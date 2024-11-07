@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"gpio.h": "c",
+			"fm25cl.h": "c",
+			"driver_digitalout.h": "c",
+			"driver_interface.h": "c",
+			"driver_rtc.h": "c"
+		}
+	}
+}
