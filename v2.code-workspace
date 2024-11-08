@@ -10,7 +10,12 @@
 			"fm25cl.h": "c",
 			"driver_digitalout.h": "c",
 			"driver_interface.h": "c",
-			"driver_rtc.h": "c"
+			"driver_rtc.h": "c",
+			"tl16c554.h": "c",
+			"driver_stm32_uart.h": "c",
+			"main.h": "c",
+			"freertos.h": "c",
+			"xutility": "c"
 		}
 	}
 }

@@ -43,14 +43,14 @@ typedef struct spi_cfg_s
 
 SPI_HandleTypeDef hspi1={.Instance = SPI1};
 SPI_HandleTypeDef hspi2={.Instance = SPI2};
-
+   DMA_HandleTypeDef hdma_tx;
+   DMA_HandleTypeDef hdma_rx;
 static volatile uint32_t SpixTimeout = 0x1000; 
 
 
 void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
 {
-  static DMA_HandleTypeDef hdma_tx;
-  static DMA_HandleTypeDef hdma_rx;
+
   
   
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -622,11 +622,6 @@ void DMA1_Stream4_IRQHandler(void)
   HAL_DMA_IRQHandler(hspi1.hdmatx);
 }
 
-//rx
-void DMA1_Stream3_IRQHandler(void)
-{
-  HAL_DMA_IRQHandler(hspi1.hdmatx);
-}
 
 void SPI1_IRQHandler(void)
 {

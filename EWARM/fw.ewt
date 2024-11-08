@@ -1234,9 +1234,6 @@
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\tim.c</name>
                 </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\usart.c</name>
-                </file>
             </group>
             <group>
                 <name>FATFS</name>
@@ -1347,12 +1344,21 @@
                 </file>
             </group>
             <group>
-                <name>EX_UART</name>
+                <name>RS232</name>
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\BSP\Components\EX_UART\TL16C554.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\BSP\Components\EX_UART\TL16C554.h</name>
+                </file>
+            </group>
+            <group>
+                <name>RS485</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\BSP\Components\rs485\rs485.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\BSP\Components\rs485\rs485.h</name>
                 </file>
             </group>
         </group>
@@ -1364,6 +1370,12 @@
         </group>
         <group>
             <name>Driver</name>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_485.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_485.h</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_adc.c</name>
             </file>
@@ -1419,16 +1431,19 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_spi.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_spi_2.c</name>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_uart.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_spi_2.h</name>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_uart.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_uart.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_uart.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_uart_def.h</name>
             </file>
         </group>
         <group>

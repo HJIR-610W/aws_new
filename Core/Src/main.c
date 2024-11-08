@@ -113,10 +113,16 @@ void SetRDPLevel0(void) {
     HAL_FLASH_Lock();
 }
 
+
+#define DBGMCU_STOP_SYSTICK() (DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP)
+
+
 int main(void)
 {
   
-  SetRDPLevel0();
+  DBGMCU_STOP_SYSTICK();
+  
+
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -148,9 +154,7 @@ int main(void)
   MX_TIM10_Init();
   MX_TIM11_Init();
   MX_TIM13_Init();
-  MX_USART1_UART_Init();
-  MX_USART3_UART_Init();
-  MX_USART6_UART_Init();
+
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 

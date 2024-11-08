@@ -105,3 +105,42 @@ void (*call)(void *)=NULL;
   //HAL_GPIO_EXTI_IRQHandler(IN_EX_UART_INT_8_Pin);
   //HAL_GPIO_EXTI_IRQHandler(INT_RTC_Pin);
 }
+
+
+extern UART_HandleTypeDef huart1 ;
+extern UART_HandleTypeDef huart3 ;
+extern UART_HandleTypeDef huart6 ;
+
+extern DMA_HandleTypeDef hdma_usart1_tx;
+extern DMA_HandleTypeDef hdma_usart3_tx;
+extern DMA_HandleTypeDef hdma_usart6_tx;
+
+
+extern SPI_HandleTypeDef hspi1;
+extern SPI_HandleTypeDef hspi2;
+extern DMA_HandleTypeDef hdma_tx;
+extern DMA_HandleTypeDef hdma_rx;
+
+
+void DMA2_Stream7_IRQHandler(void) 
+{
+    HAL_DMA_IRQHandler(&hdma_usart1_tx);
+}
+
+void DMA1_Stream3_IRQHandler(void) {
+    // DMA 상태 레지스터에서 전송 완료 인터럽트 플래그 확인
+    if (__HAL_DMA_GET_FLAG(&hdma_usart3_tx, DMA_FLAG_TCIF3_7)) {
+        // USART3 TX DMA 전송 완료 인터럽트
+        HAL_DMA_IRQHandler(&hdma_usart3_tx);
+    } 
+    else if (__HAL_DMA_GET_FLAG(&hdma_tx, DMA_FLAG_TCIF3_7)) {
+        // SPI1 TX DMA 전송 완료 인터럽트
+        HAL_DMA_IRQHandler(&hdma_tx);
+         HAL_DMA_IRQHandler(hspi1.hdmatx);
+    }
+}
+
+void DMA2_Stream6_IRQHandler(void) {
+    HAL_DMA_IRQHandler(&hdma_usart6_tx);
+}
+

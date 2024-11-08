@@ -9,6 +9,7 @@
 
 
 #include "driver_uart.h"
+#include "TL16C554.h"
 
 
 #define BUFFER_SIZE 256 // 링 버퍼의 크기
@@ -111,47 +112,90 @@ uint32_t timeoutTicks = timeOutMs * (configTICK_RATE_HZ  / 1000);
     return false; // 타임아웃 발생 시 false 반환
 }
 
-UART_HandleTypeDef huart1;
-void MX_USART1_UART_Init(void) {
-    huart1.Instance = USART1;
-    huart1.Init.BaudRate = 115200; // 원하는 보드레이트로 설정
-    huart1.Init.WordLength = UART_WORDLENGTH_8B;
-    huart1.Init.StopBits = UART_STOPBITS_1;
-    huart1.Init.Parity = UART_PARITY_NONE;
-    huart1.Init.Mode = UART_MODE_TX_RX;
-    huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-    huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-    if (HAL_UART_Init(&huart1) != HAL_OK) {
-        // 초기화 오류 처리
-        //Error_Handler();
-    }
-}
 
 
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
+
+
+
+
+
+typedef struct adc_api_s
 {
-    
-    if (huart->Instance == USART1)
-    {
-        // 수신된 데이터를 처리 (rxBuffer에 저장됨)
-        // 예: 수신된 데이터 출력
-        // 다시 수신 인터럽트 활성화 (다음 데이터를 수신하기 위해)
-      //  HAL_UART_Receive_IT(UartHandle, rxBuffer, 1);
-    }
-}
+    void (*send)(driver_t *tls16c554,uint8_t *pData,uint16_t dataLen);
+    void (*recv)(driver_t *tls16c554,uint8_t *pBuff,uint16_t rLen);
+    int32_t (*recv_byte)(driver_t *tls16c554,uint8_t *pData);
+    void (*set)(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option);
+    void (*init)(driver_t *tls16c554);
+}rs232_api_t;
 
 
-void driver_uart_init(driver_uart_t *uart,uint32_t num)
+
+driver_t g_rs232[8];
+static rs232_api_t g_rs232_api ={.send = tls16c554_send,
+                                 .recv = tls16c554_recv,
+                                 .recv_byte = tls16c554_recv_byte,
+                                 .set = tls16c554_set,
+                                 .init =tls16c554_init};
+              
+driver_t *driver_uart_open(int  num)
 {
-    switch(num)
-    {
-        case CONSOLE_UART:
-        break;
-    }
+ 
+  if(g_rs232[num].opened == true)
+  {
+   return &g_rs232[num];
+  }
+  
+  switch(num)
+  {
+    case UART_EX_232_1:
+    case  UART_EX_TTL_2:  
+    case UART_EX_232_3:
+    case  UART_EX_232_4:
+    case  UART_EX_232_7:
+    case  UART_EX_232_8:
+        g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
+        return &g_rs232[num];
+    break;    
+  }
+ 
+  
 }
 
+void driver_send_uart(driver_t *uart,uint8_t *pData,uint16_t dataLen)
+{
+  rs232_api_t *api = (rs232_api_t *)uart->api;
+  
+  api->send(uart->handle,pData,dataLen);
+}
 
+void driver_recv_uart(driver_t *uart,uint8_t *pBuff,uint16_t buffSize)
+{
+  rs232_api_t *api = (rs232_api_t *)uart->api;
+  
+  api->recv(uart->handle,pBuff,buffSize);
+}
+
+int driver_recv_uart_byte(driver_t *uart,uint8_t *pData)
+{
+  rs232_api_t *api = (rs232_api_t *)uart->api;
+  
+  return api->recv_byte(uart->handle,pData);
+}
+
+void driver_set_uart(driver_t *uart,eUART_SET_CMD_t cmd,void *para)
+{
+      rs232_api_t *api = (rs232_api_t *)uart->api;
+  
+  api->set(uart->handle,cmd,para);  
+}
+
+void driver_get_uart(driver_t *uart,eUART_SET_CMD_t cmd,void *config)
+{
+  rs232_api_t *api = (rs232_api_t *)uart->api;
+  
+//  api->init(uart->handle);
+}
 
 
 

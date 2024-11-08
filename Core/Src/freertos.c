@@ -36,7 +36,12 @@
 #include "vt100_command.h"
 #include "io.h"
 #include "time_define.h"
-    #include "driver_rtc.h"
+#include "driver_rtc.h"
+#include "driver_stm32_uart.h"
+
+
+
+#include "fatfs.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -65,7 +70,7 @@
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .stack_size = 128 * 8,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -219,6 +224,110 @@ void rtc_test(void)
   }
 }
 
+
+extern FATFS SDFatFS;    /* File system object for SD logical drive */
+void fat_test(void)
+{
+    FIL file;            // 파일 객체
+    FRESULT res;         // FATFS 함수 결과 코드
+    UINT bytesWritten;   // 쓰여진 바이트 수
+    UINT bytesRead;      // 읽은 바이트 수
+    const char writeData[10] = "1234567890"; // 쓰기 데이터 (10바이트)
+    char readData[10] = {0}; // 읽기 데이터를 저장할 버퍼
+    const char* fileName = "test.txt"; // 테스트 파일 이름
+
+    // 1. SD 카드 마운트
+    res = f_mount(&SDFatFS, (TCHAR const*)SDPath, 1);
+    if (res != FR_OK) {
+        printf("Failed to mount SD card. Error: %d\n", res);
+        return;
+    }
+
+    // 2. 파일 열기 (새 파일 생성 또는 쓰기 모드로 열기)
+    res = f_open(&file, fileName, FA_CREATE_ALWAYS | FA_WRITE);
+    if (res != FR_OK) {
+        printf("Failed to open file for writing. Error: %d\n", res);
+        f_mount(NULL, (TCHAR const*)SDPath, 1); // SD 카드 언마운트
+        return;
+    }
+
+    // 3. 파일에 데이터 쓰기
+    res = f_write(&file, writeData, sizeof(writeData), &bytesWritten);
+    if (res != FR_OK || bytesWritten != sizeof(writeData)) {
+        printf("Failed to write data to file. Error: %d\n", res);
+        f_close(&file);
+        f_mount(NULL, (TCHAR const*)SDPath, 1); // SD 카드 언마운트
+        return;
+    }
+
+    // 4. 파일 닫기
+    f_close(&file);
+
+    // 5. 파일 다시 열기 (읽기 모드로 열기)
+    res = f_open(&file, fileName, FA_READ);
+    if (res != FR_OK) {
+        printf("Failed to open file for reading. Error: %d\n", res);
+        f_mount(NULL, (TCHAR const*)SDPath, 1); // SD 카드 언마운트
+        return;
+    }
+
+    // 6. 파일에서 데이터 읽기
+    res = f_read(&file, readData, sizeof(readData), &bytesRead);
+    if (res != FR_OK || bytesRead != sizeof(readData)) {
+        printf("Failed to read data from file. Error: %d\n", res);
+        f_close(&file);
+        f_mount(NULL, (TCHAR const*)SDPath, 1); // SD 카드 언마운트
+        return;
+    }
+
+    // 7. 파일 닫기
+    f_close(&file);
+
+    // 8. 데이터 비교
+    if (memcmp(writeData, readData, sizeof(writeData)) == 0) {
+        printf("Write and read data match!\n");
+    } else {
+        printf("Write and read data do not match!\n");
+    }
+
+    // 9. SD 카드 언마운트
+    f_mount(NULL, (TCHAR const*)SDPath, 1);
+
+}
+
+driver_t *debug_uart=NULL;
+
+  uint8_t buff[100];
+
+void uart_test(void)
+{
+  uint16_t len;
+  uint8_t data;
+
+  debug_uart = stm32_uart_open(STM32_UART_1);
+
+    stm32_uart_send(debug_uart,"hello\r\n",7);
+
+  len = stm32_uart_recv(debug_uart,buff,sizeof(buff)-1,1);
+
+  buff[len] = 0;
+  debug_send(buff,strlen(buff));
+
+    debug_printf("receviced\r\n");
+
+    while(stm32_uart_recv_byte(debug_uart,&data,osWaitForever))
+    {
+      if(data==0x03)
+      {
+        break;
+      }
+        //debug_printf("%c",data);
+    }
+
+}
+
+
+
 void StartDefaultTask(void *argument)
 {
   char buff[100];
@@ -237,12 +346,14 @@ void StartDefaultTask(void *argument)
                           "A_SIG_RTD_0","A_SIG_RTD_1"};
 
 
-  uint32_t i=0;
+    uint32_t i=0;
 
-  MX_LWIP_Init();
-  
-  fram_test();
-  rtc_test();
+    //fat_test();
+    //MX_LWIP_Init();
+
+    fram_test();
+    rtc_test();
+    uart_test();
 
 
     driver_led_init(&runLed,LED_SYS_RUN);
@@ -255,14 +366,15 @@ void StartDefaultTask(void *argument)
 
   for(;;)
   {
+
     debug_printf(VT100_CURSOR_HOME);
 
-       osDelay(50);
+    osDelay(50);
     for(i = 0 ;i <_countof(adcList);i++)
     {
         driver_adc_read(&g_ads12,&adc,adcList[i]);
-        snprintf(buff,sizeof(buff),"CH:%02d,%10d,%s\r\n",adcList[i],adc,nameList[i]);
-        HAL_UART_Transmit(&huart1, buff, strlen(buff), HAL_MAX_DELAY);
+
+        debug_printf("CH:%02d,%10d,%s\r\n",adcList[i],adc,nameList[i]);
     }
   }
   /* USER CODE END StartDefaultTask */

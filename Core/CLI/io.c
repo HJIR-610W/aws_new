@@ -5,9 +5,12 @@
 #include <string.h>
 
 #include "stm32f4xx_hal.h"
+#include "driver_stm32_uart.h"
 
 
 extern UART_HandleTypeDef huart1;
+
+extern driver_t *debug_uart;
 
 int32_t debug_printf(const char * pFmt, ...)
 {
@@ -22,11 +25,17 @@ int32_t debug_printf(const char * pFmt, ...)
     va_end(ap);
     
 
-
-   HAL_UART_Transmit(&huart1, buff, strlen(buff), HAL_MAX_DELAY);
-            
-            
-
+           
+                
+    stm32_uart_send(debug_uart,buff,len);
 
     return 0;
+
+}
+
+
+void debug_send(uint8_t *pData,uint16_t dataLen)
+{
+                 
+    stm32_uart_send(debug_uart,pData,dataLen);
 }

@@ -21,3 +21,19 @@ void mcu_delay(uint32_t us) {
 
     while ((DWT->CYCCNT - start) < delayTicks); // 사이클이 충분히 지날 때까지 대기
 }
+
+uint32_t mcu_get_clk(void)
+{
+ return DWT->CYCCNT;;   
+}
+
+uint32_t mcu_cal_elapse_us(uint32_t start)
+{
+    uint32_t time_us;
+    uint32_t cycles;
+
+    cycles = DWT->CYCCNT - start;
+    time_us = cycles * (1.0 / (SystemCoreClock / 1000000));  // 168MHz = 1
+
+    return time_us;
+}
