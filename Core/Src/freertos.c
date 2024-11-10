@@ -297,7 +297,7 @@ void fat_test(void)
 
 driver_t *debug_uart=NULL;
 
-  uint8_t buff[100];
+  uint8_t buff[500];
 
 void uart_test(void)
 {
@@ -315,13 +315,16 @@ void uart_test(void)
 
     debug_printf("receviced\r\n");
 
-    while(stm32_uart_recv_byte(debug_uart,&data,osWaitForever))
+    
+    while(1)
     {
-      if(data==0x03)
-      {
-        break;
-      }
-        //debug_printf("%c",data);
+        len = stm32_uart_recv(debug_uart,buff,sizeof(buff)-1,5000);
+
+        buff[len] = 0;
+        if(len)
+        {
+        debug_send(buff,strlen(buff));
+        }
     }
 
 }
