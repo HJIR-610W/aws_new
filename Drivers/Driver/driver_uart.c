@@ -65,6 +65,8 @@ bool serial_receive_nonblocking(uint8_t *data, size_t length) {
     return true; // 데이터 수신 시 true 반환
 }
 
+#if 0 
+
 // COBS 디코딩 함수
 size_t cobs_decode(const uint8_t *input, size_t length, uint8_t *output) {
     if (length == 0) return 0;
@@ -112,7 +114,7 @@ uint32_t timeoutTicks = timeOutMs * (configTICK_RATE_HZ  / 1000);
     return false; // 타임아웃 발생 시 false 반환
 }
 
-
+#endif
 
 
 

@@ -39,8 +39,8 @@
 #include "driver_rtc.h"
 #include "driver_stm32_uart.h"
 
-
-
+#include "task_cmd.h"
+#include "task_host.h"
 #include "fatfs.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -356,14 +356,18 @@ void StartDefaultTask(void *argument)
 
     fram_test();
     rtc_test();
-    uart_test();
+    //uart_test();
 
 
+    cmdTask_init();
+    hostTask_init();
+
+    while(1)
+    {
+      osDelay(1000);
+    }
     driver_led_init(&runLed,LED_SYS_RUN);
-
     driver_adc_init(&g_ads12,ADC_ADS1220);
-
-
     debug_printf(VT100_CLEAR_SCREEN);
     debug_printf(VT100_CURSOR_OFF);
 

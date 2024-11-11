@@ -1146,6 +1146,15 @@
                     <name>$PROJ_DIR$\..\Core\Src\stm32f4xx_it.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_cmd.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_host.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_host.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Core\Src\tim.c</name>
                 </file>
             </group>
@@ -1840,6 +1849,12 @@
     </group>
     <group>
         <name>Utile</name>
+        <file>
+            <name>$PROJ_DIR$\..\Drivers\Utile\cobs.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Drivers\Utile\cobs.h</name>
+        </file>
         <file>
             <name>$PROJ_DIR$\..\Drivers\Utile\utile.c</name>
         </file>

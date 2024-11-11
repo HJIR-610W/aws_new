@@ -131,7 +131,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
 
 // USART1 초기화 함수
-static void MX_USART1_UART_Init(void) {
+static void MX_USART1_UART_Init(void)
+{
     huart1.Instance = USART1;
     huart1.Init.BaudRate = 115200;
     huart1.Init.WordLength = UART_WORDLENGTH_8B;
@@ -140,11 +141,16 @@ static void MX_USART1_UART_Init(void) {
     huart1.Init.Mode = UART_MODE_TX_RX;
     huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
     huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+
+
     if (HAL_UART_Init(&huart1) != HAL_OK) {
         //Error_Handler();
     }
     
-       __HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR); 
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR); 
+
+
+    
 }
 
 // USART3 초기화 함수
@@ -177,7 +183,8 @@ static void MX_USART6_UART_Init(void) {
     }
 }
 
-
+#define UART1_RX_INT_USE 1
+#define UART1_RX_DMA_USE 0
 
 static void MX_DMA_UART1_Init(void) 
 {
@@ -203,7 +210,11 @@ static void MX_DMA_UART1_Init(void)
     HAL_NVIC_EnableIRQ(DMA2_Stream7_IRQn);
 
 
-#if 0 
+    HAL_NVIC_SetPriority(USART1_IRQn, 6, 1);
+    HAL_NVIC_EnableIRQ(USART1_IRQn);
+    
+    
+#if UART1_RX_DMA_USE 
 
 // DMA 설정
     hdma_usart1_rx.Instance = DMA2_Stream2;  // DMA 스트림 설정 (USART1 RX용 스트림)
@@ -229,13 +240,17 @@ static void MX_DMA_UART1_Init(void)
 
     // UART 수신을 DMA로 시작 (CIRCULAR 모드)
     HAL_UART_Receive_DMA(&huart1, &g_uart_rx_dma_buffer[0], BUFFER_SIZE);
-#endif
+
+   // HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 5, 0);
+   // HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
     
 
-    HAL_NVIC_SetPriority(USART1_IRQn, 6, 1);
-    HAL_NVIC_EnableIRQ(USART1_IRQn);
-    
+#else
+   
     HAL_UART_Receive_IT(&huart1, (uint8_t *)&g_uart_ring[0].buffer[0], 1);
+
+#endif
+     
 }
 
 static void MX_DMA_UART3_Init(void) {
@@ -484,16 +499,22 @@ int RingBuffer_Read2(uart_ring_t *rb, uint8_t *data,uint16_t dataSize,uint32_t t
 
 uint16_t stm32_uart_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
 {
-
-int cnt;
+  int cnt;
 
   cnt =RingBuffer_Read2(&g_uart_ring[drv->num],pBuff,buffSize,timeOutMs);
 
   return cnt;
+       
+}
 
+uint16_t stm32_uart_recvFrame(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
+{
+  int cnt;
 
+  cnt =RingBuffer_Read2(&g_uart_ring[drv->num],pBuff,buffSize,timeOutMs);
 
-        
+  return cnt;
+       
 }
 
 void stm32_uart_set(driver_t *drv,eUART_SET_CMD_t cmd,void *option)
@@ -561,24 +582,54 @@ void uart1_receive(UART_HandleTypeDef *huart)
 }
 
 
-uint32_t run_time;
-uint32_t startTick;
-uint32_t elapse_us;
-uint32_t max_us=0;
+
+/*
+최초이의 한번바이트가 수신된 상태에서 특정 시간동안 UART RX 라인이 
+High 있으면 idle 인터럽트 발생
+uart 일반적으로 한번에 들어온다면 적용가능한 방법
+그러나,바이트의 재수신 시간이 너무 짧다면 문제가될 요소는 있음 
+*/
+  uint16_t len;
+void HAL_UART_IDLECallback(UART_HandleTypeDef *huart)
+{
+
+  
+  
+    if (huart->Instance == USART1)
+    {
+
+        // DMA 수신을 멈추고, 수신된 데이터 길이 계산
+        __HAL_DMA_DISABLE(&hdma_usart1_rx);
+
+        uart1_receive(huart);
+
+        // DMA 수신 재시작
+        __HAL_DMA_SET_COUNTER(&hdma_usart3_rx, BUFFER_SIZE);
+        __HAL_DMA_ENABLE(&hdma_usart3_rx);
+    }
+}
 
 //인터럽트 설정
+   uint32_t isrflag;
+     
 void USART1_IRQHandler(void)
 {
-  startTick = mcu_get_clk();
 
-  HAL_UART_IRQHandler(&huart1);
+#if UART1_RX_DMA_USE
 
-  elapse_us =  mcu_get_clk()-startTick;//mcu_cal_elapse_us(startTick);
-
-  if(elapse_us >max_us)
+  if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))
   {
-    max_us = elapse_us;
+    __HAL_UART_CLEAR_IDLEFLAG(&huart1);  // IDLE 플래그 클리어
+    HAL_UART_IDLECallback(&huart1);         // IDLE 콜백 호출
   }
+  else
+  {
+    HAL_UART_IRQHandler(&huart1);
+  }
+#else
+    HAL_UART_IRQHandler(&huart1);
+  
+#endif
 }
 
 void USART3_IRQHandler(void)
@@ -592,25 +643,34 @@ void USART6_IRQHandler(void)
 }
 
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
-    
-    if (huart->Instance == USART1) 
-    {
-      osSemaphoreRelease(g_stm32_uart_cfg[0].syncSem);
-    }
-    else if (huart->Instance == USART3) 
-    {
-      osSemaphoreRelease(g_stm32_uart_cfg[1].syncSem);
-    }
-    else if (huart->Instance == USART6)
-    {
-        osSemaphoreRelease(g_stm32_uart_cfg[2].syncSem);
-    }
+
+/*
+UART TX 완료 처리
+DMA 사용해서 데이터 전송시 마지막 데이터가 전송되고 나면
+전송완료 인터럽트 발생
+DMA 전송완료가 아닌 UART TX 전송 완료로 전송완료를 처리해야함
+*/
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  
+  if (huart->Instance == USART1) 
+  {
+    osSemaphoreRelease(g_stm32_uart_cfg[0].syncSem);
+  }
+  else if (huart->Instance == USART3) 
+  {
+    osSemaphoreRelease(g_stm32_uart_cfg[1].syncSem);
+  }
+  else if (huart->Instance == USART6)
+  {
+    osSemaphoreRelease(g_stm32_uart_cfg[2].syncSem);
+  }
 }
  
 #include "semphr.h"
 
-uint32_t g_rx_cnt = 0;
+
+
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
@@ -618,6 +678,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   
     if (huart->Instance == USART1) 
     {
+#if UART1_RX_INT_USE 
         // 수신된 데이터를 링버퍼에 저장
         head = g_uart_ring[0].head;
         g_uart_ring[0].head = (head + 1) % BUFFER_SIZE;
@@ -626,7 +687,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         head = g_uart_ring[0].head;
         HAL_UART_Receive_IT(&huart1, (uint8_t *)&g_uart_ring[0].buffer[head], 1);
 
-    g_rx_cnt++;
+
+#endif
+        
+
+    
 
     }
         if (huart->Instance == USART3) 
@@ -659,17 +724,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 }
 
 
-uint8_t g_uart_err=0;
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) 
 {
-      uint32_t isrflags   = READ_REG(huart->Instance->SR);
+      uint32_t isrflags   = READ_REG(huart->Instance->SR);// 이 시퀀스를 수행하면 에러가지워짐
       uint32_t data   = READ_REG(huart->Instance->DR);
     if (huart->Instance == USART1) 
     {
 
         // 오류 종류 확인
         uint32_t error = HAL_UART_GetError(huart);
-        g_uart_err= error;
+
         if (error & HAL_UART_ERROR_PE) {
            // printf("Parity Error\n");
         }
