@@ -72,7 +72,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, OUT_CON_PWR_ASEN_Pin|OUT_CON_PWR_ASEN_A_Pin|OUT_CON_PWR_ASEN_B_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOH, OUT_ETH_RST_PHY_Pin|OUT_CON_PWR_CDMA_Pin|OUT_ADC_EN_RTD_Pin|OUT_ADC_EN_ODD_Pin
+  HAL_GPIO_WritePin(GPIOH, OUT_ETH_RST_PHY_Pin|OUT_DO_PWR_CDMA_Pin|OUT_ADC_EN_RTD_Pin|OUT_ADC_EN_ODD_Pin
                           |OUT_ADC_EN_EVEN_Pin|OUT_ADC_SEL_A1_Pin|OUT_ADC_SEL_A2_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
@@ -151,7 +151,7 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pins : PHPin PHPin PHPin PHPin
                            PHPin PHPin PH13 PHPin
                            PHPin */
-  GPIO_InitStruct.Pin = OUT_ETH_RST_PHY_Pin|OUT_CON_PWR_CDMA_Pin|OUT_SYS_RUN_Pin|OUT_ADC_EN_RTD_Pin
+  GPIO_InitStruct.Pin = OUT_ETH_RST_PHY_Pin|OUT_DO_PWR_CDMA_Pin|OUT_SYS_RUN_Pin|OUT_ADC_EN_RTD_Pin
                           |OUT_ADC_EN_ODD_Pin|OUT_ADC_EN_EVEN_Pin|GPIO_PIN_13|OUT_ADC_SEL_A1_Pin
                           |OUT_ADC_SEL_A2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;

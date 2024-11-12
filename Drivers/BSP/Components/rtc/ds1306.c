@@ -16,16 +16,10 @@ driver_t *ds1306_open(void)
   return &ds1306;
 }
 
-
-
-
-
 int32_t ds1306_read_reg(driver_t *ds1306, uint8_t reg,uint8_t *rval)
 {
   int32_t err;
   ds1306_cfg_t *cfg=(ds1306_cfg_t*)ds1306->cfg;
-
-
 
   driverex_spi_pend_sem(cfg->spi_io);
 
@@ -34,7 +28,7 @@ int32_t ds1306_read_reg(driver_t *ds1306, uint8_t reg,uint8_t *rval)
 
   driverex_spi_send_byte(cfg->spi_io,reg);
     
-  *rval = driver_spi_read_byte(cfg->spi_io);
+  *rval = driverex_spi_read_byte(cfg->spi_io);
 
   driver_do_low(cfg->cs_io);
 
@@ -105,22 +99,14 @@ void ds1306_read(driver_t *ds1306,DATE_TIME_BUF *t)
 }
 
 
-uint8_t min;
-uint8_t hour;
-uint8_t sec;
 
 void ds1306_init(driver_t *ds1306)
 {
-  ds1306_cfg_t *cfg=(ds1306_cfg_t*)ds1306->cfg;
-    uint8_t val;
+  uint8_t val;
 
-
-
-    ds1306_write_reg(ds1306,0x0f,00);   
-    
-    ds1306_write_reg(ds1306,0x11,00);
-
- 	ds1306_read_reg(ds1306,0x10,&val);
-	ds1306_read_reg(ds1306,0x07,&val);
+  ds1306_write_reg(ds1306,0x0f,00);   
+  ds1306_write_reg(ds1306,0x11,00);
+  ds1306_read_reg(ds1306,0x10,&val);
+  ds1306_read_reg(ds1306,0x07,&val);
    
 }

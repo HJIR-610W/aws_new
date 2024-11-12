@@ -207,120 +207,109 @@ void ADS1210_init(void)
 #endif
 
 
-void os_pend(void *sem,uint32_t timeout_ms)
-{
-    if(sem)
-    {
-        osSemaphoreAcquire(sem, timeout_ms);
-    }
-}
 
-void os_post(void *sem)
-{
-    if(sem)
-    {
-        osSemaphoreRelease(sem);
-    }
-}
-
-
-void write_reg(ads1210_t *ads1210,uint8_t startAddress,uint8_t numRegs,uint8_t *pData)
+void write_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs,uint8_t *pData)
 {
     uint32_t i;
     uint8_t data;
+    ads1210_t *cfg=(ads1210_t*)drv->cfg;
 
-    os_pend(((driver_spi_t *)ads1210->spi_io)->sem,osWaitForever);
 
-    driver_digitalOut_low( (driver_digitalOut_t *)ads1210->cs_io);
+    driverex_spi_pend_sem(cfg->spi_io);
+
+    driver_do_low(cfg->cs_io);
 
     mcu_delay(50);
 
     data = ADS1220_CMD_WREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03));
  
-    driver_spi_send_byte(ads1210->spi_io,data);
+    driverex_spi_send_byte(cfg->spi_io,data);
 
     for (i=0; i< numRegs; i++)
     {
-        driver_spi_send_byte(ads1210->spi_io,*pData++);
+        driverex_spi_send_byte(cfg->spi_io,*pData++);
     }
    
-    driver_digitalOut_high( (driver_digitalOut_t *)ads1210->cs_io);
+    driver_do_high( cfg->cs_io);
 
-    os_post(((driver_spi_t *)ads1210->spi_io)->sem);
+    driverex_spi_post_sem(cfg->spi_io);
 }
 
-void read_reg(ads1210_t *ads1210,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff)
+void read_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff)
 {
     uint32_t i;
     uint8_t val=0;
     uint8_t data;
+    ads1210_t *cfg=(ads1210_t*)drv->cfg;
 
-    os_pend(((driver_spi_t *)ads1210->spi_io)->sem,osWaitForever);
+    driverex_spi_pend_sem(cfg->spi_io);
 
+    driver_do_low(cfg->cs_io);
 
-    driver_digitalOut_low( (driver_digitalOut_t *)ads1210->cs_io);
-
-mcu_delay(50);
+    mcu_delay(50);
     
     data = (ADS1220_CMD_RREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03)));
 
-    driver_spi_send_byte(ads1210->spi_io,data);
+    driverex_spi_send_byte(cfg->spi_io,data);
 
     for (i=0; i< numRegs; i++)
     {
-        val = driver_spi_read_byte(ads1210->spi_io);
+        val = driverex_spi_read_byte(cfg->spi_io);
         *pBuff++ = val;
     }
    
-    driver_digitalOut_high( (driver_digitalOut_t *)ads1210->cs_io);
+    driver_do_high( cfg->cs_io);
     
-    os_post(((driver_spi_t *)ads1210->spi_io)->sem);
-    
+    driverex_spi_post_sem(cfg->spi_io);
 
 }
 
-void ADS1210_start_conv(ads1210_t *ads1210)
+void ADS1210_start_conv(driver_t *drv)
 {
-    os_pend(((driver_spi_t *)ads1210->spi_io)->sem,osWaitForever);
+    ads1210_t *cfg=(ads1210_t*)drv->cfg;
 
-    driver_digitalOut_low( (driver_digitalOut_t *)ads1210->cs_io);
+    driverex_spi_pend_sem(cfg->spi_io);
+
+    driver_do_low( cfg->cs_io);
     
-mcu_delay(50);
-    driver_spi_send_byte(ads1210->spi_io,ADS1220_CMD_SYNC);
+    mcu_delay(50);
+    driverex_spi_send_byte(cfg->spi_io,ADS1220_CMD_SYNC);
    
-    driver_digitalOut_high( (driver_digitalOut_t *)ads1210->cs_io);
+    driver_do_high( cfg->cs_io);
     
-    os_post(((driver_spi_t *)ads1210->spi_io)->sem);
+   driverex_spi_post_sem(cfg->spi_io);
     
 }
 
-void ADS1210_set_channel(ads1210_t *ads1210,uint32_t ch)
+void ADS1210_set_channel(driver_t *drv,uint32_t ch)
 {
     uint8_t reg=0;
-    
-    read_reg(ads1210,ADS1220_REG_0, 0x01, &reg);
+ 
+
+    read_reg(drv,ADS1220_REG_0, 0x01, &reg);
         
     reg = (reg&0x0F) |((ch<<4)|0x80);
    
-    write_reg(ads1210,ADS1220_REG_0,0x01,&reg);
+    write_reg(drv,ADS1220_REG_0,0x01,&reg);
 
 
 
 
 }
 
-void ADS1210_reset_sw(ads1210_t *ads1210)
+void ADS1210_reset_sw(driver_t *drv)
 {
+    ads1210_t *cfg=(ads1210_t*)drv->cfg;
 
-    os_pend(((driver_spi_t *)ads1210->spi_io)->sem,osWaitForever);
-    driver_digitalOut_low( (driver_digitalOut_t *)ads1210->cs_io);
+    driverex_spi_pend_sem(cfg->spi_io);
 
+    driver_do_low(cfg->cs_io);
 
-    driver_spi_send_byte(ads1210->spi_io,ADS1220_CMD_RESET);
+    driverex_spi_send_byte(cfg->spi_io,ADS1220_CMD_RESET);
 
-    driver_digitalOut_high( (driver_digitalOut_t *)ads1210->cs_io);
+    driver_do_high(cfg->cs_io);
 
-    os_post(((driver_spi_t *)ads1210->spi_io)->sem);
+    driverex_spi_post_sem(cfg->spi_io);
 }
 
 
@@ -330,20 +319,24 @@ void irq_dataReady(void *ads1210)
 }
 
 
-void read_adc(ads1210_t *ads1210,uint8_t *err)
+void read_adc(driver_t *drv,uint8_t *err)
 {
+        ads1210_t *cfg=(ads1210_t*)drv->cfg;
+
         int32_t data=0;
             *err = 1;
-    if(driver_digitalIn_read(ads1210->drdy_i)==0)
+    if(driver_di_read(cfg->drdy_i)==0)
 {
-    os_pend(((driver_spi_t *)ads1210->spi_io)->sem,osWaitForever);
-    driver_digitalOut_low( (driver_digitalOut_t *)ads1210->cs_io);
-    osDelay(2);
-    driver_spi_send_byte(ads1210->spi_io,ADS1220_CMD_RDATA);
+    driverex_spi_pend_sem(cfg->spi_io);
 
-    data = driver_spi_read_byte(ads1210->spi_io);
-    data = (data << 8) |driver_spi_read_byte(ads1210->spi_io);
-    data = (data << 8) |driver_spi_read_byte(ads1210->spi_io);
+
+    driver_do_low( cfg->cs_io);
+    osDelay(2);
+    driverex_spi_send_byte(cfg->spi_io,ADS1220_CMD_RDATA);
+
+    data = driver_spi_read_byte(cfg->spi_io);
+    data = (data << 8) |driver_spi_read_byte(cfg->spi_io);
+    data = (data << 8) |driver_spi_read_byte(cfg->spi_io);
 
     if (data & 0x00800000)
     {
@@ -351,31 +344,31 @@ void read_adc(ads1210_t *ads1210,uint8_t *err)
     }
 //    data = data<<8;
 //    data = data>>8; // 부호확장
-    driver_digitalOut_high( (driver_digitalOut_t *)ads1210->cs_io);
+    driver_do_high(cfg->cs_io);
     *err = 0;
-        os_post(((driver_spi_t *)ads1210->spi_io)->sem);
+    driverex_spi_post_sem(cfg->spi_io);
  
     }
 }
 
-int32_t AD1220_read_data(ads1210_t *ads1210,int32_t ch,uint8_t *err)
+int32_t AD1220_read_data(driver_t *drv,int32_t ch,uint8_t *err)
 {
     int32_t data=0;
     uint32_t startTime;
-
+        ads1210_t *cfg=(ads1210_t*)drv->cfg;
 
     
     *err = 1;
 
-    os_pend(ads1210->sem,osWaitForever);
+    driverex_spi_pend_sem(cfg->spi_io);
 
-    ADS1210_set_channel(ads1210,ch);
+    ADS1210_set_channel(drv,ch);
    // osDelay(10);
 
     //if(!READY_DRDY_ADC())
     {
  
-       ADS1210_start_conv(ads1210);
+       ADS1210_start_conv(drv);
         
         startTime = osKernelSysTick();
 
@@ -385,17 +378,17 @@ int32_t AD1220_read_data(ads1210_t *ads1210,int32_t ch,uint8_t *err)
             {
                 break;
             }
-            if(driver_digitalIn_read(ads1210->drdy_i)==0)
+            if(driver_di_read(cfg->drdy_i)==0)
             {
-                os_pend(((driver_spi_t *)ads1210->spi_io)->sem,osWaitForever);
-                driver_digitalOut_low( (driver_digitalOut_t *)ads1210->cs_io);
+                    driverex_spi_pend_sem(cfg->spi_io);
+                driver_do_low(cfg->cs_io);
                 osDelay(2);
-                driver_spi_send_byte(ads1210->spi_io,ADS1220_CMD_RDATA);//이명령어 전송되면
+                driverex_spi_send_byte(cfg->spi_io,ADS1220_CMD_RDATA);//이명령어 전송되면
                 //drdy 핀 올라감
 
-                data = driver_spi_read_byte(ads1210->spi_io);
-                data = (data << 8) |driver_spi_read_byte(ads1210->spi_io);
-                data = (data << 8) |driver_spi_read_byte(ads1210->spi_io);
+                data = driverex_spi_read_byte(cfg->spi_io);
+                data = (data << 8) |driverex_spi_read_byte(cfg->spi_io);
+                data = (data << 8) |driverex_spi_read_byte(cfg->spi_io);
 
                 if (data & 0x00800000)
                 {
@@ -403,41 +396,57 @@ int32_t AD1220_read_data(ads1210_t *ads1210,int32_t ch,uint8_t *err)
                 }
             //    data = data<<8;
             //    data = data>>8; // 부호확장
-                driver_digitalOut_high( (driver_digitalOut_t *)ads1210->cs_io);
+                driver_do_high( cfg->cs_io);
                 *err = 0;
-                    os_post(((driver_spi_t *)ads1210->spi_io)->sem);
+                driverex_spi_post_sem(cfg->spi_io);
                 break;
             }
         }
     }
 
-    os_post(ads1210->sem);
+    driverex_spi_post_sem(cfg->spi_io);
     return data;
 }
 
   uint8_t reg;
-void ads1210_init(ads1210_t *ads1210)
+void ads1210_init(driver_t *drv)
 {
   
-  ADS1210_reset_sw(ads1210);
+  ADS1210_reset_sw(drv);
   
 
-    if(ads1210->sem == NULL)
+    if(drv->sem == NULL)
     {
-        ads1210->sem = osSemaphoreNew(1, 1, NULL); 
+        drv->sem = osSemaphoreNew(1, 1, NULL); 
     }
 
     reg = 0x01;//PGA disable  
 
-    write_reg(ads1210,ADS1220_REG_0, 1, &reg);  
+    write_reg(drv,ADS1220_REG_0, 1, &reg);  
 
     reg = 0xc0;
-    write_reg(ads1210,ADS1220_REG_1, 1, &reg);
+    write_reg(drv,ADS1220_REG_1, 1, &reg);
 
     reg = (0x01)<<6;
-    write_reg(ads1210,ADS1220_REG_2, 1, &reg);
+    write_reg(drv,ADS1220_REG_2, 1, &reg);
 
     reg = 0x00;
-    write_reg(ads1210,ADS1220_REG_3, 1, &reg);
+    write_reg(drv,ADS1220_REG_3, 1, &reg);
 
+}
+
+
+static driver_t ads1220;
+ads1210_t ads1210_cfg;
+
+driver_t *ads1220_open(void)
+{
+    if(ads1220.opened == false)
+    {
+        ads1220.opened = true;
+        ads1220.cfg = &ads1210_cfg;
+    }
+
+
+    return &ads1220;
 }

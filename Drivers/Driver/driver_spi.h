@@ -44,10 +44,9 @@ driver_t *driver_spi_open(int num);
 void driverex_spi_send_byte(driver_t *spi, uint8_t value);
 void driverex_spi_send_bytes(driver_t *spi,uint8_t *data,uint16_t dataLen);
 uint8_t driverex_spi_read_byte(driver_t *spi);
-uint8_t driverex_spi_read_bytes(driver_spi_t *spi,uint8_t *pBuff,uint16_t rLen);
+uint8_t driverex_spi_read_bytes(driver_t *spi,uint8_t *pBuff,uint16_t rLen);
 
 
-
-void driverex_spi_pend_sem(driver_spi_t *spi);
-void driverex_spi_post_sem(driver_spi_t *spi);
+void driverex_spi_pend_sem(driver_t *spi);
+void driverex_spi_post_sem(driver_t *spi);
 #endif

@@ -38,10 +38,13 @@
 #include "time_define.h"
 #include "driver_rtc.h"
 #include "driver_stm32_uart.h"
-
+#include "driver_flash.h"
+#include "driver_gpio.h"
 #include "task_cmd.h"
 #include "task_host.h"
 #include "fatfs.h"
+
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -70,7 +73,7 @@
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 8,
+  .stack_size = 2048,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -180,7 +183,7 @@ void MX_FREERTOS_Init(void) {
 extern UART_HandleTypeDef huart1;
 
 
-driver_adc_t g_ads12;
+
 
 
 
@@ -189,7 +192,6 @@ void fram_test(void)
 {
   driver_t *fram;
  
-
   fram = driver_fram_open(FRAM_FM25LC);
 
   for(int i = 0;i< sizeof(test_buff);i++)
@@ -328,14 +330,36 @@ void uart_test(void)
     }
 
 }
+  static uint8_t wBuff[1024];
+  static uint8_t rBuff[1024];
 
-
-
-void StartDefaultTask(void *argument)
+void flash_test(void)
 {
-  char buff[100];
-  
-  driver_led_t runLed;
+  driver_t *flash;
+
+
+  flash = driver_flash_open(FALSH_AT45DB);
+
+  for(int i = 0 ; i< sizeof(wBuff);i++)
+  {
+    wBuff[i] = i;
+  }
+  for(int i = 0 ; i< sizeof(rBuff);i++)
+  {
+    rBuff[i] = 0;
+  }
+
+  driver_flash_write(flash,0,wBuff,sizeof(wBuff));
+
+  driver_flash_read(flash,0,rBuff,sizeof(rBuff),sizeof(rBuff));
+}
+
+
+
+void adc_test(void)
+{
+  driver_t *ads1220;
+  int i;
   int32_t adc;
   uint16_t adcList[]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29,2,6};
   const char *nameList[]={"A_SIG_1","A_SIG_2",
@@ -349,25 +373,7 @@ void StartDefaultTask(void *argument)
                           "A_SIG_RTD_0","A_SIG_RTD_1"};
 
 
-    uint32_t i=0;
-
-    //fat_test();
-    //MX_LWIP_Init();
-
-    fram_test();
-    rtc_test();
-    //uart_test();
-
-
-    cmdTask_init();
-    hostTask_init();
-
-    while(1)
-    {
-      osDelay(1000);
-    }
-    driver_led_init(&runLed,LED_SYS_RUN);
-    driver_adc_init(&g_ads12,ADC_ADS1220);
+  ads1220 = driver_adc_open(ADC_ADS1220);
     debug_printf(VT100_CLEAR_SCREEN);
     debug_printf(VT100_CURSOR_OFF);
 
@@ -379,11 +385,75 @@ void StartDefaultTask(void *argument)
     osDelay(50);
     for(i = 0 ;i <_countof(adcList);i++)
     {
-        driver_adc_read(&g_ads12,&adc,adcList[i]);
+        driver_adc_read(ads1220,&adc,adcList[i]);
 
         debug_printf("CH:%02d,%10d,%s\r\n",adcList[i],adc,nameList[i]);
     }
   }
+}
+
+void gpio_test(void)
+{
+  driver_t *gpio;
+  uint16_t data;
+  uint16_t out_data=0xffff;
+  uint16_t out=0x00ff;
+  char buff[20];
+
+  gpio = driver_gpio_open(DRIVER_PCF8575);
+
+#if 0 
+  while(1)
+  {
+    driver_gpio_read(gpio,&data);
+
+    out^=0xFF;
+
+    driver_gpio_write(gpio,out_data);
+    hex_to_binary_string(data,buff,16);
+
+    printf("b%s\r\n",buff);
+    osDelay(1000);
+    out^=0xFF;
+    
+  }
+#endif
+    uint8_t out_pin=0xff;
+  while(1)
+  {
+    uint8_t pin;
+
+    pin = driver_gpio_read_pin(gpio,GPIO_PIN3);
+    printf("ги 2:%d\r\n",pin);
+    
+    driver_gpio_write_pin(gpio,GPIO_PIN5,out_pin);
+    out_pin^=0xff;
+    osDelay(100);
+  }
+}
+void StartDefaultTask(void *argument)
+{
+  char buff[100];
+  uint32_t i=0;
+  driver_led_t runLed;
+
+  //fat_test();
+  //MX_LWIP_Init();
+  fram_test();
+  rtc_test();
+  flash_test();
+  cmdTask_init();
+  hostTask_init();
+  //adc_test();
+  gpio_test();
+  driver_led_init(&runLed,LED_SYS_RUN);
+
+  while(1)
+  {
+    osDelay(1000);
+  }
+
+
   /* USER CODE END StartDefaultTask */
 }
 

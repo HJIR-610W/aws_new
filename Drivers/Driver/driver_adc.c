@@ -17,7 +17,7 @@
 #include "utile.h"
 typedef struct adc_cfg_S
 {
-    ;
+    
     GPIO_PinState pin;
    
 }digitalOut_cfg_t;
@@ -79,60 +79,23 @@ void stm32AdcTask(void *argument)
 
 
 
-void driver_adc_start(driver_adc_t *adc)
+void driver_adc_start(driver_t *adc)
 {
   
 }
-void driver_adc_stop(driver_adc_t *adc)
+void driver_adc_stop(driver_t *adc)
 {
   
 }
 
-void driver_adc_read(driver_adc_t *adc,uint32_t *val,uint32_t ch)
+void driver_adc_read(driver_t *adc,uint32_t *val,uint32_t ch)
 {
     adc_api_t *adc_api = (adc_api_t *)adc->api;
 
     adc_api->read(val,ch);
 }
+static ads1210_t ads1210;
 
-
-
-  static ads1210_t ads1210;
-
-void ads1220_init(void)
-{
-
-  static driver_spi_t ads1220_spi;
-  static driver_digitalOut_t ads1220_cs;
-  static driver_digitalIn_t ads1220_drdy;
-digitalIn_set_interupt_t cfgInt;
-
-
-  driver_spi_init(&ads1220_spi,STM_SPI_2);
-  driver_digitalOut_init(&ads1220_cs,DO_ADC_NCS);
-  
-  driver_digitalIn_init(&ads1220_drdy,DI_ADC_RDY);
-
-
-
-
-  ads1210.spi_io = &ads1220_spi;
-  ads1210.cs_io  = &ads1220_cs;
-  ads1210.drdy_i = &ads1220_drdy;
-
-  cfgInt.call = irq_dataReady;
-  cfgInt.intType = INT_FALLING;
-  cfgInt.priority = 5;
-  cfgInt.handle = &ads1210;
-
-  //driver_digitalIn_set(&ads1220_drdy,eDIG_IN_SET_INTERRUPT,&cfgInt);
-
-  ads1210_init(&ads1210);
-
-
-
-
-}
 
 
 void ads1220_read(int32_t *val,uint32_t ch)
@@ -155,7 +118,7 @@ void set_adc_mux(uint16_t ch)
 {
   
 }
-
+driver_t g_ads1220_h={.opened = false};
 
 int32_t g_sample[20];
 void adc1220Task(void *argument)
@@ -184,7 +147,7 @@ int32_t first=0;
       for(int n = 0 ; n< 10; n++)
       {
         g_sample[n]=0;
-        adc = AD1220_read_data(&ads1210,channel%4,&err);
+        adc = AD1220_read_data(g_ads1220_h.handle,channel%4,&err);
         if(err == 0)
         {
           g_sample[n]=adc;
@@ -212,33 +175,67 @@ int32_t first=0;
 }
 
 
-void driver_adc_init(driver_adc_t *adc,uint32_t num)
+void ads1220_common_open(driver_t *adc)
+{
+    if(adc->opened == false)
+    {
+      if(g_ads1220TaskHandle==NULL)
+      {
+        g_ads1220TaskHandle = osThreadNew(adc1220Task, NULL, &ads1220Task_attributes);  
+      }
+
+      driver_t *p_ads1220;
+      ads1220_cfg_t *p_ads1220_cfg;
+
+      p_ads1220 = ads1220_open();
+      p_ads1220_cfg = (ads1220_cfg_t *)(p_ads1220->cfg);
+
+      p_ads1220_cfg->spi_io = driver_spi_open(STM_SPI_2);
+      p_ads1220_cfg->cs_io  = driver_do_open(DO_ADC_NCS);
+      p_ads1220_cfg->irq_io = driver_di_open(DI_ADC_RDY);
+
+      adc->handle = p_ads1220;
+
+      ads1210_init(p_ads1220);
+      
+      adc_mux_init();
+    }
+}
+
+
+
+typedef struct adc_cfg_s
+{
+  int samplingHz;
+}adc_cfg_t;
+
+
+driver_t g_ads1220List[32];
+
+driver_t * driver_adc_open(uint32_t num)
 {
   
     switch(num)
     {
-        case 0:
-        if(g_ads1220TaskHandle==NULL)
-        {
-            g_ads1220TaskHandle = osThreadNew(adc1220Task, NULL, &ads1220Task_attributes);  
-        }
-        
-        adc->api = (void *)&g_ads1220;
-
-        ads1220_init();
-        adc_mux_init();
-
+        case ADC_ADS1220_SINGLE_CH_0:
+            ads1220_common_open(&g_ads1220List[num]);
+        return &g_ads1220List[num];
+         
         break;
     case 1:
               if(g_adcstm32adcTaskHandle==NULL)
         {
             g_adcstm32adcTaskHandle = osThreadNew(stm32AdcTask, NULL, &adcstm32Task_attributes);  
         }
-        adc->api = (void *)&g_stm32;
+
       break;
     }
+    
+    return 0;
 }
 
-adc_api_t g_ads1220={.read = ads1220_read,.init = ads1220_init};
+
 adc_api_t g_stm32={.read = stm32_read,.init= stm32_init};
+
+
 

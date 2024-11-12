@@ -17,3 +17,13 @@ int getPinNumber(uint16_t pin) {
   }
   return -1; // 비트가 1인 위치가 없으면 -1 반환
 }
+
+
+
+void hex_to_binary_string(uint16_t hex_value, char *binary_str, int bit_length) {
+    // bit_length만큼의 이진수 문자열 생성
+    for (int i = bit_length - 1; i >= 0; i--) {
+        binary_str[bit_length - 1 - i] = (hex_value & (1 << i)) ? '1' : '0';
+    }
+    binary_str[bit_length] = '\0';  // 문자열 종료 문자 추가
+}

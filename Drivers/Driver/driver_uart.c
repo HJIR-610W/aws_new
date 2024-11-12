@@ -161,7 +161,7 @@ driver_t *driver_uart_open(int  num)
     break;    
   }
  
-  
+  return 0;
 }
 
 void driver_send_uart(driver_t *uart,uint8_t *pData,uint16_t dataLen)

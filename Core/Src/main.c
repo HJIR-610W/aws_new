@@ -31,6 +31,12 @@
 #include "fsmc.h"
 #include "mcu_delay.h"
 
+
+
+
+
+
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -117,9 +123,15 @@ void SetRDPLevel0(void) {
 #define DBGMCU_STOP_SYSTICK() (DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP)
 
 
+
+
+
+
 int main(void)
 {
-  
+
+
+
   DBGMCU_STOP_SYSTICK();
   
 
@@ -147,7 +159,7 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_FSMC_Init();
-  MX_I2C1_Init();
+
   MX_SDIO_SD_Init();
   MX_SPI1_Init();
   MX_SPI2_Init();

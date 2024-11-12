@@ -21,7 +21,7 @@ driver_t * driver_fram_open(int num)
     case FRAM_FM25LC:
     static driver_t fram_fm25lcl;//driver_fram_open을 하면 생성되는것
     const static fram_api_t fm25_api={.read = fm25cl_read,
-                                .write = fm25cl_write};
+                                      .write = fm25cl_write};
 
     driver_t *fm25lc;
     fm25lc_cfg_t *fm25lc_cfg;
@@ -84,4 +84,5 @@ void driver_fram_write(driver_t* driver, uint32_t offset, unsigned char* pBuff, 
   {
     osSemaphoreRelease(driver->sem);
   }
+
 }

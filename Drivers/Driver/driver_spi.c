@@ -386,9 +386,10 @@ uint8_t stm32_spi_read_bytes(void *hspi,uint8_t *pBuff,uint16_t rLen)
 	if(status != HAL_OK)
 	{
 	//	MSP_SPIx_Error(hspi);
+    return 1;
 	}
 
-	return readvalue;
+	return 0;
 
 }
 #else
@@ -487,28 +488,24 @@ uint8_t driver_spi_read_byte(driver_spi_t *spi)
 
 
 
+static stm32_spi_cfg_t stm32_spi_cfg;
+static driver_t spi1={.opened=false};
+static spi_api_t g_spi_api={.send_byte  = stm32_spi_send_byte,
+                            .send_bytes = stm32_spi_send_bytes,
+                            .read_byte  = stm32_spi_read_byte,
+                            .read_bytes = stm32_spi_read_bytes};
 
 driver_t *driver_spi_open(int num)
 {
   switch(num)
   {
     case STM_SPI_1:
-      {
-    static int init=0;
-    static stm32_spi_cfg_t stm32_spi_cfg;
-    static driver_t spi1;
-    static spi_api_t g_spi_api={.send_byte  = stm32_spi_send_byte,
-                                .send_bytes = stm32_spi_send_bytes,
-                                .read_byte  = stm32_spi_read_byte,
-                                .read_bytes = stm32_spi_read_bytes,
-    };
-
-    if(init==0)
+    if(spi1.opened == false)
     {
-      init = 1;
+      spi1.opened = true;
+
       stm32_spi_init(&hspi1);
       stm32_spi_cfg.handle = &hspi1;
-
       spi1.cfg = &stm32_spi_cfg;
       spi1.api = &g_spi_api;
       if(spi1.sem == NULL)
@@ -517,9 +514,7 @@ driver_t *driver_spi_open(int num)
       }
     }
     return &spi1;
-      }
     break;
-
   }
   
   return 0;
@@ -547,16 +542,9 @@ void driverex_spi_send_bytes(driver_t *spi,uint8_t *data,uint16_t dataLen)
 {
   spi_api_t *api = (spi_api_t*)spi->api;
 
-  if(spi->sem)
-  {
-   // osSemaphoreAcquire(spi->sem, osWaitForever);
-  }
   api->send_bytes((( stm32_spi_cfg_t*)spi->cfg)->handle,data,dataLen);
 
-    if(spi->sem)
-  {
-    //osSemaphoreRelease(spi->sem);
-  }
+
 }
 
 uint8_t driverex_spi_read_byte(driver_t *spi)
@@ -564,50 +552,37 @@ uint8_t driverex_spi_read_byte(driver_t *spi)
   uint8_t data;
   spi_api_t *api = (spi_api_t*)spi->api;
 
-  if(spi->sem)
-  {
-   // osSemaphoreAcquire(spi->sem, osWaitForever);
-  }
   data = api->read_byte((( stm32_spi_cfg_t*)spi->cfg)->handle);
-    if(spi->sem)
-  {
-   // osSemaphoreRelease(spi->sem);
-  }
+
   return data;
 }
 
 
 
-uint8_t driverex_spi_read_bytes(driver_spi_t *spi,uint8_t *pBuff,uint16_t rLen)
+uint8_t driverex_spi_read_bytes(driver_t *spi,uint8_t *pBuff,uint16_t rLen)
 {
   uint8_t data;
 
-  spi_api_t *api = (spi_api_t *)spi->api;
-  spi_cfg_t *cfg = (spi_cfg_t *)spi->apiCfg;
+  spi_api_t *api = (spi_api_t*)spi->api;
 
-  data = api->read_bytes(cfg->handle,pBuff,rLen);
+  api->read_bytes((( stm32_spi_cfg_t*)spi->cfg)->handle,pBuff,rLen);
 
-  return data;
+    return 0;
+
 }
 
 
 
-void driverex_spi_pend_sem(driver_spi_t *spi)
+void driverex_spi_pend_sem(driver_t *spi)
 {
-
-  spi_api_t *api = (spi_api_t*)spi->api;
-
   if(spi->sem)
   {
     osSemaphoreAcquire(spi->sem, osWaitForever);
   }
 }
 
-void driverex_spi_post_sem(driver_spi_t *spi)
+void driverex_spi_post_sem(driver_t *spi)
 {
-
-  spi_api_t *api = (spi_api_t*)spi->api;
-
   if(spi->sem)
   {
     osSemaphoreRelease(spi->sem);

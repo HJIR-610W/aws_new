@@ -99,8 +99,8 @@ void Error_Handler(void);
 #define IN_RAIN_PULSE_H_EXTI_IRQn EXTI1_IRQn
 #define IN_BOOT1_Pin GPIO_PIN_2
 #define IN_BOOT1_GPIO_Port GPIOB
-#define OUT_CON_PWR_CDMA_Pin GPIO_PIN_6
-#define OUT_CON_PWR_CDMA_GPIO_Port GPIOH
+#define OUT_DO_PWR_CDMA_Pin GPIO_PIN_6
+#define OUT_DO_PWR_CDMA_GPIO_Port GPIOH
 #define OUT_SYS_RUN_Pin GPIO_PIN_9
 #define OUT_SYS_RUN_GPIO_Port GPIOH
 #define OUT_ADC_EN_RTD_Pin GPIO_PIN_10
@@ -175,6 +175,15 @@ void Error_Handler(void);
 
 #define OUT_FLASH_CS_Pin GPIO_PIN_7
 #define OUT_FLASH_CS_GPIO_Port GPIOD
+
+
+
+#define I2C2_CLK_Pin GPIO_PIN_4
+#define I2C2_CLK_GPIO_Port GPIOH
+
+#define I2C2_SDA_Pin GPIO_PIN_5
+#define I2C2_SDA_GPIO_Port GPIOH
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

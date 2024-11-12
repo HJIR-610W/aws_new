@@ -3,20 +3,20 @@
     <StLinkDriver>
         <stlinkserialNo>13004800040000393333574E</stlinkserialNo>
         <stlinkfoundProbes />
-        <CStepIntDis>_ 0</CStepIntDis>
-        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
         <stlinkResetStyle>0</stlinkResetStyle>
         <stlinkResetStrategy>2</stlinkResetStrategy>
+        <CStepIntDis>_ 0</CStepIntDis>
+        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
     </StLinkDriver>
     <DebugChecksum>
-        <Checksum>1703276946</Checksum>
+        <Checksum>3908489605</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
         <StopOnThrow>_ 0</StopOnThrow>
     </Exceptions>
     <Stack>
-        <FillEnabled>0</FillEnabled>
+        <FillEnabled>1</FillEnabled>
         <OverflowWarningsEnabled>1</OverflowWarningsEnabled>
         <WarningThreshold>90</WarningThreshold>
         <SpWarningsEnabled>1</SpWarningsEnabled>
@@ -27,8 +27,8 @@
         <ByteLimit>50</ByteLimit>
     </Stack>
     <Disassembly>
-        <InstrCount>0</InstrCount>
         <MixedMode>1</MixedMode>
+        <InstrCount>0</InstrCount>
     </Disassembly>
     <CodeCoverage>
         <Enabled>0</Enabled>
@@ -83,7 +83,8 @@
         <Fmt1>DATE_TIME_BUF-Sec	3	0</Fmt1>
     </struct_types>
     <watch_formats>
-        <Fmt0>{W}1:isrflag	4	0</Fmt0>
+        <Fmt0>{W}1:data16	4	0</Fmt0>
+        <Fmt1>{W}1:isrflag	4	0</Fmt1>
     </watch_formats>
     <Trace2>
         <Enabled>0</Enabled>
@@ -130,13 +131,6 @@
         <ShowTimeSum>1</ShowTimeSum>
         <SumSortOrder>0</SumSortOrder>
     </EventLog>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Bp0>_ 0 "EMUL_DATA" "0x40011014" 0 0 0 0 4294967295</Bp0>
-        <Count>1</Count>
-    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -146,15 +140,6 @@
         <LogFile>_ ""</LogFile>
         <Category>_ 0</Category>
     </LogFile>
-    <Aliases>
-        <A0>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\Core\Src\stm32f4xx_it.c" ""</A0>
-        <A1>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\EWARM\startup_stm32f407xx.s" ""</A1>
-        <A2>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\bsp_driver_sd.c" ""</A2>
-        <A3>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\fatfs_platform.c" ""</A3>
-        <A4>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\sd_diskio.c" ""</A4>
-        <Count>5</Count>
-        <SuppressDialog>1</SuppressDialog>
-    </Aliases>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>3</Mode>
@@ -168,4 +153,20 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\freertos.c}.222.5" 0 0 1 "" 0 "" 0</Bp0>
+        <Count>1</Count>
+    </Breakpoints2>
+    <Aliases>
+        <A0>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\Core\Src\stm32f4xx_it.c" ""</A0>
+        <A1>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\EWARM\startup_stm32f407xx.s" ""</A1>
+        <A2>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\bsp_driver_sd.c" ""</A2>
+        <A3>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\fatfs_platform.c" ""</A3>
+        <A4>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\sd_diskio.c" ""</A4>
+        <Count>5</Count>
+        <SuppressDialog>1</SuppressDialog>
+    </Aliases>
 </settings>

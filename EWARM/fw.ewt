@@ -1202,6 +1202,12 @@
                     <name>$PROJ_DIR$\..\Core\Src\adc.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Core\Src\config.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\config.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Core\Src\freertos.c</name>
                 </file>
                 <file>
@@ -1322,6 +1328,15 @@
                     </file>
                 </group>
                 <group>
+                    <name>exgpio</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\exgpio\pcf8575.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\exgpio\pcf8575.h</name>
+                    </file>
+                </group>
+                <group>
                     <name>fram</name>
                     <file>
                         <name>$PROJ_DIR$\..\Drivers\BSP\Components\fram\fm25cl.c</name>
@@ -1407,6 +1422,12 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_digitalOut.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_flash.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_flash.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_fram.c</name>
             </file>
             <file>
@@ -1414,6 +1435,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_gpio.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_gpio.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_gpio_def.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_interface.h</name>
@@ -1440,6 +1467,24 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_spi.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_di.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_di.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_do.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_do.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_i2c.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_i2c.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_uart.c</name>
             </file>
             <file>
@@ -1462,6 +1507,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\MCU\mcu_interrupt.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\MCU\mcu_utile.c</name>
             </file>
         </group>
         <group>

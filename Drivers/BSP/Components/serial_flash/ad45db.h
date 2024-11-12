@@ -1,6 +1,6 @@
 
-#ifndef DS1306_H
-#define DS1306_H
+#ifndef AT45DB_H
+#define AT45DB_H
 
 #include <stdint.h>
 
@@ -8,16 +8,19 @@
 
 #include "driver_interface.h"
 
-typedef struct ds1306_cfg_s
+
+
+typedef struct ad45db_cfg_s
 {
   void *spi_io;
   void *cs_io;
-  void *irq_io;
-  
-}fm25lc_cfg_t;
+ 
+}at45db_cfg_t;
 
-driver_t *ds1306_open(void);
-void ds1306_init(driver_t *ds1306);
+driver_t *at45db_open(void);
+void at45db_init(driver_t *drv);
+void at45db_write_page(driver_t *drv,uint32_t WriteAddr, uint8_t *writebuff);
+void at45db_read_page(driver_t *drv,uint32_t ReadAddr,uint8_t *readbuff);
 
 
 #endif
