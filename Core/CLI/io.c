@@ -25,7 +25,11 @@ int32_t debug_printf(const char * pFmt, ...)
     va_end(ap);
     
 
-           
+    
+    if(debug_uart ==NULL)
+    {
+        debug_uart = stm32_uart_open(STM32_UART_1);
+    }
                 
     stm32_uart_send(debug_uart,buff,len);
 

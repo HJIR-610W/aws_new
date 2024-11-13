@@ -94,9 +94,10 @@ void Error_Handler(void);
 #define INT_D_IO_Pin GPIO_PIN_0
 #define INT_D_IO_GPIO_Port GPIOB
 #define INT_D_IO_EXTI_IRQn EXTI0_IRQn
-#define IN_RAIN_PULSE_H_Pin GPIO_PIN_1
-#define IN_RAIN_PULSE_H_GPIO_Port GPIOB
+
+
 #define IN_RAIN_PULSE_H_EXTI_IRQn EXTI1_IRQn
+
 #define IN_BOOT1_Pin GPIO_PIN_2
 #define IN_BOOT1_GPIO_Port GPIOB
 #define OUT_DO_PWR_CDMA_Pin GPIO_PIN_6
@@ -183,6 +184,26 @@ void Error_Handler(void);
 
 #define I2C2_SDA_Pin GPIO_PIN_5
 #define I2C2_SDA_GPIO_Port GPIOH
+
+
+
+
+
+
+#define IN_TIM10_CH1_Pin GPIO_PIN_6
+#define IN_TIM10_CH1_GPIO_Port GPIOF
+
+
+#define IN_TIM11_CH1_Pin GPIO_PIN_7
+#define IN_TIM11_CH1_GPIO_Port GPIOF
+
+#define IN_TIM13_CH1_Pin GPIO_PIN_8
+#define IN_TIM13_CH1_GPIO_Port GPIOF
+
+
+
+
+
 
 /* USER CODE BEGIN Private defines */
 

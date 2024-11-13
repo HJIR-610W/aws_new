@@ -187,11 +187,7 @@ int read_data(int uart_num, uint8_t *data) {
 
 void quad_send(driver_t *tls16c554,uint8_t *pData,uint16_t dataLen)
 {
-  while(dataLen)
-  {
-    dataLen--;
-    send_data(tls16c554->num,*pData++);
-  }
+
 }
 
 int quad_recv_byte(driver_t *tls16c554,uint8_t *data)
@@ -207,16 +203,7 @@ int quad_recv_byte(driver_t *tls16c554,uint8_t *data)
 
 void quad_set(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option)
 {
-  tls16c554_cmd_config_t *config;
 
-  switch(cmd)
-  {
-    case eUART_SET_CONFIG:
-    config = (tls16c554_cmd_config_t*)option;
-
-    set_baud_rate(tls16c554->num,config->baud) ;
-    break;
-  }
 
 }
 
@@ -227,7 +214,7 @@ void quad_set(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option)
 typedef struct adc_api_s
 {
     void (*send)(driver_t *tls16c554,uint8_t *pData,uint16_t dataLen);
-    void (*recv)(driver_t *tls16c554,uint8_t *pBuff,uint16_t rLen);
+    int32_t (*recv)(driver_t *tls16c554,uint8_t *pBuff);
     int32_t (*recv_byte)(driver_t *tls16c554,uint8_t *pData);
     void (*set)(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option);
     void (*init)(driver_t *tls16c554);
@@ -243,7 +230,7 @@ tl16c554_api_t g_tl16c554_api={.send =quad_send,
 driver_t g_quad_uart[8];
 
 
-
+int g_init=1;
 driver_t *tls16c554_open(int num)
 {
 
@@ -256,6 +243,8 @@ driver_t *tls16c554_open(int num)
   g_quad_uart[num].api = &g_tl16c554_api;
   
 
+    quad_init(&g_quad_uart[num]);
+
   
   return &g_quad_uart[num];
 }
@@ -267,31 +256,52 @@ driver_t *tls16c554_open(int num)
 
 void tls16c554_send(driver_t *tls16c554,uint8_t *pData,uint16_t dataLen)
 {
-  tl16c554_api_t *api = (tl16c554_api_t *)tls16c554->api;
-  
-  api->send(tls16c554,pData,dataLen);
+ 
+  while(dataLen)
+  {
+    dataLen--;
+    send_data(tls16c554->num,*pData++);
+  }
 }
 
-void tls16c554_recv(driver_t *tls16c554,uint8_t *pBuff,uint16_t rLen)
+int32_t tls16c554_recv(driver_t *drv,uint8_t *data)
 {
-  tl16c554_api_t *api = (tl16c554_api_t *)tls16c554->api;
-  
-  api->recv(tls16c554,pBuff,rLen);
+    // LSR의 DR 비트를 확인하여 수신 버퍼에 데이터가 있는지 확인
+    if (read_register(LSR(exUartBaseAddress[drv->num])) & LSR_DR) {
+        *data = read_register(RBR(exUartBaseAddress[drv->num])); // RBR에서 데이터 읽기
+        return 1; // 데이터 읽기 성공
+    } 
+
+    
+    return 0; // 데이터가 준비되지 않음
+   
 }
 
 void tls16c554_set(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option)
 {
-  tl16c554_api_t *api = (tl16c554_api_t *)tls16c554->api;
-  
-  api->set(tls16c554,cmd,option);
+    uart_baud_config_t *config;
+
+  switch(cmd)
+  {
+    case eUART_SET_CONFIG:
+    config = (uart_baud_config_t*)option;
+
+    set_baud_rate(tls16c554->num,config->baud) ;
+    break;
+  }
     
 }
 
-int tls16c554_recv_byte(driver_t *tls16c554,uint8_t *data)
+int tls16c554_recv_byte(driver_t *drv,uint8_t *data)
 {
-    tl16c554_api_t *api = (tl16c554_api_t *)tls16c554->api;
-  
-  return api->recv_byte(tls16c554,data);
+    // LSR의 DR 비트를 확인하여 수신 버퍼에 데이터가 있는지 확인
+    if (read_register(LSR(exUartBaseAddress[drv->num])) & LSR_DR) {
+        *data = read_register(RBR(exUartBaseAddress[drv->num])); // RBR에서 데이터 읽기
+        return 1; // 데이터 읽기 성공
+    } 
+
+    
+    return 0; // 데이터가 준비되지 않음
 }
 
 void tls16c554_init(driver_t *tls16c554)

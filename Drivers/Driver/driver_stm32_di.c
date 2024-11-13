@@ -15,6 +15,13 @@ typedef struct  stm32_di_cfg_s
 const stm32_di_cfg_t ADC_DRDY_cfg  ={.port=IN_SPI2_DRDY_GPIO_Port,   .pin = IN_SPI2_DRDY_Pin};
 const stm32_di_cfg_t RTC_IRQ_cfg  ={.port=INT_RTC_GPIO_Port,   .pin = INT_RTC_Pin};
 
+const stm32_di_cfg_t RAIN_REED_cfg  ={.port=INT_RTC_GPIO_Port,   .pin = INT_RTC_Pin};
+const stm32_di_cfg_t RAIN_HALL_cfg  ={.port=INT_RTC_GPIO_Port,   .pin = INT_RTC_Pin};
+const stm32_di_cfg_t RAIN_HALL_ERR_cfg  ={.port=INT_RTC_GPIO_Port,   .pin = INT_RTC_Pin};
+
+
+
+
 
 driver_t g_stm32_di_list[STM32_DI_MAX];
 

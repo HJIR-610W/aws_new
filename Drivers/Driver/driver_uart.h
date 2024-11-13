@@ -12,20 +12,18 @@
 #define UART_EX_TTL_2  3  //TTL
 #define UART_EX_232_3  4
 #define UART_EX_232_4  5
-#define UART_EX_232_7  6
-#define UART_EX_232_8  7
-
-
-
-
+#define UART_EX_485_1  6
+#define UART_EX_485_2  7
+#define UART_EX_232_7  8
+#define UART_EX_232_8  9
 
 
 
 driver_t *driver_uart_open(int  num);
-void driver_send_uart(driver_t *uart,uint8_t *pData,uint16_t dataLen);
-void driver_recv_uart(driver_t *uart,uint8_t *pBuff,uint16_t buffSize);
-void driver_set_uart(driver_t *uart,eUART_SET_CMD_t cmd,void *para);
-void driver_get_uart(driver_t *uart,eUART_SET_CMD_t cmd,void *config);
+void driver_uart_send(driver_t *uart,uint8_t *pData,uint16_t dataLen);
+int32_t driver_uart_recv(driver_t *drv,uint8_t *pBuff);
+void driver_uart_set(driver_t *uart,eUART_SET_CMD_t cmd,void *para);
+void driver_uart_get(driver_t *uart,eUART_SET_CMD_t cmd,void *config);
 
 
 

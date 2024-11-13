@@ -26,10 +26,12 @@
 #include "main.h"
 #include "cmsis_os.h"
 
+
 #include "driver_led.h"
 #include "driver_digitalOut.h"
 #include "driver_adc.h"
 #include "driver_fram.h"
+#include "driver_freqInput.h"
 #include "utile.h"
     
 #include "terminal.h"
@@ -40,36 +42,17 @@
 #include "driver_stm32_uart.h"
 #include "driver_flash.h"
 #include "driver_gpio.h"
+#include "driver_485.h"
+#include "driver_sdi.h"
 #include "task_cmd.h"
 #include "task_host.h"
 #include "fatfs.h"
+#include "swTimer.h"
+#include "driver_uart.h"
+
+driver_t *debug_uart=NULL;
 
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-/* USER CODE BEGIN Variables */
-
-/* USER CODE END Variables */
-/* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
@@ -77,121 +60,25 @@ const osThreadAttr_t defaultTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
-/* Private function prototypes -----------------------------------------------*/
-/* USER CODE BEGIN FunctionPrototypes */
-
-/* USER CODE END FunctionPrototypes */
+extern void MX_LWIP_Init(void);
+extern FATFS SDFatFS;    /* File system object for SD logical drive */
 
 void StartDefaultTask(void *argument);
+void MX_FREERTOS_Init(void); 
 
-extern void MX_LWIP_Init(void);
-void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
-/* Hook prototypes */
-void vApplicationIdleHook(void);
-void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
-void vApplicationMallocFailedHook(void);
 
-/* USER CODE BEGIN 2 */
-void vApplicationIdleHook( void )
-{
-   /* vApplicationIdleHook() will only be called if configUSE_IDLE_HOOK is set
-   to 1 in FreeRTOSConfig.h. It will be called on each iteration of the idle
-   task. It is essential that code added to this hook function never attempts
-   to block in any way (for example, call xQueueReceive() with a block time
-   specified, or call vTaskDelay()). If the application makes use of the
-   vTaskDelete() API function (as this demo application does) then it is also
-   important that vApplicationIdleHook() is permitted to return to its calling
-   function, because it is the responsibility of the idle task to clean up
-   memory allocated by the kernel to any task that has since been deleted. */
-}
-/* USER CODE END 2 */
+void MX_FREERTOS_Init(void)
+ {
 
-/* USER CODE BEGIN 4 */
-void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
-{
-   /* Run time stack overflow checking is performed if
-   configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
-   called if a stack overflow is detected. */
-}
-/* USER CODE END 4 */
-
-/* USER CODE BEGIN 5 */
-void vApplicationMallocFailedHook(void)
-{
-   /* vApplicationMallocFailedHook() will only be called if
-   configUSE_MALLOC_FAILED_HOOK is set to 1 in FreeRTOSConfig.h. It is a hook
-   function that will get called if a call to pvPortMalloc() fails.
-   pvPortMalloc() is called internally by the kernel whenever a task, queue,
-   timer or semaphore is created. It is also called by various parts of the
-   demo application. If heap_1.c or heap_2.c are used, then the size of the
-   heap available to pvPortMalloc() is defined by configTOTAL_HEAP_SIZE in
-   FreeRTOSConfig.h, and the xPortGetFreeHeapSize() API function can be used
-   to query the size of free heap space that remains (although it does not
-   provide information on how the remaining heap might be fragmented). */
-}
-/* USER CODE END 5 */
-
-/**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
-
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
-
-  /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
-
-  /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
-  /* USER CODE END RTOS_QUEUES */
-
-  /* Create the thread(s) */
-  /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  /* USER CODE END RTOS_THREADS */
-
-  /* USER CODE BEGIN RTOS_EVENTS */
-  /* add events, ... */
-  /* USER CODE END RTOS_EVENTS */
-
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-
-extern UART_HandleTypeDef huart1;
-
-
-
-
-
-
- uint8_t test_buff[5];
 void fram_test(void)
 {
   driver_t *fram;
- 
+static  uint8_t test_buff[5]; 
   fram = driver_fram_open(FRAM_FM25LC);
 
   for(int i = 0;i< sizeof(test_buff);i++)
@@ -207,9 +94,9 @@ void fram_test(void)
 
 }
 
-DATE_TIME_BUF date;
 void rtc_test(void)
 {
+  static DATE_TIME_BUF date;
   driver_t *rtc;
   uint32_t startTieck;
 
@@ -227,7 +114,6 @@ void rtc_test(void)
 }
 
 
-extern FATFS SDFatFS;    /* File system object for SD logical drive */
 void fat_test(void)
 {
     FIL file;            // ÆÄÀÏ °´Ã¼
@@ -297,41 +183,42 @@ void fat_test(void)
 
 }
 
-driver_t *debug_uart=NULL;
 
-  uint8_t buff[500];
+
+
 
 void uart_test(void)
 {
   uint16_t len;
   uint8_t data;
+static   uint8_t buff[500];;
 
   debug_uart = stm32_uart_open(STM32_UART_1);
 
-    stm32_uart_send(debug_uart,"hello\r\n",7);
+  stm32_uart_send(debug_uart,"hello\r\n",7);
 
   len = stm32_uart_recv(debug_uart,buff,sizeof(buff)-1,1);
 
   buff[len] = 0;
   debug_send(buff,strlen(buff));
 
-    debug_printf("receviced\r\n");
+  debug_printf("receviced\r\n");
 
-    
-    while(1)
+  while(1)
+  {
+    len = stm32_uart_recv(debug_uart,buff,sizeof(buff)-1,5000);
+
+    buff[len] = 0;
+    if(len)
     {
-        len = stm32_uart_recv(debug_uart,buff,sizeof(buff)-1,5000);
-
-        buff[len] = 0;
-        if(len)
-        {
-        debug_send(buff,strlen(buff));
-        }
+      debug_send(buff,strlen(buff));
     }
+  }
 
 }
-  static uint8_t wBuff[1024];
-  static uint8_t rBuff[1024];
+
+static uint8_t wBuff[1024];
+static uint8_t rBuff[1024];
 
 void flash_test(void)
 {
@@ -431,22 +318,137 @@ void gpio_test(void)
     osDelay(100);
   }
 }
+
+
+void freq_test(void)
+{
+  driver_t *countA;
+  driver_t *countB;
+  driver_t *countC;
+  driver_t *gpio;
+  uint16_t out_pin = 1;
+  float freq[3];
+
+  countA = driver_freq_open(FREQ_MEAURE_A);
+  countB = driver_freq_open(FREQ_MEAURE_A);
+  countC = driver_freq_open(FREQ_MEAURE_A);
+
+  gpio = driver_gpio_open(DRIVER_PCF8575);
+
+  while(1)
+  {
+    driver_gpio_write_pin(gpio,GPIO_PIN5,out_pin);
+    osDelay(100);
+    out_pin ^= 1;
+    driver_freq_read(countA,&freq[0]);
+    driver_freq_read(countB,&freq[1]);
+    driver_freq_read(countC,&freq[2]);
+
+    debug_printf("%f,%f,%f\r\n",freq[0],freq[1],freq[2]);
+
+  }
+}
+
+
+
+void rs485_test(void)
+{
+  driver_t *rs485_a;
+  uint8_t ch='a';
+  uint8_t cmd;
+  rs485_a = driver_rs485_open(RS485_A);
+
+  while(1)
+  {
+    driver_rs485_sends(rs485_a,&ch,1);
+    driver_rs485_recv(rs485_a,&ch,1,5000);
+    osDelay(100);
+  
+  }
+}
+
+void sram_test(void)
+{
+
+  static uint16_t rData[10];
+  
+  volatile uint16_t *ptr = (volatile uint16_t *)0x64000000;
+
+    for(int i = 0 ; i< 10;i++)
+    {
+      ptr[i]=i;
+    }
+    
+    for(int i = 0 ; i< 10;i++)
+    {
+      rData[i] = ptr[i];
+    }
+}
+
+
+
+void exuart_test(void)
+{
+  driver_t *quad_uart;
+  uint8_t data='a';
+  
+  quad_uart= driver_uart_open(UART_EX_232_1);
+  
+  while(1)
+  {
+    driver_uart_send(quad_uart,&data,1);
+    osDelay(3000);
+    driver_uart_recv(quad_uart,&data);
+    
+  }
+}
+
+
+void cdmaPower_test(void)
+{
+  driver_t *cdma_pwr= driver_do_open(DO_PWR_CDMA);
+
+  while(1)
+  {
+    driver_do_low(cdma_pwr);
+    osDelay(500);
+    driver_do_high(cdma_pwr);
+        osDelay(500);
+  }
+}
 void StartDefaultTask(void *argument)
 {
   char buff[100];
   uint32_t i=0;
-  driver_led_t runLed;
+  driver_t *runLed;    
+  led_freq_cfg_t cfg={.freq=5,.highDuty=10};
 
+  runLed = driver_led_open(LED_SYS_RUN);
+  
+  driver_led_set(runLed,LED_CMD_SET_TOGGLE_FREQ,&cfg);
+  driver_led_set(runLed,LED_CMD_START,NULL);
+
+  debug_uart = stm32_uart_open(STM32_UART_1);
+
+
+  
+  //exuart_test();
+  sram_test();
   //fat_test();
   //MX_LWIP_Init();
   fram_test();
   rtc_test();
   flash_test();
   cmdTask_init();
-  hostTask_init();
+
+  //hostTask_init();
   //adc_test();
-  gpio_test();
-  driver_led_init(&runLed,LED_SYS_RUN);
+  //gpio_test();
+
+  //freq_test();
+  //rs485_test();
+  cdmaPower_test();
+
 
   while(1)
   {
@@ -454,11 +456,6 @@ void StartDefaultTask(void *argument)
   }
 
 
-  /* USER CODE END StartDefaultTask */
 }
 
-/* Private application code --------------------------------------------------*/
-/* USER CODE BEGIN Application */
-
-/* USER CODE END Application */
 

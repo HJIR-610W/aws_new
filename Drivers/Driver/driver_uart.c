@@ -65,56 +65,6 @@ bool serial_receive_nonblocking(uint8_t *data, size_t length) {
     return true; // 데이터 수신 시 true 반환
 }
 
-#if 0 
-
-// COBS 디코딩 함수
-size_t cobs_decode(const uint8_t *input, size_t length, uint8_t *output) {
-    if (length == 0) return 0;
-
-    size_t read_index = 0, write_index = 0;
-    while (read_index < length) {
-        uint8_t code = input[read_index];
-        if (read_index + code > length && code != 1) {
-            // 유효하지 않은 COBS 패킷
-            return 0;
-        }
-
-        read_index++;
-        for (uint8_t i = 1; i < code; i++) {
-            output[write_index++] = input[read_index++];
-        }
-
-        if (code != 0xFF && read_index < length) {
-            output[write_index++] = 0;
-        }
-    }
-    return write_index;
-}
-
-// 비차단 시리얼 데이터 수신 및 COBS 디코딩
-bool recv_cobs(uint8_t *buff, uint16_t buffSize, uint32_t timeOutMs) {
-    uint8_t tempBuffer[256]; // 임시 수신 버퍼
-    size_t receivedLength = 0;
-    uint32_t startTime = osKernelSysTick();
-uint32_t timeoutTicks = timeOutMs * (configTICK_RATE_HZ  / 1000);
-
-
-    while ((osKernelSysTick() - startTime) < timeoutTicks) {
-        if (serial_receive_nonblocking(tempBuffer + receivedLength, 1)) {
-            receivedLength++;
-            // 0x00은 COBS 프레임의 종료 바이트
-            if (tempBuffer[receivedLength - 1] == 0x00) {
-                size_t decodedLength = cobs_decode(tempBuffer, receivedLength, buff);
-                return decodedLength > 0; // 성공 시 true 반환
-            }
-        }
-        osDelay(1); // 1ms 대기 후 다시 시도 (비차단)
-    }
-
-    return false; // 타임아웃 발생 시 false 반환
-}
-
-#endif
 
 
 
@@ -125,7 +75,7 @@ uint32_t timeoutTicks = timeOutMs * (configTICK_RATE_HZ  / 1000);
 typedef struct adc_api_s
 {
     void (*send)(driver_t *tls16c554,uint8_t *pData,uint16_t dataLen);
-    void (*recv)(driver_t *tls16c554,uint8_t *pBuff,uint16_t rLen);
+    int32_t (*recv)(driver_t *tls16c554,uint8_t *pBuff);
     int32_t (*recv_byte)(driver_t *tls16c554,uint8_t *pData);
     void (*set)(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option);
     void (*init)(driver_t *tls16c554);
@@ -133,13 +83,18 @@ typedef struct adc_api_s
 
 
 
-driver_t g_rs232[8];
+driver_t g_rs232[10];
 static rs232_api_t g_rs232_api ={.send = tls16c554_send,
-                                 .recv = tls16c554_recv,
+                                  .recv = tls16c554_recv,
                                  .recv_byte = tls16c554_recv_byte,
                                  .set = tls16c554_set,
                                  .init =tls16c554_init};
               
+
+void quad_gpio_init(void)
+{
+
+}
 driver_t *driver_uart_open(int  num)
 {
  
@@ -151,12 +106,18 @@ driver_t *driver_uart_open(int  num)
   switch(num)
   {
     case UART_EX_232_1:
-    case  UART_EX_TTL_2:  
+    case UART_EX_TTL_2:  
     case UART_EX_232_3:
-    case  UART_EX_232_4:
-    case  UART_EX_232_7:
-    case  UART_EX_232_8:
+    case UART_EX_232_4:
+    case UART_EX_485_1:
+    case UART_EX_485_2:
+    case UART_EX_232_7:
+    case UART_EX_232_8:
+
+
         g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
+        g_rs232[num].api = &g_rs232_api;
+
         return &g_rs232[num];
     break;    
   }
@@ -164,18 +125,20 @@ driver_t *driver_uart_open(int  num)
   return 0;
 }
 
-void driver_send_uart(driver_t *uart,uint8_t *pData,uint16_t dataLen)
+void driver_uart_send(driver_t *uart,uint8_t *pData,uint16_t dataLen)
 {
   rs232_api_t *api = (rs232_api_t *)uart->api;
   
   api->send(uart->handle,pData,dataLen);
 }
 
-void driver_recv_uart(driver_t *uart,uint8_t *pBuff,uint16_t buffSize)
+int32_t driver_uart_recv(driver_t *drv,uint8_t *pBuff)
 {
-  rs232_api_t *api = (rs232_api_t *)uart->api;
+  rs232_api_t *api = (rs232_api_t *)drv->api;
   
-  api->recv(uart->handle,pBuff,buffSize);
+  api->recv(drv->handle,pBuff);
+
+  return 0;
 }
 
 int driver_recv_uart_byte(driver_t *uart,uint8_t *pData)
@@ -185,14 +148,14 @@ int driver_recv_uart_byte(driver_t *uart,uint8_t *pData)
   return api->recv_byte(uart->handle,pData);
 }
 
-void driver_set_uart(driver_t *uart,eUART_SET_CMD_t cmd,void *para)
+void driver_uart_set(driver_t *uart,eUART_SET_CMD_t cmd,void *para)
 {
       rs232_api_t *api = (rs232_api_t *)uart->api;
   
   api->set(uart->handle,cmd,para);  
 }
 
-void driver_get_uart(driver_t *uart,eUART_SET_CMD_t cmd,void *config)
+void driver_uart_get(driver_t *uart,eUART_SET_CMD_t cmd,void *config)
 {
   rs232_api_t *api = (rs232_api_t *)uart->api;
   

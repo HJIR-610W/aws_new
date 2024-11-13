@@ -1211,6 +1211,12 @@
                     <name>$PROJ_DIR$\..\Core\Src\freertos.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Core\Src\freertosCallBack.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Inc\FreeRTOSConfig.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Core\Src\fsmc.c</name>
                 </file>
                 <file>
@@ -1223,10 +1229,10 @@
                     <name>$PROJ_DIR$\..\Core\Src\main.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Core\Src\sdio.c</name>
+                    <name>$PROJ_DIR$\..\Core\Inc\main.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Core\Src\spi.c</name>
+                    <name>$PROJ_DIR$\..\Core\Src\sdio.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\stm32f4xx_hal_msp.c</name>
@@ -1238,6 +1244,12 @@
                     <name>$PROJ_DIR$\..\Core\Src\stm32f4xx_it.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Core\Src\swTimer.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\swTimer.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_cmd.c</name>
                 </file>
                 <file>
@@ -1245,9 +1257,6 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_host.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\tim.c</name>
                 </file>
             </group>
             <group>
@@ -1432,6 +1441,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_fram.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_freqInput.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_freqInput.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_gpio.c</name>

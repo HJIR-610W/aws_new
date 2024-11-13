@@ -24,8 +24,11 @@
 #define DO_CON_PWR_ASEN_C 13
 #define DO_CON_PWR_ASEN_D 14
 
+#define DO_DIR_SDI       15
+#define DO_DIR_RS485_A   16
+#define DO_DIR_RS485_B    17
 
-#define DO_NUM_MAX   15
+#define DO_NUM_MAX   18
 
 
 driver_t * driver_do_open(uint32_t num);

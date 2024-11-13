@@ -27,7 +27,12 @@
 #define STM32_DO_CON_PWR_ASEN_C 13
 #define STM32_DO_CON_PWR_ASEN_D 14
 
-#define STM32_DO_MAX       15
+#define STM32_DO_DIR_SDI       15
+#define STM32_DO_DIR_RS485_A   16
+#define STM32_DO_DIR_RS485_B    17
+
+
+#define STM32_DO_MAX       18
 
 
 

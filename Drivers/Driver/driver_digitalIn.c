@@ -15,7 +15,7 @@ typedef struct di_api_s
 
 static di_api_t di_api={.read = stm32_di_read};
 
-driver_t g_di_list[2];
+driver_t g_di_list[DI_MAX];
 
 driver_t *driver_di_open(uint32_t num)
 {

@@ -1,22 +1,3 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
@@ -32,176 +13,48 @@
 #include "mcu_delay.h"
 
 
-
-
-
-
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
-
-
-
-
-void SetRDPLevel0(void) {
-    FLASH_OBProgramInitTypeDef OBInit;
-
-    // Unlock the Flash to enable the flash control register access
-    HAL_FLASH_Unlock();
-
-    // Unlock the Options Bytes to allow modifications
-    HAL_FLASH_OB_Unlock();
-
-    // Get the current Option Bytes configuration
-    HAL_FLASHEx_OBGetConfig(&OBInit);
-
-    // Check if the current RDP level is not already Level 0
-    if (OBInit.RDPLevel != OB_RDP_LEVEL_0) {
-        // Set the Option Bytes for RDP Level 0 (0xAA)
-        OBInit.OptionType = OPTIONBYTE_RDP;
-        OBInit.RDPLevel = OB_RDP_LEVEL_0;
-
-        // Program the Option Bytes
-        if (HAL_FLASHEx_OBProgram(&OBInit) == HAL_OK) {
-            // Launch the Option Bytes programming process (this will trigger a mass erase)
-            if (HAL_FLASH_OB_Launch() != HAL_OK) {
-                // Handle error: Option bytes launch failed
-                while (1); // Infinite loop in case of failure
-            }
-        } else {
-            // Handle error: Option bytes programming failed
-            while (1); // Infinite loop in case of failure
-        }
-    }
-
-    // Lock the Options Bytes and Flash memory again after modification
-    HAL_FLASH_OB_Lock();
-    HAL_FLASH_Lock();
-}
-
-
 #define DBGMCU_STOP_SYSTICK() (DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP)
 
 
-
-
+void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 
 
 int main(void)
 {
 
-
-
   DBGMCU_STOP_SYSTICK();
   
 
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_FSMC_Init();
 
   MX_SDIO_SD_Init();
-  MX_SPI1_Init();
-  MX_SPI2_Init();
-  MX_TIM10_Init();
-  MX_TIM11_Init();
-  MX_TIM13_Init();
+
+
 
   MX_FATFS_Init();
-  /* USER CODE BEGIN 2 */
 
-  /* USER CODE END 2 */
-
-  /* Init scheduler */
   osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
   
   DWT_Delay_Init();
   MX_FREERTOS_Init();
 
-  /* Start scheduler */
+
   osKernelStart();
 
-  /* We should never get here as control is now taken by the scheduler */
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+
   while (1)
   {
-    /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
   }
-  /* USER CODE END 3 */
+
 }
-
-/**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-
-
-
-
-
 
 
 
@@ -282,6 +135,7 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+    
   }
   /* USER CODE END Error_Handler_Debug */
 }

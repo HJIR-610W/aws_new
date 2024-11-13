@@ -29,6 +29,9 @@ driver_t *driver_do_open(uint32_t num)
   }
   switch(num)
   {
+    case DO_PWR_CDMA:
+      p_drv = stm32_do_open(num);
+    break;
     case DO_FRAM_CS:
       p_drv = stm32_do_open(num);
     break;
@@ -71,7 +74,15 @@ driver_t *driver_do_open(uint32_t num)
    case  DO_CON_PWR_ASEN_D:
          p_drv = stm32_do_open(num);
     break;
-   break;
+  case DO_DIR_SDI:
+           p_drv = stm32_do_open(num);
+  break;
+  case DO_DIR_RS485_A:
+           p_drv = stm32_do_open(num);
+  break;
+  case DO_DIR_RS485_B:
+           p_drv = stm32_do_open(num);
+  break;
 
   }
 

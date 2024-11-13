@@ -32,6 +32,15 @@ const stm32_do_cfg_t CON_PWR_ASEN_C_cfg = {.port=OUT_CON_PWR_ASEN_C_GPIO_Port, .
 const stm32_do_cfg_t CON_PWR_ASEN_D_cfg = {.port=OUT_CON_PWR_ASEN_D_GPIO_Port, .pin = OUT_CON_PWR_ASEN_D_Pin};
 
 
+const stm32_do_cfg_t DIR_RS485_A_cfg = {.port=OUT_DIR_RS485_A_GPIO_Port, .pin = OUT_DIR_RS485_A_Pin};
+const stm32_do_cfg_t DIR_RS485_B_cfg = {.port=OUT_DIR_RS485_B_GPIO_Port, .pin = OUT_DIR_RS485_B_Pin};
+const stm32_do_cfg_t DIR_SDI_cfg     = {.port=OUT_DIR_SDI_GPIO_Port, .pin = OUT_DIR_SDI_Pin};
+
+
+
+
+
+
 driver_t g_stm32_do_list[STM32_DO_MAX];
 
 const driver_t g_stm[]={
@@ -121,8 +130,28 @@ driver_t *stm32_do_open(int num)
     break;
     case STM32_DO_CON_PWR_ASEN_D:
         g_stm32_do_list[num].cfg = (void *)&CON_PWR_ASEN_D_cfg;
-    stm32_do_init(&CON_PWR_ASEN_D_cfg);
+      stm32_do_init(&CON_PWR_ASEN_D_cfg);
     break;
+
+
+
+    case STM32_DO_DIR_SDI:
+        g_stm32_do_list[num].cfg = (void *)&DIR_SDI_cfg;
+      stm32_do_init(&DIR_SDI_cfg);
+    break;
+
+        case STM32_DO_DIR_RS485_A:
+        g_stm32_do_list[num].cfg = (void *)&DIR_RS485_A_cfg;
+      stm32_do_init(&DIR_RS485_A_cfg);
+    break;
+
+
+        case STM32_DO_DIR_RS485_B:
+        g_stm32_do_list[num].cfg = (void *)&DIR_RS485_B_cfg;
+      stm32_do_init(&DIR_RS485_B_cfg);
+    break;
+
+
 
 
 

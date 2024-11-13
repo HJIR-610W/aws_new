@@ -83,7 +83,7 @@ void MX_FSMC_Init(void)
   hsram2.Init.NSBank = FSMC_NORSRAM_BANK3;
   hsram2.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
   hsram2.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
-  hsram2.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_16;
+  hsram2.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_8;
   hsram2.Init.BurstAccessMode = FSMC_BURST_ACCESS_MODE_DISABLE;
   hsram2.Init.WaitSignalPolarity = FSMC_WAIT_SIGNAL_POLARITY_LOW;
   hsram2.Init.WrapMode = FSMC_WRAP_MODE_DISABLE;
@@ -102,9 +102,9 @@ void MX_FSMC_Init(void)
 
   Timing.AccessMode = FSMC_ACCESS_MODE_A;
   /* ExtTiming */
-  ExtTiming.AddressSetupTime = 4;
-  ExtTiming.AddressHoldTime = 0;
-  ExtTiming.DataSetupTime = 10;
+  ExtTiming.AddressSetupTime      = 4;
+  ExtTiming.AddressHoldTime       =  0;
+  ExtTiming.DataSetupTime         = 10;
   ExtTiming.BusTurnAroundDuration = 10;
 
   ExtTiming.AccessMode = FSMC_ACCESS_MODE_A;
