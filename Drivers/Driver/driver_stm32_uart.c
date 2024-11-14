@@ -1,16 +1,17 @@
 
 
-
-
 #include <stdio.h>
 
 #include "stm32f4xx_hal.h"
 #include "driver_stm32_uart.h"
 #include "cmsis_os.h"
 #include "mcu_delay.h"
- UART_HandleTypeDef huart1 = {.Instance = USART1};
- UART_HandleTypeDef huart3 = {.Instance = USART3};
- UART_HandleTypeDef huart6 = {.Instance = USART6};
+#include "semphr.h"
+#include "utile.h"
+
+UART_HandleTypeDef huart1 = {.Instance = USART1};
+UART_HandleTypeDef huart3 = {.Instance = USART3};
+UART_HandleTypeDef huart6 = {.Instance = USART6};
 
 DMA_HandleTypeDef hdma_usart1_tx;
 DMA_HandleTypeDef hdma_usart3_tx;
@@ -34,15 +35,14 @@ typedef struct uart_ring_s
 typedef struct stm32_uart_cfg_s
 {
   UART_HandleTypeDef *handle;
-  void *syncSem;
+  void *txcSem;   //전송 완료 알림 세마포어
 }stm32_uart_cfg_t;
 
-
+uart_ring_t g_uart_ring[3];
 driver_t g_stm32_uart[3];
 stm32_uart_cfg_t g_stm32_uart_cfg[3]={{.handle = &huart1 },
                                       {.handle = &huart3},
                                       {.handle = &huart6}};
-uart_ring_t g_uart_ring[3];
 
 
 uint8_t g_uart_rx_dma_buffer[BUFFER_SIZE];
@@ -253,7 +253,8 @@ static void MX_DMA_UART1_Init(void)
      
 }
 
-static void MX_DMA_UART3_Init(void) {
+static void MX_DMA_UART3_Init(void) 
+{
     __HAL_RCC_DMA1_CLK_ENABLE();
 
     hdma_usart3_tx.Instance = DMA1_Stream3;
@@ -278,10 +279,11 @@ static void MX_DMA_UART3_Init(void) {
     HAL_NVIC_SetPriority(USART3_IRQn, 5, 1);
     HAL_NVIC_EnableIRQ(USART3_IRQn);
   
-  
+    HAL_UART_Receive_IT(&huart3, (uint8_t *)&g_uart_ring[1].buffer[0], 1);
 }
 
-static void MX_DMA_UART6_Init(void) {
+static void MX_DMA_UART6_Init(void)
+{
     __HAL_RCC_DMA2_CLK_ENABLE();
 
     hdma_usart6_tx.Instance = DMA2_Stream6;
@@ -306,12 +308,9 @@ static void MX_DMA_UART6_Init(void) {
     HAL_NVIC_SetPriority(USART6_IRQn, 5, 1);
     HAL_NVIC_EnableIRQ(USART6_IRQn);
 
-
-
-    
+    HAL_UART_Receive_IT(&huart6, (uint8_t *)&g_uart_ring[2].buffer[0], 1);
     
 }
-
 
 
 void uart_ring_init(int num)
@@ -324,11 +323,9 @@ void uart_ring_init(int num)
 
 
 
-
-
 driver_t *stm32_uart_open(int num)
 {
-  osSemaphoreId_t uartTxCompleteSemaphore;
+  osSemaphoreId_t tempSem=NULL;
 
   if(g_stm32_uart[num].opened == true)
   {
@@ -338,21 +335,24 @@ driver_t *stm32_uart_open(int num)
   switch (num)
   {
   case STM32_UART_1:
+      g_stm32_uart[num].name = TOSTRING(STM32_UART_1);
     g_stm32_uart[num].num = num;
     g_stm32_uart[num].cfg = &g_stm32_uart_cfg[num];
 
-    if(g_stm32_uart[num].sem ==NULL)
+    if(g_stm32_uart[num].sem == NULL)
     {
-      uartTxCompleteSemaphore = osSemaphoreNew(1, 1, NULL);
-      if(uartTxCompleteSemaphore)
-      g_stm32_uart[num].sem = uartTxCompleteSemaphore;
+      tempSem = osSemaphoreNew(1, 1, NULL);
+      if(tempSem)
+      {
+        g_stm32_uart[num].sem = tempSem;
+      }
     }
 
-    if(g_stm32_uart_cfg[num].syncSem ==NULL)
+    if(g_stm32_uart_cfg[num].txcSem ==NULL)
     {
-      uartTxCompleteSemaphore = osSemaphoreNew(1, 0, NULL);
-      if(uartTxCompleteSemaphore)
-      g_stm32_uart_cfg[num].syncSem = uartTxCompleteSemaphore;
+      tempSem = osSemaphoreNew(1, 0, NULL);
+      if(tempSem)
+      g_stm32_uart_cfg[num].txcSem = tempSem;
     }
 
     uart_ring_init(num);
@@ -360,42 +360,44 @@ driver_t *stm32_uart_open(int num)
     MX_DMA_UART1_Init();
     break;
   case STM32_UART_3:
+    g_stm32_uart[num].name = TOSTRING(STM32_UART_3);
     g_stm32_uart[num].num = num;
     g_stm32_uart[num].cfg = &g_stm32_uart_cfg[num];
-    if(g_stm32_uart[num].sem ==NULL)
+
+    tempSem = osSemaphoreNew(1, 1, NULL);
+    if(tempSem)
+    g_stm32_uart[num].sem = tempSem;
+
+
+    tempSem = osSemaphoreNew(1, 0, NULL);
+    if(tempSem)
     {
-      uartTxCompleteSemaphore = osSemaphoreNew(1, 1, NULL);
-      if(uartTxCompleteSemaphore)
-      g_stm32_uart[num].sem = uartTxCompleteSemaphore;
+      g_stm32_uart_cfg[num].txcSem = tempSem;
     }
-    if(g_stm32_uart_cfg[num].syncSem == NULL)
-    {
-      uartTxCompleteSemaphore = osSemaphoreNew(1, 0, NULL);
-      if(uartTxCompleteSemaphore)
-      g_stm32_uart_cfg[num].syncSem = uartTxCompleteSemaphore;
-    }
-        uart_ring_init(num);
+
+    uart_ring_init(num);
     MX_USART3_UART_Init();
     MX_DMA_UART3_Init();
   break;
   case STM32_UART_6:
+    g_stm32_uart[num].name = TOSTRING(STM32_UART_6);
     g_stm32_uart[num].num = num;
     g_stm32_uart[num].cfg = &g_stm32_uart_cfg[num];
     
     if(g_stm32_uart[num].sem ==NULL)
     {
-      uartTxCompleteSemaphore = osSemaphoreNew(1, 1, NULL);
-      if(uartTxCompleteSemaphore)
-      g_stm32_uart[num].sem = uartTxCompleteSemaphore;
+      tempSem = osSemaphoreNew(1, 1, NULL);
+      if(tempSem)
+      g_stm32_uart[num].sem = tempSem;
     }
-    if(g_stm32_uart_cfg[num].syncSem == NULL)
+    if(g_stm32_uart_cfg[num].txcSem == NULL)
     {
-      uartTxCompleteSemaphore = osSemaphoreNew(1, 0, NULL);
-      if(uartTxCompleteSemaphore)
-      g_stm32_uart_cfg[num].syncSem = uartTxCompleteSemaphore;
+      tempSem = osSemaphoreNew(1, 0, NULL);
+      if(tempSem)
+      g_stm32_uart_cfg[num].txcSem = tempSem;
 
     }
-        uart_ring_init(num);
+    uart_ring_init(num);
     MX_USART6_UART_Init();
     MX_DMA_UART6_Init();
 
@@ -411,7 +413,7 @@ g_stm32_uart[num].opened = true;
 void stm32_uart_send(driver_t *drv,uint8_t *pData,uint16_t dataLen)
 {
   stm32_uart_cfg_t *cfg = (stm32_uart_cfg_t *)drv->cfg;
-HAL_StatusTypeDef status;
+  HAL_StatusTypeDef status;
   
     if(drv==NULL || drv->opened==false)
     {
@@ -427,9 +429,9 @@ HAL_StatusTypeDef status;
 
   if(status == HAL_OK)
   {
-    if(cfg->syncSem)
+    if(cfg->txcSem)
     {
-      osSemaphoreAcquire(cfg->syncSem, osWaitForever);
+      osSemaphoreAcquire(cfg->txcSem, osWaitForever);
     }
   }
   else
@@ -592,26 +594,22 @@ uart 일반적으로 한번에 들어온다면 적용가능한 방법
   uint16_t len;
 void HAL_UART_IDLECallback(UART_HandleTypeDef *huart)
 {
+ 
+  if (huart->Instance == USART1)
+  {
 
-  
-  
-    if (huart->Instance == USART1)
-    {
+      // DMA 수신을 멈추고, 수신된 데이터 길이 계산
+      __HAL_DMA_DISABLE(&hdma_usart1_rx);
 
-        // DMA 수신을 멈추고, 수신된 데이터 길이 계산
-        __HAL_DMA_DISABLE(&hdma_usart1_rx);
+      uart1_receive(huart);
 
-        uart1_receive(huart);
-
-        // DMA 수신 재시작
-        __HAL_DMA_SET_COUNTER(&hdma_usart3_rx, BUFFER_SIZE);
-        __HAL_DMA_ENABLE(&hdma_usart3_rx);
-    }
+      // DMA 수신 재시작
+      __HAL_DMA_SET_COUNTER(&hdma_usart3_rx, BUFFER_SIZE);
+      __HAL_DMA_ENABLE(&hdma_usart3_rx);
+  }
 }
 
-//인터럽트 설정
-   uint32_t isrflag;
-     
+    
 void USART1_IRQHandler(void)
 {
 
@@ -634,12 +632,12 @@ void USART1_IRQHandler(void)
 
 void USART3_IRQHandler(void)
 {
-    HAL_UART_IRQHandler(&huart3);
+  HAL_UART_IRQHandler(&huart3);
 }
 
 void USART6_IRQHandler(void)
 {
-    HAL_UART_IRQHandler(&huart6);
+  HAL_UART_IRQHandler(&huart6);
 }
 
 
@@ -655,22 +653,18 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
   
   if (huart->Instance == USART1) 
   {
-    osSemaphoreRelease(g_stm32_uart_cfg[0].syncSem);
+    osSemaphoreRelease(g_stm32_uart_cfg[0].txcSem);
   }
   else if (huart->Instance == USART3) 
   {
-    osSemaphoreRelease(g_stm32_uart_cfg[1].syncSem);
+    osSemaphoreRelease(g_stm32_uart_cfg[1].txcSem);
   }
   else if (huart->Instance == USART6)
   {
-    osSemaphoreRelease(g_stm32_uart_cfg[2].syncSem);
+    osSemaphoreRelease(g_stm32_uart_cfg[2].txcSem);
   }
 }
  
-#include "semphr.h"
-
-
-
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
@@ -678,36 +672,27 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   
     if (huart->Instance == USART1) 
     {
-#if UART1_RX_INT_USE 
-        // 수신된 데이터를 링버퍼에 저장
         head = g_uart_ring[0].head;
         g_uart_ring[0].head = (head + 1) % BUFFER_SIZE;
 
         osSemaphoreRelease(g_uart_ring[0].sem);
         head = g_uart_ring[0].head;
         HAL_UART_Receive_IT(&huart1, (uint8_t *)&g_uart_ring[0].buffer[head], 1);
-
-
-#endif
-        
-
-    
-
     }
-        if (huart->Instance == USART3) 
+    else if(huart->Instance == USART3) 
     {
         // 수신된 데이터를 링버퍼에 저장
         head = g_uart_ring[1].head;
         g_uart_ring[1].head = (head + 1) % BUFFER_SIZE;
 
         // 세마포어 증가 (데이터 개수 증가)
-        osSemaphoreRelease(g_uart_ring[0].sem);
+        osSemaphoreRelease(g_uart_ring[1].sem);
 
         // 다음 바이트 수신을 위한 인터럽트 활성화
         head = g_uart_ring[1].head;
         HAL_UART_Receive_IT(&huart3, (uint8_t *)&g_uart_ring[1].buffer[head], 1);
     }
-        if (huart->Instance == USART6) 
+    else if(huart->Instance == USART6) 
     {
         // 수신된 데이터를 링버퍼에 저장
         head = g_uart_ring[2].head;

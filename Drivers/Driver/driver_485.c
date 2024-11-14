@@ -29,7 +29,7 @@ driver_t *driver_rs485_open(uint32_t num)
   {
   case RS485_A:
       g_rs485_cfg[num].uart_io =  driver_uart_open(UART_EX_485_1);
-      baud.baud=9600;
+      baud.baud=1200;
 
       driver_uart_set(g_rs485_cfg[num].uart_io,eUART_SET_CONFIG,&baud);
       g_rs485_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_A); 
@@ -45,6 +45,10 @@ driver_t *driver_rs485_open(uint32_t num)
     break;
   case RS485_B:
       g_rs485_cfg[num].uart_io =  driver_uart_open(UART_EX_485_2);
+      baud.baud=1200;
+
+      driver_uart_set(g_rs485_cfg[num].uart_io,eUART_SET_CONFIG,&baud);
+      
       g_rs485_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_B); 
       driver_do_low(g_rs485_cfg[num].do_io);//수신 모드
      if( g_rs485[num].sem == NULL)
@@ -92,7 +96,7 @@ uint16_t len;
     osSemaphoreAcquire(drv->sem, osWaitForever);
   }
 
-  len = driver_uart_recv(cfg->uart_io,pBuff);
+  len = driver_uart_recvs(cfg->uart_io,pBuff,rLen,timeOutms);
 
   if(drv->sem)
   {
@@ -100,5 +104,37 @@ uint16_t len;
   }
   
   return len;
+
+}
+
+
+void driver_rs485_set(driver_t *drv,uint8_t cmd,void *option)
+{
+  rs485_cfg_t *cfg;
+  cfg = (rs485_cfg_t *)(drv->cfg);
+
+
+  if(drv->sem)
+  {
+    osSemaphoreAcquire(drv->sem, osWaitForever);
+  }
+
+
+
+    switch (cmd)
+    {
+      case 0:
+      uart_baud_config_t uart_cfg;
+      uart_cfg.baud = (int)option;
+      driver_uart_set(cfg->uart_io,eUART_SET_CONFIG,&uart_cfg);
+      break;
+    }
+
+  if(drv->sem)
+  {
+    osSemaphoreRelease(drv->sem);
+  }
+  
+
 
 }

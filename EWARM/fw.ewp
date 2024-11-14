@@ -1174,6 +1174,9 @@
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_host.h</name>
                 </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_test.c</name>
+                </file>
             </group>
             <group>
                 <name>FATFS</name>
@@ -1390,6 +1393,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_rtc.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_sdi.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_sdi.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_spi.c</name>

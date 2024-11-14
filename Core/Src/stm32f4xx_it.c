@@ -160,65 +160,13 @@ void DebugMon_Handler(void)
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
 
-/**
-  * @brief This function handles EXTI line0 interrupt.
-  */
-void EXTI0_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI0_IRQn 0 */
 
-  /* USER CODE END EXTI0_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(INT_D_IO_Pin);
-  /* USER CODE BEGIN EXTI0_IRQn 1 */
 
-  /* USER CODE END EXTI0_IRQn 1 */
-}
 
-/**
-  * @brief This function handles EXTI line1 interrupt.
-  */
-void EXTI1_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI1_IRQn 0 */
 
-  /* USER CODE END EXTI1_IRQn 0 */
 
-  /* USER CODE BEGIN EXTI1_IRQn 1 */
 
-  /* USER CODE END EXTI1_IRQn 1 */
-}
 
-/**
-  * @brief This function handles EXTI line4 interrupt.
-  */
-void EXTI4_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI4_IRQn 0 */
-
-  /* USER CODE END EXTI4_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(IN_EX_UART_INT_1_Pin);
-  /* USER CODE BEGIN EXTI4_IRQn 1 */
-
-  /* USER CODE END EXTI4_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line[9:5] interrupts.
-  */
-void EXTI9_5_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
-  /* USER CODE END EXTI9_5_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(IN_EX_UART_INT_2_Pin);
-  HAL_GPIO_EXTI_IRQHandler(IN_EX_UART_INT_3_Pin);
-  HAL_GPIO_EXTI_IRQHandler(IN_EX_UART_INT_4_Pin);
-  HAL_GPIO_EXTI_IRQHandler(IN_EX_UART_INT_5_Pin);
-  HAL_GPIO_EXTI_IRQHandler(IN_EX_UART_INT_6_Pin);
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-
-  /* USER CODE END EXTI9_5_IRQn 1 */
-}
 
 /**
   * @brief This function handles TIM4 global interrupt.
@@ -249,7 +197,3 @@ void ETH_IRQHandler(void)
 
   /* USER CODE END ETH_IRQn 1 */
 }
-
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */

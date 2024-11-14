@@ -29,26 +29,28 @@
 
 #include "driver_led.h"
 #include "driver_digitalOut.h"
+#include "driver_digitalIn.h"
 #include "driver_adc.h"
 #include "driver_fram.h"
 #include "driver_freqInput.h"
-#include "utile.h"
-    
-#include "terminal.h"
-#include "vt100_command.h"
-#include "io.h"
-#include "time_define.h"
 #include "driver_rtc.h"
 #include "driver_stm32_uart.h"
 #include "driver_flash.h"
 #include "driver_gpio.h"
 #include "driver_485.h"
 #include "driver_sdi.h"
+#include "driver_uart.h"
 #include "task_cmd.h"
 #include "task_host.h"
 #include "fatfs.h"
 #include "swTimer.h"
-#include "driver_uart.h"
+#include "task_test.h"
+#include "utile.h"
+#include "terminal.h"
+#include "vt100_command.h"
+#include "io.h"
+#include "time_define.h"
+
 
 driver_t *debug_uart=NULL;
 
@@ -416,6 +418,33 @@ void cdmaPower_test(void)
         osDelay(500);
   }
 }
+
+
+void rain_test(void)
+{
+  driver_t *rain_reed;
+  driver_t *rain_hall;
+  driver_t *rain_err;
+  int32_t rain_reed_data;
+  int32_t rain_hall_data;
+  int32_t rain_err_data;
+
+  rain_hall= driver_di_open(DI_RAIN_HALL);
+  rain_reed= driver_di_open(DI_RAIN_REED);
+  rain_err= driver_di_open(DI_RAIN_HALL_ERR);
+
+
+
+
+  while(1)
+  {
+      rain_reed_data = driver_di_read(rain_reed);
+  rain_hall_data = driver_di_read(rain_hall);
+  rain_err_data = driver_di_read(rain_err);
+    debug_printf("reed:%d,hall:%d,err:%d\r\n",rain_reed_data,rain_hall_data,rain_err_data);
+    osDelay(100);
+  }
+}
 void StartDefaultTask(void *argument)
 {
   char buff[100];
@@ -427,19 +456,20 @@ void StartDefaultTask(void *argument)
   
   driver_led_set(runLed,LED_CMD_SET_TOGGLE_FREQ,&cfg);
   driver_led_set(runLed,LED_CMD_START,NULL);
-
   debug_uart = stm32_uart_open(STM32_UART_1);
 
+  testTask_init();
 
-  
+
+ 
   //exuart_test();
-  sram_test();
+  //sram_test();
   //fat_test();
   //MX_LWIP_Init();
-  fram_test();
-  rtc_test();
-  flash_test();
-  cmdTask_init();
+  //fram_test();
+  //rtc_test();
+  //flash_test();
+  //cmdTask_init();
 
   //hostTask_init();
   //adc_test();
@@ -447,7 +477,8 @@ void StartDefaultTask(void *argument)
 
   //freq_test();
   //rs485_test();
-  cdmaPower_test();
+  //cdmaPower_test();
+ // rain_test();
 
 
   while(1)

@@ -11,29 +11,29 @@ typedef struct sdi_cfg_s
 
 sdi_cfg_t g_sdi_cfg[1];
 
-driver_t g_sdi[1]={{.cfg=&g_sdi_cfg[0]}};
+driver_t g_sdi_list[1]={{.cfg=&g_sdi_cfg[0]}};
 
 
 driver_t *driver_sdi_open(uint32_t num)
 {
-  if(g_sdi[num].opened == true)
+  if(g_sdi_list[num].opened == true)
   {
-    return &g_sdi[num];
+    return &g_sdi_list[num];
   }
 
-  g_sdi[num].opened = true;
+  g_sdi_list[num].opened = true;
 
 
   switch (num)
   {
   case SDI_1:
-      g_sdi_cfg[num].uart_io =  driver_stm32_uart_open(STM32_UART_6);
+      g_sdi_cfg[num].uart_io =  stm32_uart_open(STM32_UART_6);
       g_sdi_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_A); 
       driver_do_low(g_sdi_cfg[num].do_io);//수신 모드
 
-    if( g_sdi[num].sem == NULL)
+    if( g_sdi_list[num].sem == NULL)
     {
-       g_sdi[num].sem = osSemaphoreNew(1, 1, NULL); 
+       g_sdi_list[num].sem = osSemaphoreNew(1, 1, NULL); 
     }
     break;
 
@@ -41,7 +41,7 @@ driver_t *driver_sdi_open(uint32_t num)
     break;
   }
 
-  return &g_sdi[num];
+  return &g_sdi_list[num];
   
 }
 
@@ -56,7 +56,7 @@ void driver_sdi_sends(driver_t *drv,uint8_t *pData,uint16_t dataLen)
   }
   driver_do_high(cfg->do_io);
   osDelay(1);
-  driver_stm32_uart_send(cfg->uart_io,pData,dataLen);
+  stm32_uart_send(cfg->uart_io,pData,dataLen);
   driver_do_low(cfg->do_io);
   osDelay(1);
   if(drv->sem)
@@ -77,7 +77,7 @@ uint16_t len;
     osSemaphoreAcquire(drv->sem, osWaitForever);
   }
 
-  len = driver_stm32_uart_recv(cfg->uart_io,pBuff,rLen, timeOutms);
+  len = stm32_uart_recv(cfg->uart_io,pBuff,rLen, timeOutms);
 
   if(drv->sem)
   {

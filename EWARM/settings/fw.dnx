@@ -3,13 +3,13 @@
     <StLinkDriver>
         <stlinkserialNo>13004800040000393333574E</stlinkserialNo>
         <stlinkfoundProbes />
-        <CStepIntDis>_ 0</CStepIntDis>
-        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
         <stlinkResetStyle>0</stlinkResetStyle>
         <stlinkResetStrategy>2</stlinkResetStrategy>
+        <CStepIntDis>_ 0</CStepIntDis>
+        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
     </StLinkDriver>
     <DebugChecksum>
-        <Checksum>4171073960</Checksum>
+        <Checksum>2866856604</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -134,14 +134,6 @@
         <ShowTimeSum>1</ShowTimeSum>
         <SumSortOrder>0</SumSortOrder>
     </EventLog>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\freertos.c}.416.9" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\freertos.c}.414.5" 0 0 1 "" 0 "" 0</Bp1>
-        <Count>2</Count>
-    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -151,15 +143,6 @@
         <LogFile>_ ""</LogFile>
         <Category>_ 0</Category>
     </LogFile>
-    <Aliases>
-        <A0>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\Core\Src\stm32f4xx_it.c" ""</A0>
-        <A1>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\EWARM\startup_stm32f407xx.s" ""</A1>
-        <A2>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\bsp_driver_sd.c" ""</A2>
-        <A3>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\fatfs_platform.c" ""</A3>
-        <A4>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\sd_diskio.c" ""</A4>
-        <Count>5</Count>
-        <SuppressDialog>1</SuppressDialog>
-    </Aliases>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>3</Mode>
@@ -173,4 +156,22 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Core\CLI\io.c}.41.5" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Drivers\Driver\driver_stm32_uart.c}.640.3" 0 0 1 "" 0 "" 0</Bp1>
+        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\task_test.c}.360.7" 0 0 1 "" 0 "" 0</Bp2>
+        <Count>3</Count>
+    </Breakpoints2>
+    <Aliases>
+        <A0>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\Core\Src\stm32f4xx_it.c" ""</A0>
+        <A1>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\EWARM\startup_stm32f407xx.s" ""</A1>
+        <A2>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\bsp_driver_sd.c" ""</A2>
+        <A3>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\fatfs_platform.c" ""</A3>
+        <A4>_ "D:\WTH\1.Projects\4.Dev\16.AWS\v2\FATFS\Target\sd_diskio.c" ""</A4>
+        <Count>5</Count>
+        <SuppressDialog>1</SuppressDialog>
+    </Aliases>
 </settings>

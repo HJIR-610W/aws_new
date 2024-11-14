@@ -14,6 +14,7 @@ osThreadId_t g_hostTaskHandle;
 
 osMessageQueueId_t g_hostTxMessageQueue;
 
+
 typedef struct hostMsg_s
 {
   uint8_t data[512];

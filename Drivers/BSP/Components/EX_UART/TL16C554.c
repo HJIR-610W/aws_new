@@ -304,6 +304,34 @@ int tls16c554_recv_byte(driver_t *drv,uint8_t *data)
     return 0; // 데이터가 준비되지 않음
 }
 
+
+
+uint16_t tls16c554_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
+{
+  uint32_t startTick;
+  uint16_t cnt=0;
+
+  startTick = xTaskGetTickCount();
+  while(1)
+  {
+    if (read_register(LSR(exUartBaseAddress[drv->num])) & LSR_DR)
+    {
+      pBuff[cnt++] = read_register(RBR(exUartBaseAddress[drv->num])); 
+    } 
+    if(cnt==buffSize)
+    {
+      break;
+    }
+    if((xTaskGetTickCount()-startTick)>timeOutMs)
+    {
+      break;
+    }
+  }
+    
+    return cnt; // 데이터가 준비되지 않음
+}
+
+
 void tls16c554_init(driver_t *tls16c554)
 {
   tl16c554_api_t *api = (tl16c554_api_t *)tls16c554->api;

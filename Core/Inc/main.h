@@ -201,8 +201,14 @@ void Error_Handler(void);
 #define IN_TIM13_CH1_GPIO_Port GPIOF
 
 
+#define IN_RAIN_REED_Pin GPIO_PIN_11
+#define IN_RAIN_REED_GPIO_Port GPIOF
 
+#define IN_RAIN_HALL_Pin GPIO_PIN_1
+#define IN_RAIN_HALL_GPIO_Port GPIOB
 
+#define IN_RAIN_ERR_Pin GPIO_PIN_6
+#define IN_RAIN_ERR_GPIO_Port GPIOA
 
 
 /* USER CODE BEGIN Private defines */

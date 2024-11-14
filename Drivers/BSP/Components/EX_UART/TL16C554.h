@@ -40,7 +40,7 @@ driver_t *tls16c554_open(int num);
 void tls16c554_send(driver_t *tls16c554,uint8_t *pData,uint16_t dataLen);
 int32_t tls16c554_recv(driver_t *tls16c554,uint8_t *pData);
 
-
+uint16_t tls16c554_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs);
 int tls16c554_recv_byte(driver_t *tls16c554,uint8_t *data);
 void tls16c554_set(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option);
 void tls16c554_init(driver_t *tls16c554);

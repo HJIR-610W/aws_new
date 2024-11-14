@@ -29,12 +29,12 @@ driver_t *driver_di_open(uint32_t num)
   switch(num)
   {
     case DI_ADC_RDY:
-      p_drv = stm32_di_open(num);
-    break;
     case DI_RTC_IRQ:
-      p_drv = stm32_di_open(num);
-      break;
-
+    case DI_RAIN_HALL:
+    case DI_RAIN_REED :
+    case DI_RAIN_HALL_ERR:
+         p_drv = stm32_di_open(num);
+    break;
   }
 
   g_di_list[num].api = &di_api;

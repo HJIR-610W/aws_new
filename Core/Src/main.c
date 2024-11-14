@@ -1,53 +1,42 @@
-#include "main.h"
-#include "cmsis_os.h"
 #include "adc.h"
+#include "cmsis_os.h"
 #include "fatfs.h"
+#include "fsmc.h"
 #include "i2c.h"
+#include "gpio.h"
 #include "lwip.h"
+#include "main.h"
+#include "mcu_delay.h"
 #include "sdio.h"
 #include "spi.h"
-#include "tim.h"
 #include "usart.h"
-#include "gpio.h"
-#include "fsmc.h"
-#include "mcu_delay.h"
+#include "tim.h"
 
 
 #define DBGMCU_STOP_SYSTICK() (DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP)
 
-
 void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
 
+extern void MX_FREERTOS_Init(void);
 
 int main(void)
 {
 
   DBGMCU_STOP_SYSTICK();
   
-
   HAL_Init();
-
   SystemClock_Config();
-
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_FSMC_Init();
-
   MX_SDIO_SD_Init();
-
-
-
   MX_FATFS_Init();
-
   osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
-  
+
   DWT_Delay_Init();
   MX_FREERTOS_Init();
 
-
   osKernelStart();
-
 
   while (1)
   {

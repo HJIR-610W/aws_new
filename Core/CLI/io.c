@@ -10,7 +10,14 @@
 
 extern UART_HandleTypeDef huart1;
 
-extern driver_t *debug_uart;
+static driver_t *debug_uart=NULL;;
+
+
+
+void set_debug_uart_handle(driver_t *drv)
+{
+  debug_uart = drv;
+}
 
 int32_t debug_printf(const char * pFmt, ...)
 {

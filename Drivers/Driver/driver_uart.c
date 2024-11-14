@@ -6,7 +6,7 @@
 
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
-
+#include "driver_stm32_uart.h"
 
 #include "driver_uart.h"
 #include "TL16C554.h"
@@ -79,17 +79,25 @@ typedef struct adc_api_s
     int32_t (*recv_byte)(driver_t *tls16c554,uint8_t *pData);
     void (*set)(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option);
     void (*init)(driver_t *tls16c554);
+    uint16_t (*recv_bytes)(driver_t *tls16c554,uint8_t *pData,uint16_t rLen,uint32_t timeoutMs);
 }rs232_api_t;
 
 
 
-driver_t g_rs232[10];
+driver_t g_rs232[UART_MAX];
 static rs232_api_t g_rs232_api ={.send = tls16c554_send,
-                                  .recv = tls16c554_recv,
+                                 .recv = tls16c554_recv,
                                  .recv_byte = tls16c554_recv_byte,
                                  .set = tls16c554_set,
-                                 .init =tls16c554_init};
+                                 .init =tls16c554_init,
+                                 .recv_bytes=tls16c554_uart_recvs};
               
+static rs232_api_t g_stm32_uart_api ={.send = stm32_uart_send,
+                                      .recv = tls16c554_recv,
+                                      .recv_byte = tls16c554_recv_byte,
+                                      .set = stm32_uart_set,
+                                      .recv_bytes = stm32_uart_recv};
+
 
 void quad_gpio_init(void)
 {
@@ -105,23 +113,27 @@ driver_t *driver_uart_open(int  num)
   
   switch(num)
   {
+    case UART_STM32_1:  //µð¹ö±ë¿ë
+    case UART_STM32_3:  //D-SUB
+    case UART_STM32_6:
+      g_rs232[num].handle = stm32_uart_open(num);;
+      g_rs232[num].api = &g_stm32_uart_api;
+      break;
     case UART_EX_232_1:
     case UART_EX_TTL_2:  
-    case UART_EX_232_3:
-    case UART_EX_232_4:
+    case UART_EX_232_A_3:
+    case UART_EX_232_B_4:
     case UART_EX_485_1:
     case UART_EX_485_2:
-    case UART_EX_232_7:
-    case UART_EX_232_8:
-
-
+    case UART_EX_232_C_7:
+    case UART_EX_232_D_8:
         g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
         g_rs232[num].api = &g_rs232_api;
 
-        return &g_rs232[num];
+
     break;    
   }
- 
+         return &g_rs232[num];
   return 0;
 }
 
@@ -164,6 +176,16 @@ void driver_uart_get(driver_t *uart,eUART_SET_CMD_t cmd,void *config)
 
 
 
+
+uint16_t driver_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t rLen,uint32_t timeOutMs)
+{
+  rs232_api_t *api = (rs232_api_t *)drv->api;
+  uint16_t cnt;
+
+  cnt = api->recv_bytes(drv->handle,pBuff,rLen,timeOutMs);
+
+  return cnt;
+}
 
 
 

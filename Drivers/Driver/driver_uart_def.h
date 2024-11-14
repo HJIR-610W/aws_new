@@ -14,7 +14,6 @@ typedef struct uart_baud_config_s
 
 typedef enum uart_set_cmd_s
 {
-  eUART_SET_BAUD,
   eUART_SET_CONFIG,
   eUART_SET_TIMEOUT
 }eUART_SET_CMD_t;
