@@ -410,6 +410,51 @@ g_stm32_uart[num].opened = true;
 
 
 
+
+
+
+
+#include "stm32f4xx_hal.h"
+
+HAL_StatusTypeDef UART_SetBaudAndParity(UART_HandleTypeDef *huart, uint32_t baudrate, uint32_t parity)
+{
+    HAL_StatusTypeDef status;
+    uint32_t setParity;
+
+    switch(parity)
+    {
+      case 0:
+      setParity=  UART_PARITY_NONE;
+      break;
+      case 1:
+      setParity = UART_PARITY_ODD;
+      break;
+      case 2:
+      setParity = UART_PARITY_EVEN;
+      break;
+      case 3:
+      setParity = huart->Init.Parity;//변경 안함
+      break;
+    }
+    // UART 통신을 일시적으로 중지
+    status = HAL_UART_DeInit(huart);
+    if (status != HAL_OK) {
+        return status; // UART 해제 실패 시 에러 반환
+    }
+
+    // UART 설정 변경
+    huart->Init.BaudRate = baudrate;     // 보드레이트 설정
+  
+    huart->Init.Parity   = setParity;       // 패리티 설정 (UART_PARITY_NONE, UART_PARITY_EVEN, UART_PARITY_ODD 중 선택)
+    
+    // UART 통신 재초기화
+    status = HAL_UART_Init(huart);
+    return status; // UART 초기화 성공 여부 반환
+}
+
+
+
+
 void stm32_uart_send(driver_t *drv,uint8_t *pData,uint16_t dataLen)
 {
   stm32_uart_cfg_t *cfg = (stm32_uart_cfg_t *)drv->cfg;
@@ -521,7 +566,17 @@ uint16_t stm32_uart_recvFrame(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uin
 
 void stm32_uart_set(driver_t *drv,eUART_SET_CMD_t cmd,void *option)
 {
+  uart_baud_config_t *cfg_baud;;
+  stm32_uart_cfg_t *cfg;
 
+   cfg = (stm32_uart_cfg_t *)drv->cfg;
+  switch(cmd)
+  {
+    case eUART_SET_CONFIG:
+    cfg_baud = (uart_baud_config_t *)option;
+    UART_SetBaudAndParity(cfg->handle,cfg_baud->baud,3);//parity는 변경 안함
+    break;
+  }
     
 }
 

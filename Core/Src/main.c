@@ -19,13 +19,24 @@ void SystemClock_Config(void);
 
 extern void MX_FREERTOS_Init(void);
 
+
+
+
 int main(void)
 {
 
   DBGMCU_STOP_SYSTICK();
+
   
+
+  SystemInit();
+  
+
   HAL_Init();
+  
   SystemClock_Config();
+  
+
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_FSMC_Init();

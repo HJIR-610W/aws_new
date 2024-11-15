@@ -7,11 +7,12 @@ typedef struct rs485_cfg_s
 {
   driver_t *uart_io;
   driver_t *do_io;
+  uint32_t baud;
 }rs485_cfg_t;
 
 rs485_cfg_t g_rs485_cfg[2];
 
-driver_t g_rs485[2]={{.cfg=&g_rs485_cfg[0]},{.cfg=&g_rs485_cfg[0]}};
+driver_t g_rs485[2]={{.cfg=&g_rs485_cfg[0]},{.cfg=&g_rs485_cfg[1]}};
 
 
 driver_t *driver_rs485_open(uint32_t num)
@@ -28,6 +29,7 @@ driver_t *driver_rs485_open(uint32_t num)
   switch (num)
   {
   case RS485_A:
+      g_rs485[num].name = "RS485_A";
       g_rs485_cfg[num].uart_io =  driver_uart_open(UART_EX_485_1);
       baud.baud=1200;
 
@@ -44,6 +46,7 @@ driver_t *driver_rs485_open(uint32_t num)
 
     break;
   case RS485_B:
+      g_rs485[num].name = "RS485_B";
       g_rs485_cfg[num].uart_io =  driver_uart_open(UART_EX_485_2);
       baud.baud=1200;
 
@@ -75,7 +78,7 @@ void driver_rs485_sends(driver_t *drv,uint8_t *pData,uint16_t dataLen)
   }
   driver_do_high(cfg->do_io);
   driver_uart_send(cfg->uart_io,pData,dataLen);
-  osDelay(10);
+  osDelay(20);
   driver_do_low(cfg->do_io);
 
   if(drv->sem)

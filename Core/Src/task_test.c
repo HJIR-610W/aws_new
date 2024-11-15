@@ -23,7 +23,7 @@ typedef struct {
 
 const osThreadAttr_t testTxTask_attributes = {
   .name = "testTask",
-  .stack_size = 1024,
+  .stack_size = 2048,//2048바이트가 할당됨 하지만 4바이트 단위로 스택은 구성됨
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -138,6 +138,7 @@ void test_cmd(char *data)
   ParsedData cmd;
   uint16_t pin;
   char temp[20];
+  char msg[100];
   
   uint16_t cnt;
 
@@ -231,7 +232,67 @@ void test_cmd(char *data)
               switch(list[2][4])
               {
                 case '1':
-             
+                strcpy(msg,"UART_STM32_1");
+                driver_uart_send(g_stm_uart_1,msg,strlen(msg));
+                  cnt = driver_uart_recvs(g_stm_uart_1,temp,sizeof(temp),3000);
+                  if(cnt)
+                  {
+                      driver_uart_send(g_stm_uart_1,temp,cnt);
+                  }
+                break;
+                case '2':
+                strcpy(msg,"UART_QUAD_1");
+                driver_uart_send(g_quad_232_1,msg,strlen(msg));
+                cnt = driver_uart_recvs(g_quad_232_1,temp,sizeof(temp),3000);
+                if(cnt)
+                {
+                    driver_uart_send(g_quad_232_1,temp,cnt);
+                }
+                break;
+                case '3':
+                strcpy(msg,"UART_EX_TTL_2");
+                driver_uart_send(g_quad_ttl_2,msg,strlen(msg));
+                cnt = driver_uart_recvs(g_quad_ttl_2,temp,sizeof(temp),3000);
+                if(cnt)
+                {
+                    driver_uart_send(g_quad_ttl_2,temp,cnt);
+                }
+                break;
+                case '4':
+                strcpy(msg,"UART_EX_232_A_3");
+                driver_uart_send(g_232_A,msg,strlen(msg));
+                cnt = driver_uart_recvs(g_232_A,temp,sizeof(temp),3000);
+                if(cnt)
+                {
+                    driver_uart_send(g_232_A,temp,cnt);
+                }
+                break;
+                case '5':
+                strcpy(msg,"UART_EX_232_B_4");
+                driver_uart_send(g_232_B,msg,strlen(msg));
+                cnt = driver_uart_recvs(g_232_B,temp,sizeof(temp),3000);
+                if(cnt)
+                {
+                    driver_uart_send(g_232_B,temp,cnt);
+                }
+                break;
+                case '6':
+                strcpy(msg,"UART_EX_232_C_7");
+                driver_uart_send(g_232_C,msg,strlen(msg));
+                cnt = driver_uart_recvs(g_232_C,temp,sizeof(temp),3000);
+                if(cnt)
+                {
+                  driver_uart_send(g_232_C,temp,cnt);
+                }
+                break;
+                case '7':
+                strcpy(msg,"UART_EX_232_D_8");
+                driver_uart_send(g_232_D,msg,strlen(msg));
+                cnt = driver_uart_recvs(g_232_D,temp,sizeof(temp),3000);
+                if(cnt)
+                {
+                  driver_uart_send(g_232_D,temp,cnt);
+                }
                 break;
               }
       }
@@ -322,6 +383,43 @@ void test_cmd(char *data)
 
 
       }
+      else if(strncmp(list[1],"rs232_",6) == 0)
+      {
+        uart_baud_config_t uart_cfg;
+        switch (list[1][6])
+        {
+        case '1':
+          uart_cfg.baud = atoi(list[2]);
+          driver_uart_set(g_stm_uart_1,eUART_SET_CONFIG,(void *)&uart_cfg);
+          break;
+        case '2':
+          uart_cfg.baud = atoi(list[2]);
+          driver_uart_set(g_quad_232_1,eUART_SET_CONFIG,(void *)&uart_cfg);
+        break;
+        case '3':
+          uart_cfg.baud = atoi(list[2]);
+          driver_uart_set(g_quad_ttl_2,eUART_SET_CONFIG,(void *)&uart_cfg);
+        break;
+        case '4':
+          uart_cfg.baud = atoi(list[2]);
+          driver_uart_set(g_232_A,eUART_SET_CONFIG,(void *)&uart_cfg);
+        break;
+        case '5':
+          uart_cfg.baud = atoi(list[2]);
+          driver_uart_set(g_232_B,eUART_SET_CONFIG,(void *)&uart_cfg);
+        break;
+        case '6':
+          uart_cfg.baud = atoi(list[2]);
+          driver_uart_set(g_232_C,eUART_SET_CONFIG,(void *)&uart_cfg);
+        break;
+        case '7':
+          uart_cfg.baud = atoi(list[2]);
+          driver_uart_set(g_232_D,eUART_SET_CONFIG,(void *)&uart_cfg);
+        break;
+        default:
+          break;
+        }
+      }
     }
   }
 }
@@ -335,12 +433,9 @@ void testTask(void *argument)
   uint16_t cnt=0;
 
 
-  
-
   g_rs485_a = driver_rs485_open(RS485_A);
-  g_rs485_a = driver_rs485_open(RS485_B);
+  g_rs485_b = driver_rs485_open(RS485_B);
   g_sdi     = driver_sdi_open(SDI_1);
-
 
   g_stm_uart_1 = driver_uart_open(UART_STM32_1);
   g_uart3      = driver_uart_open(UART_STM32_3);
@@ -355,9 +450,11 @@ void testTask(void *argument)
   
   set_debug_uart_handle(g_uart3);
   
+  
+  debug_printf("Hello\r\n");
   while(1)
   {
-    if (stm32_uart_recv_byte(g_uart3,&data,osWaitForever))
+    if (driver_uart_recvs(g_uart3,&data,1,osWaitForever))
     {
       buff[cnt++] = data;
       if(data=='\n')

@@ -66,12 +66,6 @@ bool serial_receive_nonblocking(uint8_t *data, size_t length) {
 }
 
 
-
-
-
-
-
-
 typedef struct adc_api_s
 {
     void (*send)(driver_t *tls16c554,uint8_t *pData,uint16_t dataLen);
@@ -105,6 +99,7 @@ void quad_gpio_init(void)
 }
 driver_t *driver_uart_open(int  num)
 {
+  uart_baud_config_t cfg_baud;
  
   if(g_rs232[num].opened == true)
   {
@@ -114,34 +109,87 @@ driver_t *driver_uart_open(int  num)
   switch(num)
   {
     case UART_STM32_1:  //µð¹ö±ë¿ë
-    case UART_STM32_3:  //D-SUB
+    g_rs232[num].name ="UART_STM32_1";
+    g_rs232[num].handle = stm32_uart_open(num);;
+    g_rs232[num].api = &g_stm32_uart_api;
+      break;
+  case UART_STM32_3:  //D-SUB
+    g_rs232[num].name ="UART_STM32_3";
+    g_rs232[num].handle = stm32_uart_open(num);;
+    g_rs232[num].api = &g_stm32_uart_api;
+      break;
     case UART_STM32_6:
+      g_rs232[num].name ="UART_STM32_6";
       g_rs232[num].handle = stm32_uart_open(num);;
       g_rs232[num].api = &g_stm32_uart_api;
       break;
     case UART_EX_232_1:
+      g_rs232[num].name ="UART_EX_232_1";
+      g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
+      cfg_baud.baud = 115200;
+      tls16c554_set(g_rs232[num].handle,eUART_SET_CONFIG,&cfg_baud);
+      g_rs232[num].api = &g_rs232_api;
+      break;
     case UART_EX_TTL_2:  
-    case UART_EX_232_A_3:
-    case UART_EX_232_B_4:
-    case UART_EX_485_1:
-    case UART_EX_485_2:
-    case UART_EX_232_C_7:
-    case UART_EX_232_D_8:
+        g_rs232[num].name ="UART_EX_TTL_2";
         g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
+       cfg_baud.baud = 115200;
+      tls16c554_set(g_rs232[num].handle,eUART_SET_CONFIG,&cfg_baud);
         g_rs232[num].api = &g_rs232_api;
-
-
-    break;    
+          break;
+    case UART_EX_232_A_3:
+        g_rs232[num].name ="UART_EX_232_A_3";
+        g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
+        cfg_baud.baud = 1200;
+        tls16c554_set(g_rs232[num].handle,eUART_SET_CONFIG,&cfg_baud);
+        g_rs232[num].api = &g_rs232_api;
+          break;
+    case UART_EX_232_B_4:
+        g_rs232[num].name ="UART_EX_232_B_4";
+        g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
+        cfg_baud.baud = 1200;
+        tls16c554_set(g_rs232[num].handle,eUART_SET_CONFIG,&cfg_baud);
+        g_rs232[num].api = &g_rs232_api;
+          break;
+    case UART_EX_485_1:
+        g_rs232[num].name ="UART_EX_485_1";
+        g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
+       cfg_baud.baud = 9600;
+      tls16c554_set(g_rs232[num].handle,eUART_SET_CONFIG,&cfg_baud);
+        g_rs232[num].api = &g_rs232_api;
+          break;
+    case UART_EX_485_2:
+      g_rs232[num].name ="g_rs232";
+      g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
+      cfg_baud.baud = 115200;
+      tls16c554_set(g_rs232[num].handle,eUART_SET_CONFIG,&cfg_baud);
+      g_rs232[num].api = &g_rs232_api;
+          break;
+    case UART_EX_232_C_7:
+      g_rs232[num].name ="UART_EX_232_C_7";
+      g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
+      cfg_baud.baud = 1200;
+      tls16c554_set(g_rs232[num].handle,eUART_SET_CONFIG,&cfg_baud);
+      g_rs232[num].api = &g_rs232_api;
+          break;
+    case UART_EX_232_D_8:
+      g_rs232[num].name ="UART_EX_232_D_8";
+      g_rs232[num].handle = tls16c554_open(num - UART_EX_232_1);;
+      cfg_baud.baud = 1200;
+      tls16c554_set(g_rs232[num].handle,eUART_SET_CONFIG,&cfg_baud);
+      g_rs232[num].api = &g_rs232_api;
+   break;    
   }
          return &g_rs232[num];
-  return 0;
+
 }
 
 void driver_uart_send(driver_t *uart,uint8_t *pData,uint16_t dataLen)
 {
   rs232_api_t *api = (rs232_api_t *)uart->api;
-  
+
   api->send(uart->handle,pData,dataLen);
+
 }
 
 int32_t driver_uart_recv(driver_t *drv,uint8_t *pBuff)
@@ -169,13 +217,8 @@ void driver_uart_set(driver_t *uart,eUART_SET_CMD_t cmd,void *para)
 
 void driver_uart_get(driver_t *uart,eUART_SET_CMD_t cmd,void *config)
 {
-  rs232_api_t *api = (rs232_api_t *)uart->api;
-  
-//  api->init(uart->handle);
+
 }
-
-
-
 
 uint16_t driver_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t rLen,uint32_t timeOutMs)
 {

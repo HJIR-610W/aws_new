@@ -30,6 +30,7 @@ driver_t *driver_do_open(uint32_t num)
   switch(num)
   {
     case DO_PWR_CDMA:
+                  g_do_list[num].name ="DO_PWR_CDMA";
       p_drv = stm32_do_open(num);
     break;
     case DO_FRAM_CS:
@@ -75,12 +76,15 @@ driver_t *driver_do_open(uint32_t num)
          p_drv = stm32_do_open(num);
     break;
   case DO_DIR_SDI:
+              g_do_list[num].name ="DO_DIR_SDI";
            p_drv = stm32_do_open(num);
   break;
   case DO_DIR_RS485_A:
+              g_do_list[num].name ="DO_DIR_RS485_A";
            p_drv = stm32_do_open(num);
   break;
   case DO_DIR_RS485_B:
+            g_do_list[num].name ="DO_DIR_RS485_B";
            p_drv = stm32_do_open(num);
   break;
 
