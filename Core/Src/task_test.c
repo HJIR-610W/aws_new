@@ -330,11 +330,10 @@ extern void set_debug_uart_handle(driver_t *drv);
 void testTask(void *argument)
 {
   uint8_t buff[512];
-
   osStatus status;
   uint8_t data;
   uint16_t cnt=0;
-  g_uart3 = stm32_uart_open(UART_STM32_3);
+
 
   
 
@@ -344,18 +343,21 @@ void testTask(void *argument)
 
 
   g_stm_uart_1 = driver_uart_open(UART_STM32_1);
-  g_quad_232_1 =  driver_uart_open(UART_EX_232_1);
-  g_quad_ttl_2 =  driver_uart_open(UART_EX_TTL_2);
+  g_uart3      = driver_uart_open(UART_STM32_3);
+  
+  g_quad_232_1 = driver_uart_open(UART_EX_232_1);
+  g_quad_ttl_2 = driver_uart_open(UART_EX_TTL_2);
   g_232_A =  driver_uart_open(UART_EX_232_A_3);
   g_232_B =  driver_uart_open(UART_EX_232_B_4);
   g_232_C =  driver_uart_open(UART_EX_232_C_7);
   g_232_D =  driver_uart_open(UART_EX_232_D_8);
 
   
-    set_debug_uart_handle(g_stm_uart_1);
+  set_debug_uart_handle(g_uart3);
+  
   while(1)
   {
-    if (stm32_uart_recv_byte(g_stm_uart_1,&data,osWaitForever))
+    if (stm32_uart_recv_byte(g_uart3,&data,osWaitForever))
     {
       buff[cnt++] = data;
       if(data=='\n')
