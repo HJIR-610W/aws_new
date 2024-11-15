@@ -23,7 +23,9 @@
 			"driver_uart.h": "c",
 			"driver_flash.h": "c",
 			"driver_sdi.h": "c",
-			"driver_uart_def.h": "c"
+			"driver_uart_def.h": "c",
+			"driver_di_def.h": "c",
+			"mcu_interrupt.h": "c"
 		}
 	}
 }

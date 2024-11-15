@@ -135,3 +135,97 @@ const driver_ex_t *stm32_open(const char *name)
   return 0;
 }
 #endif
+
+
+#include "stm32f4xx_hal.h"
+
+
+IRQn_Type get_irqFromPin(uint16_t GPIO_Pin)
+{
+
+      IRQn_Type irq;
+    if (GPIO_Pin == GPIO_PIN_0) {
+        irq = EXTI0_IRQn;
+    } else if (GPIO_Pin == GPIO_PIN_1) {
+        irq = EXTI1_IRQn;
+    } else if (GPIO_Pin == GPIO_PIN_2) {
+        irq = EXTI2_IRQn;
+    } else if (GPIO_Pin == GPIO_PIN_3) {
+        irq = EXTI3_IRQn;
+    } else if (GPIO_Pin == GPIO_PIN_4) {
+        irq = EXTI4_IRQn;
+    } else if (GPIO_Pin >= GPIO_PIN_5 && GPIO_Pin <= GPIO_PIN_9) {
+        irq = EXTI9_5_IRQn;
+    } else if (GPIO_Pin >= GPIO_PIN_10 && GPIO_Pin <= GPIO_PIN_15) {
+        irq = EXTI15_10_IRQn;
+    }
+
+    return irq;
+}
+
+// GPIO 핀을 인터럽트 모드로 초기화하는 함수
+void GPIO_InputInterrupt_Init(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin,  eDI_TRIGGER_t trigger,uint16_t prio)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    // 2. GPIO 핀 설정 (입력 모드, 풀업/풀다운)
+    GPIO_InitStruct.Pin = GPIO_Pin;
+    GPIO_InitStruct.Mode = eDI_RISING_FALLING; // 기본적으로 양 엣지로 설정
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    
+    // 트리거 모드 설정 (Rising, Falling 또는 Both)
+    if (trigger == eDI_RISING)
+    {
+        GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+    }
+    else if (trigger == eDI_FALLING)
+    {
+        GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    }
+    else
+    {
+        GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+    }
+
+    HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
+
+    // 3. EXTI 인터럽트 우선순위 및 활성화 설정 (핀 번호에 따른 IRQ 설정)
+    uint32_t exti_line = 0;
+    IRQn_Type irq;
+
+    irq = get_irqFromPin(GPIO_Pin);
+
+    // 인터럽트 우선순위 설정 (우선순위 2, 하위 우선순위 0으로 설정)
+    HAL_NVIC_SetPriority(irq, prio, 0);
+    HAL_NVIC_EnableIRQ(irq);
+}
+
+
+
+void stm32_di_set(driver_t *drv,uint8_t cmd,void *option)
+{
+  stm32_di_cfg_t *cfg = drv->cfg;
+
+  exti_isr_cfg_t exti_isr_cfg;
+
+  switch(cmd)
+  {
+    case DI_SET_INTERRUT:
+    {
+      di_isr_set_cfg_t *isr;
+      isr = (di_isr_set_cfg_t *)option;
+
+
+      __HAL_GPIO_EXTI_CLEAR_IT(cfg->pin);
+      exti_isr_cfg.irq =   get_irqFromPin(cfg->pin);
+      exti_isr_cfg.call = isr->call;
+      exti_isr_cfg.name = isr->name;
+      exti_isr_cfg.gpio_pin = cfg->pin;
+      exti_register(&exti_isr_cfg);
+
+      GPIO_InputInterrupt_Init(cfg->port,cfg->pin,isr->trigger,isr->prio);
+
+    }
+    break;
+  }
+}

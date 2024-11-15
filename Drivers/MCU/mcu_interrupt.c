@@ -3,34 +3,60 @@
 #include "stm32f4xx_hal.h"
 
 #include "utile.h"
+#include "mcu_interrupt.h"
+
+
+typedef struct int_sub_s
+{
+  int gpio_pin;
+  void *handle;
+  void (*call)(void *);
+}int_sub_t;
 
 
 typedef struct mcu_interrupt_list_s
 {
-  int init;
-  int num;
-  void (*call)(void *);
-  void *handle;
+  int_sub_t *isrList;
 }mcu_interrupt_list_t;
 
+
+int_sub_t g_exti_gpio[6];
 mcu_interrupt_list_t g_mcu_isr_list[82];//WWDG_IRQn 시작
 
 
-
-
-
-
-
-void exti_register(uint16_t pin,void *handle,void (*call)(void *))
+void mcu_interrupt_init(void)
 {
-  int pos;
-  pin = getPinNumber(pin);
 
-  if(pos !=-1)
+
+  g_mcu_isr_list[(int)EXTI15_10_IRQn].isrList = g_exti_gpio;
+
+}
+
+
+
+
+
+void exti_register(exti_isr_cfg_t *cfg)
+{
+  int basePin;
+
+
+  switch (cfg->irq)
   {
-    g_mcu_isr_list[pin].handle = handle;
-    g_mcu_isr_list[pin].call = call;
+  case EXTI15_10_IRQn:
+  basePin = getPinNumber(cfg->gpio_pin)-10;
+    g_mcu_isr_list[(int)EXTI15_10_IRQn].isrList[basePin].handle   = cfg->handle;
+    g_mcu_isr_list[(int)EXTI15_10_IRQn].isrList[basePin].gpio_pin = cfg->gpio_pin;
+    g_mcu_isr_list[(int)EXTI15_10_IRQn].isrList[basePin].call = cfg->call;
+    
+    break;
+  
+  default:
+    break;
   }
+ // g_mcu_isr_list[(IRQn_Type)cfg->irq].handle = cfg->handle;
+ // g_mcu_isr_list[(IRQn_Type)cfg->irq].call = cfg->call;
+ 
 }
 
 
@@ -168,11 +194,11 @@ void EXTI9_5_IRQHandler(void)
 void EXTI15_10_IRQHandler(void)
 {
   void *handle=NULL;;
-void (*call)(void *)=NULL;
+  void (*call)(void *)=NULL;
 
 
     // PA10 ~ PA15의 인터럽트 확인 및 클리어
-    for (uint16_t pin = GPIO_PIN_10; pin <= GPIO_PIN_15; pin <<= 1)
+    for (uint32_t pin = GPIO_PIN_10; pin <= GPIO_PIN_15; pin <<= 1)
     {
         if (__HAL_GPIO_EXTI_GET_IT(pin) != RESET)
         {
@@ -181,8 +207,8 @@ void (*call)(void *)=NULL;
             // 인터럽트 발생 시 핀별로 수행할 작업
             if (pin == GPIO_PIN_10)
             {
-                handle = g_mcu_isr_list[getPinNumber(pin)].handle;
-                call =  g_mcu_isr_list[getPinNumber(pin)].call;
+                handle = g_mcu_isr_list[EXTI15_10_IRQn].isrList[0].handle;
+                call   =  g_mcu_isr_list[EXTI15_10_IRQn].isrList[0].call;
                 if(call)
                 {
                   call(handle);
@@ -190,8 +216,8 @@ void (*call)(void *)=NULL;
             }
             else if (pin == GPIO_PIN_11)
             {
-                handle = g_mcu_isr_list[getPinNumber(pin)].handle;
-                call =  g_mcu_isr_list[getPinNumber(pin)].call;
+                handle = g_mcu_isr_list[EXTI15_10_IRQn].isrList[1].handle;
+                call   =  g_mcu_isr_list[EXTI15_10_IRQn].isrList[1].call;
                 if(call)
                 {
                   call(handle);
@@ -199,32 +225,32 @@ void (*call)(void *)=NULL;
             } 
             else if (pin == GPIO_PIN_12)
             {
-                handle = g_mcu_isr_list[getPinNumber(pin)].handle;
-                call =  g_mcu_isr_list[getPinNumber(pin)].call;
+                handle = g_mcu_isr_list[EXTI15_10_IRQn].isrList[2].handle;
+                call   =  g_mcu_isr_list[EXTI15_10_IRQn].isrList[2].call;
                 if(call)
                 {
                   call(handle);
                 }
             } else if (pin == GPIO_PIN_13)
             {
-                handle = g_mcu_isr_list[getPinNumber(pin)].handle;
-                call =  g_mcu_isr_list[getPinNumber(pin)].call;
+                handle = g_mcu_isr_list[EXTI15_10_IRQn].isrList[3].handle;
+                call   =  g_mcu_isr_list[EXTI15_10_IRQn].isrList[3].call;
                 if(call)
                 {
                   call(handle);
                 }
             } else if (pin == GPIO_PIN_14) 
             {
-                handle = g_mcu_isr_list[getPinNumber(pin)].handle;
-                call =  g_mcu_isr_list[getPinNumber(pin)].call;
+                handle = g_mcu_isr_list[EXTI15_10_IRQn].isrList[4].handle;
+                call   =  g_mcu_isr_list[EXTI15_10_IRQn].isrList[4].call;
                 if(call)
                 {
                   call(handle);
                 }
             } else if (pin == GPIO_PIN_15) 
             {
-                handle = g_mcu_isr_list[getPinNumber(pin)].handle;
-                call =  g_mcu_isr_list[getPinNumber(pin)].call;
+                handle = g_mcu_isr_list[EXTI15_10_IRQn].isrList[5].handle;
+                call   =  g_mcu_isr_list[EXTI15_10_IRQn].isrList[5].call;
                 if(call)
                 {
                   call(handle);

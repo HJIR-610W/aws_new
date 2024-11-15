@@ -11,7 +11,7 @@
 #include "spi.h"
 #include "usart.h"
 #include "tim.h"
-
+#include "mcu_interrupt.h"
 
 #define DBGMCU_STOP_SYSTICK() (DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP)
 
@@ -35,7 +35,7 @@ int main(void)
   HAL_Init();
   
   SystemClock_Config();
-  
+  mcu_interrupt_init();
 
   MX_GPIO_Init();
   MX_ADC1_Init();

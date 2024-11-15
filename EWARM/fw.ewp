@@ -1175,6 +1175,9 @@
                     <name>$PROJ_DIR$\..\Core\Src\task_host.h</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_rain.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_test.c</name>
                 </file>
             </group>

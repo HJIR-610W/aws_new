@@ -10,10 +10,12 @@
 typedef struct di_api_s
 {
   int32_t (*read)(driver_t *driver);
+  void (*set)(driver_t *drv,uint8_t cmd,void *option);
 }di_api_t;
 
 
-static di_api_t di_api={.read = stm32_di_read};
+static di_api_t di_api={.read = stm32_di_read,
+                        .set  = stm32_di_set};
 
 driver_t g_di_list[DI_MAX];
 
@@ -50,4 +52,15 @@ int32_t driver_di_read(driver_t *drv)
   const di_api_t *api = (di_api_t *)drv->api;
 
  return api->read(drv->handle);
+}
+
+
+
+
+
+void driver_di_set(driver_t *drv,uint8_t cmd,void *option)
+{
+  di_api_t *api = ( di_api_t*)(drv->api);
+
+  api->set(drv->handle,cmd,option);
 }

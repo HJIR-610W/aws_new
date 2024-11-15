@@ -223,7 +223,7 @@ driver_t * driver_adc_open(uint32_t num)
          
         break;
     case 1:
-              if(g_adcstm32adcTaskHandle==NULL)
+        if(g_adcstm32adcTaskHandle==NULL)
         {
             g_adcstm32adcTaskHandle = osThreadNew(stm32AdcTask, NULL, &adcstm32Task_attributes);  
         }

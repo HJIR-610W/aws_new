@@ -45,6 +45,7 @@
 #include "fatfs.h"
 #include "swTimer.h"
 #include "task_test.h"
+#include "task_rain.h"
 #include "utile.h"
 #include "terminal.h"
 #include "vt100_command.h"
@@ -459,7 +460,7 @@ void StartDefaultTask(void *argument)
   debug_uart = stm32_uart_open(STM32_UART_1);
 
   testTask_init();
-
+  rainTask_init();
 
  
   //exuart_test();

@@ -7,7 +7,7 @@
 
 #include "cmsis_os.h"
 #include "driver_interface.h"
-
+#include "driver_di_def.h"
 
 
 #define DI_ADC_RDY    0
@@ -18,8 +18,15 @@
 
 #define DI_MAX 5
 
+
+#define DI_SET_ISR 0
+
+
+
+
+
 driver_t *driver_di_open(uint32_t num);
 int32_t driver_di_read(driver_t *drv);
-
+void driver_di_set(driver_t *drv,uint8_t cmd,void *option);
 
 #endif
