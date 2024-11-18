@@ -1536,6 +1536,12 @@
                 <name>$PROJ_DIR$\..\Drivers\MCU\mcu_interrupt.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\MCU\mcu_swo.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\MCU\mcu_swo.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\MCU\mcu_utile.c</name>
             </file>
         </group>
@@ -2006,6 +2012,9 @@
         <name>System</name>
         <file>
             <name>$PROJ_DIR$\..\System\io_retarget.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\System\syscalls.c</name>
         </file>
     </group>
     <group>

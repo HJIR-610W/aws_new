@@ -20,6 +20,11 @@ void SystemClock_Config(void);
 extern void MX_FREERTOS_Init(void);
 
 
+volatile uint16_t g_data;
+void __low_level_init(void)
+{
+    g_data = 0x1234;
+}
 
 
 int main(void)
@@ -27,14 +32,10 @@ int main(void)
 
   DBGMCU_STOP_SYSTICK();
 
-  
-
-  SystemInit();
-  
-
   HAL_Init();
   
   SystemClock_Config();
+
   mcu_interrupt_init();
 
   MX_GPIO_Init();

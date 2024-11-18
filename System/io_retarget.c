@@ -20,7 +20,7 @@ static int errno;
 
 extern UART_HandleTypeDef huart1;
 
-
+#if 0 
 // write 함수 재정의: STDOUT 및 STDERR에 대해 UART로 출력
 int __write(int file, char *data, int len) {
     if (file != STDOUT_FILENO && file != STDERR_FILENO) {
@@ -31,7 +31,7 @@ int __write(int file, char *data, int len) {
     HAL_StatusTypeDef status = HAL_UART_Transmit(&huart1, (uint8_t*)data, len, HAL_MAX_DELAY);
     return (status == HAL_OK ? len : 0); // 성공적으로 전송한 바이트 수 반환
 }
-
+#endif
 // lseek 함수 재정의: UART에서는 의미가 없으므로 0 반환
 off_t __lseek(int file, off_t offset, int whence) {
     (void)file;
@@ -68,3 +68,6 @@ int __read(int file, char *data, int len) {
 int __isatty(int file) {
     return (file == STDOUT_FILENO || file == STDERR_FILENO || file == STDIN_FILENO) ? 1 : 0;
 }
+
+
+

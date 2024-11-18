@@ -6,6 +6,7 @@
 #include "driver_stm32_uart.h"
 #include "cmsis_os.h"
 #include "mcu_delay.h"
+#include "mcu_swo.h"
 #include "semphr.h"
 #include "utile.h"
 
@@ -687,6 +688,7 @@ void USART1_IRQHandler(void)
 
 void USART3_IRQHandler(void)
 {
+  swo_puts("T");
   HAL_UART_IRQHandler(&huart3);
 }
 
@@ -724,6 +726,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
   uint16_t head=0;
+  
+  swo_puts("R");
   
     if (huart->Instance == USART1) 
     {
