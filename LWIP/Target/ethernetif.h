@@ -36,7 +36,7 @@ err_t ethernetif_init(struct netif *netif);
 void ethernetif_input(void* argument);
 void ethernet_link_thread(void* argument );
 
-void Error_Handler(void);
+void Error_Handler(const char *file,int32_t line);
 u32_t sys_jiffies(void);
 u32_t sys_now(void);
 

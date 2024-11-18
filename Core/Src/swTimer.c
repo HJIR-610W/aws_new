@@ -47,7 +47,7 @@ void swTimer_init(void)
     else
     {
         // 타이머 생성 실패 시 오류 처리
-        Error_Handler();
+            Error_Handler(__FILE__,__LINE__);
     }
     
 #endif

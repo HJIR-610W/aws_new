@@ -82,7 +82,7 @@
                 </option>
                 <option>
                     <name>GenLowLevelInterface</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>GEndianModeBE</name>
@@ -94,7 +94,7 @@
                 </option>
                 <option>
                     <name>GenStdoutInterface</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>GeneralMisraRules98</name>
@@ -391,6 +391,7 @@
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\EX_UART</state>
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\serial_flash</state>
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\exgpio</state>
+                    <state>$PROJ_DIR$\..\Lib\tlsf</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1548,6 +1549,18 @@
         <file>
             <name>$PROJ_DIR$\..\Drivers\time_define.h</name>
         </file>
+    </group>
+    <group>
+        <name>Lib</name>
+        <group>
+            <name>tlsf</name>
+            <file>
+                <name>$PROJ_DIR$\..\Lib\tlsf\tlsf.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Lib\tlsf\tlsf.h</name>
+            </file>
+        </group>
     </group>
     <group>
         <name>Middlewares</name>

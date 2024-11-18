@@ -72,7 +72,7 @@ void MX_FSMC_Init(void)
 
   if (HAL_SRAM_Init(&hsram1, &Timing, NULL) != HAL_OK)
   {
-    Error_Handler( );
+        Error_Handler(__FILE__,__LINE__);
   }
 
   /** Perform the SRAM2 memory initialization sequence
@@ -111,7 +111,7 @@ void MX_FSMC_Init(void)
 
   if (HAL_SRAM_Init(&hsram2, &Timing, &ExtTiming) != HAL_OK)
   {
-    Error_Handler( );
+        Error_Handler(__FILE__,__LINE__);
   }
 
   /* USER CODE BEGIN FSMC_Init 2 */

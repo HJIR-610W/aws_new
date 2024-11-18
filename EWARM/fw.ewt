@@ -1634,6 +1634,18 @@
         </file>
     </group>
     <group>
+        <name>Lib</name>
+        <group>
+            <name>tlsf</name>
+            <file>
+                <name>$PROJ_DIR$\..\Lib\tlsf\tlsf.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Lib\tlsf\tlsf.h</name>
+            </file>
+        </group>
+    </group>
+    <group>
         <name>Middlewares</name>
         <group>
             <name>FatFs</name>

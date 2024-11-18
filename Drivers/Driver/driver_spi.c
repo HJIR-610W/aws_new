@@ -283,7 +283,7 @@ void stm32_spi_init(SPI_HandleTypeDef *hspi)
     hspi1.Init.CRCPolynomial = 10;
     if (HAL_SPI_Init(&hspi1) != HAL_OK)
     {
-      Error_Handler();
+          Error_Handler(__FILE__,__LINE__);;
     }
   }
   else if(hspi->Instance == SPI2)
@@ -302,7 +302,7 @@ void stm32_spi_init(SPI_HandleTypeDef *hspi)
   hspi2.Init.CRCPolynomial = 10;
   if (HAL_SPI_Init(&hspi2) != HAL_OK)
   {
-  //  Error_Handler();
+  //      Error_Handler(__FILE__,__LINE__);
   }
   }
 
@@ -348,7 +348,7 @@ void stm32_spi_send_bytes(void *hspi,uint8_t *data,uint16_t dataLen)
   if(HAL_SPI_Transmit_DMA((SPI_HandleTypeDef*)hspi, (uint8_t*)data, dataLen) != HAL_OK)
   {
     /* Transfer error in transmission process */
-    //Error_Handler();
+    //    Error_Handler(__FILE__,__LINE__);
   }
 }
 #endif

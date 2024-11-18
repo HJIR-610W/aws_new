@@ -145,7 +145,7 @@ static void MX_USART1_UART_Init(void)
 
 
     if (HAL_UART_Init(&huart1) != HAL_OK) {
-        //Error_Handler();
+        //    Error_Handler(__FILE__,__LINE__);
     }
     
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR); 
@@ -165,7 +165,7 @@ static void MX_USART3_UART_Init(void) {
     huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
     huart3.Init.OverSampling = UART_OVERSAMPLING_16;
     if (HAL_UART_Init(&huart3) != HAL_OK) {
-        //Error_Handler();
+        //    Error_Handler(__FILE__,__LINE__);
     }
 }
 
@@ -180,7 +180,7 @@ static void MX_USART6_UART_Init(void) {
     huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
     huart6.Init.OverSampling = UART_OVERSAMPLING_16;
     if (HAL_UART_Init(&huart6) != HAL_OK) {
-       // Error_Handler();
+       //     Error_Handler(__FILE__,__LINE__);
     }
 }
 
@@ -203,7 +203,7 @@ static void MX_DMA_UART1_Init(void)
     hdma_usart1_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
     if (HAL_DMA_Init(&hdma_usart1_tx) != HAL_OK) {
-       // Error_Handler();
+       //     Error_Handler(__FILE__,__LINE__);
     }
     __HAL_LINKDMA(&huart1, hdmatx, hdma_usart1_tx);
 
@@ -230,7 +230,7 @@ static void MX_DMA_UART1_Init(void)
 
     // DMA 초기화
     if (HAL_DMA_Init(&hdma_usart1_rx) != HAL_OK) {
-        //Error_Handler();
+        //    Error_Handler(__FILE__,__LINE__);
     }
 
     // DMA와 UART 링크
@@ -270,7 +270,7 @@ static void MX_DMA_UART3_Init(void)
     hdma_usart3_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
     if (HAL_DMA_Init(&hdma_usart3_tx) != HAL_OK) {
-       // Error_Handler();
+       //     Error_Handler(__FILE__,__LINE__);
     }
     __HAL_LINKDMA(&huart3, hdmatx, hdma_usart3_tx);
 
@@ -299,7 +299,7 @@ static void MX_DMA_UART6_Init(void)
     hdma_usart6_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
     if (HAL_DMA_Init(&hdma_usart6_tx) != HAL_OK) {
-       // Error_Handler();
+       //     Error_Handler(__FILE__,__LINE__);
     }
     __HAL_LINKDMA(&huart6, hdmatx, hdma_usart6_tx);
 
@@ -688,7 +688,6 @@ void USART1_IRQHandler(void)
 
 void USART3_IRQHandler(void)
 {
-  swo_puts("T");
   HAL_UART_IRQHandler(&huart3);
 }
 
@@ -727,7 +726,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   uint16_t head=0;
   
-  swo_puts("R");
+
   
     if (huart->Instance == USART1) 
     {

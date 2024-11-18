@@ -6,10 +6,66 @@
 
 #include "stm32f4xx_hal.h"
 #include "driver_uart.h"
-
-
+#include "tlsf.h"
+#include "main.h"
 
 static driver_t *debug_uart=NULL;;
+
+#include "tlsf.h"
+
+
+
+USART_TypeDef *debug_uart_base = USART3;
+void debug_uart_init(uint32_t baud_rate)
+{
+  uint32_t pclk;
+  
+  if(debug_uart_base ==USART1)
+  {
+      pclk = HAL_RCC_GetPCLK2Freq();
+  }
+  else
+  {
+      pclk = HAL_RCC_GetPCLK1Freq(); 
+  }
+
+    // 1. UART3 및 GPIO 클럭 활성화
+  RCC->APB1ENR |= RCC_APB1ENR_USART3EN;  // UART3 클럭 활성화
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;   // GPIOB 클럭 활성화
+
+  RCC->APB1RSTR |= RCC_APB1RSTR_USART3RST;  // USART3 리셋 활성화
+  RCC->APB1RSTR &= ~RCC_APB1RSTR_USART3RST; // USART3 리셋 비활성화
+    
+    // 2. GPIO 핀 설정 (PB10: TX, PB11: RX)
+  GPIOB->MODER &= ~(GPIO_MODER_MODER10 | GPIO_MODER_MODER11);  // 초기화
+  GPIOB->MODER |= (GPIO_MODER_MODER10_1 | GPIO_MODER_MODER11_1); // AF 모드 설정
+  GPIOB->AFR[1] &= ~((0xF << (2 * 4)) | (0xF << (3 * 4))); // AFR[1] 클리어 (핀 10, 11)
+  GPIOB->AFR[1] |= (7 << (2 * 4)) | (7 << (3 * 4));         // AF7 (USART3)
+
+    // 3. UART 설정
+  debug_uart_base->CR1 &= ~USART_CR1_UE;  // UART 비활성화
+
+
+  // BRR 레지스터 설정
+  debug_uart_base->BRR =     UART_BRR_SAMPLING16(pclk, baud_rate);
+
+  // (2) 데이터 비트, 패리티, 정지 비트 설정
+  debug_uart_base->CR1 &= ~USART_CR1_M;    // 8 데이터 비트
+  debug_uart_base->CR2 &= ~USART_CR2_STOP; // 1 정지 비트
+  debug_uart_base->CR1 &= ~USART_CR1_PCE;  // 패리티 비활성화
+
+  // (3) 송신(TX) 및 수신(RX) 활성화
+  debug_uart_base->CR1 |= USART_CR1_TE;   // 송신 활성화
+
+  // (4) UART 활성화
+  debug_uart_base->CR1 |= USART_CR1_UE;   // UART 활성화
+
+  // (5) 송신 준비 확인
+  while (!(debug_uart_base->SR & USART_SR_TC));  // 송신 완료 플래그 확인
+
+  
+
+}
 
 
 void set_debug_uart_handle(driver_t *drv)
@@ -17,26 +73,63 @@ void set_debug_uart_handle(driver_t *drv)
   debug_uart = drv;
 }
 
+uint8_t g_debug_os_started = 0;
+
+void debug_puts_nonos(char *str)
+{
+
+  while(*str)
+  {
+      while (!(debug_uart_base->SR & USART_SR_TXE));  // 송신 버퍼가 비어있는지 확인
+      debug_uart_base->DR = (uint8_t)*str++;              // 데이터 레지스터에 문자 송신
+  }
+
+}
+
 int32_t debug_printf(const char * pFmt, ...)
 {
-    uint8_t buff[200];
-    va_list ap;  
-    int32_t len;
+  char buff[2];
+  va_list ap;  
+  int32_t len;
+  char *ptr=NULL;
+  char *temp=NULL;
+    
    
     va_start(ap, pFmt);
-    len =vsnprintf((char *)buff, sizeof(buff), (char *)pFmt, ap);
+    len = vsnprintf((char *)buff, sizeof(buff), (char *)pFmt, ap);
     va_end(ap);
     
-
-
-    if(debug_uart == NULL)
+    if(len > (sizeof(buff)-1))//
     {
-      debug_uart = driver_uart_open(UART_STM32_1);
+      temp = aws_malloc(len +1);//null포함
+      if(temp)
+      {
+        va_start(ap, pFmt);
+        len = vsnprintf((char *)temp, len+1, (char *)pFmt, ap);
+        va_end(ap);
+        ptr = temp;
+      }
+      
     }
     else
     {
-      driver_uart_send(debug_uart,buff,len);
+      ptr = buff;
     }
+    
+    if(debug_uart&& ptr)
+    {
+        driver_uart_send(debug_uart,(uint8_t *)ptr,strlen(ptr));
+
+    }
+    else if(ptr)
+    {
+      debug_puts_nonos(ptr);
+    }
+      if(temp)
+      {
+        aws_free(temp);
+      }
+
 
     return 0;
 
@@ -44,6 +137,8 @@ int32_t debug_printf(const char * pFmt, ...)
 
 void debug_send(uint8_t *pData,uint16_t dataLen)
 {
-                 
-    driver_uart_send(debug_uart,pData,dataLen);
+  driver_uart_send(debug_uart,pData,dataLen);
 }
+
+
+

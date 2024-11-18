@@ -13,7 +13,6 @@ const osThreadAttr_t rainTask_attributes = {
 };
 
 
-
 void rainTriggerCallBack(void *arg)
 {
   //∏±∏Æ¡Ó

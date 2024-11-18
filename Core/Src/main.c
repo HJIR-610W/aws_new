@@ -12,29 +12,43 @@
 #include "usart.h"
 #include "tim.h"
 #include "mcu_interrupt.h"
+#include "io.h"
+#include "tlsf.h"
 
-#define DBGMCU_STOP_SYSTICK() (DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP)
 
-void SystemClock_Config(void);
 
 extern void MX_FREERTOS_Init(void);
 
+#define DBGMCU_STOP_SYSTICK() (DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP)
+#define POOL_SIZE (1024 * 4)  
 
-volatile uint16_t g_data;
-void __low_level_init(void)
-{
-    g_data = 0x1234;
-}
+static char memory_pool[POOL_SIZE];
+static void *tlsf_handle=NULL;
+
+void SystemClock_Config(void);
+void asw_tlsf_init(size_t size);
+
+
 
 
 int main(void)
 {
 
+
   DBGMCU_STOP_SYSTICK();
 
+
+  
   HAL_Init();
+
   
   SystemClock_Config();
+
+  debug_uart_init(115200);
+  asw_tlsf_init(POOL_SIZE);
+
+  debug_printf("aws\r\n");
+
 
   mcu_interrupt_init();
 
@@ -82,7 +96,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLQ = 7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
@@ -96,7 +110,7 @@ void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
 }
 
@@ -129,16 +143,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
-void Error_Handler(void)
+void Error_Handler(const char *file,const int32_t line)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
+ 
+   debug_printf("%s,%d\r\n",file,line);
+
+   __disable_irq();
+    
+   __asm("BKPT #0"); 
+         
+           
   while (1)
   {
     
   }
-  /* USER CODE END Error_Handler_Debug */
+  /* USER CODE END     Error_Handler(__FILE__,__LINE__);_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -157,3 +176,33 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
+
+void Error_Handler_init(void)
+{
+
+}
+
+
+void asw_tlsf_init(size_t size)
+{
+  
+   tlsf_handle = tlsf_create_with_pool(memory_pool, size);
+   if (tlsf_handle == NULL)
+   {
+        // 초기화 실패 처리
+        while (1);
+   }
+}
+
+
+void *aws_malloc(size_t size)
+{
+  return (void *)tlsf_malloc(tlsf_handle,size);
+}
+
+
+void aws_free(void *ptr)
+{
+    tlsf_free(tlsf_handle,ptr);
+}

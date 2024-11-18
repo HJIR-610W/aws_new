@@ -49,11 +49,11 @@ void MX_TIM10_Init(void)
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
   if (HAL_TIM_IC_Init(&htim10) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
   sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
@@ -61,7 +61,7 @@ void MX_TIM10_Init(void)
   sConfigIC.ICFilter = 0;
   if (HAL_TIM_IC_ConfigChannel(&htim10, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
   /* USER CODE BEGIN TIM10_Init 2 */
 
@@ -89,11 +89,11 @@ void MX_TIM11_Init(void)
   htim11.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim11) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
   if (HAL_TIM_IC_Init(&htim11) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
   sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
@@ -101,7 +101,7 @@ void MX_TIM11_Init(void)
   sConfigIC.ICFilter = 0;
   if (HAL_TIM_IC_ConfigChannel(&htim11, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
   /* USER CODE BEGIN TIM11_Init 2 */
 
@@ -129,11 +129,11 @@ void MX_TIM13_Init(void)
   htim13.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim13) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
   if (HAL_TIM_IC_Init(&htim13) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
   sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
@@ -141,7 +141,7 @@ void MX_TIM13_Init(void)
   sConfigIC.ICFilter = 0;
   if (HAL_TIM_IC_ConfigChannel(&htim13, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
   {
-    Error_Handler();
+        Error_Handler(__FILE__,__LINE__);
   }
   /* USER CODE BEGIN TIM13_Init 2 */
 
@@ -190,7 +190,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {
-      Error_Handler();
+          Error_Handler(__FILE__,__LINE__);
     }
 
     /* TIM11 clock enable */

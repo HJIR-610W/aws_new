@@ -150,7 +150,7 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
     hdma_sdio_rx.Init.PeriphBurst = DMA_PBURST_INC4;
     if (HAL_DMA_Init(&hdma_sdio_rx) != HAL_OK)
     {
-      Error_Handler();
+          Error_Handler(__FILE__,__LINE__);
     }
 
     __HAL_LINKDMA(sdHandle,hdmarx,hdma_sdio_rx);
@@ -171,7 +171,7 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
     hdma_sdio_tx.Init.PeriphBurst = DMA_PBURST_INC4;
     if (HAL_DMA_Init(&hdma_sdio_tx) != HAL_OK)
     {
-      Error_Handler();
+          Error_Handler(__FILE__,__LINE__);
     }
 
     __HAL_LINKDMA(sdHandle,hdmatx,hdma_sdio_tx);

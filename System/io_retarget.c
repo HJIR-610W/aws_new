@@ -20,7 +20,7 @@ static int errno;
 
 extern UART_HandleTypeDef huart1;
 
-#if 0 
+#if 1 
 // write 함수 재정의: STDOUT 및 STDERR에 대해 UART로 출력
 int __write(int file, char *data, int len) {
     if (file != STDOUT_FILENO && file != STDERR_FILENO) {

@@ -1,190 +1,143 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file    stm32f4xx_it.c
-  * @brief   Interrupt Service Routines.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
 
-/* Includes ------------------------------------------------------------------*/
+#include <stdio.h>
+#include <stdarg.h>
 #include "main.h"
 #include "stm32f4xx_it.h"
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-/* USER CODE END Includes */
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN TD */
-
-/* USER CODE END TD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-/* External variables --------------------------------------------------------*/
 extern ETH_HandleTypeDef heth;
 extern TIM_HandleTypeDef htim4;
 
-/* USER CODE BEGIN EV */
 
-/* USER CODE END EV */
-
-/******************************************************************************/
-/*           Cortex-M4 Processor Interruption and Exception Handlers          */
-/******************************************************************************/
-/**
-  * @brief This function handles Non maskable interrupt.
-  */
 void NMI_Handler(void)
 {
-  /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
 
-  /* USER CODE END NonMaskableInt_IRQn 0 */
-  /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
   while (1)
   {
-       __asm("BKPT #0"); 
+    __asm("BKPT #0"); 
   }
-  /* USER CODE END NonMaskableInt_IRQn 1 */
+
 }
 
-/**
-  * @brief This function handles Hard fault interrupt.
-  */
+__no_init volatile uint32_t stacked_reg[8];
+__no_init volatile uint32_t fault_reg[4];
+
+static const  uint32_t exc_ret[6]={0xFFFFFFF1,0xFFFFFFF9,0xFFFFFFFD,0xFFFFFFE1,0xFFFFFFE9,0xFFFFFFED};
+
+
+
+
+   uint32_t *reg_sp=0;
+   uint32_t reg_lr;
+   uint32_t reg_msp;
+   uint32_t reg_psp;
+   uint32_t i;
+
 void HardFault_Handler(void)
 {
-  /* USER CODE BEGIN HardFault_IRQn 0 */
+  reg_msp = __get_MSP()+16;//이코드전에 push 4개의 레지스터 동작해서 MSP가 변경됨
+  reg_psp = __get_PSP();
+  reg_lr = __get_LR();
+    
+  for(i = 0 ; i < 6;i++)
+  {
+    if(reg_lr == exc_ret[i])
+    {
+      if(i==0 || i ==3)
+      {
+        reg_sp = (uint32_t *)reg_msp;
+      }
+      else
+      {
+        reg_sp = (uint32_t*)reg_psp;
+        if(reg_sp==0)
+        {
+          reg_sp = (uint32_t *)reg_msp;
+        }
+      }
+      break;
+    }
+  }
+      
+  if(reg_sp)
+  {
+    stacked_reg[0] = reg_sp[0]; // R0
+    stacked_reg[1] = reg_sp[1]; // R1
+    stacked_reg[2] = reg_sp[2]; // R2
+    stacked_reg[3] = reg_sp[3]; // R3
+    stacked_reg[4] = reg_sp[4]; // R12
+    stacked_reg[5] = reg_sp[5]; // LR
+    stacked_reg[6] = reg_sp[6]; // PC
+    stacked_reg[7] = reg_sp[7]; // PSR
 
-  /* USER CODE END HardFault_IRQn 0 */
+    fault_reg[0] =  SCB->CFSR;
+    fault_reg[1] =  SCB->HFSR;
+    fault_reg[2] =  SCB->MMFAR;
+    fault_reg[3] =  SCB->BFAR;
+#if 0      
+    debug_uart_init(115200);
+        
+    debug_printf("HardFault_Handler\r\n");
+    debug_printf("R0   0x%08X\r\n",stacked_reg[0]);
+    debug_printf("R1   0x%08X\r\n",stacked_reg[1]);
+    debug_printf("R2   0x%08X\r\n",stacked_reg[2]);
+    debug_printf("R3   0x%08X\r\n",stacked_reg[3]);
+    debug_printf("R12  0x%08X\r\n",stacked_reg[4]);
+    debug_printf("LR   0x%08X\r\n",stacked_reg[5]);
+    debug_printf("PC   0x%08X\r\n",stacked_reg[6]);
+    debug_printf("xPSR 0x%08X\r\n",stacked_reg[7]);
+    debug_printf("SCB->CFSR  %08X\r\n",fault_reg[0]);
+    debug_printf("SCB->HFSR  %08X\r\n",fault_reg[1]);
+    debug_printf("SCB->MMFAR %08X\r\n",fault_reg[2]);
+    debug_printf("SCB->BFAR  %08X\r\n",fault_reg[3]);
+#endif
+  }
+     
   while (1)
   {
-       __asm("BKPT #0"); 
-    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-    /* USER CODE END W1_HardFault_IRQn 0 */
+    #if DEBUG_MODE
+    __asm("BKPT #0");
+    #endif 
+    HAL_NVIC_SystemReset();
   }
 }
 
-/**
-  * @brief This function handles Memory management fault.
-  */
 void MemManage_Handler(void)
 {
-  /* USER CODE BEGIN MemoryManagement_IRQn 0 */
 
-  /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
   {
-       __asm("BKPT #0"); 
-    /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
-    /* USER CODE END W1_MemoryManagement_IRQn 0 */
+     __asm("BKPT #0"); 
   }
 }
 
-/**
-  * @brief This function handles Pre-fetch fault, memory access fault.
-  */
+
 void BusFault_Handler(void)
 {
-  /* USER CODE BEGIN BusFault_IRQn 0 */
-
-  /* USER CODE END BusFault_IRQn 0 */
   while (1)
   {
-       __asm("BKPT #0"); 
-    /* USER CODE BEGIN W1_BusFault_IRQn 0 */
-    /* USER CODE END W1_BusFault_IRQn 0 */
+     __asm("BKPT #0"); 
   }
 }
 
-/**
-  * @brief This function handles Undefined instruction or illegal state.
-  */
 void UsageFault_Handler(void)
 {
-  /* USER CODE BEGIN UsageFault_IRQn 0 */
-
-  /* USER CODE END UsageFault_IRQn 0 */
   while (1)
   {
-       __asm("BKPT #0"); 
-    /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
-    /* USER CODE END W1_UsageFault_IRQn 0 */
+    __asm("BKPT #0"); 
   }
 }
 
-/**
-  * @brief This function handles Debug monitor.
-  */
 void DebugMon_Handler(void)
 {
-  /* USER CODE BEGIN DebugMonitor_IRQn 0 */
 
-  /* USER CODE END DebugMonitor_IRQn 0 */
-  /* USER CODE BEGIN DebugMonitor_IRQn 1 */
-
-  /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
-/******************************************************************************/
-/* STM32F4xx Peripheral Interrupt Handlers                                    */
-/* Add here the Interrupt Handlers for the used peripherals.                  */
-/* For the available peripheral interrupt handler names,                      */
-/* please refer to the startup file (startup_stm32f4xx.s).                    */
-/******************************************************************************/
 
-
-
-
-
-
-
-
-
-/**
-  * @brief This function handles TIM4 global interrupt.
-  */
 void TIM4_IRQHandler(void)
 {
-  /* USER CODE BEGIN TIM4_IRQn 0 */
 
-  /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
-  /* USER CODE BEGIN TIM4_IRQn 1 */
 
-  /* USER CODE END TIM4_IRQn 1 */
 }
 
 
@@ -194,13 +147,9 @@ void TIM4_IRQHandler(void)
   */
 void ETH_IRQHandler(void)
 {
-  /* USER CODE BEGIN ETH_IRQn 0 */
 
-  /* USER CODE END ETH_IRQn 0 */
   HAL_ETH_IRQHandler(&heth);
-  /* USER CODE BEGIN ETH_IRQn 1 */
 
-  /* USER CODE END ETH_IRQn 1 */
 }
 
 

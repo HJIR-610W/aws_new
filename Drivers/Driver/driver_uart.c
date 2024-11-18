@@ -188,8 +188,10 @@ void driver_uart_send(driver_t *uart,uint8_t *pData,uint16_t dataLen)
 {
   rs232_api_t *api = (rs232_api_t *)uart->api;
 
-  api->send(uart->handle,pData,dataLen);
-
+  if(dataLen)
+  {
+    api->send(uart->handle,pData,dataLen);
+  }
 }
 
 int32_t driver_uart_recv(driver_t *drv,uint8_t *pBuff)

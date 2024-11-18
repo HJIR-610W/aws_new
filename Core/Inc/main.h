@@ -50,8 +50,9 @@ extern "C" {
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler(void);
-
+void Error_Handler(const char *file,int32_t line);
+void *aws_malloc(size_t size);
+void aws_free(void *ptr);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */
