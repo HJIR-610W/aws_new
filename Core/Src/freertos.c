@@ -459,7 +459,7 @@ void StartDefaultTask(void *argument)
   driver_led_set(runLed,LED_CMD_START,NULL);
   debug_uart = stm32_uart_open(STM32_UART_1);
 
-  testTask_init();
+
   rainTask_init();
 
  

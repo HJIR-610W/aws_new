@@ -1,77 +1,10 @@
-#include "adc.h"
+
 #include "cmsis_os.h"
-#include "fatfs.h"
-#include "fsmc.h"
-#include "i2c.h"
-#include "gpio.h"
-#include "lwip.h"
 #include "main.h"
-#include "mcu_delay.h"
-#include "sdio.h"
-#include "spi.h"
-#include "usart.h"
-#include "tim.h"
-#include "mcu_interrupt.h"
+#include "project_def.h"
+#include "task_start.h"
 #include "io.h"
 #include "tlsf.h"
-
-
-
-extern void MX_FREERTOS_Init(void);
-
-#define DBGMCU_STOP_SYSTICK() (DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP)
-#define POOL_SIZE (1024 * 4)  
-
-static char memory_pool[POOL_SIZE];
-static void *tlsf_handle=NULL;
-
-void SystemClock_Config(void);
-void asw_tlsf_init(size_t size);
-
-
-
-
-int main(void)
-{
-
-
-  DBGMCU_STOP_SYSTICK();
-
-
-  
-  HAL_Init();
-
-  
-  SystemClock_Config();
-
-  debug_uart_init(115200);
-  asw_tlsf_init(POOL_SIZE);
-
-  debug_printf("aws\r\n");
-
-
-  mcu_interrupt_init();
-
-  MX_GPIO_Init();
-  MX_ADC1_Init();
-  MX_FSMC_Init();
-  MX_SDIO_SD_Init();
-  MX_FATFS_Init();
-  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
-
-  DWT_Delay_Init();
-  MX_FREERTOS_Init();
-
-  osKernelStart();
-
-  while (1)
-  {
-
-  }
-
-}
-
-
 
 void SystemClock_Config(void)
 {
@@ -114,18 +47,34 @@ void SystemClock_Config(void)
   }
 }
 
-/* USER CODE BEGIN 4 */
 
-/* USER CODE END 4 */
 
-/**
-  * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM4 interrupt took place, inside
-  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
-  * a global variable "uwTick" used as application time base.
-  * @param  htim : TIM handle
-  * @retval None
-  */
+int main(void)
+{
+
+#if DEBUG_MODE_EN
+  __HAL_DBGMCU_FREEZE_IWDG(); // 디버깅시 와치독 카운트 멈춤
+  __HAL_DBGMCU_FREEZE_RTC();  // 디버깅시 rtc 타이머 멈춤
+#endif
+
+  HAL_Init();//타이머 4를 초기헤 HAL 타이머 틱 인터럽트로 사용
+ 
+  SystemClock_Config();
+ 
+  osKernelInitialize(); 
+
+  startTask_init();
+
+  osKernelStart();
+
+  while(1)
+  {
+
+  }
+
+
+}
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
@@ -184,25 +133,3 @@ void Error_Handler_init(void)
 }
 
 
-void asw_tlsf_init(size_t size)
-{
-  
-   tlsf_handle = tlsf_create_with_pool(memory_pool, size);
-   if (tlsf_handle == NULL)
-   {
-        // 초기화 실패 처리
-        while (1);
-   }
-}
-
-
-void *aws_malloc(size_t size)
-{
-  return (void *)tlsf_malloc(tlsf_handle,size);
-}
-
-
-void aws_free(void *ptr)
-{
-    tlsf_free(tlsf_handle,ptr);
-}

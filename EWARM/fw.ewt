@@ -1223,13 +1223,13 @@
                     <name>$PROJ_DIR$\..\Core\Src\gpio.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Core\Src\i2c.c</name>
-                </file>
-                <file>
                     <name>$PROJ_DIR$\..\Core\Src\main.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Inc\main.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Inc\project_def.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\sdio.c</name>
@@ -1260,6 +1260,12 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_rain.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_start.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_start.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_test.c</name>

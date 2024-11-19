@@ -23,8 +23,62 @@ __no_init volatile uint32_t fault_reg[4];
 
 static const  uint32_t exc_ret[6]={0xFFFFFFF1,0xFFFFFFF9,0xFFFFFFFD,0xFFFFFFE1,0xFFFFFFE9,0xFFFFFFED};
 
+void fault_uart_init(uint32_t baud_rate)
+{
+    // 1. UART3 및 GPIO 클럭 활성화
+    RCC->APB1ENR |= RCC_APB1ENR_USART3EN;  // UART3 클럭 활성화
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;   // GPIOB 클럭 활성화
+
+    RCC->APB1RSTR |= RCC_APB1RSTR_USART3RST;  // USART3 리셋 활성화
+    RCC->APB1RSTR &= ~RCC_APB1RSTR_USART3RST; // USART3 리셋 비활성화
+    
+    // 2. GPIO 핀 설정 (PB10: TX, PB11: RX)
+    GPIOB->MODER &= ~(GPIO_MODER_MODER10 | GPIO_MODER_MODER11);  // 초기화
+    GPIOB->MODER |= (GPIO_MODER_MODER10_1 | GPIO_MODER_MODER11_1); // AF 모드 설정
+    GPIOB->AFR[1] &= ~((0xF << (2 * 4)) | (0xF << (3 * 4))); // AFR[1] 클리어 (핀 10, 11)
+    GPIOB->AFR[1] |= (7 << (2 * 4)) | (7 << (3 * 4));         // AF7 (USART3)
+
+    // 3. UART 설정
+    USART3->CR1 &= ~USART_CR1_UE;  // UART 비활성화
 
 
+    // BRR 레지스터 설정
+    USART3->BRR =     UART_BRR_SAMPLING16(16000000, baud_rate);
+
+    // (2) 데이터 비트, 패리티, 정지 비트 설정
+    USART3->CR1 &= ~USART_CR1_M;    // 8 데이터 비트
+    USART3->CR2 &= ~USART_CR2_STOP; // 1 정지 비트
+    USART3->CR1 &= ~USART_CR1_PCE;  // 패리티 비활성화
+
+    // (3) 송신(TX) 및 수신(RX) 활성화
+    USART3->CR1 |= USART_CR1_TE;   // 송신 활성화
+
+    // (4) UART 활성화
+    USART3->CR1 |= USART_CR1_UE;   // UART 활성화
+
+    // (5) 송신 준비 확인
+    while (!(USART3->SR & USART_SR_TC));  // 송신 완료 플래그 확인
+}
+
+void fault_printf(const char * pFmt, ...)
+{
+  char buff[50];
+  char *ptr=buff;
+  va_list ap;  
+  int32_t len;
+
+
+  va_start(ap, pFmt);
+  len = vsnprintf((char *)buff, sizeof(buff), (char *)pFmt, ap);
+  va_end(ap);
+        
+  while(*ptr)
+  {
+        while (!(USART3->SR & USART_SR_TXE));  // 송신 버퍼가 비어있는지 확인
+        USART3->DR = (uint8_t)*ptr++;              // 데이터 레지스터에 문자 송신
+  }
+
+}
 
    uint32_t *reg_sp=0;
    uint32_t reg_lr;
@@ -73,23 +127,22 @@ void HardFault_Handler(void)
     fault_reg[1] =  SCB->HFSR;
     fault_reg[2] =  SCB->MMFAR;
     fault_reg[3] =  SCB->BFAR;
-#if 0      
-    debug_uart_init(115200);
         
-    debug_printf("HardFault_Handler\r\n");
-    debug_printf("R0   0x%08X\r\n",stacked_reg[0]);
-    debug_printf("R1   0x%08X\r\n",stacked_reg[1]);
-    debug_printf("R2   0x%08X\r\n",stacked_reg[2]);
-    debug_printf("R3   0x%08X\r\n",stacked_reg[3]);
-    debug_printf("R12  0x%08X\r\n",stacked_reg[4]);
-    debug_printf("LR   0x%08X\r\n",stacked_reg[5]);
-    debug_printf("PC   0x%08X\r\n",stacked_reg[6]);
-    debug_printf("xPSR 0x%08X\r\n",stacked_reg[7]);
-    debug_printf("SCB->CFSR  %08X\r\n",fault_reg[0]);
-    debug_printf("SCB->HFSR  %08X\r\n",fault_reg[1]);
-    debug_printf("SCB->MMFAR %08X\r\n",fault_reg[2]);
-    debug_printf("SCB->BFAR  %08X\r\n",fault_reg[3]);
-#endif
+    fault_uart_init(115200);
+        
+    fault_printf("HardFault_Handler\r\n");
+    fault_printf("R0   0x%08X\r\n",stacked_reg[0]);
+    fault_printf("R1   0x%08X\r\n",stacked_reg[1]);
+    fault_printf("R2   0x%08X\r\n",stacked_reg[2]);
+    fault_printf("R3   0x%08X\r\n",stacked_reg[3]);
+    fault_printf("R12  0x%08X\r\n",stacked_reg[4]);
+    fault_printf("LR   0x%08X\r\n",stacked_reg[5]);
+    fault_printf("PC   0x%08X\r\n",stacked_reg[6]);
+    fault_printf("xPSR 0x%08X\r\n",stacked_reg[7]);
+    fault_printf("SCB->CFSR  %08X\r\n",fault_reg[0]);
+    fault_printf("SCB->HFSR  %08X\r\n",fault_reg[1]);
+    fault_printf("SCB->MMFAR %08X\r\n",fault_reg[2]);
+    fault_printf("SCB->BFAR  %08X\r\n",fault_reg[3]);
   }
      
   while (1)
@@ -103,7 +156,6 @@ void HardFault_Handler(void)
 
 void MemManage_Handler(void)
 {
-
   while (1)
   {
      __asm("BKPT #0"); 

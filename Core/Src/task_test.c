@@ -451,7 +451,6 @@ void testTask(void *argument)
   set_debug_uart_handle(g_uart3);
   
   
-  debug_printf("Hello\r\n");
   while(1)
   {
     if (driver_uart_recvs(g_uart3,&data,1,osWaitForever))

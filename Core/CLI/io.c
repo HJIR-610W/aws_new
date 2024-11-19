@@ -63,7 +63,7 @@ void debug_uart_init(uint32_t baud_rate)
   // (5) 송신 준비 확인
   while (!(debug_uart_base->SR & USART_SR_TC));  // 송신 완료 플래그 확인
 
-  
+
 
 }
 
