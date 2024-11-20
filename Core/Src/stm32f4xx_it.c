@@ -128,9 +128,9 @@ void HardFault_Handler(void)
     fault_reg[2] =  SCB->MMFAR;
     fault_reg[3] =  SCB->BFAR;
         
-    fault_uart_init(115200);
+   // fault_uart_init(115200);
         
-    fault_printf("HardFault_Handler\r\n");
+    fault_printf("\r\nHardFault_Handler\r\n");
     fault_printf("R0   0x%08X\r\n",stacked_reg[0]);
     fault_printf("R1   0x%08X\r\n",stacked_reg[1]);
     fault_printf("R2   0x%08X\r\n",stacked_reg[2]);

@@ -62,26 +62,29 @@ void aws_free(void *ptr)
  */
 void startTask(void *arg)
 {
-  debug_uart_init(115200);
-
   asw_tlsf_init(POOL_SIZE);
+
+  debug_uart_init(115200);
 
   debug_printf("aws 0.0.1\r\n");
 
   mcu_interrupt_init();
+  
+  MX_FSMC_Init();
 
   MX_GPIO_Init();
   MX_ADC1_Init();
-  MX_FSMC_Init();
   MX_SDIO_SD_Init();
   MX_FATFS_Init();
-
   DWT_Delay_Init();
-  
-  
   testTask_init();
     
-    
+   extern int is_debug_mode(void);
+
+   if(is_debug_mode())
+   {
+    debug_printf("debug mode");
+   } 
   while(1)
   {
 
@@ -90,5 +93,7 @@ void startTask(void *arg)
 
 void startTask_init(void)
 {
-    osThreadNew(startTask, NULL, &startTask_attributes);
+
+
+  osThreadNew(startTask, NULL, &startTask_attributes);
 }

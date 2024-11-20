@@ -9,18 +9,14 @@
 #include "tlsf.h"
 #include "main.h"
 
-static driver_t *debug_uart=NULL;;
-
-#include "tlsf.h"
-
-
-
+static driver_t *debug_uart = NULL;;
 USART_TypeDef *debug_uart_base = USART3;
+
 void debug_uart_init(uint32_t baud_rate)
 {
   uint32_t pclk;
   
-  if(debug_uart_base ==USART1)
+  if(debug_uart_base == USART1)
   {
       pclk = HAL_RCC_GetPCLK2Freq();
   }
@@ -73,31 +69,32 @@ void set_debug_uart_handle(driver_t *drv)
   debug_uart = drv;
 }
 
-uint8_t g_debug_os_started = 0;
 
+/**
+ * @brief os구동 없을때 사용
+ */
 void debug_puts_nonos(char *str)
 {
 
   while(*str)
   {
-      while (!(debug_uart_base->SR & USART_SR_TXE));  // 송신 버퍼가 비어있는지 확인
-      debug_uart_base->DR = (uint8_t)*str++;              // 데이터 레지스터에 문자 송신
+    while (!(debug_uart_base->SR & USART_SR_TXE));  // 송신 버퍼가 비어있는지 확인
+    debug_uart_base->DR = (uint8_t)*str++;              // 데이터 레지스터에 문자 송신
   }
-
 }
 
 int32_t debug_printf(const char * pFmt, ...)
 {
   char buff[2];
-  va_list ap;  
-  int32_t len;
   char *ptr=NULL;
   char *temp=NULL;
-    
-   
-    va_start(ap, pFmt);
-    len = vsnprintf((char *)buff, sizeof(buff), (char *)pFmt, ap);
-    va_end(ap);
+  va_list ap;  
+  int32_t len;
+
+//먼저 format 후 len의 길이를 확인 후 메모리를 할당후 최종 처리 
+  va_start(ap, pFmt);
+  len = vsnprintf((char *)buff, sizeof(buff), (char *)pFmt, ap);
+  va_end(ap);
     
     if(len > (sizeof(buff)-1))//
     {
@@ -109,27 +106,29 @@ int32_t debug_printf(const char * pFmt, ...)
         va_end(ap);
         ptr = temp;
       }
-      
+      else
+      {
+        return 1;//메모리 할당 에러 
+      }
     }
     else
     {
-      ptr = buff;
+      ptr = buff;//1바이트만 전송하게 되면 버퍼로 처리 
     }
     
-    if(debug_uart&& ptr)
+    if(debug_uart && ptr)//os구동중인지 확인
     {
-        driver_uart_send(debug_uart,(uint8_t *)ptr,strlen(ptr));
-
+      driver_uart_send(debug_uart,(uint8_t *)ptr,strlen(ptr));
     }
-    else if(ptr)
+    else if(ptr)//os 없으면 
     {
       debug_puts_nonos(ptr);
     }
-      if(temp)
-      {
-        aws_free(temp);
-      }
 
+    if(temp)
+    {
+      aws_free(temp);
+    }
 
     return 0;
 
@@ -138,6 +137,15 @@ int32_t debug_printf(const char * pFmt, ...)
 void debug_send(uint8_t *pData,uint16_t dataLen)
 {
   driver_uart_send(debug_uart,pData,dataLen);
+}
+
+void debug_puts(char *str)
+{
+  while(*str)
+  {
+    driver_uart_send(debug_uart,str,1);
+    str++;
+  }
 }
 
 

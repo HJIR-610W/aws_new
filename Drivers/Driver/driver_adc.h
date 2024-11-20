@@ -52,7 +52,9 @@
 #define ADC_ADS1220_DIFF_CH_6 38
 #define ADC_ADS1220_DIFF_CH_7 39
 
-#define ADC_ADS1220_DIFF_CH_8  40  //하드웨어 미지원
+#define DRIVER_ADC_MAX 40
+
+#define ADC_ADS1220_DIFF_CH_8  40 //하드웨어 미지원
 #define ADC_ADS1220_DIFF_CH_9  41 //하드웨어 미지원
 #define ADC_ADS1220_DIFF_CH_10 42 //하드웨어 미지원
 #define ADC_ADS1220_DIFF_CH_11 43 //하드웨어 미지원
@@ -62,8 +64,10 @@
 #define ADC_ADS1220_DIFF_CH_15 46 //하드웨어 미지원
 
 
+#define ADC_CMD_AVERAGE_SET 0
 
 driver_t * driver_adc_open(uint32_t num);
-void driver_adc_read(driver_t *adc,uint32_t *val,uint32_t ch);
+int32_t driver_adc_read(driver_t *adc,uint32_t ch,uint8_t *err);
+int32_t driver_adc_read_average(driver_t *drv,uint32_t ch,uint8_t *err,uint8_t average_cnt);
 
 #endif

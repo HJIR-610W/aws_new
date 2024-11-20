@@ -5,14 +5,37 @@
 #include <stdlib.h>
 
 #include "cmsis_os.h"
+#include "config.h"
+#include "driver_adc.h"
 #include "driver_uart.h"
 #include "driver_stm32_uart.h"
 #include "driver_485.h"
 #include "driver_sdi.h"
+#include "driver_fram.h"
 #include "stm32f4xx_hal.h"
-
+#include "utile.h"
 #include "mcu_utile.h"
-typedef struct {
+
+#define WRITE_CFG(x) driver_fram_write(g_fram,(uint32_t)OFFSET_OF_STRUCT(test_config_t, x),(uint8_t *)&g_test_config.x,sizeof(g_test_config.x));
+
+uint8_t g_adc_average_cnt = 10;
+
+adc_calibraion_t single_cali[32];
+adc_calibraion_t diff_cali[8];
+driver_t *g_fram = NULL;
+
+
+
+typedef struct test_config_s
+{
+  adc_calibraion_t single_cali[32];
+  adc_calibraion_t diff_cali[8];
+}test_config_t;
+
+test_config_t g_test_config;
+
+typedef struct 
+{
     char cmd[10];       // "write"
     char target[10];    // "gpio"
     char port[10];      // "porta"
@@ -26,6 +49,7 @@ const osThreadAttr_t testTxTask_attributes = {
   .stack_size = 2048,//2048바이트가 할당됨 하지만 4바이트 단위로 스택은 구성됨
   .priority = (osPriority_t) osPriorityNormal,
 };
+
 
 
 extern int32_t debug_printf(const char * pFmt, ...);
@@ -129,7 +153,240 @@ driver_t * g_232_A      = NULL;
 driver_t * g_232_B      = NULL;
 driver_t * g_232_C      = NULL;
 driver_t * g_232_D      = NULL;
+driver_t *g_adc_single=NULL;
+driver_t *g_adc_diff=NULL;
 
+  const char *nameList[]={"A_SIG_01","A_SIG_02","A_SIG_RTD_0","NOT USE",
+                          "A_SIG_03","A_SIG_04","A_SIG_RTD_1","NOT USE",
+                          "A_SIG_05","A_SIG_06","NOT USE","NOT USE",
+                          "A_SIG_07","A_SIG_08","NOT USE","NOT USE",
+                          "A_SIG_09","A_SIG_10","NOT USE","NOT USE",
+                          "A_SIG_11","A_SIG_12","NOT USE","NOT USE",
+                          "A_SIG_13","A_SIG_14","NOT USE","NOT USE",
+                          "A_SIG_15","A_SIG_16","NOT USE","NOT USE"};
+float calculate_gain_adc_single(int32_t ch)
+{
+
+
+  float gain;
+  int32_t diff;
+  int32_t input_diff;
+  test_config_t *cfg= &g_test_config;
+
+  diff =  cfg->single_cali[ch].fullset  - cfg->single_cali[ch].offset ;
+  input_diff = cfg->single_cali[ch].fullset_input  - cfg->single_cali[ch].offset_input;
+
+  gain = (float)input_diff/(float)diff/1000.0;
+
+  return gain;
+
+}
+
+
+float get_voltage(float gain,int32_t adc,int32_t offset)
+{
+  float voltage;
+
+  voltage = gain*(adc-offset);
+
+  return voltage;
+}
+
+
+float get_voltage_vref(int32_t adc,int32_t offset)
+{
+  double lsb_value;
+const double Vref = 5.973;
+  lsb_value = 2*Vref/16777216;
+  float voltage;
+
+  voltage = lsb_value *(adc-offset);
+
+  return voltage;
+}
+
+void adc_read_single(int32_t ch)
+{
+  int32_t adc;
+  uint8_t err;
+  float gain;
+  if(g_adc_single == NULL)
+  {
+    g_adc_single = driver_adc_open(ADC_ADS1220_SINGLE_CH_0);
+  }
+
+  adc = driver_adc_read_average(g_adc_single,ch,&err,g_adc_average_cnt);
+  if(err)
+  {
+    debug_printf("ADC_%d,read err\r\n",ch);
+  }
+  else
+  {
+    gain = calculate_gain_adc_single(ch);
+    debug_printf("%s:%d,%.3fv [offset:%d,fullset:%d]\r\n",nameList[ch],adc,
+                             get_voltage_vref(adc,g_test_config.single_cali[ch].offset),
+                              g_test_config.single_cali[ch].offset,
+                              g_test_config.single_cali[ch].fullset);
+  }
+}
+
+void adc_read_diff(int32_t ch)
+{
+  int32_t adc;
+  uint8_t err;
+  const char *nameLists[] = {"A_SIG_01 - A_SIG_02",
+                            "A_SIG_03 - A_SIG_04",
+                            "A_SIG_05 - A_SIG_06",
+                            "A_SIG_07 - A_SIG_08",
+                            "A_SIG_09 - A_SIG_10",
+                            "A_SIG_11 - A_SIG_12",
+                            "A_SIG_13 - A_SIG_14",
+                            "A_SIG_15 - A_SIG_16"};
+
+  if(g_adc_diff == NULL)
+  {
+    g_adc_diff = driver_adc_open(ADC_ADS1220_DIFF_CH_0);
+  }
+
+  adc = driver_adc_read_average(g_adc_diff,ch+ADC_ADS1220_DIFF_CH_0,&err,g_adc_average_cnt);
+  if(err)
+  {
+    debug_printf("%s,read err\r\n",nameLists[ch]);
+  }
+  else
+  {
+    debug_printf("%s:%d\r\n",nameLists[ch],adc);
+  }
+}
+
+void adc_single_all_test(void)
+{
+  int32_t adc;
+  uint8_t err;
+
+  const uint8_t adc_ch_list[]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29,2,6};
+  const char *nameLists[]={"A_SIG_01","A_SIG_02",
+                          "A_SIG_03","A_SIG_04",
+                          "A_SIG_05","A_SIG_06",
+                          "A_SIG_07","A_SIG_08",
+                          "A_SIG_09","A_SIG_10",
+                          "A_SIG_11","A_SIG_12",
+                          "A_SIG_13","A_SIG_14",
+                          "A_SIG_15","A_SIG_16",
+                          "A_SIG_RTD_0","A_SIG_RTD_1"};
+
+
+  for(int i = 0 ;i<_countof(adc_ch_list); i++)
+  {
+    adc = driver_adc_read_average(g_adc_single,adc_ch_list[i],&err,g_adc_average_cnt);
+    if(err)
+    {
+      debug_printf("%s,read err\r\n",nameLists[i]);
+    }
+    else
+    {
+      debug_printf("%s:%d\r\n",nameLists[i],adc);
+    }
+  }
+}
+
+
+
+
+float calculate_gain_adc_diff(int32_t ch)
+{
+  float gain;
+  int32_t diff;
+  int32_t input_diff;
+  test_config_t *cfg= &g_test_config;
+  diff =  cfg->diff_cali[ch].fullset  - cfg->diff_cali[ch].offset ;
+  input_diff = cfg->diff_cali[ch].fullset_input  - cfg->diff_cali[ch].offset_input;
+
+  gain = (float)input_diff/(float)diff;
+
+  return gain;
+}
+
+void adc_diff_all_test(void)
+{
+
+  int32_t adc;
+  uint8_t err;
+
+  const uint8_t adc_ch_list[]={0,1,2,3,4,5,6,7};
+  const char *nameLists[] = {"A_SIG_01 - A_SIG_02",
+                            "A_SIG_03 - A_SIG_04",
+                            "A_SIG_05 - A_SIG_06",
+                            "A_SIG_07 - A_SIG_08",
+                            "A_SIG_09 - A_SIG_10",
+                            "A_SIG_11 - A_SIG_12",
+                            "A_SIG_13 - A_SIG_14",
+                            "A_SIG_15 - A_SIG_16"};
+
+  for(int i = 0 ;i<_countof(adc_ch_list); i++)
+  {
+    adc = driver_adc_read(g_adc_diff,adc_ch_list[i]+ADC_ADS1220_DIFF_CH_0,&err);
+  
+    if(err)
+    {
+      debug_printf("%s,read err\r\n",nameLists[i]);
+    }
+    else
+    {
+      debug_printf("%s:%d\r\n",nameLists[i],adc);
+    }
+  }
+}
+
+#define ADC_OFFSET  0
+#define ADC_FULLSET 1
+void adc_single_calibration_set(int32_t ch,int32_t setType,int32_t input_voltage)
+{
+  int32_t adc;
+  uint8_t err;
+
+  adc = driver_adc_read_average(g_adc_single,ch,&err,g_adc_average_cnt);
+
+  switch(setType)
+  {
+    case ADC_OFFSET:
+      if(err ==0)
+      {
+        g_test_config.single_cali[ch].offset = adc;
+        g_test_config.single_cali[ch].offset_input = input_voltage;
+
+        WRITE_CFG(single_cali[ch].offset);
+        WRITE_CFG(single_cali[ch].offset_input);
+
+        debug_printf("offset:%d\r\n",adc);
+      }
+      else
+      {
+        debug_printf("adc read err\r\n");
+      }
+    break;
+    case ADC_FULLSET:
+       if(err ==0)
+      {
+        g_test_config.single_cali[ch].fullset = adc;
+        g_test_config.single_cali[ch].fullset_input = input_voltage;
+
+
+
+        WRITE_CFG(single_cali[ch].fullset);
+        WRITE_CFG(single_cali[ch].fullset_input);
+
+        g_test_config.single_cali[ch].gain = calculate_gain_adc_single(ch);
+        WRITE_CFG(single_cali[ch].gain);
+        debug_printf("fullset:%d\r\n",adc);
+      }
+      else
+      {
+        debug_printf("adc read err\r\n");
+      }
+    break;
+  }
+}
 
 void test_cmd(char *data)
 {
@@ -156,39 +413,39 @@ void test_cmd(char *data)
           {
             case 'a':
               test_do_init(GPIOA,1<<cmd.pin);
-              HAL_GPIO_WritePin(GPIOA,1<<cmd.pin,cmd.data);
+              HAL_GPIO_WritePin(GPIOA,1<<cmd.pin,(GPIO_PinState)cmd.data);
             break;
             case 'b':
               test_do_init(GPIOB,1<<cmd.pin);
-              HAL_GPIO_WritePin(GPIOB,1<<cmd.pin,cmd.data);
+              HAL_GPIO_WritePin(GPIOB,1<<cmd.pin,(GPIO_PinState)cmd.data);
             break;
             case 'c':
               test_do_init(GPIOC,1<<cmd.pin);
-              HAL_GPIO_WritePin(GPIOC,1<<cmd.pin,cmd.data);
+              HAL_GPIO_WritePin(GPIOC,1<<cmd.pin,(GPIO_PinState)cmd.data);
             break;
             case 'd':
               test_do_init(GPIOD,1<<cmd.pin);
-              HAL_GPIO_WritePin(GPIOD,1<<cmd.pin,cmd.data);
+              HAL_GPIO_WritePin(GPIOD,1<<cmd.pin,(GPIO_PinState)cmd.data);
             break;
             case 'e':
               test_do_init(GPIOE,1<<cmd.pin);
-              HAL_GPIO_WritePin(GPIOE,1<<cmd.pin,cmd.data);
+              HAL_GPIO_WritePin(GPIOE,1<<cmd.pin,(GPIO_PinState)cmd.data);
             break;
             case 'f':
               test_do_init(GPIOF,1<<cmd.pin);
-              HAL_GPIO_WritePin(GPIOF,1<<cmd.pin,cmd.data);
+              HAL_GPIO_WritePin(GPIOF,1<<cmd.pin,(GPIO_PinState)cmd.data);
             break;
             case 'g':
               test_do_init(GPIOG,1<<cmd.pin);
-              HAL_GPIO_WritePin(GPIOG,1<<cmd.pin,cmd.data);
+              HAL_GPIO_WritePin(GPIOG,1<<cmd.pin,(GPIO_PinState)cmd.data);
             break;
             case 'h':
               test_do_init(GPIOH,1<<cmd.pin);
-              HAL_GPIO_WritePin(GPIOH,1<<cmd.pin,cmd.data);
+              HAL_GPIO_WritePin(GPIOH,1<<cmd.pin,(GPIO_PinState)cmd.data);
             break;
             case 'i':
               test_do_init(GPIOI,1<<cmd.pin);
-              HAL_GPIO_WritePin(GPIOI,1<<cmd.pin,cmd.data);
+              HAL_GPIO_WritePin(GPIOI,1<<cmd.pin,(GPIO_PinState)cmd.data);
             break;
 
 
@@ -205,18 +462,18 @@ void test_cmd(char *data)
               {
                 case 'a':
                 driver_rs485_sends(g_rs485_a,"rs485_a",7);
-              cnt = driver_rs485_recv(g_rs485_a,temp,10,3000);
+              cnt = driver_rs485_recv(g_rs485_a,(uint8_t *)temp,10,3000);
               if(cnt)
               {
-                driver_rs485_sends(g_rs485_a,temp,cnt);
+                driver_rs485_sends(g_rs485_a,(uint8_t *)temp,cnt);
               }
                 break;
                 case 'b':
                 driver_rs485_sends(g_rs485_b,"rs485_b",7);
-               cnt = driver_rs485_recv(g_rs485_b,temp,10,3000);
+               cnt = driver_rs485_recv(g_rs485_b,(uint8_t *)temp,10,3000);
               if(cnt)
               {
-                driver_rs485_sends(g_rs485_b,temp,cnt);
+                driver_rs485_sends(g_rs485_b,(uint8_t *)temp,cnt);
               }
                 break;
               }
@@ -233,70 +490,76 @@ void test_cmd(char *data)
               {
                 case '1':
                 strcpy(msg,"UART_STM32_1");
-                driver_uart_send(g_stm_uart_1,msg,strlen(msg));
-                  cnt = driver_uart_recvs(g_stm_uart_1,temp,sizeof(temp),3000);
-                  if(cnt)
-                  {
-                      driver_uart_send(g_stm_uart_1,temp,cnt);
-                  }
+                driver_uart_send(g_stm_uart_1,(uint8_t *)msg,strlen(msg));
+                
+                cnt = driver_uart_recvs(g_stm_uart_1,(uint8_t *)temp,sizeof(temp),3000);
+                if(cnt)
+                {
+                    driver_uart_send(g_stm_uart_1,(uint8_t *)temp,cnt);
+                }
                 break;
                 case '2':
                 strcpy(msg,"UART_QUAD_1");
-                driver_uart_send(g_quad_232_1,msg,strlen(msg));
-                cnt = driver_uart_recvs(g_quad_232_1,temp,sizeof(temp),3000);
+                driver_uart_send(g_quad_232_1,(uint8_t *)msg,strlen(msg));
+                
+                cnt = driver_uart_recvs(g_quad_232_1,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
-                    driver_uart_send(g_quad_232_1,temp,cnt);
+                    driver_uart_send(g_quad_232_1,(uint8_t *)temp,cnt);
                 }
+                
                 break;
                 case '3':
                 strcpy(msg,"UART_EX_TTL_2");
-                driver_uart_send(g_quad_ttl_2,msg,strlen(msg));
-                cnt = driver_uart_recvs(g_quad_ttl_2,temp,sizeof(temp),3000);
+                driver_uart_send(g_quad_ttl_2,(uint8_t *)msg,strlen(msg));
+                
+                cnt = driver_uart_recvs(g_quad_ttl_2,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
-                    driver_uart_send(g_quad_ttl_2,temp,cnt);
+                    driver_uart_send(g_quad_ttl_2,(uint8_t *)temp,cnt);
                 }
                 break;
                 case '4':
                 strcpy(msg,"UART_EX_232_A_3");
-                driver_uart_send(g_232_A,msg,strlen(msg));
-                cnt = driver_uart_recvs(g_232_A,temp,sizeof(temp),3000);
+                driver_uart_send(g_232_A,(uint8_t *)msg,strlen(msg));
+                
+                cnt = driver_uart_recvs(g_232_A,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
-                    driver_uart_send(g_232_A,temp,cnt);
+                    driver_uart_send(g_232_A,(uint8_t *)temp,cnt);
                 }
                 break;
                 case '5':
                 strcpy(msg,"UART_EX_232_B_4");
-                driver_uart_send(g_232_B,msg,strlen(msg));
-                cnt = driver_uart_recvs(g_232_B,temp,sizeof(temp),3000);
+                driver_uart_send(g_232_B,(uint8_t *)msg,strlen(msg));
+                cnt = driver_uart_recvs(g_232_B,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
-                    driver_uart_send(g_232_B,temp,cnt);
+                    driver_uart_send(g_232_B,(uint8_t *)temp,cnt);
                 }
                 break;
                 case '6':
                 strcpy(msg,"UART_EX_232_C_7");
-                driver_uart_send(g_232_C,msg,strlen(msg));
-                cnt = driver_uart_recvs(g_232_C,temp,sizeof(temp),3000);
+                driver_uart_send(g_232_C,(uint8_t *)msg,strlen(msg));
+                cnt = driver_uart_recvs(g_232_C,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
-                  driver_uart_send(g_232_C,temp,cnt);
+                  driver_uart_send(g_232_C,(uint8_t *)temp,cnt);
                 }
                 break;
                 case '7':
                 strcpy(msg,"UART_EX_232_D_8");
-                driver_uart_send(g_232_D,msg,strlen(msg));
-                cnt = driver_uart_recvs(g_232_D,temp,sizeof(temp),3000);
+                driver_uart_send(g_232_D,(uint8_t *)msg,strlen(msg));
+                cnt = driver_uart_recvs(g_232_D,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
-                  driver_uart_send(g_232_D,temp,cnt);
+                  driver_uart_send(g_232_D,(uint8_t *)temp,cnt);
                 }
                 break;
               }
       }
     }
+    
     if(strncmp(list[0],"read",4)==0)
     {
       if(strncmp(list[1],"gpio",4)==0)
@@ -360,6 +623,34 @@ void test_cmd(char *data)
         }
         
       }
+      else if(strncmp(list[1],"adc",3)==0)
+      {
+        if(strncmp(list[2],"single_",7)==0)
+        {
+            int32_t ch;
+            if(sscanf(list[2], "single_%d", &ch)==1)
+            {
+                adc_read_single(ch);
+            }
+
+        }
+        else if(strncmp(list[2],"diff_",5)==0)
+        {
+            int32_t ch;
+            if(sscanf(list[2], "diff_%d", &ch)==1)
+            {
+                adc_read_diff(ch );
+            }
+        }
+        else if(strncmp(list[2],"all_single",10) == 0)
+        {
+          adc_single_all_test();
+        }
+        else if(strncmp(list[2],"all_diff", 8) == 0)
+        {
+            adc_diff_all_test();
+        }
+      }
     }
     if(strncmp(list[0],"set",3)==0)
     {
@@ -380,8 +671,6 @@ void test_cmd(char *data)
         default:
           break;
         }
-
-
       }
       else if(strncmp(list[1],"rs232_",6) == 0)
       {
@@ -420,11 +709,46 @@ void test_cmd(char *data)
           break;
         }
       }
+      else if(strncmp(list[1],"adc",3)==0)
+      {
+          if(strncmp(list[2],"single_",7)==0)
+          {
+            int32_t ch;
+            int32_t input_voltage;
+            int32_t setMode;
+            if(sscanf(list[2], "single_%d", &ch)==1)
+            {
+              if(strncmp(list[3],"offset",6)==0)
+              {
+                setMode = ADC_OFFSET;
+              }
+              else if(strncmp(list[3],"fullset",7)==0)
+              {
+                setMode = ADC_FULLSET;
+              }
+
+              if(sscanf(list[4], "%d", &input_voltage)==1)
+              {
+                  adc_single_calibration_set(ch,setMode,input_voltage);
+              }
+            }
+          }
+          else if(strncmp(list[2],"average",7)==0)
+          {
+            int32_t average_cnt;
+              if(sscanf(list[2], "average=%d", &average_cnt)==1)
+              {
+                g_adc_average_cnt = average_cnt;
+                debug_printf("adc average cnt:%d\r\n",g_adc_average_cnt);
+              }
+          }
+      }
     }
   }
 }
 
 extern void set_debug_uart_handle(driver_t *drv);
+extern void fram_test(void);
 void testTask(void *argument)
 {
   uint8_t buff[512];
@@ -451,6 +775,22 @@ void testTask(void *argument)
   set_debug_uart_handle(g_uart3);
   
   
+  if(g_adc_single == NULL)
+  {
+    g_adc_single = driver_adc_open(ADC_ADS1220_SINGLE_CH_0);
+  }
+  
+    if(g_adc_diff == NULL)
+  {
+    g_adc_diff = driver_adc_open(ADC_ADS1220_DIFF_CH_0);
+  }
+
+fram_test();
+
+  g_fram = driver_fram_open(FRAM_FM25LC);
+  
+  driver_fram_read(g_fram,0,(uint8_t *)&g_test_config,sizeof(test_config_t));
+  
   while(1)
   {
     if (driver_uart_recvs(g_uart3,&data,1,osWaitForever))
@@ -459,7 +799,7 @@ void testTask(void *argument)
       if(data=='\n')
       {
         buff[cnt]=0;
-        test_cmd(buff);
+        test_cmd((uint8_t *)buff);
 
         memset(buff,0,sizeof(buff));
         cnt = 0;

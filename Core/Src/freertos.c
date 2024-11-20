@@ -203,7 +203,8 @@ static   uint8_t buff[500];;
   len = stm32_uart_recv(debug_uart,buff,sizeof(buff)-1,1);
 
   buff[len] = 0;
-  debug_send(buff,strlen(buff));
+  
+  debug_puts(buff);
 
   debug_printf("receviced\r\n");
 
@@ -214,7 +215,7 @@ static   uint8_t buff[500];;
     buff[len] = 0;
     if(len)
     {
-      debug_send(buff,strlen(buff));
+      debug_puts(buff);
     }
   }
 
@@ -248,6 +249,7 @@ void flash_test(void)
 
 void adc_test(void)
 {
+  uint8_t err;
   driver_t *ads1220;
   int i;
   int32_t adc;
@@ -275,7 +277,7 @@ void adc_test(void)
     osDelay(50);
     for(i = 0 ;i <_countof(adcList);i++)
     {
-        driver_adc_read(ads1220,&adc,adcList[i]);
+       adc =  driver_adc_read(ads1220,adcList[i],&err);
 
         debug_printf("CH:%02d,%10d,%s\r\n",adcList[i],adc,nameList[i]);
     }

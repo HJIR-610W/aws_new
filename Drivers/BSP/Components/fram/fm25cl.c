@@ -61,10 +61,7 @@ void fm25cl_write(driver_t *fm25cl,uint32_t offset,uint8_t *pData,uint16_t wLen)
     driverex_spi_send_byte(cfg->spi_io,(offset>>8)&0xFF);
     driverex_spi_send_byte(cfg->spi_io,offset&0xFF);
 
-    for(i=0;i<wLen;i++)
-    {
-      //driverex_spi_send_byte(cfg->spi_io,pData[i]);
-    }
+    osDelay(1);
     driverex_spi_send_bytes(cfg->spi_io,pData,wLen);
     driver_do_high(cfg->cs_io);
    
@@ -100,9 +97,6 @@ void fm25cl_read(driver_t *fm25cl,uint32_t offset,uint8_t *pBuff,uint16_t rLen)
 
     }
     
-
-
-
     driver_do_high(cfg->cs_io);
   
 

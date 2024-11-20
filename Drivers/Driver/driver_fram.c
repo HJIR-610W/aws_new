@@ -25,7 +25,7 @@ driver_t * driver_fram_open(int num)
 
     driver_t *fm25lc;
     fm25lc_cfg_t *fm25lc_cfg;
-
+    
     fm25lc = fm25lc_open();// IC¸¦ ¿¬´Ù.
 
     fm25lc_cfg = (fm25lc_cfg_t *)fm25lc->cfg;
@@ -43,7 +43,8 @@ driver_t * driver_fram_open(int num)
 
 
     fm25cl_init(fm25lc);
-
+    
+    fram_fm25lcl.name= "fram_fm25lcl";
     return &fram_fm25lcl;
     
     break;

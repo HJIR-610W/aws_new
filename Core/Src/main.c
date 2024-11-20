@@ -48,18 +48,46 @@ void SystemClock_Config(void)
 }
 
 
+int is_debug_mode(void)
+{
+  return (CoreDebug->DHCSR& (1 << 0)) != 0;
+}
 
+void configure_swo_as_input(void)
+{
+    // GPIO 핀을 설정하기 위해 핸들 정의
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    // GPIOB 클럭 활성화
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+
+    // PB3 핀을 입력으로 설정
+    GPIO_InitStruct.Pin = GPIO_PIN_3;         // PB3 (SWO 핀)
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;  // 입력 모드
+    GPIO_InitStruct.Pull = GPIO_NOPULL;      // 풀업/풀다운 없음
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+}
 int main(void)
 {
 
 #if DEBUG_MODE_EN
-  __HAL_DBGMCU_FREEZE_IWDG(); // 디버깅시 와치독 카운트 멈춤
-  __HAL_DBGMCU_FREEZE_RTC();  // 디버깅시 rtc 타이머 멈춤
+  if(is_debug_mode())
+  {
+    __HAL_DBGMCU_FREEZE_IWDG(); // 디버깅 시 와치독 카운트 멈춤
+    __HAL_DBGMCU_FREEZE_RTC();  // 디버깅 시 rtc 타이머 멈춤
+  }
 #endif
+  
+  
 
   HAL_Init();//타이머 4를 초기헤 HAL 타이머 틱 인터럽트로 사용
- 
+
   SystemClock_Config();
+ 
+  configure_swo_as_input();
+  
+  while(1);
  
   osKernelInitialize(); 
 

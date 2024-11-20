@@ -131,25 +131,7 @@
 #define ADS1220_CMD_WREG        0x40
 
 
-
 #define READY_DRDY_ADC()  	(HAL_GPIO_ReadPin(DO_DRDY_ADC_EXDO_GPIO_Port, DO_DRDY_ADC_EXDO_1_Pin) == GPIO_PIN_RESET)
-
-
-typedef struct ads1210_s
-{
-  void *spi_io;
-  void *cs_io;
-  void *sem;
-  void *drdy_i;
-}ads1210_t;
-
-
-void ads1210_init(driver_t *drv);
-int32_t AD1220_read_data(driver_t *ads1210,int32_t ch,uint8_t *err);
-void ADS1210_set_channel(driver_t *,uint32_t mux);
-
-
-void irq_dataReady(void *ads1210);
 
 
 typedef struct ads1220_cfg_s
@@ -161,6 +143,8 @@ typedef struct ads1220_cfg_s
 }ads1220_cfg_t;
 
 driver_t *ads1220_open(void);
-
-
+int32_t ads1220_read_diff_ch(driver_t *drv,int32_t ch,uint8_t *err);
+int32_t ads1220_read_single_ch(driver_t *drv,int32_t ch,uint8_t *err);
+void ads1210_init(driver_t *drv);
+void irq_dataReady(void *arg);
 #endif

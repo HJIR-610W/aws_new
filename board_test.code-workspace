@@ -15,17 +15,7 @@
 			"driver_gpio_def.h": "c",
 			"driver_stm32_di.h": "c",
 			"driver_digitalin.h": "c",
-			"stm32f4xx_hal.h": "c",
-			"task_cmd.h": "c",
-			"xstring": "c",
-			"xutility": "c",
-			"driver_rtc.h": "c",
-			"driver_uart.h": "c",
-			"driver_flash.h": "c",
-			"driver_sdi.h": "c",
-			"driver_uart_def.h": "c",
-			"driver_di_def.h": "c",
-			"mcu_interrupt.h": "c"
+			"stm32f4xx_hal.h": "c"
 		}
 	}
 }
