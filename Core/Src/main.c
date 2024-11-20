@@ -53,21 +53,7 @@ int is_debug_mode(void)
   return (CoreDebug->DHCSR& (1 << 0)) != 0;
 }
 
-void configure_swo_as_input(void)
-{
-    // GPIO 핀을 설정하기 위해 핸들 정의
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    // GPIOB 클럭 활성화
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-
-
-    // PB3 핀을 입력으로 설정
-    GPIO_InitStruct.Pin = GPIO_PIN_3;         // PB3 (SWO 핀)
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;  // 입력 모드
-    GPIO_InitStruct.Pull = GPIO_NOPULL;      // 풀업/풀다운 없음
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-}
 int main(void)
 {
 
@@ -85,9 +71,7 @@ int main(void)
 
   SystemClock_Config();
  
-  configure_swo_as_input();
-  
-  while(1);
+
  
   osKernelInitialize(); 
 

@@ -19,6 +19,7 @@
 #define WRITE_CFG(x) driver_fram_write(g_fram,(uint32_t)OFFSET_OF_STRUCT(test_config_t, x),(uint8_t *)&g_test_config.x,sizeof(g_test_config.x));
 
 uint8_t g_adc_average_cnt = 10;
+int32_t g_adc_vref = 5980;//mv
 
 adc_calibraion_t single_cali[32];
 adc_calibraion_t diff_cali[8];
@@ -30,6 +31,7 @@ typedef struct test_config_s
 {
   adc_calibraion_t single_cali[32];
   adc_calibraion_t diff_cali[8];
+  int32_t Vref;
 }test_config_t;
 
 test_config_t g_test_config;
@@ -164,10 +166,17 @@ driver_t *g_adc_diff=NULL;
                           "A_SIG_11","A_SIG_12","NOT USE","NOT USE",
                           "A_SIG_13","A_SIG_14","NOT USE","NOT USE",
                           "A_SIG_15","A_SIG_16","NOT USE","NOT USE"};
+
+  const char *diff_nameLists[] = {"A_SIG_01 - A_SIG_02",
+                                  "A_SIG_03 - A_SIG_04",
+                                  "A_SIG_05 - A_SIG_06",
+                                  "A_SIG_07 - A_SIG_08",
+                                  "A_SIG_09 - A_SIG_10",
+                                  "A_SIG_11 - A_SIG_12",
+                                  "A_SIG_13 - A_SIG_14",
+                                  "A_SIG_15 - A_SIG_16"};
 float calculate_gain_adc_single(int32_t ch)
 {
-
-
   float gain;
   int32_t diff;
   int32_t input_diff;
@@ -178,10 +187,24 @@ float calculate_gain_adc_single(int32_t ch)
 
   gain = (float)input_diff/(float)diff/1000.0;
 
-  return gain;
+  return gain;//mv
 
 }
+float calculate_gain_adc_diff(int32_t ch)
+{
+  float gain;
+  int32_t diff;
+  int32_t input_diff;
+  test_config_t *cfg= &g_test_config;
 
+  diff =  cfg->diff_cali[ch].fullset  - cfg->diff_cali[ch].offset ;
+  input_diff = cfg->diff_cali[ch].fullset_input  - cfg->diff_cali[ch].offset_input;
+
+  gain = (float)input_diff/(float)diff/1000.0;
+
+  return gain;//mv
+
+}
 
 float get_voltage(float gain,int32_t adc,int32_t offset)
 {
@@ -193,12 +216,18 @@ float get_voltage(float gain,int32_t adc,int32_t offset)
 }
 
 
+
+
+
 float get_voltage_vref(int32_t adc,int32_t offset)
 {
   double lsb_value;
-const double Vref = 5.973;
-  lsb_value = 2*Vref/16777216;
+  double Vref ;
   float voltage;
+
+  Vref = g_test_config.Vref/1000.0;
+
+  lsb_value = 2*Vref/16777216;//2^24 = 1677216
 
   voltage = lsb_value *(adc-offset);
 
@@ -210,6 +239,8 @@ void adc_read_single(int32_t ch)
   int32_t adc;
   uint8_t err;
   float gain;
+  int32_t offset;
+
   if(g_adc_single == NULL)
   {
     g_adc_single = driver_adc_open(ADC_ADS1220_SINGLE_CH_0);
@@ -223,39 +254,28 @@ void adc_read_single(int32_t ch)
   else
   {
     gain = calculate_gain_adc_single(ch);
-    debug_printf("%s:%d,%.3fv [offset:%d,fullset:%d]\r\n",nameList[ch],adc,
-                             get_voltage_vref(adc,g_test_config.single_cali[ch].offset),
-                              g_test_config.single_cali[ch].offset,
-                              g_test_config.single_cali[ch].fullset);
+    offset = g_test_config.single_cali[ch].offset;
+    debug_printf("%12s:%d,%.3fv\r\n",nameList[ch],adc, get_voltage_vref(adc,offset));
   }
 }
 
 void adc_read_diff(int32_t ch)
 {
-  int32_t adc;
   uint8_t err;
-  const char *nameLists[] = {"A_SIG_01 - A_SIG_02",
-                            "A_SIG_03 - A_SIG_04",
-                            "A_SIG_05 - A_SIG_06",
-                            "A_SIG_07 - A_SIG_08",
-                            "A_SIG_09 - A_SIG_10",
-                            "A_SIG_11 - A_SIG_12",
-                            "A_SIG_13 - A_SIG_14",
-                            "A_SIG_15 - A_SIG_16"};
-
-  if(g_adc_diff == NULL)
-  {
-    g_adc_diff = driver_adc_open(ADC_ADS1220_DIFF_CH_0);
-  }
+  int32_t adc;
+  int32_t offset;
+  float gain;
 
   adc = driver_adc_read_average(g_adc_diff,ch+ADC_ADS1220_DIFF_CH_0,&err,g_adc_average_cnt);
   if(err)
   {
-    debug_printf("%s,read err\r\n",nameLists[ch]);
+    debug_printf("%s,read err\r\n",diff_nameLists[ch]);
   }
   else
   {
-    debug_printf("%s:%d\r\n",nameLists[ch],adc);
+    gain = calculate_gain_adc_diff(ch);
+    offset = g_test_config.single_cali[ch].offset;
+    debug_printf("%s:%10d,%6.3fv\r\n",diff_nameLists[ch],adc, get_voltage_vref(adc,offset));
   }
 }
 
@@ -263,77 +283,49 @@ void adc_single_all_test(void)
 {
   int32_t adc;
   uint8_t err;
-
+  float gain;
+  int32_t offset;
   const uint8_t adc_ch_list[]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29,2,6};
-  const char *nameLists[]={"A_SIG_01","A_SIG_02",
-                          "A_SIG_03","A_SIG_04",
-                          "A_SIG_05","A_SIG_06",
-                          "A_SIG_07","A_SIG_08",
-                          "A_SIG_09","A_SIG_10",
-                          "A_SIG_11","A_SIG_12",
-                          "A_SIG_13","A_SIG_14",
-                          "A_SIG_15","A_SIG_16",
-                          "A_SIG_RTD_0","A_SIG_RTD_1"};
 
-
-  for(int i = 0 ;i<_countof(adc_ch_list); i++)
+  debug_printf("\r\n");
+  for(int i = 0 ; i < _countof(adc_ch_list); i++)
   {
     adc = driver_adc_read_average(g_adc_single,adc_ch_list[i],&err,g_adc_average_cnt);
     if(err)
     {
-      debug_printf("%s,read err\r\n",nameLists[i]);
+      debug_printf("%s,read err\r\n",nameList[i]);
     }
     else
     {
-      debug_printf("%s:%d\r\n",nameLists[i],adc);
+      gain = calculate_gain_adc_diff(adc_ch_list[i]);
+      offset = g_test_config.single_cali[adc_ch_list[i]].offset;
+      debug_printf("%12s:%10d,%6.3fv\r\n",nameList[i],adc, get_voltage_vref(adc,offset));
     }
   }
 }
 
-
-
-
-float calculate_gain_adc_diff(int32_t ch)
-{
-  float gain;
-  int32_t diff;
-  int32_t input_diff;
-  test_config_t *cfg= &g_test_config;
-  diff =  cfg->diff_cali[ch].fullset  - cfg->diff_cali[ch].offset ;
-  input_diff = cfg->diff_cali[ch].fullset_input  - cfg->diff_cali[ch].offset_input;
-
-  gain = (float)input_diff/(float)diff;
-
-  return gain;
-}
-
 void adc_diff_all_test(void)
 {
-
-  int32_t adc;
   uint8_t err;
-
+  int32_t adc;
+  int32_t offset;
+  float gain;
   const uint8_t adc_ch_list[]={0,1,2,3,4,5,6,7};
-  const char *nameLists[] = {"A_SIG_01 - A_SIG_02",
-                            "A_SIG_03 - A_SIG_04",
-                            "A_SIG_05 - A_SIG_06",
-                            "A_SIG_07 - A_SIG_08",
-                            "A_SIG_09 - A_SIG_10",
-                            "A_SIG_11 - A_SIG_12",
-                            "A_SIG_13 - A_SIG_14",
-                            "A_SIG_15 - A_SIG_16"};
 
+  debug_printf("\r\n");
   for(int i = 0 ;i<_countof(adc_ch_list); i++)
   {
     adc = driver_adc_read(g_adc_diff,adc_ch_list[i]+ADC_ADS1220_DIFF_CH_0,&err);
-  
     if(err)
     {
-      debug_printf("%s,read err\r\n",nameLists[i]);
+      debug_printf("%s,read err\r\n",diff_nameLists[i]);
     }
     else
     {
-      debug_printf("%s:%d\r\n",nameLists[i],adc);
+    gain = calculate_gain_adc_diff(adc_ch_list[i]);
+    offset = g_test_config.diff_cali[adc_ch_list[i]].offset;
+    debug_printf("%12s:%10d,%6.3fv\r\n",diff_nameLists[i],adc, get_voltage_vref(adc,offset));
+
     }
   }
 }
@@ -350,7 +342,7 @@ void adc_single_calibration_set(int32_t ch,int32_t setType,int32_t input_voltage
   switch(setType)
   {
     case ADC_OFFSET:
-      if(err ==0)
+      if(err == 0)
       {
         g_test_config.single_cali[ch].offset = adc;
         g_test_config.single_cali[ch].offset_input = input_voltage;
@@ -387,6 +379,56 @@ void adc_single_calibration_set(int32_t ch,int32_t setType,int32_t input_voltage
     break;
   }
 }
+
+
+void adc_diff_calibration_set(int32_t ch,int32_t setType,int32_t input_voltage)
+{
+  int32_t adc;
+  uint8_t err;
+
+  adc = driver_adc_read_average(g_adc_single,ch,&err,g_adc_average_cnt);
+
+  switch(setType)
+  {
+    case ADC_OFFSET:
+      if(err ==0)
+      {
+        g_test_config.diff_cali[ch].offset = adc;
+        g_test_config.diff_cali[ch].offset_input = input_voltage;
+
+        WRITE_CFG(diff_cali[ch].offset);
+        WRITE_CFG(diff_cali[ch].offset_input);
+
+        debug_printf("offset:%d\r\n",adc);
+      }
+      else
+      {
+        debug_printf("adc read err\r\n");
+      }
+    break;
+    case ADC_FULLSET:
+       if(err ==0)
+      {
+        g_test_config.diff_cali[ch].fullset = adc;
+        g_test_config.diff_cali[ch].fullset_input = input_voltage;
+
+        WRITE_CFG(diff_cali[ch].fullset);
+        WRITE_CFG(diff_cali[ch].fullset_input);
+
+        g_test_config.diff_cali[ch].gain = calculate_gain_adc_single(ch);
+        WRITE_CFG(diff_cali[ch].gain);
+        debug_printf("fullset:%d\r\n",adc);
+      }
+      else
+      {
+        debug_printf("adc read err\r\n");
+      }
+    break;
+  }
+}
+
+
+
 
 void test_cmd(char *data)
 {
@@ -742,6 +784,17 @@ void test_cmd(char *data)
                 debug_printf("adc average cnt:%d\r\n",g_adc_average_cnt);
               }
           }
+          else if(strncmp(list[2],"Vref",4)==0)
+          {
+            int32_t Vref;
+              if(sscanf(list[2], "Vref=%d", &Vref)==1)
+              {
+                g_adc_vref = Vref;
+                debug_printf("adc Vref:%dmV\r\n",g_adc_vref);
+                g_test_config.Vref = Vref;
+                WRITE_CFG(Vref);
+              }
+          }
       }
     }
   }
@@ -785,7 +838,7 @@ void testTask(void *argument)
     g_adc_diff = driver_adc_open(ADC_ADS1220_DIFF_CH_0);
   }
 
-fram_test();
+
 
   g_fram = driver_fram_open(FRAM_FM25LC);
   

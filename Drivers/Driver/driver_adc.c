@@ -306,7 +306,6 @@ int32_t driver_adc_read(driver_t *drv,uint32_t ch,uint8_t *err)
   
   if(cfg->ch_mode == eADC_CH_DIFF)
   {
-    
     diff_ch = (ch - ADC_ADS1220_DIFF_CH_0);//총 8개 채널이 실제 물리 0채널임
     //차동 채널 0,1,2,3,4,5,6,7 은 ADS1220에서는 0채널로만 측정하며  MUX가 채널이 됨
     adc_diff_mux_set(diff_ch);
@@ -315,11 +314,11 @@ int32_t driver_adc_read(driver_t *drv,uint32_t ch,uint8_t *err)
   }
   else
   {
-     adc_single_mux_set(ch);
+    adc_single_mux_set(ch);
     adc = adc_api->read_single(drv->handle,ch%4,err);
   }
 
-   return adc;
+  return adc;
 
 }
 

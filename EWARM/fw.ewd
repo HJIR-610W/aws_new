@@ -6,7 +6,7 @@
         <toolchain>
             <name>ARM</name>
         </toolchain>
-        <debug>1</debug>
+        <debug>0</debug>
         <settings>
             <name>C-SPY</name>
             <archiveVersion>2</archiveVersion>
@@ -84,7 +84,7 @@
                 </option>
                 <option>
                     <name>OCDynDriverList</name>
-                    <state>JLINK_ID</state>
+                    <state>STLINK_ID</state>
                 </option>
                 <option>
                     <name>OCLastSavedByProductVersion</name>
