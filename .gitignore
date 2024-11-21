@@ -1,2 +1,5 @@
 /EWARM/fw/Obj
 /EWARM/fw/List
+/EWARM/release/Obj
+/EWARM/release/List
+*.tmp

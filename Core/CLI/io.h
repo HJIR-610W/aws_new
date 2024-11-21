@@ -9,6 +9,6 @@ void debug_uart_init(uint32_t baud_rate);
 int32_t debug_printf(const char * pFmt, ...);
 void debug_send(uint8_t *pData,uint16_t dataLen);
 void debug_puts(char *str);
-
+void debug_puts_nonos(char *str);
 void set_debug_uart_handle(driver_t *drv);
 #endif

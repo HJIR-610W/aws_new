@@ -35,6 +35,14 @@ driver_t *driver_di_open(uint32_t num)
     case DI_RAIN_HALL:
     case DI_RAIN_REED :
     case DI_RAIN_HALL_ERR:
+    case DI_QUAD_UARTA_1:
+    case DI_QUAD_UARTB_2:
+    case DI_QUAD_UARTC_3:
+    case DI_QUAD_UARTD_4:
+    case DI_QUAD_UARTA_5:
+    case DI_QUAD_UARTB_6:
+    case DI_QUAD_UARTC_7:
+    case DI_QUAD_UARTD_8:
          p_drv = stm32_di_open(num);
     break;
   }

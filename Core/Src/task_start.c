@@ -90,7 +90,7 @@ void startTask(void *arg)
   driver_led_set(runLed,LED_CMD_SET_TOGGLE_FREQ,&cfg);
   driver_led_set(runLed,LED_CMD_START,NULL);
   
-  ethernetTask_init();
+//  ethernetTask_init();
   testTask_init();
   
   osThreadExit();//¡æ∑· Ω√≈¥

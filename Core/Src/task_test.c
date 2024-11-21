@@ -256,7 +256,7 @@ void adc_read_single(int32_t ch)
   {
     gain = calculate_gain_adc_single(ch);
     offset = g_test_config.single_cali[ch].offset;
-    debug_printf("%12s:%d,%.3fv\r\n",nameList[ch],adc, get_voltage_vref(adc,offset));
+    debug_printf("%12s:%d,%9.6fv\r\n",nameList[ch],adc, get_voltage_vref(adc,offset));
   }
 }
 
@@ -276,7 +276,7 @@ void adc_read_diff(int32_t ch)
   {
     gain = calculate_gain_adc_diff(ch);
     offset = g_test_config.single_cali[ch].offset;
-    debug_printf("%s:%10d,%6.3fv\r\n",diff_nameLists[ch],adc, get_voltage_vref(adc,offset));
+    debug_printf("%s:%10d,%9.6fv\r\n",diff_nameLists[ch],adc, get_voltage_vref(adc,offset));
   }
 }
 
@@ -300,7 +300,7 @@ void adc_single_all_test(void)
     {
       gain = calculate_gain_adc_diff(adc_ch_list[i]);
       offset = g_test_config.single_cali[adc_ch_list[i]].offset;
-      debug_printf("%12s:%10d,%6.3fv\r\n",nameList[i],adc, get_voltage_vref(adc,offset));
+      debug_printf("%12s:%10d,%9.6fv\r\n",nameList[i],adc, get_voltage_vref(adc,offset));
     }
   }
 }
@@ -325,7 +325,7 @@ void adc_diff_all_test(void)
     {
     gain = calculate_gain_adc_diff(adc_ch_list[i]);
     offset = g_test_config.diff_cali[adc_ch_list[i]].offset;
-    debug_printf("%12s:%10d,%6.3fv\r\n",diff_nameLists[i],adc, get_voltage_vref(adc,offset));
+    debug_printf("%12s:%10d,%9.6fv\r\n",diff_nameLists[i],adc, get_voltage_vref(adc,offset));
 
     }
   }

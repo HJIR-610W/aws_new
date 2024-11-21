@@ -20,6 +20,16 @@ const stm32_di_cfg_t RAIN_REED_cfg  ={.port=IN_RAIN_REED_GPIO_Port,   .pin = IN_
 const stm32_di_cfg_t RAIN_HALL_cfg  ={.port=IN_RAIN_HALL_GPIO_Port,   .pin = IN_RAIN_HALL_Pin};
 const stm32_di_cfg_t RAIN_HALL_ERR_cfg  ={.port=IN_RAIN_ERR_GPIO_Port,.pin = IN_RAIN_ERR_Pin};
 
+const stm32_di_cfg_t QUAD_UARTA_1_cfg  ={.port=IN_EX_UART_INT_1_GPIO_Port,.pin = IN_EX_UART_INT_1_Pin};
+const stm32_di_cfg_t QUAD_UARTB_2_cfg  ={.port=IN_EX_UART_INT_2_GPIO_Port,.pin = IN_EX_UART_INT_2_Pin};
+const stm32_di_cfg_t QUAD_UARTC_3_cfg  ={.port=IN_EX_UART_INT_3_GPIO_Port,.pin = IN_EX_UART_INT_3_Pin};
+const stm32_di_cfg_t QUAD_UARTD_4_cfg  ={.port=IN_EX_UART_INT_4_GPIO_Port,.pin = IN_EX_UART_INT_4_Pin};
+const stm32_di_cfg_t QUAD_UARTA_5_cfg  ={.port=IN_EX_UART_INT_5_GPIO_Port,.pin = IN_EX_UART_INT_5_Pin};
+const stm32_di_cfg_t QUAD_UARTB_6_cfg  ={.port=IN_EX_UART_INT_6_GPIO_Port,.pin = IN_EX_UART_INT_6_Pin};
+const stm32_di_cfg_t QUAD_UARTC_7_cfg  ={.port=IN_EX_UART_INT_7_GPIO_Port,.pin = IN_EX_UART_INT_7_Pin};
+const stm32_di_cfg_t QUAD_UARTD_8_cfg  ={.port=IN_EX_UART_INT_8_GPIO_Port,.pin = IN_EX_UART_INT_8_Pin};
+
+
 driver_t g_stm32_di_list[STM32_DI_MAX];
 
 void stm32_di_init(const stm32_di_cfg_t *cfg)
@@ -67,7 +77,38 @@ driver_t *stm32_di_open(int num)
     g_stm32_di_list[num].cfg = (void *)&RAIN_HALL_ERR_cfg;
     stm32_di_init(&RAIN_HALL_ERR_cfg);
     break;
-
+    case STM32_DI_QUAD_UARTA_1:
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTA_1_cfg;
+    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    break;
+    case STM32_DI_QUAD_UARTB_2:
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTB_2_cfg;
+    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    break;
+    case STM32_DI_QUAD_UARTC_3:
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTC_3_cfg;
+    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    break;
+    case STM32_DI_QUAD_UARTD_4:
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTD_4_cfg;
+    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    break;
+    case STM32_DI_QUAD_UARTA_5:
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTA_1_cfg;
+    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    break;
+    case STM32_DI_QUAD_UARTB_6:
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTB_2_cfg;
+    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    break;
+    case STM32_DI_QUAD_UARTC_7:
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTC_3_cfg;
+    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    break;
+    case STM32_DI_QUAD_UARTD_8:
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTD_4_cfg;
+    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    break;
   }
  
   return &g_stm32_di_list[num];

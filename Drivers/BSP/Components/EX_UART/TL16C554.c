@@ -3,7 +3,9 @@
 #include "TL16C554.h"
 
 #include <stdio.h>
-
+#include "driver_digitalIn.h"
+#include "utile.h"
+#include "io.h"
 #define UART_CLOCK_FREQ 3686400
 
 // DLAB 비트 마스크
@@ -26,6 +28,10 @@
 #define THR(BASE) (void *)(BASE + 0x00) // Transmitter Holding Register
 #define DLL(BASE) (void *)(BASE + 0x00) // Divisor Latch Low
 #define DLM(BASE) (void *)(BASE + 0x01) // Divisor Latch High
+
+#define IER(BASE) (void *)(BASE + 0x01)
+
+
 #define FCR(BASE) (void *)(BASE + 0x02) 
 #define LCR(BASE) (void *)(BASE + 0x03) 
 #define MCR(BASE) (void *)(BASE + 0x04) 
@@ -42,6 +48,29 @@
 #define FCR_OFFSET 0x02 // FIFO Control Register
 #define MCR_OFFSET 0x04 // Modem Control Register
 
+typedef struct adc_api_s
+{
+    void (*send)(driver_t *tls16c554,uint8_t *pData,uint16_t dataLen);
+    int32_t (*recv)(driver_t *tls16c554,uint8_t *pBuff);
+    int32_t (*recv_byte)(driver_t *tls16c554,uint8_t *pData);
+    void (*set)(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option);
+    void (*init)(driver_t *tls16c554);
+}tl16c554_api_t;
+
+typedef struct tl16c554_cfg_s
+{
+  driver_t *irq_io;
+}tl16c554_cfg_t;
+
+
+void irq_INTA_1(void *arg);
+void irq_INTB_2(void *arg);
+void irq_INTC_3(void *arg);
+void irq_INTD_4(void *arg);
+void irq_INTA_5(void *arg);
+void irq_INTB_6(void *arg);
+void irq_INTC_7(void *arg);
+void irq_INTD_8(void *arg);
 
 
 uint8_t read_register(void * addr) 
@@ -119,36 +148,59 @@ void set_baud_rate(int uart_num,uint32_t baud_rate)
     write_register(LCR(exUartBaseAddress[uart_num]), lcr_value & ~DLAB_BIT);
 }
 
+uint8_t g_reg;
 
-
-void quad_init(driver_t *tls16c554) {
-
+void quad_init(driver_t *tls16c554)
+{
+  di_isr_set_cfg_t isr_cfg; 
+  tl16c554_cfg_t *cfg;
+  void (*isrTable[8])(void *)={irq_INTA_1,irq_INTB_2,irq_INTC_3,irq_INTD_4,
+                               irq_INTA_5,irq_INTB_6,irq_INTC_7,irq_INTD_8};
+  const char *isrNameTable[8]={TOSTRING(irq_INTB_1),TOSTRING(irq_INTB_2),
+                                   TOSTRING(irq_INTC_3),TOSTRING(irq_INTD_4),
+                                   TOSTRING( irq_INTA_5),TOSTRING(irq_INTB_6),
+                                   TOSTRING(irq_INTC_7),TOSTRING(irq_INTD_8)};
   int baud_rate = 115200;
   int uart_num = tls16c554->num;
-    // 보오드레이트 설정을 위한 Divisor 계산
-    uint16_t divisor = UART_CLOCK_FREQ / (16 * baud_rate);
 
-    // DLAB 비트 설정 (LCR의 MSB 비트)
-    write_register(LCR(exUartBaseAddress[uart_num]),0x80);
+  // 보오드레이트 설정을 위한 Divisor 계산
+  uint16_t divisor = UART_CLOCK_FREQ / (16 * baud_rate);
+
+  // DLAB 비트 설정 (LCR의 MSB 비트)
+  write_register(LCR(exUartBaseAddress[uart_num]),0x80);
+      
+  // DLL과 DLM에 divisor 값 설정
+
+  write_register(DLL(exUartBaseAddress[uart_num]),divisor & 0xFF);
+  write_register(DLM(exUartBaseAddress[uart_num]),(divisor >> 8) & 0xFF);
         
-    // DLL과 DLM에 divisor 값 설정
-
-    write_register(DLL(exUartBaseAddress[uart_num]),divisor & 0xFF);
-    write_register(DLM(exUartBaseAddress[uart_num]),(divisor >> 8) & 0xFF);
-        
-        
-
-
-    // DLAB 비트를 0으로 설정하여 LCR 설정
-    write_register(LCR(exUartBaseAddress[uart_num]),0x03);
+   // DLAB 비트를 0으로 설정하여 LCR 설정
+  write_register(LCR(exUartBaseAddress[uart_num]),0x03);
         
     
-    // FIFO 설정 (FCR)
-        write_register(FCR(exUartBaseAddress[uart_num]),0x07);// FIFO enable, RX/TX FIFO reset
+  // FIFO 설정 (FCR)
+  write_register(FCR(exUartBaseAddress[uart_num]),0x07);// FIFO enable, RX/TX FIFO reset
 
 
-    // MCR 설정 (필요에 따라 추가 설정)
-        write_register(MCR(exUartBaseAddress[uart_num]),0x00);
+  // MCR 설정 (필요에 따라 추가 설정)
+  write_register(MCR(exUartBaseAddress[uart_num]),0x08);
+
+
+g_reg =read_register(IER(exUartBaseAddress[uart_num]));
+ // write_register(IER(exUartBaseAddress[uart_num]),0x01);
+
+
+  cfg = tls16c554->cfg;
+
+  isr_cfg.call    = isrTable[tls16c554->num];
+  isr_cfg.name = isrNameTable[tls16c554->num];
+  isr_cfg.trigger = eDI_RISING;
+  isr_cfg.prio    = 6;
+
+  driver_di_set(cfg->irq_io,DI_SET_INTERRUT,&isr_cfg);
+
+
+
 }
 
 // 데이터 전송 함수
@@ -211,18 +263,10 @@ void quad_set(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option)
 
 
 
-typedef struct adc_api_s
-{
-    void (*send)(driver_t *tls16c554,uint8_t *pData,uint16_t dataLen);
-    int32_t (*recv)(driver_t *tls16c554,uint8_t *pBuff);
-    int32_t (*recv_byte)(driver_t *tls16c554,uint8_t *pData);
-    void (*set)(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option);
-    void (*init)(driver_t *tls16c554);
-}tl16c554_api_t;
 
 
 
-
+tl16c554_cfg_t g_tl16c554_cfg[8];
 tl16c554_api_t g_tl16c554_api={.send =quad_send,
                               .recv_byte = quad_recv_byte,
                               .set= quad_set,
@@ -241,9 +285,12 @@ driver_t *tls16c554_open(int num)
 
   g_quad_uart[num].num = num;
   g_quad_uart[num].api = &g_tl16c554_api;
-  
 
-    quad_init(&g_quad_uart[num]);
+  g_tl16c554_cfg[num].irq_io = driver_di_open(num +DI_QUAD_UARTA_1);
+
+  g_quad_uart[num].cfg = &g_tl16c554_cfg[num];
+
+  quad_init(&g_quad_uart[num]);
 
   
   return &g_quad_uart[num];
@@ -332,12 +379,68 @@ uint16_t tls16c554_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uin
 }
 
 
+
+driver_t *g_quad_uart_INTA_1;
+driver_t *g_quad_uart_INTB_2;
+driver_t *g_quad_uart_INTC_3;
+driver_t *g_quad_uart_INTD_4;
+driver_t *g_quad_uart_INTA_5;
+driver_t *g_quad_uart_INTB_6;
+driver_t *g_quad_uart_INTC_7;
+driver_t *g_quad_uart_INTD_8;
+
 void tls16c554_init(driver_t *tls16c554)
 {
   tl16c554_api_t *api = (tl16c554_api_t *)tls16c554->api;
-  
+
+
   api->init(tls16c554);
     
+
+}
+
+
+
+void irq_INTA_1(void *arg)
+{
+  debug_puts_nonos("INTA_1\r\n");
+}
+
+void irq_INTB_2(void *arg)
+{
+  debug_puts_nonos("INTB_2\r\n");
+}
+
+
+void irq_INTC_3(void *arg)
+{
+  debug_puts_nonos("INTC_3\r\n");
+}
+
+void irq_INTD_4(void *arg)
+{
+  debug_puts_nonos("INTD_4\r\n");
+}
+
+void irq_INTA_5(void *arg)
+{
+  debug_puts_nonos("INTA_5\r\n");
+}
+
+void irq_INTB_6(void *arg)
+{
+  debug_puts_nonos("INTB_6\r\n");
+}
+
+
+void irq_INTC_7(void *arg)
+{
+  debug_puts_nonos("INTC_7\r\n");
+}
+
+void irq_INTD_8(void *arg)
+{
+  debug_puts_nonos("INTD_8\r\n");
 }
 
 

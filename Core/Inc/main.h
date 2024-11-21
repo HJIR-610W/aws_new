@@ -25,15 +25,7 @@ void aws_free(void *ptr);
 #define IN_EX_UART_INT_5_EXTI_IRQn EXTI9_5_IRQn
 #define NOT_USED_PC13_Pin GPIO_PIN_13
 #define NOT_USED_PC13_GPIO_Port GPIOC
-#define IN_EX_UART_INT_6_Pin GPIO_PIN_9
-#define IN_EX_UART_INT_6_GPIO_Port GPIOI
-#define IN_EX_UART_INT_6_EXTI_IRQn EXTI9_5_IRQn
-#define IN_EX_UART_INT_7_Pin GPIO_PIN_10
-#define IN_EX_UART_INT_7_GPIO_Port GPIOI
-#define IN_EX_UART_INT_7_EXTI_IRQn EXTI15_10_IRQn
-#define IN_EX_UART_INT_8_Pin GPIO_PIN_11
-#define IN_EX_UART_INT_8_GPIO_Port GPIOI
-#define IN_EX_UART_INT_8_EXTI_IRQn EXTI15_10_IRQn
+
 #define OUT_CON_PWR_ASEN_C_Pin GPIO_PIN_9
 #define OUT_CON_PWR_ASEN_C_GPIO_Port GPIOF
 #define OUT_CON_PWR_ASEN_D_Pin GPIO_PIN_10
@@ -116,6 +108,8 @@ void aws_free(void *ptr);
 #define OUT_EX_UART_RST_A_GPIO_Port GPIOE
 #define OUT_EX_UART_RST_B_Pin GPIO_PIN_1
 #define OUT_EX_UART_RST_B_GPIO_Port GPIOE
+
+
 #define IN_EX_UART_INT_1_Pin GPIO_PIN_4
 #define IN_EX_UART_INT_1_GPIO_Port GPIOI
 #define IN_EX_UART_INT_1_EXTI_IRQn EXTI4_IRQn
@@ -128,6 +122,16 @@ void aws_free(void *ptr);
 #define IN_EX_UART_INT_4_Pin GPIO_PIN_7
 #define IN_EX_UART_INT_4_GPIO_Port GPIOI
 #define IN_EX_UART_INT_4_EXTI_IRQn EXTI9_5_IRQn
+#define IN_EX_UART_INT_6_Pin GPIO_PIN_9
+#define IN_EX_UART_INT_6_GPIO_Port GPIOI
+#define IN_EX_UART_INT_6_EXTI_IRQn EXTI9_5_IRQn
+#define IN_EX_UART_INT_7_Pin GPIO_PIN_10
+#define IN_EX_UART_INT_7_GPIO_Port GPIOI
+#define IN_EX_UART_INT_7_EXTI_IRQn EXTI15_10_IRQn
+#define IN_EX_UART_INT_8_Pin GPIO_PIN_11
+#define IN_EX_UART_INT_8_GPIO_Port GPIOI
+#define IN_EX_UART_INT_8_EXTI_IRQn EXTI15_10_IRQn
+
 
 
 #define OUT_FLASH_CS_Pin GPIO_PIN_7
@@ -158,6 +162,7 @@ void aws_free(void *ptr);
 
 #define IN_RAIN_ERR_Pin GPIO_PIN_6
 #define IN_RAIN_ERR_GPIO_Port GPIOA
+
 
 
 
