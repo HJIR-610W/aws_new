@@ -19,6 +19,8 @@
 #include "usart.h"
 #include "task_start.h"
 #include "task_test.h"
+#include  "task_ethernet.h"
+#include "driver_led.h"
 
 
 #define POOL_SIZE (1024 * 4)  
@@ -62,11 +64,15 @@ void aws_free(void *ptr)
  */
 void startTask(void *arg)
 {
+  driver_t *runLed;    
+  led_freq_cfg_t cfg={.freq=5,.highDuty=10};
+  
+  
   asw_tlsf_init(POOL_SIZE);
 
   debug_uart_init(115200);
 
-  debug_printf("aws 0.0.1\r\n");
+
 
   mcu_interrupt_init();
   
@@ -77,18 +83,18 @@ void startTask(void *arg)
   MX_SDIO_SD_Init();
   MX_FATFS_Init();
   DWT_Delay_Init();
+  
+  
+  runLed = driver_led_open(LED_SYS_RUN);
+  
+  driver_led_set(runLed,LED_CMD_SET_TOGGLE_FREQ,&cfg);
+  driver_led_set(runLed,LED_CMD_START,NULL);
+  
+  ethernetTask_init();
   testTask_init();
-    
-   extern int is_debug_mode(void);
-
-   if(is_debug_mode())
-   {
-    debug_printf("debug mode");
-   } 
-  while(1)
-  {
-
-  }
+  
+  osThreadExit();//¡æ∑· Ω√≈¥
+  
 }
 
 void startTask_init(void)

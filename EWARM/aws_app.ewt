@@ -2,11 +2,11 @@
 <project>
     <fileVersion>3</fileVersion>
     <configuration>
-        <name>fw</name>
+        <name>release</name>
         <toolchain>
             <name>ARM</name>
         </toolchain>
-        <debug>1</debug>
+        <debug>0</debug>
         <settings>
             <name>C-STAT</name>
             <archiveVersion>262</archiveVersion>
@@ -1114,7 +1114,7 @@
             <data>
                 <version>2</version>
                 <wantNonLocal>1</wantNonLocal>
-                <debug>1</debug>
+                <debug>0</debug>
                 <option>
                     <name>GenRtcDebugHeap</name>
                     <state>0</state>
@@ -1202,6 +1202,12 @@
                     <name>$PROJ_DIR$\..\Core\Src\adc.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Core\Src\app_cfg.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\app_cfg.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Core\Src\config.c</name>
                 </file>
                 <file>
@@ -1221,6 +1227,9 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\gpio.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\hj_product_list.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\main.c</name>
@@ -1251,6 +1260,12 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_cmd.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_ethernet.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_ethernet.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_host.c</name>
@@ -1302,6 +1317,9 @@
                     <file>
                         <name>$PROJ_DIR$\..\LWIP\App\lwip.c</name>
                     </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\LWIP\App\lwip.h</name>
+                    </file>
                 </group>
                 <group>
                     <name>Target</name>
@@ -1311,6 +1329,9 @@
                 </group>
             </group>
         </group>
+        <file>
+            <name>$PROJ_DIR$\..\Core\읽기.txt</name>
+        </file>
     </group>
     <group>
         <name>CLI</name>
@@ -2048,6 +2069,12 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\Drivers\Utile\utile.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Drivers\Utile\utile_time.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Drivers\Utile\utile_time.h</name>
         </file>
     </group>
 </project>

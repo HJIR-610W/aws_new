@@ -452,13 +452,7 @@ void StartDefaultTask(void *argument)
 {
   char buff[100];
   uint32_t i=0;
-  driver_t *runLed;    
-  led_freq_cfg_t cfg={.freq=5,.highDuty=10};
 
-  runLed = driver_led_open(LED_SYS_RUN);
-  
-  driver_led_set(runLed,LED_CMD_SET_TOGGLE_FREQ,&cfg);
-  driver_led_set(runLed,LED_CMD_START,NULL);
   debug_uart = stm32_uart_open(STM32_UART_1);
 
 

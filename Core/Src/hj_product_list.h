@@ -1,7 +1,7 @@
 
-#ifndef PROJECT_DEF_H
-#define PROJECT_DEF_H
-
+#ifndef HJ_PRODUCT_LIST_H
+#define HJ_PRODUCT_LIST_H
+#include <stdint.h>
 
 
 #define INFO_VER (0U)
@@ -23,9 +23,6 @@
 #define NICK_MINILOGGER_HJ   (0U)
 
 
-#define APP_VERSION        0x01000000U   // 바이트 단위
-
-
 typedef struct section_info_s
 {
     uint32_t ver;
@@ -42,6 +39,5 @@ typedef struct section_info_s
 
 
 
-#define DEBUG_MODE_EN 0   // 디버깅시 1로하영 사용
 
 #endif

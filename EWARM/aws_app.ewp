@@ -2,7 +2,7 @@
 <project>
     <fileVersion>3</fileVersion>
     <configuration>
-        <name>fw</name>
+        <name>release</name>
         <toolchain>
             <name>ARM</name>
         </toolchain>
@@ -13,18 +13,18 @@
             <data>
                 <version>31</version>
                 <wantNonLocal>1</wantNonLocal>
-                <debug>1</debug>
+                <debug>0</debug>
                 <option>
                     <name>ExePath</name>
-                    <state>fw/Exe</state>
+                    <state>release\Exe</state>
                 </option>
                 <option>
                     <name>ObjPath</name>
-                    <state>fw/Obj</state>
+                    <state>release\Obj</state>
                 </option>
                 <option>
                     <name>ListPath</name>
-                    <state>fw/List</state>
+                    <state>release\List</state>
                 </option>
                 <option>
                     <name>GEndianMode</name>
@@ -217,7 +217,7 @@
             <data>
                 <version>36</version>
                 <wantNonLocal>1</wantNonLocal>
-                <debug>1</debug>
+                <debug>0</debug>
                 <option>
                     <name>CCOptimizationNoSizeConstraints</name>
                     <state>0</state>
@@ -521,7 +521,7 @@
             <data>
                 <version>10</version>
                 <wantNonLocal>1</wantNonLocal>
-                <debug>1</debug>
+                <debug>0</debug>
                 <option>
                     <name>AObjPrefix</name>
                     <state>1</state>
@@ -683,19 +683,19 @@
             <data>
                 <version>1</version>
                 <wantNonLocal>1</wantNonLocal>
-                <debug>1</debug>
+                <debug>0</debug>
                 <option>
                     <name>OOCOutputFormat</name>
                     <version>3</version>
-                    <state>1</state>
+                    <state>3</state>
                 </option>
                 <option>
                     <name>OCOutputOverride</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>OOCOutputFile</name>
-                    <state>fw.hex</state>
+                    <state>aws_app.bin</state>
                 </option>
                 <option>
                     <name>OOCCommandLineProducer</name>
@@ -735,10 +735,10 @@
             <data>
                 <version>23</version>
                 <wantNonLocal>1</wantNonLocal>
-                <debug>1</debug>
+                <debug>0</debug>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>fw.out</state>
+                    <state>aws_app.out</state>
                 </option>
                 <option>
                     <name>IlinkLibIOConfig</name>
@@ -1077,7 +1077,7 @@
             <data>
                 <version>0</version>
                 <wantNonLocal>1</wantNonLocal>
-                <debug>1</debug>
+                <debug>0</debug>
                 <option>
                     <name>IarchiveInputs</name>
                     <state></state>
@@ -1119,6 +1119,12 @@
                     <name>$PROJ_DIR$\..\Core\Src\adc.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Core\Src\app_cfg.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\app_cfg.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Core\Src\config.c</name>
                 </file>
                 <file>
@@ -1138,6 +1144,9 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\gpio.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\hj_product_list.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\main.c</name>
@@ -1168,6 +1177,12 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_cmd.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_ethernet.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_ethernet.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_host.c</name>
@@ -1219,6 +1234,9 @@
                     <file>
                         <name>$PROJ_DIR$\..\LWIP\App\lwip.c</name>
                     </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\LWIP\App\lwip.h</name>
+                    </file>
                 </group>
                 <group>
                     <name>Target</name>
@@ -1228,6 +1246,9 @@
                 </group>
             </group>
         </group>
+        <file>
+            <name>$PROJ_DIR$\..\Core\읽기.txt</name>
+        </file>
     </group>
     <group>
         <name>CLI</name>
@@ -1965,6 +1986,12 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\Drivers\Utile\utile.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Drivers\Utile\utile_time.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Drivers\Utile\utile_time.h</name>
         </file>
     </group>
 </project>

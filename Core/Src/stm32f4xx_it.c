@@ -224,3 +224,9 @@ void RTC_WKUP_IRQHandler(void)
     EXTI->PR = EXTI_PR_PR22;
 
 }
+
+
+void FPU_IRQHandler(void)
+{
+  
+}

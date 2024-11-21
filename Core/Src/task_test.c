@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "app_cfg.h"
 #include "cmsis_os.h"
 #include "config.h"
 #include "driver_adc.h"
@@ -796,6 +797,13 @@ void test_cmd(char *data)
               }
           }
       }
+      else if(strncmp(list[1],"update",6)==0)
+      {
+          debug_printf("ok\r\n");
+          set_testKey(0xa5a5a5a5);
+          HAL_NVIC_SystemReset();
+        
+      }
     }
   }
 }
@@ -808,8 +816,12 @@ void testTask(void *argument)
   osStatus status;
   uint8_t data;
   uint16_t cnt=0;
+  uint8_t a,b,c,d;
 
-
+  get_appVer(&a,&b,&c,&d);
+  
+  debug_printf("app ver:%d.%d.%d.%d\r\n",a,b,c,d);
+  
   g_rs485_a = driver_rs485_open(RS485_A);
   g_rs485_b = driver_rs485_open(RS485_B);
   g_sdi     = driver_sdi_open(SDI_1);
