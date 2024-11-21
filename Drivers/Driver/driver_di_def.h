@@ -21,6 +21,7 @@ typedef struct di_isr_set_cfg_s
   void (*call)(void *);
   eDI_TRIGGER_t trigger;
   uint16_t prio;
+  void *handle;
 }di_isr_set_cfg_t;
 
 

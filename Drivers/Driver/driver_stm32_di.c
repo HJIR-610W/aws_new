@@ -79,35 +79,35 @@ driver_t *stm32_di_open(int num)
     break;
     case STM32_DI_QUAD_UARTA_1:
     g_stm32_di_list[num].cfg = (void *)&QUAD_UARTA_1_cfg;
-    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    stm32_di_init(&QUAD_UARTA_1_cfg);
     break;
     case STM32_DI_QUAD_UARTB_2:
     g_stm32_di_list[num].cfg = (void *)&QUAD_UARTB_2_cfg;
-    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    stm32_di_init(&QUAD_UARTB_2_cfg);
     break;
     case STM32_DI_QUAD_UARTC_3:
     g_stm32_di_list[num].cfg = (void *)&QUAD_UARTC_3_cfg;
-    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    stm32_di_init(&QUAD_UARTC_3_cfg);
     break;
     case STM32_DI_QUAD_UARTD_4:
     g_stm32_di_list[num].cfg = (void *)&QUAD_UARTD_4_cfg;
-    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    stm32_di_init(&QUAD_UARTD_4_cfg);
     break;
     case STM32_DI_QUAD_UARTA_5:
-    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTA_1_cfg;
-    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTA_5_cfg;
+    stm32_di_init(&QUAD_UARTA_5_cfg);
     break;
     case STM32_DI_QUAD_UARTB_6:
-    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTB_2_cfg;
-    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTB_6_cfg;
+    stm32_di_init(&QUAD_UARTB_6_cfg);
     break;
     case STM32_DI_QUAD_UARTC_7:
-    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTC_3_cfg;
-    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTC_7_cfg;
+    stm32_di_init(&QUAD_UARTC_7_cfg);
     break;
     case STM32_DI_QUAD_UARTD_8:
-    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTD_4_cfg;
-    stm32_di_init(&RAIN_HALL_ERR_cfg);
+    g_stm32_di_list[num].cfg = (void *)&QUAD_UARTD_8_cfg;
+    stm32_di_init(&QUAD_UARTD_8_cfg);
     break;
   }
  
@@ -262,6 +262,7 @@ void stm32_di_set(driver_t *drv,uint8_t cmd,void *option)
       exti_isr_cfg.call = isr->call;
       exti_isr_cfg.name = isr->name;
       exti_isr_cfg.gpio_pin = cfg->pin;
+      exti_isr_cfg.handle = isr->handle;;
       exti_register(&exti_isr_cfg);
 
       GPIO_InputInterrupt_Init(cfg->port,cfg->pin,isr->trigger,isr->prio);

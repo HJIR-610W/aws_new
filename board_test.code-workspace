@@ -16,7 +16,13 @@
 			"driver_stm32_di.h": "c",
 			"driver_digitalin.h": "c",
 			"stm32f4xx_hal.h": "c",
-			"utile.h": "c"
+			"utile.h": "c",
+			"bit": "cpp",
+			"compare": "cpp",
+			"cstddef": "cpp",
+			"limits": "cpp",
+			"type_traits": "cpp",
+			"xutility": "cpp"
 		}
 	}
 }

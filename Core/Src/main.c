@@ -1,5 +1,7 @@
 
 #include "cmsis_os.h"
+#include "fsmc.h"
+#include "gpio.h"
 #include "main.h"
 #include "project_def.h"
 #include "task_start.h"
@@ -78,8 +80,9 @@ int main(void)
 
   SystemClock_Config();
  
-
- 
+  MX_GPIO_Init();
+   MX_FSMC_Init();
+   
   osKernelInitialize(); 
 
   startTask_init();

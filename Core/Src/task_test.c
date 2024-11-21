@@ -830,6 +830,8 @@ void testTask(void *argument)
   g_uart3      = driver_uart_open(UART_STM32_3);
   
   g_quad_232_1 = driver_uart_open(UART_EX_232_1);
+  
+  driver_uart_send(g_quad_232_1,"g_quad_232_1\r\n",14);
   g_quad_ttl_2 = driver_uart_open(UART_EX_TTL_2);
   g_232_A =  driver_uart_open(UART_EX_232_A_3);
   g_232_B =  driver_uart_open(UART_EX_232_B_4);

@@ -17,16 +17,16 @@ typedef struct di_api_s
 static di_api_t di_api={.read = stm32_di_read,
                         .set  = stm32_di_set};
 
-driver_t g_di_list[DI_MAX];
+driver_t g_drv_di_list[DI_MAX];
 
 driver_t *driver_di_open(uint32_t num)
 {
 
   driver_t *p_drv;
 
-  if(g_di_list[num].opened == true)
+  if(g_drv_di_list[num].opened == true)
   {
-    return &g_di_list[num];
+    return &g_drv_di_list[num];
   }
   switch(num)
   {
@@ -46,12 +46,12 @@ driver_t *driver_di_open(uint32_t num)
          p_drv = stm32_di_open(num);
     break;
   }
+  g_drv_di_list[num].num = num;
+  g_drv_di_list[num].api = &di_api;
+  g_drv_di_list[num].handle = p_drv;//연결된 IC
+  g_drv_di_list[num].opened = true; 
 
-  g_di_list[num].api = &di_api;
-  g_di_list[num].handle = p_drv;//연결된 IC
-  g_di_list[num].opened = true; 
-
-    return &g_di_list[num];
+    return &g_drv_di_list[num];
 }
 
 

@@ -33,6 +33,7 @@
 
 
 #define FCR(BASE) (void *)(BASE + 0x02) 
+#define IIR(BASE) (void *)(BASE + 0x02) 
 #define LCR(BASE) (void *)(BASE + 0x03) 
 #define MCR(BASE) (void *)(BASE + 0x04) 
 #define LSR(BASE) (void *)(BASE + 0x05) 
@@ -187,15 +188,16 @@ void quad_init(driver_t *tls16c554)
 
 
 g_reg =read_register(IER(exUartBaseAddress[uart_num]));
- // write_register(IER(exUartBaseAddress[uart_num]),0x01);
+  write_register(IER(exUartBaseAddress[uart_num]),0x05);
 
 
   cfg = tls16c554->cfg;
 
   isr_cfg.call    = isrTable[tls16c554->num];
-  isr_cfg.name = isrNameTable[tls16c554->num];
+  isr_cfg.name    = isrNameTable[tls16c554->num];
   isr_cfg.trigger = eDI_RISING;
   isr_cfg.prio    = 6;
+  isr_cfg.handle  = tls16c554;
 
   driver_di_set(cfg->irq_io,DI_SET_INTERRUT,&isr_cfg);
 
@@ -267,33 +269,36 @@ void quad_set(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option)
 
 
 tl16c554_cfg_t g_tl16c554_cfg[8];
-tl16c554_api_t g_tl16c554_api={.send =quad_send,
-                              .recv_byte = quad_recv_byte,
-                              .set= quad_set,
-                              .init = quad_init};
-driver_t g_quad_uart[8];
+tl16c554_api_t g_tl16c554_api={.send = quad_send,
+                               .recv_byte = quad_recv_byte,
+                               .set  = quad_set,
+                               .init = quad_init};
+driver_t g_drv_quad_uart[8];
 
 
-int g_init=1;
+
 driver_t *tls16c554_open(int num)
 {
-
-  if(g_quad_uart[num].opened == true)
+  const char *portNameList[8]={"QUAD_1","QUAD_2","QUAD_3","QUAD_4","QUAD_5","QUAD_6","QUAD_7","QUAD_8"};
+  
+  if(g_drv_quad_uart[num].opened == true)
   {
-    return &g_quad_uart[num];
+    return &g_drv_quad_uart[num];
   }
+  
+  g_drv_quad_uart[num].name = portNameList[num];
 
-  g_quad_uart[num].num = num;
-  g_quad_uart[num].api = &g_tl16c554_api;
+  g_drv_quad_uart[num].opened = true;
+  g_drv_quad_uart[num].num    = num;
+  g_drv_quad_uart[num].api    = &g_tl16c554_api;//모두 같은 api 사용
 
   g_tl16c554_cfg[num].irq_io = driver_di_open(num +DI_QUAD_UARTA_1);
 
-  g_quad_uart[num].cfg = &g_tl16c554_cfg[num];
+  g_drv_quad_uart[num].cfg = &g_tl16c554_cfg[num];
 
-  quad_init(&g_quad_uart[num]);
-
+  quad_init(&g_drv_quad_uart[num]);
   
-  return &g_quad_uart[num];
+  return &g_drv_quad_uart[num];
 }
 
 
@@ -401,46 +406,90 @@ void tls16c554_init(driver_t *tls16c554)
 
 
 
+void irq_tl16c554(driver_t *drv)
+{
+  uint8_t iir;
+  uint8_t interruptType ;
+  uint8_t data; 
+  uint8_t lineStatus;
+  uint8_t modemStatus;
+  iir = read_register(IIR(exUartBaseAddress[drv->num]));
+            write_register(THR(exUartBaseAddress[drv->num]), iir);
+  if ((iir & 0x01) == 0)
+  {
+     interruptType = (iir >> 1) & 0x07;  // Extract interrupt type
+
+    switch (interruptType) 
+    {
+        case 0x01:  // Transmitter Holding Register Empty
+            // Handle TX Ready
+            write_register(THR(exUartBaseAddress[drv->num]), '1');
+            break;
+
+        case 0x02:  // Receiver Data Available
+            // Handle RX Data
+             data = read_register(RBR(exUartBaseAddress[drv->num])); // RBR에서 데이터 읽기
+            // Process data...
+            break;
+
+        case 0x03:  // Receiver Line Status
+            // Handle Line Error
+            lineStatus = read_register(LSR(exUartBaseAddress[drv->num])); // RBR에서 데이터 읽기
+            // Check for specific errors
+            break;
+
+        case 0x04:  // Modem Status
+            // Handle Modem Status
+            modemStatus = read_register(MSR(exUartBaseAddress[drv->num])); // RBR에서 데이터 읽기
+            break;
+
+        default:
+            // Handle other cases (if applicable)
+            break;
+    }
+  }
+}
+
+
 void irq_INTA_1(void *arg)
 {
-  debug_puts_nonos("INTA_1\r\n");
+  irq_tl16c554((driver_t *)arg);
 }
 
 void irq_INTB_2(void *arg)
 {
-  debug_puts_nonos("INTB_2\r\n");
+  irq_tl16c554((driver_t *)arg);
 }
-
 
 void irq_INTC_3(void *arg)
 {
-  debug_puts_nonos("INTC_3\r\n");
+  irq_tl16c554((driver_t *)arg);
 }
 
 void irq_INTD_4(void *arg)
 {
-  debug_puts_nonos("INTD_4\r\n");
+  irq_tl16c554((driver_t *)arg);
 }
 
 void irq_INTA_5(void *arg)
 {
-  debug_puts_nonos("INTA_5\r\n");
+  irq_tl16c554((driver_t *)arg);
 }
 
 void irq_INTB_6(void *arg)
 {
-  debug_puts_nonos("INTB_6\r\n");
+  irq_tl16c554((driver_t *)arg);
 }
 
 
 void irq_INTC_7(void *arg)
 {
-  debug_puts_nonos("INTC_7\r\n");
+  irq_tl16c554((driver_t *)arg);
 }
 
 void irq_INTD_8(void *arg)
 {
-  debug_puts_nonos("INTD_8\r\n");
+  irq_tl16c554((driver_t *)arg);
 }
 
 

@@ -4,7 +4,7 @@
 #include "cmsis_os.h"
 #include "fatfs.h"
 #include "fsmc.h"
-#include "gpio.h"
+
 #include "i2c.h"
 #include "io.h"
 #include "lwip.h"
@@ -76,9 +76,9 @@ void startTask(void *arg)
 
   mcu_interrupt_init();
   
-  MX_FSMC_Init();
 
-  MX_GPIO_Init();
+
+
   MX_ADC1_Init();
   MX_SDIO_SD_Init();
   MX_FATFS_Init();

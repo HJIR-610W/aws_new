@@ -17,6 +17,7 @@
 #define STM32_DI_RAIN_REED     2
 #define STM32_DI_RAIN_HALL     3
 #define STM32_DI_RAIN_HALL_ERR 4
+
 #define STM32_DI_QUAD_UARTA_1  5
 #define STM32_DI_QUAD_UARTB_2  6
 #define STM32_DI_QUAD_UARTC_3  7
