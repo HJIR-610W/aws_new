@@ -20,8 +20,9 @@
 #include "task_start.h"
 #include "task_test.h"
 #include  "task_ethernet.h"
+#include "task_logging.h"
 #include "driver_led.h"
-
+#include "swTimer.h"
 
 #define POOL_SIZE (1024 * 4)  
 
@@ -88,8 +89,9 @@ void startTask(void *arg)
   driver_led_set(runLed,LED_CMD_START,NULL);
   
 //  ethernetTask_init();
+loggingTask_init();
   testTask_init();
-  
+  swTimer_init();
   osThreadExit();//¡æ∑· Ω√≈¥
   
 }

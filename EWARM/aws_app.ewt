@@ -1277,6 +1277,12 @@
                     <name>$PROJ_DIR$\..\Core\Src\task_cmd.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_comm.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_comm.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_ethernet.c</name>
                 </file>
                 <file>
@@ -1287,6 +1293,12 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_host.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_logging.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Core\Src\task_logging.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Core\Src\task_rain.c</name>

@@ -184,36 +184,66 @@ driver_t *driver_uart_open(int  num)
 
 }
 
-void driver_uart_send(driver_t *uart,uint8_t *pData,uint16_t dataLen)
+void driver_uart_send(driver_t *drv,uint8_t *pData,uint16_t dataLen)
 {
-  rs232_api_t *api = (rs232_api_t *)uart->api;
+  rs232_api_t *api = (rs232_api_t *)drv->api;
 
+  if(drv->sem)
+  {
+    osSemaphoreAcquire(drv->sem, osWaitForever);
+  }
   if(dataLen)
   {
-    api->send(uart->handle,pData,dataLen);
+    api->send(drv->handle,pData,dataLen);
   }
+  if(drv->sem)
+  {
+    osSemaphoreRelease(drv->sem);
+  }
+
 }
 
 int32_t driver_uart_recv(driver_t *drv,uint8_t *pBuff)
 {
   rs232_api_t *api = (rs232_api_t *)drv->api;
   
+    if(drv->sem)
+  {
+    osSemaphoreAcquire(drv->sem, osWaitForever);
+  }
   api->recv(drv->handle,pBuff);
+  if(drv->sem)
+  {
+    osSemaphoreRelease(drv->sem);
+  }
 
   return 0;
 }
 
-int driver_recv_uart_byte(driver_t *uart,uint8_t *pData)
+int driver_recv_uart_byte(driver_t *drv,uint8_t *pData)
 {
-  rs232_api_t *api = (rs232_api_t *)uart->api;
-  
-  return api->recv_byte(uart->handle,pData);
+  int32_t cnt;
+
+  rs232_api_t *api = (rs232_api_t *)drv->api;
+      if(drv->sem)
+  {
+    osSemaphoreAcquire(drv->sem, osWaitForever);
+  }
+ cnt =  api->recv_byte(drv->handle,pData);
+
+   if(drv->sem)
+  {
+    osSemaphoreRelease(drv->sem);
+  }
+
+  return cnt;
 }
 
 void driver_uart_set(driver_t *uart,eUART_SET_CMD_t cmd,void *para)
 {
-      rs232_api_t *api = (rs232_api_t *)uart->api;
+  rs232_api_t *api = (rs232_api_t *)uart->api;
   
+
   api->set(uart->handle,cmd,para);  
 }
 
@@ -227,8 +257,16 @@ uint16_t driver_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t rLen,uint32_t t
   rs232_api_t *api = (rs232_api_t *)drv->api;
   uint16_t cnt;
 
-  cnt = api->recv_bytes(drv->handle,pBuff,rLen,timeOutMs);
+      if(drv->sem)
+  {
+    osSemaphoreAcquire(drv->sem, osWaitForever);
+  }
 
+  cnt = api->recv_bytes(drv->handle,pBuff,rLen,timeOutMs);
+   if(drv->sem)
+  {
+    osSemaphoreRelease(drv->sem);
+  }
   return cnt;
 }
 

@@ -73,29 +73,36 @@ uint8_t BCD_to_Decimal(uint8_t bcd)
 
 
 // DS1306에서 현재 시간 읽기 함수
-void ds1306_read(driver_t *ds1306,DATE_TIME_BUF *t)
-{
-  uint8_t time_data[3]={0xff,0xff,0xff};  // 초, 분, 시 데이터를 저장할 배열
-    uint8_t reg_address = DS1306_READ | DS1306_SECONDS_REG; // 시작 레지스터 주소 (초)
-  ds1306_cfg_t *cfg=(ds1306_cfg_t*)ds1306->cfg;
+void ds1306_read(driver_t *ds1306, DATE_TIME_BUF *t) {
+    uint8_t time_data[7] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}; // 초, 분, 시, 일, 월, 요일, 년 데이터를 저장할 배열
+    uint8_t reg_address = DS1306_READ | DS1306_SECONDS_REG;            // 시작 레지스터 주소 (초)
+    ds1306_cfg_t *cfg = (ds1306_cfg_t *)ds1306->cfg;
 
-
-  driverex_spi_pend_sem(cfg->spi_io);
-
+    // SPI 동기화
+    driverex_spi_pend_sem(cfg->spi_io);
     driver_do_high(cfg->cs_io);
 
     // 시작 레지스터 주소 전송 (읽기 모드)
-    driverex_spi_send_byte(cfg->spi_io,reg_address);
-    // 초, 분, 시 데이터를 수신
+    driverex_spi_send_byte(cfg->spi_io, reg_address);
 
-    driverex_spi_read_bytes(cfg->spi_io,time_data,3);
-    
-   driver_do_low(cfg->cs_io);
-  driverex_spi_post_sem(cfg->spi_io);
+    // 초, 분, 시, 일, 월, 요일, 년 데이터를 수신
+    driverex_spi_read_bytes(cfg->spi_io, time_data, 7);
+
+    // SPI 통신 종료
+    driver_do_low(cfg->cs_io);
+    driverex_spi_post_sem(cfg->spi_io);
+
     // BCD 데이터를 이진수로 변환
-    t->Sec = BCD_to_Decimal(time_data[0]);
-    t->Min = BCD_to_Decimal(time_data[1]);
-    t->Hour = BCD_to_Decimal(time_data[2]);
+    t->Sec  = BCD_to_Decimal(time_data[0]); // 초
+    t->Min  = BCD_to_Decimal(time_data[1]); // 분
+    t->Hour = BCD_to_Decimal(time_data[2]); // 시
+
+    //t->Day  = BCD_to_Decimal(time_data[3]); // 요일 (Day of Week)
+
+    t->Day  = BCD_to_Decimal(time_data[4]); // 일
+    t->Month= BCD_to_Decimal(time_data[5]); // 월
+
+    t->Year = BCD_to_Decimal(time_data[6]); // 년
 }
 
 

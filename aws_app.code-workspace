@@ -6,6 +6,12 @@
 	],
 	"settings": {
 		"editor.tabSize": 2,
-		"editor.renderWhitespace": "boundary"
+    "editor.renderWhitespace": "boundary",
+    "files.associations": {
+      "time.h": "c",
+      "task_ethernet.h": "c",
+      "utile_time.h": "c",
+      "time_define.h": "c"
+    }
 	}
 }
