@@ -392,6 +392,7 @@
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\serial_flash</state>
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\exgpio</state>
                     <state>$PROJ_DIR$\..\Lib\tlsf</state>
+                    <state>$PROJ_DIR$\..\Debug</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1105,6 +1106,21 @@
     </configuration>
     <group>
         <name>Application</name>
+        <group>
+            <name>Debug</name>
+            <file>
+                <name>$PROJ_DIR$\..\Debug\mcu_debug.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Debug\mcu_debug.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Debug\rtos_debug.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Debug\rtos_debug.h</name>
+            </file>
+        </group>
         <group>
             <name>EWARM</name>
             <file>

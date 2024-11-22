@@ -72,10 +72,7 @@ void startTask(void *arg)
 
   debug_uart_init(115200);
 
-
-
   mcu_interrupt_init();
-  
 
 
 

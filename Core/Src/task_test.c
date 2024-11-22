@@ -16,6 +16,8 @@
 #include "stm32f4xx_hal.h"
 #include "utile.h"
 #include "mcu_utile.h"
+#include "mcu_debug.h"
+#include "rtos_debug.h"
 
 #define WRITE_CFG(x) driver_fram_write(g_fram,(uint32_t)OFFSET_OF_STRUCT(test_config_t, x),(uint8_t *)&g_test_config.x,sizeof(g_test_config.x));
 
@@ -694,6 +696,12 @@ void test_cmd(char *data)
             adc_diff_all_test();
         }
       }
+      if(strncmp(list[1],"rtos_info",9)==0)
+      {
+        PrintTaskList();
+        PrintRunTimeStats();
+        ParseAndPrintTaskList();
+      }
     }
     if(strncmp(list[0],"set",3)==0)
     {
@@ -839,7 +847,7 @@ void testTask(void *argument)
   g_232_D =  driver_uart_open(UART_EX_232_D_8);
 
   
-  set_debug_uart_handle(g_uart3);
+  set_debug_uart_handle(g_quad_232_1);
   
   
   if(g_adc_single == NULL)
@@ -858,9 +866,13 @@ void testTask(void *argument)
   
   driver_fram_read(g_fram,0,(uint8_t *)&g_test_config,sizeof(test_config_t));
   
+  PrintAllInterrupts();
+  PrintTaskList();
+  PrintRunTimeStats();
+  ParseAndPrintTaskList();
   while(1)
   {
-    if (driver_uart_recvs(g_uart3,&data,1,osWaitForever))
+    if (driver_uart_recvs(g_quad_232_1,&data,1,osWaitForever))
     {
       buff[cnt++] = data;
       if(data=='\n')

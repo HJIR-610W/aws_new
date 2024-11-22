@@ -1189,6 +1189,21 @@
     <group>
         <name>Application</name>
         <group>
+            <name>Debug</name>
+            <file>
+                <name>$PROJ_DIR$\..\Debug\mcu_debug.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Debug\mcu_debug.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Debug\rtos_debug.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Debug\rtos_debug.h</name>
+            </file>
+        </group>
+        <group>
             <name>EWARM</name>
             <file>
                 <name>$PROJ_DIR$\startup_stm32f407xx.s</name>

@@ -73,13 +73,24 @@
 #define configUSE_TRACE_FACILITY                 1
 #define configUSE_16_BIT_TICKS                   0
 #define configUSE_MUTEXES                        1
-#define configQUEUE_REGISTRY_SIZE                8
-#define configCHECK_FOR_STACK_OVERFLOW           2
+#define configQUEUE_REGISTRY_SIZE                8 //큐,세마포어 등 디버깅 추적목적,0이면 미사용
+#define configCHECK_FOR_STACK_OVERFLOW           2 //
 #define configUSE_RECURSIVE_MUTEXES              1
 #define configUSE_MALLOC_FAILED_HOOK             1
 #define configUSE_COUNTING_SEMAPHORES            1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION  0
 /* USER CODE BEGIN MESSAGE_BUFFER_LENGTH_TYPE */
+
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1  //task 상태 추적 vTaskList 사용하려면
+#define configGENERATE_RUN_TIME_STATS        1 // task 실행중 상태 확인 vTaskGetRunTimeStats
+
+
+
+
+ 
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()  YourTimerInitFunction()  // 사용자 코드에서 구현
+#define portGET_RUN_TIME_COUNTER_VALUE()         YourTimerGetCounterValue()
+
 /* Defaults to size_t for backward compatibility, but can be changed
    if lengths will always be less than the number of bytes in a size_t. */
 #define configMESSAGE_BUFFER_LENGTH_TYPE         size_t
@@ -170,5 +181,8 @@ standard names. */
 /* USER CODE BEGIN Defines */
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
 /* USER CODE END Defines */
+
+
+
 
 #endif /* FREERTOS_CONFIG_H */

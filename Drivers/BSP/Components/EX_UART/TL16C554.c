@@ -3,9 +3,18 @@
 #include "TL16C554.h"
 
 #include <stdio.h>
+
+
 #include "driver_digitalIn.h"
+#include "FreeRTOS.h"
+#include "stream_buffer.h"
 #include "utile.h"
 #include "io.h"
+
+
+#define STREAMBUFFER_USE 1 //데이터 수신을 freertos 스트림 버퍼 사용시 
+
+
 #define UART_CLOCK_FREQ 3686400
 
 // DLAB 비트 마스크
@@ -62,6 +71,23 @@ typedef struct tl16c554_cfg_s
 {
   driver_t *irq_io;
 }tl16c554_cfg_t;
+
+
+#define QUAD_1_BUFF_SIZE 100
+#define QUAD_2_BUFF_SIZE 100
+#define QUAD_3_BUFF_SIZE 100
+#define QUAD_4_BUFF_SIZE 100
+#define QUAD_5_BUFF_SIZE 100
+#define QUAD_6_BUFF_SIZE 100
+#define QUAD_7_BUFF_SIZE 100
+#define QUAD_8_BUFF_SIZE 100
+
+const uint8_t g_streamBuffSizeList[8]={QUAD_1_BUFF_SIZE,QUAD_2_BUFF_SIZE,QUAD_3_BUFF_SIZE,
+                                       QUAD_4_BUFF_SIZE,QUAD_5_BUFF_SIZE,QUAD_6_BUFF_SIZE,
+                                       QUAD_7_BUFF_SIZE,QUAD_8_BUFF_SIZE};
+
+StreamBufferHandle_t g_quad_xStreamBuffer[8];
+
 
 
 void irq_INTA_1(void *arg);
@@ -296,6 +322,9 @@ driver_t *tls16c554_open(int num)
 
   g_drv_quad_uart[num].cfg = &g_tl16c554_cfg[num];
 
+
+  g_quad_xStreamBuffer[num] =   xStreamBufferCreate( g_streamBuffSizeList[num], 1 ); // Trigger level = 1
+
   quad_init(&g_drv_quad_uart[num]);
   
   return &g_drv_quad_uart[num];
@@ -357,9 +386,73 @@ int tls16c554_recv_byte(driver_t *drv,uint8_t *data)
 }
 
 
-
+/**
+ * @brief
+ * 처음에는 사용자가 요청한 타임아웃 만큼 지연준다.
+ * 데이터가 빨리 도착하면 아직 타임아웃이 남아있다
+ * 남아있는 타임아웃동안 계속 수신한다.
+ * 그러다 원하는 데이터만큼 수신이 되면 타임아웃은 무시되고 리턴된다.
+ * @retval 수신된 데이터 숫자
+ */
 uint16_t tls16c554_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
 {
+#if STREAMBUFFER_USE // 레지스터 직접 접근
+    uint32_t starTick;
+    uint32_t stopTick;
+    uint32_t elapseTick;
+    uint32_t timeout;
+    size_t xBytesAvailable;
+    size_t xBytesRead;
+    size_t remainBuffSize = buffSize;
+    size_t cnt = 0;
+
+
+    timeout = timeOutMs;
+
+    while(1)
+    {
+        /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
+        xBytesAvailable = xStreamBufferBytesAvailable( g_quad_xStreamBuffer[drv->num] );
+
+        if(remainBuffSize < xBytesAvailable)
+        {
+          xBytesAvailable = remainBuffSize;// 버퍼 수만큼만 읽기
+        }
+
+        starTick = xTaskGetTickCount();
+        if( xBytesAvailable > 0 )
+        {
+            /* 데이터를 읽을 수 있다면, 데이터를 수신 */
+            xBytesRead = xStreamBufferReceive( g_quad_xStreamBuffer[drv->num], ( void * ) &pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS( timeout ) );
+            
+            if(xBytesRead >0)
+            {
+              cnt += xBytesRead;
+            }
+        }
+        else
+        {
+            /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
+            xBytesRead = xStreamBufferReceive( g_quad_xStreamBuffer[drv->num], ( void * ) &pBuff[cnt], 1, pdMS_TO_TICKS( timeout ) );
+            if(xBytesRead ==1)
+            {
+              cnt += 1;
+            }
+
+
+        }
+        stopTick = xTaskGetTickCount();
+        elapseTick = stopTick-starTick;
+
+        if(timeout <= elapseTick ||cnt >= buffSize)
+        {
+          return cnt;
+        }
+        remainBuffSize -= xBytesAvailable;
+        timeout = timeout - elapseTick; 
+    }
+
+#else
   uint32_t startTick;
   uint16_t cnt=0;
 
@@ -381,6 +474,10 @@ uint16_t tls16c554_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uin
   }
     
     return cnt; // 데이터가 준비되지 않음
+
+    #endif
+
+    return 0;
 }
 
 
@@ -398,9 +495,7 @@ void tls16c554_init(driver_t *tls16c554)
 {
   tl16c554_api_t *api = (tl16c554_api_t *)tls16c554->api;
 
-
   api->init(tls16c554);
-    
 
 }
 
@@ -413,8 +508,12 @@ void irq_tl16c554(driver_t *drv)
   uint8_t data; 
   uint8_t lineStatus;
   uint8_t modemStatus;
+  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+  size_t xBytesSent;
+  
+  
   iir = read_register(IIR(exUartBaseAddress[drv->num]));
-            write_register(THR(exUartBaseAddress[drv->num]), iir);
+
   if ((iir & 0x01) == 0)
   {
      interruptType = (iir >> 1) & 0x07;  // Extract interrupt type
@@ -426,10 +525,19 @@ void irq_tl16c554(driver_t *drv)
             write_register(THR(exUartBaseAddress[drv->num]), '1');
             break;
 
-        case 0x02:  // Receiver Data Available
-            // Handle RX Data
+        case 0x02://데이터 수신
              data = read_register(RBR(exUartBaseAddress[drv->num])); // RBR에서 데이터 읽기
-            // Process data...
+
+            /* 데이터를 스트림 버퍼에 전송 */
+            xBytesSent = xStreamBufferSendFromISR(g_quad_xStreamBuffer[drv->num],&data, 
+                                        1, &xHigherPriorityTaskWoken);
+            /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
+            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+
+            if(!(xBytesSent > 0))
+            {
+              __asm("BKPT #0"); 
+            }
             break;
 
         case 0x03:  // Receiver Line Status
@@ -480,7 +588,6 @@ void irq_INTB_6(void *arg)
 {
   irq_tl16c554((driver_t *)arg);
 }
-
 
 void irq_INTC_7(void *arg)
 {
