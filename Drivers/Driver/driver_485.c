@@ -38,13 +38,12 @@ driver_t *driver_rs485_open(uint32_t num)
       driver_do_low(g_rs485_cfg[num].do_io);//수신 모드
 
 
-    if( g_rs485[num].sem == NULL)
-    {
-       g_rs485[num].sem = osSemaphoreNew(1, 1, NULL); 
-    }
+      if(g_rs485[num].sem == NULL)
+      {
+        g_rs485[num].sem = osSemaphoreNew(1, 1, NULL); 
+      }
 
-
-    break;
+      break;
   case RS485_B:
       g_rs485[num].name = "RS485_B";
       g_rs485_cfg[num].uart_io =  driver_uart_open(UART_EX_485_2);
