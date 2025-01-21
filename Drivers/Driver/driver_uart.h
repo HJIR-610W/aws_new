@@ -21,7 +21,7 @@
 
 
 driver_t *driver_uart_open(int  num);
-void driver_uart_send(driver_t *uart,uint8_t *pData,uint16_t dataLen);
+void driver_uart_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen);
 uint16_t driver_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t rLen,uint32_t timeOutMs);
 void driver_uart_set(driver_t *uart,eUART_SET_CMD_t cmd,void *para);
 void driver_uart_get(driver_t *uart,eUART_SET_CMD_t cmd,void *config);
@@ -29,6 +29,7 @@ void driver_uart_get(driver_t *uart,eUART_SET_CMD_t cmd,void *config);
 
 int32_t driver_uart_recv(driver_t *drv,uint8_t *pBuff);
 
-
+void driver_uart_get_char(driver_t *drv,uint8_t *pBuff,uint16_t rLen);
+int32_t driver_uart_get_charNonBlocking(driver_t *drv,uint8_t *pBuff);
 
 #endif

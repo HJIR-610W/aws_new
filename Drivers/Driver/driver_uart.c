@@ -68,7 +68,7 @@ bool serial_receive_nonblocking(uint8_t *data, size_t length) {
 
 typedef struct adc_api_s
 {
-    void (*send)(driver_t *tls16c554,uint8_t *pData,uint16_t dataLen);
+    void (*send)(driver_t *tls16c554,const uint8_t *pData,uint16_t dataLen);
     int32_t (*recv)(driver_t *tls16c554,uint8_t *pBuff);
     int32_t (*recv_byte)(driver_t *tls16c554,uint8_t *pData);
     void (*set)(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option);
@@ -184,10 +184,10 @@ driver_t *driver_uart_open(int  num)
 
 }
 
-void driver_uart_send(driver_t *drv,uint8_t *pData,uint16_t dataLen)
+void driver_uart_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
 {
   rs232_api_t *api = (rs232_api_t *)drv->api;
-
+  
   if(drv->sem)
   {
     osSemaphoreAcquire(drv->sem, osWaitForever);
@@ -273,4 +273,39 @@ uint16_t driver_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t rLen,uint32_t t
 
 
 
+void driver_uart_get_char(driver_t *drv,uint8_t *pBuff,uint16_t rLen)
+{
+  rs232_api_t *api = (rs232_api_t *)drv->api;
 
+  if(drv->sem)
+  {
+    osSemaphoreAcquire(drv->sem, osWaitForever);
+  }
+
+  api->recv_bytes(drv->handle,pBuff,rLen,osWaitForever);
+   if(drv->sem)
+  {
+    osSemaphoreRelease(drv->sem);
+  }
+
+}
+
+
+
+int32_t driver_uart_get_charNonBlocking(driver_t *drv,uint8_t *pBuff)
+{
+  rs232_api_t *api = (rs232_api_t *)drv->api;
+  int32_t cnt;
+  if(drv->sem)
+  {
+    osSemaphoreAcquire(drv->sem, osWaitForever);
+  }
+
+  cnt = api->recv_bytes(drv->handle,pBuff,1,0);
+   if(drv->sem)
+  {
+    osSemaphoreRelease(drv->sem);
+  }
+  return cnt;
+
+}

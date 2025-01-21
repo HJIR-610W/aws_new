@@ -11,7 +11,17 @@
       "time.h": "c",
       "task_ethernet.h": "c",
       "utile_time.h": "c",
-      "time_define.h": "c"
+      "time_define.h": "c",
+      "io.h": "c",
+      "task_isrevent.h": "c",
+      "driver_digitalin.h": "c",
+      "driver_rtc.h": "c",
+      "app_console.h": "c",
+      "algorithm": "c",
+      "xutility": "c",
+      "config.h": "c",
+      "utile.h": "c",
+      "vt100_command.h": "c"
     }
 	}
 }

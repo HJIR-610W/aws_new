@@ -350,23 +350,36 @@
                 </option>
                 <option>
                     <name>CCIncludePath2</name>
-                    <state>$PROJ_DIR$/../Core/Inc</state>
+                    <state>$PROJ_DIR$\..</state>
+                    <state>$PROJ_DIR$\..\Application</state>
+                    <state>$PROJ_DIR$\..\Application\Tasks</state>
+                    <state>$PROJ_DIR$\..\Application\Communications\LWIP</state>
+                    <state>$PROJ_DIR$\..\Application\IO</state>
+                    <state>$PROJ_DIR$\..\Application\IO\terminal</state>
+                    <state>$PROJ_DIR$\..\Application\Debug</state>
+                    <state>$PROJ_DIR$\..\Application\Communications\LWIP</state>
+                    <state>$PROJ_DIR$\..\Application\Communications\LWIP\App</state>
+                    <state>$PROJ_DIR$\..\Application\Communications\LWIP\Target</state>
+                    <state>$PROJ_DIR$\..\Drivers</state>
+                    <state>$PROJ_DIR$\..\Drivers\Driver_stm32</state>
+                    <state>$PROJ_DIR$\..\Drivers\Driver</state>
+                    <state>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy</state>
+                    <state>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Inc</state>
+                    <state>$PROJ_DIR$/../Drivers/BSP/Components/lan8742</state>
+                    <state>$PROJ_DIR$/../Drivers/CMSIS/Device/ST/STM32F4xx/Include</state>
+                    <state>$PROJ_DIR$\..\Lib</state>
                     <state>$PROJ_DIR$/../FATFS/Target</state>
                     <state>$PROJ_DIR$/../FATFS/App</state>
                     <state>$PROJ_DIR$/../LWIP/App</state>
                     <state>$PROJ_DIR$/../LWIP/Target</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/src/include</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/system</state>
-                    <state>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Inc</state>
-                    <state>$PROJ_DIR$/../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/include</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM4F</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/FatFs/src</state>
-                    <state>$PROJ_DIR$/../Drivers/BSP/Components/lan8742</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/src/include/netif/ppp</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/src/apps/http</state>
-                    <state>$PROJ_DIR$/../Drivers/CMSIS/Device/ST/STM32F4xx/Include</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/src/include/lwip</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/src/include/lwip/apps</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/src/include/lwip/priv</state>
@@ -380,19 +393,25 @@
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/system/arch</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/src/apps/snmp</state>
                     <state>$PROJ_DIR$/../Drivers/CMSIS/Include</state>
-                    <state>$PROJ_DIR$\..\Drivers\Driver</state>
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\ADC</state>
                     <state>$PROJ_DIR$\..\Drivers\MCU</state>
                     <state>$PROJ_DIR$\..\Drivers\Utile</state>
-                    <state>$PROJ_DIR$\..\Core\CLI</state>
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\fram</state>
-                    <state>$PROJ_DIR$\..\Drivers</state>
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\rtc</state>
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\EX_UART</state>
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\serial_flash</state>
                     <state>$PROJ_DIR$\..\Drivers\BSP\Components\exgpio</state>
-                    <state>$PROJ_DIR$\..\Lib\tlsf</state>
-                    <state>$PROJ_DIR$\..\Debug</state>
+                    <state>$PROJ_DIR$\..\Utile</state>
+                    <state>$PROJ_DIR$\..\Application\FATFS\App</state>
+                    <state>$PROJ_DIR$\..\Application\FATFS\Target</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\lan8742</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\ADC</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\EX_UART</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\exgpio</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\fram</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\rtc</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\serial_flash</state>
+                    <state>$PROJ_DIR$\..\Application\IO\cli</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -662,7 +681,7 @@
                 </option>
                 <option>
                     <name>AUserIncludes</name>
-                    <state>$PROJ_DIR$/../Core/Inc</state>
+                    <state>$PROJ_DIR$\..\Application</state>
                 </option>
                 <option>
                     <name>AExtraOptionsCheckV2</name>
@@ -1107,277 +1126,337 @@
     <group>
         <name>Application</name>
         <group>
+            <name>Communications</name>
+            <group>
+                <name>CDMA</name>
+            </group>
+            <group>
+                <name>Direct</name>
+            </group>
+            <group>
+                <name>Ethernet</name>
+            </group>
+            <group>
+                <name>LWIP_APP</name>
+                <group>
+                    <name>App</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\Application\Communications\LWIP\App\lwip.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\Application\Communications\LWIP\App\lwip.h</name>
+                    </file>
+                </group>
+                <group>
+                    <name>Target</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\Application\Communications\LWIP\Target\ethernetif.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\Application\Communications\LWIP\Target\ethernetif.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\Application\Communications\LWIP\Target\lwipopts.h</name>
+                    </file>
+                </group>
+            </group>
+        </group>
+        <group>
             <name>Debug</name>
             <file>
-                <name>$PROJ_DIR$\..\Debug\mcu_debug.c</name>
+                <name>$PROJ_DIR$\..\Application\Debug\mcu_debug.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Debug\mcu_debug.h</name>
+                <name>$PROJ_DIR$\..\Application\Debug\mcu_debug.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Debug\rtos_debug.c</name>
+                <name>$PROJ_DIR$\..\Application\Debug\rtos_debug.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Debug\rtos_debug.h</name>
+                <name>$PROJ_DIR$\..\Application\Debug\rtos_debug.h</name>
             </file>
         </group>
         <group>
-            <name>EWARM</name>
+            <name>FATFS</name>
+            <group>
+                <name>App</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\App\fatfs.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\App\fatfs.h</name>
+                </file>
+            </group>
+            <group>
+                <name>Target</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\Target\bsp_driver_sd.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\Target\bsp_driver_sd.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\Target\fatfs_platform.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\Target\fatfs_platform.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\Target\ffconf.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\Target\sd_diskio.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\Target\sd_diskio.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\Target\user_diskio.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\FATFS\Target\user_diskio.h</name>
+                </file>
+            </group>
+        </group>
+        <group>
+            <name>IO</name>
+            <group>
+                <name>cli</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\IO\cli\console_scanf.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\IO\cli\fsl_debug_console.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\IO\cli\fsl_shell.c</name>
+                </file>
+            </group>
+            <group>
+                <name>terminal</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\IO\terminal\terminal.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\IO\terminal\terminal.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\IO\terminal\vt100.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\IO\terminal\vt100_command.h</name>
+                </file>
+            </group>
             <file>
-                <name>$PROJ_DIR$\startup_stm32f407xx.s</name>
+                <name>$PROJ_DIR$\..\Application\IO\io.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\IO\io.h</name>
             </file>
         </group>
         <group>
-            <name>User</name>
+            <name>Panel</name>
+        </group>
+        <group>
+            <name>Sensors</name>
             <group>
-                <name>Core</name>
+                <name>rain</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Core\Src\adc.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\app_cfg.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\app_cfg.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\config.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\config.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\freertos.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\freertosCallBack.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Inc\FreeRTOSConfig.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\fsmc.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\gpio.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\hj_product_list.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\main.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Inc\main.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Inc\project_def.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\sdio.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\stm32f4xx_hal_msp.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\stm32f4xx_hal_timebase_tim.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\stm32f4xx_it.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\swTimer.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\swTimer.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_cmd.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_comm.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_comm.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_ethernet.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_ethernet.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_host.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_host.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_logging.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_logging.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_rain.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_start.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_start.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Core\Src\task_test.c</name>
+                    <name>$PROJ_DIR$\..\Application\Sensors\rain\rain.c</name>
                 </file>
             </group>
             <group>
-                <name>FATFS</name>
-                <group>
-                    <name>App</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\FATFS\App\fatfs.c</name>
-                    </file>
-                </group>
-                <group>
-                    <name>Target</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\FATFS\Target\bsp_driver_sd.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\FATFS\Target\fatfs_platform.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\FATFS\Target\sd_diskio.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\FATFS\Target\user_diskio.c</name>
-                    </file>
-                </group>
-            </group>
-            <group>
-                <name>LWIP</name>
-                <group>
-                    <name>App</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\LWIP\App\lwip.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\LWIP\App\lwip.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>Target</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\LWIP\Target\ethernetif.c</name>
-                    </file>
-                </group>
+                <name>water</name>
             </group>
         </group>
+        <group>
+            <name>tasks</name>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_adc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_console.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_console.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_rtc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_cmd.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_comm.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_console.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_ethernet.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_host.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_isrEvent.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_logging.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_measure.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_monitor.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_start.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_system.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_test.c</name>
+            </file>
+        </group>
         <file>
-            <name>$PROJ_DIR$\..\Core\읽기.txt</name>
+            <name>$PROJ_DIR$\..\Application\adc.c</name>
         </file>
-    </group>
-    <group>
-        <name>CLI</name>
         <file>
-            <name>$PROJ_DIR$\..\Core\CLI\io.c</name>
+            <name>$PROJ_DIR$\..\Application\app_version.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Core\CLI\io.h</name>
+            <name>$PROJ_DIR$\..\Application\app_version.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Core\CLI\terminal.c</name>
+            <name>$PROJ_DIR$\..\Application\boot_version.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Core\CLI\terminal.h</name>
+            <name>$PROJ_DIR$\..\Application\config.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Core\CLI\vt100.c</name>
+            <name>$PROJ_DIR$\..\Application\config.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Core\CLI\vt100_command.h</name>
+            <name>$PROJ_DIR$\..\Application\freertos.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\freertosCallBack.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\fsmc.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\gpio.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\hj_product_list.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\main.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\sdio.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\stm32f4xx_hal_msp.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\stm32f4xx_hal_timebase_tim.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\stm32f4xx_it.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\system_err.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\user_heap.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\user_heap.h</name>
         </file>
     </group>
     <group>
         <name>Drivers</name>
         <group>
-            <name>BSP</name>
+            <name>CMSIS</name>
+            <file>
+                <name>$PROJ_DIR$\..\Application\system_stm32f4xx.c</name>
+            </file>
+        </group>
+        <group>
+            <name>Components</name>
             <group>
-                <name>Components</name>
-                <group>
-                    <name>adc</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\ADC\ads1220.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\ADC\ads1220.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>exgpio</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\exgpio\pcf8575.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\exgpio\pcf8575.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>fram</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\fram\fm25cl.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\fram\fm25cl.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>rtc</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\rtc\ds1306.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\rtc\ds1306.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>serial_flash</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\serial_flash\ad45db.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Drivers\BSP\Components\serial_flash\ad45db.h</name>
-                    </file>
-                </group>
+                <name>adc</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\BSP\Components\lan8742\lan8742.c</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\ADC\ads1220.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\ADC\ads1220.h</name>
                 </file>
             </group>
             <group>
-                <name>RS232</name>
+                <name>EX_UART</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\BSP\Components\EX_UART\TL16C554.c</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\EX_UART\TL16C554.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\BSP\Components\EX_UART\TL16C554.h</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\EX_UART\TL16C554.h</name>
+                </file>
+            </group>
+            <group>
+                <name>exgpio</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\exgpio\pcf8575.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\exgpio\pcf8575.h</name>
+                </file>
+            </group>
+            <group>
+                <name>fram</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\fram\fm25cl.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\fram\fm25cl.h</name>
+                </file>
+            </group>
+            <group>
+                <name>lan</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\lan8742\lan8742.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
                 <name>RS485</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\BSP\Components\rs485\rs485.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Drivers\BSP\Components\rs485\rs485.h</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\RS485\rs485.c</name>
                 </file>
             </group>
-        </group>
-        <group>
-            <name>CMSIS</name>
-            <file>
-                <name>$PROJ_DIR$\..\Core\Src\system_stm32f4xx.c</name>
-            </file>
+            <group>
+                <name>rtc</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\rtc\ds1306.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\rtc\ds1306.h</name>
+                </file>
+            </group>
+            <group>
+                <name>serial_flash</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\serial_flash\ad45db.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\serial_flash\ad45db.h</name>
+                </file>
+            </group>
         </group>
         <group>
             <name>Driver</name>
@@ -1466,30 +1545,6 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_spi.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_di.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_di.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_do.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_do.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_i2c.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_i2c.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_uart.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_stm32_uart.h</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_uart.c</name>
             </file>
             <file>
@@ -1497,6 +1552,33 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_uart_def.h</name>
+            </file>
+        </group>
+        <group>
+            <name>Driver_stm32</name>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_di.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_di.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_do.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_do.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_i2c.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_i2c.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_uart.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_uart.h</name>
             </file>
         </group>
         <group>
@@ -1601,12 +1683,24 @@
                 <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_sdmmc.c</name>
             </file>
         </group>
+    </group>
+    <group>
+        <name>EWARM</name>
         <file>
-            <name>$PROJ_DIR$\..\Drivers\time_define.h</name>
+            <name>$PROJ_DIR$\startup_stm32f407xx.s</name>
         </file>
     </group>
     <group>
         <name>Lib</name>
+        <group>
+            <name>cobs</name>
+            <file>
+                <name>$PROJ_DIR$\..\Lib\cobs\cobs.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Lib\cobs\cobs.h</name>
+            </file>
+        </group>
         <group>
             <name>tlsf</name>
             <file>
@@ -1991,6 +2085,9 @@
                 <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\netif\zepif.c</name>
             </file>
         </group>
+        <group>
+            <name>modem</name>
+        </group>
     </group>
     <group>
         <name>System</name>
@@ -2004,22 +2101,19 @@
     <group>
         <name>Utile</name>
         <file>
-            <name>$PROJ_DIR$\..\Drivers\Utile\cobs.c</name>
+            <name>$PROJ_DIR$\..\Utile\utile.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Drivers\Utile\cobs.h</name>
+            <name>$PROJ_DIR$\..\Utile\utile.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Drivers\Utile\utile.c</name>
+            <name>$PROJ_DIR$\..\Utile\utile_stdio.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Drivers\Utile\utile.h</name>
+            <name>$PROJ_DIR$\..\Utile\utile_time.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Drivers\Utile\utile_time.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\Drivers\Utile\utile_time.h</name>
+            <name>$PROJ_DIR$\..\Utile\utile_time.h</name>
         </file>
     </group>
 </project>

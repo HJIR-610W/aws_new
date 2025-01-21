@@ -20,7 +20,9 @@
 #include "cmsis_os.h"
 #include "driver_spi.h"
 
-#include "main.h"
+
+#include "system_err.h"
+
 
 typedef struct spi_api_s
 {

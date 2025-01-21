@@ -6,11 +6,6 @@
 #include "ds1306.h"
 
 
-
-
-
-
-
 typedef struct rtc_api_s
 {
   void (*read)(driver_t *driver,DATE_TIME_BUF *t);
@@ -70,4 +65,26 @@ void driver_rtc_read(driver_t* driver, DATE_TIME_BUF *t)
     osSemaphoreRelease(driver->sem);
   }
 
+}
+
+
+
+
+void driver_rtc_set(driver_t *driver,uint8_t cmd,void *opt)
+{
+  driver_t* drv = ((driver_t *)driver)->handle;
+  ds1306_cfg_t *cfg = drv->cfg;
+
+  switch (cmd)
+  {
+    case eRTC_SET_IRQ:
+    driver_t *rain_pulse;
+    di_isr_set_cfg_t *isr_cfg = &((rtc_set_irq_cfg_t *)opt)->cfg;
+
+    driver_di_set(cfg->irq_io,DI_SET_INTERRUT,isr_cfg);
+    break;
+  
+  default:
+    break;
+  }
 }

@@ -1,8 +1,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "stm32f4xx_hal.h"
-#include "main.h"
+#include "pcb_define.h"
+
+
 
 
 #define IS_ODD_MUX_ACTIVE() (HAL_GPIO_ReadPin(OUT_ADC_EN_ODD_GPIO_Port,OUT_ADC_EN_ODD_Pin)==1)
