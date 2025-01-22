@@ -60,3 +60,18 @@ int32_t make_timeToStr(DATE_TIME_BUF *ct,char *out,uint16_t outSize)
   return snprintf_s(out,outSize,"%04d-%02d-%02d %02d:%02d:%02d",Date_Time.Year,
   Date_Time.Month,Date_Time.Day,Date_Time.Hour,Date_Time.Min,Date_Time.Sec);
 }
+
+
+time_t SetTime(int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec)
+{
+	struct tm atm;
+
+	atm.tm_sec = nSec;
+	atm.tm_min = nMin;
+	atm.tm_hour = nHour;
+	atm.tm_mday = nDay;
+	atm.tm_mon = nMonth - 1;        // tm_mon is 0 based
+	atm.tm_year = nYear - 1900;     // tm_year is 1900 based
+	atm.tm_isdst = 0;
+	return mktime(&atm);
+}

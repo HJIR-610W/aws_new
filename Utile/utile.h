@@ -15,4 +15,7 @@ int getPinNumber(uint16_t pin);
 void hex_to_binary_string(uint16_t hex_value, char *binary_str, int bit_length);
 
 uint16_t swap_uint16(uint16_t value);
+
+uint16_t  GetWord(uint8_t* lpBuff);
+void    SetWord(uint8_t *lpBuff, uint16_t shVal);		// Big Endiand으로 취함
 #endif

@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include "crc16_ccitt.h"
 #include "utile.h"
+#include "aws_kma3.h"
+
 #define KMA3_REQ_LEN 29  
 
 
@@ -27,16 +29,22 @@ bool is_awsProtocol(uint8_t *input,uint32_t len)
   return false;
 }
 
-int32_t aws_cmd(uint8_t *input,uint32_t len)
+int32_t aws_cmd(uint8_t *input,uint32_t inputLen,uint8_t *txBuff,uint16_t txSize,uint8_t source)
 {
+  int32_t len=0;
 
-  if(is_awsProtocol(input,len)==false)
+  if(is_awsProtocol(input,inputLen)==false)
   {
     return 0;
   }
 
+  switch(source)
+  {
+    case 0://break;
+    len = cmd_kma3(input,inputLen,txBuff,txSize,source);
+    break;
+  }
 
 
-
-  return 0;
+  return len;
 }

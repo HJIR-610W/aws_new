@@ -41,3 +41,19 @@ uint16_t swap_uint16(uint16_t value)
 
   return ret;
 }
+
+
+uint16_t  GetWord(uint8_t* lpBuff)
+{
+    uint16_t shVal;
+    
+    shVal = ((uint16_t)lpBuff[0] << 8) |(uint16_t)lpBuff[1];
+
+    return(shVal);
+}   
+
+void    SetWord(uint8_t *lpBuff, uint16_t shVal)		// Big Endiand으로 취함
+{
+    lpBuff[0] = (uint8_t)(shVal >> 8);
+    lpBuff[1] = (uint8_t)shVal;
+}

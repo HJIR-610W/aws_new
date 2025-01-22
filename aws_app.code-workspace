@@ -26,7 +26,9 @@
       "stdarg.h": "c",
       "task_tcpserver.h": "c",
       "app_logging.h": "c",
-      "util.h": "c"
+      "util.h": "c",
+      "app_version.h": "c",
+      "aws_kma3.h": "c"
     }
 	}
 }

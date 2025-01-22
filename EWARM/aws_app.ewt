@@ -1233,6 +1233,15 @@
                 </group>
             </group>
             <file>
+                <name>$PROJ_DIR$\..\Application\Communications\aws_data.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Communications\aws_kma2.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Communications\aws_kma3.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\Communications\aws_protocol.c</name>
             </file>
         </group>

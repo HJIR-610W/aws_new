@@ -37,12 +37,14 @@ int set_recv_timeout(int sockfd, uint32_t timeout_ms)
     return 0;
 }
 
-#define RECV_BUFF_SIZE 100
+#define RECV_BUFF_SIZE 512
 void server_service(int conn)
 {
   int32_t ret;
   int32_t err;
-  uint8_t recv_buffer[RECV_BUFF_SIZE];
+  uint8_t rbuffer[RECV_BUFF_SIZE];
+  uint8_t tbuffer[RECV_BUFF_SIZE];
+  int32_t len;
 
     if(set_recv_timeout(conn,60000)<0)
     {
@@ -51,7 +53,7 @@ void server_service(int conn)
 
   while(1)
   {
-     ret = recv(conn, recv_buffer, RECV_BUFF_SIZE, 0);
+     ret = recv(conn, rbuffer, RECV_BUFF_SIZE, 0);
     if(ret <= 0)
     {
       err = errno;
@@ -63,7 +65,11 @@ void server_service(int conn)
       return;
     }
 
-     aws_cmd(recv_buffer,ret);
+     len = aws_cmd(rbuffer,ret,tbuffer,sizeof(tbuffer),0);
+     if(len)
+     {
+      send(conn,tbuffer,len,0);
+     }
   }
   
 }
