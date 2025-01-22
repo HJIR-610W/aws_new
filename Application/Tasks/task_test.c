@@ -25,7 +25,7 @@ int32_t g_adc_vref = 5980;//mv
 
 adc_calibraion_t single_cali[32];
 adc_calibraion_t diff_cali[8];
-driver_t *g_fram = NULL;
+driver_t *g_framTest = NULL;
 
 
 
@@ -861,9 +861,9 @@ void testTask(void *argument)
 
 
 
-  g_fram = driver_fram_open(FRAM_FM25LC);
+  g_framTest = driver_fram_open(FRAM_FM25LC);
   
-  driver_fram_read(g_fram,0,(uint8_t *)&g_test_config,sizeof(test_config_t));
+  driver_fram_read(g_framTest,0,(uint8_t *)&g_test_config,sizeof(test_config_t));
   
   PrintAllInterrupts();
   PrintTaskList();

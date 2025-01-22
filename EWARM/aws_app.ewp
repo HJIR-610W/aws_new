@@ -413,6 +413,8 @@
                     <state>$PROJ_DIR$\..\Drivers\Components\serial_flash</state>
                     <state>$PROJ_DIR$\..\Application\IO\cli</state>
                     <state>$PROJ_DIR$\..\Middlewares\modem</state>
+                    <state>$PROJ_DIR$\..\Application\Communications\Ethernet</state>
+                    <state>$PROJ_DIR$\..\Application\Communications</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1137,6 +1139,12 @@
             <group>
                 <name>Ethernet</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\Ethernet\app_socket.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\Ethernet\task_client.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Communications\Ethernet\task_tcpServer.c</name>
                 </file>
             </group>
@@ -1164,6 +1172,9 @@
                     </file>
                 </group>
             </group>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Communications\aws_protocol.c</name>
+            </file>
         </group>
         <group>
             <name>Debug</name>
@@ -1286,6 +1297,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_flash.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_fram.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_logging.c</name>
@@ -2116,6 +2130,9 @@
     </group>
     <group>
         <name>Utile</name>
+        <file>
+            <name>$PROJ_DIR$\..\Utile\crc16_ccitt.c</name>
+        </file>
         <file>
             <name>$PROJ_DIR$\..\Utile\utile.c</name>
         </file>

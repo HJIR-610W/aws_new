@@ -81,7 +81,7 @@
 /*----- Value in opt.h for DEFAULT_THREAD_STACKSIZE: 0 -----*/
 #define DEFAULT_THREAD_STACKSIZE 1024
 /*----- Value in opt.h for DEFAULT_THREAD_PRIO: 1 -----*/
-#define DEFAULT_THREAD_PRIO 3
+#define DEFAULT_THREAD_PRIO osPriorityHigh
 /*----- Value in opt.h for DEFAULT_UDP_RECVMBOX_SIZE: 0 -----*/
 #define DEFAULT_UDP_RECVMBOX_SIZE 6
 /*----- Value in opt.h for DEFAULT_TCP_RECVMBOX_SIZE: 0 -----*/
@@ -116,10 +116,25 @@
 #define CHECKSUM_CHECK_ICMP 0
 /*----- Value in opt.h for CHECKSUM_CHECK_ICMP6: 1 -----*/
 #define CHECKSUM_CHECK_ICMP6 0
+   
 /*-----------------------------------------------------------------------------*/
-/* USER CODE BEGIN 1 */
 
-/* USER CODE END 1 */
+
+
+
+
+#define LWIP_SO_RCVTIMEO 1
+
+#define SO_REUSE 1
+
+#define LWIP_TCP_KEEPALIVE 1
+
+#define MEMP_NUM_NETCONN                5 //화진 클라이언트, 웹서버,소하천 클라이언트,업데이트 
+#define LWIP_SO_RCVTIMEO                1
+#define LWIP_SO_SNDTIMEO                1
+#define LWIP_RAW 1
+
+#define DEFAULT_RAW_RECVMBOX_SIZE 10  //raw 패킷용 메일박스 크기 (void *)*10
 
 #ifdef __cplusplus
 }

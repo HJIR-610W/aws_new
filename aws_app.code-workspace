@@ -23,7 +23,10 @@
       "utile.h": "c",
       "vt100_command.h": "c",
       "driver_flash.h": "c",
-      "stdarg.h": "c"
+      "stdarg.h": "c",
+      "task_tcpserver.h": "c",
+      "app_logging.h": "c",
+      "util.h": "c"
     }
 	}
 }

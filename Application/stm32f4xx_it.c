@@ -86,6 +86,86 @@ void fault_printf(const char * pFmt, ...)
    uint32_t reg_psp;
    uint32_t i;
 
+
+#include <stdio.h>
+
+#define printf debug_printf
+#include <stdio.h>
+
+#define printf debug_printf
+
+void analyze_fault(uint32_t cfsr, uint32_t hfsr, uint32_t mmfar, uint32_t bfar)
+{
+  fault_printf("Analyzing Fault...\r\n");
+
+  // Usage Fault Analysis
+  if (cfsr & 0xFFFF0000) {
+    if (cfsr & (1 << 16)) {
+      fault_printf("UsageFault: Undefined instruction usage detected.\r\n");
+    }
+    if (cfsr & (1 << 17)) {
+      fault_printf("UsageFault: Attempt to execute an illegal state instruction.\r\n");
+    }
+    if (cfsr & (1 << 18)) {
+      fault_printf("UsageFault: Illegal access to EPSR (exception state).\r\n");
+    }
+    if (cfsr & (1 << 19)) {
+      fault_printf("UsageFault: Coprocessor access error.\r\n");
+    }
+    if (cfsr & (1 << 24)) {
+      fault_printf("UsageFault: Divide by zero.\r\n");
+    }
+    if (cfsr & (1 << 25)) {
+      fault_printf("UsageFault: Unaligned memory access.\r\n");
+    }
+  }
+
+  // Bus Fault Analysis
+  if (cfsr & 0x0000FF00) {
+    if (cfsr & (1 << 8)) {
+      fault_printf("BusFault: Instruction prefetch error.\r\n");
+    }
+    if (cfsr & (1 << 9)) {
+      fault_printf("BusFault: Precise data bus error.\r\n");
+      if (cfsr & (1 << 15)) { // BFARVALID
+        fault_printf("BusFault: Fault address valid at BFAR: 0x%08X.\r\n", bfar);
+      }
+    }
+    if (cfsr & (1 << 10)) {
+      fault_printf("BusFault: Imprecise data bus error.\r\n");
+    }
+    if (cfsr & (1 << 11)) {
+      fault_printf("BusFault: Bus fault occurred during exception entry.\r\n");
+    }
+  }
+
+  // Memory Management Fault Analysis
+  if (cfsr & 0x000000FF) {
+    if (cfsr & (1 << 0)) {
+      fault_printf("MemManageFault: Instruction access violation.\r\n");
+    }
+    if (cfsr & (1 << 1)) {
+      fault_printf("MemManageFault: Data access violation.\r\n");
+    }
+    if (cfsr & (1 << 7)) {
+      fault_printf("MemManageFault: Fault address valid at MMFAR: 0x%08X.\r\n", mmfar);
+    }
+  }
+
+  // Hard Fault Analysis
+  if (hfsr & (1 << 30)) {
+    fault_printf("HardFault: Forced HardFault, possibly escalated from other faults.\r\n");
+  }
+  if (hfsr & (1 << 1)) {
+    fault_printf("HardFault: Vector table read error.\r\n");
+  }
+
+
+}
+
+
+
+
 void HardFault_Handler(void)
 {
   reg_msp = __get_MSP()+16;//이코드전에 push 4개의 레지스터 동작해서 MSP가 변경됨
@@ -143,6 +223,8 @@ void HardFault_Handler(void)
     fault_printf("SCB->HFSR  %08X\r\n",fault_reg[1]);
     fault_printf("SCB->MMFAR %08X\r\n",fault_reg[2]);
     fault_printf("SCB->BFAR  %08X\r\n",fault_reg[3]);
+
+      analyze_fault(fault_reg[0], fault_reg[1], fault_reg[2],fault_reg[3]);
   }
      
   while (1)

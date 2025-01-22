@@ -51,8 +51,22 @@ const char *linkStatusList[]={"up","down"};
 const char *g_chgList[]={"smart charger",
                          "aws charger"};
 const char *g_unknown="unknown";
-
-
+const char *generalStatusList[]={"정상","비정상"};
+const char *temperatureList[]={"미사용","ADC","RS-232","RS485"};  
+const char *windDirectionList[]={"미사용","ADC","RS-232","RS485"}; 
+const char *windSpeedList[]={"미사용","ADC"};                      
+const char *windDirectionInstantList[]={"미사용","VAL"};           
+const char *windSpeedInstantList[]={"미사용","VAL"};              
+const char *precipitationList[]={"미사용","REED","HALL"};          
+const char *pressureList[]={"미사용","RS-485"};
+const char *precipitationPresenceList[]={"미사용"};
+const char *snowfallList[]={"미사용","RS485"};
+const char *relativeHumidityList[]={"미사용"};
+const char *precipitationFineList[]={"미사용"};
+const char *unusedList[]={"미사용"};
+const char *adcChModeList[]={"single","diff"};
+const char *rs232ParityList[]={"none","even","odd"};
+const char *enableList[]={"미사용","사용"};
 
 void make_comList(char *out,uint16_t outsize)
 {
@@ -68,6 +82,11 @@ void make_comList(char *out,uint16_t outsize)
     if(config.direct_use)
   {
     len += snprintf(&out[len],outsize-len,"[DIRECT]");
+  }
+
+  if(len==0)
+  {
+snprintf(&out[len],outsize-len,"미사용");
   }
 }
 
@@ -210,6 +229,19 @@ int32_t print_systemInfo(uint16_t row,uint16_t column)
   return 4+2;
 }
 
+int32_t print_chargerInfo(uint16_t row,uint16_t column)
+{
+  uint8_t index=0;
+  uint8_t line=row+3;
+
+  vt100_print_frame(row   ,column,"충전기", '+', '|', '-', DISP_WIDTH, WHITE);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"상태           :%s\r\n",ITEM_LIST(System.charger_status,generalStatusList));
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"충전 전압(v)   :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"배터리 전압(v) :%d\r\n",0);
+  vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
+    
+  return 4+2;
+}
 int32_t print_ethInfo(uint16_t row,uint16_t column)
 {
     char buff[30];
@@ -318,6 +350,7 @@ int32_t menu_display(p_shell_context_t ctx)
     debug_printf("\r\n");
     print_systemInfo(1,0);
     print_ethInfo(1,30);
+    print_chargerInfo(20,0);
     print_awsRealLefinfo(1,60,awsMode,NULL);
 
       ch=0;
@@ -406,8 +439,8 @@ int32_t input_use(p_shell_context_t ctx,bool *en)
 {
   int32_t cnt;
   int32_t dec;
-  ctx->printf("0:사용\r\n");
-  ctx->printf("1:미미사용\r\n");
+  ctx->printf("0:미사용\r\n");
+  ctx->printf("1:사용\r\n");
   ctx->printf("Input:");
   cnt = console_scanf("%d",&dec);
   if(cnt==1)
@@ -546,22 +579,7 @@ int32_t menu_system(p_shell_context_t ctx)
 }
 
 
-const char *temperatureList[]={"미사용","ADC","RS-232","RS485"};   //A-1 기온
-const char *windDirectionList[]={"미사용","ADC","RS-232","RS485"}; //A-2 풍향
-const char *windSpeedList[]={"미사용","ADC"};                      //A-3 풍속 
-const char *windDirectionInstantList[]={"미사용","VAL"};           //A-4 순간 풍향
-const char *windSpeedInstantList[]={"미사용","VAL"};               //A-5 순간 풍속
-const char *precipitationList[]={"미사용","REED","HALL"};          //
-const char *pressureList[]={"미사용","RS-485"};
-const char *precipitationPresenceList[]={"미사용"};
-const char *snowfallList[]={"미사용","RS485"};
-const char *relativeHumidityList[]={"미사용"};
-const char *precipitationFineList[]={"미사용"};
-const char *unusedList[]={"미사용"};
 
-const char *adcChModeList[]={"single","diff"};
-const char *rs232ParityList[]={"none","even","odd"};
-const char *enableList[]={"사용","미사용"};
 
 int32_t print_menu_sensor(p_shell_context_t ctx)
 {
@@ -810,26 +828,27 @@ int32_t menu_net_use(p_shell_context_t ctx)
   do
   {
     cnt = select_indexFromList(ctx,NULL,print_net_use,0,false);
-    if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+    if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK )
     {
       return cnt;
     }
+    cnt--;
 
-    switch(index)
+    switch(cnt)
     {
-      case 1:
+      case 0:
       if(input_use(ctx,&config.eth_use))
       {
         WRITE_CFG(eth_use);
       }
       break;
-          case 2:
+          case 1:
       if(input_use(ctx,&config.cdma_use))
       {
         WRITE_CFG(cdma_use);
       }
       break;
-      case 3:
+      case 2:
       if(input_use(ctx,&config.direct_use))
       {
         WRITE_CFG(direct_use);
@@ -904,6 +923,15 @@ int32_t menu_net_eth_remote_set(p_shell_context_t ctx)
         WRITE_CFG(eth_server_port);
       }
       break;
+      case 2://프로토콜
+        cnt = select_indexFromList(ctx,protocolList,NULL,_countof(protocolList),true);
+        if(cnt>0)
+        {
+          cnt--;
+          config.eth_protocol = cnt;
+          WRITE_CFG(eth_protocol);
+        }
+      break;
     }
   } while (1);
 }
@@ -914,7 +942,7 @@ int32_t menu_net_eth_remote_set(p_shell_context_t ctx)
 
 int32_t print_net_eth_default_set(p_shell_context_t ctx)
 {
-  int32_t cnt = 2;
+  int32_t cnt = 3;
   uint8_t *ip = config.eth_ip;
   uint8_t *gw = config.eth_gateway;
   uint8_t *subnet = config.eth_subnet;
@@ -996,6 +1024,7 @@ int32_t menu_net_eth_set(p_shell_context_t ctx)
     {
       return cnt;
     }
+    cnt--;
     cnt = menu[cnt](ctx);
     if(cnt == EXIT_PROGRAM)
     {
@@ -1097,7 +1126,7 @@ int32_t menu_net_direct_set(p_shell_context_t ctx)
 
   do
   {
-    cnt = select_indexFromList(ctx,NULL,print_net_cdma_set,0,false);
+    cnt = select_indexFromList(ctx,NULL,print_net_direct_set,0,false);
     if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK)
     {
       return cnt;
@@ -1158,17 +1187,107 @@ int32_t menu_net_set(p_shell_context_t ctx)
   return cnt;
 }
 
-int32_t menu_net_vhf(p_shell_context_t ctx)
+int32_t print_menu_vhf(p_shell_context_t ctx)
 {
+  int32_t cnt=0;
+  
+  ctx->printf("%2d.그룹         :%d\r\n",cnt++,config.vhf_group);
+  ctx->printf("%2d.VHF ID       :%d\r\n",cnt++,config.vhf_id);
+  ctx->printf("%2d.중계 ID      :%d\r\n",cnt++,config.vhf_repeater_id);
+  ctx->printf("%2d.통제 ID      :%d\r\n",cnt++,config.vhf_host_id);
+  ctx->printf("%2d.PTT 시간(ms) :%d\r\n",cnt++,config.vhf_ptt_delay);
+  ctx->printf("%2d.VHF 가상 설정\r\n",cnt++);
+  ctx->printf("%2d.VHF 루프 테스트\r\n",cnt++);
+  ctx->printf("%2d.VHF 톤 테스트\r\n",cnt++);
 
-  return 0;
+  return cnt;
+
 }
 
+int32_t menu_net_vhf_vir_set(p_shell_context_t ctx)
+{
+
+}
+int32_t menu_net_vhf_loop_test(p_shell_context_t ctx)
+{
+
+}
+
+int32_t menu_net_vhf_tone_test(p_shell_context_t ctx)
+{
+
+}
+
+
+int32_t menu_net_vhf(p_shell_context_t ctx)
+{
+  int32_t cnt;
+  int32_t ret;
+  int32_t dec;
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_vhf,0,false);
+    if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM)
+    {
+      return cnt;
+    }
+    cnt--;
+
+    switch (cnt)
+    {
+    case 0://그룹
+      if(input_decimal(ctx,0,255,&dec))
+      {
+        config.vhf_group = dec;
+        WRITE_CFG(vhf_group);
+      }
+      break;
+    case 1://id
+      if(input_decimal(ctx,0,255,&dec))
+      {
+        config.vhf_id = dec;
+        WRITE_CFG(vhf_id);
+      }
+      break;
+    case 2://중계
+      if(input_decimal(ctx,0,255,&dec))
+      {
+        config.vhf_repeater_id = dec;
+        WRITE_CFG(vhf_repeater_id);
+      }
+      break;
+    case 3://호스트
+      if(input_decimal(ctx,0,255,&dec))
+      {
+        config.vhf_host_id = dec;
+        WRITE_CFG(vhf_host_id);
+      }
+      break;
+    case 4://ptt
+      if(input_decimal(ctx,0,255,&dec))
+      {
+        config.vhf_ptt_delay = dec;
+        WRITE_CFG(vhf_ptt_delay);
+      }
+      break;
+    case 5://
+    ret = menu_net_vhf_vir_set(ctx);
+    break;
+    default:
+      break;
+    }
+
+
+  }while(cnt != EXIT_PROGRAM);
+
+  return cnt;
+}
 
 int32_t print_menu_net(p_shell_context_t ctx)
 {
   int32_t cnt=0;
-  char buff[50];
+  char buff[50]={0};
   
   make_comList(buff,sizeof(buff));
 
@@ -1627,9 +1746,9 @@ int32_t menu_cali_config_all(p_shell_context_t ctx)
     
     ctx->printf("%-10s %-2s %-7s %-10s %-10s %-10s %-12s %-10s\r\n","Mode","Ch","offset","fullset","o_in(mv)","f_in(mv)","adc_avg(10)","voltage(v)");
 
-    for(int i = 1 ; i <= 18; i++)
+    for(int i = 0 ; i < 18; i++)
     {
-      adc = adc_read_single_avg(i-1,&err,10);
+      adc = adc_read_single_avg(i,&err,10);
       off = g_adc_cali_config.single[i].offset;
       full = g_adc_cali_config.single[i].fullset;
       off_in =g_adc_cali_config.single[i].offset_input;
@@ -1638,21 +1757,21 @@ int32_t menu_cali_config_all(p_shell_context_t ctx)
       if(err)
       {
         ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12s %-10s \r\n","Single",
-        i,off,full,off_in,full_in,"error"," ");;
+        i+1,off,full,off_in,full_in,"error"," ");;
       }
       else
       {
         ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12d %-8.6f \r\n","Single",
-        i,off,full,off_in,full_in,adc,voltage/1000.0);;
+        i+1,off,full,off_in,full_in,adc,voltage/1000.0);;
       }
 
 
 
   }
 
-  for(int i = 1 ; i <= 8; i++)
+  for(int i = 0 ; i < 8; i++)
   {
-      adc     = adc_read_diff_avg(i-1,&err,10);
+      adc     = adc_read_diff_avg(i,&err,10);
       off     = g_adc_cali_config.diff[i].offset;
       full    = g_adc_cali_config.diff[i].fullset;
       off_in  = g_adc_cali_config.diff[i].offset_input;
@@ -1661,12 +1780,12 @@ int32_t menu_cali_config_all(p_shell_context_t ctx)
       if(err)
       {
         ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12s %-10s \r\n","Diff",
-        i,off,full,off_in,full_in,"error"," ");;
+        i+1,off,full,off_in,full_in,"error"," ");;
       }
       else
       {
         ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12d %-8.6f \r\n","Diff",
-        i,off,full,off_in,full_in,adc,voltage/1000.0);;
+        i+1,off,full,off_in,full_in,adc,voltage/1000.0);;
       }
 
   }

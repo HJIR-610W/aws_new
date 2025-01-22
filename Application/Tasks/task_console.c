@@ -1,22 +1,18 @@
 
-
-#include "cmsis_os.h"
-#include "driver_uart.h"
-#include "io.h"
-#include "task_isrEvent.h"
-
-#include "cli\fsl_shell.h"
-#include "cli\fsl_debug_console.h"
-#include "cli\console_scanf.h"
-
 #include "app_console.h"
 #include "app_version.h"
 #include "boot_version.h"
+#include "cmsis_os.h"
+#include "cli\fsl_shell.h"
+#include "cli\fsl_debug_console.h"
+#include "cli\console_scanf.h"
+#include "driver_uart.h"
+#include "io.h"
+#include "task_isrEvent.h"
 #include "utile_time.h"
 
 
 driver_t *console_uart;
-
 
 const osThreadAttr_t consoleTask_attributes = {
   .name = "consoleTask",
@@ -83,20 +79,18 @@ void sonsoleTask(void *arg)
 
   set_debug_uart_handle(console_uart);
 
-  
-print_signature();
-  
-  
-    DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
-    
-      SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf, "AWS>> ");
-        console_scanf_init(&user_context);
-  
-            SHELL_RegisterCommand(&printCmd);
-                SHELL_Main(&user_context);
 
-                
-            
+  print_signature();
+
+
+  DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
+
+  SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf, "AWS>> ");
+  console_scanf_init(&user_context);
+
+  SHELL_RegisterCommand(&printCmd);
+  SHELL_Main(&user_context);
+
   while(1)
   {
     osDelay(1000);

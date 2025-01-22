@@ -27,3 +27,17 @@ void hex_to_binary_string(uint16_t hex_value, char *binary_str, int bit_length) 
     }
     binary_str[bit_length] = '\0';  // 문자열 종료 문자 추가
 }
+
+
+
+
+
+uint16_t swap_uint16(uint16_t value)
+{
+  uint16_t ret = 0;
+
+  ret = (value >> 8 &0x00FF);
+  ret |= (value << 8);
+
+  return ret;
+}

@@ -6,6 +6,7 @@
 #include "lwip.h"
 
 
+#include "task_tcpServer.h"
 
 
 const osThreadAttr_t ethernetTxTask_attributes = {
@@ -15,38 +16,27 @@ const osThreadAttr_t ethernetTxTask_attributes = {
 };
 
 
-
-
-
-
-
-
+/**
+ * @brief 이더넷 초기화 해주고 종료
+ */
 void ethernetTask(void *arg)
 {
   uint8_t *ip;
   uint8_t *mask;
   uint8_t *gw;
 
-  ip = config.eth_ip;
+  ip   = config.eth_ip;
   mask = config.eth_subnet;
-  gw = config.eth_gateway;
+  gw   = config.eth_gateway;
 
   MX_LWIP_Init(ip,mask,gw);
 
-  
-  while(1)
-  {
-    osDelay(1000);
-  }
+  noti_tcpServerTask(0x00000001);
+
+  osThreadExit();//종료 시킴
+
+
 }
-
-
-
-
-
-
-
-
 
 
 

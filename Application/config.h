@@ -9,11 +9,12 @@
 #include <stdbool.h>
 #include "utile.h"
 #include "driver_fram.h"
+#include "app_fram.h"
 
 #define ADC_CALI_START_ADDRESS 0x00000000
 #define CONFIG_START_ADDRESS   0x00002800 
-#define WRITE_CFG_CALI(x) driver_fram_write(g_framCfg,(uint32_t)OFFSET_OF_STRUCT(adc_cali_config_t, x),(uint8_t *)&g_adc_cali_config.x,sizeof(g_adc_cali_config.x));
-#define WRITE_CFG(x) driver_fram_write(g_framCfg,CONFIG_START_ADDRESS +(uint32_t)OFFSET_OF_STRUCT(config_t, x),(uint8_t *)&config.x,sizeof(config.x));
+#define WRITE_CFG_CALI(x) fram_write((uint32_t)OFFSET_OF_STRUCT(adc_cali_config_t, x),(uint8_t *)&g_adc_cali_config.x,sizeof(g_adc_cali_config.x));
+#define WRITE_CFG(x) fram_write(CONFIG_START_ADDRESS +(uint32_t)OFFSET_OF_STRUCT(config_t, x),(uint8_t *)&config.x,sizeof(config.x));
 
 typedef struct adc_calibraion_s
 {
@@ -32,6 +33,8 @@ typedef struct adc_cali_s
 
 
 
+
+
 #define USER_ENABLE  1
 #define USER_DISABLE 0
 
@@ -42,24 +45,6 @@ typedef enum adcChType_e
   eSINGLE_ADC,
   eDIFF_ADC
 }eADC_CH_TYPE_t;
-
-typedef struct adc_config_s
-{
-  bool singleChEn[32];
-  bool diffChEn_1[8];
-  bool diffChEn_2[8];    
-}adc_config_t;
-
-typedef struct adc_s
-{
-  int32_t singleCh[32];
-  int32_t diffCh_1[8];
-  int32_t diffCh_2[8];
-}adc_data_t;
-
-
-
-
 
 
 typedef struct 
@@ -138,14 +123,12 @@ typedef struct config_s
   uint8_t chgType;
   sensor_t sensor[50];
   uint16_t logCnt;
-  
   uint8_t eth_subnet[4];
   uint8_t eth_gateway[4];
   uint8_t eth_ip[4];
   uint8_t eth_server_ip[4];
   uint16_t eth_server_port;
   uint8_t eth_protocol;
-
   uint8_t cdma_server_ip[4];
   uint16_t cdma_port;
   uint8_t cdma_protocol;
@@ -156,7 +139,11 @@ typedef struct config_s
   uint8_t direct_protocol;
   uint32_t direct_baud;
   uint8_t panelType;
-
+  uint8_t vhf_id;
+  uint8_t vhf_group;
+  uint8_t vhf_host_id;
+  uint8_t vhf_repeater_id;
+  uint16_t vhf_ptt_delay;
 }config_t;
 
 
@@ -176,7 +163,7 @@ typedef struct system_s
   uint8_t direct_rx_cnt;
   uint8_t vhf_tx_cnt;
   uint8_t vhf_rx_cnt;
-
+  uint8_t charger_status;
 }system_t;
 
 void config_init(void);
@@ -185,9 +172,8 @@ void config_write_adcCalibraion(void);
 extern config_t config;
 extern system_t System;
 extern temp_config_t g_temp_config;;
-
 extern adc_cali_config_t g_adc_cali_config;
 
-extern driver_t *g_framCfg;
+
 
 #endif

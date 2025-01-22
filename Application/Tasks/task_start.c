@@ -26,13 +26,14 @@
 #include "task_console.h"
 #include "task_measure.h"
 #include "utile_time.h"
+#include "task_tcpServer.h"
 
 
 
 const osThreadAttr_t startTask_attributes = {
   .name = "startTask",
   .stack_size = 2048,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 
 
@@ -60,33 +61,26 @@ void startTask(void *arg)
   flash_init();
   runLed_init();
 
+  isrEventTask_init();
   loggingTask_init();
   measureTask_init();
   consoleTask_init();
-  
-  rtc_init();
 
-  isrEventTask_init();
-  
+  if(config.eth_use)
+  {
+    tcpServerTask_init(0);
+    ethernetTask_init();
 
+  }
 
   MX_ADC1_Init();
   MX_SDIO_SD_Init();
   MX_FATFS_Init();
   DWT_Delay_Init();
-  
-
-
-  
-  //  ethernetTask_init();
- // loggingTask_init();
- // testTask_init();
-
+ 
   osThreadExit();//¡æ∑· Ω√≈¥
   
 }
-
-
 
 void startTask_init(void)
 {
