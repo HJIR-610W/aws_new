@@ -5,6 +5,7 @@
 #include "driver_rtc.h"
 
 #include "adc.h"
+#include "app_flash.h"
 #include "cmsis_os.h"
 #include "config.h"
 #include "fatfs.h"
@@ -54,11 +55,12 @@ void startTask(void *arg)
 {
   mcu_interrupt_init();//최우선 실행
   rtc_init();
-  
+
   config_init();
-  
+  flash_init();
   runLed_init();
 
+  loggingTask_init();
   measureTask_init();
   consoleTask_init();
   

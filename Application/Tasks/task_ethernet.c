@@ -2,7 +2,7 @@
 
 
 #include "cmsis_os.h"
-
+#include "config.h"
 #include "lwip.h"
 
 
@@ -23,11 +23,17 @@ const osThreadAttr_t ethernetTxTask_attributes = {
 
 void ethernetTask(void *arg)
 {
-uint8_t ip[4]={192,168,1,173};
-uint8_t mask[4]={255,255,255,0};
-uint8_t gw[4]={192,168,1,1};
+  uint8_t *ip;
+  uint8_t *mask;
+  uint8_t *gw;
+
+  ip = config.eth_ip;
+  mask = config.eth_subnet;
+  gw = config.eth_gateway;
 
   MX_LWIP_Init(ip,mask,gw);
+
+  
   while(1)
   {
     osDelay(1000);

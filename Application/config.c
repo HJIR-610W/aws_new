@@ -20,6 +20,7 @@ adc_cali_config_t g_adc_cali_config;
 temp_config_t g_temp_config;
 
 config_t config;
+system_t System;
 
 adc_config_t g_adc_config;
 
@@ -75,14 +76,10 @@ void adcSingleChCfg_set(uint8_t singleChannel,bool enable)
 void config_init(void)
 {
   g_framCfg = driver_fram_open(FRAM_FM25LC);
-  
-  
-  
-  driver_fram_read(g_framCfg, 0, (uint8_t *)&g_adc_cali_config, sizeof(g_adc_cali_config));
-
-
-  
-  
+    
+  driver_fram_read(g_framCfg, ADC_CALI_START_ADDRESS, (uint8_t *)&g_adc_cali_config, sizeof(g_adc_cali_config));
+ 
+  driver_fram_read(g_framCfg, CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
 
 }
 
@@ -90,8 +87,11 @@ void config_init(void)
 void config_write_adcCalibraion(void)
 {
   driver_fram_write(g_framCfg, 0, (uint8_t *)&g_adc_cali_config, sizeof(g_adc_cali_config));
+}
 
-  
+void config_write_config(void)
+{
+  driver_fram_write(g_framCfg, CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
 }
 
 void config_factoryReset(void)

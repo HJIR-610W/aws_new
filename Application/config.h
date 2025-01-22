@@ -10,8 +10,10 @@
 #include "utile.h"
 #include "driver_fram.h"
 
-
+#define ADC_CALI_START_ADDRESS 0x00000000
+#define CONFIG_START_ADDRESS   0x00002800 
 #define WRITE_CFG_CALI(x) driver_fram_write(g_framCfg,(uint32_t)OFFSET_OF_STRUCT(adc_cali_config_t, x),(uint8_t *)&g_adc_cali_config.x,sizeof(g_adc_cali_config.x));
+#define WRITE_CFG(x) driver_fram_write(g_framCfg,CONFIG_START_ADDRESS +(uint32_t)OFFSET_OF_STRUCT(config_t, x),(uint8_t *)&config.x,sizeof(config.x));
 
 typedef struct adc_calibraion_s
 {
@@ -128,19 +130,60 @@ typedef struct windSpeed_config_s
 
 
 
+
 typedef struct config_s
 {
   uint16_t id;
   uint16_t password;
   uint8_t chgType;
   sensor_t sensor[50];
+  uint16_t logCnt;
+  
+  uint8_t eth_subnet[4];
+  uint8_t eth_gateway[4];
+  uint8_t eth_ip[4];
+  uint8_t eth_server_ip[4];
+  uint16_t eth_server_port;
+  uint8_t eth_protocol;
+
+  uint8_t cdma_server_ip[4];
+  uint16_t cdma_port;
+  uint8_t cdma_protocol;
+  uint8_t cdmaType;
+  bool eth_use;
+  bool cdma_use;
+  bool direct_use;
+  uint8_t direct_protocol;
+  uint32_t direct_baud;
+  uint8_t panelType;
+
 }config_t;
 
+
+typedef struct system_s
+{
+  uint8_t doorStatus;
+  uint8_t eth_link_status;//0정상, 1 다운
+  uint8_t eth_tx_cnt;
+  uint8_t eth_rx_cnt;
+  uint8_t cdma_link_status;
+  uint8_t cdma_tx_cnt;
+  uint8_t cdma_rx_cnt;
+  int8_t cdma_rssi;
+  char cdma_num[20];
+  uint8_t direct_link_status;
+  uint8_t direct_tx_cnt;
+  uint8_t direct_rx_cnt;
+  uint8_t vhf_tx_cnt;
+  uint8_t vhf_rx_cnt;
+
+}system_t;
 
 void config_init(void);
 void config_write_adcCalibraion(void);
 
 extern config_t config;
+extern system_t System;
 extern temp_config_t g_temp_config;;
 
 extern adc_cali_config_t g_adc_cali_config;

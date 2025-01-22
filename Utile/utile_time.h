@@ -8,6 +8,7 @@
 
 #include <time.h>
 void time_cvt_secTotime(time_t sec,DATE_TIME_BUF *timeNow);
+time_t time_cvt_timestamp(DATE_TIME_BUF *tN);
 void time_get(DATE_TIME_BUF *ct);
 void time_set(DATE_TIME_BUF *nt);
 int32_t make_timeToStr(DATE_TIME_BUF *ct,char *out,uint16_t outSize);

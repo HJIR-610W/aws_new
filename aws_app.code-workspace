@@ -21,7 +21,9 @@
       "xutility": "c",
       "config.h": "c",
       "utile.h": "c",
-      "vt100_command.h": "c"
+      "vt100_command.h": "c",
+      "driver_flash.h": "c",
+      "stdarg.h": "c"
     }
 	}
 }

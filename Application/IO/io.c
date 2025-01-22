@@ -1,4 +1,4 @@
-
+#define __STDC_WANT_LIB_EXT1__ 1
 #include <stdint.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -149,6 +149,10 @@ void debug_send(uint8_t *pData,uint16_t dataLen)
   driver_uart_send(debug_uart,pData,dataLen);
 }
 
+void debug_putch(char ch)
+{
+   driver_uart_send(debug_uart,&ch,1);
+}
 void debug_puts(char *str)
 {
   while(*str)
@@ -158,5 +162,97 @@ void debug_puts(char *str)
   }
 }
 
+uint16_t debug_recv(char *out,uint16_t outSize,uint32_t timeout)
+{
+  uint16_t cnt;
+
+  cnt = driver_uart_recvs(debug_uart,out,outSize,timeout);
+
+  return cnt;
+}
 
 
+
+void LOG_MEM(uint8_t* src, uint32_t size, uint32_t startAddr,uint32_t col)
+{
+
+	int32_t i, j, row;
+	uint8_t ch;
+	char temp[100];
+
+	int32_t len;
+
+
+	if ((size % col) == 0)
+		row = (size / col);
+	else
+		row = (size / col) + 1;
+
+	debug_printf("\n\r\n\r                ");
+	len = 0;
+	temp[0] = 0;
+
+	for (j = 0; j < col; j++)
+	{
+		len = strnlen_s(temp, sizeof(temp));
+		snprintf_s(&temp[len], sizeof(temp) - len, "%02X ", j);
+	}
+	debug_printf(temp);
+
+	debug_printf("  ");
+	for (j = 0; j < col; j++)
+	{
+		debug_printf("%X", j%16);
+	}
+
+
+
+
+	for (i = 0; i < row; i++)
+	{
+		snprintf_s(temp, sizeof(temp), "\n\r%04d  %08X  ", (int32_t)(i * col), (startAddr + i * col));
+		debug_printf(temp);
+
+		temp[0] = 0;
+
+		for (j = 0; j < col; j++)
+		{
+			if (((i * col) + j) < size)
+			{
+				len = strnlen_s(temp, sizeof(temp));
+				snprintf_s(&temp[len], sizeof(temp) - len, "%02X ", src[i * col + j]);
+			}
+			else
+			{
+				len = strnlen_s(temp, sizeof(temp));
+				snprintf_s(&temp[len], sizeof(temp) - len, "   ");
+			}
+		}
+		debug_printf(temp);
+		debug_printf("  ");
+
+		temp[0] = 0;
+
+		for (j = 0; j < col; j++)
+		{
+			if (((i * col) + j) < size)
+			{
+				ch = src[i * col + j];
+				if ((ch >= 0x20) && (ch < 0x7F) && ch !='%')
+				{
+					len = strnlen_s(temp, sizeof(temp));
+					snprintf_s(&temp[len], sizeof(temp) - len, "%c", ch);
+				}
+				else
+				{
+					len = strnlen_s(temp, sizeof(temp));
+					snprintf_s(&temp[len], sizeof(temp) - len, ".");
+				}
+			}
+		}
+		debug_printf(temp);
+	}
+	debug_printf("\n\r");
+
+
+}

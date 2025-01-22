@@ -1198,6 +1198,9 @@
             </group>
             <group>
                 <name>Ethernet</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\Ethernet\task_tcpServer.c</name>
+                </file>
             </group>
             <group>
                 <name>LWIP_APP</name>
@@ -1344,6 +1347,12 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\app_console.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_flash.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_logging.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_rtc.c</name>
             </file>
             <file>
@@ -1381,6 +1390,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_test.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\vir_data.c</name>
             </file>
         </group>
         <file>
@@ -2150,6 +2162,9 @@
         </group>
         <group>
             <name>modem</name>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\modem\ymodem.c</name>
+            </file>
         </group>
     </group>
     <group>

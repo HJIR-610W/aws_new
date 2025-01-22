@@ -1,7 +1,11 @@
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <math.h>
+#include "app_version.h"
+#include "boot_version.h"
 #include "app_adc.h"
+#include "app_flash.h"
 #include "cmsis_os.h"
 #include "app_console.h"
 #include "io.h"
@@ -11,9 +15,12 @@
 #include "utile.h"
 #include "vt100_command.h"
 #include "mcu_debug.h"
+#include "ymodem.h"
+#include "terminal.h"
 #define EXIT_PROGRAM -3
 #define EXIT_BACK    -1
 
+#define ITEM_LIST(cnt,list) cnt>=_countof(list)?g_unknown:list[cnt] 
 //사용가능한 싱글 채널 설정정
 const bool single_en[32]={1,1,1,0,
                           1,1,1,0,
@@ -35,6 +42,34 @@ typedef enum val_e
   eFLOAT
 }eVAL_TYPE_t;
 
+
+const char *protocolList[]={"kma ver 1","kma ver 2"};
+const char *cdmaModellList[]={"TX700","NTLE9607"};
+const char *panelList[]={"model a","model b"};
+const char *doorStatusList[]={"닫힘","열림"};
+const char *linkStatusList[]={"up","down"};
+const char *g_chgList[]={"smart charger",
+                         "aws charger"};
+const char *g_unknown="unknown";
+
+
+
+void make_comList(char *out,uint16_t outsize)
+{
+  int32_t len = 0 ;
+  if(config.eth_use)
+  {
+    len = snprintf(&out[len],outsize-len,"[ETH]");
+  }
+  if(config.cdma_use)
+  {
+    len += snprintf(&out[len],outsize-len,"[CDMA]");
+  }
+    if(config.direct_use)
+  {
+    len += snprintf(&out[len],outsize-len,"[DIRECT]");
+  }
+}
 
 void update_val(void *val,void *target,eVAL_TYPE_t type)
 {
@@ -129,15 +164,6 @@ int32_t select_indexFromList(p_shell_context_t ctx,const char *list[],
 
 
 
-const char *menuList[]={"0.diplay",
-                        "1.system",
-                        "2.sensor",
-                        "3.network",
-                        "4.data",
-                        "5.display panel",
-                        "6.manage",
-                        "7.calibraion",
-                        "8.developer"};
 
 
 typedef   int32_t (*menu_func)(p_shell_context_t);
@@ -155,48 +181,180 @@ bool wait_break(uint32_t timeoutms)
 
 return false;
 }
+
+
+#define DISP_WIDTH    24
+
+#define ASCII_CODE_ESC    0x1B
+#define ASCII_CODE_CTRL_Q 0x11
+#define ASCII_CODE_CTRL_C 0x03
+#define ASCII_CODE_CR     0x0D
+
+#define ASCII_SPEICIAL    0x5B //   '['   
+
+int32_t print_systemInfo(uint16_t row,uint16_t column)
+{
+  uint8_t index=0;
+  uint8_t line=row+3;
+  char buff[30];
+
+  snprintf(buff,sizeof(buff),"%04d-%02d-%02d %02d:%02d:%02d\r\n",Date_Time.Year,Date_Time.Month,
+  Date_Time.Day,Date_Time.Hour,Date_Time.Min,Date_Time.Sec);
+
+
+  vt100_print_frame(row   ,column,"시스템", '+', '|', '-', DISP_WIDTH, WHITE);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"%s\r\n",buff);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"문 상태  :%s\r\n",ITEM_LIST(System.doorStatus,doorStatusList));
+  vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
+    
+  return 4+2;
+}
+
+int32_t print_ethInfo(uint16_t row,uint16_t column)
+{
+    char buff[30];
+    uint8_t index=0;
+    uint8_t line=row+3;
+
+    make_comList(buff,sizeof(buff));
+    vt100_print_frame(row   ,column,"이더넷", '+', '|', '-', DISP_WIDTH, WHITE);
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"링크  :%s\r\n",ITEM_LIST(System.eth_link_status,linkStatusList));
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"송신  :%d\r\n",System.eth_tx_cnt);
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"수신  :%d\r\n",System.eth_rx_cnt);
+    vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
+    
+    return 5+2;
+}
+
+int32_t print_awsRealLefinfo(uint16_t row,uint16_t column,uint8_t mode,void* arg)
+{
+  char buff[30];
+  uint8_t index=0;
+  uint8_t line=row+3;
+  const char *aswTitleList[]={"실시간(1s)","1분","10분","한시간"};
+
+  snprintf(buff,sizeof(buff),"AWS %s",aswTitleList[mode]);
+
+  vt100_print_frame(row   ,column,buff, '+', '|', '-', DISP_WIDTH, WHITE);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온          :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍향          :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속          :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간 풍향     :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간 풍속     :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수량        :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기압          :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수 유무     :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"적설          :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"상대습도      :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수량        :%f\r\n",0);
+
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"일사          :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"일조          :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지면온도      :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"초상온도      :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 5cm  :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 10cm :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 20cm :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 30cm :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 50cm :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 1m   :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 1.5m :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 3m   :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 5cm  :%f\r\n",0);
+
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"1층 운고      :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"2층 운고      :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"3층 운고      :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"운량          :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"시정          :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"PM10          :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"PM2.5         :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순복사        :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"전천복사      :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"반사복사      :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"직달일사      :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"현재일기      :%f\r\n",0);
+
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 10cm :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 20cm :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 30cm :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 50cm :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"조도량        :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속 1.5m     :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속 4m       :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간풍속 1.5m :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간풍속 4m   :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온 0.5m     :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온 4m       :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"습도 0.5m     :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"습도 4m       :%f\r\n",0);
+
+  vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
+    
+    return 5+2;
+}
+
+#define KEY_UP    0x41
+#define KEY_DOWN  0x42
+#define KEY_LEFT  0x44
+#define KEY_RIGHT 0x43
+#define KEY_ENTER 0x0D
+
+#define AWS_MODE_MAX 3
 int32_t menu_display(p_shell_context_t ctx)
 {
-  int ch;
+  char buff[30];
+  char ch;
+  int row;
+  uint8_t awsMode=0;
+
+  debug_printf(VT100_CLEAR_SCREEN);
+  debug_printf(VT100_CURSOR_OFF);
+
+
   do
   {
+    debug_printf(VT100_CURSOR_HOME);
+    debug_printf("\r\n");
+    print_systemInfo(1,0);
+    print_ethInfo(1,30);
+    print_awsRealLefinfo(1,60,awsMode,NULL);
 
-  
-  ctx->printf("%04d-%02d-%02d %02d:%02d:%02d\r\n",Date_Time.Year,Date_Time.Month,
-  Date_Time.Day,Date_Time.Hour,Date_Time.Min,Date_Time.Sec);
- 
-  
-  osDelay(1000);
-  ch = DbgConsole_GetcharNonBlocking();
-  if(ch !=-1)
-  {
-    break;
-  }
+      ch=0;
+     debug_recv(&ch,1,1000);
+
+
+    if(ch == KEY_RIGHT)
+    {
+      if(awsMode<AWS_MODE_MAX)
+      {
+        awsMode++;
+      }
+    }
+    else if(ch == KEY_LEFT)
+    {
+      if(awsMode>0)
+      {
+        awsMode--;
+      }
+    }
+    
+        if(ch ==ASCII_CODE_CTRL_Q)
+    {
+      break;
+    }
   } while (1);
 
+    debug_printf(VT100_CURSOR_ON);
 return 0;
 }
 
 
-const char *g_chgList[]={"smart charger",
-                         "aws charger"};
-const char *g_unknown="unknown";
 
-#define ITEM_LIST(cnt,list) cnt>=_countof(list)?g_unknown:list[cnt] 
 
-int32_t print_menu_system(p_shell_context_t ctx)
-{
-  char buff[50];
-  int cnt=0;
 
-  make_timeToStr(&Date_Time,buff,sizeof(buff));
-  ctx->printf("%2d.time        :%s\r\n",cnt++,buff);
-  ctx->printf("%2d.id          :%d\r\n",cnt++,config.id);
-  ctx->printf("%2d.password    :%d\r\n",cnt++,config.password);
-  ctx->printf("%2d:charger type:%s\r\n",cnt++,ITEM_LIST(config.chgType,g_chgList));
 
-  return cnt;
-}
+
 
 int32_t input_date(p_shell_context_t ctx,DATE_TIME_BUF *nt)
 {
@@ -243,6 +401,33 @@ int input_decimal(p_shell_context_t ctx,int32_t start,int32_t stop,int32_t *dec)
   return cnt;
 }
 
+
+int32_t input_use(p_shell_context_t ctx,bool *en)
+{
+  int32_t cnt;
+  int32_t dec;
+  ctx->printf("0:사용\r\n");
+  ctx->printf("1:미미사용\r\n");
+  ctx->printf("Input:");
+  cnt = console_scanf("%d",&dec);
+  if(cnt==1)
+  {
+    if(dec >=0 && dec<= 1)
+    {
+        *en = (bool)dec;
+      return 1;
+    }
+    else
+    {
+        ctx->printf("입력 범위를 확인해주세요\r\n");
+      return 0;
+    }
+  }
+
+  return cnt;
+}
+
+
 int input_digit(p_shell_context_t ctx,int32_t start,int32_t stop,void *target,eVAL_TYPE_t type)
 {
   int32_t cnt;
@@ -275,20 +460,50 @@ int input_digit(p_shell_context_t ctx,int32_t start,int32_t stop,void *target,eV
 
   return cnt;
 }
+int32_t input_string(p_shell_context_t ctx,char *buff)
+{
+  int32_t cnt;
 
+
+  ctx->printf("Input:");
+  cnt = console_scanf("%s",buff);
+  if(cnt>0)
+  {
+
+      return 1;
+
+  }
+
+  return cnt;
+}
+
+int32_t print_menu_system(p_shell_context_t ctx)
+{
+  char buff[50];
+  int cnt=0;
+
+  make_timeToStr(&Date_Time,buff,sizeof(buff));
+  ctx->printf("%2d.time        :%s\r\n",cnt++,buff);
+  ctx->printf("%2d.id          :%d\r\n",cnt++,config.id);
+  ctx->printf("%2d.password    :%d\r\n",cnt++,config.password);
+  ctx->printf("%2d:charger type:%s\r\n",cnt++,ITEM_LIST(config.chgType,g_chgList));
+
+  return cnt;
+}
 
 int32_t menu_system(p_shell_context_t ctx)
 {
   int cnt;
   int32_t dec;
   DATE_TIME_BUF nt;
+
   do
   {
-
-  cnt = select_indexFromList(ctx,NULL,print_menu_system,4,false);
-
-  if(cnt>0)
-  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_system,0,false);
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
     cnt--;
     switch(cnt)
     {
@@ -304,6 +519,7 @@ int32_t menu_system(p_shell_context_t ctx)
       if(cnt)
       {
         config.id = dec;
+        WRITE_CFG(id);
       }
       break;
        case 2://password
@@ -311,6 +527,7 @@ int32_t menu_system(p_shell_context_t ctx)
       if(cnt)
       {
           config.password = dec;
+          WRITE_CFG(password);
       }
       break;
       case 3://charger type
@@ -319,22 +536,13 @@ int32_t menu_system(p_shell_context_t ctx)
       {
         cnt--;
         config.chgType = cnt;
+        WRITE_CFG(chgType);
       }
       break;
     }
-    if(cnt<0)
-    {
-      break;
-    }
-  }
-  else
-  {
-    break;
-  }
-
   } while (1);
   
-  return cnt;
+
 }
 
 
@@ -353,7 +561,7 @@ const char *unusedList[]={"미사용"};
 
 const char *adcChModeList[]={"single","diff"};
 const char *rs232ParityList[]={"none","even","odd"};
-
+const char *enableList[]={"사용","미사용"};
 
 int32_t print_menu_sensor(p_shell_context_t ctx)
 {
@@ -466,7 +674,6 @@ int32_t select_item(p_shell_context_t ctx,const char *list[],int listCnt,void *t
 int32_t menu_sensor_temp(p_shell_context_t ctx)
 {
   int32_t cnt;
-  int32_t ret;
   uint8_t itmeCnt;
   
   do
@@ -579,10 +786,419 @@ int32_t menu_sensor(p_shell_context_t ctx)
 
 
 
-int32_t menu_network(p_shell_context_t ctx)
+
+
+
+int32_t print_net_use(p_shell_context_t ctx)
+{
+  int32_t cnt=3;
+
+  ctx->printf(" 0.이더넷  :%s\r\n",ITEM_LIST((int)config.eth_use,enableList));
+  ctx->printf(" 1.CDMA    :%s\r\n",ITEM_LIST((int)config.cdma_use,enableList));
+  ctx->printf(" 2.직접통신:%s\r\n",ITEM_LIST((int)config.direct_use,enableList));
+
+  return cnt;
+}
+
+
+
+int32_t menu_net_use(p_shell_context_t ctx)
+{
+  int32_t cnt;
+  int32_t index;
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_net_use,0,false);
+    if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+    {
+      return cnt;
+    }
+
+    switch(index)
+    {
+      case 1:
+      if(input_use(ctx,&config.eth_use))
+      {
+        WRITE_CFG(eth_use);
+      }
+      break;
+          case 2:
+      if(input_use(ctx,&config.cdma_use))
+      {
+        WRITE_CFG(cdma_use);
+      }
+      break;
+      case 3:
+      if(input_use(ctx,&config.direct_use))
+      {
+        WRITE_CFG(direct_use);
+      }
+      break;
+    }   
+  } while (1);
+
+}
+
+
+int32_t print_net_eth_set(p_shell_context_t ctx)
+{
+  int32_t cnt = 0;
+  ctx->printf("%2d.원격 서버 정보\r\n",cnt++);
+  ctx->printf("%2d.기본 구성\r\n",cnt++);
+
+  return cnt;
+}
+
+
+
+
+
+int32_t print_net_eth_remote_set(p_shell_context_t ctx)
+{
+  int32_t cnt = 0;
+  uint8_t *ip = config.eth_server_ip;
+
+  ctx->printf("%2d.ip      :%d.%d.%d.%d\r\n",cnt++,ip[0],ip[1],ip[2],ip[3]);
+  ctx->printf("%2d.port    :%d\r\n",cnt++,config.eth_server_port);
+  ctx->printf("%2d.protocol:%s\r\n",cnt++,ITEM_LIST(config.eth_protocol,protocolList));
+
+  return cnt;
+}
+
+
+
+int32_t menu_net_eth_remote_set(p_shell_context_t ctx)
+{
+
+  int32_t cnt;
+  int32_t a,b,c,d;
+  int32_t dec;
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_net_eth_remote_set,0,false);
+    if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+    {
+      return cnt;
+    }
+
+    cnt--;
+    switch(cnt)
+    { 
+      case 0:
+      ctx->printf("xxx.xxx.xxx.xxx:");
+      if(console_scanf("%d.%d.%d.%d", &a,&b,&c,&d)==4)
+      {
+        config.eth_server_ip[0] = a;
+        config.eth_server_ip[1] = b;
+        config.eth_server_ip[2] = c;
+        config.eth_server_ip[3] = d;
+        WRITE_CFG(eth_server_ip);
+      }
+      break;
+      case 1:
+      if(input_decimal(ctx,0,60000,&dec))
+      {
+        config.eth_server_port = dec;
+        WRITE_CFG(eth_server_port);
+      }
+      break;
+    }
+  } while (1);
+}
+
+
+
+
+
+int32_t print_net_eth_default_set(p_shell_context_t ctx)
+{
+  int32_t cnt = 2;
+  uint8_t *ip = config.eth_ip;
+  uint8_t *gw = config.eth_gateway;
+  uint8_t *subnet = config.eth_subnet;
+
+  ctx->printf(" 0.ip      :%d.%d.%d.%d\r\n",ip[0],ip[1],ip[2],ip[3]);
+  ctx->printf(" 1.subnet  :%d.%d.%d.%d\r\n",subnet[0],subnet[1],subnet[2],subnet[3]);
+  ctx->printf(" 2.gateway :%d.%d.%d.%d\r\n",gw[0],gw[1],gw[2],gw[3]);
+
+  return cnt;
+}
+
+
+int32_t menu_net_eth_default_set(p_shell_context_t ctx)
+{
+
+  int32_t cnt;
+  int32_t a,b,c,d;
+
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_net_eth_default_set,0,false);
+    if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+    {
+      return cnt;
+    }
+
+    cnt--;
+    switch(cnt)
+    { 
+      case 0://ip
+      ctx->printf("xxx.xxx.xxx.xxx:");
+      if(console_scanf("%d.%d.%d.%d", &a,&b,&c,&d)==4)
+      {
+        config.eth_ip[0] = a;
+        config.eth_ip[1] = b;
+        config.eth_ip[2] = c;
+        config.eth_ip[3] = d;
+        WRITE_CFG(eth_ip);
+      }
+      break;
+      case 1://subnet
+      ctx->printf("xxx.xxx.xxx.xxx:");
+      if(console_scanf("%d.%d.%d.%d", &a,&b,&c,&d)==4)
+      {
+        config.eth_subnet[0] = a;
+        config.eth_subnet[1] = b;
+        config.eth_subnet[2] = c;
+        config.eth_subnet[3] = d;
+        WRITE_CFG(eth_subnet);
+      }
+      break;
+      case 2://gateway
+      ctx->printf("xxx.xxx.xxx.xxx:");
+      if(console_scanf("%d.%d.%d.%d", &a,&b,&c,&d)==4)
+      {
+        config.eth_gateway[0] = a;
+        config.eth_gateway[1] = b;
+        config.eth_gateway[2] = c;
+        config.eth_gateway[3] = d;
+        WRITE_CFG(eth_gateway);
+      }
+      break;
+    }
+  } while (1);
+}
+
+
+int32_t menu_net_eth_set(p_shell_context_t ctx)
+{
+  int32_t cnt;
+
+  const menu_func menu[]={menu_net_eth_remote_set,
+                          menu_net_eth_default_set};
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_net_eth_set,0,false);
+    if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+    {
+      return cnt;
+    }
+    cnt = menu[cnt](ctx);
+    if(cnt == EXIT_PROGRAM)
+    {
+      return cnt;
+    }
+  } while (1);
+
+}
+
+
+int32_t print_net_cdma_set(p_shell_context_t ctx)
+{
+  int32_t cnt = 0;
+  uint8_t *ip  = config.cdma_server_ip;
+  int32_t port = config.cdma_port;
+
+  ctx->printf("%2d.ip      :%d.%d.%d.%d\r\n",cnt++,ip[0],ip[1],ip[2],ip[3]);
+  ctx->printf("%2d.port    :%d\r\n",cnt++,port);
+  ctx->printf("%2d.protocol:%s\r\n",cnt++,ITEM_LIST(config.cdma_protocol,protocolList));
+  ctx->printf("%2d.model   :%s\r\n",cnt++,ITEM_LIST(config.cdmaType,cdmaModellList));
+
+  return cnt;
+}
+
+int32_t menu_net_cdma_set(p_shell_context_t ctx)
+{
+
+  int32_t cnt;
+  int32_t a,b,c,d;
+  int32_t dec;
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_net_cdma_set,0,false);
+    if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+    {
+      return cnt;
+    }
+
+    cnt--;
+    switch(cnt)
+    { 
+      case 0:
+      ctx->printf("xxx.xxx.xxx.xxx:");
+      if(console_scanf("%d.%d.%d.%d", &a,&b,&c,&d)==4)
+      {
+        config.cdma_server_ip[0] = a;
+        config.cdma_server_ip[1] = b;
+        config.cdma_server_ip[2] = c;
+        config.cdma_server_ip[3] = d;
+        WRITE_CFG(cdma_server_ip);
+      }
+      break;
+      case 1:
+      if(input_decimal(ctx,0,60000,&dec))
+      {
+        config.cdma_port = dec;
+        WRITE_CFG(cdma_port);
+      }
+      break;
+      case 2://프로토콜
+        cnt = select_indexFromList(ctx,protocolList,NULL,_countof(protocolList),true);
+        if(cnt>0)
+        {
+          cnt--;
+          config.cdma_protocol = cnt;
+          WRITE_CFG(cdma_protocol);
+        }
+      break;
+      case 3://모델 
+        cnt = select_indexFromList(ctx,cdmaModellList,NULL,_countof(cdmaModellList),true);
+        if(cnt>0)
+        {
+          cnt--;
+          config.cdmaType = cnt;
+          WRITE_CFG(cdmaType);
+        }
+      break;
+    }
+  } while (1);
+}
+
+
+int32_t print_net_direct_set(p_shell_context_t ctx)
+{
+  int32_t cnt = 2;
+
+  ctx->printf(" 0.baud     :%d\r\n",cnt++,config.direct_baud);
+  ctx->printf(" 1.protocol :%s\r\n",cnt++,ITEM_LIST(config.direct_protocol,protocolList));
+
+  return cnt;
+}
+
+int32_t menu_net_direct_set(p_shell_context_t ctx)
+{
+
+  int32_t cnt;
+  int32_t dec;
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_net_cdma_set,0,false);
+    if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK)
+    {
+      return cnt;
+    }
+
+    cnt--;
+    switch(cnt)
+    { 
+      case 0://baud
+      if(input_decimal(ctx,0,115200,&dec))
+      {
+        config.direct_baud = dec;
+        WRITE_CFG(direct_baud);
+      }
+      break;
+      case 2://프로토콜
+        cnt = select_indexFromList(ctx,protocolList,NULL,_countof(protocolList),true);
+        if(cnt>0)
+        {
+          cnt--;
+          config.direct_protocol = cnt;
+          WRITE_CFG(direct_protocol);
+        }
+      break;
+
+    }
+  } while (1);
+}
+
+int32_t print_net_set(p_shell_context_t ctx)
+{
+  int32_t cnt = 0;
+
+  ctx->printf("%2d.이더넷\r\n",cnt++);
+  ctx->printf("%2d.CDMA\r\n",cnt++);
+  ctx->printf("%2d.직접 통신\r\n",cnt++);
+
+  return cnt;
+}
+
+int32_t menu_net_set(p_shell_context_t ctx)
+{
+  int32_t cnt;
+  const menu_func menu[]={menu_net_eth_set,
+                          menu_net_cdma_set,
+                          menu_net_direct_set};
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_net_set,0,false);
+    if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    cnt = menu[cnt](ctx);
+  } while (cnt != EXIT_PROGRAM);
+
+  return cnt;
+}
+
+int32_t menu_net_vhf(p_shell_context_t ctx)
 {
 
   return 0;
+}
+
+
+int32_t print_menu_net(p_shell_context_t ctx)
+{
+  int32_t cnt=0;
+  char buff[50];
+  
+  make_comList(buff,sizeof(buff));
+
+  ctx->printf("%2d.통신 방식:%s\r\n",cnt++,buff);
+  ctx->printf("%2d.통신 설정\r\n",cnt++);
+  ctx->printf("%2d.VHF\r\n",cnt++);
+
+  return cnt;
+
+}
+
+int32_t menu_network(p_shell_context_t ctx)
+{
+  int32_t cnt;
+
+  const menu_func menu[]={menu_net_use,
+                          menu_net_set,
+                          menu_net_vhf};
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_net,0,false);
+    if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM)
+    {
+      return cnt;
+    }
+    cnt--;
+    cnt = menu[cnt](ctx);
+  }while(cnt != EXIT_PROGRAM);
+
+  return cnt;
 }
 
 int32_t menu_data(p_shell_context_t ctx)
@@ -590,17 +1206,157 @@ int32_t menu_data(p_shell_context_t ctx)
 
   return 0;
 }
-int32_t menu_display_panel(p_shell_context_t ctx)
+
+
+int32_t print_menu_panel(p_shell_context_t ctx)
 {
+  int32_t cnt=0;
+
+  ctx->printf("%2d.패널 종류:%s\r\n",cnt++,ITEM_LIST(config.panelType,panelList));
+
+  return cnt;
+
+}
+ int32_t menu_display_panel(p_shell_context_t ctx)
+{
+  int32_t cnt;
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_panel,0,false);
+
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    {
+      return cnt;
+    }
+    cnt--;
+
+    switch (cnt)
+    {
+      case 0:
+      cnt = select_indexFromList(ctx,panelList,NULL,_countof(panelList),false);
+
+      if(cnt > 0)
+      {
+        cnt--;
+        config.panelType = cnt;
+        WRITE_CFG(panelType);
+      }
+      break;
+    }
+
+  }while(1);
+
+  return cnt;
+}
+
+
+int32_t menu_manage_version(p_shell_context_t ctx)
+{
+  char buff[30];
+
+  uint8_t a,b,c,d;
+  DATE_TIME_BUF ct;
+
+    get_appVer(&a,&b,&c,&d);
+    get_appBuild(&ct);
+
+    ctx->printf("App:%d.%d.%d.%d\r\n",a,b,c,d);
+    make_timeToStr(&ct,buff,sizeof(buff));
+    ctx->printf("App build:%s\r\n",buff);
+
+    get_bootVer(&a,&b,&c,&d);
+    get_bootBuild(&ct);
+
+    ctx->printf("Boot:%d.%d.%d.%d\r\n",a,b,c,d);
+    make_timeToStr(&ct,buff,sizeof(buff));
+    ctx->printf("Boot build:%s\r\n",buff);
+  return 0;
+
+}
+int32_t download_file(int32_t (*write_file)(char *path,uint32_t offset,uint8_t *data,uint32_t dataLen),
+                        char *path,uint32_t offset,uint32_t *len,uint32_t limit);
+
+
+int32_t write_file(char *path,uint32_t offset,uint8_t *data,uint32_t dataLen)
+{
+
+  flash_write(offset,data,dataLen);
 
   return 0;
 }
+
+int32_t menu_manage_update(p_shell_context_t ctx)
+{
+  char buff[20];
+  uint32_t len;
+
+  ctx->printf("10초뒤에 파일을 전송해주세요\r\n");
+  osDelay(10000);
+
+  if(download_file(write_file,buff,0,&len,512*1024) ==0)
+  {
+    ctx->printf("파일 크기:%d\r\n",len);
+  }
+  else
+  {
+    ctx->printf("파일 수신 오류\r\n");
+  }
+
+
+
+  return 0;
+}
+int32_t menu_manage_device_reset(p_shell_context_t ctx)
+{
+  
+  return 0;
+}
+int32_t menu_manage_config_reset(p_shell_context_t ctx)
+{
+
+    return 0;
+}
+
+menu_func g_manageMenu[]={[0]=menu_manage_version,
+                              menu_manage_update,
+                              menu_manage_device_reset,
+                              menu_manage_config_reset};
+
+int32_t print_menu_manage(p_shell_context_t ctx)
+{
+  int32_t cnt=0;
+  
+  ctx->printf("\r\n");
+  ctx->printf(" 0.version\r\n");
+  ctx->printf(" 1.fw update\r\n");
+  ctx->printf(" 2.device reset\r\n");
+  ctx->printf(" 3.config factory reset\r\n");
+  cnt = 4;
+  return cnt;
+}
+
 int32_t menu_manage(p_shell_context_t ctx)
 {
+  int32_t cnt;
 
-  return 0;
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_manage,0,false);
+    if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM && cnt <= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    cnt = g_manageMenu[cnt](ctx);
+    if(cnt == EXIT_PROGRAM )
+    {
+      return cnt;
+    }
+  }while(1);
+
+  //return 0;//
 }
-
 
 
 
@@ -860,7 +1616,7 @@ int32_t menu_cali_config_all(p_shell_context_t ctx)
   int32_t adc;
   uint8_t err = 0;
   int32_t off,full,off_in,full_in;
-  uint8_t ch;
+
 
   ctx->printf(VT100_CLEAR_SCREEN);
   ctx->printf(VT100_CURSOR_OFF);
@@ -974,7 +1730,7 @@ int32_t menu_cali_config_factory(p_shell_context_t ctx)
 int32_t menu_cali_print_adc(p_shell_context_t ctx)
 {
   char buff[30];
-  int32_t off,full,o_in,f_in;
+
   int32_t channel;
   int32_t cnt;
   int32_t adc;
@@ -1026,6 +1782,7 @@ int32_t menu_cali_print_adc(p_shell_context_t ctx)
         ctx->printf("%s MODE:%s CH:%d ADC:%d %8.6f\r\n",buff,adcMode==eSINGLE_ADC?"s":"d",channel+1,adc,voltage);
     }while(wait_break(1000));
   }
+    return 0;
 
 }
 
@@ -1116,7 +1873,70 @@ int32_t menu_developer_interrupt(p_shell_context_t ctx)
   PrintAllInterrupts();
   return 0;
 }
-menu_func g_developerMenu[]={[0]=menu_developer_interrupt};
+
+
+
+void print_flash(uint32_t start,uint32_t size,uint32_t width)
+{
+    uint8_t buff[512];
+    uint32_t quot;
+    uint32_t rem;
+    uint32_t i;
+
+    quot = size/512;
+    rem = size % 512;
+
+    for(i = 0;i<quot;i++)
+    {
+        flash_read(start+i*512,buff,512,512);
+        LOG_MEM(buff,sizeof(buff),start+i*512,width);
+        
+    }
+
+    if(rem)
+    {
+        flash_read(start+i*512,buff,512,rem);
+        LOG_MEM(buff,rem,start+i*512,width);
+    }
+
+}
+
+int32_t menu_developer_memory(p_shell_context_t ctx)
+{
+  int32_t cnt;
+  int32_t inCnt;
+  int32_t start,size,len;
+
+  const char *memList[]={"flash","fram"};
+
+  cnt = select_indexFromList(ctx,memList,NULL,_countof(memList),true);
+
+  if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM && cnt <= 0)
+  {
+    return cnt;
+  }
+
+  ctx->printf("start,size,len>>");
+
+  inCnt = console_scanf("%d,%d,%d",&start,&size,&len);
+  if(inCnt == EXIT_BACK || inCnt==EXIT_PROGRAM && cnt <= 0)
+  {
+    return inCnt;
+  }
+
+  cnt--;
+  switch(cnt)
+  {
+    case 0://flash;
+      print_flash(start,size,len);
+    break;
+    case 1://fram
+    break;
+  }
+return 0;
+}
+menu_func g_developerMenu[]={[0]=menu_developer_interrupt,
+                                 menu_developer_memory};
 
 
 
@@ -1126,8 +1946,8 @@ int32_t print_menu_developer(p_shell_context_t ctx)
   
   ctx->printf("\r\n");
   ctx->printf(" 0.interrupt\r\n");
-
-  cnt = 1;
+  ctx->printf(" 1.memory\r\n");
+  cnt = 2;
   return cnt;
 }
 
@@ -1152,37 +1972,41 @@ int32_t menu_developer(p_shell_context_t ctx)
   }while(1);
 }
 
-menu_func g_rootMenu[9]={menu_display,
-                         menu_system,
-                         menu_sensor,
-                         menu_network,
-                         menu_data,
-                         menu_display_panel,
-                         menu_manage,
-                         menu_calibration,
-                         menu_developer};
+
+
+const char *menuList[]={"0.diplay",
+                        "1.system",
+                        "2.sensor",
+                        "3.network",
+                        "4.data",
+                        "5.display panel",
+                        "6.manage",
+                        "7.calibraion",
+                        "8.developer"};
 
  int32_t print_menu(p_shell_context_t ctx, int32_t argc, char** argv)
 {
   int32_t cnt;
-  int32_t ret;
-
+const menu_func menu[]={menu_display,
+                        menu_system,
+                        menu_sensor,
+                        menu_network,
+                        menu_data,
+                        menu_display_panel,
+                        menu_manage,
+                        menu_calibration,
+                        menu_developer};
   do
   {
     cnt = select_indexFromList(ctx,menuList,NULL,_countof(menuList),false);
 
-    if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM)
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
     {
       return cnt;
     }
-
     cnt--;
-    ret = g_rootMenu[cnt](ctx);
-    if(ret == EXIT_PROGRAM)
-    {
-      break;
-    }
-  }while(1);
+    cnt = menu[cnt](ctx);
+  }while(cnt != EXIT_PROGRAM);
 
-  return 0;
+  return cnt;
 }

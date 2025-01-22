@@ -38,6 +38,22 @@ void time_cvt_secTotime(time_t sec,DATE_TIME_BUF *timeNow)
 
 }
 
+time_t time_cvt_timestamp(DATE_TIME_BUF *tN)
+{
+	struct tm atm;
+
+	atm.tm_sec = tN->Sec;
+	atm.tm_min = tN->Min;
+	atm.tm_hour = tN->Hour;
+	atm.tm_mday = tN->Day;
+	atm.tm_mon = tN->Month-1;       // tm_mon is 0 based
+	atm.tm_year = tN->Year - 1900;     // tm_year is 1900 based
+	atm.tm_isdst = 0;
+    
+
+	return mktime(&atm);
+}
+
 
 int32_t make_timeToStr(DATE_TIME_BUF *ct,char *out,uint16_t outSize)
 {

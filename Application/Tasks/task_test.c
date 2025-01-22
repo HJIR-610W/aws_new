@@ -19,7 +19,6 @@
 #include "Debug\mcu_debug.h"
 #include "rtos_debug.h"
 
-#define WRITE_CFG(x) driver_fram_write(g_fram,(uint32_t)OFFSET_OF_STRUCT(test_config_t, x),(uint8_t *)&g_test_config.x,sizeof(g_test_config.x));
 
 uint8_t g_adc_average_cnt = 10;
 int32_t g_adc_vref = 5980;//mv
@@ -350,8 +349,8 @@ void adc_single_calibration_set(int32_t ch,int32_t setType,int32_t input_voltage
         g_test_config.single_cali[ch].offset = adc;
         g_test_config.single_cali[ch].offset_input = input_voltage;
 
-        WRITE_CFG(single_cali[ch].offset);
-        WRITE_CFG(single_cali[ch].offset_input);
+      //  WRITE_CFG(single_cali[ch].offset);
+      //  WRITE_CFG(single_cali[ch].offset_input);
 
         debug_printf("offset:%d\r\n",adc);
       }
@@ -368,11 +367,11 @@ void adc_single_calibration_set(int32_t ch,int32_t setType,int32_t input_voltage
 
 
 
-        WRITE_CFG(single_cali[ch].fullset);
-        WRITE_CFG(single_cali[ch].fullset_input);
+      //  WRITE_CFG(single_cali[ch].fullset);
+      //  WRITE_CFG(single_cali[ch].fullset_input);
 
         g_test_config.single_cali[ch].gain = calculate_gain_adc_single(ch);
-        WRITE_CFG(single_cali[ch].gain);
+     //   WRITE_CFG(single_cali[ch].gain);
         debug_printf("fullset:%d\r\n",adc);
       }
       else
@@ -399,8 +398,8 @@ void adc_diff_calibration_set(int32_t ch,int32_t setType,int32_t input_voltage)
         g_test_config.diff_cali[ch].offset = adc;
         g_test_config.diff_cali[ch].offset_input = input_voltage;
 
-        WRITE_CFG(diff_cali[ch].offset);
-        WRITE_CFG(diff_cali[ch].offset_input);
+       // WRITE_CFG(diff_cali[ch].offset);
+       // WRITE_CFG(diff_cali[ch].offset_input);
 
         debug_printf("offset:%d\r\n",adc);
       }
@@ -415,11 +414,11 @@ void adc_diff_calibration_set(int32_t ch,int32_t setType,int32_t input_voltage)
         g_test_config.diff_cali[ch].fullset = adc;
         g_test_config.diff_cali[ch].fullset_input = input_voltage;
 
-        WRITE_CFG(diff_cali[ch].fullset);
-        WRITE_CFG(diff_cali[ch].fullset_input);
+       // WRITE_CFG(diff_cali[ch].fullset);
+       // WRITE_CFG(diff_cali[ch].fullset_input);
 
         g_test_config.diff_cali[ch].gain = calculate_gain_adc_single(ch);
-        WRITE_CFG(diff_cali[ch].gain);
+       // WRITE_CFG(diff_cali[ch].gain);
         debug_printf("fullset:%d\r\n",adc);
       }
       else
@@ -801,7 +800,7 @@ void test_cmd(char *data)
                 g_adc_vref = Vref;
                 debug_printf("adc Vref:%dmV\r\n",g_adc_vref);
                 g_test_config.Vref = Vref;
-                WRITE_CFG(Vref);
+//                WRITE_CFG(Vref);
               }
           }
       }

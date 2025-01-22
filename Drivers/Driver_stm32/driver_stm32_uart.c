@@ -22,7 +22,7 @@ DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart3_rx;
 DMA_HandleTypeDef hdma_usart6_rx;
 
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 1024+128
 typedef struct uart_ring_s
 {
   uint16_t size;
