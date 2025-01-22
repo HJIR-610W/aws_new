@@ -28,7 +28,12 @@
       "app_logging.h": "c",
       "util.h": "c",
       "app_version.h": "c",
-      "aws_kma3.h": "c"
+      "aws_kma3.h": "c",
+      "bit": "cpp",
+      "compare": "cpp",
+      "cstddef": "cpp",
+      "limits": "cpp",
+      "type_traits": "cpp"
     }
 	}
 }

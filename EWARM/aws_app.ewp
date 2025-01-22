@@ -415,6 +415,7 @@
                     <state>$PROJ_DIR$\..\Middlewares\modem</state>
                     <state>$PROJ_DIR$\..\Application\Communications\Ethernet</state>
                     <state>$PROJ_DIR$\..\Application\Communications</state>
+                    <state>$PROJ_DIR$\..\Application\Sensors</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1292,6 +1293,9 @@
             <group>
                 <name>water</name>
             </group>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Sensors\app_sensor.c</name>
+            </file>
         </group>
         <group>
             <name>tasks</name>

@@ -4,7 +4,7 @@
 
 
 #include <stdint.h>
-
+#include <stdbool.h>
 
 typedef enum
 {
@@ -24,7 +24,7 @@ B1_SOLAR_RADIATION        = 11,  // 일사
 B2_SUNSHINE_DURATION      = 12,  // 일조
 B3_GROUND_TEMPERATURE     = 13,  // 지면온도
 B4_SURFACE_TEMPERATURE    = 14,  // 초상온도
-B5_SOIL_TEMPERATURE       = 15,  // 지중온도
+B5_SOIL_TEMPERATURE_5CM   = 15,  // 지중온도
 B6_SOIL_TEMPERATURE_10CM  = 16,  // 지중온도
 B7_SOIL_TEMPERATURE_20CM  = 17,  // 지중온도
 B8_SOIL_TEMPERATURE_30CM  = 18,  // 지중온도
@@ -64,6 +64,7 @@ I1_TACHOMETER             = 49, // 타코미터
 
 FAN_STATUS = 63
 }eSENSOR_LIST_t;
+
 
 
 typedef struct
@@ -226,5 +227,17 @@ typedef struct
 }kma_data_t;
 
 
+
+
+typedef struct sensor_emul_s
+{
+  const char *name;
+  int16_t data;
+  bool use;
+}sensor_emul_t;
+
+
 extern kma_data_t kma_data_1s;
+extern sensor_emul_t g_sensor_emul[50];
+extern const char *sensorNameList[50];
 #endif

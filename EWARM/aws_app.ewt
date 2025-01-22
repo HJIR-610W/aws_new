@@ -1352,6 +1352,9 @@
             <group>
                 <name>water</name>
             </group>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Sensors\app_sensor.c</name>
+            </file>
         </group>
         <group>
             <name>tasks</name>

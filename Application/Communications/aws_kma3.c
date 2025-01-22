@@ -484,6 +484,12 @@ uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend,uint16_t lpSendSize,  kma_da
 
 }
 
+
+void check_sensor_emul(void)
+{
+  
+}
+
 //순간 자료
 uint16_t kma_cmd_AI(uint8_t *recv,uint8_t *send)
 {

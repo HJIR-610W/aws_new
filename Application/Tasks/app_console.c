@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
+#include "aws_data.h"
 #include "app_version.h"
 #include "boot_version.h"
 #include "app_adc.h"
@@ -17,6 +18,7 @@
 #include "mcu_debug.h"
 #include "ymodem.h"
 #include "terminal.h"
+
 #define EXIT_PROGRAM -3
 #define EXIT_BACK    -1
 
@@ -67,6 +69,9 @@ const char *unusedList[]={"미사용"};
 const char *adcChModeList[]={"single","diff"};
 const char *rs232ParityList[]={"none","even","odd"};
 const char *enableList[]={"미사용","사용"};
+
+
+const char *sensorTypeList[]={"a"};
 
 void make_comList(char *out,uint16_t outsize)
 {
@@ -584,57 +589,17 @@ int32_t menu_system(p_shell_context_t ctx)
 int32_t print_menu_sensor(p_shell_context_t ctx)
 {
   int32_t cnt=0;
-  
+  int i=0;
   ctx->printf("\r\n");
-  ctx->printf(" 0.기온           :%s\r\n",ITEM_LIST(g_temp_config.type,temperatureList));
-  ctx->printf(" 1.풍향           :%s\r\n",ITEM_LIST(config.sensor[1].type,windDirectionList));
-  ctx->printf(" 2.풍속           :%s\r\n",ITEM_LIST(config.sensor[2].type,windSpeedList));
-  ctx->printf(" 3.순간풍향       :%s\r\n",ITEM_LIST(config.sensor[3].type,windDirectionInstantList));
-  ctx->printf(" 4.순간풍속       :%s\r\n",ITEM_LIST(config.sensor[4].type,windSpeedInstantList));
-  ctx->printf(" 5.강수량         :%s\r\n",ITEM_LIST(config.sensor[5].type,precipitationList));
-  ctx->printf(" 6.기압           :%s\r\n",ITEM_LIST(config.sensor[6].type,pressureList));
-  ctx->printf(" 7.강수유무       :%s\r\n",ITEM_LIST(config.sensor[7].type,precipitationPresenceList));
-  ctx->printf(" 8.적설           :%s\r\n",ITEM_LIST(config.sensor[8].type,snowfallList));
-  ctx->printf(" 9.상대습도       :%s\r\n",ITEM_LIST(config.sensor[9].type,relativeHumidityList));
-  ctx->printf("10.강수량(0.1mm)  :%s\r\n",ITEM_LIST(config.sensor[10].type,precipitationFineList));
-  ctx->printf("11.일사           :%s\r\n",ITEM_LIST(config.sensor[11].type,unusedList));
-  ctx->printf("12.일조           :%s\r\n",ITEM_LIST(config.sensor[12].type,unusedList));
-  ctx->printf("13.지면온도       :%s\r\n",ITEM_LIST(config.sensor[13].type,unusedList));
-  ctx->printf("14.초상온도       :%s\r\n",ITEM_LIST(config.sensor[14].type,unusedList));
-  ctx->printf("15.지중온도 5cm   :%s\r\n",ITEM_LIST(config.sensor[15].type,unusedList));
-  ctx->printf("16.지중온도 20cm  :%s\r\n",ITEM_LIST(config.sensor[16].type,unusedList));
-  ctx->printf("17.지중온도 30cm  :%s\r\n",ITEM_LIST(config.sensor[17].type,unusedList));
-  ctx->printf("18.지중온도 50cm  :%s\r\n",ITEM_LIST(config.sensor[18].type,unusedList));
-  ctx->printf("19.지중온도 1.0m  :%s\r\n",ITEM_LIST(config.sensor[19].type,unusedList));
-  ctx->printf("20.지중온도 1.5m  :%s\r\n",ITEM_LIST(config.sensor[20].type,unusedList));
-  ctx->printf("21.지중온도 3.0m  :%s\r\n",ITEM_LIST(config.sensor[21].type,unusedList));
-  ctx->printf("22.지중온도 5.0m  :%s\r\n",ITEM_LIST(config.sensor[22].type,unusedList));
-  ctx->printf("23.층운고         :%s\r\n",ITEM_LIST(config.sensor[23].type,unusedList));
-  ctx->printf("24.2층운고        :%s\r\n",ITEM_LIST(config.sensor[24].type,unusedList));
-  ctx->printf("25.3층운고        :%s\r\n",ITEM_LIST(config.sensor[25].type,unusedList));
-  ctx->printf("26.운량           :%s\r\n",ITEM_LIST(config.sensor[26].type,unusedList));
-  ctx->printf("27.시정           :%s\r\n",ITEM_LIST(config.sensor[27].type,unusedList));
-  ctx->printf("28.PM10           :%s\r\n",ITEM_LIST(config.sensor[28].type,unusedList));
-  ctx->printf("29.PM2.5          :%s\r\n",ITEM_LIST(config.sensor[29].type,unusedList));
-  ctx->printf("30.순복사         :%s\r\n",ITEM_LIST(config.sensor[30].type,unusedList));
-  ctx->printf("31.전천복사       :%s\r\n",ITEM_LIST(config.sensor[31].type,unusedList));
-  ctx->printf("32.반사복사       :%s\r\n",ITEM_LIST(config.sensor[32].type,unusedList));
-  ctx->printf("33.직달 일사      :%s\r\n",ITEM_LIST(config.sensor[33].type,unusedList));
-  ctx->printf("34.현재일기       :%s\r\n",ITEM_LIST(config.sensor[34].type,unusedList));
-  ctx->printf("35.토양수분 10cm  :%s\r\n",ITEM_LIST(config.sensor[35].type,unusedList));
-  ctx->printf("36.토양수분 20cm  :%s\r\n",ITEM_LIST(config.sensor[36].type,unusedList));
-  ctx->printf("37.토양수분 30cm  :%s\r\n",ITEM_LIST(config.sensor[37].type,unusedList));
-  ctx->printf("38.토양수분 50cm  :%s\r\n",ITEM_LIST(config.sensor[38].type,unusedList));
-  ctx->printf("39.조도량         :%s\r\n",ITEM_LIST(config.sensor[39].type,unusedList));
-  ctx->printf("40.풍속(1.5m)     :%s\r\n",ITEM_LIST(config.sensor[40].type,unusedList));
-  ctx->printf("41.풍속(4.m)      :%s\r\n",ITEM_LIST(config.sensor[41].type,unusedList));
-  ctx->printf("42.순간풍속(1.5m) :%s\r\n",ITEM_LIST(config.sensor[42].type,unusedList));
-  ctx->printf("43.순간풍속(4.0m) :%s\r\n",ITEM_LIST(config.sensor[43].type,unusedList));
-  ctx->printf("44.기온 0.5m      :%s\r\n",ITEM_LIST(config.sensor[44].type,unusedList));
-  ctx->printf("45.기온 4.0m      :%s\r\n",ITEM_LIST(config.sensor[45].type,unusedList));
-  ctx->printf("46.습도 0.5m      :%s\r\n",ITEM_LIST(config.sensor[46].type,unusedList));
-  ctx->printf("47.습도 4.0m      :%s\r\n",ITEM_LIST(config.sensor[47].type,unusedList));
-  ctx->printf("48.타코미터       :%s\r\n",ITEM_LIST(config.sensor[48].type,unusedList));
+
+  for(int i = 0 ; i< _countof(sensorNameList);i++)
+  {
+  ctx->printf("%2d.%-15s:%s\r\n",i,sensorNameList[i],ITEM_LIST(config.sensor[i].type,sensorTypeList));
+  cnt++;
+  }
+
+
+
 
   cnt = 49;
   return cnt;
@@ -644,26 +609,27 @@ int32_t print_menu_sensor(p_shell_context_t ctx)
 int32_t print_menu_sensor_temp(p_shell_context_t ctx)
 {
   int cnt = 0;
+adc_config_t adcCfg;
+rs232_config_t rs232Cfg;
 
-  ctx->printf("%2d.type       :%s\r\n",cnt++,ITEM_LIST(g_temp_config.type,temperatureList));
-  switch(g_temp_config.type)
+  ctx->printf("%2d.type       :%s\r\n",cnt++,ITEM_LIST(config.sensor[A1_TEMPERATURE].type,temperatureList));
+  switch(config.sensor[A1_TEMPERATURE].type)
   {
-    case TEMP_TYPE_UNUSED://미사용
+    case S_T_UNSUED://미사용
     break;
-    case TEMP_TYPE_ADC://ADC
-
-      ctx->printf("%2d.adc mode   :%s\r\n",cnt++,ITEM_LIST(g_temp_config.adc.mode,adcChModeList));    
-      ctx->printf("%2d.channel    :%d\r\n",cnt++,g_temp_config.adc.channel);
-      ctx->printf("%2d:high scale :%d\r\n",cnt++,g_temp_config.adc.highScale);
-      ctx->printf("%2d:low scale  :%d\r\n",cnt++,g_temp_config.adc.lowScale);
+    case S_T_ADC://ADC
+      ctx->printf("%2d.adc mode   :%s\r\n",cnt++,ITEM_LIST(adcCfg.mode,adcChModeList));    
+      ctx->printf("%2d.channel    :%d\r\n",cnt++,adcCfg.channel);
+      ctx->printf("%2d:high scale :%d\r\n",cnt++,adcCfg.highScale);
+      ctx->printf("%2d:low scale  :%d\r\n",cnt++,adcCfg.lowScale);
     break;
-    case TEMP_TYPE_RS485://RS485
-      ctx->printf("%2d.port       :%d\r\n",cnt++,g_temp_config.rs485.port);    
-      ctx->printf("%2d.baud       :%d\r\n",cnt++,g_temp_config.rs485.buad);
-      ctx->printf("%2d:paraity    :%s\r\n",cnt++,ITEM_LIST(g_temp_config.rs485.parity,rs232ParityList));
+    case S_T_RS485://RS485
+      ctx->printf("%2d.port       :%d\r\n",cnt++,rs232Cfg.port);    
+      ctx->printf("%2d.baud       :%d\r\n",cnt++,rs232Cfg.baudIdx);
+      ctx->printf("%2d:paraity    :%s\r\n",cnt++,ITEM_LIST(rs232Cfg.parityIdx,rs232ParityList));
     break;
   }
-  ctx->printf("%2d:factory\r\n",cnt++,g_temp_config.rs485.parity);
+  ctx->printf("%2d:factory\r\n");
   
   return cnt;
 }
@@ -696,15 +662,15 @@ int32_t menu_sensor_temp(p_shell_context_t ctx)
   
   do
   {
-      switch(g_temp_config.type)
+      switch(config.sensor[A1_TEMPERATURE].type)
       {
-        case TEMP_TYPE_UNUSED:
+        case S_T_UNSUED:
         itmeCnt = 2;
         break;
-        case TEMP_TYPE_ADC:
+        case S_T_ADC:
         itmeCnt = 6;
         break;
-        case TEMP_TYPE_RS485:
+        case S_T_RS485:
         itmeCnt = 6;
         break;
       }
@@ -716,13 +682,13 @@ int32_t menu_sensor_temp(p_shell_context_t ctx)
         return cnt;
       }
           cnt--;
-      switch(g_temp_config.type)
+      switch(config.sensor[A1_TEMPERATURE].type)
       {
         case TEMP_TYPE_UNUSED:
           switch (cnt)
           {
           case 0:
-            cnt = select_item(ctx,temperatureList,_countof(temperatureList),&g_temp_config.type,eUINT8);
+            cnt = select_item(ctx,temperatureList,_countof(temperatureList),&config.sensor[A1_TEMPERATURE].type,eUINT16);
             break;
           default:
             break;
@@ -733,19 +699,19 @@ int32_t menu_sensor_temp(p_shell_context_t ctx)
           switch(cnt)
           {
             case 0://0.센서타입
-            cnt = select_item(ctx,temperatureList,_countof(temperatureList),&g_temp_config.type,eUINT8);
+            cnt = select_item(ctx,temperatureList,_countof(temperatureList),&config.sensor[A1_TEMPERATURE].type,eUINT16);
             break;
             case 1://1.채널 모드
-            cnt = select_item(ctx,adcChModeList,_countof(adcChModeList),&g_temp_config.adc.mode,eUINT8);
+            cnt = select_item(ctx,adcChModeList,_countof(adcChModeList),&config.sensor[A1_TEMPERATURE],eUINT8);
             break;
             case 2://channel;
-            cnt = input_digit(ctx,0,100000,&g_temp_config.adc.channel,eUINT32);
+           // cnt = input_digit(ctx,0,100000,&g_temp_config.adc.channel,eUINT32);
             break;
             case 3://hish cale;
-            cnt = input_digit(ctx,0,100000,&g_temp_config.adc.highScale,eUINT32);
+           // cnt = input_digit(ctx,0,100000,&g_temp_config.adc.highScale,eUINT32);
             break;
             case 4://low cale;
-            cnt = input_digit(ctx,0,100000,&g_temp_config.adc.lowScale,eUINT32);
+           // cnt = input_digit(ctx,0,100000,&g_temp_config.adc.lowScale,eUINT32);
             break;
             case 5:
             break;
@@ -2054,19 +2020,66 @@ int32_t menu_developer_memory(p_shell_context_t ctx)
   }
 return 0;
 }
-menu_func g_developerMenu[]={[0]=menu_developer_interrupt,
-                                 menu_developer_memory};
 
 
+
+
+int32_t print_developer_sensor(p_shell_context_t ctx)
+{
+  int32_t cnt=0;
+  int32_t i=0;
+
+  ctx->printf("\r\n");
+  for(int i = 0 ;i<_countof(sensorNameList);i++)
+  {
+    ctx->printf("%2d.%-15s:%s,%d\r\n",i,sensorNameList[i], ITEM_LIST(g_sensor_emul[i].use,enableList),g_sensor_emul[i].data);
+    cnt++;
+  }
+
+  return cnt;
+}
+
+
+int32_t menu_developer_sensor(p_shell_context_t ctx)
+{
+  int32_t cnt;
+  int32_t inCnt;
+  int32_t start,size,len;
+  float fVal;
+  int32_t dec;
+  int32_t use;
+  while(1)
+  {
+
+
+  cnt = select_indexFromList(ctx,NULL,print_developer_sensor,0,true);
+
+  if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM && cnt <= 0)
+  {
+    return cnt;
+  }
+
+  cnt--;
+
+  ctx->printf("use,data:");
+  if(console_scanf("%d,%d",&use,&dec)==2)
+  {
+    g_sensor_emul[cnt].use = use;
+    g_sensor_emul[cnt].data = dec;
+  }
+}
+
+}
 
 int32_t print_menu_developer(p_shell_context_t ctx)
 {
   int32_t cnt=0;
   
   ctx->printf("\r\n");
-  ctx->printf(" 0.interrupt\r\n");
-  ctx->printf(" 1.memory\r\n");
-  cnt = 2;
+  ctx->printf("%2d.interrupt\r\n",cnt++);
+  ctx->printf("%2d.memory\r\n",cnt++);
+  ctx->printf("%2d.sensor emul\r\n",cnt++);
+
   return cnt;
 }
 
@@ -2074,7 +2087,9 @@ int32_t print_menu_developer(p_shell_context_t ctx)
 int32_t menu_developer(p_shell_context_t ctx)
 {
   int32_t cnt;
-
+const menu_func menu[]={[0]= menu_developer_interrupt,
+                             menu_developer_memory,
+                             menu_developer_sensor};
   do
   {
     cnt = select_indexFromList(ctx,NULL,print_menu_developer,0,false);
@@ -2083,7 +2098,7 @@ int32_t menu_developer(p_shell_context_t ctx)
       return cnt;
     }
     cnt--;
-    cnt = g_developerMenu[cnt](ctx);
+    cnt = menu[cnt](ctx);
     if(cnt == EXIT_PROGRAM )
     {
       return cnt;
