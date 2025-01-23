@@ -58,3 +58,7 @@ const char *sensorNameList[]={
 "습도 4.0m",//48
 "타코미터"//49
 };
+
+
+
+sensor_data_t sensor_data[50];

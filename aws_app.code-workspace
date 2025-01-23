@@ -34,7 +34,8 @@
       "cstddef": "cpp",
       "limits": "cpp",
       "type_traits": "cpp",
-      "app_fram.h": "c"
+      "app_fram.h": "c",
+      "app_sensor.h": "c"
     }
 	}
 }

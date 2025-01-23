@@ -236,8 +236,17 @@ typedef struct sensor_emul_s
   bool use;
 }sensor_emul_t;
 
+typedef struct sensor_data_s
+{
+  int16_t data;
+  int16_t max;
+  int16_t min;
+  uint8_t status;
+  float unitScale;
+}sensor_data_t;
 
 extern kma_data_t kma_data_1s;
 extern sensor_emul_t g_sensor_emul[50];
 extern const char *sensorNameList[50];
+extern sensor_data_t sensor_data[50];
 #endif

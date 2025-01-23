@@ -14,10 +14,10 @@
     <StLinkDriver>
         <stlinkserialNo>13004800040000393333574E</stlinkserialNo>
         <stlinkfoundProbes />
-        <CStepIntDis>_ 0</CStepIntDis>
-        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
         <stlinkResetStyle>0</stlinkResetStyle>
         <stlinkResetStrategy>0</stlinkResetStrategy>
+        <CStepIntDis>_ 0</CStepIntDis>
+        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
     </StLinkDriver>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>1512352715</Checksum>
+        <Checksum>3638979108</Checksum>
     </DebugChecksum>
     <Disassembly>
         <InstrCount>0</InstrCount>
@@ -77,6 +77,8 @@
     </Simulator>
     <struct_types>
         <Fmt0>DATE_TIME_BUF-Sec	3	0</Fmt0>
+        <Fmt1>adc_config_t-channel	3	0</Fmt1>
+        <Fmt2>adc_config_t-lowScale	4	0</Fmt2>
     </struct_types>
     <watch_formats>
         <Fmt0>{W}1:crc	4	0</Fmt0>
@@ -127,12 +129,6 @@
         <ShowTimeSum>1</ShowTimeSum>
         <SumSortOrder>0</SumSortOrder>
     </EventLog>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Count>0</Count>
-    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -142,10 +138,6 @@
         <LogFile>_ ""</LogFile>
         <Category>_ 0</Category>
     </LogFile>
-    <Aliases>
-        <Count>0</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>3</Mode>
@@ -159,4 +151,15 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Sensors\temperature\temperature.c}.20.5" 0 0 1 "" 0 "" 0</Bp0>
+        <Count>1</Count>
+    </Breakpoints2>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
 </settings>

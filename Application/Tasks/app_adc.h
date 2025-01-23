@@ -3,6 +3,7 @@
 #define APP_ADC_H
 
 #include <stdint.h>
+#include "app_sensor.h"
 
 extern const uint8_t user_adc_single_channel[18];
 
@@ -15,4 +16,7 @@ int32_t adc_read_single_avg(int channel,uint8_t *err,uint8_t avg_cnt);
 int32_t adc_read_diff_avg(int channel,uint8_t *err,uint8_t avg_cnt);
 
 float adc_chToVoltage(int32_t mode,int32_t channel,int32_t adc);
+float adc_read_volate(adc_config_t *adc,uint8_t *err);
+int32_t get_adc_vref(adc_config_t *adc);
+float calculate_adc(adc_config_t *adc_config,uint8_t *err);
 #endif

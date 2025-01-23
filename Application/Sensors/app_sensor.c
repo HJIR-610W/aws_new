@@ -18,7 +18,10 @@ const char *sensorTypeList[14]={"¹Ì»ç¿ë",         /* 0 S_T_UNSUED */
                                 "SNOW_HJ_RS485", /* 12 S_T_HJ_SNOW_RS485 */
                                 "RAIN_SERIAL"};  /* 13 S_T_RAIN_SERIAL */
 
-
+const uint8_t temperatureList[]={S_T_UNSUED,
+                                 S_T_ADC,
+                                 S_T_RS232,
+                                 S_T_RS485};
 
 
 

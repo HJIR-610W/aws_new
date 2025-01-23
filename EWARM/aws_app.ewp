@@ -1285,9 +1285,21 @@
         <group>
             <name>Sensors</name>
             <group>
+                <name>barometer</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\barometer\barometer.c</name>
+                </file>
+            </group>
+            <group>
                 <name>rain</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\rain\rain.c</name>
+                </file>
+            </group>
+            <group>
+                <name>temperature</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\temperature\temperature.c</name>
                 </file>
             </group>
             <group>

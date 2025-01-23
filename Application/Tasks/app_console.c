@@ -64,10 +64,7 @@ typedef struct select_menu_s
 }select_menu_t;
 
 
-const uint8_t temperatureList[]={S_T_UNSUED,
-                                 S_T_ADC,
-                                 S_T_RS232,
-                                 S_T_RS485};
+
 
 const uint8_t rainList[]={S_T_RAIN_REED_05MM,
                           S_T_RAIN_REED_1MM,
@@ -296,41 +293,44 @@ int32_t print_ethInfo(uint16_t row,uint16_t column)
     return 5+2;
 }
 
+
 int32_t print_awsRealLefinfo(uint16_t row,uint16_t column,uint8_t mode,void* arg)
 {
   char buff[30];
   uint8_t index=0;
   uint8_t line=row+3;
+  sensor_t *sensor;
+
   const char *aswTitleList[]={"실시간(1s)","1분","10분","한시간"};
 
   snprintf(buff,sizeof(buff),"AWS %s",aswTitleList[mode]);
-
+  
   vt100_print_frame(row   ,column,buff, '+', '|', '-', DISP_WIDTH, WHITE);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온          :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍향          :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속          :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간 풍향     :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간 풍속     :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수량        :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기압          :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수 유무     :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"적설          :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"상대습도      :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수량        :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온          :%5.2f\r\n",(float)sensor_data[A1_TEMPERATURE].data/(float)sensor->scale);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍향          :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속          :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간 풍향     :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간 풍속     :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수량        :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기압          :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수 유무     :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"적설          :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"상대습도      :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수량        :%d\r\n",0);
 
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"일사          :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"일조          :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지면온도      :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"초상온도      :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 5cm  :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 10cm :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 20cm :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 30cm :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 50cm :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 1m   :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 1.5m :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 3m   :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 5cm  :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"일사          :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"일조          :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지면온도      :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"초상온도      :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 5cm  :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 10cm :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 20cm :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 30cm :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 50cm :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 1m   :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 1.5m :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 3m   :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 5cm  :%d\r\n",0);
 
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"1층 운고      :%f\r\n",0);
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"2층 운고      :%f\r\n",0);
@@ -665,6 +665,7 @@ int32_t print_menu_sensor_temp(p_shell_context_t ctx)
   sensor = &config.sensor[A1_TEMPERATURE];
 
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  ctx->printf("%2d.scale      :%d\r\n",cnt++,sensor->scale);
   switch(sensor->type)
   {
     case S_T_ADC://ADC
@@ -743,7 +744,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
     }
     break;
     case ADC_SET_HIGHSCALE://hish cale;
-    cnt = input_decimal(ctx,0,100000,&dec);
+    cnt = input_decimal(ctx,-100000,100000,&dec);
     if(cnt)
     {
       adc->highScale = dec;
@@ -751,7 +752,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
      }
       break;
     case ADC_SET_LOWSCALE://low cale;
-      cnt = input_decimal(ctx,0,100000,&dec);
+      cnt = input_decimal(ctx,-100000,100000,&dec);
       if(cnt)
       {
         adc->lowScale = dec;
@@ -890,6 +891,7 @@ const config_sen_func_t sen_func[8]={{.sensorType = S_T_ADC,.config_set   = adc_
  */
 int32_t menu_sensor_temp(p_shell_context_t ctx)
 {
+  float scale;
   int32_t dec;
   int32_t cnt;
   uint8_t itemListCnt;
@@ -918,13 +920,22 @@ int32_t menu_sensor_temp(p_shell_context_t ctx)
         WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
       }
     }
+    else if(cnt==1)
+    {
+      cnt = input_decimal(ctx,0,1000,&dec);
+      if(cnt>0)
+      {
+        sensor->scale =  dec;
+       WRITE_CFG_MEM(&sensor->scale,sizeof(sensor->scale));
+      }
+    }
     else
     {
       for(int i = 0 ; i< _countof(sen_func);i++)
       {
         if(sen_func[i].sensorType == sensor->type)
         {
-          sen_func[i].config_set(ctx,sensor,cnt-1);
+          sen_func[i].config_set(ctx,sensor,cnt-2);
           break;
         }
       }

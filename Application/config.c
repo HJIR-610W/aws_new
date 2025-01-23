@@ -62,3 +62,7 @@ void config_init(void)
 
 
 
+float get_scale(uint8_t sensor)
+{
+  return config.sensor[sensor].scale;
+}

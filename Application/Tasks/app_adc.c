@@ -19,6 +19,7 @@ void adc_init(void)
 
 int32_t adc_read_single(int channel,uint8_t *err)
 {
+  
   return  driver_adc_read(g_adc_s,user_adc_single_channel[channel],err);
 }
 int32_t adc_read_single_avg(int channel,uint8_t *err,uint8_t avg_cnt)
@@ -73,4 +74,51 @@ float adc_chToVoltage(int32_t mode,int32_t channel,int32_t adc)
   }
 
   return cvt_adcToVol(adc,off,full,o_in,f_in)/1000.0;
+}
+
+
+float adc_read_volate(adc_config_t *adc,uint8_t *err)
+{
+  int32_t data;
+  float ret;
+  if(adc->mode == eSINGLE_ADC)
+  {
+    data = adc_read_single(adc->channel-1,err);
+    ret= adc_chToVoltage(adc->mode,adc->channel-1,data);
+  }
+  else
+  {
+    data = adc_read_diff(adc->channel-1,err);
+    ret= adc_chToVoltage(adc->mode,adc->channel-1,data);
+  }
+  return ret;
+}
+
+
+int32_t get_adc_vref(adc_config_t *adc)
+{
+  if(adc->mode==eSINGLE_ADC)
+  {
+    return   g_adc_cali_config.single[adc->channel-1].fullset_input;
+
+  }
+  else
+  {
+    return g_adc_cali_config.diff[adc->channel-1].fullset_input;
+  }
+}
+
+
+float calculate_adc(adc_config_t *adc_config,uint8_t *err)
+{
+  float val;
+  int32_t vref;
+ float data;
+
+  vref = get_adc_vref(adc_config);
+  data = adc_read_volate(adc_config,err);
+  val = adc_config->lowScale + (adc_config->highScale - adc_config->lowScale)*data/(vref/1000.0);
+
+return val;
+
 }

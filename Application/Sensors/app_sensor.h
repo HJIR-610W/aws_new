@@ -51,8 +51,8 @@ typedef struct
 {
   uint8_t mode; //0 single, 1 diff
   uint8_t channel;
-  uint32_t highScale;
-  uint32_t lowScale;
+  int32_t highScale;
+  int32_t lowScale;
 }adc_config_t;
 
 
@@ -60,6 +60,7 @@ typedef struct sensor_s
 {
   int16_t data;
   uint16_t type;//ADC
+  int16_t scale;
   uint8_t configCnt;
   uint8_t config[4][2];
 }sensor_t;
@@ -88,4 +89,6 @@ void * get_sensor_config(sensor_t *sensor,uint8_t sensorType);
 extern config_manager_t s_config;
 
 extern const char *sensorTypeList[14];
+
+extern const uint8_t temperatureList[4];
 #endif

@@ -96,6 +96,9 @@ void config_init(void);
 void config_write_adcCalibraion(void);
 void write_s_config(void);
 void write_config(void);
+
+float get_scale(uint8_t sensor);
+
 extern config_t config;
 extern system_t System;
 extern adc_cali_config_t g_adc_cali_config;
