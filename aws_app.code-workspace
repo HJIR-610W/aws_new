@@ -33,7 +33,8 @@
       "compare": "cpp",
       "cstddef": "cpp",
       "limits": "cpp",
-      "type_traits": "cpp"
+      "type_traits": "cpp",
+      "app_fram.h": "c"
     }
 	}
 }

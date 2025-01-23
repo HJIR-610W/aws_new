@@ -5,6 +5,8 @@
 
 #include <stdint.h>
 
+#include "driver_fram.h"
+
 void fram_init(void);
 void fram_read(uint32_t offset, unsigned char* pBuff, uint16_t rLen);
 void fram_write(uint32_t offset, unsigned char* pBuff, uint16_t rLen);

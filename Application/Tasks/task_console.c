@@ -23,7 +23,7 @@ const osThreadAttr_t consoleTask_attributes = {
 
 static const shell_command_context_t printCmd = { "menu",
                                                   "\r\n\"menu\"\r\n" ,
-                                                   print_menu,0 };
+                                                   menu_root,0 };
 
 
 

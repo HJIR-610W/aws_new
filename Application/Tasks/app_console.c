@@ -2,27 +2,30 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
+
+
 #include "aws_data.h"
+#include "app_console.h"
 #include "app_version.h"
-#include "boot_version.h"
 #include "app_adc.h"
 #include "app_flash.h"
+#include "boot_version.h"
 #include "cmsis_os.h"
-#include "app_console.h"
-#include "io.h"
-
-#include "utile_time.h"
 #include "config.h"
+#include "io.h"
+#include "mcu_debug.h"
+#include "system_err.h"
+#include "utile_time.h"
 #include "utile.h"
 #include "vt100_command.h"
-#include "mcu_debug.h"
 #include "ymodem.h"
 #include "terminal.h"
+
 
 #define EXIT_PROGRAM -3
 #define EXIT_BACK    -1
 
-#define ITEM_LIST(cnt,list) cnt>=_countof(list)?g_unknown:list[cnt] 
+#define ITEM_LIST(cnt,list) cnt>=_countof(list)?g_unknown:(char *)list[cnt] 
 //사용가능한 싱글 채널 설정정
 const bool single_en[32]={1,1,1,0,
                           1,1,1,0,
@@ -34,7 +37,13 @@ const bool single_en[32]={1,1,1,0,
                           1,1,0,0};
       
 
+typedef   int32_t (*menu_func)(p_shell_context_t);
 
+typedef struct menuFunc_s
+{
+  const char *title;
+  menu_func func;
+}menuFunc_t;
 
 typedef enum val_e
 {
@@ -43,6 +52,29 @@ typedef enum val_e
   eUINT32,
   eFLOAT
 }eVAL_TYPE_t;
+
+typedef struct select_menu_s
+{
+  p_shell_context_t ctx;
+  const char **list;
+  int32_t (*func)(p_shell_context_t ctx);
+  uint8_t cnt;
+  bool show;
+  const menuFunc_t *menuFunc;
+}select_menu_t;
+
+
+const uint8_t temperatureList[]={S_T_UNSUED,
+                                 S_T_ADC,
+                                 S_T_RS232,
+                                 S_T_RS485};
+
+const uint8_t rainList[]={S_T_RAIN_REED_05MM,
+                          S_T_RAIN_REED_1MM,
+                          S_T_RAIN_HALL_05MM,
+                          S_T_RAIN_HALL_1MM,
+                          S_T_RAIN_SERIAL};
+
 
 
 const char *protocolList[]={"kma ver 1","kma ver 2"};
@@ -54,7 +86,8 @@ const char *g_chgList[]={"smart charger",
                          "aws charger"};
 const char *g_unknown="unknown";
 const char *generalStatusList[]={"정상","비정상"};
-const char *temperatureList[]={"미사용","ADC","RS-232","RS485"};  
+
+
 const char *windDirectionList[]={"미사용","ADC","RS-232","RS485"}; 
 const char *windSpeedList[]={"미사용","ADC"};                      
 const char *windDirectionInstantList[]={"미사용","VAL"};           
@@ -71,7 +104,7 @@ const char *rs232ParityList[]={"none","even","odd"};
 const char *enableList[]={"미사용","사용"};
 
 
-const char *sensorTypeList[]={"a"};
+
 
 void make_comList(char *out,uint16_t outsize)
 {
@@ -190,7 +223,7 @@ int32_t select_indexFromList(p_shell_context_t ctx,const char *list[],
 
 
 
-typedef   int32_t (*menu_func)(p_shell_context_t);
+
 
 
 bool wait_break(uint32_t timeoutms)
@@ -605,32 +638,45 @@ int32_t print_menu_sensor(p_shell_context_t ctx)
   return cnt;
 }
 
+uint8_t print_rs232_cfg(p_shell_context_t ctx,rs232_config_t *rs232_config,uint8_t cnt)
+{
+  ctx->printf("%2d.port       :%d\r\n",cnt++,rs232_config->port);    
+  ctx->printf("%2d.baud       :%d\r\n",cnt++,rs232_config->baud);
+  ctx->printf("%2d:paraity    :%s\r\n",cnt++,ITEM_LIST(rs232_config->parityIdx,rs232ParityList));
+  return cnt;
+}
+
+uint8_t print_adc_cfg(p_shell_context_t ctx,adc_config_t *adc_config,uint8_t cnt)
+{
+  ctx->printf("%2d.adc mode   :%s\r\n",cnt++,ITEM_LIST(adc_config->mode,adcChModeList));    
+  ctx->printf("%2d.channel    :%d\r\n",cnt++,adc_config->channel);
+  ctx->printf("%2d:high scale :%d\r\n",cnt++,adc_config->highScale);
+  ctx->printf("%2d:low scale  :%d\r\n",cnt++,adc_config->lowScale);
+  return cnt;
+}
+
 
 int32_t print_menu_sensor_temp(p_shell_context_t ctx)
 {
+  uint8_t type;
   int cnt = 0;
-adc_config_t adcCfg;
-rs232_config_t rs232Cfg;
+  sensor_t *sensor;
 
-  ctx->printf("%2d.type       :%s\r\n",cnt++,ITEM_LIST(config.sensor[A1_TEMPERATURE].type,temperatureList));
-  switch(config.sensor[A1_TEMPERATURE].type)
+  sensor = &config.sensor[A1_TEMPERATURE];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  switch(sensor->type)
   {
-    case S_T_UNSUED://미사용
-    break;
     case S_T_ADC://ADC
-      ctx->printf("%2d.adc mode   :%s\r\n",cnt++,ITEM_LIST(adcCfg.mode,adcChModeList));    
-      ctx->printf("%2d.channel    :%d\r\n",cnt++,adcCfg.channel);
-      ctx->printf("%2d:high scale :%d\r\n",cnt++,adcCfg.highScale);
-      ctx->printf("%2d:low scale  :%d\r\n",cnt++,adcCfg.lowScale);
+      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
     break;
-    case S_T_RS485://RS485
-      ctx->printf("%2d.port       :%d\r\n",cnt++,rs232Cfg.port);    
-      ctx->printf("%2d.baud       :%d\r\n",cnt++,rs232Cfg.baudIdx);
-      ctx->printf("%2d:paraity    :%s\r\n",cnt++,ITEM_LIST(rs232Cfg.parityIdx,rs232ParityList));
+    case S_T_RS232://RS485
+      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_RS232),cnt);
+    break;
+    case S_T_RS485:
+      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_RS485),cnt);
     break;
   }
-  ctx->printf("%2d:factory\r\n");
-  
   return cnt;
 }
 
@@ -653,81 +699,237 @@ int32_t select_item(p_shell_context_t ctx,const char *list[],int listCnt,void *t
 }
 
 /**
+ * @brief index로 저장된 센서 목록을 문자열 목록으로 가져오기
+ */
+uint16_t gen_sensorItemList(const char **itemListOut,const uint8_t *idxList,uint8_t listCnt)
+{
+  int  i;
+
+  for(  i = 0; i< listCnt;i++)
+  {
+    itemListOut[i] = sensorTypeList[idxList[i]];
+  }
+
+  return i;
+}
+
+#define ADC_SET_CH_MODE   0
+#define ADC_SET_CHANNLEL  1
+#define ADC_SET_HIGHSCALE 2
+#define ADC_SET_LOWSCALE  3
+
+void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
+{
+  int32_t dec;
+  adc_config_t *adc;
+
+  adc = get_sensor_config(sensor,S_T_ADC);
+  switch(cnt)
+  {
+    case ADC_SET_CH_MODE://1.채널 모드
+    cnt = select_indexFromList(ctx,adcChModeList,NULL,_countof(adcChModeList),true);
+    if(cnt>0)
+    {
+      adc->mode = (cnt-1);
+      write_s_config();
+    }
+    break;
+    case ADC_SET_CHANNLEL://channel;
+    cnt = input_decimal(ctx,1,18,&dec);
+    if(cnt)
+    {
+      adc->channel = dec;
+      write_s_config();
+    }
+    break;
+    case ADC_SET_HIGHSCALE://hish cale;
+    cnt = input_decimal(ctx,0,100000,&dec);
+    if(cnt)
+    {
+      adc->highScale = dec;
+      write_s_config();
+     }
+      break;
+    case ADC_SET_LOWSCALE://low cale;
+      cnt = input_decimal(ctx,0,100000,&dec);
+      if(cnt)
+      {
+        adc->lowScale = dec;
+        write_s_config();
+      }
+    break;
+  }
+}
+
+
+#define RS232_SET_PORT   0
+#define RS232_SET_BAUD   1
+#define RS232_SET_PARITY 2
+void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
+{
+  int32_t dec;
+  rs232_config_t *rs232;
+
+  rs232= get_sensor_config(sensor,S_T_RS232);
+  if(rs232==0)
+  {
+    debug_printf("rs232 err\r\n");
+  }
+  switch (cnt)
+  {
+  case RS232_SET_PORT:
+    cnt = input_decimal(ctx,1,5,&dec);
+    if(cnt)
+    {
+      rs232->port = dec;
+      write_s_config();
+    }
+    break;
+
+  case RS232_SET_BAUD:
+    cnt = input_decimal(ctx,9600,115200,&dec);
+    if(cnt)
+    {
+      rs232->baud = dec;
+      write_s_config();
+    }
+
+  break;
+  case RS232_SET_PARITY:
+        cnt = select_indexFromList(ctx,rs232ParityList,NULL,_countof(rs232ParityList),true);
+        {
+          rs232->parityIdx = cnt-1;
+          write_s_config();
+        }
+  break;
+  default:
+    break;
+  }
+}
+
+void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
+{
+  int32_t dec;
+  rs232_config_t *rs232;
+
+  rs232= get_sensor_config(sensor,S_T_RS485);
+  if(rs232==0)
+  {
+    debug_printf("rs485 err\r\n");
+  }
+  switch (cnt)
+  {
+  case RS232_SET_PORT:
+    cnt = input_decimal(ctx,1,5,&dec);
+    if(cnt)
+    {
+      rs232->port = dec;
+      write_s_config();
+    }
+    break;
+
+  case RS232_SET_BAUD:
+    cnt = input_decimal(ctx,9600,115200,&dec);
+    if(cnt)
+    {
+      rs232->baud = dec;
+      write_s_config();
+    }
+
+  break;
+  case RS232_SET_PARITY:
+        cnt = select_indexFromList(ctx,rs232ParityList,NULL,_countof(rs232ParityList),true);
+        {
+          rs232->parityIdx = cnt-1;
+          write_s_config();
+        }
+  break;
+  default:
+    break;
+  }
+}
+
+void rain_reed_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
+{
+
+}
+
+void rain_hall_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
+{
+
+}
+
+
+
+void rain_reed_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt);
+void rain_hall_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt);
+
+
+
+
+
+typedef struct
+{
+  uint8_t sensorType;
+  void (*config_set)(p_shell_context_t , sensor_t *, uint8_t);
+}config_sen_func_t;
+
+
+const config_sen_func_t sen_func[8]={{.sensorType = S_T_ADC,.config_set   = adc_config_set},
+                                     {.sensorType = S_T_RS232,.config_set = rs232_config_set},
+                                     {.sensorType = S_T_RS485,.config_set = rs485_config_set},
+                                     {.sensorType = S_T_RAIN_HALL_05MM,.config_set =rain_hall_config_set},
+                                     {.sensorType = S_T_RAIN_HALL_1MM,.config_set =rain_hall_config_set},
+                                     {.sensorType = S_T_RAIN_REED_05MM,.config_set =rain_reed_config_set},
+                                     {.sensorType = S_T_RAIN_REED_1MM,.config_set =rain_reed_config_set},
+                                     {.sensorType = S_T_RAIN_SERIAL,.config_set = rs232_config_set}};
+
+
+/**
  * 설정=>2.센서=>0.기온
  */
 int32_t menu_sensor_temp(p_shell_context_t ctx)
 {
+  int32_t dec;
   int32_t cnt;
-  uint8_t itmeCnt;
-  
+  uint8_t itemListCnt;
+  char *itemList[10];
+
+  sensor_t *sensor = &config.sensor[A1_TEMPERATURE];
+
   do
   {
-      switch(config.sensor[A1_TEMPERATURE].type)
-      {
-        case S_T_UNSUED:
-        itmeCnt = 2;
-        break;
-        case S_T_ADC:
-        itmeCnt = 6;
-        break;
-        case S_T_RS485:
-        itmeCnt = 6;
-        break;
-      }
-
-      cnt = select_indexFromList(ctx,NULL,print_menu_sensor_temp,itmeCnt,false);
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_temp,0,false);
     
-      if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    if(cnt==0)
+    {
+      //온도 센서의 문자열 목록을 가져온다.
+      itemListCnt = gen_sensorItemList(itemList,temperatureList,_countof(temperatureList));
+      cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+      if(cnt > 0)
       {
-        return cnt;
+        sensor->type = (cnt-1);
+        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
       }
-          cnt--;
-      switch(config.sensor[A1_TEMPERATURE].type)
+    }
+    else
+    {
+      for(int i = 0 ; i< _countof(sen_func);i++)
       {
-        case TEMP_TYPE_UNUSED:
-          switch (cnt)
-          {
-          case 0:
-            cnt = select_item(ctx,temperatureList,_countof(temperatureList),&config.sensor[A1_TEMPERATURE].type,eUINT16);
-            break;
-          default:
-            break;
-          }
-        break;
-        case TEMP_TYPE_ADC:
-
-          switch(cnt)
-          {
-            case 0://0.센서타입
-            cnt = select_item(ctx,temperatureList,_countof(temperatureList),&config.sensor[A1_TEMPERATURE].type,eUINT16);
-            break;
-            case 1://1.채널 모드
-            cnt = select_item(ctx,adcChModeList,_countof(adcChModeList),&config.sensor[A1_TEMPERATURE],eUINT8);
-            break;
-            case 2://channel;
-           // cnt = input_digit(ctx,0,100000,&g_temp_config.adc.channel,eUINT32);
-            break;
-            case 3://hish cale;
-           // cnt = input_digit(ctx,0,100000,&g_temp_config.adc.highScale,eUINT32);
-            break;
-            case 4://low cale;
-           // cnt = input_digit(ctx,0,100000,&g_temp_config.adc.lowScale,eUINT32);
-            break;
-            case 5:
-            break;
-          }
-        break;
-        case TEMP_TYPE_RS485:
-        break;
+        if(sen_func[i].sensorType == sensor->type)
+        {
+          sen_func[i].config_set(ctx,sensor,cnt-1);
+          break;
+        }
       }
-
-      if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
-      {
-        return cnt;
-      }
+    }
   }while(1);
-
-//  return 0;
 }
 
 
@@ -737,9 +939,73 @@ int32_t menu_sensor_windDirection(p_shell_context_t ctx)
   return 0;
 }
 
+int32_t print_menu_sensor_rain(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
 
-menu_func g_sensorMenu[2]={[0]=menu_sensor_temp,
-                               menu_sensor_windDirection};
+  sensor = &config.sensor[A6_RAINFALL_DOT5_1MM];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  switch(sensor->type)
+  {
+    case S_T_RAIN_SERIAL:
+      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_RAIN_SERIAL),cnt);
+    break;
+
+  }
+  return cnt;
+}
+
+int32_t menu_sensor_rain(p_shell_context_t ctx)
+{
+  int32_t dec;
+  int32_t cnt;
+  uint8_t itemListCnt;
+  char *itemList[10];
+
+  sensor_t *sensor = &config.sensor[A6_RAINFALL_DOT5_1MM];
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_rain,0,false);
+    
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    if(cnt==0)
+    {
+      //강우 센서의 문자열 목록을 가져온다.
+      itemListCnt = gen_sensorItemList(itemList,rainList,_countof(rainList));
+      cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+      if(cnt > 0)
+      { 
+        sensor->type = rainList[(cnt-1)];
+        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+      }
+    }
+    else
+    {
+      for(int i = 0 ; i< _countof(sen_func);i++)
+      {
+        if(sen_func[i].sensorType == sensor->type)
+        {
+          sen_func[i].config_set(ctx,sensor,cnt-1);
+          break;
+        }
+      }
+    }
+  }while(1);
+}
+
+
+const menu_func g_sensorMenu[50]={[0] = menu_sensor_temp,
+                                  [1] = menu_sensor_windDirection,
+                                  [5] = menu_sensor_rain};
 
 
 /**
@@ -753,19 +1019,17 @@ int32_t menu_sensor(p_shell_context_t ctx)
   do
   {
     cnt = select_indexFromList(ctx,NULL,print_menu_sensor,0,false);
-    if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM && cnt <= 0)
+    if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM)
     {
-      return cnt;
+      break;
     }
-    cnt--;
-    cnt = g_sensorMenu[cnt](ctx);
-    if(cnt == EXIT_PROGRAM )
+    if(g_sensorMenu[cnt-1])
     {
-      return cnt;
+      cnt = g_sensorMenu[cnt-1](ctx);
     }
-  }while(1);
+  }while(cnt != EXIT_PROGRAM);
 
-  //return 0;//
+  return cnt;
 }
 
 
@@ -1395,6 +1659,8 @@ int32_t menu_manage_update(p_shell_context_t ctx)
 int32_t menu_manage_device_reset(p_shell_context_t ctx)
 {
   
+  
+  reset_system(0,"console reset");
   return 0;
 }
 int32_t menu_manage_config_reset(p_shell_context_t ctx)
@@ -2108,39 +2374,78 @@ const menu_func menu[]={[0]= menu_developer_interrupt,
 
 
 
-const char *menuList[]={"0.diplay",
-                        "1.system",
-                        "2.sensor",
-                        "3.network",
-                        "4.data",
-                        "5.display panel",
-                        "6.manage",
-                        "7.calibraion",
-                        "8.developer"};
+const menuFunc_t menuFunc[]={{.title = "0.diplay",.func = menu_display},
+                             {.title = "1.system",.func = menu_system},
+                             {.title = "2.sensor",.func = menu_sensor},
+                             {.title = "3.network",.func = menu_network},
+                             {.title = "4.data",   .func = menu_data},
+                             {.title = "5.display panel",.func = menu_display_panel},
+                             {.title = "6.manage",.func = menu_manage},
+                             {.title = "7.calibraion",.func = menu_calibration},
+                             {.title = "8.developer", .func = menu_developer}};
 
- int32_t print_menu(p_shell_context_t ctx, int32_t argc, char** argv)
+
+int32_t print_menu_root(p_shell_context_t ctx)
+{
+  int i;
+  for( i = 0; i<_countof(menuFunc);i++)
+  {
+    ctx->printf("%s\r\n",menuFunc[i].title);
+  }
+  return i;
+}
+
+ int32_t menu_root_(p_shell_context_t ctx, int32_t argc, char** argv)
 {
   int32_t cnt;
-const menu_func menu[]={menu_display,
-                        menu_system,
-                        menu_sensor,
-                        menu_network,
-                        menu_data,
-                        menu_display_panel,
-                        menu_manage,
-                        menu_calibration,
-                        menu_developer};
+
   do
   {
-    cnt = select_indexFromList(ctx,menuList,NULL,_countof(menuList),false);
-
+    cnt = select_indexFromList(ctx,NULL,print_menu_root,0,false);
     if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
     {
       return cnt;
     }
-    cnt--;
-    cnt = menu[cnt](ctx);
+    cnt = menuFunc[cnt-1].func(ctx);
   }while(cnt != EXIT_PROGRAM);
 
   return cnt;
 }
+
+
+
+int32_t select_menu(select_menu_t *select_menu)
+{
+  int32_t cnt;
+
+  do
+  {
+    cnt = select_indexFromList(select_menu->ctx,
+                               select_menu->list,
+                               select_menu->func,
+                               select_menu->cnt,
+                               select_menu->show);
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    {
+      return cnt;
+    }
+    cnt = select_menu->menuFunc[cnt-1].func(select_menu->ctx);
+  }while(cnt != EXIT_PROGRAM);
+
+  return cnt;
+}
+
+ int32_t menu_root(p_shell_context_t ctx, int32_t argc, char** argv)
+ {
+    select_menu_t menu;
+
+    menu.ctx = ctx;
+    menu.list = NULL;
+    menu.func = print_menu_root;
+    menu.cnt = 0;
+    menu.show = false;
+    menu.menuFunc = menuFunc;
+
+    return select_menu(&menu);
+
+ }
