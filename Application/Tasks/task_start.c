@@ -10,7 +10,7 @@
 #include "config.h"
 #include "fatfs.h"
 #include "fsmc.h"
-#include "io.h"
+#include "dev_io.h"
 #include "lwip.h"
 #include "main.h"
 #include "mcu_delay.h"
@@ -27,6 +27,7 @@
 #include "task_measure.h"
 #include "utile_time.h"
 #include "task_tcpServer.h"
+#include "mcu_utile.h"
 
 
 
@@ -54,6 +55,7 @@ void runLed_init(void)
 
 void startTask(void *arg)
 {
+  DWT_Delay_Init();
   mcu_interrupt_init();//최우선 실행
   rtc_init();
 

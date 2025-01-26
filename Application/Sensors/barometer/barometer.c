@@ -18,7 +18,7 @@ int32_t read_sensor_barometer(uint8_t type,sensor_t *sensor,uint8_t *err)
     adc = get_sensor_config(sensor,S_T_ADC);
 
     break;
-    case S_T_RS232:
+    case S_T_TEMP_232:
 
     break;
   }

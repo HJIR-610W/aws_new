@@ -7,12 +7,15 @@
 #include "aws_data.h"
 #include "app_console.h"
 #include "app_version.h"
+#include "app_sensor.h""
+#include "app_rs232.h"
+#include "app_rs485.h"
 #include "app_adc.h"
 #include "app_flash.h"
 #include "boot_version.h"
 #include "cmsis_os.h"
 #include "config.h"
-#include "io.h"
+#include "dev_io.h"
 #include "mcu_debug.h"
 #include "system_err.h"
 #include "utile_time.h"
@@ -66,12 +69,6 @@ typedef struct select_menu_s
 
 
 
-const uint8_t rainList[]={S_T_RAIN_REED_05MM,
-                          S_T_RAIN_REED_1MM,
-                          S_T_RAIN_HALL_05MM,
-                          S_T_RAIN_HALL_1MM,
-                          S_T_RAIN_SERIAL};
-
 
 
 const char *protocolList[]={"kma ver 1","kma ver 2"};
@@ -83,19 +80,7 @@ const char *g_chgList[]={"smart charger",
                          "aws charger"};
 const char *g_unknown="unknown";
 const char *generalStatusList[]={"정상","비정상"};
-
-
-const char *windDirectionList[]={"미사용","ADC","RS-232","RS485"}; 
-const char *windSpeedList[]={"미사용","ADC"};                      
-const char *windDirectionInstantList[]={"미사용","VAL"};           
-const char *windSpeedInstantList[]={"미사용","VAL"};              
-const char *precipitationList[]={"미사용","REED","HALL"};          
-const char *pressureList[]={"미사용","RS-485"};
-const char *precipitationPresenceList[]={"미사용"};
-const char *snowfallList[]={"미사용","RS485"};
-const char *relativeHumidityList[]={"미사용"};
-const char *precipitationFineList[]={"미사용"};
-const char *unusedList[]={"미사용"};
+     const char *unusedList[]={"미사용"};
 const char *adcChModeList[]={"single","diff"};
 const char *rs232ParityList[]={"none","even","odd"};
 const char *enableList[]={"미사용","사용"};
@@ -237,7 +222,7 @@ return false;
 }
 
 
-#define DISP_WIDTH    24
+#define DISP_WIDTH    25
 
 #define ASCII_CODE_ESC    0x1B
 #define ASCII_CODE_CTRL_Q 0x11
@@ -259,7 +244,10 @@ int32_t print_systemInfo(uint16_t row,uint16_t column)
   vt100_print_frame(row   ,column,"시스템", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"%s\r\n",buff);
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"문 상태  :%s\r\n",ITEM_LIST(System.doorStatus,doorStatusList));
+  extern   uint32_t elased_time;;
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"측정 시간:%dus\r\n",elased_time);
   vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
+
     
   return 4+2;
 }
@@ -294,73 +282,103 @@ int32_t print_ethInfo(uint16_t row,uint16_t column)
 }
 
 
+
+
 int32_t print_awsRealLefinfo(uint16_t row,uint16_t column,uint8_t mode,void* arg)
 {
-  char buff[30];
+  char buff[50];
   uint8_t index=0;
   uint8_t line=row+3;
   sensor_t *sensor;
-
+  sensor_data_t *pdata;
   const char *aswTitleList[]={"실시간(1s)","1분","10분","한시간"};
 
   snprintf(buff,sizeof(buff),"AWS %s",aswTitleList[mode]);
   
+  pdata = sensor_data;
+
+#define P_WIDTH 27
+#if 1
+  vt100_print_frame(row   ,column,buff, '+', '|', '-', P_WIDTH, WHITE);
+
+  for(int i = 0 ;i < _countof(config.sensor);i++)
+  {
+    if(config.sensor[i].type)//센서가 사용중
+    {
+      snprintf(buff,sizeof(buff),"%-13s:%s\r\n",sensorNameList[i],dataFmtList[i]);
+      if(pdata[i].dataType == DATA_TYPE_I)
+      {
+        vt100_print_bar(line++ ,column,-P_WIDTH,buff,pdata[i].data.i );
+      }
+      else
+      {
+        vt100_print_bar(line++ ,column,-P_WIDTH,buff,pdata[i].data.f );
+      }
+    }
+  } 
+
+
+  vt100_print_line(line++,column,'+', '-', P_WIDTH);
+
+  #endif
+
+#if 0 
   vt100_print_frame(row   ,column,buff, '+', '|', '-', DISP_WIDTH, WHITE);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온          :%5.2f\r\n",(float)sensor_data[A1_TEMPERATURE].data/(float)sensor->scale);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍향          :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속          :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간 풍향     :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간 풍속     :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수량        :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기압          :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수 유무     :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"적설          :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"상대습도      :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수량        :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온          :%5.2f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍향          :%f\r\n",pdata[A2_WIND_DIRECTION].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속          :%f\r\n",pdata[A3_WIND_SPEED].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간 풍향     :%f\r\n",pdata[A4_INSTANT_WIND_DIRECTION].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간 풍속     :%f\r\n",pdata[A5_INSTANT_WIND_SPEED].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수량        :%f\r\n",pdata[A6_RAINFALL_DOT5_1MM].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기압          :%f\r\n",pdata[A7_PRESSURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수 유무     :%f\r\n",pdata[A8_RAIN_PRESENT].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"적설          :%f\r\n",pdata[A9_SNOW_DEPTH].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"상대습도      :%\r\n",pdata[A10_RELATIVE_HUMIDITY].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"강수량        :%fd\r\n",pdata[A11_RAINFALL_DOT1MM].data.f);
 
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"일사          :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"일조          :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지면온도      :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"초상온도      :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 5cm  :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 10cm :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 20cm :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 30cm :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 50cm :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 1m   :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 1.5m :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 3m   :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 5cm  :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"일사          :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"일조          :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지면온도      :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"초상온도      :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 5cm  :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 10cm :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 20cm :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 30cm :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 50cm :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 1m   :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 1.5m :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 3m   :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"지중온도 5cm  :%f\r\n",pdata[A1_TEMPERATURE].data.f);
 
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"1층 운고      :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"2층 운고      :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"3층 운고      :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"운량          :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"시정          :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"PM10          :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"PM2.5         :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순복사        :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"전천복사      :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"반사복사      :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"직달일사      :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"현재일기      :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"1층 운고      :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"2층 운고      :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"3층 운고      :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"운량          :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"시정          :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"PM10          :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"PM2.5         :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순복사        :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"전천복사      :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"반사복사      :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"직달일사      :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"현재일기      :%f\r\n",pdata[A1_TEMPERATURE].data.f);
 
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 10cm :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 20cm :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 30cm :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 50cm :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"조도량        :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속 1.5m     :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속 4m       :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간풍속 1.5m :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간풍속 4m   :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온 0.5m     :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온 4m       :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"습도 0.5m     :%f\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"습도 4m       :%f\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 10cm :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 20cm :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 30cm :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"토양수분 50cm :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"조도량        :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속 1.5m     :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"풍속 4m       :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간풍속 1.5m :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"순간풍속 4m   :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온 0.5m     :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"기온 4m       :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"습도 0.5m     :%f\r\n",pdata[A1_TEMPERATURE].data.f);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"습도 4m       :%f\r\n",pdata[A1_TEMPERATURE].data.f);
 
   vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
-    
+#endif
     return 5+2;
 }
 
@@ -625,22 +643,46 @@ int32_t print_menu_sensor(p_shell_context_t ctx)
   int i=0;
   ctx->printf("\r\n");
 
+#if 0 
   for(int i = 0 ; i< _countof(sensorNameList);i++)
   {
-  ctx->printf("%2d.%-15s:%s\r\n",i,sensorNameList[i],ITEM_LIST(config.sensor[i].type,sensorTypeList));
+    ctx->printf("%2d.%-15s:%s\r\n",i,sensorNameList[i],ITEM_LIST(config.sensor[i].type,sensorTypeList));
   cnt++;
   }
+#endif 
 
+#if 1
 
+  for(int i = 0 ; i< _countof(sensorNameList)/2;i++)
+  {
+    ctx->printf("%2d.%-20s:%-20s ,  ",i*2,sensorNameList[i*2]  ,ITEM_LIST(config.sensor[i*2].type,sensorTypeList));
+    ctx->printf("%2d.%-20s:%-20s\r\n",i*2+1,sensorNameList[i*2+1],ITEM_LIST(config.sensor[i*2+1].type,sensorTypeList));
+ 
+  }
 
+#endif
 
-  cnt = 49;
+  cnt =  _countof(sensorNameList);
   return cnt;
 }
 
 uint8_t print_rs232_cfg(p_shell_context_t ctx,rs232_config_t *rs232_config,uint8_t cnt)
 {
-  ctx->printf("%2d.port       :%d\r\n",cnt++,rs232_config->port);    
+  char *portNameList[10];
+
+  rs232_get_portList(portNameList,_countof(portNameList));
+  ctx->printf("%2d.port       :%s\r\n",cnt++,portNameList[rs232_config->port]);    
+  ctx->printf("%2d.baud       :%d\r\n",cnt++,rs232_config->baud);
+  ctx->printf("%2d:paraity    :%s\r\n",cnt++,ITEM_LIST(rs232_config->parityIdx,rs232ParityList));
+  return cnt;
+}
+
+uint8_t print_rs485_cfg(p_shell_context_t ctx,rs232_config_t *rs232_config,uint8_t cnt)
+{
+  const char **portNameList;
+
+  rs485_get_portList(&portNameList);
+  ctx->printf("%2d.port       :%s\r\n",cnt++,portNameList[rs232_config->port]);    
   ctx->printf("%2d.baud       :%d\r\n",cnt++,rs232_config->baud);
   ctx->printf("%2d:paraity    :%s\r\n",cnt++,ITEM_LIST(rs232_config->parityIdx,rs232ParityList));
   return cnt;
@@ -655,31 +697,6 @@ uint8_t print_adc_cfg(p_shell_context_t ctx,adc_config_t *adc_config,uint8_t cnt
   return cnt;
 }
 
-
-int32_t print_menu_sensor_temp(p_shell_context_t ctx)
-{
-  uint8_t type;
-  int cnt = 0;
-  sensor_t *sensor;
-
-  sensor = &config.sensor[A1_TEMPERATURE];
-
-  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
-  ctx->printf("%2d.scale      :%d\r\n",cnt++,sensor->scale);
-  switch(sensor->type)
-  {
-    case S_T_ADC://ADC
-      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
-    break;
-    case S_T_RS232://RS485
-      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_RS232),cnt);
-    break;
-    case S_T_RS485:
-      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_RS485),cnt);
-    break;
-  }
-  return cnt;
-}
 
 
 
@@ -762,7 +779,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
   }
 }
 
-
+//232설정
 #define RS232_SET_PORT   0
 #define RS232_SET_BAUD   1
 #define RS232_SET_PARITY 2
@@ -771,7 +788,7 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
   int32_t dec;
   rs232_config_t *rs232;
 
-  rs232= get_sensor_config(sensor,S_T_RS232);
+  rs232= get_sensor_config(sensor,S_T_TEMP_232);
   if(rs232==0)
   {
     debug_printf("rs232 err\r\n");
@@ -779,10 +796,31 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
   switch (cnt)
   {
   case RS232_SET_PORT:
-    cnt = input_decimal(ctx,1,5,&dec);
+   const char *portList[10];
+    cnt = rs232_get_portList(portList,_countof(portList));
+
+    cnt = select_indexFromList(ctx,portList,NULL,cnt,true);
     if(cnt)
     {
-      rs232->port = dec;
+      if(rs232_is_opened(rs232->port))//만약 이미 열린 포트인데 변경하려고 하면 오류
+      {
+        ctx->printf("포트가 열린 상태에서 변경을 시도합니다.\r\n");
+        ctx->printf("열린 포트는 닫힙니다\r\n");
+        rs232_close(rs232->port);
+      }
+
+      rs232->port = cnt-1;
+      if(rs232_is_opened(rs232->port))//열려고 하는 포트가 이미 열려있다면
+      {
+        ctx->printf("PORT:%d 이미 열려있습니다.통신속도는 변경되지 않습니다.\r\n",cnt-1);
+      }
+      else
+      { 
+        rs232_open(rs232->port);
+        rs232_set(rs232->port,rs232->baud,rs232->parityIdx);
+        ctx->printf("%s 새롭게 열렸습니다.\r\n",portList[rs232->port]);
+      }
+
       write_s_config();
     }
     break;
@@ -813,7 +851,7 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
   int32_t dec;
   rs232_config_t *rs232;
 
-  rs232= get_sensor_config(sensor,S_T_RS485);
+  rs232= get_sensor_config(sensor,S_T_TEMP_485);
   if(rs232==0)
   {
     debug_printf("rs485 err\r\n");
@@ -821,10 +859,16 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
   switch (cnt)
   {
   case RS232_SET_PORT:
-    cnt = input_decimal(ctx,1,5,&dec);
+   const char **portList;
+    cnt = rs485_get_portList(&portList);
+    cnt = select_indexFromList(ctx,portList,NULL,cnt,true);
     if(cnt)
     {
-      rs232->port = dec;
+      if(rs485_opened(cnt-1))
+      {
+        ctx->printf("PORT:%d  이미 열림, 충돌\r\n",cnt-1);
+      }
+      rs232->port = cnt-1;
       write_s_config();
     }
     break;
@@ -875,20 +919,53 @@ typedef struct
   void (*config_set)(p_shell_context_t , sensor_t *, uint8_t);
 }config_sen_func_t;
 
+/*
+센서 모델과 모델 설정 함수 연결
+*/
+const config_sen_func_t sen_func[]=
+            {{.sensorType = S_T_ADC,     .config_set  = adc_config_set},
+            {.sensorType = S_T_TEMP_232, .config_set = rs232_config_set},
+            {.sensorType = S_T_TEMP_485, .config_set = rs485_config_set},
+            {.sensorType = S_T_RAIN_HALL_05MM,.config_set = rain_hall_config_set},
+            {.sensorType = S_T_RAIN_HALL_1MM,.config_set  = rain_hall_config_set},
+            {.sensorType = S_T_RAIN_REED_05MM,.config_set = rain_reed_config_set},
+            {.sensorType = S_T_RAIN_REED_1MM,.config_set  = rain_reed_config_set},
+            {.sensorType = S_T_RAIN_SERIAL_232,.config_set = rs232_config_set},
+            {.sensorType = S_T_WIND_DIRECTION_485,.config_set = rs485_config_set},
+            {.sensorType = S_T_WIND_SPEED_485,.config_set = rs485_config_set},
+            {.sensorType = S_T_WIND_SPEED_MAX_VAL,.config_set = 0},
+            {.sensorType = S_T_WIND_DIRECTION_MAX_VAL,.config_set = 0},
+            {.sensorType = S_T_SNOW_HJ_485,.config_set = rs485_config_set},
+            {.sensorType = S_T_HUMI_HJ_485,.config_set= rs485_config_set},
+            {.sensorType = S_T_SNOW_HJ_232,.config_set= rs232_config_set}};
 
-const config_sen_func_t sen_func[8]={{.sensorType = S_T_ADC,.config_set   = adc_config_set},
-                                     {.sensorType = S_T_RS232,.config_set = rs232_config_set},
-                                     {.sensorType = S_T_RS485,.config_set = rs485_config_set},
-                                     {.sensorType = S_T_RAIN_HALL_05MM,.config_set =rain_hall_config_set},
-                                     {.sensorType = S_T_RAIN_HALL_1MM,.config_set =rain_hall_config_set},
-                                     {.sensorType = S_T_RAIN_REED_05MM,.config_set =rain_reed_config_set},
-                                     {.sensorType = S_T_RAIN_REED_1MM,.config_set =rain_reed_config_set},
-                                     {.sensorType = S_T_RAIN_SERIAL,.config_set = rs232_config_set}};
 
+int32_t print_menu_sensor_temp(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
 
-/**
- * 설정=>2.센서=>0.기온
- */
+  sensor = &config.sensor[A1_TEMPERATURE];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  ctx->printf("%2d.scale      :%d\r\n",cnt++,sensor->scale);
+  switch(sensor->type)
+  {
+    case S_T_ADC://ADC
+      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
+    break;
+    case S_T_TEMP_232:
+      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_TEMP_232),cnt);
+    break;
+    case S_T_TEMP_485:
+      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_TEMP_485),cnt);
+    break;
+  }
+  return cnt;
+}
+
+//온도 설정
 int32_t menu_sensor_temp(p_shell_context_t ctx)
 {
   float scale;
@@ -943,11 +1020,327 @@ int32_t menu_sensor_temp(p_shell_context_t ctx)
   }while(1);
 }
 
+//풍향 설정정
+int32_t print_menu_sensor_windDirection(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
 
+  sensor = &config.sensor[A2_WIND_DIRECTION];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  switch(sensor->type)
+  {
+    case S_T_ADC://ADC
+      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
+    break;
+    case S_T_WIND_DIRECTION_485:
+      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_WIND_DIRECTION_485),cnt);
+    break;
+  }
+  return cnt;
+}
 int32_t menu_sensor_windDirection(p_shell_context_t ctx)
 {
+  int32_t dec;
+  int32_t cnt;
+  uint8_t itemListCnt;
+  char *itemList[10];
 
-  return 0;
+  sensor_t *sensor = &config.sensor[A2_WIND_DIRECTION];
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_windDirection,0,false);
+    
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    if(cnt==0)
+    {
+      //방향 센서 목록 가져옴
+      itemListCnt = gen_sensorItemList(itemList,windDirectionList,_countof(windDirectionList));
+      cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+      if(cnt > 0)
+      { 
+        sensor->type = windDirectionList[(cnt-1)];
+        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+      }
+    }
+    else
+    {
+      for(int i = 0 ; i< _countof(sen_func);i++)
+      {
+        if(sen_func[i].sensorType == sensor->type)
+        {
+          sen_func[i].config_set(ctx,sensor,cnt-1);
+          break;
+        }
+      }
+    }
+  }while(1);
+}
+
+
+//풍속 설정정
+int32_t print_menu_sensor_windSpeed(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
+
+  sensor = &config.sensor[A3_WIND_SPEED];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  switch(sensor->type)
+  {
+    case S_T_ADC://ADC
+      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
+    break;
+    case S_T_WIND_SPEED_485:
+      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_WIND_SPEED_485),cnt);
+    break;
+  }
+  return cnt;
+}
+int32_t menu_sensor_windSpeed(p_shell_context_t ctx)
+{
+  int32_t dec;
+  int32_t cnt;
+  uint8_t itemListCnt;
+  char *itemList[10];
+
+  sensor_t *sensor = &config.sensor[A3_WIND_SPEED];
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_windSpeed,0,false);
+    
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    if(cnt==0)
+    {
+      //방향 센서 목록 가져옴
+      itemListCnt = gen_sensorItemList(itemList,windDirectionList,_countof(windDirectionList));
+      cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+      if(cnt > 0)
+      { 
+        sensor->type = windDirectionList[(cnt-1)];
+        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+      }
+    }
+    else
+    {
+      for(int i = 0 ; i< _countof(sen_func);i++)
+      {
+        if(sen_func[i].sensorType == sensor->type)
+        {
+          sen_func[i].config_set(ctx,sensor,cnt-1);
+          break;
+        }
+      }
+    }
+  }while(1);
+}
+
+
+
+int32_t print_menu_sensor_windDirectionInstanct(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
+
+  sensor = &config.sensor[A4_INSTANT_WIND_DIRECTION];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+
+  switch(sensor->type)
+  {
+    case S_T_WIND_DIRECTION_MAX_VAL:
+    //  cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_WIND_SPEED_485),cnt);
+    break;
+  }
+  return cnt;
+}
+int32_t menu_sensor_windDirectionInstant(p_shell_context_t ctx)
+{
+  int32_t dec;
+  int32_t cnt;
+  uint8_t itemListCnt;
+  char *itemList[10];
+
+  sensor_t *sensor = &config.sensor[A4_INSTANT_WIND_DIRECTION];
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_windDirectionInstanct,0,false);
+    
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    if(cnt==0)
+    {
+      itemListCnt = gen_sensorItemList(itemList,windDirectionInstantList,_countof(windDirectionInstantList));
+      cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+      if(cnt > 0)
+      { 
+        sensor->type = windDirectionInstantList[(cnt-1)];
+        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+      }
+    }
+    else
+    {
+      for(int i = 0 ; i< _countof(sen_func);i++)
+      {
+        if(sen_func[i].sensorType == sensor->type)
+        {
+          sen_func[i].config_set(ctx,sensor,cnt-1);
+          break;
+        }
+      }
+    }
+  }while(1);
+}
+
+
+int32_t print_menu_sensor_windSpeedInstanct(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
+
+  sensor = &config.sensor[A5_INSTANT_WIND_SPEED];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+
+  switch(sensor->type)
+  {
+    case S_T_WIND_SPEED_MAX_VAL:
+    //  cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_WIND_SPEED_485),cnt);
+    break;
+  }
+  return cnt;
+}
+int32_t menu_sensor_windSpeedInstant(p_shell_context_t ctx)
+{
+  int32_t dec;
+  int32_t cnt;
+  uint8_t itemListCnt;
+  char *itemList[10];
+
+  sensor_t *sensor = &config.sensor[A5_INSTANT_WIND_SPEED];
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_windSpeedInstanct,0,false);
+    
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    if(cnt==0)
+    {
+      itemListCnt = gen_sensorItemList(itemList,windDirectionInstantList,_countof(windDirectionInstantList));
+      cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+      if(cnt > 0)
+      { 
+        sensor->type = windDirectionInstantList[(cnt-1)];
+        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+      }
+    }
+    else
+    {
+      for(int i = 0 ; i< _countof(sen_func);i++)
+      {
+        if(sen_func[i].sensorType == sensor->type)
+        {
+          sen_func[i].config_set(ctx,sensor,cnt-1);
+          break;
+        }
+      }
+    }
+  }while(1);
+}
+
+//적설 설정
+int32_t print_menu_sensor_snow(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
+
+  sensor = &config.sensor[A9_SNOW_DEPTH];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  switch(sensor->type)
+  {
+    case S_T_ADC://ADC
+      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
+    break;
+    case S_T_SNOW_HJ_485:
+      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_SNOW_HJ_485),cnt);
+    break;
+    case S_T_SNOW_HJ_232:
+      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_SNOW_HJ_232),cnt);
+    break;
+  }
+  return cnt;
+}
+int32_t menu_sensor_snow(p_shell_context_t ctx)
+{
+  int32_t dec;
+  int32_t cnt;
+  uint8_t itemListCnt;
+  char *itemList[10];
+
+  sensor_t *sensor = &config.sensor[A9_SNOW_DEPTH];
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_snow,0,false);
+    
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    if(cnt==0)
+    {
+      itemListCnt = gen_sensorItemList(itemList,snowList,_countof(snowList));
+      cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+      if(cnt > 0)
+      { 
+        sensor->type = snowList[(cnt-1)];
+        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+      }
+    }
+    else
+    {
+      for(int i = 0 ; i< _countof(sen_func);i++)
+      {
+        if(sen_func[i].sensorType == sensor->type)
+        {
+          sen_func[i].config_set(ctx,sensor,cnt-1);
+          break;
+        }
+      }
+    }
+  }while(1);
 }
 
 int32_t print_menu_sensor_rain(p_shell_context_t ctx)
@@ -961,8 +1354,8 @@ int32_t print_menu_sensor_rain(p_shell_context_t ctx)
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
   switch(sensor->type)
   {
-    case S_T_RAIN_SERIAL:
-      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_RAIN_SERIAL),cnt);
+    case S_T_RAIN_SERIAL_232:
+      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_RAIN_SERIAL_232),cnt);
     break;
 
   }
@@ -1013,10 +1406,217 @@ int32_t menu_sensor_rain(p_shell_context_t ctx)
   }while(1);
 }
 
+//기압 설정
+int32_t print_menu_sensor_pressure(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
 
-const menu_func g_sensorMenu[50]={[0] = menu_sensor_temp,
-                                  [1] = menu_sensor_windDirection,
-                                  [5] = menu_sensor_rain};
+  sensor = &config.sensor[A7_PRESSURE];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  switch(sensor->type)
+  {
+    case S_T_ADC://ADC
+      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
+    break;
+    case S_T_PRESSURE_485:
+      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_PRESSURE_485),cnt);
+    break;
+
+  }
+  return cnt;
+}
+
+int32_t menu_sensor_pressure(p_shell_context_t ctx)
+{
+  int32_t dec;
+  int32_t cnt;
+  uint8_t itemListCnt;
+  char *itemList[10];
+
+  sensor_t *sensor = &config.sensor[A7_PRESSURE];
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_pressure,0,false);
+    
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    if(cnt==0)
+    {
+      //강우 센서의 문자열 목록을 가져온다.
+      itemListCnt = gen_sensorItemList(itemList,pressureList,_countof(pressureList));
+      cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+      if(cnt > 0)
+      { 
+        sensor->type = pressureList[(cnt-1)];
+        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+      }
+    }
+    else
+    {
+      for(int i = 0 ; i< _countof(sen_func);i++)
+      {
+        if(sen_func[i].sensorType == sensor->type)
+        {
+          sen_func[i].config_set(ctx,sensor,cnt-1);
+          break;
+        }
+      }
+    }
+  }while(1);
+}
+
+
+//습도 설정
+int32_t print_menu_sensor_humi(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
+
+  sensor = &config.sensor[A10_RELATIVE_HUMIDITY];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  switch(sensor->type)
+  {
+    case S_T_ADC://ADC
+      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
+    break;
+    case S_T_HUMI_RS485:
+      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_HUMI_RS485),cnt);
+    break;
+
+  }
+  return cnt;
+}
+
+int32_t menu_sensor_humi(p_shell_context_t ctx)
+{
+  int32_t dec;
+  int32_t cnt;
+  uint8_t itemListCnt;
+  char *itemList[10];
+
+  sensor_t *sensor = &config.sensor[A10_RELATIVE_HUMIDITY];
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_pressure,0,false);
+    
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    if(cnt==0)
+    {
+
+      itemListCnt = gen_sensorItemList(itemList,humiList,_countof(humiList));
+      cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+      if(cnt > 0)
+      { 
+        sensor->type = humiList[(cnt-1)];
+        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+      }
+    }
+    else
+    {
+      for(int i = 0 ; i< _countof(sen_func);i++)
+      {
+        if(sen_func[i].sensorType == sensor->type)
+        {
+          sen_func[i].config_set(ctx,sensor,cnt-1);
+          break;
+        }
+      }
+    }
+  }while(1);
+}
+
+
+//강수유무 설정
+int32_t print_menu_sensor_rainPresent(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
+
+  sensor = &config.sensor[A8_RAIN_PRESENT];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  switch(sensor->type)
+  {
+    case S_T_RAIN_PRESENT_DI:
+     // cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
+    break;
+
+
+  }
+  return cnt;
+}
+
+int32_t menu_sensor_rainPresent(p_shell_context_t ctx)
+{
+  int32_t dec;
+  int32_t cnt;
+  uint8_t itemListCnt;
+  char *itemList[10];
+
+  sensor_t *sensor = &config.sensor[A8_RAIN_PRESENT];
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_rainPresent,0,false);
+    
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    if(cnt==0)
+    {
+
+      itemListCnt = gen_sensorItemList(itemList,rainPresentList,_countof(rainPresentList));
+      cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+      if(cnt > 0)
+      { 
+        sensor->type = rainPresentList[(cnt-1)];
+        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+      }
+    }
+    else
+    {
+      for(int i = 0 ; i< _countof(sen_func);i++)
+      {
+        if(sen_func[i].sensorType == sensor->type)
+        {
+          sen_func[i].config_set(ctx,sensor,cnt-1);
+          break;
+        }
+      }
+    }
+  }while(1);
+}
+//센서 목록록
+const menu_func g_sensorMenu[50]={[A1_TEMPERATURE] = menu_sensor_temp,
+                                  [A2_WIND_DIRECTION] = menu_sensor_windDirection,
+                                  [A3_WIND_SPEED] = menu_sensor_windSpeed,
+                                  [A4_INSTANT_WIND_DIRECTION]=menu_sensor_windDirectionInstant,
+                                  [A5_INSTANT_WIND_SPEED]    =menu_sensor_windSpeedInstant,
+                                  [A6_RAINFALL_DOT5_1MM] = menu_sensor_rain,
+                                  [A7_PRESSURE] = menu_sensor_pressure,
+                                  [A8_RAIN_PRESENT] = menu_sensor_rainPresent,
+                                  [A9_SNOW_DEPTH] = menu_sensor_snow,
+                                  [A10_RELATIVE_HUMIDITY]=menu_sensor_humi};
 
 
 /**
@@ -2309,7 +2909,7 @@ int32_t print_developer_sensor(p_shell_context_t ctx)
   ctx->printf("\r\n");
   for(int i = 0 ;i<_countof(sensorNameList);i++)
   {
-    ctx->printf("%2d.%-15s:%s,%d\r\n",i,sensorNameList[i], ITEM_LIST(g_sensor_emul[i].use,enableList),g_sensor_emul[i].data);
+  //  ctx->printf("%2d.%-15s:%s,%d\r\n",i,sensorNameList[i], ITEM_LIST(g_sensor_emul[i].use,enableList),g_sensor_emul[i].data);
     cnt++;
   }
 
@@ -2341,8 +2941,8 @@ int32_t menu_developer_sensor(p_shell_context_t ctx)
   ctx->printf("use,data:");
   if(console_scanf("%d,%d",&use,&dec)==2)
   {
-    g_sensor_emul[cnt].use = use;
-    g_sensor_emul[cnt].data = dec;
+    g_sensor_emul[cnt].enable = use;
+    g_sensor_emul[cnt].data.i = dec;
   }
 }
 

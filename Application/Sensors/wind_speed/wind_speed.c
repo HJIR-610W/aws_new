@@ -1,14 +1,17 @@
 
 
-
-#include "Sensors\temperature\temperature.h"
-
+#include "Sensors\wind_speed\wind_speed.h"
 
 
 
 
 
-float read_sensor_temperature(sensor_t *sensor,uint8_t *err)
+
+
+
+
+
+float read_sensor_windSpeed(sensor_t *sensor,uint8_t *err)
 {
   float data;
   float gain;
@@ -21,7 +24,7 @@ float read_sensor_temperature(sensor_t *sensor,uint8_t *err)
 
     break;
     case S_T_TEMP_232:
-
+  
     break;
   }
 

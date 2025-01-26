@@ -1,12 +1,62 @@
 
 #include "app_sensor.h"
+#include "config.h"
 #include "utile.h"
 
-#include "config.h"
-const char *sensorTypeList[14]={"미사용",         /* 0 S_T_UNSUED */
+
+
+//지원하는 센서 목록 정의
+
+const uint8_t temperatureList[]={S_T_UNSUED,
+                                 S_T_ADC,
+                                 S_T_TEMP_232,
+                                 S_T_TEMP_485};
+                                 
+const uint8_t windDirectionList[]={S_T_UNSUED,
+                                   S_T_ADC,
+                                   S_T_WIND_SPEED_485};
+
+const uint8_t windSpeedList[]={S_T_UNSUED,
+                               S_T_ADC,
+                               S_T_WIND_SPEED_485};
+
+
+const uint8_t windDirectionInstantList[]={S_T_UNSUED,
+                                          S_T_WIND_DIRECTION_MAX_VAL};
+
+const uint8_t windSpeedInstantList[]={S_T_UNSUED,
+                                      S_T_WIND_SPEED_MAX_VAL};
+
+
+
+const uint8_t rainList[]={S_T_UNSUED,
+                          S_T_RAIN_REED_05MM,
+                          S_T_RAIN_REED_1MM,
+                          S_T_RAIN_HALL_05MM,
+                          S_T_RAIN_HALL_1MM,
+                          S_T_RAIN_SERIAL_232};
+//기압 6
+const uint8_t pressureList[]={S_T_UNSUED,
+                              S_T_ADC,
+                              S_T_PRESSURE_485};
+
+const uint8_t snowList[]={S_T_UNSUED,
+                          S_T_ADC,
+                          S_T_SNOW_HJ_485,
+                          S_T_SNOW_HJ_232};
+
+const uint8_t rainPresentList[]={S_T_UNSUED,
+                                 S_T_RAIN_PRESENT_DI};
+
+const uint8_t humiList[]={S_T_UNSUED,
+                          S_T_ADC,
+                          S_T_HUMI_HJ_485};
+
+                          
+const char *sensorTypeList[]={"미사용",         /* 0 S_T_UNSUED */
                                 "ADC",            /* 1 S_T_ADC */
-                                "RS232",          /* 2 S_T_RS232 */
-                                "RS485",          /* 3 S_T_RS485 */
+                                "RS232",          /* 2 S_T_TEMP_232 */
+                                "RS485",          /* 3 S_T_TEMP_485 */
                                 "MODBUS",         /* 4 S_T_MODBUS */
                                 "HART",           /* 5 S_T_HART */
                                 "FREQ_0",         /* 6 S_T_FREQ_0*/
@@ -15,13 +65,44 @@ const char *sensorTypeList[14]={"미사용",         /* 0 S_T_UNSUED */
                                 "HALL 0.5mm",     /* 9 S_T_RAIN_HALL_05MM */
                                 "HALL 1mm",       /* 10 S_T_RAIN_HALL_1MM */
                                 "DI_0",           /* 11 S_T_DI_0 */
-                                "SNOW_HJ_RS485", /* 12 S_T_HJ_SNOW_RS485 */
-                                "RAIN_SERIAL"};  /* 13 S_T_RAIN_SERIAL */
+                                "SNOW_HJ_RS485",  /* 12 S_T_SNOW_HJ_485 */
+                                "RAIN_SERIAL",    /* 13 S_T_RAIN_SERIAL_232 */
+                                "WIND_SPEED_485", /* 14 S_T_WIND_SPEED_485 */
+                                "WIND_DIRECTION_485", /* 15 S_T_WIND_DIRECTION_485 */
+                                "HUMI_HJ_RS485",      /* 16 S_T_HUMI_HJ_485 */
+                                "WIND_SPEED_MAX",     /* 17 S_T_WIND_SPEED_MAX_VAL */
+                                "WIND_DIRECTION_MAX", /* 18 S_T_WIND_DIRECTION_MAX_VAL */
+                                "PRESSURE_RS485",     /* 19 S_T_PRESSURE_485 */
+                                "HUMI_RS485",         /* 20 S_T_HUMI_RS485*/       
+                                "RAIN_PRESENT_DI",    /* 21 S_T_RAIN_PRESENT_DI */
+                                "SNOW_HJ_RS232"};     /* 22 S_T_SNOW_HJ_232*/
+                                
+                                     
 
-const uint8_t temperatureList[]={S_T_UNSUED,
-                                 S_T_ADC,
-                                 S_T_RS232,
-                                 S_T_RS485};
+
+typedef struct sensorDefine_s
+{
+  uint8_t type;
+  const char *typeName;
+}sensorDefine_t;
+sensorDefine_t sensorDefine[]={{.type = S_T_UNSUED,.typeName = "미사용"},
+                              {.type = S_T_ADC,.typeName = "ADC"},
+                              {.type = S_T_TEMP_232,.typeName = "RS232"},
+                              {.type = S_T_TEMP_485,.typeName = "RS485"},
+                              {.type = S_T_UNSUED,.typeName = "MODBUS"},
+                              {.type = S_T_UNSUED,.typeName = "HART"},
+                              {.type = S_T_UNSUED,.typeName = "미사용"},
+                              {.type = S_T_UNSUED,.typeName = "미사용"},
+                              {.type = S_T_UNSUED,.typeName = "미사용"},
+                              {.type = S_T_UNSUED,.typeName = "미사용"},
+                              {.type = S_T_UNSUED,.typeName = "미사용"},
+                              {.type = S_T_UNSUED,.typeName = "미사용"},
+                              {.type = S_T_UNSUED,.typeName = "미사용"},
+                              {.type = S_T_UNSUED,.typeName = "미사용"},
+                              {.type = S_T_UNSUED,.typeName = "미사용"},
+                              {.type = S_T_UNSUED,.typeName = "미사용"}};
+
+
 
 
 
@@ -115,8 +196,9 @@ void * sensor_add(sensor_t *sensor,uint8_t sensorType)
         return &s_config.adc[index];
       }
       return 0;
-      case S_T_RS232:
-      case S_T_RAIN_SERIAL:
+      case S_T_TEMP_232:
+      case S_T_RAIN_SERIAL_232:
+      case S_T_SNOW_HJ_232:
       if(s_config.rs232_cnt < _countof(s_config.rs232))
       {
         sensor->config[sensor->configCnt][0] = sensorType;//해당 타입을 추가
@@ -132,7 +214,12 @@ void * sensor_add(sensor_t *sensor,uint8_t sensorType)
       }
       return 0;
       break;
-      case S_T_RS485:
+      case S_T_TEMP_485:
+      case S_T_WIND_SPEED_485:
+      case S_T_WIND_DIRECTION_485:
+      case S_T_SNOW_HJ_485:
+      case S_T_PRESSURE_485:
+      case S_T_HUMI_RS485:
       if(s_config.rs485_cnt < _countof(s_config.rs485))
       {
         sensor->config[sensor->configCnt][0] = sensorType;//해당 타입을 추가
@@ -177,11 +264,17 @@ void * get_sensor_config(sensor_t *sensor,uint8_t sensorType)
         case S_T_ADC:
         return &s_config.adc[sensor->config[i][1]];
         break;
-        case S_T_RS232:
-        case S_T_RAIN_SERIAL:
+        case S_T_TEMP_232:
+        case S_T_RAIN_SERIAL_232:
+        case S_T_SNOW_HJ_232:
         return &s_config.rs232[sensor->config[i][1]];
         break;
-        case S_T_RS485:
+        case S_T_TEMP_485:
+        case S_T_WIND_SPEED_485:
+        case S_T_WIND_DIRECTION_485:
+        case S_T_SNOW_HJ_485:
+        case S_T_PRESSURE_485:
+        case S_T_HUMI_RS485:
         return &s_config.rs485[sensor->config[i][1]];
         break;
         case S_T_MODBUS:

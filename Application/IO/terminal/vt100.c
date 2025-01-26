@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "vt100_command.h"
-#include "io.h"
+#include "dev_io.h"
 #include "terminal.h"
 
  void vt100_set_cursorPos(uint8_t line, uint8_t col)

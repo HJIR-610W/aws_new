@@ -1,14 +1,18 @@
 
 
-
-#include "Sensors\temperature\temperature.h"
-
+#include "Sensors\wind_direction\wind_direction.h"
 
 
 
 
 
-float read_sensor_temperature(sensor_t *sensor,uint8_t *err)
+
+
+
+
+
+
+float read_sensor_windDirection(sensor_t *sensor,uint8_t *err)
 {
   float data;
   float gain;

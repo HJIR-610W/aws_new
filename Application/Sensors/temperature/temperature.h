@@ -8,6 +8,6 @@
 #include "app_sensor.h"
 #include "app_adc.h"
 
-int32_t read_sensor_temperature(sensor_t *sensor,uint8_t *err);
+float read_sensor_temperature(sensor_t *sensor,uint8_t *err);
 
 #endif

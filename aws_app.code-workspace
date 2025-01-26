@@ -35,7 +35,14 @@
       "limits": "cpp",
       "type_traits": "cpp",
       "app_fram.h": "c",
-      "app_sensor.h": "c"
+      "app_sensor.h": "c",
+      "aws_data.h": "c",
+      "driver_uart.h": "c",
+      "driver_485.h": "c",
+      "snow.h": "c",
+      "hj_snow.h": "c",
+      "app_rs232.h": "c",
+      "driver_uart_def.h": "c"
     }
 	}
 }

@@ -1,5 +1,9 @@
 
 #include "Sensors\temperature\temperature.h"
+#include "Sensors\wind_speed\wind_speed.h"
+#include "Sensors\wind_direction\wind_direction.h"
+#include "Sensors\snow\snow.h"
+
 #include "app_adc.h"
 #include "app_rtc.h"
 #include "aws_data.h"
@@ -7,39 +11,74 @@
 #include "cmsis_os.h"
 
 #include "task_measure.h"
+#include "mcu_delay.h"
 
 const osThreadAttr_t measureTask_attributes = {
   .name = "measureTask",
-  .stack_size = 512,
+  .stack_size = 2048,
   .priority = (osPriority_t) osPriorityHigh,
 };
 
 
 
+  uint32_t start_time;
+  uint32_t elased_time;
 
+void sensor_init(void)
+{
+    sensor_t *sensor;
+      sensor = config.sensor;
+
+  if(sensor[A9_SNOW_DEPTH].type)
+  {
+    snow_init(&sensor[A9_SNOW_DEPTH]);
+  }
+}
 void measureTask(void *arg)
 {
   int32_t data;
   uint8_t err;
   sensor_t *sensor;
   sensor_data_t *psensor_data;
+
+  sensor_init();
+  
   adc_init();
+  sensorData_init();
 
 
 
+  sensor = config.sensor;
+
+  
   while(1)
   {
     osDelay(250);
-    rtc_update();
-   
-   sensor       = &config.sensor[A1_TEMPERATURE]; 
-   psensor_data = &sensor_data[A1_TEMPERATURE];
 
-   if(sensor->type)
-   {
-      psensor_data->data = read_sensor_temperature(sensor,&err);
-   }
+    start_time = mcu_get_clk();
+   
+    if(sensor[A1_TEMPERATURE].type)
+    {
+      sensor_data[A1_TEMPERATURE].data.f = read_sensor_temperature(&sensor[A1_TEMPERATURE],&err);
+    }
     
+    if(sensor[A2_WIND_DIRECTION].type)
+    {
+      sensor_data[A2_WIND_DIRECTION].data.f = read_sensor_windDirection(&sensor[A2_WIND_DIRECTION],&err);
+    }
+    
+    if(sensor[A3_WIND_SPEED].type)
+    {
+      sensor_data[A3_WIND_SPEED].data.f = read_sensor_windSpeed(&sensor[A3_WIND_SPEED],&err);
+    }
+    
+    if(sensor[A9_SNOW_DEPTH].type)
+    {
+      sensor_data[A9_SNOW_DEPTH].data.i = read_sensor_snow(&sensor[A9_SNOW_DEPTH],&err);
+    }
+
+   elased_time =mcu_cal_elapse_us(start_time);
+
   }
   
 }

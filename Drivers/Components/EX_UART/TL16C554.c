@@ -9,7 +9,7 @@
 #include "FreeRTOS.h"
 #include "stream_buffer.h"
 #include "utile.h"
-#include "io.h"
+#include "dev_io.h"
 
 
 #define STREAMBUFFER_USE 1 //데이터 수신을 freertos 스트림 버퍼 사용시 
@@ -212,10 +212,10 @@ void quad_init(driver_t *tls16c554)
   // MCR 설정 (필요에 따라 추가 설정)
   write_register(MCR(exUartBaseAddress[uart_num]),0x08);
 
-
-g_reg =read_register(IER(exUartBaseAddress[uart_num]));
+#if STREAMBUFFER_USE
+  g_reg =read_register(IER(exUartBaseAddress[uart_num]));
   write_register(IER(exUartBaseAddress[uart_num]),0x05);
-
+#endif
 
   cfg = tls16c554->cfg;
 

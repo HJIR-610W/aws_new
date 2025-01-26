@@ -4,26 +4,37 @@
 #include <stdint.h>
 
 
-#define S_T_UNSUED        0
-#define S_T_ADC           1
-#define S_T_RS232         2
-#define S_T_RS485         3
-#define S_T_MODBUS        4 
-#define S_T_HART          5
-#define S_T_FREQ_0        6
-#define S_T_RAIN_REED_05MM  7
-#define S_T_RAIN_REED_1MM   8
-#define S_T_RAIN_HALL_05MM  9
-#define S_T_RAIN_HALL_1MM   10
-#define S_T_DI_0            11
-#define S_T_HJ_SNOW_RS485   12
-#define S_T_RAIN_SERIAL     13
+typedef enum S_T_e
+{
+  S_T_UNSUED                =  0, 
+  S_T_ADC                   =  1,
+  S_T_TEMP_232              =  2,
+  S_T_TEMP_485              =  3,
+  S_T_MODBUS                =  4 ,
+  S_T_HART                  =  5,
+  S_T_FREQ_0                =  6,
+  S_T_RAIN_REED_05MM        =  7,
+  S_T_RAIN_REED_1MM         =  8,
+  S_T_RAIN_HALL_05MM        =  9,
+  S_T_RAIN_HALL_1MM         = 10,
+  S_T_DI_0                  = 11,
+  S_T_SNOW_HJ_485           = 12,
+  S_T_RAIN_SERIAL_232       = 13,
+  S_T_WIND_SPEED_485         =14,
+  S_T_WIND_DIRECTION_485     =15,
+  S_T_HUMI_HJ_485            =16,
+  S_T_WIND_SPEED_MAX_VAL     =17,
+  S_T_WIND_DIRECTION_MAX_VAL =18,
+  S_T_PRESSURE_485           = 19,
+  S_T_HUMI_RS485             = 20,
+  S_T_RAIN_PRESENT_DI        = 21,
+  S_T_SNOW_HJ_232            = 22,
+}eSENSOR_MODEL_t;
 
-#define TEMP_TYPE_UNUSED 0
-#define TEMP_TYPE_ADC    1
-#define TEMP_TYPE_RS485  2
-
-
+typedef struct di_s
+{
+  uint8_t num; //DI 핀 번호
+}di_config_t;
 
 typedef struct rs232_s
 {
@@ -58,12 +69,12 @@ typedef struct
 
 typedef struct sensor_s
 {
-  int16_t data;
-  uint16_t type;//ADC
+  eSENSOR_MODEL_t type; 
   int16_t scale;
   uint8_t configCnt;
   uint8_t config[4][2];
 }sensor_t;
+
 
 
 typedef struct config_manage_s
@@ -76,6 +87,8 @@ typedef struct config_manage_s
   rs232_config_t rs485[10];
   uint8_t modbus_cnt;
   modbus_config_t modbus[10];
+  uint8_t di_cnt;
+  di_config_t di[10];
 }config_manager_t;
 
 
@@ -88,7 +101,18 @@ void * get_sensor_config(sensor_t *sensor,uint8_t sensorType);
 
 extern config_manager_t s_config;
 
-extern const char *sensorTypeList[14];
+extern const char *sensorTypeList[23];
 
+//지원되는 센서 목록 
 extern const uint8_t temperatureList[4];
+extern const uint8_t windDirectionList[3];
+extern const uint8_t windSpeedList[3];
+extern const uint8_t windDirectionInstantList[2];
+extern const uint8_t windSpeedInstantList[2];
+extern const uint8_t pressureList[3];
+extern const uint8_t rainList[6];
+extern const uint8_t snowList[4];
+extern const uint8_t rainPresentList[2];
+extern const uint8_t humiList[3];
+
 #endif

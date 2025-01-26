@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "io.h"
+#include "dev_io.h"
 
 /* IRQ 테이블 정의 */
 typedef struct {

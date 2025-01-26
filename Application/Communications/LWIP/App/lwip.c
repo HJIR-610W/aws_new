@@ -26,7 +26,7 @@
 #include "lwip/sio.h"
 #endif /* MDK ARM Compiler */
 #include "ethernetif.h"
-#include "io.h"
+#include "dev_io.h"
 #include <string.h>
 
 /* USER CODE BEGIN 0 */

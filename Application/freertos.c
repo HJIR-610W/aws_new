@@ -49,7 +49,7 @@
 #include "utile.h"
 #include "terminal\terminal.h"
 #include "terminal\vt100_command.h"
-#include "io.h"
+#include "dev_io.h"
 #include "time_define.h"
 
 

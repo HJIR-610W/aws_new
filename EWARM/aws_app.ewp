@@ -1273,10 +1273,10 @@
                 </file>
             </group>
             <file>
-                <name>$PROJ_DIR$\..\Application\IO\io.c</name>
+                <name>$PROJ_DIR$\..\Application\IO\dev_io.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\IO\io.h</name>
+                <name>$PROJ_DIR$\..\Application\IO\dev_io.h</name>
             </file>
         </group>
         <group>
@@ -1297,6 +1297,18 @@
                 </file>
             </group>
             <group>
+                <name>rain_present</name>
+            </group>
+            <group>
+                <name>snow</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\snow\hj_snow.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\snow\snow.c</name>
+                </file>
+            </group>
+            <group>
                 <name>temperature</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\temperature\temperature.c</name>
@@ -1304,6 +1316,18 @@
             </group>
             <group>
                 <name>water</name>
+            </group>
+            <group>
+                <name>wind_direction</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\wind_direction\wind_direction.c</name>
+                </file>
+            </group>
+            <group>
+                <name>wind_speed</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\wind_speed\wind_speed.c</name>
+                </file>
             </group>
             <file>
                 <name>$PROJ_DIR$\..\Application\Sensors\app_sensor.c</name>
@@ -1328,6 +1352,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_logging.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_rs232.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_rs485.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_rtc.c</name>
