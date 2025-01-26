@@ -1737,6 +1737,10 @@
             <name>$PROJ_DIR$\..\Application\Tasks\task_measure.c</name>
             <outputs>
                 <tool>
+                    <name>ICCARM</name>
+                    <file> 941</file>
+                </tool>
+                <tool>
                     <name>BICOMP</name>
                     <file> 838</file>
                 </tool>
@@ -6950,6 +6954,10 @@
         <file>
             <name>$PROJ_DIR$\..\Application\Tasks\app_console.c</name>
             <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 926</file>
+                </tool>
                 <tool>
                     <name>BICOMP</name>
                     <file> 1131</file>

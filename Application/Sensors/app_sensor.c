@@ -37,7 +37,7 @@ const uint8_t rainList[]={S_T_UNSUED,
                           S_T_RAIN_REED_1MM,
                           S_T_RAIN_HALL_05MM,
                           S_T_RAIN_HALL_1MM,
-                          S_T_RAIN_SERIAL_232};
+                          S_T_RAIN_232};
 //기압 6
 const uint8_t pressureList[]={S_T_UNSUED,
                               S_T_ADC,
@@ -69,7 +69,7 @@ const char *sensorTypeList[]={"미사용",         /* 0 S_T_UNSUED */
                                 "HALL 1mm",       /* 10 S_T_RAIN_HALL_1MM */
                                 "DI_0",           /* 11 S_T_DI_0 */
                                 "SNOW_HJ_RS485",  /* 12 S_T_SNOW_HJ_485 */
-                                "RAIN_RS232",    /* 13 S_T_RAIN_SERIAL_232 */
+                                "RAIN_RS232",    /* 13 S_T_RAIN_232 */
                                 "WIND_SPEED_RS485", /* 14 S_T_WIND_SPEED_485 */
                                 "WIND_DIRECTION_RS485", /* 15 S_T_WIND_DIRECTION_485 */
                                 "HUMI_HJ_RS485",      /* 16 S_T_HUMI_HJ_485 */
@@ -252,7 +252,7 @@ void * sensor_add(sensor_t *sensor,uint8_t sensorType)
     }
     return 0;
     case S_T_TEMP_232:
-    case S_T_RAIN_SERIAL_232:
+    case S_T_RAIN_232:
     case S_T_SNOW_HJ_232:
     if(s_config.rs232_cnt < _countof(s_config.rs232))
     {
@@ -303,10 +303,10 @@ void * sensor_add(sensor_t *sensor,uint8_t sensorType)
     return 0;
 }
 
+
+
 void * get_sensor_config(sensor_t *sensor,uint8_t sensorType)
 {
-
-
   //저장된 config정보가 없으면 생성성
   if(sensor->configCnt==0)
   {
@@ -323,7 +323,7 @@ void * get_sensor_config(sensor_t *sensor,uint8_t sensorType)
         return &s_config.adc[sensor->config[i][1]];
         break;
         case S_T_TEMP_232:
-        case S_T_RAIN_SERIAL_232:
+        case S_T_RAIN_232:
         case S_T_SNOW_HJ_232:
         return &s_config.rs232[sensor->config[i][1]];
         break;

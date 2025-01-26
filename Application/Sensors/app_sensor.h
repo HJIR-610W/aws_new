@@ -97,7 +97,7 @@ typedef enum S_T_e
   S_T_RAIN_HALL_1MM         = 10,
   S_T_DI_0                  = 11,
   S_T_SNOW_HJ_485           = 12,
-  S_T_RAIN_SERIAL_232       = 13,
+  S_T_RAIN_232               = 13,
   S_T_WIND_SPEED_485         = 14,
   S_T_WIND_DIRECTION_485     = 15,
   S_T_HUMI_HJ_485            = 16,

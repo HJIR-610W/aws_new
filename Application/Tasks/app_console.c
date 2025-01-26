@@ -635,34 +635,48 @@ int32_t menu_system(p_shell_context_t ctx)
 }
 
 
-
+void make_option(sensor_t *sensor,char *out,uint16_t outSize)
+{
+  switch(sensor->type)
+  {
+    case S_T_SNOW_HJ_232:
+    case S_T_TEMP_232:
+    case S_T_RAIN_232:
+    rs232_config_t *rs232_cfg;
+    rs232_cfg = get_sensor_config(sensor,sensor->type);
+    snprintf(out,outSize,"[PORT%d]",rs232_cfg->port);
+    break;
+    case S_T_ADC:
+    adc_config_t *adc_cfg;
+    adc_cfg = get_sensor_config(sensor,sensor->type);
+    snprintf(out,outSize,"[%s.%d]",adcChModeList[adc_cfg->mode],adc_cfg->channel);
+    break;
+    default:
+    out[0]=0;
+    break;
+  }
+}
 
 int32_t print_menu_sensor(p_shell_context_t ctx)
 {
+  char opt[20];
   int32_t cnt=0;
   int i=0;
-  ctx->printf("\r\n");
 
-#if 0 
-  for(int i = 0 ; i< _countof(sensorNameList);i++)
-  {
-    ctx->printf("%2d.%-15s:%s\r\n",i,sensorNameList[i],ITEM_LIST(config.sensor[i].type,sensorTypeList));
-  cnt++;
-  }
-#endif 
+  ctx->printf("\r\n");
 
 #if 1
   cnt = _countof(sensorNameList)/2;
 
-  for(int i = 0 ; i< cnt;i++)
+  for( i = 0 ; i< cnt;i++)
   {
-    ctx->printf("%2d.%-20s:%-20s ,  ",i,sensorNameList[i]  ,ITEM_LIST(config.sensor[i].type,sensorTypeList));
-    ctx->printf("%2d.%-20s:%-20s\r\n",i+cnt,sensorNameList[i+cnt],ITEM_LIST(config.sensor[i+cnt].type,sensorTypeList));
- 
+    make_option(&config.sensor[i],opt,sizeof(opt));
+    ctx->printf("%2d.%-15s:%-20s %-15s,  ",i,sensorNameList[i]  ,ITEM_LIST(config.sensor[i].type,sensorTypeList),opt);
+    make_option(&config.sensor[i+cnt],opt,sizeof(opt));
+    ctx->printf("%2d.%-15s:%-20s %-15s\r\n",i+cnt,sensorNameList[i+cnt],ITEM_LIST(config.sensor[i+cnt].type,sensorTypeList),opt);
   }
 
 #endif
-
   cnt =  _countof(sensorNameList);
   return cnt;
 }
@@ -931,7 +945,7 @@ const config_sen_func_t sen_func[]=
             {.sensorType = S_T_RAIN_HALL_1MM,.config_set  = rain_hall_config_set},
             {.sensorType = S_T_RAIN_REED_05MM,.config_set = rain_reed_config_set},
             {.sensorType = S_T_RAIN_REED_1MM,.config_set  = rain_reed_config_set},
-            {.sensorType = S_T_RAIN_SERIAL_232,.config_set = rs232_config_set},
+            {.sensorType = S_T_RAIN_232,.config_set = rs232_config_set},
             {.sensorType = S_T_WIND_DIRECTION_485,.config_set = rs485_config_set},
             {.sensorType = S_T_WIND_SPEED_485,.config_set = rs485_config_set},
             {.sensorType = S_T_WIND_SPEED_MAX_VAL,.config_set = 0},
@@ -1355,8 +1369,8 @@ int32_t print_menu_sensor_rain(p_shell_context_t ctx)
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
   switch(sensor->type)
   {
-    case S_T_RAIN_SERIAL_232:
-      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_RAIN_SERIAL_232),cnt);
+    case S_T_RAIN_232:
+      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_RAIN_232),cnt);
     break;
 
   }
@@ -2275,10 +2289,15 @@ int32_t menu_manage_device_reset(p_shell_context_t ctx)
   reset_system(0,"console reset");
   return 0;
 }
+//√ ±‚»≠
 int32_t menu_manage_config_reset(p_shell_context_t ctx)
 {
 
-    return 0;
+  for(int i = 0 ;i < _countof(config.sensor);i++)
+  {
+    config.sensor[i].configCnt = 0;
+  }
+  return 0;
 }
 
 menu_func g_manageMenu[]={[0]=menu_manage_version,
