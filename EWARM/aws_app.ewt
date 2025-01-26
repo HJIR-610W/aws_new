@@ -1350,6 +1350,12 @@
                 </file>
             </group>
             <group>
+                <name>humidity</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\humidity\humidity.c</name>
+                </file>
+            </group>
+            <group>
                 <name>rain</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\rain\rain.c</name>

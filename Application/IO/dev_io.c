@@ -269,7 +269,7 @@ void dev_io_write(dev_io_t  *dev,uint8_t *data,uint32_t dataLen,uint32_t opt)
       rs485_sends((uint8_t)dev->handle,data,dataLen);
     break;
     case eRS232_IO:
-      rs232_sends((uint8_t)dev->handle,data,dataLen);
+      rs232_send((uint8_t)dev->handle,data,dataLen);
     break;
 
   }

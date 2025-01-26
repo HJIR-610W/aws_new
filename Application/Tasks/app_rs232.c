@@ -47,7 +47,7 @@ void rs232_close(eRS232_PORT_t port)
   rs232_drivers[(int)port] = 0;
 }
 
-void rs232_sends(eRS232_PORT_t port,uint8_t *pData,uint16_t dataLen)
+void rs232_send(eRS232_PORT_t port,uint8_t *pData,uint16_t dataLen)
 {
   if(rs232_drivers[(int)port])
   {
@@ -64,6 +64,11 @@ uint16_t rs232_recv(eRS232_PORT_t port,uint8_t *pBuff,uint16_t rLen,uint32_t tim
 
   return driver_uart_recvs(rs232_drivers[(int)port],pBuff,rLen,timeOutms);
 }
+
+
+
+
+
 
 uint16_t rs232_get_portList(const char **list,uint16_t listMax)
 {

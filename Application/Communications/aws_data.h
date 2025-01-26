@@ -1,70 +1,8 @@
 
 #ifndef AWS_DATA_H
-
 #define AWS_DATA_H
 
-
 #include <stdint.h>
-#include <stdbool.h>
-
-typedef enum
-{
-A1_TEMPERATURE            = 0,   // 기온
-A2_WIND_DIRECTION         = 1,   // 풍향
-A3_WIND_SPEED             = 2,   // 풍속
-A4_INSTANT_WIND_DIRECTION = 3,   // 순간풍향
-A5_INSTANT_WIND_SPEED     = 4,   // 순간풍속
-A6_RAINFALL_DOT5_1MM      = 5,   // 강수량
-A7_PRESSURE               = 6,   // 기압
-A8_RAIN_PRESENT           = 7,   // 강수유무
-A9_SNOW_DEPTH             = 8,   // 적설
-A10_RELATIVE_HUMIDITY     = 9,   // 상대습도
-A11_RAINFALL_DOT1MM      = 10,   // 강수량
-B1_SOLAR_RADIATION        = 11,  // 일사
-B2_SUNSHINE_DURATION      = 12,  // 일조
-B3_GROUND_TEMPERATURE     = 13,  // 지면온도
-B4_SURFACE_TEMPERATURE    = 14,  // 초상온도
-B5_SOIL_TEMPERATURE_5CM   = 15,  // 지중온도
-B6_SOIL_TEMPERATURE_10CM  = 16,  // 지중온도
-B7_SOIL_TEMPERATURE_20CM  = 17,  // 지중온도
-B8_SOIL_TEMPERATURE_30CM  = 18,  // 지중온도
-B9_SOIL_TEMPERATURE_50CM  = 19,  // 지중온도
-B10_SOIL_TEMPERATURE_100CM = 20, // 지중온도
-B11_SOIL_TEMPERATURE_150CM = 21, // 지중온도
-B12_SOIL_TEMPERATURE_300CM = 22, // 지중온도
-B13_SOIL_TEMPERATURE_500CM = 23, // 지중온도
-C1_CLOUD_BASE1 = 24,          // 운고
-C2_CLOUD_BASE2 = 25,          // 운고
-C3_CLOUD_BASE3 = 26,          // 운고
-C4_CLOUD_COVER = 27,          // 운량
-C5_VISIBILITY  = 28,          // 시정
-C6_PM10        = 29,
-C7_PM2DOT5     = 30,
-C8_NET_RADIATION        = 31,  // 순복사
-C9_TOTAL_RADIATION      = 32,  // 전천복사
-C10_REFLECTED_RADIATION = 33,  // 반사복사
-C11_DIRECT_SOLAR        = 34,  // 직달일사
-C12_CURRENT_WEATHER     = 35,  // 현재일기
-N1_SOIL_MOISTURE_10CM   = 36,  // 토양수분
-N2_SOIL_MOISTURE_20CM   = 37,  // 토양수분
-N3_SOIL_MOISTURE_30CM   = 38,  // 토양수분
-N4_SOIL_MOISTURE_50CM   = 39,  // 토양수분
-N5_ILLUMINANCE            = 40, // 조도량
-N6_WIND_VELOCITY_150CM    = 41, // 풍속
-N7_WIND_VELOCITY_400CM    = 42, // 풍속
-N8_INSTANT_VELOCITY_150CM = 43, // 순간풍속
-N9_INSTANT_VELOCITY_400CM = 44, // 순간풍속
-N10_AIR_TEMPERATURE_50CM  = 45, // 기온
-N11_AIR_TEMPERATURE_400CM = 46, // 기온
-N12_HUMIDITY_50CM         = 47, // 습도
-N13_HUMIDITY_400CM        = 48, // 습도
-I1_TACHOMETER             = 49, // 타코미터
-USER_DATA_1               = 50, // 사용자 1
-USER_DATA_2               = 51, // 사용자 1
-SENSOR_LIST_MAX
-}eSENSOR_LIST_t;
-
-
 
 typedef struct
 {
@@ -228,40 +166,14 @@ typedef struct
 
 
 
-typedef struct sensor_emul_s
-{
-  union 
-  {
-    int32_t i;
-    float f;
-  }data;
-  uint8_t type:3;
-  uint8_t enable:1;
-  uint8_t user:4;
-}sensor_emul_t;
 
-#define DATA_TYPE_I 0
-#define DATA_TYPE_F 1
-typedef struct sensor_data_s
-{
-  union aws_data
-  {
-    int32_t i;
-    float f;
-  }data;
-  int16_t max;
-  int16_t min;
-  float unitScale;
-  uint8_t enable:1;
-  uint8_t dataType  :3;
-  uint8_t status:7;
-}sensor_data_t;
 
-void sensorData_init(void);
+
+
+
 
 extern kma_data_t kma_data_1s;
-extern sensor_emul_t g_sensor_emul[SENSOR_LIST_MAX];
-extern const char *sensorNameList[SENSOR_LIST_MAX];
-extern sensor_data_t sensor_data[SENSOR_LIST_MAX];
-extern const char *dataFmtList[SENSOR_LIST_MAX];
+
+
+
 #endif

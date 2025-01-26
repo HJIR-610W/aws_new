@@ -433,8 +433,8 @@ int32_t menu_display(p_shell_context_t ctx)
       break;
     }
   } while (1);
-
-    debug_printf(VT100_CURSOR_ON);
+  vt100_print(50,0,"\r\n");
+  debug_printf(VT100_CURSOR_ON);
 return 0;
 }
 
@@ -652,11 +652,12 @@ int32_t print_menu_sensor(p_shell_context_t ctx)
 #endif 
 
 #if 1
+  cnt = _countof(sensorNameList)/2;
 
-  for(int i = 0 ; i< _countof(sensorNameList)/2;i++)
+  for(int i = 0 ; i< cnt;i++)
   {
-    ctx->printf("%2d.%-20s:%-20s ,  ",i*2,sensorNameList[i*2]  ,ITEM_LIST(config.sensor[i*2].type,sensorTypeList));
-    ctx->printf("%2d.%-20s:%-20s\r\n",i*2+1,sensorNameList[i*2+1],ITEM_LIST(config.sensor[i*2+1].type,sensorTypeList));
+    ctx->printf("%2d.%-20s:%-20s ,  ",i,sensorNameList[i]  ,ITEM_LIST(config.sensor[i].type,sensorTypeList));
+    ctx->printf("%2d.%-20s:%-20s\r\n",i+cnt,sensorNameList[i+cnt],ITEM_LIST(config.sensor[i+cnt].type,sensorTypeList));
  
   }
 

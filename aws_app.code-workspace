@@ -42,7 +42,8 @@
       "snow.h": "c",
       "hj_snow.h": "c",
       "app_rs232.h": "c",
-      "driver_uart_def.h": "c"
+      "driver_uart_def.h": "c",
+      "pcb_define.h": "c"
     }
 	}
 }

@@ -22,7 +22,7 @@ typedef enum rs232_port_e
 void rs232_open(eRS232_PORT_t port);
 void rs232_close(eRS232_PORT_t port);
 void rs232_set(eRS232_PORT_t port,uint32_t baud,uint8_t parity);
-void rs232_sends(eRS232_PORT_t port,uint8_t *pData,uint16_t dataLen);
+void rs232_send(eRS232_PORT_t port,uint8_t *pData,uint16_t dataLen);
 uint16_t rs232_recv(eRS232_PORT_t port,uint8_t *pBuff,uint16_t rLen,uint32_t timeOutms);
 uint16_t rs232_get_portList(const char **list,uint16_t listMax);
 bool rs232_is_opened(eRS232_PORT_t port);

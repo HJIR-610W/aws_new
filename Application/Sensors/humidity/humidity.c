@@ -1,18 +1,18 @@
 
 
 
-#include "Sensors\temperature\temperature.h"
+#include "Sensors\humidity\humidity.h"
 
 
-
-void temperature_init(sensor_t *sensor)
+void humidity_init(sensor_t *sensor)
 {
   
 }
 
 
 
-float read_sensor_temperature(sensor_t *sensor,uint8_t *err)
+
+float read_sensor_humidity(sensor_t *sensor,uint8_t *err)
 {
   float data;
   float gain;

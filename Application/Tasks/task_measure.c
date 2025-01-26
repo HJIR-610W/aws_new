@@ -3,9 +3,11 @@
 #include "Sensors\wind_speed\wind_speed.h"
 #include "Sensors\wind_direction\wind_direction.h"
 #include "Sensors\snow\snow.h"
+#include "Sensors\rain\rain.h"
 
 #include "app_adc.h"
 #include "app_rtc.h"
+
 #include "aws_data.h"
 #include "config.h"
 #include "cmsis_os.h"
@@ -33,6 +35,12 @@ void sensor_init(void)
   {
     snow_init(&sensor[A9_SNOW_DEPTH]);
   }
+
+  if(sensor[A6_RAINFALL_DOT5_1MM].type)
+  {
+    rain_init(&sensor[A6_RAINFALL_DOT5_1MM]);
+  }
+
 }
 void measureTask(void *arg)
 {
@@ -41,12 +49,10 @@ void measureTask(void *arg)
   sensor_t *sensor;
   sensor_data_t *psensor_data;
 
-  sensor_init();
-  
   adc_init();
+
+  sensor_init();
   sensorData_init();
-
-
 
   sensor = config.sensor;
 
@@ -66,15 +72,24 @@ void measureTask(void *arg)
     {
       sensor_data[A2_WIND_DIRECTION].data.f = read_sensor_windDirection(&sensor[A2_WIND_DIRECTION],&err);
     }
-    
     if(sensor[A3_WIND_SPEED].type)
     {
-      sensor_data[A3_WIND_SPEED].data.f = read_sensor_windSpeed(&sensor[A3_WIND_SPEED],&err);
+      sensor_data[A3_WIND_SPEED].data.f = read_sensor_windDirection(&sensor[A3_WIND_SPEED],&err);
     }
     
     if(sensor[A9_SNOW_DEPTH].type)
     {
       sensor_data[A9_SNOW_DEPTH].data.i = read_sensor_snow(&sensor[A9_SNOW_DEPTH],&err);
+    }
+
+    if(sensor[A6_RAINFALL_DOT5_1MM].type)
+    {
+      sensor_data[A6_RAINFALL_DOT5_1MM].data.i = read_sensor_rain(&sensor[A6_RAINFALL_DOT5_1MM],&err);
+    }
+
+    if(sensor[A10_RELATIVE_HUMIDITY].type)
+    {
+      sensor_data[A10_RELATIVE_HUMIDITY].data.f = read_sensor_temperature(&sensor[A10_RELATIVE_HUMIDITY],&err);
     }
 
    elased_time =mcu_cal_elapse_us(start_time);
