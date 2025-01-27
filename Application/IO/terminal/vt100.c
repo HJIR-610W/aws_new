@@ -58,24 +58,37 @@ void vt100_print_bar(uint32_t line,uint32_t col,int32_t width,const char * pFmt,
 
 void vt100_print(uint32_t line,uint32_t col,const char * pFmt, ...)
 {
-    char buff[150];
-    va_list ap;  
+  char buff[150];
+  va_list ap;  
 
+  debug_printf("\x1B[%d;%dH",line,col);
 
-
-    debug_printf("\x1B[%d;%dH",line,col);
-
-    va_start(ap, pFmt);
-    vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
-    va_end(ap);
-     strnlen_s((char *)buff,0xFFFF);
-    
-
-       debug_printf("%s",  buff);
- 
-
-    return ; 
+  va_start(ap, pFmt);
+  vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
+  va_end(ap);
+  strnlen_s((char *)buff,0xFFFF);
+  debug_printf("%s",  buff);
+  return ; 
 }
+
+void vt100_printfColor(color_t color, char * pFmt, ...)
+{
+  char buff[150];
+  va_list ap;  
+
+  terminal_set_color(color);
+
+  va_start(ap, pFmt);
+  vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
+  va_end(ap);
+  strnlen_s((char *)buff,0xFFFF);
+  debug_printf("%s",  buff);
+
+  terminal_reset_color();
+  return ; 
+}
+
+
 void vt100_print_frame(uint8_t line,uint8_t colum,const char* text, char a, char b, char tb, size_t width,
     color_t col)
 {

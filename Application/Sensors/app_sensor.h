@@ -69,7 +69,7 @@ USER_SLOPE_7               = 59, // 경사 지점 7
 USER_SLOPE_8               = 60, // 경사 지점 8
 USER_SLOPE_9               = 61, // 경사 지점 9
 USER_SLOPE_10              = 62, // 경사 지점 10
-USER_WATER_CONTENT_1       = 63, // 함수비 지점 1  
+USER_DEFAULT               = 63, //
 SENSOR_LIST_MAX
 }eSENSOR_LIST_t;
 
@@ -97,7 +97,7 @@ typedef enum S_T_e
   S_T_RAIN_HALL_1MM         = 10,
   S_T_DI_0                  = 11,
   S_T_SNOW_HJ_485           = 12,
-  S_T_RAIN_232               = 13,
+  S_T_GENERAL_232            = 13,
   S_T_WIND_SPEED_485         = 14,
   S_T_WIND_DIRECTION_485     = 15,
   S_T_HUMI_HJ_485            = 16,
@@ -107,8 +107,14 @@ typedef enum S_T_e
   S_T_HUMI_RS485             = 20,
   S_T_RAIN_PRESENT_DI        = 21,
   S_T_SNOW_HJ_232            = 22,
+  S_T_GENERAL_485            = 23
 }eSENSOR_MODEL_t;
 
+typedef struct supported_sensors_s
+{
+  const uint8_t *list;
+  uint8_t cnt;
+}supported_sensors_t;
 
 typedef struct di_s
 {
@@ -122,6 +128,15 @@ typedef struct rs232_s
   uint8_t parityIdx;
 }rs232_config_t;
 
+typedef struct rs485_s
+{
+  uint32_t baud;
+  uint8_t id;
+  uint8_t port;
+  uint8_t parityIdx;
+}rs485_config_t;
+
+
 typedef struct modbus_s
 {
   uint8_t mode; //0 rtu 1 tcp 2 ascii
@@ -130,8 +145,8 @@ typedef struct modbus_s
 
 typedef struct hart_s
 {
-  uint8_t pv;
   uint8_t id;
+  uint8_t pv;
 }hart_config_t;
 
 
@@ -164,6 +179,7 @@ typedef struct sensor_s
   uint8_t config[4][2];
 }sensor_t;
 
+#define SENSOR_ERR_CFG 2
 
 #define DATA_TYPE_I 0
 #define DATA_TYPE_F 1
@@ -201,7 +217,7 @@ typedef struct config_manage_s
   uint8_t rs232_cnt;
   rs232_config_t rs232[10];
   uint8_t rs485_cnt;
-  rs232_config_t rs485[10];
+  rs485_config_t rs485[10];
   uint8_t modbus_cnt;
   modbus_config_t modbus[10];
   uint8_t di_cnt;
@@ -210,18 +226,21 @@ typedef struct config_manage_s
   hart_config_t hart[2];
   uint8_t sdi_cnt;
   sdi_config_t sdi[2];
+
 }config_manager_t;
 
 
 
 
 void add_sensor_config(sensor_t *sensor,void *config,uint8_t sensorType);
-void * get_sensor_config(sensor_t *sensor,uint8_t sensorType);
+void * get_sensor_config(sensor_t *sensor);
+void * sensor_add(sensor_t *sensor);
+
 void sensorData_init(void);
 
 extern config_manager_t s_config;
 
-extern const char *sensorTypeList[23];
+extern const char *sensorTypeList[24];
 
 
 extern const uint8_t temperatureList[4];
@@ -239,4 +258,7 @@ extern const char *sensorNameList[SENSOR_LIST_MAX];
 extern const char *dataFmtList[SENSOR_LIST_MAX];
 extern sensor_emul_t g_sensor_emul[SENSOR_LIST_MAX];
 extern sensor_data_t sensor_data[SENSOR_LIST_MAX];
+
+
+extern const supported_sensors_t supported_sensors[SENSOR_LIST_MAX];
 #endif

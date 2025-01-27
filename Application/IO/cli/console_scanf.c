@@ -2,7 +2,7 @@
 
 
 #include <stdarg.h>
-
+#include <stdio.h>
 #include "cmsis_os.h"
 
 #include "console_scanf.h"
@@ -49,7 +49,8 @@ int32_t console_scanf(const char *fmt_ptr, ...)
         }
         else
         {
-            result = DbgConsole_ScanfFormattedData(pxShell_context_struct->line,(char *) fmt_ptr, ap);
+         //   result = DbgConsole_ScanfFormattedData(pxShell_context_struct->line,(char *) fmt_ptr, ap);
+         result = vsscanf(pxShell_context_struct->line, fmt_ptr, ap);
         }
     }
 

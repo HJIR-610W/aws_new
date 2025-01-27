@@ -20,4 +20,6 @@ void vt100_print_line(uint8_t line,uint8_t colum,char del, char l, size_t width)
 
 void vt100_print_bar(uint32_t line,uint32_t col,int32_t width,const char * pFmt, ...);
 void vt100_print(uint32_t line,uint32_t col,const char * pFmt, ...);
+
+void vt100_printfColor(color_t color, char * pFmt, ...);
 #endif

@@ -1,5 +1,6 @@
 
 #include "app_console.h"
+#include "app_console_test.h"
 #include "app_version.h"
 #include "boot_version.h"
 #include "cmsis_os.h"
@@ -27,9 +28,22 @@ static const shell_command_context_t printCmd = { "menu",
 
 
 
+ const shell_command_context_t ioCmd = {"io",
+                                        "\r\n\"io arg1 arg2 arg3 arg4\"\r\n"
+                                        "arg1: write|read|wr\r\n"
+                                        "arg2: rs232|rs485|do|di|eth\r\n"
+                                        "arg3: dest\r\n"
+                                        "arg4: data\r\n",
+                                         io_test, 4};
 
+static const shell_command_context_t mcuPinCmd = {"mcu",
+                                        "\r\n\"mcu arg\"\r\n"
+                                        "arg1: di|do\r\n",
+                                         mcu_pin, 1};
 
-
+static const shell_command_context_t pcbCmd = { "pcb",
+                                                  "\r\n\"pcb\"\r\n" ,
+                                                   pcb_pin,0 };
 void print_signature(void)
 {
     uint8_t a;
@@ -75,9 +89,7 @@ void sonsoleTask(void *arg)
   shell_context_struct user_context;
    uint8_t instance = 0;
     
-  console_uart = driver_uart_open(UART_STM32_3);
 
-  set_debug_uart_handle(console_uart);
 
 
   print_signature();
@@ -85,10 +97,13 @@ void sonsoleTask(void *arg)
 
   DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
 
-  SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf, "AWS>> ");
+  SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf, "\x1B[32mAWS>> \x1B[37m");
   console_scanf_init(&user_context);
 
   SHELL_RegisterCommand(&printCmd);
+  SHELL_RegisterCommand(&ioCmd);
+    SHELL_RegisterCommand(&mcuPinCmd);
+        SHELL_RegisterCommand(&pcbCmd);
   SHELL_Main(&user_context);
 
   while(1)
@@ -99,5 +114,8 @@ void sonsoleTask(void *arg)
 
 void consoleTask_init(void)
 {
+  console_uart = driver_uart_open(UART_STM32_1);
+
+  set_debug_uart_handle(console_uart);
   osThreadNew(sonsoleTask, NULL, &consoleTask_attributes);
 }

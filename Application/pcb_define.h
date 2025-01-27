@@ -166,6 +166,10 @@ PCB 0.3 20250120
 #define IN_RAIN_ERR_Pin GPIO_PIN_6
 #define IN_RAIN_ERR_GPIO_Port GPIOA
 
+
+
+extern const char* pcbPortNameList[9];
+extern const char* pcbPinNameList[3][16]; 
 #endif
 
 

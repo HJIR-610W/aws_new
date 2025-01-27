@@ -204,12 +204,18 @@ uint16_t make_hjSnowFrame(uint8_t* out, uint16_t outSize,
     switch (io->io)
     {
     case eRS485_IO:
-      rs485_open((eRS485_PORT_t)io);
+      {
+      rs485_config_t *rs485_config=(rs485_config_t *)io->config;
+      rs485_open((eRS485_PORT_t)io->handle);
+      rs485_set((eRS485_PORT_t)io->handle,rs485_config->baud,rs485_config->parityIdx);
+      }
       break;
     case eRS232_IO:
+      {
       rs232_config_t *rs232_config=(rs232_config_t *)io->config;
-      rs232_open((eRS485_PORT_t)io->handle);
-      rs232_set((eRS485_PORT_t)io->handle,rs232_config->baud,rs232_config->parityIdx);
+      rs232_open((eRS232_PORT_t)io->handle);
+      rs232_set((eRS232_PORT_t)io->handle,rs232_config->baud,rs232_config->parityIdx);
+      }
       break;
     default:
       break;

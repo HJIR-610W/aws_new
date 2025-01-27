@@ -12,16 +12,16 @@
 
 const uint8_t temperatureList[]={S_T_UNSUED,
                                  S_T_ADC,
-                                 S_T_TEMP_232,
-                                 S_T_TEMP_485};
+                                 S_T_GENERAL_232,
+                                 S_T_GENERAL_485};
                                  
 const uint8_t windDirectionList[]={S_T_UNSUED,
                                    S_T_ADC,
-                                   S_T_WIND_SPEED_485};
+                                   S_T_GENERAL_232};
 
 const uint8_t windSpeedList[]={S_T_UNSUED,
                                S_T_ADC,
-                               S_T_WIND_SPEED_485};
+                               S_T_GENERAL_232};
 
 
 const uint8_t windDirectionInstantList[]={S_T_UNSUED,
@@ -37,23 +37,101 @@ const uint8_t rainList[]={S_T_UNSUED,
                           S_T_RAIN_REED_1MM,
                           S_T_RAIN_HALL_05MM,
                           S_T_RAIN_HALL_1MM,
-                          S_T_RAIN_232};
+                          S_T_GENERAL_232};
 //±‚æ– 6
 const uint8_t pressureList[]={S_T_UNSUED,
                               S_T_ADC,
-                              S_T_PRESSURE_485};
+                              S_T_GENERAL_232};
+
+const uint8_t rainPresentList[]={S_T_UNSUED,
+                                 S_T_RAIN_PRESENT_DI};
 
 const uint8_t snowList[]={S_T_UNSUED,
                           S_T_ADC,
                           S_T_SNOW_HJ_485,
                           S_T_SNOW_HJ_232};
 
-const uint8_t rainPresentList[]={S_T_UNSUED,
-                                 S_T_RAIN_PRESENT_DI};
-
 const uint8_t humiList[]={S_T_UNSUED,
                           S_T_ADC,
-                          S_T_HUMI_HJ_485};
+                          S_T_GENERAL_232};
+
+const uint8_t defaultList[]={S_T_UNSUED,
+                          S_T_ADC,
+                          S_T_GENERAL_232,
+                          S_T_GENERAL_485};
+
+
+
+const supported_sensors_t supported_sensors[SENSOR_LIST_MAX]={{.list = temperatureList,.cnt =  sizeof(temperatureList)},      //A1_TEMPERATURE
+{.list = windDirectionList,.cnt =  sizeof(windDirectionList)},   //A2_WIND_DIRECTION
+{.list = windSpeedList,.cnt =  sizeof(windSpeedList)},           //A3_WIND_SPEED
+{.list = windDirectionInstantList,.cnt =  sizeof(windDirectionInstantList)},   //A4_INSTANT_WIND_DIRECTION
+{.list = windSpeedInstantList,.cnt =  sizeof(windSpeedInstantList)},//A5_INSTANT_WIND_SPEED
+{.list = rainList,.cnt =  sizeof(rainList)},                       //A6_RAINFALL_DOT5_1MM
+{.list = pressureList,.cnt =  sizeof(pressureList)},//A7_PRESSURE
+{.list = rainPresentList,.cnt =  sizeof(rainPresentList)},//A8_RAIN_PRESENT
+{.list = snowList,.cnt    =  sizeof(snowList)},//A9_SNOW_DEPTH
+{.list = humiList,.cnt    = sizeof(humiList)},//A10_RELATIVE_HUMIDITY
+{.list = defaultList,.cnt = sizeof(defaultList)},//A11_RAINFALL_DOT1MM
+{.list = defaultList,.cnt = sizeof(defaultList)},//B1_SOLAR_RADIATION
+{.list = defaultList,.cnt = sizeof(defaultList)},//B2_SUNSHINE_DURATION
+{.list = defaultList,.cnt = sizeof(defaultList)},//B3_GROUND_TEMPERATURE
+{.list = defaultList,.cnt = sizeof(defaultList)},//B4_SURFACE_TEMPERATURE
+{.list = defaultList,.cnt = sizeof(defaultList)},//B5_SOIL_TEMPERATURE_5CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//B6_SOIL_TEMPERATURE_10CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//B7_SOIL_TEMPERATURE_20CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//B8_SOIL_TEMPERATURE_30CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//B9_SOIL_TEMPERATURE_50CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//B10_SOIL_TEMPERATURE_100CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//B11_SOIL_TEMPERATURE_150CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//B12_SOIL_TEMPERATURE_300CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//B13_SOIL_TEMPERATURE_500CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//C1_CLOUD_BASE1
+{.list = defaultList,.cnt = sizeof(defaultList)},//C2_CLOUD_BASE2
+{.list = defaultList,.cnt = sizeof(defaultList)},//C3_CLOUD_BASE3
+{.list = defaultList,.cnt = sizeof(defaultList)},//C4_CLOUD_COVER
+{.list = defaultList,.cnt = sizeof(defaultList)},//C5_VISIBILITY
+{.list = defaultList,.cnt = sizeof(defaultList)},//C6_PM10
+{.list = defaultList,.cnt = sizeof(defaultList)},//C7_PM2DOT5
+{.list = defaultList,.cnt = sizeof(defaultList)},//C8_NET_RADIATION
+{.list = defaultList,.cnt = sizeof(defaultList)},//C9_TOTAL_RADIATION
+{.list = defaultList,.cnt = sizeof(defaultList)},//C10_REFLECTED_RADIATION
+{.list = defaultList,.cnt = sizeof(defaultList)},//C11_DIRECT_SOLAR
+{.list = defaultList,.cnt = sizeof(defaultList)},//C12_CURRENT_WEATHER
+{.list = defaultList,.cnt = sizeof(defaultList)},//N1_SOIL_MOISTURE_10CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N2_SOIL_MOISTURE_20CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N3_SOIL_MOISTURE_30CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N4_SOIL_MOISTURE_50CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N5_ILLUMINANCE
+{.list = defaultList,.cnt = sizeof(defaultList)},//N6_WIND_VELOCITY_150CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N7_WIND_VELOCITY_400CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N8_INSTANT_VELOCITY_150CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N9_INSTANT_VELOCITY_400CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N10_AIR_TEMPERATURE_50CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N11_AIR_TEMPERATURE_400CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N12_HUMIDITY_50CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//N13_HUMIDITY_400CM
+{.list = defaultList,.cnt = sizeof(defaultList)},//I1_TACHOMETER
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_WATER
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SWV
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_FLOW_RATE
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SLOPE_1
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SLOPE_2
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SLOPE_3
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SLOPE_4
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SLOPE_5
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SLOPE_6
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SLOPE_7
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SLOPE_8
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SLOPE_9
+{.list = defaultList,.cnt = sizeof(defaultList)},//USER_SLOPE_10
+{.list = defaultList,.cnt = sizeof(defaultList)}};//USER_DEFAULT
+
+
+
+
+
+
 
                           
 const char *sensorTypeList[]={"πÃªÁøÎ",         /* 0 S_T_UNSUED */
@@ -69,7 +147,7 @@ const char *sensorTypeList[]={"πÃªÁøÎ",         /* 0 S_T_UNSUED */
                                 "HALL 1mm",       /* 10 S_T_RAIN_HALL_1MM */
                                 "DI_0",           /* 11 S_T_DI_0 */
                                 "SNOW_HJ_RS485",  /* 12 S_T_SNOW_HJ_485 */
-                                "RAIN_RS232",    /* 13 S_T_RAIN_232 */
+                                "GENERAL_RS232",    /* 13 S_T_GENERAL_232 */
                                 "WIND_SPEED_RS485", /* 14 S_T_WIND_SPEED_485 */
                                 "WIND_DIRECTION_RS485", /* 15 S_T_WIND_DIRECTION_485 */
                                 "HUMI_HJ_RS485",      /* 16 S_T_HUMI_HJ_485 */
@@ -78,7 +156,8 @@ const char *sensorTypeList[]={"πÃªÁøÎ",         /* 0 S_T_UNSUED */
                                 "PRESSURE_RS485",     /* 19 S_T_PRESSURE_485 */
                                 "HUMI_RS485",         /* 20 S_T_HUMI_RS485*/       
                                 "RAIN_PRESENT_DI",    /* 21 S_T_RAIN_PRESENT_DI */
-                                "SNOW_HJ_RS232"};     /* 22 S_T_SNOW_HJ_232*/
+                                "SNOW_HJ_RS232",      /* 22 S_T_SNOW_HJ_232 */
+                                "GENERAL_485"};       /* 23 S_T_GENERAL_485 */
                                 
 
 
@@ -146,15 +225,15 @@ const char *sensorNameList[SENSOR_LIST_MAX]={
 "∞ÊªÁ7",    //60
 "∞ÊªÁ8",    //61
 "∞ÊªÁ9",    //62
-"«‘ºˆ∫Ò1"   //63  
+"±‚∫ª"      //63  
 };
 
 
 const char *dataFmtList[SENSOR_LIST_MAX]={ 
 "%-5.2fC",  //±‚ø¬ 0
-"%-6.2f(0f(B",//«≥«‚      1
+"%-6.2f(0f(B      ",//«≥«‚      1
 "%-5.2fm/s", //«≥º”      2
-"%-6.2f(0f(B",//º¯∞£«≥«‚  3
+"%-6.2f(0f(B      ",//º¯∞£«≥«‚  3
 "%-5.2fm/s", //º¯∞£«≥º”  4
 "%-dmm",     //∞≠ºˆ∑Æ    5
 "%-5.2fbar", //±‚æ–      6
@@ -230,38 +309,43 @@ void sensorData_init(void)
   sensor_data[A2_WIND_DIRECTION].dataType = DATA_TYPE_F;
 }
 
-void * sensor_add(sensor_t *sensor,uint8_t sensorType)
+/**
+ * @brief º≥¡§∞™ «“¥Á
+ */
+void * sensor_add(sensor_t *sensor)
 {
   uint8_t index=0;
 
-  switch (sensorType)
+  switch (sensor->type)
   {
     case S_T_ADC:
     if(s_config.adc_cnt < _countof(s_config.adc))//«“¥Á ∞°¥…«—¡ˆ ∆«¥‹
     {
-      sensor->config[sensor->configCnt][0] = sensorType;//«ÿ¥Á ≈∏¿‘¿ª √ﬂ∞°
-
-      WRITE_CFG_MEM(&sensor->config[sensor->configCnt][0],sizeof(sensor->config[sensor->configCnt][0]));
+      index = s_config.adc_cnt;
+      
+      sensor->config[sensor->configCnt][0] = sensor->type;//«ÿ¥Á ≈∏¿‘¿ª √ﬂ∞°
+      sensor->config[sensor->configCnt][1] = index;
+      
+      WRITE_CFG_MEM(&sensor->config[sensor->configCnt],sizeof(sensor->config[sensor->configCnt]));
       sensor->configCnt++;
       WRITE_CFG_MEM(&sensor->configCnt,sizeof(sensor->configCnt));
 
-      index = s_config.adc_cnt;
       s_config.adc_cnt++;
       WRITE_S_CFG(adc_cnt);
+
       return &s_config.adc[index];
     }
-    return 0;
     case S_T_TEMP_232:
-    case S_T_RAIN_232:
+    case S_T_GENERAL_232:
     case S_T_SNOW_HJ_232:
     if(s_config.rs232_cnt < _countof(s_config.rs232))
     {
       index = s_config.rs232_cnt;
 
-      sensor->config[sensor->configCnt][0] = sensorType;//«ÿ¥Á ≈∏¿‘¿ª √ﬂ∞°
+      sensor->config[sensor->configCnt][0] = sensor->type;//«ÿ¥Á ≈∏¿‘¿ª √ﬂ∞°
       sensor->config[sensor->configCnt][1] = index;
 
-      WRITE_CFG_MEM(&sensor->config[sensor->configCnt][0],sizeof(sensor->config[sensor->configCnt][0]));
+      WRITE_CFG_MEM(&sensor->config[sensor->configCnt],sizeof(sensor->config[sensor->configCnt]));
       sensor->configCnt++;
       WRITE_CFG_MEM(&sensor->configCnt,sizeof(sensor->configCnt));
 
@@ -279,15 +363,15 @@ void * sensor_add(sensor_t *sensor,uint8_t sensorType)
       case S_T_SNOW_HJ_485:
       case S_T_PRESSURE_485:
       case S_T_HUMI_RS485:
+      case S_T_GENERAL_485:
       if(s_config.rs485_cnt < _countof(s_config.rs485))
       {
-        sensor->config[sensor->configCnt][0] = sensorType;//«ÿ¥Á ≈∏¿‘¿ª √ﬂ∞°
-
-        WRITE_CFG_MEM(&sensor->config[sensor->configCnt][0],sizeof(sensor->config[sensor->configCnt][0]));
+        index = s_config.rs485_cnt;
+        sensor->config[sensor->configCnt][0] = sensor->type;//«ÿ¥Á ≈∏¿‘¿ª √ﬂ∞°
+        sensor->config[sensor->configCnt][1] = index;
+        WRITE_CFG_MEM(&sensor->config[sensor->configCnt],sizeof(sensor->config[sensor->configCnt]));
         sensor->configCnt++;
         WRITE_CFG_MEM(&sensor->configCnt,sizeof(sensor->configCnt));
-
-        index = s_config.rs485_cnt;
         s_config.rs485_cnt++;
         WRITE_S_CFG(rs485_cnt);
         return &s_config.rs485[index];
@@ -305,25 +389,25 @@ void * sensor_add(sensor_t *sensor,uint8_t sensorType)
 
 
 
-void * get_sensor_config(sensor_t *sensor,uint8_t sensorType)
+void * get_sensor_config(sensor_t *sensor)
 {
   //¿˙¿Âµ» config¡§∫∏∞° æ¯¿∏∏È ª˝º∫º∫
   if(sensor->configCnt==0)
   {
-    return sensor_add(sensor,sensorType);
+    return 0;
   }
 
   for (int i = 0; i < sensor->configCnt; i++)
   {
-    if (sensor->config[i][0] == sensorType)
+    if (sensor->config[i][0] == sensor->type)
     {
-      switch(sensorType)
+      switch(sensor->type)
       {
         case S_T_ADC:
         return &s_config.adc[sensor->config[i][1]];
         break;
         case S_T_TEMP_232:
-        case S_T_RAIN_232:
+        case S_T_GENERAL_232:
         case S_T_SNOW_HJ_232:
         return &s_config.rs232[sensor->config[i][1]];
         break;
@@ -333,6 +417,7 @@ void * get_sensor_config(sensor_t *sensor,uint8_t sensorType)
         case S_T_SNOW_HJ_485:
         case S_T_PRESSURE_485:
         case S_T_HUMI_RS485:
+        case S_T_GENERAL_485:
         return &s_config.rs485[sensor->config[i][1]];
         break;
         case S_T_MODBUS:
@@ -342,7 +427,7 @@ void * get_sensor_config(sensor_t *sensor,uint8_t sensorType)
     }
   }
   //«ÿ¥Á ºæº≠ ≈∏¿‘ config∞° º≥¡§µ«æÓ ¿÷¡ˆ æ ¿∏∏È √ﬂ∞° 
-  return sensor_add(sensor,sensorType);
+  return 0;
 }
 
 

@@ -86,7 +86,7 @@ const char *rs232ParityList[]={"none","even","odd"};
 const char *enableList[]={"미사용","사용"};
 
 
-
+int32_t print_common_cfg(p_shell_context_t ctx,sensor_t *sensor,uint8_t c);
 
 void make_comList(char *out,uint16_t outsize)
 {
@@ -164,7 +164,7 @@ int32_t select_indexFromList(p_shell_context_t ctx,const char *list[],
         }
         else
         {
-        ctx->printf("%s\r\n",list[i]);
+          ctx->printf("%s\r\n",list[i]);
         }
       }
       indexMax = listCnt;
@@ -175,7 +175,12 @@ int32_t select_indexFromList(p_shell_context_t ctx,const char *list[],
       indexMax = funcCnt;
     }
 
-    ctx->printf("Please enter a number:");
+    if(func == NULL && list ==NULL)
+    {
+      indexMax = listCnt;
+    }
+
+    vt100_printfColor(GREEN,"번호를 선택해 주세요:");
     //사용자로 부터 메뉴를 선택 받는다.
     cnt = console_scanf("%d",&index);//-1 ctrl+c, 0 enter esc
     ctx->printf("\r\n");
@@ -192,11 +197,51 @@ int32_t select_indexFromList(p_shell_context_t ctx,const char *list[],
     {
       return EXIT_PROGRAM;
     }
-  ctx->printf("Invalid input. Please select a menu number again.\r\n");
+  //ctx->printf("Invalid input. Please select a menu number again.\r\n");
+  vt100_printfColor(RED,"유효한 번호가 아닙니다\r\n");
   }while(1);
 
   return  (index+1);
 }
+
+
+int32_t select_indexMenu(p_shell_context_t ctx,sensor_t *sensor)
+{
+  int cnt;
+  int index=0;
+  int funcCnt=0;
+  int indexMax;
+
+  do
+  {
+    funcCnt = print_common_cfg(ctx,sensor,0);
+    indexMax = funcCnt;
+ 
+
+    vt100_printfColor(GREEN,"번호를 선택해 주세요:");
+    //사용자로 부터 메뉴를 선택 받는다.
+    cnt = console_scanf("%d",&index);//-1 ctrl+c, 0 enter esc
+    ctx->printf("\r\n");
+    if(cnt==1)
+    {
+      if(index < indexMax)
+      break;
+    }
+    else if(cnt == EXIT_BACK)
+    {
+      return EXIT_BACK;
+    }
+    else if(cnt == EXIT_PROGRAM)
+    {
+      return EXIT_PROGRAM;
+    }
+  //ctx->printf("Invalid input. Please select a menu number again.\r\n");
+  vt100_printfColor(RED,"유효한 번호가 아닙니다\r\n");
+  }while(1);
+
+  return  (index+1);
+}
+
 
 
 
@@ -224,12 +269,7 @@ return false;
 
 #define DISP_WIDTH    25
 
-#define ASCII_CODE_ESC    0x1B
-#define ASCII_CODE_CTRL_Q 0x11
-#define ASCII_CODE_CTRL_C 0x03
-#define ASCII_CODE_CR     0x0D
 
-#define ASCII_SPEICIAL    0x5B //   '['   
 
 int32_t print_systemInfo(uint16_t row,uint16_t column)
 {
@@ -245,7 +285,6 @@ int32_t print_systemInfo(uint16_t row,uint16_t column)
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"%s\r\n",buff);
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"문 상태  :%s\r\n",ITEM_LIST(System.doorStatus,doorStatusList));
   extern   uint32_t elased_time;;
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"측정 시간:%dus\r\n",elased_time);
   vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
 
     
@@ -293,7 +332,7 @@ int32_t print_awsRealLefinfo(uint16_t row,uint16_t column,uint8_t mode,void* arg
   sensor_data_t *pdata;
   const char *aswTitleList[]={"실시간(1s)","1분","10분","한시간"};
 
-  snprintf(buff,sizeof(buff),"AWS %s",aswTitleList[mode]);
+  snprintf(buff,sizeof(buff),"AWS %s %.2fms",aswTitleList[mode],(float)elased_time/1000.0f);
   
   pdata = sensor_data;
 
@@ -471,8 +510,8 @@ int input_decimal(p_shell_context_t ctx,int32_t start,int32_t stop,int32_t *dec)
 {
   int32_t cnt;
 
-  ctx->printf("Range:%d~%d\r\n",start,stop);
-  ctx->printf("Input:");
+  ctx->printf("범위:%d~%d\r\n",start,stop);
+  vt100_printfColor(GREEN,"값을 입력해 주세요:");
   cnt = console_scanf("%d",dec);
   if(cnt==1)
   {
@@ -482,7 +521,7 @@ int input_decimal(p_shell_context_t ctx,int32_t start,int32_t stop,int32_t *dec)
     }
     else
     {
-        ctx->printf("입력 범위를 확인해주세요\r\n");
+      vt100_printfColor(RED,"입력값의 범위를 확인해 주세요\r\n");
       return 0;
     }
   }
@@ -497,7 +536,7 @@ int32_t input_use(p_shell_context_t ctx,bool *en)
   int32_t dec;
   ctx->printf("0:미사용\r\n");
   ctx->printf("1:사용\r\n");
-  ctx->printf("Input:");
+  vt100_printfColor(GREEN,"번호를 선택해 주세요:");
   cnt = console_scanf("%d",&dec);
   if(cnt==1)
   {
@@ -524,11 +563,16 @@ int input_digit(p_shell_context_t ctx,int32_t start,int32_t stop,void *target,eV
   int16_t i16val;
   int32_t i32val;
 
-  ctx->printf("Range:%d~%d\r\n",start,stop);
-  ctx->printf("Input:");
+  ctx->printf("\r\n범위:%d~%d\r\n",start,stop);
+  vt100_printfColor(GREEN,"값을 입력해 주세요:");
   cnt = console_scanf("%d",&i32val);
   if(cnt==1)
   {
+    if(i32val<start || i32val>stop)
+    {
+      vt100_printfColor(RED,"입력값을 범위를 확인해 주세요\r\n");
+      return 0;
+    }
     switch(type)
     {
       case eUINT8:
@@ -549,22 +593,7 @@ int input_digit(p_shell_context_t ctx,int32_t start,int32_t stop,void *target,eV
 
   return cnt;
 }
-int32_t input_string(p_shell_context_t ctx,char *buff)
-{
-  int32_t cnt;
 
-
-  ctx->printf("Input:");
-  cnt = console_scanf("%s",buff);
-  if(cnt>0)
-  {
-
-      return 1;
-
-  }
-
-  return cnt;
-}
 
 int32_t print_menu_system(p_shell_context_t ctx)
 {
@@ -637,18 +666,44 @@ int32_t menu_system(p_shell_context_t ctx)
 
 void make_option(sensor_t *sensor,char *out,uint16_t outSize)
 {
+  void *cfg;
+  char *list[10];
+
+  out[0]=0;
+
+  cfg = get_sensor_config(sensor);
+
+  if(cfg==NULL)
+  {
+    return; 
+  }
+
   switch(sensor->type)
   {
     case S_T_SNOW_HJ_232:
     case S_T_TEMP_232:
-    case S_T_RAIN_232:
-    rs232_config_t *rs232_cfg;
-    rs232_cfg = get_sensor_config(sensor,sensor->type);
-    snprintf(out,outSize,"[PORT%d]",rs232_cfg->port);
+    case S_T_GENERAL_232:
+    {
+    rs232_config_t *rs232_cfg = (rs232_config_t*)cfg;
+    rs232_get_portList(list,sizeof(list));
+    snprintf(out,outSize,"[%s]",list[rs232_cfg->port]);
+    }
+    break;
+      case S_T_HUMI_HJ_485:
+    case S_T_WIND_DIRECTION_485:
+    case S_T_WIND_SPEED_485:
+    case S_T_TEMP_485:
+    case S_T_GENERAL_485:
+    case S_T_SNOW_HJ_485:
+
+    {
+    rs485_config_t *rs485_cfg = (rs485_config_t*)cfg;
+    rs485_get_portList(list,sizeof(list));
+    snprintf(out,outSize,"[%s.%d]",list[rs485_cfg->port],rs485_cfg->id);
+    }
     break;
     case S_T_ADC:
-    adc_config_t *adc_cfg;
-    adc_cfg = get_sensor_config(sensor,sensor->type);
+    adc_config_t *adc_cfg = (adc_config_t *)cfg;
     snprintf(out,outSize,"[%s.%d]",adcChModeList[adc_cfg->mode],adc_cfg->channel);
     break;
     default:
@@ -656,7 +711,7 @@ void make_option(sensor_t *sensor,char *out,uint16_t outSize)
     break;
   }
 }
-
+//센서 출력
 int32_t print_menu_sensor(p_shell_context_t ctx)
 {
   char opt[20];
@@ -692,14 +747,15 @@ uint8_t print_rs232_cfg(p_shell_context_t ctx,rs232_config_t *rs232_config,uint8
   return cnt;
 }
 
-uint8_t print_rs485_cfg(p_shell_context_t ctx,rs232_config_t *rs232_config,uint8_t cnt)
+uint8_t print_rs485_cfg(p_shell_context_t ctx,rs485_config_t *rs485_config,uint8_t cnt)
 {
-  const char **portNameList;
+  char *portNameList[10];
 
-  rs485_get_portList(&portNameList);
-  ctx->printf("%2d.port       :%s\r\n",cnt++,portNameList[rs232_config->port]);    
-  ctx->printf("%2d.baud       :%d\r\n",cnt++,rs232_config->baud);
-  ctx->printf("%2d:paraity    :%s\r\n",cnt++,ITEM_LIST(rs232_config->parityIdx,rs232ParityList));
+  rs485_get_portList(portNameList,_countof(portNameList));
+  ctx->printf("%2d.id         :%d\r\n",cnt++,rs485_config->id);    
+  ctx->printf("%2d.port       :%s\r\n",cnt++,portNameList[rs485_config->port]);    
+  ctx->printf("%2d.baud       :%d\r\n",cnt++,rs485_config->baud);
+  ctx->printf("%2d:paraity    :%s\r\n",cnt++,ITEM_LIST(rs485_config->parityIdx,rs232ParityList));
   return cnt;
 }
 
@@ -707,8 +763,8 @@ uint8_t print_adc_cfg(p_shell_context_t ctx,adc_config_t *adc_config,uint8_t cnt
 {
   ctx->printf("%2d.adc mode   :%s\r\n",cnt++,ITEM_LIST(adc_config->mode,adcChModeList));    
   ctx->printf("%2d.channel    :%d\r\n",cnt++,adc_config->channel);
-  ctx->printf("%2d:high scale :%d\r\n",cnt++,adc_config->highScale);
-  ctx->printf("%2d:low scale  :%d\r\n",cnt++,adc_config->lowScale);
+  ctx->printf("%2d.high scale :%d\r\n",cnt++,adc_config->highScale);
+  ctx->printf("%2d.low scale  :%d\r\n",cnt++,adc_config->lowScale);
   return cnt;
 }
 
@@ -756,7 +812,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
   int32_t dec;
   adc_config_t *adc;
 
-  adc = get_sensor_config(sensor,S_T_ADC);
+  adc = get_sensor_config(sensor);
   switch(cnt)
   {
     case ADC_SET_CH_MODE://1.채널 모드
@@ -795,15 +851,17 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
 }
 
 //232설정
+
 #define RS232_SET_PORT   0
 #define RS232_SET_BAUD   1
 #define RS232_SET_PARITY 2
+
 void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
 {
   int32_t dec;
   rs232_config_t *rs232;
 
-  rs232= get_sensor_config(sensor,S_T_TEMP_232);
+  rs232= get_sensor_config(sensor);
   if(rs232==0)
   {
     debug_printf("rs232 err\r\n");
@@ -861,46 +919,74 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
   }
 }
 
+#define RS485_SET_ID     0
+#define RS485_SET_PORT   1
+#define RS485_SET_BAUD   2
+#define RS485_SET_PARITY 3
+
 void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
 {
   int32_t dec;
-  rs232_config_t *rs232;
+  rs485_config_t *rs485;
 
-  rs232= get_sensor_config(sensor,S_T_TEMP_485);
-  if(rs232==0)
+  rs485= get_sensor_config(sensor);
+  if(rs485 == NULL)
   {
-    debug_printf("rs485 err\r\n");
+    return;
   }
   switch (cnt)
   {
-  case RS232_SET_PORT:
-   const char **portList;
-    cnt = rs485_get_portList(&portList);
+    case RS485_SET_ID:
+     cnt = input_decimal(ctx,0,255,&dec);
+    if(cnt>0)
+    {
+      rs485->id = dec;
+      write_s_config();
+    }
+    break;
+  case RS485_SET_PORT:
+   const char *portList[10];
+    cnt = rs485_get_portList(portList,_countof(portList));
+
     cnt = select_indexFromList(ctx,portList,NULL,cnt,true);
     if(cnt)
     {
-      if(rs485_opened(cnt-1))
+      if(rs485_is_opened(rs485->port))//만약 이미 열린 포트인데 변경하려고 하면 오류
       {
-        ctx->printf("PORT:%d  이미 열림, 충돌\r\n",cnt-1);
+        ctx->printf("포트가 열린 상태에서 변경을 시도합니다.\r\n");
+        ctx->printf("열린 포트는 닫힙니다\r\n");
+        rs485_close(rs485->port);
       }
-      rs232->port = cnt-1;
+
+      rs485->port = cnt-1;
+      if(rs485_is_opened(rs485->port))//열려고 하는 포트가 이미 열려있다면
+      {
+        ctx->printf("PORT:%d 이미 열려있습니다.통신속도는 변경되지 않습니다.\r\n",cnt-1);
+      }
+      else
+      { 
+        rs485_open(rs485->port);
+        rs485_set(rs485->port,rs485->baud,rs485->parityIdx);
+        ctx->printf("%s 새롭게 열렸습니다.\r\n",portList[rs485->port]);
+      }
+
       write_s_config();
     }
     break;
 
-  case RS232_SET_BAUD:
+  case RS485_SET_BAUD:
     cnt = input_decimal(ctx,9600,115200,&dec);
     if(cnt)
     {
-      rs232->baud = dec;
+      rs485->baud = dec;
       write_s_config();
     }
 
   break;
-  case RS232_SET_PARITY:
+  case RS485_SET_PARITY:
         cnt = select_indexFromList(ctx,rs232ParityList,NULL,_countof(rs232ParityList),true);
         {
-          rs232->parityIdx = cnt-1;
+          rs485->parityIdx = cnt-1;
           write_s_config();
         }
   break;
@@ -945,49 +1031,80 @@ const config_sen_func_t sen_func[]=
             {.sensorType = S_T_RAIN_HALL_1MM,.config_set  = rain_hall_config_set},
             {.sensorType = S_T_RAIN_REED_05MM,.config_set = rain_reed_config_set},
             {.sensorType = S_T_RAIN_REED_1MM,.config_set  = rain_reed_config_set},
-            {.sensorType = S_T_RAIN_232,.config_set = rs232_config_set},
+            {.sensorType = S_T_GENERAL_232,.config_set = rs232_config_set},
             {.sensorType = S_T_WIND_DIRECTION_485,.config_set = rs485_config_set},
             {.sensorType = S_T_WIND_SPEED_485,.config_set = rs485_config_set},
             {.sensorType = S_T_WIND_SPEED_MAX_VAL,.config_set = 0},
             {.sensorType = S_T_WIND_DIRECTION_MAX_VAL,.config_set = 0},
             {.sensorType = S_T_SNOW_HJ_485,.config_set = rs485_config_set},
             {.sensorType = S_T_HUMI_HJ_485,.config_set= rs485_config_set},
-            {.sensorType = S_T_SNOW_HJ_232,.config_set= rs232_config_set}};
+            {.sensorType = S_T_SNOW_HJ_232,.config_set= rs232_config_set},
+            {.sensorType = S_T_GENERAL_485,.config_set= rs485_config_set}};
 
 
-int32_t print_menu_sensor_temp(p_shell_context_t ctx)
+
+
+int32_t print_common_cfg(p_shell_context_t ctx,sensor_t *sensor,uint8_t c)
 {
-  uint8_t type;
-  int cnt = 0;
-  sensor_t *sensor;
-
-  sensor = &config.sensor[A1_TEMPERATURE];
+  int32_t cnt=0;
 
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
-  ctx->printf("%2d.scale      :%d\r\n",cnt++,sensor->scale);
+  
   switch(sensor->type)
   {
     case S_T_ADC://ADC
-      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
+      cnt = print_adc_cfg( ctx,get_sensor_config(sensor),cnt);
     break;
-    case S_T_TEMP_232:
-      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_TEMP_232),cnt);
+    case S_T_GENERAL_232:
+    case S_T_SNOW_HJ_232:
+      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor),cnt);
     break;
-    case S_T_TEMP_485:
-      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_TEMP_485),cnt);
+    case S_T_GENERAL_485:
+    case S_T_SNOW_HJ_485:
+    case S_T_HUMI_RS485:
+      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor),cnt);
     break;
   }
   return cnt;
+}
+int32_t print_menu_sensor_temp(p_shell_context_t ctx)
+{
+  int cnt = 0;
+  sensor_t *sensor;
+  sensor = &config.sensor[A1_TEMPERATURE];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+
+  if(sensor->type != S_T_UNSUED)
+  {
+    ctx->printf("%2d.scale      :%d\r\n",cnt++,sensor->scale);
+    cnt = print_common_cfg(ctx,sensor,cnt);  
+  }
+
+  return cnt;
+}
+
+void set_type(sensor_t *sensor)
+{
+  WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+  if(sensor->type != S_T_UNSUED)
+  {
+    void *cfg = get_sensor_config(sensor);
+    if(cfg == NULL)
+    {
+      sensor_add(sensor);
+    }
+  }
 }
 
 //온도 설정
 int32_t menu_sensor_temp(p_shell_context_t ctx)
 {
-  float scale;
+  char *itemList[10];
   int32_t dec;
   int32_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+  float scale;
 
   sensor_t *sensor = &config.sensor[A1_TEMPERATURE];
 
@@ -1003,13 +1120,12 @@ int32_t menu_sensor_temp(p_shell_context_t ctx)
     
     if(cnt==0)
     {
-      //온도 센서의 문자열 목록을 가져온다.
       itemListCnt = gen_sensorItemList(itemList,temperatureList,_countof(temperatureList));
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       {
-        sensor->type = (cnt-1);
-        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+        sensor->type = temperatureList[cnt-1];
+        set_type(sensor);
       }
     }
     else if(cnt==1)
@@ -1045,15 +1161,7 @@ int32_t print_menu_sensor_windDirection(p_shell_context_t ctx)
   sensor = &config.sensor[A2_WIND_DIRECTION];
 
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
-  switch(sensor->type)
-  {
-    case S_T_ADC://ADC
-      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
-    break;
-    case S_T_WIND_DIRECTION_485:
-      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_WIND_DIRECTION_485),cnt);
-    break;
-  }
+  cnt = print_common_cfg(ctx,sensor,cnt);
   return cnt;
 }
 int32_t menu_sensor_windDirection(p_shell_context_t ctx)
@@ -1082,8 +1190,8 @@ int32_t menu_sensor_windDirection(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = windDirectionList[(cnt-1)];
-        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+        sensor->type = windDirectionList[cnt-1];
+        set_type(sensor);
       }
     }
     else
@@ -1111,15 +1219,7 @@ int32_t print_menu_sensor_windSpeed(p_shell_context_t ctx)
   sensor = &config.sensor[A3_WIND_SPEED];
 
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
-  switch(sensor->type)
-  {
-    case S_T_ADC://ADC
-      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
-    break;
-    case S_T_WIND_SPEED_485:
-      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_WIND_SPEED_485),cnt);
-    break;
-  }
+  cnt = print_common_cfg(ctx,sensor,cnt);
   return cnt;
 }
 int32_t menu_sensor_windSpeed(p_shell_context_t ctx)
@@ -1148,8 +1248,8 @@ int32_t menu_sensor_windSpeed(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = windDirectionList[(cnt-1)];
-        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+        sensor->type = windDirectionList[cnt-1];
+        set_type(sensor);
       }
     }
     else
@@ -1178,12 +1278,7 @@ int32_t print_menu_sensor_windDirectionInstanct(p_shell_context_t ctx)
 
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
 
-  switch(sensor->type)
-  {
-    case S_T_WIND_DIRECTION_MAX_VAL:
-    //  cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_WIND_SPEED_485),cnt);
-    break;
-  }
+  cnt = print_common_cfg(ctx,sensor,cnt);
   return cnt;
 }
 int32_t menu_sensor_windDirectionInstant(p_shell_context_t ctx)
@@ -1211,8 +1306,8 @@ int32_t menu_sensor_windDirectionInstant(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = windDirectionInstantList[(cnt-1)];
-        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+        sensor->type = windDirectionInstantList[cnt-1];
+        set_type(sensor);
       }
     }
     else
@@ -1240,12 +1335,7 @@ int32_t print_menu_sensor_windSpeedInstanct(p_shell_context_t ctx)
 
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
 
-  switch(sensor->type)
-  {
-    case S_T_WIND_SPEED_MAX_VAL:
-    //  cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_WIND_SPEED_485),cnt);
-    break;
-  }
+  cnt = print_common_cfg(ctx,sensor,cnt);
   return cnt;
 }
 int32_t menu_sensor_windSpeedInstant(p_shell_context_t ctx)
@@ -1273,8 +1363,8 @@ int32_t menu_sensor_windSpeedInstant(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = windDirectionInstantList[(cnt-1)];
-        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+        sensor->type = windDirectionInstantList[cnt-1];
+        set_type(sensor);
       }
     }
     else
@@ -1301,18 +1391,7 @@ int32_t print_menu_sensor_snow(p_shell_context_t ctx)
   sensor = &config.sensor[A9_SNOW_DEPTH];
 
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
-  switch(sensor->type)
-  {
-    case S_T_ADC://ADC
-      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
-    break;
-    case S_T_SNOW_HJ_485:
-      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_SNOW_HJ_485),cnt);
-    break;
-    case S_T_SNOW_HJ_232:
-      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_SNOW_HJ_232),cnt);
-    break;
-  }
+  cnt = print_common_cfg(ctx,sensor,cnt);
   return cnt;
 }
 int32_t menu_sensor_snow(p_shell_context_t ctx)
@@ -1340,8 +1419,8 @@ int32_t menu_sensor_snow(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = snowList[(cnt-1)];
-        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+        sensor->type = snowList[cnt-1];
+        set_type(sensor);
       }
     }
     else
@@ -1367,13 +1446,7 @@ int32_t print_menu_sensor_rain(p_shell_context_t ctx)
   sensor = &config.sensor[A6_RAINFALL_DOT5_1MM];
 
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
-  switch(sensor->type)
-  {
-    case S_T_RAIN_232:
-      cnt = print_rs232_cfg(ctx,get_sensor_config(sensor,S_T_RAIN_232),cnt);
-    break;
-
-  }
+  cnt = print_common_cfg(ctx,sensor,cnt);
   return cnt;
 }
 
@@ -1403,8 +1476,8 @@ int32_t menu_sensor_rain(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = rainList[(cnt-1)];
-        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+        sensor->type = rainList[cnt-1];
+        set_type(sensor);
       }
     }
     else
@@ -1431,16 +1504,7 @@ int32_t print_menu_sensor_pressure(p_shell_context_t ctx)
   sensor = &config.sensor[A7_PRESSURE];
 
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
-  switch(sensor->type)
-  {
-    case S_T_ADC://ADC
-      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
-    break;
-    case S_T_PRESSURE_485:
-      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_PRESSURE_485),cnt);
-    break;
-
-  }
+  cnt = print_common_cfg(ctx,sensor,cnt);
   return cnt;
 }
 
@@ -1470,8 +1534,8 @@ int32_t menu_sensor_pressure(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = pressureList[(cnt-1)];
-        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+        sensor->type = pressureList[cnt-1];
+        set_type(sensor);
       }
     }
     else
@@ -1499,16 +1563,7 @@ int32_t print_menu_sensor_humi(p_shell_context_t ctx)
   sensor = &config.sensor[A10_RELATIVE_HUMIDITY];
 
   ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
-  switch(sensor->type)
-  {
-    case S_T_ADC://ADC
-      cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
-    break;
-    case S_T_HUMI_RS485:
-      cnt = print_rs485_cfg(ctx,get_sensor_config(sensor,S_T_HUMI_RS485),cnt);
-    break;
-
-  }
+  cnt = print_common_cfg(ctx,sensor,cnt);
   return cnt;
 }
 
@@ -1523,7 +1578,7 @@ int32_t menu_sensor_humi(p_shell_context_t ctx)
 
   do
   {
-    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_pressure,0,false);
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_humi,0,false);
     
     if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
     {
@@ -1538,8 +1593,8 @@ int32_t menu_sensor_humi(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = humiList[(cnt-1)];
-        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+        sensor->type = humiList[cnt-1];
+        set_type(sensor);
       }
     }
     else
@@ -1570,7 +1625,7 @@ int32_t print_menu_sensor_rainPresent(p_shell_context_t ctx)
   switch(sensor->type)
   {
     case S_T_RAIN_PRESENT_DI:
-     // cnt = print_adc_cfg( ctx,get_sensor_config(sensor,S_T_ADC),cnt);
+     // cnt = print_adc_cfg( ctx,get_sensor_config(sensor),cnt);
     break;
 
 
@@ -1604,8 +1659,8 @@ int32_t menu_sensor_rainPresent(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = rainPresentList[(cnt-1)];
-        WRITE_CFG_MEM(&sensor->type,sizeof(sensor->type));
+        sensor->type = rainPresentList[cnt-1];
+        set_type(sensor);
       }
     }
     else
@@ -1621,8 +1676,85 @@ int32_t menu_sensor_rainPresent(p_shell_context_t ctx)
     }
   }while(1);
 }
+
+
+
+
+
+void sensor_set(p_shell_context_t ctx,sensor_t *sensor,uint8_t cnt)
+{
+    for(int i = 0 ; i< _countof(sen_func);i++)
+    {
+      if(sen_func[i].sensorType == sensor->type)
+      {
+        sen_func[i].config_set(ctx,sensor,cnt-1);
+        break;
+      }
+    }
+}
+
+/**
+ * @brief 센서 모델 변경
+*/
+void sensor_type_set(p_shell_context_t ctx,sensor_t *sensor,const uint8_t *list,uint8_t listCnt)
+{
+  uint8_t cnt;
+  uint8_t itemListCnt;
+  char *itemList[10];
+
+  itemListCnt = gen_sensorItemList(itemList,list,listCnt);
+  cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
+  if(cnt > 0)
+  { 
+    sensor->type = list[cnt-1];
+    set_type(sensor);
+  }
+
+}
+
+//기본 설정
+int32_t print_menu_sensor_default(p_shell_context_t ctx)
+{
+  uint8_t type;
+  int cnt = 0;
+  sensor_t *sensor;
+
+  sensor = &config.sensor[A11_RAINFALL_DOT1MM];
+
+  ctx->printf("%2d.type       :%s\r\n",cnt++,sensorTypeList[sensor->type]);
+  cnt = print_common_cfg(ctx,sensor,cnt);
+  return cnt;
+}
+
+int32_t menu_sensor_default(p_shell_context_t ctx)
+{
+  int32_t cnt;
+  sensor_t *sensor = &config.sensor[A11_RAINFALL_DOT1MM];
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_sensor_humi,0,false);
+    
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    switch(cnt)
+    {
+      case 0://타입
+      sensor_type_set(ctx,sensor,humiList,_countof(humiList));
+      break; 
+      default:
+      sensor_set(ctx,sensor,cnt-1);
+      break;
+    }
+  }while(1);
+}
+
 //센서 목록록
-const menu_func g_sensorMenu[50]={[A1_TEMPERATURE] = menu_sensor_temp,
+const menu_func g_sensorMenu[SENSOR_LIST_MAX]={[A1_TEMPERATURE] = menu_sensor_temp,
                                   [A2_WIND_DIRECTION] = menu_sensor_windDirection,
                                   [A3_WIND_SPEED] = menu_sensor_windSpeed,
                                   [A4_INSTANT_WIND_DIRECTION]=menu_sensor_windDirectionInstant,
@@ -1631,7 +1763,93 @@ const menu_func g_sensorMenu[50]={[A1_TEMPERATURE] = menu_sensor_temp,
                                   [A7_PRESSURE] = menu_sensor_pressure,
                                   [A8_RAIN_PRESENT] = menu_sensor_rainPresent,
                                   [A9_SNOW_DEPTH] = menu_sensor_snow,
-                                  [A10_RELATIVE_HUMIDITY]=menu_sensor_humi};
+                                  [A10_RELATIVE_HUMIDITY]=menu_sensor_humi,
+                                  [A11_RAINFALL_DOT1MM]=menu_sensor_humi,
+                                  [B1_SOLAR_RADIATION]=menu_sensor_default,
+                                  [B2_SUNSHINE_DURATION]=menu_sensor_default,
+                                  [B3_GROUND_TEMPERATURE]=menu_sensor_default,
+                                  [B4_SURFACE_TEMPERATURE]=menu_sensor_default,
+                                  [B5_SOIL_TEMPERATURE_5CM]=menu_sensor_default,
+                                  [B6_SOIL_TEMPERATURE_10CM]=menu_sensor_default,
+                                  [B7_SOIL_TEMPERATURE_20CM]=menu_sensor_default,
+                                  [B8_SOIL_TEMPERATURE_30CM]=menu_sensor_default,
+                                  [B9_SOIL_TEMPERATURE_50CM]=menu_sensor_default,
+                                  [B10_SOIL_TEMPERATURE_100CM]=menu_sensor_default,
+                                  [B11_SOIL_TEMPERATURE_150CM]=menu_sensor_default,
+                                  [B12_SOIL_TEMPERATURE_300CM]=menu_sensor_default,
+                                  [B13_SOIL_TEMPERATURE_500CM]=menu_sensor_default,
+                                  [C1_CLOUD_BASE1]=menu_sensor_default,
+                                  [C2_CLOUD_BASE2]=menu_sensor_default,
+                                  [C3_CLOUD_BASE3]=menu_sensor_default,
+                                  [C4_CLOUD_COVER]=menu_sensor_default,
+                                  [C5_VISIBILITY]=menu_sensor_default,
+                                  [C6_PM10]=menu_sensor_default,
+                                  [C7_PM2DOT5]=menu_sensor_default,
+                                  [C8_NET_RADIATION]=menu_sensor_default,
+                                  [C9_TOTAL_RADIATION]=menu_sensor_default,
+                                  [C10_REFLECTED_RADIATION]=menu_sensor_default,
+                                  [C11_DIRECT_SOLAR]=menu_sensor_default,
+                                  [C12_CURRENT_WEATHER]=menu_sensor_default,
+                                  [N1_SOIL_MOISTURE_10CM]=menu_sensor_default,
+                                  [N2_SOIL_MOISTURE_20CM]=menu_sensor_default,
+                                  [N3_SOIL_MOISTURE_30CM]=menu_sensor_default,
+                                  [N4_SOIL_MOISTURE_50CM]=menu_sensor_default,
+                                  [N5_ILLUMINANCE]=menu_sensor_default,
+                                  [N6_WIND_VELOCITY_150CM]=menu_sensor_default,
+                                  [N7_WIND_VELOCITY_400CM]=menu_sensor_default,
+                                  [N8_INSTANT_VELOCITY_150CM]=menu_sensor_default,
+                                  [N9_INSTANT_VELOCITY_400CM]=menu_sensor_default,
+                                  [N10_AIR_TEMPERATURE_50CM]=menu_sensor_default,
+                                  [N11_AIR_TEMPERATURE_400CM]=menu_sensor_default,
+                                  [N12_HUMIDITY_50CM]=menu_sensor_default,
+                                  [N13_HUMIDITY_400CM]=menu_sensor_default,
+                                  [I1_TACHOMETER]=menu_sensor_default,
+                                  [USER_WATER]=menu_sensor_default,
+                                  [USER_SWV]=menu_sensor_default,
+                                  [USER_FLOW_RATE]=menu_sensor_default,
+                                  [USER_SLOPE_1]=menu_sensor_default,
+                                  [USER_SLOPE_2]=menu_sensor_default,
+                                  [USER_SLOPE_3]=menu_sensor_default,
+                                  [USER_SLOPE_4]=menu_sensor_default,
+                                  [USER_SLOPE_5]=menu_sensor_default,
+                                  [USER_SLOPE_6]=menu_sensor_default,
+                                  [USER_SLOPE_7]=menu_sensor_default,
+                                  [USER_SLOPE_8]=menu_sensor_default,
+                                  [USER_SLOPE_9]=menu_sensor_default,
+                                  [USER_SLOPE_10]=menu_sensor_default,
+                                  [USER_DEFAULT]=menu_sensor_default};
+
+
+int32_t menu_sensor_default_2(p_shell_context_t ctx,eSENSOR_LIST_t list)
+{
+  int32_t cnt=0;
+  sensor_t *sensor = &config.sensor[(int)list];
+  do
+  {
+  //  cnt = print_common_cfg(ctx,sensor);
+
+  //  cnt = select_indexFromList(ctx,NULL,NULL,cnt,false);
+    
+   cnt =  select_indexMenu(ctx,sensor);
+
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt<= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    
+    switch(cnt)
+    {
+      case 0://타입
+      sensor_type_set(ctx,sensor,supported_sensors[list].list,supported_sensors[list].cnt);
+      break; 
+      default:
+      sensor_set(ctx,sensor,cnt);
+      break;
+    }
+  }while(1);
+}
+
 
 
 /**
@@ -1649,10 +1867,13 @@ int32_t menu_sensor(p_shell_context_t ctx)
     {
       break;
     }
+#if 0 
     if(g_sensorMenu[cnt-1])
     {
       cnt = g_sensorMenu[cnt-1](ctx);
     }
+#endif
+    cnt = menu_sensor_default_2(ctx,(eSENSOR_LIST_t)(cnt-1));
   }while(cnt != EXIT_PROGRAM);
 
   return cnt;
@@ -2293,10 +2514,12 @@ int32_t menu_manage_device_reset(p_shell_context_t ctx)
 int32_t menu_manage_config_reset(p_shell_context_t ctx)
 {
 
-  for(int i = 0 ;i < _countof(config.sensor);i++)
-  {
-    config.sensor[i].configCnt = 0;
-  }
+
+  memset(config.sensor,0,sizeof(config.sensor));
+
+  WRITE_CFG(sensor);
+  memset(&s_config,0,sizeof(s_config));
+  write_s_config();
   return 0;
 }
 
@@ -2411,14 +2634,14 @@ int32_t  inpu_adc_cali(p_shell_context_t ctx,int adcMode,int channel,int32_t cfg
   } while(1);
 
   ctx->printf("\r\n") ;
-  ctx->printf("ADC:") ;
+  vt100_printfColor(GREEN,"ADC 값을 수동으로 입력해 주세요:");
   if(input_digit(ctx,-8388607,8388607,&adc,eUINT32) != 1)
   {
     return 1;
   }
 
   ctx->printf("\r\n") ;
-  ctx->printf("REF VOLTAGE(mv):") ;
+  vt100_printfColor(GREEN,"입력된 전압값을 입력해 주세요(mV):");
   if(input_digit(ctx,0,5000,&voltage,eUINT32) != 1)
   {
     return 1;
@@ -2733,7 +2956,8 @@ int32_t menu_cali_print_adc(p_shell_context_t ctx)
   adcMode = (eADC_CH_TYPE_t)cnt;
 
 
-  ctx->printf("채널 번호를 입력해주세요\r\n");
+  //ctx->printf("채널 번호를 입력해주세요\r\n");
+  vt100_printfColor(GREEN,"채널 번호를 입력해주세요:");
 
   if(adcMode == eSINGLE_ADC)
   {
@@ -2976,17 +3200,84 @@ int32_t print_menu_developer(p_shell_context_t ctx)
   ctx->printf("%2d.interrupt\r\n",cnt++);
   ctx->printf("%2d.memory\r\n",cnt++);
   ctx->printf("%2d.sensor emul\r\n",cnt++);
+  ctx->printf("%2d.print sensor config\r\n",cnt++);
+  return cnt;
+}
+
+int32_t menu_developer_sensor_config(p_shell_context_t ctx)
+{
+  char opt[20];
+  int32_t cnt=0;
+  int i=0;
+
+  ctx->printf("\r\n");
+
+#if 1
+  cnt = _countof(sensorNameList);
+
+  for( i = 0 ; i< cnt;i++)
+  {
+    ctx->printf("%2d:%d",i,config.sensor[i].configCnt);
+    for(int j=0; j<4; j++)
+    {
+        ctx->printf("[%-15s.%d]",ITEM_LIST(config.sensor[i].config[j][0],sensorTypeList),config.sensor[i].config[j][1]);
+    }
+    
+  ctx->printf("\r\n");
+
+  }
+
+#endif
+  cnt =  _countof(sensorNameList);
+  return cnt;
+}
+
+int32_t menu_developer_test_rs232(p_shell_context_t ctx)
+{
+  
+  
+
+  return 0;
+}
+
+int32_t print_menu_developer_test(p_shell_context_t ctx)
+{
+  int32_t cnt=0;
+
+  ctx->printf("%2d:RS232",cnt++);
 
   return cnt;
 }
 
+int32_t menu_developer_test(p_shell_context_t ctx)
+{
+  int32_t cnt;
+  
+  const menu_func menu[]={[0]= menu_developer_test_rs232};
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_developer_test,0,false);
+    if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM && cnt <= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    cnt = menu[cnt](ctx);
+    if(cnt == EXIT_PROGRAM )
+    {
+      return cnt;
+    }
+  }while(1);
+}
 
 int32_t menu_developer(p_shell_context_t ctx)
 {
   int32_t cnt;
 const menu_func menu[]={[0]= menu_developer_interrupt,
                              menu_developer_memory,
-                             menu_developer_sensor};
+                             menu_developer_sensor,
+                             menu_developer_sensor_config};
   do
   {
     cnt = select_indexFromList(ctx,NULL,print_menu_developer,0,false);

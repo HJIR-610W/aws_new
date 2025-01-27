@@ -4,6 +4,7 @@
 #include "Sensors\wind_direction\wind_direction.h"
 #include "Sensors\snow\snow.h"
 #include "Sensors\rain\rain.h"
+#include "Sensors\humidity\humidity.h"
 
 #include "app_adc.h"
 #include "app_rtc.h"
@@ -89,7 +90,7 @@ void measureTask(void *arg)
 
     if(sensor[A10_RELATIVE_HUMIDITY].type)
     {
-      sensor_data[A10_RELATIVE_HUMIDITY].data.f = read_sensor_temperature(&sensor[A10_RELATIVE_HUMIDITY],&err);
+      sensor_data[A10_RELATIVE_HUMIDITY].data.f = read_sensor_humidity(&sensor[A10_RELATIVE_HUMIDITY],&err);
     }
 
    elased_time =mcu_cal_elapse_us(start_time);

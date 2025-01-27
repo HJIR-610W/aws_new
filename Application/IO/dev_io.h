@@ -5,6 +5,13 @@
 #include <stdint.h>
 #include "driver_interface.h"
 
+#define ASCII_CODE_ESC    0x1B
+#define ASCII_CODE_CTRL_Q 0x11
+#define ASCII_CODE_CTRL_C 0x03
+#define ASCII_CODE_CR     0x0D
+
+#define ASCII_SPEICIAL    0x5B //   '['   
+
 typedef enum dev_io_e
 {
   eRS485_IO,

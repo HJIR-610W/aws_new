@@ -26,7 +26,7 @@
 
 #define DO_DIR_SDI       15
 #define DO_DIR_RS485_A   16
-#define DO_DIR_RS485_B    17
+#define DO_DIR_RS485_B   17
 
 #define DO_NUM_MAX   18
 

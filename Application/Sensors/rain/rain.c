@@ -28,7 +28,7 @@ void rain_init(sensor_t *sensor)
 
   switch (sensor->type)
   {
-  case S_T_RAIN_232:
+  case S_T_GENERAL_232:
   /* code */
   break;
   case S_T_RAIN_REED_05MM:
@@ -96,10 +96,22 @@ int32_t read_sensor_rain(sensor_t *sensor,uint8_t *err)
   rs232_config_t *rs232_config;
   int32_t data;
     dev_io_t dev_io;
+  void *cfg;
+
+  cfg = get_sensor_config(sensor);
+
+  if(cfg == NULL)
+  {
+    *err = 2;
+
+    return 0;
+  }
+
+  rs232_config = cfg;
   switch (sensor->type)
   {
-  case S_T_RAIN_232:
-    rs232_config = get_sensor_config(sensor,S_T_SNOW_HJ_232);
+  case S_T_GENERAL_232:
+
     dev_io.io = eRS232_IO;
     dev_io.handle = (void *)rs232_config->port;
 

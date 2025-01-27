@@ -9,14 +9,13 @@ typedef struct app_rs232_s
   const char *name;
 }app_rs232_t;
 
-const app_rs232_t rs232_define[]={{.num = UART_STM32_1,   .name ="DEBUG"},
-                                  {.num = UART_STM32_3,   .name ="D-SUB CDMA"},
-                                  {.num = UART_EX_232_1,  .name ="D-SUB EX1 232"},
-                                  {.num = UART_EX_TTL_2,  .name ="EX2 TTL"},
-                                  {.num = UART_EX_232_A_3,.name ="EX3 232 A"},
-                                  {.num = UART_EX_232_B_4,.name ="EX4 232 B"},
-                                  {.num = UART_EX_232_C_7,.name ="EX7 232 C"},
-                                  {.num = UART_EX_232_D_8,.name ="EX8 232 D"}};
+const app_rs232_t rs232_define[]={{.num = UART_STM32_3,   .name ="D-SUB_CDMA"},
+                                  {.num = UART_EX_232_1,  .name ="D-SUB_EX1_232"},
+                                  {.num = UART_EX_TTL_2,  .name ="EX2_TTL"},
+                                  {.num = UART_EX_232_A_3,.name ="EX3_232_A"},
+                                  {.num = UART_EX_232_B_4,.name ="EX4_232_B"},
+                                  {.num = UART_EX_232_C_7,.name ="EX7_232_C"},
+                                  {.num = UART_EX_232_D_8,.name ="EX8_232_D"}};
 
 driver_t *rs232_drivers[eRS232_MAX];
 

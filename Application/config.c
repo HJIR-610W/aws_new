@@ -38,6 +38,32 @@ void check_config_limit(void)
       WRITE_S_CFG(rs232[i].parityIdx);
     }
   }
+
+
+#if 0 
+  for(int i = 0 ; i < _countof(config.sensor);i++)
+  {
+    int row;
+    int cnt;
+    cnt = config.sensor[i].configCnt;
+    row = config.sensor[i].config[0][0];
+    for(int j=i+1;j< _countof(config.sensor); j++)
+    {
+      for(int n = 0; n< 4; n++)
+      {
+        if(config.sensor[i].config[i][0]==config.sensor[j].config[n][0])
+        {
+          if(config.sensor[i].config[i][1]==config.sensor[j].config[n][1])
+          {
+            config.sensor[j].configCnt = 0;
+          }
+        }
+      }
+    }
+
+  }
+#endif
+
 }
 
 

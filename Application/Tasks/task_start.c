@@ -63,10 +63,12 @@ void startTask(void *arg)
   flash_init();
   runLed_init();
 
+  consoleTask_init();
+  
   isrEventTask_init();
   loggingTask_init();
   measureTask_init();
-  consoleTask_init();
+
 
   if(config.eth_use)
   {

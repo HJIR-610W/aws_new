@@ -14,7 +14,6 @@ typedef enum rs232_port_e
   eRS232_5,
   eRS232_6,
   eRS232_7,
-  eRS232_8,
   eRS232_MAX
 }eRS232_PORT_t;
 

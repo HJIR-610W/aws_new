@@ -1351,6 +1351,12 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\app_console.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_console_test.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_do.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_flash.c</name>
             </file>
             <file>
@@ -1443,6 +1449,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\Application\main.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\pcb_define.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\Application\sdio.c</name>

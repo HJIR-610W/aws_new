@@ -15,7 +15,7 @@
 #include "app_rs232.h"
 
 static driver_t *debug_uart = NULL;;
-USART_TypeDef *debug_uart_base = USART3;
+USART_TypeDef *debug_uart_base = USART1;
 
 void debug_uart_init(uint32_t baud_rate)
 {
@@ -287,4 +287,5 @@ uint16_t dev_io_read(dev_io_t  *dev,uint8_t *out,uint32_t dataLen,uint8_t cmd,vo
     break;
 
   }
+  return 0;
 }
