@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>4</fileVersion>
-    <fileChecksum>2055897127</fileChecksum>
+    <fileChecksum>2951976023</fileChecksum>
     <configuration>
         <name>release</name>
         <outputs>
@@ -5987,14 +5987,16 @@
             <name>$PROJ_DIR$\..\Application\pcb_define.c</name>
             <outputs>
                 <tool>
-                    <name>ICCARM</name>
-                    <file> 1083</file>
-                </tool>
-                <tool>
                     <name>BICOMP</name>
                     <file> 1084</file>
                 </tool>
             </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 580 811 766 594 735 615 650 810 815 809 750 655 764 844 465 771 581 725 816 796 686 502 598 762 603 734 758 648 746 782 533 252 651 661 437 573 664 738 840 454 824 759 592 706 508 670 672 732 838</file>
+                </tool>
+            </inputs>
         </file>
     </configuration>
 </project>

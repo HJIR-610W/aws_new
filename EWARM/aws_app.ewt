@@ -1189,6 +1189,9 @@
     <group>
         <name>Application</name>
         <group>
+            <name>app_driver</name>
+        </group>
+        <group>
             <name>Communications</name>
             <group>
                 <name>CDMA</name>
@@ -1399,7 +1402,7 @@
             </file>
         </group>
         <group>
-            <name>tasks</name>
+            <name>Tasks</name>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_adc.c</name>
             </file>

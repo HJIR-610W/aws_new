@@ -1,12 +1,12 @@
 
-
+#include "pcb_define.h"
 
 
 
 const char* pcbPortNameList[9] = {"PORTA","PORTB","PORTC","PORTD","PORTE","PORTF","PORTG","PORTH","PORTI"};
 
 #if (AWS_PCB_VER==1)
-const char* s[9][16] = 
+const char* pcbPinNameList[9][16] = 
 {{" 0:WAKE_UP",
   " 1:ETH_REF_CLK",
   " 2:ETH_MDIO",
