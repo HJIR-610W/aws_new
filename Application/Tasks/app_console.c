@@ -2523,10 +2523,49 @@ int32_t menu_manage_config_reset(p_shell_context_t ctx)
   return 0;
 }
 
+int32_t menu_manage_print_config_all(p_shell_context_t ctx)
+{
+  ctx->printf("ID               :%d\r\n",config.id);
+  ctx->printf("비밀번호         :%d\r\n",config.password);
+  ctx->printf("충전기 종류      :%s\r\n",ITEM_LIST(config.chgType,g_chgList));
+  ctx->printf("로그 카운트      :%d\r\n",config.logCnt);
+
+  ctx->printf("이더넷 서브넷    :%d.%d.%d.%d\r\n",config.eth_subnet[0],config.eth_subnet[1],
+  config.eth_subnet[2],config.eth_subnet[3]);
+  ctx->printf("이더넷 게이트웨이:%d.%d.%d.%d\r\n",config.eth_gateway[0],config.eth_gateway[1],
+  config.eth_gateway[2],config.eth_gateway[3]);
+  ctx->printf("이더넷 IP        :%d.%d.%d.%d\r\n",config.eth_ip[0],config.eth_ip[1],
+  config.eth_ip[2],config.eth_ip[3]);
+  ctx->printf("이더넷 원격 서버 :%d.%d.%d.%d\r\n",config.eth_server_ip[0],config.eth_server_ip[1],
+  config.eth_server_ip[2],config.eth_server_ip[3]);
+;
+
+  ctx->printf("이더넛 포트      :%d\r\n",config.eth_server_port);
+  ctx->printf("이더넷 프로토콜  :%s\r\n",ITEM_LIST(config.eth_protocol,protocolList));
+  ctx->printf("CDMA 원격 서버   :%d.%d.%d.%d\r\n",config.cdma_server_ip[0],config.cdma_server_ip[1],
+  config.cdma_server_ip[2],config.cdma_server_ip[3]);
+  ctx->printf("CDMA 포트        :%d\r\n",config.cdma_port);
+  ctx->printf("CDMA 프로토콜    :%s\r\n",ITEM_LIST(config.cdma_protocol,protocolList));
+  ctx->printf("CDMA 종류        :%s\r\n",ITEM_LIST(config.cdmaType,cdmaModellList));
+  ctx->printf("이더넷 사용      :%s\r\n", ITEM_LIST(config.eth_use,enableList));
+  ctx->printf("CDMA 사용        :%s\r\n",ITEM_LIST(config.cdma_use,enableList));
+  ctx->printf("직접통신         :%s\r\n",ITEM_LIST(config.direct_use,enableList));
+  ctx->printf("직접통신 프로토콜:%s\r\n",ITEM_LIST(config.direct_protocol,protocolList));
+  ctx->printf("직접통신 속도    :%d\r\n",config.direct_baud);
+  ctx->printf("패널 종류        :%s\r\n",ITEM_LIST(config.panelType,panelList));
+  ctx->printf("VHF ID           :%d\r\n",config.vhf_id);
+  ctx->printf("VHF 그룹         :%d\r\n",config.vhf_group);
+  ctx->printf("VHF HOST         :%d\r\n",config.vhf_host_id);
+  ctx->printf("VHF 중계         :%d\r\n",config.vhf_repeater_id);
+  ctx->printf("VHF PTT 지연     :%d\r\n",config.vhf_ptt_delay);
+
+  return 0;
+}
 menu_func g_manageMenu[]={[0]=menu_manage_version,
                               menu_manage_update,
                               menu_manage_device_reset,
-                              menu_manage_config_reset};
+                              menu_manage_config_reset,
+                              menu_manage_print_config_all};
 
 int32_t print_menu_manage(p_shell_context_t ctx)
 {
@@ -2537,7 +2576,8 @@ int32_t print_menu_manage(p_shell_context_t ctx)
   ctx->printf(" 1.fw update\r\n");
   ctx->printf(" 2.device reset\r\n");
   ctx->printf(" 3.config factory reset\r\n");
-  cnt = 4;
+  ctx->printf(" 4.print config all\r\n");
+  cnt = 5;
   return cnt;
 }
 

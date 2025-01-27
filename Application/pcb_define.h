@@ -173,7 +173,7 @@ extern const char* pcbPinNameList[3][16];
 #endif
 
 
-#if (AWS_PCB_VER==2)
+#if (AWS_PCB_VER==3)
 
 #define IN_WAKE_UP_PIN            GPIO_PIN_0 
 #define IN_WAKE_UP_GPIO_Port      GPIOA
