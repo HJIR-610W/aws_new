@@ -78,7 +78,7 @@
 
 /*! @brief Macro to set maximum count of commands. */
 #ifndef SHELL_MAX_CMD
-#define SHELL_MAX_CMD (6U)
+#define SHELL_MAX_CMD (10U)
 #endif
 
 /*! @brief Shell user send data callback prototype.*/

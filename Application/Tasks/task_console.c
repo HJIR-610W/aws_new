@@ -36,14 +36,18 @@ static const shell_command_context_t printCmd = { "menu",
                                         "arg4: data\r\n",
                                          io_test, 4};
 
-static const shell_command_context_t mcuPinCmd = {"mcu",
-                                        "\r\n\"mcu arg\"\r\n"
-                                        "arg1: di|do\r\n",
-                                         mcu_pin, 1};
+static const shell_command_context_t diCmd = {"di",
+                                              "\r\n\"di\"\r\n",
+                                              print_di, 0};
 
 static const shell_command_context_t pcbCmd = { "pcb",
                                                   "\r\n\"pcb\"\r\n" ,
                                                    pcb_pin,0 };
+static const shell_command_context_t doutCmd = {"do",
+                                        "\r\n\"do arg1 arg2\"\r\n"
+                                        "arg1: pin\r\n"
+                                        "arg2: 0|1\r\n",
+                                         ctrl_do, 2};
 void print_signature(void)
 {
     uint8_t a;
@@ -102,8 +106,9 @@ void sonsoleTask(void *arg)
 
   SHELL_RegisterCommand(&printCmd);
   SHELL_RegisterCommand(&ioCmd);
-    SHELL_RegisterCommand(&mcuPinCmd);
-        SHELL_RegisterCommand(&pcbCmd);
+  SHELL_RegisterCommand(&diCmd);
+  SHELL_RegisterCommand(&pcbCmd);
+  SHELL_RegisterCommand(&doutCmd);
   SHELL_Main(&user_context);
 
   while(1)

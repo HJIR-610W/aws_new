@@ -9,4 +9,6 @@
   int32_t mcu_pin(p_shell_context_t ctx, int32_t argc, char** argv);
 int32_t pcb_pin(p_shell_context_t ctx, int32_t argc, char** argv);
 
+int32_t print_di(p_shell_context_t ctx, int32_t argc, char** argv);
+int32_t ctrl_do(p_shell_context_t ctx, int32_t argc, char** argv);
 #endif

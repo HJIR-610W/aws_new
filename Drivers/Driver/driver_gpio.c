@@ -39,12 +39,17 @@ driver_t g_gpio[2];
 
 driver_t *driver_gpio_open(uint32_t num)
 {
+  if(g_gpio[num].opened)
+  {
+    return &g_gpio[num];
+  }
   switch(num)
   {
     case DRIVER_PCF8575:
     pcf8575_cfg_t *cfg;
     driver_t *drv;
 
+    
     drv = pcf8575_open(0);
     cfg = (pcf8575_cfg_t *)drv->cfg;
 
