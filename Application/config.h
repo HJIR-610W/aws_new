@@ -8,6 +8,7 @@
 #include "app_fram.h"
 #include "app_sensor.h"
 #include "utile.h"
+#include "driver_fram.h"
 
 #define SENSOR_COUNT_MAX  SENSOR_LIST_MAX
 
@@ -97,7 +98,7 @@ void config_write_adcCalibraion(void);
 void write_s_config(void);
 void write_config(void);
 
-float get_scale(uint8_t sensor);
+
 
 extern config_t config;
 extern system_t System;

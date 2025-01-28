@@ -12,9 +12,7 @@ void fram_init(void)
 
 void fram_read(uint32_t offset, unsigned char* pBuff, uint16_t rLen)
 {
-
   driver_fram_read(g_fram, offset, pBuff, rLen);
-
 }
 
 

@@ -1189,7 +1189,28 @@
     <group>
         <name>Application</name>
         <group>
-            <name>app_driver</name>
+            <name>App_driver</name>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_adc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_do.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_flash.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_fram.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_rs232.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_rs485.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_rtc.c</name>
+            </file>
         </group>
         <group>
             <name>Communications</name>
@@ -1404,9 +1425,6 @@
         <group>
             <name>Tasks</name>
             <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\app_adc.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_console.c</name>
             </file>
             <file>
@@ -1416,25 +1434,7 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\app_console_test.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\app_do.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\app_flash.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\app_fram.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_logging.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\app_rs232.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\app_rs485.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\app_rtc.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_cmd.c</name>
@@ -1476,9 +1476,6 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\vir_data.c</name>
             </file>
         </group>
-        <file>
-            <name>$PROJ_DIR$\..\Application\adc.c</name>
-        </file>
         <file>
             <name>$PROJ_DIR$\..\Application\app_version.c</name>
         </file>

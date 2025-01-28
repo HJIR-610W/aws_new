@@ -1,12 +1,10 @@
 
-#include "app_fram.h"
+
 #include "config.h"
-#include "driver_fram.h"
+
 
 #include "app_rs232.h"
 #include "app_rs485.h"
-
-
 
 
 
@@ -63,11 +61,7 @@ void check_config_limit(void)
 
   }
 #endif
-
 }
-
-
-
 
 void config_write_adcCalibraion(void)
 {
@@ -102,9 +96,3 @@ void config_init(void)
   check_config_limit();
 }
 
-
-
-float get_scale(uint8_t sensor)
-{
-  return config.sensor[sensor].scale;
-}

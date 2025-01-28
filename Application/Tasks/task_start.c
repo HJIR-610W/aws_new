@@ -4,7 +4,7 @@
 #include "driver_led.h"
 #include "driver_rtc.h"
 
-#include "adc.h"
+
 #include "app_flash.h"
 #include "cmsis_os.h"
 #include "config.h"
@@ -77,7 +77,7 @@ void startTask(void *arg)
 
   }
 
-  MX_ADC1_Init();
+
   MX_SDIO_SD_Init();
   MX_FATFS_Init();
   DWT_Delay_Init();
