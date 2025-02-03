@@ -6,7 +6,7 @@
 #include "cmsis_os.h"
 #include "ad45db.h"
 
-#include "driver_digitalOut.h"
+#include "driver_do.h"
 #include "driver_spi.h"
 #include "mcu_delay.h"
 

@@ -6,7 +6,7 @@
 
 #include "cmsis_os.h"
 
-#include "driver_digitalIn.h"
+#include "driver_di.h"
 #include "driver_interface.h"
 #include "time_define.h"
 #define RTC_DS1306       0

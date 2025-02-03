@@ -1,7 +1,8 @@
 
+#include "cmsis_os.h"
 #include "driver_485.h"
 #include "driver_uart.h"
-#include "driver_digitalOut.h"
+#include "driver_do.h"
 
 typedef struct rs485_cfg_s
 {
@@ -12,7 +13,6 @@ typedef struct rs485_cfg_s
 rs485_cfg_t g_rs485_cfg[2];
 
 driver_t g_rs485[2]={{.cfg=&g_rs485_cfg[0]},{.cfg=&g_rs485_cfg[1]}};
-
 
 driver_t *driver_rs485_open(uint32_t num,void *opt)
 {
@@ -29,7 +29,8 @@ driver_t *driver_rs485_open(uint32_t num,void *opt)
   case RS485_A:
       g_rs485[num].name = "RS485_A";
       g_rs485_cfg[num].uart_io =  driver_uart_open(UART_4_RS485_A,opt);
-      g_rs485_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_A); 
+      g_rs485_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_A,0); 
+
       driver_do_low(g_rs485_cfg[num].do_io);//수신 모드
       if(g_rs485[num].sem == NULL)
       {
@@ -39,7 +40,7 @@ driver_t *driver_rs485_open(uint32_t num,void *opt)
   case RS485_B:
       g_rs485[num].name = "RS485_B";
       g_rs485_cfg[num].uart_io =  driver_uart_open(UART_5_RS485_B,opt);
-      g_rs485_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_B); 
+      g_rs485_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_B,0); 
       driver_do_low(g_rs485_cfg[num].do_io);//수신 모드
      if( g_rs485[num].sem == NULL)
       {
@@ -102,7 +103,7 @@ int32_t driver_rs485_recv(driver_t *drv,uint8_t *pBuff,uint16_t rLen,uint32_t ti
 void driver_rs485_set(driver_t *drv,uint8_t cmd,void *option)
 {
   rs485_cfg_t *cfg;
-    uart_config_t uart_cfg;
+  uart_config_t uart_cfg;
     
   cfg = (rs485_cfg_t *)(drv->cfg);
 
@@ -124,5 +125,10 @@ void driver_rs485_set(driver_t *drv,uint8_t cmd,void *option)
   {
     osSemaphoreRelease(drv->sem);
   }
+
+}
+
+void driver_rs485_close(driver_t *drv)
+{
 
 }

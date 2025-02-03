@@ -4,14 +4,15 @@
 
 #include <stdio.h>
 
-
-#include "driver_digitalIn.h"
+#include "pcb_define.h"
+#include "cmsis_os.h"
+#include "driver_di.h"
 #include "FreeRTOS.h"
 #include "stream_buffer.h"
 #include "utile.h"
 #include "dev_io.h"
 #include "system_err.h"
-#include "driver_digitalIn.h"
+#include "driver_di.h"
 
 #define STREAMBUFFER_USE 1 //데이터 수신을 freertos 스트림 버퍼 사용시 
 
@@ -227,7 +228,7 @@ void quad_init(driver_t *tls16c554,void *opt)
   isr_cfg.prio    = 6;
   isr_cfg.handle  = tls16c554;
 
-  driver_di_set(cfg->irq_io,DI_SET_INTERRUT,&isr_cfg);
+  driver_di_set(cfg->irq_io,DI_SET_INTERRUPT,&isr_cfg);
 
 }
 
@@ -749,7 +750,7 @@ void tls16c554_irq_init(driver_t *drv,uint8_t prio)
   isr_cfg.prio    = prio;
   isr_cfg.handle  = drv;
 
-  driver_di_set(cfg->irq_io,DI_SET_INTERRUT,&isr_cfg);
+  driver_di_set(cfg->irq_io,DI_SET_INTERRUPT,&isr_cfg);
 }
 
 driver_t *tls16c554_open(uint32_t num,void *opt)
@@ -773,28 +774,28 @@ driver_t *tls16c554_open(uint32_t num,void *opt)
   switch(num)
   {
     case TL16C554_UART_0_D_SUB:
-      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTA_1);
+      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTA_1,0);
     break;
     case TL16C554_UART_1_TTL_TTL:
-      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTB_2);
+      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTB_2,0);
     break;
     case TL16C554_UART_EXT3:
-      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTC_3);
+      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTC_3,0);
     break;
     case TL16C554_UART_EXT4:
-      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTD_4);
+      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTD_4,0);
     break;
     case TL16C554_UART_4_RS485_A:
-      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTA_5);
+      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTA_5,0);
     break;
     case TL16C554_UART_5_RS485_B:
-      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTB_6);
+      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTB_6,0);
     break;
     case TL16C554_UART_6_EXT1:
-      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTC_7);
+      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTC_7,0);
     break;
     case TL16C554_UART_7_EXT2:
-      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTD_8);
+      g_tl16c554_cfg[num].irq_io   = driver_di_open(DI_QUAD_UARTD_8,0);
     break;
   }
 

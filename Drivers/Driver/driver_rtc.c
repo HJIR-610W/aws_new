@@ -1,7 +1,7 @@
 #include "driver_rtc.h"
 #include "driver_spi.h"
-#include "driver_digitalIn.h"
-#include "driver_digitalOut.h"
+#include "driver_di.h"
+#include "driver_do.h"
 
 #include "ds1306.h"
 
@@ -31,8 +31,8 @@ driver_t * driver_rtc_open(int num)
     cfg = (ds1306_cfg_t *)drv->cfg;
 
     cfg->spi_io = driver_spi_open(STM_SPI_1);
-    cfg->cs_io  = driver_do_open(DO_RTC_CS);
-    cfg->irq_io = driver_di_open(DI_RTC_IRQ);
+    cfg->cs_io  = driver_do_open(DO_RTC_CS,0);
+    cfg->irq_io = driver_di_open(DI_1_RTC_IRQ,0);
 
     rtc_ds1306.api    = &rtc_api;
     rtc_ds1306.handle = drv;   
@@ -84,7 +84,7 @@ void driver_rtc_set(driver_t *driver,uint8_t cmd,void *opt)
 
 
 
-    driver_di_set(cfg->irq_io,DI_SET_INTERRUT,isr_cfg);
+    driver_di_set(cfg->irq_io,DI_SET_INTERRUPT,isr_cfg);
     break;
   
   default:

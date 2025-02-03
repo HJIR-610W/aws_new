@@ -1,10 +1,10 @@
 
 #include <string.h>
+
 #include "driver_stm32_do.h"
-#include "driver_digitalOut.h"
+#include "driver_do.h"
+
 #include "pcb_define.h"
-
-
 #include "mcu_utile.h"
 #include "utile.h"
 
@@ -14,29 +14,35 @@ typedef struct  stm32_do_cfg_s
   uint16_t pin;
 }stm32_do_cfg_t;
 
+void stm32_do_low(driver_t *driver);
+void stm32_do_high(driver_t *driver);
+void stm32_do_close(driver_t *driver);
+void stm32_do_set(driver_t *driver,do_set_option_t cmd,void *opt);
+
+const do_api_t do_api ={.low   = stm32_do_low,
+                        .high  = stm32_do_high,
+                        .close = stm32_do_close,
+                        .set   = stm32_do_set};
 
 
-
-const stm32_do_cfg_t CDMA_PWR_cfg  ={.port=OUT_DO_PWR_CDMA_GPIO_Port,   .pin = OUT_DO_PWR_CDMA_Pin};
-const stm32_do_cfg_t FRAM_CS_cfg  ={.port=OUT_SPI1_NSS_GPIO_Port,   .pin = OUT_SPI1_NSS_Pin};
-const stm32_do_cfg_t RTC_CS_cfg   ={.port=OUT_SPI1_CS_RTC_GPIO_Port,.pin = OUT_SPI1_CS_RTC_Pin};
-const stm32_do_cfg_t FLASH_CS_cfg ={.port=OUT_FLASH_CS_GPIO_Port,   .pin = OUT_FLASH_CS_Pin};
-const stm32_do_cfg_t ADC_CS_cfg   ={.port=OUT_SPI2_NSS_GPIO_Port,   .pin = OUT_SPI2_NSS_Pin};
+const stm32_do_cfg_t CDMA_PWR_cfg       = {.port=OUT_DO_PWR_CDMA_GPIO_Port,.pin = OUT_DO_PWR_CDMA_Pin};
+const stm32_do_cfg_t FRAM_CS_cfg        = {.port=OUT_SPI1_NSS_GPIO_Port,   .pin = OUT_SPI1_NSS_Pin};
+const stm32_do_cfg_t RTC_CS_cfg         = {.port=OUT_SPI1_CS_RTC_GPIO_Port,.pin = OUT_SPI1_CS_RTC_Pin};
+const stm32_do_cfg_t FLASH_CS_cfg       = {.port=OUT_FLASH_CS_GPIO_Port,   .pin = OUT_FLASH_CS_Pin};
+const stm32_do_cfg_t ADC_CS_cfg         = {.port=OUT_SPI2_NSS_GPIO_Port,   .pin = OUT_SPI2_NSS_Pin};
 const stm32_do_cfg_t CON_PWR_232_A_cfg  = {.port=OUT_CON_PWR_232_A_GPIO_Port, .pin = OUT_CON_PWR_232_A_Pin};
 const stm32_do_cfg_t CON_PWR_232_B_cfg  = {.port=OUT_CON_PWR_232_B_GPIO_Port, .pin = OUT_CON_PWR_232_B_Pin};
 const stm32_do_cfg_t CON_PWR_485_cfg    = {.port=OUT_CON_PWR_485_GPIO_Port,   .pin = OUT_CON_PWR_485_Pin};
 const stm32_do_cfg_t CON_PWR_TC_cfg     = {.port=CON_PWR_TC_GPIO_Port,        .pin = CON_PWR_TC_Pin};
-const stm32_do_cfg_t CON_PWR_DSEN_cfg   = {.port=OUT_CON_PWR_DSEN_GPIO_Port,    .pin = OUT_CON_PWR_DSEN_Pin};
-const stm32_do_cfg_t CON_PWR_ASEN_cfg   = {.port=OUT_CON_PWR_ASEN_GPIO_Port,    .pin = OUT_CON_PWR_ASEN_Pin};
-const stm32_do_cfg_t CON_PWR_ASEN_A_cfg = {.port=OUT_CON_PWR_ASEN_GPIO_Port,   .pin = OUT_CON_PWR_ASEN_A_Pin};
-const stm32_do_cfg_t CON_PWR_ASEN_B_cfg = {.port=OUT_CON_PWR_ASEN_B_GPIO_Port, .pin = OUT_CON_PWR_ASEN_B_Pin};
-const stm32_do_cfg_t CON_PWR_ASEN_C_cfg = {.port=OUT_CON_PWR_ASEN_C_GPIO_Port, .pin = OUT_CON_PWR_ASEN_C_Pin};
-const stm32_do_cfg_t CON_PWR_ASEN_D_cfg = {.port=OUT_CON_PWR_ASEN_D_GPIO_Port, .pin = OUT_CON_PWR_ASEN_D_Pin};
-
-
-const stm32_do_cfg_t DIR_RS485_A_cfg = {.port=OUT_DIR_RS485_A_GPIO_Port, .pin = OUT_DIR_RS485_A_Pin};
-const stm32_do_cfg_t DIR_RS485_B_cfg = {.port=OUT_DIR_RS485_B_GPIO_Port, .pin = OUT_DIR_RS485_B_Pin};
-const stm32_do_cfg_t DIR_SDI_cfg     = {.port=OUT_DIR_SDI_GPIO_Port, .pin = OUT_DIR_SDI_Pin};
+const stm32_do_cfg_t CON_PWR_DSEN_cfg   = {.port=OUT_CON_PWR_DSEN_GPIO_Port,  .pin = OUT_CON_PWR_DSEN_Pin};
+const stm32_do_cfg_t CON_PWR_ASEN_cfg   = {.port=OUT_CON_PWR_ASEN_GPIO_Port,  .pin = OUT_CON_PWR_ASEN_Pin};
+const stm32_do_cfg_t CON_PWR_ASEN_A_cfg = {.port=OUT_CON_PWR_ASEN_GPIO_Port,  .pin = OUT_CON_PWR_ASEN_A_Pin};
+const stm32_do_cfg_t CON_PWR_ASEN_B_cfg = {.port=OUT_CON_PWR_ASEN_B_GPIO_Port,.pin = OUT_CON_PWR_ASEN_B_Pin};
+const stm32_do_cfg_t CON_PWR_ASEN_C_cfg = {.port=OUT_CON_PWR_ASEN_C_GPIO_Port,.pin = OUT_CON_PWR_ASEN_C_Pin};
+const stm32_do_cfg_t CON_PWR_ASEN_D_cfg = {.port=OUT_CON_PWR_ASEN_D_GPIO_Port,.pin = OUT_CON_PWR_ASEN_D_Pin};
+const stm32_do_cfg_t DIR_RS485_A_cfg    = {.port=OUT_DIR_RS485_A_GPIO_Port,   .pin = OUT_DIR_RS485_A_Pin};
+const stm32_do_cfg_t DIR_RS485_B_cfg    = {.port=OUT_DIR_RS485_B_GPIO_Port,   .pin = OUT_DIR_RS485_B_Pin};
+const stm32_do_cfg_t DIR_SDI_cfg        = {.port=OUT_DIR_SDI_GPIO_Port,       .pin = OUT_DIR_SDI_Pin};
 
 
 
@@ -63,7 +69,7 @@ void stm32_do_init(const stm32_do_cfg_t *cfg)
 
 }
 
-driver_t *stm32_do_open(int num)
+driver_t *stm32_do_open(int num,void *opt)
 {
 
   if(g_stm32_do_list[num].opened)
@@ -71,6 +77,7 @@ driver_t *stm32_do_open(int num)
     return &g_stm32_do_list[num];
   }
   g_stm32_do_list[num].opened = true;
+  g_stm32_do_list[num].api = &do_api;
 
   switch(num)
   {
@@ -134,29 +141,18 @@ driver_t *stm32_do_open(int num)
         g_stm32_do_list[num].cfg = (void *)&CON_PWR_ASEN_D_cfg;
       stm32_do_init(&CON_PWR_ASEN_D_cfg);
     break;
-
-
-
     case STM32_DO_DIR_SDI:
         g_stm32_do_list[num].cfg = (void *)&DIR_SDI_cfg;
       stm32_do_init(&DIR_SDI_cfg);
     break;
-
         case STM32_DO_DIR_RS485_A:
         g_stm32_do_list[num].cfg = (void *)&DIR_RS485_A_cfg;
       stm32_do_init(&DIR_RS485_A_cfg);
     break;
-
-
         case STM32_DO_DIR_RS485_B:
         g_stm32_do_list[num].cfg = (void *)&DIR_RS485_B_cfg;
       stm32_do_init(&DIR_RS485_B_cfg);
     break;
-
-
-
-
-
 
   }
  
@@ -178,7 +174,16 @@ void stm32_do_high(driver_t *driver)
   HAL_GPIO_WritePin(cfg->port,cfg->pin,GPIO_PIN_SET);
 }
 
+void stm32_do_close(driver_t *driver)
+{
 
+}
+
+
+void stm32_do_set(driver_t *driver,do_set_option_t cmd,void *opt)
+{
+
+}
 
 
 

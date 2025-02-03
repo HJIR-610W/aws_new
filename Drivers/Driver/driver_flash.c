@@ -2,7 +2,7 @@
 #include <string.h>
 #include "driver_flash.h"
 #include "driver_spi.h"
-#include "driver_digitalOut.h"
+#include "driver_do.h"
 #include "ad45db.h"
 
 typedef struct flash_api_s
@@ -58,7 +58,7 @@ driver_t * driver_flash_open(int num)
     p_at45db_cfg = (at45db_cfg_t *)at45db_ic->cfg;
 
     p_at45db_cfg->spi_io = driver_spi_open(STM_SPI_1);//IC 사용해 필요한 하드웨어 연결
-    p_at45db_cfg->cs_io  = driver_do_open(DO_FLASH_CS);//IC 사용에 필요한 하드웨여 연결
+    p_at45db_cfg->cs_io  = driver_do_open(DO_FLASH_CS,0);//IC 사용에 필요한 하드웨여 연결
         
     flash_at45db.api    = &at45db_api;//api 연결
     flash_at45db.handle = at45db_ic;   //하위 드라이버 연결(IC연결)

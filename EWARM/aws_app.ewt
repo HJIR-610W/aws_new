@@ -1632,16 +1632,22 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_adc_reg.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_digitalIn.c</name>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_di.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_digitalIn.h</name>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_di.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_digitalOut.c</name>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_di_def.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_digitalOut.h</name>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_do.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_do.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_do_define.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_flash.c</name>
@@ -1660,12 +1666,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_freqInput.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_gpio.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_gpio.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_gpio_def.h</name>

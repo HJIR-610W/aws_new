@@ -2,7 +2,7 @@
 
 #include "ds1306.h"
 
-#include "driver_digitalOut.h"
+#include "driver_do.h"
 #include "driver_spi.h"
 
 

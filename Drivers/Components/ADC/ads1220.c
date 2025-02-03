@@ -1,8 +1,8 @@
 #include "cmsis_os.h"
 #include "ads1220.h"
-#include "driver_digitalOut.h"
+#include "driver_do.h"
 #include "driver_spi.h"
-#include "driver_digitalIn.h"
+#include "driver_di.h"
 #include "mcu_delay.h"
 #include "mcu_interrupt.h"
 
@@ -228,7 +228,7 @@ void ads1210_init(driver_t *drv)
     isr_cfg.trigger = eDI_FALLING;
     isr_cfg.prio    = 5;
 
-    driver_di_set(cfg->irq_io,DI_SET_INTERRUT,&isr_cfg);
+    driver_di_set(cfg->irq_io,DI_SET_INTERRUPT,&isr_cfg);
 
     ads1220_reset_sw(drv);
   

@@ -5,15 +5,11 @@
 
 #include <stdint.h>
 
-#include "cmsis_os.h"
 #include "driver_interface.h"
-#include "stm32f4xx_hal.h"
-#include "mcu_interrupt.h"
 #include "driver_di_def.h"
 
-
-#define STM32_DI_ADC_RDY       0
-#define STM32_DI_RTC_IRQ       1
+#define STM32_DI_0_ADC_RDY       0
+#define STM32_DI_1_RTC_IRQ       1
 #define STM32_DI_RAIN_REED     2
 #define STM32_DI_RAIN_HALL     3
 #define STM32_DI_RAIN_HALL_ERR 4
@@ -27,12 +23,12 @@
 #define STM32_DI_QUAD_UARTC_7 11
 #define STM32_DI_QUAD_UARTD_8 12
 
-#define STM32_DI_MAX         13
+#define STM32_DI_MAX          13
 
 
 
-driver_t *stm32_di_open(int num);
+driver_t *stm32_di_open(int num,void *opt);
 int32_t stm32_di_read(driver_t *driver);
-void stm32_di_set(driver_t *drv,uint8_t cmd,void *option);
+void stm32_di_set(driver_t *drv,di_set_option_t cmd,void *option);
 
 #endif

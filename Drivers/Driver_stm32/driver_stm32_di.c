@@ -1,10 +1,13 @@
 
 #include <string.h>
+
+#include "cmsis_os.h"
 #include "driver_stm32_di.h"
-#include "driver_digitalOut.h"
+#include "driver_do.h"
 #include "driver_di_def.h"
 #include "pcb_define.h"
-
+#include "stm32f4xx_hal.h"
+#include "mcu_interrupt.h"
 
 #include "utile.h"
 #include "mcu_utile.h"
@@ -31,8 +34,16 @@ const stm32_di_cfg_t QUAD_UARTB_6_cfg  ={.port=IN_EX_UART_INT_6_GPIO_Port,.pin =
 const stm32_di_cfg_t QUAD_UARTC_7_cfg  ={.port=IN_EX_UART_INT_7_GPIO_Port,.pin = IN_EX_UART_INT_7_Pin};
 const stm32_di_cfg_t QUAD_UARTD_8_cfg  ={.port=IN_EX_UART_INT_8_GPIO_Port,.pin = IN_EX_UART_INT_8_Pin};
 
+void stm32_di_close(driver_t *driver);
+int32_t stm32_di_read(driver_t *driver);
+void stm32_di_set(driver_t *drv,di_set_option_t cmd,void *option);
 
 driver_t g_stm32_di_list[STM32_DI_MAX];
+
+const di_api_t di_api={.close = stm32_di_close,
+                 .read  = stm32_di_read,
+                 .set   = stm32_di_set};
+
 
 void stm32_di_init(const stm32_di_cfg_t *cfg)
 {
@@ -46,7 +57,7 @@ void stm32_di_init(const stm32_di_cfg_t *cfg)
 
 }
 
-driver_t *stm32_di_open(int num)
+driver_t *stm32_di_open(int num,void *opt)
 {
 
   if(g_stm32_di_list[num].opened)
@@ -54,14 +65,15 @@ driver_t *stm32_di_open(int num)
     return &g_stm32_di_list[num];
   }
   g_stm32_di_list[num].opened = true;
+  g_stm32_di_list[num].api = &di_api;
 
   switch(num)
   {
-    case STM32_DI_ADC_RDY:
+    case STM32_DI_0_ADC_RDY:
      g_stm32_di_list[num].cfg = (void *)&ADC_DRDY_cfg;
     stm32_di_init(&ADC_DRDY_cfg);
     break;
-    case STM32_DI_RTC_IRQ:
+    case STM32_DI_1_RTC_IRQ:
     g_stm32_di_list[num].cfg = (void *)&RTC_IRQ_cfg;
     stm32_di_init(&RTC_IRQ_cfg);
     break;
@@ -117,23 +129,16 @@ driver_t *stm32_di_open(int num)
   
 }
 
+void stm32_di_close(driver_t *driver)
+{
+  driver->opened = false;
+}
+
 int32_t stm32_di_read(driver_t *driver)
 {
   stm32_di_cfg_t *cfg = driver->cfg;
 
-   return HAL_GPIO_ReadPin(cfg->port,cfg->pin);
-}
-
-void stm32_t_di_set(driver_t *drv,uint8_t cmd,void *option)
-{
-  switch (cmd)
-  {
-  case DI_SET_INTERRUT:
-    break;
-  
-  default:
-    break;
-  }
+  return HAL_GPIO_ReadPin(cfg->port,cfg->pin);
 }
 
 
@@ -144,43 +149,8 @@ void stm32_t_di_set(driver_t *drv,uint8_t cmd,void *option)
 
 
 
-#if 0 
 
 
-typedef struct driver_ex_s
-{
-  const char *name;
-  struct driver_ex_s *driver;
-  void *cfg;
-}driver_ex_t;
-const driver_ex_t *stm32_open(const char *name)
-{
-  int cnt;
-  gpio_cfg_t *cfg;
-
-  cnt = _countof(g_gpio_list);
-
-  for(int i=0;i<cnt;i++)
-  {
-    if(strncmp(name,g_gpio_list[i].name,strlen(name))==0)
-    {
-      cfg = (gpio_cfg_t *)g_gpio_list[i].cfg;
-      if(cfg->opened==false)
-      {
-        cfg->opened = true;
-
-      }
-
-      return &g_gpio_list[i];
-    }
-  }
-
-  return 0;
-}
-#endif
-
-
-#include "stm32f4xx_hal.h"
 
 
 IRQn_Type get_irqFromPin(uint16_t GPIO_Pin)
@@ -245,15 +215,14 @@ void GPIO_InputInterrupt_Init(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin,  eDI_TRIGG
 
 
 
-void stm32_di_set(driver_t *drv,uint8_t cmd,void *option)
+void stm32_di_set(driver_t *drv,di_set_option_t cmd,void *option)
 {
   stm32_di_cfg_t *cfg = drv->cfg;
-
   exti_isr_cfg_t exti_isr_cfg;
 
   switch(cmd)
   {
-    case DI_SET_INTERRUT:
+    case DI_SET_INTERRUPT:
     {
       di_isr_set_cfg_t *isr;
       isr = (di_isr_set_cfg_t *)option;

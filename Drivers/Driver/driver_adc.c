@@ -10,8 +10,8 @@
 
 #include "driver_adc.h"
 #include "driver_spi.h"
-#include "driver_digitalOut.h"
-#include "driver_digitalIn.h"
+#include "driver_do.h"
+#include "driver_di.h"
 #include "ads1220.h"
 #include "driver_mux.h"
 #include "mcu_interrupt.h"
@@ -195,8 +195,8 @@ void ads1220_common_open(driver_t *adc)
       p_ads1220_cfg = (ads1220_cfg_t *)(p_ads1220->cfg);
 
       p_ads1220_cfg->spi_io = driver_spi_open(STM_SPI_2);
-      p_ads1220_cfg->cs_io  = driver_do_open(DO_ADC_NCS);
-      p_ads1220_cfg->irq_io = driver_di_open(DI_ADC_RDY);
+      p_ads1220_cfg->cs_io  = driver_do_open(DO_ADC_NCS,0);
+      p_ads1220_cfg->irq_io = driver_di_open(DI_0_ADC_RDY,0);
 
       ads1210_init(p_ads1220);
       adc_mux_init();

@@ -28,4 +28,15 @@
 #define DIR_IN(x) x
 #define DIR_OUT(x) (0)
 
+
+
+
+
+typedef struct gpio_api_s
+{
+    void (*close)(driver_t *handle);
+    int32_t (*read8)(driver_t *handle,uint16_t *data);
+    int32_t (*write8)(driver_t *handle,uint8_t data);
+    int (*write_pin)(driver_t *drv,uint16_t pin,uint16_t high);
+} gpio_api_t;
 #endif

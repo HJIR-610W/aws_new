@@ -88,7 +88,7 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 
 /* USER CODE END 1 */
 
-driver_t * driver_stm32_i2c_open(uint32_t num)
+driver_t * driver_stm32_i2c_open(uint32_t num,void *opt)
 {
 
   switch (num)

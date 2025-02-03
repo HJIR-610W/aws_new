@@ -7,7 +7,7 @@
 #include "Sensors\rain\rain.h"
 #include "task_isrEvent.h"
 #include "pcb_define.h"
-#include "driver_digitalIn.h"
+#include "driver_di.h"
 
 static uint16_t g_rainPulse;
 
@@ -35,14 +35,14 @@ void rain_init(sensor_t *sensor)
   case S_T_RAIN_REED_1MM:
   case S_T_RAIN_HALL_05MM:
   case S_T_RAIN_HALL_1MM:
-    rain_pulse = driver_di_open(DI_RAIN_REED);
+    rain_pulse = driver_di_open(DI_RAIN_REED,0);
 
     isr_cfg.call    = rainReedCallBack;
     isr_cfg.name    = "rain_pulse";
     isr_cfg.trigger = eDI_FALLING;
     isr_cfg.prio    = 5;
 
-    driver_di_set(rain_pulse,DI_SET_INTERRUT,&isr_cfg);
+    driver_di_set(rain_pulse,DI_SET_INTERRUPT,&isr_cfg);
 
   break;
   default:

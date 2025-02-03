@@ -2,7 +2,7 @@
 
 
 #include "fm25cl.h"
-#include "driver_digitalOut.h"
+#include "driver_do.h"
 #include "driver_spi.h"
 
 #define FRAM_LOCK_USE 1 /* Mutex 사용할지 선택 */

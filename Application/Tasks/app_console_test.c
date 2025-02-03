@@ -5,8 +5,9 @@
 #include "app_console_test.h"
 #include "app_rs232.h"
 #include "dev_io.h"
-#include "driver_digitalOut.h"
-#include "driver_gpio.h"
+#include "driver_di.h"
+#include "driver_do.h"
+
 #include "utile.h"
 #include "vt100_command.h"
 
@@ -297,22 +298,18 @@ int32_t pcb_pin(p_shell_context_t ctx, int32_t argc, char** argv)
 
 int32_t print_di(p_shell_context_t ctx, int32_t argc, char** argv)
 {
-  driver_t *gp;
-  uint16_t input;
+  driver_t *din;
+  int32_t input;
 
-  gp = driver_gpio_open(DRIVER_PCF8575);
-
-  if(gp)
+  for(int i = 0 ; i< 8; i++)
   {
-    driver_gpio_read(gp,&input);
-
-    for(int i = 0 ; i< 8 ;i++)
+    din = driver_di_open(DI_EXT_0 + i,0);
+    if(din)
     {
-      debug_printf("PIN%d:%d\r\n",i+1,input&(1<<i)?1:0);
+      input = driver_di_read(din);
+      debug_printf("EXT_%d:%d\r\n",i,input); 
     }
-    debug_printf("\r\n");
   }
-  
   return 0;
 }
 
@@ -322,15 +319,23 @@ int32_t ctrl_do(p_shell_context_t ctx, int32_t argc, char** argv)
   char *endptr;
   int32_t pin;
   int32_t pin_state;
+  driver_t *dout;
 
   pin = strtol(argv[1],&endptr,10);
   pin_state = strtol(argv[2],&endptr,10);
 
-  gp = driver_gpio_open(DRIVER_PCF8575);
+  dout = driver_do_open(pin,0);
 
-  if(gp)
+  if(dout)
   {
-    driver_gpio_write_pin(gp,pin,pin_state);
+    if(pin_state)
+    {
+      driver_do_high(dout);
+    }
+    else
+    {
+      driver_do_low(dout);
+    }
   }
   
   return 0;

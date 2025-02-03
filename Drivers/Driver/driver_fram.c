@@ -4,7 +4,7 @@
 
 #include "fm25cl.h"
 #include "driver_spi.h"
-#include "driver_digitalOut.h"
+#include "driver_do.h"
 
 
 typedef struct fram_api_s
@@ -34,7 +34,7 @@ driver_t * driver_fram_open(int num)
     fm25lc_cfg = (fm25lc_cfg_t *)fm25lc->cfg;
 
     fm25lc_cfg->spi_io = driver_spi_open(STM_SPI_1);//IC 사용해 필요한 하드웨어 연결
-    fm25lc_cfg->cs_io  = driver_do_open(DO_FRAM_CS);//IC 사용에 필요한 하드웨여 연결
+    fm25lc_cfg->cs_io  = driver_do_open(DO_FRAM_CS,0);//IC 사용에 필요한 하드웨여 연결
     
     fram_fm25lcl.api    = &fm25_api;//api 연결
     fram_fm25lcl.handle = fm25lc;   //하위 드라이버 연결(IC연결)

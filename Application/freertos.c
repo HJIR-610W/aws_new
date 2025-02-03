@@ -28,15 +28,14 @@
 
 
 #include "driver_led.h"
-#include "driver_digitalOut.h"
-#include "driver_digitalIn.h"
+#include "driver_do.h"
+#include "driver_di.h"
 #include "driver_adc.h"
 #include "driver_fram.h"
 #include "driver_freqInput.h"
 #include "driver_rtc.h"
 #include "driver_stm32_uart.h"
 #include "driver_flash.h"
-#include "driver_gpio.h"
 #include "driver_485.h"
 #include "driver_sdi.h"
 #include "driver_uart.h"
@@ -255,7 +254,7 @@ void gpio_test(void)
   uint16_t out=0x00ff;
   char buff[20];
 
-  gpio = driver_gpio_open(DRIVER_PCF8575);
+  //gpio = driver_gpio_open(DRIVER_PCF8575,NULL);
 
 #if 0 
   while(1)
@@ -278,10 +277,10 @@ void gpio_test(void)
   {
     uint8_t pin;
 
-    pin = driver_gpio_read_pin(gpio,GPIO_PIN3);
-    printf("ги 2:%d\r\n",pin);
+    //pin = driver_gpio_read_pin(gpio,GPIO_PIN3);
+   // printf("ги 2:%d\r\n",pin);
     
-    driver_gpio_write_pin(gpio,GPIO_PIN5,out_pin);
+   // driver_gpio_write_pin(gpio,GPIO_PIN5,out_pin);
     out_pin^=0xff;
     osDelay(100);
   }
@@ -301,11 +300,11 @@ void freq_test(void)
   countB = driver_freq_open(FREQ_MEAURE_A);
   countC = driver_freq_open(FREQ_MEAURE_A);
 
-  gpio = driver_gpio_open(DRIVER_PCF8575);
+  //gpio = driver_gpio_open(DRIVER_PCF8575,NULL);
 
   while(1)
   {
-    driver_gpio_write_pin(gpio,GPIO_PIN5,out_pin);
+    //driver_gpio_write_pin(gpio,GPIO_PIN5,out_pin);
     osDelay(100);
     out_pin ^= 1;
     driver_freq_read(countA,&freq[0]);
@@ -364,7 +363,7 @@ void sram_test(void)
 
 void cdmaPower_test(void)
 {
-  driver_t *cdma_pwr= driver_do_open(DO_PWR_CDMA);
+  driver_t *cdma_pwr= driver_do_open(DO_PWR_CDMA,0);
 
   while(1)
   {
@@ -385,9 +384,9 @@ void rain_test(void)
   int32_t rain_hall_data;
   int32_t rain_err_data;
 
-  rain_hall= driver_di_open(DI_RAIN_HALL);
-  rain_reed= driver_di_open(DI_RAIN_REED);
-  rain_err= driver_di_open(DI_RAIN_HALL_ERR);
+  rain_hall= driver_di_open(DI_RAIN_HALL,0);
+  rain_reed= driver_di_open(DI_RAIN_REED,0);
+  rain_err= driver_di_open(DI_RAIN_HALL_ERR,0);
 
 
 

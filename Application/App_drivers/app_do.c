@@ -1,5 +1,5 @@
 
-#include "driver_digitalOut.h"
+#include "driver_do.h"
 #include "app_do.h"
 #include "utile.h"
 
@@ -19,7 +19,7 @@ driver_t *do_drivers[eDO_MAX];
 
 void do_open(eDO_PORT_t port)
 {
-  do_drivers[(int)port] = driver_do_open(do_define[(int)port].num);
+  do_drivers[(int)port] = driver_do_open(do_define[(int)port].num,0);
 }
 
 
