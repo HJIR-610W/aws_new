@@ -19,20 +19,20 @@ bool app_rs485Open[eAPP_RS485_MAX];
 
 driver_t *rs485_drivers[eAPP_RS485_MAX];
 
-void rs485_open(eRS485_PORT_t port)
+void rs485_open(eRS485_PORT_t port,void *opt)
 {
-  rs485_drivers[(int)port] = driver_rs485_open(rs485_define[(int)port].num);
+  rs485_drivers[(int)port] = driver_rs485_open(rs485_define[(int)port].num,opt);
 }
 
 void rs485_set(eRS485_PORT_t port,uint32_t baud,uint8_t parity)
 {
-  uart_baud_config_t uart_cfg;
+  uart_config_t uart_cfg;
 
   if(rs485_drivers[(int)port])
   {
     
     uart_cfg.baud   = baud==0?19200:baud;
-    uart_cfg.parity = parity;
+    uart_cfg.parityIdx = parity;
 
 
     driver_rs485_set(rs485_drivers[(int)port],eUART_SET_CONFIG,(void *)&uart_cfg);
@@ -46,9 +46,9 @@ void rs485_close(eRS485_PORT_t port)
   app_rs485Open[(int)port] = 0;
 }
 
-void rs485_sends(eRS485_PORT_t port,uint8_t *pData,uint16_t dataLen)
+void rs485_send(eRS485_PORT_t port,uint8_t *pData,uint16_t dataLen)
 {
-  driver_rs485_sends(rs485_drivers[(int)port],pData,dataLen);
+  driver_rs485_send(rs485_drivers[(int)port],pData,dataLen);
 }
 
 uint16_t rs485_recv(eRS485_PORT_t port,uint8_t *pBuff,uint16_t rLen,uint32_t timeOutms)

@@ -9,34 +9,29 @@ typedef struct app_rs232_s
   const char *name;
 }app_rs232_t;
 
-const app_rs232_t rs232_define[]={{.num = UART_STM32_3,   .name ="D-SUB_CDMA"},
-                                  {.num = UART_EX_232_1,  .name ="D-SUB_EX1_232"},
-                                  {.num = UART_EX_TTL_2,  .name ="EX2_TTL"},
-                                  {.num = UART_EX_232_A_3,.name ="EX3_232_A"},
-                                  {.num = UART_EX_232_B_4,.name ="EX4_232_B"},
-                                  {.num = UART_EX_232_C_7,.name ="EX7_232_C"},
-                                  {.num = UART_EX_232_D_8,.name ="EX8_232_D"}};
+const app_rs232_t rs232_define[]={{.num = UART_6_EXT1,.name ="EX3_232_A"},
+                                  {.num = UART_7_EXT2,.name ="EX4_232_B"},
+                                  {.num = UART_2_EXT3,.name ="EX7_232_C"},
+                                  {.num = UART_3_EXT4,.name ="EX8_232_D"}};
 
 driver_t *rs232_drivers[eRS232_MAX];
 
 
-
-
-void rs232_open(eRS232_PORT_t port)
+void rs232_open(eRS232_PORT_t port,void *opt)
 {
-  rs232_drivers[(int)port] = driver_uart_open(rs232_define[(int)port].num);
+  rs232_drivers[(int)port] = driver_uart_open(rs232_define[(int)port].num,opt);
 }
 
 void rs232_set(eRS232_PORT_t port,uint32_t baud,uint8_t parity)
 {
-  uart_baud_config_t uart_cfg;
+  uart_config_t uart_cfg;
 
   if(rs232_drivers[(int)port])
   {
     uart_cfg.baud   = baud;
-    uart_cfg.parity = parity;
+    uart_cfg.parityIdx = parity;
 
-    driver_uart_set(rs232_drivers[(int)port],eUART_SET_CONFIG,(void *)&uart_cfg);
+    driver_uart_set(rs232_drivers[(int)port],UART_SET_BAUDRATE,(void *)&uart_cfg);
   }
 }
 
@@ -61,10 +56,23 @@ uint16_t rs232_recv(eRS232_PORT_t port,uint8_t *pBuff,uint16_t rLen,uint32_t tim
     return 0;
   }
 
-  return driver_uart_recvs(rs232_drivers[(int)port],pBuff,rLen,timeOutms);
+  return driver_uart_recv(rs232_drivers[(int)port],pBuff,rLen,timeOutms);
 }
 
 
+
+uint16_t rs232_recvOpt(eRS232_PORT_t port,uint8_t *pBuff,uint16_t rLen,
+                      uint32_t timeOutms,uint32_t dataTimeOutms)
+{
+  if(rs232_drivers[(int)port] == 0)
+  {
+    return 0;
+  }
+
+//  return driver_uart_recvOpt(rs232_drivers[(int)port],pBuff,rLen,timeOutms,dataTimeOutms);
+  
+  return 0;
+}
 
 
 

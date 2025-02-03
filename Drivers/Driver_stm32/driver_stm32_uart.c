@@ -9,6 +9,7 @@
 #include "mcu_swo.h"
 #include "semphr.h"
 #include "utile.h"
+#include "system_err.h"
 
 UART_HandleTypeDef huart1 = {.Instance = USART1};
 UART_HandleTypeDef huart3 = {.Instance = USART3};
@@ -37,16 +38,25 @@ typedef struct stm32_uart_cfg_s
 {
   UART_HandleTypeDef *handle;
   void *txcSem;   //전송 완료 알림 세마포어
+  uint8_t channel;
 }stm32_uart_cfg_t;
 
-uart_ring_t g_uart_ring[3];
-driver_t g_stm32_uart[3];
-stm32_uart_cfg_t g_stm32_uart_cfg[3]={{.handle = &huart1 },
-                                      {.handle = &huart3},
-                                      {.handle = &huart6}};
+uart_ring_t g_uart_ring[STM32_UART_MAX];
+driver_t g_stm32_uart[STM32_UART_MAX];
+stm32_uart_cfg_t g_stm32_uart_cfg[STM32_UART_MAX]={{.handle = &huart1 },
+                                                   {.handle = &huart3},
+                                                   {.handle = &huart6}};
 
 
 uint8_t g_uart_rx_dma_buffer[BUFFER_SIZE];
+
+
+int32_t stm32_uart_recv_opt(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint8_t cmd,void *opt);
+void stm32_uart_flush_rx(driver_t *drv);
+void stm32_uart_close(driver_t *handle);
+void stm32_uart_set(driver_t *drv,uart_set_option_t cmd,void *option);
+int32_t stm32_uart_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen);
+int32_t stm32_uart_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs);
 
 
 
@@ -132,13 +142,29 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
 
 // USART1 초기화 함수
-static void MX_USART1_UART_Init(void)
+static void MX_USART1_UART_Init(uint32_t baud,uint32_t parity)
 {
+  uint32_t val;
     huart1.Instance = USART1;
-    huart1.Init.BaudRate = 115200;
+    huart1.Init.BaudRate = baud;
     huart1.Init.WordLength = UART_WORDLENGTH_8B;
     huart1.Init.StopBits = UART_STOPBITS_1;
-    huart1.Init.Parity = UART_PARITY_NONE;
+
+    switch(parity)
+    {
+      case PARITY_EVEN:
+          huart1.Init.Parity = UART_PARITY_EVEN;
+      break;
+      case PARITY_ODD:
+          huart1.Init.Parity = UART_PARITY_ODD;
+      break;
+      case PARITY_NONE:
+      default:
+          huart1.Init.Parity = UART_PARITY_NONE;
+          break;
+    }
+    
+
     huart1.Init.Mode = UART_MODE_TX_RX;
     huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
     huart1.Init.OverSampling = UART_OVERSAMPLING_16;
@@ -155,12 +181,24 @@ static void MX_USART1_UART_Init(void)
 }
 
 // USART3 초기화 함수
-static void MX_USART3_UART_Init(void) {
+static void MX_USART3_UART_Init(uint32_t baud,uint32_t parity) {
     huart3.Instance = USART3;
-    huart3.Init.BaudRate = 115200;
+    huart3.Init.BaudRate = baud;
     huart3.Init.WordLength = UART_WORDLENGTH_8B;
     huart3.Init.StopBits = UART_STOPBITS_1;
-    huart3.Init.Parity = UART_PARITY_NONE;
+    switch(parity)
+    {
+      case PARITY_EVEN:
+          huart1.Init.Parity = UART_PARITY_EVEN;
+      break;
+      case PARITY_ODD:
+          huart1.Init.Parity = UART_PARITY_ODD;
+      break;
+      case PARITY_NONE:
+      default:
+          huart1.Init.Parity = UART_PARITY_NONE;
+          break;
+    }
     huart3.Init.Mode = UART_MODE_TX_RX;
     huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
     huart3.Init.OverSampling = UART_OVERSAMPLING_16;
@@ -170,12 +208,24 @@ static void MX_USART3_UART_Init(void) {
 }
 
 // USART4 초기화 함수
-static void MX_USART6_UART_Init(void) {
+static void MX_USART6_UART_Init(uint32_t baud,uint32_t parity){
     huart6.Instance = USART6;
-    huart6.Init.BaudRate = 115200;
+    huart6.Init.BaudRate = baud;
     huart6.Init.WordLength = UART_WORDLENGTH_8B;
     huart6.Init.StopBits = UART_STOPBITS_1;
-    huart6.Init.Parity = UART_PARITY_NONE;
+    switch(parity)
+    {
+      case PARITY_EVEN:
+          huart1.Init.Parity = UART_PARITY_EVEN;
+      break;
+      case PARITY_ODD:
+          huart1.Init.Parity = UART_PARITY_ODD;
+      break;
+      case PARITY_NONE:
+      default:
+          huart1.Init.Parity = UART_PARITY_NONE;
+          break;
+    }
     huart6.Init.Mode = UART_MODE_TX_RX;
     huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
     huart6.Init.OverSampling = UART_OVERSAMPLING_16;
@@ -322,24 +372,31 @@ void uart_ring_init(int num)
   g_uart_ring[num].sem = osSemaphoreNew(BUFFER_SIZE, 0, NULL);
 }
 
+driver_t *stm32_uart_open(int num,void *opt);
+void stm32_uart_close(driver_t *handle);
+int32_t stm32_uart_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, uint8_t cmd,void *opt);
+void stm32_uart_flush_rx(driver_t *handle);
+
+uart_api_t stm32_uart_api={.close = stm32_uart_close,
+                           .send =stm32_uart_send,
+                           .recv =stm32_uart_recv,
+                           .flush_rx = stm32_uart_flush_rx,
+                           .recv_opt = stm32_uart_recv_opt};
 
 
-driver_t *stm32_uart_open(int num)
+driver_t *stm32_uart_open(int num,void *opt)
 {
   osSemaphoreId_t tempSem=NULL;
+  uart_config_t *cfg=opt;
 
   if(g_stm32_uart[num].opened == true)
   {
     return &g_stm32_uart[num];
   }
 
-  switch (num)
-  {
-  case STM32_UART_1:
-      g_stm32_uart[num].name = TOSTRING(STM32_UART_1);
-    g_stm32_uart[num].num = num;
+    g_stm32_uart_cfg[num].channel = num;
+    g_stm32_uart[num].api = &stm32_uart_api;
     g_stm32_uart[num].cfg = &g_stm32_uart_cfg[num];
-
     if(g_stm32_uart[num].sem == NULL)
     {
       tempSem = osSemaphoreNew(1, 1, NULL);
@@ -355,67 +412,34 @@ driver_t *stm32_uart_open(int num)
       if(tempSem)
       g_stm32_uart_cfg[num].txcSem = tempSem;
     }
-
     uart_ring_init(num);
-    MX_USART1_UART_Init();
+  switch (num)
+  {
+    case STM32_UART_0_DEBUG:
+    g_stm32_uart[num].name = TOSTRING(STM32_UART_0_DEBUG);
+
+    MX_USART1_UART_Init(cfg->baud,cfg->parityIdx);
     MX_DMA_UART1_Init();
     break;
-  case STM32_UART_3:
-    g_stm32_uart[num].name = TOSTRING(STM32_UART_3);
-    g_stm32_uart[num].num = num;
-    g_stm32_uart[num].cfg = &g_stm32_uart_cfg[num];
+  case STM32_UART_1_CDMA:
+    g_stm32_uart[num].name = TOSTRING(STM32_UART_1_CDMA);
 
-    tempSem = osSemaphoreNew(1, 1, NULL);
-    if(tempSem)
-    g_stm32_uart[num].sem = tempSem;
-
-
-    tempSem = osSemaphoreNew(1, 0, NULL);
-    if(tempSem)
-    {
-      g_stm32_uart_cfg[num].txcSem = tempSem;
-    }
-
-    uart_ring_init(num);
-    MX_USART3_UART_Init();
+    MX_USART3_UART_Init(cfg->baud,cfg->parityIdx);
     MX_DMA_UART3_Init();
   break;
-  case STM32_UART_6:
-    g_stm32_uart[num].name = TOSTRING(STM32_UART_6);
-    g_stm32_uart[num].num = num;
-    g_stm32_uart[num].cfg = &g_stm32_uart_cfg[num];
-    
-    if(g_stm32_uart[num].sem ==NULL)
-    {
-      tempSem = osSemaphoreNew(1, 1, NULL);
-      if(tempSem)
-      g_stm32_uart[num].sem = tempSem;
-    }
-    if(g_stm32_uart_cfg[num].txcSem == NULL)
-    {
-      tempSem = osSemaphoreNew(1, 0, NULL);
-      if(tempSem)
-      g_stm32_uart_cfg[num].txcSem = tempSem;
-
-    }
-    uart_ring_init(num);
-    MX_USART6_UART_Init();
+  case STM32_UART_2_SDI:
+    g_stm32_uart[num].name = TOSTRING(STM32_UART_2_SDI);
+    MX_USART6_UART_Init(cfg->baud,cfg->parityIdx);
     MX_DMA_UART6_Init();
-
     break;
   }
   
-g_stm32_uart[num].opened = true;
+  g_stm32_uart[num].opened = true;
+  
   return &g_stm32_uart[num];
 }
 
 
-
-
-
-
-
-#include "stm32f4xx_hal.h"
 
 HAL_StatusTypeDef UART_SetBaudAndParity(UART_HandleTypeDef *huart, uint32_t baudrate, uint32_t parity)
 {
@@ -454,17 +478,19 @@ HAL_StatusTypeDef UART_SetBaudAndParity(UART_HandleTypeDef *huart, uint32_t baud
 }
 
 
+#define STM32_UART_TX_TIMEOUTMS 60000
 
-
-void stm32_uart_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
+int32_t stm32_uart_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
 {
   stm32_uart_cfg_t *cfg = (stm32_uart_cfg_t *)drv->cfg;
   HAL_StatusTypeDef status;
-  
-    if(drv==NULL || drv->opened==false)
-    {
-      return ;
-    }
+  osStatus_t osStatus;
+  int32_t retVal=dataLen;
+
+  if(drv==NULL || drv->opened==false)
+  {
+    return 0;
+  }
 
   if(drv->sem)
   {
@@ -477,21 +503,24 @@ void stm32_uart_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
   {
     if(cfg->txcSem)
     {
-      osSemaphoreAcquire(cfg->txcSem, osWaitForever);
+     osStatus = osSemaphoreAcquire(cfg->txcSem, STM32_UART_TX_TIMEOUTMS);
+     if(osStatus !=osOK)
+     {
+      retVal = -1;
+     }
     }
   }
   else
   {
-    printf("HAL_UART_Transmit_DMA:%d\r\n",status);
+    Error_Handler(__FILE__,__LINE__);
   }
-
-
 
   if(drv->sem)
   {
     osSemaphoreRelease(drv->sem);
   }
 
+  return dataLen;
 }
 
 int RingBuffer_Read(uart_ring_t *rb, uint8_t *data,uint32_t timeOutMs)
@@ -545,57 +574,34 @@ int RingBuffer_Read2(uart_ring_t *rb, uint8_t *data,uint16_t dataSize,uint32_t t
     return cnt;  
 }
 
-uint16_t stm32_uart_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
+int32_t stm32_uart_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
 {
   int cnt;
-
-  cnt =RingBuffer_Read2(&g_uart_ring[drv->num],pBuff,buffSize,timeOutMs);
+  stm32_uart_cfg_t *cfg = drv->cfg;
+  
+  cnt =RingBuffer_Read2(&g_uart_ring[cfg->channel],pBuff,buffSize,timeOutMs);
 
   return cnt;
        
 }
 
-uint16_t stm32_uart_recvFrame(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
+
+void stm32_uart_set(driver_t *drv,uart_set_option_t cmd,void *option)
 {
-  int cnt;
-
-  cnt =RingBuffer_Read2(&g_uart_ring[drv->num],pBuff,buffSize,timeOutMs);
-
-  return cnt;
-       
-}
-
-void stm32_uart_set(driver_t *drv,eUART_SET_CMD_t cmd,void *option)
-{
-  uart_baud_config_t *cfg_baud;;
+  uart_config_t *cfg_baud;;
   stm32_uart_cfg_t *cfg;
 
    cfg = (stm32_uart_cfg_t *)drv->cfg;
   switch(cmd)
   {
     case eUART_SET_CONFIG:
-    cfg_baud = (uart_baud_config_t *)option;
+    cfg_baud = (uart_config_t *)option;
     UART_SetBaudAndParity(cfg->handle,cfg_baud->baud,3);//parity는 변경 안함
     break;
   }
     
 }
 
-int stm32_uart_recv_byte(driver_t *drv,uint8_t *data,uint32_t timeOutms)
-{
-  if(RingBuffer_Read(&g_uart_ring[drv->num],data,timeOutms))
-  {
-    return 1;
-  }
-
-  return  0;
-}
-
-void stm32_uart_init(driver_t *drv)
-{
-
-    
-}
 
 
 
@@ -794,3 +800,25 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
         // 필요한 추가 오류 처리 작업 수행
     }
 }
+
+void stm32_uart_close(driver_t *handle)
+{
+
+}
+
+int32_t stm32_uart_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, uint8_t cmd,void *opt)
+{
+
+  return 0;
+}
+
+void stm32_uart_flush_rx(driver_t *handle)
+{
+
+}
+
+
+
+
+
+

@@ -14,11 +14,12 @@
 float read_sensor_windSpeed(sensor_t *sensor,uint8_t *err)
 {
   float data;
-  float gain;
+    adc_config_t *adc;
+    
   switch(sensor->type)
   {
     case S_T_ADC:
-    adc_config_t *adc;
+
     adc = get_sensor_config(sensor);
     data = calculate_adc(adc,err);
 

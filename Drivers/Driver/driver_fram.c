@@ -16,15 +16,18 @@ typedef struct fram_api_s
 
 driver_t * driver_fram_open(int num)
 {
-  switch(num)
-  {
-    case FRAM_FM25LC:
     static driver_t fram_fm25lcl;//driver_fram_open을 하면 생성되는것
     const static fram_api_t fm25_api={.read = fm25cl_read,
                                       .write = fm25cl_write};
-
-    driver_t *fm25lc;
+        driver_t *fm25lc;
     fm25lc_cfg_t *fm25lc_cfg;
+    switch(num)
+  {
+    case FRAM_FM25LC:
+
+
+
+
     
     fm25lc = fm25lc_open();// IC를 연다.
 

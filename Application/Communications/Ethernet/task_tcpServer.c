@@ -57,7 +57,7 @@ void server_service(int conn)
     if(ret <= 0)
     {
       err = errno;
-      if(err == EWOULDBLOCK || err == EAGAIN)
+      if( err == EAGAIN)
       {
         continue;
       }
@@ -83,7 +83,7 @@ void tcpServerTask(void *arg)
     struct sockaddr_in address, remotehost,oldClient;
       int error = 0;
   socklen_t len = sizeof(error);
-  uint32_t flag =(uint32_t)arg;
+ // uint32_t flag =(uint32_t)arg;
   char client_ip[INET_ADDRSTRLEN];
 
   osThreadFlagsWait(0x00000001,osFlagsWaitAny,osWaitForever);

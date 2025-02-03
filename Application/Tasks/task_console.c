@@ -119,7 +119,13 @@ void sonsoleTask(void *arg)
 
 void consoleTask_init(void)
 {
-  console_uart = driver_uart_open(UART_STM32_1);
+  uart_config_t uart_cfg;
+
+  uart_cfg.baud = 115200;
+  uart_cfg.parityIdx = 0;
+  uart_cfg.stop_bit = 0;
+
+  console_uart = driver_uart_open(UART_8_DEBUG,&uart_cfg);
 
   set_debug_uart_handle(console_uart);
   osThreadNew(sonsoleTask, NULL, &consoleTask_attributes);

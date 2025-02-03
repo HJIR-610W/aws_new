@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-
+#include "app_sensor.h"
 #include "app_rs232.h"
 #include "app_rs485.h"
 
@@ -24,6 +24,12 @@ void check_config_limit(void)
 
   for(int i = 0 ; i < _countof(s_config.rs232);i++)
   {
+    if(s_config.rs232[i].baud < 9600)
+    {
+      s_config.rs232[i].baud = 9600;
+       WRITE_S_CFG(rs232[i].baud);
+    }
+
     if(s_config.rs232[i].port >= eRS232_MAX)
     {
       s_config.rs232[i].port = 0;

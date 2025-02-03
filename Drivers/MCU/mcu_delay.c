@@ -33,7 +33,7 @@ uint32_t mcu_cal_elapse_us(uint32_t start)
     uint32_t cycles;
 
     cycles = DWT->CYCCNT - start;
-    time_us = cycles * (1.0 / (SystemCoreClock / 1000000));  // 168MHz = 1
+    time_us = (uint32_t)(cycles * (1.0 / (SystemCoreClock / 1000000)));  // 168MHz = 1
 
     return time_us;
 }

@@ -45,10 +45,9 @@ void sensor_init(void)
 }
 void measureTask(void *arg)
 {
-  int32_t data;
+
   uint8_t err;
   sensor_t *sensor;
-  sensor_data_t *psensor_data;
 
   adc_init();
 

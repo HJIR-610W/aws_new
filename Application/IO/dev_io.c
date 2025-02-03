@@ -105,7 +105,7 @@ int32_t debug_printf(const char * pFmt, ...)
 
 //먼저 format 후 len의 길이를 확인 후 메모리를 할당후 최종 처리 
   va_start(ap, pFmt);
-  len = vsnprintf((char *)buff, sizeof(buff), (char *)pFmt, ap);
+  len = vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
   va_end(ap);
     
     if(len > (sizeof(buff)-1))//
@@ -114,7 +114,7 @@ int32_t debug_printf(const char * pFmt, ...)
       if(temp)
       {
         va_start(ap, pFmt);
-        len = vsnprintf((char *)temp, len+1, (char *)pFmt, ap);
+        len = vsnprintf_s((char *)temp, len+1, (char *)pFmt, ap);
         va_end(ap);
         ptr = temp;
       }
@@ -153,13 +153,13 @@ void debug_send(uint8_t *pData,uint16_t dataLen)
 
 void debug_putch(char ch)
 {
-   driver_uart_send(debug_uart,&ch,1);
+   driver_uart_send(debug_uart,(uint8_t *)&ch,1);
 }
 void debug_puts(char *str)
 {
   while(*str)
   {
-    driver_uart_send(debug_uart,str,1);
+    driver_uart_send(debug_uart,(uint8_t *)str,1);
     str++;
   }
 }
@@ -168,7 +168,7 @@ uint16_t debug_recv(char *out,uint16_t outSize,uint32_t timeout)
 {
   uint16_t cnt;
 
-  cnt = driver_uart_recvs(debug_uart,out,outSize,timeout);
+  cnt = driver_uart_recv(debug_uart,(uint8_t*)out,outSize,timeout);
 
   return cnt;
 }
@@ -259,6 +259,26 @@ void LOG_MEM(uint8_t* src, uint32_t size, uint32_t startAddr,uint32_t col)
 
 }
 
+void dev_io_get(dev_io_t  *dev,uint8_t cmd,void* opt)
+{
+
+  switch(cmd)
+  {
+    case DEV_IO_GET_CMD_CFG:
+    switch(dev->io)
+    {
+      case eRS485_IO:
+
+      break;
+      case eRS232_IO:
+
+      break;
+
+    }
+    break;
+  }
+
+}
 
 
 void dev_io_write(dev_io_t  *dev,uint8_t *data,uint32_t dataLen,uint32_t opt)
@@ -266,10 +286,10 @@ void dev_io_write(dev_io_t  *dev,uint8_t *data,uint32_t dataLen,uint32_t opt)
   switch(dev->io)
   {
     case eRS485_IO:
-      rs485_sends((uint8_t)dev->handle,data,dataLen);
+      rs485_send((eRS485_PORT_t)(int)dev->handle,data,dataLen);
     break;
     case eRS232_IO:
-      rs232_send((uint8_t)dev->handle,data,dataLen);
+      rs232_send((eRS232_PORT_t)(int)dev->handle,data,dataLen);
     break;
 
   }
@@ -280,12 +300,13 @@ uint16_t dev_io_read(dev_io_t  *dev,uint8_t *out,uint32_t dataLen,uint8_t cmd,vo
   switch(dev->io)
   {
     case eRS485_IO:
-    return rs485_recv((uint8_t)dev->handle,out,dataLen,(uint32_t)opt);
+    return rs485_recv((eRS485_PORT_t)(int)dev->handle,out,dataLen,(uint32_t)opt);
     break;
     case eRS232_IO:
-        return rs232_recv((uint8_t)dev->handle,out,dataLen,(uint32_t)opt);
+        return rs232_recv((eRS232_PORT_t)(int)dev->handle,out,dataLen,(uint32_t)opt);
     break;
 
   }
   return 0;
 }
+

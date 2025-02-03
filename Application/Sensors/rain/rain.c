@@ -59,7 +59,7 @@ int32_t read_rain(dev_io_t *dev,uint8_t *err)
 
 int32_t read_rain_rs232(dev_io_t *dev,uint8_t *err)
 {
-  uint8_t frame[10];
+  char frame[10];
   uint16_t len;
   int32_t data=0;
   static uint8_t cnt=0;
@@ -126,4 +126,6 @@ int32_t read_sensor_rain(sensor_t *sensor,uint8_t *err)
   default:
     break;
   }
+  
+  return 0;
 }

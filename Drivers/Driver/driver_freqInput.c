@@ -249,7 +249,7 @@ driver_t *driver_freq_open(uint32_t num)
     break;
   }
 
-    g_freqMeasure[num].num  = num;
+  //  g_freqMeasure[num].num  = num;
     return &g_freqMeasure[num];
 }
 
@@ -257,5 +257,5 @@ driver_t *driver_freq_open(uint32_t num)
 
 void driver_freq_read(driver_t *drv,float *freq)
 {
-  *freq = g_freq[drv->num];
+ // *freq = g_freq[drv->num];
 }

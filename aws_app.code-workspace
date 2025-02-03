@@ -45,7 +45,14 @@
       "driver_uart_def.h": "c",
       "pcb_define.h": "c",
       "app_rs485.h": "c",
-      "driver_digitalout.h": "c"
+      "driver_digitalout.h": "c",
+      "driver_interface.h": "c",
+      "system_err.h": "c",
+      "driver_stm32_uart.h": "c",
+      "tl16c554.h": "c",
+      "cmsis_os.h": "c",
+      "stdint.h": "c",
+      "stm32f4xx_hal.h": "c"
     }
 	}
 }

@@ -129,7 +129,7 @@ typedef struct DebugConsoleOperationFunctions
 {
     struct tx_union_s
     {
-        void (*PutChar)(driver_t* base, const uint8_t* buffer, uint16_t length);
+        int32_t (*PutChar)(driver_t* base, const uint8_t* buffer, uint16_t length);
 #if defined(FSL_FEATURE_SOC_UART_COUNT) && (FSL_FEATURE_SOC_UART_COUNT > 0)
         void (*UART_PutChar)(UART_Type* base, const uint8_t* buffer, uint16_t length);
 #endif /* FSL_FEATURE_SOC_UART_COUNT */
@@ -148,7 +148,7 @@ typedef struct DebugConsoleOperationFunctions
     } tx_union;
     struct rx_union_s
     {
-        void (*GetChar)(driver_t* base,  uint8_t* buffer, uint16_t length);
+        int32_t (*GetChar)(driver_t* base,  uint8_t* buffer, uint16_t length);
         int32_t (*GetCharNonBlocking)(driver_t* base,  uint8_t* data);
 #if defined(FSL_FEATURE_SOC_UART_COUNT) && (FSL_FEATURE_SOC_UART_COUNT > 0)
         status_t(*UART_GetChar)(UART_Type* base, uint8_t* buffer, size_t length);
@@ -548,7 +548,7 @@ int DbgConsole_Scanf(char* fmt_ptr, ...)
         }
         else if(result == KEY_EXIT_PROGRAM)
         {
-            result  = -3;//exit
+            result  = (char)-3;//exit
             goto END_FUNC;
         }
         else if( result == KEY_PREV_PROGRAM)

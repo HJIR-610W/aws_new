@@ -150,7 +150,7 @@ driver_t *g_rs485_a     = NULL;
 driver_t *g_rs485_b     = NULL;
 driver_t *g_sdi         = NULL;
 driver_t *g_uart3       = NULL;
-driver_t * g_stm_uart_1 = NULL;
+driver_t * g_stm_UART_1_TTL = NULL;
 driver_t * g_quad_232_1 = NULL;
 driver_t * g_quad_ttl_2 = NULL;
 driver_t * g_232_A      = NULL;
@@ -240,7 +240,7 @@ void adc_read_single_test(int32_t ch)
 {
   int32_t adc;
   uint8_t err;
-  float gain;
+
   int32_t offset;
 
   if(g_adc_single == NULL)
@@ -255,7 +255,7 @@ void adc_read_single_test(int32_t ch)
   }
   else
   {
-    gain = calculate_gain_adc_single(ch);
+
     offset = g_test_config.single_cali[ch].offset;
     debug_printf("%12s:%d,%9.6fv\r\n",nameList[ch],adc, get_voltage_vref(adc,offset));
   }
@@ -266,7 +266,7 @@ void adc_read_diff_test(int32_t ch)
   uint8_t err;
   int32_t adc;
   int32_t offset;
-  float gain;
+
 
   adc = driver_adc_read_average(g_adc_diff,ch+ADC_ADS1220_DIFF_CH_0,&err,g_adc_average_cnt);
   if(err)
@@ -275,7 +275,7 @@ void adc_read_diff_test(int32_t ch)
   }
   else
   {
-    gain = calculate_gain_adc_diff(ch);
+
     offset = g_test_config.single_cali[ch].offset;
     debug_printf("%s:%10d,%9.6fv\r\n",diff_nameLists[ch],adc, get_voltage_vref(adc,offset));
   }
@@ -285,7 +285,7 @@ void adc_single_all_test(void)
 {
   int32_t adc;
   uint8_t err;
-  float gain;
+
   int32_t offset;
   const uint8_t adc_ch_list[]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29,2,6};
 
@@ -299,7 +299,7 @@ void adc_single_all_test(void)
     }
     else
     {
-      gain = calculate_gain_adc_diff(adc_ch_list[i]);
+
       offset = g_test_config.single_cali[adc_ch_list[i]].offset;
       debug_printf("%12s:%10d,%9.6fv\r\n",nameList[i],adc, get_voltage_vref(adc,offset));
     }
@@ -311,7 +311,7 @@ void adc_diff_all_test(void)
   uint8_t err;
   int32_t adc;
   int32_t offset;
-  float gain;
+
   const uint8_t adc_ch_list[]={0,1,2,3,4,5,6,7};
 
   debug_printf("\r\n");
@@ -324,7 +324,7 @@ void adc_diff_all_test(void)
     }
     else
     {
-    gain = calculate_gain_adc_diff(adc_ch_list[i]);
+
     offset = g_test_config.diff_cali[adc_ch_list[i]].offset;
     debug_printf("%12s:%10d,%9.6fv\r\n",diff_nameLists[i],adc, get_voltage_vref(adc,offset));
 
@@ -505,19 +505,19 @@ void test_cmd(char *data)
               switch(list[2][4])
               {
                 case 'a':
-                driver_rs485_sends(g_rs485_a,"rs485_a",7);
+                driver_rs485_send(g_rs485_a,"rs485_a",7);
               cnt = driver_rs485_recv(g_rs485_a,(uint8_t *)temp,10,3000);
               if(cnt)
               {
-                driver_rs485_sends(g_rs485_a,(uint8_t *)temp,cnt);
+                driver_rs485_send(g_rs485_a,(uint8_t *)temp,cnt);
               }
                 break;
                 case 'b':
-                driver_rs485_sends(g_rs485_b,"rs485_b",7);
+                driver_rs485_send(g_rs485_b,"rs485_b",7);
                cnt = driver_rs485_recv(g_rs485_b,(uint8_t *)temp,10,3000);
               if(cnt)
               {
-                driver_rs485_sends(g_rs485_b,(uint8_t *)temp,cnt);
+                driver_rs485_send(g_rs485_b,(uint8_t *)temp,cnt);
               }
                 break;
               }
@@ -534,19 +534,19 @@ void test_cmd(char *data)
               {
                 case '1':
                 strcpy(msg,"UART_STM32_1");
-                driver_uart_send(g_stm_uart_1,(uint8_t *)msg,strlen(msg));
+                driver_uart_send(g_stm_UART_1_TTL,(uint8_t *)msg,strlen(msg));
                 
-                cnt = driver_uart_recvs(g_stm_uart_1,(uint8_t *)temp,sizeof(temp),3000);
+                cnt = driver_uart_recv(g_stm_UART_1_TTL,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
-                    driver_uart_send(g_stm_uart_1,(uint8_t *)temp,cnt);
+                    driver_uart_send(g_stm_UART_1_TTL,(uint8_t *)temp,cnt);
                 }
                 break;
                 case '2':
                 strcpy(msg,"UART_QUAD_1");
                 driver_uart_send(g_quad_232_1,(uint8_t *)msg,strlen(msg));
                 
-                cnt = driver_uart_recvs(g_quad_232_1,(uint8_t *)temp,sizeof(temp),3000);
+                cnt = driver_uart_recv(g_quad_232_1,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
                     driver_uart_send(g_quad_232_1,(uint8_t *)temp,cnt);
@@ -554,47 +554,47 @@ void test_cmd(char *data)
                 
                 break;
                 case '3':
-                strcpy(msg,"UART_EX_TTL_2");
+                strcpy(msg,"UART_EX_2_TTL");
                 driver_uart_send(g_quad_ttl_2,(uint8_t *)msg,strlen(msg));
                 
-                cnt = driver_uart_recvs(g_quad_ttl_2,(uint8_t *)temp,sizeof(temp),3000);
+                cnt = driver_uart_recv(g_quad_ttl_2,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
                     driver_uart_send(g_quad_ttl_2,(uint8_t *)temp,cnt);
                 }
                 break;
                 case '4':
-                strcpy(msg,"UART_EX_232_A_3");
+                strcpy(msg,"UART_EX_3_232_A");
                 driver_uart_send(g_232_A,(uint8_t *)msg,strlen(msg));
                 
-                cnt = driver_uart_recvs(g_232_A,(uint8_t *)temp,sizeof(temp),3000);
+                cnt = driver_uart_recv(g_232_A,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
                     driver_uart_send(g_232_A,(uint8_t *)temp,cnt);
                 }
                 break;
                 case '5':
-                strcpy(msg,"UART_EX_232_B_4");
+                strcpy(msg,"UART_EX_4_232_B");
                 driver_uart_send(g_232_B,(uint8_t *)msg,strlen(msg));
-                cnt = driver_uart_recvs(g_232_B,(uint8_t *)temp,sizeof(temp),3000);
+                cnt = driver_uart_recv(g_232_B,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
                     driver_uart_send(g_232_B,(uint8_t *)temp,cnt);
                 }
                 break;
                 case '6':
-                strcpy(msg,"UART_EX_232_C_7");
+                strcpy(msg,"UART_EX_7_232_C");
                 driver_uart_send(g_232_C,(uint8_t *)msg,strlen(msg));
-                cnt = driver_uart_recvs(g_232_C,(uint8_t *)temp,sizeof(temp),3000);
+                cnt = driver_uart_recv(g_232_C,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
                   driver_uart_send(g_232_C,(uint8_t *)temp,cnt);
                 }
                 break;
                 case '7':
-                strcpy(msg,"UART_EX_232_D_8");
+                strcpy(msg,"UART_EX_8_232_D");
                 driver_uart_send(g_232_D,(uint8_t *)msg,strlen(msg));
-                cnt = driver_uart_recvs(g_232_D,(uint8_t *)temp,sizeof(temp),3000);
+                cnt = driver_uart_recv(g_232_D,(uint8_t *)temp,sizeof(temp),3000);
                 if(cnt)
                 {
                   driver_uart_send(g_232_D,(uint8_t *)temp,cnt);
@@ -724,36 +724,36 @@ void test_cmd(char *data)
       }
       else if(strncmp(list[1],"rs232_",6) == 0)
       {
-        uart_baud_config_t uart_cfg;
+        uart_config_t uart_cfg;
         switch (list[1][6])
         {
         case '1':
           uart_cfg.baud = atoi(list[2]);
-          driver_uart_set(g_stm_uart_1,eUART_SET_CONFIG,(void *)&uart_cfg);
+          driver_uart_set(g_stm_UART_1_TTL,UART_SET_BAUDRATE,(void *)&uart_cfg);
           break;
         case '2':
           uart_cfg.baud = atoi(list[2]);
-          driver_uart_set(g_quad_232_1,eUART_SET_CONFIG,(void *)&uart_cfg);
+          driver_uart_set(g_quad_232_1,UART_SET_BAUDRATE,(void *)&uart_cfg);
         break;
         case '3':
           uart_cfg.baud = atoi(list[2]);
-          driver_uart_set(g_quad_ttl_2,eUART_SET_CONFIG,(void *)&uart_cfg);
+          driver_uart_set(g_quad_ttl_2,UART_SET_BAUDRATE,(void *)&uart_cfg);
         break;
         case '4':
           uart_cfg.baud = atoi(list[2]);
-          driver_uart_set(g_232_A,eUART_SET_CONFIG,(void *)&uart_cfg);
+          driver_uart_set(g_232_A,UART_SET_BAUDRATE,(void *)&uart_cfg);
         break;
         case '5':
           uart_cfg.baud = atoi(list[2]);
-          driver_uart_set(g_232_B,eUART_SET_CONFIG,(void *)&uart_cfg);
+          driver_uart_set(g_232_B,UART_SET_BAUDRATE,(void *)&uart_cfg);
         break;
         case '6':
           uart_cfg.baud = atoi(list[2]);
-          driver_uart_set(g_232_C,eUART_SET_CONFIG,(void *)&uart_cfg);
+          driver_uart_set(g_232_C,UART_SET_BAUDRATE,(void *)&uart_cfg);
         break;
         case '7':
           uart_cfg.baud = atoi(list[2]);
-          driver_uart_set(g_232_D,eUART_SET_CONFIG,(void *)&uart_cfg);
+          driver_uart_set(g_232_D,UART_SET_BAUDRATE,(void *)&uart_cfg);
         break;
         default:
           break;
@@ -820,30 +820,33 @@ extern void fram_test(void);
 void testTask(void *argument)
 {
   uint8_t buff[512];
-  osStatus status;
+ // osStatus status;
   uint8_t data;
   uint16_t cnt=0;
   uint8_t a,b,c,d;
-
+  uart_config_t uart_config;
   get_appVer(&a,&b,&c,&d);
   
   debug_printf("app ver:%d.%d.%d.%d\r\n",a,b,c,d);
   
-  g_rs485_a = driver_rs485_open(RS485_A);
-  g_rs485_b = driver_rs485_open(RS485_B);
-  g_sdi     = driver_sdi_open(SDI_1);
+  uart_config.baud = 19200;
+  uart_config.parityIdx = 0;
+  uart_config.stop_bit = 0;
+  g_rs485_a = driver_rs485_open(RS485_A,&uart_config);
+  g_rs485_b = driver_rs485_open(RS485_B,&uart_config);
+  g_sdi     = driver_sdi_open(SDI_0,&uart_config);
 
-  g_stm_uart_1 = driver_uart_open(UART_STM32_1);
-  g_uart3      = driver_uart_open(UART_STM32_3);
+  g_stm_UART_1_TTL = driver_uart_open(UART_1_TTL,&uart_config);
+  g_uart3      = driver_uart_open(UART_8_DEBUG,&uart_config);
   
-  g_quad_232_1 = driver_uart_open(UART_EX_232_1);
+  g_quad_232_1 = driver_uart_open(UART_0_D_SUB_0,&uart_config);
   
   driver_uart_send(g_quad_232_1,"g_quad_232_1\r\n",14);
-  g_quad_ttl_2 = driver_uart_open(UART_EX_TTL_2);
-  g_232_A =  driver_uart_open(UART_EX_232_A_3);
-  g_232_B =  driver_uart_open(UART_EX_232_B_4);
-  g_232_C =  driver_uart_open(UART_EX_232_C_7);
-  g_232_D =  driver_uart_open(UART_EX_232_D_8);
+  g_quad_ttl_2 = driver_uart_open(UART_1_TTL,&uart_config);
+  g_232_A =  driver_uart_open(UART_6_EXT1,&uart_config);
+  g_232_B =  driver_uart_open(UART_7_EXT2,&uart_config);
+  g_232_C =  driver_uart_open(UART_2_EXT3,&uart_config);
+  g_232_D =  driver_uart_open(UART_3_EXT4,&uart_config);
 
   
   set_debug_uart_handle(g_quad_232_1);
@@ -871,13 +874,13 @@ void testTask(void *argument)
   ParseAndPrintTaskList();
   while(1)
   {
-    if (driver_uart_recvs(g_quad_232_1,&data,1,osWaitForever))
+    if (driver_uart_recv(g_quad_232_1,&data,1,osWaitForever))
     {
       buff[cnt++] = data;
       if(data=='\n')
       {
         buff[cnt]=0;
-        test_cmd((uint8_t *)buff);
+       // test_cmd((uint8_t *)buff);
 
         memset(buff,0,sizeof(buff));
         cnt = 0;

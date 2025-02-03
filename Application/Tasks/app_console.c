@@ -7,7 +7,7 @@
 #include "aws_data.h"
 #include "app_console.h"
 #include "app_version.h"
-#include "app_sensor.h""
+#include "app_sensor.h"
 #include "app_rs232.h"
 #include "app_rs485.h"
 #include "app_adc.h"
@@ -270,10 +270,10 @@ return false;
 #define DISP_WIDTH    25
 
 
-
+  extern   uint32_t elased_time;
 int32_t print_systemInfo(uint16_t row,uint16_t column)
 {
-  uint8_t index=0;
+
   uint8_t line=row+3;
   char buff[30];
 
@@ -284,7 +284,7 @@ int32_t print_systemInfo(uint16_t row,uint16_t column)
   vt100_print_frame(row   ,column,"시스템", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"%s\r\n",buff);
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"문 상태  :%s\r\n",ITEM_LIST(System.doorStatus,doorStatusList));
-  extern   uint32_t elased_time;;
+
   vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
 
     
@@ -293,7 +293,7 @@ int32_t print_systemInfo(uint16_t row,uint16_t column)
 
 int32_t print_chargerInfo(uint16_t row,uint16_t column)
 {
-  uint8_t index=0;
+
   uint8_t line=row+3;
 
   vt100_print_frame(row   ,column,"충전기", '+', '|', '-', DISP_WIDTH, WHITE);
@@ -307,7 +307,7 @@ int32_t print_chargerInfo(uint16_t row,uint16_t column)
 int32_t print_ethInfo(uint16_t row,uint16_t column)
 {
     char buff[30];
-    uint8_t index=0;
+
     uint8_t line=row+3;
 
     make_comList(buff,sizeof(buff));
@@ -326,9 +326,9 @@ int32_t print_ethInfo(uint16_t row,uint16_t column)
 int32_t print_awsRealLefinfo(uint16_t row,uint16_t column,uint8_t mode,void* arg)
 {
   char buff[50];
-  uint8_t index=0;
+
   uint8_t line=row+3;
-  sensor_t *sensor;
+  //sensor_t *sensor;
   sensor_data_t *pdata;
   const char *aswTitleList[]={"실시간(1s)","1분","10분","한시간"};
 
@@ -430,9 +430,9 @@ int32_t print_awsRealLefinfo(uint16_t row,uint16_t column,uint8_t mode,void* arg
 #define AWS_MODE_MAX 3
 int32_t menu_display(p_shell_context_t ctx)
 {
-  char buff[30];
+
   char ch;
-  int row;
+
   uint8_t awsMode=0;
 
   debug_printf(VT100_CLEAR_SCREEN);
@@ -667,7 +667,7 @@ int32_t menu_system(p_shell_context_t ctx)
 void make_option(sensor_t *sensor,char *out,uint16_t outSize)
 {
   void *cfg;
-  char *list[10];
+  const char *list[10];
 
   out[0]=0;
 
@@ -703,8 +703,10 @@ void make_option(sensor_t *sensor,char *out,uint16_t outSize)
     }
     break;
     case S_T_ADC:
+      {
     adc_config_t *adc_cfg = (adc_config_t *)cfg;
     snprintf(out,outSize,"[%s.%d]",adcChModeList[adc_cfg->mode],adc_cfg->channel);
+      }
     break;
     default:
     out[0]=0;
@@ -738,7 +740,7 @@ int32_t print_menu_sensor(p_shell_context_t ctx)
 
 uint8_t print_rs232_cfg(p_shell_context_t ctx,rs232_config_t *rs232_config,uint8_t cnt)
 {
-  char *portNameList[10];
+  const char *portNameList[10];
 
   rs232_get_portList(portNameList,_countof(portNameList));
   ctx->printf("%2d.port       :%s\r\n",cnt++,portNameList[rs232_config->port]);    
@@ -749,7 +751,7 @@ uint8_t print_rs232_cfg(p_shell_context_t ctx,rs232_config_t *rs232_config,uint8
 
 uint8_t print_rs485_cfg(p_shell_context_t ctx,rs485_config_t *rs485_config,uint8_t cnt)
 {
-  char *portNameList[10];
+  const char *portNameList[10];
 
   rs485_get_portList(portNameList,_countof(portNameList));
   ctx->printf("%2d.id         :%d\r\n",cnt++,rs485_config->id);    
@@ -860,7 +862,7 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
 {
   int32_t dec;
   rs232_config_t *rs232;
-
+   const char *portList[10];
   rs232= get_sensor_config(sensor);
   if(rs232==0)
   {
@@ -869,28 +871,31 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
   switch (cnt)
   {
   case RS232_SET_PORT:
-   const char *portList[10];
+
     cnt = rs232_get_portList(portList,_countof(portList));
 
     cnt = select_indexFromList(ctx,portList,NULL,cnt,true);
     if(cnt)
     {
-      if(rs232_is_opened(rs232->port))//만약 이미 열린 포트인데 변경하려고 하면 오류
+      if(rs232_is_opened((eRS232_PORT_t)rs232->port))//만약 이미 열린 포트인데 변경하려고 하면 오류
       {
         ctx->printf("포트가 열린 상태에서 변경을 시도합니다.\r\n");
         ctx->printf("열린 포트는 닫힙니다\r\n");
-        rs232_close(rs232->port);
+        rs232_close((eRS232_PORT_t)rs232->port);
       }
 
       rs232->port = cnt-1;
-      if(rs232_is_opened(rs232->port))//열려고 하는 포트가 이미 열려있다면
+      if(rs232_is_opened((eRS232_PORT_t)rs232->port))//열려고 하는 포트가 이미 열려있다면
       {
         ctx->printf("PORT:%d 이미 열려있습니다.통신속도는 변경되지 않습니다.\r\n",cnt-1);
       }
       else
       { 
-        rs232_open(rs232->port);
-        rs232_set(rs232->port,rs232->baud,rs232->parityIdx);
+        uart_config_t uart_cfg;
+        uart_cfg.baud = rs232->baud;
+        uart_cfg.parityIdx = rs232->parityIdx;
+
+        rs232_open((eRS232_PORT_t)rs232->port,&uart_cfg);
         ctx->printf("%s 새롭게 열렸습니다.\r\n",portList[rs232->port]);
       }
 
@@ -928,7 +933,8 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
 {
   int32_t dec;
   rs485_config_t *rs485;
-
+   const char *portList[10];
+   
   rs485= get_sensor_config(sensor);
   if(rs485 == NULL)
   {
@@ -945,28 +951,32 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
     }
     break;
   case RS485_SET_PORT:
-   const char *portList[10];
+
     cnt = rs485_get_portList(portList,_countof(portList));
 
     cnt = select_indexFromList(ctx,portList,NULL,cnt,true);
     if(cnt)
     {
-      if(rs485_is_opened(rs485->port))//만약 이미 열린 포트인데 변경하려고 하면 오류
+      if(rs485_is_opened((eRS485_PORT_t)rs485->port))//만약 이미 열린 포트인데 변경하려고 하면 오류
       {
         ctx->printf("포트가 열린 상태에서 변경을 시도합니다.\r\n");
         ctx->printf("열린 포트는 닫힙니다\r\n");
-        rs485_close(rs485->port);
+        rs485_close((eRS485_PORT_t)rs485->port);
       }
 
       rs485->port = cnt-1;
-      if(rs485_is_opened(rs485->port))//열려고 하는 포트가 이미 열려있다면
+      if(rs485_is_opened((eRS485_PORT_t)rs485->port))//열려고 하는 포트가 이미 열려있다면
       {
         ctx->printf("PORT:%d 이미 열려있습니다.통신속도는 변경되지 않습니다.\r\n",cnt-1);
       }
       else
       { 
-        rs485_open(rs485->port);
-        rs485_set(rs485->port,rs485->baud,rs485->parityIdx);
+        uart_config_t uart_config;
+        uart_config.baud = rs485->baud;
+        uart_config.parityIdx = rs485->parityIdx;
+        uart_config.stop_bit = 0;
+        rs485_open((eRS485_PORT_t)rs485->port,&uart_config);
+
         ctx->printf("%s 새롭게 열렸습니다.\r\n",portList[rs485->port]);
       }
 
@@ -1100,11 +1110,11 @@ void set_type(sensor_t *sensor)
 //온도 설정
 int32_t menu_sensor_temp(p_shell_context_t ctx)
 {
-  char *itemList[10];
-  int32_t dec;
+  const char *itemList[10];
+
   int32_t cnt;
   uint8_t itemListCnt;
-  float scale;
+
 
   sensor_t *sensor = &config.sensor[A1_TEMPERATURE];
 
@@ -1124,19 +1134,11 @@ int32_t menu_sensor_temp(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       {
-        sensor->type = temperatureList[cnt-1];
+        sensor->type = (eSENSOR_MODEL_t)temperatureList[cnt-1];
         set_type(sensor);
       }
     }
-    else if(cnt==1)
-    {
-      cnt = input_decimal(ctx,0,1000,&dec);
-      if(cnt>0)
-      {
-        sensor->scale =  dec;
-       WRITE_CFG_MEM(&sensor->scale,sizeof(sensor->scale));
-      }
-    }
+
     else
     {
       for(int i = 0 ; i< _countof(sen_func);i++)
@@ -1154,7 +1156,7 @@ int32_t menu_sensor_temp(p_shell_context_t ctx)
 //풍향 설정정
 int32_t print_menu_sensor_windDirection(p_shell_context_t ctx)
 {
-  uint8_t type;
+
   int cnt = 0;
   sensor_t *sensor;
 
@@ -1166,10 +1168,10 @@ int32_t print_menu_sensor_windDirection(p_shell_context_t ctx)
 }
 int32_t menu_sensor_windDirection(p_shell_context_t ctx)
 {
-  int32_t dec;
+
   int32_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+  const char *itemList[10];
 
   sensor_t *sensor = &config.sensor[A2_WIND_DIRECTION];
 
@@ -1190,7 +1192,7 @@ int32_t menu_sensor_windDirection(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = windDirectionList[cnt-1];
+        sensor->type = (eSENSOR_MODEL_t)windDirectionList[cnt-1];
         set_type(sensor);
       }
     }
@@ -1212,7 +1214,7 @@ int32_t menu_sensor_windDirection(p_shell_context_t ctx)
 //풍속 설정정
 int32_t print_menu_sensor_windSpeed(p_shell_context_t ctx)
 {
-  uint8_t type;
+ // uint8_t type;
   int cnt = 0;
   sensor_t *sensor;
 
@@ -1224,10 +1226,10 @@ int32_t print_menu_sensor_windSpeed(p_shell_context_t ctx)
 }
 int32_t menu_sensor_windSpeed(p_shell_context_t ctx)
 {
-  int32_t dec;
+
   int32_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+  const char *itemList[10];
 
   sensor_t *sensor = &config.sensor[A3_WIND_SPEED];
 
@@ -1248,7 +1250,7 @@ int32_t menu_sensor_windSpeed(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = windDirectionList[cnt-1];
+        sensor->type = (eSENSOR_MODEL_t)windDirectionList[cnt-1];
         set_type(sensor);
       }
     }
@@ -1270,7 +1272,7 @@ int32_t menu_sensor_windSpeed(p_shell_context_t ctx)
 
 int32_t print_menu_sensor_windDirectionInstanct(p_shell_context_t ctx)
 {
-  uint8_t type;
+ // uint8_t type;
   int cnt = 0;
   sensor_t *sensor;
 
@@ -1283,10 +1285,10 @@ int32_t print_menu_sensor_windDirectionInstanct(p_shell_context_t ctx)
 }
 int32_t menu_sensor_windDirectionInstant(p_shell_context_t ctx)
 {
-  int32_t dec;
+
   int32_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+ const  char *itemList[10];
 
   sensor_t *sensor = &config.sensor[A4_INSTANT_WIND_DIRECTION];
 
@@ -1306,7 +1308,7 @@ int32_t menu_sensor_windDirectionInstant(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = windDirectionInstantList[cnt-1];
+        sensor->type = (eSENSOR_MODEL_t)windDirectionInstantList[cnt-1];
         set_type(sensor);
       }
     }
@@ -1327,7 +1329,7 @@ int32_t menu_sensor_windDirectionInstant(p_shell_context_t ctx)
 
 int32_t print_menu_sensor_windSpeedInstanct(p_shell_context_t ctx)
 {
-  uint8_t type;
+
   int cnt = 0;
   sensor_t *sensor;
 
@@ -1340,10 +1342,10 @@ int32_t print_menu_sensor_windSpeedInstanct(p_shell_context_t ctx)
 }
 int32_t menu_sensor_windSpeedInstant(p_shell_context_t ctx)
 {
-  int32_t dec;
+
   int32_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+ const  char *itemList[10];
 
   sensor_t *sensor = &config.sensor[A5_INSTANT_WIND_SPEED];
 
@@ -1363,7 +1365,7 @@ int32_t menu_sensor_windSpeedInstant(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = windDirectionInstantList[cnt-1];
+        sensor->type = (eSENSOR_MODEL_t)windDirectionInstantList[cnt-1];
         set_type(sensor);
       }
     }
@@ -1384,7 +1386,7 @@ int32_t menu_sensor_windSpeedInstant(p_shell_context_t ctx)
 //적설 설정
 int32_t print_menu_sensor_snow(p_shell_context_t ctx)
 {
-  uint8_t type;
+ // uint8_t type;
   int cnt = 0;
   sensor_t *sensor;
 
@@ -1396,10 +1398,10 @@ int32_t print_menu_sensor_snow(p_shell_context_t ctx)
 }
 int32_t menu_sensor_snow(p_shell_context_t ctx)
 {
-  int32_t dec;
+
   int32_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+  const char *itemList[10];
 
   sensor_t *sensor = &config.sensor[A9_SNOW_DEPTH];
 
@@ -1419,7 +1421,7 @@ int32_t menu_sensor_snow(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = snowList[cnt-1];
+        sensor->type = (eSENSOR_MODEL_t)snowList[cnt-1];
         set_type(sensor);
       }
     }
@@ -1439,7 +1441,7 @@ int32_t menu_sensor_snow(p_shell_context_t ctx)
 
 int32_t print_menu_sensor_rain(p_shell_context_t ctx)
 {
-  uint8_t type;
+ // uint8_t type;
   int cnt = 0;
   sensor_t *sensor;
 
@@ -1452,10 +1454,10 @@ int32_t print_menu_sensor_rain(p_shell_context_t ctx)
 
 int32_t menu_sensor_rain(p_shell_context_t ctx)
 {
-  int32_t dec;
+  //int32_t dec;
   int32_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+  const char *itemList[10];
 
   sensor_t *sensor = &config.sensor[A6_RAINFALL_DOT5_1MM];
 
@@ -1476,7 +1478,7 @@ int32_t menu_sensor_rain(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = rainList[cnt-1];
+        sensor->type = (eSENSOR_MODEL_t)rainList[cnt-1];
         set_type(sensor);
       }
     }
@@ -1497,7 +1499,7 @@ int32_t menu_sensor_rain(p_shell_context_t ctx)
 //기압 설정
 int32_t print_menu_sensor_pressure(p_shell_context_t ctx)
 {
-  uint8_t type;
+  //uint8_t type;
   int cnt = 0;
   sensor_t *sensor;
 
@@ -1510,10 +1512,10 @@ int32_t print_menu_sensor_pressure(p_shell_context_t ctx)
 
 int32_t menu_sensor_pressure(p_shell_context_t ctx)
 {
-  int32_t dec;
+  //int32_t dec;
   int32_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+  const char *itemList[10];
 
   sensor_t *sensor = &config.sensor[A7_PRESSURE];
 
@@ -1534,7 +1536,7 @@ int32_t menu_sensor_pressure(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = pressureList[cnt-1];
+        sensor->type = (eSENSOR_MODEL_t)pressureList[cnt-1];
         set_type(sensor);
       }
     }
@@ -1556,7 +1558,7 @@ int32_t menu_sensor_pressure(p_shell_context_t ctx)
 //습도 설정
 int32_t print_menu_sensor_humi(p_shell_context_t ctx)
 {
-  uint8_t type;
+ // uint8_t type;
   int cnt = 0;
   sensor_t *sensor;
 
@@ -1569,10 +1571,10 @@ int32_t print_menu_sensor_humi(p_shell_context_t ctx)
 
 int32_t menu_sensor_humi(p_shell_context_t ctx)
 {
-  int32_t dec;
+  //int32_t dec;
   int32_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+  const char *itemList[10];
 
   sensor_t *sensor = &config.sensor[A10_RELATIVE_HUMIDITY];
 
@@ -1593,7 +1595,7 @@ int32_t menu_sensor_humi(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = humiList[cnt-1];
+        sensor->type = (eSENSOR_MODEL_t)humiList[cnt-1];
         set_type(sensor);
       }
     }
@@ -1615,7 +1617,7 @@ int32_t menu_sensor_humi(p_shell_context_t ctx)
 //강수유무 설정
 int32_t print_menu_sensor_rainPresent(p_shell_context_t ctx)
 {
-  uint8_t type;
+ // uint8_t type;
   int cnt = 0;
   sensor_t *sensor;
 
@@ -1635,10 +1637,10 @@ int32_t print_menu_sensor_rainPresent(p_shell_context_t ctx)
 
 int32_t menu_sensor_rainPresent(p_shell_context_t ctx)
 {
-  int32_t dec;
+ // int32_t dec;
   int32_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+ const char *itemList[10];
 
   sensor_t *sensor = &config.sensor[A8_RAIN_PRESENT];
 
@@ -1659,7 +1661,7 @@ int32_t menu_sensor_rainPresent(p_shell_context_t ctx)
       cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
       if(cnt > 0)
       { 
-        sensor->type = rainPresentList[cnt-1];
+        sensor->type = (eSENSOR_MODEL_t)rainPresentList[cnt-1];
         set_type(sensor);
       }
     }
@@ -1700,13 +1702,13 @@ void sensor_type_set(p_shell_context_t ctx,sensor_t *sensor,const uint8_t *list,
 {
   uint8_t cnt;
   uint8_t itemListCnt;
-  char *itemList[10];
+  const char *itemList[10];
 
   itemListCnt = gen_sensorItemList(itemList,list,listCnt);
   cnt = select_indexFromList(ctx,itemList,NULL,itemListCnt,true);
   if(cnt > 0)
   { 
-    sensor->type = list[cnt-1];
+    sensor->type =(eSENSOR_MODEL_t) list[cnt-1];
     set_type(sensor);
   }
 
@@ -1715,7 +1717,7 @@ void sensor_type_set(p_shell_context_t ctx,sensor_t *sensor,const uint8_t *list,
 //기본 설정
 int32_t print_menu_sensor_default(p_shell_context_t ctx)
 {
-  uint8_t type;
+
   int cnt = 0;
   sensor_t *sensor;
 
@@ -1900,7 +1902,7 @@ int32_t print_net_use(p_shell_context_t ctx)
 int32_t menu_net_use(p_shell_context_t ctx)
 {
   int32_t cnt;
-  int32_t index;
+
 
   do
   {
@@ -2283,23 +2285,27 @@ int32_t print_menu_vhf(p_shell_context_t ctx)
 
 int32_t menu_net_vhf_vir_set(p_shell_context_t ctx)
 {
+  
+  return 0;
 
 }
 int32_t menu_net_vhf_loop_test(p_shell_context_t ctx)
 {
-
+  
+  return 0;
 }
 
 int32_t menu_net_vhf_tone_test(p_shell_context_t ctx)
 {
-
+  
+  return 0;
 }
 
 
 int32_t menu_net_vhf(p_shell_context_t ctx)
 {
   int32_t cnt;
-  int32_t ret;
+//  int32_t ret;
   int32_t dec;
 
   do
@@ -2349,7 +2355,7 @@ int32_t menu_net_vhf(p_shell_context_t ctx)
       }
       break;
     case 5://
-    ret = menu_net_vhf_vir_set(ctx);
+     menu_net_vhf_vir_set(ctx);
     break;
     default:
       break;
@@ -2443,7 +2449,7 @@ int32_t print_menu_panel(p_shell_context_t ctx)
 
   }while(1);
 
-  return cnt;
+
 }
 
 
@@ -2547,9 +2553,9 @@ int32_t menu_manage_print_config_all(p_shell_context_t ctx)
   ctx->printf("CDMA 포트        :%d\r\n",config.cdma_port);
   ctx->printf("CDMA 프로토콜    :%s\r\n",ITEM_LIST(config.cdma_protocol,protocolList));
   ctx->printf("CDMA 종류        :%s\r\n",ITEM_LIST(config.cdmaType,cdmaModellList));
-  ctx->printf("이더넷 사용      :%s\r\n", ITEM_LIST(config.eth_use,enableList));
-  ctx->printf("CDMA 사용        :%s\r\n",ITEM_LIST(config.cdma_use,enableList));
-  ctx->printf("직접통신         :%s\r\n",ITEM_LIST(config.direct_use,enableList));
+  ctx->printf("이더넷 사용      :%s\r\n", ITEM_LIST((int32_t)config.eth_use,enableList));
+  ctx->printf("CDMA 사용        :%s\r\n",ITEM_LIST((int32_t)config.cdma_use,enableList));
+  ctx->printf("직접통신         :%s\r\n",ITEM_LIST((int32_t)config.direct_use,enableList));
   ctx->printf("직접통신 프로토콜:%s\r\n",ITEM_LIST(config.direct_protocol,protocolList));
   ctx->printf("직접통신 속도    :%d\r\n",config.direct_baud);
   ctx->printf("패널 종류        :%s\r\n",ITEM_LIST(config.panelType,panelList));
@@ -3188,7 +3194,7 @@ return 0;
 int32_t print_developer_sensor(p_shell_context_t ctx)
 {
   int32_t cnt=0;
-  int32_t i=0;
+//  int32_t i=0;
 
   ctx->printf("\r\n");
   for(int i = 0 ;i<_countof(sensorNameList);i++)
@@ -3204,9 +3210,9 @@ int32_t print_developer_sensor(p_shell_context_t ctx)
 int32_t menu_developer_sensor(p_shell_context_t ctx)
 {
   int32_t cnt;
-  int32_t inCnt;
-  int32_t start,size,len;
-  float fVal;
+ // int32_t inCnt;
+ // int32_t start,size,len;
+//  float fVal;
   int32_t dec;
   int32_t use;
   while(1)
@@ -3246,7 +3252,7 @@ int32_t print_menu_developer(p_shell_context_t ctx)
 
 int32_t menu_developer_sensor_config(p_shell_context_t ctx)
 {
-  char opt[20];
+ // char opt[20];
   int32_t cnt=0;
   int i=0;
 

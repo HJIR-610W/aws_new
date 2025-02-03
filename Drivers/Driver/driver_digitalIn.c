@@ -46,7 +46,7 @@ driver_t *driver_di_open(uint32_t num)
          p_drv = stm32_di_open(num);
     break;
   }
-  g_drv_di_list[num].num = num;
+
   g_drv_di_list[num].api = &di_api;
   g_drv_di_list[num].handle = p_drv;//¿¬°áµÈ IC
   g_drv_di_list[num].opened = true; 

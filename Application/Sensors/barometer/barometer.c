@@ -10,11 +10,12 @@
 
 int32_t read_sensor_barometer(sensor_t *sensor,uint8_t *err)
 {
-  int32_t data;
+  int32_t data=0;
+    adc_config_t *adc;
   switch(sensor->type)
   {
     case S_T_ADC:
-    adc_config_t *adc;
+
     adc = get_sensor_config(sensor);
 
     break;

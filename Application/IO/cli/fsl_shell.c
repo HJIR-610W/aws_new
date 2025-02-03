@@ -409,7 +409,7 @@ static void ProcessCommand(p_shell_context_t context, const char *cmd)
     else
     {
         context->printf(
-            "\r\nCommand not recognised.  Enter 'help' to view a list of available commands.\r\n\r\n");
+            "\r\nhelp를 입력하여 명령어를 확인해주세요\r\n\r\n");
         tmpCommand = NULL;
     }
 }

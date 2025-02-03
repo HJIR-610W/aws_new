@@ -6,10 +6,10 @@
 #include "driver_interface.h"
 
 
-#define SDI_1 0
+#define SDI_0 0
 
 
-driver_t *driver_sdi_open(uint32_t num);
+driver_t *driver_sdi_open(uint32_t num,void *opt);
 void driver_sdi_sends(driver_t *drv,uint8_t *pData,uint16_t dataLen);
 uint16_t driver_sdi_recv(driver_t *drv,uint8_t *pBuff,uint16_t rLen,uint32_t timeOutms);
 #endif

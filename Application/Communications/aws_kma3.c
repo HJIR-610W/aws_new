@@ -522,7 +522,7 @@ uint16_t kma_cmd_AB(uint8_t *recv,uint8_t *send)
   uint16_t len;
   kma3_req_t *req = (kma3_req_t *)recv;
   DATE_TIME_BUF *pDate;
-  kma_data_t *aws;
+  kma_data_t *aws=0;
 
   pDate  = &Date_Time;
   nt[0]  = pDate->Year%100;

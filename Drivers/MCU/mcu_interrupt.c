@@ -146,8 +146,13 @@ void DMA1_Stream3_IRQHandler(void) {
 extern DMA_HandleTypeDef hdma_sdio_tx;
 extern DMA_HandleTypeDef hdma_sdio_rx;
 extern SD_HandleTypeDef hsd;
+extern DMA_HandleTypeDef hdma_memtomem;;
 
-
+void DMA2_Stream0_IRQHandler(void)
+{
+    HAL_DMA_IRQHandler(&hdma_memtomem);
+  
+}
 void DMA2_Stream6_IRQHandler(void) {
   
   
@@ -157,7 +162,8 @@ void DMA2_Stream6_IRQHandler(void) {
       // __HAL_DMA_CLEAR_FLAG(&hdma_sdio_tx, DMA_FLAG_TCIF2_6);
         HAL_DMA_IRQHandler(&hdma_sdio_tx);
     }
-        else if (__HAL_DMA_GET_FLAG(&hdma_sdio_tx, DMA_FLAG_TCIF2_6)) {
+    else if (__HAL_DMA_GET_FLAG(&hdma_sdio_tx, DMA_FLAG_TCIF2_6))
+    {
         /* 인터럽트 플래그 클리어 */
         __HAL_DMA_CLEAR_FLAG(&hdma_sdio_tx, DMA_FLAG_TCIF2_6);
 //

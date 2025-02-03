@@ -18,7 +18,7 @@ driver_t *ds1306_open(void)
 
 int32_t ds1306_read_reg(driver_t *ds1306, uint8_t reg,uint8_t *rval)
 {
-  int32_t err;
+  int32_t err=0;
   ds1306_cfg_t *cfg=(ds1306_cfg_t*)ds1306->cfg;
 
   driverex_spi_pend_sem(cfg->spi_io);
@@ -40,7 +40,7 @@ int32_t ds1306_read_reg(driver_t *ds1306, uint8_t reg,uint8_t *rval)
 
 int32_t ds1306_write_reg(driver_t *ds1306,uint8_t reg,uint8_t val)
 {
-    int32_t err;
+    int32_t err=0;
   ds1306_cfg_t *cfg=(ds1306_cfg_t*)ds1306->cfg;
 
   driverex_spi_pend_sem(cfg->spi_io);

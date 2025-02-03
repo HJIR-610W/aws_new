@@ -39,16 +39,19 @@ void _spi_post_sem(driver_t *spi)
 driver_t * driver_flash_open(int num)
 {
   driver_t at45db;
-
-  switch(num)
-  {
-    case FALSH_AT45DB:
     static driver_t flash_at45db;//driver_fram_open을 하면 생성되는것
     const static flash_api_t at45db_api={.read_page  = at45db_read_page,
                                          .write_page = at45db_write_page};
-
-    driver_t *at45db_ic;
+    driver_t *at45db_ic;    
     at45db_cfg_t *p_at45db_cfg;
+    switch(num)
+  {
+    case FALSH_AT45DB:
+
+
+
+
+
 
     at45db_ic = at45db_open();// IC를 연다.
 
@@ -69,6 +72,8 @@ driver_t * driver_flash_open(int num)
     return &flash_at45db;
   break;
   }
+  
+  return 0;
 
 }
 

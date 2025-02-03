@@ -168,7 +168,7 @@ uint16_t debug_recv(char *out,uint16_t outSize,uint32_t timeout)
 {
   uint16_t cnt;
 
-  cnt = driver_uart_recvs(debug_uart,out,outSize,timeout);
+  cnt = driver_uart_recv(debug_uart,out,outSize,timeout);
 
   return cnt;
 }
@@ -266,7 +266,7 @@ void dev_io_write(dev_io_t  *dev,uint8_t *data,uint32_t dataLen,uint32_t opt)
   switch(dev->io)
   {
     case eRS485_IO:
-      rs485_sends((uint8_t)dev->handle,data,dataLen);
+      rs485_send((uint8_t)dev->handle,data,dataLen);
     break;
     case eRS232_IO:
       rs232_send((uint8_t)dev->handle,data,dataLen);
@@ -277,14 +277,36 @@ void dev_io_write(dev_io_t  *dev,uint8_t *data,uint32_t dataLen,uint32_t opt)
 
 uint16_t dev_io_read(dev_io_t  *dev,uint8_t *out,uint32_t dataLen,uint8_t cmd,void *opt)
 {
+devIoTimeOutopt_t *timeo=opt;
+
+  switch (cmd)
+  {
+  case DEV_IO_CMD_DATA_TIMEOUT:
   switch(dev->io)
   {
     case eRS485_IO:
-    return rs485_recv((uint8_t)dev->handle,out,dataLen,(uint32_t)opt);
+     return rs485_recv((uint8_t)dev->handle,out,dataLen,timeo->waitTimeOutMs);
     break;
     case eRS232_IO:
-        return rs232_recv((uint8_t)dev->handle,out,dataLen,(uint32_t)opt);
+        return rs232_recvOpt((uint8_t)dev->handle,out,dataLen,timeo->waitTimeOutMs,
+        timeo->dataTimeOutMs);
+    break;
+  }
+    break;
+  case DEV_IO_CMD_RECV_TIMEOUT:
+    switch(dev->io)
+  {
+    case eRS485_IO:
+    return rs485_recv((uint8_t)dev->handle,out,dataLen,timeo->waitTimeOutMs);
+    break;
+    case eRS232_IO:
+        return rs232_recv((uint8_t)dev->handle,out,dataLen,timeo->dataTimeOutMs);
     break;
 
   }
+  break;
+  default:
+    break;
+  }
+
 }

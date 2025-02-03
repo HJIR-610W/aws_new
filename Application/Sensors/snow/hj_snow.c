@@ -2,12 +2,10 @@
 #include <string.h>
 
 #include "Sensors\snow\hj_snow.h"
-
-
 #include "app_rs485.h"
 #include "app_rs232.h"
 #include "app_sensor.h"
-
+#include "dev_io.h"
 
 #define PROTOCOL_TYPE_t  uint8_t
 #define P_TYPE_HJ                   0
@@ -166,7 +164,6 @@ uint16_t make_hjSnowFrame(uint8_t* out, uint16_t outSize,
 	}
 
 
-
   int32_t read_hjSnowFall(dev_io_t *dev,uint8_t *err)
   {
     uint8_t frame[50];
@@ -174,22 +171,29 @@ uint16_t make_hjSnowFrame(uint8_t* out, uint16_t outSize,
     int16_t data=0;
     uint8_t para[2];
     uint8_t paraCnt=0;
-  uint16_t offset= (uint16_t)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
-
+  uint16_t offset= (uint16_t)(int)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
+  uint16_t req_bytes;
+  devIoTimeOutopt_t opt;
     *err = 1;
 
+#if 0
     para[paraCnt++] = 0x00;//(uint8_t)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
     para[paraCnt++] = 0x2C;//sizeof(((SYSTEM_TypeDef *)0)->CurSnowLevel);
-
+#else
+    para[paraCnt++] = 0x00;
+    para[paraCnt++] = sizeof(SYSTEM_TypeDef);
+    req_bytes =  37;
+#endif
     len = make_hjSnowFrame(frame,sizeof(frame),CMD_SNOW_READ_STAT,para,paraCnt);
 
     dev_io_write(dev,frame,len,0);
-    
-    len = dev_io_read(dev,frame,sizeof(frame),0,(void *)50);
+
+    opt.waitTimeOutMs = 5;
+    opt.dataTimeOutMs = 2;
+    len = dev_io_read(dev,frame,sizeof(frame),DEV_IO_CMD_DATA_TIMEOUT,(void *)&opt);
 
     if(len)
     {
-
       memcpy(&data,&frame[4+offset],sizeof(data));
       *err = 0;
     }
@@ -200,21 +204,26 @@ uint16_t make_hjSnowFrame(uint8_t* out, uint16_t outSize,
 
   void hjsnow_init(dev_io_t *io)
   {
-
+      uart_config_t uart_cfg;
     switch (io->io)
     {
     case eRS485_IO:
       {
       rs485_config_t *rs485_config=(rs485_config_t *)io->config;
-      rs485_open((eRS485_PORT_t)io->handle);
-      rs485_set((eRS485_PORT_t)io->handle,rs485_config->baud,rs485_config->parityIdx);
+      uart_cfg.baud = rs485_config->baud;
+      uart_cfg.parityIdx = rs485_config->parityIdx;
+      uart_cfg.stop_bit = 0;
+      rs485_open((eRS485_PORT_t)(int)io->handle,&uart_cfg);
       }
       break;
     case eRS232_IO:
       {
       rs232_config_t *rs232_config=(rs232_config_t *)io->config;
-      rs232_open((eRS232_PORT_t)io->handle);
-      rs232_set((eRS232_PORT_t)io->handle,rs232_config->baud,rs232_config->parityIdx);
+      uart_config_t uart_cfg;
+
+      uart_cfg.baud = rs232_config->baud;
+      uart_cfg.parityIdx = rs232_config->parityIdx;
+      rs232_open((eRS232_PORT_t)(int)io->handle,&uart_cfg);
       }
       break;
     default:

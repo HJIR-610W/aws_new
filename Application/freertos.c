@@ -66,17 +66,11 @@ const osThreadAttr_t defaultTask_attributes = {
 extern void MX_LWIP_Init(void);
 extern FATFS SDFatFS;    /* File system object for SD logical drive */
 
-void StartDefaultTask(void *argument);
-void MX_FREERTOS_Init(void); 
 
 
 
-void MX_FREERTOS_Init(void)
- {
 
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-}
 
 void fram_test(void)
 {
@@ -189,37 +183,6 @@ void fat_test(void)
 
 
 
-
-void uart_test(void)
-{
-  uint16_t len;
-  uint8_t data;
-static   uint8_t buff[500];;
-
-  debug_uart = stm32_uart_open(STM32_UART_1);
-
-  stm32_uart_send(debug_uart,"hello\r\n",7);
-
-  len = stm32_uart_recv(debug_uart,buff,sizeof(buff)-1,1);
-
-  buff[len] = 0;
-  
-  debug_puts(buff);
-
-  debug_printf("receviced\r\n");
-
-  while(1)
-  {
-    len = stm32_uart_recv(debug_uart,buff,sizeof(buff)-1,5000);
-
-    buff[len] = 0;
-    if(len)
-    {
-      debug_puts(buff);
-    }
-  }
-
-}
 
 static uint8_t wBuff[1024];
 static uint8_t rBuff[1024];
@@ -359,13 +322,19 @@ void freq_test(void)
 void rs485_test(void)
 {
   driver_t *rs485_a;
+  uart_config_t uart_config;
+
   uint8_t ch='a';
   uint8_t cmd;
-  rs485_a = driver_rs485_open(RS485_A);
+  uart_config.baud = 19200;
+  uart_config.parityIdx = 0;
+  uart_config.stop_bit = 0;
+
+  rs485_a = driver_rs485_open(RS485_A,&uart_config);
 
   while(1)
   {
-    driver_rs485_sends(rs485_a,&ch,1);
+    driver_rs485_send(rs485_a,&ch,1);
     driver_rs485_recv(rs485_a,&ch,1,5000);
     osDelay(100);
   
@@ -391,22 +360,6 @@ void sram_test(void)
 }
 
 
-
-void exuart_test(void)
-{
-  driver_t *quad_uart;
-  uint8_t data='a';
-  
-  quad_uart= driver_uart_open(UART_EX_232_1);
-  
-  while(1)
-  {
-    driver_uart_send(quad_uart,&data,1);
-    osDelay(3000);
-    driver_uart_recv(quad_uart,&data);
-    
-  }
-}
 
 
 void cdmaPower_test(void)
@@ -448,18 +401,18 @@ void rain_test(void)
     osDelay(100);
   }
 }
-void StartDefaultTask(void *argument)
+void sss(void *argument)
 {
   char buff[100];
   uint32_t i=0;
 
-  debug_uart = stm32_uart_open(STM32_UART_1);
+  debug_uart = stm32_uart_open(STM32_UART_0_DEBUG,0);
 
 
 
 
  
-  //exuart_test();
+
   //sram_test();
   //fat_test();
   //MX_LWIP_Init();

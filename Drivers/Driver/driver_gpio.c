@@ -39,6 +39,8 @@ driver_t g_gpio[2];
 
 driver_t *driver_gpio_open(uint32_t num)
 {
+      driver_t *drv;
+    pcf8575_cfg_t *cfg;
   if(g_gpio[num].opened)
   {
     return &g_gpio[num];
@@ -46,8 +48,8 @@ driver_t *driver_gpio_open(uint32_t num)
   switch(num)
   {
     case DRIVER_PCF8575:
-    pcf8575_cfg_t *cfg;
-    driver_t *drv;
+
+
 
     
     drv = pcf8575_open(0);
@@ -86,6 +88,7 @@ int driver_gpio_write(driver_t *drv,uint16_t port_data)
   
   api->write(drv->handle,port_data);
 
+  return 0;
 }
 
 

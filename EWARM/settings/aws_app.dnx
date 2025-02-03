@@ -42,11 +42,11 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>3277253946</Checksum>
+        <Checksum>467626897</Checksum>
     </DebugChecksum>
     <Disassembly>
-        <MixedMode>1</MixedMode>
         <InstrCount>0</InstrCount>
+        <MixedMode>1</MixedMode>
     </Disassembly>
     <CodeCoverage>
         <Enabled>0</Enabled>
@@ -162,8 +162,8 @@
     </DisassembleMode>
     <Breakpoints2>
         <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\IO\cli\fsl_debug_console.c}.1837.5" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_console.c}.754.3" 0 0 1 "" 0 "" 0</Bp1>
-        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_console_test.c}.322.3" 0 0 1 "" 0 "" 0</Bp2>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_console.c}.756.3" 0 0 1 "" 0 "" 0</Bp1>
+        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_console_test.c}.326.3" 0 0 1 "" 0 "" 0</Bp2>
         <Count>3</Count>
     </Breakpoints2>
     <Aliases>

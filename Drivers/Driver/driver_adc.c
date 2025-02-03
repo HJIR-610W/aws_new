@@ -384,7 +384,7 @@ void driver_adc_set(driver_t *drv,uint8_t cmd,void *option)
   {
     case ADC_CMD_AVERAGE_SET:
     {
-      uint8_t average_cnt = (uint8_t)option;
+      uint8_t average_cnt = (uint8_t)(int)option;
 
 
     }

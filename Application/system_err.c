@@ -19,15 +19,10 @@ void Error_Handler(const char *file,const int32_t line)
  
    debug_printf("%s,%d\r\n",file,line);
 
-   __disable_irq();
+//   __disable_irq();
     
-   __asm("BKPT #0"); 
-         
-           
-  while (1)
-  {
-    
-  }
+//   __asm("BKPT #0"); 
+
   /* USER CODE END     Error_Handler(__FILE__,__LINE__);_Debug */
 }
 
@@ -64,7 +59,7 @@ void reset_system(uint16_t code,const char * pFmt, ...)
     char buff[RST_LOG_MAX];
     uint32_t len=0;
     va_list ap;
-    DATE_TIME_BUF tn;
+    DATE_TIME_BUF tn={1,1,1,1,1,1};
  
     __disable_irq();;//TODO 인터럽트 비활성 코드 삽입
     

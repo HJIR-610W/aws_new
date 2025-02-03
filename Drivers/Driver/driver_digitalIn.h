@@ -5,6 +5,8 @@
 
 #include <stdint.h>
 
+#include "pcb_define.h"
+
 #include "cmsis_os.h"
 #include "driver_interface.h"
 #include "driver_di_def.h"

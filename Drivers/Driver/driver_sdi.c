@@ -1,6 +1,6 @@
 
 #include "driver_sdi.h"
-#include "driver_stm32_uart.h"
+#include "driver_uart.h"
 #include "driver_digitalOut.h"
 
 typedef struct sdi_cfg_s
@@ -10,11 +10,10 @@ typedef struct sdi_cfg_s
 }sdi_cfg_t;
 
 sdi_cfg_t g_sdi_cfg[1];
-
 driver_t g_sdi_list[1]={{.cfg=&g_sdi_cfg[0]}};
 
 
-driver_t *driver_sdi_open(uint32_t num)
+driver_t *driver_sdi_open(uint32_t num,void *opt)
 {
   if(g_sdi_list[num].opened == true)
   {
@@ -26,8 +25,8 @@ driver_t *driver_sdi_open(uint32_t num)
 
   switch (num)
   {
-  case SDI_1:
-      g_sdi_cfg[num].uart_io =  stm32_uart_open(STM32_UART_6);
+  case SDI_0:
+      g_sdi_cfg[num].uart_io =  driver_uart_open(UART_10_SDI,opt);
       g_sdi_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_A); 
       driver_do_low(g_sdi_cfg[num].do_io);//수신 모드
 
@@ -56,7 +55,7 @@ void driver_sdi_sends(driver_t *drv,uint8_t *pData,uint16_t dataLen)
   }
   driver_do_high(cfg->do_io);
   osDelay(1);
-  stm32_uart_send(cfg->uart_io,pData,dataLen);
+  driver_uart_send(cfg->uart_io,pData,dataLen);
   driver_do_low(cfg->do_io);
   osDelay(1);
   if(drv->sem)
@@ -77,7 +76,7 @@ uint16_t len;
     osSemaphoreAcquire(drv->sem, osWaitForever);
   }
 
-  len = stm32_uart_recv(cfg->uart_io,pBuff,rLen, timeOutms);
+  len = driver_uart_recv(cfg->uart_io,pBuff,rLen, timeOutms);
 
   if(drv->sem)
   {

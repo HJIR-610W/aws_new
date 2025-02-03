@@ -75,7 +75,7 @@ void hostRxTask(void *argument)
   
   while(1)
   {
-    if (stm32_uart_recv_byte(g_hostRs232,&data,osWaitForever))
+   // if (stm32_uart_recv_byte(g_hostRs232,&data,osWaitForever))
     {
         if (data == COBS_DELIMITER)
         {             // 패킷 종료 바이트 감지
@@ -118,7 +118,7 @@ void hostTxTask(void *argument)
       
       if(status== osOK)
       {
-        stm32_uart_send(g_hostRs232,msg.data,msg.len);
+        //stm32_uart_send(g_hostRs232,msg.data,msg.len);
       }
   }
 }
@@ -128,7 +128,7 @@ void hostTxTask(void *argument)
 
 void hostTask_init(void)
 {
-  g_hostRs232 = stm32_uart_open(STM32_UART_1);
+  g_hostRs232 = stm32_uart_open(STM32_UART_0_DEBUG,0);
   
   g_hostTxMessageQueue = osMessageQueueNew(2, sizeof(hostMsg_t), NULL);
 

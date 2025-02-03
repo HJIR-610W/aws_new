@@ -15,7 +15,7 @@ void temperature_init(sensor_t *sensor)
 float read_sensor_temperature(sensor_t *sensor,uint8_t *err)
 {
   float data;
-  float gain;
+
   void *cfg;
 
   cfg =  get_sensor_config(sensor);

@@ -12,6 +12,17 @@
 
 #define ASCII_SPEICIAL    0x5B //   '['   
 
+#define DEV_IO_CMD_RECV_TIMEOUT  1 
+#define DEV_IO_CMD_DATA_TIMEOUT  2
+
+#define DEV_IO_GET_CMD_CFG 0x01
+typedef struct
+{
+  uint32_t waitTimeOutMs;
+  uint32_t dataTimeOutMs;
+}devIoTimeOutopt_t;
+
+
 typedef enum dev_io_e
 {
   eRS485_IO,

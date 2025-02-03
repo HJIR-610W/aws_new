@@ -140,7 +140,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num) {
     static char buffer[256];
     char temp[50]={0,0};
     buffer[0] = '\0';
-
+ DMA_Stream_TypeDef* stream ;
     switch (irq_num) {
         // EXTI (External Interrupts)
         case EXTI0_IRQn: 
@@ -249,7 +249,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num) {
                          Print_DMA_Stream_Peripherals(temp,sizeof(temp),2,7);
             goto DMA_PRINT;
 DMA_PRINT:
-              DMA_Stream_TypeDef* stream = (irq_num >= DMA2_Stream0_IRQn) ?
+               stream = (irq_num >= DMA2_Stream0_IRQn) ?
                                          (DMA2_Stream0 + (irq_num - DMA2_Stream0_IRQn)) :
                                          (DMA1_Stream0 + (irq_num - DMA1_Stream0_IRQn));
 
@@ -408,7 +408,7 @@ void PrintAllInterrupts(void) {
 
         if(is_enabled)
         {
-            const char* source_details = GetInterruptSourceDetails(irq_num);
+            const char* source_details = GetInterruptSourceDetails((IRQn_Type)irq_num);
             
 
             debug_printf("| %7d | %8d | %-20s | %-80s \r\n", irq_num,priority, IRQ_Table[irq_num].name, source_details);

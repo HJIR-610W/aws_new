@@ -15,14 +15,16 @@ typedef struct rtc_api_s
 
 driver_t * driver_rtc_open(int num)
 {
-  switch(num)
-  {
-    case RTC_DS1306:
     static driver_t rtc_ds1306;//driver_fram_open을 하면 생성되는것
     const static rtc_api_t rtc_api={.read = ds1306_read};
-
     driver_t *drv;
     ds1306_cfg_t *cfg;
+    switch(num)
+  {
+    case RTC_DS1306:
+
+
+
 
     drv = ds1306_open();
 
@@ -74,12 +76,13 @@ void driver_rtc_set(driver_t *driver,uint8_t cmd,void *opt)
 {
   driver_t* drv = ((driver_t *)driver)->handle;
   ds1306_cfg_t *cfg = drv->cfg;
-
+    driver_t *rain_pulse;
+        di_isr_set_cfg_t *isr_cfg = &((rtc_set_irq_cfg_t *)opt)->cfg;
   switch (cmd)
   {
     case eRTC_SET_IRQ:
-    driver_t *rain_pulse;
-    di_isr_set_cfg_t *isr_cfg = &((rtc_set_irq_cfg_t *)opt)->cfg;
+
+
 
     driver_di_set(cfg->irq_io,DI_SET_INTERRUT,isr_cfg);
     break;

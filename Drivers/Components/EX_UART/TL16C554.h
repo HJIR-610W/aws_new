@@ -6,42 +6,22 @@
 
 #include <stdint.h>
 #include "driver_interface.h"
-#include "driver_digitalIn.h"
 #include "driver_uart_def.h"
 
+//항상 0부터 시작해야함
+#define TL16C554_UART_0_D_SUB   0
+#define TL16C554_UART_1_TTL_TTL 1
+#define TL16C554_UART_EXT3      2
+#define TL16C554_UART_EXT4      3
+#define TL16C554_UART_4_RS485_A 4
+#define TL16C554_UART_5_RS485_B 5
+#define TL16C554_UART_6_EXT1    6
+#define TL16C554_UART_7_EXT2    7
+
+#define TL16C554_UART_MAX 8
 
 
-
-void check_baud_rate(int uart_num);
-void set_baud_rate(int uart_num,uint32_t baud_rate) ;
-void send_data(int uart_num,uint8_t data);
-void send_data_n(int uart_num,uint8_t *p_data,uint16_t dataLen);
-int read_data(int uart_num, uint8_t *data);
-
-void init_uart(int uart_num);
+driver_t *tls16c554_open(uint32_t num,void *opt);
 
 
-
-
-typedef struct tls16c554_s
-{
-  driver_t *sram_io;
-  driver_t *irq_io;
-}tls16c554_t;
-
-
-typedef eUART_SET_CMD_t eTLS16C554_CMD_t;
-
-
-
-
-
-driver_t *tls16c554_open(int num);
-void tls16c554_send(driver_t *tls16c554,const uint8_t *pData,uint16_t dataLen);
-int32_t tls16c554_recv(driver_t *tls16c554,uint8_t *pData);
-
-uint16_t tls16c554_uart_recvs(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs);
-int tls16c554_recv_byte(driver_t *tls16c554,uint8_t *data);
-void tls16c554_set(driver_t *tls16c554,eTLS16C554_CMD_t cmd,void *option);
-void tls16c554_init(driver_t *tls16c554);
 #endif

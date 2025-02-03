@@ -18,8 +18,8 @@
   uint16_t cnt;
   char *endptr;
   int pin;
-  int data;
-  driver_t *driver;
+
+
   if(strncmp(argv[1],"write",4)==0)
   {
     if(strncmp(argv[2],"rs232",5)==0)
@@ -29,21 +29,21 @@
       {
         if(strncmp(argv[3],portList[i],strlen(portList[i]))==0)
         {
-          if(rs232_is_opened(i)==false)
+          if(rs232_is_opened((eRS232_PORT_t)i)==false)
           {
-            rs232_open((eRS232_PORT_t)i);
+           // rs232_open((eRS232_PORT_t)i);
 
           }
-          rs232_send(i,argv[4],strlen(argv[4]));
+          rs232_send((eRS232_PORT_t)i,(uint8_t*)argv[4],strlen(argv[4]));
           break;
         }
       }
     }
     else if(strncmp(argv[2],"do",2)==0)
     {
-      pin  = strtol(argv[3],&endptr,10);
-      data = strtol(argv[4],&endptr,10);
-      driver = driver_do_open(pin);
+     // pin  = strtol(argv[3],&endptr,10);
+     // data = strtol(argv[4],&endptr,10);
+     // driver = driver_do_open(pin);
     }
   }
   else if(strncmp(argv[1],"read",4)==0)
@@ -55,13 +55,14 @@
       {
         if(strncmp(argv[3],portList[i],strlen(portList[i]))==0)
         {
-          if(rs232_is_opened(i)==false)
+          if(rs232_is_opened((eRS232_PORT_t)i)==false)
           {
-            rs232_open((eRS232_PORT_t)i);
+            
+           // rs232_open((eRS232_PORT_t)i);
 
           }
           do{
-            if(rs232_recv(i,buff,1,100))
+            if(rs232_recv((eRS232_PORT_t)i,(uint8_t *)buff,1,100))
             {
               debug_printf("%c",buff[0]);
             }
@@ -74,6 +75,7 @@
     }
   }
  
+  return 0;
  }
 
 
@@ -310,6 +312,8 @@ int32_t print_di(p_shell_context_t ctx, int32_t argc, char** argv)
     }
     debug_printf("\r\n");
   }
+  
+  return 0;
 }
 
 int32_t ctrl_do(p_shell_context_t ctx, int32_t argc, char** argv)
@@ -329,4 +333,5 @@ int32_t ctrl_do(p_shell_context_t ctx, int32_t argc, char** argv)
     driver_gpio_write_pin(gp,pin,pin_state);
   }
   
+  return 0;
 }

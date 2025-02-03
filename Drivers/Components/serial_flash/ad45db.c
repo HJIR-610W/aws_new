@@ -253,7 +253,7 @@ void AT45_Read_Buffer(driver_t *drv,uint8_t buffer_choice, uint32_t address, cha
 		szCmd[4] = BYTE_DUMMY;
 
 
-	driverex_spi_send_bytes(cfg->spi_io,szCmd,5);
+	driverex_spi_send_bytes(cfg->spi_io,(uint8_t *)szCmd,5);
 	driverex_spi_read_bytes(cfg->spi_io,(uint8_t *)string,buf_len);
 	
 	driver_do_high(cfg->cs_io);
