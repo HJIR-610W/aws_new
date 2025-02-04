@@ -1,11 +1,15 @@
-#include "cmsis_os.h"
+
+#include "cmsis_os2.h"
+
 #include "ads1220.h"
 #include "driver_do.h"
 #include "driver_spi.h"
 #include "driver_di.h"
 #include "mcu_delay.h"
 #include "mcu_interrupt.h"
-
+#include "driver_adc_define.h"
+#include "driver_adc.h"
+#include "driver_mux.h"
 osSemaphoreId_t g_dataReadySem=NULL;
 
 void write_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs,uint8_t *pData)
@@ -266,4 +270,122 @@ driver_t *ads1220_open(void)
     }
 
     return &ads1220;
+}
+
+
+
+
+
+void ads1220_close(driver_t *handle);
+int32_t ads1220_read(driver_t *handle,int channel,uint16_t avg,uint8_t *err);
+void ads1220_set(driver_t *handle, adc_set_option_t option, void *value);
+int32_t ads1220_diff_read(driver_t *handle,int channel,uint16_t avg,uint8_t *err);
+
+
+adc_ch_api_t ads1220_api ={.close = ads1220_close,
+                    .read_single = ads1220_read,
+                    .read_diff = ads1220_diff_read,
+                    .set = ads1220_set};
+
+driver_t ads1220_driver;
+
+
+
+ads1220_cfg_t ads1220_cfg;
+
+driver_t *ads1220_ch_open(uint32_t num,void *pot)
+{
+  if(ads1220_driver.opened)
+  {
+    return &ads1220_driver;
+  }  
+  
+  ads1220_cfg.spi_io = driver_spi_open(STM_SPI_2);
+  ads1220_cfg.cs_io  = driver_do_open(DO_ADC_NCS,0);
+  ads1220_cfg.irq_io = driver_di_open(DI_0_ADC_RDY,0);
+
+  ads1220_driver.cfg = &ads1220_cfg;
+  ads1220_driver.api = &ads1220_api;
+
+  if(ads1220_driver.sem==NULL)
+  {
+    ads1220_driver.sem = osSemaphoreNew(1, 1, NULL); 
+  }
+  adc_mux_init();
+  ads1210_init(&ads1220_driver);
+
+  return &ads1220_driver;
+}
+
+
+
+void ads1220_close(driver_t *handle)
+{
+
+}
+
+int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
+{
+
+  uint32_t diff_ch;
+  int32_t adc;
+  int32_t sum=0;
+  uint8_t valid_cnt=0;
+
+  
+  adc_single_mux_set(channel);
+  
+  for(int i = 0 ; i< avg; i++)
+  {
+    adc = ads1220_read_single_ch(drv->handle,channel%4,err);
+  
+  if(*err ==0)
+  {
+    sum += adc;
+    valid_cnt++;
+  }
+      
+
+     }
+
+
+  adc = sum/valid_cnt;
+
+  return adc;
+}
+
+int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
+{
+  uint32_t diff_ch;
+  int32_t adc;
+  int32_t sum=0;
+  uint8_t valid_cnt=0;
+
+   
+  //diff_ch = (channel - ADC_ADS1220_DIFF_CH_0);//총 8개 채널이 실제 물리 0채널임
+    //차동 채널 0,1,2,3,4,5,6,7 은 ADS1220에서는 0채널로만 측정하며  MUX가 채널이 됨
+    adc_diff_mux_set(channel);
+    
+    for(int i = 0 ; i< avg;i++)
+    {
+      adc = ads1220_read_diff_ch(drv->handle,channel/8,err);
+      if(*err ==0)
+      {
+        sum += adc;
+        valid_cnt++;
+      }
+    }
+ 
+
+
+  adc = sum/valid_cnt;
+
+  return adc;
+
+}
+
+
+void ads1220_set(driver_t *handle, adc_set_option_t option, void *value)
+{
+
 }

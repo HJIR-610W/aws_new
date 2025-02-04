@@ -7,7 +7,6 @@
 #include "pcb_define.h"
 #include "cmsis_os.h"
 
-
 #include "driver_adc.h"
 #include "driver_spi.h"
 #include "driver_do.h"
@@ -16,6 +15,7 @@
 #include "driver_mux.h"
 #include "mcu_interrupt.h"
 #include "utile.h"
+
 
 
 
@@ -48,54 +48,9 @@ adc_api_t g_ads1220;
 adc_api_t g_stm32;
 
 
-osThreadId_t g_ads1220TaskHandle=NULL;
-osThreadId_t g_adcstm32adcTaskHandle=NULL;
-
-
-static const osThreadAttr_t ads1220Task_attributes = {
-  .name = "ads1220",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-
-static const osThreadAttr_t adcstm32Task_attributes = {
-  .name = "stm32adc",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
 
 
 int32_t g_adcChannel[32];
-
-
-
-
-
-void stm32AdcTask(void *argument)
-{
-
-
-
-  for(;;)
-  {
-        osDelay(100);
-
-  }
-
-}
-
-
-
-
-void driver_adc_start(driver_t *adc)
-{
-  
-}
-void driver_adc_stop(driver_t *adc)
-{
-  
-}
-
 
 
 
@@ -123,59 +78,7 @@ void set_adc_mux(uint16_t ch)
 }
 driver_t g_ads1220_h={.opened = false};
 
-int32_t g_sample[20];
-void adc1220Task(void *argument)
-{
-  uint8_t err;
-  int32_t adc;
-  uint16_t adcChannelList[]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29,2,6};
-  uint16_t channel=0;
-  uint32_t sum=0;
-int n=0;
-int sample_cnt=0;
-int32_t first=0;
 
-  for(;;)
-  {
-    for(int i = 0 ; i< _countof(adcChannelList);i++)
-    {
-      channel = adcChannelList[i];
-      adc_single_mux_set(channel);
-      osDelay(50);
-      
-      sum = 0;
-      sample_cnt=0;
-      first =1;
-      
-      for(int n = 0 ; n< 10; n++)
-      {
-        g_sample[n]=0;
-        //adc = ads1220_read_single_ch(g_ads1220_h.handle,channel%4,&err);
-        if(err == 0)
-        {
-          g_sample[n]=adc;
-          if(first)
-          {
-            first =0;
-            continue;
-          }
-          sample_cnt++;
-          sum +=adc;
-        }
-    
-
-      }
-
-        if(sample_cnt)
-        g_adcChannel[channel] = sum/sample_cnt;
-        else
-        g_adcChannel[channel] = -1;
-
-
-    }
-  }
-
-}
 
 
 void ads1220_common_open(driver_t *adc)
@@ -287,10 +190,6 @@ driver_t * driver_adc_open(uint32_t num)
     return 0;
 }
 
-void stm32_read(int32_t *val,uint32_t ch)
-{
-  
-}
 
 
 
@@ -377,17 +276,48 @@ int32_t driver_adc_read_average(driver_t *drv,uint32_t ch,uint8_t *err,uint8_t a
 
 
 
-void driver_adc_set(driver_t *drv,uint8_t cmd,void *option)
+
+driver_t *driver_adc_ch_open(uint32_t num,void *opt)
 {
-  driver_adc_cfg_t *cfg = drv->cfg;
-  switch(cmd)
+  driver_t *driver = NULL;
+
+  switch(num)
   {
-    case ADC_CMD_AVERAGE_SET:
-    {
-      uint8_t average_cnt = (uint8_t)(int)option;
+    case ADC_ADS1220:
+    driver = ads1220_ch_open(ADC_ADS1220,opt);
+    break;
+    case ADC_STM32:
 
-
-    }
     break;
   }
+
+  return driver;
+}
+
+void driver_close(driver_t *drv)
+{
+  const adc_ch_api_t *api = drv->api;
+}
+
+int32_t driver_single_read(driver_t *drv,int group,int channel,uint16_t avg,uint8_t *err)
+{
+  const adc_ch_api_t *api = drv->api;
+
+  return api->read_single(drv,channel,avg,err);
+}
+
+int32_t driver_diff_read(driver_t *drv,int group,int channel,uint16_t avg,uint8_t *err)
+{
+  const adc_ch_api_t *api = drv->api;
+
+  return api->read_diff(drv,channel,avg,err);
+}
+
+
+void driver_set(driver_t *drv, adc_set_option_t option, void *value)
+{
+  const adc_ch_api_t *api = drv->api;
+
+
+  api->set(drv,option,value);
 }

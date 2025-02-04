@@ -4,7 +4,7 @@
 #define DRIVER_ADC_H
 
 #include "driver_interface.h"
-
+#include "driver_adc_define.h"
 #define ADC_ADS1220 0
 #define ADC_STM32   1
 
@@ -70,4 +70,12 @@ driver_t * driver_adc_open(uint32_t num);
 int32_t driver_adc_read(driver_t *adc,uint32_t ch,uint8_t *err);
 int32_t driver_adc_read_average(driver_t *drv,uint32_t ch,uint8_t *err,uint8_t average_cnt);
 
+
+
+
+driver_t *driver_adc_ch_open(uint32_t num,void *opt);
+void driver_close(driver_t *handle);
+int32_t driver_single_read(driver_t *drv,int group,int channel,uint16_t avg,uint8_t *err);
+int32_t driver_diff_read(driver_t *drv,int group,int channel,uint16_t avg,uint8_t *err);
+void driver_set(driver_t *handle, adc_set_option_t option, void *value);
 #endif
