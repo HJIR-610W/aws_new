@@ -61,12 +61,9 @@ void measureTask(void *arg)
   sensorData_init();
 
   sensor = config.sensor;
+  os_logging_printf("measure task");
 
-
-
-os_logging_printf("measure task");
-
-    ct = Date_Time;
+  ct = Date_Time;
     
   memset(data,0xff,sizeof(data));
   while(1)

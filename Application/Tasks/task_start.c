@@ -66,13 +66,10 @@ void startTask(void *arg)
   runLed_init();
 
   systemTask_init();
-
   consoleTask_init();
-  
   isrEventTask_init();
   dataLogging_init();
   loggingTask_init();
-  
   measureTask_init();
 
 
