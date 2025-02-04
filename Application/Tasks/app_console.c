@@ -5,6 +5,7 @@
 
 
 #include "aws_data.h"
+#include "app_logging.h"
 #include "app_console.h"
 #include "app_version.h"
 #include "app_sensor.h"
@@ -2476,11 +2477,11 @@ int32_t menu_manage_version(p_shell_context_t ctx)
   return 0;
 
 }
-int32_t download_file(int32_t (*write_file)(char *path,uint32_t offset,uint8_t *data,uint32_t dataLen),
+int32_t download_file(int32_t (*save_file)(char *path,uint32_t offset,uint8_t *data,uint32_t dataLen),
                         char *path,uint32_t offset,uint32_t *len,uint32_t limit);
 
 
-int32_t write_file(char *path,uint32_t offset,uint8_t *data,uint32_t dataLen)
+int32_t save_file(char *path,uint32_t offset,uint8_t *data,uint32_t dataLen)
 {
 
   flash_write(offset,data,dataLen);
@@ -2496,7 +2497,7 @@ int32_t menu_manage_update(p_shell_context_t ctx)
   ctx->printf("10초뒤에 파일을 전송해주세요\r\n");
   osDelay(10000);
 
-  if(download_file(write_file,buff,0,&len,512*1024) ==0)
+  if(download_file(save_file,buff,0,&len,512*1024) ==0)
   {
     ctx->printf("파일 크기:%d\r\n",len);
   }
@@ -3247,6 +3248,7 @@ int32_t print_menu_developer(p_shell_context_t ctx)
   ctx->printf("%2d.memory\r\n",cnt++);
   ctx->printf("%2d.sensor emul\r\n",cnt++);
   ctx->printf("%2d.print sensor config\r\n",cnt++);
+  ctx->printf("%2d.view system logging\r\n",cnt++);
   return cnt;
 }
 
@@ -3317,13 +3319,53 @@ int32_t menu_developer_test(p_shell_context_t ctx)
   }while(1);
 }
 
+int32_t menu_developer_logging(p_shell_context_t ctx)
+{
+    int32_t startCnt,endCnt;
+    loggingMsg_t log;
+    int32_t cnt;
+    int32_t year,month,day,hour,min,sec;
+
+
+  do
+  {
+
+  
+  debug_printf("로그 시작 카운트:%d\r\n",logging_get_logCnt());
+  debug_printf("start,end>>");
+
+  
+  cnt = console_scanf("%d,%d,%d",&startCnt,&endCnt);
+
+      if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM)
+      {
+        return cnt;
+      }
+
+      if(cnt ==2)
+      {
+      
+        for(int32_t i=startCnt; i <= endCnt;i++)
+        {
+            logging_read_log(i,&log);
+            sscanf(log.msg,"%02d%02d%02d%02d%02d%02d",&year,&month,&day,&hour,&min,&sec);
+            debug_printf("%4d,%04d-%02d-%02d %02d:%02d:%02d,%s\r\n",i,year+2000,month,day,hour,min,sec,&log.msg[13]);
+
+        }
+      }
+  }while(1);
+  
+  return 0;
+
+}
 int32_t menu_developer(p_shell_context_t ctx)
 {
   int32_t cnt;
 const menu_func menu[]={[0]= menu_developer_interrupt,
                              menu_developer_memory,
                              menu_developer_sensor,
-                             menu_developer_sensor_config};
+                             menu_developer_sensor_config,
+                             menu_developer_logging};
   do
   {
     cnt = select_indexFromList(ctx,NULL,print_menu_developer,0,false);

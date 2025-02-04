@@ -2,12 +2,12 @@
 #include "cmsis_os.h"
 #include "Lib\tlsf\tlsf.h"
 #include "fsmc.h"
-#include "gpio.h"
+
 #include "pcb_define.h"
 #include "task_start.h"
 #include "user_heap.h"
 
-
+#include "driver_stm32_bsp.h"
 
 
 
@@ -62,6 +62,8 @@ int is_debug_mode(void)
 
 int main(void)
 {
+  
+
 
 #if DEBUG_MODE_EN
   if(is_debug_mode())
@@ -77,7 +79,8 @@ int main(void)
 
   asw_tlsf_init(POOL_SIZE);  
    
-  MX_GPIO_Init();
+  driver_stm32_bsp_init();
+  
   MX_FSMC_Init();//SRAM√ ±‚»≠
    
   osKernelInitialize(); 

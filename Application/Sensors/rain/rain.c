@@ -67,9 +67,9 @@ int32_t read_rain_rs232(dev_io_t *dev,uint8_t *err)
   char *endptr;
  len= snprintf(frame,sizeof(frame),"Q_RAIN:%d\r\n",cnt);
 
-  dev_io_write(dev,frame,len,0);
+  dev_io_write(dev,(uint8_t *)frame,len,0);
     
-  len = dev_io_read(dev,frame,sizeof(frame),0,(void *)5);
+  len = dev_io_read(dev,(uint8_t*)frame,sizeof(frame),0,(void *)5);
 
   if(len)
   {

@@ -6,6 +6,11 @@
 #include "stm32f4xx_hal.h"
 
 /*
+¿ÜºÎ SRAM:IS61WV204816BLL-xxTLI 4MB
+MCU SRAM:192KB(112+16+64(CCM))
+112:0x20000000 ~ -0x2001BFFF
+ 16:0x2001C000 ~  0x2001FFFF
+
 
 PCB 0.1 20241021
 PCB 0.3 20250120
@@ -16,159 +21,138 @@ PCB 0.3 20250120
 #define AWS_PCB_VER 1  //0.1=> 1, 0.3 => 3
 
 #if (AWS_PCB_VER==1)
-#define NOT_USED_PE2_Pin GPIO_PIN_2
-#define NOT_USED_PE2_GPIO_Port GPIOE
-#define OUT_SPI1_CS_RTC_Pin GPIO_PIN_5
-#define OUT_SPI1_CS_RTC_GPIO_Port GPIOE
-#define NOT_USED_PE6_Pin GPIO_PIN_6
-#define NOT_USED_PE6_GPIO_Port GPIOE
+#define IN_RAIN_ERR_Pin              GPIO_PIN_6
+#define IN_RAIN_ERR_GPIO_Port        GPIOA
+#define NOT_USED_PA5_Pin             GPIO_PIN_5
+#define NOT_USED_PA5_GPIO_Port       GPIOA
+#define NOT_USED_PA11_Pin            GPIO_PIN_11
+#define NOT_USED_PA11_GPIO_Port      GPIOA
+#define IN_SPI2_DRDY_Pin             GPIO_PIN_12
+#define IN_SPI2_DRDY_GPIO_Port       GPIOA
+#define OUT_SPI1_NSS_Pin             GPIO_PIN_15
+#define OUT_SPI1_NSS_GPIO_Port       GPIOA
 
-#define NOT_USED_PC13_Pin GPIO_PIN_13
-#define NOT_USED_PC13_GPIO_Port GPIOC
 
-#define OUT_CON_PWR_ASEN_C_Pin GPIO_PIN_9
-#define OUT_CON_PWR_ASEN_C_GPIO_Port GPIOF
-#define OUT_CON_PWR_ASEN_D_Pin GPIO_PIN_10
-#define OUT_CON_PWR_ASEN_D_GPIO_Port GPIOF
-#define OUT_CON_PWR_ASEN_Pin GPIO_PIN_0
-#define OUT_CON_PWR_ASEN_GPIO_Port GPIOC
-#define OUT_CON_PWR_ASEN_A_Pin GPIO_PIN_2
+#define IN_RAIN_HALL_Pin             GPIO_PIN_1
+#define IN_RAIN_HALL_GPIO_Port       GPIOB
+#define INT_D_IO_Pin                 GPIO_PIN_0
+#define INT_D_IO_GPIO_Port           GPIOB
+#define IN_BOOT1_Pin                 GPIO_PIN_2
+#define IN_BOOT1_GPIO_Port           GPIOB
+#define IN_STATUS_BTM_Pin            GPIO_PIN_14
+#define IN_STATUS_BTM_GPIO_Port      GPIOB
+#define BTM_PWRC_Pin                 GPIO_PIN_15
+#define BTM_PWRC_GPIO_Port           GPIOB
+#define OUT_CON_PWR_485_Pin          GPIO_PIN_8
+#define OUT_CON_PWR_485_GPIO_Port    GPIOB
+#define CON_PWR_TC_Pin               GPIO_PIN_9
+#define CON_PWR_TC_GPIO_Port         GPIOB
+
+
+#define OUT_CON_PWR_ASEN_Pin         GPIO_PIN_0
+#define OUT_CON_PWR_ASEN_GPIO_Port   GPIOC
+#define OUT_CON_PWR_ASEN_A_Pin       GPIO_PIN_2
 #define OUT_CON_PWR_ASEN_A_GPIO_Port GPIOC
-#define OUT_CON_PWR_ASEN_B_Pin GPIO_PIN_3
+#define OUT_CON_PWR_ASEN_B_Pin       GPIO_PIN_3
 #define OUT_CON_PWR_ASEN_B_GPIO_Port GPIOC
-#define OUT_ETH_RST_PHY_Pin GPIO_PIN_2
-#define OUT_ETH_RST_PHY_GPIO_Port GPIOH
-#define NOT_USED_PA5_Pin GPIO_PIN_5
-#define NOT_USED_PA5_GPIO_Port GPIOA
-#define INT_D_IO_Pin GPIO_PIN_0
-#define INT_D_IO_GPIO_Port GPIOB
-#define INT_D_IO_EXTI_IRQn EXTI0_IRQn
+#define NOT_USED_PC13_Pin            GPIO_PIN_13
+#define NOT_USED_PC13_GPIO_Port      GPIOC
+
+#define IN_SDIO_DETECT_Pin            GPIO_PIN_3
+#define IN_SDIO_DETECT_GPIO_Port      GPIOD
+#define OUT_CON_PWR_DSEN_Pin          GPIO_PIN_6
+#define OUT_CON_PWR_DSEN_GPIO_Port    GPIOD
+#define OUT_FLASH_CS_Pin              GPIO_PIN_7
+#define OUT_FLASH_CS_GPIO_Port        GPIOD
+
+#define NOT_USED_PE2_Pin             GPIO_PIN_2
+#define NOT_USED_PE2_GPIO_Port       GPIOE
+#define OUT_SPI1_CS_RTC_Pin          GPIO_PIN_5
+#define OUT_SPI1_CS_RTC_GPIO_Port    GPIOE
+#define NOT_USED_PE6_Pin             GPIO_PIN_6
+#define NOT_USED_PE6_GPIO_Port       GPIOE
+#define OUT_EX_UART_RST_A_Pin         GPIO_PIN_0
+#define OUT_EX_UART_RST_A_GPIO_Port   GPIOE
+#define OUT_EX_UART_RST_B_Pin         GPIO_PIN_1
+#define OUT_EX_UART_RST_B_GPIO_Port   GPIOE
 
 
-#define IN_RAIN_PULSE_H_EXTI_IRQn EXTI1_IRQn
+#define OUT_CON_PWR_ASEN_C_Pin       GPIO_PIN_9
+#define OUT_CON_PWR_ASEN_C_GPIO_Port GPIOF
+#define OUT_CON_PWR_ASEN_D_Pin       GPIO_PIN_10
+#define OUT_CON_PWR_ASEN_D_GPIO_Port GPIOF
+#define IN_TIM10_CH1_Pin              GPIO_PIN_6
+#define IN_TIM10_CH1_GPIO_Port        GPIOF
+#define IN_TIM11_CH1_Pin              GPIO_PIN_7
+#define IN_TIM11_CH1_GPIO_Port        GPIOF
+#define IN_TIM13_CH1_Pin              GPIO_PIN_8
+#define IN_TIM13_CH1_GPIO_Port        GPIOF
+#define IN_RAIN_REED_Pin              GPIO_PIN_11
+#define IN_RAIN_REED_GPIO_Port        GPIOF
 
-#define IN_BOOT1_Pin GPIO_PIN_2
-#define IN_BOOT1_GPIO_Port GPIOB
-#define OUT_DO_PWR_CDMA_Pin GPIO_PIN_6
-#define OUT_DO_PWR_CDMA_GPIO_Port GPIOH
-#define OUT_SYS_RUN_Pin GPIO_PIN_9
-#define OUT_SYS_RUN_GPIO_Port GPIOH
-#define OUT_ADC_EN_RTD_Pin GPIO_PIN_10
-#define OUT_ADC_EN_RTD_GPIO_Port GPIOH
-#define OUT_ADC_EN_ODD_Pin GPIO_PIN_11
-#define OUT_ADC_EN_ODD_GPIO_Port GPIOH
-#define OUT_ADC_EN_EVEN_Pin GPIO_PIN_12
-#define OUT_ADC_EN_EVEN_GPIO_Port GPIOH
-#define IN_STATUS_BTM_Pin GPIO_PIN_14
-#define IN_STATUS_BTM_GPIO_Port GPIOB
-#define BTM_PWRC_Pin GPIO_PIN_15
-#define BTM_PWRC_GPIO_Port GPIOB
-#define OUT_DIR_RS485_A_Pin GPIO_PIN_6
-#define OUT_DIR_RS485_A_GPIO_Port GPIOG
-#define OUT_DIR_RS485_B_Pin GPIO_PIN_7
-#define OUT_DIR_RS485_B_GPIO_Port GPIOG
-#define OUT_DIR_SDI_Pin GPIO_PIN_8
-#define OUT_DIR_SDI_GPIO_Port GPIOG
-#define NOT_USED_PA11_Pin GPIO_PIN_11
-#define NOT_USED_PA11_GPIO_Port GPIOA
-#define IN_SPI2_DRDY_Pin GPIO_PIN_12
-#define IN_SPI2_DRDY_GPIO_Port GPIOA
+#define OUT_DIR_RS485_A_Pin           GPIO_PIN_6
+#define OUT_DIR_RS485_A_GPIO_Port     GPIOG
+#define OUT_DIR_RS485_B_Pin           GPIO_PIN_7
+#define OUT_DIR_RS485_B_GPIO_Port     GPIOG
+#define OUT_DIR_SDI_Pin               GPIO_PIN_8
+#define OUT_DIR_SDI_GPIO_Port         GPIOG
+#define OUT_NOR_RESET_Pin             GPIO_PIN_12
+#define OUT_NOR_RESET_GPIO_Port       GPIOG
+#define OUT_CON_PWR_232_A_Pin         GPIO_PIN_13
+#define OUT_CON_PWR_232_A_GPIO_Port   GPIOG
+#define OUT_CON_PWR_232_B_Pin         GPIO_PIN_14
+#define OUT_CON_PWR_232_B_GPIO_Port   GPIOG
+#define INT_RTC_Pin                   GPIO_PIN_15
+#define INT_RTC_GPIO_Port             GPIOG
 
-#define OUT_ADC_SEL_A0_Pin GPIO_PIN_13
-#define OUT_ADC_SEL_A0_GPIO_Port GPIOH
+#define OUT_ETH_RST_PHY_Pin          GPIO_PIN_2
+#define OUT_ETH_RST_PHY_GPIO_Port    GPIOH
+#define I2C2_CLK_Pin                 GPIO_PIN_4
+#define I2C2_CLK_GPIO_Port           GPIOH
+#define I2C2_SDA_Pin                 GPIO_PIN_5
+#define I2C2_SDA_GPIO_Port           GPIOH
+#define OUT_DO_PWR_CDMA_Pin          GPIO_PIN_6
+#define OUT_DO_PWR_CDMA_GPIO_Port    GPIOH
+#define OUT_SYS_RUN_Pin              GPIO_PIN_9
+#define OUT_SYS_RUN_GPIO_Port        GPIOH
+#define OUT_ADC_EN_RTD_Pin           GPIO_PIN_10
+#define OUT_ADC_EN_RTD_GPIO_Port     GPIOH
+#define OUT_ADC_EN_ODD_Pin           GPIO_PIN_11
+#define OUT_ADC_EN_ODD_GPIO_Port     GPIOH
+#define OUT_ADC_EN_EVEN_Pin          GPIO_PIN_12
+#define OUT_ADC_EN_EVEN_GPIO_Port    GPIOH
+#define OUT_ADC_SEL_A0_Pin           GPIO_PIN_13
+#define OUT_ADC_SEL_A0_GPIO_Port     GPIOH
+#define OUT_ADC_SEL_A1_Pin           GPIO_PIN_14
+#define OUT_ADC_SEL_A1_GPIO_Port     GPIOH
+#define OUT_ADC_SEL_A2_Pin           GPIO_PIN_15
+#define OUT_ADC_SEL_A2_GPIO_Port     GPIOH
 
-#define OUT_ADC_SEL_A1_Pin GPIO_PIN_14
-#define OUT_ADC_SEL_A1_GPIO_Port GPIOH
-#define OUT_ADC_SEL_A2_Pin GPIO_PIN_15
-#define OUT_ADC_SEL_A2_GPIO_Port GPIOH
-#define OUT_SPI2_NSS_Pin GPIO_PIN_0
-#define OUT_SPI2_NSS_GPIO_Port GPIOI
-#define OUT_SPI1_NSS_Pin GPIO_PIN_15
-#define OUT_SPI1_NSS_GPIO_Port GPIOA
-#define IN_SDIO_DETECT_Pin GPIO_PIN_3
-#define IN_SDIO_DETECT_GPIO_Port GPIOD
-#define OUT_CON_PWR_DSEN_Pin GPIO_PIN_6
-#define OUT_CON_PWR_DSEN_GPIO_Port GPIOD
-
-
-#define OUT_NOR_RESET_Pin GPIO_PIN_12
-#define OUT_NOR_RESET_GPIO_Port GPIOG
-#define OUT_CON_PWR_232_A_Pin GPIO_PIN_13
-#define OUT_CON_PWR_232_A_GPIO_Port GPIOG
-#define OUT_CON_PWR_232_B_Pin GPIO_PIN_14
-#define OUT_CON_PWR_232_B_GPIO_Port GPIOG
-#define INT_RTC_Pin GPIO_PIN_15
-#define INT_RTC_GPIO_Port GPIOG
-#define INT_RTC_EXTI_IRQn EXTI15_10_IRQn
-#define OUT_CON_PWR_485_Pin GPIO_PIN_8
-#define OUT_CON_PWR_485_GPIO_Port GPIOB
-#define CON_PWR_TC_Pin GPIO_PIN_9
-#define CON_PWR_TC_GPIO_Port GPIOB
-#define OUT_EX_UART_RST_A_Pin GPIO_PIN_0
-#define OUT_EX_UART_RST_A_GPIO_Port GPIOE
-#define OUT_EX_UART_RST_B_Pin GPIO_PIN_1
-#define OUT_EX_UART_RST_B_GPIO_Port GPIOE
-
-
-#define IN_EX_UART_INT_1_Pin GPIO_PIN_4
-#define IN_EX_UART_INT_1_GPIO_Port GPIOI
-
-#define IN_EX_UART_INT_2_Pin GPIO_PIN_5
-#define IN_EX_UART_INT_2_GPIO_Port GPIOI
-
-#define IN_EX_UART_INT_3_Pin GPIO_PIN_6
-#define IN_EX_UART_INT_3_GPIO_Port GPIOI
-
-#define IN_EX_UART_INT_4_Pin GPIO_PIN_7
-#define IN_EX_UART_INT_4_GPIO_Port GPIOI
-
-#define IN_EX_UART_INT_5_Pin GPIO_PIN_8
-#define IN_EX_UART_INT_5_GPIO_Port GPIOI
-
-#define IN_EX_UART_INT_6_Pin GPIO_PIN_9
-#define IN_EX_UART_INT_6_GPIO_Port GPIOI
-
-#define IN_EX_UART_INT_7_Pin GPIO_PIN_10
-#define IN_EX_UART_INT_7_GPIO_Port GPIOI
-
-#define IN_EX_UART_INT_8_Pin GPIO_PIN_11
-#define IN_EX_UART_INT_8_GPIO_Port GPIOI
+#define OUT_SPI2_NSS_Pin             GPIO_PIN_0
+#define OUT_SPI2_NSS_GPIO_Port       GPIOI
+#define IN_EX_UART_INT_1_Pin          GPIO_PIN_4
+#define IN_EX_UART_INT_1_GPIO_Port    GPIOI
+#define IN_EX_UART_INT_2_Pin          GPIO_PIN_5
+#define IN_EX_UART_INT_2_GPIO_Port    GPIOI
+#define IN_EX_UART_INT_3_Pin          GPIO_PIN_6
+#define IN_EX_UART_INT_3_GPIO_Port    GPIOI
+#define IN_EX_UART_INT_4_Pin          GPIO_PIN_7
+#define IN_EX_UART_INT_4_GPIO_Port    GPIOI
+#define IN_EX_UART_INT_5_Pin          GPIO_PIN_8
+#define IN_EX_UART_INT_5_GPIO_Port    GPIOI
+#define IN_EX_UART_INT_6_Pin          GPIO_PIN_9
+#define IN_EX_UART_INT_6_GPIO_Port    GPIOI
+#define IN_EX_UART_INT_7_Pin          GPIO_PIN_10
+#define IN_EX_UART_INT_7_GPIO_Port    GPIOI
+#define IN_EX_UART_INT_8_Pin          GPIO_PIN_11
+#define IN_EX_UART_INT_8_GPIO_Port    GPIOI
 
 
 
 
-#define OUT_FLASH_CS_Pin GPIO_PIN_7
-#define OUT_FLASH_CS_GPIO_Port GPIOD
-
-#define I2C2_CLK_Pin GPIO_PIN_4
-#define I2C2_CLK_GPIO_Port GPIOH
-
-#define I2C2_SDA_Pin GPIO_PIN_5
-#define I2C2_SDA_GPIO_Port GPIOH
-
-#define IN_TIM10_CH1_Pin GPIO_PIN_6
-#define IN_TIM10_CH1_GPIO_Port GPIOF
-
-
-#define IN_TIM11_CH1_Pin GPIO_PIN_7
-#define IN_TIM11_CH1_GPIO_Port GPIOF
-
-#define IN_TIM13_CH1_Pin GPIO_PIN_8
-#define IN_TIM13_CH1_GPIO_Port GPIOF
-
-
-#define IN_RAIN_REED_Pin GPIO_PIN_11
-#define IN_RAIN_REED_GPIO_Port GPIOF
-
-#define IN_RAIN_HALL_Pin GPIO_PIN_1
-#define IN_RAIN_HALL_GPIO_Port GPIOB
-
-#define IN_RAIN_ERR_Pin GPIO_PIN_6
-#define IN_RAIN_ERR_GPIO_Port GPIOA
-
-
-
-
+#define INT_D_IO_EXTI_IRQn           EXTI0_IRQn
+#define IN_RAIN_PULSE_H_EXTI_IRQn    EXTI1_IRQn
+#define INT_RTC_EXTI_IRQn             EXTI15_10_IRQn
 #endif
 
 
@@ -339,7 +323,6 @@ PCB 0.3 20250120
 #define FSMC_D11_GPIO_Port       GPIOE
 #define FSMC_D12_PIN             GPIO_PIN_15
 #define FSMC_D12_GPIO_Port       GPIOE
-
 
 
 #define FSMC_A0               GPIO_PIN_0 

@@ -8,13 +8,15 @@
 
 #include "app_adc.h"
 #include "app_rtc.h"
-
+#include "app_file.h"
 #include "aws_data.h"
+#include "app_dataLogging.h"
 #include "config.h"
 #include "cmsis_os.h"
-
+#include "task_logging.h"
 #include "task_measure.h"
 #include "mcu_delay.h"
+#include "utile_time.h"
 
 const osThreadAttr_t measureTask_attributes = {
   .name = "measureTask",
@@ -43,10 +45,14 @@ void sensor_init(void)
   }
 
 }
+
+extern void file_test(void);
 void measureTask(void *arg)
 {
-
+  DATE_TIME_BUF ct;
+  DATE_TIME_BUF ot;
   uint8_t err;
+  uint8_t data[100];
   sensor_t *sensor;
 
   adc_init();
@@ -56,11 +62,31 @@ void measureTask(void *arg)
 
   sensor = config.sensor;
 
-  
+
+
+os_logging_printf("measure task");
+
+    ct = Date_Time;
+    
+  memset(data,0xff,sizeof(data));
   while(1)
   {
-    osDelay(250);
+    ct.Sec = Date_Time.Sec;
+    ct.Min = Date_Time.Min;
+    
+    if(ct.Sec != ot.Sec)
+    {
+      if(ct.Min != ot.Min)
+      {
+        os_write_sensorData(&ct,data, sizeof(data),0,1);
+        ot.Min = ct.Min;
+      }
+      ot.Sec = ct.Sec;
+    }
 
+
+    osDelay(250);
+    
     start_time = mcu_get_clk();
    
     if(sensor[A1_TEMPERATURE].type)

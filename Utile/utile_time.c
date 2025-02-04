@@ -75,3 +75,19 @@ time_t SetTime(int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec)
 	atm.tm_isdst = 0;
 	return mktime(&atm);
 }
+
+int GetYear(time_t tmIn)
+{
+    struct tm time_info;
+  //C11
+    time_info.tm_year =0;
+	localtime_s(&tmIn,&time_info);
+    
+    return time_info.tm_year;
+}
+
+
+long GetTotalSeconds(time_t ts)
+{
+	return ts;
+}

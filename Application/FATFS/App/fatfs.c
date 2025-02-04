@@ -17,6 +17,7 @@
   */
 /* USER CODE END Header */
 #include "fatfs.h"
+#include "dev_io.h"
 
 uint8_t retSD;    /* Return value for SD */
 char SDPath[4];   /* SD logical drive path */
@@ -33,14 +34,19 @@ FIL USERFile;       /* File object for USER */
 
 void MX_FATFS_Init(void)
 {
+    FRESULT res;  
+    
   /*## FatFS: Link the SD driver ###########################*/
   retSD = FATFS_LinkDriver(&SD_Driver, SDPath);
   /*## FatFS: Link the USER driver ###########################*/
   retUSER = FATFS_LinkDriver(&USER_Driver, USERPath);
 
-  /* USER CODE BEGIN Init */
-  /* additional user code for init */
-  /* USER CODE END Init */
+    // 1. SD 카드 마운트
+    res = f_mount(&SDFatFS, (TCHAR const*)SDPath, 1);
+    if (res != FR_OK)
+    {
+        debug_printf("Failed to mount SD card. Error: %d\n", res);
+    }
 }
 
 /**

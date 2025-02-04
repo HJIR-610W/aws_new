@@ -1,10 +1,11 @@
 
 
 #include "app_rtc.h"
+#include "app_logging.h"
 #include "driver_led.h"
 #include "driver_rtc.h"
 
-
+#include "app_dataLogging.h"
 #include "app_flash.h"
 #include "cmsis_os.h"
 #include "config.h"
@@ -23,6 +24,7 @@
 #include  "task_ethernet.h"
 #include "task_logging.h"
 #include "task_isrEvent.h"
+#include "task_system.h"
 #include "task_console.h"
 #include "task_measure.h"
 #include "utile_time.h"
@@ -63,17 +65,21 @@ void startTask(void *arg)
   flash_init();
   runLed_init();
 
+  systemTask_init();
+
   consoleTask_init();
   
   isrEventTask_init();
+  dataLogging_init();
   loggingTask_init();
+  
   measureTask_init();
 
 
   if(config.eth_use)
   {
-    tcpServerTask_init(0);
-    ethernetTask_init();
+    //tcpServerTask_init(0);
+   // ethernetTask_init();
 
   }
 
@@ -81,7 +87,7 @@ void startTask(void *arg)
   MX_SDIO_SD_Init();
   MX_FATFS_Init();
   DWT_Delay_Init();
- 
+  logging_init();
   osThreadExit();//¡æ∑· Ω√≈¥
   
 }

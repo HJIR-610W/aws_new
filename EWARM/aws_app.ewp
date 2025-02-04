@@ -1376,6 +1376,15 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\app_console_test.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_dataLogging.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_file.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_file.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_logging.c</name>
             </file>
             <file>
@@ -1441,9 +1450,6 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\Application\fsmc.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\Application\gpio.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\Application\hj_product_list.h</name>
@@ -1610,6 +1616,9 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_freqInput.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_fs.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_gpio_def.h</name>
             </file>
             <file>
@@ -1643,6 +1652,9 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_spi.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_sram.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_uart.c</name>
             </file>
             <file>
@@ -1654,6 +1666,9 @@
         </group>
         <group>
             <name>Driver_stm32</name>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_bsp.c</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_di.c</name>
             </file>
@@ -1813,9 +1828,6 @@
         <name>Middlewares</name>
         <group>
             <name>FatFs</name>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\option\cc949.c</name>
-            </file>
             <file>
                 <name>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\diskio.c</name>
             </file>

@@ -1,52 +1,7 @@
+
 #include "pcb_define.h"
 
-
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file    gpio.c
-  * @brief   This file provides code for the configuration
-  *          of all used GPIO pins.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-
-/* Includes ------------------------------------------------------------------*/
-#include "gpio.h"
-
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-/*----------------------------------------------------------------------------*/
-/* Configure GPIO                                                             */
-/*----------------------------------------------------------------------------*/
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
-
-/** Configure pins as
-        * Analog
-        * Input
-        * Output
-        * EVENT_OUT
-        * EXTI
-     PH4   ------> I2C2_SCL
-     PH5   ------> I2C2_SDA
-     PH7   ------> I2C3_SCL
-     PH8   ------> I2C3_SDA
-*/
-void MX_GPIO_Init(void)
+void driver_stm32_bsp_init(void)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -270,7 +225,3 @@ void MX_GPIO_Init(void)
 
 
 }
-
-/* USER CODE BEGIN 2 */
-
-/* USER CODE END 2 */

@@ -141,7 +141,7 @@ void tcpServerTask(void *arg)
       if(oldClient.sin_addr.s_addr != remotehost.sin_addr.s_addr&&oldClient.sin_port != remotehost.sin_port )
       {
         inet_ntop(AF_INET, &remotehost.sin_addr, client_ip, sizeof(client_ip)); 
-        logging_printf(0, "Client:%s,%d",client_ip,ntohs(remotehost.sin_port));
+        logging_printf("Client:%s,%d",client_ip,ntohs(remotehost.sin_port));
       }
       
       oldClient = remotehost;

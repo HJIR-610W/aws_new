@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>876683516</Checksum>
+        <Checksum>1947941293</Checksum>
     </DebugChecksum>
     <Disassembly>
         <InstrCount>0</InstrCount>
@@ -76,11 +76,12 @@
         <MultiCoreRunAll>1</MultiCoreRunAll>
     </Simulator>
     <struct_types>
-        <Fmt0>DATE_TIME_BUF-Sec	3	0</Fmt0>
-        <Fmt1>adc_config_t-channel	3	0</Fmt1>
-        <Fmt2>adc_config_t-lowScale	4	0</Fmt2>
-        <Fmt3>rs232_config_t-baud	3	0</Fmt3>
-        <Fmt4>rs232_config_t-parityIdx	3	0</Fmt4>
+        <Fmt0>DATE_TIME_BUF-Min	3	0</Fmt0>
+        <Fmt1>DATE_TIME_BUF-Sec	3	0</Fmt1>
+        <Fmt2>adc_config_t-channel	3	0</Fmt2>
+        <Fmt3>adc_config_t-lowScale	4	0</Fmt3>
+        <Fmt4>rs232_config_t-baud	3	0</Fmt4>
+        <Fmt5>rs232_config_t-parityIdx	3	0</Fmt5>
     </struct_types>
     <array_types>
         <Fmt0>uint8_t[50]	4	0</Fmt0>
@@ -140,9 +141,11 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\IO\cli\fsl_debug_console.c}.1837.5" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_console.c}.756.3" 0 0 1 "" 0 "" 0</Bp1>
-        <Count>2</Count>
+        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_file.c}.160.8" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_file.c}.157.5" 0 0 1 "" 0 "" 0</Bp1>
+        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_file.c}.152.7" 0 0 1 "" 0 "" 0</Bp2>
+        <Bp3>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\task_logging.c}.112.3" 0 0 1 "" 0 "" 0</Bp3>
+        <Count>4</Count>
     </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>

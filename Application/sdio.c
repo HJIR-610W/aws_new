@@ -69,8 +69,7 @@ uint32_t calculateSDIOClockDiv(uint32_t ahbClock, uint32_t desiredSDIOClock) {
 uint32_t g_sdioMainClk;
 void MX_SDIO_SD_Init(void)
 {
-
-  
+ 
   g_sdioMainClk = getSDIOClockFrequency();//168MHz
   /* USER CODE BEGIN SDIO_Init 0 */
 
