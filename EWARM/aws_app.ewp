@@ -1640,6 +1640,9 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_rtc.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_rtc_define.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_sdi.c</name>
             </file>
             <file>

@@ -1,3 +1,4 @@
+#include <string.h>
 
 #include "Sensors\temperature\temperature.h"
 #include "Sensors\wind_speed\wind_speed.h"

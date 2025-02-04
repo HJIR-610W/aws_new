@@ -96,7 +96,7 @@ void rtc_test(void)
   driver_t *rtc;
   uint32_t startTieck;
 
-  rtc = driver_rtc_open(RTC_DS1306);
+  rtc = driver_rtc_open(RTC_DS1306,0);
 
   startTieck = osKernelSysTick();
 

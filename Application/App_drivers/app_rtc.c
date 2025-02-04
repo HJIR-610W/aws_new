@@ -16,7 +16,7 @@ void rtc_init(void)
 {
  rtc_set_irq_cfg_t rtc_cfg;
 
-  g_rtc = driver_rtc_open(RTC_DS1306);
+  g_rtc = driver_rtc_open(RTC_DS1306,0);
 
   driver_rtc_read(g_rtc,&Date_Time);
 
@@ -38,3 +38,9 @@ void rtc_update(void)
   Date_Time = nt;
 }
 
+
+
+void rtc_set(DATE_TIME_BUF *ct)
+{
+  driver_rtc_set(g_rtc,eRTC_SET_TIME,ct);
+}

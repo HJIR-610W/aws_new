@@ -3,18 +3,21 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "cmsis_os2.h"
+
+#include "app_rtc.h"
+#include "app_rs232.h"
+#include "app_rs485.h"
+#include "app_adc.h"
+#include "app_flash.h"
 
 #include "aws_data.h"
 #include "app_logging.h"
 #include "app_console.h"
 #include "app_version.h"
 #include "app_sensor.h"
-#include "app_rs232.h"
-#include "app_rs485.h"
-#include "app_adc.h"
-#include "app_flash.h"
 #include "boot_version.h"
-#include "cmsis_os.h"
+
 #include "config.h"
 #include "dev_io.h"
 #include "mcu_debug.h"
@@ -501,6 +504,13 @@ int32_t input_date(p_shell_context_t ctx,DATE_TIME_BUF *nt)
 
   if(cnt==6)
   {
+    nt->Year = year;
+    nt->Month = month;
+    nt->Day = day;
+    nt->Hour = hour;
+    nt->Min = min;
+    nt->Sec = sec;
+
     return 6;
   }
   
@@ -630,7 +640,8 @@ int32_t menu_system(p_shell_context_t ctx)
         cnt = input_date(ctx,&nt);
         if(cnt>0)
         {
-          
+          rtc_set(&nt);
+          rtc_update();
         }
       break;
       case 1://id
