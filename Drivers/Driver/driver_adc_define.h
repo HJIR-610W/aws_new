@@ -21,7 +21,7 @@ typedef struct
     int32_t (*read_single)(driver_t *handle,int channel,uint16_t avg,uint8_t *err);
     int32_t (*read_diff)(driver_t *handle,int channel,uint16_t avg,uint8_t *err);
     void (*set)(driver_t *handle, adc_set_option_t option, void *value);
-} adc_ch_api_t;
+} adc_api_t;
 
 #endif
 

@@ -7,6 +7,7 @@
 #include "Sensors\rain\rain.h"
 #include "Sensors\humidity\humidity.h"
 
+#include "app_bsp.h"
 #include "app_adc.h"
 #include "app_rtc.h"
 #include "app_file.h"
@@ -67,6 +68,11 @@ void measureTask(void *arg)
   ct = Date_Time;
     
   memset(data,0xff,sizeof(data));
+
+  driver_t *stm32_adc;
+
+  battery_init();
+
   while(1)
   {
     ct.Sec = Date_Time.Sec;
@@ -80,6 +86,8 @@ void measureTask(void *arg)
         ot.Min = ct.Min;
       }
       ot.Sec = ct.Sec;
+
+
     }
 
 

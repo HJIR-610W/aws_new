@@ -69,7 +69,9 @@
       "app_rtc.h": "c",
       "driver_spi.h": "c",
       "ds1306.h": "c",
-      "driver_rtc_define.h": "c"
+      "driver_rtc_define.h": "c",
+      "driver_adc.h": "c",
+      "utility": "c"
     }
 	}
 }

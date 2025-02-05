@@ -280,7 +280,7 @@ void ads1220_set(driver_t *handle, adc_set_option_t option, void *value);
 int32_t ads1220_diff_read(driver_t *handle,int channel,uint16_t avg,uint8_t *err);
 
 
-const adc_ch_api_t ads1220_api ={.close = ads1220_close,
+const adc_api_t ads1220_api ={.close = ads1220_close,
                            .read_single = ads1220_single_read,
                            .read_diff = ads1220_diff_read,
                            .set = ads1220_set};
@@ -318,9 +318,11 @@ driver_t *ads1220_open(uint32_t num,void *pot)
 
 
 
-void ads1220_close(driver_t *handle)
+void ads1220_close(driver_t *drv)
 {
+  osSemaphoreAcquire(drv->sem, osWaitForever);
 
+  osSemaphoreRelease(drv->sem);  // 세마포어 해제
 }
 
 const uint8_t user_adc_single_channel[18]={0,1,4,5,6,9,12,13,16,17,20,21,24,25,28,29,2,6};
@@ -331,6 +333,8 @@ int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
   int32_t adc;
   int32_t sum=0;
   uint8_t valid_cnt=0;
+
+  osSemaphoreAcquire(drv->sem, osWaitForever);
 
   channel = user_adc_single_channel[channel];
 
@@ -350,6 +354,7 @@ int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 
   adc = sum/valid_cnt;
 
+  osSemaphoreRelease(drv->sem);  // 세마포어 해제
   return adc;
 }
 
@@ -360,31 +365,34 @@ int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
   int32_t sum=0;
   uint8_t valid_cnt=0;
 
-   
+    osSemaphoreAcquire(drv->sem, osWaitForever);
 
-    //차동 채널 0,1,2,3,4,5,6,7 은 ADS1220에서는 0채널로만 측정하며  MUX가 채널이 됨
-    adc_diff_mux_set(channel);
-    
-    for(int i = 0 ; i< avg;i++)
+  //차동 채널 0,1,2,3,4,5,6,7 은 ADS1220에서는 0채널로만 측정하며  MUX가 채널이 됨
+  adc_diff_mux_set(channel);
+  
+  for(int i = 0 ; i< avg;i++)
+  {
+    adc = ads1220_read_diff_ch(drv,channel/8,err);
+    if(*err ==0)
     {
-      adc = ads1220_read_diff_ch(drv,channel/8,err);
-      if(*err ==0)
-      {
-        sum += adc;
-        valid_cnt++;
-      }
+      sum += adc;
+      valid_cnt++;
     }
+  }
  
-
-
   adc = sum/valid_cnt;
+
+  osSemaphoreRelease(drv->sem);  // 세마포어 해제
 
   return adc;
 
 }
 
 
-void ads1220_set(driver_t *handle, adc_set_option_t option, void *value)
+void ads1220_set(driver_t *drv, adc_set_option_t option, void *value)
 {
 
+  osSemaphoreAcquire(drv->sem, osWaitForever);
+
+    osSemaphoreRelease(drv->sem);  // 세마포어 해제
 }

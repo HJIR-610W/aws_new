@@ -1,5 +1,5 @@
 
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
 #include "driver_485.h"
 #include "driver_uart.h"
 #include "driver_do.h"
@@ -42,7 +42,7 @@ driver_t *driver_rs485_open(uint32_t num,void *opt)
       g_rs485_cfg[num].uart_io =  driver_uart_open(UART_5_RS485_B,opt);
       g_rs485_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_B,0); 
       driver_do_low(g_rs485_cfg[num].do_io);//수신 모드
-     if( g_rs485[num].sem == NULL)
+     if(g_rs485[num].sem == NULL)
       {
         g_rs485[num].sem = osSemaphoreNew(1, 1, NULL); 
       }
@@ -100,12 +100,10 @@ int32_t driver_rs485_recv(driver_t *drv,uint8_t *pBuff,uint16_t rLen,uint32_t ti
 }
 
 
-void driver_rs485_set(driver_t *drv,uint8_t cmd,void *option)
+void driver_rs485_set(driver_t *drv,uart_set_option_t cmd,void *option)
 {
   rs485_cfg_t *cfg;
   uart_config_t uart_cfg;
-    
-  cfg = (rs485_cfg_t *)(drv->cfg);
 
   if(drv->sem)
   {
@@ -114,10 +112,8 @@ void driver_rs485_set(driver_t *drv,uint8_t cmd,void *option)
 
   switch (cmd)
   {
-    case 0:
-
-    uart_cfg.baud = (int)option;
-    driver_uart_set(cfg->uart_io,UART_SET_BAUDRATE,&uart_cfg);
+    case UART_SET_BAUDRATE:
+    driver_uart_set(cfg->uart_io,cmd,option);
     break;
   }
 

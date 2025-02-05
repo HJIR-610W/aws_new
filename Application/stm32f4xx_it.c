@@ -312,3 +312,11 @@ void FPU_IRQHandler(void)
 {
   
 }
+
+
+// ADC 인터럽트 핸들러
+extern ADC_HandleTypeDef hadc1;
+void ADC_IRQHandler(void)
+{
+  HAL_ADC_IRQHandler(&hadc1);
+}

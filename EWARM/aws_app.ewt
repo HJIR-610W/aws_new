@@ -1194,6 +1194,9 @@
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_adc.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_bsp.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_do.c</name>
             </file>
             <file>

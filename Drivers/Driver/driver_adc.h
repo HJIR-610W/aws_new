@@ -35,6 +35,11 @@
 #define ADC_ADS1220_D_CH_6 6
 #define ADC_ADS1220_D_CH_7 7
 
+
+#define ADC_STM32_S_CH_0 0
+#define ADC_STM32_S_CH_1 1
+
+
 driver_t *driver_adc_open(uint32_t num,void *opt);
 void driver_close(driver_t *handle);
 int32_t driver_adc_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err);

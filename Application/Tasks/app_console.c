@@ -5,6 +5,7 @@
 
 #include "cmsis_os2.h"
 
+#include "app_bsp.h"
 #include "app_rtc.h"
 #include "app_rs232.h"
 #include "app_rs485.h"
@@ -287,8 +288,9 @@ int32_t print_systemInfo(uint16_t row,uint16_t column)
 
   vt100_print_frame(row   ,column,"시스템", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"%s\r\n",buff);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"문 상태  :%s\r\n",ITEM_LIST(System.doorStatus,doorStatusList));
-
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"문 상태   :%s\r\n",ITEM_LIST(System.doorStatus,doorStatusList));
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"장비 전원 :%5.2f\r\n",read_battery());
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"장비 온도 :%5.2f\r\n",read_temperature());
   vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
 
     
