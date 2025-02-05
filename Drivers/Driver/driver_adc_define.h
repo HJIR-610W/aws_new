@@ -4,12 +4,10 @@
 
 #include "driver_interface.h"
 
-
 typedef struct adc_config
 {
   uint32_t channelCnt;
 }adc_ch_config_t;
-
 
 typedef enum
 {

@@ -43,7 +43,7 @@
 #include "task_host.h"
 #include "fatfs.h"
 
-#include "task_test.h"
+
 
 #include "utile.h"
 #include "terminal\terminal.h"
@@ -227,7 +227,7 @@ void adc_test(void)
                           "A_SIG_RTD_0","A_SIG_RTD_1"};
 
 
-  ads1220 = driver_adc_open(ADC_ADS1220);
+  ads1220 = driver_adc_open(ADC_ADS1220,0);
     debug_printf(VT100_CLEAR_SCREEN);
     debug_printf(VT100_CURSOR_OFF);
 
@@ -239,7 +239,7 @@ void adc_test(void)
     osDelay(50);
     for(i = 0 ;i <_countof(adcList);i++)
     {
-       adc =  driver_adc_read(ads1220,adcList[i],&err);
+       //adc =  driver_adc_read(ads1220,adcList[i],&err);
 
         debug_printf("CH:%02d,%10d,%s\r\n",adcList[i],adc,nameList[i]);
     }

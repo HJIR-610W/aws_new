@@ -1479,9 +1479,6 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\task_system.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\task_test.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\vir_data.c</name>
             </file>
         </group>
@@ -1558,6 +1555,9 @@
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\Components\ADC\ads1220.h</name>
                 </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\ADC\ads1220_reg.h</name>
+                </file>
             </group>
             <group>
                 <name>EX_UART</name>
@@ -1633,9 +1633,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_adc.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_adc_reg.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_di.c</name>
@@ -1727,6 +1724,9 @@
         </group>
         <group>
             <name>Driver_stm32</name>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_adc.c</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_bsp.c</name>
             </file>

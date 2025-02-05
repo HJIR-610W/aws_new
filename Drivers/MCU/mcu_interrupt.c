@@ -223,7 +223,7 @@ void EXTI0_IRQHandler(void)
   {
     __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);  // 인터럽트 플래그 클리어
 
-    handle = g_mcu_isr_list[EXTI0_IRQn].isrList->handle;
+    handle =  g_mcu_isr_list[EXTI0_IRQn].isrList->handle;
     call   =  g_mcu_isr_list[EXTI0_IRQn].isrList->call;
 
     if(call)

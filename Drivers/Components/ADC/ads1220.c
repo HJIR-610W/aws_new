@@ -1,15 +1,27 @@
 
 #include "cmsis_os2.h"
 
+#include "ads1220_reg.h"
 #include "ads1220.h"
+#include "driver_adc_define.h"
+#include "driver_adc.h"
 #include "driver_do.h"
 #include "driver_spi.h"
 #include "driver_di.h"
+#include "driver_mux.h"
 #include "mcu_delay.h"
 #include "mcu_interrupt.h"
-#include "driver_adc_define.h"
-#include "driver_adc.h"
-#include "driver_mux.h"
+
+typedef struct ads1220_cfg_s
+{
+  void *spi_io;
+  void *cs_io;
+  void *irq_io;
+  void *sem;
+  uint8_t diffChCnt;
+  uint8_t singleChCnt;
+}ads1220_cfg_t;
+
 osSemaphoreId_t g_dataReadySem=NULL;
 
 void write_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs,uint8_t *pData)
@@ -223,7 +235,7 @@ void ads1210_init(driver_t *drv)
 {
     uint8_t reg;
     di_isr_set_cfg_t isr_cfg;
-    ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
+    ads1220_cfg_t *cfg = (ads1220_cfg_t*)drv->cfg;
 
     g_dataReadySem = osSemaphoreNew(1, 0, NULL);
 
@@ -257,49 +269,35 @@ void ads1210_init(driver_t *drv)
 }
 
 
-driver_t ads1220;
-ads1220_cfg_t ads1210_cfg;
-
-driver_t *ads1220_open(void)
-{
-    if(ads1220.opened == false)
-    {
-        ads1220.opened = true;
-
-        ads1220.cfg = &ads1210_cfg;
-    }
-
-    return &ads1220;
-}
 
 
 
 
 
 void ads1220_close(driver_t *handle);
-int32_t ads1220_read(driver_t *handle,int channel,uint16_t avg,uint8_t *err);
+int32_t ads1220_single_read(driver_t *handle,int channel,uint16_t avg,uint8_t *err);
 void ads1220_set(driver_t *handle, adc_set_option_t option, void *value);
 int32_t ads1220_diff_read(driver_t *handle,int channel,uint16_t avg,uint8_t *err);
 
 
-adc_ch_api_t ads1220_api ={.close = ads1220_close,
-                    .read_single = ads1220_read,
-                    .read_diff = ads1220_diff_read,
-                    .set = ads1220_set};
+const adc_ch_api_t ads1220_api ={.close = ads1220_close,
+                           .read_single = ads1220_single_read,
+                           .read_diff = ads1220_diff_read,
+                           .set = ads1220_set};
 
 driver_t ads1220_driver;
-
-
-
 ads1220_cfg_t ads1220_cfg;
 
-driver_t *ads1220_ch_open(uint32_t num,void *pot)
+
+driver_t *ads1220_open(uint32_t num,void *pot)
 {
   if(ads1220_driver.opened)
   {
     return &ads1220_driver;
-  }  
-  
+  }
+
+  ads1220_driver.name = "ADC_ADS1220";
+
   ads1220_cfg.spi_io = driver_spi_open(STM_SPI_2);
   ads1220_cfg.cs_io  = driver_do_open(DO_ADC_NCS,0);
   ads1220_cfg.irq_io = driver_di_open(DI_0_ADC_RDY,0);
@@ -307,10 +305,11 @@ driver_t *ads1220_ch_open(uint32_t num,void *pot)
   ads1220_driver.cfg = &ads1220_cfg;
   ads1220_driver.api = &ads1220_api;
 
-  if(ads1220_driver.sem==NULL)
+  if(ads1220_driver.sem == NULL)
   {
     ads1220_driver.sem = osSemaphoreNew(1, 1, NULL); 
   }
+
   adc_mux_init();
   ads1210_init(&ads1220_driver);
 
@@ -324,6 +323,7 @@ void ads1220_close(driver_t *handle)
 
 }
 
+const uint8_t user_adc_single_channel[18]={0,1,4,5,6,9,12,13,16,17,20,21,24,25,28,29,2,6};
 int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 {
 
@@ -332,21 +332,20 @@ int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
   int32_t sum=0;
   uint8_t valid_cnt=0;
 
-  
+  channel = user_adc_single_channel[channel];
+
   adc_single_mux_set(channel);
   
   for(int i = 0 ; i< avg; i++)
   {
-    adc = ads1220_read_single_ch(drv->handle,channel%4,err);
+    adc = ads1220_read_single_ch(drv,channel%4,err);
   
-  if(*err ==0)
-  {
-    sum += adc;
-    valid_cnt++;
+    if(*err ==0)
+    {
+      sum += adc;
+      valid_cnt++;
+    }
   }
-      
-
-     }
 
 
   adc = sum/valid_cnt;
@@ -362,13 +361,13 @@ int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
   uint8_t valid_cnt=0;
 
    
-  //diff_ch = (channel - ADC_ADS1220_DIFF_CH_0);//총 8개 채널이 실제 물리 0채널임
+
     //차동 채널 0,1,2,3,4,5,6,7 은 ADS1220에서는 0채널로만 측정하며  MUX가 채널이 됨
     adc_diff_mux_set(channel);
     
     for(int i = 0 ; i< avg;i++)
     {
-      adc = ads1220_read_diff_ch(drv->handle,channel/8,err);
+      adc = ads1220_read_diff_ch(drv,channel/8,err);
       if(*err ==0)
       {
         sum += adc;

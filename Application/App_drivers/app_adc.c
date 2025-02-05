@@ -5,38 +5,37 @@
 #include "driver_adc.h"
 #include "cmsis_os.h"
 #include "app_adc.h"
-
 #include "config.h"
-driver_t *g_adc_s;
-driver_t *g_adc_d;
-const uint8_t user_adc_single_channel[18]={0,1,4,5,6,9,12,13,16,17,20,21,24,25,28,29,2,6};
+
+
+driver_t *g_ads1120;
 
 void adc_init(void)
 {
-    g_adc_s = driver_adc_open(ADC_ADS1220_SINGLE_CH_0);
-    g_adc_d = driver_adc_open(ADC_ADS1220_DIFF_CH_0);
+  g_ads1120 = driver_adc_open(ADC_ADS1220,0);
 }
 
 int32_t adc_read_single(int channel,uint8_t *err)
 {
-  
-  return  driver_adc_read(g_adc_s,user_adc_single_channel[channel],err);
+  return  driver_adc_single_read(g_ads1120,channel,1,err);
 }
+
 int32_t adc_read_single_avg(int channel,uint8_t *err,uint8_t avg_cnt)
 {
-  return  driver_adc_read_average(g_adc_s,user_adc_single_channel[channel],err,avg_cnt);
+  return  driver_adc_single_read(g_ads1120,channel,avg_cnt,err);
 }
 
 
 int32_t adc_read_diff_avg(int channel,uint8_t *err,uint8_t avg_cnt)
 {
-  return  driver_adc_read_average(g_adc_d,channel+ADC_ADS1220_DIFF_CH_0,err,avg_cnt);
+  return  driver_adc_diff_read(g_ads1120,channel,avg_cnt,err);
 }
 
 int32_t adc_read_diff(int channel,uint8_t *err)
 {
-  return  driver_adc_read(g_adc_d,channel+ADC_ADS1220_DIFF_CH_0,err);
+  return  driver_adc_diff_read(g_ads1120,channel,1,err);
 }
+
 
 
 
@@ -93,6 +92,7 @@ float adc_read_volate(adc_config_t *adc,uint8_t *err)
   }
   return ret;
 }
+
 
 
 int32_t get_adc_vref(adc_config_t *adc)

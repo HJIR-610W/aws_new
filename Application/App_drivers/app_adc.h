@@ -5,7 +5,38 @@
 #include <stdint.h>
 #include "app_sensor.h"
 
-extern const uint8_t user_adc_single_channel[18];
+typedef enum adc_single_ch_e
+{
+  eADC_S_CH_0,
+  eADC_S_CH_1,
+  eADC_S_CH_2,
+  eADC_S_CH_3,
+  eADC_S_CH_4,
+  eADC_S_CH_5,
+  eADC_S_CH_6,
+  eADC_S_CH_7,
+  eADC_S_CH_8,
+  eADC_S_CH_9,
+  eADC_S_CH_10,
+  eADC_S_CH_11,
+  eADC_S_CH_13,
+  eADC_S_CH_14,
+  eADC_S_CH_15,
+}eADC_S_CH_t;
+
+
+typedef enum adc_diff_ch_e
+{
+  eADC_D_CH_0,
+  eADC_D_CH_1,
+  eADC_D_CH_2,
+  eADC_D_CH_3,
+  eADC_D_CH_4,
+  eADC_D_CH_5,
+  eADC_D_CH_6,
+  eADC_D_CH_7,
+}eADC_D_CH_t;
+
 
 
 void adc_init(void);
