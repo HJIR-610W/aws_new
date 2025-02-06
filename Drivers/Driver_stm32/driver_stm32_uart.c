@@ -2,14 +2,27 @@
 
 #include <stdio.h>
 
+#include "FreeRTOS.h"
+#include "stream_buffer.h"
 #include "stm32f4xx_hal.h"
 #include "driver_stm32_uart.h"
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
 #include "mcu_delay.h"
 #include "mcu_swo.h"
 #include "semphr.h"
 #include "utile.h"
 #include "system_err.h"
+
+
+#define STM32_UART_0_BUFF_SIZE 512
+#define STM32_UART_1_BUFF_SIZE 512
+#define STM32_UART_2_BUFF_SIZE 512
+
+uint8_t rxData[3];
+
+StreamBufferHandle_t g_stm32_xStreamBuffer[STM32_UART_MAX];
+
+
 
 UART_HandleTypeDef huart1 = {.Instance = USART1};
 UART_HandleTypeDef huart3 = {.Instance = USART3};
@@ -298,7 +311,7 @@ static void MX_DMA_UART1_Init(void)
 
 #else
    
-    HAL_UART_Receive_IT(&huart1, (uint8_t *)&g_uart_ring[0].buffer[0], 1);
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&rxData[0], 1);
 
 #endif
      
@@ -330,7 +343,7 @@ static void MX_DMA_UART3_Init(void)
     HAL_NVIC_SetPriority(USART3_IRQn, 5, 1);
     HAL_NVIC_EnableIRQ(USART3_IRQn);
   
-    HAL_UART_Receive_IT(&huart3, (uint8_t *)&g_uart_ring[1].buffer[0], 1);
+    HAL_UART_Receive_IT(&huart3, (uint8_t *)&rxData[1], 1);
 }
 
 static void MX_DMA_UART6_Init(void)
@@ -359,7 +372,7 @@ static void MX_DMA_UART6_Init(void)
     HAL_NVIC_SetPriority(USART6_IRQn, 5, 1);
     HAL_NVIC_EnableIRQ(USART6_IRQn);
 
-    HAL_UART_Receive_IT(&huart6, (uint8_t *)&g_uart_ring[2].buffer[0], 1);
+    HAL_UART_Receive_IT(&huart6, (uint8_t *)&rxData[2], 1);
     
 }
 
@@ -418,17 +431,21 @@ driver_t *stm32_uart_open(int num,void *opt)
     case STM32_UART_0_DEBUG:
     g_stm32_uart[num].name = TOSTRING(STM32_UART_0_DEBUG);
 
+      g_stm32_xStreamBuffer[num] =   xStreamBufferCreate(STM32_UART_0_BUFF_SIZE, 1 ); 
+  
+
     MX_USART1_UART_Init(cfg->baud,cfg->parityIdx);
     MX_DMA_UART1_Init();
     break;
   case STM32_UART_1_CDMA:
     g_stm32_uart[num].name = TOSTRING(STM32_UART_1_CDMA);
-
+      g_stm32_xStreamBuffer[num] =   xStreamBufferCreate(STM32_UART_2_BUFF_SIZE, 1 ); 
     MX_USART3_UART_Init(cfg->baud,cfg->parityIdx);
     MX_DMA_UART3_Init();
   break;
   case STM32_UART_2_SDI:
     g_stm32_uart[num].name = TOSTRING(STM32_UART_2_SDI);
+    g_stm32_xStreamBuffer[num] =   xStreamBufferCreate(STM32_UART_2_BUFF_SIZE, 1 ); 
     MX_USART6_UART_Init(cfg->baud,cfg->parityIdx);
     MX_DMA_UART6_Init();
     break;
@@ -574,16 +591,99 @@ int RingBuffer_Read2(uart_ring_t *rb, uint8_t *data,uint16_t dataSize,uint32_t t
     return cnt;  
 }
 
+#define STREAMBUFFER_USE 1
 int32_t stm32_uart_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
 {
-  int cnt;
-  stm32_uart_cfg_t *cfg = drv->cfg;
-  
-  cnt =RingBuffer_Read2(&g_uart_ring[cfg->channel],pBuff,buffSize,timeOutMs);
+#if STREAMBUFFER_USE // 레지스터 직접 접근
+    uint32_t starTick;
+    uint32_t stopTick;
+    uint32_t elapseTick;
+    uint32_t timeout;
+    uint32_t lastTick=0;
+    size_t xBytesAvailable;
+    size_t xBytesRead;
+    size_t remainBuffSize = buffSize;
+    size_t cnt = 0;
 
-  return cnt;
-       
+    stm32_uart_cfg_t *cfg = drv->cfg;
+    uint8_t channel = cfg->channel;
+    timeout = timeOutMs;
+    
+    (void)lastTick;
+
+    while(1)
+    {
+        /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
+        xBytesAvailable = xStreamBufferBytesAvailable( g_stm32_xStreamBuffer[channel] );
+
+        if(remainBuffSize < xBytesAvailable)
+        {
+          xBytesAvailable = remainBuffSize;// 버퍼 수만큼만 읽기
+        }
+
+        starTick = xTaskGetTickCount();
+        if( xBytesAvailable > 0 )
+        {
+            /* 데이터를 읽을 수 있다면, 데이터를 수신 */
+            xBytesRead = xStreamBufferReceive( g_stm32_xStreamBuffer[channel], ( void * ) &pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS( timeout ) );
+            
+            if(xBytesRead >0)
+            {
+              cnt += xBytesRead;
+              lastTick = xTaskGetTickCount();
+            }
+        }
+        else
+        {
+            /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
+            xBytesRead = xStreamBufferReceive( g_stm32_xStreamBuffer[channel], ( void * ) &pBuff[cnt], 1, pdMS_TO_TICKS( timeout ) );
+            if(xBytesRead ==1)
+            {
+              cnt += 1;
+              lastTick = xTaskGetTickCount();
+            }
+        }
+        stopTick = xTaskGetTickCount();
+        elapseTick = stopTick-starTick;
+
+        
+  
+        if(elapseTick >= timeout  || cnt >= buffSize)
+        {
+          return cnt;
+        }
+        remainBuffSize -= xBytesAvailable;
+        timeout = timeout - elapseTick; 
+    }
+
+#else
+  uint32_t startTick;
+  uint16_t cnt=0;
+
+  startTick = xTaskGetTickCount();
+  while(1)
+  {
+    if (read_register(LSR(exUartBaseAddress[channel])) & LSR_DR)
+    {
+      pBuff[cnt++] = read_register(RBR(exUartBaseAddress[channel])); 
+    } 
+    if(cnt==buffSize)
+    {
+      break;
+    }
+    if((xTaskGetTickCount()-startTick)>timeOutMs)
+    {
+      break;
+    }
+  }
+    
+    return cnt; // 데이터가 준비되지 않음
+
+    #endif
+
+    //return 0;
 }
+
 
 
 void stm32_uart_set(driver_t *drv,uart_set_option_t cmd,void *option)
@@ -731,44 +831,35 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
   uint16_t head=0;
-  
+  size_t xBytesSent;
+  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-  
-    if (huart->Instance == USART1) 
-    {
-        head = g_uart_ring[0].head;
-        g_uart_ring[0].head = (head + 1) % BUFFER_SIZE;
+  if (huart->Instance == USART1) 
+  {
+        
+      xBytesSent = xStreamBufferSendFromISR(g_stm32_xStreamBuffer[0],&rxData[0], 
+                                        1, &xHigherPriorityTaskWoken);
+            /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
+            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
-        osSemaphoreRelease(g_uart_ring[0].sem);
-        head = g_uart_ring[0].head;
-        HAL_UART_Receive_IT(&huart1, (uint8_t *)&g_uart_ring[0].buffer[head], 1);
+        HAL_UART_Receive_IT(&huart1, (uint8_t *)&rxData[0], 1);
     }
     else if(huart->Instance == USART3) 
     {
-        // 수신된 데이터를 링버퍼에 저장
-        head = g_uart_ring[1].head;
-        g_uart_ring[1].head = (head + 1) % BUFFER_SIZE;
-
-        // 세마포어 증가 (데이터 개수 증가)
-        osSemaphoreRelease(g_uart_ring[1].sem);
-
-        // 다음 바이트 수신을 위한 인터럽트 활성화
-        head = g_uart_ring[1].head;
-        HAL_UART_Receive_IT(&huart3, (uint8_t *)&g_uart_ring[1].buffer[head], 1);
+      xBytesSent = xStreamBufferSendFromISR(g_stm32_xStreamBuffer[1],&rxData[1], 
+                                        1, &xHigherPriorityTaskWoken);
+            /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
+            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+        HAL_UART_Receive_IT(&huart3, (uint8_t *)&rxData[1], 1);
     }
     else if(huart->Instance == USART6) 
     {
-        // 수신된 데이터를 링버퍼에 저장
-        head = g_uart_ring[2].head;
-        g_uart_ring[2].head = (head + 1) % BUFFER_SIZE;
+      xBytesSent = xStreamBufferSendFromISR(g_stm32_xStreamBuffer[2],&rxData[2], 
+                                        1, &xHigherPriorityTaskWoken);
+            /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
+            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
-        // 세마포어 증가 (데이터 개수 증가)
-        osSemaphoreRelease(g_uart_ring[2].sem);
-
-        // 다음 바이트 수신을 위한 인터럽트 활성화
-        head = g_uart_ring[2].head;
-
-        HAL_UART_Receive_IT(&huart6, (uint8_t *)&g_uart_ring[2].buffer[head], 1);
+        HAL_UART_Receive_IT(&huart6, (uint8_t *)&rxData[2], 1);
     }
 }
 

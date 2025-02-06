@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "pcb_define.h"
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
 #include "driver_di.h"
 #include "FreeRTOS.h"
 #include "stream_buffer.h"
@@ -241,10 +241,10 @@ int32_t send_data(uint8_t channel,uint8_t data)
   uint32_t startTime;
 
   // 송신 버퍼가 비어있을 때까지 대기
-  startTime = osKernelSysTick();
+  startTime = osKernelGetTickCount();
   while ((read_register(LSR(exUartBaseAddress[channel])) & LSR_THRE) == 0)
   {
-    if((osKernelSysTick()-startTime)>10)
+    if((osKernelGetTickCount()-startTime)>10)
     {
       return -1;
     }
@@ -324,7 +324,7 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,
     timeout = waitTimeOutMs;
 
 tl16c554_cfg_t *cfg = drv->cfg;
-    startTime  = xTaskGetTickCount();
+    startTime  = osKernelGetTickCount();
     while(1)
     {
 
@@ -336,7 +336,7 @@ tl16c554_cfg_t *cfg = drv->cfg;
           xBytesAvailable = remainBuffSize;// 버퍼 수만큼만 읽기
         }
 
-        starTick = xTaskGetTickCount();
+        starTick = osKernelGetTickCount();
         if( xBytesAvailable > 0 )
         {
             /* 데이터를 읽을 수 있다면, 데이터를 수신 */
@@ -366,7 +366,7 @@ tl16c554_cfg_t *cfg = drv->cfg;
           timeout = dataTimeOutMs;
         }
 
-        stopTick = xTaskGetTickCount();
+        stopTick = osKernelGetTickCount();
         elapseTick = stopTick-starTick;
         
 
@@ -443,7 +443,7 @@ tl16c554_cfg_t *cfg = drv->cfg;
 
     timeout = waitTimeOutMs;
 
-    startTime  = xTaskGetTickCount();
+    startTime  = osKernelGetTickCount();
     while(1)
     {
 
@@ -455,7 +455,7 @@ tl16c554_cfg_t *cfg = drv->cfg;
           xBytesAvailable = remainBuffSize;// 버퍼 수만큼만 읽기
         }
 
-        starTick = xTaskGetTickCount();
+        starTick = osKernelGetTickCount();
         if( xBytesAvailable > 0 )
         {
             /* 데이터를 읽을 수 있다면, 데이터를 수신 */
@@ -485,7 +485,7 @@ tl16c554_cfg_t *cfg = drv->cfg;
           timeout = dataTimeOutMs;
         }
 
-        stopTick = xTaskGetTickCount();
+        stopTick = osKernelGetTickCount();
         elapseTick = stopTick-starTick;
         
 
@@ -859,7 +859,7 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
           xBytesAvailable = remainBuffSize;// 버퍼 수만큼만 읽기
         }
 
-        starTick = xTaskGetTickCount();
+        starTick = osKernelGetTickCount();
         if( xBytesAvailable > 0 )
         {
             /* 데이터를 읽을 수 있다면, 데이터를 수신 */
@@ -868,7 +868,7 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
             if(xBytesRead >0)
             {
               cnt += xBytesRead;
-              lastTick = xTaskGetTickCount();
+              lastTick = osKernelGetTickCount();
             }
         }
         else
@@ -878,10 +878,10 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
             if(xBytesRead ==1)
             {
               cnt += 1;
-              lastTick = xTaskGetTickCount();
+              lastTick = osKernelGetTickCount();
             }
         }
-        stopTick = xTaskGetTickCount();
+        stopTick = osKernelGetTickCount();
         elapseTick = stopTick-starTick;
 
         

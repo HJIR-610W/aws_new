@@ -1428,8 +1428,8 @@ void modemTcpTask(void  *argument)
 
                 if((osKernelGetTickCount()-startTime)>PING_TIMEOUT_MS)/*일정 기간동안 ping이 한번이라도 수신 안되면*/
                 {
-                    type = eCONNECT_TCP_WDT;
-                    break;
+                   // type = eCONNECT_TCP_WDT;
+                  //  break;
                 }
             }
         }
