@@ -71,6 +71,9 @@ typedef struct config_s
   uint8_t vhf_repeater_id;
   uint16_t vhf_ptt_delay;
   sensor_t sensor[SENSOR_COUNT_MAX];
+  
+  bool encryptUse;
+  uint8_t netMode;
 }config_t;
 
 
@@ -80,7 +83,7 @@ typedef struct system_s
   uint8_t eth_link_status;//0정상, 1 다운
   uint8_t eth_tx_cnt;
   uint8_t eth_rx_cnt;
-  uint8_t cdma_link_status;
+  int8_t cdma_link_status;
   uint8_t cdma_tx_cnt;
   uint8_t cdma_rx_cnt;
   int8_t cdma_rssi;
@@ -91,6 +94,13 @@ typedef struct system_s
   uint8_t vhf_tx_cnt;
   uint8_t vhf_rx_cnt;
   uint8_t charger_status;
+  
+  uint8_t TcpCntStat;
+  uint8_t ModemRcvLevel;
+  uint8_t netRun;
+
+  
+  
 }system_t;
 
 void config_init(void);

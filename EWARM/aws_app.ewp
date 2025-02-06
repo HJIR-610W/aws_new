@@ -417,6 +417,7 @@
                     <state>$PROJ_DIR$\..\Application\Communications</state>
                     <state>$PROJ_DIR$\..\Application\Sensors</state>
                     <state>$PROJ_DIR$\..\Application\App_drivers</state>
+                    <state>$PROJ_DIR$\..\Application\Communications\CDMA</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1161,6 +1162,24 @@
             <name>Communications</name>
             <group>
                 <name>CDMA</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\at_cmd.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_if.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.h</name>
+                </file>
             </group>
             <group>
                 <name>Direct</name>

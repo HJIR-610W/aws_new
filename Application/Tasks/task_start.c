@@ -19,9 +19,9 @@
 #include "project_def.h"
 #include "sdio.h"
 #include "user_heap.h"
+#include "task_cellular.h"
 #include "task_start.h"
-
-#include  "task_ethernet.h"
+#include "task_ethernet.h"
 #include "task_logging.h"
 #include "task_isrEvent.h"
 #include "task_system.h"
@@ -72,6 +72,7 @@ void startTask(void *arg)
   loggingTask_init();
   measureTask_init();
 
+  cellularTask_init();
 
   if(config.eth_use)
   {

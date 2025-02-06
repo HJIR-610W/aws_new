@@ -13,6 +13,9 @@
 #include "app_logging.h"
 #include "app_dataLogging.h"
 
+
+
+
 const osThreadAttr_t loggingTask_attributes = {
   .name = "loggingTask",
   .stack_size = 2048,//2048바이트가 할당됨 하지만 4바이트 단위로 스택은 구성됨
@@ -107,10 +110,23 @@ void loggingTask(void *arg)
 
 
 
+
+
 void loggingTask_init(void)
 {
   loggingQueue = osMessageQueueNew(5, sizeof(logging_t), NULL);
    
+
+
+   osMessageQueueId_t _atMailId;
+osMessageQueueId_t _tcpAckMailId;
+osMessageQueueId_t _asyncAckMailId;
+osMessageQueueId_t _smsMailId;
+
+osMessageQueueId_t _tcpDataMailId;
+osMessageQueueId_t _callReqMailId;
+
+
   osThreadNew(loggingTask, NULL, &loggingTask_attributes);
 
 }

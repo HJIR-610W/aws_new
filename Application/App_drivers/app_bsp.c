@@ -1,56 +1,47 @@
 #include <math.h>
 #include "driver_adc.h"
 
-
-driver_t *g_battery;
-
-void battery_init(void)
-{
-  g_battery = driver_adc_open(ADC_STM32,0);
-
-}
-
 #define VIN_SOLA_V_MAX 2003          /* full scale 일때 최대값 */
 #define VIN_SOLA_FULL_SCALE 12000 
 #define ADC_REF_VOLTAGE 3300
 #define ADC_SCALE(max,full)  ((double)max/(double)full)
 
-int32_t get_mV(int32_t adc, uint32_t bitCnt,double refVolt,double scale)
+
+driver_t *g_adcStm;
+
+void battery_init(void)
 {
-	int32_t val;
-
-    if(scale != 0)
-    {
-	    val = (int32_t)((adc / (float)bitCnt) * refVolt / scale);
-    }
-    else
-    {
-        val = 0;
-    }
-
-	return val;
+  g_adcStm = driver_adc_open(ADC_STM32,0);
 }
 
+int32_t get_mV(int32_t adc, uint32_t bitCnt,double refVolt,double scale)
+{
+  int32_t val;
+
+  if(scale != 0)
+  {
+    val = (int32_t)((adc / (float)bitCnt) * refVolt / scale);
+  }
+  else
+  {
+    val = 0;
+  }
+  return val;
+}
 
 float read_battery(void)
 {
   int32_t val;
   uint8_t err;
-  
 
-  val = driver_adc_single_read(g_battery,ADC_STM32_S_CH_0,1,&err);
-
-
-  val   = get_mV(val,4095,ADC_REF_VOLTAGE,ADC_SCALE(VIN_SOLA_V_MAX,VIN_SOLA_FULL_SCALE));
+  val = driver_adc_single_read(g_adcStm,ADC_STM32_S_CH_0,1,&err);
+  val = get_mV(val,4095,ADC_REF_VOLTAGE,ADC_SCALE(VIN_SOLA_V_MAX,VIN_SOLA_FULL_SCALE));
 
   return (float)val/1000.0;
 
 }
 
 
-
-#include "stm32f4xx_hal.h"
-#include <math.h>
 
 #define VREF 3.3f           // ADC 기준 전압
 #define ADC_MAX 4095.0f     // 12비트 ADC 최대값
@@ -116,13 +107,14 @@ float ntc_resistance_to_temperature(float resistance)
 
   return 0.0f; // 이론적으로 도달하지 않음
 }
+
 float read_temperature(void)
 {
   int32_t val;
   uint8_t err;
   
 
-  val = driver_adc_single_read(g_battery,ADC_STM32_S_CH_1,1,&err);
+  val = driver_adc_single_read(g_adcStm,ADC_STM32_S_CH_1,1,&err);
 
 
   return ntc_resistance_to_temperature(calculate_ntc_resistance(val));

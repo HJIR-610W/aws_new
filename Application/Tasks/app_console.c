@@ -326,6 +326,48 @@ int32_t print_ethInfo(uint16_t row,uint16_t column)
     return 5+2;
 }
 
+int32_t print_cdmaInfo(uint16_t row,uint16_t column)
+{
+    char buff[30];
+    char num[20];
+    uint8_t line=row+3;
+    int8_t rssi;
+
+    make_comList(buff,sizeof(buff));
+    vt100_print_frame(row   ,column,"CDMA", '+', '|', '-', DISP_WIDTH, WHITE);
+    if(System.cdma_link_status==-1)
+    {
+      vt100_print_bar(line++ ,column,-DISP_WIDTH,"링크    :-\r\n");
+    }
+    else
+    {
+      vt100_print_bar(line++ ,column,-DISP_WIDTH,"링크    :%s\r\n",ITEM_LIST(System.cdma_link_status,linkStatusList));
+    }
+    if(System.cdma_num[0]!='0')
+    {
+      num[0]='-';
+      num[1] = 0;
+    }
+    else
+    {
+      snprintf(num,sizeof(num),"%s",System.cdma_num);
+    }
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"전화번호:%s\r\n",num);
+    if(System.cdma_rssi == -1)
+    {
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"수신감도:-\r\n");
+    }
+    else
+    {
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"수신감도:%d\r\n",System.cdma_rssi);
+    }
+
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"송신    :%d\r\n",System.eth_tx_cnt);
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"수신    :%d\r\n",System.eth_rx_cnt);
+    vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
+    
+    return 5+2;
+}
 
 
 
@@ -450,7 +492,7 @@ int32_t menu_display(p_shell_context_t ctx)
     debug_printf(VT100_CURSOR_HOME);
     debug_printf("\r\n");
     print_systemInfo(1,0);
-    print_ethInfo(1,30);
+    print_cdmaInfo(1,30);
     print_chargerInfo(20,0);
     print_awsRealLefinfo(1,60,awsMode,NULL);
 

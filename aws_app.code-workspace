@@ -71,7 +71,10 @@
       "ds1306.h": "c",
       "driver_rtc_define.h": "c",
       "driver_adc.h": "c",
-      "utility": "c"
+      "utility": "c",
+      "at_cmd.h": "c",
+      "xtr1common": "c",
+      "task_cellular.h": "c"
     }
 	}
 }

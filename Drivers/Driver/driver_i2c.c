@@ -10,7 +10,7 @@
 
 driver_t driver_i2c[2];
 
-driver_t *driver_i2c_open(uint32_t num)
+driver_t *driver_i2c_open(uint32_t num,void *opt)
 {
     switch(num)
     {

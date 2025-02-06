@@ -43,7 +43,7 @@ int32_t driver_adc_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err
 }
 
 
-void driver_set(driver_t *drv, adc_set_option_t option, void *value)
+void driver_adc_set(driver_t *drv, adc_set_option_t option, void *value)
 {
   const adc_api_t *api = drv->api;
 
