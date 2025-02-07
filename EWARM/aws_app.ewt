@@ -1246,6 +1246,12 @@
             </group>
             <group>
                 <name>Direct</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.h</name>
+                </file>
             </group>
             <group>
                 <name>Ethernet</name>

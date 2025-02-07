@@ -75,7 +75,8 @@
       "at_cmd.h": "c",
       "xtr1common": "c",
       "task_cellular.h": "c",
-      "boot_version.h": "c"
+      "boot_version.h": "c",
+      "aws_protocol.h": "c"
     }
 	}
 }

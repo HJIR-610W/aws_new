@@ -19,6 +19,19 @@ void config_factoryReset(void)
 }
 
 
+void update_cnt(uint8_t *cnt)
+{
+  int8_t val;
+
+  val = *cnt +1;
+
+  if(val>=100|| val==0)
+  {
+    val = 1;
+  }
+
+  *cnt = val;
+}
 void check_config_limit(void)
 {
   uint8_t config_check_cnt=0;
@@ -43,6 +56,13 @@ void check_config_limit(void)
     }
   }
 
+  if(config.direct_use && config.cdma_use)
+  {
+    config.direct_use = 0 ;
+    config.cdma_use = 1;
+    WRITE_CFG(direct_use);
+    WRITE_CFG(cdma_use);
+  }
 
   for(int i = 0; i < _countof(config.sensor) ;i++)
   {
@@ -52,6 +72,8 @@ void check_config_limit(void)
       config_check_cnt++;
     }
   }
+
+
 
   if(config_check_cnt)
   {

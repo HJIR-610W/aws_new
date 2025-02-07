@@ -59,7 +59,7 @@ stm32_uart_cfg_t g_stm32_uart_cfg[STM32_UART_MAX]={{.handle = &huart1 },
 uint8_t g_uart_rx_dma_buffer[BUFFER_SIZE];
 
 
-int32_t stm32_uart_recv_opt(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint8_t cmd,void *opt);
+
 void stm32_uart_flush_rx(driver_t *drv);
 void stm32_uart_close(driver_t *handle);
 void stm32_uart_set(driver_t *drv,uart_set_option_t cmd,void *option);
@@ -375,7 +375,8 @@ static void MX_DMA_UART6_Init(void)
 
 driver_t *stm32_uart_open(int num,void *opt);
 void stm32_uart_close(driver_t *handle);
-int32_t stm32_uart_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, uint8_t cmd,void *opt);
+
+int32_t stm32_uart_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, eUART_RECV_OPT_t cmd,void *opt);
 void stm32_uart_flush_rx(driver_t *handle);
 
 uart_api_t stm32_uart_api={.close = stm32_uart_close,
@@ -549,10 +550,10 @@ int32_t stm32_uart_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
 
 
 
-#define STREAMBUFFER_USE 1
+
 int32_t stm32_uart_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
 {
-#if STREAMBUFFER_USE // 레지스터 직접 접근
+
     uint32_t starTick;
     uint32_t stopTick;
     uint32_t elapseTick;
@@ -613,33 +614,6 @@ int32_t stm32_uart_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t 
         remainBuffSize -= xBytesAvailable;
         timeout = timeout - elapseTick; 
     }
-
-#else
-  uint32_t startTick;
-  uint16_t cnt=0;
-
-  startTick = xTaskGetTickCount();
-  while(1)
-  {
-    if (read_register(LSR(exUartBaseAddress[channel])) & LSR_DR)
-    {
-      pBuff[cnt++] = read_register(RBR(exUartBaseAddress[channel])); 
-    } 
-    if(cnt==buffSize)
-    {
-      break;
-    }
-    if((xTaskGetTickCount()-startTick)>timeOutMs)
-    {
-      break;
-    }
-  }
-    
-    return cnt; // 데이터가 준비되지 않음
-
-    #endif
-
-    //return 0;
 }
 
 
@@ -814,10 +788,98 @@ void stm32_uart_close(driver_t *handle)
 
 }
 
-int32_t stm32_uart_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, uint8_t cmd,void *opt)
-{
 
-  return 0;
+int32_t stm32_uart_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *opt)
+{
+  uart_optTimeOut_t *optTimeOut=opt;
+  uint32_t starTick;
+  uint32_t stopTick;
+  uint32_t elapseTick;
+  uint32_t timeout;
+  uint32_t lastTick=0;
+  size_t xBytesAvailable;
+  size_t xBytesRead;
+  size_t remainBuffSize = buffSize;
+  size_t cnt = 0;
+  stm32_uart_cfg_t *cfg = drv->cfg;
+  uint8_t channel = cfg->channel;
+
+
+  timeout = optTimeOut->frameTimeOutMs;
+    
+  (void)lastTick;
+
+  while(1)
+  {
+        /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
+        xBytesAvailable = xStreamBufferBytesAvailable( g_stm32_xStreamBuffer[channel] );
+
+        if(remainBuffSize < xBytesAvailable)
+        {
+          xBytesAvailable = remainBuffSize;// 버퍼 수만큼만 읽기
+        }
+
+        starTick = xTaskGetTickCount();
+        if( xBytesAvailable > 0 )
+        {
+            /* 데이터를 읽을 수 있다면, 데이터를 수신 */
+            xBytesRead = xStreamBufferReceive( g_stm32_xStreamBuffer[channel], ( void * ) &pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS( timeout ) );
+            
+            if(xBytesRead >0)
+            {
+              cnt += xBytesRead;
+              lastTick = xTaskGetTickCount();
+            }
+        }
+        else
+        {
+            /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
+            xBytesRead = xStreamBufferReceive( g_stm32_xStreamBuffer[channel], ( void * ) &pBuff[cnt], 1, pdMS_TO_TICKS( timeout ) );
+            if(xBytesRead ==1)
+            {
+              cnt += 1;
+              lastTick = xTaskGetTickCount();
+            }
+        }
+
+
+        stopTick = xTaskGetTickCount();
+        elapseTick = stopTick-starTick;
+
+        
+  
+        if(elapseTick >= timeout  || cnt >= buffSize)
+        {
+          return cnt;
+        }
+        remainBuffSize -= xBytesAvailable;
+
+
+        if(cnt)
+        {
+          timeout = optTimeOut->dataTimeOutMs;
+        }
+        else
+        {
+        timeout = timeout - elapseTick; 
+        }
+    }
+}
+
+
+int32_t stm32_uart_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, eUART_RECV_OPT_t cmd,void *opt)
+{
+  uart_optTimeOut_t optTimeOut;
+  int32_t cnt=0;
+  switch(cmd)
+  {
+    case eUART_OPT_DATA_TIMEOUT_1:
+    cnt = stm32_uart_recv_1(handle,buffer,length,opt);
+    break;
+
+  }
+
+  return cnt;
 }
 
 void stm32_uart_flush_rx(driver_t *handle)

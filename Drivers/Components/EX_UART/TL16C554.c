@@ -722,7 +722,7 @@ void tls16c554_close(driver_t *handle);
 int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen);
 int32_t tls16c554_recv(driver_t *handle, uint8_t *buffer, uint16_t length, uint32_t timeOutMs);
 void tls16c554_flush_rx(driver_t *handle);
-int32_t tls16c554_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, uint8_t cmd,void *opt);
+int32_t tls16c554_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, eUART_RECV_OPT_t cmd,void *opt);
 void tls16c554_set(driver_t *handle, uart_set_option_t option, void *value);
 
 uart_api_t tl16c554_api={.close = tls16c554_close,
@@ -923,20 +923,96 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
 }
 
 
-int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint8_t cmd,void *opt)
+
+int32_t tls16c554_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *opt)
+{
+  uart_optTimeOut_t *optTimeOut=opt;
+  uint32_t starTick;
+  uint32_t stopTick;
+  uint32_t elapseTick;
+  uint32_t timeout;
+  uint32_t lastTick=0;
+  size_t xBytesAvailable;
+  size_t xBytesRead;
+  size_t remainBuffSize = buffSize;
+  size_t cnt = 0;
+  tl16c554_cfg_t *cfg = drv->cfg;
+  uint8_t channel = cfg->channel;
+
+
+  timeout = optTimeOut->frameTimeOutMs;
+    
+  (void)lastTick;
+
+  while(1)
+  {
+        /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
+        xBytesAvailable = xStreamBufferBytesAvailable( g_quad_xStreamBuffer[channel] );
+
+        if(remainBuffSize < xBytesAvailable)
+        {
+          xBytesAvailable = remainBuffSize;// 버퍼 수만큼만 읽기
+        }
+
+        starTick = osKernelGetTickCount();
+        if( xBytesAvailable > 0 )
+        {
+            /* 데이터를 읽을 수 있다면, 데이터를 수신 */
+            xBytesRead = xStreamBufferReceive( g_quad_xStreamBuffer[channel], ( void * ) &pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS( timeout ) );
+            
+            if(xBytesRead >0)
+            {
+              cnt += xBytesRead;
+              lastTick = osKernelGetTickCount();
+            }
+        }
+        else
+        {
+            /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
+            xBytesRead = xStreamBufferReceive( g_quad_xStreamBuffer[channel], ( void * ) &pBuff[cnt], 1, pdMS_TO_TICKS( timeout ) );
+            if(xBytesRead ==1)
+            {
+              cnt += 1;
+              lastTick = osKernelGetTickCount();
+            }
+        }
+
+
+        stopTick = osKernelGetTickCount();
+        elapseTick = stopTick-starTick;
+
+        
+  
+        if(elapseTick >= timeout  || cnt >= buffSize)
+        {
+          return cnt;
+        }
+        remainBuffSize -= xBytesAvailable;
+
+
+        if(cnt)
+        {
+          timeout = optTimeOut->dataTimeOutMs;
+        }
+        else
+        {
+        timeout = timeout - elapseTick; 
+        }
+    }
+}
+
+int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, eUART_RECV_OPT_t cmd,void *opt)
 {
   uint16_t len = 0;
-  uart_optTimeOut_t *timeout = opt;
+  int32_t cnt = 0;
   
   switch (cmd)
   {
 
   case eUART_OPT_DATA_TIMEOUT_1:
-    len = tls16c554_uart_recvsOpt(drv,pBuff,buffSize,timeout->frameTimeOutMs,
-                                  timeout->dataTimeOutMs);
+   cnt = tls16c554_recv_1(drv,pBuff,buffSize,opt);
   break;
-  case eUART_OPT_DATA_TIMEOUT_2:
-  break;
+
   }
   return len;
 }

@@ -418,6 +418,7 @@
                     <state>$PROJ_DIR$\..\Application\Sensors</state>
                     <state>$PROJ_DIR$\..\Application\App_drivers</state>
                     <state>$PROJ_DIR$\..\Application\Communications\CDMA</state>
+                    <state>$PROJ_DIR$\..\Application\Communications\Direct</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1189,6 +1190,12 @@
             </group>
             <group>
                 <name>Direct</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.h</name>
+                </file>
             </group>
             <group>
                 <name>Ethernet</name>

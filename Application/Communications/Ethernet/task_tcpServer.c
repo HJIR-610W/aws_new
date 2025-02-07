@@ -14,7 +14,7 @@ osThreadId_t g_tcpSeverTaskId;
 
 const osThreadAttr_t tcpServerTask_attributes = {
   .name = "tcpServerTask",
-  .stack_size = 2048,//2048바이트가 할당됨 하지만 4바이트 단위로 스택은 구성됨
+  .stack_size = 4096,//2048바이트가 할당됨 하지만 4바이트 단위로 스택은 구성됨
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -64,11 +64,12 @@ void server_service(int conn)
 
       return;
     }
-
+    update_cnt(&System.eth_rx_cnt);
      len = aws_cmd(rbuffer,ret,tbuffer,sizeof(tbuffer),0);
      if(len)
      {
       send(conn,tbuffer,len,0);
+      update_cnt(&System.eth_tx_cnt);
      }
   }
   
@@ -166,5 +167,7 @@ void tcpServerTask(void *arg)
 
 void tcpServerTask_init(uint32_t flag)
 {
+  System.eth_link_status = -1;
+  
   g_tcpSeverTaskId = osThreadNew(tcpServerTask, NULL, &tcpServerTask_attributes);
 }

@@ -34,6 +34,8 @@
 #define EXIT_BACK    -1
 
 #define ITEM_LIST(cnt,list) cnt>=_countof(list)?g_unknown:(char *)list[cnt] 
+
+
 //사용가능한 싱글 채널 설정정
 const bool single_en[32]={1,1,1,0,
                           1,1,1,0,
@@ -80,7 +82,7 @@ const char *protocolList[]={"kma ver 1","kma ver 2"};
 const char *cdmaModellList[]={"TX700","NTLE9607"};
 const char *panelList[]={"model a","model b"};
 const char *doorStatusList[]={"닫힘","열림"};
-const char *linkStatusList[]={"up","down"};
+const char *linkStatusList[]={"-","up","down"};
 const char *g_chgList[]={"smart charger",
                          "aws charger"};
 const char *g_unknown="unknown";
@@ -89,7 +91,7 @@ const char *generalStatusList[]={"정상","비정상"};
 const char *adcChModeList[]={"single","diff"};
 const char *rs232ParityList[]={"none","even","odd"};
 const char *enableList[]={"미사용","사용"};
-
+const char *ethModeList[]={"클라이언트","서버"};
 
 int32_t print_common_cfg(p_shell_context_t ctx,sensor_t *sensor,uint8_t c);
 
@@ -318,12 +320,13 @@ int32_t print_ethInfo(uint16_t row,uint16_t column)
 
     make_comList(buff,sizeof(buff));
     vt100_print_frame(row   ,column,"이더넷", '+', '|', '-', DISP_WIDTH, WHITE);
-    vt100_print_bar(line++ ,column,-DISP_WIDTH,"링크  :%s\r\n",ITEM_LIST(System.eth_link_status,linkStatusList));
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"링크  :%s\r\n",ITEM_LIST(System.eth_link_status+1,linkStatusList));
     vt100_print_bar(line++ ,column,-DISP_WIDTH,"송신  :%d\r\n",System.eth_tx_cnt);
     vt100_print_bar(line++ ,column,-DISP_WIDTH,"수신  :%d\r\n",System.eth_rx_cnt);
+
     vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
     
-    return 5+2;
+    return line-(row);
 }
 
 int32_t print_cdmaInfo(uint16_t row,uint16_t column)
@@ -341,7 +344,7 @@ int32_t print_cdmaInfo(uint16_t row,uint16_t column)
     }
     else
     {
-      vt100_print_bar(line++ ,column,-DISP_WIDTH,"링크    :%s\r\n",ITEM_LIST(System.cdma_link_status,linkStatusList));
+      vt100_print_bar(line++ ,column,-DISP_WIDTH,"링크    :%s\r\n",ITEM_LIST(System.cdma_link_status+1,linkStatusList));
     }
     if(System.cdma_num[0]!='0')
     {
@@ -359,7 +362,7 @@ int32_t print_cdmaInfo(uint16_t row,uint16_t column)
     }
     else
     {
-    vt100_print_bar(line++ ,column,-DISP_WIDTH,"수신감도:%d\r\n",System.cdma_rssi);
+      vt100_print_bar(line++ ,column,-DISP_WIDTH,"수신감도:%d\r\n",System.cdma_rssi);
     }
 
     vt100_print_bar(line++ ,column,-DISP_WIDTH,"송신    :%d\r\n",System.eth_tx_cnt);
@@ -368,10 +371,27 @@ int32_t print_cdmaInfo(uint16_t row,uint16_t column)
     
 
     
-    return 5+2;
+    return line-(row);
 }
 
 
+
+int32_t print_directInfo(uint16_t row,uint16_t column)
+{
+    char buff[30];
+    char num[20];
+    uint8_t line=row+3;
+    int8_t rssi;
+
+    make_comList(buff,sizeof(buff));
+    vt100_print_frame(row   ,column,"DIRECT", '+', '|', '-', DISP_WIDTH, WHITE);
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"링크    :%s\r\n",ITEM_LIST(System.direct_link_status+1,linkStatusList));
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"송신    :%d\r\n",System.direct_tx_cnt);
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"수신    :%d\r\n",System.direct_rx_cnt);
+    vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
+
+    return line-(row);
+}
 
 int32_t print_awsRealLefinfo(uint16_t row,uint16_t column,uint8_t mode,void* arg)
 {
@@ -482,7 +502,7 @@ int32_t menu_display(p_shell_context_t ctx)
 {
 
   char ch;
-
+  int32_t line=0;
   uint8_t awsMode=0;
 
   debug_printf(VT100_CLEAR_SCREEN);
@@ -494,7 +514,21 @@ int32_t menu_display(p_shell_context_t ctx)
     debug_printf(VT100_CURSOR_HOME);
     debug_printf("\r\n");
     print_systemInfo(1,0);
-    print_cdmaInfo(1,30);
+
+    line = 0;
+    if(config.cdma_use)
+    {
+      line = print_cdmaInfo(1,30);
+    }
+    if(config.direct_use)
+    {
+      line += print_directInfo(1+line,30);
+    }
+    if(config.eth_use)
+    {
+      line += print_ethInfo(1+line,30);
+    }
+
     print_chargerInfo(20,0);
     print_awsRealLefinfo(1,60,awsMode,NULL);
 
@@ -1982,12 +2016,24 @@ int32_t menu_net_use(p_shell_context_t ctx)
           case 1:
       if(input_use(ctx,&config.cdma_use))
       {
-        WRITE_CFG(cdma_use);
+        if(config.cdma_use)
+        {
+          config.direct_use = 0;
+          WRITE_CFG(direct_use);
+        }
+
+          WRITE_CFG(cdma_use);
+
       }
       break;
       case 2:
       if(input_use(ctx,&config.direct_use))
       {
+        if(config.direct_use)
+        {
+          config.cdma_use = 0;
+          WRITE_CFG(cdma_use);
+        }
         WRITE_CFG(direct_use);
       }
       break;
@@ -2000,6 +2046,7 @@ int32_t menu_net_use(p_shell_context_t ctx)
 int32_t print_net_eth_set(p_shell_context_t ctx)
 {
   int32_t cnt = 0;
+  ctx->printf("%2d.방식         :%s \r\n",cnt++,ITEM_LIST(config.eth_mode,ethModeList));
   ctx->printf("%2d.원격 서버 정보\r\n",cnt++);
   ctx->printf("%2d.기본 구성\r\n",cnt++);
 
@@ -2148,11 +2195,37 @@ int32_t menu_net_eth_default_set(p_shell_context_t ctx)
 }
 
 
+int32_t menu_net_eth_mode_set(p_shell_context_t ctx)
+{
+
+  int32_t cnt;
+  int32_t a,b,c,d;
+
+
+    cnt = select_indexFromList(ctx,ethModeList,NULL,_countof(ethModeList),true);
+    if(cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+    {
+      return cnt;
+    }
+
+    cnt--;
+    switch(cnt)
+    { 
+      case 0:
+        config.eth_mode = cnt;
+     WRITE_CFG(eth_mode);
+     break;
+   
+    }
+  return cnt;
+}
+
 int32_t menu_net_eth_set(p_shell_context_t ctx)
 {
   int32_t cnt;
 
-  const menu_func menu[]={menu_net_eth_remote_set,
+  const menu_func menu[]={menu_net_eth_mode_set,
+                          menu_net_eth_remote_set,
                           menu_net_eth_default_set};
   do
   {
@@ -2162,11 +2235,21 @@ int32_t menu_net_eth_set(p_shell_context_t ctx)
       return cnt;
     }
     cnt--;
-    cnt = menu[cnt](ctx);
+
+    switch(cnt)
+    {
+      case 0:
+      cnt = menu_net_eth_mode_set(ctx);
+      break;
+      default:
+          cnt = menu[cnt](ctx);
     if(cnt == EXIT_PROGRAM)
     {
       return cnt;
     }
+      break;
+    }
+
   } while (1);
 
 }
@@ -2249,8 +2332,8 @@ int32_t print_net_direct_set(p_shell_context_t ctx)
 {
   int32_t cnt = 2;
 
-  ctx->printf(" 0.baud     :%d\r\n",cnt++,config.direct_baud);
-  ctx->printf(" 1.protocol :%s\r\n",cnt++,ITEM_LIST(config.direct_protocol,protocolList));
+  ctx->printf("%2d.baud     :%d\r\n",cnt++,config.direct_baud);
+  ctx->printf("%2d.protocol :%s\r\n",cnt++,ITEM_LIST(config.direct_protocol,protocolList));
 
   return cnt;
 }

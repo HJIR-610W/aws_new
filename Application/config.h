@@ -42,13 +42,15 @@ typedef struct adc_cali_s
   adc_calibraion_t diff[8];
 }adc_cali_config_t;
 
-
+#define ETH_MODE_CLIENT 0
+#define ETH_MODE_SERVER 1
 typedef struct config_s
 {
   uint16_t id;
   uint16_t password;
   uint8_t chgType;
   uint16_t logCnt;
+  uint8_t eth_mode;
   uint8_t eth_subnet[4];
   uint8_t eth_gateway[4];
   uint8_t eth_ip[4];
@@ -77,23 +79,26 @@ typedef struct config_s
 }config_t;
 
 
+#define STATUS_IDLE -1
+#define LINK_UP 0
+#define LINK_DOWN 1
 typedef struct system_s
 {
-  uint8_t doorStatus;
-  uint8_t eth_link_status;//0정상, 1 다운
-  uint8_t eth_tx_cnt;
-  uint8_t eth_rx_cnt;
+  int8_t doorStatus;
+  int8_t eth_link_status;//0정상, 1 다운
+  int8_t eth_tx_cnt;
+  int8_t eth_rx_cnt;
   int8_t cdma_link_status;
   uint8_t cdma_tx_cnt;
   uint8_t cdma_rx_cnt;
   int8_t cdma_rssi;
   char cdma_num[20];
-  uint8_t direct_link_status;
-  uint8_t direct_tx_cnt;
-  uint8_t direct_rx_cnt;
-  uint8_t vhf_tx_cnt;
-  uint8_t vhf_rx_cnt;
-  uint8_t charger_status;
+  int8_t direct_link_status;
+  int8_t direct_tx_cnt;
+  int8_t direct_rx_cnt;
+  int8_t vhf_tx_cnt;
+  int8_t vhf_rx_cnt;
+  int8_t charger_status;
   
   uint8_t TcpCntStat;
   uint8_t ModemRcvLevel;
@@ -109,6 +114,7 @@ void write_s_config(void);
 void write_config(void);
 
 
+void update_cnt(uint8_t *cnt);
 
 extern config_t config;
 extern system_t System;

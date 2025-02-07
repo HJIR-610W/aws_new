@@ -85,20 +85,20 @@ typedef struct
 const osThreadAttr_t atTask_attributes = {
   .name = "atTask",
   .stack_size = 2048,
-  .priority = (osPriority_t) osPriorityRealtime,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 
 const osThreadAttr_t tcpTask_attributes = {
   .name = "tcpTask",
   .stack_size = 4096,
-  .priority = (osPriority_t) osPriorityRealtime,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 
 
 const osThreadAttr_t asyncTask_attributes = {
   .name = "asyncTask",
   .stack_size = 2048,
-  .priority = (osPriority_t) osPriorityRealtime,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 
 
@@ -1417,13 +1417,14 @@ void mdoem_status_init(void)
 {
   g_modem_status.rssi = -1;
   g_modem_status.link_status = -1;
-  g_modem_status.txCnt = -1;
-  g_modem_status.rxCnt = -1;
-  g_modem_status.link_status  = eLINK_DISCONNECTED;
-
+  g_modem_status.txCnt = 0;
+  g_modem_status.rxCnt = 0;
 
   g_modem_config.connection_timeoutms = 3600000;
 }
+
+
+
 
 void cellularTask_init(void)
 {

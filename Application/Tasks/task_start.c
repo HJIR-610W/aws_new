@@ -27,6 +27,7 @@
 #include "task_system.h"
 #include "task_console.h"
 #include "task_measure.h"
+#include "task_direct.h"
 #include "utile_time.h"
 #include "task_tcpServer.h"
 #include "mcu_utile.h"
@@ -72,12 +73,19 @@ void startTask(void *arg)
   loggingTask_init();
   measureTask_init();
 
-  cellularTask_init();
+  if(config.cdma_use)
+  {
+    cellularTask_init();
+  }
+  if(config.direct_use)
+  {
+    directTask_init();
+  }
 
   if(config.eth_use)
   {
-    //tcpServerTask_init(0);
-   // ethernetTask_init();
+    tcpServerTask_init(0);
+    ethernetTask_init();
 
   }
 

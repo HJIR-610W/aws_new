@@ -41,12 +41,7 @@ typedef enum uart_recv_opt_s
    - modbus 같은 경우 유용
   */
   eUART_OPT_DATA_TIMEOUT_1,
-  /*
-  주어진 시간동안 대기, 데이터가 수신되면 대기시간이 지연됨
-  예)프레임 대기시간 100ms인데 99ms에서 데이터가 100바이이트 수신되는 경우 대기시간이 
-  더필요하다.
-  */ 
-  eUART_OPT_DATA_TIMEOUT_2,
+
 }eUART_RECV_OPT_t;
 
 typedef enum
@@ -67,7 +62,7 @@ typedef struct
     int32_t (*recv)(driver_t *handle, uint8_t *buffer, uint16_t length, uint32_t timeout);
     
 
-    int32_t (*recv_opt)(driver_t *handle, uint8_t *buffer, uint16_t length, uint8_t cmd,void *opt);
+    int32_t (*recv_opt)(driver_t *handle, uint8_t *buffer, uint16_t length, eUART_RECV_OPT_t cmd,void *opt);
     void (*flush_rx)(driver_t *handle);
     int32_t (*available)(driver_t *handle);
 
