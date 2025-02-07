@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
+#include "aws_protocol.h"
 #include "modem_if.h"
 #include "at_cmd.h"
 #include  "modem_ntle9607.h"
@@ -1394,19 +1396,18 @@ void modemTcpTask(void  *argument)
                     case RET_OK:
                     if(len)//수신된 데이터가 있음
                     {
-                      debug_printf("recv %d\r\n",osKernelGetTickCount());
-                        startTime = osKernelGetTickCount();//ping 타임아웃 초기화
+                           len = aws_cmd(buff,ret,tx,sizeof(tx),0);
+
                         if(len)//전송할 데이터있다면
                         {
-    
 
-                            if(_iCellular->send_tcp(buff,len) == RET_FAIL_SEND)//실패하면 1회 더 재전송
+
+                            if(_iCellular->send_tcp(tx,len) == RET_FAIL_SEND)//실패하면 1회 더 재전송
                             {
-                                if(_iCellular->send_tcp(buff,len) == RET_FAIL_SEND)
-                                {
+ 
                                         err = 1;
                                         type = eCONNECT_TX_FAIL;
-                                }
+
                             }
                         }
                     }
@@ -1428,8 +1429,8 @@ void modemTcpTask(void  *argument)
 
                 if((osKernelGetTickCount()-startTime)>PING_TIMEOUT_MS)/*일정 기간동안 ping이 한번이라도 수신 안되면*/
                 {
-                   // type = eCONNECT_TCP_WDT;
-                  //  break;
+                  // type = eCONNECT_TCP_WDT;
+                  // break;
                 }
             }
         }
