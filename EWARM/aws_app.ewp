@@ -1351,6 +1351,12 @@
                 </file>
             </group>
             <group>
+                <name>general</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\general\sensor_general.c</name>
+                </file>
+            </group>
+            <group>
                 <name>humidity</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\humidity\humidity.c</name>
@@ -2123,72 +2129,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\netif\slipif.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_asn1.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_core.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_mib2.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_mib2_icmp.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_mib2_interfaces.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_mib2_ip.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_mib2_snmp.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_mib2_system.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_mib2_tcp.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_mib2_udp.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_msg.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_netconn.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_pbuf_stream.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_raw.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_scalar.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_snmpv2_framework.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_snmpv2_usm.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_table.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_threadsync.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmp_traps.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmpv3.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\snmp\snmpv3_mbedtls.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\api\sockets.c</name>

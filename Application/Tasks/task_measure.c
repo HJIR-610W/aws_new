@@ -6,6 +6,7 @@
 #include "Sensors\snow\snow.h"
 #include "Sensors\rain\rain.h"
 #include "Sensors\humidity\humidity.h"
+#include "Sensors\general\sensor_general.h"
 
 #include "app_bsp.h"
 #include "app_adc.h"
@@ -56,6 +57,7 @@ void measureTask(void *arg)
   uint8_t err;
   uint8_t data[100];
   sensor_t *sensor;
+  uint32_t i;
 
   adc_init();
 
@@ -95,33 +97,44 @@ void measureTask(void *arg)
     
     start_time = mcu_get_clk();
    
-    if(sensor[A1_TEMPERATURE].type)
-    {
-      sensor_data[A1_TEMPERATURE].data.f = read_sensor_temperature(&sensor[A1_TEMPERATURE],&err);
-    }
-    
-    if(sensor[A2_WIND_DIRECTION].type)
-    {
-      sensor_data[A2_WIND_DIRECTION].data.f = read_sensor_windDirection(&sensor[A2_WIND_DIRECTION],&err);
-    }
-    if(sensor[A3_WIND_SPEED].type)
-    {
-      sensor_data[A3_WIND_SPEED].data.f = read_sensor_windDirection(&sensor[A3_WIND_SPEED],&err);
-    }
-    
-    if(sensor[A9_SNOW_DEPTH].type)
-    {
-      sensor_data[A9_SNOW_DEPTH].data.i = read_sensor_snow(&sensor[A9_SNOW_DEPTH],&err);
-    }
 
-    if(sensor[A6_RAINFALL_DOT5_1MM].type)
+    for( i = 0 ;i< _countof(config.sensor);i++)
     {
-      sensor_data[A6_RAINFALL_DOT5_1MM].data.i = read_sensor_rain(&sensor[A6_RAINFALL_DOT5_1MM],&err);
-    }
+      
+      if(sensor[i].type == S_T_ADC || sensor[i].type == S_T_GENERAL_485)
+      {
+        if(sensor[i].type)
+        {
+          switch(i)
+          {
+            case A1_TEMPERATURE:
+            sensor_data[A1_TEMPERATURE].data.f = read_sensor_temperature(&sensor[A1_TEMPERATURE],&err);
+            break;
+            case A2_WIND_DIRECTION:
+            sensor_data[A2_WIND_DIRECTION].data.f = read_sensor_windDirection(&sensor[A2_WIND_DIRECTION],&err);
+            break;
+            case A3_WIND_SPEED:
+            sensor_data[A3_WIND_SPEED].data.f = read_sensor_windDirection(&sensor[A3_WIND_SPEED],&err);
+            break;
+            case A9_SNOW_DEPTH:
+            sensor_data[A9_SNOW_DEPTH].data.i = read_sensor_snow(&sensor[A9_SNOW_DEPTH],&err);
+            break;
+            case A6_RAINFALL_DOT5_1MM:
+            sensor_data[A6_RAINFALL_DOT5_1MM].data.i = read_sensor_rain(&sensor[A6_RAINFALL_DOT5_1MM],&err);
+            break;
+            case A10_RELATIVE_HUMIDITY:
+            sensor_data[A10_RELATIVE_HUMIDITY].data.f = read_sensor_humidity(&sensor[A10_RELATIVE_HUMIDITY],&err);
+            break;
+            case A11_RAINFALL_DOT1MM:
+            sensor_data[A11_RAINFALL_DOT1MM].data.f = read_sensor_rain(&sensor[A11_RAINFALL_DOT1MM],&err);
+            break;
+            default:
+            sensor_data[i].data.f = read_sensorGeneral(&sensor[i],&err);
+            break;
+          }
+      }
 
-    if(sensor[A10_RELATIVE_HUMIDITY].type)
-    {
-      sensor_data[A10_RELATIVE_HUMIDITY].data.f = read_sensor_humidity(&sensor[A10_RELATIVE_HUMIDITY],&err);
+      }
     }
 
    elased_time =mcu_cal_elapse_us(start_time);
