@@ -45,6 +45,7 @@ typedef struct dev_io_s
 
 void debug_uart_init(uint32_t baud_rate);
 int32_t debug_printf(const char * pFmt, ...);
+int32_t error_printf(const char * pFmt, ...);
 void debug_send(uint8_t *pData,uint16_t dataLen);
 void debug_puts(char *str);
 void debug_puts_nonos(char *str);

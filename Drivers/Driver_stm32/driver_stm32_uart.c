@@ -37,24 +37,19 @@ DMA_HandleTypeDef hdma_usart3_rx;
 DMA_HandleTypeDef hdma_usart6_rx;
 
 #define BUFFER_SIZE 1024+128
-typedef struct uart_ring_s
-{
-  uint16_t size;
-  uint16_t head;
-  uint16_t tail;
-  uint8_t buffer[BUFFER_SIZE];
-  osSemaphoreId_t  sem;
-}uart_ring_t;
+
 
 
 typedef struct stm32_uart_cfg_s
 {
   UART_HandleTypeDef *handle;
-  void *txcSem;   //전송 완료 알림 세마포어
-  uint8_t channel;
+  void *txcSem;   // 전송 완료 알림 세마포어
+  uint8_t channel;// 채널 번호
+  uint32_t baud;  // 설정된 통신속도
+  int8_t errCode;// 드라이버 에러  상태 정보
 }stm32_uart_cfg_t;
 
-uart_ring_t g_uart_ring[STM32_UART_MAX];
+
 driver_t g_stm32_uart[STM32_UART_MAX];
 stm32_uart_cfg_t g_stm32_uart_cfg[STM32_UART_MAX]={{.handle = &huart1 },
                                                    {.handle = &huart3},
@@ -377,13 +372,6 @@ static void MX_DMA_UART6_Init(void)
 }
 
 
-void uart_ring_init(int num)
-{
-  g_uart_ring[num].tail = 0;
-  g_uart_ring[num].head = 0;
-
-  g_uart_ring[num].sem = osSemaphoreNew(BUFFER_SIZE, 0, NULL);
-}
 
 driver_t *stm32_uart_open(int num,void *opt);
 void stm32_uart_close(driver_t *handle);
@@ -408,8 +396,10 @@ driver_t *stm32_uart_open(int num,void *opt)
   }
 
     g_stm32_uart_cfg[num].channel = num;
+    g_stm32_uart_cfg[num].baud = cfg->baud;
     g_stm32_uart[num].api = &stm32_uart_api;
     g_stm32_uart[num].cfg = &g_stm32_uart_cfg[num];
+    
     if(g_stm32_uart[num].sem == NULL)
     {
       tempSem = osSemaphoreNew(1, 1, NULL);
@@ -425,7 +415,7 @@ driver_t *stm32_uart_open(int num,void *opt)
       if(tempSem)
       g_stm32_uart_cfg[num].txcSem = tempSem;
     }
-    uart_ring_init(num);
+
   switch (num)
   {
     case STM32_UART_0_DEBUG:
@@ -497,12 +487,24 @@ HAL_StatusTypeDef UART_SetBaudAndParity(UART_HandleTypeDef *huart, uint32_t baud
 
 #define STM32_UART_TX_TIMEOUTMS 60000
 
+
+uint32_t calculate_txWaitTimeMs(uint32_t baud,uint16_t dataLen)
+{
+  uint32_t waitTime;
+
+  waitTime = (uint32_t)(((dataLen*10)/(float)baud)*1000) + 100;//100정도 기본 delay 해줌
+
+  return waitTime;
+
+}
 int32_t stm32_uart_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
 {
   stm32_uart_cfg_t *cfg = (stm32_uart_cfg_t *)drv->cfg;
   HAL_StatusTypeDef status;
   osStatus_t osStatus;
   int32_t retVal=dataLen;
+  uint32_t waitTime;
+
 
   if(drv==NULL || drv->opened==false)
   {
@@ -514,15 +516,19 @@ int32_t stm32_uart_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
     osSemaphoreAcquire(drv->sem, osWaitForever);
   }
 
+  osSemaphoreAcquire(cfg->txcSem, 0);// 이전에 처리 못한건 제거 
+  waitTime = calculate_txWaitTimeMs(cfg->baud,dataLen);
   status = HAL_UART_Transmit_DMA(cfg->handle,pData, dataLen);
 
   if(status == HAL_OK)
   {
     if(cfg->txcSem)
     {
-     osStatus = osSemaphoreAcquire(cfg->txcSem, STM32_UART_TX_TIMEOUTMS);
-     if(osStatus !=osOK)
+     osStatus = osSemaphoreAcquire(cfg->txcSem, waitTime);
+     if(osStatus != osOK)
      {
+      cfg->errCode = (int8_t)osStatus;
+      
       retVal = -1;
      }
     }
@@ -537,59 +543,11 @@ int32_t stm32_uart_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
     osSemaphoreRelease(drv->sem);
   }
 
-  return dataLen;
+  return retVal;
 }
 
-int RingBuffer_Read(uart_ring_t *rb, uint8_t *data,uint32_t timeOutMs)
-{
-    // 세마포어가 확보되면 데이터 읽기 (데이터가 없으면 대기)
-    
-    if (osSemaphoreAcquire(rb->sem, timeOutMs) == osOK)
-    {
-        // 링버퍼에서 데이터 읽기
-        *data = rb->buffer[rb->tail];
-        rb->tail = (rb->tail + 1) % BUFFER_SIZE;
-        return 1;  // 읽기 성공
-    }
-    return 0;  // 읽기 실패
-}
-
-int RingBuffer_Read2(uart_ring_t *rb, uint8_t *data,uint16_t dataSize,uint32_t timeOutMs)
-{
-  uint32_t starTick = xTaskGetTickCount();
-  uint32_t stopTick;
-  uint32_t elapseTick;
-  int cnt = 0;
 
 
-  while(1)
-  {
-    starTick = xTaskGetTickCount();
-    if (osSemaphoreAcquire(rb->sem, timeOutMs) == osOK)
-    {
-          stopTick = xTaskGetTickCount();
-          elapseTick = stopTick-starTick;
-
-
-          // 링버퍼에서 데이터 읽기
-          data[cnt] = rb->buffer[rb->tail];
-          rb->tail = (rb->tail + 1) % BUFFER_SIZE;
-          cnt++;
-
-          if(timeOutMs <= elapseTick || cnt==dataSize) 
-          {
-            break;
-          }
-          timeOutMs =timeOutMs-elapseTick; 
-      }
-      else
-      {
-        break;
-      }
-    }
-
-    return cnt;  
-}
 
 #define STREAMBUFFER_USE 1
 int32_t stm32_uart_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
@@ -705,45 +663,7 @@ void stm32_uart_set(driver_t *drv,uart_set_option_t cmd,void *option)
 
 
 
-void uart1_receive(UART_HandleTypeDef *huart)
-{
-// UART IDLE 라인 감지 인터럽트 발생 여부 확인
- // DMA의 현재 수신 위치를 읽어 링 버퍼에 데이터 저장
-  uint16_t dma_current_pos = BUFFER_SIZE - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
-  static uint16_t old_pos = 0;
-  uint16_t head;
 
-  head = g_uart_ring[0].head;
-
-    if (dma_current_pos != old_pos) {
-        // 새로운 데이터가 들어온 구간만큼 링 버퍼에 복사
-        if (dma_current_pos > old_pos) {
-            for (uint16_t i = old_pos; i < dma_current_pos; i++)
-            {
-                g_uart_ring[0].buffer[head] = g_uart_rx_dma_buffer[i];
-                head = (head + 1) % BUFFER_SIZE;
-                osSemaphoreRelease(g_uart_ring[0].sem);
-            }
-        } else {
-            for (uint16_t i = old_pos; i < BUFFER_SIZE; i++)
-            {
-                 g_uart_ring[0].buffer[head] = g_uart_rx_dma_buffer[i];
-                head = (head + 1) % BUFFER_SIZE;
-                                osSemaphoreRelease(g_uart_ring[0].sem);
-            }
-            for (uint16_t i = 0; i < dma_current_pos; i++)
-            {
-              
-                 g_uart_ring[0].buffer[head] = g_uart_rx_dma_buffer[i];
-                head = (head + 1) % BUFFER_SIZE;
-                                osSemaphoreRelease(g_uart_ring[0].sem);
-            }
-        }
-        g_uart_ring[0].head = head;
-    }
-        old_pos = dma_current_pos;
-
-}
 
 
 
@@ -759,11 +679,8 @@ void HAL_UART_IDLECallback(UART_HandleTypeDef *huart)
  
   if (huart->Instance == USART1)
   {
-
       // DMA 수신을 멈추고, 수신된 데이터 길이 계산
       __HAL_DMA_DISABLE(&hdma_usart1_rx);
-
-      uart1_receive(huart);
 
       // DMA 수신 재시작
       __HAL_DMA_SET_COUNTER(&hdma_usart3_rx, BUFFER_SIZE);

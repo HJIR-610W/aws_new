@@ -13,7 +13,7 @@
 #include "driver_uart.h"
 #include "app_logging.h"
 #include "task_logging.h"
-
+#include "modem_sms.h"
 typedef enum{
 	ePOWER_RESET,
 	eCONNECT_TCP_WDT,
@@ -109,9 +109,6 @@ static osThreadId_t _asyncTaskId = NULL;
 static osThreadId_t _atTaskId = NULL;
 static osSemaphoreId_t _modemSendMtxId = NULL;
 static osSemaphoreId_t _modemSemId = NULL;
-
-
-
 static osMessageQueueId_t _smsMailId=NULL;
 static osMessageQueueId_t _respAsyncMailId=NULL;
 static osMessageQueueId_t _respTcpMailId=NULL;
@@ -120,10 +117,10 @@ static osMessageQueueId_t _callReqMailId=NULL;
 
 static modemEx_t _modem;
 static atCmd_t *_atCmd = cmd_ntle9607;
-
 iCellular_t *_iCellular=NULL;
-
 driver_t *cdma_driver;
+modem_status_t g_modem_status;
+modem_config_t g_modem_config;
 
 void modem_send(uint8_t *pData,uint16_t dataLen);
 void modem_sends(const char *pData);
@@ -215,7 +212,7 @@ void modem_init(void)
     {
         if(_iCellular->read_num(num,sizeof(num))==RET_OK)
         {
-             strcpy_safe(System.cdma_num,sizeof(System.cdma_num),num);
+             strcpy_safe(g_modem_status.num,sizeof(g_modem_status.num),num);
             _modem.phoneNumChecked = 1;
             break;
         }
@@ -276,16 +273,13 @@ STATUS_t connect_tcp(eConnect_Type_t type)
     uint8_t ip[4];
     uint16_t port;
     STATUS_t connection = STATUS_FAIL;
-    M_RET_t ret;
     uint32_t startTime;
-
-
+    M_RET_t ret;
 
     startTime = osKernelGetTickCount();
     
     do
     {
-
         if(type == eCONNECT_TCP_WDT)
         {
             if(connectionCnt == 1)  // 서버 연결 1회 시도 실패면 sw 리셋
@@ -304,12 +298,11 @@ STATUS_t connect_tcp(eConnect_Type_t type)
             }
             else if(connectionCnt == 3) 
             {
-            
                 connectionCnt = 2;
                 if((osKernelGetTickCount()-startTime)>CONNECT_TIMEOUT_MS)//12시간
                 {
-                os_logging_printf( "MODEM RESET TIMEOUT");    
-                    connectionCnt = 0;
+                  os_logging_printf( "MODEM RESET TIMEOUT");    
+                  connectionCnt = 0;
                 }
                 modem_socket_init();
             }
@@ -319,9 +312,10 @@ STATUS_t connect_tcp(eConnect_Type_t type)
         switch(type)
         {
             case ePOWER_RESET:
-               // _iCellular->reset(M_RESET_HW,_iCellular->resetDelay);
+              //   _iCellular->reset(M_RESET_HW,_iCellular->resetDelay);
             case eCONNECT_MODEM_REBOOT:
                 modem_init();
+                _iCellular->check_network_service(g_modem_status.network_service_msg,sizeof(g_modem_status.network_service_msg));
                 modem_voice_init();
                 modem_socket_init();
                 if(is_vpn())
@@ -364,7 +358,7 @@ STATUS_t connect_tcp(eConnect_Type_t type)
 
     }while(connection != STATUS_OK);
 
-            os_logging_printf( "SERVER Connected");
+    os_logging_printf( "SERVER Connected");
     return connection;
 }
 
@@ -894,15 +888,9 @@ void proc_sms(void)
     {
         if(_iCellular->read_sms(&sms) == RET_OK)
         {
-          //  rxSMS = sms;
 
-		    os_logging_printf( "SMS: %s", sms.num);
-			//RTU_SmsRcv(&rxSMS,&txSMS);
-
-           // if(strlen(txSMS.msg) > 0)
-            {
-            //    _iCellular->send_sms(txSMS.num,txSMS.msg);
-            }
+		        os_logging_printf( "SMS: %s", sms.num);
+            sms_cmd(&sms);
         }
     }
 
@@ -927,10 +915,8 @@ void modemAsyncTask(void  *argument)
 
     while(1)
     {
-        osDelay(100);//
-
+        osDelay(1000);
         proc_sms();
-
         if(once)
         {
            if(_modem.phoneNumChecked == 1)
@@ -941,15 +927,15 @@ void modemAsyncTask(void  *argument)
         }
         if(((osKernelGetTickCount() - startTime)>READ_RSSI_SCAN_TIME_MS) || rssiRead)
         {
-            if(rssiRead)
-            {
-                rssiRead = 0;
-            }
-            startTime = osKernelGetTickCount();
-            if(_iCellular->read_rssi(&rssi) == RET_OK)
-            {
-                System.cdma_rssi = (uint8_t)rssi;
-            }
+          if(rssiRead)
+          {
+            rssiRead = 0;
+          }
+          startTime = osKernelGetTickCount();
+          if(_iCellular->read_rssi(&rssi) == RET_OK)
+          {
+              g_modem_status.rssi = rssi;
+          }
         }
     }
 }
@@ -1168,7 +1154,7 @@ void put_tcpData(uint8_t *data, uint16_t dataLen)
   #if 0 
     tcpData_t *tcpData = NULL;
 
-    tcpData = (tcpData_t *)osMailAlloc(_tcpDataMailId,osWaitForever);
+    tcpData = (tcpData_t *)osMailAlloc(_tcpDataMailId,1000);
 
     if(tcpData)
     {
@@ -1178,15 +1164,15 @@ void put_tcpData(uint8_t *data, uint16_t dataLen)
         osMailPut(_tcpDataMailId,tcpData);
     }
     #else
-    tcpData_t tcpData;
-
+  tcpData_t tcpData;
   tcpData.len = dataLen;
+
   memcpy_safe((uint8_t *)tcpData.data,sizeof(tcpData.data),(uint8_t *)data,dataLen);
 
-    if (osMessageQueuePut(_tcpDataMailId, &tcpData, 0, osWaitForever) == osOK)
-    {
-    }
-
+  if(osMessageQueuePut(_tcpDataMailId, &tcpData, 0, 1000) != osOK)
+  {
+    debug_printf("put_tcpData timeout\r\n");
+  }
 
     #endif
 }
@@ -1249,6 +1235,7 @@ void modemAtTask(void  *argument)
   int32_t len;
   uint32_t index=0;
   bool checked= false;
+
   while(1)
   {
     len = drier_uart_recv_crlf(cdma_driver,buff,sizeof(buff),osWaitForever);
@@ -1258,67 +1245,61 @@ void modemAtTask(void  *argument)
       continue;
     }
 
-        for(uint32_t idx = 0 ;  idx< AT_MAX ;idx++)
-        {
-            if(strncmp((char *)buff,_atCmd[idx].cmdStr,strlen(_atCmd[idx].cmdStr))==0)
-            {
-                switch(_atCmd[idx].cmd)
-                {
-                    case AT_ASYNC_RESP_REBOOT:
-                        at_reboot(idx,buff,len); // 모뎀이 리셋되었다는 부팅 메시지를 받음
-                    break;
-                    case AT_ASYNC_RESP_SMS_RECEIVED:
-                        at_sms_received(idx,buff,len);//SMS가 수시되었다는 알림을 받음
-                    break;
-                    case AT_ASYNC_RESP_RING_RECEIVED:
-                        at_ring_received(idx,buff,len);//전화 수신되었다는 메시지를 받음
-                    break;
-                    case AT_ASYNC_RESP_VOICE_END:
-                         at_voice_end(idx,buff,len);// 전화가 끊겼다는 메시지를 받음
-                    break;
-                    case AT_ASYNC_RESP_DTMF://DTMF를 받음
-                        at_dtmf(idx,buff,len);
-                    break;
-                    case AT_ASYNC_RESP_TCP_RECV://tcp data를 받음
-                       debug_printf("recv 1:%d\r\n",osKernelGetTickCount());
-                        at_async_tcp_recv(idx,buff,len);
-                           debug_printf("recv 2:%d\r\n",osKernelGetTickCount());
-                    break;
-                    case AT_ASYNC_RESP_TCP_DISCONNECTED://tcp 가 끊겼다는 메시지를 받음
-                        at_async_tcp_disconnected(idx,buff,len);
-                    break;
-
-                    case AT_ASYNC_OPEN_VOICE_RESP:  // 전화가 연결되었는지 응답
-                    case AT_ASYNC_GET_RSSI_RESP:    // 수신감도 명령어에 대한 응답
-                    case AT_ASYNC_SMS_READ_RESP_OK: // SMS 읽기에 대한 응답
-                    case AT_ASYNC_SMS_READ_RESP_ERR:// SMS 읽기 에러에대한 응답
-                    case AT_ASYNC_DIAL_RESP:
-                         put_asyncResp(idx,buff,len);
-                        break;
-                    case AT_SMS_SEND_RESP_OK:        // SMS 전송에대한 응답
-                        put_smsResp(idx,buff,len);
-                        break;
-                    case AT_TCP_SEND_DATA_RESP:
-                    case AT_TCP_OPEN_SOCKET_RESP_OK:
-                    case AT_TCP_OPEN_SOCKET_RESP_FAIL:
-                    case AT_TCP_OPEN_SOCKET_RESP:
-                    case AT_TCP_READ_NUM_RESP:
-                    case AT_TCP_CONNECT_VPN_RESP:
-                    case AT_TCP_OPEN_PPP_RESP:
-                    case AT_TCP_CLOSE_PPP_RESP:
-                    case AT_TCP_CLOSE_SOCKET_RESP:
-                    case AT_TCP_RESET_SW_RESP:
-                        put_tcpResp(idx,buff,len);
-                        break;
-
-
-
-                }
+    for(uint32_t idx = 0 ;  idx< AT_MAX ;idx++)
+    {
+      if(strncmp((char *)buff,_atCmd[idx].cmdStr,strlen(_atCmd[idx].cmdStr))==0)
+      {
+          switch(_atCmd[idx].cmd)
+          {
+            case AT_ASYNC_RESP_REBOOT:
+                at_reboot(idx,buff,len); // 모뎀이 리셋되었다는 부팅 메시지를 받음
+            break;
+            case AT_ASYNC_RESP_SMS_RECEIVED:
+                at_sms_received(idx,buff,len);//SMS가 수시되었다는 알림을 받음
+            break;
+            case AT_ASYNC_RESP_RING_RECEIVED:
+                at_ring_received(idx,buff,len);//전화 수신되었다는 메시지를 받음
+            break;
+            case AT_ASYNC_RESP_VOICE_END:
+                  at_voice_end(idx,buff,len);// 전화가 끊겼다는 메시지를 받음
+            break;
+            case AT_ASYNC_RESP_DTMF://DTMF를 받음
+                at_dtmf(idx,buff,len);
+            break;
+            case AT_ASYNC_RESP_TCP_RECV://tcp data를 받음
+                at_async_tcp_recv(idx,buff,len);
+            break;
+            case AT_ASYNC_RESP_TCP_DISCONNECTED://tcp 가 끊겼다는 메시지를 받음
+                at_async_tcp_disconnected(idx,buff,len);
+            break;
+            case AT_ASYNC_OPEN_VOICE_RESP:  // 전화가 연결되었는지 응답
+            case AT_ASYNC_GET_RSSI_RESP:    // 수신감도 명령어에 대한 응답
+            case AT_ASYNC_SMS_READ_RESP_OK: // SMS 읽기에 대한 응답
+            case AT_ASYNC_SMS_READ_RESP_ERR:// SMS 읽기 에러에대한 응답
+            case AT_ASYNC_DIAL_RESP:
+                put_asyncResp(idx,buff,len);
                 break;
-
-            }
-        }
+            case AT_SMS_SEND_RESP_OK:        // SMS 전송에대한 응답
+                put_smsResp(idx,buff,len);
+                break;
+            case AT_TCP_SEND_DATA_RESP:
+            case AT_TCP_OPEN_SOCKET_RESP_OK:
+            case AT_TCP_OPEN_SOCKET_RESP_FAIL:
+            case AT_TCP_OPEN_SOCKET_RESP:
+            case AT_TCP_READ_NUM_RESP:
+            case AT_TCP_CONNECT_VPN_RESP:
+            case AT_TCP_OPEN_PPP_RESP:
+            case AT_TCP_CLOSE_PPP_RESP:
+            case AT_TCP_CLOSE_SOCKET_RESP:
+            case AT_TCP_RESET_SW_RESP:
+            case AT_TCP_NETWORK_SERVICE:
+                put_tcpResp(idx,buff,len);
+                break;
+          }
+        break;
+     }
     }
+  }
     
 }
 
@@ -1355,6 +1336,7 @@ void iCellular_init(void)
   _iCellular->set_vpn_config  = ntle_9607_set_vpn;
   _iCellular->read_vpn_config = ntle_9607_read_vpn;
   _iCellular->at_direct       = ntle_9607_at_direct;
+  _iCellular->check_network_service = ntle9607_check_network_service;
 
 }
 
@@ -1372,18 +1354,15 @@ void modemTcpTask(void  *argument)
     uint16_t len;
     uint32_t startTime=0;
     M_RET_t ret;
-    eConnect_Type_t type = ePOWER_RESET;
-
-
+    eConnect_Type_t type = ePOWER_RESET;//초기에는 전원리셋이 발생하였다고넘겨줌줌
 
     while(1)
     {
-        System.TcpCntStat = 1;
+        g_modem_status.link_status  = eLINK_DISCONNECTED;
 
         if(connect_tcp(type)==STATUS_OK)
         {
-
-            System.TcpCntStat = 0;
+            g_modem_status.link_status  = eLINK_CONNECTED;
             startTime = osKernelGetTickCount();
             err = 0;
 
@@ -1396,19 +1375,15 @@ void modemTcpTask(void  *argument)
                     case RET_OK:
                     if(len)//수신된 데이터가 있음
                     {
-                           len = aws_cmd(buff,ret,tx,sizeof(tx),0);
+                        len = aws_cmd(buff,ret,tx,sizeof(tx),0);
 
                         if(len)//전송할 데이터있다면
                         {
-
-
-                            if(_iCellular->send_tcp(tx,len) == RET_FAIL_SEND)//실패하면 1회 더 재전송
-                            {
- 
-                                        err = 1;
-                                        type = eCONNECT_TX_FAIL;
-
-                            }
+                          if(_iCellular->send_tcp(tx,len) == RET_FAIL_SEND)
+                          {
+                            err = 1;
+                           type = eCONNECT_TX_FAIL;
+                          }
                         }
                     }
                     break;
@@ -1424,13 +1399,13 @@ void modemTcpTask(void  *argument)
 
                 if(err)
                 {
-                    break;
+                  break;
                 }
 
-                if((osKernelGetTickCount()-startTime)>PING_TIMEOUT_MS)/*일정 기간동안 ping이 한번이라도 수신 안되면*/
+                if((osKernelGetTickCount()-startTime)>g_modem_config.connection_timeoutms)/*일정 기간동안 ping이 한번이라도 수신 안되면*/
                 {
-                  // type = eCONNECT_TCP_WDT;
-                  // break;
+                   type = eCONNECT_TCP_WDT;
+                   break;
                 }
             }
         }
@@ -1438,6 +1413,17 @@ void modemTcpTask(void  *argument)
 }
 
 
+void mdoem_status_init(void)
+{
+  g_modem_status.rssi = -1;
+  g_modem_status.link_status = -1;
+  g_modem_status.txCnt = -1;
+  g_modem_status.rxCnt = -1;
+  g_modem_status.link_status  = eLINK_DISCONNECTED;
+
+
+  g_modem_config.connection_timeoutms = 3600000;
+}
 
 void cellularTask_init(void)
 {
@@ -1449,9 +1435,8 @@ void cellularTask_init(void)
 
   cdma_driver = driver_uart_open(UART_9_CDMA,&uart_config);
 
-System.cdma_rssi = -1;
-System.cdma_link_status = -1;
-
+  mdoem_status_init();
+  
   iCellular_init();//반드시 이 이위치에서 실행되어야함
 
   _modemSemId = osSemaphoreNew(1, 1, NULL); 

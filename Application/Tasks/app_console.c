@@ -366,6 +366,8 @@ int32_t print_cdmaInfo(uint16_t row,uint16_t column)
     vt100_print_bar(line++ ,column,-DISP_WIDTH,"¼ö½Å    :%d\r\n",System.eth_rx_cnt);
     vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
     
+
+    
     return 5+2;
 }
 
@@ -1756,7 +1758,7 @@ void sensor_set(p_shell_context_t ctx,sensor_t *sensor,uint8_t cnt)
 */
 void sensor_type_set(p_shell_context_t ctx,sensor_t *sensor,const uint8_t *list,uint8_t listCnt)
 {
-  uint8_t cnt;
+  int32_t cnt;
   uint8_t itemListCnt;
   const char *itemList[10];
 
@@ -3410,7 +3412,7 @@ int32_t menu_developer_logging(p_shell_context_t ctx)
       }
   }while(1);
   
-  return 0;
+
 
 }
 int32_t menu_developer(p_shell_context_t ctx)

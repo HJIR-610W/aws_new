@@ -74,7 +74,8 @@
       "utility": "c",
       "at_cmd.h": "c",
       "xtr1common": "c",
-      "task_cellular.h": "c"
+      "task_cellular.h": "c",
+      "boot_version.h": "c"
     }
 	}
 }

@@ -1,4 +1,6 @@
 
+#include <stdio.h>
+
 #include "driver_rtc.h"
 #include "ds1306.h"
 
@@ -6,12 +8,14 @@
 
 driver_t * driver_rtc_open(int num,void *opt)
 {
-  driver_t *driver;
+  driver_t *driver=NULL;
 
     switch(num)
   {
     case RTC_DS1306:
     driver = ds1306_open();
+    break;
+    case RTC_MCU:
     break;
   }
 

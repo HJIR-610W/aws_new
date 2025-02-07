@@ -46,19 +46,18 @@ enum
     AT_ASYNC_DIAL_RESP,
     AT_ASYNC_DIAL_OFF,
     AT_ASYNC_CONFIG_READ_RESP,
+    AT_TCP_NETWORK_SERVICE,
     AT_MAX
 };
 
+typedef struct atCmd_s
+{
+  uint32_t cmd;
+  char *cmdStr;   // at 명령어 또는 응답
+  void (*fsend)(void);
+}atCmd_t;
 
 
-    
-
-    typedef struct atCmd_s
-    {
-        uint32_t cmd;
-        char *cmdStr;   // at 명령어 또는 응답
-        void (*fsend)(void);
-    }atCmd_t;
 
 #ifdef __cplusplus
 }

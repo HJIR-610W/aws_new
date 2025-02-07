@@ -21,7 +21,7 @@ void config_factoryReset(void)
 
 void check_config_limit(void)
 {
-
+  uint8_t config_check_cnt=0;
   for(int i = 0 ; i < _countof(s_config.rs232);i++)
   {
     if(s_config.rs232[i].baud < 9600)
@@ -43,6 +43,20 @@ void check_config_limit(void)
     }
   }
 
+
+  for(int i = 0; i < _countof(config.sensor) ;i++)
+  {
+    if(config.sensor[i].type>supported_sensors[i].cnt)
+    {
+      config.sensor[i].type = S_T_UNSUED;
+      config_check_cnt++;
+    }
+  }
+
+  if(config_check_cnt)
+  {
+    write_config();
+  }
 
 #if 0 
   for(int i = 0 ; i < _countof(config.sensor);i++)

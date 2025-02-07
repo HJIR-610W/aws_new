@@ -109,6 +109,8 @@ typedef struct iCellular
     M_RET_t (*set_vpn_config)(char *id,char *pw,uint8_t ip[4],uint16_t port);
     M_RET_t (*read_vpn_config)(char *outBuffer,uint16_t outSize);
     M_RET_t (*at_direct)(char *at,char *outBuffer,uint16_t outSize);
+
+    M_RET_t (*check_network_service)(char *msgOut,uint16_t msgSize);
 }iCellular_t;
 
 

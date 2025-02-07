@@ -13,6 +13,7 @@
 #include "dev_io.h"
 #include "app_rs485.h"
 #include "app_rs232.h"
+#include "terminal.h"
 
 static driver_t *debug_uart = NULL;;
 USART_TypeDef *debug_uart_base = USART1;
@@ -145,6 +146,65 @@ int32_t debug_printf(const char * pFmt, ...)
     return 0;
 
 }
+
+
+
+
+int32_t error_printf(const char * pFmt, ...)
+{
+  char buff[2];
+  char *ptr=NULL;
+  char *temp=NULL;
+  va_list ap;  
+  int32_t len;
+
+//먼저 format 후 len의 길이를 확인 후 메모리를 할당후 최종 처리 
+  va_start(ap, pFmt);
+  len = vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
+  va_end(ap);
+    
+    if(len > (sizeof(buff)-1))//
+    {
+      temp = aws_malloc(len +1);//null포함
+      if(temp)
+      {
+        va_start(ap, pFmt);
+        len = vsnprintf_s((char *)temp, len+1, (char *)pFmt, ap);
+        va_end(ap);
+        ptr = temp;
+      }
+      else
+      {
+        return 1;//메모리 할당 에러 
+      }
+    }
+    else
+    {
+      ptr = buff;//1바이트만 전송하게 되면 버퍼로 처리 
+    }
+    
+    if(debug_uart && ptr)//os구동중인지 확인
+    {
+      driver_uart_send(debug_uart,"\x1B[31m",5);
+      driver_uart_send(debug_uart,(uint8_t *)ptr,strlen(ptr));
+      driver_uart_send(debug_uart,"\x1B[37m",5);
+    }
+    else if(ptr)//os 없으면 
+    {
+      debug_puts_nonos((char *)"\x1B[31m");
+      debug_puts_nonos(ptr);
+      debug_puts_nonos((char *)"\x1B[37m");
+    }
+
+    if(temp)
+    {
+      aws_free(temp);
+    }
+
+    return 0;
+
+}
+
 
 void debug_send(uint8_t *pData,uint16_t dataLen)
 {

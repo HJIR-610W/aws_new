@@ -302,11 +302,11 @@
                 </option>
                 <option>
                     <name>IExtraOptionsCheck</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>IExtraOptions</name>
-                    <state>--diag_error=Pe223</state>
+                    <state>--no_path_in_file_macros</state>
                 </option>
                 <option>
                     <name>CCLangConformance</name>
@@ -1173,6 +1173,12 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_sms.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_sms.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>

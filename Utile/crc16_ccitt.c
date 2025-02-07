@@ -52,3 +52,16 @@ uint16_t crc16_ccitt_table(uint8_t* data, uint16_t dataLen)
   }
   return crc;
 }
+
+
+uint16_t Cal_CRC16_xmodem(uint8_t* data, uint16_t dataLen)
+ {
+ uint16_t i;
+ uint8_t index;
+  uint16_t crc = 0; // 초기값
+  for ( i = 0; i < dataLen; i++) {
+     index = (crc >> 8) ^ data[i]; // 테이블 인덱스 계산
+    crc = (crc << 8) ^ crc16Table[index]; // 테이블 참조와 XOR
+  }
+  return crc;
+}
