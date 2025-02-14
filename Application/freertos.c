@@ -39,8 +39,7 @@
 #include "driver_485.h"
 #include "driver_sdi.h"
 #include "driver_uart.h"
-#include "task_cmd.h"
-#include "task_host.h"
+
 #include "fatfs.h"
 
 

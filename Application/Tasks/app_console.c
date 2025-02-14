@@ -12,6 +12,7 @@
 #include "app_adc.h"
 #include "app_flash.h"
 
+#include "app_dataLogging.h"
 #include "aws_data.h"
 #include "app_logging.h"
 #include "app_console.h"
@@ -28,7 +29,8 @@
 #include "vt100_command.h"
 #include "ymodem.h"
 #include "terminal.h"
-
+#include "usDelay.h"
+#include "task_logging.h"
 
 #define EXIT_PROGRAM -3
 #define EXIT_BACK    -1
@@ -277,7 +279,7 @@ return false;
 #define DISP_WIDTH    25
 
 
-  extern   uint32_t elased_time;
+  extern   uint32_t g_elased_time;
 int32_t print_systemInfo(uint16_t row,uint16_t column)
 {
 
@@ -291,8 +293,10 @@ int32_t print_systemInfo(uint16_t row,uint16_t column)
   vt100_print_frame(row   ,column,"시스템", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"%s\r\n",buff);
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"문 상태   :%s\r\n",ITEM_LIST(System.doorStatus,doorStatusList));
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"저장 기능 :%s\r\n",ITEM_LIST(IS_DATA_ERR(),generalStatusList));
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"장비 전원 :%5.2f\r\n",read_battery());
   vt100_print_bar(line++ ,column,-DISP_WIDTH,"장비 온도 :%5.2f\r\n",read_temperature());
+
   vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
 
     
@@ -402,7 +406,7 @@ int32_t print_awsRealLefinfo(uint16_t row,uint16_t column,uint8_t mode,void* arg
   sensor_data_t *pdata;
   const char *aswTitleList[]={"실시간(1s)","1분","10분","한시간"};
 
-  snprintf(buff,sizeof(buff),"AWS %s %.2fms",aswTitleList[mode],(float)elased_time/1000.0f);
+  snprintf(buff,sizeof(buff),"AWS %s %.2fms",aswTitleList[mode],(float)g_elased_time/1000.0f);
   
   pdata = sensor_data;
 
@@ -918,7 +922,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
     }
     break;
     case ADC_SET_CHANNLEL://channel;
-    cnt = input_decimal(ctx,1,18,&dec);
+    cnt = input_decimal(ctx,0,17,&dec);
     if(cnt)
     {
       adc->channel = dec;
@@ -958,6 +962,8 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
   rs232= get_sensor_config(sensor);
   if(rs232==0)
   {
+    sensor_add(sensor);
+    rs232= get_sensor_config(sensor);
     debug_printf("rs232 err\r\n");
   }
   switch (cnt)
@@ -1196,6 +1202,7 @@ void set_type(sensor_t *sensor)
     {
       sensor_add(sensor);
     }
+    
   }
 }
 
@@ -2544,10 +2551,159 @@ int32_t menu_network(p_shell_context_t ctx)
   return cnt;
 }
 
-int32_t menu_data(p_shell_context_t ctx)
+
+int32_t print_menu_data(p_shell_context_t ctx)
+{
+  int32_t cnt=0;
+
+
+  ctx->printf("%2d.데이터 확인\r\n",cnt++);
+  ctx->printf("%2d.데이터 편집\r\n",cnt++);
+  ctx->printf("%2d.데이터 초기화\r\n",cnt++);
+
+  return cnt;
+
+}
+
+int32_t menu_data_view(p_shell_context_t ctx)
+{
+  const uint8_t kLoggingIntervalMin = 1;
+  DATE_TIME_BUF ut;
+  int32_t year;
+  int32_t month;
+  int32_t day;
+  int32_t hour;
+  int32_t min;
+  int32_t sec;
+  int32_t readCnt;
+  int32_t cnt;
+  uint32_t timeTick;
+  uint32_t timeTickEnd;
+
+  kma_data_t kma_data;
+  do{
+      ctx->printf("yyyy-mm-dd hh:mm:ss,cnt >>");
+
+      cnt = console_scanf("%04d-%02d-%02d %02d:%02d:%02d,%d",&year,&month,&day,&hour,&min,&sec,&readCnt);
+
+      if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM)
+      {
+        return cnt;
+      }
+      ut.Year = year;
+      ut.Month = month;
+      ut.Day = day;
+      ut.Hour = hour;
+      ut.Min = min;
+      ut.Sec = sec;
+
+      
+      timeTick = time_cvt_timestamp(&ut);
+      timeTickEnd = timeTick + kLoggingIntervalMin*60*readCnt;
+      for(uint32_t tick =  timeTick; tick <=timeTickEnd ; )
+      {
+
+          read_data(&ut,&kma_data,sizeof(kma_data),0,1);
+
+          ctx->printf("%04d-%02d-%02d %02d:%02d:%02d\r\n",ut.Year,ut.Month,ut.Day,ut.Hour,ut.Min,ut.Sec);
+
+          ctx->printf("기온            : %-6d\r\n",kma_data.temperature);
+          ctx->printf("풍향            : %-6d\r\n",kma_data.wind_direction_avg);
+          ctx->printf("풍속            : %-6d\r\n",kma_data.wind_speed_avg);
+          ctx->printf("풍향(순간)      : %-6d\r\n",kma_data.wind_direction_instant);
+          ctx->printf("풍속(순간)      : %-6d\r\n",kma_data.wind_speed_instant);
+          ctx->printf("강수량          : %-6d\r\n",kma_data.precipitation);
+          ctx->printf("기압            : %-6d\r\n",kma_data.pressure);
+          ctx->printf("강수 유무       : %-6d\r\n",kma_data.precipitation_presence);
+          ctx->printf("적설            : %-6d\r\n",kma_data.snowfall);
+          ctx->printf("습도            : %-6d\r\n",kma_data.relative_humidity);
+          ctx->printf("강수량(0.1mm)   : %-6d\r\n",kma_data.precipitation_fine);
+          ctx->printf("일사            : %-6d\r\n",kma_data.solar_radiation);
+          ctx->printf("일조            : %-6d\r\n",kma_data.sunshine_duration);
+          ctx->printf("지면온도        : %-6d\r\n",kma_data.surface_temperature);
+          ctx->printf("초상온도        : %-6d\r\n",kma_data.grass_temperature);
+          ctx->printf("지중온도 5cm    : %-6d\r\n",kma_data.soil_temperature_5cm);
+          ctx->printf("지중온도 10cm   : %-6d\r\n",kma_data.soil_temperature_10cm);
+          ctx->printf("지중온도 20cm   : %-6d\r\n",kma_data.soil_temperature_20cm);
+          ctx->printf("지중온도 30cm   : %-6d\r\n",kma_data.soil_temperature_30cm);
+          ctx->printf("지중온도 50cm   : %-6d\r\n",kma_data.soil_temperature_50cm);
+          ctx->printf("지중온도   1m   : %-6d\r\n",kma_data.soil_temperature_1m);
+          ctx->printf("지중온도 1_5m   : %-6d\r\n",kma_data.soil_temperature_1_5m);
+          ctx->printf("지중온도   3m   : %-6d\r\n",kma_data.soil_temperature_3m);
+          ctx->printf("지중온도   5m   : %-6d\r\n",kma_data.soil_temperature_5m);
+          ctx->printf("운고(1층)       : %-6d\r\n",kma_data.cloud_height_1st);
+          ctx->printf("운고(2층)       : %-6d\r\n",kma_data.cloud_height_2nd);
+          ctx->printf("운고(3층)       : %-6d\r\n",kma_data.cloud_height_3rd);
+          ctx->printf("운량량          : %-6d\r\n",kma_data.cloud_amount);
+          ctx->printf("시정정          : %-6d\r\n",kma_data.visibility);
+          ctx->printf("PM1.0           : %-6d\r\n",kma_data.pm10_concentration);
+          ctx->printf("PM2.5           : %-6d\r\n",kma_data.pm25_concentration);
+          ctx->printf("순복사          : %-6d\r\n",kma_data.net_radiation);
+          ctx->printf("전천복사        : %-6d\r\n",kma_data.total_radiation);
+          ctx->printf("반사복사사      : %-6d\r\n",kma_data.reflected_radiation);
+          ctx->printf("직달복사사      : %-6d\r\n",kma_data.direct_radiation);
+          ctx->printf("현재 일기기     : %-6d\r\n",kma_data.current_weather);
+          ctx->printf("토양수분(10cm)  : %-6d\r\n",kma_data.soil_moisture_10cm);
+          ctx->printf("토양수분(20cm)  : %-6d\r\n",kma_data.soil_moisture_20cm);
+          ctx->printf("토양수분(30cm)  : %-6d\r\n",kma_data.soil_moisture_30cm);
+          ctx->printf("토양수분(50cm)  : %-6d\r\n",kma_data.soil_moisture_50cm);
+          ctx->printf("조도량량        : %-6d\r\n",kma_data.illuminance);
+          ctx->printf("풍속(1.5m)      : %-6d\r\n",kma_data.wind_speed_1_5m);
+          ctx->printf("풍속(4.0m)      : %-6d\r\n",kma_data.wind_speed_4m);
+          ctx->printf("순간 풍속(1.5m) : %-6d\r\n",kma_data.instant_wind_speed_1_5m);
+          ctx->printf("순간 풍속(4.0m) : %-6d\r\n",kma_data.instant_wind_speed_4m);
+          ctx->printf("기온(0.5m)      : %-6d\r\n",kma_data.temperature_0_5m);
+          ctx->printf("기온(4.0m)      : %-6d\r\n",kma_data.temperature_4m);
+          ctx->printf("습도(0.5m)      : %-6d\r\n",kma_data.humidity_0_5m);
+          ctx->printf("습도(4.0m)      : %-6d\r\n",kma_data.humidity_4m);
+          ctx->printf("타코미터        : %-6d\r\n",kma_data.tacometer);
+
+
+          tick += (60*kLoggingIntervalMin);
+          time_cvt_secTotime(tick,&ut);
+      }
+
+  osDelay(100);
+  }while(1);
+
+}
+
+
+int32_t menu_data_edit(p_shell_context_t ctx)
 {
 
-  return 0;
+}
+
+int32_t menu_data_reset(p_shell_context_t ctx)
+{
+
+}
+
+menu_func g_dataMenu[]={menu_data_view,
+                        menu_data_edit,
+                        menu_data_reset};
+
+
+int32_t menu_data(p_shell_context_t ctx)
+{
+  int32_t cnt;
+
+  do
+  {
+    cnt = select_indexFromList(ctx,NULL,print_menu_data,0,false);
+    if(cnt == EXIT_BACK || cnt==EXIT_PROGRAM && cnt <= 0)
+    {
+      return cnt;
+    }
+    cnt--;
+    cnt = g_dataMenu[cnt](ctx);
+    if(cnt == EXIT_PROGRAM )
+    {
+      return cnt;
+    }
+  }while(1);
+
+  
 }
 
 
@@ -3130,6 +3286,11 @@ int32_t menu_cali_print_adc(p_shell_context_t ctx)
   float voltage;
   eADC_CH_TYPE_t  adcMode;
   int32_t start,stop;
+  uint32_t start_time;
+  uint32_t elased_time;
+  uint32_t sample_cnt=0;
+  float avg=0;
+
   ctx->printf("채널 모드를 선택해주세요\r\n");
   
   cnt = select_indexFromList(ctx,adcChModeList,NULL,_countof(adcChModeList),true);
@@ -3161,19 +3322,25 @@ int32_t menu_cali_print_adc(p_shell_context_t ctx)
   {
     channel--;//0기준으로 
     do{
+      start_time = mcu_get_clk();
         if(adcMode==eSINGLE_ADC)//single
         {
-          adc = adc_read_single_avg(channel,&err,5);
+
+          adc = adc_read_single_avg(channel,&err,10);
         }
         else//diff
         {
-          adc = adc_read_diff_avg(channel,&err,5);
+          adc = adc_read_diff_avg(channel,&err,10);
         }
-
+#if 0   
+        avg = recursiveAvg(avg,adc,++sample_cnt);
+        adc = avg;
+#endif
+        elased_time = cal_elapsed_us(start_time);
         voltage = adc_chToVoltage(adcMode,channel,adc);
         make_timeToStr(&Date_Time,buff,sizeof(buff));
-        ctx->printf("%s MODE:%s CH:%d ADC:%d %8.6f\r\n",buff,adcMode==eSINGLE_ADC?"s":"d",channel+1,adc,voltage);
-    }while(wait_break(1000));
+        ctx->printf("%s MODE:%s CH:%d ADC:%d %8.6f %.3fms\r\n",buff,adcMode==eSINGLE_ADC?"s":"d",channel+1,adc,voltage,elased_time/1000.0f);
+    }while(wait_break(100));
   }
     return 0;
 

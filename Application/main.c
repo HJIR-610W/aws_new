@@ -1,14 +1,13 @@
 
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
+
 #include "Lib\tlsf\tlsf.h"
 #include "fsmc.h"
-
 #include "pcb_define.h"
 #include "task_start.h"
 #include "user_heap.h"
 
 #include "driver_stm32_bsp.h"
-
 
 
 void SystemClock_Config(void)
@@ -62,9 +61,6 @@ int is_debug_mode(void)
 
 int main(void)
 {
-  
-
-
 #if DEBUG_MODE_EN
   if(is_debug_mode())
   {

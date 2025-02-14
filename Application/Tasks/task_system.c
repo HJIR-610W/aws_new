@@ -1,20 +1,12 @@
-
-#include "app_rtc.h"
 #include "cmsis_os2.h"
-#include "task_isrEvent.h"
-#include "dev_io.h"
+
 #include "app_rtc.h"
 
-
-
-const osThreadAttr_t systemTask_attributes = {
+const osThreadAttr_t kSystemTask_attributes = {
   .name = "systemTask",
   .stack_size = 512,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityLow,
 };
-
-
-
 
 
 void systemTask(void *arg)
@@ -22,16 +14,12 @@ void systemTask(void *arg)
   while(1)
   {
     rtc_update();
-    osDelay(250);
+    osDelay(500);
   }
 }
 
 
-
-
-
 void systemTask_init(void)
 {
-
-  osThreadNew(systemTask, NULL, &systemTask_attributes);
+  osThreadNew(systemTask, NULL, &kSystemTask_attributes);
 }

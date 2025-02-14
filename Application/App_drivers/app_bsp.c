@@ -9,10 +9,8 @@
 
 driver_t *g_adcStm;
 
-void battery_init(void)
-{
-  g_adcStm = driver_adc_open(ADC_STM32,0);
-}
+
+
 
 int32_t get_mV(int32_t adc, uint32_t bitCnt,double refVolt,double scale)
 {
@@ -29,6 +27,11 @@ int32_t get_mV(int32_t adc, uint32_t bitCnt,double refVolt,double scale)
   return val;
 }
 
+void battery_init(void)
+{
+  g_adcStm = driver_adc_open(ADC_STM32,0);
+}
+
 float read_battery(void)
 {
   int32_t val;
@@ -40,7 +43,6 @@ float read_battery(void)
   return (float)val/1000.0;
 
 }
-
 
 
 #define VREF 3.3f           // ADC 기준 전압

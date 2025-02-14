@@ -9,8 +9,9 @@
 #include "driver_spi.h"
 #include "driver_di.h"
 #include "driver_mux.h"
-#include "mcu_delay.h"
+#include "usDelay.h"
 #include "mcu_interrupt.h"
+#include "utile.h"
 
 typedef struct ads1220_cfg_s
 {
@@ -35,7 +36,7 @@ void write_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs,uint8_t *pData
 
     driver_do_low(cfg->cs_io);
 
-    mcu_delay(50);
+    usDelay(50);
 
     data = ADS1220_CMD_WREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03));
  
@@ -62,7 +63,7 @@ void read_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff
 
     driver_do_low(cfg->cs_io);
 
-    mcu_delay(50);
+    usDelay(50);
     
     data = (ADS1220_CMD_RREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03)));
 
@@ -88,7 +89,7 @@ void ads1220_start_conv(driver_t *drv)
 
     driver_do_low( cfg->cs_io);
     
-    mcu_delay(50);
+    usDelay(50);
     driverex_spi_send_byte(cfg->spi_io,ADS1220_CMD_SYNC);
    
     driver_do_high( cfg->cs_io);
@@ -209,7 +210,7 @@ int32_t ads1220_read_single_ch(driver_t *drv,int32_t ch,uint8_t *err)
     int32_t data=0;
     
     ads1220_set_singleChannel(drv,ch);
-
+    osDelay(2);
     data = ads1220_read_adc(drv,err);
      
     return data;
@@ -362,10 +363,10 @@ int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 {
   uint32_t diff_ch;
   int32_t adc;
-  int32_t sum=0;
   uint8_t valid_cnt=0;
+  float average=0;
 
-    osSemaphoreAcquire(drv->sem, osWaitForever);
+  osSemaphoreAcquire(drv->sem, osWaitForever);
 
   //차동 채널 0,1,2,3,4,5,6,7 은 ADS1220에서는 0채널로만 측정하며  MUX가 채널이 됨
   adc_diff_mux_set(channel);
@@ -375,12 +376,12 @@ int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
     adc = ads1220_read_diff_ch(drv,channel/8,err);
     if(*err ==0)
     {
-      sum += adc;
       valid_cnt++;
+      average = recursiveAvg(average,adc,valid_cnt);
     }
   }
  
-  adc = sum/valid_cnt;
+  adc = average;
 
   osSemaphoreRelease(drv->sem);  // 세마포어 해제
 

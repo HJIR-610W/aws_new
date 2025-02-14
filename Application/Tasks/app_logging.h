@@ -10,7 +10,7 @@ typedef struct
     char msg[32];
 }loggingMsg_t;
 
-void logging_printf(const char * pFmt, ...);
+int32_t logging_printf(const char * pFmt, ...);
 void logging_read_log(int32_t offsetCnt,loggingMsg_t *loggingMsg);
 void logging_init(void);
 uint16_t logging_get_logCnt(void);

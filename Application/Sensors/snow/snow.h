@@ -7,6 +7,9 @@
 
 
 void snow_init(sensor_t *sensor);
+bool is_snowInit(void);
+bool snow_deInit(void);
+
 
 int32_t read_sensor_snow(sensor_t *sensor,uint8_t *err);
 #endif

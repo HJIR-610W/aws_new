@@ -107,7 +107,8 @@ typedef enum S_T_e
   S_T_HUMI_RS485             = 20,
   S_T_RAIN_PRESENT_DI        = 21,
   S_T_SNOW_HJ_232            = 22,
-  S_T_GENERAL_485            = 23
+  S_T_GENERAL_485            = 23,
+  S_T_MAX
 }eSENSOR_MODEL_t;
 
 typedef struct supported_sensors_s
@@ -143,6 +144,7 @@ typedef struct modbus_s
   rs232_config_t rs232;
 }modbus_config_t;
 
+
 typedef struct hart_s
 {
   uint8_t id;
@@ -154,6 +156,7 @@ typedef struct sdi_s
 {
   uint8_t id;
 }sdi_config_t;
+
 
 typedef enum adcChType_e
 {
@@ -176,8 +179,15 @@ typedef struct sensor_s
   eSENSOR_MODEL_t type; 
   int16_t scale;
   uint8_t configCnt;
-  uint8_t config[4][2];
+  uint8_t config[4][2];//[0][0] 센서타입 정보 저장, [0][1] 타입이 할당받은 설정 위치값 저장
 }sensor_t;
+
+/*
+config[0][0] = S_T_HUMI_RS485
+config[0][1] = 3
+RS485는 config_manager  rs485 coing 배열 3을 사용한다는 의미
+
+*/
 
 #define SENSOR_ERR_CFG 2
 
@@ -190,9 +200,19 @@ typedef struct sensor_data_s
     int32_t i;
     float f;
   }data;
-  int16_t max;
-  int16_t min;
+  union 
+  {
+    int32_t i;
+    float f;
+  }min;
+  union 
+  {
+    int32_t i;
+    float f;
+  }max;
   float unitScale;
+  float avg;
+  uint8_t sample_cnt;
   uint8_t enable:1;
   uint8_t dataType  :3;
   uint8_t status:7;
@@ -226,7 +246,6 @@ typedef struct config_manage_s
   hart_config_t hart[2];
   uint8_t sdi_cnt;
   sdi_config_t sdi[2];
-
 }config_manager_t;
 
 

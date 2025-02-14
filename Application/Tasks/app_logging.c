@@ -15,12 +15,10 @@
 
 
 
-#define SYSTEM_NORM_MAX 1000
-#define LOG_LEN 32 ////4(tick) + 1(code) + 27(msg null 포함)
+const uint16_t kSystemNormMax = 1000;
+const uint16_t kLogMaxLen =  32; ////4(tick) + 1(code) + 27(msg null 포함)
 
-static osSemaphoreId_t loggingSem;
-
-
+static osSemaphoreId_t g_loggingSem;
 
 
 uint16_t logging_get_logCnt(void)
@@ -39,7 +37,7 @@ void logging_set_logCnt(uint16_t cnt)
 
  //050524224635,measure task       //
 
-void logging_printf(const char * pFmt, ...)
+int32_t logging_printf(const char * pFmt, ...)
 {
     char buff[32];
     int len;
@@ -49,15 +47,16 @@ void logging_printf(const char * pFmt, ...)
     va_list ap;  
     DATE_TIME_BUF ct;
     uint32_t cnt = 0;
+    int32_t err=0;
 
     
-    osSemaphoreAcquire(loggingSem, osWaitForever);
+    osSemaphoreAcquire(g_loggingSem, osWaitForever);
 
     logCnt = logging_get_logCnt();
 
     time_get(&ct);
 
-    if(logCnt >= SYSTEM_NORM_MAX)
+    if(logCnt >= kSystemNormMax)
     {
         logCnt = 0;
     }
@@ -73,17 +72,19 @@ void logging_printf(const char * pFmt, ...)
 
     va_end(ap);
 
-    totalBytes = logCnt*LOG_LEN;// 저장된 로그 바이트 
+    totalBytes = logCnt*kLogMaxLen;// 저장된 로그 바이트 
 
 #if 0
     flash_write(LOG_START_ADDRESS + totalBytes,(uint8_t *)buff,sizeof(buff));
 #else
-    write_file((char *)system_log_path,(uint8_t*)buff,sizeof(buff),totalBytes);
+    err = write_file((char *)system_log_path,(uint8_t*)buff,sizeof(buff),totalBytes);
 #endif
     logCnt++;
     logging_set_logCnt(logCnt);
 
-     osSemaphoreRelease(loggingSem); 
+    osSemaphoreRelease(g_loggingSem); 
+
+    return err;
 }
 
 
@@ -95,9 +96,9 @@ void logging_read_log(int32_t offsetCnt,loggingMsg_t *loggingMsg)
     uint32_t totalBytes;
 
 
-    osSemaphoreAcquire(loggingSem, osWaitForever);
+    osSemaphoreAcquire(g_loggingSem, osWaitForever);
 
-    totalBytes = (offsetCnt-1)*LOG_LEN;
+    totalBytes = (offsetCnt-1)*kLogMaxLen;
 
  
 
@@ -127,11 +128,11 @@ void logging_read_log(int32_t offsetCnt,loggingMsg_t *loggingMsg)
 
 
     
-     osSemaphoreRelease(loggingSem); 
+     osSemaphoreRelease(g_loggingSem); 
 }
 
 
 void logging_init(void)
 {
-  loggingSem = osSemaphoreNew(1, 1, NULL);  
+  g_loggingSem = osSemaphoreNew(1, 1, NULL);  
 }

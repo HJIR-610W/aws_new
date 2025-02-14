@@ -7,6 +7,11 @@
 #include "app_sensor.h"
 #include "app_adc.h"
 
+
+void windSpeed_init(void);
 float read_sensor_windSpeed(sensor_t *sensor,uint8_t *err);
 
+
+extern float windSpeedSample1Min[240];
+extern float windSpeedSample10Min[10];
 #endif

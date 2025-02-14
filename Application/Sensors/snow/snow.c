@@ -9,10 +9,30 @@
 #include "dev_io.h"
 
 
+
+
+
+bool snowInit=false;
+
+
+bool is_snowInit(void)
+{
+  return snowInit;
+}
+
+bool snow_deInit(void)
+{
+  snowInit = false;
+  
+  return snowInit;
+}
+
+
+
 void snow_init(sensor_t *sensor)
 {
   dev_io_t dev_io;
-
+  snowInit = true;
 
   switch (sensor->type)
   {
@@ -51,8 +71,8 @@ int32_t read_sensor_snow(sensor_t *sensor,uint8_t *err)
   int32_t snwoFall=0;
   dev_io_t dev_io;
   void *cfg = get_sensor_config(sensor);
-
-  if(cfg == NULL)
+  
+  //if(cfg == NULL)
   {
     *err = 2;
     return 0;

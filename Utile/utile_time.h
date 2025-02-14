@@ -15,7 +15,7 @@ int32_t make_timeToStr(DATE_TIME_BUF *ct,char *out,uint16_t outSize);
 time_t SetTime(int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec);
 int GetYear(time_t tmIn);
 long GetTotalSeconds(time_t ts);
-
+int GetMonth(time_t tmIn);
 extern DATE_TIME_BUF Date_Time;;
 
 

@@ -1,5 +1,7 @@
 
 
+#include <stdio.h>
+#include "pcb_define.h"
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 #include "dev_io.h"
@@ -27,9 +29,12 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
    /* Run time stack overflow checking is performed if
    configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
    called if a stack overflow is detected. */
-  
-  debug_printf("SOF,%s",pcTaskName);
+  char buff[100];
 
+  snprintf(buff,sizeof(buff),"SOF,%s",pcTaskName);
+  debug_puts_nonos(buff);
+  //debug_printf("SOF,%s",pcTaskName);
+  HAL_NVIC_SystemReset();
 }
 /* USER CODE END 4 */
 

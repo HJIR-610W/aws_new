@@ -80,7 +80,13 @@
       "memp_std.h": "c",
       "memp.h": "c",
       "opt.h": "c",
-      "lwipopts.h": "c"
+      "lwipopts.h": "c",
+      "driver_di.h": "c",
+      "smart_charger.h": "c",
+      "task_modbus.h": "c",
+      "wind_direction.h": "c",
+      "app_datalogging.h": "c",
+      "os_define.h": "c"
     }
 	}
 }

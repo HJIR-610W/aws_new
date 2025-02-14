@@ -6,23 +6,23 @@
 #include "utile_time.h"
 
 
-#define BOOT_INFO_START_ADDRESS (0x08000188 ) // 벡터가 끝나는 곳
+#define BOOT_INFO_START_ADDRESS (0x08000188U) // 벡터가 끝나는 곳
 /**
  * @brief 부트 버전 읽기
  * a.b.c.d
  */
 uint32_t get_bootVer(uint8_t *a,uint8_t *b,uint8_t *c,uint8_t *d)
 {
-    section_info_t *info = (section_info_t *)BOOT_INFO_START_ADDRESS;
+  section_info_t *info = (section_info_t *)BOOT_INFO_START_ADDRESS;
 
-    uint32_t ver;
+  uint32_t ver;
 
-    ver = info->section_ver;
+  ver = info->section_ver;
 
-    *a = (ver>>24)&0xFF;
-    *b = (ver>>16)&0xFF;
-    *c = (ver>>8)&0xFF;
-    *d = ver&0xFF; 
+  *a = (ver>>24)&0xFF;
+  *b = (ver>>16)&0xFF;
+  *c = (ver>>8)&0xFF;
+  *d = ver&0xFF; 
 
   return ver;
 }

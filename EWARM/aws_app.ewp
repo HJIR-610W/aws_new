@@ -1341,6 +1341,51 @@
         </group>
         <group>
             <name>Panel</name>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Panel\panel.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Panel\panel.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Panel\panel_hansung.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Panel\panel_hansung.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Panel\panel_hj.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Panel\panel_hj.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Panel\panel_mooju.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Panel\panel_mooju.h</name>
+            </file>
+        </group>
+        <group>
+            <name>power</name>
+            <file>
+                <name>$PROJ_DIR$\..\Application\power\ls1024.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\power\ls1024.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\power\power.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\power\power.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\power\power_define.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\power\smart_charger.c</name>
+            </file>
         </group>
         <group>
             <name>Sensors</name>
@@ -1367,9 +1412,18 @@
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\rain\rain.c</name>
                 </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\rain\rain.h</name>
+                </file>
             </group>
             <group>
                 <name>rain_present</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\rain_present\rain_present.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\rain_present\rain_present.h</name>
+                </file>
             </group>
             <group>
                 <name>snow</name>
@@ -1378,6 +1432,24 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\snow\snow.c</name>
+                </file>
+            </group>
+            <group>
+                <name>soil_temp</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\soil_temperature\soil_temperature.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\soil_temperature\soil_temperature.h</name>
+                </file>
+            </group>
+            <group>
+                <name>sunshine</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\sunshine\sunshine.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\sunshine\sunshine.h</name>
                 </file>
             </group>
             <group>
@@ -1429,19 +1501,10 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\app_logging.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\task_cmd.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\task_comm.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_console.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_ethernet.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\task_host.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_isrEvent.c</name>
@@ -1451,6 +1514,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_measure.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_modbus.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_monitor.c</name>
@@ -1494,6 +1560,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\Application\main.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Application\os_define.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\Application\pcb_define.c</name>
@@ -1741,9 +1810,6 @@
         <group>
             <name>MCU</name>
             <file>
-                <name>$PROJ_DIR$\..\Drivers\MCU\mcu_delay.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Drivers\MCU\mcu_interrupt.c</name>
             </file>
             <file>
@@ -1754,6 +1820,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\MCU\mcu_utile.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\MCU\usDelay.c</name>
             </file>
         </group>
         <group>
@@ -2210,4 +2279,7 @@
             <name>$PROJ_DIR$\..\Utile\utile_time.h</name>
         </file>
     </group>
+    <file>
+        <name>$PROJ_DIR$\..\README.txt</name>
+    </file>
 </project>

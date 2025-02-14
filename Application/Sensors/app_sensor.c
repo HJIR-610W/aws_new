@@ -359,6 +359,7 @@ void * sensor_add(sensor_t *sensor)
     case S_T_TEMP_232:
     case S_T_GENERAL_232:
     case S_T_SNOW_HJ_232:
+    case S_T_HART:
     if(s_config.rs232_cnt < _countof(s_config.rs232))
     {
       index = s_config.rs232_cnt;
@@ -409,15 +410,18 @@ void * sensor_add(sensor_t *sensor)
 }
 
 
-
+/**
+ * @brief 센서타입에 맞는 설정값을 가져옴
+ */
 void * get_sensor_config(sensor_t *sensor)
 {
-  //저장된 config정보가 없으면 생성성
-  if(sensor->configCnt==0)
+  //configCnt가 0이란건 아직 저장된 config가 없다는것
+  if(sensor->configCnt == 0)
   {
     return 0;
   }
 
+  
   for (int i = 0; i < sensor->configCnt; i++)
   {
     if (sensor->config[i][0] == sensor->type)
@@ -430,6 +434,7 @@ void * get_sensor_config(sensor_t *sensor)
         case S_T_TEMP_232:
         case S_T_GENERAL_232:
         case S_T_SNOW_HJ_232:
+        case S_T_HART:
         return &s_config.rs232[sensor->config[i][1]];
         break;
         case S_T_TEMP_485:

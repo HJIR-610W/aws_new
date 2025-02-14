@@ -19,7 +19,7 @@ void config_factoryReset(void)
 }
 
 
-void update_cnt(uint8_t *cnt)
+void update_cnt(int8_t *cnt)
 {
   int8_t val;
 
@@ -32,12 +32,13 @@ void update_cnt(uint8_t *cnt)
 
   *cnt = val;
 }
-void check_config_limit(void)
+
+
+void limit_rs232(void)
 {
-  uint8_t config_check_cnt=0;
   for(int i = 0 ; i < _countof(s_config.rs232);i++)
   {
-    if(s_config.rs232[i].baud < 9600)
+    if(s_config.rs232[i].baud < 9600||s_config.rs232[i].baud > 115200)
     {
       s_config.rs232[i].baud = 9600;
        WRITE_S_CFG(rs232[i].baud);
@@ -55,6 +56,53 @@ void check_config_limit(void)
       WRITE_S_CFG(rs232[i].parityIdx);
     }
   }
+}
+
+void limit_rs485(void)
+{
+  for(int i = 0 ; i < _countof(s_config.rs485);i++)
+  {
+    if(s_config.rs485[i].baud < 9600||s_config.rs485[i].baud > 115200)
+    {
+      s_config.rs485[i].baud = 9600;
+       WRITE_S_CFG(rs485[i].baud);
+    }
+
+    if(s_config.rs485[i].port >= eAPP_RS485_MAX)
+    {
+      s_config.rs485[i].port = 0;
+       WRITE_S_CFG(rs485[i].port);
+    }
+
+    if(s_config.rs485[i].parityIdx >= 2)
+    {
+      s_config.rs485[i].parityIdx = 0;
+      WRITE_S_CFG(rs485[i].parityIdx);
+    }
+  }
+}
+
+
+void limit_adc(void)
+{
+  for(int i = 0 ; i < _countof(s_config.adc);i++)
+  {
+    if(s_config.adc[i].channel> 15)
+    {
+      s_config.adc[i].channel = 0;
+      WRITE_S_CFG(adc[i].channel);
+    }
+  }
+}
+
+
+void check_config_limit(void)
+{
+  uint8_t config_check_cnt=0;
+
+  limit_adc();
+  limit_rs232();
+  limit_rs485();
 
   if(config.direct_use && config.cdma_use)
   {
@@ -66,7 +114,7 @@ void check_config_limit(void)
 
   for(int i = 0; i < _countof(config.sensor) ;i++)
   {
-    if(config.sensor[i].type>supported_sensors[i].cnt)
+    if(config.sensor[i].type>S_T_MAX)
     {
       config.sensor[i].type = S_T_UNSUED;
       config_check_cnt++;

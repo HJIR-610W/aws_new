@@ -1,15 +1,13 @@
+#include "cmsis_os2.h"
+
 
 #include "app_rtc.h"
-#include "cmsis_os.h"
-#include "task_isrEvent.h"
 #include "dev_io.h"
+#include "task_isrEvent.h"
 
 
 
-
-
-
-const osThreadAttr_t isrEventTask_attributes = {
+const osThreadAttr_t kIsrEventTask_attributes = {
   .name = "isrEventTask",
   .stack_size = 2048,
   .priority = (osPriority_t) osPriorityHigh,
@@ -17,9 +15,7 @@ const osThreadAttr_t isrEventTask_attributes = {
 
 
 osMessageQueueId_t g_isrEventMessageQueue;
-
 eISR_EVENT_CMD_t g_isrEventCmd;
-
 
 int32_t os_send_isrEvent(eISR_EVENT_CMD_t cmd,uint32_t timeOutms)
 {
@@ -43,7 +39,6 @@ void isrEventTask(void *arg)
         rtc_update();
         break;
         case eRAIN_REED_INT:
-
         debug_printf("eRAIN_REED_INT\r\n");
         break;
         case eRAIN_HALL_INT:
@@ -70,5 +65,5 @@ void isrEventTask_init(void)
   g_isrEventMessageQueue = osMessageQueueNew(10, sizeof(eISR_EVENT_CMD_t), NULL);
 
 
-  osThreadNew(isrEventTask, NULL, &isrEventTask_attributes);
+  osThreadNew(isrEventTask, NULL, &kIsrEventTask_attributes);
 }

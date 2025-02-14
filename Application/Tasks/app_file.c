@@ -2,15 +2,16 @@
 
 #include <stdint.h>
 
+#include "os_define.h"
 #include "app_file.h"
-#include "mcu_delay.h"
+#include "usDelay.h"
 //파일명 8자리 
 const char *remote_path = "0:Firmware/Remote";
 const char *user_path   = "0:Firmware/User";
 const char *system_log_path = "0:System/log.txt";
 
 
-
+static osSemaphoreId_t g_fileSem;
 
 
 int32_t write_file(char *pPath,uint8_t *pData, uint32_t dataLen,uint32_t offset)
@@ -18,6 +19,8 @@ int32_t write_file(char *pPath,uint8_t *pData, uint32_t dataLen,uint32_t offset)
     uint32_t bw = 0;
     FIL wFile;
     FRESULT volatile fr;
+  
+    OS_SEM_PEND(g_fileSem,osWaitForever);
 
     do
     {
@@ -52,7 +55,9 @@ int32_t write_file(char *pPath,uint8_t *pData, uint32_t dataLen,uint32_t offset)
 
     }
 
-    return (int32_t)(fr==FR_OK);
+    OS_SEM_POST(g_fileSem);
+
+    return !(fr==FR_OK);//fr_ok이면 1인데 이것의 반전인 0을 리턴 , 즉 0이면 정상 
 }
 
 
@@ -85,6 +90,7 @@ enum {READ_SIZE = 4096};
     _fatErr[i] = 0xFF;
   }
 
+    OS_SEM_PEND(g_fileSem,osWaitForever);
 
   do
   {
@@ -135,6 +141,7 @@ enum {READ_SIZE = 4096};
         _fatErr[eFAT_ERR_CLOSE] = (uint8_t)fr;
     }
 
+    OS_SEM_POST(g_fileSem);
     return !(fr == FR_OK);
 
 }
@@ -155,10 +162,17 @@ void file_test(void)
       start_time1 = mcu_get_clk();
   write_file((char *)path,buff,fileLen,105407990);
 
-         elased_time1 =mcu_cal_elapse_us(start_time1);
+         elased_time1 =cal_elapsed_us(start_time1);
          
     read_file((char *)path,(uint8_t *)buff,5,0);
     
 
        osDelay(1);
+}
+
+
+
+void file_init(void)
+{
+  g_fileSem = osSemaphoreNew(1, 1, NULL);  
 }

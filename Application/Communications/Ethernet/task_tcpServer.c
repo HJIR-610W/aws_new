@@ -9,6 +9,7 @@
 #include "sockets.h"
 #include "app_logging.h"
 #include "app_socket.h"
+#include "task_logging.h"
 
 osThreadId_t g_tcpSeverTaskId;
 
@@ -142,7 +143,7 @@ void tcpServerTask(void *arg)
       if(oldClient.sin_addr.s_addr != remotehost.sin_addr.s_addr&&oldClient.sin_port != remotehost.sin_port )
       {
         inet_ntop(AF_INET, &remotehost.sin_addr, client_ip, sizeof(client_ip)); 
-        logging_printf("Client:%s,%d",client_ip,ntohs(remotehost.sin_port));
+        os_logging_printf("Client:%s,%d",client_ip,ntohs(remotehost.sin_port));
       }
       
       oldClient = remotehost;

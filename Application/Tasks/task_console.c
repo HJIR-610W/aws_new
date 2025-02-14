@@ -17,7 +17,7 @@ driver_t *console_uart;
 
 const osThreadAttr_t consoleTask_attributes = {
   .name = "consoleTask",
-  .stack_size = 2048,
+  .stack_size = 2048+1024,
   .priority = (osPriority_t) osPriorityLow,
 };
 

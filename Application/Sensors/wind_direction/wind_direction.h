@@ -7,6 +7,17 @@
 #include "app_sensor.h"
 #include "app_adc.h"
 
+
+
+
+
+void windDirection_init(void);
+bool is_windDirectionInit(void);
 float read_sensor_windDirection(sensor_t *sensor,uint8_t *err);
 
+
+extern float windDirectionSample1Min[240];
+extern float windDirectionSample10Min[10];
+extern uint16_t windDirectionSample1MinCnt;
+extern uint16_t windDirectionSample10MinCnt;
 #endif

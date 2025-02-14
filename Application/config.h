@@ -103,7 +103,7 @@ typedef struct system_s
   uint8_t TcpCntStat;
   uint8_t ModemRcvLevel;
   uint8_t netRun;
-
+  uint8_t loggingStatusGroup;
   
   
 }system_t;
@@ -114,7 +114,8 @@ void write_s_config(void);
 void write_config(void);
 
 
-void update_cnt(uint8_t *cnt);
+
+void update_cnt(int8_t *cnt);
 
 extern config_t config;
 extern system_t System;

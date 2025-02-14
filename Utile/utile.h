@@ -38,4 +38,6 @@ uint32_t Convert_HexAscii2uchar(char* src, uint16_t len, uint8_t * dst);
 
 
 uint32_t Convert_ucharHexAscii(uint8_t* src, uint16_t len, char* dst);
+
+float recursiveAvg(double pre_avg,float adc, int cnt);
 #endif

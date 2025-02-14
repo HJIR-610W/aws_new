@@ -256,7 +256,7 @@ int32_t send_data(uint8_t channel,uint8_t data)
 }
 
 // 데이터 읽기 함수
-int read_data(int uart_num, uint8_t *data) {
+int read_byte(int uart_num, uint8_t *data) {
     // LSR의 DR 비트를 확인하여 수신 버퍼에 데이터가 있는지 확인
     if (read_register(LSR(exUartBaseAddress[uart_num])) & LSR_DR) {
         *data = read_register(RBR(exUartBaseAddress[uart_num])); // RBR에서 데이터 읽기

@@ -3,10 +3,25 @@
 #include "Sensors\wind_speed\wind_speed.h"
 
 
+float windSpeedSample1Min[240];
+float windSpeedSample10Min[10];
 
+bool windSpeedInit=false;
 
+void windSpeed_init(void)
+{
+  windSpeedInit = true;
+}
 
+bool is_sensorWindSpeedInit(void)
+{
+  return windSpeedInit;
+}
 
+bool windSpeed_deInit(void)
+{
+  windSpeedInit = false;
+}
 
 
 

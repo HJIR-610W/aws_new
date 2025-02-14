@@ -158,6 +158,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
+#define FREERTOS_USE 1
+
+#if FREERTOS_USE
+#include "cmsis_os2.h"
+#define osDelay(...)
+#endif
+
 #if defined(SDIO)
 
 /** @addtogroup STM32F4xx_HAL_Driver
@@ -1196,13 +1203,29 @@ uint32_t SDMMC_GetCmdResp1(SDIO_TypeDef *SDIOx, uint8_t SD_CMD, uint32_t Timeout
   /* 8 is the number of required instructions cycles for the below loop statement.
   The Timeout is expressed in ms */
   uint32_t count = Timeout * (SystemCoreClock / 8U /1000U);
-  
+  uint8_t run=0;
+  #if FREERTOS_USE
+  count = HAL_GetTick();
+  #endif
   do
   {
+    #if FREERTOS_USE
+      if((HAL_GetTick()-count) > Timeout)
+      {
+        return SDMMC_ERROR_TIMEOUT;
+      }
+      if(run)
+      {
+        osDelay(1);
+      }
+      run = 1;
+    #else
     if (count-- == 0U)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
+    #endif
+
     sta_reg = SDIOx->STA;
   }while(((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) ||
          ((sta_reg & SDIO_FLAG_CMDACT) != 0U ));
@@ -1329,13 +1352,29 @@ uint32_t SDMMC_GetCmdResp2(SDIO_TypeDef *SDIOx)
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDIO_CMDTIMEOUT is expressed in ms */
   uint32_t count = SDIO_CMDTIMEOUT * (SystemCoreClock / 8U /1000U);
-  
+  uint8_t run=0;
+  #if FREERTOS_USE
+  count = HAL_GetTick();
+  #endif
   do
   {
+    #if FREERTOS_USE
+      if((HAL_GetTick()-count) > SDIO_CMDTIMEOUT)
+      {
+        return SDMMC_ERROR_TIMEOUT;
+      }
+      if(run)
+      {
+      osDelay(1);
+      }
+
+      run = 1;
+    #else
     if (count-- == 0U)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
+    #endif
     sta_reg = SDIOx->STA;
   }while(((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) ||
          ((sta_reg & SDIO_FLAG_CMDACT) != 0U ));
@@ -1373,13 +1412,29 @@ uint32_t SDMMC_GetCmdResp3(SDIO_TypeDef *SDIOx)
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDIO_CMDTIMEOUT is expressed in ms */
   uint32_t count = SDIO_CMDTIMEOUT * (SystemCoreClock / 8U /1000U);
-  
+  uint8_t run = 1;
+  #if FREERTOS_USE
+  count = HAL_GetTick();
+  #endif
   do
   {
+    #if FREERTOS_USE
+      if((HAL_GetTick()-count) > SDIO_CMDTIMEOUT)
+      {
+        return SDMMC_ERROR_TIMEOUT;
+      }
+      if(run)
+      {
+        osDelay(1);
+      }
+        run = 1;
+    #else
     if (count-- == 0U)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
+    #endif
+
     sta_reg = SDIOx->STA;
   }while(((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) ||
          ((sta_reg & SDIO_FLAG_CMDACT) != 0U ));
@@ -1415,13 +1470,31 @@ uint32_t SDMMC_GetCmdResp6(SDIO_TypeDef *SDIOx, uint8_t SD_CMD, uint16_t *pRCA)
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDIO_CMDTIMEOUT is expressed in ms */
   uint32_t count = SDIO_CMDTIMEOUT * (SystemCoreClock / 8U /1000U);
-  
+  uint8_t run = 0;
+
+  #if FREERTOS_USE
+  count = HAL_GetTick();
+  #endif
   do
   {
+    #if FREERTOS_USE
+      if((HAL_GetTick()-count) > SDIO_CMDTIMEOUT)
+      {
+        return SDMMC_ERROR_TIMEOUT;
+      }
+      if(run)
+      {
+        osDelay(1);
+      }
+
+      run = 1;
+
+    #else
     if (count-- == 0U)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
+    #endif
     sta_reg = SDIOx->STA;
   }while(((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) ||
          ((sta_reg & SDIO_FLAG_CMDACT) != 0U ));
@@ -1486,13 +1559,31 @@ uint32_t SDMMC_GetCmdResp7(SDIO_TypeDef *SDIOx)
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDIO_CMDTIMEOUT is expressed in ms */
   uint32_t count = SDIO_CMDTIMEOUT * (SystemCoreClock / 8U /1000U);
-  
+  uint8_t run = 0;
+
+  #if FREERTOS_USE
+  count = HAL_GetTick();
+  #endif
   do
   {
+    #if FREERTOS_USE
+      if((HAL_GetTick()-count) > SDIO_CMDTIMEOUT)
+      {
+        return SDMMC_ERROR_TIMEOUT;
+      }
+      if(run)
+      {
+        osDelay(1);
+      }
+
+      run = 1;
+
+    #else
     if (count-- == 0U)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
+    #endif
     sta_reg = SDIOx->STA;
   }while(((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) ||
          ((sta_reg & SDIO_FLAG_CMDACT) != 0U ));
@@ -1545,14 +1636,28 @@ static uint32_t SDMMC_GetCmdError(SDIO_TypeDef *SDIOx)
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDIO_CMDTIMEOUT is expressed in ms */
   uint32_t count = SDIO_CMDTIMEOUT * (SystemCoreClock / 8U /1000U);
-  
+  uint8_t run=0;
+  #if FREERTOS_USE
+  count = HAL_GetTick();
+  #endif
   do
   {
+    #if FREERTOS_USE
+      if((HAL_GetTick()-count) > SDIO_CMDTIMEOUT)
+      {
+        return SDMMC_ERROR_TIMEOUT;
+      }
+      if(run)
+      {
+        osDelay(1);
+      }
+      run = 1;
+    #else
     if (count-- == 0U)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
-    
+    #endif
   }while(!__SDIO_GET_FLAG(SDIOx, SDIO_FLAG_CMDSENT));
   
   /* Clear all the static flags */

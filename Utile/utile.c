@@ -307,3 +307,15 @@ uint32_t Convert_ucharHexAscii(uint8_t* src, uint16_t len, char* dst)
 	return len * 2;
 }
 
+//float ¡¾16,777,216
+float recursiveAvg(double pre_avg,float adc, int cnt)
+{
+  float avg;
+
+  avg = ((cnt - 1) * pre_avg) / cnt + adc / cnt;
+
+  return avg;
+
+}
+
+

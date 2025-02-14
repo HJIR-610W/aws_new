@@ -8,7 +8,7 @@
 
 #include "driver_do.h"
 #include "driver_spi.h"
-#include "mcu_delay.h"
+#include "usDelay.h"
 
 
 #define STATUS_REGISTER 	0xD7 //0x57
@@ -33,7 +33,7 @@ uint16_t _pageSize = 256;
 
 void AT45_Delay(uint32_t usec)
 {
-	mcu_delay(usec);
+	usDelay(usec);
 }
 
 
@@ -192,7 +192,7 @@ void at45db_write_page(driver_t *drv,uint32_t WriteAddr, uint8_t *writebuff)
 	for(i = 0; i <  readCnt; i++)
 	{
 		AT45_Write_Buffer(drv,0, 0, (const char *) writebuff, pageSize);
-		mcu_delay(10);
+		usDelay(10);
 		AT45_BufferToMemory(drv,0, WriteAddr * readCnt + i);
 		AT45_IsBusy(drv);
 		writebuff += pageSize;

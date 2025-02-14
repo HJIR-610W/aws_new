@@ -115,9 +115,7 @@ typedef struct
   // 12. 현재 일기
   int16_t current_weather; // 사용비트: 6, 유효범위: 0 ~ 127 (인치 코드), 표현범위: 0 ~ 99 (관측값)
 
-
   int16_t temp0[4];
-
 
   // 1. 토양수분 (10 cm)
   int16_t soil_moisture_10cm; // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000 (관측값 * 10)
@@ -161,6 +159,7 @@ typedef struct
   int16_t tacometer;
   int8_t sensorStatus[8];
   int8_t volateStatus;
+  int16_t temp[60];
 }kma_data_t;
 
 

@@ -83,7 +83,17 @@ int GetYear(time_t tmIn)
     time_info.tm_year =0;
 	localtime_s(&tmIn,&time_info);
     
-    return time_info.tm_year;
+    return time_info.tm_year+1900;
+}
+int GetMonth(time_t tmIn)
+{
+    struct tm time_info;
+  //C11
+    time_info.tm_year =0;
+    time_info.tm_mon = 0;
+	localtime_s(&tmIn,&time_info);
+    
+    return time_info.tm_mon+1;
 }
 
 

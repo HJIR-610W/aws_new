@@ -6,7 +6,7 @@
 #include "cmsis_os.h"
 #include "app_adc.h"
 #include "config.h"
-
+#include "utile.h"
 
 driver_t *g_ads1120;
 
@@ -22,13 +22,20 @@ int32_t adc_read_single(int channel,uint8_t *err)
 
 int32_t adc_read_single_avg(int channel,uint8_t *err,uint8_t avg_cnt)
 {
-  return  driver_adc_single_read(g_ads1120,channel,avg_cnt,err);
+
+return driver_adc_single_read(g_ads1120,channel,avg_cnt,err);
+
+
+
 }
 
 
 int32_t adc_read_diff_avg(int channel,uint8_t *err,uint8_t avg_cnt)
 {
-  return  driver_adc_diff_read(g_ads1120,channel,avg_cnt,err);
+
+return driver_adc_diff_read(g_ads1120,channel,avg_cnt,err);
+
+
 }
 
 int32_t adc_read_diff(int channel,uint8_t *err)
@@ -82,13 +89,13 @@ float adc_read_volate(adc_config_t *adc,uint8_t *err)
   float ret;
   if(adc->mode == eSINGLE_ADC)
   {
-    data = adc_read_single(adc->channel-1,err);
-    ret= adc_chToVoltage(adc->mode,adc->channel-1,data);
+    data = adc_read_single(adc->channel,err);
+    ret= adc_chToVoltage(adc->mode,adc->channel,data);
   }
   else
   {
-    data = adc_read_diff(adc->channel-1,err);
-    ret= adc_chToVoltage(adc->mode,adc->channel-1,data);
+    data = adc_read_diff(adc->channel,err);
+    ret= adc_chToVoltage(adc->mode,adc->channel,data);
   }
   return ret;
 }
@@ -99,12 +106,12 @@ int32_t get_adc_vref(adc_config_t *adc)
 {
   if(adc->mode==eSINGLE_ADC)
   {
-    return   g_adc_cali_config.single[adc->channel-1].fullset_input;
+    return   g_adc_cali_config.single[adc->channel].fullset_input;
 
   }
   else
   {
-    return g_adc_cali_config.diff[adc->channel-1].fullset_input;
+    return g_adc_cali_config.diff[adc->channel].fullset_input;
   }
 }
 
