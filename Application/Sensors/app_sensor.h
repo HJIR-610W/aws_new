@@ -108,6 +108,7 @@ typedef enum S_T_e
   S_T_RAIN_PRESENT_DI        = 21,
   S_T_SNOW_HJ_232            = 22,
   S_T_GENERAL_485            = 23,
+  S_T_PT100                  = 24,
   S_T_MAX
 }eSENSOR_MODEL_t;
 
@@ -212,6 +213,7 @@ typedef struct sensor_data_s
   }max;
   float unitScale;
   float avg;
+  void *opt;
   uint8_t sample_cnt;
   uint8_t enable:1;
   uint8_t dataType  :3;
@@ -256,6 +258,8 @@ void * get_sensor_config(sensor_t *sensor);
 void * sensor_add(sensor_t *sensor);
 
 void sensorData_init(void);
+void update_sensorData1s(void);
+void update_sensorData1min(void);
 
 extern config_manager_t s_config;
 
@@ -277,7 +281,7 @@ extern const char *sensorNameList[SENSOR_LIST_MAX];
 extern const char *dataFmtList[SENSOR_LIST_MAX];
 extern sensor_emul_t g_sensor_emul[SENSOR_LIST_MAX];
 extern sensor_data_t sensor_data[SENSOR_LIST_MAX];
-
+extern sensor_data_t sensor_data_1s[SENSOR_LIST_MAX];//1초마다 갱신되는 자료 
 
 extern const supported_sensors_t supported_sensors[SENSOR_LIST_MAX];
 #endif

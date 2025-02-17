@@ -408,7 +408,7 @@ int32_t print_awsRealLefinfo(uint16_t row,uint16_t column,uint8_t mode,void* arg
 
   snprintf(buff,sizeof(buff),"AWS %s %.2fms",aswTitleList[mode],(float)g_elased_time/1000.0f);
   
-  pdata = sensor_data;
+  pdata = sensor_data_1s;
 
 #define P_WIDTH 27
 #if 1

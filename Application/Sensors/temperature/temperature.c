@@ -38,8 +38,8 @@ float read_sensor_temperature(sensor_t *sensor,uint8_t *err)
     case S_T_ADC:
     data = calculate_adc((adc_config_t*)cfg,err);
     break;
-    case S_T_TEMP_232:
-
+    case S_T_PT100:
+    
     break;
   }
 

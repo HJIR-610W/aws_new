@@ -1237,6 +1237,15 @@
                 <name>$PROJ_DIR$\..\Application\Communications\aws_data.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\Communications\aws_jinyang.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Communications\aws_kma.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Communications\aws_kma.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\Communications\aws_kma2.c</name>
             </file>
             <file>

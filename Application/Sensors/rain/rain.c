@@ -2,18 +2,70 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cmsis_os.h"
+
+#include "os_define.h"
 #include "dev_io.h"
 #include "Sensors\rain\rain.h"
 #include "task_isrEvent.h"
 #include "pcb_define.h"
 #include "driver_di.h"
+#include "utile_time.h"
+
+
+rain_data_t rain_data;
 
 static uint16_t g_rainPulse;
+static osSemaphoreId_t g_rainSemId = NULL;
+
+volatile uint32_t g_last_pulse_time;
+
+
+void increase_rain(void)
+{
+  if(OS_SEM_PEND(g_rainSemId, osWaitForever) == osOK)
+  {
+    g_rainPulse += 1;
+    OS_SEM_POST(g_rainSemId);
+  }
+}
+
+uint16_t peek_rain(void)
+{
+	uint16_t ret=0;
+  if(OS_SEM_PEND(g_rainSemId, osWaitForever) == osOK)
+	{
+		ret = g_rainPulse;
+    OS_SEM_POST(g_rainSemId);
+	}
+	return ret;
+}
+
+uint16_t get_rain(uint16_t cnt)
+{
+  uint16_t ret=0;
+  if(OS_SEM_PEND(g_rainSemId, osWaitForever) == osOK)
+  {
+    if(cnt>= g_rainPulse)
+      {
+        g_rainPulse -= cnt;
+              ret = cnt;
+      }
+      OS_SEM_POST(g_rainSemId);
+    }	
+  return ret;
+}
+
 
 void rainReedCallBack(void *arg)
 {
-  os_send_isrEvent(eRAIN_REED_INT,0);
+  uint32_t current_time = OS_GET_TICK();
+
+  if((current_time - g_last_pulse_time)>= 1000)
+  {
+    os_send_isrEvent(eRAIN_REED_INT,0);
+    g_last_pulse_time = OS_GET_TICK();
+  }
+
 }
 
 void rainHallCallBack(void *arg)
@@ -25,6 +77,10 @@ void rain_init(sensor_t *sensor)
 {
   driver_t *rain_pulse;
   di_isr_set_cfg_t isr_cfg;
+
+
+  g_rainSemId = osSemaphoreNew(1, 1, NULL); 
+
 
   switch (sensor->type)
   {
@@ -88,48 +144,48 @@ int32_t read_rain_rs232(dev_io_t *dev,uint8_t *err)
 
 }
 
-
+/**
+ * @brief 1mm 10, 0.5mm 5
+ */
 int32_t read_sensor_rain(sensor_t *sensor,uint8_t *err)
 {
-  driver_t *rain_pulse;
-  di_isr_set_cfg_t isr_cfg;
-  rs232_config_t *rs232_config;
-  int32_t data;
-    dev_io_t dev_io;
-  void *cfg;
+  uint16_t rain=0;
+  uint16_t scale=1;
+  int32_t data=0;
 
-  cfg = get_sensor_config(sensor);
-
-  if(cfg == NULL)
-  {
-    *err = 2;
-
-    return 0;
-  }
-
-  rs232_config = cfg;
+  
   switch (sensor->type)
   {
-  case S_T_GENERAL_232:
-
-    dev_io.io = eRS232_IO;
-    dev_io.handle = (void *)rs232_config->port;
-
-  data =read_rain_rs232(&dev_io,err);
-  break;
   case S_T_RAIN_REED_05MM:
-  case S_T_RAIN_REED_1MM:
-  case S_T_RAIN_HALL_05MM:
-  case S_T_RAIN_HALL_1MM:
-
+  scale = 5;
   break;
-  default:
-    break;
+  case S_T_RAIN_REED_1MM:
+  scale = 10;
+  break;
+  case S_T_RAIN_HALL_05MM:
+  scale = 5;
+  break;
+  case S_T_RAIN_HALL_1MM:
+  scale = 10;
+  break;
   }
   
-  return 0;
+  rain =  peek_rain();
+  if(rain)
+  {
+   data = get_rain(rain);
+  }
+  return data*scale;
 }
 
 
+uint16_t calculate_yearRain(DATE_TIME_BUF *ct)
+{
+
+}
 
 
+uint16_t calculate_monthRain(DATE_TIME_BUF *ct)
+{
+
+}

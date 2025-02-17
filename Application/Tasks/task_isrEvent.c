@@ -5,7 +5,7 @@
 #include "dev_io.h"
 #include "task_isrEvent.h"
 
-
+#include "Sensors\rain\rain.h"
 
 const osThreadAttr_t kIsrEventTask_attributes = {
   .name = "isrEventTask",
@@ -40,9 +40,11 @@ void isrEventTask(void *arg)
         break;
         case eRAIN_REED_INT:
         debug_printf("eRAIN_REED_INT\r\n");
+        increase_rain();
         break;
         case eRAIN_HALL_INT:
         debug_printf("eRAIN_HALL_INT\r\n");
+        increase_rain();
         break;
         case eUSER_BTN_INT:
         debug_printf("eUSER_BTN_INT\r\n");

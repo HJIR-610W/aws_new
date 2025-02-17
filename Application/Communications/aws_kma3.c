@@ -10,6 +10,7 @@
 #include "aws_data.h"
 #include "crc16_ccitt.h"
 #include "aws_data.h"
+#include "aws_kma.h"
 
 //규격서 프로토콜 버전
 #define PROTOCOL_YEAR  2018
@@ -44,83 +45,35 @@
 #define             FANFAIL_BIT         0x0080
 // sMax
 #define             RAINFAIL_BIT        0x0001
-typedef struct {
-  uint16_t header;
-  uint8_t protocol_year;
-  uint8_t protocol_month;
-  uint8_t protocol_day;
-  uint8_t year;
-  uint8_t month;
-  uint8_t day;
-  uint8_t hour;
-  uint8_t min;
-  uint8_t sec;
-  uint16_t password;
-  uint16_t id;
-  char cmd[10];
-  uint16_t crc;
-  uint16_t end;
-} kma3_req_t;
-//수신된 명령어 처리하기 위해 적용
-typedef enum KMA3_REQ_e
-{
-  eAI,
-  eAB,
-  eAQ,
-  eAV,
-  eAR,
-  eAO,
-  eAD,
-  eAT,
-  eAW,
-  eAC,
-  eAP//국립공원 기존에 있길래 추가,기상청 문서에는 없음
-
-}eKMA3_REQ_t;
-typedef struct 
-{
-  eKMA3_REQ_t cmd;
-  const char *cmdName;
-}kma3_cmd_t;
-const kma3_cmd_t kma3_cmd[]={{eAI,"AI?"},
-                             {eAB,"AB?"},
-                             {eAQ,"AQ?"},
-                             {eAV,"AV?"},
-                             {eAR,"AR?"},
-                             {eAO,"AO?"},
-                             {eAD,"AD?"},
-                             {eAT,"AT?"},
-                             {eAW,"AW?"},
-                             {eAC,"AC?"},
-                             {eAP,"AP?"}};
 
 
 
-uint8_t g_sensorStatus[8];//64개의 센서의 상태 표시 
+
+uint8_t g_sensorStatus_kma3[8];//64개의 센서의 상태 표시 
 
 //센서 상태를 8바이트 *8 총 64bit 전송한다.
 //미리 센서상태를 설정한다.
 
-void set_sensorError(eSENSOR_LIST_t sensorNum)
+void set_sensorError_kma3(eSENSOR_LIST_t sensorNum)
 {
   int quot;
   int rem;
 
-  quot = sensorNum / sizeof(g_sensorStatus);
-  rem  = sensorNum % sizeof(g_sensorStatus);
+  quot = sensorNum / sizeof(g_sensorStatus_kma3);
+  rem  = sensorNum % sizeof(g_sensorStatus_kma3);
 
-  g_sensorStatus[quot] |= 1 << rem;
+  g_sensorStatus_kma3[quot] |= 1 << rem;
 }
 
-void clear_sensorError(eSENSOR_LIST_t sensorNum)
+void clear_sensorError_kma3(eSENSOR_LIST_t sensorNum)
 {
   int quot;
   int rem;
 
-  quot = sensorNum / sizeof(g_sensorStatus);
-  rem = sensorNum % sizeof(g_sensorStatus);
+  quot = sensorNum / sizeof(g_sensorStatus_kma3);
+  rem = sensorNum % sizeof(g_sensorStatus_kma3);
 
-  g_sensorStatus[quot] &= ~(1 << rem);
+  g_sensorStatus_kma3[quot] &= ~(1 << rem);
 }
 
 
@@ -137,93 +90,93 @@ bit 6 기압 센서
 
 bit 15 FAN
  */
-void make_sensorStatus(uint8_t sensorState[8], uint8_t status)
+void make_sensorStatus_kma3(uint8_t sensorState[8], uint8_t status)
 {
 
 
   if(status & WINDSPEEDFAIL_BIT)
   {
-    set_sensorError(A3_WIND_SPEED);
+    set_sensorError_kma3(A3_WIND_SPEED);
   }
   else
   {
-    clear_sensorError(A3_WIND_SPEED);
+    clear_sensorError_kma3(A3_WIND_SPEED);
   }
 
   if(status & WINDDIRECFAIL_BIT)
   {
-    set_sensorError(A2_WIND_DIRECTION);
+    set_sensorError_kma3(A2_WIND_DIRECTION);
   }
   else
   {
-    clear_sensorError(A2_WIND_DIRECTION);
+    clear_sensorError_kma3(A2_WIND_DIRECTION);
   }
 
   if(status & TEMPERATUREFAIL_BIT)
   {
-    set_sensorError(A1_TEMPERATURE);
+    set_sensorError_kma3(A1_TEMPERATURE);
   }
   else
   {
-    clear_sensorError(A1_TEMPERATURE);
+    clear_sensorError_kma3(A1_TEMPERATURE);
   }
 
 
   if(status & RAINDETECTFAIL_BIT)
   {
-    set_sensorError(A8_RAIN_PRESENT);
+    set_sensorError_kma3(A8_RAIN_PRESENT);
   }
   else
   {
-    clear_sensorError(A8_RAIN_PRESENT);
+    clear_sensorError_kma3(A8_RAIN_PRESENT);
   }
 
 
   if(status & RAINFALLFAIL_BIT)
   {
-    set_sensorError(A6_RAINFALL_DOT5_1MM);
+    set_sensorError_kma3(A6_RAINFALL_DOT5_1MM);
   }
   else
   {
-    clear_sensorError(A6_RAINFALL_DOT5_1MM);
+    clear_sensorError_kma3(A6_RAINFALL_DOT5_1MM);
   }
 
 
   if(status & HUMIDITYFAIL_BIT)
   {
-    set_sensorError(A10_RELATIVE_HUMIDITY);
+    set_sensorError_kma3(A10_RELATIVE_HUMIDITY);
   }
   else
   {
-    clear_sensorError(A10_RELATIVE_HUMIDITY);
+    clear_sensorError_kma3(A10_RELATIVE_HUMIDITY);
   }
 
 
   if(status & BAROMETRICFAIL_BIT)
   {
-    set_sensorError(A7_PRESSURE);
+    set_sensorError_kma3(A7_PRESSURE);
   }
   else
   {
-    clear_sensorError(A7_PRESSURE);
+    clear_sensorError_kma3(A7_PRESSURE);
   }
 
 
 
 
-  sensorState[0] = g_sensorStatus[0];
-  sensorState[1] = g_sensorStatus[1];
-  sensorState[2] = g_sensorStatus[2];
-  sensorState[3] = g_sensorStatus[3];
-  sensorState[4] = g_sensorStatus[4];
-  sensorState[5] = g_sensorStatus[5];
-  sensorState[6] = g_sensorStatus[6];
-  sensorState[7] = g_sensorStatus[7];
+  sensorState[0] = g_sensorStatus_kma3[0];
+  sensorState[1] = g_sensorStatus_kma3[1];
+  sensorState[2] = g_sensorStatus_kma3[2];
+  sensorState[3] = g_sensorStatus_kma3[3];
+  sensorState[4] = g_sensorStatus_kma3[4];
+  sensorState[5] = g_sensorStatus_kma3[5];
+  sensorState[6] = g_sensorStatus_kma3[6];
+  sensorState[7] = g_sensorStatus_kma3[7];
 }
 
 
 
-void kma3_unpack(uint8_t *packet,kma3_req_t *req)
+void kma3_unpack(uint8_t *packet,kma_req_t *req)
 {
   uint16_t usData;
 
@@ -321,7 +274,7 @@ uint16_t make_kma3_resp(uint8_t *out,
 }
 
 
-int16_t get_sensorVal(sensor_t *sensor)
+int16_t get_sensorVal_kma3(sensor_t *sensor)
 {
 
   int16_t val = -999;  
@@ -475,7 +428,7 @@ uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend,uint16_t lpSendSize,  kma_da
   SetWord(&lpSend[cnt], aws->tacometer);                          //I-1 타코미터 
   cnt         += 2;	
 
-  make_sensorStatus(&lpSend[cnt],0);              //8바이트 
+  make_sensorStatus_kma3(&lpSend[cnt],0);              //8바이트 
   cnt += 8;
 
   lpSend[cnt++] = (uint8_t)aws->volateStatus;                      	// 상태 (DC 전압, 밧데리, 전압, 로거 잠금) 
@@ -491,12 +444,12 @@ void check_sensor_emul(void)
 }
 
 //순간 자료
-uint16_t kma_cmd_AI(uint8_t *recv,uint8_t *send)
+uint16_t kma3_cmd_AI(uint8_t *recv,uint8_t *send)
 {
   uint8_t nt[5];
   uint8_t data[200];
   uint16_t len;
-  kma3_req_t *req = (kma3_req_t *)recv;
+  kma_req_t *req = (kma_req_t *)recv;
   DATE_TIME_BUF *pDate;
   kma_data_t *kma_data = &kma_data_1s;
 
@@ -515,12 +468,12 @@ uint16_t kma_cmd_AI(uint8_t *recv,uint8_t *send)
 
 
 //1분 자료
-uint16_t kma_cmd_AB(uint8_t *recv,uint8_t *send)
+uint16_t kma3_cmd_AB(uint8_t *recv,uint8_t *send)
 {
   uint8_t nt[5];
   uint8_t data[200];
   uint16_t len;
-  kma3_req_t *req = (kma3_req_t *)recv;
+  kma_req_t *req = (kma_req_t *)recv;
   DATE_TIME_BUF *pDate;
   kma_data_t *aws=0;
 
@@ -542,11 +495,11 @@ uint16_t kma_cmd_AB(uint8_t *recv,uint8_t *send)
 
 
 //1분 과거 자료
-uint16_t kma_cmd_AQ(uint8_t *recv,uint8_t *send)
+uint16_t kma3_cmd_AQ(uint8_t *recv,uint8_t *send)
 {
   uint8_t data[200];
   uint16_t len;
-  kma3_req_t *req = (kma3_req_t *)recv;
+  kma_req_t *req = (kma_req_t *)recv;
   DATE_TIME_BUF mOldDate;
   DATE_TIME_BUF *pDate;
   uint8_t nt[5];
@@ -648,7 +601,7 @@ uint16_t make_kma3_resp_RODTWC(uint8_t *out,uint16_t outSize,
   return cnt;
 }
 //로거 버전 응답
-uint32_t kma_cmdAV(uint8_t *packet,uint8_t *txBuff)
+uint32_t kma3_cmdAV(uint8_t *packet,uint8_t *txBuff)
 {
   uint8_t data[30];
   uint16_t cnt = 0 ;
@@ -697,11 +650,11 @@ uint32_t kma_cmdAV(uint8_t *packet,uint8_t *txBuff)
 
 
 //리셋
-uint16_t kma_cmd_AR(uint8_t *recv,uint8_t *send)
+uint16_t kma3_cmd_AR(uint8_t *recv,uint8_t *send)
 {
   uint8_t packet[50];
   uint16_t len;
-  kma3_req_t *req = (kma3_req_t *)recv;
+  kma_req_t *req = (kma_req_t *)recv;
 
   len = make_kma3_resp_RODTWC(packet,sizeof(packet),config.id,req->cmd[1],"OKAY");
 
@@ -711,11 +664,11 @@ uint16_t kma_cmd_AR(uint8_t *recv,uint8_t *send)
 }
 
 
-uint16_t kma_cmd_AO(uint8_t *recv,uint8_t *send)
+uint16_t kma3_cmd_AO(uint8_t *recv,uint8_t *send)
 {
   uint8_t packet[50];
   uint16_t len;
-  kma3_req_t *req = (kma3_req_t *)recv;
+  kma_req_t *req = (kma_req_t *)recv;
 
   len = make_kma3_resp_RODTWC(packet,sizeof(packet),config.id,req->cmd[1],"OKAY");
 
@@ -726,11 +679,11 @@ uint16_t kma_cmd_AO(uint8_t *recv,uint8_t *send)
 
 
 //시간 설정
-uint16_t kma_cmd_AT(uint8_t *recv,uint8_t *send)
+uint16_t kma3_cmd_AT(uint8_t *recv,uint8_t *send)
 {
   uint8_t packet[50];
   uint16_t len;
-  kma3_req_t *req = (kma3_req_t *)recv;
+  kma_req_t *req = (kma_req_t *)recv;
   DATE_TIME_BUF nt;
 
 
@@ -752,13 +705,13 @@ uint16_t kma_cmd_AT(uint8_t *recv,uint8_t *send)
 }
 
 //암호 설정
-uint16_t kma_cmd_AW(uint8_t *recv,uint8_t *send)
+uint16_t kma3_cmd_AW(uint8_t *recv,uint8_t *send)
 {
   char temp[10];
 
   uint8_t packet[50];
   uint16_t len;
-  kma3_req_t *req = ( kma3_req_t*)recv;
+  kma_req_t *req = ( kma_req_t*)recv;
 
 
   snprintf(temp,sizeof(temp),"%d",req->password);
@@ -772,11 +725,11 @@ uint16_t kma_cmd_AW(uint8_t *recv,uint8_t *send)
 }
 
 //데이터 삭제
-uint16_t kma_cmd_AC(uint8_t *recv,uint8_t *send)
+uint16_t kma3_cmd_AC(uint8_t *recv,uint8_t *send)
 {
   uint8_t packet[50];
   uint16_t len;
-  kma3_req_t *req = (kma3_req_t *)recv;
+  kma_req_t *req = (kma_req_t *)recv;
 
   len = make_kma3_resp_RODTWC(packet,sizeof(packet),config.id,req->cmd[1],"OKAY");
 
@@ -786,13 +739,13 @@ uint16_t kma_cmd_AC(uint8_t *recv,uint8_t *send)
 }
 
 
-uint16_t kma_cmd_AP(uint8_t *recv,uint8_t *send)
+uint16_t kma3_cmd_AP(uint8_t *recv,uint8_t *send)
 {
   uint8_t packet[50];
   uint16_t len;
   uint32_t i;
 
-  kma3_req_t *req = (kma3_req_t *)recv;
+  kma_req_t *req = (kma_req_t *)recv;
 
   for(i = 0; i < 4; i++)
   {
@@ -813,14 +766,17 @@ uint16_t kma_cmd_AP(uint8_t *recv,uint8_t *send)
 
   return len;
 }
+
+
+
 int32_t cmd_kma3(uint8_t *packet,uint16_t paLen,uint8_t *txBuff,uint16_t tLen,uint8_t source)//,uint16_t packetLen)
 {
 
   int32_t i;
   uint32_t len;
-  kma3_req_t *req = (kma3_req_t*)packet;
-  kma3_req_t request;
-
+  kma_req_t *req = (kma_req_t*)packet;
+  kma_req_t request;
+  uint16_t cmd_cnt;
 
   
   kma3_unpack(packet,&request);
@@ -840,45 +796,47 @@ int32_t cmd_kma3(uint8_t *packet,uint16_t paLen,uint8_t *txBuff,uint16_t tLen,ui
     return 0;
   }
 
-  for(i = 0 ;i <sizeof(kma3_cmd)/sizeof(kma3_cmd[0]);i++)
+  cmd_cnt = coutntof_kma_cmd();
+
+  for(i = 0 ;i < cmd_cnt ;i++)
   {
-    if(strncmp(kma3_cmd[i].cmdName,req->cmd,strlen(kma3_cmd[i].cmdName))==0)
+    if(strncmp(kma_cmd[i].cmdName,req->cmd,strlen(kma_cmd[i].cmdName))==0)
     {
-      switch(kma3_cmd[i].cmd)
+      switch(kma_cmd[i].cmd)
       {
         case eAI://순간자료
-        len = kma_cmd_AI((uint8_t *)req,txBuff);
+        len = kma3_cmd_AI((uint8_t *)req,txBuff);
         break;
         case eAB://1분자료(최근 1분 자료 요구)
-        len = kma_cmd_AB((uint8_t *)req,txBuff);//동일한 함수로 처리
+        len = kma3_cmd_AB((uint8_t *)req,txBuff);//동일한 함수로 처리
         break;
         case eAQ://1분 과거 자료(C한에 과거 시간을 입력하여 과거자료 요구)
-        len = kma_cmd_AQ((uint8_t *)req,txBuff);//동일한 함수로 처리
+        len = kma3_cmd_AQ((uint8_t *)req,txBuff);//동일한 함수로 처리
         break;
         case eAV://데이터로거 버전
-        len = kma_cmdAV((uint8_t *)req,txBuff);
+        len = kma3_cmdAV((uint8_t *)req,txBuff);
         break;
         case eAR://데이터로거 리셋
-        len = kma_cmd_AR((uint8_t *)req,txBuff);
+        len = kma3_cmd_AR((uint8_t *)req,txBuff);
         osDelay(10);
         break;
         case eAO://전원리셋 또는 모뎀 리셋 또는 적설센서 리셋
-        len = kma_cmd_AO((uint8_t *)req,txBuff);
+        len = kma3_cmd_AO((uint8_t *)req,txBuff);
         break;
         case eAD://지점번호 설정
 
         break;
         case eAT://날짜,시간 설정
-        len = kma_cmd_AT((uint8_t *)req,txBuff);
+        len = kma3_cmd_AT((uint8_t *)req,txBuff);
         break;
         case eAW://암호 설정
-        len = kma_cmd_AW((uint8_t *)req,txBuff);
+        len = kma3_cmd_AW((uint8_t *)req,txBuff);
         break;
         case eAC://저장데이터 삭제
-        len =  kma_cmd_AC((uint8_t *)req,txBuff);
+        len =  kma3_cmd_AC((uint8_t *)req,txBuff);
         break;
         case eAP: // 국립공원 Protocol전용 : 원격 CDMA 원격 TCP  IP & PORT 변경							
-        len = kma_cmd_AP((uint8_t *)req,txBuff);
+        len = kma3_cmd_AP((uint8_t *)req,txBuff);
          break;
       }
       break;

@@ -86,7 +86,8 @@
       "task_modbus.h": "c",
       "wind_direction.h": "c",
       "app_datalogging.h": "c",
-      "os_define.h": "c"
+      "os_define.h": "c",
+      "dev_io.h": "c"
     }
 	}
 }

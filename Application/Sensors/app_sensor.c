@@ -2,10 +2,12 @@
 장비가 제공하는 센서를 정의
 
 */
+#include <string.h>
+
 #include "app_sensor.h"
 #include "config.h"
 #include "utile.h"
-
+#include "Sensors\rain\rain.h"
 
 
 //지원하는 센서 목록 정의
@@ -13,7 +15,8 @@
 const uint8_t temperatureList[]={S_T_UNSUED,
                                  S_T_ADC,
                                  S_T_GENERAL_232,
-                                 S_T_GENERAL_485};
+                                 S_T_GENERAL_485,
+                                 S_T_PT100};
                                  
 const uint8_t windDirectionList[]={S_T_UNSUED,
                                    S_T_ADC,
@@ -298,10 +301,37 @@ const char *dataFmtList[SENSOR_LIST_MAX]={
 
 config_manager_t s_config;
 
+sensor_data_t sensor_data[SENSOR_LIST_MAX];     // 실시간 자료 연산용
+sensor_data_t sensor_data_1s[SENSOR_LIST_MAX];  // 1초 마다 갱신되는 실시간 자료
+sensor_data_t sensor_data_1min[SENSOR_LIST_MAX];// 1분 마다 갱신되는 실시간 자료
 
 
-sensor_data_t sensor_data[SENSOR_LIST_MAX];
 sensor_emul_t g_sensor_emul[SENSOR_LIST_MAX];
+
+
+
+uint8_t sensorData_updated=0;
+
+bool wait_sensorComplete(void)
+{
+  return true;
+}
+
+//1초 자료를 업데이트, 실시간 값 요청시 이 값 전송
+void update_sensorData1s(void)
+{
+  //세마포어 pend 완전히 한번에 업데이트된 자료만 읽도록
+  memcpy(sensor_data_1s,sensor_data,sizeof(sensor_data_1s));
+ //세마 포어 post
+}
+
+//1분 자료를 업데이트, 1분 자료 요청시 이 값 전송
+void update_sensorData1min(void)
+{
+  //세마포어 pend 완전히 한번에 업데이트된 자료만 읽도록
+  memcpy(sensor_data_1min,sensor_data,sizeof(sensor_data_1min));
+ //세마 포어 post
+}
 
 void sensorData_init(void)
 {
@@ -315,6 +345,11 @@ void sensorData_init(void)
       break;
       case A2_WIND_DIRECTION:
       sensor_data[A2_WIND_DIRECTION].dataType = DATA_TYPE_F;
+      break;
+      case A6_RAINFALL_DOT5_1MM:
+      sensor_data[A6_RAINFALL_DOT5_1MM].dataType = DATA_TYPE_I;
+      sensor_data[A6_RAINFALL_DOT5_1MM].opt = &rain_data;
+
       break;
       default:
       sensor_data[i].dataType = DATA_TYPE_F;
