@@ -451,7 +451,7 @@ uint16_t kma3_cmd_AI(uint8_t *recv,uint8_t *send)
   uint16_t len;
   kma_req_t *req = (kma_req_t *)recv;
   DATE_TIME_BUF *pDate;
-  kma_data_t *kma_data = &kma_data_1s;
+  kma_data_t *kma_data = &g_kma_1s;
 
   pDate  = &Date_Time;
   nt[0]  = pDate->Year%100;

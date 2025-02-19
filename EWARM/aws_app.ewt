@@ -1520,6 +1520,9 @@
             <group>
                 <name>temperature</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\temperature\pt100.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\temperature\temperature.c</name>
                 </file>
             </group>
@@ -1564,6 +1567,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_logging.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\app_measure.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_console.c</name>

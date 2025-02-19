@@ -8,6 +8,7 @@
 #include "app_sensor.h"
 #include "app_adc.h"
 
+#define TEMP_ERR_VAL 1000
 
 void temperature_init(void);
 bool is_sensorTempInit(void);

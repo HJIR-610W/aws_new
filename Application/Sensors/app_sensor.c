@@ -15,8 +15,7 @@
 const uint8_t temperatureList[]={S_T_UNSUED,
                                  S_T_ADC,
                                  S_T_GENERAL_232,
-                                 S_T_GENERAL_485,
-                                 S_T_PT100};
+                                 S_T_GENERAL_485};
                                  
 const uint8_t windDirectionList[]={S_T_UNSUED,
                                    S_T_ADC,
@@ -333,9 +332,9 @@ void update_sensorData1min(void)
  //세마 포어 post
 }
 
+
 void sensorData_init(void)
 {
-
   for(int i = 0 ; i <_countof(sensor_data);i++)
   {
     switch(i)
@@ -349,7 +348,6 @@ void sensorData_init(void)
       case A6_RAINFALL_DOT5_1MM:
       sensor_data[A6_RAINFALL_DOT5_1MM].dataType = DATA_TYPE_I;
       sensor_data[A6_RAINFALL_DOT5_1MM].opt = &rain_data;
-
       break;
       default:
       sensor_data[i].dataType = DATA_TYPE_F;
@@ -357,11 +355,6 @@ void sensorData_init(void)
     }
 
   }
-
-
-
-
-
 
 }
 

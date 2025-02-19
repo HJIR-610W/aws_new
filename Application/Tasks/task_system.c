@@ -1,6 +1,7 @@
 #include "cmsis_os2.h"
 
 #include "app_rtc.h"
+#include "app_bsp.h"
 
 const osThreadAttr_t kSystemTask_attributes = {
   .name = "systemTask",
@@ -11,6 +12,7 @@ const osThreadAttr_t kSystemTask_attributes = {
 
 void systemTask(void *arg)
 {
+  battery_init();
   while(1)
   {
     rtc_update();

@@ -1,5 +1,4 @@
-
-
+#include <math.h>
 
 float       TempResTable[111] = {
   83.48,  83.88,             																// -45.0 -42.0 ... -41.0 

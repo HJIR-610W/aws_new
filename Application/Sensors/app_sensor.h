@@ -189,7 +189,7 @@ config[0][1] = 3
 RS485는 config_manager  rs485 coing 배열 3을 사용한다는 의미
 
 */
-
+#include <stdbool.h>
 #define SENSOR_ERR_CFG 2
 
 #define DATA_TYPE_I 0
@@ -200,6 +200,7 @@ typedef struct sensor_data_s
   {
     int32_t i;
     float f;
+    bool b;
   }data;
   union 
   {

@@ -7,6 +7,7 @@
 #include "app_sensor.h"
 #include "app_adc.h"
 
+#define WIND_DIRECTION_ERR_VAL 1000
 
 
 

@@ -3,6 +3,9 @@
 
 #include "Sensors\temperature\temperature.h"
 
+#include "utile.h"
+
+
 bool sensorTempInit=false;
 
 void temperature_init(void)
@@ -43,5 +46,9 @@ float read_sensor_temperature(sensor_t *sensor,uint8_t *err)
     break;
   }
 
+  if(*err)
+  {
+    data = TEMP_ERR_VAL;
+  }
   return data;
 }

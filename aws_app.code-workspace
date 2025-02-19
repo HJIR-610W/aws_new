@@ -87,7 +87,8 @@
       "wind_direction.h": "c",
       "app_datalogging.h": "c",
       "os_define.h": "c",
-      "dev_io.h": "c"
+      "dev_io.h": "c",
+      "temperature.h": "c"
     }
 	}
 }

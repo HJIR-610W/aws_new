@@ -7,6 +7,7 @@
 #include "app_sensor.h"
 #include "app_adc.h"
 
+#define WIND_SPEED_ERR_VAL 1000
 
 void windSpeed_init(void);
 float read_sensor_windSpeed(sensor_t *sensor,uint8_t *err);

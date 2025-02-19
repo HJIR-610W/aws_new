@@ -3,9 +3,12 @@
 #define AWS_DATA_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct
 {
+  bool init;
+  uint16_t crc;
   // 1. 기온 (1분 평균)
   int16_t temperature; // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~ 1500 (관측값 * 10)
 
@@ -160,18 +163,13 @@ typedef struct
   int8_t sensorStatus[8];
   int8_t volateStatus;
   int16_t temp[60];
+
 }kma_data_t;
 
 
 
-
-
-
-
-
-
-
-extern kma_data_t kma_data_1s;
+extern kma_data_t g_kma_1s;
+extern kma_data_t g_kma_1min;
 
 
 
