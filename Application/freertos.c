@@ -320,7 +320,7 @@ void freq_test(void)
 void rs485_test(void)
 {
   driver_t *rs485_a;
-  uart_config_t uart_config;
+  uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
   uint8_t ch='a';
   uint8_t cmd;

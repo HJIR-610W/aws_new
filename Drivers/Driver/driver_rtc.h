@@ -6,7 +6,8 @@
 #include "driver_rtc_define.h"
 
 #define RTC_DS1306       0
-#define RTC_MCU          1
+#define RTC_RV8803       1
+#define RTC_MCU          2
 
 
 driver_t * driver_rtc_open(int num,void *opt);

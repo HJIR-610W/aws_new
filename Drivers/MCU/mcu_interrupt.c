@@ -126,6 +126,12 @@ extern DMA_HandleTypeDef hdma_rx;
 void DMA2_Stream7_IRQHandler(void) 
 {
     HAL_DMA_IRQHandler(&hdma_usart1_tx);
+
+    if (__HAL_DMA_GET_FLAG(&hdma_usart6_tx, DMA_FLAG_TCIF3_7))
+    {
+
+        HAL_DMA_IRQHandler(&hdma_usart6_tx);
+    }
 }
 
 void DMA1_Stream3_IRQHandler(void) {
@@ -177,16 +183,8 @@ void DMA2_Stream6_IRQHandler(void) {
         /* 반전송 완료 처리 콜백 호출 */
         HAL_DMA_IRQHandler(&hdma_sdio_tx);
     }
-      /* USART6 전송 완료 플래그 확인 */
-    else if (__HAL_DMA_GET_FLAG(&hdma_usart6_tx, DMA_FLAG_TCIF2_6))
-    {
-        /* USART6의 전송 완료 인터럽트 발생 */
-        /* 인터럽트 플래그 클리어 */
-       // __HAL_DMA_CLEAR_FLAG(&hdma_usart6_tx, DMA_FLAG_TCIF2_6);
 
-        /* USART6용 DMA 핸들러 호출 */
-        HAL_DMA_IRQHandler(&hdma_usart6_tx);
-    }
+    
 }
 
 

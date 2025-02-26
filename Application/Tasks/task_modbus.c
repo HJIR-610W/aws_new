@@ -476,12 +476,12 @@ void modbusTask(void *arg)
 //  osThreadFlagsWait(0x00000001,osFlagsWaitAny,osWaitForever);
 void modbusTask_init(void)
 {
-  uart_config_t uartCfg;
+  uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
-  uartCfg.baud = 19200;
-  uartCfg.parityIdx = 0;
-  uartCfg.stop_bit = 0;
-  modbus_driver = driver_rs485_open(RS485_A,&uartCfg);
+  uart_config.baud = 19200;
+  uart_config.parityIdx = 0;
+  uart_config.stop_bit = 0;
+  //modbus_driver = driver_rs485_open(RS485_A,&uart_config);
 
 
   g_modbusQuerySem = osSemaphoreNew(1, 1, NULL); 
@@ -489,6 +489,6 @@ void modbusTask_init(void)
   g_queryMailId = osMessageQueueNew(2, sizeof(modbus_t), NULL);
 
 
-  osThreadNew(modbusTask, NULL, &modbusTask_attributes);
+  //osThreadNew(modbusTask, NULL, &modbusTask_attributes);
 
 }

@@ -2,7 +2,7 @@
 #include <stdbool.h>
 
 #include "pcb_define.h"
-
+#include "mcu_utile.h"
 
 
 
@@ -189,7 +189,15 @@ void adc_diff_mux_set(uint16_t channel)
 
 void adc_mux_init(void)
 {
-    HAL_GPIO_WritePin(OUT_ADC_EN_RTD_GPIO_Port,OUT_ADC_SEL_A0_Pin,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(OUT_ADC_EN_ODD_GPIO_Port,OUT_ADC_SEL_A1_Pin,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port,OUT_ADC_SEL_A2_Pin,GPIO_PIN_RESET);
+
+  board_set_gpio(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_SEL_A0_Pin, GPIO_PIN_RESET);
+  board_config_gpio(OUT_ADC_EN_RTD_GPIO_Port,OUT_ADC_SEL_A0_Pin,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+  board_set_gpio(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_SEL_A1_Pin, GPIO_PIN_RESET);
+  board_config_gpio(OUT_ADC_EN_ODD_GPIO_Port,OUT_ADC_SEL_A1_Pin,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+  board_set_gpio(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_SEL_A2_Pin, GPIO_PIN_RESET);
+  board_config_gpio(OUT_ADC_EN_EVEN_GPIO_Port,OUT_ADC_SEL_A2_Pin,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+
 }

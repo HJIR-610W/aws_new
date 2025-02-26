@@ -326,7 +326,7 @@ void ads1220_close(driver_t *drv)
   osSemaphoreRelease(drv->sem);  // 세마포어 해제
 }
 
-const uint8_t user_adc_single_channel[18]={0,1,4,5,6,9,12,13,16,17,20,21,24,25,28,29,2,6};
+const uint8_t user_adc_single_channel[18]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29,2,6};
 int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 {
 

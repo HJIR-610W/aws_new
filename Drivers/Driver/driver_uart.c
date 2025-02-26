@@ -20,31 +20,28 @@ driver_t *driver_uart_open(int32_t  num,void *opt)
     case  UART_1_TTL:
     driver = tls16c554_open(TL16C554_UART_1_TTL_TTL,opt);
     break;
-    case  UART_2_EXT3:
+    case  UART_2_EXT_A:
     driver = tls16c554_open(TL16C554_UART_EXT3,opt);
     break;
-    case  UART_3_EXT4:
+    case  UART_3_EXT_B:
     driver = tls16c554_open(TL16C554_UART_EXT4,opt);
     break;
-    case  UART_4_RS485_A:
+    case  UART_6_RS485_A:
     driver = tls16c554_open(TL16C554_UART_4_RS485_A,opt);
     break;
-    case  UART_5_RS485_B:
+    case  UART_7_RS485_B:
     driver = tls16c554_open(TL16C554_UART_5_RS485_B,opt);
     break;
-    case  UART_6_EXT1:
+    case  UART_4_EXT_C:
     driver = tls16c554_open(TL16C554_UART_6_EXT1,opt);
     break;
-    case  UART_7_EXT2:
+    case  UART_5_EXT_D:
     driver = tls16c554_open(TL16C554_UART_7_EXT2,opt);
     break;
-    case  UART_8_DEBUG:
-    driver = stm32_uart_open(STM32_UART_0_DEBUG,opt);
-    break;
-    case  UART_9_CDMA:
+    case  UART_8_CDMA:
     driver = stm32_uart_open(STM32_UART_1_CDMA,opt);
     break;
-    case  UART_10_SDI:
+    case  UART_9_SDI:
     driver = stm32_uart_open(STM32_UART_2_SDI,opt);
     break;
   }

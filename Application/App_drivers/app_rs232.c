@@ -9,10 +9,10 @@ typedef struct app_rs232_s
   const char *name;
 }app_rs232_t;
 
-const app_rs232_t rs232_define[]={{.num = UART_6_EXT1,.name ="EX3_232_A"},
-                                  {.num = UART_7_EXT2,.name ="EX4_232_B"},
-                                  {.num = UART_2_EXT3,.name ="EX7_232_C"},
-                                  {.num = UART_3_EXT4,.name ="EX8_232_D"}};
+const app_rs232_t rs232_define[]={{.num = UART_4_EXT_C,.name ="EX3_232_A"},
+                                  {.num = UART_5_EXT_D,.name ="EX4_232_B"},
+                                  {.num = UART_2_EXT_A,.name ="EX7_232_C"},
+                                  {.num = UART_3_EXT_B,.name ="EX8_232_D"}};
 
 driver_t *rs232_drivers[eRS232_MAX];
 
@@ -24,14 +24,14 @@ void rs232_open(eRS232_PORT_t port,void *opt)
 
 void rs232_set(eRS232_PORT_t port,uint32_t baud,uint8_t parity)
 {
-  uart_config_t uart_cfg;
+  uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
   if(rs232_drivers[(int)port])
   {
-    uart_cfg.baud   = baud;
-    uart_cfg.parityIdx = parity;
+    uart_config.baud   = baud;
+    uart_config.parityIdx = parity;
 
-    driver_uart_set(rs232_drivers[(int)port],UART_SET_BAUDRATE,(void *)&uart_cfg);
+    driver_uart_set(rs232_drivers[(int)port],UART_SET_BAUDRATE,(void *)&uart_config);
   }
 }
 

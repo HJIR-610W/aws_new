@@ -43,7 +43,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;//2로 하면 uart 1200bps 
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
@@ -73,12 +73,13 @@ int main(void)
 
   SystemClock_Config();
 
+
   asw_tlsf_init(POOL_SIZE);  
    
   driver_stm32_bsp_init();
   
   MX_FSMC_Init();//SRAM초기화
-   
+
   osKernelInitialize(); 
 
   startTask_init();

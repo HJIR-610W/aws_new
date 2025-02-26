@@ -135,7 +135,7 @@ const char* pcbPinNameList[9][16] =
   "13:ADC_SEL_A0",
   "14:ADC_SEL_A1",
   "15:ADC_SEL_A2"} ,
-    {" 0:SPI2_NSS",
+    {" 0:OUT_SPI2_NSS_PIN",
   " 1:SPI2_SCK",
   " 2:SPI2_MISO",
   " 3:SPI2_MOSI",
@@ -155,7 +155,7 @@ const char* pcbPinNameList[9][16] =
 #endif
 
 #if (AWS_PCB_VER==3)
-const char* s[9][16] = 
+const char* pcbPinNameList[9][16] = 
 {{" 0:WAKE_UP",
   " 1:ETH_REF_CLK",
   " 2:ETH_MDIO",
@@ -284,7 +284,7 @@ const char* s[9][16] =
   "13:ADC_SEL_A0",
   "14:ADC_SEL_A1",
   "15:ADC_SEL_A2"} ,
-    {" 0:SPI2_NSS",
+    {" 0:OUT_SPI2_NSS_PIN",
   " 1:SPI2_SCK",
   " 2:SPI2_MISO",
   " 3:SPI2_MOSI",

@@ -260,7 +260,7 @@ status_t DbgConsole_Init(uint32_t baseAddr, uint32_t baudRate, uint8_t device, u
 #if defined(FSL_FEATURE_SOC_UART_COUNT) && (FSL_FEATURE_SOC_UART_COUNT > 0)
     case DEBUG_CONSOLE_DEVICE_TYPE_UART:
     {
-        uart_config_t uart_config;
+      uart_config_t uart_config={.dataLen=UART_DATA_LEN,.stop_bit=0};
         s_debugConsole.base = (UART_Type*)baseAddr;
         UART_GetDefaultConfig(&uart_config);
         uart_config.baudRate_Bps = baudRate;

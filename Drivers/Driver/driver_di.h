@@ -29,6 +29,8 @@
 #define DI_EXT_6        19
 #define DI_EXT_7        20
 
+#define DI_HART_CD      21
+
 
 driver_t *driver_di_open(uint32_t num,void *opt);
 void driver_di_close(driver_t *drv);

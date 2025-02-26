@@ -359,6 +359,7 @@ void measure_1s(DATE_TIME_BUF *ct,sensor_t *sensor,uint16_t sensor_cnt)
           {
             rain_pulse = read_sensor_rain(&sensor[A6_RAINFALL_DOT5_1MM],&err);//금일강수량
             sensor_data[A6_RAINFALL_DOT5_1MM].data.i += rain_pulse;//금일 우량
+            sensor_data[A6_RAINFALL_DOT5_1MM].status = read_rainHallErr();
           }
             
           break;

@@ -14,6 +14,8 @@
 
 rain_data_t rain_data;
 
+driver_t *g_hallStatusDriver;
+
 static uint16_t g_rainPulse;
 static osSemaphoreId_t g_rainSemId = NULL;
 
@@ -65,12 +67,17 @@ void rainReedCallBack(void *arg)
     os_send_isrEvent(eRAIN_REED_INT,0);
     g_last_pulse_time = OS_GET_TICK();
   }
-
 }
 
 void rainHallCallBack(void *arg)
 {
-  os_send_isrEvent(eRAIN_REED_INT,0);
+  uint32_t current_time = OS_GET_TICK();
+
+  if((current_time - g_last_pulse_time)>= 1000)
+  {
+  os_send_isrEvent(eRAIN_HALL_INT,0);
+  g_last_pulse_time = OS_GET_TICK();
+}
 }
 
 void rain_init(sensor_t *sensor)
@@ -80,7 +87,7 @@ void rain_init(sensor_t *sensor)
 
 
   g_rainSemId = osSemaphoreNew(1, 1, NULL); 
-
+  g_hallStatusDriver  = driver_di_open(DI_RAIN_HALL_ERR,0);
 
   switch (sensor->type)
   {
@@ -89,11 +96,20 @@ void rain_init(sensor_t *sensor)
   break;
   case S_T_RAIN_REED_05MM:
   case S_T_RAIN_REED_1MM:
+  rain_pulse = driver_di_open(DI_RAIN_REED,0);
+
+  isr_cfg.call    = rainReedCallBack;
+  isr_cfg.name    = "rain_pulse";
+  isr_cfg.trigger = eDI_FALLING;
+  isr_cfg.prio    = 5;
+  driver_di_set(rain_pulse,DI_SET_INTERRUPT,&isr_cfg);
+  break;
+  
   case S_T_RAIN_HALL_05MM:
   case S_T_RAIN_HALL_1MM:
-    rain_pulse = driver_di_open(DI_RAIN_REED,0);
+    rain_pulse = driver_di_open(DI_RAIN_HALL,0);
 
-    isr_cfg.call    = rainReedCallBack;
+    isr_cfg.call    = rainHallCallBack;
     isr_cfg.name    = "rain_pulse";
     isr_cfg.trigger = eDI_FALLING;
     isr_cfg.prio    = 5;
@@ -179,6 +195,15 @@ int32_t read_sensor_rain(sensor_t *sensor,uint8_t *err)
 }
 
 
+int32_t read_rainHallErr(void)
+{
+  if(driver_di_read(g_hallStatusDriver))
+  {
+    return 1;
+  }
+
+  return 0;
+}
 uint16_t calculate_yearRain(DATE_TIME_BUF *ct)
 {
 

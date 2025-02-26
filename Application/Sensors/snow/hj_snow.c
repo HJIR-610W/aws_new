@@ -204,26 +204,26 @@ uint16_t make_hjSnowFrame(uint8_t* out, uint16_t outSize,
 
   void hjsnow_init(dev_io_t *io)
   {
-      uart_config_t uart_cfg;
+    uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
     switch (io->io)
     {
     case eRS485_IO:
       {
       rs485_config_t *rs485_config=(rs485_config_t *)io->config;
-      uart_cfg.baud = rs485_config->baud;
-      uart_cfg.parityIdx = rs485_config->parityIdx;
-      uart_cfg.stop_bit = 0;
-      rs485_open((eRS485_PORT_t)(int)io->handle,&uart_cfg);
+      uart_config.baud = rs485_config->baud;
+      uart_config.parityIdx = rs485_config->parityIdx;
+      uart_config.stop_bit = 0;
+      rs485_open((eRS485_PORT_t)(int)io->handle,&uart_config);
       }
       break;
     case eRS232_IO:
       {
       rs232_config_t *rs232_config=(rs232_config_t *)io->config;
-      uart_config_t uart_cfg;
+      uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
-      uart_cfg.baud = rs232_config->baud;
-      uart_cfg.parityIdx = rs232_config->parityIdx;
-      rs232_open((eRS232_PORT_t)(int)io->handle,&uart_cfg);
+      uart_config.baud = rs232_config->baud;
+      uart_config.parityIdx = rs232_config->parityIdx;
+      rs232_open((eRS232_PORT_t)(int)io->handle,&uart_config);
       }
       break;
     default:

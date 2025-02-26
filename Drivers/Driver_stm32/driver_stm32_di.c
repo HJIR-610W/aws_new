@@ -19,11 +19,14 @@ typedef struct  stm32_di_cfg_s
   uint16_t pin;
 }stm32_di_cfg_t;
 
+
+
+
 const stm32_di_cfg_t ADC_DRDY_cfg   ={.port=IN_SPI2_DRDY_GPIO_Port,   .pin = IN_SPI2_DRDY_Pin};
-const stm32_di_cfg_t RTC_IRQ_cfg    ={.port=INT_RTC_GPIO_Port,        .pin = INT_RTC_Pin};
+const stm32_di_cfg_t RTC_IRQ_cfg    ={.port=IN_INT_RTC_GPIO_Port,        .pin = IN_INT_RTC_PIN};
 const stm32_di_cfg_t RAIN_REED_cfg  ={.port=IN_RAIN_REED_GPIO_Port,   .pin = IN_RAIN_REED_Pin};
 const stm32_di_cfg_t RAIN_HALL_cfg  ={.port=IN_RAIN_HALL_GPIO_Port,   .pin = IN_RAIN_HALL_Pin};
-const stm32_di_cfg_t RAIN_HALL_ERR_cfg  ={.port=IN_RAIN_ERR_GPIO_Port,.pin = IN_RAIN_ERR_Pin};
+const stm32_di_cfg_t RAIN_HALL_ERR_cfg  ={.port=IN_RAIN_HALL_ERR_GPIO_Port,.pin = IN_RAIN_HALL_ERR_Pin};
 
 const stm32_di_cfg_t QUAD_UARTA_1_cfg  ={.port=IN_EX_UART_INT_1_GPIO_Port,.pin = IN_EX_UART_INT_1_Pin};
 const stm32_di_cfg_t QUAD_UARTB_2_cfg  ={.port=IN_EX_UART_INT_2_GPIO_Port,.pin = IN_EX_UART_INT_2_Pin};
@@ -33,6 +36,12 @@ const stm32_di_cfg_t QUAD_UARTA_5_cfg  ={.port=IN_EX_UART_INT_5_GPIO_Port,.pin =
 const stm32_di_cfg_t QUAD_UARTB_6_cfg  ={.port=IN_EX_UART_INT_6_GPIO_Port,.pin = IN_EX_UART_INT_6_Pin};
 const stm32_di_cfg_t QUAD_UARTC_7_cfg  ={.port=IN_EX_UART_INT_7_GPIO_Port,.pin = IN_EX_UART_INT_7_Pin};
 const stm32_di_cfg_t QUAD_UARTD_8_cfg  ={.port=IN_EX_UART_INT_8_GPIO_Port,.pin = IN_EX_UART_INT_8_Pin};
+
+
+const stm32_di_cfg_t HART_CD_cfg  ={.port=DI_CD_H_GPIO_Port,.pin = DI_CD_H_Pin};
+
+
+
 
 void stm32_di_close(driver_t *driver);
 int32_t stm32_di_read(driver_t *driver);
@@ -122,6 +131,10 @@ driver_t *stm32_di_open(int num,void *opt)
     case STM32_DI_QUAD_UARTD_8:
     g_stm32_di_list[num].cfg = (void *)&QUAD_UARTD_8_cfg;
     stm32_di_init(&QUAD_UARTD_8_cfg);
+    break;
+    case STM32_DI_HART_CD:
+    g_stm32_di_list[num].cfg = (void *)&HART_CD_cfg;
+    stm32_di_init(&HART_CD_cfg);
     break;
   }
  

@@ -8,11 +8,15 @@
 #define PARITY_NONE 0
 #define PARITY_ODD  1
 #define PARITY_EVEN 2
+
+#define UART_DATA_LEN_8 0
+#define UART_DATA_LEN_9 1
 typedef struct uart_baud_config_s
 {
   int baud;
-  int parityIdx;
-  int stop_bit;
+  uint8_t parityIdx;
+  uint8_t stop_bit;
+  uint8_t dataLen;
 }uart_config_t;
 
 

@@ -88,7 +88,9 @@
       "app_datalogging.h": "c",
       "os_define.h": "c",
       "dev_io.h": "c",
-      "temperature.h": "c"
+      "temperature.h": "c",
+      "driver_stm32_i2c.h": "c",
+      "xmemory": "c"
     }
 	}
 }

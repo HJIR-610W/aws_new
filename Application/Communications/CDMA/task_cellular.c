@@ -1428,13 +1428,14 @@ void mdoem_status_init(void)
 
 void cellularTask_init(void)
 {
-  uart_config_t uart_config;
+  uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
   uart_config.baud = 57600;
   uart_config.parityIdx = 0;
   uart_config.stop_bit = 0;
+  
 
-  cdma_driver = driver_uart_open(UART_9_CDMA,&uart_config);
+  cdma_driver = driver_uart_open(UART_8_CDMA,&uart_config);
 
   mdoem_status_init();
   

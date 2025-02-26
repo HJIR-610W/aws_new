@@ -44,6 +44,8 @@ void MX_FSMC_Init(void)
 
   /* USER CODE END FSMC_Init 1 */
 
+  
+  //SRAM
   /** Perform the SRAM1 memory initialization sequence
   */
   hsram1.Instance = FSMC_NORSRAM_DEVICE;
@@ -62,15 +64,18 @@ void MX_FSMC_Init(void)
   hsram1.Init.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
   hsram1.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
   hsram1.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
-  hsram1.Init.PageSize = FSMC_PAGE_SIZE_NONE;
+
   /* Timing */
-  Timing.AddressSetupTime = 2;
-  Timing.AddressHoldTime = 1;
-  Timing.DataSetupTime = 2;
-  Timing.BusTurnAroundDuration = 1;
-  Timing.CLKDivision = 16;
-  Timing.DataLatency = 17;
-  Timing.AccessMode = FSMC_ACCESS_MODE_A;
+  /* FSMC SRAM 타이밍 설정 (읽기/쓰기 속도 조절) */
+ /* FSMC SRAM 타이밍 설정 */
+ Timing.AddressSetupTime       = 1;  
+ Timing.AddressHoldTime        = 1;  
+ Timing.DataSetupTime          = 2;  
+ Timing.BusTurnAroundDuration  = 1;  
+ Timing.CLKDivision            = 0;  //  비동기 모드에서는 무시
+ Timing.DataLatency            = 0;  //  비동기 모드에서는 무시
+ Timing.AccessMode             = FSMC_ACCESS_MODE_A;  // 기본 액세스 모드
+
   /* ExtTiming */
 
   if (HAL_SRAM_Init(&hsram1, &Timing, NULL) != HAL_OK)
@@ -80,6 +85,7 @@ void MX_FSMC_Init(void)
 
   /** Perform the SRAM2 memory initialization sequence
   */
+  //QUAD UART
   hsram2.Instance = FSMC_NORSRAM_DEVICE;
   hsram2.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
   /* hsram2.Init */
@@ -182,7 +188,7 @@ static void HAL_FSMC_MspInit(void){
   PG10   ------> FSMC_NE3
   */
   /* GPIO_InitStruct */
-  GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_7|GPIO_PIN_8
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_7|GPIO_PIN_8
                           |GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12
                           |GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -298,7 +304,7 @@ static void HAL_FSMC_MspDeInit(void){
   PG10   ------> FSMC_NE3
   */
 
-  HAL_GPIO_DeInit(GPIOE, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_7|GPIO_PIN_8
+  HAL_GPIO_DeInit(GPIOE, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_7|GPIO_PIN_8
                           |GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12
                           |GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15);
 

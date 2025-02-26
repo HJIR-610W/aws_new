@@ -135,7 +135,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     */
     GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -150,13 +150,30 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
 
 // USART1 초기화 함수
-static void MX_USART1_UART_Init(uint32_t baud,uint32_t parity)
+static void MX_USART1_UART_Init(uint32_t baud,uint8_t parity,uint8_t dataLen,uint8_t stop)
 {
   uint32_t val;
     huart1.Instance = USART1;
     huart1.Init.BaudRate = baud;
-    huart1.Init.WordLength = UART_WORDLENGTH_8B;
-    huart1.Init.StopBits = UART_STOPBITS_1;
+
+    if(dataLen==0)
+    {
+      huart1.Init.WordLength = UART_WORDLENGTH_8B;
+    }
+    else
+    {
+      huart1.Init.WordLength = UART_WORDLENGTH_9B;
+    }
+
+    if(stop)
+    {
+      huart1.Init.StopBits = UART_STOPBITS_2;
+    }
+    else
+    {
+      huart1.Init.StopBits = UART_STOPBITS_1;
+    }
+
 
     switch(parity)
     {
@@ -189,11 +206,27 @@ static void MX_USART1_UART_Init(uint32_t baud,uint32_t parity)
 }
 
 // USART3 초기화 함수
-static void MX_USART3_UART_Init(uint32_t baud,uint32_t parity) {
+static void MX_USART3_UART_Init(uint32_t baud,uint8_t parity,uint8_t dataLen,uint8_t stop)
+{
     huart3.Instance = USART3;
     huart3.Init.BaudRate = baud;
-    huart3.Init.WordLength = UART_WORDLENGTH_8B;
-    huart3.Init.StopBits = UART_STOPBITS_1;
+    if(dataLen==0)
+    {
+      huart1.Init.WordLength = UART_WORDLENGTH_8B;
+    }
+    else
+    {
+      huart1.Init.WordLength = UART_WORDLENGTH_9B;
+    }
+
+    if(stop)
+    {
+      huart1.Init.StopBits = UART_STOPBITS_2;
+    }
+    else
+    {
+      huart1.Init.StopBits = UART_STOPBITS_1;
+    }
     switch(parity)
     {
       case PARITY_EVEN:
@@ -216,11 +249,27 @@ static void MX_USART3_UART_Init(uint32_t baud,uint32_t parity) {
 }
 
 // USART4 초기화 함수
-static void MX_USART6_UART_Init(uint32_t baud,uint32_t parity){
+static void MX_USART6_UART_Init(uint32_t baud,uint8_t parity,uint8_t dataLen,uint8_t stop)
+{
     huart6.Instance = USART6;
     huart6.Init.BaudRate = baud;
-    huart6.Init.WordLength = UART_WORDLENGTH_8B;
-    huart6.Init.StopBits = UART_STOPBITS_1;
+    if(dataLen==0)
+    {
+      huart1.Init.WordLength = UART_WORDLENGTH_8B;
+    }
+    else
+    {
+      huart1.Init.WordLength = UART_WORDLENGTH_9B;
+    }
+
+    if(stop)
+    {
+      huart1.Init.StopBits = UART_STOPBITS_2;
+    }
+    else
+    {
+      huart1.Init.StopBits = UART_STOPBITS_1;
+    }
     switch(parity)
     {
       case PARITY_EVEN:
@@ -345,7 +394,7 @@ static void MX_DMA_UART6_Init(void)
 {
     __HAL_RCC_DMA2_CLK_ENABLE();
 
-    hdma_usart6_tx.Instance = DMA2_Stream6;
+    hdma_usart6_tx.Instance = DMA2_Stream7;
     hdma_usart6_tx.Init.Channel = DMA_CHANNEL_5;
     hdma_usart6_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
     hdma_usart6_tx.Init.PeriphInc = DMA_PINC_DISABLE;
@@ -361,8 +410,8 @@ static void MX_DMA_UART6_Init(void)
     }
     __HAL_LINKDMA(&huart6, hdmatx, hdma_usart6_tx);
 
-    HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
+    HAL_NVIC_SetPriority(DMA2_Stream7_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(DMA2_Stream7_IRQn);
 
     HAL_NVIC_SetPriority(USART6_IRQn, 5, 1);
     HAL_NVIC_EnableIRQ(USART6_IRQn);
@@ -370,6 +419,7 @@ static void MX_DMA_UART6_Init(void)
     HAL_UART_Receive_IT(&huart6, (uint8_t *)&rxData[2], 1);
     
 }
+
 
 
 
@@ -420,24 +470,21 @@ driver_t *stm32_uart_open(int num,void *opt)
   switch (num)
   {
     case STM32_UART_0_DEBUG:
-    g_stm32_uart[num].name = TOSTRING(STM32_UART_0_DEBUG);
-
+      g_stm32_uart[num].name = TOSTRING(STM32_UART_0_DEBUG);
       g_stm32_xStreamBuffer[num] =   xStreamBufferCreate(STM32_UART_0_BUFF_SIZE, 1 ); 
-  
-
-    MX_USART1_UART_Init(cfg->baud,cfg->parityIdx);
-    MX_DMA_UART1_Init();
+      MX_USART1_UART_Init(cfg->baud,cfg->parityIdx,cfg->dataLen,cfg->stop_bit);
+      MX_DMA_UART1_Init();
     break;
   case STM32_UART_1_CDMA:
-    g_stm32_uart[num].name = TOSTRING(STM32_UART_1_CDMA);
+      g_stm32_uart[num].name = TOSTRING(STM32_UART_1_CDMA);
       g_stm32_xStreamBuffer[num] =   xStreamBufferCreate(STM32_UART_2_BUFF_SIZE, 1 ); 
-    MX_USART3_UART_Init(cfg->baud,cfg->parityIdx);
-    MX_DMA_UART3_Init();
+      MX_USART3_UART_Init(cfg->baud,cfg->parityIdx,cfg->dataLen,cfg->stop_bit);
+      MX_DMA_UART3_Init();
   break;
   case STM32_UART_2_SDI:
     g_stm32_uart[num].name = TOSTRING(STM32_UART_2_SDI);
     g_stm32_xStreamBuffer[num] =   xStreamBufferCreate(STM32_UART_2_BUFF_SIZE, 1 ); 
-    MX_USART6_UART_Init(cfg->baud,cfg->parityIdx);
+    MX_USART6_UART_Init(cfg->baud,cfg->parityIdx,cfg->dataLen,cfg->stop_bit);
     MX_DMA_UART6_Init();
     break;
   }

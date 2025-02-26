@@ -7,15 +7,14 @@
 
 #define UART_0_D_SUB_0  0 //표시기
 #define UART_1_TTL      1 //블루투스 모듈 
-#define UART_2_EXT3     2 //사용자0
-#define UART_3_EXT4     3 //사용자1
-#define UART_4_RS485_A  4 //RS485 A
-#define UART_5_RS485_B  5 //RS485 B
-#define UART_6_EXT1     6 //사용자2
-#define UART_7_EXT2     7 //사용자3
-#define UART_8_DEBUG    8 //디버깅용
-#define UART_9_CDMA     9 //CDMA
-#define UART_10_SDI    10 //SDI통신
+#define UART_2_EXT_A    2 //사용자0
+#define UART_3_EXT_B    3 //사용자1
+#define UART_4_EXT_C    4 //사용자2
+#define UART_5_EXT_D    5 //사용자3
+#define UART_6_RS485_A  6 //RS485 A
+#define UART_7_RS485_B  7 //RS485 B
+#define UART_8_CDMA     8 //CDMA  
+#define UART_9_SDI      9 //SDI통신
 
 
 #define UART_ERR_TIMEOUT -1

@@ -4,6 +4,7 @@
 #include "app_sensor.h"
 #include "app_console_test.h"
 #include "app_rs232.h"
+#include "app_rs485.h"
 #include "dev_io.h"
 #include "driver_di.h"
 #include "driver_do.h"
@@ -46,6 +47,29 @@
      // data = strtol(argv[4],&endptr,10);
      // driver = driver_do_open(pin);
     }
+    else if(strncmp(argv[2],"rs485",5)==0)
+    {
+      if(strncmp(argv[3],"a",1)==0)
+      {
+        uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
+        uart_config.baud = 115200;
+        uart_config.parityIdx = 0;
+        uart_config.stop_bit = 0;
+        rs485_open(eAPP_RS485_A,&uart_config);
+
+        rs485_send(eAPP_RS485_A,"a_123456789",11);
+      }
+      else if(strncmp(argv[3],"b",1)==0)
+      {
+        uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
+        uart_config.baud = 115200;
+        uart_config.parityIdx = 0;
+        uart_config.stop_bit = 0;
+        rs485_open(eAPP_RS485_B,&uart_config);
+
+        rs485_send(eAPP_RS485_B,"b_123456789",11);
+      }
+    }
   }
   else if(strncmp(argv[1],"read",4)==0)
   {
@@ -72,6 +96,31 @@
           }while(ch !=ASCII_CODE_CTRL_Q);
           break;
         }
+      }
+    }
+    else if(strncmp(argv[2],"rs485",5)==0)
+    {
+      if(strncmp(argv[3],"a",1)==0)
+      {
+        do{
+          if(rs485_recv(eAPP_RS485_A,(uint8_t *)buff,1,100))
+          {
+            debug_printf("%c",buff[0]);
+          }
+
+           debug_recv(&ch,1,0);
+        }while(ch !=ASCII_CODE_CTRL_Q);
+      }
+      else if(strncmp(argv[3],"b",1)==0)
+      {
+        do{
+          if(rs485_recv(eAPP_RS485_B,(uint8_t *)buff,1,100))
+          {
+            debug_printf("%c",buff[0]);
+          }
+
+           debug_recv(&ch,1,0);
+        }while(ch !=ASCII_CODE_CTRL_Q);
       }
     }
   }

@@ -24,6 +24,7 @@ bool rainPresent_deInit(void);
 
 bool read_sensor_rainPresent(sensor_t *sensor,uint8_t *err);
 
+int32_t read_rainHallErr(void);
 
 
 void increase_rain(void);

@@ -26,16 +26,16 @@ void rs485_open(eRS485_PORT_t port,void *opt)
 
 void rs485_set(eRS485_PORT_t port,uint32_t baud,uint8_t parity)
 {
-  uart_config_t uart_cfg;
+  uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
   if(rs485_drivers[(int)port])
   {
     
-    uart_cfg.baud   = baud==0?19200:baud;
-    uart_cfg.parityIdx = parity;
+    uart_config.baud   = baud==0?19200:baud;
+    uart_config.parityIdx = parity;
 
 
-    driver_rs485_set(rs485_drivers[(int)port],eUART_SET_CONFIG,(void *)&uart_cfg);
+    driver_rs485_set(rs485_drivers[(int)port],eUART_SET_CONFIG,(void *)&uart_config);
   }
 }
 

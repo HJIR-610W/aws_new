@@ -25,6 +25,8 @@
 #define LSR_DR 0x01 // Data Ready 비트
 // LSR의 비트 마스크
 #define LSR_THRE 0x20 // Transmitter Holding Register Empty 비트
+#define LSR_TEMT 0x40
+
   volatile uint8_t *exUartBaseAddress[8] = {(uint8_t*)0x68000000,
                                               (uint8_t*)0x68000010,
                                               (uint8_t*)0x68000020,
@@ -166,9 +168,49 @@ void set_baud_rate(int uart_num,uint32_t baud_rate)
 }
 
 
+#define PEN             (1 << 3)  // 패리티 활성화 비트
+#define EPS             (1 << 4)  // 짝수 패리티 비트
+#define SP              (1 << 5)  // 강제 패리티 비트
+// 패리티 설정 함수
+void set_parity(uint8_t uart_num, uint8_t parity_mode)
+{
+  volatile uint8_t lcr;
+
+
+  lcr =     read_register(LCR(exUartBaseAddress[uart_num])) ;
+  uint8_t lcr_val = lcr & 0xC7;  // LCR에서 parity 관련 비트(3~5)만 초기화
+
+  switch (parity_mode)
+  {
+    case 0:  // No Parity
+      lcr_val &= ~PEN;
+      break;
+    case 1:  // Odd Parity
+      lcr_val |= PEN;
+      lcr_val &= ~EPS;
+      break;
+    case 2:  // Even Parity
+      lcr_val |= PEN | EPS;
+      break;
+    case 3:  // Forced Parity 1
+      lcr_val |= PEN | SP;
+      lcr_val &= ~EPS;
+      break;
+    case 4:  // Forced Parity 0
+      lcr_val |= PEN | EPS | SP;
+      break;
+    default:
+      return;  // 잘못된 입력값이면 무시
+  }
+
+  write_register(LCR(exUartBaseAddress[uart_num]), lcr_val);
+
+
+}
 
 void quad_init(driver_t *tls16c554,void *opt)
 {
+  uint8_t parity_mode;
   uint8_t flag=0;
   uint8_t g_reg;
   uart_config_t *config = opt;
@@ -198,7 +240,21 @@ void quad_init(driver_t *tls16c554,void *opt)
         
    // DLAB 비트를 0으로 설정하여 LCR 설정, 상태레지스터 접근 가능
   write_register(LCR(exUartBaseAddress[uart_num]),0x03);
-        
+  
+
+  if(config->parityIdx ==PARITY_NONE)
+  {
+    parity_mode = 0;
+  }
+  else if(config->parityIdx == PARITY_ODD)
+  {
+    parity_mode = 1;
+  }
+  else //even
+  {
+    parity_mode = 2;
+  }
+  set_parity(uart_num,parity_mode);
     
   /*
   FIFO 설정 (FCR) 트리거 레벨 1바이트
@@ -239,16 +295,19 @@ void quad_init(driver_t *tls16c554,void *opt)
 int32_t send_data(uint8_t channel,uint8_t data)
 {
   uint32_t startTime;
-
+  uint8_t lsr;
+  
+  
   // 송신 버퍼가 비어있을 때까지 대기
   startTime = osKernelGetTickCount();
-  while ((read_register(LSR(exUartBaseAddress[channel])) & LSR_THRE) == 0)
-  {
-    if((osKernelGetTickCount()-startTime)>10)
+  
+  do{
+        if((osKernelGetTickCount()-startTime)>10)
     {
       return -1;
     }
-  }
+  }while ((read_register(LSR(exUartBaseAddress[channel])) & LSR_THRE) == 0);
+  
   // 데이터를 THR에 씁니다.
   write_register(THR(exUartBaseAddress[channel]), data);
   
@@ -818,7 +877,8 @@ int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen)
   driver_t *drv = handle;
   tl16c554_cfg_t *cfg = drv->cfg;
   int32_t cnt=0;
-
+  uint32_t startTime;
+  
   while(dataLen)
   {
     dataLen--;
@@ -827,6 +887,19 @@ int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen)
       cnt++;
     }
   }
+
+  startTime = osKernelGetTickCount();
+
+  do
+  {
+   if((osKernelGetTickCount()-startTime)>1000)
+   {
+    break;
+   }
+  } while ((read_register(LSR(exUartBaseAddress[cfg->channel])) & LSR_TEMT) == 0);
+  
+
+
   return cnt;
 }
 

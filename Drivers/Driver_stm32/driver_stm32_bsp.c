@@ -1,8 +1,12 @@
 
 #include "pcb_define.h"
+#include "mcu_utile.h"
 
+
+#if (AWS_PCB_VE==1)
 void driver_stm32_bsp_init(void)
 {
+
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
@@ -18,48 +22,48 @@ void driver_stm32_bsp_init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, OUT_SPI1_CS_RTC_Pin|OUT_EX_UART_RST_A_Pin|OUT_EX_UART_RST_B_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOE, OUT_RV8803_EVI_Pin|OUT_EX_UART_RST_A_Pin|OUT_EX_UART_RST_B_Pin, GPIO_PIN_SET);
 
-   HAL_GPIO_WritePin(GPIOE, OUT_SPI1_CS_RTC_Pin, GPIO_PIN_RESET);
+   HAL_GPIO_WritePin(GPIOE, OUT_RV8803_EVI_Pin, GPIO_PIN_RESET);
     
     
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOF, OUT_CON_PWR_ASEN_C_Pin|OUT_CON_PWR_ASEN_D_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOF, OUT_CON_PWR_ASEN_C_PIN|OUT_CON_PWR_ASEN_D_PIN, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, OUT_CON_PWR_ASEN_Pin|OUT_CON_PWR_ASEN_A_Pin|OUT_CON_PWR_ASEN_B_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOC, OUT_CON_PWR_ASEN_PIN|OUT_CON_PWR_ASEN_A_PIN|OUT_CON_PWR_ASEN_B_PIN, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOH, OUT_ETH_RST_PHY_Pin|OUT_DO_PWR_CDMA_Pin|OUT_ADC_EN_RTD_Pin|OUT_ADC_EN_ODD_Pin
+  HAL_GPIO_WritePin(GPIOH, OUT_ETH_RST_PHY_Pin|OUT_PWR_CDMA_PIN|OUT_ADC_EN_RTD_Pin|OUT_ADC_EN_ODD_Pin
                           |OUT_ADC_EN_EVEN_Pin|OUT_ADC_SEL_A1_Pin|OUT_ADC_SEL_A2_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOH, OUT_SYS_RUN_Pin|GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, OUT_DIR_RS485_A_Pin|OUT_DIR_RS485_B_Pin|OUT_DIR_SDI_Pin|OUT_NOR_RESET_Pin
-                          |OUT_CON_PWR_232_A_Pin|OUT_CON_PWR_232_B_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOG, OUT_DIR_RS485_A_PIN|OUT_DIR_RS485_B_PIN|OUT_DIR_SDI_PIN|OUT_NOR_RESET_Pin
+                          |OUT_CON_PWR_232_A_PIN|OUT_CON_PWR_232_B_PIN, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(OUT_SPI2_NSS_GPIO_Port, OUT_SPI2_NSS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(OUT_SPI2_NSS_GPIO_Port, OUT_SPI2_NSS_PIN, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(OUT_SPI1_NSS_GPIO_Port, OUT_SPI1_NSS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(OUT_SPI1_NSS_GPIO_Port, OUT_SPI1_NSS_PIN, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(OUT_CON_PWR_DSEN_GPIO_Port, OUT_CON_PWR_DSEN_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(OUT_CON_PWR_DSEN_GPIO_Port, OUT_CON_PWR_DSEN_PIN, GPIO_PIN_SET);
 
 
-  HAL_GPIO_WritePin(OUT_FLASH_CS_GPIO_Port, OUT_FLASH_CS_Pin, GPIO_PIN_SET);
-
-
-
-  HAL_GPIO_WritePin(GPIOB, OUT_CON_PWR_485_Pin|CON_PWR_TC_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(OUT_FLASH_CS_GPIO_Port, OUT_FLASH_CS_PIN, GPIO_PIN_SET);
 
 
 
+  HAL_GPIO_WritePin(GPIOB, OUT_CON_PWR_485_PIN|CON_PWR_TC_PIN, GPIO_PIN_SET);
 
- GPIO_InitStruct.Pin = OUT_FLASH_CS_Pin;
+
+
+
+ GPIO_InitStruct.Pin = OUT_FLASH_CS_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -72,7 +76,7 @@ void driver_stm32_bsp_init(void)
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PEPin PEPin PEPin */
-  GPIO_InitStruct.Pin = OUT_SPI1_CS_RTC_Pin|OUT_EX_UART_RST_A_Pin|OUT_EX_UART_RST_B_Pin;
+  GPIO_InitStruct.Pin = OUT_RV8803_EVI_Pin|OUT_EX_UART_RST_A_Pin|OUT_EX_UART_RST_B_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -93,14 +97,14 @@ void driver_stm32_bsp_init(void)
   HAL_GPIO_Init(NOT_USED_PC13_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PFPin PFPin */
-  GPIO_InitStruct.Pin = OUT_CON_PWR_ASEN_C_Pin|OUT_CON_PWR_ASEN_D_Pin;
+  GPIO_InitStruct.Pin = OUT_CON_PWR_ASEN_C_PIN|OUT_CON_PWR_ASEN_D_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PCPin PCPin PCPin */
-  GPIO_InitStruct.Pin = OUT_CON_PWR_ASEN_Pin|OUT_CON_PWR_ASEN_A_Pin|OUT_CON_PWR_ASEN_B_Pin;
+  GPIO_InitStruct.Pin = OUT_CON_PWR_ASEN_PIN|OUT_CON_PWR_ASEN_A_PIN|OUT_CON_PWR_ASEN_B_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -109,7 +113,7 @@ void driver_stm32_bsp_init(void)
   /*Configure GPIO pins : PHPin PHPin PHPin PHPin
                            PHPin PHPin PH13 PHPin
                            PHPin */
-  GPIO_InitStruct.Pin = OUT_ETH_RST_PHY_Pin|OUT_DO_PWR_CDMA_Pin|OUT_SYS_RUN_Pin|OUT_ADC_EN_RTD_Pin
+  GPIO_InitStruct.Pin = OUT_ETH_RST_PHY_Pin|OUT_PWR_CDMA_PIN|OUT_SYS_RUN_Pin|OUT_ADC_EN_RTD_Pin
                           |OUT_ADC_EN_ODD_Pin|OUT_ADC_EN_EVEN_Pin|GPIO_PIN_13|OUT_ADC_SEL_A1_Pin
                           |OUT_ADC_SEL_A2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -153,22 +157,22 @@ void driver_stm32_bsp_init(void)
 
   /*Configure GPIO pins : PGPin PGPin PGPin PGPin
                            PGPin PGPin */
-  GPIO_InitStruct.Pin = OUT_DIR_RS485_A_Pin|OUT_DIR_RS485_B_Pin|OUT_DIR_SDI_Pin|OUT_NOR_RESET_Pin
-                          |OUT_CON_PWR_232_A_Pin|OUT_CON_PWR_232_B_Pin;
+  GPIO_InitStruct.Pin = OUT_DIR_RS485_A_PIN|OUT_DIR_RS485_B_PIN|OUT_DIR_SDI_PIN|OUT_NOR_RESET_Pin
+                          |OUT_CON_PWR_232_A_PIN|OUT_CON_PWR_232_B_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = OUT_SPI2_NSS_Pin;
+  GPIO_InitStruct.Pin = OUT_SPI2_NSS_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(OUT_SPI2_NSS_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = OUT_SPI1_NSS_Pin;
+  GPIO_InitStruct.Pin = OUT_SPI1_NSS_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
@@ -181,7 +185,7 @@ void driver_stm32_bsp_init(void)
   HAL_GPIO_Init(IN_SDIO_DETECT_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = OUT_CON_PWR_DSEN_Pin;
+  GPIO_InitStruct.Pin = OUT_CON_PWR_DSEN_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -194,7 +198,7 @@ void driver_stm32_bsp_init(void)
   HAL_GPIO_Init(INT_RTC_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PBPin PBPin */
-  GPIO_InitStruct.Pin = OUT_CON_PWR_485_Pin|CON_PWR_TC_Pin;
+  GPIO_InitStruct.Pin = OUT_CON_PWR_485_PIN|CON_PWR_TC_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -225,3 +229,74 @@ void driver_stm32_bsp_init(void)
 
 
 }
+#endif
+
+
+#if (AWS_PCB_VER==3)
+void driver_stm32_bsp_init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOI_CLK_ENABLE();
+
+
+
+  //QUAD UART 칩을 리셋해준다. H->L 
+  board_set_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_PIN_SET);
+  board_config_gpio(EX_UART_RST_A_GPIO_Port,EX_UART_RST_A_PIN,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+  board_set_gpio(EX_UART_RST_B_GPIO_Port, EX_UART_RST_B_PIN, GPIO_PIN_SET);
+  board_config_gpio(EX_UART_RST_B_GPIO_Port,EX_UART_RST_B_PIN,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+  HAL_Delay(10);
+
+  board_set_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_PIN_RESET);
+  board_set_gpio(EX_UART_RST_B_GPIO_Port, EX_UART_RST_B_PIN, GPIO_PIN_RESET);
+
+  //RS485 A,B의 방향을 입력으로 설정한다.
+
+  board_set_gpio(OUT_DIR_RS485_A_GPIO_Port, OUT_DIR_RS485_A_PIN, GPIO_PIN_RESET);
+  board_config_gpio(OUT_DIR_RS485_A_GPIO_Port,OUT_DIR_RS485_A_PIN,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+  board_set_gpio(OUT_DIR_RS485_B_GPIO_Port, OUT_DIR_RS485_B_PIN, GPIO_PIN_RESET);
+  board_config_gpio(OUT_DIR_RS485_B_GPIO_Port,OUT_DIR_RS485_B_PIN,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+
+  board_set_gpio(OUT_SPI1_NSS_GPIO_Port, OUT_SPI1_NSS_PIN, GPIO_PIN_SET);
+  board_config_gpio(OUT_SPI1_NSS_GPIO_Port,OUT_SPI1_NSS_PIN,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+
+  board_set_gpio(OUT_SPI1_CS_RTC_GPIO_Port, OUT_RV8803_EVI_Pin, GPIO_PIN_SET);
+  board_config_gpio(OUT_SPI1_CS_RTC_GPIO_Port,OUT_RV8803_EVI_Pin,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+  board_set_gpio(OUT_SPI2_NSS_GPIO_Port, OUT_SPI2_NSS_PIN, GPIO_PIN_RESET);
+  board_config_gpio(OUT_SPI2_NSS_GPIO_Port,OUT_SPI2_NSS_PIN,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+  
+  board_set_gpio(OUT_SPI2_NSS_GPIO_Port, OUT_SPI2_NSS_PIN, GPIO_PIN_RESET);
+  board_config_gpio(OUT_SPI2_NSS_GPIO_Port,OUT_SPI2_NSS_PIN,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+
+  board_set_gpio(DO_SEL_IF_UART_GPIO_Port, SEL_IF_UART_Pin, GPIO_PIN_RESET);//기본은 UART로 사용
+  board_config_gpio(DO_SEL_IF_UART_GPIO_Port,SEL_IF_UART_Pin,GPIO_MODE_OUTPUT_OD,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+  board_set_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_PIN_RESET);//24V
+  board_config_gpio(DO_CON_PWR_S24_GPIO_Port,DO_CON_PWR_S24_Pin,GPIO_MODE_OUTPUT_OD,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+
+  board_set_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_PIN_RESET);//24V
+  board_config_gpio(DO_RESET_H_GPIO_Port,DO_RESET_H_Pin,GPIO_MODE_OUTPUT_OD,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
+
+  
+
+
+
+ }
+
+#endif

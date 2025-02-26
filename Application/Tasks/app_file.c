@@ -5,6 +5,8 @@
 #include "os_define.h"
 #include "app_file.h"
 #include "usDelay.h"
+#include "sdio.h"
+
 //파일명 8자리 
 const char *remote_path = "0:Firmware/Remote";
 const char *user_path   = "0:Firmware/User";
@@ -174,5 +176,9 @@ void file_test(void)
 
 void file_init(void)
 {
+  MX_SDIO_SD_Init();
+  MX_FATFS_Init();
+
+  
   g_fileSem = osSemaphoreNew(1, 1, NULL);  
 }

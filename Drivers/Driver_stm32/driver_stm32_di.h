@@ -23,7 +23,9 @@
 #define STM32_DI_QUAD_UARTC_7 11
 #define STM32_DI_QUAD_UARTD_8 12
 
-#define STM32_DI_MAX          13
+#define STM32_DI_HART_CD       13
+
+#define STM32_DI_MAX          14
 
 
 

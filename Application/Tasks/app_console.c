@@ -989,11 +989,11 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor,uint8_t cnt)
       }
       else
       { 
-        uart_config_t uart_cfg;
-        uart_cfg.baud = rs232->baud;
-        uart_cfg.parityIdx = rs232->parityIdx;
+        uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
+        uart_config.baud = rs232->baud;
+        uart_config.parityIdx = rs232->parityIdx;
 
-        rs232_open((eRS232_PORT_t)rs232->port,&uart_cfg);
+        rs232_open((eRS232_PORT_t)rs232->port,&uart_config);
         ctx->printf("%s 새롭게 열렸습니다.\r\n",portList[rs232->port]);
       }
 

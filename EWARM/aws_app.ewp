@@ -1522,6 +1522,9 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\task_ethernet.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_hart.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_isrEvent.c</name>
             </file>
             <file>
@@ -1535,6 +1538,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_monitor.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_sdi.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_start.c</name>
@@ -1671,10 +1677,22 @@
             <group>
                 <name>rtc</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\rtc\bcd.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\rtc\built_.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Drivers\Components\rtc\ds1306.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\Components\rtc\ds1306.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\rtc\rv8803.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\rtc\rv8803.h</name>
                 </file>
             </group>
             <group>
@@ -2003,6 +2021,15 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\timers.c</name>
+            </file>
+        </group>
+        <group>
+            <name>HART</name>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\HART\hart.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\HART\hart.h</name>
             </file>
         </group>
         <group>

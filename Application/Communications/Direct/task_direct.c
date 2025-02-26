@@ -56,18 +56,18 @@ uart_optTimeOut_t opt;
 
 void directTask_init(void)
 {
-  uart_config_t uart_cfg;
+  uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
   
   System.direct_link_status = STATUS_IDLE;
   System.direct_tx_cnt=0;
   System.direct_rx_cnt=0;
 
 
-  uart_cfg.baud = config.direct_baud;
-  uart_cfg.parityIdx = 0;
-  uart_cfg.stop_bit = 0;
+  uart_config.baud = config.direct_baud;
+  uart_config.parityIdx = 0;
+  uart_config.stop_bit = 0;
 
-  direct_driver = driver_uart_open(UART_9_CDMA,&uart_cfg);
+  direct_driver = driver_uart_open(UART_8_CDMA,&uart_config);
 
   osThreadNew(directTask, NULL, &directTask_attributes);
 }

@@ -28,7 +28,7 @@ driver_t *driver_rs485_open(uint32_t num,void *opt)
   {
   case RS485_A:
       g_rs485[num].name = "RS485_A";
-      g_rs485_cfg[num].uart_io =  driver_uart_open(UART_4_RS485_A,opt);
+      g_rs485_cfg[num].uart_io =  driver_uart_open(UART_6_RS485_A,opt);
       g_rs485_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_A,0); 
 
       driver_do_low(g_rs485_cfg[num].do_io);//수신 모드
@@ -39,7 +39,7 @@ driver_t *driver_rs485_open(uint32_t num,void *opt)
       break;
   case RS485_B:
       g_rs485[num].name = "RS485_B";
-      g_rs485_cfg[num].uart_io =  driver_uart_open(UART_5_RS485_B,opt);
+      g_rs485_cfg[num].uart_io =  driver_uart_open(UART_7_RS485_B,opt);
       g_rs485_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_B,0); 
       driver_do_low(g_rs485_cfg[num].do_io);//수신 모드
      if(g_rs485[num].sem == NULL)
@@ -103,7 +103,7 @@ int32_t driver_rs485_recv(driver_t *drv,uint8_t *pBuff,uint16_t rLen,uint32_t ti
 void driver_rs485_set(driver_t *drv,uart_set_option_t cmd,void *option)
 {
   rs485_cfg_t *cfg;
-  uart_config_t uart_cfg;
+  uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
   if(drv->sem)
   {

@@ -27,10 +27,12 @@
 #include "task_isrEvent.h"
 #include "task_system.h"
 #include "task_console.h"
+#include "task_hart.h"
 #include "task_measure.h"
 #include "task_direct.h"
 #include "task_modbus.h"
 #include "utile_time.h"
+#include "task_sdi.h"
 #include "task_tcpServer.h"
 #include "mcu_utile.h"
 
@@ -67,15 +69,22 @@ void startTask(void *arg)
   usDelay_init();
   rtc_init();
 
+
+
   config_init();
   flash_init();
+
 
   modbusTask_init();
   systemTask_init();
   consoleTask_init();
+  
+
   isrEventTask_init();
   dataLogging_init();
   loggingTask_init();
+
+  
   measureTask_init();
 
   if(config.cdma_use)
@@ -92,16 +101,18 @@ void startTask(void *arg)
     tcpServerTask_init(0);
     ethernetTask_init();
   }
-
-  MX_SDIO_SD_Init();
-  MX_FATFS_Init();
+  
+ // hartTask_init();
+  sdiTask_init();
+  
   file_init();
+
   logging_init();
 
   runLed_init();
   os_logging_printf("Starting task");
   osThreadExit();//¡æ∑· Ω√≈¥
-  
+
 }
 
 

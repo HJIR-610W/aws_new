@@ -32,6 +32,12 @@
 #define DO_EXT_6          24
 #define DO_EXT_7          25
 
+#define DO_HART_SEL       26
+#define DO_HART_RTS       27
+
+#define DO_POWER_24V_ACTIVE_H 28     
+#define DO_HART_RESET 29
+
 
 driver_t *driver_do_open(uint32_t num,void *opt);
 void driver_do_low(driver_t *drv);
