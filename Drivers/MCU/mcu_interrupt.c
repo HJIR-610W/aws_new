@@ -450,3 +450,15 @@ void EXTI15_10_IRQHandler(void)
   //HAL_GPIO_EXTI_IRQHandler(IN_EX_UART_INT_8_Pin);
   //HAL_GPIO_EXTI_IRQHandler(INT_RTC_Pin);
 }
+
+
+
+extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+#ifdef USE_USB_FS
+void OTG_FS_IRQHandler(void)
+#else
+void OTG_HS_IRQHandler(void)
+#endif
+{
+  HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
+}
