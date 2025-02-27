@@ -3,7 +3,8 @@
 #include "app_rtc.h"
 #include "app_bsp.h"
 #include "driver_do.h"
-
+#include "driver_di.h"
+#include "task_isrEvent.h"
 driver_t *g_test_do;
 
 const osThreadAttr_t kSystemTask_attributes = {
@@ -11,6 +12,27 @@ const osThreadAttr_t kSystemTask_attributes = {
   .stack_size = 512,
   .priority = (osPriority_t) osPriorityLow,
 };
+
+void userBtnCallBack(void *arg)
+{
+  os_send_isrEvent(eUSER_BTN_INT,0);
+}
+
+void userBtn_init(void)
+{
+  driver_t *user_btn;
+  di_isr_set_cfg_t isr_cfg;
+
+  user_btn = driver_di_open(DI_USER_BTN,0);
+
+  isr_cfg.call    = userBtnCallBack;
+  isr_cfg.name    = "user_btn";
+  isr_cfg.trigger = eDI_FALLING;
+  isr_cfg.prio    = 5;
+
+  driver_di_set(user_btn,DI_SET_INTERRUPT,&isr_cfg);
+}
+
 
 
 void systemTask(void *arg)
@@ -52,5 +74,6 @@ void systemTask_init(void)
 {
   g_test_do = driver_do_open(DO_EXT_0,0);
 
+  userBtn_init();
   osThreadNew(systemTask, NULL, &kSystemTask_attributes);
 }

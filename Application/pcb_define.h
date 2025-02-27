@@ -386,8 +386,8 @@ PCB 0.3 20250120
 #define FSMC_NE3_GPIO_Port      GPIOG
 #define ETH_TX_EN_PIN           GPIO_PIN_11
 #define ETH_TX_EN_GPIO_Port     GPIOG
-#define SW_SYS_PIN              GPIO_PIN_12
-#define SW_SYS_GPIO_Port        GPIOG
+#define DI_SW_SYS_Pin              GPIO_PIN_12
+#define DI_SW_SYS_GPIO_Port        GPIOG
 #define NOR_RESET_PIN           GPIO_PIN_13
 #define NOR_RESET_GPIO_Port     GPIOG
 #define IN_INT_RTC_PIN             GPIO_PIN_14

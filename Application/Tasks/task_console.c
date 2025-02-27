@@ -95,7 +95,7 @@ void sonsoleTask(void *arg)
    uint8_t instance = 0;
     
 
-  osDelay(2000);
+
 
   print_signature();
 
@@ -131,6 +131,7 @@ void consoleTask_init(void)
   uart_config.stop_bit = 0;
 
   console_uart = driver_uart_open(UART_10_CDC,&uart_config);
+  osDelay(100);
   //console_uart = driver_uart_open(UART_0_D_SUB_0,&uart_config);
 
 

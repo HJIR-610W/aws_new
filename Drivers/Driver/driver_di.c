@@ -75,6 +75,9 @@ driver_t *driver_di_open(uint32_t num,void *opt)
     case DI_HART_CD:
     driver = stm32_di_open(STM32_DI_HART_CD,opt);
     break;
+    case DI_USER_BTN:
+    driver = stm32_di_open(STM32_DI_USER_BTN,opt);
+    break;
 
   }
 

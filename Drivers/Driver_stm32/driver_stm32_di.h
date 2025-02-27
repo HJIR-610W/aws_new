@@ -25,7 +25,9 @@
 
 #define STM32_DI_HART_CD       13
 
-#define STM32_DI_MAX          14
+#define STM32_DI_USER_BTN      14
+
+#define STM32_DI_MAX          15
 
 
 
