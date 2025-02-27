@@ -217,56 +217,102 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
   }
 }
 
+uint32_t getSPI1ClockFrequency(void) 
+{
+  uint32_t systemClock = HAL_RCC_GetSysClockFreq(); // 시스템 클럭 가져오기
+  uint32_t apb2Prescaler = (RCC->CFGR & RCC_CFGR_PPRE2) >> 13; // APB2 프리스케일러 추출
 
+  // APB2 프리스케일러 값에 따라 나눗셈 설정
+  uint32_t apb2Divider;
+  if (apb2Prescaler < 4) 
+  {
+    apb2Divider = 1; // 프리스케일러 값이 0b000(분주 없음)일 때
+  } 
+  else 
+  {
+    apb2Divider = 2 << (apb2Prescaler - 4); // 프리스케일러 값이 0b100(분주 시작)부터
+  }
 
+  uint32_t apb2Clock = systemClock / apb2Divider; // APB2 클럭 계산
+  return apb2Clock; // SPI1의 메인 클럭 속도 반환
+}
 uint32_t getSPI2ClockFrequency(void) {
-    uint32_t systemClock = HAL_RCC_GetSysClockFreq(); // 시스템 클럭 가져오기
-    uint32_t apb1Prescaler = (RCC->CFGR & RCC_CFGR_PPRE1) >> 10; // APB1 프리스케일러 추출
+  uint32_t systemClock = HAL_RCC_GetSysClockFreq(); // 시스템 클럭 가져오기
+  uint32_t apb1Prescaler = (RCC->CFGR & RCC_CFGR_PPRE1) >> 10; // APB1 프리스케일러 추출
 
-    // APB1 프리스케일러 값에 따라 나눗셈 설정
-    uint32_t apb1Divider;
-    if (apb1Prescaler < 4) {
-        apb1Divider = 1; // 프리스케일러 값이 0b000(분주 없음)일 때
-    } else {
-        apb1Divider = 2 << (apb1Prescaler - 4); // 프리스케일러 값이 0b100(분주 시작)부터
-    }
+  // APB1 프리스케일러 값에 따라 나눗셈 설정
+  uint32_t apb1Divider;
+  if (apb1Prescaler < 4) {
+      apb1Divider = 1; // 프리스케일러 값이 0b000(분주 없음)일 때
+  } else {
+      apb1Divider = 2 << (apb1Prescaler - 4); // 프리스케일러 값이 0b100(분주 시작)부터
+  }
 
-    uint32_t apb1Clock = systemClock / apb1Divider; // APB1 클럭 계산
-    return apb1Clock; // SPI2의 메인 클럭 속도 반환
+  uint32_t apb1Clock = systemClock / apb1Divider; // APB1 클럭 계산
+  return apb1Clock; // SPI2의 메인 클럭 속도 반환
 }
 
 // 사용자가 원하는 SPI 클럭에 맞는 baudRatePrescaler 값을 반환하는 함수
-uint32_t getBaudRatePrescaler(uint32_t desiredSpiClock) {
-    // 프리스케일러 값 테이블 (STM32 HAL에서 사용되는 값)
-    const uint32_t prescalers[] = {
-        SPI_BAUDRATEPRESCALER_2,
-        SPI_BAUDRATEPRESCALER_4,
-        SPI_BAUDRATEPRESCALER_8,
-        SPI_BAUDRATEPRESCALER_16,
-        SPI_BAUDRATEPRESCALER_32,
-        SPI_BAUDRATEPRESCALER_64,
-        SPI_BAUDRATEPRESCALER_128,
-        SPI_BAUDRATEPRESCALER_256
-    };
-    uint32_t pclk = getSPI2ClockFrequency();
+uint32_t getBaudRatePrescaler(uint32_t desiredSpiClock,uint32_t pclk)
+{
+  // 프리스케일러 값 테이블 (STM32 HAL에서 사용되는 값)
+  const uint32_t prescalers[] = {
+      SPI_BAUDRATEPRESCALER_2,
+      SPI_BAUDRATEPRESCALER_4,
+      SPI_BAUDRATEPRESCALER_8,
+      SPI_BAUDRATEPRESCALER_16,
+      SPI_BAUDRATEPRESCALER_32,
+      SPI_BAUDRATEPRESCALER_64,
+      SPI_BAUDRATEPRESCALER_128,
+      SPI_BAUDRATEPRESCALER_256
+  };
 
-    // 실제 분주 값 테이블
-    const uint32_t actualDivisors[] = {2, 4, 8, 16, 32, 64, 128, 256};
 
-    for (int i = 0; i < 8; i++) {
-        // PCLK를 현재 분주 값으로 나눈 SPI 클럭 속도
-        uint32_t calculatedSpiClock = pclk / actualDivisors[i];
-        if (calculatedSpiClock < desiredSpiClock) {
-            return prescalers[i+1]; // 적절한 prescaler 반환
-        }
-    }
+  // 실제 분주 값 테이블
+  const uint32_t actualDivisors[] = {2, 4, 8, 16, 32, 64, 128, 256};
 
-    // 원하는 SPI 클럭 속도가 너무 낮을 경우 최대 프리스케일러 반환
-    return SPI_BAUDRATEPRESCALER_256;
+  for (int i = 0; i < 8; i++) {
+      // PCLK를 현재 분주 값으로 나눈 SPI 클럭 속도
+      uint32_t calculatedSpiClock = pclk / actualDivisors[i];
+      if (calculatedSpiClock <= desiredSpiClock) {
+          return prescalers[i]; // 적절한 prescaler 반환
+      }
+  }
+
+  // 원하는 SPI 클럭 속도가 너무 낮을 경우 최대 프리스케일러 반환
+  return SPI_BAUDRATEPRESCALER_256;
+}
+
+uint32_t get_spi_prescaler(SPI_HandleTypeDef *hspi,uint32_t freq)
+{
+  uint32_t pclk;
+  uint32_t prescale;
+
+  if(hspi->Instance ==SPI1)
+  {
+    pclk =getSPI1ClockFrequency();
+    prescale = getBaudRatePrescaler(freq,pclk);
+    
+  }
+  else if(hspi->Instance ==SPI2)
+  {
+    pclk = getSPI2ClockFrequency();
+    prescale = getBaudRatePrescaler(freq,pclk);
+  }
+
+  return prescale;
 }
 
 
 
+
+
+
+
+
+
+
+//SPI최대 클럭은 동작클럭의 절반 
 void stm32_spi_init(SPI_HandleTypeDef *hspi)
 {
   if(hspi->Instance == SPI1)
@@ -278,7 +324,7 @@ void stm32_spi_init(SPI_HandleTypeDef *hspi)
     hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
     hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
     hspi1.Init.NSS = SPI_NSS_SOFT;
-    hspi1.Init.BaudRatePrescaler = getBaudRatePrescaler(2000000);;
+    hspi1.Init.BaudRatePrescaler = get_spi_prescaler(hspi,10500000);;
     hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -297,7 +343,7 @@ void stm32_spi_init(SPI_HandleTypeDef *hspi)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = getBaudRatePrescaler(2000000);
+  hspi2.Init.BaudRatePrescaler = get_spi_prescaler(hspi,10500000);;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;

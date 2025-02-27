@@ -178,7 +178,7 @@ int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
        
     status = osSemaphoreAcquire(g_dataReadySem, 5);//≈∏¿”æ∆øÙ 5ms ¡‹
 
-    if(status == osEventTimeout)
+    if(status == osErrorTimeout)
     {
         *err = 2;
         return 0;
