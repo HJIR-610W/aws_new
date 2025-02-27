@@ -6,7 +6,7 @@
 #include "driver_stm32_uart.h"
 #include "driver_uart.h"
 #include "TL16C554.h"
-
+#include "driver_stm32_cdc.h"
 
 driver_t *driver_uart_open(int32_t  num,void *opt)
 {
@@ -43,6 +43,9 @@ driver_t *driver_uart_open(int32_t  num,void *opt)
     break;
     case  UART_9_SDI:
     driver = stm32_uart_open(STM32_UART_2_SDI,opt);
+    break;
+    case UART_10_CDC:
+    driver = stm32_cdc_open(STM32_CDC,opt);
     break;
   }
 

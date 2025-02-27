@@ -133,7 +133,6 @@ void loggingTask(void *arg)
 
 
 
-
 void loggingTask_init(void)
 {
   /*

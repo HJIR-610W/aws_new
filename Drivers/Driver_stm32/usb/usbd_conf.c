@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include "pcb_define.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "usbd_def.h"
@@ -77,13 +78,12 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
     /**USB_OTG_FS GPIO Configuration
-    PA8     ------> USB_OTG_FS_SOF
     PA9     ------> USB_OTG_FS_VBUS
     PA10     ------> USB_OTG_FS_ID
     PA11     ------> USB_OTG_FS_DM
     PA12     ------> USB_OTG_FS_DP
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
+    GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -105,6 +105,27 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 
   /* USER CODE END USB_OTG_FS_MspInit 1 */
   }
+
+
+  //SOF 핀은 비활성 하여 VBUS 사용 안하게 한다.
+  GPIO_InitStruct.Pin = USB_OTG_FS_SOF_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = 0;
+  HAL_GPIO_Init(USB_OTG_FS_SOF_GPIO_Port, &GPIO_InitStruct);
+
+  HAL_GPIO_WritePin(USB_OTG_FS_SOF_GPIO_Port,USB_OTG_FS_SOF_Pin, GPIO_PIN_SET);
+
+  //파워 감지신호는 입력으로 설정 그러나 host 사용 안할거라서 사용은 안함
+  GPIO_InitStruct.Pin = USB_OTG_PWR_FAIL_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = 0;
+  HAL_GPIO_Init(USB_OTG_PWR_FAIL_GPIO_Port, &GPIO_InitStruct);
+
+
 }
 
 void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
@@ -141,6 +162,7 @@ void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
   * @param  hpcd: PCD handle
   * @retval None
   */
+
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
 static void PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
 #else
@@ -171,6 +193,10 @@ void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
   * @param  epnum: Endpoint number
   * @retval None
   */
+
+
+
+
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
 static void PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 #else
@@ -178,6 +204,10 @@ void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   USBD_LL_DataInStage((USBD_HandleTypeDef*)hpcd->pData, epnum, hpcd->IN_ep[epnum].xfer_buff);
+  
+
+
+
 }
 
 /**

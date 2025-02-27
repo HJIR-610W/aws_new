@@ -293,9 +293,11 @@ void driver_stm32_bsp_init(void)
   board_set_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_PIN_RESET);//24V
   board_config_gpio(DO_RESET_H_GPIO_Port,DO_RESET_H_Pin,GPIO_MODE_OUTPUT_OD,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
 
-  
+  board_set_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_PIN_SET);//VBUS 비활성
+  board_config_gpio(USB_OTG_FS_SOF_GPIO_Port,USB_OTG_FS_SOF_Pin,GPIO_MODE_OUTPUT_OD,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
 
-
+  //미사용
+  board_config_gpio(USB_OTG_PWR_FAIL_GPIO_Port,USB_OTG_PWR_FAIL_Pin,GPIO_MODE_INPUT,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
 
  }
 

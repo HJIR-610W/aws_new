@@ -1608,30 +1608,6 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\vir_data.c</name>
             </file>
         </group>
-        <group>
-            <name>usb</name>
-            <file>
-                <name>$PROJ_DIR$\..\Application\usb\task_usb.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\usb\task_usb.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\usb\usb_읽기.txt</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\usb\usbd_cdc_interface.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\usb\usbd_conf.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\usb\usbd_desc.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\usb\usbd_desc.h</name>
-            </file>
-        </group>
         <file>
             <name>$PROJ_DIR$\..\Application\app_version.c</name>
         </file>
@@ -1800,6 +1776,9 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_adc.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_cdc.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_di.c</name>
             </file>
             <file>
@@ -1889,11 +1868,47 @@
         </group>
         <group>
             <name>Driver_stm32</name>
+            <group>
+                <name>usb</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\task_usb.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\task_usb.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usb_읽기.txt</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usbd_cdc_interface.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usbd_cdc_interface.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usbd_conf.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usbd_conf.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usbd_desc.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usbd_desc.h</name>
+                </file>
+            </group>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_adc.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_bsp.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_cdc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_cdc.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_di.c</name>

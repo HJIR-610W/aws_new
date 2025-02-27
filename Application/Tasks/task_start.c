@@ -34,7 +34,7 @@
 #include "utile_time.h"
 #include "task_sdi.h"
 #include "task_tcpServer.h"
-#include "task_usb.h"
+
 #include "mcu_utile.h"
 
 
@@ -67,7 +67,7 @@ void startTask(void *arg)
 {
   mcu_interrupt_init();//최우선 실행
   
-  usbTask_init();
+
   osDelay(1000);
   usDelay_init();
   rtc_init();

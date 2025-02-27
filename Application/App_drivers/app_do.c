@@ -67,3 +67,4 @@ bool do_is_opened(eDO_PORT_t port)
   }
   return false;
 }
+

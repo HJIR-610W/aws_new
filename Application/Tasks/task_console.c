@@ -1,4 +1,5 @@
 
+#include "pcb_define.h"
 #include "app_console.h"
 #include "app_console_test.h"
 #include "app_version.h"
@@ -94,7 +95,7 @@ void sonsoleTask(void *arg)
    uint8_t instance = 0;
     
 
-
+  osDelay(2000);
 
   print_signature();
 
@@ -117,6 +118,10 @@ void sonsoleTask(void *arg)
   }
 }
 
+
+
+
+
 void consoleTask_init(void)
 {
   uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
@@ -125,7 +130,10 @@ void consoleTask_init(void)
   uart_config.parityIdx = 0;
   uart_config.stop_bit = 0;
 
-  console_uart = driver_uart_open(UART_0_D_SUB_0,&uart_config);
+  console_uart = driver_uart_open(UART_10_CDC,&uart_config);
+  //console_uart = driver_uart_open(UART_0_D_SUB_0,&uart_config);
+
+
 
   set_debug_uart_handle(console_uart);
   osThreadNew(sonsoleTask, NULL, &consoleTask_attributes);

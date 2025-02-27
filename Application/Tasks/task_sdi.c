@@ -148,7 +148,7 @@ void sdiTask(void *arg)
       len = SDI_RECV(buff,sizeof(buff),3000);
       if(len)
       {
-        LOG_MEM(buff,len,0,16);
+      //  LOG_MEM(buff,len,0,16);
       }
       
   }

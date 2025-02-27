@@ -175,7 +175,7 @@ PCB 0.3 20250120
 #define IN_RAIN_HALL_ERR_GPIO_Port   GPIOA
 #define ETH_CRS_DV_PIN            GPIO_PIN_7
 #define ETH_CRS_DV_GPIO_Port      GPIOA
-#define USB_OTG_FS_SOF_PIN        GPIO_PIN_8
+#define USB_OTG_FS_SOF_Pin        GPIO_PIN_8
 #define USB_OTG_FS_SOF_GPIO_Port  GPIOA
 #define USB_OTG_FS_VBUS_PIN       GPIO_PIN_9
 #define USB_OTG_FS_VBUS_GPIO_Port GPIOA
@@ -209,7 +209,7 @@ PCB 0.3 20250120
 #define I2C1_SCL_GPIO_Port     GPIOB
 #define I2C1_SDA_PIN                GPIO_PIN_7
 #define I2C1_SDA_GPIO_Port          GPIOB
-#define USB_OTG_PWR_FAIL_PIN        GPIO_PIN_8
+#define USB_OTG_PWR_FAIL_Pin        GPIO_PIN_8
 #define USB_OTG_PWR_FAIL_GPIO_Port  GPIOB
 #define SEL_IF_UART_Pin             GPIO_PIN_9
 #define DO_SEL_IF_UART_GPIO_Port       GPIOB

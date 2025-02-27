@@ -15,7 +15,7 @@
 #define UART_7_RS485_B  7 //RS485 B
 #define UART_8_CDMA     8 //CDMA  
 #define UART_9_SDI      9 //SDI통신
-
+#define UART_10_CDC     10 //USB 디버깅
 
 #define UART_ERR_TIMEOUT -1
 #define UART_ERR_SIZE    -2
