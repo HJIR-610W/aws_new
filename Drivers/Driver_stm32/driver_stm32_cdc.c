@@ -15,7 +15,7 @@
 #include "semphr.h"
 #include "utile.h"
 #include "system_err.h"
-#include "task_usb.h"
+#include "stm32_usb.h"
 
 typedef struct stm32_cdc_cfg_s
 {

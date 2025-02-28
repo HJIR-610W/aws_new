@@ -1871,10 +1871,10 @@
             <group>
                 <name>usb</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\task_usb.c</name>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\stm32_usb.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\task_usb.h</name>
+                    <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\stm32_usb.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usb_읽기.txt</name>

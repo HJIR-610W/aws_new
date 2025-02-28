@@ -68,7 +68,7 @@ void hardTask(void *arg)
   while(1)
   {
       hart_send(cmd,sizeof(cmd));
-      len = HART_RECV(buff,sizeof(buff),3000);
+      len = HART_RECV(buff,sizeof(buff),1000);
       if(len)
       {
         LOG_MEM(buff,len,0,16);
