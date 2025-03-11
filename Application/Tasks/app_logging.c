@@ -1,4 +1,4 @@
-#define __STDC_WANT_LIB_EXT1__ 1
+
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -15,8 +15,8 @@
 
 
 
-const uint16_t kSystemNormMax = 1000;
-const uint16_t kLogMaxLen =  32; ////4(tick) + 1(code) + 27(msg null 포함)
+const uint16_t kSystemNormMax = 10000;
+const uint16_t kLogMaxLen =  64; 
 
 static osSemaphoreId_t g_loggingSem;
 
@@ -35,17 +35,17 @@ void logging_set_logCnt(uint16_t cnt)
   WRITE_CFG(logCnt);
 }
 
- //050524224635,measure task       //
-
-int32_t logging_printf(const char * pFmt, ...)
+//2015-05-24 22:46:35,measure task                       //
+/*
+로그가 64바이트씩 저장되도록 한다.
+*/
+int32_t logging_printf(const char *log)
 {
-    char buff[32];
+    char buff[kLogMaxLen];
     int len;
+    int i=0;
     uint16_t logCnt;
-    uint32_t tick=0;;
     uint32_t totalBytes;
-    va_list ap;  
-    DATE_TIME_BUF ct;
     uint32_t cnt = 0;
     int32_t err=0;
 
@@ -54,31 +54,32 @@ int32_t logging_printf(const char * pFmt, ...)
 
     logCnt = logging_get_logCnt();
 
-    time_get(&ct);
-
     if(logCnt >= kSystemNormMax)
     {
-        logCnt = 0;
+      logCnt = 0;
     }
 
-    memset_s(buff,sizeof(buff),0x00,sizeof(buff));
-    //000102042914,measure_________
-    len = snprintf_s(buff,sizeof(buff),"%02d%02d%02d%02d%02d%02d,",ct.Year%100,ct.Month,
-    ct.Day,ct.Hour,ct.Min,ct.Sec);
+    memset(buff,sizeof(buff),0x00,sizeof(buff));
 
+    for( i = 0 ; i < sizeof(buff)-1;i++)
+    {
+      if(*log)
+      {
+        buff[i] = *log++;
+      }
+      else
+      {
 
-    va_start(ap, pFmt);
-    vsnprintf_s((char *)&buff[13], sizeof(buff)-13, (char *)pFmt, ap);
+        buff[i]=' ';
+      }
+    }
 
-    va_end(ap);
-
+    buff[sizeof(buff)-1]=0;//마지막 NULL 처리리
+    
     totalBytes = logCnt*kLogMaxLen;// 저장된 로그 바이트 
 
-#if 0
-    flash_write(LOG_START_ADDRESS + totalBytes,(uint8_t *)buff,sizeof(buff));
-#else
     err = write_file((char *)system_log_path,(uint8_t*)buff,sizeof(buff),totalBytes);
-#endif
+
     logCnt++;
     logging_set_logCnt(logCnt);
 

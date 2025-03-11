@@ -4,7 +4,7 @@
 
 #include "utile_time.h"
 
-#define IS_LOG_ERR()  ((g_loggingStatusGroup&LOGGING_LOG_ERR)>0)  
+#define IS_LOG_ERR()   ((g_loggingStatusGroup&LOGGING_LOG_ERR)>0)  
 #define IS_DATA_ERR()  ((g_loggingStatusGroup&LOGGING_DATA_ERR)>0)  
 
 

@@ -1,12 +1,16 @@
 
+#include <iomanip>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "cmsis_os2.h"
 
+
+#include "pcb_define.h"
 #include "config.h"
 #include "driver_rtc.h"
+
 
 #include "app_file.h"
 #include "app_logging.h"
@@ -34,7 +38,7 @@ typedef struct logging_s
 
 const osThreadAttr_t kLoggingTask_attributes = {
   .name = "loggingTask",
-  .stack_size = 2048,//2048바이트가 할당됨 하지만 4바이트 단위로 스택은 구성됨
+  .stack_size = 2048,
   .priority = (osPriority_t) osPriorityLow,
 };
 
@@ -50,10 +54,14 @@ void os_logging_printf(const char * pFmt, ...)
 {
   logging_t logging;
   va_list ap;  
-
+  int32_t len;
+  DATE_TIME_BUF ct;
+  
+  
   va_start(ap, pFmt);
-  vsnprintf((char *)&logging.data[0], sizeof(logging.data), (char *)pFmt, ap);
+  len = vsnprintf((char *)&logging.data[0], sizeof(logging.data), (char *)pFmt, ap);
   va_end(ap);
+
 
   logging.cmd = eLOGGING_LOG;
   if(osMessageQueuePut(g_loggingQueue, &logging, 0, kLoggingTimeOutMs) != osOK)
@@ -138,14 +146,11 @@ void loggingTask_init(void)
   /*
    로그가 동시에 전송될것을 고려하여 적당한 갯수 필요
    큐가 부족하면 로그 저장이 안될 수 있음
-
   */
   g_loggingQueue = osMessageQueueNew(5, sizeof(logging_t), NULL);
 
-  if(g_loggingQueue == NULL)
-  {
-    debug_printf("g_loggingQueue failed");
-  }
+  assert_param(g_loggingQueue);
+
   osThreadNew(loggingTask, NULL, &kLoggingTask_attributes);
 
 }

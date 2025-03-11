@@ -72,8 +72,8 @@ void MX_FSMC_Init(void)
  Timing.AddressHoldTime        = 1;  
  Timing.DataSetupTime          = 2;  
  Timing.BusTurnAroundDuration  = 1;  
- Timing.CLKDivision            = 0;  //  비동기 모드에서는 무시
- Timing.DataLatency            = 0;  //  비동기 모드에서는 무시
+ Timing.CLKDivision            = 2;  //  비동기 모드에서는 무시,0설정시 assert 발생
+ Timing.DataLatency            = 2;  //  비동기 모드에서는 무시
  Timing.AccessMode             = FSMC_ACCESS_MODE_A;  // 기본 액세스 모드
 
   /* ExtTiming */
@@ -105,14 +105,14 @@ void MX_FSMC_Init(void)
   hsram2.Init.PageSize = FSMC_PAGE_SIZE_NONE;
   /* Timing */
   Timing.AddressSetupTime = 4;
-  Timing.AddressHoldTime = 0;
+  Timing.AddressHoldTime = 1;
   Timing.DataSetupTime = 15;
   Timing.BusTurnAroundDuration = 10;
 
   Timing.AccessMode = FSMC_ACCESS_MODE_A;
   /* ExtTiming */
   ExtTiming.AddressSetupTime      = 4;
-  ExtTiming.AddressHoldTime       =  0;
+  ExtTiming.AddressHoldTime       =  1;//0으로 하면 assert 발생, 재검토
   ExtTiming.DataSetupTime         = 10;
   ExtTiming.BusTurnAroundDuration = 10;
 
