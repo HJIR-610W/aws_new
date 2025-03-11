@@ -142,7 +142,7 @@ void driver_stm32_bsp_init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PBPin PBPin PBPin */
-  GPIO_InitStruct.Pin = IN_BOOT1_Pin|IN_STATUS_BTM_Pin|BTM_PWRC_Pin;
+  GPIO_InitStruct.Pin = IN_BOOT1_Pin|IN_DI_STATUS_BTM_Pin|DO_BTM_PWRC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);

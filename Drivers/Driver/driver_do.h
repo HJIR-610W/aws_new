@@ -37,6 +37,7 @@
 
 #define DO_POWER_24V_ACTIVE_H 28     
 #define DO_HART_RESET 29
+#define DO_BTM_PWCTRL 30
 
 
 driver_t *driver_do_open(uint32_t num,void *opt);

@@ -71,7 +71,7 @@ void hardTask(void *arg)
       len = HART_RECV(buff,sizeof(buff),1000);
       if(len)
       {
-        LOG_MEM(buff,len,0,16);
+       // LOG_MEM(buff,len,0,16);
       }
       
   }

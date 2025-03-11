@@ -43,6 +43,10 @@ const stm32_do_cfg_t HART_RTS_cfg        = {.port=DO_RTS_H_GPIO_Port,       .pin
 const stm32_do_cfg_t POWER_24V_cfg       ={.port=DO_CON_PWR_S24_GPIO_Port,.pin = DO_CON_PWR_S24_Pin};
 const stm32_do_cfg_t HART_RESET_cfg       ={.port=DO_RESET_H_GPIO_Port,.pin = DO_RESET_H_Pin};
 
+const stm32_do_cfg_t BTM_PWRC_cfg       ={.port=DO_BTM_PWRC_GPIO_Port,.pin = DO_BTM_PWRC_Pin};
+
+
+
 
 
 
@@ -152,6 +156,11 @@ driver_t *stm32_do_open(int num,void *opt)
     case STM32_DO_HART_RESET:
     g_stm32_do_list[num].cfg = (void *)&HART_RESET_cfg;
     stm32_do_init(&HART_RESET_cfg,opt);
+    break;
+    case STM32_DO_BTM_PWRC:
+    g_stm32_do_list[num].cfg = (void *)&BTM_PWRC_cfg;
+    stm32_do_init(&BTM_PWRC_cfg,opt);
+
     break;
 
     break;

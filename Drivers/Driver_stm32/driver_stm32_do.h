@@ -19,7 +19,7 @@
 
 #define STM32_DO_POWER_24V       7
 #define STM32_DO_HART_RESET       8
-
+#define STM32_DO_BTM_PWRC       9
 #define STM32_DO_DIR_SDI        15
 
 #define STM32_DO_DIR_RS485_A    16

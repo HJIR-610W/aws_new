@@ -8,8 +8,8 @@
 #include "driver_interface.h"
 #include "driver_di_def.h"
 
-#define STM32_DI_0_ADC_RDY       0
-#define STM32_DI_1_RTC_IRQ       1
+#define STM32_DI_0_ADC_RDY     0
+#define STM32_DI_1_RTC_IRQ     1
 #define STM32_DI_RAIN_REED     2
 #define STM32_DI_RAIN_HALL     3
 #define STM32_DI_RAIN_HALL_ERR 4
@@ -23,11 +23,12 @@
 #define STM32_DI_QUAD_UARTC_7 11
 #define STM32_DI_QUAD_UARTD_8 12
 
-#define STM32_DI_HART_CD       13
+#define STM32_DI_HART_CD      13
 
-#define STM32_DI_USER_BTN      14
+#define STM32_DI_USER_BTN     14
+#define STM32_DI_BTM_STATUS   15
 
-#define STM32_DI_MAX          15
+#define STM32_DI_MAX          16
 
 
 

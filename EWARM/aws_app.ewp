@@ -1520,6 +1520,9 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\app_measure.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_ble.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_console.c</name>
             </file>
             <file>
@@ -1877,6 +1880,9 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_i2c.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_rtc.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_uart.c</name>
             </file>
             <file>
@@ -1946,6 +1952,9 @@
                 <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_i2c_ex.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_iwdg.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd.c</name>
             </file>
             <file>
@@ -1962,6 +1971,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc_ex.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sd.c</name>

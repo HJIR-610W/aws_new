@@ -41,7 +41,7 @@ const stm32_di_cfg_t QUAD_UARTD_8_cfg  ={.port=IN_EX_UART_INT_8_GPIO_Port,.pin =
 const stm32_di_cfg_t HART_CD_cfg  ={.port=DI_CD_H_GPIO_Port,.pin = DI_CD_H_Pin};
 
 const stm32_di_cfg_t USER_BTN_cfg  ={.port=DI_SW_SYS_GPIO_Port,.pin = DI_SW_SYS_Pin};
-
+const stm32_di_cfg_t BTM_STATUS_cfg  ={.port=DI_STATUS_BTM_GPIO_Port,.pin = DI_STATUS_BTM_Pin};
 
 void stm32_di_close(driver_t *driver);
 int32_t stm32_di_read(driver_t *driver);
@@ -139,6 +139,10 @@ driver_t *stm32_di_open(int num,void *opt)
     case STM32_DI_USER_BTN:
     g_stm32_di_list[num].cfg = (void *)&USER_BTN_cfg;
     stm32_di_init(&USER_BTN_cfg);
+    break;
+    case STM32_DI_BTM_STATUS:
+    g_stm32_di_list[num].cfg = (void *)&BTM_STATUS_cfg;
+    stm32_di_init(&BTM_STATUS_cfg);
     break;
   }
  

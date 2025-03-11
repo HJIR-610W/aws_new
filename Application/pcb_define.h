@@ -6,6 +6,10 @@
 
 #include "stm32f4xx_hal.h"
 
+#if FREE_RTOS_USE
+#include "cmsis_os2.h"
+#endif
+
 /*
 ¿ÜºÎ SRAM:IS61WV204816BLL-xxTLI 4MB
 MCU SRAM:192KB(112+16+64(CCM))
@@ -40,10 +44,10 @@ PCB 0.3 20250120
 #define INT_D_IO_GPIO_Port           GPIOB
 #define IN_BOOT1_Pin                 GPIO_PIN_2
 #define IN_BOOT1_GPIO_Port           GPIOB
-#define IN_STATUS_BTM_Pin            GPIO_PIN_14
-#define IN_STATUS_BTM_GPIO_Port      GPIOB
-#define BTM_PWRC_Pin                 GPIO_PIN_15
-#define BTM_PWRC_GPIO_Port           GPIOB
+#define IN_DI_STATUS_BTM_Pin            GPIO_PIN_14
+#define IN_DI_STATUS_BTM_GPIO_Port      GPIOB
+#define DO_BTM_PWRC_Pin                 GPIO_PIN_15
+#define DO_BTM_PWRC_GPIO_Port           GPIOB
 #define OUT_CON_PWR_485_PIN          GPIO_PIN_8
 #define OUT_CON_PWR_485_GPIO_Port    GPIOB
 #define CON_PWR_TC_PIN               GPIO_PIN_9
@@ -221,10 +225,11 @@ PCB 0.3 20250120
 #define ETH_TXD0_GPIO_Port          GPIOB
 #define ETH_TXD1_PIN                GPIO_PIN_13
 #define ETH_TXD1_GPIO_Port          GPIOB
-#define STATUS_BTM_PIN              GPIO_PIN_14
-#define STATUS_BTM_GPIO_Port        GPIOB
-#define BTM_PWRC_PIN                GPIO_PIN_15
-#define BTM_PWRC_GPIO_Port          GPIOB
+#define DI_STATUS_BTM_Pin              GPIO_PIN_14
+#define DI_STATUS_BTM_GPIO_Port        GPIOB
+#define DO_BTM_PWRC_Pin                GPIO_PIN_15
+#define DO_BTM_PWRC_GPIO_Port          GPIOB
+
 #define DO_CON_PWR_S24_Pin                 GPIO_PIN_0 
 #define DO_CON_PWR_S24_GPIO_Port       GPIOC
 

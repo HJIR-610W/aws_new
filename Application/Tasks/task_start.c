@@ -34,6 +34,7 @@
 #include "utile_time.h"
 #include "task_sdi.h"
 #include "task_tcpServer.h"
+#include "task_ble.h"
 
 #include "mcu_utile.h"
 
@@ -111,7 +112,8 @@ void startTask(void *arg)
   file_init();
 
   logging_init();
-
+  bleTask_init();
+  
   runLed_init();
   os_logging_printf("Starting task");
   osThreadExit();//¡æ∑· Ω√≈¥

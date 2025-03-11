@@ -72,6 +72,9 @@ driver_t *driver_do_open(uint32_t num,void *opt)
     case DO_HART_RESET:
     driver = stm32_do_open(STM32_DO_HART_RESET,opt);
     break;
+    case DO_BTM_PWCTRL:
+    driver = stm32_do_open(STM32_DO_BTM_PWRC,opt);
+    break;
   }
 
   return driver;
