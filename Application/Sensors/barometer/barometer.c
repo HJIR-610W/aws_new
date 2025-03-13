@@ -7,6 +7,12 @@
 
 
 
+void barometer_init(sensor_t *sensor)
+{
+  
+}
+
+
 
 int32_t read_sensor_barometer(sensor_t *sensor,uint8_t *err)
 {

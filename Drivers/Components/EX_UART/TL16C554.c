@@ -49,7 +49,7 @@
 #define IIR(BASE) (void *)(BASE + 0x02) 
 #define LCR(BASE) (void *)(BASE + 0x03) 
 #define MCR(BASE) (void *)(BASE + 0x04) 
-#define LSR(BASE) (void *)(BASE + 0x05) 
+#define LSR(BASE) (void *)(BASE + 0x05)  //라인상태 레지스터터
 
 #define MSR(BASE) (void *)(BASE + 0x06) 
 #define SCR(BASE) (void *)(BASE + 0x07) 
@@ -894,11 +894,16 @@ int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen)
   {
    if((osKernelGetTickCount()-startTime)>1000)
    {
+     cnt = -1;
     break;
    }
   } while ((read_register(LSR(exUartBaseAddress[cfg->channel])) & LSR_TEMT) == 0);
   
-
+/*
+송신 레지스터 비어있음
+THR 및 TSR이 모두 비어있을 때 설정됨
+THR에 문자가 로드되면 LSR6은 클리어되며 문자가 완전히 송신될 때 까지 유지됨
+*/
 
   return cnt;
 }

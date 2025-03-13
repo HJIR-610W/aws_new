@@ -25,6 +25,9 @@
 #define ADC_ADS1220_S_CH_13 13
 #define ADC_ADS1220_S_CH_14 14
 #define ADC_ADS1220_S_CH_15 15
+#define ADC_ADS1220_S_CH_16 16
+#define ADC_ADS1220_S_CH_17 17
+
 
 #define ADC_ADS1220_D_CH_0 0
 #define ADC_ADS1220_D_CH_1 1

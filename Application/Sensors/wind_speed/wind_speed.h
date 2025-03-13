@@ -7,12 +7,20 @@
 #include "app_sensor.h"
 #include "app_adc.h"
 
+
 #define WIND_SPEED_ERR_VAL 1000
 
-void windSpeed_init(void);
-float read_sensor_windSpeed(sensor_t *sensor,uint8_t *err);
+
+#define HJ_WIND 0
 
 
-extern float windSpeedSample1Min[240];
-extern float windSpeedSample10Min[10];
+#define WIND_CHANNEL_SPEED     1
+#define WIND_CHANNEL_DIRECTION 2
+
+
+driver_t * windSpeed_open(uint8_t num,void *opt);
+float wind_read(void *driver,int32_t channel,uint8_t *err);
+
+
+
 #endif

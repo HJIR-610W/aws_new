@@ -101,6 +101,19 @@ float adc_read_volate(adc_config_t *adc,uint8_t *err)
 }
 
 
+float adc_read_volate_single(int32_t ch,uint8_t *err)
+{
+  int32_t data;
+  float ret;
+
+    data = adc_read_single(ch,err);
+    ret= adc_chToVoltage(eSINGLE_ADC,ch,data);
+
+  return ret;
+}
+
+
+
 
 int32_t get_adc_vref(adc_config_t *adc)
 {
@@ -125,7 +138,22 @@ float calculate_adc(adc_config_t *adc_config,uint8_t *err)
   vref = get_adc_vref(adc_config);
   data = adc_read_volate(adc_config,err);
   val = adc_config->lowScale + (adc_config->highScale - adc_config->lowScale)*data/(vref/1000.0);
+  
+return val/adc_config->scale;
 
-return val;
+}
 
+
+int32_t get_adc_single_offset(int channel)
+{
+  int32_t offset;
+
+  return g_adc_cali_config.single[channel].offset;
+}
+
+int32_t get_adc_single_fullset(int channel)
+{
+  int32_t offset;
+
+  return g_adc_cali_config.single[channel].fullset;
 }

@@ -26,7 +26,7 @@ bool rainPresent_deInit(void)
   rainPresentInit = false;
 }
 
-void rainPresent_init(void)
+void rainPresent_init(sensor_t *sensor)
 {
   rainPresentInit = true;
   rainPresent = driver_di_open(DI_EXT_0,0);

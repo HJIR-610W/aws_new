@@ -1,54 +1,43 @@
 
 
+#include <math.h>
+
+
 
 #include "Sensors\temperature\temperature.h"
-
+#include "Sensors\general\sensor_general.h"
 #include "utile.h"
+#include "pt100.h"
 
 
-bool sensorTempInit=false;
 
-void temperature_init(void)
+void *temperature_open(uint8_t num,void *opt)
 {
-  sensorTempInit = true;
+  void *driver;
+
+  switch (num)
+  {
+    case TEMP_PT100_A:
+    driver  = pt100_open(PT100_A,opt);
+    break;
+  case TEMP_PT100_B:
+    driver  = pt100_open(PT100_B,opt);
+    break;
+
+  }
+
+  return driver;
 }
 
-bool is_sensorTempInit(void)
+float temperature_read(void *driver,uint8_t *err)
 {
-  return sensorTempInit;
-}
+  const temperature_api_t *api = ((driver_t *)driver)->api;
 
-float read_sensor_temperature(sensor_t *sensor,uint8_t *err)
-{
-  float data;
-  void *cfg;
-
-  if(sensorTempInit==false)
+  if(driver == NULL)
   {
-    *err = 2;
-    return 0;
-  }
-  
-  cfg =  get_sensor_config(sensor);
-
-  if(cfg==NULL)
-  {
-    *err = SENSOR_ERR_CFG;
-    return 0;
-  }
-  switch(sensor->type)
-  {
-    case S_T_ADC:
-    data = calculate_adc((adc_config_t*)cfg,err);
-    break;
-    case S_T_PT100:
-    
-    break;
+    *err = 1;
+    return NAN;
   }
 
-  if(*err)
-  {
-    data = TEMP_ERR_VAL;
-  }
-  return data;
+  return api->read(driver,err);
 }

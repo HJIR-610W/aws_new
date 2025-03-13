@@ -3,7 +3,7 @@
 #define APP_RS485_H
 
 #include <stdint.h>
-
+#include <stdbool.h>
 
 typedef enum RS485_PORT_e
 {

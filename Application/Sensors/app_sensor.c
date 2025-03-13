@@ -13,17 +13,23 @@
 //지원하는 센서 목록 정의
 
 const uint8_t temperatureList[]={S_T_UNSUED,
+                                 S_T_PT100_A,
+                                 S_T_PT100_B,
                                  S_T_ADC,
                                  S_T_GENERAL_232,
                                  S_T_GENERAL_485};
                                  
 const uint8_t windDirectionList[]={S_T_UNSUED,
+                                   S_T_WIND_DIRECTION_HJ_485,
                                    S_T_ADC,
-                                   S_T_GENERAL_232};
+                                   S_T_GENERAL_232,
+                                   S_T_GENERAL_485};
 
 const uint8_t windSpeedList[]={S_T_UNSUED,
+                               S_T_WIND_SPEED_HJ_485,
                                S_T_ADC,
-                               S_T_GENERAL_232};
+                               S_T_GENERAL_232,
+                               S_T_GENERAL_485};
 
 
 const uint8_t windDirectionInstantList[]={S_T_UNSUED,
@@ -57,10 +63,58 @@ const uint8_t humiList[]={S_T_UNSUED,
                           S_T_ADC,
                           S_T_GENERAL_232};
 
+
+const uint8_t sunShineList[]={S_T_UNSUED,
+                              S_T_SUNSHINE,
+                              S_T_ADC};
+
+const uint8_t solarRadiationList[]={S_T_UNSUED,
+                                    S_T_SOLAR_RADIATION,
+                                    S_T_ADC};
+
+const uint8_t soilTemp5cmList[]={S_T_UNSUED,
+                                 S_T_SOIL_TEMP_5CM,
+                                 S_T_ADC};
+
+const uint8_t soilTemp10cmList[]={S_T_UNSUED,
+                                 S_T_SOIL_TEMP_10CM,
+                                 S_T_ADC};
+
+const uint8_t soilTemp20cmList[]={S_T_UNSUED,
+                                 S_T_SOIL_TEMP_20CM,
+                                 S_T_ADC};
+const uint8_t soilTemp30cmList[]={S_T_UNSUED,
+                                 S_T_SOIL_TEMP_30CM,
+                                 S_T_ADC};
+
+const uint8_t soilTemp50cmList[]={S_T_UNSUED,
+                                 S_T_SOIL_TEMP_50CM,
+                                 S_T_ADC};
+
+const uint8_t soilTemp100cmList[]={S_T_UNSUED,
+                                   S_T_SOIL_TEMP_100CM,
+                                   S_T_ADC};
+
+const uint8_t soilTemp150cmList[]={S_T_UNSUED,
+                                   S_T_SOIL_TEMP_150CM,
+                                   S_T_ADC};
+
+const uint8_t soilTemp300cmList[]={S_T_UNSUED,
+                                   S_T_SOIL_TEMP_300CM,
+                                   S_T_ADC};
+
+const uint8_t soilTemp500cmList[]={S_T_UNSUED,
+                                   S_T_SOIL_TEMP_500CM,
+                                   S_T_ADC};
+
+
+const uint8_t temperature50cmList[]={S_T_UNSUED,
+                                     S_T_PT100_B};
+
 const uint8_t defaultList[]={S_T_UNSUED,
-                          S_T_ADC,
-                          S_T_GENERAL_232,
-                          S_T_GENERAL_485};
+                             S_T_ADC,
+                             S_T_GENERAL_232,
+                             S_T_GENERAL_485};
 
 
 
@@ -109,7 +163,7 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX]={{.list = temperatu
 {.list = defaultList,.cnt = sizeof(defaultList)},//N7_WIND_VELOCITY_400CM
 {.list = defaultList,.cnt = sizeof(defaultList)},//N8_INSTANT_VELOCITY_150CM
 {.list = defaultList,.cnt = sizeof(defaultList)},//N9_INSTANT_VELOCITY_400CM
-{.list = defaultList,.cnt = sizeof(defaultList)},//N10_AIR_TEMPERATURE_50CM
+{.list = temperature50cmList,.cnt = sizeof(temperature50cmList)},//N10_AIR_TEMPERATURE_50CM
 {.list = defaultList,.cnt = sizeof(defaultList)},//N11_AIR_TEMPERATURE_400CM
 {.list = defaultList,.cnt = sizeof(defaultList)},//N12_HUMIDITY_50CM
 {.list = defaultList,.cnt = sizeof(defaultList)},//N13_HUMIDITY_400CM
@@ -130,28 +184,23 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX]={{.list = temperatu
 {.list = defaultList,.cnt = sizeof(defaultList)}};//USER_DEFAULT
 
 
-
-
-
-
-
                           
-const char *sensorTypeList[]={"미사용",         /* 0 S_T_UNSUED */
-                                "ADC",            /* 1 S_T_ADC */
-                                "RS232",          /* 2 S_T_TEMP_232 */
-                                "RS485",          /* 3 S_T_TEMP_485 */
-                                "MODBUS",         /* 4 S_T_MODBUS */
-                                "HART",           /* 5 S_T_HART */
-                                "FREQ_0",         /* 6 S_T_FREQ_0*/
-                                "REED 0.5mm",     /* 7 S_T_RAIN_REED_05MM */
-                                "REED 1mm",       /* 8 S_T_RAIN_REED_1MM */
-                                "HALL 0.5mm",     /* 9 S_T_RAIN_HALL_05MM */
-                                "HALL 1mm",       /* 10 S_T_RAIN_HALL_1MM */
-                                "DI_0",           /* 11 S_T_DI_0 */
-                                "SNOW_HJ_RS485",  /* 12 S_T_SNOW_HJ_485 */
-                                "GENERAL_RS232",    /* 13 S_T_GENERAL_232 */
-                                "WIND_SPEED_RS485", /* 14 S_T_WIND_SPEED_485 */
-                                "WIND_DIRECTION_RS485", /* 15 S_T_WIND_DIRECTION_485 */
+const char *sensorTypeList[]={"미사용",              /* 0 S_T_UNSUED */
+                                "ADC",               /* 1 S_T_ADC */
+                                "RS232",             /* 2 S_T_TEMP_232 */
+                                "RS485",             /* 3 S_T_TEMP_485 */
+                                "MODBUS",            /* 4 S_T_MODBUS */
+                                "HART",              /* 5 S_T_HART */
+                                "FREQ_0",            /* 6 S_T_FREQ_0*/
+                                "REED 0.5mm",        /* 7 S_T_RAIN_REED_05MM */
+                                "REED 1mm",          /* 8 S_T_RAIN_REED_1MM */
+                                "HALL 0.5mm",        /* 9 S_T_RAIN_HALL_05MM */
+                                "HALL 1mm",          /* 10 S_T_RAIN_HALL_1MM */
+                                "DI_0",              /* 11 S_T_DI_0 */
+                                "SNOW_HJ_RS485",     /* 12 S_T_SNOW_HJ_485 */
+                                "GENERAL_RS232",     /* 13 S_T_GENERAL_232 */
+                                "WIND_SPEED_RS485",  /* 14 S_T_WIND_SPEED_HJ_485 */
+                                "WIND_DIRECTION_RS485", /* 15 S_T_WIND_DIRECTION_HJ_485 */
                                 "HUMI_HJ_RS485",      /* 16 S_T_HUMI_HJ_485 */
                                 "WIND_SPEED_MAX",     /* 17 S_T_WIND_SPEED_MAX_VAL */
                                 "WIND_DIRECTION_MAX", /* 18 S_T_WIND_DIRECTION_MAX_VAL */
@@ -159,8 +208,25 @@ const char *sensorTypeList[]={"미사용",         /* 0 S_T_UNSUED */
                                 "HUMI_RS485",         /* 20 S_T_HUMI_RS485*/       
                                 "RAIN_PRESENT_DI",    /* 21 S_T_RAIN_PRESENT_DI */
                                 "SNOW_HJ_RS232",      /* 22 S_T_SNOW_HJ_232 */
-                                "GENERAL_485"};       /* 23 S_T_GENERAL_485 */
-                                
+                                "GENERAL_485",        /* 23 S_T_GENERAL_485 */
+                                "PT100_A",            /* 24 S_T_PT100_A */
+                                "PT100_B",            /* 25 S_T_PT100_B */
+                                "FREQ_A",             /* 26 S_T_FREQ_A */
+                                "FREQ_B",             /* 27 S_T_FREQ_B */
+                                "SUNSHINE",           /* 28 S_T_SUNSHINE */
+                                "SOLAR_RADIATION",    /* 29 S_T_SOLAR_RADIATION */
+                                "S_T_SOIL_TEMP_5CM",  /* 30 S_T_SOIL_TEMP_5CM */
+                                "S_T_SOIL_TEMP_10CM", /* 31 S_T_SOIL_TEMP_10CM */
+                                "S_T_SOIL_TEMP_20CM", /* 32 S_T_SOIL_TEMP_20CM */
+                                "S_T_SOIL_TEMP_30CM", /* 33 S_T_SOIL_TEMP_30CM */
+                                "S_T_SOIL_TEMP_50CM", /* 34 S_T_SOIL_TEMP_50CM */
+                                "S_T_SOIL_TEMP_100CM",/* 35 S_T_SOIL_TEMP_100CM */
+                                "S_T_SOIL_TEMP_150CM",/* 36 S_T_SOIL_TEMP_150CM */
+                                "S_T_SOIL_TEMP_300CM",/* 37 S_T_SOIL_TEMP_300CM */
+                                "S_T_SOIL_TEMP_500CM",/* 38 S_T_SOIL_TEMP_500CM */
+                                "S_T_GENERAL"};       /* 39 S_T_GENERAL */
+
+        
 
 
 const char *sensorNameList[SENSOR_LIST_MAX]={ 
@@ -277,7 +343,7 @@ const char *dataFmtList[SENSOR_LIST_MAX]={
 "%-5.2f",//"풍속(4.0m)",//42
 "%-5.2f",//"순간풍속(1.5m)",//43
 "%-5.2f",//"순간풍속(4.0m)",//44
-"%-5.2f",//"기온 0.5m",//45
+"%-5.2fC",//"기온 0.5m",//45
 "%-5.2f",//"기온 4.0m",//46
 "%-5.2f",//"습도 0.5m",//47
 "%-5.2f",//"습도 4.0m",//48
@@ -300,6 +366,7 @@ const char *dataFmtList[SENSOR_LIST_MAX]={
 
 config_manager_t s_config;
 
+sensor_data_t sensor_data_real[SENSOR_LIST_MAX]; // 실시간
 sensor_data_t sensor_data[SENSOR_LIST_MAX];     // 실시간 자료 연산용
 sensor_data_t sensor_data_1s[SENSOR_LIST_MAX];  // 1초 마다 갱신되는 실시간 자료
 sensor_data_t sensor_data_1min[SENSOR_LIST_MAX];// 1분 마다 갱신되는 실시간 자료
@@ -341,16 +408,20 @@ void sensorData_init(void)
     {
       case A1_TEMPERATURE:
       sensor_data[A1_TEMPERATURE].dataType = DATA_TYPE_F;
+      sensor_data_1s[A1_TEMPERATURE].dataType = DATA_TYPE_F;
       break;
       case A2_WIND_DIRECTION:
       sensor_data[A2_WIND_DIRECTION].dataType = DATA_TYPE_F;
+      sensor_data_1s[A2_WIND_DIRECTION].dataType = DATA_TYPE_F;
       break;
       case A6_RAINFALL_DOT5_1MM:
       sensor_data[A6_RAINFALL_DOT5_1MM].dataType = DATA_TYPE_I;
       sensor_data[A6_RAINFALL_DOT5_1MM].opt = &rain_data;
+      sensor_data_1s[A6_RAINFALL_DOT5_1MM].dataType = DATA_TYPE_I;
       break;
       default:
       sensor_data[i].dataType = DATA_TYPE_F;
+      sensor_data_1s[i].dataType = DATA_TYPE_F;
       break;
     }
 
@@ -407,9 +478,9 @@ void * sensor_add(sensor_t *sensor)
     }
       return 0;
       break;
+      case S_T_WIND_DIRECTION_HJ_485:
+      case S_T_WIND_SPEED_HJ_485:
       case S_T_TEMP_485:
-      case S_T_WIND_SPEED_485:
-      case S_T_WIND_DIRECTION_485:
       case S_T_SNOW_HJ_485:
       case S_T_PRESSURE_485:
       case S_T_HUMI_RS485:
@@ -466,8 +537,8 @@ void * get_sensor_config(sensor_t *sensor)
         return &s_config.rs232[sensor->config[i][1]];
         break;
         case S_T_TEMP_485:
-        case S_T_WIND_SPEED_485:
-        case S_T_WIND_DIRECTION_485:
+        case S_T_WIND_SPEED_HJ_485:
+        case S_T_WIND_DIRECTION_HJ_485:
         case S_T_SNOW_HJ_485:
         case S_T_PRESSURE_485:
         case S_T_HUMI_RS485:

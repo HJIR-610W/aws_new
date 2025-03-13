@@ -87,7 +87,7 @@ void limit_adc(void)
 {
   for(int i = 0 ; i < _countof(s_config.adc);i++)
   {
-    if(s_config.adc[i].channel> 15)
+    if(s_config.adc[i].channel> 17)
     {
       s_config.adc[i].channel = 0;
       WRITE_S_CFG(adc[i].channel);

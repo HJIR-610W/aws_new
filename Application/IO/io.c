@@ -263,6 +263,7 @@ void LOG_MEM(uint8_t* src, uint32_t size, uint32_t startAddr,uint32_t col)
 
 void dev_io_write(dev_io_t  *dev,uint8_t *data,uint32_t dataLen,uint32_t opt)
 {
+
   switch(dev->io)
   {
     case eRS485_IO:

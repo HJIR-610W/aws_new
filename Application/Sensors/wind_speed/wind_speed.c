@@ -1,48 +1,38 @@
 
 
 #include "Sensors\wind_speed\wind_speed.h"
+#include "hj_wind.h"
+
+#include <math.h>
 
 
-float windSpeedSample1Min[240];
-float windSpeedSample10Min[10];
-
-bool windSpeedInit=false;
-
-void windSpeed_init(void)
+driver_t * windSpeed_open(uint8_t num,void *opt)
 {
-  windSpeedInit = true;
-}
+  driver_t *driver=NULL;
 
-bool is_sensorWindSpeedInit(void)
-{
-  return windSpeedInit;
-}
-
-bool windSpeed_deInit(void)
-{
-  windSpeedInit = false;
-}
-
-
-
-
-float read_sensor_windSpeed(sensor_t *sensor,uint8_t *err)
-{
-  float data;
-    adc_config_t *adc;
-    
-  switch(sensor->type)
+  switch (num)
   {
-    case S_T_ADC:
-
-    adc = get_sensor_config(sensor);
-    data = calculate_adc(adc,err);
-
+    case HJ_WIND:
+    driver = hjwind_open(HJ_WIND,opt)  ;
     break;
-    case S_T_TEMP_232:
-  
+  default:
     break;
   }
 
-  return data;
+  return driver;
 }
+
+float wind_read(void *driver,int32_t channel,uint8_t *err)
+{
+  const wind_api_t *api = ((driver_t *)driver)->api;
+
+  if(driver == NULL)
+  {
+    *err = 1;
+    return NAN;
+  }
+
+  return api->read(driver,channel,err);
+}
+
+

@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+
+#define SENSOR_NOT_INIT 1
+
 //제공 가능한 센서 목록
 typedef enum
 {
@@ -84,31 +87,46 @@ SENSOR_LIST_MAX
 */
 typedef enum S_T_e
 {
-  S_T_UNSUED                =  0, 
-  S_T_ADC                   =  1,
-  S_T_TEMP_232              =  2,
-  S_T_TEMP_485              =  3,
-  S_T_MODBUS                =  4 ,
-  S_T_HART                  =  5,
-  S_T_FREQ_0                =  6,
-  S_T_RAIN_REED_05MM        =  7,
-  S_T_RAIN_REED_1MM         =  8,
-  S_T_RAIN_HALL_05MM        =  9,
-  S_T_RAIN_HALL_1MM         = 10,
-  S_T_DI_0                  = 11,
-  S_T_SNOW_HJ_485           = 12,
+  S_T_UNSUED                 =  0, 
+  S_T_ADC                    =  1,
+  S_T_TEMP_232               =  2,
+  S_T_TEMP_485               =  3,
+  S_T_MODBUS                 =  4 ,
+  S_T_HART                   =  5,
+  S_T_FREQ_0                 =  6,
+  S_T_RAIN_REED_05MM         =  7,
+  S_T_RAIN_REED_1MM          =  8,
+  S_T_RAIN_HALL_05MM         =  9,
+  S_T_RAIN_HALL_1MM          = 10,
+  S_T_DI_0                   = 11,
+  S_T_SNOW_HJ_485            = 12, /* 화진 */
   S_T_GENERAL_232            = 13,
-  S_T_WIND_SPEED_485         = 14,
-  S_T_WIND_DIRECTION_485     = 15,
+  S_T_WIND_SPEED_HJ_485      = 14, /* 화진 */
+  S_T_WIND_DIRECTION_HJ_485  = 15, /* 화진 */
   S_T_HUMI_HJ_485            = 16,
   S_T_WIND_SPEED_MAX_VAL     = 17,
   S_T_WIND_DIRECTION_MAX_VAL = 18,
   S_T_PRESSURE_485           = 19,
   S_T_HUMI_RS485             = 20,
   S_T_RAIN_PRESENT_DI        = 21,
-  S_T_SNOW_HJ_232            = 22,
+  S_T_SNOW_HJ_232            = 22, /* 화진 */
   S_T_GENERAL_485            = 23,
-  S_T_PT100                  = 24,
+  S_T_PT100_A                = 24,
+  S_T_PT100_B                = 25,
+  S_T_FREQ_A                 = 26,
+  S_T_FREQ_B                 = 27,
+  S_T_SUNSHINE               = 28,
+  S_T_SOLAR_RADIATION        = 29,
+  S_T_SOIL_TEMP_5CM          = 30,
+  S_T_SOIL_TEMP_10CM         = 31,
+  S_T_SOIL_TEMP_20CM         = 32,
+  S_T_SOIL_TEMP_30CM         = 33,
+  S_T_SOIL_TEMP_50CM         = 34,
+  S_T_SOIL_TEMP_100CM        = 35,
+  S_T_SOIL_TEMP_150CM        = 36,
+  S_T_SOIL_TEMP_300CM        = 37,
+  S_T_SOIL_TEMP_500CM        = 38,
+  S_T_GENERAL                = 39,
   S_T_MAX
 }eSENSOR_MODEL_t;
 
@@ -172,6 +190,8 @@ typedef struct
   uint8_t channel;
   int32_t highScale;
   int32_t lowScale;
+  int32_t scale;//원본값에 몇배 곱해졌다의 의미 highScale 100, lowScale 0이면 0~100으로 값이 나옴
+                // scale 10이면 최종 값은 나누기 10해야함
 }adc_config_t;
 
 
@@ -264,12 +284,12 @@ void update_sensorData1min(void);
 
 extern config_manager_t s_config;
 
-extern const char *sensorTypeList[24];
+extern const char *sensorTypeList[40];
 
 
-extern const uint8_t temperatureList[4];
-extern const uint8_t windDirectionList[3];
-extern const uint8_t windSpeedList[3];
+extern const uint8_t temperatureList[6];
+extern const uint8_t windDirectionList[5];
+extern const uint8_t windSpeedList[5];
 extern const uint8_t windDirectionInstantList[2];
 extern const uint8_t windSpeedInstantList[2];
 extern const uint8_t pressureList[3];
@@ -277,12 +297,29 @@ extern const uint8_t rainList[6];
 extern const uint8_t snowList[4];
 extern const uint8_t rainPresentList[2];
 extern const uint8_t humiList[3];
+extern const uint8_t sunShineList[3];
+extern const uint8_t solarRadiationList[3];
+extern const uint8_t soilTemp5cmList[3];
+extern const uint8_t soilTemp10cmList[3];
+extern const uint8_t soilTemp20cmList[3];
+extern const uint8_t soilTemp30cmList[3];
+extern const uint8_t soilTemp50cmList[3];
+extern const uint8_t soilTemp100cmList[3];
+extern const uint8_t soilTemp150cmList[3];
+extern const uint8_t soilTemp300cmList[3];
+extern const uint8_t soilTemp500cmList[3];
+
+extern const uint8_t temperature50cmList[2];
 
 extern const char *sensorNameList[SENSOR_LIST_MAX];
 extern const char *dataFmtList[SENSOR_LIST_MAX];
 extern sensor_emul_t g_sensor_emul[SENSOR_LIST_MAX];
 extern sensor_data_t sensor_data[SENSOR_LIST_MAX];
 extern sensor_data_t sensor_data_1s[SENSOR_LIST_MAX];//1초마다 갱신되는 자료 
+extern sensor_data_t sensor_data_real[SENSOR_LIST_MAX]; // 실시간;
 
 extern const supported_sensors_t supported_sensors[SENSOR_LIST_MAX];
+
+
+
 #endif

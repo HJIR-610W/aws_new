@@ -1,8 +1,7 @@
 
 
 #include "Sensors\wind_direction\wind_direction.h"
-
-
+#include "Sensors\wind_speed\hj_wind.h"
 
 
 float windDirectionSample1Min[240];
@@ -12,7 +11,7 @@ uint16_t windDirectionSample10MinCnt;
 
 bool windDirectionInit=false;
 
-void windDirection_init(void)
+void windDirection_init(sensor_t *sensor)
 {
   windDirectionInit = true;
 }
@@ -22,7 +21,7 @@ bool is_windDirectionInit(void)
   return windDirectionInit;
 }
 
-bool windDirection_deInit(void)
+void windDirection_deInit(void)
 {
   windDirectionInit = false;
 }
@@ -30,8 +29,13 @@ bool windDirection_deInit(void)
 float read_sensor_windDirection(sensor_t *sensor,uint8_t *err)
 {
   float data;
+  dev_io_t dev_io;
 
-  if(is_windDirectionInit()==false)
+  rs485_config_t *rs485_config;
+
+
+
+  if(is_windDirectionInit() == false)
   {
     *err = 2;
     return 0;
@@ -44,16 +48,7 @@ float read_sensor_windDirection(sensor_t *sensor,uint8_t *err)
     *err = 2;
     return 0;
   }
-  switch(sensor->type)
-  {
-    case S_T_ADC:
-    data = calculate_adc(cfg,err);
 
-    break;
-    case S_T_TEMP_232:
-
-    break;
-  }
 
   return data;
 }

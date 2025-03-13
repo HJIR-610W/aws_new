@@ -3,9 +3,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <math.h>
 
 #include "utile.h"
+
+#define ABSTOLERANCE 1.0e-8
+#define ULPTOLERANCE 4
+
 
 int getPinNumber(uint16_t pin) {
   if (pin == 0) {
@@ -319,3 +323,74 @@ float recursiveAvg(double pre_avg,float adc, int cnt)
 }
 
 
+
+
+uint8_t	 make_sum(uint8_t *lpRcv, uint32_t len)
+{
+	uint32_t i;
+	uint8_t sum = 0;
+	
+	for(i = 0; i < len; i++)
+	{
+		sum += lpRcv[i];
+	}
+	return(sum);
+}
+
+
+
+/**
+ * @brief 부동소수점 비교 함수 a와 b가 같은가
+ * @retval 
+*/
+bool equal_float(float x, float y)
+{
+	float absTolerance = ABSTOLERANCE;
+	int ulpsTolerance = ULPTOLERANCE;
+	float diff = x - y;
+
+	if (fabs(diff) <= absTolerance)
+		return true;
+
+	int nx = *((int*)&x);
+	int ny = *((int*)&y);
+
+	if ((nx & 0x80000000) != (ny & 0x80000000))
+		//   return (diff > 0) ? 1 : -1;
+		return false;
+
+	int ulpsDiff = nx - ny;
+	if ((ulpsDiff >= 0 ? ulpsDiff : -ulpsDiff) <= ulpsTolerance)
+		return true;
+
+	//return (diff > 0) ? 1 : -1;
+	return false;
+}
+
+/**
+ * @brief 부동소수점 비교 함수 a가 b보다 작은가?
+ * @retval 
+*/
+bool less_float(float a, float b)
+{
+	return a < b && !equal_float(a, b);
+}
+
+/**
+ * @brief 부동소수점 비교 함수 a가 b보다 큰가?
+ * 
+*/
+bool bigger_float(float a, float b)
+{
+	return a > b && !equal_float(a, b);
+}
+
+bool bigger_equal_float(float a,float b)
+{
+	return a > b || equal_float(a, b);
+}
+
+bool less_equal_float(float a, float b)
+{
+	return a < b || equal_float(a, b);
+}

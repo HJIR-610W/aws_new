@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "driver_rtc.h"
+#include "driver_stm32_rtc.h"
 #include "ds1306.h"
 #include "rv8803.h"
 
@@ -17,6 +18,9 @@ driver_t * driver_rtc_open(int num,void *opt)
     break;
     case RTC_RV8803:
     driver = rv8803_open();
+    break;
+    case RTC_MCU:
+    driver = driver_stm32_rtc_open(0,0);
     break;
   }
 

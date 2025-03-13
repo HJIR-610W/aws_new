@@ -1,13 +1,86 @@
 {
 	"folders": [
-		{
-			"path": "."
-		}
+        {
+            "path": "Application"
+        }
+        ,
+        {
+            "path": "Drivers"
+        },
+        {
+            "path": "Lib"
+        },
+        {
+            "path": "Middlewares"
+        },
+        {
+            "path": "System"
+        },
+        {
+            "path": "Utile"
+        },
+        {
+            "path": ".vscode"
+        }
+
   ],
-  "settings": {},
+"settings": {
+    "editor.fontSize": 16,
+    "editor.fontFamily": "나눔고딕코딩",
+    "files.associations": {
+        "driver_do.h": "c",
+        "temperature.h": "c",
+        "config.h": "c",
+        "app_fram.h": "c",
+        "driver_interface.h": "c",
+        "app_datalogging.h": "c",
+        "pcb_define.h": "c",
+        "fsmc.h": "c",
+        "snow.h": "c",
+        "app_file.h": "c",
+        "cmsis_os2.h": "c",
+        "wind_speed.h": "c",
+        "sensor_general.h": "c",
+        "rain.h": "c",
+        "hj_wind.h": "c",
+        "xstring": "c",
+        "xutility": "c",
+        "bit": "cpp",
+        "compare": "cpp",
+        "cstddef": "cpp",
+        "iterator": "cpp",
+        "limits": "cpp",
+        "memory": "cpp",
+        "system_error": "cpp",
+        "type_traits": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xlocmon": "cpp",
+        "xloctime": "cpp",
+        "wind_direction.h": "c",
+        "driver_uart.h": "c",
+        "utile.h": "c",
+        "driver_stm32_rtc.h": "c",
+        "dev_io.h": "c",
+        "tuple": "c",
+        "utility": "c",
+        "xmemory": "c",
+        "xtr1common": "c",
+        "istream": "c",
+        "pt100.h": "c",
+        "temperature_define.h": "c",
+        "app_adc.h": "c",
+        "driver_adc.h": "c"
+    },
+    "files.encoding": "euckr",
+    "editor.tabSize": 2,
+    "editor.renderWhitespace": "all"
+},
   "extensions": {
     "recommendations": [
       "ms-vscode.cpptools-extension-pack"
     ]
   }
+  ,
+  
 }

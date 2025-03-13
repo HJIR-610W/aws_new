@@ -786,8 +786,8 @@ void make_option(sensor_t *sensor,char *out,uint16_t outSize)
     }
     break;
       case S_T_HUMI_HJ_485:
-    case S_T_WIND_DIRECTION_485:
-    case S_T_WIND_SPEED_485:
+    case S_T_WIND_DIRECTION_HJ_485:
+    case S_T_WIND_SPEED_HJ_485:
     case S_T_TEMP_485:
     case S_T_GENERAL_485:
     case S_T_SNOW_HJ_485:
@@ -863,6 +863,7 @@ uint8_t print_adc_cfg(p_shell_context_t ctx,adc_config_t *adc_config,uint8_t cnt
   ctx->printf("%2d.channel    :%d\r\n",cnt++,adc_config->channel);
   ctx->printf("%2d.high scale :%d\r\n",cnt++,adc_config->highScale);
   ctx->printf("%2d.low scale  :%d\r\n",cnt++,adc_config->lowScale);
+  ctx->printf("%2d.scale      :%d\r\n",cnt++,adc_config->scale);
   return cnt;
 }
 
@@ -904,6 +905,7 @@ uint16_t gen_sensorItemList(const char **itemListOut,const uint8_t *idxList,uint
 #define ADC_SET_CHANNLEL  1
 #define ADC_SET_HIGHSCALE 2
 #define ADC_SET_LOWSCALE  3
+#define ADC_SET_SCALE  4
 
 void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
 {
@@ -942,6 +944,14 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if(cnt)
       {
         adc->lowScale = dec;
+        write_s_config();
+      }
+    break;
+    case ADC_SET_SCALE://ale;
+      cnt = input_decimal(ctx,-100000,100000,&dec);
+      if(cnt)
+      {
+        adc->scale = dec;
         write_s_config();
       }
     break;
@@ -1140,8 +1150,8 @@ const config_sen_func_t sen_func[]=
             {.sensorType = S_T_RAIN_REED_05MM,.config_set = rain_reed_config_set},
             {.sensorType = S_T_RAIN_REED_1MM,.config_set  = rain_reed_config_set},
             {.sensorType = S_T_GENERAL_232,.config_set = rs232_config_set},
-            {.sensorType = S_T_WIND_DIRECTION_485,.config_set = rs485_config_set},
-            {.sensorType = S_T_WIND_SPEED_485,.config_set = rs485_config_set},
+            {.sensorType = S_T_WIND_DIRECTION_HJ_485,.config_set = rs485_config_set},
+            {.sensorType = S_T_WIND_SPEED_HJ_485,.config_set = rs485_config_set},
             {.sensorType = S_T_WIND_SPEED_MAX_VAL,.config_set = 0},
             {.sensorType = S_T_WIND_DIRECTION_MAX_VAL,.config_set = 0},
             {.sensorType = S_T_SNOW_HJ_485,.config_set = rs485_config_set},
@@ -1170,6 +1180,8 @@ int32_t print_common_cfg(p_shell_context_t ctx,sensor_t *sensor,uint8_t c)
     case S_T_GENERAL_485:
     case S_T_SNOW_HJ_485:
     case S_T_HUMI_RS485:
+    case S_T_WIND_SPEED_HJ_485:
+    case S_T_WIND_DIRECTION_HJ_485:
       cnt = print_rs485_cfg(ctx,get_sensor_config(sensor),cnt);
     break;
   }

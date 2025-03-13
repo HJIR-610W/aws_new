@@ -1,16 +1,20 @@
 #include <string.h>
 #include <math.h>
 
+#include "cmsis_os2.h"
+
 #include "Sensors\temperature\temperature.h"
+#include "Sensors\humidity\humidity.h"
 #include "Sensors\wind_speed\wind_speed.h"
 #include "Sensors\wind_direction\wind_direction.h"
 #include "Sensors\snow\snow.h"
 #include "Sensors\rain\rain.h"
-#include "Sensors\humidity\humidity.h"
-#include "Sensors\general\sensor_general.h"
 #include "Sensors\soil_temperature\soil_temperature.h"
 #include "Sensors\sunshine\sunshine.h"
 #include "Sensors\barometer\barometer.h"
+#include "Sensors\solar_radiation\solar_radiation.h"
+#include "Sensors\general\sensor_general.h"
+#include "Sensors\general\general_adc.h"
 #include "app_bsp.h"
 #include "app_adc.h"
 #include "app_rtc.h"
@@ -18,7 +22,7 @@
 #include "aws_data.h"
 #include "app_dataLogging.h"
 #include "config.h"
-#include "cmsis_os.h"
+
 
 #include "driver_do.h"
 #include "task_logging.h"
@@ -29,6 +33,8 @@
 #include "app_measure.h"
 
 
+
+#define MEASURE_PERIOD_MS 250
 extern uint16_t calcCRC(uint8_t* Buffer, uint32_t length);
 
 
@@ -45,44 +51,140 @@ uint32_t g_elased_time;
 sensor_t g_sensor_copy[SENSOR_COUNT_MAX];
 
 
+driver_t *sensor_driver[50];
+
+
+int32_t get_driverNum(eSENSOR_MODEL_t type)
+{
+  int32_t num=-1;//항목 없음음
+
+  switch(type)
+  {
+    case S_T_PT100_A:
+    num = TEMP_PT100_A;
+    break;
+    case S_T_PT100_B:
+    num = TEMP_PT100_B;
+    break;
+    case S_T_WIND_SPEED_HJ_485:
+    num = HJ_WIND;
+    break;
+  }
+  return num;
+}
+
+
+
+
 /**
  * @brief 사용하는 센서츨 초기화한다.
  */
 void sensor_init(void)
 {
+  uint8_t num;
+
   sensor_t *p_sensor;
   p_sensor = g_sensor_copy;
 
   adc_init();//ADC 항상 초기화 
 
-  if(p_sensor[A1_TEMPERATURE].type)
-  {
-    temperature_init();
-  }
-  if(p_sensor[A2_WIND_DIRECTION].type)
-  {
-    windDirection_init();
-  }
 
-  if(p_sensor[A3_WIND_SPEED].type)
+  for(int i = 0 ; i < _countof(g_sensor_copy);i++)
   {
-    windSpeed_init();
-  }
+    if(p_sensor[i].type)
+    {
 
-  if(p_sensor[A9_SNOW_DEPTH].type)
-  {
-    snow_init(&p_sensor[A9_SNOW_DEPTH]);
-  }
+      switch(i)
+      {
+      case A1_TEMPERATURE:
+        num = get_driverNum(p_sensor[A1_TEMPERATURE].type);
+        sensor_driver[A1_TEMPERATURE] = temperature_open(num,0);
+        break;
+      case A10_RELATIVE_HUMIDITY:
+        humidity_init(&p_sensor[A10_RELATIVE_HUMIDITY]);
+        break;
+        case A3_WIND_SPEED:
+          num = get_driverNum(p_sensor[A3_WIND_SPEED].type);
+          sensor_driver[A3_WIND_SPEED]  = windSpeed_open(num,0);
+        break;
+        case A2_WIND_DIRECTION:
+          num = get_driverNum(p_sensor[A2_WIND_DIRECTION].type);
+          sensor_driver[A2_WIND_DIRECTION]  = windSpeed_open(num,0);
+        break;
+        case A9_SNOW_DEPTH:
+          snow_init(&p_sensor[A9_SNOW_DEPTH]);
+        break;
+        case A6_RAINFALL_DOT5_1MM:
+          rain_init(&p_sensor[A6_RAINFALL_DOT5_1MM]);
+        break;
+        case A8_RAIN_PRESENT:
+          rainPresent_init(&p_sensor[A8_RAIN_PRESENT]);
+        break;
+        case A7_PRESSURE:
+          barometer_init(&p_sensor[A7_PRESSURE]);
+        break;
+        case B5_SOIL_TEMPERATURE_5CM:
+        soilTmep_init(&p_sensor[B5_SOIL_TEMPERATURE_5CM],0);
+        break;
+        case B6_SOIL_TEMPERATURE_10CM:
+          soilTmep_init(&p_sensor[B6_SOIL_TEMPERATURE_10CM],0);
+        break;
+        case B7_SOIL_TEMPERATURE_20CM:
+          soilTmep_init(&p_sensor[B7_SOIL_TEMPERATURE_20CM],0);
+        break;
+        case B8_SOIL_TEMPERATURE_30CM:
+          soilTmep_init(&p_sensor[B8_SOIL_TEMPERATURE_30CM],0);
+        break;
+        case B9_SOIL_TEMPERATURE_50CM:
+         soilTmep_init(&p_sensor[B9_SOIL_TEMPERATURE_50CM],0);
+        break;
+        case B10_SOIL_TEMPERATURE_100CM:
+          soilTmep_init(&p_sensor[B10_SOIL_TEMPERATURE_100CM],0);
+        break;
+        case B11_SOIL_TEMPERATURE_150CM:
+          soilTmep_init(&p_sensor[B11_SOIL_TEMPERATURE_150CM],0);
+        break;
+        case B12_SOIL_TEMPERATURE_300CM:
+          soilTmep_init(&p_sensor[B12_SOIL_TEMPERATURE_300CM],0);
+        break;
+        case B13_SOIL_TEMPERATURE_500CM:
+          soilTmep_init(&p_sensor[B13_SOIL_TEMPERATURE_500CM],0);
+        break;
+        case B2_SUNSHINE_DURATION:
+          sunShine_init(&p_sensor[B2_SUNSHINE_DURATION],0);
+        break;
+        case B1_SOLAR_RADIATION:
+          solraRadiation_init(&p_sensor[B1_SOLAR_RADIATION],0);
+        break;
+        case N10_AIR_TEMPERATURE_50CM:
+          num = get_driverNum(p_sensor[N10_AIR_TEMPERATURE_50CM].type);
+          sensor_driver[N10_AIR_TEMPERATURE_50CM] = temperature_open(num,0);
+        break;
 
-  if(p_sensor[A6_RAINFALL_DOT5_1MM].type)
-  {
-    rain_init(&p_sensor[A6_RAINFALL_DOT5_1MM]);
-  }
 
-  if(p_sensor[A8_RAIN_PRESENT].type)
-  {
-    rainPresent_init();
-  }
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
 
 
 
@@ -287,63 +389,75 @@ void  cvt_sensorToAWS(sensor_data_t *p_data,kma_data_t *p_kma)
 
 }
 
-
-void measure_250ms(DATE_TIME_BUF *ct)
+/**
+ * @brief 250ms마다 측정해야 하는 센서들 처리리
+ */
+void measure_250ms(DATE_TIME_BUF *ct,sensor_t *p_sensor,int32_t cnt)
 {
   uint8_t err;
   uint16_t i;
-  uint8_t sample_cnt=0;
-  float avg;
-  float adc;
-  float max;
-  float min;
-  sensor_t *p_sensor = g_sensor_copy;
+  float data;
 
-  for( i = 0 ;i < _countof(g_sensor_copy);i++)
+  for( i = 0 ;i < cnt;i++)
   {
-      if(p_sensor[i].type)
+    if(p_sensor[i].type)
+    {
+      switch(i)
       {
-        switch(i)
-        {
-          case A2_WIND_DIRECTION:
-          adc =  read_sensor_windDirection(&p_sensor[A2_WIND_DIRECTION],&err);
-          break;
-          case A3_WIND_SPEED:
-          adc =  read_sensor_windSpeed(&p_sensor[A3_WIND_SPEED],&err);
-          break;
-
-        }
+        case A2_WIND_DIRECTION:
+        data =  wind_read(sensor_driver[A2_WIND_DIRECTION],WIND_CHANNEL_DIRECTION,&err);
+        sensor_data_1s[A2_WIND_DIRECTION].data.f = data;
+        break;
+        case A3_WIND_SPEED:
+        data =  wind_read(sensor_driver[A2_WIND_DIRECTION],WIND_CHANNEL_SPEED,&err);
+        sensor_data_1s[A3_WIND_SPEED].data.f = data;
+        break;
+      }
     }
   }
+}
+
+float read_general(uint8_t type)
+{
+
 }
 
 
 void measure_1s(DATE_TIME_BUF *ct,sensor_t *sensor,uint16_t sensor_cnt)
 {
+  int32_t iData;
+  float fData;
   int32_t rain_pulse;
   uint8_t err;
   uint8_t sample_cnt=0;
   uint16_t i;
   uint16_t data;
+  bool bVal;
   float avg;
   float adc;
   float max;
   float min;
+  int32_t ch;
+  eSENSOR_MODEL_t type;
 
-  g_start_time = mcu_get_clk();
+
+
   for( i = 0 ;i < sensor_cnt;i++)
   {
-      if(sensor[i].type)
+      type = sensor[i].type; 
+      if(type)
       {
         switch(i)
         {
-          case A1_TEMPERATURE://10초마다 샘플링하고 6개 자료의 평균을 1분자료
-            if((ct->Sec%10)==0)
-            {
-              adc =  read_sensor_temperature(&sensor[A1_TEMPERATURE],&err);
-              sample_temperature(adc);//샘플을 수집
-              sensor_data[A1_TEMPERATURE].data.f = get_avg_temperature();//평균
-            }
+          case A1_TEMPERATURE:
+          adc =  (type == S_T_GENERAL)?general_sensor_read(sensor_driver[A1_TEMPERATURE],&err):
+                                       temperature_read(sensor_driver[A1_TEMPERATURE],&err);
+          sensor_data_1s[A1_TEMPERATURE].data.f = adc;
+          if((ct->Sec % 10)==0)//10초마다 샘플링하고 6개 자료의 평균을 1분자료
+          {
+            sample_temperature(adc);//샘플을 수집
+            sensor_data[A1_TEMPERATURE].data.f = get_avg_temperature();//평균
+          }
           break;
           case A2_WIND_DIRECTION:
           break;
@@ -364,65 +478,95 @@ void measure_1s(DATE_TIME_BUF *ct,sensor_t *sensor,uint16_t sensor_cnt)
             
           break;
           case A7_PRESSURE://10초마다 샘플링하고 6개 자료의 평균을 1분자료
-            if((ct->Sec%10)==0)
+          adc =  read_sensor_barometer(&sensor[A7_PRESSURE],&err);
+          sensor_data_1s[A7_PRESSURE].data.f = adc;
+          if((ct->Sec%10)==0)
             {
-              adc =  read_sensor_barometer(&sensor[A7_PRESSURE],&err);
               sample_barometer(adc);
               sensor_data[A7_PRESSURE].data.f = get_avg_barometer();
             }
           break;
           case A8_RAIN_PRESENT:
-            sensor_data[A8_RAIN_PRESENT].data.b = read_sensor_rainPresent(&sensor[A8_RAIN_PRESENT],&err);
+            bVal = read_sensor_rainPresent(&sensor[A8_RAIN_PRESENT],&err);
+            sensor_data[A8_RAIN_PRESENT].data.b = bVal;
+            sensor_data_1s[A8_RAIN_PRESENT].data.b = bVal;
           break;
           case A9_SNOW_DEPTH: //mm
-          sensor_data[A9_SNOW_DEPTH].data.i = read_sensor_snow(&sensor[A9_SNOW_DEPTH],&err);
+          iData = read_sensor_snow(&sensor[A9_SNOW_DEPTH],&err);;
+          sensor_data[A9_SNOW_DEPTH].data.i = iData;
+          sensor_data_1s[A9_SNOW_DEPTH].data.i = iData;
           break;
           case A10_RELATIVE_HUMIDITY://10초마다 샘플링하고 6개 자료의 평균을 1분자료
-            if((ct->Sec%10)==0)
+          adc =  read_sensor_humidity(&sensor[A10_RELATIVE_HUMIDITY],&err);
+          sensor_data_1s[A10_RELATIVE_HUMIDITY].data.f = adc;
+          if((ct->Sec%10)==0)
             {
-              adc =  read_sensor_humidity(&sensor[A10_RELATIVE_HUMIDITY],&err);
               sample_humi(adc);
               sensor_data[A10_RELATIVE_HUMIDITY].data.f = get_avg_humi();
             }
           break;
           case B1_SOLAR_RADIATION:
-          sensor_data[B1_SOLAR_RADIATION].data.f      = read_sensor_sunshine(&sensor[B1_SOLAR_RADIATION],&err);
+          fData = read_sensor_sunshine(&sensor[B1_SOLAR_RADIATION],&err);
+          sensor_data[B1_SOLAR_RADIATION].data.f    = fData;
+          sensor_data_1s[B1_SOLAR_RADIATION].data.f = fData;
           break;
           case B2_SUNSHINE_DURATION:
-          sensor_data[B2_SUNSHINE_DURATION].data.f    = read_sensor_sunshine(&sensor[B2_SUNSHINE_DURATION],&err);
+          fData = read_sensor_sunshine(&sensor[B2_SUNSHINE_DURATION],&err);
+          sensor_data[B2_SUNSHINE_DURATION].data.f    = fData;
+          sensor_data_1s[B2_SUNSHINE_DURATION].data.f = fData;
           break;
           case B5_SOIL_TEMPERATURE_5CM:
-          sensor_data[B5_SOIL_TEMPERATURE_5CM].data.f = read_sensor_soilTemp(&sensor[B5_SOIL_TEMPERATURE_5CM],SOIL_TEMP_5CM,&err);
+          fData = read_sensor_soilTemp(&sensor[B5_SOIL_TEMPERATURE_5CM],SOIL_TEMP_5CM,&err);
+          sensor_data[B5_SOIL_TEMPERATURE_5CM].data.f = fData;
+          sensor_data_1s[B5_SOIL_TEMPERATURE_5CM].data.f = fData;
           break;
           case B6_SOIL_TEMPERATURE_10CM:
-          sensor_data[B6_SOIL_TEMPERATURE_10CM].data.f = read_sensor_soilTemp(&sensor[B6_SOIL_TEMPERATURE_10CM],SOIL_TEMP_10CM,&err);
+          fData = read_sensor_soilTemp(&sensor[B6_SOIL_TEMPERATURE_10CM],SOIL_TEMP_10CM,&err);
+          sensor_data[B6_SOIL_TEMPERATURE_10CM].data.f = fData;
+          sensor_data_1s[B6_SOIL_TEMPERATURE_10CM].data.f = fData;
           break;
           case B7_SOIL_TEMPERATURE_20CM:
-          sensor_data[B7_SOIL_TEMPERATURE_20CM].data.f = read_sensor_soilTemp(&sensor[B7_SOIL_TEMPERATURE_20CM],SOIL_TEMP_20CM,&err);
+          fData = read_sensor_soilTemp(&sensor[B7_SOIL_TEMPERATURE_20CM],SOIL_TEMP_20CM,&err);
+          sensor_data[B7_SOIL_TEMPERATURE_20CM].data.f = fData;
+          sensor_data_1s[B7_SOIL_TEMPERATURE_20CM].data.f = fData;
           break;
           case B8_SOIL_TEMPERATURE_30CM:
-          sensor_data[B8_SOIL_TEMPERATURE_30CM].data.f = read_sensor_soilTemp(&sensor[B8_SOIL_TEMPERATURE_30CM],SOIL_TEMP_30CM,&err);
+          fData = read_sensor_soilTemp(&sensor[B8_SOIL_TEMPERATURE_30CM],SOIL_TEMP_30CM,&err);
+          sensor_data[B8_SOIL_TEMPERATURE_30CM].data.f = fData;
+          sensor_data_1s[B8_SOIL_TEMPERATURE_30CM].data.f = fData;
+
           break;
           case B9_SOIL_TEMPERATURE_50CM:
-          sensor_data[B9_SOIL_TEMPERATURE_50CM].data.f = read_sensor_soilTemp(&sensor[B9_SOIL_TEMPERATURE_50CM],SOIL_TEMP_50CM,&err);
+          fData = read_sensor_soilTemp(&sensor[B9_SOIL_TEMPERATURE_50CM],SOIL_TEMP_50CM,&err);
+          sensor_data[B9_SOIL_TEMPERATURE_50CM].data.f = fData;
+          sensor_data_1s[B9_SOIL_TEMPERATURE_50CM].data.f = fData;
+
           break;
           case B10_SOIL_TEMPERATURE_100CM:
-          sensor_data[B10_SOIL_TEMPERATURE_100CM].data.f = read_sensor_soilTemp(&sensor[B10_SOIL_TEMPERATURE_100CM],SOIL_TEMP_100CM,&err);
+          fData = read_sensor_soilTemp(&sensor[B10_SOIL_TEMPERATURE_100CM],SOIL_TEMP_100CM,&err);
+          sensor_data[B10_SOIL_TEMPERATURE_100CM].data.f = fData;
+          sensor_data_1s[B10_SOIL_TEMPERATURE_100CM].data.f = fData;
           break;
           case B11_SOIL_TEMPERATURE_150CM:
-          sensor_data[B11_SOIL_TEMPERATURE_150CM].data.f = read_sensor_soilTemp(&sensor[B11_SOIL_TEMPERATURE_150CM],SOIL_TEMP_150CM,&err);
+          fData = read_sensor_soilTemp(&sensor[B11_SOIL_TEMPERATURE_150CM],SOIL_TEMP_150CM,&err);
+          sensor_data[B11_SOIL_TEMPERATURE_150CM].data.f = fData;
+          sensor_data_1s[B11_SOIL_TEMPERATURE_150CM].data.f = fData;
+          break;
+          case N10_AIR_TEMPERATURE_50CM:
+          adc =  temperature_read(sensor_driver[N10_AIR_TEMPERATURE_50CM],&err);//더빠른값 변화위해 수집은 1초ㄴ
+          sensor_data_1s[N10_AIR_TEMPERATURE_50CM].data.f = adc;
+
           break;
           default:
-          sensor_data[i].data.f = read_sensorGeneral(&sensor[i],&err);
+         // fData =  read_sensorGeneral(&sensor[i],&err);
+          sensor_data[i].data.f = fData;
+          sensor_data_1s[i].data.f = fData;
           break;
         }
     }
   }
 
 
-
- g_elased_time = cal_elapsed_us(g_start_time);
- update_sensorData1s();//1초마다 갱신
 
 }
 
@@ -546,8 +690,6 @@ void measureTask(void *arg)
   DATE_TIME_BUF ct;
   DATE_TIME_BUF ot;
   uint32_t tick_count;
- const uint32_t period = 250;
-
 
   os_logging_printf("measure task");
 
@@ -567,9 +709,10 @@ void measureTask(void *arg)
   tick_count = osKernelGetTickCount();
   while(1)
   {
+    g_start_time = mcu_get_clk();
     ct = Date_Time;
 
-    measure_250ms(&ct);
+    measure_250ms(&ct,g_sensor_copy,_countof(g_sensor_copy));
 
     if(ct.Sec != ot.Sec)
     {
@@ -583,15 +726,19 @@ void measureTask(void *arg)
       }
       ot.Sec = ct.Sec;
     }
-
-    tick_count += period;
+    g_elased_time = cal_elapsed_us(g_start_time);
+    tick_count += MEASURE_PERIOD_MS;
     
-    osDelayUntil(tick_count);
+    osDelayUntil(tick_count);//남은 지연 시간만큼 지연
 
   }
 }
 
 void measureTask_init(void)
 {
-  osThreadNew(measureTask, NULL, &kMeasureTask_attributes);
+    osThreadId_t  threadId;
+
+    threadId = osThreadNew(measureTask, NULL, &kMeasureTask_attributes);
+
+    assert_param(threadId);
 }

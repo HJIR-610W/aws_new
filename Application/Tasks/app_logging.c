@@ -14,9 +14,9 @@
 
 
 
-
+#define LOG_LEN_MAX 64
 const uint16_t kSystemNormMax = 10000;
-const uint16_t kLogMaxLen =  64; 
+
 
 static osSemaphoreId_t g_loggingSem;
 
@@ -41,7 +41,7 @@ void logging_set_logCnt(uint16_t cnt)
 */
 int32_t logging_printf(const char *log)
 {
-    char buff[kLogMaxLen];
+    char buff[LOG_LEN_MAX];
     int len;
     int i=0;
     uint16_t logCnt;
@@ -59,7 +59,7 @@ int32_t logging_printf(const char *log)
       logCnt = 0;
     }
 
-    memset(buff,sizeof(buff),0x00,sizeof(buff));
+    memset(buff,0x00,sizeof(buff));
 
     for( i = 0 ; i < sizeof(buff)-1;i++)
     {
@@ -76,7 +76,7 @@ int32_t logging_printf(const char *log)
 
     buff[sizeof(buff)-1]=0;//마지막 NULL 처리리
     
-    totalBytes = logCnt*kLogMaxLen;// 저장된 로그 바이트 
+    totalBytes = logCnt*LOG_LEN_MAX;// 저장된 로그 바이트 
 
     err = write_file((char *)system_log_path,(uint8_t*)buff,sizeof(buff),totalBytes);
 
@@ -99,7 +99,7 @@ void logging_read_log(int32_t offsetCnt,loggingMsg_t *loggingMsg)
 
     osSemaphoreAcquire(g_loggingSem, osWaitForever);
 
-    totalBytes = (offsetCnt-1)*kLogMaxLen;
+    totalBytes = (offsetCnt-1)*LOG_LEN_MAX;
 
  
 

@@ -1,77 +1,175 @@
 #include <math.h>
 
-float       TempResTable[111] = {
-  83.48,  83.88,             																// -45.0 -42.0 ... -41.0 
-  84.27,  84.67,  85.06,  85.46,  85.85,  86.25,  86.64,  87.04,  87.43,  87.83,             // -40.0 -39.0 ... -31.0
-  88.22,  88.62,  89.01,  89.40,  89.80,  90.19,  90.59,  90.98,  91.37,  91.77,             // -30.0 -29.0 ... -21.0
-  92.16,  92.55,  92.95,  93.34,  93.73,  94.12,  94.52,  94.91,  95.30,  95.69,             // -20.0 -19.0 ... -11.0
-  96.09,  96.48,  96.87,  97.26,  97.65,  98.04,  98.44,  98.83,  99.22,  99.61,             // -10.0 -09.0 ... -01.0
- 100.00, 100.39, 100.78, 101.17, 101.56, 101.95, 102.34, 102.73, 103.12, 103.51,             //   0.0   1.0 ...   9.0
- 103.90, 104.29, 104.68, 105.07, 105.46, 105.85, 106.24, 106.63, 107.02, 107.40,             //  10.0  11.0 ...  19.0
- 107.79, 108.18, 108.57, 108.96, 109.35, 109.73, 110.12, 110.51, 110.90, 111.29,             //  20.0  21.0 ...  29.0
- 111.67, 112.06, 112.45, 112.83, 113.22, 113.61, 114.00, 114.38, 114.77, 115.15,             //  30.0  31.0 ...  39.0
- 115.54, 115.93, 116.31, 116.70, 117.08, 117.47, 117.86, 118.24, 118.63, 119.01,             //  40.0  41.0 ...  49.0
- 119.40, 119.78, 120.17, 120.55, 120.94, 121.32, 121.71, 122.09, 122.47, 122.86,             //  50.0  51.0 ...  59.0
- 123.24, 123.62, 124.01,                                              						//  60.0  61.0 ...  62.0
- };
+#include "driver_interface.h"
+#include "driver_adc.h"
+#include "pt100.h"
+#include "app_adc.h"
+#include "utile.h"
+
+#include "pt100.h"
+
+ #define MIN_TEMP  -42  // 최소 온도
+ #define MAX_TEMP   62  // 최대 온도
+ #define TABLE_SIZE (MAX_TEMP - MIN_TEMP + 1)  
+ 
+ // PT100 저항 테이블 
+ const float pt100_table[TABLE_SIZE] = {
+    83.48,  83.88,  // -°42C ~ --41°C
+    84.27,  84.67,  85.06,  85.46,  85.85,  86.25,  86.64,  87.04,  87.43,  87.83,  // -40°C ~ -31°C
+    88.22,  88.62,  89.01,  89.40,  89.80,  90.19,  90.59,  90.98,  91.37,  91.77,  // -30°C ~ -21°C
+    92.16,  92.55,  92.95,  93.34,  93.73,  94.12,  94.52,  94.91,  95.30,  95.69,  // -20°C ~ -11°C
+    96.09,  96.48,  96.87,  97.26,  97.65,  98.04,  98.44,  98.83,  99.22,  99.61,  // -10°C ~  -1°C
+    100.00, 100.39, 100.78, 101.17, 101.56, 101.95, 102.34, 102.73, 103.12, 103.51, //   0°C ~   9°C
+    103.90, 104.29, 104.68, 105.07, 105.46, 105.85, 106.24, 106.63, 107.02, 107.40, //  10°C ~  19°C
+    107.79, 108.18, 108.57, 108.96, 109.35, 109.73, 110.12, 110.51, 110.90, 111.29, //  20°C ~  29°C
+    111.67, 112.06, 112.45, 112.83, 113.22, 113.61, 114.00, 114.38, 114.77, 115.15, //  30°C ~  39°C
+    115.54, 115.93, 116.31, 116.70, 117.08, 117.47, 117.86, 118.24, 118.63, 119.01, //  40°C ~  49°C
+    119.40, 119.78, 120.17, 120.55, 120.94, 121.32, 121.71, 122.09, 122.47, 122.86, //  50°C ~  59°C
+    123.24, 123.63, 124.01}; // 60°C ~ 62°C
+
+ 
+ // 저항값을 기반으로 온도를 계산하는 함수 (선형 보간법 사용)
+ float pt100_resistance_to_temperature(float resistance)
+ {
+   // 범위를 벗어난 경우
+  
+   if (bigger_float(resistance ,pt100_table[TABLE_SIZE - 1]) || less_float(resistance, pt100_table[0]))
+   {
+     return 9999.0;  // 오류 코드
+   }
+ 
+   for(int i = 0; i < TABLE_SIZE - 1; i++)
+   {
+     if (bigger_equal_float(resistance ,pt100_table[i]) && less_equal_float(resistance,pt100_table[i + 1]))
+     {
+       // 선형 보간법 적용
+       double temp1 = MIN_TEMP + i;
+       double temp2 = MIN_TEMP + i + 1;
+       double res1 = pt100_table[i];
+       double res2 = pt100_table[i + 1];
+ 
+       return temp1 + (temp2 - temp1)*((resistance - res1) / (res2 - res1));
+     }
+   }
+ 
+   return 9999.0;  // 오류 코드
+ }
+
+ const float kConstanctA = 1.2454e-3;
 
 
-// PT100 저항값을 온도로 변환하는 함수
-double pt100_resistance_to_temperature(double resistance)
+typedef struct pt100_cfg_s
 {
-    double temperature;
+  driver_t *adc_io;
+  uint8_t channel;
+}pt100_cfg_t;
 
-    if (resistance >= 100.0)  // 0℃ 이상
-    {
-        temperature = -247.29 + (2.3992 * resistance) + (0.00063962 * pow(resistance, 2)) +
-                      (0.000004330 * pow(resistance, 3));
-    }
-    else  // 0℃ 이하
-    {
-        temperature = -242.02 + (2.2228 * resistance) + (0.00014277 * pow(resistance, 2)) +
-                      (0.0000005435 * pow(resistance, 3)) - (0.000000000163 * pow(resistance, 4));
-    }
+
+ /**
+  * @brief 온도 단위 도 12.56도
+  */
+
+float read_pt100(void *driver,uint8_t *err)
+{
+  int32_t sAdval;
+  int32_t fullset;
+  int32_t offset;
+  int32_t sSpan;
+  int32_t sMinus45;
+  int32_t sPlus65;
+  int32_t errTmp;
+  float       x, resistance;
+  int32_t ss;
+  int32_t i;
+  int32_t      tt;
+  float temperature;
+  int32_t adc_ch;
+  const pt100_cfg_t *cfg = ((driver_t *)driver)->cfg;
+
+
+  switch (cfg->channel)
+  {
+    case PT100_A:
+    adc_ch = eADC_S_CH_16;
+    break;
+
+    case PT100_B:
+    adc_ch = eADC_S_CH_17;
+    break;
+
+  }
+
+  if(cfg->channel == PT100_B)
+  {
+    float voltage;
+    voltage = adc_read_volate_single(adc_ch,err);
+
+    resistance = voltage/kConstanctA;
+    temperature = pt100_resistance_to_temperature(resistance);
 
     return temperature;
+  }
+
+  offset  = get_adc_single_offset(adc_ch);
+  fullset = get_adc_single_fullset(adc_ch);
+  sAdval  = adc_read_single_avg(adc_ch, err,10);
+
+
+
+  //여기서 부터 기존 AWS 온도 코드인데 이해가 안됨.일단 사용
+  //원분석: sSpan은 -40,60도 ADC값 
+  sSpan    = fullset - offset;   //저항 1개당 ADC값 ,79%,77%로 offset %출처 모름름
+  sMinus45 = (int32_t)(((float)sSpan / 38.97) * 0.79);//원 분석:38.97= 123.24-84.27
+  sPlus65  = (int32_t)(((float)sSpan / 38.97) * 0.77);
+
+  sSpan   = ((fullset + sMinus45) - (offset - sPlus65));//범위를 더 넓게 줌?
+  errTmp = (int32_t)((float)sSpan * 0.05); 
+
+
+  if((sAdval > ((offset - sMinus45) - errTmp)) && 
+     (sAdval < ((fullset+ sPlus65) + errTmp)))
+  {
+    if(sSpan > 0)
+    {
+      x = 40.53 / (float)sSpan;     //40.53= 124.01(62도)-83.48(-42도),  AD Convertion Value 값을 저항 테이블에 맞춤
+      resistance = (float)(sAdval - (offset- sMinus45)) * x + pt100_table[0]; //  저항값 검색 하기위해 전압을 저항으로 변환
+      //f는 저항값
+      temperature = pt100_resistance_to_temperature(resistance);
+    }
+    else
+    {
+      temperature = 9999.0f;
+    }
+  }
+  else
+  {
+    temperature = 9999.0f;
+  }
+  return(temperature);
 }
 
 
+driver_t pt100_driver[2];
+pt100_cfg_t pt100_cfg[2];
 
-// PT100 온도-저항 Look-up Table (-42℃ ~ 62℃)
-typedef struct {
-  double resistance;
-  double temperature;
-} PT100_LUT;
 
-// EN 60751 (ITS-90) 기반 PT100 저항값 테이블 (-42℃ ~ 62℃, 1℃ 단위)
-PT100_LUT pt100_table[] = {
-  {83.479, -42}, {83.875, -41}, {84.276, -40}, {84.686, -39}, {85.096, -38},
-  {85.504, -37}, {85.913, -36}, {86.321, -35}, {86.730, -34}, {87.138, -33},
-  {87.546, -32}, {87.954, -31}, {88.362, -30}, {88.769, -29}, {89.177, -28},
-  {89.840, -27}, {90.312, -26}, {90.791, -25}, {91.273, -24}, {91.752, -23},
-  {92.230, -22}, {92.709, -21}, {93.187, -20}, {93.666, -19}, {94.144, -18},
-  {94.623, -17}, {95.101, -16}, {95.579, -15}, {96.109, -14}, {96.517, -13},
-  {96.926, -12}, {97.334, -11}, {97.743, -10}, {98.151, -9}, {98.560, -8},
-  {98.969, -7}, {99.377, -6}, {99.786, -5}, {100.000, 0}, {105.482, 14},
-  {111.225, 28}, {116.568, 40}, {122.102, 60}, {122.993, 62}
-};
-int table_size = sizeof(pt100_table) / sizeof(pt100_table[0]);
+temperature_api_t temperature_api ={.read= read_pt100};
 
-// 보간법을 이용한 저항 -> 온도 변환 함수
-double pt100_resistance_to_temp_LUT(double resistance) {
-  if (resistance < pt100_table[0].resistance || resistance > pt100_table[table_size - 1].resistance) {
-      return -999.0;  // 범위 초과 오류 코드
+void *pt100_open(uint8_t num,void *opt)
+{
+
+  if(pt100_driver[num].opened)
+  {
+    return &pt100_driver;
   }
+  pt100_cfg[num].channel = num;
 
-  for (int i = 0; i < table_size - 1; i++) {
-      if (resistance >= pt100_table[i].resistance && resistance <= pt100_table[i + 1].resistance) {
-          // 선형 보간법 적용
-          double temp = pt100_table[i].temperature +
-                        (resistance - pt100_table[i].resistance) *
-                        (pt100_table[i + 1].temperature - pt100_table[i].temperature) /
-                        (pt100_table[i + 1].resistance - pt100_table[i].resistance);
-          return temp;
-      }
-  }
-  return -999.0;  // 오류 처리
+  pt100_driver[num].cfg = &pt100_cfg[num];
+  pt100_driver[num].api = &temperature_api;
+
+  pt100_cfg[num].adc_io = driver_adc_open(ADC_ADS1220,0);
+
+
+
+  return &pt100_driver[num];
 }

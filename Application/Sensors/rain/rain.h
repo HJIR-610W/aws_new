@@ -18,7 +18,7 @@ typedef struct rain_data_s
 void rain_init(sensor_t *sensor);
 int32_t read_sensor_rain(sensor_t *sensor,uint8_t *err);
 
-void rainPresent_init(void);
+void rainPresent_init(sensor_t *sensor);
 bool is_rainPresentInit(void);
 bool rainPresent_deInit(void);
 

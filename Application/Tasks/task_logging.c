@@ -1,5 +1,5 @@
 
-#include <iomanip>
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -55,15 +55,33 @@ void os_logging_printf(const char * pFmt, ...)
   logging_t logging;
   va_list ap;  
   int32_t len;
+  int32_t i;
+
   DATE_TIME_BUF ct;
   
-  
+  time_get(&ct);
+  //2000-01-01 00:00:00,{문자열}     \r\n\0
+
+  len = snprintf(logging.data,sizeof(logging.data),"%04d-%02d-%02d %02d:%02d:%02d,",ct.Year,ct.Month,ct.Day,
+  ct.Hour,ct.Min,ct.Sec);
+
   va_start(ap, pFmt);
-  len = vsnprintf((char *)&logging.data[0], sizeof(logging.data), (char *)pFmt, ap);
+  len += vsnprintf((char *)&logging.data[len], sizeof(logging.data)-len, (char *)pFmt, ap);
   va_end(ap);
 
+  //
+  for(int i = len; i <= 60;i++)
+  {
+    logging.data[i]= ' ';//
+  }
 
-  logging.cmd = eLOGGING_LOG;
+  logging.data[61] = '\r';
+  logging.data[62] = '\n';
+  logging.data[63] = '\0';
+
+
+  logging.cmd = eLOGGING_LOG;//로그는 문자열만 전송송
+
   if(osMessageQueuePut(g_loggingQueue, &logging, 0, kLoggingTimeOutMs) != osOK)
   {
     debug_printf("os_logging_printf timeout.\r\n");
@@ -108,12 +126,12 @@ void update_loggingErr(uint8_t *status,int8_t err,uint8_t flag)
  */
 void loggingTask(void *arg)
 {
-  uint8_t Type;
-  logging_t logging;
-  DATE_TIME_BUF ct;
+  uint8_t data_type;
+  int32_t err=0;
   uint32_t data_size;
   uint32_t period_min;
-  int32_t err=0;
+  logging_t logging;
+
   while(1)
   {
     // 메시지 큐에서 데이터 수신
@@ -122,14 +140,14 @@ void loggingTask(void *arg)
         switch(logging.cmd)
         {
           case eLOGGING_LOG:
-            err = logging_printf((char *)"%s",&logging.data[0]);
+            err = logging_printf((char *)logging.data);
             update_loggingErr(&g_loggingStatusGroup,err,LOGGING_LOG_ERR);
           break;
           case eLOGGING_DATA:
             memcpy(&data_size,&logging.data[0],sizeof(data_size));
-            memcpy(&Type,&logging.data[4],sizeof(Type));
+            memcpy(&data_type,&logging.data[4],sizeof(data_type));
             memcpy(&period_min,&logging.data[5],sizeof(period_min));
-            err =write_data(&logging.ct,&logging.data[9],data_size,Type,period_min);
+            err =write_data(&logging.ct,&logging.data[9],data_size,data_type,period_min);
             update_loggingErr(&g_loggingStatusGroup,err,LOGGING_DATA_ERR);
           break;
         }

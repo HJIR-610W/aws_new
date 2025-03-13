@@ -76,7 +76,7 @@ int32_t driver_uart_recv(driver_t *drv,uint8_t *pBuff,uint16_t rLen,uint32_t tim
   
 }
 int32_t driver_uart_recv_opt(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,
-                                  eUART_RECV_OPT_t cmd,void *opt)
+                                 eUART_RECV_OPT_t cmd,void *opt) 
 {
   uart_api_t *api = (uart_api_t *)drv->api;
 

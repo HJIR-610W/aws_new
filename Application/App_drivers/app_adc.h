@@ -19,9 +19,12 @@ typedef enum adc_single_ch_e
   eADC_S_CH_9,
   eADC_S_CH_10,
   eADC_S_CH_11,
+  eADC_S_CH_12,
   eADC_S_CH_13,
   eADC_S_CH_14,
   eADC_S_CH_15,
+  eADC_S_CH_16,//PT100_A
+  eADC_S_CH_17,//PT100_B
 }eADC_S_CH_t;
 
 
@@ -50,4 +53,12 @@ float adc_chToVoltage(int32_t mode,int32_t channel,int32_t adc);
 float adc_read_volate(adc_config_t *adc,uint8_t *err);
 int32_t get_adc_vref(adc_config_t *adc);
 float calculate_adc(adc_config_t *adc_config,uint8_t *err);
+
+int32_t get_adc_single_offset(int channel);
+int32_t get_adc_single_fullset(int channel);
+
+
+float adc_read_volate_single(int32_t ch,uint8_t *err);
+
+
 #endif
