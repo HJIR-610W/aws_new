@@ -131,18 +131,23 @@ driver_t hjWind;
 driver_t *hjwind_open(uint8_t num,void *opt)
 {
   uart_config_t uart_config;
+  rs485_config_t *rs485_config =  opt;
+
   
-  uart_config.baud = 9600;
-  uart_config.parityIdx = 0;
-  uart_config.dataLen = 8;
-  uart_config.stop_bit = 1;
 
   if(hjWind.opened == true)
   {
     return &hjWind;
   }
 
-  hjWind_cfg.rs485_io = driver_rs485_open((int)opt,&uart_config);
+  uart_config.baud = rs485_config->baud;
+  uart_config.parityIdx = rs485_config->parityIdx;
+  uart_config.dataLen = 8;
+  uart_config.stop_bit = 1;
+
+
+  
+  hjWind_cfg.rs485_io = driver_rs485_open((int)rs485_config->port,&uart_config);
   hjWind.opened = true;
   hjWind.cfg = &hjWind_cfg;
   hjWind.api = &hjWind_api;

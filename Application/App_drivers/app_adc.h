@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include "app_sensor.h"
 
+
+
 typedef enum adc_single_ch_e
 {
   eADC_S_CH_0,

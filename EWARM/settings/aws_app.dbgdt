@@ -1031,7 +1031,7 @@
                     <item>resistance</item>
                     <item>recv</item>
                     <item>type</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

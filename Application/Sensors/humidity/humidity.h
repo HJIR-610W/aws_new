@@ -5,12 +5,22 @@
 #include "config.h"
 #include "app_sensor.h"
 #include "app_adc.h"
+#include "driver_interface.h"
 
 
 #define HUMI_ERR_VAL 1000
 
 
-void humidity_init(sensor_t *sensor);
-float read_sensor_humidity(sensor_t *sensor,uint8_t *err);
+#ifndef GENERAL_ADC
+#define GENERAL_ADC   0
+#endif
+
+#ifndef GENERAL_RS485
+#define GENERAL_RS485 1
+#endif
+
+driver_t *humidity_open(int32_t num,void *opt);
+
+float read_sensor_humidity(driver_t *driver,uint8_t *err);
 
 #endif

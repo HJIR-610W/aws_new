@@ -1,106 +1,42 @@
 
 #include <stdio.h>
-
-#include "Sensors\snow\snow.h"
-#include "driver_uart.h"
+#include <math.h>
+#include <string.h>
 
 #include "app_sensor.h"
 #include "hj_snow.h"
-#include "dev_io.h"
+#include "snow.h"
+#include "snow_define.h"
 
 
-
-
-
-bool snowInit=false;
-
-
-bool is_snowInit(void)
+driver_t *snow_open(int32_t num,void *opt)
 {
-  return snowInit;
-}
+  driver_t *driver;
 
-bool snow_deInit(void)
-{
-  snowInit = false;
-  
-  return snowInit;
-}
-
-
-
-void snow_init(sensor_t *sensor)
-{
-  dev_io_t dev_io;
-  snowInit = true;
-
-  switch (sensor->type)
+  switch (num)
   {
-    case S_T_SNOW_HJ_485:
-    {
-        rs485_config_t *rs485_config;
-    dev_io.io  = eRS485_IO;
-    rs485_config = get_sensor_config(sensor);
-    dev_io.handle = (void *)rs485_config->port;
-    dev_io.config = (void *)&rs485_config;
-    hjsnow_init(&dev_io);
-    }
-
+    case SNOW_HJ_485:
+    driver = hjsnow_open(HJ_SNOW_485,opt);
     break;
-    case S_T_SNOW_HJ_232:
-    {
-        rs232_config_t *rs232_config;
-    dev_io.io  = eRS232_IO;
-    rs232_config  = get_sensor_config(sensor);
-    dev_io.handle = (void *)rs232_config->port;
-    dev_io.config = (void *)rs232_config;
-    hjsnow_init(&dev_io);
-    }
-
+    case SNOW_HJ_232:
+    driver = hjsnow_open(HJ_SNOW_232,opt);
     break;
   }
+
+  return driver;
 }
 
-int32_t read_snow_485(void)
+int32_t read_sensor_snow(driver_t *driver,uint8_t *err)
 {
+  int32_t data;
+  const snow_api_t *api = driver->api;
 
-}
-
-int32_t read_sensor_snow(sensor_t *sensor,uint8_t *err)
-{
-  int32_t snwoFall=0;
-  dev_io_t dev_io;
-  void *cfg = get_sensor_config(sensor);
-  
-  //if(cfg == NULL)
+  if(driver == NULL)
   {
-    *err = 2;
+    *err = 1;
     return 0;
   }
 
+  return api->read(driver,err);
 
-
-  switch (sensor->type)
-  {
-    case S_T_SNOW_HJ_485:
-    {
-      rs485_config_t *rs485_config=(rs485_config_t *)cfg;;
-    dev_io.io = eRS485_IO;
-    dev_io.handle = (void *)rs485_config->port;
-    snwoFall = read_hjSnowFall(&dev_io,err);
-    }
-    break;
-    case S_T_SNOW_HJ_232:
-  {
-          rs232_config_t *rs232_config=(rs232_config_t *)cfg;;
-    dev_io.io = eRS232_IO;
-    dev_io.handle = (void *)rs232_config->port;
-    snwoFall = read_hjSnowFall(&dev_io,err);
-  }
-    break;
-  default:
-    break;
-  }
-
-  return snwoFall;
 }

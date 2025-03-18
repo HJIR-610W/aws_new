@@ -11,7 +11,15 @@
 #define WIND_SPEED_ERR_VAL 1000
 
 
-#define HJ_WIND 0
+
+#ifndef GENERAL_ADC
+#define GENERAL_ADC   0
+#endif
+#ifndef GENERAL_RS485
+#define GENERAL_RS485 1
+#endif
+
+#define WIND_HJ 100
 
 
 #define WIND_CHANNEL_SPEED     1
@@ -19,7 +27,7 @@
 
 
 driver_t * windSpeed_open(uint8_t num,void *opt);
-float wind_read(void *driver,int32_t channel,uint8_t *err);
+float wind_read(driver_t *driver,int32_t channel,uint8_t *err);
 
 
 

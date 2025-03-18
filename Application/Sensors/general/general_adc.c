@@ -10,7 +10,6 @@
 
 
 
-
 typedef struct general_adc_cfg_s
 {
   driver_t *adc_io;
@@ -18,6 +17,7 @@ typedef struct general_adc_cfg_s
   int32_t lowScale;
   int32_t scale;
   uint8_t channel;
+  uint8_t mode;
 }general_adc_cfg_t;
 
 
@@ -26,51 +26,66 @@ general_adc_cfg_t general_adc_cfg_diff[8];
 driver_t general_adc_single[16];
 driver_t general_adc_diff[8];
 
-void *general_adc_single_open(uint8_t num,void *opt)
+
+
+
+
+
+void *general_adc_open(uint8_t num,void *opt)
 {
   adc_config_t *cfg = opt;
 
-  if(general_adc_single[num].opened)
+
+  if(cfg->mode ==0)//single
   {
-    return &general_adc_single[num];
-  }  
+    if(general_adc_single[cfg->channel].opened)
+    {
+      return &general_adc_single[cfg->channel];
+    }  
 
-  general_adc_cfg_single[num].adc_io = driver_adc_open(ADC_ADS1220,0);
-  general_adc_cfg_single[num].highScale = cfg->highScale;
-  general_adc_cfg_single[num].lowScale  = cfg->lowScale;
-  general_adc_cfg_single[num].scale     = cfg->scale;
+    
+    general_adc_cfg_single[cfg->channel].adc_io    = driver_adc_open(ADC_ADS1220,0);
+    general_adc_cfg_single[cfg->channel].highScale = cfg->highScale;
+    general_adc_cfg_single[cfg->channel].lowScale  = cfg->lowScale;
+    general_adc_cfg_single[cfg->channel].scale     = cfg->scale;
+    general_adc_cfg_single[cfg->channel].channel   = cfg->channel;
+    general_adc_cfg_single[cfg->channel].mode      = cfg->mode;
 
-  general_adc_single[num].cfg = &general_adc_cfg_single[num];
-
-return &general_adc_single[num];
-}
-
-void *general_adc_diff_open(uint8_t num,void *opt)
-{
-  adc_config_t *cfg = opt;
+    general_adc_single[cfg->channel].cfg = &general_adc_cfg_single[cfg->channel];
+    general_adc_single[cfg->channel].name = "GENERAL_ADC";
+    return &general_adc_single[cfg->channel];
+  }
+  else
+  {
+    if(general_adc_diff[cfg->channel].opened)
+    {
+      return &general_adc_diff[cfg->channel];
+    }  
   
-  if(general_adc_single[num].opened)
-  {
-    return &general_adc_single[num];
-  }  
+    general_adc_cfg_diff[cfg->channel].adc_io = driver_adc_open(ADC_ADS1220,0);
+    general_adc_cfg_diff[cfg->channel].highScale = cfg->highScale;
+    general_adc_cfg_diff[cfg->channel].lowScale  = cfg->lowScale;
+    general_adc_cfg_diff[cfg->channel].scale     = cfg->scale;
+    general_adc_cfg_diff[cfg->channel].channel = cfg->channel;
+    general_adc_cfg_diff[cfg->channel].mode = cfg->mode;
+    general_adc_diff[cfg->channel].name = "GENERAL_ADC";
+    general_adc_diff[cfg->channel].cfg = &general_adc_cfg_diff[cfg->channel];
+  
+  return &general_adc_diff[cfg->channel];
 
-  general_adc_cfg_diff[num].adc_io = driver_adc_open(ADC_ADS1220,0);
-  general_adc_cfg_diff[num].highScale = cfg->highScale;
-  general_adc_cfg_diff[num].lowScale  = cfg->lowScale;
-  general_adc_cfg_diff[num].scale     = cfg->scale;
+  }
 
-  general_adc_diff[num].cfg = &general_adc_cfg_diff[num];
-
-return &general_adc_diff[num];
 }
 
 
-float general_adc_read_single(void *driver,uint8_t *err)
+
+float general_adc_read(void *driver,uint8_t *err)
 {
   general_adc_cfg_t *cfg = ((driver_t *)driver)->cfg;
   adc_config_t adc_config;
 
-  adc_config.mode      = 0;
+  
+  adc_config.mode      = cfg->mode;
   adc_config.channel   = cfg->channel;
   adc_config.highScale = cfg->highScale;
   adc_config.lowScale  = cfg->lowScale;
@@ -79,16 +94,3 @@ float general_adc_read_single(void *driver,uint8_t *err)
   return calculate_adc(&adc_config,err);
 }
 
-float general_adc_read_diff(void *driver,uint8_t *err)
-{
-  general_adc_cfg_t *cfg = ((driver_t *)driver)->cfg;
-  adc_config_t adc_config;
-
-  adc_config.mode      = 1;
-  adc_config.channel   = cfg->channel;
-  adc_config.highScale = cfg->highScale;
-  adc_config.lowScale  = cfg->lowScale;
-  adc_config.scale     = cfg->scale;
-
-  return calculate_adc(&adc_config,err);
-}

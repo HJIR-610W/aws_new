@@ -9,6 +9,7 @@
 #include "Sensors\wind_direction\wind_direction.h"
 #include "Sensors\snow\snow.h"
 #include "Sensors\rain\rain.h"
+#include "Sensors\rain_present\rain_present.h"
 #include "Sensors\soil_temperature\soil_temperature.h"
 #include "Sensors\sunshine\sunshine.h"
 #include "Sensors\barometer\barometer.h"
@@ -54,12 +55,17 @@ sensor_t g_sensor_copy[SENSOR_COUNT_MAX];
 driver_t *sensor_driver[50];
 
 
+//센서 모델에 해당하는 드라이버 번호를 넘겨준다.
+
 int32_t get_driverNum(eSENSOR_MODEL_t type)
 {
   int32_t num=-1;//항목 없음음
 
   switch(type)
   {
+    case S_T_ADC:
+    num = GENERAL_ADC;
+    break;
     case S_T_PT100_A:
     num = TEMP_PT100_A;
     break;
@@ -67,8 +73,29 @@ int32_t get_driverNum(eSENSOR_MODEL_t type)
     num = TEMP_PT100_B;
     break;
     case S_T_WIND_SPEED_HJ_485:
-    num = HJ_WIND;
+    case S_T_WIND_DIRECTION_HJ_485:
+    num = WIND_HJ;
     break;
+    case S_T_SNOW_HJ_485:
+    num = SNOW_HJ_485;
+    break;
+    case S_T_SNOW_HJ_232:
+    num = SNOW_HJ_232;
+    break;
+    case S_T_RAIN_REED_05MM:
+    num = RAIN_REED_05MM;
+    break;
+    case S_T_RAIN_REED_1MM:
+    num = RAIN_REED_1MM;
+    break;
+    case S_T_RAIN_HALL_05MM:
+    num = RAIN_HALL_05MM;
+    break;
+    case S_T_RAIN_HALL_1MM:
+    num = RAIN_HALL_1MM;
+    break;
+
+
   }
   return num;
 }
@@ -82,7 +109,7 @@ int32_t get_driverNum(eSENSOR_MODEL_t type)
 void sensor_init(void)
 {
   uint8_t num;
-
+  void *para=NULL;
   sensor_t *p_sensor;
   p_sensor = g_sensor_copy;
 
@@ -91,43 +118,52 @@ void sensor_init(void)
 
   for(int i = 0 ; i < _countof(g_sensor_copy);i++)
   {
-    if(p_sensor[i].type)
+    if(p_sensor[i].type)//사용으로 설정되었는 확인
     {
-
       switch(i)
       {
       case A1_TEMPERATURE:
         num = get_driverNum(p_sensor[A1_TEMPERATURE].type);
-        sensor_driver[A1_TEMPERATURE] = temperature_open(num,0);
+        para =  get_sensor_config(&p_sensor[A1_TEMPERATURE]);
+        sensor_driver[A1_TEMPERATURE] = temperature_open(num,para);
         break;
       case A10_RELATIVE_HUMIDITY:
-        humidity_init(&p_sensor[A10_RELATIVE_HUMIDITY]);
+        num = get_driverNum(p_sensor[A10_RELATIVE_HUMIDITY].type);
+        para=  get_sensor_config(&p_sensor[A10_RELATIVE_HUMIDITY]);
+        sensor_driver[A10_RELATIVE_HUMIDITY] = humidity_open(num,para);
         break;
-        case A3_WIND_SPEED:
-          num = get_driverNum(p_sensor[A3_WIND_SPEED].type);
-          sensor_driver[A3_WIND_SPEED]  = windSpeed_open(num,0);
+      case A3_WIND_SPEED:
+        num = get_driverNum(p_sensor[A3_WIND_SPEED].type);
+        para = get_sensor_config(&p_sensor[A3_WIND_SPEED]);
+        sensor_driver[A3_WIND_SPEED]  = windSpeed_open(num,para);
         break;
-        case A2_WIND_DIRECTION:
-          num = get_driverNum(p_sensor[A2_WIND_DIRECTION].type);
-          sensor_driver[A2_WIND_DIRECTION]  = windSpeed_open(num,0);
+      case A2_WIND_DIRECTION:
+        num = get_driverNum(p_sensor[A2_WIND_DIRECTION].type);
+        para =  get_sensor_config(&p_sensor[A2_WIND_DIRECTION]);
+        sensor_driver[A2_WIND_DIRECTION]  = windSpeed_open(num,para);
         break;
-        case A9_SNOW_DEPTH:
-          snow_init(&p_sensor[A9_SNOW_DEPTH]);
+      case A9_SNOW_DEPTH:
+        num = get_driverNum(p_sensor[A9_SNOW_DEPTH].type);
+        para = get_sensor_config(&p_sensor[A9_SNOW_DEPTH]);
+        sensor_driver[A9_SNOW_DEPTH]  = snow_open(num,para);
         break;
-        case A6_RAINFALL_DOT5_1MM:
-          rain_init(&p_sensor[A6_RAINFALL_DOT5_1MM]);
+      case A6_RAINFALL_DOT5_1MM:
+          num = get_driverNum(p_sensor[A6_RAINFALL_DOT5_1MM].type);
+          sensor_driver[A6_RAINFALL_DOT5_1MM]  = rain_open(num,0);
         break;
-        case A8_RAIN_PRESENT:
-          rainPresent_init(&p_sensor[A8_RAIN_PRESENT]);
+      case A8_RAIN_PRESENT:
+        sensor_driver[A8_RAIN_PRESENT]  = rainPresent_open(RAIN_PRESENT_DI,0);
         break;
-        case A7_PRESSURE:
-          barometer_init(&p_sensor[A7_PRESSURE]);
+      case A7_PRESSURE:
+        num = get_driverNum(p_sensor[A7_PRESSURE].type);
+        para=  get_sensor_config(&p_sensor[A7_PRESSURE]);
+        sensor_driver[A7_PRESSURE]  = barometer_open(num,para);
         break;
-        case B5_SOIL_TEMPERATURE_5CM:
+      case B5_SOIL_TEMPERATURE_5CM:
         soilTmep_init(&p_sensor[B5_SOIL_TEMPERATURE_5CM],0);
         break;
-        case B6_SOIL_TEMPERATURE_10CM:
-          soilTmep_init(&p_sensor[B6_SOIL_TEMPERATURE_10CM],0);
+      case B6_SOIL_TEMPERATURE_10CM:
+        soilTmep_init(&p_sensor[B6_SOIL_TEMPERATURE_10CM],0);
         break;
         case B7_SOIL_TEMPERATURE_20CM:
           soilTmep_init(&p_sensor[B7_SOIL_TEMPERATURE_20CM],0);
@@ -151,17 +187,19 @@ void sensor_init(void)
           soilTmep_init(&p_sensor[B13_SOIL_TEMPERATURE_500CM],0);
         break;
         case B2_SUNSHINE_DURATION:
-          sunShine_init(&p_sensor[B2_SUNSHINE_DURATION],0);
+          num = get_driverNum(p_sensor[B2_SUNSHINE_DURATION].type);
+          para=  get_sensor_config(&p_sensor[B2_SUNSHINE_DURATION]);
+          sensor_driver[B2_SUNSHINE_DURATION]  = sunshine_open(num,para);
         break;
         case B1_SOLAR_RADIATION:
-          solraRadiation_init(&p_sensor[B1_SOLAR_RADIATION],0);
+        num = get_driverNum(p_sensor[B1_SOLAR_RADIATION].type);
+        para = get_sensor_config(&p_sensor[B1_SOLAR_RADIATION]);
+        sensor_driver[B1_SOLAR_RADIATION]  = solarRadiation_open(num,para);
         break;
         case N10_AIR_TEMPERATURE_50CM:
           num = get_driverNum(p_sensor[N10_AIR_TEMPERATURE_50CM].type);
           sensor_driver[N10_AIR_TEMPERATURE_50CM] = temperature_open(num,0);
         break;
-
-
       }
     }
 
@@ -409,7 +447,7 @@ void measure_250ms(DATE_TIME_BUF *ct,sensor_t *p_sensor,int32_t cnt)
         sensor_data_1s[A2_WIND_DIRECTION].data.f = data;
         break;
         case A3_WIND_SPEED:
-        data =  wind_read(sensor_driver[A2_WIND_DIRECTION],WIND_CHANNEL_SPEED,&err);
+        data =  wind_read(sensor_driver[A3_WIND_SPEED],WIND_CHANNEL_SPEED,&err);
         sensor_data_1s[A3_WIND_SPEED].data.f = data;
         break;
       }
@@ -417,10 +455,6 @@ void measure_250ms(DATE_TIME_BUF *ct,sensor_t *p_sensor,int32_t cnt)
   }
 }
 
-float read_general(uint8_t type)
-{
-
-}
 
 
 void measure_1s(DATE_TIME_BUF *ct,sensor_t *sensor,uint16_t sensor_cnt)
@@ -450,8 +484,7 @@ void measure_1s(DATE_TIME_BUF *ct,sensor_t *sensor,uint16_t sensor_cnt)
         switch(i)
         {
           case A1_TEMPERATURE:
-          adc =  (type == S_T_GENERAL)?general_sensor_read(sensor_driver[A1_TEMPERATURE],&err):
-                                       temperature_read(sensor_driver[A1_TEMPERATURE],&err);
+          adc =  temperature_read(sensor_driver[A1_TEMPERATURE],&err);
           sensor_data_1s[A1_TEMPERATURE].data.f = adc;
           if((ct->Sec % 10)==0)//10초마다 샘플링하고 6개 자료의 평균을 1분자료
           {
@@ -471,14 +504,15 @@ void measure_1s(DATE_TIME_BUF *ct,sensor_t *sensor,uint16_t sensor_cnt)
           break;
           case A6_RAINFALL_DOT5_1MM:
           {
-            rain_pulse = read_sensor_rain(&sensor[A6_RAINFALL_DOT5_1MM],&err);//금일강수량
+            rain_pulse = read_sensor_rain(sensor_driver[A6_RAINFALL_DOT5_1MM],&err);
+            sensor_data_1s[A6_RAINFALL_DOT5_1MM].data.i += rain_pulse;
             sensor_data[A6_RAINFALL_DOT5_1MM].data.i += rain_pulse;//금일 우량
             sensor_data[A6_RAINFALL_DOT5_1MM].status = read_rainHallErr();
           }
             
           break;
           case A7_PRESSURE://10초마다 샘플링하고 6개 자료의 평균을 1분자료
-          adc =  read_sensor_barometer(&sensor[A7_PRESSURE],&err);
+          adc =  read_sensor_barometer(sensor_driver[A7_PRESSURE],&err);
           sensor_data_1s[A7_PRESSURE].data.f = adc;
           if((ct->Sec%10)==0)
             {
@@ -487,17 +521,17 @@ void measure_1s(DATE_TIME_BUF *ct,sensor_t *sensor,uint16_t sensor_cnt)
             }
           break;
           case A8_RAIN_PRESENT:
-            bVal = read_sensor_rainPresent(&sensor[A8_RAIN_PRESENT],&err);
+            bVal = read_sensor_rainPresent(sensor_driver[A8_RAIN_PRESENT],&err);
             sensor_data[A8_RAIN_PRESENT].data.b = bVal;
             sensor_data_1s[A8_RAIN_PRESENT].data.b = bVal;
           break;
           case A9_SNOW_DEPTH: //mm
-          iData = read_sensor_snow(&sensor[A9_SNOW_DEPTH],&err);;
+          iData = read_sensor_snow(sensor_driver[A9_SNOW_DEPTH],&err);
           sensor_data[A9_SNOW_DEPTH].data.i = iData;
           sensor_data_1s[A9_SNOW_DEPTH].data.i = iData;
           break;
           case A10_RELATIVE_HUMIDITY://10초마다 샘플링하고 6개 자료의 평균을 1분자료
-          adc =  read_sensor_humidity(&sensor[A10_RELATIVE_HUMIDITY],&err);
+          adc =  read_sensor_humidity(sensor_driver[A10_RELATIVE_HUMIDITY],&err);
           sensor_data_1s[A10_RELATIVE_HUMIDITY].data.f = adc;
           if((ct->Sec%10)==0)
             {
@@ -506,12 +540,12 @@ void measure_1s(DATE_TIME_BUF *ct,sensor_t *sensor,uint16_t sensor_cnt)
             }
           break;
           case B1_SOLAR_RADIATION:
-          fData = read_sensor_sunshine(&sensor[B1_SOLAR_RADIATION],&err);
+          fData = read_sensor_solarRadiation(sensor_driver[B1_SOLAR_RADIATION],&err);
           sensor_data[B1_SOLAR_RADIATION].data.f    = fData;
           sensor_data_1s[B1_SOLAR_RADIATION].data.f = fData;
           break;
           case B2_SUNSHINE_DURATION:
-          fData = read_sensor_sunshine(&sensor[B2_SUNSHINE_DURATION],&err);
+          fData = read_sensor_sunshine(sensor_driver[B2_SUNSHINE_DURATION],&err);
           sensor_data[B2_SUNSHINE_DURATION].data.f    = fData;
           sensor_data_1s[B2_SUNSHINE_DURATION].data.f = fData;
           break;

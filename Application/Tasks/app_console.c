@@ -20,6 +20,7 @@
 #include "app_sensor.h"
 #include "boot_version.h"
 
+#include "driver_485.h"
 #include "config.h"
 #include "dev_io.h"
 #include "mcu_debug.h"
@@ -824,9 +825,9 @@ int32_t print_menu_sensor(p_shell_context_t ctx)
   for( i = 0 ; i< cnt;i++)
   {
     make_option(&config.sensor[i],opt,sizeof(opt));
-    ctx->printf("%2d.%-15s:%-20s %-15s,  ",i,sensorNameList[i]  ,ITEM_LIST(config.sensor[i].type,sensorTypeList),opt);
+    ctx->printf("%2d.%-14s:%-24s %-15s,  ",i,sensorNameList[i]  ,ITEM_LIST(config.sensor[i].type,sensorTypeList),opt);
     make_option(&config.sensor[i+cnt],opt,sizeof(opt));
-    ctx->printf("%2d.%-15s:%-20s %-15s\r\n",i+cnt,sensorNameList[i+cnt],ITEM_LIST(config.sensor[i+cnt].type,sensorTypeList),opt);
+    ctx->printf("%2d.%-14s:%-24s %-15s\r\n",i+cnt,sensorNameList[i+cnt],ITEM_LIST(config.sensor[i+cnt].type,sensorTypeList),opt);
   }
 
 #endif
@@ -1197,7 +1198,6 @@ int32_t print_menu_sensor_temp(p_shell_context_t ctx)
 
   if(sensor->type != S_T_UNSUED)
   {
-    ctx->printf("%2d.scale      :%d\r\n",cnt++,sensor->scale);
     cnt = print_common_cfg(ctx,sensor,cnt);  
   }
 
@@ -2825,16 +2825,123 @@ int32_t menu_manage_device_reset(p_shell_context_t ctx)
   reset_system(0,"console reset");
   return 0;
 }
+
+
+void config_hj_reset(void)
+{
+  config_t hj_config;
+  adc_config_t *adc_config;
+  rs485_config_t *rs485_cfg;
+  uint8_t single_channel=0;
+  
+  memset(&hj_config,0,sizeof(hj_config));
+
+  memset(&s_config,0,sizeof(s_config));
+  write_s_config();
+
+
+  hj_config.sensor[A1_TEMPERATURE].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[A1_TEMPERATURE]);
+  adc_config = get_sensor_config(&hj_config.sensor[A1_TEMPERATURE]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 6000;
+  adc_config->lowScale = -4000;
+  adc_config->scale = 100;
+
+  hj_config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;
+  sensor_add(&hj_config.sensor[A2_WIND_DIRECTION]);
+  rs485_cfg = get_sensor_config(&hj_config.sensor[A2_WIND_DIRECTION]);
+
+  rs485_cfg->baud = 9600;
+  rs485_cfg->id   = 0;
+  rs485_cfg->parityIdx = 0;
+  rs485_cfg->port = RS485_A;
+
+
+  hj_config.sensor[A3_WIND_SPEED].type = S_T_WIND_SPEED_HJ_485;
+  sensor_add(&hj_config.sensor[A3_WIND_SPEED]);
+  rs485_cfg = get_sensor_config(&hj_config.sensor[A3_WIND_SPEED]);
+
+  rs485_cfg->baud = 9600;
+  rs485_cfg->id   = 0;
+  rs485_cfg->parityIdx = 0;
+  rs485_cfg->port = RS485_A;
+
+
+  hj_config.sensor[A8_RAIN_PRESENT].type = S_T_RAIN_PRESENT_DI;
+  hj_config.sensor[A6_RAINFALL_DOT5_1MM].type = S_T_RAIN_REED_1MM;
+
+  hj_config.sensor[A4_INSTANT_WIND_DIRECTION].type = S_T_WIND_DIRECTION_MAX_VAL;
+  hj_config.sensor[A5_INSTANT_WIND_SPEED].type = S_T_WIND_SPEED_MAX_VAL;
+
+  hj_config.sensor[A9_SNOW_DEPTH].type = S_T_SNOW_HJ_485;
+  sensor_add(&hj_config.sensor[A9_SNOW_DEPTH]);
+  rs485_cfg = get_sensor_config(&hj_config.sensor[A9_SNOW_DEPTH]);
+
+  rs485_cfg->baud = 19200;
+  rs485_cfg->id   = 0;
+  rs485_cfg->parityIdx = 0;
+  rs485_cfg->port = RS485_B;
+
+
+  hj_config.sensor[A7_PRESSURE].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[A7_PRESSURE]);
+  adc_config = get_sensor_config(&hj_config.sensor[A7_PRESSURE]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 200000;
+  adc_config->lowScale = 0;
+  adc_config->scale = 100;
+
+
+  hj_config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[A10_RELATIVE_HUMIDITY]);
+  adc_config = get_sensor_config(&hj_config.sensor[A10_RELATIVE_HUMIDITY]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 10000;
+  adc_config->lowScale = 0;
+  adc_config->scale = 100;
+
+
+  write_s_config();
+
+  config = hj_config;
+  write_config();
+  
+}
+
+
 //초기화
 int32_t menu_manage_config_reset(p_shell_context_t ctx)
 {
+  int32_t cnt;
+  const char *config_menu[]={"0.AWS 화진 기본 설정","1.공장 초기화 "};
+
+  cnt = select_indexFromList(ctx,config_menu,NULL,_countof(config_menu),false);
 
 
-  memset(config.sensor,0,sizeof(config.sensor));
+  if(cnt > 0)
+  {
+    cnt--;
+    switch(cnt)
+    {
+      case 0:
+      config_hj_reset();
 
-  WRITE_CFG(sensor);
-  memset(&s_config,0,sizeof(s_config));
-  write_s_config();
+      break;
+      case 1:
+      memset(config.sensor,0,sizeof(config.sensor));
+
+      WRITE_CFG(sensor);
+      memset(&s_config,0,sizeof(s_config));
+      write_s_config();
+      break;
+    }
+  }
+
+
   return 0;
 }
 
@@ -2877,21 +2984,17 @@ int32_t menu_manage_print_config_all(p_shell_context_t ctx)
   return 0;
 }
 menu_func g_manageMenu[]={[0]=menu_manage_version,
-                              menu_manage_update,
                               menu_manage_device_reset,
-                              menu_manage_config_reset,
-                              menu_manage_print_config_all};
+                              menu_manage_config_reset};
 
 int32_t print_menu_manage(p_shell_context_t ctx)
 {
   int32_t cnt=0;
   
   ctx->printf("\r\n");
-  ctx->printf(" 0.version\r\n");
-  ctx->printf(" 1.fw update\r\n");
-  ctx->printf(" 2.device reset\r\n");
-  ctx->printf(" 3.config factory reset\r\n");
-  ctx->printf(" 4.print config all\r\n");
+  ctx->printf(" 0.버전\r\n");
+  ctx->printf(" 1.장비 리셋\r\n");
+  ctx->printf(" 2.설정 값\r\n");
   cnt = 5;
   return cnt;
 }

@@ -195,11 +195,11 @@ typedef struct
 }adc_config_t;
 
 
+
 typedef struct sensor_s
 {
   eSENSOR_MODEL_t type; 
-  int16_t scale;
-  uint8_t configCnt;
+  uint8_t configCnt;//센서가 가지고 있는 설정값 수 예)
   uint8_t config[4][2];//[0][0] 센서타입 정보 저장, [0][1] 타입이 할당받은 설정 위치값 저장
 }sensor_t;
 

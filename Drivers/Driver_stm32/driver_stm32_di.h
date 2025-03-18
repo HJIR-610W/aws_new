@@ -28,7 +28,8 @@
 #define STM32_DI_USER_BTN     14
 #define STM32_DI_BTM_STATUS   15
 
-#define STM32_DI_MAX          16
+#define STM32_DI_RAIN_DETECT   16
+#define STM32_DI_MAX          17
 
 
 

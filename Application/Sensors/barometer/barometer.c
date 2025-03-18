@@ -1,34 +1,48 @@
 
+#include <math.h>
+#include <string.h>
+
 
 #include "config.h"
 #include "app_adc.h"
 #include "Sensors\barometer\barometer.h"
+#include "Sensors\general\general_adc.h"
 
 
 
-
-void barometer_init(sensor_t *sensor)
+driver_t *barometer_open(int32_t num,void *opt)
 {
-  
-}
+  driver_t *driver;
 
-
-
-int32_t read_sensor_barometer(sensor_t *sensor,uint8_t *err)
-{
-  int32_t data=0;
-    adc_config_t *adc;
-  switch(sensor->type)
+  switch (num)
   {
-    case S_T_ADC:
-
-    adc = get_sensor_config(sensor);
-
-    break;
-    case S_T_TEMP_232:
-
+  case GENERAL_ADC:
+    driver = general_adc_open(GENERAL_ADC,opt);
     break;
   }
-
-  return data;
+  
+  return driver;
 }
+
+float read_sensor_barometer(driver_t *driver,uint8_t *err)
+{
+
+
+  if(driver == NULL)
+  {
+    *err = 1;
+    return NAN;
+  }
+
+  if(strncmp(driver->name,"GENERAL_ADC",11)==0)
+  {
+    return general_adc_read(driver,err);
+  }
+
+  
+  return 0;
+
+
+}
+
+

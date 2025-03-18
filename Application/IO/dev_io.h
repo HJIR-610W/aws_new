@@ -38,7 +38,7 @@ typedef enum dev_io_e
 typedef struct dev_io_s
 {
   eDEV_IO_t io;
-  void *handle;
+  void *driver;
   void *config;
 }dev_io_t;
 

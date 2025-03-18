@@ -33,6 +33,8 @@
 #define DI_USER_BTN     22
 #define DI_BTM_STATUS   23
 
+#define DI_RAIN_DETECT 24
+
 
 driver_t *driver_di_open(uint32_t num,void *opt);
 void driver_di_close(driver_t *drv);

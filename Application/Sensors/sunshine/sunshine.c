@@ -3,13 +3,16 @@
 
 
 #include <stdio.h>
+#include <math.h>
+#include <string.h>
 
 #include "Sensors\sunshine\sunshine.h"
+#include "sunshine_define.h"
 #include "driver_adc.h"
 #include "app_sensor.h"
 
 #include "dev_io.h"
-
+#include "Sensors\general\general_adc.h"
 
 
 bool sunShineInit=false;
@@ -19,33 +22,39 @@ void sunShine_init(sensor_t *sensor,void *opt)
   sunShineInit = true;
 }
 
-bool is_sunShineInit(void)
-{
-  return sunShineInit;
-}
 
-bool sunShine_deInit(void)
-{
-  sunShineInit = false;
-}
 
-float read_sensor_sunshine(sensor_t *sensor,uint8_t *err)
+
+
+driver_t *sunshine_open(int32_t num,void *opt)
 {
-  float data;
-    adc_config_t *adc;
-    
-  switch(sensor->type)
+  driver_t *driver;
+
+  switch (num)
   {
-    case S_T_ADC:
-
-    adc = get_sensor_config(sensor);
-    data = calculate_adc(adc,err);
-
+  case GENERAL_ADC:
+    driver = general_adc_open(GENERAL_ADC,opt);
     break;
-    case S_T_GENERAL_485:
-  
-    break;
+ }
+
+ return driver;
+}
+
+float read_sensor_sunshine(driver_t *driver,uint8_t *err)
+{
+  const sunshine_api_t *api = ((driver_t *)driver)->api;
+
+  if(driver == NULL)
+  {
+    *err = 1;
+    return NAN;
   }
 
-  return data;
+  if(strncmp(driver->name,"GENERAL_ADC",11)==0)
+  {
+    return general_adc_read(driver,err);
+  }
+
+
+  return api->read(driver,err);
 }

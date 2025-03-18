@@ -3,49 +3,46 @@
 
 
 #include <stdio.h>
+#include <math.h>
+#include <string.h>
 
-#include "solar_radiation.h"
+#include "Sensors\solar_radiation\solar_radiation.h"
+#include "Sensors\general\general_adc.h"
 #include "driver_adc.h"
 #include "app_sensor.h"
 
-#include "dev_io.h"
+#include "solarRadiation_define.h"
 
 
-
-bool solarRadiationInit=false;
-
-void solraRadiation_init(sensor_t *sensor,void *opt)
+driver_t *solarRadiation_open(int32_t num,void *opt)
 {
-  solarRadiationInit = true;
-}
+  driver_t *driver;
 
-bool is_solraRadiationInit(void)
-{
-  return solarRadiationInit;
-}
-
-void solarRadiation_deInit(void)
-{
-  solarRadiationInit = false;
-  
-   
-}
-
-float read_sensor_solarRadiation(sensor_t *sensor,uint8_t *err)
-{
-  float data;
-    adc_config_t *adc;
-    
-  switch(sensor->type)
+  switch (num)
   {
-    case S_T_ADC:
-
-    adc = get_sensor_config(sensor);
-    data = calculate_adc(adc,err);
-
+  case GENERAL_ADC:
+    driver = general_adc_open(GENERAL_ADC,opt);
     break;
+ }
 
+ return driver;
+}
+
+float read_sensor_solarRadiation(driver_t *driver,uint8_t *err)
+{
+  const solarRadiation_api_t *api = ((driver_t *)driver)->api;
+
+  if(driver == NULL)
+  {
+    *err = 1;
+    return NAN;
   }
 
-  return data;
+  if(strncmp(driver->name,"GENERAL_ADC",11)==0)
+  {
+    return general_adc_read(driver,err);
+  }
+
+
+  return api->read(driver,err);
 }

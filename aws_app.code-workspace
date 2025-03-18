@@ -70,7 +70,9 @@
         "pt100.h": "c",
         "temperature_define.h": "c",
         "app_adc.h": "c",
-        "driver_adc.h": "c"
+        "driver_adc.h": "c",
+        "wind_define.h": "c",
+        "general_adc.h": "c"
     },
     "files.encoding": "euckr",
     "editor.tabSize": 2,

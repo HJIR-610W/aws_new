@@ -15,14 +15,12 @@ typedef struct rain_data_s
   uint16_t year;
 }rain_data_t;
 
-void rain_init(sensor_t *sensor);
-int32_t read_sensor_rain(sensor_t *sensor,uint8_t *err);
 
 void rainPresent_init(sensor_t *sensor);
 bool is_rainPresentInit(void);
 bool rainPresent_deInit(void);
 
-bool read_sensor_rainPresent(sensor_t *sensor,uint8_t *err);
+
 
 int32_t read_rainHallErr(void);
 
@@ -33,4 +31,14 @@ uint16_t get_rain(uint16_t cnt);
 
 
 extern rain_data_t rain_data;;
+
+
+#define RAIN_REED_05MM 100
+#define RAIN_REED_1MM  101
+#define RAIN_HALL_05MM 102
+#define RAIN_HALL_1MM  103
+
+driver_t *rain_open(int32_t num,void *opt);
+int32_t read_sensor_rain(driver_t *driver,uint8_t *err);
+
 #endif

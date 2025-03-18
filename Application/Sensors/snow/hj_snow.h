@@ -4,6 +4,10 @@
 
 #include "dev_io.h"
 
-  int32_t read_hjSnowFall(dev_io_t *dev,uint8_t *err);
-    void hjsnow_init(dev_io_t *io);
+#define HJ_SNOW_485 0
+#define HJ_SNOW_232 1
+
+driver_t *hjsnow_open(int32_t num,void *opt);
+
+  
 #endif

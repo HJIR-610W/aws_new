@@ -1,9 +1,14 @@
 
 
+#include <math.h>
+#include <string.h>
+
 #include "Sensors\wind_speed\wind_speed.h"
+#include "Sensors\general\general_adc.h"
 #include "hj_wind.h"
 
-#include <math.h>
+
+
 
 
 driver_t * windSpeed_open(uint8_t num,void *opt)
@@ -12,7 +17,10 @@ driver_t * windSpeed_open(uint8_t num,void *opt)
 
   switch (num)
   {
-    case HJ_WIND:
+    case GENERAL_ADC:
+    driver = general_adc_open(num,opt);
+    break;
+    case WIND_HJ:
     driver = hjwind_open(HJ_WIND,opt)  ;
     break;
   default:
@@ -22,7 +30,7 @@ driver_t * windSpeed_open(uint8_t num,void *opt)
   return driver;
 }
 
-float wind_read(void *driver,int32_t channel,uint8_t *err)
+float wind_read(driver_t *driver,int32_t channel,uint8_t *err)
 {
   const wind_api_t *api = ((driver_t *)driver)->api;
 
@@ -31,6 +39,12 @@ float wind_read(void *driver,int32_t channel,uint8_t *err)
     *err = 1;
     return NAN;
   }
+
+  if(strncmp(driver->name,"GENERAL_ADC",11)==0)
+  {
+    return general_adc_read(driver,err);
+  }
+
 
   return api->read(driver,channel,err);
 }

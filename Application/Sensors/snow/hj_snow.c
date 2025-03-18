@@ -2,17 +2,21 @@
 #include <string.h>
 
 #include "Sensors\snow\hj_snow.h"
+#include "driver_485.h"
+#include "driver_uart.h"
+
 #include "app_rs485.h"
 #include "app_rs232.h"
 #include "app_sensor.h"
 #include "dev_io.h"
+#include "snow_define.h"
 
 #define PROTOCOL_TYPE_t  uint8_t
 #define P_TYPE_HJ                   0
 #define P_TYPE_WEATHERPIA_2         1
 #define P_TYPE_WEATHERPIA_013456    2
-	#define		WATCHDOG_BUFFER_MAX		12		// 32bit size
-	#define		PASSNUMBER_MAX				5
+#define WATCHDOG_BUFFER_MAX		12		// 32bit size
+#define PASSNUMBER_MAX				5
 	typedef struct
 	{
 		// Snowfall Config
@@ -163,7 +167,10 @@ uint16_t make_hjSnowFrame(uint8_t* out, uint16_t outSize,
 		return cnt;
 	}
 
+bool check_hjsnow(uint8_t *pdata,uint16_t datalen)
+{
 
+}
   int32_t read_hjSnowFall(dev_io_t *dev,uint8_t *err)
   {
     uint8_t frame[50];
@@ -188,8 +195,7 @@ uint16_t make_hjSnowFrame(uint8_t* out, uint16_t outSize,
 
     dev_io_write(dev,frame,len,0);
 
-    opt.waitTimeOutMs = 5;
-    opt.dataTimeOutMs = 2;
+    opt.waitTimeOutMs = 50;
     len = dev_io_read(dev,frame,sizeof(frame),DEV_IO_CMD_DATA_TIMEOUT,(void *)&opt);
 
     if(len)
@@ -202,31 +208,94 @@ uint16_t make_hjSnowFrame(uint8_t* out, uint16_t outSize,
   }
 
 
-  void hjsnow_init(dev_io_t *io)
-  {
-    uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
-    switch (io->io)
-    {
-    case eRS485_IO:
-      {
-      rs485_config_t *rs485_config=(rs485_config_t *)io->config;
-      uart_config.baud = rs485_config->baud;
-      uart_config.parityIdx = rs485_config->parityIdx;
-      uart_config.stop_bit = 0;
-      rs485_open((eRS485_PORT_t)(int)io->handle,&uart_config);
-      }
-      break;
-    case eRS232_IO:
-      {
-      rs232_config_t *rs232_config=(rs232_config_t *)io->config;
-      uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
-      uart_config.baud = rs232_config->baud;
-      uart_config.parityIdx = rs232_config->parityIdx;
-      rs232_open((eRS232_PORT_t)(int)io->handle,&uart_config);
-      }
-      break;
-    default:
-      break;
-    }
-  }
+
+	typedef struct hjsnow_cfg_s
+	{
+		driver_t *io;
+		int32_t channel;
+	}hjsnow_cfg_t;
+
+	
+	#define SNOW_CH_485 0
+	#define SNOW_CH_232 1
+
+	driver_t hjsnow_driver[2];
+	hjsnow_cfg_t hjsnow_cfg_485;
+	hjsnow_cfg_t hjsnow_cfg_232;
+
+
+	int32_t read_hjsnow(driver_t *driver,uint8_t *err);
+
+	snow_api_t snow_api={.read=read_hjsnow};
+
+	driver_t *hjsnow_open(int32_t num,void *opt)
+	{
+
+		if(hjsnow_driver[num].opened)
+		{
+			return &hjsnow_driver[num];
+		}
+
+		hjsnow_driver[num].opened = true;
+
+		if(num==0)//RS485
+		{
+      rs485_config_t *rs485_config=opt;
+			uart_config_t uart_config;
+
+			uart_config.baud      = rs485_config->baud;
+			uart_config.dataLen   = 8;
+			uart_config.parityIdx = 0;
+			uart_config.stop_bit  = 1;
+			hjsnow_cfg_485.io = driver_rs485_open(rs485_config->port,&uart_config);
+			hjsnow_cfg_485.channel = 0;
+			hjsnow_driver[SNOW_CH_485].cfg = &hjsnow_cfg_485;
+			hjsnow_driver[SNOW_CH_485].api = &snow_api;
+		}
+		else
+		{
+      rs232_config_t *rs232_config=opt;
+			uart_config_t uart_config;
+
+			uart_config.baud = rs232_config->baud;
+			uart_config.dataLen = 8;
+			uart_config.parityIdx = rs232_config->parityIdx;
+			uart_config.stop_bit = 1;
+
+			hjsnow_cfg_232.channel = 1;
+			hjsnow_cfg_232.io = driver_uart_open(rs232_config->port,&uart_config);
+
+			hjsnow_driver[SNOW_CH_232].cfg = &hjsnow_cfg_232;
+			hjsnow_driver[SNOW_CH_232].api = &snow_api;
+		}
+
+
+		return &hjsnow_driver[num];
+
+	}
+
+
+
+	int32_t read_hjsnow(driver_t *driver,uint8_t *err)
+	{
+		hjsnow_cfg_t *pcfg = driver->cfg;
+		int32_t snow=0;
+		dev_io_t dev_io;
+
+		dev_io.driver = pcfg->io;
+
+		if(pcfg->channel ==0)//485
+		{
+			dev_io.io = eRS485_IO;
+		}
+		else
+		{
+			dev_io.io = eRS232_IO;
+		}
+
+		return read_hjSnowFall(&dev_io,err);
+
+
+
+	}

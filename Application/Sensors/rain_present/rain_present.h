@@ -5,8 +5,13 @@
 
 #include <stdbool.h>
 #include "app_sensor.h"
+#include "driver_interface.h"
 
 
-void rainPresent_init(sensor_t *sensor);
-bool read_sensor_rainPresent(sensor_t *sensor,uint8_t *err);
+#define RAIN_PRESENT_DI 100
+
+
+driver_t *rainPresent_open(int32_t num,void *opt);
+bool read_sensor_rainPresent(driver_t *driver,uint8_t *err);
+
 #endif

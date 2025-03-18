@@ -1458,6 +1458,12 @@
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\snow\snow.c</name>
                 </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\snow\snow.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\snow\snow_define.h</name>
+                </file>
             </group>
             <group>
                 <name>soil_temp</name>
@@ -1476,6 +1482,9 @@
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\solar_radiation\solar_radiation.h</name>
                 </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\solar_radiation\solarRadiation_define.h</name>
+                </file>
             </group>
             <group>
                 <name>sunshine</name>
@@ -1484,6 +1493,9 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\sunshine\sunshine.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\sunshine\sunshine_define.h</name>
                 </file>
             </group>
             <group>

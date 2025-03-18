@@ -14,6 +14,8 @@
 #include "app_rs485.h"
 #include "app_rs232.h"
 #include "terminal.h"
+#include "driver_485.h"
+#include "driver_uart.h"
 
 static driver_t *debug_uart = NULL;;
 USART_TypeDef *debug_uart_base = USART1;
@@ -346,24 +348,28 @@ void dev_io_write(dev_io_t  *dev,uint8_t *data,uint32_t dataLen,uint32_t opt)
   switch(dev->io)
   {
     case eRS485_IO:
-      rs485_send((eRS485_PORT_t)(int)dev->handle,data,dataLen);
+      driver_rs485_send(dev->driver,data,dataLen);
     break;
     case eRS232_IO:
-      rs232_send((eRS232_PORT_t)(int)dev->handle,data,dataLen);
+      driver_uart_send(dev->driver,data,dataLen);
     break;
-
   }
 }
 
 uint16_t dev_io_read(dev_io_t  *dev,uint8_t *out,uint32_t dataLen,uint8_t cmd,void *opt)
 {
+    devIoTimeOutopt_t *pdevopt= opt;
+    
   switch(dev->io)
   {
     case eRS485_IO:
-    return rs485_recv((eRS485_PORT_t)(int)dev->handle,out,dataLen,(uint32_t)opt);
+
+    return driver_rs485_recv(dev->driver,out,dataLen,pdevopt->waitTimeOutMs);
     break;
     case eRS232_IO:
-        return rs232_recv((eRS232_PORT_t)(int)dev->handle,out,dataLen,(uint32_t)opt);
+
+
+        return driver_uart_recv(dev->driver,out,dataLen,pdevopt->waitTimeOutMs);
     break;
 
   }

@@ -43,6 +43,13 @@ const stm32_di_cfg_t HART_CD_cfg  ={.port=DI_CD_H_GPIO_Port,.pin = DI_CD_H_Pin};
 const stm32_di_cfg_t USER_BTN_cfg  ={.port=DI_SW_SYS_GPIO_Port,.pin = DI_SW_SYS_Pin};
 const stm32_di_cfg_t BTM_STATUS_cfg  ={.port=DI_STATUS_BTM_GPIO_Port,.pin = DI_STATUS_BTM_Pin};
 
+
+
+const stm32_di_cfg_t Rain_detect_cfg  ={.port=RAIN_DETECT_GPIO_Port,.pin = RAIN_DETECT_PIN};
+
+
+
+
 void stm32_di_close(driver_t *driver);
 int32_t stm32_di_read(driver_t *driver);
 void stm32_di_set(driver_t *drv,di_set_option_t cmd,void *option);
@@ -143,6 +150,10 @@ driver_t *stm32_di_open(int num,void *opt)
     case STM32_DI_BTM_STATUS:
     g_stm32_di_list[num].cfg = (void *)&BTM_STATUS_cfg;
     stm32_di_init(&BTM_STATUS_cfg);
+    break;
+    case STM32_DI_RAIN_DETECT:
+    g_stm32_di_list[num].cfg = (void *)&Rain_detect_cfg;
+    stm32_di_init(&Rain_detect_cfg);
     break;
   }
  

@@ -80,7 +80,14 @@ void rainHallCallBack(void *arg)
 }
 }
 
-void rain_init(sensor_t *sensor)
+
+
+#define RAIN_REED_05MM 100
+#define RAIN_REED_1MM  101
+#define RAIN_HALL_05MM 102
+#define RAIN_HALL_1MM  103
+
+void rain_init(uint32_t num)
 {
   driver_t *rain_pulse;
   di_isr_set_cfg_t isr_cfg;
@@ -89,13 +96,10 @@ void rain_init(sensor_t *sensor)
   g_rainSemId = osSemaphoreNew(1, 1, NULL); 
   g_hallStatusDriver  = driver_di_open(DI_RAIN_HALL_ERR,0);
 
-  switch (sensor->type)
+  switch (num)
   {
-  case S_T_GENERAL_232:
-  /* code */
-  break;
-  case S_T_RAIN_REED_05MM:
-  case S_T_RAIN_REED_1MM:
+  case RAIN_REED_05MM:
+  case RAIN_REED_1MM:
   rain_pulse = driver_di_open(DI_RAIN_REED,0);
 
   isr_cfg.call    = rainReedCallBack;
@@ -105,8 +109,8 @@ void rain_init(sensor_t *sensor)
   driver_di_set(rain_pulse,DI_SET_INTERRUPT,&isr_cfg);
   break;
   
-  case S_T_RAIN_HALL_05MM:
-  case S_T_RAIN_HALL_1MM:
+  case RAIN_HALL_05MM:
+  case RAIN_HALL_1MM:
     rain_pulse = driver_di_open(DI_RAIN_HALL,0);
 
     isr_cfg.call    = rainHallCallBack;
@@ -117,82 +121,12 @@ void rain_init(sensor_t *sensor)
     driver_di_set(rain_pulse,DI_SET_INTERRUPT,&isr_cfg);
 
   break;
-  default:
-    break;
   }
 }
 
 
 
-int32_t read_rain(dev_io_t *dev,uint8_t *err)
-{
-  return 0;
-}
 
-int32_t read_rain_rs232(dev_io_t *dev,uint8_t *err)
-{
-  char frame[10];
-  uint16_t len;
-  int32_t data=0;
-  static uint8_t cnt=0;
-  int32_t recvCnt;
-  char *endptr;
- len= snprintf(frame,sizeof(frame),"Q_RAIN:%d\r\n",cnt);
-
-  dev_io_write(dev,(uint8_t *)frame,len,0);
-    
-  len = dev_io_read(dev,(uint8_t*)frame,sizeof(frame),0,(void *)5);
-
-  if(len)
-  {
-    frame[len]=0;
-
-    recvCnt = strtol(&frame[1],&endptr,10);
-   // if(frame[0]=='A'&&recvCnt==cnt)
-    {
-      *err = 0;
-      data = 1;
-    }
-
-  }
-  cnt++;
-  return data;
-
-}
-
-/**
- * @brief 1mm 10, 0.5mm 5
- */
-int32_t read_sensor_rain(sensor_t *sensor,uint8_t *err)
-{
-  uint16_t rain=0;
-  uint16_t scale=1;
-  int32_t data=0;
-
-  
-  switch (sensor->type)
-  {
-  case S_T_RAIN_REED_05MM:
-  scale = 5;
-  break;
-  case S_T_RAIN_REED_1MM:
-  scale = 10;
-  break;
-  case S_T_RAIN_HALL_05MM:
-  scale = 5;
-  break;
-  case S_T_RAIN_HALL_1MM:
-  scale = 10;
-  break;
-  }
-  
-  rain =  peek_rain();
-  if(rain)
-  {
-   data = get_rain(rain);
-  }
-  return data*scale;
-}
 
 
 int32_t read_rainHallErr(void)
@@ -213,4 +147,60 @@ uint16_t calculate_yearRain(DATE_TIME_BUF *ct)
 uint16_t calculate_monthRain(DATE_TIME_BUF *ct)
 {
 
+}
+
+typedef struct rain_cfg_s
+{
+  int32_t pulse;
+}rain_cfg_t;
+
+driver_t rain_driver;
+rain_cfg_t rain_cfg;
+
+
+
+driver_t *rain_open(int32_t num,void *opt)
+{
+
+  if(rain_driver.opened)
+  {
+    return &rain_driver;
+  }
+  
+  rain_init(num);
+  switch (num)
+  {
+    case RAIN_REED_05MM:
+    rain_cfg.pulse = 5;
+    break;
+    case RAIN_REED_1MM:
+    rain_cfg.pulse = 10;
+    break;
+    case RAIN_HALL_05MM:
+    rain_cfg.pulse = 5;
+    break;
+    case RAIN_HALL_1MM:
+    rain_cfg.pulse = 10;
+    break;
+  }
+
+  rain_driver.cfg = &rain_cfg;
+
+  return &rain_driver;
+
+}
+
+int32_t read_sensor_rain(driver_t *driver,uint8_t *err)
+{
+  int32_t rain=0;
+  rain_cfg_t *cfg = driver->cfg;
+  uint16_t data = 0;
+
+  rain =  peek_rain();
+  if(rain)
+  {
+   data = get_rain(rain);
+  }
+
+  return (data*cfg->pulse);
 }

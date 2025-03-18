@@ -15,21 +15,15 @@
 const uint8_t temperatureList[]={S_T_UNSUED,
                                  S_T_PT100_A,
                                  S_T_PT100_B,
-                                 S_T_ADC,
-                                 S_T_GENERAL_232,
-                                 S_T_GENERAL_485};
+                                 S_T_ADC};
                                  
 const uint8_t windDirectionList[]={S_T_UNSUED,
                                    S_T_WIND_DIRECTION_HJ_485,
-                                   S_T_ADC,
-                                   S_T_GENERAL_232,
-                                   S_T_GENERAL_485};
+                                   S_T_ADC};
 
 const uint8_t windSpeedList[]={S_T_UNSUED,
                                S_T_WIND_SPEED_HJ_485,
-                               S_T_ADC,
-                               S_T_GENERAL_232,
-                               S_T_GENERAL_485};
+                               S_T_ADC};
 
 
 const uint8_t windDirectionInstantList[]={S_T_UNSUED,
@@ -37,7 +31,6 @@ const uint8_t windDirectionInstantList[]={S_T_UNSUED,
 
 const uint8_t windSpeedInstantList[]={S_T_UNSUED,
                                       S_T_WIND_SPEED_MAX_VAL};
-
 
 
 const uint8_t rainList[]={S_T_UNSUED,
@@ -48,20 +41,17 @@ const uint8_t rainList[]={S_T_UNSUED,
                           S_T_GENERAL_232};
 //기압 6
 const uint8_t pressureList[]={S_T_UNSUED,
-                              S_T_ADC,
-                              S_T_GENERAL_232};
+                              S_T_ADC};
 
 const uint8_t rainPresentList[]={S_T_UNSUED,
                                  S_T_RAIN_PRESENT_DI};
 
 const uint8_t snowList[]={S_T_UNSUED,
                           S_T_ADC,
-                          S_T_SNOW_HJ_485,
-                          S_T_SNOW_HJ_232};
+                          S_T_SNOW_HJ_485};
 
 const uint8_t humiList[]={S_T_UNSUED,
-                          S_T_ADC,
-                          S_T_GENERAL_232};
+                          S_T_ADC};
 
 
 const uint8_t sunShineList[]={S_T_UNSUED,
@@ -199,8 +189,8 @@ const char *sensorTypeList[]={"미사용",              /* 0 S_T_UNSUED */
                                 "DI_0",              /* 11 S_T_DI_0 */
                                 "SNOW_HJ_RS485",     /* 12 S_T_SNOW_HJ_485 */
                                 "GENERAL_RS232",     /* 13 S_T_GENERAL_232 */
-                                "WIND_SPEED_RS485",  /* 14 S_T_WIND_SPEED_HJ_485 */
-                                "WIND_DIRECTION_RS485", /* 15 S_T_WIND_DIRECTION_HJ_485 */
+                                "WIND_SPEED_HJ_RS485",  /* 14 S_T_WIND_SPEED_HJ_485 */
+                                "WIND_DIRECTION_HJ_RS485", /* 15 S_T_WIND_DIRECTION_HJ_485 */
                                 "HUMI_HJ_RS485",      /* 16 S_T_HUMI_HJ_485 */
                                 "WIND_SPEED_MAX",     /* 17 S_T_WIND_SPEED_MAX_VAL */
                                 "WIND_DIRECTION_MAX", /* 18 S_T_WIND_DIRECTION_MAX_VAL */
@@ -419,6 +409,12 @@ void sensorData_init(void)
       sensor_data[A6_RAINFALL_DOT5_1MM].opt = &rain_data;
       sensor_data_1s[A6_RAINFALL_DOT5_1MM].dataType = DATA_TYPE_I;
       break;
+      case A9_SNOW_DEPTH:
+      sensor_data[A9_SNOW_DEPTH].dataType = DATA_TYPE_I;
+      sensor_data[A9_SNOW_DEPTH].opt = &rain_data;
+      sensor_data_1s[A9_SNOW_DEPTH].dataType = DATA_TYPE_I;
+      break;
+
       default:
       sensor_data[i].dataType = DATA_TYPE_F;
       sensor_data_1s[i].dataType = DATA_TYPE_F;

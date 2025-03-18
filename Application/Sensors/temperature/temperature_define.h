@@ -7,9 +7,14 @@
 
 #include <stdint.h>
 
+typedef struct temperature_set_cfg_s
+{
+  int32_t channel;
+}temperature_set_cfg_t;
+
 typedef enum
 {
-    eWIND_SET,
+    eTEMP_SET,
 } temperature_set_option_t;
 
 
