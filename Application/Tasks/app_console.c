@@ -32,6 +32,7 @@
 #include "terminal.h"
 #include "usDelay.h"
 #include "task_logging.h"
+#include "app_charger.h"
 
 #define EXIT_PROGRAM -3
 #define EXIT_BACK    -1
@@ -306,13 +307,29 @@ int32_t print_systemInfo(uint16_t row,uint16_t column)
 
 int32_t print_chargerInfo(uint16_t row,uint16_t column)
 {
+  char buff[10];
 
   uint8_t line=row+3;
-
+  uint8_t err;
+  
+  read_chargerStatus(buff,sizeof(buff));
   vt100_print_frame(row   ,column,"충전기", '+', '|', '-', DISP_WIDTH, WHITE);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"상태           :%s\r\n",ITEM_LIST(System.charger_status,generalStatusList));
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"충전 전압(v)   :%d\r\n",0);
-  vt100_print_bar(line++ ,column,-DISP_WIDTH,"배터리 전압(v) :%d\r\n",0);
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"상태           :%s\r\n",buff);
+  
+  if(is_chargerValid())
+  {
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"  충전 전압(V) :%.2f\r\n",read_solarVoltage1(&err));
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"  충전 전류(A) :%.2f\r\n",read_solarCurrrent1(&err));
+  vt100_print_bar(line++ ,column,-DISP_WIDTH,"배터리 전압(V) :%.2f\r\n",read_batteryVoltage1(&err));
+  vt100_print_bar(line++ ,column,-DISP_WIDTH," 부하1 전류(A) :%.2f\r\n",read_loadCurrent1(&err));
+  }
+  else
+  {
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"  충전 전압(V) :--\r\n",0);
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"  충전 전류(A) :--\r\n",0);
+    vt100_print_bar(line++ ,column,-DISP_WIDTH,"배터리 전압(V) :--\r\n",0);
+    vt100_print_bar(line++ ,column,-DISP_WIDTH," 부하1 전류(A) :--\r\n",0);
+  }
   vt100_print_line(line++,column,'+', '-', DISP_WIDTH);
     
   return 4+2;

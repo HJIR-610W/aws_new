@@ -10,7 +10,7 @@
 const osThreadAttr_t kIsrEventTask_attributes = {
   .name = "isrEventTask",
   .stack_size = 2048,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityRealtime2,
 };
 
 

@@ -423,6 +423,7 @@
                     <state>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc</state>
                     <state>$PROJ_DIR$\..\Drivers\Driver_stm32\usb</state>
                     <state>$PROJ_DIR$\..\Utile</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\charger</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1145,6 +1146,12 @@
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_bsp.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_charger.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_charger.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_do.c</name>
             </file>
             <file>
@@ -1685,6 +1692,15 @@
                 </file>
             </group>
             <group>
+                <name>charger</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\charger\hjsmartCharger.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\charger\hjsmartCharger.h</name>
+                </file>
+            </group>
+            <group>
                 <name>EX_UART</name>
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\Components\EX_UART\TL16C554.c</name>
@@ -1773,6 +1789,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_cdc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_charger.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_charger.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_di.c</name>

@@ -42,13 +42,14 @@ extern uint16_t calcCRC(uint8_t* Buffer, uint32_t length);
 const osThreadAttr_t kMeasureTask_attributes = {
   .name = "measureTask",
   .stack_size = 2048,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityRealtime1,
 };
 
 
 
 uint32_t g_start_time;
 uint32_t g_elased_time;
+uint32_t g_elased_max=0;
 sensor_t g_sensor_copy[SENSOR_COUNT_MAX];
 
 
@@ -761,6 +762,10 @@ void measureTask(void *arg)
       ot.Sec = ct.Sec;
     }
     g_elased_time = cal_elapsed_us(g_start_time);
+    if(g_elased_time>g_elased_max)
+    {
+      g_elased_max = g_elased_time;
+    }
     tick_count += MEASURE_PERIOD_MS;
     
     osDelayUntil(tick_count);//남은 지연 시간만큼 지연

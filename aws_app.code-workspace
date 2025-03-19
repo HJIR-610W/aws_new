@@ -72,7 +72,12 @@
         "app_adc.h": "c",
         "driver_adc.h": "c",
         "wind_define.h": "c",
-        "general_adc.h": "c"
+        "general_adc.h": "c",
+        "hjsmartcharger.h": "c",
+        "driver_charger.h": "c",
+        "driver_charger_define.h": "c",
+        "stm32f4xx_hal.h": "c",
+        "ostream": "c"
     },
     "files.encoding": "euckr",
     "editor.tabSize": 2,

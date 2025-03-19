@@ -37,5 +37,7 @@ int32_t driver_uart_get_char(driver_t *drv,uint8_t *pBuff,uint16_t rLen);
 int32_t driver_uart_get_charNonBlocking(driver_t *drv,uint8_t *pBuff);
 
 
+void driver_uart_flush_rx(driver_t *drv);
+
 
 #endif

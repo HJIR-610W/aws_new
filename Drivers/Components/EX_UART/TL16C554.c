@@ -63,7 +63,7 @@
 #define MCR_OFFSET 0x04 // Modem Control Register
 
 
-#define QUAD_1_BUFF_SIZE 100 //D_SUB
+#define QUAD_1_BUFF_SIZE 200 //D_SUB
 #define QUAD_2_BUFF_SIZE 100 //TTL
 #define QUAD_3_BUFF_SIZE 100 //EXT3
 #define QUAD_4_BUFF_SIZE 100 //EXT4

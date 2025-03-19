@@ -163,3 +163,10 @@ int32_t drier_uart_recv_crlf(driver_t *drv,char *pBuff,uint16_t bSize,uint32_t t
 
 
 
+
+void driver_uart_flush_rx(driver_t *drv)
+{
+  uart_api_t *api = (uart_api_t *)drv->api;
+  
+  api->flush_rx(drv);  
+}

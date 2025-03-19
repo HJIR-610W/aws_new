@@ -105,7 +105,15 @@ typedef struct system_s
   uint8_t netRun;
   uint8_t loggingStatusGroup;
   
-  
+  float chg_solarV1;
+  float chg_solarV2;
+  float chg_solarC1;
+  float chg_solarC2;
+  float chg_batV1;
+  float chg_batV2;
+  float chg_loadC1;
+  float chg_loadC2;
+  float chg_loadC3;
 }system_t;
 
 void config_init(void);

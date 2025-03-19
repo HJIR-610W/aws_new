@@ -931,7 +931,8 @@ int32_t stm32_uart_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, 
 
 void stm32_uart_flush_rx(driver_t *handle)
 {
-
+  uint8_t data;
+  while(stm32_uart_recv(handle,&data,1,0));
 }
 
 

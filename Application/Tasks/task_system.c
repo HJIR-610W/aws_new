@@ -5,12 +5,14 @@
 #include "driver_do.h"
 #include "driver_di.h"
 #include "task_isrEvent.h"
+#include "app_charger.h"
+
 driver_t *g_test_do;
 
 const osThreadAttr_t kSystemTask_attributes = {
   .name = "systemTask",
   .stack_size = 512,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 
 void userBtnCallBack(void *arg)
@@ -34,13 +36,14 @@ void userBtn_init(void)
 }
 
 
-
 void systemTask(void *arg)
 {
-  battery_init();
+
   while(1)
   {
     rtc_update();
+    update_charger();
+    
     osDelay(500);
   }
 }
@@ -74,6 +77,11 @@ void systemTask_init(void)
 {
   g_test_do = driver_do_open(DO_EXT_0,0);
 
+  battery_init();
+
   userBtn_init();
+
+  charger_init(APP_CHARGER_HJ);
+
   osThreadNew(systemTask, NULL, &kSystemTask_attributes);
 }

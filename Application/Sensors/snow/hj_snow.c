@@ -10,6 +10,7 @@
 #include "app_sensor.h"
 #include "dev_io.h"
 #include "snow_define.h"
+#include "utile.h"
 
 #define PROTOCOL_TYPE_t  uint8_t
 #define P_TYPE_HJ                   0
@@ -169,6 +170,31 @@ uint16_t make_hjSnowFrame(uint8_t* out, uint16_t outSize,
 
 bool check_hjsnow(uint8_t *pdata,uint16_t datalen)
 {
+	uint8_t len;
+	uint8_t sum = 0;
+
+	if(pdata[0] != 0x02)
+	{
+    return false;
+	}
+
+	if(pdata[1] != 0x00)//id
+	{
+		return false;
+	}
+
+	len =  pdata[3];
+
+
+	sum = make_sum(&pdata[1],len+3);
+
+	if(sum != pdata[datalen-2])
+	{
+		return false;
+	}
+
+	return true;
+
 
 }
   int32_t read_hjSnowFall(dev_io_t *dev,uint8_t *err)
@@ -200,8 +226,15 @@ bool check_hjsnow(uint8_t *pdata,uint16_t datalen)
 
     if(len)
     {
-      memcpy(&data,&frame[4+offset],sizeof(data));
-      *err = 0;
+			if(check_hjsnow(frame,len))
+			{
+				memcpy(&data,&frame[4+offset],sizeof(data));
+				*err = 0;
+			}
+			else
+			{
+				*err = 2;
+			}
     }
 
     return data;
