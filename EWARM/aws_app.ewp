@@ -1699,6 +1699,12 @@
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\Components\charger\hjsmartCharger.h</name>
                 </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\charger\ls1024.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\charger\ls1024.h</name>
+                </file>
             </group>
             <group>
                 <name>EX_UART</name>
@@ -1846,6 +1852,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_led.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_modbus.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_modbus.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_mux.c</name>

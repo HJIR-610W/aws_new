@@ -225,8 +225,8 @@ int32_t recv_smartCharger(void *rs232_driver,uint8_t *pbuff,int32_t buffSize)
 	return -1;
 }
 
-SYSTEM_TypeDef chg_system;
-static uint8_t buff[sizeof(SYSTEM_TypeDef)+20];
+SYSTEM_TypeDef chg_system;//TODO:heap으로 변경
+static uint8_t buff[sizeof(SYSTEM_TypeDef)+20]; //TODO:heap으로 변경경
 int32_t hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err)
 {
   hjsmartCharger_cfg_t *cfg = chg->cfg;
@@ -235,20 +235,17 @@ int32_t hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *
   uint16_t val;
 
 
-  data[0] = 1;
-  data[1] = 10;
+  data[0] = 1;  // 의미없음
+  data[1] = 10; // 상태읽기
 
   val = 0;
-
   memcpy(&data[2],&val,2);
-
-  val = 22;
+  val = 22;  //22바이트만 읽어옴옴
   memcpy(&data[4],&val,2);
   
 
   len = Make_SmartChgFrame(buff,sizeof(buff),0x50,data,6);
   
-
   #if FREE_RTOS_USE
   if(chg->sem)
   {
@@ -261,13 +258,11 @@ int32_t hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *
 
   len = recv_smartCharger(cfg->rs232_io,buff,sizeof(buff));
 
-
-  
-  if(len>0)
+  if(len > 0)
   {
     memcpy(&chg_system,&buff[13],sizeof(SYSTEM_TypeDef));
-    charger_data->battery1 = (float)chg_system.BattVolt1/1000.0f;
-    charger_data->battery2 = (float)chg_system.BattVolt2/1000.0f;
+    charger_data->battery1     = (float)chg_system.BattVolt1/1000.0f;
+    charger_data->battery2     = (float)chg_system.BattVolt2/1000.0f;
     charger_data->load1Current = (float)chg_system.LoadCurr1/1000.0f;
     charger_data->load2Current = (float)chg_system.LoadCurr2/1000.0f;
     charger_data->load3Current = (float)chg_system.LoadCurr3/1000.0f;
