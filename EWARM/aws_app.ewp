@@ -1412,6 +1412,12 @@
                     <name>$PROJ_DIR$\..\Application\Sensors\general\general_adc.h</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\general\general_virtual.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\general\general_virtual.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\general\sensor_general.c</name>
                 </file>
             </group>

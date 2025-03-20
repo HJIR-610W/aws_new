@@ -1,11 +1,12 @@
 
 
+#include <math.h>
 
+#include "cmsis_os2.h"
 
-#include "driver_adc.h"
-#include "cmsis_os.h"
 #include "app_adc.h"
 #include "config.h"
+#include "driver_adc.h"
 #include "utile.h"
 
 driver_t *g_ads1120;
@@ -133,12 +134,31 @@ float calculate_adc(adc_config_t *adc_config,uint8_t *err)
 {
   float val;
   int32_t vref;
- float data;
+  float data;
+  float retVal;
 
   vref = get_adc_vref(adc_config);
+
   data = adc_read_volate(adc_config,err);
+
+
+  if(*err)
+  {
+    return NAN;
+  }
+
   val = adc_config->lowScale + (adc_config->highScale - adc_config->lowScale)*data/(vref/1000.0);
   
+  if(val >adc_config->highScale)
+  {
+    val = adc_config->highScale;
+  } 
+
+  if(val < adc_config->lowScale)
+  {
+    val = adc_config->lowScale;
+  }
+
 return val/adc_config->scale;
 
 }

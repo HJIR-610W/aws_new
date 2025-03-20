@@ -77,7 +77,8 @@
         "driver_charger.h": "c",
         "driver_charger_define.h": "c",
         "stm32f4xx_hal.h": "c",
-        "ostream": "c"
+        "ostream": "c",
+        "app_sensor.h": "c"
     },
     "files.encoding": "euckr",
     "editor.tabSize": 2,

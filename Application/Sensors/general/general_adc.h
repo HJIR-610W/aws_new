@@ -7,6 +7,7 @@
 #include <app_sensor.h>
 
 #define GENERAL_ADC 0
+#define GENERAL_V   1
 
 
 void *general_adc_open(uint8_t num,void *opt);
