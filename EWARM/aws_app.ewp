@@ -1152,6 +1152,12 @@
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_charger.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_di.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_di.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_do.c</name>
             </file>
             <file>
@@ -1210,6 +1216,9 @@
             </group>
             <group>
                 <name>Ethernet</name>
+                <group>
+                    <name>http</name>
+                </group>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\Ethernet\app_socket.c</name>
                 </file>
@@ -1384,27 +1393,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Panel\panel_mooju.h</name>
-            </file>
-        </group>
-        <group>
-            <name>power</name>
-            <file>
-                <name>$PROJ_DIR$\..\Application\power\ls1024.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\power\ls1024.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\power\power.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\power\power.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\power\power_define.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\power\smart_charger.c</name>
             </file>
         </group>
         <group>

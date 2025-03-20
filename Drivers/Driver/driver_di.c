@@ -66,12 +66,7 @@ driver_t *driver_di_open(uint32_t num,void *opt)
     case DI_EXT_5:
     driver = pcf8575_di_open(DI_PCF8575_5,0);
     break;
-    case DI_EXT_6:
-    driver = pcf8575_di_open(DI_PCF8575_6,0);
-    break;
-    case DI_EXT_7:
-    driver = pcf8575_di_open(DI_PCF8575_7,0);
-    break;
+
     case DI_HART_CD:
     driver = stm32_di_open(STM32_DI_HART_CD,opt);
     break;

@@ -48,7 +48,7 @@ void charger_init(uint32_t type)
     break;
   case APP_CHARGER_LS:
   break;
-  g_charger =   driver_charger_open(CHARGER_LS,0);
+  g_charger =   driver_charger_open(CHARGER_LS1024,0);
     break;
   }
 }

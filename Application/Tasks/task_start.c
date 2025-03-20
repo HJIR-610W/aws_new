@@ -72,7 +72,7 @@ void startTask(void *arg)
   osDelay(1000);
   usDelay_init();
   rtc_init();
-
+  
 
 
   config_init();

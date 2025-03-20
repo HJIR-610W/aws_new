@@ -1,7 +1,9 @@
 #include "cmsis_os2.h"
 
+#include "app_do.h"
 #include "app_rtc.h"
 #include "app_bsp.h"
+#include "app_di.h"
 #include "driver_do.h"
 #include "driver_di.h"
 #include "task_isrEvent.h"
@@ -43,7 +45,18 @@ void systemTask(void *arg)
   {
     rtc_update();
     update_charger();
-    
+
+    for(int i = 0 ; i< 6; i++)
+    {
+      if(IS_DI_PRESSED(i))
+      {
+        write_do(i,0);
+      }
+      else
+      {
+        write_do(i,1);
+      }
+    }
     osDelay(500);
   }
 }
@@ -82,6 +95,10 @@ void systemTask_init(void)
   userBtn_init();
 
   charger_init(APP_CHARGER_HJ);
+
+  di_init();
+
+  do_init();
 
   osThreadNew(systemTask, NULL, &kSystemTask_attributes);
 }

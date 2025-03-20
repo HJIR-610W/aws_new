@@ -1,70 +1,27 @@
 
 #include "driver_do.h"
-#include "app_do.h"
-#include "utile.h"
 
-typedef struct app_do_s
+driver_t *app_do[6];
+
+void do_init(void)
 {
-  uint8_t num;
-  const char *name;
-}app_do_t;
-
-const app_do_t do_define[]={{.num = DO_CON_PWR_232_A,   .name ="DO_CON_PWR_232_A"},
-                            {.num = DO_CON_PWR_232_B,  .name ="D-SUB_EX1_232"}};
-
-driver_t *do_drivers[eDO_MAX];
-
-
-
-
-void do_open(eDO_PORT_t port)
-{
-  do_drivers[(int)port] = driver_do_open(do_define[(int)port].num,0);
+  app_do[0]  = driver_do_open(DO_EXT_0,0);
+  app_do[1]  = driver_do_open(DO_EXT_1,0);
+  app_do[2]  = driver_do_open(DO_EXT_2,0);
+  app_do[3]  = driver_do_open(DO_EXT_3,0);
+  app_do[4]  = driver_do_open(DO_EXT_4,0);
+  app_do[5]  = driver_do_open(DO_EXT_5,0);
 }
 
 
-void do_close(eDO_PORT_t port)
+void write_do(int32_t num,int32_t status)
 {
-  //driver 해제 구현
-  do_drivers[(int)port] = 0;
-}
-
-void do_low(eDO_PORT_t port)
-{
-  if(do_drivers[(int)port])
+  if(status)
   {
-    driver_do_low(do_drivers[(int)port]);
+    driver_do_high(app_do[num]);
+  }
+  else
+  {
+    driver_do_low(app_do[num]);
   }
 }
-
-void do_high(eDO_PORT_t port)
-{
-  if(do_drivers[(int)port])
-  {
-    driver_do_high(do_drivers[(int)port]);
-  }
-}
-
-
-uint16_t do_get_portList(const char **list,uint16_t listMax)
-{
-  int i=0;
-  for( i = 0; i <_countof(do_define);i++)
-  {
-    if(i<listMax)
-    {
-      list[i] = do_define[i].name;
-    }
-  }
-  return i;
-}
-
-bool do_is_opened(eDO_PORT_t port)
-{
-  if(do_drivers[(int)port] != 0)
-  {
-    return true;
-  }
-  return false;
-}
-

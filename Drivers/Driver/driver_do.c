@@ -54,12 +54,7 @@ driver_t *driver_do_open(uint32_t num,void *opt)
     case DO_EXT_5:
     driver = pcf8575_do_open(DO_PCF8575_5,0);
     break;
-    case DO_EXT_6:
-    driver = pcf8575_do_open(DO_PCF8575_6,0);
-    break;
-    case DO_EXT_7:
-    driver = pcf8575_do_open(DO_PCF8575_7,0);
-    break;
+
     case DO_HART_RTS:
     driver = stm32_do_open(STM32_DO_HART_RTS,opt);
     break;

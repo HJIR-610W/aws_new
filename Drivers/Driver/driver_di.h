@@ -26,8 +26,7 @@
 #define DI_EXT_3        16
 #define DI_EXT_4        17
 #define DI_EXT_5        18
-#define DI_EXT_6        19
-#define DI_EXT_7        20
+
 
 #define DI_HART_CD      21
 #define DI_USER_BTN     22

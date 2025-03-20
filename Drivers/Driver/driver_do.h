@@ -29,8 +29,7 @@
 #define DO_EXT_3          21
 #define DO_EXT_4          22
 #define DO_EXT_5          23
-#define DO_EXT_6          24
-#define DO_EXT_7          25
+
 
 #define DO_HART_SEL       26
 #define DO_HART_RTS       27
