@@ -399,6 +399,7 @@ void sensorData_init(void)
       case A1_TEMPERATURE:
       sensor_data[A1_TEMPERATURE].dataType = DATA_TYPE_F;
       sensor_data_1s[A1_TEMPERATURE].dataType = DATA_TYPE_F;
+      
       break;
       case A2_WIND_DIRECTION:
       sensor_data[A2_WIND_DIRECTION].dataType = DATA_TYPE_F;
@@ -411,9 +412,10 @@ void sensorData_init(void)
       break;
       case A9_SNOW_DEPTH:
       sensor_data[A9_SNOW_DEPTH].dataType = DATA_TYPE_I;
-      sensor_data[A9_SNOW_DEPTH].opt = &rain_data;
       sensor_data_1s[A9_SNOW_DEPTH].dataType = DATA_TYPE_I;
       break;
+
+      
 
       default:
       sensor_data[i].dataType = DATA_TYPE_F;

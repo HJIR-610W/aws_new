@@ -406,7 +406,7 @@ void stm32_spi_send_bytes(void *hspi,uint8_t *data,uint16_t dataLen)
 uint8_t stm32_spi_read_byte(void *hspi)
 {
 	HAL_StatusTypeDef status = HAL_OK;
-	uint8_t readvalue=0xff;
+	uint8_t readvalue=0x00;
   
   
   status = HAL_SPI_Receive((SPI_HandleTypeDef *)hspi, (uint8_t*) &readvalue, 1, SpixTimeout);

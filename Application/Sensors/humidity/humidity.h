@@ -19,8 +19,12 @@
 #define GENERAL_RS485 1
 #endif
 
+#ifndef GENERAL_V
+#define GENERAL_V 2
+#endif
+
+
 driver_t *humidity_open(int32_t num,void *opt);
 
 float read_sensor_humidity(driver_t *driver,uint8_t *err);
-
 #endif

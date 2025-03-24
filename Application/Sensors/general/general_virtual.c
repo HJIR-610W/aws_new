@@ -6,7 +6,7 @@
 
 typedef struct general_v_cfg_s
 {
-  float data;
+  float data;//-16,777,216 ~ 16,777,216  24bit,0.001 ~ 9999.999
 }general_v_cfg_t;
 
 driver_t g_general_virtual[SENSOR_LIST_MAX];

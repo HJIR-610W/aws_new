@@ -161,8 +161,8 @@ void ads1220_reset_sw(driver_t *drv)
  * 양의 최대 입력값은 Vref/Gain-1LSB
  * Vref= 5V이면        4.999999404V
  * 음의 최대 입력값은 -4.999999404V
- * 
- * 
+ * ADC = (Vin/Vref)*2^23 
+ *
  */
 
 int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
@@ -176,7 +176,7 @@ int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
     osSemaphoreAcquire(g_dataReadySem,0);
     ads1220_start_conv(drv);
        
-    status = osSemaphoreAcquire(g_dataReadySem, 5);//타임아웃 5ms 줌
+    status = osSemaphoreAcquire(g_dataReadySem, 60);//타임아웃 5ms 줌
 
     if(status == osErrorTimeout)
     {
@@ -254,16 +254,46 @@ void ads1210_init(driver_t *drv)
         drv->sem = osSemaphoreNew(1, 1, NULL); 
     }
 
+    /*
+    7:4 MUX[3:0] AINp = AIN0, AINn = AIN1:0000b
+    3:1 GAIN[2:0] :000b
+    gain 1,2,4는 PGA없이 사용가능해서 비활성 가능
+    이때는 게인이 스위치드캐패시터구조로 얻어짐
+    0 PGA_BYPASS:1b
+    */
     reg = 0x01;//PGA disable  
 
     write_reg(drv,ADS1220_REG_0, 1, &reg);  
 
-    reg = 0xc0;
-    write_reg(drv,ADS1220_REG_1, 1, &reg);
+    /*
+    7:5 DR   :000b 90sps      데이터 속도
+    4:3 MODE :00b             동작 모드
+      2 CM   :0b                단일 변환
+      1 TS   :0b                온도센서 비활성
+      0 BCS  :0b                10uA 전류 소스 비활성
+    */
+    reg = 0x00;
+    reg |= (0x06)<<5;
 
-    reg = (0x01)<<6;
+    //reg |= (0x02)<<3;
+    write_reg(drv,ADS1220_REG_1, 1, &reg);
+    /*
+     7:6 VREF   01b REFP0,REFN0
+     5:4 50/60  01b 50Hz,60Hz 제거 
+       3 PSW     1b 로우사이드 전원 스위치 닫힘
+     2:0 IDAC  000b 끄기
+    */
+    reg =  (0x01)<<6;
+    reg |= (0x01)<<3;
+    reg |= (0x01)<<4;
     write_reg(drv,ADS1220_REG_2, 1, &reg);
 
+    /*
+    7:5 I1MUX 000b IDAC1 비활성화
+    4:2 I2MUX 000b IDAC2 비활성화
+      1 DRDYM   0b DRDY 핀만 사용
+      0 미사용
+    */
     reg = 0x00;
     write_reg(drv,ADS1220_REG_3, 1, &reg);
 

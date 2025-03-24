@@ -192,6 +192,8 @@ typedef struct
   int32_t lowScale;
   int32_t scale;//원본값에 몇배 곱해졌다의 의미 highScale 100, lowScale 0이면 0~100으로 값이 나옴
                 // scale 10이면 최종 값은 나누기 10해야함
+  int32_t outMaxV;  //센서의 출력 전압 최고
+  int32_t outMinV; //센서의 출력 전압 최저
 }adc_config_t;
 
 

@@ -1,6 +1,6 @@
 
 #include <string.h>
-
+#include <math.h>
 #include "cmsis_os2.h"
 
 #include "app_rs485.h"
@@ -82,6 +82,7 @@ float read_hjWind(void *driver,uint8_t channel,uint8_t *err)
   uint8_t recv[10];
   uint16_t len;
   uint16_t windData=0;
+  float retVal = NAN;
 
   hjWind_cfg_t *cfg = ((driver_t *)driver)->cfg;
 
@@ -114,6 +115,7 @@ float read_hjWind(void *driver,uint8_t channel,uint8_t *err)
   else
   {
     *err = 1;
+    return NAN;
   }
   
   return (float)((float)windData/10.0);

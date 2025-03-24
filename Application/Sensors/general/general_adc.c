@@ -16,6 +16,8 @@ typedef struct general_adc_cfg_s
   int32_t highScale;
   int32_t lowScale;
   int32_t scale;
+  int32_t outMaxVolt;
+  int32_t outMinVolt;
   uint8_t channel;
   uint8_t mode;
 }general_adc_cfg_t;
@@ -50,7 +52,8 @@ void *general_adc_open(uint8_t num,void *opt)
     general_adc_cfg_single[cfg->channel].scale     = cfg->scale;
     general_adc_cfg_single[cfg->channel].channel   = cfg->channel;
     general_adc_cfg_single[cfg->channel].mode      = cfg->mode;
-
+    general_adc_cfg_single[cfg->channel].outMaxVolt      = cfg->outMaxV;
+    general_adc_cfg_single[cfg->channel].outMinVolt      = cfg->outMinV;
     general_adc_single[cfg->channel].cfg = &general_adc_cfg_single[cfg->channel];
     general_adc_single[cfg->channel].name = "GENERAL_ADC";
     return &general_adc_single[cfg->channel];
@@ -68,6 +71,8 @@ void *general_adc_open(uint8_t num,void *opt)
     general_adc_cfg_diff[cfg->channel].scale     = cfg->scale;
     general_adc_cfg_diff[cfg->channel].channel = cfg->channel;
     general_adc_cfg_diff[cfg->channel].mode = cfg->mode;
+    general_adc_cfg_diff[cfg->channel].outMaxVolt = cfg->outMaxV;
+    general_adc_cfg_diff[cfg->channel].outMinVolt = cfg->outMinV;
     general_adc_diff[cfg->channel].name = "GENERAL_ADC";
     general_adc_diff[cfg->channel].cfg = &general_adc_cfg_diff[cfg->channel];
   
@@ -90,7 +95,8 @@ float general_adc_read(void *driver,uint8_t *err)
   adc_config.highScale = cfg->highScale;
   adc_config.lowScale  = cfg->lowScale;
   adc_config.scale     = cfg->scale;
-
-  return calculate_adc(&adc_config,err);
+  adc_config.outMaxV   = cfg->outMaxVolt;
+  adc_config.outMinV   = cfg->outMinVolt;
+  return calculate_voltage(&adc_config,err);
 }
 

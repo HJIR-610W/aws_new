@@ -164,6 +164,39 @@ return val/adc_config->scale;
 }
 
 
+float calculate_voltage(adc_config_t *adc_config,uint8_t *err)
+{
+  float val;
+  int32_t vref;
+  float data;
+  float retVal;
+
+  vref = adc_config->outMaxV;
+
+  data = adc_read_volate(adc_config,err);
+
+
+  if(*err)
+  {
+    return NAN;
+  }
+
+  val = adc_config->lowScale + (adc_config->highScale - adc_config->lowScale)*data/(vref/1000.0);
+  
+  if(val >adc_config->highScale)
+  {
+    val = adc_config->highScale;
+  } 
+
+  if(val < adc_config->lowScale)
+  {
+    val = adc_config->lowScale;
+  }
+
+return val/adc_config->scale;
+
+}
+
 int32_t get_adc_single_offset(int channel)
 {
   int32_t offset;
