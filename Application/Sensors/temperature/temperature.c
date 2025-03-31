@@ -1,59 +1,60 @@
 
-#include <string.h>
-#include <math.h>
-
 #include "Sensors\temperature\temperature.h"
-#include "Sensors\general\sensor_general.h"
+
+#include <math.h>
+#include <string.h>
+
 #include "Sensors\general\general_adc.h"
 #include "Sensors\general\general_virtual.h"
-
-#include "utile.h"
+#include "Sensors\general\sensor_general.h"
+#include "Sensors\temperature\hj_temperature.h"
 #include "pt100.h"
+#include "utile.h"
 
-
-void *temperature_open(uint8_t num,void *opt)
+driver_t *temperature_open(uint32_t num, void *opt)
 {
-  void *driver;
-
+  driver_t *driver;
 
   switch (num)
   {
     case GENERAL_ADC:
-    driver  = general_adc_open(num,opt);
-    break;
+      driver = general_adc_open(num, opt);
+      break;
     case GENERAL_V:
-    driver = general_v_open(num,opt);
-    break;
+      driver = general_v_open(num, opt);
+      break;
     case TEMP_PT100_A:
-    driver  = pt100_open(PT100_A,opt);
-    break;
-  case TEMP_PT100_B:
-    driver  = pt100_open(PT100_B,opt);
-    break;
-
+      driver = pt100_open(PT100_A, opt);
+      break;
+    case TEMP_PT100_B:
+      driver = pt100_open(PT100_B, opt);
+      break;
+    case TEMP_HJ_TEMPERATURE:
+      driver = hjTemperature_open(HJ_TEMPERATURE, opt);
+      break;
   }
 
   return driver;
 }
 
-float temperature_read(driver_t *driver,uint8_t *err)
+float temperature_read(driver_t *driver, uint8_t *err)
 {
   const temperature_api_t *api = ((driver_t *)driver)->api;
 
-  if(driver == NULL)
+  if (driver == NULL)
   {
     *err = 1;
     return NAN;
   }
 
-  if(strncmp(driver->name,"GENERAL_ADC",11)==0)
+  if (strncmp(driver->name, "GENERAL_ADC", 11) == 0)
   {
-    return general_adc_read(driver,err);
+    return general_adc_read(driver, err);
   }
-  else if(strncmp(driver->name,"GENERAL_V",9)==0)
+  else if (strncmp(driver->name, "GENERAL_V", 9) == 0)
   {
-    return general_v_read(driver,err);
+    return general_v_read(driver, err);
   }
-  
-  return api->read(driver,err);
+
+  return api->read(driver, err);
 }

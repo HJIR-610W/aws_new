@@ -4,7 +4,7 @@
 
 #include <stdbool.h>
 #include "app_sensor.h"
-
+#include "driver_interface.h"
 typedef struct rain_data_s
 {
   uint16_t min;

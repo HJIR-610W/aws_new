@@ -1502,6 +1502,9 @@
             <group>
                 <name>temperature</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\temperature\hj_temperature.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\temperature\pt100.c</name>
                 </file>
                 <file>
@@ -1585,9 +1588,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_measure.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\task_modbus.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_monitor.c</name>
@@ -1775,11 +1775,29 @@
         </group>
         <group>
             <name>Driver</name>
+            <group>
+                <name>modbus</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver\modbus\modbus.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver\modbus\modbus_master.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver\modbus\modbus_master.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Driver\modbus\modbus_master_def.h</name>
+                </file>
+            </group>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_485.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_485.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_485_def.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_adc.c</name>
@@ -2485,7 +2503,4 @@
             <name>$PROJ_DIR$\..\Utile\utile_time.h</name>
         </file>
     </group>
-    <file>
-        <name>$PROJ_DIR$\..\README.txt</name>
-    </file>
 </project>

@@ -14,10 +14,10 @@
     <StLinkDriver>
         <stlinkserialNo>13004800040000393333574E</stlinkserialNo>
         <stlinkfoundProbes />
-        <CStepIntDis>_ 0</CStepIntDis>
-        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
         <stlinkResetStyle>0</stlinkResetStyle>
         <stlinkResetStrategy>0</stlinkResetStrategy>
+        <CStepIntDis>_ 0</CStepIntDis>
+        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
     </StLinkDriver>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>3346455052</Checksum>
+        <Checksum>1367201184</Checksum>
     </DebugChecksum>
     <Disassembly>
         <InstrCount>0</InstrCount>
@@ -79,16 +79,21 @@
         <Fmt0>DATE_TIME_BUF-Min	3	0</Fmt0>
         <Fmt1>DATE_TIME_BUF-Sec	3	0</Fmt1>
     </struct_types>
+    <array_types>
+        <Fmt0>uint16_t[10]	4	0</Fmt0>
+        <Fmt1>uint16_t[256]	4	0</Fmt1>
+    </array_types>
     <watch_formats>
         <Fmt0>{W}1:crc	4	0</Fmt0>
-        <Fmt1>{W}1:data	4	0</Fmt1>
-        <Fmt2>{W}1:data16	4	0</Fmt2>
-        <Fmt3>{W}1:g_int_num	4	0</Fmt3>
-        <Fmt4>{W}1:last_day	3	0</Fmt4>
-        <Fmt5>{W}1:port	3	0</Fmt5>
-        <Fmt6>{W}1:recv_crc	4	0</Fmt6>
-        <Fmt7>{W}1:sensor_data[A6_RAINFALL_DOT5_1MM].data.i	4	0</Fmt7>
-        <Fmt8>{W}1:year	3	0</Fmt8>
+        <Fmt1>{W}1:crc_received	4	0</Fmt1>
+        <Fmt2>{W}1:data	4	0</Fmt2>
+        <Fmt3>{W}1:data16	4	0</Fmt3>
+        <Fmt4>{W}1:g_int_num	4	0</Fmt4>
+        <Fmt5>{W}1:last_day	3	0</Fmt5>
+        <Fmt6>{W}1:port	3	0</Fmt6>
+        <Fmt7>{W}1:recv_crc	4	0</Fmt7>
+        <Fmt8>{W}1:sensor_data[A6_RAINFALL_DOT5_1MM].data.i	4	0</Fmt8>
+        <Fmt9>{W}1:year	3	0</Fmt9>
     </watch_formats>
     <Trace2>
         <Enabled>0</Enabled>
@@ -135,12 +140,6 @@
         <ShowTimeSum>1</ShowTimeSum>
         <SumSortOrder>0</SumSortOrder>
     </EventLog>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Count>0</Count>
-    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -150,10 +149,6 @@
         <LogFile>_ ""</LogFile>
         <Category>_ 0</Category>
     </LogFile>
-    <Aliases>
-        <Count>0</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>3</Mode>
@@ -167,4 +162,17 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Drivers\Components\EX_UART\TL16C554.c}.1012.11" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_console.c}.928.7" 0 0 1 "" 0 "" 0</Bp1>
+        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_console.c}.969.5" 0 0 1 "" 0 "" 0</Bp2>
+        <Count>3</Count>
+    </Breakpoints2>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
 </settings>

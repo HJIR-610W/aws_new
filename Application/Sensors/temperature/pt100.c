@@ -69,7 +69,7 @@ typedef struct pt100_cfg_s
   * @brief 온도 단위 도 12.56도
   */
 
-float read_pt100(void *driver,uint8_t *err)
+float read_pt100(driver_t *driver,uint8_t *err)
 {
   int32_t sAdval;
   int32_t fullset;

@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-
+#include <stdbool.h>
 
 #define APP_CHARGER_HJ 0
 #define APP_CHARGER_LS 1

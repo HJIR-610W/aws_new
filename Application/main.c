@@ -1,16 +1,11 @@
 
-#include "cmsis_os2.h"
-
-#include "fsmc.h"
 #include "Lib\tlsf\tlsf.h"
+#include "cmsis_os2.h"
+#include "driver_stm32_bsp.h"
+#include "fsmc.h"
 #include "pcb_define.h"
 #include "task_start.h"
 #include "user_heap.h"
-
-
-#include "driver_stm32_bsp.h"
-
-
 
 /*
 시스템 동작 클럭:168MHz
@@ -21,14 +16,15 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_HSE;
+   * in the RCC_OscInitTypeDef structure.
+   */
+  RCC_OscInitStruct.OscillatorType =
+      RCC_OSCILLATORTYPE_LSE | RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.LSIState = RCC_LSI_OFF;
@@ -40,80 +36,62 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLQ = 7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-        Error_Handler(__FILE__,__LINE__);
+    Error_Handler(__FILE__, __LINE__);
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
+                                RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;//2로 하면 uart 1200bps 
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;  // 2로 하면 uart 1200bps
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
-        Error_Handler(__FILE__,__LINE__);
+    Error_Handler(__FILE__, __LINE__);
   }
 }
 
-
-int is_debug_mode(void)
-{
-  return (CoreDebug->DHCSR& (1 << 0)) != 0;
-}
-
-
+int is_debug_mode(void) { return (CoreDebug->DHCSR & (1 << 0)) != 0; }
 
 int main(void)
 {
+  
 #if DEBUG_MODE_EN
-  if(is_debug_mode())
+  if (is_debug_mode())
   {
-    __HAL_DBGMCU_FREEZE_IWDG(); // 디버깅 시 와치독 카운트 멈춤
-    __HAL_DBGMCU_FREEZE_RTC();  // 디버깅 시 rtc 타이머 멈춤
+    __HAL_DBGMCU_FREEZE_IWDG();  // 디버깅 시 와치독 카운트 멈춤
+    __HAL_DBGMCU_FREEZE_RTC();   // 디버깅 시 rtc 타이머 멈춤
   }
 #endif
 
-  HAL_Init();//타이머 4를 초기화 HAL 타이머 틱 인터럽트로 사용
+  HAL_Init();  // 타이머 4를 초기화 HAL 타이머 틱 인터럽트로 사용
 
   SystemClock_Config();
 
+  asw_tlsf_init(POOL_SIZE);
 
-  asw_tlsf_init(POOL_SIZE);  
-   
   driver_stm32_bsp_init();
-  
-  MX_FSMC_Init();//SRAM초기화
 
-  osKernelInitialize(); 
+  MX_FSMC_Init();  // SRAM초기화
+
+  osKernelInitialize();
 
   startTask_init();
 
   osKernelStart();
 
-  while(1)
+  while (1)
   {
-
   }
 }
-
-
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  /* USER CODE BEGIN Callback 0 */
-
-  /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM4) {
+  if (htim->Instance == TIM4)
+  {
     HAL_IncTick();
   }
-  /* USER CODE BEGIN Callback 1 */
-
-  /* USER CODE END Callback 1 */
 }
-
-
-
-

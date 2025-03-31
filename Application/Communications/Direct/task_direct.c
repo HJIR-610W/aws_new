@@ -31,7 +31,7 @@ uart_optTimeOut_t opt;
 
   while(1)
   {
-    len = driver_uart_recv_opt(direct_driver,rx_buff,sizeof(rx_buff),eUART_OPT_DATA_TIMEOUT_1,&opt);
+    len = driver_uart_recv_opt(direct_driver,rx_buff,sizeof(rx_buff),eUART_OPT_DATA_TIMEOUT_1,10);
     if(len)
     {
       System.direct_link_status = LINK_UP;

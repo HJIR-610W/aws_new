@@ -2,30 +2,23 @@
 
 #include "config.h"
 
-#include "app_sensor.h"
 #include "app_rs232.h"
 #include "app_rs485.h"
-
-
+#include "app_sensor.h"
 
 adc_cali_config_t g_adc_cali_config;
 config_t config;
 system_t System;
 
-
-void config_factoryReset(void)
-{
-  
-}
-
+void config_factoryReset(void) {}
 
 void update_cnt(int8_t *cnt)
 {
   int8_t val;
 
-  val = *cnt +1;
+  val = *cnt + 1;
 
-  if(val>=100|| val==0)
+  if (val >= 100 || val == 0)
   {
     val = 1;
   }
@@ -33,24 +26,23 @@ void update_cnt(int8_t *cnt)
   *cnt = val;
 }
 
-
 void limit_rs232(void)
 {
-  for(int i = 0 ; i < _countof(s_config.rs232);i++)
+  for (int i = 0; i < _countof(s_config.rs232); i++)
   {
-    if(s_config.rs232[i].baud < 9600||s_config.rs232[i].baud > 115200)
+    if (s_config.rs232[i].baud < 9600 || s_config.rs232[i].baud > 115200)
     {
       s_config.rs232[i].baud = 9600;
-       WRITE_S_CFG(rs232[i].baud);
+      WRITE_S_CFG(rs232[i].baud);
     }
 
-    if(s_config.rs232[i].port >= eRS232_MAX)
+    if (s_config.rs232[i].port >= eRS232_MAX)
     {
       s_config.rs232[i].port = 0;
-       WRITE_S_CFG(rs232[i].port);
+      WRITE_S_CFG(rs232[i].port);
     }
 
-    if(s_config.rs232[i].parityIdx >= 2)
+    if (s_config.rs232[i].parityIdx >= 2)
     {
       s_config.rs232[i].parityIdx = 0;
       WRITE_S_CFG(rs232[i].parityIdx);
@@ -60,21 +52,21 @@ void limit_rs232(void)
 
 void limit_rs485(void)
 {
-  for(int i = 0 ; i < _countof(s_config.rs485);i++)
+  for (int i = 0; i < _countof(s_config.rs485); i++)
   {
-    if(s_config.rs485[i].baud < 9600||s_config.rs485[i].baud > 115200)
+    if (s_config.rs485[i].baud < 9600 || s_config.rs485[i].baud > 115200)
     {
       s_config.rs485[i].baud = 9600;
-       WRITE_S_CFG(rs485[i].baud);
+      WRITE_S_CFG(rs485[i].baud);
     }
 
-    if(s_config.rs485[i].port >= eAPP_RS485_MAX)
+    if (s_config.rs485[i].port >= eAPP_RS485_MAX)
     {
       s_config.rs485[i].port = 0;
-       WRITE_S_CFG(rs485[i].port);
+      WRITE_S_CFG(rs485[i].port);
     }
 
-    if(s_config.rs485[i].parityIdx >= 2)
+    if (s_config.rs485[i].parityIdx >= 2)
     {
       s_config.rs485[i].parityIdx = 0;
       WRITE_S_CFG(rs485[i].parityIdx);
@@ -82,12 +74,11 @@ void limit_rs485(void)
   }
 }
 
-
 void limit_adc(void)
 {
-  for(int i = 0 ; i < _countof(s_config.adc);i++)
+  for (int i = 0; i < _countof(s_config.adc); i++)
   {
-    if(s_config.adc[i].channel> 17)
+    if (s_config.adc[i].channel > 17)
     {
       s_config.adc[i].channel = 0;
       WRITE_S_CFG(adc[i].channel);
@@ -95,35 +86,58 @@ void limit_adc(void)
   }
 }
 
+void limit_hjwind(void)
+{
+  for (int i = 0; i < _countof(s_config.hjwind); i++)
+  {
+    if (s_config.hjwind[i].rs485_port > eAPP_RS485_MAX)
+    {
+      s_config.hjwind[i].rs485_port = 0;
+      WRITE_S_CFG(hjwind[i].rs485_port);
+    }
+  }
+}
+
+void limit_hjtemp(void)
+{
+  for (int i = 0; i < _countof(s_config.hjtemp); i++)
+  {
+    if (s_config.hjtemp[i].rs485_port > eAPP_RS485_MAX)
+    {
+      s_config.hjtemp[i].rs485_port = 0;
+      WRITE_S_CFG(hjtemp[i].rs485_port);
+    }
+  }
+}
 
 void check_config_limit(void)
 {
-  uint8_t config_check_cnt=0;
+  uint8_t config_check_cnt = 0;
 
   limit_adc();
   limit_rs232();
   limit_rs485();
+  limit_hjwind();
+  limit_hjtemp();
 
-  if(config.direct_use && config.cdma_use)
+  if (config.direct_use && config.cdma_use)
   {
-    config.direct_use = 0 ;
+    config.direct_use = 0;
     config.cdma_use = 1;
     WRITE_CFG(direct_use);
     WRITE_CFG(cdma_use);
   }
 
-  for(int i = 0; i < _countof(config.sensor) ;i++)
+  for (int i = 0; i < _countof(config.sensor); i++)
   {
-    if(config.sensor[i].type>S_T_MAX)
+    if (config.sensor[i].type > S_T_MAX)
     {
       config.sensor[i].type = S_T_UNSUED;
       config_check_cnt++;
     }
   }
 
-
-
-  if(config_check_cnt)
+  if (config_check_cnt)
   {
     write_config();
   }
@@ -161,10 +175,7 @@ void config_write_adcCalibraion(void)
 /**
  * @brief config 저장
  */
-void write_config(void)
-{
-  fram_write(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
-}
+void write_config(void) { fram_write(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config)); }
 
 /**
  * @brief sensor config 저장
@@ -174,15 +185,13 @@ void write_s_config(void)
   fram_write(S_CONFIG_START_ADDRESS, (uint8_t *)&s_config, sizeof(s_config));
 }
 
-
 void config_init(void)
 {
   fram_init();
-  
+
   fram_read(ADC_CALI_START_ADDRESS, (uint8_t *)&g_adc_cali_config, sizeof(g_adc_cali_config));
   fram_read(S_CONFIG_START_ADDRESS, (uint8_t *)&s_config, sizeof(s_config));
   fram_read(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
 
   check_config_limit();
 }
-

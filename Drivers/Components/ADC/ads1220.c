@@ -357,6 +357,7 @@ void ads1220_close(driver_t *drv)
 }
 
 const uint8_t user_adc_single_channel[18]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29,2,6};
+
 int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 {
 
@@ -370,7 +371,7 @@ int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
   channel = user_adc_single_channel[channel];
 
   adc_single_mux_set(channel);
-  
+
   for(int i = 0 ; i< avg; i++)
   {
     adc = ads1220_read_single_ch(drv,channel%4,err);

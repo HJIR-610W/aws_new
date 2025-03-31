@@ -41,7 +41,8 @@ extern uint32_t calculate_txWaitTimeMs(uint32_t baud,uint16_t dataLen);
 driver_t *stm32_cdc_open(int num,void *opt);
 void stm32_cdc_close(driver_t *handle);
 
-int32_t stm32_cdc_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, eUART_RECV_OPT_t cmd,void *opt);
+int32_t stm32_cdc_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
+                           uint32_t timeout1_ms, uint32_t timeout2_ms);
 void stm32_cdc_flush_rx(driver_t *handle);
 int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen);
 int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs);
@@ -304,17 +305,10 @@ int32_t stm32_cdc_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *
     }
 }
 
-int32_t stm32_cdc_recv_opt(driver_t *handle, uint8_t *buffer, uint16_t length, eUART_RECV_OPT_t cmd,void *opt)
+int32_t stm32_cdc_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
+                           uint32_t timeout1_ms, uint32_t timeout2_ms)
 {
-  uart_optTimeOut_t optTimeOut;
-  int32_t cnt=0;
-  switch(cmd)
-  {
-    case eUART_OPT_DATA_TIMEOUT_1:
-    cnt = stm32_cdc_recv_1(handle,buffer,length,opt);
-    break;
-
-  }
+  int32_t cnt;
 
   return cnt;
 }
