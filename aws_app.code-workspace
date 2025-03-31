@@ -16,7 +16,8 @@
 			"driver_modbus.h": "c",
 			"os_user_def.h": "c",
 			"driver_485.h": "c",
-			"driver_485_def.h": "c"
+			"driver_485_def.h": "c",
+			"utile.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

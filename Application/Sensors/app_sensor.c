@@ -1,6 +1,5 @@
 /*
 장비가 제공하는 센서를 정의
-
 */
 #include "app_sensor.h"
 
@@ -12,8 +11,7 @@
 
 // 지원하는 센서 목록 정의
 
-const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ_485, S_T_PT100_A, S_T_PT100_B,
-                                   S_T_ADC};
+const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ_485, S_T_PT100_A, S_T_PT100_B};
 
 const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};
 
@@ -30,9 +28,10 @@ const uint8_t pressureList[] = {S_T_UNSUED, S_T_ADC};
 
 const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI};
 
-const uint8_t snowList[] = {S_T_UNSUED, S_T_ADC, S_T_SNOW_HJ_485};
+const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ_485, S_T_SNOW_HJ_232};
 
-const uint8_t humiList[] = {S_T_UNSUED, S_T_ADC};
+// 습도
+const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMI_HJ_485, S_T_ADC};
 
 const uint8_t sunShineList[] = {S_T_UNSUED, S_T_SUNSHINE, S_T_ADC};
 
@@ -364,6 +363,14 @@ void sensorData_init(void)
   }
 }
 
+void sensor_add_common(sensor_t *sensor, uint8_t index)
+{
+  sensor->config[sensor->configCnt][0] = sensor->type;  // 해당 타입을 추가
+  sensor->config[sensor->configCnt][1] = index;
+  WRITE_CFG_MEM(&sensor->config[sensor->configCnt], sizeof(sensor->config[sensor->configCnt]));
+  sensor->configCnt++;
+  WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
+}
 /**
  * @brief 설정값 할당
  */
@@ -393,7 +400,6 @@ void *sensor_add(sensor_t *sensor)
       }
     case S_T_TEMP_232:
     case S_T_GENERAL_232:
-    case S_T_SNOW_HJ_232:
     case S_T_HART:
       if (s_config.rs232_cnt < _countof(s_config.rs232))
       {
@@ -416,7 +422,6 @@ void *sensor_add(sensor_t *sensor)
       break;
 
     case S_T_TEMP_485:
-    case S_T_SNOW_HJ_485:
     case S_T_PRESSURE_485:
     case S_T_HUMI_RS485:
     case S_T_GENERAL_485:
@@ -481,8 +486,17 @@ void *sensor_add(sensor_t *sensor)
         WRITE_S_CFG(hjwindDir_cnt);
         return &s_config.hjwindDir[index];
       }
-
       break;
+    case S_T_SNOW_HJ_232:
+    case S_T_SNOW_HJ_485:
+      if (s_config.hjsnow_cnt < _countof(s_config.hjwindDir))
+      {
+        index = s_config.hjsnow_cnt;
+        sensor_add_common(sensor, index);
+        s_config.hjsnow_cnt++;
+        WRITE_S_CFG(hjsnow_cnt);
+        return &s_config.hjsnow[index];
+      }
     default:
       break;
   }
@@ -512,12 +526,10 @@ void *get_sensor_config(sensor_t *sensor)
           break;
         case S_T_TEMP_232:
         case S_T_GENERAL_232:
-        case S_T_SNOW_HJ_232:
         case S_T_HART:
           return &s_config.rs232[sensor->config[i][1]];
           break;
         case S_T_TEMP_485:
-        case S_T_SNOW_HJ_485:
         case S_T_PRESSURE_485:
         case S_T_HUMI_RS485:
         case S_T_GENERAL_485:
@@ -535,6 +547,10 @@ void *get_sensor_config(sensor_t *sensor)
           break;
         case S_T_WIND_DIRECTION_HJ_485:
           return &s_config.hjwindDir[sensor->config[i][1]];
+          break;
+        case S_T_SNOW_HJ_232:
+        case S_T_SNOW_HJ_485:
+          return &s_config.hjsnow[sensor->config[i][1]];
           break;
       }
     }

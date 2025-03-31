@@ -183,6 +183,11 @@ typedef struct hjwindDirection_s
   uint8_t rs485_port;
 } hjwindDirection_config_t;
 
+typedef struct hjsnow_config_s
+{
+  uint8_t port;
+} hjsnow_config_t;
+
 typedef struct hjtemp_s
 {
   uint8_t rs485_port;
@@ -286,6 +291,9 @@ typedef struct config_manage_s
   hjtemp_config_t hjtemp[2];
   uint8_t hjwindDir_cnt;
   hjwindDirection_config_t hjwindDir[1];
+
+  uint8_t hjsnow_cnt;
+  hjsnow_config_t hjsnow[2];
 } config_manager_t;
 
 void *get_sensor_config(sensor_t *sensor);
@@ -299,14 +307,15 @@ extern config_manager_t s_config;
 
 extern const char *sensorTypeList[42];
 
-extern const uint8_t temperatureList[6];
+// TODO:하드 코딩됨, 소스파일과 일치시켜야함 주의
+extern const uint8_t temperatureList[4];
 extern const uint8_t windDirectionList[5];
 extern const uint8_t windSpeedList[5];
 extern const uint8_t windDirectionInstantList[2];
 extern const uint8_t windSpeedInstantList[2];
 extern const uint8_t pressureList[3];
 extern const uint8_t rainList[6];
-extern const uint8_t snowList[4];
+extern const uint8_t snowList[3];
 extern const uint8_t rainPresentList[2];
 extern const uint8_t humiList[3];
 extern const uint8_t sunShineList[3];

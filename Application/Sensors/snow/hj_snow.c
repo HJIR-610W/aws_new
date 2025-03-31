@@ -52,11 +52,10 @@ typedef struct
   uint8_t Com4PingTime;  // TBD
 
   ///////////////////////////////
-  char Password[PASSNUMBER_MAX];  // DTMF 및 SMS TCP/IP 통신시 비밀번호
+  char Password[PASSNUMBER_MAX];             // DTMF 및 SMS TCP/IP 통신시 비밀번호
   uint8_t WatchDogSec[WATCHDOG_BUFFER_MAX];  // 0 ~ 9:off, 10 ~ 240sec,
-  PROTOCOL_TYPE_t
-      protocolType;  // 통신 프로토콜, 0 화진(요청 응답) 1 웨더피아(일방전송)
-  uint32_t txPeriodSec;  //  웨더피아 전송 주기 sec
+  PROTOCOL_TYPE_t protocolType;  // 통신 프로토콜, 0 화진(요청 응답) 1 웨더피아(일방전송)
+  uint32_t txPeriodSec;          //  웨더피아 전송 주기 sec
   uint8_t snowScanCnt;
 } CONFIG_TypeDef;  // Config		LOGMSG_BUFFER_MAX
 
@@ -137,8 +136,8 @@ uint8_t make_snowFrame(uint8_t *pFrame, uint8_t Cmd, uint8_t DataLen)
   return i;
 }
 
-uint16_t make_hjSnowFrame(uint8_t *out, uint16_t outSize, uint8_t Cmd,
-                          uint8_t *data, uint16_t dataLen)
+uint16_t make_hjSnowFrame(uint8_t *out, uint16_t outSize, uint8_t Cmd, uint8_t *data,
+                          uint16_t dataLen)
 {
   uint16_t i;
   uint8_t sum = 0;
@@ -214,14 +213,12 @@ int32_t read_hjSnowFall(dev_io_t *dev, uint8_t *err)
   para[paraCnt++] = sizeof(SYSTEM_TypeDef);
   req_bytes = 37;
 #endif
-  len =
-      make_hjSnowFrame(frame, sizeof(frame), CMD_SNOW_READ_STAT, para, paraCnt);
+  len = make_hjSnowFrame(frame, sizeof(frame), CMD_SNOW_READ_STAT, para, paraCnt);
 
   dev_io_write(dev, frame, len, 0);
 
   opt.waitTimeOutMs = 50;
-  len = dev_io_read(dev, frame, sizeof(frame), DEV_IO_CMD_DATA_TIMEOUT,
-                    (void *)&opt);
+  len = dev_io_read(dev, frame, sizeof(frame), DEV_IO_CMD_DATA_TIMEOUT, (void *)&opt);
 
   if (len)
   {
@@ -267,26 +264,26 @@ driver_t *hjsnow_open(int32_t num, void *opt)
 
   if (num == 0)  // RS485
   {
-    rs485_config_t *rs485_config = opt;
+    hjsnow_config_t *hjsnow = opt;
     uart_config_t uart_config;
 
-    uart_config.baud = rs485_config->baud;
+    uart_config.baud = 19200;
     uart_config.dataLen = 8;
     uart_config.parityIdx = 0;
     uart_config.stop_bit = 1;
-    hjsnow_cfg_485.io = driver_rs485_open(rs485_config->port, &uart_config);
+    hjsnow_cfg_485.io = driver_rs485_open(hjsnow->port, &uart_config);
     hjsnow_cfg_485.channel = 0;
     hjsnow_driver[SNOW_CH_485].cfg = &hjsnow_cfg_485;
     hjsnow_driver[SNOW_CH_485].api = &snow_api;
   }
   else
   {
-    rs232_config_t *rs232_config = opt;
+    hjsnow_config_t *rs232_config = opt;
     uart_config_t uart_config;
 
-    uart_config.baud = rs232_config->baud;
+    uart_config.baud = 19200;
     uart_config.dataLen = 8;
-    uart_config.parityIdx = rs232_config->parityIdx;
+    uart_config.parityIdx = 0;
     uart_config.stop_bit = 1;
 
     hjsnow_cfg_232.channel = 1;

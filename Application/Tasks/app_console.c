@@ -930,6 +930,12 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
     }
     break;
     case S_T_WIND_DIRECTION_HJ_485:
+    {
+      hjwindDirection_config_t *hjwindDir = (hjwindDirection_config_t *)cfg;
+      rs485_get_portList(list, sizeof(list));
+      snprintf(out, outSize, "[%s]", list[hjwindDir->rs485_port]);
+    }
+    break;
     case S_T_WIND_SPEED_HJ_485:
     {
       hjwindspeed_config_t *hjwind = (hjwindspeed_config_t *)cfg;
@@ -1036,6 +1042,15 @@ uint8_t print_hjtemp_cfg(p_shell_context_t ctx, hjtemp_config_t *hjtempCfg, uint
 
   rs485_get_portList(portNameList, _countof(portNameList));
   ctx->printf("%2d.port        :%s\r\n", cnt++, portNameList[hjtempCfg->rs485_port]);  // 고정
+  return cnt;
+}
+
+uint8_t print_hjsnow_cfg(p_shell_context_t ctx, hjsnow_config_t *hjsnow, uint8_t cnt)
+{
+  const char *portNameList[10];
+
+  rs232_get_portList(portNameList, _countof(portNameList));
+  ctx->printf("%2d.port        :%s\r\n", cnt++, portNameList[hjsnow->port]);  // 고정
   return cnt;
 }
 
@@ -1388,7 +1403,7 @@ void hjwinddir_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
   }
   switch (cnt)
   {
-    case HJWIND_CFG_PORT:
+    case HJWIND_DIR_CFG_PORT:
       cnt = rs485_get_portList(portList, _countof(portList));
 
       cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
@@ -1492,6 +1507,8 @@ typedef struct
 
 /*
 센서 모델과 모델 설정 함수 연결
+
+센서가 추가되거나 센서고유의 설정값을 변경하려면 처리 함수를 작성해야한다.
 */
 const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_ADC, .config_set = adc_config_set},
@@ -1512,7 +1529,9 @@ const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_TEMPERATURE_HJ_485, .config_set = hjtemp_config_set},
     {.sensorType = S_T_HUMI_HJ_485, .config_set = hjtemp_config_set}};
 
-// 센서 메뉴
+/*
+ 선택된 센서의 정보를 출력력
+ */
 int32_t print_common_cfg(p_shell_context_t ctx, sensor_t *sensor, uint8_t c)
 {
   int32_t cnt = 0;
@@ -1525,13 +1544,14 @@ int32_t print_common_cfg(p_shell_context_t ctx, sensor_t *sensor, uint8_t c)
       cnt = print_adc_cfg(ctx, get_sensor_config(sensor), cnt);
       break;
     case S_T_GENERAL_232:
-    case S_T_SNOW_HJ_232:
       cnt = print_rs232_cfg(ctx, get_sensor_config(sensor), cnt);
       break;
     case S_T_GENERAL_485:
-    case S_T_SNOW_HJ_485:
-    case S_T_HUMI_RS485:
       cnt = print_rs485_cfg(ctx, get_sensor_config(sensor), cnt);
+      break;
+    case S_T_SNOW_HJ_232:
+    case S_T_SNOW_HJ_485:
+      cnt = print_hjsnow_cfg(ctx, get_sensor_config(sensor), cnt);
       break;
     case S_T_WIND_DIRECTION_HJ_485:
       cnt = print_hjwindDir_cfg(ctx, get_sensor_config(sensor), cnt);
@@ -2136,9 +2156,11 @@ int32_t menu_sensor_rainPresent(p_shell_context_t ctx)
 void sensor_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
 {
   for (int i = 0; i < _countof(sen_func); i++)
-  {
+  {  // 센서마다 고유의 처리 함수를 사용한다.
     if (sen_func[i].sensorType == sensor->type)
     {
+      // 고유 처리 함수는 0번부터 처리하도록 되어있어서 -1해준다.
+      //
       sen_func[i].config_set(ctx, sensor, cnt - 1);
       break;
     }
@@ -2270,13 +2292,25 @@ const menu_func g_sensorMenu[SENSOR_LIST_MAX] = {
     [USER_SLOPE_10] = menu_sensor_default,
     [USER_DEFAULT] = menu_sensor_default};
 
-// 센서 설정
+/*
+센서 설정
+
+
+*/
 int32_t menu_sensor_default_2(p_shell_context_t ctx, eSENSOR_LIST_t list)
 {
   int32_t cnt = 0;
+
+  // 선택된 센서의 설정 정보를 가져온다.
   sensor_t *sensor = &config.sensor[(int)list];
   do
   {
+    /*
+    센서의 현재 정보를 출력하고, 수정을 원하는 항목의 번호를 입력받는다.
+    0.type       :화진 RS485 9600
+    1.port        :EX1 RS485 A
+    이런 화면이 나타남남
+    */
     cnt = select_indexMenu(ctx, sensor);
 
     if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
@@ -2287,10 +2321,12 @@ int32_t menu_sensor_default_2(p_shell_context_t ctx, eSENSOR_LIST_t list)
 
     switch (cnt)
     {
-      case 0:  // 타입
+      case 0:  // 센서가 사용하고자하는 센서 타입을 설정한다.
+               // 센서마다 지원가능한 목록을 넘겨지고 출력하여 선택하도록 한다.
         sensor_type_set(ctx, sensor, supported_sensors[list].list, supported_sensors[list].cnt);
         break;
-      default:
+      default:  // 센서 타입이 아닌 센서 고유 속성들은 이 함수 에서 처리한다.
+        // 현재의 센서 정보와 사용자가 수정하고자한 항목 번호를 넘긴다.
         sensor_set(ctx, sensor, cnt);  // 센서별 설정값 변경
         break;
     }
@@ -2299,7 +2335,7 @@ int32_t menu_sensor_default_2(p_shell_context_t ctx, eSENSOR_LIST_t list)
 
 /**
  * @brief 센서 메뉴
- * @retval
+ * @retval 센서 목록을 출력하고 센서를 선택한다.
  */
 int32_t menu_sensor(p_shell_context_t ctx)
 {
@@ -3080,8 +3116,9 @@ void config_hj_reset(void)
   adc_config_t *adc_config;
   hjtemp_config_t *hjtemp_cfg;
   hjwindspeed_config_t *hjwind_cfg;
-
+  hjwindDirection_config_t *hjwindDir_cfg;
   rs485_config_t *rs485_cfg;
+  hjsnow_config_t *hjsnow_cfg;
   uint8_t single_channel = 0;
 
   memset(&hj_config, 0, sizeof(hj_config));
@@ -3104,13 +3141,13 @@ void config_hj_reset(void)
   // 풍향[화진 RS485 풍향 19200]
   hj_config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;
   sensor_add(&hj_config.sensor[A2_WIND_DIRECTION]);
-  hjwind_cfg = get_sensor_config(&hj_config.sensor[A2_WIND_DIRECTION]);
-  hjwind_cfg->rs485_port = RS485_B;
+  hjwindDir_cfg = get_sensor_config(&hj_config.sensor[A2_WIND_DIRECTION]);
+  hjwindDir_cfg->rs485_port = RS485_B;
 
   // 풍속[화진 RS485 풍속 19200]
   hj_config.sensor[A3_WIND_SPEED].type = S_T_WIND_SPEED_HJ_485;
   sensor_add(&hj_config.sensor[A3_WIND_SPEED]);
-  rs485_cfg = get_sensor_config(&hj_config.sensor[A3_WIND_SPEED]);
+  hjwind_cfg = get_sensor_config(&hj_config.sensor[A3_WIND_SPEED]);
   hjwind_cfg->rs485_port = RS485_B;
   hjwind_cfg->full = 3200;
   hjwind_cfg->offset = 0;
@@ -3128,12 +3165,10 @@ void config_hj_reset(void)
   hj_config.sensor[A5_INSTANT_WIND_SPEED].type = S_T_WIND_SPEED_MAX_VAL;
 
   // 적설[화진 RS485 19200]
-  hj_config.sensor[A9_SNOW_DEPTH].type = S_T_SNOW_HJ_485;
+  hj_config.sensor[A9_SNOW_DEPTH].type = S_T_SNOW_HJ_232;
   sensor_add(&hj_config.sensor[A9_SNOW_DEPTH]);
-  rs485_cfg = get_sensor_config(&hj_config.sensor[A9_SNOW_DEPTH]);
-  rs485_cfg->baud = 19200;
-  rs485_cfg->parityIdx = 0;
-  rs485_cfg->port = RS485_B;
+  hjsnow_cfg = get_sensor_config(&hj_config.sensor[A9_SNOW_DEPTH]);
+  hjsnow_cfg->port = eRS232_1;
 
   // 기압[RM YOUNG]
   hj_config.sensor[A7_PRESSURE].type = S_T_ADC;
