@@ -1029,7 +1029,8 @@ uint8_t print_hjwindDir_cfg(p_shell_context_t ctx, hjwindspeed_config_t *hjwindC
   const char *portNameList[10];
 
   rs485_get_portList(portNameList, _countof(portNameList));
-  ctx->printf("%2d.port        :%s\r\n", cnt++, portNameList[hjwindCfg->rs485_port]);
+
+  ctx->printf("%2d.port       :%s\r\n", cnt++, portNameList[hjwindCfg->rs485_port]);
 
   return cnt;
 }
@@ -1041,6 +1042,7 @@ uint8_t print_hjtemp_cfg(p_shell_context_t ctx, hjtemp_config_t *hjtempCfg, uint
   const char *portNameList[10];
 
   rs485_get_portList(portNameList, _countof(portNameList));
+  // 0.type       :
   ctx->printf("%2d.port        :%s\r\n", cnt++, portNameList[hjtempCfg->rs485_port]);  // 고정
   return cnt;
 }
@@ -1530,7 +1532,7 @@ const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_HUMI_HJ_485, .config_set = hjtemp_config_set}};
 
 /*
- 선택된 센서의 정보를 출력력
+ 센서 개별
  */
 int32_t print_common_cfg(p_shell_context_t ctx, sensor_t *sensor, uint8_t c)
 {
@@ -2225,73 +2227,6 @@ int32_t menu_sensor_default(p_shell_context_t ctx)
   } while (1);
 }
 
-// 센서 목록록
-const menu_func g_sensorMenu[SENSOR_LIST_MAX] = {
-    [A1_TEMPERATURE] = menu_sensor_temp,
-    [A2_WIND_DIRECTION] = menu_sensor_windDirection,
-    [A3_WIND_SPEED] = menu_sensor_windSpeed,
-    [A4_INSTANT_WIND_DIRECTION] = menu_sensor_windDirectionInstant,
-    [A5_INSTANT_WIND_SPEED] = menu_sensor_windSpeedInstant,
-    [A6_RAINFALL_DOT5_1MM] = menu_sensor_rain,
-    [A7_PRESSURE] = menu_sensor_pressure,
-    [A8_RAIN_PRESENT] = menu_sensor_rainPresent,
-    [A9_SNOW_DEPTH] = menu_sensor_snow,
-    [A10_RELATIVE_HUMIDITY] = menu_sensor_humi,
-    [A11_RAINFALL_DOT1MM] = menu_sensor_humi,
-    [B1_SOLAR_RADIATION] = menu_sensor_default,
-    [B2_SUNSHINE_DURATION] = menu_sensor_default,
-    [B3_GROUND_TEMPERATURE] = menu_sensor_default,
-    [B4_SURFACE_TEMPERATURE] = menu_sensor_default,
-    [B5_SOIL_TEMPERATURE_5CM] = menu_sensor_default,
-    [B6_SOIL_TEMPERATURE_10CM] = menu_sensor_default,
-    [B7_SOIL_TEMPERATURE_20CM] = menu_sensor_default,
-    [B8_SOIL_TEMPERATURE_30CM] = menu_sensor_default,
-    [B9_SOIL_TEMPERATURE_50CM] = menu_sensor_default,
-    [B10_SOIL_TEMPERATURE_100CM] = menu_sensor_default,
-    [B11_SOIL_TEMPERATURE_150CM] = menu_sensor_default,
-    [B12_SOIL_TEMPERATURE_300CM] = menu_sensor_default,
-    [B13_SOIL_TEMPERATURE_500CM] = menu_sensor_default,
-    [C1_CLOUD_BASE1] = menu_sensor_default,
-    [C2_CLOUD_BASE2] = menu_sensor_default,
-    [C3_CLOUD_BASE3] = menu_sensor_default,
-    [C4_CLOUD_COVER] = menu_sensor_default,
-    [C5_VISIBILITY] = menu_sensor_default,
-    [C6_PM10] = menu_sensor_default,
-    [C7_PM2DOT5] = menu_sensor_default,
-    [C8_NET_RADIATION] = menu_sensor_default,
-    [C9_TOTAL_RADIATION] = menu_sensor_default,
-    [C10_REFLECTED_RADIATION] = menu_sensor_default,
-    [C11_DIRECT_SOLAR] = menu_sensor_default,
-    [C12_CURRENT_WEATHER] = menu_sensor_default,
-    [N1_SOIL_MOISTURE_10CM] = menu_sensor_default,
-    [N2_SOIL_MOISTURE_20CM] = menu_sensor_default,
-    [N3_SOIL_MOISTURE_30CM] = menu_sensor_default,
-    [N4_SOIL_MOISTURE_50CM] = menu_sensor_default,
-    [N5_ILLUMINANCE] = menu_sensor_default,
-    [N6_WIND_VELOCITY_150CM] = menu_sensor_default,
-    [N7_WIND_VELOCITY_400CM] = menu_sensor_default,
-    [N8_INSTANT_VELOCITY_150CM] = menu_sensor_default,
-    [N9_INSTANT_VELOCITY_400CM] = menu_sensor_default,
-    [N10_AIR_TEMPERATURE_50CM] = menu_sensor_default,
-    [N11_AIR_TEMPERATURE_400CM] = menu_sensor_default,
-    [N12_HUMIDITY_50CM] = menu_sensor_default,
-    [N13_HUMIDITY_400CM] = menu_sensor_default,
-    [I1_TACHOMETER] = menu_sensor_default,
-    [USER_WATER] = menu_sensor_default,
-    [USER_SWV] = menu_sensor_default,
-    [USER_FLOW_RATE] = menu_sensor_default,
-    [USER_SLOPE_1] = menu_sensor_default,
-    [USER_SLOPE_2] = menu_sensor_default,
-    [USER_SLOPE_3] = menu_sensor_default,
-    [USER_SLOPE_4] = menu_sensor_default,
-    [USER_SLOPE_5] = menu_sensor_default,
-    [USER_SLOPE_6] = menu_sensor_default,
-    [USER_SLOPE_7] = menu_sensor_default,
-    [USER_SLOPE_8] = menu_sensor_default,
-    [USER_SLOPE_9] = menu_sensor_default,
-    [USER_SLOPE_10] = menu_sensor_default,
-    [USER_DEFAULT] = menu_sensor_default};
-
 /*
 센서 설정
 
@@ -2348,12 +2283,7 @@ int32_t menu_sensor(p_shell_context_t ctx)
     {
       break;
     }
-#if 0 
-    if(g_sensorMenu[cnt-1])
-    {
-      cnt = g_sensorMenu[cnt-1](ctx);
-    }
-#endif
+
     cnt = menu_sensor_default_2(ctx, (eSENSOR_LIST_t)(cnt - 1));
   } while (cnt != EXIT_PROGRAM);
 

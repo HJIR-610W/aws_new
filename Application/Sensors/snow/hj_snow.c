@@ -262,35 +262,40 @@ driver_t *hjsnow_open(int32_t num, void *opt)
 
   hjsnow_driver[num].opened = true;
 
-  if (num == 0)  // RS485
+  switch (num)
   {
-    hjsnow_config_t *hjsnow = opt;
-    uart_config_t uart_config;
+    case HJ_SNOW_485:
+    {
+      hjsnow_config_t *hjsnow = opt;
+      uart_config_t uart_config;
 
-    uart_config.baud = 19200;
-    uart_config.dataLen = 8;
-    uart_config.parityIdx = 0;
-    uart_config.stop_bit = 1;
-    hjsnow_cfg_485.io = driver_rs485_open(hjsnow->port, &uart_config);
-    hjsnow_cfg_485.channel = 0;
-    hjsnow_driver[SNOW_CH_485].cfg = &hjsnow_cfg_485;
-    hjsnow_driver[SNOW_CH_485].api = &snow_api;
-  }
-  else
-  {
-    hjsnow_config_t *rs232_config = opt;
-    uart_config_t uart_config;
+      uart_config.baud = 19200;
+      uart_config.dataLen = 8;
+      uart_config.parityIdx = 0;
+      uart_config.stop_bit = 1;
+      hjsnow_cfg_485.io = driver_rs485_open(hjsnow->port, &uart_config);
+      hjsnow_cfg_485.channel = 0;
+      hjsnow_driver[SNOW_CH_485].cfg = &hjsnow_cfg_485;
+      hjsnow_driver[SNOW_CH_485].api = &snow_api;
+    }
+    break;
+    case HJ_SNOW_232:
+    {
+      hjsnow_config_t *rs232_config = opt;
+      uart_config_t uart_config;
 
-    uart_config.baud = 19200;
-    uart_config.dataLen = 8;
-    uart_config.parityIdx = 0;
-    uart_config.stop_bit = 1;
+      uart_config.baud = 19200;
+      uart_config.dataLen = 8;
+      uart_config.parityIdx = 0;
+      uart_config.stop_bit = 1;
 
-    hjsnow_cfg_232.channel = 1;
-    hjsnow_cfg_232.io = driver_uart_open(rs232_config->port, &uart_config);
+      hjsnow_cfg_232.channel = 1;
+      hjsnow_cfg_232.io = driver_uart_open(rs232_config->port, &uart_config);
 
-    hjsnow_driver[SNOW_CH_232].cfg = &hjsnow_cfg_232;
-    hjsnow_driver[SNOW_CH_232].api = &snow_api;
+      hjsnow_driver[SNOW_CH_232].cfg = &hjsnow_cfg_232;
+      hjsnow_driver[SNOW_CH_232].api = &snow_api;
+    }
+    break;
   }
 
   return &hjsnow_driver[num];

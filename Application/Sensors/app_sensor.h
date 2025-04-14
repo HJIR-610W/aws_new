@@ -183,15 +183,18 @@ typedef struct hjwindDirection_s
   uint8_t rs485_port;
 } hjwindDirection_config_t;
 
+// 화진 적설 232,485
 typedef struct hjsnow_config_s
 {
   uint8_t port;
 } hjsnow_config_t;
 
+// 화진 온도 센서 485만 사용
 typedef struct hjtemp_s
 {
   uint8_t rs485_port;
 } hjtemp_config_t;
+
 typedef enum adcChType_e
 {
   eSINGLE_ADC = 0,
