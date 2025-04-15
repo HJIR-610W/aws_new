@@ -166,11 +166,9 @@ typedef struct
 
 }kma_data_t;
 
-
-
-extern kma_data_t g_kma_1s;
+extern kma_data_t g_kma_raw;
+extern kma_data_t g_kma_avg;
 extern kma_data_t g_kma_1min;
-
-
-
+extern kma_data_t g_kma_10min;
+extern kma_data_t g_kma_hour;
 #endif

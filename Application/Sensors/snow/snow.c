@@ -31,9 +31,9 @@ int32_t read_sensor_snow(driver_t *driver,uint8_t *err)
   int32_t data;
   const snow_api_t *api = driver->api;
 
-  if(driver == NULL)
+  if (driver == NULL)
   {
-    *err = 1;
+    *err = DRV_ERR_HANDLE;
     return 0;
   }
 

@@ -1,32 +1,22 @@
-/* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * File Name          : FSMC.c
-  * Description        : This file provides code for the configuration
-  *                      of the FSMC peripheral.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
+ * @file           fsmc.c
+ * @brief          fsmc √ ±‚»≠
+ * @author         t
+ * @date           2025-01-01
+ * @version        v1.0.0
+ *
+ * @note
+ * 0x64000000 NE2 SRAM
+ * 0x68000000 NE3 QUAD UART
+ */
 
-/* Includes ------------------------------------------------------------------*/
+
 #include "pcb_define.h"
 #include "system_err.h"
 #include "fsmc.h"
 
 
-/* USER CODE BEGIN 0 */
 
-/* USER CODE END 0 */
 
 SRAM_HandleTypeDef hsram1;
 SRAM_HandleTypeDef hsram2;

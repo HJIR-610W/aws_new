@@ -44,10 +44,10 @@ void systemTask(void *arg)
   m_init.port_num = MODBUS_MSTER_RTU_OVER_485_PORTA;
   m_init.stop = 1;
 
-  m_master = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &m_init);
+ // m_master = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &m_init);
   while (1)
   {
-    driver_modbus_m_read_multi_reg(m_master, 0, 0, reg, 2);
+    //driver_modbus_m_read_multi_reg(m_master, 0, 0, reg, 2);
 
     rtc_update();
     update_charger();

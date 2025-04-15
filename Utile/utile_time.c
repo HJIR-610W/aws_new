@@ -24,10 +24,9 @@ void time_set(DATE_TIME_BUF *nt)
 
 void time_cvt_secTotime(time_t sec,DATE_TIME_BUF *timeNow)
 {
+	struct tm newtime;
 
-    struct tm newtime;
-    
-      localtime_s(&sec,&newtime);
+	localtime_s(&sec,&newtime);
 
 	timeNow->Year = newtime.tm_year + 1900;
 	timeNow->Month = newtime.tm_mon +1;

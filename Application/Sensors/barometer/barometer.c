@@ -27,10 +27,9 @@ driver_t *barometer_open(int32_t num,void *opt)
 float read_sensor_barometer(driver_t *driver,uint8_t *err)
 {
 
-
   if(driver == NULL)
   {
-    *err = 1;
+    *err = DRV_ERR_HANDLE;
     return NAN;
   }
 
@@ -39,10 +38,9 @@ float read_sensor_barometer(driver_t *driver,uint8_t *err)
     return general_adc_read(driver,err);
   }
 
+  *err = DRV_ERR_NONE;
   
-  return 0;
-
-
+  return 0.0f;
 }
 
 

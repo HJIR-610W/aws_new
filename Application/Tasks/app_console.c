@@ -251,7 +251,7 @@ bool wait_break(uint32_t timeoutms)
 
 #define DISP_WIDTH 26
 
-extern uint32_t g_elased_time;
+extern uint32_t g_debug_elased_time;
 int32_t print_systemInfo(uint16_t row, uint16_t column)
 {
   uint8_t line = row + 3;
@@ -390,42 +390,35 @@ int32_t print_directInfo(uint16_t row, uint16_t column)
 int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, uint8_t mode, void *arg)
 {
   char buff[50];
-
   uint8_t line = row + 3;
-  // sensor_t *sensor;
   sensor_data_t *pdata;
-  const char *aswTitleList[] = {"실시간(1s)", "1분", "10분", "한시간"};
+  const char *aswTitleList[] = {"RAW", "평균","1분", "10분","한시간"};
+  kma_data_t *pkma=NULL;
 
-  snprintf(buff, sizeof(buff), "AWS %s %.2fms", aswTitleList[mode], (float)g_elased_time / 1000.0f);
 
-#if 0 
-  pdata = sensor_data_1s;
-
-#define P_WIDTH 27
-#if 1
-  vt100_print_frame(row   ,column,buff, '+', '|', '-', P_WIDTH, WHITE);
-
-  for(int i = 0 ;i < _countof(config.sensor);i++)
+  switch (mode)
   {
-    if(config.sensor[i].type)//센서가 사용중
-    {
-      snprintf(buff,sizeof(buff),"%-13s:%s\r\n",sensorNameList[i],dataFmtList[i]);
-      if(pdata[i].dataType == DATA_TYPE_I)
-      {
-        vt100_print_bar(line++ ,column,-P_WIDTH,buff,pdata[i].data.i );
-      }
-      else
-      {
-        vt100_print_bar(line++ ,column,-P_WIDTH,buff,pdata[i].data.f );
-      }
-    }
-  } 
+  case 0: //raw
+  pkma = &g_kma_raw;
+  break;
+  case 1://avg
+    pkma = &g_kma_avg;
+    break;
+  case 2://1min
+    pkma = &g_kma_1min;
+    break;
+  case 3://10min
+    pkma = &g_kma_10min;
+    break;
+  case 4:  // 10min
+    pkma = &g_kma_hour;
+    break;
+  }
+
+    snprintf(buff, sizeof(buff), "AWS %s %.2fms", aswTitleList[mode],
+              (float)g_debug_elased_time / 1000.0f);
 
 
-  vt100_print_line(line++,column,'+', '-', P_WIDTH);
-
-#endif
-#endif
 
 #define KMA_TO_TEMPERATURE(x) \
   ((float)((x - 1000) / 10.0f))  //[AWS = (관측값+100)/10, 관측값 = (x-1000)/10]
@@ -439,191 +432,191 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, uint8_t mode, void *
   vt100_print_frame(row, column, buff, '+', '|', '-', DISP_WIDTH, WHITE);
   if (p_sensor[A1_TEMPERATURE].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "기온          :%5.1f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.temperature));
+                    KMA_TO_TEMPERATURE(pkma->temperature));
   if (p_sensor[A2_WIND_DIRECTION].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "풍향          :%5.1f 도\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.wind_direction_avg));
+                    KMA_TO_GENERAL(pkma->wind_direction_avg));
   if (p_sensor[A3_WIND_SPEED].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "풍속          :%5.1f m/s\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.wind_speed_avg));
+                    KMA_TO_GENERAL(pkma->wind_speed_avg));
   if (p_sensor[A4_INSTANT_WIND_DIRECTION].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "순간 풍향     :%5.1f 도\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.wind_direction_instant));
+                    KMA_TO_GENERAL(pkma->wind_direction_instant));
   if (p_sensor[A5_INSTANT_WIND_SPEED].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "순간 풍속     :%5.1f m/s\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.wind_speed_instant));
+                    KMA_TO_GENERAL(pkma->wind_speed_instant));
   if (p_sensor[A6_RAINFALL_DOT5_1MM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "강수량        :%5.1f mm\r\n",
-                    (float)(g_kma_1s.precipitation / 10.0f));
+                    (float)(pkma->precipitation / 10.0f));
   if (p_sensor[A7_PRESSURE].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "기압          :%5.1f\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.pressure));
+                    KMA_TO_GENERAL(pkma->pressure));
   if (p_sensor[A8_RAIN_PRESENT].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "강수유무      :%5s\r\n",
-                    g_kma_1s.precipitation_presence == 10 ? "유" : "무");
+                    pkma->precipitation_presence == 10 ? "유" : "무");
   if (p_sensor[A9_SNOW_DEPTH].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "적설          :%5d mm\r\n",
-                    (int)(g_kma_1s.snowfall / 10.0f));
+                    (int)(pkma->snowfall / 10.0f));
   if (p_sensor[A10_RELATIVE_HUMIDITY].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "상대습도      :%5.1f %%\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.relative_humidity));
+                    KMA_TO_GENERAL(pkma->relative_humidity));
   if (p_sensor[A11_RAINFALL_DOT1MM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "강수량        :%5d mm\r\n",
-                    g_kma_1s.precipitation_fine);
+                    pkma->precipitation_fine);
   if (p_sensor[B1_SOLAR_RADIATION].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "일사          :%5.2f MJ/m2\r\n",
-                    g_kma_1s.solar_radiation / 100.f);  // 표현범위	→	0	～
+                    pkma->solar_radiation / 100.f);  // 표현범위	→	0	～
                                                         // 32767 [누적	값(MJ/m2)	×	100]
   if (p_sensor[B2_SUNSHINE_DURATION].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "일조          :%5d s\r\n",
-                    (int)g_kma_1s.sunshine_duration);  // 표현범위	→	0	～
+                    (int)pkma->sunshine_duration);  // 표현범위	→	0	～
                                                        // 65535	[누적시간(초	단위)
   if (p_sensor[B3_GROUND_TEMPERATURE].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "지면온도      :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.surface_temperature));  // 표현범위	→	500
+                    KMA_TO_TEMPERATURE(pkma->surface_temperature));  // 표현범위	→	500
                                                                         // ～	2000	[(관측값
                                                                         // ＋	100)	×	10
   if (p_sensor[B4_SURFACE_TEMPERATURE].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "초상온도      :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.grass_temperature));
+                    KMA_TO_TEMPERATURE(pkma->grass_temperature));
   if (p_sensor[B5_SOIL_TEMPERATURE_5CM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "지중온도 5cm  :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.soil_temperature_5cm));
+                    KMA_TO_TEMPERATURE(pkma->soil_temperature_5cm));
   if (p_sensor[B6_SOIL_TEMPERATURE_10CM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "지중온도 10cm :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.soil_temperature_10cm));
+                    KMA_TO_TEMPERATURE(pkma->soil_temperature_10cm));
   if (p_sensor[B7_SOIL_TEMPERATURE_20CM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "지중온도 20cm :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.soil_temperature_20cm));
+                    KMA_TO_TEMPERATURE(pkma->soil_temperature_20cm));
   if (p_sensor[B8_SOIL_TEMPERATURE_30CM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "지중온도 30cm :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.soil_temperature_30cm));
+                    KMA_TO_TEMPERATURE(pkma->soil_temperature_30cm));
   if (p_sensor[B9_SOIL_TEMPERATURE_50CM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "지중온도 50cm :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.soil_temperature_50cm));
+                    KMA_TO_TEMPERATURE(pkma->soil_temperature_50cm));
   if (p_sensor[B10_SOIL_TEMPERATURE_100CM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "지중온도 1m   :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.soil_temperature_1m));
+                    KMA_TO_TEMPERATURE(pkma->soil_temperature_1m));
   if (p_sensor[B11_SOIL_TEMPERATURE_150CM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "지중온도 1.5m :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.soil_temperature_1_5m));
+                    KMA_TO_TEMPERATURE(pkma->soil_temperature_1_5m));
   if (p_sensor[B12_SOIL_TEMPERATURE_300CM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "지중온도 3m   :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.soil_temperature_3m));
+                    KMA_TO_TEMPERATURE(pkma->soil_temperature_3m));
   if (p_sensor[B13_SOIL_TEMPERATURE_500CM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "지중온도 5cm  :%5.2f C\r\n",
-                    KMA_TO_TEMPERATURE(g_kma_1s.soil_temperature_5m));
+                    KMA_TO_TEMPERATURE(pkma->soil_temperature_5m));
   if (p_sensor[C1_CLOUD_BASE1].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "1층 운고      :%dm\r\n",
-                    (g_kma_1s.cloud_height_1st));  // 표현범위	→	1
+                    (pkma->cloud_height_1st));  // 표현범위	→	1
                                                    // ～ 8000	[관측값(m)]
   if (p_sensor[C2_CLOUD_BASE2].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "2층 운고      :%dm\r\n",
-                    (g_kma_1s.cloud_height_2nd));  // 표현범위	→	1
+                    (pkma->cloud_height_2nd));  // 표현범위	→	1
                                                    // ～ 8000	[관측값(m)]
   if (p_sensor[C3_CLOUD_BASE3].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "3층 운고      :%dm\r\n",
-                    (g_kma_1s.cloud_height_3rd));  // 표현범위	→	1
+                    (pkma->cloud_height_3rd));  // 표현범위	→	1
                                                    // ～ 8000	[관측값(m)]
   if (p_sensor[27].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "운량          :%5d\r\n",
-                    (g_kma_1s.cloud_amount));  // 표현범위	→	0
+                    (pkma->cloud_amount));  // 표현범위	→	0
                                                // ～	10	(관측값)
   if (p_sensor[28].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "시정          :%5d m\r\n",
-                    (g_kma_1s.visibility));  // 표현범위	→	1
+                    (pkma->visibility));  // 표현범위	→	1
                                              // ～	50000	[관측값(m)]
   if (p_sensor[29].type)
     vt100_print_bar(
         line++, column, -DISP_WIDTH, "PM10          :%5.1f μg/㎥\r\n",
-        KMA_TO_GENERAL(g_kma_1s.pm10_concentration));  // 표현범위	→	1	～
+        KMA_TO_GENERAL(pkma->pm10_concentration));  // 표현범위	→	1	～
                                                        // 3599	[관측값(μg/㎥)	×	10]
   if (p_sensor[30].type)
     vt100_print_bar(
         line++, column, -DISP_WIDTH, "PM2.5         :%5.1f μg/㎥\r\n",
-        KMA_TO_GENERAL(g_kma_1s.pm25_concentration));  // 표현범위	→	1	～
+        KMA_TO_GENERAL(pkma->pm25_concentration));  // 표현범위	→	1	～
                                                        // 3599	[관측값(μg/㎥)	×	10]
   if (p_sensor[31].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "순복사        :%5f W/m2\r\n",
-                    KMA_TO_1000(g_kma_1s.net_radiation));  // 표현범위	→	0
+                    KMA_TO_1000(pkma->net_radiation));  // 표현범위	→	0
                                                            // ～	32767	{[관측값(W/m2)
                                                            // +	1000]	×	10}
   if (p_sensor[32].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "전천복사      :%5f W/m2\r\n",
-                    KMA_TO_1000(g_kma_1s.total_radiation));  // 표현범위	→	0
+                    KMA_TO_1000(pkma->total_radiation));  // 표현범위	→	0
                                                              // ～	32767	{[관측값(W/m2)
                                                              // +	1000]	×	10}
   if (p_sensor[33].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "반사복사      :%5f W/m2\r\n",
-                    KMA_TO_1000(g_kma_1s.reflected_radiation));  // 표현범위	→	0
+                    KMA_TO_1000(pkma->reflected_radiation));  // 표현범위	→	0
                                                                  // ～	32767	{[관측값(W/m2)
                                                                  // +	1000]	×	10}
   if (p_sensor[34].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "직달일사      :%5f W/m2\r\n",
-                    KMA_TO_1000(g_kma_1s.direct_radiation));  // 표현범위	→	0
+                    KMA_TO_1000(pkma->direct_radiation));  // 표현범위	→	0
                                                               // ～	32767	{[관측값(W/m2)
                                                               // +	1000]	×	10}
   if (p_sensor[35].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "현재일기      :%5f\r\n",
-                    g_kma_1s.current_weather);  // 표현범위	→	0
+                    pkma->current_weather);  // 표현범위	→	0
                                                 // ～	99	(관측값)
   if (p_sensor[36].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "토양수분10cm  :%5.1f\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.soil_moisture_10cm));  // 표현범위	→	0	～
+                    KMA_TO_GENERAL(pkma->soil_moisture_10cm));  // 표현범위	→	0	～
                                                                    // 1000	(관측값	×	10)
   if (p_sensor[37].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "토양수분20cm  :%5.1f\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.soil_moisture_20cm));  // 표현범위	→	0	～
+                    KMA_TO_GENERAL(pkma->soil_moisture_20cm));  // 표현범위	→	0	～
                                                                    // 1000	(관측값	×	10)
   if (p_sensor[38].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "토양수분30cm  :%5.1f\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.soil_moisture_30cm));  // 표현범위	→	0	～
+                    KMA_TO_GENERAL(pkma->soil_moisture_30cm));  // 표현범위	→	0	～
                                                                    // 1000	(관측값	×	10)
   if (p_sensor[39].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "토양수분50cm  :%5.1f\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.soil_moisture_50cm));  // 표현범위	→	0	～
+                    KMA_TO_GENERAL(pkma->soil_moisture_50cm));  // 표현범위	→	0	～
                                                                    // 1000	(관측값	×	10)
   if (p_sensor[40].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "조도량        :%5.2f klux\r\n",
-                    (g_kma_1s.illuminance));  // 표현범위	→	0	～	32767
+                    (pkma->illuminance));  // 표현범위	→	0	～	32767
                                               // (관측값(klux)	×	100)
   if (p_sensor[N6_WIND_VELOCITY_150CM].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "풍속1.5m      :%5.2f m/s\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.wind_speed_1_5m));  // 표현범위	→	1	～
+                    KMA_TO_GENERAL(pkma->wind_speed_1_5m));  // 표현범위	→	1	～
                                                                 // 1000	(관측값	×	10)
   if (p_sensor[42].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "풍속4m        :%5.2f m/s\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.wind_speed_4m));  // 표현범위	→	1	～
+                    KMA_TO_GENERAL(pkma->wind_speed_4m));  // 표현범위	→	1	～
                                                               // 1000	(관측값	×	10)
   if (p_sensor[43].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "순간풍속1.5m  :%5.2f m/s\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.instant_wind_speed_1_5m));  // 표현범위	→
+                    KMA_TO_GENERAL(pkma->instant_wind_speed_1_5m));  // 표현범위	→
                                                                         // 1 ～	1000
                                                                         // (관측값	× 10)
   if (p_sensor[44].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "순간풍속4m    :%5.2f m/s\r\n",
-                    KMA_TO_GENERAL(g_kma_1s.instant_wind_speed_4m));  // 표현범위	→
+                    KMA_TO_GENERAL(pkma->instant_wind_speed_4m));  // 표현범위	→
                                                                       // 1	～ 1000	(관측값
                                                                       // ×	10)
   if (p_sensor[45].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "기온0.5m      :%5.2f C\r\n",
-                    (g_kma_1s.temperature_0_5m));  // 표현범위	→	500	～	1500
+                    (pkma->temperature_0_5m));  // 표현범위	→	500	～	1500
                                                    // [(관측값	＋	100)	×	10
   if (p_sensor[46].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "기온4m        :%5.2f C\r\n",
-                    (g_kma_1s.temperature_4m));  // 표현범위	→	500	～	1500
+                    (pkma->temperature_4m));  // 표현범위	→	500	～	1500
                                                  // [(관측값	＋	100)	×	10
   if (p_sensor[47].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "습도0.5m      :%5.2f %%\r\n",
-                    (g_kma_1s.humidity_0_5m));  // 표현범위	→	500	～	1500
+                    (pkma->humidity_0_5m));  // 표현범위	→	500	～	1500
                                                 // [(관측값	＋	100)	×	10
   if (p_sensor[48].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "습도4m        :%5.2f %%\r\n",
-                    (g_kma_1s.humidity_4m));  // 표현범위	→	500	～	1500
+                    (pkma->humidity_4m));  // 표현범위	→	500	～	1500
                                               // [(관측값	＋	100)	×	10
   if (p_sensor[49].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "타코4m        :%5d\r\n",
-                    (g_kma_1s.tacometer));  // 표현범위	→	0	～	8000	(관측값)
+                    (pkma->tacometer));  // 표현범위	→	0	～	8000	(관측값)
 
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 #endif
@@ -637,9 +630,32 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, uint8_t mode, void *
 #define KEY_ENTER 0x0D
 
 #define AWS_MODE_MAX 3
+
+
+char recv_key(void)
+{
+  char key;
+  char ch=0;
+
+  while(1)
+  {
+    if(debug_recv(&ch, 1, 1000))
+    {
+      if(ch==0x1B || ch==0x5B)
+      {
+        continue;
+      }
+      break;
+    }
+    break;
+  }
+return ch;
+
+}
+
 int32_t menu_display(p_shell_context_t ctx)
 {
-  char ch;
+  char key;
   int32_t line = 0;
   uint8_t awsMode = 0;
 
@@ -669,17 +685,16 @@ int32_t menu_display(p_shell_context_t ctx)
     print_chargerInfo(20, 0);
     print_awsRealLefinfo(1, 60, awsMode, NULL);
 
-    ch = 0;
-    debug_recv(&ch, 1, 1000);
+    key = recv_key();
 
-    if (ch == KEY_RIGHT)
+    if (key == KEY_RIGHT)
     {
       if (awsMode < AWS_MODE_MAX)
       {
         awsMode++;
       }
     }
-    else if (ch == KEY_LEFT)
+    else if (key == KEY_LEFT)
     {
       if (awsMode > 0)
       {
@@ -687,7 +702,7 @@ int32_t menu_display(p_shell_context_t ctx)
       }
     }
 
-    if (ch == ASCII_CODE_CTRL_Q)
+    if (key == ASCII_CODE_CTRL_Q)
     {
       break;
     }
@@ -891,6 +906,7 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
 
   if (cfg == NULL)
   {
+    snprintf(out, outSize, "%s","NULL");
     return;
   }
 

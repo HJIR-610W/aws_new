@@ -16,6 +16,9 @@ typedef struct driver_s
 }driver_t;
 
 
-
+#define DRV_ERR_NONE 0
+#define DRV_ERR_HANDLE  1
+#define DRV_ERR_TIMEOUT 2
+#define DRV_ERR_RECV_DATA    3
 
 #endif

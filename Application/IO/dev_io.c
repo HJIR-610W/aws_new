@@ -84,6 +84,11 @@ void debug_puts_nonos(char *str)
   }
 }
 
+static char g_printf_buff[512];
+
+#define PRINTF_HEAP_USE 0
+
+
 int32_t debug_printf(const char *pFmt, ...)
 {
   char buff[2];
@@ -97,6 +102,7 @@ int32_t debug_printf(const char *pFmt, ...)
   len = vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
   va_end(ap);
 
+#if PRINTF_HEAP_USE
   if (len > (sizeof(buff) - 1))  //
   {
     temp = aws_malloc(len + 1);  // null포함
@@ -116,7 +122,13 @@ int32_t debug_printf(const char *pFmt, ...)
   {
     ptr = buff;  // 1바이트만 전송하게 되면 버퍼로 처리
   }
+#else
+  va_start(ap, pFmt);
+  len = vsnprintf_s((char *)g_printf_buff, sizeof(g_printf_buff), (char *)pFmt, ap);
+  va_end(ap);
 
+  ptr = g_printf_buff;
+#endif
   if (debug_uart && ptr)  // os구동중인지 확인
   {
     driver_uart_send(debug_uart, (uint8_t *)ptr, strlen(ptr));
@@ -126,13 +138,15 @@ int32_t debug_printf(const char *pFmt, ...)
     debug_puts_nonos(ptr);
   }
 
+#ifdef PRINTF_HEAP_USE
   if (temp)
   {
     aws_free(temp);
   }
-
+#endif
   return 0;
 }
+
 
 int32_t error_printf(const char *pFmt, ...)
 {
@@ -149,6 +163,7 @@ int32_t error_printf(const char *pFmt, ...)
 
   if (len > (sizeof(buff) - 1))  //
   {
+#if PRINTF_HEAP_USE
     temp = aws_malloc(len + 1);  // null포함
     if (temp)
     {
@@ -161,6 +176,13 @@ int32_t error_printf(const char *pFmt, ...)
     {
       return 1;  // 메모리 할당 에러
     }
+#else
+    va_start(ap, pFmt);
+    len = vsnprintf_s((char *)g_printf_buff, sizeof(g_printf_buff), (char *)pFmt, ap);
+    va_end(ap);
+
+    ptr = g_printf_buff;
+#endif
   }
   else
   {
@@ -179,12 +201,12 @@ int32_t error_printf(const char *pFmt, ...)
     debug_puts_nonos(ptr);
     debug_puts_nonos((char *)"\x1B[37m");
   }
-
+#if PRINTF_HEAP_USE
   if (temp)
   {
     aws_free(temp);
   }
-
+#endif
   return 0;
 }
 

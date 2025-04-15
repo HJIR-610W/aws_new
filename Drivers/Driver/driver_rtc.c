@@ -11,30 +11,43 @@ driver_t * driver_rtc_open(int num,void *opt)
 {
   driver_t *driver=NULL;
 
-    switch(num)
+  switch(num)
   {
     case RTC_DS1306:
-    driver = ds1306_open();
+      driver = ds1306_open();
     break;
     case RTC_RV8803:
-    driver = rv8803_open();
+      driver = rv8803_open();
     break;
     case RTC_MCU:
-    driver = driver_stm32_rtc_open(0,0);
-    break;
+      driver = driver_stm32_rtc_open(STM32_RTC, 0);
+      break;
   }
 
   return driver;
 }
 
+/**
+ * 
+ */
 void driver_rtc_read(driver_t* driver, DATE_TIME_BUF *t)
 {
-   const rtc_api_t* api;
-  if(driver)
+  const rtc_api_t* api;
+
+  if(driver == NULL)
   {
-    api = ((driver_t *)driver)->api;
-    api->read(driver,t);
+    return;
   }
+
+  api = ((driver_t *)driver)->api;
+
+  if(api == NULL)
+  {
+    return ;
+  }
+  
+  api->read(driver,t);
+ 
 }
 
 

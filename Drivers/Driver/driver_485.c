@@ -103,6 +103,8 @@ int32_t driver_rs485_recv(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32_t
  * timeout2 2ms
  * 명령어 보내고 2초간 기다리고 일단 그 안에 1바이트라도 수신되면 패킷이
  * 수신되기 시작 의미 그런데 2ms 안에 그다음 데이터가 수신안되면 종료로 판단
+ * @details 
+ * #test
  */
 int32_t driver_rs485_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
                               uint32_t timeout1_ms, uint32_t timeout2_ms)

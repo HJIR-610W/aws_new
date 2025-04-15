@@ -17,7 +17,25 @@
 			"os_user_def.h": "c",
 			"driver_485.h": "c",
 			"driver_485_def.h": "c",
-			"utile.h": "c"
+			"utile.h": "c",
+			"utile_time.h": "c",
+			"time_define.h": "c",
+			"xutility": "c",
+			"xtr1common": "c",
+			"type_traits": "c",
+			"aws_processor.h": "c",
+			"app_sensor.h": "c",
+			"schedule.h": "c",
+			"tlsf.h": "c",
+			"user_heap.h": "c",
+			"old_aws_define.h": "c",
+			"config.h": "c",
+			"utility": "c",
+			"xmemory": "c",
+			"crc16_ccitt.h": "c",
+			"wind_direction.h": "c",
+			"wind_define.h": "c",
+			"aws_data.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

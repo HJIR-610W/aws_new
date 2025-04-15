@@ -24,11 +24,9 @@ driver_t *humidity_open(int32_t num,void *opt)
 
 float read_sensor_humidity(driver_t *driver,uint8_t *err)
 {
-
-
-  if(driver == NULL)
+  if (driver == NULL)
   {
-    *err = 1;
+    *err = DRV_ERR_HANDLE;
     return NAN;
   }
 

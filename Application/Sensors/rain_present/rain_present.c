@@ -32,6 +32,13 @@ bool read_sensor_rainPresent(driver_t *driver,uint8_t *err)
 {
   bool data=false;
 
+  if (driver == NULL)
+  {
+    *err = DRV_ERR_HANDLE;
+    return false;
+  }
+
+
   if(driver_di_read(driver))
   {
     data = true;

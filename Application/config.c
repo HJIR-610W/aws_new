@@ -192,6 +192,7 @@ void config_init(void)
   fram_read(ADC_CALI_START_ADDRESS, (uint8_t *)&g_adc_cali_config, sizeof(g_adc_cali_config));
   fram_read(S_CONFIG_START_ADDRESS, (uint8_t *)&s_config, sizeof(s_config));
   fram_read(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
+  fram_read(SENSOR_START_ADDRESS, (uint8_t *)&g_sensor_nvm, sizeof(g_sensor_nvm));
 
   check_config_limit();
 }

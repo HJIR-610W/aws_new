@@ -17,6 +17,38 @@
 
 #define MAX_ARGV 10
 
+#define CIRCULAR_PUSH(arr, index, value, max) \
+  do                                          \
+  {                                           \
+    arr[index] = value;                       \
+    index = (index + 1) % max;                \
+  } while (0)
+
+/*사용 예
+버퍼가 3개로 3개의 샘플을 평균내는 코드에서
+버퍼가 다 차지 전까지는 저장한 샘플수만큼만 평균내고
+샘플이 다찬상태에서는 버퍼갯수 만큼 평균을 낼때 사용
+
+index가 max보다 작으면 버퍼가 한번이라도 완전히 찬적이 없으면
+버퍼가 max보다 같거나 크면 한번은 완전히 찬 상태가 된다.
+
+max가 20이면 index는 0~19사이인데
+20~40사이 값을 모듈러 연산해도 동일한 값이다.
+대신 이버퍼가 완전히 찬적이 있는지 판단할수 있게 한다.
+*/
+#define CIRCULAR_PUSH2(arr, index, value, max) \
+  do                                           \
+  {                                            \
+    int idx = index % max;                     \
+    arr[idx] = value;                          \
+    index++;                                   \
+    if (index >= max * 2)                      \
+    {                                          \
+      index = max;                             \
+    }                                          \
+  } while (0);
+
+
 int getPinNumber(uint16_t pin);
 void hex_to_binary_string(uint16_t hex_value, char *binary_str, int bit_length);
 

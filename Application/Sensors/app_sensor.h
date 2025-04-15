@@ -233,6 +233,7 @@ RS485는 config_manager  rs485 coing 배열 3을 사용한다는 의미
 
 #define DATA_TYPE_I 0
 #define DATA_TYPE_F 1
+#define DATA_TYPE_B 2
 typedef struct sensor_data_s
 {
   union aws_data
@@ -254,6 +255,7 @@ typedef struct sensor_data_s
   float unitScale;
   float avg;
   void *opt;
+  uint8_t err;
   uint8_t sample_cnt;
   uint8_t enable : 1;
   uint8_t dataType : 3;
@@ -274,6 +276,7 @@ typedef struct sensor_emul_s
 
 typedef struct config_manage_s
 {
+  uint32_t crc;
   uint8_t adc_cnt;
   adc_config_t adc[50];
   uint8_t rs232_cnt;
@@ -299,11 +302,26 @@ typedef struct config_manage_s
   hjsnow_config_t hjsnow[2];
 } config_manager_t;
 
+
+typedef struct sensor_nvm_S
+{
+  uint32_t crc;
+  uint32_t yearRain;
+  uint32_t yearSunshine;
+  uint32_t monthRain;
+  uint32_t monthSunshine;
+}sensor_nvm_t;
+
+
+
+
+
+
 void *get_sensor_config(sensor_t *sensor);
 void *sensor_add(sensor_t *sensor);
 
-void sensorData_init(void);
-void update_sensorData1s(void);
+
+
 void update_sensorData1min(void);
 
 extern config_manager_t s_config;
@@ -338,10 +356,14 @@ extern const uint8_t temperature50cmList[2];
 extern const char *sensorNameList[SENSOR_LIST_MAX];
 extern const char *dataFmtList[SENSOR_LIST_MAX];
 extern sensor_emul_t g_sensor_emul[SENSOR_LIST_MAX];
-extern sensor_data_t sensor_data[SENSOR_LIST_MAX];
-extern sensor_data_t sensor_data_1s[SENSOR_LIST_MAX];    // 1초마다 갱신되는 자료
-extern sensor_data_t sensor_data_real[SENSOR_LIST_MAX];  // 실시간;
+
+
 
 extern const supported_sensors_t supported_sensors[SENSOR_LIST_MAX];
 
+extern sensor_data_t sensor_data_1min[SENSOR_LIST_MAX];     // 1분 마다 갱신되는 실시간 자료
+extern sensor_data_t sensor_data_instant[SENSOR_LIST_MAX];   //
+extern sensor_data_t sensor_data_raw[SENSOR_LIST_MAX];
+
+extern sensor_nvm_t g_sensor_nvm;;
 #endif

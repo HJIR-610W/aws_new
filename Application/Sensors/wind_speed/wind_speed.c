@@ -36,7 +36,7 @@ float wind_read(driver_t *driver,int32_t channel,uint8_t *err)
 
   if(driver == NULL)
   {
-    *err = 1;
+    *err = DRV_ERR_HANDLE;
     return NAN;
   }
 

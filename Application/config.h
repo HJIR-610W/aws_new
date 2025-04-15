@@ -12,21 +12,28 @@
 
 #define SENSOR_COUNT_MAX  SENSOR_LIST_MAX
 
-#define ADC_CALI_START_ADDRESS 0x00000000 //0x00000000~0x000003FF 1024KB
-#define S_CONFIG_START_ADDRESS 0x00000400 //0x00000400~0x00000FFF 1024KB
-#define CONFIG_START_ADDRESS   0x00001000 //0x00001000~
+//프로그램에서 사용하는 NVM의 주소를 정의한다.
+
+#define ADC_CALI_START_ADDRESS 0x00000000 //0x00000000~0x000003FF 1024바이트 ADC켈리브레이션용
+#define S_CONFIG_START_ADDRESS 0x00000400 //0x00000400~0x00000FFF 1024바이트 센서 config용
+#define CONFIG_START_ADDRESS   0x00001000 //0x00001000~0x00001FFF 4096바이트 시스템 config용
+#define SENSOR_START_ADDRESS   0x00002000 //0x00002000~0x000023FF 1024바이트 센서 값 저장용                    
 
 
 
 #define WRITE_CFG_CALI(x) fram_write((uint32_t)OFFSET_OF_STRUCT(adc_cali_config_t, x),(uint8_t *)&g_adc_cali_config.x,sizeof(g_adc_cali_config.x));
 #define WRITE_CFG(x) fram_write(CONFIG_START_ADDRESS +(uint32_t)OFFSET_OF_STRUCT(config_t, x),(uint8_t *)&config.x,sizeof(config.x));
-
-
 #define WRITE_S_CFG(x) fram_write(S_CONFIG_START_ADDRESS +(uint32_t)OFFSET_OF_STRUCT(config_manager_t, x),(uint8_t *)&s_config.x,sizeof(s_config.x));
 
 #define WRITE_CFG_MEM(dataAdd,len) fram_write(CONFIG_START_ADDRESS +(uint32_t)OFFSET_S(&config, dataAdd),(uint8_t *)dataAdd,len);
 
+#define WRITE_SENSOR(x)                                                          \
+  fram_write(SENSOR_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(sensor_nvm_t, x), \
+             (uint8_t *)&g_sensor_nvm.x, sizeof(g_sensor_nvm.x));
 
+
+
+             
 typedef struct adc_calibraion_s
 {
   int32_t offset;       //   0v 입력 시 ADC값

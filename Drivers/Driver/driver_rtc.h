@@ -13,4 +13,5 @@
 driver_t * driver_rtc_open(int num,void *opt);
 void driver_rtc_read(driver_t* driver, DATE_TIME_BUF *t);
 void driver_rtc_set(driver_t *driver,rtc_set_option_t cmd,void *opt);
+
 #endif

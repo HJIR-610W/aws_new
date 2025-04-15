@@ -6,7 +6,7 @@
 #include "pcb_define.h"
 #include "task_start.h"
 #include "user_heap.h"
-
+#include "test_sram.h"
 /*
 시스템 동작 클럭:168MHz
 */
@@ -71,12 +71,12 @@ int main(void)
 
   SystemClock_Config();
 
-  asw_tlsf_init(POOL_SIZE);
-
   driver_stm32_bsp_init();
 
   MX_FSMC_Init();  // SRAM초기화
 
+  asw_tlsf_init(POOL_SIZE);
+  
   osKernelInitialize();
 
   startTask_init();
@@ -85,6 +85,7 @@ int main(void)
 
   while (1)
   {
+    
   }
 }
 

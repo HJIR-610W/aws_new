@@ -4,14 +4,16 @@
 
 
 
-static char memory_pool[POOL_SIZE];
-tlsf_t tlsf_handle=NULL;
+//static char memory_pool[POOL_SIZE];
 
+ char *g_ext_sram = ( char *)0x64100000;
+
+tlsf_t tlsf_handle = NULL;
 
 void asw_tlsf_init(size_t size)
 {
-  tlsf_handle = tlsf_create_with_pool(memory_pool, size);
-  
+  tlsf_handle = tlsf_create_with_pool(g_ext_sram, size);
+
   if (tlsf_handle == NULL)
   {
         // 초기화 실패 처리

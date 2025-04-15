@@ -424,6 +424,8 @@
                     <state>$PROJ_DIR$\..\Drivers\Driver_stm32\usb</state>
                     <state>$PROJ_DIR$\..\Utile</state>
                     <state>$PROJ_DIR$\..\Drivers\Components\charger</state>
+                    <state>$PROJ_DIR$\..\Application\Tasks\aws</state>
+                    <state>$PROJ_DIR$\..\Application\test</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1544,6 +1546,33 @@
         </group>
         <group>
             <name>Tasks</name>
+            <group>
+                <name>aws</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\aws\aws_processor.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\aws\aws_processor.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\aws\dualport.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\aws\dualport.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\aws\old_aws_define.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\aws\schedule.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\aws\schedule.h</name>
+                </file>
+            </group>
+            <group>
+                <name>recorder</name>
+            </group>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_console.c</name>
             </file>
@@ -1603,6 +1632,15 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\vir_data.c</name>
+            </file>
+        </group>
+        <group>
+            <name>test</name>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_sram.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_sram.h</name>
             </file>
         </group>
         <file>

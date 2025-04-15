@@ -196,6 +196,8 @@ int32_t read_sensor_rain(driver_t *driver,uint8_t *err)
   rain_cfg_t *cfg = driver->cfg;
   uint16_t data = 0;
 
+  *err = 0;
+  
   rain =  peek_rain();
   if(rain)
   {

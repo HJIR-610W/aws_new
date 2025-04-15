@@ -339,7 +339,7 @@ void rs485_test(void)
   }
 }
 
-void sram_test(void)
+void sram_test_unit(void)
 {
 
   static uint16_t rData[10];

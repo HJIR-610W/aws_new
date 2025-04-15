@@ -3,7 +3,7 @@
 #include "driver_stm32_rtc.h"
 #include "system_err.h"
 
-
+#include "utile_time.h"
 
 typedef struct  stm32_do_cfg_s
 {
@@ -169,15 +169,21 @@ ans_int32 /= RtcSynchPrediv + 1;
 ans_uint32 = (uint32_t)ans_int32 & 0xFFU;
 sub_sec = (uint8_t)ans_uint32;
 #endif
+  time_t time_tick;
+  DATE_TIME_BUF temp_time;
 
+  temp_time.Year = sdatestructureget.Year + 2000;
+  temp_time.Month = sdatestructureget.Month;
+  temp_time.Day = sdatestructureget.Date;
+  temp_time.Hour = stimestructureget.Hours;
+  temp_time.Min = stimestructureget.Minutes;
+  temp_time.Sec = stimestructureget.Seconds;
+  temp_time.SubSec = sub_sec;
 
-ct->Year  = sdatestructureget.Year + 2000;
-ct->Month = sdatestructureget.Month;
-ct->Day   = sdatestructureget.Date;
-ct->Hour  = stimestructureget.Hours;
-ct->Min  = stimestructureget.Minutes;
-ct->Sec   = stimestructureget.Seconds;
-ct->SubSec = sub_sec;
+  time_tick = time_cvt_timestamp(&temp_time);
+
+  time_cvt_secTotime(time_tick, ct);
+  
 }
 
 

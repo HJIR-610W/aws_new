@@ -303,65 +303,30 @@ const char *dataFmtList[SENSOR_LIST_MAX] = {
 
 config_manager_t s_config;
 
-sensor_data_t sensor_data_real[SENSOR_LIST_MAX];  // 실시간
-sensor_data_t sensor_data[SENSOR_LIST_MAX];       // 실시간 자료 연산용
-sensor_data_t sensor_data_1s[SENSOR_LIST_MAX];    // 1초 마다 갱신되는 실시간 자료
-sensor_data_t sensor_data_1min[SENSOR_LIST_MAX];  // 1분 마다 갱신되는 실시간 자료
 
+
+sensor_data_t sensor_data_1min[SENSOR_LIST_MAX];    // 1분 마다 갱신되는 실시간 자료
+sensor_data_t sensor_data_instant[SENSOR_LIST_MAX]; //
+sensor_data_t sensor_data_raw[SENSOR_LIST_MAX]; 
 sensor_emul_t g_sensor_emul[SENSOR_LIST_MAX];
 
-uint8_t sensorData_updated = 0;
+sensor_nvm_t g_sensor_nvm;
+
+    uint8_t sensorData_updated = 0;
 
 bool wait_sensorComplete(void) { return true; }
 
-// 1초 자료를 업데이트, 실시간 값 요청시 이 값 전송
-void update_sensorData1s(void)
-{
-  // 세마포어 pend 완전히 한번에 업데이트된 자료만 읽도록
-  memcpy(sensor_data_1s, sensor_data, sizeof(sensor_data_1s));
-  // 세마 포어 post
-}
+
 
 // 1분 자료를 업데이트, 1분 자료 요청시 이 값 전송
 void update_sensorData1min(void)
 {
   // 세마포어 pend 완전히 한번에 업데이트된 자료만 읽도록
-  memcpy(sensor_data_1min, sensor_data, sizeof(sensor_data_1min));
+ // memcpy(sensor_data_1min, sensor_data, sizeof(sensor_data_1min));
   // 세마 포어 post
 }
 
-void sensorData_init(void)
-{
-  for (int i = 0; i < _countof(sensor_data); i++)
-  {
-    switch (i)
-    {
-      case A1_TEMPERATURE:
-        sensor_data[A1_TEMPERATURE].dataType = DATA_TYPE_F;
-        sensor_data_1s[A1_TEMPERATURE].dataType = DATA_TYPE_F;
 
-        break;
-      case A2_WIND_DIRECTION:
-        sensor_data[A2_WIND_DIRECTION].dataType = DATA_TYPE_F;
-        sensor_data_1s[A2_WIND_DIRECTION].dataType = DATA_TYPE_F;
-        break;
-      case A6_RAINFALL_DOT5_1MM:
-        sensor_data[A6_RAINFALL_DOT5_1MM].dataType = DATA_TYPE_I;
-        sensor_data[A6_RAINFALL_DOT5_1MM].opt = &rain_data;
-        sensor_data_1s[A6_RAINFALL_DOT5_1MM].dataType = DATA_TYPE_I;
-        break;
-      case A9_SNOW_DEPTH:
-        sensor_data[A9_SNOW_DEPTH].dataType = DATA_TYPE_I;
-        sensor_data_1s[A9_SNOW_DEPTH].dataType = DATA_TYPE_I;
-        break;
-
-      default:
-        sensor_data[i].dataType = DATA_TYPE_F;
-        sensor_data_1s[i].dataType = DATA_TYPE_F;
-        break;
-    }
-  }
-}
 
 void sensor_add_common(sensor_t *sensor, uint8_t index)
 {
@@ -558,3 +523,12 @@ void *get_sensor_config(sensor_t *sensor)
   // 해당 센서 타입 config가 설정되어 있지 않으면 추가
   return 0;
 }
+
+
+
+void read_sensorNVM(uint32_t offset)
+{
+
+}
+
+

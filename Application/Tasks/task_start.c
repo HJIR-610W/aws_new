@@ -30,6 +30,9 @@
 #include "task_sdi.h"
 #include "task_system.h"
 #include "task_tcpServer.h"
+
+#include "dualport.h"
+
 #include "usDelay.h"
 #include "user_heap.h"
 #include "utile_time.h"
@@ -75,7 +78,9 @@ void startTask(void *arg)
   dataLogging_init();
   loggingTask_init();
 
-  measureTask_init();
+ // dualportTask_init();
+ // measureTask_init();
+
 
   if (config.cdma_use)
   {
