@@ -9,7 +9,7 @@
 #include "at_cmd.h"
 #include  "modem_ntle9607.h"
 #include "dev_io.h"
-#include "config.h"
+#include "config_app.h"
 #include "driver_uart.h"
 #include "app_logging.h"
 #include "task_logging.h"

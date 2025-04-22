@@ -76,6 +76,14 @@ uint32_t get_appVer(uint8_t *a,uint8_t *b,uint8_t *c,uint8_t *d)
   return ver;
 }
 
+uint32_t get_app_version(void)
+{
+    return g_kappInfo.section_ver;
+}
+
+
+
+
 #ifndef TIME_ZONE_SOULE
 #define TIME_ZONE_SOULE 32400
 #endif

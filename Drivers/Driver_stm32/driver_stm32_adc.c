@@ -137,7 +137,7 @@ driver_t *driver_stm32_adc_open(uint32_t num,void *opt)
 
 
   stm32_adc_driver.opened = true;
-  
+  stm32_adc_driver.name = "STM32_ADC";
   stm32_adc_driver.api = &adc_api;
   stm32_adc_driver.cfg = &stm32_adc_config;
 

@@ -2682,7 +2682,7 @@ httpd_init(void)
  * Also set up TLS connection handling (HTTPS).
  */
 void
-httpd_inits(struct altcp_tls_config *conf)
+httpd_inits(struct altcp_tlg_config_sensor *conf)
 {
 #if LWIP_ALTCP_TLS
   struct altcp_pcb *pcb_tls = altcp_tls_new(conf, IPADDR_TYPE_ANY);

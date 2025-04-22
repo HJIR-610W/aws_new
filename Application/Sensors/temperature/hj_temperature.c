@@ -5,6 +5,7 @@
 #include "app_sensor.h"
 #include "driver_modbus.h"
 #include "temperature_define.h"
+#include "config_sensor.h"
 
 typedef struct hj_temperature_cfg_s
 {

@@ -1,6 +1,8 @@
 
 #include "Lib\tlsf\tlsf.h"
+#include "config_app.h"
 #include "cmsis_os2.h"
+#include "crc.h"
 #include "driver_stm32_bsp.h"
 #include "fsmc.h"
 #include "pcb_define.h"
@@ -56,11 +58,12 @@ void SystemClock_Config(void)
 
 int is_debug_mode(void) { return (CoreDebug->DHCSR & (1 << 0)) != 0; }
 
+
 int main(void)
 {
-  
+
 #if DEBUG_MODE_EN
-  if (is_debug_mode())
+      if (is_debug_mode())
   {
     __HAL_DBGMCU_FREEZE_IWDG();  // µð¹ö±ë ½Ã ¿ÍÄ¡µ¶ Ä«¿îÆ® ¸ØÃã
     __HAL_DBGMCU_FREEZE_RTC();   // µð¹ö±ë ½Ã rtc Å¸ÀÌ¸Ó ¸ØÃã
@@ -75,6 +78,8 @@ int main(void)
 
   MX_FSMC_Init();  // SRAMÃÊ±âÈ­
 
+  MX_CRC_Init();
+  
   asw_tlsf_init(POOL_SIZE);
   
   osKernelInitialize();

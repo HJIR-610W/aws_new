@@ -14,6 +14,7 @@
 #define TOSTRING(x) #x
 #define OFFSET_OF_STRUCT(s,m) ((size_t)&(((s*)0)->m))
 #define OFFSET_S(start,stop) ((unsigned int)stop - (unsigned int)start) //두 메모리사이 크기
+#define MEMBER_SIZE(type, member) sizeof(((type *)0)->member)
 
 #define MAX_ARGV 10
 
@@ -48,6 +49,16 @@ max가 20이면 index는 0~19사이인데
     }                                          \
   } while (0);
 
+#define UPDATE_CNT(cnt_ptr, max_val)   \
+  do                                   \
+  {                                    \
+    uint8_t _val = cnt_ptr + 1;        \
+    if (_val > (max_val) || _val == 0) \
+    {                                  \
+      _val = 1;                        \
+    }                                  \
+    cnt_ptr = _val;                    \
+  } while (0)
 
 int getPinNumber(uint16_t pin);
 void hex_to_binary_string(uint16_t hex_value, char *binary_str, int bit_length);

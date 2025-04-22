@@ -5,7 +5,7 @@
 
 #include "app_version.h"
 #include "utile.h"
-#include "config.h"
+#include "config_app.h"
 #include "utile_time.h"
 #include "aws_data.h"
 #include "crc16_ccitt.h"
@@ -451,7 +451,7 @@ uint16_t kma3_cmd_AI(uint8_t *recv,uint8_t *send)
   uint16_t len;
   kma_req_t *req = (kma_req_t *)recv;
   DATE_TIME_BUF *pDate;
-  kma_data_t *kma_data = &g_kma_avg;
+  kma_data_t *kma_data = &g_kma_inst;
 
   pDate  = &Date_Time;
   nt[0]  = pDate->Year%100;

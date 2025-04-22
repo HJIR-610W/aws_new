@@ -41,7 +41,7 @@
 #include "app_rtc.h"
 #include "aws_data.h"
 #include "cmsis_os2.h"
-#include "config.h"
+#include "config_app.h"
 #include "driver_do.h"
 #include "task_logging.h"
 #include "usDelay.h"
@@ -59,8 +59,8 @@ const osThreadAttr_t kMeasureTask_attributes = {
 
 const uint32_t kMesaureTimeOutMs = 50;
 
-static sensor_t g_sensor_copy[SENSOR_COUNT_MAX];  // config 센서의 복사본
-static driver_t *g_sensor_driver[SENSOR_COUNT_MAX];
+static sensor_t g_sensor_copy[SENSOR_LIST_MAX];  // config 센서의 복사본
+static driver_t *g_sensor_driver[SENSOR_LIST_MAX];
 
 osMessageQueueId_t g_measure_queue;//센서 측정 데이터 송순 Q
 uint32_t g_debug_start_time; //task 실행시간 측정용
@@ -177,7 +177,7 @@ void sensor_init(void)
 
   adc_init();  // ADC 항상 초기화
 
-  for (int i = 0; i < SENSOR_COUNT_MAX; i++)
+  for (int i = 0; i < SENSOR_LIST_MAX; i++)
   {
     if (p_sensor[i].type)  // 사용으로 설정되었는 확인
     {
@@ -285,7 +285,7 @@ void sensor_init(void)
 
   sensor_data_t *pa_reading = g_reading.data;
 
-  for (int i = 0; i < SENSOR_COUNT_MAX; i++)
+  for (int i = 0; i < SENSOR_LIST_MAX; i++)
   {
     if (p_sensor[i].type)  // 사용으로 설정되었는지지 확인
     {
@@ -293,36 +293,36 @@ void sensor_init(void)
     }
   }
     
-  pa_reading[A1_TEMPERATURE].dataType = DATA_TYPE_F;
-  pa_reading[A2_WIND_DIRECTION].dataType = DATA_TYPE_F;
-  pa_reading[A3_WIND_SPEED].dataType = DATA_TYPE_F;
-  pa_reading[A4_INSTANT_WIND_DIRECTION].dataType = DATA_TYPE_F;
-  pa_reading[A5_INSTANT_WIND_SPEED].dataType = DATA_TYPE_F;
-  pa_reading[A6_RAINFALL_DOT5_1MM].dataType = DATA_TYPE_I;
-  pa_reading[A7_PRESSURE].dataType = DATA_TYPE_F;
-  pa_reading[A8_RAIN_PRESENT].dataType = DATA_TYPE_B;
-  pa_reading[A9_SNOW_DEPTH].dataType = DATA_TYPE_I;
+  pa_reading[A1_TEMPERATURE].data_type = eDATA_TYPE_F;
+  pa_reading[A2_WIND_DIRECTION].data_type = eDATA_TYPE_F;
+  pa_reading[A3_WIND_SPEED].data_type = eDATA_TYPE_F;
+  pa_reading[A4_INSTANT_WIND_DIRECTION].data_type = eDATA_TYPE_F;
+  pa_reading[A5_INSTANT_WIND_SPEED].data_type = eDATA_TYPE_F;
+  pa_reading[A6_RAINFALL_DOT5_1MM].data_type = eDATA_TYPE_I;
+  pa_reading[A7_PRESSURE].data_type = eDATA_TYPE_F;
+  pa_reading[A8_RAIN_PRESENT].data_type = eDATA_TYPE_B;
+  pa_reading[A9_SNOW_DEPTH].data_type = eDATA_TYPE_I;
 
-  pa_reading[A10_RELATIVE_HUMIDITY].dataType = DATA_TYPE_F;
-  pa_reading[A11_RAINFALL_DOT1MM].dataType = DATA_TYPE_F;
-  pa_reading[B1_SOLAR_RADIATION].dataType = DATA_TYPE_F;
-  pa_reading[B2_SUNSHINE_DURATION].dataType = DATA_TYPE_F;
+  pa_reading[A10_RELATIVE_HUMIDITY].data_type = eDATA_TYPE_F;
+  pa_reading[A11_RAINFALL_DOT1MM].data_type = eDATA_TYPE_F;
+  pa_reading[B1_SOLAR_RADIATION].data_type = eDATA_TYPE_F;
+  pa_reading[B2_SUNSHINE_DURATION].data_type = eDATA_TYPE_F;
 
-  pa_reading[B3_GROUND_TEMPERATURE].dataType = DATA_TYPE_F;
-  pa_reading[B4_SURFACE_TEMPERATURE].dataType = DATA_TYPE_F;
-  pa_reading[B5_SOIL_TEMPERATURE_5CM].dataType = DATA_TYPE_F;
-  pa_reading[B6_SOIL_TEMPERATURE_10CM].dataType = DATA_TYPE_F;
+  pa_reading[B3_GROUND_TEMPERATURE].data_type = eDATA_TYPE_F;
+  pa_reading[B4_SURFACE_TEMPERATURE].data_type = eDATA_TYPE_F;
+  pa_reading[B5_SOIL_TEMPERATURE_5CM].data_type = eDATA_TYPE_F;
+  pa_reading[B6_SOIL_TEMPERATURE_10CM].data_type = eDATA_TYPE_F;
 
-  pa_reading[B7_SOIL_TEMPERATURE_20CM].dataType = DATA_TYPE_F;
-  pa_reading[B8_SOIL_TEMPERATURE_30CM].dataType = DATA_TYPE_F;
-  pa_reading[B9_SOIL_TEMPERATURE_50CM].dataType = DATA_TYPE_F;
-  pa_reading[B10_SOIL_TEMPERATURE_100CM].dataType = DATA_TYPE_F;
+  pa_reading[B7_SOIL_TEMPERATURE_20CM].data_type = eDATA_TYPE_F;
+  pa_reading[B8_SOIL_TEMPERATURE_30CM].data_type = eDATA_TYPE_F;
+  pa_reading[B9_SOIL_TEMPERATURE_50CM].data_type = eDATA_TYPE_F;
+  pa_reading[B10_SOIL_TEMPERATURE_100CM].data_type = eDATA_TYPE_F;
 
-  pa_reading[B11_SOIL_TEMPERATURE_150CM].dataType = DATA_TYPE_F;
-  pa_reading[B12_SOIL_TEMPERATURE_300CM].dataType = DATA_TYPE_F;
-  pa_reading[B13_SOIL_TEMPERATURE_500CM].dataType = DATA_TYPE_F;
-  pa_reading[C1_CLOUD_BASE1].dataType = DATA_TYPE_F;
-  pa_reading[C2_CLOUD_BASE2].dataType = DATA_TYPE_F;
+  pa_reading[B11_SOIL_TEMPERATURE_150CM].data_type = eDATA_TYPE_F;
+  pa_reading[B12_SOIL_TEMPERATURE_300CM].data_type = eDATA_TYPE_F;
+  pa_reading[B13_SOIL_TEMPERATURE_500CM].data_type = eDATA_TYPE_F;
+  pa_reading[C1_CLOUD_BASE1].data_type = eDATA_TYPE_F;
+  pa_reading[C2_CLOUD_BASE2].data_type = eDATA_TYPE_F;
     }
 
     /**
@@ -545,7 +545,7 @@ void measureTask(void *arg)
     }
     tick_count += MEASURE_PERIOD_MS;
 
-  //  send_measurement(&g_reading);
+    send_measurement(&g_reading);
     osDelayUntil(tick_count);  // 남은 지연 시간만큼 지연
   }
 #endif

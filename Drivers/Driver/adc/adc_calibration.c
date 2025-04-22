@@ -1,0 +1,341 @@
+
+
+#include "adc_calibration.h"
+#
+
+config_adc_adv_t g_adc_config;
+float g_current_temp = 25.0f;
+
+int32_t (*adc_printf)(const char* , ...);
+
+
+
+
+
+uint32_t get_max_raw_value(void)
+{
+  return g_adc_config.resolution_bits ? g_adc_config.max_raw_value : 4095;
+}
+
+// ---  LUT 보간 함수 ---
+/** @brief 온도 LUT에서 현재 온도에 해당하는 보상 계수를 선형 보간합니다. LUT는 온도로 정렬되어
+ * 있어야 합니다. */
+static bool interpolate_lut(const temp_lut_point_t lut[], uint8_t size, float current_temp,
+                                float* interp_slope_mult, float* interp_offset_corr)
+{
+  if (lut == NULL || size == 0 || interp_slope_mult == NULL || interp_offset_corr == NULL)
+  {
+    return false;  // 기본 파라미터 오류
+  }
+
+  // LUT 크기가 1인 경우
+  if (size == 1)
+  {
+    *interp_slope_mult = lut[0].slope_multiplier;
+    *interp_offset_corr = lut[0].offset_correction;
+    return true;
+  }
+
+  // 현재 온도가 LUT 범위 밖인 경우: 가장 가까운 끝점 값 사용 (Clamping)
+  if (current_temp <= lut[0].temperature)
+  {
+    *interp_slope_mult = lut[0].slope_multiplier;
+    *interp_offset_corr = lut[0].offset_correction;
+    return true;
+  }
+  if (current_temp >= lut[size - 1].temperature)
+  {
+    *interp_slope_mult = lut[size - 1].slope_multiplier;
+    *interp_offset_corr = lut[size - 1].offset_correction;
+    return true;
+  }
+
+  // 현재 온도를 포함하는 두 LUT 포인트 찾기 (LUT는 온도로 정렬 가정)
+  for (uint8_t i = 0; i < size - 1; ++i)
+  {
+    if (current_temp >= lut[i].temperature && current_temp <= lut[i + 1].temperature)
+    {
+      const temp_lut_point_t* p1 = &lut[i];
+      const temp_lut_point_t* p2 = &lut[i + 1];
+
+      // 선형 보간
+      float temp_range = p2->temperature - p1->temperature;
+      // 온도 범위가 0에 가까우면 보간 불가 (또는 p1 값 사용)
+      if (fabsf(temp_range) < 1e-6f)
+      {
+        *interp_slope_mult = p1->slope_multiplier;
+        *interp_offset_corr = p1->offset_correction;
+        return true;
+      }
+
+      float ratio = (current_temp - p1->temperature) / temp_range;
+
+      *interp_slope_mult =
+          p1->slope_multiplier + ratio * (p2->slope_multiplier - p1->slope_multiplier);
+      *interp_offset_corr =
+          p1->offset_correction + ratio * (p2->offset_correction - p1->offset_correction);
+      return true;
+    }
+  }
+
+  // 여기까지 오면 안됨 (범위 체크에서 걸렸어야 함)
+  adc_printf( "오류: LUT 보간 중 로직 오류.\n");
+  return false;
+}
+
+// --- 4. 초기화 함수 ---
+bool adc_config_init(config_adc_adv_t* adc_config, uint32_t resolution_bits, float reference_voltage)
+{
+  if (adc_config == NULL || resolution_bits == 0 || resolution_bits > 32 ||
+      reference_voltage <= 0.0f)
+  {
+    adc_printf( "오류: adc_config_init 파라미터 오류.\n");
+    return false;
+  }
+  // NVM 로드 실패 또는 미구현 시 기본값 초기화 가정
+  // if (!load_adc_config_from_nvm(adc_config)) { ... }
+  adc_config->resolution_bits = resolution_bits;
+  adc_config->reference_voltage = reference_voltage;
+  adc_config->max_raw_value = (1UL << resolution_bits) - 1;
+
+  for (int i = 0; i < NUM_SINGLE_ENDED_CHANNELS; ++i)
+  {
+    adc_config->single_ended_cal[i] =
+        (adc_cal_params_t){.factory_slope = 1.0f,
+                           .factory_offset = 0.0f,
+                           .factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP,
+                           .is_calibrated = false,
+                           .comp_method = TEMP_COMP_NONE,  // 기본: 보상 없음
+                           .slope_temp_coeff = 0.0f,
+                           .offset_temp_coeff = 0.0f,
+                           .lut_size = 0};
+  }
+  for (int i = 0; i < NUM_DIFFERENTIAL_CHANNELS; ++i)
+  {
+    adc_config->differential_cal[i] =
+        (adc_cal_params_t){.factory_slope = 1.0f,
+                           .factory_offset = 0.0f,
+                           .factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP,
+                           .is_calibrated = false,
+                           .comp_method = TEMP_COMP_NONE,
+                           .slope_temp_coeff = 0.0f,
+                           .offset_temp_coeff = 0.0f,
+                           .lut_size = 0};
+  }
+  adc_printf("ADC 설정 초기화 완료: Res=%u, Vref=%.2fV, MaxRaw=%u\n", adc_config->resolution_bits,
+             adc_config->reference_voltage, adc_config->max_raw_value);
+  return true;
+}
+
+// --- 공장 캘리브레이션 함수 ---
+bool adc_perform_factory_calibration(config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,
+                                     adc_cal_point_t p1, adc_cal_point_t p2, float cal_temp)
+{
+  if (!cal_params || !adc_config)
+    return false;
+  if (p1.raw_value == p2.raw_value)
+  {
+    cal_params->is_calibrated = false;
+    return false;
+  }
+  if (fabsf(p1.reference_value - p2.reference_value) < 1e-9f)
+  {
+    cal_params->is_calibrated = false;
+    return false;
+  }
+  if (p1.raw_value > adc_config->max_raw_value || p2.raw_value > adc_config->max_raw_value)
+  { /* 경고 */
+  }
+
+  cal_params->factory_slope =
+      (p2.reference_value - p1.reference_value) / (float)(p2.raw_value - p1.raw_value);
+  cal_params->factory_offset = p1.reference_value - cal_params->factory_slope * (float)p1.raw_value;
+  cal_params->factory_cal_temp = cal_temp;
+  cal_params->is_calibrated = true;
+  // comp_method, 계수, LUT는 이 함수에서 변경하지 않음 (별도 설정)
+
+  adc_printf("공장 캘리브레이션 성공 (%.1f°C): Slope=%.6f, Offset=%.6f\n", cal_temp,
+             cal_params->factory_slope, cal_params->factory_offset);
+  // save_adc_config_to_nvm(adc_config); // NVM 저장 필요
+  return true;
+}
+
+// --- 최종 보상 값 계산 함수 (보상 방법 선택 로직 포함) ---
+float adc_get_compensated_value(uint32_t raw_value, const adc_cal_params_t* cal_params,
+                                float current_temperature)
+{
+  if (!cal_params || !cal_params->is_calibrated)
+  {
+    return NAN;
+  }
+
+  float effective_slope = cal_params->factory_slope;
+  float effective_offset = cal_params->factory_offset;
+
+  switch (cal_params->comp_method)
+  {
+    case TEMP_COMP_COEFF:
+    {
+      float delta_temp = current_temperature - cal_params->factory_cal_temp;
+      effective_slope *= (1.0f + cal_params->slope_temp_coeff * delta_temp);
+      effective_offset += cal_params->offset_temp_coeff * delta_temp;
+      break;
+    }
+    case TEMP_COMP_LUT:
+    {
+      float slope_mult = 1.0f;
+      float offset_corr = 0.0f;
+      if (interpolate_lut(cal_params->temp_comp_lut, cal_params->lut_size, current_temperature,
+                          &slope_mult, &offset_corr))
+      {
+        effective_slope *= slope_mult;
+        effective_offset += offset_corr;
+      }
+      else
+      {
+        // fprintf(stderr, "경고: LUT 보간 실패, 공장 캘리브레이션 값 사용.\n");
+        // 보간 실패 시 공장 값 사용 (위에서 이미 초기화됨)
+      }
+      break;
+    }
+    case TEMP_COMP_NONE:
+    default:
+      // 보상 없음, 공장 값 그대로 사용
+      break;
+  }
+
+  return effective_slope * (float)raw_value + effective_offset;
+}
+
+
+
+// --- 동적 오프셋 조정 함수 (보상 방법 고려) ---
+bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,
+                                   adc_channel_type_t ch_type, int ch_idx, float current_temp,
+                                   float target_ref, int32_t raw_now)
+{
+  uint8_t err;
+  if (!adc_config || !cal_params || !cal_params->is_calibrated)
+    return false;
+
+
+
+  float eff_slope = cal_params->factory_slope;
+  float offset_correction = 0.0f;
+
+  // 현재 온도에서의 유효 기울기 및 오프셋 보정량 계산
+  switch (cal_params->comp_method)
+  {
+    case TEMP_COMP_COEFF:
+    {
+      float delta_temp = current_temp - cal_params->factory_cal_temp;
+      eff_slope *= (1.0f + cal_params->slope_temp_coeff * delta_temp);
+      offset_correction = cal_params->offset_temp_coeff * delta_temp;
+      break;
+    }
+    case TEMP_COMP_LUT:
+    {
+      float slope_mult = 1.0f;
+      if (interpolate_lut(cal_params->temp_comp_lut, cal_params->lut_size, current_temp,
+                          &slope_mult, &offset_correction))
+      {
+        eff_slope *= slope_mult;
+      }  // 보간 실패 시 factory_slope 사용, offset_correction은 0.0 유지
+      break;
+    }
+    case TEMP_COMP_NONE:
+    default:
+      break;  // 보상 없음
+  }
+
+  // 새 factory_offset 계산: target = eff_slope * raw + (new_factory_offset + offset_correction)
+  float new_factory_offset = target_ref - eff_slope * (float)raw_now - offset_correction;
+
+  adc_printf(
+      "채널 %d 오프셋 조정 (%.1f°C): Raw=%u, 목표=%.3f -> 새 Factory Offset=%.6f (기존=%.6f)\n",
+      ch_idx, current_temp, raw_now, target_ref, new_factory_offset, cal_params->factory_offset);
+
+  cal_params->factory_offset = new_factory_offset;
+  // save_adc_config_to_nvm(adc_config); // NVM 저장 필요
+  return true;
+}
+
+void populate_lut(adc_cal_params_t* params)
+{
+  if (!params || MAX_LUT_SIZE < 3)
+    return;  // 최소 3개 포인트 가정
+  params->lut_size = 3;
+  // 온도 오름차순으로 정렬되어야 함
+  params->temp_comp_lut[0] = (temp_lut_point_t){
+      .temperature = 0.0f, .slope_multiplier = 1.02f, .offset_correction = -0.05f};
+  params->temp_comp_lut[1] = (temp_lut_point_t){
+      .temperature = 25.0f, .slope_multiplier = 1.00f, .offset_correction = 0.00f}; 
+  params->temp_comp_lut[2] = (temp_lut_point_t){
+      .temperature = 50.0f, .slope_multiplier = 0.98f, .offset_correction = 0.08f};
+
+}
+
+
+float read_current_temperature(void) 
+{ 
+  return g_current_temp; 
+}
+
+float adc_driver_get_value(adc_channel_type_t channel_type, int channel_index, int32_t raw_value)
+{
+  const adc_cal_params_t* cal_params;
+  uint8_t err;
+  switch (channel_type)
+  {
+    case ADC_CHANNEL_TYPE_SINGLE_ENDED:
+      if (channel_index < 0 || channel_index >= NUM_SINGLE_ENDED_CHANNELS)
+        return NAN;
+      cal_params = &g_adc_config.single_ended_cal[channel_index];
+      break;
+    case ADC_CHANNEL_TYPE_DIFFERENTIAL:
+      if (channel_index < 0 || channel_index >= NUM_DIFFERENTIAL_CHANNELS)
+        return NAN;
+      cal_params = &g_adc_config.differential_cal[channel_index];
+      break;
+  }
+
+  float current_temp = read_current_temperature();
+
+  return adc_get_compensated_value(raw_value, cal_params, current_temp);
+}
+
+bool adc_driver_adjust_offset(adc_channel_type_t channel_type, int channel_index,
+                              float target_reference_value, int32_t raw_value)
+{
+  adc_cal_params_t* cal_params_rw;
+  if (channel_type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+  {
+    if (channel_index < 0 || channel_index >= NUM_SINGLE_ENDED_CHANNELS)
+      return false;
+    cal_params_rw = &g_adc_config.single_ended_cal[channel_index];
+  }
+  else if (channel_type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
+  {
+    if (channel_index < 0 || channel_index >= NUM_DIFFERENTIAL_CHANNELS)
+      return false;
+    cal_params_rw = &g_adc_config.differential_cal[channel_index];
+  }
+  else
+  {
+    return false;
+  }
+  float current_temp = read_current_temperature();
+  bool success =
+      adc_perform_offset_adjustment(&g_adc_config, cal_params_rw, channel_type, channel_index,
+                                    current_temp, target_reference_value, raw_value);
+  // if(success) { save_adc_config_to_nvm(&g_adc_config); }
+  return success;
+}
+
+
+
+/*
+
+
+*/
+

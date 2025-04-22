@@ -33,3 +33,5 @@ os함수가 길어서 쉬운 용어로 사용
     }                          \
   } while (0)
 #endif
+
+#define GET_TICK() osKernelGetTickCount()

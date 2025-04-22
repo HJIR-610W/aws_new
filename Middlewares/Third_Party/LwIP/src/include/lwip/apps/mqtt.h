@@ -49,7 +49,7 @@ extern "C" {
 typedef struct mqtt_client_s mqtt_client_t;
 
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
-struct altcp_tls_config;
+struct altcp_tlg_config_sensor;
 #endif
 
 /** @ingroup mqtt
@@ -85,7 +85,7 @@ struct mqtt_connect_client_info_t {
   u8_t will_retain;
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
   /** TLS configuration for secure connections */
-  struct altcp_tls_config *tls_config;
+  struct altcp_tlg_config_sensor *tlg_config_sensor;
 #endif
 };
 

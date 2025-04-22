@@ -6,7 +6,8 @@
 #include "app_logging.h"
 #include "app_rtc.h"
 #include "cmsis_os2.h"
-#include "config.h"
+#include "config_app.h"
+#include "config_manager.h"
 #include "dev_io.h"
 #include "driver_led.h"
 #include "driver_rtc.h"
@@ -68,7 +69,7 @@ void startTask(void *arg)
   usDelay_init();
   rtc_init();
 
-  config_init();
+  config_manager_init();
   flash_init();
 
   systemTask_init();
@@ -78,20 +79,19 @@ void startTask(void *arg)
   dataLogging_init();
   loggingTask_init();
 
- // dualportTask_init();
- // measureTask_init();
+  dualportTask_init();
+  measureTask_init();
 
-
-  if (config.cdma_use)
+  if (get_config_app()->cdma_use)
   {
     cellularTask_init();
   }
-  if (config.direct_use)
+  if (get_config_app()->direct_use)
   {
     directTask_init();
   }
 
-  if (config.eth_use)
+  if (get_config_app()->eth_use)
   {
     tcpServerTask_init(0);
     ethernetTask_init();

@@ -11,8 +11,10 @@
 #include "task_measure.h"
 #include "schedule.h"
 #include "user_heap.h"
+#include "aws_data.h"
 
-measure_data_t *g_p_raw;
+measure_data_t *g_p_raw = NULL;
+
 
 
 bool is_raining(void)
@@ -69,6 +71,7 @@ uint16_t  WindDirecCalc(void)
   return sRet;
 }
 
+//(측정값 + 100)*10
 uint16_t TempCalc(void)
  {
   sensor_data_t *p_sensor = g_p_raw->data;
@@ -78,51 +81,129 @@ uint16_t TempCalc(void)
     return 9999;
   }
   
-  return (uint16_t)(p_sensor[A1_TEMPERATURE].data.i *10);
+  return (uint16_t)((p_sensor[A1_TEMPERATURE].data.i +100)*10);
 
 }
 
+//측정값 *10
 uint16_t  BarometricCalc(void)
 {
-  uint16_t sRet;
+  sensor_data_t *p_sensor = g_p_raw->data;
 
-  return sRet;
+  if (p_sensor[A7_PRESSURE].err)
+  {
+    return 9999;
+  }
+
+  return (uint16_t)(p_sensor[A7_PRESSURE].data.i * 10);
 }
 
 uint16_t HumidityCalc(void)
 {
-  uint16_t sRet;
+  sensor_data_t *p_sensor = g_p_raw->data;
 
-  return sRet;
+  if (p_sensor[A10_RELATIVE_HUMIDITY].err)
+  {
+    return 9999;
+  }
+
+  return (uint16_t)(p_sensor[A10_RELATIVE_HUMIDITY].data.i * 10);
 }
 
 uint16_t  SolarRadCalc(void)
 {
+  sensor_data_t *p_sensor = g_p_raw->data;
 
-  uint16_t sRet;
+  if (p_sensor[B1_SOLAR_RADIATION].err)
+  {
+    return 9999;
+  }
 
-  return sRet;
+  return (uint16_t)(p_sensor[B1_SOLAR_RADIATION].data.i * 10);
 }
 
 uint16_t SnowCalc(void)
 {
-  uint16_t sRet;
+  sensor_data_t *p_sensor = g_p_raw->data;
 
-  return sRet;
+  if (p_sensor[A9_SNOW_DEPTH].err)
+  {
+    return 9999;
+  }
+
+  return (uint16_t)(p_sensor[A9_SNOW_DEPTH].data.i);
 }
 
 uint16_t  TempCalcExt(uint8_t ch)
 {
   uint16_t sRet;
+  sensor_data_t *p_sensor = g_p_raw->data;
+
+  switch (ch)
+  {
+    case SOLITEMP5CM_CHN:
+      if (p_sensor[B5_SOIL_TEMPERATURE_5CM].err)
+      {
+        return 9999;
+      }
+      sRet = p_sensor[B5_SOIL_TEMPERATURE_5CM].data.i * 10;
+      break;
+    case SOLITEMP10CM_CHN:
+      if (p_sensor[B6_SOIL_TEMPERATURE_10CM].err)
+      {
+        return 9999;
+      }
+      sRet = p_sensor[B6_SOIL_TEMPERATURE_10CM].data.i * 10;
+      break;
+    case SOLITEMP20CM_CHN:
+      if (p_sensor[B7_SOIL_TEMPERATURE_20CM].err)
+      {
+        return 9999;
+      }
+      sRet = p_sensor[B7_SOIL_TEMPERATURE_20CM].data.i * 10;
+      break;
+    case SOLITEMP30CM_CHN:
+      if (p_sensor[B8_SOIL_TEMPERATURE_30CM].err)
+      {
+        return 9999;
+      }
+      sRet = p_sensor[B8_SOIL_TEMPERATURE_30CM].data.i * 10;
+      break;
+    case SOLITEMP50CM_CHN:
+      if (p_sensor[B9_SOIL_TEMPERATURE_50CM].err)
+      {
+        return 9999;
+      }
+      sRet = p_sensor[B9_SOIL_TEMPERATURE_50CM].data.i * 10;
+      break;
+    case SOLITEMP1_0M_CHN:
+      if (p_sensor[B10_SOIL_TEMPERATURE_100CM].err)
+      {
+        return 9999;
+      }
+      sRet = p_sensor[B10_SOIL_TEMPERATURE_100CM].data.i * 10;
+      break;
+    case SOLITEMP1_5M_CHN:
+      if (p_sensor[B11_SOIL_TEMPERATURE_150CM].err)
+      {
+        return 9999;
+      }
+      sRet = p_sensor[B11_SOIL_TEMPERATURE_150CM].data.i * 10;
+      break;
+      break;
+  }
 
   return sRet;
 }
 
 uint8_t SunshineCalc(void)
 {
-  uint8_t sRet;
-
-  return sRet;
+  sensor_data_t *p_sensor = g_p_raw->data;
+  if(p_sensor[B2_SUNSHINE_DURATION].data.b)
+  {
+    return 1;
+  }
+  return 0;
 }
 
 void dualport_init(void)
@@ -143,7 +224,53 @@ uint16_t get_rain_mm(void)
 }
 
 
+void update_old_kma_real(void)
+{
 
+  g_kma_inst_ex.temperature.data =  mRealAws.mTemperature.sReal;
+  g_kma_inst_ex.temperature.max = mRealAws.mTemperature.sMax;
+  g_kma_inst_ex.temperature.min = mRealAws.mTemperature.sMin;
+
+  g_kma_inst_ex.relative_humidity.data = mRealAws.mHumidity.sReal;
+  g_kma_inst_ex.relative_humidity.max  = mRealAws.mHumidity.sMin;
+  g_kma_inst_ex.relative_humidity.min  = mRealAws.mHumidity.sMin;
+
+  g_kma_inst_ex.wind_speed_avg.data     = mRealAws.mWind.mSpeed.sReal;
+  g_kma_inst_ex.wind_speed_avg.max = mRealAws.mWind.mSpeed.sMax;
+
+
+  g_kma_inst_ex.wind_direction_avg.data = mRealAws.mWind.mDirection.sReal;
+  g_kma_inst_ex.wind_direction_avg.max = mRealAws.mWind.mDirection.sMax;
+
+  g_kma_inst_ex.wind_speed_instant.data = mRealAws.mWind.mSpeed.sMax;
+  g_kma_inst_ex.wind_direction_instant.data = mRealAws.mWind.mDirection.sMax;
+
+  g_kma_inst_ex.sunshine_duration.data = mRealAws.mSunshine.sReal;
+  g_kma_inst_ex.sunshine_duration.max = mRealAws.mSunshine.sMax;
+
+  
+  g_kma_inst_ex.solar_radiation.data = mRealAws.mSolarRad.sReal;
+  g_kma_inst_ex.solar_radiation.max = mRealAws.mSolarRad.sMax;//일간
+
+
+  g_kma_inst_ex.precipitation_presence.data = mRealAws.mRainDetect.sReal;//우량 감지
+
+  g_kma_inst_ex.snowfall.data = mRealAws.mSnowFall.sReal;
+
+  g_kma_inst_ex.pressure.max = mRealAws.mBarometric.sMax;
+  g_kma_inst_ex.pressure.min = mRealAws.mBarometric.sMin;
+  g_kma_inst_ex.pressure.data = mRealAws.mBarometric.sReal;
+
+  g_kma_inst_ex.soil_temperature_5cm.data = mRealAws.mSoilTemp5cm.sReal;
+
+  g_kma_inst_ex.soil_temperature_10cm.data = mRealAws.mSoilTemp10cm.sReal;
+  g_kma_inst_ex.soil_temperature_20cm.data = mRealAws.mSoilTemp20cm.sReal;
+  g_kma_inst_ex.soil_temperature_30cm.data = mRealAws.mSoilTemp30cm.sReal;
+  g_kma_inst_ex.soil_temperature_50cm.data = mRealAws.mSoilTemp50cm.sReal;
+  g_kma_inst_ex.soil_temperature_1m.data = mRealAws.mSoilTemp1_0m.sReal;
+  g_kma_inst_ex.soil_temperature_1_5m.data = mRealAws.mSoilTemp1_5m.sReal;
+
+}
 
 void DUALPORT_TASK(void *arg)
 {
@@ -170,11 +297,11 @@ void DUALPORT_TASK(void *arg)
   pSystem = &Sysinfo;
   pConfig = &Config;
 
-  g_p_raw = aws_malloc(sizeof(measure_data_t));
+  g_p_raw = aws_malloc(sizeof(measure_data_t));//250ms 마다 측정한 데이터 
 
   while (1)
   {
-    if(is_measurement(g_p_raw)==false)
+    if(is_measurement(g_p_raw)==false)//데이터가 있는지 확인,250ms마다 업데이트 됨
     {
       continue;
     }
@@ -194,7 +321,6 @@ void DUALPORT_TASK(void *arg)
     pSystem->mRealWind.sAvg3Speed[nWindCnt12] = sSpeed;   // 풍속  3 초 평균
     pSystem->mRealWind.sAvg10Speed[nWindCnt40] = sSpeed;  // 풍속 10 초 평균
 
-   // pSystem->windDirSrc = sDirec;
     pSystem->mRealWind.sAvg3Direction[nWindCnt12] = sDirec;   // 풍향  3 초 평균
     pSystem->mRealWind.sAvg10Direction[nWindCnt40] = sDirec;  // 풍향 10 초 평균
     pSystem->mRealWind.sWrFlag[nWindCnt40] = 1;
@@ -245,7 +371,7 @@ void DUALPORT_TASK(void *arg)
 
     pAws->mSunshine.sReal =  SunshineCalc();  // CSD3 기준 0-1V 신호로 발생됨
 
-    // ==============================================================================
+
     // // 센서 불량 처리
     pAws->mStatus.sReal =0;// pDp640to710->sLoggerDiStatus;  // m_main.h 참조
 
@@ -290,9 +416,10 @@ void DUALPORT_TASK(void *arg)
 
         pAws->mStatus.sMin &= ~(RAINDETECTFAIL_BIT);
         pAws->mStatus.sMin &= ~(FANFAIL_BIT);
-        // 센서 불량 처리 끝
 
         schedule_process(&ct);
+
+        update_old_kma_real();
   }
 }
 
@@ -302,9 +429,13 @@ const osThreadAttr_t dualportTask_attributes = {
     .priority = (osPriority_t)osPriorityNormal1,
 };
 
+extern void aws_data_task(void *arg) ;
+
+
 void dualportTask_init(void)
 {
   AwsMinMaxInit();
 
   osThreadNew(DUALPORT_TASK, NULL, &dualportTask_attributes);
+  //osThreadNew(aws_data_task, NULL, &dualportTask_attributes);
 }

@@ -6,7 +6,7 @@
 
 #include "crc16_ccitt.h"
 #include "task_cellular.h"
-#include "config.h"
+#include "config_app.h"
 #include "app_version.h"
 #include "boot_version.h"
 typedef enum

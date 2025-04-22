@@ -2,7 +2,7 @@
 
 
 #include "cmsis_os.h"
-#include "config.h"
+#include "config_app.h"
 #include "lwip.h"
 
 

@@ -7,11 +7,15 @@
 #include "humidity\humidity.h"
 #include "barometer\barometer.h"
 
+#include "task_measure.h"
 kma_data_t g_kma_raw;
-kma_data_t g_kma_avg;
+kma_data_t g_kma_inst;//실시간, 순간자료, 평균낸 자료
 kma_data_t g_kma_1min;
 kma_data_t g_kma_10min;
 kma_data_t g_kma_hour;
+kma_data_ex_t g_kma_inst_ex;
+
+kma_data_ex_t g_kma_1min_ex;
 
 // 실제 수집된 데이터를 AWS에서 요구하는 형태로 저장해야한다.
 
@@ -27,11 +31,11 @@ kma_data_t g_kma_hour;
 
 #define UNUSED_SENSOR_VAL -999
 
-
-/**
- * @brief 센서 데이터를 AWS 자료형으로 변환환
- */
-void cvt_sensorToAWS(sensor_t *p_sensor,sensor_data_t *p_data, kma_data_t *p_kma)
+    /**
+     * @brief 센서 데이터를 AWS 자료형으로 변환환
+     */
+    void
+    cvt_sensorToAWS(sensor_t *p_sensor, sensor_data_t *p_data, kma_data_t *p_kma)
 {
   bool status;
 

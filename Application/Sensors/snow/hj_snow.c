@@ -11,7 +11,7 @@
 #include "driver_uart.h"
 #include "snow_define.h"
 #include "utile.h"
-
+#include "config_sensor.h"
 #define PROTOCOL_TYPE_t uint8_t
 #define P_TYPE_HJ 0
 #define P_TYPE_WEATHERPIA_2 1

@@ -35,7 +35,17 @@
 			"crc16_ccitt.h": "c",
 			"wind_direction.h": "c",
 			"wind_define.h": "c",
-			"aws_data.h": "c"
+			"aws_data.h": "c",
+			"aws_kma.h": "c",
+			"aws_nvm.h": "c",
+			"app_version.h": "c",
+			"app_rs232.h": "c",
+			"config_define.h": "c",
+			"calibration_config.h": "c",
+			"task_tcpserver.h": "c",
+			"config_sensor.h": "c",
+			"config_memory_map.h": "c",
+			"app_adc.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

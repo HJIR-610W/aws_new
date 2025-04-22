@@ -11,6 +11,7 @@
 #include "driver_485.h"
 #include "driver_uart.h"
 #include "utile.h"
+#include "config_sensor.h"
 
 typedef struct hjwind_cfg_s
 {

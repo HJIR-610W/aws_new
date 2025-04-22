@@ -408,19 +408,19 @@ altcp_proxyconnect_alloc(void *arg, u8_t ip_type)
  *
  * This function is meant for use with @ref altcp_new.
  *
- * @param arg struct altcp_proxyconnect_tls_config that contains the proxy settings
+ * @param arg struct altcp_proxyconnect_tlg_config_sensor that contains the proxy settings
  *        and tls settings
  * @param ip_type IP type of the connection (@ref lwip_ip_addr_type)
  */
 struct altcp_pcb *
 altcp_proxyconnect_tls_alloc(void *arg, u8_t ip_type)
 {
-  struct altcp_proxyconnect_tls_config *cfg = (struct altcp_proxyconnect_tls_config *)arg;
+  struct altcp_proxyconnect_tlg_config_sensor *cfg = (struct altcp_proxyconnect_tlg_config_sensor *)arg;
   struct altcp_pcb *proxy_pcb;
   struct altcp_pcb *tls_pcb;
 
   proxy_pcb = altcp_proxyconnect_new_tcp(&cfg->proxy, ip_type);
-  tls_pcb = altcp_tls_wrap(cfg->tls_config, proxy_pcb);
+  tls_pcb = altcp_tls_wrap(cfg->tlg_config_sensor, proxy_pcb);
 
   if (tls_pcb == NULL) {
     altcp_close(proxy_pcb);

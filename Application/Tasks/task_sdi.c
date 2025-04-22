@@ -1,6 +1,6 @@
 
 #include "cmsis_os2.h"
-#include "config.h"
+#include "config_app.h"
 #include "dev_io.h"
 #include "pcb_define.h"
 #include "driver_uart.h"

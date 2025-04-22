@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-#include "config.h"
+#include "config_app.h"
 #include "app_adc.h"
 #include "Sensors\barometer\barometer.h"
 #include "Sensors\general\general_adc.h"

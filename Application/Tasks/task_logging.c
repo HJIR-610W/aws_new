@@ -8,7 +8,7 @@
 
 
 #include "pcb_define.h"
-#include "config.h"
+#include "config_app.h"
 #include "driver_rtc.h"
 
 

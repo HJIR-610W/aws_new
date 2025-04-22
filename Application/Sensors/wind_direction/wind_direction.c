@@ -43,7 +43,7 @@ float read_sensor_windDirection(sensor_t *sensor,uint8_t *err)
 
   void *cfg = get_sensor_config(sensor);;
 
-  if(cfg ==NULL)
+  if(cfg ==0)
   {
     *err = 2;
     return 0;

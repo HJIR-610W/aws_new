@@ -1,7 +1,7 @@
 
 #include "aws_protocol.h"
 #include "cmsis_os.h"
-#include "config.h"
+#include "config_app.h"
 #include "driver_rtc.h"
 #include "dev_io.h"
 #include "lwip.h"
@@ -10,7 +10,11 @@
 #include "app_logging.h"
 #include "app_socket.h"
 #include "task_logging.h"
+#include "task_tcpServer.h"
+#include "utile.h"
 
+
+tcp_status_t g_tcp_status;
 osThreadId_t g_tcpSeverTaskId;
 
 const osThreadAttr_t tcpServerTask_attributes = {
@@ -18,6 +22,11 @@ const osThreadAttr_t tcpServerTask_attributes = {
   .stack_size = 4096,//2048바이트가 할당됨 하지만 4바이트 단위로 스택은 구성됨
   .priority = (osPriority_t) osPriorityNormal,
 };
+
+tcp_status_t *get_tcp_system(void) 
+{ 
+  return &g_tcp_status; 
+}
 
 void noti_tcpServerTask(uint32_t flag)
 {
@@ -47,10 +56,10 @@ void server_service(int conn)
   uint8_t tbuffer[RECV_BUFF_SIZE];
   int32_t len;
 
-    if(set_recv_timeout(conn,60000)<0)
-    {
-      return;
-    }
+  if(set_recv_timeout(conn,60000)<0)
+  {
+    return;
+  }
 
   while(1)
   {
@@ -65,12 +74,12 @@ void server_service(int conn)
 
       return;
     }
-    update_cnt(&System.eth_rx_cnt);
+    UPDATE_CNT(g_tcp_status.rx_cnt,99);
      len = aws_cmd(rbuffer,ret,tbuffer,sizeof(tbuffer),0);
      if(len)
      {
       send(conn,tbuffer,len,0);
-      update_cnt(&System.eth_tx_cnt);
+      UPDATE_CNT(g_tcp_status.tx_cnt, 99);
      }
   }
   
@@ -81,12 +90,12 @@ void tcpServerTask(void *arg)
 {
     int32_t opt=1;
     int32_t sock;
-      int32_t newconn, size;
+    int32_t newconn, size;
     struct sockaddr_in address, remotehost,oldClient;
-      int error = 0;
-  socklen_t len = sizeof(error);
- // uint32_t flag =(uint32_t)arg;
-  char client_ip[INET_ADDRSTRLEN];
+    int error = 0;
+    socklen_t len = sizeof(error);
+    // uint32_t flag =(uint32_t)arg;
+    char client_ip[INET_ADDRSTRLEN];
 
   osThreadFlagsWait(0x00000001,osFlagsWaitAny,osWaitForever);
 
@@ -168,7 +177,7 @@ void tcpServerTask(void *arg)
 
 void tcpServerTask_init(uint32_t flag)
 {
-  System.eth_link_status = -1;
-  
+  g_tcp_status.link_status = eLINK_IDLE;
+
   g_tcpSeverTaskId = osThreadNew(tcpServerTask, NULL, &tcpServerTask_attributes);
 }

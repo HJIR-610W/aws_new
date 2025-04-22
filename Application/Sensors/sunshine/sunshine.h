@@ -4,7 +4,7 @@
 #define SUNSHINE_H
 
 #include <stdint.h>
-#include "config.h"
+#include "config_app.h"
 
 #include "app_sensor.h"
 #include "app_adc.h"

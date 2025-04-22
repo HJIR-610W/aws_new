@@ -9,7 +9,8 @@
 #include "app_file.h"
 #include "app_flash.h"
 #include "app_logging.h"
-#include "config.h"
+#include "config_app.h"
+#include "config_nvm.h"
 #include "utile_time.h"
 
 
@@ -24,15 +25,15 @@ static osSemaphoreId_t g_loggingSem;
 uint16_t logging_get_logCnt(void)
 {
     uint16_t cnt;
-    cnt = config.logCnt;
+    cnt = g_config_nvm.logCnt;
     return cnt;
 }
 
 void logging_set_logCnt(uint16_t cnt)
 {
 
-  config.logCnt = cnt;
-  WRITE_CFG(logCnt);
+  g_config_nvm.logCnt = cnt;
+  WRITE_NVM(logCnt);
 }
 
 //2015-05-24 22:46:35,measure task                       //

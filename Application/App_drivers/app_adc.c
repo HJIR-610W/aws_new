@@ -5,7 +5,7 @@
 #include "cmsis_os2.h"
 
 #include "app_adc.h"
-#include "config.h"
+#include "config_adc.h"
 #include "driver_adc.h"
 #include "utile.h"
 
@@ -67,17 +67,17 @@ float adc_chToVoltage(int32_t mode,int32_t channel,int32_t adc)
 
   if(mode==0)//single
   {
-    off  = g_adc_cali_config.single[channel].offset;
-    o_in = g_adc_cali_config.single[channel].offset_input;
-    full = g_adc_cali_config.single[channel].fullset;
-    f_in = g_adc_cali_config.single[channel].fullset_input;
+    off  = g_config_adc.single[channel].offset;
+    o_in = g_config_adc.single[channel].offset_input;
+    full = g_config_adc.single[channel].fullset;
+    f_in = g_config_adc.single[channel].fullset_input;
   }
   else
   {
-    off  = g_adc_cali_config.diff[channel].offset;
-    o_in = g_adc_cali_config.diff[channel].offset_input;
-    full = g_adc_cali_config.diff[channel].fullset;
-    f_in = g_adc_cali_config.diff[channel].fullset_input;
+    off  = g_config_adc.diff[channel].offset;
+    o_in = g_config_adc.diff[channel].offset_input;
+    full = g_config_adc.diff[channel].fullset;
+    f_in = g_config_adc.diff[channel].fullset_input;
   }
 
   return cvt_adcToVol(adc,off,full,o_in,f_in)/1000.0;
@@ -120,12 +120,12 @@ int32_t get_adc_vref(adc_config_t *adc)
 {
   if(adc->mode==eSINGLE_ADC)
   {
-    return   g_adc_cali_config.single[adc->channel].fullset_input;
+    return   g_config_adc.single[adc->channel].fullset_input;
 
   }
   else
   {
-    return g_adc_cali_config.diff[adc->channel].fullset_input;
+    return g_config_adc.diff[adc->channel].fullset_input;
   }
 }
 
@@ -201,12 +201,12 @@ int32_t get_adc_single_offset(int channel)
 {
   int32_t offset;
 
-  return g_adc_cali_config.single[channel].offset;
+  return g_config_adc.single[channel].offset;
 }
 
 int32_t get_adc_single_fullset(int channel)
 {
   int32_t offset;
 
-  return g_adc_cali_config.single[channel].fullset;
+  return g_config_adc.single[channel].fullset;
 }

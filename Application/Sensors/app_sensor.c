@@ -1,61 +1,55 @@
-/*
-Àåºñ°¡ Á¦°øÇÏ´Â ¼¾¼­¸¦ Á¤ÀÇ
-*/
+
 #include "app_sensor.h"
 
 #include <string.h>
 
-#include "Sensors\rain\rain.h"
-#include "config.h"
+#include "config_sensor.h"
+#include "config_app.h"
 #include "utile.h"
 
+
+const char *g_sensor_model_list[] = {
+#define X(name, format) format,
+    SENSOR_MODEL_LIST
+#undef X
+};
+
+const char *sensor_name_list[] = {
+#define X(name, name2, format) name2,
+    SENSOR_LIST
+#undef X
+};
+
+const char *sensor_format_list[] = {
+#define X(name, name2, format) format,
+    SENSOR_LIST
+#undef X
+};
+
 // Áö¿øÇÏ´Â ¼¾¼­ ¸ñ·Ï Á¤ÀÇ
-
 const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ_485, S_T_PT100_A, S_T_PT100_B};
-
 const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};
-
 const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};
-
 const uint8_t windDirectionInstantList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_MAX_VAL};
-
 const uint8_t windSpeedInstantList[] = {S_T_UNSUED, S_T_WIND_SPEED_MAX_VAL};
-
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
                             S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM,  S_T_GENERAL_232};
-// ±â¾Ð 6
 const uint8_t pressureList[] = {S_T_UNSUED, S_T_ADC};
-
 const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI};
-
 const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ_485, S_T_SNOW_HJ_232};
-
-// ½Àµµ
 const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMI_HJ_485, S_T_ADC};
-
 const uint8_t sunShineList[] = {S_T_UNSUED, S_T_SUNSHINE, S_T_ADC};
-
 const uint8_t solarRadiationList[] = {S_T_UNSUED, S_T_SOLAR_RADIATION, S_T_ADC};
-
 const uint8_t soilTemp5cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_5CM, S_T_ADC};
-
 const uint8_t soilTemp10cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_10CM, S_T_ADC};
-
 const uint8_t soilTemp20cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_20CM, S_T_ADC};
 const uint8_t soilTemp30cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_30CM, S_T_ADC};
-
 const uint8_t soilTemp50cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_50CM, S_T_ADC};
-
 const uint8_t soilTemp100cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_100CM, S_T_ADC};
-
 const uint8_t soilTemp150cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_150CM, S_T_ADC};
-
 const uint8_t soilTemp300cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_300CM, S_T_ADC};
-
 const uint8_t soilTemp500cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_500CM, S_T_ADC};
-
 const uint8_t temperature50cmList[] = {S_T_UNSUED, S_T_PT100_B};
-
 const uint8_t defaultList[] = {S_T_UNSUED, S_T_ADC, S_T_GENERAL_232, S_T_GENERAL_485};
 
 const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] = {
@@ -110,221 +104,8 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] = {
     {.list = defaultList, .cnt = sizeof(defaultList)},                  // N12_HUMIDITY_50CM
     {.list = defaultList, .cnt = sizeof(defaultList)},                  // N13_HUMIDITY_400CM
     {.list = defaultList, .cnt = sizeof(defaultList)},                  // I1_TACHOMETER
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_WATER
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SWV
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_FLOW_RATE
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SLOPE_1
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SLOPE_2
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SLOPE_3
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SLOPE_4
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SLOPE_5
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SLOPE_6
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SLOPE_7
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SLOPE_8
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SLOPE_9
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // USER_SLOPE_10
-    {.list = defaultList, .cnt = sizeof(defaultList)}};                 // USER_DEFAULT
+    {.list = defaultList, .cnt = sizeof(defaultList)}};                  // USER_WATER
 
-const char *sensorTypeList[] = {"¹Ì»ç¿ë",             /* 0 S_T_UNSUED */
-                                "ADC",                /* 1 S_T_ADC */
-                                "RS232",              /* 2 S_T_TEMP_232 */
-                                "RS485",              /* 3 S_T_TEMP_485 */
-                                "MODBUS",             /* 4 S_T_MODBUS */
-                                "HART",               /* 5 S_T_HART */
-                                "FREQ_0",             /* 6 S_T_FREQ_0*/
-                                "REED 0.5mm",         /* 7 S_T_RAIN_REED_05MM */
-                                "REED 1mm",           /* 8 S_T_RAIN_REED_1MM */
-                                "È­Áø HALL 0.5mm",    /* 9 S_T_RAIN_HALL_05MM */
-                                "È­Áø HALL 1mm",      /* 10 S_T_RAIN_HALL_1MM */
-                                "DI_0",               /* 11 S_T_DI_0 */
-                                "È­Áø RS485 19200",   /* 12 S_T_SNOW_HJ_485 */
-                                "GENERAL_RS232",      /* 13 S_T_GENERAL_232 */
-                                "È­Áø RS485 9600",    /* 14 S_T_WIND_SPEED_HJ_485 */
-                                "È­Áø RS485 9600",    /* 15 S_T_WIND_DIRECTION_HJ_485 */
-                                "È­Áø RS485 9600",    /* 16 S_T_HUMI_HJ_485 */
-                                "WIND_SPEED_MAX",     /* 17 S_T_WIND_SPEED_MAX_VAL */
-                                "WIND_DIRECTION_MAX", /* 18 S_T_WIND_DIRECTION_MAX_VAL */
-                                "PRESSURE_RS485",     /* 19 S_T_PRESSURE_485 */
-                                "HUMI_RS485",         /* 20 S_T_HUMI_RS485*/
-                                "È­Áø Á¢Á¡",          /* 21 S_T_RAIN_PRESENT_DI */
-                                "È­Áø RS232 19200",   /* 22 S_T_SNOW_HJ_232 */
-                                "GENERAL_485",        /* 23 S_T_GENERAL_485 */
-                                "PT100_A",            /* 24 S_T_PT100_A */
-                                "PT100_B",            /* 25 S_T_PT100_B */
-                                "FREQ_A",             /* 26 S_T_FREQ_A */
-                                "FREQ_B",             /* 27 S_T_FREQ_B */
-                                "SUNSHINE",           /* 28 S_T_SUNSHINE */
-                                "SOLAR_RADIATION",    /* 29 S_T_SOLAR_RADIATION */
-                                "SOIL_TEMP_5CM",      /* 30 S_T_SOIL_TEMP_5CM */
-                                "SOIL_TEMP_10CM",     /* 31 S_T_SOIL_TEMP_10CM */
-                                "SOIL_TEMP_20CM",     /* 32 S_T_SOIL_TEMP_20CM */
-                                "SOIL_TEMP_30CM",     /* 33 S_T_SOIL_TEMP_30CM */
-                                "SOIL_TEMP_50CM",     /* 34 S_T_SOIL_TEMP_50CM */
-                                "SOIL_TEMP_100CM",    /* 35 S_T_SOIL_TEMP_100CM */
-                                "SOIL_TEMP_150CM",    /* 36 S_T_SOIL_TEMP_150CM */
-                                "SOIL_TEMP_300CM",    /* 37 S_T_SOIL_TEMP_300CM */
-                                "SOIL_TEMP_500CM",    /* 38 S_T_SOIL_TEMP_500CM */
-                                "GENERAL",            /* 39 S_T_GENERAL */
-                                "È­Áø RS485 9600"};   /* 40 S_T_TEMPERATURE_HJ_485  */
-
-const char *sensorNameList[SENSOR_LIST_MAX] = {
-    "±â¿Â",            // 0
-    "Ç³Çâ",            // 1
-    "Ç³¼Ó",            // 2
-    "¼ø°£Ç³Çâ",        // 3
-    "¼ø°£Ç³¼Ó",        // 4
-    "°­¼ö·®",          // 5
-    "±â¾Ð",            // 6
-    "°­¼öÀ¯¹«",        // 7
-    "Àû¼³",            // 8
-    "»ó´ë½Àµµ",        // 9
-    "°­¼ö·®(0.1mm)",   // 10
-    "ÀÏ»ç",            // 11
-    "ÀÏÁ¶",            // 12
-    "Áö¸é¿Âµµ",        // 13
-    "ÃÊ»ó¿Âµµ",        // 14
-    "ÁöÁß¿Âµµ 5cm",    // 15
-    "ÁöÁß¿Âµµ 10cm",   // 16
-    "ÁöÁß¿Âµµ 20cm",   // 17
-    "ÁöÁß¿Âµµ 30cm",   // 18
-    "ÁöÁß¿Âµµ 50cm",   // 19
-    "ÁöÁß¿Âµµ 1.0m",   // 20
-    "ÁöÁß¿Âµµ 1.5m",   // 21
-    "ÁöÁß¿Âµµ 3.0m",   // 22
-    "ÁöÁß¿Âµµ 5.0",    // 23
-    "Ãþ¿î°í",          // 24
-    "2Ãþ¿î°í",         // 25
-    "3Ãþ¿î°í",         // 26
-    "¿î·®",            // 27
-    "½ÃÁ¤",            // 28
-    "PM10",            // 29
-    "PM2",             // 30
-    "¼øº¹»ç",          // 31
-    "ÀüÃµº¹»ç",        // 32
-    "¹Ý»çº¹»ç",        // 33
-    "Á÷´Þ",            // 34
-    "ÇöÀçÀÏ±â",        // 35
-    "Åä¾ç¼öºÐ 10cm",   // 36
-    "Åä¾ç¼öºÐ 20cm",   // 37
-    "Åä¾ç¼öºÐ 30cm",   // 38
-    "Åä¾ç¼öºÐ 50cm",   // 39
-    "Á¶µµ·®",          // 40
-    "Ç³¼Ó(1.5m)",      // 41
-    "Ç³¼Ó(4.0m)",      // 42
-    "¼ø°£Ç³¼Ó(1.5m)",  // 43
-    "¼ø°£Ç³¼Ó(4.0m)",  // 44
-    "±â¿Â 0.5m",       // 45
-    "±â¿Â 4.0m",       // 46
-    "½Àµµ 0.5m",       // 47
-    "½Àµµ 4.0m",       // 48
-    "Å¸ÄÚ¹ÌÅÍ",        // 49
-    "¼öÀ§",            // 50
-    "Ç¥¸é À¯¼Ó",       // 51
-    "À¯·®",            // 52 m©ø/s
-    "°æ»ç1",           // 53
-    "°æ»ç1",           // 54
-    "°æ»ç2",           // 55
-    "°æ»ç3",           // 56
-    "°æ»ç4",           // 57
-    "°æ»ç5",           // 58
-    "°æ»ç6",           // 59
-    "°æ»ç7",           // 60
-    "°æ»ç8",           // 61
-    "°æ»ç9",           // 62
-    "±âº»"             // 63
-};
-
-const char *dataFmtList[SENSOR_LIST_MAX] = {
-    "%-5.2fC",              // ±â¿Â 0
-    "%-6.2f(0f(B      ",  // Ç³Çâ      1
-    "%-5.2fm/s",            // Ç³¼Ó      2
-    "%-6.2f(0f(B      ",  // ¼ø°£Ç³Çâ  3
-    "%-5.2fm/s",            // ¼ø°£Ç³¼Ó  4
-    "%-dmm",                // °­¼ö·®    5
-    "%-5.2fbar",            // ±â¾Ð      6
-    "%-d",                  // °­¼öÀ¯¹«  7
-    "%-dmm",                // Àû¼³      8
-    "%-5.2f",               // »ó´ë½Àµµ  9
-    "%-dmm",                // °­¼ö·®(0.1mm)",//10
-    "%-5.2f",               // ÀÏ»ç",//11
-    "%-5.2f",               //"ÀÏÁ¶",//12
-    "%-5.2f",               //"Áö¸é¿Âµµ",//13
-    "%-5.2f",               //"ÃÊ»ó¿Âµµ",//14
-    "%-5.2f",               //"ÁöÁß¿Âµµ 5cm",//15
-    "%-5.2f",               //"ÁöÁß¿Âµµ 10cm",//16
-    "%-5.2f",               //"ÁöÁß¿Âµµ 20cm",//17
-    "%-5.2f",               //"ÁöÁß¿Âµµ 30cm",//18
-    "%-5.2f",               //"ÁöÁß¿Âµµ 50cm",//19
-    "%-5.2f",               //"ÁöÁß¿Âµµ 1.0m",//20
-    "%-5.2f",               //"ÁöÁß¿Âµµ 1.5m",//21
-    "%-5.2f",               //"ÁöÁß¿Âµµ 3.0m",//22
-    "%-5.2f",               //"ÁöÁß¿Âµµ 5.0",//23
-    "%-5.2f",               //"Ãþ¿î°í",//24
-    "%-5.2f",               //"2Ãþ¿î°í",//25
-    "%-5.2f",               //"3Ãþ¿î°í",//26
-    "%-5.2f",               //"¿î·®",//27
-    "%-5.2f",               //"½ÃÁ¤",//28
-    "%-5.2f",               //"PM10",//29
-    "%-5.2f",               //"PM2",//30
-    "%-5.2f",               //"¼øº¹»ç",//31
-    "%-5.2f",               //"ÀüÃµº¹»ç",//32
-    "%-5.2f",               //"¹Ý»çº¹»ç",//33
-    "%-5.2f",               //"Á÷´Þ",//34
-    "%-5.2f",               //"ÇöÀçÀÏ±â",//35
-    "%-5.2f",               //"Åä¾ç¼öºÐ 10cm",//36
-    "%-5.2f",               //"Åä¾ç¼öºÐ 20cm",//37
-    "%-5.2f",               //"Åä¾ç¼öºÐ 30cm",//38
-    "%-5.2f",               //"Åä¾ç¼öºÐ 50cm",//39
-    "%-5.2f",               //"Á¶µµ·®",//40
-    "%-5.2f",               //"Ç³¼Ó(1.5m)",//41
-    "%-5.2f",               //"Ç³¼Ó(4.0m)",//42
-    "%-5.2f",               //"¼ø°£Ç³¼Ó(1.5m)",//43
-    "%-5.2f",               //"¼ø°£Ç³¼Ó(4.0m)",//44
-    "%-5.2fC",              //"±â¿Â 0.5m",//45
-    "%-5.2f",               //"±â¿Â 4.0m",//46
-    "%-5.2f",               //"½Àµµ 0.5m",//47
-    "%-5.2f",               //"½Àµµ 4.0m",//48
-    "%-5.2f",               //"Å¸ÄÚ¹ÌÅÍ",//49
-    "%-5.2f",               // "»ç¿ëÀÚ 1"//50
-    "%-5.2f",               // "»ç¿ëÀÚ 2"//51
-    "%-5.2f",               // 52
-    "%-5.2f",               // 53
-    "%-5.2f",               // 54
-    "%-5.2f",               // 55
-    "%-5.2f",               // 56
-    "%-5.2f",               // 57
-    "%-5.2f",               // 58
-    "%-5.2f",               // 59
-    "%-5.2f",               // 60
-    "%-5.2f",               // 61
-    "%-5.2f",               // 62
-    "%-5.2f"                // 63
-};
-
-config_manager_t s_config;
-
-
-
-sensor_data_t sensor_data_1min[SENSOR_LIST_MAX];    // 1ºÐ ¸¶´Ù °»½ÅµÇ´Â ½Ç½Ã°£ ÀÚ·á
-sensor_data_t sensor_data_instant[SENSOR_LIST_MAX]; //
-sensor_data_t sensor_data_raw[SENSOR_LIST_MAX]; 
-sensor_emul_t g_sensor_emul[SENSOR_LIST_MAX];
-
-sensor_nvm_t g_sensor_nvm;
-
-    uint8_t sensorData_updated = 0;
-
-bool wait_sensorComplete(void) { return true; }
-
-
-
-// 1ºÐ ÀÚ·á¸¦ ¾÷µ¥ÀÌÆ®, 1ºÐ ÀÚ·á ¿äÃ»½Ã ÀÌ °ª Àü¼Û
-void update_sensorData1min(void)
-{
-  // ¼¼¸¶Æ÷¾î pend ¿ÏÀüÈ÷ ÇÑ¹ø¿¡ ¾÷µ¥ÀÌÆ®µÈ ÀÚ·á¸¸ ÀÐµµ·Ï
- // memcpy(sensor_data_1min, sensor_data, sizeof(sensor_data_1min));
-  // ¼¼¸¶ Æ÷¾î post
-}
 
 
 
@@ -336,6 +117,8 @@ void sensor_add_common(sensor_t *sensor, uint8_t index)
   sensor->configCnt++;
   WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
 }
+
+
 /**
  * @brief ¼³Á¤°ª ÇÒ´ç
  */
@@ -346,29 +129,30 @@ void *sensor_add(sensor_t *sensor)
   switch (sensor->type)
   {
     case S_T_ADC:
-      if (s_config.adc_cnt < _countof(s_config.adc))  // ÇÒ´ç °¡´ÉÇÑÁö ÆÇ´Ü
+      if (g_config_sensor.adc_cnt < _countof(g_config_sensor.adc))  // ÇÒ´ç °¡´ÉÇÑÁö ÆÇ´Ü
       {
-        index = s_config.adc_cnt;
+        index = g_config_sensor.adc_cnt;
 
         sensor->config[sensor->configCnt][0] = sensor->type;  // ÇØ´ç Å¸ÀÔÀ» Ãß°¡
         sensor->config[sensor->configCnt][1] = index;
 
+        
         WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
                       sizeof(sensor->config[sensor->configCnt]));
         sensor->configCnt++;
         WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
 
-        s_config.adc_cnt++;
-        WRITE_S_CFG(adc_cnt);
+        g_config_sensor.adc_cnt++;
+        WRITE_CFG_SENSOR(adc_cnt);
 
-        return &s_config.adc[index];
+        return &g_config_sensor.adc[index];
       }
     case S_T_TEMP_232:
     case S_T_GENERAL_232:
     case S_T_HART:
-      if (s_config.rs232_cnt < _countof(s_config.rs232))
+      if (g_config_sensor.rs232_cnt < _countof(g_config_sensor.rs232))
       {
-        index = s_config.rs232_cnt;
+        index = g_config_sensor.rs232_cnt;
 
         sensor->config[sensor->configCnt][0] = sensor->type;  // ÇØ´ç Å¸ÀÔÀ» Ãß°¡
         sensor->config[sensor->configCnt][1] = index;
@@ -378,10 +162,10 @@ void *sensor_add(sensor_t *sensor)
         sensor->configCnt++;
         WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
 
-        s_config.rs232_cnt++;
+        g_config_sensor.rs232_cnt++;
 
-        WRITE_S_CFG(rs232_cnt);
-        return &s_config.rs232[index];
+        WRITE_CFG_SENSOR(rs232_cnt);
+        return &g_config_sensor.rs232[index];
       }
       return 0;
       break;
@@ -390,77 +174,77 @@ void *sensor_add(sensor_t *sensor)
     case S_T_PRESSURE_485:
     case S_T_HUMI_RS485:
     case S_T_GENERAL_485:
-      if (s_config.rs485_cnt < _countof(s_config.rs485))
+      if (g_config_sensor.rs485_cnt < _countof(g_config_sensor.rs485))
       {
-        index = s_config.rs485_cnt;
+        index = g_config_sensor.rs485_cnt;
         sensor->config[sensor->configCnt][0] = sensor->type;  // ÇØ´ç Å¸ÀÔÀ» Ãß°¡
         sensor->config[sensor->configCnt][1] = index;
         WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
                       sizeof(sensor->config[sensor->configCnt]));
         sensor->configCnt++;
         WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-        s_config.rs485_cnt++;
-        WRITE_S_CFG(rs485_cnt);
-        return &s_config.rs485[index];
+        g_config_sensor.rs485_cnt++;
+        WRITE_CFG_SENSOR(rs485_cnt);
+        return &g_config_sensor.rs485[index];
       }
       return 0;
       break;
     case S_T_WIND_SPEED_HJ_485:
-      if (s_config.hjwind_cnt < _countof(s_config.hjwind))
+      if (g_config_sensor.hjwind_cnt < _countof(g_config_sensor.hjwind))
       {
-        index = s_config.hjwind_cnt;
+        index = g_config_sensor.hjwind_cnt;
         sensor->config[sensor->configCnt][0] = sensor->type;  // ÇØ´ç Å¸ÀÔÀ» Ãß°¡
         sensor->config[sensor->configCnt][1] = index;
         WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
                       sizeof(sensor->config[sensor->configCnt]));
         sensor->configCnt++;
         WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-        s_config.hjwind_cnt++;
-        WRITE_S_CFG(hjwind_cnt);
-        return &s_config.hjwind[index];
+        g_config_sensor.hjwind_cnt++;
+        WRITE_CFG_SENSOR(hjwind_cnt);
+        return &g_config_sensor.hjwind[index];
       }
       return 0;
       break;
     case S_T_HUMI_HJ_485:
     case S_T_TEMPERATURE_HJ_485:
-      if (s_config.hjtemp_cnt < _countof(s_config.hjtemp))
+      if (g_config_sensor.hjtemp_cnt < _countof(g_config_sensor.hjtemp))
       {
-        index = s_config.hjtemp_cnt;
+        index = g_config_sensor.hjtemp_cnt;
         sensor->config[sensor->configCnt][0] = sensor->type;  // ÇØ´ç Å¸ÀÔÀ» Ãß°¡
         sensor->config[sensor->configCnt][1] = index;
         WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
                       sizeof(sensor->config[sensor->configCnt]));
         sensor->configCnt++;
         WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-        s_config.hjtemp_cnt++;
-        WRITE_S_CFG(hjtemp_cnt);
-        return &s_config.hjtemp[index];
+        g_config_sensor.hjtemp_cnt++;
+        WRITE_CFG_SENSOR(hjtemp_cnt);
+        return &g_config_sensor.hjtemp[index];
       }
       break;
     case S_T_WIND_DIRECTION_HJ_485:
-      if (s_config.hjwindDir_cnt < _countof(s_config.hjwindDir))
+      if (g_config_sensor.hjwindDir_cnt < _countof(g_config_sensor.hjwindDir))
       {
-        index = s_config.hjwindDir_cnt;
+        index = g_config_sensor.hjwindDir_cnt;
         sensor->config[sensor->configCnt][0] = sensor->type;  // ÇØ´ç Å¸ÀÔÀ» Ãß°¡
         sensor->config[sensor->configCnt][1] = index;
         WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
                       sizeof(sensor->config[sensor->configCnt]));
         sensor->configCnt++;
         WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-        s_config.hjwindDir_cnt++;
-        WRITE_S_CFG(hjwindDir_cnt);
-        return &s_config.hjwindDir[index];
+        g_config_sensor.hjwindDir_cnt++;
+        WRITE_CFG_SENSOR(hjwindDir_cnt);
+        return &g_config_sensor.hjwindDir[index];
       }
       break;
     case S_T_SNOW_HJ_232:
     case S_T_SNOW_HJ_485:
-      if (s_config.hjsnow_cnt < _countof(s_config.hjwindDir))
+      if (g_config_sensor.hjsnow_cnt < _countof(g_config_sensor.hjwindDir))
       {
-        index = s_config.hjsnow_cnt;
+        index = g_config_sensor.hjsnow_cnt;
         sensor_add_common(sensor, index);
-        s_config.hjsnow_cnt++;
-        WRITE_S_CFG(hjsnow_cnt);
-        return &s_config.hjsnow[index];
+        g_config_sensor.hjsnow_cnt++;
+        WRITE_CFG_SENSOR(hjsnow_cnt);
+        return &g_config_sensor.hjsnow[index];
       }
     default:
       break;
@@ -487,35 +271,35 @@ void *get_sensor_config(sensor_t *sensor)
       switch (sensor->type)
       {
         case S_T_ADC:
-          return &s_config.adc[sensor->config[i][1]];
+          return &g_config_sensor.adc[sensor->config[i][1]];
           break;
         case S_T_TEMP_232:
         case S_T_GENERAL_232:
         case S_T_HART:
-          return &s_config.rs232[sensor->config[i][1]];
+          return &g_config_sensor.rs232[sensor->config[i][1]];
           break;
         case S_T_TEMP_485:
         case S_T_PRESSURE_485:
         case S_T_HUMI_RS485:
         case S_T_GENERAL_485:
-          return &s_config.rs485[sensor->config[i][1]];
+          return &g_config_sensor.rs485[sensor->config[i][1]];
           break;
         case S_T_MODBUS:
-          return &s_config.modbus[sensor->config[i][1]];
+          return &g_config_sensor.modbus[sensor->config[i][1]];
           break;
         case S_T_WIND_SPEED_HJ_485:
-          return &s_config.hjwind[sensor->config[i][1]];
+          return &g_config_sensor.hjwind[sensor->config[i][1]];
           break;
         case S_T_TEMPERATURE_HJ_485:
         case S_T_HUMI_HJ_485:
-          return &s_config.hjtemp[sensor->config[i][1]];
+          return &g_config_sensor.hjtemp[sensor->config[i][1]];
           break;
         case S_T_WIND_DIRECTION_HJ_485:
-          return &s_config.hjwindDir[sensor->config[i][1]];
+          return &g_config_sensor.hjwindDir[sensor->config[i][1]];
           break;
         case S_T_SNOW_HJ_232:
         case S_T_SNOW_HJ_485:
-          return &s_config.hjsnow[sensor->config[i][1]];
+          return &g_config_sensor.hjsnow[sensor->config[i][1]];
           break;
       }
     }
@@ -525,10 +309,5 @@ void *get_sensor_config(sensor_t *sensor)
 }
 
 
-
-void read_sensorNVM(uint32_t offset)
-{
-
-}
 
 

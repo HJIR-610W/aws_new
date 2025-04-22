@@ -5,6 +5,7 @@
 
 #include <math.h>
 
+#include "cmsis_os2.h"
 #include "aws_processor.h"
 #include "utile.h"
 #include "utile_time.h"
@@ -12,6 +13,9 @@
 
 #include "task_measure.h"
 #include "user_heap.h"
+
+#include "os_user_def.h"
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -48,10 +52,18 @@ static uint32_t g_minute_counter_for_10min = 0;
 static windVector_t g_current_daily_max_gust = {0, 0};
 static uint32_t g_minute_counter_for_day = 0;
 
-void calculate_windToVector(wind_t* wind,
-                            windVector_t* windVector) ;
-                            
+wind_t avg_wind;
+wind_t wind_gust_inst;
+wind_t g_wind_gust_1min;
 
+
+
+
+//온도
+#define TEMP_SAMPLES_PER_MINUTE 6
+static uint16_t g_1min_temp_avg[TEMP_SAMPLES_PER_MINUTE];
+static uint8_t g_1min_temp_avg_idx=0;
+void calculate_windToVector(wind_t* wind, windVector_t* windVector);
 
 void wind1min_add_sample(wind_t* wind, uint8_t *err)
 {
@@ -255,7 +267,7 @@ void wind_process_250ms(wind_t* wind_sample, uint8_t spd_err, uint8_t dir_err)
 {
   windVector_t current_vector;
   wind_t wind;
-  wind_t avg_wind;
+
 
   if(spd_err || dir_err)
   {
@@ -289,35 +301,108 @@ void wind_process_250ms(wind_t* wind_sample, uint8_t spd_err, uint8_t dir_err)
     calculate_vectorToWin(&avg_inst_vector, &avg_wind);
   }
 
+
   g_1min_gust_buffer[g_1min_gust_buffer_idx] = avg_wind;
 
-  // g_inst_buffer_idx = (g_inst_buffer_idx + 1) % SAMPLES_PER_GUST;
+   g_inst_buffer_idx = (g_inst_buffer_idx + 1) % SAMPLES_PER_GUST;
   // g_1min_buffer_idx = (g_1min_buffer_idx + 1);  // Increment first
   // g_1min_gust_buffer_idx = g_1min_buffer_idx;   // Keep synced for simplicity
 
+   int32_t i_wind_speed;
+   int32_t i_wind_direction;
+   int32_t i_wind_speed_inst;
+   int32_t i_wind_direction_inst;
 
+
+   i_wind_speed = (int32_t)(avg_wind.speed*1000);
+   i_wind_direction = (int32_t)(avg_wind.direction*1000);
+
+   i_wind_speed_inst = (int32_t)(wind_gust_inst.speed * 1000);
+   i_wind_direction_inst = (int32_t)(wind_gust_inst.direction * 1000);
+
+   //250ms 실시간 최대값 계산산,실시간은 분이 바뀌면 초기화
+   if (i_wind_speed > i_wind_speed_inst)
+   {
+     i_wind_speed_inst = i_wind_speed;
+   }
+
+   if (i_wind_direction > i_wind_direction_inst)
+   {
+     i_wind_direction_inst = i_wind_direction;
+   }
+
+   wind_gust_inst.speed = (i_wind_speed_inst/1000.0);
+   wind_gust_inst.direction = (i_wind_direction_inst / 1000.0);
+}
+void wind_process_1min(void)
+{
+  g_wind_gust_1min = find_max_gust(g_1min_gust_buffer, sizeof(g_1min_gust_buffer));
 }
 
 
 
-void temperature_process_1sec(float *temperature,uint8_t *err)
+void wind_gust_init(void)
+{
+  wind_gust_inst.direction = 0;
+  wind_gust_inst.speed  = 0;
+}
+
+
+
+ void temperature_process_1sec(float* temperature, uint8_t* err)
 {
 
 }
+ uint16_t avg_sample(uint16_t* samples, uint16_t cnt)
+ {
+   uint32_t sum = 0;
+   uint16_t avg;
+   for (int i = 0; i < cnt; i++)
+   {
+     sum += samples[i];
+   }
 
-static measure_data_t* g_p_raw;
+   avg = (sum / cnt);
 
-uint16_t get_aws_temperature(void)
-{
+   return avg;
+ }
 
+uint16_t g_temperature_avg;
+
+void temperature_process_10s(uint16_t temperature)
+{ 
+  g_1min_temp_avg[g_1min_temp_avg_idx] = temperature;
+
+  g_1min_temp_avg_idx = (g_1min_temp_avg_idx + 1) % TEMP_SAMPLES_PER_MINUTE;
+
+  if (g_inst_buffer_idx >= SAMPLES_PER_GUST)
+  {
+    g_temperature_avg = avg_sample(g_1min_temp_avg, TEMP_SAMPLES_PER_MINUTE);
+  }
 }
 
-uint16_t get_aws_huminity(void)
-{
-  uint16_t huminity;
 
-  return huminity;
+
+void huminity_process_10s(uint16_t temperature)
+{
+  g_1min_temp_avg[g_1min_temp_avg_idx] = temperature;
+
+  g_1min_temp_avg_idx = (g_1min_temp_avg_idx + 1) % TEMP_SAMPLES_PER_MINUTE;
 }
+
+ static measure_data_t* g_p_raw;
+
+ uint16_t get_aws_temperature(void)
+ {
+   
+ }
+
+ uint16_t get_aws_huminity(void)
+ {
+   uint16_t huminity;
+
+   return huminity;
+ }
 
 uint16_t get_aws_barometer(void)
 {
@@ -353,9 +438,12 @@ uint16_t get_aws_raining(void)
 
 uint16_t get_aws_snow(void)
 {
-  uint16_t rain;
+  sensor_data_t* p_sensor = g_p_raw->data;
+  uint16_t snow;
 
-  return rain;
+  snow = p_sensor[A9_SNOW_DEPTH].data.i;
+
+  return snow;
 }
 
 
@@ -381,36 +469,98 @@ uint16_t get_aws_soil_temperature_20cm(void)
   return rain;
 }
 
-uint16_t get_aws_wind_speed(void)
+uint16_t get_aws_soil_temperature_30cm(void)
 {
   uint16_t rain;
 
   return rain;
 }
-
-uint16_t get_aws_wind_direction(void)
-{
-  uint16_t rain;
-
-  return rain;
-}
-
-
 
 uint16_t get_aws_wind_speed_gust(void)
 {
-  uint16_t rain;
+  uint16_t wind_speed_gust;
+  int32_t val;
 
-  return rain;
+  val = (int32_t)(wind_gust_inst.speed*10);
+
+  wind_speed_gust = val;
+
+  return wind_speed_gust;
 }
 
 uint16_t get_aws_wind_direction_gust(void)
 {
-  uint16_t rain;
+  uint16_t wind_direction_gust;
+  int32_t val;
 
-  return rain;
+  val = (int32_t)(wind_gust_inst.speed * 10);
+
+  wind_direction_gust = val;
+
+  return wind_direction_gust;
 }
 
+
+
+
+uint16_t get_aws_wind_speed(uint8_t* err)
+{
+  uint16_t wind_speed;
+  int32_t val;
+
+  sensor_data_t* p_sensor = g_p_raw->data;
+
+  val = (uint16_t)(p_sensor[A3_WIND_SPEED].data.f * 10);
+
+  if (p_sensor[A3_WIND_SPEED].err)
+  {
+    *err = 1;
+    wind_speed = 9999;
+  }
+  else
+  {
+    *err = 0;
+    wind_speed = val;
+  }
+
+  return wind_speed;
+}
+
+
+uint16_t get_aws_wind_direction(uint8_t* err)
+{
+  uint16_t wind_direction;
+  int32_t val;
+
+  sensor_data_t* p_sensor = g_p_raw->data;
+
+  val = (uint16_t)(p_sensor[A2_WIND_DIRECTION].data.f*10);
+
+  if(p_sensor[A2_WIND_DIRECTION].err)
+  {
+    *err = 1;
+    wind_direction = 9999;
+  }
+  else
+  {
+    *err = 0;
+    wind_direction = val;
+  }
+
+  return wind_direction;
+
+}
+
+uint16_t get_wind_direction(uint8_t* err)
+{
+  sensor_data_t* p_sensor = g_p_raw->data;
+int32_t val;
+
+  *err = p_sensor[A2_WIND_DIRECTION].err;
+val =   (int32_t)(p_sensor[A2_WIND_DIRECTION].data.f*10);
+
+  return val;
+}
 
 float get_wind_speed(uint8_t *err)
 {
@@ -421,15 +571,123 @@ float get_wind_speed(uint8_t *err)
   *err = p_sensor[A3_WIND_SPEED].err;
 }
 
-float get_wind_direction(uint8_t* err)
+
+
+
+
+#include <stdint.h>
+
+#define ERROR_TIMEOUT_MS 10000
+
+typedef struct
 {
-  sensor_data_t* p_sensor = g_p_raw->data;
+  uint8_t error_active;       // 현재 에러 상태인지 여부
+  uint32_t error_start_time;  // 에러가 시작된 시간
+} error_timer_t;
 
-  return p_sensor[A2_WIND_DIRECTION].data.f;
 
-  *err = p_sensor[A2_WIND_DIRECTION].err;
+int is_error_timeout(error_timer_t* timer, uint8_t err_now, uint32_t now)
+{
+  if (err_now == 0)
+  {
+    // 정상 상태면 타이머 초기화
+    timer->error_active = 0;
+    timer->error_start_time = 0;
+    return 0;  // 타임아웃 아님
+  }
+
+  if (!timer->error_active)
+  {
+    // 에러 상태 진입 시 타이머 시작
+    timer->error_active = 1;
+    timer->error_start_time = now;
+    return 0;
+  }
+
+  // 이미 에러 상태 → 시간 확인
+  if ((now - timer->error_start_time) >= ERROR_TIMEOUT_MS)
+  {
+    return 1;  // 타임아웃 발생
+  }
+
+  return 0;
 }
 
+#define ERROR_TIMEOUT_MS 10000
+#define ERROR_VALUE 9999
+
+#define ERROR_VALUE 9999
+
+uint16_t get_aws_wind_direction_safe(void)
+{
+  static uint16_t last_valid_wind_direction = 0;
+  static error_timer_t dir_timer = {0, 0};
+  uint8_t err = 0;
+  uint32_t now = GET_TICK();
+
+  uint16_t temp = get_aws_wind_direction(&err);
+
+  if (is_error_timeout(&dir_timer, err, now))
+  {
+    return ERROR_VALUE;
+  }
+
+  if (err == 0)
+  {
+    last_valid_wind_direction = temp;
+  }
+
+  return last_valid_wind_direction;
+}
+
+uint16_t get_aws_wind_speed_safe(void)
+{
+  static uint16_t last_valid_wind_direction = 0;
+  static error_timer_t dir_timer = {0, 0};
+  uint8_t err = 0;
+  uint32_t now = GET_TICK();
+
+  uint16_t temp = get_aws_wind_speed(&err);
+
+  if (is_error_timeout(&dir_timer, err, now))
+  {
+
+    return ERROR_VALUE;
+  }
+
+  if (err == 0)
+  {
+
+    last_valid_wind_direction = temp;
+  }
+
+  return last_valid_wind_direction;
+}
+
+uint16_t get_aws_wind_speed_avg(void) 
+{
+  int32_t speed;
+  
+  speed = (int32_t)(avg_wind.speed*10);
+
+  return speed;
+}
+uint16_t get_aws_wind_direction_avg(void)
+{
+  int32_t direction;
+
+  direction = (int32_t)(avg_wind.direction * 10);
+
+  return direction;
+}
+
+void update_kma_raw(void) 
+{ 
+  
+  g_kma_raw.temperature = get_aws_temperature();
+  
+
+}
 
 void aws_data_task(void* arg)
 {
@@ -437,7 +695,6 @@ void aws_data_task(void* arg)
   wind_t wind;
   uint8_t wind_spd_err;
   uint8_t wind_dir_err;
-
   
   g_p_raw = aws_malloc(sizeof(measure_data_t));
 
@@ -446,51 +703,61 @@ void aws_data_task(void* arg)
 
   while (1)
   {
+    ct = Date_Time;
+    
     if(is_measurement(g_p_raw) == false)
     {
       continue;
     }
 
+    update_kma_raw();//원본 값을 저장한다.
+
+    //자료 규격 처리 
     wind.direction = get_wind_direction(&wind_dir_err);
     wind.speed = get_wind_speed(&wind_spd_err);
 
     wind_process_250ms(&wind,wind_spd_err,wind_dir_err);//250ms마다 이동평균
 
-    g_kma_avg.wind_speed_avg = get_aws_wind_speed();
-    g_kma_avg.wind_direction_avg = get_aws_wind_direction();
+    g_kma_inst.wind_speed_avg = get_aws_wind_speed_avg();
+    g_kma_inst.wind_direction_avg = get_aws_wind_direction_avg();
 
-    g_kma_avg.wind_speed_instant = get_aws_wind_speed_gust();
-    g_kma_avg.wind_direction_instant = get_aws_wind_direction_gust();
+    g_kma_inst.wind_speed_instant = get_aws_wind_speed_gust();
+    g_kma_inst.wind_direction_instant = get_aws_wind_direction_gust();
 
-    g_kma_avg.precipitation += get_aws_rain();
-    g_kma_avg.precipitation_presence = get_aws_raining();
-    g_kma_avg.snowfall = get_aws_snow();
+    g_kma_inst.precipitation += get_aws_rain();
+    g_kma_inst.precipitation_presence = get_aws_raining();//샘플링 시간 1분,더 빠르게 처리리
+    g_kma_inst.snowfall = get_aws_snow();
 
     if (ct.Sec != ot.Sec)
     {
-      g_kma_avg.precipitation_presence = get_aws_raining();
-      g_kma_avg.solar_radiation = get_aws_solar_radiation();
+      g_kma_inst.solar_radiation = get_aws_solar_radiation();
       
       if (ct.Sec % 10 == 0)
       {
-        g_kma_avg.temperature = get_aws_temperature();
-        g_kma_avg.relative_humidity = get_aws_temperature();
-        g_kma_avg.pressure    = get_aws_barometer();
+        g_kma_inst.temperature = get_aws_temperature();
+        g_kma_inst.relative_humidity = get_aws_temperature();
+        g_kma_inst.pressure    = get_aws_barometer();
 
-        g_kma_avg.soil_temperature_20cm = get_aws_soil_temperature_20cm();
+        g_kma_inst.soil_temperature_20cm = get_aws_soil_temperature_20cm();
       }
       ot.Sec = ct.Sec;
     }
 
     if(ct.Min != ot.Min)
     {
-      g_kma_1min = g_kma_avg;
+      wind_gust_init();
+      wind_process_1min();
+      
+      g_kma_1min = g_kma_inst;
+      g_kma_1min.wind_direction_avg = 0;
+      g_kma_1min.wind_speed_avg = 1;
+
       ot.Min = ct.Min;
     }
 
     if (ct.Day != ot.Day)
     {
-      g_kma_avg.precipitation = 0;//금일 강우량량
+      g_kma_inst.precipitation = 0;//금일 강우량
     }
 
     }//while

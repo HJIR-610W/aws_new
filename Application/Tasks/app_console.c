@@ -20,7 +20,9 @@
 #include "aws_data.h"
 #include "boot_version.h"
 #include "cmsis_os2.h"
-#include "config.h"
+#include "config_app.h"
+#include "config_adc.h"
+#include "config_nvm.h"
 #include "dev_io.h"
 #include "driver_485.h"
 #include "mcu_debug.h"
@@ -32,7 +34,9 @@
 #include "utile_time.h"
 #include "vt100_command.h"
 #include "ymodem.h"
-
+#include "task_direct.h"
+#include "task_tcpServer.h"
+#include "task_measure.h"
 #define EXIT_PROGRAM -3
 #define EXIT_BACK -1
 
@@ -316,9 +320,9 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
   make_comList(buff, sizeof(buff));
   vt100_print_frame(row, column, "이더넷", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++, column, -DISP_WIDTH, "링크  :%s\r\n",
-                  ITEM_LIST(System.eth_link_status + 1, linkStatusList));
-  vt100_print_bar(line++, column, -DISP_WIDTH, "송신  :%d\r\n", System.eth_tx_cnt);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "수신  :%d\r\n", System.eth_rx_cnt);
+                  ITEM_LIST(get_direct_system()->link_status + 1, linkStatusList));
+  vt100_print_bar(line++, column, -DISP_WIDTH, "송신  :%d\r\n", get_tcp_system()->tx_cnt);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "수신  :%d\r\n", get_tcp_system()->rx_cnt);
 
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
@@ -362,8 +366,8 @@ int32_t print_cdmaInfo(uint16_t row, uint16_t column)
     vt100_print_bar(line++, column, -DISP_WIDTH, "수신감도:%d\r\n", System.cdma_rssi);
   }
 
-  vt100_print_bar(line++, column, -DISP_WIDTH, "송신    :%d\r\n", System.eth_tx_cnt);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "수신    :%d\r\n", System.eth_rx_cnt);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "송신    :%d\r\n", get_tcp_system()->tx_cnt);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "수신    :%d\r\n", get_tcp_system()->rx_cnt);
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
   return line - (row);
@@ -379,9 +383,9 @@ int32_t print_directInfo(uint16_t row, uint16_t column)
   make_comList(buff, sizeof(buff));
   vt100_print_frame(row, column, "DIRECT", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++, column, -DISP_WIDTH, "링크    :%s\r\n",
-                  ITEM_LIST(System.direct_link_status + 1, linkStatusList));
-  vt100_print_bar(line++, column, -DISP_WIDTH, "송신    :%d\r\n", System.direct_tx_cnt);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "수신    :%d\r\n", System.direct_rx_cnt);
+                  ITEM_LIST(get_direct_system()->link_status + 1, linkStatusList));
+  vt100_print_bar(line++, column, -DISP_WIDTH, "송신    :%d\r\n", get_direct_system()->tx_cnt);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "수신    :%d\r\n", get_direct_system()->rx_cnt);
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
   return line - (row);
@@ -402,7 +406,7 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, uint8_t mode, void *
   pkma = &g_kma_raw;
   break;
   case 1://avg
-    pkma = &g_kma_avg;
+    pkma = &g_kma_inst;
     break;
   case 2://1min
     pkma = &g_kma_1min;
@@ -426,7 +430,7 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, uint8_t mode, void *
 
 #define KMA_TO_1000(x) ((float)((x - 1000) / 10.0f))
 
-  sensor_t *p_sensor = config.sensor;
+  sensor_t *p_sensor = get_config_app()->sensor;
 
 #if 1
   vt100_print_frame(row, column, buff, '+', '|', '-', DISP_WIDTH, WHITE);
@@ -669,15 +673,15 @@ int32_t menu_display(p_shell_context_t ctx)
     print_systemInfo(1, 0);
 
     line = 0;
-    if (config.cdma_use)
+    if (get_config_app()->cdma_use)
     {
       line = print_cdmaInfo(1, 30);
     }
-    if (config.direct_use)
+    if (get_config_app()->direct_use)
     {
       line += print_directInfo(1 + line, 30);
     }
-    if (config.eth_use)
+    if (get_config_app()->eth_use)
     {
       line += print_ethInfo(1 + line, 30);
     }
@@ -834,9 +838,9 @@ int32_t print_menu_system(p_shell_context_t ctx)
 
   make_timeToStr(&Date_Time, buff, sizeof(buff));
   ctx->printf("%2d.time        :%s\r\n", cnt++, buff);
-  ctx->printf("%2d.id          :%d\r\n", cnt++, config.id);
-  ctx->printf("%2d.password    :%d\r\n", cnt++, config.password);
-  ctx->printf("%2d:charger type:%s\r\n", cnt++, ITEM_LIST(config.chgType, g_chgList));
+  ctx->printf("%2d.id          :%d\r\n", cnt++, get_config_app()->id);
+  ctx->printf("%2d.password    :%d\r\n", cnt++, get_config_app()->password);
+  ctx->printf("%2d:charger type:%s\r\n", cnt++, ITEM_LIST(get_config_app()->charger_model, g_chgList));
 
   return cnt;
 }
@@ -887,8 +891,8 @@ int32_t menu_system(p_shell_context_t ctx)
         if (cnt > 0)
         {
           cnt--;
-          config.chgType = cnt;
-          WRITE_CFG(chgType);
+          config.charger_model = cnt;
+          WRITE_CFG(charger_model);
         }
         break;
     }
@@ -984,20 +988,20 @@ int32_t print_menu_sensor(p_shell_context_t ctx)
   ctx->printf("\r\n");
 
 #if 1
-  cnt = _countof(sensorNameList) / 2;
+  cnt = _countof(sensor_name_list) / 2;
 
   for (i = 0; i < cnt; i++)
   {
-    make_option(&config.sensor[i], opt, sizeof(opt));
-    ctx->printf("%2d.%-14s:%-24s %-15s,  ", i, sensorNameList[i],
-                ITEM_LIST(config.sensor[i].type, sensorTypeList), opt);
-    make_option(&config.sensor[i + cnt], opt, sizeof(opt));
-    ctx->printf("%2d.%-14s:%-24s %-15s\r\n", i + cnt, sensorNameList[i + cnt],
-                ITEM_LIST(config.sensor[i + cnt].type, sensorTypeList), opt);
+    make_option(&get_config_app()->sensor[i], opt, sizeof(opt));
+    ctx->printf("%2d.%-14s:%-24s %-15s,  ", i, sensor_name_list[i],
+                ITEM_LIST(get_config_app()->sensor[i].type, g_sensor_model_list), opt);
+    make_option(&get_config_app()->sensor[i + cnt], opt, sizeof(opt));
+    ctx->printf("%2d.%-14s:%-24s %-15s\r\n", i + cnt, sensor_name_list[i + cnt],
+                ITEM_LIST(get_config_app()->sensor[i + cnt].type, g_sensor_model_list), opt);
   }
 
 #endif
-  cnt = _countof(sensorNameList);
+  cnt = _countof(sensor_name_list);
   return cnt;
 }
 
@@ -1109,7 +1113,7 @@ uint16_t gen_sensorItemList(const char **itemListOut, const uint8_t *idxList, ui
 
   for (i = 0; i < listCnt; i++)
   {
-    itemListOut[i] = sensorTypeList[idxList[i]];
+    itemListOut[i] = g_sensor_model_list[idxList[i]];
   }
 
   return i;
@@ -1136,7 +1140,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt > 0)
       {
         adc->mode = (cnt - 1);
-        write_s_config();
+        save_config_sensor();
       }
       break;
     case ADC_SET_CHANNLEL:  // channel;
@@ -1144,7 +1148,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt)
       {
         adc->channel = dec;
-        write_s_config();
+        save_config_sensor();
       }
       break;
     case ADC_SET_HIGHSCALE:  // hish cale;
@@ -1152,7 +1156,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt)
       {
         adc->highScale = dec;
-        write_s_config();
+        save_config_sensor();
       }
       break;
     case ADC_SET_LOWSCALE:  // low cale;
@@ -1160,7 +1164,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt)
       {
         adc->lowScale = dec;
-        write_s_config();
+        save_config_sensor();
       }
       break;
     case ADC_SET_SCALE:  // ale;
@@ -1168,7 +1172,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt)
       {
         adc->scale = dec;
-        write_s_config();
+        save_config_sensor();
       }
       break;
 
@@ -1177,7 +1181,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt)
       {
         adc->outMaxV = dec;
-        write_s_config();
+        save_config_sensor();
       }
       break;
 
@@ -1186,7 +1190,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt)
       {
         adc->outMinV = dec;
-        write_s_config();
+        save_config_sensor();
       }
       break;
   }
@@ -1242,7 +1246,7 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
           ctx->printf("%s 새롭게 열렸습니다.\r\n", portList[rs232->port]);
         }
 
-        write_s_config();
+        save_config_sensor();
       }
       break;
 
@@ -1251,7 +1255,7 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt)
       {
         rs232->baud = dec;
-        write_s_config();
+        save_config_sensor();
       }
 
       break;
@@ -1259,7 +1263,7 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       cnt = select_indexFromList(ctx, rs232ParityList, NULL, _countof(rs232ParityList), true);
       {
         rs232->parityIdx = cnt - 1;
-        write_s_config();
+        save_config_sensor();
       }
       break;
     default:
@@ -1315,7 +1319,7 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
           ctx->printf("%s 새롭게 열렸습니다.\r\n", portList[rs485->port]);
         }
 
-        write_s_config();
+        save_config_sensor();
       }
       break;
 
@@ -1324,7 +1328,7 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt)
       {
         rs485->baud = dec;
-        write_s_config();
+        save_config_sensor();
       }
 
       break;
@@ -1332,7 +1336,7 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       cnt = select_indexFromList(ctx, rs232ParityList, NULL, _countof(rs232ParityList), true);
       {
         rs485->parityIdx = cnt - 1;
-        write_s_config();
+        save_config_sensor();
       }
       break;
     default:
@@ -1358,7 +1362,7 @@ void hjwind_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt)
       {
         hjwind->full = dec;
-        write_s_config();
+        save_config_sensor();
       }
       break;
     case HJWIND_CFG_OFF:
@@ -1366,7 +1370,7 @@ void hjwind_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       if (cnt)
       {
         hjwind->offset = dec;
-        write_s_config();
+        save_config_sensor();
       }
       break;
     case HJWIND_CFG_PORT:
@@ -1400,7 +1404,7 @@ void hjwind_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
           ctx->printf("%s 새롭게 열렸습니다.\r\n", portList[hjwind->rs485_port]);
         }
 
-        write_s_config();
+        save_config_sensor();
       }
       break;
     default:
@@ -1452,7 +1456,7 @@ void hjwinddir_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
           ctx->printf("%s 새롭게 열렸습니다.\r\n", portList[hjwind->rs485_port]);
         }
 
-        write_s_config();
+        save_config_sensor();
       }
       break;
     default:
@@ -1503,7 +1507,7 @@ void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
           ctx->printf("%s 새롭게 열렸습니다.\r\n", portList[hjtemp->rs485_port]);
         }
 
-        write_s_config();
+        save_config_sensor();
       }
       break;
     default:
@@ -1554,7 +1558,7 @@ int32_t print_common_cfg(p_shell_context_t ctx, sensor_t *sensor, uint8_t c)
 {
   int32_t cnt = 0;
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
 
   switch (sensor->type)
   {
@@ -1590,9 +1594,9 @@ int32_t print_menu_sensor_temp(p_shell_context_t ctx)
 {
   int cnt = 0;
   sensor_t *sensor;
-  sensor = &config.sensor[A1_TEMPERATURE];
+  sensor = &get_config_app()->sensor[A1_TEMPERATURE];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
 
   if (sensor->type != S_T_UNSUED)
   {
@@ -1623,7 +1627,7 @@ int32_t menu_sensor_temp(p_shell_context_t ctx)
   int32_t cnt;
   uint8_t itemListCnt;
 
-  sensor_t *sensor = &config.sensor[A1_TEMPERATURE];
+  sensor_t *sensor = &get_config_app()->sensor[A1_TEMPERATURE];
 
   do
   {
@@ -1666,9 +1670,9 @@ int32_t print_menu_sensor_windDirection(p_shell_context_t ctx)
   int cnt = 0;
   sensor_t *sensor;
 
-  sensor = &config.sensor[A2_WIND_DIRECTION];
+  sensor = &get_config_app()->sensor[A2_WIND_DIRECTION];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
   cnt = print_common_cfg(ctx, sensor, cnt);
   return cnt;
 }
@@ -1678,7 +1682,7 @@ int32_t menu_sensor_windDirection(p_shell_context_t ctx)
   uint8_t itemListCnt;
   const char *itemList[10];
 
-  sensor_t *sensor = &config.sensor[A2_WIND_DIRECTION];
+  sensor_t *sensor = &get_config_app()->sensor[A2_WIND_DIRECTION];
 
   do
   {
@@ -1722,9 +1726,9 @@ int32_t print_menu_sensor_windSpeed(p_shell_context_t ctx)
   int cnt = 0;
   sensor_t *sensor;
 
-  sensor = &config.sensor[A3_WIND_SPEED];
+  sensor = &get_config_app()->sensor[A3_WIND_SPEED];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
   cnt = print_common_cfg(ctx, sensor, cnt);
   return cnt;
 }
@@ -1734,7 +1738,7 @@ int32_t menu_sensor_windSpeed(p_shell_context_t ctx)
   uint8_t itemListCnt;
   const char *itemList[10];
 
-  sensor_t *sensor = &config.sensor[A3_WIND_SPEED];
+  sensor_t *sensor = &get_config_app()->sensor[A3_WIND_SPEED];
 
   do
   {
@@ -1777,9 +1781,9 @@ int32_t print_menu_sensor_windDirectionInstanct(p_shell_context_t ctx)
   int cnt = 0;
   sensor_t *sensor;
 
-  sensor = &config.sensor[A4_INSTANT_WIND_DIRECTION];
+  sensor = &get_config_app()->sensor[A4_INSTANT_WIND_DIRECTION];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
 
   cnt = print_common_cfg(ctx, sensor, cnt);
   return cnt;
@@ -1790,7 +1794,7 @@ int32_t menu_sensor_windDirectionInstant(p_shell_context_t ctx)
   uint8_t itemListCnt;
   const char *itemList[10];
 
-  sensor_t *sensor = &config.sensor[A4_INSTANT_WIND_DIRECTION];
+  sensor_t *sensor = &get_config_app()->sensor[A4_INSTANT_WIND_DIRECTION];
 
   do
   {
@@ -1832,9 +1836,9 @@ int32_t print_menu_sensor_windSpeedInstanct(p_shell_context_t ctx)
   int cnt = 0;
   sensor_t *sensor;
 
-  sensor = &config.sensor[A5_INSTANT_WIND_SPEED];
+  sensor = &get_config_app()->sensor[A5_INSTANT_WIND_SPEED];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
 
   cnt = print_common_cfg(ctx, sensor, cnt);
   return cnt;
@@ -1845,7 +1849,7 @@ int32_t menu_sensor_windSpeedInstant(p_shell_context_t ctx)
   uint8_t itemListCnt;
   const char *itemList[10];
 
-  sensor_t *sensor = &config.sensor[A5_INSTANT_WIND_SPEED];
+  sensor_t *sensor = &get_config_app()->sensor[A5_INSTANT_WIND_SPEED];
 
   do
   {
@@ -1889,9 +1893,9 @@ int32_t print_menu_sensor_snow(p_shell_context_t ctx)
   int cnt = 0;
   sensor_t *sensor;
 
-  sensor = &config.sensor[A9_SNOW_DEPTH];
+  sensor = &get_config_app()->sensor[A9_SNOW_DEPTH];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
   cnt = print_common_cfg(ctx, sensor, cnt);
   return cnt;
 }
@@ -1901,7 +1905,7 @@ int32_t menu_sensor_snow(p_shell_context_t ctx)
   uint8_t itemListCnt;
   const char *itemList[10];
 
-  sensor_t *sensor = &config.sensor[A9_SNOW_DEPTH];
+  sensor_t *sensor = &get_config_app()->sensor[A9_SNOW_DEPTH];
 
   do
   {
@@ -1943,9 +1947,9 @@ int32_t print_menu_sensor_rain(p_shell_context_t ctx)
   int cnt = 0;
   sensor_t *sensor;
 
-  sensor = &config.sensor[A6_RAINFALL_DOT5_1MM];
+  sensor = &get_config_app()->sensor[A6_RAINFALL_DOT5_1MM];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
   cnt = print_common_cfg(ctx, sensor, cnt);
   return cnt;
 }
@@ -1957,7 +1961,7 @@ int32_t menu_sensor_rain(p_shell_context_t ctx)
   uint8_t itemListCnt;
   const char *itemList[10];
 
-  sensor_t *sensor = &config.sensor[A6_RAINFALL_DOT5_1MM];
+  sensor_t *sensor = &get_config_app()->sensor[A6_RAINFALL_DOT5_1MM];
 
   do
   {
@@ -2001,9 +2005,9 @@ int32_t print_menu_sensor_pressure(p_shell_context_t ctx)
   int cnt = 0;
   sensor_t *sensor;
 
-  sensor = &config.sensor[A7_PRESSURE];
+  sensor = &get_config_app()->sensor[A7_PRESSURE];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
   cnt = print_common_cfg(ctx, sensor, cnt);
   return cnt;
 }
@@ -2015,7 +2019,7 @@ int32_t menu_sensor_pressure(p_shell_context_t ctx)
   uint8_t itemListCnt;
   const char *itemList[10];
 
-  sensor_t *sensor = &config.sensor[A7_PRESSURE];
+  sensor_t *sensor = &get_config_app()->sensor[A7_PRESSURE];
 
   do
   {
@@ -2059,9 +2063,9 @@ int32_t print_menu_sensor_humi(p_shell_context_t ctx)
   int cnt = 0;
   sensor_t *sensor;
 
-  sensor = &config.sensor[A10_RELATIVE_HUMIDITY];
+  sensor = &get_config_app()->sensor[A10_RELATIVE_HUMIDITY];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
   cnt = print_common_cfg(ctx, sensor, cnt);
   return cnt;
 }
@@ -2073,7 +2077,7 @@ int32_t menu_sensor_humi(p_shell_context_t ctx)
   uint8_t itemListCnt;
   const char *itemList[10];
 
-  sensor_t *sensor = &config.sensor[A10_RELATIVE_HUMIDITY];
+  sensor_t *sensor = &get_config_app()->sensor[A10_RELATIVE_HUMIDITY];
 
   do
   {
@@ -2116,9 +2120,9 @@ int32_t print_menu_sensor_rainPresent(p_shell_context_t ctx)
   int cnt = 0;
   sensor_t *sensor;
 
-  sensor = &config.sensor[A8_RAIN_PRESENT];
+  sensor = &get_config_app()->sensor[A8_RAIN_PRESENT];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
   switch (sensor->type)
   {
     case S_T_RAIN_PRESENT_DI:
@@ -2135,7 +2139,7 @@ int32_t menu_sensor_rainPresent(p_shell_context_t ctx)
   uint8_t itemListCnt;
   const char *itemList[10];
 
-  sensor_t *sensor = &config.sensor[A8_RAIN_PRESENT];
+  sensor_t *sensor = &get_config_app()->sensor[A8_RAIN_PRESENT];
 
   do
   {
@@ -2209,9 +2213,9 @@ int32_t print_menu_sensor_default(p_shell_context_t ctx)
   int cnt = 0;
   sensor_t *sensor;
 
-  sensor = &config.sensor[A11_RAINFALL_DOT1MM];
+  sensor = &get_config_app()->sensor[A11_RAINFALL_DOT1MM];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, sensorTypeList[sensor->type]);
+  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
   cnt = print_common_cfg(ctx, sensor, cnt);
   return cnt;
 }
@@ -2219,7 +2223,7 @@ int32_t print_menu_sensor_default(p_shell_context_t ctx)
 int32_t menu_sensor_default(p_shell_context_t ctx)
 {
   int32_t cnt;
-  sensor_t *sensor = &config.sensor[A11_RAINFALL_DOT1MM];
+  sensor_t *sensor = &get_config_app()->sensor[A11_RAINFALL_DOT1MM];
 
   do
   {
@@ -2253,7 +2257,7 @@ int32_t menu_sensor_default_2(p_shell_context_t ctx, eSENSOR_LIST_t list)
   int32_t cnt = 0;
 
   // 선택된 센서의 설정 정보를 가져온다.
-  sensor_t *sensor = &config.sensor[(int)list];
+  sensor_t *sensor = &get_config_app()->sensor[(int)list];
   do
   {
     /*
@@ -2310,9 +2314,9 @@ int32_t print_net_use(p_shell_context_t ctx)
 {
   int32_t cnt = 3;
 
-  ctx->printf(" 0.이더넷  :%s\r\n", ITEM_LIST((int)config.eth_use, enableList));
-  ctx->printf(" 1.CDMA    :%s\r\n", ITEM_LIST((int)config.cdma_use, enableList));
-  ctx->printf(" 2.직접통신:%s\r\n", ITEM_LIST((int)config.direct_use, enableList));
+  ctx->printf(" 0.이더넷  :%s\r\n", ITEM_LIST((int)get_config_app()->eth_use, enableList));
+  ctx->printf(" 1.CDMA    :%s\r\n", ITEM_LIST((int)get_config_app()->cdma_use, enableList));
+  ctx->printf(" 2.직접통신:%s\r\n", ITEM_LIST((int)get_config_app()->direct_use, enableList));
 
   return cnt;
 }
@@ -2333,15 +2337,15 @@ int32_t menu_net_use(p_shell_context_t ctx)
     switch (cnt)
     {
       case 0:
-        if (input_use(ctx, &config.eth_use))
+        if (input_use(ctx, &get_config_app()->eth_use))
         {
           WRITE_CFG(eth_use);
         }
         break;
       case 1:
-        if (input_use(ctx, &config.cdma_use))
+        if (input_use(ctx, &get_config_app()->cdma_use))
         {
-          if (config.cdma_use)
+          if (get_config_app()->cdma_use)
           {
             config.direct_use = 0;
             WRITE_CFG(direct_use);
@@ -2351,9 +2355,9 @@ int32_t menu_net_use(p_shell_context_t ctx)
         }
         break;
       case 2:
-        if (input_use(ctx, &config.direct_use))
+        if (input_use(ctx, &get_config_app()->direct_use))
         {
-          if (config.direct_use)
+          if (get_config_app()->direct_use)
           {
             config.cdma_use = 0;
             WRITE_CFG(cdma_use);
@@ -2368,7 +2372,7 @@ int32_t menu_net_use(p_shell_context_t ctx)
 int32_t print_net_eth_set(p_shell_context_t ctx)
 {
   int32_t cnt = 0;
-  ctx->printf("%2d.방식         :%s \r\n", cnt++, ITEM_LIST(config.eth_mode, ethModeList));
+  ctx->printf("%2d.방식         :%s \r\n", cnt++, ITEM_LIST(get_config_app()->eth_mode, ethModeList));
   ctx->printf("%2d.원격 서버 정보\r\n", cnt++);
   ctx->printf("%2d.기본 구성\r\n", cnt++);
 
@@ -2378,11 +2382,11 @@ int32_t print_net_eth_set(p_shell_context_t ctx)
 int32_t print_net_eth_remote_set(p_shell_context_t ctx)
 {
   int32_t cnt = 0;
-  uint8_t *ip = config.eth_server_ip;
+  uint8_t *ip = get_config_app()->eth_server_ip;
 
   ctx->printf("%2d.ip      :%d.%d.%d.%d\r\n", cnt++, ip[0], ip[1], ip[2], ip[3]);
-  ctx->printf("%2d.port    :%d\r\n", cnt++, config.eth_server_port);
-  ctx->printf("%2d.protocol:%s\r\n", cnt++, ITEM_LIST(config.eth_protocol, protocolList));
+  ctx->printf("%2d.port    :%d\r\n", cnt++, get_config_app()->eth_server_port);
+  ctx->printf("%2d.protocol:%s\r\n", cnt++, ITEM_LIST(get_config_app()->eth_protocol, protocolList));
 
   return cnt;
 }
@@ -2565,7 +2569,7 @@ int32_t print_net_cdma_set(p_shell_context_t ctx)
   ctx->printf("%2d.ip      :%d.%d.%d.%d\r\n", cnt++, ip[0], ip[1], ip[2], ip[3]);
   ctx->printf("%2d.port    :%d\r\n", cnt++, port);
   ctx->printf("%2d.protocol:%s\r\n", cnt++, ITEM_LIST(config.cdma_protocol, protocolList));
-  ctx->printf("%2d.model   :%s\r\n", cnt++, ITEM_LIST(config.cdmaType, cdmaModellList));
+  ctx->printf("%2d.model   :%s\r\n", cnt++, ITEM_LIST(config.cdma_model, cdmaModellList));
 
   return cnt;
 }
@@ -2619,8 +2623,8 @@ int32_t menu_net_cdma_set(p_shell_context_t ctx)
         if (cnt > 0)
         {
           cnt--;
-          config.cdmaType = cnt;
-          WRITE_CFG(cdmaType);
+          config.cdma_model = cnt;
+          WRITE_CFG(cdma_model);
         }
         break;
     }
@@ -2963,7 +2967,7 @@ int32_t print_menu_panel(p_shell_context_t ctx)
 {
   int32_t cnt = 0;
 
-  ctx->printf("%2d.패널 종류:%s\r\n", cnt++, ITEM_LIST(config.panelType, panelList));
+  ctx->printf("%2d.패널 종류:%s\r\n", cnt++, ITEM_LIST(config.panel_model, panelList));
 
   return cnt;
 }
@@ -2989,8 +2993,8 @@ int32_t menu_display_panel(p_shell_context_t ctx)
         if (cnt > 0)
         {
           cnt--;
-          config.panelType = cnt;
-          WRITE_CFG(panelType);
+          config.panel_model = cnt;
+          WRITE_CFG(panel_model);
         }
         break;
     }
@@ -3069,8 +3073,8 @@ void config_hj_reset(void)
 
   memset(&hj_config, 0, sizeof(hj_config));
 
-  memset(&s_config, 0, sizeof(s_config));
-  write_s_config();
+  memset(&g_config_sensor, 0, sizeof(g_config_sensor));
+  save_config_sensor();
 
   // 온도 센서[화진 온도 9600]
   hj_config.sensor[A1_TEMPERATURE].type = S_T_TEMPERATURE_HJ_485;
@@ -3126,10 +3130,11 @@ void config_hj_reset(void)
   adc_config->lowScale = 0;
   adc_config->scale = 100;
 
-  write_s_config();
+  save_config_sensor();
 
   config = hj_config;
-  write_config();
+  save_config_app();
+  save_config_sensor();
 }
 
 // 초기화
@@ -3153,8 +3158,8 @@ int32_t menu_manage_config_reset(p_shell_context_t ctx)
         memset(config.sensor, 0, sizeof(config.sensor));
 
         WRITE_CFG(sensor);
-        memset(&s_config, 0, sizeof(s_config));
-        write_s_config();
+        memset(&g_config_sensor, 0, sizeof(g_config_sensor));
+        save_config_sensor();
         break;
     }
   }
@@ -3166,8 +3171,8 @@ int32_t menu_manage_print_config_all(p_shell_context_t ctx)
 {
   ctx->printf("ID               :%d\r\n", config.id);
   ctx->printf("비밀번호         :%d\r\n", config.password);
-  ctx->printf("충전기 종류      :%s\r\n", ITEM_LIST(config.chgType, g_chgList));
-  ctx->printf("로그 카운트      :%d\r\n", config.logCnt);
+  ctx->printf("충전기 종류      :%s\r\n", ITEM_LIST(config.charger_model, g_chgList));
+  ctx->printf("로그 카운트      :%d\r\n", g_config_nvm.logCnt);
 
   ctx->printf("이더넷 서브넷    :%d.%d.%d.%d\r\n", config.eth_subnet[0], config.eth_subnet[1],
               config.eth_subnet[2], config.eth_subnet[3]);
@@ -3185,13 +3190,13 @@ int32_t menu_manage_print_config_all(p_shell_context_t ctx)
               config.cdma_server_ip[1], config.cdma_server_ip[2], config.cdma_server_ip[3]);
   ctx->printf("CDMA 포트        :%d\r\n", config.cdma_port);
   ctx->printf("CDMA 프로토콜    :%s\r\n", ITEM_LIST(config.cdma_protocol, protocolList));
-  ctx->printf("CDMA 종류        :%s\r\n", ITEM_LIST(config.cdmaType, cdmaModellList));
+  ctx->printf("CDMA 종류        :%s\r\n", ITEM_LIST(config.cdma_model, cdmaModellList));
   ctx->printf("이더넷 사용      :%s\r\n", ITEM_LIST((int32_t)config.eth_use, enableList));
   ctx->printf("CDMA 사용        :%s\r\n", ITEM_LIST((int32_t)config.cdma_use, enableList));
   ctx->printf("직접통신         :%s\r\n", ITEM_LIST((int32_t)config.direct_use, enableList));
   ctx->printf("직접통신 프로토콜:%s\r\n", ITEM_LIST(config.direct_protocol, protocolList));
   ctx->printf("직접통신 속도    :%d\r\n", config.direct_baud);
-  ctx->printf("패널 종류        :%s\r\n", ITEM_LIST(config.panelType, panelList));
+  ctx->printf("패널 종류        :%s\r\n", ITEM_LIST(config.panel_model, panelList));
   ctx->printf("VHF ID           :%d\r\n", config.vhf_id);
   ctx->printf("VHF 그룹         :%d\r\n", config.vhf_group);
   ctx->printf("VHF HOST         :%d\r\n", config.vhf_host_id);
@@ -3243,8 +3248,8 @@ int32_t print_menu_cali_adc(p_shell_context_t ctx)
 
   ctx->printf("\r\n");
 
-  ctx->printf(" 0.offset  :%d\r\n", g_adc_cali_config.single[0].offset);
-  ctx->printf(" 1.fullset :%d\r\n", g_adc_cali_config.single[0].fullset);
+  ctx->printf(" 0.offset  :%d\r\n", g_config_adc.single[0].offset);
+  ctx->printf(" 1.fullset :%d\r\n", g_config_adc.single[0].fullset);
 
   cnt = 2;
   return cnt;
@@ -3342,8 +3347,8 @@ int32_t menu_cali_single(p_shell_context_t ctx)
 
     while (1)
     {
-      ctx->printf(" 0.offset  :%d\r\n", g_adc_cali_config.single[channel].offset);
-      ctx->printf(" 1.fullset :%d\r\n", g_adc_cali_config.single[channel].fullset);
+      ctx->printf(" 0.offset  :%d\r\n", g_config_adc.single[channel].offset);
+      ctx->printf(" 1.fullset :%d\r\n", g_config_adc.single[channel].fullset);
       ctx->printf("Please enter a number:");
 
       cnt = console_scanf("%d", &index);
@@ -3360,26 +3365,26 @@ int32_t menu_cali_single(p_shell_context_t ctx)
       switch (index)
       {
         case 0:  // offset
-          if (inpu_adc_cali(ctx, 0, channel, g_adc_cali_config.single[channel].offset,
-                            g_adc_cali_config.single[channel].offset_input, &adc, &voltage) == 0)
+          if (inpu_adc_cali(ctx, 0, channel, g_config_adc.single[channel].offset,
+                            g_config_adc.single[channel].offset_input, &adc, &voltage) == 0)
           {
             ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-            g_adc_cali_config.single[channel].offset = adc;
-            g_adc_cali_config.single[channel].offset_input = voltage;
-            WRITE_CFG_CALI(single[channel].offset);
-            WRITE_CFG_CALI(single[channel].offset_input);
+            g_config_adc.single[channel].offset = adc;
+            g_config_adc.single[channel].offset_input = voltage;
+            WRITE_ADC(single[channel].offset);
+            WRITE_ADC(single[channel].offset_input);
           }
           break;
 
         case 1:  // fullset
-          if (inpu_adc_cali(ctx, 0, channel, g_adc_cali_config.single[channel].fullset,
-                            g_adc_cali_config.single[channel].fullset_input, &adc, &voltage) == 0)
+          if (inpu_adc_cali(ctx, 0, channel, g_config_adc.single[channel].fullset,
+                            g_config_adc.single[channel].fullset_input, &adc, &voltage) == 0)
           {
             ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-            g_adc_cali_config.single[channel].fullset = adc;
-            g_adc_cali_config.single[channel].fullset_input = voltage;
-            WRITE_CFG_CALI(single[channel].fullset);
-            WRITE_CFG_CALI(single[channel].fullset_input);
+            g_config_adc.single[channel].fullset = adc;
+            g_config_adc.single[channel].fullset_input = voltage;
+            WRITE_ADC(single[channel].fullset);
+            WRITE_ADC(single[channel].fullset_input);
           }
           break;
       }
@@ -3420,8 +3425,8 @@ int32_t menu_cali_diff(p_shell_context_t ctx)
     cnt--;
     channel = cnt;
 
-    ctx->printf(" 0.offset  :%d\r\n", g_adc_cali_config.diff[channel].offset);
-    ctx->printf(" 1.fullset :%d\r\n", g_adc_cali_config.diff[channel].fullset);
+    ctx->printf(" 0.offset  :%d\r\n", g_config_adc.diff[channel].offset);
+    ctx->printf(" 1.fullset :%d\r\n", g_config_adc.diff[channel].fullset);
 
     ctx->printf("num:");
 
@@ -3435,25 +3440,25 @@ int32_t menu_cali_diff(p_shell_context_t ctx)
     switch (index)
     {
       case 0:  // offset
-        if (inpu_adc_cali(ctx, 0, channel, g_adc_cali_config.diff[channel].offset,
-                          g_adc_cali_config.diff[channel].offset_input, &adc, &voltage) == 0)
+        if (inpu_adc_cali(ctx, 0, channel, g_config_adc.diff[channel].offset,
+                          g_config_adc.diff[channel].offset_input, &adc, &voltage) == 0)
         {
           ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-          g_adc_cali_config.diff[channel].offset = adc;
-          g_adc_cali_config.diff[channel].offset_input = voltage;
-          WRITE_CFG_CALI(diff[channel].offset);
-          WRITE_CFG_CALI(diff[channel].offset_input);
+          g_config_adc.diff[channel].offset = adc;
+          g_config_adc.diff[channel].offset_input = voltage;
+          WRITE_ADC(diff[channel].offset);
+          WRITE_ADC(diff[channel].offset_input);
         }
         break;
       case 1:  // fullset
-        if (inpu_adc_cali(ctx, 0, channel, g_adc_cali_config.diff[channel].fullset,
-                          g_adc_cali_config.diff[channel].fullset_input, &adc, &voltage) == 0)
+        if (inpu_adc_cali(ctx, 0, channel, g_config_adc.diff[channel].fullset,
+                          g_config_adc.diff[channel].fullset_input, &adc, &voltage) == 0)
         {
           ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-          g_adc_cali_config.diff[channel].fullset = adc;
-          g_adc_cali_config.diff[channel].fullset_input = voltage;
-          WRITE_CFG_CALI(diff[channel].fullset);
-          WRITE_CFG_CALI(diff[channel].fullset_input);
+          g_config_adc.diff[channel].fullset = adc;
+          g_config_adc.diff[channel].fullset_input = voltage;
+          WRITE_ADC(diff[channel].fullset);
+          WRITE_ADC(diff[channel].fullset_input);
         }
         break;
     }
@@ -3487,10 +3492,10 @@ int32_t menu_cali_config_all(p_shell_context_t ctx)
     for (int i = 0; i < 18; i++)
     {
       adc = adc_read_single_avg(i, &err, 10);
-      off = g_adc_cali_config.single[i].offset;
-      full = g_adc_cali_config.single[i].fullset;
-      off_in = g_adc_cali_config.single[i].offset_input;
-      full_in = g_adc_cali_config.single[i].fullset_input;
+      off = g_config_adc.single[i].offset;
+      full = g_config_adc.single[i].fullset;
+      off_in = g_config_adc.single[i].offset_input;
+      full_in = g_config_adc.single[i].fullset_input;
       voltage = cvt_adcToVol(adc, off, full, off_in, full_in);
       if (err)
       {
@@ -3509,10 +3514,10 @@ int32_t menu_cali_config_all(p_shell_context_t ctx)
     for (int i = 0; i < 8; i++)
     {
       adc = adc_read_diff_avg(i, &err, 10);
-      off = g_adc_cali_config.diff[i].offset;
-      full = g_adc_cali_config.diff[i].fullset;
-      off_in = g_adc_cali_config.diff[i].offset_input;
-      full_in = g_adc_cali_config.diff[i].fullset_input;
+      off = g_config_adc.diff[i].offset;
+      full = g_config_adc.diff[i].fullset;
+      off_in = g_config_adc.diff[i].offset_input;
+      full_in = g_config_adc.diff[i].fullset_input;
       voltage = cvt_adcToVol(adc, off, full, off_in, full_in);
       if (err)
       {
@@ -3559,21 +3564,21 @@ int32_t menu_cali_config_factory(p_shell_context_t ctx)
 
   for (int i = 0; i < 18; i++)
   {
-    g_adc_cali_config.single[i].offset = -2559;
-    g_adc_cali_config.single[i].offset_input = 0;
-    g_adc_cali_config.single[i].fullset = 8384783;
-    g_adc_cali_config.single[i].fullset_input = 5000;
+    g_config_adc.single[i].offset = -2559;
+    g_config_adc.single[i].offset_input = 0;
+    g_config_adc.single[i].fullset = 8384783;
+    g_config_adc.single[i].fullset_input = 5000;
   }
 
   for (int i = 0; i < 8; i++)
   {
-    g_adc_cali_config.diff[i].offset = 63325;
-    g_adc_cali_config.diff[i].offset_input = 0;
-    g_adc_cali_config.diff[i].fullset = 8319265;
-    g_adc_cali_config.diff[i].fullset_input = 5000;
+    g_config_adc.diff[i].offset = 63325;
+    g_config_adc.diff[i].offset_input = 0;
+    g_config_adc.diff[i].fullset = 8319265;
+    g_config_adc.diff[i].fullset_input = 5000;
   }
 
-  config_write_adcCalibraion();
+  save_config_adc();
 
   debug_printf("+config facory:ok\r\n");
   return 0;
@@ -3812,9 +3817,9 @@ int32_t print_developer_sensor(p_shell_context_t ctx)
   //  int32_t i=0;
 
   ctx->printf("\r\n");
-  for (int i = 0; i < _countof(sensorNameList); i++)
+  for (int i = 0; i < _countof(sensor_name_list); i++)
   {
-    //  ctx->printf("%2d.%-15s:%s,%d\r\n",i,sensorNameList[i],
+    //  ctx->printf("%2d.%-15s:%s,%d\r\n",i,sensor_name_list[i],
     //  ITEM_LIST(g_sensor_emul[i].use,enableList),g_sensor_emul[i].data);
     cnt++;
   }
@@ -3844,8 +3849,8 @@ int32_t menu_developer_sensor(p_shell_context_t ctx)
     ctx->printf("use,data:");
     if (console_scanf("%d,%d", &use, &dec) == 2)
     {
-      g_sensor_emul[cnt].enable = use;
-      g_sensor_emul[cnt].data.i = dec;
+     // g_sensor_emul[cnt].enable = use;
+     // g_sensor_emul[cnt].data.i = dec;
     }
   }
 }
@@ -3872,14 +3877,14 @@ int32_t menu_developer_sensor_config(p_shell_context_t ctx)
   ctx->printf("\r\n");
 
 #if 1
-  cnt = _countof(sensorNameList);
+  cnt = _countof(sensor_name_list);
 
   for (i = 0; i < cnt; i++)
   {
     ctx->printf("%2d:%d", i, config.sensor[i].configCnt);
     for (int j = 0; j < 4; j++)
     {
-      ctx->printf("[%-15s.%d]", ITEM_LIST(config.sensor[i].config[j][0], sensorTypeList),
+      ctx->printf("[%-15s.%d]", ITEM_LIST(config.sensor[i].config[j][0], g_sensor_model_list),
                   config.sensor[i].config[j][1]);
     }
 
@@ -3887,7 +3892,7 @@ int32_t menu_developer_sensor_config(p_shell_context_t ctx)
   }
 
 #endif
-  cnt = _countof(sensorNameList);
+  cnt = _countof(sensor_name_list);
   return cnt;
 }
 

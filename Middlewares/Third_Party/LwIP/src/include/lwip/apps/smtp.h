@@ -108,8 +108,8 @@ err_t smtp_send_mail_bodycback(const char *from, const char* to, const char* sub
 err_t smtp_set_server_addr(const char* server);
 void smtp_set_server_port(u16_t port);
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
-struct altcp_tls_config;
-void smtp_set_tls_config(struct altcp_tls_config *tls_config);
+struct altcp_tlg_config_sensor;
+void smtp_set_tlg_config_sensor(struct altcp_tlg_config_sensor *tlg_config_sensor);
 #endif
 err_t smtp_set_auth(const char* username, const char* pass);
 err_t smtp_send_mail(const char *from, const char* to, const char* subject, const char* body,

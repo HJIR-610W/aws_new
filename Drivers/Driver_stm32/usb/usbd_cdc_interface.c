@@ -160,7 +160,7 @@ static int8_t CDC_Itf_Receive(uint8_t* Buf, uint32_t *Len)
   USBD_CDC_SetRxBuffer(&USBD_Device, &Buf[0]);
   USBD_CDC_ReceivePacket(&USBD_Device);
   
-  put_cdc_rx(Buf,1);
+  put_cdc_rx(Buf,*Len);
 
   test_do_toggle();
   return (USBD_OK);

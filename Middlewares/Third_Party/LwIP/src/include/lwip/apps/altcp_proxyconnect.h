@@ -63,9 +63,9 @@ struct altcp_pcb *altcp_proxyconnect_new_tcp(struct altcp_proxyconnect_config *c
 struct altcp_pcb *altcp_proxyconnect_alloc(void *arg, u8_t ip_type);
 
 #if LWIP_ALTCP_TLS
-struct altcp_proxyconnect_tls_config {
+struct altcp_proxyconnect_tlg_config_sensor {
   struct altcp_proxyconnect_config proxy;
-  struct altcp_tls_config *tls_config;
+  struct altcp_tlg_config_sensor *tlg_config_sensor;
 };
 
 struct altcp_pcb *altcp_proxyconnect_tls_alloc(void *arg, u8_t ip_type);

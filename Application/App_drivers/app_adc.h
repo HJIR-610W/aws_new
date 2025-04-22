@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 #include "app_sensor.h"
-
+#include "config_sensor.h"
 
 
 typedef enum adc_single_ch_e

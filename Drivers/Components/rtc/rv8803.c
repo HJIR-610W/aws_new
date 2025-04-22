@@ -139,7 +139,7 @@ static int rv8803_regs_reset(driver_t *rv8803)
 	    return err;
     }
 
-	//err =  rv8803_regs_configure(rv8803);
+	//err =  rv8803_regg_config_sensorure(rv8803);
 
     return err;
 }

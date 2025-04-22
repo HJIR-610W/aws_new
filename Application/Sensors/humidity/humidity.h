@@ -2,7 +2,7 @@
 #ifndef HUMIDITY_H
 #define HUMIDITY_H
 #include <stdint.h>
-#include "config.h"
+
 #include "app_sensor.h"
 #include "app_adc.h"
 #include "driver_interface.h"

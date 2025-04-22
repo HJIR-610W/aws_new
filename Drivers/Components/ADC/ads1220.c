@@ -13,6 +13,8 @@
 #include "mcu_interrupt.h"
 #include "utile.h"
 
+#include "adc_calibration.h"
+
 typedef struct ads1220_cfg_s
 {
   void *spi_io;
@@ -386,6 +388,8 @@ int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 
   adc = sum/valid_cnt;
 
+
+  
   osSemaphoreRelease(drv->sem);  // 세마포어 해제
   return adc;
 }

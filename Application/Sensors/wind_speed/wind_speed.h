@@ -3,7 +3,8 @@
 #define WIND_SPEED_H
 
 #include <stdint.h>
-#include "config.h"
+
+#include "driver_interface.h"
 #include "app_sensor.h"
 #include "app_adc.h"
 

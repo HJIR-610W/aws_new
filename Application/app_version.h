@@ -36,7 +36,7 @@ x.x.1.x  버그 수정
 x.x.x.1  개발 버전
 */
 
-
+uint32_t get_app_version(void);
 uint32_t get_appVer(uint8_t *a,uint8_t *b,uint8_t *c,uint8_t *d);
 void get_appBuild(DATE_TIME_BUF *build);
 uint32_t get_appNick(void);
