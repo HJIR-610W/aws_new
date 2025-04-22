@@ -1689,6 +1689,15 @@
                 </file>
             </group>
             <group>
+                <name>console</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_cali.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_cali.h</name>
+                </file>
+            </group>
+            <group>
                 <name>recorder</name>
             </group>
             <file>

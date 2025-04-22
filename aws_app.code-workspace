@@ -45,7 +45,10 @@
 			"task_tcpserver.h": "c",
 			"config_sensor.h": "c",
 			"config_memory_map.h": "c",
-			"app_adc.h": "c"
+			"app_adc.h": "c",
+			"config_adc.h": "c",
+			"console_scanf.h": "c",
+			"app_fram.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

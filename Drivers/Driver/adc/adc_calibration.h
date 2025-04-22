@@ -49,10 +49,12 @@ typedef struct
   // 방법 1: 계수 사용 시
   float slope_temp_coeff;
   float offset_temp_coeff;
-
+#ifdef ADC_LUT
   // 방법 2: LUT 사용 시 (NVM 로드/저장 필요)
   temp_lut_point_t temp_comp_lut[MAX_LUT_SIZE];
+#endif
   uint8_t lut_size;  // LUT에 저장된 실제 포인트 수
+
 
 } adc_cal_params_t;
 
@@ -80,4 +82,16 @@ float adc_driver_get_value(adc_channel_type_t channel_type, int channel_index, i
 
 bool adc_perform_factory_calibration(config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,
                                      adc_cal_point_t p1, adc_cal_point_t p2, float cal_temp);
+
+void set_adc_printf(void* func);
+
+
+float read_current_temperature(void) ;
+
+float adc_get_compensated_value(uint32_t raw_value, const adc_cal_params_t* cal_params,
+                                float current_temperature);
+
+bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,
+                                   adc_channel_type_t ch_type, int ch_idx, float current_temp,
+                                   float target_ref, int32_t raw_now);
 #endif

@@ -6,7 +6,6 @@
 #include "app_fram.h"
 
 
-
 typedef struct adc_calibraion_s
 {
   int32_t offset;         //   0v 입력 시 ADC값
@@ -37,4 +36,6 @@ void config_adc_reset(void);
 
 config_adc_t *get_config_adc(void);
 
+void save_adc_cali(void);
+void load_adc_cali(void);
 #endif

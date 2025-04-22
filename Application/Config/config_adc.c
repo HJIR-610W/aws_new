@@ -4,6 +4,7 @@
 
 #include "app_version.h"
 #include "config_memory_map.h"
+#include "adc_calibration.h"
 #include "crc.h"
 #include <math.h>
 
@@ -105,7 +106,7 @@ void save_config_adc(void)
 
 void load_config_adc(void)
 {
-  fram_read(CONFIG_ADC_START_ADDRESS, (uint8_t *)&g_config_adc, sizeof(g_config_adc));
+
 
 #if 0
     config_adc_t *p_config = aws_malloc(sizeof(config_adc_t));
@@ -142,4 +143,14 @@ void config_adc_reset(void)
   g_config_adc = g_config_adc_default;
 }
 
+extern config_adc_adv_t g_adc_config;
 
+void save_adc_cali(void)
+{
+  fram_write(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config, sizeof(g_adc_config));
+}
+
+void load_adc_cali(void)
+{
+  fram_read(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config, sizeof(g_adc_config));
+}

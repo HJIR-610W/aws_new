@@ -21,6 +21,11 @@ int32_t adc_read_single(int channel,uint8_t *err)
   return  driver_adc_single_read(g_ads1120,channel,1,err);
 }
 
+int32_t adc_read_single_raw(int channel, uint8_t *err)
+{
+  return driver_adc_single_raw_read(g_ads1120, channel, 1, err);
+}
+
 int32_t adc_read_single_avg(int channel,uint8_t *err,uint8_t avg_cnt)
 {
 
@@ -44,10 +49,10 @@ int32_t adc_read_diff(int channel,uint8_t *err)
   return  driver_adc_diff_read(g_ads1120,channel,1,err);
 }
 
-
-
-
-
+int32_t adc_read_diff_raw(int channel, uint8_t *err)
+{
+  return driver_adc_diff_raw_read(g_ads1120, channel, 1, err);
+}
 
 float cvt_adcToVol(int32_t adc,int32_t off,int32_t full,int32_t off_in,int32_t full_in)
 {

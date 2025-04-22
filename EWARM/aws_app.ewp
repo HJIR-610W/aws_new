@@ -430,6 +430,7 @@
                     <state>$PROJ_DIR$\..\Application\hwajin</state>
                     <state>$PROJ_DIR$\..\Application\Config</state>
                     <state>$PROJ_DIR$\..\Drivers\Driver\adc</state>
+                    <state>$PROJ_DIR$\..\Application\Tasks\console</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1641,6 +1642,15 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\aws\schedule.h</name>
+                </file>
+            </group>
+            <group>
+                <name>console</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_cali.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_cali.h</name>
                 </file>
             </group>
             <group>

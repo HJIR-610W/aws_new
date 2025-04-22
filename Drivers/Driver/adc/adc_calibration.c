@@ -1,15 +1,18 @@
 
 
 #include "adc_calibration.h"
-#
+#include "config_adc.h"
 
 config_adc_adv_t g_adc_config;
-float g_current_temp = 25.0f;
+float g_current_temp = 25.0f;//공장 초기화시 온도가 25라고 하자 
 
 int32_t (*adc_printf)(const char* , ...);
 
 
-
+void set_adc_printf(void *func)
+{
+  adc_printf = (int32_t (*)(const char* , ...))func;
+}
 
 
 uint32_t get_max_raw_value(void)
@@ -79,7 +82,8 @@ static bool interpolate_lut(const temp_lut_point_t lut[], uint8_t size, float cu
   }
 
   // 여기까지 오면 안됨 (범위 체크에서 걸렸어야 함)
-  adc_printf( "오류: LUT 보간 중 로직 오류.\n");
+  if (adc_printf)
+    adc_printf("오류: LUT 보간 중 로직 오류.\n");
   return false;
 }
 
@@ -89,7 +93,8 @@ bool adc_config_init(config_adc_adv_t* adc_config, uint32_t resolution_bits, flo
   if (adc_config == NULL || resolution_bits == 0 || resolution_bits > 32 ||
       reference_voltage <= 0.0f)
   {
-    adc_printf( "오류: adc_config_init 파라미터 오류.\n");
+    if (adc_printf)
+      adc_printf("오류: adc_config_init 파라미터 오류.\n");
     return false;
   }
   // NVM 로드 실패 또는 미구현 시 기본값 초기화 가정
@@ -122,8 +127,9 @@ bool adc_config_init(config_adc_adv_t* adc_config, uint32_t resolution_bits, flo
                            .offset_temp_coeff = 0.0f,
                            .lut_size = 0};
   }
-  adc_printf("ADC 설정 초기화 완료: Res=%u, Vref=%.2fV, MaxRaw=%u\n", adc_config->resolution_bits,
-             adc_config->reference_voltage, adc_config->max_raw_value);
+  if (adc_printf)
+    adc_printf("ADC 설정 초기화 완료: Res=%u, Vref=%.2fV, MaxRaw=%u\n", adc_config->resolution_bits,
+               adc_config->reference_voltage, adc_config->max_raw_value);
   return true;
 }
 
@@ -154,9 +160,10 @@ bool adc_perform_factory_calibration(config_adc_adv_t* adc_config, adc_cal_param
   cal_params->is_calibrated = true;
   // comp_method, 계수, LUT는 이 함수에서 변경하지 않음 (별도 설정)
 
-  adc_printf("공장 캘리브레이션 성공 (%.1f°C): Slope=%.6f, Offset=%.6f\n", cal_temp,
-             cal_params->factory_slope, cal_params->factory_offset);
-  // save_adc_config_to_nvm(adc_config); // NVM 저장 필요
+  if (adc_printf)
+    adc_printf("공장 캘리브레이션 성공 (%.1f°C): Slope=%.6f, Offset=%.6f\n", cal_temp,
+               cal_params->factory_slope, cal_params->factory_offset);
+  save_adc_cali();  
   return true;
 }
 
@@ -181,6 +188,7 @@ float adc_get_compensated_value(uint32_t raw_value, const adc_cal_params_t* cal_
       effective_offset += cal_params->offset_temp_coeff * delta_temp;
       break;
     }
+    #ifdef ADC_LUT
     case TEMP_COMP_LUT:
     {
       float slope_mult = 1.0f;
@@ -198,6 +206,7 @@ float adc_get_compensated_value(uint32_t raw_value, const adc_cal_params_t* cal_
       }
       break;
     }
+#endif
     case TEMP_COMP_NONE:
     default:
       // 보상 없음, 공장 값 그대로 사용
@@ -233,6 +242,7 @@ bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_p
       offset_correction = cal_params->offset_temp_coeff * delta_temp;
       break;
     }
+    #ifdef ADC_LUT
     case TEMP_COMP_LUT:
     {
       float slope_mult = 1.0f;
@@ -243,6 +253,7 @@ bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_p
       }  // 보간 실패 시 factory_slope 사용, offset_correction은 0.0 유지
       break;
     }
+#endif
     case TEMP_COMP_NONE:
     default:
       break;  // 보상 없음
@@ -251,17 +262,19 @@ bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_p
   // 새 factory_offset 계산: target = eff_slope * raw + (new_factory_offset + offset_correction)
   float new_factory_offset = target_ref - eff_slope * (float)raw_now - offset_correction;
 
-  adc_printf(
-      "채널 %d 오프셋 조정 (%.1f°C): Raw=%u, 목표=%.3f -> 새 Factory Offset=%.6f (기존=%.6f)\n",
-      ch_idx, current_temp, raw_now, target_ref, new_factory_offset, cal_params->factory_offset);
+  if (adc_printf)
+    adc_printf(
+        "채널 %d 오프셋 조정 (%.1f°C): Raw=%u, 목표=%.3f -> 새 Factory Offset=%.6f (기존=%.6f)\n",
+        ch_idx, current_temp, raw_now, target_ref, new_factory_offset, cal_params->factory_offset);
 
   cal_params->factory_offset = new_factory_offset;
-  // save_adc_config_to_nvm(adc_config); // NVM 저장 필요
+  save_adc_cali();
   return true;
 }
 
 void populate_lut(adc_cal_params_t* params)
 {
+#ifdef ADC_LUT
   if (!params || MAX_LUT_SIZE < 3)
     return;  // 최소 3개 포인트 가정
   params->lut_size = 3;
@@ -272,6 +285,7 @@ void populate_lut(adc_cal_params_t* params)
       .temperature = 25.0f, .slope_multiplier = 1.00f, .offset_correction = 0.00f}; 
   params->temp_comp_lut[2] = (temp_lut_point_t){
       .temperature = 50.0f, .slope_multiplier = 0.98f, .offset_correction = 0.08f};
+#endif
 
 }
 
@@ -328,7 +342,10 @@ bool adc_driver_adjust_offset(adc_channel_type_t channel_type, int channel_index
   bool success =
       adc_perform_offset_adjustment(&g_adc_config, cal_params_rw, channel_type, channel_index,
                                     current_temp, target_reference_value, raw_value);
-  // if(success) { save_adc_config_to_nvm(&g_adc_config); }
+  if(success)
+  { 
+    save_adc_cali();
+  }
   return success;
 }
 

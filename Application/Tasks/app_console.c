@@ -37,6 +37,9 @@
 #include "task_direct.h"
 #include "task_tcpServer.h"
 #include "task_measure.h"
+#include "console_cali.h"
+
+
 #define EXIT_PROGRAM -3
 #define EXIT_BACK -1
 
@@ -3491,7 +3494,7 @@ int32_t menu_cali_config_all(p_shell_context_t ctx)
 
     for (int i = 0; i < 18; i++)
     {
-      adc = adc_read_single_avg(i, &err, 10);
+      adc = adc_read_single_raw(i, &err);
       off = g_config_adc.single[i].offset;
       full = g_config_adc.single[i].fullset;
       off_in = g_config_adc.single[i].offset_input;
@@ -3513,7 +3516,7 @@ int32_t menu_cali_config_all(p_shell_context_t ctx)
 
     for (int i = 0; i < 8; i++)
     {
-      adc = adc_read_diff_avg(i, &err, 10);
+      adc = adc_read_diff_raw(i, &err);
       off = g_config_adc.diff[i].offset;
       full = g_config_adc.diff[i].fullset;
       off_in = g_config_adc.diff[i].offset_input;
@@ -3646,16 +3649,13 @@ int32_t menu_cali_print_adc(p_shell_context_t ctx)
       start_time = mcu_get_clk();
       if (adcMode == eSINGLE_ADC)  // single
       {
-        adc = adc_read_single_avg(channel, &err, 1);
+        adc = adc_read_single_raw(channel, &err);
       }
       else  // diff
       {
-        adc = adc_read_diff_avg(channel, &err, 1);
+        adc = adc_read_diff_raw(channel, &err);
       }
-#if 0   
-        avg = recursiveAvg(avg,adc,++sample_cnt);
-        adc = avg;
-#endif
+
       g_adc = adc;
       elased_time = cal_elapsed_us(start_time);
       voltage = adc_chToVoltage(adcMode, channel, adc);
@@ -3667,7 +3667,7 @@ int32_t menu_cali_print_adc(p_shell_context_t ctx)
       // ctx->printf("%d,\r\n",adc);
       snprintf(buff, sizeof(buff), "%d,\r\n", adc);
       driver_uart_send(g_osc_port, buff, strlen(buff));
-    } while (1 || wait_break(1));
+    } while ( wait_break(200));
   }
   return 0;
 }
@@ -3727,6 +3727,9 @@ int32_t print_menu_calibration(p_shell_context_t ctx)
 
 int32_t menu_calibration(p_shell_context_t ctx)
 {
+  run_calibration_menu();
+  
+
   int32_t cnt;
 
   do

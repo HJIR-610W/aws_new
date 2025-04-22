@@ -49,4 +49,6 @@ float driver_adc_single_read(driver_t *drv, int channel, uint16_t avg, uint8_t *
 float driver_adc_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err);
 void driver_adc_set(driver_t *handle, adc_set_option_t option, void *value);
 
+int32_t driver_adc_single_raw_read(driver_t *drv, int channel, uint16_t avg, uint8_t *err);
+int32_t driver_adc_diff_raw_read(driver_t *drv, int channel, uint16_t avg, uint8_t *err);
 #endif

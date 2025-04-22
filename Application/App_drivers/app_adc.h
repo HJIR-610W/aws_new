@@ -63,4 +63,7 @@ int32_t get_adc_single_fullset(int channel);
 float adc_read_volate_single(int32_t ch,uint8_t *err);
 float calculate_voltage(adc_config_t *adc_config,uint8_t *err);
 
+int32_t adc_read_single_raw(int channel, uint8_t *err);
+
+int32_t adc_read_diff_raw(int channel, uint8_t *err);
 #endif
