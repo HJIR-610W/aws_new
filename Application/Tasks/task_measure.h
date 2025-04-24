@@ -24,6 +24,11 @@ typedef struct sensor_data_s
   {
     int32_t i;
     float f;
+  } offset;
+  union
+  {
+    int32_t i;
+    float f;
   } min;
   union
   {
@@ -33,6 +38,7 @@ typedef struct sensor_data_s
   eDATA_TYPE_t data_type;
   uint8_t err;
   uint8_t enable : 1;
+
 } sensor_data_t;
 
 typedef enum measure_type_e

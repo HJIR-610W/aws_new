@@ -7,7 +7,8 @@
 
 typedef struct aws_data_s
 {
-  uint8_t enable;
+  bool enable;
+  uint8_t err;
   uint16_t max;
   uint16_t min;
   uint16_t data;
@@ -15,6 +16,8 @@ typedef struct aws_data_s
 
 typedef struct aws_data_s2
 {
+  bool enable;
+  uint8_t err;
   uint16_t max;
   uint16_t min;
   uint16_t data;
@@ -395,4 +398,8 @@ extern kma_data_t g_kma_10min;
 extern kma_data_t g_kma_hour;
 extern kma_data_ex_t g_kma_inst_ex;
 extern kma_data_ex_t g_kma_1min_ex;;
+
+extern kma_data_ex_t g_kma_raw_ex;
+extern kma_data_ex_t g_kma_10min_ex;
+extern kma_data_ex_t g_kma_1Hour_ex;
 #endif

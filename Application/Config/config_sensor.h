@@ -31,6 +31,9 @@ typedef struct
                     //  scale 10이면 최종 값은 나누기 10해야함
   int32_t outMaxV;  // 센서의 출력 전압 최고
   int32_t outMinV;  // 센서의 출력 전압 최저
+  //float voltage_offset; // 센서값 = (전압 + 전압_오프셋)*gain + offset
+  //float gain;
+  //float offset;  사용자 직관성 위해 현재 미사용
 } adc_config_t;
 
 typedef struct rs232_s
@@ -80,6 +83,12 @@ typedef struct hjwindSpeed_s
 typedef struct hjtemp_s
 {
   uint8_t rs485_port;
+  union 
+  {
+    int32_t i_data;
+    float f_data;
+  }ofset;
+  
 } hjtemp_config_t;
 
 typedef struct hjwindDirection_s
@@ -112,10 +121,10 @@ typedef struct config_manage_s
   hart_config_t hart[2];
   uint8_t sdi_cnt;
   sdi_config_t sdi[2];
-  uint8_t hjwind_cnt;
-  hjwindspeed_config_t hjwind[1];
   uint8_t hjtemp_cnt;
   hjtemp_config_t hjtemp[2];
+  uint8_t hjwind_speed_cnt;
+  hjwindspeed_config_t hjwind[1];
   uint8_t hjwindDir_cnt;
   hjwindDirection_config_t hjwindDir[1];
   uint8_t hjsnow_cnt;

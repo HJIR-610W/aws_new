@@ -29,7 +29,7 @@ const char *sensor_format_list[] = {
 // 지원하는 센서 목록 정의
 const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ_485, S_T_PT100_A, S_T_PT100_B};
 const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};
-const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};
+const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_ADC};
 const uint8_t windDirectionInstantList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_MAX_VAL};
 const uint8_t windSpeedInstantList[] = {S_T_UNSUED, S_T_WIND_SPEED_MAX_VAL};
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
@@ -56,8 +56,7 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] = {
     {.list = temperatureList, .cnt = sizeof(temperatureList)},      // A1_TEMPERATURE
     {.list = windDirectionList, .cnt = sizeof(windDirectionList)},  // A2_WIND_DIRECTION
     {.list = windSpeedList, .cnt = sizeof(windSpeedList)},          // A3_WIND_SPEED
-    {.list = windDirectionInstantList,
-     .cnt = sizeof(windDirectionInstantList)},  // A4_INSTANT_WIND_DIRECTION
+    {.list = windDirectionInstantList,  .cnt = sizeof(windDirectionInstantList)},  // A4_INSTANT_WIND_DIRECTION
     {.list = windSpeedInstantList, .cnt = sizeof(windSpeedInstantList)},  // A5_INSTANT_WIND_SPEED
     {.list = rainList, .cnt = sizeof(rainList)},                          // A6_RAINFALL_DOT5_1MM
     {.list = pressureList, .cnt = sizeof(pressureList)},                  // A7_PRESSURE
@@ -189,20 +188,18 @@ void *sensor_add(sensor_t *sensor)
       }
       return 0;
       break;
-    case S_T_WIND_SPEED_HJ_485:
-      if (g_config_sensor.hjwind_cnt < _countof(g_config_sensor.hjwind))
-      {
-        index = g_config_sensor.hjwind_cnt;
+    case S_T_WIND_SPEED_HJ_485://
+        index = 0;
         sensor->config[sensor->configCnt][0] = sensor->type;  // 해당 타입을 추가
-        sensor->config[sensor->configCnt][1] = index;
+        sensor->config[sensor->configCnt][1] = index;//타입 배열에 인덱스 값
         WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
                       sizeof(sensor->config[sensor->configCnt]));
         sensor->configCnt++;
         WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-        g_config_sensor.hjwind_cnt++;
-        WRITE_CFG_SENSOR(hjwind_cnt);
+        g_config_sensor.hjwind_speed_cnt=1;
+        WRITE_CFG_SENSOR(hjwind_speed_cnt);
         return &g_config_sensor.hjwind[index];
-      }
+
       return 0;
       break;
     case S_T_HUMI_HJ_485:
@@ -222,19 +219,17 @@ void *sensor_add(sensor_t *sensor)
       }
       break;
     case S_T_WIND_DIRECTION_HJ_485:
-      if (g_config_sensor.hjwindDir_cnt < _countof(g_config_sensor.hjwindDir))
-      {
-        index = g_config_sensor.hjwindDir_cnt;
+        index = 0;
         sensor->config[sensor->configCnt][0] = sensor->type;  // 해당 타입을 추가
         sensor->config[sensor->configCnt][1] = index;
         WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
                       sizeof(sensor->config[sensor->configCnt]));
         sensor->configCnt++;
         WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-        g_config_sensor.hjwindDir_cnt++;
+        g_config_sensor.hjwindDir_cnt=1;
         WRITE_CFG_SENSOR(hjwindDir_cnt);
         return &g_config_sensor.hjwindDir[index];
-      }
+
       break;
     case S_T_SNOW_HJ_232:
     case S_T_SNOW_HJ_485:
@@ -288,15 +283,16 @@ void *get_sensor_config(sensor_t *sensor)
           return &g_config_sensor.modbus[sensor->config[i][1]];
           break;
         case S_T_WIND_SPEED_HJ_485:
-          return &g_config_sensor.hjwind[sensor->config[i][1]];
+          return &g_config_sensor.hjwind[0];
+          break;
+        case S_T_WIND_DIRECTION_HJ_485:
+          return &g_config_sensor.hjwindDir[0];
           break;
         case S_T_TEMPERATURE_HJ_485:
         case S_T_HUMI_HJ_485:
           return &g_config_sensor.hjtemp[sensor->config[i][1]];
           break;
-        case S_T_WIND_DIRECTION_HJ_485:
-          return &g_config_sensor.hjwindDir[sensor->config[i][1]];
-          break;
+
         case S_T_SNOW_HJ_232:
         case S_T_SNOW_HJ_485:
           return &g_config_sensor.hjsnow[sensor->config[i][1]];

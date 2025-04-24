@@ -16,24 +16,24 @@ void adc_init(void)
   g_ads1120 = driver_adc_open(ADC_ADS1220,0);
 }
 
-int32_t adc_read_single(int channel,uint8_t *err)
+
+float adc_read_single(int channel,uint8_t *err)
 {
   return  driver_adc_single_read(g_ads1120,channel,1,err);
 }
 
-int32_t adc_read_single_raw(int channel, uint8_t *err)
+float adc_read_single_avg(int channel, uint8_t *err, uint8_t avg_cnt)
+{
+  return driver_adc_single_read(g_ads1120, channel, avg_cnt, err);
+}
+
+
+float adc_read_single_raw(int channel, uint8_t *err)
 {
   return driver_adc_single_raw_read(g_ads1120, channel, 1, err);
 }
 
-int32_t adc_read_single_avg(int channel,uint8_t *err,uint8_t avg_cnt)
-{
 
-return driver_adc_single_read(g_ads1120,channel,avg_cnt,err);
-
-
-
-}
 
 
 int32_t adc_read_diff_avg(int channel,uint8_t *err,uint8_t avg_cnt)
@@ -88,35 +88,32 @@ float adc_chToVoltage(int32_t mode,int32_t channel,int32_t adc)
   return cvt_adcToVol(adc,off,full,o_in,f_in)/1000.0;
 }
 
-
+#define GENERAL_ADC_AVG_CNT 5
 float adc_read_volate(adc_config_t *adc,uint8_t *err)
 {
-  int32_t data;
-  float ret;
+  float voltage=0;
   if(adc->mode == eSINGLE_ADC)
   {
-    data = adc_read_single(adc->channel,err);
-    ret= adc_chToVoltage(adc->mode,adc->channel,data);
+    voltage = adc_read_single_avg(adc->channel, err, GENERAL_ADC_AVG_CNT);
   }
   else
   {
-    data = adc_read_diff(adc->channel,err);
-    ret= adc_chToVoltage(adc->mode,adc->channel,data);
+    voltage = adc_read_diff_avg(adc->channel, err, GENERAL_ADC_AVG_CNT);
   }
-  return ret;
+  return voltage;
 }
 
 
 float adc_read_volate_single(int32_t ch,uint8_t *err)
 {
-  int32_t data;
-  float ret;
-
-    data = adc_read_single(ch,err);
-    ret= adc_chToVoltage(eSINGLE_ADC,ch,data);
-
-  return ret;
+  return adc_read_single(ch,err);
 }
+
+float adc_read_volate_single_avg(int32_t ch,uint8_t *err)
+{
+  return adc_read_single(ch,err);
+}
+
 
 
 
@@ -171,34 +168,36 @@ return val/adc_config->scale;
 
 float calculate_voltage(adc_config_t *adc_config,uint8_t *err)
 {
+  float slope;
+  float offset;
   float val;
   int32_t vref;
   float data;
   float retVal;
+  
+  float sensor_value;
+  float scale;
+  float input;
 
-  vref = adc_config->outMaxV;
+  //y = slope*측정값+오프셋
+
+  scale = (float)(adc_config->highScale - adc_config->lowScale)/(float)adc_config->scale;
+  input = (float)(adc_config->outMaxV - adc_config->outMinV)/1000.0f;
+
+  slope = scale/input;
+
+  offset = ((float)adc_config->lowScale/(float)adc_config->scale) -slope*((float)adc_config->outMinV/1000.0); 
 
   data = adc_read_volate(adc_config,err);
 
+  sensor_value = slope*data+offset;
 
   if(*err)
   {
     return NAN;
   }
 
-  val = adc_config->lowScale + (adc_config->highScale - adc_config->lowScale)*data/(vref/1000.0);
-  
-  if(val >adc_config->highScale)
-  {
-    val = adc_config->highScale;
-  } 
-
-  if(val < adc_config->lowScale)
-  {
-    val = adc_config->lowScale;
-  }
-
-return val/adc_config->scale;
+  return sensor_value;
 
 }
 

@@ -268,16 +268,16 @@ void ads1210_init(driver_t *drv)
     write_reg(drv,ADS1220_REG_0, 1, &reg);  
 
     /*
-    7:5 DR   :000b 90sps      데이터 속도
+    7:5 DR   :011b 175sps      데이터 속도
     4:3 MODE :00b             동작 모드
       2 CM   :0b                단일 변환
       1 TS   :0b                온도센서 비활성
       0 BCS  :0b                10uA 전류 소스 비활성
     */
     reg = 0x00;
-    reg |= (0x06)<<5;
+    reg |= (0x03)<<5;
 
-    //reg |= (0x02)<<3;
+
     write_reg(drv,ADS1220_REG_1, 1, &reg);
     /*
      7:6 VREF   01b REFP0,REFN0

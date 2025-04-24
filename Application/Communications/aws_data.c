@@ -13,9 +13,12 @@ kma_data_t g_kma_inst;//실시간, 순간자료, 평균낸 자료
 kma_data_t g_kma_1min;
 kma_data_t g_kma_10min;
 kma_data_t g_kma_hour;
-kma_data_ex_t g_kma_inst_ex;
 
+kma_data_ex_t g_kma_raw_ex;
+kma_data_ex_t g_kma_inst_ex;
 kma_data_ex_t g_kma_1min_ex;
+kma_data_ex_t g_kma_10min_ex;
+kma_data_ex_t g_kma_1Hour_ex;
 
 // 실제 수집된 데이터를 AWS에서 요구하는 형태로 저장해야한다.
 

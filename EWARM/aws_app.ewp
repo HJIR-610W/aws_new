@@ -2612,6 +2612,9 @@
             <name>$PROJ_DIR$\..\Utile\utile.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\Utile\utile_filter.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\Utile\utile_stdio.c</name>
         </file>
         <file>

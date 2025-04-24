@@ -1,5 +1,5 @@
 #include "config_app.h"
-
+#include "config_sensor.h"
 #include "app_rs232.h"
 #include "app_rs485.h"
 #include "app_sensor.h"
@@ -41,8 +41,21 @@ const config_t config_app_default = {.id = 0,
 
 bool g_config_app_dirty_flag = false;
 
+bool is_value_in_array(uint8_t target, const uint8_t *arr, size_t len)
+{
+  for (size_t i = 0; i < len; i++)
+  {
+    if (arr[i] == target)
+      return true;
+  }
+
+  return false;
+}
+
 void check_config_app(void)
 {
+  int check_cnt=0;
+  void *p_config;
   if (config.charger_model > eCHARGER_LS)
   {
     config.charger_model = config_app_default.charger_model;
@@ -98,6 +111,28 @@ void check_config_app(void)
     {
       config.sensor[i].type = S_T_UNSUED;
       g_config_app_dirty_flag = true;
+    }
+
+  }
+
+  if(!is_value_in_array(config.sensor[A3_WIND_SPEED].type,windSpeedList,_countof(windSpeedList)))
+  {
+    config.sensor[A3_WIND_SPEED].type = S_T_UNSUED;
+  }
+
+  if (!is_value_in_array(config.sensor[A2_WIND_DIRECTION].type, windDirectionList,
+                          _countof(windDirectionList)))
+  {
+    config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
+  }
+
+  if (config.sensor[A2_WIND_DIRECTION].type == S_T_WIND_DIRECTION_HJ_485)
+  {
+    p_config = get_sensor_config(&config.sensor[A2_WIND_DIRECTION]);
+
+    if (p_config ==NULL)
+    {
+      config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
     }
   }
 }

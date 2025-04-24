@@ -16,7 +16,7 @@
   X(A8_RAIN_PRESENT,            "강수유무", "%-d")       \
   X(A9_SNOW_DEPTH,              "적설", "%-dmm")         \
   X(A10_RELATIVE_HUMIDITY,      "상대습도", "%-5.2f")    \
-  X(A11_RAINFALL_DOT1MM,        "강수량", "%-dmm")       \
+  X(A11_RAINFALL_DOT1MM,        "강수량 0.1", "%-dmm")       \
   X(B1_SOLAR_RADIATION,         "일사", "%-5.2f")        \
   X(B2_SUNSHINE_DURATION,       "일조", "%-5.2f")        \
   X(B3_GROUND_TEMPERATURE,      "지면온도", "%-5.2f")    \
@@ -150,8 +150,8 @@ extern const char *g_sensor_model_list[SENSOR_MODEL_MAX];
 
 // TODO:하드 코딩됨, 소스파일과 일치시켜야함 주의
 extern const uint8_t temperatureList[4];
-extern const uint8_t windDirectionList[5];
-extern const uint8_t windSpeedList[5];
+extern const uint8_t windDirectionList[3];
+extern const uint8_t windSpeedList[3];
 extern const uint8_t windDirectionInstantList[2];
 extern const uint8_t windSpeedInstantList[2];
 extern const uint8_t pressureList[3];

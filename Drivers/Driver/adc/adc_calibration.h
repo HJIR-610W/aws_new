@@ -63,7 +63,8 @@ typedef struct
 {
   uint32_t resolution_bits;
   float reference_voltage;
-  uint32_t max_raw_value;
+  int32_t min_raw_value;  ///< ADC 최소 원시 값 (예: -2^23)
+  int32_t max_raw_value;  ///< ADC 최대 원시 값 (예: 2^23 - 1)
   adc_cal_params_t single_ended_cal[NUM_SINGLE_ENDED_CHANNELS];
   adc_cal_params_t differential_cal[NUM_DIFFERENTIAL_CHANNELS];
 } config_adc_adv_t;
@@ -71,7 +72,7 @@ typedef struct
 
 typedef struct
 {
-  uint32_t raw_value;
+  int32_t raw_value;
   float reference_value;
 } adc_cal_point_t;
 
@@ -88,7 +89,7 @@ void set_adc_printf(void* func);
 
 float read_current_temperature(void) ;
 
-float adc_get_compensated_value(uint32_t raw_value, const adc_cal_params_t* cal_params,
+float adc_get_compensated_value(int32_t raw_value, const adc_cal_params_t* cal_params,
                                 float current_temperature);
 
 bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,

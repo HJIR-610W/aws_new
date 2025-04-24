@@ -392,7 +392,7 @@ void huminity_process_10s(uint16_t temperature)
 
  static measure_data_t* g_p_raw;
 
- uint16_t get_aws_temperature(void)
+ uint16_t get_aws_temperature(uint8_t *err)
  {
    
  }
@@ -682,11 +682,12 @@ uint16_t get_aws_wind_direction_avg(void)
 }
 
 void update_kma_raw(void) 
-{ 
-  
-  g_kma_raw.temperature = get_aws_temperature();
-  
+{
+  uint8_t err=0;
 
+  g_kma_raw_ex.temperature.data = get_aws_temperature(&err);
+  g_kma_raw_ex.temperature.err = err;
+  
 }
 
 void aws_data_task(void* arg)
@@ -695,7 +696,7 @@ void aws_data_task(void* arg)
   wind_t wind;
   uint8_t wind_spd_err;
   uint8_t wind_dir_err;
-  
+  uint8_t err=0;
   g_p_raw = aws_malloc(sizeof(measure_data_t));
 
   ct = Date_Time;
@@ -734,8 +735,8 @@ void aws_data_task(void* arg)
       
       if (ct.Sec % 10 == 0)
       {
-        g_kma_inst.temperature = get_aws_temperature();
-        g_kma_inst.relative_humidity = get_aws_temperature();
+        g_kma_inst.temperature = get_aws_temperature(&err);
+        g_kma_inst.relative_humidity = get_aws_temperature(&err);
         g_kma_inst.pressure    = get_aws_barometer();
 
         g_kma_inst.soil_temperature_20cm = get_aws_soil_temperature_20cm();

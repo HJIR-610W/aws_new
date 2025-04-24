@@ -17,8 +17,14 @@ void set_adc_printf(void *func)
 
 uint32_t get_max_raw_value(void)
 {
-  return g_adc_config.resolution_bits ? g_adc_config.max_raw_value : 4095;
+  return g_adc_config.resolution_bits ? g_adc_config.max_raw_value: 4095;
 }
+
+uint32_t get_min_raw_value(void)
+{
+  return g_adc_config.resolution_bits ? g_adc_config.min_raw_value : 4095;
+}
+
 
 // ---  LUT 보간 함수 ---
 /** @brief 온도 LUT에서 현재 온도에 해당하는 보상 계수를 선형 보간합니다. LUT는 온도로 정렬되어
@@ -97,11 +103,15 @@ bool adc_config_init(config_adc_adv_t* adc_config, uint32_t resolution_bits, flo
       adc_printf("오류: adc_config_init 파라미터 오류.\n");
     return false;
   }
-  // NVM 로드 실패 또는 미구현 시 기본값 초기화 가정
-  // if (!load_adc_config_from_nvm(adc_config)) { ... }
+
+  load_adc_cali();
+
   adc_config->resolution_bits = resolution_bits;
   adc_config->reference_voltage = reference_voltage;
-  adc_config->max_raw_value = (1UL << resolution_bits) - 1;
+  
+  int32_t range_limit = (1L << (resolution_bits - 1));  // 상위 비트는 부호 비트
+  adc_config->min_raw_value = -range_limit;
+  adc_config->max_raw_value = range_limit - 1;
 
   for (int i = 0; i < NUM_SINGLE_ENDED_CHANNELS; ++i)
   {
@@ -168,7 +178,7 @@ bool adc_perform_factory_calibration(config_adc_adv_t* adc_config, adc_cal_param
 }
 
 // --- 최종 보상 값 계산 함수 (보상 방법 선택 로직 포함) ---
-float adc_get_compensated_value(uint32_t raw_value, const adc_cal_params_t* cal_params,
+float adc_get_compensated_value(int32_t raw_value, const adc_cal_params_t* cal_params,
                                 float current_temperature)
 {
   if (!cal_params || !cal_params->is_calibrated)

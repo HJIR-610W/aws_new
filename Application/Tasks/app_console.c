@@ -256,6 +256,9 @@ bool wait_break(uint32_t timeoutms)
   return false;
 }
 
+
+
+
 #define DISP_WIDTH 26
 
 extern uint32_t g_debug_elased_time;
@@ -400,25 +403,24 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, uint8_t mode, void *
   uint8_t line = row + 3;
   sensor_data_t *pdata;
   const char *aswTitleList[] = {"RAW", "평균","1분", "10분","한시간"};
-  kma_data_t *pkma=NULL;
-
+  kma_data_ex_t *p_kma = NULL;
 
   switch (mode)
   {
-  case 0: //raw
-  pkma = &g_kma_raw;
-  break;
-  case 1://avg
-    pkma = &g_kma_inst;
+  case 0:
+    p_kma = &g_kma_raw_ex;
     break;
-  case 2://1min
-    pkma = &g_kma_1min;
+  case 1:
+    p_kma = &g_kma_inst_ex;
     break;
-  case 3://10min
-    pkma = &g_kma_10min;
+  case 2: 
+    p_kma = &g_kma_1min_ex;
     break;
-  case 4:  // 10min
-    pkma = &g_kma_hour;
+  case 3: 
+    p_kma = &g_kma_10min_ex;
+    break;
+  case 4: 
+    p_kma = &g_kma_1Hour_ex;
     break;
   }
 
@@ -433,9 +435,182 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, uint8_t mode, void *
 
 #define KMA_TO_1000(x) ((float)((x - 1000) / 10.0f))
 
-  sensor_t *p_sensor = get_config_app()->sensor;
+#define COL_WIDTH 15
+    vt100_print_frame(row, column, buff, '+', '|', '-', DISP_WIDTH, WHITE);
 
-#if 1
+    if (p_kma->temperature.enable)
+    {
+      if(p_kma->temperature.err)
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:error\r\n", COL_WIDTH, "기온");
+      }
+      else
+      {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.1f C\r\n", COL_WIDTH ,"기온",
+                      KMA_TO_TEMPERATURE(p_kma->temperature.data));
+      }
+    }
+
+    if (p_kma->wind_direction_avg.enable)
+    {
+      if(p_kma->wind_direction_avg.err)
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:error\r\n", COL_WIDTH, "풍향");
+      }
+      else
+      {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.1f 도\r\n", COL_WIDTH, "풍향",
+                      KMA_TO_GENERAL(p_kma->wind_direction_avg.data));
+      }
+    }
+
+    if (p_kma->wind_speed_avg.enable)
+    {
+      if(p_kma->wind_speed_avg.err)
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:error\r\n", COL_WIDTH, "풍속");
+      }
+      else
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.1f m/s\r\n", COL_WIDTH, "풍속",
+                        KMA_TO_GENERAL(p_kma->wind_speed_avg.data));
+      }
+
+    }
+
+    if (p_kma->wind_direction_instant.enable)
+    {
+
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.1f 도\r\n", COL_WIDTH, "순간 풍향",
+                      KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
+    }
+    if (p_kma->wind_speed_instant.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.1f m/s\r\n", COL_WIDTH, "순간 풍속",
+                      KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
+    }
+
+    if (p_kma->precipitation.enable)
+    {
+      if(p_kma->precipitation.err)
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:error\r\n", COL_WIDTH, "강수량");
+      }
+      else
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.1f mm\r\n", COL_WIDTH, "강수량",
+                        KMA_TO_GENERAL(p_kma->precipitation.data));
+      }
+    }
+
+    if (p_kma->pressure.enable)
+    {
+      if(p_kma->pressure.err)
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:error\r\n", COL_WIDTH, "기압");
+      }
+      else
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.1f bar\r\n", COL_WIDTH, "기압",
+                        KMA_TO_GENERAL(p_kma->pressure.data));
+      }
+
+    }
+
+    if (p_kma->precipitation_presence.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5s\r\n", COL_WIDTH, "강수유무",
+                      p_kma->precipitation_presence.data == 10 ? "유" : "무");
+    }
+
+    if (p_kma->snowfall.enable)
+    {
+      if(p_kma->snowfall.err)
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:error\r\n", COL_WIDTH, "적설");
+      }
+      else
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5d mm\r\n", COL_WIDTH, "적설",
+                        (int)(p_kma->snowfall.data / 10.0f));
+      }
+
+    }
+
+    if (p_kma->relative_humidity.enable)
+    {
+      if(p_kma->relative_humidity.err)
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:error\r\n", COL_WIDTH, "상대습도");
+      }
+      else
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.1f %%\r\n", COL_WIDTH, "상대습도",
+                        KMA_TO_GENERAL(p_kma->relative_humidity.data));
+      }
+
+    }
+
+    if (p_kma->solar_radiation.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f MJ/m2\r\n", COL_WIDTH, "일사",
+                      p_kma->solar_radiation.data / 100.f);  // 표현범위	→	0	～
+    }
+
+    if (p_kma->sunshine_duration.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5d s\r\n", COL_WIDTH, "일조",
+                      (int)p_kma->sunshine_duration.data);  // 표현범위	→	0	～
+    }
+
+    if (p_kma->soil_temperature_5cm.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 5cm",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.data));
+    }
+    if (p_kma->soil_temperature_10cm.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 10cm",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.data));
+    }
+    if (p_kma->soil_temperature_20cm.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 20cm",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.data));
+    }
+    if (p_kma->soil_temperature_30cm.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 30cm",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.data));
+    }
+    if (p_kma->soil_temperature_50cm.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 50cm",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.data));
+    }
+    if (p_kma->soil_temperature_1m.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH,
+                      "지중온도 1m" ,KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.data));
+    }
+    if (p_kma->soil_temperature_1_5m.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH,
+                      "지중온도 1.5m", KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.data));
+    }
+    if (p_kma->soil_temperature_3m.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH,
+                      "지중온도 3m", KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.data));
+    }
+    if (p_kma->soil_temperature_5m.enable)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH,
+                      "지중온도 5m" ,KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.data));
+    }
+    vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
+
+#if 0
   vt100_print_frame(row, column, buff, '+', '|', '-', DISP_WIDTH, WHITE);
   if (p_sensor[A1_TEMPERATURE].type)
     vt100_print_bar(line++, column, -DISP_WIDTH, "기온          :%5.1f C\r\n",
@@ -905,7 +1080,7 @@ int32_t menu_system(p_shell_context_t ctx)
 void make_option(sensor_t *sensor, char *out, uint16_t outSize)
 {
   void *cfg;
-  const char *list[10];
+  const char *list[10]={" "};
 
   out[0] = 0;
 
@@ -913,7 +1088,7 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
 
   if (cfg == NULL)
   {
-    snprintf(out, outSize, "%s","NULL");
+    snprintf(out, outSize, "%s"," ");
     return;
   }
 
@@ -3729,25 +3904,6 @@ int32_t menu_calibration(p_shell_context_t ctx)
 {
   run_calibration_menu();
   
-
-  int32_t cnt;
-
-  do
-  {
-    cnt = select_indexFromList(ctx, NULL, print_menu_calibration, 0, false);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
-    {
-      return cnt;
-    }
-    cnt--;
-    cnt = g_calibraionMenu[cnt](ctx);
-    if (cnt == EXIT_PROGRAM)
-    {
-      return cnt;
-    }
-  } while (1);
-
-  // return 0;//
 }
 
 int32_t menu_developer_interrupt(p_shell_context_t ctx)
