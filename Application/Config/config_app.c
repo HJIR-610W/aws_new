@@ -126,6 +126,12 @@ void check_config_app(void)
     config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
   }
 
+  if (!is_value_in_array(config.sensor[A9_SNOW_DEPTH].type, snowList, _countof(snowList)))
+  {
+    config.sensor[A9_SNOW_DEPTH].type = S_T_UNSUED;
+  }
+
+
   if (config.sensor[A2_WIND_DIRECTION].type == S_T_WIND_DIRECTION_HJ_485)
   {
     p_config = get_sensor_config(&config.sensor[A2_WIND_DIRECTION]);
@@ -221,5 +227,27 @@ void save_config_app_field(eCONFIG_APP_FIELD_t field)
 
     default:
       break;
+  }
+}
+
+void make_comList(char *out, uint16_t outsize)
+{
+  int32_t len = 0;
+  if (config.eth_use)
+  {
+    len = snprintf(&out[len], outsize - len, "[ETH]");
+  }
+  if (config.cdma_use)
+  {
+    len += snprintf(&out[len], outsize - len, "[CDMA]");
+  }
+  if (config.direct_use)
+  {
+    len += snprintf(&out[len], outsize - len, "[DIRECT]");
+  }
+
+  if (len == 0)
+  {
+    snprintf(&out[len], outsize - len, "¹Ì»ç¿ë");
   }
 }

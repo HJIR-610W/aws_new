@@ -49,12 +49,13 @@
 
 
 
-uint8_t g_sensorStatus_kma3[8];//64개의 센서의 상태 표시 
 
-//센서 상태를 8바이트 *8 총 64bit 전송한다.
-//미리 센서상태를 설정한다.
 
-void set_sensorError_kma3(eSENSOR_LIST_t sensorNum)
+
+    // 센서 상태를 8바이트 *8 총 64bit 전송한다.
+    // 미리 센서상태를 설정한다.
+uint8_t g_sensorStatus_kma3[8];  // 64개의 센서의 상태 표시
+void kma3_set_sensor_error(eSENSOR_LIST_t sensorNum)
 {
   int quot;
   int rem;
@@ -65,7 +66,7 @@ void set_sensorError_kma3(eSENSOR_LIST_t sensorNum)
   g_sensorStatus_kma3[quot] |= 1 << rem;
 }
 
-void clear_sensorError_kma3(eSENSOR_LIST_t sensorNum)
+void kma3_clear_sensor_error(eSENSOR_LIST_t sensorNum)
 {
   int quot;
   int rem;
@@ -76,8 +77,36 @@ void clear_sensorError_kma3(eSENSOR_LIST_t sensorNum)
   g_sensorStatus_kma3[quot] &= ~(1 << rem);
 }
 
+bool kma_is_sensor_error(eSENSOR_LIST_t sensor_num)
+{
+  int quot;
+  int rem;
+
+  quot = sensor_num / sizeof(g_sensorStatus_kma3);
+  rem = sensor_num % sizeof(g_sensorStatus_kma3);
+
+  if (g_sensorStatus_kma3[quot] & (1 << rem))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 
 
+void kma_update_sensor_err(eSENSOR_LIST_t sensor_num, uint8_t err)
+{
+  if (err)
+  {
+    kma3_set_sensor_error(sensor_num);
+  }
+  else
+  {
+    kma3_clear_sensor_error(sensor_num);
+  }
+}
 
 /*
 bit 0 풍향
@@ -96,69 +125,69 @@ void make_sensorStatus_kma3(uint8_t sensorState[8], uint8_t status)
 
   if(status & WINDSPEEDFAIL_BIT)
   {
-    set_sensorError_kma3(A3_WIND_SPEED);
+    kma3_set_sensor_error(A3_WIND_SPEED);
   }
   else
   {
-    clear_sensorError_kma3(A3_WIND_SPEED);
+    kma3_clear_sensor_error(A3_WIND_SPEED);
   }
 
   if(status & WINDDIRECFAIL_BIT)
   {
-    set_sensorError_kma3(A2_WIND_DIRECTION);
+    kma3_set_sensor_error(A2_WIND_DIRECTION);
   }
   else
   {
-    clear_sensorError_kma3(A2_WIND_DIRECTION);
+    kma3_clear_sensor_error(A2_WIND_DIRECTION);
   }
 
   if(status & TEMPERATUREFAIL_BIT)
   {
-    set_sensorError_kma3(A1_TEMPERATURE);
+    kma3_set_sensor_error(A1_TEMPERATURE);
   }
   else
   {
-    clear_sensorError_kma3(A1_TEMPERATURE);
+    kma3_clear_sensor_error(A1_TEMPERATURE);
   }
 
 
   if(status & RAINDETECTFAIL_BIT)
   {
-    set_sensorError_kma3(A8_RAIN_PRESENT);
+    kma3_set_sensor_error(A8_RAIN_PRESENT);
   }
   else
   {
-    clear_sensorError_kma3(A8_RAIN_PRESENT);
+    kma3_clear_sensor_error(A8_RAIN_PRESENT);
   }
 
 
   if(status & RAINFALLFAIL_BIT)
   {
-    set_sensorError_kma3(A6_RAINFALL_DOT5_1MM);
+    kma3_set_sensor_error(A6_RAINFALL_DOT5_1MM);
   }
   else
   {
-    clear_sensorError_kma3(A6_RAINFALL_DOT5_1MM);
+    kma3_clear_sensor_error(A6_RAINFALL_DOT5_1MM);
   }
 
 
   if(status & HUMIDITYFAIL_BIT)
   {
-    set_sensorError_kma3(A10_RELATIVE_HUMIDITY);
+    kma3_set_sensor_error(A10_RELATIVE_HUMIDITY);
   }
   else
   {
-    clear_sensorError_kma3(A10_RELATIVE_HUMIDITY);
+    kma3_clear_sensor_error(A10_RELATIVE_HUMIDITY);
   }
 
 
   if(status & BAROMETRICFAIL_BIT)
   {
-    set_sensorError_kma3(A7_PRESSURE);
+    kma3_set_sensor_error(A7_PRESSURE);
   }
   else
   {
-    clear_sensorError_kma3(A7_PRESSURE);
+    kma3_clear_sensor_error(A7_PRESSURE);
   }
 
 
@@ -769,7 +798,7 @@ uint16_t kma3_cmd_AP(uint8_t *recv,uint8_t *send)
 
 
 
-int32_t cmd_kma3(uint8_t *packet,uint16_t paLen,uint8_t *txBuff,uint16_t tLen,uint8_t source)//,uint16_t packetLen)
+int32_t kma2_cmd_handler(uint8_t *packet,uint16_t paLen,uint8_t *txBuff,uint16_t tLen,uint8_t source)//,uint16_t packetLen)
 {
 
   int32_t i;

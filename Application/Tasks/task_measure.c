@@ -296,8 +296,7 @@ void sensor_init(void)
   pa_reading[A1_TEMPERATURE].data_type = eDATA_TYPE_F;
   pa_reading[A2_WIND_DIRECTION].data_type = eDATA_TYPE_F;
   pa_reading[A3_WIND_SPEED].data_type = eDATA_TYPE_F;
-  pa_reading[A4_INSTANT_WIND_DIRECTION].data_type = eDATA_TYPE_F;
-  pa_reading[A5_INSTANT_WIND_SPEED].data_type = eDATA_TYPE_F;
+
   pa_reading[A6_RAINFALL_DOT5_1MM].data_type = eDATA_TYPE_I;
   pa_reading[A7_PRESSURE].data_type = eDATA_TYPE_F;
   pa_reading[A8_RAIN_PRESENT].data_type = eDATA_TYPE_B;
@@ -566,5 +565,5 @@ void measureTask_init(void)
 
   thread_id = osThreadNew(measureTask, NULL, &kMeasureTask_attributes);
 
-  assert_param(thread_id);
+ assert_param(thread_id);
 }

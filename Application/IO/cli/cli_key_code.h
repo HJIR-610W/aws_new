@@ -1,0 +1,65 @@
+
+#ifndef CONSOLE_KEY_CODE_H
+#define CONSOLE_KEY_CODE_H
+
+#include <stdint.h>
+
+typedef enum
+{
+  KEY_CODE_NONE = 0,
+
+  // 일반 키
+  KEY_CODE_ENTER = '\r',
+  KEY_CODE_BACKSPACE = 0x08,
+  KEY_CODE_TAB = '\t',
+  KEY_CODE_ESC = 0x1B,
+  KEY_CODE_SPACE = ' ',
+
+  // 방향키 (ESC 시퀀스)
+  KEY_CODE_UP = 1000,
+  KEY_CODE_DOWN,
+  KEY_CODE_LEFT,
+  KEY_CODE_RIGHT,
+  KEY_CODE_HOME,
+  KEY_CODE_END,
+  KEY_CODE_INSERT,
+  KEY_CODE_DELETE,
+  KEY_CODE_PAGEUP,
+  KEY_CODE_PAGEDOWN,
+
+  // Ctrl 키 조합 (Ctrl+A~Z → 0x01~0x1A)
+  KEY_CODE_CTRL_A = 0x01,
+  KEY_CODE_CTRL_B = 0x02,
+  KEY_CODE_CTRL_C = 0x03,
+  KEY_CODE_CTRL_D = 0x04,
+  KEY_CODE_CTRL_E = 0x05,
+  KEY_CODE_CTRL_F = 0x06,
+  KEY_CODE_CTRL_G = 0x07,
+  KEY_CODE_CTRL_H = 0x08,
+  KEY_CODE_CTRL_I = 0x09,
+  KEY_CODE_CTRL_J = 0x0A,
+  KEY_CODE_CTRL_K = 0x0B,
+  KEY_CODE_CTRL_L = 0x0C,
+  KEY_CODE_CTRL_M = 0x0D,
+  KEY_CODE_CTRL_N = 0x0E,
+  KEY_CODE_CTRL_O = 0x0F,
+  KEY_CODE_CTRL_P = 0x10,
+  KEY_CODE_CTRL_Q = 0x11,
+  KEY_CODE_CTRL_R = 0x12,
+  KEY_CODE_CTRL_S = 0x13,
+  KEY_CODE_CTRL_T = 0x14,
+  KEY_CODE_CTRL_U = 0x15,
+  KEY_CODE_CTRL_V = 0x16,
+  KEY_CODE_CTRL_W = 0x17,
+  KEY_CODE_CTRL_X = 0x18,
+  KEY_CODE_CTRL_Y = 0x19,
+  KEY_CODE_CTRL_Z = 0x1A,
+
+  // 특수
+  KEY_CODE_UNKNOWN = 0xFFFF
+
+} keycode_t;
+
+int32_t get_key(uint32_t timeout_ms);
+
+#endif

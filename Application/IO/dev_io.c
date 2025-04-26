@@ -213,7 +213,7 @@ int32_t error_printf(const char *pFmt, ...)
 void debug_send(uint8_t *pData, uint16_t dataLen) { driver_uart_send(debug_uart, pData, dataLen); }
 
 void debug_putch(char ch) { driver_uart_send(debug_uart, (uint8_t *)&ch, 1); }
-void debug_puts(char *str)
+void debug_puts(const char *str)
 {
   while (*str)
   {
@@ -222,9 +222,9 @@ void debug_puts(char *str)
   }
 }
 
-uint16_t debug_recv(char *out, uint16_t outSize, uint32_t timeout)
+int32_t debug_recv(char *out, uint16_t outSize, uint32_t timeout)
 {
-  uint16_t cnt;
+  int32_t cnt;
 
   cnt = driver_uart_recv(debug_uart, (uint8_t *)out, outSize, timeout);
 
@@ -356,3 +356,6 @@ uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd,
   }
   return 0;
 }
+
+
+

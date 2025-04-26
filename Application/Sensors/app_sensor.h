@@ -9,8 +9,6 @@
   X(A1_TEMPERATURE,             "기온", "%-5.2fC,")      \
   X(A2_WIND_DIRECTION,          "풍향", "%-6.2f")        \
   X(A3_WIND_SPEED,              "풍속", "%-5.2fm/s,")    \
-  X(A4_INSTANT_WIND_DIRECTION,  "순간풍향", "%-6.2f")    \
-  X(A5_INSTANT_WIND_SPEED,      "순간풍속", "%-5.2fm/s") \
   X(A6_RAINFALL_DOT5_1MM,       "강수량", "%-dmm")       \
   X(A7_PRESSURE,                "기압", "%-5.2fbar")     \
   X(A8_RAIN_PRESENT,            "강수유무", "%-d")       \

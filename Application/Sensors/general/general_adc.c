@@ -88,7 +88,6 @@ float general_adc_read(void *driver,uint8_t *err)
 {
   general_adc_cfg_t *cfg = ((driver_t *)driver)->cfg;
   adc_config_t adc_config;
-
   
   adc_config.mode      = cfg->mode;
   adc_config.channel   = cfg->channel;
@@ -97,6 +96,7 @@ float general_adc_read(void *driver,uint8_t *err)
   adc_config.scale     = cfg->scale;
   adc_config.outMaxV   = cfg->outMaxVolt;
   adc_config.outMinV   = cfg->outMinVolt;
-  return calculate_voltage(&adc_config,err);
+
+  return cvt_voltateToData(&adc_config,err);
 }
 

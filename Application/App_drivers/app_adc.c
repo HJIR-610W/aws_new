@@ -166,15 +166,11 @@ return val/adc_config->scale;
 }
 
 
-float calculate_voltage(adc_config_t *adc_config,uint8_t *err)
+float cvt_voltateToData(adc_config_t *adc_config,uint8_t *err)
 {
   float slope;
   float offset;
-  float val;
-  int32_t vref;
   float data;
-  float retVal;
-  
   float sensor_value;
   float scale;
   float input;
@@ -201,16 +197,4 @@ float calculate_voltage(adc_config_t *adc_config,uint8_t *err)
 
 }
 
-int32_t get_adc_single_offset(int channel)
-{
-  int32_t offset;
 
-  return g_config_adc.single[channel].offset;
-}
-
-int32_t get_adc_single_fullset(int channel)
-{
-  int32_t offset;
-
-  return g_config_adc.single[channel].fullset;
-}

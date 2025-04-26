@@ -30,7 +30,7 @@ driver_t *rainPresent_open(int32_t num,void *opt)
 
 bool read_sensor_rainPresent(driver_t *driver,uint8_t *err)
 {
-  bool data=false;
+  bool data=true;
 
   if (driver == NULL)
   {
@@ -41,7 +41,7 @@ bool read_sensor_rainPresent(driver_t *driver,uint8_t *err)
 
   if(driver_di_read(driver))
   {
-    data = true;
+    data = false;
   }
 
   return data;

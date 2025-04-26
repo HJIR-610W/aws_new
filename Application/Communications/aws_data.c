@@ -60,16 +60,10 @@ kma_data_ex_t g_kma_1Hour_ex;
                               : UNUSED_SENSOR_VAL;
 
   // 4. 풍향 (1분 순간) 표현범위 → 0 ～ 3599 (관측값 × 10)
-  p_kma->wind_direction_instant =
-      p_sensor[A4_INSTANT_WIND_DIRECTION].type
-          ? (int16_t)AWS_CVT_WIND_DIRECTION(p_data[A4_INSTANT_WIND_DIRECTION].data.f)
-          : UNUSED_SENSOR_VAL;
+
 
   // 5. 풍속 (1분 순간) 표현범위 → 0 ～ 1000 (관측값 × 10
-  p_kma->wind_speed_instant =
-      p_sensor[A5_INSTANT_WIND_SPEED].type
-          ? (int16_t)AWS_CVT_WIND_SPEED(p_data[A5_INSTANT_WIND_SPEED].data.f)
-          : UNUSED_SENSOR_VAL;
+
 
   // 6. 강수량 (0.5/1.0 mm) 표현범위 → 0 ～ 32767 (관측값 × 10)
   p_kma->precipitation = p_sensor[A6_RAINFALL_DOT5_1MM].type

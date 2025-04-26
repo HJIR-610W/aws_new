@@ -41,7 +41,7 @@ int32_t aws_cmd(uint8_t *input,uint32_t inputLen,uint8_t *txBuff,uint16_t txSize
   switch(source)
   {
     case 0://break;
-    len = cmd_kma3(input,inputLen,txBuff,txSize,source);
+    len = kma2_cmd_handler(input,inputLen,txBuff,txSize,source);
     break;
   }
 

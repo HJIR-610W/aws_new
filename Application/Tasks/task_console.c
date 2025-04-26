@@ -1,4 +1,6 @@
 
+#include <stdio.h>
+
 #include "pcb_define.h"
 #include "app_console.h"
 #include "app_console_test.h"
@@ -12,6 +14,7 @@
 #include "dev_io.h"
 #include "task_isrEvent.h"
 #include "utile_time.h"
+#include "cli_input.h"
 
 
 driver_t *console_uart;
@@ -86,19 +89,22 @@ void SHELL_ReceiveDataCallback(uint8_t* buf, uint32_t len)
 {
     driver_uart_get_char(console_uart, buf, len);
 }
-
+char g_buf[100];
+int a;
+float b;
 void sonsoleTask(void *arg)
 {
-
-  
   shell_context_struct user_context;
-   uint8_t instance = 0;
-    
+  uint8_t instance = 0;
+  int a;
+  int ret;
 
+  cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
 
-
+    cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
+      cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
+      
   print_signature();
-
 
   DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
 

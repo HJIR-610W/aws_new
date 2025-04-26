@@ -431,6 +431,7 @@
                     <state>$PROJ_DIR$\..\Application\Config</state>
                     <state>$PROJ_DIR$\..\Drivers\Driver\adc</state>
                     <state>$PROJ_DIR$\..\Application\Tasks\console</state>
+                    <state>$PROJ_DIR$\..\System</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1410,6 +1411,12 @@
             <group>
                 <name>cli</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\IO\cli\cli_input.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\IO\cli\cli_key_code.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\IO\cli\console_scanf.c</name>
                 </file>
                 <file>
@@ -1647,10 +1654,22 @@
             <group>
                 <name>console</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_aws_display.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_aws_display.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\console\console_cali.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\console\console_cali.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_utile.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_utile.h</name>
                 </file>
             </group>
             <group>
@@ -2592,12 +2611,9 @@
         </group>
     </group>
     <group>
-        <name>System</name>
+        <name>Low_Level_Interface</name>
         <file>
-            <name>$PROJ_DIR$\..\System\io_retarget.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\System\syscalls.c</name>
+            <name>$PROJ_DIR$\..\System\iar_io_retarget.c</name>
         </file>
     </group>
     <group>

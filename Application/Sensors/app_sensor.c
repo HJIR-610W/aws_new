@@ -56,8 +56,6 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] = {
     {.list = temperatureList, .cnt = sizeof(temperatureList)},      // A1_TEMPERATURE
     {.list = windDirectionList, .cnt = sizeof(windDirectionList)},  // A2_WIND_DIRECTION
     {.list = windSpeedList, .cnt = sizeof(windSpeedList)},          // A3_WIND_SPEED
-    {.list = windDirectionInstantList,  .cnt = sizeof(windDirectionInstantList)},  // A4_INSTANT_WIND_DIRECTION
-    {.list = windSpeedInstantList, .cnt = sizeof(windSpeedInstantList)},  // A5_INSTANT_WIND_SPEED
     {.list = rainList, .cnt = sizeof(rainList)},                          // A6_RAINFALL_DOT5_1MM
     {.list = pressureList, .cnt = sizeof(pressureList)},                  // A7_PRESSURE
     {.list = rainPresentList, .cnt = sizeof(rainPresentList)},            // A8_RAIN_PRESENT

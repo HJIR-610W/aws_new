@@ -48,7 +48,16 @@
 			"app_adc.h": "c",
 			"config_adc.h": "c",
 			"console_scanf.h": "c",
-			"app_fram.h": "c"
+			"app_fram.h": "c",
+			"aws_kma3.h": "c",
+			"app_console.h": "c",
+			"vt100_command.h": "c",
+			"task_direct.h": "c",
+			"dev_io.h": "c",
+			"io_retarget.h": "c",
+			"yfuns.h": "c",
+			"stddef.h": "c",
+			"errno.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,
