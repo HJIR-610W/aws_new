@@ -69,9 +69,6 @@ static const char *autocomplete(const char *input)
 static void clear_line_and_print(const char *buf, int len)
 {
   uart_puts("\r");
-  for (int i = 0; i < UART_LINE_MAX - 2; i++) uart_send(' ');
-  uart_puts("\r");
-  for (int i = 0; i < len; i++) uart_send(buf[i]);
 }
 
 // 줄 다시 그리기 (삽입, 삭제 등)
@@ -92,8 +89,6 @@ int uart_get_line_with_edit(char *buf, int maxlen)
   char ch;
 
   memset(buf, 0, maxlen);
-
-
 
   while (1)
   {
@@ -150,22 +145,55 @@ int uart_get_line_with_edit(char *buf, int maxlen)
           {
             if (history_count > 0 && history_index < history_count - 1)
             {
+              for (int i = 0; i < cursor_pos; i++)
+              {
+                uart_puts("\b");
+              }
+
+              for (int i = 0; i < cursor_pos; i++)
+              {
+                uart_puts(" ");
+              }
+
+              for (int i = 0; i < cursor_pos; i++)
+              {
+                uart_puts("\b");
+              }
+
               history_index++;
               strcpy(buf, history[history_index]);
               len = strlen(buf);
               cursor_pos = len;
-              clear_line_and_print(buf, len);
+
+              uart_puts(buf);
             }
           }
           else if (seq[1] == 'B')  // ↓ Down (히스토리 다음)
           {
             if (history_index > 0)
             {
+
+              for (int i = 0; i < cursor_pos; i++)
+              {
+                uart_puts("\b");
+              }
+
+              for (int i = 0; i < cursor_pos; i++)
+              {
+                uart_puts(" ");
+              }
+
+              for (int i = 0; i < cursor_pos; i++)
+              {
+                uart_puts("\b");
+              }
+
               history_index--;
               strcpy(buf, history[history_index]);
               len = strlen(buf);
               cursor_pos = len;
-              clear_line_and_print(buf, len);
+              uart_puts(buf);
+              // clear_line_and_print(buf, len);
             }
             else if (history_index == 0)
             {
@@ -213,11 +241,24 @@ if (ch == 0x08)  // Backspace
 {
   if (cursor_pos > 0)
   {
-    memmove(&buf[cursor_pos - 1], &buf[cursor_pos], len - cursor_pos);
     cursor_pos--;
     len--;
-    refresh_line(buf, len, cursor_pos);
+
+    memmove(&buf[cursor_pos], &buf[cursor_pos+1], len - cursor_pos);
+
+    buf[len]=0;
+    
+    uart_puts("\b");
+    uart_puts(&buf[cursor_pos]);
+    uart_puts("  \b");
+
+    for (int i = cursor_pos; i <= len; i++)
+    {
+      uart_puts("\b");
+    }
+
   }
+
   continue;
 }
 else if (ch == 0x7F)  // Delete
@@ -239,7 +280,7 @@ else if (ch == 0x7F)  // Delete
       buf[cursor_pos] = ch;
       cursor_pos++;
       len++;
-      refresh_line(buf, len, cursor_pos);
+      uart_send(ch);
       continue;
     }
   }
