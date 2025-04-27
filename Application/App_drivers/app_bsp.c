@@ -1,76 +1,73 @@
 #include <math.h>
 #include "driver_adc.h"
 
-#define VIN_SOLA_V_MAX 2003          /* full scale 일때 최대값 */
-#define VIN_SOLA_FULL_SCALE 12000 
-#define ADC_REF_VOLTAGE 3300
-#define ADC_SCALE(max,full)  ((double)max/(double)full)
-
 
 driver_t *g_adcStm;
 
 
-
-
-int32_t get_mV(int32_t adc, uint32_t bitCnt,double refVolt,double scale)
-{
-  int32_t val;
-
-  if(scale != 0)
-  {
-    val = (int32_t)((adc / (float)bitCnt) * refVolt / scale);
-  }
-  else
-  {
-    val = 0;
-  }
-  return val;
-}
-
-void battery_init(void)
+void app_bsp_init(void)
 {
   g_adcStm = driver_adc_open(ADC_STM32,0);
 }
 
+/*
+공급전압 최대 입력을 15V로 하자
+0~2.5V => 0~15V
+12V(전압)
+|
+49.9K
+|-------1K---ADC
+10K
+|
+GND
+*/
+
 float read_battery(void)
 {
-  int32_t val;
+  const float slope = 6;  // (float)(15.0f-0.0f)/(float)(2.5-0);
+  const float offset = 0.0;
   uint8_t err;
+  float voltage;
+  float battery;
 
-  val = driver_adc_single_read(g_adcStm,ADC_STM32_S_CH_0,1,&err);
-  val = get_mV(val,4095,ADC_REF_VOLTAGE,ADC_SCALE(VIN_SOLA_V_MAX,VIN_SOLA_FULL_SCALE));
+  voltage = driver_adc_single_read(g_adcStm, ADC_STM32_S_CH_0, 1, &err);
 
-  return (float)val/1000.0;
+  battery = voltage * slope + offset;
+
+  return (float)battery;
 
 }
 
+
+/*
+온도측정정
+3.3V(VREF)
+|
+10K(R1)
+|----------ADC
+10K(NTC)
+|
+GND
+
+25도라면 3.3V/2 = 1.65v가 ADC되어야함
+3.3V *(NTC/(R1+NTC)) = ADC전압값
+NTC = (ADC*R1)/(3.3V-ADC)
+*/
 
 #define VREF 3.3f           // ADC 기준 전압
-#define ADC_MAX 4095.0f     // 12비트 ADC 최대값
-#define R_PULLUP 10000.0f   // 10kΩ 풀업 저항
-
-// ADC 값을 서미스터 저항값으로 변환하는 함수
-float calculate_ntc_resistance(int32_t adc_value)
-{
-  if (adc_value <= 0 || adc_value >= ADC_MAX) // 값이 범위를 벗어나면 무효
-    return 0.0f;
-
-  // ADC 값 → 전압 변환
-  float v_ntc = (adc_value / ADC_MAX) * VREF;
-
-  // 서미스터 저항값 계산
-  float r_ntc = R_PULLUP * (v_ntc / (VREF - v_ntc));
-
-  return r_ntc;  // 서미스터 저항값 반환 (Ω 단위)
-}
-
+#define R1 10000.0f   // 10kΩ 풀업 저항
 
 typedef struct {
   float temperature;
   float resistance;
 } NTC_Lookup;
 
-// LNSK 103 서미스터 저항-온도 테이블 (일부 주요 값)
+/*
+LNSK16G103 NTC써미스터
+10kΩ (25도 기준)
+온도에 따라 저항이 변함
+온도가 높아질수록 저항이 감소
+*/
 const NTC_Lookup ntc_table[] = {
   { -40.0, 200800 }, { -35.0, 152900 }, { -30.0, 117200 }, { -25.0, 90510 },
   { -20.0, 70400 }, { -15.0, 55140 }, { -10.0, 43510 }, { -5.0, 34570 },
@@ -112,13 +109,13 @@ float ntc_resistance_to_temperature(float resistance)
 
 float read_temperature(void)
 {
-  int32_t val;
   uint8_t err;
+  float voltage;
+  float resistance;
   
+  voltage = driver_adc_single_read(g_adcStm, ADC_STM32_S_CH_1, 1, &err);
 
-  val = driver_adc_single_read(g_adcStm,ADC_STM32_S_CH_1,1,&err);
+  resistance = (voltage * R1) /(VREF - voltage);
 
-
-  return ntc_resistance_to_temperature(calculate_ntc_resistance(val));
-
+  return ntc_resistance_to_temperature(resistance);
 }

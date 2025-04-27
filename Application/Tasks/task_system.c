@@ -8,7 +8,7 @@
 #include "driver_do.h"
 #include "driver_modbus.h"
 #include "task_isrEvent.h"
-
+#include "driver_uart.h"
 driver_t *g_test_do;
 
 const osThreadAttr_t kSystemTask_attributes = {
@@ -39,15 +39,15 @@ void systemTask(void *arg)
   modbus_init_t m_init;
   uint16_t reg[10];
   driver_t *m_master;
-  m_init.baud = 19200;
+  m_init.baud = 9600;
   m_init.parityIdx = 0;
-  m_init.port_num = MODBUS_MSTER_RTU_OVER_485_PORTA;
+  m_init.port_num = UART_2_EXT_A;
   m_init.stop = 1;
 
- // m_master = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &m_init);
+ //m_master = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_232, &m_init);
   while (1)
   {
-    //driver_modbus_m_read_multi_reg(m_master, 0, 0, reg, 2);
+   // driver_modbus_m_read_multi_reg(m_master, 0, 0, reg, 2);
 
     rtc_update();
     update_charger();
@@ -98,7 +98,7 @@ void systemTask_init(void)
 {
   g_test_do = driver_do_open(DO_EXT_0, 0);
 
-  battery_init();
+  app_bsp_init();
 
   userBtn_init();
 

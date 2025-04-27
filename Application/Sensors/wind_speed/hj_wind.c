@@ -71,10 +71,43 @@ bool is_hjwin(uint8_t *frame, uint16_t len)
   return false;
 }
 
+#define WIND_DATA_MAX 9990
+float calculate_wind_speed(uint16_t wind_pulse)
+{
+  int32_t tmp = 0;
+  float wind_speed = 0;
+  int32_t span;
+  uint32_t errTmp;
 
+  float gain;
+  uint16_t offset;
+  uint16_t fullset;
 
+  offset = get_config_sensor()->hjwind[0].offset;
+  fullset = get_config_sensor()->hjwind[0].full;
 
+  if (wind_pulse < WIND_DATA_MAX)
+  {
+    span = fullset - offset;
 
+    errTmp = (uint32_t)((float)span * 0.05);  // offset보다 5% 크고 Full보다 5% 작을 것
+
+    if (wind_pulse < (fullset + errTmp))
+    {
+      if (span > 0)
+      {
+        gain = 70.0 / (float)span;
+        wind_speed = ((float)(wind_pulse - offset) * gain);
+      }
+    }
+    else
+    {
+      wind_speed = 0;
+    }
+  }
+
+  return wind_speed;
+}
 
 float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
 {
@@ -83,16 +116,25 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
   uint16_t len;
   uint16_t windData = 0;
   float retVal = NAN;
+  
 
   hjwind_cfg_t *cfg = ((driver_t *)driver)->cfg;
 
   len = make_hjwind(send, channel);
 
+  driver_rs485_flush_rx(cfg->rs485_io);
   driver_rs485_send(cfg->rs485_io, send, len);
 
   // 10배된 값이 수신됨됨
-  len = driver_rs485_recv_opt(cfg->rs485_io, recv, sizeof(recv),
-                              10,5); //응답이 10ms 안에 와야하며, 5ms 이상 데이터 미 수신시 종료
+  // 응답이 30ms 안에 와야하며, 10ms 이상 데이터 미 수신시 종료
+  //  독라이트 테스트시 10ms하면 자주 실패함
+  len = driver_rs485_recv_opt(cfg->rs485_io, recv, sizeof(recv), 30,20); 
+
+  if(len == 0)
+  {
+    *err = DRV_ERR_TIMEOUT;
+    return NAN;
+  }
 
   if (len && is_hjwin(recv, len))
   {
@@ -110,6 +152,7 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
       {
         *err = DRV_ERR_NONE;
         memcpy(&windData, &recv[4], 2);
+        return calculate_wind_speed(windData);
       }
     }
   }

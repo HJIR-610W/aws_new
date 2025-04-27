@@ -18,5 +18,5 @@ extern SYSTEM_CONFIG_AWS Config;
  void AwsMinMaxInit(void);
 
  void schedule_process(DATE_TIME_BUF *pDate);
-
+ SYSTEM_INFO_AWS *get_system_info_aws(void);
 #endif

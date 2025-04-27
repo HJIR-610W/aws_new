@@ -3,27 +3,34 @@
 #include "adc_calibration.h"
 #include "config_adc.h"
 
-config_adc_adv_t g_adc_config;
-float g_current_temp = 25.0f;//공장 초기화시 온도가 25라고 하자 
+config_adc_nvm_t g_adc_config_nvm;
+config_adc_adv_t g_adc_config_stm32;
+config_adc_adv_t g_adc_config_ads1220;
+
+
+float g_current_temp = 25.0f;  // 공장 초기화시 온도가 25라고 하자
 
 int32_t (*adc_printf)(const char* , ...);
 
+config_adc_adv_t *get_adc_config(int type)
+{
+  if(type==0)
+  {
+    return &g_adc_config_ads1220;
+  }
 
-void set_adc_printf(void *func)
+    return &g_adc_config_stm32;
+
+
+
+}
+
+    void
+    set_adc_printf(void* func)
 {
   adc_printf = (int32_t (*)(const char* , ...))func;
 }
 
-
-uint32_t get_max_raw_value(void)
-{
-  return g_adc_config.resolution_bits ? g_adc_config.max_raw_value: 4095;
-}
-
-uint32_t get_min_raw_value(void)
-{
-  return g_adc_config.resolution_bits ? g_adc_config.min_raw_value : 4095;
-}
 
 
 // ---  LUT 보간 함수 ---
@@ -93,11 +100,28 @@ static bool interpolate_lut(const temp_lut_point_t lut[], uint8_t size, float cu
   return false;
 }
 
-// --- 4. 초기화 함수 ---
-bool adc_config_init(config_adc_adv_t* adc_config, uint32_t resolution_bits, float reference_voltage)
+
+void adc_config_map(void)
 {
-  if (adc_config == NULL || resolution_bits == 0 || resolution_bits > 32 ||
-      reference_voltage <= 0.0f)
+  g_adc_config_ads1220.bits = &g_adc_config_nvm.ads1220_bits;
+  g_adc_config_ads1220.single_ended_cal = g_adc_config_nvm.ads1220_se_cal;
+  g_adc_config_ads1220.params_se_cnt = ADS1220_NUM_SINGLE_ENDED_CHANNELS;
+
+  g_adc_config_ads1220.differential_cal = g_adc_config_nvm.ads1220_di_cal;
+  g_adc_config_ads1220.params_di_cnt = ADS1220_NUM_DIFFERENTIAL_CHANNELS;
+
+  g_adc_config_stm32.bits = &g_adc_config_nvm.stm32_bits;
+  g_adc_config_stm32.single_ended_cal = g_adc_config_nvm.stm32_se_cal;
+  g_adc_config_stm32.params_se_cnt = STM32_NUM_SINGLE_ENDED_CHANNELS;
+
+  g_adc_config_stm32.params_di_cnt = 0;
+}
+
+
+// --- 4. 초기화 함수 ---
+bool adc_config_init(config_adc_adv_t* cfg, uint32_t resolution_bits, float reference_voltage)
+{
+  if (cfg == NULL || resolution_bits == 0 || resolution_bits > 32 || reference_voltage <= 0.0f)
   {
     if (adc_printf)
       adc_printf("오류: adc_config_init 파라미터 오류.\n");
@@ -106,28 +130,27 @@ bool adc_config_init(config_adc_adv_t* adc_config, uint32_t resolution_bits, flo
 
   load_adc_cali();
 
-  adc_config->resolution_bits = resolution_bits;
-  adc_config->reference_voltage = reference_voltage;
-  
-  int32_t range_limit = (1L << (resolution_bits - 1));  // 상위 비트는 부호 비트
-  adc_config->min_raw_value = -range_limit;
-  adc_config->max_raw_value = range_limit - 1;
+  cfg->bits->resolution_bits = resolution_bits;
+  cfg->bits->reference_voltage = reference_voltage;
 
-  for (int i = 0; i < NUM_SINGLE_ENDED_CHANNELS; ++i)
+  int32_t range_limit = (1L << (resolution_bits - 1));  // 상위 비트는 부호 비트
+  cfg->bits->min_raw_value = -range_limit;
+  cfg->bits->max_raw_value = range_limit - 1;
+
+  for (int i = 0; i < cfg->params_se_cnt; ++i)
   {
-    adc_config->single_ended_cal[i] =
-        (adc_cal_params_t){.factory_slope = 1.0f,
-                           .factory_offset = 0.0f,
-                           .factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP,
-                           .is_calibrated = false,
-                           .comp_method = TEMP_COMP_NONE,  // 기본: 보상 없음
-                           .slope_temp_coeff = 0.0f,
-                           .offset_temp_coeff = 0.0f,
-                           .lut_size = 0};
+    cfg->single_ended_cal[i] = (adc_cal_params_t){.factory_slope = 1.0f,
+                                                  .factory_offset = 0.0f,
+                                                  .factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP,
+                                                  .is_calibrated = false,
+                                                  .comp_method = TEMP_COMP_NONE,  // 기본: 보상 없음
+                                                  .slope_temp_coeff = 0.0f,
+                                                  .offset_temp_coeff = 0.0f,
+                                                  .lut_size = 0};
   }
-  for (int i = 0; i < NUM_DIFFERENTIAL_CHANNELS; ++i)
+  for (int i = 0; i < cfg->params_di_cnt; ++i)
   {
-    adc_config->differential_cal[i] =
+    cfg->differential_cal[i] =
         (adc_cal_params_t){.factory_slope = 1.0f,
                            .factory_offset = 0.0f,
                            .factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP,
@@ -138,16 +161,16 @@ bool adc_config_init(config_adc_adv_t* adc_config, uint32_t resolution_bits, flo
                            .lut_size = 0};
   }
   if (adc_printf)
-    adc_printf("ADC 설정 초기화 완료: Res=%u, Vref=%.2fV, MaxRaw=%u\n", adc_config->resolution_bits,
-               adc_config->reference_voltage, adc_config->max_raw_value);
+    adc_printf("ADC 설정 초기화 완료: Res=%u, Vref=%.2fV, MaxRaw=%u\n", cfg->bits->resolution_bits,
+               cfg->bits->reference_voltage, cfg->bits->max_raw_value);
   return true;
 }
 
 // --- 공장 캘리브레이션 함수 ---
-bool adc_perform_factory_calibration(config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,
+bool adc_perform_factory_calibration(config_adc_adv_t* cfg, adc_cal_params_t* cal_params,
                                      adc_cal_point_t p1, adc_cal_point_t p2, float cal_temp)
 {
-  if (!cal_params || !adc_config)
+  if (!cal_params || !cfg)
     return false;
   if (p1.raw_value == p2.raw_value)
   {
@@ -159,8 +182,9 @@ bool adc_perform_factory_calibration(config_adc_adv_t* adc_config, adc_cal_param
     cal_params->is_calibrated = false;
     return false;
   }
-  if (p1.raw_value > adc_config->max_raw_value || p2.raw_value > adc_config->max_raw_value)
-  { /* 경고 */
+  if (p1.raw_value > cfg->bits->max_raw_value || p2.raw_value > cfg->bits->max_raw_value)
+  {
+     /* 경고 */
   }
 
   cal_params->factory_slope =
@@ -305,21 +329,24 @@ float read_current_temperature(void)
   return g_current_temp; 
 }
 
-float adc_driver_get_value(adc_channel_type_t channel_type, int channel_index, int32_t raw_value)
+
+
+float adc_driver_get_value(config_adc_adv_t *cfg,adc_channel_type_t channel_type, int channel_index,
+                           int32_t raw_value)
 {
   const adc_cal_params_t* cal_params;
   uint8_t err;
   switch (channel_type)
   {
     case ADC_CHANNEL_TYPE_SINGLE_ENDED:
-      if (channel_index < 0 || channel_index >= NUM_SINGLE_ENDED_CHANNELS)
+      if (channel_index < 0 || channel_index >= cfg->params_se_cnt)
         return NAN;
-      cal_params = &g_adc_config.single_ended_cal[channel_index];
+      cal_params = &cfg->single_ended_cal[channel_index];
       break;
     case ADC_CHANNEL_TYPE_DIFFERENTIAL:
-      if (channel_index < 0 || channel_index >= NUM_DIFFERENTIAL_CHANNELS)
+      if (channel_index < 0 || channel_index >= cfg->params_di_cnt)
         return NAN;
-      cal_params = &g_adc_config.differential_cal[channel_index];
+      cal_params = &cfg->differential_cal[channel_index];
       break;
   }
 
@@ -328,30 +355,29 @@ float adc_driver_get_value(adc_channel_type_t channel_type, int channel_index, i
   return adc_get_compensated_value(raw_value, cal_params, current_temp);
 }
 
-bool adc_driver_adjust_offset(adc_channel_type_t channel_type, int channel_index,
+bool adc_driver_adjust_offset(config_adc_adv_t *cfg,adc_channel_type_t channel_type, int channel_index,
                               float target_reference_value, int32_t raw_value)
 {
   adc_cal_params_t* cal_params_rw;
   if (channel_type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
   {
-    if (channel_index < 0 || channel_index >= NUM_SINGLE_ENDED_CHANNELS)
+    if (channel_index < 0 || channel_index >= cfg->params_se_cnt)
       return false;
-    cal_params_rw = &g_adc_config.single_ended_cal[channel_index];
+    cal_params_rw = &cfg->single_ended_cal[channel_index];
   }
   else if (channel_type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
   {
-    if (channel_index < 0 || channel_index >= NUM_DIFFERENTIAL_CHANNELS)
+    if (channel_index < 0 || channel_index >= cfg->params_di_cnt)
       return false;
-    cal_params_rw = &g_adc_config.differential_cal[channel_index];
+    cal_params_rw = &cfg->differential_cal[channel_index];
   }
   else
   {
     return false;
   }
   float current_temp = read_current_temperature();
-  bool success =
-      adc_perform_offset_adjustment(&g_adc_config, cal_params_rw, channel_type, channel_index,
-                                    current_temp, target_reference_value, raw_value);
+  bool success = adc_perform_offset_adjustment(cfg, cal_params_rw, channel_type, channel_index,
+                                               current_temp, target_reference_value, raw_value);
   if(success)
   { 
     save_adc_cali();

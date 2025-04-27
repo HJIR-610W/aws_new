@@ -13,6 +13,9 @@ driver_t *driver_modbus_master_open(int32_t num, void *opt)
     case DRIVER_MODBUS_MSTER_RTU_OVER_485:
       driver = modbus_master_open(MODBUS_RTU_OVER_485, opt);
       break;
+    case DRIVER_MODBUS_MSTER_RTU_OVER_232:
+      driver = modbus_master_open(MODBUS_RTU_OVER_232, opt);
+      break;
   }
 
   return driver;

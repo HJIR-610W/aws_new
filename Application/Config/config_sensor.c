@@ -88,9 +88,9 @@ void limit_hjtemp(void)
 {
   for (int i = 0; i < _countof(g_config_sensor.hjtemp); i++)
   {
-    if (g_config_sensor.hjtemp[i].rs485_port > eAPP_RS485_MAX)
+    if (g_config_sensor.hjtemp[i].port > eAPP_RS485_MAX)
     {
-      g_config_sensor.hjtemp[i].rs485_port = 0;
+      g_config_sensor.hjtemp[i].port = 0;
       g_config_sensor_dirty_flag = true;
     }
   }

@@ -2,6 +2,7 @@
 
 #include "modbus_master.h"
 
+#include "driver_uart.h"
 #include "driver_485.h"
 #include "driver_485_def.h"
 #include "driver_uart_def.h"
@@ -20,15 +21,22 @@
 #define MODBUS_RECV_TIMEOUT(driver, buff, buffSize, tout1, tout2) \
   driver_rs485_recv_opt(driver, buff, buffSize, tout1, tout2)
 
+#define MODBUS_232_RECV_FLUSH(driver) driver_uart_flush_rx(driver)
+#define MODBUS_232_SEND(driver, data, cnt) driver_uart_send(driver, data, cnt);
+#define MODBUS_232_RECV(driver, buff, buffSize, tout) driver_uart_recv(driver, buff, buffSize, tout)
+#define MODBUS_232_RECV_TIMEOUT(driver, buff, buffSize, tout1, tout2) \
+  driver_uart_recv_opt(driver, buff, buffSize, tout1, tout2)
+
 typedef struct modbus_cfg_s
 {
   eMODBUS_TYPE_t modbusType;
   driver_t *bus_io;
+  void *sem;
 } modbus_cfg_t;
 int32_t g_modbusLastErr;
 
-driver_t modbus_m_drv;
-modbus_cfg_t modbus_m_cfg;
+driver_t modbus_m_drv[MODBUS_RTU_MAX];
+modbus_cfg_t modbus_m_cfg[MODBUS_RTU_MAX];
 
 typedef struct modbus_regs_s
 {
@@ -187,7 +195,15 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
   uint32_t delay;
 
   //  우선 주소 + 기능 + 최소 1바이트 데이터 수신
-  ret = MODBUS_RECV(cfg->bus_io, rx_buf, 3, MODBUS_START_TIMEOUT_MS);
+  if (cfg->modbusType == eMODBUS_RS232)
+  {
+    ret = MODBUS_232_RECV(cfg->bus_io, rx_buf, 3, MODBUS_START_TIMEOUT_MS);
+  }
+  else
+  {
+    ret = MODBUS_RECV(cfg->bus_io, rx_buf, 3, MODBUS_START_TIMEOUT_MS);
+  }
+
   if (ret != 3)
   {
     return -1;
@@ -247,23 +263,43 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
       }
     }
     break;
-
-    default:
+    case eMODBUS_RS232:
+    break;
+    {
+      uart_config_t ucfg;
+      driver_uart_get(cfg->bus_io, UART_GET_CONFIG, &ucfg);
+      delay = ((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000;  // ms
+      delay = delay * 2;
+      if (delay == 0)
+      {
+        delay = 10;  // 10ms
+      }
+    }
+        default:
       break;
   }
   //  나머지 데이터 수신
-  ret = MODBUS_RECV_TIMEOUT(cfg->bus_io, &rx_buf[3], data_len + 2, delay, delay);
-  if (ret != data_len + 2)
-    return -4;
+  if (cfg->modbusType == eMODBUS_RS232)
+  {
+    ret = MODBUS_232_RECV_TIMEOUT(cfg->bus_io, &rx_buf[3], data_len + 2, delay, delay);
+  }
+  else
+  {
+    ret = MODBUS_RECV_TIMEOUT(cfg->bus_io, &rx_buf[3], data_len + 2, delay, delay);
+  }
 
-  // CRC 확인
-  crc_calc = calcCRC(rx_buf, total_len - 2);
-  crc_recv = rx_buf[total_len - 2] << 8 | (rx_buf[total_len - 1]);
-  if (crc_calc != crc_recv)
-    return -5;  // CRC 에러
 
-  return total_len;  // 유효한 패킷 길이 리턴
-}
+    if (ret != data_len + 2)
+      return -4;
+
+    // CRC 확인
+    crc_calc = calcCRC(rx_buf, total_len - 2);
+    crc_recv = rx_buf[total_len - 2] << 8 | (rx_buf[total_len - 1]);
+    if (crc_calc != crc_recv)
+      return -5;  // CRC 에러
+
+    return total_len;  // 유효한 패킷 길이 리턴
+  }
 
 int32_t modbus_master_req(driver_t *drv, modbus_t *modbus)
 {
@@ -470,8 +506,17 @@ void send_query(driver_t *drv, modbus_t *pmodbus)
   g_buff.data[cnt++] = (crc & 0x00FF);
   {
     modbus_cfg_t *cfg = drv->cfg;
-    MODBUS_RECV_FLUSH(cfg->bus_io);
-    MODBUS_SEND(cfg->bus_io, g_buff.data, cnt);
+    if (cfg->modbusType == eMODBUS_RS232)
+    {
+      MODBUS_232_RECV_FLUSH(cfg->bus_io);
+      MODBUS_232_SEND(cfg->bus_io, g_buff.data, cnt);
+    }
+    else
+    {
+      MODBUS_RECV_FLUSH(cfg->bus_io);
+      MODBUS_SEND(cfg->bus_io, g_buff.data, cnt);
+    }
+
   }
   g_buff.cnt = cnt;
 }
@@ -486,27 +531,42 @@ driver_t *modbus_master_open(int32_t num, void *opt)
   modbus_init_t *modbus_init = opt;
   uart_config_t uart_config;
 
-  if (modbus_m_drv.opened)
+ 
+  if (modbus_m_drv[num].opened)
   {
-    return &modbus_m_drv;
+    return &modbus_m_drv[num];
   }
 
   uart_config.baud = modbus_init->baud;
   uart_config.parityIdx = modbus_init->parityIdx;
   uart_config.dataLen = 8;
   uart_config.stop_bit = modbus_init->stop;
-  modbus_m_cfg.modbusType = eMODBUS_RS485;
-  modbus_m_cfg.bus_io = driver_rs485_open(modbus_init->port_num, &uart_config);
 
-  modbus_m_drv.cfg = &modbus_m_cfg;
-  modbus_m_drv.api = &modbus_master_api;
-  modbus_m_drv.opened = true;
-  modbus_m_drv.name = "modbus";
-  modbus_m_drv.opened = true;
+  modbus_m_drv[num].opened = true;
 
+  switch(num)
+  {
+    case MODBUS_RTU_OVER_485:
+      modbus_m_cfg[num].modbusType = eMODBUS_RS485;
+      modbus_m_cfg[num].bus_io = driver_rs485_open(modbus_init->port_num, &uart_config);
+
+      modbus_m_drv[num].cfg = &modbus_m_cfg[num];
+      modbus_m_drv[num].api = &modbus_master_api;
+      modbus_m_drv[num].name = "MODBUS_RS485";
+      break;
+    case MODBUS_RTU_OVER_232:
+      modbus_m_cfg[num].modbusType = eMODBUS_RS232;
+      modbus_m_cfg[num].bus_io = driver_uart_open(modbus_init->port_num, &uart_config);
+
+      modbus_m_drv[num].cfg = &modbus_m_cfg[num];
+      modbus_m_drv[num].api = &modbus_master_api;
+      modbus_m_drv[num].name = "MODBUS_RS232";
+      break;
+
+  }
 #if FREE_RTOS_USE
-  CREATE_SEM(modbus_m_drv.sem);
+  CREATE_SEM(modbus_m_cfg[num].sem);
 #endif
 
-  return &modbus_m_drv;
+  return &modbus_m_drv[num];
 }

@@ -39,15 +39,13 @@ float driver_adc_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err
 
   if (strncmp(drv->name, "ADC_ADS1220",11)==0)
   {
-    channel_calculated = channel;
+    voltage = adc_driver_get_value(get_adc_config(0),ADC_CHANNEL_TYPE_SINGLE_ENDED, channel, raw_now);
   }
   else if (strncmp(drv->name, "STM32_ADC", 9) == 0)
   {
-    channel_calculated = ADC_ADS1220_S_CH_17+ 1 + channel;
+    voltage =
+        adc_driver_get_value(get_adc_config(1),ADC_CHANNEL_TYPE_SINGLE_ENDED, channel, raw_now);
   }
-
-  //켈리브레이션은 하나로 관리하다보니 0~17은 ads, 18~19 stm32
-  voltage = adc_driver_get_value(ADC_CHANNEL_TYPE_SINGLE_ENDED, channel_calculated, raw_now);
 
   return voltage;
   
@@ -62,8 +60,16 @@ float driver_adc_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 
   raw_now  = api->read_diff(drv, channel, avg, err);
 
-  // 켈리브레이션은 하나로 관리하다보니 0~17은 ads, 18~19 stm32
-  voltage = adc_driver_get_value(ADC_CHANNEL_TYPE_DIFFERENTIAL, channel_calculated, raw_now);
+  if (strncmp(drv->name, "ADC_ADS1220", 11) == 0)
+  {
+    voltage =
+        adc_driver_get_value(get_adc_config(0), ADC_CHANNEL_TYPE_DIFFERENTIAL, channel, raw_now);
+  }
+  else if (strncmp(drv->name, "STM32_ADC", 9) == 0)
+  {
+    voltage =
+        adc_driver_get_value(get_adc_config(1), ADC_CHANNEL_TYPE_DIFFERENTIAL, channel, raw_now);
+  }
 
   return voltage;
 }

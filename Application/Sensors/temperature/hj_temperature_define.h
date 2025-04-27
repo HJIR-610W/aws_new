@@ -1,0 +1,10 @@
+#ifndef HJ_TEMPERATURE_DEFINE_H
+#define HJ_TEMPERATURE_DEFINE_H
+
+#define HJ_REG_NUM_TEMP 0
+#define HJ_REG_NUM_HUMI 1
+
+#define HJ_REG_NUM_TEMP_OFFSET  9
+#define HJ_REG_NUM_HUMI_OFFSET 10
+
+#endif

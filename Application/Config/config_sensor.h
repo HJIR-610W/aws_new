@@ -79,10 +79,17 @@ typedef struct hjwindSpeed_s
   int32_t full;
 } hjwindspeed_config_t;
 
-// 화진 온도 센서 485만 사용
+typedef enum physical_layer_e
+{
+  ePHYSICAL_RS232,
+  ePHYSICAL_RS485
+}ePHYSOCAL_LAYER_t;
+
+// 화진 온도 센서 232만 사용
 typedef struct hjtemp_s
 {
-  uint8_t rs485_port;
+  ePHYSOCAL_LAYER_t physical_layer;
+  uint8_t port;
   union 
   {
     int32_t i_data;
@@ -99,6 +106,7 @@ typedef struct hjwindDirection_s
 // 화진 적설 232,485
 typedef struct hjsnow_config_s
 {
+  ePHYSOCAL_LAYER_t physical_layer;
   uint8_t port;
 } hjsnow_config_t;
 

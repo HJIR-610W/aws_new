@@ -1,5 +1,6 @@
 #include "aws_kma.h"
 #include "utile.h"
+#include "app_sensor.h"
 const kma_cmd_t kma_cmd[]={{eAI,"AI?"},
                            {eAB,"AB?"},
                            {eAQ,"AQ?"},
@@ -17,3 +18,6 @@ uint16_t coutntof_kma_cmd(void)
 {
   return _countof(kma_cmd);
 }
+
+
+

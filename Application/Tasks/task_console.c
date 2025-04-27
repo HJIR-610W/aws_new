@@ -99,10 +99,9 @@ void sonsoleTask(void *arg)
   int a;
   int ret;
 
-  cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
-
-    cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
-      cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
+//cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
+//cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
+//cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
       
   print_signature();
 

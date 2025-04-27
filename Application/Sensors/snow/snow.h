@@ -15,8 +15,8 @@
 #define GENERAL_RS485 1
 #endif
 
-#define SNOW_HJ_485 100
-#define SNOW_HJ_232 102
+#define SNOW_HJ 100
+
 
 driver_t *snow_open(int32_t num,void *opt);
 

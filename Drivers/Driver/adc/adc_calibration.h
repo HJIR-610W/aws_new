@@ -7,11 +7,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#define NUM_SINGLE_ENDED_CHANNELS 20//18 ads1210 2 STM32
-#define NUM_DIFFERENTIAL_CHANNELS 8
+#define ADS1220_NUM_SINGLE_ENDED_CHANNELS 18// ads1210
+#define ADS1220_NUM_DIFFERENTIAL_CHANNELS 8
 #define DEFAULT_FACTORY_CAL_TEMP 25.0f
 #define MAX_LUT_SIZE 10  // 온도 보상 LUT 최대 크기
 
+#define STM32_NUM_SINGLE_ENDED_CHANNELS 2  // stm32
 
 typedef enum
 {
@@ -55,19 +56,34 @@ typedef struct
 #endif
   uint8_t lut_size;  // LUT에 저장된 실제 포인트 수
 
-
 } adc_cal_params_t;
 
-
-typedef struct
+typedef struct resolution_s
 {
   uint32_t resolution_bits;
   float reference_voltage;
   int32_t min_raw_value;  ///< ADC 최소 원시 값 (예: -2^23)
   int32_t max_raw_value;  ///< ADC 최대 원시 값 (예: 2^23 - 1)
-  adc_cal_params_t single_ended_cal[NUM_SINGLE_ENDED_CHANNELS];
-  adc_cal_params_t differential_cal[NUM_DIFFERENTIAL_CHANNELS];
+} config_adc_bits_t;
+
+typedef struct
+{
+  config_adc_bits_t ads1220_bits;
+  adc_cal_params_t ads1220_se_cal[ADS1220_NUM_SINGLE_ENDED_CHANNELS];
+  adc_cal_params_t ads1220_di_cal[ADS1220_NUM_DIFFERENTIAL_CHANNELS];
+  config_adc_bits_t stm32_bits;
+  adc_cal_params_t stm32_se_cal[STM32_NUM_SINGLE_ENDED_CHANNELS];
+} config_adc_nvm_t;
+
+typedef struct
+{
+  config_adc_bits_t* bits;
+  adc_cal_params_t* single_ended_cal;
+  uint8_t params_se_cnt;
+  adc_cal_params_t* differential_cal;
+  uint8_t params_di_cnt;
 } config_adc_adv_t;
+
 
 
 typedef struct
@@ -79,10 +95,11 @@ typedef struct
 bool adc_config_init(config_adc_adv_t* adc_config, uint32_t resolution_bits,
                      float reference_voltage);
 
-float adc_driver_get_value(adc_channel_type_t channel_type, int channel_index, int32_t raw_value);
+float adc_driver_get_value(config_adc_adv_t* cfg, adc_channel_type_t channel_type,
+                           int channel_index, int32_t raw_value);
 
-bool adc_perform_factory_calibration(config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,
-                                     adc_cal_point_t p1, adc_cal_point_t p2, float cal_temp);
+    bool adc_perform_factory_calibration(config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,
+                                         adc_cal_point_t p1, adc_cal_point_t p2, float cal_temp);
 
 void set_adc_printf(void* func);
 
@@ -95,4 +112,14 @@ float adc_get_compensated_value(int32_t raw_value, const adc_cal_params_t* cal_p
 bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,
                                    adc_channel_type_t ch_type, int ch_idx, float current_temp,
                                    float target_ref, int32_t raw_now);
+
+void adc_config_map(void) ;
+
+config_adc_adv_t* get_adc_config(int type);
+
+ extern config_adc_nvm_t g_adc_config_nvm;
+extern config_adc_adv_t g_adc_config_stm32;
+extern config_adc_adv_t g_adc_config_ads1220;
+
+
 #endif

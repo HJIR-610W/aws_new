@@ -16,6 +16,29 @@ const app_rs232_t rs232_define[]={{.num = UART_4_EXT_C,.name ="EX3_232_A"},
 
 driver_t *rs232_drivers[eRS232_MAX];
 
+int32_t uart_num_to_driver_num(int32_t app_uart_num)
+{
+  int32_t num=0;
+
+  switch (app_uart_num)
+  {
+  case 0:
+    num = UART_2_EXT_A;
+    break;
+  case 1:
+    num = UART_3_EXT_B;
+    break;
+    break;
+  case 2:
+    num = UART_4_EXT_C;
+    break;
+    break;
+  case 3:
+    num = UART_5_EXT_D;
+    break;
+    break;
+  }
+}
 
 void rs232_open(eRS232_PORT_t port,void *opt)
 {

@@ -342,16 +342,17 @@ void dev_io_write(dev_io_t *dev, uint8_t *data, uint32_t dataLen, uint32_t opt)
 uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd, void *opt)
 {
   devIoTimeOutopt_t *pdevopt = opt;
+  uint32_t data_timeout;
+  data_timeout = pdevopt->waitTimeOutMs / 2;
 
   switch (dev->io)
   {
     case eRS485_IO:
-
-      return driver_rs485_recv(dev->driver, out, dataLen, pdevopt->waitTimeOutMs);
+       return driver_rs485_recv_opt(dev->driver, out, dataLen, pdevopt->waitTimeOutMs,data_timeout);
       break;
     case eRS232_IO:
 
-      return driver_uart_recv(dev->driver, out, dataLen, pdevopt->waitTimeOutMs);
+      return driver_uart_recv_opt(dev->driver, out, dataLen, pdevopt->waitTimeOutMs, data_timeout);
       break;
   }
   return 0;

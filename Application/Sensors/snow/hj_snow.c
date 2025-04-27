@@ -220,16 +220,22 @@ int32_t read_hjSnowFall(dev_io_t *dev, uint8_t *err)
   opt.waitTimeOutMs = 50;
   len = dev_io_read(dev, frame, sizeof(frame), DEV_IO_CMD_DATA_TIMEOUT, (void *)&opt);
 
+
+  if(len == 0)
+  {
+    *err = DRV_ERR_TIMEOUT;
+  }
+
   if (len)
   {
     if (check_hjsnow(frame, len))
     {
       memcpy(&data, &frame[4 + offset], sizeof(data));
-      *err = 0;
+      *err = DRV_ERR_NONE;
     }
     else
     {
-      *err = 2;
+      *err = DRV_ERR_RECV_DATA;
     }
   }
 
@@ -242,12 +248,10 @@ typedef struct hjsnow_cfg_s
   int32_t channel;
 } hjsnow_cfg_t;
 
-#define SNOW_CH_485 0
-#define SNOW_CH_232 1
 
-driver_t hjsnow_driver[2];
-hjsnow_cfg_t hjsnow_cfg_485;
-hjsnow_cfg_t hjsnow_cfg_232;
+
+driver_t hjsnow_driver;
+hjsnow_cfg_t hjsnow_cfg;
 
 int32_t read_hjsnow(driver_t *driver, uint8_t *err);
 
@@ -255,31 +259,20 @@ snow_api_t snow_api = {.read = read_hjsnow};
 
 driver_t *hjsnow_open(int32_t num, void *opt)
 {
-  if (hjsnow_driver[num].opened)
+ int32_t port;
+ hjsnow_config_t *hjsnow = opt;
+
+
+ if (hjsnow_driver.opened)
+ {
+   return &hjsnow_driver;
+ }
+
+  hjsnow_driver.opened = true;
+
+  switch(hjsnow->physical_layer)
   {
-    return &hjsnow_driver[num];
-  }
-
-  hjsnow_driver[num].opened = true;
-
-  switch (num)
-  {
-    case HJ_SNOW_485:
-    {
-      hjsnow_config_t *hjsnow = opt;
-      uart_config_t uart_config;
-
-      uart_config.baud = 19200;
-      uart_config.dataLen = 8;
-      uart_config.parityIdx = 0;
-      uart_config.stop_bit = 1;
-      hjsnow_cfg_485.io = driver_rs485_open(hjsnow->port, &uart_config);
-      hjsnow_cfg_485.channel = 0;
-      hjsnow_driver[SNOW_CH_485].cfg = &hjsnow_cfg_485;
-      hjsnow_driver[SNOW_CH_485].api = &snow_api;
-    }
-    break;
-    case HJ_SNOW_232:
+    case ePHYSICAL_RS232:
     {
       hjsnow_config_t *rs232_config = opt;
       uart_config_t uart_config;
@@ -289,16 +282,34 @@ driver_t *hjsnow_open(int32_t num, void *opt)
       uart_config.parityIdx = 0;
       uart_config.stop_bit = 1;
 
-      hjsnow_cfg_232.channel = 1;
-      hjsnow_cfg_232.io = driver_uart_open(rs232_config->port, &uart_config);
+      hjsnow_cfg.channel = 1;
 
-      hjsnow_driver[SNOW_CH_232].cfg = &hjsnow_cfg_232;
-      hjsnow_driver[SNOW_CH_232].api = &snow_api;
+      port = uart_num_to_driver_num(rs232_config->port);
+      hjsnow_cfg.io = driver_uart_open(port, &uart_config);
+
+      hjsnow_driver.cfg = &hjsnow_cfg;
+      hjsnow_driver.api = &snow_api;
+    }
+    break;
+    case ePHYSICAL_RS485:
+    {
+      uart_config_t uart_config;
+
+      uart_config.baud = 19200;
+      uart_config.dataLen = 8;
+      uart_config.parityIdx = 0;
+      uart_config.stop_bit = 1;
+      hjsnow_cfg.io = driver_rs485_open(hjsnow->port, &uart_config);
+      hjsnow_cfg.channel = 0;
+      hjsnow_driver.cfg = &hjsnow_cfg;
+      hjsnow_driver.api = &snow_api;
     }
     break;
   }
+  
 
-  return &hjsnow_driver[num];
+
+  return &hjsnow_driver;
 }
 
 int32_t read_hjsnow(driver_t *driver, uint8_t *err)

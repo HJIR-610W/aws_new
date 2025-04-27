@@ -577,6 +577,7 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
 #define UART_IIR_THRE 0x02           // 송신기 홀딩 레지스터 비어 있음 (THRE)
 #define UART_IIR_MODEM_STATUS 0x00   // 모뎀 상태 변화 (CTS, DSR, RI, DCD)
 
+int g_channel;
 void irq_tl16c554(driver_t *drv)
 {
   uint8_t iir;
@@ -589,6 +590,7 @@ void irq_tl16c554(driver_t *drv)
   size_t xBytesSent;
   tl16c554_cfg_t *cfg = drv->cfg;
 
+  g_channel = cfg->channel;
   while (((iir = read_register(IIR(exUartBaseAddress[cfg->channel]))) &
           UART_IIR_INTTERUPT_PENDING) == 0)
   {

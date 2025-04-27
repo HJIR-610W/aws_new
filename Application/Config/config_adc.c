@@ -143,14 +143,15 @@ void config_adc_reset(void)
   g_config_adc = g_config_adc_default;
 }
 
-extern config_adc_adv_t g_adc_config;
+extern config_adc_nvm_t g_adc_config_nvm;
 
 void save_adc_cali(void)
 {
-  fram_write(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config, sizeof(g_adc_config));
+  fram_write(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config_nvm, sizeof(g_adc_config_nvm));
 }
 
 void load_adc_cali(void)
 {
-  fram_read(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config, sizeof(g_adc_config));
+  fram_read(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config_nvm, sizeof(g_adc_config_nvm));
+  adc_config_map();
 }

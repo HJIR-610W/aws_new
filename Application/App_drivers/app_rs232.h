@@ -25,4 +25,6 @@ bool rs232_is_opened(eRS232_PORT_t port);
 
 uint16_t rs232_recvOpt(eRS232_PORT_t port,uint8_t *pBuff,uint16_t rLen,
                       uint32_t timeOutms,uint32_t dataTimeOutms);
+
+int32_t uart_num_to_driver_num(int32_t app_uart_num);
 #endif

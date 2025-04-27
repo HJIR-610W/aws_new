@@ -27,7 +27,7 @@ const char *sensor_format_list[] = {
 };
 
 // 지원하는 센서 목록 정의
-const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ_485, S_T_PT100_A, S_T_PT100_B};
+const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
 const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};
 const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_ADC};
 const uint8_t windDirectionInstantList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_MAX_VAL};
@@ -36,8 +36,8 @@ const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REE
                             S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM,  S_T_GENERAL_232};
 const uint8_t pressureList[] = {S_T_UNSUED, S_T_ADC};
 const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI};
-const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ_485, S_T_SNOW_HJ_232};
-const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMI_HJ_485, S_T_ADC};
+const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ};
+const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMINITY_HJ, S_T_ADC};
 const uint8_t sunShineList[] = {S_T_UNSUED, S_T_SUNSHINE, S_T_ADC};
 const uint8_t solarRadiationList[] = {S_T_UNSUED, S_T_SOLAR_RADIATION, S_T_ADC};
 const uint8_t soilTemp5cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_5CM, S_T_ADC};
@@ -200,8 +200,8 @@ void *sensor_add(sensor_t *sensor)
 
       return 0;
       break;
-    case S_T_HUMI_HJ_485:
-    case S_T_TEMPERATURE_HJ_485:
+    case S_T_HUMINITY_HJ:
+    case S_T_TEMPERATURE_HJ:
       if (g_config_sensor.hjtemp_cnt < _countof(g_config_sensor.hjtemp))
       {
         index = g_config_sensor.hjtemp_cnt;
@@ -229,8 +229,8 @@ void *sensor_add(sensor_t *sensor)
         return &g_config_sensor.hjwindDir[index];
 
       break;
-    case S_T_SNOW_HJ_232:
-    case S_T_SNOW_HJ_485:
+
+    case S_T_SNOW_HJ:
       if (g_config_sensor.hjsnow_cnt < _countof(g_config_sensor.hjwindDir))
       {
         index = g_config_sensor.hjsnow_cnt;
@@ -286,13 +286,13 @@ void *get_sensor_config(sensor_t *sensor)
         case S_T_WIND_DIRECTION_HJ_485:
           return &g_config_sensor.hjwindDir[0];
           break;
-        case S_T_TEMPERATURE_HJ_485:
-        case S_T_HUMI_HJ_485:
+        case S_T_TEMPERATURE_HJ:
+        case S_T_HUMINITY_HJ:
           return &g_config_sensor.hjtemp[sensor->config[i][1]];
           break;
 
-        case S_T_SNOW_HJ_232:
-        case S_T_SNOW_HJ_485:
+
+        case S_T_SNOW_HJ:
           return &g_config_sensor.hjsnow[sensor->config[i][1]];
           break;
       }

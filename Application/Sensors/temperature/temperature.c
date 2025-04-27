@@ -58,3 +58,18 @@ float temperature_read(driver_t *driver, uint8_t *err)
 
   return api->read(driver, err);
 }
+
+void temperature_set(driver_t *driver, temperature_set_option_t option, void *value)
+{
+  const temperature_api_t *api = ((driver_t *)driver)->api;
+
+  api->set(driver,option,value);
+
+}
+
+void temperature_get(driver_t *driver, temperature_get_option_t option, void *value)
+{
+  const temperature_api_t *api = ((driver_t *)driver)->api;
+
+  api->get(driver, option, value);
+}

@@ -8,7 +8,10 @@
 #include "driver_interface.h"
 #include "modbus.h"
 
-#define MODBUS_RTU_OVER_485 100
+#define MODBUS_RTU_OVER_485 0
+#define MODBUS_RTU_OVER_232 1
+
+#define MODBUS_RTU_MAX 2
 
 driver_t *modbus_master_open(int32_t num, void *opt);
 

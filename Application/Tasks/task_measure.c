@@ -137,11 +137,8 @@ int32_t get_driverNum(eSENSOR_MODEL_t type)
     case S_T_WIND_DIRECTION_HJ_485:
       num = WIND_HJ;
       break;
-    case S_T_SNOW_HJ_485:
-      num = SNOW_HJ_485;
-      break;
-    case S_T_SNOW_HJ_232:
-      num = SNOW_HJ_232;
+    case S_T_SNOW_HJ:
+      num = SNOW_HJ;
       break;
     case S_T_RAIN_REED_05MM:
       num = RAIN_REED_05MM;
@@ -155,9 +152,12 @@ int32_t get_driverNum(eSENSOR_MODEL_t type)
     case S_T_RAIN_HALL_1MM:
       num = RAIN_HALL_1MM;
       break;
-    case S_T_TEMPERATURE_HJ_485:
+    case S_T_TEMPERATURE_HJ:
       num = TEMP_HJ_TEMPERATURE;
       break;
+  case S_T_HUMINITY_HJ:
+    num = TEMP_HJ_HUMINITY;
+    break;
   }
   return num;
 }
@@ -339,11 +339,12 @@ void sensor_init(void)
 
       if (p_sensor[A2_WIND_DIRECTION].type || p_sensor[A3_WIND_SPEED].type)
       {
+        osDelay(10);
         direction =
             wind_read(g_sensor_driver[A2_WIND_DIRECTION], WIND_CHANNEL_DIRECTION, &err_wind_dir);
         pa_reading[A2_WIND_DIRECTION].data.f = direction;
         pa_reading[A2_WIND_DIRECTION].err = err_wind_dir;
-
+        osDelay(10);
         speed = wind_read(g_sensor_driver[A3_WIND_SPEED], WIND_CHANNEL_SPEED, &err_wind_spd);
         pa_reading[A3_WIND_SPEED].data.f = speed;
         pa_reading[A3_WIND_SPEED].err = err_wind_spd;
@@ -563,7 +564,7 @@ void measureTask_init(void)
 
   assert_param(g_measure_queue);
 
-  thread_id = osThreadNew(measureTask, NULL, &kMeasureTask_attributes);
+ thread_id = osThreadNew(measureTask, NULL, &kMeasureTask_attributes);
 
  assert_param(thread_id);
 }

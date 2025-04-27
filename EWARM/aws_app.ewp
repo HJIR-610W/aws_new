@@ -1507,6 +1507,12 @@
             <group>
                 <name>humidity</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\humidity\hj_huminity.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\humidity\hj_huminity.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\humidity\humidity.c</name>
                 </file>
                 <file>
@@ -1583,6 +1589,12 @@
                 <name>temperature</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\temperature\hj_temperature.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\temperature\hj_temperature.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\temperature\hj_temperature_define.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\temperature\pt100.c</name>
@@ -2266,6 +2278,12 @@
         </group>
     </group>
     <group>
+        <name>Low_Level_Interface</name>
+        <file>
+            <name>$PROJ_DIR$\..\System\iar_io_retarget.c</name>
+        </file>
+    </group>
+    <group>
         <name>Middlewares</name>
         <group>
             <name>FatFs</name>
@@ -2609,12 +2627,6 @@
                 </file>
             </group>
         </group>
-    </group>
-    <group>
-        <name>Low_Level_Interface</name>
-        <file>
-            <name>$PROJ_DIR$\..\System\iar_io_retarget.c</name>
-        </file>
     </group>
     <group>
         <name>Utile</name>

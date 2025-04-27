@@ -92,6 +92,8 @@ const char *rs232ParityList[] = {"none", "even", "odd"};
 const char *enableList[] = {"미사용", "사용"};
 const char *ethModeList[] = {"클라이언트", "서버"};
 
+const char *physical_layer_list[]={"RS232","RS484"};
+
 int32_t print_common_cfg(p_shell_context_t ctx, sensor_t *sensor, uint8_t c);
 
 
@@ -445,7 +447,6 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
 
   switch (sensor->type)
   {
-    case S_T_SNOW_HJ_232:
     case S_T_TEMP_232:
     case S_T_GENERAL_232:
     {
@@ -456,12 +457,25 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
     break;
     case S_T_TEMP_485:
     case S_T_GENERAL_485:
-    case S_T_SNOW_HJ_485:
-
     {
       rs485_config_t *rs485_cfg = (rs485_config_t *)cfg;
       rs485_get_portList(list, sizeof(list));
       snprintf(out, outSize, "[%s]", list[rs485_cfg->port]);
+    }
+    break;
+    case S_T_SNOW_HJ:
+    {
+      hjsnow_config_t *hjsnow = (hjsnow_config_t *)cfg;
+      if (hjsnow->physical_layer == ePHYSICAL_RS232)
+      {
+        rs232_get_portList(list, sizeof(list));
+        snprintf(out, outSize, "[%s]", list[hjsnow->port]);
+      }
+      else
+      {
+        rs485_get_portList(list, sizeof(list));
+        snprintf(out, outSize, "[%s]", list[hjsnow->port]);
+      }
     }
     break;
     case S_T_ADC:
@@ -470,12 +484,21 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
       snprintf(out, outSize, "[%s.%d]", adcChModeList[adc_cfg->mode], adc_cfg->channel);
     }
     break;
-    case S_T_HUMI_HJ_485:
-    case S_T_TEMPERATURE_HJ_485:
+    case S_T_HUMINITY_HJ:
+    case S_T_TEMPERATURE_HJ:
     {
       hjtemp_config_t *hjtemp = (hjtemp_config_t *)cfg;
-      rs485_get_portList(list, sizeof(list));
-      snprintf(out, outSize, "[%s]", list[hjtemp->rs485_port]);
+      if (hjtemp->physical_layer == ePHYSICAL_RS232)
+      {
+        rs232_get_portList(list, sizeof(list));
+        snprintf(out, outSize, "[%s]", list[hjtemp->port]);
+      }
+      else
+      {
+        rs485_get_portList(list, sizeof(list));
+        snprintf(out, outSize, "[%s]", list[hjtemp->port]);
+      }
+
     }
     break;
     case S_T_WIND_DIRECTION_HJ_485:
@@ -585,22 +608,50 @@ uint8_t print_hjwindDir_cfg(p_shell_context_t ctx, hjwindspeed_config_t *hjwindC
 }
 
 // 화진 온도
-#define HJTEMP_CFG_PORT 0
+
+/*nn.물리장치  :RS232|RS485
+  nn.포트      :n
+*/
+#define HJTEMP_CFG_PHYSICAL_LAYER 0
+#define HJTEMP_CFG_PORT           1
 uint8_t print_hjtemp_cfg(p_shell_context_t ctx, hjtemp_config_t *hjtempCfg, uint8_t cnt)
 {
   const char *portNameList[10];
 
-  rs485_get_portList(portNameList, _countof(portNameList));
-  // 0.type       :
-  ctx->printf("%2d.port        :%s\r\n", cnt++, portNameList[hjtempCfg->rs485_port]);  // 고정
+  ctx->printf("%2d.물리장치   :%s\r\n", cnt++, physical_layer_list[hjtempCfg->physical_layer]);  // 고정
+
+  if (hjtempCfg->physical_layer == ePHYSICAL_RS232)
+  {
+    rs232_get_portList(portNameList, _countof(portNameList));
+  }
+  else
+  {
+    rs485_get_portList(portNameList, _countof(portNameList));
+
+  }
+  ctx->printf("%2d.포트       :%s\r\n", cnt++, portNameList[hjtempCfg->port]);  // 고정
   return cnt;
 }
 
+
+#define HJSNOW_CFG_MENU_PHY 0
+#define HJSNOW_CFG_MENU_PORT 1
 uint8_t print_hjsnow_cfg(p_shell_context_t ctx, hjsnow_config_t *hjsnow, uint8_t cnt)
 {
   const char *portNameList[10];
 
-  rs232_get_portList(portNameList, _countof(portNameList));
+  ctx->printf("%2d.물리장치   :%s\r\n", cnt++,
+              physical_layer_list[hjsnow->physical_layer]);  // 고정
+
+  if(hjsnow->physical_layer == ePHYSICAL_RS232)
+  {
+    rs232_get_portList(portNameList, _countof(portNameList));
+  }
+  else
+  {
+    rs485_get_portList(portNameList, _countof(portNameList));
+  }
+
   ctx->printf("%2d.port        :%s\r\n", cnt++, portNameList[hjsnow->port]);  // 고정
   return cnt;
 }
@@ -752,29 +803,7 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
       if (cnt)
       {
-        if (rs232_is_opened(
-                (eRS232_PORT_t)rs232->port))  // 만약 이미 열린 포트인데 변경하려고 하면 오류
-        {
-          ctx->printf("포트가 열린 상태에서 변경을 시도합니다.\r\n");
-          ctx->printf("열린 포트는 닫힙니다\r\n");
-          rs232_close((eRS232_PORT_t)rs232->port);
-        }
-
         rs232->port = cnt - 1;
-        if (rs232_is_opened((eRS232_PORT_t)rs232->port))  // 열려고 하는 포트가 이미 열려있다면
-        {
-          ctx->printf("PORT:%d 이미 열려있습니다.통신속도는 변경되지 않습니다.\r\n", cnt - 1);
-        }
-        else
-        {
-          uart_config_t uart_config = {.dataLen = UART_DATA_LEN_8, .stop_bit = 0};
-          uart_config.baud = rs232->baud;
-          uart_config.parityIdx = rs232->parityIdx;
-
-          rs232_open((eRS232_PORT_t)rs232->port, &uart_config);
-          ctx->printf("%s 새롭게 열렸습니다.\r\n", portList[rs232->port]);
-        }
-
         save_config_sensor();
       }
       break;
@@ -824,29 +853,9 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
       if (cnt)
       {
-        if (rs485_is_opened(
-                (eRS485_PORT_t)rs485->port))  // 만약 이미 열린 포트인데 변경하려고 하면 오류
-        {
-          ctx->printf("포트가 열린 상태에서 변경을 시도합니다.\r\n");
-          ctx->printf("열린 포트는 닫힙니다\r\n");
-          rs485_close((eRS485_PORT_t)rs485->port);
-        }
+
 
         rs485->port = cnt - 1;
-        if (rs485_is_opened((eRS485_PORT_t)rs485->port))  // 열려고 하는 포트가 이미 열려있다면
-        {
-          ctx->printf("PORT:%d 이미 열려있습니다.통신속도는 변경되지 않습니다.\r\n", cnt - 1);
-        }
-        else
-        {
-          uart_config_t uart_config;
-          uart_config.baud = rs485->baud;
-          uart_config.parityIdx = rs485->parityIdx;
-          uart_config.stop_bit = 0;
-          rs485_open((eRS485_PORT_t)rs485->port, &uart_config);
-
-          ctx->printf("%s 새롭게 열렸습니다.\r\n", portList[rs485->port]);
-        }
 
         save_config_sensor();
       }
@@ -908,30 +917,9 @@ void hjwind_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
       if (cnt)
       {
-        if (rs485_is_opened(
-                (eRS485_PORT_t)hjwind->rs485_port))  // 만약 이미 열린 포트인데 변경하려고 하면 오류
-        {
-          ctx->printf("포트가 열린 상태에서 변경을 시도합니다.\r\n");
-          ctx->printf("열린 포트는 닫힙니다\r\n");
-          rs485_close((eRS485_PORT_t)hjwind->rs485_port);
-        }
 
         hjwind->rs485_port = cnt - 1;
-        if (rs485_is_opened(
-                (eRS485_PORT_t)hjwind->rs485_port))  // 열려고 하는 포트가 이미 열려있다면
-        {
-          ctx->printf("PORT:%d 이미 열려있습니다.통신속도는 변경되지 않습니다.\r\n", cnt - 1);
-        }
-        else
-        {
-          uart_config_t uart_config;
-          uart_config.baud = 19200;
-          uart_config.parityIdx = 0;
-          uart_config.stop_bit = 0;
-          rs485_open((eRS485_PORT_t)hjwind->rs485_port, &uart_config);
 
-          ctx->printf("%s 새롭게 열렸습니다.\r\n", portList[hjwind->rs485_port]);
-        }
 
         save_config_sensor();
       }
@@ -960,30 +948,8 @@ void hjwinddir_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
       if (cnt)
       {
-        if (rs485_is_opened(
-                (eRS485_PORT_t)hjwind->rs485_port))  // 만약 이미 열린 포트인데 변경하려고 하면 오류
-        {
-          ctx->printf("포트가 열린 상태에서 변경을 시도합니다.\r\n");
-          ctx->printf("열린 포트는 닫힙니다\r\n");
-          rs485_close((eRS485_PORT_t)hjwind->rs485_port);
-        }
 
         hjwind->rs485_port = cnt - 1;
-        if (rs485_is_opened(
-                (eRS485_PORT_t)hjwind->rs485_port))  // 열려고 하는 포트가 이미 열려있다면
-        {
-          ctx->printf("PORT:%d 이미 열려있습니다.통신속도는 변경되지 않습니다.\r\n", cnt - 1);
-        }
-        else
-        {
-          uart_config_t uart_config;
-          uart_config.baud = 19200;
-          uart_config.parityIdx = 0;
-          uart_config.stop_bit = 0;
-          rs485_open((eRS485_PORT_t)hjwind->rs485_port, &uart_config);
-
-          ctx->printf("%s 새롭게 열렸습니다.\r\n", portList[hjwind->rs485_port]);
-        }
 
         save_config_sensor();
       }
@@ -992,11 +958,19 @@ void hjwinddir_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       break;
   }
 }
+
+
+/*
+0.type:화진 RS485 9600
+1.port:EX1 RS485 A
+*/
+
 void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
 {
   int32_t dec;
   hjtemp_config_t *hjtemp;
   const char *portList[10];
+  
 
   hjtemp = get_sensor_config(sensor);
   if (hjtemp == NULL)
@@ -1005,44 +979,90 @@ void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
   }
   switch (cnt)
   {
-    case HJTEMP_CFG_PORT:
-      cnt = rs485_get_portList(portList, _countof(portList));
-
-      cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
+    case HJTEMP_CFG_PHYSICAL_LAYER:
+      cnt = select_indexFromList(ctx, physical_layer_list, NULL, _countof(physical_layer_list), true);
       if (cnt)
       {
-        if (rs485_is_opened(
-                (eRS485_PORT_t)hjtemp->rs485_port))  // 만약 이미 열린 포트인데 변경하려고 하면 오류
-        {
-          ctx->printf("포트가 열린 상태에서 변경을 시도합니다.\r\n");
-          ctx->printf("열린 포트는 닫힙니다\r\n");
-          rs485_close((eRS485_PORT_t)hjtemp->rs485_port);
-        }
-
-        hjtemp->rs485_port = cnt - 1;
-        if (rs485_is_opened(
-                (eRS485_PORT_t)hjtemp->rs485_port))  // 열려고 하는 포트가 이미 열려있다면
-        {
-          ctx->printf("PORT:%d 이미 열려있습니다.통신속도는 변경되지 않습니다.\r\n", cnt - 1);
-        }
-        else
-        {
-          uart_config_t uart_config;
-          uart_config.baud = 9600;
-          uart_config.parityIdx = 0;
-          uart_config.stop_bit = 0;
-          rs485_open((eRS485_PORT_t)hjtemp->rs485_port, &uart_config);
-
-          ctx->printf("%s 새롭게 열렸습니다.\r\n", portList[hjtemp->rs485_port]);
-        }
-
-        save_config_sensor();
+        hjtemp->physical_layer = cnt - 1;
       }
+      save_config_sensor();
+
+      break;
+    case HJTEMP_CFG_PORT:
+      if (hjtemp->physical_layer == ePHYSICAL_RS232)
+      {
+        cnt = rs232_get_portList(portList, _countof(portList));
+        cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
+        if (cnt)
+        {
+          hjtemp->port = cnt - 1;
+        }
+      }
+      else
+      {
+        cnt = rs485_get_portList(portList, _countof(portList));
+        cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
+        if (cnt)
+        {
+          hjtemp->port = cnt - 1;
+        }
+      }
+        save_config_sensor();
       break;
     default:
       break;
   }
 }
+
+void hjsnow_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
+{
+  int32_t dec;
+  hjsnow_config_t *hjsnow;
+  const char *portList[10];
+
+  hjsnow = get_sensor_config(sensor);
+  if (hjsnow == NULL)
+  {
+    return;
+  }
+  switch (cnt)
+  {
+    case HJSNOW_CFG_MENU_PHY:
+      cnt =
+          select_indexFromList(ctx, physical_layer_list, NULL, _countof(physical_layer_list), true);
+      if (cnt)
+      {
+        hjsnow->physical_layer = cnt - 1;
+      }
+      save_config_sensor();
+
+      break;
+    case HJSNOW_CFG_MENU_PORT:
+      if (hjsnow->physical_layer == ePHYSICAL_RS232)
+      {
+        cnt = rs232_get_portList(portList, _countof(portList));
+        cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
+        if (cnt)
+        {
+          hjsnow->port = cnt - 1;
+        }
+      }
+      else
+      {
+        cnt = rs485_get_portList(portList, _countof(portList));
+        cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
+        if (cnt)
+        {
+          hjsnow->port = cnt - 1;
+        }
+      }
+      save_config_sensor();
+      break;
+    default:
+      break;
+  }
+}
+
 void rain_reed_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt) {}
 
 void rain_hall_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt) {}
@@ -1074,11 +1094,10 @@ const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_WIND_SPEED_HJ_485, .config_set = hjwind_config_set},
     {.sensorType = S_T_WIND_SPEED_MAX_VAL, .config_set = 0},
     {.sensorType = S_T_WIND_DIRECTION_MAX_VAL, .config_set = 0},
-    {.sensorType = S_T_SNOW_HJ_485, .config_set = rs485_config_set},
-    {.sensorType = S_T_SNOW_HJ_232, .config_set = rs232_config_set},
+    {.sensorType = S_T_SNOW_HJ, .config_set = hjsnow_config_set},
     {.sensorType = S_T_GENERAL_485, .config_set = rs485_config_set},
-    {.sensorType = S_T_TEMPERATURE_HJ_485, .config_set = hjtemp_config_set},
-    {.sensorType = S_T_HUMI_HJ_485, .config_set = hjtemp_config_set}};
+    {.sensorType = S_T_TEMPERATURE_HJ, .config_set = hjtemp_config_set},
+    {.sensorType = S_T_HUMINITY_HJ, .config_set = hjtemp_config_set}};
 
 /*
  센서 개별
@@ -1100,8 +1119,7 @@ int32_t print_common_cfg(p_shell_context_t ctx, sensor_t *sensor, uint8_t c)
     case S_T_GENERAL_485:
       cnt = print_rs485_cfg(ctx, get_sensor_config(sensor), cnt);
       break;
-    case S_T_SNOW_HJ_232:
-    case S_T_SNOW_HJ_485:
+    case S_T_SNOW_HJ:
       cnt = print_hjsnow_cfg(ctx, get_sensor_config(sensor), cnt);
       break;
     case S_T_WIND_DIRECTION_HJ_485:
@@ -1110,10 +1128,10 @@ int32_t print_common_cfg(p_shell_context_t ctx, sensor_t *sensor, uint8_t c)
     case S_T_WIND_SPEED_HJ_485:
       cnt = print_hjwind_cfg(ctx, get_sensor_config(sensor), cnt);
       break;
-    case S_T_TEMPERATURE_HJ_485:
+    case S_T_TEMPERATURE_HJ:
       cnt = print_hjtemp_cfg(ctx, get_sensor_config(sensor), cnt);
       break;
-    case S_T_HUMI_HJ_485:
+    case S_T_HUMINITY_HJ:
       cnt = print_hjtemp_cfg(ctx, get_sensor_config(sensor), cnt);
       break;
   }
@@ -2497,16 +2515,16 @@ void config_hj_reset(void)
   save_config_sensor();
 
   // 온도 센서[화진 온도 9600]
-  hj_config.sensor[A1_TEMPERATURE].type = S_T_TEMPERATURE_HJ_485;
+  hj_config.sensor[A1_TEMPERATURE].type = S_T_TEMPERATURE_HJ;
   sensor_add(&hj_config.sensor[A1_TEMPERATURE]);
   hjwind_cfg = get_sensor_config(&hj_config.sensor[A1_TEMPERATURE]);
-  hjtemp_cfg->rs485_port = RS485_A;
+  hjtemp_cfg->port = RS485_A;
 
   // 습도 센서[화진 습도 9600]
-  hj_config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_HUMI_HJ_485;
+  hj_config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_HUMINITY_HJ;
   sensor_add(&hj_config.sensor[A10_RELATIVE_HUMIDITY]);
   hjwind_cfg = get_sensor_config(&hj_config.sensor[A10_RELATIVE_HUMIDITY]);
-  hjtemp_cfg->rs485_port = RS485_A;
+  hjtemp_cfg->port = RS485_A;
 
   // 풍향[화진 RS485 풍향 19200]
   hj_config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;
@@ -2535,10 +2553,11 @@ void config_hj_reset(void)
  // hj_config.sensor[A5_INSTANT_WIND_SPEED].type = S_T_WIND_SPEED_MAX_VAL;
 
   // 적설[화진 RS485 19200]
-  hj_config.sensor[A9_SNOW_DEPTH].type = S_T_SNOW_HJ_232;
+  hj_config.sensor[A9_SNOW_DEPTH].type = S_T_SNOW_HJ;
   sensor_add(&hj_config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg = get_sensor_config(&hj_config.sensor[A9_SNOW_DEPTH]);
-  hjsnow_cfg->port = eRS232_1;
+  hjsnow_cfg->physical_layer  = ePHYSICAL_RS232;
+  hjsnow_cfg->port = eRS232_2;
 
   // 기압[RM YOUNG]
   hj_config.sensor[A7_PRESSURE].type = S_T_ADC;
@@ -3144,7 +3163,7 @@ int32_t print_menu_calibration(p_shell_context_t ctx)
 
 int32_t menu_calibration(p_shell_context_t ctx)
 {
-  run_calibration_menu();
+  run_calibraion_root();
   
 }
 

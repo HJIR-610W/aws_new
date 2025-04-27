@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define SENSOR_ERR_COMM 1
+#define SENSOR_ERR_VAL  2
+
 //장비가 측정가능한 데이터,이름,printf 에 사용될 format을 정의의
 #define SENSOR_LIST                                      \
   X(A1_TEMPERATURE,             "기온", "%-5.2fC,")      \
@@ -19,40 +22,40 @@
   X(B2_SUNSHINE_DURATION,       "일조", "%-5.2f")        \
   X(B3_GROUND_TEMPERATURE,      "지면온도", "%-5.2f")    \
   X(B4_SURFACE_TEMPERATURE,     "초상온도", "%-5.2f")    \
-  X(B5_SOIL_TEMPERATURE_5CM,    "지중온도", "%-5.2f")    \
-  X(B6_SOIL_TEMPERATURE_10CM,   "지중온도", "%-5.2f")    \
-  X(B7_SOIL_TEMPERATURE_20CM,   "지중온도", "%-5.2f")    \
-  X(B8_SOIL_TEMPERATURE_30CM,   "지중온도", "%-5.2f")    \
-  X(B9_SOIL_TEMPERATURE_50CM,   "지중온도", "%-5.2f")    \
-  X(B10_SOIL_TEMPERATURE_100CM, "지중온도", "%-5.2f")    \
-  X(B11_SOIL_TEMPERATURE_150CM, "지중온도", "%-5.2f")    \
-  X(B12_SOIL_TEMPERATURE_300CM, "지중온도", "%-5.2f")    \
-  X(B13_SOIL_TEMPERATURE_500CM, "지중온도", "%-5.2f")    \
-  X(C1_CLOUD_BASE1,             "운고", "%-5.2f")        \
-  X(C2_CLOUD_BASE2,             "운고", "%-5.2f")        \
-  X(C3_CLOUD_BASE3,             "운고", "%-5.2f")        \
+  X(B5_SOIL_TEMPERATURE_5CM,    "지중온도 5cm", "%-5.2f")    \
+  X(B6_SOIL_TEMPERATURE_10CM,   "지중온도 10cm", "%-5.2f")    \
+  X(B7_SOIL_TEMPERATURE_20CM,   "지중온도 20cm", "%-5.2f")    \
+  X(B8_SOIL_TEMPERATURE_30CM,   "지중온도 30cm", "%-5.2f")    \
+  X(B9_SOIL_TEMPERATURE_50CM,   "지중온도 50cm", "%-5.2f")    \
+  X(B10_SOIL_TEMPERATURE_100CM, "지중온도 1m", "%-5.2f")    \
+  X(B11_SOIL_TEMPERATURE_150CM, "지중온도 1.5m", "%-5.2f")    \
+  X(B12_SOIL_TEMPERATURE_300CM, "지중온도 3m", "%-5.2f")    \
+  X(B13_SOIL_TEMPERATURE_500CM, "지중온도 5m", "%-5.2f")    \
+  X(C1_CLOUD_BASE1,             "운고1", "%-5.2f")        \
+  X(C2_CLOUD_BASE2,             "운고2", "%-5.2f")        \
+  X(C3_CLOUD_BASE3,             "운고3", "%-5.2f")        \
   X(C4_CLOUD_COVER,             "운량", "%-5.2f")        \
   X(C5_VISIBILITY,              "시정", "%-5.2f")        \
-  X(C6_PM10,                    "미세먼지", "%-5.2f")    \
-  X(C7_PM2DOT5,                 "미세먼지", "%-5.2f")    \
+  X(C6_PM10,                    "미세먼지 1.0", "%-5.2f")    \
+  X(C7_PM2DOT5,                 "미세먼지 2.5", "%-5.2f")    \
   X(C8_NET_RADIATION,           "순복사", "%-5.2f")      \
   X(C9_TOTAL_RADIATION,         "전천복사", "%-5.2f")    \
   X(C10_REFLECTED_RADIATION,    "반사복사", "%-5.2f")    \
   X(C11_DIRECT_SOLAR,           "직달일사", "%-5.2f")    \
   X(C12_CURRENT_WEATHER,        "현재일기", "%-5.2f")    \
-  X(N1_SOIL_MOISTURE_10CM,      "토양수분", "%-5.2f")    \
-  X(N2_SOIL_MOISTURE_20CM,      "토양수분", "%-5.2f")    \
-  X(N3_SOIL_MOISTURE_30CM,      "토양수분", "%-5.2f")    \
-  X(N4_SOIL_MOISTURE_50CM,      "토양수분", "%-5.2f")    \
+  X(N1_SOIL_MOISTURE_10CM,      "토양수분 10cm", "%-5.2f")    \
+  X(N2_SOIL_MOISTURE_20CM,      "토양수분 20cm", "%-5.2f")    \
+  X(N3_SOIL_MOISTURE_30CM,      "토양수분 30cm", "%-5.2f")    \
+  X(N4_SOIL_MOISTURE_50CM,      "토양수분 50cm", "%-5.2f")    \
   X(N5_ILLUMINANCE,             "조도량", "%-5.2f")      \
-  X(N6_WIND_VELOCITY_150CM,     "풍속", "%-5.2f")        \
-  X(N7_WIND_VELOCITY_400CM,     "풍속", "%-5.2f")        \
-  X(N8_INSTANT_VELOCITY_150CM,  "순간풍속", "%-5.2f")    \
-  X(N9_INSTANT_VELOCITY_400CM,  "순간풍속", "%-5.2f")    \
-  X(N10_AIR_TEMPERATURE_50CM,   "기온", "%-5.2fC")       \
-  X(N11_AIR_TEMPERATURE_400CM,  "기온", "%-5.2f")        \
-  X(N12_HUMIDITY_50CM,          "습도", "%-5.2f")        \
-  X(N13_HUMIDITY_400CM,         "습도", "%-5.2f")        \
+  X(N6_WIND_VELOCITY_150CM,     "풍속 1.5m", "%-5.2f")        \
+  X(N7_WIND_VELOCITY_400CM,     "풍속 4.0m", "%-5.2f")        \
+  X(N8_INSTANT_VELOCITY_150CM,  "순간풍속 1.5m", "%-5.2f")    \
+  X(N9_INSTANT_VELOCITY_400CM,  "순간풍속 4.0m", "%-5.2f")    \
+  X(N10_AIR_TEMPERATURE_50CM,   "기온 50cm", "%-5.2fC")       \
+  X(N11_AIR_TEMPERATURE_400CM,  "기온 4m", "%-5.2f")        \
+  X(N12_HUMIDITY_50CM,          "습도 50cm", "%-5.2f")        \
+  X(N13_HUMIDITY_400CM,         "습도 4m", "%-5.2f")        \
   X(I1_TACHOMETER,              "타코미터", "%-5.2f")    \
   X(USER_WATER,                 "수위", "%-5.2f") 
 
@@ -81,17 +84,16 @@ typedef enum sensor_list_e
   X(S_T_RAIN_HALL_05MM,    "화진 HALL 0.5mm")         \
   X(S_T_RAIN_HALL_1MM,     "화진 HALL 1mm")           \
   X(S_T_DI_0,              "DI_0")                    \
-  X(S_T_SNOW_HJ_485,       "화진 RS485 19200")        \
+  X(S_T_SNOW_HJ,       "화진 적설")        \
   X(S_T_GENERAL_232,       "GENERAL_RS232")           \
-  X(S_T_WIND_SPEED_HJ_485, "화진 RS485 9600")         \
-  X(S_T_WIND_DIRECTION_HJ_485, "화진 RS485 9600")     \
-  X(S_T_HUMI_HJ_485, "화진 RS485 9600")               \
+  X(S_T_WIND_SPEED_HJ_485, "화진 풍속")         \
+  X(S_T_WIND_DIRECTION_HJ_485, "화진 풍향")     \
+  X(S_T_HUMINITY_HJ, "화진 온습도")               \
   X(S_T_WIND_SPEED_MAX_VAL, "WIND_SPEED_MAX")         \
   X(S_T_WIND_DIRECTION_MAX_VAL, "WIND_DIRECTION_MAX") \
   X(S_T_PRESSURE_485, "PRESSURE_RS485")               \
   X(S_T_HUMI_RS485, "HUMI_RS485")                     \
-  X(S_T_RAIN_PRESENT_DI, "화진 접점")                 \
-  X(S_T_SNOW_HJ_232, "화진 RS232 19200")              \
+  X(S_T_RAIN_PRESENT_DI, "화진 강우감지")                 \
   X(S_T_GENERAL_485, "GENERAL_485")                   \
   X(S_T_PT100_A, "PT100_A")                           \
   X(S_T_PT100_B, "PT100_B")                           \
@@ -109,7 +111,7 @@ typedef enum sensor_list_e
   X(S_T_SOIL_TEMP_300CM, "SOIL_TEMP_300CM")           \
   X(S_T_SOIL_TEMP_500CM, "SOIL_TEMP_500CM")           \
   X(S_T_GENERAL, "GENERAL")                           \
-  X(S_T_TEMPERATURE_HJ_485, "화진 RS485 9600")
+  X(S_T_TEMPERATURE_HJ, "화진 온습도")\
 
 typedef enum sensor_model_e
 {

@@ -8,7 +8,7 @@
 
 // 사용가능한 모드버스 종류
 #define DRIVER_MODBUS_MSTER_RTU_OVER_485 100
-
+#define DRIVER_MODBUS_MSTER_RTU_OVER_232 101
 /*
 모드버스 초기화를 위해 제공하는 정보, 각각의 드라이버에서 확인하여 수동으로 기입
 RS485는 2개 사용 가능능

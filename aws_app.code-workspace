@@ -57,7 +57,13 @@
 			"io_retarget.h": "c",
 			"yfuns.h": "c",
 			"stddef.h": "c",
-			"errno.h": "c"
+			"errno.h": "c",
+			"algorithm": "c",
+			"limits": "c",
+			"driver_adc.h": "c",
+			"hj_temperature_define.h": "c",
+			"humidity.h": "c",
+			"temperature_define.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

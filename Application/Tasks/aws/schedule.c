@@ -1338,3 +1338,8 @@ void update_old_kma_hour(void)
 
 
 }
+
+SYSTEM_INFO_AWS *get_system_info_aws(void)
+{
+  return &Sysinfo;
+}

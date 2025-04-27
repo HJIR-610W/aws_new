@@ -83,6 +83,7 @@ typedef rs485_init_t modbus_init_t;
 
 typedef enum modbus_type_e
 {
-  eMODBUS_RS485
+  eMODBUS_RS485,
+  eMODBUS_RS232
 } eMODBUS_TYPE_t;
 #endif
