@@ -48,36 +48,64 @@
 #include "utile.h"
 #include "utile_time.h"
 #include "aws_processor.h"
+#include "os_user_def.h"
 
-#define MEASURE_PERIOD_MS 250
+#define MEASURE_PERIOD_250MS 250
+#define MEASURE_PERIOD_1000MS 1000
 
-const osThreadAttr_t kMeasureTask_attributes = {
-    .name = "measureTask",
+
+const osThreadAttr_t kMeasure250msTask_attributes = {
+    .name = "measure250msTask",
     .stack_size = 2048,
-    .priority = (osPriority_t)osPriorityRealtime1,
+    .priority = (osPriority_t)osPriorityRealtime,
 };
+
+const osThreadAttr_t kMeasure1sTask_attributes = {
+    .name = "measure1sTask",
+    .stack_size = 2048,
+    .priority = (osPriority_t)osPriorityRealtime,
+};
+
+
 
 const uint32_t kMesaureTimeOutMs = 50;
 
 static sensor_t g_sensor_copy[SENSOR_LIST_MAX];  // config 센서의 복사본
 static driver_t *g_sensor_driver[SENSOR_LIST_MAX];
 
-osMessageQueueId_t g_measure_queue;//센서 측정 데이터 송순 Q
-uint32_t g_debug_start_time; //task 실행시간 측정용
+
+osMessageQueueId_t g_reading_250ms_queue;
+osMessageQueueId_t g_reading_1s_queue;
+
+uint32_t g_debug_start_time;   // task 실행시간 측정용
 uint32_t g_debug_elased_time;  // task 실행시간 측정용
 uint32_t g_debug_elased_max;   // task 실행시간 측정용
 
-measure_data_t g_reading;
+measure_data_250ms_t g_reading_250;
+measure_data_1s_t g_reading_1;
 
-/**
- * @brief 측정 데이터 전송송
- */
-void
-    send_measurement(void *data)
+exec_time_t g_exec_250ms_time;
+exec_time_t g_exec_1s_time;
+
+void elapse_start(exec_time_t *p_time) { p_time->start_time = HAL_GetTick(); }
+
+void elapse_stop(exec_time_t *p_time)
+{
+  p_time->elapsed_time = HAL_GetTick() - p_time->start_time;
+  if (p_time->elapsed_time > p_time->elapsed_max)
+    p_time->elapsed_max = p_time->elapsed_time;
+}
+
+
+
+    /**
+     * @brief 측정 데이터 전송송
+     */
+void send_measurement(void *queue,void *data)
 {
   osStatus_t status;
 
-  status = osMessageQueuePut(g_measure_queue, data, 0, kMesaureTimeOutMs);
+  status = osMessageQueuePut(queue, data, 0, kMesaureTimeOutMs);
 
   if(status != osOK)
   {
@@ -88,17 +116,17 @@ void
 /**
  * @brief 측정 데이터 확인
  */
-bool is_measurement(void *data)
+bool is_measurement_250(void *data,uint32_t timeout)
 {
   osStatus_t status;
 
-  if(g_measure_queue== NULL)
+  if (g_reading_250ms_queue == NULL)
   {
     osDelay(100);
     return false;
-  } 
-  
-  status = osMessageQueueGet(g_measure_queue, data, NULL, osWaitForever);
+  }
+
+  status = osMessageQueueGet(g_reading_250ms_queue, data, NULL, timeout);
 
   if (status != osOK)
   {
@@ -107,7 +135,23 @@ bool is_measurement(void *data)
   }
 
   return true;
+}
 
+bool is_measurement_1s( void *data,uint32_t timeout)
+{
+  osStatus_t status;
+
+  if (g_reading_1s_queue == NULL)
+  {
+    osDelay(100);
+    return false;
+  }
+
+  status = osMessageQueueGet(g_reading_1s_queue, data, NULL, timeout);
+
+
+
+  return true;
 }
 
 /**
@@ -283,7 +327,7 @@ void sensor_init(void)
     }
   }
 
-  sensor_data_t *pa_reading = g_reading.data;
+  sensor_data_t *pa_reading = g_reading_1.data;
 
   for (int i = 0; i < SENSOR_LIST_MAX; i++)
   {
@@ -291,13 +335,24 @@ void sensor_init(void)
     {
       pa_reading[i].enable = 1;
     }
+
+    switch (i)
+    {
+      case A2_WIND_DIRECTION:
+        g_reading_250.data[eA2_WIND_DIRECTION].enable = true;
+        g_reading_250.data[eA2_WIND_DIRECTION].data_type = eDATA_TYPE_F;
+        break;
+      case A3_WIND_SPEED:
+        g_reading_250.data[eA3_WIND_SPEED].enable = true;
+        g_reading_250.data[eA3_WIND_SPEED].data_type = eDATA_TYPE_F;
+        break;
+
+    }
   }
     
   pa_reading[A1_TEMPERATURE].data_type = eDATA_TYPE_F;
-  pa_reading[A2_WIND_DIRECTION].data_type = eDATA_TYPE_F;
-  pa_reading[A3_WIND_SPEED].data_type = eDATA_TYPE_F;
 
-  pa_reading[A6_RAINFALL_DOT5_1MM].data_type = eDATA_TYPE_I;
+  pa_reading[A6_RAINFALL_DOT5_1MM].data_type = eDATA_TYPE_F;
   pa_reading[A7_PRESSURE].data_type = eDATA_TYPE_F;
   pa_reading[A8_RAIN_PRESENT].data_type = eDATA_TYPE_B;
   pa_reading[A9_SNOW_DEPTH].data_type = eDATA_TYPE_I;
@@ -324,53 +379,49 @@ void sensor_init(void)
   pa_reading[C2_CLOUD_BASE2].data_type = eDATA_TYPE_F;
     }
 
-    /**
-     * @brief 250ms마다 측정
-     */
-    void measure_250ms(void)
-    {
-      uint8_t err_wind_spd;
-      uint8_t err_wind_dir;
-      sensor_t *p_sensor = g_sensor_copy;
-      wind_t wind;
-      float speed = 0.0f;
-      float direction = 0.0f;
-      sensor_data_t *pa_reading = g_reading.data;
+/**
+ * @brief 250ms마다 측정
+ */
+void measure_250ms(void)
+{
+  uint8_t err_wind_spd;
+  uint8_t err_wind_dir;
+  sensor_t *p_sensor = g_sensor_copy;
+  wind_t wind;
+  float speed = 0.0f;
+  float direction = 0.0f;
+  sensor_data_t *p_reading_250ms = g_reading_250.data;
 
-      if (p_sensor[A2_WIND_DIRECTION].type || p_sensor[A3_WIND_SPEED].type)
-      {
-        osDelay(10);
-        direction =
-            wind_read(g_sensor_driver[A2_WIND_DIRECTION], WIND_CHANNEL_DIRECTION, &err_wind_dir);
-        pa_reading[A2_WIND_DIRECTION].data.f = direction;
-        pa_reading[A2_WIND_DIRECTION].err = err_wind_dir;
-        osDelay(10);
-        speed = wind_read(g_sensor_driver[A3_WIND_SPEED], WIND_CHANNEL_SPEED, &err_wind_spd);
-        pa_reading[A3_WIND_SPEED].data.f = speed;
-        pa_reading[A3_WIND_SPEED].err = err_wind_spd;
+  if (p_sensor[A2_WIND_DIRECTION].type || p_sensor[A3_WIND_SPEED].type)
+  {
 
-        wind.direction = direction;
-        wind.speed = speed;
+    direction =
+    wind_read(g_sensor_driver[A2_WIND_DIRECTION], WIND_CHANNEL_DIRECTION, &err_wind_dir);
+    p_reading_250ms[eA2_WIND_DIRECTION].data.f = direction;
+    p_reading_250ms[eA2_WIND_DIRECTION].err = err_wind_dir;
 
-      //  wind_process_250ms(&wind, err_wind_spd, err_wind_dir);
-      }
-    }
+    speed = wind_read(g_sensor_driver[A3_WIND_SPEED], WIND_CHANNEL_SPEED, &err_wind_spd);
+    p_reading_250ms[eA3_WIND_SPEED].data.f = speed;
+    p_reading_250ms[eA3_WIND_SPEED].err = err_wind_spd;
+  }
+}
 
-    void measure_1s(DATE_TIME_BUF * ct)
-    {
-      bool bData;
-      uint8_t read_err;
-      uint16_t i;
-      uint16_t sensor_cnt;
-      int32_t iData;
-      float adc;
-      float fData;
-      eSENSOR_MODEL_t model;
-      eSENSOR_LIST_t sensor_type;
-      sensor_data_t *pa_reading = g_reading.data;
-      sensor_t *sensor = g_sensor_copy;
+void measure_1s(void)
+{
+  bool bData;
+  uint8_t read_err;
+  uint16_t i;
+  uint16_t sensor_cnt;
+  int32_t iData;
+  float adc;
+  float fData;
+  eSENSOR_MODEL_t model;
+  eSENSOR_LIST_t sensor_type;
+  sensor_data_t *pa_reading = g_reading_1.data;
+  sensor_t *sensor = g_sensor_copy;
 
-      sensor_cnt = _countof(g_sensor_copy);
+  sensor_cnt = _countof(g_sensor_copy);
+
 
       // AWS센서만 처리
       for (sensor_type = A1_TEMPERATURE; sensor_type <= I1_TACHOMETER;
@@ -389,8 +440,8 @@ void sensor_init(void)
               pa_reading[A1_TEMPERATURE].err = read_err;
               break;
             case A6_RAINFALL_DOT5_1MM:
-              iData = read_sensor_rain(g_sensor_driver[A6_RAINFALL_DOT5_1MM], &read_err);
-              pa_reading[A6_RAINFALL_DOT5_1MM].data.i = iData;
+              fData = read_sensor_rain(g_sensor_driver[A6_RAINFALL_DOT5_1MM], &read_err);
+              pa_reading[A6_RAINFALL_DOT5_1MM].data.f = fData;
               pa_reading[A6_RAINFALL_DOT5_1MM].err = read_err;
               break;
             case A7_PRESSURE:
@@ -476,95 +527,67 @@ void sensor_init(void)
       }
     }
 
-#define AWS_OLD //250ms 마다 측정해서 dualTask에서 처리
-void measureTask(void *arg)
+
+
+
+
+void measure250ms_task(void *arg)
 {
   uint32_t tick_count;
 
-  DATE_TIME_BUF ct;
-  DATE_TIME_BUF ot;
-
-
-  os_logging_printf("measure task");
-
-  /*
-  config의 복사본으로 동작시킨다.
-  config변경해도 동작에 영향이 없도록 한다.
-  설정값 변경후 장비를 리셋해야 한다다.
-  */
-
-
-  sensor_init();
-
-  ct = Date_Time;
-  ot = ct;
+  os_logging_printf("250ms start");
 
   tick_count = osKernelGetTickCount();
-
-#ifndef AWS_OLD
-  while (1)
+  while(1)
   {
-    g_debug_start_time = mcu_get_clk();
-
-    ct = Date_Time;
-
-    measure_250ms(&ct);
-    g_reading.type = eMEASURE_TYPE_250MS;
-    send_measurement(&g_reading);
-
-    if (ct.Sec != ot.Sec)
-    {
-      measure_1s(&ct);
-      ot.Sec = ct.Sec;
-      g_reading.type = eMEASURE_TYPE_1000MS;
-      send_measurement(&g_reading);
-    }
-
-    g_debug_elased_time = cal_elapsed_us(g_debug_start_time);
-    if (g_debug_elased_time > g_debug_elased_max)
-    {
-      g_debug_elased_max = g_debug_elased_time;
-    }
-    tick_count += MEASURE_PERIOD_MS;
-
-    osDelayUntil(tick_count);  // 남은 지연 시간만큼 지연
-  }
-
-#else
-  while (1)
-  {
-    g_debug_start_time = mcu_get_clk();
-
+    elapse_start(&g_exec_250ms_time);
     measure_250ms();
-    measure_1s(&ct);//함수 이름만 1s이지 호출이 250ms 임
-
-    g_debug_elased_time = cal_elapsed_us(g_debug_start_time);
-    if (g_debug_elased_time > g_debug_elased_max)
-    {
-      g_debug_elased_max = g_debug_elased_time;
-    }
-    tick_count += MEASURE_PERIOD_MS;
-
-    send_measurement(&g_reading);
-    osDelayUntil(tick_count);  // 남은 지연 시간만큼 지연
+    elapse_stop(&g_exec_250ms_time);
+    send_measurement(g_reading_250ms_queue, &g_reading_250);
+    tick_count += MEASURE_PERIOD_250MS;
+    osDelayUntil(tick_count);  
   }
-#endif
-
 }
 
 
+void measure1s_task(void *arg)
+{
+  uint32_t tick_count;
 
+  os_logging_printf("1s start");
+  tick_count = osKernelGetTickCount();
+  while(1)
+  {
+    elapse_start(&g_exec_1s_time);
+    measure_1s();
+    elapse_stop(&g_exec_1s_time);
+    send_measurement(g_reading_1s_queue, &g_reading_1);
+    tick_count += MEASURE_PERIOD_1000MS;
+    osDelayUntil(tick_count);
+  }
+}
 
-
+/**
+ * @brief 250ms,1s 1개의 센서 수집 Task실행
+ * 250ms에서 모두 처리하다보면 시리얼 통신 기반 센서에서 처리 시간이 많아
+ * 250ms 마다 실행이 불가능하다.
+ * 250ms 풍향 풍속 전용으로 처리
+ * 1s는 일반 센서처리
+ * 
+ * 
+ */
 void measureTask_init(void)
 {
   osThreadId_t thread_id;
 
-  g_measure_queue = osMessageQueueNew(1, sizeof(measure_data_t), NULL);
+  sensor_init();
 
-  assert_param(g_measure_queue);
+  g_reading_250ms_queue = osMessageQueueNew(1, sizeof(measure_data_250ms_t), NULL);
+  g_reading_1s_queue = osMessageQueueNew(1, sizeof(measure_data_1s_t), NULL);
 
- thread_id = osThreadNew(measureTask, NULL, &kMeasureTask_attributes);
+  thread_id = osThreadNew(measure250ms_task, NULL, &kMeasure250msTask_attributes);
+  assert_param(thread_id);
 
- assert_param(thread_id);
-}
+  thread_id = osThreadNew(measure1s_task, NULL, &kMeasure1sTask_attributes);
+  assert_param(thread_id);
+  }

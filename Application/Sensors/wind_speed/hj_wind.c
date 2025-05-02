@@ -72,6 +72,8 @@ bool is_hjwin(uint8_t *frame, uint16_t len)
 }
 
 #define WIND_DATA_MAX 9990
+//이코드는 구형 AWS코드와 동일
+//풍속센서의 값은 풍속값자체가 아닌 펄스값임
 float calculate_wind_speed(uint16_t wind_pulse)
 {
   int32_t tmp = 0;
@@ -109,6 +111,8 @@ float calculate_wind_speed(uint16_t wind_pulse)
   return wind_speed;
 }
 
+
+
 float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
 {
   uint8_t send[10];
@@ -124,11 +128,13 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
 
   driver_rs485_flush_rx(cfg->rs485_io);
   driver_rs485_send(cfg->rs485_io, send, len);
+   
+  // 독라이트가 응답을항상 일정한 시간안에 보내는것이 아님
+  // 2ms 안에 응답오는 경우도 있고 50ms 지나고 응답 오는 경우도 있음
+  // 따라서 독라이트 테스트시에는 첫번째 바이트 대기 시간을 50ms 해야 수신 처리됨
 
-  // 10배된 값이 수신됨됨
-  // 응답이 30ms 안에 와야하며, 10ms 이상 데이터 미 수신시 종료
-  //  독라이트 테스트시 10ms하면 자주 실패함
-  len = driver_rs485_recv_opt(cfg->rs485_io, recv, sizeof(recv), 30,20); 
+
+  len = driver_rs485_recv_opt(cfg->rs485_io, recv, sizeof(recv), 50,5); 
 
   if(len == 0)
   {
@@ -152,7 +158,7 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
       {
         *err = DRV_ERR_NONE;
         memcpy(&windData, &recv[4], 2);
-        return calculate_wind_speed(windData);
+        return calculate_wind_speed(windData); 
       }
     }
   }
@@ -162,7 +168,8 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
     return NAN;
   }
 
-  return (float)((float)windData / 10.0);
+  return (float)((float)windData / 10.0);//풍향은 10배 된 값이 수신됨
+  //풍향1234가 수신 -> 123.4도임 따라서 드라이버의 값의 단위는 도임, 따라서 10으로 나눈값을 리턴턴
 
 }
 
@@ -180,16 +187,22 @@ void set_hjwind(void *handle, wind_set_option_t option, void *value)
 
 wind_api_t hjwind_api = {.read = read_hjwind, .set = set_hjwind};
 hjwind_cfg_t g_hjwind_cfg;
-driver_t g_hjwind;
+driver_t g_hjwind_driver;
 
+/**
+ * @details
+ * 고정된 속도로 사용하는 센서들은 포트설정만 매개변수로 받아서 처리
+ */
 driver_t *hjwind_open(uint8_t num, void *opt)
 {
   uart_config_t uart_config;
   hjwindspeed_config_t *hjwind_config = opt;
 
-  if (g_hjwind.opened == true)
+  (void)num;
+
+  if (g_hjwind_driver.opened == true)
   {
-    return &g_hjwind;
+    return &g_hjwind_driver;
   }
 
   uart_config.baud = 9600;
@@ -199,9 +212,11 @@ driver_t *hjwind_open(uint8_t num, void *opt)
 
   g_hjwind_cfg.rs485_io = driver_rs485_open((int)hjwind_config->rs485_port, &uart_config);
 
-  g_hjwind.cfg = &g_hjwind_cfg;
-  g_hjwind.api = &hjwind_api;
-  g_hjwind.opened = true;
+  g_hjwind_driver.name = "hj_wind";
+  g_hjwind_driver.cfg = &g_hjwind_cfg;
+  g_hjwind_driver.api = &hjwind_api;
 
-  return &g_hjwind;
+  g_hjwind_driver.opened = true;
+
+  return &g_hjwind_driver;
 }

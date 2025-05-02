@@ -7,6 +7,7 @@
 
 #include "utile_time.h"
 
+#include "app_dataLogging.h"
 #define AWS_FILE_PATH        "0:Y%02d/M%02d.aws"
 
 
@@ -69,7 +70,7 @@ uint32_t timeToOffsetYear(time_t currnet_tick, uint8_t min,uint16_t byte)
   
   return offset;
 }
-#define LOGGING_AWS  0 
+
 
 
 void get_filePath(uint8_t type,uint8_t year,uint8_t month,char *pOutBuff,uint32_t buffSize)

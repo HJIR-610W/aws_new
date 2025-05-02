@@ -42,21 +42,40 @@ typedef struct sensor_data_s
 
 } sensor_data_t;
 
-typedef enum measure_type_e
+//250ms¸¶´Ù ¼öÁýÇÏ´Â µ¥ÀÌÅÍ
+typedef enum reading_250
 {
-  eMEASURE_TYPE_250MS,
-  eMEASURE_TYPE_1000MS
-}eMEASURE_TYPE_t;
+  eA2_WIND_DIRECTION,
+  eA3_WIND_SPEED
+}eREADING_250MS_t;
 
- typedef struct measure_data_s
+typedef struct measure_data_250ms
 {
-  eMEASURE_TYPE_t type;
-  sensor_data_t data[SENSOR_LIST_MAX];
-} measure_data_t;
+  sensor_data_t data[2];//Ç³Çâ Ç³¼Ó
+} measure_data_250ms_t;
 
+typedef struct measure_data_1s
+{
+  sensor_data_t data[SENSOR_LIST_MAX];//Ç³Çâ Ç³¼Ó ÀÎµ¦½º´Â ¹Ì»ç¿ë
+} measure_data_1s_t;
+
+
+
+typedef struct
+{
+  uint32_t start_time;
+  uint32_t elapsed_time;
+  uint32_t elapsed_max;
+} exec_time_t;
 
 void measureTask_init(void);
 
-bool is_measurement(void *data);
+bool is_measurement_1s( void *data,uint32_t timeout);
+bool is_measurement_250(void *data, uint32_t timeout);
+
+extern exec_time_t g_exec_250ms_time;
+extern exec_time_t g_exec_1s_time;
+
+
 
 #endif

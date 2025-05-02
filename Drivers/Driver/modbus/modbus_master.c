@@ -565,7 +565,7 @@ driver_t *modbus_master_open(int32_t num, void *opt)
 
   }
 #if FREE_RTOS_USE
-  CREATE_SEM(modbus_m_cfg[num].sem);
+  CREATE_BINARY_SEM(modbus_m_cfg[num].sem);
 #endif
 
   return &modbus_m_drv[num];

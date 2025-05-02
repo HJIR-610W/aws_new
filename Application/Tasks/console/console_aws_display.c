@@ -15,7 +15,7 @@
 #include "app_bsp.h"
 #include "task_logging.h"
 #include "cli_key_code.h"
-
+#include "task_measure.h"
 #include "dualport.h"
 
 
@@ -204,7 +204,7 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min,
   uint8_t err;
   uint8_t line = row + 3;
   kma_data_ex_t *p_kma = NULL;
-
+  uint32_t elapsed_time;
   switch (min)
   {
     case eAWS_DATA_REAL:
@@ -221,9 +221,9 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min,
       break;
   }
 
-  snprintf(buff, sizeof(buff), "AWS %s %.2fms", aswTitleList[min],
-           (float)g_debug_elased_time / 1000.0f);
+  elapsed_time = g_exec_250ms_time.elapsed_time + g_exec_1s_time.elapsed_time;
 
+  snprintf(buff, sizeof(buff), "AWS %s %.2fms", aswTitleList[min], (float)elapsed_time / 1000.0f);
 
   vt100_print_frame(row, column, buff, '+', '|', '-', DISP_WIDTH, WHITE);
 
@@ -550,10 +550,11 @@ int32_t aws_menu_display(p_shell_context_t ctx)
 
     print_rainInfo(1+line,60);
 
-    key = get_key(1000);
+    key = get_key(100);
 
     if (key == KEY_CODE_RIGHT)
     {
+      debug_printf(VT100_CLEAR_SCREEN);
       if (awsMode < AWS_MODE_MAX)
       {
         awsMode++;
@@ -561,6 +562,7 @@ int32_t aws_menu_display(p_shell_context_t ctx)
     }
     else if (key == KEY_CODE_LEFT)
     {
+      debug_printf(VT100_CLEAR_SCREEN);
       if (awsMode > 0)
       {
         awsMode--;

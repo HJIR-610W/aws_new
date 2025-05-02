@@ -39,6 +39,6 @@ extern rain_data_t rain_data;;
 #define RAIN_HALL_1MM  103
 
 driver_t *rain_open(int32_t num,void *opt);
-int32_t read_sensor_rain(driver_t *driver,uint8_t *err);
+float read_sensor_rain(driver_t *driver,uint8_t *err);
 
 #endif

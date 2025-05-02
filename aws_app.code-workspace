@@ -63,7 +63,8 @@
 			"driver_adc.h": "c",
 			"hj_temperature_define.h": "c",
 			"humidity.h": "c",
-			"temperature_define.h": "c"
+			"temperature_define.h": "c",
+			"task_logging.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

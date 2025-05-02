@@ -5,6 +5,7 @@
 
 #include "utile_time.h"
 
+#define LOGGING_AWS 0
 void dataLogging_init(void);
 
 

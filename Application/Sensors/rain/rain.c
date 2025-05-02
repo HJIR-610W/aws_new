@@ -151,7 +151,7 @@ uint16_t calculate_monthRain(DATE_TIME_BUF *ct)
 
 typedef struct rain_cfg_s
 {
-  int32_t pulse;
+  float pulse;
 }rain_cfg_t;
 
 driver_t rain_driver;
@@ -171,16 +171,16 @@ driver_t *rain_open(int32_t num,void *opt)
   switch (num)
   {
     case RAIN_REED_05MM:
-    rain_cfg.pulse = 5;
+    rain_cfg.pulse = 0.5;
     break;
     case RAIN_REED_1MM:
-    rain_cfg.pulse = 10;
+    rain_cfg.pulse = 1;
     break;
     case RAIN_HALL_05MM:
-    rain_cfg.pulse = 5;
+    rain_cfg.pulse = 0.5;
     break;
     case RAIN_HALL_1MM:
-    rain_cfg.pulse = 10;
+    rain_cfg.pulse = 1;
     break;
   }
 
@@ -190,7 +190,7 @@ driver_t *rain_open(int32_t num,void *opt)
 
 }
 
-int32_t read_sensor_rain(driver_t *driver,uint8_t *err)
+float read_sensor_rain(driver_t *driver,uint8_t *err)
 {
   int32_t rain=0;
   rain_cfg_t *cfg = driver->cfg;

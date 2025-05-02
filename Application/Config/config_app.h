@@ -86,7 +86,8 @@ typedef struct config_s
   bool encrypt_use;
   eNET_MODE_t network_mode;
   bool ac_use;
-  sensor_t sensor[SENSOR_LIST_MAX];
+  uint16_t m_usRainDtOffDelay;//±¸ AWS
+   sensor_t sensor[SENSOR_LIST_MAX];
 }config_t;
 
 

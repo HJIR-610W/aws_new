@@ -10,7 +10,8 @@
 
 #include "app_sensor.h"
 #include "aws_data.h"
-
+#include "task_logging.h"
+#include "app_dataLogging.h"
 
 #define D2R 3.14159265 / 180.0
 #define R2D 180.0 / 3.14159265
@@ -769,8 +770,9 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
   nIdx = (pDate->Min + 59) % 60;
 
-  memcpy((char *)&mMinAwsLog[nIdx], (char *)pAws,
-         sizeof(AWS_DATA_STRUCT));  // File로 Save할 Data를 만든다
+ // memcpy((char *)&mMinAwsLog[nIdx], (char *)pAws, sizeof(AWS_DATA_STRUCT));
+
+  os_write_sensorData(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS,1);
 }
 
 void Min10Process(void)
@@ -1123,10 +1125,14 @@ void scheduleProcess_init(void)
   memcpy((char *)&OldDate, (char *)&Date_Time, sizeof(Date_Time));
 }
 
+
+
+
 void schedule_process(DATE_TIME_BUF *pDate)
 {
   DATE_TIME_BUF *pOldDate;
   SYSTEM_INFO_AWS *pSystem;
+
 
 
   pSystem = &Sysinfo;

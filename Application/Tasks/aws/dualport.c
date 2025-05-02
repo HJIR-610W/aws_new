@@ -6,6 +6,7 @@
 #include "aws_data.h"
 #include "aws_kma3.h"
 #include "cmsis_os2.h"
+#include "config_app.h"
 #include "old_aws_define.h"
 #include "schedule.h"
 #include "task_measure.h"
@@ -14,7 +15,7 @@
 #include "utile_time.h"
 
 #define AWS_DATA_ERR_VAL 9999
-measure_data_t *g_p_raw = NULL;
+measure_data_1s_t *g_p_raw = NULL;
 
 uint8_t g_kma_err[SENSOR_LIST_MAX];
 
@@ -406,14 +407,18 @@ void dualport_init(void)
 uint16_t get_rain_mm(uint8_t *sensor_err)
 {
   uint8_t err;
-  uint16_t rain_pulse;
   sensor_data_t *p_sensor = g_p_raw->data;
+  uint16_t rain=0;;
 
+
+  //우량은 홀센서인경우에만 에러 체크됨
   *sensor_err = (uint16_t)p_sensor[A6_RAINFALL_DOT5_1MM].err;
 
-  rain_pulse = (uint16_t)p_sensor[A6_RAINFALL_DOT5_1MM].data.i;
+  
+  rain = (uint16_t)p_sensor[A6_RAINFALL_DOT5_1MM].data.f*10;;
 
-  return rain_pulse;
+  p_sensor[A6_RAINFALL_DOT5_1MM].data.f = 0;// 우량은 이전값을 초기화해줘야함
+  return rain;
 }
 
 
@@ -620,75 +625,89 @@ void update_old_kma_10min(void)
 }
 
 
-  void check_sensor_use(void)
+/**
+ * @brief 센서 사용여부 설정
+ * @details 
+ * TODO: 센서는 사용여부는 부팅시 결정되기때문에 한번만 호출 되면 됨
+ * 한번만 호출 되도록 개선 필요요
+ * 
+ */
+void check_sensor_use(void)
+{
+  kma_data_ex_t *p_kma_data;
+
+  for (int min = eAWS_DATA_REAL; min <= eAWS_DATA_HOUR; min++)
   {
-    g_kma_inst_ex.temperature.enable = g_p_raw->data[A1_TEMPERATURE].enable;
-    g_kma_inst_ex.wind_direction_avg.enable = g_p_raw->data[A2_WIND_DIRECTION].enable;
-    g_kma_inst_ex.wind_speed_avg.enable = g_p_raw->data[A3_WIND_SPEED].enable;
+    p_kma_data = get_kma_data((eAWS_DATA_MIN_t)min);
 
-    if (g_kma_inst_ex.wind_direction_avg.enable)
+    p_kma_data->temperature.enable = g_p_raw->data[A1_TEMPERATURE].enable;
+    p_kma_data->wind_direction_avg.enable = g_p_raw->data[A2_WIND_DIRECTION].enable;
+    p_kma_data->wind_speed_avg.enable = g_p_raw->data[A3_WIND_SPEED].enable;
+
+    if (p_kma_data->wind_direction_avg.enable)
     {
-      g_kma_inst_ex.wind_direction_instant.enable = true;
+      p_kma_data->wind_direction_instant.enable = true;
     }
 
-    if (g_kma_inst_ex.wind_speed_avg.enable)
+    if (p_kma_data->wind_speed_avg.enable)
     {
-      g_kma_inst_ex.wind_speed_instant.enable =  true;
+      p_kma_data->wind_speed_instant.enable = true;
     }
 
-      g_kma_inst_ex.precipitation.enable = g_p_raw->data[A6_RAINFALL_DOT5_1MM].enable;
-    g_kma_inst_ex.pressure.enable = g_p_raw->data[A7_PRESSURE].enable;
-    g_kma_inst_ex.precipitation_presence.enable = g_p_raw->data[A8_RAIN_PRESENT].enable;
-    g_kma_inst_ex.snowfall.enable = g_p_raw->data[A9_SNOW_DEPTH].enable;
-    g_kma_inst_ex.relative_humidity.enable = g_p_raw->data[A10_RELATIVE_HUMIDITY].enable;
-    g_kma_inst_ex.precipitation_fine.enable = g_p_raw->data[A11_RAINFALL_DOT1MM].enable;
-    g_kma_inst_ex.solar_radiation.enable = g_p_raw->data[B1_SOLAR_RADIATION].enable;
-    g_kma_inst_ex.sunshine_duration.enable = g_p_raw->data[B2_SUNSHINE_DURATION].enable;
-    g_kma_inst_ex.surface_temperature.enable = g_p_raw->data[B3_GROUND_TEMPERATURE].enable;
-    g_kma_inst_ex.grass_temperature.enable = g_p_raw->data[B4_SURFACE_TEMPERATURE].enable;
-    g_kma_inst_ex.soil_temperature_5cm.enable = g_p_raw->data[B5_SOIL_TEMPERATURE_5CM].enable;
-    g_kma_inst_ex.soil_temperature_10cm.enable = g_p_raw->data[B6_SOIL_TEMPERATURE_10CM].enable;
-    g_kma_inst_ex.soil_temperature_20cm.enable = g_p_raw->data[B7_SOIL_TEMPERATURE_20CM].enable;
-    g_kma_inst_ex.soil_temperature_30cm.enable = g_p_raw->data[B8_SOIL_TEMPERATURE_30CM].enable;
-    g_kma_inst_ex.soil_temperature_50cm.enable = g_p_raw->data[B9_SOIL_TEMPERATURE_50CM].enable;
-    g_kma_inst_ex.soil_temperature_1m.enable = g_p_raw->data[B10_SOIL_TEMPERATURE_100CM].enable;
-    g_kma_inst_ex.soil_temperature_1_5m.enable = g_p_raw->data[B11_SOIL_TEMPERATURE_150CM].enable;
-    g_kma_inst_ex.soil_temperature_3m.enable = g_p_raw->data[B12_SOIL_TEMPERATURE_300CM].enable;
-    g_kma_inst_ex.soil_temperature_5m.enable = g_p_raw->data[B13_SOIL_TEMPERATURE_500CM].enable;
-    g_kma_inst_ex.cloud_height_1st.enable = g_p_raw->data[C1_CLOUD_BASE1].enable;
-    g_kma_inst_ex.cloud_height_2nd.enable = g_p_raw->data[C2_CLOUD_BASE2].enable;
-    g_kma_inst_ex.cloud_height_3rd.enable = g_p_raw->data[C3_CLOUD_BASE3].enable;
-    g_kma_inst_ex.cloud_amount.enable = g_p_raw->data[C4_CLOUD_COVER].enable;
-    g_kma_inst_ex.visibility.enable = g_p_raw->data[C5_VISIBILITY].enable;
+    p_kma_data->precipitation.enable = g_p_raw->data[A6_RAINFALL_DOT5_1MM].enable;
+    p_kma_data->pressure.enable = g_p_raw->data[A7_PRESSURE].enable;
+    p_kma_data->precipitation_presence.enable = g_p_raw->data[A8_RAIN_PRESENT].enable;
+    p_kma_data->snowfall.enable = g_p_raw->data[A9_SNOW_DEPTH].enable;
+    p_kma_data->relative_humidity.enable = g_p_raw->data[A10_RELATIVE_HUMIDITY].enable;
+    p_kma_data->precipitation_fine.enable = g_p_raw->data[A11_RAINFALL_DOT1MM].enable;
+    p_kma_data->solar_radiation.enable = g_p_raw->data[B1_SOLAR_RADIATION].enable;
+    p_kma_data->sunshine_duration.enable = g_p_raw->data[B2_SUNSHINE_DURATION].enable;
+    p_kma_data->surface_temperature.enable = g_p_raw->data[B3_GROUND_TEMPERATURE].enable;
+    p_kma_data->grass_temperature.enable = g_p_raw->data[B4_SURFACE_TEMPERATURE].enable;
+    p_kma_data->soil_temperature_5cm.enable = g_p_raw->data[B5_SOIL_TEMPERATURE_5CM].enable;
+    p_kma_data->soil_temperature_10cm.enable = g_p_raw->data[B6_SOIL_TEMPERATURE_10CM].enable;
+    p_kma_data->soil_temperature_20cm.enable = g_p_raw->data[B7_SOIL_TEMPERATURE_20CM].enable;
+    p_kma_data->soil_temperature_30cm.enable = g_p_raw->data[B8_SOIL_TEMPERATURE_30CM].enable;
+    p_kma_data->soil_temperature_50cm.enable = g_p_raw->data[B9_SOIL_TEMPERATURE_50CM].enable;
+    p_kma_data->soil_temperature_1m.enable = g_p_raw->data[B10_SOIL_TEMPERATURE_100CM].enable;
+    p_kma_data->soil_temperature_1_5m.enable = g_p_raw->data[B11_SOIL_TEMPERATURE_150CM].enable;
+    p_kma_data->soil_temperature_3m.enable = g_p_raw->data[B12_SOIL_TEMPERATURE_300CM].enable;
+    p_kma_data->soil_temperature_5m.enable = g_p_raw->data[B13_SOIL_TEMPERATURE_500CM].enable;
+    p_kma_data->cloud_height_1st.enable = g_p_raw->data[C1_CLOUD_BASE1].enable;
+    p_kma_data->cloud_height_2nd.enable = g_p_raw->data[C2_CLOUD_BASE2].enable;
+    p_kma_data->cloud_height_3rd.enable = g_p_raw->data[C3_CLOUD_BASE3].enable;
+    p_kma_data->cloud_amount.enable = g_p_raw->data[C4_CLOUD_COVER].enable;
+    p_kma_data->visibility.enable = g_p_raw->data[C5_VISIBILITY].enable;
 
-    g_kma_inst_ex.pm10_concentration.enable = g_p_raw->data[C6_PM10].enable;
-    g_kma_inst_ex.pm25_concentration.enable = g_p_raw->data[C7_PM2DOT5].enable;
-    g_kma_inst_ex.net_radiation.enable = g_p_raw->data[C8_NET_RADIATION].enable;
-    g_kma_inst_ex.total_radiation.enable = g_p_raw->data[C9_TOTAL_RADIATION].enable;
-    g_kma_inst_ex.reflected_radiation.enable = g_p_raw->data[C10_REFLECTED_RADIATION].enable;
-    g_kma_inst_ex.direct_radiation.enable = g_p_raw->data[C11_DIRECT_SOLAR].enable;
-    g_kma_inst_ex.current_weather.enable = g_p_raw->data[C12_CURRENT_WEATHER].enable;
-    g_kma_inst_ex.soil_moisture_10cm.enable = g_p_raw->data[N1_SOIL_MOISTURE_10CM].enable;
-    g_kma_inst_ex.soil_moisture_20cm.enable = g_p_raw->data[N2_SOIL_MOISTURE_20CM].enable;
-    g_kma_inst_ex.soil_moisture_30cm.enable = g_p_raw->data[N3_SOIL_MOISTURE_30CM].enable;
-    g_kma_inst_ex.soil_moisture_50cm.enable = g_p_raw->data[N4_SOIL_MOISTURE_50CM].enable;
-    g_kma_inst_ex.illuminance.enable = g_p_raw->data[N5_ILLUMINANCE].enable;
-    g_kma_inst_ex.wind_speed_1_5m.enable = g_p_raw->data[N6_WIND_VELOCITY_150CM].enable;
-    g_kma_inst_ex.wind_speed_4m.enable = g_p_raw->data[N7_WIND_VELOCITY_400CM].enable;
-    g_kma_inst_ex.instant_wind_speed_1_5m.enable = g_p_raw->data[N8_INSTANT_VELOCITY_150CM].enable;
-    g_kma_inst_ex.instant_wind_speed_4m.enable = g_p_raw->data[N9_INSTANT_VELOCITY_400CM].enable;
-    g_kma_inst_ex.temperature_0_5m.enable = g_p_raw->data[N10_AIR_TEMPERATURE_50CM].enable;
-    g_kma_inst_ex.temperature_4m.enable = g_p_raw->data[N11_AIR_TEMPERATURE_400CM].enable;
-    g_kma_inst_ex.humidity_0_5m.enable = g_p_raw->data[N12_HUMIDITY_50CM].enable;
-    g_kma_inst_ex.humidity_4m.enable = g_p_raw->data[N13_HUMIDITY_400CM].enable;
-    g_kma_inst_ex.tacometer.enable = g_p_raw->data[I1_TACHOMETER].enable;
+    p_kma_data->pm10_concentration.enable = g_p_raw->data[C6_PM10].enable;
+    p_kma_data->pm25_concentration.enable = g_p_raw->data[C7_PM2DOT5].enable;
+    p_kma_data->net_radiation.enable = g_p_raw->data[C8_NET_RADIATION].enable;
+    p_kma_data->total_radiation.enable = g_p_raw->data[C9_TOTAL_RADIATION].enable;
+    p_kma_data->reflected_radiation.enable = g_p_raw->data[C10_REFLECTED_RADIATION].enable;
+    p_kma_data->direct_radiation.enable = g_p_raw->data[C11_DIRECT_SOLAR].enable;
+    p_kma_data->current_weather.enable = g_p_raw->data[C12_CURRENT_WEATHER].enable;
+    p_kma_data->soil_moisture_10cm.enable = g_p_raw->data[N1_SOIL_MOISTURE_10CM].enable;
+    p_kma_data->soil_moisture_20cm.enable = g_p_raw->data[N2_SOIL_MOISTURE_20CM].enable;
+    p_kma_data->soil_moisture_30cm.enable = g_p_raw->data[N3_SOIL_MOISTURE_30CM].enable;
+    p_kma_data->soil_moisture_50cm.enable = g_p_raw->data[N4_SOIL_MOISTURE_50CM].enable;
+    p_kma_data->illuminance.enable = g_p_raw->data[N5_ILLUMINANCE].enable;
+    p_kma_data->wind_speed_1_5m.enable = g_p_raw->data[N6_WIND_VELOCITY_150CM].enable;
+    p_kma_data->wind_speed_4m.enable = g_p_raw->data[N7_WIND_VELOCITY_400CM].enable;
+    p_kma_data->instant_wind_speed_1_5m.enable = g_p_raw->data[N8_INSTANT_VELOCITY_150CM].enable;
+    p_kma_data->instant_wind_speed_4m.enable = g_p_raw->data[N9_INSTANT_VELOCITY_400CM].enable;
+    p_kma_data->temperature_0_5m.enable = g_p_raw->data[N10_AIR_TEMPERATURE_50CM].enable;
+    p_kma_data->temperature_4m.enable = g_p_raw->data[N11_AIR_TEMPERATURE_400CM].enable;
+    p_kma_data->humidity_0_5m.enable = g_p_raw->data[N12_HUMIDITY_50CM].enable;
+    p_kma_data->humidity_4m.enable = g_p_raw->data[N13_HUMIDITY_400CM].enable;
+    p_kma_data->tacometer.enable = g_p_raw->data[I1_TACHOMETER].enable;
   }
-
+}
 
 void update_kma2_status(void)
 {
 
 }
+
 
 
   void DUALPORT_TASK(void *arg)
@@ -702,30 +721,30 @@ void update_kma2_status(void)
     uint16_t sDirec;
     uint16_t sSpeedOld;
     uint16_t sDirecOld;
-    uint16_t barometer;
-    uint16_t year;
-    uint8_t day;
-    uint8_t min;
-    uint8_t sec;
     uint8_t sensor_err=0;
     int i, j;
     int nWindCnt12 = 0;
     int nWindCnt40 = 0;
-
+    measure_data_250ms_t reading_250;
+    
     pAws = &mRealAws;
     pSystem = &Sysinfo;
     pConfig = &Config;
 
-    g_p_raw = aws_malloc(sizeof(measure_data_t));  // 250ms 마다 측정한 데이터
+    
+        // 여기서는 메모리를 아끼기위해 g_p_raw 하나만 사용
+        g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
 
     while (1)
     {
-      if (is_measurement(g_p_raw) == false)  // 데이터가 있는지 확인,250ms마다 업데이트 됨
+      is_measurement_1s(g_p_raw, 0);  // 업데이트된 값 없으면 이전값 유지
+      if (is_measurement_250(&reading_250, osWaitForever))  // 250ms마다 최신값 사용
       {
-        continue;
+        g_p_raw->data[A2_WIND_DIRECTION] = reading_250.data[eA2_WIND_DIRECTION];
+        g_p_raw->data[A3_WIND_SPEED] = reading_250.data[eA3_WIND_SPEED];
       }
-      ct = Date_Time;
 
+      ct = Date_Time;
 
       check_sensor_use();
 
@@ -743,7 +762,7 @@ void update_kma2_status(void)
 
       sSpeedOld = sSpeed;
       sDirecOld = sDirec;
-
+      
       pSystem->mRealWind.sAvg3Speed[nWindCnt12] = sSpeed;   // 풍속  3 초 평균
       pSystem->mRealWind.sAvg10Speed[nWindCnt40] = sSpeed;  // 풍속 10 초 평균
 
@@ -825,7 +844,7 @@ void update_kma2_status(void)
         update_sensor_err(A8_RAIN_PRESENT, sensor_err);
 
         pAws->mRainDetect.sReal = 0x000a;
-        pSystem->m_shOffDelayRemain = pConfig->m_usRainDtOffDelay;
+        pSystem->m_shOffDelayRemain = get_config_app()->m_usRainDtOffDelay;
         pSystem->m_cOffDelayFlag = 1;
       }
 
@@ -872,10 +891,10 @@ void update_kma2_status(void)
   }
 }
 
-const osThreadAttr_t dualportTask_attributes = {
+const osThreadAttr_t KdualportTask_attributes = {
     .name = "DUALPORT_TASK",
     .stack_size = 1024,
-    .priority = (osPriority_t)osPriorityNormal1,
+    .priority = (osPriority_t)osPriorityRealtime1,
 };
 
 extern void aws_data_task(void *arg) ;
@@ -885,6 +904,6 @@ void dualportTask_init(void)
 {
   AwsMinMaxInit();
 
-  osThreadNew(DUALPORT_TASK, NULL, &dualportTask_attributes);
+  osThreadNew(DUALPORT_TASK, NULL, &KdualportTask_attributes);
   //osThreadNew(aws_data_task, NULL, &dualportTask_attributes);
 }

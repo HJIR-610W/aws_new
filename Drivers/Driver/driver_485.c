@@ -42,7 +42,7 @@ driver_t *driver_rs485_open(uint32_t num, void *opt)
 
   g_rs485[num].opened = true;
 #if FREE_RTOS_USE
-  CREATE_SEM(g_rs485[num].sem);  //
+  CREATE_BINARY_SEM(g_rs485[num].sem);  //
 #endif
 
   return &g_rs485[num];

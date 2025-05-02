@@ -809,7 +809,7 @@ driver_t *tls16c554_open(uint32_t num, void *opt)
   quad_init(&tls16c554_driver[num], opt);
 
 #if FREE_RTOS_USE
-  CREATE_SEM(tls16c554_driver[num].sem);
+  CREATE_BINARY_SEM(tls16c554_driver[num].sem);
 #endif
 
   return &tls16c554_driver[num];

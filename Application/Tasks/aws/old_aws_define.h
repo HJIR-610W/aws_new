@@ -68,7 +68,21 @@ typedef struct
   SENSOR_RIX_BUF mSoilTemp1_5m;  // 지중온도 1.5m
   SENSOR_RIX_BUF mSoilTemp3_0m;  // 지중온도 3.0m
   SENSOR_RIX_BUF mSoilTemp5_0m;  // 지중온도 5.0m
-
+  SENSOR_RIX_BUF mSpare01;       //
+  SENSOR_RIX_BUF mSpare02;
+  SENSOR_RIX_BUF mSpare03;
+  SENSOR_RIX_BUF mSpare04;
+  SENSOR_RIX_BUF mSpare05;
+  SENSOR_RIX_BUF mSpare06;
+  SENSOR_RIX_BUF mSpare07;
+  SENSOR_RIX_BUF mSpare08;
+  SENSOR_RIX_BUF mSpare09;
+  SENSOR_RIX_BUF mSpare10;
+  SENSOR_RIX_BUF mSpare11;
+  SENSOR_RIX_BUF mSpare12;
+  SENSOR_RIX_BUF mSpare13;
+  SENSOR_RIX_BUF mSpare14;
+  SENSOR_RIX_BUF mSpare15;
   SENSOR_RIX_BUF mStatus;
 // sReal
 #define DCFAIL_BIT 0x0001
@@ -88,7 +102,7 @@ typedef struct
 #define FANFAIL_BIT 0x0080
 // sMax
 #define RAINFAIL_BIT 0x0001
-
+  char cDataSpare[44];
 } AWS_DATA_STRUCT;
 
 typedef struct

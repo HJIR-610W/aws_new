@@ -80,6 +80,8 @@ int main(void)
 
   MX_CRC_Init();
   
+ // sram_test();
+  
   asw_tlsf_init(POOL_SIZE);
   
   osKernelInitialize();
@@ -101,3 +103,4 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
 }
+  

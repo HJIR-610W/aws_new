@@ -10,7 +10,7 @@
  * 0x68000000 NE3 QUAD UART
  */
 
-
+#include <string.h>
 #include "pcb_define.h"
 #include "system_err.h"
 #include "fsmc.h"
@@ -33,6 +33,7 @@ void MX_FSMC_Init(void)
   /* USER CODE BEGIN FSMC_Init 1 */
 
   /* USER CODE END FSMC_Init 1 */
+
 
   
   //SRAM
@@ -72,6 +73,7 @@ void MX_FSMC_Init(void)
   {
         Error_Handler(__FILE__,__LINE__);
   }
+  
 
   /** Perform the SRAM2 memory initialization sequence
   */
@@ -99,6 +101,9 @@ void MX_FSMC_Init(void)
   Timing.DataSetupTime = 15;
   Timing.BusTurnAroundDuration = 10;
 
+
+ 
+ 
   Timing.AccessMode = FSMC_ACCESS_MODE_A;
   /* ExtTiming */
   ExtTiming.AddressSetupTime      = 4;
@@ -113,9 +118,7 @@ void MX_FSMC_Init(void)
         Error_Handler(__FILE__,__LINE__);
   }
 
-  /* USER CODE BEGIN FSMC_Init 2 */
 
-  /* USER CODE END FSMC_Init 2 */
 }
 
 static uint32_t FSMC_Initialized = 0;

@@ -390,7 +390,7 @@ void huminity_process_10s(uint16_t temperature)
   g_1min_temp_avg_idx = (g_1min_temp_avg_idx + 1) % TEMP_SAMPLES_PER_MINUTE;
 }
 
- static measure_data_t* g_p_raw;
+ static measure_data_1s_t* g_p_raw;
 
  uint16_t get_aws_temperature(uint8_t *err)
  {
@@ -697,7 +697,7 @@ void aws_data_task(void* arg)
   uint8_t wind_spd_err;
   uint8_t wind_dir_err;
   uint8_t err=0;
-  g_p_raw = aws_malloc(sizeof(measure_data_t));
+  g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
 
   ct = Date_Time;
   ot = ct;
@@ -706,7 +706,7 @@ void aws_data_task(void* arg)
   {
     ct = Date_Time;
     
-    if(is_measurement(g_p_raw) == false)
+    if(is_measurement_1s(g_p_raw,0) == false)
     {
       continue;
     }
