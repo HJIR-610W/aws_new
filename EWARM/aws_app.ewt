@@ -1729,6 +1729,9 @@
             </group>
             <group>
                 <name>recorder</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\recorder\data_logging.c</name>
+                </file>
             </group>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\app_console.c</name>

@@ -20,6 +20,8 @@ kma_data_ex_t g_kma_1min_ex;
 kma_data_ex_t g_kma_10min_ex;
 kma_data_ex_t g_kma_1Hour_ex;
 
+rainfall_t g_rainfall;
+
 // 실제 수집된 데이터를 AWS에서 요구하는 형태로 저장해야한다.
 
 #define AWS_CVT_TEMP(x) (x == TEMP_ERR_VAL ? -9999 : (x + 100) * 10)
@@ -320,4 +322,51 @@ kma_data_ex_t g_kma_1Hour_ex;
 
   p_kma->crc = 0;
   p_kma->init = true;
+}
+
+rainfall_t *get_rainfall(void)
+{
+    
+    return &g_rainfall;
+}
+
+void set_rainfall_yesterday(float rainfall) 
+{ 
+    g_rainfall.rainfall_yesterday = rainfall; 
+}
+
+void set_rainfall_today(float rainfall) 
+{ 
+    g_rainfall.rainfall_today = rainfall; 
+}
+
+void set_rainfall_hourly(float rainfall) { g_rainfall.rainfall_hourly = rainfall; }
+
+void set_rainfall_monthly(float rainfall) { g_rainfall.rainfall_monthly = rainfall; }
+
+void set_rainfall_yearly(float rainfall) { g_rainfall.rainfall_yearly = rainfall; }
+
+kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
+{
+  kma_data_ex_t *p_kma_data = NULL;
+
+  switch (min)
+  {
+    case eAWS_DATA_REAL:
+      p_kma_data = &g_kma_inst_ex;
+      break;
+    case eAWS_DATA_1MIN:
+      p_kma_data = &g_kma_1min_ex;
+      break;
+    case eAWS_DATA_10MIN:
+      p_kma_data = &g_kma_10min_ex;
+      break;
+    case eAWS_DATA_HOUR:
+      p_kma_data = &g_kma_1Hour_ex;
+      break;
+    default:
+      break;
+  }
+
+  return p_kma_data;
 }

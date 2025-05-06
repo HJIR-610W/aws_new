@@ -5,6 +5,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// 새롭게 추가
+typedef enum aws_data_min_s
+{
+  eAWS_DATA_REAL,
+  eAWS_DATA_1MIN,
+  eAWS_DATA_10MIN,
+  eAWS_DATA_HOUR
+} eAWS_DATA_MIN_t;
 typedef struct aws_data_s
 {
   bool enable;
@@ -390,6 +398,25 @@ typedef struct
   aws_data_t temp[60];
 
 } kma_data_ex_t;
+
+typedef struct rainfall_s
+{
+  float rainfall_yesterday; 
+  float rainfall_today;    
+  float rainfall_hourly;  
+  float rainfall_monthly;  
+  float rainfall_yearly;    
+}rainfall_t;
+
+rainfall_t *get_rainfall(void);
+void set_rainfall_yesterday(float rainfall);
+void set_rainfall_today(float rainfall);
+void set_rainfall_hourly(float rainfall);
+void set_rainfall_monthly(float rainfall);
+void set_rainfall_yearly(float rainfall);
+
+kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min) ;
+
 
 extern kma_data_t g_kma_raw;
 extern kma_data_t g_kma_inst;

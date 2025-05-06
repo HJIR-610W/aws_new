@@ -35,7 +35,7 @@ void MX_FSMC_Init(void)
   /* USER CODE END FSMC_Init 1 */
 
 
-  
+#if 1 
   //SRAM
   /** Perform the SRAM1 memory initialization sequence
   */
@@ -73,7 +73,7 @@ void MX_FSMC_Init(void)
   {
         Error_Handler(__FILE__,__LINE__);
   }
-  
+#endif
 
   /** Perform the SRAM2 memory initialization sequence
   */
@@ -110,7 +110,10 @@ void MX_FSMC_Init(void)
   ExtTiming.AddressHoldTime       =  1;//0으로 하면 assert 발생, 재검토
   ExtTiming.DataSetupTime         = 10;
   ExtTiming.BusTurnAroundDuration = 10;
-
+ Timing.CLKDivision            = 2;  //  비동기 모드에서는 무시,0설정시 assert 발생
+ Timing.DataLatency            = 2;  //  비동기 모드에서는 무시
+ 
+ 
   ExtTiming.AccessMode = FSMC_ACCESS_MODE_A;
 
   if (HAL_SRAM_Init(&hsram2, &Timing, &ExtTiming) != HAL_OK)

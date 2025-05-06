@@ -17,7 +17,8 @@
 #include "cli_key_code.h"
 #include "task_measure.h"
 #include "dualport.h"
-
+#include "task_logging.h"
+#include "task_system.h"
 
 
 
@@ -35,6 +36,7 @@ int32_t print_systemInfo(uint16_t row, uint16_t column)
 {
   uint8_t line = row + 3;
   char buff[30];
+  const char *message=NULL;
 
   snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d\r\n", Date_Time.Year, Date_Time.Month,
            Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
@@ -44,8 +46,18 @@ int32_t print_systemInfo(uint16_t row, uint16_t column)
   vt100_print_bar(line++, column, -DISP_WIDTH, "ID        :%d\r\n",0);
   vt100_print_bar(line++, column, -DISP_WIDTH, "문 상태   :%s\r\n",
                   ITEM_LIST(IS_DOOR_OPENED(), doorStatusList));
-  vt100_print_bar(line++, column, -DISP_WIDTH, "저장 기능 :%s\r\n",
-                  ITEM_LIST(IS_DATA_ERR(), generalStatusList));
+
+  if(get_logging_system()->status_group)
+  {
+    message = "오류";
+  }
+  else
+  {
+    message = "정상";
+  }
+
+  vt100_print_bar(line++, column, -DISP_WIDTH, "저장 기능 :%s\r\n",message);
+
   vt100_print_bar(line++, column, -DISP_WIDTH, "장비 전원 :%5.2f V\r\n", read_battery());
   vt100_print_bar(line++, column, -DISP_WIDTH, "장비 온도 :%5.2f C\r\n", read_temperature());
 
@@ -100,11 +112,11 @@ int32_t print_rainInfo(uint16_t row, uint16_t column)
 
   make_comList(buff, sizeof(buff));
   vt100_print_frame(row, column, "강수량", '+', '|', '-', DISP_WIDTH, WHITE);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "전일:%d\r\n",0);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "금일:%d\r\n", 0);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "시간:%d\r\n", 0);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "월간:%d\r\n", 0);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "연간:%d\r\n", 0);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "전일:%6.1f\r\n",get_rainfall()->rainfall_yesterday);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "금일:%6.1f\r\n", get_rainfall()->rainfall_today);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "시간:%6.1f\r\n", get_rainfall()->rainfall_hourly);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "월간:%6.1f\r\n", get_rainfall()->rainfall_monthly);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "연간:%6.1f\r\n", get_rainfall()->rainfall_yearly);
 
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
@@ -205,21 +217,9 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min,
   uint8_t line = row + 3;
   kma_data_ex_t *p_kma = NULL;
   uint32_t elapsed_time;
-  switch (min)
-  {
-    case eAWS_DATA_REAL:
-      p_kma = get_kma_data(min);
-      break;
-    case eAWS_DATA_1MIN:
-      p_kma = get_kma_data(min);
-      break;
-    case eAWS_DATA_10MIN:
-      p_kma = get_kma_data(min);
-      break;
-    case eAWS_DATA_HOUR:
-      p_kma = get_kma_data(min);
-      break;
-  }
+
+  p_kma = get_kma_data(min);
+
 
   elapsed_time = g_exec_250ms_time.elapsed_time + g_exec_1s_time.elapsed_time;
 
@@ -550,7 +550,7 @@ int32_t aws_menu_display(p_shell_context_t ctx)
 
     print_rainInfo(1+line,60);
 
-    key = get_key(100);
+    key = get_key(500);
 
     if (key == KEY_CODE_RIGHT)
     {

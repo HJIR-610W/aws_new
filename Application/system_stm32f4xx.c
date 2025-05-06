@@ -185,41 +185,42 @@ void SystemInit(void)
 }
 
 /**
-   * @brief  Update SystemCoreClock variable according to Clock Register Values.
-  *         The SystemCoreClock variable contains the core clock (HCLK), it can
-  *         be used by the user application to setup the SysTick timer or configure
-  *         other parameters.
+  * @brief  클럭 레지스터 값을 기준으로 SystemCoreClock 변수를 업데이트합니다.
+  *         SystemCoreClock 변수에는 코어 클럭(HCLK)이 저장되며,
+  *         사용자 애플리케이션에서 SysTick 타이머 설정이나 다른 파라미터
+  *         설정 시 사용할 수 있습니다.
   *           
-  * @note   Each time the core clock (HCLK) changes, this function must be called
-  *         to update SystemCoreClock variable value. Otherwise, any configuration
-  *         based on this variable will be incorrect.         
+  * @note   코어 클럭(HCLK)이 변경될 때마다 이 함수를 호출하여
+  *         SystemCoreClock 변수 값을 업데이트해야 합니다.
+  *         그렇지 않으면 이 변수를 기반으로 한 모든 설정이 올바르지 않게 됩니다.
   *     
-  * @note   - The system frequency computed by this function is not the real 
-  *           frequency in the chip. It is calculated based on the predefined 
-  *           constant and the selected clock source:
+  * @note   - 이 함수가 계산하는 시스템 클럭 주파수는 실제 칩 내부의
+  *           정확한 주파수가 아닐 수 있습니다. 이 함수는 사전에 정의된
+  *           상수와 선택된 클럭 소스를 기반으로 계산됩니다:
   *             
-  *           - If SYSCLK source is HSI, SystemCoreClock will contain the HSI_VALUE(*)
+  *           - SYSCLK 소스가 HSI인 경우, SystemCoreClock에는 HSI_VALUE(*)가 저장됩니다.
   *                                              
-  *           - If SYSCLK source is HSE, SystemCoreClock will contain the HSE_VALUE(**)
+  *           - SYSCLK 소스가 HSE인 경우, SystemCoreClock에는 HSE_VALUE(**)가 저장됩니다.
   *                          
-  *           - If SYSCLK source is PLL, SystemCoreClock will contain the HSE_VALUE(**) 
-  *             or HSI_VALUE(*) multiplied/divided by the PLL factors.
+  *           - SYSCLK 소스가 PLL인 경우, SystemCoreClock에는 HSE_VALUE(**) 또는 HSI_VALUE(*)
+  *             에 PLL 계수를 곱하거나 나눈 값이 저장됩니다.
   *         
-  *         (*) HSI_VALUE is a constant defined in stm32f4xx_hal_conf.h file (default value
-  *             16 MHz) but the real value may vary depending on the variations
-  *             in voltage and temperature.   
+  *         (*) HSI_VALUE는 stm32f4xx_hal_conf.h 파일에 정의된 상수 (기본값 16 MHz)이지만,
+  *             실제 값은 전압이나 온도 변화에 따라 달라질 수 있습니다.
   *    
-  *         (**) HSE_VALUE is a constant defined in stm32f4xx_hal_conf.h file (its value
-  *              depends on the application requirements), user has to ensure that HSE_VALUE
-  *              is same as the real frequency of the crystal used. Otherwise, this function
-  *              may have wrong result.
+  *         (**) HSE_VALUE는 stm32f4xx_hal_conf.h 파일에 정의된 상수이며
+  *              애플리케이션 요구 사항에 따라 값이 달라집니다.
+  *              사용자는 HSE_VALUE가 사용 중인 크리스털의 실제 주파수와
+  *              동일한지 확인해야 합니다. 그렇지 않으면 이 함수의 계산 결과가
+  *              잘못될 수 있습니다.
   *                
-  *         - The result of this function could be not correct when using fractional
-  *           value for HSE crystal.
+  *         - HSE 크리스털이 소수점 주파수일 경우, 이 함수의 계산 결과가
+  *           정확하지 않을 수 있습니다.
   *     
-  * @param  None
-  * @retval None
+  * @param  없음
+  * @retval 없음
   */
+
 void SystemCoreClockUpdate(void)
 {
   uint32_t tmp = 0, pllvco = 0, pllp = 2, pllsource = 0, pllm = 2;
@@ -437,82 +438,68 @@ void SystemInit_ExtMemCtl(void)
 }
 #endif /* STM32F427xx || STM32F437xx || STM32F429xx || STM32F439xx || STM32F469xx || STM32F479xx */
 #elif defined (DATA_IN_ExtSRAM) || defined (DATA_IN_ExtSDRAM)
-/**
-  * @brief  Setup the external memory controller.
-  *         Called in startup_stm32f4xx.s before jump to main.
-  *         This function configures the external memories (SRAM/SDRAM)
-  *         This SRAM/SDRAM will be used as program data memory (including heap and stack).
-  * @param  None
-  * @retval None
-  */
+
+
 void SystemInit_ExtMemCtl(void)
 {
   __IO uint32_t tmp = 0x00;
 
-#if defined(STM32F405xx) || defined(STM32F415xx) || defined(STM32F407xx) || defined(STM32F417xx)\
- || defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx)\
- || defined(STM32F469xx) || defined(STM32F479xx) || defined(STM32F412Zx) || defined(STM32F412Vx)
+
 
 #if defined(DATA_IN_ExtSRAM)
 /*-- GPIOs Configuration -----------------------------------------------------*/
-   /* Enable GPIOD, GPIOE, GPIOF and GPIOG interface clock */
-  RCC->AHB1ENR   |= 0x00000078;
-  /* Delay after an RCC peripheral clock enabling */
-  tmp = READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIODEN);
-  
-/* GPIOF: A0~A5, A6~A9 */
-GPIOF->AFR[0]  = 0x00CCCCCC; // PF0~PF5: AF12
-GPIOF->AFR[1]  = 0xCCCC0000; // PF12~PF15: AF12
-GPIOF->MODER   = 0xAA000AAA; // PF0~PF5, PF12~PF15: Alternate Function
-GPIOF->OSPEEDR = 0xFF000FFF; // PF0~PF5, PF12~PF15: Very High Speed
-GPIOF->OTYPER  = 0x00000000; // Push-Pull
-GPIOF->PUPDR   = 0x00000000; // No Pull
+  RCC->AHB1ENR |=RCC_AHB1ENR_GPIODEN | RCC_AHB1ENR_GPIOEEN | RCC_AHB1ENR_GPIOFEN | RCC_AHB1ENR_GPIOGEN;
+  tmp = RCC->AHB1ENR;  // Delay after RCC clock enabling
 
-/* GPIOG: A10~A15 */
-GPIOG->AFR[0]  = 0x00CCCCCC; // PG0~PG5: AF12
-GPIOG->AFR[1]  = 0x00000000; // PG6~PG15 (불필요, 초기값 유지)
-GPIOG->MODER   = 0x000AAAAA; // PG0~PG5: Alternate Function
-GPIOG->OSPEEDR = 0x000FFFFF; // PG0~PG5: Very High Speed
-GPIOG->OTYPER  = 0x00000000; // Push-Pull
-GPIOG->PUPDR   = 0x00000000; // No Pull
+GPIOD->MODER   = 0xAAAA8A0A;
+GPIOD->OTYPER  = 0x00000000;
+GPIOD->OSPEEDR = 0x00000000;
+GPIOD->PUPDR   = 0x00000000;
+GPIOD->ODR     = 0x00000000;
+GPIOD->AFR[0]  = 0xC0CC00CC;
+GPIOD->AFR[1]  = 0xCCCCCCCC;
 
-/* GPIOD: A16~A18 */
-GPIOD->AFR[1]  = 0x000CC000; // PD11~PD13: AF12
-GPIOD->MODER   |= 0x00AA0000; // PD11~PD13: Alternate Function
-GPIOD->OSPEEDR |= 0x00FF0000; // PD11~PD13: Very High Speed
-GPIOD->OTYPER  &= ~0x00003800; // PD11~PD13: Push-Pull
-GPIOD->PUPDR   &= ~0x0000F000; // PD11~PD13: No Pull
 
-/* GPIOE: A19~A20 */
-GPIOE->AFR[0]  = 0x0000C000; // PE3~PE4: AF12
-GPIOE->MODER   |= 0x00000A00; // PE3~PE4: Alternate Function
-GPIOE->OSPEEDR |= 0x00000F00; // PE3~PE4: Very High Speed
-GPIOE->OTYPER  &= ~0x00000018; // PE3~PE4: Push-Pull
-GPIOE->PUPDR   &= ~0x00000030; // PE3~PE4: No Pull
-  
-/*-- FMC/FSMC Configuration --------------------------------------------------*/
-  /* Enable the FMC/FSMC interface clock */
+GPIOE->MODER   = 0xAAAA929A;
+GPIOE->OTYPER  = 0x00000000;
+GPIOE->OSPEEDR = 0x00000000;
+GPIOE->PUPDR   = 0x00000000;
+GPIOE->ODR     = 0x00000000;
+GPIOE->AFR[0]  = 0xC00CC0CC;
+GPIOE->AFR[1]  = 0xCCCCCCCC;
+
+    
+GPIOF->MODER   = 0xAA000AAA;
+GPIOF->OTYPER  = 0x00000000;
+GPIOF->OSPEEDR = 0x00000000;
+GPIOF->PUPDR   = 0x00000000;
+GPIOF->ODR     = 0x00000000;
+GPIOF->AFR[0]  = 0x00CCCCCC;
+GPIOF->AFR[1]  = 0xCCCC0000;
+
+GPIOG->MODER   = 0x00280AAA;
+GPIOG->OTYPER  = 0x00000000;
+GPIOG->OSPEEDR = 0x00000000;
+GPIOG->PUPDR   = 0x00000000;
+GPIOG->ODR     = 0x00000000;
+GPIOG->AFR[0]  = 0x00CCCCCC;
+GPIOG->AFR[1]  = 0x00000CC0;
+
+
   RCC->AHB3ENR         |= 0x00000001;
 
 
-
-#if defined(STM32F407xx)
   /* Delay after an RCC peripheral clock enabling */
   tmp = READ_BIT(RCC->AHB3ENR, RCC_AHB3ENR_FSMCEN);
   /* Configure and enable Bank1_SRAM2 */
   FSMC_Bank1->BTCR[2]  = 0x00001011;
   FSMC_Bank1->BTCR[3]  = 0x00110211;
   FSMC_Bank1E->BWTR[2] = 0x0FFFFFFF;
-  
-  FSMC_Bank1->BTCR[4] = 0x00080001;//0x00001081
-  FSMC_Bank1->BTCR[5] = 0x002AFA14;//0x001A0F14
 
-#endif 
 
 #endif /* DATA_IN_ExtSRAM */
   
-#endif /* STM32F405xx || STM32F415xx || STM32F407xx || STM32F417xx || STM32F427xx || STM32F437xx ||\
-          STM32F429xx || STM32F439xx || STM32F469xx || STM32F479xx || STM32F412Zx || STM32F412Vx  */ 
+
   (void)(tmp); 
 }
 #endif /* DATA_IN_ExtSRAM && DATA_IN_ExtSDRAM */

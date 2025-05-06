@@ -7,6 +7,7 @@
 #include "aws_kma3.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
+#include "config_nvm.h"
 #include "old_aws_define.h"
 #include "schedule.h"
 #include "task_measure.h"
@@ -15,8 +16,8 @@
 #include "utile_time.h"
 
 #define AWS_DATA_ERR_VAL 9999
-measure_data_1s_t *g_p_raw = NULL;
 
+measure_data_1s_t *g_p_raw = NULL;
 uint8_t g_kma_err[SENSOR_LIST_MAX];
 
 void update_sensor_err(eSENSOR_LIST_t sensor,uint8_t code)
@@ -39,8 +40,6 @@ bool is_raining(uint8_t  *sensor_err)
   
   return p_sensor[A8_RAIN_PRESENT].data.b;
 }
-
-
 
 
 void MegaErrorCheck(SYSTEM_INFO_AWS *pSystem, uint16_t  *sRetVal, uint16_t  sCompVal, uint16_t  sMax,
@@ -455,30 +454,7 @@ void update_old_kma(eAWS_DATA_MIN_t min)
 
 }
 
-kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
-{
-  kma_data_ex_t *p_kma_data = NULL;
 
-  switch (min)
-  {
-    case eAWS_DATA_REAL:
-      p_kma_data = &g_kma_inst_ex;
-      break;
-    case eAWS_DATA_1MIN:
-      p_kma_data = &g_kma_1min_ex;
-      break;
-    case eAWS_DATA_10MIN:
-      p_kma_data = &g_kma_10min_ex;
-      break;
-    case eAWS_DATA_HOUR:
-      p_kma_data = &g_kma_1Hour_ex;
-      break;
-    default:
-      break;
-  }
-
-  return p_kma_data;
-}
 
 void update_old_kma_real(void)
 {
@@ -547,82 +523,14 @@ void update_old_kma_real(void)
 
   g_kma_inst_ex.soil_temperature_1_5m.data = mRealAws.mSoilTemp1_5m.sReal;
   g_kma_inst_ex.soil_temperature_1_5m.err = get_sensor_err(B11_SOIL_TEMPERATURE_150CM);
+
+  set_rainfall_yesterday(Sysinfo.mRain.sBefDayRain/10.0);
+  set_rainfall_today(Sysinfo.mRain.sDayRain / 10.0);
+  set_rainfall_hourly(Sysinfo.mRain.sHourRain / 10.0);
+  set_rainfall_monthly(get_config_nvm()->rainfall_monthly);
+  set_rainfall_yearly(get_config_nvm()->rainfall_yearly);
 }
 
-void update_old_kma_10min(void)
-{
-  g_kma_10min_ex.temperature.data = m10MinAws.mTemperature.sReal;
-  g_kma_10min_ex.temperature.err = g_kma_10min_ex.temperature.data == 9999 ? 1 : 0;
-  g_kma_10min_ex.temperature.max = m10MinAws.mTemperature.sMax;
-  g_kma_10min_ex.temperature.min = m10MinAws.mTemperature.sMin;
-
-  g_kma_10min_ex.relative_humidity.data = m10MinAws.mHumidity.sReal;
-  g_kma_10min_ex.relative_humidity.err = g_kma_10min_ex.relative_humidity.data == 9999 ? 1 : 0;
-  g_kma_10min_ex.relative_humidity.max = m10MinAws.mHumidity.sMax;
-  g_kma_10min_ex.relative_humidity.min = m10MinAws.mHumidity.sMin;
-
-  g_kma_10min_ex.wind_speed_avg.data = m10MinAws.mWind.mSpeed.sReal;
-  g_kma_10min_ex.wind_speed_avg.err = g_kma_10min_ex.wind_speed_avg.data == 9999 ? 1 : 0;
-  g_kma_10min_ex.wind_speed_avg.max = m10MinAws.mWind.mSpeed.sMax;
-
-  g_kma_10min_ex.wind_direction_avg.data = m10MinAws.mWind.mDirection.sReal;
-  g_kma_10min_ex.wind_direction_avg.err = g_kma_10min_ex.wind_direction_avg.data == 9999 ? 1 : 0;
-  g_kma_10min_ex.wind_direction_avg.max = m10MinAws.mWind.mDirection.sMax;
-
-  g_kma_10min_ex.wind_speed_instant.data = m10MinAws.mWind.mSpeed.sMax;
-  g_kma_10min_ex.wind_speed_instant.err = g_kma_10min_ex.wind_speed_instant.data == 9999 ? 1 : 0;
-
-  g_kma_10min_ex.wind_direction_instant.data = m10MinAws.mWind.mDirection.sMax;
-  g_kma_10min_ex.wind_direction_instant.err =
-      g_kma_10min_ex.wind_direction_instant.data == 9999 ? 1 : 0;
-
-  g_kma_10min_ex.sunshine_duration.data = m10MinAws.mSunshine.sReal;
-  g_kma_10min_ex.sunshine_duration.err = g_kma_10min_ex.sunshine_duration.data == 9999 ? 1 : 0;
-  g_kma_10min_ex.sunshine_duration.max = m10MinAws.mSunshine.sMax;
-
-  g_kma_10min_ex.solar_radiation.data = m10MinAws.mSolarRad.sReal;
-  g_kma_10min_ex.solar_radiation.err = g_kma_10min_ex.solar_radiation.data == 9999 ? 1 : 0;
-  g_kma_10min_ex.solar_radiation.max = m10MinAws.mSolarRad.sMax;
-
-  g_kma_10min_ex.precipitation_presence.data = m10MinAws.mRainDetect.sReal;
-  g_kma_10min_ex.precipitation_presence.err =
-      g_kma_10min_ex.precipitation_presence.data == 9999 ? 1 : 0;
-
-  g_kma_10min_ex.snowfall.data = m10MinAws.mSnowFall.sReal;
-  g_kma_10min_ex.snowfall.err = g_kma_10min_ex.snowfall.data == 9999 ? 1 : 0;
-
-  g_kma_10min_ex.pressure.data = m10MinAws.mBarometric.sReal;
-  g_kma_10min_ex.pressure.err = g_kma_10min_ex.pressure.data == 9999 ? 1 : 0;
-  g_kma_10min_ex.pressure.max = m10MinAws.mBarometric.sMax;
-  g_kma_10min_ex.pressure.min = m10MinAws.mBarometric.sMin;
-
-  g_kma_10min_ex.soil_temperature_5cm.data = m10MinAws.mSoilTemp5cm.sReal;
-  g_kma_10min_ex.soil_temperature_5cm.err =
-      g_kma_10min_ex.soil_temperature_5cm.data == 9999 ? 1 : 0;
-
-  g_kma_10min_ex.soil_temperature_10cm.data = m10MinAws.mSoilTemp10cm.sReal;
-  g_kma_10min_ex.soil_temperature_10cm.err =
-      g_kma_10min_ex.soil_temperature_10cm.data == 9999 ? 1 : 0;
-
-  g_kma_10min_ex.soil_temperature_20cm.data = m10MinAws.mSoilTemp20cm.sReal;
-  g_kma_10min_ex.soil_temperature_20cm.err =
-      g_kma_10min_ex.soil_temperature_20cm.data == 9999 ? 1 : 0;
-
-  g_kma_10min_ex.soil_temperature_30cm.data = m10MinAws.mSoilTemp30cm.sReal;
-  g_kma_10min_ex.soil_temperature_30cm.err =
-      g_kma_10min_ex.soil_temperature_30cm.data == 9999 ? 1 : 0;
-
-  g_kma_10min_ex.soil_temperature_50cm.data = m10MinAws.mSoilTemp50cm.sReal;
-  g_kma_10min_ex.soil_temperature_50cm.err =
-      g_kma_10min_ex.soil_temperature_50cm.data == 9999 ? 1 : 0;
-
-  g_kma_10min_ex.soil_temperature_1m.data = m10MinAws.mSoilTemp1_0m.sReal;
-  g_kma_10min_ex.soil_temperature_1m.err = g_kma_10min_ex.soil_temperature_1m.data == 9999 ? 1 : 0;
-
-  g_kma_10min_ex.soil_temperature_1_5m.data = m10MinAws.mSoilTemp1_5m.sReal;
-  g_kma_10min_ex.soil_temperature_1_5m.err =
-      g_kma_10min_ex.soil_temperature_1_5m.data == 9999 ? 1 : 0;
-}
 
 
 /**
@@ -714,8 +622,9 @@ void update_kma2_status(void)
   {
     uint16_t sTriger = 0;
     SYSTEM_INFO_AWS *pSystem;
-    SYSTEM_CONFIG_AWS *pConfig;
+
     DATE_TIME_BUF ct;
+    DATE_TIME_BUF time_old;
     AWS_DATA_STRUCT *pAws;
     uint16_t sSpeed;
     uint16_t sDirec;
@@ -729,166 +638,169 @@ void update_kma2_status(void)
     
     pAws = &mRealAws;
     pSystem = &Sysinfo;
-    pConfig = &Config;
+
 
     
         // 여기서는 메모리를 아끼기위해 g_p_raw 하나만 사용
         g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
 
-    while (1)
-    {
-      is_measurement_1s(g_p_raw, 0);  // 업데이트된 값 없으면 이전값 유지
-      if (is_measurement_250(&reading_250, osWaitForever))  // 250ms마다 최신값 사용
-      {
-        g_p_raw->data[A2_WIND_DIRECTION] = reading_250.data[eA2_WIND_DIRECTION];
-        g_p_raw->data[A3_WIND_SPEED] = reading_250.data[eA3_WIND_SPEED];
-      }
+        time_old = Date_Time;
+        while (1)
+        {
+          is_measurement_1s(g_p_raw, 0);                        // 업데이트된 값 없으면 이전값 유지
+          if (is_measurement_250(&reading_250, osWaitForever))  // 250ms마다 최신값 사용
+          {
+            g_p_raw->data[A2_WIND_DIRECTION] = reading_250.data[eA2_WIND_DIRECTION];
+            g_p_raw->data[A3_WIND_SPEED] = reading_250.data[eA3_WIND_SPEED];
+          }
 
-      ct = Date_Time;
+          ct = Date_Time;
 
-      check_sensor_use();
+          check_sensor_use();
 
-      pSystem->mRain.sDayCount += get_rain_mm(&sensor_err);
-      update_sensor_err(A6_RAINFALL_DOT5_1MM,sensor_err);
+          pSystem->mRain.sDayCount += get_rain_mm(&sensor_err);
+          update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
 
-      sSpeed = sSpeedOld;
-      sDirec = sDirecOld;
+          sSpeed = sSpeedOld;
+          sDirec = sDirecOld;
 
-      MegaErrorCheck(pSystem, &sSpeed, WindSpeedCalc(&sensor_err), 9999, MEGASPEED_ERR_CHAN);
-      update_sensor_err(A3_WIND_SPEED, sensor_err);
+          MegaErrorCheck(pSystem, &sSpeed, WindSpeedCalc(&sensor_err), 9999, MEGASPEED_ERR_CHAN);
+          update_sensor_err(A3_WIND_SPEED, sensor_err);
 
-      MegaErrorCheck(pSystem, &sDirec, WindDirecCalc(&sensor_err), 9999, MEGADIREC_ERR_CHAN);
-      update_sensor_err(A2_WIND_DIRECTION, sensor_err);
+          MegaErrorCheck(pSystem, &sDirec, WindDirecCalc(&sensor_err), 9999, MEGADIREC_ERR_CHAN);
+          update_sensor_err(A2_WIND_DIRECTION, sensor_err);
 
-      sSpeedOld = sSpeed;
-      sDirecOld = sDirec;
-      
-      pSystem->mRealWind.sAvg3Speed[nWindCnt12] = sSpeed;   // 풍속  3 초 평균
-      pSystem->mRealWind.sAvg10Speed[nWindCnt40] = sSpeed;  // 풍속 10 초 평균
+          sSpeedOld = sSpeed;
+          sDirecOld = sDirec;
 
-      pSystem->mRealWind.sAvg3Direction[nWindCnt12] = sDirec;   // 풍향  3 초 평균
-      pSystem->mRealWind.sAvg10Direction[nWindCnt40] = sDirec;  // 풍향 10 초 평균
-      pSystem->mRealWind.sWrFlag[nWindCnt40] = 1;
+          pSystem->mRealWind.sAvg3Speed[nWindCnt12] = sSpeed;   // 풍속  3 초 평균
+          pSystem->mRealWind.sAvg10Speed[nWindCnt40] = sSpeed;  // 풍속 10 초 평균
 
-      if (++nWindCnt12 >= 12)
-        nWindCnt12 = 0;
-      if (++nWindCnt40 >= 40)
-        nWindCnt40 = 0;
+          pSystem->mRealWind.sAvg3Direction[nWindCnt12] = sDirec;   // 풍향  3 초 평균
+          pSystem->mRealWind.sAvg10Direction[nWindCnt40] = sDirec;  // 풍향 10 초 평균
+          pSystem->mRealWind.sWrFlag[nWindCnt40] = 1;
 
-      MegaErrorCheck(pSystem, &pAws->mTemperature.sReal, TempCalc(&sensor_err), 9999,
-                     MEGATEMP_ERR_CHAN);  // 1초 순간 온도
-      update_sensor_err(A1_TEMPERATURE, sensor_err);
+          if (++nWindCnt12 >= 12)
+            nWindCnt12 = 0;
+          if (++nWindCnt40 >= 40)
+            nWindCnt40 = 0;
 
-      MegaErrorCheck(pSystem, &pAws->mBarometric.sReal, BarometricCalc(&sensor_err), 19999,
-                     MEGABARO_ERR_CHAN);  // 1초 순간 기압
-      update_sensor_err(A7_PRESSURE, sensor_err);
+          MegaErrorCheck(pSystem, &pAws->mTemperature.sReal, TempCalc(&sensor_err), 9999,
+                         MEGATEMP_ERR_CHAN);  // 1초 순간 온도
+          update_sensor_err(A1_TEMPERATURE, sensor_err);
 
-      MegaErrorCheck(pSystem, &pAws->mHumidity.sReal, HumidityCalc(&sensor_err), 9999,
-                     MEGAHUMID_ERR_CHAN);  // 1초 순간 습도
-      update_sensor_err(A10_RELATIVE_HUMIDITY, sensor_err);
+          MegaErrorCheck(pSystem, &pAws->mBarometric.sReal, BarometricCalc(&sensor_err), 19999,
+                         MEGABARO_ERR_CHAN);  // 1초 순간 기압
+          update_sensor_err(A7_PRESSURE, sensor_err);
 
-      MegaErrorCheck(pSystem, &pAws->mSolarRad.sReal, SolarRadCalc(&sensor_err), 9999,
-                     MEGASOL_ERR_CHAN);  // 일사
-      update_sensor_err(B1_SOLAR_RADIATION, sensor_err);
+          MegaErrorCheck(pSystem, &pAws->mHumidity.sReal, HumidityCalc(&sensor_err), 9999,
+                         MEGAHUMID_ERR_CHAN);  // 1초 순간 습도
+          update_sensor_err(A10_RELATIVE_HUMIDITY, sensor_err);
 
-      MegaErrorCheck(pSystem, &pAws->mSnowFall.sReal, SnowCalc(&sensor_err), 9999,
-                     MEGASNOW_ERR_CHAN);  // 현재 적설량
-      update_sensor_err(A9_SNOW_DEPTH, sensor_err);
+          MegaErrorCheck(pSystem, &pAws->mSolarRad.sReal, SolarRadCalc(&sensor_err), 9999,
+                         MEGASOL_ERR_CHAN);  // 일사
+          update_sensor_err(B1_SOLAR_RADIATION, sensor_err);
 
-      // 추가 2017. 03. 22 지중 온도 추가  //
-      MegaErrorCheck(pSystem, &pAws->mSoilTemp5cm.sReal, TempCalcExt(SOLITEMP5CM_CHN,&sensor_err), 9999,
-                     MEGASOLI5TEMP_ERR_CHAN);  // 1초 순간 지중 5Cm온도
+          MegaErrorCheck(pSystem, &pAws->mSnowFall.sReal, SnowCalc(&sensor_err), 9999,
+                         MEGASNOW_ERR_CHAN);  // 현재 적설량
+          update_sensor_err(A9_SNOW_DEPTH, sensor_err);
 
-      update_sensor_err(B5_SOIL_TEMPERATURE_5CM, sensor_err);
+          // 추가 2017. 03. 22 지중 온도 추가  //
+          MegaErrorCheck(pSystem, &pAws->mSoilTemp5cm.sReal,
+                         TempCalcExt(SOLITEMP5CM_CHN, &sensor_err), 9999,
+                         MEGASOLI5TEMP_ERR_CHAN);  // 1초 순간 지중 5Cm온도
 
-      MegaErrorCheck(pSystem, &pAws->mSoilTemp10cm.sReal, TempCalcExt(SOLITEMP10CM_CHN,&sensor_err), 9999,
-                     MEGASOLI10TEMP_ERR_CHAN);  // 1초 순간 지중 10Cm온도
+          update_sensor_err(B5_SOIL_TEMPERATURE_5CM, sensor_err);
 
-      update_sensor_err(B6_SOIL_TEMPERATURE_10CM, sensor_err);
+          MegaErrorCheck(pSystem, &pAws->mSoilTemp10cm.sReal,
+                         TempCalcExt(SOLITEMP10CM_CHN, &sensor_err), 9999,
+                         MEGASOLI10TEMP_ERR_CHAN);  // 1초 순간 지중 10Cm온도
 
-      MegaErrorCheck(pSystem, &pAws->mSoilTemp20cm.sReal,
-                     TempCalcExt(SOLITEMP20CM_CHN, &sensor_err), 9999,
-                     MEGASOLI20TEMP_ERR_CHAN);  // 1초 순간 지중 20Cm온도
+          update_sensor_err(B6_SOIL_TEMPERATURE_10CM, sensor_err);
 
-      update_sensor_err(B7_SOIL_TEMPERATURE_20CM, sensor_err);
+          MegaErrorCheck(pSystem, &pAws->mSoilTemp20cm.sReal,
+                         TempCalcExt(SOLITEMP20CM_CHN, &sensor_err), 9999,
+                         MEGASOLI20TEMP_ERR_CHAN);  // 1초 순간 지중 20Cm온도
 
-      MegaErrorCheck(pSystem, &pAws->mSoilTemp30cm.sReal,
-                     TempCalcExt(SOLITEMP30CM_CHN, &sensor_err), 9999,
-                     MEGASOLI30TEMP_ERR_CHAN);  // 1초 순간 지중 30Cm온도
+          update_sensor_err(B7_SOIL_TEMPERATURE_20CM, sensor_err);
 
-      update_sensor_err(B8_SOIL_TEMPERATURE_30CM, sensor_err);
+          MegaErrorCheck(pSystem, &pAws->mSoilTemp30cm.sReal,
+                         TempCalcExt(SOLITEMP30CM_CHN, &sensor_err), 9999,
+                         MEGASOLI30TEMP_ERR_CHAN);  // 1초 순간 지중 30Cm온도
 
-      // 추가 2017. 03. 22 지중 온도 추가 END //
-      MegaErrorCheck(pSystem, &pAws->mSoilTemp50cm.sReal,
-                     TempCalcExt(SOLITEMP50CM_CHN, &sensor_err), 9999,
-                     MEGASOLI10TEMP_ERR_CHAN);  // 1초 순간 지중 50Cm온도
+          update_sensor_err(B8_SOIL_TEMPERATURE_30CM, sensor_err);
 
-      update_sensor_err(B9_SOIL_TEMPERATURE_50CM, sensor_err);
+          // 추가 2017. 03. 22 지중 온도 추가 END //
+          MegaErrorCheck(pSystem, &pAws->mSoilTemp50cm.sReal,
+                         TempCalcExt(SOLITEMP50CM_CHN, &sensor_err), 9999,
+                         MEGASOLI10TEMP_ERR_CHAN);  // 1초 순간 지중 50Cm온도
 
-      MegaErrorCheck(pSystem, &pAws->mSoilTemp1_0m.sReal,
-                     TempCalcExt(SOLITEMP1_0M_CHN, &sensor_err), 9999,
-                     MEGASOLI20TEMP_ERR_CHAN);  // 1초 순간 지중 1~0m온도
+          update_sensor_err(B9_SOIL_TEMPERATURE_50CM, sensor_err);
 
-      update_sensor_err(B10_SOIL_TEMPERATURE_100CM, sensor_err);
+          MegaErrorCheck(pSystem, &pAws->mSoilTemp1_0m.sReal,
+                         TempCalcExt(SOLITEMP1_0M_CHN, &sensor_err), 9999,
+                         MEGASOLI20TEMP_ERR_CHAN);  // 1초 순간 지중 1~0m온도
 
-      MegaErrorCheck(pSystem, &pAws->mSoilTemp1_5m.sReal,
-                     TempCalcExt(SOLITEMP1_5M_CHN, &sensor_err), 9999,
-                     MEGASOLI30TEMP_ERR_CHAN);  // 1초 순간 지중 1_5m온도
-                                                // 추가 2017. 03. 22 지중 온도 추가 END //
+          update_sensor_err(B10_SOIL_TEMPERATURE_100CM, sensor_err);
 
-      update_sensor_err(B11_SOIL_TEMPERATURE_150CM, sensor_err);
+          MegaErrorCheck(pSystem, &pAws->mSoilTemp1_5m.sReal,
+                         TempCalcExt(SOLITEMP1_5M_CHN, &sensor_err), 9999,
+                         MEGASOLI30TEMP_ERR_CHAN);  // 1초 순간 지중 1_5m온도
+                                                    // 추가 2017. 03. 22 지중 온도 추가 END //
 
-      // Off Delay 적용 함
-      if (is_raining(&sensor_err))  // 강우 감지
-      {
-        update_sensor_err(A8_RAIN_PRESENT, sensor_err);
+          update_sensor_err(B11_SOIL_TEMPERATURE_150CM, sensor_err);
 
-        pAws->mRainDetect.sReal = 0x000a;
-        pSystem->m_shOffDelayRemain = get_config_app()->m_usRainDtOffDelay;
-        pSystem->m_cOffDelayFlag = 1;
-      }
+          // Off Delay 적용 함
+          if (is_raining(&sensor_err))  // 강우 감지
+          {
+            update_sensor_err(A8_RAIN_PRESENT, sensor_err);
 
-      pAws->mSunshine.sReal = SunshineCalc(&sensor_err);  // CSD3 기준 0-1V 신호로 발생됨
+            pAws->mRainDetect.sReal = 0x000a;
+            pSystem->m_shOffDelayRemain = get_config_app()->m_usRainDtOffDelay;
+            pSystem->m_cOffDelayFlag = 1;
+          }
 
-      update_sensor_err(B2_SUNSHINE_DURATION, sensor_err);
+          pAws->mSunshine.sReal = SunshineCalc(&sensor_err);  // CSD3 기준 0-1V 신호로 발생됨
 
-      // // 센서 불량 처리
-      pAws->mStatus.sReal = 0;
+          update_sensor_err(B2_SUNSHINE_DURATION, sensor_err);
 
-      if (kma_is_sensor_error(A6_RAINFALL_DOT5_1MM))
-        pAws->mStatus.sMin |= RAINFALLFAIL_BIT;
-      else
-        pAws->mStatus.sMin &= ~(RAINFALLFAIL_BIT);
+          // 센서 불량 처리
+          pAws->mStatus.sReal = 0;
 
-      if (sSpeed >= 1050)
-        pAws->mStatus.sMin |= WINDSPEEDFAIL_BIT;
-      else
-        pAws->mStatus.sMin &= ~(WINDSPEEDFAIL_BIT);
+          if (kma_is_sensor_error(A6_RAINFALL_DOT5_1MM))
+            pAws->mStatus.sMin |= RAINFALLFAIL_BIT;
+          else
+            pAws->mStatus.sMin &= ~(RAINFALLFAIL_BIT);
 
-      if (sDirec >= 3600)
-        pAws->mStatus.sMin |= WINDDIRECFAIL_BIT;
-      else
-        pAws->mStatus.sMin &= ~(WINDDIRECFAIL_BIT);
+          if (sSpeed >= 1050)
+            pAws->mStatus.sMin |= WINDSPEEDFAIL_BIT;
+          else
+            pAws->mStatus.sMin &= ~(WINDSPEEDFAIL_BIT);
 
-      if (pAws->mTemperature.sReal >= 9999)
-        pAws->mStatus.sMin |= TEMPERATUREFAIL_BIT;
-      else
-        pAws->mStatus.sMin &= ~(TEMPERATUREFAIL_BIT);
+          if (sDirec >= 3600)
+            pAws->mStatus.sMin |= WINDDIRECFAIL_BIT;
+          else
+            pAws->mStatus.sMin &= ~(WINDDIRECFAIL_BIT);
 
-      if (pAws->mBarometric.sReal >= 19999)
-        pAws->mStatus.sMin |= BAROMETRICFAIL_BIT;
-      else
-        pAws->mStatus.sMin &= ~(BAROMETRICFAIL_BIT);
+          if (pAws->mTemperature.sReal >= 9999)
+            pAws->mStatus.sMin |= TEMPERATUREFAIL_BIT;
+          else
+            pAws->mStatus.sMin &= ~(TEMPERATUREFAIL_BIT);
 
-      if (pAws->mHumidity.sReal >= 19999)
-        pAws->mStatus.sMin |= HUMIDITYFAIL_BIT;
-      else
-        pAws->mStatus.sMin &= ~(HUMIDITYFAIL_BIT);
+          if (pAws->mBarometric.sReal >= 19999)
+            pAws->mStatus.sMin |= BAROMETRICFAIL_BIT;
+          else
+            pAws->mStatus.sMin &= ~(BAROMETRICFAIL_BIT);
 
-      schedule_process(&ct);
-      
-      update_old_kma_real();
-  }
+          if (pAws->mHumidity.sReal >= 19999)
+            pAws->mStatus.sMin |= HUMIDITYFAIL_BIT;
+          else
+            pAws->mStatus.sMin &= ~(HUMIDITYFAIL_BIT);
+
+          schedule_process(&ct, &time_old);
+
+          update_old_kma_real();
+        }
 }
 
 const osThreadAttr_t KdualportTask_attributes = {
@@ -900,10 +812,25 @@ const osThreadAttr_t KdualportTask_attributes = {
 extern void aws_data_task(void *arg) ;
 
 
+
+void old_aws_init(void)
+{
+  SYSTEM_INFO_AWS *pSystem;
+
+  pSystem = &Sysinfo;
+
+  pSystem->mNVram.nYearRain = (uint32_t)(get_config_nvm()->rainfall_yearly*10);
+  pSystem->mNVram.nMonthRain = (uint32_t)(get_config_nvm()->rainfall_monthly*10);
+  pSystem->mNVram.nYearSunshine = (uint32_t)(get_config_nvm()->sunshine_yearly);
+  pSystem->mNVram.nMonthSunshine = (uint32_t)(get_config_nvm()->sunshine_monthly);
+}
+
 void dualportTask_init(void)
 {
   AwsMinMaxInit();
-
+  old_aws_init();
+  
   osThreadNew(DUALPORT_TASK, NULL, &KdualportTask_attributes);
   //osThreadNew(aws_data_task, NULL, &dualportTask_attributes);
 }
+

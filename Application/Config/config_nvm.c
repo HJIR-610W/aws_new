@@ -27,3 +27,8 @@ void save_config_nvm(void)
     fram_write(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(g_config_nvm));
 
 }
+
+config_nvm_t *get_config_nvm(void)
+{
+    return &g_config_nvm;
+}

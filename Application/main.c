@@ -59,6 +59,8 @@ void SystemClock_Config(void)
 int is_debug_mode(void) { return (CoreDebug->DHCSR & (1 << 0)) != 0; }
 
 
+extern void manual_bss_init(void);
+
 int main(void)
 {
 
@@ -78,9 +80,11 @@ int main(void)
 
   MX_FSMC_Init();  // SRAMÃÊ±âÈ­
 
+  manual_bss_init();
+
   MX_CRC_Init();
-  
- // sram_test();
+
+  // sram_test();
   
   asw_tlsf_init(POOL_SIZE);
   

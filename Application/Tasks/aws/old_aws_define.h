@@ -1,4 +1,6 @@
-
+/*
+구 AWS에서 사용하던 변수 그대로 사용
+*/
 
 #ifndef OLD_AWS_DEFINE_H
 #define OLD_AWS_DEFINE_H
@@ -192,7 +194,6 @@ typedef struct
   SENSORPROC_BUF mTempBuf[3];   // 0: 분 , 1: 10분 , 2: 1시간
   SENSORPROC_BUF mBaroBuf[3];   // 0: 분 , 1: 10분 , 2: 1시간
   SENSORPROC_BUF mHumidBuf[3];  // 0: 분 , 1: 10분 , 2: 1시간
-
   SENSORRAIN_BUF mRain;
   SENSORSUN_BUF mSun[3];  // 0: 분 , 1: 10분 , 2: 1시간
   SENSORPROC_BUF mGndBuf[3];
@@ -204,57 +205,17 @@ typedef struct
   SENSORPROC_BUF mSoil50Buf[3];
   SENSORPROC_BUF mSoil100Buf[3];
   SENSORPROC_BUF mSoil150Buf[3];
-  uint16_t PnlLedStatus;  // 2:Spare2, 1:Spare1, 0:TcpConnect Led
-#define TCPCONNET_LEDBIT 0x0001
-#define DOOROPEN_LEDBIT 0x0002
-#define SDFAIL_LEDBIT 0x0004
-
-  uint16_t sDiStatus;
-  uint16_t sDoStatus;
-  uint8_t FatOk;  // SD CARD 상태 1: OK , 0: Fail
-
-  uint8_t cKeyLCDFlag;
-  uint64_t lKeyOnLCDTimer;
-
-  uint16_t sCpuStat;  // IO CPU 상태 (0 - 50 roundrobin)
-  uint16_t sOldCpuStat;
-
-  uint8_t cTcpipStat;      // Tcpip Ethernet 상태 		0:Normal 1:Connect
-  uint8_t cDoorStat;       // DOOR 상태 				0:Open	 1:Close
-  uint8_t cACStat;         // AC 상태 					1:Normal 0:Fail
-  uint8_t cTTSPacketExch;  // 0:Normal,   1:Runnig
-
-  uint8_t cTcpRTxCnt;     // TCP/IP Packet Count
-  uint8_t cTcpRTxCntOld;  // TCP/IP Packet Count
-  uint8_t cSerRTxCnt;     // Serial Packet Count(CDMA)
-  uint8_t cRfRTxCnt;      // Serial Packet Count(VHF RF)
-  uint8_t cCdmaStat;
-  uint8_t cCDFlag;         // CDMA  CD Timeout Flag
-  uint8_t cModemInitFlag;  // Modem Init Flag			0:Deactive
-                           // 1:Active
-  uint64_t lCDOldTimer;
-  uint32_t CpuTimeCount;
 
   uint16_t shSnowFallOld;  // 10분 누적 적설량을 구하기위한 10분전 적설(실적설)
-                           //		uint16_t	        CDMAHookTmr;
-
-  //		uint8_t			cMegaErrCnt[10];                // Error
-  // Count를 10초 이상일 경우 9999로 설정한다(Mega640의 리셋시 대응 하기위함)
+   // Count를 10초 이상일 경우 9999로 설정한다(Mega640의 리셋시 대응 하기위함)
   uint8_t cMegaErrCnt[15];  // Error Count를 10초 이상일 경우 9999로
                             // 설정한다(Mega640의 리셋시 대응 하기위함)
 
   short m_shOffDelayRemain;  // OffDelay Remain Time(sec)
   uint8_t m_cOffDelayFlag;   // Off Delay Flag 1:일때 처리
+} SYSTEM_INFO_AWS; //1352바이트 
 
 
-} SYSTEM_INFO_AWS;
-
-/* ================================  SYSTEM CONFIGRATION
- * =============================== */
-/* -------------------------------- Auto Weather System
- * -------------------------------- */
-#define BAROMETER_TYPE_JINYANG 0
-#define BAROMETER_TYPE_YOUNG 1
 typedef struct
 {
   uint8_t m_cViDestID;     // 가상 목적지 주소
@@ -269,28 +230,19 @@ typedef struct
   uint16_t sFull;        // AD Convertion 최고값
   uint16_t sUse;         // 0: Use 1: NotUse
   uint16_t sChanDefine;  // 첨자:chan -> 0:Temp, 1:WindDirc, 2:Humid, 3:Barometric
-                         //              4:Solar Rad, 5:SnowFall
+                         // 4:Solar Rad, 5:SnowFall
 } CALIB_BUF;
 
 typedef enum eChargerType_
 {
   eCHARGER_HJ,
   eCHARGER_LS1024
-} eChargerType_t;
+} eCHARGER_TYPE_t;
 
-#define TCP_MODE_SERVER 0
-#define TCP_MODE_CLIENT 1
+
 
 typedef struct
 {
-
-
-
-  uint16_t m_usRainDtOffDelay;  // Rain Detect Sensor Off Delay : Rain Detect의
-                                // off시 지연 시간
-#ifdef VHFCOMM_DEF
-  // 여기서 부터 추가 2012. 07. 03
-  // ========== VHF CONFIG ========== //
   uint8_t m_cAlmId;  // 경보국 ID
   uint8_t m_cRev[2];
   uint8_t m_cSystemGrp;   // System Group Number
@@ -300,30 +252,12 @@ typedef struct
   uint16_t m_usTxPttGap;  // PTT Gap Time Configration Memory
   uint8_t m_cRstCnt;      // Host RTU Reset Count
   uint8_t m_cMsgQueIn;    // Message Que Input Count
-
-  uint8_t m_cMessageNum[20][8];  // 경보국 Configration과 같이 하기위함(6개 사용
-                                 // 2개 예비)
-
-  // =========== VHF ID Forwarding ============= //
+  uint8_t m_cMessageNum[20][8];  // 경보국 Configration과 같이 하기위함(6개 사용 2개 예비)
   VIRTUAL_IDGROUP_TABLE m_ViGRP[64];  // 가상ID 포워딩 중계 설정
-  ulong m_usVhfTmout;                 // Loop Back시 Time Out시간 설정
+  uint32_t m_usVhfTmout;                 // Loop Back시 Time Out시간 설정
   uint8_t m_cToneSec;                 // Tone 지연 시간
   uint8_t m_cNoiseSec;                // Noise 지연 시간
-
   uint8_t m_cEvSendCount;
-#endif
-  uint8_t m_cComm2Mode;  // 0:Direct, 1:2G Modem, 2:3G Modem
-  uint8_t m_cCDMAIP[4];
-  uint16_t m_usCDMATcpPort;          //
-  uint16_t m_usHostCommLastTimeMax;  // Host로 부터 통신후 접속 체크하는 시간(Sec)
-  uint16_t m_usReConnectTime;        // 접속 실패시 재접속 시도 까지의 시간(Sec)
-  uint8_t m_ucBarometerType;         // 시리얼 rs232 타입 기압계 사용
-  eChargerType_t m_ucChargerType;    // 0 화진 atemga 연산,1 ls1024
-  uint8_t m_ucTcpMode;               // 0 server, 1 client
-  uint8_t m_ucServer_ip[4];          // tcp 모듈 사용
-  uint16_t m_usServer_port;          // tcp 모듈 사용
-  // HWAJIN V2.00
-  uint8_t m_ucChUse[60];
 
 } SYSTEM_CONFIG_AWS;
 
@@ -369,6 +303,5 @@ typedef struct
 #define LOGGERDOOR_DIBIT 0x0008
 #define RAINFAIL_HALLDIBIT 0x8000
 
-// 강우량 감지센서가 홀소자 방식(2010)
-#define RAIN_DETECT_HALL
+
 #endif

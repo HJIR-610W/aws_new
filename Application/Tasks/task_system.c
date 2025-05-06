@@ -36,33 +36,12 @@ void userBtn_init(void)
 
 void systemTask(void *arg)
 {
-  modbus_init_t m_init;
-  uint16_t reg[10];
-  driver_t *m_master;
-  m_init.baud = 9600;
-  m_init.parityIdx = 0;
-  m_init.port_num = UART_2_EXT_A;
-  m_init.stop = 1;
 
- //m_master = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_232, &m_init);
   while (1)
   {
-   // driver_modbus_m_read_multi_reg(m_master, 0, 0, reg, 2);
-
     rtc_update();
     update_charger();
 
-    for (int i = 0; i < 6; i++)
-    {
-      if (IS_DI_PRESSED(i))
-      {
-        write_do(i, 0);
-      }
-      else
-      {
-        write_do(i, 1);
-      }
-    }
     osDelay(500);
   }
 }

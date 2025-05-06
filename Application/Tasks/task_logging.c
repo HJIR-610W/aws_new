@@ -19,14 +19,12 @@
 #include "utile_time.h"
 #include "task_logging.h"
 
-
 typedef enum logging_cmd_e
 {
-  eLOGGING_LOG, //로깅 task로 로그를 전송 할 때 사용
-  eLOGGING_DATA //로깅 task로 데이터를 전송 할 때 사용
-}eLOGGING_CMD_t;
-
-
+  eLOGGING_LOG,      // 로깅 task로 로그를 전송 할 때 사용
+  eLOGGING_DATA,      // 로깅 task로 데이터를 전송 할 때 사용
+  eLOGGING_RAIN 
+} eLOGGING_CMD_t;
 
 typedef struct logging_s
 {
@@ -45,12 +43,19 @@ const osThreadAttr_t kLoggingTask_attributes = {
 const uint32_t kLoggingTimeOutMs = 50;
 
 osMessageQueueId_t g_loggingQueue;
-uint8_t g_loggingStatusGroup;
 
-/**
- * @brief 시스템 로깅
- */
-void os_logging_printf(const char * pFmt, ...)
+logging_system_t g_logging_system;
+
+logging_system_t *get_logging_system(void)
+{
+  return &g_logging_system;
+}
+
+    /**
+     * @brief 시스템 로깅
+     */
+    void
+    os_logging_printf(const char *pFmt, ...)
 {
   logging_t logging;
   va_list ap;  
@@ -141,15 +146,15 @@ void loggingTask(void *arg)
         {
           case eLOGGING_LOG:
             err = logging_printf((char *)logging.data);
-            update_loggingErr(&g_loggingStatusGroup,err,LOGGING_LOG_ERR);
-          break;
+            update_loggingErr(&g_logging_system.status_group, err, LOGGING_LOG_ERR);
+            break;
           case eLOGGING_DATA:
             memcpy(&data_size,&logging.data[0],sizeof(data_size));
             memcpy(&data_type,&logging.data[4],sizeof(data_type));
             memcpy(&period_min,&logging.data[5],sizeof(period_min));
-            err =write_data(&logging.ct,&logging.data[9],data_size,data_type,period_min);
-            update_loggingErr(&g_loggingStatusGroup,err,LOGGING_DATA_ERR);
-          break;
+            err = write_data(&logging.ct,&logging.data[9],data_size,data_type,period_min);
+            update_loggingErr(&g_logging_system.status_group, err, LOGGING_DATA_ERR);
+            break;
         }
 
     }

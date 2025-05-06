@@ -8,10 +8,10 @@ typedef struct sensor_nvm_S
 {
   config_header_t header;
   uint8_t start;
-  uint32_t yearRain;
-  uint32_t yearSunshine;
-  uint32_t monthRain;
-  uint32_t monthSunshine;
+  float rainfall_yearly;
+  float rainfall_monthly;
+  uint32_t sunshine_yearly;
+  uint32_t sunshine_monthly;
   uint16_t logCnt;
 } config_nvm_t;
 
@@ -24,5 +24,7 @@ void save_config_nvm(void);
 
              
 extern config_nvm_t g_config_nvm;;
+
+config_nvm_t *get_config_nvm(void);
 
 #endif

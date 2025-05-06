@@ -259,7 +259,7 @@ void driver_stm32_bsp_init(void)
 
   board_set_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_PIN_RESET);
   board_set_gpio(EX_UART_RST_B_GPIO_Port, EX_UART_RST_B_PIN, GPIO_PIN_RESET);
-
+ 
   //RS485 A,B의 방향을 입력으로 설정한다.
 
   board_set_gpio(OUT_DIR_RS485_A_GPIO_Port, OUT_DIR_RS485_A_PIN, GPIO_PIN_RESET);

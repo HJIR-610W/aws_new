@@ -128,7 +128,7 @@ void stm32_rtc_rtc_set_date(driver_t *drv,uint32_t year,uint32_t month,uint32_t 
   stm32_rtc_cfg_t *cfg = (drv->cfg);
     RTC_DateTypeDef sdatestructureget;
 
-    sdatestructureget.Year    = year;
+    sdatestructureget.Year    = year-2000;
     sdatestructureget.Month   = month;
     sdatestructureget.Date    = day;
     sdatestructureget.WeekDay = RTC_WEEKDAY_MONDAY;
@@ -189,8 +189,8 @@ sub_sec = (uint8_t)ans_uint32;
 
 void stm32_set_time(driver_t *driver,DATE_TIME_BUF *ct)
 {
-  stm32_rtc_set_time(driver,ct->Year,ct->Month,ct->Day);
-  stm32_rtc_rtc_set_date(driver,ct->Hour,ct->Min,ct->Sec);
+  stm32_rtc_set_time(driver,ct->Hour,ct->Min,ct->Sec);
+  stm32_rtc_rtc_set_date(driver,ct->Year,ct->Month,ct->Day);
 }
 
 void stm32_rtc_set(driver_t *driver, rtc_set_option_t option, void *value)

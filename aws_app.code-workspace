@@ -64,7 +64,9 @@
 			"hj_temperature_define.h": "c",
 			"humidity.h": "c",
 			"temperature_define.h": "c",
-			"task_logging.h": "c"
+			"task_logging.h": "c",
+			"dualport.h": "c",
+			"data_logging.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

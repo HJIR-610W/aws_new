@@ -15,7 +15,7 @@
 #include "task_isrEvent.h"
 #include "utile_time.h"
 #include "cli_input.h"
-
+#include "vt100_command.h"
 
 driver_t *console_uart;
 
@@ -89,20 +89,17 @@ void SHELL_ReceiveDataCallback(uint8_t* buf, uint32_t len)
 {
     driver_uart_get_char(console_uart, buf, len);
 }
-char g_buf[100];
-int a;
-float b;
+
 void sonsoleTask(void *arg)
 {
   shell_context_struct user_context;
   uint8_t instance = 0;
   int a;
   int ret;
-
-//cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
-//cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
-//cli_scanf_s("%s %d %f",g_buf,10,&a,&b);
-      
+  osDelay(1000);
+  debug_printf("\r\n");
+  debug_printf(VT100_CLEAR_SCREEN);
+  debug_printf(VT100_CURSOR_HOME);
   print_signature();
 
   DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
