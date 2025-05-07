@@ -66,7 +66,8 @@
 			"temperature_define.h": "c",
 			"task_logging.h": "c",
 			"dualport.h": "c",
-			"data_logging.h": "c"
+			"data_logging.h": "c",
+			"mcu_utile.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

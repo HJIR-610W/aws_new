@@ -97,7 +97,7 @@ void startTask(void *arg)
     ethernetTask_init();
   }
 
-  // hartTask_init();
+   hartTask_init();
   // sdiTask_init();
 
   file_init();

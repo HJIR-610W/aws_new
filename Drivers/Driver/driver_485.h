@@ -9,6 +9,11 @@
 #define RS485_A 0
 #define RS485_B 1
 
+#define RS485_C 2
+#define RS485_D 3
+
+#define RS485_MAX 4
+
 driver_t *driver_rs485_open(uint32_t num, void *opt);
 void driver_rs485_close(driver_t *drv);
 

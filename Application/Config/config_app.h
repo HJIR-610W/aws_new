@@ -87,7 +87,10 @@ typedef struct config_s
   eNET_MODE_t network_mode;
   bool ac_use;
   uint16_t m_usRainDtOffDelay;//±¸ AWS
-   sensor_t sensor[SENSOR_LIST_MAX];
+  uint8_t uart_a_mode;  // 0 RS232,1 RS485
+  uint8_t uart_b_mode;  // 0 RS232,1 RS485
+  uint8_t uart_d_mode;  // 0 RS232,1 HART
+  sensor_t sensor[SENSOR_LIST_MAX];
 }config_t;
 
 

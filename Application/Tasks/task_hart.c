@@ -71,7 +71,7 @@ void hardTask(void *arg)
       len = HART_RECV(buff,sizeof(buff),1000);
       if(len)
       {
-       // LOG_MEM(buff,len,0,16);
+       LOG_MEM(buff,len,0,16);
       }
       
   }
@@ -97,7 +97,7 @@ void hartTask_init(void)
 
   g_hart_rts   = driver_do_open(DO_HART_RTS,&do_config);
   g_hart_sel   = driver_do_open(DO_HART_SEL,&do_config);
-  g_power_24   = driver_do_open(DO_POWER_24V_ACTIVE_H,&do_config);
+  g_power_24   = driver_do_open(DO_POWER_HART_24V_ACTIVE_H,&do_config);
   
   driver_do_high(g_power_24);//HART 24V¸¦ °ø±Þ
     

@@ -302,3 +302,35 @@ const char* pcbPinNameList[9][16] =
   "15:-"}};
 
 #endif
+
+#if (AWS_PCB_VER == 5)
+const char* pcbPinNameList[9][16] = {
+    {" 0:WAKE_UP", " 1:ETH_REF_CLK", " 2:ETH_MDIO", " 3:ADC1_IN3", " 4:ADC1_IN4", " 5:-",
+     " 6:RAIN_INT_H", " 7:ETH_CRS_DV", " 8:-", " 9:UART1_TX", "10:UART1_RX", "11:-", "12:SPI2_DRDY",
+     "13:SYS_JTMS_SWDIO", "14:SYS_JTCK_SWCLK", "15:SPI1_NSS"},
+    {" 0:INT_D_IO", " 1:RAIN_PULSE_H", " 2:BOOT1", " 3:SPI1_SCK", " 4:SPI1_MISO", " 5:SPI1_MOSI",
+     " 6:I2C1_SCL", " 7:I2C1_SDA", " 8:CON_PWR_485", " 9:CON_PWR_TC", "10:UART3_TX", "11:UART3_RX",
+     "12:ETH_TXD0", "13:ETH_TXD1", "14:STATUS_BTM", "15:BTM_PWRC"},
+    {" 0:CON_PWR_ASEN", " 1:ETH_MDC", " 2:CON_PWR_ASEN_A", " 3:CON_PWR_ASEN_B", " 4:ETH_RXD0",
+     " 5:ETH_RXD1", " 6:UART6_TX", " 7:UART6_RX", " 8:SDIO_D0", " 9:SDIO_D1", "10:SDIO_D2",
+     "11:SDIO_D3", "12:SDIO_CK", "13:-", "14:OSC32_IN", "15:OSC32_OUT"},
+    {" 0:FSMC_D2", " 1:FSMC_D3", " 2:SDIO_CMD", " 3:SDIO_DETECT", " 4:FSMC_NOE", " 5:FSMC_NWE",
+     " 6:CON_PWR_DSEN", " 7:FSMC_NE1", " 8:FSMC_D13", " 9:FSMC_D14", "10:FSMC_D15", "11:FSMC_A16",
+     "12:FSMC_A17", "13:FSMC_A18", "14:FSMC_D0", "15:FSMC_D1"},
+    {" 0:EX_UART_RST_A", " 1:EX_UART_RST_B", " 2:-", " 3:FSMC_A19", " 4:FSMC_A20", " 5:SPI1_CS_RTC",
+     " 6:-", " 7:FSMC_D4", " 8:FSMC_D5", " 9:FSMC_D6", "10:FSMC_D7", "11:FSMC_D8", "12:FSMC_D9",
+     "13:FSMC_D10", "14:FSMC_D11", "15:FSMC_D12"},
+    {" 0:FSMC_A0", " 1:FSMC_A1", " 2:FSMC_A2", " 3:FSMC_A3", " 4:FSMC_A4", " 5:FSMC_A5",
+     " 6:TIM10_CH1", " 7:TIM11_CH1", " 8:TIM13_CH1", " 9:CON_PWR_ASEN_C", "10:CON_PWR_ASEN_D",
+     "11:RAIN_IN", "12:FSMC_A6", "13:FSMC_A7", "14:FSMC_A8", "15:FSMC_A9"},
+    {" 0:FSMC_A10", " 1:FSMC_A11", " 2:FSMC_A12", " 3:FSMC_A13", " 4:FSMC_A14", " 5:FSMC_A15",
+     " 6:DIR_RS485_A", " 7:DIR_RS485_B", " 8:DIR_SDI", " 9:FSMC_NE2", "10:FSMC_NE3", "11:ETH_TX_EN",
+     "12:NOR_/RESET", "13:CON_PWR_232_A", "14:CON_PWR_232_B", "15:/INT_RTC"},
+    {" 0:PH0-OSC_IN", " 1:PH1-OSC_IN", " 2:ETH_RST_PHY", " 3:ETH_RX_ER", " 4:I2C2_SCL",
+     " 5:I2C2_SDA", " 6:CON_PWR_CDMA", " 7:I2C3_SCL", " 8:I2C3_SDA", " 9:SYS_RUN", "10:ADC_EN_RTD",
+     "11:ADC_EN_ODD", "12:ADC_EN_EVEN", "13:ADC_SEL_A0", "14:ADC_SEL_A1", "15:ADC_SEL_A2"},
+    {" 0:OUT_SPI2_NSS_PIN", " 1:SPI2_SCK", " 2:SPI2_MISO", " 3:SPI2_MOSI", " 4:EX_UART_INT1",
+     " 5:EX_UART_INT2", " 6:EX_UART_INT3", " 7:EX_UART_INT4", " 8:EX_UART_INT5", " 9:EX_UART_INT6",
+     "10:EX_UART_INT7", "11:EX_UART_INT8", "12:-", "13:-", "14:-", "15:-"}};
+
+#endif

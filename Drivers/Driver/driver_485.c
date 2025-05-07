@@ -12,8 +12,8 @@ typedef struct rs485_cfg_s
   driver_t *do_io;
 } rs485_cfg_t;
 
-rs485_cfg_t g_rs485_cfg[2];
-driver_t g_rs485[2];
+rs485_cfg_t g_rs485_cfg[RS485_MAX];
+driver_t g_rs485[RS485_MAX];
 
 driver_t *driver_rs485_open(uint32_t num, void *opt)
 {
@@ -36,6 +36,18 @@ driver_t *driver_rs485_open(uint32_t num, void *opt)
       g_rs485[num].name = "RS485_B";
       g_rs485_cfg[num].uart_io = driver_uart_open(UART_7_RS485_B, opt);
       g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_B, 0);
+      driver_do_low(g_rs485_cfg[num].do_io);  // 수신 모드
+      break;
+    case RS485_C:
+      g_rs485[num].name = "RS485_C";
+      g_rs485_cfg[num].uart_io = driver_uart_open(UART_2_EXT_A, opt);
+      g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_C, 0);
+      driver_do_low(g_rs485_cfg[num].do_io);  // 수신 모드
+      break;
+    case RS485_D:
+      g_rs485[num].name = "RS485_D";
+      g_rs485_cfg[num].uart_io = driver_uart_open(UART_3_EXT_B, opt);
+      g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_D, 0);
       driver_do_low(g_rs485_cfg[num].do_io);  // 수신 모드
       break;
   }

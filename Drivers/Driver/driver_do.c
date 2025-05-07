@@ -26,7 +26,6 @@ driver_t *driver_do_open(uint32_t num,void *opt)
         case DO_FLASH_CS:
     driver = stm32_do_open(STM32_DO_FLASH_CS,opt);
     break;
-
         case DO_DIR_SDI:
     driver = stm32_do_open(STM32_DO_DIR_SDI,opt);
     break;
@@ -54,22 +53,30 @@ driver_t *driver_do_open(uint32_t num,void *opt)
     case DO_EXT_5:
     driver = pcf8575_do_open(DO_PCF8575_5,0);
     break;
-
     case DO_HART_RTS:
     driver = stm32_do_open(STM32_DO_HART_RTS,opt);
     break;
     case DO_HART_SEL:
     driver = stm32_do_open(STM32_DO_HART_SEL,opt);
     break;
-    case DO_POWER_24V_ACTIVE_H:
+    case DO_POWER_HART_24V_ACTIVE_H:
     driver = stm32_do_open(STM32_DO_POWER_24V,opt);
     break;
     case DO_HART_RESET:
     driver = stm32_do_open(STM32_DO_HART_RESET,opt);
     break;
     case DO_BTM_PWCTRL:
-    driver = stm32_do_open(STM32_DO_BTM_PWRC,opt);
-    break;
+      driver = stm32_do_open(STM32_DO_BTM_PWRC,opt);
+      break;
+    case DO_DIR_RS485_C:
+      driver = stm32_do_open(STM32_DO_DIR_RS485_C, opt);
+      break;
+    case DO_DIR_RS485_D:
+      driver = stm32_do_open(STM32_DO_DIR_RS485_D, opt);
+      break;
+    case DO_CON_PWR_RAIN_DECT_ACTIVE_H:
+      driver = stm32_do_open(STM32_DO_CON_PWR_RAIN_DECT_ACTIVE_H, opt);
+      break;
   }
 
   return driver;
