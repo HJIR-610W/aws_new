@@ -1,4 +1,6 @@
 
+#include <stddef.h>
+
 #include "driver_do.h"
 #include "driver_do_define.h"
 #include "driver_stm32_do.h"
@@ -85,17 +87,36 @@ driver_t *driver_do_open(uint32_t num,void *opt)
 
 void driver_do_low(driver_t *drv)
 {
-  const do_api_t *api = drv->api;
+  const do_api_t *api;
+  
+  if(drv == NULL)
+  {
+    return;
+  }
 
-  api->low(drv);
-
+  api = drv->api;
+  
+  if (api != NULL)
+  {
+    api->low(drv);
+  }
 }
 
 void driver_do_high(driver_t *drv)
 {
-  const do_api_t *api = drv->api;
+  const do_api_t *api;
 
-  api->high(drv);
+  if(drv == NULL)
+  {
+    return;
+  }
+
+  api = drv->api;
+  if( api != NULL)
+  {
+    api->high(drv);
+  }
+
 }
 
 void driver_do_set(driver_t *drv, do_set_option_t option, void *value)

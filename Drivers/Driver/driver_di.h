@@ -39,5 +39,6 @@ driver_t *driver_di_open(uint32_t num,void *opt);
 void driver_di_close(driver_t *drv);
 int32_t driver_di_read(driver_t *drv);
 void driver_di_set(driver_t *drv,uint8_t cmd,void *option);
+bool driver_di_is_low(driver_t *di, uint32_t hold_time_ms, uint32_t debounce_ms);
 
 #endif

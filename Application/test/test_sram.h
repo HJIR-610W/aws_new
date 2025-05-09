@@ -4,7 +4,7 @@
 #define TEST_SRAM_H
 
 
-int sram_test(void);
+int test_sram(void);
 
 
 

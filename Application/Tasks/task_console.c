@@ -16,7 +16,7 @@
 #include "utile_time.h"
 #include "cli_input.h"
 #include "vt100_command.h"
-
+#include "console_test.h"
 driver_t *console_uart;
 
 const osThreadAttr_t consoleTask_attributes = {
@@ -52,6 +52,9 @@ static const shell_command_context_t doutCmd = {"do",
                                         "arg1: pin\r\n"
                                         "arg2: 0|1\r\n",
                                          ctrl_do, 2};
+
+static const shell_command_context_t testCmd = {"test", "\r\n\"test\"\r\n", test_pcb, 0};
+
 void print_signature(void)
 {
     uint8_t a;
@@ -96,6 +99,11 @@ void sonsoleTask(void *arg)
   uint8_t instance = 0;
   int a;
   int ret;
+  int mode = (int)arg;
+
+  const char *cli_aws = "\x1B[32mAWS>> \x1B[37m";
+  const char *cli_test = "\x1B[32mAWS_TEST>> \x1B[37m";
+
   osDelay(1000);
   debug_printf("\r\n");
   debug_printf(VT100_CLEAR_SCREEN);
@@ -104,7 +112,16 @@ void sonsoleTask(void *arg)
 
   DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
 
-  SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf, "\x1B[32mAWS>> \x1B[37m");
+  if(mode==0)
+  {
+    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf,
+               (char *)cli_aws);
+  }
+  else
+  {
+    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf,
+               (char *)cli_test);
+  }
   console_scanf_init(&user_context);
 
   SHELL_RegisterCommand(&printCmd);
@@ -112,6 +129,7 @@ void sonsoleTask(void *arg)
   SHELL_RegisterCommand(&diCmd);
   SHELL_RegisterCommand(&pcbCmd);
   SHELL_RegisterCommand(&doutCmd);
+  SHELL_RegisterCommand(&testCmd);
   SHELL_Main(&user_context);
 
   while(1)
@@ -122,9 +140,7 @@ void sonsoleTask(void *arg)
 
 
 
-
-
-void consoleTask_init(void)
+void consoleTask_init(void *arg)
 {
   uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
@@ -133,11 +149,10 @@ void consoleTask_init(void)
   uart_config.stop_bit = 0;
 
   console_uart = driver_uart_open(UART_10_CDC,&uart_config);
-  osDelay(100);
   //console_uart = driver_uart_open(UART_0_D_SUB_0,&uart_config);
 
-
+  osDelay(100);
 
   set_debug_uart_handle(console_uart);
-  osThreadNew(sonsoleTask, NULL, &consoleTask_attributes);
+  osThreadNew(sonsoleTask, arg, &consoleTask_attributes);
 }

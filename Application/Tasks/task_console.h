@@ -4,5 +4,5 @@
 #define TASK_CONSOLE_H
 
 
-void consoleTask_init(void);
+void consoleTask_init(void *arg);
 #endif

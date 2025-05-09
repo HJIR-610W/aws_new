@@ -9,6 +9,7 @@
 #include "task_start.h"
 #include "user_heap.h"
 #include "test_sram.h"
+
 /*
 시스템 동작 클럭:168MHz
 */
@@ -84,8 +85,6 @@ int main(void)
 
   MX_CRC_Init();
 
-  // sram_test();
-  
   asw_tlsf_init(POOL_SIZE);
   
   osKernelInitialize();

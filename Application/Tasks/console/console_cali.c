@@ -1,15 +1,8 @@
 /**
- * @file adc_calibration_menu.c
- * @brief TeraTerm/VT100 기반 ADC 캘리브레이션 메뉴 (최종 통합 버전)
+ * @file console_cali.c
+ * @brief ADC 캘리브레이션 메뉴 (최종 통합 버전)
  * @date 2025-04-22
  *
- * 설명:
- * - 제공된 debug_printf, console_scanf, recv_key 함수를 사용하여 구현.
- * - console_scanf는 Ctrl+C 또는 Ctrl+Q 입력 시 -1 반환.
- * - 계층적 메뉴 구조 사용.
- * - 공장 캘리브레이션, 온도 보상 설정(계수/LUT), 동적 오프셋 조정 기능 포함.
- * - 채널 상태 보기, 설정 저장/로드(스텁) 기능 포함.
- * - VT100 이스케이프 시퀀스를 사용하여 화면 제어.
  */
 
 #include <math.h>    // For NAN, isnan, fabsf
@@ -33,15 +26,14 @@
 
 #include "utile_filter.h"
 #include "driver_adc.h"
+#include "console_define.h"
+#include "console_utile.h"
 
-extern char recv_key(void);
+
 
 extern float g_current_temp;
 
-#define MENU_OK 0
-#define MENU_BACK -1  // Ctrl+C
-#define MENU_ABORT -3  // Ctrl+Q
-#define MENU_ERROR -4
+
 
 extern bool wait_break(uint32_t timeoutms);
 
@@ -77,38 +69,10 @@ int get_confirm_input(void)
 
 int wait_for_enter()
 {
-  int key = recv_key();
+  int key = recv_key(osWaitForever);
   return (key == -1) ? MENU_ABORT : MENU_OK;
 }
 
-
-int get_int_input(const char* prompt, int* value, int min_val, int max_val)
-{
-  int ret_scan;
-  int ret = MENU_ABORT;
-  while ( 3)
-  {
-    debug_printf("%s (%d ~ %d): ", prompt, min_val, max_val);
-    ret_scan = console_scanf("%d", value);
-    if (ret_scan == -3)
-    {
-      ret  = MENU_ABORT; 
-      break;
-    }
-    else if (ret_scan == -1)
-    {
-      ret =  MENU_BACK; 
-      break;
-    }
-    if (ret_scan == 1 && *value >= min_val && *value <= max_val)
-    {
-      ret =  MENU_OK;
-      break;
-    }
-    debug_printf("오류: 잘못된 입력입니다. 다시 시도하세요.\r\n");
-  }
-  return ret;
-}
 
 /** @brief 실수 입력을 받고 유효성 검사 및 종료(-1) 처리 */
 int get_float_input(const char* prompt, float* value)
@@ -892,8 +856,8 @@ int handle_save_load(int adc_num)
           g_adc_config_ads1220.single_ended_cal[channel].offset_temp_coeff = 1;
           g_adc_config_ads1220.single_ended_cal[channel].slope_temp_coeff = 1;
         }
-          
-          //stm32 2개
+        save_adc_cali();
+        // stm32 2개
         for (int channel = 0; channel < g_adc_config_ads1220.params_di_cnt; channel++)
         {
           g_adc_config_ads1220.differential_cal[channel].comp_method = TEMP_COMP_NONE;

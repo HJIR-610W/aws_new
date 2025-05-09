@@ -16,7 +16,8 @@
 
 
 #define LED_CMD_SET_TOGGLE_FREQ 1
-#define LED_CMD_START    2
+#define LED_CMD_START           2
+#define LED_CMD_STOP            3
 
 typedef struct led_freq_cfg_s
 {

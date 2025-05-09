@@ -5,7 +5,7 @@
 #include "driver_interface.h"
 #include "driver_uart_def.h"
 
-#define UART_0_D_SUB_0 0  // 표시기
+#define UART_0_D_SUB_0 0  // VHF
 #define UART_1_TTL 1      // 블루투스 모듈
 #define UART_2_EXT_A 2    // 사용자0
 #define UART_3_EXT_B 3    // 사용자1

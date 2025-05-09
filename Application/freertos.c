@@ -339,7 +339,7 @@ void rs485_test(void)
   }
 }
 
-void sram_test_unit(void)
+void test_sram_unit(void)
 {
 
   static uint16_t rData[10];
@@ -411,7 +411,7 @@ void sss(void *argument)
 
  
 
-  //sram_test();
+  //test_sram();
   //fat_test();
   //MX_LWIP_Init();
   //fram_test();

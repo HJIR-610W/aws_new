@@ -1721,6 +1721,9 @@
                     <name>$PROJ_DIR$\..\Application\Tasks\console\console_cali.h</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_test.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\console\console_utile.c</name>
                 </file>
                 <file>
@@ -1767,9 +1770,6 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\task_ethernet.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\task_hart.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_isrEvent.c</name>
             </file>
             <file>
@@ -1796,11 +1796,35 @@
         </group>
         <group>
             <name>test</name>
+            <group>
+                <name>parser</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\test\parser\hart_parser.c</name>
+                </file>
+            </group>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\task_test.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_hart.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_rs485.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_sdi12.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_sdi12.h</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\test\test_sram.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\test\test_sram.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_uart.c</name>
             </file>
         </group>
         <file>

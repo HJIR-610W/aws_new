@@ -17,7 +17,10 @@ const osThreadAttr_t kSystemTask_attributes = {
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
 
-void userBtnCallBack(void *arg) { os_send_isrEvent(eUSER_BTN_INT, 0); }
+void userBtnCallBack(void *arg)
+{ 
+  os_send_isrEvent(eUSER_BTN_INT, 0); 
+}
 
 void userBtn_init(void)
 {
@@ -40,7 +43,7 @@ void systemTask(void *arg)
   while (1)
   {
     rtc_update();
-    update_charger();
+    //update_charger();
 
     osDelay(500);
   }

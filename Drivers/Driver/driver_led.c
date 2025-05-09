@@ -96,7 +96,7 @@ void TIM12_PWM_Init(void)
 
 }
 
-void runLed_Init(void)
+void runled_init(void)
 {
     // GPIO 포트 H 클럭 활성화
     __HAL_RCC_GPIOH_CLK_ENABLE();
@@ -127,7 +127,7 @@ driver_t *driver_led_open(uint32_t num)
         return &g_runLed;
       }
         g_runLed.opened = true;
-        runLed_Init();
+        runled_init();
         TIM12_PWM_Init();
         
         return &g_runLed;
@@ -145,7 +145,6 @@ void driver_led_set(driver_t *drv,uint8_t cmd,void *option)
   {
   case LED_CMD_SET_TOGGLE_FREQ:
     {
-
       cfg = (led_freq_cfg_t *)option;
       Set_PWM_Frequency(cfg->freq,cfg->highDuty);
     }
@@ -153,6 +152,9 @@ void driver_led_set(driver_t *drv,uint8_t cmd,void *option)
   case LED_CMD_START:
       HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
   break;
+  case LED_CMD_STOP:
+    HAL_TIM_PWM_Stop(&htim12, TIM_CHANNEL_2);
+    break;
   default:
     break;
   }

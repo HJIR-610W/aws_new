@@ -6,4 +6,13 @@ void app_bsp_init(void);
 float read_battery(void);
 float read_temperature(void);
 
+#define LED_BLINK 0
+#define LED_ON 1
+
+void status_led_on(void);
+void status_led_off(void);
+void status_led_set(int mode);
+
+
+
 #endif

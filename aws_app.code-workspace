@@ -67,7 +67,17 @@
 			"task_logging.h": "c",
 			"dualport.h": "c",
 			"data_logging.h": "c",
-			"mcu_utile.h": "c"
+			"mcu_utile.h": "c",
+			"os_define.h": "c",
+			"app_bsp.h": "c",
+			"task_test.h": "c",
+			"app_rtc.h": "c",
+			"driver_do_define.h": "c",
+			"cli_key_code.h": "c",
+			"console_test.h": "c",
+			"test_sram.h": "c",
+			"console_utile.h": "c",
+			"test_rs485.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

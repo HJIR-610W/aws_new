@@ -12,7 +12,7 @@
 #include "pcb_define.h"
 #include "utile.h"
 #include "vt100_command.h"
-
+#include "console_test.h"
 int32_t io_test(p_shell_context_t ctx, int32_t argc, char **argv)
 {
   char ch;
@@ -411,4 +411,9 @@ int32_t ctrl_do(p_shell_context_t ctx, int32_t argc, char **argv)
   }
 
   return 0;
+}
+
+int32_t test_pcb(p_shell_context_t ctx, int32_t argc, char **argv)
+{
+  run_test_root();
 }

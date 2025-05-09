@@ -24,7 +24,7 @@
 #include "task_console.h"
 #include "task_direct.h"
 #include "task_ethernet.h"
-#include "task_hart.h"
+
 #include "task_isrEvent.h"
 #include "task_logging.h"
 #include "task_measure.h"
@@ -37,6 +37,7 @@
 #include "usDelay.h"
 #include "user_heap.h"
 #include "utile_time.h"
+#include "task_test.h"
 
 const osThreadAttr_t kStartTask_attributes = {
     .name = "startTask",
@@ -44,16 +45,7 @@ const osThreadAttr_t kStartTask_attributes = {
     .priority = (osPriority_t)osPriorityRealtime7,
 };
 
-void runLed_init(void)
-{
-  driver_t *run_led;
-  led_freq_cfg_t cfg = {.freq = 5, .highDuty = 10};
 
-  run_led = driver_led_open(LED_SYS_RUN);
-
-  driver_led_set(run_led, LED_CMD_SET_TOGGLE_FREQ, &cfg);
-  driver_led_set(run_led, LED_CMD_START, NULL);
-}
 
 /**
  * @brief 한번 수행하고 종료될 Task
@@ -63,6 +55,11 @@ void runLed_init(void)
  */
 void startTask(void *arg)
 {
+  if(testTask_init()==true)
+  {
+    osThreadExit();  // 종료 시킴
+  }
+
   mcu_interrupt_init();  // 최우선 실행
 
   osDelay(1000);
@@ -73,8 +70,7 @@ void startTask(void *arg)
   flash_init();
 
   systemTask_init();
-  consoleTask_init();
-
+  consoleTask_init(0);
   isrEventTask_init();
   dataLogging_init();
   loggingTask_init();
@@ -97,7 +93,7 @@ void startTask(void *arg)
     ethernetTask_init();
   }
 
-   hartTask_init();
+
   // sdiTask_init();
 
   file_init();
@@ -105,7 +101,7 @@ void startTask(void *arg)
   logging_init();
   bleTask_init();
 
-  runLed_init();
+
   os_logging_printf("Starting task");
   osThreadExit();  // 종료 시킴
 }
