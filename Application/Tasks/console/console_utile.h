@@ -3,6 +3,7 @@
 #define CONSOLE_UTILE_H
 
 #include <stdint.h>
+#include "console_define.h"
 
 #define ITEM_LIST(cnt, list) cnt >= _countof(list) ? g_unknown : (char *)list[cnt]
 

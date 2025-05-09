@@ -52,10 +52,11 @@ int get_int_input(const char* prompt, int* value, int min_val, int max_val)
 {
   int ret_scan;
   int ret = MENU_ABORT;
+  int input_value=0;
   while (3)
   {
     debug_printf("%s (%d ~ %d): ", prompt, min_val, max_val);
-    ret_scan = console_scanf("%d", value);
+    ret_scan = console_scanf("%d", &input_value);
     if (ret_scan == -3)
     {
       ret = MENU_ABORT;
@@ -66,8 +67,9 @@ int get_int_input(const char* prompt, int* value, int min_val, int max_val)
       ret = MENU_BACK;
       break;
     }
-    if (ret_scan == 1 && *value >= min_val && *value <= max_val)
+    if (ret_scan == 1 && input_value >= min_val && input_value <= max_val)
     {
+      *value = input_value;
       ret = MENU_OK;
       break;
     }

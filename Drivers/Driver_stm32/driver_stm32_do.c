@@ -59,7 +59,7 @@ void stm32_do_init(const stm32_do_cfg_t *cfg,void *opt)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   do_config_t *do_config=opt;
-  uint32_t mode = GPIO_MODE_OUTPUT_OD;
+  uint32_t mode = GPIO_MODE_OUTPUT_PP;
   uint32_t pull =GPIO_NOPULL;
 
   if(opt)
