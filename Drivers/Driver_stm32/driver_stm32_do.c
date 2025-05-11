@@ -18,11 +18,13 @@ void stm32_do_low(driver_t *driver);
 void stm32_do_high(driver_t *driver);
 void stm32_do_close(driver_t *driver);
 void stm32_do_set(driver_t *driver,do_set_option_t cmd,void *opt);
+int32_t stm32_do_read(driver_t *driver,uint8_t *err);
 
-const do_api_t do_api ={.low   = stm32_do_low,
-                        .high  = stm32_do_high,
-                        .close = stm32_do_close,
-                        .set   = stm32_do_set};
+const do_api_t do_api = {.low = stm32_do_low,
+                         .high = stm32_do_high,
+                         .close = stm32_do_close,
+                         .set = stm32_do_set,
+                         .read = stm32_do_read};
 
 const stm32_do_cfg_t CDMA_PWR_cfg = {.port = OUT_PWR_CDMA_GPIO_Port, .pin = OUT_PWR_CDMA_PIN};
 const stm32_do_cfg_t FRAM_CS_cfg = {.port = OUT_SPI1_NSS_GPIO_Port, .pin = OUT_SPI1_NSS_PIN};
@@ -46,6 +48,9 @@ const stm32_do_cfg_t DIR_RS485_D_cfg = {.port = OUT_RS485_DIR_D_GPIO_Port,
 
 const stm32_do_cfg_t CON_PWR_RAIN_DECT_cfg = {.port = DO_CON_PWR_RAIN_DECT_ACTIVE_H_GPIO_Port,
                                               .pin = DO_CON_PWR_RAIN_DECT_ACTIVE_H_PIN};
+
+const stm32_do_cfg_t CON_PWR_RAIN_cfg = {.port = DO_CON_PWR_RAIN_GPIO_Port,
+                                         .pin = DO_CON_PWR_RAIN_PIN};
 
 driver_t g_stm32_do_list[STM32_DO_MAX];
 
@@ -169,6 +174,11 @@ driver_t *stm32_do_open(int num,void *opt)
       g_stm32_do_list[num].cfg = (void *)&CON_PWR_RAIN_DECT_cfg;
       stm32_do_init(&CON_PWR_RAIN_DECT_cfg, opt);
       break;
+    case STM32_DO_CON_PWR_RAIN_ACTIVE_H:
+      g_stm32_do_list[num].name = "STM32_DO_CON_PWR_RAIN_ACTIVE_H";
+       g_stm32_do_list[num].cfg = (void *)&CON_PWR_RAIN_cfg;
+      stm32_do_init(&CON_PWR_RAIN_cfg, opt);
+      break;
   }
   return &g_stm32_do_list[num];
 }
@@ -196,6 +206,17 @@ void stm32_do_close(driver_t *driver)
 void stm32_do_set(driver_t *driver,do_set_option_t cmd,void *opt)
 {
 
+}
+
+int32_t stm32_do_read(driver_t *driver,uint8_t *err)
+{
+  *err =0;
+  int32_t pin;
+  stm32_do_cfg_t *cfg = driver->cfg;
+
+  pin = (int32_t)HAL_GPIO_ReadPin(cfg->port,cfg->pin);
+
+  return pin;
 }
 
 #if 0 

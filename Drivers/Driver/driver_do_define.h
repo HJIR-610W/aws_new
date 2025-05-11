@@ -33,10 +33,11 @@ typedef struct do_config_s
 
 typedef struct
 {
-    void (*close)(driver_t *handle);
-    void (*low)(driver_t *handle);
-    void (*high)(driver_t *handle);
-    void (*set)(driver_t *handle, do_set_option_t option, void *value);
+  void (*close)(driver_t *driver);
+  void (*low)(driver_t *driver);
+  void (*high)(driver_t *driver);
+  void (*set)(driver_t *driver, do_set_option_t option, void *value);
+  int32_t (*read)(driver_t *driver, uint8_t *err);
 } do_api_t;
 #endif
 

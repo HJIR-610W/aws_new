@@ -13,11 +13,17 @@
 #define IN_TIM13_CH1_Pin GPIO_PIN_8
 #define IN_TIM13_CH1_GPIO_Port GPIOF
 
-driver_t g_freqMeasure[3];
+typedef struct ds1306_cfg_s
+{
+  uint8_t channel;
 
+} freq_cfg_t;
 
-float g_freq[3];
-float g_duty[3];
+driver_t g_freqMeasure[FREQ_MAX];
+freq_cfg_t g_freq_cfg[FREQ_MAX];
+
+float g_freq[FREQ_MAX];
+float g_duty[FREQ_MAX];
 TIM_HandleTypeDef htim10;
 TIM_HandleTypeDef htim11;
 TIM_HandleTypeDef htim13;
@@ -72,44 +78,52 @@ FrequencyDutyCycleResult Calculate_Frequency_DutyCycle(TIM_HandleTypeDef *htim)
     return result;
 }
 
-
-// 타이머 캡처 인터럽트 콜백
+float g_inputFreq_TIM10 = 0.0f;
+float g_inputFreq_TIM11 = 0.0f;
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim->Instance == TIM10) 
+  static uint32_t prevCapture_TIM10 = 0;
+  static uint32_t prevCapture_TIM11 = 0;
+
+  uint32_t currCapture = 0;
+  uint32_t diffCapture = 0;
+
+  if (htim->Channel != HAL_TIM_ACTIVE_CHANNEL_1)
+    return;
+
+  if (htim->Instance == TIM10)
+  {
+    currCapture = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+
+    if (currCapture >= prevCapture_TIM10)
     {
-        uint32_t new_capture = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-
+      diffCapture = currCapture - prevCapture_TIM10;
     }
-    else if (htim->Instance == TIM11)
+    else
     {
-        uint32_t new_capture = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-
-
+      diffCapture = (0xFFFF - prevCapture_TIM10 + currCapture + 1);
     }
-    else if (htim->Instance == TIM13)
+
+    g_inputFreq_TIM10 = (diffCapture > 0) ? (1000000.0f / diffCapture) : 0.0f;
+    prevCapture_TIM10 = currCapture;
+  }
+  else if (htim->Instance == TIM11)
+  {
+    currCapture = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+
+    if (currCapture >= prevCapture_TIM11)
     {
-        uint32_t capture_val = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-        
-        if (is_rising_edge) {
-            capture_rising = capture_val;   // 상승 에지에서 캡처
-            is_rising_edge = 0;             // 다음 캡처는 하강 에지에서 수행
-        } else {
-            capture_falling = capture_val;  // 하강 에지에서 캡처
-            is_rising_edge = 1;             // 다음 캡처는 상승 에지에서 수행
-
-            // 듀티 사이클과 주파수 계산
-            FrequencyDutyCycleResult result = Calculate_Frequency_DutyCycle(htim);
-            
-             measured_frequency = result.frequency;
-             measured_period = result.period;
-             measured_duty_cycle = result.duty_cycle;
-            
-            // 계산된 주기, 주파수, 듀티 사이클 값을 사용할 수 있음
-        }
+      diffCapture = currCapture - prevCapture_TIM11;
     }
+    else
+    {
+      diffCapture = (0xFFFF - prevCapture_TIM11 + currCapture + 1);
+    }
+
+    g_inputFreq_TIM11 = (diffCapture > 0) ? (1000000.0f / diffCapture) : 0.0f;
+    prevCapture_TIM11 = currCapture;
+  }
 }
-
 
 void freqMeasureA_init(void)
 {
@@ -144,6 +158,13 @@ void freqMeasureA_init(void)
   HAL_NVIC_EnableIRQ(TIM8_UP_TIM13_IRQn);
 }
 
+/*
+| 항목             | 값                         |
+| -------------- | ------------------------- |
+| **이론적 최소 주파수** | 약 **15.26 Hz**            |
+| **이론적 최대 주파수** | 약 **1 MHz** (1 us 주기 기준)  |
+| **안전한 측정 범위**  | **20 Hz \~ 100\~200 kHz** |
+*/
 void freqMeasureB_init(void)
 {
     __HAL_RCC_GPIOF_CLK_ENABLE();
@@ -206,9 +227,9 @@ void freqMeasureC_init(void)
 
     HAL_TIM_IC_Start_IT(&htim11, TIM_CHANNEL_1);
 
+HAL_NVIC_SetPriority(TIM1_TRG_COM_TIM11_IRQn, 5, 0);
+HAL_NVIC_EnableIRQ(TIM1_TRG_COM_TIM11_IRQn);
 
-       HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
 
 }
 
@@ -238,24 +259,39 @@ driver_t *driver_freq_open(uint32_t num)
   g_freqMeasure[num].opened = true;
   switch(num)
   {
-    case FREQ_MEAURE_A:
-      freqMeasureA_init();
-    break;
     case FREQ_MEAURE_B:
       freqMeasureB_init();
-    break;
+      g_freq_cfg[FREQ_MEAURE_B].channel = 0;
+      g_freqMeasure[num].cfg = &g_freq_cfg[FREQ_MEAURE_B];
+      break;
     case FREQ_MEAURE_C:
       freqMeasureC_init();
-    break;
+      g_freq_cfg[FREQ_MEAURE_C].channel = 1;
+      g_freqMeasure[num].cfg = &g_freq_cfg[FREQ_MEAURE_C];
+      break;
+      break;
   }
 
-  //  g_freqMeasure[num].num  = num;
+
     return &g_freqMeasure[num];
 }
 
 
 
-void driver_freq_read(driver_t *drv,float *freq)
+float driver_freq_read(driver_t *drv)
 {
- // *freq = g_freq[drv->num];
+  freq_cfg_t *cfg = drv->cfg;
+
+  if(cfg->channel ==0)
+  {
+    return g_inputFreq_TIM10 ;
+  }
+
+  if(cfg->channel ==1)
+  {
+    return g_inputFreq_TIM11;
+  }
+
+  return 0;
+
 }

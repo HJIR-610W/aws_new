@@ -79,6 +79,9 @@ driver_t *driver_do_open(uint32_t num,void *opt)
     case DO_CON_PWR_RAIN_DECT_ACTIVE_H:
       driver = stm32_do_open(STM32_DO_CON_PWR_RAIN_DECT_ACTIVE_H, opt);
       break;
+    case DO_CON_PWR_RAIN_ACTIVE_H:
+      driver = stm32_do_open(STM32_DO_CON_PWR_RAIN_ACTIVE_H, opt);
+      break;
   }
 
   return driver;
@@ -130,6 +133,7 @@ void driver_do_close(driver_t *drv)
 
 }
 
+int32_t driver_do_read(driver_t *drv,uint8_t *err)
+{
 
-
-
+}

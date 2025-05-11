@@ -9,7 +9,7 @@
 #include "driver_modbus.h"
 #include "task_isrEvent.h"
 #include "driver_uart.h"
-driver_t *g_test_do;
+
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
@@ -49,36 +49,12 @@ void systemTask(void *arg)
   }
 }
 
-void test_do(int out)
-{
-  if (out)
-  {
-    driver_do_high(g_test_do);
-  }
-  else
-  {
-    driver_do_low(g_test_do);
-  }
-}
 
-void test_do_toggle(void)
-{
-  static int i = 0;
 
-  i ^= 1;
-  if (i)
-  {
-    driver_do_high(g_test_do);
-  }
-  else
-  {
-    driver_do_low(g_test_do);
-  }
-}
 
 void systemTask_init(void)
 {
-  g_test_do = driver_do_open(DO_EXT_0, 0);
+
 
   app_bsp_init();
 

@@ -30,23 +30,23 @@ driver_t * driver_rtc_open(int num,void *opt)
 /**
  * 
  */
-void driver_rtc_read(driver_t* driver, DATE_TIME_BUF *t)
+int32_t driver_rtc_read(driver_t* driver, DATE_TIME_BUF *t)
 {
   const rtc_api_t* api;
 
   if(driver == NULL)
   {
-    return;
+    return 99;
   }
 
   api = ((driver_t *)driver)->api;
 
   if(api == NULL)
   {
-    return ;
+    return 99;
   }
   
-  api->read(driver,t);
+  return api->read(driver,t);
  
 }
 

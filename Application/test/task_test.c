@@ -1,5 +1,6 @@
 
 #include "MCU\mcu_utile.h"
+#include "app_adc.h"
 #include "app_bsp.h"
 #include "app_flash.h"
 #include "app_rtc.h"
@@ -23,8 +24,8 @@ void testTask(void *arg)
   osDelay(1000);
   usDelay_init();
   app_bsp_init();
-
-  status_led_set(LED_BLINK);
+   adc_init();
+   status_led_set(LED_BLINK);
 
   rtc_init();
 

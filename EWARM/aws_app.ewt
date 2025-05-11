@@ -1277,6 +1277,9 @@
                     <name>$PROJ_DIR$\..\Application\Communications\Ethernet\app_socket.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\Ethernet\eth_icmp.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Communications\Ethernet\task_client.c</name>
                 </file>
                 <file>
@@ -1806,10 +1809,28 @@
                 <name>$PROJ_DIR$\..\Application\test\task_test.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\test\test_count.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_dinOut.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_eth.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\test\test_hart.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\test\test_power.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_rain.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\test\test_rs485.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_rtc.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\test\test_sdi12.c</name>

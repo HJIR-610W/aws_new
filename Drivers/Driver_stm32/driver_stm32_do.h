@@ -23,9 +23,10 @@
 #define STM32_DO_DIR_RS485_B    12
 #define STM32_DO_DIR_RS485_C    13
 #define STM32_DO_DIR_RS485_D    14
-#define STM32_DO_CON_PWR_RAIN_DECT_ACTIVE_H  15 
+#define STM32_DO_CON_PWR_RAIN_DECT_ACTIVE_H  15
+#define STM32_DO_CON_PWR_RAIN_ACTIVE_H 16
 
-#define STM32_DO_MAX           16
+#define STM32_DO_MAX           17
 
 
 driver_t *stm32_do_open(int num,void *opt);

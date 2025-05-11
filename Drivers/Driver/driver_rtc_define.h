@@ -23,7 +23,7 @@ typedef enum
 typedef struct
 {
   void (*close)(driver_t *handle);
-  void (*read)(driver_t *handle,DATE_TIME_BUF *ct);
+  int32_t (*read)(driver_t *handle,DATE_TIME_BUF *ct);
   void (*set)(driver_t *handle, rtc_set_option_t option, void *value);
 }rtc_api_t;
 

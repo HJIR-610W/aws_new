@@ -81,7 +81,7 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef *hrtc)
    __HAL_RCC_RTC_DISABLE();     
 }
 void stm32_rtc_close(driver_t *handle);
-void stm32_rtc_read(driver_t *handle,DATE_TIME_BUF *ct);
+int32_t stm32_rtc_read(driver_t *handle,DATE_TIME_BUF *ct);
 void stm32_rtc_set(driver_t *handle, rtc_set_option_t option, void *value);
 
 
@@ -144,7 +144,7 @@ void stm32_rtc_close(driver_t *handle)
 
 }
 
-void stm32_rtc_read(driver_t *drv,DATE_TIME_BUF *ct)
+int32_t stm32_rtc_read(driver_t *drv,DATE_TIME_BUF *ct)
 {
 uint8_t sub_sec = 0;
 RTC_DateTypeDef sdatestructureget;
@@ -183,7 +183,7 @@ sub_sec = (uint8_t)ans_uint32;
   time_tick = time_cvt_timestamp(&temp_time);
 
   time_cvt_secTotime(time_tick, ct);
-  
+  return 0;
 }
 
 

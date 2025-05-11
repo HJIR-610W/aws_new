@@ -77,7 +77,13 @@
 			"console_test.h": "c",
 			"test_sram.h": "c",
 			"console_utile.h": "c",
-			"test_rs485.h": "c"
+			"test_rs485.h": "c",
+			"driver_di.h": "c",
+			"test_power.h": "c",
+			"driver_do.h": "c",
+			"cli_input.h": "c",
+			"driver_rtc.h": "c",
+			"rain_present.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

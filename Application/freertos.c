@@ -286,34 +286,7 @@ void gpio_test(void)
 }
 
 
-void freq_test(void)
-{
-  driver_t *countA;
-  driver_t *countB;
-  driver_t *countC;
-  driver_t *gpio;
-  uint16_t out_pin = 1;
-  float freq[3];
 
-  countA = driver_freq_open(FREQ_MEAURE_A);
-  countB = driver_freq_open(FREQ_MEAURE_A);
-  countC = driver_freq_open(FREQ_MEAURE_A);
-
-  //gpio = driver_gpio_open(DRIVER_PCF8575,NULL);
-
-  while(1)
-  {
-    //driver_gpio_write_pin(gpio,GPIO_PIN5,out_pin);
-    osDelay(100);
-    out_pin ^= 1;
-    driver_freq_read(countA,&freq[0]);
-    driver_freq_read(countB,&freq[1]);
-    driver_freq_read(countC,&freq[2]);
-
-    debug_printf("%f,%f,%f\r\n",freq[0],freq[1],freq[2]);
-
-  }
-}
 
 
 
@@ -423,7 +396,7 @@ void sss(void *argument)
   //adc_test();
   //gpio_test();
 
-  //freq_test();
+
   //rs485_test();
   //cdmaPower_test();
  // rain_test();

@@ -83,7 +83,7 @@ driver_t rv8803_driver;
 
 
 void rv8803_close(driver_t *handle);
-void rv8803_read(driver_t *handle,DATE_TIME_BUF *ct);
+int32_t rv8803_read(driver_t *handle,DATE_TIME_BUF *ct);
 void rv8803_set(driver_t *handle, rtc_set_option_t option, void *value);
 int32_t rv8803_init(driver_t *rv8803);
 
@@ -255,7 +255,7 @@ void rv8803_close(driver_t *handle)
 {
 
 }
-void rv8803_read(driver_t *rv8803,DATE_TIME_BUF *ct)
+int32_t rv8803_read(driver_t *rv8803,DATE_TIME_BUF *ct)
 {
 	uint8_t date1[7];
 	uint8_t date2[7];
@@ -268,20 +268,20 @@ void rv8803_read(driver_t *rv8803,DATE_TIME_BUF *ct)
 
 	if(err)
     {
-		//return RET_IO_ERR;
+		return RET_IO_ERR;
     }
     
     //Vdd와 가 낮다. POR 시에는 1로 됨, 데이터가 유요하지 않음0x27
 	if(reg & RV8803_FLAG_V2F)
     {
-       // return RET_EINVAL;
+        return RET_EINVAL;
 	}
 
   err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_SEC, date,7);
 
 	if(err)
     {
-	//	return RET_IO_ERR;
+		return RET_IO_ERR;
     }
 
     // 주의:초를 읽었더니 59초 이면 한번더 읽는다.
@@ -293,7 +293,7 @@ void rv8803_read(driver_t *rv8803,DATE_TIME_BUF *ct)
       err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_SEC, date2,7);
 		if (err)
         {
-			//return RET_IO_ERR;
+			return RET_IO_ERR;
         }
         //읽었더니 초가 59가 아니면 이 값이 유요한값, 59와 같다면 이전에 읽은값이 유요한값
 		if ((date[RV8803_SEC] & 0x7f) != bin2bcd(59))
@@ -310,7 +310,8 @@ void rv8803_read(driver_t *rv8803,DATE_TIME_BUF *ct)
 	ct->Month  = bcd2bin(date[RV8803_MONTH] & 0x1f) ;
 	ct->Year   = bcd2bin(date[RV8803_YEAR]) + 2000;
 
-	//return RET_OK;
+
+  return 0;
 }
 
 

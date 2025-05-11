@@ -718,7 +718,7 @@ int handle_view_status(int adc_num)
 
 
 
-        } while (wait_break(500));
+        } while (wait_break(10));
 
     break;
       case MENU_VIEW_SINGLE_SUMMARY:
@@ -985,6 +985,8 @@ void run_calibration_menu(int adc_num)
 int run_calibraion_root()
 {
   int choice, status;
+  
+  driver_adc_open(ADC_ADS1220, 0);
   while (1)
   {
     debug_printf("+---------------------------------------+\r\n");

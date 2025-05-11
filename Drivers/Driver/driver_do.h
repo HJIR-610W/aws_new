@@ -27,6 +27,7 @@
 #define DO_DIR_RS485_C 19
 #define DO_DIR_RS485_D 20
 #define DO_CON_PWR_RAIN_DECT_ACTIVE_H 21
+#define DO_CON_PWR_RAIN_ACTIVE_H 22
 
 driver_t *driver_do_open(uint32_t num,void *opt);
 void driver_do_low(driver_t *drv);

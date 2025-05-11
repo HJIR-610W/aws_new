@@ -1,3 +1,6 @@
+
+#define __STDC_WANT_LIB_EXT1__ 1
+
 #include <string.h>
 #include <stdbool.h>
 #include <stdarg.h>
@@ -299,119 +302,25 @@ else if (ch == 0x7F)  // Delete
 
   return len;
 }
+
+
 int cli_scanf_s(const char *fmt, ...)
 {
   char input[100];
-  char *cursor;
   va_list args;
-  int assigned = 0;
+  int ret;
   int code;
-  
+
   code = uart_get_line_with_edit(input, sizeof(input));
-  
-  if(code== KEYCODE_CTRL_C)
+
+  if (code == KEYCODE_CTRL_C ||code == KEYCODE_CTRL_Q)
   {
-    return KEYCODE_CTRL_C;
+    return code;
   }
-  cursor = input;
 
   va_start(args, fmt);
-
-  while (*fmt && *cursor)
-  {
-    if (*fmt == '%')
-    {
-      fmt++;
-
-      switch (*fmt)
-      {
-        case 'd':  // int
-        {
-          int *p = va_arg(args, int *);
-          int matched = sscanf(cursor, "%d", p);
-          if (matched == 1)
-          {
-            while (*cursor && *cursor != ' ' && *cursor != '\0')
-              cursor++;
-            assigned++;
-          }
-          break;
-        }
-
-        case 'u':  // unsigned int
-        {
-          unsigned int *p = va_arg(args, unsigned int *);
-          int matched = sscanf(cursor, "%u", p);
-          if (matched == 1)
-          {
-            while (*cursor && *cursor != ' ' && *cursor != '\0')
-              cursor++;
-            assigned++;
-          }
-          break;
-        }
-
-        case 'f':  // float
-        {
-          float *p = va_arg(args, float *);
-          int matched = sscanf(cursor, "%f", p);
-          if (matched == 1)
-          {
-            while (*cursor && *cursor != ' ' && *cursor != '\0')
-              cursor++;
-            assigned++;
-          }
-          break;
-        }
-
-        case 'c':  // char, 반드시 버퍼 크기 받음
-        {
-          char *p = va_arg(args, char *);
-          size_t size = va_arg(args, size_t);
-          if (size < 1)
-            break;
-          *p = *cursor;
-          cursor++;
-          assigned++;
-          break;
-        }
-
-        case 's':  // string, 반드시 버퍼와 크기 필요
-        {
-          char *p = va_arg(args, char *);
-          size_t size = va_arg(args, size_t);
-
-          int i = 0;
-          while (*cursor && *cursor != ' ' && *cursor != '\0' && i < (int)(size - 1))
-          {
-            p[i++] = *cursor++;
-          }
-          p[i] = '\0';
-          assigned++;
-          break;
-        }
-
-        default:
-          break;
-      }
-    }
-    else if (isspace(*fmt))
-    {
-      // 공백은 입력에서도 건너뜀
-      while (isspace(*cursor)) cursor++;
-    }
-    else
-    {
-      // 리터럴 매칭
-      if (*fmt == *cursor)
-        cursor++;
-      else
-        break;
-    }
-
-    fmt++;
-  }
-
+  ret = vsscanf_s(input, fmt, args);  // vsscanf_s 사용!
   va_end(args);
-  return assigned;
+
+  return ret;
 }

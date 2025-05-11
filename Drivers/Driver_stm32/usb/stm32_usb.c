@@ -40,11 +40,11 @@ void usb_start(void)
   }
 }
 
-extern void test_do_toggle(void);
+
 int32_t cdc_send(const uint8_t *p_data,uint16_t dataLen)
 {
   int32_t retVal=dataLen;
-  test_do_toggle();
+
   USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t*)p_data, dataLen);
   if(USBD_CDC_TransmitPacket(&USBD_Device) != USBD_OK)
   {

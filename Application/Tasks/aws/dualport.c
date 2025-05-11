@@ -312,71 +312,103 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
 {
   uint16_t sRet;
   sensor_data_t *p_sensor = g_p_raw->data;
+  float temperature;
+  uint8_t err=0;
 
-   *sensor_err = 0;
+  *sensor_err = 0;
 
   switch (ch)
   {
     case SOLITEMP5CM_CHN:
-      if (p_sensor[B5_SOIL_TEMPERATURE_5CM].err)
+      err = p_sensor[B5_SOIL_TEMPERATURE_5CM].err; 
+      if (err)
       {
-        *sensor_err = 1;
+        *sensor_err = err;
         return AWS_DATA_ERR_VAL;
       }
-      sRet = p_sensor[B5_SOIL_TEMPERATURE_5CM].data.i * 10;
+      temperature = p_sensor[B5_SOIL_TEMPERATURE_5CM].data.f;
+
       break;
     case SOLITEMP10CM_CHN:
-      if (p_sensor[B6_SOIL_TEMPERATURE_10CM].err)
+      err = p_sensor[B6_SOIL_TEMPERATURE_10CM].err;
+      if(err)
       {
-        *sensor_err = 1;
+        *sensor_err = err;
         return AWS_DATA_ERR_VAL;
       }
-      sRet = p_sensor[B6_SOIL_TEMPERATURE_10CM].data.i * 10;
+      temperature = p_sensor[B6_SOIL_TEMPERATURE_10CM].data.f;
       break;
     case SOLITEMP20CM_CHN:
-      if (p_sensor[B7_SOIL_TEMPERATURE_20CM].err)
+      err = p_sensor[B7_SOIL_TEMPERATURE_20CM].err;
+
+      if(err)
       {
-        *sensor_err = 1;
+        *sensor_err = err;
         return AWS_DATA_ERR_VAL;
       }
-      sRet = p_sensor[B7_SOIL_TEMPERATURE_20CM].data.i * 10;
+      temperature = p_sensor[B7_SOIL_TEMPERATURE_20CM].data.f;
       break;
     case SOLITEMP30CM_CHN:
-      if (p_sensor[B8_SOIL_TEMPERATURE_30CM].err)
+      err = p_sensor[B8_SOIL_TEMPERATURE_30CM].err;
+      if(err)
       {
-        *sensor_err = 1;
+        *sensor_err = err;
         return AWS_DATA_ERR_VAL;
       }
-      sRet = p_sensor[B8_SOIL_TEMPERATURE_30CM].data.i * 10;
+      temperature = p_sensor[B8_SOIL_TEMPERATURE_30CM].data.f;
       break;
     case SOLITEMP50CM_CHN:
-      if (p_sensor[B9_SOIL_TEMPERATURE_50CM].err)
+      err = p_sensor[B9_SOIL_TEMPERATURE_50CM].err;
+
+      if(err)
       {
-        *sensor_err = 1;
+        *sensor_err = err;
         return AWS_DATA_ERR_VAL;
       }
-      sRet = p_sensor[B9_SOIL_TEMPERATURE_50CM].data.i * 10;
+      temperature = p_sensor[B9_SOIL_TEMPERATURE_50CM].data.f;
       break;
     case SOLITEMP1_0M_CHN:
-      if (p_sensor[B10_SOIL_TEMPERATURE_100CM].err)
+      err = p_sensor[B10_SOIL_TEMPERATURE_100CM].err;
+
+      if(err)
       {
-        *sensor_err = 1;
+        *sensor_err = err;
         return AWS_DATA_ERR_VAL;
       }
-      sRet = p_sensor[B10_SOIL_TEMPERATURE_100CM].data.i * 10;
+      temperature = p_sensor[B10_SOIL_TEMPERATURE_100CM].data.f;
       break;
     case SOLITEMP1_5M_CHN:
-      if (p_sensor[B11_SOIL_TEMPERATURE_150CM].err)
+
+      err = p_sensor[B11_SOIL_TEMPERATURE_150CM].err;
+      if(err)
       {
-        *sensor_err = 1;
+        *sensor_err = err;
         return AWS_DATA_ERR_VAL;
       }
-      sRet = p_sensor[B11_SOIL_TEMPERATURE_150CM].data.i * 10;
-      break;
+      temperature = p_sensor[B11_SOIL_TEMPERATURE_150CM].data.f;
       break;
   }
 
-  return sRet;
+
+
+
+  temperature = validate_sensor_value_min(temperature, -40.0f, TEMPERATURE_ACCURACY, &err);
+
+  if (err)
+  {
+    *sensor_err = err << 4;
+    return AWS_DATA_ERR_VAL;
+  }
+
+  temperature = validate_sensor_value_max(temperature, 60.0f, TEMPERATURE_ACCURACY, &err);
+
+  if (err)
+  {
+    *sensor_err = err << 4;
+    return AWS_DATA_ERR_VAL;
+  }
+
+  return (uint16_t)((temperature + 100) * 10);  // AWS 데이터 형으로 변환 ((측정값+100) *10)
 }
 
 //일조 

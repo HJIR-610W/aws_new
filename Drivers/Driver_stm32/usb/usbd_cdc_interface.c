@@ -145,7 +145,7 @@ static int8_t CDC_Itf_Control (uint8_t cmd, uint8_t* pbuf, uint16_t length)
 
 
 extern void put_cdc_rx(uint8_t *p_data,uint16_t dataLen);
-extern void test_do_toggle(void);
+
 
 /**
   * @brief  CDC_Itf_DataRx
@@ -162,7 +162,7 @@ static int8_t CDC_Itf_Receive(uint8_t* Buf, uint32_t *Len)
   
   put_cdc_rx(Buf,*Len);
 
-  test_do_toggle();
+
   return (USBD_OK);
 }
 
@@ -175,7 +175,7 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   UNUSED(Len);
   UNUSED(epnum);
 
-  test_do_toggle();
+
   cdc_tx_complete();
   return result;
 }

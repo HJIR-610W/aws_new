@@ -4,11 +4,11 @@
 
 #include "driver_interface.h"
 
-#define FREQ_MEAURE_A 0
-#define FREQ_MEAURE_B 1
-#define FREQ_MEAURE_C 2
+#define FREQ_MEAURE_B 0
+#define FREQ_MEAURE_C 1
 
+#define FREQ_MAX 2
 driver_t *driver_freq_open(uint32_t num);
 
-void driver_freq_read(driver_t *drv,float *freq);
+float driver_freq_read(driver_t *drv);
 #endif

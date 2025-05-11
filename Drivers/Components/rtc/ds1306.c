@@ -30,7 +30,7 @@ driver_t ds1306_driver;
 
 
 void close(driver_t *handle);
-void ds1306_read(driver_t *handle,DATE_TIME_BUF *ct);
+int32_t ds1306_read(driver_t *handle,DATE_TIME_BUF *ct);
 void ds1306_set(driver_t *handle, rtc_set_option_t option, void *value);
 
 
@@ -190,7 +190,7 @@ void close(driver_t *handle)
 
 }
 
-void ds1306_read(driver_t *driver,DATE_TIME_BUF *ct)
+int32_t ds1306_read(driver_t *driver,DATE_TIME_BUF *ct)
 {
   if(driver->sem)
   {
@@ -202,6 +202,8 @@ void ds1306_read(driver_t *driver,DATE_TIME_BUF *ct)
   {
    osSemaphoreRelease(driver->sem);
   }
+  
+  return 0;
 }
 
 void ds1306_set(driver_t *driver, rtc_set_option_t option, void *value)
