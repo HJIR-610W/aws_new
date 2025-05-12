@@ -35,7 +35,7 @@ int run_test_root()
     debug_printf("| 10. 디지털 출력(D0~D5)                |\r\n");
     debug_printf("| 11. 전원 제어(24V,CDMA,모듈,히터)     |\r\n");
     debug_printf("| 12. 모드버스(구현 예정)               |\r\n");
-    debug_printf("| 13. 이더넷(구현 예정)                 |\r\n");
+    debug_printf("| 13. 이더넷                            |\r\n");
     debug_printf("| 14. 시간                              |\r\n");
     debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     debug_printf("+---------------------------------------+\r\n");

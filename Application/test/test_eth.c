@@ -2,18 +2,17 @@
 #include <string.h>
 
 #include "cli_input.h"
+#include "cli_key_code.h"
 #include "dev_io.h"
 #include "lwip/icmp.h"
 #include "lwip/inet_chksum.h"
+#include "lwip/ip.h"
 #include "lwip/ip_addr.h"
 #include "lwip/netdb.h"
 #include "lwip/netif.h"
 #include "lwip/sockets.h"
 #include "lwip/sys.h"
 #include "lwip/tcpip.h"
-#include "lwip/sys.h"
-#include "lwip/ip.h"
-
 
 // 사용자 설정값을 저장할 구조체
 typedef struct
@@ -39,6 +38,8 @@ static u16_t ping_checksum(void *data, int len) { return inet_chksum(data, len);
 // Ping 전송
 static err_t ping_send(int s, struct sockaddr_in *to)
 {
+  char send_buf[40];  // Ping 데이터 버퍼
+
   struct icmp_echo_hdr
   {
     u8_t type;
@@ -92,7 +93,108 @@ static err_t ping_recv(int s, struct sockaddr_in *from)
   return -1;
 }
 
+void ping_task(const char *target_ip)
+{
 
+  struct sockaddr_in dest_addr;
+  char send_buf[40];   // Ping 데이터 버퍼
+  char recv_buf[128];  // 수신 데이터 버퍼
+  int sock;
+  int seq = 0;  // ICMP Echo Request의 시퀀스 번호
+  int i;
+  int len;
+  uint8_t recved_cnt = 0;
+
+  // 대상 주소 설정
+  memset(&dest_addr, 0, sizeof(dest_addr));
+  dest_addr.sin_family = AF_INET;
+  dest_addr.sin_addr.s_addr = inet_addr(target_ip);
+  dest_addr.sin_port = 0;  // ICMP는 포트 사용 안 함
+
+
+  debug_printf("Pinging %s with %d bytes of data:\r\n", target_ip, PING_DATA_SIZE);
+
+
+  // 소켓 생성
+  sock = socket(AF_INET, SOCK_RAW, IP_PROTO_ICMP);
+  if (sock < 0)
+  {
+
+    return;
+  }
+
+  // 송수신 타임아웃 설정
+  struct timeval timeout;
+  timeout.tv_sec = 1;
+  timeout.tv_usec = 0;
+  setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
+
+
+  for (int i = 0; i < 32; i++)
+  {
+    send_buf[i + 8] = 'a' + i;
+  }
+
+  while(1)
+  {
+    struct icmp_echo_hdr *icmp_hdr = (struct icmp_echo_hdr *)send_buf;
+    struct sockaddr_in from_addr;
+    socklen_t from_len = sizeof(from_addr);
+    int recv_len;
+
+    // ICMP Echo Request 생성
+    icmp_hdr->type = ICMP_ECHO;
+    icmp_hdr->code = 0;
+    icmp_hdr->chksum = 0;          // 하드웨어에서 처리 함
+    icmp_hdr->id = htons(0x1234);  // 임의의 식별자
+    icmp_hdr->seqno = htons(seq++);
+    // Ping 데이터 전송
+    uint32_t start_time = osKernelGetTickCount();  // 시작 시간 측정
+    if (sendto(sock, send_buf, sizeof(send_buf), 0, (struct sockaddr *)&dest_addr,
+               sizeof(dest_addr)) < 0)
+    {
+
+      close(sock);
+
+    }
+
+    // Ping 응답 수신
+    recv_len =
+        recvfrom(sock, recv_buf, sizeof(recv_buf), 0, (struct sockaddr *)&from_addr, &from_len);
+
+    if (recv_len > 0)
+    {
+      recved_cnt++;
+      uint32_t end_time = osKernelGetTickCount();  // 종료 시간 측정
+      uint32_t rtt = (end_time - start_time);
+
+      // TTL 확인
+      struct ip_hdr *ip_hdr = (struct ip_hdr *)recv_buf;
+      int ttl = ip_hdr->_ttl;
+
+      debug_printf("Reply from %s bytes=%d time=%dms TTL=%d\r\n", target_ip, recv_len,
+                      rtt == 0 ? 1 : rtt, ttl);
+    }
+    else
+    {
+
+      close(sock);
+
+    }
+    // 1초 간격으로 대기
+    if (get_key(1000) == KEY_CODE_CTRL_Q)
+    {
+      break;
+    }
+  }
+
+  // 소켓 닫기
+  close(sock);
+
+
+
+}
 // Ping 실행
 void lwip_ping_test(const char *target_ip)
 {
@@ -190,9 +292,26 @@ void test_eth(void)
 
   debug_printf("\r\n[ Ethernet + Ping 테스트 시작 ]\r\n");
 
+#if 0 
   // 사용자로부터 네트워크 설정 입력받기
   network_setup_from_user();
-
+#else
+  eth_config.eth_ip[0]=192;
+  eth_config.eth_ip[1]=168;
+  eth_config.eth_ip[2]=1;
+  eth_config.eth_ip[3]=177;
+  
+  eth_config.eth_gateway[0]=192;
+  eth_config.eth_gateway[1]=168;
+  eth_config.eth_gateway[2]=1;
+  eth_config.eth_gateway[3]=1;  
+  
+  eth_config.eth_subnet[0]=255;
+  eth_config.eth_subnet[1]=255;
+  eth_config.eth_subnet[2]=255;
+  eth_config.eth_subnet[3]=0;  
+  
+#endif
   // 네트워크 인터페이스 초기화
   debug_printf("\r\n네트워크 인터페이스 초기화 중...\r\n");
   if (g_lwip_init==0)
@@ -209,7 +328,7 @@ void test_eth(void)
   cli_scanf_s("%31s", ping_ip_str);
 
   // Ping 실행
-  lwip_ping_test(ping_ip_str);
-
-  debug_printf("\r\n[ Ethernet + Ping 테스트 종료 ]\r\n");
+  //lwip_ping_test(ping_ip_str);
+  ping_task(ping_ip_str);
+   debug_printf("\r\n[ Ethernet + Ping 테스트 종료 ]\r\n");
 }
