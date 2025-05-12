@@ -1956,13 +1956,10 @@ int32_t menu_net_eth_mode_set(p_shell_context_t ctx)
   }
 
   cnt--;
-  switch (cnt)
-  {
-    case 0:
+
       config.eth_mode = cnt;
       WRITE_CFG(eth_mode);
-      break;
-  }
+
   return cnt;
 }
 

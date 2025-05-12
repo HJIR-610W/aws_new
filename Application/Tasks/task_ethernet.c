@@ -31,6 +31,7 @@ void ethernetTask(void *arg)
 
   MX_LWIP_Init(ip,mask,gw);
 
+    
   noti_tcpServerTask(0x00000001);
 
   osThreadExit();//¡æ∑· Ω√≈¥

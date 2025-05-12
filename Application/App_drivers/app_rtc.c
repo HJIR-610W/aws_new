@@ -17,7 +17,7 @@ void rtc_init(void)
 {
   rtc_set_irq_cfg_t rtc_cfg;
 
-  g_rtc = driver_rtc_open(RTC_MCU,0);
+  g_rtc = driver_rtc_open(RTC_RV8803,0);
 
   driver_rtc_read(g_rtc,&Date_Time);
 

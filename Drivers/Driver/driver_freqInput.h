@@ -11,4 +11,9 @@
 driver_t *driver_freq_open(uint32_t num);
 
 float driver_freq_read(driver_t *drv);
+float driver_freq_read(driver_t *drv);
+
+
+float driver_freq_read_duty(driver_t *drv);
+
 #endif

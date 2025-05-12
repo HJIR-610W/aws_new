@@ -57,6 +57,8 @@ uint8_t set_even_parity(uint8_t data)
   return data;
 }
 
+
+
 void sdi_uart_tx_reset(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -126,6 +128,7 @@ int32_t sdi_send(uint8_t *cmd, uint16_t dataLen)
   osDelay(1);
   SDI_DIR_TX_OFF();  // 드라이버 ic를 수신 모드로 설정 15ms안에 응답해야한다고함
 
+
 #endif
 }
 
@@ -138,12 +141,19 @@ void sdiTask(void *arg)
 
   SDI_DIR_TX_OFF();
 
+  debug_printf("0XR3 이런 문자열이 출력되면 정상\r\n");
+  debug_printf("CTRL+Q 종료료\r\n");
+
   while (1)
   {
     sdi_send(cmd, sizeof(cmd) - 1);
     len = SDI_RECV(buff, sizeof(buff), 3000);
     if (len)
     {
+      for(int i = 0; i< len; i++)
+      {
+        buff[i]&=0x7F;//even 페리티 제거 
+      }
       LOG_MEM(buff,len,0,16);
     }
     if (get_key(1000) == KEY_CODE_CTRL_Q)
@@ -165,7 +175,7 @@ void test_sdi12(void)
 
   g_sdi_uart = driver_uart_open(UART_9_SDI, &uart_config);
 
-  do_config.mode = DO_OUT_PP;
+  do_config.mode = DO_OUT_OD;
   do_config.pullup = DO_NO_PULL;
 
   g_sdi_dir = driver_do_open(DO_DIR_SDI, &do_config);

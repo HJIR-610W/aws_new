@@ -33,7 +33,7 @@ void test_rtc(void)
     if (driver_rtc_read(rtc, &Date_Time) == 0)
     {
       // 시간 출력
-      debug_printf("현재 시간: %04d-%02d-%02d %02d:%02d:%02d (Weekday: %d)\r\n", Date_Time.Year,
+      debug_printf("현재 시간: %04d-%02d-%02d %02d:%02d:%02d\r\n", Date_Time.Year,
                    Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
     }
     else

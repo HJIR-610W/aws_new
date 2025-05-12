@@ -77,85 +77,55 @@ FrequencyDutyCycleResult Calculate_Frequency_DutyCycle(TIM_HandleTypeDef *htim)
 
     return result;
 }
+float g_freq_TIM10 = 0.0f;
+float g_duty_TIM10 = 0.0f;
 
-float g_inputFreq_TIM10 = 0.0f;
-float g_inputFreq_TIM11 = 0.0f;
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-  static uint32_t prevCapture_TIM10 = 0;
-  static uint32_t prevCapture_TIM11 = 0;
+  static uint32_t rising_edge = 0;
+  static uint32_t falling_edge = 0;
+  static uint32_t last_rising = 0;
+  static uint8_t last_edge = 0;  // 0: none, 1: rising, 2: falling
 
-  uint32_t currCapture = 0;
-  uint32_t diffCapture = 0;
-
-  if (htim->Channel != HAL_TIM_ACTIVE_CHANNEL_1)
-    return;
-
-  if (htim->Instance == TIM10)
+  if (htim->Instance == TIM10 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
   {
-    currCapture = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+    uint32_t currCapture = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+    uint32_t delta = 0;
 
-    if (currCapture >= prevCapture_TIM10)
+    // 현재 엣지가 상승인지 하강인지 판단
+    if (last_edge != 1)  // 상승엣지 (처음 or 하강 후)
     {
-      diffCapture = currCapture - prevCapture_TIM10;
-    }
-    else
-    {
-      diffCapture = (0xFFFF - prevCapture_TIM10 + currCapture + 1);
-    }
+      rising_edge = currCapture;
 
-    g_inputFreq_TIM10 = (diffCapture > 0) ? (1000000.0f / diffCapture) : 0.0f;
-    prevCapture_TIM10 = currCapture;
+      // 주기 계산 (이전 상승엣지 기준)
+      if (last_rising != 0)
+      {
+        delta = (rising_edge >= last_rising) ? (rising_edge - last_rising)
+                                             : (0xFFFF - last_rising + rising_edge + 1);
+
+        if (delta > 0)
+          g_freq_TIM10 = 1000000.0f / delta;  // Hz
+
+        // 하이타임 계산
+        if (falling_edge != 0 && falling_edge != rising_edge)
+        {
+          uint32_t high_time = (falling_edge >= last_rising)
+                                   ? (falling_edge - last_rising)
+                                   : (0xFFFF - last_rising + falling_edge + 1);
+
+          g_duty_TIM10 = (float)high_time * 100.0f / delta;
+        }
+      }
+
+      last_rising = rising_edge;
+      last_edge = 1;
+    }
+    else  // 하강엣지
+    {
+      falling_edge = currCapture;
+      last_edge = 2;
+    }
   }
-  else if (htim->Instance == TIM11)
-  {
-    currCapture = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-
-    if (currCapture >= prevCapture_TIM11)
-    {
-      diffCapture = currCapture - prevCapture_TIM11;
-    }
-    else
-    {
-      diffCapture = (0xFFFF - prevCapture_TIM11 + currCapture + 1);
-    }
-
-    g_inputFreq_TIM11 = (diffCapture > 0) ? (1000000.0f / diffCapture) : 0.0f;
-    prevCapture_TIM11 = currCapture;
-  }
-}
-
-void freqMeasureA_init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-
-  // GPIOF Pin 8 설정 (TIM13_CH1)
-  GPIO_InitStruct.Pin = IN_TIM13_CH1_Pin;
-  GPIO_InitStruct.Alternate = GPIO_AF9_TIM13;
-  HAL_GPIO_Init(IN_TIM13_CH1_GPIO_Port, &GPIO_InitStruct);
-
-  __HAL_RCC_TIM13_CLK_ENABLE();
-  htim13.Instance = TIM13;
-  htim13.Init.Prescaler = 83;
-  htim13.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim13.Init.Period = 0xFFFF;
-  HAL_TIM_IC_Init(&htim13);
-
-  TIM_IC_InitTypeDef sConfigIC = {0};
-  sConfigIC.ICPolarity = TIM_ICPOLARITY_BOTHEDGE;
-  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
-  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-  sConfigIC.ICFilter = 0;
-  HAL_TIM_IC_ConfigChannel(&htim13, &sConfigIC, TIM_CHANNEL_1);
-
-  HAL_TIM_IC_Start_IT(&htim13, TIM_CHANNEL_1);
-
-
-    HAL_NVIC_SetPriority(TIM8_UP_TIM13_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(TIM8_UP_TIM13_IRQn);
 }
 
 /*
@@ -167,37 +137,36 @@ void freqMeasureA_init(void)
 */
 void freqMeasureB_init(void)
 {
-    __HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_TIM10_CLK_ENABLE();
 
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Pin = IN_TIM10_CH1_Pin;
+  GPIO_InitStruct.Alternate = GPIO_AF3_TIM10;
+  HAL_GPIO_Init(IN_TIM10_CH1_GPIO_Port, &GPIO_InitStruct);
 
-        // GPIOF Pin 6 설정 (TIM10_CH1)
-    GPIO_InitStruct.Pin = IN_TIM10_CH1_Pin;
-    GPIO_InitStruct.Alternate = GPIO_AF3_TIM10;
-    HAL_GPIO_Init(IN_TIM10_CH1_GPIO_Port, &GPIO_InitStruct);
+  htim10.Instance = TIM10;
+  htim10.Init.Prescaler = 83;  // 1us 타이머 주기
+  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim10.Init.Period = 0xFFFF;
+  HAL_TIM_IC_Init(&htim10);
 
- __HAL_RCC_TIM10_CLK_ENABLE();
-    htim10.Instance = TIM10;
-    htim10.Init.Prescaler = 83; // 84MHz / (Prescaler + 1) = 1MHz (1us 타이머 주기)
-    htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-    htim10.Init.Period = 0xFFFF;
-    HAL_TIM_IC_Init(&htim10);
+  TIM_IC_InitTypeDef sConfigIC = {0};
+  sConfigIC.ICPolarity = TIM_ICPOLARITY_BOTHEDGE;  // 상승+하강엣지 모두 감지
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  HAL_TIM_IC_ConfigChannel(&htim10, &sConfigIC, TIM_CHANNEL_1);
 
-    TIM_IC_InitTypeDef sConfigIC = {0};
-    sConfigIC.ICPolarity = TIM_ICPOLARITY_RISING;
-    sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
-    sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-    sConfigIC.ICFilter = 0;
-    HAL_TIM_IC_ConfigChannel(&htim10, &sConfigIC, TIM_CHANNEL_1);
+  HAL_TIM_IC_Start_IT(&htim10, TIM_CHANNEL_1);
 
-    HAL_TIM_IC_Start_IT(&htim10, TIM_CHANNEL_1);
-
-    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
+  HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
 }
+
 void freqMeasureC_init(void)
 {
       GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -284,14 +253,25 @@ float driver_freq_read(driver_t *drv)
 
   if(cfg->channel ==0)
   {
-    return g_inputFreq_TIM10 ;
+    return g_freq_TIM10;
   }
 
-  if(cfg->channel ==1)
-  {
-    return g_inputFreq_TIM11;
-  }
+
 
   return 0;
 
+}
+
+float driver_freq_read_duty(driver_t *drv)
+{
+  freq_cfg_t *cfg = drv->cfg;
+
+  if (cfg->channel == 0)
+  {
+    return g_duty_TIM10;
+  }
+
+
+
+  return 0;
 }

@@ -29,9 +29,9 @@ void test_freq(void)
   while(1)
   {
     freq_b = driver_freq_read(count_b);
-    freq_c = driver_freq_read(count_c);
+    freq_c = driver_freq_read_duty(count_b);
 
-    debug_printf("f_b:%f,f_c:%f\r\n", freq_b, freq_c);
+    debug_printf("freq:%f,duty:%f\r\n", freq_b, freq_c);
 
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
