@@ -15,10 +15,10 @@
 #define UART_LINE_MAX    128
 #define UART_HISTORY_DEPTH  4
 
-#define KEYCODE_NONE      0
-#define KEYCODE_CTRL_C    3
-#define KEYCODE_CTRL_Q    17
-#define KEYCODE_ESC       27
+
+#define KEYCODE_CTRL_C    -3
+#define KEYCODE_CTRL_Q    -17
+#define KEYCODE_ESC       -27
 #define KEYCODE_UNKNOWN  -1
 
 

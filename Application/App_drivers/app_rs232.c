@@ -9,10 +9,11 @@ typedef struct app_rs232_s
   const char *name;
 }app_rs232_t;
 
-const app_rs232_t rs232_define[]={{.num = UART_4_EXT_C,.name ="EX3_232_A"},
-                                  {.num = UART_5_EXT_D,.name ="EX4_232_B"},
-                                  {.num = UART_2_EXT_A,.name ="EX7_232_C"},
-                                  {.num = UART_3_EXT_B,.name ="EX8_232_D"}};
+const app_rs232_t rs232_define[] = {
+                          {.num = UART_2_EXT_A, .name = "RS232/RS485 A"},
+                          {.num = UART_3_EXT_B, .name = "RS232/RS485 B"},
+                          {.num = UART_5_EXT_D, .name = "RS232 C"},
+                          {.num = UART_4_EXT_C, .name = "RS232/HART D"}};
 
 driver_t *rs232_drivers[eRS232_MAX];
 
@@ -22,21 +23,21 @@ int32_t uart_num_to_driver_num(int32_t app_uart_num)
 
   switch (app_uart_num)
   {
-  case 0:
-    num = UART_2_EXT_A;
-    break;
-  case 1:
-    num = UART_3_EXT_B;
-    break;
-    break;
-  case 2:
-    num = UART_4_EXT_C;
-    break;
-    break;
-  case 3:
-    num = UART_5_EXT_D;
-    break;
-    break;
+    case eRS232_1:
+      num = UART_2_EXT_A;
+      break;
+    case eRS232_2:
+      num = UART_3_EXT_B;
+      break;
+      break;
+    case eRS232_3:
+      num = UART_4_EXT_C;
+      break;
+      break;
+    case eRS232_4:
+      num = UART_5_EXT_D;
+      break;
+      break;
   }
 }
 

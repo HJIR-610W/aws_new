@@ -9,8 +9,10 @@ typedef enum RS485_PORT_e
 {
   eAPP_RS485_A,
   eAPP_RS485_B,
+  eAPP_RS485_C,
+  eAPP_RS485_D,
   eAPP_RS485_MAX
-}eRS485_PORT_t;
+} eRS485_PORT_t;
 
 void rs485_set(eRS485_PORT_t port,uint32_t baud,uint8_t parity);
 void rs485_open(eRS485_PORT_t port,void *opt);

@@ -92,7 +92,7 @@ const char *rs232ParityList[] = {"none", "even", "odd"};
 const char *enableList[] = {"¹Ì»ç¿ë", "»ç¿ë"};
 const char *ethModeList[] = {"Å¬¶óÀÌ¾ðÆ®", "¼­¹ö"};
 
-const char *physical_layer_list[]={"RS232","RS484"};
+const char *physical_list[]={"RS232","RS485"};
 
 int32_t print_common_cfg(p_shell_context_t ctx, sensor_t *sensor, uint8_t c);
 
@@ -132,6 +132,9 @@ void print_items(char *title, char *items[], uint8_t itmeCnt)
   debug_printf("(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B\r\n");
 }
 
+/**
+ * @retval 0º¸´Ù Å©¸é »ç¿ëÀÚ ÀÔ·ÂÀÌ ÀÖÀ½ 
+ */
 int32_t select_indexFromList(p_shell_context_t ctx, const char *list[],
                              int32_t (*func)(p_shell_context_t), uint16_t listCnt, bool number)
 {
@@ -618,7 +621,7 @@ uint8_t print_hjtemp_cfg(p_shell_context_t ctx, hjtemp_config_t *hjtempCfg, uint
 {
   const char *portNameList[10];
 
-  ctx->printf("%2d.¹°¸®ÀåÄ¡   :%s\r\n", cnt++, physical_layer_list[hjtempCfg->physical_layer]);  // °íÁ¤
+  ctx->printf("%2d.¹°¸®ÀåÄ¡   :%s\r\n", cnt++, physical_list[hjtempCfg->physical_layer]);  // °íÁ¤
 
   if (hjtempCfg->physical_layer == ePHYSICAL_RS232)
   {
@@ -641,7 +644,7 @@ uint8_t print_hjsnow_cfg(p_shell_context_t ctx, hjsnow_config_t *hjsnow, uint8_t
   const char *portNameList[10];
 
   ctx->printf("%2d.¹°¸®ÀåÄ¡   :%s\r\n", cnt++,
-              physical_layer_list[hjsnow->physical_layer]);  // °íÁ¤
+              physical_list[hjsnow->physical_layer]);  // °íÁ¤
 
   if(hjsnow->physical_layer == ePHYSICAL_RS232)
   {
@@ -707,49 +710,47 @@ uint16_t gen_sensorItemList(const char **itemListOut, const uint8_t *idxList, ui
 #define ADC_SET_OUTMAXVOLT 5
 #define ADC_SET_OUTMINVOLT 6
 
-void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
+void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t dec;
   adc_config_t *adc;
+  int32_t row_index;
 
   adc = get_sensor_config(sensor);
-  switch (cnt)
+  switch (menu_index)
   {
     case ADC_SET_CH_MODE:  // 1.Ã¤³Î ¸ðµå
-      cnt = select_indexFromList(ctx, adcChModeList, NULL, _countof(adcChModeList), true);
-      if (cnt > 0)
+      row_index = select_indexFromList(ctx, adcChModeList, NULL, _countof(adcChModeList), true);
+
+      if (row_index > 0)
       {
-        adc->mode = (cnt - 1);
+        adc->mode = (row_index - 1);
         save_config_sensor();
       }
       break;
     case ADC_SET_CHANNLEL:  // channel;
-      cnt = input_decimal(ctx, 0, 17, &dec);
-      if (cnt)
+      if (input_decimal(ctx, 0, 17, &dec))
       {
         adc->channel = dec;
         save_config_sensor();
       }
       break;
     case ADC_SET_HIGHSCALE:  // hish cale;
-      cnt = input_decimal(ctx, -100000, 100000, &dec);
-      if (cnt)
+      if (input_decimal(ctx, -1000000, 1000000, &dec))
       {
         adc->highScale = dec;
         save_config_sensor();
       }
       break;
     case ADC_SET_LOWSCALE:  // low cale;
-      cnt = input_decimal(ctx, -100000, 100000, &dec);
-      if (cnt)
+      if (input_decimal(ctx, -1000000, 1000000, &dec))
       {
         adc->lowScale = dec;
         save_config_sensor();
       }
       break;
     case ADC_SET_SCALE:  // ale;
-      cnt = input_decimal(ctx, -100000, 100000, &dec);
-      if (cnt)
+      if (input_decimal(ctx, -1000000, 1000000, &dec))
       {
         adc->scale = dec;
         save_config_sensor();
@@ -757,8 +758,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       break;
 
     case ADC_SET_OUTMAXVOLT:
-      cnt = input_decimal(ctx, -100000, 100000, &dec);
-      if (cnt)
+      if (input_decimal(ctx, -1000000, 1000000, &dec))
       {
         adc->outMaxV = dec;
         save_config_sensor();
@@ -766,8 +766,7 @@ void adc_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       break;
 
     case ADC_SET_OUTMINVOLT:
-      cnt = input_decimal(ctx, -100000, 100000, &dec);
-      if (cnt)
+      if (input_decimal(ctx, -1000000, 1000000, &dec))
       {
         adc->outMinV = dec;
         save_config_sensor();
@@ -801,7 +800,8 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       cnt = rs232_get_portList(portList, _countof(portList));
 
       cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
-      if (cnt)
+
+      if (cnt > 0)
       {
         rs232->port = cnt - 1;
         save_config_sensor();
@@ -819,6 +819,7 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       break;
     case RS232_SET_PARITY:
       cnt = select_indexFromList(ctx, rs232ParityList, NULL, _countof(rs232ParityList), true);
+      if(cnt>0)
       {
         rs232->parityIdx = cnt - 1;
         save_config_sensor();
@@ -851,7 +852,8 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       cnt = rs485_get_portList(portList, _countof(portList));
 
       cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
-      if (cnt)
+
+      if (cnt>0)
       {
 
 
@@ -872,6 +874,7 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
       break;
     case RS485_SET_PARITY:
       cnt = select_indexFromList(ctx, rs232ParityList, NULL, _countof(rs232ParityList), true);
+      if(cnt>0)
       {
         rs485->parityIdx = cnt - 1;
         save_config_sensor();
@@ -882,45 +885,42 @@ void rs485_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
   }
 }
 
-void hjwind_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
+void hjwind_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t munu_index)
 {
-  int32_t dec;
-  hjwindspeed_config_t *hjwind;
   const char *portList[10];
+  int32_t dec;
+  uint16_t port_cnt;
+  int32_t row_index;
+  hjwindspeed_config_t *hjwind;
 
   hjwind = get_sensor_config(sensor);
   if (hjwind == NULL)
   {
     return;
   }
-  switch (cnt)
+  switch (munu_index)
   {
     case HJWIND_CFG_FULL:
-      cnt = input_decimal(ctx, 0, 999999, &dec);
-      if (cnt)
+      if (input_decimal(ctx, 0, 999999, &dec))
       {
         hjwind->full = dec;
         save_config_sensor();
       }
       break;
     case HJWIND_CFG_OFF:
-      cnt = input_decimal(ctx, 0, 999999, &dec);
-      if (cnt)
+      if (input_decimal(ctx, 0, 999999, &dec))
       {
         hjwind->offset = dec;
         save_config_sensor();
       }
       break;
     case HJWIND_CFG_PORT:
-      cnt = rs485_get_portList(portList, _countof(portList));
+      port_cnt = rs485_get_portList(portList, _countof(portList));
+      row_index = select_indexFromList(ctx, portList, NULL, port_cnt, true);
 
-      cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
-      if (cnt)
+      if (row_index > 0)
       {
-
-        hjwind->rs485_port = cnt - 1;
-
-
+        hjwind->rs485_port = row_index - 1;
         save_config_sensor();
       }
       break;
@@ -929,27 +929,29 @@ void hjwind_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
   }
 }
 
-void hjwinddir_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
+void hjwinddir_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t dec;
   hjwindspeed_config_t *hjwind;
   const char *portList[10];
-
+  int32_t row_index;
+  uint16_t port_cnt;
+  
   hjwind = get_sensor_config(sensor);
   if (hjwind == NULL)
   {
     return;
   }
-  switch (cnt)
+  switch (menu_index)
   {
     case HJWIND_DIR_CFG_PORT:
-      cnt = rs485_get_portList(portList, _countof(portList));
+      port_cnt = rs485_get_portList(portList, _countof(portList));
 
-      cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
-      if (cnt)
+      row_index = select_indexFromList(ctx, portList, NULL, port_cnt, true);
+
+      if (row_index > 0)
       {
-
-        hjwind->rs485_port = cnt - 1;
+        hjwind->rs485_port = row_index - 1;
 
         save_config_sensor();
       }
@@ -965,98 +967,105 @@ void hjwinddir_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
 1.port:EX1 RS485 A
 */
 
-void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
+void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t dec;
+  int32_t row_idx;
+    int32_t dec;
   hjtemp_config_t *hjtemp;
   const char *portList[10];
+  uint16_t portListCnt;
   
-
   hjtemp = get_sensor_config(sensor);
   if (hjtemp == NULL)
   {
     return;
   }
-  switch (cnt)
+
+  switch (menu_index)
   {
     case HJTEMP_CFG_PHYSICAL_LAYER:
-      cnt = select_indexFromList(ctx, physical_layer_list, NULL, _countof(physical_layer_list), true);
-      if (cnt)
+      row_idx = select_indexFromList(ctx, physical_list, NULL, _countof(physical_list), true);
+      
+      if(row_idx > 0)
       {
-        hjtemp->physical_layer = cnt - 1;
+        hjtemp->physical_layer = row_idx - 1;
+        save_config_sensor();
       }
-      save_config_sensor();
-
       break;
     case HJTEMP_CFG_PORT:
       if (hjtemp->physical_layer == ePHYSICAL_RS232)
       {
-        cnt = rs232_get_portList(portList, _countof(portList));
-        cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
-        if (cnt)
+        portListCnt = rs232_get_portList(portList, _countof(portList));
+        row_idx = select_indexFromList(ctx, portList, NULL,  portListCnt, true);
+        if (row_idx > 0)
         {
-          hjtemp->port = cnt - 1;
+          hjtemp->port = row_idx - 1;
+          save_config_sensor();
         }
       }
       else
       {
-        cnt = rs485_get_portList(portList, _countof(portList));
-        cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
-        if (cnt)
+        portListCnt = rs485_get_portList(portList, _countof(portList));
+        row_idx = select_indexFromList(ctx, portList, NULL, portListCnt, true);
+
+        if (row_idx > 0)
         {
-          hjtemp->port = cnt - 1;
+          hjtemp->port = row_idx - 1;
+          save_config_sensor();
         }
       }
-        save_config_sensor();
+
       break;
     default:
       break;
   }
 }
 
-void hjsnow_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
+void hjsnow_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t dec;
   hjsnow_config_t *hjsnow;
   const char *portList[10];
-
+  uint16_t portCnt;
+  int32_t row_index;
   hjsnow = get_sensor_config(sensor);
   if (hjsnow == NULL)
   {
     return;
   }
-  switch (cnt)
+  switch (menu_index)
   {
     case HJSNOW_CFG_MENU_PHY:
-      cnt =
-          select_indexFromList(ctx, physical_layer_list, NULL, _countof(physical_layer_list), true);
-      if (cnt)
-      {
-        hjsnow->physical_layer = cnt - 1;
-      }
-      save_config_sensor();
+      row_index = select_indexFromList(ctx, physical_list, NULL, _countof(physical_list), true);
 
+      if (row_index > 0)
+      {
+        hjsnow->physical_layer = row_index - 1;
+        save_config_sensor();
+      }
       break;
     case HJSNOW_CFG_MENU_PORT:
       if (hjsnow->physical_layer == ePHYSICAL_RS232)
       {
-        cnt = rs232_get_portList(portList, _countof(portList));
-        cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
-        if (cnt)
+        portCnt = rs232_get_portList(portList, _countof(portList));
+        row_index = select_indexFromList(ctx, portList, NULL, portCnt, true);
+        if (row_index > 0)
         {
-          hjsnow->port = cnt - 1;
+          hjsnow->port = row_index - 1;
+          save_config_sensor();
         }
       }
       else
       {
-        cnt = rs485_get_portList(portList, _countof(portList));
-        cnt = select_indexFromList(ctx, portList, NULL, cnt, true);
-        if (cnt)
+        portCnt = rs485_get_portList(portList, _countof(portList));
+        row_index = select_indexFromList(ctx, portList, NULL, portCnt, true);
+        if (row_index > 0)
         {
-          hjsnow->port = cnt - 1;
+          hjsnow->port = row_index - 1;
+          save_config_sensor();
         }
       }
-      save_config_sensor();
+
       break;
     default:
       break;
@@ -1092,8 +1101,6 @@ const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_GENERAL_232, .config_set = rs232_config_set},
     {.sensorType = S_T_WIND_DIRECTION_HJ_485, .config_set = hjwinddir_config_set},
     {.sensorType = S_T_WIND_SPEED_HJ_485, .config_set = hjwind_config_set},
-    {.sensorType = S_T_WIND_SPEED_MAX_VAL, .config_set = 0},
-    {.sensorType = S_T_WIND_DIRECTION_MAX_VAL, .config_set = 0},
     {.sensorType = S_T_SNOW_HJ, .config_set = hjsnow_config_set},
     {.sensorType = S_T_GENERAL_485, .config_set = rs485_config_set},
     {.sensorType = S_T_TEMPERATURE_HJ, .config_set = hjtemp_config_set},
@@ -1180,11 +1187,6 @@ int32_t menu_sensor_temp(p_shell_context_t ctx)
   {
     cnt = select_indexFromList(ctx, NULL, print_menu_sensor_temp, 0, false);
 
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
-    {
-      return cnt;
-    }
-    cnt--;
 
     if (cnt == 0)
     {

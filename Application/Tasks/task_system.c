@@ -43,7 +43,7 @@ void systemTask(void *arg)
   while (1)
   {
     rtc_update();
-    //update_charger();
+    update_charger();
 
     osDelay(500);
   }

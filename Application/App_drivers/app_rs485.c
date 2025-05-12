@@ -9,11 +9,10 @@ typedef struct app_rs485_s
   const char *name;
 }app_rs485_t;
 
-const app_rs485_t rs485_define[]={{.num = RS485_A,   .name ="EX1 RS485 A"},
-                                  {.num = RS485_B,   .name ="EX2 RS485 B"}};
-
-
-
+const app_rs485_t rs485_define[] = {{.num = RS485_A, .name = "RS485 A"},
+                                    {.num = RS485_B, .name = "RS485 B"},
+                                    {.num = RS485_C, .name = "RS232/RS485 A"},
+                                    {.num = RS485_D, .name = "RS232/RS485 B"}};
 
 bool app_rs485Open[eAPP_RS485_MAX];
 

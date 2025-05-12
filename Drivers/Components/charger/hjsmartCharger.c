@@ -106,7 +106,7 @@ driver_t *hjsmartCharger_open(int32_t num,void *opt)
 
     hjsmartCharger_driver.opened = true;
     hjsmartCharger_driver.api = &hjcharger_api;
-    hjsmartCharger_cfg.rs232_io = driver_uart_open(UART_3_EXT_B,&uart_config);
+    hjsmartCharger_cfg.rs232_io = driver_uart_open(UART_2_EXT_A,&uart_config);
 
     hjsmartCharger_driver.cfg = &hjsmartCharger_cfg;
 

@@ -37,7 +37,8 @@ const config_t config_app_default = {.id = 0,
                                  .vhf_repeater_id = 0,
                                  .vhf_ptt_delay = 10,
                                  .encrypt_use = false,
-                                 .network_mode = eNET_MODE_TCP_SERVER};
+                                 .network_mode = eNET_MODE_TCP_SERVER,
+                                 .ac_use = 0};
 
 bool g_config_app_dirty_flag = false;
 
@@ -131,6 +132,88 @@ void check_config_app(void)
     config.sensor[A9_SNOW_DEPTH].type = S_T_UNSUED;
   }
 
+  if (config.sensor[A1_TEMPERATURE].type == S_T_TEMPERATURE_HJ)
+  {
+    p_config = get_sensor_config(&config.sensor[A1_TEMPERATURE]);
+
+    if (p_config == NULL)
+    {
+      config.sensor[A1_TEMPERATURE].type = S_T_UNSUED;
+      g_config_app_dirty_flag = true;
+    }
+    else
+    {
+      hjtemp_config_t *p_hj_temp = p_config;
+
+      if(p_hj_temp->physical_layer > ePHYSICAL_RS485)
+      {
+        p_hj_temp->physical_layer = ePHYSICAL_RS232;
+        g_config_app_dirty_flag = true;
+      }
+
+      switch (p_hj_temp->physical_layer)
+      {
+        case ePHYSICAL_RS485:
+          if (p_hj_temp->port > eAPP_RS485_MAX)
+          {
+            p_hj_temp->port = eAPP_RS485_A;
+            g_config_app_dirty_flag = true;
+          }
+            break;
+        case ePHYSICAL_RS232:
+          if (p_hj_temp->port > eRS232_MAX)
+          {
+            p_hj_temp->port = eRS232_1;
+            g_config_app_dirty_flag = true;
+          }
+          break;
+         default:
+          break;
+      }
+
+    }
+  }
+  //화진 온습도 습도 범위 확인
+  if (config.sensor[A10_RELATIVE_HUMIDITY].type == S_T_HUMINITY_HJ)
+  {
+    p_config = get_sensor_config(&config.sensor[A10_RELATIVE_HUMIDITY]);
+
+    if (p_config == NULL)
+    {
+      config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_UNSUED;
+      g_config_app_dirty_flag = true;
+    }
+    else
+    {
+      hjtemp_config_t *p_hj_temp = p_config;
+
+      if (p_hj_temp->physical_layer > ePHYSICAL_RS485)
+      {
+        p_hj_temp->physical_layer = ePHYSICAL_RS232;
+        g_config_app_dirty_flag = true;
+      }
+
+      switch (p_hj_temp->physical_layer)
+      {
+        case ePHYSICAL_RS485:
+          if (p_hj_temp->port > eAPP_RS485_MAX)
+          {
+            p_hj_temp->port = eAPP_RS485_A;
+            g_config_app_dirty_flag = true;
+          }
+          break;
+        case ePHYSICAL_RS232:
+          if (p_hj_temp->port > eRS232_MAX)
+          {
+            p_hj_temp->port = eRS232_1;
+            g_config_app_dirty_flag = true;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  }
 
   if (config.sensor[A2_WIND_DIRECTION].type == S_T_WIND_DIRECTION_HJ_485)
   {

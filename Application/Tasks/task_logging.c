@@ -145,8 +145,7 @@ void loggingTask(void *arg)
         switch(logging.cmd)
         {
           case eLOGGING_LOG:
-            err = logging_printf((char *)logging.data);
-            update_loggingErr(&g_logging_system.status_group, err, LOGGING_LOG_ERR);
+            logging_printf((char *)logging.data);
             break;
           case eLOGGING_DATA:
             memcpy(&data_size,&logging.data[0],sizeof(data_size));
