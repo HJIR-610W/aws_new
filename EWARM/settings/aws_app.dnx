@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>1453447602</Checksum>
+        <Checksum>239248949</Checksum>
     </DebugChecksum>
     <Disassembly>
         <InstrCount>0</InstrCount>
@@ -153,7 +153,7 @@
         <Bp4>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Communications\Ethernet\task_tcpServer.c}.152.7" 0 0 1 "" 0 "" 0</Bp4>
         <Bp5>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_console.c}.1963.7" 0 0 1 "" 0 "" 0</Bp5>
         <Bp6>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_console.c}.1960.7" 0 0 1 "" 0 "" 0</Bp6>
-        <Bp7>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\task_ethernet.c}.32.3" 0 0 1 "" 0 "" 0</Bp7>
+        <Bp7>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Drivers\Driver_stm32\usb\stm32_usb.c}.48.3" 0 0 1 "" 0 "" 0</Bp7>
         <Count>8</Count>
     </Breakpoints2>
     <TermIOLog>

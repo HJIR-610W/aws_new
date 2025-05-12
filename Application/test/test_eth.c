@@ -323,7 +323,7 @@ void test_eth(void)
   
   // 사용자로부터 Ping 대상 입력
   debug_printf("\r\nPing 테스트를 실행합니다.\r\n");
-  debug_printf("IPv4 주소 형식으로 입력해주세요 (예: 192.168.1.1).\r\n");
+  debug_printf("IPv4 주소 형식으로 입력해주세요 (예: 192.168.1.1)\r\n");
   debug_printf("입력>");
   cli_scanf_s("%31s", ping_ip_str);
 
