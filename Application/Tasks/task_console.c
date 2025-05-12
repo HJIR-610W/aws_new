@@ -105,9 +105,9 @@ void sonsoleTask(void *arg)
   const char *cli_test = "\x1B[32mAWS_TEST>> \x1B[37m";
 
   osDelay(1000);
-  debug_printf("\r\n");
-  debug_printf(VT100_CLEAR_SCREEN);
-  debug_printf(VT100_CURSOR_HOME);
+  debug_printf("\r\n\r\n");
+ // debug_printf(VT100_CLEAR_SCREEN);
+  //debug_printf(VT100_CURSOR_HOME);
   print_signature();
 
   DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);

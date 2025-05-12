@@ -84,13 +84,14 @@ void debug_puts_nonos(char *str)
   }
 }
 
-static char g_printf_buff[512];
 
-#define PRINTF_HEAP_USE 1
+
+#define PRINTF_HEAP_USE 0
 
 
 int32_t debug_printf(const char *pFmt, ...)
 {
+   char printf_buff[100];
   char buff[2];
   char *ptr = NULL;
   char *temp = NULL;
@@ -124,10 +125,10 @@ int32_t debug_printf(const char *pFmt, ...)
   }
 #else
   va_start(ap, pFmt);
-  len = vsnprintf_s((char *)g_printf_buff, sizeof(g_printf_buff), (char *)pFmt, ap);
+  len = vsnprintf_s((char *)printf_buff, sizeof(printf_buff), (char *)pFmt, ap);
   va_end(ap);
 
-  ptr = g_printf_buff;
+  ptr = printf_buff;
 #endif
   if (debug_uart && ptr)  // os구동중인지 확인
   {
@@ -155,7 +156,7 @@ int32_t error_printf(const char *pFmt, ...)
   char *temp = NULL;
   va_list ap;
   int32_t len;
-
+  char g_printf_buff[100];
   // 먼저 format 후 len의 길이를 확인 후 메모리를 할당후 최종 처리
   va_start(ap, pFmt);
   len = vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);

@@ -321,6 +321,10 @@ void test_eth(void)
   }
   debug_printf("네트워크 인터페이스 초기화 완료\r\n");
   
+  while(1)
+  {
+    osDelay(1000);
+  }
   // 사용자로부터 Ping 대상 입력
   debug_printf("\r\nPing 테스트를 실행합니다.\r\n");
   debug_printf("IPv4 주소 형식으로 입력해주세요 (예: 192.168.1.1)\r\n");

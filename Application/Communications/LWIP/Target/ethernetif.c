@@ -584,11 +584,11 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef* ethHandle)
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOG_CLK_ENABLE();
     /**ETH GPIO Configuration
-    PC1     ------> ETH_MDC
-    PA1     ------> ETH_REF_CLK
-    PA2     ------> ETH_MDIO
-    PH3     ------> ETH_COL
-    PA7     ------> ETH_CRS_DV
+    PC1     ------> ETH_MDC   ,
+    PA1     ------> ETH_REF_CLK,
+    PA2     ------> ETH_MDIO,
+    PH3     ------> ETH_COL,
+    PA7     ------> ETH_CRS_DV,
     PC4     ------> ETH_RXD0
     PC5     ------> ETH_RXD1
     PB12     ------> ETH_TXD0

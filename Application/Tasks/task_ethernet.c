@@ -29,6 +29,7 @@ void ethernetTask(void *arg)
   mask = config.eth_subnet;
   gw   = config.eth_gateway;
 
+
   MX_LWIP_Init(ip,mask,gw);
 
     
