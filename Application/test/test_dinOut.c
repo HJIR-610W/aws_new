@@ -100,7 +100,7 @@ void test_do(void)
     debug_printf("출력 제어 입력 대기 (번호,상태) > ");
     int ret = cli_scanf_s("%d,%9s", &num, state_str,sizeof(state_str));
 
-    if (ret == KEY_CODE_CTRL_Q)
+    if (ret == CLI_KEYCODE_CTRL_C)
     {
       debug_printf("\r\nCTRL+C 감지: 테스트 종료\r\n");
       break;

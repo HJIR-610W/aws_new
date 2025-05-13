@@ -658,7 +658,10 @@ int handle_view_status(int adc_num)
 
         debug_printf("시리얼 오실로스코프 사용하려면 yes입력\r\n");
         user_input[0] = 0;
-        cli_scanf_s("%6s", user_input);
+        if(cli_scanf_s("%6s", user_input)==CLI_KEYCODE_CTRL_C)
+        {
+          return 0;
+        }
         osc_use = 0;
         if (strcasecmp("yes", user_input) == 0)
         {

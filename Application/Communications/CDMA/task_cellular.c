@@ -14,6 +14,9 @@
 #include "app_logging.h"
 #include "task_logging.h"
 #include "modem_sms.h"
+#include "driver_do.h"
+#include "task_cellular.h"
+#include "utile_time.h"
 typedef enum{
 	ePOWER_RESET,
 	eCONNECT_TCP_WDT,
@@ -84,7 +87,7 @@ typedef struct
 
 const osThreadAttr_t atTask_attributes = {
   .name = "atTask",
-  .stack_size = 2048,
+  .stack_size = 3072,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -119,7 +122,7 @@ static modemEx_t _modem;
 static atCmd_t *_atCmd = cmd_ntle9607;
 iCellular_t *_iCellular=NULL;
 driver_t *cdma_driver;
-modem_status_t g_modem_status;
+cdma_system_t g_cdma_system;
 modem_config_t g_modem_config;
 
 void modem_send(uint8_t *pData,uint16_t dataLen);
@@ -212,7 +215,7 @@ void modem_init(void)
     {
         if(_iCellular->read_num(num,sizeof(num))==RET_OK)
         {
-             strcpy_safe(g_modem_status.num,sizeof(g_modem_status.num),num);
+             strcpy_safe(g_cdma_system.num,sizeof(g_cdma_system.num),num);
             _modem.phoneNumChecked = 1;
             break;
         }
@@ -312,10 +315,10 @@ STATUS_t connect_tcp(eConnect_Type_t type)
         switch(type)
         {
             case ePOWER_RESET:
-              //   _iCellular->reset(M_RESET_HW,_iCellular->resetDelay);
+                 _iCellular->reset(M_RESET_HW,_iCellular->resetDelay);
             case eCONNECT_MODEM_REBOOT:
                 modem_init();
-                _iCellular->check_network_service(g_modem_status.network_service_msg,sizeof(g_modem_status.network_service_msg));
+                _iCellular->check_network_service(g_cdma_system.network_service_msg,sizeof(g_cdma_system.network_service_msg));
                 modem_voice_init();
                 modem_socket_init();
                 if(is_vpn())
@@ -934,7 +937,7 @@ void modemAsyncTask(void  *argument)
           startTime = osKernelGetTickCount();
           if(_iCellular->read_rssi(&rssi) == RET_OK)
           {
-              g_modem_status.rssi = rssi;
+              g_cdma_system.rssi = rssi;
           }
         }
     }
@@ -1356,58 +1359,65 @@ void modemTcpTask(void  *argument)
     M_RET_t ret;
     eConnect_Type_t type = ePOWER_RESET;//초기에는 전원리셋이 발생하였다고넘겨줌줌
 
-    while(1)
+    g_cdma_system.link_status = eCDMA_LINK_IDLE;
+    while (1)
     {
-        g_modem_status.link_status  = eLINK_DISCONNECTED;
+      g_cdma_system.link_status = eCDMA_LINK_DOWN;
 
-        if(connect_tcp(type)==STATUS_OK)
+      if (connect_tcp(type) == STATUS_OK)
+      {
+        g_cdma_system.link_status = eCDMA_LINK_UP;
+
+        err = 0;
+
+        while (1)
         {
-            g_modem_status.link_status  = eLINK_CONNECTED;
-            startTime = osKernelGetTickCount();
-            err = 0;
+          ret = _iCellular->recv_tcp(buff, sizeof(buff), &len, 0);
 
-            while(1)
-            {
-                ret = _iCellular->recv_tcp(buff,sizeof(buff),&len,0);
+          switch (ret)  // 통신 이상 없음
+          {
+            case RET_OK:
+              if (len)  // 수신된 데이터가 있음
+              {
+                startTime = osKernelGetTickCount();
+                g_cdma_system.last_recv_time = time_timestamp();
+                UPDATE_CNT(g_cdma_system.rx_cnt, 99);
+                len = aws_cmd(buff, ret, tx, sizeof(tx), 0);
 
-                switch(ret)// 통신 이상 없음
+                if (len)  // 전송할 데이터있다면
                 {
-                    case RET_OK:
-                    if(len)//수신된 데이터가 있음
-                    {
-                        len = aws_cmd(buff,ret,tx,sizeof(tx),0);
-
-                        if(len)//전송할 데이터있다면
-                        {
-                          if(_iCellular->send_tcp(tx,len) == RET_FAIL_SEND)
-                          {
-                            err = 1;
-                           type = eCONNECT_TX_FAIL;
-                          }
-                        }
-                    }
-                    break;
-                    case RET_SERVER_ERR:
-                    type = eCONNECT_SOCKET_CLOSED;
+                  g_cdma_system.last_send_time = time_timestamp();
+                  UPDATE_CNT(g_cdma_system.tx_cnt, 99);
+                  if (_iCellular->send_tcp(tx, len) == RET_FAIL_SEND)
+                  {
                     err = 1;
-                    break;
-                    case RET_MODEM_ERR:
-                    type = eCONNECT_MODEM_REBOOT;
-                    err = 1;
-                    break;
+                    type = eCONNECT_TX_FAIL;
+                  }
                 }
+              }
+              break;
+            case RET_SERVER_ERR:
+              type = eCONNECT_SOCKET_CLOSED;
+              err = 1;
+              break;
+            case RET_MODEM_ERR:
+              type = eCONNECT_MODEM_REBOOT;
+              err = 1;
+              break;
+          }
 
-                if(err)
-                {
-                  break;
-                }
+          if (err)
+          {
+            break;
+          }
 
-                if((osKernelGetTickCount()-startTime)>g_modem_config.connection_timeoutms)/*일정 기간동안 ping이 한번이라도 수신 안되면*/
-                {
-                   type = eCONNECT_TCP_WDT;
-                   break;
-                }
-            }
+          if ((osKernelGetTickCount() - startTime) >
+              g_modem_config.connection_timeoutms) /*일정 기간동안 ping이 한번이라도 수신 안되면*/
+          {
+            type = eCONNECT_TCP_WDT;
+            break;
+          }
+        }
         }
     }
 }
@@ -1415,10 +1425,9 @@ void modemTcpTask(void  *argument)
 
 void mdoem_status_init(void)
 {
-  g_modem_status.rssi = -1;
-  g_modem_status.link_status = -1;
-  g_modem_status.txCnt = 0;
-  g_modem_status.rxCnt = 0;
+  g_cdma_system.rssi = -1;
+  g_cdma_system.link_status = -1;
+
 
   g_modem_config.connection_timeoutms = 3600000;
 }
@@ -1429,12 +1438,15 @@ void mdoem_status_init(void)
 void cellularTask_init(void)
 {
   uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
-
+  driver_t *cdma_power = driver_do_open(DO_PWR_CDMA,0);
+  
   uart_config.baud = 57600;
   uart_config.parityIdx = 0;
   uart_config.stop_bit = 0;
   
-
+  driver_do_high(cdma_power);
+  
+  
   cdma_driver = driver_uart_open(UART_8_CDMA,&uart_config);
 
   mdoem_status_init();
@@ -1456,3 +1468,7 @@ void cellularTask_init(void)
 
 }
 
+cdma_system_t *get_cdma_system(void)
+{
+  return &g_cdma_system;
+}

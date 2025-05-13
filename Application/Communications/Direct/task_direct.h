@@ -6,9 +6,9 @@
 
 typedef enum direct_link_status_e
 {
-  eDIRECT_LINK_IDLE=-1,
-  eDIRECT_LINK_UP=0,
-  eDIRECT_LINK_DOWN=1
+  eDIRECT_LINK_IDLE=0,
+  eDIRECT_LINK_UP=1,
+  eDIRECT_LINK_DOWN=2
 }eDIRECT_LINK_STATUS_t;
 
 
@@ -17,6 +17,8 @@ typedef struct direct_status_s
   eDIRECT_LINK_STATUS_t link_status;
   uint8_t rx_cnt;
   uint8_t tx_cnt;
+  uint32_t last_send_time;
+  uint32_t last_recv_time;
 } direct_status_t;
 
 direct_status_t *get_direct_system(void);

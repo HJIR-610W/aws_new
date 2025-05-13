@@ -2,17 +2,47 @@
 #include <math.h>
 #include "driver_adc.h"
 #include "driver_led.h"
+#include "driver_do.h"
 
 driver_t *g_adcStm;
 driver_t *g_status_led;
+driver_t *g_cdma_power;
+driver_t *g_portd_mode;
 
-void status_led_init(void);;
+void status_led_init(void);
+
+void set_portd_hart_mode(void)
+{
+  driver_do_high(g_portd_mode);
+}
+
+void set_portd_rs232_mode(void)
+{
+  driver_do_low(g_portd_mode);
+}
 
 void app_bsp_init(void)
 {
   g_adcStm = driver_adc_open(ADC_STM32,0);
 
   status_led_init();
+
+  g_cdma_power = driver_do_open(DO_PWR_CDMA,0);
+
+  g_portd_mode = driver_do_open(DO_HART_SEL, 0);
+
+  set_portd_rs232_mode();
+}
+
+
+void cdma_power_on(void)
+{
+  driver_do_high(g_cdma_power);
+}
+
+void cdma_power_off(void)
+{
+  driver_do_low(g_cdma_power);
 }
 
 /*

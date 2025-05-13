@@ -98,9 +98,9 @@ typedef enum config_app_field_e
 
 typedef enum link_status_e
 {
-  eLINK_IDLE=-1,
-  eLINK_UP=0,
-  eLINK_DOWN=1
+  eLINK_IDLE=0,
+  eLINK_UP=1,
+  eLINK_DOWN=2
 }eLINK_STATUS_t;
 
 typedef struct system_s

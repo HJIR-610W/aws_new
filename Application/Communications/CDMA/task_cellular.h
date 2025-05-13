@@ -12,12 +12,12 @@
 #define SOURCE_TCP   0
 #define SOURCE_ASYNC 1
 
-
-typedef enum modem_link_e
+typedef enum cdma_link_status_e
 {
-  eLINK_DISCONNECTED,
-  eLINK_CONNECTED
-}eLINK_t;
+  eCDMA_LINK_IDLE = 0,
+  eCDMA_LINK_UP = 1,
+  eCDMA_LINK_DOWN = 2
+} eCDMA_LINK_STATUS_t;
 
 typedef enum modem_model_e
 {
@@ -35,14 +35,15 @@ typedef struct modem_config_s
 typedef struct modem_status_s
 {
   char num[20];
-  char rssi;
-  char txCnt;
-  char rxCnt;
-  eLINK_t link_status;
+  int rssi;
+  char tx_cnt;
+  char rx_cnt;
+  eCDMA_LINK_STATUS_t link_status;
   char network_service_msg[50];//네트워크 상태
   char network_name[20];//STK,KT
-  
-}modem_status_t;
+  uint32_t last_send_time;
+  uint32_t last_recv_time;
+}cdma_system_t;
 
 
 typedef struct
@@ -60,11 +61,10 @@ void os_put_tcpData(uint8_t* data, uint16_t dataLen);
 void os_send_at(uint8_t source,const char* data, uint32_t dataLen,const char *ack, uint32_t timeOutMs);
 uint32_t os_recv_tcp(uint8_t* pBuff, uint16_t buffSize, uint32_t* pLen, uint32_t timeOutMs);
 
+cdma_system_t* get_cdma_system(void);
 
-extern driver_t *cdma_driver;
 
-extern modem_status_t g_modem_status;
-void cellularTask_init(void);
+    void cellularTask_init(void);
 
 extern iCellular_t *_iCellular;
 

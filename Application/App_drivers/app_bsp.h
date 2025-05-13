@@ -13,6 +13,8 @@ void status_led_on(void);
 void status_led_off(void);
 void status_led_set(int mode);
 
-
-
+void cdma_power_on(void);
+void cdma_power_off(void);
+void set_portd_hart_mode(void);
+void set_portd_rs232_mode(void);
 #endif

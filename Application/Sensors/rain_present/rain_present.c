@@ -19,8 +19,8 @@ driver_t *rainPresent_open(int32_t num,void *opt)
   switch(num)
   {
     case RAIN_PRESENT_DI:
-    driver = driver_di_open(DI_RAIN_DETECT,0);
-    break;
+      driver = driver_di_open(DI_EXT_5, 0);
+      break;
   }
 
   return driver;

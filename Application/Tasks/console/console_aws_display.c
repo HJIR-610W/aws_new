@@ -19,7 +19,7 @@
 #include "dualport.h"
 #include "task_logging.h"
 #include "task_system.h"
-
+#include "task_cellular.h"
 
 
 #define AWS_MODE_MAX 3
@@ -132,7 +132,7 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
   make_comList(buff, sizeof(buff));
   vt100_print_frame(row, column, "이더넷", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++, column, -DISP_WIDTH, "링크  :%s\r\n",
-                  ITEM_LIST(get_direct_system()->link_status + 1, linkStatusList));
+                  ITEM_LIST(get_direct_system()->link_status , linkStatusList));
   vt100_print_bar(line++, column, -DISP_WIDTH, "송신  :%d\r\n", get_tcp_system()->tx_cnt);
   vt100_print_bar(line++, column, -DISP_WIDTH, "수신  :%d\r\n", get_tcp_system()->rx_cnt);
 
@@ -141,63 +141,111 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
   return line - (row);
 }
 
+/*
++--------------------------+
+|           CDMA           |
++--------------------------+
+|링크    :down             |
+|전화번호:-                |
+|수신감도:0                |
+|송신    :0                |
+|수신    :0                |
+|T시간:2025-25-11 00:00:00 |
+|R시간:2025-25-11 00:00:00 |
++--------------------------+
+*/
 int32_t print_cdmaInfo(uint16_t row, uint16_t column)
 {
   char buff[30];
   char num[20];
   uint8_t line = row + 3;
   int8_t rssi;
+  DATE_TIME_BUF nt;
+  uint32_t last_time;
 
   make_comList(buff, sizeof(buff));
   vt100_print_frame(row, column, "CDMA", '+', '|', '-', DISP_WIDTH, WHITE);
-  if (System.cdma_link_status == -1)
-  {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "링크    :-\r\n");
-  }
-  else
-  {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "링크    :%s\r\n",
-                    ITEM_LIST(System.cdma_link_status + 1, linkStatusList));
-  }
-  if (System.cdma_num[0] != '0')
+  vt100_print_bar(line++, column, -DISP_WIDTH, "링크    :%s\r\n",
+                    ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
+
+  if (get_cdma_system()->num[0] != '0')
   {
     num[0] = '-';
     num[1] = 0;
   }
   else
   {
-    snprintf(num, sizeof(num), "%s", System.cdma_num);
+    snprintf(num, sizeof(num), "%s", get_cdma_system()->num);
   }
   vt100_print_bar(line++, column, -DISP_WIDTH, "전화번호:%s\r\n", num);
-  if (System.cdma_rssi == -1)
+  if (get_cdma_system()->rssi == -1)
   {
     vt100_print_bar(line++, column, -DISP_WIDTH, "수신감도:-\r\n");
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "수신감도:%d\r\n", System.cdma_rssi);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "수신감도:%d\r\n", get_cdma_system()->rssi);
   }
 
-  vt100_print_bar(line++, column, -DISP_WIDTH, "송신    :%d\r\n", get_tcp_system()->tx_cnt);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "수신    :%d\r\n", get_tcp_system()->rx_cnt);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "송신    :%d\r\n", get_cdma_system()->tx_cnt);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "수신    :%d\r\n", get_cdma_system()->rx_cnt);
+
+  last_time = get_cdma_system()->last_recv_time;
+  time_cvt_secTotime(last_time, &nt);
+  if(last_time==0)
+  {
+    vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :-\r\n");
+  }
+  else
+  {
+    vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
+                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+  }
+
+  last_time = get_cdma_system()->last_send_time;
+  time_cvt_secTotime(last_time, &nt);
+  if(last_time==0)
+  {
+    vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :-\r\n");
+  }
+  else
+  {
+    vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
+                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+  }
+
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
   return line - (row);
 }
 
+
 int32_t print_directInfo(uint16_t row, uint16_t column)
 {
-  char buff[30];
+  char buffer[30];
   char num[20];
   uint8_t line = row + 3;
   int8_t rssi;
-
-  make_comList(buff, sizeof(buff));
+  DATE_TIME_BUF nt;
+  uint32_t last_time;
+  struct tm time_info;
+   make_comList(buffer, sizeof(buffer));
   vt100_print_frame(row, column, "DIRECT", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++, column, -DISP_WIDTH, "링크    :%s\r\n",
-                  ITEM_LIST(get_direct_system()->link_status + 1, linkStatusList));
+                  ITEM_LIST(get_direct_system()->link_status, linkStatusList));
   vt100_print_bar(line++, column, -DISP_WIDTH, "송신    :%d\r\n", get_direct_system()->tx_cnt);
   vt100_print_bar(line++, column, -DISP_WIDTH, "수신    :%d\r\n", get_direct_system()->rx_cnt);
+
+  last_time = get_direct_system()->last_recv_time;
+  time_cvt_secTotime(last_time, &nt);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
+                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+
+  last_time = get_direct_system()->last_send_time;
+  time_cvt_secTotime(last_time, &nt);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
+                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
   return line - (row);

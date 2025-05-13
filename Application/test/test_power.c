@@ -13,12 +13,15 @@ void test_power_signal(void)
   driver_t *do_24v;
   driver_t *do_btm;
   driver_t *do_rain_heater;
-  
+  driver_t *do_rain_det;
+  driver_t *do_rain_det_power;
   // DO 오픈
   do_cdma = driver_do_open(DO_PWR_CDMA, 0);
   do_24v = driver_do_open(DO_POWER_HART_24V_ACTIVE_H, 0);
   do_btm = driver_do_open(DO_BTM_PWCTRL, 0);
   do_rain_heater = driver_do_open(DO_CON_PWR_RAIN_ACTIVE_H,0);
+  do_rain_det = driver_do_open(DO_CON_PWR_RAIN_DECT_ACTIVE_H, 0);
+
 
   debug_printf("파워 신호 제어 테스트 시작\r\n");
   debug_printf("입력 예: cdma,on  또는  24v,off  또는  btm,on\r\n");
@@ -29,10 +32,10 @@ void test_power_signal(void)
   static  char signal[20] = {0};
   static   char cmd[10] = {0};
 
-    debug_printf("입력 대기 (cdma/24v/btm/rain,on/off) > ");
+    debug_printf("입력 대기 (cdma/24v/btm/heater/raind,on/off) > ");
     int ret = cli_scanf_s("%19[^,],%9s", signal, sizeof(signal), cmd, sizeof(cmd));
 
-    if (ret == KEY_CODE_CTRL_C)
+    if (ret == CLI_KEYCODE_CTRL_C)
     {
       debug_printf("\r\nCTRL+C 감지: 테스트 종료\r\n");
       break;
@@ -94,7 +97,7 @@ void test_power_signal(void)
           debug_printf("명령어는 on 또는 off만 허용\r\n");
         }
       }
-      else if (strcmp(signal, "rain") == 0)
+      else if (strcmp(signal, "heater") == 0)
       {
         if (strcmp(cmd, "on") == 0)
         {
@@ -105,6 +108,23 @@ void test_power_signal(void)
         {
           driver_do_low(do_rain_heater);  // ACTIVE_H → off=Low
           debug_printf("rain: OFF (Low)\r\n");
+        }
+        else
+        {
+          debug_printf("명령어는 on 또는 off만 허용\r\n");
+        }
+      }
+      else if (strcmp(signal, "raind") == 0)
+      {
+        if (strcmp(cmd, "on") == 0)
+        {
+          driver_do_high(do_rain_det);  // ACTIVE_H → on=High
+          debug_printf("raind: ON (High)\r\n");
+        }
+        else if (strcmp(cmd, "off") == 0)
+        {
+          driver_do_low(do_rain_det);  // ACTIVE_H → off=Low
+          debug_printf("raind: OFF (Low)\r\n");
         }
         else
         {

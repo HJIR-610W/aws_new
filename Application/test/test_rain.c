@@ -3,6 +3,7 @@
 #include "cli_key_code.h"
 #include "dev_io.h"
 #include "driver_di.h"
+#include "driver_do.h"
 #include "Sensors\rain_present\rain_present.h"
 bool g_reed_rain=false;
 
@@ -25,12 +26,17 @@ void test_rain(void)
   driver_t *rain_hall;
   driver_t *rain_hall_err;
   driver_t *rain_present;
+  driver_t *rain_det_power;
   uint8_t err=0;
   int hall_status;
   int prev_hall_status;
   int rain_present_status = -1;
   int prev_rain_present_status=-1;
   int once=1;
+
+  rain_det_power = driver_do_open(DO_CON_PWR_RAIN_DECT_ACTIVE_H, 0);
+
+  driver_do_high(rain_det_power);
 
   rain_present = rainPresent_open(RAIN_PRESENT_DI,0);
 
@@ -53,7 +59,7 @@ void test_rain(void)
 
 
   debug_printf("우량을 1초 간격으로 입력해주세요\r\n");
-
+  debug_printf("우량감지(디지털 주파수형)\r\n");
   hall_status = driver_di_read(rain_hall_err);
 
   

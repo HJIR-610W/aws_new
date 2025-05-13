@@ -29,6 +29,7 @@ typedef struct do_config_s
 {
   uint8_t pullup;
   uint8_t mode;
+  uint8_t level;
 }do_config_t;
 
 typedef struct

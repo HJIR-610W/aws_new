@@ -21,7 +21,7 @@ long GetTotalSeconds(time_t ts);
 int GetMonth(time_t tmIn);
 
 
-
+time_t time_timestamp(void);
 extern DATE_TIME_BUF Date_Time;;
 
 #endif

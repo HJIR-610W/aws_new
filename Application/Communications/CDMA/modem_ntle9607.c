@@ -9,6 +9,7 @@
 #include "modem_ntle9607.h"
 #include "at_cmd.h"
 
+#include "app_bsp.h"
 
 extern void EwFree( void* aMemory );
 extern void* EwAlloc( int aSize );
@@ -560,7 +561,15 @@ void ntle9607_resetSW(void)
 
 
 }
+/*
 
+2025-05-13 14:25:06.281 [COM15] - <CR><LF>
+*BOOTALERT<CR><LF>
+
+2025-05-13 14:25:06.382 [COM15] - <CR><LF>
+^MODE: 9<CR><LF>
+
+*/
 
 void ntle9607_reset(uint8_t resetType,uint32_t delayMs)
 {
@@ -572,11 +581,14 @@ void ntle9607_reset(uint8_t resetType,uint32_t delayMs)
         ntle9607_resetSW();
         break;
         case M_RESET_HW:
-           // Reset_HW_Modem();
+        cdma_power_off();
+        osDelay(2000);
+        cdma_power_on();
+
         break;
     }
 
-
+#if 1 
     if(delayMs)
     {
         cnt = delayMs/1000;
@@ -590,6 +602,8 @@ void ntle9607_reset(uint8_t resetType,uint32_t delayMs)
             osDelay(1000);
         }
     }
+#endif
+
 }
 
 
@@ -666,7 +680,7 @@ M_RET_t ntle9607_send_tcp(uint8_t *data,uint16_t dataLen)
 M_RET_t ntle9607_read_num(char *prNum,uint16_t numSize)
 {
 	const char *cmd    = "AT*SKT*DIAL\r\n";
-    const char *ackList[] = {cmd_ntle9607[AT_TCP_READ_NUM_RESP].cmdStr};           //*SKT*DIAL:01227090440<CR><LF>
+    const char *ackList[] = {"*SKT*DIAL:"};           //*SKT*DIAL:01227090440<CR><LF>
     char  buff[50];
     uint32_t idx;
     int32_t len;
@@ -704,7 +718,7 @@ OK<CR><LF>
 M_RET_t ntle9607_read_rssi(int16_t *rssi)
 {
     const char *cmd = "AT+CSQ\r\n";
-    const char *ackList[] = {cmd_ntle9607[AT_ASYNC_GET_RSSI_RESP].cmdStr}; 
+    const char *ackList[] = {"+CSQ"}; 
     char  buff[50];
     uint32_t idx;
     char *endptr;

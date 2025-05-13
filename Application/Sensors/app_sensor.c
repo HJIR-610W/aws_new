@@ -33,7 +33,7 @@ const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_ADC};
 const uint8_t windDirectionInstantList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_MAX_VAL};
 const uint8_t windSpeedInstantList[] = {S_T_UNSUED, S_T_WIND_SPEED_MAX_VAL};
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
-                            S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM,  S_T_GENERAL_232};
+                            S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM};
 const uint8_t pressureList[] = {S_T_UNSUED, S_T_ADC};
 const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI};
 const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ};

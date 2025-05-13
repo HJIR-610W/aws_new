@@ -11,15 +11,16 @@
 
 #include "cli_key_code.h"
 #include "dev_io.h"
+#include "cli_input.h"
 
 #define UART_LINE_MAX    128
 #define UART_HISTORY_DEPTH  4
 
 
-#define KEYCODE_CTRL_C    -3
-#define KEYCODE_CTRL_Q    -17
-#define KEYCODE_ESC       -27
-#define KEYCODE_UNKNOWN  -1
+#define KEYCODE_CTRL_C    3
+#define KEYCODE_CTRL_Q    17
+#define KEYCODE_ESC       27
+#define KEYCODE_UNKNOWN  1
 
 
 
@@ -300,7 +301,7 @@ else if (ch == 0x7F)  // Delete
   }
   history_index = -1;
 
-  return len;
+  return 0;
 }
 
 
@@ -315,7 +316,13 @@ int cli_scanf_s(const char *fmt, ...)
 
   if (code == KEYCODE_CTRL_C ||code == KEYCODE_CTRL_Q)
   {
-    return code;
+    switch (code)
+    {
+      case KEYCODE_CTRL_C:
+        return CLI_KEYCODE_CTRL_C;
+      case KEYCODE_CTRL_Q:
+       return CLI_KEYCODE_CTRL_Q;
+    }
   }
 
   va_start(args, fmt);
