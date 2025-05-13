@@ -86,6 +86,7 @@ void server_service(int conn)
 }
 
 
+
 void tcpServerTask(void *arg)
 {
     int32_t opt=1;
@@ -94,90 +95,93 @@ void tcpServerTask(void *arg)
     struct sockaddr_in address, remotehost,oldClient;
     int error = 0;
     socklen_t len = sizeof(error);
-    // uint32_t flag =(uint32_t)arg;
-    char client_ip[INET_ADDRSTRLEN];
+    uint16_t local_port = (uint16_t )arg;
 
-  osThreadFlagsWait(0x00000001,osFlagsWaitAny,osWaitForever);
+        char client_ip[INET_ADDRSTRLEN];
 
-  while(1)
-  {
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    
-    if(sock < 0) 
-    {//옵션에서 최대사용 가능한 socket이 전부 사용중인 경우,또는 기타 이유
-      osDelay(1000);
-      continue;
-    }
-    // 이미 사용중인 로컬 주소(포트)를 재사용 할 수 있도록 허용
-    if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+    osThreadFlagsWait(0x00000001, osFlagsWaitAny, osWaitForever);
+
+    while (1)
     {
-      closesocket(sock);
-      osDelay(1000);
-      continue;
-    }
-    
+      sock = socket(AF_INET, SOCK_STREAM, 0);
 
-    if(getsockopt(sock, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
-    {
-      closesocket(sock);
-      osDelay(1000);
-      continue;
-    }
-  
-
-    address.sin_family = AF_INET;
-    address.sin_port   = htons(8080);
-    address.sin_addr.s_addr = INADDR_ANY;
-
-    if (bind(sock, (struct sockaddr *)&address, sizeof (address)) < 0)
-    {
-      closesocket(sock);
-      osDelay(1000);
-      continue;
-    }
-  
-    if(listen(sock, 1) < 0)
-    {
-      closesocket(sock);
-      osDelay(1000);
-      continue;
-    }
-    size = sizeof(remotehost);
-
-    while(1)
-    {
-      newconn = accept(sock, (struct sockaddr *)&remotehost, (socklen_t *)&size);
-
-      //클라리언트 접속 기록 저장
-      if(oldClient.sin_addr.s_addr != remotehost.sin_addr.s_addr&&oldClient.sin_port != remotehost.sin_port )
-      {
-        inet_ntop(AF_INET, &remotehost.sin_addr, client_ip, sizeof(client_ip)); 
-        os_logging_printf("Client:%s,%d",client_ip,ntohs(remotehost.sin_port));
+      if (sock < 0)
+      {  // 옵션에서 최대사용 가능한 socket이 전부 사용중인 경우,또는 기타 이유
+        osDelay(1000);
+        continue;
       }
-      
-      oldClient = remotehost;
-      enable_keepalive(newconn,60000,60000,2);
-
-      if(newconn==-1)
+      // 이미 사용중인 로컬 주소(포트)를 재사용 할 수 있도록 허용
+      if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
       {
-        break;
+        closesocket(sock);
+        osDelay(1000);
+        continue;
       }
 
-      server_service(newconn);
+      if (getsockopt(sock, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
+      {
+        closesocket(sock);
+        osDelay(1000);
+        continue;
+      }
 
-      closesocket(newconn);
+      address.sin_family = AF_INET;
+      address.sin_port = htons(local_port);
+      address.sin_addr.s_addr = INADDR_ANY;
 
+      if (bind(sock, (struct sockaddr *)&address, sizeof(address)) < 0)
+      {
+        closesocket(sock);
+        osDelay(1000);
+        continue;
+      }
+
+      if (listen(sock, 1) < 0)
+      {
+        closesocket(sock);
+        osDelay(1000);
+        continue;
+      }
+      size = sizeof(remotehost);
+
+      while (1)
+      {
+        newconn = accept(sock, (struct sockaddr *)&remotehost, (socklen_t *)&size);
+
+        // 클라리언트 접속 기록 저장
+        if (oldClient.sin_addr.s_addr != remotehost.sin_addr.s_addr &&
+            oldClient.sin_port != remotehost.sin_port)
+        {
+          inet_ntop(AF_INET, &remotehost.sin_addr, client_ip, sizeof(client_ip));
+          os_logging_printf("Client:%s,%d", client_ip, ntohs(remotehost.sin_port));
+        }
+
+        oldClient = remotehost;
+        enable_keepalive(newconn, 60000, 60000, 2);
+
+        if (newconn == -1)
+        {
+          break;
+        }
+
+        server_service(newconn);
+
+        closesocket(newconn);
+      }
+
+      closesocket(sock);  // 103 ECONNABORTED
     }
-    
-    closesocket(sock);//103 ECONNABORTED
-
-  }
 }
 
 
 void tcpServerTask_init(uint32_t flag)
 {
+
+  uint16_t local_port;
+
+ local_port = get_config_app()->eth_local_port;
+
   g_tcp_status.link_status = eLINK_IDLE;
 
-  g_tcpSeverTaskId = osThreadNew(tcpServerTask, NULL, &tcpServerTask_attributes);
+  g_tcpSeverTaskId = osThreadNew(tcpServerTask, (void*)local_port, &tcpServerTask_attributes);
 }

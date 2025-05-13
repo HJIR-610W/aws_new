@@ -1813,7 +1813,7 @@ int32_t print_net_eth_set(p_shell_context_t ctx)
 {
   int32_t cnt = 0;
   ctx->printf("%2d.방식         :%s \r\n", cnt++, ITEM_LIST(get_config_app()->eth_mode, ethModeList));
-  ctx->printf("%2d.원격 서버 정보\r\n", cnt++);
+  ctx->printf("%2d.수집 서버 정보\r\n", cnt++);
   ctx->printf("%2d.기본 구성\r\n", cnt++);
 
   return cnt;
@@ -1881,15 +1881,16 @@ int32_t menu_net_eth_remote_set(p_shell_context_t ctx)
 
 int32_t print_net_eth_default_set(p_shell_context_t ctx)
 {
-  int32_t cnt = 3;
+  int32_t cnt = 4;
   uint8_t *ip = config.eth_ip;
   uint8_t *gw = config.eth_gateway;
   uint8_t *subnet = config.eth_subnet;
+  uint16_t local_port = config.eth_local_port;
 
   ctx->printf(" 0.ip      :%d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
   ctx->printf(" 1.subnet  :%d.%d.%d.%d\r\n", subnet[0], subnet[1], subnet[2], subnet[3]);
   ctx->printf(" 2.gateway :%d.%d.%d.%d\r\n", gw[0], gw[1], gw[2], gw[3]);
-
+  ctx->printf(" 3.port    :%d\r\n", local_port);
   return cnt;
 }
 
@@ -1940,6 +1941,15 @@ int32_t menu_net_eth_default_set(p_shell_context_t ctx)
           config.eth_gateway[2] = c;
           config.eth_gateway[3] = d;
           WRITE_CFG(eth_gateway);
+        }
+        break;
+      case 3:  // port
+        ctx->printf("x:");
+        if (console_scanf("%d%d", &a) == 1)
+        {
+          config.eth_local_port = a;
+
+          WRITE_CFG(eth_local_port);
         }
         break;
     }

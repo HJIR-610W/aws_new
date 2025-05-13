@@ -67,6 +67,7 @@ typedef struct config_s
   uint8_t eth_ip[4];
   uint8_t eth_server_ip[4];
   uint16_t eth_server_port;
+  uint16_t eth_local_port;
   eETH_PROTOCOL_t eth_protocol;
   uint8_t cdma_server_ip[4];
   uint16_t cdma_port;
