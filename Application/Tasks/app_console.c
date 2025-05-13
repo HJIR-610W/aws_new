@@ -2516,26 +2516,28 @@ void config_hj_reset(void)
   // 온도 센서[화진 온도 9600]
   hj_config.sensor[A1_TEMPERATURE].type = S_T_TEMPERATURE_HJ;
   sensor_add(&hj_config.sensor[A1_TEMPERATURE]);
-  hjwind_cfg = get_sensor_config(&hj_config.sensor[A1_TEMPERATURE]);
-  hjtemp_cfg->port = RS485_A;
+  hjtemp_cfg = get_sensor_config(&hj_config.sensor[A1_TEMPERATURE]);
+  hjtemp_cfg->physical_layer = ePHYSICAL_RS232;
+  hjtemp_cfg->port = eRS232_2;
 
   // 습도 센서[화진 습도 9600]
   hj_config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_HUMINITY_HJ;
   sensor_add(&hj_config.sensor[A10_RELATIVE_HUMIDITY]);
-  hjwind_cfg = get_sensor_config(&hj_config.sensor[A10_RELATIVE_HUMIDITY]);
-  hjtemp_cfg->port = RS485_A;
+  hjtemp_cfg = get_sensor_config(&hj_config.sensor[A10_RELATIVE_HUMIDITY]);
+  hjtemp_cfg->physical_layer = ePHYSICAL_RS232;
+  hjtemp_cfg->port = eRS232_2;
 
   // 풍향[화진 RS485 풍향 19200]
   hj_config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;
   sensor_add(&hj_config.sensor[A2_WIND_DIRECTION]);
   hjwindDir_cfg = get_sensor_config(&hj_config.sensor[A2_WIND_DIRECTION]);
-  hjwindDir_cfg->rs485_port = RS485_B;
+  hjwindDir_cfg->rs485_port = RS485_A;
 
   // 풍속[화진 RS485 풍속 19200]
   hj_config.sensor[A3_WIND_SPEED].type = S_T_WIND_SPEED_HJ_485;
   sensor_add(&hj_config.sensor[A3_WIND_SPEED]);
   hjwind_cfg = get_sensor_config(&hj_config.sensor[A3_WIND_SPEED]);
-  hjwind_cfg->rs485_port = RS485_B;
+  hjwind_cfg->rs485_port = RS485_A;
   hjwind_cfg->full = 3200;
   hjwind_cfg->offset = 0;
 
@@ -2545,18 +2547,12 @@ void config_hj_reset(void)
   // 강수량[리드형]
   hj_config.sensor[A6_RAINFALL_DOT5_1MM].type = S_T_RAIN_REED_1MM;
 
-  // 순간 풍향
-
-
-  // 순간 풍속
- // hj_config.sensor[A5_INSTANT_WIND_SPEED].type = S_T_WIND_SPEED_MAX_VAL;
-
   // 적설[화진 RS485 19200]
   hj_config.sensor[A9_SNOW_DEPTH].type = S_T_SNOW_HJ;
   sensor_add(&hj_config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg = get_sensor_config(&hj_config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg->physical_layer  = ePHYSICAL_RS232;
-  hjsnow_cfg->port = eRS232_2;
+  hjsnow_cfg->port = eRS232_4;
 
   // 기압[RM YOUNG]
   hj_config.sensor[A7_PRESSURE].type = S_T_ADC;
@@ -2567,8 +2563,117 @@ void config_hj_reset(void)
   adc_config->highScale = 200000;
   adc_config->lowScale = 0;
   adc_config->scale = 100;
+  adc_config->outMaxV = 1000;
+  adc_config->outMinV = 0;
 
-  save_config_sensor();
+  // 일사
+  hj_config.sensor[B1_SOLAR_RADIATION].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[B1_SOLAR_RADIATION]);
+  adc_config = get_sensor_config(&hj_config.sensor[B1_SOLAR_RADIATION]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 200000;
+  adc_config->lowScale = 0;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 1000;
+  adc_config->outMinV = 0;
+
+  // 일조
+  hj_config.sensor[B2_SUNSHINE_DURATION].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[B2_SUNSHINE_DURATION]);
+  adc_config = get_sensor_config(&hj_config.sensor[B2_SUNSHINE_DURATION]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 200000;
+  adc_config->lowScale = 0;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 1000;
+  adc_config->outMinV = 0;
+
+  // 지중온도 5cm
+  hj_config.sensor[B5_SOIL_TEMPERATURE_5CM].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[B5_SOIL_TEMPERATURE_5CM]);
+  adc_config = get_sensor_config(&hj_config.sensor[B5_SOIL_TEMPERATURE_5CM]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 6000;
+  adc_config->lowScale = -4000;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 1000;
+  adc_config->outMinV = 0;
+
+  // 지중온도 10cm
+  hj_config.sensor[B6_SOIL_TEMPERATURE_10CM].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[B6_SOIL_TEMPERATURE_10CM]);
+  adc_config = get_sensor_config(&hj_config.sensor[B6_SOIL_TEMPERATURE_10CM]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 6000;
+  adc_config->lowScale = -4000;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 1000;
+  adc_config->outMinV = 0;
+
+  // 지중온도 20cm
+  hj_config.sensor[B7_SOIL_TEMPERATURE_20CM].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[B7_SOIL_TEMPERATURE_20CM]);
+  adc_config = get_sensor_config(&hj_config.sensor[B7_SOIL_TEMPERATURE_20CM]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 6000;
+  adc_config->lowScale = -4000;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 1000;
+  adc_config->outMinV = 0;
+
+  // 지중온도 30cm
+  hj_config.sensor[B8_SOIL_TEMPERATURE_30CM].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[B8_SOIL_TEMPERATURE_30CM]);
+  adc_config = get_sensor_config(&hj_config.sensor[B8_SOIL_TEMPERATURE_30CM]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 6000;
+  adc_config->lowScale = -4000;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 1000;
+  adc_config->outMinV = 0;
+
+  // 지중온도 50cm
+  hj_config.sensor[B9_SOIL_TEMPERATURE_50CM].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[B9_SOIL_TEMPERATURE_50CM]);
+  adc_config = get_sensor_config(&hj_config.sensor[B9_SOIL_TEMPERATURE_50CM]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 6000;
+  adc_config->lowScale = -4000;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 1000;
+  adc_config->outMinV = 0;
+
+  // 지중온도 1m
+  hj_config.sensor[B10_SOIL_TEMPERATURE_100CM].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[B10_SOIL_TEMPERATURE_100CM]);
+  adc_config = get_sensor_config(&hj_config.sensor[B10_SOIL_TEMPERATURE_100CM]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 6000;
+  adc_config->lowScale = -4000;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 1000;
+  adc_config->outMinV = 0;
+
+  // 지중온도 1.5m
+  hj_config.sensor[B11_SOIL_TEMPERATURE_150CM].type = S_T_ADC;
+  sensor_add(&hj_config.sensor[B11_SOIL_TEMPERATURE_150CM]);
+  adc_config = get_sensor_config(&hj_config.sensor[B11_SOIL_TEMPERATURE_150CM]);
+  adc_config->channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 6000;
+  adc_config->lowScale = -4000;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 1000;
+  adc_config->outMinV = 0;
+
 
   config = hj_config;
   save_config_app();

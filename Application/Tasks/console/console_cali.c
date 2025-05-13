@@ -796,7 +796,7 @@ int handle_view_status(int adc_num)
 
               }
             }
-          } while (wait_break(500));
+          } while (wait_break(100));
        }
       debug_printf(VT100_CURSOR_ON);
 

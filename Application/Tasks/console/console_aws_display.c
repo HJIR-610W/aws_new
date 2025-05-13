@@ -24,7 +24,7 @@
 
 #define AWS_MODE_MAX 3
 
-#define DISP_WIDTH 26
+#define DISP_WIDTH 27
 
 const char *linkStatusList[] = {"-", "up", "down"};
 const char *doorStatusList[] = {"´ÝÈû", "¿­¸²"};
