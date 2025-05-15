@@ -15,7 +15,7 @@ void adc_init(void)
 {
   g_ads1120 = driver_adc_open(ADC_ADS1220,0);
 }
-
+#define ADC_AVG_CNT 10
 
 float adc_read_single(int channel,uint8_t *err)
 {
@@ -46,7 +46,7 @@ return driver_adc_diff_read(g_ads1120,channel,avg_cnt,err);
 
 int32_t adc_read_diff(int channel,uint8_t *err)
 {
-  return  driver_adc_diff_read(g_ads1120,channel,1,err);
+  return driver_adc_diff_read(g_ads1120, channel, ADC_AVG_CNT, err);
 }
 
 int32_t adc_read_diff_raw(int channel, uint8_t *err)

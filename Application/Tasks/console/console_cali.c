@@ -201,7 +201,7 @@ int handle_factory_calibration(int adc_num)
         avg_cnt++;
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
-        debug_printf("RAW AVG:%10.0f\r\n", avg);
+        debug_printf("RAW:%10d AVG:%10.0f\r\n", adc_raw, avg);
         if(!wait_break(10)) 
         break;
       }
@@ -249,7 +249,7 @@ int handle_factory_calibration(int adc_num)
         avg_cnt++;
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
-        debug_printf("RAW AVG:%10.0f\r\n", avg);
+        debug_printf("RAW:%10f AVG:%10.0f\r\n", adc_raw, avg);
         if (!wait_break(10))
           break;
       }
