@@ -234,7 +234,37 @@ FRESULT append_file(char *path, uint8_t *data, uint32_t dataLen)
   return res;
 }
 
+#include "ff.h"
 
+// 파일이 존재하면 삭제하는 함수
+FRESULT delete_file(const char *fileName)
+{
+  FILINFO fno;
+  FRESULT res;
+
+  // 파일 존재 여부 확인
+  res = f_stat(fileName, &fno);
+  if (res == FR_NO_FILE)
+  {
+    // 파일이 없는 경우는 에러 아님
+    return FR_OK;
+  }
+  else if (res != FR_OK)
+  {
+    // 다른 에러 (경로 오류 등)
+    return res;
+  }
+
+  // 디렉토리인 경우는 삭제하지 않음
+  if (fno.fattrib & AM_DIR)
+  {
+    return FR_DENIED;  // 디렉토리 삭제 금지
+  }
+
+  // 파일 삭제
+  res = f_unlink(fileName);
+  return res;
+}
 
 // FAT 날짜 및 시간 포맷 해석 함수
 void print_fat_time(WORD fdate, WORD ftime)

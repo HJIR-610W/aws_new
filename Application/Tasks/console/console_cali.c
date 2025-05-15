@@ -28,7 +28,7 @@
 #include "driver_adc.h"
 #include "console_define.h"
 #include "console_utile.h"
-
+#include "app_file.h"
 #include "cli_input.h"
 
 
@@ -621,7 +621,10 @@ int handle_view_status(int adc_num)
   const adc_cal_params_t* params;
   uint8_t err;
   uint8_t osc_use;
+  uint8_t file_save_use=0;
   char user_input[10];
+  char buffer[100];
+  int32_t scan_ms;
   config_adc_adv_t* p_adc = get_adc_config(adc_num);
   while (1)
   {
@@ -667,8 +670,24 @@ int handle_view_status(int adc_num)
         {
           osc_use = 1;
         }
+        debug_printf("파일로 저장하려면 yes입력\r\n");
+        user_input[0] = 0;
+        if (cli_scanf_s("%6s", user_input) == CLI_KEYCODE_CTRL_C)
+        {
+          return 0;
+        }
+        file_save_use = 0;
+        if (strcasecmp("yes", user_input) == 0)
+        {
+          file_save_use = 1;
+          delete_file("adc_sample.txt");
+        }
 
-
+        debug_printf("스캔 주기를 ms 단위로 입력하세요\r\n");
+        if (cli_scanf_s("%d", &scan_ms) == CLI_KEYCODE_CTRL_C)
+        {
+          return 0;
+        }
 
         params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? &p_adc->single_ended_cal[channel_index]
                                                          : &p_adc->differential_cal[channel_index];
@@ -734,8 +753,13 @@ int handle_view_status(int adc_num)
             else
             {
               make_timeToStr(&Date_Time, buff, sizeof(buff));
-              debug_printf("%s SE CH:%d ADC:%8d VOLTAGE:%8.6f %.3fms\r\n", buff, channel_index,
+              snprintf(buffer,sizeof(buffer),"%s SE CH:%d ADC:%8d VOLTAGE:%8.6f %.3fms\r\n", buff, channel_index,
                            raw_adc, current_val, elased_time / 1000.0f);
+              debug_printf("%s",buffer);
+              if (file_save_use)
+              {
+                append_file("0:adc_sample.txt", buffer, strlen(buffer));
+              }
             }
 
           }
@@ -748,14 +772,19 @@ int handle_view_status(int adc_num)
             else
             {
               make_timeToStr(&Date_Time, buff, sizeof(buff));
-              debug_printf("%s SE CH:%d ADC:%8d VOLTAGE:%8.6f %.3fms\r\n", buff, channel_index,
-                           raw_adc, current_val, elased_time / 1000.0f);
+              snprintf(buffer, sizeof(buffer), "%s DI CH:%d ADC:%8d VOLTAGE:%8.6f %.3fms\r\n", buff,
+                       channel_index, raw_adc, current_val, elased_time / 1000.0f);
+              debug_printf("%s", buffer);
+              if (file_save_use)
+              {
+                append_file("0:adc_sample.txt", buffer, strlen(buffer));
+              }
             }
           }
 
 
 
-        } while (wait_break(10));
+        } while (wait_break(scan_ms));
 
     break;
       case MENU_VIEW_SINGLE_SUMMARY:

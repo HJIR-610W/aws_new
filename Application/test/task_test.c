@@ -2,6 +2,7 @@
 #include "MCU\mcu_utile.h"
 #include "app_adc.h"
 #include "app_bsp.h"
+#include "app_file.h"
 #include "app_flash.h"
 #include "app_rtc.h"
 #include "cmsis_os2.h"
@@ -10,7 +11,9 @@
 #include "mcu_interrupt.h"
 #include "os_define.h"
 #include "task_console.h"
+#include "task_system.h"
 #include "usDelay.h"
+
 const osThreadAttr_t kTestTask_attributes = {
     .name = "test_task",
     .stack_size = 2048,
@@ -20,18 +23,18 @@ const osThreadAttr_t kTestTask_attributes = {
 void testTask(void *arg)
 {
   mcu_interrupt_init();  // 최우선 실행
-
+  consoleTask_init((void *)1);
   osDelay(1000);
   usDelay_init();
   app_bsp_init();
-   adc_init();
-   status_led_set(LED_BLINK);
-
+  adc_init();
+  status_led_set(LED_BLINK);
   rtc_init();
-
+  systemTask_init();
   config_manager_init();
   flash_init();
-  consoleTask_init((void *)1);
+  
+  file_init();
 
   osThreadExit();  // 종료 시킴
 
