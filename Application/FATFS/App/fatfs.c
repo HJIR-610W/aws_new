@@ -1,23 +1,10 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file   fatfs.c
-  * @brief  Code for fatfs applications
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
+
+
+
 #include "fatfs.h"
 #include "dev_io.h"
+
+#include "utile_time.h"
 
 uint8_t retSD;    /* Return value for SD */
 char SDPath[4];   /* SD logical drive path */
@@ -36,12 +23,12 @@ void MX_FATFS_Init(void)
 {
     FRESULT res;  
     
-  /*## FatFS: Link the SD driver ###########################*/
+
   retSD = FATFS_LinkDriver(&SD_Driver, SDPath);
-  /*## FatFS: Link the USER driver ###########################*/
+
   retUSER = FATFS_LinkDriver(&USER_Driver, USERPath);
 
-    // 1. SD 카드 마운트
+
     res = f_mount(&SDFatFS, (TCHAR const*)SDPath, 1);
     if (res != FR_OK)
     {
@@ -49,18 +36,31 @@ void MX_FATFS_Init(void)
     }
 }
 
+
+
 /**
   * @brief  Gets Time from RTC
   * @param  None
   * @retval Time in DWORD
   */
+#include <time.h>
+
+#include "ff.h"
+
+
 DWORD get_fattime(void)
 {
-  /* USER CODE BEGIN get_fattime */
-  return 0;
-  /* USER CODE END get_fattime */
+  time_t now = time_cvt_timestamp(&Date_Time);
+  struct tm *t = localtime(&now);
+
+  DWORD fattime = 0;
+
+  fattime |= ((DWORD)(t->tm_year - 80) & 0x7F) << 25;  // (tm_year: 1900년 기준, FAT는 1980년 기준)
+  fattime |= ((DWORD)(t->tm_mon + 1) & 0x0F) << 21;    // tm_mon: 0~11 → 1~12
+  fattime |= ((DWORD)t->tm_mday & 0x1F) << 16;         // 일
+  fattime |= ((DWORD)t->tm_hour & 0x1F) << 11;         // 시
+  fattime |= ((DWORD)t->tm_min & 0x3F) << 5;           // 분
+  fattime |= ((DWORD)(t->tm_sec / 2) & 0x1F);          // 초 (2초 단위)
+
+  return fattime;
 }
-
-/* USER CODE BEGIN Application */
-
-/* USER CODE END Application */

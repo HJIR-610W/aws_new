@@ -2,12 +2,12 @@
 #include <stdio.h>
 
 #include "cmsis_os2.h"
-
 #include "app_file.h"
-
 #include "utile_time.h"
-
 #include "app_dataLogging.h"
+
+#include "dev_io.h"
+
 #define AWS_FILE_PATH        "0:Y%02d/M%02d.aws"
 
 

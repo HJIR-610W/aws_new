@@ -83,7 +83,11 @@
 			"driver_do.h": "c",
 			"cli_input.h": "c",
 			"driver_rtc.h": "c",
-			"rain_present.h": "c"
+			"rain_present.h": "c",
+			"file_io.h": "c",
+			"ff.h": "c",
+			"test_filesystem.h": "c",
+			"app_file.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

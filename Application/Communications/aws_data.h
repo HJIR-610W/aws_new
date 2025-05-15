@@ -9,6 +9,7 @@
 typedef enum aws_data_min_s
 {
   eAWS_DATA_REAL,
+  eAWS_DATA_AVG,
   eAWS_DATA_1MIN,
   eAWS_DATA_10MIN,
   eAWS_DATA_HOUR
@@ -389,8 +390,7 @@ typedef struct
                              // (관측값 * 10)
 
   // 13. 습도 (4.0 m, 1분 평균)
-  aws_data_t
-      humidity_4m;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000 (관측값 * 10)
+  aws_data_t  humidity_4m;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000 (관측값 * 10)
   aws_data_t temp1[9];
   aws_data_t tacometer;
   int8_t sensorStatus[8];
@@ -423,9 +423,10 @@ extern kma_data_t g_kma_inst;
 extern kma_data_t g_kma_1min;
 extern kma_data_t g_kma_10min;
 extern kma_data_t g_kma_hour;
+
+
 extern kma_data_ex_t g_kma_inst_ex;
 extern kma_data_ex_t g_kma_1min_ex;;
-
 extern kma_data_ex_t g_kma_raw_ex;
 extern kma_data_ex_t g_kma_10min_ex;
 extern kma_data_ex_t g_kma_1Hour_ex;

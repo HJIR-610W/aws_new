@@ -786,6 +786,10 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
 
+  mRealAws.mWind.mDirection.sMax = 0;
+  mRealAws.mWind.mSpeed.sMax = 0;
+
+  
   os_write_sensorData(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS,1);
 }
 
@@ -964,8 +968,7 @@ void DayProcess(void)
   // 지중온도 "			2017.03.30 추가
   // 일사   Clear 		2017.03.30 추가
 
-  mRealAws.mWind.mDirection.sMax = 0;  // mRealAws.mWind.mDirection.sReal;
-  mRealAws.mWind.mSpeed.sMax = 0;      // mRealAws.mWind.mSpeed.sReal;
+
 
   mRealAws.mTemperature.sMin = mRealAws.mTemperature.sReal;
   mRealAws.mBarometric.sMin = mRealAws.mBarometric.sReal;
@@ -1138,12 +1141,6 @@ float UVToSpeed(float u_tmp, float v_tmp)
 
 void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
 {
-
-  SYSTEM_INFO_AWS *pSystem;
-
-  pSystem = &Sysinfo;
-
-
   if (pDate->Sec != pOldDate->Sec)
   {  
     SecProcess();
@@ -1244,7 +1241,7 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->pressure.min = pAws->mBarometric.sMin;
   p_kma_data->pressure.data = pAws->mBarometric.sReal;
 
-  // 습도도
+  // 습도
   p_kma_data->relative_humidity.data = pAws->mHumidity.sReal;
   p_kma_data->relative_humidity.max = pAws->mHumidity.sMin;
   p_kma_data->relative_humidity.min = pAws->mHumidity.sMin;

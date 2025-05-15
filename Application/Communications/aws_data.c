@@ -40,7 +40,7 @@ rainfall_t g_rainfall;
      * @brief 센서 데이터를 AWS 자료형으로 변환환
      */
     void
-    cvt_sensorToAWS(sensor_t *p_sensor, sensor_data_t *p_data, kma_data_t *p_kma)
+cvt_sensorToAWS(sensor_t *p_sensor, sensor_data_t *p_data, kma_data_t *p_kma)
 {
   bool status;
 
@@ -353,6 +353,9 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
   switch (min)
   {
     case eAWS_DATA_REAL:
+      p_kma_data = &g_kma_raw_ex;
+      break;
+    case eAWS_DATA_AVG:
       p_kma_data = &g_kma_inst_ex;
       break;
     case eAWS_DATA_1MIN:

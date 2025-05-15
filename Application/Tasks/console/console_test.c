@@ -15,6 +15,8 @@
 #include "console_cali.h"
 #include "test_rtc.h"
 #include "test_eth.h"
+#include "test_filesystem.h"
+
 int run_test_root()
 {
   int choice, status;
@@ -37,6 +39,7 @@ int run_test_root()
     debug_printf("| 12. 모드버스(구현 예정)               |\r\n");
     debug_printf("| 13. 이더넷                            |\r\n");
     debug_printf("| 14. 시간                              |\r\n");
+    debug_printf("| 15. 파일시스템                        |\r\n");
     debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     debug_printf("+---------------------------------------+\r\n");
 
@@ -87,8 +90,10 @@ int run_test_root()
        case 14:
         test_rtc();
         break;
-      default :
-      break;
+        case 15:
+          test_filesystem();
+          break;
+           default : break;
     }
   }
 }

@@ -19,8 +19,10 @@
 
 measure_data_1s_t *g_p_raw = NULL;
 uint8_t g_kma_err[SENSOR_LIST_MAX];
+measure_data_250ms_t g_raw_250;
 
-void update_sensor_err(eSENSOR_LIST_t sensor,uint8_t code)
+
+void update_sensor_err(eSENSOR_LIST_t sensor, uint8_t code)
 {
   g_kma_err[sensor] = code;
 
@@ -459,7 +461,7 @@ AWS_DATA_STRUCT *get_aws_data(int min)
   AWS_DATA_STRUCT *p_aws_data=NULL;
   switch(min)
   {
-    case eAWS_DATA_REAL:
+    case eAWS_DATA_AVG:
       p_aws_data = &mRealAws;
       break;
     case eAWS_DATA_1MIN:
@@ -495,18 +497,13 @@ void update_old_kma_real(void)
   g_kma_inst_ex.temperature.max = mRealAws.mTemperature.sMax;
   g_kma_inst_ex.temperature.min = mRealAws.mTemperature.sMin;
 
-  g_kma_inst_ex.relative_humidity.data = mRealAws.mHumidity.sReal;
-  g_kma_inst_ex.relative_humidity.err = get_sensor_err(A10_RELATIVE_HUMIDITY);
-  g_kma_inst_ex.relative_humidity.max = mRealAws.mHumidity.sMax;
-  g_kma_inst_ex.relative_humidity.min = mRealAws.mHumidity.sMin;
+  g_kma_inst_ex.wind_direction_avg.data = mRealAws.mWind.mDirection.sReal;
+  g_kma_inst_ex.wind_direction_avg.err = get_sensor_err(A2_WIND_DIRECTION);
+  g_kma_inst_ex.wind_direction_avg.max = mRealAws.mWind.mDirection.sMax;
 
   g_kma_inst_ex.wind_speed_avg.data = mRealAws.mWind.mSpeed.sReal;
   g_kma_inst_ex.wind_speed_avg.err = get_sensor_err(A3_WIND_SPEED);
   g_kma_inst_ex.wind_speed_avg.max = mRealAws.mWind.mSpeed.sMax;
-
-  g_kma_inst_ex.wind_direction_avg.data = mRealAws.mWind.mDirection.sReal;
-  g_kma_inst_ex.wind_direction_avg.err = get_sensor_err(A2_WIND_DIRECTION);
-  g_kma_inst_ex.wind_direction_avg.max = mRealAws.mWind.mDirection.sMax;
 
   g_kma_inst_ex.wind_speed_instant.data = mRealAws.mWind.mSpeed.sMax;
   g_kma_inst_ex.wind_speed_instant.err = 0;
@@ -514,15 +511,12 @@ void update_old_kma_real(void)
   g_kma_inst_ex.wind_direction_instant.data = mRealAws.mWind.mDirection.sMax;
   g_kma_inst_ex.wind_direction_instant.err = 0;
 
-  g_kma_inst_ex.sunshine_duration.data = mRealAws.mSunshine.sReal;
-  g_kma_inst_ex.sunshine_duration.err = get_sensor_err(B2_SUNSHINE_DURATION);
-  g_kma_inst_ex.sunshine_duration.max = mRealAws.mSunshine.sMax;
-
-  g_kma_inst_ex.solar_radiation.data = mRealAws.mSolarRad.sReal;
-  g_kma_inst_ex.solar_radiation.err = get_sensor_err(B1_SOLAR_RADIATION);
-  g_kma_inst_ex.solar_radiation.max = mRealAws.mSolarRad.sMax;
-
   g_kma_inst_ex.precipitation.data = get_system_info_aws()->mRain.sDayCount;
+
+  g_kma_inst_ex.pressure.data = mRealAws.mBarometric.sReal;
+  g_kma_inst_ex.pressure.err = get_sensor_err(A7_PRESSURE);
+  g_kma_inst_ex.pressure.max = mRealAws.mBarometric.sMax;
+  g_kma_inst_ex.pressure.min = mRealAws.mBarometric.sMin;
 
   g_kma_inst_ex.precipitation_presence.data = mRealAws.mRainDetect.sReal;
   g_kma_inst_ex.precipitation_presence.err = get_sensor_err(A8_RAIN_PRESENT);
@@ -530,10 +524,21 @@ void update_old_kma_real(void)
   g_kma_inst_ex.snowfall.data = mRealAws.mSnowFall.sReal;
   g_kma_inst_ex.snowfall.err = get_sensor_err(A9_SNOW_DEPTH);
 
-  g_kma_inst_ex.pressure.data = mRealAws.mBarometric.sReal;
-  g_kma_inst_ex.pressure.err = get_sensor_err(A7_PRESSURE);
-  g_kma_inst_ex.pressure.max = mRealAws.mBarometric.sMax;
-  g_kma_inst_ex.pressure.min = mRealAws.mBarometric.sMin;
+  g_kma_inst_ex.relative_humidity.data = mRealAws.mHumidity.sReal;
+  g_kma_inst_ex.relative_humidity.err = get_sensor_err(A10_RELATIVE_HUMIDITY);
+  g_kma_inst_ex.relative_humidity.max = mRealAws.mHumidity.sMax;
+  g_kma_inst_ex.relative_humidity.min = mRealAws.mHumidity.sMin;
+
+//강수량 0.1
+
+  g_kma_inst_ex.solar_radiation.data = mRealAws.mSolarRad.sReal;
+  g_kma_inst_ex.solar_radiation.err = get_sensor_err(B1_SOLAR_RADIATION);
+  g_kma_inst_ex.solar_radiation.max = mRealAws.mSolarRad.sMax;
+
+  g_kma_inst_ex.sunshine_duration.data = mRealAws.mSunshine.sReal;
+  g_kma_inst_ex.sunshine_duration.err = get_sensor_err(B2_SUNSHINE_DURATION);
+  g_kma_inst_ex.sunshine_duration.max = mRealAws.mSunshine.sMax;
+
 
   g_kma_inst_ex.soil_temperature_5cm.data = mRealAws.mSoilTemp5cm.sReal;
   g_kma_inst_ex.soil_temperature_5cm.err = get_sensor_err(B5_SOIL_TEMPERATURE_5CM);
@@ -643,54 +648,125 @@ void check_sensor_use(void)
   }
 }
 
-void update_kma2_status(void)
-{
+#define MAKE_TEMP(x) (uint16_t)((x + 100) * 10)  // 기온, 지면온도, 지중온도, 초상온도
+#define MAKE_RADI(x) (uint16_t)((x + 100) * 10)  // 순복사, 전천복사, 반사복사 등
+#define MAKE_PRESSURE(x) (uint16_t)((x) * 10)    // 기압
+#define MAKE_X10(x) (uint16_t)((x) * 10)         // 풍속, 풍향, 습도, 토양수분 등
+#define MAKE_X100(x) (uint16_t)((x) * 100)       // 일사량, 조도량 등
+#define MAKE_DIRECT(x) (uint16_t)(x)             // 운고, 시정, 현재일기, 타코미터 등 정수값
 
+void update_raw(void)
+{
+  kma_data_ex_t *p_kma_data;
+
+  p_kma_data = get_kma_data((eAWS_DATA_MIN_t)eAWS_DATA_REAL);
+
+  p_kma_data->temperature.data = MAKE_TEMP(g_p_raw->data[A1_TEMPERATURE].data.f);
+  p_kma_data->wind_direction_avg.data = MAKE_X10(g_p_raw->data[A2_WIND_DIRECTION].data.f);
+  p_kma_data->wind_speed_avg.data = MAKE_X10(g_p_raw->data[A3_WIND_SPEED].data.f);
+  p_kma_data->precipitation.data = MAKE_DIRECT(g_p_raw->data[A6_RAINFALL_DOT5_1MM].data.i);
+  p_kma_data->pressure.data = MAKE_PRESSURE(g_p_raw->data[A7_PRESSURE].data.f);
+  p_kma_data->precipitation_presence.data = MAKE_DIRECT(g_p_raw->data[A8_RAIN_PRESENT].data.i);
+  p_kma_data->snowfall.data = MAKE_X10(g_p_raw->data[A9_SNOW_DEPTH].data.f);
+  p_kma_data->relative_humidity.data = MAKE_X10(g_p_raw->data[A10_RELATIVE_HUMIDITY].data.f);
+  p_kma_data->precipitation_fine.data = MAKE_DIRECT(g_p_raw->data[A11_RAINFALL_DOT1MM].data.i);
+
+  p_kma_data->solar_radiation.data = MAKE_X100(g_p_raw->data[B1_SOLAR_RADIATION].data.f);
+  p_kma_data->sunshine_duration.data = MAKE_DIRECT(g_p_raw->data[B2_SUNSHINE_DURATION].data.i);
+  p_kma_data->surface_temperature.data = MAKE_TEMP(g_p_raw->data[B3_GROUND_TEMPERATURE].data.f);
+  p_kma_data->grass_temperature.data = MAKE_TEMP(g_p_raw->data[B4_SURFACE_TEMPERATURE].data.f);
+  p_kma_data->soil_temperature_5cm.data = MAKE_TEMP(g_p_raw->data[B5_SOIL_TEMPERATURE_5CM].data.f);
+  p_kma_data->soil_temperature_10cm.data =
+      MAKE_TEMP(g_p_raw->data[B6_SOIL_TEMPERATURE_10CM].data.f);
+  p_kma_data->soil_temperature_20cm.data =
+      MAKE_TEMP(g_p_raw->data[B7_SOIL_TEMPERATURE_20CM].data.f);
+  p_kma_data->soil_temperature_30cm.data =
+      MAKE_TEMP(g_p_raw->data[B8_SOIL_TEMPERATURE_30CM].data.f);
+  p_kma_data->soil_temperature_50cm.data =
+      MAKE_TEMP(g_p_raw->data[B9_SOIL_TEMPERATURE_50CM].data.f);
+  p_kma_data->soil_temperature_1m.data =
+      MAKE_TEMP(g_p_raw->data[B10_SOIL_TEMPERATURE_100CM].data.f);
+  p_kma_data->soil_temperature_1_5m.data =
+      MAKE_TEMP(g_p_raw->data[B11_SOIL_TEMPERATURE_150CM].data.f);
+  p_kma_data->soil_temperature_3m.data =
+      MAKE_TEMP(g_p_raw->data[B12_SOIL_TEMPERATURE_300CM].data.f);
+  p_kma_data->soil_temperature_5m.data =
+      MAKE_TEMP(g_p_raw->data[B13_SOIL_TEMPERATURE_500CM].data.f);
+
+  p_kma_data->cloud_height_1st.data = MAKE_DIRECT(g_p_raw->data[C1_CLOUD_BASE1].data.i);
+  p_kma_data->cloud_height_2nd.data = MAKE_DIRECT(g_p_raw->data[C2_CLOUD_BASE2].data.i);
+  p_kma_data->cloud_height_3rd.data = MAKE_DIRECT(g_p_raw->data[C3_CLOUD_BASE3].data.i);
+  p_kma_data->cloud_amount.data = MAKE_DIRECT(g_p_raw->data[C4_CLOUD_COVER].data.i);
+  p_kma_data->visibility.data = MAKE_DIRECT(g_p_raw->data[C5_VISIBILITY].data.i);
+  p_kma_data->pm10_concentration.data = MAKE_X10(g_p_raw->data[C6_PM10].data.f);
+  p_kma_data->pm25_concentration.data = MAKE_X10(g_p_raw->data[C7_PM2DOT5].data.f);
+  p_kma_data->net_radiation.data = MAKE_RADI(g_p_raw->data[C8_NET_RADIATION].data.f);
+  p_kma_data->total_radiation.data = MAKE_RADI(g_p_raw->data[C9_TOTAL_RADIATION].data.f);
+  p_kma_data->reflected_radiation.data = MAKE_RADI(g_p_raw->data[C10_REFLECTED_RADIATION].data.f);
+  p_kma_data->direct_radiation.data = MAKE_RADI(g_p_raw->data[C11_DIRECT_SOLAR].data.f);
+  p_kma_data->current_weather.data = MAKE_DIRECT(g_p_raw->data[C12_CURRENT_WEATHER].data.i);
+
+  p_kma_data->soil_moisture_10cm.data = MAKE_X10(g_p_raw->data[N1_SOIL_MOISTURE_10CM].data.f);
+  p_kma_data->soil_moisture_20cm.data = MAKE_X10(g_p_raw->data[N2_SOIL_MOISTURE_20CM].data.f);
+  p_kma_data->soil_moisture_30cm.data = MAKE_X10(g_p_raw->data[N3_SOIL_MOISTURE_30CM].data.f);
+  p_kma_data->soil_moisture_50cm.data = MAKE_X10(g_p_raw->data[N4_SOIL_MOISTURE_50CM].data.f);
+  p_kma_data->illuminance.data = MAKE_X100(g_p_raw->data[N5_ILLUMINANCE].data.f);
+  p_kma_data->wind_speed_1_5m.data = MAKE_X10(g_p_raw->data[N6_WIND_VELOCITY_150CM].data.f);
+  p_kma_data->wind_speed_4m.data = MAKE_X10(g_p_raw->data[N7_WIND_VELOCITY_400CM].data.f);
+  p_kma_data->instant_wind_speed_1_5m.data =
+      MAKE_X10(g_p_raw->data[N8_INSTANT_VELOCITY_150CM].data.f);
+  p_kma_data->instant_wind_speed_4m.data =
+      MAKE_X10(g_p_raw->data[N9_INSTANT_VELOCITY_400CM].data.f);
+  p_kma_data->temperature_0_5m.data = MAKE_TEMP(g_p_raw->data[N10_AIR_TEMPERATURE_50CM].data.f);
+  p_kma_data->temperature_4m.data = MAKE_TEMP(g_p_raw->data[N11_AIR_TEMPERATURE_400CM].data.f);
+  p_kma_data->humidity_0_5m.data = MAKE_X10(g_p_raw->data[N12_HUMIDITY_50CM].data.f);
+  p_kma_data->humidity_4m.data = MAKE_X10(g_p_raw->data[N13_HUMIDITY_400CM].data.f);
+
+  p_kma_data->tacometer.data = MAKE_DIRECT(g_p_raw->data[I1_TACHOMETER].data.i);
+  p_kma_data->temp[USER_WATER].data = MAKE_X10(g_p_raw->data[USER_WATER].data.f);
 }
 
+void DUALPORT_TASK(void *arg)
+{
+  uint8_t sensor_err = 0;
+  uint16_t sTriger = 0;
+  uint16_t sSpeed;
+  uint16_t sDirec;
+  uint16_t sSpeedOld=0;
+  uint16_t sDirecOld=0;
+  SYSTEM_INFO_AWS *pSystem;
+  DATE_TIME_BUF ct;
+  DATE_TIME_BUF time_old;
+  AWS_DATA_STRUCT *pAws;
 
 
-  void DUALPORT_TASK(void *arg)
-  {
-    uint16_t sTriger = 0;
-    SYSTEM_INFO_AWS *pSystem;
-
-    DATE_TIME_BUF ct;
-    DATE_TIME_BUF time_old;
-    AWS_DATA_STRUCT *pAws;
-    uint16_t sSpeed;
-    uint16_t sDirec;
-    uint16_t sSpeedOld;
-    uint16_t sDirecOld;
-    uint8_t sensor_err=0;
-    int i, j;
-    int nWindCnt12 = 0;
-    int nWindCnt40 = 0;
-    measure_data_250ms_t reading_250;
-    
-    pAws = &mRealAws;
-    pSystem = &Sysinfo;
+  int i, j;
+  int nWindCnt12 = 0;
+  int nWindCnt40 = 0;
 
 
-    
-        // 여기서는 메모리를 아끼기위해 g_p_raw 하나만 사용
-        g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
+  pAws = &mRealAws;
+  pSystem = &Sysinfo;
+
+  // 여기서는 메모리를 아끼기위해 g_p_raw 하나만 사용
+  g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
 
         time_old = Date_Time;
         while (1)
         {
           is_measurement_1s(g_p_raw, 0);                        // 업데이트된 값 없으면 이전값 유지
-          if (is_measurement_250(&reading_250, osWaitForever))  // 250ms마다 최신값 사용
+          if (is_measurement_250(&g_raw_250, osWaitForever))  // 250ms마다 최신값 사용
           {
-            g_p_raw->data[A2_WIND_DIRECTION] = reading_250.data[eA2_WIND_DIRECTION];
-            g_p_raw->data[A3_WIND_SPEED] = reading_250.data[eA3_WIND_SPEED];
+            g_p_raw->data[A2_WIND_DIRECTION] = g_raw_250.data[eA2_WIND_DIRECTION];
+            g_p_raw->data[A3_WIND_SPEED] = g_raw_250.data[eA3_WIND_SPEED];
           }
 
           ct = Date_Time;
-
+          
           check_sensor_use();
+          update_raw();
 
-          pSystem->mRain.sDayCount += get_rain_mm(&sensor_err);
+              pSystem->mRain.sDayCount += get_rain_mm(&sensor_err);
           update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
 
           sSpeed = sSpeedOld;
@@ -856,6 +932,10 @@ void old_aws_init(void)
   pSystem->mNVram.nYearSunshine = (uint32_t)(get_config_nvm()->sunshine_yearly);
   pSystem->mNVram.nMonthSunshine = (uint32_t)(get_config_nvm()->sunshine_monthly);
 }
+
+
+
+
 
 void dualportTask_init(void)
 {

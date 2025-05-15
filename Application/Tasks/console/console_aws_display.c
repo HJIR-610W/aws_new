@@ -22,7 +22,7 @@
 #include "task_cellular.h"
 
 
-#define AWS_MODE_MAX 3
+#define AWS_MODE_MAX 4
 
 #define DISP_WIDTH 27
 
@@ -259,7 +259,7 @@ int32_t print_directInfo(uint16_t row, uint16_t column)
 
 int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, void *arg)
 {
-  const char *aswTitleList[] = {"순간", "1분", "10분", "한시간"};
+  const char *aswTitleList[] = {"RAW","순간(평균)", "1분", "10분", "한시간"};
   char buff[50];
   uint8_t err;
   uint8_t line = row + 3;
