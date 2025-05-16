@@ -129,8 +129,7 @@ void logging_read_log(int32_t offsetCnt,loggingMsg_t *loggingMsg)
     loggingMsg->msg[0]=0;
   }
 
-
-    
+   
      osSemaphoreRelease(g_loggingSem); 
 }
 

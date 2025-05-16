@@ -51,47 +51,92 @@ logging_system_t *get_logging_system(void)
   return &g_logging_system;
 }
 
-    /**
-     * @brief 시스템 로깅
-     */
-    void
-    os_logging_printf(const char *pFmt, ...)
+static const char *log_level_str(log_level_t level)
+{
+  switch (level)
+  {
+    case L_DEBUG: return "DEBU";
+    case L_INFO:  return "INFO";
+    case L_WARN:  return "WARN";
+    case L_ERROR: return "ERRO";
+    case L_FATAL: return "FATL";
+    default:      return "UNKN";
+  }
+}
+static log_level_t g_log_level = L_DEBUG;
+static void (*g_log_output)(logging_t *logging) = NULL;
+
+void log_set_level(log_level_t level) {
+  g_log_level = level;
+}
+
+void log_set_output(void (*func)(logging_t *logging)) {
+  g_log_output = func;
+}
+
+void log_out_queue(logging_t *logging)
+{
+  if(osMessageQueuePut(g_loggingQueue, logging, 0, kLoggingTimeOutMs) != osOK)
+  {
+    debug_printf("log_printf_level timeout.\r\n");
+  }
+}
+
+
+void log_out_uart(logging_t *logging)
+{
+  debug_printf("%s",logging->data);
+}
+
+void log_printf(log_level_t level, const char *pFmt, ...)
 {
   logging_t logging;
-  va_list ap;  
-  int32_t len;
-  int32_t i;
-
+  va_list ap;
+  int32_t len = 0;
   DATE_TIME_BUF ct;
-  
+
+  if (level < g_log_level || g_log_output == NULL)
+  return;
+
   time_get(&ct);
-  //2000-01-01 00:00:00,{문자열}     \r\n\0
 
-  len = snprintf(logging.data,sizeof(logging.data),"%04d-%02d-%02d %02d:%02d:%02d,",ct.Year,ct.Month,ct.Day,
-  ct.Hour,ct.Min,ct.Sec);
+  // 1. 날짜/시간
+  len = snprintf(logging.data, sizeof(logging.data),
+                 "%04d-%02d-%02d %02d:%02d:%02d,", 
+                 ct.Year, ct.Month, ct.Day,
+                 ct.Hour, ct.Min, ct.Sec);
 
+  if (len < 0 || len >= 64) return;
+
+  // 2. 로그 레벨 추가 
+  const char *level_str = log_level_str(level);
+  len += snprintf(&logging.data[len], sizeof(logging.data) - len,
+                  "%s,", level_str);
+
+  // 3. 메시지
   va_start(ap, pFmt);
-  len += vsnprintf((char *)&logging.data[len], sizeof(logging.data)-len, (char *)pFmt, ap);
+  int msg_len = vsnprintf(&logging.data[len],
+                          sizeof(logging.data) - len, pFmt, ap);
   va_end(ap);
 
-  //
-  for(int i = len; i <= 60;i++)
-  {
-    logging.data[i]= ' ';//
+  len += (msg_len > 0) ? msg_len : 0;
+  if (len > 60) len = 60;
+
+  // 4. 공백 패딩
+  for (int i = len; i < 61; i++) {
+    logging.data[i] = ' ';
   }
 
+  // 5. 종료 처리
   logging.data[61] = '\r';
   logging.data[62] = '\n';
   logging.data[63] = '\0';
 
+  logging.cmd = eLOGGING_LOG;
 
-  logging.cmd = eLOGGING_LOG;//로그는 문자열만 전송송
-
-  if(osMessageQueuePut(g_loggingQueue, &logging, 0, kLoggingTimeOutMs) != osOK)
-  {
-    debug_printf("os_logging_printf timeout.\r\n");
-  }
+ g_log_output(&logging); 
 }
+
 
 void os_write_sensorData(DATE_TIME_BUF *pDate, void *pInData,uint32_t data_size,
                          uint8_t Type,uint32_t period_min)
@@ -165,6 +210,7 @@ void loggingTask(void *arg)
 
 void loggingTask_init(void)
 {
+  log_set_output(log_out_queue);
   /*
    로그가 동시에 전송될것을 고려하여 적당한 갯수 필요
    큐가 부족하면 로그 저장이 안될 수 있음

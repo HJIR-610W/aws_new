@@ -287,13 +287,13 @@ STATUS_t connect_tcp(eConnect_Type_t type)
         {
             if(connectionCnt == 1)  // 서버 연결 1회 시도 실패면 sw 리셋
             {
-                os_logging_printf("MODEM SW RESET");
+                log_printf(L_INFO,"MODEM SW RESET");
                 _iCellular->reset(M_RESET_SW,20000);
                 type = eCONNECT_MODEM_REBOOT;
             }
             else if(connectionCnt == 2)// 2회 시도 실패면 hw 리셋
             {
-                os_logging_printf( "MODEM HW RESET");
+                log_printf(L_INFO, "MODEM HW RESET");
                 _iCellular->off_powerSafe();
                 _iCellular->reset(M_RESET_HW,20000);
                 type = eCONNECT_MODEM_REBOOT;
@@ -304,7 +304,7 @@ STATUS_t connect_tcp(eConnect_Type_t type)
                 connectionCnt = 2;
                 if((osKernelGetTickCount()-startTime)>CONNECT_TIMEOUT_MS)//12시간
                 {
-                  os_logging_printf( "MODEM RESET TIMEOUT");    
+                  log_printf(L_INFO, "MODEM RESET TIMEOUT");    
                   connectionCnt = 0;
                 }
                 modem_socket_init();
@@ -361,7 +361,7 @@ STATUS_t connect_tcp(eConnect_Type_t type)
 
     }while(connection != STATUS_OK);
 
-    os_logging_printf( "SERVER Connected");
+    log_printf( L_INFO,"SERVER Connected");
     return connection;
 }
 
@@ -892,7 +892,7 @@ void proc_sms(void)
         if(_iCellular->read_sms(&sms) == RET_OK)
         {
 
-		        os_logging_printf( "SMS: %s", sms.num);
+		        log_printf(L_INFO, "SMS: %s", sms.num);
             sms_cmd(&sms);
         }
     }

@@ -91,7 +91,8 @@
 			"console_define.h": "c",
 			"app_datalogging.h": "c",
 			"console_data.h": "c",
-			"hj_temperature.h": "c"
+			"hj_temperature.h": "c",
+			"cmath": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

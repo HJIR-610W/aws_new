@@ -575,7 +575,7 @@ void measure250ms_task(void *arg)
 {
   uint32_t tick_count;
 
-  os_logging_printf("250ms start");
+  log_printf(L_INFO,"250ms start");
 
   tick_count = osKernelGetTickCount();
   while(1)
@@ -594,7 +594,7 @@ void measure1s_task(void *arg)
 {
   uint32_t tick_count;
 
-  os_logging_printf("1s start");
+  log_printf(L_INFO,"1s start");
   tick_count = osKernelGetTickCount();
   while(1)
   {

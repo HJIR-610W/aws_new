@@ -51,21 +51,21 @@ void log_boot_reason(void)
     uint32_t csr = RCC->CSR;
 
     if (csr & RCC_CSR_LPWRRSTF)
-        os_logging_printf("Boot: LPWR reset");
+        log_printf(L_INFO,"Boot: LPWR reset");
     else if (csr & RCC_CSR_WWDGRSTF)
-        os_logging_printf("Boot: WWDG reset");
+        log_printf(L_INFO,"Boot: WWDG reset");
     else if (csr & RCC_CSR_IWDGRSTF)
-        os_logging_printf("Boot: IWDG reset");
+        log_printf(L_INFO,"Boot: IWDG reset");
     else if (csr & RCC_CSR_SFTRSTF)
-        os_logging_printf("Boot: SW reset");
+        log_printf(L_INFO,"Boot: SW reset");
     else if (csr & RCC_CSR_PORRSTF)
-        os_logging_printf("Boot: POR/PDR reset");
+        log_printf(L_INFO,"Boot: POR/PDR reset");
     else if (csr & RCC_CSR_PINRSTF)
-        os_logging_printf("Boot: NRST pin");
+        log_printf(L_INFO,"Boot: NRST pin");
     else if (csr & RCC_CSR_BORRSTF)
-        os_logging_printf("Boot: BOR reset");
+        log_printf(L_INFO,"Boot: BOR reset");
     else
-        os_logging_printf("Boot: unknown");
+        log_printf(L_INFO,"Boot: unknown");
 
     // 리셋 플래그 초기화
     RCC->CSR |= RCC_CSR_RMVF;
