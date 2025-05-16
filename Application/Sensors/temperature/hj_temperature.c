@@ -108,7 +108,9 @@ void hjTemperature_set(driver_t *driver, temperature_set_option_t option, void *
     case eTEMP_SET_OFFSET:
       driver_modbus_m_write_single_reg(cfg->bus_io, 1, HJ_REG_NUM_TEMP_OFFSET,data);
       break;
-
+      case eHUMI_SET_OFFSET:
+      driver_modbus_m_write_single_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI_OFFSET,data);
+      break;
     default:
       break;
   }
@@ -126,7 +128,10 @@ int32_t hjTemperature_get(driver_t *driver, temperature_get_option_t option, voi
       ret = driver_modbus_m_read_multi_reg(cfg->bus_io, 1, HJ_REG_NUM_TEMP_OFFSET, &data, 1);
       *((uint16_t *)value) = data;
       break;
-
+      case eHUMI_GET_OFFSET:
+      ret = driver_modbus_m_read_multi_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI_OFFSET, &data, 1);
+      *((uint16_t *)value) = data;
+      break;
     default:
       break;
   }

@@ -264,7 +264,6 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
     }
     break;
     case eMODBUS_RS232:
-    break;
     {
       uart_config_t ucfg;
       driver_uart_get(cfg->bus_io, UART_GET_CONFIG, &ucfg);

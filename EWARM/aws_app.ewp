@@ -1684,6 +1684,9 @@
             </group>
             <group>
                 <name>console</name>
+                <group>
+                    <name>aws_menu</name>
+                </group>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\console\console_aws_display.c</name>
                 </file>
@@ -1792,6 +1795,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\test\test_hart.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\test\test_meomoy.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\test\test_power.c</name>

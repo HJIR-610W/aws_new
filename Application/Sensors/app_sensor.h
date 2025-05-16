@@ -136,6 +136,7 @@ typedef enum adcChType_e
 
 typedef struct sensor_s
 {
+  float offset;
   eSENSOR_MODEL_t type;
   uint8_t configCnt;     // 센서가 가지고 있는 설정값 수 예)
   uint8_t config[4][2];  //[0][0] 센서타입 정보 저장, [0][1] 타입이 할당받은

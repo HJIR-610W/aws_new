@@ -362,3 +362,29 @@ int get_confirm_input(void)
     return MENU_ABORT;
   }
 }
+
+int32_t get_user_confirm(const char *message)
+{
+  char input[5] = {0};
+
+  debug_printf("%s(yes/no)\r\n",message);
+  debug_printf(">>");
+
+  int ret = cli_scanf_s("%4s", input);  // 문자열 입력
+
+  if (ret <= 0)
+  {
+    debug_printf("yes 또는 no를 입력해주세요\r\n");
+    return -1;
+  }
+
+  if (strncmp(input, "yes",3) == 0)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+}
+

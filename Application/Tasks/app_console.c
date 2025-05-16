@@ -43,6 +43,7 @@
 #include "console_aws_display.h"
 #include "console_data.h"
 #include "cli_input.h"
+#include "Sensors\temperature\hj_temperature.h"
 #define EXIT_PROGRAM -3
 #define EXIT_BACK -1
 
@@ -73,10 +74,10 @@ typedef struct select_menu_s
 {
   p_shell_context_t ctx;
   const char **list;
-  int32_t (*func)(p_shell_context_t ctx);
+  int32_t (*func)(p_shell_context_t ctx);// 목록 출력 함수
   uint8_t cnt;
   bool show;
-  const menuFunc_t *menuFunc;
+  const menuFunc_t *menuFunc;//함수 테이블 
 } select_menu_t;
 
 const char *protocolList[] = {"kma ver 1", "kma ver 2"};
@@ -284,7 +285,7 @@ int input_decimal(p_shell_context_t ctx, int32_t start, int32_t stop, int32_t *d
 {
   int32_t cnt;
 
-  ctx->printf("범위:%d~%d\r\n", start, stop);
+  debug_printf("범위:%d~%d\r\n", start, stop);
   vt100_printfColor(GREEN, "값을 입력해 주세요:");
   cnt = console_scanf("%d", dec);
   if (cnt == 1)
@@ -366,6 +367,29 @@ int input_digit(p_shell_context_t ctx, int32_t start, int32_t stop, void *target
   return cnt;
 }
 
+
+int input_float(p_shell_context_t ctx, float start, float stop, float *target)
+{
+  int32_t cnt;
+  float fVal;
+
+  ctx->printf("\r\n범위:%f~%f\r\n", start, stop);
+  vt100_printfColor(GREEN, "값을 입력해 주세요:");
+  cnt = console_scanf("%f", &fVal);
+  if (cnt == 1)
+  {
+    if (fVal < start || fVal > stop)
+    {
+      vt100_printfColor(RED, "입력값을 범위를 확인해 주세요\r\n");
+      return 0;
+    }
+
+    *target = fVal;
+    return 1;
+  }
+
+  return cnt;
+}
 int32_t print_menu_system(p_shell_context_t ctx)
 {
   char buff[50];
@@ -618,6 +642,7 @@ uint8_t print_hjwindDir_cfg(p_shell_context_t ctx, hjwindspeed_config_t *hjwindC
 */
 #define HJTEMP_CFG_PHYSICAL_LAYER 0
 #define HJTEMP_CFG_PORT           1
+#define HJTEMP_CTRL_OFFSET        2
 uint8_t print_hjtemp_cfg(p_shell_context_t ctx, hjtemp_config_t *hjtempCfg, uint8_t cnt)
 {
   const char *portNameList[10];
@@ -634,6 +659,7 @@ uint8_t print_hjtemp_cfg(p_shell_context_t ctx, hjtemp_config_t *hjtempCfg, uint
 
   }
   ctx->printf("%2d.포트       :%s\r\n", cnt++, portNameList[hjtempCfg->port]);  // 고정
+  ctx->printf("%2d.오프셋[제어]\r\n", cnt++);  // 고정
   return cnt;
 }
 
@@ -1017,11 +1043,126 @@ void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
       }
 
       break;
+      case HJTEMP_CTRL_OFFSET:
+      {
+        driver_t *hj_temp;
+        hjtemp_config_t *hjtemp_config;
+        uint16_t offset=0;
+        int32_t ret;
+        
+        hjtemp_config = get_sensor_config(&get_config_app()->sensor[A1_TEMPERATURE]);
+  
+        hj_temp = hjTemperature_open(HJ_TEMPERATURE,hjtemp_config);
+  
+        ret = hjTemperature_get(hj_temp,eTEMP_GET_OFFSET,&offset);
+        if(ret ==0)
+        {
+          debug_printf("현재 온도 오프셋:%.2f\r\n",((float)offset/100.0f));
+          if(get_user_confirm("오프셋을 변경하시겠습니까?")==1)
+          {
+            float f_offset;
+            debug_printf("오프셋을 입력해주세요>>");
+            if(input_float(ctx,-5,5,&f_offset))
+            {
+              offset = (uint16_t)(f_offset*100);
+              hjTemperature_set(hj_temp,eTEMP_SET_OFFSET,(void *)offset);
+            }
+          }
+        }
+        else
+        {
+          debug_printf("장치에 접근할 수 없습니다.\r\n");
+        }
+      }
     default:
       break;
   }
 }
 
+void hjhumi_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t row_idx;
+    int32_t dec;
+  hjtemp_config_t *hjtemp;
+  const char *portList[10];
+  uint16_t portListCnt;
+  
+  hjtemp = get_sensor_config(sensor);
+  if (hjtemp == NULL)
+  {
+    return;
+  }
+
+  switch (menu_index)
+  {
+    case HJTEMP_CFG_PHYSICAL_LAYER:
+      row_idx = select_indexFromList(ctx, physical_list, NULL, _countof(physical_list), true);
+      
+      if(row_idx > 0)
+      {
+        hjtemp->physical_layer = row_idx - 1;
+        save_config_sensor();
+      }
+      break;
+    case HJTEMP_CFG_PORT:
+      if (hjtemp->physical_layer == ePHYSICAL_RS232)
+      {
+        portListCnt = rs232_get_portList(portList, _countof(portList));
+        row_idx = select_indexFromList(ctx, portList, NULL,  portListCnt, true);
+        if (row_idx > 0)
+        {
+          hjtemp->port = row_idx - 1;
+          save_config_sensor();
+        }
+      }
+      else
+      {
+        portListCnt = rs485_get_portList(portList, _countof(portList));
+        row_idx = select_indexFromList(ctx, portList, NULL, portListCnt, true);
+
+        if (row_idx > 0)
+        {
+          hjtemp->port = row_idx - 1;
+          save_config_sensor();
+        }
+      }
+      break;
+    case HJTEMP_CTRL_OFFSET:
+    {
+      driver_t *hj_temp;
+      hjtemp_config_t *hjtemp_config;
+      uint16_t offset=0;
+      int32_t ret;
+      
+      hjtemp_config = get_sensor_config(&get_config_app()->sensor[A1_TEMPERATURE]);
+
+      hj_temp = hjTemperature_open(HJ_TEMPERATURE,hjtemp_config);
+
+      ret = hjTemperature_get(hj_temp,eHUMI_GET_OFFSET,&offset);
+      if(ret ==0)
+      {
+        debug_printf("현재 습도 오프셋:%.2f\r\n",((float)offset/100.0f));
+        if(get_user_confirm("오프셋을 변경하시겠습니까?")==1)
+        {
+          float f_offset;
+          debug_printf("오프셋을 입력해주세요>>");
+          if(input_float(ctx,-5,5,&f_offset))
+          {
+            offset = (uint16_t)(f_offset*100);
+            hjTemperature_set(hj_temp,eHUMI_SET_OFFSET,(void *)offset);
+          }
+        }
+      }
+      else
+      {
+        debug_printf("장치에 접근할 수 없습니다.\r\n");
+      }
+    }
+    break;
+    default:
+      break;
+  }
+}
 void hjsnow_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t dec;
@@ -1105,7 +1246,7 @@ const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_SNOW_HJ, .config_set = hjsnow_config_set},
     {.sensorType = S_T_GENERAL_485, .config_set = rs485_config_set},
     {.sensorType = S_T_TEMPERATURE_HJ, .config_set = hjtemp_config_set},
-    {.sensorType = S_T_HUMINITY_HJ, .config_set = hjtemp_config_set}};
+    {.sensorType = S_T_HUMINITY_HJ, .config_set = hjhumi_config_set}};
 
 /*
  센서 개별
@@ -1145,21 +1286,7 @@ int32_t print_common_cfg(p_shell_context_t ctx, sensor_t *sensor, uint8_t c)
   }
   return cnt;
 }
-int32_t print_menu_sensor_temp(p_shell_context_t ctx)
-{
-  int cnt = 0;
-  sensor_t *sensor;
-  sensor = &get_config_app()->sensor[A1_TEMPERATURE];
 
-  ctx->printf("%2d.type       :%s\r\n", cnt++, g_sensor_model_list[sensor->type]);
-
-  if (sensor->type != S_T_UNSUED)
-  {
-    cnt = print_common_cfg(ctx, sensor, cnt);
-  }
-
-  return cnt;
-}
 
 void set_type(sensor_t *sensor)
 {
@@ -1174,45 +1301,6 @@ void set_type(sensor_t *sensor)
   }
 }
 
-// 온도 설정
-int32_t menu_sensor_temp(p_shell_context_t ctx)
-{
-  const char *itemList[10];
-
-  int32_t cnt;
-  uint8_t itemListCnt;
-
-  sensor_t *sensor = &get_config_app()->sensor[A1_TEMPERATURE];
-
-  do
-  {
-    cnt = select_indexFromList(ctx, NULL, print_menu_sensor_temp, 0, false);
-
-
-    if (cnt == 0)
-    {
-      itemListCnt = gen_sensorItemList(itemList, temperatureList, _countof(temperatureList));
-      cnt = select_indexFromList(ctx, itemList, NULL, itemListCnt, true);
-      if (cnt > 0)
-      {
-        sensor->type = (eSENSOR_MODEL_t)temperatureList[cnt - 1];
-        set_type(sensor);
-      }
-    }
-
-    else
-    {
-      for (int i = 0; i < _countof(sen_func); i++)
-      {
-        if (sen_func[i].sensorType == sensor->type)
-        {
-          sen_func[i].config_set(ctx, sensor, cnt - 2);
-          break;
-        }
-      }
-    }
-  } while (1);
-}
 
 // 풍향 설정정
 int32_t print_menu_sensor_windDirection(p_shell_context_t ctx)
@@ -1744,7 +1832,7 @@ int32_t menu_sensor(p_shell_context_t ctx)
     {
       break;
     }
-
+    //선택된 센서 설정정
     cnt = menu_sensor_default_2(ctx, (eSENSOR_LIST_t)(cnt - 1));
   } while (cnt != EXIT_PROGRAM);
 
@@ -3401,62 +3489,7 @@ int32_t menu_developer_memory(p_shell_context_t ctx)
   return 0;
 }
 
-int32_t print_developer_sensor(p_shell_context_t ctx)
-{
-  int32_t cnt = 0;
-  //  int32_t i=0;
 
-  ctx->printf("\r\n");
-  for (int i = 0; i < _countof(sensor_name_list); i++)
-  {
-    //  ctx->printf("%2d.%-15s:%s,%d\r\n",i,sensor_name_list[i],
-    //  ITEM_LIST(g_sensor_emul[i].use,enableList),g_sensor_emul[i].data);
-    cnt++;
-  }
-
-  return cnt;
-}
-
-int32_t menu_developer_sensor(p_shell_context_t ctx)
-{
-  int32_t cnt;
-  // int32_t inCnt;
-  // int32_t start,size,len;
-  //  float fVal;
-  int32_t dec;
-  int32_t use;
-  while (1)
-  {
-    cnt = select_indexFromList(ctx, NULL, print_developer_sensor, 0, true);
-
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
-    {
-      return cnt;
-    }
-
-    cnt--;
-
-    ctx->printf("use,data:");
-    if (console_scanf("%d,%d", &use, &dec) == 2)
-    {
-     // g_sensor_emul[cnt].enable = use;
-     // g_sensor_emul[cnt].data.i = dec;
-    }
-  }
-}
-
-int32_t print_menu_developer(p_shell_context_t ctx)
-{
-  int32_t cnt = 0;
-
-  ctx->printf("\r\n");
-  ctx->printf("%2d.interrupt\r\n", cnt++);
-  ctx->printf("%2d.memory\r\n", cnt++);
-  ctx->printf("%2d.sensor emul\r\n", cnt++);
-  ctx->printf("%2d.print sensor config\r\n", cnt++);
-  ctx->printf("%2d.view system logging\r\n", cnt++);
-  return cnt;
-}
 
 int32_t menu_developer_sensor_config(p_shell_context_t ctx)
 {
@@ -3471,7 +3504,7 @@ int32_t menu_developer_sensor_config(p_shell_context_t ctx)
 
   for (i = 0; i < cnt; i++)
   {
-    ctx->printf("%2d:%d", i, config.sensor[i].configCnt);
+    ctx->printf("%13s:%d",sensor_name_list[i], config.sensor[i].configCnt);
     for (int j = 0; j < 4; j++)
     {
       ctx->printf("[%-15s.%d]", ITEM_LIST(config.sensor[i].config[j][0], g_sensor_model_list),
@@ -3548,14 +3581,27 @@ int32_t menu_developer_logging(p_shell_context_t ctx)
     }
   } while (1);
 }
+
+
+int32_t print_menu_developer(p_shell_context_t ctx)
+{
+  int32_t cnt = 0;
+
+  ctx->printf("\r\n");
+  ctx->printf("%2d.인터럽트 설정 확인\r\n", cnt++);
+  ctx->printf("%2d.메모리 테스트\r\n", cnt++);
+  ctx->printf("%2d.센서 config 전부 확인\r\n", cnt++);
+  ctx->printf("%2d.시스템 로그 확인인\r\n", cnt++);
+  return cnt;
+}
+
 int32_t menu_developer(p_shell_context_t ctx)
 {
   int32_t cnt;
   const menu_func menu[] = {[0] = menu_developer_interrupt,
-                            menu_developer_memory,
-                            menu_developer_sensor,
-                            menu_developer_sensor_config,
-                            menu_developer_logging};
+                                  menu_developer_memory,
+                                  menu_developer_sensor_config,
+                                  menu_developer_logging};
   do
   {
     cnt = select_indexFromList(ctx, NULL, print_menu_developer, 0, false);
@@ -3571,6 +3617,8 @@ int32_t menu_developer(p_shell_context_t ctx)
     }
   } while (1);
 }
+
+
 
 const menuFunc_t menuFunc[] = {{.title = "0.diplay", .func = aws_menu_display},
                                {.title = "1.system", .func = menu_system},
@@ -3592,22 +3640,6 @@ int32_t print_menu_root(p_shell_context_t ctx)
   return i;
 }
 
-int32_t menu_root_(p_shell_context_t ctx, int32_t argc, char **argv)
-{
-  int32_t cnt;
-
-  do
-  {
-    cnt = select_indexFromList(ctx, NULL, print_menu_root, 0, false);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
-    {
-      return cnt;
-    }
-    cnt = menuFunc[cnt - 1].func(ctx);
-  } while (cnt != EXIT_PROGRAM);
-
-  return cnt;
-}
 
 int32_t select_menu(select_menu_t *select_menu)
 {
