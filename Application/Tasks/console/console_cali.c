@@ -38,34 +38,6 @@ extern float g_current_temp;
 
 extern bool wait_break(uint32_t timeoutms);
 
-#define PASSWORD "yes"
-
-int get_confirm_input(void)
-{
-  char input[16] = {0};
-
-  debug_printf("계속 진행하려면 yes를 입력하세요.\r\n");
-  debug_printf("확인 문자: ");
-
-  int ret = console_scanf("%15s", input);  // 문자열 입력
-
-  if (ret <= 0)
-  {
-    debug_printf("입력이 실패했습니다.\r\n");
-    return MENU_ABORT;
-  }
-
-  if (strcmp(input, PASSWORD) == 0)
-  {
-    debug_printf("확인 완료.\r\n");
-    return MENU_OK;
-  }
-  else
-  {
-    debug_printf("오류: 진행이 중단됩니다.\r\n");
-    return MENU_ABORT;
-  }
-}
 
 
 int wait_for_enter()

@@ -529,13 +529,9 @@ void SecProcess(void)
     pSystem->mSun[MIN1_PROC].nSunshineTot += 1;  // 1분 누적 일조
     pSystem->mNVram.nMonthSunshine += 1;         // 월간 누적 일조량
 
-    g_config_nvm.sunshine_monthly = pSystem->mNVram.nMonthSunshine;
-
-    WRITE_NVM(sunshine_monthly);
-
+    nvm_set_sunshine_monthly(pSystem->mNVram.nMonthSunshine);
     pSystem->mNVram.nYearSunshine += 1;  // 연간 누적 일조량
-    g_config_nvm.sunshine_yearly = pSystem->mNVram.nYearSunshine;
-    WRITE_NVM(sunshine_yearly);
+    nvm_set_sunshine_yearly(pSystem->mNVram.nYearSunshine);
   }
 
   if (mRealAws.mSolarRad.sReal != 9999)  // 에러값이 아니면 누적일사를 구한다.
@@ -665,11 +661,13 @@ int WindMinMaxAvgSave(SENSOR_WIND_BUF *pSensor, SENSORWIND_BUF *pWindTmp,
   return 0;
 }
 
+/*
+1분이 됬을때 처리 내용
+온도, 습도, 기압 일조, 일사 10분 누적, 및 1분 최소 최고 처리
+일조 아루 총 누적에 처리
+강수량 1분
+*/
 void MinProcess(DATE_TIME_BUF *pDate)
-// 1분이 됬을때 처리 내용
-// 온도, 습도, 기압 일조, 일사 10분 누적, 및 1분 최소 최고 처리
-// 일조 아루 총 누적에 처리
-// 강수량 1분
 {
   uint32_t nIdx;
   SYSTEM_INFO_AWS *pSystem;
@@ -687,8 +685,8 @@ void MinProcess(DATE_TIME_BUF *pDate)
   // 온도
   AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[MIN1_PROC],
                    mRealAws.mTemperature.sReal);
-  pSystem->mTempBuf[MIN10_PROC].lTot +=
-      pAws->mTemperature.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
+  // 1분 평균을 구한 값을 10분 누적에 더한다
+  pSystem->mTempBuf[MIN10_PROC].lTot += pAws->mTemperature.sReal;  
   pSystem->mTempBuf[MIN10_PROC].sAddCnt++;
 
   // 기압
@@ -703,10 +701,9 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pSystem->mHumidBuf[MIN10_PROC].lTot += pAws->mHumidity.sReal;
   pSystem->mHumidBuf[MIN10_PROC].sAddCnt++;
 
-  pSystem->mSun[MIN10_PROC].nSunshineTot +=
-      pSystem->mSun[MIN1_PROC].nSunshineTot;
-  pSystem->mSun[MIN10_PROC].nSolarTot +=
-      pSystem->mSun[MIN1_PROC].nSolarTot / 1000000;  // 단위변환 W/M2 -> MJ/M2
+  pSystem->mSun[MIN10_PROC].nSunshineTot += pSystem->mSun[MIN1_PROC].nSunshineTot;
+  // 단위변환 W/M2 -> MJ/M2
+  pSystem->mSun[MIN10_PROC].nSolarTot += pSystem->mSun[MIN1_PROC].nSolarTot / 1000000;  
 
   // 풍향 풍속
   WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN1_PROC], &mRealAws.mWind);
@@ -717,13 +714,12 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pSystem->mWind[MIN10_PROC].sAddCnt++;
 
   // 일사 일조
-  pAws->mSunshine.sReal =
-      pSystem->mSun[MIN1_PROC].nSunshineTot;      // 일조 1분 누적값
+  // 일조 1분 누적값
+  pAws->mSunshine.sReal = pSystem->mSun[MIN1_PROC].nSunshineTot;     
   pAws->mSunshine.sMax += pAws->mSunshine.sReal;  // 하루 총 일조
   pSystem->mSun[MIN1_PROC].nSunshineTot = 0;
 
-  pAws->mSolarRad.sReal =
-      pSystem->mSun[MIN1_PROC].nSolarTot / 1000;  // 일사 1분   누적값  KJ/m2
+  pAws->mSolarRad.sReal =  pSystem->mSun[MIN1_PROC].nSolarTot / 1000;  // 일사 1분   누적값  KJ/m2
   pSystem->mSun[MIN1_PROC].nSolarTot = 0;
   pSystem->mSun[MIN10_PROC].nSolarTot += pAws->mSolarRad.sReal;
   pAws->mSolarRad.sMax += pAws->mSolarRad.sReal;  // 하루 총 일사
@@ -780,8 +776,8 @@ void MinProcess(DATE_TIME_BUF *pDate)
   // 2010. 08. 28. 수정
   //    pAws->mRainFall.sReal   = pSystem->mRain.sMinRain; // 1분 강수량
   pAws->mRainFall.sMax = pSystem->mRain.sHourRain;
-  pAws->mRainFall.sMin = (uint16_t)pSystem->mNVram.nMonthRain;  // 월간강수량( " )
-  pAws->mRainFall.sSpec = (uint16_t)pSystem->mNVram.nYearRain;  // 연간강수량( " )
+  pAws->mRainFall.sMin = (uint16_t)pSystem->mNVram.nMonthRain;  // 월간강수량
+  pAws->mRainFall.sSpec = (uint16_t)pSystem->mNVram.nYearRain;  // 연간강수량
   pSystem->mRain.sMinRain = 0;                                  // 1분 강수량
 
   pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
@@ -903,6 +899,18 @@ void Min10Process(void)
 #endif
 }
 
+
+/*
+한시간 자료 처리 항목
+온도
+기압
+습도
+풍향
+풍속
+일사
+일조
+지중온도
+*/
 void HourProcess(DATE_TIME_BUF *pDate)
 {
   SYSTEM_INFO_AWS *pSystem;
@@ -951,24 +959,14 @@ void HourProcess(DATE_TIME_BUF *pDate)
   //    pAws->mRainFall.sReal    = pSystem->mRain.sHourRain; // 1시간 강수량
   pSystem->mRain.sHourRain = 0;  // 1시간 강수량
 
-
 }
+
 
 void DayProcess(void)
 {
   SYSTEM_INFO_AWS *pSystem;
 
   pSystem = &Sysinfo;
-  // 전일 강수량 으로 기록
-  // 일간 강우량 Clear
-  // 일간 돌풍속 최대 값 Clear
-  // 온도 최대 최소값 현재 값으로 기록
-  // 습도   "
-  // 기압   "
-  // 지중온도 "			2017.03.30 추가
-  // 일사   Clear 		2017.03.30 추가
-
-
 
   mRealAws.mTemperature.sMin = mRealAws.mTemperature.sReal;
   mRealAws.mBarometric.sMin = mRealAws.mBarometric.sReal;
@@ -1009,15 +1007,13 @@ void MonthProcess(void)
 
   pSystem = &Sysinfo;
 
-  g_config_nvm.rainfall_monthly = pSystem->mNVram.nMonthRain/10.0;
-  WRITE_NVM(rainfall_monthly);
+  set_rainfall_monthly(pSystem->mNVram.nMonthRain/10.0);
+  nvm_set_rainfall_monthly(pSystem->mNVram.nMonthRain/10.0);
 
   pSystem->mNVram.nMonthRain = 0;
 
-  g_config_nvm.sunshine_monthly = pSystem->mNVram.nMonthSunshine = 0;
-  g_config_nvm.sunshine_monthly = 0;
-
-  WRITE_NVM(sunshine_monthly);
+  pSystem->mNVram.nMonthSunshine = 0;
+  nvm_set_sunshine_monthly(pSystem->mNVram.nMonthSunshine);
 }
 
 void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v)
@@ -1168,7 +1164,6 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
       HourProcess(pDate);
       update_kma_data(eAWS_DATA_HOUR);
       pOldDate->Hour = pDate->Hour;
-      // 매 시간 마다 SD CARD에 데이타를 기록
     }
 
     if (pDate->Day != pOldDate->Day)
@@ -1215,7 +1210,7 @@ void update_kma_data(eAWS_DATA_MIN_t min)
 
   switch(min)
   {
-    case eAWS_DATA_REAL:
+    case eAWS_DATA_RAW:
       pAws = &mRealAws;
       break;
     case eAWS_DATA_1MIN:

@@ -12,7 +12,7 @@
 #include "cli_key_code.h"
 #include "dev_io.h"
 #include "cli_input.h"
-
+#include "console_define.h"
 #define UART_LINE_MAX    128
 #define UART_HISTORY_DEPTH  4
 
@@ -330,4 +330,35 @@ int cli_scanf_s(const char *fmt, ...)
   va_end(args);
 
   return ret;
+}
+
+
+
+#define PASSWORD "yes"
+
+int get_confirm_input(void)
+{
+  char input[16] = {0};
+
+  debug_printf("계속 진행하려면 yes를 입력하세요.\r\n");
+  debug_printf("확인 문자: ");
+
+  int ret = cli_scanf_s("%15s", input);  // 문자열 입력
+
+  if (ret <= 0)
+  {
+    debug_printf("입력이 실패했습니다.\r\n");
+    return MENU_ABORT;
+  }
+
+  if (strcmp(input, PASSWORD) == 0)
+  {
+    debug_printf("확인 완료.\r\n");
+    return MENU_OK;
+  }
+  else
+  {
+    debug_printf("오류: 진행이 중단됩니다.\r\n");
+    return MENU_ABORT;
+  }
 }

@@ -8,4 +8,6 @@
 
 int uart_get_line_with_edit(char *buf, int maxlen);
 int cli_scanf_s(const char *fmt, ...);
+
+int get_confirm_input(void);
 #endif

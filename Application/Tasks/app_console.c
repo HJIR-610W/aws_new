@@ -41,7 +41,8 @@
 
 #include "console_utile.h"
 #include "console_aws_display.h"
-
+#include "console_data.h"
+#include "cli_input.h"
 #define EXIT_PROGRAM -3
 #define EXIT_BACK -1
 
@@ -2392,22 +2393,7 @@ menu_func g_dataMenu[] = {menu_data_view, menu_data_edit, menu_data_reset};
 
 int32_t menu_data(p_shell_context_t ctx)
 {
-  int32_t cnt;
-
-  do
-  {
-    cnt = select_indexFromList(ctx, NULL, print_menu_data, 0, false);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
-    {
-      return cnt;
-    }
-    cnt--;
-    cnt = g_dataMenu[cnt](ctx);
-    if (cnt == EXIT_PROGRAM)
-    {
-      return cnt;
-    }
-  } while (1);
+  console_menu_data();
 }
 
 int32_t print_menu_panel(p_shell_context_t ctx)
@@ -2689,14 +2675,20 @@ void config_hj_reset(void)
   save_config_app();
   save_config_sensor();
 }
-
-// 초기화
-int32_t menu_manage_config_reset(p_shell_context_t ctx)
+int32_t menu_manage_config_sensor(p_shell_context_t ctx)
 {
   int32_t cnt;
-  const char *config_menu[] = {"0.AWS 화진 기본 설정", "1.공장 초기화 "};
+  const char *config_menu[] = {"0.월간 우량", "1.연간 우량","2.월간 일조","3.연간 일조"};
 
-  cnt = select_indexFromList(ctx, config_menu, NULL, _countof(config_menu), false);
+
+  while(1)
+  {
+    cnt = select_indexFromList(ctx, config_menu, NULL, _countof(config_menu), false);
+    
+    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    {
+      return cnt;
+    }
 
   if (cnt > 0)
   {
@@ -2704,16 +2696,81 @@ int32_t menu_manage_config_reset(p_shell_context_t ctx)
     switch (cnt)
     {
       case 0:
-        config_hj_reset();
-
+      debug_printf("현재 월간 우량:%f\r\n",get_config_nvm()->rainfall_monthly);
+      if (get_confirm_input()==MENU_ABORT)
+      {
+        continue;
+      }
+        
+        nvm_set_rainfall_monthly(0.0f);
         break;
       case 1:
-        memset(config.sensor, 0, sizeof(config.sensor));
-
-        WRITE_CFG(sensor);
-        memset(&g_config_sensor, 0, sizeof(g_config_sensor));
-        save_config_sensor();
+      debug_printf("현재 연간 우량:%f\r\n",get_config_nvm()->rainfall_yearly);
+      if (get_confirm_input()==MENU_ABORT)
+      {
+        continue;
+      }
+      nvm_set_rainfall_yearly(0.0f);
         break;
+      case 2:
+      debug_printf("현재 월간 일조:%f\r\n",get_config_nvm()->sunshine_monthly);
+      if (get_confirm_input()==MENU_ABORT)
+      {
+        continue;
+      }
+      nvm_set_sunshine_monthly(0.0f);
+      break;
+      case 3:
+      debug_printf("현재 연간 일조:%f\r\n",get_config_nvm()->sunshine_yearly);
+      if (get_confirm_input()==MENU_ABORT)
+      {
+        continue;
+      }
+      nvm_set_sunshine_yearly(0.0f);
+      break;
+
+    }
+  }
+  }
+
+  return 0;
+}
+// 초기화
+int32_t menu_manage_config_reset(p_shell_context_t ctx)
+{
+  int32_t cnt;
+  const char *config_menu[] = {"0.AWS 화진 기본 설정", "1.공장 초기화","2.센서"};
+
+  while(1)
+  {
+    cnt = select_indexFromList(ctx, config_menu, NULL, _countof(config_menu), false);
+
+    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    {
+      return cnt;
+    }
+
+
+    if (cnt > 0)
+    {
+      cnt--;
+      switch (cnt)
+      {
+        case 0:
+          config_hj_reset();
+
+          break;
+        case 1:
+          memset(config.sensor, 0, sizeof(config.sensor));
+
+          WRITE_CFG(sensor);
+          memset(&g_config_sensor, 0, sizeof(g_config_sensor));
+          save_config_sensor();
+          break;
+          case 2:
+          menu_manage_config_sensor(ctx);
+          break;
+      }
     }
   }
 
@@ -2725,7 +2782,7 @@ int32_t menu_manage_print_config_all(p_shell_context_t ctx)
   ctx->printf("ID               :%d\r\n", config.id);
   ctx->printf("비밀번호         :%d\r\n", config.password);
   ctx->printf("충전기 종류      :%s\r\n", ITEM_LIST(config.charger_model, g_chgList));
-  ctx->printf("로그 카운트      :%d\r\n", g_config_nvm.logCnt);
+  ctx->printf("로그 카운트      :%d\r\n", get_config_nvm()->logCnt);
 
   ctx->printf("이더넷 서브넷    :%d.%d.%d.%d\r\n", config.eth_subnet[0], config.eth_subnet[1],
               config.eth_subnet[2], config.eth_subnet[3]);
@@ -2765,11 +2822,11 @@ int32_t print_menu_manage(p_shell_context_t ctx)
 {
   int32_t cnt = 0;
 
-  ctx->printf("\r\n");
-  ctx->printf(" 0.버전\r\n");
-  ctx->printf(" 1.장비 리셋\r\n");
-  ctx->printf(" 2.설정 값\r\n");
-  cnt = 5;
+  debug_printf("\r\n");
+  debug_printf(" %d.버전\r\n",cnt++);
+  debug_printf(" %d.장비 리셋\r\n",cnt++);
+  debug_printf(" %d.설정 값\r\n",cnt++);
+
   return cnt;
 }
 
@@ -2786,13 +2843,12 @@ int32_t menu_manage(p_shell_context_t ctx)
     }
     cnt--;
     cnt = g_manageMenu[cnt](ctx);
-    if (cnt == EXIT_PROGRAM)
+    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
     {
       return cnt;
     }
   } while (1);
-
-  // return 0;//
+ 
 }
 
 int32_t print_menu_cali_adc(p_shell_context_t ctx)
@@ -3487,9 +3543,7 @@ int32_t menu_developer_logging(p_shell_context_t ctx)
       for (int32_t i = startCnt; i <= endCnt; i++)
       {
         logging_read_log(i, &log);
-        sscanf(log.msg, "%02d%02d%02d%02d%02d%02d", &year, &month, &day, &hour, &min, &sec);
-        debug_printf("%4d,%04d-%02d-%02d %02d:%02d:%02d,%s\r\n", i, year + 2000, month, day, hour,
-                     min, sec, &log.msg[13]);
+        debug_printf("%4d,%s\r\n", i,log.msg);
       }
     }
   } while (1);

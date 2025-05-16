@@ -3,7 +3,7 @@
 
 #include "config_define.h"
 #include "config_memory_map.h"
-
+#include "utile.h"
 typedef struct sensor_nvm_S
 {
   config_header_t header;
@@ -22,7 +22,14 @@ void save_config_nvm(void);
   fram_write(CONFIG_NVM_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_nvm_t, x), \
              (uint8_t *)&g_config_nvm.x, sizeof(g_config_nvm.x));
 
-             
+
+void nvm_set_rainfall_yearly(float value);
+void nvm_set_rainfall_monthly(float value);
+void nvm_set_sunshine_yearly(uint32_t value);
+void nvm_set_sunshine_monthly(uint32_t value);
+void set_log_cnt(uint16_t value);
+
+
 extern config_nvm_t g_config_nvm;;
 
 config_nvm_t *get_config_nvm(void);

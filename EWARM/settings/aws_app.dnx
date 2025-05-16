@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>409671220</Checksum>
+        <Checksum>2869537444</Checksum>
     </DebugChecksum>
     <Disassembly>
         <InstrCount>0</InstrCount>
@@ -147,7 +147,8 @@
     </DisassembleMode>
     <Breakpoints2>
         <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\freertosCallBack.c}.34.3" 0 0 1 "" 0 "" 0</Bp0>
-        <Count>1</Count>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\app_logging.c}.129.5" 0 0 1 "" 0 "" 0</Bp1>
+        <Count>2</Count>
     </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>

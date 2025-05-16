@@ -448,7 +448,7 @@ uint16_t get_rain_mm(uint8_t *sensor_err)
   *sensor_err = (uint16_t)p_sensor[A6_RAINFALL_DOT5_1MM].err;
 
   
-  rain = (uint16_t)p_sensor[A6_RAINFALL_DOT5_1MM].data.f*10;;
+  rain = (uint16_t)(p_sensor[A6_RAINFALL_DOT5_1MM].data.f*10);;
 
   p_sensor[A6_RAINFALL_DOT5_1MM].data.f = 0;// 우량은 이전값을 초기화해줘야함
   return rain;
@@ -581,7 +581,7 @@ void check_sensor_use(void)
 {
   kma_data_ex_t *p_kma_data;
 
-  for (int min = eAWS_DATA_REAL; min <= eAWS_DATA_HOUR; min++)
+  for (int min = eAWS_DATA_AVG; min <= eAWS_DATA_RAW; min++)
   {
     p_kma_data = get_kma_data((eAWS_DATA_MIN_t)min);
 
@@ -659,7 +659,7 @@ void update_raw(void)
 {
   kma_data_ex_t *p_kma_data;
 
-  p_kma_data = get_kma_data((eAWS_DATA_MIN_t)eAWS_DATA_REAL);
+  p_kma_data = get_kma_data((eAWS_DATA_MIN_t)eAWS_DATA_RAW);
 
   p_kma_data->temperature.data = MAKE_TEMP(g_p_raw->data[A1_TEMPERATURE].data.f);
   p_kma_data->wind_direction_avg.data = MAKE_X10(g_p_raw->data[A2_WIND_DIRECTION].data.f);

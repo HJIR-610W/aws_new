@@ -340,11 +340,23 @@ void set_rainfall_today(float rainfall)
     g_rainfall.rainfall_today = rainfall; 
 }
 
-void set_rainfall_hourly(float rainfall) { g_rainfall.rainfall_hourly = rainfall; }
+void set_rainfall_hourly(float rainfall)
+{ 
+  g_rainfall.rainfall_hourly = rainfall; 
+}
 
-void set_rainfall_monthly(float rainfall) { g_rainfall.rainfall_monthly = rainfall; }
+void set_rainfall_monthly(float rainfall)
+{ 
+  g_rainfall.rainfall_monthly = rainfall; 
+}
 
-void set_rainfall_yearly(float rainfall) { g_rainfall.rainfall_yearly = rainfall; }
+
+void set_rainfall_yearly(float rainfall)
+{ 
+  g_rainfall.rainfall_yearly = rainfall; 
+}
+
+
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
 {
@@ -352,9 +364,6 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
 
   switch (min)
   {
-    case eAWS_DATA_REAL:
-      p_kma_data = &g_kma_raw_ex;
-      break;
     case eAWS_DATA_AVG:
       p_kma_data = &g_kma_inst_ex;
       break;
@@ -367,7 +376,10 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
     case eAWS_DATA_HOUR:
       p_kma_data = &g_kma_1Hour_ex;
       break;
-    default:
+      case eAWS_DATA_RAW:
+      p_kma_data = &g_kma_raw_ex;
+      break;
+      default:
       break;
   }
 

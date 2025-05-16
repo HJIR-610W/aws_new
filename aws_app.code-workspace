@@ -87,7 +87,10 @@
 			"file_io.h": "c",
 			"ff.h": "c",
 			"test_filesystem.h": "c",
-			"app_file.h": "c"
+			"app_file.h": "c",
+			"console_define.h": "c",
+			"app_datalogging.h": "c",
+			"console_data.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

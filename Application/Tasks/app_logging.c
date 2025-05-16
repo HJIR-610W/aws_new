@@ -111,7 +111,8 @@ void logging_read_log(int32_t offsetCnt,loggingMsg_t *loggingMsg)
     {
       if(loggingMsg->msg[i] != ' ')
       {
-      if(loggingMsg->msg[i] < 33 || loggingMsg->msg[i] > 126)
+        //스페이스미만
+      if(loggingMsg->msg[i] <0x20 || loggingMsg->msg[i] > 126)
       {
           loggingMsg->msg[i] = 0;
       }

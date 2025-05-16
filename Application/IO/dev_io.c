@@ -91,7 +91,7 @@ void debug_puts_nonos(char *str)
 
 int32_t debug_printf(const char *pFmt, ...)
 {
-   char printf_buff[100];
+   char printf_buff[256];
   char buff[2];
   char *ptr = NULL;
   char *temp = NULL;

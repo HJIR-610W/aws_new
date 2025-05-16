@@ -9,7 +9,6 @@
 #include "user_heap.h"
 
 
-uint8_t g_file_init = 0;
 volatile uint8_t *p_data;
 #define TEST_FILE_NAME "0:test.txt"
 #define TEST_MSG "1234"
@@ -20,11 +19,7 @@ void test_filesystem(void)
   char temp[10];
   int ret;
 
-  if(g_file_init == 0)
-  {
-    g_file_init = 1;//한번만 초기화 
-    file_init();
-  }
+
 
   //파일 쓰기 ,읽기 속도 테스트
   test_file_rw_speed("0:1mb.txt",1024*1024);

@@ -7,7 +7,7 @@
 #include "utile_time.h"
 typedef struct 
 {
-    char msg[32];
+    char msg[64];
 }loggingMsg_t;
 
 int32_t logging_printf(const char *log);

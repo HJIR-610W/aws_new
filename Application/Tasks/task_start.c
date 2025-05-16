@@ -18,6 +18,7 @@
 #include "mcu_interrupt.h"
 #include "mcu_utile.h"
 #include "project_def.h"
+#include "pcb_define.h"
 #include "sdio.h"
 #include "task_ble.h"
 #include "task_cellular.h"
@@ -45,6 +46,30 @@ const osThreadAttr_t kStartTask_attributes = {
     .priority = (osPriority_t)osPriorityRealtime7,
 };
 
+void log_boot_reason(void)
+{
+    uint32_t csr = RCC->CSR;
+
+    if (csr & RCC_CSR_LPWRRSTF)
+        os_logging_printf("Boot: LPWR reset");
+    else if (csr & RCC_CSR_WWDGRSTF)
+        os_logging_printf("Boot: WWDG reset");
+    else if (csr & RCC_CSR_IWDGRSTF)
+        os_logging_printf("Boot: IWDG reset");
+    else if (csr & RCC_CSR_SFTRSTF)
+        os_logging_printf("Boot: SW reset");
+    else if (csr & RCC_CSR_PORRSTF)
+        os_logging_printf("Boot: POR/PDR reset");
+    else if (csr & RCC_CSR_PINRSTF)
+        os_logging_printf("Boot: NRST pin");
+    else if (csr & RCC_CSR_BORRSTF)
+        os_logging_printf("Boot: BOR reset");
+    else
+        os_logging_printf("Boot: unknown");
+
+    // 리셋 플래그 초기화
+    RCC->CSR |= RCC_CSR_RMVF;
+}
 
 
 /**
@@ -102,7 +127,7 @@ void startTask(void *arg)
   bleTask_init();
 
 
-  os_logging_printf("Starting task");
+  log_boot_reason();
   osThreadExit();  // 종료 시킴
 }
 

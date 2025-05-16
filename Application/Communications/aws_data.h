@@ -5,14 +5,21 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define READ_TEMP(x) ((float)(x) / 10.0f - 100.0f)  // 기온, 지면온도, 지중온도, 초상온도
+#define READ_RADI(x) ((float)(x) / 10.0f - 100.0f)  // 순복사, 전천복사, 반사복사 등
+#define READ_X10(x) ((float)(x) / 10.0f)            // 풍속, 풍향, 습도, 토양수분,기압,강수량량 등
+#define READ_X100(x) ((float)(x) / 100.0f)          // 일사량, 조도량 등
+#define READ_DIRECT(x) ((uint16_t)(x))  // 운고, 시정, 현재일기, 타코미터 등 (정수값 그대로)
+
+
 // 새롭게 추가
 typedef enum aws_data_min_s
 {
-  eAWS_DATA_REAL,
   eAWS_DATA_AVG,
   eAWS_DATA_1MIN,
   eAWS_DATA_10MIN,
-  eAWS_DATA_HOUR
+  eAWS_DATA_HOUR,
+  eAWS_DATA_RAW
 } eAWS_DATA_MIN_t;
 typedef struct aws_data_s
 {
@@ -414,6 +421,7 @@ void set_rainfall_today(float rainfall);
 void set_rainfall_hourly(float rainfall);
 void set_rainfall_monthly(float rainfall);
 void set_rainfall_yearly(float rainfall);
+
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min) ;
 
