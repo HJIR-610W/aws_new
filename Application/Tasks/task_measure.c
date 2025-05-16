@@ -416,7 +416,8 @@ void measure_250ms(void)
   sensor_t *p_sensor_cfg = g_sensor_config_bk;
   wind_t wind;
   sensor_data_t *p_reading_250ms = g_reading_250.data;
-
+  float offset=0;
+  
   if (p_sensor_cfg[A3_WIND_SPEED].type)
   {
     speed = wind_read(g_sensor_driver[A3_WIND_SPEED], WIND_CHANNEL_SPEED, &err_wind_spd);

@@ -585,6 +585,31 @@ int32_t print_menu_sensor(p_shell_context_t ctx)
   return cnt;
 }
 
+int32_t print_menu_sensor_offset(p_shell_context_t ctx)
+{
+  char opt[20];
+  int32_t cnt = 0;
+  int i = 0;
+  float offset;
+  ctx->printf("\r\n");
+
+#if 1
+  cnt = _countof(sensor_name_list) / 2;
+
+  for (i = 0; i < cnt; i++)
+  {
+    offset = get_config_app()->sensor[i].offset;
+    ctx->printf("%2d.%-14s:%-24s %.2f,  ", i, sensor_name_list[i],
+                ITEM_LIST(get_config_app()->sensor[i].type, g_sensor_model_list), offset);
+
+    ctx->printf("%2d.%-14s:%-24s %.2f\r\n", i + cnt, sensor_name_list[i + cnt],
+                ITEM_LIST(get_config_app()->sensor[i + cnt].type, g_sensor_model_list), offset);
+  }
+
+#endif
+  cnt = _countof(sensor_name_list);
+  return cnt;
+}
 uint8_t print_rs232_cfg(p_shell_context_t ctx, rs232_config_t *rs232_config, uint8_t cnt)
 {
   const char *portNameList[10];
@@ -1834,6 +1859,49 @@ int32_t menu_sensor(p_shell_context_t ctx)
     }
     //선택된 센서 설정정
     cnt = menu_sensor_default_2(ctx, (eSENSOR_LIST_t)(cnt - 1));
+  } while (cnt != EXIT_PROGRAM);
+
+  return cnt;
+}
+
+
+int32_t menu_offset(p_shell_context_t ctx)
+{
+  int32_t cnt;
+
+  do
+  {
+    cnt = select_indexFromList(ctx, NULL, print_menu_sensor_offset, 0, false);
+    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    {
+      break;
+    }
+
+    debug_printf("%20s offset:%f\r\n",sensor_name_list[cnt-1],
+      get_config_app()->sensor[cnt-1].offset);
+
+    if(get_user_confirm("offset을 변경하시겠습니까?")==1)
+    {
+      float offset=0;
+      debug_printf("오프셋을 입력해주세요>>");
+      cnt = console_scanf("%f", &offset);
+
+      if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+      {
+        return cnt;
+      }
+      if (cnt == 1)
+      {
+        set_sensor_offset(cnt-1,offset);
+      }
+      else
+      {
+        debug_printf("입력값에 오류가 있습니다.");
+      }
+
+    }
+
+
   } while (cnt != EXIT_PROGRAM);
 
   return cnt;
@@ -3623,12 +3691,13 @@ int32_t menu_developer(p_shell_context_t ctx)
 const menuFunc_t menuFunc[] = {{.title = "0.diplay", .func = aws_menu_display},
                                {.title = "1.system", .func = menu_system},
                                {.title = "2.sensor", .func = menu_sensor},
-                               {.title = "3.network", .func = menu_network},
-                               {.title = "4.data", .func = menu_data},
-                               {.title = "5.display panel", .func = aws_menu_display_panel},
-                               {.title = "6.manage", .func = menu_manage},
-                               {.title = "7.calibraion", .func = menu_calibration},
-                               {.title = "8.developer", .func = menu_developer}};
+                               {.title = "3.offset", .func = menu_offset},
+                               {.title = "4.network", .func = menu_network},
+                               {.title = "5.data", .func = menu_data},
+                               {.title = "6.display panel", .func = aws_menu_display_panel},
+                               {.title = "7.manage", .func = menu_manage},
+                               {.title = "8.calibraion", .func = menu_calibration},
+                               {.title = "9.developer", .func = menu_developer}};
 
 int32_t print_menu_root(p_shell_context_t ctx)
 {

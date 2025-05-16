@@ -129,6 +129,7 @@ typedef struct system_s
 void save_config_app(void);
 void load_config_app(void);
 void save_config_app_field(eCONFIG_APP_FIELD_t field);
+void set_sensor_offset(eSENSOR_LIST_t sensor,float offset);
 
 config_t *get_config_app(void);
 void make_comList(char *out, uint16_t outsize) ;

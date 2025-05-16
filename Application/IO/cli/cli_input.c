@@ -374,7 +374,6 @@ int32_t get_user_confirm(const char *message)
 
   if (ret <= 0)
   {
-    debug_printf("yes 또는 no를 입력해주세요\r\n");
     return -1;
   }
 

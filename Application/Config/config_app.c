@@ -287,6 +287,12 @@ config_t *get_config_app(void)
   return &config; 
 }
 
+void set_sensor_offset(eSENSOR_LIST_t sensor,float offset)
+{
+  config.sensor[sensor].offset = offset;
+  WRITE_CFG(sensor[sensor].offset);
+}
+
 //task 실행 안되게 하고 업데이트 후 장비 재시작
 void config_app_reset(void)
 {
