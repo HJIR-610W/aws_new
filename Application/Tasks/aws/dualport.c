@@ -511,7 +511,7 @@ void update_old_kma_real(void)
   g_kma_inst_ex.wind_direction_instant.data = mRealAws.mWind.mDirection.sMax;
   g_kma_inst_ex.wind_direction_instant.err = 0;
 
-  g_kma_inst_ex.precipitation.data = get_system_info_aws()->mRain.sDayCount;
+  g_kma_inst_ex.precipitation.data =  mRealAws.mRainFall.sReal;
 
   g_kma_inst_ex.pressure.data = mRealAws.mBarometric.sReal;
   g_kma_inst_ex.pressure.err = get_sensor_err(A7_PRESSURE);
@@ -560,6 +560,11 @@ void update_old_kma_real(void)
 
   g_kma_inst_ex.soil_temperature_1_5m.data = mRealAws.mSoilTemp1_5m.sReal;
   g_kma_inst_ex.soil_temperature_1_5m.err = get_sensor_err(B11_SOIL_TEMPERATURE_150CM);
+
+
+  //추가됨
+  g_kma_inst_ex.soil_moisture_10cm.data = g_kma_raw_ex.soil_moisture_10cm.data;
+
 
   set_rainfall_yesterday(Sysinfo.mRain.sBefDayRain/10.0);
   set_rainfall_today(Sysinfo.mRain.sDayRain / 10.0);
@@ -693,11 +698,11 @@ void update_raw(void)
   p_kma_data->soil_temperature_5m.data =
       MAKE_TEMP(g_p_raw->data[B13_SOIL_TEMPERATURE_500CM].data.f);
 
-  p_kma_data->cloud_height_1st.data = MAKE_DIRECT(g_p_raw->data[C1_CLOUD_BASE1].data.i);
-  p_kma_data->cloud_height_2nd.data = MAKE_DIRECT(g_p_raw->data[C2_CLOUD_BASE2].data.i);
-  p_kma_data->cloud_height_3rd.data = MAKE_DIRECT(g_p_raw->data[C3_CLOUD_BASE3].data.i);
-  p_kma_data->cloud_amount.data = MAKE_DIRECT(g_p_raw->data[C4_CLOUD_COVER].data.i);
-  p_kma_data->visibility.data = MAKE_DIRECT(g_p_raw->data[C5_VISIBILITY].data.i);
+  p_kma_data->cloud_height_1st.data = MAKE_DIRECT(g_p_raw->data[C1_CLOUD_BASE1].data.f);
+  p_kma_data->cloud_height_2nd.data = MAKE_DIRECT(g_p_raw->data[C2_CLOUD_BASE2].data.f);
+  p_kma_data->cloud_height_3rd.data = MAKE_DIRECT(g_p_raw->data[C3_CLOUD_BASE3].data.f);
+  p_kma_data->cloud_amount.data = MAKE_DIRECT(g_p_raw->data[C4_CLOUD_COVER].data.f);
+  p_kma_data->visibility.data = MAKE_DIRECT(g_p_raw->data[C5_VISIBILITY].data.f);
   p_kma_data->pm10_concentration.data = MAKE_X10(g_p_raw->data[C6_PM10].data.f);
   p_kma_data->pm25_concentration.data = MAKE_X10(g_p_raw->data[C7_PM2DOT5].data.f);
   p_kma_data->net_radiation.data = MAKE_RADI(g_p_raw->data[C8_NET_RADIATION].data.f);
@@ -722,9 +727,65 @@ void update_raw(void)
   p_kma_data->humidity_0_5m.data = MAKE_X10(g_p_raw->data[N12_HUMIDITY_50CM].data.f);
   p_kma_data->humidity_4m.data = MAKE_X10(g_p_raw->data[N13_HUMIDITY_400CM].data.f);
 
-  p_kma_data->tacometer.data = MAKE_DIRECT(g_p_raw->data[I1_TACHOMETER].data.i);
-  p_kma_data->temp[USER_WATER].data = MAKE_X10(g_p_raw->data[USER_WATER].data.f);
+  p_kma_data->tacometer.data = MAKE_DIRECT(g_p_raw->data[I1_TACHOMETER].data.f);
+
 }
+
+
+void update_unused_data(kma_data_ex_t *p_dest, kma_data_ex_t *p_source)
+{
+  //p_dest->temperature.data = p_source->temperature.data;
+  //p_dest->wind_direction_avg.data = p_source->wind_direction_avg.data;
+  //p_dest->wind_speed_avg.data = p_source->wind_speed_avg.data;
+  //p_dest->wind_direction_instant.data = p_source->wind_direction_instant.data;
+  //p_dest->wind_speed_instant.data = p_source->wind_speed_instant.data;
+  //p_dest->precipitation.data = p_source->precipitation.data;
+ // p_dest->pressure.data = p_source->pressure.data;
+  //p_dest->precipitation_presence.data = p_source->precipitation_presence.data;
+ // p_dest->snowfall.data = p_source->snowfall.data;
+  //p_dest->relative_humidity.data = p_source->relative_humidity.data;
+  p_dest->precipitation_fine.data = p_source->precipitation_fine.data;
+  //p_dest->solar_radiation.data = p_source->solar_radiation.data;
+ // p_dest->sunshine_duration.data = p_source->sunshine_duration.data;
+  p_dest->surface_temperature.data = p_source->surface_temperature.data;
+  p_dest->grass_temperature.data = p_source->grass_temperature.data;
+  //p_dest->soil_temperature_5cm.data = p_source->soil_temperature_5cm.data;
+  //p_dest->soil_temperature_10cm.data = p_source->soil_temperature_10cm.data;
+  //p_dest->soil_temperature_20cm.data = p_source->soil_temperature_20cm.data;
+  //p_dest->soil_temperature_30cm.data = p_source->soil_temperature_30cm.data;
+  //p_dest->soil_temperature_50cm.data = p_source->soil_temperature_50cm.data;
+  //p_dest->soil_temperature_1m.data = p_source->soil_temperature_1m.data;
+  //p_dest->soil_temperature_1_5m.data = p_source->soil_temperature_1_5m.data;
+  //p_dest->soil_temperature_3m.data = p_source->soil_temperature_3m.data;
+  //p_dest->soil_temperature_5m.data = p_source->soil_temperature_5m.data;
+  p_dest->cloud_height_1st.data = p_source->cloud_height_1st.data;
+  p_dest->cloud_height_2nd.data = p_source->cloud_height_2nd.data;
+  p_dest->cloud_height_3rd.data = p_source->cloud_height_3rd.data;
+  p_dest->cloud_amount.data = p_source->cloud_amount.data;
+  p_dest->visibility.data = p_source->visibility.data;
+  p_dest->pm10_concentration.data = p_source->pm10_concentration.data;
+  p_dest->pm25_concentration.data = p_source->pm25_concentration.data;
+  p_dest->net_radiation.data = p_source->net_radiation.data;
+  p_dest->total_radiation.data = p_source->total_radiation.data;
+  p_dest->reflected_radiation.data = p_source->reflected_radiation.data;
+  p_dest->direct_radiation.data = p_source->direct_radiation.data;
+  p_dest->current_weather.data = p_source->current_weather.data;
+  p_dest->soil_moisture_10cm.data = p_source->soil_moisture_10cm.data;
+  p_dest->soil_moisture_20cm.data = p_source->soil_moisture_20cm.data;
+  p_dest->soil_moisture_30cm.data = p_source->soil_moisture_30cm.data;
+  p_dest->soil_moisture_50cm.data = p_source->soil_moisture_50cm.data;
+  p_dest->illuminance.data = p_source->illuminance.data;
+  p_dest->wind_speed_1_5m.data = p_source->wind_speed_1_5m.data;
+  p_dest->wind_speed_4m.data = p_source->wind_speed_4m.data;
+  p_dest->instant_wind_speed_1_5m.data = p_source->instant_wind_speed_1_5m.data;
+  p_dest->instant_wind_speed_4m.data = p_source->instant_wind_speed_4m.data;
+  p_dest->temperature_0_5m.data = p_source->temperature_0_5m.data;
+  p_dest->temperature_4m.data = p_source->temperature_4m.data;
+  p_dest->humidity_0_5m.data = p_source->humidity_0_5m.data;
+  p_dest->humidity_4m.data = p_source->humidity_4m.data;
+  p_dest->tacometer.data = p_source->tacometer.data;
+}
+
 
 void DUALPORT_TASK(void *arg)
 {
@@ -766,7 +827,7 @@ void DUALPORT_TASK(void *arg)
           check_sensor_use();
           update_raw();
 
-              pSystem->mRain.sDayCount += get_rain_mm(&sensor_err);
+          pSystem->mRain.sDayCount += get_rain_mm(&sensor_err);
           update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
 
           sSpeed = sSpeedOld;
@@ -908,6 +969,9 @@ void DUALPORT_TASK(void *arg)
           schedule_process(&ct, &time_old);
 
           update_old_kma_real();
+          //현재 값연산 없는 항목은 원본값으로 처리리
+          update_unused_data(get_kma_data(eAWS_DATA_AVG),get_kma_data(eAWS_DATA_RAW));//
+          update_unused_data(get_kma_data(eAWS_DATA_1MIN),get_kma_data(eAWS_DATA_RAW));//
         }
 }
 
@@ -932,9 +996,6 @@ void old_aws_init(void)
   pSystem->mNVram.nYearSunshine = (uint32_t)(get_config_nvm()->sunshine_yearly);
   pSystem->mNVram.nMonthSunshine = (uint32_t)(get_config_nvm()->sunshine_monthly);
 }
-
-
-
 
 
 void dualportTask_init(void)

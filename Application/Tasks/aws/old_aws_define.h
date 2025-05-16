@@ -156,10 +156,10 @@ typedef struct
   uint16_t sDayRain;     // 일간 강수량
   uint16_t sBefDayRain;  // 전일 강수량
 
-  uint16_t sDayCount;       // Mega에서 올라온 값
+  uint16_t sDayCount;       
   uint16_t sDayCountOld;    // 임시 저장 값
-  uint16_t sDayCountFlag;   // 일간 강우량을 새로운 값으로 써넣을시 Dual Port의 동기화
-  uint16_t sDayCountValue;  // 써넣어야할 값
+
+
 
 } SENSORRAIN_BUF;
 

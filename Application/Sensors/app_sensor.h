@@ -172,6 +172,7 @@ extern const uint8_t soilTemp150cmList[3];
 extern const uint8_t soilTemp300cmList[3];
 extern const uint8_t soilTemp500cmList[3];
 extern const uint8_t temperature50cmList[2];
+extern const uint8_t defaultList[2];
 
 extern const char *sensor_name_list[SENSOR_LIST_MAX];
 extern const char *sensor_format_list[SENSOR_LIST_MAX];

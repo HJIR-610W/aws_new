@@ -50,7 +50,7 @@ const uint8_t soilTemp150cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_150CM, S_T_ADC};
 const uint8_t soilTemp300cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_300CM, S_T_ADC};
 const uint8_t soilTemp500cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_500CM, S_T_ADC};
 const uint8_t temperature50cmList[] = {S_T_UNSUED, S_T_PT100_B};
-const uint8_t defaultList[] = {S_T_UNSUED, S_T_ADC, S_T_GENERAL_232, S_T_GENERAL_485};
+const uint8_t defaultList[] = {S_T_UNSUED, S_T_ADC};
 
 const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] = {
     {.list = temperatureList, .cnt = sizeof(temperatureList)},      // A1_TEMPERATURE

@@ -204,7 +204,7 @@ typedef struct
 typedef struct
 {
   bool init;
-  aws_data_t crc;
+  uint32_t crc;
   // 1. 기온 (1분 평균)
   aws_data_t temperature;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~ 1500
                            // (관측값 * 10)

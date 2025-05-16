@@ -396,40 +396,28 @@ void SecProcess(void)
                 &pSystem->mHumidBuf[HOUR_PROC].sMax);
 
 
+  
    sRain = pSystem->mRain.sDayCount - pSystem->mRain.sDayCountOld;
 
   if (sRain != 0)
   {
     // 강우량 값이 변경 되었음
     pSystem->mRain.sDayCountOld = pSystem->mRain.sDayCount;
-
     pSystem->mRain.sMinRain += sRain;  // 1분 강수량
-    //        m1MinAws->mRainFall.sReal   += sRain; // 1분 강수량
-
     pSystem->mRain.s10MinRain += sRain;  // 10분 강수량
-    //        m10MinAws->mRainFall.sReal  += sRain; // 10분 강수량
-
     pSystem->mRain.sHourRain += sRain;  // 1시간강수량
-    //        mHourAws->mRainFall.sReal   += sRain; // 1시간강수량
-
     pSystem->mRain.sDayRain += sRain;     // 일간강수량
+
     pSystem->mNVram.nMonthRain += sRain;  // 월간강수량
-
-    
-    g_config_nvm.rainfall_monthly = pSystem->mNVram.nMonthRain/10.0;
-
-    WRITE_NVM(rainfall_monthly);
-
+  
+    nvm_set_rainfall_monthly(pSystem->mNVram.nMonthRain/10.0);
     pSystem->mNVram.nYearRain += sRain;  // 연간강수량
+    nvm_set_rainfall_yearly(pSystem->mNVram.nYearRain / 10.0);
 
-    g_config_nvm.rainfall_yearly = pSystem->mNVram.nYearRain / 10.0;
-
-    WRITE_NVM(rainfall_yearly);
   }
 
 
-  mRealAws.mRainFall.sReal =
-      pSystem->mRain.sDayRain;  // 일간강수량(초단위로 바뀌는 값)
+  mRealAws.mRainFall.sReal = pSystem->mRain.sDayRain;  // 일간강수량(초단위로 바뀌는 값)
   // 2010. 08. 28. 수정 : 1일 강수량으로 만들기위함
   mMinAws.mRainFall.sReal = pSystem->mRain.sDayRain;
   m10MinAws.mRainFall.sReal = pSystem->mRain.sDayRain;
@@ -994,11 +982,13 @@ void DayProcess(void)
   mMinAws.mSolarRad.sMax = 0;   // 하루 총 일사
 
   // 강수량 처리
-  pSystem->mRain.sBefDayRain = pSystem->mRain.sDayRain;  // 전일강수량 <-
+  pSystem->mRain.sBefDayRain = pSystem->mRain.sDayRain;  // 전일강수량
   pSystem->mRain.sDayRain = 0;
   pSystem->mRain.sDayCount=0;
-  pSystem->mRain.sDayCountValue = 0;
-  pSystem->mRain.sDayCountFlag = 1;
+  pSystem->mRain.sDayCountOld = 0;
+
+
+
 }
 
 void MonthProcess(void)
@@ -1007,13 +997,10 @@ void MonthProcess(void)
 
   pSystem = &Sysinfo;
 
-  set_rainfall_monthly(pSystem->mNVram.nMonthRain/10.0);
-  nvm_set_rainfall_monthly(pSystem->mNVram.nMonthRain/10.0);
-
   pSystem->mNVram.nMonthRain = 0;
-
   pSystem->mNVram.nMonthSunshine = 0;
-  nvm_set_sunshine_monthly(pSystem->mNVram.nMonthSunshine);
+  nvm_set_rainfall_monthly(0);
+  nvm_set_sunshine_monthly(0);
 }
 
 void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v)
@@ -1182,15 +1169,10 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
 
     if (pDate->Year != pOldDate->Year)
     {
-      g_config_nvm.rainfall_yearly = Sysinfo.mNVram.nYearRain/10.0;
       Sysinfo.mNVram.nYearRain=0;
-
-      WRITE_NVM(rainfall_yearly);
-
-      g_config_nvm.sunshine_yearly = Sysinfo.mNVram.nYearSunshine;
+      nvm_set_rainfall_yearly(0);
       Sysinfo.mNVram.nYearSunshine = 0;
-      
-      WRITE_NVM(sunshine_yearly);
+      nvm_set_sunshine_yearly(0);
       pOldDate->Year = pDate->Year;
     }
 

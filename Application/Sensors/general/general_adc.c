@@ -1,5 +1,7 @@
 
 #include <stdint.h>
+#include <stddef.h>
+#include <math.h>
 
 #include "app_sensor.h"
 #include "driver_interface.h"
@@ -89,6 +91,11 @@ float general_adc_read(void *driver,uint8_t *err)
   general_adc_cfg_t *cfg = ((driver_t *)driver)->cfg;
   adc_config_t adc_config;
   
+  if(driver == NULL)
+  {
+    *err = 1;
+    return NAN;
+  }
   adc_config.mode      = cfg->mode;
   adc_config.channel   = cfg->channel;
   adc_config.highScale = cfg->highScale;

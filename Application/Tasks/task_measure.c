@@ -324,6 +324,11 @@ void sensor_init(void)
           num = get_driverNum(p_sensor[N10_AIR_TEMPERATURE_50CM].type);
           g_sensor_driver[N10_AIR_TEMPERATURE_50CM] = temperature_open(num, 0);
           break;
+        default:
+        num = get_driverNum(p_sensor[i].type);
+        para = get_sensor_config(&p_sensor[i]);
+        g_sensor_driver[i] = general_adc_open(num, para);
+        break;
       }
     }
   }
@@ -417,7 +422,7 @@ void measure_250ms(void)
   wind_t wind;
   sensor_data_t *p_reading_250ms = g_reading_250.data;
   float offset=0;
-  
+
   if (p_sensor_cfg[A3_WIND_SPEED].type)
   {
     speed = wind_read(g_sensor_driver[A3_WIND_SPEED], WIND_CHANNEL_SPEED, &err_wind_spd);
@@ -444,6 +449,7 @@ void measure_1s(void)
   int32_t iData;
   float adc;
   float fData;
+  float offset=0;
   eSENSOR_MODEL_t model;
   eSENSOR_LIST_t sensor_type;
   sensor_data_t *pa_reading_1s = g_reading_1.data;
@@ -551,6 +557,11 @@ void measure_1s(void)
               pa_reading_1s[B13_SOIL_TEMPERATURE_500CM].data.f = fData;
               pa_reading_1s[B13_SOIL_TEMPERATURE_500CM].err = read_err;
               break;
+            default:
+            fData = general_adc_read(g_sensor_driver[sensor_type],&read_err);
+            offset = sensor[sensor_type].offset;
+            pa_reading_1s[sensor_type].data.f = fData + offset; 
+            break;
           }
         }
       }
