@@ -6,9 +6,10 @@
 #include "aws_data.h"
 #include "driver_interface.h"
 #include "driver_uart.h"
+
 uint16_t send_panel_std(driver_t *panel_port)
 {
-  uint8_t framemk[100];
+  uint8_t framemk[50];
 	uint8_t 	cnt = 0;
 	uint32_t 	i;
 	SYSTEM_INFO_AWS	        *pSystem;
@@ -38,9 +39,9 @@ uint16_t send_panel_std(driver_t *panel_port)
 
     cnt     += 5;
 
-    sprintf(&framemk[cnt],"F%04d", get_rainfall()->rainfall_today);                                    // F 오늘 강수량 0000 - 9999 mm (관측값 * 10)
+    sprintf(&framemk[cnt],"F%04d", (uint16_t)(get_rainfall()->rainfall_today*10));                                    // F 오늘 강수량 0000 - 9999 mm (관측값 * 10)
     cnt     += 5;
-    sprintf(&framemk[cnt],"G%04d", get_rainfall()->rainfall_yesterday);                                 // G 어제 강수량 0000 - 9999 mm (관측값 * 10)
+    sprintf(&framemk[cnt],"G%04d", (uint16_t)(get_rainfall()->rainfall_yesterday*10));                                 // G 어제 강수량 0000 - 9999 mm (관측값 * 10)
     cnt     += 5;
 
     sprintf(&framemk[cnt],"H%01d", p_kma->precipitation_presence.data);                                    // H 강수 유무 1: 유 0: 무

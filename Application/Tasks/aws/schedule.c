@@ -414,6 +414,11 @@ void SecProcess(void)
     pSystem->mNVram.nYearRain += sRain;  // 연간강수량
     nvm_set_rainfall_yearly(pSystem->mNVram.nYearRain / 10.0);
 
+
+    set_rainfall_monthly( pSystem->mNVram.nMonthRain / 10.0);
+    set_rainfall_yearly(pSystem->mNVram.nYearRain / 10.0);
+
+
   }
 
 

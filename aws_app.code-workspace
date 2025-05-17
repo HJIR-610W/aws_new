@@ -94,7 +94,11 @@
 			"hj_temperature.h": "c",
 			"cmath": "c",
 			"driver_interface.h": "c",
-			"panel_common.h": "c"
+			"panel_common.h": "c",
+			"config_app.h": "c",
+			"system_err.h": "c",
+			"string.h": "c",
+			"app_rs485.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

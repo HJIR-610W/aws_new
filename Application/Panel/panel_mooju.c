@@ -31,6 +31,8 @@ framemk[cnt++] 		= 0x01;																	// Length
 framemk[cnt++]		= radd_dirc( p_kma->wind_direction_avg.data/ 10.0);
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
 driver_uart_send(panel_port,framemk,cnt);
+// 51 01 05 02 01 01 0A 
+
 
 osDelay(500);																				// 500 ms
 
@@ -59,8 +61,6 @@ cnt					+= 9;
 
 }
 
-
-
 sprintf(&framemk[cnt],"%02d%02d%02d%02d", pDate->Month, pDate->Day,
                        pDate->Hour, pDate->Min);						// 월일시분 
 cnt					+= 8;
@@ -87,7 +87,7 @@ cnt					+= 5;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
 driver_uart_send(panel_port,framemk,cnt);
-osDelay(100);																				// 500 ms
+osDelay(500);																				// 500 ms
 
 cnt					= 0;
 framemk[cnt++] 		= 'Q';																	//Start Code 'Q'
@@ -98,15 +98,15 @@ framemk[cnt++] 		= 17;																	// Length
 
 sprintf(&framemk[cnt],"%5.1f", (float)p_kma->wind_speed_avg.data / 10.0);						// 풍속
 cnt					+= 5;
-sprintf(&framemk[cnt],"%4d", get_rainfall()->rainfall_yearly / 10);					// 연간 누계 강우량
+sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_yearly*10) );					// 연간 누계 강우량
 cnt					+= 4;
-sprintf(&framemk[cnt],"%4d", get_rainfall()->rainfall_today / 10);						// 금일  강우량
+sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_today*10) );						// 금일  강우량
 cnt					+= 4;
-sprintf(&framemk[cnt],"%4d", get_rainfall()->rainfall_yesterday / 10);					// 전일  강우량
+sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_yesterday*10) );					// 전일  강우량
 cnt					+= 4;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
 driver_uart_send(panel_port,framemk,cnt);
-osDelay(100);																				// 500 ms
+osDelay(500);																				// 500 ms
 
 }

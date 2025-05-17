@@ -24,16 +24,19 @@ void vApplicationIdleHook( void )
 /* USER CODE END 2 */
 
 /* USER CODE BEGIN 4 */
+char g_task_name[20];
+bool g_stack_overflow=false;
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 {
    /* Run time stack overflow checking is performed if
    configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
    called if a stack overflow is detected. */
-  char buff[100];
 
-  snprintf(buff,sizeof(buff),"SOF,%s",pcTaskName);
-  debug_puts_nonos(buff);
+
+  snprintf(g_task_name,sizeof(g_task_name),"SOF,%s",pcTaskName);
+ // debug_puts_nonos(g_task_name);
   //debug_printf("SOF,%s",pcTaskName);
+            __asm("BKPT #0");
   HAL_NVIC_SystemReset();
 }
 /* USER CODE END 4 */

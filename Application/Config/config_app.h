@@ -128,13 +128,13 @@ typedef struct system_s
   float chg_loadC3;
 }system_t;
 
-
-
+void config_app_reset(void) ;
 void save_config_app(void);
 void load_config_app(void);
 void save_config_app_field(eCONFIG_APP_FIELD_t field);
 void set_sensor_offset(eSENSOR_LIST_t sensor,float offset);
-
+void backup_config_app(void);
+void restore_config_app(void);
 config_t *get_config_app(void);
 void make_comList(char *out, uint16_t outsize) ;
 extern config_t config;

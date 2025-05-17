@@ -147,6 +147,9 @@ typedef struct config_manage_s
 void save_config_sensor(void);
 void load_config_sensor(void);
 void config_sensor_reset(void);
+void backup_config_sensor(void);
+void restore_config_sensor(void);
+
 
 config_sensor_t *get_config_sensor(void);
 

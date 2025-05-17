@@ -569,8 +569,7 @@ void update_old_kma_real(void)
   set_rainfall_yesterday(Sysinfo.mRain.sBefDayRain/10.0);
   set_rainfall_today(Sysinfo.mRain.sDayRain / 10.0);
   set_rainfall_hourly(Sysinfo.mRain.sHourRain / 10.0);
-  set_rainfall_monthly(get_config_nvm()->rainfall_monthly);
-  set_rainfall_yearly(get_config_nvm()->rainfall_yearly);
+
 }
 
 

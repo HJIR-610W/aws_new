@@ -11,6 +11,7 @@
 #include "app_dataLogging.h"
 #include "app_di.h"
 #include "app_flash.h"
+#include "app_file.h"
 #include "app_logging.h"
 #include "app_rs232.h"
 #include "app_rs485.h"
@@ -38,12 +39,13 @@
 #include "task_tcpServer.h"
 #include "task_measure.h"
 #include "console_cali.h"
-
+#include "config_manager.h"
 #include "console_utile.h"
 #include "console_aws_display.h"
 #include "console_data.h"
 #include "cli_input.h"
 #include "Sensors\temperature\hj_temperature.h"
+
 #define EXIT_PROGRAM -3
 #define EXIT_BACK -1
 
@@ -2874,7 +2876,7 @@ int32_t menu_manage_config_sensor(p_shell_context_t ctx)
     {
       case 0:
       debug_printf("현재 월간 우량:%f\r\n",get_config_nvm()->rainfall_monthly);
-      if (get_confirm_input()==MENU_ABORT)
+      if (get_user_confirm("월간 우량을 0으로 설정합니다.")!=1)
       {
         continue;
       }
@@ -2883,7 +2885,7 @@ int32_t menu_manage_config_sensor(p_shell_context_t ctx)
         break;
       case 1:
       debug_printf("현재 연간 우량:%f\r\n",get_config_nvm()->rainfall_yearly);
-      if (get_confirm_input()==MENU_ABORT)
+      if (get_user_confirm("연간 우량을 0으로 설정합니다.")!=1)
       {
         continue;
       }
@@ -2891,7 +2893,7 @@ int32_t menu_manage_config_sensor(p_shell_context_t ctx)
         break;
       case 2:
       debug_printf("현재 월간 일조:%f\r\n",get_config_nvm()->sunshine_monthly);
-      if (get_confirm_input()==MENU_ABORT)
+      if (get_user_confirm("월간 일조을 0으로 설정합니다.")!=1)
       {
         continue;
       }
@@ -2899,7 +2901,7 @@ int32_t menu_manage_config_sensor(p_shell_context_t ctx)
       break;
       case 3:
       debug_printf("현재 연간 일조:%f\r\n",get_config_nvm()->sunshine_yearly);
-      if (get_confirm_input()==MENU_ABORT)
+      if (get_user_confirm("연간 일조을 0으로 설정합니다.")!=1)
       {
         continue;
       }
@@ -2912,11 +2914,46 @@ int32_t menu_manage_config_sensor(p_shell_context_t ctx)
 
   return 0;
 }
+int32_t menu_manage_config_backup(p_shell_context_t ctx)
+{
+  int32_t cnt;
+  const char *config_menu[] = {"0.설정값 백업", "1.설정값 복구"};
+
+
+  while(1)
+  {
+    cnt = select_indexFromList(ctx, config_menu, NULL, _countof(config_menu), false);
+    
+    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    {
+      return cnt;
+    }
+
+    if (cnt > 0)
+    {
+      cnt--;
+      switch (cnt)
+      {
+        case 0:
+        backup_config();
+        break;
+        case 1:
+        if(get_user_confirm("SD카드에서 설정값을 불러옵니다.")==1);
+        {
+          restore_config();
+        }
+        break;
+      }
+    }
+  }
+
+  return 0;
+}
 // 초기화
 int32_t menu_manage_config_reset(p_shell_context_t ctx)
 {
   int32_t cnt;
-  const char *config_menu[] = {"0.AWS 화진 기본 설정", "1.공장 초기화","2.센서"};
+  const char *config_menu[] = {"0.AWS 화진 기본 설정", "1.공장 초기화","2.센서","3.백업"};
 
   while(1)
   {
@@ -2934,19 +2971,28 @@ int32_t menu_manage_config_reset(p_shell_context_t ctx)
       switch (cnt)
       {
         case 0:
-          config_hj_reset();
-
+          if(get_user_confirm("센서 설정값을 화진 사전 설정값으로 변경합니다.")==1)
+          {
+            config_hj_reset();
+            debug_printf("초기화 되었습니다.\r\n");
+          }
           break;
         case 1:
-          memset(config.sensor, 0, sizeof(config.sensor));
-
-          WRITE_CFG(sensor);
-          memset(&g_config_sensor, 0, sizeof(g_config_sensor));
+        if(get_user_confirm("설정값을 공장초기화합니다.")==1)
+        {
+          config_app_reset();
+          save_config_app();
+          config_sensor_reset();
           save_config_sensor();
+          debug_printf("공장 초기화 되었습니다.\r\n");
+        }
           break;
           case 2:
           menu_manage_config_sensor(ctx);
           break;
+          case 3:
+            menu_manage_config_backup(ctx);
+             break;
       }
     }
   }
@@ -3000,9 +3046,9 @@ int32_t print_menu_manage(p_shell_context_t ctx)
   int32_t cnt = 0;
 
   debug_printf("\r\n");
-  debug_printf(" %d.버전\r\n",cnt++);
-  debug_printf(" %d.장비 리셋\r\n",cnt++);
-  debug_printf(" %d.설정 값\r\n",cnt++);
+  debug_printf("%d.버전\r\n",cnt++);
+  debug_printf("%d.장비 리셋\r\n",cnt++);
+  debug_printf("%d.설정 값\r\n",cnt++);
 
   return cnt;
 }

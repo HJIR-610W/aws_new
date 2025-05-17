@@ -1,11 +1,13 @@
 
+#include "config_sensor.h"
+
 #include <string.h>
 
-#include "config_sensor.h"
+#include "app_file.h"
 #include "app_version.h"
 #include "crc.h"
-
-
+#include "dev_io.h"
+#include "user_heap.h"
 config_sensor_t g_config_sensor;
 
 const config_sensor_t g_config_sensor_default;
@@ -165,5 +167,63 @@ config_sensor_t *get_config_sensor(void)
 void config_sensor_reset(void)
 {
   memset(&g_config_sensor,0,sizeof(g_config_sensor));
- // g_config_sensor = g_config_sensor_default;
+
+
+}
+
+
+
+
+#define PATH_CONFIG_SENSOR_BIN "0:config_sensor.bin"
+void backup_config_sensor(void)
+{
+  FRESULT f_ret;
+
+  f_ret = write_file(PATH_CONFIG_SENSOR_BIN, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor), 0);
+  if (f_ret == FR_OK)
+  {
+    debug_printf("0:config_sensor.bin 저장되었습니다.\r\n");
+  }
+}
+
+void restore_config_sensor(void)
+{
+  config_sensor_t *p_config;
+  bool crc_result= false;
+  uint32_t crc;
+  FRESULT f_ret;
+  
+  
+  p_config = (config_sensor_t*)aws_malloc(sizeof(config_sensor_t));
+
+  if(p_config)
+  {
+    f_ret = read_file(PATH_CONFIG_SENSOR_BIN,(uint8_t*)p_config,sizeof(config_sensor_t),0);
+    
+    if(f_ret != FR_OK)
+    {
+      debug_printf("파일 읽기 오류  %d\r\n",f_ret);
+      aws_free(p_config);
+      return ;
+    }
+      if (p_config->header.magicNum == CONFIG_MAGIC)
+      {
+        crc = crc32_hw_with_padding(&p_config->start, sizeof(config_sensor_t) - sizeof(p_config->header));
+        if (crc == p_config->header.crc)
+        {
+          memcpy(&g_config_sensor, p_config, sizeof(config_sensor_t));
+          crc_result = true;
+          debug_printf("복구되었습니다.\r\n");
+        }
+      }
+    
+      if (crc_result == false)
+      {
+        debug_printf("체크섬 오류\r\n");
+      }
+ 
+ 
+
+    aws_free(p_config);
+  }
 }

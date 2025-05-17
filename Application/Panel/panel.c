@@ -14,7 +14,7 @@ void panel_init(void)
 
   uart_config_t uart_config;
   
-  uart_config.baud = 115200;
+  uart_config.baud = 9600;
   uart_config.dataLen = UART_DATA_LEN_8;
   uart_config.parityIdx = 0;
   uart_config.stop_bit = 0;
@@ -26,7 +26,7 @@ void panel_init(void)
 void send_panel(void)
 {
   uint16_t len;
-  uint8_t frame[100];
+
   switch (get_config_app()->panel_model)
   {
     case ePANEL_STD:

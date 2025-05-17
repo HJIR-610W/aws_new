@@ -1,11 +1,16 @@
 #include "config_app.h"
-#include "config_sensor.h"
+
+#include <string.h>
+
+#include "app_file.h"
 #include "app_rs232.h"
 #include "app_rs485.h"
 #include "app_sensor.h"
 #include "app_version.h"
 #include "config_app.h"
+#include "config_sensor.h"
 #include "crc.h"
+#include "dev_io.h"
 #include "user_heap.h"
 
 config_t config;
@@ -26,11 +31,13 @@ const config_t config_app_default = {.id = 0,
                                  .cdma_protocol = eETH_PROTOCOL_KMA3,
                                  .cdma_model = eCDMA_NTLE9607,
                                  .eth_use = false,
-                                 .cdma_use = false,
+                                 .cdma_use = true,
                                  .direct_use = false,
                                  .direct_protocol = 0,
                                  .direct_baud = 19200,
                                  .panel_model = ePANEL_STD,
+                                 .panel_snow_use=true,
+                                 .panel_barometer_use=true,
                                  .vhf_id = 0,
                                  .vhf_group = 0,
                                  .vhf_host_id = 0,
@@ -38,7 +45,7 @@ const config_t config_app_default = {.id = 0,
                                  .vhf_ptt_delay = 10,
                                  .encrypt_use = false,
                                  .network_mode = eNET_MODE_TCP_SERVER,
-                                 .ac_use = 0};
+                                 .ac_use = false};
 
 bool g_config_app_dirty_flag = false;
 
@@ -57,6 +64,8 @@ void check_config_app(void)
 {
   int check_cnt=0;
   void *p_config;
+  g_config_app_dirty_flag = false;
+  
   if (config.charger_model > eCHARGER_LS)
   {
     config.charger_model = config_app_default.charger_model;
@@ -99,12 +108,43 @@ void check_config_app(void)
     g_config_app_dirty_flag = true;
   }
 
+  if (config.panel_snow_use > 1)
+  {
+    config.panel_snow_use = config_app_default.panel_snow_use;
+    g_config_app_dirty_flag = true;
+  }
+
+  if (config.panel_barometer_use > 1)
+  {
+    config.panel_barometer_use = config_app_default.panel_barometer_use;
+    g_config_app_dirty_flag = true;
+  }
+
+  if (config.eth_use > 1)
+  {
+    config.eth_use = config_app_default.eth_use;
+    g_config_app_dirty_flag = true;
+  }
+
+  if(config.direct_use >1)
+  {
+    config.direct_use = config_app_default.direct_use;
+    g_config_app_dirty_flag = true;
+  }
+
+  if (config.cdma_use > 1)
+  {
+    config.cdma_use = config_app_default.cdma_use;
+    g_config_app_dirty_flag = true;
+  }
+
   if (config.direct_use && config.cdma_use)
   {
     config.direct_use = 0;
     config.cdma_use = 1;
     g_config_app_dirty_flag = true;
   }
+
 
   for (int i = 0; i < _countof(config.sensor); i++)
   {
@@ -297,6 +337,9 @@ void set_sensor_offset(eSENSOR_LIST_t sensor,float offset)
 void config_app_reset(void)
 {
   config = config_app_default;
+
+  memset(config.sensor, 0, sizeof(config.sensor));
+  WRITE_CFG(sensor);
 }
 
 
@@ -338,5 +381,57 @@ void make_comList(char *out, uint16_t outsize)
   if (len == 0)
   {
     snprintf(&out[len], outsize - len, "미사용");
+  }
+}
+
+#define PATH_CONFIG_APP_BIN "0:config_app.bin"
+void backup_config_app(void)
+{
+  FRESULT f_ret;
+
+  f_ret = write_file(PATH_CONFIG_APP_BIN,(uint8_t *)&config,sizeof(config),0);
+  if(f_ret == FR_OK)
+  {
+    debug_printf("0:config_app.bin 저장되었습니다.\r\n");
+  }
+}
+
+void restore_config_app(void)
+{
+  config_t *p_config;
+  bool crc_result= false;
+  uint32_t crc;
+  FRESULT f_ret;
+  p_config = aws_malloc(sizeof(config_t));
+
+  if(p_config)
+  {
+    f_ret = read_file(PATH_CONFIG_APP_BIN,(uint8_t *)p_config,sizeof(config_t),0);
+    
+    if(f_ret != FR_OK)
+    {
+      debug_printf("파일 읽기 오류  %d\r\n",f_ret);
+      aws_free(p_config);
+      return ;
+    }
+      if (p_config->header.magicNum == CONFIG_MAGIC)
+      {
+        crc = crc32_hw_with_padding(&p_config->start, sizeof(config_t) - sizeof(p_config->header));
+        if (crc == p_config->header.crc)
+        {
+          memcpy(&config, p_config, sizeof(config_t));
+          crc_result = true;
+          debug_printf("0:config_app.bin 복구되었습니다.\r\n");
+        }
+      }
+    
+      if (crc_result == false)
+      {
+        debug_printf("체크섬 오류\r\n");
+      }
+ 
+ 
+
+    aws_free(p_config);
   }
 }
