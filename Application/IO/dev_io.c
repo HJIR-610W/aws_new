@@ -86,12 +86,14 @@ void debug_puts_nonos(char *str)
 
 
 
-#define PRINTF_HEAP_USE 0
+#define PRINTF_HEAP_USE 1
 
 
 int32_t debug_printf(const char *pFmt, ...)
 {
+  #if PRINTF_HEAP_USE==0
    char printf_buff[256];
+   #endif
   char buff[2];
   char *ptr = NULL;
   char *temp = NULL;

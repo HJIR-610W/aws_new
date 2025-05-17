@@ -30,7 +30,7 @@ const config_t config_app_default = {.id = 0,
                                  .direct_use = false,
                                  .direct_protocol = 0,
                                  .direct_baud = 19200,
-                                 .panel_model = ePANEL_HJ,
+                                 .panel_model = ePANEL_STD,
                                  .vhf_id = 0,
                                  .vhf_group = 0,
                                  .vhf_host_id = 0,
@@ -93,7 +93,7 @@ void check_config_app(void)
     g_config_app_dirty_flag = true;
   }
 
-  if (config.panel_model > ePANEL_HJ)
+  if (config.panel_model > ePANEL_HANSUNG)
   {
     config.panel_model = config_app_default.panel_model;
     g_config_app_dirty_flag = true;

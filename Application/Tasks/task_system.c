@@ -55,7 +55,6 @@ void systemTask(void *arg)
 void systemTask_init(void)
 {
 
-
   app_bsp_init();
 
   userBtn_init();

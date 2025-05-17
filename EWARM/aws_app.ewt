@@ -1515,6 +1515,12 @@
                 <name>$PROJ_DIR$\..\Application\Panel\panel.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\Panel\panel_aws_std.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Panel\panel_common.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\Panel\panel_hansung.c</name>
             </file>
             <file>
@@ -1798,6 +1804,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_monitor.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_panel.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_sdi.c</name>

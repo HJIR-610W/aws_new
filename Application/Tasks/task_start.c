@@ -32,7 +32,7 @@
 #include "task_sdi.h"
 #include "task_system.h"
 #include "task_tcpServer.h"
-
+#include "task_panel.h"
 #include "dualport.h"
 
 #include "usDelay.h"
@@ -124,6 +124,7 @@ void startTask(void *arg)
   file_init();
 
   logging_init();
+  panelTask_init();
   bleTask_init();
 
 

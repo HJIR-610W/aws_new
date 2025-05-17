@@ -92,7 +92,9 @@
 			"app_datalogging.h": "c",
 			"console_data.h": "c",
 			"hj_temperature.h": "c",
-			"cmath": "c"
+			"cmath": "c",
+			"driver_interface.h": "c",
+			"panel_common.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

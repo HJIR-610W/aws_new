@@ -39,7 +39,9 @@ typedef enum cdma_model_e
 
 typedef enum panel_model_e
 {
-  ePANEL_HJ,
+  ePANEL_STD,
+  ePANEL_MUJU,
+  ePANEL_HANSUNG,
 } ePANEL_MODEL_t;
 
 typedef enum net_mode_e
@@ -79,6 +81,8 @@ typedef struct config_s
   uint8_t direct_protocol;
   uint32_t direct_baud;
   ePANEL_MODEL_t panel_model;
+  bool panel_snow_use;
+  bool panel_barometer_use;
   uint8_t vhf_id;
   uint8_t vhf_group;
   uint8_t vhf_host_id;

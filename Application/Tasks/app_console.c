@@ -82,7 +82,7 @@ typedef struct select_menu_s
 
 const char *protocolList[] = {"kma ver 1", "kma ver 2"};
 const char *cdmaModellList[] = {"TX700", "NTLE9607"};
-const char *panelList[] = {"model a", "model b"};
+const char *panelList[] = {"STD", "MOOJU","HANSUNG"};
 
 
 const char *g_chgList[] = {"smart charger", "aws charger"};
@@ -2555,9 +2555,18 @@ int32_t menu_data(p_shell_context_t ctx)
 int32_t print_menu_panel(p_shell_context_t ctx)
 {
   int32_t cnt = 0;
-
+  bool enalbe;
   ctx->printf("%2d.패널 종류:%s\r\n", cnt++, ITEM_LIST(config.panel_model, panelList));
+  
+  //무주인 경우 추가 설정 출력
+  if(get_config_app()->panel_model==ePANEL_MUJU)
+  {
+  enalbe = get_config_app()->panel_snow_use;
+  ctx->printf("%2d.적설 출력:%s\r\n", cnt++, ITEM_LIST((int32_t)enalbe, enableList));
 
+  enalbe = get_config_app()->panel_barometer_use;
+  ctx->printf("%2d.기압 출력:%s\r\n", cnt++, ITEM_LIST((int32_t)enalbe, enableList));
+ }
   return cnt;
 }
 int32_t aws_menu_display_panel(p_shell_context_t ctx)
@@ -2577,13 +2586,25 @@ int32_t aws_menu_display_panel(p_shell_context_t ctx)
     switch (cnt)
     {
       case 0:
-        cnt = select_indexFromList(ctx, panelList, NULL, _countof(panelList), false);
+        cnt = select_indexFromList(ctx, panelList, NULL, _countof(panelList), true);
 
         if (cnt > 0)
         {
           cnt--;
           config.panel_model = cnt;
           WRITE_CFG(panel_model);
+        }
+        break;
+        case 1:
+        if (input_use(ctx, &get_config_app()->panel_snow_use))
+        {
+          WRITE_CFG(panel_snow_use);
+        }
+        break;
+        case 2:
+        if (input_use(ctx, &get_config_app()->panel_barometer_use))
+        {
+          WRITE_CFG(panel_barometer_use);
         }
         break;
     }
