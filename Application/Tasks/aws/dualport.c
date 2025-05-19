@@ -994,6 +994,9 @@ void old_aws_init(void)
   pSystem->mNVram.nMonthRain = (uint32_t)(get_config_nvm()->rainfall_monthly*10);
   pSystem->mNVram.nYearSunshine = (uint32_t)(get_config_nvm()->sunshine_yearly);
   pSystem->mNVram.nMonthSunshine = (uint32_t)(get_config_nvm()->sunshine_monthly);
+
+  set_rainfall_monthly(pSystem->mNVram.nMonthRain / 10.0);
+  set_rainfall_yearly(pSystem->mNVram.nYearRain / 10.0);
 }
 
 
