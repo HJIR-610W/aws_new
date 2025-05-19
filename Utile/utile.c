@@ -382,3 +382,19 @@ bool less_equal_float(float a, float b)
 {
 	return a < b || equal_float(a, b);
 }
+
+// 변환 엔디안 
+uint16_t cvt_u16_endian(const uint8_t* buf)
+{
+  return ((uint16_t)buf[0] << 8) | buf[1];
+}
+
+uint8_t calculate_xor_checksum(const uint8_t* data, uint16_t length)
+{
+  uint8_t xor_val = 0;
+  for (uint16_t i = 0; i < length; i++)
+  {
+    xor_val ^= data[i];
+  }
+  return xor_val;
+}

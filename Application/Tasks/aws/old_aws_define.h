@@ -86,25 +86,27 @@ typedef struct
   SENSOR_RIX_BUF mSpare14;
   SENSOR_RIX_BUF mSpare15;
   SENSOR_RIX_BUF mStatus;
-// sReal
-#define DCFAIL_BIT 0x0001
-#define BATTERYFAIL_BIT 0x0002
-#define AC110V_BIT 0x0000  //     2 3:AC 전압    --> 00:110 V, 01:220V, 11:AC Off
-#define AC220V_BIT 0x0004
+// sReal(전압)
+#define DCFAIL_BIT 0x0001         //X0
+#define BATTERYFAIL_BIT 0x0002    //X1
+#define AC110V_BIT 0x0000         //X2 X3:AC 전압  --> 00(110V), 01(220V), 11(AC Off)
+#define AC220V_BIT 0x0004         
 #define ACOFF_BIT 0x000C
-#define LOGGERDOOR_BIT 0x0010  //     4 : 로거잠금상태 : 0 : 닫힘 , 1 : 열림
+#define LOGGERDOOR_BIT 0x0010     //X4 로거잠금상태: 0(닫힘), 1(열림)
 // sMin
-#define WINDSPEEDFAIL_BIT 0x0001
-#define WINDDIRECFAIL_BIT 0x0002
+#define WINDSPEEDFAIL_BIT   0x0001
+#define WINDDIRECFAIL_BIT   0x0002
 #define TEMPERATUREFAIL_BIT 0x0004
-#define RAINDETECTFAIL_BIT 0x0008
-#define RAINFALLFAIL_BIT 0x0010
-#define HUMIDITYFAIL_BIT   0x0020
-#define BAROMETRICFAIL_BIT 0x0040
-#define FANFAIL_BIT        0x0080
+#define RAINDETECTFAIL_BIT  0x0008
+#define RAINFALLFAIL_BIT    0x0010
+#define HUMIDITYFAIL_BIT    0x0020
+#define BAROMETRICFAIL_BIT  0x0040
+#define FANFAIL_BIT         0x0080
 // sMax
 #define RAINFAIL_BIT 0x0001
-  char cDataSpare[44];
+
+  char kma3_sensor_status[8];
+  char cDataSpare[36];
 } AWS_DATA_STRUCT;
 
 typedef struct

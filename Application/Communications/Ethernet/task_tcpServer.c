@@ -1,5 +1,5 @@
 
-#include "aws_protocol.h"
+
 #include "cmsis_os.h"
 #include "config_app.h"
 #include "driver_rtc.h"
@@ -13,7 +13,7 @@
 #include "task_tcpServer.h"
 #include "utile.h"
 
-
+#include "kma_protocol_handler.h"
 tcp_status_t g_tcp_status;
 osThreadId_t g_tcpSeverTaskId;
 
@@ -53,7 +53,7 @@ void server_service(int conn)
   int32_t ret;
   int32_t err;
   uint8_t rbuffer[RECV_BUFF_SIZE];
-  uint8_t tbuffer[RECV_BUFF_SIZE];
+  uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
   int32_t len;
 
   if(set_recv_timeout(conn,60000)<0)
@@ -75,10 +75,10 @@ void server_service(int conn)
       return;
     }
     UPDATE_CNT(g_tcp_status.rx_cnt,99);
-     len = aws_cmd(rbuffer,ret,tbuffer,sizeof(tbuffer),0);
-     if(len)
-     {
-      send(conn,tbuffer,len,0);
+    len = kma_cmd_handler(rbuffer, ret, tx_buffer, eREQ_SOURCE_ETH);
+    if (len)
+    {
+      send(conn,tx_buffer,len,0);
       UPDATE_CNT(g_tcp_status.tx_cnt, 99);
      }
   }

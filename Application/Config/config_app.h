@@ -56,6 +56,12 @@ typedef enum eth_protocol_e
   eETH_PROTOCOL_KMA3
 } eETH_PROTOCOL_t;
 
+typedef enum aws_protocol_e
+{
+  eAWS_PROTOCOL_KMA2,
+  eAWS_PROTOCOL_KMA3
+} eAWS_PROTOCOL_t;
+
 typedef struct config_s
 {
   config_header_t header;
@@ -74,11 +80,13 @@ typedef struct config_s
   uint8_t cdma_server_ip[4];
   uint16_t cdma_port;
   eETH_PROTOCOL_t cdma_protocol;
+  eAWS_PROTOCOL_t aws_protocol_type;
   eCDMA_MODEL_t cdma_model;
   bool eth_use;
   bool cdma_use;
   bool direct_use;
   uint8_t direct_protocol;
+
   uint32_t direct_baud;
   ePANEL_MODEL_t panel_model;
   bool panel_snow_use;
@@ -137,6 +145,11 @@ void backup_config_app(void);
 void restore_config_app(void);
 config_t *get_config_app(void);
 void make_comList(char *out, uint16_t outsize) ;
+
+void set_config_app_password(uint16_t password);
+void set_config_app_cdma_port(uint16_t port);
+void set_config_app_cdma_ip(uint8_t ip[4]);
+
 extern config_t config;
 extern system_t System;
 

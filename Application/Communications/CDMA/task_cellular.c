@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 
-#include "aws_protocol.h"
+
 #include "modem_if.h"
 #include "at_cmd.h"
 #include  "modem_ntle9607.h"
@@ -17,6 +17,9 @@
 #include "driver_do.h"
 #include "task_cellular.h"
 #include "utile_time.h"
+
+#include "kma_protocol_handler.h"
+
 typedef enum{
 	ePOWER_RESET,
 	eCONNECT_TCP_WDT,
@@ -1351,8 +1354,8 @@ void iCellular_init(void)
 */
 void modemTcpTask(void  *argument)
 {
-    uint8_t buff[512+32];//tcp data 512 + 기타 
-    uint8_t tx[512+32];
+    uint8_t buff[512+32];//tcp data 512 + 기타
+    uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
     uint8_t err=0;
     uint16_t len;
     uint32_t startTime=0;
@@ -1382,13 +1385,13 @@ void modemTcpTask(void  *argument)
                 startTime = osKernelGetTickCount();
                 g_cdma_system.last_recv_time = time_timestamp();
                 UPDATE_CNT(g_cdma_system.rx_cnt, 99);
-                len = aws_cmd(buff, ret, tx, sizeof(tx), 0);
+                len = kma_cmd_handler(buff, ret, tx_buffer, eREQ_SOURCE_CDMA);
 
                 if (len)  // 전송할 데이터있다면
                 {
                   g_cdma_system.last_send_time = time_timestamp();
                   UPDATE_CNT(g_cdma_system.tx_cnt, 99);
-                  if (_iCellular->send_tcp(tx, len) == RET_FAIL_SEND)
+                  if (_iCellular->send_tcp(tx_buffer, len) == RET_FAIL_SEND)
                   {
                     err = 1;
                     type = eCONNECT_TX_FAIL;

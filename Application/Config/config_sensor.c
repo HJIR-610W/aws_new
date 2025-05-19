@@ -213,7 +213,7 @@ void restore_config_sensor(void)
         {
           memcpy(&g_config_sensor, p_config, sizeof(config_sensor_t));
           crc_result = true;
-          debug_printf("복구되었습니다.\r\n");
+          debug_printf("0:config_sensor.bin 복구되었습니다.\r\n");
         }
       }
     

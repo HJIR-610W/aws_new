@@ -1,7 +1,6 @@
 #include "task_direct.h"
-
+#include "kma_protocol_handler.h"
 #include "app_rtc.h"
-#include "aws_protocol.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "dev_io.h"
@@ -27,7 +26,7 @@ direct_status_t *get_direct_system(void)
 void directTask(void *arg)
 {
   uint8_t rx_buff[100];
-  uint8_t tx_buff[512];
+  uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
   uint32_t startTime;
   int32_t len;
 uart_optTimeOut_t opt;
@@ -45,10 +44,10 @@ uart_optTimeOut_t opt;
       g_direct_system.link_status = eDIRECT_LINK_UP;
 
       UPDATE_CNT(g_direct_system.rx_cnt, 99);
-      len = aws_cmd(rx_buff,len,tx_buff,sizeof(tx_buff),0);
+      len = kma_cmd_handler(rx_buff, len, tx_buffer, eREQ_SOURCE_DIRECT);
       if(len)
       {
-        driver_uart_send(direct_driver,tx_buff,len);
+        driver_uart_send(direct_driver, tx_buffer, len);
         UPDATE_CNT(g_direct_system.tx_cnt, 99);
       }
       startTime  = osKernelGetTickCount();

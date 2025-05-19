@@ -1313,27 +1313,6 @@
                     </file>
                 </group>
             </group>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Communications\aws_data.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Communications\aws_jinyang.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Communications\aws_kma.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Communications\aws_kma.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Communications\aws_kma2.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Communications\aws_kma3.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Communications\aws_protocol.c</name>
-            </file>
         </group>
         <group>
             <name>Config</name>
@@ -1538,6 +1517,39 @@
             <file>
                 <name>$PROJ_DIR$\..\Application\Panel\panel_mooju.h</name>
             </file>
+        </group>
+        <group>
+            <name>Protocols</name>
+            <group>
+                <name>aws</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\aws\aws_data.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\aws\aws_jinyang.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\aws\aws_jinyang.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\aws\kma2.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\aws\kma3.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\aws\kma3.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\aws\kma_define.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\aws\kma_protocol_handler.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\aws\kma_protocol_handler.h</name>
+                </file>
+            </group>
         </group>
         <group>
             <name>Sensors</name>

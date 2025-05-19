@@ -98,4 +98,7 @@ bool less_float(float a, float b);
 bool bigger_float(float a, float b);
 bool bigger_equal_float(float a,float b);
 bool less_equal_float(float a, float b);
+
+uint8_t calculate_xor_checksum(const uint8_t* data, uint16_t length);
+
 #endif

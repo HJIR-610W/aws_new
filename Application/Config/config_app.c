@@ -333,6 +333,29 @@ void set_sensor_offset(eSENSOR_LIST_t sensor,float offset)
   WRITE_CFG(sensor[sensor].offset);
 }
 
+void set_config_app_password(uint16_t password)
+{
+  config.password = password;
+  WRITE_CFG(password);
+}
+
+void set_config_app_cdma_port(uint16_t port)
+{
+  config.cdma_port = port;
+  WRITE_CFG(cdma_port);
+}
+
+void set_config_app_cdma_ip(uint8_t ip[4])
+{
+  config.cdma_server_ip[0] = ip[0];
+  config.cdma_server_ip[1] = ip[1];
+  config.cdma_server_ip[2] = ip[2];
+  config.cdma_server_ip[3] = ip[3];
+
+  WRITE_CFG(cdma_server_ip);
+}
+
+
 //task 실행 안되게 하고 업데이트 후 장비 재시작
 void config_app_reset(void)
 {
