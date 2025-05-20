@@ -260,11 +260,15 @@ void modem_set_dial(uint8_t status)
 }
 
 
-uint8_t is_vpn(void)
+bool is_vpn_enabled(void)
 {
-    //return (config.netMode == eNET_TYPE_NTLE9607_VPN);
-  
-  return 0;
+
+  if(get_config_app()->cdma_model == eCDMA_NTLE9607)
+  {
+    return get_config_app()->vpn_use;
+  }
+
+  return false;
 }
 
 #define CONNECT_TIMEOUT_MS 43200000
@@ -324,7 +328,7 @@ STATUS_t connect_tcp(eConnect_Type_t type)
                 _iCellular->check_network_service(g_cdma_system.network_service_msg,sizeof(g_cdma_system.network_service_msg));
                 modem_voice_init();
                 modem_socket_init();
-                if(is_vpn())
+                if (is_vpn_enabled())
                 {
                     _iCellular->vpn_init();
                 }
@@ -1319,7 +1323,10 @@ void iCellular_init(void)
 {
   _iCellular = &g_iCellular;
 
-  _iCellular->resetDelay = 20000;
+  switch (get_config_app()->cdma_model)
+  {
+    case eCDMA_NTLE9607:
+    _iCellular->resetDelay = 20000;
   _iCellular->init       = ntle9607_init;
   _iCellular->read_sms   = ntle9607_read_sms;
   _iCellular->send_sms   = ntle9607_send_sms;
@@ -1343,7 +1350,9 @@ void iCellular_init(void)
   _iCellular->read_vpn_config = ntle_9607_read_vpn;
   _iCellular->at_direct       = ntle_9607_at_direct;
   _iCellular->check_network_service = ntle9607_check_network_service;
-
+  break;
+  }
+  
 }
 
 

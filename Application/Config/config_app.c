@@ -43,6 +43,7 @@ const config_t config_app_default = {
     .vhf_repeater_id = 0,
     .vhf_ptt_delay = 10,
     .encrypt_use = false,
+    .vpn_use = false,
     .ac_use = false};
 
 bool g_config_app_dirty_flag = false;

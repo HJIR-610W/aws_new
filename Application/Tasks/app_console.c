@@ -83,7 +83,7 @@ typedef struct select_menu_s
 } select_menu_t;
 
 const char *protocolList[] = {"KMA2", "KMA3"};
-const char *cdmaModellList[] = {"TX700", "NTLE9607"};
+const char *cdmaModellList[] = {"NTLE9607", "TX700"};
 const char *panelList[] = {"STD", "MOOJU","HANSUNG"};
 
 
@@ -1859,7 +1859,7 @@ int32_t menu_sensor(p_shell_context_t ctx)
     {
       break;
     }
-    //선택된 센서 설정정
+    //선택된 센서 설정
     cnt = menu_sensor_default_2(ctx, (eSENSOR_LIST_t)(cnt - 1));
   } while (cnt != EXIT_PROGRAM);
 
@@ -2164,56 +2164,85 @@ int32_t print_net_cdma_set(p_shell_context_t ctx)
   ctx->printf("%2d.ip      :%d.%d.%d.%d\r\n", cnt++, ip[0], ip[1], ip[2], ip[3]);
   ctx->printf("%2d.port    :%d\r\n", cnt++, port);
   ctx->printf("%2d.model   :%s\r\n", cnt++, ITEM_LIST(config.cdma_model, cdmaModellList));
-
   return cnt;
 }
+
+int32_t print_net_ntle_set(p_shell_context_t ctx)
+{
+  int32_t cnt = 0;
+  uint8_t *ip = config.cdma_server_ip;
+  int32_t port = config.cdma_port;
+
+  ctx->printf("%2d.ip      :%d.%d.%d.%d\r\n", cnt++, ip[0], ip[1], ip[2], ip[3]);
+  ctx->printf("%2d.port    :%d\r\n", cnt++, port);
+  ctx->printf("%2d.model   :%s\r\n", cnt++, ITEM_LIST(config.cdma_model, cdmaModellList));
+  ctx->printf("%2d.VPN     :%s\r\n", cnt++, ITEM_LIST(config.vpn_use, enableList));
+  return cnt;
+}
+
 
 int32_t menu_net_cdma_set(p_shell_context_t ctx)
 {
   int32_t cnt;
   int32_t a, b, c, d;
   int32_t dec;
+  int32_t (*menu_set)(p_shell_context_t ctx) = print_net_cdma_set;
 
-  do
-  {
-    cnt = select_indexFromList(ctx, NULL, print_net_cdma_set, 0, false);
-    if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
-    {
-      return cnt;
-    }
 
-    cnt--;
-    switch (cnt)
+    do
     {
-      case 0:
-        ctx->printf("xxx.xxx.xxx.xxx:");
-        if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-        {
-          config.cdma_server_ip[0] = a;
-          config.cdma_server_ip[1] = b;
-          config.cdma_server_ip[2] = c;
-          config.cdma_server_ip[3] = d;
-          WRITE_CFG(cdma_server_ip);
-        }
-        break;
-      case 1:
-        if (input_decimal(ctx, 0, 60000, &dec))
-        {
-          config.cdma_port = dec;
-          WRITE_CFG(cdma_port);
-        }
-        break;
-      case 2:  // 모델
-        cnt = select_indexFromList(ctx, cdmaModellList, NULL, _countof(cdmaModellList), true);
-        if (cnt > 0)
-        {
-          cnt--;
-          config.cdma_model = cnt;
-          WRITE_CFG(cdma_model);
-        }
-        break;
-    }
-  } while (1);
+      if (get_config_app()->cdma_model == eCDMA_NTLE9607)
+      {
+        menu_set = print_net_ntle_set;
+      }
+      else
+      {
+        menu_set = print_net_cdma_set;
+      }
+      cnt = select_indexFromList(ctx, NULL, menu_set, 0, false);
+      if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+      {
+        return cnt;
+      }
+
+      cnt--;
+      switch (cnt)
+      {
+        case 0:
+          ctx->printf("xxx.xxx.xxx.xxx:");
+          if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
+          {
+            config.cdma_server_ip[0] = a;
+            config.cdma_server_ip[1] = b;
+            config.cdma_server_ip[2] = c;
+            config.cdma_server_ip[3] = d;
+            WRITE_CFG(cdma_server_ip);
+          }
+          break;
+        case 1:
+          if (input_decimal(ctx, 0, 60000, &dec))
+          {
+            config.cdma_port = dec;
+            WRITE_CFG(cdma_port);
+          }
+          break;
+        case 2:  // 모델
+          cnt = select_indexFromList(ctx, cdmaModellList, NULL, _countof(cdmaModellList), true);
+          if (cnt > 0)
+          {
+            cnt--;
+            config.cdma_model = cnt;
+            WRITE_CFG(cdma_model);
+          }
+          break;
+        case 3:
+          if (input_use(ctx, &get_config_app()->vpn_use))
+          {
+            WRITE_CFG(vpn_use);
+          }
+          break;
+      }
+    } while (1);
 }
 
 int32_t print_net_direct_set(p_shell_context_t ctx)

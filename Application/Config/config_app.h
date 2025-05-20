@@ -93,7 +93,7 @@ typedef struct config_s
   uint8_t vhf_repeater_id;
   uint16_t vhf_ptt_delay;
   bool encrypt_use;
-
+  bool vpn_use;
   bool ac_use;
   uint16_t m_usRainDtOffDelay;//±¸ AWS
   sensor_t sensor[SENSOR_LIST_MAX];
