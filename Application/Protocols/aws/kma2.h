@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#include "kma_define.h"
 // AWS(구)에서 szProtocolVersion[3]에 설정된값 
 #define KMA2_PROTOCOL_YEAR 9
 #define KMA2_PROTOCOL_MONTH 5

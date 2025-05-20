@@ -5,34 +5,35 @@
 #include "driver_do.h"
 #include "driver_di.h"
 
-driver_t *g_adcStm;
+driver_t *g_adc_stm;
 driver_t *g_status_led;
 driver_t *g_cdma_power;
-driver_t *g_portd_mode;
-driver_t *g_door;
+driver_t *g_port_mode;
+driver_t *g_door_status;
+
 void status_led_init(void);
 
 void set_portd_hart_mode(void)
 {
-  driver_do_high(g_portd_mode);
+  driver_do_high(g_port_mode);
 }
 
 void set_portd_rs232_mode(void)
 {
-  driver_do_low(g_portd_mode);
+  driver_do_low(g_port_mode);
 }
 
 void app_bsp_init(void)
 {
-  g_adcStm = driver_adc_open(ADC_STM32,0);
+  g_adc_stm = driver_adc_open(ADC_STM32,0);
 
   status_led_init();
 
   g_cdma_power = driver_do_open(DO_PWR_CDMA,0);
 
-  g_portd_mode = driver_do_open(DO_HART_SEL, 0);
+  g_port_mode = driver_do_open(DO_HART_SEL, 0);
 
-  g_door = driver_di_open(DI_EXT_0,0);
+  g_door_status = driver_di_open(DI_EXT_0,0);
 
   set_portd_rs232_mode();
 }
@@ -40,7 +41,7 @@ void app_bsp_init(void)
 
 bool door_opened(void)
 {
-  if(driver_di_read(g_door))
+  if(driver_di_read(g_door_status))
   {
     return false;
   }
@@ -78,7 +79,7 @@ float read_battery(void)
   float voltage;
   float battery;
 
-  voltage = driver_adc_single_read(g_adcStm, ADC_STM32_S_CH_0, 1, &err);
+  voltage = driver_adc_single_read(g_adc_stm, ADC_STM32_S_CH_0, 1, &err);
 
   battery = voltage * slope + offset;
 
@@ -161,7 +162,7 @@ float read_temperature(void)
   float voltage;
   float resistance;
   
-  voltage = driver_adc_single_read(g_adcStm, ADC_STM32_S_CH_1, 1, &err);
+  voltage = driver_adc_single_read(g_adc_stm, ADC_STM32_S_CH_1, 1, &err);
 
   resistance = (voltage * R1) /(VREF - voltage);
 

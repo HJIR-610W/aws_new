@@ -67,7 +67,7 @@ int32_t print_systemInfo(uint16_t row, uint16_t column)
   }
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
-  return 4 + 2;
+  return line;
 }
 
 int32_t print_chargerInfo(uint16_t row, uint16_t column)
@@ -101,7 +101,7 @@ int32_t print_chargerInfo(uint16_t row, uint16_t column)
   }
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
-  return 4 + 2;
+  return line;
 }
 
 int32_t print_rainInfo(uint16_t row, uint16_t column)
@@ -138,7 +138,7 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
 
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
-  return line - (row);
+  return line ;
 }
 
 /*
@@ -216,7 +216,7 @@ int32_t print_cdmaInfo(uint16_t row, uint16_t column)
 
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
-  return line - (row);
+  return line ;
 }
 
 
@@ -229,26 +229,49 @@ int32_t print_directInfo(uint16_t row, uint16_t column)
   DATE_TIME_BUF nt;
   uint32_t last_time;
   struct tm time_info;
+  uint32_t remain_sec;
+
+  remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms/1000.0);
    make_comList(buffer, sizeof(buffer));
   vt100_print_frame(row, column, "DIRECT", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++, column, -DISP_WIDTH, "링크    :%s\r\n",
                   ITEM_LIST(get_direct_system()->link_status, linkStatusList));
+  vt100_print_bar(line++, column, -DISP_WIDTH, "타임아웃:%ds\r\n",remain_sec);
   vt100_print_bar(line++, column, -DISP_WIDTH, "송신    :%d\r\n", get_direct_system()->tx_cnt);
   vt100_print_bar(line++, column, -DISP_WIDTH, "수신    :%d\r\n", get_direct_system()->rx_cnt);
 
   last_time = get_direct_system()->last_recv_time;
-  time_cvt_secTotime(last_time, &nt);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
-                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+  
+  if(last_time == 0)
+  {
+    vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :-\r\n");
+  }
+  else
+  {
+    time_cvt_secTotime(last_time, &nt);
+
+    vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
+                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+  }
 
   last_time = get_direct_system()->last_send_time;
-  time_cvt_secTotime(last_time, &nt);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
-                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+
+  if(last_time == 0 )
+  {
+    time_cvt_secTotime(last_time, &nt);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :-\r\n");
+  }
+  else
+  {
+    time_cvt_secTotime(last_time, &nt);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
+                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+  }
+
 
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
-  return line - (row);
+  return line;
 }
 
 //[AWS = (관측값+100)/10, 관측값 = (x-1000)/10]
@@ -998,7 +1021,11 @@ int32_t aws_menu_display(p_shell_context_t ctx)
   {
     debug_printf(VT100_CURSOR_HOME);
     debug_printf("\r\n");
-    print_systemInfo(1, 0);
+    
+    line = 0;
+    line = print_systemInfo(1, 0);
+
+    print_chargerInfo(line+1, 0);
 
     line = 0;
     if (get_config_app()->cdma_use)
@@ -1014,7 +1041,7 @@ int32_t aws_menu_display(p_shell_context_t ctx)
       line += print_ethInfo(1 + line, 30);
     }
 
-    print_chargerInfo(20, 0);
+
     line = 0;
     line = print_awsRealLefinfo(1, 60, awsMode, NULL);
 

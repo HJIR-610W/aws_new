@@ -7,13 +7,13 @@
 #include "driver_uart.h"
 #include "task_isrEvent.h"
 
+#define DIRECT_TIMEOUT_MS 600000
 
 const osThreadAttr_t directTask_attributes = {
     .name = "directTask",
     .stack_size = 2048,
     .priority = (osPriority_t)osPriorityNormal,
 };
-
 
 static direct_status_t g_direct_system;
 driver_t *direct_driver;
@@ -23,9 +23,10 @@ direct_status_t *get_direct_system(void)
   return &g_direct_system; 
 }
 
+
 void directTask(void *arg)
 {
-  uint8_t rx_buff[100];
+  uint8_t rx_buff[512];
   uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
   uint32_t startTime;
   int32_t len;
@@ -36,28 +37,44 @@ uart_optTimeOut_t opt;
 
   startTime = osKernelGetTickCount();
 
-  while(1)
+  g_direct_system.linkdown_remain_ms = DIRECT_TIMEOUT_MS;
+  
+  while (1)
   {
     len = driver_uart_recv_opt(direct_driver,rx_buff,sizeof(rx_buff),10000,10);
     if(len)
     {
       g_direct_system.link_status = eDIRECT_LINK_UP;
-
+      g_direct_system.last_recv_time = time_timestamp();
       UPDATE_CNT(g_direct_system.rx_cnt, 99);
       len = kma_cmd_handler(rx_buff, len, tx_buffer, eREQ_SOURCE_DIRECT);
       if(len)
       {
         driver_uart_send(direct_driver, tx_buffer, len);
         UPDATE_CNT(g_direct_system.tx_cnt, 99);
+        g_direct_system.last_send_time = time_timestamp();
       }
       startTime  = osKernelGetTickCount();
     }
+    
+    // 링크다운까지 남은 시간 계산
+    uint32_t now = osKernelGetTickCount();
+    uint32_t elapsed = now - startTime;
 
-    if((osKernelGetTickCount()-startTime)>3600000)
+    if (elapsed >= DIRECT_TIMEOUT_MS)
     {
       g_direct_system.link_status = eDIRECT_LINK_DOWN;
-      startTime  = osKernelGetTickCount();
+      g_direct_system.linkdown_remain_ms = 0;
+      startTime = now;  // 리셋
     }
+    else
+    {
+      if (g_direct_system.link_status != eDIRECT_LINK_DOWN)
+      {
+        g_direct_system.linkdown_remain_ms = DIRECT_TIMEOUT_MS - elapsed;
+      }
+    }
+
   }
 }
 

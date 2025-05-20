@@ -19,6 +19,7 @@ typedef struct direct_status_s
   uint8_t tx_cnt;
   uint32_t last_send_time;
   uint32_t last_recv_time;
+  uint32_t linkdown_remain_ms;
 } direct_status_t;
 
 direct_status_t *get_direct_system(void);

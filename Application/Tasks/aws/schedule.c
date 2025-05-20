@@ -12,7 +12,8 @@
 #include "aws_data.h"
 #include "task_logging.h"
 #include "app_dataLogging.h"
-
+#include "utile.h"
+#include "kma2.h"
 #define D2R 3.14159265 / 180.0
 #define R2D 180.0 / 3.14159265
 
@@ -778,8 +779,14 @@ void MinProcess(DATE_TIME_BUF *pDate)
   mRealAws.mWind.mDirection.sMax = 0;
   mRealAws.mWind.mSpeed.sMax = 0;
 
+  kma_data_ex_t *p_kma_avg = get_kma_data(eAWS_DATA_AVG);
   
-  os_write_sensorData(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS,1);
+  for(int i = 0 ; i< 8;i++)
+  {
+    pAws->kma3_sensor_status[i] = p_kma_avg->X_sensorStatus[i];
+  }
+  
+  os_write_sensorData(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
 }
 
 void Min10Process(void)
@@ -1284,4 +1291,13 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->precipitation_presence.data = pAws->mRainDetect.sReal;  // 우량 감지
 
   p_kma_data->snowfall.data = pAws->mSnowFall.sReal;
+
+  kma_data_ex_t *p_kma_avg = get_kma_data(eAWS_DATA_AVG);
+
+  for(int i = 0 ; i < 8 ;i++)
+  {
+    p_kma_data->X_sensorStatus[i] = p_kma_avg->X_sensorStatus[i];
+  }
+  p_kma_data->Y_volateStatus = p_kma_avg->Y_volateStatus;
+
 }
