@@ -3,12 +3,13 @@
 #include "driver_adc.h"
 #include "driver_led.h"
 #include "driver_do.h"
+#include "driver_di.h"
 
 driver_t *g_adcStm;
 driver_t *g_status_led;
 driver_t *g_cdma_power;
 driver_t *g_portd_mode;
-
+driver_t *g_door;
 void status_led_init(void);
 
 void set_portd_hart_mode(void)
@@ -31,9 +32,21 @@ void app_bsp_init(void)
 
   g_portd_mode = driver_do_open(DO_HART_SEL, 0);
 
+  g_door = driver_di_open(DI_EXT_0,0);
+
   set_portd_rs232_mode();
 }
 
+
+bool door_opened(void)
+{
+  if(driver_di_read(g_door))
+  {
+    return false;
+  }
+
+  return true;
+}
 
 void cdma_power_on(void)
 {

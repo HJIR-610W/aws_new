@@ -210,9 +210,9 @@ uint16_t make_kma2_response(uint8_t *rx_frame, uint8_t *data, uint16_t data_len,
   SetWord(&tx_frame[offset], KMA_HEADER_START);
   offset += 2;
 
-  tx_frame[offset++] = rx_frame[2];  // 프로토콜 버전 년
-  tx_frame[offset++] = rx_frame[3];  // 프로토콜 버전 월
-  tx_frame[offset++] = rx_frame[4];  // 프로토콜 버전 일
+  tx_frame[offset++] = KMA2_PROTOCOL_YEAR%100; // rx_frame[2];  // 프로토콜 버전 년
+  tx_frame[offset++] = KMA2_PROTOCOL_MONTH;    // rx_frame[3];  // 프로토콜 버전 월
+  tx_frame[offset++] = KMA2_PROTOCOL_DAY;      // rx_frame[4];  // 프로토콜 버전 일
 
   tx_frame[offset++] = Date_Time.Year%100;
   tx_frame[offset++] = Date_Time.Month;

@@ -99,7 +99,8 @@
 			"system_err.h": "c",
 			"string.h": "c",
 			"app_rs485.h": "c",
-			"kma_define.h": "c"
+			"kma_define.h": "c",
+			"kma3.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

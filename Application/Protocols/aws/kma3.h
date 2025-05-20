@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "aws_data.h"
 #include "app_sensor.h"
-
+#include "kma_define.h"
 // 규격서 프로토콜 버전
 #define KMA3_PROTOCOL_YEAR 2018
 #define KMA3_PROTOCOL_MONTH 2
@@ -27,4 +27,8 @@ uint16_t make_kma3_resp_RODTWC(uint8_t *out, uint16_t outSize, uint16_t id, uint
 void kma_update_sensor_err(eSENSOR_LIST_t sensor_num, uint8_t err);
 void kma_update_sensor_err(eSENSOR_LIST_t sensor_num, uint8_t err);
 bool kma_is_sensor_error(eSENSOR_LIST_t sensor_num);
+void kma3_set_sensor_status(eSENSOR_LIST_t sensor_num,uint8_t sensor[8]);
+void kma3_clear_sensor_status(eSENSOR_LIST_t sensor_num, uint8_t sensor[8]);
+bool kma3_is_sensor_error(eSENSOR_LIST_t sensor_num,uint8_t sensor[8]);
+void kma3_update_sensor_status(eSENSOR_LIST_t sensor_num,uint8_t sensor[8], uint8_t err);
 #endif

@@ -69,58 +69,6 @@ eKMA_COMMAND_TYPE_t kma_get_command_type(const char *cmd_str_from_packet)
   return eKMA_COMMAND_TYPE_UNKNOWN;
 }
 
-void kma3_set_sensor_status(eSENSOR_LIST_t sensor_num,uint8_t sensor[8])
-{
-  int quot;
-  int rem;
-
-  quot = sensor_num / sizeof(sensor);
-  rem = sensor_num % sizeof(sensor);
-
-  sensor[quot] |= 1 << rem;
-}
-
-void kma3_clear_sensor_status(eSENSOR_LIST_t sensor_num, uint8_t sensor[8])
-{
-  int quot;
-  int rem;
-
-  quot = sensor_num / sizeof(sensor);
-  rem = sensor_num % sizeof(sensor);
-
-  sensor[quot] &= ~(1 << rem);
-}
-
-bool kma3_is_sensor_error(eSENSOR_LIST_t sensor_num,uint8_t sensor[8])
-{
-  int quot;
-  int rem;
-
-  quot = sensor_num / sizeof(sensor);
-  rem = sensor_num % sizeof(sensor);
-
-  if (sensor[quot] & (1 << rem))
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-void kma3_update_sensor_status(eSENSOR_LIST_t sensor_num,uint8_t sensor[8], uint8_t err)
-{
-  if (err)
-  {
-    kma3_set_sensor_status(sensor_num,sensor);
-  }
-  else
-  {
-    kma3_clear_sensor_status(sensor_num,sensor);
-  }
-}
-
 #define KMA3_REQ_LEN 29
 
 bool is_kma3_protocol(uint8_t *input, uint32_t len)
@@ -696,9 +644,9 @@ uint32_t kma_cmd_handler_AV(uint8_t *packet, uint8_t *txBuff)
   uint16_t cnt = 0;
   uint8_t version[3];
 
-  switch (config.eth_protocol)
+  switch (config.aws_protocol_type)
   {
-    case 3:  // KMA3 153바이트형
+    case eAWS_PROTOCOL_KMA3:  // KMA3 153바이트형
       version[0] = KMA3_PROTOCOL_YEAR % 100;
       version[1] = KMA3_PROTOCOL_MONTH;
       version[2] = KMA3_PROTOCOL_DAY;

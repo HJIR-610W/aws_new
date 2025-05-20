@@ -68,26 +68,22 @@ typedef struct config_s
   uint8_t start;  //  bool restart_required;
   uint16_t id;
   uint16_t password;
-  eCHARGER_MODEL_t charger_model;
+  eCHARGER_MODEL_t charger_model;  // 설정 후 리셋 요구됨
   eETH_MODE_t eth_mode;
-  uint8_t eth_subnet[4];
-  uint8_t eth_gateway[4];
-  uint8_t eth_ip[4];
+  uint8_t eth_subnet[4];    // 설정 후 리셋 요구됨
+  uint8_t eth_gateway[4];   // 설정 후 리셋 요구됨
+  uint8_t eth_ip[4];        // 설정 후 리셋 요구됨
   uint8_t eth_server_ip[4];
   uint16_t eth_server_port;
-  uint16_t eth_local_port;
-  eETH_PROTOCOL_t eth_protocol;
+  uint16_t eth_local_port;   // 설정 후 리셋 요구됨
   uint8_t cdma_server_ip[4];
   uint16_t cdma_port;
-  eETH_PROTOCOL_t cdma_protocol;
   eAWS_PROTOCOL_t aws_protocol_type;
-  eCDMA_MODEL_t cdma_model;
-  bool eth_use;
-  bool cdma_use;
-  bool direct_use;
-  uint8_t direct_protocol;
-
-  uint32_t direct_baud;
+  eCDMA_MODEL_t cdma_model;  // 설정 후 리셋 요구됨
+  bool eth_use;              // 설정 후 리셋 요구됨
+  bool cdma_use;             // 설정 후 리셋 요구됨
+  bool direct_use;           // 설정 후 리셋 요구됨
+  uint32_t direct_baud;      // 설정 후 리셋 요구됨
   ePANEL_MODEL_t panel_model;
   bool panel_snow_use;
   bool panel_barometer_use;
@@ -97,7 +93,7 @@ typedef struct config_s
   uint8_t vhf_repeater_id;
   uint16_t vhf_ptt_delay;
   bool encrypt_use;
-  eNET_MODE_t network_mode;
+
   bool ac_use;
   uint16_t m_usRainDtOffDelay;//구 AWS
   sensor_t sensor[SENSOR_LIST_MAX];
@@ -118,7 +114,10 @@ typedef enum link_status_e
 
 typedef struct system_s
 {
-  int8_t doorStatus;
+  bool door_opened;
+  bool dc_error;
+  bool battery_error;
+  uint8_t ac_status;//00 110v,01 220v,11 ADC OFF
   eLINK_STATUS_t cdma_link_status;
   int8_t cdma_rssi;
   char cdma_num[20];

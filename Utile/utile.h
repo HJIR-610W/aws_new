@@ -8,7 +8,14 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-
+#define BIT_UPDATE(val, cond, bitmask) \
+  do                                   \
+  {                                    \
+    if (cond)                          \
+      (val) |= (bitmask);              \
+    else                               \
+      (val) &= ~(bitmask);             \
+  } while (0)
 #define _countof(_Array)     sizeof(_Array) / sizeof(_Array[0])            
 
 #define TOSTRING(x) #x

@@ -133,10 +133,10 @@ int32_t read_rainHallErr(void)
 {
   if(driver_di_read(g_hallStatusDriver))
   {
-    return 1;
+    return 0;//정상
   }
 
-  return 0;
+  return 1;//에러 
 }
 uint16_t calculate_yearRain(DATE_TIME_BUF *ct)
 {
@@ -152,6 +152,7 @@ uint16_t calculate_monthRain(DATE_TIME_BUF *ct)
 typedef struct rain_cfg_s
 {
   float pulse;
+  uint8_t type;
 }rain_cfg_t;
 
 driver_t rain_driver;
@@ -172,15 +173,19 @@ driver_t *rain_open(int32_t num,void *opt)
   {
     case RAIN_REED_05MM:
     rain_cfg.pulse = 0.5;
+    rain_cfg.type = RAIN_REED_05MM;
     break;
     case RAIN_REED_1MM:
     rain_cfg.pulse = 1;
+    rain_cfg.type = RAIN_REED_1MM;
     break;
     case RAIN_HALL_05MM:
     rain_cfg.pulse = 0.5;
+    rain_cfg.type = RAIN_HALL_05MM;
     break;
     case RAIN_HALL_1MM:
     rain_cfg.pulse = 1;
+    rain_cfg.type = RAIN_HALL_1MM;
     break;
   }
 
@@ -196,9 +201,16 @@ float read_sensor_rain(driver_t *driver,uint8_t *err)
   rain_cfg_t *cfg = driver->cfg;
   uint16_t data = 0;
 
-  *err = 0;
-  
-  rain =  peek_rain();
+  if (cfg->type == RAIN_HALL_05MM || cfg->type == RAIN_HALL_1MM)
+  {
+    *err = read_rainHallErr();
+  }
+  else
+  {
+    *err = 0;
+  }
+
+    rain =  peek_rain();
   if(rain)
   {
    data = get_rain(rain);

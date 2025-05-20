@@ -2,6 +2,8 @@
 #ifndef APP_BSP_H
 #define APP_BSP_H
 
+#include <stdint.h>
+#include <stdbool.h>
 void app_bsp_init(void);
 float read_battery(void);
 float read_temperature(void);
@@ -17,4 +19,5 @@ void cdma_power_on(void);
 void cdma_power_off(void);
 void set_portd_hart_mode(void);
 void set_portd_rs232_mode(void);
+bool door_opened(void);
 #endif

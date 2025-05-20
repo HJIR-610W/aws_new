@@ -82,7 +82,7 @@ typedef struct select_menu_s
   const menuFunc_t *menuFunc;//함수 테이블 
 } select_menu_t;
 
-const char *protocolList[] = {"kma ver 1", "kma ver 2"};
+const char *protocolList[] = {"KMA2", "KMA3"};
 const char *cdmaModellList[] = {"TX700", "NTLE9607"};
 const char *panelList[] = {"STD", "MOOJU","HANSUNG"};
 
@@ -1985,8 +1985,6 @@ int32_t print_net_eth_remote_set(p_shell_context_t ctx)
 
   ctx->printf("%2d.ip      :%d.%d.%d.%d\r\n", cnt++, ip[0], ip[1], ip[2], ip[3]);
   ctx->printf("%2d.port    :%d\r\n", cnt++, get_config_app()->eth_server_port);
-  ctx->printf("%2d.protocol:%s\r\n", cnt++, ITEM_LIST(get_config_app()->eth_protocol, protocolList));
-
   return cnt;
 }
 
@@ -2023,15 +2021,6 @@ int32_t menu_net_eth_remote_set(p_shell_context_t ctx)
         {
           config.eth_server_port = dec;
           WRITE_CFG(eth_server_port);
-        }
-        break;
-      case 2:  // 프로토콜
-        cnt = select_indexFromList(ctx, protocolList, NULL, _countof(protocolList), true);
-        if (cnt > 0)
-        {
-          cnt--;
-          config.eth_protocol = cnt;
-          WRITE_CFG(eth_protocol);
         }
         break;
     }
@@ -2174,7 +2163,6 @@ int32_t print_net_cdma_set(p_shell_context_t ctx)
 
   ctx->printf("%2d.ip      :%d.%d.%d.%d\r\n", cnt++, ip[0], ip[1], ip[2], ip[3]);
   ctx->printf("%2d.port    :%d\r\n", cnt++, port);
-  ctx->printf("%2d.protocol:%s\r\n", cnt++, ITEM_LIST(config.cdma_protocol, protocolList));
   ctx->printf("%2d.model   :%s\r\n", cnt++, ITEM_LIST(config.cdma_model, cdmaModellList));
 
   return cnt;
@@ -2215,16 +2203,7 @@ int32_t menu_net_cdma_set(p_shell_context_t ctx)
           WRITE_CFG(cdma_port);
         }
         break;
-      case 2:  // 프로토콜
-        cnt = select_indexFromList(ctx, protocolList, NULL, _countof(protocolList), true);
-        if (cnt > 0)
-        {
-          cnt--;
-          config.cdma_protocol = cnt;
-          WRITE_CFG(cdma_protocol);
-        }
-        break;
-      case 3:  // 모델
+      case 2:  // 모델
         cnt = select_indexFromList(ctx, cdmaModellList, NULL, _countof(cdmaModellList), true);
         if (cnt > 0)
         {
@@ -2239,10 +2218,9 @@ int32_t menu_net_cdma_set(p_shell_context_t ctx)
 
 int32_t print_net_direct_set(p_shell_context_t ctx)
 {
-  int32_t cnt = 2;
+  int32_t cnt = 0;
 
   ctx->printf("%2d.baud     :%d\r\n", cnt++, config.direct_baud);
-  ctx->printf("%2d.protocol :%s\r\n", cnt++, ITEM_LIST(config.direct_protocol, protocolList));
 
   return cnt;
 }
@@ -2268,15 +2246,6 @@ int32_t menu_net_direct_set(p_shell_context_t ctx)
         {
           config.direct_baud = dec;
           WRITE_CFG(direct_baud);
-        }
-        break;
-      case 2:  // 프로토콜
-        cnt = select_indexFromList(ctx, protocolList, NULL, _countof(protocolList), true);
-        if (cnt > 0)
-        {
-          cnt--;
-          config.direct_protocol = cnt;
-          WRITE_CFG(direct_protocol);
         }
         break;
     }
@@ -2397,6 +2366,22 @@ int32_t menu_net_vhf(p_shell_context_t ctx)
   return cnt;
 }
 
+int32_t menu_net_protocol(p_shell_context_t ctx)
+{
+  int32_t cnt;
+
+  
+    cnt = select_indexFromList(ctx, protocolList, NULL, _countof(protocolList), true);
+
+    if(cnt > 0)
+    {
+      config.aws_protocol_type = cnt-1;
+      WRITE_CFG(aws_protocol_type);
+    }
+ 
+
+  return cnt;
+}
 int32_t print_menu_net(p_shell_context_t ctx)
 {
   int32_t cnt = 0;
@@ -2406,6 +2391,8 @@ int32_t print_menu_net(p_shell_context_t ctx)
 
   ctx->printf("%2d.통신 방식:%s\r\n", cnt++, buff);
   ctx->printf("%2d.통신 설정\r\n", cnt++);
+  ctx->printf("%2d.통신 프로토콜:%s\r\n", cnt++, 
+                                 ITEM_LIST(get_config_app()->aws_protocol_type, protocolList));
   ctx->printf("%2d.VHF\r\n", cnt++);
 
   return cnt;
@@ -2415,17 +2402,18 @@ int32_t menu_network(p_shell_context_t ctx)
 {
   int32_t cnt;
 
-  const menu_func menu[] = {menu_net_use, menu_net_set, menu_net_vhf};
-  do
+  const menu_func menu[] = {menu_net_use, menu_net_set, menu_net_protocol, menu_net_vhf};
+  
+  while(1)
   {
     cnt = select_indexFromList(ctx, NULL, print_menu_net, 0, false);
     if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
     {
-      return cnt;
+      break;
     }
     cnt--;
     cnt = menu[cnt](ctx);
-  } while (cnt != EXIT_PROGRAM);
+  }
 
   return cnt;
 }
@@ -3006,7 +2994,7 @@ int32_t menu_manage_print_config_all(p_shell_context_t ctx)
   ctx->printf("비밀번호         :%d\r\n", config.password);
   ctx->printf("충전기 종류      :%s\r\n", ITEM_LIST(config.charger_model, g_chgList));
   ctx->printf("로그 카운트      :%d\r\n", get_config_nvm()->logCnt);
-
+  ctx->printf("프로토콜          :%s\r\n", ITEM_LIST(config.aws_protocol_type, protocolList));
   ctx->printf("이더넷 서브넷    :%d.%d.%d.%d\r\n", config.eth_subnet[0], config.eth_subnet[1],
               config.eth_subnet[2], config.eth_subnet[3]);
   ctx->printf("이더넷 게이트웨이:%d.%d.%d.%d\r\n", config.eth_gateway[0], config.eth_gateway[1],
@@ -3018,16 +3006,16 @@ int32_t menu_manage_print_config_all(p_shell_context_t ctx)
   ;
 
   ctx->printf("이더넛 포트      :%d\r\n", config.eth_server_port);
-  ctx->printf("이더넷 프로토콜  :%s\r\n", ITEM_LIST(config.eth_protocol, protocolList));
+
   ctx->printf("CDMA 원격 서버   :%d.%d.%d.%d\r\n", config.cdma_server_ip[0],
               config.cdma_server_ip[1], config.cdma_server_ip[2], config.cdma_server_ip[3]);
   ctx->printf("CDMA 포트        :%d\r\n", config.cdma_port);
-  ctx->printf("CDMA 프로토콜    :%s\r\n", ITEM_LIST(config.cdma_protocol, protocolList));
+
   ctx->printf("CDMA 종류        :%s\r\n", ITEM_LIST(config.cdma_model, cdmaModellList));
   ctx->printf("이더넷 사용      :%s\r\n", ITEM_LIST((int32_t)config.eth_use, enableList));
   ctx->printf("CDMA 사용        :%s\r\n", ITEM_LIST((int32_t)config.cdma_use, enableList));
   ctx->printf("직접통신         :%s\r\n", ITEM_LIST((int32_t)config.direct_use, enableList));
-  ctx->printf("직접통신 프로토콜:%s\r\n", ITEM_LIST(config.direct_protocol, protocolList));
+
   ctx->printf("직접통신 속도    :%d\r\n", config.direct_baud);
   ctx->printf("패널 종류        :%s\r\n", ITEM_LIST(config.panel_model, panelList));
   ctx->printf("VHF ID           :%d\r\n", config.vhf_id);

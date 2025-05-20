@@ -9,7 +9,7 @@
 #include "driver_modbus.h"
 #include "task_isrEvent.h"
 #include "driver_uart.h"
-
+#include "config_app.h"
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
@@ -39,11 +39,22 @@ void userBtn_init(void)
 
 void systemTask(void *arg)
 {
-
+  uint8_t err=0;
+  uint32_t start_time = osKernelGetTickCount();
   while (1)
   {
     rtc_update();
-    update_charger();
+
+
+    if ((osKernelGetTickCount() - start_time)>10000)
+    {
+      start_time = osKernelGetTickCount();
+      System.door_opened = door_opened();
+      update_charger();
+      System.battery_error = read_batteryVoltage1(&err) < 10.0f?1:0;
+      System.ac_status = 1;//220v
+      System.dc_error = read_battery()<11.0f?1:0;
+    }
 
     osDelay(500);
   }

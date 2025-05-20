@@ -489,6 +489,9 @@ void update_old_kma(eAWS_DATA_MIN_t min)
 
 }
 
+
+
+
 void update_kma_real(void)
 {
   kma_data_ex_t *p_kma3;
@@ -515,6 +518,7 @@ void update_kma_real(void)
   p_kma3->wind_direction_instant.err = 0;
 
   p_kma3->precipitation.data = mRealAws.mRainFall.sReal;
+  p_kma3->precipitation.err = get_sensor_err(A6_RAINFALL_DOT5_1MM);
 
   p_kma3->pressure.data = mRealAws.mBarometric.sReal;
   p_kma3->pressure.err = get_sensor_err(A7_PRESSURE);
@@ -569,6 +573,44 @@ void update_kma_real(void)
   set_rainfall_yesterday(Sysinfo.mRain.sBefDayRain / 10.0);
   set_rainfall_today(Sysinfo.mRain.sDayRain / 10.0);
   set_rainfall_hourly(Sysinfo.mRain.sHourRain / 10.0);
+
+  kma3_update_sensor_status(A1_TEMPERATURE, p_kma3->X_sensorStatus, get_sensor_err(A1_TEMPERATURE));
+  kma3_update_sensor_status(A2_WIND_DIRECTION, p_kma3->X_sensorStatus,
+                            get_sensor_err(A2_WIND_DIRECTION));
+  kma3_update_sensor_status(A3_WIND_SPEED, p_kma3->X_sensorStatus, get_sensor_err(A3_WIND_SPEED));
+  kma3_update_sensor_status(A6_RAINFALL_DOT5_1MM, p_kma3->X_sensorStatus,
+                            get_sensor_err(A6_RAINFALL_DOT5_1MM));
+  kma3_update_sensor_status(A7_PRESSURE, p_kma3->X_sensorStatus, get_sensor_err(A7_PRESSURE));
+  kma3_update_sensor_status(A8_RAIN_PRESENT, p_kma3->X_sensorStatus,
+                            get_sensor_err(A8_RAIN_PRESENT));
+  kma3_update_sensor_status(A9_SNOW_DEPTH, p_kma3->X_sensorStatus, get_sensor_err(A9_SNOW_DEPTH));
+  kma3_update_sensor_status(A10_RELATIVE_HUMIDITY, p_kma3->X_sensorStatus,
+                            get_sensor_err(A10_RELATIVE_HUMIDITY));
+  kma3_update_sensor_status(B1_SOLAR_RADIATION, p_kma3->X_sensorStatus,
+                            get_sensor_err(B1_SOLAR_RADIATION));
+  kma3_update_sensor_status(B2_SUNSHINE_DURATION, p_kma3->X_sensorStatus,
+                            get_sensor_err(B2_SUNSHINE_DURATION));
+
+  kma3_update_sensor_status(B5_SOIL_TEMPERATURE_5CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(B5_SOIL_TEMPERATURE_5CM));
+  kma3_update_sensor_status(B6_SOIL_TEMPERATURE_10CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(B6_SOIL_TEMPERATURE_10CM));
+  kma3_update_sensor_status(B7_SOIL_TEMPERATURE_20CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(B7_SOIL_TEMPERATURE_20CM));
+  kma3_update_sensor_status(B8_SOIL_TEMPERATURE_30CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(B8_SOIL_TEMPERATURE_30CM));
+  kma3_update_sensor_status(B9_SOIL_TEMPERATURE_50CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(B9_SOIL_TEMPERATURE_50CM));
+  kma3_update_sensor_status(B10_SOIL_TEMPERATURE_100CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(B10_SOIL_TEMPERATURE_100CM));
+  kma3_update_sensor_status(B11_SOIL_TEMPERATURE_150CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(B11_SOIL_TEMPERATURE_150CM));
+
+  BIT_UPDATE(p_kma3->Y_volateStatus, System.dc_error, KMA2_PWRSTAT_DC_INPUT_ERR);
+  BIT_UPDATE(p_kma3->Y_volateStatus, System.battery_error, KMA2_PWRSTAT_BATTERY_ERR);
+  p_kma3->Y_volateStatus &= 0xF3;
+  p_kma3->Y_volateStatus |=System.ac_status<<2;
+  BIT_UPDATE(p_kma3->Y_volateStatus, System.door_opened, KMA2_PWRSTAT_DOOR_OPEN);
 }
 
 /**
@@ -965,7 +1007,7 @@ void DUALPORT_TASK(void *arg)
           schedule_process(&ct, &time_old);
 
           update_kma_real();
-          //현재 값연산 없는 항목은 원본값으로 처리리
+          //현재 값연산 없는 항목은 원본값으로 처리
           update_unused_data(get_kma_data(eAWS_DATA_AVG),get_kma_data(eAWS_DATA_RAW));//
           update_unused_data(get_kma_data(eAWS_DATA_1MIN),get_kma_data(eAWS_DATA_RAW));//
         }

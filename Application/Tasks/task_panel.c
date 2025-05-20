@@ -6,7 +6,7 @@
 
 const osThreadAttr_t kPanelTask_attributes = {
     .name = "panelTask",
-    .stack_size = 512,
+    .stack_size = 768,
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
 

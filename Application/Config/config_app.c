@@ -16,36 +16,34 @@
 config_t config;
 system_t System;
 
-const config_t config_app_default = {.id = 0,
-                                 .password = 7777,
-                                 .charger_model = eCHARGER_SMART,
-                                 .eth_mode = eETH_MODE_SERVER,
-                                 .eth_subnet = {255, 255, 255, 0},
-                                 .eth_gateway = {192, 168, 1, 1},
-                                 .eth_ip = {192, 168, 1, 180},
-                                 .eth_server_ip = {112, 221, 177, 172},
-                                 .eth_server_port = 6442,
-                                 .eth_protocol = eETH_PROTOCOL_KMA3,
-                                 .cdma_server_ip = {192,168,1,1},
-                                 .cdma_port = 0,
-                                 .cdma_protocol = eETH_PROTOCOL_KMA3,
-                                 .cdma_model = eCDMA_NTLE9607,
-                                 .eth_use = false,
-                                 .cdma_use = true,
-                                 .direct_use = false,
-                                 .direct_protocol = 0,
-                                 .direct_baud = 19200,
-                                 .panel_model = ePANEL_STD,
-                                 .panel_snow_use=true,
-                                 .panel_barometer_use=true,
-                                 .vhf_id = 0,
-                                 .vhf_group = 0,
-                                 .vhf_host_id = 0,
-                                 .vhf_repeater_id = 0,
-                                 .vhf_ptt_delay = 10,
-                                 .encrypt_use = false,
-                                 .network_mode = eNET_MODE_TCP_SERVER,
-                                 .ac_use = false};
+const config_t config_app_default = {
+    .id = 0,
+    .password = 7777,
+    .charger_model = eCHARGER_SMART,
+    .aws_protocol_type = eAWS_PROTOCOL_KMA3,
+    .eth_mode = eETH_MODE_SERVER,
+    .eth_subnet = {255, 255, 255, 0},
+    .eth_gateway = {192, 168, 1, 1},
+    .eth_ip = {192, 168, 1, 180},
+    .eth_server_ip = {112, 221, 177, 172},
+    .eth_server_port = 6442,
+    .cdma_server_ip = {192, 168, 1, 1},
+    .cdma_port = 0,
+    .cdma_model = eCDMA_NTLE9607,
+    .eth_use = false,
+    .cdma_use = true,
+    .direct_use = false,
+    .direct_baud = 19200,
+    .panel_model = ePANEL_STD,
+    .panel_snow_use = true,
+    .panel_barometer_use = true,
+    .vhf_id = 0,
+    .vhf_group = 0,
+    .vhf_host_id = 0,
+    .vhf_repeater_id = 0,
+    .vhf_ptt_delay = 10,
+    .encrypt_use = false,
+    .ac_use = false};
 
 bool g_config_app_dirty_flag = false;
 
@@ -78,11 +76,6 @@ void check_config_app(void)
     g_config_app_dirty_flag = true;
   }
 
-  if (config.eth_protocol > eETH_PROTOCOL_KMA3)
-  {
-    config.eth_protocol = config_app_default.eth_protocol;
-    g_config_app_dirty_flag = true;
-  }
 
   if (config.cdma_model > eCDMA_TX700)
   {
@@ -90,17 +83,13 @@ void check_config_app(void)
     g_config_app_dirty_flag = true;
   }
 
-  if (config.cdma_protocol > eETH_PROTOCOL_KMA3)
+  if (config.aws_protocol_type > eETH_PROTOCOL_KMA3)
   {
-    config.cdma_protocol = config_app_default.cdma_protocol;
+    config.aws_protocol_type = config_app_default.aws_protocol_type;
     g_config_app_dirty_flag = true;
   }
 
-  if (config.network_mode > eNET_MODE_TCP_CLIENT)
-  {
-    config.network_mode = config_app_default.network_mode;
-    g_config_app_dirty_flag = true;
-  }
+
 
   if (config.panel_model > ePANEL_HANSUNG)
   {
@@ -153,23 +142,25 @@ void check_config_app(void)
       config.sensor[i].type = S_T_UNSUED;
       g_config_app_dirty_flag = true;
     }
-
   }
 
   if(!is_value_in_array(config.sensor[A3_WIND_SPEED].type,windSpeedList,_countof(windSpeedList)))
   {
     config.sensor[A3_WIND_SPEED].type = S_T_UNSUED;
+    g_config_app_dirty_flag = true;
   }
 
   if (!is_value_in_array(config.sensor[A2_WIND_DIRECTION].type, windDirectionList,
                           _countof(windDirectionList)))
   {
     config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
+    g_config_app_dirty_flag = true;
   }
 
   if (!is_value_in_array(config.sensor[A9_SNOW_DEPTH].type, snowList, _countof(snowList)))
   {
     config.sensor[A9_SNOW_DEPTH].type = S_T_UNSUED;
+    g_config_app_dirty_flag = true;
   }
 
   if (config.sensor[A1_TEMPERATURE].type == S_T_TEMPERATURE_HJ)
@@ -262,7 +253,20 @@ void check_config_app(void)
     if (p_config ==NULL)
     {
       config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
+      g_config_app_dirty_flag = true;
     }
+  }
+
+  if (config.panel_snow_use > 1)
+  {
+    config.panel_snow_use = config_app_default.panel_snow_use;
+    g_config_app_dirty_flag = true;
+  }
+
+  if (config.panel_barometer_use > 1)
+  {
+    config.panel_barometer_use = config_app_default.panel_barometer_use;
+    g_config_app_dirty_flag = true;
   }
 }
 

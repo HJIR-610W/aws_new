@@ -389,37 +389,23 @@ uint16_t make_kma3_resp(uint8_t *out, char dataType,  uint8_t dataNum, uint16_t 
                         uint8_t *data, uint16_t dataLen)
 {
   uint16_t cnt = 0;
-  uint8_t version[3];
 
-  switch (config.eth_protocol)
-  {
-    case 3:  // KMA3 153바이트형
-      version[0] = KMA3_PROTOCOL_YEAR % 100;
-      version[1] = KMA3_PROTOCOL_MONTH;
-      version[2] = 1;
-      break;
-    default:
-      version[0] = KMA3_PROTOCOL_YEAR % 100;
-      version[1] = KMA3_PROTOCOL_MONTH;
-      version[2] = 1;
-      break;
-  }
 
   SetWord(&out[cnt], 0xFAFB);  // Ⅰ시작 표시
   cnt += 2;
 
-  out[cnt++] = version[0];  // Ⅱ 프로토콜 버전 년
-  out[cnt++] = version[1];  // Ⅱ 프로토콜 버전 월
-  out[cnt++] = version[2];  // Ⅱ 프로토콜 버전 월
+  out[cnt++] = KMA3_PROTOCOL_YEAR % 100;  // Ⅱ 프로토콜 버전 년
+  out[cnt++] = KMA3_PROTOCOL_MONTH;       // Ⅱ 프로토콜 버전 월
+  out[cnt++] = KMA3_PROTOCOL_DAY;         // Ⅱ 프로토콜 버전 월
 
   //년도가 설정되어있지 않다면
   if(out[cnt]==0)
   {
     out[cnt++] = Date_Time.Year%100;  // Ⅲ 날짜 년
-    out[cnt++] = Date_Time.Month;  // Ⅲ 날짜 월
-    out[cnt++] = Date_Time.Day;  // Ⅲ 날짜 일
-    out[cnt++] = Date_Time.Hour;  // Ⅲ 날짜 시
-    out[cnt++] = Date_Time.Min;  // Ⅲ 날짜 분
+    out[cnt++] = Date_Time.Month;    // Ⅲ 날짜 월
+    out[cnt++] = Date_Time.Day;     // Ⅲ 날짜 일
+    out[cnt++] = Date_Time.Hour;    // Ⅲ 날짜 시
+    out[cnt++] = Date_Time.Min;     // Ⅲ 날짜 분
   }
   else
   {
@@ -452,34 +438,21 @@ uint16_t make_kma3_resp_RODTWC(uint8_t *out, uint16_t outSize, uint16_t id, uint
         const char *result)
 {
 uint16_t cnt = 0;
-uint8_t version[3];
 
-switch (config.eth_protocol)
-{
-case 3:  // KMA3 153바이트형
-version[0] = KMA3_PROTOCOL_YEAR % 100;
-version[1] = KMA3_PROTOCOL_MONTH;
-version[2] = KMA3_PROTOCOL_DAY;
-break;
-default:
-version[0] = KMA3_PROTOCOL_YEAR % 100;
-version[1] = KMA3_PROTOCOL_MONTH;
-version[2] = KMA3_PROTOCOL_DAY;
-break;
-}
 
 if (outSize < 16)
 {
-return 0;
+  return 0;
 }
+
 memset(out, 0, outSize);
 
 SetWord(&out[cnt], 0xFAFB);
 cnt += 2;
 
-out[cnt++] = version[0];  // Ⅱ 프로토콜 버전 년
-out[cnt++] = version[1];  // Ⅱ 프로토콜 버전 월
-out[cnt++] = version[2];  // Ⅱ 프로토콜 버전 월
+out[cnt++] = KMA3_PROTOCOL_YEAR % 100; // Ⅱ 프로토콜 버전 년
+out[cnt++] = KMA3_PROTOCOL_MONTH;      // Ⅱ 프로토콜 버전 월
+out[cnt++] = KMA3_PROTOCOL_DAY;        // Ⅱ 프로토콜 버전 월
 
 SetWord(&out[cnt], id);
 cnt += 2;
@@ -498,4 +471,54 @@ cnt += 2;
 return cnt;
 }
 
+void kma3_set_sensor_status(eSENSOR_LIST_t sensor_num, uint8_t sensor[8])
+{
+  int quot;
+  int rem;
 
+  quot = sensor_num / sizeof(sensor);
+  rem = sensor_num % sizeof(sensor);
+
+  sensor[quot] |= 1 << rem;
+}
+
+void kma3_clear_sensor_status(eSENSOR_LIST_t sensor_num, uint8_t sensor[8])
+{
+  int quot;
+  int rem;
+
+  quot = sensor_num / sizeof(sensor);
+  rem = sensor_num % sizeof(sensor);
+
+  sensor[quot] &= ~(1 << rem);
+}
+
+bool kma3_is_sensor_error(eSENSOR_LIST_t sensor_num, uint8_t sensor[8])
+{
+  int quot;
+  int rem;
+
+  quot = sensor_num / sizeof(sensor);
+  rem = sensor_num % sizeof(sensor);
+
+  if (sensor[quot] & (1 << rem))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+void kma3_update_sensor_status(eSENSOR_LIST_t sensor_num, uint8_t sensor[8], uint8_t err)
+{
+  if (err)
+  {
+    kma3_set_sensor_status(sensor_num, sensor);
+  }
+  else
+  {
+    kma3_clear_sensor_status(sensor_num, sensor);
+  }
+}
