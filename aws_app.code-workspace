@@ -103,7 +103,8 @@
 			"kma3.h": "c",
 			"kma2.h": "c",
 			"divas_protocol_handler.h": "c",
-			"kma_protocol_handler.h": "c"
+			"kma_protocol_handler.h": "c",
+			"crc.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

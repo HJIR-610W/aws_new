@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "os_define.h"
 #include "app_file.h"
@@ -470,4 +471,73 @@ void file_init(void)
 
   
   g_fileSem = osSemaphoreNew(1, 1, NULL);  
+}
+
+FRESULT find_files_by_extension(const TCHAR *folder_path, const TCHAR *extension,
+                               char found_filenames[][MAX_FILENAME_LEN], int max_filenames_to_store,
+                               int *p_files_found_count)
+{
+  FRESULT res;
+  DIR dir;
+  FILINFO fno;
+  int count = 0;
+  TCHAR pattern[32];  // "*.ext" 형태의 패턴을 저장할 버퍼 
+
+  if (p_files_found_count == NULL || found_filenames == NULL || folder_path == NULL ||
+      extension == NULL)
+  {
+    if (p_files_found_count)
+      *p_files_found_count = 0;
+    return FR_INVALID_PARAMETER;  
+  }
+  *p_files_found_count = 0;
+
+
+  if ((strlen("*.") + strlen(extension) + 1) > sizeof(pattern) / sizeof(TCHAR))
+  {
+    return FR_INVALID_PARAMETER;  // 확장자가 너무 김
+  }
+  snprintf(pattern,sizeof(pattern), "*.%s", extension); 
+
+  res = f_findfirst(&dir, &fno, folder_path, pattern);
+
+  if (res == FR_OK)
+  {
+    while (fno.fname[0] != 0 && count < max_filenames_to_store)
+    {
+      // fno.fname[0] == 0 은 더 이상 일치하는 항목이 없음을 의미
+      if (!(fno.fattrib & AM_DIR))
+      {  
+        size_t fname_len = 0;
+
+        fname_len = strlen(fno.fname);
+        if (fname_len < MAX_FILENAME_LEN)
+        {
+
+          strcpy(found_filenames[count], fno.fname);
+          count++;
+        }
+        else
+        {
+
+#if 0
+          debug_printf("Warning: Filename '%s' is too long and was skipped.\n", fno.fname);
+#endif
+        }
+      }
+
+      res = f_findnext(&dir, &fno);
+      if (res != FR_OK)
+        break; 
+    }
+    f_closedir(&dir);  // 검색 완료 후 DIR 객체 닫기
+  }
+
+  *p_files_found_count = count;
+
+  if (res == FR_NO_FILE || res == FR_NO_PATH)
+  { 
+    return FR_OK;
+  }
+  return res;  // 그 외의 FatFs 에러 코드 반환
 }

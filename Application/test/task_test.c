@@ -30,7 +30,7 @@ void testTask(void *arg)
   adc_init();
   status_led_set(LED_BLINK);
   rtc_init();
-  systemTask_init();
+  systemTask_init(PARA_TEST_MODE);
   config_manager_init();
   flash_init();
   

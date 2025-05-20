@@ -94,7 +94,7 @@ void startTask(void *arg)
   config_manager_init();
   flash_init();
 
-  systemTask_init();
+  systemTask_init(PARA_RUN_MODE);
   consoleTask_init(0);
   isrEventTask_init();
   dataLogging_init();

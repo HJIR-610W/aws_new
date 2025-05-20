@@ -63,9 +63,11 @@ void systemTask(void *arg)
 
 
 
-void systemTask_init(void)
+void systemTask_init(uint32_t para)
 {
 
+  if(para==0)
+  {
   app_bsp_init();
 
   userBtn_init();
@@ -75,6 +77,10 @@ void systemTask_init(void)
   di_init();
 
   do_init();
-
+  }
+  else
+  {
+    
+  }
   osThreadNew(systemTask, NULL, &kSystemTask_attributes);
 }

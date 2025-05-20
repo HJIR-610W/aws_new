@@ -41,7 +41,7 @@ typedef struct no_init_s
 {
   char rstLog[RST_LOG_MAX];
 }no_init_t;
-__no_init volatile no_init_t noInitData @ 0x20000000; //이 주소에 할당되도록 한다 IAR 전용
+__no_init volatile no_init_t noInitData @ 0x20000004; //이 주소에 할당되도록 한다 IAR 전용
 
 
 

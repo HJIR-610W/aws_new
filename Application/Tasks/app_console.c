@@ -45,7 +45,7 @@
 #include "console_data.h"
 #include "cli_input.h"
 #include "Sensors\temperature\hj_temperature.h"
-
+#include "Update\update_fw.h"
 #define EXIT_PROGRAM -3
 #define EXIT_BACK -1
 
@@ -3055,158 +3055,242 @@ int32_t menu_manage_print_config_all(p_shell_context_t ctx)
 
   return 0;
 }
-menu_func g_manageMenu[] = {
-    [0] = menu_manage_version, menu_manage_device_reset, menu_manage_config_reset};
+
+int32_t menu_manage_update_fw(p_shell_context_t ctx)
+{
+  if (get_user_confirm("펌웨어 업데이트를 진행할까요?") == 1)
+  {
+    update_fw(UPDATE_LOCAL);
+  }
+}
+menu_func g_manageMenu[] = {[0] = menu_manage_version,
+                            menu_manage_device_reset,
+                            menu_manage_config_reset,
+                            menu_manage_update_fw};
 
 int32_t print_menu_manage(p_shell_context_t ctx)
 {
   int32_t cnt = 0;
 
   debug_printf("\r\n");
-  debug_printf("%d.버전\r\n",cnt++);
-  debug_printf("%d.장비 리셋\r\n",cnt++);
-  debug_printf("%d.설정 값\r\n",cnt++);
-
+  debug_printf("%d.버전\r\n", cnt++);
+  debug_printf("%d.장비 리셋\r\n", cnt++);
+  debug_printf("%d.설정 값\r\n", cnt++);
+  debug_printf("%d.펌웨어 업데이트\r\n", cnt++);
   return cnt;
 }
 
-int32_t menu_manage(p_shell_context_t ctx)
-{
-  int32_t cnt;
-
-  do
+  int32_t menu_manage(p_shell_context_t ctx)
   {
-    cnt = select_indexFromList(ctx, NULL, print_menu_manage, 0, false);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
+    int32_t cnt;
+
+    do
     {
-      return cnt;
-    }
-    cnt--;
-    cnt = g_manageMenu[cnt](ctx);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
-    {
-      return cnt;
-    }
-  } while (1);
- 
-}
-
-int32_t print_menu_cali_adc(p_shell_context_t ctx)
-{
-  int32_t cnt = 0;
-
-  ctx->printf("\r\n");
-
-  ctx->printf(" 0.offset  :%d\r\n", g_config_adc.single[0].offset);
-  ctx->printf(" 1.fullset :%d\r\n", g_config_adc.single[0].fullset);
-
-  cnt = 2;
-  return cnt;
-}
-
-int32_t print_menu_cali_single(p_shell_context_t ctx)
-{
-  int32_t cnt = 0;
-
-  ctx->printf("\r\n");
-  for (int i = 0; i < 18; i++)
-  {
-    ctx->printf("%2d.single channel %d\r\n", i, i);
-  }
-  cnt = 18;
-  return cnt;
-}
-
-int32_t inpu_adc_cali(p_shell_context_t ctx, int adcMode, int channel, int32_t cfg_adc,
-                      int32_t cfg_ref, int32_t *adc_data, int32_t *ref_vol)
-{
-  uint8_t err = 0;
-  int32_t ch;
-  int32_t adc;
-  int32_t voltage = 0;
-
-  ctx->printf("ADC %s,ch:%d\r\n", adcChModeList[adcMode], channel);
-  ctx->printf("config adc:%d, ref:%d\r\n", cfg_adc, cfg_ref);
-  do
-  {
-    adc = 0;
-    if (adcMode == 0)  // single
-    {
-      adc = adc_read_single_avg(channel, &err, 10);
-    }
-    else
-    {
-      adc = adc_read_diff_avg(channel, &err, 10);
-    }
-    if (err)
-    {
-      ctx->printf("adc error:%d\r", err);
-    }
-    else
-    {
-      ctx->printf("current adc:%7d\r", adc);
-    }
-
-    osDelay(1000);
-    ch = DbgConsole_GetcharNonBlocking();
-    if (ch != -1)
-    {
-      break;
-    }
-
-  } while (1);
-
-  ctx->printf("\r\n");
-  vt100_printfColor(GREEN, "ADC 값을 수동으로 입력해 주세요:");
-  if (input_digit(ctx, -8388607, 8388607, &adc, eUINT32) != 1)
-  {
-    return 1;
+      cnt = select_indexFromList(ctx, NULL, print_menu_manage, 0, false);
+      if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
+      {
+        return cnt;
+      }
+      cnt--;
+      cnt = g_manageMenu[cnt](ctx);
+      if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
+      {
+        return cnt;
+      }
+    } while (1);
   }
 
-  ctx->printf("\r\n");
-  vt100_printfColor(GREEN, "입력된 전압값을 입력해 주세요(mV):");
-  if (input_digit(ctx, 0, 5000, &voltage, eUINT32) != 1)
+  int32_t print_menu_cali_adc(p_shell_context_t ctx)
   {
-    return 1;
+    int32_t cnt = 0;
+
+    ctx->printf("\r\n");
+
+    ctx->printf(" 0.offset  :%d\r\n", g_config_adc.single[0].offset);
+    ctx->printf(" 1.fullset :%d\r\n", g_config_adc.single[0].fullset);
+
+    cnt = 2;
+    return cnt;
   }
 
-  *adc_data = adc;
-  *ref_vol = voltage;
-
-  return 0;
-}
-
-int32_t menu_cali_single(p_shell_context_t ctx)
-{
-  int32_t cnt;
-  int32_t channel;
-  int32_t index;
-  int32_t adc;
-  int32_t voltage;
-
-  do
+  int32_t print_menu_cali_single(p_shell_context_t ctx)
   {
-    cnt = select_indexFromList(ctx, NULL, print_menu_cali_single, 0, false);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
+    int32_t cnt = 0;
+
+    ctx->printf("\r\n");
+    for (int i = 0; i < 18; i++)
     {
-      return cnt;
+      ctx->printf("%2d.single channel %d\r\n", i, i);
     }
-    cnt--;
-    channel = cnt;
+    cnt = 18;
+    return cnt;
+  }
 
-    while (1)
+  int32_t inpu_adc_cali(p_shell_context_t ctx, int adcMode, int channel, int32_t cfg_adc,
+                        int32_t cfg_ref, int32_t *adc_data, int32_t *ref_vol)
+  {
+    uint8_t err = 0;
+    int32_t ch;
+    int32_t adc;
+    int32_t voltage = 0;
+
+    ctx->printf("ADC %s,ch:%d\r\n", adcChModeList[adcMode], channel);
+    ctx->printf("config adc:%d, ref:%d\r\n", cfg_adc, cfg_ref);
+    do
     {
-      ctx->printf(" 0.offset  :%d\r\n", g_config_adc.single[channel].offset);
-      ctx->printf(" 1.fullset :%d\r\n", g_config_adc.single[channel].fullset);
-      ctx->printf("Please enter a number:");
+      adc = 0;
+      if (adcMode == 0)  // single
+      {
+        adc = adc_read_single_avg(channel, &err, 10);
+      }
+      else
+      {
+        adc = adc_read_diff_avg(channel, &err, 10);
+      }
+      if (err)
+      {
+        ctx->printf("adc error:%d\r", err);
+      }
+      else
+      {
+        ctx->printf("current adc:%7d\r", adc);
+      }
 
-      cnt = console_scanf("%d", &index);
-
-      if (cnt == EXIT_BACK)
+      osDelay(1000);
+      ch = DbgConsole_GetcharNonBlocking();
+      if (ch != -1)
       {
         break;
       }
-      if (cnt == EXIT_PROGRAM)
+
+    } while (1);
+
+    ctx->printf("\r\n");
+    vt100_printfColor(GREEN, "ADC 값을 수동으로 입력해 주세요:");
+    if (input_digit(ctx, -8388607, 8388607, &adc, eUINT32) != 1)
+    {
+      return 1;
+    }
+
+    ctx->printf("\r\n");
+    vt100_printfColor(GREEN, "입력된 전압값을 입력해 주세요(mV):");
+    if (input_digit(ctx, 0, 5000, &voltage, eUINT32) != 1)
+    {
+      return 1;
+    }
+
+    *adc_data = adc;
+    *ref_vol = voltage;
+
+    return 0;
+  }
+
+  int32_t menu_cali_single(p_shell_context_t ctx)
+  {
+    int32_t cnt;
+    int32_t channel;
+    int32_t index;
+    int32_t adc;
+    int32_t voltage;
+
+    do
+    {
+      cnt = select_indexFromList(ctx, NULL, print_menu_cali_single, 0, false);
+      if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
+      {
+        return cnt;
+      }
+      cnt--;
+      channel = cnt;
+
+      while (1)
+      {
+        ctx->printf(" 0.offset  :%d\r\n", g_config_adc.single[channel].offset);
+        ctx->printf(" 1.fullset :%d\r\n", g_config_adc.single[channel].fullset);
+        ctx->printf("Please enter a number:");
+
+        cnt = console_scanf("%d", &index);
+
+        if (cnt == EXIT_BACK)
+        {
+          break;
+        }
+        if (cnt == EXIT_PROGRAM)
+        {
+          return cnt;
+        }
+
+        switch (index)
+        {
+          case 0:  // offset
+            if (inpu_adc_cali(ctx, 0, channel, g_config_adc.single[channel].offset,
+                              g_config_adc.single[channel].offset_input, &adc, &voltage) == 0)
+            {
+              ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
+              g_config_adc.single[channel].offset = adc;
+              g_config_adc.single[channel].offset_input = voltage;
+              WRITE_ADC(single[channel].offset);
+              WRITE_ADC(single[channel].offset_input);
+            }
+            break;
+
+          case 1:  // fullset
+            if (inpu_adc_cali(ctx, 0, channel, g_config_adc.single[channel].fullset,
+                              g_config_adc.single[channel].fullset_input, &adc, &voltage) == 0)
+            {
+              ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
+              g_config_adc.single[channel].fullset = adc;
+              g_config_adc.single[channel].fullset_input = voltage;
+              WRITE_ADC(single[channel].fullset);
+              WRITE_ADC(single[channel].fullset_input);
+            }
+            break;
+        }
+      }
+    } while (1);
+
+    // return 0;//
+  }
+
+  int32_t print_menu_cali_diff(p_shell_context_t ctx)
+  {
+    int32_t cnt = 0;
+
+    ctx->printf("\r\n");
+    for (int i = 0; i < 8; i++)
+    {
+      ctx->printf("%2d.diff channel %d\r\n", i, i);
+    }
+    cnt = 18;
+    return cnt;
+  }
+
+  int32_t menu_cali_diff(p_shell_context_t ctx)
+  {
+    int32_t cnt;
+    int32_t channel;
+    int32_t index;
+    int32_t adc;
+    int32_t voltage;
+
+    do
+    {
+      cnt = select_indexFromList(ctx, NULL, print_menu_cali_diff, 0, false);
+      if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
+      {
+        return cnt;
+      }
+      cnt--;
+      channel = cnt;
+
+      ctx->printf(" 0.offset  :%d\r\n", g_config_adc.diff[channel].offset);
+      ctx->printf(" 1.fullset :%d\r\n", g_config_adc.diff[channel].fullset);
+
+      ctx->printf("num:");
+
+      cnt = console_scanf("%d", &index);
+
+      if (cnt == EXIT_PROGRAM && cnt <= 0)
       {
         return cnt;
       }
@@ -3214,224 +3298,149 @@ int32_t menu_cali_single(p_shell_context_t ctx)
       switch (index)
       {
         case 0:  // offset
-          if (inpu_adc_cali(ctx, 0, channel, g_config_adc.single[channel].offset,
-                            g_config_adc.single[channel].offset_input, &adc, &voltage) == 0)
+          if (inpu_adc_cali(ctx, 0, channel, g_config_adc.diff[channel].offset,
+                            g_config_adc.diff[channel].offset_input, &adc, &voltage) == 0)
           {
             ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-            g_config_adc.single[channel].offset = adc;
-            g_config_adc.single[channel].offset_input = voltage;
-            WRITE_ADC(single[channel].offset);
-            WRITE_ADC(single[channel].offset_input);
+            g_config_adc.diff[channel].offset = adc;
+            g_config_adc.diff[channel].offset_input = voltage;
+            WRITE_ADC(diff[channel].offset);
+            WRITE_ADC(diff[channel].offset_input);
           }
           break;
-
         case 1:  // fullset
-          if (inpu_adc_cali(ctx, 0, channel, g_config_adc.single[channel].fullset,
-                            g_config_adc.single[channel].fullset_input, &adc, &voltage) == 0)
+          if (inpu_adc_cali(ctx, 0, channel, g_config_adc.diff[channel].fullset,
+                            g_config_adc.diff[channel].fullset_input, &adc, &voltage) == 0)
           {
             ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-            g_config_adc.single[channel].fullset = adc;
-            g_config_adc.single[channel].fullset_input = voltage;
-            WRITE_ADC(single[channel].fullset);
-            WRITE_ADC(single[channel].fullset_input);
+            g_config_adc.diff[channel].fullset = adc;
+            g_config_adc.diff[channel].fullset_input = voltage;
+            WRITE_ADC(diff[channel].fullset);
+            WRITE_ADC(diff[channel].fullset_input);
           }
           break;
       }
-    }
-  } while (1);
 
-  // return 0;//
-}
+      if (cnt == EXIT_PROGRAM)
+      {
+        return cnt;
+      }
+    } while (1);
 
-int32_t print_menu_cali_diff(p_shell_context_t ctx)
-{
-  int32_t cnt = 0;
-
-  ctx->printf("\r\n");
-  for (int i = 0; i < 8; i++)
-  {
-    ctx->printf("%2d.diff channel %d\r\n", i, i);
+    // return 0;//
   }
-  cnt = 18;
-  return cnt;
-}
 
-int32_t menu_cali_diff(p_shell_context_t ctx)
-{
-  int32_t cnt;
-  int32_t channel;
-  int32_t index;
-  int32_t adc;
-  int32_t voltage;
-
-  do
+  int32_t menu_cali_config_all(p_shell_context_t ctx)
   {
-    cnt = select_indexFromList(ctx, NULL, print_menu_cali_diff, 0, false);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
+    float voltage;
+    int32_t adc;
+    uint8_t err = 0;
+    int32_t off, full, off_in, full_in;
+
+    ctx->printf(VT100_CLEAR_SCREEN);
+    ctx->printf(VT100_CURSOR_OFF);
+
+    do
     {
-      return cnt;
-    }
-    cnt--;
-    channel = cnt;
+      ctx->printf(VT100_CURSOR_HOME);
 
-    ctx->printf(" 0.offset  :%d\r\n", g_config_adc.diff[channel].offset);
-    ctx->printf(" 1.fullset :%d\r\n", g_config_adc.diff[channel].fullset);
+      ctx->printf("%-10s %-2s %-7s %-10s %-10s %-10s %-12s %-10s\r\n", "Mode", "Ch", "offset",
+                  "fullset", "o_in(mv)", "f_in(mv)", "adc_avg(10)", "voltage(v)");
 
-    ctx->printf("num:");
-
-    cnt = console_scanf("%d", &index);
-
-    if (cnt == EXIT_PROGRAM && cnt <= 0)
-    {
-      return cnt;
-    }
-
-    switch (index)
-    {
-      case 0:  // offset
-        if (inpu_adc_cali(ctx, 0, channel, g_config_adc.diff[channel].offset,
-                          g_config_adc.diff[channel].offset_input, &adc, &voltage) == 0)
+      for (int i = 0; i < 18; i++)
+      {
+        adc = adc_read_single_raw(i, &err);
+        off = g_config_adc.single[i].offset;
+        full = g_config_adc.single[i].fullset;
+        off_in = g_config_adc.single[i].offset_input;
+        full_in = g_config_adc.single[i].fullset_input;
+        voltage = cvt_adcToVol(adc, off, full, off_in, full_in);
+        if (err)
         {
-          ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-          g_config_adc.diff[channel].offset = adc;
-          g_config_adc.diff[channel].offset_input = voltage;
-          WRITE_ADC(diff[channel].offset);
-          WRITE_ADC(diff[channel].offset_input);
+          ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12s %-10s \r\n", "Single", i + 1, off,
+                      full, off_in, full_in, "error", " ");
+          ;
         }
-        break;
-      case 1:  // fullset
-        if (inpu_adc_cali(ctx, 0, channel, g_config_adc.diff[channel].fullset,
-                          g_config_adc.diff[channel].fullset_input, &adc, &voltage) == 0)
+        else
         {
-          ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-          g_config_adc.diff[channel].fullset = adc;
-          g_config_adc.diff[channel].fullset_input = voltage;
-          WRITE_ADC(diff[channel].fullset);
-          WRITE_ADC(diff[channel].fullset_input);
+          ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12d %-8.6f \r\n", "Single", i + 1, off,
+                      full, off_in, full_in, adc, voltage / 1000.0);
+          ;
         }
-        break;
-    }
+      }
 
-    if (cnt == EXIT_PROGRAM)
-    {
-      return cnt;
-    }
-  } while (1);
+      for (int i = 0; i < 8; i++)
+      {
+        adc = adc_read_diff_raw(i, &err);
+        off = g_config_adc.diff[i].offset;
+        full = g_config_adc.diff[i].fullset;
+        off_in = g_config_adc.diff[i].offset_input;
+        full_in = g_config_adc.diff[i].fullset_input;
+        voltage = cvt_adcToVol(adc, off, full, off_in, full_in);
+        if (err)
+        {
+          ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12s %-10s \r\n", "Diff", i + 1, off,
+                      full, off_in, full_in, "error", " ");
+          ;
+        }
+        else
+        {
+          ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12d %-8.6f \r\n", "Diff", i + 1, off,
+                      full, off_in, full_in, adc, voltage / 1000.0);
+          ;
+        }
+      }
+    } while (wait_break(1000));
 
-  // return 0;//
-}
+    return 0;
+  }
 
-int32_t menu_cali_config_all(p_shell_context_t ctx)
-{
-  float voltage;
-  int32_t adc;
-  uint8_t err = 0;
-  int32_t off, full, off_in, full_in;
-
-  ctx->printf(VT100_CLEAR_SCREEN);
-  ctx->printf(VT100_CURSOR_OFF);
-
-  do
+  bool check_password(void)
   {
-    ctx->printf(VT100_CURSOR_HOME);
+    int32_t password;
 
-    ctx->printf("%-10s %-2s %-7s %-10s %-10s %-10s %-12s %-10s\r\n", "Mode", "Ch", "offset",
-                "fullset", "o_in(mv)", "f_in(mv)", "adc_avg(10)", "voltage(v)");
+    debug_printf("Please enter the password:\r\n");
+
+    if (console_scanf("%d", &password) == 1)
+    {
+      if (password == 7777)
+      {
+        return true;
+      }
+    }
+
+    debug_printf("The password does not match\r\n");
+    return false;
+  }
+
+  int32_t menu_cali_config_factory(p_shell_context_t ctx)
+  {
+    if (check_password() != true)
+    {
+      return 0;
+    }
 
     for (int i = 0; i < 18; i++)
     {
-      adc = adc_read_single_raw(i, &err);
-      off = g_config_adc.single[i].offset;
-      full = g_config_adc.single[i].fullset;
-      off_in = g_config_adc.single[i].offset_input;
-      full_in = g_config_adc.single[i].fullset_input;
-      voltage = cvt_adcToVol(adc, off, full, off_in, full_in);
-      if (err)
-      {
-        ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12s %-10s \r\n", "Single", i + 1, off,
-                    full, off_in, full_in, "error", " ");
-        ;
-      }
-      else
-      {
-        ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12d %-8.6f \r\n", "Single", i + 1, off,
-                    full, off_in, full_in, adc, voltage / 1000.0);
-        ;
-      }
+      g_config_adc.single[i].offset = -2559;
+      g_config_adc.single[i].offset_input = 0;
+      g_config_adc.single[i].fullset = 8384783;
+      g_config_adc.single[i].fullset_input = 5000;
     }
 
     for (int i = 0; i < 8; i++)
     {
-      adc = adc_read_diff_raw(i, &err);
-      off = g_config_adc.diff[i].offset;
-      full = g_config_adc.diff[i].fullset;
-      off_in = g_config_adc.diff[i].offset_input;
-      full_in = g_config_adc.diff[i].fullset_input;
-      voltage = cvt_adcToVol(adc, off, full, off_in, full_in);
-      if (err)
-      {
-        ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12s %-10s \r\n", "Diff", i + 1, off, full,
-                    off_in, full_in, "error", " ");
-        ;
-      }
-      else
-      {
-        ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12d %-8.6f \r\n", "Diff", i + 1, off, full,
-                    off_in, full_in, adc, voltage / 1000.0);
-        ;
-      }
+      g_config_adc.diff[i].offset = 63325;
+      g_config_adc.diff[i].offset_input = 0;
+      g_config_adc.diff[i].fullset = 8319265;
+      g_config_adc.diff[i].fullset_input = 5000;
     }
-  } while (wait_break(1000));
 
-  return 0;
-}
+    save_config_adc();
 
-bool check_password(void)
-{
-  int32_t password;
-
-  debug_printf("Please enter the password:\r\n");
-
-  if (console_scanf("%d", &password) == 1)
-  {
-    if (password == 7777)
-    {
-      return true;
-    }
-  }
-
-  debug_printf("The password does not match\r\n");
-  return false;
-}
-
-int32_t menu_cali_config_factory(p_shell_context_t ctx)
-{
-  if (check_password() != true)
-  {
+    debug_printf("+config facory:ok\r\n");
     return 0;
   }
-
-  for (int i = 0; i < 18; i++)
-  {
-    g_config_adc.single[i].offset = -2559;
-    g_config_adc.single[i].offset_input = 0;
-    g_config_adc.single[i].fullset = 8384783;
-    g_config_adc.single[i].fullset_input = 5000;
-  }
-
-  for (int i = 0; i < 8; i++)
-  {
-    g_config_adc.diff[i].offset = 63325;
-    g_config_adc.diff[i].offset_input = 0;
-    g_config_adc.diff[i].fullset = 8319265;
-    g_config_adc.diff[i].fullset_input = 5000;
-  }
-
-  save_config_adc();
-
-  debug_printf("+config facory:ok\r\n");
-  return 0;
-}
 
 #include "driver_uart.h"
 driver_t *g_osc_port;

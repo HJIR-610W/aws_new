@@ -62,6 +62,9 @@ int is_debug_mode(void) { return (CoreDebug->DHCSR & (1 << 0)) != 0; }
 
 extern void manual_bss_init(void);
 
+
+
+
 int main(void)
 {
 
@@ -84,6 +87,7 @@ int main(void)
   manual_bss_init();
 
   MX_CRC_Init();
+
 
   asw_tlsf_init(POOL_SIZE);
   
