@@ -32,8 +32,8 @@ __root const section_info_t g_kappInfo = {.ver = INFO_VER,\
 #else
                                        .section = SECTION_APP,
 #endif
-                                       .hw_code = HW_MINILOGGER,\
-                                       .nick_code =NICK_MINILOGGER_HJ,\
+                                       .hw_code = HW_NEW_ASW,\
+                                       .nick_code =NICK_NEW_ASW_HJ,\
                                        .offset = 0x08010000,\
                                        .section_ver = APP_VERSION,\
                                        .time = 1686236400,\

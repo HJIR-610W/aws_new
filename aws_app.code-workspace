@@ -101,7 +101,9 @@
 			"app_rs485.h": "c",
 			"kma_define.h": "c",
 			"kma3.h": "c",
-			"kma2.h": "c"
+			"kma2.h": "c",
+			"divas_protocol_handler.h": "c",
+			"kma_protocol_handler.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

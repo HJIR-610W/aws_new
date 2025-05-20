@@ -16,6 +16,8 @@
 #include "kma2.h"
 #include "app_dataLogging.h"
 #include "old_aws_define.h"
+#include "Protocols\divas\divas_protocol_handler.h"
+
 
 #define KMA_HEADER_START 0xFAFB
 #define KMA_HEADER_END 0xFFFE
@@ -803,10 +805,10 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
       protocol_ok = is_kma3_protocol(rx_frame, frame_len);
       break;
   }
-  //프레임이 유효하지 않으면 리턴
+
   if (protocol_ok == false)
   {
-    return 0;
+    return divas_cmd_handler(rx_frame, frame_len,tx_buffer);
   }
 
   kma_unpack(rx_frame, &request);

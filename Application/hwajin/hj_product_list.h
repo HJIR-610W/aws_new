@@ -14,6 +14,7 @@
 #define HW_NEW_DIVAS     (0U)
 #define HW_NEW_RECORDER  (1U)
 #define HW_MINILOGGER    (2U)
+#define HW_NEW_ASW    (3U)
 
 
 #define NICK_NEW_DIVAS_HJ     (0U)
@@ -21,7 +22,7 @@
 
 
 #define NICK_MINILOGGER_HJ   (0U)
-
+#define NICK_NEW_ASW_HJ   (1U)
 
 typedef struct section_info_s
 {

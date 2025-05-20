@@ -434,6 +434,8 @@
                     <state>$PROJ_DIR$\..\System</state>
                     <state>$PROJ_DIR$\..\Application\test\parser</state>
                     <state>$PROJ_DIR$\..\Application\Protocols\aws</state>
+                    <state>$PROJ_DIR$\..\Application\Protocols\divas</state>
+                    <state>$PROJ_DIR$\..\Application\Update</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1509,6 +1511,15 @@
                     <name>$PROJ_DIR$\..\Application\Protocols\aws\kma_protocol_handler.h</name>
                 </file>
             </group>
+            <group>
+                <name>divas</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\divas\divas_protocol_handler.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\divas\divas_protocol_handler.h</name>
+                </file>
+            </group>
         </group>
         <group>
             <name>Sensors</name>
@@ -1847,6 +1858,15 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\test\test_uart.c</name>
+            </file>
+        </group>
+        <group>
+            <name>Update</name>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Update\update_fw.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Update\update_fw.h</name>
             </file>
         </group>
         <file>
