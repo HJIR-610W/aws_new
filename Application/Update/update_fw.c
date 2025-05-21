@@ -12,7 +12,9 @@
 #include "hj_product_list.h"
 #pragma location = 0x20000000
 __no_init volatile uint32_t SystemMagicValue;
-#define MAGIC_UPDATE_FW 0xA5A5ABAB
+#define MAGIC_UPDATE_FW_REMOTE  0xA5A5ABAB
+#define MAGIC_UPDATE_FW_LACAL 0xABABA5A5
+
 typedef struct fwHeader_s
 {
   uint32_t ver;           // 섹션 헤더 정보,1
@@ -104,7 +106,15 @@ void update_fw(uint8_t local)
           debug_printf("장비에 적용되는 펌웨어가 아닙니다.\r\n");
         }
           debug_printf("장비가 리셋되면서 펌웨어 업데이트가 자동 진행됩니다.\r\n");
-        SystemMagicValue = MAGIC_UPDATE_FW;
+  if (local == UPDATE_REMOTE)
+  {
+               SystemMagicValue = MAGIC_UPDATE_FW_REMOTE ;
+  }
+  else
+  {
+            SystemMagicValue = MAGIC_UPDATE_FW_LACAL;
+  }
+
       }
       else
       {
@@ -121,7 +131,7 @@ void update_fw(uint8_t local)
     aws_free(p_buffer);
   }
 
-  if (SystemMagicValue == MAGIC_UPDATE_FW)
+  if (SystemMagicValue == MAGIC_UPDATE_FW_REMOTE ||SystemMagicValue == MAGIC_UPDATE_FW_LACAL)
   {
     //리셋셋
   }

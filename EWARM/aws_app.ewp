@@ -1164,9 +1164,6 @@
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_charger.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\App_drivers\app_crc.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_di.c</name>
             </file>
             <file>
