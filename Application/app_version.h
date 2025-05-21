@@ -19,13 +19,8 @@ app 파일들에 공통적으로 적용되는 define
 #define MAKE_FW_VERSION(major, minor, bugfix,rel) (((major) << 24) | ((minor) << 16) | (bugfix<<9) |(rel))
 
 
-#define APP_VERSION (MAKE_FW_VERSION(0, 1, 0,0))
-
-
-
-
-
-
+#define APP_VERSION (MAKE_FW_VERSION(0, 1, 0, 1))
+#define PCB_VERSION (MAKE_FW_VERSION(1, 0, 0, 0))
 
 #define MODEM_BG96_USE 1
 

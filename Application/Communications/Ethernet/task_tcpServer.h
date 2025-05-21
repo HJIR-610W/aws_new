@@ -4,12 +4,7 @@
 
 #include "cmsis_os.h"
 
-typedef struct tcp_status_s
-{
-  eLINK_STATUS_t link_status;
-  uint8_t rx_cnt;
-  uint8_t tx_cnt;
-} tcp_status_t;
+#include "tcp_define.h"
 
 
 

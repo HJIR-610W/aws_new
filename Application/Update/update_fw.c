@@ -10,31 +10,43 @@
 #include "user_heap.h"
 #include "dev_io.h"
 #include "hj_product_list.h"
+#include "app_version.h"
 #pragma location = 0x20000000
 __no_init volatile uint32_t SystemMagicValue;
-#define MAGIC_UPDATE_FW_REMOTE  0xA5A5ABAB
-#define MAGIC_UPDATE_FW_LACAL 0xABABA5A5
 
 typedef struct fwHeader_s
 {
-  uint32_t ver;           // 섹션 헤더 정보,1
-  uint32_t section;       // 펌웨어,const,lib  (1펌웨어,2 const ,3 lib)
-  uint32_t hw_code;       // 하드웨어 (1 디바스, 2 M2M)
-  uint32_t nick;          // 화진, 비젼
-  uint32_t offset;        // 시작주소,0x00008000
-  uint32_t len;           // 길이
-  uint32_t section_ver;   // section 버전
-  uint32_t time;          // 헤더 생성 날짜
-  uint32_t restore;       // 0xFFFFFFFF 이면 nick 무시하고 업데이트
-  uint32_t pcb_n;         // 적용가능한 PCB 버전
-  uint32_t pcb[50];       // PCB 버전 목록
-  uint8_t iv[16];         // CBC 초기화 백터
-  uint8_t reserved[760];  // 4의 배수 정렬
+  uint32_t ver;          // 섹션 헤더 정보,1
+  uint32_t section;      // 펌웨어,const,lib  (1펌웨어,2 const ,3 lib)
+  uint32_t hw_code;      // 하드웨어 (1 디바스, 2 M2M)
+  uint32_t nick;         // 화진, 비젼
+  uint32_t offset;       // 시작주소,0x00008000
+  uint32_t len;          // 길이
+  uint32_t section_ver;  // section 버전
+  uint32_t time;         // 헤더 생성 날짜
+  uint32_t restore;      // 0xFFFFFFFF 이면 nick 무시하고 업데이트
+  uint32_t pcb_n;        // 적용가능한 PCB 버전
+  uint32_t pcb[50];      // PCB 버전 목록
+  uint8_t reserved[5];   // 4의 배수 정렬
   uint32_t fw_CRC;
   uint32_t head_CRC;  // 헤더의 헤더의 crc32
 } fw_header_t;
 
+bool g_firmware_update_required=false;
+
+bool get_firmware_update(void)
+{
+  return g_firmware_update_required;
+}
+
+void set_firmware_update(void)
+{
+  g_firmware_update_required=true;
+}
+
+
 bool serach_fw(char buffer[100]);
+void set_magic_value(uint32_t value);
 
 bool check_fw(uint8_t *p_fw_data, uint32_t len)
 {
@@ -57,13 +69,17 @@ void print_fw_header(fw_header_t *p_header)
 
 }
 #define FW_SIZE_MAX 524288
-void update_fw(uint8_t local)
+
+
+
+uint8_t check_firmware(uint8_t local)
 {
   FRESULT fret;
   uint8_t *p_buffer=0;
   FSIZE_t file_size = 0;
   char path[100];
-
+  uint32_t pcb_version;
+  uint8_t pcb_ok=0;
   SystemMagicValue = 0;
 
   if (local == UPDATE_REMOTE)
@@ -74,7 +90,7 @@ void update_fw(uint8_t local)
   {
     if(serach_fw(path)==false)
     {
-      return ;
+      return FW_FILE_OPEN_ERR;
     }
     debug_printf("%s\r\n", path);
   }
@@ -88,7 +104,7 @@ void update_fw(uint8_t local)
 
     if (p_buffer ==NULL)
     {
-      return ;
+      return FW_FILE_MEM_ERR;
     }
     fret = read_file(path, p_buffer, file_size, 0);
     if(fret == FR_OK)
@@ -97,44 +113,62 @@ void update_fw(uint8_t local)
       fw_header_t *p_header = (fw_header_t *) p_buffer;
 
       crc = crc32_hw_with_padding(p_buffer + sizeof(fw_header_t), file_size - sizeof(fw_header_t));
-
       
       if (crc == p_header->fw_CRC)
       {
         if (p_header->hw_code != HW_NEW_ASW)
         {
-          debug_printf("장비에 적용되는 펌웨어가 아닙니다.\r\n");
+          if (p_buffer)
+          {
+            aws_free(p_buffer);
+          }
+          debug_printf("제품 불일치\r\n");
+          return FW_ERR_MFG;
         }
-          debug_printf("장비가 리셋되면서 펌웨어 업데이트가 자동 진행됩니다.\r\n");
-  if (local == UPDATE_REMOTE)
-  {
-               SystemMagicValue = MAGIC_UPDATE_FW_REMOTE ;
-  }
-  else
-  {
-            SystemMagicValue = MAGIC_UPDATE_FW_LACAL;
-  }
 
+        if (p_header->nick != NICK_NEW_ASW_HJ)
+        {
+          if (p_buffer)
+          {
+            aws_free(p_buffer);
+          }
+          debug_printf("별칭 불일치\r\n");
+          return FW_ERR_AREA;
+        }
+
+        pcb_version = PCB_VERSION;
+        for (int i = 0; i < p_header->pcb_n; i++)
+        {
+          if (pcb_version == p_header->pcb[i])
+          {
+            pcb_ok = 1;
+            break;
+          }
+        }
+
+        if(pcb_ok==0)
+        {
+          if (p_buffer)
+          {
+            aws_free(p_buffer);
+          }
+          debug_printf("PCB 버전 불일치\r\n");
+          return FW_ERR_PCB;
+        }
       }
       else
       {
-        debug_printf("펌웨어 CRC 불일치\r\n");
+        if (p_buffer)
+        {
+          aws_free(p_buffer);
+        }
+        debug_printf("CRC 불일치\r\n");
+        return FW_FILE_CRC_ERR;
       }
     }
 
-
-
   }
-
-  if (p_buffer)
-  {
-    aws_free(p_buffer);
-  }
-
-  if (SystemMagicValue == MAGIC_UPDATE_FW_REMOTE ||SystemMagicValue == MAGIC_UPDATE_FW_LACAL)
-  {
-    //리셋셋
-  }
+  return 0;
 }
 
 
@@ -155,4 +189,11 @@ bool serach_fw(char buffer[100])
   }
 
   return false;
+}
+
+
+
+void set_magic_value(uint32_t value)
+{
+  SystemMagicValue = value;
 }

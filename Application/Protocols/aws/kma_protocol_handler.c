@@ -17,7 +17,7 @@
 #include "app_dataLogging.h"
 #include "old_aws_define.h"
 #include "Protocols\divas\divas_protocol_handler.h"
-
+#include "user_heap.h"
 
 #define KMA_HEADER_START 0xFAFB
 #define KMA_HEADER_END 0xFFFE
@@ -540,18 +540,25 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
   // 1분 과거 자료
   uint16_t kma_cmd_handler_AQ(uint8_t *rx_frame, uint8_t *tx_frame)
   {
-    AWS_DATA_STRUCT aws;
+    AWS_DATA_STRUCT *p_aws=NULL;
     uint8_t data[200];
-    uint16_t len;
+    uint16_t len=0;
     kma2_response_t kma2_response;
+    kma_data_ex_t kma3;
     DATE_TIME_BUF mOldDate;
     DATE_TIME_BUF *pDate;
     uint8_t nt[5];
     uint16_t station_id;
-    kma_data_ex_t kma3;
     time_t cur_t, befhour_t, poll_t;
     int nIdx;
     uint8_t data_format_no;
+
+    p_aws = aws_malloc(sizeof(AWS_DATA_STRUCT));
+
+    if(p_aws==NULL)
+    {
+      return 0;
+    }
 
     station_id = GetWord((uint8_t *)&rx_frame[13]);
 
@@ -575,11 +582,13 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     cur_t =
         SetTime(Date_Time.Year, Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, 0);
     if ((poll_t == cur_t) && (Date_Time.Sec < 2))
+    {
+      aws_free(p_aws);
       return 0;  //
+    }
 
-
-    read_data(pDate, &aws, sizeof(aws), LOGGING_AWS,1);
-    update_old_to_kma3(&aws, &kma3);
+    read_data(pDate, p_aws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
+    update_old_to_kma3(p_aws, &kma3);
 
     switch (get_config_app()->aws_protocol_type)
     {
@@ -606,11 +615,11 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
         len = make_kma3_data_unusedSesor(data, sizeof(data), &kma3);
         len = make_kma3_resp(tx_frame, 'Q', DATA_TYPE_GENERAL, station_id, data, len);
         break;
-        return len;
+
     }
-
-
-}
+    aws_free(p_aws);
+    return len;
+  }
 
 // 시간 설정
 uint16_t kma_cmd_handler_AT(uint8_t *frame, uint8_t *send)
@@ -800,10 +809,18 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
   {
     case eAWS_PROTOCOL_KMA2:
       protocol_ok = is_kma2_protocol(rx_frame, frame_len);
-      break;
+      if (protocol_ok==false)
+      {
+        protocol_ok = is_kma3_protocol(rx_frame, frame_len);
+      }
+        break;
     case eAWS_PROTOCOL_KMA3:
       protocol_ok = is_kma3_protocol(rx_frame, frame_len);
-      break;
+      if (protocol_ok==false)
+      {
+        protocol_ok = is_kma2_protocol(rx_frame, frame_len);
+      }
+        break;
   }
 
   if (protocol_ok == false)

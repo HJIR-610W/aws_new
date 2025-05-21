@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>2874945594</Checksum>
+        <Checksum>3408541177</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -169,8 +169,9 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\test\task_test.c}.32.3" 0 0 1 "" 0 "" 0</Bp0>
-        <Count>1</Count>
+        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Protocols\divas\divas_protocol_handler.c}.211.7" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Communications\Ethernet\task_tcpServer.c}.201.9" 0 0 1 "" 0 "" 0</Bp1>
+        <Count>2</Count>
     </Breakpoints2>
     <Aliases>
         <Count>0</Count>

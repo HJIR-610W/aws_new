@@ -39,6 +39,7 @@
 #include "user_heap.h"
 #include "utile_time.h"
 #include "task_test.h"
+#include "task_client.h"
 
 const osThreadAttr_t kStartTask_attributes = {
     .name = "startTask",
@@ -114,7 +115,15 @@ void startTask(void *arg)
 
   if (get_config_app()->eth_use)
   {
-    tcpServerTask_init(0);
+    if(get_config_app()->eth_mode==eETH_MODE_CLINET)
+    {
+      tcpClientTask_init();      
+    }
+    else
+    {
+      tcpServerTask_init(0);
+    }
+
     ethernetTask_init();
   }
 

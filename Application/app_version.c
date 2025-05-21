@@ -23,7 +23,8 @@ __no_init volatile uint32_t _shareData;
 
 #define APP_INFO_START_ADDRESS (0x08000188 + 0x00010000) // 벡터가 끝나는 곳
 #pragma location = APP_INFO_START_ADDRESS
-__root const section_info_t g_kappInfo = {.ver = INFO_VER,\
+__root const section_info_t g_kappInfo = {.signature ={'A','P','P',' '},\
+                                            .ver = INFO_VER,\
   
 
 

@@ -26,6 +26,7 @@
 
 typedef struct section_info_s
 {
+  char signature[4];
     uint32_t ver;
     uint32_t section;
     uint32_t hw_code;

@@ -20,6 +20,7 @@
 #include "task_logging.h"
 #include "task_system.h"
 #include "task_cellular.h"
+#include "task_client.h"
 
 
 #define AWS_MODE_MAX 4
@@ -126,15 +127,29 @@ int32_t print_rainInfo(uint16_t row, uint16_t column)
 int32_t print_ethInfo(uint16_t row, uint16_t column)
 {
   char buff[30];
-
+  eDIRECT_LINK_STATUS_t link_status;
+  uint8_t tx_cnt;
+  uint8_t rx_cnt;
   uint8_t line = row + 3;
 
-  make_comList(buff, sizeof(buff));
+  if (get_config_app()->eth_mode == eETH_MODE_CLINET)
+  {
+    link_status = get_tcp_client_system()->link_status;
+    tx_cnt = get_tcp_client_system()->tx_cnt;
+    rx_cnt = get_tcp_client_system()->rx_cnt;
+  }
+  else
+  {
+    link_status = get_tcp_system()->link_status;
+    tx_cnt = get_tcp_system()->tx_cnt;
+    rx_cnt = get_tcp_system()->rx_cnt;
+  }
+        make_comList(buff, sizeof(buff));
   vt100_print_frame(row, column, "이더넷", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++, column, -DISP_WIDTH, "링크  :%s\r\n",
-                  ITEM_LIST(get_direct_system()->link_status , linkStatusList));
-  vt100_print_bar(line++, column, -DISP_WIDTH, "송신  :%d\r\n", get_tcp_system()->tx_cnt);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "수신  :%d\r\n", get_tcp_system()->rx_cnt);
+                  ITEM_LIST(link_status , linkStatusList));
+  vt100_print_bar(line++, column, -DISP_WIDTH, "송신  :%d\r\n", tx_cnt);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "수신  :%d\r\n", rx_cnt);
 
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 

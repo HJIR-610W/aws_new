@@ -8,10 +8,6 @@
 
 #define DIVAS_CMD_FW_DOWNLOAD 0x63
 #define DIVAS_CMD_FW_UPDATE 0x64
-
-
-
-
 #define RES_FSIZE_ERROR 32       // 처음에 보낸 TOTAL 사이즈와 패킷마다 보낸 사이즈가 다른경우
 #define RES_FILE_WRITE_ERROR 39  // 파일 쓰기 오류
 
@@ -93,7 +89,7 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
 
     length = len - 8 - 14;  // 8:total(4) + offset(4)
 
-    if (offset == 0)  // first packet data
+    if (offset == 0) 
     {
       if(p_fw_buffer == NULL)
       {
@@ -101,12 +97,7 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
       }
     }
 
-    // 처음에 보낸 TOTAL 사이즈와 패킷마다 보낸 사이즈 확인
-    if (totsize != g_fw_size)
-    {
-      res = RES_FSIZE_ERROR;
-      break;
-    }
+
     if (p_fw_buffer)
     {
       memcpy(&p_fw_buffer[offset], &rx_frame[20], length);
@@ -156,28 +147,20 @@ uint16_t divas_fw_update(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t data[10];
   uint16_t cnt = 0;
-  uint8_t rtnstat = ASCII_NAK;
-  uint8_t res = 0;
-  uint8_t err;
+  uint8_t code;
 
-  //err = check_firmware();
-  if (err)
+  code = check_firmware(MAGIC_UPDATE_FW_REMOTE);
+
+  if(code)
   {
-    res = err;
+    data[cnt++] = ASCII_NAK;
+    data[cnt++] = code;
   }
   else
   {
-    rtnstat = ASCII_ACK;
-    //set_firmware_update_request();
-    //update_fw();
-  }
-
-  // 리턴상태
-  data[cnt++] = rtnstat;
-
-  if (rtnstat == ASCII_NAK)
-  {
-    data[cnt++] = res;
+    data[cnt++] = ASCII_ACK;
+    set_magic_value(MAGIC_UPDATE_FW_REMOTE);
+    set_firmware_update();
   }
 
   return make_divasFrame(DIVAS_CMD_FW_UPDATE, rx_frame[3], data, cnt, tx_frame, KMA_TX_BUFFER_SIZE);

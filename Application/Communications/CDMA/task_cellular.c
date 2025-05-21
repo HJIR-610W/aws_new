@@ -19,7 +19,8 @@
 #include "utile_time.h"
 
 #include "kma_protocol_handler.h"
-
+#include "update_fw.h"
+#include "system_err.h"
 typedef enum{
 	ePOWER_RESET,
 	eCONNECT_TCP_WDT,
@@ -1404,6 +1405,11 @@ void modemTcpTask(void  *argument)
                   {
                     err = 1;
                     type = eCONNECT_TX_FAIL;
+                  }
+
+                  if (get_firmware_update())
+                  {
+                    reset_system(0, "CDMA update");
                   }
                 }
               }

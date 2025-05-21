@@ -10,7 +10,7 @@
 #include "config_define.h"
 #include "config_memory_map.h"
 #include "utile.h"
-
+#include "tcp_define.h"
 
 #define WRITE_CFG(x)                                                                               \
   fram_write(CONFIG_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_t, x), (uint8_t *)&config.x, \
@@ -105,12 +105,7 @@ typedef enum config_app_field_e
   eCONFIG_APP_SENSOR
 } eCONFIG_APP_FIELD_t;
 
-typedef enum link_status_e
-{
-  eLINK_IDLE=0,
-  eLINK_UP=1,
-  eLINK_DOWN=2
-}eLINK_STATUS_t;
+
 
 typedef struct system_s
 {

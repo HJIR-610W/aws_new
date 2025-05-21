@@ -6,7 +6,8 @@
 #include "dev_io.h"
 #include "driver_uart.h"
 #include "task_isrEvent.h"
-
+#include "update_fw.h"
+#include "system_err.h"
 #define DIRECT_TIMEOUT_MS 600000
 
 const osThreadAttr_t directTask_attributes = {
@@ -53,6 +54,10 @@ uart_optTimeOut_t opt;
         driver_uart_send(direct_driver, tx_buffer, len);
         UPDATE_CNT(g_direct_system.tx_cnt, 99);
         g_direct_system.last_send_time = time_timestamp();
+        if (get_firmware_update())
+        {
+          reset_system(0, "DIRECT update");
+        }
       }
       startTime  = osKernelGetTickCount();
     }

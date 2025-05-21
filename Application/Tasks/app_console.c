@@ -3060,7 +3060,14 @@ int32_t menu_manage_update_fw(p_shell_context_t ctx)
 {
   if (get_user_confirm("펌웨어 업데이트를 진행할까요?") == 1)
   {
-    update_fw(UPDATE_LOCAL);
+    if(check_firmware(UPDATE_LOCAL) ==0)
+    {
+      debug_printf("장비가 리셋되면서 업데이트가 진행됩니다.\r\n");
+      debug_printf("상태 LED가 점멸됩니다.\r\n");
+      
+      set_magic_value(MAGIC_UPDATE_FW_LACAL);
+      reset_system(0, "USER update");
+    }
   }
 }
 menu_func g_manageMenu[] = {[0] = menu_manage_version,
