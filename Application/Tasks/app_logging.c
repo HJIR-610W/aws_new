@@ -13,7 +13,7 @@
 #include "config_nvm.h"
 #include "utile_time.h"
 
-
+const char *system_log_path = "0:System/log.txt";
 
 #define LOG_LEN_MAX 64
 const uint16_t kSystemNormMax = 10000;

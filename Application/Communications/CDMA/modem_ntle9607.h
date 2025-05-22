@@ -45,7 +45,7 @@ M_RET_t ntle_9607_at_direct(char *at,char *outBuffer,uint16_t outSize);
 
 M_RET_t ntle9607_check_network_service(char *msgOut,uint16_t msgSize);
 
-extern atCmd_t cmd_ntle9607[];
+extern const atCmd_t cmd_ntle9607[];
 
 #ifdef __cplusplus
 }

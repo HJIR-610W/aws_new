@@ -46,6 +46,7 @@
 #include "cli_input.h"
 #include "Sensors\temperature\hj_temperature.h"
 #include "Update\update_fw.h"
+#include "console_rtos.h"
 #define EXIT_PROGRAM -3
 #define EXIT_BACK -1
 
@@ -3759,17 +3760,23 @@ int32_t print_menu_developer(p_shell_context_t ctx)
   ctx->printf("%2d.인터럽트 설정 확인\r\n", cnt++);
   ctx->printf("%2d.메모리 테스트\r\n", cnt++);
   ctx->printf("%2d.센서 config 전부 확인\r\n", cnt++);
-  ctx->printf("%2d.시스템 로그 확인인\r\n", cnt++);
+  ctx->printf("%2d.시스템 로그 확인\r\n", cnt++);
+  ctx->printf("%2d.테스크 정보\r\n", cnt++);
   return cnt;
 }
 
+int32_t menu_task_info(p_shell_context_t ctx)
+{
+  print_task_info();
+}
 int32_t menu_developer(p_shell_context_t ctx)
 {
   int32_t cnt;
   const menu_func menu[] = {[0] = menu_developer_interrupt,
-                                  menu_developer_memory,
-                                  menu_developer_sensor_config,
-                                  menu_developer_logging};
+                            menu_developer_memory,
+                            menu_developer_sensor_config,
+                            menu_developer_logging,
+                            menu_task_info};
   do
   {
     cnt = select_indexFromList(ctx, NULL, print_menu_developer, 0, false);

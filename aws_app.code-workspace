@@ -104,7 +104,11 @@
 			"kma2.h": "c",
 			"divas_protocol_handler.h": "c",
 			"kma_protocol_handler.h": "c",
-			"crc.h": "c"
+			"crc.h": "c",
+			"usdelay.h": "c",
+			"sdio.h": "c",
+			"console_rtos.h": "c",
+			"mcu_debug.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

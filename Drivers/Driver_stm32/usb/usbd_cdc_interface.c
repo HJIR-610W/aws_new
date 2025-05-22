@@ -5,8 +5,8 @@
 #include "system_err.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define APP_RX_DATA_SIZE  1024
-#define APP_TX_DATA_SIZE  1024
+#define APP_RX_DATA_SIZE  512
+#define APP_TX_DATA_SIZE  512
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/

@@ -1214,6 +1214,12 @@
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_sms.h</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_tx700.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_tx700.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>
                 </file>
                 <file>
@@ -1545,9 +1551,6 @@
                 </file>
             </group>
             <group>
-                <name>general</name>
-            </group>
-            <group>
                 <name>humidity</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\humidity\hj_huminity.c</name>
@@ -1728,6 +1731,9 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\console\console_data.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_rtos.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\console\console_test.c</name>

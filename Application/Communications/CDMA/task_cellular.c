@@ -8,6 +8,7 @@
 #include "modem_if.h"
 #include "at_cmd.h"
 #include  "modem_ntle9607.h"
+#include "modem_tx700.h"
 #include "dev_io.h"
 #include "config_app.h"
 #include "driver_uart.h"
@@ -91,13 +92,13 @@ typedef struct
 
 const osThreadAttr_t atTask_attributes = {
   .name = "atTask",
-  .stack_size = 3072,
+  .stack_size = 2048,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 const osThreadAttr_t tcpTask_attributes = {
   .name = "tcpTask",
-  .stack_size = 4096,
+  .stack_size = 3072,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -123,7 +124,7 @@ static osMessageQueueId_t _tcpDataMailId=NULL;
 static osMessageQueueId_t _callReqMailId=NULL;
 
 static modemEx_t _modem;
-static atCmd_t *_atCmd = cmd_ntle9607;
+static const atCmd_t *_atCmd = cmd_tx700;
 iCellular_t *_iCellular=NULL;
 driver_t *cdma_driver;
 cdma_system_t g_cdma_system;
@@ -1327,6 +1328,7 @@ void iCellular_init(void)
   switch (get_config_app()->cdma_model)
   {
     case eCDMA_NTLE9607:
+         _atCmd = cmd_ntle9607;
     _iCellular->resetDelay = 20000;
   _iCellular->init       = ntle9607_init;
   _iCellular->read_sms   = ntle9607_read_sms;
@@ -1352,6 +1354,33 @@ void iCellular_init(void)
   _iCellular->at_direct       = ntle_9607_at_direct;
   _iCellular->check_network_service = ntle9607_check_network_service;
   break;
+  case eCDMA_TX700:
+   _atCmd = cmd_tx700;
+    _iCellular->resetDelay = 20000;
+    _iCellular->init = tx700_init;
+    _iCellular->read_sms = tx700_read_sms;
+    _iCellular->send_sms = tx700_send_sms;
+    _iCellular->write_ip = tx700_write_ip;
+    _iCellular->open_ppp = tx700_open_ppp;
+    _iCellular->close_ppp = tx700_close_ppp;
+    _iCellular->open_tcp = tx700_open_socket;
+    _iCellular->close_tcp = tx700_close_socket;
+    _iCellular->reset = tx700_reset;
+    _iCellular->recv_tcp = tx700_recv_tcp;
+    _iCellular->send_tcp = tx700_send_tcp;
+    _iCellular->read_num = tx700_read_num;
+    _iCellular->read_rssi = tx700_read_rssi;
+    _iCellular->get_dtmf = tx700_get_dtmf;
+    _iCellular->vpn_init = NULL;
+    _iCellular->off_powerSafe = tx700_off_powerSafe;
+    _iCellular->read_ringNum = NULL;
+    _iCellular->recv_call = NULL;
+    _iCellular->dial = tx700_dial;
+    _iCellular->set_vpn_config = NULL;
+    _iCellular->read_vpn_config = NULL;
+    _iCellular->at_direct = tx700_at_direct;
+    _iCellular->check_network_service = tx700_check_network_service;
+    break;
   }
   
 }

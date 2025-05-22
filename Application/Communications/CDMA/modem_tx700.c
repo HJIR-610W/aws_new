@@ -6,7 +6,7 @@
 #include "cmsis_os2.h"
 #include "utile.h"
 
-#include "modem_ntle9607.h"
+#include "modem_tx700.h"
 #include "at_cmd.h"
 
 #include "app_bsp.h"
@@ -44,51 +44,47 @@ extern uint32_t is_serverErr(void);
 #define MIC_LEVEL_8 8 
 
 /// @brief at 명령어와 응답 목록
-const atCmd_t cmd_ntle9607[]=
-{  
-    {AT_ASYNC_RESP_TCP_DISCONNECTED,"*TCPDISCONNECTED"},
-    {AT_ASYNC_RESP_SMS_RECEIVED,"+CMTI"},
-    {AT_ASYNC_RESP_RING_RECEIVED,"+CLIP"},
-    {AT_ASYNC_RESP_REBOOT,"^MODE: 9"},
-    {AT_ASYNC_RESP_TCP_RECV,"*TCPRD"},
-    {AT_ASYNC_RESP_VOICE_END,"*VOICE END"},
-    {AT_ASYNC_RESP_DTMF,"+RXDTMF"},
-    {AT_TCP_WRITE_IP,"*NET*SOCKPA"},
-    {AT_TCP_OPEN_PPP,"AT*NET*PPPOP\r\n"},
-    {AT_TCP_CLOSE_PPP,"AT*NET*PPPCL\r\n"},
-    {AT_TCP_OPEN_SOCKET,"AT*NET*SOCKOP\r\n"},
-    {AT_TCP_CLOSE_SOCKET,"*NET*SOCKCL"},
-    {AT_ASYNC_OPEN_VOICE,"AT*VOICE*ANS\r\n"},
-    {AT_ASYNC_OPEN_VOICE_RESP,"*VOICE CONNECT"},   
-    {AT_ASYNC_GET_RSSI,"*SKT*LEVEL"}, 
-    {AT_ASYNC_GET_RSSI_RESP,"+CSQ"},
-    {AT_ASYNC_SMS_READ_RESP_OK,"*SMS*MTREAD"},
-    {AT_ASYNC_SMS_READ_RESP_ERR,"+CMS ERROR"},
-    {AT_SMS_SEND_RESP_OK,"*SMSACK"},
-    {AT_TCP_SEND_DATA_RESP,"*ANET*SOCKWR"},
-    {AT_TCP_OPEN_SOCKET_RESP_OK,"*TCPCONNECTED"},
-    {AT_TCP_OPEN_SOCKET_RESP_FAIL,"*TCPCONNECTFAIL"},
-    {AT_TCP_OPEN_SOCKET_RESP,"*ANET*SOCKOP"},
-    {AT_TCP_READ_NUM_RESP,"*SKT*DIAL"},
-    {AT_ASYNC_OFF_VOICE,"AT*VOICE*FLASH=0\r\n"},
-    {AT_TCP_CONNECT_VPN_RESP,"*VPN*STATUS: Connected"},
-    {AT_TCP_OPEN_PPP_RESP,"*NET*PPPOP"},
-    {AT_TCP_CLOSE_PPP_RESP,"*NET*PPPCL"},
-    {AT_TCP_CLOSE_SOCKET_RESP,"*ANET*SOCKCL"},
-    {AT_TCP_RESET_SW_RESP,"*SET*RESET"},
-    {AT_ASYNC_DIAL_RESP,"+COLP"},
-    {AT_ASYNC_DIAL_OFF,"AT*VOICE*CEND\r\n"},
-    {AT_ASYNC_CONFIG_READ_RESP,"*VPN*CONFIG"},
-    {AT_TCP_NETWORK_SERVICE,"*ST*REGSTS:"}
-};
+const atCmd_t cmd_tx700[] = {{AT_ASYNC_RESP_TCP_DISCONNECTED, "*TCPDISCONNECTED"},
+                       {AT_ASYNC_RESP_SMS_RECEIVED, "+CMTI"},
+                       {AT_ASYNC_RESP_RING_RECEIVED, "+CLIP"},
+                       {AT_ASYNC_RESP_REBOOT, "^MODE: 9"},
+                       {AT_ASYNC_RESP_TCP_RECV, "*TCPRD"},
+                       {AT_ASYNC_RESP_VOICE_END, "*VOICE END"},
+                       {AT_ASYNC_RESP_DTMF, "+RXDTMF"},
+                       {AT_TCP_WRITE_IP, "*NET*SOCKPA"},
+                       {AT_TCP_OPEN_PPP, "AT*NET*PPPOP\r\n"},
+                       {AT_TCP_CLOSE_PPP, "AT*NET*PPPCL\r\n"},
+                       {AT_TCP_OPEN_SOCKET, "AT*NET*SOCKOP\r\n"},
+                       {AT_TCP_CLOSE_SOCKET, "*NET*SOCKCL"},
+                       {AT_ASYNC_OPEN_VOICE, "AT*VOICE*ANS\r\n"},
+                       {AT_ASYNC_OPEN_VOICE_RESP, "*VOICE CONNECT"},
+                       {AT_ASYNC_GET_RSSI, "*SKT*LEVEL"},
+                       {AT_ASYNC_GET_RSSI_RESP, "+CSQ"},
+                       {AT_ASYNC_SMS_READ_RESP_OK, "*SMS*MTREAD"},
+                       {AT_ASYNC_SMS_READ_RESP_ERR, "+CMS ERROR"},
+                       {AT_SMS_SEND_RESP_OK, "*SMSACK"},
+                       {AT_TCP_SEND_DATA_RESP, "*ANET*SOCKWR"},
+                       {AT_TCP_OPEN_SOCKET_RESP_OK, "*TCPCONNECTED"},
+                       {AT_TCP_OPEN_SOCKET_RESP_FAIL, "*TCPCONNECTFAIL"},
+                       {AT_TCP_OPEN_SOCKET_RESP, "*ANET*SOCKOP"},
+                       {AT_TCP_READ_NUM_RESP, "+CNUM:"},
+                       {AT_ASYNC_OFF_VOICE, "AT*VOICE*FLASH=0\r\n"},
+                       {AT_TCP_CONNECT_VPN_RESP, "*VPN*STATUS: Connected"},
+                       {AT_TCP_OPEN_PPP_RESP, "$$TCP_PPPOP: 0"},
+                       {AT_TCP_CLOSE_PPP_RESP, "*NET*PPPCL"},
+                       {AT_TCP_CLOSE_SOCKET_RESP, "$$TCP_SCCL:"},
+                       {AT_TCP_RESET_SW_RESP, "*SET*RESET"},
+                       {AT_ASYNC_DIAL_RESP, "+COLP"},
+                       {AT_ASYNC_DIAL_OFF, "AT*VOICE*CEND\r\n"},
+                       {AT_ASYNC_CONFIG_READ_RESP, "*VPN*CONFIG"},
+                       {AT_TCP_NETWORK_SERVICE, "*ST*REGSTS:"}};
 
-
-static void ntle9607_modem_sends(const char *data)
+static void tx700_modem_sends(const char *data)
 {
     modem_sends(data);
 }
 
-static void ntle9607_modem_send(const char *data,uint16_t dataLen)
+static void tx700_modem_send(const char *data,uint16_t dataLen)
 {
     modem_send(data,dataLen);
 }
@@ -96,7 +92,7 @@ static void ntle9607_modem_send(const char *data,uint16_t dataLen)
 /*
 async task에서 만 수신되도록한 응답을 확인
 */
-static M_RET_t ntle9607_asyncRecv_response(char *pBuff,uint16_t buffSize)
+static M_RET_t tx700_asyncRecv_response(char *pBuff,uint16_t buffSize)
 {
     uint32_t cmd;
     M_RET_t ret = RET_FAIL;
@@ -112,7 +108,7 @@ static M_RET_t ntle9607_asyncRecv_response(char *pBuff,uint16_t buffSize)
 /*
 tcp task에서만 수신되도록한 응답을 확인
 */
-static M_RET_t ntle9607_tcpRecv_response(char *pBuff,uint16_t buffSize)
+static M_RET_t tx700_tcpRecv_response(char *pBuff,uint16_t buffSize)
 {
     M_RET_t ret = RET_FAIL;
     uint32_t cmd;
@@ -126,7 +122,7 @@ static M_RET_t ntle9607_tcpRecv_response(char *pBuff,uint16_t buffSize)
 }
 
 
-static M_RET_t ntle9607_check_asyncResp(const char *const*pAckList,uint32_t ackListCnt,uint32_t *foundedIndex,char *pBuff,uint32_t buffSize,uint32_t timeout_ms)
+static M_RET_t tx700_check_asyncResp(const char *const*pAckList,uint32_t ackListCnt,uint32_t *foundedIndex,char *pBuff,uint32_t buffSize,uint32_t timeout_ms)
 {
 
     uint32_t startTime;
@@ -136,7 +132,7 @@ static M_RET_t ntle9607_check_asyncResp(const char *const*pAckList,uint32_t ackL
     startTime = osKernelGetTickCount();
 
     do{
-        ret = ntle9607_asyncRecv_response(pBuff,buffSize);
+        ret = tx700_asyncRecv_response(pBuff,buffSize);
 
         if(ret == RET_OK)
         {
@@ -156,7 +152,7 @@ static M_RET_t ntle9607_check_asyncResp(const char *const*pAckList,uint32_t ackL
 }
 
 
-static M_RET_t ntle9607_check_tcpResp(const char *const*pAckList,uint32_t ackListCnt,uint32_t *foundedIndex,char *pBuff,uint32_t buffSize,uint32_t timeout_ms)
+static M_RET_t tx700_check_tcpResp(const char *const*pAckList,uint32_t ackListCnt,uint32_t *foundedIndex,char *pBuff,uint32_t buffSize,uint32_t timeout_ms)
 {
     uint32_t startTime;
     uint32_t i;
@@ -165,7 +161,7 @@ static M_RET_t ntle9607_check_tcpResp(const char *const*pAckList,uint32_t ackLis
     startTime = osKernelGetTickCount();
 
     do{
-        ret = ntle9607_tcpRecv_response(pBuff,buffSize);
+        ret = tx700_tcpRecv_response(pBuff,buffSize);
 
         if(ret == RET_OK)
         {
@@ -231,32 +227,32 @@ static void parse_sms(char* msg,sms_t *pSms)
 
 
 
-M_RET_t ntle9607_read_sms(sms_t *pSms)
+M_RET_t tx700_read_sms(sms_t *pSms)
 {
-    const char *cmd    = "AT*SMS*MTREAD=0\r\n";//최근 문자 1개 읽기
-    const char *delCmd = "AT*SMS*ALLDEL=3\r\n";//전부 삭제
-    const char *ackList[] = {"*SMS*MTREAD","+CMS ERROR"};  
-    char buff[310];
-    uint32_t idx=0;
-    M_RET_t ret = RET_FAIL;
+  const char *cmd = "AT+CMGR=0\r\n";           // 최근 문자 1개 읽기
+  const char *delCmd = "AT+CMGD=,4\r\n";   // 전부 삭제
+  const char *ackList[] = {"+CMGR"};
+  char buff[310];
+  uint32_t idx = 0;
+  M_RET_t ret = RET_FAIL;
 
-    ntle9607_modem_sends(cmd);
+  tx700_modem_sends(cmd);
 
-    ret = ntle9607_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+  ret = tx700_check_asyncResp(ackList, CNT_OF(ackList), &idx, buff, sizeof(buff), 200);
 
-    if(ret == RET_OK)
+  if (ret == RET_OK)
+  {
+    switch (idx)
     {
-        switch(idx)
-        {
-            case 0:
-                ret = RET_OK;
-                parse_sms(buff,pSms);
-                modem_sends(delCmd); // 읽은 메시지는 지운다
-                break;
-            case 1:
-                ret = RET_FAIL_RESP;
-                break;
-        }
+      case 0:
+        ret = RET_OK;
+        parse_sms(buff, pSms);
+        modem_sends(delCmd);  // 읽은 메시지는 지운다
+        break;
+      case 1:
+        ret = RET_FAIL_RESP;
+        break;
+    }
     }
 
     return ret;
@@ -266,7 +262,7 @@ M_RET_t ntle9607_read_sms(sms_t *pSms)
 
 
 
-M_RET_t ntle9607_send_sms(char *num,char *msg)
+M_RET_t tx700_send_sms(char *num,char *msg)
 {
     char buff[200];
     const char *ackList[] = {"*SMSACK"};  
@@ -283,9 +279,9 @@ M_RET_t ntle9607_send_sms(char *num,char *msg)
         buff[len++] ='\r';
         buff[len++] ='\n';
 
-        ntle9607_modem_sends(buff);
+        tx700_modem_sends(buff);
 
-        ret = ntle9607_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+        ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
 
         if(ret == RET_OK)
         {
@@ -299,21 +295,6 @@ M_RET_t ntle9607_send_sms(char *num,char *msg)
 
 
 
-const char *get_ack(uint16_t cmd)
-{
-  int i;
-  const char *ret =NULL;
-
-  for(i =  0 ;i < _countof(cmd_ntle9607);i++)
-  {
-    if(cmd_ntle9607->cmd == cmd)
-    {
-      ret = cmd_ntle9607->cmdStr;
-      break;
-    }
-  }
-  return ret;
-}
 /*
 2025-02-07 10:06:44.721 [COM11] - AT*NET*PPPOP<CR><LF>
 2025-02-07 10:06:44.739 [COM10] - <CR><LF>
@@ -325,131 +306,78 @@ OK<CR><LF>
 <CR><LF>
 *PPPOPENED<CR><LF>
 */
-M_RET_t ntle9607_open_ppp(void)
+M_RET_t tx700_open_ppp(void)
 {
-  const char *cmd = cmd_ntle9607[AT_TCP_OPEN_PPP].cmdStr;
-  const char *ackList[]={"*NET*PPPOP:"};
+  const char *cmd = "AT$$TCP_PPPOP\r\n";
+  const char * ackList[] = {"$$TELL:,$$TCP_PPPOP:"};
   char buff[100];
   int32_t code;
   uint32_t idx;
   M_RET_t ret = RET_FAIL;
   osDelay(500);
-  ntle9607_modem_sends(cmd);
-  ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
+  tx700_modem_sends(cmd);
+  ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
 
-  if(ret == RET_OK)
-  {
-      sscanf(buff,"*NET*PPPOP:%d",&code);
-      switch(code)
-      {
-          case 1:
-              ret = RET_OK;
-          break;
-          default:
-              ret = RET_FAIL_RESP;
-          break;            
-      }
-  }
-  
-  return ret;
+
+  return RET_OK;
 }
 
 
-/*
-2025-02-07 10:05:34.282 [COM11] - AT*NET*PPPCL<CR><LF>
-2025-02-07 10:05:34.284 [COM10] - <CR><LF>
-*PPPCLOSED<CR><LF>
-<CR><LF>
-*NET*PPPCL:1<CR><LF>
-<CR><LF>
-OK<CR><LF>
-*/
-M_RET_t ntle9607_close_ppp(void)
+
+M_RET_t tx700_close_ppp(void)
 {
-    const char *cmd = cmd_ntle9607[AT_TCP_CLOSE_PPP].cmdStr;
-    const char *ackList[]= {"*NET*PPPCL:"};
+    const char *cmd = "AT$$$$TCP_PPPCL\r\n";
+    const char *ackList[]= {"$$TCP_PPPCL:,$$TELL:"};
     char buff[100];
     uint32_t idx;
     int32_t code;
     M_RET_t ret = RET_FAIL;
 
   osDelay(500);
-    ntle9607_modem_sends(cmd);
+    tx700_modem_sends(cmd);
 
-    ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
-
-    if(ret == RET_OK)
-    {
-        sscanf(buff,"*NET*PPPCL:%d",&code);
-        switch(code)
-        {
-            case 1:
-                ret = RET_OK;
-            break;
-            default:
-                ret = RET_FAIL_RESP;
-            break;            
-        }
-    }
+    ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
 
 
-    return ret;
+
+    return RET_OK;
 }
 
-M_RET_t ntle9607_open_socket(void)
+M_RET_t tx700_open_socket(void)
 {
-    const char *const cmd= "AT*ANET*SOCKOP\r\n";
-    const char *ackList[]= {"*TCPCONNECTED","*TCPCONNECTFAIL"};
-    char buff[100];
-    uint32_t idx;
-    M_RET_t ret = RET_FAIL;
+  const char *const cmd = "AT$$TCP_SCOP=0\r\n";
+  const char *ackList[] = {"$$TELL: 603"};
+  char buff[100];
+  uint32_t idx;
+  M_RET_t ret = RET_FAIL;
 
   osDelay(500);
-    ntle9607_modem_sends(cmd);
+    tx700_modem_sends(cmd);
     
-    ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
+    ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
 
-    if(ret == RET_OK)
-    {
-        switch(idx)
-        {
-        case 0:
-            ret = RET_OK;
-            break;
-        case 1:
-            ret = RET_FAIL_RESP;
-            break;
-        }
-    }
-    return ret;
+
+    return RET_OK;
 }
 
-M_RET_t ntle9607_close_socket(void)
+M_RET_t tx700_close_socket(void)
 {
-    const char *cmd= "AT*ANET*SOCKCL\r\n";
-    const char *ackList[]= {"*TCPDISCONNECTED","*ANET*SOCKCL:0"};
-    char buff[100];
-    uint32_t idx;
-    M_RET_t ret = RET_FAIL;
+  const char *cmd = "AT$$TCP_SCCL=0\r\n";
+  const char *ackList[] = {"$$TCP_SCCL:"};
+  char buff[100];
+  uint32_t idx;
+  M_RET_t ret = RET_FAIL;
 
-    osDelay(500);
-    ntle9607_modem_sends(cmd);
-    
-    ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
+  osDelay(500);
+  tx700_modem_sends(cmd);
 
-    if(ret == RET_OK)
-    {
-        switch(idx)
-        {
-        case 1:
-            ret = RET_OK;
-            break;
-        }
-    }
-    return ret;
+  ret = tx700_check_tcpResp(ackList, CNT_OF(ackList), &idx, buff, sizeof(buff), 10000);
+
+
+    return RET_OK;
 }
 
-const char *serviceCode1[]={"0 No Service",
+const char *serviceCode1_[]={"0 No Service",
                             "1 : Limited Service",
                             "2 : Service Available",
                             "3 : Limited Regional Service",
@@ -459,7 +387,7 @@ const char *serviceCode1[]={"0 No Service",
                             "7 : Limited Regional Service",
                             "8 : Power Save"};
 
-const char *serviceCode2[]={"0 : Error None",
+const char *serviceCode2_[]={"0 : Error None",
                             "1 : Related USIM",
                             "2 : Cell Restrict",
                             "3 : Access Control",
@@ -473,7 +401,7 @@ const char *serviceCode2[]={"0 : Error None",
 
 
 
-M_RET_t ntle9607_check_network_service(char *msgOut,uint16_t msgSize)
+M_RET_t tx700_check_network_service(char *msgOut,uint16_t msgSize)
 {
     const char *cmd = "AT*ST*REGSTS\r\n";
     const char *ackList[] = {"*ST*REGSTS:"}; 
@@ -482,67 +410,62 @@ M_RET_t ntle9607_check_network_service(char *msgOut,uint16_t msgSize)
     uint32_t idx;
     M_RET_t ret = RET_FAIL;
 
-    ntle9607_modem_sends(cmd);
-    ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+    tx700_modem_sends(cmd);
+    ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
     if(ret == RET_OK)
     {
       sscanf(buff,"*ST*REGSTS:%d,%d,%d",&code1,&code2,&code3);
 
-      snprintf(msgOut,msgSize,"%s,%s,%d",serviceCode1[code1],serviceCode2[code2],code3);
+      snprintf(msgOut,msgSize,"%s,%s,%d",serviceCode1_[code1],serviceCode2_[code2],code3);
       ret = RET_OK;
     }
   return ret;
 }
 
 
-M_RET_t ntle9607_init(void)
+M_RET_t tx700_init(void)
 {
     M_RET_t ret = RET_OK;
     char buff[50];
 
-    ntle9607_modem_sends("ATE0V1\r\n");//E0 에코 금지 V1 응답은 아스키 형태
-    osDelay(500);
-    ntle9607_modem_sends("AT*ST*REGSTS\r\n");//네트워크 서비스 상태 조회
-    osDelay(500);
-    /*
-    *ST*REGSTS:2,0,0 
-    2 서비스 가능능
-    */
+    tx700_modem_sends("ATE0V1\r\n");//E0 에코 금지 V1 응답은 아스키 형태
+    osDelay(100);
+    tx700_modem_sends("AT$$TCP_NULLPERMISSION=1\r\n"); 
+    osDelay(100);
     return ret;
 }
 
 
-void ntle9607_write_ip(uint8_t ip[4],uint16_t port)
+void tx700_write_ip(uint8_t ip[4],uint16_t port)
 {
-  const char *ackList[] = {"*ANET*SOCKPA:"}; 
+  const char *ackList[] = {"$$TCP_ADDR:"};  //$$TCP_ADDR: 0,OK
   char  buff[50];
   uint32_t idx;
   int32_t code;
   M_RET_t ret = RET_FAIL;
 
-    snprintf(buff, sizeof(buff),"AT*ANET*SOCKPA=%d.%d.%d.%d,%d\r\n", ip[0],ip[1],ip[2],ip[3],port);
-    
-    osDelay(500);
-    ntle9607_modem_sends(buff);
+  snprintf(buff, sizeof(buff), "AT$$TCP_ADDR=0,%d,%d,%d,%d,%d\r\n", ip[0], ip[1], ip[2], ip[3],
+             port);
 
-    ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),1000);
+  osDelay(500);
+  tx700_modem_sends(buff);
 
-    if(ret == RET_OK)
+  ret = tx700_check_tcpResp(ackList, CNT_OF(ackList), &idx, buff, sizeof(buff), 1000);
+
+  if (ret == RET_OK)
+  {
+    sscanf(buff, "$$TCP_ADDR: %d", &code);
+    switch (code)
     {
-      sscanf(buff,"*ANET*SOCKPA:%d",&code);
-      switch(code)
-      {
-        case 1:// 전송 실패
-          ret = RET_OK;
-          break;
-      }
+      case 1:  // 전송 실패
+        ret = RET_OK;
+        break;
     }
-    
-
-
+  }
 }
 
-void ntle9607_resetSW(void)
+
+void tx700_resetSW(void)
 {
     const char *cmd = "AT*SET*RESET\r\n";
     const char *ackList[] = {"*SET*RESET"}; 
@@ -550,9 +473,9 @@ void ntle9607_resetSW(void)
     uint32_t idx;
     M_RET_t ret = RET_FAIL;
    
-    ntle9607_modem_sends(cmd);
+    tx700_modem_sends(cmd);
 
-    ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+    ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
 
     if(ret == RET_OK)
     {
@@ -571,14 +494,14 @@ void ntle9607_resetSW(void)
 
 */
 
-void ntle9607_reset(uint8_t resetType,uint32_t delayMs)
+void tx700_reset(uint8_t resetType,uint32_t delayMs)
 {
     uint32_t cnt;
     
     switch(resetType)
     {
         case M_RESET_SW:
-        ntle9607_resetSW();
+        tx700_resetSW();
         break;
         case M_RESET_HW:
         cdma_power_off();
@@ -607,7 +530,7 @@ void ntle9607_reset(uint8_t resetType,uint32_t delayMs)
 }
 
 
-M_RET_t ntle9607_recv_tcp(uint8_t *buff,uint16_t buffSize,uint16_t *recvLen,uint32_t timeOutMs)
+M_RET_t tx700_recv_tcp(uint8_t *buff,uint16_t buffSize,uint16_t *recvLen,uint32_t timeOutMs)
 {
 
     M_RET_t ret = RET_FAIL;
@@ -632,76 +555,64 @@ M_RET_t ntle9607_recv_tcp(uint8_t *buff,uint16_t buffSize,uint16_t *recvLen,uint
 }
 
     
-M_RET_t ntle9607_send_tcp(uint8_t *data,uint16_t dataLen)
+M_RET_t tx700_send_tcp(uint8_t *data,uint16_t dataLen)
 {
-    const char *ackList[]={"*ANET*SOCKWR"};//*ANET*SOCKWR:1 성공,*ANET*SOCKWR:0 실패
-    char buff[512+64];
-    uint32_t findex;
-    int32_t len;
-    M_RET_t ret = RET_FAIL;
-    uint8_t code;
-    
-    //AT*ANET*SOCKWR=10,1234567890\r\n
-    len = snprintf((char *)buff,sizeof(buff),"AT*ANET*SOCKWR=%d,",dataLen);
+  const char *ackList[] = {"$$TCP_SENDDATA:1"};  
+  char buff[512 + 64];
+  uint32_t findex;
+  int32_t len;
+  M_RET_t ret = RET_FAIL;
+  uint8_t code;
 
-    memcpy(&buff[len],data,dataLen);
-    len += dataLen;
+  strcpy(buff,"AT$$TCP_SENDBIN=00");
 
-    buff[len++] = '\r';
-    buff[len++] = '\n';
+  buff[16] = (0xFF & ((dataLen) >> 8));
+  buff[17] = (0xFF & (dataLen));
+
+  memcpy(&buff[18],(void *)data, dataLen);
+
+  dataLen += 18;
+  buff[dataLen++] = '\r';
+  buff[dataLen++] = '\n';
+
+  tx700_modem_send(buff, dataLen);
+
+  ret = tx700_check_tcpResp(ackList, sizeof(ackList) / sizeof(ackList[0]), &findex, buff,
+                            sizeof(buff), 10000);
 
 
-    ntle9607_modem_send(buff,len);
 
-
-    ret = ntle9607_check_tcpResp(ackList,sizeof(ackList)/sizeof(ackList[0]),&findex,buff,sizeof(buff),10000);
-
-    if(ret == RET_OK)
-    {
-      code = buff[13];//
-      switch(code)
-      {
-        case '0':// 전송 실패
-          ret = RET_FAIL_SEND;
-          break;
-	    case '1':
-          ret = RET_OK;
-          break;
-      }
-    }
-
-    return ret;
+    return RET_OK;
 }
 
 
 
 
 
-M_RET_t ntle9607_read_num(char *prNum,uint16_t numSize)
+M_RET_t tx700_read_num(char *prNum,uint16_t numSize)
 {
-	const char *cmd    = "AT*SKT*DIAL\r\n";
-    const char *ackList[] = {"*SKT*DIAL:"};           //*SKT*DIAL:01227090440<CR><LF>
-    char  buff[50];
-    uint32_t idx;
-    int32_t len;
-    M_RET_t ret = RET_FAIL;
+  const char *cmd = "at+cnum\r\n";
+  const char *ackList[] = {"+CNUM"};  //*SKT*DIAL:01227090440<CR><LF>
+  char buff[50];
+  uint32_t idx;
+  int32_t len;
+  M_RET_t ret = RET_FAIL;
 
-    prNum[0] = '\0';
+  prNum[0] = '\0';
 
+  tx700_modem_sends(cmd);
 
-    ntle9607_modem_sends(cmd);
+  ret = tx700_check_tcpResp(ackList, CNT_OF(ackList), &idx, buff, sizeof(buff), 200);
+  if (ret == RET_OK)
+  {
+    //*SKT*DIAL:01227090440<CR><LF>
 
-    ret  = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
-    if(ret == RET_OK)
-    {
-        //*SKT*DIAL:01227090440<CR><LF>
+    len = strlen(&buff[10]);
 
-        len = strlen(&buff[10]);
-
-        memcpy_safe((uint8_t *)prNum,numSize,(uint8_t *)&buff[10],len);
-        prNum[len] = '\0';
-        ret = RET_OK;
-    }
+    memcpy_safe((uint8_t *)prNum, numSize, (uint8_t *)&buff[10], len);
+    prNum[len] = '\0';
+    ret = RET_OK;
+  }
 
 	return ret;	
 }
@@ -715,7 +626,7 @@ M_RET_t ntle9607_read_num(char *prNum,uint16_t numSize)
 <CR><LF>
 OK<CR><LF>
 */
-M_RET_t ntle9607_read_rssi(int16_t *rssi)
+M_RET_t tx700_read_rssi(int16_t *rssi)
 {
     const char *cmd = "AT+CSQ\r\n";
     const char *ackList[] = {"+CSQ"}; 
@@ -725,9 +636,9 @@ M_RET_t ntle9607_read_rssi(int16_t *rssi)
     M_RET_t ret = RET_FAIL;
     char *argv[10]={0};
 
-    ntle9607_modem_sends(cmd);
+    tx700_modem_sends(cmd);
 
-    ret = ntle9607_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+    ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
 
     if(ret == RET_OK)
     {
@@ -743,7 +654,7 @@ M_RET_t ntle9607_read_rssi(int16_t *rssi)
  * @brief dtmf 코드 추출 
  * @retval dtmf 코드
  */
-char ntle9607_get_dtmf(char *data)
+char tx700_get_dtmf(char *data)
 {
     char dtmfCode;
 
@@ -754,12 +665,12 @@ char ntle9607_get_dtmf(char *data)
 }
 
 
-void ntle9607_vpn_init(void)
+void tx700_vpn_init(void)
 {
   const char *connect_cmd =  "AT*VPN*CONNECT=1\r\n";
   const char *satus_cmt= "AT*VPN*STATUS\r\n";
   const char *disconnect_cmd = "AT*VPN*CONNECT=0\r\n";
-  const char *ackList[]={cmd_ntle9607[AT_TCP_CONNECT_VPN_RESP].cmdStr};
+  const char *ackList[]={cmd_tx700[AT_TCP_CONNECT_VPN_RESP].cmdStr};
   uint8_t j;
   uint32_t i;
   uint32_t idx;
@@ -775,9 +686,9 @@ void ntle9607_vpn_init(void)
   for(j = 0 ; j < 5; j++)//약 15초 동안 vpn 로그인 상태 확인
   {
     /* vpn 연결 되었는지 확인 */
-    ntle9607_modem_sends(satus_cmt);
+    tx700_modem_sends(satus_cmt);
 
-    ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+    ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
     
     if(ret == RET_OK)
     {
@@ -786,9 +697,9 @@ void ntle9607_vpn_init(void)
     }
   }
 
-  ntle9607_modem_sends(disconnect_cmd);// 
+  tx700_modem_sends(disconnect_cmd);// 
   osDelay(2000);// 정해진 지연 시간은 없음, 적당히 지연 
-  ntle9607_modem_sends(connect_cmd);
+  tx700_modem_sends(connect_cmd);
   osDelay(2000);// 정해진 지연 시간은 없음, 적당히 지연
 
   for(j = 0 ; j< 2; j++)
@@ -796,9 +707,9 @@ void ntle9607_vpn_init(void)
     for(i = 0 ; i < 5;i++)
     {
       /*vpn 연결 되었는지 확인*/
-      ntle9607_modem_sends(satus_cmt);
+      tx700_modem_sends(satus_cmt);
 
-      ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+      ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
       if(ret == RET_OK)
       {
         //연결이 완료되었으면 빠져나옴
@@ -810,9 +721,9 @@ void ntle9607_vpn_init(void)
     
     if(j == 0)// j==0일때 연결이 안되면 다시 연결종료 명령어 전송하고 다시 연결시도
     {
-      ntle9607_modem_sends(disconnect_cmd);// 잘못된 연결  해제 
+      tx700_modem_sends(disconnect_cmd);// 잘못된 연결  해제 
       osDelay(5000);
-      ntle9607_modem_sends(connect_cmd);
+      tx700_modem_sends(connect_cmd);
     }
   }
 
@@ -825,17 +736,13 @@ LOOP_EXIT:
 /**
  * @brief 안정적인 전원 차단을 위해서 아래와 같이 AT CMD 실행이 필요 합니다.
  */
-void ntle9607_off_powerSafe(void)
+void tx700_off_powerSafe(void)
 {
-    const char *cmd = "AT+APMODE=0\r\n";
 
-    ntle9607_modem_sends(cmd);
-
-    osDelay(11000);//엔티모아에서 권장한 지연시간(email)
 }
 
 
-M_RET_t ntle9607_read_ringNum(char *pData,char *prNum,uint16_t numSize)
+M_RET_t tx700_read_ringNum(char *pData,char *prNum,uint16_t numSize)
 {
     char *argv[MAX_ARGV];
     char *ptr = NULL;
@@ -855,19 +762,19 @@ M_RET_t ntle9607_read_ringNum(char *pData,char *prNum,uint16_t numSize)
 }
 
 
-M_RET_t ntle_9607_recv_call(void)
+M_RET_t tx700_recv_call(void)
 {
     M_RET_t ret = RET_FAIL;
-    const char *ackList[] = {cmd_ntle9607[AT_ASYNC_OPEN_VOICE_RESP].cmdStr}; 
+    const char *ackList[] = {cmd_tx700[AT_ASYNC_OPEN_VOICE_RESP].cmdStr}; 
 
     uint32_t idx;
     char  buff[50];
 
     for(uint32_t i =  0 ; i < 2; i++)
     {
-        ntle9607_modem_sends( cmd_ntle9607[AT_ASYNC_OPEN_VOICE].cmdStr);
+        tx700_modem_sends( cmd_tx700[AT_ASYNC_OPEN_VOICE].cmdStr);
 
-        ret = ntle9607_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+        ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
 
         if(ret == RET_OK)
         {
@@ -880,19 +787,19 @@ M_RET_t ntle_9607_recv_call(void)
     return ret;
 }
 
-M_RET_t ntle_9607_dial(char *num,uint32_t waitTimeOutMs)
+M_RET_t tx700_dial(char *num,uint32_t waitTimeOutMs)
 {
     M_RET_t ret = RET_FAIL;
-    const char *ackList[] = {cmd_ntle9607[AT_ASYNC_DIAL_RESP].cmdStr,"OS_DIAL_OFF"}; 
+    const char *ackList[] = {cmd_tx700[AT_ASYNC_DIAL_RESP].cmdStr,"OS_DIAL_OFF"}; 
     uint32_t idx;
     char  buff[50];
 
     snprintf(buff,sizeof(buff),"AT*VOICE*ORI=%s\r\n",num);
 
 
-    ntle9607_modem_sends(buff);
+    tx700_modem_sends(buff);
 
-    ret = ntle9607_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),waitTimeOutMs);
+    ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),waitTimeOutMs);
 
     if(ret == RET_OK)
     {
@@ -912,7 +819,7 @@ M_RET_t ntle_9607_dial(char *num,uint32_t waitTimeOutMs)
 }
 
 
-M_RET_t ntle_9607_set_vpn(char *id,char *pw,uint8_t ip[4],uint16_t port)
+M_RET_t tx700_set_vpn(char *id,char *pw,uint8_t ip[4],uint16_t port)
 {
   M_RET_t ret = RET_FAIL;
   char  buff[100];
@@ -922,9 +829,9 @@ M_RET_t ntle_9607_set_vpn(char *id,char *pw,uint8_t ip[4],uint16_t port)
   snprintf(buff,sizeof(buff),"AT*VPN*CONFIG=%s,%s,%d.%d.%d.%d,%d\r\n",id,pw,
   ip[0],ip[1],ip[2],ip[3],port);
 
-  ntle9607_modem_sends(buff);
+  tx700_modem_sends(buff);
 
-  ret = ntle9607_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),1000);
+  ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),1000);
 
     if(ret == RET_OK)
     {
@@ -938,7 +845,7 @@ M_RET_t ntle_9607_set_vpn(char *id,char *pw,uint8_t ip[4],uint16_t port)
   return ret;
 }
 
-M_RET_t ntle_9607_read_vpn(char *outBuffer,uint16_t outSize)
+M_RET_t tx700_read_vpn(char *outBuffer,uint16_t outSize)
 {
   M_RET_t ret = RET_FAIL;
   char  buff[100];
@@ -949,9 +856,9 @@ M_RET_t ntle_9607_read_vpn(char *outBuffer,uint16_t outSize)
 
   snprintf(buff,sizeof(buff),"AT*VPN*CONFIG?\r\n");
 
-  ntle9607_modem_sends(buff);
+  tx700_modem_sends(buff);
 
-  ret = ntle9607_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),1000);
+  ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),1000);
 
   if(ret == RET_OK)
   {
@@ -965,16 +872,16 @@ M_RET_t ntle_9607_read_vpn(char *outBuffer,uint16_t outSize)
   return ret;
 }
 
-M_RET_t ntle_9607_at_direct(char *at,char *outBuffer,uint16_t outSize)
+M_RET_t tx700_at_direct(char *at,char *outBuffer,uint16_t outSize)
 {
   M_RET_t ret = RET_FAIL;
   uint32_t startTime = osKernelGetTickCount();
 
-  ntle9607_modem_sends(at);
+  tx700_modem_sends(at);
 
   do{
 
-      ret = ntle9607_asyncRecv_response(outBuffer,outSize);
+      ret = tx700_asyncRecv_response(outBuffer,outSize);
 
       if(ret == RET_OK)
       {

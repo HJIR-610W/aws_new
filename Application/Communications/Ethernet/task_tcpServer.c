@@ -404,7 +404,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
       err_code = errno;
       if (err_code == EAGAIN || err_code == EWOULDBLOCK)
       {
-         debug_printf("Client Handler (%s:%u): recv timeout on socket %d\r\n", slot->client_ip_str, slot->client_port, sock);
+       //  debug_printf("Client Handler (%s:%u): recv timeout on socket %d\r\n", slot->client_ip_str, slot->client_port, sock);
         continue;  // 타임아웃, 다음 수신 시도
       }
       else
