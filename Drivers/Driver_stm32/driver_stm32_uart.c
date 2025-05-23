@@ -411,13 +411,15 @@ void stm32_uart_close(driver_t *handle);
 void stm32_uart_flush_rx(driver_t *handle);
 int32_t stm32_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms,
                        uint32_t timeout2_ms);
+int32_t stm32_uart_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs);
 
 uart_api_t stm32_uart_api = {.close = stm32_uart_close,
                              .send = stm32_uart_send,
                              .recv = stm32_uart_recv,
                              .flush_rx = stm32_uart_flush_rx,
                              .recv_opt = stm32_recv_opt,
-                             .get = stm32_uart_get};
+                             .get = stm32_uart_get,
+                             .recv_ll = stm32_uart_recv_ll};
 
 driver_t *stm32_uart_open(int num, void *opt)
 {
@@ -918,4 +920,28 @@ int32_t stm32_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size, uin
   }
 
   return received;
+}
+
+int32_t stm32_uart_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
+{
+  stm32_uart_cfg_t *p_cfg = drv->cfg;
+  uint32_t start_time  = HAL_GetTick();
+  uint8_t data=0;
+  int32_t len=0;
+
+  while(1)
+  {
+    if(HAL_UART_Receive(p_cfg->handle, &data, 1, 0)==HAL_OK)
+    {
+      pBuff[len++] = data;
+    }
+
+    if((HAL_GetTick()-start_time)>timeOutMs)
+    {
+      break;
+    }
+  }
+
+
+  return len;
 }

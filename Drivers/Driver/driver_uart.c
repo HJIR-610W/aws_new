@@ -109,6 +109,7 @@ void driver_uart_get(driver_t *drv, uart_get_option_t cmd, void *para)
   api->get(drv, cmd, para);
 }
 
+
 int32_t drier_uart_recv_crlf(driver_t *drv, char *pBuff, uint16_t bSize, uint32_t tout_ms)
 {
   uint8_t data;
@@ -169,4 +170,11 @@ int32_t driver_uart_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_siz
   uart_api_t *api = (uart_api_t *)drv->api;
 
   api->recv_opt(drv, buffer, buffer_size, timeout1_ms, timeout2_ms);
+}
+
+int32_t driver_uart_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutMs)
+{
+  uart_api_t *api = (uart_api_t *)drv->api;
+
+  return api->recv_ll(drv, pBuff, rLen, timeOutMs);
 }

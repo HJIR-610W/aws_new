@@ -41,5 +41,6 @@ void driver_uart_flush_rx(driver_t *drv);
 int32_t driver_uart_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
                               uint32_t timeout1_ms, uint32_t timeout2_ms);
 void driver_uart_get(driver_t *drv, uart_get_option_t cmd, void *para);
+int32_t driver_uart_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutMs);
 
 #endif

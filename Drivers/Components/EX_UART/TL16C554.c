@@ -261,7 +261,7 @@ void quad_init(driver_t *tls16c554, void *opt)
 
   isr_cfg.call = isrTable[uart_num];
   isr_cfg.name = isrNameTable[uart_num];
-  isr_cfg.trigger = eDI_RISING;
+  isr_cfg.trigger = eDI_RISING_FALLING;
   isr_cfg.prio = 6;
   isr_cfg.handle = tls16c554;
 
@@ -718,6 +718,7 @@ tl16c554_cfg_t g_tl16c554_cfg[TL16C554_UART_MAX];
 void tls16c554_close(driver_t *handle);
 int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen);
 int32_t tls16c554_recv(driver_t *handle, uint8_t *buffer, uint16_t length, uint32_t timeOutMs);
+int32_t tls16c554_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs);
 void tls16c554_flush_rx(driver_t *handle);
 
 void tls16c554_set(driver_t *handle, uart_set_option_t option, void *value);
@@ -728,7 +729,8 @@ uart_api_t tl16c554_api = {.close = tls16c554_close,
                            .flush_rx = tls16c554_flush_rx,
                            .set = tls16c554_set,
                            .recv_opt = tls16c554_recv_opt,
-                           .get = tls16c554_uart_get};
+                           .get = tls16c554_uart_get,
+                           .recv_ll = tls16c554_recv_ll};
 
 void tls16c554_irq_init(driver_t *drv, uint8_t prio)
 {
@@ -1019,4 +1021,33 @@ int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
   }
 
   return received;
+}
+
+int32_t tls16c554_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
+{
+
+  uint32_t startTick;
+  uint16_t cnt = 0;
+  tl16c554_cfg_t *cfg = drv->cfg;
+
+  startTick = HAL_GetTick();
+  while (1)
+  {
+    if (read_register(LSR(exUartBaseAddress[cfg->channel])) & LSR_DR)
+    {
+      pBuff[cnt++] = read_register(RBR(exUartBaseAddress[cfg->channel]));
+    }
+    if (cnt == buffSize)
+    {
+      break;
+    }
+    if ((HAL_GetTick() - startTick) > timeOutMs)
+    {
+      break;
+    }
+  }
+
+  return cnt;  // 데이터가 준비되지 않음
+
+
 }

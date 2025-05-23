@@ -125,7 +125,7 @@ void trigger_gpio_interrupt(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
     pin_num = count_trailing_zeros(GPIO_Pin);  // GPIO_PIN_10 → 10 (IAR이면 대체 함수 사용)
 
-#if 0
+#if 1
     // 1. SYSCFG EXTICR 설정
     uint32_t exticr_index = pin_num / 4;
     uint32_t exticr_shift = (pin_num % 4) * 4;
@@ -149,31 +149,40 @@ void trigger_gpio_interrupt(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
     HAL_NVIC_EnableIRQ(irq);
 #endif
     // 4. 소프트웨어 인터럽트 발생
-    EXTI->SWIER |= (1 << pin_num);
+//    EXTI->SWIER |= (1 << pin_num);
 }
 
 
-
+uint8_t g_uart_ll=0;
 
 void test_uart(void)
 {
   uart_config_t uart_config;
-  driver_t *port[UART_PORT_MAX];
+  driver_t *uart_driver=NULL;
   char buff[30];
   char rx_buff[10];
    char *rs232_port_name[UART_PORT_MAX] = {"VHF", "TTL", "A", "B", "C", "D","CDMA"};
-  int baud;
-  int len;
-  int rs232_number=-1;
+   const int32_t rs232_drv_num[UART_PORT_MAX] =
+   { UART_0_D_SUB_0,
+     UART_1_TTL,
+     UART_2_EXT_A,
+     UART_3_EXT_B,
+     UART_4_EXT_C,
+     UART_5_EXT_D,
+     UART_8_CDMA };
 
-  debug_printf("RS232 CDMA,TTL,A,B,C,D,CDMA 테스트\r\n");
-  debug_printf("주의:RS232 A,B는 하드웨어점퍼 설정 필요\r\n");
+   int baud;
+   int len;
+   int rs232_number = -1;
 
-    debug_printf("포트 이름을 입력해주세요\r\n");
-  if (cli_scanf_s("%7s", buff) == CLI_KEYCODE_CTRL_C)
-  {
-    return ;
-  }
+   debug_printf("RS232 CDMA,TTL,A,B,C,D,CDMA 테스트\r\n");
+   debug_printf("주의:RS232 A,B는 하드웨어점퍼 설정 필요\r\n");
+
+   debug_printf("포트 이름을 입력해주세요\r\n");
+   if (cli_scanf_s("%7s", buff) == CLI_KEYCODE_CTRL_C)
+   {
+     return;
+   }
 
   debug_printf("기능:1초마다 각 포트이름 전송되며 1초 대기,입력 에코처리함\r\n");
   debug_printf("통신 속도를 입력해주세요\r\n");
@@ -191,57 +200,51 @@ void test_uart(void)
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 
-  port[0] = driver_uart_open(UART_0_D_SUB_0, &uart_config);
-  port[1] = driver_uart_open(UART_1_TTL, &uart_config);
-  port[2] = driver_uart_open(UART_2_EXT_A, &uart_config);
-  port[3] = driver_uart_open(UART_3_EXT_B, &uart_config);
-  port[4] = driver_uart_open(UART_4_EXT_C, &uart_config);
-  port[5] = driver_uart_open(UART_5_EXT_D, &uart_config);
-  port[6] = driver_uart_open(UART_8_CDMA, &uart_config);
-
   for (int n = 0; n < _countof(rs232_port_name);n++)
   {
     if(strcmp(buff, rs232_port_name[n])==0)
     {
+      uart_driver = driver_uart_open(rs232_drv_num[n], &uart_config);
       rs232_number = n;
       break;
     }
   }
+  
   if (rs232_number ==-1)
   {
     debug_printf("포트 이름을 확인해주세요\r\n");
     return ;
   }
 
-
-
   is_gpio_interrupt_enabled(IN_EX_UART_INT_7_GPIO_Port, IN_EX_UART_INT_7_Pin);
   is_gpio_interrupt_enabled(IN_EX_UART_INT_8_GPIO_Port, IN_EX_UART_INT_8_Pin);
-
   trigger_gpio_interrupt(IN_EX_UART_INT_7_GPIO_Port,IN_EX_UART_INT_7_Pin);
   
   
   while (1)
   {
     snprintf(buff, sizeof(buff), "RS232 %s\r\n", rs232_port_name[rs232_number]);
-    len = driver_uart_send(port[rs232_number], buff, strlen(buff));
-
+    len = driver_uart_send(uart_driver, buff, strlen(buff));
     if (len < 0)
     {
       snprintf(buff, sizeof(buff), "RS232 %s error\r\n", rs232_port_name[rs232_number]);
       debug_printf(buff);
     }
 
-    len = driver_uart_recv(port[rs232_number], rx_buff, sizeof(rx_buff), 1000);
+    len = driver_uart_recv(uart_driver, rx_buff, sizeof(rx_buff), 1000);
     if (len)
     {
-      driver_uart_send(port[rs232_number], rx_buff, len);
+      driver_uart_send(uart_driver, rx_buff, len);
     }
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
       return;
     }
 
-
+    if (g_uart_ll)
+    {
+      g_uart_ll = 0;
+      len = driver_uart_recv_ll(uart_driver, rx_buff, sizeof(rx_buff), 1000);
+    }
   }
 }

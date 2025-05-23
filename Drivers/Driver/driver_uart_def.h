@@ -67,7 +67,7 @@ typedef struct
   void (*close)(driver_t *handle);
   int32_t (*send)(driver_t *handle, const uint8_t *data, uint16_t length);
   int32_t (*recv)(driver_t *handle, uint8_t *buffer, uint16_t length, uint32_t timeout);
-
+  int32_t (*recv_ll)(driver_t *handle, uint8_t *buffer, uint16_t length, uint32_t timeout);
   void (*flush_rx)(driver_t *handle);
   int32_t (*available)(driver_t *handle);
 
