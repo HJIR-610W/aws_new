@@ -10,6 +10,7 @@
 #include "task_isrEvent.h"
 #include "driver_uart.h"
 #include "config_app.h"
+#include "task_system.h"
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
@@ -66,10 +67,9 @@ void systemTask(void *arg)
 void systemTask_init(uint32_t para)
 {
 
-  if(para==0)
+  if(para==PARA_RUN_MODE)
   {
   app_bsp_init();
-
   userBtn_init();
 
   charger_init(APP_CHARGER_HJ);
@@ -78,9 +78,6 @@ void systemTask_init(uint32_t para)
 
   do_init();
   }
-  else
-  {
-    
-  }
+
   osThreadNew(systemTask, NULL, &kSystemTask_attributes);
 }

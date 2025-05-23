@@ -27,6 +27,7 @@ const config_t config_app_default = {
     .eth_ip = {192, 168, 1, 180},
     .eth_server_ip = {112, 221, 177, 172},
     .eth_server_port = 6442,
+    .eth_local_port =9000,
     .cdma_server_ip = {192, 168, 1, 1},
     .cdma_port = 0,
     .cdma_model = eCDMA_NTLE9607,
@@ -195,7 +196,7 @@ void check_config_app(void)
         case ePHYSICAL_RS232:
           if (p_hj_temp->port > eRS232_MAX)
           {
-            p_hj_temp->port = eRS232_1;
+            p_hj_temp->port = eRS232_RS485_A;
             g_config_app_dirty_flag = true;
           }
           break;
@@ -237,7 +238,7 @@ void check_config_app(void)
         case ePHYSICAL_RS232:
           if (p_hj_temp->port > eRS232_MAX)
           {
-            p_hj_temp->port = eRS232_1;
+            p_hj_temp->port = eRS232_RS485_A;
             g_config_app_dirty_flag = true;
           }
           break;
@@ -361,13 +362,18 @@ void set_config_app_cdma_ip(uint8_t ip[4])
 }
 
 
-//task 실행 안되게 하고 업데이트 후 장비 재시작
+/**
+ * @brief config_app 값을 공장초기화값으로 설정
+ * 저장되지는 않음 
+ */
+ 
 void config_app_reset(void)
 {
   config = config_app_default;
 
   memset(config.sensor, 0, sizeof(config.sensor));
-  WRITE_CFG(sensor);
+
+
 }
 
 

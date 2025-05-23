@@ -19,7 +19,7 @@ void panel_init(void)
   uart_config.parityIdx = 0;
   uart_config.stop_bit = 0;
 
-  g_panel_uart = driver_uart_open(UART_3_EXT_B,&uart_config);
+  g_panel_uart = driver_uart_open(UART_5_EXT_D, &uart_config);
 }
 
 

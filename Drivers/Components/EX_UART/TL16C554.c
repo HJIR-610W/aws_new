@@ -59,7 +59,7 @@ volatile uint8_t *exUartBaseAddress[8] = {
 #define QUAD_4_BUFF_SIZE 100  // EXT4
 #define QUAD_5_BUFF_SIZE 100  // RS485_A
 #define QUAD_6_BUFF_SIZE 100  // RS485_B
-#define QUAD_7_BUFF_SIZE 100  // EXT1
+#define QUAD_7_BUFF_SIZE 100  // RS232_C
 #define QUAD_8_BUFF_SIZE 100  // EXT2
 
 typedef struct tl16c554_cfg_s
@@ -756,8 +756,8 @@ void tls16c554_irq_init(driver_t *drv, uint8_t prio)
 driver_t *tls16c554_open(uint32_t num, void *opt)
 {
   uart_config_t *config = opt;
-  const char *portNameList[8] = {"QUAD_1", "QUAD_2", "QUAD_3", "QUAD_4",
-                                 "QUAD_5", "QUAD_6", "QUAD_7", "QUAD_8"};
+  const char *portNameList[8] = {"QUAD_1_VHF", "QUAD_2_MODULE", "QUAD_3_RS232_A", "QUAD_4_RS232_B",
+                                 "QUAD_5_RS485_A", "QUAD_6_RS485_B", "QUAD_7_RS232_C", "QUAD_8_RS232_D"};
 
   if (tls16c554_driver[num].opened)
   {
@@ -779,28 +779,28 @@ driver_t *tls16c554_open(uint32_t num, void *opt)
   // 채널당 인터럽트 설정정
   switch (num)
   {
-    case TL16C554_UART_0_D_SUB:
+    case TL16C554_UART_1_D_SUB:
       g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTA_1, 0);
       break;
-    case TL16C554_UART_1_TTL_TTL:
+    case TL16C554_UART_2_TTL_TTL:
       g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTB_2, 0);
       break;
-    case TL16C554_UART_EXT3:
+    case TL16C554_UART_3_RS232_A:
       g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTC_3, 0);
       break;
-    case TL16C554_UART_EXT4:
+    case TL16C554_UART_4_RS232_B:
       g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTD_4, 0);
       break;
-    case TL16C554_UART_4_RS485_A:
+    case TL16C554_UART_5_RS485_A:
       g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTA_5, 0);
       break;
-    case TL16C554_UART_5_RS485_B:
+    case TL16C554_UART_6_RS485_B:
       g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTB_6, 0);
       break;
-    case TL16C554_UART_6_EXT1:
+    case TL16C554_UART_7_RS232_C:
       g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTC_7, 0);
       break;
-    case TL16C554_UART_7_EXT2:
+    case TL16C554_UART_8_RS232_D:
       g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTD_8, 0);
       break;
   }
@@ -997,33 +997,22 @@ void tls16c554_uart_get(driver_t *drv, uart_get_option_t cmd, void *option)
 int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
                            uint32_t timeout1_ms, uint32_t timeout2_ms)
 {
-  typedef struct
-  {
-    uint32_t timeout1_ms;
-    uint32_t timeout2_ms;
-  } uart_recv_opt_t;
-
-  uart_recv_opt_t opt;
-  opt.timeout1_ms = timeout1_ms;
-  opt.timeout2_ms = timeout2_ms;
 
   int32_t received = 0;
   uint8_t *p = buffer;
-  // TODO:세마포어 필요
-  //  Step 1: 첫 바이트 수신 (timeout1 사용)
-  int32_t ret = tls16c554_recv(drv, p, 1, opt.timeout1_ms);
+
+  int32_t ret = tls16c554_recv(drv, p, 1, timeout1_ms);
   if (ret <= 0)
-    return 0;  // 첫 바이트 수신 실패, 수신 없음
+    return 0;  
 
   received += ret;
   p += ret;
 
-  // Step 2: 추가 바이트 수신 루프 (timeout2 사용)
   while (received < buffer_size)
   {
-    ret = tls16c554_recv(drv, p, 1, opt.timeout2_ms);
+    ret = tls16c554_recv(drv, p, 1, timeout2_ms);
     if (ret <= 0)
-      break;  // timeout2 안에 수신된 게 없으면 종료
+      break; 
 
     received += ret;
     p += ret;

@@ -245,46 +245,6 @@ void adc_test(void)
   }
 }
 
-void gpio_test(void)
-{
-  driver_t *gpio;
-  uint16_t data;
-  uint16_t out_data=0xffff;
-  uint16_t out=0x00ff;
-  char buff[20];
-
-  //gpio = driver_gpio_open(DRIVER_PCF8575,NULL);
-
-#if 0 
-  while(1)
-  {
-    driver_gpio_read(gpio,&data);
-
-    out^=0xFF;
-
-    driver_gpio_write(gpio,out_data);
-    hex_to_binary_string(data,buff,16);
-
-    printf("b%s\r\n",buff);
-    osDelay(1000);
-    out^=0xFF;
-    
-  }
-#endif
-    uint8_t out_pin=0xff;
-  while(1)
-  {
-    uint8_t pin;
-
-    //pin = driver_gpio_read_pin(gpio,GPIO_PIN3);
-   // printf("ги 2:%d\r\n",pin);
-    
-   // driver_gpio_write_pin(gpio,GPIO_PIN5,out_pin);
-    out_pin^=0xff;
-    osDelay(100);
-  }
-}
-
 
 
 
@@ -394,7 +354,7 @@ void sss(void *argument)
 
   //hostTask_init();
   //adc_test();
-  //gpio_test();
+
 
 
   //rs485_test();

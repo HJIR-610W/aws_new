@@ -73,7 +73,7 @@ void stm32_di_init(const stm32_di_cfg_t *cfg)
   board_clk_gpio(cfg->port);
   GPIO_InitStruct.Pin = cfg->pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(cfg->port, &GPIO_InitStruct);
 }
 
@@ -224,16 +224,61 @@ IRQn_Type get_irqFromPin(uint16_t GPIO_Pin)
   return irq;
 }
 
+
+#include "stm32f4xx_hal.h"
+
+void Read_GPIO_Config(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_InitTypeDef *out)
+{
+  uint32_t pin_pos = 0;
+
+  // 핀 위치 계산 (0~15)
+  for (pin_pos = 0; pin_pos < 16; pin_pos++)
+  {
+    if ((GPIO_Pin >> pin_pos) & 0x1)
+      break;
+  }
+
+  // MODER (2비트 당 1핀)
+  out->Mode = (GPIOx->MODER >> (pin_pos * 2)) & 0x3;
+
+  // OTYPER (1비트 당 1핀)
+  out->Mode |= ((GPIOx->OTYPER >> pin_pos) & 0x1) << 4;  // OpenDrain이면 OR로 표시 가능
+
+  // OSPEEDR (2비트 당 1핀)
+  out->Speed = (GPIOx->OSPEEDR >> (pin_pos * 2)) & 0x3;
+
+  // PUPDR (2비트 당 1핀)
+  out->Pull = (GPIOx->PUPDR >> (pin_pos * 2)) & 0x3;
+
+  // AFR[0] for pin 0~7, AFR[1] for pin 8~15
+  if (pin_pos < 8)
+  {
+    out->Alternate = (GPIOx->AFR[0] >> (pin_pos * 4)) & 0xF;
+  }
+  else
+  {
+    out->Alternate = (GPIOx->AFR[1] >> ((pin_pos - 8) * 4)) & 0xF;
+  }
+
+  // Pin 정보 그대로 저장
+  out->Pin = GPIO_Pin;
+}
+
+
+
+
 // GPIO 핀을 인터럽트 모드로 초기화하는 함수
 void GPIO_InputInterrupt_Init(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin,
                               eDI_TRIGGER_t trigger, uint16_t prio)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
+  
+  Read_GPIO_Config(GPIOx,GPIO_Pin,&GPIO_InitStruct);
   // 2. GPIO 핀 설정 (입력 모드, 풀업/풀다운)
   GPIO_InitStruct.Pin = GPIO_Pin;
   GPIO_InitStruct.Mode = eDI_RISING_FALLING;  // 기본적으로 양 엣지로 설정
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  //GPIO_InitStruct.Pull = GPIO_NOPULL;
 
   // 트리거 모드 설정 (Rising, Falling 또는 Both)
   if (trigger == eDI_RISING)

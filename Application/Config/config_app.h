@@ -69,6 +69,7 @@ typedef struct config_s
   uint16_t id;
   uint16_t password;
   eCHARGER_MODEL_t charger_model;  // 설정 후 리셋 요구됨
+  eAWS_PROTOCOL_t aws_protocol_type;
   eETH_MODE_t eth_mode;
   uint8_t eth_subnet[4];    // 설정 후 리셋 요구됨
   uint8_t eth_gateway[4];   // 설정 후 리셋 요구됨
@@ -78,7 +79,6 @@ typedef struct config_s
   uint16_t eth_local_port;   // 설정 후 리셋 요구됨
   uint8_t cdma_server_ip[4];
   uint16_t cdma_port;
-  eAWS_PROTOCOL_t aws_protocol_type;
   eCDMA_MODEL_t cdma_model;  // 설정 후 리셋 요구됨
   bool eth_use;              // 설정 후 리셋 요구됨
   bool cdma_use;             // 설정 후 리셋 요구됨

@@ -44,7 +44,7 @@ int32_t print_systemInfo(uint16_t row, uint16_t column)
 
   vt100_print_frame(row, column, "시스템", '+', '|', '-', DISP_WIDTH, WHITE);
   vt100_print_bar(line++, column, -DISP_WIDTH, "%s\r\n", buff);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "ID        :%d\r\n",0);
+  vt100_print_bar(line++, column, -DISP_WIDTH, "ID        :%d\r\n",get_config_app()->id);
   vt100_print_bar(line++, column, -DISP_WIDTH, "문 상태   :%s\r\n",
                   ITEM_LIST(IS_DOOR_OPENED(), doorStatusList));
 

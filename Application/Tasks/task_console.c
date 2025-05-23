@@ -32,13 +32,6 @@ static const shell_command_context_t printCmd = { "menu",
 
 
 
- const shell_command_context_t ioCmd = {"io",
-                                        "\r\n\"io arg1 arg2 arg3 arg4\"\r\n"
-                                        "arg1: write|read|wr\r\n"
-                                        "arg2: rs232|rs485|do|di|eth\r\n"
-                                        "arg3: dest\r\n"
-                                        "arg4: data\r\n",
-                                         io_test, 4};
 
 static const shell_command_context_t diCmd = {"di",
                                               "\r\n\"di\"\r\n",
@@ -125,7 +118,7 @@ void sonsoleTask(void *arg)
   console_scanf_init(&user_context);
 
   SHELL_RegisterCommand(&printCmd);
-  SHELL_RegisterCommand(&ioCmd);
+
   SHELL_RegisterCommand(&diCmd);
   SHELL_RegisterCommand(&pcbCmd);
   SHELL_RegisterCommand(&doutCmd);
