@@ -66,19 +66,42 @@ driver_t g_stm32_di_list[STM32_DI_MAX];
 const di_api_t di_api = {
     .close = stm32_di_close, .read = stm32_di_read, .set = stm32_di_set};
 
-void stm32_di_init(const stm32_di_cfg_t *cfg)
+void stm32_di_init(const stm32_di_cfg_t *cfg, di_init_t *p_di_init)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   board_clk_gpio(cfg->port);
   GPIO_InitStruct.Pin = cfg->pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+
+  if(p_di_init)
+  {
+    if(p_di_init->pullup == DI_PULL_UP)
+    {
+      GPIO_InitStruct.Pull = GPIO_PULLUP;
+    }
+    else if (p_di_init->pullup == DI_PULL_DOWN)
+    {
+      GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    }
+    else
+    {
+      GPIO_InitStruct.Pull = GPIO_NOPULL;
+    }
+  }
+  else
+  {
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+  }
+
   HAL_GPIO_Init(cfg->port, &GPIO_InitStruct);
+
 }
 
 driver_t *stm32_di_open(int num, void *opt)
 {
+  di_init_t di_init;
+
   if (g_stm32_di_list[num].opened)
   {
     return &g_stm32_di_list[num];
@@ -91,89 +114,90 @@ driver_t *stm32_di_open(int num, void *opt)
     case STM32_DI_0_ADC_RDY:
       g_stm32_di_list[num].name = "STM32_DI_0_ADC_RDY";
       g_stm32_di_list[num].cfg = (void *)&ADC_DRDY_cfg;
-      stm32_di_init(&ADC_DRDY_cfg);
+      stm32_di_init(&ADC_DRDY_cfg,opt);
       break;
     case STM32_DI_1_RTC_IRQ:
       g_stm32_di_list[num].name = "STM32_DI_1_RTC_IRQ";
       g_stm32_di_list[num].cfg = (void *)&RTC_IRQ_cfg;
-      stm32_di_init(&RTC_IRQ_cfg);
+      stm32_di_init(&RTC_IRQ_cfg, opt);
       break;
     case STM32_DI_RAIN_REED:
       g_stm32_di_list[num].name = "STM32_DI_RAIN_REED";
       g_stm32_di_list[num].cfg = (void *)&RAIN_REED_cfg;
-      stm32_di_init(&RAIN_REED_cfg);
+      stm32_di_init(&RAIN_REED_cfg, opt);
       break;
 
     case STM32_DI_RAIN_HALL:
       g_stm32_di_list[num].name = "STM32_DI_RAIN_HALL";
       g_stm32_di_list[num].cfg = (void *)&RAIN_HALL_cfg;
-      stm32_di_init(&RAIN_HALL_cfg);
+      stm32_di_init(&RAIN_HALL_cfg, opt);
       break;
 
     case STM32_DI_RAIN_HALL_ERR:
       g_stm32_di_list[num].name = "STM32_DI_RAIN_HALL_ERR";
       g_stm32_di_list[num].cfg = (void *)&RAIN_HALL_ERR_cfg;
-      stm32_di_init(&RAIN_HALL_ERR_cfg);
+      stm32_di_init(&RAIN_HALL_ERR_cfg, opt);
       break;
     case STM32_DI_QUAD_UARTA_1:
       g_stm32_di_list[num].name = "STM32_DI_QUAD_UARTA_1";
       g_stm32_di_list[num].cfg = (void *)&QUAD_UARTA_1_cfg;
-      stm32_di_init(&QUAD_UARTA_1_cfg);
+      stm32_di_init(&QUAD_UARTA_1_cfg, opt);
       break;
     case STM32_DI_QUAD_UARTB_2:
       g_stm32_di_list[num].name = "STM32_DI_QUAD_UARTB_2";
       g_stm32_di_list[num].cfg = (void *)&QUAD_UARTB_2_cfg;
-      stm32_di_init(&QUAD_UARTB_2_cfg);
+      stm32_di_init(&QUAD_UARTB_2_cfg, opt);
       break;
     case STM32_DI_QUAD_UARTC_3:
       g_stm32_di_list[num].name = "STM32_DI_QUAD_UARTC_3";
       g_stm32_di_list[num].cfg = (void *)&QUAD_UARTC_3_cfg;
-      stm32_di_init(&QUAD_UARTC_3_cfg);
+      stm32_di_init(&QUAD_UARTC_3_cfg, opt);
       break;
     case STM32_DI_QUAD_UARTD_4:
       g_stm32_di_list[num].name = "STM32_DI_QUAD_UARTD_4";
       g_stm32_di_list[num].cfg = (void *)&QUAD_UARTD_4_cfg;
-      stm32_di_init(&QUAD_UARTD_4_cfg);
+      stm32_di_init(&QUAD_UARTD_4_cfg,opt);
       break;
     case STM32_DI_QUAD_UARTA_5:
       g_stm32_di_list[num].name = "STM32_DI_QUAD_UARTA_5";
       g_stm32_di_list[num].cfg = (void *)&QUAD_UARTA_5_cfg;
-      stm32_di_init(&QUAD_UARTA_5_cfg);
+      stm32_di_init(&QUAD_UARTA_5_cfg, opt);
       break;
     case STM32_DI_QUAD_UARTB_6:
       g_stm32_di_list[num].name = "STM32_DI_QUAD_UARTB_6";
       g_stm32_di_list[num].cfg = (void *)&QUAD_UARTB_6_cfg;
-      stm32_di_init(&QUAD_UARTB_6_cfg);
+      stm32_di_init(&QUAD_UARTB_6_cfg, opt);
       break;
     case STM32_DI_QUAD_UARTC_7:
       g_stm32_di_list[num].name = "STM32_DI_QUAD_UARTC_7";
       g_stm32_di_list[num].cfg = (void *)&QUAD_UARTC_7_cfg;
-      stm32_di_init(&QUAD_UARTC_7_cfg);
+
+      stm32_di_init(&QUAD_UARTC_7_cfg, opt);
       break;
     case STM32_DI_QUAD_UARTD_8:
       g_stm32_di_list[num].name = "STM32_DI_QUAD_UARTD_8";
       g_stm32_di_list[num].cfg = (void *)&QUAD_UARTD_8_cfg;
-      stm32_di_init(&QUAD_UARTD_8_cfg);
+      stm32_di_init(&QUAD_UARTD_8_cfg, opt);
       break;
     case STM32_DI_HART_CD:
       g_stm32_di_list[num].name = "STM32_DI_HART_CD";
       g_stm32_di_list[num].cfg = (void *)&HART_CD_cfg;
-      stm32_di_init(&HART_CD_cfg);
+      stm32_di_init(&HART_CD_cfg, opt);
       break;
     case STM32_DI_USER_BTN:
       g_stm32_di_list[num].name = "STM32_DI_USER_BTN";
       g_stm32_di_list[num].cfg = (void *)&USER_BTN_cfg;
-      stm32_di_init(&USER_BTN_cfg);
+      stm32_di_init(&USER_BTN_cfg, opt);
       break;
     case STM32_DI_BTM_STATUS:
       g_stm32_di_list[num].name = "STM32_DI_BTM_STATUS";
       g_stm32_di_list[num].cfg = (void *)&BTM_STATUS_cfg;
-      stm32_di_init(&BTM_STATUS_cfg);
+      stm32_di_init(&BTM_STATUS_cfg, opt);
       break;
     case STM32_DI_RAIN_DETECT:
       g_stm32_di_list[num].name = "STM32_DI_RAIN_DETECT";
       g_stm32_di_list[num].cfg = (void *)&Rain_detect_cfg;
-      stm32_di_init(&Rain_detect_cfg);
+      stm32_di_init(&Rain_detect_cfg, opt);
       break;
   }
 

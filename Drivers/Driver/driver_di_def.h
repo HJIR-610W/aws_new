@@ -32,9 +32,14 @@ typedef enum
 }di_set_option_t;
 
 
+#define DI_PULL_UP   0
+#define DI_PULL_DOWN 1
+#define DI_PULL_NO   2
+
+
 typedef struct di_init_s
 {
-  bool pullup;
+  uint8_t pullup;//
 }di_init_t;
 
 typedef struct

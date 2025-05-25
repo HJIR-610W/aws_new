@@ -1070,7 +1070,7 @@
                     <item>GPIO_InitStruct</item>
                     <item>g_uart_ll</item>
                     <item>g_uart_ll</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

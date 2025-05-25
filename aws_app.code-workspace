@@ -108,7 +108,8 @@
 			"usdelay.h": "c",
 			"sdio.h": "c",
 			"console_rtos.h": "c",
-			"mcu_debug.h": "c"
+			"mcu_debug.h": "c",
+			"driver_di_def.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,
