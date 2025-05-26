@@ -1932,7 +1932,7 @@ int32_t menu_net_use(p_shell_context_t ctx)
     cnt = select_indexFromList(ctx, NULL, print_net_use, 0, false);
     if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK)
     {
-      return cnt;
+      break;
     }
     cnt--;
 
@@ -1969,6 +1969,8 @@ int32_t menu_net_use(p_shell_context_t ctx)
         break;
     }
   } while (1);
+
+  return cnt;
 }
 
 int32_t print_net_eth_set(p_shell_context_t ctx)
@@ -2304,11 +2306,15 @@ int32_t menu_net_set(p_shell_context_t ctx)
     cnt = select_indexFromList(ctx, NULL, print_net_set, 0, false);
     if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
     {
-      return cnt;
+      break;
     }
     cnt--;
     cnt = menu[cnt](ctx);
-  } while (cnt != EXIT_PROGRAM);
+    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    {
+      break;
+    }
+  } while(1);
 
   return cnt;
 }
@@ -2445,6 +2451,10 @@ int32_t menu_network(p_shell_context_t ctx)
     }
     cnt--;
     cnt = menu[cnt](ctx);
+    if(cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    {
+      break;
+    }
   }
 
   return cnt;
