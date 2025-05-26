@@ -37,7 +37,7 @@ __root const section_info_t g_kappInfo = {.signature ={'A','P','P',' '},\
                                        .nick_code =NICK_NEW_ASW_HJ,\
                                        .offset = 0x08010000,\
                                        .section_ver = APP_VERSION,\
-                                       .time = 1686236400,\
+                                       .time = 1748224091,\
                                        .pcb_n =1,
                                        .pcb[0]=0x01000000};
 

@@ -121,6 +121,7 @@ typedef struct iCellular
 
     M_RET_t (*check_network_service)(char *msgOut,uint16_t msgSize);
     void (*recv_bin)(void * port, char *data, uint16_t dataLen);;
+    uint32_t (*get_count)(void);
 } iCellular_t;
 
     typedef struct mqtt_if_s

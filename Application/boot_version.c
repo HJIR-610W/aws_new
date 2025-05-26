@@ -6,7 +6,7 @@
 #include "utile_time.h"
 
 
-#define BOOT_INFO_START_ADDRESS (0x08000188U) // 벡터가 끝나는 곳
+#define BOOT_INFO_START_ADDRESS (0x08000188U) 
 /**
  * @brief 부트 버전 읽기
  * a.b.c.d

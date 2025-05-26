@@ -278,10 +278,10 @@ STATUS_t connect_tcp(eConnect_Type_t type)
     uint8_t ip[4];
     uint16_t port;
     STATUS_t connection = STATUS_FAIL;
-    uint32_t startTime;
+    uint32_t start_time;
     M_RET_t ret;
 
-    startTime = osKernelGetTickCount();
+    start_time = osKernelGetTickCount();
     
     do
     {
@@ -299,12 +299,12 @@ STATUS_t connect_tcp(eConnect_Type_t type)
                 _iCellular->off_powerSafe();
                 _iCellular->reset(M_RESET_HW,20000);
                 type = eCONNECT_MODEM_REBOOT;
-                startTime = osKernelGetTickCount();
+                start_time = osKernelGetTickCount();
             }
             else if(connectionCnt == 3) 
             {
                 connectionCnt = 2;
-                if((osKernelGetTickCount()-startTime)>CONNECT_TIMEOUT_MS)//12시간
+                if((osKernelGetTickCount()-start_time)>CONNECT_TIMEOUT_MS)//12시간
                 {
                   log_printf(L_INFO, "MODEM RESET TIMEOUT");    
                   connectionCnt = 0;
@@ -879,10 +879,10 @@ void proc_sms(void)
 void modemAsyncTask(void  *argument)
 {
     int16_t rssi;
-    uint32_t startTime;
+    uint32_t start_time;
     uint8_t once = 1;
     uint8_t rssiRead =0;
-    startTime = osKernelGetTickCount();
+    start_time = osKernelGetTickCount();
 
 
     while(1)
@@ -897,13 +897,13 @@ void modemAsyncTask(void  *argument)
             rssiRead = 1;
            }
         }
-        if(((osKernelGetTickCount() - startTime)>READ_RSSI_SCAN_TIME_MS) || rssiRead)
+        if(((osKernelGetTickCount() - start_time)>READ_RSSI_SCAN_TIME_MS) || rssiRead)
         {
           if(rssiRead)
           {
             rssiRead = 0;
           }
-          startTime = osKernelGetTickCount();
+          start_time = osKernelGetTickCount();
           if(_iCellular->read_rssi(&rssi) == RET_OK)
           {
               g_cdma_system.rssi = rssi;
@@ -926,9 +926,9 @@ uint32_t uart_recv_crlf(char *pBuff,uint32_t buffSize,uint32_t timeout_ms,uint32
 {
   uint8_t data;
   uint32_t cnt;
-  uint32_t startTime;
+  uint32_t start_time;
 
-	startTime = osKernelGetTickCount();
+	start_time = osKernelGetTickCount();
 
     cnt = *index;
 
@@ -964,7 +964,7 @@ uint32_t uart_recv_crlf(char *pBuff,uint32_t buffSize,uint32_t timeout_ms,uint32
 		1. timeout_ms 타임아웃이 0이면 바로 리턴
 		2. timeout_ms 경과되면 리턴
 		*/
-		if((timeout_ms == 0) || ((osKernelGetTickCount()-startTime) >= timeout_ms))
+		if((timeout_ms == 0) || ((osKernelGetTickCount()-start_time) >= timeout_ms))
 		{
 			break;
 		}
@@ -983,9 +983,9 @@ int32_t NT_recv_tcprd(uint8_t *pBuff,uint32_t buffLen,uint32_t readCnt)
 {
     uint8_t data;
     uint32_t i=0;
-    uint32_t startTime;
+    uint32_t start_time;
 
-    startTime = osKernelGetTickCount();
+    start_time = osKernelGetTickCount();
 
     do{
         while(driver_uart_recv(cdma_driver, (uint8_t *)&data, 1, 10))
@@ -1004,7 +1004,7 @@ int32_t NT_recv_tcprd(uint8_t *pBuff,uint32_t buffLen,uint32_t readCnt)
             }
             
         }
-        if( (osKernelGetTickCount()-startTime)>2000)
+        if( (osKernelGetTickCount()-start_time)>2000)
         {
             break;
         }
@@ -1214,7 +1214,7 @@ int32_t driver_uart_recv(driver_t *drv, uint8_t *data, uint16_t len, uint32_t to
 int32_t recv_tx700(void *port, uint8_t *buffer, uint16_t buffer_size)
 {
   driver_t *drv = (driver_t *)port;
-  uint32_t startTime = osKernelGetTickCount();
+  uint32_t start_time = osKernelGetTickCount();
   uint32_t timeout = 1000;  // 기본 1초
   uint16_t cnt = 0;
   uint8_t ch;
@@ -1277,48 +1277,48 @@ void modemAtTask(void  *argument)
   uint32_t index=0;
   bool checked= false;
   eAT_COMMAND_t at_cmd;
-
+  uint32_t cmd_count = _iCellular->get_count();
   while(1)
   {
-   // len = driver_uart_recv_crlf(cdma_driver,buff,sizeof(buff),osWaitForever);
-    len =  recv_tx700(cdma_driver,buff,sizeof(buff));
+    len = driver_uart_recv_crlf(cdma_driver,buff,sizeof(buff),osWaitForever);
+   // len =  recv_tx700(cdma_driver,buff,sizeof(buff));
     if(len<=0||len==UART_ERR_SIZE || len == UART_ERR_TIMEOUT)
     {
       continue;
     }
 
-    for (uint32_t idx = 0; idx < _countof(cmd_tx700); idx++)
+    for (uint32_t idx = 0; idx < cmd_count; idx++)
     {
       if(strncmp((char *)buff,_atCmd[idx].cmdStr,strlen(_atCmd[idx].cmdStr))==0)
       {
         at_cmd = _atCmd[idx].cmd;
-        debug_printf("%d %s\r\n", (int)at_cmd, buff);
+       // debug_printf("%d %s\r\n", (int)at_cmd, buff);
         switch (at_cmd)
         {
-          case AT_ASYNC_RESP_REBOOT:
+          case AT_ASYNC_RECV_REBOOT:
             at_reboot(idx, buff, len);  // 모뎀이 리셋되었다는 부팅 메시지를 받음
             break;
-            case AT_ASYNC_RESP_SMS_RECEIVED:
+            case AT_ASYNC_RECV_SMS:
                 at_sms_received(idx,buff,len);//SMS가 수시되었다는 알림을 받음
             break;
-            case AT_ASYNC_RESP_RING_RECEIVED:
+            case AT_ASYNC_RECV_RING:
                 at_ring_received(idx,buff,len);//전화 수신되었다는 메시지를 받음
             break;
             case AT_ASYNC_RESP_VOICE_END:
                   at_voice_end(idx,buff,len);// 전화가 끊겼다는 메시지를 받음
             break;
-            case AT_ASYNC_RESP_DTMF://DTMF를 받음
+            case AT_ASYNC_RECV_DTMF://DTMF를 받음
                 at_dtmf(idx,buff,len);
             break;
-            case AT_ASYNC_RESP_TCP_RECV://tcp data를 받음
+            case AT_ASYNC_RECV_TCP_DATA://tcp data를 받음
                 at_async_tcp_recv(buff,len);
             break;
-            case AT_ASYNC_RESP_TCP_DISCONNECTED://tcp 가 끊겼다는 메시지를 받음
+            case AT_ASYNC_RECV_TCP_DISCONNECTED://tcp 가 끊겼다는 메시지를 받음
                 at_async_tcp_disconnected(idx,buff,len);
             break;
             case AT_ASYNC_OPEN_VOICE_RESP:  // 전화가 연결되었는지 응답
-            case AT_ASYNC_GET_RSSI_RESP:    // 수신감도 명령어에 대한 응답
-            case AT_ASYNC_SMS_READ_RESP_OK: // SMS 읽기에 대한 응답
+            case AT_SYNC_GET_RSSI_RESP:    // 수신감도 명령어에 대한 응답
+            case AT_SYNC_SMS_READ_RESP_OK: // SMS 읽기에 대한 응답
             case AT_ASYNC_SMS_READ_RESP_ERR:// SMS 읽기 에러에대한 응답
             case AT_ASYNC_DIAL_RESP:
                 put_asyncResp(idx,buff,len);
@@ -1388,6 +1388,7 @@ void iCellular_init(void)
   _iCellular->at_direct       = ntle_9607_at_direct;
   _iCellular->check_network_service = ntle9607_check_network_service;
   _iCellular->recv_bin = ntle9607_recv_bin;
+  _iCellular->get_count = get_count_ntle9607;
   break;
   case eCDMA_TX700:
    _atCmd = cmd_tx700;
@@ -1416,6 +1417,7 @@ void iCellular_init(void)
     _iCellular->at_direct = tx700_at_direct;
     _iCellular->check_network_service = tx700_check_network_service;
     _iCellular->recv_bin = tx700_recv_bin;
+    _iCellular->get_count = get_count_tx700;
     break;
   }
   
@@ -1433,7 +1435,7 @@ void modemTcpTask(void  *argument)
     uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
     uint8_t err=0;
     uint16_t len;
-    uint32_t startTime=0;
+    uint32_t start_time=0;
     M_RET_t ret;
     eConnect_Type_t type = ePOWER_RESET;//초기에는 전원리셋이 발생하였다고넘겨줌줌
 
@@ -1444,6 +1446,7 @@ void modemTcpTask(void  *argument)
 
       if (connect_tcp(type) == STATUS_OK)
       {
+        start_time = osKernelGetTickCount();
         g_cdma_system.link_status = eCDMA_LINK_UP;
 
         err = 0;
@@ -1457,10 +1460,10 @@ void modemTcpTask(void  *argument)
             case RET_OK:
               if (len)  // 수신된 데이터가 있음
               {
-                startTime = osKernelGetTickCount();
+                start_time = osKernelGetTickCount();
                 g_cdma_system.last_recv_time = time_timestamp();
                 UPDATE_CNT(g_cdma_system.rx_cnt, 99);
-                len = kma_cmd_handler(buff, ret, tx_buffer, eREQ_SOURCE_CDMA);
+                len = kma_cmd_handler(buff, len, tx_buffer, eREQ_SOURCE_CDMA);
 
                 if (len)  // 전송할 데이터있다면
                 {
@@ -1474,6 +1477,8 @@ void modemTcpTask(void  *argument)
 
                   if (get_firmware_update())
                   {
+                    _iCellular->close_tcp();
+                    osDelay(1000);
                     reset_system(0, "CDMA update");
                   }
                 }
@@ -1494,7 +1499,7 @@ void modemTcpTask(void  *argument)
             break;
           }
 
-          if ((osKernelGetTickCount() - startTime) >
+          if ((osKernelGetTickCount() - start_time) >
               g_modem_config.connection_timeoutms) /*일정 기간동안 ping이 한번이라도 수신 안되면*/
           {
             type = eCONNECT_TCP_WDT;
@@ -1521,18 +1526,20 @@ void mdoem_status_init(void)
 void cellularTask_init(void)
 {
   uart_config_t uart_config;
-  driver_t *do_cdma_power;
+  driver_t *do_cdma_power=NULL;
   
   uart_config.dataLen = UART_DATA_LEN_8;
   uart_config.baud = 57600;
   uart_config.parityIdx = 0;
   uart_config.stop_bit = 0;
 
-  driver_do_high(do_cdma_power);
+
 
   cdma_driver = driver_uart_open(UART_8_CDMA,&uart_config);
   do_cdma_power = driver_do_open(DO_PWR_CDMA, 0);
   
+  driver_do_high(do_cdma_power);  // POWER ON 12V
+
   mdoem_status_init();
   
   iCellular_init();

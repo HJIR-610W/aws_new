@@ -44,43 +44,59 @@ extern uint32_t is_serverErr(void);
 #define MIC_LEVEL_8 8 
 
 /// @brief at 명령어와 응답 목록
-const atCmd_t cmd_ntle9607[]=
-{  
-    {AT_ASYNC_RESP_TCP_DISCONNECTED,"*TCPDISCONNECTED"},
-    {AT_ASYNC_RESP_SMS_RECEIVED,"+CMTI"},
-    {AT_ASYNC_RESP_RING_RECEIVED,"+CLIP"},
-    {AT_ASYNC_RESP_REBOOT,"^MODE: 9"},
-    {AT_ASYNC_RESP_TCP_RECV,"*TCPRD"},
-    {AT_ASYNC_RESP_VOICE_END,"*VOICE END"},
-    {AT_ASYNC_RESP_DTMF,"+RXDTMF"},
-    {AT_TCP_WRITE_IP_RESP,"*NET*SOCKPA"},
-    {AT_TCP_OPEN_PPP,"AT*NET*PPPOP\r\n"},
-    {AT_TCP_CLOSE_PPP,"AT*NET*PPPCL\r\n"},
-    {AT_TCP_OPEN_SOCKET,"AT*NET*SOCKOP\r\n"},
-    {AT_TCP_CLOSE_SOCKET,"*NET*SOCKCL"},
-    {AT_ASYNC_OPEN_VOICE,"AT*VOICE*ANS\r\n"},
-    {AT_ASYNC_OPEN_VOICE_RESP,"*VOICE CONNECT"},   
-    {AT_ASYNC_GET_RSSI,"*SKT*LEVEL"}, 
-    {AT_ASYNC_GET_RSSI_RESP,"+CSQ"},
-    {AT_ASYNC_SMS_READ_RESP_OK,"*SMS*MTREAD"},
-    {AT_ASYNC_SMS_READ_RESP_ERR,"+CMS ERROR"},
-    {AT_SMS_SEND_RESP,"*SMSACK"},
-    {AT_TCP_SEND_DATA_RESP,"*ANET*SOCKWR"},
-    {AT_TCP_OPEN_SOCKET_RESP_OK,"*TCPCONNECTED"},
-    {AT_TCP_OPEN_SOCKET_RESP_FAIL,"*TCPCONNECTFAIL"},
-    {AT_TCP_OPEN_SOCKET_RESP,"*ANET*SOCKOP"},
-    {AT_TCP_READ_NUM_RESP,"*SKT*DIAL"},
-    {AT_ASYNC_OFF_VOICE,"AT*VOICE*FLASH=0\r\n"},
-    {AT_TCP_CONNECT_VPN_RESP,"*VPN*STATUS: Connected"},
-    {AT_TCP_OPEN_PPP_RESP,"*NET*PPPOP"},
-    {AT_TCP_CLOSE_PPP_RESP,"*NET*PPPCL"},
-    {AT_TCP_CLOSE_SOCKET_RESP,"*ANET*SOCKCL"},
-    {AT_RESET_SW_RESP,"*SET*RESET"},
-    {AT_ASYNC_DIAL_RESP,"+COLP"},
-    {AT_ASYNC_DIAL_OFF,"AT*VOICE*CEND\r\n"},
-    {AT_ASYNC_CONFIG_READ_RESP,"*VPN*CONFIG"},
-    {AT_TCP_NETWORK_SERVICE,"*ST*REGSTS:"}
-};
+const atCmd_t cmd_ntle9607[] = {{AT_ASYNC_RECV_REBOOT, "^MODE: 9"},
+                                {AT_ASYNC_RECV_TCP_DISCONNECTED, "*TCPDISCONNECTED"},
+                                {AT_ASYNC_RECV_SMS, "+CMTI"},
+                                {AT_ASYNC_RECV_RING, "+CLIP"},
+                                {AT_ASYNC_RECV_TCP_DATA, "*TCPRD"},
+                                {AT_ASYNC_RESP_VOICE_END, "*VOICE END"},
+                                {AT_ASYNC_RECV_DTMF, "+RXDTMF"},
+                                {AT_TCP_OPEN_PPP, "AT*NET*PPPOP\r\n"},
+                                {AT_TCP_CLOSE_PPP, "AT*NET*PPPCL\r\n"},
+                                {AT_TCP_OPEN_SOCKET, "AT*NET*SOCKOP\r\n"},
+                                {AT_ASYNC_OFF_VOICE, "AT*VOICE*FLASH=0\r\n"},
+                                {AT_ASYNC_OPEN_VOICE, "AT*VOICE*ANS\r\n"},
+                                {AT_TCP_WRITE_IP_RESP, "*NET*SOCKPA"},
+                                {AT_TCP_CLOSE_SOCKET, "*NET*SOCKCL"},
+                                {AT_ASYNC_OPEN_VOICE_RESP, "*VOICE CONNECT"},
+                                {AT_ASYNC_GET_RSSI, "*SKT*LEVEL"},
+                                {AT_SYNC_GET_RSSI_RESP, "+CSQ"},
+                                {AT_SYNC_SMS_READ_RESP_OK, "*SMS*MTREAD"},
+                                {AT_ASYNC_SMS_READ_RESP_ERR, "+CMS ERROR"},
+                                {AT_SMS_SEND_RESP, "*SMSACK"},
+                                {AT_TCP_SEND_DATA_RESP, "*ANET*SOCKWR"},
+                                {AT_TCP_OPEN_SOCKET_RESP_OK, "*TCPCONNECTED"},
+                                {AT_TCP_OPEN_SOCKET_RESP_FAIL, "*TCPCONNECTFAIL"},
+                                {AT_TCP_OPEN_SOCKET_RESP, "*ANET*SOCKOP"},
+                                {AT_TCP_READ_NUM_RESP, "*SKT*DIAL"},
+                                {AT_TCP_CONNECT_VPN_RESP, "*VPN*STATUS: Connected"},
+                                {AT_TCP_OPEN_PPP_RESP, "*NET*PPPOP"},
+                                {AT_TCP_CLOSE_PPP_RESP, "*NET*PPPCL"},
+                                {AT_TCP_CLOSE_SOCKET_RESP, "*ANET*SOCKCL"},
+                                {AT_RESET_SW_RESP, "*SET*RESET"},
+                                {AT_ASYNC_DIAL_RESP, "+COLP"},
+                                {AT_ASYNC_DIAL_OFF, "AT*VOICE*CEND\r\n"},
+                                {AT_ASYNC_CONFIG_READ_RESP, "*VPN*CONFIG"},
+                                {AT_TCP_NETWORK_SERVICE, "*ST*REGSTS:"}};
+
+uint32_t get_count_ntle9607(void)
+{
+    return _countof(cmd_ntle9607);
+}
+
+const char *get_modem_string_ntle9607(eAT_COMMAND_t cmd)
+{
+  for (int i = 0; i < AT_MAX; i++)
+  {
+    if (cmd_ntle9607[i].cmd == cmd)
+    {
+      return cmd_ntle9607[i].cmdStr;
+    }
+  }
+
+  return NULL;
+}
+
 
 
 static void ntle9607_modem_sends(const char *data)
@@ -327,14 +343,14 @@ OK<CR><LF>
 */
 M_RET_t ntle9607_open_ppp(void)
 {
-  const char *cmd = cmd_ntle9607[AT_TCP_OPEN_PPP].cmdStr;
   const char *ackList[]={"*NET*PPPOP:"};
   char buff[100];
   int32_t code;
   uint32_t idx;
   M_RET_t ret = RET_FAIL;
+
   osDelay(500);
-  ntle9607_modem_sends(cmd);
+  ntle9607_modem_sends(get_modem_string_ntle9607(AT_TCP_OPEN_PPP));
   ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
 
   if(ret == RET_OK)
@@ -366,7 +382,7 @@ OK<CR><LF>
 */
 M_RET_t ntle9607_close_ppp(void)
 {
-    const char *cmd = cmd_ntle9607[AT_TCP_CLOSE_PPP].cmdStr;
+
     const char *ackList[]= {"*NET*PPPCL:"};
     char buff[100];
     uint32_t idx;
@@ -374,22 +390,22 @@ M_RET_t ntle9607_close_ppp(void)
     M_RET_t ret = RET_FAIL;
 
   osDelay(500);
-    ntle9607_modem_sends(cmd);
+  ntle9607_modem_sends(get_modem_string_ntle9607(AT_TCP_CLOSE_PPP));
 
-    ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
+  ret = ntle9607_check_tcpResp(ackList, CNT_OF(ackList), &idx, buff, sizeof(buff), 10000);
 
-    if(ret == RET_OK)
+  if (ret == RET_OK)
+  {
+    sscanf(buff, "*NET*PPPCL:%d", &code);
+    switch (code)
     {
-        sscanf(buff,"*NET*PPPCL:%d",&code);
-        switch(code)
-        {
-            case 1:
-                ret = RET_OK;
-            break;
-            default:
-                ret = RET_FAIL_RESP;
-            break;            
-        }
+      case 1:
+        ret = RET_OK;
+        break;
+      default:
+        ret = RET_FAIL_RESP;
+        break;
+    }
     }
 
 
@@ -880,31 +896,36 @@ M_RET_t ntle_9607_recv_call(void)
     return ret;
 }
 
+#define NTLE9607_DIAL_ACK_CNT 2
 M_RET_t ntle_9607_dial(char *num,uint32_t waitTimeOutMs)
 {
     M_RET_t ret = RET_FAIL;
-    const char *ackList[] = {cmd_ntle9607[AT_ASYNC_DIAL_RESP].cmdStr,"OS_DIAL_OFF"}; 
-    uint32_t idx;
+    const char *ack_list[NTLE9607_DIAL_ACK_CNT];
+    uint32_t matched_index=0;
     char  buff[50];
 
-    snprintf(buff,sizeof(buff),"AT*VOICE*ORI=%s\r\n",num);
+    ack_list[0] = get_modem_string_ntle9607(AT_ASYNC_DIAL_RESP);
+    ack_list[1] = "OS_DIAL_OFF";
 
+
+        snprintf(buff, sizeof(buff), "AT*VOICE*ORI=%s\r\n", num);
 
     ntle9607_modem_sends(buff);
 
-    ret = ntle9607_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),waitTimeOutMs);
+    ret = ntle9607_check_asyncResp(ack_list, NTLE9607_DIAL_ACK_CNT, &matched_index, buff,
+                                   sizeof(buff), waitTimeOutMs);
 
     if(ret == RET_OK)
     {
-        switch(idx)
-        {
-            case 0:
-            ret = RET_OK;
-            break;
-            case 1:
-            ret = RET_FAIL;
-            break;
-        }
+      switch (matched_index)
+      {
+        case 0:
+          ret = RET_OK;
+          break;
+        case 1:
+          ret = RET_FAIL;
+          break;
+      }
 
     }
 

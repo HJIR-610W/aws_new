@@ -45,6 +45,9 @@ M_RET_t tx700_at_direct(char *at,char *outBuffer,uint16_t outSize);
 
 M_RET_t tx700_check_network_service(char *msgOut,uint16_t msgSize);
 void tx700_recv_bin(void *port, char *p_data, uint16_t data_len);
+uint32_t get_count_tx700(void) ;
+
+
 extern const atCmd_t cmd_tx700[36];
 
 #ifdef __cplusplus

@@ -11,7 +11,7 @@
 
 #include "app_bsp.h"
 
-
+#include "utile.h"
 
 
 
@@ -72,14 +72,14 @@ driver_t g_tx700_drv;
 
     /// @brief at 명령어와 응답 목록
     const atCmd_t cmd_tx700[] = {
-        {AT_ASYNC_RESP_TCP_DISCONNECTED, "$$TELL: 605"},  //$$TELL: 605, TCP : TCP ???? ????
-        {AT_ASYNC_RESP_SMS_RECEIVED, "+CMTI"},            //+CMTI: "ME",0
-        {AT_ASYNC_RESP_RING_RECEIVED, "+CLIP"},           //+CLIP: "01053730725",128,"",0,,0
-        {AT_ASYNC_RESP_REBOOT, "$$TELL:34"},              //$$TELL:34,Modem Boot Up
-        {AT_ASYNC_RESP_TCP_RECV, "$$BinRecv"},            //$$BinRecv
+        {AT_ASYNC_RECV_TCP_DISCONNECTED, "$$TELL: 605"},  //$$TELL: 605, TCP : TCP ???? ????
+        {AT_ASYNC_RECV_SMS, "+CMTI"},            //+CMTI: "ME",0
+        {AT_ASYNC_RECV_RING, "+CLIP"},           //+CLIP: "01053730725",128,"",0,,0
+        {AT_ASYNC_RECV_REBOOT, "$$TELL:34"},              //$$TELL:34,Modem Boot Up
+        {AT_ASYNC_RECV_TCP_DATA, "$$BinRecv"},            //$$BinRecv
         {AT_ASYNC_RESP_VOICE_END,
          "$$TELL: 754, VOICE : NETWORK RELEASE"},     //$$TELL: 754, VOICE : NETWORK RELEASE
-        {AT_ASYNC_RESP_DTMF, "$DTMF:"},               //$DTMF: 4
+        {AT_ASYNC_RECV_DTMF, "$DTMF:"},               //$DTMF: 4
         {AT_TCP_WRITE_IP_RESP, "$$TCP_ADDR:"},        //$$TCP_ADDR: 0
         {AT_TCP_OPEN_PPP, "AT$$TCP_PPPOP\r\n"},       // AT$$TCP_PPPOP
         {AT_TCP_CLOSE_PPP, "AT$$TCP_PPPCL\r\n"},      // AT$$TCP_PPPCL
@@ -89,8 +89,8 @@ driver_t g_tx700_drv;
         {AT_ASYNC_OPEN_VOICE_RESP,
          "$$TELL: 751, VOICE : CONNECT USER"},  //$$TELL: 751, VOICE : CONNECT USER
         {AT_ASYNC_GET_RSSI, "AT+CSQ\r\n"},      // AT+CSQ
-        {AT_ASYNC_GET_RSSI_RESP, "+CSQ"},       //+CSQ: 28,99<
-        {AT_ASYNC_SMS_READ_RESP_OK,
+        {AT_SYNC_GET_RSSI_RESP, "+CSQ"},       //+CSQ: 28,99<
+        {AT_SYNC_SMS_READ_RESP_OK,
          "+CMGR:"},  //+CMGR: "REC UNREAD","01053730725",,"25/05/25,10:07:34+36"<CR><LF>
                      //+CMGS: 59
         {AT_ASYNC_SMS_READ_RESP_ERR, "+CMS ERROR"},
@@ -113,6 +113,13 @@ driver_t g_tx700_drv;
         {AT_TCP_NETWORK_SERVICE, " "},
         {AT_READ_NUM, "AT+CNUM\r\n"},
         {AT_RESET_SW, "AT$$RESET\r\n"}};
+
+
+
+uint32_t get_count_tx700(void)
+{
+    return _countof(cmd_tx700);
+}
 
 const char *get_modem_string_tx700(eAT_COMMAND_t cmd)
 {
@@ -658,7 +665,7 @@ M_RET_t tx700_read_rssi(int16_t *rssi)
 
   tx700_modem_sends(get_modem_string_tx700(AT_ASYNC_GET_RSSI));
 
-  response_lst[0] = get_modem_string_tx700(AT_ASYNC_GET_RSSI_RESP);
+  response_lst[0] = get_modem_string_tx700(AT_SYNC_GET_RSSI_RESP);
 
   ret = tx700_check_asyncResp(response_lst, TX700_RSSI_RESP_CNT, &matched_index, buff, sizeof(buff),
                               200);

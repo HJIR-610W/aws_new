@@ -25,6 +25,7 @@
 #include "config_adc.h"
 #include "config_nvm.h"
 #include "dev_io.h"
+#include "cli_key_code.h"
 #include "driver_485.h"
 #include "mcu_debug.h"
 #include "system_err.h"
@@ -47,6 +48,7 @@
 #include "Sensors\temperature\hj_temperature.h"
 #include "Update\update_fw.h"
 #include "console_rtos.h"
+#include "Protocols\divas\divas_protocol_handler.h"
 #define EXIT_PROGRAM -3
 #define EXIT_BACK -1
 
@@ -3759,6 +3761,7 @@ int32_t print_menu_developer(p_shell_context_t ctx)
   ctx->printf("%2d.센서 config 전부 확인\r\n", cnt++);
   ctx->printf("%2d.시스템 로그 확인\r\n", cnt++);
   ctx->printf("%2d.테스크 정보\r\n", cnt++);
+  ctx->printf("%2d.파일다운 상태 정보 \r\n", cnt++);
   return cnt;
 }
 
@@ -3766,14 +3769,39 @@ int32_t menu_task_info(p_shell_context_t ctx)
 {
   print_task_info();
 }
+
+
+int32_t menu_update_info(p_shell_context_t ctc)
+{
+  float progress=0.0f;
+  uint32_t total_bytes;
+  uint32_t received_bytes;
+
+
+  while(1)
+  {
+    total_bytes = get_download_file_size();
+    received_bytes = get_received_bytes();
+    if(total_bytes !=0)
+    {
+      progress = ((float)received_bytes/(float)total_bytes)*100.0;
+    }
+    debug_printf("펌웨어 다운:%7d/%7d [%5.2f%%]\r",received_bytes,total_bytes,progress);
+
+    if (get_key(1000) == KEY_CODE_CTRL_Q)
+    {
+      break;
+    }
+  }
+
+  return 0;
+}
 int32_t menu_developer(p_shell_context_t ctx)
 {
   int32_t cnt;
-  const menu_func menu[] = {[0] = menu_developer_interrupt,
-                            menu_developer_memory,
-                            menu_developer_sensor_config,
-                            menu_developer_logging,
-                            menu_task_info};
+  const menu_func menu[] = {
+      [0] = menu_developer_interrupt, menu_developer_memory, menu_developer_sensor_config,
+      menu_developer_logging,         menu_task_info,        menu_update_info};
   do
   {
     cnt = select_indexFromList(ctx, NULL, print_menu_developer, 0, false);

@@ -15,8 +15,26 @@
 #define ASCII_ACK 0x06
 #define ASCII_NAK 0x15
 
-uint32_t g_fw_size = 0;
+uint32_t g_download_file_size = 0;
+uint32_t g_received_bytes;
 uint8_t *p_fw_buffer;
+
+
+
+
+uint32_t get_download_file_size(void)
+{
+  return g_download_file_size;
+}
+
+uint32_t get_received_bytes(void)
+{
+  return g_received_bytes;
+}
+
+
+
+
 uint16_t make_divasFrame(uint8_t cmd, uint8_t seq, const uint8_t *pInData, uint16_t dataLen,
                          uint8_t *pOutBuff, uint16_t buffSize)
 {
@@ -91,6 +109,8 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
 
     if (offset == 0) 
     {
+      g_download_file_size = totsize;
+      g_received_bytes = 0;
       if(p_fw_buffer == NULL)
       {
         p_fw_buffer = aws_malloc(1024*512);
@@ -105,6 +125,7 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
 
     rcvSize = offset + length;
 
+    g_received_bytes =rcvSize;
     if ((rcvSize == totsize))
     {
       if (p_fw_buffer)
@@ -149,7 +170,7 @@ uint16_t divas_fw_update(uint8_t *rx_frame, uint8_t *tx_frame)
   uint16_t cnt = 0;
   uint8_t code;
 
-  code = check_firmware(MAGIC_UPDATE_FW_REMOTE);
+  code = check_firmware(UPDATE_REMOTE);
 
   if(code)
   {

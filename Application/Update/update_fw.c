@@ -166,6 +166,10 @@ uint8_t check_firmware(uint8_t local)
         return FW_FILE_CRC_ERR;
       }
     }
+    else
+    {
+      return FW_FILE_OPEN_ERR;
+    }
 
   }
   return 0;
