@@ -11,6 +11,10 @@
 
 #include "app_bsp.h"
 
+
+
+
+
 extern void EwFree( void* aMemory );
 extern void* EwAlloc( int aSize );
 extern void modem_sends(const char *pData);
@@ -20,6 +24,8 @@ extern uint32_t wait_tcpResp(uint32_t *cmd,char *pBuff,uint16_t buffSize);
 extern uint32_t recv_tcp(uint8_t *pBuff,uint16_t buffSize,uint16_t *pLen,uint32_t timeOutMs);
 extern bool is_modemBoot(void);
 extern uint32_t is_serverErr(void);
+
+
 
 #define CNT_OF(arr)   (sizeof(arr)/sizeof(arr[0]))
 
@@ -41,43 +47,86 @@ extern uint32_t is_serverErr(void);
 #define MIC_LEVEL_5 5 
 #define MIC_LEVEL_6 6 
 #define MIC_LEVEL_7 7 
-#define MIC_LEVEL_8 8 
+#define MIC_LEVEL_8 8
 
-/// @brief at 명령어와 응답 목록
-const atCmd_t cmd_tx700[] = {{AT_ASYNC_RESP_TCP_DISCONNECTED, "*TCPDISCONNECTED"},
-                       {AT_ASYNC_RESP_SMS_RECEIVED, "+CMTI"},
-                       {AT_ASYNC_RESP_RING_RECEIVED, "+CLIP"},
-                       {AT_ASYNC_RESP_REBOOT, "^MODE: 9"},
-                       {AT_ASYNC_RESP_TCP_RECV, "*TCPRD"},
-                       {AT_ASYNC_RESP_VOICE_END, "*VOICE END"},
-                       {AT_ASYNC_RESP_DTMF, "+RXDTMF"},
-                       {AT_TCP_WRITE_IP, "*NET*SOCKPA"},
-                       {AT_TCP_OPEN_PPP, "AT*NET*PPPOP\r\n"},
-                       {AT_TCP_CLOSE_PPP, "AT*NET*PPPCL\r\n"},
-                       {AT_TCP_OPEN_SOCKET, "AT*NET*SOCKOP\r\n"},
-                       {AT_TCP_CLOSE_SOCKET, "*NET*SOCKCL"},
-                       {AT_ASYNC_OPEN_VOICE, "AT*VOICE*ANS\r\n"},
-                       {AT_ASYNC_OPEN_VOICE_RESP, "*VOICE CONNECT"},
-                       {AT_ASYNC_GET_RSSI, "*SKT*LEVEL"},
-                       {AT_ASYNC_GET_RSSI_RESP, "+CSQ"},
-                       {AT_ASYNC_SMS_READ_RESP_OK, "*SMS*MTREAD"},
-                       {AT_ASYNC_SMS_READ_RESP_ERR, "+CMS ERROR"},
-                       {AT_SMS_SEND_RESP_OK, "*SMSACK"},
-                       {AT_TCP_SEND_DATA_RESP, "*ANET*SOCKWR"},
-                       {AT_TCP_OPEN_SOCKET_RESP_OK, "*TCPCONNECTED"},
-                       {AT_TCP_OPEN_SOCKET_RESP_FAIL, "*TCPCONNECTFAIL"},
-                       {AT_TCP_OPEN_SOCKET_RESP, "*ANET*SOCKOP"},
-                       {AT_TCP_READ_NUM_RESP, "+CNUM:"},
-                       {AT_ASYNC_OFF_VOICE, "AT*VOICE*FLASH=0\r\n"},
-                       {AT_TCP_CONNECT_VPN_RESP, "*VPN*STATUS: Connected"},
-                       {AT_TCP_OPEN_PPP_RESP, "$$TCP_PPPOP: 0"},
-                       {AT_TCP_CLOSE_PPP_RESP, "*NET*PPPCL"},
-                       {AT_TCP_CLOSE_SOCKET_RESP, "$$TCP_SCCL:"},
-                       {AT_TCP_RESET_SW_RESP, "*SET*RESET"},
-                       {AT_ASYNC_DIAL_RESP, "+COLP"},
-                       {AT_ASYNC_DIAL_OFF, "AT*VOICE*CEND\r\n"},
-                       {AT_ASYNC_CONFIG_READ_RESP, "*VPN*CONFIG"},
-                       {AT_TCP_NETWORK_SERVICE, "*ST*REGSTS:"}};
+cdma_cfg_t g_cdma_cfg;
+driver_t g_tx700_drv;
+
+    /*
+
+    서버가 실행중이 아닌상태에서 AT$$TCP_SCOP=0이것을 하면
+    서버가 실행될때까지 계속 접속시도하는듯함
+    수십초 지나서 서버가 실행이되면 그때 연결됨
+    모뎀이 서버접속의 타임아웃을 얼마로 했는지는 알수 없음
+
+    전환 연결됨
+    $$TELL: 751, VOICE : CONNECT USER
+
+    전화가 연결된 상태에서 상대가 끊을때
+    NO CARRIER
+    $$TELL: 754, VOICE : NETWORK RELEASE
+
+    전화를 받지 않은 상태에서 상대가 전화를 끊을때
+    $$TELL: 754, VOICE : NETWORK RELEASE
+    */
+
+    /// @brief at 명령어와 응답 목록
+    const atCmd_t cmd_tx700[] = {
+        {AT_ASYNC_RESP_TCP_DISCONNECTED, "$$TELL: 605"},  //$$TELL: 605, TCP : TCP ???? ????
+        {AT_ASYNC_RESP_SMS_RECEIVED, "+CMTI"},            //+CMTI: "ME",0
+        {AT_ASYNC_RESP_RING_RECEIVED, "+CLIP"},           //+CLIP: "01053730725",128,"",0,,0
+        {AT_ASYNC_RESP_REBOOT, "$$TELL:34"},              //$$TELL:34,Modem Boot Up
+        {AT_ASYNC_RESP_TCP_RECV, "$$BinRecv"},            //$$BinRecv
+        {AT_ASYNC_RESP_VOICE_END,
+         "$$TELL: 754, VOICE : NETWORK RELEASE"},     //$$TELL: 754, VOICE : NETWORK RELEASE
+        {AT_ASYNC_RESP_DTMF, "$DTMF:"},               //$DTMF: 4
+        {AT_TCP_WRITE_IP_RESP, "$$TCP_ADDR:"},        //$$TCP_ADDR: 0
+        {AT_TCP_OPEN_PPP, "AT$$TCP_PPPOP\r\n"},       // AT$$TCP_PPPOP
+        {AT_TCP_CLOSE_PPP, "AT$$TCP_PPPCL\r\n"},      // AT$$TCP_PPPCL
+        {AT_TCP_OPEN_SOCKET, "AT$$TCP_SCOP=0\r\n"},   // AT$$TCP_SCOP=0
+        {AT_TCP_CLOSE_SOCKET, "AT$$TCP_SCCL=0\r\n"},  // AT$$TCP_SCCL=0
+        {AT_ASYNC_OPEN_VOICE, "ATA\r\n"},             // ATA
+        {AT_ASYNC_OPEN_VOICE_RESP,
+         "$$TELL: 751, VOICE : CONNECT USER"},  //$$TELL: 751, VOICE : CONNECT USER
+        {AT_ASYNC_GET_RSSI, "AT+CSQ\r\n"},      // AT+CSQ
+        {AT_ASYNC_GET_RSSI_RESP, "+CSQ"},       //+CSQ: 28,99<
+        {AT_ASYNC_SMS_READ_RESP_OK,
+         "+CMGR:"},  //+CMGR: "REC UNREAD","01053730725",,"25/05/25,10:07:34+36"<CR><LF>
+                     //+CMGS: 59
+        {AT_ASYNC_SMS_READ_RESP_ERR, "+CMS ERROR"},
+        {AT_SMS_SEND_RESP, "$$TELL:45"},              //$$TELL:45,?????? ???? ???? ????<CR><LF>
+        {AT_TCP_SEND_DATA_RESP, "$$TCP_SENDDATA:"},   //$$TCP_SENDDATA:1
+        {AT_TCP_OPEN_SOCKET_RESP_OK, "$$TELL: 603"},  //$$TELL: 603, TCP : TCP ???? ????<CR><LF>
+        {AT_TCP_OPEN_SOCKET_RESP_FAIL,
+         "$$TELL: 602"},                           //$$TELL: 602, TCP : TCP ???? ???? ??<CR><LF>
+        {AT_TCP_OPEN_SOCKET_RESP, "$$TELL: 603"},  //
+        {AT_TCP_READ_NUM_RESP, "+CNUM:"},          //+CNUM: ,"01220891572",129
+        {AT_ASYNC_OFF_VOICE, "$$TELL: 756"},       //$$TELL: 756, VOICE : USER RELEASE<
+        {AT_TCP_CONNECT_VPN_RESP, " "},
+        {AT_TCP_OPEN_PPP_RESP, "$$TELL: 600"},      //$$TELL: 600, TCP : PPP ???? ????<CR><LF>
+        {AT_TCP_CLOSE_PPP_RESP, "$$TELL: 601"},     //$$TELL: 601, TCP : PPP ???? ????<CR><LF>
+        {AT_TCP_CLOSE_SOCKET_RESP, "$$TELL: 605"},  //$$TELL: 605, TCP : TCP ???? ????<CR><LF>
+        {AT_RESET_SW_RESP, "OK"},                   // OK
+        {AT_ASYNC_DIAL_RESP, " "},
+        {AT_ASYNC_DIAL_OFF, "AT+CHUP\r\n"},  // AT+CHUP
+        {AT_ASYNC_CONFIG_READ_RESP, " "},
+        {AT_TCP_NETWORK_SERVICE, " "},
+        {AT_READ_NUM, "AT+CNUM\r\n"},
+        {AT_RESET_SW, "AT$$RESET\r\n"}};
+
+const char *get_modem_string_tx700(eAT_COMMAND_t cmd)
+{
+  for (int i = 0; i < AT_MAX; i++)
+  {
+    if (cmd_tx700[i].cmd == cmd)
+    {
+      return cmd_tx700[i].cmdStr;
+    }
+  }
+
+  return NULL;
+}
+
 
 static void tx700_modem_sends(const char *data)
 {
@@ -86,7 +135,7 @@ static void tx700_modem_sends(const char *data)
 
 static void tx700_modem_send(const char *data,uint16_t dataLen)
 {
-    modem_send(data,dataLen);
+  modem_send(data,dataLen);
 }
 
 /*
@@ -115,6 +164,7 @@ static M_RET_t tx700_tcpRecv_response(char *pBuff,uint16_t buffSize)
 
     if(wait_tcpResp(&cmd,pBuff,buffSize) == 0)
     {
+      
         ret = RET_OK;
     }
 
@@ -261,120 +311,126 @@ M_RET_t tx700_read_sms(sms_t *pSms)
 }
 
 
-
+#define TX700_SEND_SMS_RESP_CNT 1
 M_RET_t tx700_send_sms(char *num,char *msg)
 {
     char buff[200];
-    const char *ackList[] = {"*SMSACK"};  
+    const char *ack_list[TX700_SEND_SMS_RESP_CNT];
     int32_t len=0;
     uint32_t idx;
     M_RET_t ret = RET_FAIL;
 
-    len = snprintf((char *)buff,sizeof(buff),"AT*SMS*MO=%s,"",",num);
+    ack_list[0] = get_modem_string_tx700(AT_SMS_SEND_RESP);
 
-    if( (sizeof(buff)-len-2) >= (strlen((char *)msg)*2) )
+    len = snprintf((char *)buff, sizeof(buff), "AT+CMGS=\"%s\"", num);
+    tx700_modem_sends(buff);
+    osDelay(500);
+
+    len = snprintf((char *)buff, sizeof(buff), "%s", msg);
+
+    buff[len++] = 0x1A;
+    buff[len] = 0;
+
+    tx700_modem_sends(buff);
+
+    ret = tx700_check_asyncResp(ack_list, TX700_SEND_SMS_RESP_CNT, &idx, buff, sizeof(buff), 200);
+
+    if (ret == RET_OK)
     {
-        len += Convert_ucharHexAscii((uint8_t *)msg,strlen(msg),&buff[len]);
-
-        buff[len++] ='\r';
-        buff[len++] ='\n';
-
-        tx700_modem_sends(buff);
-
-        ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
-
-        if(ret == RET_OK)
-        {
-            ret = RET_OK;
-        }
- 
+      ret = RET_OK;
     }
+
 
     return ret;
 }
 
 
 
-/*
-2025-02-07 10:06:44.721 [COM11] - AT*NET*PPPOP<CR><LF>
-2025-02-07 10:06:44.739 [COM10] - <CR><LF>
-*PPPOPENED<CR><LF>
-<CR><LF>
-*NET*PPPOP:1<CR><LF>
-<CR><LF>
-OK<CR><LF>
-<CR><LF>
-*PPPOPENED<CR><LF>
-*/
+
+#define TX700_OPEN_PPP_RESP_CNT 1
 M_RET_t tx700_open_ppp(void)
 {
-  const char *cmd = "AT$$TCP_PPPOP\r\n";
-  const char * ackList[] = {"$$TELL:,$$TCP_PPPOP:"};
+  const char *ack_list[TX700_OPEN_PPP_RESP_CNT];
   char buff[100];
-  int32_t code;
-  uint32_t idx;
+  uint32_t matched_index;
   M_RET_t ret = RET_FAIL;
-  osDelay(500);
-  tx700_modem_sends(cmd);
-  ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
 
+  tx700_modem_sends(get_modem_string_tx700(AT_TCP_OPEN_PPP));
+
+  ack_list[0] = get_modem_string_tx700(AT_TCP_OPEN_PPP_RESP);
+
+  ret = tx700_check_tcpResp(ack_list, TX700_OPEN_PPP_RESP_CNT, &matched_index, buff, sizeof(buff),
+                            1000);
 
   return RET_OK;
 }
 
-
-
+#define TX700_CLOSE_PPP_RESP_CNT 1
 M_RET_t tx700_close_ppp(void)
 {
-    const char *cmd = "AT$$$$TCP_PPPCL\r\n";
-    const char *ackList[]= {"$$TCP_PPPCL:,$$TELL:"};
-    char buff[100];
-    uint32_t idx;
-    int32_t code;
-    M_RET_t ret = RET_FAIL;
-
-  osDelay(500);
-    tx700_modem_sends(cmd);
-
-    ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
-
-
-
-    return RET_OK;
-}
-
-M_RET_t tx700_open_socket(void)
-{
-  const char *const cmd = "AT$$TCP_SCOP=0\r\n";
-  const char *ackList[] = {"$$TELL: 603"};
+  const char *ack_list[TX700_CLOSE_PPP_RESP_CNT];
   char buff[100];
-  uint32_t idx;
+  uint32_t matched_index;
   M_RET_t ret = RET_FAIL;
 
-  osDelay(500);
-    tx700_modem_sends(cmd);
-    
-    ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),10000);
+  tx700_modem_sends(get_modem_string_tx700(AT_TCP_CLOSE_PPP));
 
+  ack_list[0] = get_modem_string_tx700(AT_TCP_CLOSE_PPP_RESP);
 
-    return RET_OK;
+  ret = tx700_check_tcpResp(ack_list, TX700_CLOSE_PPP_RESP_CNT, &matched_index, buff, sizeof(buff),
+                            1000);
+
+  return RET_OK;
 }
+
+#define TX700_OPEN_SOCKET_RESP_CNT 1
+M_RET_t tx700_open_socket(void)
+{
+  const char *ack_list[TX700_OPEN_SOCKET_RESP_CNT];
+  char buff[100];
+  uint32_t matched_index;
+  M_RET_t ret = RET_FAIL;
+
+  
+  tx700_modem_sends(get_modem_string_tx700(AT_TCP_OPEN_SOCKET));
+
+  ack_list[0] = get_modem_string_tx700(AT_TCP_OPEN_SOCKET_RESP_OK);
+
+  ret = tx700_check_tcpResp(ack_list, TX700_OPEN_SOCKET_RESP_CNT, &matched_index, buff,
+                                sizeof(buff), 10000);
+
+  if(ret == RET_OK)
+  {
+    switch(matched_index)
+    {
+    case 0:
+      
+      break;
+    default:
+      ret = RET_FAIL;
+      break;
+    }
+  }
+  return ret;
+}
+
+#define TX700_CLOSE_SOCKET_RESP_CNT 1
 
 M_RET_t tx700_close_socket(void)
 {
-  const char *cmd = "AT$$TCP_SCCL=0\r\n";
-  const char *ackList[] = {"$$TCP_SCCL:"};
+  const char *ack_list[TX700_CLOSE_SOCKET_RESP_CNT];
   char buff[100];
-  uint32_t idx;
+  uint32_t matched_index;
   M_RET_t ret = RET_FAIL;
 
-  osDelay(500);
-  tx700_modem_sends(cmd);
+  ack_list[0] = get_modem_string_tx700(AT_TCP_CLOSE_SOCKET_RESP);
 
-  ret = tx700_check_tcpResp(ackList, CNT_OF(ackList), &idx, buff, sizeof(buff), 10000);
+  tx700_modem_sends(get_modem_string_tx700(AT_TCP_CLOSE_SOCKET));
 
+  ret = tx700_check_tcpResp(ack_list, TX700_CLOSE_SOCKET_RESP_CNT, &matched_index, buff,
+                            sizeof(buff), 1000);
 
-    return RET_OK;
+  return RET_OK;
 }
 
 const char *serviceCode1_[]={"0 No Service",
@@ -403,23 +459,7 @@ const char *serviceCode2_[]={"0 : Error None",
 
 M_RET_t tx700_check_network_service(char *msgOut,uint16_t msgSize)
 {
-    const char *cmd = "AT*ST*REGSTS\r\n";
-    const char *ackList[] = {"*ST*REGSTS:"}; 
-    char  buff[50];
-    int32_t code1,code2,code3;
-    uint32_t idx;
-    M_RET_t ret = RET_FAIL;
-
-    tx700_modem_sends(cmd);
-    ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
-    if(ret == RET_OK)
-    {
-      sscanf(buff,"*ST*REGSTS:%d,%d,%d",&code1,&code2,&code3);
-
-      snprintf(msgOut,msgSize,"%s,%s,%d",serviceCode1_[code1],serviceCode2_[code2],code3);
-      ret = RET_OK;
-    }
-  return ret;
+  msgOut[0] = 0;
 }
 
 
@@ -435,54 +475,39 @@ M_RET_t tx700_init(void)
     return ret;
 }
 
-
+#define TX700_WRITE_IP_REST_CNT 1
 void tx700_write_ip(uint8_t ip[4],uint16_t port)
 {
-  const char *ackList[] = {"$$TCP_ADDR:"};  //$$TCP_ADDR: 0,OK
+  const char *ack_list[1];
   char  buff[50];
-  uint32_t idx;
-  int32_t code;
+  uint32_t matched_index;
   M_RET_t ret = RET_FAIL;
+
+  ack_list[0] = get_modem_string_tx700(AT_TCP_WRITE_IP_RESP);
 
   snprintf(buff, sizeof(buff), "AT$$TCP_ADDR=0,%d,%d,%d,%d,%d\r\n", ip[0], ip[1], ip[2], ip[3],
              port);
 
-  osDelay(500);
   tx700_modem_sends(buff);
 
-  ret = tx700_check_tcpResp(ackList, CNT_OF(ackList), &idx, buff, sizeof(buff), 1000);
-
-  if (ret == RET_OK)
-  {
-    sscanf(buff, "$$TCP_ADDR: %d", &code);
-    switch (code)
-    {
-      case 1:  // 전송 실패
-        ret = RET_OK;
-        break;
-    }
-  }
+  ret = tx700_check_tcpResp(ack_list, TX700_WRITE_IP_REST_CNT, &matched_index, buff, sizeof(buff),
+                            1000);
 }
 
-
+#define TX700_RESET_SW_CNT_RESP 1
 void tx700_resetSW(void)
 {
-    const char *cmd = "AT*SET*RESET\r\n";
-    const char *ackList[] = {"*SET*RESET"}; 
-    char  buff[50];
-    uint32_t idx;
-    M_RET_t ret = RET_FAIL;
-   
-    tx700_modem_sends(cmd);
+  const char *ack_list[1]; 
+  char  buff[50];
+  uint32_t matched_index;
+  M_RET_t ret = RET_FAIL;
 
-    ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+  ack_list[0] = get_modem_string_tx700(AT_RESET_SW_RESP);
 
-    if(ret == RET_OK)
-    {
-        ret = RET_OK;
-    }
+  tx700_modem_sends(get_modem_string_tx700(AT_RESET_SW));
 
-
+  ret = tx700_check_tcpResp(ack_list, TX700_RESET_SW_CNT_RESP, &matched_index, buff, sizeof(buff),
+                            200);
 }
 /*
 
@@ -554,17 +579,17 @@ M_RET_t tx700_recv_tcp(uint8_t *buff,uint16_t buffSize,uint16_t *recvLen,uint32_
     return ret;
 }
 
-    
+#define TX700_SEND_TCP_RESP_CNT 1
 M_RET_t tx700_send_tcp(uint8_t *data,uint16_t dataLen)
 {
-  const char *ackList[] = {"$$TCP_SENDDATA:1"};  
+  const char *ack_list[TX700_SEND_TCP_RESP_CNT];
   char buff[512 + 64];
-  uint32_t findex;
-  int32_t len;
+  uint32_t matched_index;
   M_RET_t ret = RET_FAIL;
-  uint8_t code;
 
-  strcpy(buff,"AT$$TCP_SENDBIN=00");
+  ack_list[0] = get_modem_string_tx700(AT_TCP_SEND_DATA_RESP);
+
+  strcpy(buff, "AT$$TCP_SENDBIN=00");
 
   buff[16] = (0xFF & ((dataLen) >> 8));
   buff[17] = (0xFF & (dataLen));
@@ -577,41 +602,37 @@ M_RET_t tx700_send_tcp(uint8_t *data,uint16_t dataLen)
 
   tx700_modem_send(buff, dataLen);
 
-  ret = tx700_check_tcpResp(ackList, sizeof(ackList) / sizeof(ackList[0]), &findex, buff,
-                            sizeof(buff), 10000);
+  ret = tx700_check_tcpResp(ack_list, TX700_SEND_TCP_RESP_CNT, &matched_index, buff, sizeof(buff),
+                            10000);
 
-
-
-    return RET_OK;
+  return RET_OK;
 }
 
-
-
-
-
-M_RET_t tx700_read_num(char *prNum,uint16_t numSize)
+#define TX700_READ_NUM_RESP_CNT 1
+M_RET_t tx700_read_num(char *p_number,uint16_t number_size)
 {
-  const char *cmd = "at+cnum\r\n";
-  const char *ackList[] = {"+CNUM"};  //*SKT*DIAL:01227090440<CR><LF>
+  const char *response_lst[TX700_READ_NUM_RESP_CNT];
   char buff[50];
-  uint32_t idx;
-  int32_t len;
+  char number[20];
+  uint32_t matched_index;
   M_RET_t ret = RET_FAIL;
 
-  prNum[0] = '\0';
+  p_number[0] = '\0';
 
-  tx700_modem_sends(cmd);
+  tx700_modem_sends(get_modem_string_tx700(AT_READ_NUM));
 
-  ret = tx700_check_tcpResp(ackList, CNT_OF(ackList), &idx, buff, sizeof(buff), 200);
+  response_lst[0] = get_modem_string_tx700(AT_TCP_READ_NUM_RESP);
+  
+  ret = tx700_check_tcpResp(response_lst, TX700_READ_NUM_RESP_CNT, &matched_index, buff,
+                            sizeof(buff), 200);
   if (ret == RET_OK)
   {
-    //*SKT*DIAL:01227090440<CR><LF>
+    //+CNUM: ,"01220891572",129
+    if (sscanf(buff, "+CNUM: ,\"%19[^\"]", number) == 1)
+    {
+      strcpy_safe(p_number, number_size, number);
+    }
 
-    len = strlen(&buff[10]);
-
-    memcpy_safe((uint8_t *)prNum, numSize, (uint8_t *)&buff[10], len);
-    prNum[len] = '\0';
-    ret = RET_OK;
   }
 
 	return ret;	
@@ -626,26 +647,35 @@ M_RET_t tx700_read_num(char *prNum,uint16_t numSize)
 <CR><LF>
 OK<CR><LF>
 */
+#define TX700_RSSI_RESP_CNT 1
 M_RET_t tx700_read_rssi(int16_t *rssi)
 {
-    const char *cmd = "AT+CSQ\r\n";
-    const char *ackList[] = {"+CSQ"}; 
-    char  buff[50];
-    uint32_t idx;
-    char *endptr;
-    M_RET_t ret = RET_FAIL;
-    char *argv[10]={0};
+  M_RET_t ret = RET_FAIL;
+  char buff[50];
+  const char *response_lst[TX700_RSSI_RESP_CNT];
+  uint32_t matched_index;
+  int32_t data=0;
 
-    tx700_modem_sends(cmd);
+  tx700_modem_sends(get_modem_string_tx700(AT_ASYNC_GET_RSSI));
 
-    ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+  response_lst[0] = get_modem_string_tx700(AT_ASYNC_GET_RSSI_RESP);
 
-    if(ret == RET_OK)
+  ret = tx700_check_asyncResp(response_lst, TX700_RSSI_RESP_CNT, &matched_index, buff, sizeof(buff),
+                              200);
+
+  if(ret == RET_OK)
+  {
+    if(sscanf(buff,"+CSQ:%d",&data)==1)
     {
-        parse_args(buff,argv,10);
-        *rssi = strtol(argv[1],&endptr,10);
-        ret = RET_OK;
+      *rssi = data;
+      ret = RET_OK;
     }
+    else
+    {
+      ret =RET_FAIL;
+    }
+
+  }
 
 	return ret;	
 }
@@ -656,79 +686,19 @@ M_RET_t tx700_read_rssi(int16_t *rssi)
  */
 char tx700_get_dtmf(char *data)
 {
-    char dtmfCode;
+  char dtmf_code;
 
- // "+RXDTMF: 1"에서 dtmf 코드만 추출
-    dtmfCode = data[9];
+  //$DTMF: 4
+  dtmf_code = data[7];
 
-    return dtmfCode;
+  return dtmf_code;
 }
 
 
 void tx700_vpn_init(void)
 {
-  const char *connect_cmd =  "AT*VPN*CONNECT=1\r\n";
-  const char *satus_cmt= "AT*VPN*STATUS\r\n";
-  const char *disconnect_cmd = "AT*VPN*CONNECT=0\r\n";
-  const char *ackList[]={cmd_tx700[AT_TCP_CONNECT_VPN_RESP].cmdStr};
-  uint8_t j;
-  uint32_t i;
-  uint32_t idx;
-  char buff[512];
-    M_RET_t ret = RET_FAIL;
-  /*
-  전원이 투입되면 vpn 자동연결이 시도되는듯한, 모뎀 전원 리셋후 vpn 상태읽기 하면 
-  connected 가 되는 경우 존재
-  어떤경우에는 아무리 상태확인해도 연결이 안됨,이상태에서 껐다켜고 상태만 확인하면 연결이 되어있음
-  그래서 일단 부팅되면 연결이 되었는지 확인하고 안되어있으면 연결 명령어를 시도
-  */
+ 
 
-  for(j = 0 ; j < 5; j++)//약 15초 동안 vpn 로그인 상태 확인
-  {
-    /* vpn 연결 되었는지 확인 */
-    tx700_modem_sends(satus_cmt);
-
-    ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
-    
-    if(ret == RET_OK)
-    {
-      //연결이 완료되었으면 빠져나옴
-      goto LOOP_EXIT;
-    }
-  }
-
-  tx700_modem_sends(disconnect_cmd);// 
-  osDelay(2000);// 정해진 지연 시간은 없음, 적당히 지연 
-  tx700_modem_sends(connect_cmd);
-  osDelay(2000);// 정해진 지연 시간은 없음, 적당히 지연
-
-  for(j = 0 ; j< 2; j++)
-  {
-    for(i = 0 ; i < 5;i++)
-    {
-      /*vpn 연결 되었는지 확인*/
-      tx700_modem_sends(satus_cmt);
-
-      ret = tx700_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
-      if(ret == RET_OK)
-      {
-        //연결이 완료되었으면 빠져나옴
-        goto LOOP_EXIT;
-      }
-                  
-      osDelay(1000);
-    }
-    
-    if(j == 0)// j==0일때 연결이 안되면 다시 연결종료 명령어 전송하고 다시 연결시도
-    {
-      tx700_modem_sends(disconnect_cmd);// 잘못된 연결  해제 
-      osDelay(5000);
-      tx700_modem_sends(connect_cmd);
-    }
-  }
-
-LOOP_EXIT:
-  (void)(0);//warning 때문에 넣음
 
 }
 
@@ -742,7 +712,7 @@ void tx700_off_powerSafe(void)
 }
 
 
-M_RET_t tx700_read_ringNum(char *pData,char *prNum,uint16_t numSize)
+M_RET_t tx700_read_ring_number(char *pData,char *prNum,uint16_t numSize)
 {
     char *argv[MAX_ARGV];
     char *ptr = NULL;
@@ -762,114 +732,50 @@ M_RET_t tx700_read_ringNum(char *pData,char *prNum,uint16_t numSize)
 }
 
 
+#define CONNECT_CALL_RESPONSE_CNT 1
+#define COONECT_CALL_RETRY 2
 M_RET_t tx700_recv_call(void)
 {
-    M_RET_t ret = RET_FAIL;
-    const char *ackList[] = {cmd_tx700[AT_ASYNC_OPEN_VOICE_RESP].cmdStr}; 
+  const char *response_list[CONNECT_CALL_RESPONSE_CNT];
+  char  buff[50];
+  int32_t matched_index = -1;
+  M_RET_t ret = RET_FAIL;
 
-    uint32_t idx;
-    char  buff[50];
+  response_list[0] = get_modem_string_tx700(AT_ASYNC_OPEN_VOICE_RESP);
 
-    for(uint32_t i =  0 ; i < 2; i++)
+  for (uint32_t i = 0; i < COONECT_CALL_RETRY; i++)
+  {
+    tx700_modem_sends(get_modem_string_tx700(AT_ASYNC_OPEN_VOICE));
+
+    ret = tx700_check_asyncResp(response_list, CONNECT_CALL_RESPONSE_CNT, &matched_index, buff,
+                                sizeof(buff), 200);
+    if (ret == RET_OK)
     {
-        tx700_modem_sends( cmd_tx700[AT_ASYNC_OPEN_VOICE].cmdStr);
-
-        ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
-
-        if(ret == RET_OK)
-        {
-            ret = RET_OK;
-            break;
-        }
-        osDelay(1000);
+      ret = RET_OK;
+      break;
     }
+    osDelay(1000);
+  }
 
-    return ret;
+  return ret;
 }
 
 M_RET_t tx700_dial(char *num,uint32_t waitTimeOutMs)
 {
-    M_RET_t ret = RET_FAIL;
-    const char *ackList[] = {cmd_tx700[AT_ASYNC_DIAL_RESP].cmdStr,"OS_DIAL_OFF"}; 
-    uint32_t idx;
-    char  buff[50];
-
-    snprintf(buff,sizeof(buff),"AT*VOICE*ORI=%s\r\n",num);
-
-
-    tx700_modem_sends(buff);
-
-    ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),waitTimeOutMs);
-
-    if(ret == RET_OK)
-    {
-        switch(idx)
-        {
-            case 0:
-            ret = RET_OK;
-            break;
-            case 1:
-            ret = RET_FAIL;
-            break;
-        }
-
-    }
-
-    return ret;
+  return RET_OK;
 }
 
 
 M_RET_t tx700_set_vpn(char *id,char *pw,uint8_t ip[4],uint16_t port)
 {
-  M_RET_t ret = RET_FAIL;
-  char  buff[100];
-  const char *ackList[] = {"OK"}; 
-  uint32_t idx;
 
-  snprintf(buff,sizeof(buff),"AT*VPN*CONFIG=%s,%s,%d.%d.%d.%d,%d\r\n",id,pw,
-  ip[0],ip[1],ip[2],ip[3],port);
-
-  tx700_modem_sends(buff);
-
-  ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),1000);
-
-    if(ret == RET_OK)
-    {
-        switch(idx)
-        {
-            case 0:
-            ret = RET_OK;
-            break;
-        }
-    }
-  return ret;
+    return RET_OK;
 }
 
 M_RET_t tx700_read_vpn(char *outBuffer,uint16_t outSize)
 {
-  M_RET_t ret = RET_FAIL;
-  char  buff[100];
-  const char *ackList[] = {"*VPN*CONFIG"}; 
-  uint32_t idx;
 
-//*VPN*CONFIG:test10,test135!@,112.221.177.172,4430<CR>
-
-  snprintf(buff,sizeof(buff),"AT*VPN*CONFIG?\r\n");
-
-  tx700_modem_sends(buff);
-
-  ret = tx700_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),1000);
-
-  if(ret == RET_OK)
-  {
-    switch(idx)
-    {
-        case 0:
-        ret = RET_OK;
-        break;
-    }
-  }
-  return ret;
+  return RET_OK;
 }
 
 M_RET_t tx700_at_direct(char *at,char *outBuffer,uint16_t outSize)
@@ -891,3 +797,81 @@ M_RET_t tx700_at_direct(char *at,char *outBuffer,uint16_t outSize)
   
   return ret;
 }
+
+/*
+$$BinRecv:<NUL><SOH>2<CR><LF>
+24 24 42 69 6E 52 65 63 76 3A 00 01 32 0D 0A
+*/
+
+extern void put_tcpData(uint8_t *data, uint16_t dataLen);
+void tx700_recv_bin(void *port, char *p_data, uint16_t data_len)
+{
+  uint16_t len;
+
+  (void)port;
+
+  len = (p_data[10]&0x03)*256 + p_data[11];
+  
+  if (len)
+  {
+    put_tcpData(&p_data[12], len);
+  }
+
+}
+
+int32_t recv_tx700_handler(uint8_t *buffer, uint16_t buffer_size)
+{
+  uint32_t startTime = osKernelGetTickCount();
+  uint32_t timeout = 1000;  // 기본 1초
+  uint16_t cnt = 0;
+  uint8_t ch;
+  uint8_t bin_mode = 0;
+  uint8_t first = 1;
+  uint16_t len = 0;
+
+  while (1)
+  {
+    if (driver_uart_recv(0, &ch, 1, osWaitForever) == 1)
+    {
+      buffer[cnt++] = ch;
+
+      if (cnt == 12 && first)
+      {
+        first = 0;
+        if (strncmp((char *)buffer, "$$BinRecv:", 10) == 0)
+        {
+          bin_mode = 1;
+          len = (buffer[10] & 0x0F) * 256 + buffer[11];
+        }
+      }
+      else
+      {
+        if (bin_mode)
+        {
+          if (cnt >= (12 + len))
+          {
+            return cnt;
+          }
+        }
+        else
+        {
+          if ((ch == '\r') || (ch == '\n'))
+          {
+            buffer[cnt - 1] = 0;
+            return (cnt - 1);
+          }
+        }
+      }
+
+      if (cnt >= buffer_size)
+      {
+        return 0;
+      }
+    }
+  }
+
+  return 0;
+}
+
+
+

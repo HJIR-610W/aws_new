@@ -53,7 +53,7 @@ const atCmd_t cmd_ntle9607[]=
     {AT_ASYNC_RESP_TCP_RECV,"*TCPRD"},
     {AT_ASYNC_RESP_VOICE_END,"*VOICE END"},
     {AT_ASYNC_RESP_DTMF,"+RXDTMF"},
-    {AT_TCP_WRITE_IP,"*NET*SOCKPA"},
+    {AT_TCP_WRITE_IP_RESP,"*NET*SOCKPA"},
     {AT_TCP_OPEN_PPP,"AT*NET*PPPOP\r\n"},
     {AT_TCP_CLOSE_PPP,"AT*NET*PPPCL\r\n"},
     {AT_TCP_OPEN_SOCKET,"AT*NET*SOCKOP\r\n"},
@@ -64,7 +64,7 @@ const atCmd_t cmd_ntle9607[]=
     {AT_ASYNC_GET_RSSI_RESP,"+CSQ"},
     {AT_ASYNC_SMS_READ_RESP_OK,"*SMS*MTREAD"},
     {AT_ASYNC_SMS_READ_RESP_ERR,"+CMS ERROR"},
-    {AT_SMS_SEND_RESP_OK,"*SMSACK"},
+    {AT_SMS_SEND_RESP,"*SMSACK"},
     {AT_TCP_SEND_DATA_RESP,"*ANET*SOCKWR"},
     {AT_TCP_OPEN_SOCKET_RESP_OK,"*TCPCONNECTED"},
     {AT_TCP_OPEN_SOCKET_RESP_FAIL,"*TCPCONNECTFAIL"},
@@ -75,7 +75,7 @@ const atCmd_t cmd_ntle9607[]=
     {AT_TCP_OPEN_PPP_RESP,"*NET*PPPOP"},
     {AT_TCP_CLOSE_PPP_RESP,"*NET*PPPCL"},
     {AT_TCP_CLOSE_SOCKET_RESP,"*ANET*SOCKCL"},
-    {AT_TCP_RESET_SW_RESP,"*SET*RESET"},
+    {AT_RESET_SW_RESP,"*SET*RESET"},
     {AT_ASYNC_DIAL_RESP,"+COLP"},
     {AT_ASYNC_DIAL_OFF,"AT*VOICE*CEND\r\n"},
     {AT_ASYNC_CONFIG_READ_RESP,"*VPN*CONFIG"},
@@ -983,4 +983,31 @@ M_RET_t ntle_9607_at_direct(char *at,char *outBuffer,uint16_t outSize)
   }while((osKernelGetTickCount()-startTime) < 1000);
   
   return ret;
+}
+
+extern void put_tcpData(uint8_t *data, uint16_t dataLen);
+void ntle9607_recv_bin(void *port, char *p_data, uint16_t data_len)
+{
+  uint16_t cnt;
+  uint8_t temp[512 + 32];
+  int32_t readCnt;
+  int32_t len;
+
+  cnt = data_len - 7;  //*TCPRD=4<CR><LF>에서 숫자의 자리수
+
+  if (cnt < sizeof(temp))
+  {
+    memset(temp, 0x00, sizeof(temp));
+    memcpy(temp, &p_data[7], cnt);
+    readCnt = atoi((char *)temp);  // 수신 처리해야할 tcp data 길이를 계산
+
+    len = driver_uart_recv(port, (uint8_t *)temp, 1, 1000);  // 최종 tcp data 버퍼에서 가져옴
+    len = driver_uart_recv(port, (uint8_t *)temp, readCnt,
+                           1000);  // 최종 tcp data 버퍼에서 가져옴
+
+    if (len)
+    {
+      put_tcpData(temp, len);
+    }
+  }
 }

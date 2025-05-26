@@ -27,7 +27,7 @@ int32_t driver_uart_send(driver_t *drv, const uint8_t *pData, uint16_t dataLen);
 int32_t driver_uart_recv(driver_t *drv, uint8_t *pBuff, uint16_t rLen,
                          uint32_t timeOutMs);
 
-int32_t drier_uart_recv_crlf(driver_t *drv, char *pBuff, uint16_t bSize,
+int32_t driver_uart_recv_crlf(driver_t *drv, char *pBuff, uint16_t bSize,
                              uint32_t tout_ms);
 
 void driver_uart_set(driver_t *uart, uart_set_option_t cmd, void *para);

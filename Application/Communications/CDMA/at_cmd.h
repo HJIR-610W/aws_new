@@ -10,19 +10,19 @@ extern "C" {
 #include <stdint.h>
 #include <stdint.h>
 
-enum
-{
-    AT_ASYNC_RESP_TCP_DISCONNECTED=0,
+  typedef enum AT_COMMAND_e
+  {
+    AT_ASYNC_RESP_TCP_DISCONNECTED = 0, //0
     AT_ASYNC_RESP_SMS_RECEIVED,
     AT_ASYNC_RESP_RING_RECEIVED,
     AT_ASYNC_RESP_REBOOT,
     AT_ASYNC_RESP_TCP_RECV,
     AT_ASYNC_RESP_VOICE_END,
     AT_ASYNC_RESP_DTMF,
-    AT_TCP_WRITE_IP,
+    AT_TCP_WRITE_IP_RESP,
     AT_TCP_OPEN_PPP,
     AT_TCP_CLOSE_PPP,
-    AT_TCP_OPEN_SOCKET,
+    AT_TCP_OPEN_SOCKET,//10
     AT_TCP_CLOSE_SOCKET,
     AT_TCP_SEND_DATA,
     AT_ASYNC_OPEN_VOICE,
@@ -31,8 +31,8 @@ enum
     AT_ASYNC_GET_RSSI_RESP,
     AT_ASYNC_SMS_READ_RESP_OK,
     AT_ASYNC_SMS_READ_RESP_ERR,
-    AT_SMS_SEND_RESP_OK,
-    AT_TCP_SEND_DATA_RESP,
+    AT_SMS_SEND_RESP,
+    AT_TCP_SEND_DATA_RESP,//20
     AT_TCP_OPEN_SOCKET_RESP_OK,
     AT_TCP_OPEN_SOCKET_RESP_FAIL,
     AT_TCP_OPEN_SOCKET_RESP,
@@ -42,20 +42,22 @@ enum
     AT_TCP_OPEN_PPP_RESP,
     AT_TCP_CLOSE_PPP_RESP,
     AT_TCP_CLOSE_SOCKET_RESP,
-    AT_TCP_RESET_SW_RESP,
-    AT_ASYNC_DIAL_RESP,
+    AT_ASYNC_DIAL_RESP,//30
     AT_ASYNC_DIAL_OFF,
     AT_ASYNC_CONFIG_READ_RESP,
     AT_TCP_NETWORK_SERVICE,
+    AT_READ_NUM,
+    AT_RESET_SW,
+    AT_RESET_SW_RESP,
     AT_MAX
-};
+  } eAT_COMMAND_t;
 
-typedef struct atCmd_s
-{
-  uint32_t cmd;
-  char *cmdStr;   // at 명령어 또는 응답
-  void (*fsend)(void);
-}atCmd_t;
+  typedef struct atCmd_s
+  {
+    uint32_t cmd;
+    char *cmdStr;  // at 명령어 또는 응답
+    void (*fsend)(void);
+  } atCmd_t;
 
 
 

@@ -35,7 +35,7 @@ M_RET_t tx700_read_rssi(int16_t *rssi);
 char tx700_get_dtmf(char *data);
 void tx700_vpn_init(void);
 void tx700_off_powerSafe(void);
-M_RET_t tx700_read_ringNum(char *data,char *prNum,uint16_t numSize); 
+M_RET_t tx700_read_ring_number(char *data,char *prNum,uint16_t numSize); 
 M_RET_t tx700_recv_call(void);
 
 M_RET_t tx700_dial(char *num, uint32_t waitTimeOutMs);
@@ -44,8 +44,8 @@ M_RET_t tx700_set_vpn(char *id,char *pw,uint8_t ip[4],uint16_t port);
 M_RET_t tx700_at_direct(char *at,char *outBuffer,uint16_t outSize);
 
 M_RET_t tx700_check_network_service(char *msgOut,uint16_t msgSize);
-
-extern const atCmd_t cmd_tx700[];
+void tx700_recv_bin(void *port, char *p_data, uint16_t data_len);
+extern const atCmd_t cmd_tx700[36];
 
 #ifdef __cplusplus
 }

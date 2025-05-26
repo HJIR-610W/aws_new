@@ -7,6 +7,7 @@ extern "C" {
 
 
 #include <stdint.h>
+#include "driver_interface.h"
 #include "time_define.h"
     typedef uint16_t M_RET_t;
 
@@ -23,12 +24,20 @@ extern "C" {
 #define M_RESET_HW (1U)
 
 
-    typedef struct
-    {
-        DATE_TIME_BUF time;
-        char num[12];  //01011111111
-        char msg[200];
-    }sms_t;
+
+typedef struct cdma_cfg_s
+{
+    driver_t *io_uart;
+    driver_t *do_power;
+}cdma_cfg_t;
+
+
+typedef struct
+{
+    DATE_TIME_BUF time;
+    char num[12];  //01011111111
+    char msg[200];
+}sms_t;
 
 
 
@@ -111,8 +120,8 @@ typedef struct iCellular
     M_RET_t (*at_direct)(char *at,char *outBuffer,uint16_t outSize);
 
     M_RET_t (*check_network_service)(char *msgOut,uint16_t msgSize);
-}iCellular_t;
-
+    void (*recv_bin)(void * port, char *data, uint16_t dataLen);;
+} iCellular_t;
 
     typedef struct mqtt_if_s
     {

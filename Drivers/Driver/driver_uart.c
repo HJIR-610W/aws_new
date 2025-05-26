@@ -110,7 +110,7 @@ void driver_uart_get(driver_t *drv, uart_get_option_t cmd, void *para)
 }
 
 
-int32_t drier_uart_recv_crlf(driver_t *drv, char *pBuff, uint16_t bSize, uint32_t tout_ms)
+int32_t driver_uart_recv_crlf(driver_t *drv, char *pBuff, uint16_t bSize, uint32_t tout_ms)
 {
   uint8_t data;
   uint16_t cnt = 0;
