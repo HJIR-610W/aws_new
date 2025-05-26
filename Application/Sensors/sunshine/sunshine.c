@@ -28,7 +28,7 @@ void sunShine_init(sensor_t *sensor,void *opt)
 
 driver_t *sunshine_open(int32_t num,void *opt)
 {
-  driver_t *driver;
+  driver_t *driver=NULL;
 
   switch (num)
   {

@@ -19,9 +19,9 @@
 #define GENERAL_RS485 1
 #endif
 
-#define SUNSHINE_A  100
+#define OTT_SMP3_MODBUS  100
 
-driver_t *solarRadiation_open(int32_t num,void *opt);
+driver_t *solar_radiation_open(int32_t num,void *opt);
 float read_sensor_solarRadiation(driver_t *driver,uint8_t *err);
 
 

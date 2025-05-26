@@ -529,8 +529,7 @@ void SecProcess(void)
   }
 
   if (mRealAws.mSolarRad.sReal != 9999)  // 에러값이 아니면 누적일사를 구한다.
-    pSystem->mSun[MIN1_PROC].nSolarTot +=
-        mRealAws.mSolarRad.sReal;  // 1분 누적 일사
+    pSystem->mSun[MIN1_PROC].nSolarTot += mRealAws.mSolarRad.sReal;  // 1분 누적 일사
 
   if (pSystem->m_cOffDelayFlag)  // 강우 감지 루틴
   {

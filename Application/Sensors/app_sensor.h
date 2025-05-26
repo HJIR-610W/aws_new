@@ -100,7 +100,7 @@ typedef enum sensor_list_e
   X(S_T_FREQ_A, "FREQ_A")                             \
   X(S_T_FREQ_B, "FREQ_B")                             \
   X(S_T_SUNSHINE, "SUNSHINE")                         \
-  X(S_T_SOLAR_RADIATION, "SOLAR_RADIATION")           \
+  X(S_T_SOLAR_RADIATION_OTT_SMP3, "SOLAR_RADIATION OTT SMP3")           \
   X(S_T_SOIL_TEMP_5CM, "SOIL_TEMP_5CM")               \
   X(S_T_SOIL_TEMP_10CM, "SOIL_TEMP_10CM")             \
   X(S_T_SOIL_TEMP_20CM, "SOIL_TEMP_20CM")             \

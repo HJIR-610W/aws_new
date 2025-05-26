@@ -1,6 +1,7 @@
 #include "dualport.h"
 
 #include <stdbool.h>
+#include <math.h>
 
 #include "app_sensor.h"
 #include "aws_data.h"
@@ -15,6 +16,9 @@
 #include "utile_filter.h"
 #include "utile_time.h"
 #include "kma3.h"
+
+const float kSunshine_threshold = 0.8f;
+
 
 #define AWS_DATA_ERR_VAL 9999
 
@@ -271,6 +275,15 @@ uint16_t HumidityCalc(uint8_t *sensor_err)
   return (uint16_t)(huminity * 10);//AWS 데이터 형으로 변환 측정값 *10
 }
 
+/*
+일사
+
+AWS(구)
+return값 :: error인 경우 9999, 정상인 경우: 0 - 1000
+자료의 표현은 0 - 1600까지 W/m2
+
+
+*/
 uint16_t  SolarRadCalc(uint8_t *sensor_err)
 {
   sensor_data_t *p_sensor = g_p_raw->data;
@@ -282,7 +295,7 @@ uint16_t  SolarRadCalc(uint8_t *sensor_err)
     return AWS_DATA_ERR_VAL;
   }
 
-  return (uint16_t)(p_sensor[B1_SOLAR_RADIATION].data.f * 10);
+  return (uint16_t)(p_sensor[B1_SOLAR_RADIATION].data.f);
 }
 
 
@@ -414,17 +427,41 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
   return (uint16_t)((temperature + 100) * 10);  // AWS 데이터 형으로 변환 ((측정값+100) *10)
 }
 
-//일조 
+
+
+bool is_over_threshold(float sample, float threshold, float epsilon)
+{
+  float round_smaple ;
+
+  if (!isnormal(sample))
+  {
+		return false;
+	}
+
+	round_smaple = round_to(sample, 2);
+
+
+	if (fabsf(round_smaple - threshold) <= epsilon)
+    return false;
+
+  return round_smaple > threshold;
+
+	
+
+  }
+
+  // 일조
 uint8_t SunshineCalc(uint8_t *err)
 {
   sensor_data_t *p_sensor = g_p_raw->data;
 
   *err = p_sensor[B2_SUNSHINE_DURATION].err;
-  
-  if (p_sensor[B2_SUNSHINE_DURATION].data.b)
-  { 
-    return 1; 
+
+  if (is_over_threshold(p_sensor[B2_SUNSHINE_DURATION].data.f, kSunshine_threshold,0.01))
+  {
+      return 1;
   }
+
   return 0;
 }
 
@@ -691,6 +728,8 @@ void check_sensor_use(void)
   }
 }
 
+
+
 #define MAKE_TEMP(x) (uint16_t)((x + 100) * 10)  // 기온, 지면온도, 지중온도, 초상온도
 #define MAKE_RADI(x) (uint16_t)((x + 100) * 10)  // 순복사, 전천복사, 반사복사 등
 #define MAKE_PRESSURE(x) (uint16_t)((x) * 10)    // 기압
@@ -698,6 +737,8 @@ void check_sensor_use(void)
 #define MAKE_X100(x) (uint16_t)((x) * 100)       // 일사량, 조도량 등
 #define MAKE_DIRECT(x) (uint16_t)(x)             // 운고, 시정, 현재일기, 타코미터 등 정수값
 
+
+//원본값을 업데이트한다.
 void update_raw(void)
 {
   kma_data_ex_t *p_kma_data;
@@ -705,68 +746,171 @@ void update_raw(void)
   p_kma_data = get_kma_data((eAWS_DATA_MIN_t)eAWS_DATA_RAW);
 
   p_kma_data->temperature.data = MAKE_TEMP(g_p_raw->data[A1_TEMPERATURE].data.f);
-  p_kma_data->wind_direction_avg.data = MAKE_X10(g_p_raw->data[A2_WIND_DIRECTION].data.f);
-  p_kma_data->wind_speed_avg.data = MAKE_X10(g_p_raw->data[A3_WIND_SPEED].data.f);
-  p_kma_data->precipitation.data = MAKE_DIRECT(g_p_raw->data[A6_RAINFALL_DOT5_1MM].data.i);
-  p_kma_data->pressure.data = MAKE_PRESSURE(g_p_raw->data[A7_PRESSURE].data.f);
-  p_kma_data->precipitation_presence.data = MAKE_DIRECT(g_p_raw->data[A8_RAIN_PRESENT].data.i);
-  p_kma_data->snowfall.data = MAKE_X10(g_p_raw->data[A9_SNOW_DEPTH].data.f);
-  p_kma_data->relative_humidity.data = MAKE_X10(g_p_raw->data[A10_RELATIVE_HUMIDITY].data.f);
-  p_kma_data->precipitation_fine.data = MAKE_DIRECT(g_p_raw->data[A11_RAINFALL_DOT1MM].data.i);
+  p_kma_data->temperature.err = g_p_raw->data[A1_TEMPERATURE].err;
 
-  p_kma_data->solar_radiation.data = MAKE_X100(g_p_raw->data[B1_SOLAR_RADIATION].data.f);
-  p_kma_data->sunshine_duration.data = MAKE_DIRECT(g_p_raw->data[B2_SUNSHINE_DURATION].data.i);
+  p_kma_data->wind_direction_avg.data = MAKE_X10(g_p_raw->data[A2_WIND_DIRECTION].data.f);
+  p_kma_data->wind_direction_avg.err = g_p_raw->data[A2_WIND_DIRECTION].err;
+
+  p_kma_data->wind_speed_avg.data = MAKE_X10(g_p_raw->data[A3_WIND_SPEED].data.f);
+  p_kma_data->wind_speed_avg.err = g_p_raw->data[A3_WIND_SPEED].err;
+
+  p_kma_data->precipitation.data = MAKE_X10(g_p_raw->data[A6_RAINFALL_DOT5_1MM].data.f);
+  p_kma_data->precipitation.err = g_p_raw->data[A6_RAINFALL_DOT5_1MM].err;
+
+  if (p_kma_data->precipitation.data)
+    p_kma_data->precipitation.last_time = time_timestamp();
+
+  p_kma_data->pressure.data = MAKE_PRESSURE(g_p_raw->data[A7_PRESSURE].data.f);
+  p_kma_data->pressure.err = g_p_raw->data[A7_PRESSURE].err;
+
+  p_kma_data->precipitation_presence.data = MAKE_DIRECT(g_p_raw->data[A8_RAIN_PRESENT].data.i);
+  p_kma_data->precipitation_presence.err = g_p_raw->data[A8_RAIN_PRESENT].err;
+
+  p_kma_data->snowfall.data = MAKE_X10(g_p_raw->data[A9_SNOW_DEPTH].data.f);
+  p_kma_data->snowfall.err = g_p_raw->data[A9_SNOW_DEPTH].err;
+
+  p_kma_data->relative_humidity.data = MAKE_X10(g_p_raw->data[A10_RELATIVE_HUMIDITY].data.f);
+  p_kma_data->relative_humidity.err = g_p_raw->data[A10_RELATIVE_HUMIDITY].err;
+
+  
+  p_kma_data->precipitation_fine.data = MAKE_DIRECT(g_p_raw->data[A11_RAINFALL_DOT1MM].data.i);
+  p_kma_data->precipitation_fine.err = g_p_raw->data[A11_RAINFALL_DOT1MM].err;
+
+  p_kma_data->solar_radiation.data = MAKE_DIRECT(g_p_raw->data[B1_SOLAR_RADIATION].data.f);
+  p_kma_data->solar_radiation.err = g_p_raw->data[B1_SOLAR_RADIATION].err;
+
+  //기준값과 차이가 0.01차이라면 같은 값으로 처리하자
+  if (is_over_threshold(g_p_raw->data[B2_SUNSHINE_DURATION].data.f, kSunshine_threshold, 0.01))
+  {
+    p_kma_data->sunshine_duration.data = 1;
+  }
+  else
+  {
+    p_kma_data->sunshine_duration.data = 0;
+  }
+
+  p_kma_data->sunshine_duration.err = g_p_raw->data[B2_SUNSHINE_DURATION].err;
+
   p_kma_data->surface_temperature.data = MAKE_TEMP(g_p_raw->data[B3_GROUND_TEMPERATURE].data.f);
+  p_kma_data->surface_temperature.err = g_p_raw->data[B3_GROUND_TEMPERATURE].err;
+
   p_kma_data->grass_temperature.data = MAKE_TEMP(g_p_raw->data[B4_SURFACE_TEMPERATURE].data.f);
+  p_kma_data->grass_temperature.err = g_p_raw->data[B4_SURFACE_TEMPERATURE].err;
+
   p_kma_data->soil_temperature_5cm.data = MAKE_TEMP(g_p_raw->data[B5_SOIL_TEMPERATURE_5CM].data.f);
+  p_kma_data->soil_temperature_5cm.err = g_p_raw->data[B5_SOIL_TEMPERATURE_5CM].err;
+
   p_kma_data->soil_temperature_10cm.data =
       MAKE_TEMP(g_p_raw->data[B6_SOIL_TEMPERATURE_10CM].data.f);
+  p_kma_data->soil_temperature_10cm.err = g_p_raw->data[B6_SOIL_TEMPERATURE_10CM].err;
+
   p_kma_data->soil_temperature_20cm.data =
       MAKE_TEMP(g_p_raw->data[B7_SOIL_TEMPERATURE_20CM].data.f);
+  p_kma_data->soil_temperature_20cm.err = g_p_raw->data[B7_SOIL_TEMPERATURE_20CM].err;
+
   p_kma_data->soil_temperature_30cm.data =
       MAKE_TEMP(g_p_raw->data[B8_SOIL_TEMPERATURE_30CM].data.f);
+  p_kma_data->soil_temperature_30cm.err = g_p_raw->data[B8_SOIL_TEMPERATURE_30CM].err;
+
   p_kma_data->soil_temperature_50cm.data =
       MAKE_TEMP(g_p_raw->data[B9_SOIL_TEMPERATURE_50CM].data.f);
+  p_kma_data->soil_temperature_50cm.err = g_p_raw->data[B9_SOIL_TEMPERATURE_50CM].err;
+
   p_kma_data->soil_temperature_1m.data =
       MAKE_TEMP(g_p_raw->data[B10_SOIL_TEMPERATURE_100CM].data.f);
+  p_kma_data->soil_temperature_1m.err = g_p_raw->data[B10_SOIL_TEMPERATURE_100CM].err;
+
   p_kma_data->soil_temperature_1_5m.data =
       MAKE_TEMP(g_p_raw->data[B11_SOIL_TEMPERATURE_150CM].data.f);
+  p_kma_data->soil_temperature_1_5m.err = g_p_raw->data[B11_SOIL_TEMPERATURE_150CM].err;
+
   p_kma_data->soil_temperature_3m.data =
       MAKE_TEMP(g_p_raw->data[B12_SOIL_TEMPERATURE_300CM].data.f);
+  p_kma_data->soil_temperature_3m.err = g_p_raw->data[B12_SOIL_TEMPERATURE_300CM].err;
+
   p_kma_data->soil_temperature_5m.data =
       MAKE_TEMP(g_p_raw->data[B13_SOIL_TEMPERATURE_500CM].data.f);
+  p_kma_data->soil_temperature_5m.err = g_p_raw->data[B13_SOIL_TEMPERATURE_500CM].err;
 
   p_kma_data->cloud_height_1st.data = MAKE_DIRECT(g_p_raw->data[C1_CLOUD_BASE1].data.f);
+  p_kma_data->cloud_height_1st.err = g_p_raw->data[C1_CLOUD_BASE1].err;
+
   p_kma_data->cloud_height_2nd.data = MAKE_DIRECT(g_p_raw->data[C2_CLOUD_BASE2].data.f);
+  p_kma_data->cloud_height_2nd.err = g_p_raw->data[C2_CLOUD_BASE2].err;
+
   p_kma_data->cloud_height_3rd.data = MAKE_DIRECT(g_p_raw->data[C3_CLOUD_BASE3].data.f);
+  p_kma_data->cloud_height_3rd.err = g_p_raw->data[C3_CLOUD_BASE3].err;
+
   p_kma_data->cloud_amount.data = MAKE_DIRECT(g_p_raw->data[C4_CLOUD_COVER].data.f);
+  p_kma_data->cloud_amount.err = g_p_raw->data[C4_CLOUD_COVER].err;
+
   p_kma_data->visibility.data = MAKE_DIRECT(g_p_raw->data[C5_VISIBILITY].data.f);
+  p_kma_data->visibility.err = g_p_raw->data[C5_VISIBILITY].err;
+
   p_kma_data->pm10_concentration.data = MAKE_X10(g_p_raw->data[C6_PM10].data.f);
+  p_kma_data->pm10_concentration.err = g_p_raw->data[C6_PM10].err;
+
   p_kma_data->pm25_concentration.data = MAKE_X10(g_p_raw->data[C7_PM2DOT5].data.f);
+  p_kma_data->pm25_concentration.err = g_p_raw->data[C7_PM2DOT5].err;
+
   p_kma_data->net_radiation.data = MAKE_RADI(g_p_raw->data[C8_NET_RADIATION].data.f);
+  p_kma_data->net_radiation.err = g_p_raw->data[C8_NET_RADIATION].err;
+
   p_kma_data->total_radiation.data = MAKE_RADI(g_p_raw->data[C9_TOTAL_RADIATION].data.f);
+  p_kma_data->total_radiation.err = g_p_raw->data[C9_TOTAL_RADIATION].err;
+
   p_kma_data->reflected_radiation.data = MAKE_RADI(g_p_raw->data[C10_REFLECTED_RADIATION].data.f);
+  p_kma_data->reflected_radiation.err = g_p_raw->data[C10_REFLECTED_RADIATION].err;
+
   p_kma_data->direct_radiation.data = MAKE_RADI(g_p_raw->data[C11_DIRECT_SOLAR].data.f);
+  p_kma_data->direct_radiation.err = g_p_raw->data[C11_DIRECT_SOLAR].err;
+
   p_kma_data->current_weather.data = MAKE_DIRECT(g_p_raw->data[C12_CURRENT_WEATHER].data.i);
+  p_kma_data->current_weather.err = g_p_raw->data[C12_CURRENT_WEATHER].err;
 
   p_kma_data->soil_moisture_10cm.data = MAKE_X10(g_p_raw->data[N1_SOIL_MOISTURE_10CM].data.f);
+  p_kma_data->soil_moisture_10cm.err = g_p_raw->data[N1_SOIL_MOISTURE_10CM].err;
+
   p_kma_data->soil_moisture_20cm.data = MAKE_X10(g_p_raw->data[N2_SOIL_MOISTURE_20CM].data.f);
+  p_kma_data->soil_moisture_20cm.err = g_p_raw->data[N2_SOIL_MOISTURE_20CM].err;
+
   p_kma_data->soil_moisture_30cm.data = MAKE_X10(g_p_raw->data[N3_SOIL_MOISTURE_30CM].data.f);
+  p_kma_data->soil_moisture_30cm.err = g_p_raw->data[N3_SOIL_MOISTURE_30CM].err;
+
   p_kma_data->soil_moisture_50cm.data = MAKE_X10(g_p_raw->data[N4_SOIL_MOISTURE_50CM].data.f);
+  p_kma_data->soil_moisture_50cm.err = g_p_raw->data[N4_SOIL_MOISTURE_50CM].err;
+
   p_kma_data->illuminance.data = MAKE_X100(g_p_raw->data[N5_ILLUMINANCE].data.f);
+  p_kma_data->illuminance.err = g_p_raw->data[N5_ILLUMINANCE].err;
+
   p_kma_data->wind_speed_1_5m.data = MAKE_X10(g_p_raw->data[N6_WIND_VELOCITY_150CM].data.f);
+  p_kma_data->wind_speed_1_5m.err = g_p_raw->data[N6_WIND_VELOCITY_150CM].err;
+
   p_kma_data->wind_speed_4m.data = MAKE_X10(g_p_raw->data[N7_WIND_VELOCITY_400CM].data.f);
+  p_kma_data->wind_speed_4m.err = g_p_raw->data[N7_WIND_VELOCITY_400CM].err;
+
   p_kma_data->instant_wind_speed_1_5m.data =
       MAKE_X10(g_p_raw->data[N8_INSTANT_VELOCITY_150CM].data.f);
+  p_kma_data->instant_wind_speed_1_5m.err = g_p_raw->data[N8_INSTANT_VELOCITY_150CM].err;
+
   p_kma_data->instant_wind_speed_4m.data =
       MAKE_X10(g_p_raw->data[N9_INSTANT_VELOCITY_400CM].data.f);
+  p_kma_data->instant_wind_speed_4m.err = g_p_raw->data[N9_INSTANT_VELOCITY_400CM].err;
+
   p_kma_data->temperature_0_5m.data = MAKE_TEMP(g_p_raw->data[N10_AIR_TEMPERATURE_50CM].data.f);
+  p_kma_data->temperature_0_5m.err = g_p_raw->data[N10_AIR_TEMPERATURE_50CM].err;
+
   p_kma_data->temperature_4m.data = MAKE_TEMP(g_p_raw->data[N11_AIR_TEMPERATURE_400CM].data.f);
+  p_kma_data->temperature_4m.err = g_p_raw->data[N11_AIR_TEMPERATURE_400CM].err;
+
   p_kma_data->humidity_0_5m.data = MAKE_X10(g_p_raw->data[N12_HUMIDITY_50CM].data.f);
+  p_kma_data->humidity_0_5m.err = g_p_raw->data[N12_HUMIDITY_50CM].err;
+
   p_kma_data->humidity_4m.data = MAKE_X10(g_p_raw->data[N13_HUMIDITY_400CM].data.f);
+  p_kma_data->humidity_4m.err = g_p_raw->data[N13_HUMIDITY_400CM].err;
 
   p_kma_data->tacometer.data = MAKE_DIRECT(g_p_raw->data[I1_TACHOMETER].data.f);
-
+  p_kma_data->tacometer.err = g_p_raw->data[I1_TACHOMETER].err;
 }
 
 

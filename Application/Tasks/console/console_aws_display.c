@@ -25,7 +25,7 @@
 
 #define AWS_MODE_MAX 4
 
-#define DISP_WIDTH 27
+#define DISP_WIDTH 30
 
 const char *linkStatusList[] = {"-", "up", "down"};
 const char *doorStatusList[] = {"닫힘", "열림"};
@@ -155,6 +155,26 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
 
   return line ;
 }
+
+
+/*
+10분
+온도
+기압
+습도
+풍향
+풍속
+일사
+일조
+지중온도 5cm
+지중온도 10cm
+지중온도 20cm
+지중온도 30cm
+지중온도 50cm
+지중온도 1_0m
+지둥온도 1_5m
+10분 강수량
+*/
 
 /*
 +--------------------------+
@@ -298,6 +318,7 @@ int32_t print_directInfo(uint16_t row, uint16_t column)
 
 #define COL_WIDTH 15
 
+
 int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, void *arg)
 {
   const char *aswTitleList[] = {"순간(평균)", "1분", "10분", "한시간","RAW"};
@@ -316,7 +337,7 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min,
 
   vt100_print_frame(row, column, buff, '+', '|', '-', DISP_WIDTH, WHITE);
 // 자동 생성된 AWS 출력 코드
-if (p_kma->temperature.enable)
+if(p_kma->temperature.enable)
 {
   err = p_kma->temperature.err;
   if (err)
@@ -325,8 +346,8 @@ if (p_kma->temperature.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "기온",
-                    KMA_TO_TEMPERATURE(p_kma->temperature.data));
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "기온",
+                      KMA_TO_TEMPERATURE(p_kma->temperature.data));
   }
 }
 
@@ -358,19 +379,28 @@ if (p_kma->wind_speed_avg.enable)
   }
 }
 
-if (p_kma->wind_direction_instant.enable)
-{
-  err = p_kma->wind_direction_instant.err;
-  if (err)
+
+  if (p_kma->wind_direction_instant.enable)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순간 풍향", err);
+    err = p_kma->wind_direction_instant.err;
+    if (err)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순간 풍향",
+                      err);
+    }
+    else
+    {
+      if (min == eAWS_DATA_RAW)
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "순간 풍향");
+      }
+      else
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f 도\r\n", COL_WIDTH, "순간 풍향",
+                        KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
+      }
+    }
   }
-  else
-  {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f 도\r\n", COL_WIDTH, "순간 풍향",
-                    KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
-  }
-}
 
 if (p_kma->wind_speed_instant.enable)
 {
@@ -381,10 +411,18 @@ if (p_kma->wind_speed_instant.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "순간 풍속",
-                    KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
+    if (min == eAWS_DATA_RAW)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "순간 풍속");
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "순간 풍속",
+                      KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
+    }
   }
 }
+
 
 if (p_kma->precipitation.enable)
 {
@@ -395,8 +433,28 @@ if (p_kma->precipitation.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f mm\r\n", COL_WIDTH, "강수량",
-                    KMA_TO_GENERAL(p_kma->precipitation.data));
+    if (min == eAWS_DATA_RAW)
+    {
+      uint32_t last_time;
+      last_time = p_kma->precipitation.last_time;
+      DATE_TIME_BUF nt;
+      char buff[20];
+      if(last_time==0)//우량이 내린적이 없으면
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "강수량(time)");
+      }
+      else
+      {
+        time_cvt_secTotime(last_time,&nt);
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%04d%02d%02d%02d%02d%02d\r\n", COL_WIDTH,
+                        "강수량(time)", nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
+      }
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f mm\r\n", COL_WIDTH, "강수량",
+                      KMA_TO_GENERAL(p_kma->precipitation.data));
+    }
   }
 }
 
@@ -479,8 +537,25 @@ if (p_kma->solar_radiation.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f MJ/m2\r\n", COL_WIDTH, "일사",
-                    KMA_TO_RADI(p_kma->solar_radiation.data));
+    float solar_radiation;
+
+    solar_radiation = p_kma->solar_radiation.data;
+
+    switch (min)
+    {
+      case eAWS_DATA_RAW:
+      case eAWS_DATA_AVG:
+       vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f WJ/m2\r\n",
+                                         COL_WIDTH, "일사", solar_radiation);
+          break;
+
+          default:
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f KJ/m2\r\n", COL_WIDTH, "일사",
+                        solar_radiation);
+        break;
+
+    }
+
   }
 }
 
@@ -493,8 +568,24 @@ if (p_kma->sunshine_duration.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5d s\r\n", COL_WIDTH, "일조",
-                    p_kma->sunshine_duration.data);
+    switch (min)
+    {
+      case eAWS_DATA_RAW:
+      case eAWS_DATA_AVG:
+      {
+        bool sunshine_duration;
+        sunshine_duration = (p_kma->sunshine_duration.data == 1);
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "일조",
+                        sunshine_duration ? "ON" : "OFF");
+      }
+        break;
+
+      default:
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5d s\r\n", COL_WIDTH, "일조",
+                        p_kma->sunshine_duration.data);
+        break;
+    }
+
   }
 }
 
@@ -507,8 +598,15 @@ if (p_kma->surface_temperature.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지면온도",
-                    KMA_TO_TEMPERATURE(p_kma->surface_temperature.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지면온도",
+                      KMA_TO_TEMPERATURE(p_kma->surface_temperature.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f C");
+    }
   }
 }
 
@@ -521,8 +619,15 @@ if (p_kma->grass_temperature.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "초상온도",
-                    KMA_TO_TEMPERATURE(p_kma->grass_temperature.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "초상온도",
+                      KMA_TO_TEMPERATURE(p_kma->grass_temperature.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f C");
+    }
   }
 }
 
@@ -531,12 +636,20 @@ if (p_kma->soil_temperature_5cm.enable)
   err = p_kma->soil_temperature_5cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 5cm", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 5cm",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 5cm",
-                    KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.data));
+    if (min == eAWS_DATA_AVG || min == eAWS_DATA_1MIN)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 5cm",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "지중온도 5cm");
+    }
   }
 }
 
@@ -545,12 +658,20 @@ if (p_kma->soil_temperature_10cm.enable)
   err = p_kma->soil_temperature_10cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 10cm", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 10cm",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 10cm",
-                    KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.data));
+    if (min == eAWS_DATA_AVG || min == eAWS_DATA_1MIN)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 10cm",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "지중온도 10cm");
+    }
   }
 }
 
@@ -559,12 +680,20 @@ if (p_kma->soil_temperature_20cm.enable)
   err = p_kma->soil_temperature_20cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 20cm", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 20cm",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 20cm",
-                    KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.data));
+    if (min == eAWS_DATA_AVG || min == eAWS_DATA_1MIN)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 20cm",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "지중온도 20cm");
+    }
   }
 }
 
@@ -573,12 +702,20 @@ if (p_kma->soil_temperature_30cm.enable)
   err = p_kma->soil_temperature_30cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 30cm", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 30cm",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 30cm",
-                    KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.data));
+    if (min == eAWS_DATA_AVG || min == eAWS_DATA_1MIN)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 30cm",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "지중온도 30cm");
+    }
   }
 }
 
@@ -587,12 +724,20 @@ if (p_kma->soil_temperature_50cm.enable)
   err = p_kma->soil_temperature_50cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 50cm", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 50cm",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 50cm",
-                    KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.data));
+    if (min == eAWS_DATA_AVG || min == eAWS_DATA_1MIN)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 50cm",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "지중온도 50cm");
+    }
   }
 }
 
@@ -601,12 +746,20 @@ if (p_kma->soil_temperature_1m.enable)
   err = p_kma->soil_temperature_1m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 1m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 1m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 1m",
-                    KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.data));
+    if (min == eAWS_DATA_AVG || min == eAWS_DATA_1MIN)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 1m",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "지중온도 1m");
+    }
   }
 }
 
@@ -615,12 +768,20 @@ if (p_kma->soil_temperature_1_5m.enable)
   err = p_kma->soil_temperature_1_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 1.5m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 1.5m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 1.5m",
-                    KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.data));
+    if (min == eAWS_DATA_AVG || min == eAWS_DATA_1MIN)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 1.5m",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "지중온도 1.5m");
+    }
   }
 }
 
@@ -629,12 +790,20 @@ if (p_kma->soil_temperature_3m.enable)
   err = p_kma->soil_temperature_3m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 3m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 3m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 3m",
-                    KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.data));
+    if (min == eAWS_DATA_AVG || min == eAWS_DATA_1MIN)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 3m",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "지중온도 3m");
+    }
   }
 }
 
@@ -643,12 +812,20 @@ if (p_kma->soil_temperature_5m.enable)
   err = p_kma->soil_temperature_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 5m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 5m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 5m",
-                    KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.data));
+    if (min == eAWS_DATA_AVG || min == eAWS_DATA_1MIN)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "지중온도 5m",
+                      KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "지중온도 5m");
+    }
   }
 }
 
@@ -661,8 +838,15 @@ if (p_kma->cloud_height_1st.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m\r\n", COL_WIDTH, "운고 1층",
-                    KMA_TO_GENERAL(p_kma->cloud_height_1st.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m\r\n", COL_WIDTH, "운고 1층",
+                      KMA_TO_GENERAL(p_kma->cloud_height_1st.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f m");
+    }
   }
 }
 
@@ -675,8 +859,15 @@ if (p_kma->cloud_height_2nd.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m\r\n", COL_WIDTH, "운고 2층",
-                    KMA_TO_GENERAL(p_kma->cloud_height_2nd.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m\r\n", COL_WIDTH, "운고 2층",
+                      KMA_TO_GENERAL(p_kma->cloud_height_2nd.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f m");
+    }
   }
 }
 
@@ -689,8 +880,15 @@ if (p_kma->cloud_height_3rd.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m\r\n", COL_WIDTH, "운고 3층",
-                    KMA_TO_GENERAL(p_kma->cloud_height_3rd.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m\r\n", COL_WIDTH, "운고 3층",
+                      KMA_TO_GENERAL(p_kma->cloud_height_3rd.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f m");
+    }
   }
 }
 
@@ -703,8 +901,15 @@ if (p_kma->cloud_amount.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f \r\n", COL_WIDTH, "운량",
-                    KMA_TO_GENERAL(p_kma->cloud_amount.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f \r\n", COL_WIDTH, "운량",
+                      KMA_TO_GENERAL(p_kma->cloud_amount.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f");
+    }
   }
 }
 
@@ -717,8 +922,15 @@ if (p_kma->visibility.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m\r\n", COL_WIDTH, "시정",
-                    KMA_TO_GENERAL(p_kma->visibility.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m\r\n", COL_WIDTH, "시정",
+                      KMA_TO_GENERAL(p_kma->visibility.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f m");
+    }
   }
 }
 
@@ -727,12 +939,20 @@ if (p_kma->pm10_concentration.enable)
   err = p_kma->pm10_concentration.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "미세먼지 PM10", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "미세먼지 PM10",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f ug/m3\r\n", COL_WIDTH, "미세먼지 PM10",
-                    KMA_TO_GENERAL(p_kma->pm10_concentration.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f ug/m3\r\n", COL_WIDTH,
+                      "미세먼지 PM10", KMA_TO_GENERAL(p_kma->pm10_concentration.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f ug/m3");
+    }
   }
 }
 
@@ -741,12 +961,20 @@ if (p_kma->pm25_concentration.enable)
   err = p_kma->pm25_concentration.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "미세먼지 PM2.5", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "미세먼지 PM2.5",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f ug/m3\r\n", COL_WIDTH, "미세먼지 PM2.5",
-                    KMA_TO_GENERAL(p_kma->pm25_concentration.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f ug/m3\r\n", COL_WIDTH,
+                      "미세먼지 PM2.5", KMA_TO_GENERAL(p_kma->pm25_concentration.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f ug/m3");
+    }
   }
 }
 
@@ -759,8 +987,15 @@ if (p_kma->net_radiation.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f W/m2\r\n", COL_WIDTH, "순복사",
-                    KMA_TO_RADI(p_kma->net_radiation.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f W/m2\r\n", COL_WIDTH, "순복사",
+                      KMA_TO_RADI(p_kma->net_radiation.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f W/m2");
+    }
   }
 }
 
@@ -773,8 +1008,15 @@ if (p_kma->total_radiation.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f W/m2\r\n", COL_WIDTH, "전천복사",
-                    KMA_TO_RADI(p_kma->total_radiation.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f W/m2\r\n", COL_WIDTH, "전천복사",
+                      KMA_TO_RADI(p_kma->total_radiation.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f W/m2");
+    }
   }
 }
 
@@ -787,8 +1029,15 @@ if (p_kma->reflected_radiation.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f W/m2\r\n", COL_WIDTH, "반사복사",
-                    KMA_TO_RADI(p_kma->reflected_radiation.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f W/m2\r\n", COL_WIDTH, "반사복사",
+                      KMA_TO_RADI(p_kma->reflected_radiation.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f W/m2");
+    }
   }
 }
 
@@ -801,8 +1050,15 @@ if (p_kma->direct_radiation.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f W/m2\r\n", COL_WIDTH, "직달일사",
-                    KMA_TO_RADI(p_kma->direct_radiation.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f W/m2\r\n", COL_WIDTH, "직달일사",
+                      KMA_TO_RADI(p_kma->direct_radiation.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f W/m2");
+    }
   }
 }
 
@@ -815,8 +1071,15 @@ if (p_kma->current_weather.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f \r\n", COL_WIDTH, "현재일기",
-                    KMA_TO_GENERAL(p_kma->current_weather.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f \r\n", COL_WIDTH, "현재일기",
+                      KMA_TO_GENERAL(p_kma->current_weather.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f");
+    }
   }
 }
 
@@ -825,12 +1088,20 @@ if (p_kma->soil_moisture_10cm.enable)
   err = p_kma->soil_moisture_10cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 10cm", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 10cm",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "토양수분 10cm",
-                    KMA_TO_GENERAL(p_kma->soil_moisture_10cm.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "토양수분 10cm",
+                      KMA_TO_GENERAL(p_kma->soil_moisture_10cm.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f %");
+    }
   }
 }
 
@@ -839,12 +1110,20 @@ if (p_kma->soil_moisture_20cm.enable)
   err = p_kma->soil_moisture_20cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 20cm", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 20cm",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "토양수분 20cm",
-                    KMA_TO_GENERAL(p_kma->soil_moisture_20cm.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "토양수분 20cm",
+                      KMA_TO_GENERAL(p_kma->soil_moisture_20cm.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f %");
+    }
   }
 }
 
@@ -853,12 +1132,20 @@ if (p_kma->soil_moisture_30cm.enable)
   err = p_kma->soil_moisture_30cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 30cm", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 30cm",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "토양수분 30cm",
-                    KMA_TO_GENERAL(p_kma->soil_moisture_30cm.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "토양수분 30cm",
+                      KMA_TO_GENERAL(p_kma->soil_moisture_30cm.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f %");
+    }
   }
 }
 
@@ -867,12 +1154,20 @@ if (p_kma->soil_moisture_50cm.enable)
   err = p_kma->soil_moisture_50cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 50cm", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 50cm",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "토양수분 50cm",
-                    KMA_TO_GENERAL(p_kma->soil_moisture_50cm.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "토양수분 50cm",
+                      KMA_TO_GENERAL(p_kma->soil_moisture_50cm.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f %");
+    }
   }
 }
 
@@ -885,8 +1180,15 @@ if (p_kma->illuminance.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f klux\r\n", COL_WIDTH, "조도",
-                    KMA_TO_ILLUMINANCE(p_kma->illuminance.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f klux\r\n", COL_WIDTH, "조도",
+                      KMA_TO_ILLUMINANCE(p_kma->illuminance.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f klux");
+    }
   }
 }
 
@@ -895,12 +1197,20 @@ if (p_kma->wind_speed_1_5m.enable)
   err = p_kma->wind_speed_1_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "풍속 1.5m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "풍속 1.5m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "풍속 1.5m",
-                    KMA_TO_GENERAL(p_kma->wind_speed_1_5m.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "풍속 1.5m",
+                      KMA_TO_GENERAL(p_kma->wind_speed_1_5m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f m/s");
+    }
   }
 }
 
@@ -909,12 +1219,20 @@ if (p_kma->wind_speed_4m.enable)
   err = p_kma->wind_speed_4m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "풍속 4.0m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "풍속 4.0m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "풍속 4.0m",
-                    KMA_TO_GENERAL(p_kma->wind_speed_4m.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "풍속 4.0m",
+                      KMA_TO_GENERAL(p_kma->wind_speed_4m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f m/s");
+    }
   }
 }
 
@@ -923,12 +1241,20 @@ if (p_kma->instant_wind_speed_1_5m.enable)
   err = p_kma->instant_wind_speed_1_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순간풍속 1.5m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순간풍속 1.5m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "순간풍속 1.5m",
-                    KMA_TO_GENERAL(p_kma->instant_wind_speed_1_5m.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "순간풍속 1.5m",
+                      KMA_TO_GENERAL(p_kma->instant_wind_speed_1_5m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f m/s");
+    }
   }
 }
 
@@ -937,12 +1263,20 @@ if (p_kma->instant_wind_speed_4m.enable)
   err = p_kma->instant_wind_speed_4m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순간풍속 4.0m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순간풍속 4.0m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "순간풍속 4.0m",
-                    KMA_TO_GENERAL(p_kma->instant_wind_speed_4m.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "순간풍속 4.0m",
+                      KMA_TO_GENERAL(p_kma->instant_wind_speed_4m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f m/s");
+    }
   }
 }
 
@@ -951,12 +1285,20 @@ if (p_kma->temperature_0_5m.enable)
   err = p_kma->temperature_0_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "기온 0.5m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "기온 0.5m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "기온 0.5m",
-                    KMA_TO_TEMPERATURE(p_kma->temperature_0_5m.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "기온 0.5m",
+                      KMA_TO_TEMPERATURE(p_kma->temperature_0_5m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f C");
+    }
   }
 }
 
@@ -965,12 +1307,20 @@ if (p_kma->temperature_4m.enable)
   err = p_kma->temperature_4m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "기온 4.0m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "기온 4.0m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "기온 4.0m",
-                    KMA_TO_TEMPERATURE(p_kma->temperature_4m.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "기온 4.0m",
+                      KMA_TO_TEMPERATURE(p_kma->temperature_4m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "%5.2f C");
+    }
   }
 }
 
@@ -979,12 +1329,20 @@ if (p_kma->humidity_0_5m.enable)
   err = p_kma->humidity_0_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "습도 0.5m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "습도 0.5m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "습도 0.5m",
-                    KMA_TO_GENERAL(p_kma->humidity_0_5m.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "습도 0.5m",
+                      KMA_TO_GENERAL(p_kma->humidity_0_5m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "습도 0.5m");
+    }
   }
 }
 
@@ -993,12 +1351,20 @@ if (p_kma->humidity_4m.enable)
   err = p_kma->humidity_4m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "습도 4.0m", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "습도 4.0m",
+                    err);
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "습도 4.0m",
-                    KMA_TO_GENERAL(p_kma->humidity_4m.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f %\r\n", COL_WIDTH, "습도 4.0m",
+                      KMA_TO_GENERAL(p_kma->humidity_4m.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "습도 4.0m");
+    }
   }
 }
 
@@ -1011,12 +1377,17 @@ if (p_kma->tacometer.enable)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f rpm\r\n", COL_WIDTH, "타코미터",
-                    KMA_TO_GENERAL(p_kma->tacometer.data));
+    if (min == eAWS_DATA_AVG)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f rpm\r\n", COL_WIDTH, "타코미터",
+                      KMA_TO_GENERAL(p_kma->tacometer.data));
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "타코미터");
+    }
   }
 }
-
-
 
   vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
 
@@ -1045,22 +1416,22 @@ int32_t aws_menu_display(p_shell_context_t ctx)
     line = 0;
     if (get_config_app()->cdma_use)
     {
-      line = print_cdmaInfo(1, 30);
+      line = print_cdmaInfo(1, DISP_WIDTH+3);
     }
     if (get_config_app()->direct_use)
     {
-      line += print_directInfo(1 + line, 30);
+      line += print_directInfo(1 + line, DISP_WIDTH+3);
     }
     if (get_config_app()->eth_use)
     {
-      line += print_ethInfo(1 + line, 30);
+      line += print_ethInfo(1 + line, DISP_WIDTH+3);
     }
 
 
     line = 0;
-    line = print_awsRealLefinfo(1, 60, awsMode, NULL);
+    line = print_awsRealLefinfo(1, (DISP_WIDTH+3)*2, awsMode, NULL);
 
-    print_rainInfo(1+line,60);
+    print_rainInfo(1 + line, (DISP_WIDTH + 3) * 2);
 
     key = get_key(500);
 

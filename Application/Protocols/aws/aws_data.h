@@ -38,6 +38,7 @@ typedef struct aws_data_s2
   uint16_t min;
   uint16_t data;
   uint16_t spec;
+  uint32_t last_time;
 } aws_data2_t;
 
 typedef struct
@@ -218,7 +219,7 @@ typedef struct
   aws_data_t relative_humidity;       // 10. 상대습도 (1분 평균)
   aws_data_t precipitation_fine;      // 11. 강수량 (0.1 mm)
 
-  aws_data_t solar_radiation;        // 1. 일사 (누적값)
+  aws_data_t solar_radiation;        // 1. 일사 (누적값)  [누적 값(MJ/m2) × 100]
   aws_data_t sunshine_duration;      // 2. 일조 (누적 시간)
   aws_data_t surface_temperature;    // 3. 지면온도 (1분 평균)
   aws_data_t grass_temperature;      // 4. 초상온도 (1분 평균)

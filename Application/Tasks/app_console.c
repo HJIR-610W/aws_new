@@ -548,6 +548,13 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
       snprintf(out, outSize, "[%s]", list[hjwind->rs485_port]);
     }
     break;
+    case S_T_SOLAR_RADIATION_OTT_SMP3:
+    {
+      ott_smp3_config_t *ott = (ott_smp3_config_t *)cfg;
+      rs485_get_portList(list, sizeof(list));
+      snprintf(out, outSize, "[%s]", list[ott->port]);
+    }
+    break;
     default:
       out[0] = 0;
       break;
@@ -693,6 +700,15 @@ uint8_t print_hjtemp_cfg(p_shell_context_t ctx, hjtemp_config_t *hjtempCfg, uint
   return cnt;
 }
 
+#define OTT_SMP3_CFG_PORT 0
+uint8_t print_ott_smp3_cfg(p_shell_context_t ctx, ott_smp3_config_t *ott, uint8_t cnt)
+{
+  const char *portNameList[10];
+
+   rs485_get_portList(portNameList, _countof(portNameList));
+   ctx->printf("%2d.포트       :%s\r\n", cnt++, portNameList[ott->port]);  // 고정
+   return cnt;
+}
 
 #define HJSNOW_CFG_MENU_PHY 0
 #define HJSNOW_CFG_MENU_PORT 1
@@ -1193,6 +1209,39 @@ void hjhumi_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
       break;
   }
 }
+
+void ott_smp3_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t row_idx;
+  int32_t dec;
+  ott_smp3_config_t *ott;
+  const char *portList[10];
+  uint16_t portListCnt;
+
+  ott = get_sensor_config(sensor);
+  if (ott == NULL)
+  {
+    return;
+  }
+
+  switch (menu_index)
+  {
+    case OTT_SMP3_CFG_PORT:
+      portListCnt = rs485_get_portList(portList, _countof(portList));
+      row_idx = select_indexFromList(ctx, portList, NULL, portListCnt, true);
+
+      if (row_idx > 0)
+      {
+        ott->port = row_idx - 1;
+        save_config_sensor();
+      }
+
+      break;
+
+    default:
+      break;
+  }
+}
 void hjsnow_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t dec;
@@ -1276,7 +1325,8 @@ const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_SNOW_HJ, .config_set = hjsnow_config_set},
     {.sensorType = S_T_GENERAL_485, .config_set = rs485_config_set},
     {.sensorType = S_T_TEMPERATURE_HJ, .config_set = hjtemp_config_set},
-    {.sensorType = S_T_HUMINITY_HJ, .config_set = hjhumi_config_set}};
+    {.sensorType = S_T_HUMINITY_HJ, .config_set = hjhumi_config_set},
+    {.sensorType = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_config_set}};
 
 /*
  센서 개별
@@ -1312,6 +1362,9 @@ int32_t print_common_cfg(p_shell_context_t ctx, sensor_t *sensor, uint8_t c)
       break;
     case S_T_HUMINITY_HJ:
       cnt = print_hjtemp_cfg(ctx, get_sensor_config(sensor), cnt);
+      break;
+    case S_T_SOLAR_RADIATION_OTT_SMP3:
+      cnt = print_ott_smp3_cfg(ctx, get_sensor_config(sensor), cnt);
       break;
   }
   return cnt;
@@ -1857,6 +1910,7 @@ int32_t menu_sensor(p_shell_context_t ctx)
 
   do
   {
+    //모든 센서의 출력, 기본정보 출력
     cnt = select_indexFromList(ctx, NULL, print_menu_sensor, 0, false);
     if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
     {
@@ -2756,7 +2810,7 @@ void config_hj_reset(void)
   sensor_add(&config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg = get_sensor_config(&config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg->physical_layer  = ePHYSICAL_RS232;
-  hjsnow_cfg->port = eRS232_C;
+  hjsnow_cfg->port = eRS232_HART_D;
 
   // 기압[RM YOUNG]
   config.sensor[A7_PRESSURE].type = S_T_ADC;
@@ -2770,28 +2824,30 @@ void config_hj_reset(void)
   adc_config->outMaxV = 1000;
   adc_config->outMinV = 0;
 
-  // 일사
+  // 일사 CMP3 0~1.0VDC 
   config.sensor[B1_SOLAR_RADIATION].type = S_T_ADC;
   sensor_add(&config.sensor[B1_SOLAR_RADIATION]);
   adc_config = get_sensor_config(&config.sensor[B1_SOLAR_RADIATION]);
   adc_config->channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 200000;
-  adc_config->lowScale = 0;
-  adc_config->scale = 100;
-  adc_config->outMaxV = 1000;
+  adc_config->highScale = 5000;//5v
+  adc_config->lowScale = 0;//0v
+  adc_config->scale = 1000;
+  adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
-  // 일조
+
+  // 일조 CSD3 센서 출력 : 120 w/m2 이상일 때 1 VDC, 이하일 때 0 VDC
+  // 센서값 자체를 전압으로 받는다.
   config.sensor[B2_SUNSHINE_DURATION].type = S_T_ADC;
   sensor_add(&config.sensor[B2_SUNSHINE_DURATION]);
   adc_config = get_sensor_config(&config.sensor[B2_SUNSHINE_DURATION]);
   adc_config->channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 200000;
+  adc_config->highScale = 5000;
   adc_config->lowScale = 0;
-  adc_config->scale = 100;
-  adc_config->outMaxV = 1000;
+  adc_config->scale = 1000;
+  adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
   // 지중온도 5cm

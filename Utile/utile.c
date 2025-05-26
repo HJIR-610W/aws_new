@@ -398,3 +398,15 @@ uint8_t calculate_xor_checksum(const uint8_t* data, uint16_t length)
   }
   return xor_val;
 }
+
+
+
+float round_to(float value, int digits)
+{
+  float scale = powf(10.0f, digits);     
+	volatile float round_value;
+
+  round_value = roundf(value * scale);
+
+  return round_value/scale;  
+}

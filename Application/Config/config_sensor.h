@@ -110,6 +110,11 @@ typedef struct hjsnow_config_s
   uint8_t port;
 } hjsnow_config_t;
 
+typedef struct ottSMP3_config_s
+{
+  uint8_t port;
+} ott_smp3_config_t;
+
 
 typedef struct config_manage_s
 {
@@ -137,6 +142,8 @@ typedef struct config_manage_s
   hjwindDirection_config_t hjwindDir[1];
   uint8_t hjsnow_cnt;
   hjsnow_config_t hjsnow[2];
+  uint8_t ott_smp3_cnt;
+  ott_smp3_config_t ott_smp3[1];
 } config_sensor_t;
 
 #define WRITE_CFG_SENSOR(x)                                                                \

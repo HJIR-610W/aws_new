@@ -14,23 +14,16 @@ const osThreadAttr_t kPanelTask_attributes = {
 
 void panelTask(void *arg)
 {
-
   while (1)
   {
-
- send_panel();
+    send_panel();
     osDelay(1000);
   }
 }
 
-
-
-
 void panelTask_init(void)
 {
-
- panel_init();
-
+  panel_init();
 
   osThreadNew(panelTask, NULL, &kPanelTask_attributes);
 }

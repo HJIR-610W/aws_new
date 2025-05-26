@@ -202,6 +202,9 @@ int32_t get_driverNum(eSENSOR_MODEL_t type)
   case S_T_HUMINITY_HJ:
     num = TEMP_HJ_HUMINITY;
     break;
+  case S_T_SOLAR_RADIATION_OTT_SMP3:
+    num = OTT_SMP3_MODBUS;
+     break;
   }
   return num;
 }
@@ -265,6 +268,7 @@ void sensor_init(void)
           para = get_sensor_config(&p_sensor[A7_PRESSURE]);
           g_sensor_driver[A7_PRESSURE] = barometer_open(num, para);
           break;
+        
         case B5_SOIL_TEMPERATURE_5CM:
           num = get_driverNum(p_sensor[B5_SOIL_TEMPERATURE_5CM].type);
           para = get_sensor_config(&p_sensor[B5_SOIL_TEMPERATURE_5CM]);
@@ -318,7 +322,7 @@ void sensor_init(void)
         case B1_SOLAR_RADIATION:
           num = get_driverNum(p_sensor[B1_SOLAR_RADIATION].type);
           para = get_sensor_config(&p_sensor[B1_SOLAR_RADIATION]);
-          g_sensor_driver[B1_SOLAR_RADIATION] = solarRadiation_open(num, para);
+          g_sensor_driver[B1_SOLAR_RADIATION] = solar_radiation_open(num, para);
           break;
         case N10_AIR_TEMPERATURE_50CM:
           num = get_driverNum(p_sensor[N10_AIR_TEMPERATURE_50CM].type);

@@ -1610,6 +1610,15 @@
             <group>
                 <name>solar_radiation</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\solar_radiation\ott_smp3.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\solar_radiation\ott_smp3.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\solar_radiation\ott_smp3_define.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\solar_radiation\solar_radiation.c</name>
                 </file>
                 <file>
