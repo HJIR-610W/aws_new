@@ -182,10 +182,10 @@ int32_t write_rain_1min(DATE_TIME_BUF *nt,uint16_t rain_1min)
   return err;
 }
 
-int32_t write_sunshine_1min(DATE_TIME_BUF *nt, uint32_t sunshine_1min)
+int32_t write_sunshine_1min(DATE_TIME_BUF *nt, uint16_t sunshine_1min)
 {
   int32_t err;
-  err = write_data_year(nt, &sunshine_1min, 4, LOGGING_SUNSHINE_1MIN, 1);
+  err = write_data_year(nt, &sunshine_1min, sizeof(uint16_t), LOGGING_SUNSHINE_1MIN, 1);
 
   return err;
 }
@@ -204,11 +204,10 @@ void loggingTask(void *arg)
   uint32_t period_min;
   logging_t logging;
   uint16_t rain;
-  uint32_t sun;
   AWS_DATA_STRUCT *p_aws;
 
   uint32_t offset;
-  
+  uint16_t sunshine;
   while (1)
   {
     // 메시지 큐에서 데이터 수신
@@ -231,8 +230,8 @@ void loggingTask(void *arg)
             err = write_rain_1min(&logging.ct, rain);
             update_loggingErr(&g_logging_system.status_group, err, LOGGING_RAIN_ERR);
             offset = OFFSET_OF_SUN();
-            memcpy(&sun, &logging.data[9 + offset], sizeof(uint32_t)); 
-            err = write_sunshine_1min(&logging.ct, sun);
+            memcpy(&sunshine, &logging.data[9 + offset], sizeof(uint16_t));
+            err = write_sunshine_1min(&logging.ct, sunshine);
             update_loggingErr(&g_logging_system.status_group, err, LOGGING_RAIN_ERR);
             break;
         }

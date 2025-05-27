@@ -1,26 +1,23 @@
 
 
-#include "data_rain.h"
+#include "data_accu.h"
 
 #include <stdint.h>
 #include <string.h>
 
+#include "app_dataLogging.h"
 #include "app_file.h"
+#include "dev_io.h"
 #include "ff.h"  // FatFs 관련 헤더
-#include "utile_time.h"
-
 #include "task_logging.h"
 #include "user_heap.h"
-#include "app_dataLogging.h"
-#include "dev_io.h"
-
 #include "utile_data.h"
+#include "utile_time.h"
 
 #define MINUTES_PER_DAY 1440
 #define DAYS_IN_YEAR 366
 
-
-//1분마다 저장된 년도의 모든 우량 데이터 가져옴
+// 1분마다 저장된 1년치 우량량 데이터 읽기
 int32_t read_rain_1min(uint16_t year, uint16_t *rain_data, uint32_t read_size)
 {
   char path[50];
@@ -39,7 +36,8 @@ int32_t read_rain_1min(uint16_t year, uint16_t *rain_data, uint32_t read_size)
   return 1;
 }
 
-int32_t read_sunshine_1min(uint16_t year, uint32_t *sunshine_data, uint32_t read_size)
+//1분마다 저장된 1년치 일조 데이터 읽기
+int32_t read_sunshine_1min(uint16_t year, uint16_t *sunshine_data, uint32_t read_size)
 {
   char path[50];
   FRESULT fret;
@@ -151,6 +149,9 @@ uint16_t get_monthly_rain(const uint16_t *rain_days, int year, int month, int da
   return monthly_rain[month-1];
 }
 
+/**
+ * @brief 일간 우량 자료로 년간 우량 계산
+ */
 uint16_t get_yearly_rain(const uint16_t *rain_days, int year, int month, int day)
 {
   if (rain_days == NULL)
@@ -169,30 +170,32 @@ uint16_t get_yearly_rain(const uint16_t *rain_days, int year, int month, int day
   return sum;
 }
 
-
-
+/**
+ * @brief 1분 자료로 10분 우량 산출
+ * 00:01:00 ~ 00:10:00 10분 누적 자료
+ * 예)
+ * 요청시간이 00:02:00이면
+ * 00:01:00
+ * 00:02:00
+ * 누적 산출
+ * 요청시간이 00:10:00이면
+ * 00:10:00 
+ * 누적산출
+ */
 uint32_t get_10min_rain(const uint16_t *rain_minutes, int year, int month, int day, int hour,
                          int min)
 {
   uint32_t offset = 0;
-  uint32_t start;
   uint32_t sum = 0;
   uint32_t read_cnt;
 
   offset = get_minute_index(year, month, day, hour, min);
 
-  if (min % 10 != 0)
+  read_cnt = min % 10 + 1;
+  while (read_cnt)
   {
-    read_cnt = min % 10 + 1;
-    while (read_cnt)
-    {
-      sum += rain_minutes[offset--];
-      read_cnt--;
-    }
-  }
-  else
-  {
-    sum = rain_minutes[offset];
+    sum += rain_minutes[offset--];
+    read_cnt--;
   }
 
   return sum;

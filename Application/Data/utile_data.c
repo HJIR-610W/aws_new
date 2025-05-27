@@ -8,7 +8,9 @@
 
 #define DATA_DAYS_IN_YEAR 366
 
-void compute_daily_data(uint32_t *data_minutes, uint32_t *data_days, int year)
+
+
+void compute_daily_data(uint8_t type, void *data_minutes, void *data_days, int year)
 {
   uint32_t i;
   uint32_t day_index = 0;
@@ -27,16 +29,33 @@ void compute_daily_data(uint32_t *data_minutes, uint32_t *data_days, int year)
 
       for (i = 0; i < DATA_MINUTES_PER_DAY; i++)
       {
-        sum += data_minutes[minute_index++];
+        if (type == 16)
+        {
+          uint16_t *src = (uint16_t *)data_minutes;
+          sum += src[minute_index++];
+        }
+        else if (type == 32)
+        {
+          uint32_t *src = (uint32_t *)data_minutes;
+          sum += src[minute_index++];
+        }
       }
 
-      data_days[day_index++] = (uint16_t)sum;
+      if (type == 16)
+      {
+        uint16_t *dst = (uint16_t *)data_days;
+        dst[day_index++] = (uint16_t)sum;
+      }
+      else if (type == 32)
+      {
+        uint32_t *dst = (uint32_t *)data_days;
+        dst[day_index++] = sum;
+      }
     }
   }
 }
 
-
-void compute_monthly_data(const uint32_t *data_days, int year, uint32_t *data_month)
+void compute_monthly_data(uint8_t type, const void *data_days, int year, uint32_t *data_month)
 {
   uint16_t days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
@@ -50,66 +69,123 @@ void compute_monthly_data(const uint32_t *data_days, int year, uint32_t *data_mo
     uint32_t sum = 0;
     for (int d = 0; d < days_in_month[month]; d++)
     {
-      sum += data_days[index++];
+      if (type == 16)
+      {
+        const uint16_t *src = (const uint16_t *)data_days;
+        sum += src[index++];
+      }
+      else if (type == 32)
+      {
+        const uint32_t *src = (const uint32_t *)data_days;
+        sum += src[index++];
+      }
     }
-    data_month[month] = (uint32_t)sum;
+
+      data_month[month] = sum;
+ 
   }
 }
 
-
-
-uint32_t get_daily_accu(const uint32_t *data_days, int year, int month, int day)
+int32_t get_daily_accu(uint8_t type, const void *data_days, int year, int month, int day)
 {
   int index = dayOfYear(year, month, day);
   if (index <= 0 || index > 366)
-    return -1;
+    return -1;  // 오류 값 (unsigned -1)
 
-  return data_days[index - 1];  // 배열 index는 0-based
+  index -= 1;  // 0-based 인덱스
+
+  if (type == 16)
+  {
+    const uint16_t *src = (const uint16_t *)data_days;
+    return (uint32_t)src[index];
+  }
+  else if (type == 32)
+  {
+    const uint32_t *src = (const uint32_t *)data_days;
+    return src[index];
+  }
+
+  return -1;  // 잘못된 type
 }
 
-uint16_t get_monthly_accu(const uint32_t *data_days, int year, int month, int day)
+uint16_t get_monthly_accu(uint8_t type,const void *data_days, int year, int month)
 {
   uint32_t monthly_data[12];
 
-  compute_monthly_data(data_days, year, monthly_data);
+  compute_monthly_data(type,data_days, year, monthly_data);
 
   return monthly_data[month - 1];
 }
 
-uint32_t get_yearly_accu(const uint32_t *data_days, int year, int month, int day)
+uint32_t get_yearly_accu(uint8_t type, const void *data_days, int year, int month, int day)
 {
-  if (data_days == NULL)
+  if (!data_days)
     return 0;
 
   int doy = dayOfYear(year, month, day);
   if (doy <= 0 || doy > 366)
     return 0;
 
-  uint16_t sum = 0;
-  for (int i = 0; i < doy; i++)
+  uint32_t sum = 0;
+
+  if (type == 16)
   {
-    sum += data_days[i];  //
+    const uint16_t *src = (const uint16_t *)data_days;
+    for (int i = 0; i < doy; i++)
+    {
+      sum += src[i];
+    }
+  }
+  else if (type == 32)
+  {
+    const uint32_t *src = (const uint32_t *)data_days;
+    for (int i = 0; i < doy; i++)
+    {
+      sum += src[i];
+    }
+  }
+  else
+  {
+    return 0;  // 잘못된 type
   }
 
   return sum;
 }
 
-uint32_t get_hourly_accu(uint32_t *data_minutes, int year, int month, int day, int hour, int min)
+uint32_t get_hourly_accu(uint8_t type, const void *data_minutes, int year, int month, int day,
+                         int hour, int min)
 {
-  if (hour < 0 || hour >= 24 || min < 0 || min >= 60)
-    return -1;
+  if (!data_minutes || hour < 0 || hour >= 24 || min < 0 || min >= 60)
+    return 0xFFFFFFFF;
 
   int doy = dayOfYear(year, month, day);
   if (doy <= 0 || doy > DATA_DAYS_IN_YEAR)
-    return -1;
+    return 0xFFFFFFFF;
 
-  // 시작 시간은 항상 정시 0분
-  uint32_t start_index = (doy - 1) * DATA_MINUTES_PER_DAY + hour * 60 + 0 + 1;
+  // 시작 인덱스: 00분 기준 (주의: +1이면 00:01부터 시작하는 경우임, 여기선 00:00부터)
+  uint32_t start_index = (doy - 1) * DATA_MINUTES_PER_DAY + hour * 60;
 
   uint32_t sum = 0;
-  for (int i = 0; i <= min; i++)  // 0분부터 현재 분까지 포함 (min 포함)
+
+  if (type == 16)
   {
-    sum += data_minutes[start_index + i];
+    const uint16_t *src = (const uint16_t *)data_minutes;
+    for (int i = 0; i <= min; i++)
+    {
+      sum += src[start_index + i];
+    }
+  }
+  else if (type == 32)
+  {
+    const uint32_t *src = (const uint32_t *)data_minutes;
+    for (int i = 0; i <= min; i++)
+    {
+      sum += src[start_index + i];
+    }
+  }
+  else
+  {
+    return 0xFFFFFFFF;  // invalid type
   }
 
   return sum;

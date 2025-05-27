@@ -16,7 +16,7 @@
 #include "utile_filter.h"
 #include "utile_time.h"
 #include "kma3.h"
-#include "Data\data_rain.h"
+#include "Data\data_accu.h"
 #include "dev_io.h"
 #include "Data\utile_data.h"
 const float kSunshine_threshold = 0.8f;
@@ -994,7 +994,7 @@ void calculate_rain(void)
 
   //p_rain_1min 2025-01-01 00:01:00 부터 저장되는에 인덱스 1이다 0 미사용
   daily_rain = get_daily_rain(p_rain_days, ct.Year, ct.Month, ct.Day);
-  hourly_rain = get_hourly_rain(&p_rain_1min[1], ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+  hourly_rain = get_hourly_rain(p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
   monthly_rain = get_monthly_rain(p_rain_days, ct.Year, ct.Month, ct.Day);
   yearly_rain = get_yearly_rain(p_rain_days, ct.Year, ct.Month, ct.Day);
   min10_rain = get_10min_rain(p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
@@ -1024,20 +1024,20 @@ void calculate_rain(void)
   Sysinfo.mRain.sYearRain = yearly_rain;    // 년간 강수량
 }
 
-#define SUNSHINE_TOTAL (4*60*24*366+4)
-#define SUNSHINE_DAYS_SIZE (366*4)
+#define SUNSHINE_TOTAL (sizeof(uint16_t) * 60 * 24 * 366 + sizeof(uint16_t))
+#define SUNSHINE_DAYS_SIZE (366*sizeof(uint16_t))
 
 void calculate_sunshine(void)
 {
   DATE_TIME_BUF ct = Date_Time;
 
-  uint32_t *p_sunshine_1min = aws_malloc(SUNSHINE_TOTAL);
-  uint32_t *p_sunshine_days = aws_malloc(SUNSHINE_DAYS_SIZE);
+  uint16_t *p_sunshine_1min = aws_malloc(SUNSHINE_TOTAL);
+  uint16_t *p_sunshine_days = aws_malloc(SUNSHINE_DAYS_SIZE);
 
   ct = Date_Time;
 
   read_sunshine_1min(ct.Year, p_sunshine_1min, SUNSHINE_TOTAL);
-  compute_daily_data(p_sunshine_1min, p_sunshine_days, ct.Year);
+  compute_daily_data(DATA_SIZE_16,p_sunshine_1min, p_sunshine_days, ct.Year);
 
   uint16_t daily_sunshine = 0;
   uint16_t hourly_sunshine = 0;
@@ -1045,11 +1045,11 @@ void calculate_sunshine(void)
   uint16_t yearly_sunshine = 0;
 
   // p_sunshine_1min 2025-01-01 00:01:00 부터 저장되는에 인덱스 1이다 0 미사용
-  daily_sunshine = get_daily_accu(p_sunshine_days, ct.Year, ct.Month, ct.Day);
+  daily_sunshine = get_daily_accu(DATA_SIZE_16,p_sunshine_days, ct.Year, ct.Month, ct.Day);
   hourly_sunshine =
-      get_hourly_accu(&p_sunshine_1min[1], ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
-  monthly_sunshine = get_monthly_accu(p_sunshine_days, ct.Year, ct.Month, ct.Day);
-  yearly_sunshine = get_yearly_accu(p_sunshine_days, ct.Year, ct.Month, ct.Day);
+      get_hourly_accu(DATA_SIZE_16, p_sunshine_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+  monthly_sunshine = get_monthly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month);
+  yearly_sunshine = get_yearly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
 
   set_sunshine_monthly(monthly_sunshine);
   set_sunshine_yearly(yearly_sunshine);
