@@ -35,7 +35,7 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 
   snprintf(g_task_name,sizeof(g_task_name),"SOF,%s",pcTaskName);
  // debug_puts_nonos(g_task_name);
-  //debug_printf("SOF,%s",pcTaskName);
+  //io_printf("SOF,%s",pcTaskName);
             __asm("BKPT #0");
   HAL_NVIC_SystemReset();
 }
@@ -54,5 +54,5 @@ void vApplicationMallocFailedHook(void)
    FreeRTOSConfig.h, and the xPortGetFreeHeapSize() API function can be used
    to query the size of free heap space that remains (although it does not
    provide information on how the remaining heap might be fragmented). */
-     debug_printf("MallocFailed\r\n");
+     io_printf("MallocFailed\r\n");
 }

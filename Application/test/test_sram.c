@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "dev_io.h"
-#define printf debug_printf
+#define printf io_printf
 // 테스트할 메모리 크기 (4MB)
 #define MEM_SIZE (4 * 1024 * 1024)
 // 테스트할 메모리 시작 주소 (★★★★★ 실제 하드웨어 주소로 변경 필수 ★★★★★)

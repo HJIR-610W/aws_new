@@ -109,7 +109,7 @@ void send_measurement(void *queue,void *data)
 
   if(status != osOK)
   {
-    debug_printf("os_send_measureData fail %d\r\n",status);
+    io_printf("os_send_measureData fail %d\r\n",status);
   }
 }
 
@@ -130,7 +130,7 @@ bool is_measurement_250(void *data,uint32_t timeout)
 
   if (status != osOK)
   {
-    debug_printf("is_measurement fail %d\r\n", status);
+    io_printf("is_measurement fail %d\r\n", status);
     return false;
   }
 

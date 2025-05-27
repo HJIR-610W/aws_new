@@ -340,25 +340,25 @@ int get_confirm_input(void)
 {
   char input[16] = {0};
 
-  debug_printf("계속 진행하려면 yes를 입력하세요.\r\n");
-  debug_printf("확인 문자: ");
+  io_printf("계속 진행하려면 yes를 입력하세요.\r\n");
+  io_printf("확인 문자: ");
 
   int ret = cli_scanf_s("%15s", input);  // 문자열 입력
 
   if (ret <= 0)
   {
-    debug_printf("입력이 실패했습니다.\r\n");
+    io_printf("입력이 실패했습니다.\r\n");
     return MENU_ABORT;
   }
 
   if (strcmp(input, PASSWORD) == 0)
   {
-    debug_printf("확인 완료.\r\n");
+    io_printf("확인 완료.\r\n");
     return MENU_OK;
   }
   else
   {
-    debug_printf("오류: 진행이 중단됩니다.\r\n");
+    io_printf("오류: 진행이 중단됩니다.\r\n");
     return MENU_ABORT;
   }
 }
@@ -367,8 +367,8 @@ int32_t get_user_confirm(const char *message)
 {
   char input[5] = {0};
 
-  debug_printf("%s(yes/no)\r\n",message);
-  debug_printf(">>");
+  io_printf("%s(yes/no)\r\n",message);
+  io_printf(">>");
 
   int ret = cli_scanf_s("%4s", input);  // 문자열 입력
 

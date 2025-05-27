@@ -182,7 +182,7 @@ void backup_config_sensor(void)
   f_ret = write_file(PATH_CONFIG_SENSOR_BIN, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor), 0);
   if (f_ret == FR_OK)
   {
-    debug_printf("0:config_sensor.bin 저장되었습니다.\r\n");
+    io_printf("0:config_sensor.bin 저장되었습니다.\r\n");
   }
 }
 
@@ -202,7 +202,7 @@ void restore_config_sensor(void)
     
     if(f_ret != FR_OK)
     {
-      debug_printf("파일 읽기 오류  %d\r\n",f_ret);
+      io_printf("파일 읽기 오류  %d\r\n",f_ret);
       aws_free(p_config);
       return ;
     }
@@ -213,13 +213,13 @@ void restore_config_sensor(void)
         {
           memcpy(&g_config_sensor, p_config, sizeof(config_sensor_t));
           crc_result = true;
-          debug_printf("0:config_sensor.bin 복구되었습니다.\r\n");
+          io_printf("0:config_sensor.bin 복구되었습니다.\r\n");
         }
       }
     
       if (crc_result == false)
       {
-        debug_printf("체크섬 오류\r\n");
+        io_printf("체크섬 오류\r\n");
       }
  
  

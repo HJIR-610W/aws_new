@@ -21,7 +21,7 @@ void menu_data_display(void)
   AWS_DATA_STRUCT aws;
 DATE_TIME_BUF nt;
 uint32_t startTime;
-  debug_printf("시작 시간을 입력해주세요(yyyy-mm-dd hh:mm)\r\n");
+  io_printf("시작 시간을 입력해주세요(yyyy-mm-dd hh:mm)\r\n");
   ret = cli_scanf_s("%04d-%02d-%02d %02d:%02d",&year,&month,&day,&hour,&min);
 
   if (ret == CLI_KEYCODE_CTRL_C)
@@ -29,7 +29,7 @@ uint32_t startTime;
     return;
   }
 
-  debug_printf("읽을 갯수를 입력해주세요요\r\n");
+  io_printf("읽을 갯수를 입력해주세요요\r\n");
   ret = cli_scanf_s("%d", &cnt);
 
   if (ret == CLI_KEYCODE_CTRL_C)
@@ -45,40 +45,40 @@ uint32_t startTime;
   {
      read_data_month(&nt, &aws, sizeof(aws), LOGGING_AWS, 1);
 
-     debug_printf("%04d-%02d-%02d %02d:%02d\r\n", nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min);
+     io_printf("%04d-%02d-%02d %02d:%02d\r\n", nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min);
 
 
-     debug_printf("온도      :%6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_TEMP(aws.mTemperature.sReal),
+     io_printf("온도      :%6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_TEMP(aws.mTemperature.sReal),
                   READ_TEMP(aws.mTemperature.sMin), (aws.mTemperature.sMax));
 
 
 
-     debug_printf("풍향      :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mDirection.sReal),
+     io_printf("풍향      :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mDirection.sReal),
                   READ_X10(aws.mWind.mDirection.sMax));
 
-     debug_printf("풍속      :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mSpeed.sReal),
+     io_printf("풍속      :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mSpeed.sReal),
                   READ_X10(aws.mWind.mSpeed.sMax));
 
-     debug_printf("강우량(일): %6.1f 월: %6.1f 시간: %6.1f\r\n", READ_X10(aws.mRainFall.sReal),
+     io_printf("강우량(일): %6.1f 월: %6.1f 시간: %6.1f\r\n", READ_X10(aws.mRainFall.sReal),
                   READ_X10(aws.mRainFall.sMin), READ_X10(aws.mRainFall.sMax));
 
-     debug_printf("기압      : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_X10(aws.mBarometric.sReal),
+     io_printf("기압      : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_X10(aws.mBarometric.sReal),
                   READ_X10(aws.mBarometric.sMin), READ_X10(aws.mBarometric.sMax));
 
-     debug_printf("강우감지  : %6d\r\n", aws.mRainDetect.sReal);
+     io_printf("강우감지  : %6d\r\n", aws.mRainDetect.sReal);
 
-     debug_printf("적설      : %6d\r\n", aws.mSnowFall.sReal);
+     io_printf("적설      : %6d\r\n", aws.mSnowFall.sReal);
 
-     debug_printf("습도      : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_X10(aws.mHumidity.sReal),
+     io_printf("습도      : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_X10(aws.mHumidity.sReal),
                   READ_X10(aws.mHumidity.sMin), READ_X10(aws.mHumidity.sMax));
 
-     debug_printf("일사      : %7.2f 하루 총: %.2f\r\n", READ_X100(aws.mSolarRad.sReal), READ_X100(aws.mSolarRad.sMax));
-     debug_printf("일조      : %6d  하루 총: %d\r\n", aws.mSunshine.sReal, aws.mSunshine.sMax);
+     io_printf("일사      : %7.2f 하루 총: %.2f\r\n", READ_X100(aws.mSolarRad.sReal), READ_X100(aws.mSolarRad.sMax));
+     io_printf("일조      : %6d  하루 총: %d\r\n", aws.mSunshine.sReal, aws.mSunshine.sMax);
 
 
 // 지면온도 / 초상온도 / 지중온도
 #define PRINT_RIX(label, obj) \
-  debug_printf(label " : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_TEMP((obj).sReal),  READ_TEMP((obj).sMin),  READ_TEMP((obj).sMax))
+  io_printf(label " : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_TEMP((obj).sReal),  READ_TEMP((obj).sMin),  READ_TEMP((obj).sMax))
 
     PRINT_RIX("지면온도", aws.mGndTemp);
     PRINT_RIX("초상온도", aws.mGrassTemp);
@@ -103,22 +103,22 @@ uint32_t startTime;
 
     for (int i = 0; i < 15; i++)
     {
-      debug_printf("Spare%02d 순간: %d 최소: %d 최대: %d\r\n", i + 1, spareList[i].sReal,
+      io_printf("Spare%02d 순간: %d 최소: %d 최대: %d\r\n", i + 1, spareList[i].sReal,
                    spareList[i].sMin, spareList[i].sMax);
     }
 #endif
     // 상태값 출력
-    debug_printf("Status sReal: 0x%04X sMin: 0x%04X sMax: 0x%04X\r\n", aws.mStatus.sReal,
+    io_printf("Status sReal: 0x%04X sMin: 0x%04X sMax: 0x%04X\r\n", aws.mStatus.sReal,
                  aws.mStatus.sMin, aws.mStatus.sMax);
 
 #if 0 
     // 예비 데이터 (cDataSpare) 출력
-    debug_printf("Data Spare:");
+    io_printf("Data Spare:");
     for (int i = 0; i < sizeof(aws.cDataSpare); i++)
     {
-      debug_printf(" %02X", aws.cDataSpare[i]);
+      io_printf(" %02X", aws.cDataSpare[i]);
     }
-    debug_printf("\r\n");
+    io_printf("\r\n");
 #endif
     startTime += 60;
     time_cvt_secTotime(startTime, &nt);
@@ -134,13 +134,13 @@ int console_menu_data(void)
 
       while (1)
   {
-    debug_printf("+---------------------------------------+\r\n");
-    debug_printf("|       --- 설정 저장/로드 (NVM) ---    |\r\n");
-    debug_printf("+---------------------------------------+\r\n");
-    debug_printf("|  1. 1분자료 확인                      |\r\n");
-    debug_printf("|  2. 1분자료 편집                      |\r\n");
-    debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
-    debug_printf("+---------------------------------------+\r\n");
+    io_printf("+---------------------------------------+\r\n");
+    io_printf("|       --- 설정 저장/로드 (NVM) ---    |\r\n");
+    io_printf("+---------------------------------------+\r\n");
+    io_printf("|  1. 1분자료 확인                      |\r\n");
+    io_printf("|  2. 1분자료 편집                      |\r\n");
+    io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
+    io_printf("+---------------------------------------+\r\n");
 
     status = get_int_input("선택", &choice, 1, 2);
     if (status == MENU_ABORT || status == MENU_BACK)

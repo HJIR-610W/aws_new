@@ -17,7 +17,7 @@
 void Error_Handler(const char *file,const int32_t line)
 {
  
-   debug_printf("%s,%d\r\n",file,line);
+   io_printf("%s,%d\r\n",file,line);
 
 //   __disable_irq();
     

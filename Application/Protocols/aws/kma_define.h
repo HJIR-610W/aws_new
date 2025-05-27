@@ -16,45 +16,108 @@
 #define DATA_TYPE_AGRICULTURAL 4  // 농관용
 #define DATA_TYPE_OBSERVATION 5   // 관측요소에 따라 부여 (5～255 범위)
 
-
+#pragma pack(push, 1)
+// KMA2 구조체 정의 (이전과 동일)
 typedef struct
 {
-  uint16_t header_start;    // FAFB
-  uint8_t protocol_ver_yy;  // 프로토콜버전 년
-  uint8_t protocol_ver_mm;  // 프로토콜버전 월
-  uint8_t protocol_ver_dd;  // 프로토콜버전 일
-  uint8_t date_yy;          // C.1) 년
-  uint8_t date_mm;          // C.2) 월
-  uint8_t date_dd;          // C.3) 일
-  uint8_t time_hh;          // C.4) 시
-  uint8_t time_mm;          // C.5) 분
-  uint8_t time_ss;          // C.6) 초
-  uint16_t password;        // D. 비밀번호
-  uint16_t station_id;      // E. 지점번호
-  char command_str[10];     // F. 명령어
-  uint8_t checksum_xor;     // G. CHECK XOR
-  uint8_t checksum_sum;     // G. CHECK SUM
-  uint16_t header_end;      // H. FFFE
+  uint16_t header_start;
+  uint8_t protocol_yy;  // ... (이하 필드 동일)
+  uint8_t protocol_mm;
+  uint8_t protocol_dd;
+  uint8_t date_yy;
+  uint8_t date_mm;
+  uint8_t date_dd;
+  uint8_t time_hh;
+  uint8_t time_mm;
+  uint8_t time_ss;
+  uint16_t password;
+  uint16_t station_id;
+  char command_str[10];
+  uint8_t checksum_xor;
+  uint8_t checksum_sum;
+  uint16_t header_end;
 } kma2_command_request_t;
 
 typedef struct
 {
-  uint16_t header;
-  uint8_t protocol_year;
-  uint8_t protocol_month;
-  uint8_t protocol_day;
-  uint8_t year;
-  uint8_t month;
-  uint8_t day;
-  uint8_t hour;
-  uint8_t min;
-  uint8_t sec;
+  uint16_t header_start;
+  uint8_t protocol_yy;  // ... (이하 필드 동일)
+  uint8_t protocol_mm;
+  uint8_t protocol_dd;
+  uint8_t date_yy;
+  uint8_t date_mm;
+  uint8_t date_dd;
+  uint8_t time_hh;
+  uint8_t time_mm;
+  uint8_t time_ss;
   uint16_t password;
   uint16_t station_id;
   char command_str[10];
   uint16_t crc;
-  uint16_t end;
+  uint16_t header_end;
 } kma3_command_request_t;
+
+typedef struct
+{
+  uint16_t start_mark;
+  uint8_t protocol_ver_yy;  // ... (이하 필드 동일)
+  uint8_t protocol_ver_mm;
+  uint8_t protocol_ver_dd;
+  uint8_t date_yy;
+  uint8_t date_mm;
+  uint8_t date_dd;
+  uint8_t time_hh;
+  uint8_t time_mm;
+  uint8_t data_type_char;
+  uint8_t data_format_no;
+  uint16_t station_id;
+} kma2_observation_packet_header_t;
+
+typedef struct
+{
+  uint8_t checksum_xor;  // ... (이하 필드 동일)
+  uint8_t checksum_sum;
+  uint16_t end_mark;
+} kma2_observation_packet_footer_t;
+
+typedef struct
+{
+  float temperature;  // ... (이하 필드 및 valid 플래그 동일)
+  float wind_direction_avg;
+  float wind_speed_avg;
+  float gust_wind_direction;
+  float gust_wind_speed;
+  float precipitation_0_5mm;
+  float pressure;
+  uint16_t precipitation_presence;
+  float snowfall_accum;
+  float relative_humidity;
+  float precipitation_0_1mm;
+  float solar_radiation_mj;
+  uint32_t sunshine_duration_sec;
+  float surface_temperature;
+  float grass_temperature;
+  float soil_temp_5cm;
+  float soil_temp_10cm;
+  float soil_temp_20cm;
+  float soil_temp_30cm;
+  float soil_temp_50cm;
+  float soil_temp_1m;
+  float soil_temp_1_5m;
+  float soil_temp_3m;
+  float soil_temp_5m;
+  uint16_t raw_L[10];
+  uint16_t raw_S[10];
+  uint8_t status_X;
+  uint16_t status_Y;
+  uint8_t status_Z;
+  bool valid_A, valid_B, valid_C, valid_D, valid_E, valid_F, valid_G, valid_H, valid_I, valid_J,
+      valid_K;
+  bool valid_a, valid_b, valid_c, valid_d, valid_e_m;
+  bool valid_L[10], valid_S[10];
+  bool valid_X, valid_Y, valid_Z;
+} kma2_observation_fields_t;
+#pragma pack(pop)
 
 // voltage status 8bit
 //  BIT 0: DC 입력 전압 (0: 정상, 1: 비정상)

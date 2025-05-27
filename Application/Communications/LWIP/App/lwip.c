@@ -134,11 +134,11 @@ static void ethernet_link_status_updated(struct netif *netif)
 {
   if (netif_is_up(netif))
   {
-    debug_printf("eth link up\r\n");
+    io_printf("eth link up\r\n");
   }
   else /* netif is down */
   {
-    debug_printf("eth link down\r\n");
+    io_printf("eth link down\r\n");
   }
 }
 

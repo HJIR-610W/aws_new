@@ -21,8 +21,8 @@ void test_di(void)
 
   int32_t prev_state[DI_COUNT] = {-1, -1, -1, -1, -1, -1};  // 초기값 -1: 아직 읽지 않음
 
-  debug_printf("DI_EXT_0 ~ DI_EXT_5 상태 모니터링 시작\r\n");
-  debug_printf("1초마다 상태를 읽어 변경 시 출력됩니다. CTRL+Q로 종료\r\n");
+  io_printf("DI_EXT_0 ~ DI_EXT_5 상태 모니터링 시작\r\n");
+  io_printf("1초마다 상태를 읽어 변경 시 출력됩니다. CTRL+Q로 종료\r\n");
 
   // DI 포트 열기
   for (int i = 0; i < DI_COUNT; i++)
@@ -30,11 +30,11 @@ void test_di(void)
     di_ports[i] = driver_di_open(di_nums[i], 0);
     if (di_ports[i] == NULL)
     {
-      debug_printf("%s open 실패\r\n", di_names[i]);
+      io_printf("%s open 실패\r\n", di_names[i]);
     }
     else
     {
-      debug_printf("%s open 성공\r\n", di_names[i]);
+      io_printf("%s open 성공\r\n", di_names[i]);
     }
   }
 
@@ -47,19 +47,19 @@ void test_di(void)
         int32_t state = driver_di_read(di_ports[i]);
         if (state >= 0 && state != prev_state[i])
         {
-          debug_printf("%s 상태 변경: %s\r\n", di_names[i], (state == 1) ? "High" : "Low");
+          io_printf("%s 상태 변경: %s\r\n", di_names[i], (state == 1) ? "High" : "Low");
           prev_state[i] = state;
         }
         else if (state < 0)
         {
-          debug_printf("%s read 에러: %d\r\n", di_names[i], state);
+          io_printf("%s read 에러: %d\r\n", di_names[i], state);
         }
       }
     }
 
     if (get_key(100) == KEY_CODE_CTRL_Q) 
     {
-      debug_printf("테스트 종료\r\n");
+      io_printf("테스트 종료\r\n");
       break;
     }
   }
@@ -74,9 +74,9 @@ void test_do(void)
   const char *do_names[DO_COUNT] = {"DO_EXT_0", "DO_EXT_1", "DO_EXT_2",
                                     "DO_EXT_3", "DO_EXT_4", "DO_EXT_5"};
 
-  debug_printf("DO_EXT_0 ~ DO_EXT_5 인터랙티브 테스트 시작\r\n");
-  debug_printf("입력 예: 0,low  또는  3,high (번호,상태)\r\n");
-  debug_printf("CTRL+C 입력 시 종료\r\n");
+  io_printf("DO_EXT_0 ~ DO_EXT_5 인터랙티브 테스트 시작\r\n");
+  io_printf("입력 예: 0,low  또는  3,high (번호,상태)\r\n");
+  io_printf("CTRL+C 입력 시 종료\r\n");
 
   // DO 포트 열기
   for (int i = 0; i < DO_COUNT; i++)
@@ -84,11 +84,11 @@ void test_do(void)
     do_ports[i] = driver_do_open(do_nums[i], 0);
     if (do_ports[i] == NULL)
     {
-      debug_printf("%s open 실패\r\n", do_names[i]);
+      io_printf("%s open 실패\r\n", do_names[i]);
     }
     else
     {
-      debug_printf("%s open 성공\r\n", do_names[i]);
+      io_printf("%s open 성공\r\n", do_names[i]);
     }
   }
 
@@ -97,25 +97,25 @@ void test_do(void)
     int num;
     char state_str[10] = {0};
 
-    debug_printf("출력 제어 입력 대기 (번호,상태) > ");
+    io_printf("출력 제어 입력 대기 (번호,상태) > ");
     int ret = cli_scanf_s("%d,%9s", &num, state_str,sizeof(state_str));
 
     if (ret == CLI_KEYCODE_CTRL_C)
     {
-      debug_printf("\r\nCTRL+C 감지: 테스트 종료\r\n");
+      io_printf("\r\nCTRL+C 감지: 테스트 종료\r\n");
       break;
     }
     else if (ret == 2)
     {
       if (num < 0 || num >= DO_COUNT)
       {
-        debug_printf("잘못된 번호입니다. 0 ~ %d 범위만 허용\r\n", DO_COUNT - 1);
+        io_printf("잘못된 번호입니다. 0 ~ %d 범위만 허용\r\n", DO_COUNT - 1);
         continue;
       }
 
       if (do_ports[num] == NULL)
       {
-        debug_printf("%s는 열리지 않았습니다\r\n", do_names[num]);
+        io_printf("%s는 열리지 않았습니다\r\n", do_names[num]);
         continue;
       }
 
@@ -123,21 +123,21 @@ void test_do(void)
       if (strcasecmp(state_str, "low") == 0 || strcmp(state_str, "0") == 0)
       {
         driver_do_low(do_ports[num]);
-        debug_printf("%s 출력: Low\r\n", do_names[num]);
+        io_printf("%s 출력: Low\r\n", do_names[num]);
       }
       else if (strcasecmp(state_str, "high") == 0 || strcmp(state_str, "1") == 0)
       {
         driver_do_high(do_ports[num]);
-        debug_printf("%s 출력: High\r\n", do_names[num]);
+        io_printf("%s 출력: High\r\n", do_names[num]);
       }
       else
       {
-        debug_printf("상태는 low 또는 high 만 허용\r\n");
+        io_printf("상태는 low 또는 high 만 허용\r\n");
       }
     }
     else
     {
-      debug_printf("입력 형식 오류. 예: 2,low 또는 3,high\r\n");
+      io_printf("입력 형식 오류. 예: 2,low 또는 3,high\r\n");
     }
   }
 

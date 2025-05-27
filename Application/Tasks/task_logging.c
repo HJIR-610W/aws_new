@@ -79,14 +79,14 @@ void log_out_queue(logging_t *logging)
 {
   if(osMessageQueuePut(g_loggingQueue, logging, 0, kLoggingTimeOutMs) != osOK)
   {
-    debug_printf("log_printf_level timeout.\r\n");
+    io_printf("log_printf_level timeout.\r\n");
   }
 }
 
 
 void log_out_uart(logging_t *logging)
 {
-  debug_printf("%s",logging->data);
+  io_printf("%s",logging->data);
 }
 
 void log_printf(log_level_t level, const char *pFmt, ...)
@@ -155,7 +155,7 @@ void os_write_data_year(DATE_TIME_BUF *pDate, void *pInData,uint32_t data_size,
   logging.cmd = eLOGGING_DATA;
   if(osMessageQueuePut(g_loggingQueue, &logging, 0, kLoggingTimeOutMs) != osOK)
   {
-    debug_printf("os_write_data_year timeout.\r\n");
+    io_printf("os_write_data_year timeout.\r\n");
   }
 }
 

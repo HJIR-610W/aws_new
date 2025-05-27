@@ -32,7 +32,7 @@ void MX_FATFS_Init(void)
     res = f_mount(&SDFatFS, (TCHAR const*)SDPath, 1);
     if (res != FR_OK)
     {
-        debug_printf("Failed to mount SD card. Error: %d\n", res);
+        io_printf("Failed to mount SD card. Error: %d\n", res);
     }
 }
 

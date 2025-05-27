@@ -1,6 +1,6 @@
 
 #include <math.h>    // For NAN, isnan, fabsf
-#include <stdarg.h>  // For va_list in debug_printf stub
+#include <stdarg.h>  // For va_list in io_printf stub
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -55,7 +55,7 @@ int get_int_input(const char* prompt, int* value, int min_val, int max_val)
   int input_value=0;
   while (3)
   {
-    debug_printf("%s (%d ~ %d): ", prompt, min_val, max_val);
+    io_printf("%s (%d ~ %d): ", prompt, min_val, max_val);
     ret_scan = console_scanf("%d", &input_value);
     if (ret_scan == -3)
     {
@@ -73,7 +73,7 @@ int get_int_input(const char* prompt, int* value, int min_val, int max_val)
       ret = MENU_OK;
       break;
     }
-    debug_printf("오류: 잘못된 입력입니다. 다시 시도하세요.\r\n");
+    io_printf("오류: 잘못된 입력입니다. 다시 시도하세요.\r\n");
   }
   return ret;
 }

@@ -127,13 +127,13 @@ void check_baud_rate(int uart_num)
 
   if (divisor == 0)
   {
-    debug_printf("Invalid divisor value.\n");
+    io_printf("Invalid divisor value.\n");
     return;
   }
 
   // 보오드레이트 계산
   uint32_t baud_rate = UART_CLOCK_FREQ / (16 * divisor);
-  debug_printf("Calculated Baud Rate: %u\n", baud_rate);
+  io_printf("Calculated Baud Rate: %u\n", baud_rate);
 }
 
 // 보오드레이트 설정 함수
@@ -681,7 +681,7 @@ void tl16c554_DMA_init(void)
   if (HAL_DMA_Init(&hdma_memtomem) != HAL_OK)
   {
     // 초기화 실패 처리
-    debug_printf("DMA Initialization Failed\n");
+    io_printf("DMA Initialization Failed\n");
     while (1);
   }
 
@@ -695,10 +695,10 @@ void HAL_DMA_XferCpltCallback(DMA_HandleTypeDef *hdma)
 {
   if (hdma->Instance == DMA2_Stream0)
   {                        // DMA 스트림 확인
-    debug_printf("ok\n");  // 전송 완료 메시지 출력
+    io_printf("ok\n");  // 전송 완료 메시지 출력
   }
 }
-void HAL_DMA_XferErrorCallback(DMA_HandleTypeDef *hdma) { debug_printf("DMA Transfer Error\n"); }
+void HAL_DMA_XferErrorCallback(DMA_HandleTypeDef *hdma) { io_printf("DMA Transfer Error\n"); }
 
 void tls16c554_send_DMA(int num, const uint8_t *pData, uint16_t dataLen)
 {
@@ -707,7 +707,7 @@ void tls16c554_send_DMA(int num, const uint8_t *pData, uint16_t dataLen)
   if (HAL_DMA_Start_IT(&hdma_memtomem, (uint32_t)pData, dest_address, dataLen) != HAL_OK)
   {
     // DMA 시작 실패 처리
-    debug_printf("DMA Start Failed\n");
+    io_printf("DMA Start Failed\n");
     while (1);
   }
 }

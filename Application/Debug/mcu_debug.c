@@ -520,13 +520,13 @@ void PrintAllInterrupts(void)
   uint8_t priority;
   int irq_num;
 
-  debug_printf("Interrupt Vector Table:\r\n");
-  debug_printf(
+  io_printf("Interrupt Vector Table:\r\n");
+  io_printf(
       "------------------------------------------------------------------------"
       "-------------------\r\n");
-  debug_printf(
+  io_printf(
       "| IRQ Num | Priority | Name                 | Source Details\r\n");
-  debug_printf(
+  io_printf(
       "------------------------------------------------------------------------"
       "-------------------\r\n");
 
@@ -554,12 +554,12 @@ void PrintAllInterrupts(void)
       const char* source_details =
           GetInterruptSourceDetails((IRQn_Type)irq_num);
 
-      debug_printf("| %7d | %8d | %-20s | %-80s \r\n", irq_num, priority,
+      io_printf("| %7d | %8d | %-20s | %-80s \r\n", irq_num, priority,
                    IRQ_Table[irq_num].name, source_details);
     }
   }
 
-  debug_printf(
+  io_printf(
       "------------------------------------------------------------------------"
       "-------------------\r\n");
 }

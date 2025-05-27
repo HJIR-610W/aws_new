@@ -30,25 +30,25 @@ void test_filesystem(void)
 
   if (strncmp(temp, TEST_MSG, TEST_MSG_LEN) == 0)
   {
-    debug_printf("파일 쓰기 읽기 정상 \r\n");
+    io_printf("파일 쓰기 읽기 정상 \r\n");
   }
   else
   {
-    debug_printf("파일 쓰기 읽기 실패 \r\n");
+    io_printf("파일 쓰기 읽기 실패 \r\n");
   }
 
 
-  debug_printf("'0:'목록을 출력합니다.\r\n");
+  io_printf("'0:'목록을 출력합니다.\r\n");
   while(1)
   {
     list_directory(buff);
 
-    debug_printf("경로를 입력하세요>>\r\n");
+    io_printf("경로를 입력하세요>>\r\n");
     ret = cli_scanf_s("%19s", buff, sizeof(buff));
 
     if (ret == CLI_KEYCODE_CTRL_C)
     {
-      debug_printf("테스트 종료\r\n");
+      io_printf("테스트 종료\r\n");
       break;
     }
     

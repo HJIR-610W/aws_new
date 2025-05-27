@@ -11,14 +11,14 @@
 
 
 
-extern int32_t debug_printf(const char * pFmt, ...);
+extern int32_t io_printf(const char * pFmt, ...);
 
 
 
 
 void terminal_set_color(color_t c)
 {
-    debug_printf("%c[%dm", 27, c);
+    io_printf("%c[%dm", 27, c);
 }
 
 
@@ -27,7 +27,7 @@ void terminal_print_line(char del, char l, size_t width)
     char line[200];
     (void)memset_s(line,sizeof(line), l, width);
 
-    debug_printf("%c%.*s%c\r\n", del, width, line, del);
+    io_printf("%c%.*s%c\r\n", del, width, line, del);
 }
 
 void terminal_print_centered(const char* text, char border, size_t width)
@@ -40,13 +40,13 @@ void terminal_print_centered(const char* text, char border, size_t width)
     size_t c = width - a - b;
 
     // [b]<empty>[text]<empty>[b]
-    debug_printf("%c%*.s%s%*.s%c\r\n", border, a, "", text, c, "", border);
+    io_printf("%c%*.s%s%*.s%c\r\n", border, a, "", text, c, "", border);
 }
 
 
 void terminal_reset_color(void)
 {
-    debug_printf("%c[%dm", 27,37);
+    io_printf("%c[%dm", 27,37);
 }
 
 

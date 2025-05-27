@@ -111,7 +111,8 @@
 			"mcu_debug.h": "c",
 			"driver_di_def.h": "c",
 			"fatfs.h": "c",
-			"tuple": "c"
+			"tuple": "c",
+			"parse_aws.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

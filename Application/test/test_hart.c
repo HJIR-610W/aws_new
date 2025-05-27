@@ -59,7 +59,7 @@ void hart_task(void *arg)
     len  = hart_send(cmd, sizeof(cmd));
     if(len < 0)
     {
-      debug_printf("send failed\r\n");
+      io_printf("send failed\r\n");
     }
     len = HART_RECV(buff, sizeof(buff), 1000);
     if (len)

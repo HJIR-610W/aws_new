@@ -20,9 +20,9 @@ void PrintTaskList(void)
     // 모든 태스크의 상태를 문자열로 가져옵니다.
     vTaskList(buffer);
     // 태스크의 상태를 출력합니다.
-    debug_printf("Task Name\tState\tPriority\tStack\tTask Number\n");
-    debug_printf("-------------------------------------------------\n");
-    debug_printf("%s", buffer);
+    io_printf("Task Name\tState\tPriority\tStack\tTask Number\n");
+    io_printf("-------------------------------------------------\n");
+    io_printf("%s", buffer);
 
     aws_free(buffer);
   }
@@ -39,9 +39,9 @@ void PrintRunTimeStats(void)
     vTaskGetRunTimeStats(buffer);
 
     // 런타임 통계 출력
-    debug_printf("Task Name\tExecution Time\tCPU Usage\n");
-    debug_printf("-------------------------------------------------\n");
-    debug_printf("%s", buffer);
+    io_printf("Task Name\tExecution Time\tCPU Usage\n");
+    io_printf("-------------------------------------------------\n");
+    io_printf("%s", buffer);
 
     aws_free(buffer);
   }
@@ -55,12 +55,12 @@ void PrintTaskDetails(const char *taskName)
   if (taskHandle != NULL) 
   {
     UBaseType_t stackSize = uxTaskGetStackHighWaterMark(taskHandle);
-    debug_printf("Task Name: %10s ", taskName);
-    debug_printf("  Remaining Stack Size: %u words\n", (unsigned int)stackSize);
+    io_printf("Task Name: %10s ", taskName);
+    io_printf("  Remaining Stack Size: %u words\n", (unsigned int)stackSize);
   }
   else
   {
-    debug_printf("Task Name: %10s - Handle not found\n", taskName);
+    io_printf("Task Name: %10s - Handle not found\n", taskName);
   }
 }
 

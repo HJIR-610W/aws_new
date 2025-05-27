@@ -128,15 +128,15 @@ void update_val(void *val, void *target, eVAL_TYPE_t type)
 
 void print_items(char *title, char *items[], uint8_t itmeCnt)
 {
-  debug_printf("\r\n");
-  debug_printf("(0lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk(B\r\n");
-  debug_printf("(0x(B %s(0x(B\r\n", title);
-  debug_printf("(0tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu(B\r\n");
+  io_printf("\r\n");
+  io_printf("(0lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk(B\r\n");
+  io_printf("(0x(B %s(0x(B\r\n", title);
+  io_printf("(0tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu(B\r\n");
   for (int i = 0; i < itmeCnt; i++)
   {
-    debug_printf("(0x(B %s(0x(B\r\n", items[i]);
+    io_printf("(0x(B %s(0x(B\r\n", items[i]);
   }
-  debug_printf("(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B\r\n");
+  io_printf("(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B\r\n");
 }
 
 /**
@@ -290,7 +290,7 @@ int input_decimal(p_shell_context_t ctx, int32_t start, int32_t stop, int32_t *d
 {
   int32_t cnt;
 
-  debug_printf("¹üÀ§:%d~%d\r\n", start, stop);
+  io_printf("¹üÀ§:%d~%d\r\n", start, stop);
   vt100_printfColor(GREEN, "°ªÀ» ÀÔ·ÂÇØ ÁÖ¼¼¿ä:");
   cnt = console_scanf("%d", dec);
   if (cnt == 1)
@@ -864,7 +864,7 @@ void rs232_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t cnt)
   {
     sensor_add(sensor);
     rs232 = get_sensor_config(sensor);
-    debug_printf("rs232 err\r\n");
+    io_printf("rs232 err\r\n");
   }
   switch (cnt)
   {
@@ -1103,11 +1103,11 @@ void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
         ret = hjTemperature_get(hj_temp,eTEMP_GET_OFFSET,&offset);
         if(ret ==0)
         {
-          debug_printf("ÇöÀç ¿Âµµ ¿ÀÇÁ¼Â:%.2f\r\n",((float)offset/100.0f));
+          io_printf("ÇöÀç ¿Âµµ ¿ÀÇÁ¼Â:%.2f\r\n",((float)offset/100.0f));
           if(get_user_confirm("¿ÀÇÁ¼ÂÀ» º¯°æÇÏ½Ã°Ú½À´Ï±î?")==1)
           {
             float f_offset;
-            debug_printf("¿ÀÇÁ¼ÂÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä>>");
+            io_printf("¿ÀÇÁ¼ÂÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä>>");
             if(input_float(ctx,-5,5,&f_offset))
             {
               offset = (uint16_t)(f_offset*100);
@@ -1117,7 +1117,7 @@ void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
         }
         else
         {
-          debug_printf("ÀåÄ¡¿¡ Á¢±ÙÇÒ ¼ö ¾ø½À´Ï´Ù.\r\n");
+          io_printf("ÀåÄ¡¿¡ Á¢±ÙÇÒ ¼ö ¾ø½À´Ï´Ù.\r\n");
         }
       }
     default:
@@ -1187,11 +1187,11 @@ void hjhumi_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
       ret = hjTemperature_get(hj_temp,eHUMI_GET_OFFSET,&offset);
       if(ret ==0)
       {
-        debug_printf("ÇöÀç ½Àµµ ¿ÀÇÁ¼Â:%.2f\r\n",((float)offset/100.0f));
+        io_printf("ÇöÀç ½Àµµ ¿ÀÇÁ¼Â:%.2f\r\n",((float)offset/100.0f));
         if(get_user_confirm("¿ÀÇÁ¼ÂÀ» º¯°æÇÏ½Ã°Ú½À´Ï±î?")==1)
         {
           float f_offset;
-          debug_printf("¿ÀÇÁ¼ÂÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä>>");
+          io_printf("¿ÀÇÁ¼ÂÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä>>");
           if(input_float(ctx,-5,5,&f_offset))
           {
             offset = (uint16_t)(f_offset*100);
@@ -1201,7 +1201,7 @@ void hjhumi_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
       }
       else
       {
-        debug_printf("ÀåÄ¡¿¡ Á¢±ÙÇÒ ¼ö ¾ø½À´Ï´Ù.\r\n");
+        io_printf("ÀåÄ¡¿¡ Á¢±ÙÇÒ ¼ö ¾ø½À´Ï´Ù.\r\n");
       }
     }
     break;
@@ -1936,13 +1936,13 @@ int32_t menu_offset(p_shell_context_t ctx)
       break;
     }
 
-    debug_printf("%20s offset:%f\r\n",sensor_name_list[cnt-1],
+    io_printf("%20s offset:%f\r\n",sensor_name_list[cnt-1],
       get_config_app()->sensor[cnt-1].offset);
 
     if(get_user_confirm("offsetÀ» º¯°æÇÏ½Ã°Ú½À´Ï±î?")==1)
     {
       float offset=0;
-      debug_printf("¿ÀÇÁ¼ÂÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä>>");
+      io_printf("¿ÀÇÁ¼ÂÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä>>");
       cnt = console_scanf("%f", &offset);
 
       if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
@@ -1955,7 +1955,7 @@ int32_t menu_offset(p_shell_context_t ctx)
       }
       else
       {
-        debug_printf("ÀÔ·Â°ª¿¡ ¿À·ù°¡ ÀÖ½À´Ï´Ù.");
+        io_printf("ÀÔ·Â°ª¿¡ ¿À·ù°¡ ÀÖ½À´Ï´Ù.");
       }
 
     }
@@ -2998,7 +2998,7 @@ int32_t menu_manage_config_reset(p_shell_context_t ctx)
           if(get_user_confirm("¼¾¼­ ¼³Á¤°ªÀ» È­Áø »çÀü ¼³Á¤°ªÀ¸·Î º¯°æÇÕ´Ï´Ù.")==1)
           {
             config_hj_reset();
-            debug_printf("ÃÊ±âÈ­ µÇ¾ú½À´Ï´Ù.\r\n");
+            io_printf("ÃÊ±âÈ­ µÇ¾ú½À´Ï´Ù.\r\n");
           }
           break;
         case 1:
@@ -3008,7 +3008,7 @@ int32_t menu_manage_config_reset(p_shell_context_t ctx)
           save_config_app();
           config_sensor_reset();
           save_config_sensor();
-          debug_printf("°øÀå ÃÊ±âÈ­ µÇ¾ú½À´Ï´Ù.\r\n");
+          io_printf("°øÀå ÃÊ±âÈ­ µÇ¾ú½À´Ï´Ù.\r\n");
         }
           break;
           case 2:
@@ -3066,8 +3066,8 @@ int32_t menu_manage_update_fw(p_shell_context_t ctx)
   {
     if(check_firmware(UPDATE_LOCAL) ==0)
     {
-      debug_printf("Àåºñ°¡ ¸®¼ÂµÇ¸é¼­ ¾÷µ¥ÀÌÆ®°¡ ÁøÇàµË´Ï´Ù.\r\n");
-      debug_printf("»óÅÂ LED°¡ Á¡¸êµË´Ï´Ù.\r\n");
+      io_printf("Àåºñ°¡ ¸®¼ÂµÇ¸é¼­ ¾÷µ¥ÀÌÆ®°¡ ÁøÇàµË´Ï´Ù.\r\n");
+      io_printf("»óÅÂ LED°¡ Á¡¸êµË´Ï´Ù.\r\n");
       
       set_magic_value(MAGIC_UPDATE_FW_LACAL);
       reset_system(0, "USER update");
@@ -3083,11 +3083,11 @@ int32_t print_menu_manage(p_shell_context_t ctx)
 {
   int32_t cnt = 0;
 
-  debug_printf("\r\n");
-  debug_printf("%d.¹öÀü\r\n", cnt++);
-  debug_printf("%d.Àåºñ ¸®¼Â\r\n", cnt++);
-  debug_printf("%d.¼³Á¤ °ª\r\n", cnt++);
-  debug_printf("%d.Æß¿þ¾î ¾÷µ¥ÀÌÆ®\r\n", cnt++);
+  io_printf("\r\n");
+  io_printf("%d.¹öÀü\r\n", cnt++);
+  io_printf("%d.Àåºñ ¸®¼Â\r\n", cnt++);
+  io_printf("%d.¼³Á¤ °ª\r\n", cnt++);
+  io_printf("%d.Æß¿þ¾î ¾÷µ¥ÀÌÆ®\r\n", cnt++);
   return cnt;
 }
 
@@ -3410,7 +3410,7 @@ int32_t print_menu_manage(p_shell_context_t ctx)
   {
     int32_t password;
 
-    debug_printf("Please enter the password:\r\n");
+    io_printf("Please enter the password:\r\n");
 
     if (console_scanf("%d", &password) == 1)
     {
@@ -3420,7 +3420,7 @@ int32_t print_menu_manage(p_shell_context_t ctx)
       }
     }
 
-    debug_printf("The password does not match\r\n");
+    io_printf("The password does not match\r\n");
     return false;
   }
 
@@ -3449,7 +3449,7 @@ int32_t print_menu_manage(p_shell_context_t ctx)
 
     save_config_adc();
 
-    debug_printf("+config facory:ok\r\n");
+    io_printf("+config facory:ok\r\n");
     return 0;
   }
 
@@ -3733,8 +3733,8 @@ int32_t menu_developer_logging(p_shell_context_t ctx)
 
   do
   {
-    debug_printf("·Î±× ½ÃÀÛ Ä«¿îÆ®:%d\r\n", logging_get_logCnt());
-    debug_printf("start,end>>");
+    io_printf("·Î±× ½ÃÀÛ Ä«¿îÆ®:%d\r\n", logging_get_logCnt());
+    io_printf("start,end>>");
 
     cnt = console_scanf("%d,%d,%d", &startCnt, &endCnt);
 
@@ -3748,7 +3748,7 @@ int32_t menu_developer_logging(p_shell_context_t ctx)
       for (int32_t i = startCnt; i <= endCnt; i++)
       {
         logging_read_log(i, &log);
-        debug_printf("%4d,%s\r\n", i,log.msg);
+        io_printf("%4d,%s\r\n", i,log.msg);
       }
     }
   } while (1);
@@ -3766,6 +3766,7 @@ int32_t print_menu_developer(p_shell_context_t ctx)
   ctx->printf("%2d.½Ã½ºÅÛ ·Î±× È®ÀÎ\r\n", cnt++);
   ctx->printf("%2d.Å×½ºÅ© Á¤º¸\r\n", cnt++);
   ctx->printf("%2d.ÆÄÀÏ´Ù¿î »óÅÂ Á¤º¸ \r\n", cnt++);
+  ctx->printf("%2d.TASK Ãâ·Â \r\n", cnt++);
   return cnt;
 }
 
@@ -3790,7 +3791,7 @@ int32_t menu_update_info(p_shell_context_t ctc)
     {
       progress = ((float)received_bytes/(float)total_bytes)*100.0;
     }
-    debug_printf("Æß¿þ¾î ´Ù¿î:%7d/%7d [%5.2f%%]\r",received_bytes,total_bytes,progress);
+    io_printf("Æß¿þ¾î ´Ù¿î:%7d/%7d [%5.2f%%]\r",received_bytes,total_bytes,progress);
 
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
@@ -3800,80 +3801,101 @@ int32_t menu_update_info(p_shell_context_t ctc)
 
   return 0;
 }
-int32_t menu_developer(p_shell_context_t ctx)
+
+int32_t menu_task_print(p_shell_context_t ctc)
 {
-  int32_t cnt;
-  const menu_func menu[] = {
-      [0] = menu_developer_interrupt, menu_developer_memory, menu_developer_sensor_config,
-      menu_developer_logging,         menu_task_info,        menu_update_info};
-  do
+  uint32_t id;
+  int32_t ret;
+  io_printf("printf ÇÏ°í ½ÍÀº task idÀÔ·ÂÇØÁÖ¼¼¿ä\r\n");
+  io_printf("printf Á¾·áÇÏ·Á¸é 0À» ÀÔ·Â\r\n");
+  io_printf(">>");
+
+  ret = cli_scanf_s("%X",&id);
+  if(ret <=0)
   {
-    cnt = select_indexFromList(ctx, NULL, print_menu_developer, 0, false);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
-    {
-      return cnt;
-    }
-    cnt--;
-    cnt = menu[cnt](ctx);
-    if (cnt == EXIT_PROGRAM)
-    {
-      return cnt;
-    }
-  } while (1);
-}
-
-
-
-const menuFunc_t menuFunc[] = {{.title = "0.diplay", .func = aws_menu_display},
-                               {.title = "1.system", .func = menu_system},
-                               {.title = "2.sensor", .func = menu_sensor},
-                               {.title = "3.offset", .func = menu_offset},
-                               {.title = "4.network", .func = menu_network},
-                               {.title = "5.data", .func = menu_data},
-                               {.title = "6.display panel", .func = aws_menu_display_panel},
-                               {.title = "7.manage", .func = menu_manage},
-                               {.title = "8.calibraion", .func = menu_calibration},
-                               {.title = "9.developer", .func = menu_developer}};
-
-int32_t print_menu_root(p_shell_context_t ctx)
-{
-  int i;
-  for (i = 0; i < _countof(menuFunc); i++)
-  {
-    ctx->printf("%s\r\n", menuFunc[i].title);
+    return ret;
   }
-  return i;
+  set_task_id((void*)id);
+
 }
 
 
-int32_t select_menu(select_menu_t *select_menu)
-{
-  int32_t cnt;
 
-  do
+  int32_t menu_developer(p_shell_context_t ctx)
   {
-    cnt = select_indexFromList(select_menu->ctx, select_menu->list, select_menu->func,
-                               select_menu->cnt, select_menu->show);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    int32_t cnt;
+    const menu_func menu[] = {[0] = menu_developer_interrupt,
+                              menu_developer_memory,
+                              menu_developer_sensor_config,
+                              menu_developer_logging,
+                              menu_task_info,
+                              menu_update_info,
+                              menu_task_print};
+    do
     {
-      return cnt;
+      cnt = select_indexFromList(ctx, NULL, print_menu_developer, 0, false);
+      if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
+      {
+        return cnt;
+      }
+      cnt--;
+      cnt = menu[cnt](ctx);
+      if (cnt == EXIT_PROGRAM)
+      {
+        return cnt;
+      }
+    } while (1);
+  }
+
+  const menuFunc_t menuFunc[] = {{.title = "0.diplay", .func = aws_menu_display},
+                                 {.title = "1.system", .func = menu_system},
+                                 {.title = "2.sensor", .func = menu_sensor},
+                                 {.title = "3.offset", .func = menu_offset},
+                                 {.title = "4.network", .func = menu_network},
+                                 {.title = "5.data", .func = menu_data},
+                                 {.title = "6.display panel", .func = aws_menu_display_panel},
+                                 {.title = "7.manage", .func = menu_manage},
+                                 {.title = "8.calibraion", .func = menu_calibration},
+                                 {.title = "9.developer", .func = menu_developer}};
+
+  int32_t print_menu_root(p_shell_context_t ctx)
+  {
+    int i;
+    for (i = 0; i < _countof(menuFunc); i++)
+    {
+      ctx->printf("%s\r\n", menuFunc[i].title);
     }
-    cnt = select_menu->menuFunc[cnt - 1].func(select_menu->ctx);
-  } while (cnt != EXIT_PROGRAM);
+    return i;
+  }
 
-  return cnt;
-}
+  int32_t select_menu(select_menu_t * select_menu)
+  {
+    int32_t cnt;
 
-int32_t menu_root(p_shell_context_t ctx, int32_t argc, char **argv)
-{
-  select_menu_t menu;
+    do
+    {
+      cnt = select_indexFromList(select_menu->ctx, select_menu->list, select_menu->func,
+                                 select_menu->cnt, select_menu->show);
+      if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+      {
+        return cnt;
+      }
+      cnt = select_menu->menuFunc[cnt - 1].func(select_menu->ctx);
+    } while (cnt != EXIT_PROGRAM);
 
-  menu.ctx = ctx;
-  menu.list = NULL;
-  menu.func = print_menu_root;
-  menu.cnt = 0;
-  menu.show = false;
-  menu.menuFunc = menuFunc;
+    return cnt;
+  }
 
-  return select_menu(&menu);
-}
+  int32_t menu_root(p_shell_context_t ctx, int32_t argc, char **argv)
+  {
+    select_menu_t menu;
+
+    menu.ctx = ctx;
+    menu.list = NULL;
+    menu.func = print_menu_root;
+    menu.cnt = 0;
+    menu.show = false;
+    menu.menuFunc = menuFunc;
+
+    return select_menu(&menu);
+  }

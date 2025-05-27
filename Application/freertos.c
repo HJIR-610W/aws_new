@@ -103,7 +103,7 @@ void rtc_test(void)
   {
     driver_rtc_read(rtc,&date);
 
-    debug_printf("%02d:%02d:%02d\r\n",date.Hour,date.Min,date.Sec);
+    io_printf("%02d:%02d:%02d\r\n",date.Hour,date.Min,date.Sec);
     osDelay(500);
   }
 }
@@ -227,20 +227,20 @@ void adc_test(void)
 
 
   ads1220 = driver_adc_open(ADC_ADS1220,0);
-    debug_printf(VT100_CLEAR_SCREEN);
-    debug_printf(VT100_CURSOR_OFF);
+    io_printf(VT100_CLEAR_SCREEN);
+    io_printf(VT100_CURSOR_OFF);
 
   for(;;)
   {
 
-    debug_printf(VT100_CURSOR_HOME);
+    io_printf(VT100_CURSOR_HOME);
 
     osDelay(50);
     for(i = 0 ;i <_countof(adcList);i++)
     {
        //adc =  driver_adc_read(ads1220,adcList[i],&err);
 
-        debug_printf("CH:%02d,%10d,%s\r\n",adcList[i],adc,nameList[i]);
+        io_printf("CH:%02d,%10d,%s\r\n",adcList[i],adc,nameList[i]);
     }
   }
 }
@@ -328,7 +328,7 @@ void rain_test(void)
       rain_reed_data = driver_di_read(rain_reed);
   rain_hall_data = driver_di_read(rain_hall);
   rain_err_data = driver_di_read(rain_err);
-    debug_printf("reed:%d,hall:%d,err:%d\r\n",rain_reed_data,rain_hall_data,rain_err_data);
+    io_printf("reed:%d,hall:%d,err:%d\r\n",rain_reed_data,rain_hall_data,rain_err_data);
     osDelay(100);
   }
 }

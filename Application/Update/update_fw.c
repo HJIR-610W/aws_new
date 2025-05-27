@@ -92,14 +92,14 @@ uint8_t check_firmware(uint8_t local)
     {
       return FW_FILE_OPEN_ERR;
     }
-    debug_printf("%s\r\n", path);
+    io_printf("%s\r\n", path);
   }
 
   fret = get_file_size(path, &file_size);
 
   if (fret == FR_OK && (file_size < FW_SIZE_MAX))
   {
-    debug_printf("크기:%d\r\n",file_size);
+    io_printf("크기:%d\r\n",file_size);
     p_buffer = aws_malloc(file_size);
 
     if (p_buffer ==NULL)
@@ -122,7 +122,7 @@ uint8_t check_firmware(uint8_t local)
           {
             aws_free(p_buffer);
           }
-          debug_printf("제품 불일치\r\n");
+          io_printf("제품 불일치\r\n");
           return FW_ERR_MFG;
         }
 
@@ -132,7 +132,7 @@ uint8_t check_firmware(uint8_t local)
           {
             aws_free(p_buffer);
           }
-          debug_printf("별칭 불일치\r\n");
+          io_printf("별칭 불일치\r\n");
           return FW_ERR_AREA;
         }
 
@@ -152,7 +152,7 @@ uint8_t check_firmware(uint8_t local)
           {
             aws_free(p_buffer);
           }
-          debug_printf("PCB 버전 불일치\r\n");
+          io_printf("PCB 버전 불일치\r\n");
           return FW_ERR_PCB;
         }
       }
@@ -162,7 +162,7 @@ uint8_t check_firmware(uint8_t local)
         {
           aws_free(p_buffer);
         }
-        debug_printf("CRC 불일치\r\n");
+        io_printf("CRC 불일치\r\n");
         return FW_FILE_CRC_ERR;
       }
     }

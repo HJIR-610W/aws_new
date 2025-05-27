@@ -66,7 +66,7 @@ void server_service(int sock)
 
   if (set_recv_timeout(sock, CLIENT_CONNECT_TIMEOUT_MS) < 0)
   {
-    debug_printf("타임아웃 설정 실패\r\n");
+    io_printf("타임아웃 설정 실패\r\n");
     return;
   }
 
@@ -83,16 +83,16 @@ void server_service(int sock)
       }
       else
       {
-        debug_printf("recv error on socket %d, errno: %d\r\n", sock, err_code);
+        io_printf("recv error on socket %d, errno: %d\r\n", sock, err_code);
         break;
       }
 
-      debug_printf("recv failed: errno=%d\r\n", err_code);
+      io_printf("recv failed: errno=%d\r\n", err_code);
       break;  // 연결 종료 처리
     }
     else if (ret == 0)
     {
-      debug_printf("Client: Connection closed by peer on socket %d\r\n", sock);
+      io_printf("Client: Connection closed by peer on socket %d\r\n", sock);
       break;
     }
     else
@@ -109,7 +109,7 @@ void server_service(int sock)
           ret = send(sock, tx_buffer + total, len - total, 0);
           if (ret <= 0)
           {
-            debug_printf("전송 실패 errno=%d\r\n", errno);
+            io_printf("전송 실패 errno=%d\r\n", errno);
             send_error = true;
             break;
           }
@@ -203,7 +203,7 @@ void tcpServerTask(void *arg)
 
     if (listen(sock, 5) < 0)
     {
-      debug_printf("TCP Server: Failed to listen on socket, errno: %d. Closing socket.\r\n", errno);
+      io_printf("TCP Server: Failed to listen on socket, errno: %d. Closing socket.\r\n", errno);
       closesocket(sock);
       sock = -1;
       osDelay(1000);
@@ -218,7 +218,7 @@ void tcpServerTask(void *arg)
 
       if (newconn < 0)  // accept 실패
       {
-        debug_printf("TCP Server: accept() failed, errno: %d\r\n", errno);
+        io_printf("TCP Server: accept() failed, errno: %d\r\n", errno);
 
         break; 
       }
@@ -227,7 +227,7 @@ void tcpServerTask(void *arg)
           oldClient.sin_port != remotehost.sin_port)
       {
         inet_ntop(AF_INET, &remotehost.sin_addr, client_ip_str, sizeof(client_ip_str));
-        debug_printf("Accepted : %s, Port: %d, Socket: %d\r\n", client_ip_str, ntohs(remotehost.sin_port), newconn);
+        io_printf("Accepted : %s, Port: %d, Socket: %d\r\n", client_ip_str, ntohs(remotehost.sin_port), newconn);
         oldClient = remotehost;  
       }
       else
@@ -247,7 +247,7 @@ void tcpServerTask(void *arg)
 
     if (sock >= 0)
     {
-      debug_printf("TCP Server: Closing listening socket %d.\r\n", sock);
+      io_printf("TCP Server: Closing listening socket %d.\r\n", sock);
       closesocket(sock);
       sock = -1;
     }
@@ -351,7 +351,7 @@ int set_recv_timeout(int sockfd, uint32_t timeout_ms)
     timeout.tv_usec = (timeout_ms % 1000) * 1000;
 
     if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
-        debug_printf("Failed to set SO_RCVTIMEO, errno: %d\r\n", errno);
+        io_printf("Failed to set SO_RCVTIMEO, errno: %d\r\n", errno);
         return -1;
     }
     return 0;
@@ -365,7 +365,7 @@ int set_recv_timeout(int sockfd, uint32_t timeout_ms)
             osMutexRelease(g_tcp_status_mutex); \
         } else { /* 뮤텍스 에러 처리 또는 그냥 카운트 (정확도 저하 감수) */ \
             g_tcp_status.counter_field = (g_tcp_status.counter_field >= (max_val)) ? 0 : g_tcp_status.counter_field + 1; \
-            debug_printf("Warning: Failed to acquire g_tcp_status_mutex for counter update.\r\n"); \
+            io_printf("Warning: Failed to acquire g_tcp_status_mutex for counter update.\r\n"); \
         } \
     } while(0)
 
@@ -386,12 +386,12 @@ static void server_service_for_client(int sock, client_slot_t* slot)
     return;
   }
 
-  debug_printf("Client Handler: Servicing client %s:%u on socket %d\r\n", slot->client_ip_str,
+  io_printf("Client Handler: Servicing client %s:%u on socket %d\r\n", slot->client_ip_str,
                    slot->client_port, sock);
 
   if (set_recv_timeout(sock, CLIENT_CONNECT_TIMEOUT_MS) < 0)
   {
-    debug_printf("Client Handler (%s:%u): Timeout set failed for socket %d\r\n", slot->client_ip_str, slot->client_port, sock);
+    io_printf("Client Handler (%s:%u): Timeout set failed for socket %d\r\n", slot->client_ip_str, slot->client_port, sock);
     return;
   }
 
@@ -404,18 +404,18 @@ static void server_service_for_client(int sock, client_slot_t* slot)
       err_code = errno;
       if (err_code == EAGAIN || err_code == EWOULDBLOCK)
       {
-       //  debug_printf("Client Handler (%s:%u): recv timeout on socket %d\r\n", slot->client_ip_str, slot->client_port, sock);
+       //  io_printf("Client Handler (%s:%u): recv timeout on socket %d\r\n", slot->client_ip_str, slot->client_port, sock);
         continue;  // 타임아웃, 다음 수신 시도
       }
       else
       {
-        debug_printf("Client Handler (%s:%u): recv error on socket %d, errno: %d\r\n", slot->client_ip_str, slot->client_port, sock, err_code);
+        io_printf("Client Handler (%s:%u): recv error on socket %d, errno: %d\r\n", slot->client_ip_str, slot->client_port, sock, err_code);
         break; // 그 외 오류는 루프 종료
       }
     }
     else if (ret == 0) // 상대방이 연결 정상 종료
     {
-      debug_printf("Client Handler (%s:%u): Connection closed by peer on socket %d\r\n", slot->client_ip_str, slot->client_port, sock);
+      io_printf("Client Handler (%s:%u): Connection closed by peer on socket %d\r\n", slot->client_ip_str, slot->client_port, sock);
       break; // 루프 종료
     }
     else // 데이터 수신 성공 (ret > 0)
@@ -434,7 +434,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
           if (ret <= 0) // send 오류 또는 연결 종료
           {
             err_code = errno;
-            debug_printf("Client Handler (%s:%u): send failed on socket %d, sent %d/%d, errno: %d\r\n",
+            io_printf("Client Handler (%s:%u): send failed on socket %d, sent %d/%d, errno: %d\r\n",
                          slot->client_ip_str, slot->client_port, sock, total_sent, len, (ret < 0 ? err_code : 0));
             send_error = true;
             break; // 내부 send 루프 종료
@@ -451,14 +451,14 @@ static void server_service_for_client(int sock, client_slot_t* slot)
 
         if (get_firmware_update())
         {
-          debug_printf("Client Handler (%s:%u): Firmware update triggered via TCP. Resetting system.\r\n", slot->client_ip_str, slot->client_port);
+          io_printf("Client Handler (%s:%u): Firmware update triggered via TCP. Resetting system.\r\n", slot->client_ip_str, slot->client_port);
           closesocket(sock);
           reset_system(0, "TCP client update"); //리턴 없음
         }
       }
     }
   }
-  debug_printf("Client Handler (%s:%u): Service loop ended for socket %d.\r\n", slot->client_ip_str, slot->client_port, sock);
+  io_printf("Client Handler (%s:%u): Service loop ended for socket %d.\r\n", slot->client_ip_str, slot->client_port, sock);
 
   aws_free(p_rx_buffer);
 
@@ -473,7 +473,7 @@ static void client_handler_task(void *argument)
   server_service_for_client(client_socket_fd, slot);
 
   closesocket(client_socket_fd);
-  debug_printf("Client Handler Task: Closed client socket %d (%s:%u)\r\n", client_socket_fd, slot->client_ip_str, slot->client_port);
+  io_printf("Client Handler Task: Closed client socket %d (%s:%u)\r\n", client_socket_fd, slot->client_ip_str, slot->client_port);
 
   if (osMutexAcquire(client_slots_mutex, osWaitForever) == osOK)
   {
@@ -482,7 +482,7 @@ static void client_handler_task(void *argument)
     slot->client_socket = -1;
     osMutexRelease(client_slots_mutex);
   } else {
-    debug_printf("Error: client_handler_task failed to acquire client_slots_mutex for cleanup.\r\n");
+    io_printf("Error: client_handler_task failed to acquire client_slots_mutex for cleanup.\r\n");
   }
 
   osThreadExit();
@@ -512,7 +512,7 @@ void tcpServerTask(void *arg)
       }
       osMutexRelease(client_slots_mutex);
   } else {
-      debug_printf("FATAL: tcpServerTask failed to acquire client_slots_mutex for init.\r\n");
+      io_printf("FATAL: tcpServerTask failed to acquire client_slots_mutex for init.\r\n");
       return;
   }
 
@@ -537,14 +537,14 @@ void tcpServerTask(void *arg)
         listen_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (listen_sock < 0)
         {
-            debug_printf("TCP Server: Failed to create listening socket, errno: %d. Retrying in %dms.\r\n", errno, SERVER_RETRY_INTERVAL_MS);
+            io_printf("TCP Server: Failed to create listening socket, errno: %d. Retrying in %dms.\r\n", errno, SERVER_RETRY_INTERVAL_MS);
             osDelay(SERVER_RETRY_INTERVAL_MS);
             continue;
         }
 
         if (setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
         {
-            debug_printf("TCP Server: Failed to set SO_REUSEADDR, errno: %d.\r\n", errno);
+            io_printf("TCP Server: Failed to set SO_REUSEADDR, errno: %d.\r\n", errno);
             closesocket(listen_sock); listen_sock = -1;
             osDelay(SERVER_RETRY_INTERVAL_MS);
             continue;
@@ -553,7 +553,7 @@ void tcpServerTask(void *arg)
         // SO_ERROR 확인 (선택적)
         if (getsockopt(listen_sock, SOL_SOCKET, SO_ERROR, &error_val, &len_error) < 0 || error_val != 0)
         {
-            debug_printf("TCP Server: Socket error after creation/setsockopt. Error: %d, Errno: %d.\r\n", error_val, errno);
+            io_printf("TCP Server: Socket error after creation/setsockopt. Error: %d, Errno: %d.\r\n", error_val, errno);
             closesocket(listen_sock); listen_sock = -1;
             osDelay(SERVER_RETRY_INTERVAL_MS);
             continue;
@@ -566,7 +566,7 @@ void tcpServerTask(void *arg)
 
         if (bind(listen_sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
         {
-            debug_printf("TCP Server: Failed to bind to port %u, errno: %d.\r\n", local_port, errno);
+            io_printf("TCP Server: Failed to bind to port %u, errno: %d.\r\n", local_port, errno);
             closesocket(listen_sock); listen_sock = -1;
             osDelay(SERVER_RETRY_INTERVAL_MS);
             continue;
@@ -574,12 +574,12 @@ void tcpServerTask(void *arg)
 
         if (listen(listen_sock, MAX_CONCURRENT_CLIENTS + 1) < 0) // 백로그는 동시 클라이언트 수보다 약간 크게
         {
-            debug_printf("TCP Server: Failed to listen, errno: %d.\r\n", errno);
+            io_printf("TCP Server: Failed to listen, errno: %d.\r\n", errno);
             closesocket(listen_sock); listen_sock = -1;
             osDelay(SERVER_RETRY_INTERVAL_MS);
             continue;
         }
-        debug_printf("TCP Server: Listening on port %u (Socket: %d).\r\n", local_port, listen_sock);
+        io_printf("TCP Server: Listening on port %u (Socket: %d).\r\n", local_port, listen_sock);
         if (g_tcp_status_mutex != NULL) {
             if (osMutexAcquire(g_tcp_status_mutex, osWaitForever) == osOK) {
                  g_tcp_status.link_status = eLINK_UP;
@@ -594,7 +594,7 @@ void tcpServerTask(void *arg)
 
     if (new_conn_sock < 0)
     {
-        debug_printf("TCP Server: accept() failed, errno: %d. Re-creating listening socket if necessary.\r\n", errno);
+        io_printf("TCP Server: accept() failed, errno: %d. Re-creating listening socket if necessary.\r\n", errno);
         // accept 실패 시 리스닝 소켓 자체에 문제가 있을 수 있음.
         // ECONNABORTED, EMFILE, ENFILE 등의 오류에 따라 리스닝 소켓을 닫고 다시 시도.
         if (errno == ECONNABORTED || errno == EINVAL) { // EINVAL은 listen_sock이 더 이상 유효하지 않음을 의미할 수 있음
@@ -610,7 +610,7 @@ void tcpServerTask(void *arg)
     if (old_client_info.sin_addr.s_addr != remote_addr.sin_addr.s_addr ||
         old_client_info.sin_port != remote_addr.sin_port)
     {
-        debug_printf("TCP Server: Accepted connection from %s:%u on socket %d\r\n",
+        io_printf("TCP Server: Accepted connection from %s:%u on socket %d\r\n",
                      client_ip_str_buffer, ntohs(remote_addr.sin_port), new_conn_sock);
         old_client_info = remote_addr;
     }
@@ -638,7 +638,7 @@ void tcpServerTask(void *arg)
         }
         osMutexRelease(client_slots_mutex);
     } else {
-        debug_printf("Error: tcpServerTask failed to acquire client_slots_mutex to find slot.\r\n");
+        io_printf("Error: tcpServerTask failed to acquire client_slots_mutex to find slot.\r\n");
         closesocket(new_conn_sock); // 뮤텍스 획득 실패 시 소켓 닫고 다음 연결 시도
         new_conn_sock = -1;
         continue;
@@ -651,7 +651,7 @@ void tcpServerTask(void *arg)
         client_slots[slot_index].taskId = osThreadNew(client_handler_task, &client_slots[slot_index], &clientHandlerTask_attributes);
         if (client_slots[slot_index].taskId == NULL)
         {
-            debug_printf("TCP Server: Failed to create client_handler_task for %s:%u.\r\n", client_slots[slot_index].client_ip_str, client_slots[slot_index].client_port);
+            io_printf("TCP Server: Failed to create client_handler_task for %s:%u.\r\n", client_slots[slot_index].client_ip_str, client_slots[slot_index].client_port);
             closesocket(new_conn_sock); // 태스크 생성 실패 시 소켓 닫기
             new_conn_sock = -1;
             // 슬롯 다시 비활성화
@@ -663,14 +663,14 @@ void tcpServerTask(void *arg)
         }
         else
         {
-            debug_printf("TCP Server: client_handler_task created for %s:%u (Slot %d, TaskID: %p)\r\n",
+            io_printf("TCP Server: client_handler_task created for %s:%u (Slot %d, TaskID: %p)\r\n",
                          client_slots[slot_index].client_ip_str, client_slots[slot_index].client_port, slot_index, client_slots[slot_index].taskId);
             new_conn_sock = -1; // 소켓 제어권이 핸들러 태스크로 넘어감
         }
     }
     else // 사용 가능한 슬롯 없음 (최대 클라이언트 수 도달)
     {
-        debug_printf("TCP Server: Max concurrent clients (%d) reached. Rejecting connection from %s:%u.\r\n",
+        io_printf("TCP Server: Max concurrent clients (%d) reached. Rejecting connection from %s:%u.\r\n",
                      MAX_CONCURRENT_CLIENTS, client_ip_str_buffer, ntohs(remote_addr.sin_port));
         closesocket(new_conn_sock);
         new_conn_sock = -1;
@@ -687,14 +687,14 @@ void tcpServerTask_init(uint32_t flag) // flag 매개변수는 현재 사용되지 않음
   // 뮤텍스 생성
   client_slots_mutex = osMutexNew(NULL); // 기본 속성으로 뮤텍스 생성
   if (client_slots_mutex == NULL) {
-      debug_printf("FATAL: Failed to create client_slots_mutex.\r\n");
+      io_printf("FATAL: Failed to create client_slots_mutex.\r\n");
       // 시스템 초기화 실패 처리
       return;
   }
 
   g_tcp_status_mutex = osMutexNew(NULL);
   if (g_tcp_status_mutex == NULL) {
-      debug_printf("FATAL: Failed to create g_tcp_status_mutex.\r\n");
+      io_printf("FATAL: Failed to create g_tcp_status_mutex.\r\n");
       // client_slots_mutex는 생성되었으므로 필요시 삭제
       osMutexDelete(client_slots_mutex);
       return;
@@ -708,12 +708,12 @@ void tcpServerTask_init(uint32_t flag) // flag 매개변수는 현재 사용되지 않음
 
   g_tcpSeverTaskId = osThreadNew(tcpServerTask, (void*)(uintptr_t)local_port, &tcpServerTask_attributes);
   if (g_tcpSeverTaskId == NULL) {
-      debug_printf("FATAL: Failed to create tcpServerTask.\r\n");
+      io_printf("FATAL: Failed to create tcpServerTask.\r\n");
 
       osMutexDelete(client_slots_mutex);
       osMutexDelete(g_tcp_status_mutex);
   } else {
-      debug_printf("TCP Server Task initialized. Waiting for network...\r\n");
+      io_printf("TCP Server Task initialized. Waiting for network...\r\n");
 
   }
 }

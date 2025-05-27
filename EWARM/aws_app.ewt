@@ -1555,6 +1555,9 @@
                 <file>
                     <name>$PROJ_DIR$\..\Application\Protocols\aws\kma_protocol_handler.h</name>
                 </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\aws\parse_aws.c</name>
+                </file>
             </group>
             <group>
                 <name>divas</name>

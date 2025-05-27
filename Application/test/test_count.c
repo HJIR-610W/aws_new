@@ -19,8 +19,8 @@ void test_freq(void)
 
 
 
-  debug_printf("최소 주파수 약 15.26 Hz 이상부터 측정가능\r\n");
-  debug_printf("아무키나 입력하면 측정 시작");
+  io_printf("최소 주파수 약 15.26 Hz 이상부터 측정가능\r\n");
+  io_printf("아무키나 입력하면 측정 시작");
   get_key(0xFFFFFFFF);
 
   count_b = driver_freq_open(FREQ_MEAURE_B);
@@ -31,11 +31,11 @@ void test_freq(void)
     freq_b = driver_freq_read(count_b);
     freq_c = driver_freq_read_duty(count_b);
 
-    debug_printf("freq:%f,duty:%f\r\n", freq_b, freq_c);
+    io_printf("freq:%f,duty:%f\r\n", freq_b, freq_c);
 
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
-      debug_printf("테스트 종료 (CTRL+Q 감지)\r\n");
+      io_printf("테스트 종료 (CTRL+Q 감지)\r\n");
       break;
     }
   }

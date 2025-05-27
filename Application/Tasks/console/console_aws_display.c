@@ -1400,13 +1400,13 @@ int32_t aws_menu_display(p_shell_context_t ctx)
   int32_t line = 0;
   uint8_t awsMode = 0;
 
-  debug_printf(VT100_CLEAR_SCREEN);
-  debug_printf(VT100_CURSOR_OFF);
+  io_printf(VT100_CLEAR_SCREEN);
+  io_printf(VT100_CURSOR_OFF);
 
   do
   {
-    debug_printf(VT100_CURSOR_HOME);
-    debug_printf("\r\n");
+    io_printf(VT100_CURSOR_HOME);
+    io_printf("\r\n");
     
     line = 0;
     line = print_systemInfo(1, 0);
@@ -1437,7 +1437,7 @@ int32_t aws_menu_display(p_shell_context_t ctx)
 
     if (key == KEY_CODE_RIGHT)
     {
-      debug_printf(VT100_CLEAR_SCREEN);
+      io_printf(VT100_CLEAR_SCREEN);
       if (awsMode < AWS_MODE_MAX)
       {
         awsMode++;
@@ -1445,7 +1445,7 @@ int32_t aws_menu_display(p_shell_context_t ctx)
     }
     else if (key == KEY_CODE_LEFT)
     {
-      debug_printf(VT100_CLEAR_SCREEN);
+      io_printf(VT100_CLEAR_SCREEN);
       if (awsMode > 0)
       {
         awsMode--;
@@ -1459,6 +1459,6 @@ int32_t aws_menu_display(p_shell_context_t ctx)
   } while (1);
 
   vt100_print(50, 0, "\r\n");
-  debug_printf(VT100_CURSOR_ON);
+  io_printf(VT100_CURSOR_ON);
   return 0;
 }

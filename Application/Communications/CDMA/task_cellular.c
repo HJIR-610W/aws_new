@@ -605,7 +605,7 @@ void put_tcpResp(uint32_t cmd,char *pData,uint16_t dataLen)
 
   if (osMessageQueuePut(_respTcpMailId, &resp, 0, osWaitForever) != osOK)
   {
-    debug_printf("put_tcpResp error\r\n");
+    io_printf("put_tcpResp error\r\n");
   }
 
 
@@ -1143,7 +1143,7 @@ void put_tcpData(uint8_t *data, uint16_t dataLen)
 
   if(osMessageQueuePut(_tcpDataMailId, &tcpData, 0, 1000) != osOK)
   {
-    debug_printf("put_tcpData timeout\r\n");
+    io_printf("put_tcpData timeout\r\n");
   }
 
     #endif
@@ -1292,7 +1292,7 @@ void modemAtTask(void  *argument)
       if(strncmp((char *)buff,_atCmd[idx].cmdStr,strlen(_atCmd[idx].cmdStr))==0)
       {
         at_cmd = _atCmd[idx].cmd;
-       // debug_printf("%d %s\r\n", (int)at_cmd, buff);
+       // io_printf("%d %s\r\n", (int)at_cmd, buff);
         switch (at_cmd)
         {
           case AT_ASYNC_RECV_REBOOT:

@@ -44,26 +44,26 @@ void print_task_info(void)
   task_count = osThreadGetCount();
   if (task_count == 0)
   {
-    debug_printf("No tasks are currently active.\r\n");
+    io_printf("No tasks are currently active.\r\n");
     return;
   }
 
   task_ids = pvPortMalloc(task_count * sizeof(osThreadId_t));
   if (task_ids == NULL)
   {
-    debug_printf("Error: Failed to allocate memory for task ID array.\r\n");
+    io_printf("Error: Failed to allocate memory for task ID array.\r\n");
     return;
   }
 
   enumerated_tasks = osThreadEnumerate(task_ids, task_count);
 
-  debug_printf("\r\n--- All Task Information (CMSIS-OS2 API) ---\r\n");
-  debug_printf(
+  io_printf("\r\n--- All Task Information (CMSIS-OS2 API) ---\r\n");
+  io_printf(
       "---------------------------------------------------------------------------------------"
       "\r\n");
-  debug_printf(
+  io_printf(
       "Name              \tState     \tPrio\tStackFree (B)\tHandle\r\n");  // StackSize 제거
-  debug_printf(
+  io_printf(
       "---------------------------------------------------------------------------------------"
       "\r\n");
 
@@ -77,17 +77,17 @@ void print_task_info(void)
 
     // uint32_t total_stack = osThreadGetStackSize(tid); // 이 함수를 사용할 수 없음
 
-    debug_printf("%-18s\t%-10s\t%d\t%lu\t\t%p\r\n", name ? name : "Unnamed",
+    io_printf("%-18s\t%-10s\t%d\t%lu\t\t%p\r\n", name ? name : "Unnamed",
                  get_cmsis_thread_state_string(state), (int)prio, (unsigned long)free_stack,
                  // (unsigned long)total_stack, // 제거
                  tid);
   }
-  debug_printf(
+  io_printf(
       "---------------------------------------------------------------------------------------"
       "\r\n");
-  debug_printf(
+  io_printf(
       "StackFree is High Water Mark (Bytes). Total stack size info unavailable via API.\r\n");
-  debug_printf(
+  io_printf(
       "---------------------------------------------------------------------------------------"
       "\r\n\r\n");
 
@@ -177,14 +177,14 @@ void print_task_info(void)
   uxArraySize = uxTaskGetNumberOfTasks();
   if (uxArraySize == 0)
   {
-    debug_printf("No tasks are currently running.\r\n");
+    io_printf("No tasks are currently running.\r\n");
     return;
   }
 
   pxTaskStatusArray = (TaskStatus_t *)pvPortMalloc(uxArraySize * sizeof(TaskStatus_t));
   if (pxTaskStatusArray == NULL)
   {
-    debug_printf("Error: Failed to allocate memory for TaskStatus_t array.\r\n");
+    io_printf("Error: Failed to allocate memory for TaskStatus_t array.\r\n");
     return;
   }
 
@@ -199,37 +199,37 @@ void print_task_info(void)
 
 
 #if (configUSE_TRACE_FACILITY == 1)
-  debug_printf("Info: Output sorted by Task Number (Task#).\r\n");
+  io_printf("Info: Output sorted by Task Number (Task#).\r\n");
 #else
-  debug_printf(
+  io_printf(
       "Warning: configUSE_TRACE_FACILITY is not 1. Task names, stack info, task numbers, and "
       "sorting by Task# are unavailable/limited.\r\n");
 #endif
 #if (configGENERATE_RUN_TIME_STATS == 1)
-  debug_printf("Info: Total system run time for stats: %lu ticks.\r\n",
+  io_printf("Info: Total system run time for stats: %lu ticks.\r\n",
                (unsigned long)ulTotalRunTime);
   if (ulTotalRunTime == 0 && uxArraySize > 0)
   {
-    debug_printf(
+    io_printf(
         "Warning: Total run time is 0. CPU usage statistics might be inaccurate. Ensure runtime "
         "stats timer is configured.\r\n");
   }
 #else
-  debug_printf(
+  io_printf(
       "Info: configGENERATE_RUN_TIME_STATS is 0. CPU usage statistics are unavailable.\r\n");
 #endif
 
   // 헤더 출력
-  debug_printf("%-18s %-10s %-9s %-7s %-10s %-16s %-5s", "Name", "Handle", "State", "PrioC/B",
+  io_printf("%-18s %-10s %-9s %-7s %-10s %-16s %-5s", "Name", "Handle", "State", "PrioC/B",
                "StackBase", "StackHWM_Free(B)", "Task#");
 #if (configGENERATE_RUN_TIME_STATS == 1)
-  debug_printf(" %-7s", "CPU(%)");
+  io_printf(" %-7s", "CPU(%)");
 #endif
 #if ((defined(configNUM_CORES) && configNUM_CORES > 1) && \
      (defined(configUSE_CORE_AFFINITY) && configUSE_CORE_AFFINITY == 1))
-  debug_printf(" %-6s", "CoreID");
+  io_printf(" %-6s", "CoreID");
 #endif
-  debug_printf("\r\n");
+  io_printf("\r\n");
 
   char separator_line[150];
   int current_len = 0;
@@ -245,7 +245,7 @@ void print_task_info(void)
   current_len +=
       snprintf(separator_line + current_len, sizeof(separator_line) - current_len, " ------");
 #endif
-  debug_printf("%s\r\n", separator_line);
+  io_printf("%s\r\n", separator_line);
 
   for (x = 0; x < uxArraySize; x++)
   {
@@ -254,7 +254,7 @@ void print_task_info(void)
              (unsigned int)pxTaskStatusArray[x].uxCurrentPriority,
              (unsigned int)pxTaskStatusArray[x].uxBasePriority);
 
-    debug_printf("%-18s %p %-9s %-7s %p %-16lu ",
+    io_printf("%-18s %p %-9s %-7s %p %-16lu ",
                  pxTaskStatusArray[x].pcTaskName ? pxTaskStatusArray[x].pcTaskName : "N/A",
                  pxTaskStatusArray[x].xHandle,
                  prvTaskStateToString(pxTaskStatusArray[x].eCurrentState), prio_str,
@@ -262,9 +262,9 @@ void print_task_info(void)
                  (unsigned long)pxTaskStatusArray[x].usStackHighWaterMark * sizeof(StackType_t));
 
 #if (configUSE_TRACE_FACILITY == 1)
-    debug_printf("%-5u", (unsigned int)pxTaskStatusArray[x].xTaskNumber);
+    io_printf("%-5u", (unsigned int)pxTaskStatusArray[x].xTaskNumber);
 #else
-    debug_printf("%-5s", "N/A");
+    io_printf("%-5s", "N/A");
 #endif
 
 #if (configGENERATE_RUN_TIME_STATS == 1)
@@ -276,29 +276,29 @@ void print_task_info(void)
     {
       ulStatsAsPercentage = 0;
     }
-    debug_printf(" %-7lu", ulStatsAsPercentage);
+    io_printf(" %-7lu", ulStatsAsPercentage);
 #endif
 
 #if ((defined(configNUM_CORES) && configNUM_CORES > 1) && \
      (defined(configUSE_CORE_AFFINITY) && configUSE_CORE_AFFINITY == 1))
     if (pxTaskStatusArray[x].xCoreID == tskNO_AFFINITY)
     {
-      debug_printf(" %-6s", "Any");
+      io_printf(" %-6s", "Any");
     }
     else
     {
-      debug_printf(" %-6d", (int)pxTaskStatusArray[x].xCoreID);
+      io_printf(" %-6d", (int)pxTaskStatusArray[x].xCoreID);
     }
 #endif
-    debug_printf("\r\n");
+    io_printf("\r\n");
   }
 
-  debug_printf("%s\r\n", separator_line);
+  io_printf("%s\r\n", separator_line);
 
 #if (configGENERATE_RUN_TIME_STATS == 1)
-  debug_printf("CPU(%%): ulTotalRunTime 대비 각 태스크의 ulRunTimeCounter 비율 (근사치).\r\n");
+  io_printf("CPU(%%): ulTotalRunTime 대비 각 태스크의 ulRunTimeCounter 비율 (근사치).\r\n");
 #endif
-  debug_printf(
+  io_printf(
       "--------------------------------------------------------------------------------------------"
       "---------\r\n\r\n");
 

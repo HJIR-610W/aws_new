@@ -19,18 +19,18 @@ void test_rs485(void)
   const char *rs485_port_name[RS485_PORT_MAX]={"A","B","C","D"};
 
 
-  debug_printf("RS485 A,B,C,D 테스트\r\n");
-  debug_printf("주의:RS485 C,D는 하드웨어점퍼 설정 필요\r\n");
-  debug_printf("기능:1초마다 각 포트이름 전송되며 1초 대기,입력 에코처리함\r\n");
+  io_printf("RS485 A,B,C,D 테스트\r\n");
+  io_printf("주의:RS485 C,D는 하드웨어점퍼 설정 필요\r\n");
+  io_printf("기능:1초마다 각 포트이름 전송되며 1초 대기,입력 에코처리함\r\n");
 
-  debug_printf("통신 속도를 입력해주세요\r\n");
+  io_printf("통신 속도를 입력해주세요\r\n");
 
   if(get_int_input("통신 속도를 입력해주세요", &baud, 1200, 115200)!= MENU_OK)
   {
     baud=57600;
-    debug_printf("기본 속도로 설정합니다.%d\r\n", baud);
+    io_printf("기본 속도로 설정합니다.%d\r\n", baud);
   }
-  debug_printf("이제 테스트 진행하세요 CTRL+Q 종료\r\n");
+  io_printf("이제 테스트 진행하세요 CTRL+Q 종료\r\n");
 
   uart_config.baud = baud;
   uart_config.parityIdx = PARITY_NONE;
@@ -51,7 +51,7 @@ void test_rs485(void)
       if(len<0)
       {
         snprintf(buff, sizeof(buff), "RS485 %s failed\r\n", rs485_port_name[i]);
-        debug_printf(buff);
+        io_printf(buff);
       }
       len = driver_rs485_recv(port[i], rx_buff, sizeof(rx_buff), 1000);
       if(len)

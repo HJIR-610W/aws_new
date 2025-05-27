@@ -39,16 +39,16 @@ void isrEventTask(void *arg)
         rtc_update();
         break;
         case eRAIN_REED_INT:
-        debug_printf("eRAIN_REED_INT\r\n");
+        task_printf("eRAIN_REED_INT\r\n");
         increase_rain();
         break;
         case eRAIN_HALL_INT:
-        debug_printf("eRAIN_HALL_INT\r\n");
-        increase_rain();
-        break;
+        task_printf("eRAIN_HALL_INT\r\n");
+          increase_rain();
+          break;
         case eUSER_BTN_INT:
-        debug_printf("eUSER_BTN_INT\r\n");
-        break;
+        task_printf("eUSER_BTN_INT\r\n");
+          break;
         default:
         break;
       }

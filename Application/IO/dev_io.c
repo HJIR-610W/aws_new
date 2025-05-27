@@ -89,7 +89,7 @@ void debug_puts_nonos(char *str)
 #define PRINTF_HEAP_USE 1
 
 
-int32_t debug_printf(const char *pFmt, ...)
+int32_t io_printf(const char *pFmt, ...)
 {
   #if PRINTF_HEAP_USE==0
    char printf_buff[256];
@@ -149,7 +149,65 @@ int32_t debug_printf(const char *pFmt, ...)
 #endif
   return 0;
 }
+int32_t io_vprintf(const char *pFmt, va_list ap)
+{
+#if PRINTF_HEAP_USE == 0
+  char printf_buff[256];
+#endif
 
+  char buff[2];
+  char *ptr = NULL;
+  char *temp = NULL;
+  va_list ap_copy;
+  int32_t len;
+
+
+  va_copy(ap_copy, ap);
+  len = vsnprintf_s(buff, sizeof(buff), pFmt, ap_copy);
+  va_end(ap_copy);
+
+#if PRINTF_HEAP_USE
+  if (len > (sizeof(buff) - 1))  // 1바이트 초과면 메모리 동적 할당
+  {
+    temp = aws_malloc(len + 1);  // null 포함
+    if (temp)
+    {
+      vsnprintf_s(temp, len + 1, pFmt, ap);
+      ptr = temp;
+    }
+    else
+    {
+      return 1;  // 메모리 할당 실패
+    }
+  }
+  else
+  {
+    ptr = buff;  // 아주 짧은 메시지는 임시 버퍼 사용
+  }
+#else
+  vsnprintf_s(printf_buff, sizeof(printf_buff), pFmt, ap);
+  ptr = printf_buff;
+#endif
+
+  // 전송: RTOS 여부에 따라
+  if (debug_uart && ptr)
+  {
+    driver_uart_send(debug_uart, (uint8_t *)ptr, strlen(ptr));
+  }
+  else if (ptr)
+  {
+    debug_puts_nonos(ptr);
+  }
+
+#if PRINTF_HEAP_USE
+  if (temp)
+  {
+    aws_free(temp);
+  }
+#endif
+
+  return 0;
+}
 
 int32_t error_printf(const char *pFmt, ...)
 {
@@ -247,7 +305,7 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
   else
     row = (size / col) + 1;
 
-  debug_printf("\n\r\n\r                ");
+  io_printf("\n\r\n\r                ");
   len = 0;
   temp[0] = 0;
 
@@ -256,18 +314,18 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
     len = strnlen_s(temp, sizeof(temp));
     snprintf_s(&temp[len], sizeof(temp) - len, "%02X ", j);
   }
-  debug_printf(temp);
+  io_printf(temp);
 
-  debug_printf("  ");
+  io_printf("  ");
   for (j = 0; j < col; j++)
   {
-    debug_printf("%X", j % 16);
+    io_printf("%X", j % 16);
   }
 
   for (i = 0; i < row; i++)
   {
     snprintf_s(temp, sizeof(temp), "\n\r%04d  %08X  ", (int32_t)(i * col), (startAddr + i * col));
-    debug_printf(temp);
+    io_printf(temp);
 
     temp[0] = 0;
 
@@ -284,8 +342,8 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
         snprintf_s(&temp[len], sizeof(temp) - len, "   ");
       }
     }
-    debug_printf(temp);
-    debug_printf("  ");
+    io_printf(temp);
+    io_printf("  ");
 
     temp[0] = 0;
 
@@ -306,9 +364,9 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
         }
       }
     }
-    debug_printf(temp);
+    io_printf(temp);
   }
-  debug_printf("\n\r");
+  io_printf("\n\r");
 }
 
 void dev_io_get(dev_io_t *dev, uint8_t cmd, void *opt)
@@ -364,3 +422,51 @@ uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd,
 
 
 
+
+static void *g_task_id;
+void set_task_id(void *task_id)
+{
+  g_task_id = task_id;
+}
+
+void task_printf(const char *pFmt, ...)
+{
+  void *task_id;
+
+  task_id = osThreadGetId();
+
+  if(task_id ==NULL)
+  {
+    return;
+  }
+
+  if(g_task_id==NULL)
+  {
+    return;
+  }
+
+  if(task_id == g_task_id)
+  {
+    va_list args;
+    va_start(args, pFmt);
+    io_vprintf(pFmt, args); 
+    va_end(args);
+  }
+}
+
+void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)
+{
+  if (title)
+    task_printf("%s (len=%d):\r\n", title, (int)length);
+
+  for (uint32_t i = 0; i < length; i++)
+  {
+    if (i % 16 == 0)
+      task_printf("%04X: ", (unsigned int)i);  // 주소/인덱스 출력
+
+    task_printf("%02X ", data[i]);
+
+    if ((i + 1) % 16 == 0 || i + 1 == length)
+      task_printf("\r\n");
+  }
+}

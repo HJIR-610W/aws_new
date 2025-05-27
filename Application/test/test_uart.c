@@ -62,13 +62,13 @@ bool is_gpio_interrupt_enabled(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
   if (exti_port_val != gpio_port_index)
   {
-    debug_printf("포트 매핑 불일치: SYSCFG = %u, 기대값 = %u\r\n", exti_port_val, gpio_port_index);
+    io_printf("포트 매핑 불일치: SYSCFG = %u, 기대값 = %u\r\n", exti_port_val, gpio_port_index);
     return false;
   }
 
   if (!(EXTI->IMR & (1 << pin_num)))
   {
-    debug_printf("EXTI 인터럽트 마스크됨 (IMR[%d] = 0)\r\n", pin_num);
+    io_printf("EXTI 인터럽트 마스크됨 (IMR[%d] = 0)\r\n", pin_num);
     return false;
   }
 
@@ -82,7 +82,7 @@ bool is_gpio_interrupt_enabled(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
   if (!(NVIC->ISER[irq / 32] & (1 << (irq % 32))))
   {
-    debug_printf("NVIC ISER[%d] 비활성화됨\r\n", irq);
+    io_printf("NVIC ISER[%d] 비활성화됨\r\n", irq);
     return false;
   }
 
@@ -93,11 +93,11 @@ bool is_gpio_interrupt_enabled(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
   bool rising = (EXTI->RTSR & (1 << pin_num)) != 0;
   bool falling = (EXTI->FTSR & (1 << pin_num)) != 0;
 
-  debug_printf("GPIO 인터럽트 설정됨: 포트=GPIO%c, 핀=%d\r\n", 'A' + gpio_port_index, pin_num);
-  debug_printf("  IRQn = %d\r\n", irq);
-  debug_printf("  NVIC PreemptPriority = %lu\r\n", preempt_priority);
-  debug_printf("  NVIC SubPriority = %lu\r\n", sub_priority);
-  debug_printf("  Edge Trigger: %s%s\r\n", rising ? "RISING " : "", falling ? "FALLING" : "");
+  io_printf("GPIO 인터럽트 설정됨: 포트=GPIO%c, 핀=%d\r\n", 'A' + gpio_port_index, pin_num);
+  io_printf("  IRQn = %d\r\n", irq);
+  io_printf("  NVIC PreemptPriority = %lu\r\n", preempt_priority);
+  io_printf("  NVIC SubPriority = %lu\r\n", sub_priority);
+  io_printf("  Edge Trigger: %s%s\r\n", rising ? "RISING " : "", falling ? "FALLING" : "");
 
   return true;
 }
@@ -175,24 +175,24 @@ void test_uart(void)
    int len;
    int rs232_number = -1;
 
-   debug_printf("RS232 CDMA,TTL,A,B,C,D,CDMA 테스트\r\n");
-   debug_printf("주의:RS232 A,B는 하드웨어점퍼 설정 필요\r\n");
+   io_printf("RS232 CDMA,TTL,A,B,C,D,CDMA 테스트\r\n");
+   io_printf("주의:RS232 A,B는 하드웨어점퍼 설정 필요\r\n");
 
-   debug_printf("포트 이름을 입력해주세요\r\n");
+   io_printf("포트 이름을 입력해주세요\r\n");
    if (cli_scanf_s("%7s", buff) == CLI_KEYCODE_CTRL_C)
    {
      return;
    }
 
-  debug_printf("기능:1초마다 각 포트이름 전송되며 1초 대기,입력 에코처리함\r\n");
-  debug_printf("통신 속도를 입력해주세요\r\n");
+  io_printf("기능:1초마다 각 포트이름 전송되며 1초 대기,입력 에코처리함\r\n");
+  io_printf("통신 속도를 입력해주세요\r\n");
 
   if (get_int_input("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
   {
     baud = 57600;
-    debug_printf("기본 속도로 설정합니다.%d\r\n", baud);
+    io_printf("기본 속도로 설정합니다.%d\r\n", baud);
   }
-  debug_printf("이제 테스트 진행하세요 CTRL+Q 종료\r\n");
+  io_printf("이제 테스트 진행하세요 CTRL+Q 종료\r\n");
 
 
   uart_config.baud = baud;
@@ -212,7 +212,7 @@ void test_uart(void)
   
   if (rs232_number ==-1)
   {
-    debug_printf("포트 이름을 확인해주세요\r\n");
+    io_printf("포트 이름을 확인해주세요\r\n");
     return ;
   }
 
@@ -228,7 +228,7 @@ void test_uart(void)
     if (len < 0)
     {
       snprintf(buff, sizeof(buff), "RS232 %s error\r\n", rs232_port_name[rs232_number]);
-      debug_printf(buff);
+      io_printf(buff);
     }
 
     len = driver_uart_recv(uart_driver, rx_buff, sizeof(rx_buff), 1000);

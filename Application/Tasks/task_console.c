@@ -59,19 +59,19 @@ void print_signature(void)
     get_appVer(&a,&b,&c,&d);
     get_appBuild(&ct);
 
-    debug_printf("\r\n");
-    debug_printf("(0lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk(B\r\n");
-    debug_printf("(0x(B HWAJIN T&I CO.,LTD.                      (0x(B\r\n");
-    debug_printf("(0tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu(B\r\n");
-    debug_printf("(0x(B AWS                                      (0x(B\r\n"); //1111-11-11 11:11:11
-    debug_printf("(0x(B App  %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",a,b,c,d,ct.Year,ct.Month,ct.Day,
+    io_printf("\r\n");
+    io_printf("(0lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk(B\r\n");
+    io_printf("(0x(B HWAJIN T&I CO.,LTD.                      (0x(B\r\n");
+    io_printf("(0tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu(B\r\n");
+    io_printf("(0x(B AWS                                      (0x(B\r\n"); //1111-11-11 11:11:11
+    io_printf("(0x(B App  %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",a,b,c,d,ct.Year,ct.Month,ct.Day,
                                                     ct.Hour,ct.Min,ct.Sec);//os »ç¿ëÀü¿¡´Â Á÷Á¢ È£Ãâ
     get_bootVer(&a,&b,&c,&d);
     get_bootBuild(&ct);
-    debug_printf("(0x(B Boot %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",a,b,c,d,ct.Year,ct.Month,ct.Day,
+    io_printf("(0x(B Boot %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",a,b,c,d,ct.Year,ct.Month,ct.Day,
                                                     ct.Hour,ct.Min,ct.Sec);//os »ç¿ëÀü¿¡´Â Á÷Á¢ È£Ãâ
 
-    debug_printf("(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B\r\n");
+    io_printf("(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B\r\n");
 
 }
 
@@ -98,21 +98,21 @@ void sonsoleTask(void *arg)
   const char *cli_test = "\x1B[32mAWS_TEST>> \x1B[37m";
 
   osDelay(1000);
-  debug_printf("\r\n\r\n");
- // debug_printf(VT100_CLEAR_SCREEN);
-  //debug_printf(VT100_CURSOR_HOME);
+  io_printf("\r\n\r\n");
+ // io_printf(VT100_CLEAR_SCREEN);
+  //io_printf(VT100_CURSOR_HOME);
   print_signature();
 
   DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
 
   if(mode==0)
   {
-    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf,
+    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, io_printf,
                (char *)cli_aws);
   }
   else
   {
-    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf,
+    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, io_printf,
                (char *)cli_test);
   }
   console_scanf_init(&user_context);

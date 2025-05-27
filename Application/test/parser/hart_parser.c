@@ -6,7 +6,7 @@
 #include "hart_parser.h"
 #include "dev_io.h"
 
-#define printf debug_printf
+#define printf io_printf
 
 static const char* hart_command_to_str(uint8_t cmd)
 {

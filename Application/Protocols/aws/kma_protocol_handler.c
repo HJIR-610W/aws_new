@@ -18,6 +18,8 @@
 #include "old_aws_define.h"
 #include "Protocols\divas\divas_protocol_handler.h"
 #include "user_heap.h"
+#include "parse_aws.h"
+#include "dev_io.h"
 
 #define KMA_HEADER_START 0xFAFB
 #define KMA_HEADER_END 0xFFFE
@@ -131,16 +133,16 @@ void kma_unpack(uint8_t *packet,kma3_command_request_t *req)
 {
   uint16_t usData;
 
-  req->protocol_year  = packet[2];
-  req->protocol_month = packet[3];
-  req->protocol_day   = packet[4];
+  req->protocol_yy  = packet[2];
+  req->protocol_mm = packet[3];
+  req->protocol_dd  = packet[4];
 
-  req->year  = packet[5];
-  req->month = packet[6];
-  req->day   = packet[7];
-  req->hour  = packet[8];
-  req->min   = packet[9];
-  req->sec   = packet[10];
+  req->date_yy  = packet[5];
+  req->date_mm = packet[6];
+  req->date_dd   = packet[7];
+  req->time_hh  = packet[8];
+  req->time_mm   = packet[9];
+  req->time_ss   = packet[10];
 
   usData = GetWord((uint8_t *)&packet[11]);
   req->password = usData;
@@ -632,12 +634,12 @@ uint16_t kma_cmd_handler_AT(uint8_t *frame, uint8_t *send)
 
   station_id = GetWord((uint8_t *)&frame[13]);
 
-  nt.Year = req->year + 2000;
-  nt.Month = req->month;
-  nt.Day = req->day;
-  nt.Hour = req->hour;
-  nt.Min = req->min;
-  nt.Sec = req->sec;
+  nt.Year = req->date_yy + 2000;
+  nt.Month = req->date_mm;
+  nt.Day = req->date_dd;
+  nt.Hour = req->time_hh;
+  nt.Min = req->time_mm;
+  nt.Sec = req->time_ss;
 
   rtc_set(&nt);
 
@@ -805,30 +807,38 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
   eKMA_COMMAND_TYPE_t cmd_type;
   kma3_command_request_t request;
 
+  
+  //프로토콜이 잘못 설정되어있어도 처리 하도록
+  //차이라면 프로토콜이 설정되어있으면 우선 처리됨
   switch (get_config_app()->aws_protocol_type)
   {
     case eAWS_PROTOCOL_KMA2:
       protocol_ok = is_kma2_protocol(rx_frame, frame_len);
-      if (protocol_ok==false)
-      {
-        protocol_ok = is_kma3_protocol(rx_frame, frame_len);
-      }
-        break;
+      break;
     case eAWS_PROTOCOL_KMA3:
       protocol_ok = is_kma3_protocol(rx_frame, frame_len);
-      if (protocol_ok==false)
-      {
-        protocol_ok = is_kma2_protocol(rx_frame, frame_len);
-      }
-        break;
+       break;
   }
 
   if (protocol_ok == false)
   {
+    task_hex_dump("AWS frame",rx_frame,frame_len);
     return divas_cmd_handler(rx_frame, frame_len,tx_buffer);
   }
 
-  kma_unpack(rx_frame, &request);
+  switch (get_config_app()->aws_protocol_type)
+  {
+    case eAWS_PROTOCOL_KMA2:
+      print_kma2_command_request((kma2_command_request_t*)rx_frame);
+      break;
+    case eAWS_PROTOCOL_KMA3:
+      print_kma3_command_request((kma3_command_request_t*)rx_frame);
+      break;
+  }
+
+
+
+    kma_unpack(rx_frame, &request);
 
   if (request.command_str[1] == 'D')  // 지점번호 설정,AWS(구)에서 이렇게 처리함
   {
@@ -887,6 +897,16 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
       len = 0;
       break;
   }
+
+  switch (get_config_app()->aws_protocol_type)
+  {
+  case eAWS_PROTOCOL_KMA2:
+    parse_kma2_response(tx_buffer,len);
+     break;
+  default:
+    break;
+  }
+
 
   return len;
 }

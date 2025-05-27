@@ -141,8 +141,8 @@ void sdiTask(void *arg)
 
   SDI_DIR_TX_OFF();
 
-  debug_printf("0XR3 이런 문자열이 출력되면 정상\r\n");
-  debug_printf("CTRL+Q 종료료\r\n");
+  io_printf("0XR3 이런 문자열이 출력되면 정상\r\n");
+  io_printf("CTRL+Q 종료료\r\n");
 
   while (1)
   {

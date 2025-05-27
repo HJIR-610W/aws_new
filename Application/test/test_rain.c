@@ -58,8 +58,8 @@ void test_rain(void)
   driver_di_set(rain_reed, DI_SET_INTERRUPT, &isr_cfg);
 
 
-  debug_printf("우량을 1초 간격으로 입력해주세요\r\n");
-  debug_printf("우량감지(디지털 주파수형)\r\n");
+  io_printf("우량을 1초 간격으로 입력해주세요\r\n");
+  io_printf("우량감지(디지털 주파수형)\r\n");
   hall_status = driver_di_read(rain_hall_err);
 
   
@@ -76,11 +76,11 @@ void test_rain(void)
       }
       if(hall_status == 1)
       {
-        debug_printf("홀센서 정상\r\n");
+        io_printf("홀센서 정상\r\n");
       }
       else
       {
-        debug_printf("홀센서 에러\r\n");
+        io_printf("홀센서 에러\r\n");
       }
       prev_hall_status = hall_status;
     }
@@ -89,13 +89,13 @@ void test_rain(void)
     if(g_reed_rain)
     {
       g_reed_rain = false;
-      debug_printf("리드 우량\r\n");
+      io_printf("리드 우량\r\n");
     }
 
     if (g_hall_rain)
     {
       g_hall_rain = false;
-      debug_printf("홀 우량\r\n");
+      io_printf("홀 우량\r\n");
     }
 
     if (read_sensor_rainPresent(rain_present,&err))
@@ -111,10 +111,10 @@ void test_rain(void)
       prev_rain_present_status = rain_present_status;
        if (rain_present_status == 1)
       {
-        debug_printf("우량 감지\r\n");
+        io_printf("우량 감지\r\n");
       }
       else{
-        debug_printf("우량 감지 해제\r\n");
+        io_printf("우량 감지 해제\r\n");
       }
     }
 

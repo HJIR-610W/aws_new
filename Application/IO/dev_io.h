@@ -44,7 +44,7 @@ typedef struct dev_io_s
 
 
 void debug_uart_init(uint32_t baud_rate);
-int32_t debug_printf(const char * pFmt, ...);
+int32_t io_printf(const char * pFmt, ...);
 int32_t error_printf(const char * pFmt, ...);
 void debug_send(uint8_t *pData,uint16_t dataLen);
 void debug_puts(const char *str);
@@ -59,4 +59,8 @@ void LOG_MEM(uint8_t* src, uint32_t size, uint32_t startAddr,uint32_t col);
 
 void dev_io_write(dev_io_t  *dev,uint8_t *data,uint32_t dataLen,uint32_t opt);
 uint16_t dev_io_read(dev_io_t  *dev,uint8_t *out,uint32_t dataLen,uint8_t cmd,void *opt);
+
+void set_task_id(void *task_id);
+void task_printf( const char *pFmt, ...);
+void task_hex_dump(const char *title, const uint8_t *data, uint32_t length);
 #endif

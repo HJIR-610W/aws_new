@@ -23,21 +23,21 @@ void test_power_signal(void)
   do_rain_det = driver_do_open(DO_CON_PWR_RAIN_DECT_ACTIVE_H, 0);
 
 
-  debug_printf("파워 신호 제어 테스트 시작\r\n");
-  debug_printf("입력 예: cdma,on  또는  24v,off  또는  btm,on\r\n");
-  debug_printf("CTRL+C 입력 시 종료\r\n");
+  io_printf("파워 신호 제어 테스트 시작\r\n");
+  io_printf("입력 예: cdma,on  또는  24v,off  또는  btm,on\r\n");
+  io_printf("CTRL+C 입력 시 종료\r\n");
 
   while (1)
   {
   static  char signal[20] = {0};
   static   char cmd[10] = {0};
 
-    debug_printf("입력 대기 (cdma/24v/btm/heater/raind,on/off) > ");
+    io_printf("입력 대기 (cdma/24v/btm/heater/raind,on/off) > ");
     int ret = cli_scanf_s("%19[^,],%9s", signal, sizeof(signal), cmd, sizeof(cmd));
 
     if (ret == CLI_KEYCODE_CTRL_C)
     {
-      debug_printf("\r\nCTRL+C 감지: 테스트 종료\r\n");
+      io_printf("\r\nCTRL+C 감지: 테스트 종료\r\n");
       break;
     }
     else if (ret == 2)
@@ -51,16 +51,16 @@ void test_power_signal(void)
         if (strcmp(cmd, "on") == 0)
         {
           driver_do_high(do_cdma);  
-          debug_printf("CDMA: ON (Low)\r\n");
+          io_printf("CDMA: ON (Low)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
           driver_do_low(do_cdma);  
-          debug_printf("CDMA: OFF (High)\r\n");
+          io_printf("CDMA: OFF (High)\r\n");
         }
         else
         {
-          debug_printf("명령어는 on 또는 off만 허용\r\n");
+          io_printf("명령어는 on 또는 off만 허용\r\n");
         }
       }
       else if (strcmp(signal, "24v") == 0)
@@ -68,16 +68,16 @@ void test_power_signal(void)
         if (strcmp(cmd, "on") == 0)
         {
           driver_do_high(do_24v);  // ACTIVE_H → on=High
-          debug_printf("24V: ON (High)\r\n");
+          io_printf("24V: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
           driver_do_low(do_24v);  // ACTIVE_H → off=Low
-          debug_printf("24V: OFF (Low)\r\n");
+          io_printf("24V: OFF (Low)\r\n");
         }
         else
         {
-          debug_printf("명령어는 on 또는 off만 허용\r\n");
+          io_printf("명령어는 on 또는 off만 허용\r\n");
         }
       }
       else if (strcmp(signal, "btm") == 0)
@@ -85,16 +85,16 @@ void test_power_signal(void)
         if (strcmp(cmd, "on") == 0)
         {
           driver_do_high(do_btm);  
-          debug_printf("BTM: ON (Low)\r\n");
+          io_printf("BTM: ON (Low)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
           driver_do_low(do_btm);  
-          debug_printf("BTM: OFF (High)\r\n");
+          io_printf("BTM: OFF (High)\r\n");
         }
         else
         {
-          debug_printf("명령어는 on 또는 off만 허용\r\n");
+          io_printf("명령어는 on 또는 off만 허용\r\n");
         }
       }
       else if (strcmp(signal, "heater") == 0)
@@ -102,16 +102,16 @@ void test_power_signal(void)
         if (strcmp(cmd, "on") == 0)
         {
           driver_do_high(do_rain_heater);  // ACTIVE_H → on=High
-          debug_printf("rain: ON (High)\r\n");
+          io_printf("rain: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
           driver_do_low(do_rain_heater);  // ACTIVE_H → off=Low
-          debug_printf("rain: OFF (Low)\r\n");
+          io_printf("rain: OFF (Low)\r\n");
         }
         else
         {
-          debug_printf("명령어는 on 또는 off만 허용\r\n");
+          io_printf("명령어는 on 또는 off만 허용\r\n");
         }
       }
       else if (strcmp(signal, "raind") == 0)
@@ -119,26 +119,26 @@ void test_power_signal(void)
         if (strcmp(cmd, "on") == 0)
         {
           driver_do_high(do_rain_det);  // ACTIVE_H → on=High
-          debug_printf("raind: ON (High)\r\n");
+          io_printf("raind: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
           driver_do_low(do_rain_det);  // ACTIVE_H → off=Low
-          debug_printf("raind: OFF (Low)\r\n");
+          io_printf("raind: OFF (Low)\r\n");
         }
         else
         {
-          debug_printf("명령어는 on 또는 off만 허용\r\n");
+          io_printf("명령어는 on 또는 off만 허용\r\n");
         }
       }
       else
       {
-        debug_printf("알 수 없는 신호명입니다. cdma, 24v, btm,rain만 허용\r\n");
+        io_printf("알 수 없는 신호명입니다. cdma, 24v, btm,rain만 허용\r\n");
       }
     }
     else
     {
-      debug_printf("입력 형식 오류. 예: cdma,on 또는 24v,off\r\n");
+      io_printf("입력 형식 오류. 예: cdma,on 또는 24v,off\r\n");
     }
   }
 

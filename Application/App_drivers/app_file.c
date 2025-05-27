@@ -276,7 +276,7 @@ void print_fat_time(WORD fdate, WORD ftime)
   uint8_t min = (ftime >> 5) & 0x3F;
   uint8_t sec = (ftime & 0x1F) * 2;
 
-  debug_printf("%04u-%02u-%02u %02u:%02u:%02u", year, month, day, hour, min, sec);
+  io_printf("%04u-%02u-%02u %02u:%02u:%02u", year, month, day, hour, min, sec);
 }
 FRESULT list_directory(const char *path)
 {
@@ -290,7 +290,7 @@ FRESULT list_directory(const char *path)
   res = f_opendir(&dir, path);
   if (res != FR_OK)
   {
-    debug_printf("Failed to open directory: %s (Error: %d)\r\n", path, res);
+    io_printf("Failed to open directory: %s (Error: %d)\r\n", path, res);
     OS_SEM_POST(g_fileSem);
     return res;
   }
@@ -307,11 +307,11 @@ FRESULT list_directory(const char *path)
     // 파일/디렉토리 정보 출력
     if (fno.fattrib & AM_DIR)
     {
-      debug_printf("[DIR ] %-20s  ", fno.fname);
+      io_printf("[DIR ] %-20s  ", fno.fname);
     }
     else
     {
-      debug_printf("[FILE] %-20s  %10llu bytes  ", fno.fname, (unsigned long long)fno.fsize);
+      io_printf("[FILE] %-20s  %10llu bytes  ", fno.fname, (unsigned long long)fno.fsize);
     }
 
     // 날짜/시간 출력
@@ -319,16 +319,16 @@ FRESULT list_directory(const char *path)
 
     
     // 속성 출력
-    debug_printf("  [");
+    io_printf("  [");
     if (fno.fattrib & AM_RDO)
-      debug_printf("R");
+      io_printf("R");
     if (fno.fattrib & AM_HID)
-      debug_printf("H");
+      io_printf("H");
     if (fno.fattrib & AM_SYS)
-      debug_printf("S");
+      io_printf("S");
     if (fno.fattrib & AM_ARC)
-      debug_printf("A");
-    debug_printf("]\r\n");
+      io_printf("A");
+    io_printf("]\r\n");
   }
 
   // 디렉토리 닫기
@@ -405,7 +405,7 @@ FRESULT find_files_by_extension(const TCHAR *folder_path, const TCHAR *extension
         {
 
 #if 0
-          debug_printf("Warning: Filename '%s' is too long and was skipped.\n", fno.fname);
+          io_printf("Warning: Filename '%s' is too long and was skipped.\n", fno.fname);
 #endif
         }
       }
@@ -447,20 +447,20 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
   uint8_t *buffer = (uint8_t *)aws_malloc(TEST_BUFFER_SIZE);
   if (buffer == NULL)
   {
-      debug_printf("메모리 할당 실패\r\n");
+      io_printf("메모리 할당 실패\r\n");
     return FR_OK;
   }
 #endif
 
   memset(buffer, 0xAA, TEST_BUFFER_SIZE);
 
-  debug_printf("Writing %lu bytes to %s...\r\n", (unsigned long)fileSize, path);
+  io_printf("Writing %lu bytes to %s...\r\n", (unsigned long)fileSize, path);
 
   // 파일 열기 (없으면 생성, 항상 새로쓰기)
   res = f_open(&file, path, FA_WRITE | FA_CREATE_ALWAYS);
   if (res != FR_OK)
   {
-    debug_printf("Failed to open file for write (Error: %d)\r\n", res);
+    io_printf("Failed to open file for write (Error: %d)\r\n", res);
 #if !STATIC_RAM_USE
     aws_free(buffer);
 #endif
@@ -480,7 +480,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
     res = f_write(&file, buffer, writeSize, &bytesRW);
     if (res != FR_OK || bytesRW != writeSize)
     {
-      debug_printf("Write error at %lu bytes (Error: %d)\r\n", totalBytes, res);
+      io_printf("Write error at %lu bytes (Error: %d)\r\n", totalBytes, res);
       f_close(&file);
 #if !STATIC_RAM_USE
       aws_free(buffer);
@@ -498,7 +498,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
   endClk = HAL_GetTick();
   elapsed = endClk - startClk;
 
-  debug_printf("Write completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
+  io_printf("Write completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
                (unsigned long)elapsed,
                (fileSize / (elapsed > 0 ? (elapsed / 1000.0f) : 1.0f)) / 1024.0f);
 
@@ -506,12 +506,12 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
 
   // ============================ 읽기 측정 ==============================
 
-  debug_printf("Reading %lu bytes from %s...\r\n", (unsigned long)fileSize, path);
+  io_printf("Reading %lu bytes from %s...\r\n", (unsigned long)fileSize, path);
 
   res = f_open(&file, path, FA_READ);
   if (res != FR_OK)
   {
-    debug_printf("Failed to open file for read (Error: %d)\r\n", res);
+    io_printf("Failed to open file for read (Error: %d)\r\n", res);
 #if !STATIC_RAM_USE
     aws_free(buffer);
 #endif
@@ -530,7 +530,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
     res = f_read(&file, buffer, readSize, &bytesRW);
     if (res != FR_OK || bytesRW == 0)
     {
-      debug_printf("Read error at %lu bytes (Error: %d)\r\n", totalBytes, res);
+      io_printf("Read error at %lu bytes (Error: %d)\r\n", totalBytes, res);
       f_close(&file);
 #if !STATIC_RAM_USE
       aws_free(buffer);
@@ -545,7 +545,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
   endClk = HAL_GetTick();
   elapsed = endClk - startClk;
 
-  debug_printf("Read completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
+  io_printf("Read completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
                (unsigned long)elapsed,
                (fileSize / (elapsed > 0 ? (elapsed / 1000.0f) : 1.0f)) / 1024.0f);
 
