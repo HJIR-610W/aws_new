@@ -5,13 +5,16 @@
 
 #include <stdint.h>
 #include "utile_time.h"
+
+#define LOG_LEN_MAX 64
+
 typedef struct 
 {
-    char msg[64];
+  char msg[LOG_LEN_MAX];  // 문자열만 저장
 }loggingMsg_t;
 
 int32_t logging_printf(const char *log);
-void logging_read_log(int32_t offsetCnt,loggingMsg_t *loggingMsg);
-void logging_init(void);
+void logging_read_log(uint32_t log_q_cnt,loggingMsg_t *loggingMsg);
 uint16_t logging_get_logCnt(void);
+void logging_init(void);
 #endif

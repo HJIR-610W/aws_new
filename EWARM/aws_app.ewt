@@ -1379,6 +1379,9 @@
             <file>
                 <name>$PROJ_DIR$\..\Application\Data\data_rain.c</name>
             </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Data\utile_data.c</name>
+            </file>
         </group>
         <group>
             <name>Debug</name>

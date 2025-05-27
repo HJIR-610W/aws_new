@@ -109,7 +109,9 @@
 			"sdio.h": "c",
 			"console_rtos.h": "c",
 			"mcu_debug.h": "c",
-			"driver_di_def.h": "c"
+			"driver_di_def.h": "c",
+			"fatfs.h": "c",
+			"tuple": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

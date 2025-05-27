@@ -23,7 +23,6 @@ FRESULT find_files_by_extension(const TCHAR *folder_path, const TCHAR *extension
                                 char found_filenames[][MAX_FILENAME_LEN],
                                 int max_filenames_to_store, int *p_files_found_count);
 
-
-
+void *get_file_sem(void);
 
 #endif

@@ -10,7 +10,9 @@
 
 
 #define LOGGING_LOG_ERR  0x01U
+#define LOGGING_RAIN_ERR 0x02U
 #define LOGGING_DATA_ERR 0x04U
+#define LOGGING_SUN_ERR 0x10U
 
 typedef struct logging_task_info_s
 {
@@ -29,7 +31,7 @@ typedef enum
 
 void loggingTask_init(void);
 void log_printf(log_level_t level, const char *pFmt, ...);
-void os_write_sensorData(DATE_TIME_BUF *pDate, void *pInData,uint32_t dataSize,
+void os_write_data_year(DATE_TIME_BUF *pDate, void *pInData,uint32_t dataSize,
                          uint8_t Type,uint32_t periodMin);
 logging_system_t *get_logging_system(void);
 

@@ -106,7 +106,9 @@ typedef struct
 #define RAINFAIL_BIT 0x0001
 
   char kma3_sensor_status[8];
-  char cDataSpare[36];
+  char cDataSpare[30];
+  uint16_t rain_1min;
+  uint32_t crc;
 } AWS_DATA_STRUCT;
 
 typedef struct
@@ -121,11 +123,8 @@ typedef struct
 } SENSORWIND_BUF;
 typedef struct
 {
-  uint32_t nMonthRain;      // 월간강수량
-  uint32_t nYearRain;       // 년간강수량
   uint32_t nYearSunshine;   // 연간 일조량
   uint32_t nMonthSunshine;  // 월간 일조량
-
 } NONVOLATILE_BUF;
 
 typedef struct
@@ -157,11 +156,10 @@ typedef struct
   uint16_t sHourRain;    // 1시간 강수량
   uint16_t sDayRain;     // 일간 강수량
   uint16_t sBefDayRain;  // 전일 강수량
-
   uint16_t sDayCount;       
   uint16_t sDayCountOld;    // 임시 저장 값
-
-
+  uint16_t sMonthRain;
+  uint16_t sYearRain;
 
 } SENSORRAIN_BUF;
 
@@ -190,7 +188,12 @@ typedef struct
 
 typedef struct
 {
-  NONVOLATILE_BUF mNVram;
+  uint32_t nYearSunshine;   // 연간 일조량
+  uint32_t nMonthSunshine;  // 월간 일조량
+}SUNSHINE_BUF;
+
+typedef struct
+{
   SENSORWIND_REAL mRealWind;  // Dual Port Ram에서 들어온 Data
   SENSORWIND_BUF mWind[3];  // 0: 분 , 1: 10분 , 2: 1시간
   SENSORPROC_BUF mTempBuf[3];   // 0: 분 , 1: 10분 , 2: 1시간
@@ -207,7 +210,7 @@ typedef struct
   SENSORPROC_BUF mSoil50Buf[3];
   SENSORPROC_BUF mSoil100Buf[3];
   SENSORPROC_BUF mSoil150Buf[3];
-
+  SUNSHINE_BUF mSunshine;
   uint16_t shSnowFallOld;  // 10분 누적 적설량을 구하기위한 10분전 적설(실적설)
    // Count를 10초 이상일 경우 9999로 설정한다(Mega640의 리셋시 대응 하기위함)
   uint8_t cMegaErrCnt[15];  // Error Count를 10초 이상일 경우 9999로

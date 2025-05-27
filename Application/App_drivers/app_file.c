@@ -558,6 +558,11 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
 //========== 파일시스템 테스트 코드 종료==========
 
 
+void *get_file_sem(void)
+{
+  return g_fileSem;
+}
+
 void file_init(void)
 {
   MX_SDIO_SD_Init();

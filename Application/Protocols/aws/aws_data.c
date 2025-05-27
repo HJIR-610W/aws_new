@@ -21,6 +21,7 @@ kma_data_ex_t g_kma_10min_ex;
 kma_data_ex_t g_kma_1Hour_ex;
 
 rainfall_t g_rainfall;
+sunshine_t g_sunshine;
 
 // 실제 수집된 데이터를 AWS에서 요구하는 형태로 저장해야한다.
 
@@ -40,7 +41,7 @@ rainfall_t g_rainfall;
      * @brief 센서 데이터를 AWS 자료형으로 변환환
      */
     void
-cvt_sensorToAWS(sensor_t *p_sensor, sensor_data_t *p_data, kma_data_t *p_kma)
+    cvt_sensorToAWS(sensor_t *p_sensor, sensor_data_t *p_data, kma_data_t *p_kma)
 {
   bool status;
 
@@ -326,8 +327,7 @@ cvt_sensorToAWS(sensor_t *p_sensor, sensor_data_t *p_data, kma_data_t *p_kma)
 
 rainfall_t *get_rainfall(void)
 {
-    
-    return &g_rainfall;
+  return &g_rainfall;
 }
 
 void set_rainfall_yesterday(float rainfall) 
@@ -355,8 +355,23 @@ void set_rainfall_yearly(float rainfall)
 { 
   g_rainfall.rainfall_yearly = rainfall; 
 }
+void set_rainfall_10min(float rainfall) 
+{ g_rainfall.rainfall_10min = rainfall; }
 
+sunshine_t *get_sunshine(void)
+{
+  return &g_sunshine;
+}
 
+void set_sunshine_yesterday(float sunshine) { g_sunshine.sunshine_yesterday = sunshine; }
+
+void set_sunshine_today(float sunshine) { g_sunshine.sunshine_today = sunshine; }
+
+void set_sunshine_hourly(float sunshine) { g_sunshine.sunshine_hourly = sunshine; }
+
+void set_sunshine_monthly(float sunshine) { g_sunshine.sunshine_monthly = sunshine; }
+
+void set_sunshine_yearly(float sunshine) { g_sunshine.sunshine_yearly = sunshine; }
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
 {

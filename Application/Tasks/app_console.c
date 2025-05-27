@@ -2563,7 +2563,7 @@ int32_t menu_data_view(p_shell_context_t ctx)
     timeTickEnd = timeTick + kLoggingIntervalMin * 60 * readCnt;
     for (uint32_t tick = timeTick; tick <= timeTickEnd;)
     {
-      read_data(&ut, &kma_data, sizeof(kma_data), 0, 1);
+      read_data_month(&ut, &kma_data, sizeof(kma_data), 0, 1);
 
       ctx->printf("%04d-%02d-%02d %02d:%02d:%02d\r\n", ut.Year, ut.Month, ut.Day, ut.Hour, ut.Min,
                   ut.Sec);
@@ -2937,66 +2937,7 @@ void config_hj_reset(void)
   save_config_app();
   save_config_sensor();
 }
-int32_t menu_manage_config_sensor(p_shell_context_t ctx)
-{
-  int32_t cnt;
-  const char *config_menu[] = {"0.월간 우량", "1.연간 우량","2.월간 일조","3.연간 일조"};
 
-
-  while(1)
-  {
-    cnt = select_indexFromList(ctx, config_menu, NULL, _countof(config_menu), false);
-    
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
-    {
-      return cnt;
-    }
-
-  if (cnt > 0)
-  {
-    cnt--;
-    switch (cnt)
-    {
-      case 0:
-      debug_printf("현재 월간 우량:%f\r\n",get_config_nvm()->rainfall_monthly);
-      if (get_user_confirm("월간 우량을 0으로 설정합니다.")!=1)
-      {
-        continue;
-      }
-        
-        nvm_set_rainfall_monthly(0.0f);
-        break;
-      case 1:
-      debug_printf("현재 연간 우량:%f\r\n",get_config_nvm()->rainfall_yearly);
-      if (get_user_confirm("연간 우량을 0으로 설정합니다.")!=1)
-      {
-        continue;
-      }
-      nvm_set_rainfall_yearly(0.0f);
-        break;
-      case 2:
-      debug_printf("현재 월간 일조:%f\r\n",get_config_nvm()->sunshine_monthly);
-      if (get_user_confirm("월간 일조을 0으로 설정합니다.")!=1)
-      {
-        continue;
-      }
-      nvm_set_sunshine_monthly(0.0f);
-      break;
-      case 3:
-      debug_printf("현재 연간 일조:%f\r\n",get_config_nvm()->sunshine_yearly);
-      if (get_user_confirm("연간 일조을 0으로 설정합니다.")!=1)
-      {
-        continue;
-      }
-      nvm_set_sunshine_yearly(0.0f);
-      break;
-
-    }
-  }
-  }
-
-  return 0;
-}
 int32_t menu_manage_config_backup(p_shell_context_t ctx)
 {
   int32_t cnt;
@@ -3036,7 +2977,7 @@ int32_t menu_manage_config_backup(p_shell_context_t ctx)
 int32_t menu_manage_config_reset(p_shell_context_t ctx)
 {
   int32_t cnt;
-  const char *config_menu[] = {"0.AWS 화진 기본 설정", "1.공장 초기화","2.센서","3.백업"};
+  const char *config_menu[] = {"0.AWS 화진 기본 설정", "1.공장 초기화","2.백업"};
 
   while(1)
   {
@@ -3071,9 +3012,6 @@ int32_t menu_manage_config_reset(p_shell_context_t ctx)
         }
           break;
           case 2:
-          menu_manage_config_sensor(ctx);
-          break;
-          case 3:
             menu_manage_config_backup(ctx);
              break;
       }
@@ -3088,7 +3026,7 @@ int32_t menu_manage_print_config_all(p_shell_context_t ctx)
   ctx->printf("ID               :%d\r\n", config.id);
   ctx->printf("비밀번호         :%d\r\n", config.password);
   ctx->printf("충전기 종류      :%s\r\n", ITEM_LIST(config.charger_model, g_chgList));
-  ctx->printf("로그 카운트      :%d\r\n", get_config_nvm()->logCnt);
+  ctx->printf("로그 카운트      :%d\r\n", nvm_get_log_cnt());
   ctx->printf("프로토콜          :%s\r\n", ITEM_LIST(config.aws_protocol_type, protocolList));
   ctx->printf("이더넷 서브넷    :%d.%d.%d.%d\r\n", config.eth_subnet[0], config.eth_subnet[1],
               config.eth_subnet[2], config.eth_subnet[3]);

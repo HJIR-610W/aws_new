@@ -18,6 +18,7 @@
 #include "dev_io.h"
 #include "utile_time.h"
 #include "task_logging.h"
+#include "old_aws_define.h"
 
 typedef enum logging_cmd_e
 {
@@ -138,7 +139,7 @@ void log_printf(log_level_t level, const char *pFmt, ...)
 }
 
 
-void os_write_sensorData(DATE_TIME_BUF *pDate, void *pInData,uint32_t data_size,
+void os_write_data_year(DATE_TIME_BUF *pDate, void *pInData,uint32_t data_size,
                          uint8_t Type,uint32_t period_min)
 {
   logging_t logging;
@@ -154,7 +155,7 @@ void os_write_sensorData(DATE_TIME_BUF *pDate, void *pInData,uint32_t data_size,
   logging.cmd = eLOGGING_DATA;
   if(osMessageQueuePut(g_loggingQueue, &logging, 0, kLoggingTimeOutMs) != osOK)
   {
-    debug_printf("os_write_sensorData timeout.\r\n");
+    debug_printf("os_write_data_year timeout.\r\n");
   }
 }
 
@@ -171,6 +172,27 @@ void update_loggingErr(uint8_t *status,int8_t err,uint8_t flag)
     *status &= ~flag;
   }
 }
+
+
+int32_t write_rain_1min(DATE_TIME_BUF *nt,uint16_t rain_1min)
+{
+  int32_t err;
+  err = write_data_year(nt, &rain_1min, 2, LOGGING_RAIN_1MIN, 1);
+
+  return err;
+}
+
+int32_t write_sunshine_1min(DATE_TIME_BUF *nt, uint32_t sunshine_1min)
+{
+  int32_t err;
+  err = write_data_year(nt, &sunshine_1min, 4, LOGGING_SUNSHINE_1MIN, 1);
+
+  return err;
+}
+
+#define OFFSET_OF_SUN() (uint32_t)(&(((AWS_DATA_STRUCT *)0)->mSunshine.sReal))
+#define OFFSET_OF_RAIN() (uint32_t)(&(((AWS_DATA_STRUCT *)0)->rain_1min))
+
 /**
  * @brief SD쓰기 처리리
  */
@@ -181,8 +203,13 @@ void loggingTask(void *arg)
   uint32_t data_size;
   uint32_t period_min;
   logging_t logging;
+  uint16_t rain;
+  uint32_t sun;
+  AWS_DATA_STRUCT *p_aws;
 
-  while(1)
+  uint32_t offset;
+  
+  while (1)
   {
     // 메시지 큐에서 데이터 수신
     if (osMessageQueueGet(g_loggingQueue, &logging, NULL, osWaitForever) == osOK)
@@ -196,8 +223,17 @@ void loggingTask(void *arg)
             memcpy(&data_size,&logging.data[0],sizeof(data_size));
             memcpy(&data_type,&logging.data[4],sizeof(data_type));
             memcpy(&period_min,&logging.data[5],sizeof(period_min));
-            err = write_data(&logging.ct,&logging.data[9],data_size,data_type,period_min);
+
+            err = write_data_month(&logging.ct,&logging.data[9],data_size,data_type,period_min);
             update_loggingErr(&g_logging_system.status_group, err, LOGGING_DATA_ERR);
+            offset = OFFSET_OF_RAIN();
+            memcpy(&rain, &logging.data[9 + offset], sizeof(uint16_t));  
+            err = write_rain_1min(&logging.ct, rain);
+            update_loggingErr(&g_logging_system.status_group, err, LOGGING_RAIN_ERR);
+            offset = OFFSET_OF_SUN();
+            memcpy(&sun, &logging.data[9 + offset], sizeof(uint32_t)); 
+            err = write_sunshine_1min(&logging.ct, sun);
+            update_loggingErr(&g_logging_system.status_group, err, LOGGING_RAIN_ERR);
             break;
         }
 

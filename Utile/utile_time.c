@@ -99,8 +99,37 @@ int GetMonth(time_t tmIn)
     return time_info.tm_mon+1;
 }
 
+int GetDay(time_t tmIn)
+{
+  struct tm time_info;
+
+  time_info.tm_year = 0;
+  time_info.tm_mon = 0;
+  localtime_s(&tmIn, &time_info);
+
+  return time_info.tm_mday;
+}
 
 long GetTotalSeconds(time_t ts)
 {
 	return ts;
+}
+
+bool isLeapYear(int year) { return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0); }
+// year: 연도 (예: 2025)
+// month: 월 (1 ~ 12)
+// day: 일 (1 ~ 31)
+// 리턴값: 해당 연도의 1월 1일부터 몇 번째 날인지 (1 ~ 365 또는 366)
+int dayOfYear(int year, int month, int day)
+{
+  static const uint16_t days_until_month[12] = {0,   31,  59,  90,  120, 151,
+                                                181, 212, 243, 273, 304, 334};
+  static const uint16_t days_until_month_leap[12] = {0,   31,  60,  91,  121, 152,
+                                                     182, 213, 244, 274, 305, 335};
+
+  if (month < 1 || month > 12 || day < 1 || day > 31)
+    return -1;  // 잘못된 날짜 입력
+
+  const uint16_t *table = isLeapYear(year) ? days_until_month_leap : days_until_month;
+  return table[month - 1] + day;
 }

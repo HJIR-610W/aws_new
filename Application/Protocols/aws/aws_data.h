@@ -286,8 +286,18 @@ typedef struct rainfall_s
   float rainfall_today;    
   float rainfall_hourly;  
   float rainfall_monthly;  
-  float rainfall_yearly;    
+  float rainfall_yearly;   
+  float rainfall_10min; 
 }rainfall_t;
+
+typedef struct sunshine_s
+{
+  uint32_t sunshine_yesterday;
+  uint32_t sunshine_today;
+  uint32_t sunshine_hourly;
+  uint32_t sunshine_monthly;
+  uint32_t sunshine_yearly;
+} sunshine_t;
 
 rainfall_t *get_rainfall(void);
 void set_rainfall_yesterday(float rainfall);
@@ -295,6 +305,15 @@ void set_rainfall_today(float rainfall);
 void set_rainfall_hourly(float rainfall);
 void set_rainfall_monthly(float rainfall);
 void set_rainfall_yearly(float rainfall);
+void set_rainfall_10min(float rainfall);
+
+
+sunshine_t *get_sunshine(void);
+void set_sunshine_yesterday(float sunshine);
+void set_sunshine_today(float sunshine);
+void set_sunshine_hourly(float sunshine);
+void set_sunshine_monthly(float sunshine);
+void set_sunshine_yearly(float sunshine);
 
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min) ;
@@ -312,4 +331,6 @@ extern kma_data_ex_t g_kma_1min_ex;;
 extern kma_data_ex_t g_kma_raw_ex;
 extern kma_data_ex_t g_kma_10min_ex;
 extern kma_data_ex_t g_kma_1Hour_ex;
+
+extern rainfall_t g_rainfall;
 #endif

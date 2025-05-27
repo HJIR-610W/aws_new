@@ -34,34 +34,10 @@ config_nvm_t *get_config_nvm(void)
 }
 
 
-
-void nvm_set_rainfall_yearly(float value)
-{
-  g_config_nvm.rainfall_yearly = value;
-
-  WRITE_NVM(rainfall_yearly);
-}
-
-void nvm_set_rainfall_monthly(float value)
-{
-  g_config_nvm.rainfall_monthly = value;
-  WRITE_NVM(rainfall_monthly);
-}
-
-void nvm_set_sunshine_yearly(uint32_t value)
-{
-  g_config_nvm.sunshine_yearly = value;
-  WRITE_NVM(sunshine_yearly);
-}
-
-void nvm_set_sunshine_monthly(uint32_t value)
-{
-  g_config_nvm.sunshine_monthly = value;
-  WRITE_NVM(sunshine_monthly);
-}
-
 void nvm_set_log_cnt(uint16_t value)
 {
-  g_config_nvm.logCnt = value;
-  WRITE_NVM(logCnt);
+  g_config_nvm.log_q_cnt = value;
+  WRITE_NVM(log_q_cnt);
 }
+
+uint16_t nvm_get_log_cnt(void) { return g_config_nvm.log_q_cnt; };

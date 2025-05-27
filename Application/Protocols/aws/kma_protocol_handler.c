@@ -587,7 +587,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
       return 0;  //
     }
 
-    read_data(pDate, p_aws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
+    read_data_month(pDate, p_aws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
     update_old_to_kma3(p_aws, &kma3);
 
     switch (get_config_app()->aws_protocol_type)

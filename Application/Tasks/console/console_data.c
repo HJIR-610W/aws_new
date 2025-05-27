@@ -43,7 +43,7 @@ uint32_t startTime;
 
   for(uint32_t n=0;n<cnt; n++)
   {
-     read_data(&nt, &aws, sizeof(aws), LOGGING_AWS, 1);
+     read_data_month(&nt, &aws, sizeof(aws), LOGGING_AWS, 1);
 
      debug_printf("%04d-%02d-%02d %02d:%02d\r\n", nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min);
 
