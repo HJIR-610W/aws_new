@@ -765,6 +765,8 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->rain_1min = pSystem->mRain.sMinRain;
   pSystem->mRain.sMinRain = 0;                                  // 1분 강수량
 
+  set_rainfall_1min(0);
+
   pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
 
   mRealAws.mWind.mDirection.sMax = 0;
@@ -872,6 +874,7 @@ void Min10Process(void)
   pAws->mRainFall.sReal = pSystem->mRain.s10MinRain;  // 10분 강수량
   pAws->mRainFall.sMax = pSystem->mRain.sHourRain;
   pSystem->mRain.s10MinRain = 0;  // 10분 강수량
+  set_rainfall_10min(pSystem->mRain.s10MinRain/10.0f);
 
 #if 0 
 // 2010. 11. 30. 수정 적설량 처리
@@ -886,7 +889,7 @@ void Min10Process(void)
 	}	
 	pSystem->shSnowFallOld 	= mRealAws.mSnowFall.sReal;														// 현재 적설위치를 옮겨 놓는다.
 #else
-  m10MinAws.mSnowFall.sReal = mRealAws.mSnowFall.sReal;
+      m10MinAws.mSnowFall.sReal = mRealAws.mSnowFall.sReal;
 #endif
 }
 
@@ -993,6 +996,7 @@ void DayProcess(void)
 
   set_rainfall_today(0.0f);
   set_rainfall_yesterday(pSystem->mRain.sBefDayRain/10.0f);
+
   set_sunshine_today(0);
 }
 
@@ -1006,7 +1010,7 @@ void MonthProcess(void)
   pSystem->mSunshine.nMonthSunshine = 0;
 
   set_rainfall_monthly(0.0f);
-  set_sunshine_monthly(0);
+  set_sunshine_monthly(0.0f);
 }
 
 void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v)
@@ -1179,7 +1183,7 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
       Sysinfo.mSunshine.nYearSunshine =0;
       pOldDate->Year = pDate->Year;
       set_rainfall_yearly(0.0f);
-      set_sunshine_yearly(0);
+      set_sunshine_yearly(0.0f);
     }
 }
 

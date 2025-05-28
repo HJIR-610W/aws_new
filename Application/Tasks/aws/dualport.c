@@ -738,9 +738,9 @@ void update_kma_real(void)
   set_rainfall_hourly(Sysinfo.mRain.sHourRain / 10.0f);
   set_rainfall_today(Sysinfo.mRain.sDayRain / 10.0f);
   set_rainfall_monthly(Sysinfo.mRain.sMonthRain / 10.0f);
-  set_rainfall_yesterday(Sysinfo.mRain.s10MinRain / 10.0f);
   set_rainfall_yesterday(Sysinfo.mRain.sBefDayRain / 10.0f);
-
+  set_rainfall_yearly(Sysinfo.mRain.sYearRain/10.0f);
+  
   set_sunshine_monthly(Sysinfo.mSunshine.nMonthSunshine);
   set_sunshine_monthly(Sysinfo.mSunshine.nYearSunshine);
 
