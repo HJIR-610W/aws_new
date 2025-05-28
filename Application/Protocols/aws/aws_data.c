@@ -8,7 +8,7 @@
 #include "barometer\barometer.h"
 
 #include "task_measure.h"
-kma_data_t g_kma_raw;
+
 kma_data_t g_kma_inst;//실시간, 순간자료, 평균낸 자료
 kma_data_t g_kma_1min;
 kma_data_t g_kma_10min;
@@ -330,33 +330,16 @@ rainfall_t *get_rainfall(void)
   return &g_rainfall;
 }
 
-void set_rainfall_yesterday(float rainfall) 
-{ 
-    g_rainfall.rainfall_yesterday = rainfall; 
-}
-
-void set_rainfall_today(float rainfall) 
-{ 
-    g_rainfall.rainfall_today = rainfall; 
-}
-
-void set_rainfall_hourly(float rainfall)
-{ 
-  g_rainfall.rainfall_hourly = rainfall; 
-}
-
-void set_rainfall_monthly(float rainfall)
-{ 
-  g_rainfall.rainfall_monthly = rainfall; 
-}
+void set_rainfall_1min(float rainfall) { g_rainfall.rainfall_1min = rainfall; }
+void set_rainfall_10min(float rainfall) { g_rainfall.rainfall_10min = rainfall; }
+void set_rainfall_hourly(float rainfall) { g_rainfall.rainfall_hourly = rainfall; }
+void set_rainfall_today(float rainfall) { g_rainfall.rainfall_today = rainfall; }
+void set_rainfall_monthly(float rainfall) { g_rainfall.rainfall_monthly = rainfall; }
+void set_rainfall_yesterday(float rainfall) { g_rainfall.rainfall_yesterday = rainfall; }
+void set_rainfall_yearly(float rainfall) { g_rainfall.rainfall_yearly = rainfall; }
 
 
-void set_rainfall_yearly(float rainfall)
-{ 
-  g_rainfall.rainfall_yearly = rainfall; 
-}
-void set_rainfall_10min(float rainfall) 
-{ g_rainfall.rainfall_10min = rainfall; }
+
 
 sunshine_t *get_sunshine(void)
 {

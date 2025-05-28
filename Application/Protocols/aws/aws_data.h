@@ -15,7 +15,7 @@
 // 새롭게 추가
 typedef enum aws_data_min_s
 {
-  eAWS_DATA_AVG,
+  eAWS_DATA_AVG,//AWS(구) real과 동일
   eAWS_DATA_1MIN,
   eAWS_DATA_10MIN,
   eAWS_DATA_HOUR,
@@ -282,12 +282,13 @@ typedef struct
 
 typedef struct rainfall_s
 {
+  float rainfall_1min;
+  float rainfall_10min;
+  float rainfall_hourly;
+  float rainfall_today;
   float rainfall_yesterday; 
-  float rainfall_today;    
-  float rainfall_hourly;  
   float rainfall_monthly;  
   float rainfall_yearly;   
-  float rainfall_10min; 
 }rainfall_t;
 
 typedef struct sunshine_s
@@ -300,26 +301,26 @@ typedef struct sunshine_s
 } sunshine_t;
 
 rainfall_t *get_rainfall(void);
-void set_rainfall_yesterday(float rainfall);
-void set_rainfall_today(float rainfall);
-void set_rainfall_hourly(float rainfall);
-void set_rainfall_monthly(float rainfall);
-void set_rainfall_yearly(float rainfall);
+void set_rainfall_1min(float rainfall);
 void set_rainfall_10min(float rainfall);
-
+void set_rainfall_hourly(float rainfall);
+void set_rainfall_today(float rainfall);
+void set_rainfall_monthly(float rainfall);
+void set_rainfall_yesterday(float rainfall);
+void set_rainfall_yearly(float rainfall);
 
 sunshine_t *get_sunshine(void);
-void set_sunshine_yesterday(float sunshine);
-void set_sunshine_today(float sunshine);
 void set_sunshine_hourly(float sunshine);
+void set_sunshine_today(float sunshine);
 void set_sunshine_monthly(float sunshine);
+void set_sunshine_yesterday(float sunshine);
 void set_sunshine_yearly(float sunshine);
 
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min) ;
 
 
-extern kma_data_t g_kma_raw;
+
 extern kma_data_t g_kma_inst;
 extern kma_data_t g_kma_1min;
 extern kma_data_t g_kma_10min;

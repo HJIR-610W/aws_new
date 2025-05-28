@@ -33,6 +33,37 @@ const char *generalStatusList[] = {"정상", "비정상"};
 
 
 extern uint32_t g_debug_elased_time;
+
+void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size)
+{
+  if (!buffer || buffer_size == 0)
+    return;
+
+  uint8_t val_err = (error >> 4) & 0x0F;
+  uint8_t comm_err = error & 0x0F;
+
+  if (val_err == 0 && comm_err == 0)
+  {
+    buffer[0] = '\0';  // 에러 없음
+    return;
+  }
+
+  if (val_err && comm_err)
+  {
+    snprintf(buffer, buffer_size, "E(값%u,통신%u)", val_err, comm_err);
+  }
+  else if (val_err)
+  {
+    snprintf(buffer, buffer_size, "E(값%u)", val_err);
+  }
+  else if (comm_err)
+  {
+    snprintf(buffer, buffer_size, "E(통신%u)", comm_err);
+  }
+}
+
+
+
 int32_t print_systemInfo(uint16_t row, uint16_t column)
 {
   uint8_t line = row + 3;
@@ -327,6 +358,7 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min,
   uint8_t line = row + 3;
   kma_data_ex_t *p_kma = NULL;
   uint32_t elapsed_time;
+  char err_buf[32];
 
   p_kma = get_kma_data(min);
 
@@ -342,7 +374,8 @@ if(p_kma->temperature.enable)
   err = p_kma->temperature.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "기온", err);
+    make_error_string(err,err_buf,sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "기온", err_buf);
   }
   else
   {
@@ -356,7 +389,8 @@ if (p_kma->wind_direction_avg.enable)
   err = p_kma->wind_direction_avg.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "풍향", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "풍향", err_buf);
   }
   else
   {
@@ -370,7 +404,8 @@ if (p_kma->wind_speed_avg.enable)
   err = p_kma->wind_speed_avg.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "풍속", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "풍속", err_buf);
   }
   else
   {
@@ -379,48 +414,46 @@ if (p_kma->wind_speed_avg.enable)
   }
 }
 
-
-  if (p_kma->wind_direction_instant.enable)
-  {
-    err = p_kma->wind_direction_instant.err;
-    if (err)
-    {
-      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순간 풍향",
-                      err);
-    }
-    else
-    {
-      if (min == eAWS_DATA_RAW)
-      {
-        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "순간 풍향");
-      }
-      else
-      {
-        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f 도\r\n", COL_WIDTH, "순간 풍향",
-                        KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
-      }
-    }
-  }
-
-if (p_kma->wind_speed_instant.enable)
+if (p_kma->wind_direction_avg.enable)
 {
-  err = p_kma->wind_speed_instant.err;
+  err = p_kma->wind_direction_avg.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순간 풍속", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "순간 풍향");
   }
   else
   {
     if (min == eAWS_DATA_RAW)
     {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "순간 풍향");
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f 도\r\n", COL_WIDTH, "순간 풍향",
+                      KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
+    }
+  }
+  }
+
+  if (p_kma->wind_speed_avg.enable)
+  {
+    err = p_kma->wind_speed_avg.err;
+    if (err)
+    {
       vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "순간 풍속");
     }
     else
     {
-      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "순간 풍속",
-                      KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
+      if (min == eAWS_DATA_RAW)
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "순간 풍속");
+      }
+      else
+      {
+        vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f m/s\r\n", COL_WIDTH, "순간 풍속",
+                        KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
+      }
     }
-  }
 }
 
 
@@ -429,7 +462,9 @@ if (p_kma->precipitation.enable)
   err = p_kma->precipitation.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "강수량", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "강수량",
+                    err_buf);
   }
   else
   {
@@ -463,7 +498,8 @@ if (p_kma->pressure.enable)
   err = p_kma->pressure.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "기압", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "기압", err_buf);
   }
   else
   {
@@ -477,7 +513,9 @@ if (p_kma->precipitation_presence.enable)
   err = p_kma->precipitation_presence.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "강수유무", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "강수유무",
+                    err_buf);
   }
   else
   {
@@ -491,7 +529,8 @@ if (p_kma->snowfall.enable)
   err = p_kma->snowfall.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "적설", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "적설", err_buf);
   }
   else
   {
@@ -505,7 +544,8 @@ if (p_kma->relative_humidity.enable)
   err = p_kma->relative_humidity.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "상대습도", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "상대습도", err_buf);
   }
   else
   {
@@ -519,7 +559,8 @@ if (p_kma->precipitation_fine.enable)
   err = p_kma->precipitation_fine.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "강수량(0.1)", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "강수량(0.1)", err_buf);
   }
   else
   {
@@ -533,7 +574,8 @@ if (p_kma->solar_radiation.enable)
   err = p_kma->solar_radiation.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "일사", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "일사", err_buf);
   }
   else
   {
@@ -564,7 +606,8 @@ if (p_kma->sunshine_duration.enable)
   err = p_kma->sunshine_duration.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "일조", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "일조", err_buf);
   }
   else
   {
@@ -594,7 +637,8 @@ if (p_kma->surface_temperature.enable)
   err = p_kma->surface_temperature.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지면온도", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "지면온도", err_buf);
   }
   else
   {
@@ -615,7 +659,8 @@ if (p_kma->grass_temperature.enable)
   err = p_kma->grass_temperature.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "초상온도", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "초상온도", err_buf);
   }
   else
   {
@@ -636,8 +681,8 @@ if (p_kma->soil_temperature_5cm.enable)
   err = p_kma->soil_temperature_5cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 5cm",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "지중온도 5cm", err_buf);
   }
   else
   {
@@ -658,8 +703,8 @@ if (p_kma->soil_temperature_10cm.enable)
   err = p_kma->soil_temperature_10cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 10cm",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "지중온도 10cm", err_buf);
   }
   else
   {
@@ -680,8 +725,8 @@ if (p_kma->soil_temperature_20cm.enable)
   err = p_kma->soil_temperature_20cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 20cm",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "지중온도 20cm", err_buf);
   }
   else
   {
@@ -702,8 +747,8 @@ if (p_kma->soil_temperature_30cm.enable)
   err = p_kma->soil_temperature_30cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 30cm",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "지중온도 30cm", err_buf);
   }
   else
   {
@@ -724,8 +769,8 @@ if (p_kma->soil_temperature_50cm.enable)
   err = p_kma->soil_temperature_50cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 50cm",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "지중온도 50cm", err_buf);
   }
   else
   {
@@ -746,8 +791,8 @@ if (p_kma->soil_temperature_1m.enable)
   err = p_kma->soil_temperature_1m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 1m",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "지중온도 1m", err_buf);
   }
   else
   {
@@ -768,8 +813,8 @@ if (p_kma->soil_temperature_1_5m.enable)
   err = p_kma->soil_temperature_1_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 1.5m",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "지중온도 1.5m", err_buf);
   }
   else
   {
@@ -790,8 +835,8 @@ if (p_kma->soil_temperature_3m.enable)
   err = p_kma->soil_temperature_3m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 3m",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "지중온도 3m", err_buf);
   }
   else
   {
@@ -812,8 +857,8 @@ if (p_kma->soil_temperature_5m.enable)
   err = p_kma->soil_temperature_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "지중온도 5m",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "지중온도 5m", err_buf);
   }
   else
   {
@@ -834,7 +879,9 @@ if (p_kma->cloud_height_1st.enable)
   err = p_kma->cloud_height_1st.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "운고 1층", err);
+    
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "운고 1층", err_buf);
   }
   else
   {
@@ -855,7 +902,8 @@ if (p_kma->cloud_height_2nd.enable)
   err = p_kma->cloud_height_2nd.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "운고 2층", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "운고 2층", err_buf);
   }
   else
   {
@@ -876,7 +924,8 @@ if (p_kma->cloud_height_3rd.enable)
   err = p_kma->cloud_height_3rd.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "운고 3층", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "운고 3층", err_buf);
   }
   else
   {
@@ -897,7 +946,8 @@ if (p_kma->cloud_amount.enable)
   err = p_kma->cloud_amount.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "운량", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "운량", err_buf);
   }
   else
   {
@@ -918,7 +968,8 @@ if (p_kma->visibility.enable)
   err = p_kma->visibility.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "시정", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "시정", err_buf);
   }
   else
   {
@@ -939,8 +990,9 @@ if (p_kma->pm10_concentration.enable)
   err = p_kma->pm10_concentration.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "미세먼지 PM10",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "미세먼지 PM10",
+                    err_buf);
   }
   else
   {
@@ -961,8 +1013,9 @@ if (p_kma->pm25_concentration.enable)
   err = p_kma->pm25_concentration.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "미세먼지 PM2.5",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "미세먼지 PM2.5",
+                    err_buf);
   }
   else
   {
@@ -983,7 +1036,8 @@ if (p_kma->net_radiation.enable)
   err = p_kma->net_radiation.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순복사", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "순복사", err_buf);
   }
   else
   {
@@ -1004,7 +1058,8 @@ if (p_kma->total_radiation.enable)
   err = p_kma->total_radiation.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "전천복사", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "전천복사", err_buf);
   }
   else
   {
@@ -1025,7 +1080,8 @@ if (p_kma->reflected_radiation.enable)
   err = p_kma->reflected_radiation.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "반사복사", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "반사복사", err_buf);
   }
   else
   {
@@ -1046,7 +1102,8 @@ if (p_kma->direct_radiation.enable)
   err = p_kma->direct_radiation.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "직달일사", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "직달일사", err_buf);
   }
   else
   {
@@ -1067,7 +1124,8 @@ if (p_kma->current_weather.enable)
   err = p_kma->current_weather.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "현재일기", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "현재일기", err_buf);
   }
   else
   {
@@ -1088,8 +1146,9 @@ if (p_kma->soil_moisture_10cm.enable)
   err = p_kma->soil_moisture_10cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 10cm",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "토양수분 10cm",
+                    err_buf);
   }
   else
   {
@@ -1110,8 +1169,9 @@ if (p_kma->soil_moisture_20cm.enable)
   err = p_kma->soil_moisture_20cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 20cm",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "토양수분 20cm",
+                    err_buf);
   }
   else
   {
@@ -1132,8 +1192,9 @@ if (p_kma->soil_moisture_30cm.enable)
   err = p_kma->soil_moisture_30cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 30cm",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "토양수분 30cm",
+                    err_buf);
   }
   else
   {
@@ -1154,8 +1215,9 @@ if (p_kma->soil_moisture_50cm.enable)
   err = p_kma->soil_moisture_50cm.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "토양수분 50cm",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "토양수분 50cm",
+                    err_buf);
   }
   else
   {
@@ -1176,7 +1238,8 @@ if (p_kma->illuminance.enable)
   err = p_kma->illuminance.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "조도", err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "조도", err_buf);
   }
   else
   {
@@ -1197,8 +1260,8 @@ if (p_kma->wind_speed_1_5m.enable)
   err = p_kma->wind_speed_1_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "풍속 1.5m",
-                    err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "풍속 1.5m",
+      err_buf);
   }
   else
   {
@@ -1219,8 +1282,8 @@ if (p_kma->wind_speed_4m.enable)
   err = p_kma->wind_speed_4m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "풍속 4.0m",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "풍속 4.0m", err_buf);
   }
   else
   {
@@ -1241,8 +1304,9 @@ if (p_kma->instant_wind_speed_1_5m.enable)
   err = p_kma->instant_wind_speed_1_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순간풍속 1.5m",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "순간풍속 1.5m",
+                    err_buf);
   }
   else
   {
@@ -1263,8 +1327,9 @@ if (p_kma->instant_wind_speed_4m.enable)
   err = p_kma->instant_wind_speed_4m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "순간풍속 4.0m",
-                    err);
+    make_error_string(err, err_buf, sizeof(err_buf));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "순간풍속 4.0m",
+                    err_buf);
   }
   else
   {
@@ -1285,8 +1350,8 @@ if (p_kma->temperature_0_5m.enable)
   err = p_kma->temperature_0_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "기온 0.5m",
-                    err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "기온 0.5m",
+      err_buf);
   }
   else
   {
@@ -1307,8 +1372,8 @@ if (p_kma->temperature_4m.enable)
   err = p_kma->temperature_4m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "기온 4.0m",
-                    err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "기온 4.0m",
+      err_buf);
   }
   else
   {
@@ -1329,8 +1394,8 @@ if (p_kma->humidity_0_5m.enable)
   err = p_kma->humidity_0_5m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "습도 0.5m",
-                    err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "습도 0.5m",
+      err_buf);
   }
   else
   {
@@ -1351,8 +1416,8 @@ if (p_kma->humidity_4m.enable)
   err = p_kma->humidity_4m.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "습도 4.0m",
-                    err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "습도 4.0m",
+                    err_buf);
   }
   else
   {
@@ -1373,7 +1438,7 @@ if (p_kma->tacometer.enable)
   err = p_kma->tacometer.err;
   if (err)
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:에러0x%02X\r\n", COL_WIDTH, "타코미터", err);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "타코미터", err_buf);
   }
   else
   {

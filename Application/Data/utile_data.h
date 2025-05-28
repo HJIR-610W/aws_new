@@ -19,4 +19,8 @@ uint32_t get_hourly_accu(uint8_t type, const void *data_minutes, int year, int m
                          int hour, int min);
 
 int get_minute_index(int year, int month, int day, int hour, int min);
+
+
+uint32_t get_10min_accu(uint8_t type, const void *rain_minutes, int year, int month, int day,
+  int hour, int min);
 #endif

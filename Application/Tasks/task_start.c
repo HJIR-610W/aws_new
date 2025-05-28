@@ -29,7 +29,7 @@
 #include "task_isrEvent.h"
 #include "task_logging.h"
 #include "task_measure.h"
-#include "task_sdi.h"
+
 #include "task_system.h"
 #include "task_tcpServer.h"
 #include "task_panel.h"

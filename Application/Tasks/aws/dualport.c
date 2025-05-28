@@ -19,7 +19,26 @@
 #include "Data\data_accu.h"
 #include "dev_io.h"
 #include "Data\utile_data.h"
-const float kSunshine_threshold = 0.8f;
+
+typedef struct filter_data_s
+{
+  uint8_t delay;
+  uint16_t data;
+  uint8_t err;
+}filter_data_t;
+
+
+filter_data_t g_pre_data[SENSOR_LIST_MAX];
+
+ const float kSunshine_threshold = 0.8f;
+
+#define MAKE_TEMP(x) (uint16_t)((x + 100) * 10)  // 기온, 지면온도, 지중온도, 초상온도
+#define MAKE_RADI(x) (uint16_t)((x + 100) * 10)  // 순복사, 전천복사, 반사복사 등
+#define MAKE_PRESSURE(x) (uint16_t)((x) * 10)    // 기압
+#define MAKE_X10(x) (uint16_t)((x) * 10)         // 풍속, 풍향, 습도, 토양수분 등
+#define MAKE_X100(x) (uint16_t)((x) * 100)       // 일사량, 조도량 등
+#define MAKE_DIRECT(x) (uint16_t)(x)             // 운고, 시정, 현재일기, 타코미터 등 정수값
+
 
 
 #define AWS_DATA_ERR_VAL 9999
@@ -290,10 +309,9 @@ uint16_t  SolarRadCalc(uint8_t *sensor_err)
 {
   sensor_data_t *p_sensor = g_p_raw->data;
 
-  *sensor_err = 0;
-  if (p_sensor[B1_SOLAR_RADIATION].err)
+  *sensor_err = p_sensor[B1_SOLAR_RADIATION].err;
+  if (*sensor_err )
   {
-    *sensor_err = 1;
     return AWS_DATA_ERR_VAL;
   }
 
@@ -480,17 +498,16 @@ void dualport_init(void)
 uint16_t get_rain_mm(uint8_t *sensor_err)
 {
   uint8_t err;
+  uint16_t rain = 0;
   sensor_data_t *p_sensor = g_p_raw->data;
-  uint16_t rain=0;;
 
-
-  //우량은 홀센서인경우에만 에러 체크됨
+  //우량은 홀센서인 경우에만 에러 체크됨
   *sensor_err = (uint16_t)p_sensor[A6_RAINFALL_DOT5_1MM].err;
-
   
-  rain = (uint16_t)(p_sensor[A6_RAINFALL_DOT5_1MM].data.f*10);;
+  rain = MAKE_X10(p_sensor[A6_RAINFALL_DOT5_1MM].data.f);
 
   p_sensor[A6_RAINFALL_DOT5_1MM].data.f = 0;// 우량은 이전값을 초기화해줘야함
+
   return rain;
 }
 
@@ -530,22 +547,29 @@ void update_old_kma(eAWS_DATA_MIN_t min)
 
 
 
-
+/*
+250ms마다 업데이트되는 실시간값을 업데이트 한다.
+기존 AWS(구)자료형을 AWS(신)자료형으로 변환한다.
+*/
 void update_kma_real(void)
 {
   kma_data_ex_t *p_kma3;
+  kma_data_ex_t *p_raw;
 
   p_kma3 = get_kma_data(eAWS_DATA_AVG);
+  p_raw = get_kma_data(eAWS_DATA_RAW);
 
+  //[사용]
   p_kma3->temperature.data = mRealAws.mTemperature.sReal;
   p_kma3->temperature.err = get_sensor_err(A1_TEMPERATURE);
   p_kma3->temperature.max = mRealAws.mTemperature.sMax;
   p_kma3->temperature.min = mRealAws.mTemperature.sMin;
 
+  //[사용]
   p_kma3->wind_direction_avg.data = mRealAws.mWind.mDirection.sReal;
   p_kma3->wind_direction_avg.err = get_sensor_err(A2_WIND_DIRECTION);
   p_kma3->wind_direction_avg.max = mRealAws.mWind.mDirection.sMax;
-
+  //[사용]
   p_kma3->wind_speed_avg.data = mRealAws.mWind.mSpeed.sReal;
   p_kma3->wind_speed_avg.err = get_sensor_err(A3_WIND_SPEED);
   p_kma3->wind_speed_avg.max = mRealAws.mWind.mSpeed.sMax;
@@ -556,94 +580,299 @@ void update_kma_real(void)
   p_kma3->wind_direction_instant.data = mRealAws.mWind.mDirection.sMax;
   p_kma3->wind_direction_instant.err = 0;
 
+  //[사용]
   p_kma3->precipitation.data = mRealAws.mRainFall.sReal;
   p_kma3->precipitation.err = get_sensor_err(A6_RAINFALL_DOT5_1MM);
 
+  //[사용]
   p_kma3->pressure.data = mRealAws.mBarometric.sReal;
   p_kma3->pressure.err = get_sensor_err(A7_PRESSURE);
   p_kma3->pressure.max = mRealAws.mBarometric.sMax;
   p_kma3->pressure.min = mRealAws.mBarometric.sMin;
-
+  //[사용]
   p_kma3->precipitation_presence.data = mRealAws.mRainDetect.sReal;
   p_kma3->precipitation_presence.err = get_sensor_err(A8_RAIN_PRESENT);
-
+  //[사용]
   p_kma3->snowfall.data = mRealAws.mSnowFall.sReal;
   p_kma3->snowfall.err = get_sensor_err(A9_SNOW_DEPTH);
-
+  //[사용]
   p_kma3->relative_humidity.data = mRealAws.mHumidity.sReal;
   p_kma3->relative_humidity.err = get_sensor_err(A10_RELATIVE_HUMIDITY);
   p_kma3->relative_humidity.max = mRealAws.mHumidity.sMax;
   p_kma3->relative_humidity.min = mRealAws.mHumidity.sMin;
 
-  // 강수량 0.1
+  //[미사용] 강수량 0.1 (원본값으로 표현)
+  p_kma3->precipitation_fine.data = p_raw->precipitation_fine.data;
+  p_kma3->precipitation_fine.err = get_sensor_err(A11_RAINFALL_DOT1MM);
 
+  //[사용]
   p_kma3->solar_radiation.data = mRealAws.mSolarRad.sReal;
   p_kma3->solar_radiation.err = get_sensor_err(B1_SOLAR_RADIATION);
   p_kma3->solar_radiation.max = mRealAws.mSolarRad.sMax;
-
+  //[사용]
   p_kma3->sunshine_duration.data = mRealAws.mSunshine.sReal;
   p_kma3->sunshine_duration.err = get_sensor_err(B2_SUNSHINE_DURATION);
   p_kma3->sunshine_duration.max = mRealAws.mSunshine.sMax;
 
+  //[미사용] 3. 지면온도 (1분 평균)
+  p_kma3->surface_temperature.data = p_raw->surface_temperature.data;
+  p_kma3->surface_temperature.err = get_sensor_err(B3_GROUND_TEMPERATURE);
+
+  //[미사용] 4. 초상온도 (1분 평균)
+  p_kma3->grass_temperature.data = p_raw->grass_temperature.data;
+  p_kma3->grass_temperature.err = get_sensor_err(B4_SURFACE_TEMPERATURE);
+
+  //[사용]  5. 지중온도 (5cm, 1분 평균)
   p_kma3->soil_temperature_5cm.data = mRealAws.mSoilTemp5cm.sReal;
   p_kma3->soil_temperature_5cm.err = get_sensor_err(B5_SOIL_TEMPERATURE_5CM);
-
+  //[사용] 6. 지중온도 (10cm, 1분 평균)
   p_kma3->soil_temperature_10cm.data = mRealAws.mSoilTemp10cm.sReal;
   p_kma3->soil_temperature_10cm.err = get_sensor_err(B6_SOIL_TEMPERATURE_10CM);
-
+  //[사용] 7. 지중온도 (20cm, 1분 평균)
   p_kma3->soil_temperature_20cm.data = mRealAws.mSoilTemp20cm.sReal;
   p_kma3->soil_temperature_20cm.err = get_sensor_err(B7_SOIL_TEMPERATURE_20CM);
-
+  //[사용]  8. 지중온도 (30cm, 1분 평균)
   p_kma3->soil_temperature_30cm.data = mRealAws.mSoilTemp30cm.sReal;
   p_kma3->soil_temperature_30cm.err = get_sensor_err(B8_SOIL_TEMPERATURE_30CM);
+  //[사용]  9. 지중온도 (50cm, 1분 평균)
   p_kma3->soil_temperature_50cm.data = mRealAws.mSoilTemp50cm.sReal;
   p_kma3->soil_temperature_50cm.err = get_sensor_err(B9_SOIL_TEMPERATURE_50CM);
-  ;
-
+  //[사용] 10. 지중온도 (1.0m, 1분 평균)
   p_kma3->soil_temperature_1m.data = mRealAws.mSoilTemp1_0m.sReal;
   p_kma3->soil_temperature_1m.err = get_sensor_err(B10_SOIL_TEMPERATURE_100CM);
-
+  //[사용] 11. 지중온도 (1.5m, 1분 평균)
   p_kma3->soil_temperature_1_5m.data = mRealAws.mSoilTemp1_5m.sReal;
   p_kma3->soil_temperature_1_5m.err = get_sensor_err(B11_SOIL_TEMPERATURE_150CM);
 
-  // 추가됨
-  p_kma3->soil_moisture_10cm.data = g_kma_raw_ex.soil_moisture_10cm.data;
+  // [미사용] 12. 지중온도(3.0m, 1분 평균) 
+  p_kma3 -> soil_temperature_3m.data =  p_raw->soil_temperature_3m.data;
+  p_kma3->soil_temperature_3m.err = get_sensor_err(B12_SOIL_TEMPERATURE_300CM);
 
-  set_rainfall_yesterday(Sysinfo.mRain.sBefDayRain / 10.0);
-  set_rainfall_today(Sysinfo.mRain.sDayRain / 10.0);
-  set_rainfall_hourly(Sysinfo.mRain.sHourRain / 10.0);
+  //[미사용] 13. 지중온도 (5.0m, 1분 평균)
+  p_kma3->soil_temperature_5m.data = p_raw->soil_temperature_5m.data;
+  p_kma3->soil_temperature_5m.err = get_sensor_err(B13_SOIL_TEMPERATURE_500CM);
 
+  //[미사용]
+  p_kma3->cloud_height_1st.data = p_raw->cloud_height_1st.data;
+  p_kma3->cloud_height_1st.err = get_sensor_err(C1_CLOUD_BASE1);
+  //[미사용]
+  p_kma3->cloud_height_2nd.data = p_raw->cloud_height_2nd.data;
+  p_kma3->cloud_height_2nd.err = get_sensor_err(C2_CLOUD_BASE2);
+  //[미사용]
+  p_kma3->cloud_height_3rd.data = p_raw->cloud_height_3rd.data;
+  p_kma3->cloud_height_3rd.err = get_sensor_err(C3_CLOUD_BASE3);
+  //[미사용]
+  p_kma3->cloud_amount.data = p_raw->cloud_amount.data;
+  p_kma3->cloud_amount.err = get_sensor_err(C4_CLOUD_COVER);
+  //[미사용]
+  p_kma3->visibility.data = p_raw->visibility.data;
+  p_kma3->visibility.err = get_sensor_err(C5_VISIBILITY);
+  //[미사용]
+  p_kma3->pm10_concentration.data = p_raw->pm10_concentration.data;
+  p_kma3->pm10_concentration.err = get_sensor_err(C6_PM10);
+  //[미사용]
+  p_kma3->pm25_concentration.data = p_raw->pm25_concentration.data;
+  p_kma3->pm25_concentration.err = get_sensor_err(C7_PM2DOT5);
+  //[미사용]
+  p_kma3->net_radiation.data = p_raw->net_radiation.data;
+  p_kma3->net_radiation.err = get_sensor_err(C8_NET_RADIATION);
+  //[미사용]
+  p_kma3->total_radiation.data = p_raw->total_radiation.data;
+  p_kma3->total_radiation.err = get_sensor_err(C9_TOTAL_RADIATION);
+  //[미사용]
+  p_kma3->reflected_radiation.data = p_raw->reflected_radiation.data;
+  p_kma3->reflected_radiation.err = get_sensor_err(C10_REFLECTED_RADIATION);
+  //[미사용]
+  p_kma3->direct_radiation.data = p_raw->direct_radiation.data;
+  p_kma3->direct_radiation.err = get_sensor_err(C11_DIRECT_SOLAR);
+  //[미사용]
+  p_kma3->current_weather.data = p_raw->current_weather.data;
+  p_kma3->current_weather.err = get_sensor_err(C12_CURRENT_WEATHER);
+
+  //[미사용]
+  p_kma3->soil_moisture_10cm.data = p_raw->soil_moisture_10cm.data;
+  p_kma3->soil_moisture_10cm.err = get_sensor_err(N1_SOIL_MOISTURE_10CM);
+  //[미사용]
+  p_kma3->soil_moisture_20cm.data = p_raw->soil_moisture_20cm.data;
+  p_kma3->soil_moisture_20cm.err = get_sensor_err(N2_SOIL_MOISTURE_20CM);
+  //[미사용]
+  p_kma3->soil_moisture_30cm.data = p_raw->soil_moisture_30cm.data;
+  p_kma3->soil_moisture_30cm.err = get_sensor_err(N3_SOIL_MOISTURE_30CM);
+  //[미사용]
+  p_kma3->soil_moisture_50cm.data = p_raw->soil_moisture_50cm.data;
+  p_kma3->soil_moisture_50cm.err = get_sensor_err(N4_SOIL_MOISTURE_50CM);
+  //[미사용]
+  p_kma3->illuminance.data = p_raw->illuminance.data;
+  p_kma3->illuminance.err = get_sensor_err(N5_ILLUMINANCE);
+  //[미사용]
+  p_kma3->wind_speed_1_5m.data = p_raw->wind_speed_1_5m.data;
+  p_kma3->wind_speed_1_5m.err = get_sensor_err(N6_WIND_VELOCITY_150CM);
+  //[미사용]
+  p_kma3->wind_speed_4m.data = p_raw->wind_speed_4m.data;
+  p_kma3->wind_speed_4m.err = get_sensor_err(N7_WIND_VELOCITY_400CM);
+  //[미사용]
+  p_kma3->instant_wind_speed_1_5m.data = p_raw->instant_wind_speed_1_5m.data;
+  p_kma3->instant_wind_speed_1_5m.err = get_sensor_err(N8_INSTANT_VELOCITY_150CM);
+  //[미사용]
+  p_kma3->instant_wind_speed_4m.data = p_raw->instant_wind_speed_4m.data;
+  p_kma3->instant_wind_speed_4m.err = get_sensor_err(N9_INSTANT_VELOCITY_400CM);
+  //[미사용]
+  p_kma3->temperature_0_5m.data = p_raw->temperature_0_5m.data;
+  p_kma3->temperature_0_5m.err = get_sensor_err(N10_AIR_TEMPERATURE_50CM);
+  //[미사용]
+  p_kma3->temperature_4m.data = p_raw->temperature_4m.data;
+  p_kma3->temperature_4m.err = get_sensor_err(N11_AIR_TEMPERATURE_400CM);
+  //[미사용]
+  p_kma3->humidity_0_5m.data = p_raw->humidity_0_5m.data;
+  p_kma3->humidity_0_5m.err = get_sensor_err(N12_HUMIDITY_50CM);
+  //[미사용]
+  p_kma3->humidity_4m.data = p_raw->humidity_4m.data;
+  p_kma3->humidity_4m.err = get_sensor_err(N13_HUMIDITY_400CM);
+
+  //[미사용]
+  p_kma3->tacometer.data = p_raw->tacometer.data;
+  p_kma3->tacometer.err = get_sensor_err(I1_TACHOMETER);
+
+  set_rainfall_1min(Sysinfo.mRain.sMinRain/10.0f);
+  set_rainfall_10min(Sysinfo.mRain.s10MinRain/10.0f);
+  set_rainfall_hourly(Sysinfo.mRain.sHourRain / 10.0f);
+  set_rainfall_today(Sysinfo.mRain.sDayRain / 10.0f);
+  set_rainfall_monthly(Sysinfo.mRain.sMonthRain / 10.0f);
+  set_rainfall_yesterday(Sysinfo.mRain.s10MinRain / 10.0f);
+  set_rainfall_yesterday(Sysinfo.mRain.sBefDayRain / 10.0f);
+
+  set_sunshine_monthly(Sysinfo.mSunshine.nMonthSunshine);
+  set_sunshine_monthly(Sysinfo.mSunshine.nYearSunshine);
+
+  //에러 변수 업데이트 
+  //[사용]
   kma3_update_sensor_status(A1_TEMPERATURE, p_kma3->X_sensorStatus, get_sensor_err(A1_TEMPERATURE));
   kma3_update_sensor_status(A2_WIND_DIRECTION, p_kma3->X_sensorStatus,
                             get_sensor_err(A2_WIND_DIRECTION));
+  //[사용]
   kma3_update_sensor_status(A3_WIND_SPEED, p_kma3->X_sensorStatus, get_sensor_err(A3_WIND_SPEED));
+  //[사용]
   kma3_update_sensor_status(A6_RAINFALL_DOT5_1MM, p_kma3->X_sensorStatus,
                             get_sensor_err(A6_RAINFALL_DOT5_1MM));
+  //[사용]
   kma3_update_sensor_status(A7_PRESSURE, p_kma3->X_sensorStatus, get_sensor_err(A7_PRESSURE));
+  //[사용]
   kma3_update_sensor_status(A8_RAIN_PRESENT, p_kma3->X_sensorStatus,
                             get_sensor_err(A8_RAIN_PRESENT));
+  //[사용]
   kma3_update_sensor_status(A9_SNOW_DEPTH, p_kma3->X_sensorStatus, get_sensor_err(A9_SNOW_DEPTH));
+  //[사용]
   kma3_update_sensor_status(A10_RELATIVE_HUMIDITY, p_kma3->X_sensorStatus,
                             get_sensor_err(A10_RELATIVE_HUMIDITY));
+  //[미사용]
+  kma3_update_sensor_status(A11_RAINFALL_DOT1MM, p_kma3->X_sensorStatus, get_sensor_err(A11_RAINFALL_DOT1MM));
+  //[사용]
   kma3_update_sensor_status(B1_SOLAR_RADIATION, p_kma3->X_sensorStatus,
                             get_sensor_err(B1_SOLAR_RADIATION));
+  //[사용]
   kma3_update_sensor_status(B2_SUNSHINE_DURATION, p_kma3->X_sensorStatus,
                             get_sensor_err(B2_SUNSHINE_DURATION));
-
+  //[사용]
   kma3_update_sensor_status(B5_SOIL_TEMPERATURE_5CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B5_SOIL_TEMPERATURE_5CM));
+  //[사용]
   kma3_update_sensor_status(B6_SOIL_TEMPERATURE_10CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B6_SOIL_TEMPERATURE_10CM));
+  //[사용]
   kma3_update_sensor_status(B7_SOIL_TEMPERATURE_20CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B7_SOIL_TEMPERATURE_20CM));
+  //[사용]
   kma3_update_sensor_status(B8_SOIL_TEMPERATURE_30CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B8_SOIL_TEMPERATURE_30CM));
+  //[사용]
   kma3_update_sensor_status(B9_SOIL_TEMPERATURE_50CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B9_SOIL_TEMPERATURE_50CM));
+  //[사용]
   kma3_update_sensor_status(B10_SOIL_TEMPERATURE_100CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B10_SOIL_TEMPERATURE_100CM));
+  //[사용]
   kma3_update_sensor_status(B11_SOIL_TEMPERATURE_150CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B11_SOIL_TEMPERATURE_150CM));
+
+  //[미사용]
+  kma3_update_sensor_status(B12_SOIL_TEMPERATURE_300CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(B12_SOIL_TEMPERATURE_300CM));
+  //[미사용]
+  kma3_update_sensor_status(B13_SOIL_TEMPERATURE_500CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(B13_SOIL_TEMPERATURE_500CM));
+
+  //[미사용]
+  kma3_update_sensor_status(C1_CLOUD_BASE1, p_kma3->X_sensorStatus, get_sensor_err(C1_CLOUD_BASE1));
+  //[미사용]
+  kma3_update_sensor_status(C2_CLOUD_BASE2, p_kma3->X_sensorStatus, get_sensor_err(C2_CLOUD_BASE2));
+  //[미사용]
+  kma3_update_sensor_status(C3_CLOUD_BASE3, p_kma3->X_sensorStatus, get_sensor_err(C3_CLOUD_BASE3));
+  //[미사용]
+  kma3_update_sensor_status(C4_CLOUD_COVER, p_kma3->X_sensorStatus, get_sensor_err(C4_CLOUD_COVER));
+  //[미사용]
+  kma3_update_sensor_status(C5_VISIBILITY, p_kma3->X_sensorStatus, get_sensor_err(C5_VISIBILITY));
+  //[미사용]
+  kma3_update_sensor_status(C6_PM10, p_kma3->X_sensorStatus, get_sensor_err(C6_PM10));
+  //[미사용]
+  kma3_update_sensor_status(C7_PM2DOT5, p_kma3->X_sensorStatus, get_sensor_err(C7_PM2DOT5));
+  //[미사용]
+  kma3_update_sensor_status(C8_NET_RADIATION, p_kma3->X_sensorStatus,
+                            get_sensor_err(C8_NET_RADIATION));
+  //[미사용]
+  kma3_update_sensor_status(C9_TOTAL_RADIATION, p_kma3->X_sensorStatus,
+                            get_sensor_err(C9_TOTAL_RADIATION));
+  //[미사용]
+  kma3_update_sensor_status(C10_REFLECTED_RADIATION, p_kma3->X_sensorStatus,
+                            get_sensor_err(C10_REFLECTED_RADIATION));
+  //[미사용]
+  kma3_update_sensor_status(C11_DIRECT_SOLAR, p_kma3->X_sensorStatus,
+                            get_sensor_err(C11_DIRECT_SOLAR));
+  //[미사용]
+  kma3_update_sensor_status(C12_CURRENT_WEATHER, p_kma3->X_sensorStatus,
+                            get_sensor_err(C12_CURRENT_WEATHER));
+
+  //[미사용]
+  kma3_update_sensor_status(N1_SOIL_MOISTURE_10CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N1_SOIL_MOISTURE_10CM));
+  //[미사용]
+  kma3_update_sensor_status(N2_SOIL_MOISTURE_20CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N2_SOIL_MOISTURE_20CM));
+  //[미사용]
+  kma3_update_sensor_status(N3_SOIL_MOISTURE_30CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N3_SOIL_MOISTURE_30CM));
+  //[미사용]
+  kma3_update_sensor_status(N4_SOIL_MOISTURE_50CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N4_SOIL_MOISTURE_50CM));
+  //[미사용]
+  kma3_update_sensor_status(N5_ILLUMINANCE, p_kma3->X_sensorStatus, get_sensor_err(N5_ILLUMINANCE));
+  //[미사용]
+  kma3_update_sensor_status(N6_WIND_VELOCITY_150CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N6_WIND_VELOCITY_150CM));
+  //[미사용]
+  kma3_update_sensor_status(N7_WIND_VELOCITY_400CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N7_WIND_VELOCITY_400CM));
+  //[미사용]
+  kma3_update_sensor_status(N8_INSTANT_VELOCITY_150CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N8_INSTANT_VELOCITY_150CM));
+  //[미사용]
+  kma3_update_sensor_status(N9_INSTANT_VELOCITY_400CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N9_INSTANT_VELOCITY_400CM));
+  //[미사용]
+  kma3_update_sensor_status(N10_AIR_TEMPERATURE_50CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N10_AIR_TEMPERATURE_50CM));
+  //[미사용]
+  kma3_update_sensor_status(N11_AIR_TEMPERATURE_400CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N11_AIR_TEMPERATURE_400CM));
+  //[미사용]
+  kma3_update_sensor_status(N12_HUMIDITY_50CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N12_HUMIDITY_50CM));
+  //[미사용]
+  kma3_update_sensor_status(N13_HUMIDITY_400CM, p_kma3->X_sensorStatus,
+                            get_sensor_err(N13_HUMIDITY_400CM));
+
+  //[미사용]
+  kma3_update_sensor_status(I1_TACHOMETER, p_kma3->X_sensorStatus, get_sensor_err(I1_TACHOMETER));
+
 
   BIT_UPDATE(p_kma3->Y_volateStatus, System.dc_error, KMA2_PWRSTAT_DC_INPUT_ERR);
   BIT_UPDATE(p_kma3->Y_volateStatus, System.battery_error, KMA2_PWRSTAT_BATTERY_ERR);
@@ -732,15 +961,12 @@ void check_sensor_use(void)
 
 
 
-#define MAKE_TEMP(x) (uint16_t)((x + 100) * 10)  // 기온, 지면온도, 지중온도, 초상온도
-#define MAKE_RADI(x) (uint16_t)((x + 100) * 10)  // 순복사, 전천복사, 반사복사 등
-#define MAKE_PRESSURE(x) (uint16_t)((x) * 10)    // 기압
-#define MAKE_X10(x) (uint16_t)((x) * 10)         // 풍속, 풍향, 습도, 토양수분 등
-#define MAKE_X100(x) (uint16_t)((x) * 100)       // 일사량, 조도량 등
-#define MAKE_DIRECT(x) (uint16_t)(x)             // 운고, 시정, 현재일기, 타코미터 등 정수값
 
 
-//원본값을 업데이트한다.
+/*
+원본값을 업데이트한다.
+원본값을 aws 자료형으로 보관한다.
+*/
 void update_raw(void)
 {
   kma_data_ex_t *p_kma_data;
@@ -759,6 +985,7 @@ void update_raw(void)
   p_kma_data->precipitation.data = MAKE_X10(g_p_raw->data[A6_RAINFALL_DOT5_1MM].data.f);
   p_kma_data->precipitation.err = g_p_raw->data[A6_RAINFALL_DOT5_1MM].err;
 
+  //강수량은 250ms마다 처리되기대문에 이전값 유지가 없어서 마지막으로 우량이 발생한 시간으로 처리한다.
   if (p_kma_data->precipitation.data)
     p_kma_data->precipitation.last_time = time_timestamp();
 
@@ -768,7 +995,7 @@ void update_raw(void)
   p_kma_data->precipitation_presence.data = MAKE_DIRECT(g_p_raw->data[A8_RAIN_PRESENT].data.i);
   p_kma_data->precipitation_presence.err = g_p_raw->data[A8_RAIN_PRESENT].err;
 
-  p_kma_data->snowfall.data = MAKE_X10(g_p_raw->data[A9_SNOW_DEPTH].data.f);
+  p_kma_data->snowfall.data = MAKE_X10(g_p_raw->data[A9_SNOW_DEPTH].data.i);
   p_kma_data->snowfall.err = g_p_raw->data[A9_SNOW_DEPTH].err;
 
   p_kma_data->relative_humidity.data = MAKE_X10(g_p_raw->data[A10_RELATIVE_HUMIDITY].data.f);
@@ -781,7 +1008,8 @@ void update_raw(void)
   p_kma_data->solar_radiation.data = MAKE_DIRECT(g_p_raw->data[B1_SOLAR_RADIATION].data.f);
   p_kma_data->solar_radiation.err = g_p_raw->data[B1_SOLAR_RADIATION].err;
 
-  //기준값과 차이가 0.01차이라면 같은 값으로 처리하자
+  //일조는 기준값과 차이가 0.01차이라면 같은 값으로 처리하자
+  //전압이 특정전압 이상인경우 1(일조 있음)으로 처리리
   if (is_over_threshold(g_p_raw->data[B2_SUNSHINE_DURATION].data.f, kSunshine_threshold, 0.01))
   {
     p_kma_data->sunshine_duration.data = 1;
@@ -970,58 +1198,63 @@ void update_unused_data(kma_data_ex_t *p_dest, kma_data_ex_t *p_source)
   p_dest->tacometer.data = p_source->tacometer.data;
 }
 
-#define RAIN_TOTAL 1056506  // 2*24*60*366=1054080 레코더 파일 활용사이즈 조금 다름
-#define RAIN_DAYS_SIZE (366 * 2)
 
+#define RAIN_TOTAL (sizeof(uint16_t) * 60 * 24 * 366 + sizeof(uint16_t))
+#define RAIN_DAYS_SIZE (366 * sizeof(uint16_t))
 
+/*
+SD카드에 기록된 RAIN_01.rcd 1분 우량 파일을 전부 읽어서 연산산
+*/
 void calculate_rain(void)
 {
   DATE_TIME_BUF ct = Date_Time;
-
-  uint16_t *p_rain_1min = aws_malloc(RAIN_TOTAL);
-  uint16_t *p_rain_days = aws_malloc(RAIN_DAYS_SIZE);
-
-  ct = Date_Time;
-
-  read_rain_1min(ct.Year, p_rain_1min, RAIN_TOTAL);
-  compute_daily_rain(p_rain_1min, p_rain_days, ct.Year);
-
   uint16_t daily_rain = 0;
   uint16_t hourly_rain = 0;
   uint16_t monthly_rain = 0;
   uint16_t yearly_rain = 0;
   uint16_t min10_rain = 0;
+  uint16_t *p_rain_1min = aws_malloc(RAIN_TOTAL);
+  uint16_t *p_rain_days = aws_malloc(RAIN_DAYS_SIZE);
 
-  //p_rain_1min 2025-01-01 00:01:00 부터 저장되는에 인덱스 1이다 0 미사용
-  daily_rain = get_daily_rain(p_rain_days, ct.Year, ct.Month, ct.Day);
-  hourly_rain = get_hourly_rain(p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
-  monthly_rain = get_monthly_rain(p_rain_days, ct.Year, ct.Month, ct.Day);
-  yearly_rain = get_yearly_rain(p_rain_days, ct.Year, ct.Month, ct.Day);
-  min10_rain = get_10min_rain(p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
 
-  set_rainfall_today(daily_rain / 10.0f);
-  set_rainfall_hourly(hourly_rain / 10.0f);
-  set_rainfall_monthly(monthly_rain / 10.0f);
-  set_rainfall_yearly(yearly_rain / 10.0f);
-  set_rainfall_10min(min10_rain/10.0f);
+  ct = Date_Time;
 
-  io_printf("일간 우량:%.1f\r\n", daily_rain / 10.0f);
-  io_printf("시간 우량:%.1f\r\n", hourly_rain / 10.0f);
-  io_printf("월간 우량:%.1f\r\n", monthly_rain / 10.0f);
-  io_printf("년간 우량:%.1f\r\n", yearly_rain / 10.0f);
+  if(read_rain_1min(ct.Year, p_rain_1min, RAIN_TOTAL) == 0)
+  {
+    compute_daily_rain(p_rain_1min, p_rain_days, ct.Year);
 
-  aws_free(p_rain_1min);
-  aws_free(p_rain_days);
+    daily_rain = get_daily_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month, ct.Day);
+    hourly_rain =
+        get_hourly_accu(DATA_SIZE_16, p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+    monthly_rain = get_monthly_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month);
+    yearly_rain = get_yearly_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month, ct.Day);
+    min10_rain =
+        get_10min_accu(DATA_SIZE_16, p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+
+    set_rainfall_today(daily_rain / 10.0f);
+    set_rainfall_hourly(hourly_rain / 10.0f);
+    set_rainfall_monthly(monthly_rain / 10.0f);
+    set_rainfall_yearly(yearly_rain / 10.0f);
+    set_rainfall_10min(min10_rain / 10.0f);
+
+    io_printf("일간 우량:%.1f\r\n", daily_rain / 10.0f);
+    io_printf("시간 우량:%.1f\r\n", hourly_rain / 10.0f);
+    io_printf("월간 우량:%.1f\r\n", monthly_rain / 10.0f);
+    io_printf("년간 우량:%.1f\r\n", yearly_rain / 10.0f);
+
+    aws_free(p_rain_1min);
+    aws_free(p_rain_days);
+  }
 
   Sysinfo.mRain.sDayCount = daily_rain;
   Sysinfo.mRain.sDayCountOld = daily_rain;
-
   Sysinfo.mRain.sMinRain   = 0;      // 1분 강수량
   Sysinfo.mRain.s10MinRain = min10_rain;  // 10분 강수량
   Sysinfo.mRain.sHourRain = hourly_rain;  // 1시간강수량
   Sysinfo.mRain.sDayRain = daily_rain;    // 일간강수량
   Sysinfo.mRain.sMonthRain = monthly_rain;  // 월간 강수량
   Sysinfo.mRain.sYearRain = yearly_rain;    // 년간 강수량
+
 }
 
 #define SUNSHINE_TOTAL (sizeof(uint16_t) * 60 * 24 * 366 + sizeof(uint16_t))
@@ -1030,42 +1263,88 @@ void calculate_rain(void)
 void calculate_sunshine(void)
 {
   DATE_TIME_BUF ct = Date_Time;
-
+  uint16_t daily_sunshine = 0;
+  uint16_t hourly_sunshine = 0;
+  uint16_t monthly_sunshine = 0;
+  uint16_t yearly_sunshine = 0;
   uint16_t *p_sunshine_1min = aws_malloc(SUNSHINE_TOTAL);
   uint16_t *p_sunshine_days = aws_malloc(SUNSHINE_DAYS_SIZE);
 
   ct = Date_Time;
 
-  read_sunshine_1min(ct.Year, p_sunshine_1min, SUNSHINE_TOTAL);
-  compute_daily_data(DATA_SIZE_16,p_sunshine_1min, p_sunshine_days, ct.Year);
+  if( read_sunshine_1min(ct.Year, p_sunshine_1min, SUNSHINE_TOTAL)==0)
+  {
+    compute_daily_data(DATA_SIZE_16,p_sunshine_1min, p_sunshine_days, ct.Year);
+    daily_sunshine = get_daily_accu(DATA_SIZE_16,p_sunshine_days, ct.Year, ct.Month, ct.Day);
+    hourly_sunshine =get_hourly_accu(DATA_SIZE_16, p_sunshine_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+    monthly_sunshine = get_monthly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month);
+    yearly_sunshine = get_yearly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
 
-  uint16_t daily_sunshine = 0;
-  uint16_t hourly_sunshine = 0;
-  uint16_t monthly_sunshine = 0;
-  uint16_t yearly_sunshine = 0;
+    io_printf("일간 일조:%d\r\n", daily_sunshine);
+    io_printf("시간 일조:%d\r\n", hourly_sunshine);
+    io_printf("월간 일조:%d\r\n", monthly_sunshine);
+    io_printf("년간 일조:%d\r\n", yearly_sunshine);
 
-  // p_sunshine_1min 2025-01-01 00:01:00 부터 저장되는에 인덱스 1이다 0 미사용
-  daily_sunshine = get_daily_accu(DATA_SIZE_16,p_sunshine_days, ct.Year, ct.Month, ct.Day);
-  hourly_sunshine =
-      get_hourly_accu(DATA_SIZE_16, p_sunshine_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
-  monthly_sunshine = get_monthly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month);
-  yearly_sunshine = get_yearly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
+    set_sunshine_monthly(monthly_sunshine);
+    set_sunshine_yearly(yearly_sunshine);
 
-  set_sunshine_monthly(monthly_sunshine);
-  set_sunshine_yearly(yearly_sunshine);
-  io_printf("일간 일조:%d\r\n", daily_sunshine);
-  io_printf("시간 일조:%d\r\n", hourly_sunshine);
-  io_printf("월간 일조:%d\r\n", monthly_sunshine);
-  io_printf("년간 일조:%d\r\n", yearly_sunshine);
-
-  aws_free(p_sunshine_1min);
-  aws_free(p_sunshine_days);
-
+    aws_free(p_sunshine_1min);
+    aws_free(p_sunshine_days);
+  }
   Sysinfo.mSunshine.nYearSunshine = yearly_sunshine;
   Sysinfo.mSunshine.nMonthSunshine = monthly_sunshine;
 }
 
-    void DUALPORT_TASK(void *arg)
+#define MS_TO_SCAN(ms) ((uint16_t)((float)ms/0.25))
+/**
+ * 에러가 존재하면 타임아웃 전까지는 이전값 유지
+ */
+uint16_t filter_data(eSENSOR_LIST_t sensor_index,uint16_t data, uint8_t error,uint8_t *f_err)
+{
+  uint8_t delay=0;
+  uint16_t ret_data;
+
+  delay = g_pre_data[sensor_index].delay;
+  if(error)
+  {
+    delay++;
+    if (delay >= MS_TO_SCAN(10))
+    {
+      delay = 0;
+      *f_err = 1;
+      ret_data = data;
+      g_pre_data[sensor_index].data = ret_data;
+      g_pre_data[sensor_index].err = error;
+    }
+    else
+    {
+      ret_data = g_pre_data[sensor_index].data;
+    }
+    g_pre_data[sensor_index].delay = delay;
+  }
+  else
+  {
+    g_pre_data[sensor_index].err = 0;
+    g_pre_data[sensor_index].delay = 0;
+    g_pre_data[sensor_index].data = data;
+    ret_data = data;
+    *f_err = 0;
+  }
+
+  *f_err = g_pre_data[sensor_index].err;
+
+  return ret_data;
+}
+
+
+void filter_init(void)
+{
+  for(int i = 0 ; i< _countof(g_pre_data);i++)
+  {
+    g_pre_data[i].err = 0xFF;
+  }
+}
+void DUALPORT_TASK(void *arg)
 {
   uint8_t sensor_err = 0;
   uint16_t sTriger = 0;
@@ -1077,17 +1356,19 @@ void calculate_sunshine(void)
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
   AWS_DATA_STRUCT *pAws;
-  int i, j;
-  int nWindCnt12 = 0;
-  int nWindCnt40 = 0;
+  int32_t i, j;
+  int32_t nWindCnt12 = 0;
+  int32_t nWindCnt40 = 0;
+  uint16_t data;
+  uint8_t f_err=0;
 
   pAws = &mRealAws;
   pSystem = &Sysinfo;
 
   calculate_rain();
   calculate_sunshine();
-
-      // 여기서는 메모리를 아끼기위해 g_p_raw 하나만 사용
+  filter_init();
+      // 메모리를 아끼기위해 g_p_raw 하나만 사용
       g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
 
   time_old = Date_Time;
@@ -1105,20 +1386,21 @@ void calculate_sunshine(void)
     check_sensor_use();
     update_raw();
 
-    pSystem->mRain.sDayCount += get_rain_mm(&sensor_err);
-    update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
+    // 온도
+    data = TempCalc(&sensor_err);
+    pAws->mTemperature.sReal = filter_data(A1_TEMPERATURE, data, sensor_err, &f_err);
+    update_sensor_err(A1_TEMPERATURE, f_err);
 
-    sSpeed = sSpeedOld;
-    sDirec = sDirecOld;
+    // 풍향
+    data =  WindDirecCalc(&sensor_err);
+    sDirec = filter_data(A2_WIND_DIRECTION, data, sensor_err,&f_err);
+    update_sensor_err(A2_WIND_DIRECTION, f_err);
+    ;
 
-    MegaErrorCheck(pSystem, &sSpeed, WindSpeedCalc(&sensor_err), 9999, MEGASPEED_ERR_CHAN);
-    update_sensor_err(A3_WIND_SPEED, sensor_err);
-
-    MegaErrorCheck(pSystem, &sDirec, WindDirecCalc(&sensor_err), 9999, MEGADIREC_ERR_CHAN);
-    update_sensor_err(A2_WIND_DIRECTION, sensor_err);
-
-    sSpeedOld = sSpeed;
-    sDirecOld = sDirec;
+    // 풍속
+    data = WindSpeedCalc(&sensor_err);
+    sSpeed = filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
+    update_sensor_err(A3_WIND_SPEED, f_err);
 
     pSystem->mRealWind.sAvg3Speed[nWindCnt12] = sSpeed;   // 풍속  3 초 평균
     pSystem->mRealWind.sAvg10Speed[nWindCnt40] = sSpeed;  // 풍속 10 초 평균
@@ -1132,84 +1414,76 @@ void calculate_sunshine(void)
     if (++nWindCnt40 >= 40)
       nWindCnt40 = 0;
 
-    MegaErrorCheck(pSystem, &pAws->mTemperature.sReal, TempCalc(&sensor_err), 9999,
-                   MEGATEMP_ERR_CHAN);  // 1초 순간 온도
-    update_sensor_err(A1_TEMPERATURE, sensor_err);
+    pSystem->mRain.sDayCount += get_rain_mm(&sensor_err);
+    update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
 
-    MegaErrorCheck(pSystem, &pAws->mBarometric.sReal, BarometricCalc(&sensor_err), 19999,
-                   MEGABARO_ERR_CHAN);  // 1초 순간 기압
-    update_sensor_err(A7_PRESSURE, sensor_err);
+    // 기압
+    data = BarometricCalc(&sensor_err);
+    pAws->mBarometric.sReal = filter_data(A7_PRESSURE, data, sensor_err, &f_err);
+    update_sensor_err(A7_PRESSURE, f_err);
 
-    MegaErrorCheck(pSystem, &pAws->mHumidity.sReal, HumidityCalc(&sensor_err), 9999,
-                   MEGAHUMID_ERR_CHAN);  // 1초 순간 습도
-    update_sensor_err(A10_RELATIVE_HUMIDITY, sensor_err);
-
-    MegaErrorCheck(pSystem, &pAws->mSolarRad.sReal, SolarRadCalc(&sensor_err), 9999,
-                   MEGASOL_ERR_CHAN);  // 일사
-    update_sensor_err(B1_SOLAR_RADIATION, sensor_err);
-
-    MegaErrorCheck(pSystem, &pAws->mSnowFall.sReal, SnowCalc(&sensor_err), 9999,
-                   MEGASNOW_ERR_CHAN);  // 현재 적설량
-    update_sensor_err(A9_SNOW_DEPTH, sensor_err);
-
-    // 추가 2017. 03. 22 지중 온도 추가  //
-    MegaErrorCheck(pSystem, &pAws->mSoilTemp5cm.sReal, TempCalcExt(SOLITEMP5CM_CHN, &sensor_err),
-                   9999,
-                   MEGASOLI5TEMP_ERR_CHAN);  // 1초 순간 지중 5Cm온도
-
-    update_sensor_err(B5_SOIL_TEMPERATURE_5CM, sensor_err);
-
-    MegaErrorCheck(pSystem, &pAws->mSoilTemp10cm.sReal, TempCalcExt(SOLITEMP10CM_CHN, &sensor_err),
-                   9999,
-                   MEGASOLI10TEMP_ERR_CHAN);  // 1초 순간 지중 10Cm온도
-
-    update_sensor_err(B6_SOIL_TEMPERATURE_10CM, sensor_err);
-
-    MegaErrorCheck(pSystem, &pAws->mSoilTemp20cm.sReal, TempCalcExt(SOLITEMP20CM_CHN, &sensor_err),
-                   9999,
-                   MEGASOLI20TEMP_ERR_CHAN);  // 1초 순간 지중 20Cm온도
-
-    update_sensor_err(B7_SOIL_TEMPERATURE_20CM, sensor_err);
-
-    MegaErrorCheck(pSystem, &pAws->mSoilTemp30cm.sReal, TempCalcExt(SOLITEMP30CM_CHN, &sensor_err),
-                   9999,
-                   MEGASOLI30TEMP_ERR_CHAN);  // 1초 순간 지중 30Cm온도
-
-    update_sensor_err(B8_SOIL_TEMPERATURE_30CM, sensor_err);
-
-    // 추가 2017. 03. 22 지중 온도 추가 END //
-    MegaErrorCheck(pSystem, &pAws->mSoilTemp50cm.sReal, TempCalcExt(SOLITEMP50CM_CHN, &sensor_err),
-                   9999,
-                   MEGASOLI10TEMP_ERR_CHAN);  // 1초 순간 지중 50Cm온도
-
-    update_sensor_err(B9_SOIL_TEMPERATURE_50CM, sensor_err);
-
-    MegaErrorCheck(pSystem, &pAws->mSoilTemp1_0m.sReal, TempCalcExt(SOLITEMP1_0M_CHN, &sensor_err),
-                   9999,
-                   MEGASOLI20TEMP_ERR_CHAN);  // 1초 순간 지중 1~0m온도
-
-    update_sensor_err(B10_SOIL_TEMPERATURE_100CM, sensor_err);
-
-    MegaErrorCheck(pSystem, &pAws->mSoilTemp1_5m.sReal, TempCalcExt(SOLITEMP1_5M_CHN, &sensor_err),
-                   9999,
-                   MEGASOLI30TEMP_ERR_CHAN);  // 1초 순간 지중 1_5m온도
-                                              // 추가 2017. 03. 22 지중 온도 추가 END //
-
-    update_sensor_err(B11_SOIL_TEMPERATURE_150CM, sensor_err);
-
-    // Off Delay 적용 함
-    if (is_raining(&sensor_err))  // 강우 감지
+    //강우 감지
+    if (is_raining(&sensor_err))  // Off Delay 적용 함
     {
-      update_sensor_err(A8_RAIN_PRESENT, sensor_err);
+      update_sensor_err(A8_RAIN_PRESENT, f_err);
 
       pAws->mRainDetect.sReal = 0x000a;
       pSystem->m_shOffDelayRemain = get_config_app()->m_usRainDtOffDelay;
       pSystem->m_cOffDelayFlag = 1;
     }
+    // 적설
+    data = SnowCalc(&sensor_err);
+    pAws->mSnowFall.sReal = filter_data(A9_SNOW_DEPTH, data, sensor_err, &f_err);
+    update_sensor_err(A9_SNOW_DEPTH, f_err);
 
-    pAws->mSunshine.sReal = SunshineCalc(&sensor_err);  // CSD3 기준 0-1V 신호로 발생됨
+    // 상대습도
+    data = HumidityCalc(&sensor_err);
+    pAws->mHumidity.sReal = filter_data(A10_RELATIVE_HUMIDITY, data, sensor_err, &f_err);
+    update_sensor_err(A10_RELATIVE_HUMIDITY, f_err);
 
-    update_sensor_err(B2_SUNSHINE_DURATION, sensor_err);
+    // 일사
+    data = SolarRadCalc(&sensor_err);
+    pAws->mSolarRad.sReal = filter_data(B1_SOLAR_RADIATION, data, sensor_err, &f_err);
+    update_sensor_err(B1_SOLAR_RADIATION, f_err);
+
+    // 일조
+    data = SunshineCalc(&sensor_err);
+    pAws->mSunshine.sReal = filter_data(B2_SUNSHINE_DURATION, data, sensor_err, &f_err);
+    update_sensor_err(B2_SUNSHINE_DURATION, f_err);
+
+    // 지중온도 5cm
+    data = TempCalcExt(SOLITEMP5CM_CHN, &sensor_err);
+    pAws->mSoilTemp5cm.sReal = filter_data(B5_SOIL_TEMPERATURE_5CM, data, sensor_err, &f_err);
+    update_sensor_err(B5_SOIL_TEMPERATURE_5CM, f_err);
+
+    // 지중온도 10cm
+    data = TempCalcExt(SOLITEMP10CM_CHN, &sensor_err);
+    pAws->mSoilTemp10cm.sReal = filter_data(B6_SOIL_TEMPERATURE_10CM, data, sensor_err, &f_err);
+    update_sensor_err(B6_SOIL_TEMPERATURE_10CM, f_err);
+
+    // 지중온도 20cm
+    data = TempCalcExt(SOLITEMP20CM_CHN, &sensor_err);
+    pAws->mSoilTemp20cm.sReal = filter_data(B7_SOIL_TEMPERATURE_20CM, data, sensor_err, &f_err);
+    update_sensor_err(B7_SOIL_TEMPERATURE_20CM, f_err);
+
+      // 지중온도 30cm
+    data = TempCalcExt(SOLITEMP30CM_CHN, &sensor_err);
+    pAws->mSoilTemp30cm.sReal = filter_data(B8_SOIL_TEMPERATURE_30CM, data, sensor_err, &f_err);
+    update_sensor_err(B8_SOIL_TEMPERATURE_30CM, f_err);
+
+    // 지중온도 50cm
+    data = TempCalcExt(SOLITEMP50CM_CHN, &sensor_err);
+    pAws->mSoilTemp50cm.sReal = filter_data(B9_SOIL_TEMPERATURE_50CM, data, sensor_err, &f_err);
+    update_sensor_err(B9_SOIL_TEMPERATURE_50CM, f_err);
+    // 지중온도 1m
+    data = TempCalcExt(SOLITEMP1_0M_CHN, &sensor_err);
+    pAws->mSoilTemp1_0m.sReal = filter_data(B10_SOIL_TEMPERATURE_100CM, data, sensor_err, &f_err);
+    update_sensor_err(B10_SOIL_TEMPERATURE_100CM, f_err);
+
+    // 지중온도 1.5m
+    data = TempCalcExt(SOLITEMP1_5M_CHN, &sensor_err);
+    pAws->mSoilTemp1_5m.sReal = filter_data(B11_SOIL_TEMPERATURE_150CM, data, sensor_err, &f_err);
+    update_sensor_err(B11_SOIL_TEMPERATURE_150CM, f_err);
 
     // 센서 불량 처리
     pAws->mStatus.sReal = 0;
@@ -1248,8 +1522,8 @@ void calculate_sunshine(void)
 
     update_kma_real();
     // 현재 값연산 없는 항목은 원본값으로 처리
-    update_unused_data(get_kma_data(eAWS_DATA_AVG), get_kma_data(eAWS_DATA_RAW));   //
-    update_unused_data(get_kma_data(eAWS_DATA_1MIN), get_kma_data(eAWS_DATA_RAW));  //
+    //update_unused_data(get_kma_data(eAWS_DATA_AVG), get_kma_data(eAWS_DATA_RAW));
+    update_unused_data(get_kma_data(eAWS_DATA_1MIN), get_kma_data(eAWS_DATA_RAW));
   }
 }
 
@@ -1258,18 +1532,12 @@ const osThreadAttr_t KdualportTask_attributes = {
     .stack_size = 2048,
     .priority = (osPriority_t)osPriorityRealtime1,
 };
-
-extern void aws_data_task(void *arg) ;
-
-
-
-
 void dualportTask_init(void)
 {
   
   AwsMinMaxInit();
 
   osThreadNew(DUALPORT_TASK, NULL, &KdualportTask_attributes);
-  //osThreadNew(aws_data_task, NULL, &dualportTask_attributes);
+
 }
 

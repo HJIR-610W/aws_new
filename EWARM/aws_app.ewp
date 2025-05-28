@@ -1809,9 +1809,6 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\task_panel.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\task_sdi.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_start.c</name>
             </file>
             <file>

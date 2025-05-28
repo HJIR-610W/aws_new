@@ -235,3 +235,38 @@ int get_minute_index(int year, int month, int day, int hour, int min)
   int index = (doy - 1) * DATA_MINUTES_PER_DAY + hour * 60 + min;
   return index;  // 0-based index
 }
+
+
+uint32_t get_10min_accu(uint8_t type, const void *rain_minutes, int year, int month, int day,
+                        int hour, int min)
+{
+  if (!rain_minutes || hour < 0 || hour >= 24 || min < 0 || min >= 60)
+    return 0xFFFFFFFF;
+
+  uint32_t offset = get_minute_index(year, month, day, hour, min);
+  uint32_t sum = 0;
+  uint32_t read_cnt = (min % 10) + 1;
+
+  if (type == 16)
+  {
+    const uint16_t *src = (const uint16_t *)rain_minutes;
+    while (read_cnt--)
+    {
+      sum += src[offset--];
+    }
+  }
+  else if (type == 32)
+  {
+    const uint32_t *src = (const uint32_t *)rain_minutes;
+    while (read_cnt--)
+    {
+      sum += src[offset--];
+    }
+  }
+  else
+  {
+    return 0xFFFFFFFF;  
+  }
+
+  return sum;
+}
