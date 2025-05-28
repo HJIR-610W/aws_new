@@ -3,7 +3,8 @@
 #include "panel_aws_std.h"
 #include "panel_mooju.h"
 #include "panel_hansung.h"
-
+#include "panel_aws_std.h"
+#include "panel_hj.h"
 #include "driver_uart.h"
 #include "config_app.h"
 
@@ -29,15 +30,18 @@ void send_panel(void)
 
   switch (get_config_app()->panel_model)
   {
-    case ePANEL_STD:
-    send_panel_std(g_panel_uart);
-    break;
-  case ePANEL_HANSUNG:
-  	send_panel_hansung(g_panel_uart);
-    break;
-  case ePANEL_MUJU:
-    send_panel_muju(g_panel_uart);
-  break;
+    case ePANEL_AWS_STD:
+      send_panel_aws_std(g_panel_uart);
+      break;
+    case ePANEL_HJ_STD:
+      send_panel_hj(g_panel_uart);
+      break;
+    case ePANEL_HANSUNG:
+      send_panel_hansung(g_panel_uart);
+      break;
+    case ePANEL_MUJU:
+      send_panel_muju(g_panel_uart);
+      break;
 
   }
 

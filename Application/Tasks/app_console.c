@@ -87,7 +87,7 @@ typedef struct select_menu_s
 
 const char *protocolList[] = {"KMA2", "KMA3"};
 const char *cdmaModellList[] = {"NTLE9607", "TX700"};
-const char *panelList[] = {"STD", "MOOJU","HANSUNG"};
+const char *panelList[] = {"AWS STD","HJ_STD","MOOJU","HANSUNG"};
 
 
 const char *g_chgList[] = {"smart charger", "aws charger"};

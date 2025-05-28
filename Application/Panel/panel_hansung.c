@@ -9,6 +9,12 @@
 #include "utile.h"
 #include "panel_common.h"
 
+/*
+
+51 01 05 02 01 0C 15     //풍향
+51 02 00 00 14 20 39 39 39 2E 20 32 36 2E 37 20 20 30 2E 30 20 20 30 2E 30 //풍속,온도,금일우량,전일우량
+
+*/
 // ========================================================================================================== //
 //                          한성 전자 Protocol과 공용
 // ========================================================================================================== //
@@ -43,9 +49,9 @@ void	send_panel_hansung(driver_t *panel_port)
 	framemk[cnt++] 		= 0x00;																	// Start Address
 	framemk[cnt++] 		= 20;																	// Length
 	
-	sprintf(&framemk[cnt]," %4.1f", (float)p_kma->wind_speed_avg.data / 10.0);
+	sprintf(&framemk[cnt]," %4.1f", (float)p_kma->wind_speed_avg.data / 10.0); //실측값 전송
 	cnt					+= 5;
-	sprintf(&framemk[cnt],"%5.1f", ((float)p_kma->temperature.data - 1000.0)/10.0);
+	sprintf(&framemk[cnt],"%5.1f", ((float)p_kma->temperature.data - 1000.0)/10.0); //실측값 전송
 	cnt					+= 5;
 	sprintf(&framemk[cnt],"%5.1f%5.1f", (float)get_rainfall()->rainfall_today, (float)get_rainfall()->rainfall_yesterday);
 	cnt					+= 10;
