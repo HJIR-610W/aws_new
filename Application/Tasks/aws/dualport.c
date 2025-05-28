@@ -740,7 +740,7 @@ void update_kma_real(void)
   set_rainfall_monthly(Sysinfo.mRain.sMonthRain / 10.0f);
   set_rainfall_yesterday(Sysinfo.mRain.sBefDayRain / 10.0f);
   set_rainfall_yearly(Sysinfo.mRain.sYearRain/10.0f);
-  
+
   set_sunshine_monthly(Sysinfo.mSunshine.nMonthSunshine);
   set_sunshine_monthly(Sysinfo.mSunshine.nYearSunshine);
 
@@ -1213,13 +1213,15 @@ void calculate_rain(void)
   uint16_t monthly_rain = 0;
   uint16_t yearly_rain = 0;
   uint16_t min10_rain = 0;
+  uint16_t yesterday_rain=0;
   uint16_t *p_rain_1min = aws_malloc(RAIN_TOTAL);
   uint16_t *p_rain_days = aws_malloc(RAIN_DAYS_SIZE);
-
+  DATE_TIME_BUF pre_date;
 
   ct = Date_Time;
-
-  if(read_rain_1min(ct.Year, p_rain_1min, RAIN_TOTAL) == 0)
+  pre_date = Date_Time;
+  
+  if (read_rain_1min(ct.Year, p_rain_1min, RAIN_TOTAL) == 0)
   {
     compute_daily_rain(p_rain_1min, p_rain_days, ct.Year);
 
@@ -1231,11 +1233,30 @@ void calculate_rain(void)
     min10_rain =
         get_10min_accu(DATA_SIZE_16, p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
 
+    //전일 우량 1일전 시간계산
+    subtract_seconds(&pre_date, 86400);
+
+    if(pre_date.Year != ct.Year)
+    {
+      if (read_rain_1min(pre_date.Year, p_rain_1min, RAIN_TOTAL) == 0)
+      {
+        compute_daily_rain(p_rain_1min, p_rain_days, pre_date.Year);
+        yesterday_rain =
+            get_daily_accu(DATA_SIZE_16, p_rain_days, pre_date.Year, pre_date.Month, pre_date.Day);
+      }
+    }
+    else
+    {
+      yesterday_rain =
+          get_daily_accu(DATA_SIZE_16, p_rain_days, pre_date.Year, pre_date.Month, pre_date.Day);
+    }
+
     set_rainfall_today(daily_rain / 10.0f);
     set_rainfall_hourly(hourly_rain / 10.0f);
     set_rainfall_monthly(monthly_rain / 10.0f);
     set_rainfall_yearly(yearly_rain / 10.0f);
     set_rainfall_10min(min10_rain / 10.0f);
+    set_rainfall_yesterday(yesterday_rain/10.0f);
 
     io_printf("일간 우량:%.1f\r\n", daily_rain / 10.0f);
     io_printf("시간 우량:%.1f\r\n", hourly_rain / 10.0f);
@@ -1252,8 +1273,10 @@ void calculate_rain(void)
   Sysinfo.mRain.s10MinRain = min10_rain;  // 10분 강수량
   Sysinfo.mRain.sHourRain = hourly_rain;  // 1시간강수량
   Sysinfo.mRain.sDayRain = daily_rain;    // 일간강수량
+  Sysinfo.mRain.sBefDayRain = yesterday_rain;//전일 우량
   Sysinfo.mRain.sMonthRain = monthly_rain;  // 월간 강수량
   Sysinfo.mRain.sYearRain = yearly_rain;    // 년간 강수량
+
 
 }
 

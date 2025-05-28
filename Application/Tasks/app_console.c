@@ -49,6 +49,8 @@
 #include "Update\update_fw.h"
 #include "console_rtos.h"
 #include "Protocols\divas\divas_protocol_handler.h"
+
+#include "Data\utile_data.h"
 #define EXIT_PROGRAM -3
 #define EXIT_BACK -1
 
@@ -2973,11 +2975,73 @@ int32_t menu_manage_config_backup(p_shell_context_t ctx)
 
   return 0;
 }
+
+int32_t menu_manage_sentor_edit(p_shell_context_t ctx)
+{
+  int32_t cnt;
+  const char *config_menu[] = {"0.우량 자료 편집", "1.일조 자료 편집"};
+  char start_time[30];
+  char end_time[30];//2025-01-01 00:00:00
+  int32_t value;
+  const char *filename;
+  int32_t ret;
+  while (1)
+  {
+    cnt = select_indexFromList(ctx, config_menu, NULL, _countof(config_menu), false);
+
+    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    {
+      return cnt;
+    }
+
+    if (cnt > 0)
+    {
+      cnt--;
+      switch (cnt)
+      {
+        case 0:
+        case 1:
+          io_printf("시작시간입력(예:2025-01-01 00:01:00)\r\n");
+          io_printf(">>");
+          cli_scanf_s("%[^\n]", start_time, (unsigned)_countof(start_time));
+          io_printf("종료시간입력(예:2025-01-01 00:01:00)\r\n");
+          io_printf(">>");
+          cli_scanf_s("%[^\n]", end_time, (unsigned)_countof(end_time));
+          io_printf("갑 입력\r\n");
+          io_printf(">>");
+          cli_scanf_s("%d",&value);;
+          if(cnt==0)
+          {
+            filename = "RAIN_01.rcd";
+          }
+          else if(cnt==1)
+          {
+            filename = "SUNSHINE_01.rcd";
+          }
+
+          if (get_user_confirm("계속 진행하겠니까?")==1)
+          {
+            io_printf("범위를 넓게 하면 편집에 수십초가 소요될 수 있습니다.\r\n");
+            ret = write_bulk_data_range(filename, start_time, end_time, value);
+            if (ret < 0)
+            {
+              io_printf("에러 발생 코드:%d\r\n", ret);
+            }
+          io_printf("OK\r\n");
+          }
+           break;
+
+      }
+    }
+  }
+
+  return 0;
+}
 // 초기화
 int32_t menu_manage_config_reset(p_shell_context_t ctx)
 {
   int32_t cnt;
-  const char *config_menu[] = {"0.AWS 화진 기본 설정", "1.공장 초기화","2.백업"};
+  const char *config_menu[] = {"0.AWS 화진 기본 설정", "1.공장 초기화","2.백업","3.센서(우량,일조) 초기화"};
 
   while(1)
   {
@@ -3013,6 +3077,9 @@ int32_t menu_manage_config_reset(p_shell_context_t ctx)
           break;
           case 2:
             menu_manage_config_backup(ctx);
+             break;
+          case 3:
+             menu_manage_sentor_edit(ctx);
              break;
       }
     }

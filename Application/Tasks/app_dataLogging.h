@@ -26,4 +26,5 @@ uint8_t read_sensorDataMulti(DATE_TIME_BUF *pDate, uint32_t dataSize, int32_t Re
   uint8_t cSystem, uint32_t periodMin, uint8_t *pOutBuff,
   uint32_t buffSize);
 
+void get_filePath(uint8_t type, uint16_t year, uint8_t month, char *pOutBuff, uint32_t buffSize);
 #endif

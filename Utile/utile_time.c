@@ -133,3 +133,13 @@ int dayOfYear(int year, int month, int day)
   const uint16_t *table = isLeapYear(year) ? days_until_month_leap : days_until_month;
   return table[month - 1] + day;
 }
+
+void subtract_seconds(DATE_TIME_BUF *dt, uint32_t seconds)
+{
+  uint32_t tick = time_cvt_timestamp(dt);
+
+  tick = tick -  seconds;
+
+  time_cvt_secTotime(tick,dt);
+
+}

@@ -17,7 +17,7 @@ void panelTask(void *arg)
   while (1)
   {
     send_panel();
-    osDelay(1000);
+    osDelay(2000);
   }
 }
 

@@ -16,9 +16,9 @@
 (4) 풍속,연간우량,금일 우량,전일 우량
 
 (1) 51 01 05 02 01 0C 15
-(2) 51 02 00 00 11 20 39 39 39 2E 39 20 20 20 20 35 35 31 2E 30 20 20 20 31 32 31 31 30 30 35 36 FE
-(3) 51 03 00 00 14 20 32 37 2E 31 20 32 37 2E 31 2D 31 30 30 2E 20 34 35 2E 37 C1
-(4) 51 04 00 00 11 39 39 39 2E 39 20 31 35 30 20 20 39 30 20 20 20 30 16
+(2) 51 02 00 00 11 20 20 20 30 2E 30 20 20 20 20 35 35 30 2E 38 20 20 20 30 35 33 30 30 33 30 30 C1
+(3) 51 03 00 00 14 20 32 36 2E 33 20 32 36 2E 33 2D 31 30 30 2E 20 34 34 2E 33 BE
+(4) 51 04 00 00 11 39 39 39 2E 38 20 20 20 30 20 20 20 30 20 20 20 30 D6
 */
 
 void send_panel_muju(
@@ -68,7 +68,7 @@ if(get_config_app()->panel_barometer_use)
 {
 
 // 기압 FALL 추가(2013. 05. 21)
-sprintf(&framemk[cnt],"%6.1f   ", (float)(p_kma->pressure.data) / 10);
+sprintf(&framemk[cnt],"%6.1f   ", (float)p_kma->pressure.data / 10);
 cnt					+= 9;
 // 기압 FALL 추가(2013. 05. 21)  --끝--
 
@@ -89,11 +89,11 @@ framemk[cnt++] 		= 0x00;																	// Status
 framemk[cnt++] 		= 0x00;																	// Start Address
 framemk[cnt++] 		= 20;																	// Length
 
-sprintf(&framemk[cnt],"%5.1f", ((float)p_kma->temperature.data - 1000.0)/10.0);			// 온도 현재
+sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.data - 1000.0))/10.0);			// 온도 현재
 cnt					+= 5;
-sprintf(&framemk[cnt],"%5.1f", ((float)p_kma->temperature.max - 1000.0)/10.0);				// 일 최고온도
+sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.max - 1000.0))/10.0);				// 일 최고온도
 cnt					+= 5;
-sprintf(&framemk[cnt],"%5.1f", ((float)p_kma->temperature.min - 1000.0)/10.0);				// 일 최저온도
+sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.min - 1000.0))/10.0);				// 일 최저온도
 cnt					+= 5;
 sprintf(&framemk[cnt],"%5.1f", (float)p_kma->relative_humidity.data/10.0);							// 습도 현재
 cnt					+= 5;

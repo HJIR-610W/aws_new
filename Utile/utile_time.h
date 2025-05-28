@@ -20,9 +20,9 @@ int GetYear(time_t tmIn);
 int GetDay(time_t tmIn);
 long GetTotalSeconds(time_t ts);
 int GetMonth(time_t tmIn);
+void subtract_seconds(DATE_TIME_BUF *dt, uint32_t seconds);
 
-
-time_t time_timestamp(void);
+    time_t time_timestamp(void);
 
 bool isLeapYear(int year);
 int dayOfYear(int year, int month, int day);

@@ -1,14 +1,19 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 
-#include <math.h>
 #include "utile_data.h"
+
+#include <math.h>
+
+#include "app_file.h"
+#include "cmsis_os2.h"
+#include "dev_io.h"
+#include "os_define.h"
+#include "user_heap.h"
 #include "utile_time.h"
 
+
 #define DATA_MINUTES_PER_DAY 1440
-
 #define DATA_DAYS_IN_YEAR 366
-
-
 
 void compute_daily_data(uint8_t type, void *data_minutes, void *data_days, int year)
 {
@@ -269,4 +274,230 @@ uint32_t get_10min_accu(uint8_t type, const void *rain_minutes, int year, int mo
   }
 
   return sum;
+}
+
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#include "ff.h"  // FatFs header
+
+#define RECORD_SIZE 2
+#define FIXED_FILE_MINUTES (366 * 24 * 60)
+#define FIXED_FILE_SIZE ((FIXED_FILE_MINUTES + 1) * RECORD_SIZE)
+
+// FatFs file object
+static FIL file;
+
+int is_leap_year(int year) { return (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)); }
+
+int get_valid_minutes(int year) { return (is_leap_year(year) ? 366 : 365) * 24 * 60; }
+
+
+void make_filename(int year, char *file_path,const char *filename)
+{ 
+  sprintf(file_path, "0:Y%02d/%s", year,filename); 
+}
+
+int parse_datetime(const char *datetime_str, struct tm *out)
+{
+  int y, M, d, h, m, s;
+  if (sscanf(datetime_str, "%d-%d-%d %d:%d:%d", &y, &M, &d, &h, &m, &s) != 6)
+    return 0;
+
+  out->tm_year = y - 1900;
+  out->tm_mon = M - 1;
+  out->tm_mday = d;
+  out->tm_hour = h;
+  out->tm_min = m;
+  out->tm_sec = s;
+  return 1;
+}
+
+int calculate_offset(struct tm *t)
+{
+  struct tm base = {0};
+  base.tm_year = t->tm_year;
+  base.tm_mon = 0;
+  base.tm_mday = 1;
+  base.tm_hour = 0;
+  base.tm_min = 1;
+  base.tm_sec = 0;
+
+  time_t t_base = mktime(&base);
+  time_t t_now = mktime(t);
+  return (int)((t_now - t_base) / 60) ;
+}
+
+int ensure_file_exists(const char *filename)
+{
+  FRESULT fr;
+  FILINFO finfo;
+  fr = f_stat(filename, &finfo);
+  if (fr != FR_OK)
+  {
+    fr = f_open(&file, filename, FA_CREATE_ALWAYS | FA_WRITE);
+    if (fr != FR_OK)
+      return -1;
+
+    uint16_t zero = 0;
+    for (uint32_t i = 0; i < FIXED_FILE_MINUTES + 1; ++i)
+    {
+      UINT bw;
+      f_write(&file, &zero, RECORD_SIZE, &bw);
+    }
+    f_close(&file);
+  }
+  return 0;
+}
+
+int write_bulk_data_range(const char *name, const char *start_datetime,
+                              const char *end_datetime, uint16_t value)
+{
+  struct tm start_tm = {0}, end_tm = {0};
+  if (!parse_datetime(start_datetime, &start_tm) || !parse_datetime(end_datetime, &end_tm))
+    return -1;
+
+  time_t t_start = mktime(&start_tm);
+  if (calculate_offset(&start_tm) <= 0)
+  {
+    return -99;  // offset 0인 경우 에러 리턴: 최소 1분부터 시작
+  }
+  time_t t_end = mktime(&end_tm);
+  if (t_end < t_start)
+    return -2;
+
+  OS_SEM_PEND(get_file_sem(), -1);
+
+  int start_year = start_tm.tm_year + 1900;
+  int end_year = end_tm.tm_year + 1900;
+
+  for (int year = start_year; year <= end_year; ++year)
+  {
+    char filename[64];
+    make_filename(year % 10, filename, name);
+    if (ensure_file_exists(filename) < 0)
+    {
+      OS_SEM_POST(get_file_sem());
+      return -3;
+    }
+
+    int offset_start = 1;
+    int offset_end = 0;
+
+    if (year == start_year && year == end_year)
+    {
+      offset_start = calculate_offset(&start_tm);
+      offset_end = calculate_offset(&end_tm);
+      if (offset_end == 0)
+        offset_end = get_valid_minutes(year - 1) + 1;
+    }
+    else if (year == start_year)
+    {
+      offset_start = calculate_offset(&start_tm);
+      offset_end = get_valid_minutes(year);
+    }
+    else if (year == end_year)
+    {
+      offset_start = 1;
+      offset_end = calculate_offset(&end_tm);
+      if (offset_end == 0)
+        offset_end = get_valid_minutes(year - 1) + 1;
+    }
+    else
+    {
+      offset_start = 1;
+      offset_end = get_valid_minutes(year);
+    }
+
+    int count = offset_end - offset_start + 1;
+    if (count <= 0)
+      continue;
+
+    uint16_t *buffer = (uint16_t *)aws_malloc(count * sizeof(uint16_t));
+    if (!buffer)
+    {
+      OS_SEM_POST(get_file_sem());
+      return -4;
+    }
+
+    FRESULT fr = f_open(&file, filename, FA_READ | FA_WRITE);
+    if (fr != FR_OK)
+    {
+      aws_free(buffer);
+      OS_SEM_POST(get_file_sem());
+      return -5;
+    }
+
+    UINT br, bw;
+    f_lseek(&file, offset_start * RECORD_SIZE);
+    f_read(&file, buffer, count * RECORD_SIZE, &br);
+
+    for (int i = 0; i < count; ++i) buffer[i] = value;
+
+    f_lseek(&file, offset_start * RECORD_SIZE);
+    f_write(&file, buffer, count * RECORD_SIZE, &bw);
+    f_close(&file);
+    aws_free(buffer);
+  }
+
+  OS_SEM_POST(get_file_sem());
+  return 0;
+}
+
+int read_bulk_data(const char *name, const char *start_datetime, uint32_t read_cnt,
+                   uint16_t *buffer)
+{
+  struct tm start_tm = {0};
+  if (!parse_datetime(start_datetime, &start_tm))
+    return -1;
+
+  time_t current_time = mktime(&start_tm);
+  if (calculate_offset(&start_tm) <= 0)
+    return -2;
+
+  OS_SEM_PEND(get_file_sem(), -1);
+
+  int year = start_tm.tm_year + 1900;
+  int offset = calculate_offset(&start_tm);
+  int total_read = 0;
+
+  while (read_cnt > 0)
+  {
+    char filename[64];
+    make_filename(year % 10, filename, name);
+    if (ensure_file_exists(filename) < 0)
+    {
+      OS_SEM_POST(get_file_sem());
+      return -3;
+    }
+
+    int max_offset = get_valid_minutes(year);
+    int remain_in_year = max_offset - offset + 1;
+
+    int to_read = (read_cnt < (uint32_t)remain_in_year) ? read_cnt : remain_in_year;
+
+    FRESULT fr = f_open(&file, filename, FA_READ);
+    if (fr != FR_OK)
+    {
+      OS_SEM_POST(get_file_sem());
+      return -4;
+    }
+
+    f_lseek(&file, offset * RECORD_SIZE);
+    UINT br;
+    f_read(&file, buffer + total_read, to_read * RECORD_SIZE, &br);
+    f_close(&file);
+
+    total_read += to_read;
+    read_cnt -= to_read;
+
+    year++;
+    offset = 1;
+  }
+
+  OS_SEM_POST(get_file_sem());
+  return total_read;
 }
