@@ -2980,7 +2980,7 @@ int32_t menu_manage_sentor_edit(p_shell_context_t ctx)
 {
   int32_t cnt;
   const char *config_menu[] = {"0.우량 자료 편집", "1.일조 자료 편집", "2.우량 자료 확인",
-                               "3.일조 자료 확인인"};
+                               "3.일조 자료 확인"};
   char start_time[30];
   char end_time[30];//2025-01-01 00:00:00
   int32_t value;
