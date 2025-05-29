@@ -37,6 +37,10 @@ void get_appBuild(DATE_TIME_BUF *build);
 uint32_t get_appNick(void);
 void get_nickCode(uint32_t *nickCode);
 void get_hwCode(uint32_t *nickCode);
-void set_testKey(uint32_t key); 
+void set_testKey(uint32_t key);
+const char *get_mfg_name(void);
+
+uint32_t get_appPCB(void);
+uint32_t get_appAREA(void);
 
 #endif

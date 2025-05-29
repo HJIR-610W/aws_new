@@ -38,7 +38,13 @@ void get_bootBuild(DATE_TIME_BUF *build)
     section_info_t *info = (section_info_t *)BOOT_INFO_START_ADDRESS;
 
  
-
     time_cvt_secTotime(info->time+TIME_ZONE_SOULE,build);
     
+}
+
+uint32_t get_bootPCB(void)
+{
+  section_info_t *info = (section_info_t *)BOOT_INFO_START_ADDRESS;
+
+  return info->pcb[0];//부트로더에 PCB 인덱스 0 PCB고유 버전 기록
 }

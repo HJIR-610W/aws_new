@@ -131,6 +131,40 @@ driver_t *cdma_driver;
 cdma_system_t g_cdma_system;
 modem_config_t g_modem_config;
 
+static uint8_t cdma_retarget_ip[4];
+static uint16_t cdma_retarget_port=0;
+static bool  cdma_retarget=false;
+
+void set_cdma_retarget(bool target)
+{
+  cdma_retarget = target;
+}
+
+bool is_cdma_retarget(void)
+{
+  return cdma_retarget;
+}
+
+void set_cdma_retarget_ip(uint8_t ip[4],uint16_t port)
+{
+  cdma_retarget_ip[0] = ip[0];
+  cdma_retarget_ip[1] = ip[1];
+  cdma_retarget_ip[2] = ip[2];
+  cdma_retarget_ip[3] = ip[3];
+  cdma_retarget_port = port;
+}
+
+void get_cdma_retarget_ip(uint8_t ip[4],uint16_t *port)
+{
+  ip[0] = cdma_retarget_ip[0];
+  ip[1] = cdma_retarget_ip[1];
+  ip[2]  = cdma_retarget_ip[2];
+  ip[3]  = cdma_retarget_ip[3];
+
+  *port = cdma_retarget_port;
+
+}
+
 void modem_send(uint8_t *pData,uint16_t dataLen);
 void modem_sends(const char *pData);
 void get_ip(uint8_t pIp[4],uint16_t *pPort);
@@ -343,6 +377,12 @@ STATUS_t connect_tcp(eConnect_Type_t type)
 
     modem_socket_init();
     get_ip(ip,&port);
+    
+    if(is_cdma_retarget())
+    {
+      get_cdma_retarget_ip(ip,&port);
+      set_cdma_retarget(false);
+    }
     
     _iCellular->write_ip(ip,port);
 
@@ -1503,6 +1543,12 @@ void modemTcpTask(void  *argument)
               g_modem_config.connection_timeoutms) /*일정 기간동안 ping이 한번이라도 수신 안되면*/
           {
             type = eCONNECT_TCP_WDT;
+            break;
+          }
+
+          if (is_cdma_retarget())
+          {
+            type = eCONNECT_CHANG_IP_REQ;
             break;
           }
         }

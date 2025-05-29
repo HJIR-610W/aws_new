@@ -258,7 +258,7 @@ M_RET_t ntle9607_read_sms(sms_t *pSms)
 
     ntle9607_modem_sends(cmd);
 
-    ret = ntle9607_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
+    ret = ntle9607_check_asyncResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),1000);
 
     if(ret == RET_OK)
     {
@@ -268,6 +268,7 @@ M_RET_t ntle9607_read_sms(sms_t *pSms)
                 ret = RET_OK;
                 parse_sms(buff,pSms);
                 modem_sends(delCmd); // 읽은 메시지는 지운다
+                osDelay(1000);
                 break;
             case 1:
                 ret = RET_FAIL_RESP;

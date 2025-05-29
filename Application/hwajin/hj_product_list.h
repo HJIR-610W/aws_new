@@ -22,24 +22,22 @@
 
 
 #define NICK_MINILOGGER_HJ   (0U)
-#define NICK_NEW_ASW_HJ   (1U)
+#define NICK_NEW_ASW_HJ      (1U)
 
 typedef struct section_info_s
 {
   char signature[4];
-    uint32_t ver;
-    uint32_t section;
-    uint32_t hw_code;
-    uint32_t nick_code;
-    uint32_t offset;
-    uint32_t section_ver;
-    uint32_t time;
-    uint32_t pcb_n;
-    uint32_t pcb[4];
+  uint32_t ver;//펌웨어 버전
+  uint32_t section;//파일이 저장되는 영역
+  uint32_t hw_code;//제품 구분
+  uint32_t nick_code;//판매시 이름
+  uint32_t offset;//펌웨어시작주소
+  uint32_t section_ver;
+  uint32_t time;//빌드 시간
+  uint32_t area;//지역
+  uint32_t pcb_n;//적용가능한 PCB버전 목록
+  uint32_t pcb[4];
 }section_info_t;
-
-
-
 
 
 #endif

@@ -1259,6 +1259,12 @@
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_tx700.h</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\old_aws_sms.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\old_aws_sms.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>
                 </file>
                 <file>

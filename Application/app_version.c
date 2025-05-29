@@ -99,12 +99,13 @@ void get_appBuild(DATE_TIME_BUF *build)
     time_cvt_secTotime(data,build);
 }
 
-uint32_t get_appNick(void)
-{
-    return g_kappInfo.nick_code;
+uint32_t get_appPCB(void)
+{ 
+    return g_kappInfo.hw_code;
+
 }
 
-
+uint32_t get_appNick(void) { return g_kappInfo.nick_code; }
 
 /**
  * 
@@ -115,4 +116,28 @@ INFO:test 프로그램을 사용하지 않으려면 없어도 되는 함수
 void set_testKey(uint32_t key) 
 {
   _shareData = key;
+}
+
+const char *mfgList[] = {"HJ"};
+
+
+const char *get_mfg_name(void)
+{
+  uint32_t mfg_ver;
+
+  mfg_ver = get_appNick();
+
+  if(mfg_ver < (sizeof(mfgList)/sizeof(mfgList[0])))
+  {
+    return mfgList[mfg_ver];
+  }
+  else
+  {
+    return "UNKNOWN";
+  }
+}
+
+uint32_t get_appAREA(void)
+{
+    return g_kappInfo.area;
 }

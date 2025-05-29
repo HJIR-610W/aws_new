@@ -64,8 +64,11 @@ uint32_t os_recv_tcp(uint8_t* pBuff, uint16_t buffSize, uint32_t* pLen, uint32_t
 cdma_system_t* get_cdma_system(void);
 
 
-    void cellularTask_init(void);
+void cellularTask_init(void);
 
-extern iCellular_t *_iCellular;
+void set_cdma_retarget(bool target);
+void set_cdma_retarget_ip(uint8_t ip[4], uint16_t port) ;
+    
+extern iCellular_t* _iCellular;
 
 #endif
