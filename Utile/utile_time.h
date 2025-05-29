@@ -27,6 +27,9 @@ void subtract_seconds(DATE_TIME_BUF *dt, uint32_t seconds);
 bool isLeapYear(int year);
 int dayOfYear(int year, int month, int day);
 
-extern DATE_TIME_BUF Date_Time;;
+int offset_min(DATE_TIME_BUF *t) ;
+int32_t count_min(DATE_TIME_BUF *st,DATE_TIME_BUF *et);
+extern DATE_TIME_BUF Date_Time;
+;
 
 #endif

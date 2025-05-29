@@ -353,6 +353,7 @@ int ensure_file_exists(const char *filename)
   return 0;
 }
 
+#if 0 
 int write_bulk_data_range(const char *name, const char *start_datetime,
                               const char *end_datetime, uint16_t value)
 {
@@ -446,58 +447,465 @@ int write_bulk_data_range(const char *name, const char *start_datetime,
   OS_SEM_POST(get_file_sem());
   return 0;
 }
+#endif
 
-int read_bulk_data(const char *name, const char *start_datetime, uint32_t read_cnt,
+
+int32_t last_minute_offsets_in_year(int32_t year)
+{
+  return get_minute_index(year,12,31,23,59)+1;
+}
+
+#if 0 
+int read_bulk_data(const char *name, const DATE_TIME_BUF *start_time, uint32_t read_cnt,
                    uint16_t *buffer)
 {
-  struct tm start_tm = {0};
-  if (!parse_datetime(start_datetime, &start_tm))
-    return -1;
+  FRESULT fret=-1;
+  DATE_TIME_BUF end_time;
+  uint16_t *p_buffer=0;
+   time_t current_time = time_cvt_timestamp((DATE_TIME_BUF *)start_time);
+  char path[50];
+  uint32_t index = 0;
 
-  time_t current_time = mktime(&start_tm);
-  if (calculate_offset(&start_tm) <= 0)
-    return -2;
 
-  OS_SEM_PEND(get_file_sem(), -1);
-
-  int year = start_tm.tm_year + 1900;
-  int offset = calculate_offset(&start_tm);
-  int total_read = 0;
-
-  while (read_cnt > 0)
+  if(offset_min(start_time)==0)
   {
-    char filename[64];
-    make_filename(year % 10, filename, name);
-    if (ensure_file_exists(filename) < 0)
+    return -1;// 시작시간항상 1월1일 0시 1분 부터 해야한다.
+  }
+  //종료 시간을 구한다.
+  time_cvt_secTotime(current_time + (read_cnt * 60), &end_time);
+
+  //해가 바뀌면 시작해,종료해 두번 구한다.
+  if(start_time->Year != end_time.Year)
+  {
+    uint32_t first_year_cnt;
+    uint32_t first_year_min_offset;
+    uint32_t end_time_offset;
+
+    //시작해에 읽을 카운트 계산()
+    first_year_min_offset =offset_min(start_time);
+    first_year_cnt = last_minute_offsets_in_year(start_time->Year) - first_year_min_offset + 1;
+
+    uint32_t read_bytes = first_year_cnt * sizeof(uint16_t);
+    p_buffer = aws_malloc(read_bytes);
+
+    make_filename(start_time->Year, path, name);
+
+    fret = read_file(path, p_buffer, read_bytes, first_year_min_offset*sizeof(uint16_t));
+
+    if(fret != FR_OK)
     {
-      OS_SEM_POST(get_file_sem());
-      return -3;
+      aws_free(p_buffer);
+      return -1;
     }
 
-    int max_offset = get_valid_minutes(year);
-    int remain_in_year = max_offset - offset + 1;
+      for (int i = 0; i < first_year_cnt; i++)
+      {
+        buffer[index++] = p_buffer[i];
+      }
 
-    int to_read = (read_cnt < (uint32_t)remain_in_year) ? read_cnt : remain_in_year;
+      end_time_offset = offset_min(&end_time);
 
-    FRESULT fr = f_open(&file, filename, FA_READ);
-    if (fr != FR_OK)
+      if (end_time_offset > 0)
+      {
+        uint32_t read_bytes =end_time_offset * sizeof(uint16_t);
+
+        p_buffer = aws_malloc(read_bytes);
+
+        make_filename(end_time.Year, path, name);
+
+        fret = read_file(path, p_buffer, read_bytes, sizeof(uint16_t));
+        if(fret != FR_OK)
+        {
+          aws_free(p_buffer);
+          return -1;
+        }
+        for (int i = 0; i < end_time_offset; i++)
+        {
+          buffer[index++] = p_buffer[i];
+        }
+
+        aws_free(p_buffer);
+      }
+  }
+  else
+  {
+    //같은 해이면 한번에 읽기
+    uint8_t *p_buffer;
+    uint32_t start_min_offset;
+    uint32_t end_offset;
+    uint32_t cnt;
+
+    start_min_offset = offset_min(start_time);
+    cnt = read_cnt * sizeof(uint16_t);
+    *p_buffer = aws_malloc(cnt);
+    if(p_buffer)
     {
-      OS_SEM_POST(get_file_sem());
-      return -4;
+      make_filename(start_time->Year, path, name);
+      fret = read_file(path, p_buffer, cnt, start_min_offset*sizeof(uint16_t));
+
+      if(fret != FR_OK)
+      {
+        return -1;
+      }
+
+      for(int i = 0;i<read_cnt;i++)
+      {
+        buffer[i] = p_buffer[i];
+      }
+      
+      aws_free(p_buffer);
     }
-
-    f_lseek(&file, offset * RECORD_SIZE);
-    UINT br;
-    f_read(&file, buffer + total_read, to_read * RECORD_SIZE, &br);
-    f_close(&file);
-
-    total_read += to_read;
-    read_cnt -= to_read;
-
-    year++;
-    offset = 1;
   }
 
-  OS_SEM_POST(get_file_sem());
-  return total_read;
+  return (int)fret;
+}
+#endif
+
+#if 0 
+int read_bulk_data(const char *name, const DATE_TIME_BUF *start_time, uint32_t read_cnt,
+                   uint16_t *buffer)
+{
+  FRESULT result = -1;
+  DATE_TIME_BUF end_time;
+  uint16_t *temp_buf = NULL;
+  time_t start_sec = time_cvt_timestamp((DATE_TIME_BUF *)start_time);
+  char file_path[64];
+  uint32_t out_index = 0;
+
+  memset(buffer,0,sizeof(uint16_t)*read_cnt);
+
+  if (offset_min((DATE_TIME_BUF *)start_time) == 0)
+  {
+    time_cvt_secTotime(start_sec - 60, &end_time);
+    uint32_t offset = last_minute_offsets_in_year(end_time.Year);
+
+    make_filename(end_time.Year, file_path, name);
+    result = read_file(file_path, (uint8_t *)&buffer[0], sizeof(uint16_t), offset * sizeof(uint16_t));
+    if (result != FR_OK)
+    {
+      return -1;
+    }
+    if(read_cnt>1)
+    {
+      DATE_TIME_BUF nt = *start_time;
+      uint32_t min_offset = 1;
+      nt.Min= 1;
+
+      make_filename(nt.Year, file_path, name);
+      result = read_file(file_path, (uint8_t *)&buffer[1], sizeof(uint16_t) * (read_cnt - 1),
+                         min_offset * sizeof(uint16_t));
+      if (result != FR_OK)
+      {
+        return -1;
+      }
+    }
+
+    return (int)result;
+  }
+
+  time_cvt_secTotime(start_sec + (read_cnt * 60), &end_time);
+
+  if (start_time->Year != end_time.Year)
+  {
+    uint32_t start_offset = offset_min((DATE_TIME_BUF *)start_time);
+    uint32_t start_year_remain = last_minute_offsets_in_year(start_time->Year) - start_offset + 1;
+    uint32_t read_bytes = start_year_remain * sizeof(uint16_t);
+
+    temp_buf = aws_malloc(read_bytes);
+    if (!temp_buf)
+      return -1;
+
+    make_filename(start_time->Year, file_path, name);
+    result = read_file(file_path, temp_buf, read_bytes, start_offset * sizeof(uint16_t));
+    if (result != FR_OK)
+    {
+      aws_free(temp_buf);
+      return -1;
+    }
+
+    for (uint32_t i = 0; i < start_year_remain; i++) buffer[out_index++] = temp_buf[i];
+
+    aws_free(temp_buf);
+
+    uint32_t end_offset = offset_min(&end_time);
+    if (end_offset > 0)
+    {
+      read_bytes = end_offset * sizeof(uint16_t);
+      temp_buf = aws_malloc(read_bytes);
+      if (!temp_buf)
+        return -1;
+
+      make_filename(end_time.Year, file_path, name);
+      result = read_file(file_path, temp_buf, read_bytes, 1 * sizeof(uint16_t));
+      if (result != FR_OK)
+      {
+        aws_free(temp_buf);
+        return -1;
+      }
+
+      for (uint32_t i = 0; i < end_offset; i++) buffer[out_index++] = temp_buf[i];
+
+      aws_free(temp_buf);
+    }
+  }
+  else
+  {
+    uint32_t start_offset = offset_min((DATE_TIME_BUF *)start_time);
+    uint32_t read_bytes = read_cnt * sizeof(uint16_t);
+    temp_buf = aws_malloc(read_bytes);
+    if (!temp_buf)
+      return -1;
+
+    make_filename(start_time->Year, file_path, name);
+    result = read_file(file_path, temp_buf, read_bytes, start_offset * sizeof(uint16_t));
+    if (result != FR_OK)
+    {
+      aws_free(temp_buf);
+      return -1;
+    }
+
+    for (uint32_t i = 0; i < read_cnt; i++) buffer[i] = temp_buf[i];
+
+    aws_free(temp_buf);
+  }
+
+  return (int)result;
+}
+#endif
+
+int read_bulk_data(const char *name, const DATE_TIME_BUF *start_time, uint32_t read_cnt,
+                   uint16_t *buffer)
+{
+  FRESULT result = -1;
+  DATE_TIME_BUF end_time;
+  time_t start_sec = time_cvt_timestamp((DATE_TIME_BUF *)start_time);
+  char file_path[64];
+  uint32_t buffer_index = 0;
+  uint32_t remain = read_cnt;
+
+  memset(buffer, 0, sizeof(uint16_t) * read_cnt);
+
+  if (offset_min((DATE_TIME_BUF *)start_time) == 0)
+  {
+    time_cvt_secTotime(start_sec - 60, &end_time);
+    uint32_t offset = last_minute_offsets_in_year(end_time.Year);
+
+    make_filename(end_time.Year % 10, file_path, name);
+    result = read_file(file_path, (uint8_t*)&buffer[0], sizeof(uint16_t), offset * sizeof(uint16_t));
+    if (result != FR_OK)
+      return -1;
+
+    if (read_cnt > 1)
+    {
+      DATE_TIME_BUF nt;
+      time_cvt_secTotime(start_sec + 60, &nt);
+      uint32_t offset = offset_min(&nt);
+
+      make_filename(nt.Year % 10, file_path, name);
+      result = read_file(file_path, (uint8_t*)&buffer[1], (read_cnt - 1) * sizeof(uint16_t),
+                         offset * sizeof(uint16_t));
+      if (result != FR_OK)
+        return -1;
+    }
+
+    return (int)FR_OK;
+  }
+
+  time_cvt_secTotime(start_sec + (read_cnt * 60), &end_time);
+
+  if (start_time->Year != end_time.Year)
+  {
+    uint32_t start_offset = offset_min((DATE_TIME_BUF *)start_time);
+    uint32_t start_year_remain = last_minute_offsets_in_year(start_time->Year) - start_offset + 1;
+    uint32_t to_read = (remain < start_year_remain) ? remain : start_year_remain;
+    uint32_t read_bytes = to_read * sizeof(uint16_t);
+
+    make_filename(start_time->Year % 10, file_path, name);
+    result =
+        read_file(file_path, (uint8_t*)&buffer[buffer_index], read_bytes, start_offset * sizeof(uint16_t));
+    if (result != FR_OK)
+      return -1;
+
+    buffer_index += to_read;
+    remain -= to_read;
+
+    if (remain > 0)
+    {
+      uint32_t offset = 1;
+      read_bytes = remain * sizeof(uint16_t);
+
+      make_filename(end_time.Year % 10, file_path, name);
+      result = read_file(file_path, (uint8_t*)&buffer[buffer_index], read_bytes, offset * sizeof(uint16_t));
+      if (result != FR_OK)
+        return -1;
+    }
+  }
+  else
+  {
+    uint32_t offset = offset_min((DATE_TIME_BUF *)start_time);
+    uint32_t read_bytes = remain * sizeof(uint16_t);
+
+    make_filename(start_time->Year % 10, file_path, name);
+    result = read_file(file_path, (uint8_t*)buffer, read_bytes, offset * sizeof(uint16_t));
+    if (result != FR_OK)
+      return -1;
+  }
+
+  return (int)FR_OK;
+}
+
+
+int parse_datetime_buf(const char *str, DATE_TIME_BUF *dt)
+{
+  int y, M, d, h, m, s;
+  if (sscanf(str, "%04d-%02d-%02d %02d:%02d:%02d", &y, &M, &d, &h, &m, &s) != 6)
+    return 0;
+  dt->Year = (int16_t)y;
+  dt->Month = (int8_t)M;
+  dt->Day = (int8_t)d;
+  dt->Hour = (int8_t)h;
+  dt->Min = (int8_t)m;
+  dt->Sec = (int8_t)s;
+  return 1;
+}
+
+int write_bulk_data_range(const char *name, const char *start_datetime,
+                          const char *end_datetime, uint16_t value)
+{
+  char path[50];
+  DATE_TIME_BUF start_time, end_time;
+  FRESULT fret;
+  uint32_t write_cnt;
+
+  if (!parse_datetime_buf(start_datetime, &start_time) ||
+      !parse_datetime_buf(end_datetime, &end_time))
+    return -1;
+
+  write_cnt = count_min(&start_time, &end_time);
+
+  if (offset_min(&start_time) == 0 && write_cnt>0)
+  {
+    DATE_TIME_BUF yt;
+    uint32_t offset;
+    uint32_t start_sec = time_cvt_timestamp(&start_time);
+
+    time_cvt_secTotime(start_sec - 60, &yt);
+
+    offset = last_minute_offsets_in_year(yt.Year);
+
+    make_filename(yt.Year % 10, path, name);
+    fret = write_file(path, (uint8_t *)&value, sizeof(uint16_t), offset * sizeof(uint16_t));
+    if (fret != FR_OK)
+    {
+      return -1;
+    }
+
+    write_cnt = count_min(&start_time,&end_time);
+    write_cnt = write_cnt -1;
+      if (write_cnt > 0)
+      {
+        DATE_TIME_BUF nt;
+        uint32_t offset = 1;
+        uint8_t *p_buffer = aws_malloc(write_cnt*sizeof(uint16_t));
+
+        for(int i = 0;i<write_cnt;i++)
+        {
+          p_buffer[i] = value;
+        }
+
+        make_filename(start_time.Year % 10, path, name);
+        fret = write_file(path, (uint8_t *)p_buffer, write_cnt * sizeof(uint16_t),
+                          offset * sizeof(uint16_t));
+        if (fret != FR_OK)
+        {
+          aws_free(p_buffer);
+          return -1;
+        }
+
+
+      }
+
+    return (int)FR_OK;
+  }
+
+  if(start_time.Year == end_time.Year)
+  {
+    uint32_t start_offset= offset_min(&start_time);
+    uint32_t cnt = offset_min(&end_time) -  start_offset + 1;
+    uint16_t *p_buffer = aws_malloc(cnt*sizeof(uint16_t));
+
+    for(int i = 0 ; i< cnt; i++)
+    {
+      p_buffer[i] = value;
+    }
+    make_filename(start_time.Year % 10, path, name);
+
+    fret = write_file(path, (uint8_t*)p_buffer, cnt * sizeof(uint16_t), start_offset);
+
+    aws_free(p_buffer);
+    
+    if(fret !=FR_OK)
+    {
+
+      return -1;
+    }
+  }
+  else
+  {
+    DATE_TIME_BUF last_time;
+    uint32_t offset;
+    uint32_t write_cnt;
+    uint32_t total_cnt;
+    uint32_t remain_cnt;
+    total_cnt = count_min(&start_time,&end_time);
+    offset = offset_min(&start_time);
+    write_cnt = last_minute_offsets_in_year(start_time.Year)-offset +1;
+
+    make_filename(start_time.Year % 10, path, name);
+
+    uint16_t *p_buffer = aws_malloc(write_cnt*sizeof(uint16_t));
+
+        if(p_buffer ==0)
+    {
+      return -1;
+    }
+    
+    for(int i = 0;i< write_cnt; i++)
+    {
+      p_buffer[i] = value;
+    }
+
+    fret = write_file(path,(uint8_t *)p_buffer,write_cnt*sizeof(uint16_t),offset);
+    aws_free(p_buffer);
+    if(fret != FR_OK)
+    {
+      return -1;
+    }
+
+    remain_cnt = total_cnt - write_cnt;
+
+    if (remain_cnt)
+    {
+      p_buffer = aws_malloc(remain_cnt * sizeof(uint16_t));
+    
+    if(p_buffer ==0)
+    {
+      return -1;
+    }
+      
+      for (int i = 0; i < remain_cnt; i++)
+    {
+      p_buffer[i] = value;
+    }
+    make_filename(end_time.Year % 10, path, name);
+    fret = write_file(path, (uint8_t *)p_buffer, remain_cnt * sizeof(uint16_t), sizeof(uint16_t));
+    aws_free(p_buffer);
+    if (fret != FR_OK)
+    {
+      return -1;
+    }
+    }
+  }
+
+  return 0;
 }

@@ -2979,7 +2979,8 @@ int32_t menu_manage_config_backup(p_shell_context_t ctx)
 int32_t menu_manage_sentor_edit(p_shell_context_t ctx)
 {
   int32_t cnt;
-  const char *config_menu[] = {"0.우량 자료 편집", "1.일조 자료 편집"};
+  const char *config_menu[] = {"0.우량 자료 편집", "1.일조 자료 편집", "2.우량 자료 확인",
+                               "3.일조 자료 확인인"};
   char start_time[30];
   char end_time[30];//2025-01-01 00:00:00
   int32_t value;
@@ -3031,6 +3032,42 @@ int32_t menu_manage_sentor_edit(p_shell_context_t ctx)
           }
            break;
 
+          case 2:
+          case 3:
+          {
+            int year;
+            int month;
+            int day;
+            int hour;
+            int min;
+            int read_cnt;
+            io_printf("시작시간입력(예:2025-01-01 00:01)\r\n");
+            io_printf(">>");
+            cli_scanf_s("%04d-%02d-%02d %02d:%02d",&year,&month,&day,&hour,&min);
+            io_printf("읽을 갯수 입력\r\n");
+            io_printf(">>");
+            cli_scanf_s("%d", &read_cnt);
+            DATE_TIME_BUF ct;
+            ct.Year = year;
+            ct.Month = month;
+            ct.Day = day;
+            ct.Hour = hour;
+            ct.Min = min;
+            ct.Sec = 0;
+            uint32_t start_time = time_cvt_timestamp(&ct);
+
+            for (int i = 0; i < read_cnt; i++)
+            {
+              uint16_t data;
+              uint8_t type;
+              type = cnt == 2 ? LOGGING_RAIN_1MIN: LOGGING_SUNSHINE_1MIN;
+              read_sensorDataMulti(&ct, sizeof(uint16_t), 1, type,1,(uint8_t*)&data,sizeof(data));
+              io_printf("%04d-%02d-%02d %02d:%02d:00 %5d\r\n",ct.Year,ct.Month,ct.Day,ct.Hour,ct.Min,data
+              );
+              start_time +=60;
+              time_cvt_secTotime(start_time,&ct);
+            }
+          }
       }
     }
   }

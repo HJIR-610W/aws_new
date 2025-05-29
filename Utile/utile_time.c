@@ -143,3 +143,34 @@ void subtract_seconds(DATE_TIME_BUF *dt, uint32_t seconds)
   time_cvt_secTotime(tick,dt);
 
 }
+
+
+//현재 분이 해의 시작부터 몇번째 분인지 확인
+int offset_min(DATE_TIME_BUF *t)
+{
+  DATE_TIME_BUF base;
+
+  base.Year = t->Year;
+  base.Month = 1;
+  base.Day = 1;
+  base.Hour = 0;
+  base.Min = 0;
+  base.Sec = 0;
+
+  time_t t_base = time_cvt_timestamp(&base);
+  time_t t_now = time_cvt_timestamp(t);
+
+  int offset = (int)((t_now - t_base) / 60);
+
+  return offset;
+}
+
+int32_t count_min(DATE_TIME_BUF *st,DATE_TIME_BUF *et)
+{
+  time_t t_et = time_cvt_timestamp(et);
+  time_t t_st = time_cvt_timestamp(st);
+
+  int offset = (int)((t_et - t_st) / 60)+1;
+
+  return offset;
+}

@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>117730744</Checksum>
+        <Checksum>119858799</Checksum>
     </DebugChecksum>
     <Disassembly>
         <InstrCount>0</InstrCount>
@@ -77,10 +77,11 @@
     </Simulator>
     <struct_types>
         <Fmt0>DATE_TIME_BUF-Day	3	0</Fmt0>
-        <Fmt1>DATE_TIME_BUF-Min	3	0</Fmt1>
-        <Fmt2>DATE_TIME_BUF-Sec	3	0</Fmt2>
-        <Fmt3>RTC_TimeTypeDef-Hours	3	0</Fmt3>
-        <Fmt4>config_header_t-magicNum	4	0</Fmt4>
+        <Fmt1>DATE_TIME_BUF-Hour	3	0</Fmt1>
+        <Fmt2>DATE_TIME_BUF-Min	3	0</Fmt2>
+        <Fmt3>DATE_TIME_BUF-Sec	3	0</Fmt3>
+        <Fmt4>RTC_TimeTypeDef-Hours	3	0</Fmt4>
+        <Fmt5>config_header_t-magicNum	4	0</Fmt5>
     </struct_types>
     <array_types>
         <Fmt0>uint16_t[10]	4	0</Fmt0>
@@ -148,7 +149,7 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Data\utile_data.c}.380.5" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Data\utile_data.c}.780.3" 0 0 1 "" 0 "" 0</Bp0>
         <Count>1</Count>
     </Breakpoints2>
     <TermIOLog>
