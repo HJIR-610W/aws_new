@@ -22,7 +22,7 @@ typedef struct charger_data_s
 
 typedef struct
 {
-    int32_t (*read)(driver_t *driver,charger_data_t *data,uint8_t *err);
+    void (*read)(driver_t *driver,charger_data_t *data,uint8_t *err);
 }charger_api_t;
 
 #endif

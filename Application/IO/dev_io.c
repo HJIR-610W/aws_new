@@ -424,10 +424,16 @@ uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd,
 
 
 static void *g_task_id;
+static bool foreced_print = false;
 void set_task_id(void *task_id)
 {
   g_task_id = task_id;
 }
+
+
+
+void set_forced_print(bool set) { foreced_print = set; }
+
 
 void task_printf(const char *pFmt, ...)
 {
@@ -435,17 +441,17 @@ void task_printf(const char *pFmt, ...)
 
   task_id = osThreadGetId();
 
-  if(task_id ==NULL)
+  if (task_id == NULL && foreced_print==false)
   {
     return;
   }
 
-  if(g_task_id==NULL)
+  if (g_task_id == NULL && foreced_print==false)
   {
     return;
   }
 
-  if(task_id == g_task_id)
+  if (task_id == g_task_id || (foreced_print))
   {
     va_list args;
     va_start(args, pFmt);
@@ -454,9 +460,11 @@ void task_printf(const char *pFmt, ...)
   }
 }
 
+
+
 void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)
 {
-  if (title)
+  if (title || foreced_print)
     task_printf("%s (len=%d):\r\n", title, (int)length);
 
   for (uint32_t i = 0; i < length; i++)

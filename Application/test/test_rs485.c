@@ -14,7 +14,7 @@ void test_rs485(void)
   int len;
   driver_t *port[RS485_PORT_MAX];
   char buff[30];
-  char rx_buff[10];
+  char rx_buff[50];
   int baud=57600;
   const char *rs485_port_name[RS485_PORT_MAX]={"A","B","C","D"};
 
@@ -53,7 +53,7 @@ void test_rs485(void)
         snprintf(buff, sizeof(buff), "RS485 %s failed\r\n", rs485_port_name[i]);
         io_printf(buff);
       }
-      len = driver_rs485_recv(port[i], rx_buff, sizeof(rx_buff), 1000);
+      len = driver_rs485_recv(port[i], rx_buff, sizeof(rx_buff), 2000);
       if(len)
       {
         driver_rs485_send(port[i], rx_buff, len);

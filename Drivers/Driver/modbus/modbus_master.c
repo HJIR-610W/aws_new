@@ -2,6 +2,8 @@
 
 #include "modbus_master.h"
 
+#include <string.h>
+
 #include "driver_uart.h"
 #include "driver_485.h"
 #include "driver_485_def.h"
@@ -162,7 +164,7 @@ int32_t parse_recv(uint8_t *pInData, uint16_t dataLen, uint16_t *pOutRegs, uint1
       get_FC1(pInData, dataLen, pOutRegs, regCnt);
       break;
     case MB_FC_READ_INPUT_REGISTER:
-    case MB_FC_READ_REGISTERS:
+     case MB_FC_READ_REGISTERS:
       // call get_FC3 to transfer the incoming message to u16regs buffer
       get_FC3(pInData, dataLen, pOutRegs, regCnt);
       break;
@@ -306,6 +308,7 @@ int32_t modbus_master_req(driver_t *drv, modbus_t *modbus)
   int32_t len;
   modbus_cfg_t *cfg = drv->cfg;
 
+  memset(buff,0,sizeof(buff));
   send_query(drv, modbus);
 
   len = modbus_receive_packet(drv, buff, sizeof(buff));
@@ -394,7 +397,7 @@ int32_t modbus_write_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address
   return err;
 }
 
-int32_t modbus_read_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutRegs,
+int32_t modbus_read_hold_reg(driver_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutRegs,
                               uint16_t regCnt)
 {
   modbus_t modbus;
@@ -431,6 +434,43 @@ int32_t modbus_read_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address,
   return ret;
 }
 
+int32_t modbus_read_input_reg(driver_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutRegs,
+                             uint16_t regCnt)
+{
+  modbus_t modbus;
+  uint16_t reg[160];
+  int32_t ret = RET_FAIL;
+
+  memset(reg,0,sizeof(reg));
+  if ((sizeof(reg) / sizeof(reg[0])) < regCnt)
+  {
+    return ret;
+  }
+
+  modbus.id = slave_id;
+  modbus.fc = MB_FC_READ_INPUT_REGISTER;
+  modbus.regAdd = address;
+  modbus.coilsNo = regCnt;
+  modbus.regs = &reg[0];
+  modbus.regsCnt = sizeof(reg) / sizeof(reg[0]);
+  modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
+
+  ret = modbus_master_req(drv, &modbus);
+  g_modbusLastErr = ret;  // 디버깅을 위해 모드버스 마지막 결과값을 저장
+  if (ret == RET_OK)
+  {
+    for (int i = 0; i < regCnt; i++)
+    {
+      pOutRegs[i] = modbus.regs[i];
+    }
+  }
+  else
+  {
+    ret = RET_FAIL;
+  }
+
+  return ret;
+}
 void send_query(driver_t *drv, modbus_t *pmodbus)
 {
   uint8_t regsno;
@@ -520,9 +560,10 @@ void send_query(driver_t *drv, modbus_t *pmodbus)
   g_buff.cnt = cnt;
 }
 
-modbus_master_api_t modbus_master_api = {.read_multi_reg = modbus_read_multi_reg,
+modbus_master_api_t modbus_master_api = {.read_hold_reg = modbus_read_hold_reg,
                                          .write_multi_reg = modbus_write_multi_reg,
-                                         .write_single_reg = modbus_write_single_reg};
+                                         .write_single_reg = modbus_write_single_reg,
+                                        .read_input_reg = modbus_read_input_reg};
 
 driver_t *modbus_master_open(int32_t num, void *opt)
 {

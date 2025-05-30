@@ -1,9 +1,12 @@
-#include "dev_io.h"
 #include "parse_aws.h"
 
-#include "utile.h"
 #include <stdio.h>
 #include <string.h>
+
+#include "dev_io.h"
+#include "utile.h"
+#include "utile_time.h"
+
 #define KMA2_PRINT_LABEL_WIDTH 38  // 콜론 앞까지의 레이블이 차지할 최대 너비 (조정 가능)
 
 // 비트 체크를 위한 매크로
@@ -45,7 +48,8 @@ static inline uint16_t kma2_get_u16_big_endian(const uint8_t* buf)
 
 void print_kma2_command_request(const kma2_command_request_t* req)
 {
-  task_printf("--- KMA2 Command Request ---\r\n");
+  task_printf("KMA2 Command Request(%04d-%02d-%02d %02d:%02d:%02d)\r\n", Date_Time.Year,
+              Date_Time.Month, Date_Time.Min, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
   task_printf("%-*s : 0x%04X\r\n", KMA2_PRINT_LABEL_WIDTH, "Header",
               swap_bytes_uint16(req->header_start));
   task_printf("%-*s : %02d-%02d-%02d\r\n", KMA2_PRINT_LABEL_WIDTH, "P.Ver", req->protocol_yy,
@@ -68,7 +72,9 @@ void print_kma2_command_request(const kma2_command_request_t* req)
 }
 void print_kma3_command_request(const kma3_command_request_t* req)
 {
-  task_printf("--- KMA3 Command Request ---\r\n");
+  task_printf("KMA3 Command Request(%04d-%02d-%02d %02d:%02d:%02d)\r\n",Date_Time.Year,Date_Time.Month,Date_Time.Min,
+  Date_Time.Hour,Date_Time.Min,Date_Time.Sec);
+
   task_printf("%-*s : 0x%04X\r\n", KMA2_PRINT_LABEL_WIDTH, "Header",
               swap_bytes_uint16(req->header_start));
   task_printf("%-*s : %02d-%02d-%02d\r\n", KMA2_PRINT_LABEL_WIDTH, "P.Ver", req->protocol_yy,
@@ -652,4 +658,383 @@ void parse_kma2_response(const uint8_t* frame, uint32_t bytes_read)
       }
     }
   }
+}
+#pragma pack(push,1)
+typedef struct
+{
+  uint16_t header;
+  uint8_t protocol_year;
+  uint8_t protocol_month;
+  uint8_t protocol_day;
+  uint8_t year;
+  uint8_t month;
+  uint8_t day;
+  uint8_t hour;
+  uint8_t min;
+  uint8_t dataType;
+  uint8_t dataNum;
+  uint16_t id;
+
+  // 1. 기온 (1분 평균)
+  uint16_t temperature;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~ 1500
+                         // (관측값 * 10)
+
+  // 2. 풍향 (1분 평균)
+  uint16_t wind_direction_avg;  // 사용비트: 11, 유효범위: 0 ~ 4095 (인치 코드), 표현범위: 0 ~ 3599
+                                // (관측값 * 10)
+
+  // 3. 풍속 (1분 평균)
+  uint16_t wind_speed_avg;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000
+                            // (관측값 * 10)
+
+  // 4. 풍향 (1분 순간)
+  uint16_t wind_direction_instant;  // 사용비트: 11, 유효범위: 0 ~ 4095 (인치 코드), 표현범위: 0 ~
+                                    // 3599 (관측값 * 10)
+
+  // 5. 풍속 (1분 순간)
+  uint16_t wind_speed_instant;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000
+                                // (관측값 * 10)
+
+  // 6. 강수량 (0.5/1.0 mm)
+  uint16_t precipitation;  // 사용비트: 14, 유효범위: 0 ~ 32767 (인치 코드), 표현범위: 0 ~ 32767
+
+  // 7. 기압 (1분 평균 현지 기압)
+  uint16_t pressure;  // 사용비트: 13, 유효범위: 0 ~ 16383 (인치 코드), 표현범위: 5000 ~ 11000
+
+  // 8. 강수 유무
+  uint16_t precipitation_presence;  // 사용비트: 3, 유효범위: 0 ~ 15 (인치 코드), 표현범위: 0 = 강수
+                                    // 없음, 1 = 강수 있음
+
+  // 9. 적설
+  uint16_t
+      snowfall;  // 사용비트: 11, 유효범위: 0 ~ 4095 (인치 코드), 표현범위: 0 ~ 4095 (관측값 * 10)
+
+  // 10. 상대습도 (1분 평균)
+  uint16_t relative_humidity;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000
+                               // (관측값 * 10)
+
+  // 11. 강수량 (0.1 mm)
+  uint16_t
+      precipitation_fine;  // 사용비트: 14, 유효범위: 0 ~ 32767 (인치 코드), 표현범위: 0 ~ 32767
+
+  // 1. 일사 (누적값)
+  uint16_t solar_radiation;  // 사용비트: 14, 유효범위: 0 ~ 32767 (인치 코드), 표현범위: 0 ~ 32767
+                             // [관측값(MJ/m²) * 100]
+
+  // 2. 일조 (누적 시간)
+  uint16_t sunshine_duration;  // 사용비트: 15, 유효범위: 0 ~ 65535 (인치 코드), 표현범위: 0 ~ 65535
+                               // [누적시간(초 단위)]
+
+  // 3. 지면온도 (1분 평균)
+  uint16_t surface_temperature;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~
+                                 // 2000 [(관측값 + 100) * 10]
+
+  // 4. 초상온도 (1분 평균)
+  uint16_t grass_temperature;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~ 2000
+                               // [(관측값 + 100) * 10]
+
+  // 5. 지중온도 (5cm, 1분 평균)
+  uint16_t soil_temperature_5cm;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~
+                                  // 2000 [(관측값 + 100) * 10]
+
+  // 6. 지중온도 (10cm, 1분 평균)
+  uint16_t soil_temperature_10cm;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~
+                                   // 2000 [(관측값 + 100) * 10]
+
+  // 7. 지중온도 (20cm, 1분 평균)
+  uint16_t soil_temperature_20cm;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~
+                                   // 2000 [(관측값 + 100) * 10]
+
+  // 8. 지중온도 (30cm, 1분 평균)
+  uint16_t soil_temperature_30cm;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~
+                                   // 2000 [(관측값 + 100) * 10]
+
+  // 9. 지중온도 (50cm, 1분 평균)
+  uint16_t soil_temperature_50cm;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~
+                                   // 2000 [(관측값 + 100) * 10]
+
+  // 10. 지중온도 (1.0m, 1분 평균)
+  uint16_t soil_temperature_1m;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~
+                                 // 2000 [(관측값 + 100) * 10]
+
+  // 11. 지중온도 (1.5m, 1분 평균)
+  uint16_t soil_temperature_1_5m;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~
+                                   // 2000 [(관측값 + 100) * 10]
+
+  // 12. 지중온도 (3.0m, 1분 평균)
+  uint16_t soil_temperature_3m;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~
+                                 // 2000 [(관측값 + 100) * 10]
+
+  // 13. 지중온도 (5.0m, 1분 평균)
+  uint16_t soil_temperature_5m;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~
+                                 // 2000 [(관측값 + 100) * 10]
+
+  // 1. 1층 운고 (1분 평균)
+  uint16_t cloud_height_1st;  // 사용비트: 12, 유효범위: 0 ~ 8191 (인치 코드), 표현범위: 0 ~ 8000
+                              // (관측값[m])
+
+  // 2. 2층 운고 (1분 평균)
+  uint16_t cloud_height_2nd;  // 사용비트: 12, 유효범위: 0 ~ 8191 (인치 코드), 표현범위: 0 ~ 8000
+                              // (관측값[m])
+
+  // 3. 3층 운고 (1분 평균)
+  uint16_t cloud_height_3rd;  // 사용비트: 12, 유효범위: 0 ~ 8191 (인치 코드), 표현범위: 0 ~ 8000
+                              // (관측값[m])
+
+  // 4. 운량
+  uint16_t cloud_amount;  // 사용비트: 3, 유효범위: 0 ~ 15 (인치 코드), 표현범위: 0 ~ 10 (관측값)
+
+  // 5. 시정 (1분 평균)
+  uint16_t
+      visibility;  // 사용비트: 15, 유효범위: 0 ~ 65535 (인치 코드), 표현범위: 0 ~ 50000 (관측값[m])
+
+  // 6. PM10 (분진농도)
+  uint16_t pm10_concentration;  // 사용비트: 11, 유효범위: 0 ~ 4095 (인치 코드), 표현범위: 1 ~ 3599
+                                // (관측값 [μg/m³] × 10)
+
+  // 7. PM2.5 (분진농도)
+  uint16_t pm25_concentration;  // 사용비트: 11, 유효범위: 0 ~ 4095 (인치 코드), 표현범위: 1 ~ 3599
+                                // (관측값 [μg/m³] × 10)
+
+  // 8. 순복사 (1분 평균)
+  uint16_t net_radiation;  // 사용비트: 14, 유효범위: 0 ~ 32767 (인치 코드), 표현범위: 0 ~ 32767
+                           // (관측값[W/m²] + 1000) × 10
+
+  // 9. 전천복사 (1분 평균)
+  uint16_t total_radiation;  // 사용비트: 14, 유효범위: 0 ~ 32767 (인치 코드), 표현범위: 0 ~ 32767
+                             // (관측값[W/m²] + 1000) × 10
+
+  // 10. 반사복사 (1분 평균)
+  uint16_t reflected_radiation;  // 사용비트: 14, 유효범위: 0 ~ 32767 (인치 코드), 표현범위: 0 ~
+                                 // 32767 (관측값[W/m²] + 1000) × 10
+
+  // 11. 직달복사 (1분 평균)
+  uint16_t direct_radiation;  // 사용비트: 14, 유효범위: 0 ~ 32767 (인치 코드), 표현범위: 0 ~ 32767
+                              // (관측값[W/m²] + 1000) × 10
+
+  // 12. 현재 일기
+  uint16_t
+      current_weather;  // 사용비트: 6, 유효범위: 0 ~ 127 (인치 코드), 표현범위: 0 ~ 99 (관측값)
+
+  uint16_t temp0[4];
+
+  // 1. 토양수분 (10 cm)
+  uint16_t soil_moisture_10cm;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000
+                                // (관측값 * 10)
+
+  // 2. 토양수분 (20 cm)
+  uint16_t soil_moisture_20cm;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000
+                                // (관측값 * 10)
+
+  // 3. 토양수분 (30 cm)
+  uint16_t soil_moisture_30cm;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000
+                                // (관측값 * 10)
+
+  // 4. 토양수분 (50 cm)
+  uint16_t soil_moisture_50cm;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000
+                                // (관측값 * 10)
+
+  // 5. 조도량 (1분 평균)
+  uint16_t illuminance;  // 사용비트: 14, 유효범위: 0 ~ 32767 (인치 코드), 표현범위: 0 ~ 32767
+                         // (관측값 * 100)
+
+  // 6. 풍속 (1.5 m, 1분 평균)
+  uint16_t wind_speed_1_5m;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000
+                             // (관측값 * 10)
+
+  // 7. 풍속 (4.0 m, 1분 평균)
+  uint16_t wind_speed_4m;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000
+                           // (관측값 * 10)
+
+  // 8. 순간 풍속 (1.5 m)
+  uint16_t instant_wind_speed_1_5m;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~
+                                     // 1000 (관측값 * 10)
+
+  // 9. 순간 풍속 (4.0 m)
+  uint16_t instant_wind_speed_4m;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~
+                                   // 1000 (관측값 * 10)
+
+  // 10. 기온 (0.5 m)
+  uint16_t temperature_0_5m;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~ 1500
+                              // [(관측값 + 100) * 10]
+
+  // 11. 기온 (4.0 m)
+  uint16_t temperature_4m;  // 사용비트: 10, 유효범위: 0 ~ 2047 (인치 코드), 표현범위: 500 ~ 1500
+                            // [(관측값 + 100) * 10]
+
+  // 12. 습도 (0.5 m, 1분 평균)
+  uint16_t humidity_0_5m;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000
+                           // (관측값 * 10)
+
+  // 13. 습도 (4.0 m, 1분 평균)
+  uint16_t
+      humidity_4m;  // 사용비트: 9, 유효범위: 0 ~ 1023 (인치 코드), 표현범위: 0 ~ 1000 (관측값 * 10)
+
+  uint16_t temp1[9];
+
+  uint16_t tacometer;
+  uint8_t sensorStatus[8];
+  uint8_t volateStatus;
+  uint16_t crc;
+  uint16_t end;
+} kma_data_t;
+#pragma pack(pop)
+
+int16_t big_endian_to_little_endian(int16_t value)
+{
+  int16_t ret = 0;
+
+  ret = (value >> 8 & 0x00FF);
+  ret |= (value << 8);
+
+  return ret;
+}
+
+void parse_kma3_response(const uint8_t* frame, uint32_t bytes_read)
+{
+  const char* dataNumName;
+  const kma_data_t* kma_data = (kma_data_t*)frame;
+
+      task_printf("=============================================================\r\n");
+  task_printf("시작 표시    : 0x%04X\r\n", big_endian_to_little_endian(kma_data->header) & 0xFFFF);
+  task_printf("프로토콜 버전: %02d-%02d-%02d\r\n", kma_data->protocol_year, kma_data->protocol_month,
+         kma_data->protocol_day);
+  task_printf("날짜/시간    : %02d-%02d-%02d %02d:%02d\r\n", kma_data->year, kma_data->month,
+         kma_data->day, kma_data->hour, kma_data->min);
+  task_printf("자료 구분    : %c\r\n", kma_data->dataType);
+
+  switch (kma_data->dataNum)
+  {
+    case 0:
+    case 1:
+    case 2:
+      dataNumName = "미사용";
+      break;
+    case 3:
+      dataNumName = "일반용";
+      break;
+    case 0x0c:
+      dataNumName = "관측요소에따라 부여(5~255)";
+      break;
+    default:
+      dataNumName = "오류";
+      break;
+  }
+  task_printf("자료형식번호 : %s\r\n", dataNumName);
+  task_printf("지점 번호    : %d\r\n", big_endian_to_little_endian(kma_data->id));
+
+  // 관측 데이터 출력
+  task_printf("A-1  기온      Temperature            : %5.2f도C\r\n",
+         (big_endian_to_little_endian(kma_data->temperature) - 1000) / 10.0);
+  task_printf("A-2  풍향 Wind Direction Avg          : %5.2f도\r\n",
+         big_endian_to_little_endian(kma_data->wind_direction_avg) / 10.0);
+  task_printf("A-3  풍속 Wind Speed Avg              : %5.2fm/s\r\n",
+         big_endian_to_little_endian(kma_data->wind_speed_avg) / 10.0);
+  task_printf("A-4  순간 풍향 Wind Direction Instant : %5.2f도\r\n",
+         big_endian_to_little_endian(kma_data->wind_direction_instant) / 10.0);
+  task_printf("A-5  순간 풍속 Wind Speed Instant     : %5.2fm/s\r\n",
+         big_endian_to_little_endian(kma_data->wind_speed_instant) / 10.0);
+  task_printf("A-6  강수량    Precipitation          : %dmm\r\n",
+         big_endian_to_little_endian(kma_data->precipitation));
+  task_printf("A-7  기압      Pressure               : %5.2fhPa\r\n",
+         big_endian_to_little_endian(kma_data->pressure) / 10.0);
+  task_printf("A-8  강수 유무 Precipitation Presence : %d\r\n",
+         big_endian_to_little_endian(kma_data->precipitation_presence));
+  task_printf("A-9  적설      Snowfall               : %5.2fcm\r\n",
+         big_endian_to_little_endian(kma_data->snowfall) / 10.0);
+  task_printf("A-10 상대습도  Relative Humidity      : %5.2f%%\r\n",
+         big_endian_to_little_endian(kma_data->relative_humidity) / 10.0);
+  task_printf("A-12 강수량    Precipitation Fine     : %d\r\n",
+         big_endian_to_little_endian(kma_data->precipitation_fine));
+
+  task_printf("B-1  일사      Solar Radiation        : %d\r\n",
+         big_endian_to_little_endian(kma_data->solar_radiation));
+  task_printf("B-2  일조      Sunshine Duration      : %d\r\n",
+         big_endian_to_little_endian(kma_data->sunshine_duration));
+  task_printf("B-3  지면온도  Surface Temperature    : %d\r\n",
+         big_endian_to_little_endian(kma_data->surface_temperature));
+  task_printf("B-4  초상온도  Grass Temperature      : %d\r\n",
+         big_endian_to_little_endian(kma_data->grass_temperature));
+  task_printf("B-5  지중온도  Soil Temperature 5cm   : %d\r\n",
+         big_endian_to_little_endian(kma_data->soil_temperature_5cm));
+  task_printf("B-6  지중온도  Soil Temperature 10cm  : %d\r\n",
+         big_endian_to_little_endian(kma_data->soil_temperature_10cm));
+  task_printf("B-7  지중온도  Soil Temperature 20cm  : %d\r\n",
+         big_endian_to_little_endian(kma_data->soil_temperature_20cm));
+  task_printf("B-8  지중온도  Soil Temperature 30cm  : %d\r\n",
+         big_endian_to_little_endian(kma_data->soil_temperature_30cm));
+  task_printf("B-9  지중온도  Soil Temperature 50cm  : %d\r\n",
+         big_endian_to_little_endian(kma_data->soil_temperature_50cm));
+  task_printf("B-10 지중온도  Soil Temperature 1m    : %d\r\n",
+         big_endian_to_little_endian(kma_data->soil_temperature_1m));
+  task_printf("B-11 지중온도  Soil Temperature 1.5m  : %d\r\n",
+         big_endian_to_little_endian(kma_data->soil_temperature_1_5m));
+  task_printf("B-12 지중온도  Soil Temperature 3m    : %d\r\n",
+         big_endian_to_little_endian(kma_data->soil_temperature_3m));
+  task_printf("B-13 지중온도  Soil Temperature 5m    : %d\r\n",
+         big_endian_to_little_endian(kma_data->soil_temperature_5m));
+
+  task_printf("C-1  1층 운고 Cloud Height 1st        : %d\r\n",
+         big_endian_to_little_endian(kma_data->cloud_height_1st));
+  task_printf("C-2  2층 운고 Cloud Height 2nd        : %d\r\n",
+         big_endian_to_little_endian(kma_data->cloud_height_2nd));
+  task_printf("C-3  3층 운고 Cloud Height 3rd        : %d\r\n",
+         big_endian_to_little_endian(kma_data->cloud_height_3rd));
+  task_printf("C-4  운량     Cloud Amount            : %d\r\n",
+         big_endian_to_little_endian(kma_data->cloud_amount));
+  task_printf("C-5  시정     Visibility              : %d\r\n",
+         big_endian_to_little_endian(kma_data->visibility));
+  task_printf("C-6  PM10     PM10 Concentration      : %d\r\n",
+         big_endian_to_little_endian(kma_data->pm10_concentration));
+  task_printf("C-7  PM2.5    Concentration           : %d\r\n",
+         big_endian_to_little_endian(kma_data->pm25_concentration));
+  task_printf("C-8  순복사   Net Radiation           : %d\r\n",
+         big_endian_to_little_endian(kma_data->net_radiation));
+  task_printf("C-9  전천복사 Total Radiation         : %d\r\n",
+         big_endian_to_little_endian(kma_data->total_radiation));
+  task_printf("C-10 반사복사 Reflected Radiation     : %d\r\n",
+         big_endian_to_little_endian(kma_data->reflected_radiation));
+  task_printf("C-11 직달일사 Direct Radiation        : %d\r\n",
+         big_endian_to_little_endian(kma_data->direct_radiation));
+  task_printf("C-12 현재일기 Current Weather         : %d\r\n",
+         big_endian_to_little_endian(kma_data->current_weather));
+
+
+  // 배열 데이터 출력
+  for (int i = 0; i < 4; i++)
+  {
+    task_printf("L_%d:%d\r\n", i + 1, big_endian_to_little_endian(kma_data->temp0[i]));
+  }
+
+  task_printf("N-1  토양수분 soil_moisture_10cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_10cm));
+  task_printf("N-2  토양수분 soil_moisture_20cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_20cm));
+  task_printf("N-3  토양수분 soil_moisture_30cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_30cm));
+  task_printf("N-4  토양수분 soil_moisture_50cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_50cm));
+  task_printf("N-5  조도량   illuminance             : %d\r\n", big_endian_to_little_endian(kma_data->illuminance));
+  task_printf("N-6  풍속     wind_speed_1_5m         : %d\r\n", big_endian_to_little_endian(kma_data->wind_speed_1_5m));
+  task_printf("N-7  풍속     wind_speed_4m           : %d\r\n", big_endian_to_little_endian(kma_data->wind_speed_4m));
+  task_printf("N-8  순간풍속 instant_wind_speed_1_5m : %d\r\n", big_endian_to_little_endian(kma_data->instant_wind_speed_1_5m));
+  task_printf("N-9  순간풍속 instant_wind_speed_4m   : %d\r\n", big_endian_to_little_endian(kma_data->instant_wind_speed_4m));
+  task_printf("N-10 기온     temperature_0_5m;       : %d\r\n", big_endian_to_little_endian(kma_data->temperature_0_5m));
+  task_printf("N-11 기온     temperature_4m          : %d\r\n", big_endian_to_little_endian(kma_data->temperature_4m));
+  task_printf("N-12 습도     humidity_0_5m           : %d\r\n", big_endian_to_little_endian(kma_data->humidity_0_5m));
+  task_printf("N-13 습도     humidity_4m             : %d\r\n", big_endian_to_little_endian(kma_data->humidity_4m));
+
+
+  for (int i = 0; i < 9; i++)
+  {
+    task_printf("L_%d:%d\r\n", i + 1, big_endian_to_little_endian(kma_data->temp1[i]));
+  }
+
+  task_printf("Tachometer: %d\r\n", big_endian_to_little_endian(kma_data->tacometer));
+
+  for (int i = 0; i < 8; i++)
+  {
+    task_printf("SensorStatus[%d]: 0x%02X\r\n", i, kma_data->sensorStatus[i]);
+  }
+
+  task_printf("Voltage Status: 0x%02X\r\n", kma_data->volateStatus);
+  task_printf("CRC: 0x%04X\r\n", big_endian_to_little_endian(kma_data->crc) & 0xFFFF);
+  task_printf("End: 0x%04X\r\n", big_endian_to_little_endian(kma_data->end) & 0xFFFF);
+
 }

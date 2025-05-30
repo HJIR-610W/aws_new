@@ -8,11 +8,10 @@
 #include "Sensors\rain\rain.h"
 
 const osThreadAttr_t kIsrEventTask_attributes = {
-  .name = "isrEventTask",
-  .stack_size = 2048,
+  .name = "isr_event",
+  .stack_size = 1024,
   .priority = (osPriority_t) osPriorityRealtime2,
 };
-
 
 osMessageQueueId_t g_isrEventMessageQueue;
 eISR_EVENT_CMD_t g_isrEventCmd;

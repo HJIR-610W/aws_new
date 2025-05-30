@@ -51,17 +51,21 @@ SYSTEM_INFO_AWS Sysinfo;
  void MonthProcess(void);
  float UVToSpeed(float u_tmp, float v_tmp);
 
+ /*
 
-
-
-void manual_bss_init(void)
-{
-  memset(&mRealAws, 0, sizeof(mRealAws));
-  memset(&mMinAws, 0, sizeof(mMinAws));
-  memset(&m10MinAws, 0, sizeof(m10MinAws));
-  memset(&mHourAws, 0, sizeof(mHourAws));
-  memset(&Sysinfo, 0, sizeof(Sysinfo));
-}
+ lowlevel init 호출전에 SystemInit_ExtMemCtl 여기에서 FSMC 초기화를 해서
+ 초기화된 섹션,초기화되지 않은 섹션을 처리해줘야하는데
+ FSMC 초기화에 문제가 있어. 일단
+ main에서 FSMC 초기화한 다음 수동으로 FSMC영역에 배치된 변수를 0으로 초기화
+ */
+ void manual_bss_init(void)
+ {
+   memset(&mRealAws, 0, sizeof(mRealAws));
+   memset(&mMinAws, 0, sizeof(mMinAws));
+   memset(&m10MinAws, 0, sizeof(m10MinAws));
+   memset(&mHourAws, 0, sizeof(mHourAws));
+   memset(&Sysinfo, 0, sizeof(Sysinfo));
+ }
 
 void update_kma_data(eAWS_DATA_MIN_t min);
 

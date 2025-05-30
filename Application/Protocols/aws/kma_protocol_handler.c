@@ -539,26 +539,105 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
         break;
     }
   }
-  // 1분 과거 자료
+
+  //현재값 기준으로 enable적용
+  void update_sensor_enable(kma_data_ex_t *p_kma)
+  {
+    kma_data_ex_t *p_kma_avg;
+
+    p_kma_avg = get_kma_data(eAWS_DATA_AVG);
+
+    p_kma->temperature.enable =p_kma_avg->temperature.enable;
+    p_kma->wind_direction_avg.enable = p_kma_avg->wind_direction_avg.enable;
+    p_kma->wind_speed_avg.enable = p_kma_avg->wind_speed_avg.enable;
+    p_kma->wind_direction_instant.enable = p_kma_avg->wind_direction_instant.enable;
+    p_kma->wind_speed_instant.enable = p_kma_avg->wind_speed_instant.enable;
+    p_kma->precipitation.enable = p_kma_avg->precipitation.enable;
+    p_kma->pressure.enable = p_kma_avg->pressure.enable;
+    p_kma->precipitation_presence.enable = p_kma_avg->precipitation_presence.enable;
+    p_kma->snowfall.enable = p_kma_avg->snowfall.enable;
+    p_kma->relative_humidity.enable = p_kma_avg->relative_humidity.enable;
+    p_kma->precipitation_fine.enable = p_kma_avg->precipitation_fine.enable;
+    p_kma->solar_radiation.enable = p_kma_avg->solar_radiation.enable;
+    p_kma->sunshine_duration.enable = p_kma_avg->sunshine_duration.enable;
+    p_kma->surface_temperature.enable = p_kma_avg->surface_temperature.enable;
+    p_kma->grass_temperature.enable = p_kma_avg->grass_temperature.enable;
+    p_kma->soil_temperature_5cm.enable = p_kma_avg->soil_temperature_5cm.enable;
+    p_kma->soil_temperature_10cm.enable = p_kma_avg->soil_temperature_10cm.enable;
+    p_kma->soil_temperature_20cm.enable = p_kma_avg->soil_temperature_20cm.enable;
+    p_kma->soil_temperature_30cm.enable = p_kma_avg->soil_temperature_30cm.enable;
+    p_kma->soil_temperature_50cm.enable = p_kma_avg->soil_temperature_50cm.enable;
+    p_kma->soil_temperature_1m.enable = p_kma_avg->soil_temperature_1m.enable;
+    p_kma->soil_temperature_1_5m.enable = p_kma_avg->soil_temperature_1_5m.enable;
+    p_kma->soil_temperature_3m.enable = p_kma_avg->soil_temperature_3m.enable;
+    p_kma->soil_temperature_5m.enable = p_kma_avg->soil_temperature_5m.enable;
+    p_kma->cloud_height_1st.enable = p_kma_avg->cloud_height_1st.enable;
+    p_kma->cloud_height_2nd.enable = p_kma_avg->cloud_height_2nd.enable;
+    p_kma->cloud_height_3rd.enable = p_kma_avg->cloud_height_3rd.enable;
+    p_kma->cloud_amount.enable = p_kma_avg->cloud_amount.enable;
+    p_kma->visibility.enable = p_kma_avg->visibility.enable;
+    p_kma->pm10_concentration.enable = p_kma_avg->pm10_concentration.enable;
+    p_kma->pm25_concentration.enable = p_kma_avg->pm25_concentration.enable;
+    p_kma->net_radiation.enable = p_kma_avg->net_radiation.enable;
+    p_kma->total_radiation.enable = p_kma_avg->total_radiation.enable;
+    p_kma->reflected_radiation.enable = p_kma_avg->reflected_radiation.enable;
+    p_kma->direct_radiation.enable = p_kma_avg->direct_radiation.enable;
+    p_kma->current_weather.enable = p_kma_avg->current_weather.enable;
+    p_kma->temp0_0.enable = p_kma_avg->temp0_0.enable;
+    p_kma->temp0_1.enable = p_kma_avg->temp0_1.enable;
+    p_kma->temp0_2.enable = p_kma_avg->temp0_2.enable;
+    p_kma->temp0_3.enable = p_kma_avg->temp0_3.enable;
+    p_kma->soil_moisture_10cm.enable = p_kma_avg->soil_moisture_10cm.enable;
+    p_kma->soil_moisture_20cm.enable = p_kma_avg->soil_moisture_20cm.enable;
+    p_kma->soil_moisture_30cm.enable = p_kma_avg->soil_moisture_30cm.enable;
+    p_kma->soil_moisture_50cm.enable = p_kma_avg->soil_moisture_50cm.enable;
+    p_kma->illuminance.enable = p_kma_avg->illuminance.enable;
+    p_kma->wind_speed_1_5m.enable = p_kma_avg->wind_speed_1_5m.enable;
+    p_kma->wind_speed_4m.enable = p_kma_avg->wind_speed_4m.enable;
+    p_kma->instant_wind_speed_1_5m.enable = p_kma_avg->instant_wind_speed_1_5m.enable;
+    p_kma->instant_wind_speed_4m.enable = p_kma_avg->instant_wind_speed_4m.enable;
+    p_kma->temperature_0_5m.enable = p_kma_avg->temperature_0_5m.enable;
+    p_kma->temperature_4m.enable = p_kma_avg->temperature_4m.enable;
+    p_kma->humidity_0_5m.enable = p_kma_avg->humidity_0_5m.enable;
+    p_kma->humidity_4m.enable = p_kma_avg->humidity_4m.enable;
+    p_kma->temp1_0.enable = p_kma_avg->temp1_0.enable;
+    p_kma->temp1_1.enable = p_kma_avg->temp1_1.enable;
+    p_kma->temp1_2.enable = p_kma_avg->temp1_2.enable;
+    p_kma->temp1_3.enable = p_kma_avg->temp1_3.enable;
+    p_kma->temp1_4.enable = p_kma_avg->temp1_4.enable;
+    p_kma->temp1_5.enable = p_kma_avg->temp1_5.enable;
+    p_kma->temp1_6.enable = p_kma_avg->temp1_6.enable;
+    p_kma->temp1_7.enable = p_kma_avg->temp1_7.enable;
+    p_kma->temp1_8.enable = p_kma_avg->temp1_8.enable;
+    p_kma->tacometer.enable = p_kma_avg->tacometer.enable;
+    }
+      // 1분 과거 자료
   uint16_t kma_cmd_handler_AQ(uint8_t *rx_frame, uint8_t *tx_frame)
   {
-    AWS_DATA_STRUCT *p_aws=NULL;
+    uint8_t nt[5];
     uint8_t data[200];
-    uint16_t len=0;
+    uint8_t data_format_no;
+    uint16_t len = 0;
+    uint16_t station_id;
     kma2_response_t kma2_response;
-    kma_data_ex_t kma3;
+    kma_data_ex_t *p_kma3=NULL;
     DATE_TIME_BUF mOldDate;
     DATE_TIME_BUF *pDate;
-    uint8_t nt[5];
-    uint16_t station_id;
     time_t cur_t, befhour_t, poll_t;
+    AWS_DATA_STRUCT *p_aws = NULL;
     int nIdx;
-    uint8_t data_format_no;
 
-    p_aws = aws_malloc(sizeof(AWS_DATA_STRUCT));
+    p_kma3 = pvPortMalloc(sizeof(kma_data_ex_t));
+
+    if(p_kma3 == NULL)
+    {
+      return 0;
+    }
+    p_aws = pvPortMalloc(sizeof(AWS_DATA_STRUCT));
 
     if(p_aws==NULL)
     {
+      vPortFree(p_kma3);
       return 0;
     }
 
@@ -590,14 +669,15 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     }
 
     read_data_month(pDate, p_aws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
-    update_old_to_kma3(p_aws, &kma3);
+    update_old_to_kma3(p_aws, p_kma3);
+    update_sensor_enable(p_kma3);
 
     switch (get_config_app()->aws_protocol_type)
     {
       case eAWS_PROTOCOL_KMA2:
-      
-        data_format_no = calculate_kma2_data_format_no(&kma3);
-        cvt_kma3_to_kma2(&kma3, &kma2_response);
+
+        data_format_no = calculate_kma2_data_format_no(p_kma3);
+        cvt_kma3_to_kma2(p_kma3, &kma2_response);
 
         switch (data_format_no)
         {
@@ -614,12 +694,13 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
         len = make_kma2_response(rx_frame, data, len, data_format_no, tx_frame);
         break;
       case eAWS_PROTOCOL_KMA3:
-        len = make_kma3_data_unusedSesor(data, sizeof(data), &kma3);
+        len = make_kma3_data_unusedSesor(data, sizeof(data), p_kma3);
         len = make_kma3_resp(tx_frame, 'Q', DATA_TYPE_GENERAL, station_id, data, len);
         break;
 
     }
-    aws_free(p_aws);
+    vPortFree(p_aws);
+    vPortFree(p_kma3);
     return len;
   }
 
@@ -807,9 +888,6 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
   eKMA_COMMAND_TYPE_t cmd_type;
   kma3_command_request_t request;
 
-  
-  //프로토콜이 잘못 설정되어있어도 처리 하도록
-  //차이라면 프로토콜이 설정되어있으면 우선 처리됨
   switch (get_config_app()->aws_protocol_type)
   {
     case eAWS_PROTOCOL_KMA2:
@@ -903,6 +981,9 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
   case eAWS_PROTOCOL_KMA2:
     parse_kma2_response(tx_buffer,len);
      break;
+  case eAWS_PROTOCOL_KMA3:
+    parse_kma3_response(tx_buffer, len);
+    break;
   default:
     break;
   }

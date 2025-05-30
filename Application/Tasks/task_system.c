@@ -1,16 +1,18 @@
+#include "task_system.h"
+
+
 #include "app_bsp.h"
 #include "app_charger.h"
 #include "app_di.h"
 #include "app_do.h"
 #include "app_rtc.h"
 #include "cmsis_os2.h"
+#include "config_app.h"
 #include "driver_di.h"
 #include "driver_do.h"
 #include "driver_modbus.h"
-#include "task_isrEvent.h"
 #include "driver_uart.h"
-#include "config_app.h"
-#include "task_system.h"
+#include "task_isrEvent.h"
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
@@ -47,7 +49,7 @@ void systemTask(void *arg)
     rtc_update();
 
 
-    if ((osKernelGetTickCount() - start_time)>10000)
+    if ((osKernelGetTickCount() - start_time)>1000)
     {
       start_time = osKernelGetTickCount();
       System.door_opened = door_opened();
@@ -72,7 +74,7 @@ void systemTask_init(uint32_t para)
   app_bsp_init();
   userBtn_init();
 
-  charger_init(APP_CHARGER_HJ);
+  charger_init(get_config_app()->charger_model);
 
   di_init();
 

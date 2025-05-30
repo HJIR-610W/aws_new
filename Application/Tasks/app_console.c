@@ -92,7 +92,7 @@ const char *cdmaModellList[] = {"NTLE9607", "TX700"};
 const char *panelList[] = {"AWS STD","HJ_STD","MOOJU","HANSUNG"};
 
 
-const char *g_chgList[] = {"smart charger", "aws charger"};
+const char *g_chgList[] = {"smart charger", "LS1024"};
 
 
 const char *unusedList[] = {"미사용"};
@@ -459,6 +459,7 @@ int32_t menu_system(p_shell_context_t ctx)
           cnt--;
           config.charger_model = cnt;
           WRITE_CFG(charger_model);
+          io_printf("리셋 후 적용됩니다\r\n");
         }
         break;
     }
@@ -3871,12 +3872,15 @@ int32_t print_menu_developer(p_shell_context_t ctx)
   ctx->printf("%2d.테스크 정보\r\n", cnt++);
   ctx->printf("%2d.파일다운 상태 정보 \r\n", cnt++);
   ctx->printf("%2d.TASK 출력 \r\n", cnt++);
+  ctx->printf("%2d.TASK 출력 강제 \r\n", cnt++);
   return cnt;
 }
 
 int32_t menu_task_info(p_shell_context_t ctx)
 {
   print_task_info();
+
+  return EXIT_BACK;
 }
 
 
@@ -3903,7 +3907,7 @@ int32_t menu_update_info(p_shell_context_t ctc)
     }
   }
 
-  return 0;
+  return EXIT_BACK;
 }
 
 int32_t menu_task_print(p_shell_context_t ctc)
@@ -3921,9 +3925,35 @@ int32_t menu_task_print(p_shell_context_t ctc)
   }
   set_task_id((void*)id);
 
+  while(1)
+  {
+    if(get_key(osWaitForever)==KEY_CODE_CTRL_Q)
+    {
+      set_task_id(0);
+      break;
+    }
+  }
+
+  return EXIT_BACK;
 }
 
+int32_t menu_task_print_force(p_shell_context_t ctc)
+{
+  uint32_t id;
+  int32_t ret;
 
+  io_printf("특정 Task는 1회성 실행으로 task id가 유지 되지 않는다.");
+  io_printf("강제 출력을 하면 task_prinf가 강제 실행된다.\r\n");
+  if (get_user_confirm("task printf 강제출력하겠습니까?") == 1)
+  {
+    set_forced_print(true);
+  }
+  else{
+    set_forced_print(false);
+  }
+
+    return EXIT_BACK;
+}
 
   int32_t menu_developer(p_shell_context_t ctx)
   {
@@ -3934,7 +3964,8 @@ int32_t menu_task_print(p_shell_context_t ctc)
                               menu_developer_logging,
                               menu_task_info,
                               menu_update_info,
-                              menu_task_print};
+                              menu_task_print,
+                              menu_task_print_force};
     do
     {
       cnt = select_indexFromList(ctx, NULL, print_menu_developer, 0, false);

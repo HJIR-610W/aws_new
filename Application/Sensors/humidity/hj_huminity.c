@@ -69,7 +69,7 @@ float hjHuminity_read(driver_t *driver, uint8_t *err)
   hj_huminity_cfg_t *cfg = driver->cfg;
   int32_t ret;
 
-  ret = driver_modbus_m_read_multi_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI, reg, 1);
+  ret = driver_modbus_m_read_hold_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI, reg, 1);
 
   if(ret)
   {
@@ -111,7 +111,7 @@ int32_t hjHuminity_get(driver_t *driver, temperature_get_option_t option, void *
   switch (option)
   {
     case eHUMI_GET_OFFSET:
-      ret = driver_modbus_m_read_multi_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI_OFFSET, &data, 1);
+      ret = driver_modbus_m_read_hold_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI_OFFSET, &data, 1);
       *((uint16_t *)value) = data;
       break;
 

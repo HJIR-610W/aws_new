@@ -1,14 +1,16 @@
 
 #include "Lib\tlsf\tlsf.h"
-#include "config_app.h"
 #include "cmsis_os2.h"
+#include "config_app.h"
 #include "crc.h"
 #include "driver_stm32_bsp.h"
 #include "fsmc.h"
 #include "pcb_define.h"
 #include "task_start.h"
-#include "user_heap.h"
 #include "test_sram.h"
+#include "user_heap.h"
+
+extern void manual_bss_init(void);
 
 /*
 시스템 동작 클럭:168MHz
@@ -60,7 +62,7 @@ void SystemClock_Config(void)
 int is_debug_mode(void) { return (CoreDebug->DHCSR & (1 << 0)) != 0; }
 
 
-extern void manual_bss_init(void);
+
 
 
 
@@ -82,12 +84,11 @@ int main(void)
 
   driver_stm32_bsp_init();
 
-  MX_FSMC_Init();  // SRAM초기화
+  MX_FSMC_Init();  // TODO: SRAM초기화,SystemInit_ExtMemCtl 이함수에 적용해야함
 
   manual_bss_init();
 
   MX_CRC_Init();
-
 
   asw_tlsf_init(POOL_SIZE);
   
@@ -102,6 +103,7 @@ int main(void)
     
   }
 }
+
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {

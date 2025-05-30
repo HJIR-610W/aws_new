@@ -35,7 +35,7 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 
   snprintf(g_task_name,sizeof(g_task_name),"SOF,%s",pcTaskName);
  // debug_puts_nonos(g_task_name);
-  //io_printf("SOF,%s",pcTaskName);
+  io_printf("SOF,%s",g_task_name);
             __asm("BKPT #0");
   HAL_NVIC_SystemReset();
 }
@@ -44,15 +44,23 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 /* USER CODE BEGIN 5 */
 void vApplicationMallocFailedHook(void)
 {
-   /* vApplicationMallocFailedHook() will only be called if
-   configUSE_MALLOC_FAILED_HOOK is set to 1 in FreeRTOSConfig.h. It is a hook
-   function that will get called if a call to pvPortMalloc() fails.
-   pvPortMalloc() is called internally by the kernel whenever a task, queue,
-   timer or semaphore is created. It is also called by various parts of the
-   demo application. If heap_1.c or heap_2.c are used, then the size of the
-   heap available to pvPortMalloc() is defined by configTOTAL_HEAP_SIZE in
-   FreeRTOSConfig.h, and the xPortGetFreeHeapSize() API function can be used
-   to query the size of free heap space that remains (although it does not
-   provide information on how the remaining heap might be fragmented). */
-     io_printf("MallocFailed\r\n");
+/* vApplicationMallocFailedHook() 함수는 오직
+   FreeRTOSConfig.h에서 configUSE_MALLOC_FAILED_HOOK이 1로 설정된 경우에만 호출됩니다.
+   이 함수는 pvPortMalloc() 호출이 실패했을 때 실행되는 **훅 함수(hook function)**입니다.
+   pvPortMalloc()은 커널 내부에서 태스크, 큐, 타이머 또는 세마포어를 생성할 때 호출됩니다.
+   또한 데모 애플리케이션의 여러 부분에서도 호출됩니다.
+
+   만약 heap_1.c 또는 heap_2.c를 사용하는 경우, pvPortMalloc()이 사용할 수 있는 heap의 크기는
+   FreeRTOSConfig.h에 정의된 configTOTAL_HEAP_SIZE에 의해 결정됩니다.
+   현재 남아 있는 heap의 크기를 확인하려면 xPortGetFreeHeapSize() API 함수를 사용할 수 있습니다.
+   단, 이 함수는 남아 있는 heap이 얼마나 조각(fragmented)나 있는지는 알려주지 않습니다.
+*/
+  
+  size_t free_heap = xPortGetFreeHeapSize();            // 현재 사용 가능한 힙 크기
+  size_t min_free_heap = xPortGetMinimumEverFreeHeapSize(); // 프로그램 실행 중 가장 작았던 힙 크기
+
+  io_printf("Free Heap Size          : %u bytes\r\n", (unsigned int)free_heap);
+  io_printf("Minimum Ever Free Heap : %u bytes\r\n", (unsigned int)min_free_heap);
+
+
 }

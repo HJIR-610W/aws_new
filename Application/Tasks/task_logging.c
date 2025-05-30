@@ -216,7 +216,11 @@ void loggingTask(void *arg)
         switch(logging.cmd)
         {
           case eLOGGING_LOG:
-            logging_printf((char *)logging.data);
+            err = logging_printf((char *)logging.data);
+            if(err)
+            {
+              io_printf("log err:%d\r\n",err);
+            }
             break;
           case eLOGGING_DATA:
             memcpy(&data_size,&logging.data[0],sizeof(data_size));

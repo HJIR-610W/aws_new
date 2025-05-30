@@ -92,7 +92,7 @@ float smp3_solar_read(driver_t *driver, uint8_t *err)
   ott_smp3_cfg_t *cfg = driver->cfg;
   int32_t ret;
 
-  ret = driver_modbus_m_read_multi_reg(cfg->bus_io, 1, REG_U_STATUS_FLAGS, reg, _countof(reg));
+  ret = driver_modbus_m_read_hold_reg(cfg->bus_io, 1, REG_U_STATUS_FLAGS, reg, _countof(reg));
 
   if(ret)
   {

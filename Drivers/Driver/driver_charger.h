@@ -9,6 +9,6 @@
 #define CHARGER_LS1024   1
 
 driver_t *driver_charger_open(int32_t num,void *opt);
-int32_t driver_charger_read(driver_t *driver,charger_data_t *data,uint8_t *err);
+void driver_charger_read(driver_t *driver,charger_data_t *data,uint8_t *err);
 
 #endif

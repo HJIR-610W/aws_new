@@ -30,7 +30,9 @@ int32_t driver_modbus_m_write_single_reg(driver_t *drv, uint8_t slave_id, uint16
 int32_t driver_modbus_m_write_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address,
                                         uint16_t *regs, uint16_t regCnt);
 
-int32_t driver_modbus_m_read_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address,
+int32_t driver_modbus_m_read_hold_reg(driver_t *drv, uint8_t slave_id, uint16_t address,
                                        uint16_t *pOutRegs, uint16_t regCnt);
 
+int32_t driver_modbus_m_read_input_reg(driver_t *drv, uint8_t slave_id, uint16_t address,
+                                       uint16_t *pOutRegs, uint16_t regCnt);
 #endif

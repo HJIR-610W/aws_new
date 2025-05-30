@@ -8,7 +8,7 @@
 #include "cli_input.h"
 #include "utile.h"
 #include "pcb_define.h"
-
+#include "driver_do.h"
 #define UART_PORT_MAX 7
 
 #include <stdbool.h>
@@ -160,7 +160,7 @@ void test_uart(void)
   uart_config_t uart_config;
   driver_t *uart_driver=NULL;
   char buff[30];
-  char rx_buff[10];
+  char rx_buff[50];
    char *rs232_port_name[UART_PORT_MAX] = {"VHF", "TTL", "A", "B", "C", "D","CDMA"};
    const int32_t rs232_drv_num[UART_PORT_MAX] =
    { UART_0_D_SUB_0,
@@ -174,6 +174,7 @@ void test_uart(void)
    int baud;
    int len;
    int rs232_number = -1;
+
 
    io_printf("RS232 CDMA,TTL,A,B,C,D,CDMA 테스트\r\n");
    io_printf("주의:RS232 A,B는 하드웨어점퍼 설정 필요\r\n");
@@ -216,9 +217,7 @@ void test_uart(void)
     return ;
   }
 
-  is_gpio_interrupt_enabled(IN_EX_UART_INT_7_GPIO_Port, IN_EX_UART_INT_7_Pin);
-  is_gpio_interrupt_enabled(IN_EX_UART_INT_8_GPIO_Port, IN_EX_UART_INT_8_Pin);
-  trigger_gpio_interrupt(IN_EX_UART_INT_7_GPIO_Port,IN_EX_UART_INT_7_Pin);
+
   
   
   while (1)
@@ -231,7 +230,7 @@ void test_uart(void)
       io_printf(buff);
     }
 
-    len = driver_uart_recv(uart_driver, rx_buff, sizeof(rx_buff), 1000);
+    len = driver_uart_recv(uart_driver, rx_buff, sizeof(rx_buff), 2000);
     if (len)
     {
       driver_uart_send(uart_driver, rx_buff, len);

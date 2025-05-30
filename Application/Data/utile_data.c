@@ -606,7 +606,7 @@ int write_bulk_data_range(const char *name, const char *start_datetime,
 
 #define VALUE_SIZE sizeof(uint16_t)
 
-static int write_data_block(const char *name, uint8_t year, uint32_t offset, uint32_t count,
+static int write_data_block(const char *name, uint16_t year, uint32_t offset, uint32_t count,
                             uint16_t value)
 {
   if (count == 0)

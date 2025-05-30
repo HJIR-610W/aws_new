@@ -1,45 +1,44 @@
-#include "task_start.h"
 
+
+#include "Tasks\task_start.h"
+
+#include "App_drivers\app_file.h"
+
+#include "App_drivers\app_flash.h"
+#include "App_drivers\app_rtc.h"
+#include "Communications\CDMA\task_cellular.h"
+#include "Communications\Direct\task_direct.h"
+#include "Communications\Ethernet\task_client.h"
+#include "Communications\Ethernet\task_tcpServer.h"
+#include "Config\config_app.h"
+#include "Config\config_manager.h"
+#include "Config\config_sensor.h"
+#include "Drivers\Driver\driver_led.h"
+#include "Drivers\Driver\driver_rtc.h"
+#include "IO\dev_io.h"
+#include "MCU\mcu_interrupt.h"
+#include "MCU\mcu_utile.h"
+#include "MCU\usDelay.h"
+#include "Tasks\aws\dualport.h"
+#include "Tasks\task_ble.h"
+#include "Tasks\task_console.h"
+#include "Tasks\task_ethernet.h"
+#include "Tasks\task_isrEvent.h"
+#include "Tasks\task_logging.h"
+#include "Tasks\task_measure.h"
+#include "Tasks\task_panel.h"
+#include "Tasks\task_system.h"
+#include "Utile\utile_time.h"
 #include "app_dataLogging.h"
-#include "app_file.h"
-#include "app_flash.h"
 #include "app_logging.h"
-#include "app_rtc.h"
-#include "cmsis_os2.h"
-#include "config_app.h"
-#include "config_manager.h"
-#include "dev_io.h"
-#include "driver_led.h"
-#include "driver_rtc.h"
 #include "fatfs.h"
 #include "fsmc.h"
 #include "lwip.h"
-#include "main.h"
-#include "mcu_interrupt.h"
-#include "mcu_utile.h"
-#include "project_def.h"
 #include "pcb_define.h"
+#include "project_def.h"
 #include "sdio.h"
-#include "task_ble.h"
-#include "task_cellular.h"
-#include "task_console.h"
-#include "task_direct.h"
-#include "task_ethernet.h"
-
-#include "task_isrEvent.h"
-#include "task_logging.h"
-#include "task_measure.h"
-
-#include "task_system.h"
-#include "task_tcpServer.h"
-#include "task_panel.h"
-#include "dualport.h"
-
-#include "usDelay.h"
+#include "test\task_test.h"
 #include "user_heap.h"
-#include "utile_time.h"
-#include "task_test.h"
-#include "task_client.h"
 
 const osThreadAttr_t kStartTask_attributes = {
     .name = "startTask",
@@ -49,24 +48,24 @@ const osThreadAttr_t kStartTask_attributes = {
 
 void log_boot_reason(void)
 {
-    uint32_t csr = RCC->CSR;
+  uint32_t csr = RCC->CSR;
 
-    if (csr & RCC_CSR_LPWRRSTF)
-        log_printf(L_INFO,"Boot: LPWR reset");
-    else if (csr & RCC_CSR_WWDGRSTF)
-        log_printf(L_INFO,"Boot: WWDG reset");
-    else if (csr & RCC_CSR_IWDGRSTF)
-        log_printf(L_INFO,"Boot: IWDG reset");
-    else if (csr & RCC_CSR_SFTRSTF)
-        log_printf(L_INFO,"Boot: SW reset");
-    else if (csr & RCC_CSR_PORRSTF)
-        log_printf(L_INFO,"Boot: POR/PDR reset");
-    else if (csr & RCC_CSR_PINRSTF)
-        log_printf(L_INFO,"Boot: NRST pin");
-    else if (csr & RCC_CSR_BORRSTF)
-        log_printf(L_INFO,"Boot: BOR reset");
-    else
-        log_printf(L_INFO,"Boot: unknown");
+  if (csr & RCC_CSR_LPWRRSTF)
+      log_printf(L_INFO,"Boot: LPWR reset");
+  else if (csr & RCC_CSR_WWDGRSTF)
+      log_printf(L_INFO,"Boot: WWDG reset");
+  else if (csr & RCC_CSR_IWDGRSTF)
+      log_printf(L_INFO,"Boot: IWDG reset");
+  else if (csr & RCC_CSR_SFTRSTF)
+      log_printf(L_INFO,"Boot: SW reset");
+  else if (csr & RCC_CSR_PORRSTF)
+      log_printf(L_INFO,"Boot: POR/PDR reset");
+  else if (csr & RCC_CSR_PINRSTF)
+      log_printf(L_INFO,"Boot: NRST pin");
+  else if (csr & RCC_CSR_BORRSTF)
+      log_printf(L_INFO,"Boot: BOR reset");
+  else
+      log_printf(L_INFO,"Boot: unknown");
 
     // 리셋 플래그 초기화
     RCC->CSR |= RCC_CSR_RMVF;
@@ -127,15 +126,11 @@ void startTask(void *arg)
     ethernetTask_init();
   }
 
-
-  // sdiTask_init();
-
   file_init();
 
   logging_init();
   panelTask_init();
   bleTask_init();
-
 
   log_boot_reason();
   osThreadExit();  // 종료 시킴

@@ -9,7 +9,7 @@ int32_t read_ls1024(power_t *power)
   uint16_t reg[15];  // F/WVersion_H ~Alarm Bit
   eRET_t ret;
 
-  ret = modbus_read_multi_reg(0x01, 0x3100, reg, 15);
+  ret = modbus_read_hold_reg(0x01, 0x3100, reg, 15);
 
   if (ret == RET_OK)
   {

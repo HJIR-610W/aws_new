@@ -6,6 +6,7 @@ os함수가 길어서 쉬운 용어로 사용
 
 #include "cmsis_os2.h"
 
+
 #define CREATE_BINARY_SEM(sem)                 \
   do                                    \
   {                                     \

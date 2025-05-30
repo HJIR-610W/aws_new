@@ -11,8 +11,9 @@
 #include "driver_uart.h"
 #include "utile_time.h"
 #include "utile.h"
+#include  "os_define.h"
 
-
+#include "os_user_def.h"
 typedef struct
 {
     uint16_t SolraVolt1;        // nAIN_SV1
@@ -76,7 +77,7 @@ typedef struct
 
 
 
-int32_t hjsmartCharger_read(driver_t *chg,charger_data_t *data,uint8_t *err);
+void  hjsmartCharger_read(driver_t *chg,charger_data_t *data,uint8_t *err);
 
 
 charger_api_t hjcharger_api ={.read = hjsmartCharger_read};
@@ -226,8 +227,8 @@ int32_t recv_smartCharger(void *rs232_driver,uint8_t *pbuff,int32_t buffSize)
 }
 
 SYSTEM_TypeDef chg_system;//TODO:heap으로 변경
-static uint8_t buff[sizeof(SYSTEM_TypeDef)+20]; //TODO:heap으로 변경경
-int32_t hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err)
+static uint8_t buff[sizeof(SYSTEM_TypeDef)+20]; //TODO:heap으로 변경
+void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err)
 {
   hjsmartCharger_cfg_t *cfg = chg->cfg;
   int32_t len;
@@ -240,18 +241,14 @@ int32_t hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *
 
   val = 0;
   memcpy(&data[2],&val,2);
-  val = 22;  //22바이트만 읽어옴옴
+  val = 22;  //22바이트만 읽어옴
   memcpy(&data[4],&val,2);
   
-
   len = Make_SmartChgFrame(buff,sizeof(buff),0x50,data,6);
-  
-  #if FREE_RTOS_USE
-  if(chg->sem)
-  {
-    osSemaphoreAcquire(chg->sem, osWaitForever);
-  }
-  #endif
+
+#if FREE_RTOS_USE
+    PEND_SEM(chg->sem,osWaitForever);
+#endif
   
   driver_uart_flush_rx(cfg->rs232_io);
   driver_uart_send(cfg->rs232_io,buff,len);
@@ -261,36 +258,26 @@ int32_t hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *
   if(len > 0)
   {
     memcpy(&chg_system,&buff[13],sizeof(SYSTEM_TypeDef));
-    charger_data->battery1     = (float)chg_system.BattVolt1/1000.0f;
-    charger_data->battery2     = (float)chg_system.BattVolt2/1000.0f;
-    charger_data->load1Current = (float)chg_system.LoadCurr1/1000.0f;
-    charger_data->load2Current = (float)chg_system.LoadCurr2/1000.0f;
-    charger_data->load3Current = (float)chg_system.LoadCurr3/1000.0f;
+    charger_data->battery1     = (float)chg_system.BattVolt1/100.0f;
+    charger_data->battery2     = (float)chg_system.BattVolt2/100.0f;
+    charger_data->load1Current = (float)chg_system.LoadCurr1/100.0f;
+    charger_data->load2Current = (float)chg_system.LoadCurr2/100.0f;
+    charger_data->load3Current = (float)chg_system.LoadCurr3/100.0f;
 
-    charger_data->solar1Volt    = (float)chg_system.SolraVolt1/1000.0f;
-    charger_data->solar2Volt    = (float)chg_system.SolraVolt2/1000.0f;
-    charger_data->solar1Current = (float)chg_system.SolraCurr1/1000.0f;
-    charger_data->solar2Current = (float)chg_system.SolraCurr2/1000.0f;
+    charger_data->solar1Volt    = (float)chg_system.SolraVolt1/100.0f;
+    charger_data->solar2Volt    = (float)chg_system.SolraVolt2/100.0f;
+    charger_data->solar1Current = (float)chg_system.SolraCurr1/100.0f;
+    charger_data->solar2Current = (float)chg_system.SolraCurr2/100.0f;
     *err = 0;
   }
-  
-  else if(len == -1)
-  {
-    *err = CHARGER_ERR_RECV_TIMEOUT;
-  } 
   else
   {
-   *err = CHARGER_ERR_RECV_PACKET;
-  }
+    *err = DRV_ERR_TIMEOUT;
+  } 
 
-  
 #if FREE_RTOS_USE
-if(chg->sem)
-{
-  osSemaphoreRelease(chg->sem);
-}
+  POST_SEM(chg->sem);
 #endif
 
 
-  return len;
 }

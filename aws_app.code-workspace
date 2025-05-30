@@ -112,7 +112,27 @@
 			"driver_di_def.h": "c",
 			"fatfs.h": "c",
 			"tuple": "c",
-			"parse_aws.h": "c"
+			"parse_aws.h": "c",
+			"app_charger.h": "c",
+			"project_def.h": "c",
+			"mcu_interrupt.h": "c",
+			"task_ble.h": "c",
+			"task_cellular.h": "c",
+			"task_console.h": "c",
+			"task_isrevent.h": "c",
+			"task_measure.h": "c",
+			"task_panel.h": "c",
+			"task_system.h": "c",
+			"app_logging.h": "c",
+			"task_ethernet.h": "c",
+			"app_flash.h": "c",
+			"config_manager.h": "c",
+			"driver_led.h": "c",
+			"main.h": "c",
+			"task_start.h": "c",
+			"driver_stm32_bsp.h": "c",
+			"modbus.h": "c",
+			"modbus_master.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

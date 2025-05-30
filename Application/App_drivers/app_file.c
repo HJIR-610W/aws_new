@@ -149,12 +149,75 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   return res;
 }
 
+#define FAT_HEAP_USE 1
 FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
 {
-  FIL file;
+
+
+
+#if FAT_HEAP_USE
+  FIL *p_file;
   FRESULT res;
   UINT bytesRead;
 
+  p_file = pvPortMalloc(sizeof(FIL));
+
+  if(p_file==NULL)
+  {
+    return (FRESULT)-1;
+  }
+  OS_SEM_PEND(g_fileSem, osWaitForever);
+  // 파일 열기 (읽기 전용, 없으면 오류)
+  res = f_open(p_file, path, FA_READ);
+  if (res != FR_OK)
+  {
+    vPortFree(p_file);
+    OS_SEM_POST(g_fileSem);
+    return res;  // 실패 시 오류 코드 반환
+  }
+
+  // 파일 포인터를 offset 위치로 이동
+  res = f_lseek(p_file, offset);
+  if (res != FR_OK)
+  {
+    f_close(p_file);
+    vPortFree(p_file);
+    OS_SEM_POST(g_fileSem);
+    return res;
+  }
+
+  // 데이터 읽기
+  res = f_read(p_file, data, dataLen, &bytesRead);
+  if (res != FR_OK || bytesRead != dataLen)
+  {
+    // 읽을 데이터가 파일 끝(EOF)에 도달했을 수 있음 (정상)
+    if (res == FR_OK && bytesRead < dataLen)
+    {
+      // 남은 부분은 0으로 패딩 (옵션, 필요시)
+      for (uint32_t i = bytesRead; i < dataLen; i++)
+      {
+        data[i] = 0;
+      }
+    }
+    else
+    {
+      f_close(p_file);
+      vPortFree(p_file);
+      OS_SEM_POST(g_fileSem);
+      return res != FR_OK ? res : FR_DISK_ERR;
+    }
+  }
+
+  // 파일 닫기
+  f_close(p_file);
+  vPortFree(p_file);
+
+  OS_SEM_POST(g_fileSem);
+  return FR_OK;
+#else
+  FIL file;
+  FRESULT res;
+  UINT bytesRead;
   OS_SEM_PEND(g_fileSem, osWaitForever);
   // 파일 열기 (읽기 전용, 없으면 오류)
   res = f_open(&file, path, FA_READ);
@@ -198,6 +261,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   f_close(&file);
   OS_SEM_POST(g_fileSem);
   return FR_OK;
+#endif
 }
 
 FRESULT append_file(char *path, uint8_t *data, uint32_t dataLen)

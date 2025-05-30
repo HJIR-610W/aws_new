@@ -3,6 +3,7 @@
 #define KMA_DEFINE_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define KMA_HEADER_START 0xFAFB
 #define KMA_HEADER_END 0xFFFE
