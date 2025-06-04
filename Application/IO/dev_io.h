@@ -33,8 +33,6 @@ typedef enum dev_io_e
   eSMS_IO
 }eDEV_IO_t;
 
-
-
 typedef struct dev_io_s
 {
   eDEV_IO_t io;
@@ -42,19 +40,18 @@ typedef struct dev_io_s
   void *config;
 }dev_io_t;
 
-
 void debug_uart_init(uint32_t baud_rate);
 int32_t io_printf(const char * pFmt, ...);
-int32_t error_printf(const char * pFmt, ...);
-void debug_send(uint8_t *pData,uint16_t dataLen);
-void debug_puts(const char *str);
+int32_t io_recv(char *out, uint16_t outSize, uint32_t timeout);
+void io_put_ch(char ch);
+void io_send(uint8_t *pData,uint16_t dataLen);
+void io_puts(const char *str);
+
 void debug_puts_nonos(char *str);
 void set_debug_uart_handle(driver_t *drv);
-int32_t debug_recv(char *out,uint16_t outSize,uint32_t timeout);
-void debug_putch(char ch);
+
 driver_t * get_debug_uart_handle(void);
 void LOG_MEM(uint8_t* src, uint32_t size, uint32_t startAddr,uint32_t col);
-
 
 
 void dev_io_write(dev_io_t  *dev,uint8_t *data,uint32_t dataLen,uint32_t opt);

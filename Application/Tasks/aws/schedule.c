@@ -237,7 +237,7 @@ void SecProcess(void)
   uint16_t sAvgSpeed;
   uint16_t sAvgDirection;
   uint16_t sRain;
-  uint32_t nSpeedTot, i;
+  uint32_t  i;
   SYSTEM_INFO_AWS *pSystem;
   uint64_t windSum=0;
   float wind_sum_u = 0;
@@ -618,7 +618,7 @@ int WindMinMaxAvgSave(SENSOR_WIND_BUF *pSensor, SENSORWIND_BUF *pWindTmp,
   if (pWindTmp->sAddCnt)
   {
     // avg 자체가 awv단위
-    awv_wind_speed = UVToSpeed(avg_u, avg_v);
+    awv_wind_speed = (int)UVToSpeed(avg_u, avg_v);
 
     pSensor->mSpeed.sReal = (uint16_t)awv_wind_speed;
   }
@@ -657,10 +657,10 @@ int WindMinMaxAvgSave(SENSOR_WIND_BUF *pSensor, SENSORWIND_BUF *pWindTmp,
 */
 void MinProcess(DATE_TIME_BUF *pDate)
 {
-  uint32_t nIdx;
+
   SYSTEM_INFO_AWS *pSystem;
   AWS_DATA_STRUCT *pAws;
-  short snow;
+ 
 
   pSystem = &Sysinfo;
   pAws = &mMinAws;
@@ -792,7 +792,7 @@ void Min10Process(void)
 {
   SYSTEM_INFO_AWS *pSystem;
   AWS_DATA_STRUCT *pAws;
-  short shSnow;
+
 
   pSystem = &Sysinfo;
   pAws = &m10MinAws;

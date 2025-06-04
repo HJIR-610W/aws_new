@@ -15,7 +15,7 @@
 void windDirection_init(sensor_t *sensor);
 
 bool is_windDirectionInit(void);
-float read_sensor_windDirection(sensor_t *sensor,uint8_t *err);
+
 
 
 extern float windDirectionSample1Min[240];

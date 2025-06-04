@@ -16,7 +16,7 @@ volatile uint8_t *p_data;
 void test_filesystem(void)
 {
   char buff[20]="0:";
-  char temp[10];
+  uint8_t temp[10];
   int ret;
 
 
@@ -28,7 +28,7 @@ void test_filesystem(void)
   write_file(TEST_FILE_NAME, TEST_MSG, TEST_MSG_LEN, 0);
   read_file(TEST_FILE_NAME, temp, TEST_MSG_LEN, 0);
 
-  if (strncmp(temp, TEST_MSG, TEST_MSG_LEN) == 0)
+  if (strncmp((char *)temp, TEST_MSG, TEST_MSG_LEN) == 0)
   {
     io_printf("파일 쓰기 읽기 정상 \r\n");
   }

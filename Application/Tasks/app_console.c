@@ -311,7 +311,7 @@ int input_decimal(p_shell_context_t ctx, int32_t start, int32_t stop, int32_t *d
   return cnt;
 }
 
-int32_t input_use(p_shell_context_t ctx, bool *en)
+int32_t input_use(p_shell_context_t ctx, uint8_t *en)
 {
   int32_t cnt;
   int32_t dec;
@@ -323,7 +323,7 @@ int32_t input_use(p_shell_context_t ctx, bool *en)
   {
     if (dec >= 0 && dec <= 1)
     {
-      *en = (bool)dec;
+      *en = (uint8_t)dec;
       return 1;
     }
     else
@@ -457,7 +457,7 @@ int32_t menu_system(p_shell_context_t ctx)
         if (cnt > 0)
         {
           cnt--;
-          config.charger_model = cnt;
+          config.charger_model = (eCHARGER_MODEL_t)cnt;
           WRITE_CFG(charger_model);
           io_printf("리셋 후 적용됩니다\r\n");
         }
@@ -602,7 +602,7 @@ int32_t print_menu_sensor(p_shell_context_t ctx)
 
 int32_t print_menu_sensor_offset(p_shell_context_t ctx)
 {
-  char opt[20];
+ // char opt[20];
   int32_t cnt = 0;
   int i = 0;
   float offset;
@@ -1007,7 +1007,7 @@ void hjwind_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t munu_ind
 
 void hjwinddir_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t dec;
+
   hjwindspeed_config_t *hjwind;
   const char *portList[10];
   int32_t row_index;
@@ -1046,7 +1046,7 @@ void hjwinddir_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_
 void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t row_idx;
-    int32_t dec;
+
   hjtemp_config_t *hjtemp;
   const char *portList[10];
   uint16_t portListCnt;
@@ -1064,7 +1064,7 @@ void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
       
       if(row_idx > 0)
       {
-        hjtemp->physical_layer = row_idx - 1;
+        hjtemp->physical_layer = (ePHYSOCAL_LAYER_t)(row_idx - 1);
         save_config_sensor();
       }
       break;
@@ -1131,7 +1131,7 @@ void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
 void hjhumi_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t row_idx;
-    int32_t dec;
+
   hjtemp_config_t *hjtemp;
   const char *portList[10];
   uint16_t portListCnt;
@@ -1149,7 +1149,7 @@ void hjhumi_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
       
       if(row_idx > 0)
       {
-        hjtemp->physical_layer = row_idx - 1;
+        hjtemp->physical_layer = (ePHYSOCAL_LAYER_t)(row_idx - 1);
         save_config_sensor();
       }
       break;
@@ -1216,7 +1216,7 @@ void hjhumi_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
 void ott_smp3_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t row_idx;
-  int32_t dec;
+
   ott_smp3_config_t *ott;
   const char *portList[10];
   uint16_t portListCnt;
@@ -1247,7 +1247,7 @@ void ott_smp3_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_i
 }
 void hjsnow_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t dec;
+
   hjsnow_config_t *hjsnow;
   const char *portList[10];
   uint16_t portCnt;
@@ -1264,7 +1264,7 @@ void hjsnow_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
 
       if (row_index > 0)
       {
-        hjsnow->physical_layer = row_index - 1;
+        hjsnow->physical_layer = (ePHYSOCAL_LAYER_t)(row_index - 1);
         save_config_sensor();
       }
       break;
@@ -1954,7 +1954,7 @@ int32_t menu_offset(p_shell_context_t ctx)
       }
       if (cnt == 1)
       {
-        set_sensor_offset(cnt-1,offset);
+        set_sensor_offset((eSENSOR_LIST_t)(cnt-1),offset);
       }
       else
       {
@@ -2169,7 +2169,7 @@ int32_t menu_net_eth_default_set(p_shell_context_t ctx)
 int32_t menu_net_eth_mode_set(p_shell_context_t ctx)
 {
   int32_t cnt;
-  int32_t a, b, c, d;
+
 
   cnt = select_indexFromList(ctx, ethModeList, NULL, _countof(ethModeList), true);
   if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
@@ -2179,7 +2179,7 @@ int32_t menu_net_eth_mode_set(p_shell_context_t ctx)
 
   cnt--;
 
-      config.eth_mode = cnt;
+      config.eth_mode = (eETH_MODE_t)cnt;
       WRITE_CFG(eth_mode);
 
   return cnt;
@@ -2293,7 +2293,7 @@ int32_t menu_net_cdma_set(p_shell_context_t ctx)
           if (cnt > 0)
           {
             cnt--;
-            config.cdma_model = cnt;
+            config.cdma_model = (eCDMA_MODEL_t)cnt;
             WRITE_CFG(cdma_model);
           }
           break;
@@ -2470,7 +2470,7 @@ int32_t menu_net_protocol(p_shell_context_t ctx)
 
     if(cnt > 0)
     {
-      config.aws_protocol_type = cnt-1;
+      config.aws_protocol_type = (eAWS_PROTOCOL_t)(cnt-1);
       WRITE_CFG(aws_protocol_type);
     }
  
@@ -2528,117 +2528,12 @@ int32_t print_menu_data(p_shell_context_t ctx)
   return cnt;
 }
 
-int32_t menu_data_view(p_shell_context_t ctx)
-{
-  const uint8_t kLoggingIntervalMin = 1;
-  DATE_TIME_BUF ut;
-  int32_t year;
-  int32_t month;
-  int32_t day;
-  int32_t hour;
-  int32_t min;
-  int32_t sec;
-  int32_t readCnt;
-  int32_t cnt;
-  uint32_t timeTick;
-  uint32_t timeTickEnd;
-
-  kma_data_t kma_data;
-  do
-  {
-    ctx->printf("yyyy-mm-dd hh:mm:ss,cnt >>");
-
-    cnt = console_scanf("%04d-%02d-%02d %02d:%02d:%02d,%d", &year, &month, &day, &hour, &min, &sec,
-                        &readCnt);
-
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
-    {
-      return cnt;
-    }
-    ut.Year = year;
-    ut.Month = month;
-    ut.Day = day;
-    ut.Hour = hour;
-    ut.Min = min;
-    ut.Sec = sec;
-
-    timeTick = time_cvt_timestamp(&ut);
-    timeTickEnd = timeTick + kLoggingIntervalMin * 60 * readCnt;
-    for (uint32_t tick = timeTick; tick <= timeTickEnd;)
-    {
-      read_data_month(&ut, &kma_data, sizeof(kma_data), 0, 1);
-
-      ctx->printf("%04d-%02d-%02d %02d:%02d:%02d\r\n", ut.Year, ut.Month, ut.Day, ut.Hour, ut.Min,
-                  ut.Sec);
-
-      ctx->printf("기온            : %-6d\r\n", kma_data.temperature);
-      ctx->printf("풍향            : %-6d\r\n", kma_data.wind_direction_avg);
-      ctx->printf("풍속            : %-6d\r\n", kma_data.wind_speed_avg);
-      ctx->printf("풍향(순간)      : %-6d\r\n", kma_data.wind_direction_instant);
-      ctx->printf("풍속(순간)      : %-6d\r\n", kma_data.wind_speed_instant);
-      ctx->printf("강수량          : %-6d\r\n", kma_data.precipitation);
-      ctx->printf("기압            : %-6d\r\n", kma_data.pressure);
-      ctx->printf("강수 유무       : %-6d\r\n", kma_data.precipitation_presence);
-      ctx->printf("적설            : %-6d\r\n", kma_data.snowfall);
-      ctx->printf("습도            : %-6d\r\n", kma_data.relative_humidity);
-      ctx->printf("강수량(0.1mm)   : %-6d\r\n", kma_data.precipitation_fine);
-      ctx->printf("일사            : %-6d\r\n", kma_data.solar_radiation);
-      ctx->printf("일조            : %-6d\r\n", kma_data.sunshine_duration);
-      ctx->printf("지면온도        : %-6d\r\n", kma_data.surface_temperature);
-      ctx->printf("초상온도        : %-6d\r\n", kma_data.grass_temperature);
-      ctx->printf("지중온도 5cm    : %-6d\r\n", kma_data.soil_temperature_5cm);
-      ctx->printf("지중온도 10cm   : %-6d\r\n", kma_data.soil_temperature_10cm);
-      ctx->printf("지중온도 20cm   : %-6d\r\n", kma_data.soil_temperature_20cm);
-      ctx->printf("지중온도 30cm   : %-6d\r\n", kma_data.soil_temperature_30cm);
-      ctx->printf("지중온도 50cm   : %-6d\r\n", kma_data.soil_temperature_50cm);
-      ctx->printf("지중온도   1m   : %-6d\r\n", kma_data.soil_temperature_1m);
-      ctx->printf("지중온도 1_5m   : %-6d\r\n", kma_data.soil_temperature_1_5m);
-      ctx->printf("지중온도   3m   : %-6d\r\n", kma_data.soil_temperature_3m);
-      ctx->printf("지중온도   5m   : %-6d\r\n", kma_data.soil_temperature_5m);
-      ctx->printf("운고(1층)       : %-6d\r\n", kma_data.cloud_height_1st);
-      ctx->printf("운고(2층)       : %-6d\r\n", kma_data.cloud_height_2nd);
-      ctx->printf("운고(3층)       : %-6d\r\n", kma_data.cloud_height_3rd);
-      ctx->printf("운량량          : %-6d\r\n", kma_data.cloud_amount);
-      ctx->printf("시정정          : %-6d\r\n", kma_data.visibility);
-      ctx->printf("PM1.0           : %-6d\r\n", kma_data.pm10_concentration);
-      ctx->printf("PM2.5           : %-6d\r\n", kma_data.pm25_concentration);
-      ctx->printf("순복사          : %-6d\r\n", kma_data.net_radiation);
-      ctx->printf("전천복사        : %-6d\r\n", kma_data.total_radiation);
-      ctx->printf("반사복사사      : %-6d\r\n", kma_data.reflected_radiation);
-      ctx->printf("직달복사사      : %-6d\r\n", kma_data.direct_radiation);
-      ctx->printf("현재 일기기     : %-6d\r\n", kma_data.current_weather);
-      ctx->printf("토양수분(10cm)  : %-6d\r\n", kma_data.soil_moisture_10cm);
-      ctx->printf("토양수분(20cm)  : %-6d\r\n", kma_data.soil_moisture_20cm);
-      ctx->printf("토양수분(30cm)  : %-6d\r\n", kma_data.soil_moisture_30cm);
-      ctx->printf("토양수분(50cm)  : %-6d\r\n", kma_data.soil_moisture_50cm);
-      ctx->printf("조도량량        : %-6d\r\n", kma_data.illuminance);
-      ctx->printf("풍속(1.5m)      : %-6d\r\n", kma_data.wind_speed_1_5m);
-      ctx->printf("풍속(4.0m)      : %-6d\r\n", kma_data.wind_speed_4m);
-      ctx->printf("순간 풍속(1.5m) : %-6d\r\n", kma_data.instant_wind_speed_1_5m);
-      ctx->printf("순간 풍속(4.0m) : %-6d\r\n", kma_data.instant_wind_speed_4m);
-      ctx->printf("기온(0.5m)      : %-6d\r\n", kma_data.temperature_0_5m);
-      ctx->printf("기온(4.0m)      : %-6d\r\n", kma_data.temperature_4m);
-      ctx->printf("습도(0.5m)      : %-6d\r\n", kma_data.humidity_0_5m);
-      ctx->printf("습도(4.0m)      : %-6d\r\n", kma_data.humidity_4m);
-      ctx->printf("타코미터        : %-6d\r\n", kma_data.tacometer);
-
-      tick += (60 * kLoggingIntervalMin);
-      time_cvt_secTotime(tick, &ut);
-    }
-
-    osDelay(100);
-  } while (1);
-}
-
-int32_t menu_data_edit(p_shell_context_t ctx) {}
-
-int32_t menu_data_reset(p_shell_context_t ctx) {}
-
-menu_func g_dataMenu[] = {menu_data_view, menu_data_edit, menu_data_reset};
 
 int32_t menu_data(p_shell_context_t ctx)
 {
   console_menu_data();
+  
+  return 0;
 }
 
 int32_t print_menu_panel(p_shell_context_t ctx)
@@ -2680,7 +2575,7 @@ int32_t aws_menu_display_panel(p_shell_context_t ctx)
         if (cnt > 0)
         {
           cnt--;
-          config.panel_model = cnt;
+          config.panel_model = (ePANEL_MODEL_t)cnt;
           WRITE_CFG(panel_model);
         }
         break;
@@ -2765,7 +2660,7 @@ void config_hj_reset(void)
   hjtemp_config_t *hjtemp_cfg;
   hjwindspeed_config_t *hjwind_cfg;
   hjwindDirection_config_t *hjwindDir_cfg;
-  rs485_config_t *rs485_cfg;
+
   hjsnow_config_t *hjsnow_cfg;
   uint8_t single_channel = 0;
 
@@ -2974,7 +2869,7 @@ int32_t menu_manage_config_backup(p_shell_context_t ctx)
     }
   }
 
-  return 0;
+
 }
 
 int32_t menu_manage_sentor_edit(p_shell_context_t ctx)
@@ -3073,7 +2968,7 @@ int32_t menu_manage_sentor_edit(p_shell_context_t ctx)
     }
   }
 
-  return 0;
+
 }
 // 초기화
 int32_t menu_manage_config_reset(p_shell_context_t ctx)
@@ -3123,7 +3018,7 @@ int32_t menu_manage_config_reset(p_shell_context_t ctx)
     }
   }
 
-  return 0;
+
 }
 
 int32_t menu_manage_print_config_all(p_shell_context_t ctx)
@@ -3178,6 +3073,8 @@ int32_t menu_manage_update_fw(p_shell_context_t ctx)
       reset_system( "USER update");
     }
   }
+  
+  return 0;
 }
 menu_func g_manageMenu[] = {[0] = menu_manage_version,
                             menu_manage_device_reset,
@@ -3242,274 +3139,9 @@ int32_t print_menu_manage(p_shell_context_t ctx)
     return cnt;
   }
 
-  int32_t inpu_adc_cali(p_shell_context_t ctx, int adcMode, int channel, int32_t cfg_adc,
-                        int32_t cfg_ref, int32_t *adc_data, int32_t *ref_vol)
-  {
-    uint8_t err = 0;
-    int32_t ch;
-    int32_t adc;
-    int32_t voltage = 0;
 
-    ctx->printf("ADC %s,ch:%d\r\n", adcChModeList[adcMode], channel);
-    ctx->printf("config adc:%d, ref:%d\r\n", cfg_adc, cfg_ref);
-    do
-    {
-      adc = 0;
-      if (adcMode == 0)  // single
-      {
-        adc = adc_read_single_avg(channel, &err, 10);
-      }
-      else
-      {
-        adc = adc_read_diff_avg(channel, &err, 10);
-      }
-      if (err)
-      {
-        ctx->printf("adc error:%d\r", err);
-      }
-      else
-      {
-        ctx->printf("current adc:%7d\r", adc);
-      }
 
-      osDelay(1000);
-      ch = DbgConsole_GetcharNonBlocking();
-      if (ch != -1)
-      {
-        break;
-      }
 
-    } while (1);
-
-    ctx->printf("\r\n");
-    vt100_printfColor(GREEN, "ADC 값을 수동으로 입력해 주세요:");
-    if (input_digit(ctx, -8388607, 8388607, &adc, eUINT32) != 1)
-    {
-      return 1;
-    }
-
-    ctx->printf("\r\n");
-    vt100_printfColor(GREEN, "입력된 전압값을 입력해 주세요(mV):");
-    if (input_digit(ctx, 0, 5000, &voltage, eUINT32) != 1)
-    {
-      return 1;
-    }
-
-    *adc_data = adc;
-    *ref_vol = voltage;
-
-    return 0;
-  }
-
-  int32_t menu_cali_single(p_shell_context_t ctx)
-  {
-    int32_t cnt;
-    int32_t channel;
-    int32_t index;
-    int32_t adc;
-    int32_t voltage;
-
-    do
-    {
-      cnt = select_indexFromList(ctx, NULL, print_menu_cali_single, 0, false);
-      if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
-      {
-        return cnt;
-      }
-      cnt--;
-      channel = cnt;
-
-      while (1)
-      {
-        ctx->printf(" 0.offset  :%d\r\n", g_config_adc.single[channel].offset);
-        ctx->printf(" 1.fullset :%d\r\n", g_config_adc.single[channel].fullset);
-        ctx->printf("Please enter a number:");
-
-        cnt = console_scanf("%d", &index);
-
-        if (cnt == EXIT_BACK)
-        {
-          break;
-        }
-        if (cnt == EXIT_PROGRAM)
-        {
-          return cnt;
-        }
-
-        switch (index)
-        {
-          case 0:  // offset
-            if (inpu_adc_cali(ctx, 0, channel, g_config_adc.single[channel].offset,
-                              g_config_adc.single[channel].offset_input, &adc, &voltage) == 0)
-            {
-              ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-              g_config_adc.single[channel].offset = adc;
-              g_config_adc.single[channel].offset_input = voltage;
-              WRITE_ADC(single[channel].offset);
-              WRITE_ADC(single[channel].offset_input);
-            }
-            break;
-
-          case 1:  // fullset
-            if (inpu_adc_cali(ctx, 0, channel, g_config_adc.single[channel].fullset,
-                              g_config_adc.single[channel].fullset_input, &adc, &voltage) == 0)
-            {
-              ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-              g_config_adc.single[channel].fullset = adc;
-              g_config_adc.single[channel].fullset_input = voltage;
-              WRITE_ADC(single[channel].fullset);
-              WRITE_ADC(single[channel].fullset_input);
-            }
-            break;
-        }
-      }
-    } while (1);
-
-    // return 0;//
-  }
-
-  int32_t print_menu_cali_diff(p_shell_context_t ctx)
-  {
-    int32_t cnt = 0;
-
-    ctx->printf("\r\n");
-    for (int i = 0; i < 8; i++)
-    {
-      ctx->printf("%2d.diff channel %d\r\n", i, i);
-    }
-    cnt = 18;
-    return cnt;
-  }
-
-  int32_t menu_cali_diff(p_shell_context_t ctx)
-  {
-    int32_t cnt;
-    int32_t channel;
-    int32_t index;
-    int32_t adc;
-    int32_t voltage;
-
-    do
-    {
-      cnt = select_indexFromList(ctx, NULL, print_menu_cali_diff, 0, false);
-      if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
-      {
-        return cnt;
-      }
-      cnt--;
-      channel = cnt;
-
-      ctx->printf(" 0.offset  :%d\r\n", g_config_adc.diff[channel].offset);
-      ctx->printf(" 1.fullset :%d\r\n", g_config_adc.diff[channel].fullset);
-
-      ctx->printf("num:");
-
-      cnt = console_scanf("%d", &index);
-
-      if (cnt == EXIT_PROGRAM && cnt <= 0)
-      {
-        return cnt;
-      }
-
-      switch (index)
-      {
-        case 0:  // offset
-          if (inpu_adc_cali(ctx, 0, channel, g_config_adc.diff[channel].offset,
-                            g_config_adc.diff[channel].offset_input, &adc, &voltage) == 0)
-          {
-            ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-            g_config_adc.diff[channel].offset = adc;
-            g_config_adc.diff[channel].offset_input = voltage;
-            WRITE_ADC(diff[channel].offset);
-            WRITE_ADC(diff[channel].offset_input);
-          }
-          break;
-        case 1:  // fullset
-          if (inpu_adc_cali(ctx, 0, channel, g_config_adc.diff[channel].fullset,
-                            g_config_adc.diff[channel].fullset_input, &adc, &voltage) == 0)
-          {
-            ctx->printf("offset:%d, voltage:%d\r\n", adc, voltage);
-            g_config_adc.diff[channel].fullset = adc;
-            g_config_adc.diff[channel].fullset_input = voltage;
-            WRITE_ADC(diff[channel].fullset);
-            WRITE_ADC(diff[channel].fullset_input);
-          }
-          break;
-      }
-
-      if (cnt == EXIT_PROGRAM)
-      {
-        return cnt;
-      }
-    } while (1);
-
-    // return 0;//
-  }
-
-  int32_t menu_cali_config_all(p_shell_context_t ctx)
-  {
-    float voltage;
-    int32_t adc;
-    uint8_t err = 0;
-    int32_t off, full, off_in, full_in;
-
-    ctx->printf(VT100_CLEAR_SCREEN);
-    ctx->printf(VT100_CURSOR_OFF);
-
-    do
-    {
-      ctx->printf(VT100_CURSOR_HOME);
-
-      ctx->printf("%-10s %-2s %-7s %-10s %-10s %-10s %-12s %-10s\r\n", "Mode", "Ch", "offset",
-                  "fullset", "o_in(mv)", "f_in(mv)", "adc_avg(10)", "voltage(v)");
-
-      for (int i = 0; i < 18; i++)
-      {
-        adc = adc_read_single_raw(i, &err);
-        off = g_config_adc.single[i].offset;
-        full = g_config_adc.single[i].fullset;
-        off_in = g_config_adc.single[i].offset_input;
-        full_in = g_config_adc.single[i].fullset_input;
-        voltage = cvt_adcToVol(adc, off, full, off_in, full_in);
-        if (err)
-        {
-          ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12s %-10s \r\n", "Single", i + 1, off,
-                      full, off_in, full_in, "error", " ");
-          ;
-        }
-        else
-        {
-          ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12d %-8.6f \r\n", "Single", i + 1, off,
-                      full, off_in, full_in, adc, voltage / 1000.0);
-          ;
-        }
-      }
-
-      for (int i = 0; i < 8; i++)
-      {
-        adc = adc_read_diff_raw(i, &err);
-        off = g_config_adc.diff[i].offset;
-        full = g_config_adc.diff[i].fullset;
-        off_in = g_config_adc.diff[i].offset_input;
-        full_in = g_config_adc.diff[i].fullset_input;
-        voltage = cvt_adcToVol(adc, off, full, off_in, full_in);
-        if (err)
-        {
-          ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12s %-10s \r\n", "Diff", i + 1, off,
-                      full, off_in, full_in, "error", " ");
-          ;
-        }
-        else
-        {
-          ctx->printf("%-10s %-2d %-7d %-10d %-10d %-10d %-12d %-8.6f \r\n", "Diff", i + 1, off,
-                      full, off_in, full_in, adc, voltage / 1000.0);
-          ;
-        }
-      }
-    } while (wait_break(1000));
-
-    return 0;
-  }
 
   bool check_password(void)
   {
@@ -3559,147 +3191,15 @@ int32_t print_menu_manage(p_shell_context_t ctx)
   }
 
 #include "driver_uart.h"
-driver_t *g_osc_port;
 
-int32_t g_adc;
-/**
- * @brief 1초마다 ADC 값을 출력
- */
-int32_t menu_cali_print_adc(p_shell_context_t ctx)
-{
-  char buff[30];
 
-  int32_t channel;
-  int32_t cnt;
-  int32_t adc;
-  uint8_t err;
-  float voltage;
-  eADC_CH_TYPE_t adcMode;
-  int32_t start, stop;
-  uint32_t start_time;
-  uint32_t elased_time;
-  uint32_t sample_cnt = 0;
-  float avg = 0;
 
-  uart_config_t uart_config = {.dataLen = UART_DATA_LEN_8, .stop_bit = 0};
-  uart_config.baud = 115200;
-  uart_config.parityIdx = 0;
-  g_osc_port = driver_uart_open(UART_0_D_SUB_0, &uart_config);
 
-  ctx->printf("채널 모드를 선택해주세요\r\n");
-
-  cnt = select_indexFromList(ctx, adcChModeList, NULL, _countof(adcChModeList), true);
-
-  if (cnt <= 0)
-  {
-    return 0;
-  }
-
-  cnt--;
-  adcMode = (eADC_CH_TYPE_t)cnt;
-
-  // ctx->printf("채널 번호를 입력해주세요\r\n");
-  vt100_printfColor(GREEN, "채널 번호를 입력해주세요:");
-
-  if (adcMode == eSINGLE_ADC)
-  {
-    start = 1;
-    stop = 18;
-  }
-  else
-  {
-    start = 1;
-    stop = 8;
-  }
-
-  if (input_decimal(ctx, start, stop, &channel) == 1)
-  {
-    channel--;  // 0기준으로
-    do
-    {
-      start_time = mcu_get_clk();
-      if (adcMode == eSINGLE_ADC)  // single
-      {
-        adc = adc_read_single_raw(channel, &err);
-      }
-      else  // diff
-      {
-        adc = adc_read_diff_raw(channel, &err);
-      }
-
-      g_adc = adc;
-      elased_time = cal_elapsed_us(start_time);
-      voltage = adc_chToVoltage(adcMode, channel, adc);
-      make_timeToStr(&Date_Time, buff, sizeof(buff));
-      ctx->printf("%s MODE:%s CH:%d ADC:%8d %8.6f %.3fms\r\n", buff,
-                  adcMode == eSINGLE_ADC ? "s" : "d", channel + 1, adc, voltage,
-                  elased_time / 1000.0f);
-      // ctx->printf("{\"data1\":%d}\r\n",adc);
-      // ctx->printf("%d,\r\n",adc);
-      snprintf(buff, sizeof(buff), "%d,\r\n", adc);
-      driver_uart_send(g_osc_port, buff, strlen(buff));
-    } while ( wait_break(200));
-  }
-  return 0;
-}
-
-int32_t menu_cali_print_adc_all(p_shell_context_t ctx)
-{
-  char buff[30];
-  uint8_t err;
-  int32_t adc;
-  float voltage;
-
-  do
-  {
-    make_timeToStr(&Date_Time, buff, sizeof(buff));
-    ctx->printf("%s,", buff);
-
-    for (int i = 0; i < 18; i++)
-    {
-      adc = adc_read_single_avg(i, &err, 5);
-
-      if (err)
-      {
-        voltage = NAN;
-      }
-      else
-      {
-        voltage = adc_chToVoltage(0, i, adc);
-      }
-
-      ctx->printf("%2d:%7d,%8.6f ", i + 1, adc, voltage);
-    }
-    ctx->printf("\r\n");
-
-  } while (wait_break(1000));
-
-  return 0;
-}
-
-menu_func g_calibraionMenu[] = {[0] = menu_cali_single,  menu_cali_diff,
-                                menu_cali_config_all,    menu_cali_print_adc,
-                                menu_cali_print_adc_all, menu_cali_config_factory};
-
-int32_t print_menu_calibration(p_shell_context_t ctx)
-{
-  int32_t cnt = 0;
-
-  ctx->printf("\r\n");
-  ctx->printf(" 0.single\r\n");
-  ctx->printf(" 1.differential\r\n");
-  ctx->printf(" 2.config all\r\n");
-  ctx->printf(" 3.print adc\r\n");
-  ctx->printf(" 4.print adc single all\r\n");
-  ctx->printf(" 5.config factory reset\r\n");
-  cnt = 6;
-  return cnt;
-}
 
 int32_t menu_calibration(p_shell_context_t ctx)
 {
   run_calibraion_root();
-  
+ return 0; 
 }
 
 int32_t menu_developer_interrupt(p_shell_context_t ctx)
@@ -3834,7 +3334,7 @@ int32_t menu_developer_logging(p_shell_context_t ctx)
   int32_t startCnt, endCnt;
   loggingMsg_t log;
   int32_t cnt;
-  int32_t year, month, day, hour, min, sec;
+  //int32_t year, month, day, hour, min, sec;
 
   do
   {
@@ -3939,8 +3439,8 @@ int32_t menu_task_print(p_shell_context_t ctc)
 
 int32_t menu_task_print_force(p_shell_context_t ctc)
 {
-  uint32_t id;
-  int32_t ret;
+//  uint32_t id;
+//  int32_t ret;
 
   io_printf("특정 Task는 1회성 실행으로 task id가 유지 되지 않는다.");
   io_printf("강제 출력을 하면 task_prinf가 강제 실행된다.\r\n");

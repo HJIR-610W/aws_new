@@ -363,7 +363,7 @@ const uint8_t user_adc_single_channel[18]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,2
 int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 {
 
-  uint32_t diff_ch;
+
   int32_t adc;
   int32_t sum=0;
   uint8_t valid_cnt=0;
@@ -396,7 +396,7 @@ int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 
 int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 {
-  uint32_t diff_ch;
+
   int32_t adc;
   uint8_t valid_cnt=0;
   float average=0;
@@ -416,7 +416,7 @@ int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
     }
   }
  
-  adc = average;
+  adc = (int32_t)average;
 
   osSemaphoreRelease(drv->sem);  // 세마포어 해제
 

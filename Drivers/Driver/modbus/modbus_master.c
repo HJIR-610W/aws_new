@@ -257,7 +257,7 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
     {
       uart_config_t ucfg;
       driver_rs485_get(cfg->bus_io, UART_GET_CONFIG, &ucfg);
-      delay = ((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000;  // ms
+      delay = (uint32_t)(((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000);  // ms
       delay = delay * 2;
       if (delay == 0)
       {
@@ -269,7 +269,7 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
     {
       uart_config_t ucfg;
       driver_uart_get(cfg->bus_io, UART_GET_CONFIG, &ucfg);
-      delay = ((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000;  // ms
+      delay = (uint32_t)(((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000);  // ms
       delay = delay * 2;
       if (delay == 0)
       {

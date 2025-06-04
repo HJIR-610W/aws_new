@@ -136,4 +136,5 @@ void driver_do_close(driver_t *drv)
 int32_t driver_do_read(driver_t *drv,uint8_t *err)
 {
 
+  return 0;
 }

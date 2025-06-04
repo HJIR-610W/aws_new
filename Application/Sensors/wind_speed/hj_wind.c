@@ -76,7 +76,7 @@ bool is_hjwin(uint8_t *frame, uint16_t len)
 //풍속센서의 값은 풍속값자체가 아닌 펄스값임
 float calculate_wind_speed(uint16_t wind_pulse)
 {
-  int32_t tmp = 0;
+
   float wind_speed = 0;
   int32_t span;
   uint32_t errTmp;
@@ -119,7 +119,7 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
   uint8_t recv[10];
   uint16_t len;
   uint16_t windData = 0;
-  float retVal = NAN;
+
   
 
   hjwind_cfg_t *cfg = ((driver_t *)driver)->cfg;

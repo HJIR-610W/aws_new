@@ -102,7 +102,7 @@ void limit_hjtemp(void)
 void save_config_sensor(void)
 {
   uint32_t crc;
-  uint8_t temp;
+
 
   g_config_sensor.start = 0;
   crc = crc32_hw_with_padding(&g_config_sensor.start,

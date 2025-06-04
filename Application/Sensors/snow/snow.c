@@ -25,7 +25,7 @@ driver_t *snow_open(int32_t num,void *opt)
 
 int32_t read_sensor_snow(driver_t *driver,uint8_t *err)
 {
-  int32_t data;
+ // int32_t data;
   const snow_api_t *api = driver->api;
 
   if (driver == NULL)

@@ -62,7 +62,7 @@ bool is_value_in_array(uint8_t target, const uint8_t *arr, size_t len)
 
 void check_config_app(void)
 {
-  int check_cnt=0;
+
   void *p_config;
   g_config_app_dirty_flag = false;
   
@@ -85,7 +85,7 @@ void check_config_app(void)
     g_config_app_dirty_flag = true;
   }
 
-  if (config.aws_protocol_type > eETH_PROTOCOL_KMA3)
+  if (config.aws_protocol_type > eAWS_PROTOCOL_KMA3)
   {
     config.aws_protocol_type = config_app_default.aws_protocol_type;
     g_config_app_dirty_flag = true;
@@ -105,7 +105,7 @@ void check_config_app(void)
     g_config_app_dirty_flag = true;
   }
 
-  if (config.panel_barometer_use > 1)
+  if ((int)config.panel_barometer_use > 1)
   {
     config.panel_barometer_use = config_app_default.panel_barometer_use;
     g_config_app_dirty_flag = true;
@@ -277,7 +277,7 @@ void check_config_app(void)
 void save_config_app(void)
 { 
   uint32_t crc;
-  uint8_t temp;
+
 
 
   config.start = 0;

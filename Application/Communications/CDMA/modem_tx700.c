@@ -359,13 +359,13 @@ M_RET_t tx700_open_ppp(void)
   const char *ack_list[TX700_OPEN_PPP_RESP_CNT];
   char buff[100];
   uint32_t matched_index;
-  M_RET_t ret = RET_FAIL;
+
 
   tx700_modem_sends(get_modem_string_tx700(AT_TCP_OPEN_PPP));
 
   ack_list[0] = get_modem_string_tx700(AT_TCP_OPEN_PPP_RESP);
 
-  ret = tx700_check_tcpResp(ack_list, TX700_OPEN_PPP_RESP_CNT, &matched_index, buff, sizeof(buff),
+  tx700_check_tcpResp(ack_list, TX700_OPEN_PPP_RESP_CNT, &matched_index, buff, sizeof(buff),
                             1000);
 
   return RET_OK;
@@ -377,13 +377,13 @@ M_RET_t tx700_close_ppp(void)
   const char *ack_list[TX700_CLOSE_PPP_RESP_CNT];
   char buff[100];
   uint32_t matched_index;
-  M_RET_t ret = RET_FAIL;
+
 
   tx700_modem_sends(get_modem_string_tx700(AT_TCP_CLOSE_PPP));
 
   ack_list[0] = get_modem_string_tx700(AT_TCP_CLOSE_PPP_RESP);
 
-  ret = tx700_check_tcpResp(ack_list, TX700_CLOSE_PPP_RESP_CNT, &matched_index, buff, sizeof(buff),
+ tx700_check_tcpResp(ack_list, TX700_CLOSE_PPP_RESP_CNT, &matched_index, buff, sizeof(buff),
                             1000);
 
   return RET_OK;
@@ -427,13 +427,13 @@ M_RET_t tx700_close_socket(void)
   const char *ack_list[TX700_CLOSE_SOCKET_RESP_CNT];
   char buff[100];
   uint32_t matched_index;
-  M_RET_t ret = RET_FAIL;
+
 
   ack_list[0] = get_modem_string_tx700(AT_TCP_CLOSE_SOCKET_RESP);
 
   tx700_modem_sends(get_modem_string_tx700(AT_TCP_CLOSE_SOCKET));
 
-  ret = tx700_check_tcpResp(ack_list, TX700_CLOSE_SOCKET_RESP_CNT, &matched_index, buff,
+   tx700_check_tcpResp(ack_list, TX700_CLOSE_SOCKET_RESP_CNT, &matched_index, buff,
                             sizeof(buff), 1000);
 
   return RET_OK;
@@ -466,6 +466,7 @@ const char *serviceCode2_[]={"0 : Error None",
 M_RET_t tx700_check_network_service(char *msgOut,uint16_t msgSize)
 {
   msgOut[0] = 0;
+  return RET_OK;
 }
 
 
@@ -487,7 +488,7 @@ void tx700_write_ip(uint8_t ip[4],uint16_t port)
   const char *ack_list[1];
   char  buff[50];
   uint32_t matched_index;
-  M_RET_t ret = RET_FAIL;
+
 
   ack_list[0] = get_modem_string_tx700(AT_TCP_WRITE_IP_RESP);
 
@@ -496,7 +497,7 @@ void tx700_write_ip(uint8_t ip[4],uint16_t port)
 
   tx700_modem_sends(buff);
 
-  ret = tx700_check_tcpResp(ack_list, TX700_WRITE_IP_REST_CNT, &matched_index, buff, sizeof(buff),
+   tx700_check_tcpResp(ack_list, TX700_WRITE_IP_REST_CNT, &matched_index, buff, sizeof(buff),
                             1000);
 }
 
@@ -506,13 +507,13 @@ void tx700_resetSW(void)
   const char *ack_list[1]; 
   char  buff[50];
   uint32_t matched_index;
-  M_RET_t ret = RET_FAIL;
+
 
   ack_list[0] = get_modem_string_tx700(AT_RESET_SW_RESP);
 
   tx700_modem_sends(get_modem_string_tx700(AT_RESET_SW));
 
-  ret = tx700_check_tcpResp(ack_list, TX700_RESET_SW_CNT_RESP, &matched_index, buff, sizeof(buff),
+   tx700_check_tcpResp(ack_list, TX700_RESET_SW_CNT_RESP, &matched_index, buff, sizeof(buff),
                             200);
 }
 /*
@@ -591,7 +592,7 @@ M_RET_t tx700_send_tcp(uint8_t *data,uint16_t dataLen)
   const char *ack_list[TX700_SEND_TCP_RESP_CNT];
   char buff[512 + 64];
   uint32_t matched_index;
-  M_RET_t ret = RET_FAIL;
+
 
   ack_list[0] = get_modem_string_tx700(AT_TCP_SEND_DATA_RESP);
 
@@ -608,7 +609,7 @@ M_RET_t tx700_send_tcp(uint8_t *data,uint16_t dataLen)
 
   tx700_modem_send(buff, dataLen);
 
-  ret = tx700_check_tcpResp(ack_list, TX700_SEND_TCP_RESP_CNT, &matched_index, buff, sizeof(buff),
+   tx700_check_tcpResp(ack_list, TX700_SEND_TCP_RESP_CNT, &matched_index, buff, sizeof(buff),
                             10000);
 
   return RET_OK;
@@ -744,7 +745,7 @@ M_RET_t tx700_recv_call(void)
 {
   const char *response_list[CONNECT_CALL_RESPONSE_CNT];
   char  buff[50];
-  int32_t matched_index = -1;
+  uint32_t matched_index = -1;
   M_RET_t ret = RET_FAIL;
 
   response_list[0] = get_modem_string_tx700(AT_ASYNC_OPEN_VOICE_RESP);
@@ -820,7 +821,7 @@ void tx700_recv_bin(void *port, char *p_data, uint16_t data_len)
   
   if (len)
   {
-    put_tcpData(&p_data[12], len);
+    put_tcpData((uint8_t *)&p_data[12], len);
   }
 
 }
@@ -876,7 +877,7 @@ int32_t recv_tx700_handler(uint8_t *buffer, uint16_t buffer_size)
     }
   }
 
-  return 0;
+
 }
 
 

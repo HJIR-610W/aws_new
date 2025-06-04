@@ -30,7 +30,7 @@ void ble_cmd(const char *cmd)
   int32_t len;
   
 
-    driver_uart_send(g_ble_drv,cmd,strlen(cmd));
+    driver_uart_send(g_ble_drv,(uint8_t*)cmd,strlen(cmd));
     len = driver_uart_recv(g_ble_drv,buff,sizeof(buff),1000);
     if(len)
     {
@@ -40,10 +40,11 @@ void ble_cmd(const char *cmd)
 
 void bleTask(void *arg)
 {
-
+#if 0 
   uint8_t buff[10];
   int32_t len;
   uint8_t temp[10];
+#endif
   while(1)
   {
 #if 0 
@@ -78,7 +79,7 @@ void bleTask(void *arg)
 void bleTask_init(void)
 {
   uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
-  do_config_t do_config;
+
 
   uart_config.baud = 9600;
   uart_config.parityIdx = PARITY_NONE;

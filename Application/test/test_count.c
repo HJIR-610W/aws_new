@@ -14,8 +14,8 @@
 void test_freq(void)
 {
   driver_t *count_b;
-  driver_t *count_c;
-  float freq_b,freq_c;
+ // driver_t *count_c;
+  float freq_b,duty_b;
 
 
 
@@ -24,14 +24,14 @@ void test_freq(void)
   get_key(0xFFFFFFFF);
 
   count_b = driver_freq_open(FREQ_MEAURE_B);
-  count_c = driver_freq_open(FREQ_MEAURE_C);
+ // count_c = driver_freq_open(FREQ_MEAURE_C);
 
   while(1)
   {
     freq_b = driver_freq_read(count_b);
-    freq_c = driver_freq_read_duty(count_b);
+    duty_b = driver_freq_read_duty(count_b);
 
-    io_printf("freq:%f,duty:%f\r\n", freq_b, freq_c);
+    io_printf("freq b:%f,duty:%f\r\n", freq_b, duty_b);
 
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {

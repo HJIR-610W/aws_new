@@ -138,16 +138,8 @@ int32_t read_rainHallErr(void)
 
   return 1;//¿¡·¯ 
 }
-uint16_t calculate_yearRain(DATE_TIME_BUF *ct)
-{
-
-}
 
 
-uint16_t calculate_monthRain(DATE_TIME_BUF *ct)
-{
-
-}
 
 typedef struct rain_cfg_s
 {

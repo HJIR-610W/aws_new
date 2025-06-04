@@ -71,7 +71,7 @@ int get_float_input(const char* prompt, float* value)
       ret = MENU_OK;
       break;
     }
-    io_printf("오류: 잘못된 실수 입력입니다. 다시 시도하세요.\r\n");
+
   }
   return ret;
 }
@@ -154,7 +154,7 @@ int handle_factory_calibration(int adc_num)
 
       // Point 1 입력
       io_printf("1. 낮은 기준점(Low Reference)을 연결하고 엔터를 입력해주세요요\r\n");
-      debug_recv(&ch,1,60000);
+      io_recv(&ch,1,60000);
       float avg = 0;
       int32_t adc_raw;
       int32_t avg_cnt=0;
@@ -164,11 +164,11 @@ int handle_factory_calibration(int adc_num)
  
         if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
         {
-          adc_raw = adc_read_single_raw(channel_index, &err);
+          adc_raw = (int32_t)adc_read_single_raw(channel_index, &err);
         }
         else if (type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
         {
-          adc_raw = adc_read_diff_raw(channel_index, &err);
+          adc_raw = (int32_t)adc_read_diff_raw(channel_index, &err);
         }
         avg_cnt++;
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
@@ -203,7 +203,7 @@ int handle_factory_calibration(int adc_num)
 
       // Point 2 입력
       io_printf("2. 높은 기준점(High Reference)을 연결하고 엔터를 입력해주세요\r\n");
-      debug_recv(&ch, 1, 60000);
+      io_recv(&ch, 1, 60000);
              avg_cnt=0;
             avg = 0;
       while (1)
@@ -212,11 +212,11 @@ int handle_factory_calibration(int adc_num)
 
         if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
         {
-          adc_raw = adc_read_single_raw(channel_index, &err);
+          adc_raw = (int32_t)adc_read_single_raw(channel_index, &err);
         }
         else if (type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
         {
-          adc_raw = adc_read_diff_raw(channel_index, &err);
+          adc_raw = (int32_t)adc_read_diff_raw(channel_index, &err);
         }
         avg_cnt++;
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
@@ -273,7 +273,7 @@ int handle_factory_calibration(int adc_num)
       }
     }
   }
-  return MENU_OK;  
+  //return MENU_OK;  
 }
 
 /** @brief 온도 보상 설정 메뉴 처리 */
@@ -452,7 +452,7 @@ int handle_temp_comp_setup(int adc_num)
     }
 
   }  // end main loop
-  return MENU_OK;
+  //return MENU_OK;
 }
 
 /** @brief 오프셋 조정 메뉴 처리 */
@@ -518,8 +518,8 @@ int handle_offset_adjustment(int adc_num)
                      channel_index);
         g_current_temp = read_current_temperature();
         float current_val =
-            adc_get_compensated_value((type == 0 ? adc_read_single_raw(channel_index,&err)
-                                                 : adc_read_diff_raw(channel_index,&err)),
+            adc_get_compensated_value((type == 0 ? (int32_t)adc_read_single_raw(channel_index,&err)
+                                                 : (int32_t)adc_read_diff_raw(channel_index,&err)),
                                       params, g_current_temp);
         io_printf("| 현재 온도: %.1f°C\r\n", g_current_temp);
         io_printf("| 현재 측정값: ");
@@ -547,7 +547,7 @@ int handle_offset_adjustment(int adc_num)
            if(type == ADC_CHANNEL_TYPE_SINGLE_ENDED)//싱글
           {
             uint8_t err;
-            raw_now = adc_read_single_raw(channel_index,&err);
+            raw_now = (int32_t)adc_read_single_raw(channel_index,&err);
           }
           else if(type ==ADC_CHANNEL_TYPE_DIFFERENTIAL)
           {
@@ -573,7 +573,7 @@ int handle_offset_adjustment(int adc_num)
     }
 
   }  // end main loop
-  return MENU_OK;
+  //return MENU_OK;
 }
 
 typedef enum
@@ -711,7 +711,7 @@ int handle_view_status(int adc_num)
         do
         {
           start_time = mcu_get_clk();
-          int32_t raw_adc = (type == 0 ? adc_read_single_raw(channel_index,&err)
+          int32_t raw_adc = (type == 0 ? (int32_t)adc_read_single_raw(channel_index,&err)
                                                : adc_read_diff_raw(channel_index,&err));
           elased_time = cal_elapsed_us(start_time);
           float current_val = adc_get_compensated_value(raw_adc, params, g_current_temp);
@@ -730,7 +730,7 @@ int handle_view_status(int adc_num)
               io_printf("%s",buffer);
               if (file_save_use)
               {
-                append_file("0:adc_sample.txt", buffer, strlen(buffer));
+                append_file("0:adc_sample.txt", (uint8_t *)buffer, strlen(buffer));
               }
             }
 
@@ -749,7 +749,7 @@ int handle_view_status(int adc_num)
               io_printf("%s", buffer);
               if (file_save_use)
               {
-                append_file("0:adc_sample.txt", buffer, strlen(buffer));
+                append_file("0:adc_sample.txt", (uint8_t*)buffer, strlen(buffer));
               }
             }
           }
@@ -781,7 +781,7 @@ int handle_view_status(int adc_num)
             {
               params = &p_adc->single_ended_cal[channel];
 
-              raw =  adc_read_single_raw(channel, &err);
+              raw =  (int32_t)adc_read_single_raw(channel, &err);
 
               voltage = adc_get_compensated_value(raw, params, g_current_temp);
               
@@ -852,7 +852,7 @@ int handle_view_status(int adc_num)
         break;
     }
   }
-  return MENU_OK;
+  //return MENU_OK;
 }
 
 /** @brief 설정 저장/로드 메뉴 처리 */
@@ -942,12 +942,12 @@ int handle_save_load(int adc_num)
             io_printf("켈리브레이션을 다시 진행해주세요\r\n");
             save_adc_cali();  
             break;
-            io_printf("잘못된 선택입니다.\r\n");
+            //io_printf("잘못된 선택입니다.\r\n");
             break;
     }
 
   }
-  return MENU_OK;
+  //return MENU_OK;
 }
 
 typedef enum
@@ -1007,14 +1007,14 @@ void run_calibration_menu(int adc_num)
     if (status == MENU_ABORT || status == MENU_BACK)
       return;
 
-    bool handled = false;
+
 
     for (int i = 0; i < sizeof(menu_table) / sizeof(menu_table[0]); i++)
     {
       if (menu_table[i].enabled && menu_table[i].display_idx == choice)
       {
         status = menu_table[i].handler(adc_num);
-        handled = true;
+
         break;
       }
     }

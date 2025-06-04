@@ -308,7 +308,7 @@ int32_t stm32_cdc_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *
 int32_t stm32_cdc_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
                            uint32_t timeout1_ms, uint32_t timeout2_ms)
 {
-  int32_t cnt;
+  int32_t cnt=0;
 
   return cnt;
 }
@@ -337,4 +337,5 @@ void put_cdc_rx(uint8_t *p_data,uint16_t dataLen)
 /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
 portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
+  (void)xBytesSent;
 }

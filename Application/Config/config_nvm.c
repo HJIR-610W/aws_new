@@ -14,7 +14,7 @@ void load_config_nvm(void)
 void save_config_nvm(void)
 {
     uint32_t crc;
-    uint8_t temp;
+
 
     g_config_nvm.start = 0;
     crc = crc32_hw_with_padding(&g_config_nvm.start,

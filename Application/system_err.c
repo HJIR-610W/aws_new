@@ -1,5 +1,4 @@
 
-#define __STDC_WANT_LIB_EXT1__ 1
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -20,7 +19,7 @@ void Error_Handler(const char *file,const int32_t line)
 #ifdef  USE_FULL_ASSERT
 void assert_failed(uint8_t *file, uint32_t line)
 {
-  Error_Handler(file,line);
+  Error_Handler((const char *)file,line);
 }
 #endif /* USE_FULL_ASSERT */
 
@@ -44,16 +43,16 @@ void reset_system(const char * pFmt, ...)
 
     __disable_irq();;//TODO 인터럽트 비활성 코드 삽입
 
-    snprintf_s(&buff[len], sizeof(buff), "RST,%04d-%02d-%02d %02d:%02d:%02d,", Date_Time.Year,
+    snprintf(&buff[len], sizeof(buff), "RST,%04d-%02d-%02d %02d:%02d:%02d,", Date_Time.Year,
                Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
 
-    len = strnlen_s(buff, sizeof(buff));
+    len = strlen(buff);
 
     va_start(ap, pFmt);
-    vsnprintf_s(&buff[len], sizeof(buff)-len,pFmt, ap);
+    vsnprintf(&buff[len], sizeof(buff)-len,pFmt, ap);
     va_end(ap);
 
-    strcpy_s((char *)noInitData.rstLog, sizeof(noInitData.rstLog), buff);//리셋 원인 기록
+    strcpy((char *)noInitData.rstLog,  buff);//리셋 원인 기록
 
     noInitData.key = 0x5a5a5a5a;
     HAL_NVIC_SystemReset();
@@ -70,3 +69,8 @@ bool restore_error(char *p_out, int32_t out_size)
 
   return false;
 }
+
+void assert_print(uint8_t *file, uint32_t line,char *msg)
+{ 
+  io_printf("%s,%d,%s",file,line,msg);
+ }

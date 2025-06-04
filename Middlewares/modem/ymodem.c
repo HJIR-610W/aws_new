@@ -31,7 +31,7 @@
 #define Serial_PutByte(x)  do{\
                                 uint8_t byte;\
                                 byte = x;\
-                                debug_send(&byte,1);\
+                                io_send(&byte,1);\
                             }while(0)
 
 #define RECVDATA_SIZE 1
@@ -223,7 +223,7 @@ uint32_t write_ramFile(uint8_t * address,uint8_t *data,uint32_t dataLen)
 
     *p_length = 0;
 
-    if(debug_recv((char *)&char1,1,timeout))
+    if(io_recv((char *)&char1,1,timeout))
     {
         switch (char1)
         {
@@ -237,7 +237,7 @@ uint32_t write_ramFile(uint8_t * address,uint8_t *data,uint32_t dataLen)
                 status = (HAL_StatusTypeDef)4;//颇老场
                 break;
             case CA:
-                if(debug_recv((char *)&char1,1,timeout)&&(char1==CA))
+                if(io_recv((char *)&char1,1,timeout)&&(char1==CA))
                 {
                     packet_size = 2;
                     status = (HAL_StatusTypeDef)5;// 俊矾 
@@ -262,7 +262,7 @@ uint32_t write_ramFile(uint8_t * address,uint8_t *data,uint32_t dataLen)
     if (packet_size >= PACKET_SIZE )
     {
         status = HAL_ERROR;
-        len = debug_recv((char *)&p_data[PACKET_NUMBER_INDEX],packet_size + PACKET_OVERHEAD_SIZE,timeout);
+        len = io_recv((char *)&p_data[PACKET_NUMBER_INDEX],packet_size + PACKET_OVERHEAD_SIZE,timeout);
        // printf("CNT %d,len %d\r\n",p_data[PACKET_NUMBER_INDEX],len);
         if(len)
         {
@@ -488,7 +488,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
   {
     /* Send Packet */
   //  HAL_UART_Transmit(&UartHandle, &aPacketData[PACKET_START_INDEX], PACKET_SIZE + PACKET_HEADER_SIZE, NAK_TIMEOUT);
-       debug_send(&aPacketData[PACKET_START_INDEX], PACKET_SIZE + PACKET_HEADER_SIZE);
+       io_send(&aPacketData[PACKET_START_INDEX], PACKET_SIZE + PACKET_HEADER_SIZE);
     /* Send CRC or Check Sum based on CRC16_F */
 #ifdef CRC16_F    
     temp_crc = Cal_CRC16(&aPacketData[PACKET_DATA_INDEX], PACKET_SIZE);
@@ -501,7 +501,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
 
     /* Wait for Ack and 'C' */
     //if (HAL_UART_Receive(&UartHandle, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK)
-    if(debug_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT))
+    if(io_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT))
     {
       if (a_rx_ctrl[0] == ACK)
       {
@@ -510,7 +510,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
       else if (a_rx_ctrl[0] == CA)
       {
         //if ((HAL_UART_Receive(&UartHandle, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK) && (a_rx_ctrl[0] == CA))
-    if(debug_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT) && (a_rx_ctrl[0] == CA))
+    if(io_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT) && (a_rx_ctrl[0] == CA))
         {
           HAL_Delay( 2 );
          // __HAL_UART_FLUSH_DRREGISTER(&UartHandle);
@@ -555,7 +555,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
       }
 
     //  HAL_UART_Transmit(&UartHandle, &aPacketData[PACKET_START_INDEX], pkt_size + PACKET_HEADER_SIZE, NAK_TIMEOUT);
-             debug_send( &aPacketData[PACKET_START_INDEX], pkt_size + PACKET_HEADER_SIZE);
+             io_send( &aPacketData[PACKET_START_INDEX], pkt_size + PACKET_HEADER_SIZE);
       /* Send CRC or Check Sum based on CRC16_F */
 #ifdef CRC16_F    
       temp_crc = Cal_CRC16(&aPacketData[PACKET_DATA_INDEX], pkt_size);
@@ -568,7 +568,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
       
       /* Wait for Ack */
      // if ((HAL_UART_Receive(&UartHandle, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK) && (a_rx_ctrl[0] == ACK))
-      if(debug_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT)&& (a_rx_ctrl[0] == ACK))
+      if(io_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT)&& (a_rx_ctrl[0] == ACK))
       {
         ack_recpt = 1;
         if (size > pkt_size)
@@ -613,7 +613,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
 
     /* Wait for Ack */
     //if (HAL_UART_Receive(&UartHandle, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK)
-    if(debug_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT))
+    if(io_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT))
     {
       if (a_rx_ctrl[0] == ACK)
       {
@@ -621,7 +621,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
       }
       else if (a_rx_ctrl[0] == CA)
       {
-        if (debug_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT) && (a_rx_ctrl[0] == CA))
+        if (io_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT) && (a_rx_ctrl[0] == CA))
         {
           HAL_Delay( 2 );
          // __HAL_UART_FLUSH_DRREGISTER(&UartHandle);
@@ -655,7 +655,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
 
     /* Send Packet */
    // HAL_UART_Transmit(&UartHandle, &aPacketData[PACKET_START_INDEX], PACKET_SIZE + PACKET_HEADER_SIZE, NAK_TIMEOUT);
-       debug_send( &aPacketData[PACKET_START_INDEX], PACKET_SIZE + PACKET_HEADER_SIZE);
+       io_send( &aPacketData[PACKET_START_INDEX], PACKET_SIZE + PACKET_HEADER_SIZE);
     /* Send CRC or Check Sum based on CRC16_F */
 #ifdef CRC16_F    
     temp_crc = Cal_CRC16(&aPacketData[PACKET_DATA_INDEX], PACKET_SIZE);
@@ -668,7 +668,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
 
     /* Wait for Ack and 'C' */
   //  if (HAL_UART_Receive(&UartHandle, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK)
-    if(debug_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT))
+    if(io_recv((char *)&a_rx_ctrl[0], 1, NAK_TIMEOUT))
     {
       if (a_rx_ctrl[0] == CA)
       {
@@ -726,8 +726,8 @@ int32_t download_file(int32_t (*write_file)(char *path,uint32_t offset,uint8_t *
                 
                 case 4:// 颇老场
                 err = 0;
-                                                        debug_putch(CA);
-                                        debug_putch(CA);
+                                                        io_put_ch(CA);
+                                        io_put_ch(CA);
                                         
                 return 0;
                 break;
@@ -737,18 +737,18 @@ int32_t download_file(int32_t (*write_file)(char *path,uint32_t offset,uint8_t *
                     {
                         case 2:
                             /* Abort by sender */
-                            debug_putch(ACK);
+                            io_put_ch(ACK);
                             result = COM_ABORT;
                         break;
                         case 0:
                             /* End of transmission */
-                            debug_putch(ACK);
+                            io_put_ch(ACK);
                             file_done = 1;
                         break;
                         default:
                             if (aPacketData[PACKET_NUMBER_INDEX] != packets_received)
                             {
-                                debug_putch(NAK);
+                                io_put_ch(NAK);
                             }
                             else
                             {
@@ -779,18 +779,18 @@ int32_t download_file(int32_t (*write_file)(char *path,uint32_t offset,uint8_t *
 
                                         if (filesize > limit )
                                         {
-                                        debug_putch(CA);
-                                        debug_putch(CA);
+                                        io_put_ch(CA);
+                                        io_put_ch(CA);
                                         result = COM_LIMIT;
                                         err = 2;
                                         }
-                                        debug_putch(ACK);
-                                        debug_putch(CRC16);
+                                        io_put_ch(ACK);
+                                        io_put_ch(CRC16);
                                     }
                                     /* File header packet is empty, end session */
                                     else
                                     {
-                                        debug_putch(ACK);
+                                        io_put_ch(ACK);
                                         file_done = 1;
                                         session_done = 1;
                                         break;
@@ -809,8 +809,8 @@ int32_t download_file(int32_t (*write_file)(char *path,uint32_t offset,uint8_t *
                                     
                                     if(err)
                                     {
-                                        debug_putch(CA);
-                                        debug_putch(CA);
+                                        io_put_ch(CA);
+                                        io_put_ch(CA);
                                         result = COM_DATA;
                                         return 1;
                                     }
@@ -821,7 +821,7 @@ int32_t download_file(int32_t (*write_file)(char *path,uint32_t offset,uint8_t *
                                         flashdestination += packet_length;
 
 
-                                        debug_putch(ACK);
+                                        io_put_ch(ACK);
                                     }
                                 }
                                 packets_received ++;
@@ -831,8 +831,8 @@ int32_t download_file(int32_t (*write_file)(char *path,uint32_t offset,uint8_t *
                     }//switch end HAL_OK
                     break;
                 case HAL_BUSY: /* Abort actually */
-                    debug_putch(CA);
-                    debug_putch(CA);
+                    io_put_ch(CA);
+                    io_put_ch(CA);
                     result = COM_ABORT;
                     return 1;
                     break;
@@ -846,15 +846,15 @@ int32_t download_file(int32_t (*write_file)(char *path,uint32_t offset,uint8_t *
                     {
                         osDelay(10);
                         /* Abort communication */
-                        debug_putch(CA);
-                        debug_putch(CA);
+                        io_put_ch(CA);
+                        io_put_ch(CA);
 
                         return  1;
                     }
                     else
                     {
                         osDelay(10);
-                        debug_putch(CRC16); /* Ask for a packet */
+                        io_put_ch(CRC16); /* Ask for a packet */
                     }
                     break;
                 }

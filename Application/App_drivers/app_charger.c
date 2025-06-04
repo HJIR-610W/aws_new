@@ -7,14 +7,14 @@
 
 driver_t *g_charger = NULL;
 charger_data_t charger_data;
-uint8_t charger_err=-1;//음수 아직 값이 업데이트 안됨, 0정상, 1 에러
+uint8_t charger_err = 99;//음수 아직 값이 업데이트 안됨, 0정상, 1 에러
 
 
 void read_chargerStatus(char *pBuff,uint16_t buffSize)
 {
   switch (charger_err)
   {
-  case -1:
+  case 99:
     snprintf(pBuff,buffSize,"초기화 전");
     break;
   case CHARGER_ERR_RECV_TIMEOUT:
@@ -31,7 +31,7 @@ void read_chargerStatus(char *pBuff,uint16_t buffSize)
 
 bool is_chargerValid(void)
 {
-  if(charger_err !=-1)
+  if(charger_err != 99)
   {
     return true;
   }

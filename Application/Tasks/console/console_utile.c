@@ -34,7 +34,7 @@ char recv_key(uint32_t timeout_ms)
 
   while(1)
   {
-    if(debug_recv(&ch, 1, timeout_ms))
+    if(io_recv(&ch, 1, timeout_ms))
     {
       if(ch==0x1B || ch==0x5B)
       {

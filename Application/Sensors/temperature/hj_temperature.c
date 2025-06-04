@@ -101,7 +101,7 @@ void hjTemperature_set(driver_t *driver, temperature_set_option_t option, void *
 {
   hj_temperature_cfg_t *cfg = driver->cfg;
 
-  uint16_t data = (uint16_t )value;
+  uint16_t data = (uint16_t )(int)value;
 
   switch (option)
   {
@@ -120,7 +120,7 @@ int32_t hjTemperature_get(driver_t *driver, temperature_get_option_t option, voi
 {
   hj_temperature_cfg_t *cfg = driver->cfg;
   int32_t ret=0;
-  uint16_t data = (uint16_t)value;
+  uint16_t data = (uint16_t)(int)value;
 
   switch (option)
   {

@@ -249,6 +249,9 @@ void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum,
 /* 소스 디테일 가져오기 */
 const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 {
+  uint32_t reg1;
+  uint32_t reg;
+  
   static char buffer[256];
   char temp[50] = {0, 0};
   buffer[0] = '\0';
@@ -268,12 +271,14 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       break;
     }
     case EXTI9_5_IRQn:
-      snprintf(buffer, sizeof(buffer), "IMR=%04x,%s", (EXTI->IMR & 0x03E0),
-               GetEXTIGroupMapping((EXTI->IMR & 0x03E0), 5));
+      reg1 = EXTI->IMR;
+      snprintf(buffer, sizeof(buffer), "IMR=%04x,%s", (reg1 & 0x03E0),
+               GetEXTIGroupMapping((reg1 & 0x03E0), 5));
       break;
     case EXTI15_10_IRQn:
-      snprintf(buffer, sizeof(buffer), "IMR=%04x,%s", (EXTI->IMR & 0xFC00),
-               GetEXTIGroupMapping((EXTI->IMR & 0xFC00), 10));
+            reg1 = EXTI->IMR;
+      snprintf(buffer, sizeof(buffer), "IMR=%04x,%s", (reg1 & 0xFC00),
+               GetEXTIGroupMapping((reg1 & 0xFC00), 10));
       break;
 
     // USART
@@ -286,12 +291,14 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
                              : (irq_num == USART2_IRQn) ? USART2
                              : (irq_num == USART3_IRQn) ? USART3
                                                         : USART6;
+                                                        
+        reg = usart->CR1;
       snprintf(
           buffer, sizeof(buffer), "TE=%d, RE=%d, IDLEIE=%d, TCIE=%d, RXNEIE=%d",
-          (usart->CR1 & USART_CR1_TE) != 0, (usart->CR1 & USART_CR1_RE) != 0,
-          (usart->CR1 & USART_CR1_IDLEIE) != 0,
-          (usart->CR1 & USART_CR1_TCIE) != 0,
-          (usart->CR1 & USART_CR1_RXNEIE) != 0);
+          (reg & USART_CR1_TE) != 0, (reg & USART_CR1_RE) != 0,
+          (reg & USART_CR1_IDLEIE) != 0,
+          (reg & USART_CR1_TCIE) != 0,
+          (reg & USART_CR1_RXNEIE) != 0);
       break;
     }
 
@@ -303,10 +310,12 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       SPI_TypeDef* spi = (irq_num == SPI1_IRQn)   ? SPI1
                          : (irq_num == SPI2_IRQn) ? SPI2
                                                   : SPI3;
+                                                  
+       reg = spi->CR2;
       snprintf(buffer, sizeof(buffer), "TXEIE=%d, RXNEIE=%d, ERRIE=%d",
-               (spi->CR2 & SPI_CR2_TXEIE) != 0,
-               (spi->CR2 & SPI_CR2_RXNEIE) != 0,
-               (spi->CR2 & SPI_CR2_ERRIE) != 0);
+               (reg & SPI_CR2_TXEIE) != 0,
+               (reg & SPI_CR2_RXNEIE) != 0,
+               (reg & SPI_CR2_ERRIE) != 0);
       break;
     }
 
@@ -364,11 +373,11 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       stream = (irq_num >= DMA2_Stream0_IRQn)
                    ? (DMA2_Stream0 + (irq_num - DMA2_Stream0_IRQn))
                    : (DMA1_Stream0 + (irq_num - DMA1_Stream0_IRQn));
-
+      reg = stream->CR;
       snprintf(buffer, sizeof(buffer), "%s,TCIE=%d, HTIE=%d, TEIE=%d", temp,
-               (stream->CR & DMA_SxCR_TCIE) != 0,
-               (stream->CR & DMA_SxCR_HTIE) != 0,
-               (stream->CR & DMA_SxCR_TEIE) != 0);
+               (reg & DMA_SxCR_TCIE) != 0,
+               (reg & DMA_SxCR_HTIE) != 0,
+               (reg & DMA_SxCR_TEIE) != 0);
       break;
     }
 
@@ -382,10 +391,11 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
                          : (irq_num == TIM3_IRQn) ? TIM3
                          : (irq_num == TIM4_IRQn) ? TIM4
                                                   : TIM5;
+        reg = tim->DIER;
       snprintf(buffer, sizeof(buffer), "UIE=%d, CC1IE=%d, CC2IE=%d",
-               (tim->DIER & TIM_DIER_UIE) != 0,
-               (tim->DIER & TIM_DIER_CC1IE) != 0,
-               (tim->DIER & TIM_DIER_CC2IE) != 0);
+               (reg & TIM_DIER_UIE) != 0,
+               (reg & TIM_DIER_CC1IE) != 0,
+               (reg & TIM_DIER_CC2IE) != 0);
       break;
     }
     case I2C1_EV_IRQn:
@@ -395,15 +405,17 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       I2C_TypeDef* i2c = (irq_num == I2C1_EV_IRQn)   ? I2C1
                          : (irq_num == I2C2_EV_IRQn) ? I2C2
                                                      : I2C3;
+       reg = i2c->CR2;
+       reg1= i2c->SR1;
       snprintf(buffer, sizeof(buffer),
                "ITBUFEN=%d, ITEVTEN=%d, ADDR=%d, STOPF=%d, RXNE=%d, TXE=%d",
-               (i2c->CR2 & I2C_CR2_ITBUFEN) !=
+               (reg & I2C_CR2_ITBUFEN) !=
                    0,  // Buffer interrupt enable (TXE/RXNE)
-               (i2c->CR2 & I2C_CR2_ITEVTEN) != 0,  // Event interrupt enable
-               (i2c->SR1 & I2C_SR1_ADDR) != 0,     // Address matched
-               (i2c->SR1 & I2C_SR1_STOPF) != 0,    // Stop condition detected
-               (i2c->SR1 & I2C_SR1_RXNE) != 0,     // Receive buffer not empty
-               (i2c->SR1 & I2C_SR1_TXE) != 0       // Transmit buffer empty
+               (reg & I2C_CR2_ITEVTEN) != 0,  // Event interrupt enable
+               (reg1 & I2C_SR1_ADDR) != 0,     // Address matched
+               (reg1 & I2C_SR1_STOPF) != 0,    // Stop condition detected
+               (reg1 & I2C_SR1_RXNE) != 0,     // Receive buffer not empty
+               (reg1 & I2C_SR1_TXE) != 0       // Transmit buffer empty
       );
       break;
     }
@@ -415,92 +427,102 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       I2C_TypeDef* i2c = ((IRQn_Type)irq_num == I2C1_ER_IRQn)   ? I2C1
                          : ((IRQn_Type)irq_num == I2C2_ER_IRQn) ? I2C2
                                                                 : I2C3;
+       reg = i2c->SR1;
       snprintf(buffer, sizeof(buffer), "BERR=%d, ARLO=%d, AF=%d, OVR=%d",
-               (i2c->SR1 & I2C_SR1_BERR) != 0,  // Bus error
-               (i2c->SR1 & I2C_SR1_ARLO) != 0,  // Arbitration lost
-               (i2c->SR1 & I2C_SR1_AF) != 0,    // Acknowledge failure
-               (i2c->SR1 & I2C_SR1_OVR) != 0    // Overrun/Underrun
+               (reg & I2C_SR1_BERR) != 0,  // Bus error
+               (reg & I2C_SR1_ARLO) != 0,  // Arbitration lost
+               (reg & I2C_SR1_AF) != 0,    // Acknowledge failure
+               (reg & I2C_SR1_OVR) != 0    // Overrun/Underrun
       );
       break;
     }
 
     case SDIO_IRQn:
     {
+      reg = SDIO->MASK;
       snprintf(
           buffer, sizeof(buffer),
           "CMDRENDIE=%d, CMDSENTIE=%d, DATAENDIE=%d, RXOVERRIE=%d, "
           "TXUNDERRIE=%d, STBITERRIE=%d",
-          (SDIO->MASK & SDIO_MASK_CMDRENDIE) != 0,  // Command response received
-          (SDIO->MASK & SDIO_MASK_CMDSENTIE) != 0,  // Command sent
-          (SDIO->MASK & SDIO_MASK_DATAENDIE) != 0,  // Data transfer end
-          (SDIO->MASK & SDIO_MASK_RXOVERRIE) != 0,  // Receive FIFO overrun
-          (SDIO->MASK & SDIO_MASK_TXUNDERRIE) != 0,  // Transmit FIFO underrun
-          (SDIO->MASK & SDIO_MASK_STBITERRIE) != 0   // Start bit error
+          (reg & SDIO_MASK_CMDRENDIE) != 0,  // Command response received
+          (reg & SDIO_MASK_CMDSENTIE) != 0,  // Command sent
+          (reg & SDIO_MASK_DATAENDIE) != 0,  // Data transfer end
+          (reg & SDIO_MASK_RXOVERRIE) != 0,  // Receive FIFO overrun
+          (reg & SDIO_MASK_TXUNDERRIE) != 0,  // Transmit FIFO underrun
+          (reg & SDIO_MASK_STBITERRIE) != 0   // Start bit error
       );
       break;
     }
     case TAMP_STAMP_IRQn:
     {
+      
+      reg = RTC->ISR;
+      reg1 = RTC->TAFCR ;
       snprintf(
           buffer, sizeof(buffer),
           "TAMP1IE=%d, TAMP2IE=%d, TIMESTAMPIE=%d, TAMP1F=%d, TAMP2F=%d, "
           "TSF=%d",
-          (RTC->TAFCR & RTC_TAFCR_TAMPIE) !=
+          (reg1& RTC_TAFCR_TAMPIE) !=
               0,  // General Tamper interrupt enable
-          (RTC->TAFCR & RTC_TAFCR_TAMP2E) != 0,  // Tamper 2 interrupt enable
+          (reg1 & RTC_TAFCR_TAMP2E) != 0,  // Tamper 2 interrupt enable
           (RTC->CR & RTC_CR_TSIE) != 0,          // Timestamp interrupt enable
-          (RTC->ISR & RTC_ISR_TAMP1F) != 0,      // Tamper 1 flag
-          (RTC->ISR & RTC_ISR_TAMP2F) != 0,      // Tamper 2 flag
-          (RTC->ISR & RTC_ISR_TSF) != 0          // Timestamp flag
+          (reg & RTC_ISR_TAMP1F) != 0,      // Tamper 1 flag
+          (reg & RTC_ISR_TAMP2F) != 0,      // Tamper 2 flag
+          (reg & RTC_ISR_TSF) != 0          // Timestamp flag
       );
       break;
     }
 
     case RCC_IRQn:
     {
+      reg = RCC->CIR;
       snprintf(
           buffer, sizeof(buffer),
           "CSSIE=%d, PLLRDYIE=%d, HSE_RDYIE=%d, HSI_RDYIE=%d, LSE_RDYIE=%d, "
           "LSI_RDYIE=%d",
-          (RCC->CIR & RCC_CIR_CSSC) !=
+          (reg & RCC_CIR_CSSC) !=
               0,  // Clock Security System interrupt enable
-          (RCC->CIR & RCC_CIR_PLLRDYIE) != 0,  // PLL Ready interrupt enable
-          (RCC->CIR & RCC_CIR_HSERDYIE) != 0,  // HSE Ready interrupt enable
-          (RCC->CIR & RCC_CIR_HSIRDYIE) != 0,  // HSI Ready interrupt enable
-          (RCC->CIR & RCC_CIR_LSERDYIE) != 0,  // LSE Ready interrupt enable
-          (RCC->CIR & RCC_CIR_LSIRDYIE) != 0   // LSI Ready interrupt enable
+          (reg& RCC_CIR_PLLRDYIE) != 0,  // PLL Ready interrupt enable
+          (reg & RCC_CIR_HSERDYIE) != 0,  // HSE Ready interrupt enable
+          (reg & RCC_CIR_HSIRDYIE) != 0,  // HSI Ready interrupt enable
+          (reg& RCC_CIR_LSERDYIE) != 0,  // LSE Ready interrupt enable
+          (reg & RCC_CIR_LSIRDYIE) != 0   // LSI Ready interrupt enable
       );
       break;
     }
     case RTC_WKUP_IRQn:
     {
+      reg = RTC->CR ;
       snprintf(buffer, sizeof(buffer), "WKUPIE=%d, WUTF=%d",
-               (RTC->CR & RTC_CR_WUTIE) != 0,  // Wakeup Timer interrupt enable
+               (reg& RTC_CR_WUTIE) != 0,  // Wakeup Timer interrupt enable
                (RTC->ISR & RTC_ISR_WUTF) != 0  // Wakeup Timer flag
       );
       break;
     }
     case ADC_IRQn:
     {
+      reg = ADC1->CR1;
       snprintf(
           buffer, sizeof(buffer), "EOCIE=%d, JEOCIE=%d, AWDIE=%d, OVRIE=%d",
-          (ADC1->CR1 & ADC_CR1_EOCIE) !=
+          (reg & ADC_CR1_EOCIE) !=
               0,  // End of Conversion interrupt enable
-          (ADC1->CR1 & ADC_CR1_JEOCIE) !=
+          (reg & ADC_CR1_JEOCIE) !=
               0,  // Injected End of Conversion interrupt enable
-          (ADC1->CR1 & ADC_CR1_AWDIE) != 0,  // Analog Watchdog interrupt enable
-          (ADC1->CR1 & ADC_CR1_OVRIE) != 0   // Overrun interrupt enable
+          (reg & ADC_CR1_AWDIE) != 0,  // Analog Watchdog interrupt enable
+          (reg & ADC_CR1_OVRIE) != 0   // Overrun interrupt enable
       );
       break;
     }
     case RTC_Alarm_IRQn:
     {
+      reg= RTC->CR;
+      reg1 = RTC->ISR;
       snprintf(buffer, sizeof(buffer),
                "ALRAIE=%d, ALRBIE=%d, ALRAF=%d, ALRBF=%d",
-               (RTC->CR & RTC_CR_ALRAIE) != 0,   // Alarm A interrupt enable
-               (RTC->CR & RTC_CR_ALRBIE) != 0,   // Alarm B interrupt enable
-               (RTC->ISR & RTC_ISR_ALRAF) != 0,  // Alarm A flag
-               (RTC->ISR & RTC_ISR_ALRBF) != 0   // Alarm B flag
+               (reg & RTC_CR_ALRAIE) != 0,   // Alarm A interrupt enable
+               (reg & RTC_CR_ALRBIE) != 0,   // Alarm B interrupt enable
+               (reg1 & RTC_ISR_ALRAF) != 0,  // Alarm A flag
+               (reg1 & RTC_ISR_ALRBF) != 0   // Alarm B flag
       );
       break;
     }

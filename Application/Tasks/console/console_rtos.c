@@ -13,88 +13,8 @@
 #include "task.h"  // (pvPortMalloc, vPortFree는 task.h 또는 FreeRTOS.h에 있을 수 있음)
 #include "util_time.h"
 
-static const char *get_cmsis_thread_state_string(osThreadState_t state)
-{
-  switch (state)
-  {
-    case osThreadInactive:
-      return "Inactive";
-    case osThreadReady:
-      return "Ready";
-    case osThreadRunning:
-      return "Running";
-    case osThreadBlocked:
-      return "Blocked";
-    case osThreadTerminated:
-      return "Terminated";
-    case osThreadError:
-       return "Error";
-    default:
-      return "Unknown";
-  }
-}
 
-#if 0 
-void print_task_info(void)
-{
-  uint32_t task_count;
-  osThreadId_t *task_ids;
-  uint32_t i, enumerated_tasks;
 
-  task_count = osThreadGetCount();
-  if (task_count == 0)
-  {
-    io_printf("No tasks are currently active.\r\n");
-    return;
-  }
-
-  task_ids = pvPortMalloc(task_count * sizeof(osThreadId_t));
-  if (task_ids == NULL)
-  {
-    io_printf("Error: Failed to allocate memory for task ID array.\r\n");
-    return;
-  }
-
-  enumerated_tasks = osThreadEnumerate(task_ids, task_count);
-
-  io_printf("\r\n--- All Task Information (CMSIS-OS2 API) ---\r\n");
-  io_printf(
-      "---------------------------------------------------------------------------------------"
-      "\r\n");
-  io_printf(
-      "Name              \tState     \tPrio\tStackFree (B)\tHandle\r\n");  // StackSize 제거
-  io_printf(
-      "---------------------------------------------------------------------------------------"
-      "\r\n");
-
-  for (i = 0; i < enumerated_tasks; i++)
-  {
-    osThreadId_t tid = task_ids[i];
-    const char *name = osThreadGetName(tid);
-    osThreadState_t state = osThreadGetState(tid);
-    osPriority_t prio = osThreadGetPriority(tid);
-    uint32_t free_stack = osThreadGetStackSpace(tid);  // 남은 스택 공간 (High Water Mark)
-
-    // uint32_t total_stack = osThreadGetStackSize(tid); // 이 함수를 사용할 수 없음
-
-    io_printf("%-18s\t%-10s\t%d\t%lu\t\t%p\r\n", name ? name : "Unnamed",
-                 get_cmsis_thread_state_string(state), (int)prio, (unsigned long)free_stack,
-                 // (unsigned long)total_stack, // 제거
-                 tid);
-  }
-  io_printf(
-      "---------------------------------------------------------------------------------------"
-      "\r\n");
-  io_printf(
-      "StackFree is High Water Mark (Bytes). Total stack size info unavailable via API.\r\n");
-  io_printf(
-      "---------------------------------------------------------------------------------------"
-      "\r\n\r\n");
-
-  vPortFree(task_ids);
-}
-
-#endif
 
 
 

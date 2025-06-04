@@ -18,8 +18,8 @@ void NMI_Handler(void)
 
 }
 
-__no_init volatile uint32_t stacked_reg[8];
-__no_init volatile uint32_t fault_reg[4];
+__no_init  uint32_t stacked_reg[8];
+__no_init  uint32_t fault_reg[4];
 
 static const  uint32_t exc_ret[6]={0xFFFFFFF1,0xFFFFFFF9,0xFFFFFFFD,0xFFFFFFE1,0xFFFFFFE9,0xFFFFFFED};
 
@@ -65,11 +65,11 @@ void fault_printf(const char * pFmt, ...)
   char buff[50];
   char *ptr=buff;
   va_list ap;  
-  int32_t len;
+
 
 
   va_start(ap, pFmt);
-  len = vsnprintf((char *)buff, sizeof(buff), (char *)pFmt, ap);
+   vsnprintf((char *)buff, sizeof(buff), (char *)pFmt, ap);
   va_end(ap);
         
   while(*ptr)
@@ -224,7 +224,7 @@ void HardFault_Handler(void)
     fault_printf("SCB->MMFAR %08X\r\n",fault_reg[2]);
     fault_printf("SCB->BFAR  %08X\r\n",fault_reg[3]);
 
-      analyze_fault(fault_reg[0], fault_reg[1], fault_reg[2],fault_reg[3]);
+    analyze_fault(fault_reg[0], fault_reg[1], fault_reg[2],fault_reg[3]);
   }
      
   while (1)

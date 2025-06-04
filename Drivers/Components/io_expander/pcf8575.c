@@ -330,10 +330,10 @@ int32_t pcf8575_di_read(driver_t *drv)
 
   gpio_api_t *api = (gpio_api_t*)pcf->api;
 
-  int32_t ret;
+
   uint16_t data;
 
-  ret = api->read8(pcf,&data);
+   api->read8(pcf,&data);
 
   if(data&(1<<cfg->channel))
   {
@@ -455,9 +455,10 @@ void pcf8575_do_set(driver_t *handle, do_set_option_t option, void *value)
 
 }
 
-
+//TODO:
 int32_t pcf8575_do_read(driver_t *drv,uint8_t *err)
 {
   int32_t pin;
 
+  return 0;
 }

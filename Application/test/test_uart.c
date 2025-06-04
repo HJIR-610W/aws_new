@@ -223,17 +223,17 @@ void test_uart(void)
   while (1)
   {
     snprintf(buff, sizeof(buff), "RS232 %s\r\n", rs232_port_name[rs232_number]);
-    len = driver_uart_send(uart_driver, buff, strlen(buff));
+    len = driver_uart_send(uart_driver, (uint8_t*)buff, strlen(buff));
     if (len < 0)
     {
       snprintf(buff, sizeof(buff), "RS232 %s error\r\n", rs232_port_name[rs232_number]);
       io_printf(buff);
     }
 
-    len = driver_uart_recv(uart_driver, rx_buff, sizeof(rx_buff), 2000);
+    len = driver_uart_recv(uart_driver, (uint8_t*)rx_buff, sizeof(rx_buff), 2000);
     if (len)
     {
-      driver_uart_send(uart_driver, rx_buff, len);
+      driver_uart_send(uart_driver, (uint8_t*)rx_buff, len);
     }
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
@@ -243,7 +243,7 @@ void test_uart(void)
     if (g_uart_ll)
     {
       g_uart_ll = 0;
-      len = driver_uart_recv_ll(uart_driver, rx_buff, sizeof(rx_buff), 1000);
+      len = driver_uart_recv_ll(uart_driver, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
     }
   }
 }

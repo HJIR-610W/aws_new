@@ -1,25 +1,18 @@
 
 
+#include "task_logging.h"
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "cmsis_os2.h"
-
-
-#include "pcb_define.h"
-#include "config_app.h"
-#include "driver_rtc.h"
-
-
+#include "app_dataLogging.h"
 #include "app_file.h"
 #include "app_logging.h"
-#include "app_dataLogging.h"
-#include "dev_io.h"
-#include "util_time.h"
-#include "task_logging.h"
-#include "old_aws_define.h"
 
+#include "old_aws_define.h"
+#include "util_time.h"
+#include "dev_io.h"
 typedef enum logging_cmd_e
 {
   eLOGGING_LOG,      // 로깅 task로 로그를 전송 할 때 사용
@@ -32,7 +25,7 @@ typedef struct logging_s
   eLOGGING_CMD_t cmd;
   DATE_TIME_BUF ct;
   uint16_t len;
-  uint8_t data[300];
+  char data[300];
 }logging_t;
 
 const osThreadAttr_t kLoggingTask_attributes = {
@@ -44,9 +37,7 @@ const osThreadAttr_t kLoggingTask_attributes = {
 const uint32_t kLoggingTimeOutMs = 50;
 
 osMessageQueueId_t g_loggingQueue;
-
 logging_system_t g_logging_system;
-
 logging_system_t *get_logging_system(void)
 {
   return &g_logging_system;
@@ -216,7 +207,7 @@ void loggingTask(void *arg)
         switch(logging.cmd)
         {
           case eLOGGING_LOG:
-            err = logging_printf((char *)logging.data);
+            err = save_log((char *)logging.data);
             if(err)
             {
               io_printf("log err:%d\r\n",err);
@@ -243,8 +234,6 @@ void loggingTask(void *arg)
     }
   }
 }
-
-
 
 
 void loggingTask_init(void)

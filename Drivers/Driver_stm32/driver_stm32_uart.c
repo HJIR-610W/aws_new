@@ -748,6 +748,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   {
     xBytesSent = xStreamBufferSendFromISR(g_stm32_xStreamBuffer[0], &rxData[0], 1,
                                           &xHigherPriorityTaskWoken);
+            if (!(xBytesSent > 0))
+        {
+          __asm("BKPT #0");
+        }
     /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
@@ -757,6 +761,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   {
     xBytesSent = xStreamBufferSendFromISR(g_stm32_xStreamBuffer[1], &rxData[1], 1,
                                           &xHigherPriorityTaskWoken);
+            if (!(xBytesSent > 0))
+        {
+          __asm("BKPT #0");
+        }
     /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     HAL_UART_Receive_IT(&huart3, (uint8_t *)&rxData[1], 1);
@@ -765,6 +773,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   {
     xBytesSent = xStreamBufferSendFromISR(g_stm32_xStreamBuffer[2], &rxData[2], 1,
                                           &xHigherPriorityTaskWoken);
+            if (!(xBytesSent > 0))
+        {
+          __asm("BKPT #0");
+        }
     /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 

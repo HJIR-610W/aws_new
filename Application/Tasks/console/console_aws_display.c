@@ -158,7 +158,7 @@ int32_t print_rainInfo(uint16_t row, uint16_t column)
 int32_t print_ethInfo(uint16_t row, uint16_t column)
 {
   char buff[30];
-  eDIRECT_LINK_STATUS_t link_status;
+  eLINK_STATUS_t link_status;
   uint8_t tx_cnt;
   uint8_t rx_cnt;
   uint8_t line = row + 3;
@@ -225,7 +225,7 @@ int32_t print_cdmaInfo(uint16_t row, uint16_t column)
   char buff[30];
   char num[20];
   uint8_t line = row + 3;
-  int8_t rssi;
+
   DATE_TIME_BUF nt;
   uint32_t last_time;
 
@@ -1492,13 +1492,12 @@ int32_t aws_menu_display(p_shell_context_t ctx)
       line += print_ethInfo(1 + line, DISP_WIDTH+3);
     }
 
-
     line = 0;
-    line = print_awsRealLefinfo(1, (DISP_WIDTH+3)*2, awsMode, NULL);
+    line = print_awsRealLefinfo(1, (DISP_WIDTH+3)*2, (eAWS_DATA_MIN_t)awsMode, NULL);
 
     print_rainInfo(1 + line, (DISP_WIDTH + 3) * 2);
 
-    key = get_key(500);
+    key = (keycode_t)get_key(500);
 
     if (key == KEY_CODE_RIGHT)
     {

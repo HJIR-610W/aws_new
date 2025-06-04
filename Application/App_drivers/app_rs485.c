@@ -33,8 +33,7 @@ void rs485_set(eRS485_PORT_t port,uint32_t baud,uint8_t parity)
     uart_config.baud   = baud==0?19200:baud;
     uart_config.parityIdx = parity;
 
-
-    driver_rs485_set(rs485_drivers[(int)port],eUART_SET_CONFIG,(void *)&uart_config);
+    driver_rs485_set(rs485_drivers[(int)port], UART_SET_BAUDRATE, (void *)&uart_config);
   }
 }
 

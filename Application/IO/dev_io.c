@@ -149,6 +149,8 @@ int32_t io_printf(const char *pFmt, ...)
 #endif
   return 0;
 }
+
+
 int32_t io_vprintf(const char *pFmt, va_list ap)
 {
 #if PRINTF_HEAP_USE == 0
@@ -209,72 +211,17 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
   return 0;
 }
 
-int32_t error_printf(const char *pFmt, ...)
+void io_send(uint8_t *p_in_data, uint16_t data_len)
 {
-  char buff[2];
-  char *ptr = NULL;
-  char *temp = NULL;
-  va_list ap;
-  int32_t len;
-  char g_printf_buff[100];
-  // 먼저 format 후 len의 길이를 확인 후 메모리를 할당후 최종 처리
-  va_start(ap, pFmt);
-  len = vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
-  va_end(ap);
-
-  if (len > (sizeof(buff) - 1))  //
-  {
-#if PRINTF_HEAP_USE
-    temp = aws_malloc(len + 1);  // null포함
-    if (temp)
-    {
-      va_start(ap, pFmt);
-      len = vsnprintf_s((char *)temp, len + 1, (char *)pFmt, ap);
-      va_end(ap);
-      ptr = temp;
-    }
-    else
-    {
-      return 1;  // 메모리 할당 에러
-    }
-#else
-    va_start(ap, pFmt);
-    len = vsnprintf_s((char *)g_printf_buff, sizeof(g_printf_buff), (char *)pFmt, ap);
-    va_end(ap);
-
-    ptr = g_printf_buff;
-#endif
-  }
-  else
-  {
-    ptr = buff;  // 1바이트만 전송하게 되면 버퍼로 처리
-  }
-
-  if (debug_uart && ptr)  // os구동중인지 확인
-  {
-    driver_uart_send(debug_uart, "\x1B[31m", 5);
-    driver_uart_send(debug_uart, (uint8_t *)ptr, strlen(ptr));
-    driver_uart_send(debug_uart, "\x1B[37m", 5);
-  }
-  else if (ptr)  // os 없으면
-  {
-    debug_puts_nonos((char *)"\x1B[31m");
-    debug_puts_nonos(ptr);
-    debug_puts_nonos((char *)"\x1B[37m");
-  }
-#if PRINTF_HEAP_USE
-  if (temp)
-  {
-    aws_free(temp);
-  }
-#endif
-  return 0;
+  driver_uart_send(debug_uart, p_in_data, data_len);
 }
 
-void debug_send(uint8_t *pData, uint16_t dataLen) { driver_uart_send(debug_uart, pData, dataLen); }
+void io_put_ch(char ch)
+{ 
+  driver_uart_send(debug_uart, (uint8_t *)&ch, 1); 
+}
 
-void debug_putch(char ch) { driver_uart_send(debug_uart, (uint8_t *)&ch, 1); }
-void debug_puts(const char *str)
+void io_puts(const char *str)
 {
   while (*str)
   {
@@ -283,11 +230,11 @@ void debug_puts(const char *str)
   }
 }
 
-int32_t debug_recv(char *out, uint16_t outSize, uint32_t timeout)
+int32_t io_recv(char *p_out_buffer, uint16_t out_size, uint32_t timeout)
 {
   int32_t cnt;
 
-  cnt = driver_uart_recv(debug_uart, (uint8_t *)out, outSize, timeout);
+  cnt = driver_uart_recv(debug_uart, (uint8_t *)p_out_buffer, out_size, timeout);
 
   return cnt;
 }
@@ -421,7 +368,11 @@ uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd,
 
 
 
-
+/**
+ * @brief Task에서 디버깅용으로 출력 하고 싶을때
+ *         콘솔 메뉴에서 task id를 설정해주면 id가 일치하는 task는 
+ *         printf 
+ */
 
 static void *g_task_id;
 static bool foreced_print = false;
@@ -429,8 +380,6 @@ void set_task_id(void *task_id)
 {
   g_task_id = task_id;
 }
-
-
 
 void set_forced_print(bool set) { foreced_print = set; }
 
@@ -459,7 +408,6 @@ void task_printf(const char *pFmt, ...)
     va_end(args);
   }
 }
-
 
 
 void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)

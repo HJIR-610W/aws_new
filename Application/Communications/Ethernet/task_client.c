@@ -65,7 +65,7 @@ static void tcp_client_service(int sock)
     if(ret < 0)
     {
       err_code = errno;
-      if (err_code == EAGAIN || err_code == EWOULDBLOCK)
+      if (err_code == EAGAIN )//|| err_code == EWOULDBLOCK)
       {
         continue;//타임아웃
       }
@@ -75,8 +75,7 @@ static void tcp_client_service(int sock)
         break;
       }
 
-      log_printf(L_WARN, "recv failed: errno=%d\r\n", err_code);
-      break;  // 연결 종료 처리
+
     }
     else if(ret ==0)
     {

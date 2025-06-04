@@ -29,7 +29,7 @@ eth_eth_config_t eth_config;
 #define PING_COUNT 4
 #define PING_DELAY_MS 1000
 #define PING_TIMEOUT_MS 1000
-#define IPH_HL(ip_hdr) ((ip_hdr->_v_hl) & 0x0F)
+#define STATIC_IPH_HL(ip_hdr) ((ip_hdr->_v_hl) & 0x0F)
 static u16_t ping_seq_num = 0;
 
 // Ã¼Å©¼¶ °è»ê
@@ -79,7 +79,7 @@ static err_t ping_recv(int s, struct sockaddr_in *from)
   if (len >= (int)(sizeof(struct ip_hdr) + sizeof(struct icmp_echo_hdr)))
   {
     struct ip_hdr *iphdr = (struct ip_hdr *)buf;
-    struct icmp_echo_hdr *iecho = (struct icmp_echo_hdr *)(buf + (IPH_HL(iphdr) * 4));
+    struct icmp_echo_hdr *iecho = (struct icmp_echo_hdr *)(buf + (STATIC_IPH_HL(iphdr) * 4));
 
     if ((iecho->id == PING_ID) && (iecho->seqno == htons(ping_seq_num)))
     {

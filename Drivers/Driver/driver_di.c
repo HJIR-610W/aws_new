@@ -100,7 +100,7 @@ int32_t driver_di_read(driver_t *drv)
   return api->read(drv);
 }
 
-void driver_di_set(driver_t *drv, uint8_t cmd, void *option)
+void driver_di_set(driver_t *drv, di_set_option_t cmd, void *option)
 {
   const di_api_t *api = drv->api;
 

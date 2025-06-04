@@ -81,21 +81,21 @@ typedef struct config_s
   uint8_t cdma_server_ip[4];
   uint16_t cdma_port;
   eCDMA_MODEL_t cdma_model;  // 설정 후 리셋 요구됨
-  bool eth_use;              // 설정 후 리셋 요구됨
-  bool cdma_use;             // 설정 후 리셋 요구됨
-  bool direct_use;           // 설정 후 리셋 요구됨
+  uint8_t eth_use;              // 설정 후 리셋 요구됨
+  uint8_t cdma_use;             // 설정 후 리셋 요구됨
+  uint8_t direct_use;           // 설정 후 리셋 요구됨
   uint32_t direct_baud;      // 설정 후 리셋 요구됨
   ePANEL_MODEL_t panel_model;
-  bool panel_snow_use;
-  bool panel_barometer_use;
+  uint8_t panel_snow_use;
+  uint8_t panel_barometer_use;
   uint8_t vhf_id;
   uint8_t vhf_group;
   uint8_t vhf_host_id;
   uint8_t vhf_repeater_id;
   uint16_t vhf_ptt_delay;
-  bool encrypt_use;
-  bool vpn_use;
-  bool ac_use;
+  uint8_t encrypt_use;
+  uint8_t vpn_use;
+  uint8_t ac_use;
   uint16_t m_usRainDtOffDelay;//구 AWS
   sensor_t sensor[SENSOR_LIST_MAX];
 }config_t;

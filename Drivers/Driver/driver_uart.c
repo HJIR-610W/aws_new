@@ -169,7 +169,7 @@ int32_t driver_uart_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_siz
 {
   uart_api_t *api = (uart_api_t *)drv->api;
 
-  api->recv_opt(drv, buffer, buffer_size, timeout1_ms, timeout2_ms);
+  return api->recv_opt(drv, buffer, buffer_size, timeout1_ms, timeout2_ms);
 }
 
 int32_t driver_uart_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutMs)

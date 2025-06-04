@@ -49,9 +49,9 @@ framemk[cnt++] 		= 0x01;																	// ID
 framemk[cnt++] 		= 0x05;																	// Status
 framemk[cnt++] 		= 0x02;																	// Start Address
 framemk[cnt++] 		= 0x01;																	// Length
-framemk[cnt++]		= radd_dirc( p_kma->wind_direction_avg.data/ 10.0);
+framemk[cnt++]		= radd_dirc( (uint32_t)(p_kma->wind_direction_avg.data/ 10.0));
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
-driver_uart_send(panel_port,framemk,cnt);
+driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
 // 51 01 05 02 01 01 0A 
 
 
@@ -86,7 +86,7 @@ sprintf(&framemk[cnt],"%02d%02d%02d%02d", pDate->Month, pDate->Day,
                        pDate->Hour, pDate->Min);						// 월일시분 
 cnt					+= 8;
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
-driver_uart_send(panel_port,framemk,cnt);
+driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
 
 osDelay(500);																				// 500 ms
                         
@@ -107,7 +107,7 @@ sprintf(&framemk[cnt],"%5.1f", (float)p_kma->relative_humidity.data/10.0);						
 cnt					+= 5;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
-driver_uart_send(panel_port,framemk,cnt);
+driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
 osDelay(500);																				// 500 ms
 
 cnt					= 0;
@@ -127,7 +127,7 @@ sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_yesterday*10) )
 cnt					+= 4;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
-driver_uart_send(panel_port,framemk,cnt);
+driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
 osDelay(500);																				// 500 ms
 
 }

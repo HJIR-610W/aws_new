@@ -68,11 +68,11 @@ bool CheckReadSMS(char *sms_msg,char *sms_number)
   char szTemp[32];
   uint8_t cIp[4];
   int nIndex;
-  time_t tmSMSSend;
-  time_t tmCurrent;
-  ts_t tmsSpan;
+
+
+
   uint16_t port;
-  int nRet;
+
   char password[10];
   uint8_t ip[4];
 
@@ -110,11 +110,9 @@ bool CheckReadSMS(char *sms_msg,char *sms_number)
 
   strncpy(szTemp, sms_msg + 40, 14);
   szTemp[14] = 0x00;
-  tmSMSSend = ConvertDate_TMX400(szTemp);
-  tmCurrent = SetTime(Date_Time.Year, Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min,
-                      Date_Time.Sec);
-  tmsSpan = tmCurrent - tmSMSSend;
-  nRet = GetTotalSeconds(tmsSpan);
+
+
+
 
 
 

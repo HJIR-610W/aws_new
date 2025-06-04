@@ -7,7 +7,7 @@ extern uint32_t millis(void);  // 현재 ms를 가져오는 함수 (플랫폼에 맞게 구현)
 
 int32_t get_key(uint32_t timeout_ms)
 {
-  uint8_t ch;
+  char ch;
   uint32_t start_time = HAL_GetTick();
   uint32_t elapsed = 0;
 
@@ -20,7 +20,7 @@ int32_t get_key(uint32_t timeout_ms)
       return (int32_t)KEY_CODE_NONE;
     }
 
-    if (debug_recv(&ch, 1, remain) == 1)
+    if (io_recv(&ch, 1, remain) == 1)
     {
       break;
     }
@@ -35,7 +35,7 @@ int32_t get_key(uint32_t timeout_ms)
   // 2. 첫 바이트 처리
   if (ch == 0x1B)
   {
-    uint8_t seq[2];
+    char seq[2];
     int seq_idx = 0;
     elapsed = HAL_GetTick() - start_time;
 
@@ -47,7 +47,7 @@ int32_t get_key(uint32_t timeout_ms)
         return (int32_t)KEY_CODE_ESC;
       }
 
-      if (debug_recv(&seq[seq_idx], 1, remain) == 1)
+      if (io_recv(&seq[seq_idx], 1, remain) == 1)
       {
         seq_idx++;
       }

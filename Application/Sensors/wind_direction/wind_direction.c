@@ -26,29 +26,3 @@ void windDirection_deInit(void)
   windDirectionInit = false;
 }
 
-float read_sensor_windDirection(sensor_t *sensor,uint8_t *err)
-{
-  float data;
-  dev_io_t dev_io;
-
-  rs485_config_t *rs485_config;
-
-
-
-  if(is_windDirectionInit() == false)
-  {
-    *err = 2;
-    return 0;
-  }
-
-  void *cfg = get_sensor_config(sensor);;
-
-  if(cfg ==0)
-  {
-    *err = 2;
-    return 0;
-  }
-
-
-  return data;
-}

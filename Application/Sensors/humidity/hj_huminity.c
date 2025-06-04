@@ -89,7 +89,7 @@ void hjHuminity_set(driver_t *driver, temperature_set_option_t option, void *val
 {
   hj_huminity_cfg_t *cfg = driver->cfg;
 
-  uint16_t data = (uint16_t)value;
+  uint16_t data = (uint16_t)(int)value;
 
   switch (option)
   {
@@ -106,7 +106,7 @@ int32_t hjHuminity_get(driver_t *driver, temperature_get_option_t option, void *
 {
   hj_huminity_cfg_t *cfg = driver->cfg;
   int32_t ret = 0;
-  uint16_t data = (uint16_t)value;
+  uint16_t data = (uint16_t)(int)value;
 
   switch (option)
   {

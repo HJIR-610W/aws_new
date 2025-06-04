@@ -43,7 +43,7 @@ sunshine_t g_sunshine;
     void
     cvt_sensorToAWS(sensor_t *p_sensor, sensor_data_t *p_data, kma_data_t *p_kma)
 {
-  bool status;
+
 
 
   // 1. 기온 (1분 평균)  표현 범위 500~1500 [(관측값 + 100)*100]
@@ -346,15 +346,15 @@ sunshine_t *get_sunshine(void)
   return &g_sunshine;
 }
 
-void set_sunshine_yesterday(float sunshine) { g_sunshine.sunshine_yesterday = sunshine; }
+void set_sunshine_yesterday(uint32_t sunshine) { g_sunshine.sunshine_yesterday = sunshine; }
 
-void set_sunshine_today(float sunshine) { g_sunshine.sunshine_today = sunshine; }
+void set_sunshine_today(uint32_t sunshine) { g_sunshine.sunshine_today = sunshine; }
 
-void set_sunshine_hourly(float sunshine) { g_sunshine.sunshine_hourly = sunshine; }
+void set_sunshine_hourly(uint32_t sunshine) { g_sunshine.sunshine_hourly = sunshine; }
 
-void set_sunshine_monthly(float sunshine) { g_sunshine.sunshine_monthly = sunshine; }
+void set_sunshine_monthly(uint32_t sunshine) { g_sunshine.sunshine_monthly = sunshine; }
 
-void set_sunshine_yearly(float sunshine) { g_sunshine.sunshine_yearly = sunshine; }
+void set_sunshine_yearly(uint32_t sunshine) { g_sunshine.sunshine_yearly = sunshine; }
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
 {

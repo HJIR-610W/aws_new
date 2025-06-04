@@ -1122,11 +1122,11 @@ void at_ring_received(uint32_t cmd,char *pData,uint16_t dataLen)
  */
 void at_dtmf(uint32_t cmd,char *pData,uint16_t dataLen)
 {
-    char dtmf;
+   // char dtmf;
 
   (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
 
-    dtmf = _iCellular->get_dtmf(pData);//
+    //dtmf = _iCellular->get_dtmf(pData);//
     
     //DTMF_put_dtmf(dtmf);
 
@@ -1303,7 +1303,7 @@ int32_t recv_tx700(void *port, uint8_t *buffer, uint16_t buffer_size)
     }
   }
 
-  return 0;
+
 }
 
 /**

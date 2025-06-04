@@ -26,10 +26,9 @@ void	send_panel_hansung(driver_t *panel_port)
     char   framemk[60];
 	uint8_t 	cnt = 0;
 	uint32_t 	i;
-	DATE_TIME_BUF			*pDate;
+
   kma_data_ex_t *p_kma;
 
-  pDate			= &Date_Time;
 
   p_kma =get_kma_data(eAWS_DATA_AVG);
 
@@ -38,10 +37,10 @@ void	send_panel_hansung(driver_t *panel_port)
 	framemk[cnt++] 		= 0x05;																	// Status
 	framemk[cnt++] 		= 0x02;																	// Start Address
 	framemk[cnt++] 		= 0x01;																	// Length
-	framemk[cnt++]		= radd_dirc( p_kma->wind_direction_avg.data / 10.0);
+	framemk[cnt++]		= radd_dirc((uint32_t)(p_kma->wind_direction_avg.data / 10.0));
 	framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
 
-  driver_uart_send(panel_port,framemk,cnt);
+  driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
 
 	osDelay(500);																				// 500 ms
 	
@@ -60,6 +59,6 @@ void	send_panel_hansung(driver_t *panel_port)
 	cnt					+= 10;
 	framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
 
-	driver_uart_send(panel_port,framemk,cnt);
+	driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
 
 }

@@ -82,7 +82,7 @@ uint32_t timeToOffsetYear(time_t currnet_tick, uint8_t min,uint16_t byte)
   time_t  ts;
   time_t  year_start_tick;
   uint16_t year;
-  uint8_t month;
+
   uint32_t offset;
 
   currnet_tick     -= currnet_tick % (min*60);
@@ -170,15 +170,15 @@ int32_t write_data_month(DATE_TIME_BUF *p_date, void *p_data,uint16_t dataLen, u
 {
   char path[70];
   time_t tmCurrent;
-  uint8_t hour;
-  uint8_t min;
+
+
   uint16_t year; 
   uint8_t month;
   uint8_t last_day;
   uint32_t year_offset;
   uint32_t month_offset;
-  uint8_t retry;
-  uint8_t yearList[10]={9,0,1,2,3,4,5,6,7,8};
+
+
   uint8_t monthList[]={0,12,1,2,3,4,5,6,7,8,9,10,11};
   uint8_t ret;
 
@@ -219,15 +219,15 @@ int32_t read_data_month(DATE_TIME_BUF *p_date, void *p_buff,uint16_t readLen, ui
 {
   char path[70];
   time_t tmCurrent;
-  uint8_t hour;
-  uint8_t min;
+
+
   uint16_t year; 
   uint8_t month;
   uint8_t last_day;
   uint32_t year_offset;
   uint32_t month_offset;
-  uint8_t retry;
-  uint8_t yearList[10]={9,0,1,2,3,4,5,6,7,8};
+
+
   uint8_t monthList[]={0,12,1,2,3,4,5,6,7,8,9,10,11};
   uint8_t ret;
 
@@ -267,15 +267,15 @@ int32_t read_data_month_bulk(DATE_TIME_BUF *p_date, void *p_buff, uint16_t readL
 {
   char path[70];
   time_t tmCurrent;
-  uint8_t hour;
-  uint8_t min;
+
+
   uint16_t year;
   uint8_t month;
   uint8_t last_day;
   uint32_t year_offset;
   uint32_t month_offset;
-  uint8_t retry;
-  uint8_t yearList[10] = {9, 0, 1, 2, 3, 4, 5, 6, 7, 8};
+
+
   uint8_t monthList[] = {0, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
   uint8_t ret;
 
@@ -406,7 +406,7 @@ uint8_t read_sensorDataMulti(DATE_TIME_BUF *pDate, uint32_t dataSize, int32_t Re
   uint8_t ret = 0;
   uint32_t nAddr;
   uint32_t nAddrOld;
-  uint32_t retry = 0;
+
   uint32_t year;
   uint32_t yearOld;
   uint32_t offset = 0;
@@ -428,7 +428,7 @@ uint8_t read_sensorDataMulti(DATE_TIME_BUF *pDate, uint32_t dataSize, int32_t Re
                dataSize;
     yearOld = yearList[GetYear(tmCurrent) % 10];  // 전년도 저장 메모리에 연속하여 저장
 
-    retry = 3;
+
 
       get_filePath(cSystem, yearOld, periodMin, path, sizeof(path));
 

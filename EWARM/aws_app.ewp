@@ -121,7 +121,7 @@
                 </option>
                 <option>
                     <name>OGUseCmsis</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>OGUseCmsisDspLib</name>
@@ -267,7 +267,7 @@
                 </option>
                 <option>
                     <name>CCDiagSuppress</name>
-                    <state>Pe177,Pe550</state>
+                    <state>Pe177</state>
                 </option>
                 <option>
                     <name>CCDiagRemark</name>
@@ -279,7 +279,7 @@
                 </option>
                 <option>
                     <name>CCDiagError</name>
-                    <state>Pe223</state>
+                    <state></state>
                 </option>
                 <option>
                     <name>CCObjPrefix</name>
@@ -832,7 +832,7 @@
                 </option>
                 <option>
                     <name>IlinkLogFile</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>IlinkLogInitialization</name>
@@ -1061,7 +1061,7 @@
                 </option>
                 <option>
                     <name>IlinkLogCallGraph</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>IlinkIcfFile_AltDefault</name>
@@ -1654,9 +1654,6 @@
                 </file>
             </group>
             <group>
-                <name>water</name>
-            </group>
-            <group>
                 <name>wind_direction</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\wind_direction\wind_direction.c</name>
@@ -1687,15 +1684,6 @@
                 <name>aws</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\aws\aws_data_process.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Tasks\aws\aws_nvm.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Tasks\aws\aws_processor.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Tasks\aws\aws_processor.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\aws\dualport.c</name>
@@ -1953,13 +1941,13 @@
             <group>
                 <name>adc</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\ADC\ads1220.c</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\ADC\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\adc\ads1220.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\ADC\ads1220_reg.h</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\adc\ads1220_reg.h</name>
                 </file>
             </group>
             <group>
@@ -1978,12 +1966,12 @@
                 </file>
             </group>
             <group>
-                <name>uart_ext</name>
+                <name>fram</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\uart_ext\TL16C554.c</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\fram\fm25cl.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\uart_ext\TL16C554.h</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\fram\fm25cl.h</name>
                 </file>
             </group>
             <group>
@@ -1993,15 +1981,6 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\Components\io_expander\pcf8575.h</name>
-                </file>
-            </group>
-            <group>
-                <name>fram</name>
-                <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\fram\fm25cl.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\fram\fm25cl.h</name>
                 </file>
             </group>
             <group>
@@ -2041,6 +2020,15 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\Components\serial_flash\ad45db.h</name>
+                </file>
+            </group>
+            <group>
+                <name>uart_ext</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\uart_ext\TL16C554.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\uart_ext\TL16C554.h</name>
                 </file>
             </group>
         </group>
@@ -2174,9 +2162,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_spi.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_sram.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_uart.c</name>

@@ -36,7 +36,7 @@ config_adc_adv_t *get_adc_config(int type)
 // ---  LUT 보간 함수 ---
 /** @brief 온도 LUT에서 현재 온도에 해당하는 보상 계수를 선형 보간합니다. LUT는 온도로 정렬되어
  * 있어야 합니다. */
-static bool interpolate_lut(const temp_lut_point_t lut[], uint8_t size, float current_temp,
+ bool interpolate_lut(const temp_lut_point_t lut[], uint8_t size, float current_temp,
                                 float* interp_slope_mult, float* interp_offset_corr)
 {
   if (lut == NULL || size == 0 || interp_slope_mult == NULL || interp_offset_corr == NULL)
@@ -257,7 +257,7 @@ bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_p
                                    adc_channel_type_t ch_type, int ch_idx, float current_temp,
                                    float target_ref, int32_t raw_now)
 {
-  uint8_t err;
+
   if (!adc_config || !cal_params || !cal_params->is_calibrated)
     return false;
 
@@ -335,7 +335,7 @@ float adc_driver_get_value(config_adc_adv_t *cfg,adc_channel_type_t channel_type
                            int32_t raw_value)
 {
   const adc_cal_params_t* cal_params;
-  uint8_t err;
+
   switch (channel_type)
   {
     case ADC_CHANNEL_TYPE_SINGLE_ENDED:

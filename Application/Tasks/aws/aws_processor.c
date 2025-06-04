@@ -127,7 +127,7 @@ void calculate_windToVector(wind_t *wind, windVector_t *windVector)
 
 void calculate_vectorToWin(windVector_t* windVector, wind_t *wind )
 {
-  float sum_u = 0.0f, sum_v = 0.0f;
+
 
   float speed = sqrtf(windVector->u * windVector->u + windVector->v * windVector->v);
 
@@ -235,7 +235,7 @@ wind_t calculate_wind1min(void)
 wind_t find_max_gust(const wind_t* buffer, uint32_t count)
 { 
   wind_t max_gust = {0, 0};
-  int32_t speed;
+
 
   max_gust = buffer[0];
 
@@ -392,14 +392,11 @@ void huminity_process_10s(uint16_t temperature)
 
  static measure_data_1s_t* g_p_raw;
 
- uint16_t get_aws_temperature(uint8_t *err)
- {
-   
- }
+
 
  uint16_t get_aws_huminity(void)
  {
-   uint16_t huminity;
+   uint16_t huminity=9;
 
    return huminity;
  }

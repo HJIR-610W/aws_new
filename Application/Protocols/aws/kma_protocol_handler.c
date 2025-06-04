@@ -117,7 +117,7 @@ bool is_kma2_protocol(uint8_t *input, uint32_t len)
   uint16_t checksum_data_len = KMA_REQUEST_LEN - 6;
 
   uint8_t calculated_xor = calculate_xor_checksum(checksum_data_ptr, checksum_data_len);
-  uint8_t calculated_sum = make_sum((char *)checksum_data_ptr, checksum_data_len);
+  uint8_t calculated_sum = make_sum((uint8_t *)checksum_data_ptr, checksum_data_len);
   uint8_t received_xor = input[len - 4];
   uint8_t received_sum = input[len - 3];
 
@@ -487,12 +487,6 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
   void update_old_to_kma3(AWS_DATA_STRUCT * p_aws_old, kma_data_ex_t * p_kma_ex)
   {
     uint8_t status;
-    uint8_t kma3_status[8];
-
-    for (int i = 0; i < _countof(kma3_status); i++)
-    {
-      kma3_status[i] = 0;
-    }
 
     p_kma_ex->temperature.data = p_aws_old->mTemperature.sReal;
     p_kma_ex->wind_direction_avg.data = p_aws_old->mWind.mDirection.sReal;
@@ -659,11 +653,12 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     tx_frame[9] = rx_frame[9];
 
     poll_t = SetTime(pDate->Year, pDate->Month, pDate->Day, pDate->Hour, pDate->Min, 0);
-    befhour_t = SetTime(Date_Time.Year, Date_Time.Month, Date_Time.Day, Date_Time.Hour, 0, 0);
+
     cur_t =
         SetTime(Date_Time.Year, Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, 0);
     if ((poll_t == cur_t) && (Date_Time.Sec < 2))
     {
+      vPortFree(p_kma3);
       vPortFree(p_aws);
       return 0;  //
     }

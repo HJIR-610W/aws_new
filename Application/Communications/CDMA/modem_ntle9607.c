@@ -515,7 +515,7 @@ M_RET_t ntle9607_check_network_service(char *msgOut,uint16_t msgSize)
 M_RET_t ntle9607_init(void)
 {
     M_RET_t ret = RET_OK;
-    char buff[50];
+ 
 
     ntle9607_modem_sends("ATE0V1\r\n");//E0 에코 금지 V1 응답은 아스키 형태
     osDelay(500);

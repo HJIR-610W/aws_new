@@ -65,8 +65,10 @@ void status_led_set(int mode)
   switch (mode)
   {
     case LED_BLINK:
+      {
        led_freq_cfg_t cfg = {.freq = 1, .highDuty = 10};
       driver_led_set(g_status_led, LED_CMD_SET_TOGGLE_FREQ, &cfg);
+      }
       break;
     case LED_ON:
     break;

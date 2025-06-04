@@ -38,7 +38,7 @@ long get_minute_offset(DATE_TIME_BUF *ct, int logging_min)
     return -1;
   }
 
-  long seconds_diff = difftime(t_now, t_base);
+  long seconds_diff = (long)difftime(t_now, t_base);
   return seconds_diff / (logging_min * 60);
 }
 
@@ -175,7 +175,7 @@ int32_t load_data(DATE_TIME_BUF *ct, uint8_t *pDataBuff,
       return 1;
     }
 
-    long seconds_diff = difftime(t_prev, t_base);
+    long seconds_diff = (long)difftime(t_prev, t_base);
     long offsetEntry = seconds_diff / 60;  // 1분 주기 기준
     uint32_t byte_offset = offsetEntry * dataSizePerEntry;
 

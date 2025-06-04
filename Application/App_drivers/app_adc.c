@@ -36,7 +36,7 @@ float adc_read_single_raw(int channel, uint8_t *err)
 
 
 
-int32_t adc_read_diff_avg(int channel,uint8_t *err,uint8_t avg_cnt)
+float adc_read_diff_avg(int channel,uint8_t *err,uint8_t avg_cnt)
 {
 
 return driver_adc_diff_read(g_ads1120,channel,avg_cnt,err);
@@ -44,10 +44,6 @@ return driver_adc_diff_read(g_ads1120,channel,avg_cnt,err);
 
 }
 
-int32_t adc_read_diff(int channel,uint8_t *err)
-{
-  return driver_adc_diff_read(g_ads1120, channel, ADC_AVG_CNT, err);
-}
 
 int32_t adc_read_diff_raw(int channel, uint8_t *err)
 {
@@ -132,38 +128,8 @@ int32_t get_adc_vref(adc_config_t *adc)
 }
 
 
-float calculate_adc(adc_config_t *adc_config,uint8_t *err)
-{
-  float val;
-  int32_t vref;
-  float data;
-  float retVal;
-
-  vref = get_adc_vref(adc_config);
-
-  data = adc_read_volate(adc_config,err);
 
 
-  if(*err)
-  {
-    return NAN;
-  }
-
-  val = adc_config->lowScale + (adc_config->highScale - adc_config->lowScale)*data/(vref/1000.0);
-  
-  if(val >adc_config->highScale)
-  {
-    val = adc_config->highScale;
-  } 
-
-  if(val < adc_config->lowScale)
-  {
-    val = adc_config->lowScale;
-  }
-
-return val/adc_config->scale;
-
-}
 
 
 float cvt_voltateToData(adc_config_t *adc_config,uint8_t *err)

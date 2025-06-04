@@ -85,7 +85,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
 #ifdef NEW_AWS_METHOD
 
   int32_t adc_ch;
-  float x, resistance;
+  float resistance;
   float temperature;
   float voltage;
   const pt100_cfg_t *cfg = ((driver_t *)driver)->cfg;
@@ -116,6 +116,8 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
     temperature = pt100_resistance_to_temperature(resistance);
     return temperature;
   }
+  
+  return temperature;
 #else
 
   int32_t sAdval;

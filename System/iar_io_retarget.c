@@ -18,7 +18,7 @@
 typedef int off_t;
 
 // errno 변수 정의
-static int errno;
+ //int errno;
 
 
 
@@ -36,7 +36,7 @@ int __isatty(int file) {
 
  int remove(const char *out)
  {
-   
+   return -1;
  }
 
 
@@ -172,7 +172,7 @@ int __isatty(int file) {
        // __write(STDOUT, &buffer[i], 1);
 
        // 선택 사항: 줄 끝 처리 (예: '\r' 또는 '\n'에서 반환)
-       if (buffer[i] == '\\r' || buffer[i] == '\\n')
+       if (buffer[i] == '\r' || buffer[i] == '\n')
        {
          // 선택 사항: CR/LF를 '\n'과 같은 표준 줄 끝 문자로 대체
          // buffer[i] = '\n';

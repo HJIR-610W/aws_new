@@ -47,16 +47,16 @@ void test_rs485(void)
     for (int i = 0; i < RS485_PORT_MAX; i++)
     {
       snprintf(buff,sizeof(buff),"RS485 %s\r\n",rs485_port_name[i]);
-      len = driver_rs485_send(port[i], buff, strlen(buff));
+      len = driver_rs485_send(port[i], (uint8_t*)buff, strlen(buff));
       if(len<0)
       {
         snprintf(buff, sizeof(buff), "RS485 %s failed\r\n", rs485_port_name[i]);
         io_printf(buff);
       }
-      len = driver_rs485_recv(port[i], rx_buff, sizeof(rx_buff), 2000);
+      len = driver_rs485_recv(port[i], (uint8_t*)rx_buff, sizeof(rx_buff), 2000);
       if(len)
       {
-        driver_rs485_send(port[i], rx_buff, len);
+        driver_rs485_send(port[i], (uint8_t*)rx_buff, len);
       }
       if (get_key(100) == KEY_CODE_CTRL_Q)
       {

@@ -31,10 +31,6 @@ void directTask(void *arg)
   uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
   uint32_t startTime;
   int32_t len;
-uart_optTimeOut_t opt;
-  
-  opt.frameTimeOutMs=10000;
-  opt.dataTimeOutMs = 10;
 
   startTime = osKernelGetTickCount();
 

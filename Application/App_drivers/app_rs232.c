@@ -30,6 +30,8 @@ int32_t uart_num_to_driver_num(int32_t app_uart_num)
       num = UART_5_EXT_D;
        break;
   }
+
+  return num;
 }
 
 

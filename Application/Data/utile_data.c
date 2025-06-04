@@ -15,6 +15,8 @@
 #define DATA_MINUTES_PER_DAY 1440
 #define DATA_DAYS_IN_YEAR 366
 
+
+#define FILE_PATH_SIZE 60
 void compute_daily_data(uint8_t type, void *data_minutes, void *data_days, int year)
 {
   uint32_t i;
@@ -298,13 +300,13 @@ int get_valid_minutes(int year) { return (is_leap_year(year) ? 366 : 365) * 24 *
 
 void make_filename(int year, char *file_path,const char *filename)
 { 
-  sprintf(file_path, "0:Y%02d/%s", year,filename); 
+  snprintf_s(file_path, FILE_PATH_SIZE,"0:Y%02d/%s", year,filename); 
 }
 
 int parse_datetime(const char *datetime_str, struct tm *out)
 {
   int y, M, d, h, m, s;
-  if (sscanf(datetime_str, "%d-%d-%d %d:%d:%d", &y, &M, &d, &h, &m, &s) != 6)
+  if (sscanf_s(datetime_str, "%d-%d-%d %d:%d:%d", &y, &M, &d, &h, &m, &s) != 6)
     return 0;
 
   out->tm_year = y - 1900;
@@ -363,14 +365,14 @@ int32_t last_minute_offsets_in_year(int32_t year)
 int read_bulk_data(const char *name, const DATE_TIME_BUF *start_time, uint32_t read_cnt,
                    uint16_t *buffer)
 {
-  FRESULT result = -1;
+  FRESULT result = (FRESULT)-1;
   DATE_TIME_BUF end_time;
   time_t start_sec = time_cvt_timestamp((DATE_TIME_BUF *)start_time);
   char file_path[64];
   uint32_t buffer_index = 0;
   uint32_t remain = read_cnt;
 
-  memset(buffer, 0, sizeof(uint16_t) * read_cnt);
+  memset_s(buffer, sizeof(buffer),0, sizeof(uint16_t) * read_cnt);
 
   if (offset_min((DATE_TIME_BUF *)start_time) == 0)
   {
@@ -445,7 +447,7 @@ int read_bulk_data(const char *name, const DATE_TIME_BUF *start_time, uint32_t r
 int parse_datetime_buf(const char *str, DATE_TIME_BUF *dt)
 {
   int y, M, d, h, m, s;
-  if (sscanf(str, "%04d-%02d-%02d %02d:%02d:%02d", &y, &M, &d, &h, &m, &s) != 6)
+  if (sscanf_s(str, "%04d-%02d-%02d %02d:%02d:%02d", &y, &M, &d, &h, &m, &s) != 6)
     return 0;
   dt->Year = (int16_t)y;
   dt->Month = (int8_t)M;

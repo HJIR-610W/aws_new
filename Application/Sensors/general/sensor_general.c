@@ -11,10 +11,7 @@
 
 
 
-void *general_sensor_open(sensor_t *sensor,uint8_t *err)
-{
 
-}
 
 
 

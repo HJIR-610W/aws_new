@@ -99,6 +99,7 @@ void print_kma3_command_request(const kma3_command_request_t* req)
 bool is_kma2_observation_packet_valid(const uint8_t* buffer, size_t len,
                                       uint8_t* out_data_format_no, uint16_t* out_data_content_len)
 {
+  uint16_t data;
   if (len != KMA2_OBS_PACKET_TOTAL_LEN_ESSENTIAL_SELECTIVE &&
       len != KMA2_OBS_PACKET_TOTAL_LEN_ESSENTIAL && len != KMA2_OBS_PACKET_TOTAL_LEN_PRECIPITATION)
   {
@@ -106,7 +107,7 @@ bool is_kma2_observation_packet_valid(const uint8_t* buffer, size_t len,
   }
   const kma2_observation_packet_header_t* header =
       (const kma2_observation_packet_header_t*)(buffer);
-  if (kma2_get_u16_big_endian((const uint8_t*)&header->start_mark) != KMA2_HEADER_START)
+  if (swap_bytes_uint16(header->start_mark) != KMA2_HEADER_START)
   {
     return false;
   }
@@ -138,10 +139,12 @@ bool is_kma2_observation_packet_valid(const uint8_t* buffer, size_t len,
   const kma2_observation_packet_footer_t* footer =
       (const kma2_observation_packet_footer_t*)(buffer + KMA2_OBS_PACKET_BASE_LEN +
                                                 current_data_content_len);
-  if (kma2_get_u16_big_endian((const uint8_t*)&footer->end_mark) != KMA2_HEADER_END)
-  {
-    return false;
-  }
+
+      data = footer->end_mark;
+      if (kma2_get_u16_big_endian((const uint8_t*)&data) != KMA2_HEADER_END)
+      {
+        return false;
+      }
   const uint8_t* checksum_data_start = buffer + 2;
   size_t checksum_data_len = (KMA2_OBS_PACKET_BASE_LEN - 2) + current_data_content_len;
   uint8_t calc_xor = calculate_xor_checksum(checksum_data_start, checksum_data_len);
@@ -517,7 +520,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
     // BIT 2, 3: AC 전압
     uint8_t ac_status_val = (fields->status_X >> 2) & 0x03;
     const char* ac_str = "Unknown";
-    bool ac_is_off = false;
+
     if (ac_status_val == 0x00)
       ac_str = "110V";
     else if (ac_status_val == 0x01)
@@ -525,50 +528,31 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
     else if (ac_status_val == 0x03)
     {
       ac_str = "AC OFF";
-      ac_is_off = true;
+
     }
     else
       ac_str = "Reserved/Unknown";
-#ifdef _WIN32
-    if (ac_is_off)
-      SetConsoleTextAttribute(
-          hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);  // AC OFF를 Abnormal로 간주하여 빨간색
-#endif
+
     task_printf("    %-*s : %s (0x%02X)\r\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 2-3 (AC Volt)",
                 ac_str, ac_status_val);
-#ifdef _WIN32
-    if (ac_is_off)
-      SetConsoleTextAttribute(hConsole, saved_attributes);
-#endif
+
 
     // BIT 4: 데이터로거함 잠금상태
     is_abnormal = IS_BIT_SET(fields->status_X, 4);  // 'Open'을 Abnormal로 간주
-#ifdef _WIN32
-    if (is_abnormal)
-      SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
-#endif
+
     task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 4 (Logger Door)",
                 is_abnormal ? "Open" : "Closed");
-#ifdef _WIN32
-    if (is_abnormal)
-      SetConsoleTextAttribute(hConsole, saved_attributes);
-#endif
+
 
     // BIT 5, 6, 7: 예비
     for (int i = 5; i <= 7; ++i)
     {
       is_abnormal = IS_BIT_SET(fields->status_X, i);
       sprintf(label_buf, "BIT %d (Reserve %d)", i, i - 4);
-#ifdef _WIN32
-      if (is_abnormal)
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
-#endif
+
       task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, label_buf,
                   is_abnormal ? "Abnormal" : "Normal");
-#ifdef _WIN32
-      if (is_abnormal)
-        SetConsoleTextAttribute(hConsole, saved_attributes);
-#endif
+
     }
   }
 
@@ -585,16 +569,10 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
     {
       bool is_abnormal = IS_BIT_SET(fields->status_Y, i);
       sprintf(label_buf, "BIT %d (%s)", i, sensor_names_Y[i]);
-#ifdef _WIN32
-      if (is_abnormal)
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
-#endif
+
       task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, label_buf,
                   is_abnormal ? "Abnormal" : "Normal");
-#ifdef _WIN32
-      if (is_abnormal)
-        SetConsoleTextAttribute(hConsole, saved_attributes);
-#endif
+
     }
   }
 
@@ -607,16 +585,10 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
     {  // Z는 4비트만 유효 (문서상)
       bool is_abnormal = IS_BIT_SET(fields->status_Z, i);
       sprintf(label_buf, "BIT %d (%s)", i, sensor_names_Z[i]);
-#ifdef _WIN32
-      if (is_abnormal)
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
-#endif
+
       task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, label_buf,
                   is_abnormal ? "Abnormal" : "Normal");
-#ifdef _WIN32
-      if (is_abnormal)
-        SetConsoleTextAttribute(hConsole, saved_attributes);
-#endif
+
     }
   }
 #endif

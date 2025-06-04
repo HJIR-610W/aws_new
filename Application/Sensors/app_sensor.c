@@ -195,7 +195,7 @@ void *sensor_add(sensor_t *sensor)
         WRITE_CFG_SENSOR(hjwind_speed_cnt);
         return &g_config_sensor.hjwind[index];
 
-      return 0;
+
       break;
     case S_T_HUMINITY_HJ:
     case S_T_TEMPERATURE_HJ:

@@ -32,14 +32,14 @@ void logging_set_logCnt(uint16_t cnt)
 /*
 로그가 64바이트씩 저장되도록 한다.
 */
-int32_t logging_printf(const char *log)
+int32_t save_log(const char *log)
 {
   char buff[LOG_LEN_MAX];
-  int len;
+
   int i=0;
   uint16_t logCnt;
   uint32_t totalBytes;
-  uint32_t cnt = 0;
+
   int32_t err=0;
 
   osSemaphoreAcquire(g_loggingSem, osWaitForever);

@@ -120,7 +120,7 @@ typedef struct iCellular
     M_RET_t (*at_direct)(char *at,char *outBuffer,uint16_t outSize);
 
     M_RET_t (*check_network_service)(char *msgOut,uint16_t msgSize);
-    void (*recv_bin)(void * port, char *data, uint16_t dataLen);;
+    void (*recv_bin)(void * port, char *data, uint16_t dataLen);
     uint32_t (*get_count)(void);
 } iCellular_t;
 

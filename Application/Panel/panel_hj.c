@@ -15,7 +15,7 @@
 */
 uint16_t send_panel_hj(driver_t *panel_port)
 {
-    uint8_t framemk[50];
+    char framemk[50];
     uint8_t 	cnt = 0;
     uint32_t 	i;
     DATE_TIME_BUF			*pDate;
@@ -74,7 +74,7 @@ uint16_t send_panel_hj(driver_t *panel_port)
     framemk[cnt++]  = 0x03;                                                                     // ETX      
     
 
-    driver_uart_send(panel_port,framemk,cnt);
+    driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
     return cnt;
 		
 }

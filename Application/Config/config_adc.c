@@ -89,7 +89,7 @@ config_adc_t g_config_adc_default = {
 void save_config_adc(void)
 {
   uint32_t crc;
-  uint8_t temp;
+
   uint8_t major,minor,fix,rel;
 
   g_config_adc.start = 0;

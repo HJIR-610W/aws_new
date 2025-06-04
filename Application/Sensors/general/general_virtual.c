@@ -14,7 +14,8 @@ general_v_cfg_t general_v_cfg[SENSOR_LIST_MAX];
 
 driver_t *general_v_open(int32_t n,void *opt)
 {
-  eSENSOR_LIST_t type =(eSENSOR_LIST_t)opt;
+  
+  eSENSOR_LIST_t type =(eSENSOR_LIST_t)(int)opt;
 
   if(g_general_virtual[type].opened)
   {

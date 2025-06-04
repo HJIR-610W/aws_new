@@ -246,7 +246,7 @@ typedef struct
   aws_data_t direct_radiation;     // 11. 직달복사 (1분 평균)
   aws_data_t current_weather;      // 12. 현재 일기
 
-  aws_data_t temp0_0;;
+  aws_data_t temp0_0;
   aws_data_t temp0_1;
   aws_data_t temp0_2;
   aws_data_t temp0_3;
@@ -276,8 +276,8 @@ typedef struct
   aws_data_t temp1_8;
   aws_data_t tacometer;
 
-  int8_t X_sensorStatus[8];
-  int8_t Y_volateStatus;
+  uint8_t X_sensorStatus[8];
+  uint8_t Y_volateStatus;
 } kma_data_ex_t;
 
 typedef struct rainfall_s
@@ -310,11 +310,11 @@ void set_rainfall_yesterday(float rainfall);
 void set_rainfall_yearly(float rainfall);
 
 sunshine_t *get_sunshine(void);
-void set_sunshine_hourly(float sunshine);
-void set_sunshine_today(float sunshine);
-void set_sunshine_monthly(float sunshine);
-void set_sunshine_yesterday(float sunshine);
-void set_sunshine_yearly(float sunshine);
+void set_sunshine_hourly(uint32_t sunshine);
+void set_sunshine_today(uint32_t sunshine);
+void set_sunshine_monthly(uint32_t sunshine);
+void set_sunshine_yesterday(uint32_t sunshine);
+void set_sunshine_yearly(uint32_t sunshine);
 
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min) ;

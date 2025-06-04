@@ -13,6 +13,8 @@
 #include "dev_io.h"
 #include "cli_input.h"
 #include "console_define.h"
+
+
 #define UART_LINE_MAX    128
 #define UART_HISTORY_DEPTH  4
 
@@ -21,8 +23,6 @@
 #define KEYCODE_CTRL_Q    17
 #define KEYCODE_ESC       27
 #define KEYCODE_UNKNOWN  1
-
-
 
 
 
@@ -43,18 +43,18 @@ static const char *cmdlist[] = {
 
 int uart_recv(char *ch)
 {
-  debug_recv(ch,1,0xffffffff);
+  io_recv(ch,1,0xffffffff);
   
   return 0;
 }
 
 void uart_send(char ch) 
 { 
-  debug_putch (ch);
+  io_put_ch (ch);
 }
 void uart_puts(const char *s)
 {
-  debug_puts(s);
+  io_puts(s);
 }
 
 static const char *autocomplete(const char *input)
@@ -74,7 +74,6 @@ static void clear_line_and_print(const char *buf, int len)
 {
   uart_puts("\r");
 }
-
 // 줄 다시 그리기 (삽입, 삭제 등)
 static void refresh_line(const char *buf, int len, int cursor_pos)
 {
@@ -92,14 +91,13 @@ int uart_get_line_with_edit(char *buf, int maxlen)
   int cursor_pos = 0;
   char ch;
 
-  memset(buf, 0, maxlen);
+  memset_s(buf, maxlen, 0, maxlen);
 
   while (1)
   {
     if (uart_recv(&ch) != 0)
       continue;
 
-    // Ctrl+C, Ctrl+Q
     if (ch == KEYCODE_CTRL_C)
     {
       uart_puts("\r\nCtrl+C detected.\r\n");
@@ -113,7 +111,6 @@ int uart_get_line_with_edit(char *buf, int maxlen)
       return KEYCODE_CTRL_Q;
     }
 
-    // Enter
     if (ch == '\r' || ch == '\n')
     {
       uart_send('\r');
@@ -121,7 +118,6 @@ int uart_get_line_with_edit(char *buf, int maxlen)
       break;
     }
 
-    // ESC 시퀀스 (방향키, Del 등)
     if (ch == 0x1B)
     {
       char seq[3] = {0};
@@ -129,7 +125,7 @@ int uart_get_line_with_edit(char *buf, int maxlen)
       {
         if (seq[0] == '[')
         {
-          if (seq[1] == 'D')  // ← Left
+          if (seq[1] == 'D')
           {
             if (cursor_pos > 0)
             {
@@ -137,7 +133,7 @@ int uart_get_line_with_edit(char *buf, int maxlen)
               cursor_pos--;
             }
           }
-          else if (seq[1] == 'C')  // → Right
+          else if (seq[1] == 'C')
           {
             if (cursor_pos < len)
             {
@@ -145,76 +141,45 @@ int uart_get_line_with_edit(char *buf, int maxlen)
               cursor_pos++;
             }
           }
-          else if (seq[1] == 'A')  // ↑ Up (히스토리 이전)
+          else if (seq[1] == 'A')
           {
             if (history_count > 0 && history_index < history_count - 1)
             {
-              for (int i = 0; i < cursor_pos; i++)
-              {
-                uart_puts("\b");
-              }
-
-              for (int i = 0; i < cursor_pos; i++)
-              {
-                uart_puts(" ");
-              }
-
-              for (int i = 0; i < cursor_pos; i++)
-              {
-                uart_puts("\b");
-              }
-
+              clear_line_and_print(buf, cursor_pos);
               history_index++;
-              strcpy(buf, history[history_index]);
+              strcpy_s(buf, maxlen, history[history_index]);
               len = strlen(buf);
               cursor_pos = len;
-
               uart_puts(buf);
             }
           }
-          else if (seq[1] == 'B')  // ↓ Down (히스토리 다음)
+          else if (seq[1] == 'B')
           {
             if (history_index > 0)
             {
-
-              for (int i = 0; i < cursor_pos; i++)
-              {
-                uart_puts("\b");
-              }
-
-              for (int i = 0; i < cursor_pos; i++)
-              {
-                uart_puts(" ");
-              }
-
-              for (int i = 0; i < cursor_pos; i++)
-              {
-                uart_puts("\b");
-              }
-
+              clear_line_and_print(buf, cursor_pos);
               history_index--;
-              strcpy(buf, history[history_index]);
+              strcpy_s(buf, maxlen, history[history_index]);
               len = strlen(buf);
               cursor_pos = len;
               uart_puts(buf);
-              // clear_line_and_print(buf, len);
             }
             else if (history_index == 0)
             {
               history_index = -1;
-              buf[0] = '\0';
+              memset_s(buf, maxlen, 0, maxlen);
               len = 0;
               cursor_pos = 0;
               clear_line_and_print(buf, len);
             }
           }
-          else if (seq[1] == '3')  // Delete (ESC [3~)
+          else if (seq[1] == '3')
           {
             char tilde;
-            uart_recv(&tilde);  // '~' 수신
+            uart_recv(&tilde);
             if (cursor_pos < len)
             {
-              memmove(&buf[cursor_pos], &buf[cursor_pos + 1], len - cursor_pos);
+              memmove_s(&buf[cursor_pos], maxlen - cursor_pos, &buf[cursor_pos + 1], len - cursor_pos);
               len--;
               refresh_line(buf, len, cursor_pos);
             }
@@ -224,7 +189,6 @@ int uart_get_line_with_edit(char *buf, int maxlen)
       continue;
     }
 
-    // Tab 자동완성
     if (ch == '\t')
     {
       buf[len] = 0;
@@ -232,55 +196,47 @@ int uart_get_line_with_edit(char *buf, int maxlen)
       if (suggest)
       {
         int remain = strlen(suggest) - len;
-        strncpy(&buf[len], &suggest[len], remain);
-        len += remain;
-        cursor_pos = len;
+        if (remain > 0 && len + remain < maxlen)
+        {
+          strncpy_s(&buf[len], maxlen - len, &suggest[len], remain);
+          len += remain;
+          cursor_pos = len;
+          refresh_line(buf, len, cursor_pos);
+        }
+      }
+      continue;
+    }
+
+    if (ch == 0x08)
+    {
+      if (cursor_pos > 0)
+      {
+        cursor_pos--;
+        len--;
+        memmove_s(&buf[cursor_pos], maxlen - cursor_pos, &buf[cursor_pos + 1], len - cursor_pos);
+        buf[len] = 0;
+        uart_puts("\b");
+        uart_puts(&buf[cursor_pos]);
+        uart_puts("  \b");
+        for (int i = cursor_pos; i <= len; i++)
+          uart_puts("\b");
+      }
+      continue;
+    }
+    else if (ch == 0x7F)
+    {
+      if (cursor_pos < len)
+      {
+        memmove_s(&buf[cursor_pos], maxlen - cursor_pos, &buf[cursor_pos + 1], len - cursor_pos);
+        len--;
         refresh_line(buf, len, cursor_pos);
       }
       continue;
     }
 
-// Backspace (0x08) 또는 Delete (0x7F) 구분 처리
-if (ch == 0x08)  // Backspace
-{
-  if (cursor_pos > 0)
-  {
-    cursor_pos--;
-    len--;
-
-    memmove(&buf[cursor_pos], &buf[cursor_pos+1], len - cursor_pos);
-
-    buf[len]=0;
-    
-    uart_puts("\b");
-    uart_puts(&buf[cursor_pos]);
-    uart_puts("  \b");
-
-    for (int i = cursor_pos; i <= len; i++)
-    {
-      uart_puts("\b");
-    }
-
-  }
-
-  continue;
-}
-else if (ch == 0x7F)  // Delete
-{
-  if (cursor_pos < len)
-  {
-    memmove(&buf[cursor_pos], &buf[cursor_pos + 1], len - cursor_pos);
-    len--;
-    refresh_line(buf, len, cursor_pos);
-  }
-  continue;
-}
-
-
-    // 일반 문자 입력
     if (isprint((unsigned char)ch) && len < maxlen - 1)
     {
-      memmove(&buf[cursor_pos + 1], &buf[cursor_pos], len - cursor_pos);
+      memmove_s(&buf[cursor_pos + 1], maxlen - (cursor_pos + 1), &buf[cursor_pos], len - cursor_pos);
       buf[cursor_pos] = ch;
       cursor_pos++;
       len++;
@@ -291,13 +247,13 @@ else if (ch == 0x7F)  // Delete
 
   buf[len] = '\0';
 
-  // 히스토리 저장
   if (len > 0)
   {
     if (history_count < UART_HISTORY_DEPTH)
       history_count++;
-    for (int i = UART_HISTORY_DEPTH - 1; i > 0; i--) strcpy(history[i], history[i - 1]);
-    strcpy(history[0], buf);
+    for (int i = UART_HISTORY_DEPTH - 1; i > 0; i--)
+      strcpy_s(history[i], sizeof(history[i]), history[i - 1]);
+    strcpy_s(history[0], sizeof(history[0]), buf);
   }
   history_index = -1;
 

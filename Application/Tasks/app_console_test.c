@@ -155,7 +155,7 @@ int32_t mcu_pin(p_shell_context_t ctx, int32_t argc, char **argv)
       io_printf(VT100_CURSOR_HOME);
       print_gpio_states_in_table();
 
-      debug_recv(&ch, 1, 100);
+      io_recv(&ch, 1, 100);
     } while (ch != ASCII_CODE_CTRL_Q);
 
     io_printf(VT100_CURSOR_ON);
@@ -274,7 +274,7 @@ int32_t print_di(p_shell_context_t ctx, int32_t argc, char **argv)
 
 int32_t ctrl_do(p_shell_context_t ctx, int32_t argc, char **argv)
 {
-  driver_t *gp;
+
   char *endptr;
   int32_t pin;
   int32_t pin_state;
@@ -303,4 +303,6 @@ int32_t ctrl_do(p_shell_context_t ctx, int32_t argc, char **argv)
 int32_t test_pcb(p_shell_context_t ctx, int32_t argc, char **argv)
 {
   run_test_root();
+  
+  return 0;
 }

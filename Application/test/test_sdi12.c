@@ -92,7 +92,7 @@ void send_uart6_break()
 }
 
 volatile uint32_t g_int_num = UART_IT_RXNE;
-int32_t sdi_send(uint8_t *cmd, uint16_t dataLen)
+void sdi_send(uint8_t *cmd, uint16_t dataLen)
 {
   // TX 라인은 송신 모드에서는 idle 일때 High 이고 수신 모드로 전환되면 low가 출력됨
   uint8_t data;

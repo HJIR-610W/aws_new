@@ -346,7 +346,7 @@ uint16_t SnowCalc(uint8_t *sensor_err)
 
 uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
 {
-  uint16_t sRet;
+
   sensor_data_t *p_sensor = g_p_raw->data;
   float temperature;
   uint8_t err=0;
@@ -497,7 +497,7 @@ void dualport_init(void)
  */
 uint16_t get_rain_mm(uint8_t *sensor_err)
 {
-  uint8_t err;
+
   uint16_t rain = 0;
   sensor_data_t *p_sensor = g_p_raw->data;
 
@@ -537,13 +537,7 @@ AWS_DATA_STRUCT *get_aws_data(int min)
   return p_aws_data;
 }
 
-void update_old_kma(eAWS_DATA_MIN_t min)
-{
-  AWS_DATA_STRUCT *p_aws_data;
 
-  p_aws_data = get_aws_data(min);
-
-}
 
 
 
@@ -1370,16 +1364,15 @@ void filter_init(void)
 void DUALPORT_TASK(void *arg)
 {
   uint8_t sensor_err = 0;
-  uint16_t sTriger = 0;
+
   uint16_t sSpeed;
   uint16_t sDirec;
-  uint16_t sSpeedOld=0;
-  uint16_t sDirecOld=0;
+
   SYSTEM_INFO_AWS *pSystem;
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
   AWS_DATA_STRUCT *pAws;
-  int32_t i, j;
+
   int32_t nWindCnt12 = 0;
   int32_t nWindCnt40 = 0;
   uint16_t data;

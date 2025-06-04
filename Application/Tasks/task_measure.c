@@ -139,7 +139,6 @@ bool is_measurement_250(void *data,uint32_t timeout)
 
 bool is_measurement_1s( void *data,uint32_t timeout)
 {
-  osStatus_t status;
 
   if (g_reading_1s_queue == NULL)
   {
@@ -147,7 +146,7 @@ bool is_measurement_1s( void *data,uint32_t timeout)
     return false;
   }
 
-  status = osMessageQueueGet(g_reading_1s_queue, data, NULL, timeout);
+  osMessageQueueGet(g_reading_1s_queue, data, NULL, timeout);
 
 
 
@@ -337,7 +336,7 @@ void sensor_init(void)
     }
   }
 
-  sensor_data_t *pa_reading_1s = g_reading_1.data;
+
 
   for (int i = 0; i < SENSOR_LIST_MAX; i++)
   { 
@@ -423,9 +422,9 @@ void measure_250ms(void)
   float speed = 0.0f;
   float direction = 0.0f;
   sensor_t *p_sensor_cfg = g_sensor_config_bk;
-  wind_t wind;
+ 
   sensor_data_t *p_reading_250ms = g_reading_250.data;
-  float offset=0;
+
 
   if (p_sensor_cfg[A3_WIND_SPEED].type)
   {
@@ -448,8 +447,8 @@ void measure_1s(void)
 {
   bool bData;
   uint8_t read_err;
-  uint16_t i;
-  uint16_t sensor_cnt;
+
+
   int32_t iData;
   float adc;
   float fData;
@@ -459,7 +458,7 @@ void measure_1s(void)
   sensor_data_t *pa_reading_1s = g_reading_1.data;
   sensor_t *sensor = g_sensor_config_bk;
 
-  sensor_cnt = _countof(g_sensor_config_bk);
+
 
 
       // AWS센서만 처리

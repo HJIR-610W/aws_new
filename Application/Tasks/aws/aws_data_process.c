@@ -14,12 +14,3 @@ typedef struct monthdata_s
 
 monthdata_t month[12];
 
-void calculate_aws_data(void)
-{
-  uint16_t month_rain;
-  uint8_t *p_data;
-  FRESULT rets;
-  char buff[100];
-
-
-}
