@@ -664,7 +664,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
         SetTime(Date_Time.Year, Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, 0);
     if ((poll_t == cur_t) && (Date_Time.Sec < 2))
     {
-      aws_free(p_aws);
+      vPortFree(p_aws);
       return 0;  //
     }
 
