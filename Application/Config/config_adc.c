@@ -90,6 +90,7 @@ void save_config_adc(void)
 {
   uint32_t crc;
   uint8_t temp;
+  uint8_t major,minor,fix,rel;
 
   g_config_adc.start = 0;
   crc = crc32_hw_with_padding(&g_config_adc.start,
@@ -97,7 +98,7 @@ void save_config_adc(void)
 
   g_config_adc.header.magicNum = CONFIG_MAGIC;
   g_config_adc.header.crc = crc;
-  g_config_adc.header.version = get_app_version();
+  g_config_adc.header.version = get_app_version(&major,&minor,&fix,&rel);
 
   fram_write(CONFIG_ADC_START_ADDRESS, (uint8_t *)&g_config_adc, sizeof(g_config_adc));
 }

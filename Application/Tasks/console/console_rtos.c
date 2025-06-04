@@ -11,7 +11,7 @@
 #include "console_utile.h"
 #include "old_aws_define.h"
 #include "task.h"  // (pvPortMalloc, vPortFree는 task.h 또는 FreeRTOS.h에 있을 수 있음)
-#include "utile_time.h"
+#include "util_time.h"
 
 static const char *get_cmsis_thread_state_string(osThreadState_t state)
 {

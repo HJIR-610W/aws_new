@@ -12,7 +12,7 @@
 #include "pcb_define.h"
 #include "stream_buffer.h"
 #include "system_err.h"
-#include "utile.h"
+#include "util_memory.h"
 
 #define STREAMBUFFER_USE 1  // 데이터 수신을 freertos 스트림 버퍼 사용시
 
@@ -811,7 +811,7 @@ driver_t *tls16c554_open(uint32_t num, void *opt)
   quad_init(&tls16c554_driver[num], opt);
 
 #if FREE_RTOS_USE
-  CREATE_BINARY_SEM(tls16c554_driver[num].sem);
+  OS_CREATE_BINARY_SEM(tls16c554_driver[num].sem);
 #endif
 
   return &tls16c554_driver[num];
@@ -827,7 +827,7 @@ int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen)
   uint32_t startTime;
 
 #if FREE_RTOS_USE
-  PEND_SEM(handle->sem, osWaitForever);
+  OS_PEND_SEM(handle->sem, osWaitForever);
 #endif
 
   while (dataLen)
@@ -856,7 +856,7 @@ int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen)
   THR에 문자가 로드되면 LSR6은 클리어되며 문자가 완전히 송신될 때 까지 유지됨
   */
 #if FREE_RTOS_USE
-  POST_SEM(handle->sem);
+  OS_POST_SEM(handle->sem);
 #endif
   return cnt;
 }
@@ -880,7 +880,7 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
 
   (void)lastTick;
 #if FREE_RTOS_USE
-  PEND_SEM(handle->sem, osWaitForever);
+  OS_PEND_SEM(handle->sem, osWaitForever);
 #endif
   while (1)
   {
@@ -922,7 +922,7 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
     if (elapseTick >= timeout || cnt >= buffSize)
     {
 #if FREE_RTOS_USE
-      POST_SEM(handle->sem);
+      OS_POST_SEM(handle->sem);
 #endif
       return cnt;
     }

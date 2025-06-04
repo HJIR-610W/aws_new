@@ -4,8 +4,8 @@
 #include <string.h>
 
 #include "dev_io.h"
-#include "utile.h"
-#include "utile_time.h"
+#include "util_memory.h"
+#include "util_time.h"
 
 #define KMA2_PRINT_LABEL_WIDTH 38  // 콜론 앞까지의 레이블이 차지할 최대 너비 (조정 가능)
 

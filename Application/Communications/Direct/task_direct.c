@@ -1,6 +1,6 @@
 #include "task_direct.h"
 #include "kma_protocol_handler.h"
-#include "app_rtc.h"
+#include "bsp.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "dev_io.h"
@@ -56,7 +56,7 @@ uart_optTimeOut_t opt;
         g_direct_system.last_send_time = time_timestamp();
         if (get_firmware_update())
         {
-          reset_system(0, "DIRECT update");
+          reset_system( "DIRECT update");
         }
       }
       startTime  = osKernelGetTickCount();

@@ -7,27 +7,17 @@
 #include "dev_io.h"
 #include "system_err.h"
 #include "pcb_define.h"
-#include "utile_time.h"
+#include "util_time.h"
 
 
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
 void Error_Handler(const char *file,const int32_t line)
 {
  
-   io_printf("%s,%d\r\n",file,line);
+  io_printf("%s,%d\r\n",file,line);
 
-//   __disable_irq();
-    
-//   __asm("BKPT #0"); 
-
-  /* USER CODE END     Error_Handler(__FILE__,__LINE__);_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
-
 void assert_failed(uint8_t *file, uint32_t line)
 {
   Error_Handler(file,line);
@@ -36,28 +26,26 @@ void assert_failed(uint8_t *file, uint32_t line)
 
 
 #define RST_LOG_MAX 100
-//2022-11-11 11:00:00,10,12,test
+//2022-11-11 11:00:00,test
 typedef struct no_init_s
 {
+  uint32_t key;
   char rstLog[RST_LOG_MAX];
 }no_init_t;
 __no_init volatile no_init_t noInitData @ 0x20000004; //이 주소에 할당되도록 한다 IAR 전용
 
 
 
-void reset_system(uint16_t code,const char * pFmt, ...)
+void reset_system(const char * pFmt, ...)
 {
-    char buff[RST_LOG_MAX];
-    uint32_t len=0;
-    va_list ap;
-    DATE_TIME_BUF tn={1,1,1,1,1,1};
- 
+  char buff[RST_LOG_MAX];
+  uint32_t len=0;
+  va_list ap;
+
     __disable_irq();;//TODO 인터럽트 비활성 코드 삽입
-    
-    //time_getFromDirect_unsafe(&tn);
-    
-    snprintf_s(&buff[len],sizeof(buff),"RST,%04d-%02d-%02d %02d:%02d:%02d,%d,",
-    tn.Year,tn.Month,tn.Day,tn.Hour,tn.Min,tn.Sec,code);
+
+    snprintf_s(&buff[len], sizeof(buff), "RST,%04d-%02d-%02d %02d:%02d:%02d,", Date_Time.Year,
+               Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
 
     len = strnlen_s(buff, sizeof(buff));
 
@@ -67,6 +55,18 @@ void reset_system(uint16_t code,const char * pFmt, ...)
 
     strcpy_s((char *)noInitData.rstLog, sizeof(noInitData.rstLog), buff);//리셋 원인 기록
 
+    noInitData.key = 0x5a5a5a5a;
     HAL_NVIC_SystemReset();
 
+}
+
+bool restore_error(char *p_out, int32_t out_size)
+{ 
+  if(noInitData.key ==0x5a5a5a5a)
+  {
+    snprintf(p_out, out_size,"%s",noInitData.rstLog);
+  return true;
+  }
+
+  return false;
 }

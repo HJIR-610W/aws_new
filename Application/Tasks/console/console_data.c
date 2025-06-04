@@ -1,13 +1,13 @@
 #include "IO\dev_io.h"
 
 #include "console_define.h"
-#include "console_utile.h"
+#include "util_memory.h"
 #include "cli_input.h"
-
 #include "old_aws_define.h"
 #include "app_dataLogging.h"
-#include "utile_time.h"
+#include "util_time.h"
 #include "aws_data.h"
+#include "console_utile.h"
 
 void menu_data_display(void)
 {

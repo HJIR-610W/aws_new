@@ -9,7 +9,7 @@
 #include "Sensors\general\sensor_general.h"
 #include "Sensors\temperature\hj_temperature.h"
 #include "pt100.h"
-#include "utile.h"
+#include "util_memory.h"
 
 driver_t *temperature_open(uint32_t num, void *opt)
 {

@@ -8,7 +8,7 @@
 
 #include "dev_io.h"
 #include "ff.h"
-#include "os_define.h"
+#include "os_user_def.h"
 #include "sdio.h"
 #include "usDelay.h"
 #include "user_heap.h"
@@ -98,7 +98,7 @@ enum {READ_SIZE = 4096};
         g_fat_error[eFAT_ERR_CLOSE] = (uint8_t)fr;
     }
 
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return !(fr == FR_OK);
 
 }
@@ -110,14 +110,14 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   FRESULT res;
   UINT bytesWritten;
 
-  OS_SEM_PEND(g_fileSem, osWaitForever);
+  OS_PEND_SEM(g_fileSem, osWaitForever);
 
 
   // 파일 열기 (없으면 생성, 있으면 열기 + 쓰기)
   res = f_open(&file, path, FA_WRITE | FA_OPEN_ALWAYS);
   if (res != FR_OK)
   {
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res;  // 실패 시 오류 코드 반환
   }
 
@@ -126,7 +126,7 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   if (res != FR_OK)
   {
     f_close(&file);
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res;
   }
 
@@ -135,7 +135,7 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   if (res != FR_OK || bytesWritten != dataLen)
   {
     f_close(&file);
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res != FR_OK ? res : FR_DISK_ERR;
   }
 
@@ -145,7 +145,7 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   // 파일 닫기
   f_close(&file);
 
-  OS_SEM_POST(g_fileSem);
+  OS_POST_SEM(g_fileSem);
   return res;
 }
 
@@ -166,13 +166,13 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   {
     return (FRESULT)-1;
   }
-  OS_SEM_PEND(g_fileSem, osWaitForever);
+  OS_PEND_SEM(g_fileSem, osWaitForever);
   // 파일 열기 (읽기 전용, 없으면 오류)
   res = f_open(p_file, path, FA_READ);
   if (res != FR_OK)
   {
     vPortFree(p_file);
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res;  // 실패 시 오류 코드 반환
   }
 
@@ -182,7 +182,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   {
     f_close(p_file);
     vPortFree(p_file);
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res;
   }
 
@@ -203,7 +203,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
     {
       f_close(p_file);
       vPortFree(p_file);
-      OS_SEM_POST(g_fileSem);
+      OS_POST_SEM(g_fileSem);
       return res != FR_OK ? res : FR_DISK_ERR;
     }
   }
@@ -212,7 +212,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   f_close(p_file);
   vPortFree(p_file);
 
-  OS_SEM_POST(g_fileSem);
+  OS_POST_SEM(g_fileSem);
   return FR_OK;
 #else
   FIL file;
@@ -223,7 +223,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   res = f_open(&file, path, FA_READ);
   if (res != FR_OK)
   {
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res;  // 실패 시 오류 코드 반환
   }
 
@@ -270,12 +270,12 @@ FRESULT append_file(char *path, uint8_t *data, uint32_t dataLen)
   FRESULT res;
   UINT bytesWritten;
 
-  OS_SEM_PEND(g_fileSem, osWaitForever);
+  OS_PEND_SEM(g_fileSem, osWaitForever);
   // 파일 열기 (쓰기, 없으면 생성, 있으면 파일 끝으로 포인터 이동 후 쓰기)
   res = f_open(&file, path, FA_WRITE | FA_OPEN_APPEND);
   if (res != FR_OK)
   {
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res;  // 실패 시 오류 코드 반환
   }
 
@@ -284,7 +284,7 @@ FRESULT append_file(char *path, uint8_t *data, uint32_t dataLen)
   if (res != FR_OK || bytesWritten != dataLen)
   {
     f_close(&file);
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res != FR_OK ? res : FR_DISK_ERR;
   }
 
@@ -293,7 +293,7 @@ FRESULT append_file(char *path, uint8_t *data, uint32_t dataLen)
 
   // 파일 닫기
   f_close(&file);
-  OS_SEM_POST(g_fileSem);
+  OS_POST_SEM(g_fileSem);
   return res;
 }
 
@@ -348,14 +348,14 @@ FRESULT list_directory(const char *path)
   FILINFO fno;
   FRESULT res;
 
-  OS_SEM_PEND(g_fileSem, osWaitForever);
+  OS_PEND_SEM(g_fileSem, osWaitForever);
 
   // 디렉토리 열기
   res = f_opendir(&dir, path);
   if (res != FR_OK)
   {
     io_printf("Failed to open directory: %s (Error: %d)\r\n", path, res);
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res;
   }
 
@@ -398,7 +398,7 @@ FRESULT list_directory(const char *path)
   // 디렉토리 닫기
   f_closedir(&dir);
 
-  OS_SEM_POST(g_fileSem);
+  OS_POST_SEM(g_fileSem);
   return FR_OK;
 }
 
@@ -406,17 +406,17 @@ FRESULT get_file_size(const char *path, FSIZE_t *size)
 {
   FILINFO fno;
   FRESULT res;
-  OS_SEM_PEND(g_fileSem, osWaitForever);
+  OS_PEND_SEM(g_fileSem, osWaitForever);
   res = f_stat(path, &fno);  // 파일 정보 가져오기
   if (res != FR_OK)
   {
     *size = 0;
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res;  // 오류 반환
   }
 
   *size = fno.fsize;  // 파일 크기 설정
-  OS_SEM_POST(g_fileSem);
+  OS_POST_SEM(g_fileSem);
   return FR_OK;
 }
 

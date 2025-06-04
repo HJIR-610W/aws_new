@@ -5,7 +5,7 @@
 
 #include "config_sensor.h"
 #include "config_app.h"
-#include "utile.h"
+#include "util_memory.h"
 
 
 const char *g_sensor_model_list[] = {

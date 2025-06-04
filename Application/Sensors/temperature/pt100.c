@@ -6,7 +6,7 @@
 #include "driver_adc.h"
 #include "driver_interface.h"
 #include "pt100.h"
-#include "utile.h"
+#include "util_memory.h"
 
 #define PT100_CNT 2
 #define MIN_TEMP -42  // 최소 온도

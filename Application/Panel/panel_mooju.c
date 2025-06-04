@@ -3,10 +3,10 @@
 #include <stdint.h>
 #include "old_aws_define.h"
 #include "config_app.h"
-#include "utile_time.h"
+#include "util_time.h"
 #include "aws_data.h"
 #include "driver_uart.h"
-#include "utile.h"
+#include "util_memory.h"
 #include "panel_common.h"
 
 /*

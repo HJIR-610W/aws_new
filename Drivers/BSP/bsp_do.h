@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-void do_init(void);
-void write_do(int32_t num,int32_t status);
+void bsp_do_init(void);
+void bsp_write_do(int32_t num,int32_t status);
 
 #endif

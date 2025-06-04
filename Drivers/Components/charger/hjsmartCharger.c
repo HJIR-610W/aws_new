@@ -9,9 +9,9 @@
 #include "pcb_define.h"
 #include "hjsmartCharger.h"
 #include "driver_uart.h"
-#include "utile_time.h"
-#include "utile.h"
-#include  "os_define.h"
+#include "util_time.h"
+#include "util_memory.h"
+#include  "os_user_def.h"
 
 #include "os_user_def.h"
 typedef struct
@@ -247,7 +247,7 @@ void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err
   len = Make_SmartChgFrame(buff,sizeof(buff),0x50,data,6);
 
 #if FREE_RTOS_USE
-    PEND_SEM(chg->sem,osWaitForever);
+    OS_PEND_SEM(chg->sem,osWaitForever);
 #endif
   
   driver_uart_flush_rx(cfg->rs232_io);
@@ -276,7 +276,7 @@ void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err
   } 
 
 #if FREE_RTOS_USE
-  POST_SEM(chg->sem);
+  OS_POST_SEM(chg->sem);
 #endif
 
 

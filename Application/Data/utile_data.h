@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 
-#include "utile_time.h"
+#include "util_time.h"
 #define DATA_SIZE_16 16
 #define DATA_SIZE_32 32
 

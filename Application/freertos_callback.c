@@ -1,47 +1,46 @@
 
 
 #include <stdio.h>
-#include "pcb_define.h"
+
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 #include "dev_io.h"
+#include "pcb_define.h"
+#include "system_err.h"
 
 void vApplicationIdleHook(void);
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
 void vApplicationMallocFailedHook(void);
 void vApplicationIdleHook( void )
 {
-   /* vApplicationIdleHook() will only be called if configUSE_IDLE_HOOK is set
-   to 1 in FreeRTOSConfig.h. It will be called on each iteration of the idle
-   task. It is essential that code added to this hook function never attempts
-   to block in any way (for example, call xQueueReceive() with a block time
-   specified, or call vTaskDelay()). If the application makes use of the
-   vTaskDelete() API function (as this demo application does) then it is also
-   important that vApplicationIdleHook() is permitted to return to its calling
-   function, because it is the responsibility of the idle task to clean up
-   memory allocated by the kernel to any task that has since been deleted. */
-}
-/* USER CODE END 2 */
+  /* vApplicationIdleHook() 함수는 FreeRTOSConfig.h에서 configUSE_IDLE_HOOK가 1로 설정되어 있어야만
+     호출됩니다. 이 함수는 idle 태스크가 한 번 실행될 때마다 호출됩니다. 이 훅 함수에 추가되는
+     코드에서는 **절대로 블로킹 동작을 시도해서는 안 됩니다** (예: xQueueReceive()를 블로킹 시간과
+     함께 호출하거나, vTaskDelay()를 호출하는 경우 등).
 
-/* USER CODE BEGIN 4 */
+     만약 애플리케이션에서 vTaskDelete() API 함수를 사용한다면
+     (이 데모 애플리케이션이 그렇게 하듯이),
+     vApplicationIdleHook() 함수가 호출한 함수로 반드시 **리턴(return)** 하도록 하는 것도
+     중요합니다.
+
+     그 이유는, **삭제된 태스크가 사용했던 메모리를 해제(clean up)하는 책임이 idle 태스크에 있기
+     때문**입니다. */
+}
+
 char g_task_name[20];
-bool g_stack_overflow=false;
+
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 {
-   /* Run time stack overflow checking is performed if
-   configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
-   called if a stack overflow is detected. */
+  /* configCHECK_FOR_STACK_OVERFLOW가 1 또는 2로 정의되어 있으면
+     런타임 중 스택 오버플로우(overflow) 검사가 수행됩니다.
+     이 훅 함수는 스택 오버플로우가 감지되었을 때 호출됩니다. */
 
-
-  snprintf(g_task_name,sizeof(g_task_name),"SOF,%s",pcTaskName);
- // debug_puts_nonos(g_task_name);
-  io_printf("SOF,%s",g_task_name);
-            __asm("BKPT #0");
-  HAL_NVIC_SystemReset();
+   snprintf(g_task_name,sizeof(g_task_name),"SOF,%s",pcTaskName);
+   io_printf("SOF,%s",g_task_name);
+   __asm("BKPT #0");
+   reset_system("%s", g_task_name);
 }
-/* USER CODE END 4 */
 
-/* USER CODE BEGIN 5 */
 void vApplicationMallocFailedHook(void)
 {
 /* vApplicationMallocFailedHook() 함수는 오직

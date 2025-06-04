@@ -3,7 +3,7 @@
 #include "driver_adc.h"
 #include "driver_stm32_adc.h"
 #include "ads1220.h"
-#include "utile.h"
+#include "util_memory.h"
 #include "adc_calibration.h"
 
 driver_t *driver_adc_open(uint32_t num,void *opt)

@@ -3,7 +3,7 @@
 
 #include "cmsis_os2.h"
 #include "app_file.h"
-#include "utile_time.h"
+#include "util_time.h"
 #include "app_dataLogging.h"
 
 #include "dev_io.h"

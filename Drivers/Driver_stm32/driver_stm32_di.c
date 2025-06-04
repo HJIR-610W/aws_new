@@ -10,7 +10,7 @@
 #include "mcu_utile.h"
 #include "pcb_define.h"
 #include "stm32f4xx_hal.h"
-#include "utile.h"
+#include "util_memory.h"
 
 typedef struct stm32_di_cfg_s
 {

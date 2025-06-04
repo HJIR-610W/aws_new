@@ -3,13 +3,13 @@
 #include <stdlib.h>
 
 
-#include "os_define.h"
+#include "os_user_def.h"
 #include "dev_io.h"
 #include "Sensors\rain\rain.h"
 #include "task_isrEvent.h"
 #include "pcb_define.h"
 #include "driver_di.h"
-#include "utile_time.h"
+#include "util_time.h"
 
 
 rain_data_t rain_data;
@@ -24,36 +24,36 @@ volatile uint32_t g_last_pulse_time;
 
 void increase_rain(void)
 {
-  if(OS_SEM_PEND(g_rainSemId, osWaitForever) == osOK)
-  {
+  OS_PEND_SEM(g_rainSemId, osWaitForever);
+
     g_rainPulse += 1;
-    OS_SEM_POST(g_rainSemId);
-  }
+    OS_POST_SEM(g_rainSemId);
+
 }
 
 uint16_t peek_rain(void)
 {
 	uint16_t ret=0;
-  if(OS_SEM_PEND(g_rainSemId, osWaitForever) == osOK)
-	{
+  OS_PEND_SEM(g_rainSemId, osWaitForever);
+
 		ret = g_rainPulse;
-    OS_SEM_POST(g_rainSemId);
-	}
+    OS_POST_SEM(g_rainSemId);
+	
 	return ret;
 }
 
 uint16_t get_rain(uint16_t cnt)
 {
   uint16_t ret=0;
-  if(OS_SEM_PEND(g_rainSemId, osWaitForever) == osOK)
-  {
+  OS_PEND_SEM(g_rainSemId, osWaitForever);
+ 
     if(cnt>= g_rainPulse)
       {
         g_rainPulse -= cnt;
               ret = cnt;
       }
-      OS_SEM_POST(g_rainSemId);
-    }	
+      OS_POST_SEM(g_rainSemId);
+
   return ret;
 }
 

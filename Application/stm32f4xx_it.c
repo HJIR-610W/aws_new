@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include "pcb_define.h"
 #include "stm32f4xx_it.h"
-
+#include "system_err.h"
 extern ETH_HandleTypeDef heth;
 extern TIM_HandleTypeDef htim4;
 
@@ -232,7 +232,7 @@ void HardFault_Handler(void)
     #if DEBUG_MODE
     __asm("BKPT #0");
     #endif 
-    HAL_NVIC_SystemReset();
+    reset_system("hard fault");
   }
 }
 

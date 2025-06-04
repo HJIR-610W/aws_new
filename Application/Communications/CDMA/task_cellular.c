@@ -17,7 +17,7 @@
 #include "modem_sms.h"
 #include "driver_do.h"
 #include "task_cellular.h"
-#include "utile_time.h"
+#include "util_time.h"
 
 #include "kma_protocol_handler.h"
 #include "update_fw.h"
@@ -1519,7 +1519,7 @@ void modemTcpTask(void  *argument)
                   {
                     _iCellular->close_tcp();
                     osDelay(1000);
-                    reset_system(0, "CDMA update");
+                    reset_system( "CDMA update");
                   }
                 }
               }

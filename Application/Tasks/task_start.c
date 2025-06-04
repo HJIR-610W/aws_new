@@ -5,7 +5,7 @@
 #include "App_drivers\app_file.h"
 
 #include "App_drivers\app_flash.h"
-#include "App_drivers\app_rtc.h"
+
 #include "Communications\CDMA\task_cellular.h"
 #include "Communications\Direct\task_direct.h"
 #include "Communications\Ethernet\task_client.h"
@@ -28,7 +28,7 @@
 #include "Tasks\task_measure.h"
 #include "Tasks\task_panel.h"
 #include "Tasks\task_system.h"
-#include "Utile\utile_time.h"
+#include "Utils\util_time.h"
 #include "app_dataLogging.h"
 #include "app_logging.h"
 #include "fatfs.h"
@@ -39,6 +39,7 @@
 #include "sdio.h"
 #include "test\task_test.h"
 #include "user_heap.h"
+#include "bsp.h"
 
 const osThreadAttr_t kStartTask_attributes = {
     .name = "startTask",
@@ -85,11 +86,14 @@ void startTask(void *arg)
     osThreadExit();  // 종료 시킴
   }
 
+  
   mcu_interrupt_init();  // 최우선 실행
 
+  
   osDelay(1000);
+  bsp_init();
   usDelay_init();
-  rtc_init();
+
 
   config_manager_init();
   flash_init();

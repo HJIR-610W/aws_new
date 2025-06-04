@@ -4,14 +4,14 @@
 #include "vt100_command.h"
 #include "config_app.h"
 #include "dev_io.h"
-
+#include "bsp.h"
 #include "task_tcpServer.h"
 #include "task_direct.h"
-#include "utile_time.h"
+#include "util_time.h"
 #include "aws_data.h"
 #include "console_utile.h"
 #include "app_charger.h"
-#include "app_di.h"
+#include "bsp_di.h"
 #include "app_bsp.h"
 #include "task_logging.h"
 #include "cli_key_code.h"
@@ -90,8 +90,8 @@ int32_t print_systemInfo(uint16_t row, uint16_t column)
 
   vt100_print_bar(line++, column, -DISP_WIDTH, "저장 기능 :%s\r\n",message);
 
-  vt100_print_bar(line++, column, -DISP_WIDTH, "장비 전원 :%5.2f V\r\n", read_battery());
-  vt100_print_bar(line++, column, -DISP_WIDTH, "장비 온도 :%5.2f C\r\n", read_temperature());
+  vt100_print_bar(line++, column, -DISP_WIDTH, "장비 전원 :%5.2f V\r\n", bsp_read_battery());
+  vt100_print_bar(line++, column, -DISP_WIDTH, "장비 온도 :%5.2f C\r\n", bsp_read_temperature());
 
   if(get_config_app()->ac_use)
   {

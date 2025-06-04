@@ -12,7 +12,7 @@
 #include "stream_buffer.h"
 #include "system_err.h"
 #include "usDelay.h"
-#include "utile.h"
+#include "util_memory.h"
 
 #define STM32_UART_0_BUFF_SIZE 512
 #define STM32_UART_1_BUFF_SIZE 512

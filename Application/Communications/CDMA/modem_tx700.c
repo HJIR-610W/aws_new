@@ -2,16 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdlib.h>
-
 #include "cmsis_os2.h"
-#include "utile.h"
-
+#include "util_memory.h"
 #include "modem_tx700.h"
 #include "at_cmd.h"
-
 #include "app_bsp.h"
+#include "util_memory.h"
 
-#include "utile.h"
+#include "bsp.h"
+
 
 
 
@@ -536,9 +535,9 @@ void tx700_reset(uint8_t resetType,uint32_t delayMs)
         tx700_resetSW();
         break;
         case M_RESET_HW:
-        cdma_power_off();
+        bsp_cdma_power_off();
         osDelay(2000);
-        cdma_power_on();
+        bsp_cdma_power_on();
 
         break;
     }

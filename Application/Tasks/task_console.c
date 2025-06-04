@@ -13,10 +13,11 @@
 #include "driver_uart.h"
 #include "dev_io.h"
 #include "task_isrEvent.h"
-#include "utile_time.h"
+#include "util_time.h"
 #include "cli_input.h"
 #include "vt100_command.h"
 #include "console_test.h"
+#include "system_err.h"
 driver_t *console_uart;
 
 const osThreadAttr_t consoleTask_attributes = {
@@ -50,28 +51,27 @@ static const shell_command_context_t testCmd = {"test", "\r\n\"test\"\r\n", test
 
 void print_signature(void)
 {
-    uint8_t a;
-    uint8_t b;
-    uint8_t c;
-    uint8_t d;
-    DATE_TIME_BUF ct;
+  uint8_t major;
+  uint8_t minor;
+  uint8_t fix;
+  uint8_t rel;
+  DATE_TIME_BUF ct;
 
-    get_appVer(&a,&b,&c,&d);
-    get_appBuild(&ct);
+  get_app_version(&major,&minor,&fix,&rel);
+  get_app_build(&ct);
 
-    io_printf("\r\n");
-    io_printf("(0lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk(B\r\n");
-    io_printf("(0x(B HWAJIN T&I CO.,LTD.                      (0x(B\r\n");
-    io_printf("(0tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu(B\r\n");
-    io_printf("(0x(B AWS                                      (0x(B\r\n"); //1111-11-11 11:11:11
-    io_printf("(0x(B App  %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",a,b,c,d,ct.Year,ct.Month,ct.Day,
-                                                    ct.Hour,ct.Min,ct.Sec);//os »ç¿ëÀü¿¡´Â Á÷Á¢ È£Ãâ
-    get_bootVer(&a,&b,&c,&d);
-    get_bootBuild(&ct);
-    io_printf("(0x(B Boot %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",a,b,c,d,ct.Year,ct.Month,ct.Day,
-                                                    ct.Hour,ct.Min,ct.Sec);//os »ç¿ëÀü¿¡´Â Á÷Á¢ È£Ãâ
-
-    io_printf("(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B\r\n");
+  io_printf("\r\n");
+  io_printf("(0lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk(B\r\n");
+  io_printf("(0x(B HWAJIN T&I CO.,LTD.                      (0x(B\r\n");
+  io_printf("(0tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu(B\r\n");
+  io_printf("(0x(B AWS                                      (0x(B\r\n"); //1111-11-11 11:11:11
+  io_printf("(0x(B App  %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",major,minor,fix,rel,ct.Year,ct.Month,ct.Day,
+                                                  ct.Hour,ct.Min,ct.Sec);//os »ç¿ëÀü¿¡´Â Á÷Á¢ È£Ãâ
+  get_boot_version(&major,&minor,&fix,&rel);
+  get_boot_build(&ct);
+  io_printf("(0x(B Boot %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",major,minor,fix,rel,ct.Year,ct.Month,ct.Day,
+                                                  ct.Hour,ct.Min,ct.Sec);//os »ç¿ëÀü¿¡´Â Á÷Á¢ È£Ãâ
+  io_printf("(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B\r\n");
 
 }
 
@@ -93,15 +93,21 @@ void sonsoleTask(void *arg)
   int a;
   int ret;
   int mode = (int)arg;
-
+  char buffer[100];
   const char *cli_aws = "\x1B[32mAWS>> \x1B[37m";
   const char *cli_test = "\x1B[32mAWS_TEST>> \x1B[37m";
 
   osDelay(1000);
   io_printf("\r\n\r\n");
- // io_printf(VT100_CLEAR_SCREEN);
-  //io_printf(VT100_CURSOR_HOME);
-  print_signature();
+
+  if (restore_error(buffer,sizeof(buffer)))
+  {
+    io_printf("%s\r\n",buffer);
+  }
+
+    // io_printf(VT100_CLEAR_SCREEN);
+    // io_printf(VT100_CURSOR_HOME);
+    print_signature();
 
   DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
 

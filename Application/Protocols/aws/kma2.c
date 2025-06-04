@@ -4,11 +4,11 @@
 
 #include "aws_data.h"
 #include "config_app.h"
-#include "crc16_ccitt.h"
+#include "util_crc16_ccitt.h"
 #include "kma2.h"
 #include "kma_define.h"
-#include "utile.h"
-#include "utile_time.h"
+#include "util_memory.h"
+#include "util_time.h"
 
 
 #define KMA2_DATA_CONTENT_ESSENTIAL_SELECTIVE_LEN 91  // 필수 및 선택 모두 관측 시

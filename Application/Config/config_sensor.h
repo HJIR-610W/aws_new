@@ -12,7 +12,7 @@
 #include "app_rs232.h"
 #include "app_rs485.h"
 #include "config_memory_map.h"
-#include "utile.h"
+#include "util_memory.h"
 
 
 #define SENSOR_ERR_CFG 2

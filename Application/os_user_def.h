@@ -7,7 +7,7 @@ os함수가 길어서 쉬운 용어로 사용
 #include "cmsis_os2.h"
 
 
-#define CREATE_BINARY_SEM(sem)                 \
+#define OS_CREATE_BINARY_SEM(sem)                 \
   do                                    \
   {                                     \
     if (sem == NULL)                    \
@@ -16,7 +16,7 @@ os함수가 길어서 쉬운 용어로 사용
     }                                   \
   } while (0)
 
-#define PEND_SEM(sem, timeout)          \
+#define OS_PEND_SEM(sem, timeout)          \
   do                                    \
   {                                     \
     if (sem)                            \
@@ -25,7 +25,7 @@ os함수가 길어서 쉬운 용어로 사용
     }                                   \
   } while (0)
 
-#define POST_SEM(sem)          \
+#define OS_POST_SEM(sem)          \
   do                           \
   {                            \
     if (sem)                   \
@@ -35,4 +35,5 @@ os함수가 길어서 쉬운 용어로 사용
   } while (0)
 #endif
 
-#define GET_TICK() osKernelGetTickCount()
+
+#define OS_GET_TICK() osKernelGetTickCount()

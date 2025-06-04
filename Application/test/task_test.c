@@ -4,12 +4,12 @@
 #include "app_bsp.h"
 #include "app_file.h"
 #include "app_flash.h"
-#include "app_rtc.h"
+#include "bsp.h"
 #include "cmsis_os2.h"
 #include "config_manager.h"
 #include "driver_di.h"
 #include "mcu_interrupt.h"
-#include "os_define.h"
+#include "os_user_def.h"
 #include "task_console.h"
 #include "task_system.h"
 #include "usDelay.h"
@@ -26,10 +26,10 @@ void testTask(void *arg)
   consoleTask_init((void *)1);
   osDelay(1000);
   usDelay_init();
+  bsp_init();
   app_bsp_init();
   adc_init();
   status_led_set(LED_BLINK);
-  rtc_init();
   systemTask_init(PARA_TEST_MODE);
   config_manager_init();
   flash_init();

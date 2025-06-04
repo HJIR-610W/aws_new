@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #include "Sensors\temperature\temperature.h"
-#include "utile.h"
+#include "util_memory.h"
 
 
 #define SAMPLE_CNT_TEMP 6

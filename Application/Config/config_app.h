@@ -9,7 +9,7 @@
 #include "app_sensor.h"
 #include "config_define.h"
 #include "config_memory_map.h"
-#include "utile.h"
+#include "util_memory.h"
 #include "tcp_define.h"
 
 #define WRITE_CFG(x)                                                                               \

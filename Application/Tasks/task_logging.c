@@ -16,7 +16,7 @@
 #include "app_logging.h"
 #include "app_dataLogging.h"
 #include "dev_io.h"
-#include "utile_time.h"
+#include "util_time.h"
 #include "task_logging.h"
 #include "old_aws_define.h"
 

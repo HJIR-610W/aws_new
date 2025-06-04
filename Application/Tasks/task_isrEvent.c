@@ -1,7 +1,7 @@
 #include "cmsis_os2.h"
 
 
-#include "app_rtc.h"
+#include "bsp.h"
 #include "dev_io.h"
 #include "task_isrEvent.h"
 
@@ -35,7 +35,7 @@ void isrEventTask(void *arg)
       switch(cmd)
       {
         case eRTC_INT:
-        rtc_update();
+        bsp_rtc_update();
         break;
         case eRAIN_REED_INT:
         task_printf("eRAIN_REED_INT\r\n");
@@ -54,10 +54,6 @@ void isrEventTask(void *arg)
     }
   }
 }
-
-
-
-
 
 
 

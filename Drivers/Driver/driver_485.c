@@ -54,7 +54,7 @@ driver_t *driver_rs485_open(uint32_t num, void *opt)
 
   g_rs485[num].opened = true;
 #if FREE_RTOS_USE
-  CREATE_BINARY_SEM(g_rs485[num].sem);  //
+  OS_CREATE_BINARY_SEM(g_rs485[num].sem);  //
 #endif
 
   return &g_rs485[num];
@@ -73,7 +73,7 @@ int32_t driver_rs485_send(driver_t *drv, uint8_t *pData, uint16_t dataLen)
   int32_t cnt = 0;
 
 #if FREE_RTOS_USE
-  PEND_SEM(drv->sem, osWaitForever);
+  OS_PEND_SEM(drv->sem, osWaitForever);
 #endif
   // TODO:이 드라이버를 호출하는 task보다 우선높은곳이 있으면 osDelay 1이상 지연됨됨
   driver_do_high(cfg->do_io);  // 출력으로 설정
@@ -83,7 +83,7 @@ int32_t driver_rs485_send(driver_t *drv, uint8_t *pData, uint16_t dataLen)
   driver_do_low(cfg->do_io);  // 입력으로 설정
 
 #if FREE_RTOS_USE
-  POST_SEM(drv->sem);
+  OS_POST_SEM(drv->sem);
 #endif
 
   return cnt;

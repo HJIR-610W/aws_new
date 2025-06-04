@@ -6,9 +6,9 @@
 #include "app_version.h"
 #include "boot_version.h"
 #include "config_app.h"
-#include "crc16_ccitt.h"
+#include "util_crc16_ccitt.h"
 #include "task_cellular.h"
-#include "utile.h"
+#include "util_memory.h"
 #include "old_aws_sms.h"
 
 typedef enum
@@ -43,16 +43,16 @@ void SMS_Read_Info(sms_t *sms)
 	
   const char *mfgName;
 
-	get_appBuild(&ct);
+	get_app_build(&ct);
 
 	bufild_time = time_cvt_timestamp(&ct);
 	
-  get_appVer(&release, &add, &fix, &build);
+  get_app_version(&release, &add, &fix, &build);
 
 
   len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "App/Boot Ver:(%d.%d.%d/", release, add, fix);
 
-	get_bootVer(&release, &add, &fix, &build);
+	get_boot_version(&release, &add, &fix, &build);
 
   len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "%d.%d.%d)", release, add, fix);
 

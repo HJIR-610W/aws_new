@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "schedule.h"
-#include "utile_time.h"
+#include "util_time.h"
 #include "config_nvm.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
@@ -12,7 +12,7 @@
 #include "aws_data.h"
 #include "task_logging.h"
 #include "app_dataLogging.h"
-#include "utile.h"
+#include "util_memory.h"
 #include "kma2.h"
 #define D2R 3.14159265 / 180.0
 #define R2D 180.0 / 3.14159265

@@ -10,7 +10,7 @@
 #include "driver_di.h"
 #include "driver_do.h"
 #include "pcb_define.h"
-#include "utile.h"
+#include "util_memory.h"
 #include "vt100_command.h"
 #include "console_test.h"
 

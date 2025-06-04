@@ -4,7 +4,7 @@
 #define APP_LOGGING_H
 
 #include <stdint.h>
-#include "utile_time.h"
+#include "util_time.h"
 
 #define LOG_LEN_MAX 64
 

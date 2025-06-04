@@ -4,7 +4,7 @@
 #include "cmsis_os.h"
 #include "driver_stm32_di.h"
 #include "pcf8575.h"
-#include "os_define.h"
+#include "os_user_def.h"
 driver_t *driver_di_open(uint32_t num, void *opt)
 {
   driver_t *driver = NULL;

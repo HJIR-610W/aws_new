@@ -1,20 +1,10 @@
 
 
 
-
-
-
-
-
-
-
-
 #include "app_version.h"
-
-#include "utile_time.h"
+#include "util_time.h"
 
 #define MCU_SRAM_START_ADDR 0x20000000   // MCU SRAM 시작 주소
-
 
 #define SYSTEM_SHARE_VAR_ADDR MCU_SRAM_START_ADDR
 #pragma location = SYSTEM_SHARE_VAR_ADDR
@@ -44,10 +34,6 @@ __root const section_info_t g_kappInfo = {.signature ={'A','P','P',' '},\
 
 
 
-
-
-
-
 void get_nickCode(uint32_t *nickCode)
 {
     *nickCode = g_kappInfo.nick_code;
@@ -59,27 +45,33 @@ void get_hwCode(uint32_t *hwCode)
     *hwCode = g_kappInfo.hw_code;
 }
 
-/**
- * @brief 부트 버전 읽기
- * a.b.c.d
- */
-uint32_t get_appVer(uint8_t *a,uint8_t *b,uint8_t *c,uint8_t *d)
+uint32_t get_app_version(uint8_t *major, uint8_t *minor, uint8_t *patch, uint8_t *release)
 {
     uint32_t ver;
 
     ver = g_kappInfo.section_ver;
 
-    *a = (ver>>24)&0xFF;
-    *b = (ver>>16)&0xFF;
-    *c = (ver>>8)&0xFF;
-    *d = ver&0xFF; 
+    if(major)
+    {
+      *major = (ver>>24)&0xFF;
+    }
+    if(minor)
+    {
+      *minor = (ver >> 16) & 0xFF;
+    }
+
+    if(patch)
+    {
+      *patch = (ver >> 8) & 0xFF;
+    }
+
+    if(release)
+    {
+      *release = ver & 0xFF;
+    }
+
 
   return ver;
-}
-
-uint32_t get_app_version(void)
-{
-    return g_kappInfo.section_ver;
 }
 
 
@@ -91,7 +83,7 @@ uint32_t get_app_version(void)
 /**
  * @brief 부트 빌드 시간 읽기
  */
-void get_appBuild(DATE_TIME_BUF *build)
+void get_app_build(DATE_TIME_BUF *build)
 {
     uint32_t data;
 

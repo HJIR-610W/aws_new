@@ -6,7 +6,7 @@
 #include "dev_io.h"
 #include "driver_uart.h"
 #include "cli_input.h"
-#include "utile.h"
+#include "util_memory.h"
 #include "pcb_define.h"
 #include "driver_do.h"
 #define UART_PORT_MAX 7

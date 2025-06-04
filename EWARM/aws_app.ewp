@@ -394,23 +394,20 @@
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/src/include/compat/stdc</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/system/arch</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/src/apps/snmp</state>
-                    <state>$PROJ_DIR$\..\Drivers\CMSIS\Include</state>
-                    <state>$PROJ_DIR$\..\Drivers\BSP\Components\ADC</state>
-                    <state>$PROJ_DIR$\..\Drivers\MCU</state>
-                    <state>$PROJ_DIR$\..\Drivers\BSP\Components\fram</state>
-                    <state>$PROJ_DIR$\..\Drivers\BSP\Components\rtc</state>
-                    <state>$PROJ_DIR$\..\Drivers\BSP\Components\EX_UART</state>
-                    <state>$PROJ_DIR$\..\Drivers\BSP\Components\serial_flash</state>
-                    <state>$PROJ_DIR$\..\Drivers\BSP\Components\exgpio</state>
                     <state>$PROJ_DIR$\..\Application\FATFS\App</state>
                     <state>$PROJ_DIR$\..\Application\FATFS\Target</state>
+                    <state>$PROJ_DIR$\..\Drivers\CMSIS\Include</state>
+                    <state>$PROJ_DIR$\..\Drivers\MCU</state>
+                    <state>$PROJ_DIR$\..\Drivers\Driver_stm32\usb</state>
                     <state>$PROJ_DIR$\..\Drivers\Components\lan8742</state>
                     <state>$PROJ_DIR$\..\Drivers\Components\ADC</state>
-                    <state>$PROJ_DIR$\..\Drivers\Components\EX_UART</state>
-                    <state>$PROJ_DIR$\..\Drivers\Components\exgpio</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\uart_ext</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\io_expander</state>
                     <state>$PROJ_DIR$\..\Drivers\Components\fram</state>
                     <state>$PROJ_DIR$\..\Drivers\Components\rtc</state>
                     <state>$PROJ_DIR$\..\Drivers\Components\serial_flash</state>
+                    <state>$PROJ_DIR$\..\Drivers\Components\charger</state>
+                    <state>$PROJ_DIR$\..\Drivers\Driver\adc</state>
                     <state>$PROJ_DIR$\..\Application\IO\cli</state>
                     <state>$PROJ_DIR$\..\Middlewares\modem</state>
                     <state>$PROJ_DIR$\..\Application\Communications\Ethernet</state>
@@ -421,21 +418,22 @@
                     <state>$PROJ_DIR$\..\Application\Communications\Direct</state>
                     <state>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Class\CDC\Inc</state>
                     <state>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc</state>
-                    <state>$PROJ_DIR$\..\Drivers\Driver_stm32\usb</state>
-                    <state>$PROJ_DIR$\..\Utile</state>
-                    <state>$PROJ_DIR$\..\Drivers\Components\charger</state>
+                    <state>$PROJ_DIR$\..\Utils</state>
                     <state>$PROJ_DIR$\..\Application\Tasks\aws</state>
                     <state>$PROJ_DIR$\..\Application\test</state>
                     <state>$PROJ_DIR$\..\Application\CubeMX</state>
                     <state>$PROJ_DIR$\..\Application\hwajin</state>
                     <state>$PROJ_DIR$\..\Application\Config</state>
-                    <state>$PROJ_DIR$\..\Drivers\Driver\adc</state>
                     <state>$PROJ_DIR$\..\Application\Tasks\console</state>
                     <state>$PROJ_DIR$\..\System</state>
                     <state>$PROJ_DIR$\..\Application\test\parser</state>
                     <state>$PROJ_DIR$\..\Application\Protocols\aws</state>
                     <state>$PROJ_DIR$\..\Application\Protocols\divas</state>
                     <state>$PROJ_DIR$\..\Application\Update</state>
+                    <state>$PROJ_DIR$\..\Drivers\BSP</state>
+                    <state>$PROJ_DIR$\..\Middlewares\Third_Party</state>
+                    <state>$PROJ_DIR$\..\Middlewares\Third_Party\tlsf</state>
+                    <state>$PROJ_DIR$\..\Application\Version</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1164,15 +1162,6 @@
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_charger.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\App_drivers\app_di.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\App_drivers\app_di.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\App_drivers\app_do.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_file.c</name>
             </file>
             <file>
@@ -1186,9 +1175,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_rs485.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\App_drivers\app_rtc.c</name>
             </file>
         </group>
         <group>
@@ -1408,12 +1394,6 @@
             </group>
             <file>
                 <name>$PROJ_DIR$\..\Application\FATFS\file_io.c</name>
-            </file>
-        </group>
-        <group>
-            <name>hwajin</name>
-            <file>
-                <name>$PROJ_DIR$\..\Application\hwajin\hj_product_list.h</name>
             </file>
         </group>
         <group>
@@ -1820,12 +1800,9 @@
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_system.c</name>
             </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\Tasks\vir_data.c</name>
-            </file>
         </group>
         <group>
-            <name>test</name>
+            <name>Test</name>
             <group>
                 <name>parser</name>
                 <file>
@@ -1890,29 +1867,32 @@
                 <name>$PROJ_DIR$\..\Application\Update\update_fw.h</name>
             </file>
         </group>
+        <group>
+            <name>Version</name>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Version\app_version.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Version\app_version.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Version\boot_version.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Version\boot_version.h</name>
+            </file>
+        </group>
         <file>
-            <name>$PROJ_DIR$\..\Application\app_version.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\Application\app_version.h</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\Application\boot_version.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\Application\freertos.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\Application\freertosCallBack.c</name>
+            <name>$PROJ_DIR$\..\Application\freertos_callback.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\Application\main.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Application\os_define.h</name>
+            <name>$PROJ_DIR$\..\Application\pcb_define.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Application\pcb_define.c</name>
+            <name>$PROJ_DIR$\..\Application\pcb_define.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\Application\stm32f4xx_hal_msp.c</name>
@@ -1935,6 +1915,33 @@
     </group>
     <group>
         <name>Drivers</name>
+        <group>
+            <name>BSP</name>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_di.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_di.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_do.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_do.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_rtc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_rtc.h</name>
+            </file>
+        </group>
         <group>
             <name>CMSIS</name>
             <file>
@@ -1971,21 +1978,21 @@
                 </file>
             </group>
             <group>
-                <name>EX_UART</name>
+                <name>uart_ext</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\EX_UART\TL16C554.c</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\uart_ext\TL16C554.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\EX_UART\TL16C554.h</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\uart_ext\TL16C554.h</name>
                 </file>
             </group>
             <group>
-                <name>exgpio</name>
+                <name>io_expander</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\exgpio\pcf8575.c</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\exgpio\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -2004,12 +2011,6 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\Components\lan8742\lan8742.h</name>
-                </file>
-            </group>
-            <group>
-                <name>RS485</name>
-                <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\RS485\rs485.c</name>
                 </file>
             </group>
             <group>
@@ -2390,27 +2391,6 @@
         </file>
     </group>
     <group>
-        <name>Lib</name>
-        <group>
-            <name>cobs</name>
-            <file>
-                <name>$PROJ_DIR$\..\Lib\cobs\cobs.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Lib\cobs\cobs.h</name>
-            </file>
-        </group>
-        <group>
-            <name>tlsf</name>
-            <file>
-                <name>$PROJ_DIR$\..\Lib\tlsf\tlsf.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Lib\tlsf\tlsf.h</name>
-            </file>
-        </group>
-    </group>
-    <group>
         <name>Low_Level_Interface</name>
         <file>
             <name>$PROJ_DIR$\..\System\iar_io_retarget.c</name>
@@ -2763,29 +2743,59 @@
                 </file>
             </group>
         </group>
+        <group>
+            <name>Third_Party</name>
+            <group>
+                <name>cobs</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\Third_Party\cobs\cobs.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\Third_Party\cobs\cobs.h</name>
+                </file>
+            </group>
+            <group>
+                <name>tlsf</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\Third_Party\tlsf\tlsf.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\Third_Party\tlsf\tlsf.h</name>
+                </file>
+            </group>
+        </group>
     </group>
     <group>
-        <name>Utile</name>
+        <name>Utils</name>
         <file>
-            <name>$PROJ_DIR$\..\Utile\crc16_ccitt.c</name>
+            <name>$PROJ_DIR$\..\Utils\util_crc16_ccitt.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Utile\utile.c</name>
+            <name>$PROJ_DIR$\..\Utils\util_crc16_ccitt.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Utile\utile.h</name>
+            <name>$PROJ_DIR$\..\Utils\util_filter.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Utile\utile_filter.c</name>
+            <name>$PROJ_DIR$\..\Utils\util_filter.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Utile\utile_stdio.c</name>
+            <name>$PROJ_DIR$\..\Utils\util_memory.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Utile\utile_time.c</name>
+            <name>$PROJ_DIR$\..\Utils\util_memory.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Utile\utile_time.h</name>
+            <name>$PROJ_DIR$\..\Utils\util_stdio.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Utils\util_stdio.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Utils\util_time.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Utils\util_time.h</name>
         </file>
     </group>
 </project>

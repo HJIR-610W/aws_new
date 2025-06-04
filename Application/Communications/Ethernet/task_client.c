@@ -8,7 +8,7 @@
 #include "task_logging.h"
 #include "tcp_define.h"
 #include "update_fw.h"
-#include "utile_time.h"
+#include "util_time.h"
 
 #define RECV_BUFF_SIZE 512
 #define SERVER_RETRY_INTERVAL_MS 5000
@@ -109,7 +109,7 @@ static void tcp_client_service(int sock)
             if (get_firmware_update())
             {
               closesocket(sock);
-              reset_system(0, "TCP client update");
+              reset_system( "TCP client update");
             }
           }
         }

@@ -3,7 +3,7 @@
 #include "driver_stm32_rtc.h"
 #include "system_err.h"
 
-#include "utile_time.h"
+#include "util_time.h"
 
 typedef struct  stm32_do_cfg_s
 {

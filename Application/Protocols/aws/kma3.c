@@ -5,10 +5,10 @@
 #include <string.h>
 #include "aws_data.h"
 #include "config_app.h"
-#include "crc16_ccitt.h"
+#include "util_crc16_ccitt.h"
 #include "kma_define.h"
-#include "utile.h"
-#include "utile_time.h"
+#include "util_memory.h"
+#include "util_time.h"
 
 #define KMA3_DATA_LEN 135  // Ⅶ 자료내용 영역에 전송되는 데이터의 총 길이 고정임
 

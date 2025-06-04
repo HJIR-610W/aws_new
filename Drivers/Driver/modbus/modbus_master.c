@@ -363,12 +363,12 @@ int32_t modbus_write_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address
   int32_t err = RET_FAIL;
 
 #if FREE_RTOS_USE
-  PEND_SEM(drv->sem, osWaitForever);
+  OS_PEND_SEM(drv->sem, osWaitForever);
 #endif
   if ((sizeof(reg) / sizeof(reg[0])) < regCnt)
   {
 #if FREE_RTOS_USE
-    POST_SEM(drv->sem);
+    OS_POST_SEM(drv->sem);
 #endif
     return err;
   }
@@ -392,7 +392,7 @@ int32_t modbus_write_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address
   }
 
 #if FREE_RTOS_USE
-  POST_SEM(drv->sem);
+  OS_POST_SEM(drv->sem);
 #endif
   return err;
 }
@@ -605,7 +605,7 @@ driver_t *modbus_master_open(int32_t num, void *opt)
 
   }
 #if FREE_RTOS_USE
-  CREATE_BINARY_SEM(modbus_m_cfg[num].sem);
+  OS_CREATE_BINARY_SEM(modbus_m_cfg[num].sem);
 #endif
 
   return &modbus_m_drv[num];

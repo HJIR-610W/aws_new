@@ -5,7 +5,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "utile.h"
+#include "util_memory.h"
 
 #define ABSTOLERANCE 1.0e-8
 #define ULPTOLERANCE 4

@@ -70,7 +70,7 @@
 #include "fsl_debug_console.h"
 #include "dev_io.h"
 #include "driver_uart.h"
-#include "utile_stdio.h"
+#include "util_stdio.h"
 #include "user_heap.h"
 
 

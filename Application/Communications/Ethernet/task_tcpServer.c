@@ -18,8 +18,8 @@
 #include "tcp_define.h"
 #include "update_fw.h"
 #include "user_heap.h"
-#include "utile.h"
-#include "utile_time.h"
+#include "util_memory.h"
+#include "util_time.h"
 
 #define RECV_BUFF_SIZE 512
 #define SERVER_RETRY_INTERVAL_MS 5000
@@ -201,7 +201,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
               slot->client_ip_str, slot->client_port);
 
           closesocket(sock);
-          reset_system(0, "TCP client update"); //리턴 없음
+          reset_system( "TCP client update"); //리턴 없음
         }
       }
     }

@@ -1,6 +1,6 @@
 #include "divas_protocol_handler.h"
 #include "app_file.h"
-#include "utile_time.h"
+#include "util_time.h"
 #include "kma_protocol_handler.h"
 #include "user_heap.h"
 #include "update_fw.h"

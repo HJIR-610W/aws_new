@@ -9,13 +9,13 @@
 #include "app_bsp.h"
 #include "app_charger.h"
 #include "app_dataLogging.h"
-#include "app_di.h"
+
 #include "app_flash.h"
 #include "app_file.h"
 #include "app_logging.h"
 #include "app_rs232.h"
 #include "app_rs485.h"
-#include "app_rtc.h"
+#include "bsp.h"
 #include "app_sensor.h"
 #include "app_version.h"
 #include "aws_data.h"
@@ -32,8 +32,8 @@
 #include "task_logging.h"
 #include "terminal.h"
 #include "usDelay.h"
-#include "utile.h"
-#include "utile_time.h"
+#include "util_memory.h"
+#include "util_time.h"
 #include "vt100_command.h"
 #include "ymodem.h"
 #include "task_direct.h"
@@ -431,8 +431,8 @@ int32_t menu_system(p_shell_context_t ctx)
         cnt = input_date(ctx, &nt);
         if (cnt > 0)
         {
-          rtc_set(&nt);
-          rtc_update();
+          bsp_rtc_set(&nt);
+          bsp_rtc_update();
         }
         break;
       case 1:  // id
@@ -2705,20 +2705,20 @@ int32_t menu_manage_version(p_shell_context_t ctx)
 {
   char buff[30];
 
-  uint8_t a, b, c, d;
+  uint8_t major, minor, fix, rel;
   DATE_TIME_BUF ct;
 
-  get_appVer(&a, &b, &c, &d);
-  get_appBuild(&ct);
+  get_app_version(&major, &minor, &fix, &rel);
+  get_app_build(&ct);
 
-  ctx->printf("App:%d.%d.%d.%d\r\n", a, b, c, d);
+  ctx->printf("App:%d.%d.%d.%d\r\n", major, minor, fix, rel);
   make_timeToStr(&ct, buff, sizeof(buff));
   ctx->printf("App build:%s\r\n", buff);
 
-  get_bootVer(&a, &b, &c, &d);
-  get_bootBuild(&ct);
+  get_boot_version(&major, &minor, &fix, &rel);
+  get_boot_build(&ct);
 
-  ctx->printf("Boot:%d.%d.%d.%d\r\n", a, b, c, d);
+  ctx->printf("Boot:%d.%d.%d.%d\r\n", major, minor, fix, rel);
   make_timeToStr(&ct, buff, sizeof(buff));
   ctx->printf("Boot build:%s\r\n", buff);
   return 0;
@@ -2755,7 +2755,7 @@ int32_t menu_manage_update(p_shell_context_t ctx)
 }
 int32_t menu_manage_device_reset(p_shell_context_t ctx)
 {
-  reset_system(0, "console reset");
+  reset_system( "console reset");
   return 0;
 }
 
@@ -3175,7 +3175,7 @@ int32_t menu_manage_update_fw(p_shell_context_t ctx)
       io_printf("상태 LED가 점멸됩니다.\r\n");
       
       set_magic_value(MAGIC_UPDATE_FW_LACAL);
-      reset_system(0, "USER update");
+      reset_system( "USER update");
     }
   }
 }

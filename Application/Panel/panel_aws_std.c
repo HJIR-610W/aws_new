@@ -6,7 +6,7 @@
 #include "driver_interface.h"
 #include "driver_uart.h"
 #include "old_aws_define.h"
-#include "utile_time.h"
+#include "util_time.h"
 
 void send_panel_aws_std(driver_t *panel_port)
 {

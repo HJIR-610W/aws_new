@@ -2,7 +2,7 @@
 #include "driver_rtc.h"
 
 #include "task_isrEvent.h"
-#include "utile_time.h"
+#include "util_time.h"
 
 driver_t *g_rtc;
 
@@ -13,7 +13,7 @@ void rtcIrqCallBack(void *arg)
 
 
 
-void rtc_init(void)
+void bsp_rtc_init(void)
 {
   rtc_set_irq_cfg_t rtc_cfg;
 
@@ -33,7 +33,7 @@ void rtc_init(void)
 }
 
 
-void rtc_update(void)
+void bsp_rtc_update(void)
 {
   DATE_TIME_BUF nt;
 
@@ -43,7 +43,7 @@ void rtc_update(void)
 
 
 
-void rtc_set(DATE_TIME_BUF *ct)
+void bsp_rtc_set(DATE_TIME_BUF *ct)
 {
   driver_rtc_set(g_rtc,eRTC_SET_TIME,ct);
 }

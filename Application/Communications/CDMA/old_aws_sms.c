@@ -6,7 +6,7 @@
 
 #include "config_app.h"
 #include "task_cellular.h"
-#include "utile_time.h"
+#include "util_time.h"
 
 typedef int ts_t;
 

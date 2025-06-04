@@ -7,8 +7,8 @@
 
 #include "cmsis_os2.h"
 #include "aws_processor.h"
-#include "utile.h"
-#include "utile_time.h"
+#include "util_memory.h"
+#include "util_time.h"
 #include "aws_data.h"
 
 #include "task_measure.h"
@@ -623,7 +623,7 @@ uint16_t get_aws_wind_direction_safe(void)
   static uint16_t last_valid_wind_direction = 0;
   static error_timer_t dir_timer = {0, 0};
   uint8_t err = 0;
-  uint32_t now = GET_TICK();
+  uint32_t now = OS_GET_TICK();
 
   uint16_t temp = get_aws_wind_direction(&err);
 
@@ -645,7 +645,7 @@ uint16_t get_aws_wind_speed_safe(void)
   static uint16_t last_valid_wind_direction = 0;
   static error_timer_t dir_timer = {0, 0};
   uint8_t err = 0;
-  uint32_t now = GET_TICK();
+  uint32_t now = OS_GET_TICK();
 
   uint16_t temp = get_aws_wind_speed(&err);
 

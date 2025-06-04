@@ -110,7 +110,7 @@ void save_config_sensor(void)
 
   g_config_sensor.header.magicNum = CONFIG_MAGIC;
   g_config_sensor.header.crc = crc;
-  g_config_sensor.header.version = get_app_version();
+  g_config_sensor.header.version = get_app_version(0,0,0,0);
   fram_write(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
 }
 

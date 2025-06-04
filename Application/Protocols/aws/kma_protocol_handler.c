@@ -6,13 +6,13 @@
 #include "app_version.h"
 #include "aws_data.h"
 #include "config_app.h"
-#include "crc16_ccitt.h"
+#include "util_crc16_ccitt.h"
 #include "kma3.h"
-#include "utile.h"
-#include "utile_time.h"
+#include "util_memory.h"
+#include "util_time.h"
 #include "kma_define.h"
 #include "kma_protocol_handler.h"
-#include "app_rtc.h"
+#include "bsp.h"
 #include "kma2.h"
 #include "app_dataLogging.h"
 #include "old_aws_define.h"
@@ -722,7 +722,7 @@ uint16_t kma_cmd_handler_AT(uint8_t *frame, uint8_t *send)
   nt.Min = req->time_mm;
   nt.Sec = req->time_ss;
 
-  rtc_set(&nt);
+  bsp_rtc_set(&nt);
 
   len = make_kma3_resp_RODTWC(packet, sizeof(packet), station_id, req->command_str[1], "OKAY");
 

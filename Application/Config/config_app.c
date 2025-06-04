@@ -279,12 +279,13 @@ void save_config_app(void)
   uint32_t crc;
   uint8_t temp;
 
+
   config.start = 0;
   crc = crc32_hw_with_padding( &config.start,sizeof(config_t)-sizeof(config.header));
   
   config.header.magicNum = CONFIG_MAGIC;
   config.header.crc = crc;
-  config.header.version = get_app_version(); 
+  config.header.version = get_app_version(0,0,0,0); 
 
   fram_write(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config)); 
 }

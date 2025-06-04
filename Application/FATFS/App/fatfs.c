@@ -4,7 +4,7 @@
 #include "fatfs.h"
 #include "dev_io.h"
 
-#include "utile_time.h"
+#include "util_time.h"
 
 uint8_t retSD;    /* Return value for SD */
 char SDPath[4];   /* SD logical drive path */

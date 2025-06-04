@@ -3,7 +3,7 @@
 
 #include "config_define.h"
 #include "config_memory_map.h"
-#include "utile.h"
+#include "util_memory.h"
 typedef struct sensor_nvm_S
 {
   config_header_t header;

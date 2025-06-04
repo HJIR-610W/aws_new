@@ -22,7 +22,7 @@ void save_config_nvm(void)
 
     g_config_nvm.header.magicNum = CONFIG_MAGIC;
     g_config_nvm.header.crc = crc;
-    g_config_nvm.header.version = get_app_version();
+    g_config_nvm.header.version = get_app_version(0,0,0,0);
 
     fram_write(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(g_config_nvm));
 

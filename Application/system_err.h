@@ -3,7 +3,9 @@
 #define SYSTEM_ERR_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 void Error_Handler(const char *file,int32_t line);
-void reset_system(uint16_t code,const char * pFmt, ...);
+void reset_system(const char * pFmt, ...);
+bool restore_error(char *p_out, int32_t out_size);
 #endif

@@ -3,7 +3,7 @@
 #ifndef APP_DATALOGGING_H
 #define APP_DATALOGGING_H
 
-#include "utile_time.h"
+#include "util_time.h"
 
 #define LOGGING_AWS  0
 #define LOGGING_RAIN_1MIN 1

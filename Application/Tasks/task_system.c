@@ -1,11 +1,11 @@
 #include "task_system.h"
 
-
+#include "bsp.h"
 #include "app_bsp.h"
 #include "app_charger.h"
-#include "app_di.h"
-#include "app_do.h"
-#include "app_rtc.h"
+
+
+#include "bsp.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "driver_di.h"
@@ -46,17 +46,17 @@ void systemTask(void *arg)
   uint32_t start_time = osKernelGetTickCount();
   while (1)
   {
-    rtc_update();
+    bsp_rtc_update();
 
 
     if ((osKernelGetTickCount() - start_time)>1000)
     {
       start_time = osKernelGetTickCount();
-      System.door_opened = door_opened();
+      System.door_opened = bsp_door_opened();
       update_charger();
       System.battery_error = read_batteryVoltage1(&err) < 10.0f?1:0;
       System.ac_status = 1;//220v
-      System.dc_error = read_battery()<11.0f?1:0;
+      System.dc_error = bsp_read_battery()<11.0f?1:0;
     }
 
     osDelay(500);
@@ -76,9 +76,9 @@ void systemTask_init(uint32_t para)
 
   charger_init(get_config_app()->charger_model);
 
-  di_init();
 
-  do_init();
+
+  
   }
 
   osThreadNew(systemTask, NULL, &kSystemTask_attributes);

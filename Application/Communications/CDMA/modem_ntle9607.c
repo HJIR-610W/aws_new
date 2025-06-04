@@ -4,13 +4,13 @@
 #include <stdlib.h>
 
 #include "cmsis_os2.h"
-#include "utile.h"
+#include "util_memory.h"
 
 #include "modem_ntle9607.h"
 #include "at_cmd.h"
 
 #include "app_bsp.h"
-
+#include "bsp.h"
 extern void EwFree( void* aMemory );
 extern void* EwAlloc( int aSize );
 extern void modem_sends(const char *pData);
@@ -598,9 +598,9 @@ void ntle9607_reset(uint8_t resetType,uint32_t delayMs)
         ntle9607_resetSW();
         break;
         case M_RESET_HW:
-        cdma_power_off();
+        bsp_cdma_power_off();
         osDelay(2000);
-        cdma_power_on();
+        bsp_cdma_power_on();
 
         break;
     }

@@ -1,6 +1,6 @@
 
 #include "user_heap.h"
-#include "Lib\tlsf\tlsf.h"
+#include "tlsf.h"
 #include "os_user_def.h"
 
 
@@ -15,7 +15,7 @@ tlsf_t tlsf_handle = NULL;
 void asw_tlsf_init(size_t size)
 {
 
-  CREATE_BINARY_SEM(g_heap_sem);
+  OS_CREATE_BINARY_SEM(g_heap_sem);
 
   tlsf_handle = tlsf_create_with_pool(g_ext_sram, size);
 
@@ -30,18 +30,18 @@ void asw_tlsf_init(size_t size)
 void *aws_malloc(size_t size)
 {
   void *mem=0;
-  PEND_SEM(g_heap_sem,osWaitForever);
+  OS_PEND_SEM(g_heap_sem,osWaitForever);
 
   mem = (void *)tlsf_malloc(tlsf_handle, size);
 
-  POST_SEM(g_heap_sem);
+  OS_POST_SEM(g_heap_sem);
   return mem;
 }
 
 
 void aws_free(void *ptr)
 {
-  PEND_SEM(g_heap_sem, osWaitForever);
+  OS_PEND_SEM(g_heap_sem, osWaitForever);
   tlsf_free(tlsf_handle, ptr);
-  POST_SEM(g_heap_sem);
+  OS_POST_SEM(g_heap_sem);
 }

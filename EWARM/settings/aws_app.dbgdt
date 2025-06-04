@@ -1077,7 +1077,7 @@
                     <item>aws</item>
                     <item>path</item>
                     <item>logging</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

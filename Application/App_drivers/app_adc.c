@@ -7,7 +7,7 @@
 #include "app_adc.h"
 #include "config_adc.h"
 #include "driver_adc.h"
-#include "utile.h"
+#include "util_memory.h"
 
 driver_t *g_ads1120;
 

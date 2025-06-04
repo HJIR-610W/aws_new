@@ -3,7 +3,7 @@
 
 driver_t *app_do[6];
 
-void do_init(void)
+void bsp_do_init(void)
 {
   app_do[0]  = driver_do_open(DO_EXT_0,0);
   app_do[1]  = driver_do_open(DO_EXT_1,0);
@@ -14,7 +14,7 @@ void do_init(void)
 }
 
 
-void write_do(int32_t num,int32_t status)
+void bsp_write_do(int32_t num,int32_t status)
 {
   if(status)
   {
