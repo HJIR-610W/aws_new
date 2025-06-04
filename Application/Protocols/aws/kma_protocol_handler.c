@@ -486,7 +486,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
 
   void update_old_to_kma3(AWS_DATA_STRUCT * p_aws_old, kma_data_ex_t * p_kma_ex)
   {
-    uint8_t status;
+
 
     p_kma_ex->temperature.data = p_aws_old->mTemperature.sReal;
     p_kma_ex->wind_direction_avg.data = p_aws_old->mWind.mDirection.sReal;
@@ -608,7 +608,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
       // 1분 과거 자료
   uint16_t kma_cmd_handler_AQ(uint8_t *rx_frame, uint8_t *tx_frame)
   {
-    uint8_t nt[5];
+
     uint8_t data[200];
     uint8_t data_format_no;
     uint16_t len = 0;
@@ -617,9 +617,9 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     kma_data_ex_t *p_kma3=NULL;
     DATE_TIME_BUF mOldDate;
     DATE_TIME_BUF *pDate;
-    time_t cur_t, befhour_t, poll_t;
+    time_t cur_t,  poll_t;
     AWS_DATA_STRUCT *p_aws = NULL;
-    int nIdx;
+
 
     p_kma3 = pvPortMalloc(sizeof(kma_data_ex_t));
 
@@ -808,7 +808,7 @@ uint16_t kma_cmd_handler_AO(uint8_t *rx_frame, uint8_t *send)
 // 암호 설정
 uint16_t kma_cmd_handler_AW(uint8_t *rx_frame, uint8_t *tx_frame)
 {
-  char temp[10];
+
   uint8_t packet[50];
   uint16_t len;
   uint16_t password;

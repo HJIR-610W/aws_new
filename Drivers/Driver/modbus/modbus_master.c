@@ -306,7 +306,7 @@ int32_t modbus_master_req(driver_t *drv, modbus_t *modbus)
 {
   uint8_t buff[300];
   int32_t len;
-  modbus_cfg_t *cfg = drv->cfg;
+
 
   memset(buff,0,sizeof(buff));
   send_query(drv, modbus);
@@ -567,7 +567,7 @@ modbus_master_api_t modbus_master_api = {.read_hold_reg = modbus_read_hold_reg,
 
 driver_t *modbus_master_open(int32_t num, void *opt)
 {
-  driver_t *driver;
+
   modbus_init_t *modbus_init = opt;
   uart_config_t uart_config;
 

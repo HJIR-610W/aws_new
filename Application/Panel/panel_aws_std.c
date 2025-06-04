@@ -10,7 +10,7 @@
 
 void send_panel_aws_std(driver_t *panel_port)
 {
- uint16_t temperature;
+
   uint8_t packet[64];
   uint8_t cnt = 0;
 

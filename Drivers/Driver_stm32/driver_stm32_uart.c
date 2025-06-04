@@ -141,7 +141,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
 // USART1 초기화 함수
 static void MX_USART1_UART_Init(uint32_t baud, uint8_t parity, uint8_t dataLen, uint8_t stop)
 {
-  uint32_t val;
+  
   huart1.Instance = USART1;
   huart1.Init.BaudRate = baud;
 
@@ -740,7 +740,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  uint16_t head = 0;
+
   size_t xBytesSent;
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 

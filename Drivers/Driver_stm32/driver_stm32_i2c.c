@@ -32,7 +32,7 @@ driver_t g_stm32_i2c[2];
 
 void MX_I2C1_Init(void *opt)
 {
-  uint32_t i2c_clk =(uint32_t)opt;
+
 
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 100000;//표준 속도 100KHz

@@ -100,7 +100,7 @@ void stm32_di_init(const stm32_di_cfg_t *cfg, di_init_t *p_di_init)
 
 driver_t *stm32_di_open(int num, void *opt)
 {
-  di_init_t di_init;
+
 
   if (g_stm32_di_list[num].opened)
   {
@@ -321,7 +321,7 @@ void GPIO_InputInterrupt_Init(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin,
   HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
 
   // 3. EXTI 인터럽트 우선순위 및 활성화 설정 (핀 번호에 따른 IRQ 설정)
-  uint32_t exti_line = 0;
+
   IRQn_Type irq;
 
   irq = get_irqFromPin(GPIO_Pin);

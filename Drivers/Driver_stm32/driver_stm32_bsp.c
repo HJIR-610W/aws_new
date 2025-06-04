@@ -306,7 +306,7 @@ void driver_stm32_bsp_init(void)
 #if (AWS_PCB_VER == 5)
  void driver_stm32_bsp_init(void)
  {
-   GPIO_InitTypeDef GPIO_InitStruct = {0};
+
 
    __HAL_RCC_GPIOA_CLK_ENABLE();
    __HAL_RCC_GPIOB_CLK_ENABLE();

@@ -44,7 +44,7 @@ void fm25cl_write(driver_t *fm25cl,uint32_t offset,uint8_t *pData,uint16_t wLen)
 {
   fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
 
-    uint32_t i;
+ 
 
 
  
@@ -74,7 +74,7 @@ void fm25cl_write(driver_t *fm25cl,uint32_t offset,uint8_t *pData,uint16_t wLen)
 void fm25cl_read(driver_t *fm25cl,uint32_t offset,uint8_t *pBuff,uint16_t rLen)
 {
   fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
- uint8_t data=0;
+
     
 
 
@@ -120,7 +120,7 @@ uint8_t fm25cl_read_status(driver_t *fm25cl)
 uint8_t data;
 void fm25cl_init(driver_t *fm25cl)
 {
-  fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
+
 
   data = fm25cl_read_status(fm25cl);
 }

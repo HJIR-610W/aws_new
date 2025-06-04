@@ -22,7 +22,7 @@ int32_t read_rain_1min(uint16_t year, uint16_t *rain_data, uint32_t read_size)
 {
   char path[50];
   FRESULT fret;
-  FSIZE_t file_size = 0;
+//  FSIZE_t file_size = 0;
 
   make_rain_1min_path(year, path, sizeof(path));
 
@@ -41,7 +41,7 @@ int32_t read_sunshine_1min(uint16_t year, uint16_t *sunshine_data, uint32_t read
 {
   char path[50];
   FRESULT fret;
-  FSIZE_t file_size = 0;
+  //FSIZE_t file_size = 0;
 
   make_sunshine_1min_path(year, path, sizeof(path));
 

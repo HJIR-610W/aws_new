@@ -464,7 +464,7 @@ int handle_offset_adjustment(int adc_num)
   adc_cal_params_t* params;
   float target_ref;
   int32_t raw_now;
-  int mode;
+
   config_adc_adv_t* p_adc = get_adc_config(adc_num);
   while (1)
   {
@@ -761,8 +761,8 @@ int handle_view_status(int adc_num)
     break;
       case MENU_VIEW_SINGLE_SUMMARY:
       {
-        float slope;
-        float offset;
+    //    float slope;
+     //   float offset;
         int32_t raw;
         float voltage;
 
@@ -804,8 +804,8 @@ int handle_view_status(int adc_num)
       break;
       case MENU_VIEW_DIFF_SUMMARY:
       {
-        float slope;
-        float offset;
+       // float slope;
+       // float offset;
         int32_t raw;
         float voltage;
 

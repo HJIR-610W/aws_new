@@ -25,14 +25,14 @@ driver_t *driver_adc_open(uint32_t num,void *opt)
 
 void driver_close(driver_t *drv)
 {
-  const adc_api_t *api = drv->api;
+  
 }
 
 float driver_adc_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 {
   const adc_api_t *api = drv->api;
   int32_t raw_now;
-  int32_t channel_calculated=0;
+
   float voltage;
 
   raw_now =  api->read_single(drv,channel,avg,err);
@@ -55,7 +55,7 @@ float driver_adc_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 {
   const adc_api_t *api = drv->api;
   int32_t raw_now;
-  int32_t channel_calculated = 0;
+
   float voltage;
 
   raw_now  = api->read_diff(drv, channel, avg, err);

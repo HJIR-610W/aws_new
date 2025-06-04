@@ -60,7 +60,7 @@ stm32_cdc_cfg_t g_stm32_cdc_cfg;
 driver_t *stm32_cdc_open(int num,void *opt)
 {
   osSemaphoreId_t tempSem=NULL;
-  uart_config_t *cfg=opt;
+
 
   if(g_stm32_cdc.opened == true)
   {
@@ -108,7 +108,7 @@ int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
   
 
   stm32_cdc_cfg_t *cfg = (stm32_cdc_cfg_t *)drv->cfg;
-  HAL_StatusTypeDef status;
+
   osStatus_t osStatus;
   int32_t retVal=dataLen;
   uint32_t waitTime;
@@ -168,8 +168,8 @@ int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t t
     size_t remainBuffSize = buffSize;
     size_t cnt = 0;
 
-    stm32_cdc_cfg_t *cfg = drv->cfg;
-    uint8_t channel = cfg->channel;
+
+
     timeout = timeOutMs;
     
     (void)lastTick;
@@ -240,8 +240,8 @@ int32_t stm32_cdc_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *
   size_t xBytesRead;
   size_t remainBuffSize = buffSize;
   size_t cnt = 0;
-  stm32_cdc_cfg_t *cfg = drv->cfg;
-  uint8_t channel = cfg->channel;
+
+
 
 
   timeout = optTimeOut->frameTimeOutMs;

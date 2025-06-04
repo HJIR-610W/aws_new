@@ -275,7 +275,7 @@ void quad_init(driver_t *tls16c554, void *opt)
 int32_t send_data(uint8_t channel, uint8_t data)
 {
   uint32_t startTime;
-  uint8_t lsr;
+
 
   // 송신 버퍼가 비어있을 때까지 대기
   startTime = osKernelGetTickCount();

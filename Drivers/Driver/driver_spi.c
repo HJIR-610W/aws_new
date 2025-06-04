@@ -1,21 +1,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
 #include "driver_spi.h"
@@ -421,11 +406,11 @@ uint8_t stm32_spi_read_byte(void *hspi)
 
 }
 
-#if 1 
+
 uint8_t stm32_spi_read_bytes(void *hspi,uint8_t *pBuff,uint16_t rLen)
 {
 	HAL_StatusTypeDef status = HAL_OK;
-	uint8_t readvalue=0xff;
+
   
   
   status = HAL_SPI_Receive((SPI_HandleTypeDef *)hspi, (uint8_t*)pBuff, rLen, SpixTimeout);
@@ -440,25 +425,7 @@ uint8_t stm32_spi_read_bytes(void *hspi,uint8_t *pBuff,uint16_t rLen)
 	return 0;
 
 }
-#else
-uint8_t stm32_spi_read_bytes(void *hspi,uint8_t *pBuff,uint16_t rLen)
-{
-	HAL_StatusTypeDef status = HAL_OK;
-	uint8_t readvalue=0xff;
-  
-  
-  HAL_SPI_Receive_DMA((SPI_HandleTypeDef *)hspi, pBuff,rLen);
 
-	if(status != HAL_OK)
-	{
-	//	MSP_SPIx_Error(hspi);
-	}
-
-	return readvalue;
-
-}
-
-#endif
 
 
 
@@ -576,7 +543,7 @@ uint8_t driverex_spi_read_byte(driver_t *spi)
 
 uint8_t driverex_spi_read_bytes(driver_t *spi,uint8_t *pBuff,uint16_t rLen)
 {
-  uint8_t data;
+
 
   spi_api_t *api = (spi_api_t*)spi->api;
 

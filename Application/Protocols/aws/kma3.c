@@ -181,7 +181,7 @@ uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend, uint16_t lpSendSize, kma_da
 {
   uint32_t cnt = 0;
   const int16_t unusedSensor = -999;
-  int16_t temp = 0;
+
   memset(lpSend, 0, lpSendSize);
 
   if (lpSendSize < KMA3_DATA_LEN)

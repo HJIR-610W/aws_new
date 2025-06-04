@@ -29,7 +29,7 @@ const char *g_unknown = "unknown";
 
 char recv_key(uint32_t timeout_ms)
 {
-  char key;
+  //char key;
   char ch=0;
 
   while(1)

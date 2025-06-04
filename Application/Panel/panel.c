@@ -26,7 +26,7 @@ void panel_init(void)
 
 void send_panel(void)
 {
-  uint16_t len;
+
 
   switch (get_config_app()->panel_model)
   {

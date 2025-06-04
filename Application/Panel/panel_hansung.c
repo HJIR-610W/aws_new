@@ -25,7 +25,7 @@ void	send_panel_hansung(driver_t *panel_port)
 {
     char   framemk[60];
 	uint8_t 	cnt = 0;
-	uint32_t 	i;
+
 
   kma_data_ex_t *p_kma;
 

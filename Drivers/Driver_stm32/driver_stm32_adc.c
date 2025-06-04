@@ -23,7 +23,7 @@ void MX_ADC1_Init(void)
 
   /* USER CODE END ADC1_Init 0 */
 
-  ADC_ChannelConfTypeDef sConfig = {0};
+ 
 
   /* USER CODE BEGIN ADC1_Init 1 */
 
@@ -198,7 +198,7 @@ int32_t stm32_adc_read_single(driver_t *handle,int channel,uint16_t avgCnt,uint8
   ADC_ChannelConfTypeDef sConfig = {0};
   stm32_adc_config_t *cfg = handle->cfg;
   uint32_t sum = 0;
-  uint8_t adcCnt=0;
+
   int32_t avg;
 
   osSemaphoreAcquire(handle->sem, osWaitForever);

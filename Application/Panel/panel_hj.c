@@ -17,7 +17,7 @@ uint16_t send_panel_hj(driver_t *panel_port)
 {
     char framemk[50];
     uint8_t 	cnt = 0;
-    uint32_t 	i;
+
     DATE_TIME_BUF			*pDate;
     kma_data_ex_t *p_kma;
 

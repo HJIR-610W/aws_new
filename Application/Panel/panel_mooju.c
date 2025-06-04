@@ -34,7 +34,7 @@ void send_panel_muju(
 {
   char   framemk[60];
 	uint8_t 	cnt = 0;
-	uint32_t 	i;
+
 	DATE_TIME_BUF			*pDate;
   kma_data_ex_t *p_kma;
 

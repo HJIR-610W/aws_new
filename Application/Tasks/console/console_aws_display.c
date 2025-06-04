@@ -289,12 +289,12 @@ int32_t print_cdmaInfo(uint16_t row, uint16_t column)
 int32_t print_directInfo(uint16_t row, uint16_t column)
 {
   char buffer[30];
-  char num[20];
+
   uint8_t line = row + 3;
-  int8_t rssi;
+
   DATE_TIME_BUF nt;
   uint32_t last_time;
-  struct tm time_info;
+
   uint32_t remain_sec;
 
   remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms/1000.0);
@@ -473,7 +473,7 @@ if (p_kma->precipitation.enable)
       uint32_t last_time;
       last_time = p_kma->precipitation.last_time;
       DATE_TIME_BUF nt;
-      char buff[20];
+
       if(last_time==0)//우량이 내린적이 없으면
       {
         vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:--\r\n", COL_WIDTH, "강수량(time)");

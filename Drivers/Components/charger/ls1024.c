@@ -60,7 +60,7 @@ driver_t *ls1024_open(int32_t num,void *opt)
 
 void ls1024_read(driver_t *driver, charger_data_t *charger_data, uint8_t *err)
 {
-  float temp;
+
   uint16_t reg[15];
   ls1024_cfg_t *cfg = driver->cfg;
   int32_t ret;

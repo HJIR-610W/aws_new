@@ -253,8 +253,8 @@ pcf8575_di_cfg_t pcf8575_di_cfg[8];
 
 driver_t *pcf8575_di_open(uint32_t num,void *opt)
 {
-  uint16_t dir=0;
-  i2c_open_opt_t i2c_open_opt;
+
+
 
 
   if(g_pcf8575_di_list[num].opened)
@@ -365,7 +365,7 @@ const do_api_t pcf8575_do_api={.close = pcf8575_do_close,
 
 driver_t *pcf8575_do_open(uint32_t num,void *opt)
 {
-  uint16_t dir=0;
+
 
   if(g_pcf8575_do_list[num].opened)
   {
@@ -423,8 +423,8 @@ void pcf8575_low(driver_t *drv)
 
   const gpio_api_t *api = pcf->api;
 
-  int32_t ret;
-  uint16_t data;
+
+
 
   api->write_pin(pcf,1<<cfg->channel,0);
 }
@@ -438,8 +438,8 @@ void pcf8575_high(driver_t *drv)
 
   const gpio_api_t *api = pcf->api;
 
-  int32_t ret;
-  uint16_t data;
+
+
 
   api->write_pin(pcf,1<<cfg->channel,1);
 }
@@ -458,7 +458,7 @@ void pcf8575_do_set(driver_t *handle, do_set_option_t option, void *value)
 //TODO:
 int32_t pcf8575_do_read(driver_t *drv,uint8_t *err)
 {
-  int32_t pin;
+
 
   return 0;
 }

@@ -38,7 +38,7 @@ void _spi_post_sem(driver_t *spi)
 
 driver_t * driver_flash_open(int num)
 {
-  driver_t at45db;
+ 
     static driver_t flash_at45db;//driver_fram_open을 하면 생성되는것
     const static flash_api_t at45db_api={.read_page  = at45db_read_page,
                                          .write_page = at45db_write_page};
