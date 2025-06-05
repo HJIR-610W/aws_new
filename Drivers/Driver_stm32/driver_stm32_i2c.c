@@ -73,6 +73,105 @@ void MX_I2C2_Init(void *arg)
 
 }
 
+
+
+
+
+void i2c1_bus_recovery(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  // 1. SCL/SDA 핀을 GPIO로 재설정 (Open-Drain)
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+
+  // SCL 초기화
+  GPIO_InitStruct.Pin = I2C1_SCL_PIN;
+  HAL_GPIO_Init(I2C1_SCL_GPIO_Port, &GPIO_InitStruct);
+
+  // SDA는 입력으로 설정 (상태 감지용)
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pin = I2C1_SDA_PIN;
+  HAL_GPIO_Init(I2C1_SDA_GPIO_Port, &GPIO_InitStruct);
+
+  // 2. SDA 상태 확인
+  if (HAL_GPIO_ReadPin(I2C1_SDA_GPIO_Port, I2C1_SDA_PIN) == GPIO_PIN_RESET)
+  {
+    // 3. SDA가 LOW인 경우: SCL을 pulsing하여 버스 복구 시도
+    for (int i = 0; i < 9; i++)
+    {
+      HAL_GPIO_WritePin(I2C1_SCL_GPIO_Port, I2C1_SCL_PIN, GPIO_PIN_SET);
+      HAL_Delay(1);  // 최소 4us 이상, 여기선 1ms
+      HAL_GPIO_WritePin(I2C1_SCL_GPIO_Port, I2C1_SCL_PIN, GPIO_PIN_RESET);
+      HAL_Delay(1);
+    }
+
+    // 4. STOP 조건 시도: SDA high 상태로 SCL을 high로 하면서 SDA도 high
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    GPIO_InitStruct.Pin = I2C1_SDA_PIN;
+    HAL_GPIO_Init(I2C1_SDA_GPIO_Port, &GPIO_InitStruct);
+
+    HAL_GPIO_WritePin(I2C1_SCL_GPIO_Port, I2C1_SCL_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(I2C1_SDA_GPIO_Port, I2C1_SDA_PIN, GPIO_PIN_SET);
+    HAL_Delay(1);
+  }
+
+  // 5. 핀을 원래대로 복구 (I2C 모드로 다시 초기화 필요)
+  HAL_GPIO_DeInit(I2C1_SCL_GPIO_Port, I2C1_SCL_PIN);
+  HAL_GPIO_DeInit(I2C1_SDA_GPIO_Port, I2C1_SDA_PIN);
+}
+
+
+void i2c2_bus_recovery(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  // 1. SCL/SDA 핀을 GPIO Open-Drain 모드로 전환
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+
+  // SCL = PH4
+  GPIO_InitStruct.Pin = I2C2_SCL_PIN;
+  HAL_GPIO_Init(I2C2_SCL_GPIO_Port, &GPIO_InitStruct);
+
+  // SDA = PH5를 입력으로 설정하여 상태 감지
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pin = I2C2_SDA_PIN;
+  HAL_GPIO_Init(I2C2_SDA_GPIO_Port, &GPIO_InitStruct);
+
+  // 2. SDA 상태가 LOW이면 복구 진행
+  if (HAL_GPIO_ReadPin(I2C2_SDA_GPIO_Port, I2C2_SDA_PIN) == GPIO_PIN_RESET)
+  {
+    // 3. SCL 클럭을 9번 출력하여 stuck 해제 시도
+    for (int i = 0; i < 9; i++)
+    {
+      HAL_GPIO_WritePin(I2C2_SCL_GPIO_Port, I2C2_SCL_PIN, GPIO_PIN_SET);
+      HAL_Delay(1);
+      HAL_GPIO_WritePin(I2C2_SCL_GPIO_Port, I2C2_SCL_PIN, GPIO_PIN_RESET);
+      HAL_Delay(1);
+    }
+
+    // 4. STOP 조건 강제: SDA를 high로 유지하며 SCL high
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    GPIO_InitStruct.Pin = I2C2_SDA_PIN;
+    HAL_GPIO_Init(I2C2_SDA_GPIO_Port, &GPIO_InitStruct);
+
+    HAL_GPIO_WritePin(I2C2_SCL_GPIO_Port, I2C2_SCL_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(I2C2_SDA_GPIO_Port, I2C2_SDA_PIN, GPIO_PIN_SET);
+    HAL_Delay(1);
+  }
+
+  // 5. 핀 복구: HAL_I2C_Init() 전에 GPIO 해제 필요
+  HAL_GPIO_DeInit(I2C2_SCL_GPIO_Port, I2C2_SCL_PIN);
+  HAL_GPIO_DeInit(I2C2_SDA_GPIO_Port, I2C2_SDA_PIN);
+}
+
 void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
 {
 
@@ -80,6 +179,9 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
 
   if(i2cHandle->Instance==I2C1)
   {
+
+    i2c1_bus_recovery();
+
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
     GPIO_InitStruct.Pin = I2C1_SCL_PIN|I2C1_SDA_PIN;
@@ -94,6 +196,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
   }
   else if(i2cHandle->Instance==I2C2)
   {
+    i2c2_bus_recovery();
     __HAL_RCC_GPIOH_CLK_ENABLE();
 
     GPIO_InitStruct.Pin = I2C2_SCL_PIN|I2C2_SDA_PIN;
