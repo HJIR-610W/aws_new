@@ -93,14 +93,14 @@ typedef enum sensor_list_e
   X(S_T_WIND_DIRECTION_MAX_VAL, "WIND_DIRECTION_MAX") \
   X(S_T_PRESSURE_485, "PRESSURE_RS485")               \
   X(S_T_HUMI_RS485, "HUMI_RS485")                     \
-  X(S_T_RAIN_PRESENT_DI, "화진 강우감지")                 \
+  X(S_T_RAIN_PRESENT_DI, "화진 강우감지")             \
   X(S_T_GENERAL_485, "GENERAL_485")                   \
   X(S_T_PT100_A, "PT100_A")                           \
   X(S_T_PT100_B, "PT100_B")                           \
   X(S_T_FREQ_A, "FREQ_A")                             \
   X(S_T_FREQ_B, "FREQ_B")                             \
   X(S_T_SUNSHINE, "SUNSHINE")                         \
-  X(S_T_SOLAR_RADIATION_OTT_SMP3, "SOLAR_RADIATION OTT SMP3")           \
+  X(S_T_SOLAR_RADIATION_OTT_SMP3, "일사 OTT SMP3")           \
   X(S_T_SOIL_TEMP_5CM, "SOIL_TEMP_5CM")               \
   X(S_T_SOIL_TEMP_10CM, "SOIL_TEMP_10CM")             \
   X(S_T_SOIL_TEMP_20CM, "SOIL_TEMP_20CM")             \

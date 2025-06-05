@@ -12,6 +12,7 @@
 typedef struct hj_temperature_cfg_s
 {
   driver_t *bus_io;
+  uint8_t modbus_id;
 } hj_temperature_cfg_t;
 
 driver_t hjTemp_drv;
@@ -34,8 +35,12 @@ driver_t *hjTemperature_open(int32_t num, void *opt)
 
 
 
-  if (hjTemp_drv.opened) { return &hjTemp_drv; }
+  if (hjTemp_drv.opened)
+  { 
+    return &hjTemp_drv;
+  }
 
+  hj_temperature_cfg.modbus_id = hjtemp->modbus_id;
   modbus_init.baud = 9600;
   modbus_init.parityIdx = 0;
   modbus_init.stop = 1;
@@ -81,7 +86,7 @@ float hjTemperature_read(driver_t *driver, uint8_t *err)
   hj_temperature_cfg_t *cfg = driver->cfg;
   int32_t ret;
 
-  ret = driver_modbus_m_read_hold_reg(cfg->bus_io, 1, HJ_REG_NUM_TEMP, reg, 2);
+  ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_TEMP, reg, 2);
 
   if(ret)
   {
@@ -106,11 +111,11 @@ void hjTemperature_set(driver_t *driver, temperature_set_option_t option, void *
   switch (option)
   {
     case eTEMP_SET_OFFSET:
-      driver_modbus_m_write_single_reg(cfg->bus_io, 1, HJ_REG_NUM_TEMP_OFFSET,data);
+      driver_modbus_m_write_single_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_TEMP_OFFSET,data);
       break;
       case eHUMI_SET_OFFSET:
-      driver_modbus_m_write_single_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI_OFFSET,data);
-      break;
+        driver_modbus_m_write_single_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_HUMI_OFFSET, data);
+        break;
     default:
       break;
   }
@@ -125,13 +130,15 @@ int32_t hjTemperature_get(driver_t *driver, temperature_get_option_t option, voi
   switch (option)
   {
     case eTEMP_GET_OFFSET:
-      ret = driver_modbus_m_read_hold_reg(cfg->bus_io, 1, HJ_REG_NUM_TEMP_OFFSET, &data, 1);
+      ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_TEMP_OFFSET,
+                                          &data, 1);
       *((uint16_t *)value) = data;
       break;
       case eHUMI_GET_OFFSET:
-      ret = driver_modbus_m_read_hold_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI_OFFSET, &data, 1);
-      *((uint16_t *)value) = data;
-      break;
+        ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_HUMI_OFFSET,
+                                            &data, 1);
+        *((uint16_t *)value) = data;
+        break;
     default:
       break;
   }

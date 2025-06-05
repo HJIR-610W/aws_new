@@ -6,13 +6,10 @@
  * @version        v1.0.0
  *
  * @note
- *  - 센서 값은 1초 주기로 읽어 메시지 큐로 전달됨
+ *  - 센서 값은 250ms,1초 주기로 읽어 메시지 큐로 전달됨
  *
  * @details
- * ### Change Log
- * | Version  | Date       | Description             |
- * |----------|------------|-------------------------|
- * | v1.0.0   | 2025-04-15 |                         |
+ * v1.0.0 2025-04-15
  */
 
 #include "task_measure.h"
@@ -67,9 +64,7 @@ const osThreadAttr_t kMeasure1sTask_attributes = {
 };
 
 
-
 const uint32_t kMesaureTimeOutMs = 50;
-
 static sensor_t g_sensor_config_bk[SENSOR_LIST_MAX];  // config 센서의 복사본
 static driver_t *g_sensor_driver[SENSOR_LIST_MAX];
 
@@ -77,30 +72,32 @@ static driver_t *g_sensor_driver[SENSOR_LIST_MAX];
 osMessageQueueId_t g_reading_250ms_queue;
 osMessageQueueId_t g_reading_1s_queue;
 
-uint32_t g_debug_start_time;   // task 실행시간 측정용
-uint32_t g_debug_elased_time;  // task 실행시간 측정용
-uint32_t g_debug_elased_max;   // task 실행시간 측정용
+measure_data_250ms_t g_reading_250;//Task 실행 시간 측정용
+measure_data_1s_t g_reading_1;//Task 실행 시간 측정용
+exec_time_t g_exec_250ms_time; //Task 실행 시간 측정용
+exec_time_t g_exec_1s_time;//Task 실행 시간 측정용
 
-measure_data_250ms_t g_reading_250;
-measure_data_1s_t g_reading_1;
+//Task 실행 시간 측정용
+void elapse_start(exec_time_t *p_time)
+{ 
+  p_time->start_time = HAL_GetTick(); 
+}
 
-exec_time_t g_exec_250ms_time;
-exec_time_t g_exec_1s_time;
-
-void elapse_start(exec_time_t *p_time) { p_time->start_time = HAL_GetTick(); }
-
+//Task 실행 시간 측정용
 void elapse_stop(exec_time_t *p_time)
 {
   p_time->elapsed_time = HAL_GetTick() - p_time->start_time;
   if (p_time->elapsed_time > p_time->elapsed_max)
+  {
     p_time->elapsed_max = p_time->elapsed_time;
+  }
 }
 
 
 
-    /**
-     * @brief 측정 데이터 전송송
-     */
+/**
+ * @brief 측정 데이터 전송
+ */
 void send_measurement(void *queue,void *data)
 {
   osStatus_t status;
@@ -147,8 +144,6 @@ bool is_measurement_1s( void *data,uint32_t timeout)
   }
 
   osMessageQueueGet(g_reading_1s_queue, data, NULL, timeout);
-
-
 
   return true;
 }
@@ -217,6 +212,7 @@ void sensor_init(void)
   void *para = NULL;
   sensor_t *p_sensor;
 
+  //프로그램 실행 중 설정값 변경되어도 영향 없도록 측정 Task는 설정값 복사본으로 동작
   memcpy(g_sensor_config_bk, config.sensor, sizeof(g_sensor_config_bk));
 
   p_sensor = g_sensor_config_bk;
@@ -226,7 +222,7 @@ void sensor_init(void)
   //사용하는 센서의 드라이버를 초기화 한다.
   for (int i = 0; i < SENSOR_LIST_MAX; i++)
   {
-    if (p_sensor[i].type)  // 사용으로 설정되었는 확인
+    if (p_sensor[i].type)  // 0이 아니면 사용으로 설정된것
     {
       switch (i)
       {
@@ -327,7 +323,7 @@ void sensor_init(void)
           num = get_driverNum(p_sensor[N10_AIR_TEMPERATURE_50CM].type);
           g_sensor_driver[N10_AIR_TEMPERATURE_50CM] = temperature_open(num, 0);
           break;
-        default:
+        default://현재 구현되어 있지 않은 센서 드라이버는 ADC만 사용하도록함
         num = get_driverNum(p_sensor[i].type);
         para = get_sensor_config(&p_sensor[i]);
         g_sensor_driver[i] = general_adc_open(num, para);
@@ -336,8 +332,7 @@ void sensor_init(void)
     }
   }
 
-
-
+  //센서사용 여부를 업데이트한다.
   for (int i = 0; i < SENSOR_LIST_MAX; i++)
   { 
     if (get_config_app()->sensor[i].type)  // 사용으로 설정되었는지 확인
@@ -578,8 +573,6 @@ void measure250ms_task(void *arg)
 {
   uint32_t tick_count;
 
-  log_printf(L_INFO,"250ms start");
-
   tick_count = osKernelGetTickCount();
   while(1)
   {
@@ -587,6 +580,7 @@ void measure250ms_task(void *arg)
     measure_250ms();
     elapse_stop(&g_exec_250ms_time);
     send_measurement(g_reading_250ms_queue, &g_reading_250);
+    
     tick_count += MEASURE_PERIOD_250MS;
     osDelayUntil(tick_count);  
   }
@@ -597,7 +591,6 @@ void measure1s_task(void *arg)
 {
   uint32_t tick_count;
 
-  log_printf(L_INFO,"1s start");
   tick_count = osKernelGetTickCount();
   while(1)
   {
@@ -611,13 +604,9 @@ void measure1s_task(void *arg)
 }
 
 /**
- * @brief 250ms,1s 1개의 센서 수집 Task실행
- * 250ms에서 모두 처리하다보면 시리얼 통신 기반 센서에서 처리 시간이 많아
- * 250ms 마다 실행이 불가능하다.
+ * @brief 250ms,1s 마다 센서 데이터 수집
  * 250ms 풍향 풍속 전용으로 처리
  * 1s는 일반 센서처리
- * 
- * 
  */
 void measureTask_init(void)
 {

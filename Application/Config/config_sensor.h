@@ -95,7 +95,7 @@ typedef struct hjtemp_s
     int32_t i_data;
     float f_data;
   }ofset;
-  
+  uint8_t modbus_id;
 } hjtemp_config_t;
 
 typedef struct hjwindDirection_s
@@ -113,6 +113,7 @@ typedef struct hjsnow_config_s
 typedef struct ottSMP3_config_s
 {
   uint8_t port;
+  uint8_t modbus_id;
 } ott_smp3_config_t;
 
 

@@ -157,7 +157,7 @@ int32_t print_rainInfo(uint16_t row, uint16_t column)
 
 int32_t print_ethInfo(uint16_t row, uint16_t column)
 {
-  char buff[30];
+
   eLINK_STATUS_t link_status[ETH_CLIENT_MAX];
   uint8_t tx_cnt[ETH_CLIENT_MAX];
   uint8_t rx_cnt[ETH_CLIENT_MAX];

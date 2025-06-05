@@ -527,13 +527,14 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
       if (hjtemp->physical_layer == ePHYSICAL_RS232)
       {
         rs232_get_portList(list, sizeof(list));
-        snprintf(out, outSize, "[%s]", list[hjtemp->port]);
+         snprintf(out, outSize, "[%s][A.%d]", list[hjtemp->port], hjtemp->modbus_id);
       }
       else
       {
         rs485_get_portList(list, sizeof(list));
-        snprintf(out, outSize, "[%s]", list[hjtemp->port]);
+         snprintf(out, outSize, "[%s][A.%d]", list[hjtemp->port],hjtemp->modbus_id);
       }
+
 
     }
     break;
@@ -555,7 +556,7 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
     {
       ott_smp3_config_t *ott = (ott_smp3_config_t *)cfg;
       rs485_get_portList(list, sizeof(list));
-      snprintf(out, outSize, "[%s]", list[ott->port]);
+      snprintf(out, outSize, "[%s][A.%d]", list[ott->port],ott->modbus_id);
     }
     break;
     default:
@@ -576,7 +577,7 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
  */
 int32_t print_menu_sensor(p_shell_context_t ctx)
 {
-  char opt[20];
+  char opt[25];
   int32_t cnt = 0;
   int i = 0;
 
@@ -588,10 +589,10 @@ int32_t print_menu_sensor(p_shell_context_t ctx)
   for (i = 0; i < cnt; i++)
   {
     make_option(&get_config_app()->sensor[i], opt, sizeof(opt));
-    ctx->printf("%2d.%-14s:%-24s %-15s,  ", i, sensor_name_list[i],
+    ctx->printf("%2d.%-14s:%-20s %-22s,  ", i, sensor_name_list[i],
                 ITEM_LIST(get_config_app()->sensor[i].type, g_sensor_model_list), opt);
     make_option(&get_config_app()->sensor[i + cnt], opt, sizeof(opt));
-    ctx->printf("%2d.%-14s:%-24s %-15s\r\n", i + cnt, sensor_name_list[i + cnt],
+    ctx->printf("%2d.%-14s:%-20s %-22s\r\n", i + cnt, sensor_name_list[i + cnt],
                 ITEM_LIST(get_config_app()->sensor[i + cnt].type, g_sensor_model_list), opt);
   }
 
@@ -682,7 +683,8 @@ uint8_t print_hjwindDir_cfg(p_shell_context_t ctx, hjwindspeed_config_t *hjwindC
 */
 #define HJTEMP_CFG_PHYSICAL_LAYER 0
 #define HJTEMP_CFG_PORT           1
-#define HJTEMP_CTRL_OFFSET        2
+#define HJTEMP_CFG_MODBUS_ID      2
+#define HJTEMP_CTRL_OFFSET        3
 uint8_t print_hjtemp_cfg(p_shell_context_t ctx, hjtemp_config_t *hjtempCfg, uint8_t cnt)
 {
   const char *portNameList[10];
@@ -699,17 +701,20 @@ uint8_t print_hjtemp_cfg(p_shell_context_t ctx, hjtemp_config_t *hjtempCfg, uint
 
   }
   ctx->printf("%2d.포트       :%s\r\n", cnt++, portNameList[hjtempCfg->port]);  // 고정
-  ctx->printf("%2d.오프셋[제어]\r\n", cnt++);  // 고정
+  ctx->printf("%2d.모드버스 ID:%d\r\n", cnt++, hjtempCfg->modbus_id);  // 고정
+  ctx->printf("%2d.오프셋[제어]\r\n", cnt++);                                   // 고정
   return cnt;
 }
 
 #define OTT_SMP3_CFG_PORT 0
+#define OTT_SMP3_CFG_ID   1
 uint8_t print_ott_smp3_cfg(p_shell_context_t ctx, ott_smp3_config_t *ott, uint8_t cnt)
 {
   const char *portNameList[10];
 
    rs485_get_portList(portNameList, _countof(portNameList));
    ctx->printf("%2d.포트       :%s\r\n", cnt++, portNameList[ott->port]);  // 고정
+   ctx->printf("%2d.MODBUS ID  :%d\r\n", cnt++, ott->modbus_id);  // 고정
    return cnt;
 }
 
@@ -1046,7 +1051,7 @@ void hjwinddir_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_
 void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t row_idx;
-
+  int32_t dec=0;
   hjtemp_config_t *hjtemp;
   const char *portList[10];
   uint16_t portListCnt;
@@ -1092,6 +1097,13 @@ void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
       }
 
       break;
+      case HJTEMP_CFG_MODBUS_ID:
+        if (input_decimal(ctx, 0, 247, &dec))
+        {
+          hjtemp->modbus_id = dec;
+          save_config_sensor();
+        }
+        break;
       case HJTEMP_CTRL_OFFSET:
       {
         driver_t *hj_temp;
@@ -1131,7 +1143,7 @@ void hjtemp_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
 void hjhumi_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t row_idx;
-
+  int32_t dec=0;
   hjtemp_config_t *hjtemp;
   const char *portList[10];
   uint16_t portListCnt;
@@ -1174,6 +1186,13 @@ void hjhumi_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
           hjtemp->port = row_idx - 1;
           save_config_sensor();
         }
+      }
+      break;
+    case HJTEMP_CFG_MODBUS_ID:
+      if (input_decimal(ctx, 0, 247, &dec))
+      {
+        hjtemp->modbus_id = dec;
+        save_config_sensor();
       }
       break;
     case HJTEMP_CTRL_OFFSET:
@@ -1216,7 +1235,7 @@ void hjhumi_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_ind
 void ott_smp3_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t row_idx;
-
+  int32_t dec=0;
   ott_smp3_config_t *ott;
   const char *portList[10];
   uint16_t portListCnt;
@@ -1240,7 +1259,13 @@ void ott_smp3_config_set(p_shell_context_t ctx, sensor_t *sensor, uint8_t menu_i
       }
 
       break;
-
+    case OTT_SMP3_CFG_ID:
+      if (input_decimal(ctx, 0, 247, &dec))
+      {
+        ott->modbus_id = dec;
+        save_config_sensor();
+      }
+      break;
     default:
       break;
   }
@@ -2673,15 +2698,16 @@ void config_hj_reset(void)
   config.sensor[A1_TEMPERATURE].type = S_T_TEMPERATURE_HJ;
   sensor_add(&config.sensor[A1_TEMPERATURE]);
   hjtemp_cfg = get_sensor_config(&config.sensor[A1_TEMPERATURE]);
-  hjtemp_cfg->physical_layer = ePHYSICAL_RS232;
+  hjtemp_cfg->physical_layer = ePHYSICAL_RS485;
   hjtemp_cfg->port = eRS232_RS485_B;
-
+  hjtemp_cfg->modbus_id = 1;
   // 습도 센서[화진 습도 9600]
   config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_HUMINITY_HJ;
   sensor_add(&config.sensor[A10_RELATIVE_HUMIDITY]);
   hjtemp_cfg = get_sensor_config(&config.sensor[A10_RELATIVE_HUMIDITY]);
-  hjtemp_cfg->physical_layer = ePHYSICAL_RS232;
-  hjtemp_cfg->port = eRS232_RS485_B;
+  hjtemp_cfg->physical_layer = ePHYSICAL_RS485;
+  hjtemp_cfg->port = eAPP_RS485_D;
+  hjtemp_cfg->modbus_id = 1;
 
   // 풍향[화진 RS485 풍향 19200]
   config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;

@@ -15,6 +15,7 @@
 typedef struct ott_smp3_cfg_s
 {
   driver_t *bus_io;
+  uint8_t modbus_id;
 
 } ott_smp3_cfg_t;
 
@@ -44,7 +45,7 @@ driver_t *ott_smp3_open(int32_t num, void *opt)
   modbus_init.stop = 1;
   modbus_init.port_num = ott->port;
   ;
-
+  g_ott_smp3_cfg.modbus_id = ott->modbus_id;
   g_ott_smp3_cfg.bus_io = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &modbus_init);
   
   g_ott_smp3_driver.cfg = &g_ott_smp3_cfg;
@@ -92,7 +93,8 @@ float smp3_solar_read(driver_t *driver, uint8_t *err)
   ott_smp3_cfg_t *cfg = driver->cfg;
   int32_t ret;
 
-  ret = driver_modbus_m_read_hold_reg(cfg->bus_io, 1, REG_U_STATUS_FLAGS, reg, _countof(reg));
+  
+  ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, REG_U_STATUS_FLAGS, reg, _countof(reg));
 
   if(ret)
   {
@@ -103,7 +105,7 @@ float smp3_solar_read(driver_t *driver, uint8_t *err)
   {
     *err = DRV_ERR_NONE;
     memcpy(&g_ott_smp3_system.status,&reg[0],2);
-    print_ott();
+    //print_ott();
     temp = modbus_regs_to_float(reg[3], reg[4]);
   }
 

@@ -43,19 +43,18 @@ float read_sensor_solarRadiation(driver_t *driver,uint8_t *err)
     return NAN;
   }
 
-  api = ((driver_t *)driver)->api;
-
-  if(api == NULL)
-  {
-    *err = DRV_ERR_HANDLE;
-    return NAN;
-  }
-
   if(strncmp(driver->name,"GENERAL_ADC",11)==0)
   {
     return general_adc_read(driver,err);
   }
 
+  api = ((driver_t *)driver)->api;
+
+  if (api == NULL)
+  {
+    *err = DRV_ERR_HANDLE;
+    return NAN;
+  }
 
   return api->read(driver,err);
 }
