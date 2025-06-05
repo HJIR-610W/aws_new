@@ -937,7 +937,17 @@ int handle_save_load(int adc_num)
             adc_config_init(&g_adc_config_ads1220, 24, 5.0f);  // 예시 기본값으로 RAM 리셋
         
             adc_config_init(&g_adc_config_stm32, 12, 3.3f);  // 예시 기본값으로 RAM 리셋
-            
+            for (int channel = 0; channel < STM32_NUM_SINGLE_ENDED_CHANNELS; channel++)
+            {
+              g_adc_config_stm32.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
+              g_adc_config_stm32.single_ended_cal[channel].factory_cal_temp =
+                  DEFAULT_FACTORY_CAL_TEMP;
+              g_adc_config_stm32.single_ended_cal[channel].is_calibrated = true;
+              g_adc_config_stm32.single_ended_cal[channel].factory_offset = 0.0f;
+              g_adc_config_stm32.single_ended_cal[channel].factory_slope = 8.05e-04;
+              g_adc_config_stm32.single_ended_cal[channel].offset_temp_coeff = 1;
+              g_adc_config_stm32.single_ended_cal[channel].slope_temp_coeff = 1;
+            }
             io_printf("켈리브레이션 값 초기화 완료\r\n");
             io_printf("켈리브레이션을 다시 진행해주세요\r\n");
             save_adc_cali();  
