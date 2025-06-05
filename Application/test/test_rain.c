@@ -34,7 +34,7 @@ void test_rain(void)
   int prev_rain_present_status=-1;
   int once=1;
 
-  rain_det_power = driver_do_open(DO_CON_PWR_RAIN_DECT_ACTIVE_H, 0);
+  rain_det_power = driver_do_open(DO_POWER_RAIN_DECT_DIGITAL, 0);
 
   driver_do_high(rain_det_power);
 

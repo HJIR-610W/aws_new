@@ -1,18 +1,15 @@
 #include "task_system.h"
 
 #include "bsp.h"
-#include "app_bsp.h"
+
 #include "app_charger.h"
-
-
-#include "bsp.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "driver_di.h"
 #include "driver_do.h"
-#include "driver_modbus.h"
 #include "driver_uart.h"
 #include "task_isrEvent.h"
+
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
@@ -44,10 +41,10 @@ void systemTask(void *arg)
 {
   uint8_t err=0;
   uint32_t start_time = osKernelGetTickCount();
+  
   while (1)
   {
     bsp_rtc_update();
-
 
     if ((osKernelGetTickCount() - start_time)>1000)
     {
@@ -68,17 +65,12 @@ void systemTask(void *arg)
 
 void systemTask_init(uint32_t para)
 {
-
   if(para==PARA_RUN_MODE)
   {
-  app_bsp_init();
-  userBtn_init();
+    userBtn_init();
+    
+    charger_init(get_config_app()->charger_model);
 
-  charger_init(get_config_app()->charger_model);
-
-
-
-  
   }
 
   osThreadNew(systemTask, NULL, &kSystemTask_attributes);

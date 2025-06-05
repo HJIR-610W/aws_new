@@ -8,7 +8,7 @@
 #include "driver_interface.h"
 #include "driver_do_define.h"
 
-#define STM32_DO_PWR_CDMA        0
+#define STM32_DO_POWER_CDMA        0
 #define STM32_DO_ADC_NCS         1
 #define STM32_DO_FRAM_CS         2
 #define STM32_DO_RTC_CS          3
@@ -23,8 +23,8 @@
 #define STM32_DO_DIR_RS485_B    12
 #define STM32_DO_DIR_RS485_C    13
 #define STM32_DO_DIR_RS485_D    14
-#define STM32_DO_CON_PWR_RAIN_DECT_ACTIVE_H  15
-#define STM32_DO_CON_PWR_RAIN_ACTIVE_H 16
+#define STM32_DO_POWER_RAIN_DECT_DIGITAL  15
+#define STM32_DO_POWER_RAIN_DECT_ANALOG 16
 
 #define STM32_DO_MAX           17
 

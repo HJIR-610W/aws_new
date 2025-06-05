@@ -34,7 +34,7 @@
 #include "Sensors\wind_direction\wind_direction.h"
 #include "Sensors\wind_speed\wind_speed.h"
 #include "app_adc.h"
-#include "app_bsp.h"
+
 #include "app_dataLogging.h"
 #include "app_file.h"
 #include "app_measure.h"

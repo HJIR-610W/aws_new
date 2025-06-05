@@ -9,7 +9,7 @@
 #include "modem_ntle9607.h"
 #include "at_cmd.h"
 
-#include "app_bsp.h"
+
 #include "bsp.h"
 extern void EwFree( void* aMemory );
 extern void* EwAlloc( int aSize );

@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #include "app_adc.h"
-#include "app_bsp.h"
+
 #include "app_charger.h"
 #include "app_dataLogging.h"
 

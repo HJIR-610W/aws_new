@@ -12,7 +12,7 @@
 #include "console_utile.h"
 #include "app_charger.h"
 #include "bsp_di.h"
-#include "app_bsp.h"
+
 #include "task_logging.h"
 #include "cli_key_code.h"
 #include "task_measure.h"
@@ -158,31 +158,51 @@ int32_t print_rainInfo(uint16_t row, uint16_t column)
 int32_t print_ethInfo(uint16_t row, uint16_t column)
 {
   char buff[30];
-  eLINK_STATUS_t link_status;
-  uint8_t tx_cnt;
-  uint8_t rx_cnt;
+  eLINK_STATUS_t link_status[ETH_CLIENT_MAX];
+  uint8_t tx_cnt[ETH_CLIENT_MAX];
+  uint8_t rx_cnt[ETH_CLIENT_MAX];
   uint8_t line = row + 3;
 
   if (get_config_app()->eth_mode == eETH_MODE_CLINET)
   {
-    link_status = get_tcp_client_system()->link_status;
-    tx_cnt = get_tcp_client_system()->tx_cnt;
-    rx_cnt = get_tcp_client_system()->rx_cnt;
+    link_status[ETH_CLIENT_0] = get_tcp_client_system()->link_status;
+    tx_cnt[ETH_CLIENT_0] = get_tcp_client_system()->tx_cnt;
+    rx_cnt[ETH_CLIENT_0] = get_tcp_client_system()->rx_cnt;
+
+    vt100_print_frame(row, column, "이더넷", '+', '|', '-', DISP_WIDTH, WHITE);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "링크  :%s\r\n",
+                    ITEM_LIST(link_status[ETH_CLIENT_0], linkStatusList));
+    vt100_print_bar(line++, column, -DISP_WIDTH, "송신  :%d\r\n", tx_cnt[ETH_CLIENT_0]);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "수신  :%d\r\n", rx_cnt[ETH_CLIENT_0]);
+    vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
   }
   else
   {
-    link_status = get_tcp_system()->link_status;
-    tx_cnt = get_tcp_system()->tx_cnt;
-    rx_cnt = get_tcp_system()->rx_cnt;
-  }
-        make_comList(buff, sizeof(buff));
-  vt100_print_frame(row, column, "이더넷", '+', '|', '-', DISP_WIDTH, WHITE);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "링크  :%s\r\n",
-                  ITEM_LIST(link_status , linkStatusList));
-  vt100_print_bar(line++, column, -DISP_WIDTH, "송신  :%d\r\n", tx_cnt);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "수신  :%d\r\n", rx_cnt);
+    vt100_print_frame(row, column, "이더넷", '+', '|', '-', DISP_WIDTH, WHITE);
 
-  vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
+    link_status[ETH_CLIENT_0] = get_tcp_system(ETH_CLIENT_0)->link_status;
+    tx_cnt[ETH_CLIENT_0] = get_tcp_system(ETH_CLIENT_0)->tx_cnt;
+    rx_cnt[ETH_CLIENT_0] = get_tcp_system(ETH_CLIENT_0)->rx_cnt;
+
+    vt100_print_bar(line++, column, -DISP_WIDTH, "링크(0):%s(%s)\r\n",
+                    ITEM_LIST(link_status[ETH_CLIENT_0], linkStatusList),
+                    get_tcp_system(ETH_CLIENT_0)->client_ip_str);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "송신   :%d\r\n", tx_cnt[ETH_CLIENT_0]);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "수신   :%d\r\n", rx_cnt[ETH_CLIENT_0]);
+
+    link_status[ETH_CLIENT_1] = get_tcp_system(ETH_CLIENT_1)->link_status;
+    tx_cnt[ETH_CLIENT_1] = get_tcp_system(ETH_CLIENT_1)->tx_cnt;
+    rx_cnt[ETH_CLIENT_1] = get_tcp_system(ETH_CLIENT_1)->rx_cnt;
+
+    vt100_print_bar(line++, column, -DISP_WIDTH, "링크(1):%s(%s)\r\n",
+                    ITEM_LIST(link_status[ETH_CLIENT_1], linkStatusList),
+                    get_tcp_system(ETH_CLIENT_1)->client_ip_str);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "송신   :%d\r\n", tx_cnt[ETH_CLIENT_1]);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "수신   :%d\r\n", rx_cnt[ETH_CLIENT_1]);
+    vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
+  }
+  
+
 
   return line ;
 }

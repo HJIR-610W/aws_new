@@ -33,11 +33,11 @@ typedef struct
   bool isActive;
   char client_ip_str[INET_ADDRSTRLEN];
   uint16_t client_port;
+  tcp_status_t *status;
 } client_slot_t;
 
+static tcp_status_t g_tcp_status[MAX_CONCURRENT_CLIENTS];
 
-static tcp_status_t g_tcp_status;
-static osMutexId_t g_tcp_status_mutex; 
 static client_slot_t client_slots[MAX_CONCURRENT_CLIENTS];
 static osMutexId_t client_slots_mutex;
 
@@ -60,9 +60,9 @@ const osThreadAttr_t clientHandlerTask_attributes = {
 static void client_handler_task(void *argument);
 static void server_service_for_client(int sock, client_slot_t* slot); // server_service 수정본
 
-tcp_status_t *get_tcp_system(void)
+tcp_status_t *get_tcp_system(uint32_t number)
 {
-  return &g_tcp_status;
+  return &g_tcp_status[number];
 }
 
 void noti_tcpServerTask(uint32_t flag)
@@ -87,22 +87,7 @@ int set_recv_timeout(int sockfd, uint32_t timeout_ms)
     return 0;
 }
 
-#define UPDATE_TCP_STATUS_CNT(counter_field, max_val)                                            \
-  do                                                                                             \
-  {                                                                                              \
-    if (g_tcp_status_mutex != NULL && osMutexAcquire(g_tcp_status_mutex, osWaitForever) == osOK) \
-    {                                                                                            \
-      g_tcp_status.counter_field =                                                               \
-          (g_tcp_status.counter_field >= (max_val)) ? 0 : g_tcp_status.counter_field + 1;        \
-      osMutexRelease(g_tcp_status_mutex);                                                        \
-    }                                                                                            \
-    else                                                                                         \
-    { /* 뮤텍스 에러 처리 또는 그냥 카운트 (정확도 저하 감수) */                                 \
-      g_tcp_status.counter_field =                                                               \
-          (g_tcp_status.counter_field >= (max_val)) ? 0 : g_tcp_status.counter_field + 1;        \
-      task_printf("경고: 카운터 갱신을 위해 g_tcp_status_mutex 획득에 실패했습니다.\r\n");\
-} \
-    } while(0)
+
 
 
 
@@ -112,6 +97,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
   uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
   int32_t ret, len, err_code;
   uint8_t *p_rx_buffer;
+
 
   p_rx_buffer = pvPortMalloc(RECV_BUFF_SIZE);
 
@@ -160,7 +146,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
     }
     else // 데이터 수신 성공 (ret > 0)
     {
-      UPDATE_TCP_STATUS_CNT(rx_cnt, 99); // 스레드 안전한 카운터 업데이트
+      UPDATE_CNT(slot->status->rx_cnt, 99);  // 스레드 안전한 카운터 업데이트
       len = kma_cmd_handler(p_rx_buffer, ret, tx_buffer, eREQ_SOURCE_ETH);
 
       if (len > 0) // 응답할 데이터가 있는 경우
@@ -191,7 +177,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
           break; // 외부 서비스 루프 종료
         }
 
-        UPDATE_TCP_STATUS_CNT(tx_cnt, 99); 
+        UPDATE_CNT(slot->status->tx_cnt, 99);  
 
         if (get_firmware_update())
         {
@@ -211,6 +197,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
 
   vPortFree(p_rx_buffer);
 
+
 }
 
 
@@ -219,6 +206,7 @@ static void client_handler_task(void *argument)
   client_slot_t *slot = (client_slot_t *)argument;
   int client_socket_fd = slot->client_socket;
 
+  slot->status->link_status = eLINK_UP;
 
   server_service_for_client(client_socket_fd, slot);
 
@@ -237,6 +225,7 @@ static void client_handler_task(void *argument)
         "오류: 정리를 위해 client_handler_task가 client_slots_mutex를 획득하지 못했습니다.\r\n");
   }
 
+  slot->status->link_status = eLINK_DOWN;
   osThreadExit();
 }
 
@@ -275,12 +264,7 @@ void tcpServerTask(void *arg)
 
   osThreadFlagsWait(0x00000001, osFlagsWaitAny, osWaitForever);
   
-  if (g_tcp_status_mutex != NULL) { 
-      if (osMutexAcquire(g_tcp_status_mutex, osWaitForever) == osOK) {
-          g_tcp_status.link_status = eLINK_IDLE; // 또는 eLINK_LISTENING
-          osMutexRelease(g_tcp_status_mutex);
-      }
-  }
+
 
 
   while (1)
@@ -348,12 +332,7 @@ void tcpServerTask(void *arg)
         }
         task_printf("TCP 서버: 포트 %u에서 수신 대기 중 (소켓: %d).\r\n", local_port, listen_sock);
 
-        if (g_tcp_status_mutex != NULL) {
-            if (osMutexAcquire(g_tcp_status_mutex, osWaitForever) == osOK) {
-                 g_tcp_status.link_status = eLINK_UP;
-                 osMutexRelease(g_tcp_status_mutex);
-            }
-        }
+
     }
 
     // 2. 클라이언트 연결 수락
@@ -476,27 +455,29 @@ void tcpServerTask_init(uint32_t flag) // flag 매개변수는 현재 사용되지 않음
     return;
   }
 
-  g_tcp_status_mutex = osMutexNew(NULL);
-  if (g_tcp_status_mutex == NULL) {
-    task_printf("치명적 오류: g_tcp_status_mutex 생성 실패.\r\n");
-
-    // client_slots_mutex는 생성되었으므로 필요시 삭제
-    osMutexDelete(client_slots_mutex);
-    return;
-  }
 
 
   local_port = get_config_app()->eth_local_port;
 
-  g_tcp_status.link_status = eLINK_IDLE; // 태스크 시작 시 업데이트
+  g_tcp_status[ETH_CLIENT_0].link_status = eLINK_IDLE;  // 태스크 시작 시 업데이트
+  g_tcp_status[ETH_CLIENT_1].link_status = eLINK_IDLE; // 태스크 시작 시 업데이트
 
+  client_slots[ETH_CLIENT_0].status = &g_tcp_status[ETH_CLIENT_0];
+  client_slots[ETH_CLIENT_1].status = &g_tcp_status[ETH_CLIENT_1];
 
-  g_tcpSeverTaskId = osThreadNew(tcpServerTask, (void*)(uintptr_t)local_port, &tcpServerTask_attributes);
+  strcpy(client_slots[ETH_CLIENT_0].client_ip_str,"-");
+  strcpy(client_slots[ETH_CLIENT_1].client_ip_str,"-");
+
+  client_slots[ETH_CLIENT_0].status->client_ip_str = client_slots[ETH_CLIENT_0].client_ip_str;
+  client_slots[ETH_CLIENT_1].status->client_ip_str = client_slots[ETH_CLIENT_1].client_ip_str;
+
+  g_tcpSeverTaskId =
+      osThreadNew(tcpServerTask, (void *)(uintptr_t)local_port, &tcpServerTask_attributes);
   if (g_tcpSeverTaskId == NULL) {
     task_printf("치명적 오류: tcpServerTask 생성 실패.\r\n");
 
     osMutexDelete(client_slots_mutex);
-    osMutexDelete(g_tcp_status_mutex);
+
   } else {
     task_printf("TCP 서버 태스크 초기화 완료. 네트워크를 기다리는 중...\r\n");
   }

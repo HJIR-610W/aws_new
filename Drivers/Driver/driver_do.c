@@ -13,8 +13,8 @@ driver_t *driver_do_open(uint32_t num,void *opt)
 
   switch(num)
   {
-    case DO_PWR_CDMA:
-    driver = stm32_do_open(STM32_DO_PWR_CDMA,opt);
+    case DO_POWER_CDMA:
+    driver = stm32_do_open(STM32_DO_POWER_CDMA,opt);
     break;
     case DO_ADC_NCS:
     driver = stm32_do_open(STM32_DO_ADC_NCS,opt);
@@ -61,7 +61,7 @@ driver_t *driver_do_open(uint32_t num,void *opt)
     case DO_HART_SEL:
     driver = stm32_do_open(STM32_DO_HART_SEL,opt);
     break;
-    case DO_POWER_HART_24V_ACTIVE_H:
+    case DO_POWER_HART_24V:
     driver = stm32_do_open(STM32_DO_POWER_24V,opt);
     break;
     case DO_HART_RESET:
@@ -76,11 +76,11 @@ driver_t *driver_do_open(uint32_t num,void *opt)
     case DO_DIR_RS485_D:
       driver = stm32_do_open(STM32_DO_DIR_RS485_D, opt);
       break;
-    case DO_CON_PWR_RAIN_DECT_ACTIVE_H:
-      driver = stm32_do_open(STM32_DO_CON_PWR_RAIN_DECT_ACTIVE_H, opt);
+    case DO_POWER_RAIN_DECT_DIGITAL:
+      driver = stm32_do_open(STM32_DO_POWER_RAIN_DECT_DIGITAL, opt);
       break;
-    case DO_CON_PWR_RAIN_ACTIVE_H:
-      driver = stm32_do_open(STM32_DO_CON_PWR_RAIN_ACTIVE_H, opt);
+    case DO_POWER_RAIN_DECT_ANALOG:
+      driver = stm32_do_open(STM32_DO_POWER_RAIN_DECT_ANALOG, opt);
       break;
   }
 

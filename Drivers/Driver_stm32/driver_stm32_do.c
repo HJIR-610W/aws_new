@@ -46,8 +46,8 @@ const stm32_do_cfg_t DIR_RS485_C_cfg = {.port = OUT_RS485_DIR_C_GPIO_Port,
 const stm32_do_cfg_t DIR_RS485_D_cfg = {.port = OUT_RS485_DIR_D_GPIO_Port,
                                         .pin = OUT_RS485_DIR_D_PIN};
 
-const stm32_do_cfg_t CON_PWR_RAIN_DECT_cfg = {.port = DO_CON_PWR_RAIN_DECT_ACTIVE_H_GPIO_Port,
-                                              .pin = DO_CON_PWR_RAIN_DECT_ACTIVE_H_PIN};
+const stm32_do_cfg_t CON_PWR_RAIN_DECT_cfg = {.port = DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port,
+                                              .pin = DO_POWER_RAIN_DECT_DIGITAL_PIN};
 
 const stm32_do_cfg_t CON_PWR_RAIN_cfg = {.port = DO_CON_PWR_RAIN_GPIO_Port,
                                          .pin = DO_CON_PWR_RAIN_PIN};
@@ -108,7 +108,7 @@ driver_t *stm32_do_open(int num,void *opt)
 
   switch(num)
   {
-    case STM32_DO_PWR_CDMA:
+    case STM32_DO_POWER_CDMA:
     g_stm32_do_list[num].cfg = (void *)&CDMA_PWR_cfg;
     stm32_do_init(&CDMA_PWR_cfg,opt);
     break;
@@ -170,12 +170,12 @@ driver_t *stm32_do_open(int num,void *opt)
       g_stm32_do_list[num].cfg = (void *)&DIR_RS485_D_cfg;
       stm32_do_init(&DIR_RS485_D_cfg, opt);
       break;
-    case STM32_DO_CON_PWR_RAIN_DECT_ACTIVE_H:
+    case STM32_DO_POWER_RAIN_DECT_DIGITAL:
       g_stm32_do_list[num].cfg = (void *)&CON_PWR_RAIN_DECT_cfg;
       stm32_do_init(&CON_PWR_RAIN_DECT_cfg, opt);
       break;
-    case STM32_DO_CON_PWR_RAIN_ACTIVE_H:
-      g_stm32_do_list[num].name = "STM32_DO_CON_PWR_RAIN_ACTIVE_H";
+    case STM32_DO_POWER_RAIN_DECT_ANALOG:
+      g_stm32_do_list[num].name = "STM32_DO_POWER_RAIN_DECT_ANALOG";
        g_stm32_do_list[num].cfg = (void *)&CON_PWR_RAIN_cfg;
       stm32_do_init(&CON_PWR_RAIN_cfg, opt);
       break;

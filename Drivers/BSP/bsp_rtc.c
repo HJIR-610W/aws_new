@@ -11,17 +11,11 @@ void rtcIrqCallBack(void *arg)
   os_send_isrEvent(eRTC_INT,0);
 }
 
-
-
 void bsp_rtc_init(void)
 {
-
-
   g_rtc = driver_rtc_open(RTC_RV8803,0);
 
   driver_rtc_read(g_rtc,&Date_Time);
-
-
 
 }
 
@@ -33,7 +27,6 @@ void bsp_rtc_update(void)
   driver_rtc_read(g_rtc,&nt);
   Date_Time = nt;
 }
-
 
 
 void bsp_rtc_set(DATE_TIME_BUF *ct)

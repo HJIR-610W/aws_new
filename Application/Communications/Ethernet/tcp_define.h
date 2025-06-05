@@ -16,6 +16,7 @@ typedef struct tcp_status_s
   eLINK_STATUS_t link_status;
   uint8_t rx_cnt;
   uint8_t tx_cnt;
+  char *client_ip_str;
 } tcp_status_t;
 
 #endif

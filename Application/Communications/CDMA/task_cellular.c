@@ -1582,7 +1582,7 @@ void cellularTask_init(void)
 
 
   cdma_driver = driver_uart_open(UART_8_CDMA,&uart_config);
-  do_cdma_power = driver_do_open(DO_PWR_CDMA, 0);
+  do_cdma_power = driver_do_open(DO_POWER_CDMA, 0);
   
   driver_do_high(do_cdma_power);  // POWER ON 12V
 

@@ -6,7 +6,7 @@
 #include "util_memory.h"
 #include "modem_tx700.h"
 #include "at_cmd.h"
-#include "app_bsp.h"
+
 #include "util_memory.h"
 
 #include "bsp.h"

@@ -1194,9 +1194,6 @@
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_adc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\App_drivers\app_bsp.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_charger.c</name>
             </file>
             <file>
@@ -2476,15 +2473,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\timers.c</name>
-            </file>
-        </group>
-        <group>
-            <name>HART</name>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\HART\hart.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Middlewares\HART\hart.h</name>
             </file>
         </group>
         <group>

@@ -16,11 +16,11 @@ void test_power_signal(void)
   driver_t *do_rain_det;
   driver_t *do_rain_det_power;
   // DO 오픈
-  do_cdma = driver_do_open(DO_PWR_CDMA, 0);
-  do_24v = driver_do_open(DO_POWER_HART_24V_ACTIVE_H, 0);
+  do_cdma = driver_do_open(DO_POWER_CDMA, 0);
+  do_24v = driver_do_open(DO_POWER_HART_24V, 0);
   do_btm = driver_do_open(DO_BTM_PWCTRL, 0);
-  do_rain_heater = driver_do_open(DO_CON_PWR_RAIN_ACTIVE_H,0);
-  do_rain_det = driver_do_open(DO_CON_PWR_RAIN_DECT_ACTIVE_H, 0);
+  do_rain_heater = driver_do_open(DO_POWER_RAIN_DECT_ANALOG,0);
+  do_rain_det = driver_do_open(DO_POWER_RAIN_DECT_DIGITAL, 0);
 
 
   io_printf("파워 신호 제어 테스트 시작\r\n");

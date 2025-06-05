@@ -1,44 +1,147 @@
 
 #include "bsp.h"
 
-#include "driver_di.h"
-#include "driver_do.h"
 #include "bsp_di.h"
 #include "bsp_do.h"
 #include "driver_adc.h"
+#include "driver_di.h"
+#include "driver_do.h"
+#include "driver_led.h"
 
-driver_t *g_cdma_power;
-driver_t *g_adc_stm;
-driver_t *g_door_status;
+static driver_t *g_power_cdma;
+static driver_t *g_power_rain_detect_digital;
+static driver_t *g_power_hart_24v;
+static driver_t *g_power_rain_detect_analog;
+
+static driver_t *g_adc_stm;
+static driver_t *g_door_status;
+static driver_t *g_port_mode;
+static driver_t *g_status_led;
 
 
+void bsp_status_led_init(void)
+{
+  led_freq_cfg_t cfg = {.freq = 5, .highDuty = 10};
+
+  g_status_led = driver_led_open(LED_SYS_RUN);
+
+  driver_led_set(g_status_led, LED_CMD_SET_TOGGLE_FREQ, &cfg);
+  driver_led_set(g_status_led, LED_CMD_START, NULL);
+}
+
+void bsp_status_led_on(void) { driver_led_set(g_status_led, LED_CMD_START, NULL); }
+
+void bsp_status_led_off(void) { driver_led_set(g_status_led, LED_CMD_STOP, NULL); }
+
+void bsp_status_led_set(int mode)
+{
+  switch (mode)
+  {
+    case LED_BLINK:
+    {
+      led_freq_cfg_t cfg = {.freq = 1, .highDuty = 10};
+      driver_led_set(g_status_led, LED_CMD_SET_TOGGLE_FREQ, &cfg);
+    }
+    break;
+    case LED_ON:
+      break;
+    default:
+      break;
+  }
+}
+
+//CDMA 전원 제어 
 
 void bsp_cdma_power_on(void)
 {
-  driver_do_high(g_cdma_power);
+  driver_do_high(g_power_cdma);
 }
 
 void bsp_cdma_power_off(void)
 {
-  driver_do_low(g_cdma_power);
+  driver_do_low(g_power_cdma);
 }
 
 
-void bsp_init(void)
+void bsp_rain_digital_power_on(void)
 {
-    g_cdma_power = driver_do_open(DO_PWR_CDMA,0);
-    g_adc_stm = driver_adc_open(ADC_STM32,0);
-      g_door_status = driver_di_open(DI_EXT_0,0);
-      
-      
-    bsp_rtc_init();
-    bsp_di_init();
-    bsp_do_init();
-    
-    
-    
+  driver_do_high(g_power_rain_detect_digital);
+}
+void bsp_rain_digital_power_off(void)
+{
+  driver_do_low(g_power_rain_detect_digital);
 }
 
+void bsp_rain_analog_power_on(void)
+{
+  driver_do_high(g_power_rain_detect_analog);
+}
+
+void bsp_rain_analog_power_off(void)
+{
+  driver_do_low(g_power_rain_detect_analog);
+}
+
+
+
+
+void bsp_hart_24v_on(void)
+{ 
+  driver_do_high(g_power_hart_24v);
+}
+
+void bsp_hart_24v_off(void)
+{ 
+  driver_do_low(g_power_hart_24v); 
+}
+
+
+void bsp_power_init(void)
+{
+  g_power_cdma = driver_do_open(DO_POWER_CDMA, 0);
+  bsp_cdma_power_on();
+
+  g_power_rain_detect_digital = driver_do_open(DO_POWER_RAIN_DECT_DIGITAL, 0);
+  bsp_rain_digital_power_on();
+
+  g_power_rain_detect_analog = driver_do_open(DO_POWER_RAIN_DECT_ANALOG, 0);
+  bsp_rain_analog_power_on();
+
+  g_power_hart_24v = driver_do_open(DO_POWER_HART_24V, 0);
+  bsp_hart_24v_on();
+
+}
+
+
+
+
+
+
+
+
+//RS232 D포트를 HART로 할지 RS232 할지 선택 
+
+
+void bsp_set_portd_hart_mode(void)
+{
+  driver_do_high(g_port_mode);
+}
+
+void bsp_set_portd_rs232_mode(void)
+{
+  driver_do_low(g_port_mode);
+}
+void bsp_select_rs232_init(void)
+{
+  g_port_mode = driver_do_open(DO_HART_SEL, 0);
+
+  bsp_set_portd_rs232_mode();
+}
+
+void bsp_door_status_init(void)
+{
+  g_door_status = driver_di_open(DI_EXT_0, 0);
+}
 
 bool bsp_door_opened(void)
 {
@@ -53,6 +156,10 @@ bool bsp_door_opened(void)
 
 
 
+void bsp_adc_init(void)
+{
+  g_adc_stm = driver_adc_open(ADC_STM32, 0);
+}
 
 /*
 공급전압 최대 입력을 15V로 하자
@@ -65,7 +172,7 @@ bool bsp_door_opened(void)
 |
 GND
 */
-
+#define BATTERY_AVERAGE_SAMPLES 50
 float bsp_read_battery(void)
 {
   const float slope = 6;  // (float)(15.0f-0.0f)/(float)(2.5-0);
@@ -74,7 +181,7 @@ float bsp_read_battery(void)
   float voltage;
   float battery;
 
-  voltage = driver_adc_single_read(g_adc_stm, ADC_STM32_S_CH_0, 1, &err);
+  voltage = driver_adc_single_read(g_adc_stm, ADC_STM32_S_CH_0, BATTERY_AVERAGE_SAMPLES, &err);
 
   battery = voltage * slope + offset;
 
@@ -151,15 +258,28 @@ float ntc_resistance_to_temperature(float resistance)
   return 0.0f; // 이론적으로 도달하지 않음
 }
 
+#define TEMP_AVERAGE_SAMPLES 50
 float bsp_read_temperature(void)
 {
   uint8_t err;
   float voltage;
   float resistance;
-  
-  voltage = driver_adc_single_read(g_adc_stm, ADC_STM32_S_CH_1, 1, &err);
+
+  voltage = driver_adc_single_read(g_adc_stm, ADC_STM32_S_CH_1, TEMP_AVERAGE_SAMPLES, &err);
 
   resistance = (voltage * R1) /(VREF - voltage);
 
   return ntc_resistance_to_temperature(resistance);
+}
+
+void bsp_init(void)
+{
+  bsp_rtc_init();
+  bsp_power_init();
+  bsp_door_status_init();
+  bsp_select_rs232_init();
+  bsp_adc_init();
+  bsp_di_init();
+  bsp_do_init();
+  bsp_status_led_init();
 }

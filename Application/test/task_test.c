@@ -1,7 +1,7 @@
 
 #include "MCU\mcu_utile.h"
 #include "app_adc.h"
-#include "app_bsp.h"
+
 #include "app_file.h"
 #include "app_flash.h"
 #include "bsp.h"
@@ -27,9 +27,9 @@ void testTask(void *arg)
   osDelay(1000);
   usDelay_init();
   bsp_init();
-  app_bsp_init();
+
   adc_init();
-  status_led_set(LED_BLINK);
+  bsp_status_led_set(LED_BLINK);
   systemTask_init(PARA_TEST_MODE);
   config_manager_init();
   flash_init();

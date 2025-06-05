@@ -376,9 +376,9 @@ void driver_stm32_bsp_init(void)
    board_config_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
                      GPIO_SPEED_FREQ_LOW, 0);
    //[전원]강우감지 전원은 항상 출력
-   board_set_gpio(DO_CON_PWR_RAIN_DECT_ACTIVE_H_GPIO_Port, DO_CON_PWR_RAIN_DECT_ACTIVE_H_PIN,
+   board_set_gpio(DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port, DO_POWER_RAIN_DECT_DIGITAL_PIN,
                   GPIO_PIN_SET);
-   board_config_gpio(DO_CON_PWR_RAIN_DECT_ACTIVE_H_GPIO_Port, DO_CON_PWR_RAIN_DECT_ACTIVE_H_PIN,
+   board_config_gpio(DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port, DO_POWER_RAIN_DECT_DIGITAL_PIN,
                      GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
    // HART IC를 RESET 상태로 만든다.
