@@ -258,17 +258,17 @@ void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err
   if(len > 0)
   {
     memcpy(&chg_system,&buff[13],sizeof(SYSTEM_TypeDef));
-    charger_data->battery1     = (float)chg_system.BattVolt1/100.0f;
-    charger_data->battery2     = (float)chg_system.BattVolt2/100.0f;
-    charger_data->load1Current = (float)chg_system.LoadCurr1/100.0f;
-    charger_data->load2Current = (float)chg_system.LoadCurr2/100.0f;
-    charger_data->load3Current = (float)chg_system.LoadCurr3/100.0f;
+    charger_data->battery1     = (float)chg_system.BattVolt1/1000.0f;
+    charger_data->battery2     = (float)chg_system.BattVolt2/1000.0f;
+    charger_data->load1Current = (float)chg_system.LoadCurr1/1000.0f;
+    charger_data->load2Current = (float)chg_system.LoadCurr2/1000.0f;
+    charger_data->load3Current = (float)chg_system.LoadCurr3/1000.0f;
 
-    charger_data->solar1Volt    = (float)chg_system.SolraVolt1/100.0f;
-    charger_data->solar2Volt    = (float)chg_system.SolraVolt2/100.0f;
-    charger_data->solar1Current = (float)chg_system.SolraCurr1/100.0f;
-    charger_data->solar2Current = (float)chg_system.SolraCurr2/100.0f;
-    *err = 0;
+    charger_data->solar1Volt    = (float)chg_system.SolraVolt1/1000.0f;
+    charger_data->solar2Volt    = (float)chg_system.SolraVolt2/1000.0f;
+    charger_data->solar1Current = (float)chg_system.SolraCurr1/1000.0f;
+    charger_data->solar2Current = (float)chg_system.SolraCurr2/1000.0f;
+    *err = DRV_ERR_NONE;
   }
   else
   {

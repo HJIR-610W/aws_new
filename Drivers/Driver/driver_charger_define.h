@@ -4,8 +4,8 @@
 
 #include "driver_interface.h"
 
-#define CHARGER_ERR_RECV_TIMEOUT 1
-#define CHARGER_ERR_RECV_PACKET  2
+#define CHARGER_ERR_RECV_TIMEOUT 2
+#define CHARGER_ERR_RECV_PACKET  3
 
 typedef struct charger_data_s
 {
