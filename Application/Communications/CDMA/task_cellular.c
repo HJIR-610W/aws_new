@@ -600,6 +600,7 @@ void put_asyncResp(uint32_t cmd,char *pData,uint16_t dataLen)
 
     if (osMessageQueuePut(_respAsyncMailId, &resp, 0, osWaitForever) == osOK)
     {
+ 
     }
     #endif
 }

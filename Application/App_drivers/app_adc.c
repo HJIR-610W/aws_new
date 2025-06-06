@@ -15,7 +15,7 @@ void adc_init(void)
 {
   g_ads1120 = driver_adc_open(ADC_ADS1220,0);
 }
-#define ADC_AVG_CNT 10
+#define ADC_AVG_CNT 1
 
 float adc_read_single(int channel,uint8_t *err)
 {
@@ -28,9 +28,10 @@ float adc_read_single_avg(int channel, uint8_t *err, uint8_t avg_cnt)
 }
 
 
+#define ADC_RAW_AVG_CNT 1
 float adc_read_single_raw(int channel, uint8_t *err)
 {
-  return driver_adc_single_raw_read(g_ads1120, channel, 1, err);
+  return driver_adc_single_raw_read(g_ads1120, channel, ADC_RAW_AVG_CNT, err);
 }
 
 
@@ -47,7 +48,7 @@ return driver_adc_diff_read(g_ads1120,channel,avg_cnt,err);
 
 int32_t adc_read_diff_raw(int channel, uint8_t *err)
 {
-  return driver_adc_diff_raw_read(g_ads1120, channel, 1, err);
+  return driver_adc_diff_raw_read(g_ads1120, channel, ADC_RAW_AVG_CNT, err);
 }
 
 float cvt_adcToVol(int32_t adc,int32_t off,int32_t full,int32_t off_in,int32_t full_in)
@@ -84,7 +85,7 @@ float adc_chToVoltage(int32_t mode,int32_t channel,int32_t adc)
   return cvt_adcToVol(adc,off,full,o_in,f_in)/1000.0;
 }
 
-#define GENERAL_ADC_AVG_CNT 5
+#define GENERAL_ADC_AVG_CNT 1
 float adc_read_volate(adc_config_t *adc,uint8_t *err)
 {
   float voltage=0;

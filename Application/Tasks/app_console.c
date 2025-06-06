@@ -1948,6 +1948,7 @@ int32_t menu_sensor(p_shell_context_t ctx)
     cnt = menu_sensor_default_2(ctx, (eSENSOR_LIST_t)(cnt - 1));
   } while (cnt != EXIT_PROGRAM);
 
+  io_printf("장비리셋 후 설정값이 적용됩니다.\r\n");
   return cnt;
 }
 
@@ -2699,7 +2700,7 @@ void config_hj_reset(void)
   sensor_add(&config.sensor[A1_TEMPERATURE]);
   hjtemp_cfg = get_sensor_config(&config.sensor[A1_TEMPERATURE]);
   hjtemp_cfg->physical_layer = ePHYSICAL_RS485;
-  hjtemp_cfg->port = eRS232_RS485_B;
+  hjtemp_cfg->port = eAPP_RS485_D;
   hjtemp_cfg->modbus_id = 1;
   // 습도 센서[화진 습도 9600]
   config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_HUMINITY_HJ;

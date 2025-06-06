@@ -94,7 +94,6 @@ void elapse_stop(exec_time_t *p_time)
 }
 
 
-
 /**
  * @brief 측정 데이터 전송
  */
@@ -106,7 +105,7 @@ void send_measurement(void *queue,void *data)
 
   if(status != osOK)
   {
-    io_printf("os_send_measureData fail %d\r\n",status);
+    task_printf("send_measureData fail %s\r\n", osStatusToStr(status));
   }
 }
 

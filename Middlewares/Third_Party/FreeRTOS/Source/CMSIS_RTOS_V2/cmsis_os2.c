@@ -2480,3 +2480,28 @@ __WEAK void vApplicationGetTimerTaskMemory (StaticTask_t **ppxTimerTaskTCBBuffer
   *pulTimerTaskStackSize   = (uint32_t)configTIMER_TASK_STACK_DEPTH;
 }
 #endif
+
+char *osStatusToStr(osStatus_t status)
+{
+  switch (status)
+  {
+    case osOK:
+      return "osOK";
+    case osError:
+      return "osError";
+    case osErrorTimeout:
+      return "osErrorTimeout";
+    case osErrorResource:
+      return "osErrorResource";
+    case osErrorParameter:
+      return "osErrorParameter";
+    case osErrorNoMemory:
+      return "osErrorNoMemory";
+    case osErrorISR:
+      return "osErrorISR";
+    case osStatusReserved:
+      return "osStatusReserved";
+    default:
+      return "Unknown osStatus";
+  }
+}

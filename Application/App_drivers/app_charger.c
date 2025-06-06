@@ -18,10 +18,10 @@ void read_chargerStatus(char *pBuff,uint16_t buffSize)
     snprintf(pBuff,buffSize,"초기화 전");
     break;
   case CHARGER_ERR_RECV_TIMEOUT:
-  snprintf(pBuff,buffSize,"시간 초과");
+  snprintf(pBuff,buffSize,"통신 이상");
   break;
   case CHARGER_ERR_RECV_PACKET:
-  snprintf(pBuff,buffSize,"수신 길이 부족");
+  snprintf(pBuff,buffSize,"패킷 이상");
   break;
   default:
   snprintf(pBuff,buffSize,"정상");

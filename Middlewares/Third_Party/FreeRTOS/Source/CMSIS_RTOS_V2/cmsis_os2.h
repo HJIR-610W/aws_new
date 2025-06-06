@@ -726,7 +726,7 @@ osStatus_t osMessageQueueReset (osMessageQueueId_t mq_id);
 /// \return status code that indicates the execution status of the function.
 osStatus_t osMessageQueueDelete (osMessageQueueId_t mq_id);
 
-
+char *osStatusToStr(osStatus_t status);
 #ifdef  __cplusplus
 }
 #endif

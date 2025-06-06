@@ -377,15 +377,12 @@ int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min,
   uint8_t err;
   uint8_t line = row + 3;
   kma_data_ex_t *p_kma = NULL;
-  uint32_t elapsed_time;
   char err_buf[32];
 
   p_kma = get_kma_data(min);
 
-
-  elapsed_time = g_exec_250ms_time.elapsed_time + g_exec_1s_time.elapsed_time;
-
-  snprintf(buff, sizeof(buff), "AWS %s %.2fms", aswTitleList[min], (float)elapsed_time / 1000.0f);
+  snprintf(buff, sizeof(buff), "AWS %s %.2fs/%.2fs", aswTitleList[min],
+           (float)g_exec_250ms_time.elapsed_time / 1000.0f, (float)g_exec_1s_time.elapsed_time/1000.0f);
 
   vt100_print_frame(row, column, buff, '+', '|', '-', DISP_WIDTH, WHITE);
 // 자동 생성된 AWS 출력 코드

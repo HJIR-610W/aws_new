@@ -1252,11 +1252,12 @@ void calculate_rain(void)
     set_rainfall_10min(min10_rain / 10.0f);
     set_rainfall_yesterday(yesterday_rain/10.0f);
 
+#if 0 //필요시 출력
     io_printf("일간 우량:%.1f\r\n", daily_rain / 10.0f);
     io_printf("시간 우량:%.1f\r\n", hourly_rain / 10.0f);
     io_printf("월간 우량:%.1f\r\n", monthly_rain / 10.0f);
     io_printf("년간 우량:%.1f\r\n", yearly_rain / 10.0f);
-
+#endif
     aws_free(p_rain_1min);
     aws_free(p_rain_days);
   }
@@ -1287,6 +1288,8 @@ void calculate_sunshine(void)
   uint16_t *p_sunshine_1min = aws_malloc(SUNSHINE_TOTAL);
   uint16_t *p_sunshine_days = aws_malloc(SUNSHINE_DAYS_SIZE);
 
+  (void)daily_sunshine;
+  (void)hourly_sunshine;
   ct = Date_Time;
 
   if( read_sunshine_1min(ct.Year, p_sunshine_1min, SUNSHINE_TOTAL)==0)
@@ -1297,11 +1300,12 @@ void calculate_sunshine(void)
     monthly_sunshine = get_monthly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month);
     yearly_sunshine = get_yearly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
 
+#if 0 
     io_printf("일간 일조:%d\r\n", daily_sunshine);
     io_printf("시간 일조:%d\r\n", hourly_sunshine);
     io_printf("월간 일조:%d\r\n", monthly_sunshine);
     io_printf("년간 일조:%d\r\n", yearly_sunshine);
-
+#endif
     set_sunshine_monthly(monthly_sunshine);
     set_sunshine_yearly(yearly_sunshine);
 
