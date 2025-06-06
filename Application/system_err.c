@@ -70,7 +70,10 @@ bool restore_error(char *p_out, int32_t out_size)
   return false;
 }
 
-void assert_print(uint8_t *file, uint32_t line,char *msg)
-{ 
-  io_printf("%s,%d,%s",file,line,msg);
- }
+void error_print(const char *pFmt, ...)
+{
+  va_list args;
+  va_start(args, pFmt);
+  io_vprintf(pFmt, args);
+  va_end(args);
+}

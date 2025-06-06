@@ -2,13 +2,13 @@
 #ifndef _PCB_DEFINE_H
 #define _PCB_DEFINE_H
 
-#define FREE_RTOS_USE 1
+
 
 #include "stm32f4xx_hal.h"
 
-#if FREE_RTOS_USE
-#include "cmsis_os2.h"
-#endif
+
+#include "os_user_def.h"
+
 
 /*
 ¿ÜºÎ SRAM:IS61WV204816BLL-xxTLI 4MB

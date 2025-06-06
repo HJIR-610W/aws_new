@@ -11,9 +11,9 @@
 #include "driver_uart.h"
 #include "util_time.h"
 #include "util_memory.h"
-#include  "os_user_def.h"
-
 #include "os_user_def.h"
+
+
 typedef struct
 {
     uint16_t SolraVolt1;        // nAIN_SV1
@@ -111,13 +111,7 @@ driver_t *hjsmartCharger_open(int32_t num,void *opt)
 
     hjsmartCharger_driver.cfg = &hjsmartCharger_cfg;
 
-#if FREE_RTOS_USE
-  if(hjsmartCharger_driver.sem == NULL)
-  {
-    hjsmartCharger_driver.sem = osSemaphoreNew(1, 1, NULL); 
-  }
-#endif
-
+  OS_CREATE_BINARY_SEM(hjsmartCharger_driver.sem);
 
 
   return &hjsmartCharger_driver;
@@ -246,9 +240,9 @@ void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err
   
   len = Make_SmartChgFrame(buff,sizeof(buff),0x50,data,6);
 
-#if FREE_RTOS_USE
+
     OS_PEND_SEM(chg->sem,osWaitForever);
-#endif
+
   
   driver_uart_flush_rx(cfg->rs232_io);
   driver_uart_send(cfg->rs232_io,buff,len);
@@ -275,9 +269,6 @@ void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err
     *err = DRV_ERR_TIMEOUT;
   } 
 
-#if FREE_RTOS_USE
   OS_POST_SEM(chg->sem);
-#endif
-
 
 }

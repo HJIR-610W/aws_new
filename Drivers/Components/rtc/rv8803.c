@@ -1,8 +1,6 @@
 #include "pcb_define.h"
 
-#if (FREE_RTOS_USE)
-#include "cmsis_os2.h"
-#endif
+#include "os_user_def.h"
 
 #include "rv8803.h"
 #include "driver_stm32_i2c.h"
@@ -237,12 +235,9 @@ driver_t *rv8803_open(void)
   rv8803_driver.cfg = &rv8803_cfg;
   rv8803_driver.api = &rv8803_api;
 
-  if(rv8803_driver.sem==NULL)
-  {
-#if FREE_RTOS_USE
-    rv8803_driver.sem = osSemaphoreNew(1, 1, NULL); 
-#endif
-  }
+
+  OS_CREATE_BINARY_SEM(rv8803_driver.sem);
+
 
   rv8803_init(&rv8803_driver);
 
@@ -472,12 +467,9 @@ void rv8803_set_time(driver_t *driver,DATE_TIME_BUF *ct)
 void rv8803_set(driver_t *driver, rtc_set_option_t option, void *value)
 {
   DATE_TIME_BUF *ct;
-#if FREE_RTOS_USE
-  if(driver->sem)
-  {
-   osSemaphoreAcquire(driver->sem, osWaitForever);
-  }
-#endif
+
+  OS_PEND_SEM(driver->sem,osWaitForever);
+
   switch (option)
   {
   case eRTC_SET_TIME:
@@ -489,12 +481,8 @@ void rv8803_set(driver_t *driver, rtc_set_option_t option, void *value)
     break;
   }
 
-#if FREE_RTOS_USE
-  if(driver->sem)
-  {
-   osSemaphoreRelease(driver->sem);
-  }
-#endif
+  OS_POST_SEM(driver->sem);
+
 }
 
 int32_t rv8803_init(driver_t *rv8803)

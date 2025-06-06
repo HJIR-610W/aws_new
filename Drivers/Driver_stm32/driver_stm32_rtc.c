@@ -196,12 +196,9 @@ void stm32_set_time(driver_t *driver,DATE_TIME_BUF *ct)
 void stm32_rtc_set(driver_t *driver, rtc_set_option_t option, void *value)
 {
   DATE_TIME_BUF *ct;
-#if FREE_RTOS_USE
-  if(driver->sem)
-  {
-   osSemaphoreAcquire(driver->sem, osWaitForever);
-  }
-#endif
+
+  OS_PEND_SEM(driver->sem,osWaitForever);
+
   switch (option)
   {
   case eRTC_SET_TIME:
@@ -212,11 +209,7 @@ void stm32_rtc_set(driver_t *driver, rtc_set_option_t option, void *value)
 
     break;
   }
+  
+  OS_POST_SEM(driver->sem);
 
-#if FREE_RTOS_USE
-  if(driver->sem)
-  {
-   osSemaphoreRelease(driver->sem);
-  }
-#endif
 }

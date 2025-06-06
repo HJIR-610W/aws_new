@@ -198,7 +198,7 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
   }
   else if (ptr)
   {
-    debug_puts_nonos(ptr);
+   // debug_puts_nonos(ptr);
   }
 
 #if PRINTF_HEAP_USE

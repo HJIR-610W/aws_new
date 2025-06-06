@@ -46,12 +46,8 @@ driver_t *ls1024_open(int32_t num,void *opt)
 
   ls1024_driver.cfg = &ls1024_cfg;
   ls1024_driver.api = &ls1024_api;
-#if FREE_RTOS_USE
-  if(ls1024_driver.sem == NULL)
-  {
-    ls1024_driver.sem = osSemaphoreNew(1, 1, NULL); 
-  }
-#endif
+
+  OS_CREATE_BINARY_SEM(ls1024_driver.sem);
 
   ls1024_driver.opened =true;
   

@@ -22,9 +22,13 @@ void bsp_rtc_init(void)
 
 void bsp_rtc_update(void)
 {
-  DATE_TIME_BUF nt;
+  DATE_TIME_BUF nt={0};
+  
 
-  driver_rtc_read(g_rtc,&nt);
+  if(driver_rtc_read(g_rtc,&nt) !=0)
+  {
+    driver_rtc_read(g_rtc,&nt);
+  }
   Date_Time = nt;
 }
 

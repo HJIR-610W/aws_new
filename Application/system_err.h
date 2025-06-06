@@ -5,9 +5,18 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define ERROR_PRINTF_USE 1 //HAL 에러 출력 
+
+#if ERROR_PRINTF_USE
+#define ERROR_PRINTF(fmt, ...) \
+  error_print("[%s:%d] " fmt "\r\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#else
+#define ERROR_PRINTF(fmt, ...) ((void)0)
+#endif
+
 void Error_Handler(const char *file,int32_t line);
 void reset_system(const char * pFmt, ...);
 bool restore_error(char *p_out, int32_t out_size);
-void assert_print(uint8_t *file, uint32_t line, char *msg);
+void error_print(const char *pFmt, ...);
 
 #endif

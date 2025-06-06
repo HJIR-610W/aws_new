@@ -35,9 +35,6 @@ extern uint32_t calculate_txWaitTimeMs(uint32_t baud,uint16_t dataLen);
 
 
 
-
-
-
 driver_t *stm32_cdc_open(int num,void *opt);
 void stm32_cdc_close(driver_t *handle);
 
@@ -105,8 +102,6 @@ driver_t *stm32_cdc_open(int num,void *opt)
 
 int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
 {
-  
-
   stm32_cdc_cfg_t *cfg = (stm32_cdc_cfg_t *)drv->cfg;
 
   osStatus_t osStatus;
@@ -150,9 +145,6 @@ int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
 
   
 }
-
-
-
 
 
 int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)

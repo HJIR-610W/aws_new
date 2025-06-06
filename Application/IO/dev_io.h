@@ -3,6 +3,8 @@
 #define IO_HHH
 
 #include <stdint.h>
+#include <stdarg.h>
+
 #include "driver_interface.h"
 
 #define ASCII_CODE_ESC    0x1B
@@ -61,4 +63,5 @@ void set_task_id(void *task_id);
 void task_printf( const char *pFmt, ...);
 void task_hex_dump(const char *title, const uint8_t *data, uint32_t length);
 void set_forced_print(bool set);
+int32_t io_vprintf(const char *pFmt, va_list ap);
 #endif

@@ -1,15 +1,10 @@
 
 
-
-
-
+#include "driver_stm32_i2c.h"
 
 #include "pcb_define.h"
-#ifdef FREE_RTOS_USE
-#include "cmsis_os2.h"
-#endif
-#include "driver_stm32_i2c.h"
 #include "system_err.h"
+
 
 
 #define I2C_TIMEOUT 1000
@@ -19,20 +14,16 @@ typedef struct i2c_cfg_s
   I2C_HandleTypeDef *handle;
 }i2c_cfg_t;
 
-
 I2C_HandleTypeDef hi2c1={.Instance=I2C1};
 I2C_HandleTypeDef hi2c2={.Instance=I2C2};
-
 
 i2c_cfg_t g_stm32_cfg[2]={{.handle=&hi2c1},{.handle =&hi2c2}};
 driver_t g_stm32_i2c[2];
 
 
-
-
 void MX_I2C1_Init(void *opt)
 {
-
+  HAL_StatusTypeDef status = HAL_OK;
 
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 100000;//표준 속도 100KHz
@@ -44,19 +35,18 @@ void MX_I2C1_Init(void *opt)
   hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
   hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
 
-  if(HAL_I2C_Init(&hi2c1) != HAL_OK)
+  status = HAL_I2C_Init(&hi2c1);
+  
+  if(status != HAL_OK)
   {
-    Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("MX_I2C1_Init err:%d", status);
   }
-
 }
 
-
-
-
-/* I2C1 init function */
 void MX_I2C2_Init(void *arg)
 {
+  HAL_StatusTypeDef status = HAL_OK;
+
   hi2c2.Instance = I2C2;
   hi2c2.Init.ClockSpeed = 100000;//표준 속도 100KHz
   hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
@@ -66,14 +56,14 @@ void MX_I2C2_Init(void *arg)
   hi2c2.Init.OwnAddress2 = 0;
   hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
   hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  
+  status  = HAL_I2C_Init(&hi2c2);
+  
+  if(status != HAL_OK)
   {
-    Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("MX_I2C2_Init err:%d", status);
   }
-
 }
-
-
 
 
 
@@ -179,7 +169,6 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
 
   if(i2cHandle->Instance==I2C1)
   {
-
     i2c1_bus_recovery();
 
     __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -196,7 +185,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
   }
   else if(i2cHandle->Instance==I2C2)
   {
-    i2c2_bus_recovery();
+     i2c2_bus_recovery();
     __HAL_RCC_GPIOH_CLK_ENABLE();
 
     GPIO_InitStruct.Pin = I2C2_SCL_PIN|I2C2_SDA_PIN;
@@ -250,13 +239,12 @@ driver_t * driver_stm32_i2c_open(uint32_t num,void *opt)
     g_stm32_i2c[num].opened = true;
     g_stm32_cfg[STM32_I2C_1].handle = &hi2c1;
     g_stm32_i2c[STM32_I2C_1].cfg = &g_stm32_cfg[STM32_I2C_1];
-    if(g_stm32_i2c[num].sem == NULL)
-    {
-#ifdef FREE_RTOS_USE
-      g_stm32_i2c[num].sem  =   osSemaphoreNew(1, 1, NULL); 
-#endif
-    MX_I2C1_Init(0);
-    }
+
+
+      OS_CREATE_BINARY_SEM(g_stm32_i2c[num].sem);
+
+      MX_I2C1_Init(0);
+
   }
     break;
   case STM32_I2C_2:
@@ -266,12 +254,10 @@ driver_t * driver_stm32_i2c_open(uint32_t num,void *opt)
     g_stm32_i2c[num].opened = true;
     g_stm32_cfg[STM32_I2C_2].handle = &hi2c2;
     g_stm32_i2c[STM32_I2C_2].cfg = &g_stm32_cfg[STM32_I2C_2];
-    if(g_stm32_i2c[num].sem == NULL)
-    {
-#ifdef FREE_RTOS_USE
-      g_stm32_i2c[num].sem  =   osSemaphoreNew(1, 1, NULL); 
-#endif
-    }
+
+
+      OS_CREATE_BINARY_SEM(g_stm32_i2c[num].sem);
+
     MX_I2C2_Init(0);
   }
 
@@ -290,21 +276,32 @@ int32_t stm32_i2c_send(driver_t *drv, uint32_t address,uint8_t reg,const uint8_t
   i2c_cfg_t *cfg = (i2c_cfg_t *)drv->cfg;
 
 
-#ifdef FREE_RTOS_USE
-  if(drv->sem)
-  {
-    osSemaphoreAcquire(drv->sem, osWaitForever);
-  }
-#endif
+  OS_PEND_SEM(drv->sem, osWaitForever);
+
 
   status = HAL_I2C_Mem_Write(cfg->handle, address<<1,reg, I2C_MEMADD_SIZE_8BIT,(uint8_t *)pData, dataLen, I2C_TIMEOUT);
- 
-#ifdef FREE_RTOS_USE
-  if(drv->sem)
+  if (status != HAL_OK)
   {
-    osSemaphoreRelease(drv->sem);
+    uint32_t sr1;
+    uint32_t sr2;
+    sr1 = cfg->handle->Instance->SR1;
+    sr2 = cfg->handle->Instance->SR2;
+
+    ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status, sr1, sr2);
+
+    if (cfg->handle->Instance == I2C1)
+    {
+      i2c1_bus_recovery();
+    }
+    else if (cfg->handle->Instance == I2C2)
+    {
+      i2c2_bus_recovery();
+    }
+    HAL_I2C_MspInit(cfg->handle);
   }
-#endif
+
+  OS_POST_SEM(drv->sem);
+
 
   return status;
 }
@@ -313,65 +310,104 @@ int32_t stm32_i2c_read(driver_t *drv,uint32_t address,uint8_t reg,uint8_t *pData
   i2c_cfg_t *cfg = (i2c_cfg_t *)drv->cfg;
   HAL_StatusTypeDef status;
 
-  #ifdef FREE_RTOS_USE
-  if(drv->sem)
-  {
-    osSemaphoreAcquire(drv->sem, osWaitForever);
-  }
-  #endif
-  status = HAL_I2C_Mem_Read(cfg->handle, address<<1, reg, I2C_MEMADD_SIZE_8BIT, pData, readCnt, I2C_TIMEOUT); 
 
-#ifdef FREE_RTOS_USE
-  if(drv->sem)
-  {
-    osSemaphoreRelease(drv->sem);
-  }
-#endif
+  OS_PEND_SEM(drv->sem, osWaitForever);
 
-return status;
+  status = HAL_I2C_Mem_Read(cfg->handle, address<<1, reg, I2C_MEMADD_SIZE_8BIT, pData, readCnt, I2C_TIMEOUT);
+  if (status != HAL_OK)
+  {
+    uint32_t sr1;
+    uint32_t sr2;
+    sr1 = cfg->handle->Instance->SR1;
+    sr2 = cfg->handle->Instance->SR2;
+
+    ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status, sr1, sr2);
+
+    if (cfg->handle->Instance == I2C1)
+    {
+      i2c1_bus_recovery();
+    }
+    else if (cfg->handle->Instance == I2C2)
+    {
+      i2c2_bus_recovery();
+    }
+    HAL_I2C_MspInit(cfg->handle);
+  }
+
+  OS_POST_SEM(drv->sem);
+
+
+  return status;
 }
 int32_t stm32_i2c_recv_byte(driver_t *drv,uint8_t address,uint8_t *pBuff,uint32_t readCnt)
 {
   HAL_StatusTypeDef status = HAL_OK;
   
   i2c_cfg_t *cfg = (i2c_cfg_t *)drv->cfg;
-  #ifdef FREE_RTOS_USE
-    if(drv->sem)
-  {
-    osSemaphoreAcquire(drv->sem, osWaitForever);
-  }
-  #endif
+
+  OS_PEND_SEM(drv->sem, osWaitForever);
+
   status = HAL_I2C_Master_Receive(cfg->handle, address<<1, pBuff, readCnt, 1000);
-
-  #ifdef FREE_RTOS_USE
-  if(drv->sem)
+  if (status != HAL_OK)
   {
-    osSemaphoreRelease(drv->sem);
-  }
-  #endif
+    uint32_t sr1;
+    uint32_t sr2;
+    sr1 = cfg->handle->Instance->SR1;
+    sr2 = cfg->handle->Instance->SR2;
 
-return status;
+    ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status, sr1, sr2);
+
+    if (cfg->handle->Instance == I2C1)
+    {
+      i2c1_bus_recovery();
+    }
+    else if (cfg->handle->Instance == I2C2)
+    {
+      i2c2_bus_recovery();
+    }
+    HAL_I2C_MspInit(cfg->handle);
+  }
+
+  OS_POST_SEM(drv->sem);
+
+
+  return status;
 }
 int32_t stm32_i2c_send_byte(driver_t *drv,uint8_t address,uint8_t *pData,uint32_t dataLen)
 {
   HAL_StatusTypeDef status = HAL_OK;
-  
   i2c_cfg_t *cfg = (i2c_cfg_t *)drv->cfg;
-  #ifdef FREE_RTOS_USE
-  if(drv->sem)
-  {
-    osSemaphoreAcquire(drv->sem, osWaitForever);
-  }
-  #endif
-  status = HAL_I2C_Master_Transmit(cfg->handle, address<<1, pData, dataLen, 1000);
 
-  #ifdef FREE_RTOS_USE
-      if(drv->sem)
+
+  OS_PEND_SEM(drv->sem, osWaitForever);
+
+
+  status = HAL_I2C_Master_Transmit(cfg->handle, address<<1, pData, dataLen, 1000);
+  if (status != HAL_OK)
   {
-    osSemaphoreRelease(drv->sem);
+    uint32_t sr1;
+    uint32_t sr2;
+    sr1 = cfg->handle->Instance->SR1;
+    sr2 = cfg->handle->Instance->SR2;
+    
+    ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status,sr1,sr2);
+
+    if (cfg->handle->Instance == I2C1)
+    {
+      i2c1_bus_recovery();
+    }
+    else if (cfg->handle->Instance == I2C2)
+    {
+      i2c2_bus_recovery();
+    }
+    HAL_I2C_MspInit(cfg->handle);
   }
-  #endif
-  return status;
+
+
+  OS_POST_SEM(drv->sem);
+
+
+return status;
 
 }
 
