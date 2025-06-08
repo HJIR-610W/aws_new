@@ -151,9 +151,6 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
 #define FAT_HEAP_USE 1
 FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
 {
-
-
-
 #if FAT_HEAP_USE
   FIL *p_file;
   FRESULT res;
@@ -163,6 +160,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
 
   if(p_file==NULL)
   {
+    ERROR_PRINTF("read_file pvPortMalloc fail");
     return (FRESULT)-1;
   }
   OS_PEND_SEM(g_fileSem, osWaitForever);
@@ -170,6 +168,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   res = f_open(p_file, path, FA_READ);
   if (res != FR_OK)
   {
+    ERROR_PRINTF("f_open fail %d", res);
     vPortFree(p_file);
     OS_POST_SEM(g_fileSem);
     return res;  // 실패 시 오류 코드 반환

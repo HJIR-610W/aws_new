@@ -86,11 +86,10 @@ void startTask(void *arg)
     osThreadExit();  // 종료 시킴
   }
 
-  
+  consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화 
+
   mcu_interrupt_init();  // 최우선 실행
 
-  
-  osDelay(1000);
   bsp_init();
   usDelay_init();
 
@@ -99,7 +98,7 @@ void startTask(void *arg)
   flash_init();
 
   systemTask_init(PARA_RUN_MODE);
-  consoleTask_init(0);
+
   isrEventTask_init();
   dataLogging_init();
   loggingTask_init();

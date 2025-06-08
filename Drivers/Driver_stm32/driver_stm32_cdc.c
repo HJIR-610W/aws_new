@@ -7,15 +7,14 @@
 
 #include "FreeRTOS.h"
 #include "stream_buffer.h"
-#include "stm32f4xx_hal.h"
 #include "driver_stm32_cdc.h"
-#include "cmsis_os2.h"
 #include "usDelay.h"
 #include "mcu_swo.h"
 #include "semphr.h"
 #include "util_memory.h"
 #include "system_err.h"
 #include "stm32_usb.h"
+#include "pcb_define.h"
 
 typedef struct stm32_cdc_cfg_s
 {
@@ -25,8 +24,6 @@ typedef struct stm32_cdc_cfg_s
   uint32_t baud;  // 설정된 통신속도
   int8_t errCode;// 드라이버 에러  상태 정보
 }stm32_cdc_cfg_t;
-
-
 
 
 StreamBufferHandle_t g_stm32_cdc_buff;
@@ -103,11 +100,9 @@ driver_t *stm32_cdc_open(int num,void *opt)
 int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
 {
   stm32_cdc_cfg_t *cfg = (stm32_cdc_cfg_t *)drv->cfg;
-
   osStatus_t osStatus;
   int32_t retVal=dataLen;
   uint32_t waitTime;
-
 
   if(drv==NULL || drv->opened==false)
   {
@@ -123,17 +118,16 @@ int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
   waitTime = calculate_txWaitTimeMs(cfg->baud,dataLen);
   retVal = cdc_send(pData,dataLen);
 
-
-    if(cfg->txcSem)
-    {
-     osStatus = osSemaphoreAcquire(cfg->txcSem, waitTime);
+  if(cfg->txcSem)
+  {
+    osStatus = osSemaphoreAcquire(cfg->txcSem, waitTime);
      if(osStatus != osOK)
      {
       cfg->errCode = (int8_t)osStatus;
       
       retVal = -1;
      }
-    }
+  }
 
 
   if(drv->sem)
