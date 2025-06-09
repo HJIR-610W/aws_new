@@ -176,7 +176,7 @@ void test_uart(void)
    int rs232_number = -1;
 
 
-   io_printf("RS232 CDMA,TTL,A,B,C,D,CDMA 테스트\r\n");
+   io_printf("RS232 VHF,TTL,A,B,C,D,CDMA 테스트\r\n");
    io_printf("주의:RS232 A,B는 하드웨어점퍼 설정 필요\r\n");
 
    io_printf("포트 이름을 입력해주세요\r\n");

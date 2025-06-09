@@ -236,54 +236,56 @@ static M_RET_t tx700_check_tcpResp(const char *const*pAckList,uint32_t ackListCn
     return RET_TIME_OUT;
 }
 /*
-수신된 문자수신 명령어 에서 전화번호화 문자내용을 추출
-msg 문자수신 명령어
-sms 문자구조체
 
-*SMS*MTREAD: 2022032815044236,"01053730725","313374"
++CMGR: "REC READ","01053730725",,"25/06/09,13:39:56+36",02050550AF
 
 */
-static void parse_sms(char* msg,sms_t *pSms)
+int extract_sms(char* sms, char* p_out_number, int number_size, char* p_out_msg, int msg_size)
 {
-    char* argv[10] = { NULL };// 매개값 목록
-    char* ptr;
-    uint32_t cnt;
-    uint32_t len;
-
-    memset(pSms,0x00,sizeof(sms_t));
-
-    cnt = parse_args(msg, argv,10);// [*SMS*MTREAD:],[2022032815044236],["01053730725"],["313374"]
- 
-    if(cnt != 4)
+    // 1. 입력 유효성 검사
+    if (sms == NULL || p_out_number == NULL || p_out_msg == NULL || number_size <= 0 || msg_size <= 0)
     {
-      return ;
+        return -1;
     }
+
+    // 출력 버퍼를 안전하게 초기화
+    *p_out_number = '\0';
+    *p_out_msg = '\0';
+
+    // 2. 전화번호 추출
+    const char* first_comma = strchr(sms, ',');
+    if (first_comma == NULL) return -1;
+
+    const char* num_start = strchr(first_comma, '"');
+    if (num_start == NULL) return -1;
+    num_start++; // 따옴표(") 다음으로 이동
+
+    const char* num_end = strchr(num_start, '"');
+    if (num_end == NULL) return -1;
+
+    size_t num_len = num_end - num_start;
+    // 버퍼 크기를 넘지 않도록 복사할 길이 계산
+    size_t num_to_copy = (num_len >= number_size) ? (number_size - 1) : num_len;
     
-    ptr = (char *)h_findnum((char *)argv[2]);//전화번호 문자열 리턴
+    strncpy(p_out_number, num_start, num_to_copy);
+    p_out_number[num_to_copy] = '\0'; // NULL 종료 문자 추가
 
-    if(ptr)
-    {
-        strcpy_safe(pSms->num,sizeof(pSms->num),ptr);    
-    }
+    // 3. 메시지 추출
+    const char* msg_start = strrchr(sms, ',');
+    if (msg_start == NULL) return -1;
+    msg_start++; // 쉼표(,) 다음으로 이동
 
-    ptr = argv[3]+1;//문자내용 리턴
-    
-    if (ptr)
-    {
-        len = strlen(ptr)-1;
+    size_t msg_len = strlen(msg_start);
+    // 버퍼 크기를 넘지 않도록 복사할 길이 계산
+    size_t msg_to_copy = (msg_len >= msg_size) ? (msg_size - 1) : msg_len;
 
-        if (len < sizeof(pSms->msg))
-        {
-            len = Convert_HexAscii2uchar(ptr,len,(uint8_t *)pSms->msg);
-            pSms->msg[len] = '\0';
-        }
-    }
+    strncpy(p_out_msg, msg_start, msg_to_copy);
+    p_out_msg[msg_to_copy] = '\0'; // NULL 종료 문자 추가
+
+    return 0; // 성공
 }
 
-
-
-
-M_RET_t tx700_read_sms(sms_t *pSms)
+M_RET_t tx700_read_sms(sms_t *p_sms)
 {
   const char *cmd = "AT+CMGR=0\r\n";           // 최근 문자 1개 읽기
   const char *delCmd = "AT+CMGD=,4\r\n";   // 전부 삭제
@@ -291,6 +293,7 @@ M_RET_t tx700_read_sms(sms_t *pSms)
   char buff[310];
   uint32_t idx = 0;
   M_RET_t ret = RET_FAIL;
+  int results=0;
 
   tx700_modem_sends(cmd);
 
@@ -302,20 +305,45 @@ M_RET_t tx700_read_sms(sms_t *pSms)
     {
       case 0:
         ret = RET_OK;
-        parse_sms(buff, pSms);
+        results = extract_sms(buff, p_sms->num, sizeof(p_sms->num), p_sms->msg, sizeof(p_sms->msg));
         modem_sends(delCmd);  // 읽은 메시지는 지운다
         break;
       case 1:
         ret = RET_FAIL_RESP;
         break;
+      }
     }
+    if (results !=0)
+    {
+      ret = RET_FAIL;
     }
 
-    return ret;
+
+      return ret;
 
 
 }
 
+/*
+2025-06-09 14:57:24.873 [COM23] - AT+CMGS="01053730725"<CR><LF>
+AT$$TCP_NULLPERMISSION=1<CR><LF>
+
+2025-06-09 14:57:24.896 [COM24] - <CR><LF>
+>
+2025-06-09 14:57:24.927 [COM23] - App/Boot
+Ver:(0.1.0/0.1.0)PCB:0,MFG:UNKNOWN,AREA:0,BUILD:1748256491,ID:335 <SUB>2025-06-09 14:57:24.944
+[COM24] - <CR><LF>
+
+2025-06-09 14:57:24.986 [COM23] - AT$$TCP_SCCL=0<CR><LF>
+
+2025-06-09 14:57:25.070 [COM24] - <CR><LF>
++CMGS: 63<CR><LF>
+<CR><LF>
+OK<CR><LF>
+<CR><LF>
+$$TELL:45,?????? ???? ???? ????<CR><LF>
+
+*/
 
 #define TX700_SEND_SMS_RESP_CNT 1
 M_RET_t tx700_send_sms(char *num,char *msg)
@@ -328,7 +356,7 @@ M_RET_t tx700_send_sms(char *num,char *msg)
 
     ack_list[0] = get_modem_string_tx700(AT_SMS_SEND_RESP);
 
-    len = snprintf((char *)buff, sizeof(buff), "AT+CMGS=\"%s\"", num);
+    len = snprintf((char *)buff, sizeof(buff), "AT+CMGS=\"%s\"\r\n", num);
     tx700_modem_sends(buff);
     osDelay(500);
 
@@ -876,4 +904,24 @@ int32_t tx700_recv_handler(driver_t *uart,uint8_t *buffer, uint16_t buffer_size)
   }
 
 
+}
+
+extern void put_asyncResp(uint32_t cmd,char *pData,uint16_t dataLen);
+
+void tx700_sms_handler(driver_t *uart,char *data,uint16_t data_len)
+{
+  char buff[200];
+  int32_t len=data_len;
+  int32_t recv_len;
+  int32_t total_len;
+  memcpy(buff,data,data_len);
+
+  buff[len++] = ',';
+
+  recv_len = driver_uart_recv_crlf(uart, &buff[len], sizeof(buff) - len, 2000);
+
+  total_len = recv_len +len;
+  buff[total_len] = 0;
+
+  put_asyncResp(AT_SYNC_SMS_READ_RESP_OK, buff, total_len);
 }

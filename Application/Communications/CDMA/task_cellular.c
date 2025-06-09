@@ -1,27 +1,26 @@
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-
-
-#include "modem_if.h"
-#include "at_cmd.h"
-#include  "modem_ntle9607.h"
-#include "modem_tx700.h"
-#include "dev_io.h"
-#include "config_app.h"
-#include "driver_uart.h"
-#include "app_logging.h"
-#include "task_logging.h"
-#include "modem_sms.h"
-#include "driver_do.h"
 #include "task_cellular.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "app_logging.h"
+#include "at_cmd.h"
+#include "config_app.h"
+#include "dev_io.h"
+#include "driver_do.h"
+#include "driver_uart.h"
+#include "kma_protocol_handler.h"
+#include "modem_if.h"
+#include "modem_ntle9607.h"
+#include "modem_sms.h"
+#include "modem_tx700.h"
+#include "system_err.h"
+#include "task_logging.h"
+#include "update_fw.h"
 #include "util_time.h"
 
-#include "kma_protocol_handler.h"
-#include "update_fw.h"
-#include "system_err.h"
 typedef enum{
 	ePOWER_RESET,
 	eCONNECT_TCP_WDT,
@@ -74,93 +73,86 @@ typedef struct
 
 typedef struct 
 {
-    uint32_t cmd;
-    char buff[400];
-}respAsync_t;
+  uint32_t cmd;
+  char buff[400];
+}resp_async_t;
 
 typedef struct 
 {
-    uint32_t cmd;
-
-    char buff[512];
-}respTcp_t;
+  uint32_t cmd;
+  char buff[512];
+}resp_tcp_t;
 
 typedef struct 
 {
-    uint16_t len;
-    uint8_t data[512];
+  uint16_t len;
+  uint8_t data[512];
 }tcpData_t;
 
-const osThreadAttr_t atTask_attributes = {
+const osThreadAttr_t kAtTask_attributes = {
   .name = "atTask",
   .stack_size = 2048,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
-const osThreadAttr_t tcpTask_attributes = {
+const osThreadAttr_t kTcpTask_attributes = {
   .name = "tcpTask",
   .stack_size = 3072,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 
-const osThreadAttr_t asyncTask_attributes = {
+const osThreadAttr_t kAsyncTask_attributes = {
   .name = "asyncTask",
   .stack_size = 2048,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+static const atCmd_t *s_p_atCmd;
 
 
+static osSemaphoreId_t s_modem_sem_id = NULL;
+static osMessageQueueId_t s_resp_async_mail_id=NULL;
+static osMessageQueueId_t s_resp_tcp_mail_id=NULL;
+static osMessageQueueId_t s_tcp_data_mail_id=NULL;
+static modemEx_t s_modem;
+static uint8_t s_cdma_retarget_ip[4];
+static uint16_t s_cdma_retarget_port=0;
+static bool  s_cdma_retarget=false;
 
-static osThreadId_t _tcpTaskId = NULL;
-static osThreadId_t _asyncTaskId = NULL;
-static osThreadId_t _atTaskId = NULL;
-
-static osSemaphoreId_t _modemSemId = NULL;
-static osMessageQueueId_t _smsMailId=NULL;
-static osMessageQueueId_t _respAsyncMailId=NULL;
-static osMessageQueueId_t _respTcpMailId=NULL;
-static osMessageQueueId_t _tcpDataMailId=NULL;
-static osMessageQueueId_t _callReqMailId=NULL;
-
-static modemEx_t _modem;
-static const atCmd_t *_atCmd = cmd_tx700;
+iCellular_t g_iCellular;
 iCellular_t *_iCellular=NULL;
 cdma_system_t g_cdma_system;
 modem_config_t g_modem_config;
 
-static uint8_t cdma_retarget_ip[4];
-static uint16_t cdma_retarget_port=0;
-static bool  cdma_retarget=false;
 
 void set_cdma_retarget(bool target)
 {
-  cdma_retarget = target;
+  s_cdma_retarget = target;
 }
 
 bool is_cdma_retarget(void)
 {
-  return cdma_retarget;
+  return s_cdma_retarget;
 }
 
 void set_cdma_retarget_ip(uint8_t ip[4],uint16_t port)
 {
-  cdma_retarget_ip[0] = ip[0];
-  cdma_retarget_ip[1] = ip[1];
-  cdma_retarget_ip[2] = ip[2];
-  cdma_retarget_ip[3] = ip[3];
-  cdma_retarget_port = port;
+  s_cdma_retarget_ip[0] = ip[0];
+  s_cdma_retarget_ip[1] = ip[1];
+  s_cdma_retarget_ip[2] = ip[2];
+  s_cdma_retarget_ip[3] = ip[3];
+  s_cdma_retarget_port = port;
 }
 
 void get_cdma_retarget_ip(uint8_t ip[4],uint16_t *port)
 {
-  ip[0] = cdma_retarget_ip[0];
-  ip[1] = cdma_retarget_ip[1];
-  ip[2]  = cdma_retarget_ip[2];
-  ip[3]  = cdma_retarget_ip[3];
+  ip[0] = s_cdma_retarget_ip[0];
+  ip[1] = s_cdma_retarget_ip[1];
+  ip[2]  = s_cdma_retarget_ip[2];
+  ip[3]  = s_cdma_retarget_ip[3];
 
-  *port = cdma_retarget_port;
+  *port = s_cdma_retarget_port;
 
 }
 
@@ -235,6 +227,11 @@ int32_t convert_rssi_nt9607totx700(int32_t rssi)
 
 }
 
+void modem_send_sms(char *number,char *msg)
+{
+  _iCellular->send_sms(number, msg);
+}
+
 void modem_init(void)
 {
     char num[20];
@@ -247,7 +244,7 @@ void modem_init(void)
         if(_iCellular->read_num(num,sizeof(num))==RET_OK)
         {
              strcpy_safe(g_cdma_system.num,sizeof(g_cdma_system.num),num);
-            _modem.phoneNumChecked = 1;
+            s_modem.phoneNumChecked = 1;
             break;
         }
         osDelay(5000);
@@ -256,35 +253,35 @@ void modem_init(void)
 
 void modem_voice_init(void)
 {
-    (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+    (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    _modem.modemReboot = 0;
-    _modem.voiceEnd = 1;
-    _modem.ringReceived = 0;
-    _modem.ringCnt = 0;
-    _modem.dial = 0;
-    (void)osSemaphoreRelease(_modemSemId);
+    s_modem.modemReboot = 0;
+    s_modem.voiceEnd = 1;
+    s_modem.ringReceived = 0;
+    s_modem.ringCnt = 0;
+    s_modem.dial = 0;
+    (void)osSemaphoreRelease(s_modem_sem_id);
 
     flush_reqCall();
 }
 
 void modem_socket_init(void)
 {
-    (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+    (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    _modem.server_closed = 0;
+    s_modem.server_closed = 0;
 
-    (void)osSemaphoreRelease(_modemSemId);
+    (void)osSemaphoreRelease(s_modem_sem_id);
 }
 
 
 void modem_set_dial(uint8_t status)
 {
-    (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+    (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    _modem.dial = status;
+    s_modem.dial = status;
 
-    (void)osSemaphoreRelease(_modemSemId);
+    (void)osSemaphoreRelease(s_modem_sem_id);
 }
 
 
@@ -369,9 +366,7 @@ STATUS_t connect_tcp(eConnect_Type_t type)
         }
     
     _iCellular->init();
-
     _iCellular->close_tcp();
-
     _iCellular->close_ppp();
 
     modem_socket_init();
@@ -421,7 +416,7 @@ uint32_t recv_tcp(uint8_t *pBuff,uint16_t buffSize,uint16_t *pLen,uint32_t timeO
     osEvent event;
     tcpData_t *tcpData;
     *pLen = 0;
-    event = osMailGet(_tcpDataMailId,10);
+    event = osMailGet(s_tcp_data_mail_id,10);
     if(event.status == osEventMail)
     {
         tcpData = (tcpData_t *)event.value.p;
@@ -429,20 +424,19 @@ uint32_t recv_tcp(uint8_t *pBuff,uint16_t buffSize,uint16_t *pLen,uint32_t timeO
         memcpy_safe(pBuff,buffSize,tcpData->data,tcpData->len);
         *pLen = tcpData->len;
 
-        osMailFree(_tcpDataMailId, tcpData);
+        osMailFree(s_tcp_data_mail_id, tcpData);
         ret = 0;
     }
         return ret;
 #else
     uint32_t ret = 1;
     tcpData_t tcpData;
-    if(osMessageQueueGet(_tcpDataMailId, &tcpData, NULL, 1000) == osOK)
+    if(osMessageQueueGet(s_tcp_data_mail_id, &tcpData, NULL, 1000) == osOK)
     {
       memcpy_safe(pBuff,buffSize,tcpData.data,tcpData.len);
       *pLen = tcpData.len;
       ret = 0;
     }
-    
     return ret;
 #endif
 
@@ -451,14 +445,12 @@ uint32_t recv_tcp(uint8_t *pBuff,uint16_t buffSize,uint16_t *pLen,uint32_t timeO
 void get_ip(uint8_t *prIp,uint16_t *pPort)
 {
 
+  prIp[0] = config.cdma_server_ip[0];
+  prIp[1] = config.cdma_server_ip[1];
+  prIp[2] = config.cdma_server_ip[2];
+  prIp[3] = config.cdma_server_ip[3];
 
-        prIp[0] = config.cdma_server_ip[0];
-        prIp[1] = config.cdma_server_ip[1];
-        prIp[2] = config.cdma_server_ip[2];
-        prIp[3] = config.cdma_server_ip[3];
-
-        *pPort = config.cdma_port;
-
+  *pPort = config.cdma_port;
 
 }
 
@@ -472,15 +464,15 @@ bool is_modemBoot(void)
 {
     bool err = false;
 
-    (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+    (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    if(_modem.modemReboot)
+    if(s_modem.modemReboot)
     {
-        _modem.modemReboot = 0;
+        s_modem.modemReboot = 0;
         err = true;
     }
 
-    (void)osSemaphoreRelease(_modemSemId);
+    (void)osSemaphoreRelease(s_modem_sem_id);
 
     return err;
 }
@@ -493,14 +485,14 @@ bool is_serverErr(void)
 {
     bool err=false;
 
-    (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+    (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    if(_modem.server_closed)
+    if(s_modem.server_closed)
     {
         err = true;
     }
 
-    (void)osSemaphoreRelease(_modemSemId);
+    (void)osSemaphoreRelease(s_modem_sem_id);
 
     return err;
 }
@@ -535,28 +527,28 @@ bool is_ipChanged(void)
 uint32_t wait_asyncResp(uint32_t *cmd,char *pBuff,uint16_t buffSize)
 {
   #if 0 
-    respAsync_t *resp = NULL;
+    resp_async_t *resp = NULL;
     osEvent event;
     uint32_t ret = 1;
 
-    event = osMailGet(_respAsyncMailId,10);
+    event = osMailGet(s_resp_async_mail_id,10);
     if(event.status == osEventMail)
     {
-            resp = (respAsync_t *)event.value.p;
+            resp = (resp_async_t *)event.value.p;
 
             *cmd = resp->cmd;
 
             strcpy_safe(pBuff,buffSize,resp->buff);
         
-            osMailFree(_respAsyncMailId, resp);
+            osMailFree(s_resp_async_mail_id, resp);
             ret = 0;
         }
   
     return ret;
     #else
-    respAsync_t resp;
+    resp_async_t resp;
     uint32_t ret = 1;
-    if(osMessageQueueGet(_respAsyncMailId ,&resp, NULL, 10) == osOK)
+    if(osMessageQueueGet(s_resp_async_mail_id ,&resp, NULL, 10) == osOK)
       {
             *cmd = resp.cmd;
 
@@ -577,25 +569,25 @@ uint32_t wait_asyncResp(uint32_t *cmd,char *pBuff,uint16_t buffSize)
 void put_asyncResp(uint32_t cmd,char *pData,uint16_t dataLen)
 {
   #if 0 
-    respAsync_t *resp = NULL;
+    resp_async_t *resp = NULL;
 
-    resp = (respAsync_t *)osMailAlloc(_respAsyncMailId,osWaitForever);
+    resp = (resp_async_t *)osMailAlloc(s_resp_async_mail_id,osWaitForever);
 
     if(resp)
     {
         resp->cmd = cmd;
         memcpy_safe((uint8_t *)resp->buff,sizeof(resp->buff),(uint8_t *)pData,dataLen);
         resp->buff[dataLen] = '\0';
-        osMailPut(_respAsyncMailId,resp);
+        osMailPut(s_resp_async_mail_id,resp);
     }
     #else
-    respAsync_t resp;
+    resp_async_t resp;
 
             resp.cmd = cmd;
         memcpy_safe((uint8_t *)resp.buff,sizeof(resp.buff),(uint8_t *)pData,dataLen);
         resp.buff[dataLen] = '\0';
 
-    if (osMessageQueuePut(_respAsyncMailId, &resp, 0, osWaitForever) == osOK)
+    if (osMessageQueuePut(s_resp_async_mail_id, &resp, 0, osWaitForever) == osOK)
     {
  
     }
@@ -611,10 +603,10 @@ void put_asyncResp(uint32_t cmd,char *pData,uint16_t dataLen)
  */ 
 uint32_t wait_tcpResp(uint32_t *cmd,char *pBuff,uint16_t buffSize)
 {
-  respTcp_t resp ;
+  resp_tcp_t resp ;
 
   uint32_t err = 1;
-  if(osMessageQueueGet(_respTcpMailId, &resp, NULL, 10) == osOK)
+  if(osMessageQueueGet(s_resp_tcp_mail_id, &resp, NULL, 10) == osOK)
   {
     *cmd = resp.cmd;
     strcpy_safe(pBuff,buffSize,resp.buff);
@@ -632,16 +624,16 @@ uint32_t wait_tcpResp(uint32_t *cmd,char *pBuff,uint16_t buffSize)
  * @param pData 수신된 tcp관련 at 명령어 응답또는 데이타
  * @param dataLen pData의 길이
  */
-void put_tcpResp(uint32_t cmd,char *pData,uint16_t dataLen)
+void put_tcpResp(uint32_t cmd,uint8_t *pData,uint16_t dataLen)
 {
-  respTcp_t resp;
+  resp_tcp_t resp;
 
   resp.cmd = cmd;
 
   memcpy((uint8_t *)resp.buff,(uint8_t *)pData,dataLen);
   resp.buff[dataLen] = '\0';
 
-  if (osMessageQueuePut(_respTcpMailId, &resp, 0, osWaitForever) != osOK)
+  if (osMessageQueuePut(s_resp_tcp_mail_id, &resp, 0, osWaitForever) != osOK)
   {
     io_printf("put_tcpResp error\r\n");
   }
@@ -655,14 +647,14 @@ void put_tcpResp(uint32_t cmd,char *pData,uint16_t dataLen)
  */ 
 void off_call(void)
 {
-    modem_sends(_atCmd[AT_ASYNC_OFF_VOICE].cmdStr);
+    modem_sends(s_p_atCmd[AT_ASYNC_OFF_VOICE].cmdStr);
 }
 /**
  * @brief 발신 중지
  */
 void dial_off(void)
 {
-    modem_sends(_atCmd[AT_ASYNC_DIAL_OFF].cmdStr);
+    modem_sends(s_p_atCmd[AT_ASYNC_DIAL_OFF].cmdStr);
 }
 
 /**
@@ -674,60 +666,18 @@ bool is_smsRx(void)
 {
      bool is = false;
 
-    (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+    (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    if(_modem.smsRecvCnt)
+    if(s_modem.smsRecvCnt)
     {
-        _modem.smsRecvCnt--;// 읽은 후 지워야 하는지 추후 
+        s_modem.smsRecvCnt--;// 읽은 후 지워야 하는지 추후 
         is = true;
     }
 
-    (void)osSemaphoreRelease(_modemSemId);
+    (void)osSemaphoreRelease(s_modem_sem_id);
 
     return is;
 }
-
-/**
- * @brief 송신할 sms 있는지 확인, 있으면 송실할 메시지 얻기
- * @param prSms 송신할 메시지가져갈 버퍼
- * @retval true 송신할 SMS 있음
- *         false 송신할 SMS 없음
- */
-bool is_smsTx(sms_t *prSms)
-{
-  #if 0 
-    bool is = false;;
-    osEvent event;
-    sms_t *sms;
-
-    event = osMailGet(_smsMailId,10);
-    if(event.status == osEventMail)
-    {
-        sms = (sms_t *)event.value.p;
-
-        strcpy_safe(prSms->num,sizeof(prSms->num),sms->num);
-        strcpy_safe(prSms->msg,sizeof(prSms->msg),sms->msg);
-
-        osMailFree(_smsMailId, sms);
-        is = true;
-    }
-    return is;
-    #else
-    bool is = false;;
-
-    sms_t sms;
-      if(osMessageQueueGet(_smsMailId, &sms, NULL, 10) == osOK)
-      {
-        strcpy_safe(prSms->num,sizeof(prSms->num),sms.num);
-        strcpy_safe(prSms->msg,sizeof(prSms->msg),sms.msg);
-
-
-        is = true;
-      }
-return is;
-    #endif
-}
-
 
 /**
  * @brief 전화가 수신되었는지 확인
@@ -740,16 +690,16 @@ bool is_ringReceived(char *prNum,uint16_t numSize,uint16_t *prCnt)
 {
     bool is = false;
 
-    (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+    (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    if(_modem.ringReceived)
+    if(s_modem.ringReceived)
     {
-        strcpy_safe(prNum,numSize,_modem.ringNum);
-        *prCnt = _modem.ringCnt;
+        strcpy_safe(prNum,numSize,s_modem.ringNum);
+        *prCnt = s_modem.ringCnt;
         is = true;
     }
 
-    (void)osSemaphoreRelease(_modemSemId);
+    (void)osSemaphoreRelease(s_modem_sem_id);
 
     return is;
 }
@@ -790,13 +740,13 @@ return false;
  */
 void modem_clear_ring(void)
 {
-   (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+   (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    _modem.ringReceived = 0;;
-    _modem.ringCnt = 0;
-    memset(_modem.ringNum,0x00,sizeof(_modem.ringNum));
+    s_modem.ringReceived = 0;;
+    s_modem.ringCnt = 0;
+    memset(s_modem.ringNum,0x00,sizeof(s_modem.ringNum));
 
-  (void)osSemaphoreRelease(_modemSemId);
+  (void)osSemaphoreRelease(s_modem_sem_id);
 
 }
 
@@ -805,15 +755,15 @@ bool modem_is_dialOk(void)
 {
     bool is= false;
 
-   (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
-    if(_modem.dial)
+   (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
+    if(s_modem.dial)
     {
         is = true;
     }
     
-    memset(_modem.ringNum,0x00,sizeof(_modem.ringNum));
+    memset(s_modem.ringNum,0x00,sizeof(s_modem.ringNum));
 
-  (void)osSemaphoreRelease(_modemSemId);
+  (void)osSemaphoreRelease(s_modem_sem_id);
 
   return is;
 }
@@ -823,8 +773,6 @@ bool modem_is_dialOk(void)
  */
 void flush_reqCall(void)
 {
-
-
 
 
 }
@@ -852,44 +800,6 @@ void dial_call(char *num,uint32_t waitTimeOutMs)
 
 
 
-#define RING_CNT_LIMIT 2
-
-
-
-
-
-
-
-void os_send_sms(char *num,char *msg)
-{
-
-  #if 0 
-    sms_t *sms = NULL;
-
-
-    sms = (sms_t *)osMailAlloc(_smsMailId,osWaitForever);
-
-    if(sms)
-    {
-        strcpy_safe(sms->num,sizeof(sms->num),num);
-        strcpy_safe(sms->msg,sizeof(sms->msg),msg);
-        
-        osMailPut(_smsMailId,sms);
-    }
-    #else
-      sms_t sms;
-
-        strcpy_safe(sms.num,sizeof(sms.num),num);
-        strcpy_safe(sms.msg,sizeof(sms.msg),msg);
-    if (osMessageQueuePut(_smsMailId, &sms, 0, osWaitForever) == osOK)
-    {
-
-    }
-
-    #endif
-}
-
-
 void proc_sms(void)
 {
     sms_t sms;
@@ -903,16 +813,9 @@ void proc_sms(void)
             sms_cmd(&sms);
         }
     }
-
-    if(is_smsTx(&sms))
-    {
-        _iCellular->send_sms(sms.num,sms.msg);
-    }
 }
 
 #define READ_RSSI_SCAN_TIME_MS 60000
-
-
 
 void modemAsyncTask(void  *argument)
 {
@@ -929,7 +832,7 @@ void modemAsyncTask(void  *argument)
         proc_sms();
         if(once)
         {
-           if(_modem.phoneNumChecked == 1)
+           if(s_modem.phoneNumChecked == 1)
            {
             once = 0;
             rssiRead = 1;
@@ -957,35 +860,32 @@ void modemAsyncTask(void  *argument)
 
 void at_reboot(uint32_t cmd,char *pData,uint16_t dataLen)
 {
-  (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+  (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
     //if(_modem.init)
     {
-        _modem.modemReboot = 1;;
+        s_modem.modemReboot = 1;;
     }
-  (void)osSemaphoreRelease(_modemSemId);
+  (void)osSemaphoreRelease(s_modem_sem_id);
 }
 
 void at_sms_received(uint32_t cmd,char *pData,uint16_t dataLen)
 {
-  (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+  (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    _modem.smsRecvCnt++;
+    s_modem.smsRecvCnt++;
 
-  (void)osSemaphoreRelease(_modemSemId);
-  
-  
+  (void)osSemaphoreRelease(s_modem_sem_id);
+    
 }
-
-
 
 void at_async_tcp_disconnected(uint32_t cmd,char *pData,uint16_t dataLen)
 {
-  (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+  (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    _modem.server_closed =1;
+    s_modem.server_closed =1;
 
-  (void)osSemaphoreRelease(_modemSemId);
+  (void)osSemaphoreRelease(s_modem_sem_id);
   
 }
 
@@ -996,20 +896,20 @@ void at_ring_received(uint32_t cmd,char *pData,uint16_t dataLen)
 
     ret = _iCellular->read_ringNum(pData,num,sizeof(num));
 
-  (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+  (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
     if(ret == RET_OK)
     {
-        if(_modem.ringReceived == 0)
+        if(s_modem.ringReceived == 0)
         {
-            _modem.ringReceived = 1;
-            strcpy_safe(_modem.ringNum,sizeof(_modem.ringNum),num);
+            s_modem.ringReceived = 1;
+            strcpy_safe(s_modem.ringNum,sizeof(s_modem.ringNum),num);
         }
     }
 
-    _modem.ringCnt++;
+    s_modem.ringCnt++;
 
-  (void)osSemaphoreRelease(_modemSemId);
+  (void)osSemaphoreRelease(s_modem_sem_id);
 
 }
 
@@ -1023,13 +923,13 @@ void at_dtmf(uint32_t cmd,char *pData,uint16_t dataLen)
 {
    // char dtmf;
 
-  (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+  (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
     //dtmf = _iCellular->get_dtmf(pData);//
     
     //DTMF_put_dtmf(dtmf);
 
-  (void)osSemaphoreRelease(_modemSemId);
+  (void)osSemaphoreRelease(s_modem_sem_id);
 }
 
 /**
@@ -1040,16 +940,12 @@ void at_dtmf(uint32_t cmd,char *pData,uint16_t dataLen)
  */
 void at_voice_end(uint32_t cmd,char *pData,uint16_t dataLen)
 {
-  (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
-
-        _modem.voiceEnd = 1;
-        _modem.ringReceived = 0;
-        _modem.ringCnt = 0;
-        _modem.dial = 0;
-
-  (void)osSemaphoreRelease(_modemSemId);
-
-
+  (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
+    s_modem.voiceEnd = 1;
+    s_modem.ringReceived = 0;
+    s_modem.ringCnt = 0;
+    s_modem.dial = 0;
+  (void)osSemaphoreRelease(s_modem_sem_id);
 }
 
 
@@ -1065,14 +961,14 @@ void put_tcpData(uint8_t *data, uint16_t dataLen)
   #if 0 
     tcpData_t *tcpData = NULL;
 
-    tcpData = (tcpData_t *)osMailAlloc(_tcpDataMailId,1000);
+    tcpData = (tcpData_t *)osMailAlloc(s_tcp_data_mail_id,1000);
 
     if(tcpData)
     {
         tcpData->len = dataLen;
         memcpy_safe((uint8_t *)tcpData->data,sizeof(tcpData->data),(uint8_t *)data,dataLen);
         
-        osMailPut(_tcpDataMailId,tcpData);
+        osMailPut(s_tcp_data_mail_id,tcpData);
     }
     #else
   tcpData_t tcpData;
@@ -1080,7 +976,7 @@ void put_tcpData(uint8_t *data, uint16_t dataLen)
 
   memcpy_safe((uint8_t *)tcpData.data,sizeof(tcpData.data),(uint8_t *)data,dataLen);
 
-  if(osMessageQueuePut(_tcpDataMailId, &tcpData, 0, 1000) != osOK)
+  if(osMessageQueuePut(s_tcp_data_mail_id, &tcpData, 0, 1000) != osOK)
   {
     io_printf("put_tcpData timeout\r\n");
   }
@@ -1093,11 +989,11 @@ void put_tcpData(uint8_t *data, uint16_t dataLen)
 void put_smsResp(uint32_t cmd,char *pData,uint16_t dataLen)
 {
 
-  (void)osSemaphoreAcquire(_modemSemId, RTOSAL_WAIT_FOREVER);
+  (void)osSemaphoreAcquire(s_modem_sem_id, RTOSAL_WAIT_FOREVER);
 
-    _modem.smsSendOk = 1;
+    s_modem.smsSendOk = 1;
 
-  (void)osSemaphoreRelease(_modemSemId);
+  (void)osSemaphoreRelease(s_modem_sem_id);
 }
 
 
@@ -1116,68 +1012,7 @@ void at_async_tcp_recv(uint8_t *p_data,uint16_t data_len)
   _iCellular->recv_bin(_iCellular->io_uart, p_data,data_len);
 }
 
-#include <stdint.h>
-#include <string.h>
 
-#define UART_ERR_TIMEOUT -1
-#define UART_ERR_SIZE -2
-
-int32_t driver_uart_recv(driver_t *drv, uint8_t *data, uint16_t len, uint32_t tout_ms);
-
-int32_t recv_tx700(void *port, uint8_t *buffer, uint16_t buffer_size)
-{
-  driver_t *drv = (driver_t *)port;
-  uint32_t start_time = osKernelGetTickCount();
-  uint32_t timeout = 1000;  // 기본 1초
-  uint16_t cnt = 0;
-  uint8_t ch;
-  uint8_t bin_mode=0;
-  uint8_t first = 1;
-  uint16_t len=0;
-
-  while (1)
-  {
-    if (driver_uart_recv(drv, &ch, 1, osWaitForever)==1)
-    {
-      buffer[cnt++] = ch;
-
-      if(cnt==12&&first)
-      {
-        first = 0;
-        if (strncmp((char *)buffer, "$$BinRecv:", 10) == 0)
-        {
-          bin_mode = 1;
-          len = (buffer[10] & 0x0F) * 256 + buffer[11];
-        }
-      }
-      else
-      {
-        if(bin_mode)
-        {
-          if(cnt>=(12+len))
-          {
-            return cnt;
-          }
-        }
-        else
-        {
-          if ((ch == '\r') || (ch == '\n'))
-          {
-            buffer[cnt - 1] = 0;
-            return (cnt - 1); 
-          }
-        }
-      }
-
-      if(cnt>=buffer_size)
-      {
-        return 0;
-      }
-    }
-  }
-
-
-}
 
 /**
  * @brief 모뎀에서 수신되는 AT명령어 처리
@@ -1187,14 +1022,12 @@ void modemAtTask(void  *argument)
 {
   char buff[512+32];
   int32_t len;
-  uint32_t index=0;
-  bool checked= false;
   eAT_COMMAND_t at_cmd;
   uint32_t cmd_count = _iCellular->get_count();
 
   while(1)
   {
-   len = _iCellular->recv_handler(_iCellular->io_uart,buff,sizeof(buff));
+   len = _iCellular->recv_handler(_iCellular->io_uart,(uint8_t *)buff,sizeof(buff));
 
     if(len<=0||len==UART_ERR_SIZE || len == UART_ERR_TIMEOUT)
     {
@@ -1203,10 +1036,10 @@ void modemAtTask(void  *argument)
 
     for (uint32_t idx = 0; idx < cmd_count; idx++)
     {
-      if(strncmp((char *)buff,_atCmd[idx].cmdStr,strlen(_atCmd[idx].cmdStr))==0)
+      if(strncmp((char *)buff,s_p_atCmd[idx].cmdStr,strlen(s_p_atCmd[idx].cmdStr))==0)
       {
-        at_cmd = _atCmd[idx].cmd;
-       // io_printf("%d %s\r\n", (int)at_cmd, buff);
+        at_cmd = s_p_atCmd[idx].cmd;
+
         switch (at_cmd)
         {
           case AT_ASYNC_RECV_REBOOT:
@@ -1225,14 +1058,20 @@ void modemAtTask(void  *argument)
                 at_dtmf(idx,buff,len);
             break;
             case AT_ASYNC_RECV_TCP_DATA://tcp data를 받음
-                at_async_tcp_recv(buff,len);
+                at_async_tcp_recv((uint8_t *)buff,len);
             break;
             case AT_ASYNC_RECV_TCP_DISCONNECTED://tcp 가 끊겼다는 메시지를 받음
                 at_async_tcp_disconnected(idx,buff,len);
             break;
+            case AT_SYNC_SMS_READ_RESP_OK:  // SMS 읽기에 대한 응답
+              if (_iCellular->sms_handler)
+              {
+                _iCellular->sms_handler(_iCellular->io_uart, buff, len);
+                break;
+              }
             case AT_ASYNC_OPEN_VOICE_RESP:  // 전화가 연결되었는지 응답
             case AT_SYNC_GET_RSSI_RESP:    // 수신감도 명령어에 대한 응답
-            case AT_SYNC_SMS_READ_RESP_OK: // SMS 읽기에 대한 응답
+
             case AT_ASYNC_SMS_READ_RESP_ERR:// SMS 읽기 에러에대한 응답
             case AT_ASYNC_DIAL_RESP:
                 put_asyncResp(idx,buff,len);
@@ -1240,7 +1079,7 @@ void modemAtTask(void  *argument)
             case AT_SMS_SEND_RESP:        // SMS 전송에대한 응답
                 put_smsResp(idx,buff,len);
                 break;
-          case AT_TCP_WRITE_IP_RESP:
+            case AT_TCP_WRITE_IP_RESP:
             case AT_TCP_SEND_DATA_RESP:
             case AT_TCP_OPEN_SOCKET_RESP_OK:
             case AT_TCP_OPEN_SOCKET_RESP_FAIL:
@@ -1252,7 +1091,7 @@ void modemAtTask(void  *argument)
             case AT_TCP_CLOSE_SOCKET_RESP:
             case AT_RESET_SW_RESP:
             case AT_TCP_NETWORK_SERVICE:
-                put_tcpResp(idx,buff,len);
+                put_tcpResp(idx,(uint8_t*)buff,len);
                 break;
             
           }
@@ -1264,7 +1103,7 @@ void modemAtTask(void  *argument)
 }
 
 
-iCellular_t g_iCellular;
+
 
 /**
 * @brief 셀룰러 인터페이스 초기화
@@ -1295,7 +1134,7 @@ void iCellular_init(void)
   {
     case eCDMA_NTLE9607:
 
-    _atCmd = cmd_ntle9607;
+    s_p_atCmd = cmd_ntle9607;
     _iCellular->resetDelay = 20000;
   _iCellular->init       = ntle9607_init;
   _iCellular->read_sms   = ntle9607_read_sms;
@@ -1322,10 +1161,11 @@ void iCellular_init(void)
   _iCellular->check_network_service = ntle9607_check_network_service;
   _iCellular->recv_bin = ntle9607_recv_bin;
   _iCellular->get_count = ntle9607_get_count;
-  _iCellular->recv_handler = NULL;
+  _iCellular->recv_handler= ntle9607_recv_handler;
+  _iCellular->sms_handler = NULL;
   break;
   case eCDMA_TX700:
-   _atCmd = cmd_tx700;
+   s_p_atCmd = cmd_tx700;
     _iCellular->resetDelay = 20000;
     _iCellular->init = tx700_init;
     _iCellular->read_sms = tx700_read_sms;
@@ -1353,6 +1193,7 @@ void iCellular_init(void)
     _iCellular->recv_bin = tx700_recv_bin;
     _iCellular->get_count = tx700_get_count;
     _iCellular->recv_handler = tx700_recv_handler;
+    _iCellular->sms_handler = tx700_sms_handler;
     
     break;
   }
@@ -1373,9 +1214,11 @@ void modemTcpTask(void  *argument)
     uint16_t len;
     uint32_t start_time=0;
     M_RET_t ret;
-    eConnect_Type_t type = ePOWER_RESET;//초기에는 전원리셋이 발생하였다고넘겨줌줌
+    eConnect_Type_t type = ePOWER_RESET;//초기에는 전원리셋이 발생하였다고넘겨줌
 
     g_cdma_system.link_status = eCDMA_LINK_IDLE;
+    g_modem_config.connection_timeoutms = 3600000;
+
     while (1)
     {
       g_cdma_system.link_status = eCDMA_LINK_DOWN;
@@ -1452,17 +1295,18 @@ void modemTcpTask(void  *argument)
     }
 }
 
+cdma_system_t *get_cdma_system(void)
+{
+  return &g_cdma_system;
+}
+
 
 void mdoem_status_init(void)
 {
   g_cdma_system.rssi = -1;
-  g_cdma_system.link_status = -1;
-
-
-  g_modem_config.connection_timeoutms = 3600000;
+  g_cdma_system.link_status = eCDMA_LINK_IDLE;
+ 
 }
-
-
 
 
 void cellularTask_init(void)
@@ -1470,24 +1314,16 @@ void cellularTask_init(void)
   iCellular_init();
 
   mdoem_status_init();
-  
+ 
+  s_modem_sem_id = osSemaphoreNew(1, 1, NULL); 
 
-  _modemSemId = osSemaphoreNew(1, 1, NULL); 
+  s_resp_async_mail_id = osMessageQueueNew(MODEM_RESP_MAIL_SIZE, sizeof(resp_async_t), NULL);
+  s_resp_tcp_mail_id = osMessageQueueNew(1, sizeof(resp_tcp_t), NULL);
+  s_tcp_data_mail_id = osMessageQueueNew(1, sizeof(tcpData_t), NULL);
 
-
-  _smsMailId = osMessageQueueNew(MODEMSMS_MAIL_SIZE, sizeof(sms_t), NULL);
-  _respAsyncMailId = osMessageQueueNew(MODEM_RESP_MAIL_SIZE, sizeof(respAsync_t), NULL);
-  _respTcpMailId = osMessageQueueNew(MODEM_RESP_MAIL_SIZE, sizeof(respTcp_t), NULL);
-  _tcpDataMailId = osMessageQueueNew(1, sizeof(tcpData_t), NULL);
-
-  _atTaskId    = osThreadNew(modemAtTask   ,NULL,&atTask_attributes);
-  _tcpTaskId   = osThreadNew(modemTcpTask  ,NULL,&tcpTask_attributes);
-  _asyncTaskId = osThreadNew(modemAsyncTask,NULL,&asyncTask_attributes);
-
+  osThreadNew(modemAtTask   ,NULL,&kAtTask_attributes);
+  osThreadNew(modemTcpTask  ,NULL,&kTcpTask_attributes);
+  osThreadNew(modemAsyncTask,NULL,&kAsyncTask_attributes);
 
 }
 
-cdma_system_t *get_cdma_system(void)
-{
-  return &g_cdma_system;
-}

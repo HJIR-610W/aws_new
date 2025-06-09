@@ -29,7 +29,7 @@ typedef struct modem_config_s
   uint8_t ip[4];
   uint16_t port;
   eMODEM_MODEL_t model;
-  uint16_t connection_timeoutms;
+  uint32_t connection_timeoutms;
 }modem_config_t;
 
 typedef struct modem_status_s

@@ -129,6 +129,14 @@ int32_t driver_uart_recv_crlf(driver_t *drv, char *pBuff, uint16_t bSize, uint32
     if (len)
     {
       pBuff[cnt++] = data;
+      
+      if((cnt==1)&&((data == '\r') || (data == '\n')))
+      {
+        cnt = 0;
+        continue;
+      }
+         
+         
       if ((data == '\r') || (data == '\n'))
       {
         pBuff[cnt - 1] = 0;

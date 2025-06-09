@@ -121,6 +121,7 @@ typedef struct iCellular
     uint32_t (*get_count)(void);
 
     int32_t (*recv_handler)(driver_t *uart,uint8_t *buffer, uint16_t buffer_size);
+    void (*sms_handler)(driver_t *uart, char *data, uint16_t data_len);
 } iCellular_t;
 
     typedef struct mqtt_if_s

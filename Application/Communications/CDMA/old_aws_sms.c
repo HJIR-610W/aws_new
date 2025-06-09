@@ -61,13 +61,13 @@ time_t ConvertDate_TMX400(char * szDate)  // String을 날짜 시간 데이터로
 }
 bool CheckReadSMS(char *sms_msg,char *sms_number)
 {
-  char szPassword[6];
+
   uint8_t cCmd;
   char szPort[16];
-  char szIndex[12];
+
   char szTemp[32];
-  uint8_t cIp[4];
-  int nIndex;
+
+
 
 
 

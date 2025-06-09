@@ -195,7 +195,7 @@ void loggingTask(void *arg)
   uint32_t period_min;
   logging_t logging;
   uint16_t rain;
-  AWS_DATA_STRUCT *p_aws;
+
 
   uint32_t offset;
   uint16_t sunshine;

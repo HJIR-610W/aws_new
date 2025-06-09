@@ -54,7 +54,7 @@ extern "C" {
 
   typedef struct atCmd_s
   {
-    uint32_t cmd;
+    eAT_COMMAND_t cmd;
     char *cmdStr;  // at 명령어 또는 응답
     void (*fsend)(void);
   } atCmd_t;

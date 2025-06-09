@@ -86,12 +86,12 @@ void SHELL_ReceiveDataCallback(uint8_t* buf, uint32_t len)
     driver_uart_get_char(console_uart, buf, len);
 }
 
-void sonsoleTask(void *arg)
+void consoleTask(void *arg)
 {
   shell_context_struct user_context;
   uint8_t instance = 0;
-  int a;
-  int ret;
+
+
   int mode = (int)arg;
   char buffer[100];
   const char *cli_aws = "\x1B[32mAWS>> \x1B[37m";
@@ -153,5 +153,5 @@ void consoleTask_init(void *arg)
   osDelay(100);
 
   set_debug_uart_handle(console_uart);
-  osThreadNew(sonsoleTask, arg, &consoleTask_attributes);
+  osThreadNew(consoleTask, arg, &consoleTask_attributes);
 }

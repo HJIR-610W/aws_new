@@ -44,11 +44,12 @@ void testTask(void *arg)
 bool testTask_init(void)
 { 
   driver_t *user_btn;
-  uint32_t startTime;
+
 
   user_btn = driver_di_open(DI_USER_BTN,0);
 
-  //사용자가 5초이상 버튼을 누르면 testTask 실행행
+  
+  //사용자가 5초이상 버튼을 누르면 testTask 실행
   if(driver_di_is_low(user_btn,1000,10))
   {
     osThreadNew(testTask, NULL, &kTestTask_attributes);

@@ -47,8 +47,8 @@ M_RET_t tx700_check_network_service(char *msgOut,uint16_t msgSize);
 void tx700_recv_bin(driver_t *port, uint8_t *p_data, uint16_t data_len);
 uint32_t tx700_get_count(void) ;
 int32_t tx700_recv_handler(driver_t *uart,uint8_t *buffer, uint16_t buffer_size);
-
-    extern const atCmd_t cmd_tx700[36];
+void tx700_sms_handler(driver_t *uart,char *data,uint16_t data_len);
+ extern const atCmd_t cmd_tx700[36];
 
 #ifdef __cplusplus
 }

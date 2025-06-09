@@ -31,7 +31,7 @@ typedef enum
 
 void SMS_Read_Info(sms_t *sms)
 {
-  uint32_t ver;
+
   uint8_t release;
   uint8_t add;
   uint8_t fix;
