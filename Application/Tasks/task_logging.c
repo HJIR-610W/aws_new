@@ -30,7 +30,7 @@ typedef struct logging_s
 
 const osThreadAttr_t kLoggingTask_attributes = {
   .name = "loggingTask",
-  .stack_size = 2048,
+  .stack_size = 2560,
   .priority = (osPriority_t) osPriorityBelowNormal,
 };
 

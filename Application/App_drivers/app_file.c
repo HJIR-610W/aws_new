@@ -116,6 +116,7 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   res = f_open(&file, path, FA_WRITE | FA_OPEN_ALWAYS);
   if (res != FR_OK)
   {
+    ERROR_PRINTF("wrtie f_open fail %d", res);
     OS_POST_SEM(g_fileSem);
     return res;  // 실패 시 오류 코드 반환
   }
@@ -148,7 +149,7 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   return res;
 }
 
-#define FAT_HEAP_USE 1
+#define FAT_HEAP_USE 0
 FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
 {
 #if FAT_HEAP_USE
@@ -168,7 +169,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   res = f_open(p_file, path, FA_READ);
   if (res != FR_OK)
   {
-    ERROR_PRINTF("f_open fail %d", res);
+    ERROR_PRINTF("read f_open fail %d", res);
     vPortFree(p_file);
     OS_POST_SEM(g_fileSem);
     return res;  // 실패 시 오류 코드 반환
@@ -188,22 +189,11 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   res = f_read(p_file, data, dataLen, &bytesRead);
   if (res != FR_OK || bytesRead != dataLen)
   {
-    // 읽을 데이터가 파일 끝(EOF)에 도달했을 수 있음 (정상)
-    if (res == FR_OK && bytesRead < dataLen)
-    {
-      // 남은 부분은 0으로 패딩 (옵션, 필요시)
-      for (uint32_t i = bytesRead; i < dataLen; i++)
-      {
-        data[i] = 0;
-      }
-    }
-    else
-    {
-      f_close(p_file);
-      vPortFree(p_file);
-      OS_POST_SEM(g_fileSem);
-      return res != FR_OK ? res : FR_DISK_ERR;
-    }
+    ERROR_PRINTF("bytesRead != dataLen %d", res);
+    f_close(p_file);
+    vPortFree(p_file);
+    OS_POST_SEM(g_fileSem);
+    return res != FR_OK ? res : FR_DISK_ERR;
   }
 
   // 파일 닫기
@@ -216,11 +206,12 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   FIL file;
   FRESULT res;
   UINT bytesRead;
-  OS_SEM_PEND(g_fileSem, osWaitForever);
+  OS_PEND_SEM(g_fileSem, osWaitForever);
   // 파일 열기 (읽기 전용, 없으면 오류)
   res = f_open(&file, path, FA_READ);
   if (res != FR_OK)
   {
+    ERROR_PRINTF("read f_open fail %d", res);
     OS_POST_SEM(g_fileSem);
     return res;  // 실패 시 오류 코드 반환
   }
@@ -230,7 +221,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   if (res != FR_OK)
   {
     f_close(&file);
-    OS_SEM_POST(g_fileSem);
+    OS_POST_SEM(g_fileSem);
     return res;
   }
 
@@ -250,14 +241,14 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
     else
     {
       f_close(&file);
-      OS_SEM_POST(g_fileSem);
+      OS_POST_SEM(g_fileSem);
       return res != FR_OK ? res : FR_DISK_ERR;
     }
   }
 
   // 파일 닫기
   f_close(&file);
-  OS_SEM_POST(g_fileSem);
+  OS_POST_SEM(g_fileSem);
   return FR_OK;
 #endif
 }

@@ -52,7 +52,7 @@ const osThreadAttr_t tcpServerTask_attributes = {
 
 const osThreadAttr_t clientHandlerTask_attributes = {
   .name = "clientHandler", 
-  .stack_size = 2048, 
+  .stack_size = 2560, 
   .priority = (osPriority_t) osPriorityNormal,
 };
 
