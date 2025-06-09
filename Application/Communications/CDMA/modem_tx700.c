@@ -619,8 +619,8 @@ M_RET_t tx700_send_tcp(uint8_t *data,uint16_t dataLen)
   const char *ack_list[TX700_SEND_TCP_RESP_CNT];
   char buff[512 + 64];
   uint32_t matched_index;
-
-
+  M_RET_t ret;
+  int32_t code=0;
   ack_list[0] = get_modem_string_tx700(AT_TCP_SEND_DATA_RESP);
 
   strcpy(buff, "AT$$TCP_SENDBIN=00");
@@ -636,10 +636,23 @@ M_RET_t tx700_send_tcp(uint8_t *data,uint16_t dataLen)
 
   tx700_modem_send(buff, dataLen);
 
-   tx700_check_tcpResp(ack_list, TX700_SEND_TCP_RESP_CNT, &matched_index, buff, sizeof(buff),
+   ret = tx700_check_tcpResp(ack_list, TX700_SEND_TCP_RESP_CNT, &matched_index, buff, sizeof(buff),
                             10000);
+  if(ret ==RET_OK)
+  {
+    if(matched_index ==0)
+    {
+      if (sscanf(buff, "$$TCP_SENDDATA:%d",&code) == 1)
+      {
+        if(code !=1)
+        {
+          ret = RET_FAIL;
+        }
+      }
+    }
+  }
 
-  return RET_OK;
+  return ret;
 }
 
 #define TX700_READ_NUM_RESP_CNT 1
