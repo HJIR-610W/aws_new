@@ -8,7 +8,7 @@
 
 #include "modem_ntle9607.h"
 #include "at_cmd.h"
-
+#include "driver_uart.h"
 
 #include "bsp.h"
 extern void EwFree( void* aMemory );
@@ -79,7 +79,7 @@ const atCmd_t cmd_ntle9607[] = {{AT_ASYNC_RECV_REBOOT, "^MODE: 9"},
                                 {AT_ASYNC_CONFIG_READ_RESP, "*VPN*CONFIG"},
                                 {AT_TCP_NETWORK_SERVICE, "*ST*REGSTS:"}};
 
-uint32_t get_count_ntle9607(void)
+uint32_t ntle9607_get_count(void)
 {
     return _countof(cmd_ntle9607);
 }
@@ -96,6 +96,7 @@ const char *get_modem_string_ntle9607(eAT_COMMAND_t cmd)
 
   return NULL;
 }
+
 
 
 
@@ -243,8 +244,6 @@ static void parse_sms(char* msg,sms_t *pSms)
         }
     }
 }
-
-
 
 
 M_RET_t ntle9607_read_sms(sms_t *pSms)
@@ -1008,7 +1007,7 @@ M_RET_t ntle_9607_at_direct(char *at,char *outBuffer,uint16_t outSize)
 }
 
 extern void put_tcpData(uint8_t *data, uint16_t dataLen);
-void ntle9607_recv_bin(void *port, char *p_data, uint16_t data_len)
+void ntle9607_recv_bin(driver_t *uart, uint8_t *p_data, uint16_t data_len)
 {
   uint16_t cnt;
   uint8_t temp[512 + 32];
@@ -1023,8 +1022,8 @@ void ntle9607_recv_bin(void *port, char *p_data, uint16_t data_len)
     memcpy(temp, &p_data[7], cnt);
     readCnt = atoi((char *)temp);  // 수신 처리해야할 tcp data 길이를 계산
 
-    len = driver_uart_recv(port, (uint8_t *)temp, 1, 1000);  // 최종 tcp data 버퍼에서 가져옴
-    len = driver_uart_recv(port, (uint8_t *)temp, readCnt,
+    len = driver_uart_recv(uart, (uint8_t *)temp, 1, 1000);  // 최종 tcp data 버퍼에서 가져옴
+    len = driver_uart_recv(uart, (uint8_t *)temp, readCnt,
                            1000);  // 최종 tcp data 버퍼에서 가져옴
 
     if (len)

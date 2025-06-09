@@ -133,7 +133,8 @@
 			"driver_stm32_bsp.h": "c",
 			"modbus.h": "c",
 			"modbus_master.h": "c",
-			"stm32f4xx_hal.h": "c"
+			"stm32f4xx_hal.h": "c",
+			"modem_if.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

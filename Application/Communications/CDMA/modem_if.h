@@ -7,9 +7,11 @@ extern "C" {
 
 
 #include <stdint.h>
+
 #include "driver_interface.h"
 #include "time_define.h"
-    typedef uint16_t M_RET_t;
+
+typedef uint16_t M_RET_t;
 
 #define RET_OK         (0U)
 #define RET_FAIL       (1U)
@@ -25,11 +27,6 @@ extern "C" {
 
 
 
-typedef struct cdma_cfg_s
-{
-    driver_t *io_uart;
-    driver_t *do_power;
-}cdma_cfg_t;
 
 
 typedef struct
@@ -46,11 +43,11 @@ typedef struct
 /// @brief 셀룰러 모뎀 인터페이스
 typedef struct iCellular
 {
-    /**
-     * @brief 모뎀 리셋 후 지연시간
-     */
-    uint32_t resetDelay;            
-    
+ 
+    driver_t *io_uart;
+    driver_t *do_power;
+    uint32_t resetDelay;  // 모뎀 리셋 후 지연시간
+
     /**
      * @brief 모뎀 부팅이 완료되면 초기화 해줘야 하는것들 모음
      * 
@@ -120,8 +117,10 @@ typedef struct iCellular
     M_RET_t (*at_direct)(char *at,char *outBuffer,uint16_t outSize);
 
     M_RET_t (*check_network_service)(char *msgOut,uint16_t msgSize);
-    void (*recv_bin)(void * port, char *data, uint16_t dataLen);
+    void (*recv_bin)(driver_t *uart, uint8_t *data, uint16_t dataLen);
     uint32_t (*get_count)(void);
+
+    int32_t (*recv_handler)(driver_t *uart,uint8_t *buffer, uint16_t buffer_size);
 } iCellular_t;
 
     typedef struct mqtt_if_s

@@ -127,7 +127,6 @@ static osMessageQueueId_t _callReqMailId=NULL;
 static modemEx_t _modem;
 static const atCmd_t *_atCmd = cmd_tx700;
 iCellular_t *_iCellular=NULL;
-driver_t *cdma_driver;
 cdma_system_t g_cdma_system;
 modem_config_t g_modem_config;
 
@@ -174,12 +173,12 @@ void flush_reqCall(void);
 
 void modem_send(uint8_t *pData,uint16_t dataLen)
 {
-  driver_uart_send(cdma_driver, pData, dataLen);
+  driver_uart_send(_iCellular->io_uart, pData, dataLen);
 }
 
 void modem_sends(const char *pData)
 {
-  driver_uart_send(cdma_driver,  (uint8_t *)pData, strlen(pData));
+  driver_uart_send(_iCellular->io_uart,  (uint8_t *)pData, strlen(pData));
 }
 
 
@@ -436,7 +435,6 @@ uint32_t recv_tcp(uint8_t *pBuff,uint16_t buffSize,uint16_t *pLen,uint32_t timeO
         return ret;
 #else
     uint32_t ret = 1;
-    osEvent event;
     tcpData_t tcpData;
     if(osMessageQueueGet(_tcpDataMailId, &tcpData, NULL, 1000) == osOK)
     {
@@ -557,9 +555,8 @@ uint32_t wait_asyncResp(uint32_t *cmd,char *pBuff,uint16_t buffSize)
     return ret;
     #else
     respAsync_t resp;
-    osEvent event;
     uint32_t ret = 1;
-        if(osMessageQueueGet(_respAsyncMailId ,&resp, NULL, 10) == osOK)
+    if(osMessageQueueGet(_respAsyncMailId ,&resp, NULL, 10) == osOK)
       {
             *cmd = resp.cmd;
 
@@ -615,7 +612,7 @@ void put_asyncResp(uint32_t cmd,char *pData,uint16_t dataLen)
 uint32_t wait_tcpResp(uint32_t *cmd,char *pBuff,uint16_t buffSize)
 {
   respTcp_t resp ;
-  osEvent event;
+
   uint32_t err = 1;
   if(osMessageQueueGet(_respTcpMailId, &resp, NULL, 10) == osOK)
   {
@@ -717,7 +714,7 @@ bool is_smsTx(sms_t *prSms)
     return is;
     #else
     bool is = false;;
-    osEvent event;
+
     sms_t sms;
       if(osMessageQueueGet(_smsMailId, &sms, NULL, 10) == osOK)
       {
@@ -826,8 +823,8 @@ bool modem_is_dialOk(void)
  */
 void flush_reqCall(void)
 {
-    char num[20];
-    uint32_t waitTimeOutMs;
+
+
 
 
 }
@@ -954,105 +951,6 @@ void modemAsyncTask(void  *argument)
 }
 
 
-/**
- * @brief CR LF로 끝나는 문자열 수신
- * @param pBuff 수신 버퍼
- * @param buffSize pBuff의 크기
- * @param timeout_ms 수신 대기 시간 
- * @param timeout_ms 재진입 가능한 함수를 위한 수신된 데이터 길이 백업용
- * @retval 수신된 데이터 길이
- * 
- */
-uint32_t uart_recv_crlf(char *pBuff,uint32_t buffSize,uint32_t timeout_ms,uint32_t *index)
-{
-  uint8_t data;
-  uint32_t cnt;
-  uint32_t start_time;
-
-	start_time = osKernelGetTickCount();
-
-    cnt = *index;
-
-	if(cnt == 0)
-	{
-		memset(pBuff,0x00,buffSize);//TODO:굳이 계속 0으로 초기화 할 필요 없음,개선 필요
-	}
-	do
-	{
-		while(driver_uart_recv(cdma_driver,&data, 1, 0))//timeout이 0이상인경우에 1m osdelay 적용됨
-		{
-			pBuff[cnt++] = data;
-
-			if((data =='\r') || (data =='\n'))
-			{
-				if(cnt == 1)
-				{
-					cnt = 0;
-					continue;// 첫벗째 바이트가 \r 또는 \n인 경우 버림  
-				}
-				*index = 0;
-                pBuff[cnt-1]=0;
-				return (cnt-1);/* \r 또는 \n 를 제외한 문자열 길이 리턴*/    
-			}
-
-			if(cnt == buffSize)
-			{
-				cnt = 0;
-				goto END_LOOP;
-			}
-		}
-		/*
-		1. timeout_ms 타임아웃이 0이면 바로 리턴
-		2. timeout_ms 경과되면 리턴
-		*/
-		if((timeout_ms == 0) || ((osKernelGetTickCount()-start_time) >= timeout_ms))
-		{
-			break;
-		}
-
-	}while(1);
-
-END_LOOP:
-	
-    *index = cnt;
-
-    return 0;
-}
-
-
-int32_t NT_recv_tcprd(uint8_t *pBuff,uint32_t buffLen,uint32_t readCnt)
-{
-    uint8_t data;
-    uint32_t i=0;
-    uint32_t start_time;
-
-    start_time = osKernelGetTickCount();
-
-    do{
-        while(driver_uart_recv(cdma_driver, (uint8_t *)&data, 1, 10))
-        {
-            if(i < buffLen)
-            {
-                pBuff[i++] = data;
-                if(i == readCnt)
-                {
-                    return i;
-                }
-            }
-            else
-            {
-                return 0;
-            }
-            
-        }
-        if( (osKernelGetTickCount()-start_time)>2000)
-        {
-            break;
-        }
-    }while(1);
-
-    return 0;
-}
 
 
 
@@ -1215,33 +1113,7 @@ void put_smsResp(uint32_t cmd,char *pData,uint16_t dataLen)
  */
 void at_async_tcp_recv(uint8_t *p_data,uint16_t data_len)
 {
-  _iCellular->recv_bin(cdma_driver, p_data,data_len);
-}
-
-void at_async_tcp_recv_tx700(uint32_t cmd, char *pData, uint16_t dataLen)
-{
-  uint16_t cnt;
-  uint8_t temp[512 + 32];
-  int32_t readCnt;
-  int32_t len;
-
-  cnt = dataLen - 7;  //*TCPRD=4<CR><LF>에서 숫자의 자리수
-
-  if (cnt < sizeof(temp))
-  {
-    memset(temp, 0x00, sizeof(temp));
-    memcpy(temp, &pData[7], cnt);
-    readCnt = atoi((char *)temp);  // 수신 처리해야할 tcp data 길이를 계산
-
-    len = driver_uart_recv(cdma_driver, (uint8_t *)temp, 1, 1000);  // 최종 tcp data 버퍼에서 가져옴
-    len = driver_uart_recv(cdma_driver, (uint8_t *)temp, readCnt,
-                           1000);  // 최종 tcp data 버퍼에서 가져옴
-
-    if (len)
-    {
-      put_tcpData(temp, len);
-    }
-  }
+  _iCellular->recv_bin(_iCellular->io_uart, p_data,data_len);
 }
 
 #include <stdint.h>
@@ -1319,10 +1191,11 @@ void modemAtTask(void  *argument)
   bool checked= false;
   eAT_COMMAND_t at_cmd;
   uint32_t cmd_count = _iCellular->get_count();
+
   while(1)
   {
-    len = driver_uart_recv_crlf(cdma_driver,buff,sizeof(buff),osWaitForever);
-   // len =  recv_tx700(cdma_driver,buff,sizeof(buff));
+   len = _iCellular->recv_handler(_iCellular->io_uart,buff,sizeof(buff));
+
     if(len<=0||len==UART_ERR_SIZE || len == UART_ERR_TIMEOUT)
     {
       continue;
@@ -1337,7 +1210,7 @@ void modemAtTask(void  *argument)
         switch (at_cmd)
         {
           case AT_ASYNC_RECV_REBOOT:
-            at_reboot(idx, buff, len);  // 모뎀이 리셋되었다는 부팅 메시지를 받음
+              at_reboot(idx, buff, len);  // 모뎀이 리셋되었다는 부팅 메시지를 받음
             break;
             case AT_ASYNC_RECV_SMS:
                 at_sms_received(idx,buff,len);//SMS가 수시되었다는 알림을 받음
@@ -1398,12 +1271,31 @@ iCellular_t g_iCellular;
 */
 void iCellular_init(void)
 {
+  uart_config_t uart_config;
+  driver_t *cdma_power;
+  driver_t *cdma_uart;
+
+  uart_config.dataLen = UART_DATA_LEN_8;
+  uart_config.baud = 57600;
+  uart_config.parityIdx = 0;
+  uart_config.stop_bit = 0;
+
+  cdma_uart = driver_uart_open(UART_8_CDMA, &uart_config);
+  cdma_power = driver_do_open(DO_POWER_CDMA, 0);
+
+  driver_do_high(cdma_power);  // POWER ON 12V
+
+
   _iCellular = &g_iCellular;
+
+  _iCellular->io_uart = cdma_uart;
+  _iCellular->do_power = cdma_power;
 
   switch (get_config_app()->cdma_model)
   {
     case eCDMA_NTLE9607:
-         _atCmd = cmd_ntle9607;
+
+    _atCmd = cmd_ntle9607;
     _iCellular->resetDelay = 20000;
   _iCellular->init       = ntle9607_init;
   _iCellular->read_sms   = ntle9607_read_sms;
@@ -1429,7 +1321,8 @@ void iCellular_init(void)
   _iCellular->at_direct       = ntle_9607_at_direct;
   _iCellular->check_network_service = ntle9607_check_network_service;
   _iCellular->recv_bin = ntle9607_recv_bin;
-  _iCellular->get_count = get_count_ntle9607;
+  _iCellular->get_count = ntle9607_get_count;
+  _iCellular->recv_handler = NULL;
   break;
   case eCDMA_TX700:
    _atCmd = cmd_tx700;
@@ -1458,7 +1351,9 @@ void iCellular_init(void)
     _iCellular->at_direct = tx700_at_direct;
     _iCellular->check_network_service = tx700_check_network_service;
     _iCellular->recv_bin = tx700_recv_bin;
-    _iCellular->get_count = get_count_tx700;
+    _iCellular->get_count = tx700_get_count;
+    _iCellular->recv_handler = tx700_recv_handler;
+    
     break;
   }
   
@@ -1572,24 +1467,10 @@ void mdoem_status_init(void)
 
 void cellularTask_init(void)
 {
-  uart_config_t uart_config;
-  driver_t *do_cdma_power=NULL;
-  
-  uart_config.dataLen = UART_DATA_LEN_8;
-  uart_config.baud = 57600;
-  uart_config.parityIdx = 0;
-  uart_config.stop_bit = 0;
-
-
-
-  cdma_driver = driver_uart_open(UART_8_CDMA,&uart_config);
-  do_cdma_power = driver_do_open(DO_POWER_CDMA, 0);
-  
-  driver_do_high(do_cdma_power);  // POWER ON 12V
+  iCellular_init();
 
   mdoem_status_init();
   
-  iCellular_init();
 
   _modemSemId = osSemaphoreNew(1, 1, NULL); 
 

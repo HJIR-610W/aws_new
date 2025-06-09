@@ -281,7 +281,7 @@ driver_t *driver_di_open_by_name(const char *channel_name, void *opt)
                                           opt);
     
     if (driver != NULL) {
-        driver->type = DRIVER_TYPE_DI;
+       // driver->type = DRIVER_TYPE_DI;
         driver->instance_id = channel_map->logical_channel;
         driver->name = channel_map->name;
     }

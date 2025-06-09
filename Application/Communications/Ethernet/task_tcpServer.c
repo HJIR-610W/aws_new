@@ -146,6 +146,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
     }
     else // 데이터 수신 성공 (ret > 0)
     {
+      slot->status->last_recv_time = time_timestamp();
       UPDATE_CNT(slot->status->rx_cnt, 99);  // 스레드 안전한 카운터 업데이트
       len = kma_cmd_handler(p_rx_buffer, ret, tx_buffer, eREQ_SOURCE_ETH);
 
@@ -157,7 +158,8 @@ static void server_service_for_client(int sock, client_slot_t* slot)
         while (total_sent < len)
         {
           ret = send(sock, tx_buffer + total_sent, len - total_sent, 0);
-          if (ret <= 0) // send 오류 또는 연결 종료
+          slot->status->last_send_time = time_timestamp();
+          if (ret <= 0)  // send 오류 또는 연결 종료
           {
             err_code = errno;
             task_printf(

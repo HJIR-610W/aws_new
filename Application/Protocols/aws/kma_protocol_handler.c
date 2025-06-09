@@ -619,7 +619,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     DATE_TIME_BUF *pDate;
     time_t cur_t,  poll_t;
     AWS_DATA_STRUCT *p_aws = NULL;
-
+  int32_t ret;
 
     p_kma3 = pvPortMalloc(sizeof(kma_data_ex_t));
 
@@ -663,7 +663,14 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
       return 0;  //
     }
 
-    read_data_month(pDate, p_aws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
+    ret = read_data_month(pDate, p_aws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
+    
+    if(ret)
+    {
+      vPortFree(p_kma3);
+      vPortFree(p_aws);
+      return 0;
+    }
     update_old_to_kma3(p_aws, p_kma3);
     update_sensor_enable(p_kma3);
 

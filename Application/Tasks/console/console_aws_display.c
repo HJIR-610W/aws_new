@@ -157,11 +157,13 @@ int32_t print_rainInfo(uint16_t row, uint16_t column)
 
 int32_t print_ethInfo(uint16_t row, uint16_t column)
 {
-
+  DATE_TIME_BUF nt;
   eLINK_STATUS_t link_status[ETH_CLIENT_MAX];
   uint8_t tx_cnt[ETH_CLIENT_MAX];
   uint8_t rx_cnt[ETH_CLIENT_MAX];
   uint8_t line = row + 3;
+  uint32_t last_time;
+
 
   if (get_config_app()->eth_mode == eETH_MODE_CLINET)
   {
@@ -190,6 +192,32 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
     vt100_print_bar(line++, column, -DISP_WIDTH, "송신   :%d\r\n", tx_cnt[ETH_CLIENT_0]);
     vt100_print_bar(line++, column, -DISP_WIDTH, "수신   :%d\r\n", rx_cnt[ETH_CLIENT_0]);
 
+    last_time = get_tcp_system(ETH_CLIENT_0)->last_recv_time;
+    time_cvt_secTotime(last_time, &nt);
+    if (last_time == 0)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :-\r\n");
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :%02d-%02d-%02d %02d:%02d:%02d\r\n",
+                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+    }
+
+    last_time = get_tcp_system(ETH_CLIENT_0)->last_send_time;
+    time_cvt_secTotime(last_time, &nt);
+    if (last_time == 0)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :-\r\n");
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :%02d-%02d-%02d %02d:%02d:%02d\r\n",
+                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+    }
+
+
+
     link_status[ETH_CLIENT_1] = get_tcp_system(ETH_CLIENT_1)->link_status;
     tx_cnt[ETH_CLIENT_1] = get_tcp_system(ETH_CLIENT_1)->tx_cnt;
     rx_cnt[ETH_CLIENT_1] = get_tcp_system(ETH_CLIENT_1)->rx_cnt;
@@ -199,6 +227,29 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
                     get_tcp_system(ETH_CLIENT_1)->client_ip_str);
     vt100_print_bar(line++, column, -DISP_WIDTH, "송신   :%d\r\n", tx_cnt[ETH_CLIENT_1]);
     vt100_print_bar(line++, column, -DISP_WIDTH, "수신   :%d\r\n", rx_cnt[ETH_CLIENT_1]);
+    last_time = get_tcp_system(ETH_CLIENT_1)->last_recv_time;
+    time_cvt_secTotime(last_time, &nt);
+    if (last_time == 0)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :-\r\n");
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :%02d-%02d-%02d %02d:%02d:%02d\r\n",
+                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+    }
+
+    last_time = get_tcp_system(ETH_CLIENT_1)->last_send_time;
+    time_cvt_secTotime(last_time, &nt);
+    if (last_time == 0)
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :-\r\n");
+    }
+    else
+    {
+      vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :%02d-%02d-%02d %02d:%02d:%02d\r\n",
+                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+    }
     vt100_print_line(line++, column, '+', '-', DISP_WIDTH);
   }
   
@@ -284,7 +335,7 @@ int32_t print_cdmaInfo(uint16_t row, uint16_t column)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
+    vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :%02d-%02d-%02d %02d:%02d:%02d\r\n",
                     nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 
@@ -296,7 +347,7 @@ int32_t print_cdmaInfo(uint16_t row, uint16_t column)
   }
   else
   {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
+    vt100_print_bar(line++, column, -DISP_WIDTH, "T시간   :%02d-%02d-%02d %02d:%02d:%02d\r\n",
                     nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 

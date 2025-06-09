@@ -17,6 +17,8 @@ typedef struct tcp_status_s
   uint8_t rx_cnt;
   uint8_t tx_cnt;
   char *client_ip_str;
+  uint32_t last_recv_time;
+  uint32_t last_send_time;
 } tcp_status_t;
 
 #endif

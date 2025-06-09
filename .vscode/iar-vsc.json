@@ -1,0 +1,18 @@
+{
+  "workbench": {
+    "path": "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 8.4"
+  },
+  "workspace": {
+    "path": "${workspaceFolder}\\EWARM\\aws_app.eww"
+  },
+  "workspaces": {
+    "${workspaceFolder}\\EWARM\\aws_app.eww": {
+      "configs": {
+        "${workspaceFolder}\\EWARM\\aws_app.ewp": "release"
+      },
+      "selected": {
+        "path": "${workspaceFolder}\\EWARM\\aws_app.ewp"
+      }
+    }
+  }
+}

@@ -48,7 +48,7 @@ extern uint32_t is_serverErr(void);
 #define MIC_LEVEL_7 7 
 #define MIC_LEVEL_8 8
 
-cdma_cfg_t g_cdma_cfg;
+
 driver_t g_tx700_drv;
 
     /*
@@ -115,7 +115,7 @@ driver_t g_tx700_drv;
 
 
 
-uint32_t get_count_tx700(void)
+uint32_t tx700_get_count(void)
 {
     return _countof(cmd_tx700);
 }
@@ -473,7 +473,6 @@ M_RET_t tx700_check_network_service(char *msgOut,uint16_t msgSize)
 M_RET_t tx700_init(void)
 {
     M_RET_t ret = RET_OK;
-    char buff[50];
 
     tx700_modem_sends("ATE0V1\r\n");//E0 에코 금지 V1 응답은 아스키 형태
     osDelay(100);
@@ -811,7 +810,7 @@ $$BinRecv:<NUL><SOH>2<CR><LF>
 */
 
 extern void put_tcpData(uint8_t *data, uint16_t dataLen);
-void tx700_recv_bin(void *port, char *p_data, uint16_t data_len)
+void tx700_recv_bin(driver_t *port, uint8_t *p_data, uint16_t data_len)
 {
   uint16_t len;
 
@@ -826,10 +825,9 @@ void tx700_recv_bin(void *port, char *p_data, uint16_t data_len)
 
 }
 
-int32_t recv_tx700_handler(uint8_t *buffer, uint16_t buffer_size)
+int32_t tx700_recv_handler(driver_t *uart,uint8_t *buffer, uint16_t buffer_size)
 {
   uint32_t startTime = osKernelGetTickCount();
-  uint32_t timeout = 1000;  // 기본 1초
   uint16_t cnt = 0;
   uint8_t ch;
   uint8_t bin_mode = 0;
@@ -838,7 +836,7 @@ int32_t recv_tx700_handler(uint8_t *buffer, uint16_t buffer_size)
 
   while (1)
   {
-    if (driver_uart_recv(0, &ch, 1, osWaitForever) == 1)
+    if (driver_uart_recv(uart, &ch, 1, osWaitForever) == 1)
     {
       buffer[cnt++] = ch;
 
@@ -879,6 +877,3 @@ int32_t recv_tx700_handler(uint8_t *buffer, uint16_t buffer_size)
 
 
 }
-
-
-

@@ -14,6 +14,7 @@ typedef struct driver_s
   void* cfg;              //driver 자체 속성
   bool opened;            //driver 초기화 여부 
   void* sem;              //공유자원 충돌
+  uint8_t instance_id;
   struct driver_s* handle;//종속된 driver
 }driver_t;
 
