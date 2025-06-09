@@ -45,7 +45,7 @@ typedef struct iCellular
 {
  
     driver_t *io_uart;
-    driver_t *do_power;
+
     uint32_t resetDelay;  // 모뎀 리셋 후 지연시간
 
     /**

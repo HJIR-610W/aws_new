@@ -40,6 +40,7 @@
 #include "test\task_test.h"
 #include "user_heap.h"
 #include "bsp.h"
+#include "task_wdt.h"
 
 const osThreadAttr_t kStartTask_attributes = {
     .name = "startTask",
@@ -87,7 +88,7 @@ void startTask(void *arg)
   }
 
   consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화 
-
+  wdtTask_init();
   mcu_interrupt_init();  // 최우선 실행
 
   bsp_init();

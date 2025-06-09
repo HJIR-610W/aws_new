@@ -20,6 +20,7 @@
 #include "task_logging.h"
 #include "update_fw.h"
 #include "util_time.h"
+#include "task_wdt.h"
 
 #include "bsp.h"
 typedef enum{
@@ -1025,9 +1026,12 @@ void modemAtTask(void  *argument)
   int32_t len;
   eAT_COMMAND_t at_cmd;
   uint32_t cmd_count = _iCellular->get_count();
-
-  while(1)
+  int32_t wdt_number;
+  wdt_number =  wdt_task_register(kAtTask_attributes.name,600000);
+  
+  while (1)
   {
+
    len = _iCellular->recv_handler(_iCellular->io_uart,(uint8_t *)buff,sizeof(buff));
 
     if(len<=0||len==UART_ERR_SIZE || len == UART_ERR_TIMEOUT)
@@ -1035,6 +1039,8 @@ void modemAtTask(void  *argument)
       continue;
     }
 
+    wdt_task_feed(wdt_number);
+    
     for (uint32_t idx = 0; idx < cmd_count; idx++)
     {
       if(strncmp((char *)buff,s_p_atCmd[idx].cmdStr,strlen(s_p_atCmd[idx].cmdStr))==0)

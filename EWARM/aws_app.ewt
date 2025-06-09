@@ -1826,6 +1826,9 @@
             <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_system.c</name>
             </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_wdt.c</name>
+            </file>
         </group>
         <group>
             <name>Test</name>

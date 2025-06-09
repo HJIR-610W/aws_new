@@ -18,7 +18,7 @@ tcp_status_t g_tcp_client_status;
 osThreadId_t g_tcpClientTaskId;
 
 const osThreadAttr_t tcpClientTask_attributes = {
-  .name = "tcpClientTask",
+  .name = "tcp_client",
   .stack_size = 4096,
   .priority = (osPriority_t) osPriorityNormal,
 };
@@ -54,7 +54,7 @@ static void tcp_client_service(int sock)
 
   if (set_recv_timeout(sock, CLIENT_CONNECT_TIMEOUT_MS) < 0)
   {
-    io_printf("타임아웃 설정 실패\r\n");
+    task_printf("타임아웃 설정 실패\r\n");
     return;
   }
 
@@ -71,7 +71,7 @@ static void tcp_client_service(int sock)
       }
       else
       {
-        io_printf("recv error on socket %d, errno: %d\r\n", sock, err_code);
+        task_printf("recv error on socket %d, errno: %d\r\n", sock, err_code);
         break;
       }
 
@@ -79,13 +79,14 @@ static void tcp_client_service(int sock)
     }
     else if(ret ==0)
     {
-      io_printf("Client: Connection closed by peer on socket %d\r\n", sock);
+      task_printf("Client: Connection closed by peer on socket %d\r\n", sock);
       break;  
     }
     else
     {
      
       UPDATE_CNT(g_tcp_client_status.rx_cnt, 99);
+      g_tcp_client_status.last_recv_time = time_timestamp();
       len = kma_cmd_handler(rbuffer, ret, tx_buffer, eREQ_SOURCE_ETH);
       if (len > 0)
       {
@@ -97,13 +98,14 @@ static void tcp_client_service(int sock)
           ret = send(sock, tx_buffer+total, len-total, 0);
           if (ret <= 0)
           {
-            io_printf("전송 실패 errno=%d\r\n", errno);
+            task_printf("전송 실패 errno=%d\r\n", errno);
             send_error = true;
             break;
           }
           else
           {
             total += ret;
+            g_tcp_client_status.last_send_time = time_timestamp();
             UPDATE_CNT(g_tcp_client_status.tx_cnt, 99);
             if (get_firmware_update())
             {
@@ -156,17 +158,17 @@ void tcpClientTask(void *arg)
         server_addr.sin_port = htons(config->eth_server_port);
         server_addr.sin_addr.s_addr = inet_addr(server_ip); // example: "192.168.0.10"
 
-        io_printf("서버 연결 시작 %s:%d...\r\n", server_ip, config->eth_server_port);
+        task_printf("서버 연결 시작 %s:%d...\r\n", server_ip, config->eth_server_port);
 
         if (connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
         {
-            io_printf("연결 실패 재시도\r\n");
-            closesocket(sock);
-            osDelay(SERVER_RETRY_INTERVAL_MS);
-            continue;
+          task_printf("연결 실패 재시도\r\n");
+          closesocket(sock);
+          osDelay(SERVER_RETRY_INTERVAL_MS);
+          continue;
         }
 
-        io_printf("연결 성공\r\n");
+        task_printf("연결 성공\r\n");
         g_tcp_client_status.link_status = eLINK_UP;
         tcp_client_service(sock);
         g_tcp_client_status.link_status = eLINK_IDLE;
