@@ -21,6 +21,7 @@
 #include "update_fw.h"
 #include "util_time.h"
 
+#include "bsp.h"
 typedef enum{
 	ePOWER_RESET,
 	eCONNECT_TCP_WDT,
@@ -1111,24 +1112,23 @@ void modemAtTask(void  *argument)
 void iCellular_init(void)
 {
   uart_config_t uart_config;
-  driver_t *cdma_power;
+
   driver_t *cdma_uart;
 
+ 
+  
   uart_config.dataLen = UART_DATA_LEN_8;
   uart_config.baud = 57600;
   uart_config.parityIdx = 0;
   uart_config.stop_bit = 0;
 
   cdma_uart = driver_uart_open(UART_8_CDMA, &uart_config);
-  cdma_power = driver_do_open(DO_POWER_CDMA, 0);
-
-  driver_do_high(cdma_power);  // POWER ON 12V
-
 
   _iCellular = &g_iCellular;
 
+
   _iCellular->io_uart = cdma_uart;
-  _iCellular->do_power = cdma_power;
+
 
   switch (get_config_app()->cdma_model)
   {
