@@ -76,10 +76,10 @@
 #define USARTx_IRQHandler                USART3_IRQHandler
 
 /* Definition for USARTx's DMA: used for transmitting data over Tx pin */
-#define USARTx_TX_DMA_CHANNEL            DMA_CHANNEL_4
-#define USARTx_TX_DMA_STREAM             DMA1_Stream3  
-#define USARTx_DMA_TX_IRQHandler         DMA1_Stream3_IRQHandler
-#define USARTx_DMA_TX_IRQn               DMA1_Stream3_IRQn
+
+
+
+
 
 /* Definition for TIMx clock resources */
 #define TIMx                             TIM3

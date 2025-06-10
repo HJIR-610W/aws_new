@@ -26,6 +26,7 @@
 #include "usbd_core.h"
 
 #include "usbd_cdc.h"
+#include "system_err.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -41,7 +42,7 @@
 /* USER CODE END PV */
 
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
-void Error_Handler(void);
+
 
 /* External functions --------------------------------------------------------*/
 void SystemClock_Config(void);
@@ -247,7 +248,7 @@ void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd)
   }
   else
   {
-    Error_Handler();
+    ERROR_PRINTF("usb");
   }
     /* Set Speed. */
   USBD_LL_SetSpeed((USBD_HandleTypeDef*)hpcd->pData, speed);
@@ -386,7 +387,7 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   hpcd_USB_OTG_FS.Init.use_dedicated_ep1 = DISABLE;
   if (HAL_PCD_Init(&hpcd_USB_OTG_FS) != HAL_OK)
   {
-    Error_Handler( );
+    ERROR_PRINTF("usb");
   }
 
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)

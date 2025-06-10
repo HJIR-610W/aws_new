@@ -322,7 +322,7 @@ static void low_level_init(struct netif *netif)
   }
   else
   {
-        Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("eth");
   }
 #endif /* LWIP_ARP || LWIP_ETHERNET */
 

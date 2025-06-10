@@ -167,7 +167,7 @@ int32_t mcu_pin(p_shell_context_t ctx, int32_t argc, char **argv)
   return 0;
 }
 
-int32_t pcb_pin(p_shell_context_t ctx, int32_t argc, char **argv)
+int32_t pcb_pin(void)
 {
   GPIO_TypeDef *ports[] = {GPIOA, GPIOB, GPIOC, GPIOD, GPIOE,
                            GPIOF, GPIOG, GPIOH, GPIOI};

@@ -45,7 +45,7 @@ void MX_ADC1_Init(void)
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
-          Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("adc");
   }
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.

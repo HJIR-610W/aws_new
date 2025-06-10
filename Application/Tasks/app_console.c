@@ -9,7 +9,7 @@
 
 #include "app_charger.h"
 #include "app_dataLogging.h"
-
+#include "app_console_test.h"
 #include "app_flash.h"
 #include "app_file.h"
 #include "app_logging.h"
@@ -3400,6 +3400,7 @@ int32_t print_menu_developer(p_shell_context_t ctx)
   ctx->printf("%2d.파일다운 상태 정보 \r\n", cnt++);
   ctx->printf("%2d.TASK 출력 \r\n", cnt++);
   ctx->printf("%2d.TASK 출력 강제 \r\n", cnt++);
+  ctx->printf("%2d.PCB 핀 정보\r\n", cnt++);
   return cnt;
 }
 
@@ -3482,6 +3483,12 @@ int32_t menu_task_print_force(p_shell_context_t ctc)
     return EXIT_BACK;
 }
 
+int32_t menu_task_pcb(p_shell_context_t ctx)
+{
+  pcb_pin();
+  
+  return 0;
+}
   int32_t menu_developer(p_shell_context_t ctx)
   {
     int32_t cnt;
@@ -3492,7 +3499,8 @@ int32_t menu_task_print_force(p_shell_context_t ctc)
                               menu_task_info,
                               menu_update_info,
                               menu_task_print,
-                              menu_task_print_force};
+                              menu_task_print_force,
+                              menu_task_pcb};
     do
     {
       cnt = select_indexFromList(ctx, NULL, print_menu_developer, 0, false);

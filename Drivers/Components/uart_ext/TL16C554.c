@@ -84,7 +84,7 @@ void irq_INTA_5(void *arg);
 void irq_INTB_6(void *arg);
 void irq_INTC_7(void *arg);
 void irq_INTD_8(void *arg);
-void tl16c554_DMA_init(void);
+
 
 int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
                            uint32_t timeout1_ms, uint32_t timeout2_ms);
@@ -660,35 +660,7 @@ void irq_INTD_8(void *arg) { irq_tl16c554((driver_t *)arg); }
 // DMA 핸들러 선언
 DMA_HandleTypeDef hdma_memtomem;
 
-void tl16c554_DMA_init(void)
-{
-  __HAL_RCC_DMA2_CLK_ENABLE();  // DMA2 클럭 활성화
 
-  // DMA 핸들러 설정
-  hdma_memtomem.Instance = DMA2_Stream0;                // DMA2의 Stream 0 사용
-  hdma_memtomem.Init.Channel = DMA_CHANNEL_0;           // DMA 채널 0
-  hdma_memtomem.Init.Direction = DMA_MEMORY_TO_MEMORY;  // 메모리에서 메모리로 전송
-  hdma_memtomem.Init.PeriphInc = DMA_PINC_ENABLE;       // 주변 장치 주소 증가
-  hdma_memtomem.Init.MemInc = DMA_MINC_ENABLE;          // 메모리 주소 증가
-  hdma_memtomem.Init.PeriphDataAlignment =
-      DMA_PDATAALIGN_BYTE;                                    // 주변 장치 데이터 정렬 (바이트 단위)
-  hdma_memtomem.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;  // 메모리 데이터 정렬 (바이트 단위)
-  hdma_memtomem.Init.Mode = DMA_NORMAL;                       // 단일 전송 모드
-  hdma_memtomem.Init.Priority = DMA_PRIORITY_LOW;             // 낮은 우선순위
-  hdma_memtomem.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         // FIFO 비활성화
-
-  // DMA 초기화
-  if (HAL_DMA_Init(&hdma_memtomem) != HAL_OK)
-  {
-    // 초기화 실패 처리
-    io_printf("DMA Initialization Failed\n");
-    while (1);
-  }
-
-  // DMA 전송 완료 인터럽트 활성화
-  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
-}
 
 // DMA 전송 완료 콜백 함수
 void HAL_DMA_XferCpltCallback(DMA_HandleTypeDef *hdma)

@@ -11,7 +11,6 @@
 
 void Error_Handler(const char *file,const int32_t line)
 {
- 
   io_printf("%s,%d\r\n",file,line);
 
 }

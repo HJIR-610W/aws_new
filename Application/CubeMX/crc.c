@@ -22,7 +22,7 @@ void MX_CRC_Init(void)
   hcrc.Instance = CRC;
   if (HAL_CRC_Init(&hcrc) != HAL_OK)
   {
-    Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("MX_CRC_Init");
   }
   /* USER CODE BEGIN CRC_Init 2 */
 

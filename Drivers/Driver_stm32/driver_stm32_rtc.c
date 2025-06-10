@@ -42,7 +42,7 @@ void stm32_rtc_init(void)
   if(HAL_RTC_Init(&RtcHandle) != HAL_OK)
   {
     /* Initialization Error */
-    Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("rtc");
   }
 }
 
@@ -56,8 +56,8 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef *hrtc)
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   if(HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-  { 
-    Error_Handler(__FILE__,__LINE__);
+  {
+    ERROR_PRINTF("rtc");
   }
 
   

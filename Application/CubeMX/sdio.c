@@ -130,9 +130,8 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
 
     HAL_NVIC_SetPriority(SDIO_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(SDIO_IRQn);
-  
-  
-  
+
+    __HAL_RCC_DMA2_CLK_ENABLE();
 
     /* SDIO DMA Init */
     /* SDIO_RX Init */
@@ -151,7 +150,7 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
     hdma_sdio_rx.Init.PeriphBurst = DMA_PBURST_INC4;
     if (HAL_DMA_Init(&hdma_sdio_rx) != HAL_OK)
     {
-          Error_Handler(__FILE__,__LINE__);
+      ERROR_PRINTF("SDIO");
     }
 
     __HAL_LINKDMA(sdHandle,hdmarx,hdma_sdio_rx);
@@ -172,7 +171,7 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
     hdma_sdio_tx.Init.PeriphBurst = DMA_PBURST_INC4;
     if (HAL_DMA_Init(&hdma_sdio_tx) != HAL_OK)
     {
-          Error_Handler(__FILE__,__LINE__);
+      ERROR_PRINTF("SDIO DMA");
     }
 
     __HAL_LINKDMA(sdHandle,hdmatx,hdma_sdio_tx);
@@ -190,36 +189,43 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
   }
 }
 
-void HAL_SD_MspDeInit(SD_HandleTypeDef* sdHandle)
-{
-
-  if(sdHandle->Instance==SDIO)
+void HAL_SD_MspDeInit(SD_HandleTypeDef * sdHandle)
   {
-  /* USER CODE BEGIN SDIO_MspDeInit 0 */
+    if (sdHandle->Instance == SDIO)
+    {
+     __HAL_RCC_SDIO_CLK_DISABLE();
 
-  /* USER CODE END SDIO_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_SDIO_CLK_DISABLE();
 
-    /**SDIO GPIO Configuration
-    PC8     ------> SDIO_D0
-    PC9     ------> SDIO_D1
-    PC10     ------> SDIO_D2
-    PC11     ------> SDIO_D3
-    PC12     ------> SDIO_CK
-    PD2     ------> SDIO_CMD
-    */
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11
-                          |GPIO_PIN_12);
+      HAL_GPIO_DeInit(GPIOC, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12);
 
-    HAL_GPIO_DeInit(GPIOD, GPIO_PIN_2);
+      HAL_GPIO_DeInit(GPIOD, GPIO_PIN_2);
 
-  /* USER CODE BEGIN SDIO_MspDeInit 1 */
 
-  /* USER CODE END SDIO_MspDeInit 1 */
+      HAL_DMA_DeInit(sdHandle->hdmarx);
+      HAL_DMA_DeInit(sdHandle->hdmatx);
+
+
+      HAL_NVIC_DisableIRQ(SDIO_IRQn);
+      HAL_NVIC_DisableIRQ(DMA2_Stream3_IRQn);
+      HAL_NVIC_DisableIRQ(DMA2_Stream6_IRQn);
+
+
+    }
   }
+void hal_sd_init(void)
+{
+  HAL_SD_MspInit(&hsd);
 }
 
-/* USER CODE BEGIN 1 */
+void hal_sd_deinit(void)
+{
 
-/* USER CODE END 1 */
+  __HAL_RCC_SDIO_CLK_DISABLE();//클럭만 disable해도 sdio 레지스터 0이된, 이상함.
+  __HAL_RCC_SDIO_FORCE_RESET();
+  HAL_Delay(1);  // 최소 지연 필요
+  __HAL_RCC_SDIO_RELEASE_RESET();
+
+  __HAL_RCC_SDIO_CLK_ENABLE();
+  HAL_SD_MspDeInit(&hsd);
+}
+

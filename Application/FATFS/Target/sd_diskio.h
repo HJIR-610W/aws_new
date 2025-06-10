@@ -34,8 +34,6 @@
 /* Exported functions ------------------------------------------------------- */
 extern const Diskio_drvTypeDef  SD_Driver;
 
-/* USER CODE BEGIN lastSection */
-/* can be used to modify / undefine previous code or add new definitions */
-/* USER CODE END lastSection */
+extern uint8_t g_sd_diskio_error;
 
 #endif /* __SD_DISKIO_H */

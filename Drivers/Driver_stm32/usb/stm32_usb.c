@@ -18,25 +18,25 @@ void usb_start(void)
     /* Init Device Library */
   if(USBD_Init(&USBD_Device, &FS_Desc, 0)!= USBD_OK)
   {
-    Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("usb");
   }
   
   /* Add Supported Class */
   if(USBD_RegisterClass(&USBD_Device, USBD_CDC_CLASS)!= USBD_OK)
   {
-    Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("usb");
   }
   
   /* Add CDC Interface Class */
   if(USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_fops)!= USBD_OK)
   {
-    Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("usb");
   }
   
   /* Start Device Process */
   if(USBD_Start(&USBD_Device) != USBD_OK)
   {
-    Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("usb");
   }
 }
 

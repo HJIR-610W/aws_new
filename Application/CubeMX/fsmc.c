@@ -71,7 +71,7 @@ void MX_FSMC_Init(void)
 
   if (HAL_SRAM_Init(&hsram1, &Timing, NULL) != HAL_OK)
   {
-        Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("fsmc");
   }
 #endif
 
@@ -118,7 +118,7 @@ void MX_FSMC_Init(void)
 
   if (HAL_SRAM_Init(&hsram2, &Timing, &ExtTiming) != HAL_OK)
   {
-        Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("fsmc");
   }
 
 

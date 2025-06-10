@@ -40,10 +40,10 @@ driver_t *driver_uart_open(int32_t num, void *opt)
       driver = tls16c554_open(TL16C554_UART_8_RS232_D, opt);
       break;
     case UART_8_CDMA:
-      driver = stm32_uart_open(STM32_UART_1_CDMA, opt);
+      driver = stm32_uart_open(STM32_UART_0_CDMA, opt);
       break;
     case UART_9_SDI:
-      driver = stm32_uart_open(STM32_UART_2_SDI, opt);
+      driver = stm32_uart_open(STM32_UART_1_SDI, opt);
       break;
     case UART_10_CDC:
       driver = stm32_cdc_open(STM32_CDC, opt);

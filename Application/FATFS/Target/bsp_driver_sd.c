@@ -55,7 +55,9 @@ __weak uint8_t BSP_SD_Init(void)
     return MSD_ERROR;
   }
   /* HAL SD initialization */
-  sd_state = HAL_SD_Init(&hsd);
+  sd_state = HAL_SD_Init(&hsd);//여기서 enale 명령어 실행시 타임아웃 발생하는 경우 존재
+ 
+
   /* Configure SD Bus width (4 bits mode selected) */
   if (sd_state == MSD_OK)
   {

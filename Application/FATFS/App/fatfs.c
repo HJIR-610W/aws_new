@@ -5,7 +5,7 @@
 #include "dev_io.h"
 
 #include "util_time.h"
-
+#include "system_err.h"
 uint8_t retSD;    /* Return value for SD */
 char SDPath[4];   /* SD logical drive path */
 FATFS SDFatFS;    /* File system object for SD logical drive */
@@ -21,22 +21,37 @@ FIL USERFile;       /* File object for USER */
 
 void MX_FATFS_Init(void)
 {
-    FRESULT res;  
-    
-
+  FRESULT res;  
+  
   retSD = FATFS_LinkDriver(&SD_Driver, SDPath);
 
-  retUSER = FATFS_LinkDriver(&USER_Driver, USERPath);
-
-
-    res = f_mount(&SDFatFS, (TCHAR const*)SDPath, 1);
-    if (res != FR_OK)
-    {
-        io_printf("Failed to mount SD card. Error: %d\n", res);
-    }
+  res = f_mount(&SDFatFS, (TCHAR const*)SDPath, 1);
+  if (res != FR_OK)
+  {
+    ERROR_PRINTF("SD card 마운트 실패[%s]\n", get_fresult(res));
+  }
+  else
+  {
+    ERROR_PRINTF("SD card 마운트 성공\n");
+  }
 }
 
+void MX_FATFS_DeInit(void)
+{
+  FRESULT res;
 
+  // SD 드라이브 마운트 해제
+  res = f_mount(NULL, (TCHAR const *)SDPath, 1);
+  if (res != FR_OK)
+  {
+    ERROR_PRINTF("Failed to unmount SD card. Error: %d\r\n", res);
+  }
+
+
+  // 드라이버 언링크
+  FATFS_UnLinkDriver(SDPath);
+
+}
 
 /**
   * @brief  Gets Time from RTC

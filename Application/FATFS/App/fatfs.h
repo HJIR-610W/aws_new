@@ -42,7 +42,7 @@ extern FATFS USERFatFS; /* File system object for USER logical drive */
 extern FIL USERFile; /* File object for USER */
 
 void MX_FATFS_Init(void);
-
+void MX_FATFS_DeInit(void);
 /* USER CODE BEGIN Prototypes */
 
 /* USER CODE END Prototypes */

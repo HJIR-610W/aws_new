@@ -13,6 +13,9 @@
 #include "old_aws_define.h"
 #include "util_time.h"
 #include "dev_io.h"
+#include "system_err.h"
+#include "fatfs.h"
+#include "os_user_def.h"
 typedef enum logging_cmd_e
 {
   eLOGGING_LOG,      // 로깅 task로 로그를 전송 할 때 사용
@@ -199,11 +202,16 @@ void loggingTask(void *arg)
 
   uint32_t offset;
   uint16_t sunshine;
+
+
   while (1)
   {
     // 메시지 큐에서 데이터 수신
     if (osMessageQueueGet(g_loggingQueue, &logging, NULL, osWaitForever) == osOK)
     {
+
+
+      
         switch(logging.cmd)
         {
           case eLOGGING_LOG:

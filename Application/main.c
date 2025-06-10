@@ -9,7 +9,7 @@
 #include "task_start.h"
 #include "test_sram.h"
 #include "user_heap.h"
-
+#include "system_err.h"
 extern void manual_bss_init(void);
 
 /*
@@ -41,7 +41,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLQ = 7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    Error_Handler(__FILE__, __LINE__);
+    ERROR_PRINTF("SystemClock_Config");
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
@@ -55,7 +55,7 @@ void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
-    Error_Handler(__FILE__, __LINE__);
+    ERROR_PRINTF("SystemClock_Config");
   }
 }
 

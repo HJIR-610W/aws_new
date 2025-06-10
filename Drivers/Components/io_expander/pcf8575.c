@@ -66,7 +66,7 @@ driver_t *pcf8575_open(uint32_t num,void *opt)
 
       if(g_pcf8575.sem ==NULL)
       {
-        Error_Handler(__FILE__,__LINE__);
+    ERROR_PRINTF("SystemClock_Config");
       }
     }
 #endif

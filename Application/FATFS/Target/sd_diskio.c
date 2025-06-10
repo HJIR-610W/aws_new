@@ -130,11 +130,7 @@ const Diskio_drvTypeDef  SD_Driver =
 #endif /* _USE_IOCTL == 1 */
 };
 
-/* USER CODE BEGIN beforeFunctionSection */
-/* can be used to modify / undefine following code or add new code */
-/* USER CODE END beforeFunctionSection */
-
-/* Private functions ---------------------------------------------------------*/
+uint8_t g_sd_diskio_error=0;
 
 static int SD_CheckStatusWithTimeout(uint32_t timeout)
 {
@@ -269,11 +265,14 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
 
     if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0)
     {
+      g_sd_diskio_error = 1;
+
       return res;
     }
 
+
 #if defined(ENABLE_SCRATCH_BUFFER)
-  if (!((uint32_t)buff & 0x3))
+        if (!((uint32_t)buff & 0x3))
   {
 #endif
     /* Fast path cause destination buffer is correctly aligned */
@@ -395,7 +394,10 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
     }
 #endif
 
-
+  if(res !=RES_OK)
+  {
+    g_sd_diskio_error = 2;
+  }
   return res;
 }
 
@@ -434,6 +436,7 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
 
   if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0)
   {
+    g_sd_diskio_error = 3;
     return res;
   }
 
@@ -563,7 +566,10 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
 
   }
 #endif
-
+  if(res != RES_OK)
+  {
+    g_sd_diskio_error = 4;
+  }
   return res;
 }
  #endif /* _USE_WRITE == 1 */

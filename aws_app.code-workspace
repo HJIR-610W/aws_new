@@ -138,7 +138,9 @@
 			"bsp.h": "c",
 			"util_time.h": "c",
 			"util_memory.h": "c",
-			"util_crc16_ccitt.h": "c"
+			"util_crc16_ccitt.h": "c",
+			"fatfs_platform.h": "c",
+			"freertos.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

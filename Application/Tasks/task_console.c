@@ -34,18 +34,10 @@ static const shell_command_context_t printCmd = { "menu",
 
 
 
-static const shell_command_context_t diCmd = {"di",
-                                              "\r\n\"di\"\r\n",
-                                              print_di, 0};
 
-static const shell_command_context_t pcbCmd = { "pcb",
-                                                  "\r\n\"pcb\"\r\n" ,
-                                                   pcb_pin,0 };
-static const shell_command_context_t doutCmd = {"do",
-                                        "\r\n\"do arg1 arg2\"\r\n"
-                                        "arg1: pin\r\n"
-                                        "arg2: 0|1\r\n",
-                                         ctrl_do, 2};
+
+
+
 
 static const shell_command_context_t testCmd = {"test", "\r\n\"test\"\r\n", test_pcb, 0};
 
@@ -124,10 +116,6 @@ void consoleTask(void *arg)
   console_scanf_init(&user_context);
 
   SHELL_RegisterCommand(&printCmd);
-
-  SHELL_RegisterCommand(&diCmd);
-  SHELL_RegisterCommand(&pcbCmd);
-  SHELL_RegisterCommand(&doutCmd);
   SHELL_RegisterCommand(&testCmd);
   SHELL_Main(&user_context);
 
