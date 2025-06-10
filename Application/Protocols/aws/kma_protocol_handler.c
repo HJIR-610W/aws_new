@@ -1,25 +1,26 @@
 
+#include "kma_protocol_handler.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "Protocols\divas\divas_protocol_handler.h"
+#include "app_dataLogging.h"
 #include "app_version.h"
 #include "aws_data.h"
+#include "bsp.h"
 #include "config_app.h"
-#include "util_crc16_ccitt.h"
+#include "dev_io.h"
+#include "kma2.h"
 #include "kma3.h"
+#include "kma_define.h"
+#include "old_aws_define.h"
+#include "parse_aws.h"
+#include "user_heap.h"
+#include "util_crc16_ccitt.h"
 #include "util_memory.h"
 #include "util_time.h"
-#include "kma_define.h"
-#include "kma_protocol_handler.h"
-#include "bsp.h"
-#include "kma2.h"
-#include "app_dataLogging.h"
-#include "old_aws_define.h"
-#include "Protocols\divas\divas_protocol_handler.h"
-#include "user_heap.h"
-#include "parse_aws.h"
-#include "dev_io.h"
 
 #define KMA_HEADER_START 0xFAFB
 #define KMA_HEADER_END 0xFFFE

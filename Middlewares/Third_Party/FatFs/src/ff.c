@@ -6138,3 +6138,35 @@ int f_printf (
 
 #endif /* !_FS_READONLY */
 #endif /* _USE_STRFUNC */
+
+
+static const char *fresult_str[] = {
+  "Succeeded",                                  // FR_OK = 0
+  "A hard error occurred in the disk I/O layer",// FR_DISK_ERR = 1
+  "Assertion failed",                           // FR_INT_ERR = 2
+  "The physical drive cannot work",             // FR_NOT_READY = 3
+  "Could not find the file",                    // FR_NO_FILE = 4
+  "Could not find the path",                    // FR_NO_PATH = 5
+  "The path name format is invalid",            // FR_INVALID_NAME = 6
+  "Access denied (access prohibited or dir full)", // FR_DENIED = 7
+  "Access denied (object already exists)",      // FR_EXIST = 8
+  "The file/directory object is invalid",       // FR_INVALID_OBJECT = 9
+  "The physical drive is write protected",      // FR_WRITE_PROTECTED = 10
+  "The logical drive number is invalid",        // FR_INVALID_DRIVE = 11
+  "The volume has no work area",                // FR_NOT_ENABLED = 12
+  "There is no valid FAT volume",               // FR_NO_FILESYSTEM = 13
+  "f_mkfs aborted due to a problem",            // FR_MKFS_ABORTED = 14
+  "Timeout while accessing volume",             // FR_TIMEOUT = 15
+  "Operation rejected by file sharing policy",  // FR_LOCKED = 16
+  "LFN working buffer could not be allocated",  // FR_NOT_ENOUGH_CORE = 17
+  "Too many open files",                        // FR_TOO_MANY_OPEN_FILES = 18
+  "Given parameter is invalid"                  // FR_INVALID_PARAMETER = 19
+};
+
+const char *get_fresult(int index)
+{
+  if (index < 0 || index >= (int)(sizeof(fresult_str) / sizeof(fresult_str[0])))
+    return "Unknown FRESULT";
+
+  return fresult_str[index];
+}

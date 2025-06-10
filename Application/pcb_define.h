@@ -5,8 +5,6 @@
 
 
 #include "stm32f4xx_hal.h"
-
-
 #include "os_user_def.h"
 
 

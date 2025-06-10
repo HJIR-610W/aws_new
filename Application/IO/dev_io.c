@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "tlsf.h"
 #include "app_rs232.h"
 #include "app_rs485.h"
 #include "driver_485.h"
@@ -14,8 +13,11 @@
 #include "pcb_define.h"
 #include "stm32f4xx_hal.h"
 #include "system_err.h"
+#include "FreeRTOS.h"  // pvPortMalloc, vPortFree 사용 시 필요
 #include "terminal.h"
+#include "tlsf.h"
 #include "user_heap.h"
+#include "util_time.h"
 
 static driver_t *debug_uart = NULL;
 ;
@@ -162,7 +164,7 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
   char *temp = NULL;
   va_list ap_copy;
   int32_t len;
-
+  int32_t total_len;
 
   va_copy(ap_copy, ap);
   len = vsnprintf_s(buff, sizeof(buff), pFmt, ap_copy);
@@ -171,10 +173,11 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
 #if PRINTF_HEAP_USE
   if (len > (sizeof(buff) - 1))  // 1바이트 초과면 메모리 동적 할당
   {
-    temp = aws_malloc(len + 1);  // null 포함
+    total_len = len + 1 ;  // null
+    temp = pvPortMalloc(total_len);
     if (temp)
     {
-      vsnprintf_s(temp, len + 1, pFmt, ap);
+      vsnprintf_s(temp, total_len, pFmt, ap);
       ptr = temp;
     }
     else
@@ -204,7 +207,7 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
 #if PRINTF_HEAP_USE
   if (temp)
   {
-    aws_free(temp);
+    vPortFree(temp);
   }
 #endif
 

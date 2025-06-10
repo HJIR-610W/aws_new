@@ -282,9 +282,11 @@ int __isatty(int file) {
 void __exit (int status)
 {
 
+  
   vTaskSuspendAll();
   __disable_irq();
-	while (1)
+  HAL_NVIC_SystemReset();
+  while (1)
   {
     
   }

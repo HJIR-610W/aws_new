@@ -34,6 +34,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "bsp_driver_sd.h"
 
+#include "system_err.h"
 /* Extern variables ---------------------------------------------------------*/
 
 extern SD_HandleTypeDef hsd;
@@ -128,9 +129,12 @@ __weak uint8_t BSP_SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t Nu
 __weak uint8_t BSP_SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks, uint32_t Timeout)
 {
   uint8_t sd_state = MSD_OK;
+  HAL_StatusTypeDef status;
+  status = HAL_SD_WriteBlocks(&hsd, (uint8_t *)pData, WriteAddr, NumOfBlocks, Timeout);
 
-  if (HAL_SD_WriteBlocks(&hsd, (uint8_t *)pData, WriteAddr, NumOfBlocks, Timeout) != HAL_OK)
+  if (status != HAL_OK)
   {
+
     sd_state = MSD_ERROR;
   }
 
@@ -150,10 +154,14 @@ __weak uint8_t BSP_SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t 
 __weak uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks)
 {
   uint8_t sd_state = MSD_OK;
+  HAL_StatusTypeDef status;
 
-  /* Read block(s) in DMA transfer mode */
-  if (HAL_SD_ReadBlocks_DMA(&hsd, (uint8_t *)pData, ReadAddr, NumOfBlocks) != HAL_OK)
+      /* Read block(s) in DMA transfer mode */
+  status = HAL_SD_ReadBlocks_DMA(&hsd, (uint8_t *)pData, ReadAddr, NumOfBlocks);
+
+  if(status != HAL_OK)
   {
+
     sd_state = MSD_ERROR;
   }
 

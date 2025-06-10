@@ -63,69 +63,66 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 
+      
     
-    
-    
-    
-    
-    __HAL_RCC_DMA2_CLK_ENABLE();  
-    
-    
-    hdma_tx.Instance                 = DMA2_Stream3;
-  
-  hdma_tx.Init.Channel             = DMA_CHANNEL_3;
-  hdma_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
-  hdma_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
-  hdma_tx.Init.MemInc              = DMA_MINC_ENABLE;
-  hdma_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-  hdma_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-  hdma_tx.Init.Mode                = DMA_NORMAL;
-  hdma_tx.Init.Priority            = DMA_PRIORITY_LOW;
-  hdma_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;         
-  hdma_tx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
-  hdma_tx.Init.MemBurst            = DMA_MBURST_INC4;
-  hdma_tx.Init.PeriphBurst         = DMA_PBURST_INC4;
-  
-  HAL_DMA_Init(&hdma_tx);   
-  
-  /* Associate the initialized DMA handle to the the SPI handle */
-  __HAL_LINKDMA(spiHandle, hdmatx, hdma_tx);
-    
-  /* Configure the DMA handler for Transmission process */
-  hdma_rx.Instance                 = DMA2_Stream0;
-  
-  hdma_rx.Init.Channel             = DMA_CHANNEL_3;
-  hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
-  hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
-  hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
-  hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-  hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-  hdma_rx.Init.Mode                = DMA_NORMAL;
-  hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
-  hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;         
-  hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
-  hdma_rx.Init.MemBurst            = DMA_MBURST_INC4;
-  hdma_rx.Init.PeriphBurst         = DMA_PBURST_INC4; 
 
-  HAL_DMA_Init(&hdma_rx);
+    __HAL_RCC_DMA2_CLK_ENABLE();
+
+    hdma_tx.Instance = DMA2_Stream5;
+
+    hdma_tx.Init.Channel = DMA_CHANNEL_3;
+    hdma_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    hdma_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_tx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_tx.Init.Mode = DMA_NORMAL;
+    hdma_tx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    hdma_tx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+    hdma_tx.Init.MemBurst = DMA_MBURST_INC4;
+    hdma_tx.Init.PeriphBurst = DMA_PBURST_INC4;
+
+    HAL_DMA_Init(&hdma_tx);
+
+    /* Associate the initialized DMA handle to the the SPI handle */
+    __HAL_LINKDMA(spiHandle, hdmatx, hdma_tx);
+
+    /* Configure the DMA handler for Transmission process */
+    hdma_rx.Instance = DMA2_Stream0;
+
+    hdma_rx.Init.Channel = DMA_CHANNEL_3;
+    hdma_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_rx.Init.Mode = DMA_NORMAL;
+    hdma_rx.Init.Priority = DMA_PRIORITY_HIGH;
+    hdma_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    hdma_rx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+    hdma_rx.Init.MemBurst = DMA_MBURST_INC4;
+    hdma_rx.Init.PeriphBurst = DMA_PBURST_INC4;
+
+    HAL_DMA_Init(&hdma_rx);
+
+    /* Associate the initialized DMA handle to the the SPI handle */
+    __HAL_LINKDMA(spiHandle, hdmarx, hdma_rx);
+
+    /*##-4- Configure the NVIC for DMA #########################################*/
+    /* NVIC configuration for DMA transfer complete interrupt (SPI3_TX) */
+    HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 5, 1);
+    HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
+
+    /* NVIC configuration for DMA transfer complete interrupt (SPI3_RX) */
+    HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
+
+    /*##-5- Configure the NVIC for SPI #########################################*/
+    HAL_NVIC_SetPriority(SPI1_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(SPI1_IRQn);
     
-  /* Associate the initialized DMA handle to the the SPI handle */
-  __HAL_LINKDMA(spiHandle, hdmarx, hdma_rx);
-    
-  /*##-4- Configure the NVIC for DMA #########################################*/ 
-  /* NVIC configuration for DMA transfer complete interrupt (SPI3_TX) */
-  HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 5, 1);
-  HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
-    
-  /* NVIC configuration for DMA transfer complete interrupt (SPI3_RX) */
-  HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 5, 0);   
-  HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
   
-  /*##-5- Configure the NVIC for SPI #########################################*/
-  HAL_NVIC_SetPriority(SPI1_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(SPI1_IRQn);
-    
-    
     
     
     

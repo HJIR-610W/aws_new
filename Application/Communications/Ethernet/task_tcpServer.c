@@ -52,7 +52,7 @@ const osThreadAttr_t tcpServerTask_attributes = {
 
 const osThreadAttr_t clientHandlerTask_attributes = {
   .name = "client_thread", 
-  .stack_size = 2560, 
+  .stack_size = 3072, 
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -113,7 +113,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
   {
     task_printf("클라이언트 핸들러 (%s:%u): 소켓 %d에 대한 타임아웃 설정 실패\r\n",
               slot->client_ip_str, slot->client_port, sock);
-    aws_free(p_rx_buffer);
+    vPortFree(p_rx_buffer);
     return;
   }
 

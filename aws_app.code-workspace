@@ -135,7 +135,10 @@
 			"modbus_master.h": "c",
 			"stm32f4xx_hal.h": "c",
 			"modem_if.h": "c",
-			"bsp.h": "c"
+			"bsp.h": "c",
+			"util_time.h": "c",
+			"util_memory.h": "c",
+			"util_crc16_ccitt.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

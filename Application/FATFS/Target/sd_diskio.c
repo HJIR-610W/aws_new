@@ -27,7 +27,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "ff_gen_drv.h"
 #include "sd_diskio.h"
-
+#include "system_err.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -50,10 +50,11 @@ See BSP_SD_ErrorCallback() and BSP_SD_AbortCallback() below
 #define RW_ABORT_MSG       (uint32_t) 4
 */
 /*
- * the following Timeout is useful to give the control back to the applications
- * in case of errors in either BSP_SD_ReadCpltCallback() or BSP_SD_WriteCpltCallback()
- * the value by default is as defined in the BSP platform driver otherwise 30 secs
+ * 다음 Timeout 값은 BSP_SD_ReadCpltCallback() 또는 BSP_SD_WriteCpltCallback()에서
+ * 오류가 발생했을 경우, 애플리케이션으로 제어를 되돌려주기 위해 유용합니다.
+ * 기본적으로 이 값은 BSP 플랫폼 드라이버에 정의된 값이며, 정의되지 않은 경우 30초로 설정됩니다.
  */
+
 #define SD_TIMEOUT 2 * 1000
 
 #define SD_DEFAULT_BLOCK_SIZE 512
@@ -84,7 +85,7 @@ See BSP_SD_ErrorCallback() and BSP_SD_AbortCallback() below
 * transfer data
 */
 /* USER CODE BEGIN enableScratchBuffer */
-/* #define ENABLE_SCRATCH_BUFFER */
+ //#define ENABLE_SCRATCH_BUFFER 
 /* USER CODE END enableScratchBuffer */
 
 /* Private variables ---------------------------------------------------------*/
@@ -265,10 +266,11 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
   * ensure the SDCard is ready for a new operation
   */
 
-  if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0)
-  {
-    return res;
-  }
+
+    if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0)
+    {
+      return res;
+    }
 
 #if defined(ENABLE_SCRATCH_BUFFER)
   if (!((uint32_t)buff & 0x3))
@@ -392,6 +394,8 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
         res = RES_OK;
     }
 #endif
+
+
   return res;
 }
 
@@ -425,8 +429,8 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
 #endif
 
   /*
-  * ensure the SDCard is ready for a new operation
-  */
+   * ensure the SDCard is ready for a new operation
+   */
 
   if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0)
   {

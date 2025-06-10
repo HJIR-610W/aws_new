@@ -38,7 +38,7 @@ static u16_t ping_checksum(void *data, int len) { return inet_chksum(data, len);
 // Ping 전송
 static err_t ping_send(int s, struct sockaddr_in *to)
 {
-  char send_buf[40];  // Ping 데이터 버퍼
+
 
   struct icmp_echo_hdr
   {
@@ -101,9 +101,9 @@ void ping_task(const char *target_ip)
   char recv_buf[128];  // 수신 데이터 버퍼
   int sock;
   int seq = 0;  // ICMP Echo Request의 시퀀스 번호
-  int i;
-  int len;
-  uint8_t recved_cnt = 0;
+
+
+ 
 
   // 대상 주소 설정
   memset(&dest_addr, 0, sizeof(dest_addr));
@@ -165,7 +165,7 @@ void ping_task(const char *target_ip)
 
     if (recv_len > 0)
     {
-      recved_cnt++;
+ 
       uint32_t end_time = osKernelGetTickCount();  // 종료 시간 측정
       uint32_t rtt = (end_time - start_time);
 

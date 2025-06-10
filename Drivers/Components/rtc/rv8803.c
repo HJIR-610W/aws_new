@@ -15,13 +15,15 @@
 #define RET_EINVAL 1
 #define RET_IO_ERR 2
 
-#define RV8803_SEC			0x00
-#define RV8803_MIN			0x01
-#define RV8803_HOUR			0x02
-#define RV8803_WEEK			0x03
-#define RV8803_DAY			0x04
-#define RV8803_MONTH		0x05
-#define RV8803_YEAR			0x06
+#define RV8803_SEC_100th 0x10  // 100분의 1초
+#define RV8803_SEC 0x11        // 초 (Seconds)
+#define RV8803_MIN 0x12        // 분 (Minutes)
+#define RV8803_HOUR 0x13       // 시 (Hours)
+#define RV8803_WEEK 0x14       // 요일 (Weekday)
+#define RV8803_DAY 0x15        // 일 (Date)
+#define RV8803_MONTH 0x16      // 월 (Month)
+#define RV8803_YEAR 0x17       // 년 (Year)
+
 #define RV8803_RAM			0x07
 #define RV8803_ALARM_MIN	0x08
 #define RV8803_ALARM_HOUR	0x09
@@ -250,66 +252,54 @@ void rv8803_close(driver_t *handle)
 {
 
 }
-int32_t rv8803_read(driver_t *rv8803,DATE_TIME_BUF *ct)
+
+
+int32_t rv8803_read(driver_t *rv8803, DATE_TIME_BUF *ct)
 {
-	uint8_t date1[7];
-	uint8_t date2[7];
-    uint8_t reg;
-    uint8_t *date = date1;
-    int32_t err;
-    rv8803_cfg_t *cfg = (rv8803_cfg_t *)rv8803->cfg;
+  rv8803_cfg_t *cfg = (rv8803_cfg_t *)rv8803->cfg;
+  uint8_t date1[8];
+  uint8_t date2[8];
+  uint8_t reg;
+  uint8_t *date = date1;
+  int32_t err;
 
-  err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_FLAG, &reg,1);
+  // FLAG 레지스터 읽기
+  err = stm32_i2c_read(cfg->i2c_io, cfg->address, RV8803_FLAG, &reg, 1);
+  if (err)
+    return RET_IO_ERR;
 
-	if(err)
-    {
-		return RET_IO_ERR;
-    }
-    
-    //Vdd와 가 낮다. POR 시에는 1로 됨, 데이터가 유요하지 않음0x27
-	if(reg & RV8803_FLAG_V2F)
-    {
-        return RET_EINVAL;
-	}
+  // 전원 복구 여부 확인
+  if (reg & RV8803_FLAG_V2F)
+    return RET_EINVAL;
 
-  err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_SEC, date,7);
+  // 0x10 (100th sec)부터 8바이트 읽기: 100th, sec, min, hour, week, day, month, year
+  err = stm32_i2c_read(cfg->i2c_io, cfg->address, RV8803_SEC_100th, date, 8);
+  if (err)
+    return RET_IO_ERR;
 
-	if(err)
-    {
-		return RET_IO_ERR;
-    }
+  // 초가 59이면 한번 더 읽어서 바뀌었는지 확인
+  if ((date1[1] & 0x7F) == bin2bcd(59))
+  {
+    err = stm32_i2c_read(cfg->i2c_io, cfg->address, RV8803_SEC_100th, date2, 8);
+    if (err)
+      return RET_IO_ERR;
 
-    // 주의:초를 읽었더니 59초 이면 한번더 읽는다.
-    // 읽고자 하는 값이 01:59임, 그런데 읽는 도중에도 시간은 변함, 59초를 읽는데 도중에 초가 증가하면
-    // 02:00 이 되며 분을 읽게 되면 2을 읽게됨 원하는 값은 01:59 지만 실제는 02:59가 되어버림
-    // 단,7바이트 읽기가 1초안에 수행 되어야함
-	if((date1[RV8803_SEC] & 0x7f) == bin2bcd(59)) 
-    {
-      err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_SEC, date2,7);
-		if (err)
-        {
-			return RET_IO_ERR;
-        }
-        //읽었더니 초가 59가 아니면 이 값이 유요한값, 59와 같다면 이전에 읽은값이 유요한값
-		if ((date[RV8803_SEC] & 0x7f) != bin2bcd(59))
-        {
-			date = date2;
-        }
-	}
+    if ((date2[1] & 0x7F) != bin2bcd(59))
+      date = date2;
+  }
 
-	ct->Sec    = bcd2bin(date[RV8803_SEC] & 0x7f);
-	ct->Min    = bcd2bin(date[RV8803_MIN] & 0x7f);
-	ct->Hour   = bcd2bin(date[RV8803_HOUR] & 0x3f);
-	ct->Week   = (uint8_t)(31- clz(date[RV8803_WEEK] & 0x7f));
-	ct->Day    = bcd2bin(date[RV8803_DAY] & 0x3f);
-	ct->Month  = bcd2bin(date[RV8803_MONTH] & 0x1f) ;
-	ct->Year   = bcd2bin(date[RV8803_YEAR]) + 2000;
-
+  // BCD → binary 변환
+  ct->SubSec = bcd2bin(date[0] & 0x7F);  // 100th sec
+  ct->Sec = bcd2bin(date[1] & 0x7F);
+  ct->Min = bcd2bin(date[2] & 0x7F);
+  ct->Hour = bcd2bin(date[3] & 0x3F);
+  ct->Week = (uint8_t)(31 - clz(date[4] & 0x7F));  // bitmask to 0~6
+  ct->Day = bcd2bin(date[5] & 0x3F);
+  ct->Month = bcd2bin(date[6] & 0x1F);
+  ct->Year = bcd2bin(date[7]) + 2000;
 
   return 0;
 }
-
-
 
 int32_t rv8803_set_clock(driver_t *rv8803, uint8_t hour, uint8_t min, uint8_t sec)
 {

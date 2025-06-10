@@ -116,7 +116,7 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   res = f_open(&file, path, FA_WRITE | FA_OPEN_ALWAYS);
   if (res != FR_OK)
   {
-    ERROR_PRINTF("wrtie f_open fail %d", res);
+    ERROR_PRINTF("wrtie f_open fail %s", get_fresult((int)res));
     OS_POST_SEM(g_fileSem);
     return res;  // 실패 시 오류 코드 반환
   }
@@ -208,10 +208,14 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   UINT bytesRead;
   OS_PEND_SEM(g_fileSem, osWaitForever);
   // 파일 열기 (읽기 전용, 없으면 오류)
+  
+
   res = f_open(&file, path, FA_READ);
+
+  
   if (res != FR_OK)
   {
-    ERROR_PRINTF("read f_open fail %d", res);
+
     OS_POST_SEM(g_fileSem);
     return res;  // 실패 시 오류 코드 반환
   }
@@ -248,7 +252,9 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
 
   // 파일 닫기
   f_close(&file);
+
   OS_POST_SEM(g_fileSem);
+
   return FR_OK;
 #endif
 }

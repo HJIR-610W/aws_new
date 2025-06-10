@@ -12,12 +12,12 @@
         <ByteLimit>50</ByteLimit>
     </Stack>
     <StLinkDriver>
+        <stlinkserialNo>13004800040000393333574E</stlinkserialNo>
+        <stlinkfoundProbes />
         <CStepIntDis>_ 0</CStepIntDis>
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
         <stlinkResetStyle>0</stlinkResetStyle>
         <stlinkResetStrategy>0</stlinkResetStrategy>
-        <stlinkserialNo>13004800040000393333574E</stlinkserialNo>
-        <stlinkfoundProbes />
     </StLinkDriver>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -42,11 +42,11 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>2594726977</Checksum>
+        <Checksum>385255005</Checksum>
     </DebugChecksum>
     <Disassembly>
-        <InstrCount>0</InstrCount>
         <MixedMode>1</MixedMode>
+        <InstrCount>0</InstrCount>
     </Disassembly>
     <CodeCoverage>
         <Enabled>0</Enabled>
@@ -81,7 +81,23 @@
         <Fmt2>DATE_TIME_BUF-Min	3	0</Fmt2>
         <Fmt3>DATE_TIME_BUF-Sec	3	0</Fmt3>
         <Fmt4>RTC_TimeTypeDef-Hours	3	0</Fmt4>
-        <Fmt5>config_header_t-magicNum	4	0</Fmt5>
+        <Fmt5>SDIO_TypeDef-ARG	4	0</Fmt5>
+        <Fmt6>SDIO_TypeDef-CLKCR	4	0</Fmt6>
+        <Fmt7>SDIO_TypeDef-CMD	4	0</Fmt7>
+        <Fmt8>SDIO_TypeDef-DCOUNT	4	0</Fmt8>
+        <Fmt9>SDIO_TypeDef-DCTRL	4	0</Fmt9>
+        <Fmt10>SDIO_TypeDef-DLEN	4	0</Fmt10>
+        <Fmt11>SDIO_TypeDef-DTIMER	4	0</Fmt11>
+        <Fmt12>SDIO_TypeDef-FIFO	4	0</Fmt12>
+        <Fmt13>SDIO_TypeDef-POWER	4	0</Fmt13>
+        <Fmt14>SDIO_TypeDef-RESP1	4	0</Fmt14>
+        <Fmt15>SDIO_TypeDef-RESP2	4	0</Fmt15>
+        <Fmt16>SDIO_TypeDef-RESP3	4	0</Fmt16>
+        <Fmt17>SDIO_TypeDef-RESP4	4	0</Fmt17>
+        <Fmt18>SDIO_TypeDef-RESPCMD	4	0</Fmt18>
+        <Fmt19>SDIO_TypeDef-STA	4	0</Fmt19>
+        <Fmt20>SD_HandleTypeDef-Instance	4	0</Fmt20>
+        <Fmt21>config_header_t-magicNum	4	0</Fmt21>
     </struct_types>
     <array_types>
         <Fmt0>uint16_t[10]	4	0</Fmt0>
@@ -153,8 +169,13 @@
     </DisassembleMode>
     <Breakpoints2>
         <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\freertos_callback.c}.58.22" 0 0 1 "" 0 "" 0</Bp0>
-        <Count>1</Count>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\System\iar_io_retarget.c}.286.3" 0 0 1 "" 0 "" 0</Bp1>
+        <Count>2</Count>
     </Breakpoints2>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
     <LogFile>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -177,8 +198,4 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
 </settings>
