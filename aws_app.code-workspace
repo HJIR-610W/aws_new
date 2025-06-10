@@ -140,7 +140,8 @@
 			"util_memory.h": "c",
 			"util_crc16_ccitt.h": "c",
 			"fatfs_platform.h": "c",
-			"freertos.h": "c"
+			"freertos.h": "c",
+			"driver_uart_def.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

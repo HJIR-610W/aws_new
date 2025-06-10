@@ -1,38 +1,14 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file    sdio.c
-  * @brief   This file provides code for the configuration
-  *          of the SDIO instances.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
 #include "sdio.h"
 #include "pcb_define.h"
 #include "system_err.h"
 
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
 SD_HandleTypeDef hsd;
 DMA_HandleTypeDef hdma_sdio_rx;
 DMA_HandleTypeDef hdma_sdio_tx;
-/* SDIO init function */
 
 
-uint32_t getSDIOClockFrequency(void) {
+uint32_t getSDIOClockFrequency(void)
+{
     uint32_t systemClock = HAL_RCC_GetSysClockFreq(); // 시스템 클럭 가져오기
     uint32_t ahbPrescaler = (RCC->CFGR & RCC_CFGR_HPRE) >> 4; // AHB 프리스케일러 추출
 
@@ -65,31 +41,23 @@ uint32_t calculateSDIOClockDiv(uint32_t ahbClock, uint32_t desiredSDIOClock) {
     return clockDiv;
 }
 
+#define SDIO_CLOCK_FREQ 21000000
 
-uint32_t g_sdioMainClk;
 void MX_SDIO_SD_Init(void)
 {
- 
+  uint32_t g_sdioMainClk;
+
   g_sdioMainClk = getSDIOClockFrequency();//168MHz
-  /* USER CODE BEGIN SDIO_Init 0 */
 
-  /* USER CODE END SDIO_Init 0 */
-
-  /* USER CODE BEGIN SDIO_Init 1 */
-
-  /* USER CODE END SDIO_Init 1 */
   hsd.Instance = SDIO;
   hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
   hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
   hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
   hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
   hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
-  hsd.Init.ClockDiv = calculateSDIOClockDiv(g_sdioMainClk,21000000);
-  /* USER CODE BEGIN SDIO_Init 2 */
-
-  /* USER CODE END SDIO_Init 2 */
-
+  hsd.Init.ClockDiv = calculateSDIOClockDiv(g_sdioMainClk, SDIO_CLOCK_FREQ);
 }
+
 
 void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
 {
@@ -97,22 +65,10 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(sdHandle->Instance==SDIO)
   {
-  /* USER CODE BEGIN SDIO_MspInit 0 */
-
-  /* USER CODE END SDIO_MspInit 0 */
-    /* SDIO clock enable */
     __HAL_RCC_SDIO_CLK_ENABLE();
-
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOD_CLK_ENABLE();
-    /**SDIO GPIO Configuration
-    PC8     ------> SDIO_D0
-    PC9     ------> SDIO_D1
-    PC10     ------> SDIO_D2
-    PC11     ------> SDIO_D3
-    PC12     ------> SDIO_CK
-    PD2     ------> SDIO_CMD
-    */
+
     GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11
                           |GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -177,15 +133,14 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
     __HAL_LINKDMA(sdHandle,hdmatx,hdma_sdio_tx);
 
     
-      /* NVIC configuration for DMA transfer complete interrupt */
-  HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
+    /* NVIC configuration for DMA transfer complete interrupt */
+    HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
 
-  /* NVIC configuration for DMA transfer complete interrupt */
-  HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
-  
-  
+    /* NVIC configuration for DMA transfer complete interrupt */
+    HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
+
   }
 }
 
@@ -209,7 +164,6 @@ void HAL_SD_MspDeInit(SD_HandleTypeDef * sdHandle)
       HAL_NVIC_DisableIRQ(DMA2_Stream3_IRQn);
       HAL_NVIC_DisableIRQ(DMA2_Stream6_IRQn);
 
-
     }
   }
 void hal_sd_init(void)
@@ -219,7 +173,6 @@ void hal_sd_init(void)
 
 void hal_sd_deinit(void)
 {
-
   __HAL_RCC_SDIO_CLK_DISABLE();//클럭만 disable해도 sdio 레지스터 0이된, 이상함.
   __HAL_RCC_SDIO_FORCE_RESET();
   HAL_Delay(1);  // 최소 지연 필요
