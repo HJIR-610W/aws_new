@@ -314,7 +314,36 @@ int get_confirm_input(void)
   }
   else
   {
-    io_printf("오류: 진행이 중단됩니다.\r\n");
+    io_printf("오류: 진행이 중단됩니다\r\n");
+    return MENU_ABORT;
+  }
+}
+
+int check_pass(const char *title,char *password_str)
+{
+  char input[16] = {0};
+  int len;
+  io_printf("%s\r\n",title);
+  io_printf(": ");
+
+  int ret = cli_scanf_s("%15s", input);  // 문자열 입력
+
+  if (ret <= 0)
+  {
+    io_printf("입력을 확인해주세요\r\n");
+    return MENU_ABORT;
+  }
+
+  len = strlen(password_str);
+
+  if (strncmp(input, password_str, len) == 0)
+  {
+    io_printf("확인 완료.\r\n");
+    return MENU_OK;
+  }
+  else
+  {
+    io_printf("오류: 진행이 중단됩니다\r\n");
     return MENU_ABORT;
   }
 }

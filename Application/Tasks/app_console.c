@@ -3501,7 +3501,15 @@ int32_t menu_task_pcb(p_shell_context_t ctx)
                               menu_task_print,
                               menu_task_print_force,
                               menu_task_pcb};
-    do
+
+    io_printf("개발자 메뉴입니다.");
+
+    if (check_pass("비밀번호를 입력해주세요","32956") != MENU_OK)
+    {
+      return 0;
+    }
+
+        do
     {
       cnt = select_indexFromList(ctx, NULL, print_menu_developer, 0, false);
       if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
@@ -3517,25 +3525,25 @@ int32_t menu_task_pcb(p_shell_context_t ctx)
     } while (1);
   }
 
-  const menuFunc_t menuFunc[] = {{.title = "0.diplay", .func = aws_menu_display},
-                                 {.title = "1.system", .func = menu_system},
-                                 {.title = "2.sensor", .func = menu_sensor},
-                                 {.title = "3.offset", .func = menu_offset},
-                                 {.title = "4.network", .func = menu_network},
-                                 {.title = "5.data", .func = menu_data},
-                                 {.title = "6.display panel", .func = aws_menu_display_panel},
-                                 {.title = "7.manage", .func = menu_manage},
-                                 {.title = "8.calibraion", .func = menu_calibration},
-                                 {.title = "9.developer", .func = menu_developer}};
+  const menuFunc_t menuFunc[] = {{.title = "0.기본 정보", .func = aws_menu_display},
+                                 {.title = "1.시스템", .func = menu_system},
+                                 {.title = "2.센서", .func = menu_sensor},
+                                 {.title = "3.오프셋", .func = menu_offset},
+                                 {.title = "4.네트워크", .func = menu_network},
+                                 {.title = "5.데이터", .func = menu_data},
+                                 {.title = "6.패널", .func = aws_menu_display_panel},
+                                 {.title = "7.관리", .func = menu_manage},
+                                 {.title = "8.켈리브레이션", .func = menu_calibration},
+                                 {.title = "9.개발자", .func = menu_developer}};
 
   int32_t print_menu_root(p_shell_context_t ctx)
   {
     int i;
-    for (i = 0; i < _countof(menuFunc); i++)
+    for (i = 0; i < _countof(menuFunc)-1; i++)
     {
       ctx->printf("%s\r\n", menuFunc[i].title);
     }
-    return i;
+    return i+1;
   }
 
   int32_t select_menu(select_menu_t * select_menu)
