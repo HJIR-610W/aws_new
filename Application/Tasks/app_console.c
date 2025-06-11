@@ -3525,16 +3525,15 @@ int32_t menu_task_pcb(p_shell_context_t ctx)
     } while (1);
   }
 
-  const menuFunc_t menuFunc[] = {{.title = "0.기본 정보", .func = aws_menu_display},
-                                 {.title = "1.시스템", .func = menu_system},
-                                 {.title = "2.센서", .func = menu_sensor},
-                                 {.title = "3.오프셋", .func = menu_offset},
-                                 {.title = "4.네트워크", .func = menu_network},
-                                 {.title = "5.데이터", .func = menu_data},
-                                 {.title = "6.패널", .func = aws_menu_display_panel},
-                                 {.title = "7.관리", .func = menu_manage},
-                                 {.title = "8.켈리브레이션", .func = menu_calibration},
-                                 {.title = "9.개발자", .func = menu_developer}};
+  const menuFunc_t menuFunc[] = {{.title = "0.기본 정보",  .func = aws_menu_display},
+                                 {.title = "1.시스템",     .func = menu_system},
+                                 {.title = "2.센서",       .func = menu_sensor},
+                                 {.title = "3.네트워크",   .func = menu_network},
+                                 {.title = "4.데이터",     .func = menu_data},
+                                 {.title = "5.패널(전광판)",.func = aws_menu_display_panel},
+                                 {.title = "6.관리",       .func = menu_manage},
+                                 {.title = "7.켈리브레이션", .func = menu_calibration},
+                                 {.title = "8.개발자", .func = menu_developer}};
 
   int32_t print_menu_root(p_shell_context_t ctx)
   {

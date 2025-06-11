@@ -138,7 +138,7 @@ int console_menu_data(void)
     io_printf("|       --- 설정 저장/로드 (NVM) ---    |\r\n");
     io_printf("+---------------------------------------+\r\n");
     io_printf("|  1. 1분자료 확인                      |\r\n");
-    io_printf("|  2. 1분자료 편집                      |\r\n");
+    io_printf("|  2. 1분자료 편집(기능없음)            |\r\n");
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
