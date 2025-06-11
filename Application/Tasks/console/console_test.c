@@ -70,7 +70,7 @@ int run_test_root()
       test_rain();
       break;
       case 7:
-      run_calibraion_root();
+      aws_menu_calibration();
       break;
       case 8:
       test_freq();

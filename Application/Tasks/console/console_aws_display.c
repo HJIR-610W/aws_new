@@ -1553,7 +1553,7 @@ if (p_kma->tacometer.enable)
 
 #define CENSTER_OFFSET 3
 #define RIGHT_OFFSET 5
-int32_t aws_menu_display(p_shell_context_t ctx)
+int32_t aws_menu_display(void)
 {
   keycode_t key;
   int32_t line = 0;

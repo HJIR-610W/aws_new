@@ -28,18 +28,13 @@ const osThreadAttr_t consoleTask_attributes = {
 
 
 static const shell_command_context_t printCmd = { "menu",
-                                                  "\r\n\"menu\"\r\n" ,
+                                                  "\r\n\"menu\":기본 메뉴\r\n" ,
                                                    menu_root,0 };
 
+static const shell_command_context_t developCmd = {"develop", "\r\n\"develop\":개발자\r\n", menu_develop,
+                                                 0};
 
-
-
-
-
-
-
-
-static const shell_command_context_t testCmd = {"test", "\r\n\"test\"\r\n", test_pcb, 0};
+static const shell_command_context_t testCmd = {"test", "\r\n\"test\":보드 테스트\r\n", test_pcb, 0};
 
 void print_signature(void)
 {
@@ -117,6 +112,7 @@ void consoleTask(void *arg)
 
   SHELL_RegisterCommand(&printCmd);
   SHELL_RegisterCommand(&testCmd);
+  SHELL_RegisterCommand(&developCmd);
   SHELL_Main(&user_context);
 
   while(1)

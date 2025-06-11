@@ -5,6 +5,6 @@
 #include "cli\fsl_shell.h"
 
 
-int32_t aws_menu_display(p_shell_context_t ctx);
+int32_t aws_menu_display(void);
 
 #endif

@@ -141,7 +141,9 @@
 			"util_crc16_ccitt.h": "c",
 			"fatfs_platform.h": "c",
 			"freertos.h": "c",
-			"driver_uart_def.h": "c"
+			"driver_uart_def.h": "c",
+			"console_cali.h": "c",
+			"fsl_shell.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

@@ -3,7 +3,15 @@
 #define CONSOLE_UTILE_H
 
 #include <stdint.h>
+#include <stdbool.h>
+
 #include "console_define.h"
+
+typedef int32_t (*menu_func)(void);
+
+
+#define EXIT_PROGRAM -3
+#define EXIT_BACK -1
 
 #define ITEM_LIST(cnt, list) cnt >= _countof(list) ? g_unknown : (char *)list[cnt]
 
@@ -13,5 +21,16 @@ void make_comList(char *out, uint16_t outsize);
 int get_int_input(const char* prompt, int* value, int min_val, int max_val);
 
 
-extern const char *g_unknown;
+int print_menu(int width, const char* title, char** menu_list, int cnt) ;
+int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int32_t *choice);
+int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t listCnt,
+                             bool number) ;
+
+int input_decimal(int32_t start, int32_t stop, int32_t* dec);
+int32_t input_use(uint8_t* en);
+bool wait_break(uint32_t timeoutms);
+
+    extern const char* g_unknown;
+
+extern const char* enableList[2];
 #endif
