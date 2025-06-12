@@ -1687,7 +1687,7 @@ int32_t aws_menu_display(void)
   }
       while (1);
 
-      vt100_print(50, 0, "\r\n");
-      io_printf(VT100_CURSOR_ON);
-      return 0;
+  vt100_print(50, 0, "\r\n");
+  io_printf(VT100_CURSOR_ON);
+  return 0;
 }
