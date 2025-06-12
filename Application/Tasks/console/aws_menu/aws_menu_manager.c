@@ -281,7 +281,7 @@ int32_t menu_manage_config_backup()
         io_printf("SD카드에 백업되었습니다\r\n");
         break;
       case 2:
-        if (get_user_confirm("SD카드에서 설정값을 불러옵니다") == 1)
+        if (get_user_confirm("SD카드에서 설정값을 불러옵니다") == MENU_OK)
         {
           restore_config();
         }
@@ -335,7 +335,7 @@ int32_t menu_manage_sentor_edit()
           filename = "SUNSHINE_01.rcd";
         }
 
-        if (get_user_confirm("계속 진행하겠니까?") == 1)
+        if (get_user_confirm("계속 진행하겠니까?") == MENU_OK)
         {
           io_printf("범위를 넓게 하면 편집에 수십초가 소요될 수 있습니다\r\n");
           ret = write_bulk_data_range(filename, start_time, end_time, value);
@@ -391,7 +391,7 @@ int32_t menu_manage_sentor_edit()
 
 int32_t menu_manage_update_fw()
 {
-  if (get_user_confirm("펌웨어 업데이트를 진행할까요?") == 1)
+  if (get_user_confirm("펌웨어 업데이트를 진행할까요?") == MENU_OK)
   {
     if (check_firmware(UPDATE_LOCAL) == 0)
     {
@@ -422,14 +422,14 @@ int aws_manager_config(void)
     switch (choice)
     {
       case 1:
-        if (get_user_confirm("센서 구성을 화진 기본값으로 초기화합니다") == 1)
+        if (get_user_confirm("센서 구성을 화진 기본값으로 초기화합니다") == MENU_OK)
         {
           config_hj_reset();
           io_printf("초기화 되었습니다");
         }
         break;
       case 2:
-        if (get_user_confirm("설정값을 공장초기화합니다") == 1)
+        if (get_user_confirm("설정값을 공장초기화합니다") == MENU_OK)
         {
           config_app_reset();
           save_config_app();

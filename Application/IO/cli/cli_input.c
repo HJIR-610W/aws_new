@@ -351,24 +351,36 @@ int check_pass(const char *title,char *password_str)
 int32_t get_user_confirm(const char *message)
 {
   char input[5] = {0};
+  int32_t status;
 
-  io_printf("%s(yes/no)\r\n",message);
-  io_printf(">>");
-
-  int ret = cli_scanf_s("%4s", input);  // 문자열 입력
-
-  if (ret <= 0)
+  while(1)
   {
-    return -1;
-  }
+    
+    io_printf("%s(yes/no)\r\n",message);
+    io_printf(">>");
 
-  if (strncmp(input, "yes",3) == 0)
-  {
-    return 1;
+    status = cli_scanf_s("%4s", input);  // 문자열 입력
+
+    if (status == CLI_KEYCODE_CTRL_Q)
+    {
+      status = MENU_ABORT;
+      break;
+    }
+    else if (status == CLI_KEYCODE_CTRL_C)
+    {
+      status = MENU_BACK;
+      break;
+    }
+    
+    if (strncmp(input, "yes",3) == 0)
+    {
+      return MENU_OK;
+    }
+    else
+    {
+      io_printf("입력을 확인해주세요");
+    }
   }
-  else
-  {
-    return 0;
-  }
+  return status;
 }
 

@@ -75,13 +75,7 @@ float driver_adc_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 }
 
 
-void driver_adc_set(driver_t *drv, adc_set_option_t option, void *value)
-{
-  const adc_api_t *api = drv->api;
 
-
-  api->set(drv,option,value);
-}
 
 int32_t driver_adc_single_raw_read(driver_t *drv, int channel, uint16_t avg, uint8_t *err)
 {
@@ -98,4 +92,42 @@ int32_t driver_adc_diff_raw_read(driver_t *drv, int channel, uint16_t avg, uint8
 
   return api->read_diff(drv, channel, avg, err);
 
+}
+
+void driver_adc_set(driver_t *drv, adc_set_option_t option, void *value)
+{
+  const adc_api_t *api = drv->api;
+
+  switch (option)
+  {
+    case eADC_SET_OFFSET:
+    {
+      adc_offset_trim_t *p_offset = (adc_offset_trim_t*)value;
+      adc_driver_adjust_offset_trim(get_adc_config(0), ADC_CHANNEL_TYPE_SINGLE_ENDED,
+      p_offset->channel,p_offset->offset);
+    }
+    break;
+    default:
+      api->set(drv, option, value);
+      break;
+  }
+
+}
+
+bool driver_adc_get(driver_t *drv, adc_get_option_t option, void *para,void *value)
+{
+  const adc_api_t *api = drv->api;
+
+  switch (option)
+  {
+    case eADC_GET_OFFSET:
+    {
+      float offset;
+      adc_offset_trim_t *p_offset = (adc_offset_trim_t *)para;
+      adc_driver_read_offset_trim(get_adc_config(0), p_offset->mode,
+                                  p_offset->channel,&offset);
+                                  p_offset->offset = offset;
+    }
+    break;
+  }
 }

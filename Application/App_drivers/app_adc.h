@@ -66,4 +66,9 @@ float cvt_voltate_to_data(adc_config_t *adc_config,uint8_t *err);
 float adc_read_single_raw(int channel, uint8_t *err);
 
 int32_t adc_read_diff_raw(int channel, uint8_t *err);
+
+float cvt_data_to_voltage(adc_config_t *adc_config, float sensor_value);
+
+void adc_set_offset_trim(int mode, int ch, float offset);
+bool adc_get_offset_trim(int mode, int ch, float *offset);
 #endif

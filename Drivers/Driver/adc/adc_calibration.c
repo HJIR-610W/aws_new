@@ -211,7 +211,7 @@ float adc_get_compensated_value(int32_t raw_value, const adc_cal_params_t* cal_p
   }
 
   float effective_slope = cal_params->factory_slope;
-  float effective_offset = cal_params->factory_offset;
+  float effective_offset = cal_params->factory_offset + cal_params->factory_offset_trim;
 
   switch (cal_params->comp_method)
   {
@@ -350,9 +350,8 @@ float adc_driver_get_value(config_adc_adv_t *cfg,adc_channel_type_t channel_type
       break;
   }
 
-  float current_temp = read_current_temperature();
 
-  return adc_get_compensated_value(raw_value, cal_params, current_temp);
+  return adc_get_compensated_value(raw_value, cal_params, 0);
 }
 
 bool adc_driver_adjust_offset(config_adc_adv_t *cfg,adc_channel_type_t channel_type, int channel_index,
@@ -385,10 +384,58 @@ bool adc_driver_adjust_offset(config_adc_adv_t *cfg,adc_channel_type_t channel_t
   return success;
 }
 
+bool adc_driver_adjust_offset_trim(config_adc_adv_t* cfg, adc_channel_type_t channel_type,
+                              int channel_index,float offset_trim)
+{
+  adc_cal_params_t* cal_params_rw;
+  if (channel_type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+  {
+    if (channel_index < 0 || channel_index >= cfg->params_se_cnt)
+      return false;
+    cal_params_rw = &cfg->single_ended_cal[channel_index];
+  }
+  else if (channel_type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
+  {
+    if (channel_index < 0 || channel_index >= cfg->params_di_cnt)
+      return false;
+    cal_params_rw = &cfg->differential_cal[channel_index];
+  }
+  else
+  {
+    return false;
+  }
 
+  cal_params_rw->factory_offset_trim = offset_trim;
 
-/*
+  save_adc_cali();
+  
+  return true;
 
+}
 
-*/
+bool adc_driver_read_offset_trim(config_adc_adv_t* cfg, adc_channel_type_t channel_type,
+                                   int channel_index, float *offset_trim)
+{
+  adc_cal_params_t* cal_params_rw;
+  if (channel_type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+  {
+    if (channel_index < 0 || channel_index >= cfg->params_se_cnt)
+      return false;
+    cal_params_rw = &cfg->single_ended_cal[channel_index];
+  }
+  else if (channel_type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
+  {
+    if (channel_index < 0 || channel_index >= cfg->params_di_cnt)
+      return false;
+    cal_params_rw = &cfg->differential_cal[channel_index];
+  }
+  else
+  {
+    return false;
+  }
 
+  *offset_trim = cal_params_rw->factory_offset_trim;
+
+  return true;
+
+}

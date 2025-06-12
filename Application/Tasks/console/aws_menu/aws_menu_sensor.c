@@ -12,25 +12,17 @@
 #include "temperature\hj_temperature.h"
 #include "cli_input.h"
 #include "driver_interface.h"
+#include "system_err.h"
 
 const char *adcChModeList[] = {"single", "diff"};
-
-
-
-
-
 const char *unusedList[] = {"미사용"};
-
 const char *rs232ParityList[] = {"none", "even", "odd"};
-
-
-
 const char *physical_list[] = {"RS232", "RS485"};
 
 typedef struct
 {
   uint8_t sensorType;
-  void (*config_set)(sensor_t *, uint8_t);
+  int32_t (*config_set)(sensor_t *, uint8_t);
 } config_sen_func_t;
 
 void make_option(sensor_t *sensor, char *out, uint16_t outSize)
@@ -130,6 +122,14 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
   }
 }
 
+#define ADC_SET_CH_MODE 0
+#define ADC_SET_CHANNLEL 1
+#define ADC_SET_HIGHSCALE 2
+#define ADC_SET_LOWSCALE 3
+#define ADC_SET_SCALE 4
+#define ADC_SET_OUTMAXVOLT 5
+#define ADC_SET_OUTMINVOLT 6
+
 uint8_t print_adc_cfg( adc_config_t *adc_config, uint8_t cnt)
 {
   io_printf("%2d.adc mode   :%s\r\n", cnt++, ITEM_LIST(adc_config->mode, adcChModeList));
@@ -139,6 +139,7 @@ uint8_t print_adc_cfg( adc_config_t *adc_config, uint8_t cnt)
   io_printf("%2d.scale      :%d\r\n", cnt++, adc_config->scale);
   io_printf("%2d.outMaxVolt :%d\r\n", cnt++, adc_config->outMaxV);
   io_printf("%2d.outMinVolt :%d\r\n", cnt++, adc_config->outMinV);
+
   return cnt;
 }
 
@@ -297,12 +298,13 @@ int32_t print_common_cfg( sensor_t *sensor, uint8_t c)
   return cnt;
 }
 
-int32_t select_indexMenu( sensor_t *sensor)
+int32_t select_indexMenu( sensor_t *sensor,int *choice)
 {
   int cnt;
   int index = 0;
   int funcCnt = 0;
   int indexMax;
+
 
   do
   {
@@ -316,20 +318,23 @@ int32_t select_indexMenu( sensor_t *sensor)
     if (cnt == 1)
     {
       if (index < indexMax)
+      {
+       *choice = index;
         break;
+      }
     }
     else if (cnt == EXIT_BACK)
     {
-      return EXIT_BACK;
+      return MENU_BACK;
     }
     else if (cnt == EXIT_PROGRAM)
     {
-      return EXIT_PROGRAM;
+      return MENU_ABORT;
     }
     vt100_printfColor(RED, "유효한 번호가 아닙니다\r\n");
   } while (1);
 
-  return (index + 1);
+  return MENU_OK;
 }
 /**
  * @brief index로 저장된 센서 목록을 문자열 목록으로 가져오기
@@ -361,19 +366,25 @@ void set_type(sensor_t *sensor)
 /**
  * @brief 센서 모델 변경
  */
-void sensor_type_set( sensor_t *sensor, const uint8_t *list, uint8_t listCnt)
+int32_t sensor_type_set( sensor_t *sensor, const uint8_t *list, uint8_t listCnt)
 {
-  int32_t cnt;
+
   uint8_t itemListCnt;
+  int32_t status=0;
+  int32_t choice;
   const char *itemList[10];
 
   itemListCnt = gen_sensorItemList(itemList, list, listCnt);
-  cnt = select_indexFromList(itemList, NULL, itemListCnt, true);
-  if (cnt > 0)
+  status = select_indexFromList(itemList, NULL, itemListCnt, true,&choice);
+  if (status !=MENU_OK)
   {
-    sensor->type = (eSENSOR_MODEL_t)list[cnt - 1];
-    set_type(sensor);
+    return status;
   }
+  sensor->type = (eSENSOR_MODEL_t)list[choice];
+  set_type(sensor);
+  
+
+  return MENU_OK;
 }
 
 // 232설정
@@ -382,8 +393,10 @@ void sensor_type_set( sensor_t *sensor, const uint8_t *list, uint8_t listCnt)
 #define RS232_SET_BAUD 1
 #define RS232_SET_PARITY 2
 
-void rs232_config_set( sensor_t *sensor, uint8_t cnt)
+int32_t rs232_config_set( sensor_t *sensor, uint8_t cnt)
 {
+  int32_t choice;
+  int32_t status =0;
   int32_t dec;
   rs232_config_t *rs232;
   const char *portList[10];
@@ -400,195 +413,229 @@ void rs232_config_set( sensor_t *sensor, uint8_t cnt)
 
       cnt = rs232_get_portList(portList, _countof(portList));
 
-      cnt = select_indexFromList( portList, NULL, cnt, true);
+      status = select_indexFromList( portList, NULL, cnt, true,&choice);
 
-      if (cnt > 0)
+      if(status != MENU_OK)
       {
-        rs232->port = cnt - 1;
-        save_config_sensor();
+        break;
       }
+        rs232->port = choice;
+        save_config_sensor();
+
       break;
 
     case RS232_SET_BAUD:
-      cnt = input_decimal( 9600, 115200, &dec);
-      if (cnt)
-      {
+      status = input_decimal( 9600, 115200, &dec);
+      if(status != MENU_OK)
+        break;
         rs232->baud = dec;
         save_config_sensor();
-      }
-
       break;
     case RS232_SET_PARITY:
-      cnt = select_indexFromList( rs232ParityList, NULL, _countof(rs232ParityList), true);
-      if (cnt > 0)
-      {
-        rs232->parityIdx = cnt - 1;
+      status = select_indexFromList(rs232ParityList, NULL, _countof(rs232ParityList), true,&choice);
+      if(status != MENU_OK)
+        break;
+
+        rs232->parityIdx = choice;
         save_config_sensor();
-      }
       break;
     default:
       break;
   }
+  return status;
 }
 
 #define RS485_SET_PORT 0
 #define RS485_SET_BAUD 1
 #define RS485_SET_PARITY 2
 
-void rs485_config_set( sensor_t *sensor, uint8_t cnt)
+int32_t rs485_config_set( sensor_t *sensor, uint8_t cnt)
 {
+  int32_t status=0;
   int32_t dec;
+  int32_t choice;
   rs485_config_t *rs485;
   const char *portList[10];
 
   rs485 = get_sensor_config(sensor);
   if (rs485 == NULL)
   {
-    return;
+    return 0;
   }
   switch (cnt)
   {
     case RS485_SET_PORT:
 
       cnt = rs485_get_portList(portList, _countof(portList));
+      status = select_indexFromList( portList, NULL, cnt, true,&choice);
+      if(status != MENU_OK)
+        break;
 
-      cnt = select_indexFromList( portList, NULL, cnt, true);
-
-      if (cnt > 0)
-      {
-        rs485->port = cnt - 1;
-
+        rs485->port = choice;
         save_config_sensor();
-      }
+
       break;
 
     case RS485_SET_BAUD:
-      cnt = input_decimal( 9600, 115200, &dec);
-      if (cnt)
-      {
+      status = input_decimal(9600, 115200, &dec);
+      if(status != MENU_OK)
+        break;
+
         rs485->baud = dec;
         save_config_sensor();
-      }
+
 
       break;
     case RS485_SET_PARITY:
-      cnt = select_indexFromList( rs232ParityList, NULL, _countof(rs232ParityList), true);
-      if (cnt > 0)
-      {
-        rs485->parityIdx = cnt - 1;
+      status = select_indexFromList(rs232ParityList, NULL, _countof(rs232ParityList), true,&choice);
+      if(status != MENU_OK)
+        break;
+
+        rs485->parityIdx = choice;
         save_config_sensor();
-      }
+
       break;
     default:
       break;
   }
+
+  return status;
 }
 
-void hjwind_config_set(  sensor_t *sensor, uint8_t munu_index)
+int32_t hjwind_config_set(  sensor_t *sensor, uint8_t munu_index)
 {
+  int32_t status=0;
+  int32_t choice;
   const char *portList[10];
   int32_t dec;
   uint16_t port_cnt;
-  int32_t row_index;
+
   hjwindspeed_config_t *hjwind;
 
   hjwind = get_sensor_config(sensor);
   if (hjwind == NULL)
   {
-    return;
+    return status;
   }
   switch (munu_index)
   {
     case HJWIND_CFG_FULL:
-      if (input_decimal( 0, 999999, &dec))
+      status = input_decimal( 0, 999999, &dec);
+      if(status != MENU_OK)
       {
+        break;
+      }
+    
         hjwind->full = dec;
         save_config_sensor();
-      }
       break;
     case HJWIND_CFG_OFF:
-      if (input_decimal( 0, 999999, &dec))
+      status = input_decimal( 0, 999999, &dec);
+      if(status != MENU_OK)
       {
-        hjwind->offset = dec;
-        save_config_sensor();
+        break;
       }
+      
+      hjwind->offset = dec;
+      save_config_sensor();
+      
       break;
     case HJWIND_CFG_PORT:
       port_cnt = rs485_get_portList(portList, _countof(portList));
-      row_index = select_indexFromList( portList, NULL, port_cnt, true);
+      status = select_indexFromList( portList, NULL, port_cnt, true,&choice);
+      if(status !=MENU_OK)
+      break;
 
-      if (row_index > 0)
-      {
-        hjwind->rs485_port = row_index - 1;
-        save_config_sensor();
-      }
+      hjwind->rs485_port = choice;
+      save_config_sensor();
       break;
     default:
       break;
   }
+
+  return status;
 }
 
-void hjwinddir_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t hjwinddir_config_set( sensor_t *sensor, uint8_t menu_index)
 {
+  int32_t status = 0;
+  int32_t choice;
   hjwindspeed_config_t *hjwind;
   const char *portList[10];
-  int32_t row_index;
+
   uint16_t port_cnt;
 
   hjwind = get_sensor_config(sensor);
   if (hjwind == NULL)
   {
-    return;
+    return 0;
   }
   switch (menu_index)
   {
     case HJWIND_DIR_CFG_PORT:
       port_cnt = rs485_get_portList(portList, _countof(portList));
 
-      row_index = select_indexFromList( portList, NULL, port_cnt, true);
-
-      if (row_index > 0)
+      status = select_indexFromList( portList, NULL, port_cnt, true,&choice);
+      if (status != MENU_OK)
       {
-        hjwind->rs485_port = row_index - 1;
-
-        save_config_sensor();
+        break;
       }
-      break;
-    default:
+        hjwind->rs485_port = choice;
+        save_config_sensor();
       break;
   }
+
+  return status;
 }
 
 int input_float( float start, float stop, float *target)
 {
   int32_t cnt;
+  int32_t status=0;
   float fVal;
 
+  while(1)
+  {
   io_printf("\r\n범위:%f~%f\r\n", start, stop);
   vt100_printfColor(GREEN, "값을 입력해 주세요:");
   cnt = console_scanf("%f", &fVal);
-  if (cnt == 1)
+  if(cnt == 1)
   {
     if (fVal < start || fVal > stop)
     {
       vt100_printfColor(RED, "입력값을 범위를 확인해 주세요\r\n");
-      return 0;
+      return MENU_OK;
     }
 
     *target = fVal;
-    return 1;
+    return MENU_OK;
+  }
+  else
+  {
+    if(cnt ==EXIT_BACK)
+    {
+      status = MENU_BACK;
+      break;
+    }
+    else if(cnt ==EXIT_PROGRAM)
+    {
+      status = MENU_ABORT;
+      break;
+    }
+  }
   }
 
-  return cnt;
+  return status;
 }
 /*
 0.type:화진 RS485 9600
 1.port:EX1 RS485 A
 */
 
-void hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t row_idx;
+  int32_t status;
+  int32_t choice;
   int32_t dec = 0;
   hjtemp_config_t *hjtemp;
   const char *portList[10];
@@ -597,50 +644,47 @@ void hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
   hjtemp = get_sensor_config(sensor);
   if (hjtemp == NULL)
   {
-    return;
+    return 0;
   }
 
   switch (menu_index)
   {
     case HJTEMP_CFG_PHYSICAL_LAYER:
-      row_idx = select_indexFromList( physical_list, NULL, _countof(physical_list), true);
-
-      if (row_idx > 0)
-      {
-        hjtemp->physical_layer = (ePHYSOCAL_LAYER_t)(row_idx - 1);
+      status = select_indexFromList( physical_list, NULL, _countof(physical_list), true,&choice);
+      if (status!= MENU_OK)
+        break;
+        hjtemp->physical_layer = (ePHYSOCAL_LAYER_t)(choice );
         save_config_sensor();
-      }
       break;
     case HJTEMP_CFG_PORT:
       if (hjtemp->physical_layer == ePHYSICAL_RS232)
       {
         portListCnt = rs232_get_portList(portList, _countof(portList));
-        row_idx = select_indexFromList( portList, NULL, portListCnt, true);
-        if (row_idx > 0)
-        {
-          hjtemp->port = row_idx - 1;
+        status = select_indexFromList( portList, NULL, portListCnt, true,&choice);
+  
+        if(status != MENU_OK)
+          break;
+          hjtemp->port = choice;
           save_config_sensor();
-        }
       }
       else
       {
         portListCnt = rs485_get_portList(portList, _countof(portList));
-        row_idx = select_indexFromList( portList, NULL, portListCnt, true);
+        status = select_indexFromList( portList, NULL, portListCnt, true,&choice);
+      if (status!= MENU_OK)
+        break;
 
-        if (row_idx > 0)
-        {
-          hjtemp->port = row_idx - 1;
+          hjtemp->port = choice;
           save_config_sensor();
-        }
-      }
 
       break;
     case HJTEMP_CFG_MODBUS_ID:
-      if (input_decimal( 0, 247, &dec))
-      {
+      status = input_decimal( 0, 247, &dec);
+      if(status !=MENU_OK)
+        break;
+
         hjtemp->modbus_id = dec;
         save_config_sensor();
-      }
       break;
     case HJTEMP_CTRL_OFFSET:
     {
@@ -657,8 +701,10 @@ void hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
       if (ret == 0)
       {
         io_printf("현재 온도 오프셋:%.2f\r\n", ((float)offset / 100.0f));
-        if (get_user_confirm("오프셋을 변경하시겠습니까?") == 1)
-        {
+        status  = get_user_confirm("오프셋을 변경하시겠습니까?");
+        if(status != MENU_OK)
+        break;
+
           float f_offset;
           io_printf("오프셋을 입력해주세요>>");
           if (input_float( -5, 5, &f_offset))
@@ -666,68 +712,73 @@ void hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
             offset = (uint16_t)(f_offset * 100);
             hjTemperature_set(hj_temp, eTEMP_SET_OFFSET, (void *)offset);
           }
-        }
       }
       else
       {
         io_printf("장치에 접근할 수 없습니다.\r\n");
       }
     }
-    default:
-      break;
   }
+  }
+  
+  return status;
+  
 }
 
-void hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t row_idx;
-  int32_t dec = 0;
-  hjtemp_config_t *hjtemp;
   const char *portList[10];
   uint16_t portListCnt;
+  int32_t status;
+  int32_t choice;
+  int32_t dec = 0;
+  hjtemp_config_t *hjtemp;
+  float f_offset;
 
   hjtemp = get_sensor_config(sensor);
   if (hjtemp == NULL)
   {
-    return;
+    ERROR_PRINTF("화진 온습도 설정값 NULL");    
+    return MENU_OK;
   }
 
   switch (menu_index)
   {
     case HJTEMP_CFG_PHYSICAL_LAYER:
-      row_idx = select_indexFromList(physical_list, NULL, _countof(physical_list), true);
-
-      if (row_idx > 0)
-      {
-        hjtemp->physical_layer = (ePHYSOCAL_LAYER_t)(row_idx - 1);
+      status = select_indexFromList(physical_list, NULL, _countof(physical_list), true,&choice);
+      if(status !=MENU_OK)
+        break;
+        hjtemp->physical_layer = (ePHYSOCAL_LAYER_t)(choice);
         save_config_sensor();
-      }
-      break;
+        break;
     case HJTEMP_CFG_PORT:
       if (hjtemp->physical_layer == ePHYSICAL_RS232)
       {
         portListCnt = rs232_get_portList(portList, _countof(portList));
-        row_idx = select_indexFromList( portList, NULL, portListCnt, true);
-        if (row_idx > 0)
-        {
-          hjtemp->port = row_idx - 1;
+        status = select_indexFromList( portList, NULL, portListCnt, true,&choice);
+        
+        if(status !=MENU_OK)
+        break;
+
+          hjtemp->port = choice;
           save_config_sensor();
-        }
       }
       else
       {
         portListCnt = rs485_get_portList(portList, _countof(portList));
-        row_idx = select_indexFromList( portList, NULL, portListCnt, true);
+        status = select_indexFromList( portList, NULL, portListCnt, true,&choice);
 
-        if (row_idx > 0)
-        {
-          hjtemp->port = row_idx - 1;
-          save_config_sensor();
-        }
+        if(status !=MENU_OK)
+        break;
+        hjtemp->port = choice;
+        save_config_sensor();
       }
       break;
     case HJTEMP_CFG_MODBUS_ID:
-      if (input_decimal( 0, 247, &dec))
+      status = input_decimal( 0, 247, &dec);
+      
+      if(status != MENU_OK)
+        break;
       {
         hjtemp->modbus_id = dec;
         save_config_sensor();
@@ -748,16 +799,17 @@ void hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
       if (ret == 0)
       {
         io_printf("현재 습도 오프셋:%.2f\r\n", ((float)offset / 100.0f));
-        if (get_user_confirm("오프셋을 변경하시겠습니까?") == 1)
-        {
-          float f_offset;
+        status = get_user_confirm("오프셋을 변경하시겠습니까?");
+        if(status != MENU_OK)
+        break;
+
           io_printf("오프셋을 입력해주세요>>");
           if (input_float( -5, 5, &f_offset))
           {
             offset = (uint16_t)(f_offset * 100);
             hjTemperature_set(hj_temp, eHUMI_SET_OFFSET, (void *)offset);
           }
-        }
+
       }
       else
       {
@@ -768,11 +820,14 @@ void hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
     default:
       break;
   }
+  
+  return status;
 }
 
-void ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t row_idx;
+  int32_t status;
+  int32_t choice;
   int32_t dec = 0;
   ott_smp3_config_t *ott;
   const char *portList[10];
@@ -781,160 +836,195 @@ void ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
   ott = get_sensor_config(sensor);
   if (ott == NULL)
   {
-    return;
+    ERROR_PRINTF("OTT 일사 설정값 NULL");
+    return 0;
   }
 
   switch (menu_index)
   {
     case OTT_SMP3_CFG_PORT:
       portListCnt = rs485_get_portList(portList, _countof(portList));
-      row_idx = select_indexFromList( portList, NULL, portListCnt, true);
+      status = select_indexFromList( portList, NULL, portListCnt, true,&choice);
 
-      if (row_idx > 0)
-      {
-        ott->port = row_idx - 1;
+      if (status  != MENU_OK)
+        break;
+
+        ott->port = choice;
         save_config_sensor();
-      }
+
 
       break;
     case OTT_SMP3_CFG_ID:
-      if (input_decimal( 0, 247, &dec))
-      {
+      status = input_decimal( 0, 247, &dec);
+      if(status !=MENU_OK)
+        break;
         ott->modbus_id = dec;
         save_config_sensor();
-      }
+
       break;
     default:
       break;
   }
+  
+  return status;
 }
-void hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
 {
+  int32_t status;
+  int32_t choice;
   hjsnow_config_t *hjsnow;
   const char *portList[10];
   uint16_t portCnt;
-  int32_t row_index;
+
   hjsnow = get_sensor_config(sensor);
   if (hjsnow == NULL)
   {
-    return;
+    ERROR_PRINTF("화진 적설설 설정값 NULL");
+    return 0;
   }
   switch (menu_index)
   {
     case HJSNOW_CFG_MENU_PHY:
-      row_index = select_indexFromList( physical_list, NULL, _countof(physical_list), true);
-
-      if (row_index > 0)
-      {
-        hjsnow->physical_layer = (ePHYSOCAL_LAYER_t)(row_index - 1);
+      status = select_indexFromList(physical_list, NULL, _countof(physical_list), true,&choice);
+      if (status != MENU_OK)
+      break;
+ 
+        hjsnow->physical_layer = (ePHYSOCAL_LAYER_t)(choice);
         save_config_sensor();
-      }
+
       break;
     case HJSNOW_CFG_MENU_PORT:
       if (hjsnow->physical_layer == ePHYSICAL_RS232)
       {
         portCnt = rs232_get_portList(portList, _countof(portList));
-        row_index = select_indexFromList( portList, NULL, portCnt, true);
-        if (row_index > 0)
-        {
-          hjsnow->port = row_index - 1;
-          save_config_sensor();
+        status = select_indexFromList( portList, NULL, portCnt, true,&choice);
+        if (status !=MENU_OK)
+        break;
+   
+         hjsnow->port = choice;
+         save_config_sensor();
         }
-      }
       else
       {
         portCnt = rs485_get_portList(portList, _countof(portList));
-        row_index = select_indexFromList( portList, NULL, portCnt, true);
-        if (row_index > 0)
-        {
-          hjsnow->port = row_index - 1;
+        status = select_indexFromList( portList, NULL, portCnt, true,&choice);
+        if (status != MENU_OK)
+        break;
+    
+          hjsnow->port = choice;
           save_config_sensor();
-        }
+ 
       }
 
       break;
+
     default:
       break;
   }
+  
+  return status;
+  
 }
 
-#define ADC_SET_CH_MODE 0
-#define ADC_SET_CHANNLEL 1
-#define ADC_SET_HIGHSCALE 2
-#define ADC_SET_LOWSCALE 3
-#define ADC_SET_SCALE 4
-#define ADC_SET_OUTMAXVOLT 5
-#define ADC_SET_OUTMINVOLT 6
 
-void adc_config_set( sensor_t *sensor, uint8_t menu_index)
+
+int32_t adc_config_set( sensor_t *sensor, uint8_t menu_index)
 {
+  
   int32_t dec;
   adc_config_t *adc;
-  int32_t row_index;
+
+  int status=0;
+  int choice;
 
   adc = get_sensor_config(sensor);
   switch (menu_index)
   {
     case ADC_SET_CH_MODE:  // 1.채널 모드
-      row_index = select_indexFromList( adcChModeList, NULL, _countof(adcChModeList), true);
+      status = select_indexFromList(adcChModeList, NULL, _countof(adcChModeList), true,&choice);
+      if (status !=MENU_OK)
+        break;
 
-      if (row_index > 0)
-      {
-        adc->mode = (row_index - 1);
+
+        adc->mode =choice;
         save_config_sensor();
-      }
+
       break;
     case ADC_SET_CHANNLEL:  // channel;
-      if (input_decimal( 0, 17, &dec))
-      {
+      status = input_decimal( 0, 17, &dec);
+      if(status !=MENU_OK)
+      break;
+
         adc->channel = dec;
         save_config_sensor();
-      }
+
       break;
     case ADC_SET_HIGHSCALE:  // hish cale;
-      if (input_decimal( -1000000, 1000000, &dec))
-      {
+      status = input_decimal( -1000000, 1000000, &dec);
+      if (status != MENU_OK)
+        break;
+
         adc->highScale = dec;
         save_config_sensor();
-      }
+
       break;
     case ADC_SET_LOWSCALE:  // low cale;
-      if (input_decimal( -1000000, 1000000, &dec))
-      {
+      status =input_decimal( -1000000, 1000000, &dec);
+      if (status != MENU_OK)
+        break;
+
         adc->lowScale = dec;
         save_config_sensor();
-      }
+
       break;
     case ADC_SET_SCALE:  // ale;
-      if (input_decimal( -1000000, 1000000, &dec))
-      {
+      status = input_decimal( -1000000, 1000000, &dec);
+      if (status != MENU_OK)
+        break;
+
         adc->scale = dec;
         save_config_sensor();
-      }
+
       break;
 
     case ADC_SET_OUTMAXVOLT:
-      if (input_decimal( -1000000, 1000000, &dec))
-      {
+      status= input_decimal( -1000000, 1000000, &dec);
+      if (status != MENU_OK)
+        break;
+
         adc->outMaxV = dec;
         save_config_sensor();
-      }
+
       break;
 
     case ADC_SET_OUTMINVOLT:
-      if (input_decimal( -1000000, 1000000, &dec))
-      {
+      status =input_decimal( -1000000, 1000000, &dec);
+      if (status != MENU_OK)
+        break;
+
         adc->outMinV = dec;
         save_config_sensor();
-      }
+
       break;
+
   }
+
+  return status;
 }
 
-void rain_reed_config_set( sensor_t *sensor, uint8_t cnt) {}
-void rain_hall_config_set( sensor_t *sensor, uint8_t cnt) {}
-void rain_reed_config_set( sensor_t *sensor, uint8_t cnt);
-void rain_hall_config_set( sensor_t *sensor, uint8_t cnt);
+int32_t rain_reed_config_set( sensor_t *sensor, uint8_t cnt)
+{
+  return 0;
+}
+
+int32_t rain_hall_config_set( sensor_t *sensor, uint8_t cnt)
+{
+  return 0;
+}
+
+
+
+
 
 
 /*
@@ -959,18 +1049,20 @@ const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_HUMINITY_HJ, .config_set = hjhumi_config_set},
     {.sensorType = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_config_set}};
 
-void sensor_set( sensor_t *sensor, uint8_t cnt)
+int32_t sensor_set( sensor_t *sensor, uint8_t cnt)
 {
+  int32_t status=MENU_OK;
+
   for (int i = 0; i < _countof(sen_func); i++)
   {  // 센서마다 고유의 처리 함수를 사용한다.
     if (sen_func[i].sensorType == sensor->type)
     {
-      // 고유 처리 함수는 0번부터 처리하도록 되어있어서 -1해준다.
-      //
-      sen_func[i].config_set( sensor, cnt - 1);
+      status = sen_func[i].config_set( sensor, cnt - 1);
       break;
     }
   }
+
+  return status;
 }
 
 /*
@@ -980,7 +1072,8 @@ void sensor_set( sensor_t *sensor, uint8_t cnt)
 */
 int32_t menu_sensor_default_2( eSENSOR_LIST_t list)
 {
-  int32_t cnt = 0;
+  int32_t status = 0;
+  int32_t choice  = 0;
 
   // 선택된 센서의 설정 정보를 가져온다.
   sensor_t *sensor = &get_config_app()->sensor[(int)list];
@@ -992,26 +1085,27 @@ int32_t menu_sensor_default_2( eSENSOR_LIST_t list)
     1.port        :EX1 RS485 A
     이런 화면이 나타남남
     */
-    cnt = select_indexMenu( sensor);
-
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
-    {
-      return cnt;
-    }
-    cnt--;
-
-    switch (cnt)
+    status = select_indexMenu(sensor,&choice);
+    if (status != MENU_OK)
+        break; 
+    
+    switch (choice)
     {
       case 0:  // 센서가 사용하고자하는 센서 타입을 설정한다.
                // 센서마다 지원가능한 목록을 넘겨지고 출력하여 선택하도록 한다.
-        sensor_type_set( sensor, supported_sensors[list].list, supported_sensors[list].cnt);
+        status =sensor_type_set( sensor, supported_sensors[list].list, supported_sensors[list].cnt);
         break;
       default:  // 센서 타입이 아닌 센서 고유 속성들은 이 함수 에서 처리한다.
         // 현재의 센서 정보와 사용자가 수정하고자한 항목 번호를 넘긴다.
-        sensor_set( sensor, cnt);  // 센서별 설정값 변경
+        status = sensor_set(sensor, choice);  // 센서별 설정값 변경
         break;
     }
+
+    if(status == MENU_ABORT)
+      break;
   } while (1);
+
+  return status;
 }
 
 /*
@@ -1052,19 +1146,21 @@ int32_t print_menu_sensor(void)
 
 int32_t aws_menu_sensor(void)
 {
-  int32_t cnt;
 
-  while(1)
+  int32_t status=0;
+  int32_t choice;
+
+  do
   {
-  // 모든 센서의 출력, 기본정보 출력
-  cnt = select_indexFromList( NULL, print_menu_sensor, 0, false);
-  if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
-  {
+    // 모든 센서의 출력, 기본정보 출력
+    status = select_indexFromList( NULL, print_menu_sensor, 0, false,&choice);
+    if (status != MENU_OK)
+          break;
+    status = menu_sensor_default_2((eSENSOR_LIST_t)(choice));
+    if(status ==MENU_ABORT)
     break;
-  }
+  }while(1);
 
-  cnt = menu_sensor_default_2((eSENSOR_LIST_t)(cnt - 1));
-  }
   io_printf("장비리셋 후 설정값이 적용됩니다.\r\n");
-  return cnt;
+  return status;
 }

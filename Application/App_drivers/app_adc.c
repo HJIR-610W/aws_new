@@ -164,4 +164,49 @@ float cvt_voltate_to_data(adc_config_t *adc_config,uint8_t *err)
 
 }
 
+float cvt_data_to_voltage(adc_config_t *adc_config, float sensor_value)
+{
+  float slope;
+  float offset;
+  float scale;
+  float input;
+  float voltage;
 
+  // scale = (high - low) / scale값
+  scale = (float)(adc_config->highScale - adc_config->lowScale) / (float)adc_config->scale;
+  input = (float)(adc_config->outMaxV - adc_config->outMinV) / 1000.0f;
+
+  // 기존 전압 센서값 변환 수식 기준의 역산
+  slope = scale / input;
+  offset = ((float)adc_config->lowScale / (float)adc_config->scale) -
+           slope * ((float)adc_config->outMinV / 1000.0f);
+
+  // 역함수로 전압 계산
+  voltage = (sensor_value - offset) / slope;
+
+  return voltage;  // 단위: V
+}
+
+
+
+
+void adc_set_offset_trim(int mode,int ch,float offset)
+{
+  adc_offset_trim_t adc_offset_trim;
+
+  adc_offset_trim.mode = mode;
+  adc_offset_trim.channel = ch;
+  adc_offset_trim.offset = offset;
+
+  driver_adc_set(g_ads1120, eADC_SET_OFFSET, &adc_offset_trim);
+}
+
+bool adc_get_offset_trim(int mode,int ch,float *offset)
+{
+  adc_offset_trim_t adc_offset_trim;
+
+  adc_offset_trim.mode = mode;
+  adc_offset_trim.channel = ch;
+
+  return driver_adc_get(g_ads1120, eADC_GET_OFFSET,&adc_offset_trim,&offset);
+}

@@ -143,7 +143,10 @@
 			"freertos.h": "c",
 			"driver_uart_def.h": "c",
 			"console_cali.h": "c",
-			"fsl_shell.h": "c"
+			"fsl_shell.h": "c",
+			"temperature.h": "c",
+			"barometer.h": "c",
+			"driver_adc_define.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

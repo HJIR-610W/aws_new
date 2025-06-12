@@ -77,8 +77,13 @@ measure_data_1s_t g_reading_1;//Task 실행 시간 측정용
 exec_time_t g_exec_250ms_time; //Task 실행 시간 측정용
 exec_time_t g_exec_1s_time;//Task 실행 시간 측정용
 
-//Task 실행 시간 측정용
-void elapse_start(exec_time_t *p_time)
+driver_t *get_sensor_driver(eSENSOR_LIST_t sensor)
+{
+  return g_sensor_driver[sensor];
+}
+
+    // Task 실행 시간 측정용
+    void elapse_start(exec_time_t *p_time)
 { 
   p_time->start_time = HAL_GetTick(); 
 }
@@ -446,7 +451,7 @@ void measure_1s(void)
   int32_t iData;
   float adc;
   float fData;
-  float offset=0;
+
   eSENSOR_MODEL_t model;
   eSENSOR_LIST_t sensor_type;
   sensor_data_t *pa_reading_1s = g_reading_1.data;
@@ -468,7 +473,7 @@ void measure_1s(void)
           {
             case A1_TEMPERATURE:
               adc = temperature_read(g_sensor_driver[A1_TEMPERATURE], &read_err);
-              pa_reading_1s[A1_TEMPERATURE].data.f = adc;
+              pa_reading_1s[A1_TEMPERATURE].data.f = adc + sensor[sensor_type].offset;
               pa_reading_1s[A1_TEMPERATURE].err = read_err;
               break;
             case A6_RAINFALL_DOT5_1MM:
@@ -478,7 +483,7 @@ void measure_1s(void)
               break;
             case A7_PRESSURE:
               adc = read_sensor_barometer(g_sensor_driver[A7_PRESSURE], &read_err);
-              pa_reading_1s[A7_PRESSURE].data.f = adc;
+              pa_reading_1s[A7_PRESSURE].data.f = adc + sensor[sensor_type].offset;
               pa_reading_1s[A7_PRESSURE].err = read_err;
               break;
             case A8_RAIN_PRESENT:
@@ -493,71 +498,70 @@ void measure_1s(void)
               break;
             case A10_RELATIVE_HUMIDITY:
               adc = read_sensor_humidity(g_sensor_driver[A10_RELATIVE_HUMIDITY], &read_err);
-              pa_reading_1s[A10_RELATIVE_HUMIDITY].data.f = adc;
+              pa_reading_1s[A10_RELATIVE_HUMIDITY].data.f = adc + sensor[sensor_type].offset;
               pa_reading_1s[A10_RELATIVE_HUMIDITY].err = read_err;
               break;
             case B1_SOLAR_RADIATION:
               fData = read_sensor_solarRadiation(g_sensor_driver[B1_SOLAR_RADIATION], &read_err);
-              pa_reading_1s[B1_SOLAR_RADIATION].data.f = fData;
+              pa_reading_1s[B1_SOLAR_RADIATION].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B1_SOLAR_RADIATION].err = read_err;
               break;
             case B2_SUNSHINE_DURATION:
               fData = read_sensor_sunshine(g_sensor_driver[B2_SUNSHINE_DURATION], &read_err);
-              pa_reading_1s[B2_SUNSHINE_DURATION].data.f = fData;
+              pa_reading_1s[B2_SUNSHINE_DURATION].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B2_SUNSHINE_DURATION].err = read_err;
               break;
             case B5_SOIL_TEMPERATURE_5CM:
               fData = read_sensor_soilTemp(g_sensor_driver[B5_SOIL_TEMPERATURE_5CM], &read_err);
-              pa_reading_1s[B5_SOIL_TEMPERATURE_5CM].data.f = fData;
+              pa_reading_1s[B5_SOIL_TEMPERATURE_5CM].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B5_SOIL_TEMPERATURE_5CM].err = read_err;
               break;
             case B6_SOIL_TEMPERATURE_10CM:
               fData = read_sensor_soilTemp(g_sensor_driver[B6_SOIL_TEMPERATURE_10CM], &read_err);
-              pa_reading_1s[B6_SOIL_TEMPERATURE_10CM].data.f = fData;
+              pa_reading_1s[B6_SOIL_TEMPERATURE_10CM].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B6_SOIL_TEMPERATURE_10CM].err = read_err;
               break;
             case B7_SOIL_TEMPERATURE_20CM:
               fData = read_sensor_soilTemp(g_sensor_driver[B7_SOIL_TEMPERATURE_20CM], &read_err);
-              pa_reading_1s[B7_SOIL_TEMPERATURE_20CM].data.f = fData;
+              pa_reading_1s[B7_SOIL_TEMPERATURE_20CM].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B7_SOIL_TEMPERATURE_20CM].err = read_err;
               break;
             case B8_SOIL_TEMPERATURE_30CM:
               fData = read_sensor_soilTemp(g_sensor_driver[B8_SOIL_TEMPERATURE_30CM], &read_err);
-              pa_reading_1s[B8_SOIL_TEMPERATURE_30CM].data.f = fData;
+              pa_reading_1s[B8_SOIL_TEMPERATURE_30CM].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B8_SOIL_TEMPERATURE_30CM].err = read_err;
               break;
             case B9_SOIL_TEMPERATURE_50CM:
               fData = read_sensor_soilTemp(g_sensor_driver[B9_SOIL_TEMPERATURE_50CM], &read_err);
-              pa_reading_1s[B9_SOIL_TEMPERATURE_50CM].data.f = fData;
+              pa_reading_1s[B9_SOIL_TEMPERATURE_50CM].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B9_SOIL_TEMPERATURE_50CM].err = read_err;
 
               break;
             case B10_SOIL_TEMPERATURE_100CM:
               fData = read_sensor_soilTemp(g_sensor_driver[B10_SOIL_TEMPERATURE_100CM], &read_err);
-              pa_reading_1s[B10_SOIL_TEMPERATURE_100CM].data.f = fData;
+              pa_reading_1s[B10_SOIL_TEMPERATURE_100CM].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B10_SOIL_TEMPERATURE_100CM].err = read_err;
               break;
             case B11_SOIL_TEMPERATURE_150CM:
               fData = read_sensor_soilTemp(g_sensor_driver[B11_SOIL_TEMPERATURE_150CM], &read_err);
-              pa_reading_1s[B11_SOIL_TEMPERATURE_150CM].data.f = fData;
+              pa_reading_1s[B11_SOIL_TEMPERATURE_150CM].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B11_SOIL_TEMPERATURE_150CM].err = read_err;
               break;
 
             case B12_SOIL_TEMPERATURE_300CM:
               fData = read_sensor_soilTemp(g_sensor_driver[B12_SOIL_TEMPERATURE_300CM], &read_err);
-              pa_reading_1s[B12_SOIL_TEMPERATURE_300CM].data.f = fData;
+              pa_reading_1s[B12_SOIL_TEMPERATURE_300CM].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B12_SOIL_TEMPERATURE_300CM].err = read_err;
               break;
 
             case B13_SOIL_TEMPERATURE_500CM:
               fData = read_sensor_soilTemp(g_sensor_driver[B13_SOIL_TEMPERATURE_500CM], &read_err);
-              pa_reading_1s[B13_SOIL_TEMPERATURE_500CM].data.f = fData;
+              pa_reading_1s[B13_SOIL_TEMPERATURE_500CM].data.f = fData + sensor[sensor_type].offset;
               pa_reading_1s[B13_SOIL_TEMPERATURE_500CM].err = read_err;
               break;
             default:
             fData = general_adc_read(g_sensor_driver[sensor_type],&read_err);
-            offset = sensor[sensor_type].offset;
-            pa_reading_1s[sensor_type].data.f = fData + offset; 
+            pa_reading_1s[sensor_type].data.f = fData+ sensor[sensor_type].offset;
             break;
           }
         }

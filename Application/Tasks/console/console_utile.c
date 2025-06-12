@@ -176,12 +176,14 @@ int32_t user_decimal(const char *title,int min,int max, int *val)
 /**
  * @retval 0보다 크면 사용자 입력이 있음
  */
-int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t listCnt, bool number)
+int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t listCnt, bool number,int32_t *choice)
 {
   int cnt;
   int index = 0;
   int funcCnt = 0;
   int indexMax;
+  int status=0;
+
   do
   {
     if (list)
@@ -216,68 +218,81 @@ int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t lis
     if (cnt == 1)
     {
       if (index < indexMax)
+      {
+        *choice = index;
+        status = MENU_OK;
         break;
+      }
+
     }
     else if (cnt == EXIT_BACK)
     {
-      return EXIT_BACK;
+      return MENU_BACK;
     }
     else if (cnt == EXIT_PROGRAM)
     {
-      return EXIT_PROGRAM;
+      return MENU_ABORT;
     }
     vt100_printfColor(RED, "유효한 번호가 아닙니다\r\n");
   } while (1);
 
-  return (index + 1);
+  return status;
 }
 
 int input_decimal(int32_t start, int32_t stop, int32_t* dec)
 {
-  int32_t cnt;
+  int32_t status;
 
-  io_printf("범위:%d~%d\r\n", start, stop);
-  vt100_printfColor(GREEN, "값을 입력해 주세요:");
-  cnt = console_scanf("%d", dec);
-  if (cnt == 1)
+  
+  while(1)
   {
-    if (*dec >= start && *dec <= stop)
-    {
-      return 1;
-    }
-    else
-    {
-      vt100_printfColor(RED, "입력값의 범위를 확인해 주세요\r\n");
-      return 0;
-    }
+      io_printf("범위:%d~%d\r\n", start, stop);
+      vt100_printfColor(GREEN, "값을 입력해 주세요:");
+      status = console_scanf("%d", dec);
+      if (status == 1)
+      {
+        if (*dec >= start && *dec <= stop)
+        {
+          return MENU_OK;
+        }
+        else
+        {
+          vt100_printfColor(RED, "입력값의 범위를 확인해 주세요\r\n");
+        }
+      }
+      else if(status == MENU_BACK ||status == MENU_ABORT)
+      {
+        break;
+      }
+        
   }
 
-  return cnt;
+  return status;
 }
 
 int32_t input_use( uint8_t* en)
 {
-  int32_t cnt;
+  int32_t status;
   int32_t dec;
   io_printf("0:미사용\r\n");
   io_printf("1:사용\r\n");
   vt100_printfColor(GREEN, "번호를 선택해 주세요:");
-  cnt = console_scanf("%d", &dec);
-  if (cnt == 1)
+  status = console_scanf("%d", &dec);
+  if (status == 1)
   {
     if (dec >= 0 && dec <= 1)
     {
       *en = (uint8_t)dec;
-      return 1;
+      return MENU_OK;
     }
     else
     {
       io_printf("입력 범위를 확인해주세요\r\n");
-      return 0;
+      return status;
     }
   }
 
-  return cnt;
+  return status;
 }
 
 int32_t choice_enable(uint8_t *enable)

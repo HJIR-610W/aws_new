@@ -14,6 +14,7 @@
 #include "util_memory.h"
 
 #include "adc_calibration.h"
+#include "os_user_def.h"
 
 typedef struct ads1220_cfg_s
 {
@@ -428,7 +429,11 @@ int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 void ads1220_set(driver_t *drv, adc_set_option_t option, void *value)
 {
 
-  osSemaphoreAcquire(drv->sem, osWaitForever);
 
-    osSemaphoreRelease(drv->sem);  // 세마포어 해제
+  OS_PEND_SEM(drv->sem,osWaitForever);
+
+
+  OS_POST_SEM(drv->sem);
+
+
 }

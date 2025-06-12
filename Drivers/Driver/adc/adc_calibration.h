@@ -41,6 +41,7 @@ typedef struct
   // 공장 캘리브레이션 정보
   float factory_slope;
   float factory_offset;
+  float factory_offset_trim;
   float factory_cal_temp;
   bool is_calibrated;
 
@@ -114,10 +115,13 @@ bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_p
                                    float target_ref, int32_t raw_now);
 
 void adc_config_map(void) ;
+bool adc_driver_adjust_offset_trim(config_adc_adv_t* cfg, adc_channel_type_t channel_type,
+  int channel_index,float offset_trim);
+bool adc_driver_read_offset_trim(config_adc_adv_t* cfg, adc_channel_type_t channel_type,
+                                 int channel_index, float* offset_trim);
 
 config_adc_adv_t* get_adc_config(int type);
-
- extern config_adc_nvm_t g_adc_config_nvm;
+extern config_adc_nvm_t g_adc_config_nvm;
 extern config_adc_adv_t g_adc_config_stm32;
 extern config_adc_adv_t g_adc_config_ads1220;
 

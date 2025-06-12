@@ -880,6 +880,7 @@ int handle_save_load(int adc_num)
           g_adc_config_ads1220.differential_cal[channel].is_calibrated = true;
           g_adc_config_ads1220.differential_cal[channel].factory_offset = 4.928633e-03;
           g_adc_config_ads1220.differential_cal[channel].factory_slope = 5.958932e-07;
+          g_adc_config_ads1220.differential_cal[channel].factory_offset_trim = 0.0f;
           g_adc_config_ads1220.differential_cal[channel].offset_temp_coeff = 1;
           g_adc_config_ads1220.differential_cal[channel].slope_temp_coeff = 1;
         }
@@ -893,6 +894,7 @@ int handle_save_load(int adc_num)
           g_adc_config_stm32.single_ended_cal[channel].is_calibrated = true;
           g_adc_config_stm32.single_ended_cal[channel].factory_offset = 0.0f;
           g_adc_config_stm32.single_ended_cal[channel].factory_slope = 8.05e-04;
+          g_adc_config_stm32.single_ended_cal[channel].factory_offset_trim = 0.0f;
           g_adc_config_stm32.single_ended_cal[channel].offset_temp_coeff = 1;
           g_adc_config_stm32.single_ended_cal[channel].slope_temp_coeff = 1;
         }

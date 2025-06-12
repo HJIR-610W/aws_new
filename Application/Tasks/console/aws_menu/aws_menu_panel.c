@@ -29,44 +29,45 @@ int32_t print_menu_panel()
 int32_t aws_menu_display_panel()
 {
   int32_t cnt;
+  int32_t status =0;
+  int32_t choice;
 
   do
   {
-    cnt = select_indexFromList( NULL, print_menu_panel, 0, false);
+    status = select_indexFromList( NULL, print_menu_panel, 0, false,&choice);
 
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
+    if (status != MENU_OK)
     {
-      return cnt;
+      return status;
     }
-    cnt--;
 
-    switch (cnt)
+    switch (choice)
     {
       case 0:
-        cnt = select_indexFromList( panelList, NULL, _countof(panelList), true);
-
-        if (cnt > 0)
-        {
-          cnt--;
-          config.panel_model = (ePANEL_MODEL_t)cnt;
-          WRITE_CFG(panel_model);
-        }
+        status = select_indexFromList( panelList, NULL, _countof(panelList), true,&choice);
+        if(status != MENU_OK)
+        break;
+        config.panel_model = (ePANEL_MODEL_t)choice;
+        WRITE_CFG(panel_model);
         break;
       case 1:
-        if (input_use(&get_config_app()->panel_snow_use))
-        {
-          WRITE_CFG(panel_snow_use);
-        }
+        status = input_use(&get_config_app()->panel_snow_use);
+        if(status != MENU_OK)
+        break;
+        
+        WRITE_CFG(panel_snow_use);
         break;
       case 2:
-        if (input_use( &get_config_app()->panel_barometer_use))
-        {
-          WRITE_CFG(panel_barometer_use);
-        }
+        status =  input_use( &get_config_app()->panel_barometer_use);
+        if(status != MENU_OK)
+        break;
+        
+        WRITE_CFG(panel_barometer_use);
         break;
     }
-
   } while (1);
+
+  return status;
 }
 
 int aws_menu_panel(void)

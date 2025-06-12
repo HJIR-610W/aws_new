@@ -23,10 +23,10 @@ int get_int_input(const char* prompt, int* value, int min_val, int max_val);
 
 int print_menu(int width, const char* title, char** menu_list, int cnt) ;
 int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int32_t *choice);
-int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t listCnt,
-                             bool number) ;
+int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t listCnt, bool number,
+                             int32_t* choice);
 
-int input_decimal(int32_t start, int32_t stop, int32_t* dec);
+    int input_decimal(int32_t start, int32_t stop, int32_t* dec);
 int32_t input_use(uint8_t* en);
 bool wait_break(uint32_t timeoutms);
 int32_t choice_enable(uint8_t* enable);

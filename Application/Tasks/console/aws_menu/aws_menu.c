@@ -12,7 +12,7 @@
 #include "aws_network.h"
 #include "aws_menu_data.h"
 #include "aws_develop.h"
-
+#include "aws_menu_offset.h"
 #define AWS_MENU_WIDTH 30
 int aws_menu(void)
 {
@@ -24,6 +24,7 @@ int aws_menu(void)
                    "네트워크",
                    "데이터",
                    "패널(전광판)",
+                   "오프셋",
                    "켈리브레이션",
                    "관리"};
 
@@ -54,9 +55,12 @@ int aws_menu(void)
         aws_menu_panel();
          break;
       case 7:
-        aws_menu_calibration();
+      aws_menu_offset();
       break;
       case 8:
+        aws_menu_calibration();
+      break;
+      case 9:
         aws_menu_manager();
         break; ;
 

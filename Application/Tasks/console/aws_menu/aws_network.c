@@ -26,18 +26,19 @@ int32_t print_net_use(void)
 
 int32_t menu_net_use(void)
 {
-  int32_t cnt;
 
+  int32_t choice;
+  int32_t status;
   do
   {
-    cnt = select_indexFromList( NULL, print_net_use, 0, false);
-    if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK)
+    status = select_indexFromList( NULL, print_net_use, 0, false,&choice);
+    if (status != MENU_OK)
     {
       break;
     }
-    cnt--;
 
-    switch (cnt)
+
+    switch (choice)
     {
       case 0:
         if (input_use( &get_config_app()->eth_use))
@@ -71,7 +72,7 @@ int32_t menu_net_use(void)
     }
   } while (1);
 
-  return cnt;
+  return status;
 }
 
 int32_t print_net_eth_set(void)
@@ -94,44 +95,8 @@ int32_t print_net_eth_remote_set(void)
   return cnt;
 }
 
-int32_t menu_net_eth_remote_set(void)
-{
-  int32_t cnt;
-  int32_t a, b, c, d;
-  int32_t dec;
 
-  do
-  {
-    cnt = select_indexFromList( NULL, print_net_eth_remote_set, 0, false);
-    if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
-    {
-      return cnt;
-    }
 
-    cnt--;
-    switch (cnt)
-    {
-      case 0:
-        io_printf("xxx.xxx.xxx.xxx:");
-        if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-        {
-          config.eth_server_ip[0] = a;
-          config.eth_server_ip[1] = b;
-          config.eth_server_ip[2] = c;
-          config.eth_server_ip[3] = d;
-          WRITE_CFG(eth_server_ip);
-        }
-        break;
-      case 1:
-        if (input_decimal( 0, 60000, &dec))
-        {
-          config.eth_server_port = dec;
-          WRITE_CFG(eth_server_port);
-        }
-        break;
-    }
-  } while (1);
-}
 
 int32_t print_net_eth_default_set(void)
 {
@@ -150,19 +115,21 @@ int32_t print_net_eth_default_set(void)
 
 int32_t menu_net_eth_default_set(void)
 {
-  int32_t cnt;
+
   int32_t a, b, c, d;
+  int32_t status;
+  int32_t choice;
 
   do
   {
-    cnt = select_indexFromList( NULL, print_net_eth_default_set, 0, false);
-    if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+    status = select_indexFromList( NULL, print_net_eth_default_set, 0, false,&choice);
+    if (status != MENU_OK)
     {
-      return cnt;
+      break;
     }
 
-    cnt--;
-    switch (cnt)
+
+    switch (choice)
     {
       case 0:  // ip
         io_printf("xxx.xxx.xxx.xxx:");
@@ -208,58 +175,25 @@ int32_t menu_net_eth_default_set(void)
         break;
     }
   } while (1);
+  
+  return status;
 }
 
 int32_t menu_net_eth_mode_set(void)
 {
-  int32_t cnt;
-
-
-  cnt = select_indexFromList( ethModeList, NULL, _countof(ethModeList), true);
-  if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
+  int32_t status;
+  int32_t choice;
+  
+  status = select_indexFromList( ethModeList, NULL, _countof(ethModeList), true,&choice);
+  if (status == MENU_OK)
   {
-    return cnt;
+    config.eth_mode = (eETH_MODE_t)choice;
+    WRITE_CFG(eth_mode);
   }
-
-  cnt--;
-
-      config.eth_mode = (eETH_MODE_t)cnt;
-      WRITE_CFG(eth_mode);
-
-  return cnt;
+  
+  return status;
 }
 
-int32_t menu_net_eth_set(void)
-{
-  int32_t cnt;
-
-  const menu_func menu[] = {menu_net_eth_mode_set, menu_net_eth_remote_set,
-                            menu_net_eth_default_set};
-  do
-  {
-    cnt = select_indexFromList( NULL, print_net_eth_set, 0, false);
-    if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
-    {
-      return cnt;
-    }
-    cnt--;
-
-    switch (cnt)
-    {
-      case 0:
-        cnt = menu_net_eth_mode_set();
-        break;
-      default:
-        cnt = menu[cnt]();
-        if (cnt == EXIT_PROGRAM)
-        {
-          return cnt;
-        }
-        break;
-    }
-
-  } while (1);
-}
 
 int32_t print_net_cdma_set(void)
 {
@@ -287,70 +221,6 @@ int32_t print_net_ntle_set(void)
 }
 
 
-int32_t menu_net_cdma_set(void)
-{
-  int32_t cnt;
-  int32_t a, b, c, d;
-  int32_t dec;
-  int32_t (*menu_set)(void) = print_net_cdma_set;
-
-
-    do
-    {
-      if (get_config_app()->cdma_model == eCDMA_NTLE9607)
-      {
-        menu_set = print_net_ntle_set;
-      }
-      else
-      {
-        menu_set = print_net_cdma_set;
-      }
-      cnt = select_indexFromList( NULL, menu_set, 0, false);
-      if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
-      {
-        return cnt;
-      }
-
-      cnt--;
-      switch (cnt)
-      {
-        case 0:
-          io_printf("xxx.xxx.xxx.xxx:");
-          if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-          {
-            config.cdma_server_ip[0] = a;
-            config.cdma_server_ip[1] = b;
-            config.cdma_server_ip[2] = c;
-            config.cdma_server_ip[3] = d;
-            WRITE_CFG(cdma_server_ip);
-          }
-          break;
-        case 1:
-          if (input_decimal( 0, 60000, &dec))
-          {
-            config.cdma_port = dec;
-            WRITE_CFG(cdma_port);
-          }
-          break;
-        case 2:  // ¸ðµ¨
-          cnt = select_indexFromList( cdmaModellList, NULL, _countof(cdmaModellList), true);
-          if (cnt > 0)
-          {
-            cnt--;
-            config.cdma_model = (eCDMA_MODEL_t)cnt;
-            WRITE_CFG(cdma_model);
-          }
-          break;
-        case 3:
-          if (input_use( &get_config_app()->vpn_use))
-          {
-            WRITE_CFG(vpn_use);
-          }
-          break;
-      }
-    } while (1);
-}
-
 int32_t print_net_direct_set(void)
 {
   int32_t cnt = 0;
@@ -360,32 +230,7 @@ int32_t print_net_direct_set(void)
   return cnt;
 }
 
-int32_t menu_net_direct_set(void)
-{
-  int32_t cnt;
-  int32_t dec;
 
-  do
-  {
-    cnt = select_indexFromList( NULL, print_net_direct_set, 0, false);
-    if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK)
-    {
-      return cnt;
-    }
-
-    cnt--;
-    switch (cnt)
-    {
-      case 0:  // baud
-        if (input_decimal( 0, 115200, &dec))
-        {
-          config.direct_baud = dec;
-          WRITE_CFG(direct_baud);
-        }
-        break;
-    }
-  } while (1);
-}
 
 int32_t print_net_set(void)
 {
@@ -398,27 +243,7 @@ int32_t print_net_set(void)
   return cnt;
 }
 
-int32_t menu_net_set(void)
-{
-  int32_t cnt;
-  const menu_func menu[] = {menu_net_eth_set, menu_net_cdma_set, menu_net_direct_set};
-  do
-  {
-    cnt = select_indexFromList( NULL, print_net_set, 0, false);
-    if (cnt == EXIT_PROGRAM || cnt == EXIT_BACK || cnt <= 0)
-    {
-      break;
-    }
-    cnt--;
-    cnt = menu[cnt]();
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
-    {
-      break;
-    }
-  } while(1);
 
-  return cnt;
-}
 
 int32_t print_menu_vhf(void)
 {
@@ -441,6 +266,8 @@ int32_t menu_net_vhf_loop_test(void) { return 0; }
 
 int32_t menu_net_vhf_tone_test(void) { return 0; }
 
+
+#if 0 
 int32_t menu_net_vhf(void)
 {
   int32_t cnt;
@@ -504,20 +331,22 @@ int32_t menu_net_vhf(void)
 
   return cnt;
 }
-
+#endif
 int32_t menu_net_protocol(void)
 {
-  int32_t cnt;
 
-  cnt = select_indexFromList( protocolList, NULL, _countof(protocolList), true);
+  int32_t status;
+  int32_t choice;
+  
+  status = select_indexFromList( protocolList, NULL, _countof(protocolList), true,&choice);
 
-  if (cnt > 0)
+  if(status ==MENU_OK)
   {
-    config.aws_protocol_type = (eAWS_PROTOCOL_t)(cnt - 1);
+    config.aws_protocol_type = (eAWS_PROTOCOL_t)(choice);
     WRITE_CFG(aws_protocol_type);
   }
 
-  return cnt;
+  return status;
 }
 int32_t print_menu_net(void)
 {
@@ -535,29 +364,7 @@ int32_t print_menu_net(void)
   return cnt;
 }
 
-int32_t menu_network(void)
-{
-  int32_t cnt;
 
-  const menu_func menu[] = {menu_net_use, menu_net_set, menu_net_protocol, menu_net_vhf};
-
-  while (1)
-  {
-    cnt = select_indexFromList( NULL, print_menu_net, 0, false);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
-    {
-      break;
-    }
-    cnt--;
-    cnt = menu[cnt]();
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
-    {
-      break;
-    }
-  }
-
-  return cnt;
-}
 
 /*
 IP:192.168.1.1

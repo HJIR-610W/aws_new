@@ -91,29 +91,29 @@ void print_flash(uint32_t start, uint32_t size, uint32_t width)
 
 int32_t menu_developer_memory(void)
 {
-  int32_t cnt;
+  int32_t status;
+  int32_t choice;
   int32_t inCnt;
   int32_t start, size, len;
 
   const char *memList[] = {"flash", "fram"};
 
-  cnt = select_indexFromList( memList, NULL, _countof(memList), true);
+  status = select_indexFromList( memList, NULL, _countof(memList), true,&choice);
 
-  if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
+  if (status != MENU_OK)
   {
-    return cnt;
+    return status;
   }
 
   io_printf("start,size,len>>");
 
   inCnt = console_scanf("%d,%d,%d", &start, &size, &len);
-  if (inCnt == EXIT_BACK || inCnt == EXIT_PROGRAM && cnt <= 0)
+  if (inCnt == EXIT_BACK || inCnt == EXIT_PROGRAM && choice < 0)
   {
     return inCnt;
   }
 
-  cnt--;
-  switch (cnt)
+  switch (choice)
   {
     case 0:  // flash;
       print_flash(start, size, len);
@@ -252,7 +252,7 @@ int32_t menu_task_print_force(void)
 
   io_printf("특정 Task는 1회성 실행으로 task id가 유지 되지 않는다.");
   io_printf("강제 출력을 하면 task_prinf가 강제 실행된다.\r\n");
-  if (get_user_confirm("task printf 강제출력하겠습니까?") == 1)
+  if (get_user_confirm("task printf 강제출력하겠습니까?") == MENU_OK)
   {
     set_forced_print(true);
   }

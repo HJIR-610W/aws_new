@@ -56,57 +56,57 @@ int32_t input_date( DATE_TIME_BUF* nt)
 
 int32_t menu_system(void)
 {
-  int cnt;
+
   int32_t dec;
   DATE_TIME_BUF nt;
+  int32_t status,choice;
 
   do
   {
-    cnt = select_indexFromList( NULL, print_menu_system, 0, false);
-    if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM && cnt <= 0)
+    status = select_indexFromList( NULL, print_menu_system, 0, false,&choice);
+    if (status  != MENU_OK)
     {
-      return cnt;
+      break;
     }
-    cnt--;
-    switch (cnt)
+
+    switch (choice)
     {
       case 0:
-        cnt = input_date( &nt);
-        if (cnt > 0)
-        {
+        status = input_date( &nt);
+        if (status != MENU_OK)
+          break;
+
           bsp_rtc_set(&nt);
           bsp_rtc_update();
-        }
+
         break;
       case 1:  // id
-        cnt = input_decimal( 0, 9999, &dec);
-        if (cnt)
-        {
+        status = input_decimal( 0, 9999, &dec);
+          if (status != MENU_OK)
+          break;
           config.id = dec;
           WRITE_CFG(id);
-        }
         break;
       case 2:  // password
-        cnt = input_decimal( 0, 9999, &dec);
-        if (cnt)
-        {
+        status = input_decimal( 0, 9999, &dec);
+        if (status != MENU_OK)
+        break;
           config.password = dec;
           WRITE_CFG(password);
-        }
         break;
       case 3:  // charger type
-        cnt = select_indexFromList( g_chgList, NULL, sizeof(g_chgList) / sizeof(g_chgList[0]),
-                                   true);
-        if (cnt > 0)
-        {
-          cnt--;
-          config.charger_model = (eCHARGER_MODEL_t)cnt;
+        status = select_indexFromList( g_chgList, NULL, sizeof(g_chgList) / sizeof(g_chgList[0]),
+                                   true,&choice);
+        if (status != MENU_OK)
+          break;
+          config.charger_model = (eCHARGER_MODEL_t)choice;
           WRITE_CFG(charger_model);
           io_printf("리셋 후 적용됩니다\r\n");
-        }
         break;
     }
   } while (1);
+  
+  return status;
 }
 
 
@@ -151,33 +151,37 @@ int aws_menu_system(void)
     switch (choice)
     {
       case 1:
-        if (input_date(&nt) > 0)
-        {
+        status = input_date(&nt);
+          if(status != MENU_OK)
+            break;
+
           bsp_rtc_set(&nt);
           bsp_rtc_update();
-        }
+
         break;
       case 2:  // id
-        if (input_decimal(0, 9999, &dec))
-        {
+        status = input_decimal(0, 9999, &dec);
+        if(status != MENU_OK)
+          break;
           config.id = dec;
           WRITE_CFG(id);
-        }
+
         break;
       case 3:  // password
-        if (input_decimal(0, 9999, &dec))
-        {
+        status = input_decimal(0, 9999, &dec);
+        if(status != MENU_OK)
+          break;
           config.password = dec;
           WRITE_CFG(password);
-        }
+
         break;
       case 4:  // charger type
         status = choice_menu(24,"충전기 종류",(char **)g_chgList,_countof(g_chgList),&choice);
         if(status != MENU_OK)
         {
-          return status;;
+          break;
         }
-          config.charger_model = (eCHARGER_MODEL_t)(choice-1);
+          config.charger_model = (eCHARGER_MODEL_t)(choice);
           WRITE_CFG(charger_model);
           io_printf("리셋 후 적용됩니다\r\n");
         break;

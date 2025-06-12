@@ -68,6 +68,7 @@ typedef struct config_s
   config_header_t header;
   uint8_t start;  //  bool restart_required;
   uint16_t id;
+  sensor_t sensor[SENSOR_LIST_MAX];
   uint16_t password;
   eCHARGER_MODEL_t charger_model;  // 설정 후 리셋 요구됨
   eAWS_PROTOCOL_t aws_protocol_type;
@@ -97,7 +98,6 @@ typedef struct config_s
   uint8_t vpn_use;
   uint8_t ac_use;
   uint16_t m_usRainDtOffDelay;//구 AWS
-  sensor_t sensor[SENSOR_LIST_MAX];
 }config_t;
 
 

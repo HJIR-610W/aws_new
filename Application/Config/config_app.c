@@ -334,11 +334,6 @@ config_t *get_config_app(void)
   return &config; 
 }
 
-void set_sensor_offset(eSENSOR_LIST_t sensor,float offset)
-{
-  config.sensor[sensor].offset = offset;
-  WRITE_CFG(sensor[sensor].offset);
-}
 
 void set_config_app_password(uint16_t password)
 {

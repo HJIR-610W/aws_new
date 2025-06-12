@@ -1765,6 +1765,9 @@
                         <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_manager.c</name>
                     </file>
                     <file>
+                        <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_offset.c</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_panel.c</name>
                     </file>
                     <file>
