@@ -54,61 +54,6 @@ int32_t input_date( DATE_TIME_BUF* nt)
   return cnt;
 }
 
-int32_t menu_system(void)
-{
-
-  int32_t dec;
-  DATE_TIME_BUF nt;
-  int32_t status,choice;
-
-  do
-  {
-    status = select_indexFromList( NULL, print_menu_system, 0, false,&choice);
-    if (status  != MENU_OK)
-    {
-      break;
-    }
-
-    switch (choice)
-    {
-      case 0:
-        status = input_date( &nt);
-        if (status != MENU_OK)
-          break;
-
-          bsp_rtc_set(&nt);
-          bsp_rtc_update();
-
-        break;
-      case 1:  // id
-        status = input_decimal( 0, 9999, &dec);
-          if (status != MENU_OK)
-          break;
-          config.id = dec;
-          WRITE_CFG(id);
-        break;
-      case 2:  // password
-        status = input_decimal( 0, 9999, &dec);
-        if (status != MENU_OK)
-        break;
-          config.password = dec;
-          WRITE_CFG(password);
-        break;
-      case 3:  // charger type
-        status = select_indexFromList( g_chgList, NULL, sizeof(g_chgList) / sizeof(g_chgList[0]),
-                                   true,&choice);
-        if (status != MENU_OK)
-          break;
-          config.charger_model = (eCHARGER_MODEL_t)choice;
-          WRITE_CFG(charger_model);
-          io_printf("리셋 후 적용됩니다\r\n");
-        break;
-    }
-  } while (1);
-  
-  return status;
-}
-
 
 #define SYSTEM_MENU_WITDH 30
 
@@ -160,7 +105,7 @@ int aws_menu_system(void)
 
         break;
       case 2:  // id
-        status = input_decimal(0, 9999, &dec);
+        status = input_decimal_prompt("ID",&dec,0, 9999);
         if(status != MENU_OK)
           break;
           config.id = dec;
@@ -168,7 +113,7 @@ int aws_menu_system(void)
 
         break;
       case 3:  // password
-        status = input_decimal(0, 9999, &dec);
+        status = input_decimal_prompt("비밀번호",&dec,0, 9999);
         if(status != MENU_OK)
           break;
           config.password = dec;

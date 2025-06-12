@@ -292,31 +292,44 @@ int cli_scanf_s(const char *fmt, ...)
 
 #define PASSWORD "yes"
 
-int get_confirm_input(void)
+int confirm_continue(int32_t *ok)
 {
   char input[16] = {0};
-
-  io_printf("계속 진행하려면 yes를 입력하세요.\r\n");
-  io_printf("확인 문자: ");
-
-  int ret = cli_scanf_s("%15s", input);  // 문자열 입력
-
-  if (ret <= 0)
+  int status;
+  
+  while (1)
   {
-    io_printf("입력이 실패했습니다.\r\n");
-    return MENU_ABORT;
-  }
+    io_printf("계속 진행하려면 yes를 입력하세요.\r\n");
+    io_printf("입력:");
+     status = cli_scanf_s("%15s", input);  // 문자열 입력
 
-  if (strcmp(input, PASSWORD) == 0)
-  {
-    io_printf("확인 완료.\r\n");
-    return MENU_OK;
+    if (status == CLI_KEYCODE_CTRL_C)
+    {
+      status = MENU_BACK;
+      break;
+    }
+    else if (status == CLI_KEYCODE_CTRL_Q)
+    {
+      status = MENU_ABORT;
+      break;
+    }
+    else
+    {
+      if (strncmp(input, "yes", 3) == 0)
+      {
+        *ok = 1;
+        status = MENU_OK;
+        break;
+      }
+      if (strncmp(input, "no", 2) == 0)
+      {
+        *ok = 0;
+        status = MENU_OK;
+        break;
+      }
+    }
   }
-  else
-  {
-    io_printf("오류: 진행이 중단됩니다\r\n");
-    return MENU_ABORT;
-  }
+  return status;
 }
 
 int check_pass(const char *title,char *password_str)

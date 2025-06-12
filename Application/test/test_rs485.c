@@ -25,7 +25,7 @@ void test_rs485(void)
 
   io_printf("통신 속도를 입력해주세요\r\n");
 
-  if(get_int_input("통신 속도를 입력해주세요", &baud, 1200, 115200)!= MENU_OK)
+  if(input_decimal_prompt("통신 속도를 입력해주세요", &baud, 1200, 115200)!= MENU_OK)
   {
     baud=57600;
     io_printf("기본 속도로 설정합니다.%d\r\n", baud);

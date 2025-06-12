@@ -3,9 +3,9 @@
 #include "util_memory.h"
 #include "dev_io.h"
 
-#include "console_aws_display.h"
+#include "aws_menu_display.h"
 #include "aws_system.h"
-#include "console_cali.h"
+
 #include "aws_menu_manager.h"
 #include "aws_menu_panel.h"
 #include "aws_menu_sensor.h"
@@ -13,6 +13,7 @@
 #include "aws_menu_data.h"
 #include "aws_develop.h"
 #include "aws_menu_offset.h"
+#include "aws_menu_cali.h"
 #define AWS_MENU_WIDTH 30
 int aws_menu(void)
 {

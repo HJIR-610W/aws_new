@@ -425,7 +425,7 @@ int32_t rs232_config_set( sensor_t *sensor, uint8_t cnt)
       break;
 
     case RS232_SET_BAUD:
-      status = input_decimal( 9600, 115200, &dec);
+      status = input_decimal_prompt("통신속도",&dec,9600, 115200);
       if(status != MENU_OK)
         break;
         rs232->baud = dec;
@@ -477,7 +477,7 @@ int32_t rs485_config_set( sensor_t *sensor, uint8_t cnt)
       break;
 
     case RS485_SET_BAUD:
-      status = input_decimal(9600, 115200, &dec);
+      status = input_decimal_prompt("통신속도",&dec,9600, 115200);
       if(status != MENU_OK)
         break;
 
@@ -520,7 +520,7 @@ int32_t hjwind_config_set(  sensor_t *sensor, uint8_t munu_index)
   switch (munu_index)
   {
     case HJWIND_CFG_FULL:
-      status = input_decimal( 0, 999999, &dec);
+      status = input_decimal_prompt("FULL SET",&dec,0, 999999);
       if(status != MENU_OK)
       {
         break;
@@ -530,8 +530,8 @@ int32_t hjwind_config_set(  sensor_t *sensor, uint8_t munu_index)
         save_config_sensor();
       break;
     case HJWIND_CFG_OFF:
-      status = input_decimal( 0, 999999, &dec);
-      if(status != MENU_OK)
+      status = input_decimal_prompt("OFFSET", &dec, 0, 999999);
+      if (status != MENU_OK)
       {
         break;
       }
@@ -679,7 +679,7 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
 
       break;
     case HJTEMP_CFG_MODBUS_ID:
-      status = input_decimal( 0, 247, &dec);
+      status = input_decimal_prompt("ID", &dec,0, 247);
       if(status !=MENU_OK)
         break;
 
@@ -775,7 +775,7 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
       }
       break;
     case HJTEMP_CFG_MODBUS_ID:
-      status = input_decimal( 0, 247, &dec);
+      status = input_decimal_prompt("ID",&dec, 0, 247);
       
       if(status != MENU_OK)
         break;
@@ -855,7 +855,7 @@ int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
 
       break;
     case OTT_SMP3_CFG_ID:
-      status = input_decimal( 0, 247, &dec);
+      status = input_decimal_prompt("ID",&dec, 0, 247);
       if(status !=MENU_OK)
         break;
         ott->modbus_id = dec;
@@ -951,7 +951,7 @@ int32_t adc_config_set( sensor_t *sensor, uint8_t menu_index)
 
       break;
     case ADC_SET_CHANNLEL:  // channel;
-      status = input_decimal( 0, 17, &dec);
+      status = input_decimal_prompt("채널",&dec, 0, 17);
       if(status !=MENU_OK)
       break;
 
@@ -960,7 +960,7 @@ int32_t adc_config_set( sensor_t *sensor, uint8_t menu_index)
 
       break;
     case ADC_SET_HIGHSCALE:  // hish cale;
-      status = input_decimal( -1000000, 1000000, &dec);
+      status = input_decimal_prompt("HIGH SCALE",&dec, -1000000, 1000000);
       if (status != MENU_OK)
         break;
 
@@ -969,7 +969,7 @@ int32_t adc_config_set( sensor_t *sensor, uint8_t menu_index)
 
       break;
     case ADC_SET_LOWSCALE:  // low cale;
-      status =input_decimal( -1000000, 1000000, &dec);
+      status = input_decimal_prompt("LOW SCALE", &dec, -1000000, 1000000);
       if (status != MENU_OK)
         break;
 
@@ -978,7 +978,7 @@ int32_t adc_config_set( sensor_t *sensor, uint8_t menu_index)
 
       break;
     case ADC_SET_SCALE:  // ale;
-      status = input_decimal( -1000000, 1000000, &dec);
+      status = input_decimal_prompt("SCALE", &dec, -1000000, 1000000);
       if (status != MENU_OK)
         break;
 
@@ -988,7 +988,7 @@ int32_t adc_config_set( sensor_t *sensor, uint8_t menu_index)
       break;
 
     case ADC_SET_OUTMAXVOLT:
-      status= input_decimal( -1000000, 1000000, &dec);
+      status = input_decimal_prompt("OUT VOLTAGE MAX(mv)", &dec, -1000000, 1000000);
       if (status != MENU_OK)
         break;
 
@@ -998,7 +998,7 @@ int32_t adc_config_set( sensor_t *sensor, uint8_t menu_index)
       break;
 
     case ADC_SET_OUTMINVOLT:
-      status =input_decimal( -1000000, 1000000, &dec);
+      status = input_decimal_prompt("OUT VOLTAGE MIN(mv)", &dec, -1000000, 1000000);
       if (status != MENU_OK)
         break;
 

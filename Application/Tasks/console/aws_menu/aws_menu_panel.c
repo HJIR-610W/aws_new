@@ -28,7 +28,6 @@ int32_t print_menu_panel()
 }
 int32_t aws_menu_display_panel()
 {
-  int32_t cnt;
   int32_t status =0;
   int32_t choice;
 
@@ -38,7 +37,7 @@ int32_t aws_menu_display_panel()
 
     if (status != MENU_OK)
     {
-      return status;
+      break;
     }
 
     switch (choice)
@@ -51,14 +50,14 @@ int32_t aws_menu_display_panel()
         WRITE_CFG(panel_model);
         break;
       case 1:
-        status = input_use(&get_config_app()->panel_snow_use);
+        status = choice_enable(&get_config_app()->panel_snow_use);
         if(status != MENU_OK)
         break;
         
         WRITE_CFG(panel_snow_use);
         break;
       case 2:
-        status =  input_use( &get_config_app()->panel_barometer_use);
+        status = choice_enable(&get_config_app()->panel_barometer_use);
         if(status != MENU_OK)
         break;
         
@@ -112,25 +111,22 @@ int aws_menu_panel(void)
       case 1:
         status = choice_menu(24, "패널 종류",(char **)panelList, _countof(panelList), &choice);
         if(status != MENU_OK)
-        {
           break;
-        }
+
         config.panel_model = (ePANEL_MODEL_t)(choice-1);
         WRITE_CFG(panel_model);
         break;
       case 2:
-        if (input_use(&get_config_app()->panel_snow_use))
-        {
+        status = choice_enable(&get_config_app()->panel_snow_use);
+        if(status != MENU_OK)
+          break;
           WRITE_CFG(panel_snow_use);
-        }
-        break;
         break;
       case 3:
-        if (input_use(&get_config_app()->panel_snow_use))
-        {
-          WRITE_CFG(panel_snow_use);
-        }
+        status = choice_enable(&get_config_app()->panel_barometer_use);
+        if(status != MENU_OK)
         break;
+        WRITE_CFG(panel_barometer_use);
         break;
     }
 

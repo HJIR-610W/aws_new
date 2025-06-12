@@ -15,11 +15,6 @@
 
 
 
-
-
-
-
-
 // eTaskState 열거형을 문자열로 변환하는 헬퍼 함수
 static const char *prvTaskStateToString(eTaskState eState)
 {

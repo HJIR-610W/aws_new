@@ -12,10 +12,11 @@
 #include "test_count.h"
 #include "test_dinOut.h"
 #include "test_power.h"
-#include "console_cali.h"
+
 #include "test_rtc.h"
 #include "test_eth.h"
 #include "test_filesystem.h"
+#include "aws_menu_cali.h"
 
 int run_test_root()
 {
@@ -43,7 +44,7 @@ int run_test_root()
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = get_int_input("선택", &choice, 1, 15);
+    status = input_decimal_prompt("선택", &choice, 1, 15);
     if (status == MENU_ABORT || status == MENU_BACK)
       return status;
     if (status != MENU_OK)

@@ -18,19 +18,21 @@ typedef int32_t (*menu_func)(void);
 char recv_key(uint32_t timeout_ms) ;
 void make_comList(char *out, uint16_t outsize);
 
-int get_int_input(const char* prompt, int* value, int min_val, int max_val);
+int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_val);
 
+
+int input_float_prompt(const char* prompt, float* value);
 
 int print_menu(int width, const char* title, char** menu_list, int cnt) ;
 int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int32_t *choice);
 int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t listCnt, bool number,
                              int32_t* choice);
 
-    int input_decimal(int32_t start, int32_t stop, int32_t* dec);
-int32_t input_use(uint8_t* en);
+
+
 bool wait_break(uint32_t timeoutms);
 int32_t choice_enable(uint8_t* enable);
-int32_t user_decimal(const char* title, int min, int max, int* val);
+
 
     extern const char* g_unknown;
 

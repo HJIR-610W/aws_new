@@ -14,7 +14,6 @@
 #include "app_adc.h"
 #include "config_adc.h"
 #include "console_define.h"
-#include "console_scanf.h"
 #include "driver_adc.h"
 #include "fsl_shell.h"
 #include "mcu_utile.h"
@@ -22,6 +21,9 @@
 #include "util_filter.h"
 #include "util_time.h"
 #include "vt100_command.h"
+#include "cli_input.h"
+#include "cli_key_code.h"
+
 const char *g_unknown = "unknown";
 
 const char* enableList[] = {"미사용", "사용"};
@@ -48,21 +50,24 @@ return ch;
 
 }
 
-int get_int_input(const char* prompt, int* value, int min_val, int max_val)
+
+//범위 안에 값을 입력 받음
+int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_val)
 {
   int ret_scan;
   int ret = MENU_ABORT;
   int input_value=0;
-  while (3)
+  
+  while(1)
   {
     io_printf("%s (%d ~ %d): ", prompt, min_val, max_val);
-    ret_scan = console_scanf("%d", &input_value);
-    if (ret_scan == -3)
+    ret_scan = cli_scanf_s("%d", &input_value);
+    if (ret_scan == CLI_KEYCODE_CTRL_Q)
     {
       ret = MENU_ABORT;
       break;
     }
-    else if (ret_scan == -1)
+    else if (ret_scan == CLI_KEYCODE_CTRL_C)
     {
       ret = MENU_BACK;
       break;
@@ -142,7 +147,7 @@ int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int3
 
   max_number = print_menu(width, title, menu_list,cnt);
 
-  status = get_int_input("선택", choice, 1, max_number);
+  status = input_decimal_prompt("선택", choice, 1, max_number);
   if (status == MENU_ABORT || status == MENU_BACK)
     return status;
   if (status == MENU_OK)
@@ -152,24 +157,6 @@ int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int3
   }
 }
 
-int32_t user_decimal(const char *title,int min,int max, int *val)
-{
-
-  int status;
-
-
-  while (1)
-  {
-    io_printf("%s\r\n",title);
-    status = get_int_input("입력", val, min, max);
-    if (status == MENU_ABORT || status == MENU_BACK)
-      return status;
-    if (status == MENU_OK)
-    {
-      return status;
-    }
-  }
-}
 
 
 
@@ -213,7 +200,7 @@ int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t lis
     }
 
     vt100_printfColor(GREEN, "번호를 선택해 주세요:");
-    cnt = console_scanf("%d", &index);
+    cnt = cli_scanf_s("%d", &index);
     io_printf("\r\n");
     if (cnt == 1)
     {
@@ -223,15 +210,16 @@ int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t lis
         status = MENU_OK;
         break;
       }
-
     }
-    else if (cnt == EXIT_BACK)
+    else if (status == CLI_KEYCODE_CTRL_C)
     {
-      return MENU_BACK;
+      status = MENU_BACK;
+      break;
     }
-    else if (cnt == EXIT_PROGRAM)
+    else if(status == CLI_KEYCODE_CTRL_Q)
     {
-      return MENU_ABORT;
+      status  = MENU_ABORT;
+      break;
     }
     vt100_printfColor(RED, "유효한 번호가 아닙니다\r\n");
   } while (1);
@@ -239,61 +227,7 @@ int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t lis
   return status;
 }
 
-int input_decimal(int32_t start, int32_t stop, int32_t* dec)
-{
-  int32_t status;
 
-  
-  while(1)
-  {
-      io_printf("범위:%d~%d\r\n", start, stop);
-      vt100_printfColor(GREEN, "값을 입력해 주세요:");
-      status = console_scanf("%d", dec);
-      if (status == 1)
-      {
-        if (*dec >= start && *dec <= stop)
-        {
-          return MENU_OK;
-        }
-        else
-        {
-          vt100_printfColor(RED, "입력값의 범위를 확인해 주세요\r\n");
-        }
-      }
-      else if(status == MENU_BACK ||status == MENU_ABORT)
-      {
-        break;
-      }
-        
-  }
-
-  return status;
-}
-
-int32_t input_use( uint8_t* en)
-{
-  int32_t status;
-  int32_t dec;
-  io_printf("0:미사용\r\n");
-  io_printf("1:사용\r\n");
-  vt100_printfColor(GREEN, "번호를 선택해 주세요:");
-  status = console_scanf("%d", &dec);
-  if (status == 1)
-  {
-    if (dec >= 0 && dec <= 1)
-    {
-      *en = (uint8_t)dec;
-      return MENU_OK;
-    }
-    else
-    {
-      io_printf("입력 범위를 확인해주세요\r\n");
-      return status;
-    }
-  }
-
-  return status;
-}
 
 int32_t choice_enable(uint8_t *enable)
 {
@@ -326,4 +260,33 @@ bool wait_break(uint32_t timeoutms)
   }
 
   return false;
+}
+
+int input_float_prompt(const char* prompt, float* value)
+{
+  int ret_scan;
+  int ret;
+
+  while (1)
+  {
+    io_printf("%s: ", prompt);
+    ret_scan = cli_scanf_s("%f", value);
+    if (ret_scan == CLI_KEYCODE_CTRL_C)
+    {
+      ret = MENU_BACK;
+      break;
+    }
+    else if (ret_scan == CLI_KEYCODE_CTRL_Q)
+    {
+      ret = MENU_ABORT;
+      break;
+    }
+    else if (ret_scan == 1)
+    {
+      ret = MENU_OK;
+      break;
+    }
+    io_printf("값이 입력되지 않았습니다");
+  }
+  return ret;
 }

@@ -1762,6 +1762,12 @@
                         <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_data.c</name>
                     </file>
                     <file>
+                        <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_display.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_display.h</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_manager.c</name>
                     </file>
                     <file>
@@ -1783,18 +1789,6 @@
                         <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_system.c</name>
                     </file>
                 </group>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_aws_display.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_aws_display.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_cali.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Tasks\console\console_cali.h</name>
-                </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\console\console_data.c</name>
                 </file>

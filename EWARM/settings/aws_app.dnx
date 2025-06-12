@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>716346879</Checksum>
+        <Checksum>3957728766</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>

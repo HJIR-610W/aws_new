@@ -10,7 +10,7 @@
 int uart_get_line_with_edit(char *buf, int maxlen);
 int cli_scanf_s(const char *fmt, ...);
 
-int get_confirm_input(void);
+int confirm_continue(int32_t *ok);
 int32_t get_user_confirm(const char *message);
 
 int check_pass(const char *title, char *password_str);

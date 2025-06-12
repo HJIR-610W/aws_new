@@ -6,6 +6,7 @@
 #include "config_app.h"
 
 #include "console_scanf.h"
+#include "cli_input.h"
 
 #define AWS_MENU_NET_WIDTH 30
 
@@ -41,14 +42,17 @@ int32_t menu_net_use(void)
     switch (choice)
     {
       case 0:
-        if (input_use( &get_config_app()->eth_use))
-        {
+        status =  choice_enable( &get_config_app()->eth_use);
+        if(status != MENU_OK)
+        break;
+
           WRITE_CFG(eth_use);
-        }
         break;
       case 1:
-        if (input_use( &get_config_app()->cdma_use))
-        {
+       status =choice_enable( &get_config_app()->cdma_use);
+       if(status !=MENU_OK)
+       break;
+ 
           if (get_config_app()->cdma_use)
           {
             config.direct_use = 0;
@@ -56,20 +60,22 @@ int32_t menu_net_use(void)
           }
 
           WRITE_CFG(cdma_use);
-        }
+
         break;
       case 2:
-        if (input_use( &get_config_app()->direct_use))
-        {
+        status = choice_enable( &get_config_app()->direct_use);
+        if(status != MENU_OK)
+        break;
           if (get_config_app()->direct_use)
           {
             config.cdma_use = 0;
             WRITE_CFG(cdma_use);
           }
           WRITE_CFG(direct_use);
-        }
         break;
     }
+    if(status != MENU_OK)
+    break;
   } while (1);
 
   return status;
@@ -113,6 +119,37 @@ int32_t print_net_eth_default_set(void)
   return cnt;
 }
 
+int32_t input_ip(int *a, int *b, int *c, int *d)
+{
+  int32_t status;
+
+  while(1)
+  {
+    io_printf("IP(xxx.xxx.xxx.xxx)");
+    io_printf("입력:");
+    status = cli_scanf_s("%d.%d.%d.%d", a, b, c, d);
+
+    if (status == CLI_KEYCODE_CTRL_C )
+    {
+      status = MENU_BACK;
+      break;
+    }
+    else if(status==CLI_KEYCODE_CTRL_Q)
+    {
+      status = MENU_ABORT;
+      break; 
+    }
+    else if(status == 4)
+    {
+      status = MENU_OK;
+      break;
+    }
+    io_printf("값이 입력되지 않았습니다.");
+  }
+
+  return status;
+}
+
 int32_t menu_net_eth_default_set(void)
 {
 
@@ -128,50 +165,46 @@ int32_t menu_net_eth_default_set(void)
       break;
     }
 
-
     switch (choice)
     {
       case 0:  // ip
-        io_printf("xxx.xxx.xxx.xxx:");
-        if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-        {
+        status = input_ip(&a, &b, &c, &d);
+        if(status !=MENU_OK)
+        break;
           config.eth_ip[0] = a;
           config.eth_ip[1] = b;
           config.eth_ip[2] = c;
           config.eth_ip[3] = d;
           WRITE_CFG(eth_ip);
-        }
+        
         break;
       case 1:  // subnet
-        io_printf("xxx.xxx.xxx.xxx:");
-        if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-        {
-          config.eth_subnet[0] = a;
-          config.eth_subnet[1] = b;
-          config.eth_subnet[2] = c;
-          config.eth_subnet[3] = d;
-          WRITE_CFG(eth_subnet);
-        }
+        status = input_ip(&a, &b, &c, &d);
+        if (status != MENU_OK)
+          break;
+        config.eth_subnet[0] = a;
+        config.eth_subnet[1] = b;
+        config.eth_subnet[2] = c;
+        config.eth_subnet[3] = d;
+        WRITE_CFG(eth_subnet);
+
         break;
       case 2:  // gateway
-        io_printf("xxx.xxx.xxx.xxx:");
-        if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-        {
-          config.eth_gateway[0] = a;
-          config.eth_gateway[1] = b;
-          config.eth_gateway[2] = c;
-          config.eth_gateway[3] = d;
-          WRITE_CFG(eth_gateway);
-        }
+        status = input_ip(&a, &b, &c, &d);
+        if (status != MENU_OK)
+          break;
+        config.eth_gateway[0] = a;
+        config.eth_gateway[1] = b;
+        config.eth_gateway[2] = c;
+        config.eth_gateway[3] = d;
+        WRITE_CFG(eth_gateway);
         break;
       case 3:  // port
-        io_printf("x:");
-        if (console_scanf("%d%d", &a) == 1)
-        {
+       status = input_decimal_prompt("포트",&a,0,100000);
+        if(status != MENU_OK)
+          break;
           config.eth_local_port = a;
-
-          WRITE_CFG(eth_local_port);
-        }
+         WRITE_CFG(eth_local_port);
         break;
     }
   } while (1);
@@ -403,22 +436,23 @@ int dec;
     switch (choice)
     {
       case 1:
-        io_printf("xxx.xxx.xxx.xxx:");
-        if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-        {
+        status = input_ip(&a, &b, &c, &d);
+        if(status != MENU_OK)
+        break;
           config.eth_server_ip[0] = a;
           config.eth_server_ip[1] = b;
           config.eth_server_ip[2] = c;
           config.eth_server_ip[3] = d;
           WRITE_CFG(eth_server_ip);
-        }
+
         break;
       case 2:
-        if (input_decimal(0, 60000, &dec))
-        {
+        status = input_decimal_prompt("포트",&dec,0, 60000);
+        if(status != MENU_OK)
+        break;
           config.eth_server_port = dec;
           WRITE_CFG(eth_server_port);
-        }
+
         break;
     }
 
@@ -471,47 +505,46 @@ int32_t aws_eth_default(void)
     switch (choice)
       {
         case 1:  // ip
-          io_printf("xxx.xxx.xxx.xxx:");
-          if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-          {
+          status = input_ip( &a, &b, &c, &d);
+          if(status != MENU_OK)
+          break;
+
             config.eth_ip[0] = a;
             config.eth_ip[1] = b;
             config.eth_ip[2] = c;
             config.eth_ip[3] = d;
             WRITE_CFG(eth_ip);
-          }
+
           break;
         case 2:  // subnet
-          io_printf("xxx.xxx.xxx.xxx:");
-          if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-          {
-            config.eth_subnet[0] = a;
-            config.eth_subnet[1] = b;
-            config.eth_subnet[2] = c;
-            config.eth_subnet[3] = d;
-            WRITE_CFG(eth_subnet);
-          }
+          status = input_ip(&a, &b, &c, &d);
+          if (status != MENU_OK)
+            break;
+          config.eth_subnet[0] = a;
+          config.eth_subnet[1] = b;
+          config.eth_subnet[2] = c;
+          config.eth_subnet[3] = d;
+          WRITE_CFG(eth_subnet);
+
           break;
         case 3:  // gateway
-          io_printf("xxx.xxx.xxx.xxx:");
-          if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-          {
-            config.eth_gateway[0] = a;
-            config.eth_gateway[1] = b;
-            config.eth_gateway[2] = c;
-            config.eth_gateway[3] = d;
-            WRITE_CFG(eth_gateway);
-          }
+          status = input_ip(&a, &b, &c, &d);
+          if (status != MENU_OK)
+            break;
+          config.eth_gateway[0] = a;
+          config.eth_gateway[1] = b;
+          config.eth_gateway[2] = c;
+          config.eth_gateway[3] = d;
+          WRITE_CFG(eth_gateway);
+
           break;
         case 4:  // port
-          io_printf("x:");
-          if (console_scanf("%d%d", &a) == 1)
-          {
-            config.eth_local_port = a;
-
-            WRITE_CFG(eth_local_port);
-          }
+          status = input_decimal_prompt("포트",&a,0,100000);
+          if(status != MENU_OK)
           break;
+            config.eth_local_port = a;
+            WRITE_CFG(eth_local_port);
+               break;
       }
 
     if (status != MENU_OK)
@@ -574,7 +607,7 @@ int32_t aws_network_config_eth(void)
         break;
     }
 
-    if (status != MENU_OK)
+    if (status == MENU_ABORT)
     {
       break;
     }
@@ -587,7 +620,7 @@ int32_t aws_network_config_eth(void)
 int32_t aws_network_config_cdma(void)
 {
   int choice, status;
-  char buff[AWS_CDMA_CNT][20];
+  char buff[AWS_CDMA_CNT][30];
   char *menu[AWS_CDMA_CNT];
   int menu_cnt = 0;
 
@@ -626,43 +659,48 @@ int32_t aws_network_config_cdma(void)
     switch (choice)
     {
       case 1:
-        io_printf("xxx.xxx.xxx.xxx:");
-        if (console_scanf("%d.%d.%d.%d", &a, &b, &c, &d) == 4)
-        {
+       status = input_ip(&a, &b, &c, &d);
+       if(status !=MENU_OK)
+       break;
           config.cdma_server_ip[0] = a;
           config.cdma_server_ip[1] = b;
           config.cdma_server_ip[2] = c;
           config.cdma_server_ip[3] = d;
           WRITE_CFG(cdma_server_ip);
-        }
+
         break;
       case 2:
-        status = user_decimal("포트",0,10000,&dec);
-        if(status == MENU_OK)
-        {
+        status = input_decimal_prompt("포트",&dec,0,10000);
+        if(status != MENU_OK)
+        break;
+
           config.cdma_port = dec;
           WRITE_CFG(cdma_port);
-        }
+
         break;
       case 3:  // 모델
         status = choice_menu(30,"CDMA 모델",(char**)cdmaModellList,  _countof(cdmaModellList), &choice);
-        if(status == MENU_OK)
-        {
+        if( status == MENU_ABORT)
+        break;
+        if(status ==MENU_BACK)
+        continue;
+
           config.cdma_model = (eCDMA_MODEL_t)(choice - 1);
           WRITE_CFG(cdma_model);
-        }
+
 
         break;
       case 4:
         status = choice_enable(&get_config_app()->vpn_use);
-        if(status == MENU_OK)
-        {
-          WRITE_CFG(vpn_use);
-        }
+        if (status == MENU_ABORT)
+          break;
+        if (status == MENU_BACK)
+          continue;
+        WRITE_CFG(vpn_use);
         break;
     }
 
-   }while(status == MENU_OK);
+   }while(1);
   
   return status;
 }
@@ -696,7 +734,7 @@ int32_t aws_network_config_direct(void)
     switch (choice)
     {
       case 1:
-        status = user_decimal("BAUDRATE",1200,115200,&dec);
+        status = input_decimal_prompt("BAUDRATE",&dec,1200,115200);
         if(status== MENU_OK)
         {
           config.direct_baud = dec;
@@ -790,18 +828,18 @@ int32_t aws_network_use(void)
     {
       case 1:
         status = choice_enable(&get_config_app()->eth_use);
-        if(status != MENU_OK)
-        {
+        if (status == MENU_ABORT)
           break;
-        }
+        if (status == MENU_BACK)
+          continue;
         WRITE_CFG(eth_use);
         break;
       case 2:
         status = choice_enable(&get_config_app()->cdma_use);
-        if (status != MENU_OK)
-        {
+        if (status == MENU_ABORT)
           break;
-        }
+        if (status == MENU_BACK)
+          continue;
         if (get_config_app()->direct_use)
         {
           get_config_app()->direct_use = 0;
@@ -811,10 +849,10 @@ int32_t aws_network_use(void)
         break;
       case 3:
         status = choice_enable(&get_config_app()->direct_use);
-        if (status != MENU_OK)
-        {
+        if (status == MENU_ABORT)
           break;
-        }
+        if (status == MENU_BACK)
+          continue;
         if(get_config_app()->cdma_use)
         {
           get_config_app()->cdma_use = 0;

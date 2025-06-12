@@ -107,7 +107,7 @@ int aws_menu_offset(void)
   while (1)
   {
     max_number = print_offset_sensor();
-    status = get_int_input("선택", &choice, 0, max_number-1);//수위  제외
+    status = input_decimal_prompt("선택", &choice, 0, max_number-1);//수위  제외
 
     if (status != MENU_OK)
     {

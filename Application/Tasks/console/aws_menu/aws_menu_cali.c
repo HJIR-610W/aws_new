@@ -29,7 +29,7 @@
 #include "util_filter.h"
 #include "util_time.h"
 #include "vt100_command.h"
-
+#include "cli_input.h"
 extern float g_current_temp;
 
 extern bool wait_break(uint32_t timeoutms);
@@ -40,34 +40,8 @@ int wait_for_enter()
   return (key == -1) ? MENU_ABORT : MENU_OK;
 }
 
-/** @brief 실수 입력을 받고 유효성 검사 및 종료(-1) 처리 */
-int get_float_input(const char* prompt, float* value)
-{
-  int ret_scan;
-  int ret;
 
-  while (3)
-  {
-    io_printf("%s: ", prompt);
-    ret_scan = console_scanf("%f", value);
-    if (ret_scan == -3)
-    {
-      ret = MENU_ABORT;
-      break;
-    }
-    else if (ret_scan == -1)
-    {
-      ret = MENU_BACK;
-      break;
-    }
-    else
-    {
-      ret = MENU_OK;
-      break;
-    }
-  }
-  return ret;
-}
+
 
 // --- 6. 메뉴 처리 함수 ---
 
@@ -79,7 +53,7 @@ int select_channel(adc_channel_type_t type, int* channel_index)
   const char* type_str = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? "싱글 엔드" : "차동";
   char prompt[100];
   snprintf(prompt, sizeof(prompt), "채널 번호 입력 (%s: 0 ~ %d)", type_str, max_ch);
-  return get_int_input(prompt, channel_index, 0, max_ch);
+  return input_decimal_prompt(prompt, channel_index, 0, max_ch);
 }
 
 #define MENU_CALI_SINGLE 1
@@ -93,43 +67,32 @@ int handle_factory_calibration(int adc_num)
   adc_channel_type_t type;
   adc_cal_params_t* cal_params_ptr;
   adc_cal_point_t p1, p2;
-
   config_adc_adv_t* p_adc = get_adc_config(adc_num);
 
   while (1)
   {
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|       --- 공장 캘리브레이션 ---       |\r\n");
+    io_printf("|           공장 캘리브레이션           |\r\n");
     io_printf("+---------------------------------------+\r\n");
     io_printf("|  1. 싱글 엔드 채널 캘리브레이션       |\r\n");
     io_printf("|  2. 차동 채널 캘리브레이션            |\r\n");
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = get_int_input("선택", &choice, 1, 2);
-
-    if (status == MENU_ABORT || status == MENU_BACK)
-    {
-      return status;
-    }
+    status = input_decimal_prompt("선택", &choice, 1, 2);
 
     if (status != MENU_OK)
     {
-      continue;
+      break;
     }
 
     if (choice == 1 || choice == 2)
     {
       type = (choice == 1) ? ADC_CHANNEL_TYPE_SINGLE_ENDED : ADC_CHANNEL_TYPE_DIFFERENTIAL;
       status = select_channel(type, &channel_index);
-      if (status == MENU_ABORT || status == MENU_BACK)
-      {
-        return status;
-      }
-
       if (status != MENU_OK)
       {
-        continue;
+        break;
       }
 
       cal_params_ptr = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
@@ -165,27 +128,18 @@ int handle_factory_calibration(int adc_num)
           break;
       }
 
-      status = get_int_input("   측정된 RAW 값 입력", (int*)&p1.raw_value,
+      status = input_decimal_prompt("   측정된 RAW 값 입력", (int*)&p1.raw_value,
                              p_adc->bits->min_raw_value, p_adc->bits->max_raw_value);
-      if (status == MENU_ABORT || status == MENU_BACK)
-      {
-        return status;
-      }
-
       if (status != MENU_OK)
       {
-        continue;
+        break;
       }
 
-      status = get_float_input("   낮은 기준점의 실제 값(전압)을 입력하세요.", &p1.reference_value);
-      if (status == MENU_ABORT || status == MENU_BACK)
-      {
-        return status;
-      }
-
+      status =
+      input_float_prompt("   낮은 기준점의 실제 값(전압)을 입력하세요.", &p1.reference_value);
       if (status != MENU_OK)
       {
-        continue;
+        return status;
       }
 
       // Point 2 입력
@@ -212,40 +166,33 @@ int handle_factory_calibration(int adc_num)
         if (!wait_break(10))
           break;
       }
-      status = get_int_input("   측정된 RAW 값 입력", (int*)&p2.raw_value,
+      status = input_decimal_prompt("측정된 RAW 값 입력", (int*)&p2.raw_value,
                              p_adc->bits->min_raw_value, p_adc->bits->max_raw_value);
-      if (status == MENU_ABORT || status == MENU_BACK)
-      {
-        return status;
-      }
-
       if (status != MENU_OK)
       {
-        continue;
+        break;
       }
-      status = get_float_input("   높은 기준점의 실제 값(전압)을 입력하세요.", &p2.reference_value);
-      if (status == MENU_ABORT || status == MENU_BACK)
-      {
-        return status;
-      }
-
+      status = input_float_prompt("높은 기준점의 실제 값(전압)을 입력하세요.", &p2.reference_value);
       if (status != MENU_OK)
       {
-        continue;
+        break;;
       }
 
       // 캘리브레이션 온도 입력
       g_current_temp = read_current_temperature();  // 현재 온도 읽기
       io_printf("현재 측정된 온도: %.1f °C\r\n", g_current_temp);
+      #if 0
       status =
-          get_float_input("캘리브레이션 수행 온도를 입력하세요 (기본값: 현재 온도)", &cal_temp);
+          input_float_prompt("캘리브레이션 수행 온도를 입력하세요 (기본값: 현재 온도)", &cal_temp);
       if (status == MENU_ABORT || status == MENU_BACK)
       {
         return status;
       }
       if (status != MENU_OK)
         cal_temp = g_current_temp;  // 입력 실패 시 현재 온도 사용
+#endif
 
+      cal_temp = 25;
       if (adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, cal_temp))
       {
         save_adc_cali();
@@ -259,7 +206,8 @@ int handle_factory_calibration(int adc_num)
       }
     }
   }
-  // return MENU_OK;
+
+  return status;
 }
 
 /** @brief 온도 보상 설정 메뉴 처리 */
@@ -281,7 +229,7 @@ int handle_temp_comp_setup(int adc_num)
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = get_int_input("선택", &choice, 1, 2);
+    status = input_decimal_prompt("선택", &choice, 1, 2);
     if (status == MENU_ABORT || status == MENU_BACK)
     {
       return status;
@@ -335,7 +283,7 @@ int handle_temp_comp_setup(int adc_num)
         io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
         io_printf("+---------------------------------------+\r\n");
 
-        status = get_int_input("선택", &choice, 1, 3);
+        status = input_decimal_prompt("선택", &choice, 1, 3);
         if (status == MENU_ABORT || status == MENU_BACK)
         {
           return status;
@@ -349,7 +297,7 @@ int handle_temp_comp_setup(int adc_num)
         switch (choice)
         {
           case 1:  // 방식 변경
-            status = get_int_input("새 방식 선택 (0:없음, 1:계수, 2:LUT)", &method_choice, 0, 2);
+            status = input_decimal_prompt("새 방식 선택 (0:없음, 1:계수, 2:LUT)", &method_choice, 0, 2);
             if (status == MENU_ABORT || status == MENU_BACK)
               return status;
             params->comp_method = (temp_comp_method_t)method_choice;
@@ -362,7 +310,7 @@ int handle_temp_comp_setup(int adc_num)
             {
               io_printf("현재 SlopeTC=%.6f, OffsetTC=%.6f\r\n", params->slope_temp_coeff,
                         params->offset_temp_coeff);
-              status = get_float_input("새 Slope TempCo 입력", &params->slope_temp_coeff);
+              status = input_float_prompt("새 Slope TempCo 입력", &params->slope_temp_coeff);
               if (status == MENU_ABORT || status == MENU_BACK)
               {
                 return status;
@@ -370,7 +318,7 @@ int handle_temp_comp_setup(int adc_num)
 
               if (status == MENU_OK)
               {
-                status = get_float_input("새 Offset TempCo 입력", &params->offset_temp_coeff);
+                status = input_float_prompt("새 Offset TempCo 입력", &params->offset_temp_coeff);
                 if (status == MENU_ABORT || status == MENU_BACK)
                 {
                   return status;
@@ -461,7 +409,7 @@ int handle_offset_adjustment(int adc_num)
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = get_int_input("선택", &choice, 0, 2);
+    status = input_decimal_prompt("선택", &choice, 0, 2);
     if (status == MENU_ABORT || status == MENU_BACK)
     {
       return status;
@@ -517,7 +465,7 @@ int handle_offset_adjustment(int adc_num)
         io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
         io_printf("+---------------------------------------+\r\n");
 
-        status = get_int_input("선택", &choice, 1, 1);
+        status = input_decimal_prompt("선택", &choice, 1, 1);
         if (status == MENU_ABORT || status == MENU_BACK)
         {
           return status;
@@ -541,7 +489,7 @@ int handle_offset_adjustment(int adc_num)
 
         if (choice == 1)
         {
-          status = get_float_input("목표 기준값 입력", &target_ref);
+          status = input_float_prompt("목표 기준값 입력", &target_ref);
           if (status == MENU_ABORT || status == MENU_BACK)
           {
             return status;
@@ -568,23 +516,30 @@ typedef enum
   MENU_VIEW_SYSINFO = 5          // 4. 시스템 정보 보기 (Res, Vref)
 } menu_view_t;
 
-/** @brief 채널 상태 보기 메뉴 처리 */
+
+
+/**
+ * @brief 
+ * @param adc_num  ADC IC 번호
+ */
 int handle_view_status(int adc_num)
 {
-  int choice, channel_index, status;
-  adc_channel_type_t type;
+  char user_input[10];
+  char buffer[100];
   const adc_cal_params_t* params;
   uint8_t err;
   uint8_t osc_use;
   uint8_t file_save_use = 0;
-  char user_input[10];
-  char buffer[100];
   int32_t scan_ms;
+  int choice, channel_index, status;
+  adc_channel_type_t type;
+
   config_adc_adv_t* p_adc = get_adc_config(adc_num);
+
   while (1)
   {
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|       --- 채널 상태 보기 ---          |\r\n");
+    io_printf("|           채널 상태 보기              |\r\n");
     io_printf("+---------------------------------------+\r\n");
     io_printf("|  1. 싱글 엔드 채널 상태 보기 (0-18)   |\r\n");
     io_printf("|  2. 차동 채널 상태 보기 (0-7)         |\r\n");
@@ -594,11 +549,9 @@ int handle_view_status(int adc_num)
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = get_int_input("선택", &choice, 1, 5);
-    if (status == MENU_ABORT || status == MENU_BACK)
-      return status;
+    status = input_decimal_prompt("선택", &choice, 1, 5);
     if (status != MENU_OK)
-      continue;
+      break;
 
     switch (choice)
     {
@@ -607,10 +560,8 @@ int handle_view_status(int adc_num)
 
         type = (choice == 1) ? ADC_CHANNEL_TYPE_SINGLE_ENDED : ADC_CHANNEL_TYPE_DIFFERENTIAL;
         status = select_channel(type, &channel_index);
-        if (status == MENU_ABORT || status == MENU_BACK)
-          return status;
         if (status != MENU_OK)
-          continue;
+          break;
 
         io_printf("시리얼 오실로스코프 사용하려면 yes입력\r\n");
         user_input[0] = 0;
@@ -778,8 +729,6 @@ int handle_view_status(int adc_num)
         break;
       case MENU_VIEW_DIFF_SUMMARY:
       {
-        // float slope;
-        // float offset;
         int32_t raw;
         float voltage;
 
@@ -814,7 +763,7 @@ int handle_view_status(int adc_num)
         io_printf(VT100_CURSOR_ON);
         break;
       case MENU_VIEW_SYSINFO:
-        io_printf("\r\n--- 시스템 정보 ---\r\n");
+        io_printf("\r\n    시스템 정보\r\n");
         io_printf("  ADC 해상도: %u 비트\r\n", p_adc->bits->resolution_bits);
         io_printf("  기준 전압 (Vref): %.3f V\r\n", p_adc->bits->reference_voltage);
         io_printf("  최소 Raw 값: %d\r\n", p_adc->bits->min_raw_value);
@@ -825,33 +774,37 @@ int handle_view_status(int adc_num)
         break;
     }
   }
-  // return MENU_OK;
+  return status;
 }
 
 /** @brief 설정 저장/로드 메뉴 처리 */
 int handle_save_load(int adc_num)
 {
   int choice, status;
+  int ok;
   while (1)
   {
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|       --- 설정 저장/로드 (NVM) ---    |\r\n");
+    io_printf("|           설정 저장(NVM)              |\r\n");
     io_printf("+---------------------------------------+\r\n");
     io_printf("|  1. 켈리브레이션 기본값 적용          |\r\n");
     io_printf("|  2. 켈리브레이션 초기화               |\r\n");
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = get_int_input("선택", &choice, 1, 2);
-    if (status == MENU_ABORT || status == MENU_BACK)
-      return status;
+    status = input_decimal_prompt("선택", &choice, 1, 2);
     if (status != MENU_OK)
-      continue;
+      break;
 
     switch (choice)
     {
       case 1:
-        if (get_confirm_input() == MENU_ABORT)
+        status = confirm_continue(&ok);
+        if(status != MENU_OK)
+        {
+          return status;
+        }
+        if(ok==0)
         {
           continue;
         }
@@ -904,10 +857,14 @@ int handle_save_load(int adc_num)
 
         break;
       case 2:
-        if (get_confirm_input() == MENU_ABORT)
+        status = confirm_continue(&ok);
+        if (status != MENU_OK)
+        {
+          return status;
+        }
+        if (ok == 0)
         {
           continue;
-          ;
         }
 
         adc_config_init(&g_adc_config_ads1220, 24, 5.0f);  // 예시 기본값으로 RAM 리셋
@@ -931,7 +888,7 @@ int handle_save_load(int adc_num)
         break;
     }
   }
-  // return MENU_OK;
+  return status;
 }
 
 typedef enum
@@ -987,7 +944,7 @@ void run_calibration_menu(int adc_num)
     io_printf("|     CTRL+C 이전, CTRL+Q 종료          |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = get_int_input("선택", &choice, 1, display_idx - 1);
+    status = input_decimal_prompt("선택", &choice, 1, display_idx - 1);
     if (status == MENU_ABORT || status == MENU_BACK)
       return;
 
@@ -1006,12 +963,14 @@ void run_calibration_menu(int adc_num)
 int aws_menu_calibration()
 {
   int choice, status;
-  char* menu[] = {"공장 캘리브레이션", "채널 상태 보기", "초기화"};
+  char* menu[] = {"공장 캘리브레이션",
+                  "채널 상태 보기",
+                  "초기화"};
 
   driver_adc_open(ADC_ADS1220, 0);
-  while (1)
+  do
   {
-    status = choice_menu(24, "AWS", menu, _countof(menu), &choice);
+    status = choice_menu(24, "ADC 켈리브레이션", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       return status;
 
@@ -1027,11 +986,10 @@ int aws_menu_calibration()
      status = handle_save_load(0);
        break;
     }
-    if(status != MENU_OK)
-    {
-      break;
-    }
 
-  }
+    if(status==MENU_ABORT)
+    break;
+  }while(1);
+
   return status;
 }
