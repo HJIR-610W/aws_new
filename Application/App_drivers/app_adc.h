@@ -61,7 +61,7 @@ int32_t get_adc_single_fullset(int channel);
 
 
 float adc_read_volate_single(int32_t ch,uint8_t *err);
-float cvt_voltateToData(adc_config_t *adc_config,uint8_t *err);
+float cvt_voltate_to_data(adc_config_t *adc_config,uint8_t *err);
 
 float adc_read_single_raw(int channel, uint8_t *err);
 

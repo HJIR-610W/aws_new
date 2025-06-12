@@ -72,7 +72,7 @@ int32_t aws_menu_display_panel()
 int aws_menu_panel(void)
 {
   int choice, status;
-  int max_number;
+
   char buff[3][20];
 
   char* menu[3];

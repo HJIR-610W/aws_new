@@ -267,7 +267,7 @@ int32_t menu_task_print_force(void)
 int32_t aws_menu_develop(void)
 {
   int choice, status;
-  int max_number;
+
 
   char* menu[] = {"인터럽트 설정 확인",
                   "메모리 테스트",

@@ -22,5 +22,5 @@ void terminal_print_line(char del, char l, size_t width);
 void terminal_print_centered(const char* text, char border, size_t width);
 void terminal_reset_color(void);
 void terminal_print_frame(const char* text, char a, char b, char tb, size_t width, color_t col);
-
+void terminal_print_centered_selected(const char* text, char border, size_t width, color_t col);
 #endif

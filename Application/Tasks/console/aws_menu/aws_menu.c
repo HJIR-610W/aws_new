@@ -17,7 +17,7 @@
 int aws_menu(void)
 {
   int choice, status;
-  int max_number;
+
   char* menu[] = { "기본정보",
                    "시스템",
                    "센서",
@@ -31,7 +31,7 @@ int aws_menu(void)
   {
     status = choice_menu(AWS_MENU_WIDTH, "AWS", menu, _countof(menu), &choice);
     if (status != MENU_OK)
-      return status;
+      break ;
 
     switch (choice)
     {

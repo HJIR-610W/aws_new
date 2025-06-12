@@ -133,7 +133,7 @@ int32_t get_adc_vref(adc_config_t *adc)
 
 
 
-float cvt_voltateToData(adc_config_t *adc_config,uint8_t *err)
+float cvt_voltate_to_data(adc_config_t *adc_config,uint8_t *err)
 {
   float slope;
   float offset;

@@ -104,6 +104,6 @@ float general_adc_read(void *driver,uint8_t *err)
   adc_config.outMaxV   = cfg->outMaxVolt;
   adc_config.outMinV   = cfg->outMinVolt;
 
-  return cvt_voltateToData(&adc_config,err);
+  return cvt_voltate_to_data(&adc_config,err);
 }
 

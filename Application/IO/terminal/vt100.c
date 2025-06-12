@@ -92,21 +92,45 @@ void vt100_printfColor(color_t color, char * pFmt, ...)
 void vt100_print_frame(uint8_t line,uint8_t colum,const char* text, char a, char b, char tb, size_t width,
     color_t col)
 {
-
-
-    // Set the chosen color
     terminal_set_color(col);
-
     vt100_set_cursorPos(line++,colum);
     terminal_print_line(a, tb, width);
-        vt100_set_cursorPos(line++,colum);
+    vt100_set_cursorPos(line++,colum);
     terminal_print_centered(text, b, width);
-        vt100_set_cursorPos(line,colum);
+    vt100_set_cursorPos(line,colum);
     terminal_print_line(a, tb, width);
-
-    // Reset color
     terminal_reset_color();
 }
+
+void vt100_print_frame_selected(uint8_t line, uint8_t colum, const char *text, char a, char b, char tb,
+                       size_t width, color_t col,uint8_t selected)
+{
+    color_t title_col;
+  terminal_set_color(col);
+  vt100_set_cursorPos(line++, colum);
+  terminal_print_line(a, tb, width);
+  vt100_set_cursorPos(line++, colum);
+  if(selected)
+  {
+    if(selected==1)
+    {
+      title_col = 0;
+    }
+    else
+    {
+      title_col = MAGENTA;
+    }
+    terminal_print_centered_selected(text, b, width, title_col);
+  }
+  else
+  {
+  terminal_print_centered(text, b, width);
+  }
+  vt100_set_cursorPos(line, colum);
+  terminal_print_line(a, tb, width);
+  terminal_reset_color();
+}
+
 
 void vt100_print_line(uint8_t line,uint8_t colum,char del, char l, size_t width)
 {

@@ -29,6 +29,8 @@ int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t lis
 int input_decimal(int32_t start, int32_t stop, int32_t* dec);
 int32_t input_use(uint8_t* en);
 bool wait_break(uint32_t timeoutms);
+int32_t choice_enable(uint8_t* enable);
+int32_t user_decimal(const char* title, int min, int max, int* val);
 
     extern const char* g_unknown;
 

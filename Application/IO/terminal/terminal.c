@@ -43,6 +43,26 @@ void terminal_print_centered(const char* text, char border, size_t width)
     io_printf("%c%*.s%s%*.s%c\r\n", border, a, "", text, c, "", border);
 }
 
+void terminal_print_centered_selected(const char* text, char border, size_t width, color_t col)
+{
+  // Text size
+  size_t b = strlen(text);
+  // Left empty space
+  size_t a = (width - b) / 2;
+  // Right empty space
+  size_t c = width - a - b;
+
+  // [b]<empty>[text]<empty>[b]
+  if(col)//colÀÌ ¹àÀº ÆÄ¶û
+  {
+    io_printf("%c\x1b[94m%*.s%s%*.s\x1b[0m%c\r\n", border, a, "", text, c, "", border);
+
+  }
+  else//¹ÝÀü
+  {
+    io_printf("%c\x1b[7m%*.s%s%*.s\x1b[0m%c\r\n", border, a, "", text, c, "", border);
+  }
+}
 
 void terminal_reset_color(void)
 {

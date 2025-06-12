@@ -129,7 +129,7 @@ void menu_data_display(void)
 int aws_menu_data(void)
 {
   int choice, status;
-  int max_number;
+
   char* menu[] = {
       "1분자료 확인", "1분자료 편집(구현 예정) "};
 
@@ -137,7 +137,7 @@ int aws_menu_data(void)
   {
     status = choice_menu(AWS_DATA_MENU_WITDH, "데이터", menu, _countof(menu), &choice);
     if (status != MENU_OK)
-      return status;
+      break ;
 
     switch (choice)
     {
@@ -147,5 +147,5 @@ int aws_menu_data(void)
     }
   }
 
-  return 0;
+  return status;
 }

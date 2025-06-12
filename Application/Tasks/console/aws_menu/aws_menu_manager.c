@@ -410,7 +410,6 @@ int32_t menu_manage_update_fw()
 int aws_manager_config(void)
 {
   int choice, status;
-  int max_number;
   char *menu[] = {"AWS 화진 기본 설정", "공장 초기화", "설정 백업",
                   "우량,일조 자료 초기화"};
 
@@ -463,7 +462,6 @@ int aws_menu_manager(void)
 {
 
   int choice, status;
-  int max_number;
   char *menu[] = {"버전", "장비리셋", "설정 변경", "펌웨어 업데이트"};
 
   while (1)

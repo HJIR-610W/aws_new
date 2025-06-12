@@ -115,7 +115,7 @@ int32_t menu_system(void)
 int aws_menu_system(void)
 {
   int choice, status;
-  int max_number;
+
   char buff[4][40];
   char buffer[25];
   char* menu[4];

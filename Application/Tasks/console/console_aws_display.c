@@ -31,7 +31,7 @@ const char *linkStatusList[] = {"-", "UP", "DOWN"};
 const char *doorStatusList[] = {"닫힘", "열림"};
 const char *generalStatusList[] = {"정상", "비정상"};
 
-
+static uint8_t s_navi=0;
 extern uint32_t g_debug_elased_time;
 
 void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size)
@@ -62,10 +62,9 @@ void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size)
   }
 }
 
-
-
-int32_t print_systemInfo(uint16_t row, uint16_t column)
+int32_t print_systemInfo(uint16_t row, uint16_t column, uint8_t selected)
 {
+  
   uint8_t line = row + 3;
   char buff[30];
   const char *message=NULL;
@@ -73,7 +72,8 @@ int32_t print_systemInfo(uint16_t row, uint16_t column)
   snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d\r\n", Date_Time.Year, Date_Time.Month,
            Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
 
-  vt100_print_frame(row, column, "시스템", '+', '|', '-', DISP_WIDTH, WHITE);
+  vt100_print_frame_selected(row, column, "시스템", '+', '|', '-', DISP_WIDTH, WHITE,
+                             selected);
   vt100_print_bar(line++, column, -DISP_WIDTH, "%s\r\n", buff);
   vt100_print_bar(line++, column, -DISP_WIDTH, "ID        :%d\r\n",get_config_app()->id);
   vt100_print_bar(line++, column, -DISP_WIDTH, "문 상태   :%s\r\n",
@@ -102,7 +102,7 @@ int32_t print_systemInfo(uint16_t row, uint16_t column)
   return line - (row);
 }
 
-int32_t print_chargerInfo(uint16_t row, uint16_t column)
+int32_t print_chargerInfo(uint16_t row, uint16_t column, uint8_t selected)
 {
   char buff[10];
 
@@ -110,7 +110,7 @@ int32_t print_chargerInfo(uint16_t row, uint16_t column)
   uint8_t err;
 
   read_chargerStatus(buff, sizeof(buff));
-  vt100_print_frame(row, column, "충전기", '+', '|', '-', DISP_WIDTH, WHITE);
+  vt100_print_frame_selected(row, column, "충전기", '+', '|', '-', DISP_WIDTH, WHITE, selected);
   vt100_print_bar(line++, column, -DISP_WIDTH, "상태           :%s\r\n", buff);
 
   if (is_chargerValid())
@@ -136,14 +136,14 @@ int32_t print_chargerInfo(uint16_t row, uint16_t column)
   return line - (row);
 }
 
-int32_t print_rainInfo(uint16_t row, uint16_t column)
+int32_t print_rainInfo(uint16_t row, uint16_t column,uint8_t selected)
 {
   char buff[30];
 
   uint8_t line = row + 3;
 
   make_comList(buff, sizeof(buff));
-  vt100_print_frame(row, column, "강수량", '+', '|', '-', DISP_WIDTH, WHITE);
+  vt100_print_frame_selected(row, column, "강수량", '+', '|', '-', DISP_WIDTH, WHITE,selected);
   vt100_print_bar(line++, column, -DISP_WIDTH, "전일:%6.1f\r\n",get_rainfall()->rainfall_yesterday);
   vt100_print_bar(line++, column, -DISP_WIDTH, "금일:%6.1f\r\n", get_rainfall()->rainfall_today);
   vt100_print_bar(line++, column, -DISP_WIDTH, "시간:%6.1f\r\n", get_rainfall()->rainfall_hourly);
@@ -155,7 +155,7 @@ int32_t print_rainInfo(uint16_t row, uint16_t column)
   return line - (row);
 }
 
-int32_t print_ethInfo(uint16_t row, uint16_t column)
+int32_t print_ethInfo(uint16_t row, uint16_t column,  uint8_t selected)
 {
   DATE_TIME_BUF nt;
   eLINK_STATUS_t link_status[ETH_CLIENT_MAX];
@@ -171,7 +171,8 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
     tx_cnt[ETH_CLIENT_0] = get_tcp_client_system()->tx_cnt;
     rx_cnt[ETH_CLIENT_0] = get_tcp_client_system()->rx_cnt;
 
-    vt100_print_frame(row, column, "이더넷", '+', '|', '-', DISP_WIDTH, WHITE);
+    vt100_print_frame_selected(row, column, "이더넷", '+', '|', '-', DISP_WIDTH, WHITE,
+                               selected);
     vt100_print_bar(line++, column, -DISP_WIDTH, "링크  :%s\r\n",
                     ITEM_LIST(link_status[ETH_CLIENT_0], linkStatusList));
     vt100_print_bar(line++, column, -DISP_WIDTH, "송신  :%d\r\n", tx_cnt[ETH_CLIENT_0]);
@@ -206,7 +207,8 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
   }
   else
   {
-    vt100_print_frame(row, column, "이더넷", '+', '|', '-', DISP_WIDTH, WHITE);
+    vt100_print_frame_selected(row, column, "이더넷", '+', '|', '-', DISP_WIDTH, WHITE,
+                               selected);
 
     link_status[ETH_CLIENT_0] = get_tcp_system(ETH_CLIENT_0)->link_status;
     tx_cnt[ETH_CLIENT_0] = get_tcp_system(ETH_CLIENT_0)->tx_cnt;
@@ -282,6 +284,21 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
   return line - (row);
 }
 
+uint8_t check_selected(uint8_t window_index, uint8_t pos,uint8_t selected)
+{
+  uint8_t selected_sum=0;
+  
+  if (window_index == pos)
+  {
+    selected_sum = 1;
+    if (selected)
+    {
+      selected_sum = 2;
+    }
+  }
+
+  return selected_sum;
+}
 
 /*
 10분
@@ -315,25 +332,26 @@ int32_t print_ethInfo(uint16_t row, uint16_t column)
 |R시간:2025-25-11 00:00:00 |
 +--------------------------+
 */
-int32_t print_cdmaInfo(uint16_t row, uint16_t column)
+int32_t print_cdmaInfo(uint16_t row, uint16_t column,  uint8_t selected)
 {
   char buff[30];
   char num[20];
   uint8_t line = row + 3;
-
   DATE_TIME_BUF nt;
   uint32_t last_time;
+  
 
-  make_comList(buff, sizeof(buff));
-  vt100_print_frame(row, column, "CDMA", '+', '|', '-', DISP_WIDTH, WHITE);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "링크    :%s\r\n",
+
+    make_comList(buff, sizeof(buff));
+    vt100_print_frame_selected(row, column, "CDMA", '+', '|', '-', DISP_WIDTH, WHITE, selected);
+    vt100_print_bar(line++, column, -DISP_WIDTH, "링크    :%s\r\n",
                     ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
 
-  if (get_cdma_system()->num[0] != '0')
-  {
-    num[0] = '-';
-    num[1] = 0;
-  }
+    if (get_cdma_system()->num[0] != '0')
+    {
+      num[0] = '-';
+      num[1] = 0;
+    }
   else
   {
     snprintf(num, sizeof(num), "%s", get_cdma_system()->num);
@@ -380,8 +398,7 @@ int32_t print_cdmaInfo(uint16_t row, uint16_t column)
   return line - (row);
 }
 
-
-int32_t print_directInfo(uint16_t row, uint16_t column)
+int32_t print_directInfo(uint16_t row, uint16_t column, uint8_t selected)
 {
   char buffer[30];
 
@@ -394,19 +411,20 @@ int32_t print_directInfo(uint16_t row, uint16_t column)
 
   remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms/1000.0);
    make_comList(buffer, sizeof(buffer));
-  vt100_print_frame(row, column, "DIRECT", '+', '|', '-', DISP_WIDTH, WHITE);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "링크    :%s\r\n",
-                  ITEM_LIST(get_direct_system()->link_status, linkStatusList));
-  vt100_print_bar(line++, column, -DISP_WIDTH, "타임아웃:%ds\r\n",remain_sec);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "송신    :%d\r\n", get_direct_system()->tx_cnt);
-  vt100_print_bar(line++, column, -DISP_WIDTH, "수신    :%d\r\n", get_direct_system()->rx_cnt);
+   vt100_print_frame_selected(row, column, "DIRECT", '+', '|', '-', DISP_WIDTH, WHITE,
+                              selected);
+   vt100_print_bar(line++, column, -DISP_WIDTH, "링크    :%s\r\n",
+                   ITEM_LIST(get_direct_system()->link_status, linkStatusList));
+   vt100_print_bar(line++, column, -DISP_WIDTH, "타임아웃:%ds\r\n", remain_sec);
+   vt100_print_bar(line++, column, -DISP_WIDTH, "송신    :%d\r\n", get_direct_system()->tx_cnt);
+   vt100_print_bar(line++, column, -DISP_WIDTH, "수신    :%d\r\n", get_direct_system()->rx_cnt);
 
-  last_time = get_direct_system()->last_recv_time;
-  
-  if(last_time == 0)
-  {
-    vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :-\r\n");
-  }
+   last_time = get_direct_system()->last_recv_time;
+
+   if (last_time == 0)
+   {
+     vt100_print_bar(line++, column, -DISP_WIDTH, "R시간   :-\r\n");
+   }
   else
   {
     time_cvt_secTotime(last_time, &nt);
@@ -444,33 +462,34 @@ int32_t print_directInfo(uint16_t row, uint16_t column)
 
 #define COL_WIDTH 15
 
-
-int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, void *arg)
+int32_t print_awsRealLefinfo(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, void *arg,
+                             uint8_t selected)
 {
-  const char *aswTitleList[] = {"순간(평균)", "1분", "10분", "한시간","RAW"};
+  const char *aswTitleList[] = {"순간(평균)", "1분", "10분", "한시간", "RAW"};
   char buff[50];
   uint8_t err;
   uint8_t line = row + 3;
   kma_data_ex_t *p_kma = NULL;
   char err_buf[32];
 
+
   p_kma = get_kma_data(min);
 
   snprintf(buff, sizeof(buff), "AWS %s %.2fs/%.2fs", aswTitleList[min],
            (float)g_exec_250ms_time.elapsed_time / 1000.0f, (float)g_exec_1s_time.elapsed_time/1000.0f);
 
-  vt100_print_frame(row, column, buff, '+', '|', '-', DISP_WIDTH, WHITE);
-// 자동 생성된 AWS 출력 코드
-if(p_kma->temperature.enable)
-{
-  err = p_kma->temperature.err;
-  if (err)
+  vt100_print_frame_selected(row, column, buff, '+', '|', '-', DISP_WIDTH, WHITE,selected);
+  // 자동 생성된 AWS 출력 코드
+  if (p_kma->temperature.enable)
   {
-    make_error_string(err,err_buf,sizeof(err_buf));
-    vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "기온", err_buf);
-  }
-  else
-  {
+    err = p_kma->temperature.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%s\r\n", COL_WIDTH, "기온", err_buf);
+    }
+    else
+    {
       vt100_print_bar(line++, column, -DISP_WIDTH, "%-*s:%5.2f C\r\n", COL_WIDTH, "기온",
                       KMA_TO_TEMPERATURE(p_kma->temperature.data));
   }
@@ -1552,12 +1571,16 @@ if (p_kma->tacometer.enable)
 }
 
 #define CENSTER_OFFSET 3
-#define RIGHT_OFFSET 5
+#define RIGHT_OFFSET 1
 int32_t aws_menu_display(void)
 {
   keycode_t key;
   int32_t line = 0;
   uint8_t awsMode = 0;
+  uint8_t selected =1;
+  uint8_t window_index=1;
+  uint8_t window_pos=1;
+  uint8_t aws_window_selected=0;
 
   io_printf(VT100_CLEAR_SCREEN);
   io_printf(VT100_CURSOR_OFF);
@@ -1566,58 +1589,105 @@ int32_t aws_menu_display(void)
   {
     io_printf(VT100_CURSOR_HOME);
     io_printf("\r\n");
-    
-    line = 0;
-    line = print_systemInfo(1, 0);
+    window_index=0;
 
-    print_chargerInfo(line+1, 0);
+    line = 0;  // 열 시작
+    line = print_rainInfo(1 + line, 0,
+                          check_selected(window_index++, window_pos, selected));
 
-    line = 0;
+    aws_window_selected = check_selected(window_index++, window_pos, selected);
+    line = print_awsRealLefinfo(1 + line, 0, (eAWS_DATA_MIN_t)awsMode, NULL, aws_window_selected);
+
+    line = 0;// 열 시작
+
+    line = print_systemInfo(1, (DISP_WIDTH + 2) + RIGHT_OFFSET,
+                            check_selected(window_index++, window_pos, selected));
+
+    print_chargerInfo(line + 1, (DISP_WIDTH+2)  + RIGHT_OFFSET,
+                      check_selected(window_index++, window_pos, selected));
+
+    line = 0;  // 열 시작
     if (get_config_app()->cdma_use)
     {
-      line = print_cdmaInfo(1, DISP_WIDTH + CENSTER_OFFSET);
+      line = print_cdmaInfo(1, (DISP_WIDTH+2)*2+RIGHT_OFFSET,
+                            check_selected(window_index++, window_pos, selected));
     }
     if (get_config_app()->direct_use)
     {
-      line += print_directInfo(1 + line, DISP_WIDTH + CENSTER_OFFSET);
+      line += print_directInfo(1 + line, (DISP_WIDTH+2)*2 + RIGHT_OFFSET,
+                               check_selected(window_index++, window_pos, selected));
     }
     if (get_config_app()->eth_use)
     {
-      line += print_ethInfo(1 + line, DISP_WIDTH + CENSTER_OFFSET);
+      line += print_ethInfo(1 + line, (DISP_WIDTH + 2)*2 + RIGHT_OFFSET,
+                            check_selected(window_index++, window_pos, selected));
     }
 
-    line = 0;
-    line = print_rainInfo(1 + line, DISP_WIDTH * 2 + RIGHT_OFFSET);
 
-    line = print_awsRealLefinfo(1 + line, DISP_WIDTH * 2 + RIGHT_OFFSET, (eAWS_DATA_MIN_t)awsMode,
-                                NULL);
 
     key = (keycode_t)get_key(500);
-
-    if (key == KEY_CODE_RIGHT)
+    if (s_navi)
     {
-      io_printf(VT100_CLEAR_SCREEN);
-      if (awsMode < AWS_MODE_MAX)
+      if (key == KEY_CODE_RIGHT)
       {
-        awsMode++;
+        if (window_pos < (window_index - 1))
+          window_pos++;
+        io_printf(VT100_CLEAR_SCREEN);
+      }
+      else if (key == KEY_CODE_LEFT)
+      {
+        if (window_pos > 0)
+        {
+          window_pos--;
+        }
+        io_printf(VT100_CLEAR_SCREEN);
+      }
+      else if (key == KEY_CODE_ENTER)
+      {
+        s_navi = 0;
+        selected = 1;
       }
     }
-    else if (key == KEY_CODE_LEFT)
+    else
     {
-      io_printf(VT100_CLEAR_SCREEN);
-      if (awsMode > 0)
+      if(key == KEY_CODE_RIGHT)
       {
-        awsMode--;
+        io_printf(VT100_CLEAR_SCREEN);
+        if (aws_window_selected)
+        {
+          if (awsMode < eAWS_DATA_RAW)
+          {
+            awsMode++;
+          }
+        }
       }
+      else if(key == KEY_CODE_LEFT)
+      {
+        io_printf(VT100_CLEAR_SCREEN);
+        if(aws_window_selected)
+        {
+          if (awsMode > 0)
+        {
+          awsMode--;
+        }
+      }
+      }
+      else if (key ==KEY_CODE_ENTER)
+      {
+        selected =0;
+        s_navi =1;
+      }
+      
     }
 
-    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
+    if (key == KEY_CODE_CTRL_Q)
     {
       break;
     }
-  } while (1);
+  }
+      while (1);
 
-  vt100_print(50, 0, "\r\n");
-  io_printf(VT100_CURSOR_ON);
-  return 0;
+      vt100_print(50, 0, "\r\n");
+      io_printf(VT100_CURSOR_ON);
+      return 0;
 }

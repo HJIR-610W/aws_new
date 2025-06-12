@@ -22,4 +22,8 @@ void vt100_print_bar(uint32_t line,uint32_t col,int32_t width,const char * pFmt,
 void vt100_print(uint32_t line,uint32_t col,const char * pFmt, ...);
 
 void vt100_printfColor(color_t color, char * pFmt, ...);
+
+void vt100_print_frame_selected(uint8_t line, uint8_t colum, const char *text, char a, char b, char tb,
+  size_t width, color_t col,uint8_t selected);
+  
 #endif

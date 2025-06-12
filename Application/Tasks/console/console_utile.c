@@ -152,6 +152,27 @@ int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int3
   }
 }
 
+int32_t user_decimal(const char *title,int min,int max, int *val)
+{
+
+  int status;
+
+
+  while (1)
+  {
+    io_printf("%s\r\n",title);
+    status = get_int_input("입력", val, min, max);
+    if (status == MENU_ABORT || status == MENU_BACK)
+      return status;
+    if (status == MENU_OK)
+    {
+      return status;
+    }
+  }
+}
+
+
+
 /**
  * @retval 0보다 크면 사용자 입력이 있음
  */
@@ -258,6 +279,26 @@ int32_t input_use( uint8_t* en)
 
   return cnt;
 }
+
+int32_t choice_enable(uint8_t *enable)
+{
+  const char *menu[]={"미사용","사용"};
+  int32_t status;
+  int32_t choice;
+
+  status = choice_menu(20,"사용 여부",(char **)menu,_countof(menu),&choice);
+
+  if(status ==MENU_OK)
+  {
+    *enable = choice-1;
+  }
+
+  return status;
+
+}
+
+
+
 
 bool wait_break(uint32_t timeoutms)
 {
