@@ -351,6 +351,19 @@ void dev_io_write(dev_io_t *dev, uint8_t *data, uint32_t dataLen, uint32_t opt)
   }
 }
 
+void dev_io_flush(dev_io_t *dev)
+{
+  switch (dev->io)
+  {
+    case eRS485_IO:
+      driver_rs485_flush_rx(dev->driver);
+      break;
+    case eRS232_IO:
+      driver_uart_flush_rx(dev->driver);
+      break;
+  }
+}
+
 uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd, void *opt)
 {
   devIoTimeOutopt_t *pdevopt = opt;

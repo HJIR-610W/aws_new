@@ -435,6 +435,7 @@
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\tlsf</state>
                     <state>$PROJ_DIR$\..\Application\Version</state>
                     <state>$PROJ_DIR$\..\Application\Tasks\console\aws_menu</state>
+                    <state>$PROJ_DIR$\..\Application\Tasks\console\hj_snow_menu</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1579,6 +1580,9 @@
                     <name>$PROJ_DIR$\..\Application\Sensors\snow\hj_snow.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\snow\hjsnow_define.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\snow\snow.c</name>
                 </file>
                 <file>
@@ -1751,6 +1755,9 @@
                 </group>
                 <group>
                     <name>hj_snow_menu</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\Application\Tasks\console\hj_snow_menu\hj_snow_menu.c</name>
+                    </file>
                 </group>
                 <group>
                     <name>hj_temp_menu</name>
@@ -2163,6 +2170,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_gpio_def.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_interface.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_interface.h</name>

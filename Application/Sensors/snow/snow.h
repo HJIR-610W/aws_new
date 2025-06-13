@@ -19,7 +19,7 @@
 
 
 driver_t *snow_open(int32_t num,void *opt);
-
 int32_t read_sensor_snow(driver_t *driver,uint8_t *err);
+
 
 #endif

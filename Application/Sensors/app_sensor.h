@@ -157,7 +157,7 @@ extern const uint8_t windDirectionInstantList[2];
 extern const uint8_t windSpeedInstantList[2];
 extern const uint8_t pressureList[2];
 extern const uint8_t rainList[5];
-extern const uint8_t snowList[3];
+extern const uint8_t snowList[2];
 extern const uint8_t rainPresentList[2];
 extern const uint8_t humiList[3];
 extern const uint8_t sunShineList[3];

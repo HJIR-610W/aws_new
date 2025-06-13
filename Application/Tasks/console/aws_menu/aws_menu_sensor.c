@@ -1,19 +1,19 @@
 
 
-#include "config_app.h"
-#include "util_memory.h"
-#include "dev_io.h"
-#include "config_sensor.h"
-#include "terminal.h"
-#include "console_utile.h"
-#include "vt100_command.h"
-#include "console_scanf.h"
-#include "temperature\temperature_define.h"
-#include "temperature\hj_temperature.h"
 #include "cli_input.h"
+#include "config_app.h"
+#include "config_sensor.h"
+#include "console_scanf.h"
+#include "console_utile.h"
+#include "dev_io.h"
 #include "driver_interface.h"
+#include "hj_snow_menu.h"
 #include "system_err.h"
-
+#include "temperature\hj_temperature.h"
+#include "temperature\temperature_define.h"
+#include "terminal.h"
+#include "util_memory.h"
+#include "vt100_command.h"
 const char *adcChModeList[] = {"single", "diff"};
 const char *unusedList[] = {"미사용"};
 const char *rs232ParityList[] = {"none", "even", "odd"};
@@ -234,8 +234,9 @@ uint8_t print_ott_smp3_cfg( ott_smp3_config_t *ott, uint8_t cnt)
   return cnt;
 }
 
-#define HJSNOW_CFG_MENU_PHY 0
+#define HJSNOW_CFG_MENU_PHY  0
 #define HJSNOW_CFG_MENU_PORT 1
+#define HJSNOW_CFG_MENU      2
 uint8_t print_hjsnow_cfg( hjsnow_config_t *hjsnow, uint8_t cnt)
 {
   const char *portNameList[10];
@@ -253,6 +254,8 @@ uint8_t print_hjsnow_cfg( hjsnow_config_t *hjsnow, uint8_t cnt)
   }
 
   io_printf("%2d.port        :%s\r\n", cnt++, portNameList[hjsnow->port]);  // 고정
+  io_printf("%2d.화진 적설 메뉴(제어)\r\n", cnt++);
+  
   return cnt;
 }
 
@@ -911,7 +914,10 @@ int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
       }
 
       break;
-
+    case HJSNOW_CFG_MENU:
+    hj_snow_menu();
+    break;
+    
     default:
       break;
   }

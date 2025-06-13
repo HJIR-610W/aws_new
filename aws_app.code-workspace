@@ -148,7 +148,9 @@
 			"barometer.h": "c",
 			"driver_adc_define.h": "c",
 			"aws_menu_panel.h": "c",
-			"aws_network.h": "c"
+			"aws_network.h": "c",
+			"hj_snow.h": "c",
+			"hjsnow_define.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

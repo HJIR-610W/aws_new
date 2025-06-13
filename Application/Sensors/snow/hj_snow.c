@@ -12,77 +12,22 @@
 #include "snow_define.h"
 #include "util_memory.h"
 #include "config_sensor.h"
+#include "os_user_def.h"
 #define PROTOCOL_TYPE_t uint8_t
 #define P_TYPE_HJ 0
 #define P_TYPE_WEATHERPIA_2 1
 #define P_TYPE_WEATHERPIA_013456 2
 #define WATCHDOG_BUFFER_MAX 12  // 32bit size
 #define PASSNUMBER_MAX 5
-typedef struct
+
+typedef struct hjsnow_cfg_s
 {
-  // Snowfall Config
-  uint8_t xModel[3][6];  // bluetooth laser model
-                         //		uint8_t  temp_heaton;
-  //// value + 40 		uint8_t  temp_heatoff;
-  //// value + 40 		uint8_t  heat_automan;
-  //// 히터 사용유무(여름에 온도에으한 오동작방지) : 0 : manual , 1 : auto
-  uint16_t DeviceID;      //
-  uint8_t snow_scantime;  // 0:real , 1:1분 , 5분 , 10분 , 30분, 60분
-#define SNOW_HEAT_AUTO 1
-#define SNOW_HEAT_MANUAL 0
-  uint32_t snow_stddistance;  // 기준 높이 지면으로 부터 장치의 높이
+  driver_t *io;
+  void *sem;
+  int32_t channel;
+} hjsnow_cfg_t;
 
-  uint32_t snow_refdistance[3];  // calibration point distance
-  uint8_t snow_runflag;          // 0: Not scan , 1: scan
 
-  uint8_t snow_scantemp;      // value + 40 : snow scan 가동 온도 : off온도 :
-                              // snow_scantemp - 2도 낮은점
-  uint8_t snow_scantempauto;  // 0: manual 1: auto mode,
-#define SNOW_SCAN_AUTO 1
-#define SNOW_SCAN_MANUAL 0
-
-  uint16_t snow_filterlevel;
-  uint8_t snow_nofiltermode;  // 1: run mode(filter) , 0:test mode(non filter)
-  // 디바이스별 설정값들..
-  uint16_t FactorySet;
-
-  uint8_t Com1PingTime;  // 0:off, 1m~60m
-  uint8_t Com2PingTime;  // 0:off, 1m~60m
-  uint8_t Com3PingTime;  // 0:off, 1m~60m
-  uint8_t Com4PingTime;  // TBD
-
-  ///////////////////////////////
-  char Password[PASSNUMBER_MAX];             // DTMF 및 SMS TCP/IP 통신시 비밀번호
-  uint8_t WatchDogSec[WATCHDOG_BUFFER_MAX];  // 0 ~ 9:off, 10 ~ 240sec,
-  PROTOCOL_TYPE_t protocolType;  // 통신 프로토콜, 0 화진(요청 응답) 1 웨더피아(일방전송)
-  uint32_t txPeriodSec;          //  웨더피아 전송 주기 sec
-  uint8_t snowScanCnt;
-} CONFIG_TypeDef;  // Config		LOGMSG_BUFFER_MAX
-
-typedef struct
-{
-  uint16_t CurDistance[3];  // channel별 실제 측정거리값
-  int16_t CurLevel[3];      // channel별 높이
-  int16_t CurSnowLevel;     // 3점의 평균한 높이
-  uint32_t LastScanTime;    // 마지막으로 스캔한시간
-
-  uint8_t CurConnStat[3];  // 블루투스 Connection 상태
-  uint8_t HeaterStat;
-#define SNOW_STAT_HEAT_ON 1
-#define SNOW_STAT_HEAT_OFF 0
-  uint8_t snow_debugprint;  // 0: not print , 1: print
-#define SNOW_STAT_DEBUGPRINT_ON 1
-#define SNOW_STAT_DEBUGPRINT_OFF 0
-  // eTempSens_t 순서로 배치
-  int16_t innerTemp;    // 25 	-> 25`C
-  int16_t Humidity;     // 30		-> 30%
-  int16_t snow_vitemp;  // virtual temp (temp + 40)
-                        // 평상시 filter 적용하고 Test시에만 뺄수있다
-  uint8_t ComPingCnt[4];
-  uint32_t SysResetTime;  // 시스템 파워 온 시간
-  int8_t MstMcuInit;      // TFT Mcu가 초기화한 상태
-
-} SYSTEM_TypeDef;  // System
 
 // SNOWFALL Command
 typedef enum
@@ -199,15 +144,21 @@ bool check_hjsnow(uint8_t *pdata, uint16_t datalen)
 //응답 02 00 21 2D A2 0A 19 01 6A 0C D2 D3 5E 02 B3 CB A1 E0 00 00 A9 44 6D 38 01 01 01 00 00 00 19 00 2E 00 00 00 00 00 00 00 80 43 6D 38 00 00 00 00 06 D8 03 
 int32_t read_hjSnowFall(dev_io_t *dev, uint8_t *err)
 {
+  driver_t *p_driver;
   uint8_t frame[60];
   static uint16_t len;
   int16_t data = 0;
   uint8_t para[2];
   uint8_t paraCnt = 0;
   uint16_t offset = (uint16_t)(int)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
-
+  hjsnow_cfg_t *cfg;
   devIoTimeOutopt_t opt;
   *err = 1;
+
+
+  p_driver = dev->driver;
+  cfg = p_driver->cfg;
+
 
 #if 0
     para[paraCnt++] = 0x00;//(uint8_t)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
@@ -247,11 +198,6 @@ int32_t read_hjSnowFall(dev_io_t *dev, uint8_t *err)
   return data;
 }
 
-typedef struct hjsnow_cfg_s
-{
-  driver_t *io;
-  int32_t channel;
-} hjsnow_cfg_t;
 
 
 
@@ -274,6 +220,8 @@ driver_t *hjsnow_open(int32_t num, void *opt)
  }
 
   hjsnow_driver.opened = true;
+  hjsnow_driver.name = "HJ_SNOW";
+
 
   switch(hjsnow->physical_layer)
   {
@@ -311,8 +259,7 @@ driver_t *hjsnow_open(int32_t num, void *opt)
     }
     break;
   }
-  
-
+  OS_CREATE_BINARY_SEM(hjsnow_cfg.sem);
 
   return &hjsnow_driver;
 }
@@ -320,8 +267,10 @@ driver_t *hjsnow_open(int32_t num, void *opt)
 int32_t read_hjsnow(driver_t *driver, uint8_t *err)
 {
   hjsnow_cfg_t *pcfg = driver->cfg;
-  //int32_t snow = 0;
+  int32_t snow = 0;
   dev_io_t dev_io;
+
+  OS_PEND_SEM(pcfg->sem,osWaitForever);
 
   dev_io.driver = pcfg->io;
 
@@ -334,5 +283,196 @@ int32_t read_hjsnow(driver_t *driver, uint8_t *err)
     dev_io.io = eRS232_IO;
   }
 
-  return read_hjSnowFall(&dev_io, err);
+  snow =  read_hjSnowFall(&dev_io, err);
+
+  OS_POST_SEM(pcfg->sem);
+
+  return snow;
+}
+
+
+void hjsnow_read_config(driver_t *driver,uint8_t *p_out,uint16_t out_size,uint8_t *err)
+{
+  const uint8_t request[] = {0x02, 0x00, 0x28, 0x02, 0x00, 0x32, 0x5C, 0x03};
+  uint8_t frame[100];
+  static uint16_t len;
+  int16_t data = 0;
+  uint8_t para[2];
+  uint8_t paraCnt = 0;
+  uint16_t offset = (uint16_t)(int)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
+  devIoTimeOutopt_t opt;
+  hjsnow_cfg_t *pcfg = driver->cfg;
+  // int32_t snow = 0;
+  dev_io_t dev_io;
+
+
+  OS_PEND_SEM(pcfg->sem,osWaitForever);
+  dev_io.driver = pcfg->io;
+
+  if (pcfg->channel == 0)  // 485
+  {
+    dev_io.io = eRS485_IO;
+  }
+  else
+  {
+    dev_io.io = eRS232_IO;
+  }
+
+  *err = 1;
+
+  dev_io_flush(&dev_io);
+  dev_io_write(&dev_io, (uint8_t*)request, sizeof(request), 0);
+
+  opt.waitTimeOutMs = 50;
+  len = dev_io_read(&dev_io, frame, sizeof(frame), DEV_IO_CMD_DATA_TIMEOUT, (void *)&opt);
+
+  if (len == 0)
+  {
+    *err = DRV_ERR_TIMEOUT;
+  }
+
+  if (len)
+  {
+    if (check_hjsnow(frame, len))
+    {
+      memcpy(p_out, &frame[10],out_size);
+       *err = DRV_ERR_NONE;
+    }
+    else
+    {
+      *err = DRV_ERR_RECV_DATA;
+      LOG_MEM(frame,len,0,16);
+    }
+  }
+
+  OS_POST_SEM(pcfg->sem);
+}
+
+void hjsnow_read_system(driver_t *driver, uint8_t *p_out, uint16_t out_size, uint8_t *err)
+{
+  const uint8_t request[] = {0x02, 0x00, 0x21, 0x02, 0x00, 0x32, 0x55, 0x03};
+  hjsnow_cfg_t *pcfg = driver->cfg;
+  uint8_t frame[100];
+  static uint16_t len;
+  int16_t data = 0;
+  uint8_t para[2];
+  uint8_t paraCnt = 0;
+  devIoTimeOutopt_t opt;
+  dev_io_t dev_io;
+
+  OS_PEND_SEM(pcfg->sem, osWaitForever);
+  
+  dev_io.driver = pcfg->io;
+
+  if (pcfg->channel == 0)  // 485
+  {
+    dev_io.io = eRS485_IO;
+  }
+  else
+  {
+    dev_io.io = eRS232_IO;
+  }
+
+  *err = 1;
+
+
+  dev_io_flush(&dev_io);
+  dev_io_write(&dev_io, (uint8_t *)request, sizeof(request), 0);
+
+  opt.waitTimeOutMs = 50;
+  len = dev_io_read(&dev_io, frame, sizeof(frame), DEV_IO_CMD_DATA_TIMEOUT, (void *)&opt);
+
+  if (len == 0)
+  {
+    *err = DRV_ERR_TIMEOUT;
+  }
+
+  if (len)
+  {
+    if (check_hjsnow(frame, len))
+    {
+      memcpy(p_out, &frame[4], out_size);
+      *err = DRV_ERR_NONE;
+    }
+    else
+    {
+      *err = DRV_ERR_RECV_DATA;
+      LOG_MEM(frame, len, 0, 16);
+    }
+  }
+
+  OS_POST_SEM(pcfg->sem);
+}
+
+
+void hjsnow_run_zero(driver_t *driver,uint8_t *err)
+{
+  const uint8_t request[] = {0x02, 0x00, 0x24, 0x02, 0x04, 0x01, 0x2B, 0x03};
+  hjsnow_cfg_t *pcfg = driver->cfg;
+  dev_io_t dev_io;
+  uint16_t len;
+    uint8_t frame[50];
+    devIoTimeOutopt_t opt;
+    dev_io.driver = pcfg->io;
+
+    if (pcfg->channel == 0)  // 485
+    {
+      dev_io.io = eRS485_IO;
+    }
+  else
+  {
+    dev_io.io = eRS232_IO;
+  }
+  opt.waitTimeOutMs = 50;
+  dev_io_write(&dev_io, (uint8_t*)request, sizeof(request), 0);
+  len = dev_io_read(&dev_io, frame, sizeof(frame), DEV_IO_CMD_DATA_TIMEOUT, (void *)&opt);
+
+  if (len == 0)
+  {
+    *err = DRV_ERR_TIMEOUT;
+  }
+
+  if (len)
+  {
+    if (check_hjsnow(frame, len))
+    {
+      *err = DRV_ERR_NONE;
+    }
+    else
+    {
+      *err = DRV_ERR_RECV_DATA;
+    }
+  }
+}
+
+void hjsnow_ctrl(driver_t *driver, eHJSNOW_CTRL_t ctrl, void *w_opt,void *r_opt,uint8_t *err)
+{
+  switch (ctrl)
+  {
+    case eHJSNOW_RUN_ZERO:
+      hjsnow_run_zero(driver,err);
+      break;
+    case eHJSNOW_SET_DISTANCE:
+      break;
+    case eHJSNOW_GET_CONFIG:
+      hjsnow_read_config(driver, (uint8_t *)&((hjsnow_read_config_t*)r_opt)->config, sizeof(((hjsnow_read_config_t *)r_opt)->config),
+                         err);
+      break;
+    case eHJSNOW_GET_SYSTEM:
+      hjsnow_read_system(driver, (uint8_t *)&((hjsnow_read_system_t *)r_opt)->system,
+                         sizeof(((hjsnow_read_system_t *)r_opt)->system), err);
+      break;
+  }
+}
+
+driver_t * hjsnow_opened(void)
+{
+  if(hjsnow_driver.opened)
+  {
+    return &hjsnow_driver;
+   
+  }
+
+  return NULL;
+  
 }

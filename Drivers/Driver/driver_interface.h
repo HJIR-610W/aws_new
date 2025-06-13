@@ -24,4 +24,5 @@ typedef struct driver_s
 #define DRV_ERR_TIMEOUT 2
 #define DRV_ERR_RECV_DATA    3
 
+const char* get_drv_err_name(int num);
 #endif
