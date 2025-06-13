@@ -56,8 +56,8 @@
   X(N11_AIR_TEMPERATURE_400CM,  "기온 4m", "%-5.2f")        \
   X(N12_HUMIDITY_50CM,          "습도 50cm", "%-5.2f")        \
   X(N13_HUMIDITY_400CM,         "습도 4m", "%-5.2f")        \
-  X(I1_TACHOMETER,              "타코미터", "%-5.2f")    \
-  X(USER_WATER,                 "수위", "%-5.2f") 
+  X(I1_TACHOMETER,              "타코미터", "%-5.2f")    
+
 
 
 // 제공 가능한 센서 데이터,AWS 항목

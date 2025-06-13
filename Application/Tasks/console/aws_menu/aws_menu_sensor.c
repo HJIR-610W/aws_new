@@ -300,43 +300,30 @@ int32_t print_common_cfg( sensor_t *sensor, uint8_t c)
 
 int32_t select_indexMenu( sensor_t *sensor,int *choice)
 {
-  int cnt;
   int index = 0;
   int funcCnt = 0;
   int indexMax;
-
+  int status;
 
   do
   {
     funcCnt = print_common_cfg( sensor, 0);
     indexMax = funcCnt;
 
-    io_printf("번호를 선택해 주세요");
-    io_printf("입력");
 
-    // 사용자로 부터 메뉴를 선택 받는다.
-    cnt = console_scanf("%d", &index);  //-1 ctrl+c, 0 enter esc
-    io_printf("\r\n");
-    if (cnt == 1)
-    {
-      if (index < indexMax)
-      {
-       *choice = index;
-        break;
-      }
-    }
-    else if (cnt == EXIT_BACK)
-    {
-      return MENU_BACK;
-    }
-    else if (cnt == EXIT_PROGRAM)
-    {
-      return MENU_ABORT;
-    }
-    vt100_printfColor(RED, "유효한 번호가 아닙니다\r\n");
+    status = input_decimal_prompt("번호를 선택해 주세요",&index,0,indexMax-1);
+
+
+    if(status != MENU_OK)
+      break;
+    
+      *choice = index;
+      break;
+    
+
   } while (1);
 
-  return MENU_OK;
+  return status;
 }
 /**
  * @brief index로 저장된 센서 목록을 문자열 목록으로 가져오기
@@ -1056,7 +1043,7 @@ const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_HUMINITY_HJ, .config_set = hjhumi_config_set},
     {.sensorType = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_config_set}};
 
-int32_t sensor_set( sensor_t *sensor, uint8_t cnt)
+int32_t sensor_set( sensor_t *sensor, uint8_t choice)
 {
   int32_t status=MENU_OK;
 
@@ -1064,7 +1051,7 @@ int32_t sensor_set( sensor_t *sensor, uint8_t cnt)
   {  // 센서마다 고유의 처리 함수를 사용한다.
     if (sen_func[i].sensorType == sensor->type)
     {
-      status = sen_func[i].config_set( sensor, cnt - 1);
+      status = sen_func[i].config_set( sensor, choice -1);
       break;
     }
   }

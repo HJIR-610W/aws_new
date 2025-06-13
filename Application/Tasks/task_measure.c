@@ -408,7 +408,7 @@ void sensor_init(void)
   g_reading_1.data[N12_HUMIDITY_50CM].data_type = eDATA_TYPE_F;
   g_reading_1.data[N13_HUMIDITY_400CM].data_type = eDATA_TYPE_F;
   g_reading_1.data[I1_TACHOMETER].data_type = eDATA_TYPE_F;
-  g_reading_1.data[USER_WATER].data_type = eDATA_TYPE_F;
+
   }
 
 /**

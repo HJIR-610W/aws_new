@@ -185,7 +185,7 @@ int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int3
  */
 int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t listCnt, bool number,int32_t *choice)
 {
-  int cnt;
+
   int index = 0;
   int funcCnt = 0;
   int indexMax;
@@ -219,29 +219,13 @@ int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t lis
       indexMax = listCnt;
     }
 
-    vt100_printfColor(GREEN, "번호를 선택해 주세요:");
-    cnt = cli_scanf_s("%d", &index);
-    io_printf("\r\n");
-    if (cnt == 1)
-    {
-      if (index < indexMax)
-      {
-        *choice = index;
-        status = MENU_OK;
-        break;
-      }
-    }
-    else if (status == CLI_KEYCODE_CTRL_C)
-    {
-      status = MENU_BACK;
+    status = input_decimal_prompt("번호를 선택해주세요",&index,0,indexMax-1);
+    if(status!=MENU_OK)
+    break;
+
+      *choice = index;
+      status = MENU_OK;
       break;
-    }
-    else if(status == CLI_KEYCODE_CTRL_Q)
-    {
-      status  = MENU_ABORT;
-      break;
-    }
-    io_printf("%s\r\n", STRING_INPUT_ERR);
   } while (1);
 
   return status;

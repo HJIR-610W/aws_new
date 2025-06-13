@@ -100,8 +100,8 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] = {
     {.list = defaultList, .cnt = sizeof(defaultList)},                  // N11_AIR_TEMPERATURE_400CM
     {.list = defaultList, .cnt = sizeof(defaultList)},                  // N12_HUMIDITY_50CM
     {.list = defaultList, .cnt = sizeof(defaultList)},                  // N13_HUMIDITY_400CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // I1_TACHOMETER
-    {.list = defaultList, .cnt = sizeof(defaultList)}};                 // USER_WATER
+    {.list = defaultList, .cnt = sizeof(defaultList)}};                  // I1_TACHOMETER
+
 
 void sensor_add_common(sensor_t *sensor, uint8_t index)
 {

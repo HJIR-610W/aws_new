@@ -1789,6 +1789,12 @@
                         <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_system.c</name>
                     </file>
                 </group>
+                <group>
+                    <name>hj_snow_menu</name>
+                </group>
+                <group>
+                    <name>hj_temp_menu</name>
+                </group>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\console\console_data.c</name>
                 </file>
