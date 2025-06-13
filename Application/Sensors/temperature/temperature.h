@@ -23,7 +23,6 @@
 #define TEMP_ERR_VAL 1000
 driver_t *temperature_open(uint32_t num, void *opt);
 float temperature_read(driver_t *driver, uint8_t *err);
-void temperature_set(driver_t *driver, temperature_set_option_t option, void *value);
-void temperature_get(driver_t *driver, temperature_get_option_t option, void *value);
+
 
 #endif

@@ -8,21 +8,21 @@
 #include "temperature\temperature_define.h"
 #include "config_sensor.h"
 #include "temperature\hj_temperature_define.h"
-
+#include "os_user_def.h"
 typedef struct hj_huminity_cfg_s
 {
   driver_t *bus_io;
+  void *sem;
 } hj_huminity_cfg_t;
 
 driver_t hjHumi_drv;
 hj_huminity_cfg_t hj_huminity_cfg;
 
 float hjHuminity_read(driver_t *driver, uint8_t *err);
-void hjHuminity_set(driver_t *driver, temperature_set_option_t option, void *value);
-int32_t hjHuminity_get(driver_t *driver, temperature_get_option_t option, void *value);
+
 
 temperature_api_t hjHumiApi = {
-    .read = hjHuminity_read, .set = hjHuminity_set, .get = hjHuminity_get};
+    .read = hjHuminity_read};
 
 driver_t *hjHuminity_open(int32_t num, void *opt)
 {
@@ -36,6 +36,7 @@ driver_t *hjHuminity_open(int32_t num, void *opt)
     return &hjHumi_drv;
   }
 
+  hjHumi_drv.opened = true;
   modbus_init.baud = 9600;
   modbus_init.parityIdx = 0;
   modbus_init.stop = 1;
@@ -58,6 +59,9 @@ driver_t *hjHuminity_open(int32_t num, void *opt)
   hjHumi_drv.api = &hjHumiApi;
   hjHumi_drv.cfg = &hj_huminity_cfg;
 
+
+  OS_CREATE_BINARY_SEM(hj_huminity_cfg.sem);
+  
   return &hjHumi_drv;
 }
 
@@ -85,39 +89,12 @@ float hjHuminity_read(driver_t *driver, uint8_t *err)
   return temp;
 }
 
-void hjHuminity_set(driver_t *driver, temperature_set_option_t option, void *value)
+driver_t * hjHumi_opened(void)
 {
-  hj_huminity_cfg_t *cfg = driver->cfg;
-
-  uint16_t data = (uint16_t)(int)value;
-
-  switch (option)
+  if(hjHumi_drv.opened)
   {
-    case eHUMI_SET_OFFSET:
-      driver_modbus_m_write_single_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI_OFFSET, data);
-      break;
-
-    default:
-      break;
-  }
-}
-
-int32_t hjHuminity_get(driver_t *driver, temperature_get_option_t option, void *value)
-{
-  hj_huminity_cfg_t *cfg = driver->cfg;
-  int32_t ret = 0;
-  uint16_t data = (uint16_t)(int)value;
-
-  switch (option)
-  {
-    case eHUMI_GET_OFFSET:
-      ret = driver_modbus_m_read_hold_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI_OFFSET, &data, 1);
-      *((uint16_t *)value) = data;
-      break;
-
-    default:
-      break;
+    return &hjHumi_drv;
   }
 
-  return ret;
+  return NULL;
 }

@@ -23,10 +23,9 @@ void make_comList(char *out, uint16_t outsize);
 
 int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_val);
 
+int input_float_prompt(const char* prompt, float min, float max, float* value);
 
-int input_float_prompt(const char* prompt, float* value);
-
-int print_menu(int width, const char* title, char** menu_list, int cnt) ;
+    int print_menu(int width, const char* title, char** menu_list, int cnt);
 int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int32_t *choice);
 int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t listCnt, bool number,
                              int32_t* choice);

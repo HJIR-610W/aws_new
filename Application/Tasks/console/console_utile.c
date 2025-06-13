@@ -264,7 +264,7 @@ bool wait_break(uint32_t timeoutms)
   return false;
 }
 
-int input_float_prompt(const char* prompt, float* value)
+int input_float_prompt(const char* prompt, float min, float max, float* value)
 {
   int ret_scan;
   int ret;
@@ -273,6 +273,7 @@ int input_float_prompt(const char* prompt, float* value)
   {
     io_printf("%s: ", prompt);
     ret_scan = cli_scanf_s("%f", value);
+
     if (ret_scan == CLI_KEYCODE_CTRL_C)
     {
       ret = MENU_BACK;
@@ -285,14 +286,29 @@ int input_float_prompt(const char* prompt, float* value)
     }
     else if (ret_scan == 1)
     {
-      ret = MENU_OK;
-      break;
+      if(min==0&&max==0)
+      {
+        ret = MENU_OK;
+        break;
+      }
+      else if(*value >= min && *value <= max)
+      {
+        ret = MENU_OK;
+        break;
+      }
+      else
+      {
+        io_printf("범위 오류: %.2f ~ %.2f\r\n", min, max);
+      }
     }
-    io_printf("%s\r\n", STRING_INPUT_ERR);
+    else
+    {
+      io_printf("%s\r\n", STRING_INPUT_ERR);
+    }
   }
+
   return ret;
 }
-
 
 int check_pass(const char* title, char* password_str,int *ok)
 {

@@ -131,7 +131,7 @@ int handle_factory_calibration(int adc_num)
       }
 
       status =
-      input_float_prompt("   낮은 기준점의 실제 값(전압)을 입력하세요.", &p1.reference_value);
+      input_float_prompt("   낮은 기준점의 실제 값(전압)을 입력하세요.",0,0, &p1.reference_value);
       if (status != MENU_OK)
       {
         return status;
@@ -167,7 +167,7 @@ int handle_factory_calibration(int adc_num)
       {
         break;
       }
-      status = input_float_prompt("높은 기준점의 실제 값(전압)을 입력하세요.", &p2.reference_value);
+      status = input_float_prompt("높은 기준점의 실제 값(전압)을 입력하세요.", 0,0,&p2.reference_value);
       if (status != MENU_OK)
       {
         break;;
@@ -305,7 +305,7 @@ int handle_temp_comp_setup(int adc_num)
             {
               io_printf("현재 SlopeTC=%.6f, OffsetTC=%.6f\r\n", params->slope_temp_coeff,
                         params->offset_temp_coeff);
-              status = input_float_prompt("새 Slope TempCo 입력", &params->slope_temp_coeff);
+              status = input_float_prompt("새 Slope TempCo 입력",0,0, &params->slope_temp_coeff);
               if (status == MENU_ABORT || status == MENU_BACK)
               {
                 return status;
@@ -313,7 +313,7 @@ int handle_temp_comp_setup(int adc_num)
 
               if (status == MENU_OK)
               {
-                status = input_float_prompt("새 Offset TempCo 입력", &params->offset_temp_coeff);
+                status = input_float_prompt("새 Offset TempCo 입력", 0,0,&params->offset_temp_coeff);
                 if (status == MENU_ABORT || status == MENU_BACK)
                 {
                   return status;
@@ -482,7 +482,7 @@ int handle_offset_adjustment(int adc_num)
 
         if (choice == 1)
         {
-          status = input_float_prompt("목표 기준값 입력", &target_ref);
+          status = input_float_prompt("목표 기준값 입력", 0,0,&target_ref);
           if (status == MENU_ABORT || status == MENU_BACK)
           {
             return status;

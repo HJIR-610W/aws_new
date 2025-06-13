@@ -19,11 +19,10 @@ driver_t hjTemp_drv;
 hj_temperature_cfg_t hj_temperature_cfg;
 
 float hjTemperature_read(driver_t *driver, uint8_t *err);
-void hjTemperature_set(driver_t *handle, temperature_set_option_t option, void *value);
-int32_t hjTemperature_get(driver_t *driver, temperature_get_option_t option, void *value);
+
 
 temperature_api_t hjTempApi = {
-    .read = hjTemperature_read, .set = hjTemperature_set, .get = hjTemperature_get};
+    .read = hjTemperature_read};
 
 driver_t *hjTemperature_open(int32_t num, void *opt)
 {
@@ -39,6 +38,7 @@ driver_t *hjTemperature_open(int32_t num, void *opt)
   { 
     return &hjTemp_drv;
   }
+  hjTemp_drv.opened = true;
 
   hj_temperature_cfg.modbus_id = hjtemp->modbus_id;
   modbus_init.baud = 9600;
@@ -102,46 +102,55 @@ float hjTemperature_read(driver_t *driver, uint8_t *err)
   return temp;
 }
 
-void hjTemperature_set(driver_t *driver, temperature_set_option_t option, void *value)
+
+
+
+void hjtemperature_ctrl(driver_t *driver, eHJTEMPERATURE_OPT_t ctrl, void *w_opt, void *r_opt,
+                        uint8_t *err)
 {
+  int32_t ret = 0;
   hj_temperature_cfg_t *cfg = driver->cfg;
+uint16_t data;
+  
 
-  uint16_t data = (uint16_t )(int)value;
-
-  switch (option)
+  switch (ctrl)
   {
     case eTEMP_SET_OFFSET:
-      driver_modbus_m_write_single_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_TEMP_OFFSET,data);
+      data = *(int32_t *)w_opt;
+      driver_modbus_m_write_single_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_TEMP_OFFSET, data);
       break;
-      case eHUMI_SET_OFFSET:
-        driver_modbus_m_write_single_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_HUMI_OFFSET, data);
-        break;
-    default:
+    case eHUMI_SET_OFFSET:
+      data = *(int32_t *)w_opt;
+      driver_modbus_m_write_single_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_HUMI_OFFSET, data);
+      break;
+    case eTEMP_GET_OFFSET:
+      ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_TEMP_OFFSET,
+                                          &data, 1);
+      *err = ret;
+      if (ret == 0)
+      {
+        
+        *((int32_t *)r_opt) = (int16_t)data;
+      }
+      break;
+    case eHUMI_GET_OFFSET:
+      ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_HUMI_OFFSET,
+                                          &data, 1);
+            *err = ret;
+      if (ret == 0)
+      {
+        *((int32_t *)r_opt) = (int16_t)data;
+      }
       break;
   }
 }
 
-int32_t hjTemperature_get(driver_t *driver, temperature_get_option_t option, void *value)
+driver_t *hjtemp_opened(void)
 {
-  hj_temperature_cfg_t *cfg = driver->cfg;
-  int32_t ret=0;
-  uint16_t data = (uint16_t)(int)value;
-
-  switch (option)
+  if(hjTemp_drv.opened)
   {
-    case eTEMP_GET_OFFSET:
-      ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_TEMP_OFFSET,
-                                          &data, 1);
-      *((uint16_t *)value) = data;
-      break;
-      case eHUMI_GET_OFFSET:
-        ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_HUMI_OFFSET,
-                                            &data, 1);
-        *((uint16_t *)value) = data;
-        break;
-    default:
-      break;
+    return &hjTemp_drv;
   }
 
-  return ret;
+  return NULL;
 }

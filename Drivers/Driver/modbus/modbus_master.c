@@ -336,7 +336,9 @@ int32_t modbus_write_single_reg(driver_t *drv, uint8_t slave_id, uint16_t addres
   modbus_t modbus;
   uint16_t reg[10];
   int32_t err = RET_FAIL;
+  modbus_cfg_t *cfg = drv->cfg;
 
+  OS_PEND_SEM(cfg->sem,osWaitForever);
   modbus.id = slave_id;
   modbus.fc = MB_FC_WRITE_REGISTER;
   modbus.regAdd = address;
@@ -352,6 +354,7 @@ int32_t modbus_write_single_reg(driver_t *drv, uint8_t slave_id, uint16_t addres
     err = RET_OK;
   }
 
+  OS_POST_SEM(cfg->sem);
   return err;
 }
 
@@ -361,14 +364,13 @@ int32_t modbus_write_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address
   modbus_t modbus;
   uint16_t reg[160];
   int32_t err = RET_FAIL;
+  modbus_cfg_t *cfg= drv->cfg;
 
-
-  OS_PEND_SEM(drv->sem, osWaitForever);
+  OS_PEND_SEM(cfg->sem, osWaitForever);
 
   if ((sizeof(reg) / sizeof(reg[0])) < regCnt)
   {
-
-    OS_POST_SEM(drv->sem);
+    OS_POST_SEM(cfg->sem);
 
     return err;
   }
@@ -391,7 +393,7 @@ int32_t modbus_write_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address
     err = RET_OK;
   }
 
-  OS_POST_SEM(drv->sem);
+  OS_POST_SEM(cfg->sem);
 
   return err;
 }
@@ -402,11 +404,16 @@ int32_t modbus_read_hold_reg(driver_t *drv, uint8_t slave_id, uint16_t address, 
   modbus_t modbus;
   uint16_t reg[160];
   int32_t ret = RET_FAIL;
+  modbus_cfg_t *cfg = drv->cfg;
+
+
 
   if ((sizeof(reg) / sizeof(reg[0])) < regCnt)
   {
     return ret;
   }
+
+  OS_PEND_SEM(cfg->sem, osWaitForever);
 
   modbus.id = slave_id;
   modbus.fc = MB_FC_READ_REGISTERS;
@@ -430,6 +437,7 @@ int32_t modbus_read_hold_reg(driver_t *drv, uint8_t slave_id, uint16_t address, 
     ret = RET_FAIL;
   }
 
+  OS_POST_SEM(cfg->sem);
   return ret;
 }
 
@@ -439,12 +447,17 @@ int32_t modbus_read_input_reg(driver_t *drv, uint8_t slave_id, uint16_t address,
   modbus_t modbus;
   uint16_t reg[160];
   int32_t ret = RET_FAIL;
+  modbus_cfg_t *cfg = drv->cfg;
 
+  
   memset(reg,0,sizeof(reg));
   if ((sizeof(reg) / sizeof(reg[0])) < regCnt)
   {
     return ret;
   }
+  
+  OS_PEND_SEM(cfg->sem, osWaitForever);
+
 
   modbus.id = slave_id;
   modbus.fc = MB_FC_READ_INPUT_REGISTER;
@@ -468,6 +481,7 @@ int32_t modbus_read_input_reg(driver_t *drv, uint8_t slave_id, uint16_t address,
     ret = RET_FAIL;
   }
 
+  OS_POST_SEM(cfg->sem);
   return ret;
 }
 void send_query(driver_t *drv, modbus_t *pmodbus)

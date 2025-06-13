@@ -150,7 +150,10 @@
 			"aws_menu_panel.h": "c",
 			"aws_network.h": "c",
 			"hj_snow.h": "c",
-			"hjsnow_define.h": "c"
+			"hjsnow_define.h": "c",
+			"hj_huminity.h": "c",
+			"xmemory0": "c",
+			"xstddef": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

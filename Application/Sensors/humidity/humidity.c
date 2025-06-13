@@ -46,16 +46,5 @@ float read_sensor_humidity(driver_t *driver,uint8_t *err)
 
 }
 
-void huminity_set(driver_t *driver, temperature_set_option_t option, void *value)
-{
-  const temperature_api_t *api = ((driver_t *)driver)->api;
 
-  api->set(driver, option, value);
-}
 
-void huminity_get(driver_t *driver, temperature_get_option_t option, void *value)
-{
-  const temperature_api_t *api = ((driver_t *)driver)->api;
-
-  api->get(driver, option, value);
-}

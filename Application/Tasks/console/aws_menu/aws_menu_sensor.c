@@ -14,6 +14,7 @@
 #include "terminal.h"
 #include "util_memory.h"
 #include "vt100_command.h"
+#include "hj_temp_menu\hjtemp_menu.h"
 const char *adcChModeList[] = {"single", "diff"};
 const char *unusedList[] = {"미사용"};
 const char *rs232ParityList[] = {"none", "even", "odd"};
@@ -218,7 +219,7 @@ uint8_t print_hjtemp_cfg( hjtemp_config_t *hjtempCfg, uint8_t cnt)
   }
   io_printf("%2d.포트       :%s\r\n", cnt++, portNameList[hjtempCfg->port]);  // 고정
   io_printf("%2d.모드버스 ID:%d\r\n", cnt++, hjtempCfg->modbus_id);           // 고정
-  io_printf("%2d.오프셋[제어]\r\n", cnt++);                                   // 고정
+  io_printf("%2d.온습도 메뉴[제어]\r\n", cnt++);                                   // 고정
   return cnt;
 }
 
@@ -580,45 +581,6 @@ int32_t hjwinddir_config_set( sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
-int input_float( float start, float stop, float *target)
-{
-  int32_t cnt;
-  int32_t status=0;
-  float fVal;
-
-  while(1)
-  {
-  io_printf("\r\n범위:%f~%f\r\n", start, stop);
-  vt100_printfColor(GREEN, "값을 입력해 주세요:");
-  cnt = console_scanf("%f", &fVal);
-  if(cnt == 1)
-  {
-    if (fVal < start || fVal > stop)
-    {
-      vt100_printfColor(RED, "입력값을 범위를 확인해 주세요\r\n");
-      return MENU_OK;
-    }
-
-    *target = fVal;
-    return MENU_OK;
-  }
-  else
-  {
-    if(cnt ==EXIT_BACK)
-    {
-      status = MENU_BACK;
-      break;
-    }
-    else if(cnt ==EXIT_PROGRAM)
-    {
-      status = MENU_ABORT;
-      break;
-    }
-  }
-  }
-
-  return status;
-}
 /*
 0.type:화진 RS485 9600
 1.port:EX1 RS485 A
@@ -679,40 +641,10 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
         save_config_sensor();
       break;
     case HJTEMP_CTRL_OFFSET:
-    {
-      driver_t *hj_temp;
-      hjtemp_config_t *hjtemp_config;
-      uint16_t offset = 0;
-      int32_t ret;
-      int ok;
-      hjtemp_config = get_sensor_config(&get_config_app()->sensor[A1_TEMPERATURE]);
 
-      hj_temp = hjTemperature_open(HJ_TEMPERATURE, hjtemp_config);
+      status = hjtemperature_menu();     
 
-      ret = hjTemperature_get(hj_temp, eTEMP_GET_OFFSET, &offset);
-      if (ret == 0)
-      {
-        io_printf("현재 온도 오프셋:%.2f\r\n", ((float)offset / 100.0f));
-        status  = confirm_continue("오프셋을 변경하시겠습니까?",&ok);
-        if(status != MENU_OK)
-        break;
-
-        if(ok)
-        {
-          float f_offset;
-          io_printf("오프셋을 입력해주세요>>");
-          if (input_float( -5, 5, &f_offset))
-          {
-            offset = (uint16_t)(f_offset * 100);
-            hjTemperature_set(hj_temp, eTEMP_SET_OFFSET, (void *)offset);
-          }
-        }
-      }
-      else
-      {
-        io_printf("장치에 접근할 수 없습니다.\r\n");
-      }
-    }
+    break;
   }
   }
   
@@ -780,42 +712,12 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
       }
       break;
     case HJTEMP_CTRL_OFFSET:
-    {
-      driver_t *hj_temp;
-      hjtemp_config_t *hjtemp_config;
-      uint16_t offset = 0;
-      int32_t ret;
-      int ok;
-
-      hjtemp_config = get_sensor_config(&get_config_app()->sensor[A1_TEMPERATURE]);
-
-      hj_temp = hjTemperature_open(HJ_TEMPERATURE, hjtemp_config);
-
-      ret = hjTemperature_get(hj_temp, eHUMI_GET_OFFSET, &offset);
-      if (ret == 0)
-      {
-        io_printf("현재 습도 오프셋:%.2f\r\n", ((float)offset / 100.0f));
-        status = confirm_continue("오프셋을 변경하시겠습니까?",&ok);
-        if(status != MENU_OK)
-        break;
-          if(ok)
-          {
-            io_printf("오프셋을 입력해주세요>>");
-            if (input_float( -5, 5, &f_offset))
-            {
-              offset = (uint16_t)(f_offset * 100);
-              hjTemperature_set(hj_temp, eHUMI_SET_OFFSET, (void *)offset);
-            }
-          }
-      }
-      else
-      {
-        io_printf("장치에 접근할 수 없습니다.\r\n");
-      }
-    }
-    break;
+     status =  hjtemperature_menu();
+       break;
     default:
       break;
+
+      
   }
   
   return status;
