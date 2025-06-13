@@ -34,11 +34,6 @@ extern float g_current_temp;
 
 extern bool wait_break(uint32_t timeoutms);
 
-int wait_for_enter()
-{
-  int key = recv_key(osWaitForever);
-  return (key == -1) ? MENU_ABORT : MENU_OK;
-}
 
 
 
@@ -369,9 +364,7 @@ int handle_temp_comp_setup(int adc_num)
             {
               io_printf("오류: 현재 보상 방식이 'LUT 사용'이 아닙니다.\r\n");
             }
-            if (wait_for_enter() == MENU_ABORT)
-              return MENU_ABORT;
-            break;
+
 #endif
           case 'b':
             goto channel_setup_exit;  // 채널 설정 루프 탈출
@@ -799,7 +792,7 @@ int handle_save_load(int adc_num)
     switch (choice)
     {
       case 1:
-        status = confirm_continue(&ok);
+        status = confirm_continue("계속 진행하시겠습니까?",&ok);
         if(status != MENU_OK)
         {
           return status;
@@ -857,7 +850,7 @@ int handle_save_load(int adc_num)
 
         break;
       case 2:
-        status = confirm_continue(&ok);
+        status = confirm_continue("계속 진행하시겠습니까?",&ok);
         if (status != MENU_OK)
         {
           return status;

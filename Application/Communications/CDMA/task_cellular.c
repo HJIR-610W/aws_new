@@ -92,20 +92,20 @@ typedef struct
 }tcpData_t;
 
 const osThreadAttr_t kAtTask_attributes = {
-  .name = "atTask",
+  .name = "cdma AT",
   .stack_size = 2048,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 const osThreadAttr_t kTcpTask_attributes = {
-  .name = "tcpTask",
+  .name = "cdma TCP",
   .stack_size = 3072,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 
 const osThreadAttr_t kAsyncTask_attributes = {
-  .name = "asyncTask",
+  .name = "cdma ASYNC",
   .stack_size = 2048,
   .priority = (osPriority_t) osPriorityNormal,
 };
@@ -1026,8 +1026,8 @@ void modemAtTask(void  *argument)
   int32_t len;
   eAT_COMMAND_t at_cmd;
   uint32_t cmd_count = _iCellular->get_count();
-  int32_t wdt_number;
-  wdt_number =  wdt_task_register(kAtTask_attributes.name,600000);
+  int32_t wdt_number=0;;
+  //wdt_number =  wdt_task_register(kAtTask_attributes.name,600000);
   
   while (1)
   {
@@ -1039,7 +1039,7 @@ void modemAtTask(void  *argument)
       continue;
     }
 
-    wdt_task_feed(wdt_number);
+  //  wdt_task_feed(wdt_number);
     
     for (uint32_t idx = 0; idx < cmd_count; idx++)
     {

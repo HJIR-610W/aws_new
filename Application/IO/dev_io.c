@@ -18,6 +18,7 @@
 #include "tlsf.h"
 #include "user_heap.h"
 #include "util_time.h"
+#include "cli_input.h"
 
 static driver_t *debug_uart = NULL;
 ;
@@ -440,4 +441,16 @@ void io_printf_color(int color, const char *pFmt, ...)
   va_end(args);
 
   io_printf("%c[%dm", 27, 37);
+}
+
+int io_scanf_s(const char *fmt, ...)
+{
+  va_list args;
+  int ret;
+
+  va_start(args, fmt);
+  ret = cli_vscanf_s(fmt, args); 
+  va_end(args);
+
+  return ret;
 }

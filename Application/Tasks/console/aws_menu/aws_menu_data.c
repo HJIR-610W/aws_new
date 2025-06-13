@@ -161,7 +161,7 @@ int aws_menu_data(void)
   int choice;
   int status;
   char* menu[] = {"1분자료 확인",
-                  "1분자료 편집(구현 예정) "};
+                  "1분자료 편집(구현 예정)"};
 
   while (1)
   {

@@ -6,6 +6,7 @@
 #include "aws_develop.h"
 #include "cli_input.h"
 #include "console_define.h"
+#include "console_utile.h"
 
 int32_t menu_root(p_shell_context_t ctx, int32_t argc, char **argv)
 {
@@ -16,11 +17,13 @@ int32_t menu_root(p_shell_context_t ctx, int32_t argc, char **argv)
 
 int32_t menu_develop(p_shell_context_t ctx, int32_t argc, char **argv)
 {
-  
-  if (check_pass("진행 코드 입력해주세요", "32956") == MENU_OK)
-  {
+  int status;
+  int ok;
+
+  status = check_pass("진행 코드 입력해주세요", "32956",&ok);
+  if(status == MENU_OK && ok==1)
     aws_menu_develop();
-  }
+  
   
   return 0;
 }

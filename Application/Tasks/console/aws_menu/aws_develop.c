@@ -247,20 +247,26 @@ int32_t menu_task_print(void)
 
 int32_t menu_task_print_force(void)
 {
-//  uint32_t id;
-//  int32_t ret;
+  int status;
+  int ok=0;
 
   io_printf("특정 Task는 1회성 실행으로 task id가 유지 되지 않는다.");
   io_printf("강제 출력을 하면 task_prinf가 강제 실행된다.\r\n");
-  if (get_user_confirm("task printf 강제출력하겠습니까?") == MENU_OK)
+
+  while(1)
   {
+    status = confirm_continue("task printf 강제출력하겠습니까?",&ok);
+    if(status != MENU_OK)
+    break;
+
+    if(ok)
     set_forced_print(true);
-  }
-  else{
+    else
     set_forced_print(false);
   }
 
-    return EXIT_BACK;
+  return status;
+
 }
 
 

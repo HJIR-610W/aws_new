@@ -311,7 +311,9 @@ int32_t select_indexMenu( sensor_t *sensor,int *choice)
     funcCnt = print_common_cfg( sensor, 0);
     indexMax = funcCnt;
 
-    vt100_printfColor(GREEN, "번호를 선택해 주세요:");
+    io_printf("번호를 선택해 주세요");
+    io_printf("입력");
+
     // 사용자로 부터 메뉴를 선택 받는다.
     cnt = console_scanf("%d", &index);  //-1 ctrl+c, 0 enter esc
     io_printf("\r\n");
@@ -692,7 +694,7 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
       hjtemp_config_t *hjtemp_config;
       uint16_t offset = 0;
       int32_t ret;
-
+      int ok;
       hjtemp_config = get_sensor_config(&get_config_app()->sensor[A1_TEMPERATURE]);
 
       hj_temp = hjTemperature_open(HJ_TEMPERATURE, hjtemp_config);
@@ -701,10 +703,12 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
       if (ret == 0)
       {
         io_printf("현재 온도 오프셋:%.2f\r\n", ((float)offset / 100.0f));
-        status  = get_user_confirm("오프셋을 변경하시겠습니까?");
+        status  = confirm_continue("오프셋을 변경하시겠습니까?",&ok);
         if(status != MENU_OK)
         break;
 
+        if(ok)
+        {
           float f_offset;
           io_printf("오프셋을 입력해주세요>>");
           if (input_float( -5, 5, &f_offset))
@@ -712,6 +716,7 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
             offset = (uint16_t)(f_offset * 100);
             hjTemperature_set(hj_temp, eTEMP_SET_OFFSET, (void *)offset);
           }
+        }
       }
       else
       {
@@ -790,6 +795,7 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
       hjtemp_config_t *hjtemp_config;
       uint16_t offset = 0;
       int32_t ret;
+      int ok;
 
       hjtemp_config = get_sensor_config(&get_config_app()->sensor[A1_TEMPERATURE]);
 
@@ -799,17 +805,18 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
       if (ret == 0)
       {
         io_printf("현재 습도 오프셋:%.2f\r\n", ((float)offset / 100.0f));
-        status = get_user_confirm("오프셋을 변경하시겠습니까?");
+        status = confirm_continue("오프셋을 변경하시겠습니까?",&ok);
         if(status != MENU_OK)
         break;
-
-          io_printf("오프셋을 입력해주세요>>");
-          if (input_float( -5, 5, &f_offset))
+          if(ok)
           {
-            offset = (uint16_t)(f_offset * 100);
-            hjTemperature_set(hj_temp, eHUMI_SET_OFFSET, (void *)offset);
+            io_printf("오프셋을 입력해주세요>>");
+            if (input_float( -5, 5, &f_offset))
+            {
+              offset = (uint16_t)(f_offset * 100);
+              hjTemperature_set(hj_temp, eHUMI_SET_OFFSET, (void *)offset);
+            }
           }
-
       }
       else
       {

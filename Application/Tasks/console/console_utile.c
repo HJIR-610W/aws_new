@@ -50,6 +50,26 @@ return ch;
 
 }
 
+int32_t console_scanf_s(const char* fmt, ...)
+{
+  va_list args;
+  int ret;
+
+  va_start(args, fmt);
+  ret = cli_vscanf_s(fmt, args);
+  va_end(args);
+
+  if (ret == CLI_KEYCODE_CTRL_C)
+  {
+    ret = MENU_BACK;
+  }
+  else if (ret == CLI_KEYCODE_CTRL_Q)
+  {
+    ret = MENU_ABORT;
+  }
+
+  return ret;
+}
 
 //범위 안에 값을 입력 받음
 int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_val)
@@ -78,7 +98,7 @@ int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_va
       ret = MENU_OK;
       break;
     }
-    io_printf("오류: 잘못된 입력입니다. 다시 시도하세요.\r\n");
+    io_printf("%s\r\n", STRING_INPUT_ERR);
   }
   return ret;
 }
@@ -221,7 +241,7 @@ int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t lis
       status  = MENU_ABORT;
       break;
     }
-    vt100_printfColor(RED, "유효한 번호가 아닙니다\r\n");
+    io_printf("%s\r\n", STRING_INPUT_ERR);
   } while (1);
 
   return status;
@@ -245,8 +265,6 @@ int32_t choice_enable(uint8_t *enable)
   return status;
 
 }
-
-
 
 
 bool wait_break(uint32_t timeoutms)
@@ -286,7 +304,100 @@ int input_float_prompt(const char* prompt, float* value)
       ret = MENU_OK;
       break;
     }
-    io_printf("값이 입력되지 않았습니다");
+    io_printf("%s\r\n", STRING_INPUT_ERR);
   }
   return ret;
 }
+
+
+int check_pass(const char* title, char* password_str,int *ok)
+{
+  char input[16] = {0};
+  int len;
+  int status;
+
+  io_printf("%s\r\n", title);
+  io_printf(": ");
+
+  while(1)
+  {
+    status = cli_scanf_s("%15s", input);  // 문자열 입력
+
+    if(status == CLI_KEYCODE_CTRL_C)
+    {
+      status = MENU_BACK;
+      break;
+    }
+    else if (status == CLI_KEYCODE_CTRL_Q)
+    {
+      status = MENU_ABORT;
+      break;
+    }
+    else if(status >0)
+    {
+      len = strlen(password_str);
+
+      if (strncmp(input, password_str, len) == 0)
+      {
+        status == MENU_OK;
+        *ok = 1;
+        break;
+      }
+      else
+      {
+        status == MENU_OK;
+        *ok = 0;
+        break;
+      }
+    }
+
+    io_printf("%s\r\n", STRING_INPUT_ERR);
+ }
+
+ return status;
+}
+
+int confirm_continue(const char *title,int32_t* ok)
+{
+  char input[16] = {0};
+  int status;
+  int len;
+  while (1)
+  {
+    io_printf("%s(yes/no)\r\n",title);
+    io_printf("입력:");
+    status = cli_scanf_s("%15s", input);  // 문자열 입력
+
+    if (status == CLI_KEYCODE_CTRL_C)
+    {
+      status = MENU_BACK;
+      break;
+    }
+    else if (status == CLI_KEYCODE_CTRL_Q)
+    {
+      status = MENU_ABORT;
+      break;
+    }
+    else
+    {
+      len = strlen(input);
+      if (len==3 && strncmp(input, "yes", 3) == 0)
+      {
+        *ok = 1;
+        status = MENU_OK;
+        break;
+      }
+
+      if (len==2 && strncmp(input, "no", 2) == 0)
+      {
+        *ok = 0;
+        status = MENU_OK;
+        break;
+      }
+    }
+    io_printf("%s\r\n", STRING_INPUT_ERR);
+  }
+  return status;
+}
+
+

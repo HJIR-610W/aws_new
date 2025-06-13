@@ -72,4 +72,6 @@ void task_printf( const char *pFmt, ...);
 void task_hex_dump(const char *title, const uint8_t *data, uint32_t length);
 void set_forced_print(bool set);
 int32_t io_vprintf(const char *pFmt, va_list ap);
+int io_scanf_s(const char *fmt, ...);
+
 #endif

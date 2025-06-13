@@ -288,112 +288,16 @@ int cli_scanf_s(const char *fmt, ...)
   return ret;
 }
 
-
-
-#define PASSWORD "yes"
-
-int confirm_continue(int32_t *ok)
+int cli_vscanf_s(const char *fmt, va_list args)
 {
-  char input[16] = {0};
-  int status;
-  
-  while (1)
-  {
-    io_printf("계속 진행하려면 yes를 입력하세요.\r\n");
-    io_printf("입력:");
-     status = cli_scanf_s("%15s", input);  // 문자열 입력
+  char input[100];
+  int code;
+  int ret;
 
-    if (status == CLI_KEYCODE_CTRL_C)
-    {
-      status = MENU_BACK;
-      break;
-    }
-    else if (status == CLI_KEYCODE_CTRL_Q)
-    {
-      status = MENU_ABORT;
-      break;
-    }
-    else
-    {
-      if (strncmp(input, "yes", 3) == 0)
-      {
-        *ok = 1;
-        status = MENU_OK;
-        break;
-      }
-      if (strncmp(input, "no", 2) == 0)
-      {
-        *ok = 0;
-        status = MENU_OK;
-        break;
-      }
-    }
-  }
-  return status;
+  code = uart_get_line_with_edit(input, sizeof(input));
+  if (code == KEYCODE_CTRL_C || code == KEYCODE_CTRL_Q)
+    return code;
+
+  ret = vsscanf_s(input, fmt, args);
+  return ret;
 }
-
-int check_pass(const char *title,char *password_str)
-{
-  char input[16] = {0};
-  int len;
-  io_printf("%s\r\n",title);
-  io_printf(": ");
-
-  int ret = cli_scanf_s("%15s", input);  // 문자열 입력
-
-  if (ret <= 0)
-  {
-    io_printf("입력을 확인해주세요\r\n");
-    return MENU_ABORT;
-  }
-
-  len = strlen(password_str);
-
-  if (strncmp(input, password_str, len) == 0)
-  {
-    io_printf("확인 완료.\r\n");
-    return MENU_OK;
-  }
-  else
-  {
-    io_printf("오류: 진행이 중단됩니다\r\n");
-    return MENU_ABORT;
-  }
-}
-
-int32_t get_user_confirm(const char *message)
-{
-  char input[5] = {0};
-  int32_t status;
-
-  while(1)
-  {
-    
-    io_printf("%s(yes/no)\r\n",message);
-    io_printf(">>");
-
-    status = cli_scanf_s("%4s", input);  // 문자열 입력
-
-    if (status == CLI_KEYCODE_CTRL_Q)
-    {
-      status = MENU_ABORT;
-      break;
-    }
-    else if (status == CLI_KEYCODE_CTRL_C)
-    {
-      status = MENU_BACK;
-      break;
-    }
-    
-    if (strncmp(input, "yes",3) == 0)
-    {
-      return MENU_OK;
-    }
-    else
-    {
-      io_printf("입력을 확인해주세요");
-    }
-  }
-  return status;
-}
-

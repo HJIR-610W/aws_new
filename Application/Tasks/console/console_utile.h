@@ -7,6 +7,9 @@
 
 #include "console_define.h"
 
+
+#define STRING_INPUT_ERR "입력이 잘못되었습니다"
+
 typedef int32_t (*menu_func)(void);
 
 
@@ -32,8 +35,9 @@ int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t lis
 
 bool wait_break(uint32_t timeoutms);
 int32_t choice_enable(uint8_t* enable);
-
-
+int confirm_continue(const char *,int32_t* ok);
+int check_pass(const char* title, char* password_str, int* ok);
+int32_t console_scanf_s(const char* fmt, ...);
     extern const char* g_unknown;
 
 extern const char* enableList[2];

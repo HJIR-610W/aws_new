@@ -64,6 +64,8 @@ int32_t menu_offset_pressure(void)
   adc_config_t *config;
   float voltage;
   float calibrated_voltage;
+  int status;
+  int ok;
 
   driver_num = get_driverNum(get_config_app()->sensor[A7_PRESSURE].type);
 
@@ -86,12 +88,15 @@ int32_t menu_offset_pressure(void)
     io_printf("현재 ADC 싱글 %d 전압:%fv\r\n",config->channel,voltage);
     calibrated_voltage = cvt_data_to_voltage(config,local_temperature);
     io_printf("요구되는 전압:%f\r\n", calibrated_voltage);
-    if (get_user_confirm("오프셋을 조정합니다") == MENU_OK)
+    status  = confirm_continue("오프셋을 조정합니다",&ok);
+    if(status != MENU_OK)
+    if(ok)
     {
       float new_offset = calibrated_voltage - voltage;
       adc_set_offset_trim(eSINGLE_ADC, config->channel, new_offset);
       io_printf("현장센서에맞게 오프셋 %f 적용됩니다\n",new_offset);
     }
+
   }
   
   return 0;
