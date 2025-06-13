@@ -9,32 +9,60 @@
 #include "util_memory.h"
 #include "util_time.h"
 
-void menu_data_display(void)
+#define  CHECK_INPUT "입력을 확인해주세요\r\n"
+int32_t menu_data_display(void)
 {
+  int status;
   int year;
   int month;
   int day;
   int hour;
   int min;
-  int ret;
   int cnt;
   AWS_DATA_STRUCT aws;
   DATE_TIME_BUF nt;
   uint32_t startTime;
-  io_printf("시작 시간을 입력해주세요(yyyy-mm-dd hh:mm)\r\n");
-  ret = cli_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
 
-  if (ret == CLI_KEYCODE_CTRL_C)
+  while(1)
   {
-    return;
+  io_printf("시작 시간을 입력해주세요(yyyy-mm-dd hh:mm)\r\n");
+  status = cli_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
+
+  if (status == CLI_KEYCODE_CTRL_C) 
+  {
+    status = MENU_BACK;
+    break;
+  }
+  if(status == CLI_KEYCODE_CTRL_Q)
+  {
+    status = MENU_ABORT;
+    break;
   }
 
-  io_printf("읽을 갯수를 입력해주세요요\r\n");
-  ret = cli_scanf_s("%d", &cnt);
-
-  if (ret == CLI_KEYCODE_CTRL_C)
+  if(status != 5)
   {
-    return;
+    io_printf("입력을 확인해주세요\r\n");
+    continue;
+  }
+
+  io_printf("읽을 갯수를 입력해주세요");
+  status = cli_scanf_s("%d", &cnt);
+
+  if (status == CLI_KEYCODE_CTRL_C)
+  {
+    status = MENU_BACK;
+    break;
+  }
+  if (status == CLI_KEYCODE_CTRL_Q)
+  {
+    status = MENU_ABORT;
+    break;
+  }
+
+  if(status != 1)
+  {
+    io_printf("%s", CHECK_INPUT);
+    continue;
   }
 
   startTime = SetTime(year, month, day, hour, min, 0);
@@ -47,41 +75,41 @@ void menu_data_display(void)
 
     io_printf("%04d-%02d-%02d %02d:%02d\r\n", nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min);
 
-    io_printf("온도      :%6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n",
+    io_printf("온도          :%6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n",
               READ_TEMP(aws.mTemperature.sReal), READ_TEMP(aws.mTemperature.sMin),
               (aws.mTemperature.sMax));
 
-    io_printf("풍향      :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mDirection.sReal),
+    io_printf("풍향          :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mDirection.sReal),
               READ_X10(aws.mWind.mDirection.sMax));
 
-    io_printf("풍속      :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mSpeed.sReal),
+    io_printf("풍속          :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mSpeed.sReal),
               READ_X10(aws.mWind.mSpeed.sMax));
 
-    io_printf("강우량(일): %6.1f 월: %6.1f 시간: %6.1f\r\n", READ_X10(aws.mRainFall.sReal),
+    io_printf("강우량(일)    : %6.1f 월: %6.1f 시간: %6.1f\r\n", READ_X10(aws.mRainFall.sReal),
               READ_X10(aws.mRainFall.sMin), READ_X10(aws.mRainFall.sMax));
 
-    io_printf("기압      : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n",
+    io_printf("기압          : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n",
               READ_X10(aws.mBarometric.sReal), READ_X10(aws.mBarometric.sMin),
               READ_X10(aws.mBarometric.sMax));
 
-    io_printf("강우감지  : %6d\r\n", aws.mRainDetect.sReal);
+    io_printf("강우감지      : %6d\r\n", aws.mRainDetect.sReal);
 
-    io_printf("적설      : %6d\r\n", aws.mSnowFall.sReal);
+    io_printf("적설          : %6d\r\n", aws.mSnowFall.sReal);
 
-    io_printf("습도      : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_X10(aws.mHumidity.sReal),
+    io_printf("습도          : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_X10(aws.mHumidity.sReal),
               READ_X10(aws.mHumidity.sMin), READ_X10(aws.mHumidity.sMax));
 
-    io_printf("일사      : %7.2f 하루 총: %.2f\r\n", READ_X100(aws.mSolarRad.sReal),
+    io_printf("일사          : %7.2f 하루 총: %.2f\r\n", READ_X100(aws.mSolarRad.sReal),
               READ_X100(aws.mSolarRad.sMax));
-    io_printf("일조      : %6d  하루 총: %d\r\n", aws.mSunshine.sReal, aws.mSunshine.sMax);
+    io_printf("일조          : %6d  하루 총: %d\r\n", aws.mSunshine.sReal, aws.mSunshine.sMax);
 
 // 지면온도 / 초상온도 / 지중온도
 #define PRINT_RIX(label, obj)                                                           \
   io_printf(label " : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_TEMP((obj).sReal), \
             READ_TEMP((obj).sMin), READ_TEMP((obj).sMax))
 
-    PRINT_RIX("지면온도", aws.mGndTemp);
-    PRINT_RIX("초상온도", aws.mGrassTemp);
+    PRINT_RIX("지면온도     ", aws.mGndTemp);
+    PRINT_RIX("초상온도     ", aws.mGrassTemp);
 
     PRINT_RIX("지중온도  5cm", aws.mSoilTemp5cm);
     PRINT_RIX("지중온도 10cm", aws.mSoilTemp10cm);
@@ -124,14 +152,16 @@ void menu_data_display(void)
     time_cvt_secTotime(startTime, &nt);
   }
 }
+  return status;
+}
 
 #define AWS_DATA_MENU_WITDH 30
 int aws_menu_data(void)
 {
-  int choice, status;
-
-  char* menu[] = {
-      "1분자료 확인", "1분자료 편집(구현 예정) "};
+  int choice;
+  int status;
+  char* menu[] = {"1분자료 확인",
+                  "1분자료 편집(구현 예정) "};
 
   while (1)
   {
@@ -142,9 +172,12 @@ int aws_menu_data(void)
     switch (choice)
     {
       case 1:
-        menu_data_display();
+        status = menu_data_display();
       break;
     }
+
+    if(status == MENU_ABORT)
+    break;
   }
 
   return status;
