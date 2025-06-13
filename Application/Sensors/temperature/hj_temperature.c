@@ -9,6 +9,7 @@
 #include "config_sensor.h"
 #include "hj_temperature_define.h"
 #include "app_rs232.h"
+
 typedef struct hj_temperature_cfg_s
 {
   driver_t *bus_io;
@@ -28,17 +29,12 @@ driver_t *hjTemperature_open(int32_t num, void *opt)
 {
   modbus_init_t modbus_init;
   hjtemp_config_t *hjtemp = opt;
-
-
   int32_t port = hjtemp->port;
-
-
 
   if (hjTemp_drv.opened)
   { 
     return &hjTemp_drv;
   }
-  hjTemp_drv.opened = true;
 
   hj_temperature_cfg.modbus_id = hjtemp->modbus_id;
   modbus_init.baud = 9600;
@@ -60,8 +56,7 @@ driver_t *hjTemperature_open(int32_t num, void *opt)
       break;
   }
 
-
-
+  hjTemp_drv.opened = true;
   hjTemp_drv.api = &hjTempApi;
   hjTemp_drv.cfg = &hj_temperature_cfg;
 
@@ -153,4 +148,20 @@ driver_t *hjtemp_opened(void)
   }
 
   return NULL;
+}
+
+
+driver_t *get_hjtemperature_bus_io(void)
+{
+  hj_temperature_cfg_t *cfg;
+  driver_t *driver;
+
+  driver = hjtemp_opened();
+  if(driver)
+  {
+    cfg = driver->cfg;
+    return cfg->bus_io;
+  }
+
+    return NULL;
 }
