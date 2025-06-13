@@ -18,7 +18,7 @@ extern int32_t io_printf(const char * pFmt, ...);
 
 void terminal_set_color(color_t c)
 {
-    io_printf("%c[%dm", 27, c);
+  io_printf("%c[%dm", 27, c);
 }
 
 

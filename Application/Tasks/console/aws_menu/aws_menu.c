@@ -1,19 +1,21 @@
-#include "console_define.h"
-#include "console_utile.h"
-#include "util_memory.h"
-#include "dev_io.h"
 
+#include "aws_menu.h"
+
+#include "aws_develop.h"
+#include "aws_menu_cali.h"
+#include "aws_menu_data.h"
 #include "aws_menu_display.h"
-#include "aws_system.h"
-
 #include "aws_menu_manager.h"
+#include "aws_menu_offset.h"
 #include "aws_menu_panel.h"
 #include "aws_menu_sensor.h"
 #include "aws_network.h"
-#include "aws_menu_data.h"
-#include "aws_develop.h"
-#include "aws_menu_offset.h"
-#include "aws_menu_cali.h"
+#include "aws_system.h"
+#include "console_define.h"
+#include "console_utile.h"
+#include "dev_io.h"
+#include "util_memory.h"
+
 #define AWS_MENU_WIDTH 30
 int aws_menu(void)
 {
@@ -54,17 +56,16 @@ int aws_menu(void)
         break;
       case 6:
         aws_menu_panel();
-         break;
+        break;
       case 7:
-      aws_menu_offset();
-      break;
+        aws_menu_offset();
+        break;
       case 8:
         aws_menu_calibration();
-      break;
+        break;
       case 9:
         aws_menu_manager();
         break; ;
-
     }
   }
 

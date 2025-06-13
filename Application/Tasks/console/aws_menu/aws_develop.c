@@ -39,11 +39,11 @@ int32_t menu_manage_print_config_all(void)
               config.eth_gateway[2], config.eth_gateway[3]);
   io_printf("이더넷 IP        :%d.%d.%d.%d\r\n", config.eth_ip[0], config.eth_ip[1],
               config.eth_ip[2], config.eth_ip[3]);
-  io_printf("이더넷 원격 서버 :%d.%d.%d.%d\r\n", config.eth_server_ip[0], config.eth_server_ip[1],
-              config.eth_server_ip[2], config.eth_server_ip[3]);
+  io_printf("이더넷 원격 서버 :%d.%d.%d.%d\r\n", config.eth_remote_server_ip[0], config.eth_remote_server_ip[1],
+              config.eth_remote_server_ip[2], config.eth_remote_server_ip[3]);
   ;
 
-  io_printf("이더넛 포트      :%d\r\n", config.eth_server_port);
+  io_printf("이더넛 포트      :%d\r\n", config.eth_remote_server_port);
 
   io_printf("CDMA 원격 서버   :%d.%d.%d.%d\r\n", config.cdma_server_ip[0],
               config.cdma_server_ip[1], config.cdma_server_ip[2], config.cdma_server_ip[3]);

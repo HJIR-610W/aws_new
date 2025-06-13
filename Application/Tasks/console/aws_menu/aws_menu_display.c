@@ -1,27 +1,25 @@
 
 
 #include "aws_menu_display.h"
-#include "vt100_command.h"
-#include "config_app.h"
-#include "dev_io.h"
-#include "bsp.h"
-#include "task_tcpServer.h"
-#include "task_direct.h"
-#include "util_time.h"
-#include "aws_data.h"
-#include "console_utile.h"
-#include "app_charger.h"
-#include "bsp_di.h"
 
-#include "task_logging.h"
+#include "app_charger.h"
+#include "aws_data.h"
+#include "bsp.h"
+#include "bsp_di.h"
 #include "cli_key_code.h"
-#include "task_measure.h"
+#include "config_app.h"
+#include "console_utile.h"
+#include "dev_io.h"
 #include "dualport.h"
-#include "task_logging.h"
-#include "task_system.h"
 #include "task_cellular.h"
 #include "task_client.h"
-
+#include "task_direct.h"
+#include "task_logging.h"
+#include "task_measure.h"
+#include "task_system.h"
+#include "task_tcpServer.h"
+#include "util_time.h"
+#include "vt100_command.h"
 
 #define AWS_MODE_MAX 4
 

@@ -7,23 +7,10 @@
 #include "config_app.h"
 #include "bsp_rtc.h"
 #include "console_scanf.h"
+#include "cli_input.h"
 
-const char* g_chgList[] = {"화진 스마트", "LS1024"};
+const char* g_chargerList[] = {"화진 스마트", "LS1024"};
 
-int32_t print_menu_system(void)
-{
-  char buff[50];
-  int cnt = 0;
-
-  make_timeToStr(&Date_Time, buff, sizeof(buff));
-  io_printf("%2d.시간       :%s\r\n", cnt++, buff);
-  io_printf("%2d.아이디(ID) :%d\r\n", cnt++, get_config_app()->id);
-  io_printf("%2d.비밀번호   :%d\r\n", cnt++, get_config_app()->password);
-  io_printf("%2d:충전기     :%s\r\n", cnt++,
-              ITEM_LIST(get_config_app()->charger_model, g_chgList));
-
-  return cnt;
-}
 
 int32_t input_date( DATE_TIME_BUF* nt)
 {
@@ -33,25 +20,40 @@ int32_t input_date( DATE_TIME_BUF* nt)
   int hour;
   int min;
   int sec;
-  int cnt;
+  int status;
 
-  io_printf("format:YYYY-MM-DD hh:mm:ss,2020-01-01 00:11:22\r\n");
-
-  cnt = console_scanf("%04d-%02d-%02d %02d:%02d:%02d", &year, &month, &day, &hour, &min, &sec);
-
-  if (cnt == 6)
+  while (1)
   {
-    nt->Year = year;
-    nt->Month = month;
-    nt->Day = day;
-    nt->Hour = hour;
-    nt->Min = min;
-    nt->Sec = sec;
+    io_printf("format:YYYY-MM-DD hh:mm:ss,2020-01-01 00:11:22\r\n");
 
-    return 6;
+    status = cli_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year, &month, &day, &hour, &min, &sec);
+
+    if(status == CLI_KEYCODE_CTRL_Q)
+    {
+      status = MENU_ABORT;
+      break;
+    }
+    else if (status == CLI_KEYCODE_CTRL_C)
+    {
+      status = MENU_BACK;
+      break;
+    }
+
+    if(status == 6)
+    {
+      nt->Year = year;
+      nt->Month = month;
+      nt->Day = day;
+      nt->Hour = hour;
+      nt->Min = min;
+      nt->Sec = sec;
+
+      status = MENU_OK;
+      break;
+    }
+    io_printf("입력을 확인해주세요");
   }
-
-  return cnt;
+  return status;
 }
 
 
@@ -86,7 +88,7 @@ int aws_menu_system(void)
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "비밀번호:%d",get_config_app()->password);
     menu_cnt++;
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "충전기  :%s",
-             ITEM_LIST(get_config_app()->charger_model, g_chgList));
+             ITEM_LIST(get_config_app()->charger_model, g_chargerList));
     menu_cnt++;
 
     status = choice_menu(SYSTEM_MENU_WITDH, "시스템", menu, menu_cnt, &choice);
@@ -118,21 +120,18 @@ int aws_menu_system(void)
           break;
           config.password = dec;
           WRITE_CFG(password);
-
         break;
       case 4:  // charger type
-        status = choice_menu(24,"충전기 종류",(char **)g_chgList,_countof(g_chgList),&choice);
+        status = choice_menu(24,"충전기 종류",(char **)g_chargerList,_countof(g_chargerList),&choice);
         if(status != MENU_OK)
-        {
           break;
-        }
-          config.charger_model = (eCHARGER_MODEL_t)(choice);
+          config.charger_model = (eCHARGER_MODEL_t)(choice-1);
           WRITE_CFG(charger_model);
-          io_printf("리셋 후 적용됩니다\r\n");
-        break;
+          io_printf_color(IO_COLOR_RED,"리셋 후 적용됩니다\r\n");
+          break;
     }
 
-    if (status != MENU_OK)
+    if (status == MENU_ABORT)
     {
       break;
     }

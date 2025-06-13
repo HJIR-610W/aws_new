@@ -429,3 +429,15 @@ void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)
       task_printf("\r\n");
   }
 }
+
+void io_printf_color(int color, const char *pFmt, ...)
+{
+  io_printf("%c[%dm", 27, color);
+
+  va_list args;
+  va_start(args, pFmt);
+  io_vprintf(pFmt, args);
+  va_end(args);
+
+  io_printf("%c[%dm", 27, 37);
+}

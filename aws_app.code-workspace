@@ -146,7 +146,9 @@
 			"fsl_shell.h": "c",
 			"temperature.h": "c",
 			"barometer.h": "c",
-			"driver_adc_define.h": "c"
+			"driver_adc_define.h": "c",
+			"aws_menu_panel.h": "c",
+			"aws_network.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

@@ -148,17 +148,17 @@ void tcpClientTask(void *arg)
             continue;
         }
 
-        snprintf(server_ip,sizeof(server_ip),"%d.%d.%d.%d",config->eth_server_ip[0],
-                 config->eth_server_ip[1],
-                 config->eth_server_ip[2],
-                 config->eth_server_ip[3]);
+        snprintf(server_ip,sizeof(server_ip),"%d.%d.%d.%d",config->eth_remote_server_ip[0],
+                 config->eth_remote_server_ip[1],
+                 config->eth_remote_server_ip[2],
+                 config->eth_remote_server_ip[3]);
                  
         memset(&server_addr, 0, sizeof(server_addr));
         server_addr.sin_family = AF_INET;
-        server_addr.sin_port = htons(config->eth_server_port);
+        server_addr.sin_port = htons(config->eth_remote_server_port);
         server_addr.sin_addr.s_addr = inet_addr(server_ip); // example: "192.168.0.10"
 
-        task_printf("서버 연결 시작 %s:%d...\r\n", server_ip, config->eth_server_port);
+        task_printf("서버 연결 시작 %s:%d...\r\n", server_ip, config->eth_remote_server_port);
 
         if (connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
         {

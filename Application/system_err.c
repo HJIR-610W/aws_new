@@ -7,6 +7,7 @@
 #include "system_err.h"
 #include "pcb_define.h"
 #include "util_time.h"
+#include "vt100_command.h"
 
 
 void Error_Handler(const char *file,const int32_t line)
@@ -76,3 +77,4 @@ void error_print(const char *pFmt, ...)
   io_vprintf(pFmt, args);
   va_end(args);
 }
+
