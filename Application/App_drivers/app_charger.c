@@ -15,13 +15,13 @@ void read_chargerStatus(char *pBuff,uint16_t buffSize)
   switch (charger_err)
   {
   case 99:
-    snprintf(pBuff,buffSize,"초기화 전");
+    snprintf(pBuff,buffSize,"--");
     break;
   case CHARGER_ERR_RECV_TIMEOUT:
-  snprintf(pBuff,buffSize,"통신 이상");
+  snprintf(pBuff,buffSize,"통신");
   break;
   case CHARGER_ERR_RECV_PACKET:
-  snprintf(pBuff,buffSize,"패킷 이상");
+  snprintf(pBuff,buffSize,"패킷");
   break;
   default:
   snprintf(pBuff,buffSize,"정상");
