@@ -1,9 +1,10 @@
 #ifndef APP_SENSOR_H
 #define APP_SENSOR_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
+#include "config_sensor.h"
 #define SENSOR_ERR_COMM 1
 #define SENSOR_ERR_VAL  2
 
@@ -146,6 +147,7 @@ typedef struct sensor_s
 
 void *get_sensor_config(sensor_t *sensor);
 void *sensor_add(sensor_t *sensor);
+rain_present_config_t *get_rain_present_config(void);
 
 extern const char *g_sensor_model_list[SENSOR_MODEL_MAX];
 

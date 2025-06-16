@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-#include "config_sensor.h"
+
 #include "config_app.h"
 #include "util_memory.h"
 
@@ -247,13 +247,19 @@ void *sensor_add(sensor_t *sensor)
         return &g_config_sensor.ott_smp3[index];
       }
       break;
-
+    case S_T_RAIN_PRESENT_DI:
+      sensor_add_common(sensor, 0);
+      return &g_config_sensor.rain_present;
+      break;
     default:
       break;
   }
 
   return 0;
 }
+
+
+
 
 /**
  * @brief 센서타입에 맞는 설정값을 가져옴
@@ -307,9 +313,17 @@ void *get_sensor_config(sensor_t *sensor)
         case S_T_SOLAR_RADIATION_OTT_SMP3:
           return &g_config_sensor.ott_smp3[0];
           break;
+        case S_T_RAIN_PRESENT_DI:
+        return &g_config_sensor.rain_present;
+        break;
       }
     }
   }
   // 해당 센서 타입 config가 설정되어 있지 않으면 추가
   return 0;
+}
+
+rain_present_config_t *get_rain_present_config(void)
+{
+  return &g_config_sensor.rain_present;
 }

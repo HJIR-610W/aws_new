@@ -235,6 +235,18 @@ uint8_t print_ott_smp3_cfg( ott_smp3_config_t *ott, uint8_t cnt)
   return cnt;
 }
 
+#define RAIN_PRESENT_DELAY 0
+uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt)
+{
+
+
+  io_printf("%2d.지연시간       :%d\r\n", cnt++, rain_present->delay);  // 고정
+
+  return cnt;
+}
+
+
+
 #define HJSNOW_CFG_MENU_PHY  0
 #define HJSNOW_CFG_MENU_PORT 1
 #define HJSNOW_CFG_MENU      2
@@ -297,6 +309,9 @@ int32_t print_common_cfg( sensor_t *sensor, uint8_t c)
       break;
     case S_T_SOLAR_RADIATION_OTT_SMP3:
       cnt = print_ott_smp3_cfg( get_sensor_config(sensor), cnt);
+      break;
+    case S_T_RAIN_PRESENT_DI:
+      cnt = print_rain_present_cfg(get_sensor_config(sensor), cnt);
       break;
   }
   return cnt;
@@ -767,6 +782,36 @@ int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
   
   return status;
 }
+
+int32_t rain_present_config_set(sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t status;
+  int32_t dec = 0;
+  rain_present_config_t *rain_present;
+
+  rain_present = get_sensor_config(sensor);
+  if (rain_present == NULL)
+  {
+    ERROR_PRINTF("강우 감지 NULL");
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case RAIN_PRESENT_DELAY:
+      status = input_decimal_prompt("지연시간(s)", &dec, 1, 10);
+      if (status != MENU_OK)
+        break;
+      rain_present->delay = dec;
+      save_config_sensor();
+
+      break;
+
+  }
+
+  return status;
+}
+
 int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status;
@@ -949,7 +994,8 @@ const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_GENERAL_485, .config_set = rs485_config_set},
     {.sensorType = S_T_TEMPERATURE_HJ, .config_set = hjtemp_config_set},
     {.sensorType = S_T_HUMINITY_HJ, .config_set = hjhumi_config_set},
-    {.sensorType = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_config_set}};
+    {.sensorType = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_config_set},
+    {.sensorType = S_T_RAIN_PRESENT_DI, .config_set = rain_present_config_set}};
 
 int32_t sensor_set( sensor_t *sensor, uint8_t choice)
 {

@@ -144,20 +144,20 @@ bool check_hjsnow(uint8_t *pdata, uint16_t datalen)
 //ÀÀ´ä 02 00 21 2D A2 0A 19 01 6A 0C D2 D3 5E 02 B3 CB A1 E0 00 00 A9 44 6D 38 01 01 01 00 00 00 19 00 2E 00 00 00 00 00 00 00 80 43 6D 38 00 00 00 00 06 D8 03 
 int32_t read_hjSnowFall(dev_io_t *dev, uint8_t *err)
 {
-  driver_t *p_driver;
+ // driver_t *p_driver;
   uint8_t frame[60];
   static uint16_t len;
   int16_t data = 0;
   uint8_t para[2];
   uint8_t paraCnt = 0;
   uint16_t offset = (uint16_t)(int)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
-  hjsnow_cfg_t *cfg;
+  //hjsnow_cfg_t *cfg;
   devIoTimeOutopt_t opt;
   *err = 1;
 
 
-  p_driver = dev->driver;
-  cfg = p_driver->cfg;
+  //p_driver = dev->driver;
+  //cfg = p_driver->cfg;
 
 
 #if 0
@@ -296,10 +296,10 @@ void hjsnow_read_config(driver_t *driver,uint8_t *p_out,uint16_t out_size,uint8_
   const uint8_t request[] = {0x02, 0x00, 0x28, 0x02, 0x00, 0x32, 0x5C, 0x03};
   uint8_t frame[100];
   static uint16_t len;
-  int16_t data = 0;
-  uint8_t para[2];
-  uint8_t paraCnt = 0;
-  uint16_t offset = (uint16_t)(int)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
+ // int16_t data = 0;
+ // uint8_t para[2];
+ // uint8_t paraCnt = 0;
+ // uint16_t offset = (uint16_t)(int)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
   devIoTimeOutopt_t opt;
   hjsnow_cfg_t *pcfg = driver->cfg;
   // int32_t snow = 0;
@@ -354,9 +354,9 @@ void hjsnow_read_system(driver_t *driver, uint8_t *p_out, uint16_t out_size, uin
   hjsnow_cfg_t *pcfg = driver->cfg;
   uint8_t frame[100];
   static uint16_t len;
-  int16_t data = 0;
-  uint8_t para[2];
-  uint8_t paraCnt = 0;
+
+
+
   devIoTimeOutopt_t opt;
   dev_io_t dev_io;
 

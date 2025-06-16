@@ -72,7 +72,8 @@ typedef struct sdi_s
   uint8_t id;
 } sdi_config_t;
 
-typedef struct hjwindSpeed_s
+//È­Áø Ç³¼Ó
+typedef struct hj_wind_speed_s
 {
   uint8_t rs485_port;
   int32_t offset;
@@ -116,6 +117,12 @@ typedef struct ottSMP3_config_s
   uint8_t modbus_id;
 } ott_smp3_config_t;
 
+typedef struct rain_present_config_s
+{
+  uint8_t delay;
+}rain_present_config_t;
+
+
 
 typedef struct config_manage_s
 {
@@ -145,6 +152,7 @@ typedef struct config_manage_s
   hjsnow_config_t hjsnow[2];
   uint8_t ott_smp3_cnt;
   ott_smp3_config_t ott_smp3[1];
+  rain_present_config_t rain_present;
 } config_sensor_t;
 
 #define WRITE_CFG_SENSOR(x)                                                                \

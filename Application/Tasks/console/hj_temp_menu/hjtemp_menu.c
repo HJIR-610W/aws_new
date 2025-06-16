@@ -108,7 +108,7 @@ int hjtemperature_menu(void)
       case 3:
         {
           float f_offset;
-          int32_t offset = 0;
+ 
 
           int ok;
           int data;

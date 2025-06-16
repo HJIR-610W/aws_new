@@ -95,7 +95,7 @@ volatile uint32_t g_int_num = UART_IT_RXNE;
 void sdi_send(uint8_t *cmd, uint16_t dataLen)
 {
   // TX 라인은 송신 모드에서는 idle 일때 High 이고 수신 모드로 전환되면 low가 출력됨
-  uint8_t data;
+
   // SDI는 7bit data 1bit parity 라서 데이터에 parity를 넣어줘야 한다.
   for (int i = 0; i < dataLen; i++)
   {

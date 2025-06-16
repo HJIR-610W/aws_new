@@ -218,6 +218,7 @@ typedef struct
 
   short m_shOffDelayRemain;  // OffDelay Remain Time(sec)
   uint8_t m_cOffDelayFlag;   // Off Delay Flag 1:일때 처리
+  short m_usRainDtOffDelay;
 } SYSTEM_INFO_AWS; //1352바이트 
 
 

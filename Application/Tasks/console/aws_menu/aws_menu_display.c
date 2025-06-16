@@ -470,7 +470,7 @@ int32_t print_aws_info(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, uint8
 {
   const char *aws_title_list[] = {"순간(평균)", "1분", "10분", "한시간", "RAW"};
   char err_buf[32];
-  char buff[50];
+  char buff[60];
   uint8_t err;
   uint8_t line = row + 4;
   kma_data_ex_t *p_kma = NULL;
@@ -479,7 +479,7 @@ int32_t print_aws_info(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, uint8
   float data_max;
   p_kma = get_kma_data(min);
 
-  snprintf(buff, sizeof(buff), "AWS %s %.2fs/%.2fs", aws_title_list[min],
+  snprintf(buff, sizeof(buff), "AWS %s %.2fs/%.2fs [페이지 전환 LEFT,RIGHT 키 사용]", aws_title_list[min],
            (float)g_exec_250ms_time.elapsed_time / 1000.0f,
            (float)g_exec_1s_time.elapsed_time / 1000.0f);
 
@@ -506,7 +506,7 @@ int32_t print_aws_info(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, uint8
         data = KMA_TO_TEMPERATURE(p_kma->temperature.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->temperature.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->temperature.max);
-        vt100_print_bar(line++, column, -AWS_W, "%-*s:%7.2f C,최소:%7.2f C최대:%7.2f C\r\n",
+        vt100_print_bar(line++, column, -AWS_W, "%-*s:%7.2f C  ,최소:%7.2f C  ,최대:%7.2f C\r\n",
                       COL_WIDTH, "기온", data, data_min, data_max);
       }
     }
@@ -530,11 +530,10 @@ int32_t print_aws_info(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, uint8
       else
       {
         data = KMA_TO_GENERAL(p_kma->wind_direction_avg.data);
-        data_min = KMA_TO_GENERAL(p_kma->wind_direction_avg.min);
         data_max = KMA_TO_GENERAL(p_kma->wind_direction_avg.max);
 
-        vt100_print_bar(line++, column, -AWS_W, "%-*s:%7.2f 도,최소:%7.2f 도,최대:%7.2f 도\r\n",
-                        COL_WIDTH, "풍향", data, data_min, data_max);
+        vt100_print_bar(line++, column, -AWS_W, "%-*s:%7.2f 도 ,최대:%7.2f 도\r\n",
+                        COL_WIDTH, "풍향", data, data_max);
       }
     }
   }
@@ -557,16 +556,16 @@ int32_t print_aws_info(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, uint8
       else
       {
         data = KMA_TO_GENERAL(p_kma->wind_speed_avg.data);
-        data_min = KMA_TO_GENERAL(p_kma->wind_speed_avg.min);
         data_max = KMA_TO_GENERAL(p_kma->wind_speed_avg.max);
 
-        vt100_print_bar(line++, column, -AWS_W, "%-*s:%7.2f m/s,최소:%7.2f m/s,최대:%7.2f m/s\r\n",
-                        COL_WIDTH, "풍속", data, data_min, data_max);
+        vt100_print_bar(line++, column, -AWS_W, "%-*s:%7.2f m/s,최대:%7.2f m/s\r\n",
+                        COL_WIDTH, "풍속", data,  data_max);
       }
     }
   }
 
-  if (p_kma->wind_direction_avg.enable && (min !=eAWS_DATA_10MIN &&min!=eAWS_DATA_HOUR)) 
+  if (p_kma->wind_direction_avg.enable &&
+      (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR && min != eAWS_DATA_RAW))
   {
     err = p_kma->wind_direction_avg.err;
     if (err)
@@ -587,7 +586,8 @@ int32_t print_aws_info(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, uint8
     }
   }
 
-  if (p_kma->wind_speed_avg.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
+  if (p_kma->wind_speed_avg.enable &&
+      (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR && min != eAWS_DATA_RAW))
   {
     err = p_kma->wind_speed_avg.err;
     if (err)
@@ -631,7 +631,7 @@ int32_t print_aws_info(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, uint8
         else
         {
           time_cvt_secTotime(last_time, &nt);
-          vt100_print_bar(line++, column, -AWS_W, "%-*s:%04d%02d%02d%02d%02d%02d\r\n", COL_WIDTH,
+          vt100_print_bar(line++, column, -AWS_W, "%-*s:%04d-%02d-%02d %02d:%02d:%02d\r\n", COL_WIDTH,
                           "강수량(time)", nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
       }
@@ -696,7 +696,7 @@ int32_t print_aws_info(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, uint8
     else
     {
       vt100_print_bar(line++, column, -AWS_W, "%-*s:%7.2f mm\r\n", COL_WIDTH, "적설",
-                      KMA_TO_GENERAL(p_kma->snowfall.data));
+                      p_kma->snowfall.data);
     }
   }
 
@@ -1069,8 +1069,20 @@ int32_t print_aws_info(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, uint8
     }
     else
     {
+      data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.data);
+      if (min == eAWS_DATA_RAW)
+      {
         vt100_print_bar(line++, column, -AWS_W, "%-*s:%7.2f C\r\n", COL_WIDTH, "지중온도 5m",
-                        KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.data));
+                        data);
+      }
+      else
+      {
+        data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.min);
+        data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.max);
+
+        vt100_print_bar(line++, column, -AWS_W, "%-*s:%7.2f C,최소:%7.2f C,최대:%7.2f C\r\n",
+                        COL_WIDTH, "지중온도 5m", data, data_min, data_max);
+      }
     }
   }
 

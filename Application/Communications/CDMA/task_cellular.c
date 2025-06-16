@@ -1026,7 +1026,7 @@ void modemAtTask(void  *argument)
   int32_t len;
   eAT_COMMAND_t at_cmd;
   uint32_t cmd_count = _iCellular->get_count();
-  int32_t wdt_number=0;;
+
   //wdt_number =  wdt_task_register(kAtTask_attributes.name,600000);
   
   while (1)
