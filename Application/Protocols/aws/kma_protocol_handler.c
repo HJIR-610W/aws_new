@@ -675,6 +675,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     {
       vPortFree(p_kma3);
       vPortFree(p_aws);
+      task_printf("AQ\r\n");
       return 0;  //
     }
 
