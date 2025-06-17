@@ -3,17 +3,37 @@
 #include "util_time.h"
 #include "kma_protocol_handler.h"
 #include "user_heap.h"
+#include "config_app.h"
+#include "config_nvm.h"
 #include "update_fw.h"
 #include <string.h>
+#include "aws_monitor.h"
 
+
+
+
+
+#define ASCII_ACK 0x06
+#define ASCII_NAK 0x15
+
+
+#define DIVAS_CMD_RD_CFG_OFS 0x29
+#define DIVAS_CMD_WR_CFG_OFS 0x2A
 #define DIVAS_CMD_FW_DOWNLOAD 0x63
 #define DIVAS_CMD_FW_UPDATE 0x64
+#define DIVAS_CMD_RD_SYSTEM 0x06
+
 #define RES_FSIZE_ERROR 32       // 처음에 보낸 TOTAL 사이즈와 패킷마다 보낸 사이즈가 다른경우
 #define RES_FILE_WRITE_ERROR 39  // 파일 쓰기 오류
 
 #define RES_CMD_ERR 0x80
 #define ASCII_ACK 0x06
 #define ASCII_NAK 0x15
+
+#define DIVAS_FRAME_CMD_OFFSET 11
+#define DIVAS_FRAME_DATA_OFFSET 12
+
+#define DIVAS_FRAME_OVERHEAD 14 //STX(1) 길이(2) 시퀀스(1) 년월일시분초(7) 명령어(1) SUM(1) ETX(1)
 
 uint32_t g_download_file_size = 0;
 uint32_t g_received_bytes;
@@ -34,9 +54,13 @@ uint32_t get_received_bytes(void)
 
 
 
-
-uint16_t make_divasFrame(uint8_t cmd, uint8_t seq, const uint8_t *pInData, uint16_t dataLen,
-                         uint8_t *pOutBuff, uint16_t buffSize)
+/**
+ * @brief 디바스 프레임 생성
+ * @param rx_frame 수신받은 프레임
+ * @param p_in_data 전송 데이터(NULL이면 이미 p_out_data에 메모리 활용
+ */
+uint16_t make_divas_frame(uint8_t cmd, uint8_t *rx_frame, const uint8_t *p_in_data, uint16_t data_length,
+                         uint8_t *p_out_data, uint16_t buffer_size)
 {
   uint8_t sum = 0;
   uint16_t frameLen;
@@ -44,41 +68,44 @@ uint16_t make_divasFrame(uint8_t cmd, uint8_t seq, const uint8_t *pInData, uint1
   DATE_TIME_BUF ct;
   uint32_t i;
 
-  frameLen = 12 + 2 + dataLen;
+  frameLen = 12 + 2 + data_length;
 
-  if (buffSize < frameLen)
+  if (buffer_size < frameLen)
   {
     return 0;
   }
 
-  pOutBuff[cnt++] = 0x02;                               //[0   ]STX
-  memcpy(&pOutBuff[cnt], &frameLen, sizeof(frameLen));  //[1..2]LEN
+  p_out_data[cnt++] = 0x02;                               //[0   ]STX
+  memcpy(&p_out_data[cnt], &frameLen, sizeof(frameLen));  //[1..2]LEN
   cnt += sizeof(frameLen);
 
-  pOutBuff[cnt++] = seq;  //[3   ]SEQ
-  memcpy(&pOutBuff[cnt], &ct.Year, sizeof(ct.Year));
-  ;  //[4..5]YEAR
-  cnt += sizeof(ct.Year);
-  pOutBuff[cnt++] = ct.Month;  //[6   ]Month
-  pOutBuff[cnt++] = ct.Day;    //[7   ]Day
-  pOutBuff[cnt++] = ct.Hour;   //[8   ]Hour
-  pOutBuff[cnt++] = ct.Min;    //[9   ]Min
-  pOutBuff[cnt++] = ct.Sec;    //[10  ]Sec
-  pOutBuff[cnt++] = cmd;       //[11  ]CMD
+  p_out_data[cnt++] = rx_frame[3];  //[3   ]SEQ
+  memcpy(&p_out_data[cnt], &ct.Year, sizeof(ct.Year)); //[4..5]YEAR
 
-  if (dataLen)
+  cnt += sizeof(ct.Year);
+  p_out_data[cnt++] = ct.Month;  //[6   ]Month
+  p_out_data[cnt++] = ct.Day;    //[7   ]Day
+  p_out_data[cnt++] = ct.Hour;   //[8   ]Hour
+  p_out_data[cnt++] = ct.Min;    //[9   ]Min
+  p_out_data[cnt++] = ct.Sec;    //[10  ]Sec
+  p_out_data[cnt++] = cmd;       //[11  ]CMD
+
+  if (data_length)
   {
-    memcpy(&pOutBuff[cnt], pInData, dataLen);  //[12..N]DATA
-    cnt += dataLen;
+    if (p_in_data)
+    {
+      memcpy(&p_out_data[cnt], p_in_data, data_length);  //[12..N]DATA
+    }
+    cnt += data_length;
   }
 
   for (i = 1; i < cnt; i++)
   {
-    sum += pOutBuff[i];  // 체크섬,LEN부터 데이터까지
+    sum += p_out_data[i];  // 체크섬,LEN부터 데이터까지
   }
 
-  pOutBuff[cnt++] = 0x03;  //[     ]ETX
-  pOutBuff[cnt++] = sum;   //[     ]SUM
+  p_out_data[cnt++] = 0x03;  //[     ]ETX
+  p_out_data[cnt++] = sum;   //[     ]SUM
 
   return cnt;
 }
@@ -160,7 +187,7 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
     data[cnt++] = res;
   }
 
-  return make_divasFrame(DIVAS_CMD_FW_DOWNLOAD, rx_frame[3], data, cnt, tx_frame,
+  return make_divas_frame(DIVAS_CMD_FW_DOWNLOAD, rx_frame, data, cnt, tx_frame,
                          KMA_TX_BUFFER_SIZE);  // 200 주의 하드코딩
 }
 
@@ -184,28 +211,28 @@ uint16_t divas_fw_update(uint8_t *rx_frame, uint8_t *tx_frame)
     set_firmware_update();
   }
 
-  return make_divasFrame(DIVAS_CMD_FW_UPDATE, rx_frame[3], data, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+  return make_divas_frame(DIVAS_CMD_FW_UPDATE, rx_frame, data, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
 }
 
-bool is_divas_frame(uint8_t *pInData, uint16_t dataLen)
+bool is_divas_frame(uint8_t *p_in_data, uint16_t data_length)
 {
   uint8_t sum = 0;
   uint16_t len;
   uint16_t i;
 
-  memcpy(&len, &pInData[1], sizeof(len));
+  memcpy(&len, &p_in_data[1], sizeof(len));
 
-  if (len != dataLen)
+  if (len != data_length)
   {
     return 0;
   }
 
-  for (i = 1; i < (dataLen - 2); i++)
+  for (i = 1; i < (data_length - 2); i++)
   {
-    sum += pInData[i];
+    sum += p_in_data[i];
   }
 
-  if (sum != pInData[dataLen - 1])
+  if (sum != p_in_data[data_length - 1])
   {
     return false;
   }
@@ -214,11 +241,183 @@ bool is_divas_frame(uint8_t *pInData, uint16_t dataLen)
 }
 
 
-uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len,uint8_t *tx_frame)
+#define INDEX_CONFIG_APP    0
+#define INDEX_CONFIG_SENSOR 1
+#define INDEX_CONFIG_NVM    2
+
+uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame)
+{
+  uint8_t *tx_data = &tx_frame[DIVAS_FRAME_DATA_OFFSET];
+  uint8_t * p_config;
+  uint16_t cnt=0;
+  uint8_t parameter_error=0;
+#pragma pack(push, 1)
+  struct read_config_offset_s
+  {
+    uint8_t config_type;
+    uint16_t offset;
+    uint16_t length;
+  } request;
+#pragma pack(pop)
+
+  memcpy(&request, &rx_frame[DIVAS_FRAME_DATA_OFFSET], sizeof(request));
+
+  switch (request.config_type)
+  {
+    case INDEX_CONFIG_APP:
+      p_config = (uint8_t *)get_config_app();
+      break;
+    case INDEX_CONFIG_SENSOR:
+      p_config = (uint8_t *)get_config_sensor();
+      break;
+    case INDEX_CONFIG_NVM:
+      p_config = (uint8_t *)get_config_nvm();
+      break;
+    default:
+      parameter_error = 1;
+      break;
+  }
+
+  do
+  {
+    if(parameter_error)
+    {
+      tx_data[cnt++] = ASCII_NAK;
+      tx_data[cnt++] = 1;
+      break;
+    }
+    
+    //요청 길이가 전송가능한 버퍼보다 크면 에러 
+    if (request.length >= (KMA_TX_BUFFER_SIZE - DIVAS_FRAME_OVERHEAD-1))
+    {
+      tx_data[cnt++] = ASCII_NAK;
+      tx_data[cnt++] = 2;
+      break;
+    }
+
+    tx_data[cnt++] = ASCII_ACK;
+    memcpy(&tx_data[cnt++], p_config + request.offset, request.length);
+    cnt += request.length;
+
+  }while(0);
+
+  return make_divas_frame(DIVAS_CMD_RD_CFG_OFS, rx_frame, NULL, cnt, tx_frame,
+                            KMA_TX_BUFFER_SIZE);
+}
+
+
+
+
+uint16_t
+    divas_write_config_offset(uint8_t *rx_frame, uint8_t *tx_frame)
+{
+  uint8_t *tx_data = &tx_frame[DIVAS_FRAME_DATA_OFFSET];
+  uint8_t *rx_data = &rx_frame[DIVAS_FRAME_DATA_OFFSET];
+  uint8_t *p_config;
+  uint16_t cnt = 0;
+  uint8_t parameter_error = 0;
+#pragma pack(push, 1)
+  struct write_config_offset_s
+  {
+    uint8_t config_type;
+    uint16_t offset;
+    uint16_t length;
+    //uint8_t data[]; // 데이터 
+  } request;
+#pragma pack(pop)
+uint8_t *p_data;
+
+  memcpy(&request, &rx_data[0], sizeof(request));
+  p_data = &rx_data[sizeof(request)];
+
+  switch (request.config_type)
+  {
+    case INDEX_CONFIG_APP:
+      p_config = (uint8_t *)get_config_app();
+      memcpy(p_config + request.offset, p_data, request.length);
+      save_config_app();
+      break;
+    case INDEX_CONFIG_SENSOR:
+      p_config = (uint8_t *)get_config_sensor();
+      memcpy(p_config + request.offset, p_data, request.length);
+      save_config_sensor();
+      break;
+    case INDEX_CONFIG_NVM:
+      p_config = (uint8_t *)get_config_nvm();
+      memcpy(p_config + request.offset, p_data, request.length);
+      save_config_nvm();
+      break;
+    default:
+      parameter_error = 1;
+      break;
+  }
+
+  do
+  {
+    if (parameter_error)
+    {
+      tx_data[cnt++] = ASCII_NAK;
+      tx_data[cnt++] = 1;
+      break;
+    }
+    tx_data[cnt++] = ASCII_ACK;
+  }while(0);
+
+  return make_divas_frame(DIVAS_CMD_RD_CFG_OFS, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+}
+
+
+
+/// @brief 시스템 모니터링 정보 읽기
+/// @param rx_frame 
+/// @param tx_frame 
+/// @return tx 프레임 길이
+uint16_t divas_read_system(uint8_t *rx_frame, uint8_t *tx_frame)
+{
+  uint8_t *tx_data = &tx_frame[DIVAS_FRAME_DATA_OFFSET];
+  uint8_t *rx_data = &rx_frame[DIVAS_FRAME_DATA_OFFSET];
+  uint8_t *p_system;
+  uint16_t cnt = 0;
+  uint8_t parameter_error = 0;
+#pragma pack(push, 1)
+  struct read_config_offset_s
+  {
+    uint16_t offset;
+    uint16_t length;
+  } request;
+#pragma pack(pop)
+  aws_monitor_t aws_monitor;
+
+  memcpy(&request, &rx_data[0], sizeof(request));
+
+  make_aws_monitor_frame(&aws_monitor);
+
+  p_system = (uint8_t *)&aws_monitor;
+  
+  do
+  {
+    // 요청 길이가 전송가능한 버퍼보다 크면 에러
+    if (request.length >= (KMA_TX_BUFFER_SIZE - DIVAS_FRAME_OVERHEAD - 1))
+    {
+      tx_data[cnt++] = ASCII_NAK;
+      tx_data[cnt++] = 2;
+      break;
+    }
+
+    tx_data[cnt++] = ASCII_ACK;
+    memcpy(&tx_data[cnt++], p_system + request.offset, request.length);
+    cnt += request.length;
+
+  } while (0);
+
+  return make_divas_frame(DIVAS_CMD_RD_SYSTEM, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+}
+
+uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len, uint8_t *tx_frame)
 {
   uint16_t len = 0;
 
-  if (is_divas_frame(rx_frame, rx_len)==false)
+  if (is_divas_frame(rx_frame, rx_len) == false)
   {
     return 0;
   }
@@ -230,7 +429,15 @@ uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len,uint8_t *tx_frame)
       break;
     case DIVAS_CMD_FW_UPDATE:
       len = divas_fw_update(rx_frame, tx_frame);
-
+      break;
+    case DIVAS_CMD_RD_CFG_OFS:
+      len = divas_read_config_offset(rx_frame,tx_frame);
+      break;
+    case DIVAS_CMD_WR_CFG_OFS:
+      len = divas_write_config_offset(rx_frame,tx_frame);
+      break;
+    case DIVAS_CMD_RD_SYSTEM:
+      len = divas_read_system(rx_frame, tx_frame);
       break;
   }
 

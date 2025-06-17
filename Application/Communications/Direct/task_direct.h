@@ -20,9 +20,9 @@ typedef struct direct_status_s
   uint32_t last_send_time;
   uint32_t last_recv_time;
   uint32_t linkdown_remain_ms;
-} direct_status_t;
+} direct_system_t;
 
-direct_status_t *get_direct_system(void);
+direct_system_t *get_direct_system(void);
 
 void directTask_init(void);
 

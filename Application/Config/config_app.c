@@ -465,3 +465,8 @@ void restore_config_app(void)
     aws_free(p_config);
   }
 }
+
+system_t *get_system(void)
+{
+  return &System;
+}

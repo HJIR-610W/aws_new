@@ -14,7 +14,7 @@
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define CLIENT_CONNECT_TIMEOUT_MS 10000
 
-tcp_status_t g_tcp_client_status;
+tcp_system_t g_tcp_client_status;
 osThreadId_t g_tcpClientTaskId;
 
 const osThreadAttr_t tcpClientTask_attributes = {
@@ -23,7 +23,7 @@ const osThreadAttr_t tcpClientTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
-tcp_status_t *get_tcp_client_system(void) 
+tcp_system_t *get_tcp_client_system(void) 
 { 
   return &g_tcp_client_status; 
 }

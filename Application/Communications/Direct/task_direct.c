@@ -16,10 +16,10 @@ const osThreadAttr_t directTask_attributes = {
     .priority = (osPriority_t)osPriorityNormal,
 };
 
-static direct_status_t g_direct_system;
+static direct_system_t g_direct_system;
 driver_t *direct_driver;
 
-direct_status_t *get_direct_system(void)
+direct_system_t *get_direct_system(void)
 { 
   return &g_direct_system; 
 }

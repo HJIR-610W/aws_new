@@ -113,8 +113,6 @@ typedef struct system_s
   bool dc_error;
   bool battery_error;
   bool door_opened;
-
-
   uint8_t ac_status;//00 110v,01 220v,11 ADC OFF
   eLINK_STATUS_t cdma_link_status;
   int8_t cdma_rssi;
@@ -149,5 +147,5 @@ void set_config_app_cdma_ip(uint8_t ip[4]);
 
 extern config_t config;
 extern system_t System;
-
+system_t *get_system(void);
 #endif

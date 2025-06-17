@@ -1547,6 +1547,12 @@
             <group>
                 <name>divas</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\divas\aws_monitor.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Protocols\divas\aws_monitor.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Protocols\divas\divas_protocol_handler.c</name>
                 </file>
                 <file>

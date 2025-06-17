@@ -33,10 +33,10 @@ typedef struct
   bool isActive;
   char client_ip_str[INET_ADDRSTRLEN];
   uint16_t client_port;
-  tcp_status_t *status;
+  tcp_system_t *status;
 } client_slot_t;
 
-static tcp_status_t g_tcp_status[MAX_CONCURRENT_CLIENTS];
+static tcp_system_t g_tcp_status[MAX_CONCURRENT_CLIENTS];
 
 static client_slot_t client_slots[MAX_CONCURRENT_CLIENTS];
 static osMutexId_t client_slots_mutex;
@@ -60,7 +60,7 @@ const osThreadAttr_t clientHandlerTask_attributes = {
 static void client_handler_task(void *argument);
 static void server_service_for_client(int sock, client_slot_t* slot); // server_service ¼öÁ¤º»
 
-tcp_status_t *get_tcp_system(uint32_t number)
+tcp_system_t *get_tcp_system(uint32_t number)
 {
   return &g_tcp_status[number];
 }

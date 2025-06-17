@@ -15,6 +15,6 @@
 
 void noti_tcpServerTask(uint32_t flag);
 void tcpServerTask_init(uint32_t flag);
-tcp_status_t *get_tcp_system(uint32_t number);
+tcp_system_t *get_tcp_system(uint32_t number);
 
 #endif
