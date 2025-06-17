@@ -34,10 +34,10 @@ config_nvm_t *get_config_nvm(void)
 }
 
 
-void nvm_set_log_cnt(uint16_t value)
+void nvm_set_log_cnt(uint32_t value)
 {
   g_config_nvm.log_q_cnt = value;
   WRITE_NVM(log_q_cnt);
 }
 
-uint16_t nvm_get_log_cnt(void) { return g_config_nvm.log_q_cnt; };
+uint32_t nvm_get_log_cnt(void) { return g_config_nvm.log_q_cnt; };

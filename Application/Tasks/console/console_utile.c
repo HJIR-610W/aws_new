@@ -339,13 +339,13 @@ int check_pass(const char* title, char* password_str,int *ok)
 
       if (strncmp(input, password_str, len) == 0)
       {
-        status == MENU_OK;
+        status = MENU_OK;
         *ok = 1;
         break;
       }
       else
       {
-        status == MENU_OK;
+        status = MENU_OK;
         *ok = 0;
         break;
       }

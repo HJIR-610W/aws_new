@@ -464,6 +464,9 @@ uint16_t divas_cmd_reset(uint8_t *rx_frame, uint8_t *tx_frame)
    return make_divas_frame(DIVAS_CMD_RESET, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
 }
 
+#define RD_LOG_TYPE_Q 0
+#define RD_LOG_TYPE_TIME 1
+
 uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
@@ -490,9 +493,12 @@ uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame)
         tx_data[cnt] = (uint8_t)-100;
         break;
       }
+      
+      tx_data[cnt]= ASCII_ACK;
+      cnt++;
     for (int i = 0; i < request.cnt; i++)
     {
-      status = logging_read_log(request.q_start + i, (sysLog_t*)&tx_data[i * sizeof(sysLog_t)]);
+      status = logging_read_log(request.q_start + i, (sysLog_t*)&tx_data[1+i * sizeof(sysLog_t)]);
       if (status != 0)
       {
         cnt = 0;
@@ -500,7 +506,7 @@ uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame)
         tx_data[cnt] = status;
         break;
       }
-      cnt += sizeof(sizeof(sysLog_t));
+      cnt += sizeof(sysLog_t);
     }
   }while(0);
 

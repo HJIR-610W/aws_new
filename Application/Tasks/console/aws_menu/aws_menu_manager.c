@@ -12,12 +12,14 @@
 #include "app_dataLogging.h"
 #include "cli_input.h"
 #include "system_err.h"
+#include "config_nvm.h"
 
 #include "app_version.h"
 #include "boot_version.h"
 #include "app_flash.h"
 #include "config_manager.h"
 #include "Data\utile_data.h"
+#include "app_logging.h"
 
 int32_t menu_manage_version()
 {
@@ -433,100 +435,112 @@ int32_t menu_manage_update_fw()
 
   return status;
 }
-
-
-int aws_manager_config(void)
+int32_t menu_manage_log_reset(void)
 {
-  int choice, status;
-  int ok;
-  char *menu[] = {"AWS 화진 기본 설정", "공장 초기화", "설정 백업",
-                  "우량,일조 자료 초기화"};
+  int status;
+  int log_cnt;
 
-  while (1)
+  io_printf("현재 로그 카운트:%d\r\n", get_config_nvm()->log_q_cnt );
+
+  status = input_decimal_prompt("로그 카운트 입력해주세요", &log_cnt, 0, LOG_COUNT_MAX);
+  if(status == MENU_OK)
   {
-    status = choice_menu(24, "DATA", menu, _countof(menu), &choice);
-    if (status != MENU_OK)
-      return status;
-
-    switch (choice)
-    {
-      case 1:
-        status = confirm_continue("센서 구성을 화진 기본값으로 초기화합니다", &ok);
-        if(status!=MENU_OK)
-        break;
-        
-        if(ok)
-        {
-          config_hj_reset();
-          io_printf("초기화 되었습니다");
-        }
-        break;
-      case 2:
-        status  = confirm_continue("설정값을 공장초기화합니다",&ok);
-        
-        if(status != MENU_OK)
-        break;
-        if(ok)
-        {
-          config_app_reset();
-          save_config_app();
-          config_sensor_reset();
-          save_config_sensor();
-          io_printf("공장 초기화 되었습니다\r\n");
-        }
-        break;
-      case 3:
-      status =  menu_manage_config_backup();
-        break;
-      case 4:
-      status = menu_manage_sentor_edit();
-        break;
-    }
-
-    if(status != MENU_OK)
-    {
-      break;
-    }
+    nvm_set_log_cnt(log_cnt);
   }
 
   return status;
 }
-
-
-
-
-int aws_menu_manager(void)
-{
-
-  int choice, status;
-  char *menu[] = {"버전", "장비리셋", "설정 변경", "펌웨어 업데이트"};
-
-  while (1)
+  int aws_manager_config(void)
   {
-    status = choice_menu(24, "설정", menu, _countof(menu), &choice);
-    if (status != MENU_OK)
-      return status;
+    int choice, status;
+    int ok;
+    char *menu[] = {"AWS 화진 기본 설정", "공장 초기화", "설정 백업", "우량,일조 자료 초기화",
+                    "로그 카운트 초기화"};
 
-    switch (choice)
+    while (1)
     {
-      case 1:
-               status  =  menu_manage_version();
+      status = choice_menu(24, "DATA", menu, _countof(menu), &choice);
+      if (status != MENU_OK)
+        return status;
+
+      switch (choice)
+      {
+        case 1:
+          status = confirm_continue("센서 구성을 화진 기본값으로 초기화합니다", &ok);
+          if (status != MENU_OK)
+            break;
+
+          if (ok)
+          {
+            config_hj_reset();
+            io_printf("초기화 되었습니다");
+          }
+          break;
+        case 2:
+          status = confirm_continue("설정값을 공장초기화합니다", &ok);
+
+          if (status != MENU_OK)
+            break;
+          if (ok)
+          {
+            config_app_reset();
+            save_config_app();
+            config_sensor_reset();
+            save_config_sensor();
+            io_printf("공장 초기화 되었습니다\r\n");
+          }
+          break;
+        case 3:
+          status = menu_manage_config_backup();
+          break;
+        case 4:
+          status = menu_manage_sentor_edit();
+          break;
+        case 5:
+          status = menu_manage_log_reset();
+          break;
+      }
+
+      if (status != MENU_OK)
+      {
         break;
-      case 2:
-                status  = menu_manage_device_reset();
-         break;
-      case 3:
-        status  = aws_manager_config();
-        break;
-      case 4:
-               status  =  menu_manage_update_fw();
-        break;
+      }
     }
-    if(status !=MENU_OK)
-    {
-      break;
-    }
+
+    return status;
   }
 
-   return status;
-}
+  int aws_menu_manager(void)
+  {
+    int choice, status;
+    char *menu[] = {"버전", "장비리셋", "설정 변경", "펌웨어 업데이트"};
+
+    while (1)
+    {
+      status = choice_menu(24, "설정", menu, _countof(menu), &choice);
+      if (status != MENU_OK)
+        return status;
+
+      switch (choice)
+      {
+        case 1:
+          status = menu_manage_version();
+          break;
+        case 2:
+          status = menu_manage_device_reset();
+          break;
+        case 3:
+          status = aws_manager_config();
+          break;
+        case 4:
+          status = menu_manage_update_fw();
+          break;
+      }
+      if (status != MENU_OK)
+      {
+        break;
+      }
+    }
+
+    return status;
+  }

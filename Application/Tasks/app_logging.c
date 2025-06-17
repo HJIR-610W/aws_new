@@ -14,16 +14,16 @@
 
 
 const char *kSystem_log_path = "0:System/log.txt";
-const uint16_t kSystemNormMax = 10000;
+
 
 static osSemaphoreId_t g_loggingSem;
 
-uint16_t logging_get_logCnt(void)
+uint32_t logging_get_logCnt(void)
 {
   return nvm_get_log_cnt();
 }
 
-void logging_set_logCnt(uint16_t cnt)
+void logging_set_logCnt(uint32_t cnt)
 {
   nvm_set_log_cnt(cnt);
 }
@@ -37,7 +37,8 @@ int32_t save_log(const char *log)
   char buff[LOG_LEN_MAX];
 
   int i=0;
-  uint16_t logCnt;
+  uint32_t index;
+  uint32_t logCnt;
   uint32_t totalBytes;
 
   int32_t err=0;
@@ -46,29 +47,26 @@ int32_t save_log(const char *log)
 
   logCnt = logging_get_logCnt();
 
-  if(logCnt >= kSystemNormMax)
+  index = logCnt % LOG_COUNT_MAX;
+
+
+  memset(buff, 0x00, sizeof(buff));
+
+  for (i = 0; i < sizeof(buff) - 1; i++)
   {
-    logCnt = 0;
-  }
-
-    memset(buff,0x00,sizeof(buff));
-
-    for( i = 0 ; i < sizeof(buff)-1;i++)
+    if (*log)
     {
-      if(*log)
-      {
-        buff[i] = *log++;
-      }
-      else
-      {
-
-        buff[i]=' ';
-      }
+      buff[i] = *log++;
+    }
+    else
+    {
+      buff[i] = ' ';
+    }
     }
 
     buff[sizeof(buff)-1]=0;//마지막 NULL 처리리
-    
-    totalBytes = logCnt*LOG_LEN_MAX;// 저장된 로그 바이트 
+
+    totalBytes = index * LOG_LEN_MAX;  // 저장된 로그 바이트
 
     err = write_file((char *)kSystem_log_path,(uint8_t*)buff,sizeof(buff),totalBytes);
 
@@ -85,13 +83,14 @@ int logging_read_log(uint32_t log_q_cnt, sysLog_t *loggingMsg)
   int zeroCnt=0;
   FRESULT fret = (FRESULT)-1;
 
-  uint32_t totalBytes;
+  uint32_t offset;
 
   osSemaphoreAcquire(g_loggingSem, osWaitForever);
 
-  totalBytes = (log_q_cnt - 1) * LOG_LEN_MAX;
+  offset = (log_q_cnt - 1) * LOG_LEN_MAX;
 
-  fret = read_file((char *)kSystem_log_path,(uint8_t *)loggingMsg->msg,sizeof(loggingMsg->msg),totalBytes);
+  fret = read_file((char *)kSystem_log_path, (uint8_t *)loggingMsg->msg, sizeof(loggingMsg->msg),
+                   offset);
 
   for(int i = 0 ; i < sizeof(loggingMsg->msg);i++)
   {

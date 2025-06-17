@@ -20,7 +20,7 @@ int32_t menu_develop(p_shell_context_t ctx, int32_t argc, char **argv)
   int status;
   int ok;
 
-  status = check_pass("진행 코드 입력해주세요", "32956",&ok);
+  status = check_pass("진행 코드 입력해주세요", "1601",&ok);
   if(status == MENU_OK && ok==1)
     aws_menu_develop();
   

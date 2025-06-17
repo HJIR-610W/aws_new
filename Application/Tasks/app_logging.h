@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include "util_time.h"
 
+#define LOG_COUNT_MAX 10000
+
 #define LOG_LEN_MAX 45
 
 #pragma pack(push, 1)
@@ -17,6 +19,6 @@ typedef struct
 
 int32_t save_log(const char *log);
 int logging_read_log(uint32_t log_q_cnt,sysLog_t *loggingMsg);
-uint16_t logging_get_logCnt(void);
+uint32_t logging_get_logCnt(void);
 void logging_init(void);
 #endif
