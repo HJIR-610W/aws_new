@@ -140,15 +140,17 @@ bool is_measurement_250(void *data,uint32_t timeout)
 
 bool is_measurement_1s( void *data,uint32_t timeout)
 {
-
+  osStatus_t status;
   if (g_reading_1s_queue == NULL)
   {
     osDelay(100);
     return false;
   }
 
-  osMessageQueueGet(g_reading_1s_queue, data, NULL, timeout);
+  status = osMessageQueueGet(g_reading_1s_queue, data, NULL, timeout);
 
+  (void)status;
+  
   return true;
 }
 

@@ -21,10 +21,14 @@
 #include "util_crc16_ccitt.h"
 #include "util_memory.h"
 #include "util_time.h"
+#include "schedule.h"
+
+#define REQ_BLOCK_BEFORE_SEC 5 //너무 이른 요청은 무시 
 
 #define KMA_HEADER_START 0xFAFB
 #define KMA_HEADER_END 0xFFFE
 #define KMA_REQUEST_LEN 29
+
 
 typedef enum
 {
@@ -264,8 +268,11 @@ uint16_t kma_cmd_handler_AI(uint8_t *rx_frame, uint8_t *tx_frame)
   kma_data_ex_t *p_kma3_data;
   kma2_response_t kma2_response;
 
-    
-  station_id = GetWord((uint8_t *)&rx_frame[13]);
+  if (Date_Time.Sec < REQ_BLOCK_BEFORE_SEC)
+  {
+    return 0;
+  }
+    station_id = GetWord((uint8_t *)&rx_frame[13]);
   p_kma3_data = get_kma_data(eAWS_DATA_AVG);
 
   switch (get_config_app()->aws_protocol_type)
@@ -313,7 +320,12 @@ uint16_t kma_cmd_handler_AB(uint8_t *rx_frame, uint8_t *tx_frame)
   kma2_response_t kma2_response;
   uint8_t data_format_no;
 
-  station_id = GetWord((uint8_t *)&rx_frame[13]);
+  //아직 1분 자료가 업데이트 되지 않았으면 응답 안한다. 
+  if (!check_1min_data_updated())
+  {
+    return 0;
+  }
+    station_id = GetWord((uint8_t *)&rx_frame[13]);
   p_kma_data = get_kma_data(eAWS_DATA_1MIN);
 
   switch (get_config_app()->aws_protocol_type)
@@ -653,11 +665,13 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     tx_frame[8] = rx_frame[8];
     tx_frame[9] = rx_frame[9];
 
+    //요청 시간
     poll_t = SetTime(pDate->Year, pDate->Month, pDate->Day, pDate->Hour, pDate->Min, 0);
 
+    //현재 시간
     cur_t =
         SetTime(Date_Time.Year, Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, 0);
-    if ((poll_t == cur_t) && (Date_Time.Sec < 2))
+    if ((poll_t == cur_t) && (Date_Time.Sec < 5))
     {
       vPortFree(p_kma3);
       vPortFree(p_aws);

@@ -37,7 +37,7 @@ typedef struct aws_data_s2
   uint16_t max;
   uint16_t min;
   uint16_t data;
-  uint16_t spec;
+  uint16_t year;
   uint32_t last_time;
 } aws_data2_t;
 

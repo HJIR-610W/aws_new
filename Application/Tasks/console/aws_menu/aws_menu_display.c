@@ -25,7 +25,7 @@
 
 #define DISP_WIDTH 30
 
-#define SMALL_W 25
+#define SMALL_W 27
 const char *linkStatusList[] = {"-", "UP", "DOWN"};
 const char *doorStatusList[] = {"닫힘", "열림"};
 const char *generalStatusList[] = {"정상", "비정상"};
@@ -103,7 +103,7 @@ int32_t print_system_info(uint16_t row, uint16_t column, uint8_t selected)
   return line - (row+1);
 }
 
-#define SMALL_W 25
+
 int32_t print_charger_info(uint16_t row, uint16_t column, uint8_t selected)
 {
   char buff[10];
@@ -695,7 +695,7 @@ int32_t print_aws_info(uint16_t row, uint16_t column, eAWS_DATA_MIN_t min, uint8
     }
     else
     {
-      vt100_print_bar(line++, column, -AWS_W, "%-*s:%7.2f mm\r\n", COL_WIDTH, "적설",
+      vt100_print_bar(line++, column, -AWS_W, "%-*s:%7d mm\r\n", COL_WIDTH, "적설",
                       p_kma->snowfall.data);
     }
   }

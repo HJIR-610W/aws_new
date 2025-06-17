@@ -618,24 +618,38 @@ void update_kma_real(void)
 
   //[사용]  5. 지중온도 (5cm, 1분 평균)
   p_kma3->soil_temperature_5cm.data = mRealAws.mSoilTemp5cm.sReal;
+  p_kma3->soil_temperature_5cm.min = mRealAws.mSoilTemp5cm.sMin;
+  p_kma3->soil_temperature_5cm.max = mRealAws.mSoilTemp5cm.sMax; 
   p_kma3->soil_temperature_5cm.err = get_sensor_err(B5_SOIL_TEMPERATURE_5CM);
   //[사용] 6. 지중온도 (10cm, 1분 평균)
   p_kma3->soil_temperature_10cm.data = mRealAws.mSoilTemp10cm.sReal;
+  p_kma3->soil_temperature_10cm.min = mRealAws.mSoilTemp10cm.sMin;
+  p_kma3->soil_temperature_10cm.max = mRealAws.mSoilTemp10cm.sMax;
   p_kma3->soil_temperature_10cm.err = get_sensor_err(B6_SOIL_TEMPERATURE_10CM);
   //[사용] 7. 지중온도 (20cm, 1분 평균)
   p_kma3->soil_temperature_20cm.data = mRealAws.mSoilTemp20cm.sReal;
+  p_kma3->soil_temperature_20cm.min = mRealAws.mSoilTemp20cm.sMin;
+  p_kma3->soil_temperature_20cm.max = mRealAws.mSoilTemp20cm.sMax;
   p_kma3->soil_temperature_20cm.err = get_sensor_err(B7_SOIL_TEMPERATURE_20CM);
   //[사용]  8. 지중온도 (30cm, 1분 평균)
   p_kma3->soil_temperature_30cm.data = mRealAws.mSoilTemp30cm.sReal;
+  p_kma3->soil_temperature_30cm.min = mRealAws.mSoilTemp30cm.sMin;
+  p_kma3->soil_temperature_30cm.max = mRealAws.mSoilTemp30cm.sMax;
   p_kma3->soil_temperature_30cm.err = get_sensor_err(B8_SOIL_TEMPERATURE_30CM);
   //[사용]  9. 지중온도 (50cm, 1분 평균)
   p_kma3->soil_temperature_50cm.data = mRealAws.mSoilTemp50cm.sReal;
+  p_kma3->soil_temperature_50cm.min = mRealAws.mSoilTemp50cm.sMin;
+  p_kma3->soil_temperature_50cm.max = mRealAws.mSoilTemp50cm.sMax;
   p_kma3->soil_temperature_50cm.err = get_sensor_err(B9_SOIL_TEMPERATURE_50CM);
   //[사용] 10. 지중온도 (1.0m, 1분 평균)
   p_kma3->soil_temperature_1m.data = mRealAws.mSoilTemp1_0m.sReal;
+  p_kma3->soil_temperature_1m.min = mRealAws.mSoilTemp1_0m.sMin;
+  p_kma3->soil_temperature_1m.max = mRealAws.mSoilTemp1_0m.sMax;
   p_kma3->soil_temperature_1m.err = get_sensor_err(B10_SOIL_TEMPERATURE_100CM);
   //[사용] 11. 지중온도 (1.5m, 1분 평균)
   p_kma3->soil_temperature_1_5m.data = mRealAws.mSoilTemp1_5m.sReal;
+  p_kma3->soil_temperature_1_5m.min = mRealAws.mSoilTemp1_5m.sMin;
+  p_kma3->soil_temperature_1_5m.max = mRealAws.mSoilTemp1_5m.sMax;
   p_kma3->soil_temperature_1_5m.err = get_sensor_err(B11_SOIL_TEMPERATURE_150CM);
 
   // [미사용] 12. 지중온도(3.0m, 1분 평균) 
@@ -1365,13 +1379,13 @@ void filter_init(void)
     g_pre_data[i].err = 0xFF;
   }
 }
+
+
 void DUALPORT_TASK(void *arg)
 {
   uint8_t sensor_err = 0;
-
   uint16_t sSpeed;
   uint16_t sDirec;
-
   SYSTEM_INFO_AWS *pSystem;
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
@@ -1388,9 +1402,16 @@ void DUALPORT_TASK(void *arg)
   calculate_rain();
   calculate_sunshine();
   filter_init();
-      // 메모리를 아끼기위해 g_p_raw 하나만 사용
-      g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
 
+  //제품 부팅시에는 처음 측정하는 값을 즉시 반영
+  for (int i = 0; i < SENSOR_LIST_MAX; i++)
+  {
+    g_pre_data[i].delay = MS_TO_SCAN(10);
+  }
+    // 메모리를 아끼기위해 g_p_raw 하나만 사용
+    g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
+
+  osDelay(2000);//1초마다 업데이트 하는 테스트가 최소 1회이상 업데이트 되길 대기 
   time_old = Date_Time;
   while (1)
   {

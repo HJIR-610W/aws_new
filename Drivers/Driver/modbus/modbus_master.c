@@ -4,15 +4,16 @@
 
 #include <string.h>
 
-#include "driver_uart.h"
 #include "driver_485.h"
 #include "driver_485_def.h"
+#include "driver_uart.h"
 #include "driver_uart_def.h"
 #include "modbus.h"
 #include "modbus_master_def.h"
 #include "os_user_def.h"
 #include "pcb_define.h"
-
+#include "system_err.h"
+#include "dev_io.h"
 #define RET_SIZE_OVER -1
 #define RET_TIMEOUT -2
 #define FRAME_485_Q_CNT 1
@@ -297,7 +298,11 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
     crc_calc = calcCRC(rx_buf, total_len - 2);
     crc_recv = rx_buf[total_len - 2] << 8 | (rx_buf[total_len - 1]);
     if (crc_calc != crc_recv)
+    {
+      LOG_MEM(rx_buf, total_len,(uint32_t)rx_buf,16);
+      ERROR_PRINTF("recv:%X,cal:%X\r\n",crc_recv,crc_calc);
       return -5;  // CRC 에러
+    }
 
     return total_len;  // 유효한 패킷 길이 리턴
   }

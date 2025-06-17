@@ -17,6 +17,8 @@ extern SYSTEM_INFO_AWS Sysinfo;
 
 void AwsMinMaxInit(void);
 void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate);
+uint8_t check_1min_data_updated(void);
+
 SYSTEM_INFO_AWS *get_system_info_aws(void);
 
 #endif

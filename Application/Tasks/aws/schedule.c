@@ -76,155 +76,109 @@ void AwsMinMaxInit(void)
 
   pSystem = &Sysinfo;
 
-  mRealAws.mWind.mDirection.sMax = 0;
-  mRealAws.mWind.mSpeed.sMax = 0;
-
+  mRealAws.mWind.mDirection.sMax = 0; //일 최대 풍향
+  mRealAws.mWind.mSpeed.sMax = 0;    // 일 최대 풍속
 
   mRealAws.mTemperature.sMin = 9999;  // 일일 최대 최소 값 초기화
   mRealAws.mTemperature.sMax = 0;
 
-  mMinAws.mTemperature.sReal = mRealAws.mTemperature.sReal;
-  mMinAws.mTemperature.sMin = mRealAws.mTemperature.sReal;  // 1분 최대 최소 값 초기화
-  mMinAws.mTemperature.sMax = mRealAws.mTemperature.sReal;
-  m10MinAws.mTemperature.sReal = mRealAws.mTemperature.sReal;
-  m10MinAws.mTemperature.sMin = mRealAws.mTemperature.sReal;  // 10분 최대 최소 값 초기화
-  m10MinAws.mTemperature.sMax = mRealAws.mTemperature.sReal;
-  mHourAws.mTemperature.sReal = mRealAws.mTemperature.sReal;
-  mHourAws.mTemperature.sMin = mRealAws.mTemperature.sReal;  // 1시간 최대 최소 값 초기화
-  mHourAws.mTemperature.sMax = mRealAws.mTemperature.sReal;
+  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
+  {
+    pSystem->mTempBuf[i].sMin = 9999;
+    pSystem->mTempBuf[i].sMax = 0;
+  }
 
-  pSystem->mTempBuf[MIN1_PROC].sMin = mRealAws.mTemperature.sReal;
-  pSystem->mTempBuf[MIN1_PROC].sMax = mRealAws.mTemperature.sReal;
-  pSystem->mTempBuf[MIN10_PROC].sMin = mRealAws.mTemperature.sReal;
-  pSystem->mTempBuf[MIN10_PROC].sMax = mRealAws.mTemperature.sReal;
-  pSystem->mTempBuf[HOUR_PROC].sMin = mRealAws.mTemperature.sReal;
-  pSystem->mTempBuf[HOUR_PROC].sMax = mRealAws.mTemperature.sReal;
 
   mRealAws.mBarometric.sMin = 9999;
   mRealAws.mBarometric.sMax = 0;
 
-  mMinAws.mBarometric.sReal = mRealAws.mBarometric.sReal;
-  mMinAws.mBarometric.sMin = mRealAws.mBarometric.sReal;
-  mMinAws.mBarometric.sMax = mRealAws.mBarometric.sReal;
-  m10MinAws.mBarometric.sReal = mRealAws.mBarometric.sReal;
-  m10MinAws.mBarometric.sMin = mRealAws.mBarometric.sReal;
-  m10MinAws.mBarometric.sMax = mRealAws.mBarometric.sReal;
-  mHourAws.mBarometric.sReal = mRealAws.mBarometric.sReal;
-  mHourAws.mBarometric.sMin = mRealAws.mBarometric.sReal;
-  mHourAws.mBarometric.sMax = mRealAws.mBarometric.sReal;
-  pSystem->mBaroBuf[MIN1_PROC].sMin = mRealAws.mBarometric.sReal;
-  pSystem->mBaroBuf[MIN1_PROC].sMax = mRealAws.mBarometric.sReal;
-  pSystem->mBaroBuf[MIN10_PROC].sMin = mRealAws.mBarometric.sReal;
-  pSystem->mBaroBuf[MIN10_PROC].sMax = mRealAws.mBarometric.sReal;
-  pSystem->mBaroBuf[HOUR_PROC].sMin = mRealAws.mBarometric.sReal;
-  pSystem->mBaroBuf[HOUR_PROC].sMax = mRealAws.mBarometric.sReal;
+  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
+  {
+    pSystem->mBaroBuf[i].sMin = 9999;
+    pSystem->mBaroBuf[i].sMax = 0;
+  }
 
   mRealAws.mHumidity.sMin = 9999;
   mRealAws.mHumidity.sMax = 0;
 
-  mMinAws.mHumidity.sReal = mRealAws.mHumidity.sReal;
-  mMinAws.mHumidity.sMin = mRealAws.mHumidity.sReal;
-  mMinAws.mHumidity.sMax = mRealAws.mHumidity.sReal;
-  m10MinAws.mHumidity.sReal = mRealAws.mHumidity.sReal;
-  m10MinAws.mHumidity.sMin = mRealAws.mHumidity.sReal;
-  m10MinAws.mHumidity.sMax = mRealAws.mHumidity.sReal;
-  mHourAws.mHumidity.sReal = mRealAws.mHumidity.sReal;
-  mHourAws.mHumidity.sMin = mRealAws.mHumidity.sReal;
-  mHourAws.mHumidity.sMax = mRealAws.mHumidity.sReal;
-  pSystem->mHumidBuf[MIN1_PROC].sMin = mRealAws.mHumidity.sReal;
-  pSystem->mHumidBuf[MIN1_PROC].sMax = mRealAws.mHumidity.sReal;
-  pSystem->mHumidBuf[MIN10_PROC].sMin = mRealAws.mHumidity.sReal;
-  pSystem->mHumidBuf[MIN10_PROC].sMax = mRealAws.mHumidity.sReal;
-  pSystem->mHumidBuf[HOUR_PROC].sMin = mRealAws.mHumidity.sReal;
-  pSystem->mHumidBuf[HOUR_PROC].sMax = mRealAws.mHumidity.sReal;
+  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
+  {
+    pSystem->mHumidBuf[i].sMin = 9999;
+    pSystem->mHumidBuf[i].sMax = 0;
+  }
+
+
 
   pSystem->shSnowFallOld = mRealAws.mSnowFall.sReal;  // 현재 적설을 옮긴다.
 
-  mRealAws.mSoilTemp5cm.sMin = 9999;  // 일일 최대 최소 값 초기화
+  //지중온도 5cm
+  mRealAws.mSoilTemp5cm.sMin = 9999; //일 최대 최소 값 초기화 
   mRealAws.mSoilTemp5cm.sMax = 0;
 
-  mMinAws.mSoilTemp5cm.sReal = mRealAws.mSoilTemp5cm.sReal;
-  mMinAws.mSoilTemp5cm.sMin = mRealAws.mSoilTemp5cm.sReal;  // 1분 최대 최소 값 초기화
-  mMinAws.mSoilTemp5cm.sMax = mRealAws.mSoilTemp5cm.sReal;
-  m10MinAws.mSoilTemp5cm.sReal = mRealAws.mSoilTemp5cm.sReal;
-  m10MinAws.mSoilTemp5cm.sMin = mRealAws.mSoilTemp5cm.sReal;  // 10분 최대 최소 값 초기화
-  m10MinAws.mSoilTemp5cm.sMax = mRealAws.mSoilTemp5cm.sReal;
-  mHourAws.mSoilTemp5cm.sReal = mRealAws.mSoilTemp5cm.sReal;
-  mHourAws.mSoilTemp5cm.sMin = mRealAws.mSoilTemp5cm.sReal;  // 1시간 최대 최소 값 초기화
-  mHourAws.mSoilTemp5cm.sMax = mRealAws.mSoilTemp5cm.sReal;
+  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
+  {
+    pSystem->mSoil5Buf[i].sMin = 9999;
+    pSystem->mSoil5Buf[i].sMax = 0;
+  }
 
-  mRealAws.mSoilTemp10cm.sMin = 9999;  // 일일 최대 최소 값 초기화
+  // 지중온도 10cm
+  mRealAws.mSoilTemp10cm.sMin = 9999;  // 일 최대 최소 값 초기화
   mRealAws.mSoilTemp10cm.sMax = 0;
 
-  mMinAws.mSoilTemp10cm.sReal = mRealAws.mSoilTemp10cm.sReal;
-  mMinAws.mSoilTemp10cm.sMin = mRealAws.mSoilTemp10cm.sReal;  // 1분 최대 최소 값 초기화
-  mMinAws.mSoilTemp10cm.sMax = mRealAws.mSoilTemp10cm.sReal;
-  m10MinAws.mSoilTemp10cm.sReal = mRealAws.mSoilTemp10cm.sReal;
-  m10MinAws.mSoilTemp10cm.sMin = mRealAws.mSoilTemp10cm.sReal;  // 10분 최대 최소 값 초기화
-  m10MinAws.mSoilTemp10cm.sMax = mRealAws.mSoilTemp10cm.sReal;
-  mHourAws.mSoilTemp10cm.sReal = mRealAws.mSoilTemp10cm.sReal;
-  mHourAws.mSoilTemp10cm.sMin = mRealAws.mSoilTemp10cm.sReal;  // 1시간 최대 최소 값 초기화
-  mHourAws.mSoilTemp10cm.sMax = mRealAws.mSoilTemp10cm.sReal;
-
-  mRealAws.mSoilTemp20cm.sMin = 9999;  // 일일 최대 최소 값 초기화
+  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
+  {
+    pSystem->mSoil10Buf[i].sMin = 9999;
+    pSystem->mSoil10Buf[i].sMax = 0;
+  }
+  // 지중온도 20cm
+  mRealAws.mSoilTemp20cm.sMin = 9999;  // 일 최대 최소 값 초기화
   mRealAws.mSoilTemp20cm.sMax = 0;
-  mMinAws.mSoilTemp20cm.sReal = mRealAws.mSoilTemp20cm.sReal;
-  mMinAws.mSoilTemp20cm.sMin = mRealAws.mSoilTemp20cm.sReal;  // 1분 최대 최소 값 초기화
-  mMinAws.mSoilTemp20cm.sMax = mRealAws.mSoilTemp20cm.sReal;
-  m10MinAws.mSoilTemp20cm.sReal = mRealAws.mSoilTemp20cm.sReal;
-  m10MinAws.mSoilTemp20cm.sMin = mRealAws.mSoilTemp20cm.sReal;  // 10분 최대 최소 값 초기화
-  m10MinAws.mSoilTemp20cm.sMax = mRealAws.mSoilTemp20cm.sReal;
-  mHourAws.mSoilTemp20cm.sReal = mRealAws.mSoilTemp20cm.sReal;
-  mHourAws.mSoilTemp20cm.sMin = mRealAws.mSoilTemp20cm.sReal;  // 1시간 최대 최소 값 초기화
-  mHourAws.mSoilTemp20cm.sMax = mRealAws.mSoilTemp20cm.sReal;
 
-  mRealAws.mSoilTemp30cm.sMin = 9999;  // 일일 최대 최소 값 초기화
+  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
+  {
+    pSystem->mSoil20Buf[i].sMin = 9999;
+    pSystem->mSoil20Buf[i].sMax = 0;
+  }
+
+  // 지중온도 30cm
+  mRealAws.mSoilTemp30cm.sMin = 9999;  // 일 최대 최소 값 초기화
   mRealAws.mSoilTemp30cm.sMax = 0;
-  mMinAws.mSoilTemp30cm.sReal = mRealAws.mSoilTemp30cm.sReal;
-  mMinAws.mSoilTemp30cm.sMin = mRealAws.mSoilTemp30cm.sReal;  // 1분 최대 최소 값 초기화
-  mMinAws.mSoilTemp30cm.sMax = mRealAws.mSoilTemp30cm.sReal;
-  m10MinAws.mSoilTemp30cm.sReal = mRealAws.mSoilTemp30cm.sReal;
-  m10MinAws.mSoilTemp30cm.sMin = mRealAws.mSoilTemp30cm.sReal;  // 10분 최대 최소 값 초기화
-  m10MinAws.mSoilTemp30cm.sMax = mRealAws.mSoilTemp30cm.sReal;
-  mHourAws.mSoilTemp30cm.sReal = mRealAws.mSoilTemp30cm.sReal;
-  mHourAws.mSoilTemp30cm.sMin = mRealAws.mSoilTemp30cm.sReal;  // 1시간 최대 최소 값 초기화
-  mHourAws.mSoilTemp30cm.sMax = mRealAws.mSoilTemp30cm.sReal;
 
-  mRealAws.mSoilTemp50cm.sMin = 9999;  // 일일 최대 최소 값 초기화
+  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
+  {
+    pSystem->mSoil30Buf[i].sMin = 9999;
+    pSystem->mSoil30Buf[i].sMax = 0;
+  }
+
+  // 지중온도 50cm
+  mRealAws.mSoilTemp50cm.sMin = 9999;  // 일 최대 최소 값 초기화
   mRealAws.mSoilTemp50cm.sMax = 0;
-  mMinAws.mSoilTemp50cm.sReal = mRealAws.mSoilTemp50cm.sReal;
-  mMinAws.mSoilTemp50cm.sMin = mRealAws.mSoilTemp50cm.sReal;  // 1분 최대 최소 값 초기화
-  mMinAws.mSoilTemp50cm.sMax = mRealAws.mSoilTemp50cm.sReal;
-  m10MinAws.mSoilTemp50cm.sReal = mRealAws.mSoilTemp50cm.sReal;
-  m10MinAws.mSoilTemp50cm.sMin = mRealAws.mSoilTemp50cm.sReal;  // 10분 최대 최소 값 초기화
-  m10MinAws.mSoilTemp50cm.sMax = mRealAws.mSoilTemp50cm.sReal;
-  mHourAws.mSoilTemp50cm.sReal = mRealAws.mSoilTemp50cm.sReal;
-  mHourAws.mSoilTemp50cm.sMin = mRealAws.mSoilTemp50cm.sReal;  // 1시간 최대 최소 값 초기화
-  mHourAws.mSoilTemp50cm.sMax = mRealAws.mSoilTemp50cm.sReal;
 
-  mRealAws.mSoilTemp1_0m.sMin = 9999;  // 일일 최대 최소 값 초기화
+  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
+  {
+    pSystem->mSoil50Buf[i].sMin = 9999;
+    pSystem->mSoil50Buf[i].sMax = 0;
+  }
+
+  // 지중온도 100cm
+  mRealAws.mSoilTemp1_0m.sMin = 9999;  // 일 최대 최소 값 초기화
   mRealAws.mSoilTemp1_0m.sMax = 0;
-  mMinAws.mSoilTemp1_0m.sReal = mRealAws.mSoilTemp1_0m.sReal;
-  mMinAws.mSoilTemp1_0m.sMin = mRealAws.mSoilTemp1_0m.sReal;  // 1분 최대 최소 값 초기화
-  mMinAws.mSoilTemp1_0m.sMax = mRealAws.mSoilTemp1_0m.sReal;
-  m10MinAws.mSoilTemp1_0m.sReal = mRealAws.mSoilTemp1_0m.sReal;
-  m10MinAws.mSoilTemp1_0m.sMin = mRealAws.mSoilTemp1_0m.sReal;  // 10분 최대 최소 값 초기화
-  m10MinAws.mSoilTemp1_0m.sMax = mRealAws.mSoilTemp1_0m.sReal;
-  mHourAws.mSoilTemp1_0m.sReal = mRealAws.mSoilTemp1_0m.sReal;
-  mHourAws.mSoilTemp1_0m.sMin = mRealAws.mSoilTemp1_0m.sReal;  // 1시간 최대 최소 값 초기화
-  mHourAws.mSoilTemp1_0m.sMax = mRealAws.mSoilTemp1_0m.sReal;
 
-  mRealAws.mSoilTemp1_5m.sMin = 9999;  // 일일 최대 최소 값 초기화
+  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
+  {
+    pSystem->mSoil100Buf[i].sMin = 9999;
+    pSystem->mSoil100Buf[i].sMax = 0;
+  }
+
+    // 지중온도 1.5m
+  mRealAws.mSoilTemp1_5m.sMin = 9999;  // 일 최대 최소 값 초기화
   mRealAws.mSoilTemp1_5m.sMax = 0;
-  mMinAws.mSoilTemp1_5m.sReal = mRealAws.mSoilTemp1_5m.sReal;
-  mMinAws.mSoilTemp1_5m.sMin = mRealAws.mSoilTemp1_5m.sReal;  // 1분 최대 최소 값 초기화
-  mMinAws.mSoilTemp1_5m.sMax = mRealAws.mSoilTemp1_5m.sReal;
-  m10MinAws.mSoilTemp1_5m.sReal = mRealAws.mSoilTemp1_5m.sReal;
-  m10MinAws.mSoilTemp1_5m.sMin = mRealAws.mSoilTemp1_5m.sReal;  // 10분 최대 최소 값 초기화
-  m10MinAws.mSoilTemp1_5m.sMax = mRealAws.mSoilTemp1_5m.sReal;
-  mHourAws.mSoilTemp1_5m.sReal = mRealAws.mSoilTemp1_5m.sReal;
-  mHourAws.mSoilTemp1_5m.sMin = mRealAws.mSoilTemp1_5m.sReal;  // 1시간 최대 최소 값 초기화
-  mHourAws.mSoilTemp1_5m.sMax = mRealAws.mSoilTemp1_5m.sReal;
+
+  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
+  {
+    pSystem->mSoil150Buf[i].sMin = 9999;
+    pSystem->mSoil150Buf[i].sMax = 0;
+  }
 
   pSystem->m_cOffDelayFlag = 0;  // Rain Detecter 의 현재를  Off상태로 만든다
   mRealAws.mRainDetect.sReal = 0;
@@ -972,30 +926,39 @@ void DayProcess(void)
 
   pSystem = &Sysinfo;
 
-  mRealAws.mWind.mDirection.sMax = 0;
-  mRealAws.mWind.mSpeed.sMax = 0;
+  mRealAws.mWind.mDirection.sMax = 0; //일 최대 풍향 초기화
+  mRealAws.mWind.mSpeed.sMax = 0;    //일 최대 풍속 초기화
 
-  mRealAws.mTemperature.sMin = mRealAws.mTemperature.sReal;
-  mRealAws.mBarometric.sMin = mRealAws.mBarometric.sReal;
-  mRealAws.mHumidity.sMin = mRealAws.mHumidity.sReal;
+  mRealAws.mTemperature.sMin = mRealAws.mTemperature.sReal;//일 최저 기온 초기화
+  mRealAws.mTemperature.sMax = 0;
 
-  mRealAws.mSoilTemp5cm.sMin = mRealAws.mSoilTemp5cm.sReal;
-  mRealAws.mSoilTemp10cm.sMin = mRealAws.mSoilTemp10cm.sReal;
-  mRealAws.mSoilTemp20cm.sMin = mRealAws.mSoilTemp20cm.sReal;
-  mRealAws.mSoilTemp30cm.sMin = mRealAws.mSoilTemp30cm.sReal;
-  mRealAws.mSoilTemp50cm.sMin = mRealAws.mSoilTemp50cm.sReal;
-  mRealAws.mSoilTemp1_0m.sMin = mRealAws.mSoilTemp1_0m.sReal;
-  mRealAws.mSoilTemp1_5m.sMin = mRealAws.mSoilTemp1_5m.sReal;
+  mRealAws.mBarometric.sMin = 9999; //일 최저 기압 초기화
+  mRealAws.mBarometric.sMax = 0;
 
-  mRealAws.mTemperature.sMax = mRealAws.mTemperature.sReal;
-  mRealAws.mBarometric.sMax = mRealAws.mBarometric.sReal;
-  mRealAws.mHumidity.sMax = mRealAws.mHumidity.sReal;
+  mRealAws.mHumidity.sMin = 9999;  // 일 최저 습도 초기화
+  mRealAws.mHumidity.sMax = 0;
 
-  mRealAws.mSoilTemp5cm.sMax = mRealAws.mSoilTemp5cm.sReal;
-  mRealAws.mSoilTemp10cm.sMax = mRealAws.mSoilTemp10cm.sReal;
-  mRealAws.mSoilTemp20cm.sMax = mRealAws.mSoilTemp20cm.sReal;
-  mRealAws.mSoilTemp30cm.sMax = mRealAws.mSoilTemp30cm.sReal;
+  mRealAws.mSoilTemp5cm.sMin  = 9999;  // 일 최저 지중 온도 5cm
+  mRealAws.mSoilTemp5cm.sMax = 0;
 
+  mRealAws.mSoilTemp10cm.sMin = 9999;  // 일 최저 지중 온도 10cm
+  mRealAws.mSoilTemp10cm.sMax = 0;
+
+  mRealAws.mSoilTemp20cm.sMin = 9999;  // 일 최저 지중 온도 20cm
+  mRealAws.mSoilTemp20cm.sMax = 0;
+
+  mRealAws.mSoilTemp30cm.sMin = 9999;  // 일 최저 지중 온도 30cm
+  mRealAws.mSoilTemp30cm.sMax = 0;
+
+  mRealAws.mSoilTemp50cm.sMin = 9999;  // 일 최저 지중 온도 50cm
+  mRealAws.mSoilTemp50cm.sMax = 0;
+
+  mRealAws.mSoilTemp1_0m.sMin = 9999;  // 일 최저 지중 온도 1m
+  mRealAws.mSoilTemp1_0m.sMax = 0;
+
+  mRealAws.mSoilTemp1_5m.sMin = 9999;  // 일 최저 지중 온도 1.5cm
+  mRealAws.mSoilTemp1_5m.sMax = 0;
+  
   mRealAws.mSunshine.sMax = 0;  // 하루 총 일조
   mMinAws.mSunshine.sMax = 0;   // 하루 총 일조
   mMinAws.mSolarRad.sMax = 0;   // 하루 총 일사
@@ -1144,6 +1107,12 @@ float UVToSpeed(float u_tmp, float v_tmp)
 }
 
 
+uint8_t g_1min_data_updated=0;
+
+uint8_t check_1min_data_updated(void)
+{
+  return g_1min_data_updated;
+}
 
 void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
 {
@@ -1160,7 +1129,7 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
     { /* 분이 바귈때 처리						*/
       MinProcess(pDate);
       update_kma_data(eAWS_DATA_1MIN);
-
+      g_1min_data_updated = 1;
       pOldDate->Min = pDate->Min;
       if (pDate->Min % 10 == 0)
       {  // 매 10분 마다 처리
@@ -1296,7 +1265,7 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->precipitation.data = pAws->mRainFall.sReal;
   p_kma_data->precipitation.max = pAws->mRainFall.sMax;    // 시간당 강수량량
   p_kma_data->precipitation.min = pAws->mRainFall.sMin;    // 월간 강수량
-  p_kma_data->precipitation.spec = pAws->mRainFall.sSpec;  // 연간 강수량
+  p_kma_data->precipitation.year = pAws->mRainFall.sSpec;  // 연간 강수량
 
   p_kma_data->precipitation_presence.data = pAws->mRainDetect.sReal;  // 우량 감지
 
