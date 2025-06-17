@@ -80,9 +80,10 @@ int32_t save_log(const char *log)
     return err;
 }
 
-void logging_read_log(uint32_t log_q_cnt, loggingMsg_t *loggingMsg)
+int logging_read_log(uint32_t log_q_cnt, sysLog_t *loggingMsg)
 {
   int zeroCnt=0;
+  FRESULT fret = (FRESULT)-1;
 
   uint32_t totalBytes;
 
@@ -90,7 +91,7 @@ void logging_read_log(uint32_t log_q_cnt, loggingMsg_t *loggingMsg)
 
   totalBytes = (log_q_cnt - 1) * LOG_LEN_MAX;
 
-  read_file((char *)kSystem_log_path,(uint8_t *)loggingMsg->msg,sizeof(loggingMsg->msg),totalBytes);
+  fret = read_file((char *)kSystem_log_path,(uint8_t *)loggingMsg->msg,sizeof(loggingMsg->msg),totalBytes);
 
   for(int i = 0 ; i < sizeof(loggingMsg->msg);i++)
   {
@@ -115,6 +116,8 @@ void logging_read_log(uint32_t log_q_cnt, loggingMsg_t *loggingMsg)
   }
   
   osSemaphoreRelease(g_loggingSem); 
+  
+  return fret;
 }
 
 

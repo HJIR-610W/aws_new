@@ -160,7 +160,7 @@ int32_t menu_developer_sensor_config(void)
 int32_t menu_developer_logging(void)
 {
   int32_t startCnt, endCnt;
-  loggingMsg_t log;
+  sysLog_t log;
   int32_t cnt;
   //int32_t year, month, day, hour, min, sec;
 

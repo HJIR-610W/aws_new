@@ -32,5 +32,5 @@ const char *get_mfg_name(void);
 
 uint32_t get_appPCB(void);
 uint32_t get_appAREA(void);
-
+uint32_t get_app_build_timestamp(void);
 #endif

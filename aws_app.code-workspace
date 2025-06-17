@@ -154,7 +154,8 @@
 			"hj_huminity.h": "c",
 			"xmemory0": "c",
 			"xstddef": "c",
-			"tcp_define.h": "c"
+			"tcp_define.h": "c",
+			"iosfwd": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

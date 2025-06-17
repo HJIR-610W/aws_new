@@ -74,9 +74,9 @@ uint16_t swap_uint16(uint16_t value);
 
 uint16_t  GetWord(uint8_t* lpBuff);
 void    SetWord(uint8_t *lpBuff, uint16_t shVal);		// Big Endiand으로 취함
+void SetU32(uint8_t* lpBuff, uint32_t lVal);
 
-
-uint32_t parse_args2(char* str, char* argv[], uint32_t argvCnt);
+    uint32_t parse_args2(char* str, char* argv[], uint32_t argvCnt);
 char * h_findnum(char *buff);
 uint32_t parse_args(char* str, char* argv[],uint32_t argvCnt);
 bool isDigit(uint8_t d);

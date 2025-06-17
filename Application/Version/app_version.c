@@ -27,7 +27,7 @@ __root const section_info_t g_kappInfo = {.signature ={'A','P','P',' '},\
                                        .nick_code =NICK_NEW_ASW_HJ,\
                                        .offset = 0x08010000,\
                                        .section_ver = APP_VERSION,\
-                                       .time = 1748224091,\
+                                       .time = 1750148505,\
                                        .pcb_n =1,
                                        .pcb[0]=0x01000000};
 
@@ -87,8 +87,18 @@ void get_app_build(DATE_TIME_BUF *build)
 {
     uint32_t data;
 
-    data = g_kappInfo.time+TIME_ZONE_SOULE;
+    data = g_kappInfo.time;
     time_cvt_secTotime(data,build);
+}
+
+uint32_t get_app_build_timestamp(void)
+{
+  uint32_t data;
+
+  data = g_kappInfo.time ;
+
+  return data;
+ 
 }
 
 uint32_t get_appPCB(void)

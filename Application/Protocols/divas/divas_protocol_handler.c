@@ -12,6 +12,8 @@
 #include "util_time.h"
 #include "system_err.h"
 #include "task_logging.h"
+#include "app_logging.h"
+#include "app_version.h"
 typedef struct
 {
   uint8_t STX;
@@ -31,13 +33,15 @@ typedef struct
 #define DIVAS_FRAME_OFFSET(field) ((size_t)&(((divas_frame_t *)0)->field))
 
 //디바스 명령어 정의
-#define DIVAS_CMD_RD_VERSION 0x06
+#define DIVAS_CMD_RD_INDEX 0x01
+#define DIVAS_CMD_RD_VERSION 0x15
 #define DIVAS_CMD_RD_CFG_OFS 0x29
 #define DIVAS_CMD_WR_CFG_OFS 0x2A
 #define DIVAS_CMD_FW_DOWNLOAD 0x63
 #define DIVAS_CMD_FW_UPDATE 0x64
 #define DIVAS_CMD_RD_SYSTEM 0x06
 #define DIVAS_CMD_RESET     0x74
+#define DIVAS_CMD_RD_SYSLOG 0x07
 
 //응답 프레임 에러 여부
 #define ASCII_ACK 0x06
@@ -457,8 +461,92 @@ uint16_t divas_cmd_reset(uint8_t *rx_frame, uint8_t *tx_frame)
 
    log_printf(L_INFO, "MODEM SW RESET");
    reset_system_delay(5);
-   return make_divas_frame(DIVAS_CMD_RD_SYSTEM, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+   return make_divas_frame(DIVAS_CMD_RESET, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
 }
+
+uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame)
+{
+  uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
+  uint8_t *rx_data = &rx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
+  uint16_t cnt = 0;
+
+#pragma pack(push, 1)
+  struct read_config_offset_s
+  {
+    uint16_t q_start;
+    uint16_t cnt;
+  } request;
+#pragma pack(pop)
+  int status;
+  memcpy(&request, &rx_data[0], sizeof(request));
+
+  do
+  {
+  
+      if (request.cnt * sizeof(sysLog_t) >= (KMA_TX_BUFFER_SIZE - DIVAS_FRAME_OVERHEAD - 1))
+      {
+        cnt = 0;
+        tx_data[cnt] = ASCII_NAK;
+        tx_data[cnt] = (uint8_t)-100;
+        break;
+      }
+    for (int i = 0; i < request.cnt; i++)
+    {
+      status = logging_read_log(request.q_start + i, (sysLog_t*)&tx_data[i * sizeof(sysLog_t)]);
+      if (status != 0)
+      {
+        cnt = 0;
+        tx_data[cnt] = ASCII_NAK;
+        tx_data[cnt] = status;
+        break;
+      }
+      cnt += sizeof(sizeof(sysLog_t));
+    }
+  }while(0);
+
+  return make_divas_frame(DIVAS_CMD_RD_SYSLOG, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+}
+
+uint16_t divas_read_version(uint8_t *rx_frame, uint8_t *tx_frame)
+{
+  uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
+
+  uint16_t cnt = 0;
+
+
+  SetU32(&tx_data[cnt], get_app_version(NULL, NULL, NULL, NULL));
+  cnt +=4;
+  SetU32(&tx_data[cnt], get_appPCB());
+  cnt += 4;
+  SetU32(&tx_data[cnt], get_appNick());
+  cnt += 4;
+  SetU32(&tx_data[cnt], get_appAREA());
+  cnt += 4;
+   SetU32(&tx_data[cnt], get_app_build_timestamp());
+  cnt += 4;
+
+  return make_divas_frame(DIVAS_CMD_RD_VERSION, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+}
+
+#define CONNET_TYPE_AWS 100
+uint16_t divas_read_index(uint8_t *rx_frame, uint8_t *tx_frame)
+{
+  uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
+  uint16_t cnt = 0;
+  uint16_t id;
+
+
+  tx_data[cnt++] = CONNET_TYPE_AWS;
+  id = get_config_app()->id;
+  memcpy(&tx_data[cnt],&id,2);
+  
+  cnt += 2;
+  SetU32(&tx_data[cnt], 0);
+  cnt+=4;
+
+  return make_divas_frame(DIVAS_CMD_RD_INDEX, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+}
+
 
 uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len, uint8_t *tx_frame)
 {
@@ -488,6 +576,15 @@ uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len, uint8_t *tx_frame
       break;
     case DIVAS_CMD_RESET:
       len = divas_cmd_reset(rx_frame, tx_frame);
+      break;
+    case DIVAS_CMD_RD_SYSLOG:
+      len = divas_read_log(rx_frame,tx_frame);
+    break;
+    case DIVAS_CMD_RD_VERSION:
+      len = divas_read_version(rx_frame, tx_frame);
+    break;
+    case DIVAS_CMD_RD_INDEX:
+      len = divas_read_index(rx_frame,tx_frame);
       break;
   }
 

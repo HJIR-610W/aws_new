@@ -67,7 +67,13 @@ void    SetWord(uint8_t *lpBuff, uint16_t shVal)		// Big Endiand으로 취함
     lpBuff[1] = (uint8_t)shVal;
 }
 
+void SetU32(uint8_t* lpBuff, uint32_t lVal)
+{
+  uint8_t* lpTemp;
 
+  lpTemp = (uint8_t*)&lVal;
+  memcpy(lpBuff, lpTemp, 4);
+}
 
 uint32_t parse_args2(char* str, char* argv[], uint32_t argvCnt)
 {
