@@ -1087,7 +1087,7 @@
                     <item>hjsnow_cfg</item>
                     <item>map</item>
                     <item>regCnt</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

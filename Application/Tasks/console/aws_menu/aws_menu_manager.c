@@ -273,7 +273,7 @@ int32_t menu_manage_config_backup()
   {
     status = choice_menu(AWS_MANAGER_MENU_WITDH, "설정 백업/복구", menu, _countof(menu), &choice);
     if (status != MENU_OK)
-      break; status;
+      break; 
 
     switch (choice)
     {

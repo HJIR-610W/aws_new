@@ -10,7 +10,7 @@
 #include "task_cellular.h"
 #include "util_memory.h"
 #include "old_aws_sms.h"
-
+#include "system_err.h"
 typedef enum
 {
   eSMS_CMD_RESET = 1,
@@ -61,6 +61,15 @@ void SMS_Read_Info(sms_t *sms)
   len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "PCB:%d,MFG:%s,AREA:%d,BUILD:%d,",
                   get_bootPCB(), mfgName, get_appAREA(), bufild_time);
   len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "ID:%d ", get_config_app()->id);
+
+  _iCellular->send_sms(sms->num, sms->msg);
+}
+
+void SMS_Reset(sms_t *sms)
+{
+
+  reset_system_delay(5);
+  snprintf(&sms->msg[0], sizeof(sms->msg) ,"%s","장비가 리셋됩니다");
 
   _iCellular->send_sms(sms->num, sms->msg);
 }
@@ -185,7 +194,10 @@ void sms_cmd(sms_t *sms)
 	{
 		switch(sms->msg[2])
 		{
-			case eSMS_CMD_Info:
+      case eSMS_CMD_RESET:
+        SMS_Reset(sms);
+        break;
+      case eSMS_CMD_Info:
 				SMS_Read_Info(sms);
 				break;
       case eSMS_CMD_RECONNECT_TCP:

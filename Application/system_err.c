@@ -78,3 +78,35 @@ void error_print(const char *pFmt, ...)
   va_end(args);
 }
 
+static osTimerId_t s_reset_timer_id;
+
+
+// 타이머 콜백 함수
+void rtu_reset_callback(void *argument)
+{
+  HAL_NVIC_SystemReset();
+}
+
+void reset_system_delay(uint32_t delay_seconds)
+{
+  // 타이머 속성 설정
+  osTimerAttr_t timer_attr = {.name = "DelayTimer", .attr_bits = 0, .cb_mem = NULL, .cb_size = 0};
+
+  // 원샷 타이머 생성 (한 번만 실행)
+  s_reset_timer_id = osTimerNew(rtu_reset_callback, osTimerOnce, NULL, &timer_attr);
+
+  if (s_reset_timer_id != NULL)
+  {
+    // 타이머 시작 (delay_seconds를 틱 단위로 변환)
+    osStatus_t status = osTimerStart(s_reset_timer_id, delay_seconds * osKernelGetTickFreq());
+
+    if (status != osOK)
+    {
+      task_printf("타이머 시작 실패\n");
+    }
+  }
+  else
+  {
+    task_printf("타이머 생성 실패\n");
+  }
+}

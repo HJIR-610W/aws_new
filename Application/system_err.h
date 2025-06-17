@@ -20,5 +20,5 @@ void Error_Handler(const char *file,int32_t line);
 void reset_system(const char * pFmt, ...);
 bool restore_error(char *p_out, int32_t out_size);
 void error_print(const char *pFmt, ...);
-
+void reset_system_delay(uint32_t delay_seconds);
 #endif

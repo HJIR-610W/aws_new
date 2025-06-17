@@ -11,6 +11,7 @@
 #include "dev_io.h"
 #include "hj_product_list.h"
 #include "app_version.h"
+#include "system_err.h"
 #pragma location = 0x20000000
 __no_init volatile uint32_t SystemMagicValue;
 
@@ -41,6 +42,7 @@ bool get_firmware_update(void)
 
 void set_firmware_update(void)
 {
+  
   g_firmware_update_required=true;
 }
 
