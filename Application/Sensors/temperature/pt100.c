@@ -77,6 +77,7 @@ typedef struct pt100_cfg_s
 
 #define NEW_AWS_METHOD
 
+#define PT100_ADC_AVG_CNT 1
 /**
  * @brief 온도 단위 도 12.56도
  */
@@ -103,7 +104,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
 
   if (cfg->channel == PT100_A)
   {
-    voltage = adc_read_single_avg(adc_ch, err, 5);
+    voltage = adc_read_single_avg(adc_ch, err, PT100_ADC_AVG_CNT);
     resistance = voltage;  // 이채널은은 하드웨어 설계 특성상 저항이됨,관련 자료 참고
     temperature = pt100_resistance_to_temperature(resistance);
     return temperature;
@@ -111,7 +112,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
 
   if (cfg->channel == PT100_B)
   {
-    voltage = adc_read_single_avg(adc_ch, err, 5);
+    voltage = adc_read_single_avg(adc_ch, err, PT100_ADC_AVG_CNT);
     resistance = voltage;  // 이채널은은 하드웨어 설계 특성상 저항이됨,관련 자료 참고
     temperature = pt100_resistance_to_temperature(resistance);
     return temperature;
@@ -221,6 +222,7 @@ void *pt100_open(uint8_t num,void *opt)
   {
     return &pt100_driver;
   }
+  pt100_driver[num].opened = true;
   pt100_cfg[num].channel = num;
 
   pt100_driver[num].cfg = &pt100_cfg[num];

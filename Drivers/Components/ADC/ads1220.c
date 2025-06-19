@@ -1,20 +1,20 @@
 
-#include "cmsis_os2.h"
-
-#include "ads1220_reg.h"
 #include "ads1220.h"
-#include "driver_adc_define.h"
-#include "driver_adc.h"
-#include "driver_do.h"
-#include "driver_spi.h"
-#include "driver_di.h"
-#include "driver_mux.h"
-#include "usDelay.h"
-#include "mcu_interrupt.h"
-#include "util_memory.h"
 
 #include "adc_calibration.h"
+#include "ads1220_reg.h"
+#include "cmsis_os2.h"
+#include "dev_io.h"
+#include "driver_adc.h"
+#include "driver_adc_define.h"
+#include "driver_di.h"
+#include "driver_do.h"
+#include "driver_mux.h"
+#include "driver_spi.h"
+#include "mcu_interrupt.h"
 #include "os_user_def.h"
+#include "usDelay.h"
+#include "util_memory.h"
 
 typedef struct ads1220_cfg_s
 {
@@ -26,7 +26,314 @@ typedef struct ads1220_cfg_s
   uint8_t singleChCnt;
 }ads1220_cfg_t;
 
+
+
+void read_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff);
+
+
 osSemaphoreId_t g_dataReadySem=NULL;
+
+void parse_ads1220_register(driver_t *drv)
+{
+  uint8_t reg;
+
+  io_printf("\r\n==== ADS1220 레지스터 설정값==== \r\n");
+  // Register 0: MUX[7:4], GAIN[3:1], PGA_BYPASS[0]
+  read_reg(drv, ADS1220_REG_0, 1, &reg);
+  io_printf("REG0 (0x%02X): 0x%02X\r\n", ADS1220_REG_0, reg);
+
+  io_printf("  MUX       [7:4]: ");
+  switch ((reg >> 4) & 0x0F)
+  {
+    case 0x0:
+      io_printf("0000 - AIN0 - AIN1 (기본값)");
+      break;
+    case 0x1:
+      io_printf("0001 - AIN0 - AIN2");
+      break;
+    case 0x2:
+      io_printf("0010 - AIN0 - AIN3");
+      break;
+    case 0x3:
+      io_printf("0011 - AIN1 - AIN2");
+      break;
+    case 0x4:
+      io_printf("0100 - AIN1 - AIN3");
+      break;
+    case 0x5:
+      io_printf("0101 - AIN2 - AIN3");
+      break;
+    case 0x6:
+      io_printf("0110 - AIN1 - AIN0");
+      break;
+    case 0x7:
+      io_printf("0111 - AIN3 - AIN2");
+      break;
+    case 0x8:
+      io_printf("1000 - AIN0 - AVSS");
+      break;
+    case 0x9:
+      io_printf("1001 - AIN1 - AVSS");
+      break;
+    case 0xA:
+      io_printf("1010 - AIN2 - AVSS");
+      break;
+    case 0xB:
+      io_printf("1011 - AIN3 - AVSS");
+      break;
+    case 0xC:
+      io_printf("1100 - REFP0 - REFN0");
+      break;
+    case 0xD:
+      io_printf("1101 - AVDD - AVSS (모니터)");
+      break;
+    case 0xE:
+      io_printf("1110 - AINP - AINN shorted");
+      break;
+    case 0xF:
+      io_printf("1111 - Reserved");
+      break;
+  }
+  io_printf("        // 입력 다중 선택\r\n");
+
+  io_printf("  GAIN      [3:1]: ");
+  switch ((reg >> 1) & 0x07)
+  {
+    case 0:
+      io_printf("000 - Gain = 1 (기본값)");
+      break;
+    case 1:
+      io_printf("001 - Gain = 2");
+      break;
+    case 2:
+      io_printf("010 - Gain = 4");
+      break;
+    case 3:
+      io_printf("011 - Gain = 8");
+      break;
+    case 4:
+      io_printf("100 - Gain = 16");
+      break;
+    case 5:
+      io_printf("101 - Gain = 32");
+      break;
+    case 6:
+      io_printf("110 - Gain = 64");
+      break;
+    case 7:
+      io_printf("111 - Gain = 128");
+      break;
+  }
+  io_printf("              // PGA 이득 설정\r\n");
+
+  io_printf("  PGA Bypass[0]  : %s             // 내부 저잡음 PGA 우회 여부\r\n",
+            (reg & 0x01) ? "1 - 우회함 (Bypassed)" : "0 - 사용함 (Enabled)");
+
+  // Register 1: DR[7:5], MODE[4:3], CM[2], TS[1], BCS[0]
+  read_reg(drv, ADS1220_REG_1, 1, &reg);
+  io_printf("REG1 (0x%02X): 0x%02X\r\n", ADS1220_REG_1, reg);
+
+  io_printf("  Data rate [7:5]: ");
+  switch ((reg >> 5) & 0x07)
+  {
+    case 0:
+      io_printf("000 - 20 SPS (Normal)\r\n");
+      break;
+    case 1:
+      io_printf("001 - 45 SPS (Normal)\r\n");
+      break;
+    case 2:
+      io_printf("010 - 90 SPS (Normal)\r\n");
+      break;
+    case 3:
+      io_printf("011 - 175 SPS (Normal)\r\n");
+      break;
+    case 4:
+      io_printf("100 - 330 SPS (Normal)\r\n");
+      break;
+    case 5:
+      io_printf("101 - 600 SPS (Normal)\r\n");
+      break;
+    case 6:
+      io_printf("110 - 1000 SPS (Normal)\r\n");
+      break;
+    case 7:
+      io_printf("111 - Reserved\r\n");
+      break;
+  }
+  io_printf("                        // 출력 샘플링 속도 설정\r\n");
+
+  io_printf("  Mode      [4:3]: ");
+  switch ((reg >> 3) & 0x03)
+  {
+    case 0:
+      io_printf("00 - Normal mode\r\n");
+      break;
+    case 1:
+      io_printf("01 - Duty-cycle mode\r\n");
+      break;
+    case 2:
+      io_printf("10 - Turbo mode\r\n");
+      break;
+    case 3:
+      io_printf("11 - Reserved\r\n");
+      break;
+  }
+  io_printf("                        // 변환 클럭 동작 모드 설정\r\n");
+
+  io_printf("  CM        [2]  : %s                // 공통 모드 제거 기능\r\n",
+            (reg & 0x04) ? "1 - Enabled" : "0 - Disabled");
+  io_printf("  Temp Sensor[1] : %s              // 내부 온도 센서 사용\r\n",
+            (reg & 0x02) ? "1 - Enabled" : "0 - Disabled");
+  io_printf("  Burn-out  [0]  : %s                // 10uA 번아웃 전류 소스\r\n",
+            (reg & 0x01) ? "1 - On" : "0 - Off (기본값)");
+
+  // Register 2: VREF[7:6], 50/60[5:4], PSW[3], IDAC[2:0]
+  read_reg(drv, ADS1220_REG_2, 1, &reg);
+  io_printf("REG2 (0x%02X): 0x%02X\r\n", ADS1220_REG_2, reg);
+
+  io_printf("  VREF      [7:6]: ");
+  switch ((reg >> 6) & 0x03)
+  {
+    case 0:
+      io_printf("00 - Internal 2.048V (기본값)");
+      break;
+    case 1:
+      io_printf("01 - External REF0 사용");
+      break;
+    case 2:
+      io_printf("10 - AIN0/REFP1, AIN3/REFN1");
+      break;
+    case 3:
+      io_printf("11 - AVDD - AVSS 사용");
+      break;
+  }
+  io_printf("        // 기준 전압 선택\r\n");
+
+  io_printf("  50/60Hz Rej[5:4]: ");
+  switch ((reg >> 4) & 0x03)
+  {
+    case 0:
+      io_printf("00 - 필터 비활성화(기본값)");
+      break;
+    case 1:
+      io_printf("01 - 50Hz & 60Hz 동시 제거");
+      break;
+    case 2:
+      io_printf("10 - 50Hz 제거만");
+      break;
+    case 3:
+      io_printf("11 - 60Hz 제거만");
+      break;
+  }
+  io_printf("    // FIR 필터 구성\r\n");
+
+  io_printf("  PSW       [3]  : %s           // Low-side 스위치 동작 설정\r\n",
+            (reg & 0x08) ? "1 - 자동 동작" : "0 - 항상 열림(기본값)");
+
+  io_printf("  IDAC Curr[2:0]: ");
+  switch (reg & 0x07)
+  {
+    case 0:
+      io_printf("000 - Off (기본값)");
+      break;
+    case 1:
+      io_printf("001 - 10 uA");
+      break;
+    case 2:
+      io_printf("010 - 50 uA");
+      break;
+    case 3:
+      io_printf("011 - 100 uA");
+      break;
+    case 4:
+      io_printf("100 - 250 uA");
+      break;
+    case 5:
+      io_printf("101 - 500 uA");
+      break;
+    case 6:
+      io_printf("110 - 1000 uA");
+      break;
+    case 7:
+      io_printf("111 - 1500 uA");
+      break;
+  }
+  io_printf("           // IDAC1 및 IDAC2 전류 설정\r\n");
+
+  // Register 3: IDAC1[7:5], IDAC2[4:2], GPIO_DIR[1], GPIO_DAT[0]
+  read_reg(drv, ADS1220_REG_3, 1, &reg);
+  // Register 3: I1MUX[7:5], I2MUX[4:2], DRDYM[1], Reserved[0]
+  read_reg(drv, ADS1220_REG_3, 1, &reg);
+  io_printf("REG3 (0x%02X): 0x%02X\r\n", ADS1220_REG_3, reg);
+
+  io_printf("  IDAC1 MUX [7:5]: ");
+  switch ((reg >> 5) & 0x07)
+  {
+    case 0:
+      io_printf("000 - Disabled (기본값)");
+      break;
+    case 1:
+      io_printf("001 - AIN0/REFP1");
+      break;
+    case 2:
+      io_printf("010 - AIN1");
+      break;
+    case 3:
+      io_printf("011 - AIN2");
+      break;
+    case 4:
+      io_printf("100 - AIN3/REFN1");
+      break;
+    case 5:
+      io_printf("101 - REFP0");
+      break;
+    case 6:
+      io_printf("110 - REFN0");
+      break;
+    case 7:
+      io_printf("111 - Reserved");
+      break;
+  }
+  io_printf("        // IDAC1 라우팅 채널 설정\r\n");
+
+  io_printf("  IDAC2 MUX [4:2]: ");
+  switch ((reg >> 2) & 0x07)
+  {
+    case 0:
+      io_printf("000 - Disabled (기본값)");
+      break;
+    case 1:
+      io_printf("001 - AIN0/REFP1");
+      break;
+    case 2:
+      io_printf("010 - AIN1");
+      break;
+    case 3:
+      io_printf("011 - AIN2");
+      break;
+    case 4:
+      io_printf("100 - AIN3/REFN1");
+      break;
+    case 5:
+      io_printf("101 - REFP0");
+      break;
+    case 6:
+      io_printf("110 - REFN0");
+      break;
+    case 7:
+      io_printf("111 - Reserved");
+      break;
+  }
+  io_printf("        // IDAC2 라우팅 채널 설정\r\n");
+
+  io_printf("  DRDY Mode  [1] : %s              // DRDY 핀 동작 방식\r\n",
+            (reg & 0x02) ? "1 - DOUT/DRDY와 DRDY 동시에 출력" : "0 - DRDY 전용 핀 사용 (기본값)");
+
+  io_printf("  Reserved   [0] : %d                    // 예약비트 (항상 0)\r\n", reg & 0x01);
+
+  io_printf("\r\n==========\r\n");
+}
 
 void write_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs,uint8_t *pData)
 {
@@ -212,8 +519,8 @@ int32_t ads1220_read_single_ch(driver_t *drv,int32_t ch,uint8_t *err)
 {
     int32_t data=0;
     
-    ads1220_set_singleChannel(drv,ch);
-    osDelay(2);
+
+
     data = ads1220_read_adc(drv,err);
      
     return data;
@@ -223,7 +530,7 @@ int32_t ads1220_read_diff_ch(driver_t *drv,int32_t ch,uint8_t *err)
 {
     int32_t data;
 
-    ads1220_set_diffChannel(drv,ch);
+
 
     data = ads1220_read_adc(drv,err);
      
@@ -258,25 +565,29 @@ void ads1210_init(driver_t *drv)
     }
 
     /*
-    7:4 MUX[3:0] AINp = AIN0, AINn = AIN1:0000b
-    3:1 GAIN[2:0] :000b
     gain 1,2,4는 PGA없이 사용가능해서 비활성 가능
     이때는 게인이 스위치드캐패시터구조로 얻어짐
     0 PGA_BYPASS:1b
     */
-    reg = 0x01;//PGA disable  
+
+    // ADS1220 Register 0 Configuration
+    // MUX[7:4] = 0000 - AIN0 - AIN1
+    // GAIN[3:1] = 000 - Gain 1
+    // PGA_BYPASS[0] = 0 - PGA Enabled (default)
+     reg = 0x00;
+ 
 
     write_reg(drv,ADS1220_REG_0, 1, &reg);  
 
     /*
-    7:5 DR   :011b 175sps      데이터 속도
+    7:5 DR   :000b 20sps      데이터 속도
     4:3 MODE :00b             동작 모드
       2 CM   :0b                단일 변환
       1 TS   :0b                온도센서 비활성
       0 BCS  :0b                10uA 전류 소스 비활성
     */
     reg = 0x00;
-    reg |= (0x03)<<5;
+    reg |= (0x00)<<5;
 
 
     write_reg(drv,ADS1220_REG_1, 1, &reg);
@@ -288,7 +599,7 @@ void ads1210_init(driver_t *drv)
     */
     reg =  (0x01)<<6;
     reg |= (0x01)<<3;
-    reg |= (0x01)<<4;
+    reg |= (0x00)<<4;
     write_reg(drv,ADS1220_REG_2, 1, &reg);
 
     /*
@@ -300,6 +611,7 @@ void ads1210_init(driver_t *drv)
     reg = 0x00;
     write_reg(drv,ADS1220_REG_3, 1, &reg);
 
+    parse_ads1220_register(drv);
 }
 
 
@@ -330,6 +642,8 @@ driver_t *ads1220_open(uint32_t num,void *pot)
     return &ads1220_driver;
   }
 
+  ads1220_driver.opened = true;
+
   ads1220_driver.name = "ADC_ADS1220";
 
   ads1220_cfg.spi_io = driver_spi_open(STM_SPI_2);
@@ -359,15 +673,15 @@ void ads1220_close(driver_t *drv)
   osSemaphoreRelease(drv->sem);  // 세마포어 해제
 }
 
+
+//논리 채널을 물리채널로 변환 해야 함
 const uint8_t user_adc_single_channel[18]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29,2,6};
 
 int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 {
-
-
   int32_t adc;
   int32_t sum=0;
-  uint8_t valid_cnt=0;
+  int32_t valid_cnt = 0;
 
   osSemaphoreAcquire(drv->sem, osWaitForever);
 
@@ -375,21 +689,22 @@ int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 
   adc_single_mux_set(channel);
 
-  for(int i = 0 ; i< avg; i++)
+  ads1220_set_singleChannel(drv, channel % 4);
+
+  osDelay(2);
+
+  for (int i = 0; i < avg; i++)
   {
     adc = ads1220_read_single_ch(drv,channel%4,err);
   
-    if(*err ==0)
+    if(*err == 0)
     {
       sum += adc;
       valid_cnt++;
     }
   }
 
-
   adc = sum/valid_cnt;
-
-
   
   osSemaphoreRelease(drv->sem);  // 세마포어 해제
   return adc;
@@ -405,8 +720,11 @@ int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
   osSemaphoreAcquire(drv->sem, osWaitForever);
 
   //차동 채널 0,1,2,3,4,5,6,7 은 ADS1220에서는 0채널로만 측정하며  MUX가 채널이 됨
+
+  ads1220_set_diffChannel(drv, channel / 8);
+
   adc_diff_mux_set(channel);
-  
+
   for(int i = 0 ; i< avg;i++)
   {
     adc = ads1220_read_diff_ch(drv,channel/8,err);

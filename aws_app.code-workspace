@@ -155,7 +155,8 @@
 			"xmemory0": "c",
 			"xstddef": "c",
 			"tcp_define.h": "c",
-			"iosfwd": "c"
+			"iosfwd": "c",
+			"ads1220.h": "c"
 		}
 		,		"files.exclude": {
 			"**/*.i":true,

@@ -19,6 +19,7 @@
 #include "Data\data_accu.h"
 #include "dev_io.h"
 #include "Data\utile_data.h"
+#include "util_memory.h"
 
 typedef struct filter_data_s
 {
@@ -139,7 +140,7 @@ uint16_t WindSpeedCalc(uint8_t *sensor_err)
     }
   }
 
-  return (uint16_t)(wind_speed * 10);
+  return (uint16_t)(truncate_to_1_decimal(wind_speed) * 10);
 }
 
 #define WIND_DIRECTION_ACCURACY 5.0f//5도
@@ -178,7 +179,7 @@ uint16_t  WindDirecCalc(uint8_t *sensor_err)
     return AWS_DATA_ERR_VAL;
   }
 
-  return (uint16_t)(wind_direction*10);
+  return (uint16_t)(truncate_to_1_decimal(wind_direction) * 10);
 }
 
 #define TEMPERATURE_ACCURACY 0.3 //0.3도
@@ -215,7 +216,13 @@ uint16_t TempCalc(uint8_t *sensor_err)
      return AWS_DATA_ERR_VAL;
    }
 
-   return (uint16_t)((temperature + 100) * 10);  // AWS 데이터 형으로 변환 ((측정값+100) *10)
+
+   /**
+    * 온도를 소수점 1째자리만 사용함
+    * 만약 -0.002도라면 (99.998*10  = 999 가 전송됨)
+    * 999를 복구하면 -0.1도가 되버림 따라서 처음부터 소수점 1째리까지만 처리해야함
+    */
+   return (uint16_t)((truncate_to_1_decimal(temperature) + 100) * 10);  // AWS 데이터 형으로 변환 ((측정값+100) *10)
 }
 
 #define PRESSURE_ACCURACY 0.5f //0.5hPa
@@ -252,7 +259,7 @@ uint16_t  BarometricCalc(uint8_t *sensor_err)
     return AWS_DATA_ERR_VAL;
   }
 
-  return (uint16_t)(pressure * 10);  // AWS 데이터 형으로 변환 측정값 *10
+  return (uint16_t)(truncate_to_1_decimal(pressure) * 10);  // AWS 데이터 형으로 변환 측정값 *10
 }
 
 
@@ -293,7 +300,7 @@ uint16_t HumidityCalc(uint8_t *sensor_err)
     return AWS_DATA_ERR_VAL;
   }
 
-  return (uint16_t)(huminity * 10);//AWS 데이터 형으로 변환 측정값 *10
+  return (uint16_t)(truncate_to_1_decimal(huminity) * 10);  // AWS 데이터 형으로 변환 측정값 *10
 }
 
 /*
@@ -444,7 +451,8 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
     return AWS_DATA_ERR_VAL;
   }
 
-  return (uint16_t)((temperature + 100) * 10);  // AWS 데이터 형으로 변환 ((측정값+100) *10)
+  return (uint16_t)((truncate_to_1_decimal(temperature) + 100) *
+                    10);  // AWS 데이터 형으로 변환 ((측정값+100) *10)
 }
 
 

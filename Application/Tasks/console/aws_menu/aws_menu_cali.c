@@ -98,11 +98,13 @@ int handle_factory_calibration(int adc_num)
                 channel_index);
 
       // Point 1 입력
-      io_printf("1. 낮은 기준점(Low Reference)을 연결하고 엔터를 입력해주세요요\r\n");
+      io_printf("1. 낮은 기준점(Low Reference)을 연결하고 엔터를 입력해주세요\r\n");
       io_recv(&ch, 1, 60000);
+
       float avg = 0;
       int32_t adc_raw;
       int32_t avg_cnt = 0;
+      uint8_t stable_delay=1;
       while (1)
       {
         uint8_t err;
@@ -114,6 +116,15 @@ int handle_factory_calibration(int adc_num)
         else if (type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
         {
           adc_raw = (int32_t)adc_read_diff_raw(channel_index, &err);
+        }
+
+        if(stable_delay)
+        {
+          //초기에 높은값에서 점점 값이 작아지는 증상있음
+          stable_delay = 0;
+          io_printf("ADC안정화를 위해 5초뒤 시작 시작됩니다\r\n");
+          osDelay(5000);
+          continue;
         }
         avg_cnt++;
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
@@ -142,6 +153,7 @@ int handle_factory_calibration(int adc_num)
       io_recv(&ch, 1, 60000);
       avg_cnt = 0;
       avg = 0;
+      stable_delay = 1;
       while (1)
       {
         uint8_t err;
@@ -154,6 +166,15 @@ int handle_factory_calibration(int adc_num)
         {
           adc_raw = (int32_t)adc_read_diff_raw(channel_index, &err);
         }
+
+        if (stable_delay)
+        {
+          stable_delay = 0;
+          io_printf("ADC안정화를 위해 5초뒤 시작 시작됩니다\r\n");
+          osDelay(5000);
+          continue;
+        }
+
         avg_cnt++;
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
@@ -632,7 +653,7 @@ int handle_view_status(int adc_num)
 
         uint32_t start_time;
         uint32_t elased_time;
-        char buff[20];
+        char buff[35];
         do
         {
           start_time = mcu_get_clk();
@@ -649,7 +670,9 @@ int handle_view_status(int adc_num)
             }
             else
             {
-              make_timeToStr(&Date_Time, buff, sizeof(buff));
+              snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d.%02d,%d", Date_Time.Year,
+                         Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min,
+                         Date_Time.Sec,Date_Time.SubSec,HAL_GetTick());
               snprintf(buffer, sizeof(buffer), "%s SE CH:%d ADC:%8d VOLTAGE:%8.6f %.3fms\r\n", buff,
                        channel_index, raw_adc, current_val, elased_time / 1000.0f);
               io_printf("%s", buffer);
@@ -667,7 +690,9 @@ int handle_view_status(int adc_num)
             }
             else
             {
-              make_timeToStr(&Date_Time, buff, sizeof(buff));
+              snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d.%02d,%d", Date_Time.Year,
+                       Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec,
+                       Date_Time.SubSec, HAL_GetTick());
               snprintf(buffer, sizeof(buffer), "%s DI CH:%d ADC:%8d VOLTAGE:%8.6f %.3fms\r\n", buff,
                        channel_index, raw_adc, current_val, elased_time / 1000.0f);
               io_printf("%s", buffer);

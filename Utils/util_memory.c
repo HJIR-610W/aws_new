@@ -416,3 +416,9 @@ float round_to(float value, int digits)
 
   return round_value/scale;  
 }
+
+
+float truncate_to_1_decimal(float value)
+{
+  return (float)((int)(value * 10.0f)) / 10.0f;
+}
