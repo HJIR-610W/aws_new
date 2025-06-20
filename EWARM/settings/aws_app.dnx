@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>79066890</Checksum>
+        <Checksum>3157485823</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -168,7 +168,7 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 0 "EMUL_CODE" "{d:\WTH\1.Projects\4.Dev\16.AWS\1.FW\aws_app\Application\Tasks\console\console_utile.c}.326.5" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\console\console_utile.c}.326.5" 0 0 1 "" 0 "" 0</Bp0>
         <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\system_err.c}.44.5" 0 0 1 "" 0 "" 0</Bp1>
         <Count>2</Count>
     </Breakpoints2>

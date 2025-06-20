@@ -334,6 +334,8 @@ driver_t *driver_spi_open(int num)
     if(spi1.opened == false)
     {
       spi1.opened = true;
+      spi1.instance_id = num;
+      spi1.driver_type = eDRIVER_SPI;
       spi1.name = "STM32_SPI1";
       stm32_spi_init(&hspi1);
       stm32_spi1_cfg.handle = &hspi1;
@@ -349,6 +351,8 @@ driver_t *driver_spi_open(int num)
     if(spi2.opened == false)
     {
       spi2.opened = true;
+      spi2.instance_id = num;
+      spi2.driver_type = eDRIVER_SPI;
       spi2.name = "STM32_SPI2";
       stm32_spi_init(&hspi2);
       stm32_spi2_cfg.handle = &hspi2;

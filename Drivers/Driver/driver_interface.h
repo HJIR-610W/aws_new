@@ -7,6 +7,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+
+typedef enum driver_type
+{
+  eDRIVER_FLASH,
+  eDRIVER_SPI,
+  eDRIVER_I2C
+}eDRIVER_TYPE_t;
+
 typedef struct driver_s
 {
   const char *name;       //driver 이름
@@ -15,7 +23,7 @@ typedef struct driver_s
   bool opened;            //driver 초기화 여부 
   void* sem;              //공유자원 충돌
   uint8_t instance_id;
-  struct driver_s* handle;//종속된 driver
+  eDRIVER_TYPE_t driver_type;
 }driver_t;
 
 

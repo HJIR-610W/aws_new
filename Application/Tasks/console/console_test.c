@@ -18,6 +18,7 @@
 #include "test_filesystem.h"
 #include "aws_menu_cali.h"
 #include "test_adc.h"
+#include "test_flash.h"
 
 int run_test_root()
 {
@@ -43,10 +44,11 @@ int run_test_root()
     io_printf("| 14. 시간                              |\r\n");
     io_printf("| 15. 파일시스템                        |\r\n");
     io_printf("| 16. ADC선형성                         |\r\n");
+    io_printf("| 17. FLASH 메모리                      |\r\n");
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = input_decimal_prompt("선택", &choice, 1, 16);
+    status = input_decimal_prompt("선택", &choice, 1, 17);
     if (status == MENU_ABORT || status == MENU_BACK)
       return status;
     if (status != MENU_OK)
@@ -98,6 +100,9 @@ int run_test_root()
           break;
     case 16:
       test_adc();
+      break;
+      case 17:
+      test_flash();
       break;
            default : break;
     }

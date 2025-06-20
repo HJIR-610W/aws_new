@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "util_time.h"
+#include "dev_io.h"
 
 #define ERROR_PRINTF_USE 1 // 시스템 에러 출력
 #define DEBUG_PRINTF_USE 1 // 디버깅 필요시

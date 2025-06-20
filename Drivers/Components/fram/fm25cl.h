@@ -8,12 +8,7 @@
 
 #include "driver_interface.h"
 
-typedef struct fm25lc_cfg_s
-{
-  void *spi_io;
-  void *cs_io;
-  void *sem;
-}fm25lc_cfg_t;
+
 
 driver_t *fm25lc_open(void);
 void fm25cl_init(driver_t *fm25cl);
