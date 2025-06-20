@@ -122,7 +122,11 @@ typedef struct rain_present_config_s
   uint8_t delay;
 }rain_present_config_t;
 
-
+typedef struct frequency_config_s
+{
+  float scale_factor;
+  int channel;
+} frequency_config_t;
 
 typedef struct config_manage_s
 {
@@ -153,6 +157,8 @@ typedef struct config_manage_s
   uint8_t ott_smp3_cnt;
   ott_smp3_config_t ott_smp3[1];
   rain_present_config_t rain_present;
+  uint8_t frequency_cnt;
+  frequency_config_t frequency;
 } config_sensor_t;
 
 #define WRITE_CFG_SENSOR(x)                                                                \

@@ -19,6 +19,9 @@
 #ifndef GENERAL_RS485
 #define GENERAL_RS485 1
 #endif
+#ifndef GENERAL_FREQ
+#define GENERAL_FREQ 2
+#endif
 
 #define WIND_HJ 100
 

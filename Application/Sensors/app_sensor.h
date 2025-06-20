@@ -71,25 +71,25 @@ typedef enum sensor_list_e
 } eSENSOR_LIST_t;
 
 
-//센서 모델,이름 정의 
+//센서 모델,이름 정의
 #define SENSOR_MODEL_LIST                             \
-  X(S_T_UNSUED,  "미사용")                            \
-  X(S_T_ADC,     "ADC")                               \
-  X(S_T_TEMP_232,"RS232")                             \
-  X(S_T_TEMP_485,"RS485")                             \
-  X(S_T_MODBUS,  "MODBUS")                            \
-  X(S_T_HART,    "HART")                              \
-  X(S_T_FREQ_0,  "FREQ_0")                            \
+  X(S_T_UNSUED, "미사용")                             \
+  X(S_T_ADC, "ADC")                                   \
+  X(S_T_TEMP_232, "RS232")                            \
+  X(S_T_TEMP_485, "RS485")                            \
+  X(S_T_MODBUS, "MODBUS")                             \
+  X(S_T_HART, "HART")                                 \
+  X(S_T_FREQ_0, "FREQ_0")                             \
   X(S_T_RAIN_REED_05MM, "REED 0.5mm")                 \
-  X(S_T_RAIN_REED_1MM,  "REED 1mm")                   \
-  X(S_T_RAIN_HALL_05MM,    "화진 HALL 0.5mm")         \
-  X(S_T_RAIN_HALL_1MM,     "화진 HALL 1mm")           \
-  X(S_T_DI_0,              "DI_0")                    \
-  X(S_T_SNOW_HJ,       "화진 적설")        \
-  X(S_T_GENERAL_232,       "GENERAL_RS232")           \
-  X(S_T_WIND_SPEED_HJ_485, "화진 풍속")         \
-  X(S_T_WIND_DIRECTION_HJ_485, "화진 풍향")     \
-  X(S_T_HUMINITY_HJ, "화진 온습도")               \
+  X(S_T_RAIN_REED_1MM, "REED 1mm")                    \
+  X(S_T_RAIN_HALL_05MM, "화진 HALL 0.5mm")            \
+  X(S_T_RAIN_HALL_1MM, "화진 HALL 1mm")               \
+  X(S_T_DI_0, "DI_0")                                 \
+  X(S_T_SNOW_HJ, "화진 적설")                         \
+  X(S_T_GENERAL_232, "GENERAL_RS232")                 \
+  X(S_T_WIND_SPEED_HJ_485, "화진 풍속")               \
+  X(S_T_WIND_DIRECTION_HJ_485, "화진 풍향")           \
+  X(S_T_HUMINITY_HJ, "화진 온습도")                   \
   X(S_T_WIND_SPEED_MAX_VAL, "WIND_SPEED_MAX")         \
   X(S_T_WIND_DIRECTION_MAX_VAL, "WIND_DIRECTION_MAX") \
   X(S_T_PRESSURE_485, "PRESSURE_RS485")               \
@@ -98,10 +98,9 @@ typedef enum sensor_list_e
   X(S_T_GENERAL_485, "GENERAL_485")                   \
   X(S_T_PT100_A, "PT100_A")                           \
   X(S_T_PT100_B, "PT100_B")                           \
-  X(S_T_FREQ_A, "FREQ_A")                             \
-  X(S_T_FREQ_B, "FREQ_B")                             \
+  X(S_T_FREQ, "GENERAL_FREQ")                             \
   X(S_T_SUNSHINE, "SUNSHINE")                         \
-  X(S_T_SOLAR_RADIATION_OTT_SMP3, "일사 OTT SMP3")           \
+  X(S_T_SOLAR_RADIATION_OTT_SMP3, "일사 OTT SMP3")    \
   X(S_T_SOIL_TEMP_5CM, "SOIL_TEMP_5CM")               \
   X(S_T_SOIL_TEMP_10CM, "SOIL_TEMP_10CM")             \
   X(S_T_SOIL_TEMP_20CM, "SOIL_TEMP_20CM")             \
@@ -112,7 +111,8 @@ typedef enum sensor_list_e
   X(S_T_SOIL_TEMP_300CM, "SOIL_TEMP_300CM")           \
   X(S_T_SOIL_TEMP_500CM, "SOIL_TEMP_500CM")           \
   X(S_T_GENERAL, "GENERAL")                           \
-  X(S_T_TEMPERATURE_HJ, "화진 온습도")\
+  X(S_T_TEMPERATURE_HJ, "화진 온습도")                \
+
 
 typedef enum sensor_model_e
 {
@@ -154,7 +154,7 @@ extern const char *g_sensor_model_list[SENSOR_MODEL_MAX];
 // TODO:하드 코딩됨, 소스파일과 일치시켜야함 주의
 extern const uint8_t temperatureList[4];
 extern const uint8_t windDirectionList[3];
-extern const uint8_t windSpeedList[3];
+extern const uint8_t windSpeedList[4];
 extern const uint8_t windDirectionInstantList[2];
 extern const uint8_t windSpeedInstantList[2];
 extern const uint8_t pressureList[2];

@@ -205,6 +205,9 @@ int32_t get_driverNum(eSENSOR_MODEL_t type)
   case S_T_SOLAR_RADIATION_OTT_SMP3:
     num = OTT_SMP3_MODBUS;
      break;
+    case S_T_FREQ:
+    num = GENERAL_FREQ;
+    break;
   }
   return num;
 }

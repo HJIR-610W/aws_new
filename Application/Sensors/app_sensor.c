@@ -29,7 +29,7 @@ const char *sensor_format_list[] = {
 // 지원하는 센서 목록 정의
 const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
 const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};
-const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_ADC};
+const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_FREQ, S_T_ADC};
 const uint8_t windDirectionInstantList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_MAX_VAL};
 const uint8_t windSpeedInstantList[] = {S_T_UNSUED, S_T_WIND_SPEED_MAX_VAL};
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
@@ -251,6 +251,12 @@ void *sensor_add(sensor_t *sensor)
       sensor_add_common(sensor, 0);
       return &g_config_sensor.rain_present;
       break;
+    case S_T_FREQ:
+      sensor_add_common(sensor, 0);
+      g_config_sensor.frequency_cnt++;
+      WRITE_CFG_SENSOR(frequency_cnt);
+      return &g_config_sensor.frequency;
+      break;
     default:
       break;
   }
@@ -314,8 +320,11 @@ void *get_sensor_config(sensor_t *sensor)
           return &g_config_sensor.ott_smp3[0];
           break;
         case S_T_RAIN_PRESENT_DI:
-        return &g_config_sensor.rain_present;
-        break;
+          return &g_config_sensor.rain_present;
+          break;
+        case S_T_FREQ:
+          return &g_config_sensor.frequency;
+          break;
       }
     }
   }

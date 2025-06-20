@@ -1577,6 +1577,12 @@
                     <name>$PROJ_DIR$\..\Application\Sensors\general\general_adc.h</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\general\general_frequency.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Sensors\general\general_frequency.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Sensors\general\general_virtual.c</name>
                 </file>
                 <file>

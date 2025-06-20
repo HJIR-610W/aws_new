@@ -117,6 +117,12 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
       snprintf(out, outSize, "[%s][A.%d]", list[ott->port], ott->modbus_id);
     }
     break;
+    case S_T_FREQ:
+    {
+      frequency_config_t *freq_cfg = (frequency_config_t *)cfg;
+      snprintf(out, outSize, "[%d]", freq_cfg->channel);
+    }
+    break;
     default:
       out[0] = 0;
       break;
@@ -246,6 +252,13 @@ uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt
 }
 
 
+uint8_t print_freq_cfg(frequency_config_t *freq, uint8_t cnt)
+{
+  io_printf("%2d.채널       :%d\r\n", cnt++, freq->channel);
+  io_printf("%2d.factor     :%f\r\n", cnt++, freq->scale_factor);
+
+  return cnt;
+}
 
 #define HJSNOW_CFG_MENU_PHY  0
 #define HJSNOW_CFG_MENU_PORT 1
@@ -312,6 +325,9 @@ int32_t print_common_cfg( sensor_t *sensor, uint8_t c)
       break;
     case S_T_RAIN_PRESENT_DI:
       cnt = print_rain_present_cfg(get_sensor_config(sensor), cnt);
+      break;
+    case S_T_FREQ:
+      cnt = print_freq_cfg(get_sensor_config(sensor), cnt);
       break;
   }
   return cnt;
@@ -812,6 +828,43 @@ int32_t rain_present_config_set(sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
+#define GENERAL_FREQ_CHANNEL 0
+#define GENERAL_FREQ_SCALE_FACTOR 1
+int32_t general_freq_config_set(sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t status;
+  float factor = 0;
+  frequency_config_t *freq;
+  int dec;
+
+  freq = get_sensor_config(sensor);
+  if (freq == NULL)
+  {
+    ERROR_PRINTF("GENERAL FREQ NULL");
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case GENERAL_FREQ_CHANNEL:
+      status = input_decimal_prompt("채널", &dec, 0, 1);
+      if (status != MENU_OK)
+        break;
+      freq->channel = dec;
+      save_config_sensor();
+      break;
+    case GENERAL_FREQ_SCALE_FACTOR:
+      status = input_float_prompt("변환식 factor", -100000, 100000, &factor);
+      if (status != MENU_OK)
+        break;
+      freq->scale_factor = factor;
+      save_config_sensor();
+      break;
+  }
+
+  return status;
+}
+
 int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status;
@@ -995,7 +1048,8 @@ const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_TEMPERATURE_HJ, .config_set = hjtemp_config_set},
     {.sensorType = S_T_HUMINITY_HJ, .config_set = hjhumi_config_set},
     {.sensorType = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_config_set},
-    {.sensorType = S_T_RAIN_PRESENT_DI, .config_set = rain_present_config_set}};
+    {.sensorType = S_T_RAIN_PRESENT_DI, .config_set = rain_present_config_set},
+    {.sensorType = S_T_FREQ, .config_set = general_freq_config_set}};
 
 int32_t sensor_set( sensor_t *sensor, uint8_t choice)
 {

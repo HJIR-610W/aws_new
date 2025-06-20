@@ -255,6 +255,11 @@ float driver_freq_read(driver_t *drv)
   {
     return g_freq_TIM10;
   }
+  else if(cfg->channel ==1)
+  {
+    return g_duty_TIM10;
+  }
+
 
 
 

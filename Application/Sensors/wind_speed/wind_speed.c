@@ -5,6 +5,7 @@
 
 #include "Sensors\wind_speed\wind_speed.h"
 #include "Sensors\general\general_adc.h"
+#include "Sensors\general\general_frequency.h"
 #include "hj_wind.h"
 
 
@@ -23,8 +24,11 @@ driver_t * windSpeed_open(uint8_t num,void *opt)
     case WIND_HJ:
     driver = hjwind_open(HJ_WIND,opt)  ;
     break;
-  default:
-    break;
+    case GENERAL_FREQ:
+      driver = general_freq_open(HJ_WIND, opt);
+      break;
+    default:
+      break;
   }
 
   return driver;
@@ -44,7 +48,10 @@ float wind_read(driver_t *driver,int32_t channel,uint8_t *err)
   {
     return general_adc_read(driver,err);
   }
-
+  else if (strncmp(driver->name, "GENERAL_FREQ", 11) == 0)
+  {
+    return general_freq_read(driver, err);
+  }
 
   return api->read(driver,channel,err);
 }

@@ -12,7 +12,8 @@ typedef enum driver_type
 {
   eDRIVER_FLASH,
   eDRIVER_SPI,
-  eDRIVER_I2C
+  eDRIVER_I2C,
+  eDRIVER_GENERAL_FREQ
 }eDRIVER_TYPE_t;
 
 typedef struct driver_s
@@ -32,5 +33,6 @@ typedef struct driver_s
 #define DRV_ERR_TIMEOUT 2
 #define DRV_ERR_RECV_DATA    3
 
+#define DRV_ERR_DATA_NAN 4
 const char* get_drv_err_name(int num);
 #endif
