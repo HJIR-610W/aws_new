@@ -120,7 +120,7 @@ int handle_factory_calibration(int adc_num)
 
         if(stable_delay)
         {
-          //초기에 높은값에서 점점 값이 작아지는 증상있음
+          //초기에 높은값에서 점점 값이 작아지는
           stable_delay = 0;
           io_printf("ADC안정화를 위해 5초뒤 시작 시작됩니다\r\n");
           osDelay(5000);

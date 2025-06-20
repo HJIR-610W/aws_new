@@ -28,6 +28,13 @@ typedef struct aws_data_s
   uint16_t max;
   uint16_t min;
   uint16_t data;
+  union 
+  {
+    int32_t i;
+    float f;
+  }raw;
+  
+
 }aws_data_t;
 
 typedef struct aws_data_s2
@@ -39,6 +46,11 @@ typedef struct aws_data_s2
   uint16_t data;
   uint16_t year;
   uint32_t last_time;
+  union 
+  {
+    int32_t i;
+    float f;
+  }raw;
 } aws_data2_t;
 
 typedef struct

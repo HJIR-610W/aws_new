@@ -5,16 +5,28 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "util_time.h"
-#define ERROR_PRINTF_USE 1 //HAL 에러 출력
+
+#define ERROR_PRINTF_USE 1 // 시스템 에러 출력
+#define DEBUG_PRINTF_USE 1 // 디버깅 필요시
+
+#define PRINTF_BASE(fmt, ...)                                                               \
+  error_print("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \
+              Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \
+              Date_Time.Hour, Date_Time.Min, Date_Time.Sec, Date_Time.SubSec,              \
+              __FILE__, __LINE__, ##__VA_ARGS__)
 
 #if ERROR_PRINTF_USE
-#define ERROR_PRINTF(fmt, ...)                                                              \
-  error_print("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n", Date_Time.Year,     \
-              Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec, \
-              Date_Time.SubSec, __FILE__, __LINE__, ##__VA_ARGS__)
+  #define ERROR_PRINTF(fmt, ...) PRINTF_BASE(fmt, ##__VA_ARGS__)
 #else
-#define ERROR_PRINTF(fmt, ...) ((void)0)
+  #define ERROR_PRINTF(fmt, ...) ((void)0)
 #endif
+
+#if DEBUG_PRINTF_USE
+  #define DEBUG_PRINTF(fmt, ...)   io_printf(fmt, ##__VA_ARGS__)
+#else
+  #define DEBUG_PRINTF(fmt, ...) ((void)0)
+#endif
+
 
 void Error_Handler(const char *file,int32_t line);
 void reset_system(const char * pFmt, ...);

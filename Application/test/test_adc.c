@@ -1,0 +1,39 @@
+
+#include "cli_key_code.h"
+#include "cmsis_os2.h"
+#include "config_app.h"
+#include "dev_io.h"
+#include "driver_di.h"
+#include "driver_do.h"
+#include "driver_uart.h"
+#include "driver_adc.h"
+#include "app_adc.h"
+#include "app_file.h"
+
+void test_adc(void)
+{
+  float volate=0;
+  char buff[100];
+  driver_t *adc;
+  uint8_t err;
+  int32_t adc_raw;
+
+  io_printf("ADC 선형성 테스트\r\n");
+
+
+  //0~5V까지 1mv 씩 입력받아서 선형성 테스트용 샘플 수집
+  for (int i = 0; i < 5000; i++)
+  {
+    io_printf("싱글 채널  0전압 %dmv입력하고 아무키나 입력하세요\r\n",i);
+
+    if(get_key(osWaitForever)==KEY_CODE_CTRL_Q)
+    break;
+    
+    adc_raw = (int32_t)adc_read_single_raw(0, &err);
+    snprintf(buff, sizeof(buff), "%d,%d\r\n",i,adc_raw);
+    io_printf("%s",buff);
+
+    append_file("adc.csv",buff,strlen(buff));
+    }
+    io_printf("종료\r\n");
+}

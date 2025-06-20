@@ -97,6 +97,8 @@ void startTask(void *arg)
 
   config_manager_init();
   flash_init();
+  file_init();
+  logging_init();
 
   systemTask_init(PARA_RUN_MODE);
 
@@ -130,9 +132,6 @@ void startTask(void *arg)
     ethernetTask_init();
   }
 
-  file_init();
-
-  logging_init();
   panelTask_init();
   bleTask_init();
 

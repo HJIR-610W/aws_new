@@ -1860,6 +1860,9 @@
                 <name>$PROJ_DIR$\..\Application\test\task_test.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\test\test_adc.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\test\test_count.c</name>
             </file>
             <file>
