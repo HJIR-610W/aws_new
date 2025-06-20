@@ -16,7 +16,7 @@ void test_freq(void)
   driver_t *count_b;
  // driver_t *count_c;
   float freq_b,duty_b;
-
+  uint8_t err=0;
 
 
   io_printf("최소 주파수 약 15.26 Hz 이상부터 측정가능\r\n");
@@ -28,8 +28,8 @@ void test_freq(void)
 
   while(1)
   {
-    freq_b = driver_freq_read(count_b);
-    duty_b = driver_freq_read_duty(count_b);
+    freq_b = driver_freq_read(count_b,&err);
+    duty_b = driver_freq_read_duty(count_b,&err);
 
     io_printf("freq b:%f,duty:%f\r\n", freq_b, duty_b);
 

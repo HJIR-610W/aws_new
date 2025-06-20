@@ -65,7 +65,7 @@ float general_freq_read(driver_t *drv,uint8_t *err)
   float data;
 
 
-  freq = driver_freq_read(cfg->freq_io);
+  freq = driver_freq_read(cfg->freq_io,err);
 
   if (isfinite(freq))
   {

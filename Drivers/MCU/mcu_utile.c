@@ -66,3 +66,24 @@ void board_config_gpio(GPIO_TypeDef *GPIOx,uint32_t pin,uint32_t mode,uint32_t p
   GPIO_InitStruct.Alternate = alternate;
   HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
 }
+
+// APB2 타이머 클럭 주파수 계산
+ uint32_t get_apb2_timer_clock(void)
+{
+  uint32_t pclk2 = HAL_RCC_GetPCLK2Freq();
+
+  // APB2 프리스케일러가 1이 아닌 경우 타이머 클럭은 PCLK2 × 2
+  // APB2 프리스케일러가 1인 경우 타이머 클럭은 PCLK2와 동일
+  uint32_t ppre2 = (RCC->CFGR & RCC_CFGR_PPRE2) >> RCC_CFGR_PPRE2_Pos;
+
+  if (ppre2 == 0)
+  {
+    // 분주 없음 (APB2 프리스케일러 = 1)
+    return pclk2;
+  }
+  else
+  {
+    // 분주 있음 (APB2 프리스케일러 > 1)
+    return pclk2 * 2;
+  }
+}
