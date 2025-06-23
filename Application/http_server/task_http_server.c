@@ -1,5 +1,6 @@
 #include "task_http_server.h"
 #include "http_api.h"
+#include "websocket.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -96,6 +97,84 @@ void http_send_response(int client_socket, int status_code, const char* content_
 
     task_printf("HTTP Server: Sent response %d %s (%d bytes)\r\n", status_code, status_text, content_length);
     aws_free(response);
+}
+
+static int is_websocket_request(const char* buffer)
+{
+    // WebSocket 요청인지 확인하기 위한 조건들
+    int has_upgrade = (strstr(buffer, "Upgrade: websocket") != NULL || 
+                      strstr(buffer, "upgrade: websocket") != NULL);
+    int has_connection = (strstr(buffer, "Connection: Upgrade") != NULL || 
+                         strstr(buffer, "connection: upgrade") != NULL ||
+                         strstr(buffer, "Connection: upgrade") != NULL);
+    int has_ws_key = (strstr(buffer, "Sec-WebSocket-Key:") != NULL ||
+                     strstr(buffer, "sec-websocket-key:") != NULL);
+    
+    task_printf("WebSocket check - Upgrade: %d, Connection: %d, Key: %d\r\n", 
+               has_upgrade, has_connection, has_ws_key);
+    
+    return has_upgrade && has_connection && has_ws_key;
+}
+
+static char* extract_websocket_key(const char* buffer)
+{
+    char* key_line = strstr(buffer, "Sec-WebSocket-Key:");
+    if (!key_line) {
+        key_line = strstr(buffer, "sec-websocket-key:");
+    }
+    
+    if (!key_line) {
+        task_printf("WebSocket: Key header not found\r\n");
+        return NULL;
+    }
+    
+    char* key_start = strchr(key_line, ':');
+    if (!key_start) {
+        task_printf("WebSocket: Colon not found in key line\r\n");
+        return NULL;
+    }
+    
+    key_start++;
+    while (*key_start == ' ' || *key_start == '\t') {
+        key_start++;
+    }
+    
+    char* key_end = strstr(key_start, "\r\n");
+    if (!key_end) {
+        // 줄 끝을 찾을 수 없는 경우, 줄바꿈 문자로 다시 시도
+        key_end = strchr(key_start, '\n');
+        if (!key_end) {
+            key_end = strchr(key_start, '\r');
+        }
+        if (!key_end) {
+            task_printf("WebSocket: End of key line not found\r\n");
+            return NULL;
+        }
+    }
+    
+    size_t key_len = key_end - key_start;
+    if (key_len == 0 || key_len > 64) {
+        task_printf("WebSocket: Invalid key length: %zu\r\n", key_len);
+        return NULL;
+    }
+    
+    char* key = aws_malloc(key_len + 1);
+    if (key) {
+        strncpy(key, key_start, key_len);
+        key[key_len] = '\0';
+        
+        // 끝의 공백 제거
+        while (key_len > 0 && (key[key_len-1] == ' ' || key[key_len-1] == '\t')) {
+            key[key_len-1] = '\0';
+            key_len--;
+        }
+        
+        task_printf("WebSocket: Extracted key: '%s' (length: %zu)\r\n", key, key_len);
+    } else {
+        task_printf("WebSocket: Failed to allocate memory for key\r\n");
+    }
+    
+    return key;
 }
 
 int http_parse_request(const char* buffer, size_t length, http_request_t* request)
@@ -289,6 +368,27 @@ static void handle_client_request(int client_socket)
 
     buffer[bytes_received] = '\0';
     task_printf("HTTP Server: Received %d bytes\r\n", bytes_received);
+
+    if (is_websocket_request(buffer)) {
+        task_printf("HTTP Server: WebSocket upgrade request detected\r\n");
+        
+        char* ws_key = extract_websocket_key(buffer);
+        if (ws_key) {
+            if (websocket_handshake(client_socket, ws_key) == 0) {
+                task_printf("HTTP Server: WebSocket handshake successful\r\n");
+                websocket_handle_connection(client_socket);
+            } else {
+                task_printf("HTTP Server: WebSocket handshake failed\r\n");
+            }
+            aws_free(ws_key);
+        } else {
+            task_printf("HTTP Server: WebSocket key not found\r\n");
+            http_send_response(client_socket, 400, "text/plain", "Bad WebSocket Request");
+        }
+        
+        aws_free(buffer);
+        return;
+    }
 
     http_request_t request;
     if (http_parse_request(buffer, bytes_received, &request) < 0) {

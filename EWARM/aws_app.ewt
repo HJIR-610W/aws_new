@@ -1454,6 +1454,12 @@
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\task_http_server.h</name>
             </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\websocket.h</name>
+            </file>
         </group>
         <group>
             <name>IO</name>
@@ -2869,6 +2875,21 @@
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\Third_Party\cobs\cobs.h</name>
                 </file>
+            </group>
+            <group>
+                <name>MbedTLS</name>
+                <group>
+                    <name>library</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\library\base64.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\library\platform_util.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\library\sha1.c</name>
+                    </file>
+                </group>
             </group>
             <group>
                 <name>tlsf</name>

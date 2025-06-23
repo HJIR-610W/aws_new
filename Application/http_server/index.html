@@ -254,6 +254,165 @@
         .accordion-header.active .accordion-icon {
             transform: rotate(180deg);
         }
+
+        .nav-submenu {
+            background-color: #34495e;
+            padding-left: 20px;
+        }
+
+        .nav-sublink {
+            display: block;
+            padding: 10px 25px;
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-sublink:hover {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border-left-color: #3498db;
+        }
+
+        .nav-sublink.active {
+            background-color: #3498db;
+            color: white;
+            border-left-color: #2980b9;
+        }
+
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background-color: #f8f9fa;
+            margin: 20px 0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            background-color: #e9ecef;
+            border-color: #2980b9;
+        }
+
+        .upload-area.dragover {
+            background-color: #e3f2fd;
+            border-color: #2196f3;
+            transform: scale(1.02);
+        }
+
+        .upload-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .upload-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .upload-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.3s;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .file-info {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #b8daff;
+        }
+
+        .ws-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .ws-connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .ws-disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .ws-connecting {
+            background-color: #fff3cd;
+            color: #856404;
+        }
     </style>
 </head>
 <body>
@@ -268,6 +427,12 @@
             </li>
             <li class="nav-item">
                 <div class="nav-link" onclick="showPage('sensor')">센서(설정)</div>
+            </li>
+            <li class="nav-item">
+                <div class="nav-link" onclick="toggleSubmenu('management')">관리</div>
+                <div id="management-submenu" class="nav-submenu" style="display: none;">
+                    <div class="nav-sublink" onclick="showPage('firmware-update')">펌웨어 업데이트</div>
+                </div>
             </li>
         </ul>
     </div>
@@ -467,16 +632,80 @@
                 </div>
             </div>
         </div>
+
+        <!-- 펌웨어 업데이트 페이지 -->
+        <div id="firmware-update" class="page">
+            <h1>펌웨어 업데이트</h1>
+            
+            <div class="control-section">
+                <h2>파일 업로드</h2>
+                <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                    <h3>📁 펌웨어 파일 선택</h3>
+                    <p>파일을 여기에 드래그하거나 클릭하여 선택하세요</p>
+                    <p style="color: #666; font-size: 14px;">지원 형식: .bin, .hex, .fw</p>
+                    <input type="file" id="file-input" accept=".bin,.hex,.fw" style="display: none;">
+                </div>
+
+                <div id="file-info" class="file-info" style="display: none;">
+                    <h4>선택된 파일</h4>
+                    <p id="file-details">--</p>
+                </div>
+
+                <div class="input-group">
+                    <button class="upload-btn" id="upload-btn" onclick="uploadFirmware()" disabled>
+                        📤 펌웨어 업로드
+                    </button>
+                    <button class="upload-btn" onclick="clearSelection()" style="background-color: #95a5a6;">
+                        🗑️ 선택 취소
+                    </button>
+                </div>
+
+                <div class="progress-container" id="progress-container">
+                    <h4>업로드 진행률</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill">
+                            <div class="progress-text" id="progress-text">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="status-message" class="status-message"></div>
+            </div>
+
+            <div class="control-section">
+                <h2>연결 상태</h2>
+                <div class="setting-display">
+                    <div class="setting-item">
+                        <label>
+                            WebSocket 연결:
+                            <span id="ws-status" class="ws-status ws-connecting">연결 중...</span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <button class="upload-btn" onclick="forceReconnectWebSocket()" style="background-color: #f39c12;">
+                            🔄 수동 재연결
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         let updateInterval;
+        let websocket = null;
+        let selectedFile = null;
 
         function updateSensor() {
-            fetch('/api/sensor')
+            // 센서 데이터 업데이트 (2초 타임아웃)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            
+            fetch('/api/sensor', { signal: controller.signal })
                 .then(response => {
+                    clearTimeout(timeoutId);
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
                     return response.json();
                 })
@@ -515,6 +744,7 @@
                         `마지막 업데이트: ${now.toLocaleTimeString()}`;
                 })
                 .catch(error => {
+                    clearTimeout(timeoutId);
                     console.error('센서 데이터 가져오기 실패:', error);
                     // 에러 표시를 위해 모든 센서 값을 에러로 설정
                     const sensorIds = ['temperature', 'humidity', 'pressure', 'wind_direction', 'wind_speed', 
@@ -629,6 +859,9 @@
             updateChannelOptions('hum');
             updateSerialPorts('temp');
             updateSerialPorts('hum');
+            
+            // 파일 드래그 앤 드롭 설정
+            setupFileUpload();
         });
 
         // 페이지 언로드 시 정리
@@ -636,6 +869,7 @@
             if (updateInterval) {
                 clearInterval(updateInterval);
             }
+            disconnectWebSocket();
         });
 
         // 페이지 내비게이션 기능
@@ -645,7 +879,7 @@
             pages.forEach(page => page.classList.remove('active'));
             
             // 모든 내비게이션 링크 비활성화
-            const navLinks = document.querySelectorAll('.nav-link');
+            const navLinks = document.querySelectorAll('.nav-link, .nav-sublink');
             navLinks.forEach(link => link.classList.remove('active'));
             
             // 선택된 페이지 보이기
@@ -660,9 +894,27 @@
                 targetNavLink.classList.add('active');
             }
 
-            // 센서 설정 페이지로 이동 시 현재 설정값 로드
+            // 페이지별 특별 처리
             if (pageId === 'sensor') {
                 loadSensorConfigs();
+            } else if (pageId === 'firmware-update') {
+                // 펌웨어 업데이트 페이지 진입 시 WebSocket 연결
+                if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                    initWebSocket();
+                }
+            } else {
+                // 다른 페이지로 이동 시 WebSocket 연결 종료
+                disconnectWebSocket();
+            }
+        }
+
+        // 서브메뉴 토글 기능
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId + '-submenu');
+            if (submenu.style.display === 'none' || submenu.style.display === '') {
+                submenu.style.display = 'block';
+            } else {
+                submenu.style.display = 'none';
             }
         }
 
@@ -764,17 +1016,23 @@
                 config.address = document.getElementById(`${sensorType}-serial-address`).value;
             }
             
+            // 타임아웃 설정 (5초)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
             // API 호출로 설정 저장
             fetch(`/api/sensor/config/${sensorType}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(config)
+                body: JSON.stringify(config),
+                signal: controller.signal
             })
             .then(response => {
+                clearTimeout(timeoutId); // 타임아웃 정리
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 return response.json();
             })
@@ -787,8 +1045,16 @@
                 }
             })
             .catch(error => {
+                clearTimeout(timeoutId); // 타임아웃 정리
                 console.error('센서 설정 저장 실패:', error);
-                alert('서버와의 통신에 실패했습니다.');
+                
+                if (error.name === 'AbortError') {
+                    alert('서버 응답 시간이 초과되었습니다. (5초 타임아웃)');
+                } else if (error.message.includes('fetch')) {
+                    alert('서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.');
+                } else {
+                    alert('서버와의 통신에 실패했습니다: ' + error.message);
+                }
             });
         }
 
@@ -804,11 +1070,15 @@
 
         // 센서 설정값 로드
         function loadSensorConfigs() {
-            // 온도 센서 설정 로드
-            fetch('/api/sensor/config/temp')
+            // 온도 센서 설정 로드 (3초 타임아웃)
+            const tempController = new AbortController();
+            const tempTimeoutId = setTimeout(() => tempController.abort(), 3000);
+            
+            fetch('/api/sensor/config/temp', { signal: tempController.signal })
                 .then(response => {
+                    clearTimeout(tempTimeoutId);
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
                     return response.json();
                 })
@@ -816,6 +1086,7 @@
                     loadSensorConfig('temp', data);
                 })
                 .catch(error => {
+                    clearTimeout(tempTimeoutId);
                     console.error('온도 센서 설정 로드 실패:', error);
                     // 실패 시 기본값으로 설정
                     loadSensorConfig('temp', {
@@ -826,11 +1097,15 @@
                     });
                 });
 
-            // 습도 센서 설정 로드
-            fetch('/api/sensor/config/hum')
+            // 습도 센서 설정 로드 (3초 타임아웃)
+            const humController = new AbortController();
+            const humTimeoutId = setTimeout(() => humController.abort(), 3000);
+            
+            fetch('/api/sensor/config/hum', { signal: humController.signal })
                 .then(response => {
+                    clearTimeout(humTimeoutId);
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
                     return response.json();
                 })
@@ -838,6 +1113,7 @@
                     loadSensorConfig('hum', data);
                 })
                 .catch(error => {
+                    clearTimeout(humTimeoutId);
                     console.error('습도 센서 설정 로드 실패:', error);
                     // 실패 시 기본값으로 설정
                     loadSensorConfig('hum', {
@@ -887,6 +1163,335 @@
                     }
                 }
             }
+        }
+
+        // WebSocket 관련 함수들
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 10;
+        let reconnectInterval = null;
+        
+        function initWebSocket() {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                return; // 이미 연결됨
+            }
+            
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}`;
+            
+            console.log('WebSocket 연결 시도:', wsUrl);
+            updateWSStatus('connecting', `연결 시도 중... (${reconnectAttempts + 1}/${maxReconnectAttempts})`);
+            
+            try {
+                websocket = new WebSocket(wsUrl);
+                
+                // 연결 타임아웃 설정 (10초)
+                const connectTimeout = setTimeout(() => {
+                    if (websocket.readyState === WebSocket.CONNECTING) {
+                        console.log('WebSocket 연결 타임아웃');
+                        websocket.close();
+                    }
+                }, 10000);
+                
+                websocket.onopen = function(event) {
+                    console.log('WebSocket 연결 성공');
+                    clearTimeout(connectTimeout);
+                    reconnectAttempts = 0;
+                    updateWSStatus('connected', '연결됨');
+                    
+                    if (reconnectInterval) {
+                        clearInterval(reconnectInterval);
+                        reconnectInterval = null;
+                    }
+                };
+                
+                websocket.onmessage = function(event) {
+                    console.log('WebSocket 메시지 수신:', event.data);
+                    
+                    // 파일 업로드 관련 메시지가 아닌 경우에만 상태 표시
+                    if (!event.data.startsWith('upload_ready:') && 
+                        event.data !== 'upload_success') {
+                        showStatusMessage('info', '메시지 수신: ' + event.data);
+                    }
+                };
+                
+                websocket.onclose = function(event) {
+                    clearTimeout(connectTimeout);
+                    console.log('WebSocket 연결 종료. Code:', event.code, 'Reason:', event.reason);
+                    
+                    if (event.code === 1006) {
+                        updateWSStatus('disconnected', '연결 실패 (서버 응답 없음)');
+                    } else if (event.code === 1000) {
+                        updateWSStatus('disconnected', '정상 종료');
+                    } else {
+                        updateWSStatus('disconnected', `연결 끊김 (${event.code})`);
+                    }
+                    
+                    // 재연결 시도
+                    scheduleReconnect();
+                };
+                
+                websocket.onerror = function(error) {
+                    clearTimeout(connectTimeout);
+                    console.error('WebSocket 오류:', error);
+                    updateWSStatus('disconnected', '연결 오류');
+                };
+                
+            } catch (error) {
+                console.error('WebSocket 생성 실패:', error);
+                updateWSStatus('disconnected', '연결 실패');
+                scheduleReconnect();
+            }
+        }
+        
+        function scheduleReconnect() {
+            if (reconnectAttempts >= maxReconnectAttempts) {
+                console.log('최대 재연결 시도 횟수 초과');
+                updateWSStatus('disconnected', '연결 실패 (재시도 초과)');
+                return;
+            }
+            
+            if (reconnectInterval) {
+                return; // 이미 재연결 스케줄됨
+            }
+            
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000); // 지수적 백오프, 최대 30초
+            console.log(`${delay}ms 후 재연결 시도...`);
+            
+            reconnectInterval = setTimeout(() => {
+                reconnectAttempts++;
+                reconnectInterval = null;
+                initWebSocket();
+            }, delay);
+        }
+        
+        function forceReconnectWebSocket() {
+            reconnectAttempts = 0;
+            if (reconnectInterval) {
+                clearInterval(reconnectInterval);
+                reconnectInterval = null;
+            }
+            if (websocket) {
+                websocket.close();
+            }
+            setTimeout(initWebSocket, 1000);
+        }
+
+        function disconnectWebSocket() {
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+                console.log('WebSocket 연결 종료 요청');
+                updateWSStatus('disconnected', '연결 종료됨');
+                websocket.close(1000, 'Normal closure');
+                websocket = null;
+                
+                // 재연결 스케줄 취소
+                if (reconnectInterval) {
+                    clearInterval(reconnectInterval);
+                    reconnectInterval = null;
+                }
+                reconnectAttempts = 0;
+            }
+        }
+
+        function updateWSStatus(status, message) {
+            const statusElement = document.getElementById('ws-status');
+            statusElement.className = `ws-status ws-${status}`;
+            statusElement.textContent = message;
+        }
+
+        // 파일 업로드 관련 함수들
+        function setupFileUpload() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            
+            // 파일 선택 이벤트
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // 드래그 앤 드롭 이벤트
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    fileInput.files = files;
+                    handleFileSelect({ target: { files: [file] } });
+                }
+            });
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                
+                // 파일 정보 표시
+                const fileInfo = document.getElementById('file-info');
+                const fileDetails = document.getElementById('file-details');
+                
+                fileDetails.innerHTML = `
+                    <strong>파일명:</strong> ${file.name}<br>
+                    <strong>크기:</strong> ${formatFileSize(file.size)}<br>
+                    <strong>타입:</strong> ${file.type || 'Unknown'}
+                `;
+                
+                fileInfo.style.display = 'block';
+                document.getElementById('upload-btn').disabled = false;
+                
+                showStatusMessage('info', `파일 선택됨: ${file.name} (${formatFileSize(file.size)})`);
+            }
+        }
+
+        function clearSelection() {
+            selectedFile = null;
+            document.getElementById('file-input').value = '';
+            document.getElementById('file-info').style.display = 'none';
+            document.getElementById('upload-btn').disabled = true;
+            document.getElementById('progress-container').style.display = 'none';
+            showStatusMessage('info', '파일 선택이 취소되었습니다.');
+        }
+
+        function uploadFirmware() {
+            if (!selectedFile) {
+                showStatusMessage('error', '파일을 선택해주세요.');
+                return;
+            }
+
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                showStatusMessage('error', 'WebSocket이 연결되지 않았습니다.');
+                return;
+            }
+
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const arrayBuffer = e.target.result;
+                const fileData = new Uint8Array(arrayBuffer);
+                const totalSize = fileData.length;
+                const chunkSize = 1024; // 1KB 청크 (임베디드 장치 제약)
+                
+                // 진행률 표시 초기화
+                const progressContainer = document.getElementById('progress-container');
+                const progressFill = document.getElementById('progress-fill');
+                const progressText = document.getElementById('progress-text');
+                const uploadBtn = document.getElementById('upload-btn');
+                
+                progressContainer.style.display = 'block';
+                progressFill.style.width = '0%';
+                progressText.textContent = '0%';
+                uploadBtn.disabled = true;
+                
+                let sentBytes = 0;
+                let uploadStarted = false;
+                
+                showStatusMessage('info', `파일 전송 시작: ${selectedFile.name} (${formatFileSize(totalSize)})`);
+                
+                // 업로드 시작 메시지 전송
+                const uploadStartMsg = `upload_start:${selectedFile.name}:${totalSize}`;
+                websocket.send(uploadStartMsg);
+                
+                function sendNextChunk() {
+                    if (sentBytes >= totalSize) {
+                        // 전송 완료 메시지 전송
+                        websocket.send('upload_complete');
+                        
+                        progressFill.style.width = '100%';
+                        progressText.textContent = '100%';
+                        
+                        showStatusMessage('success', 
+                            `펌웨어 업로드 완료: ${selectedFile.name} (${formatFileSize(totalSize)})`);
+                        uploadBtn.disabled = false;
+                        
+                        // 3초 후 진행률 바 숨김
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                            progressFill.style.width = '0%';
+                            progressText.textContent = '0%';
+                        }, 3000);
+                        return;
+                    }
+                    
+                    // 현재 청크 계산
+                    const remainingBytes = totalSize - sentBytes;
+                    const currentChunkSize = Math.min(chunkSize, remainingBytes);
+                    const chunk = fileData.slice(sentBytes, sentBytes + currentChunkSize);
+                    
+                    try {
+                        // WebSocket으로 바이너리 청크 전송
+                        websocket.send(chunk);
+                        
+                        sentBytes += currentChunkSize;
+                        
+                        // 진행률 업데이트
+                        const progress = Math.round((sentBytes / totalSize) * 100);
+                        progressFill.style.width = progress + '%';
+                        progressText.textContent = `${progress}% (${formatFileSize(sentBytes)}/${formatFileSize(totalSize)})`;
+                        
+                        // 다음 청크 전송 (50ms 딜레이로 부드러운 진행률 표시)
+                        setTimeout(sendNextChunk, 50);
+                        
+                    } catch (error) {
+                        showStatusMessage('error', '파일 전송 중 오류가 발생했습니다: ' + error.message);
+                        uploadBtn.disabled = false;
+                        progressContainer.style.display = 'none';
+                        return;
+                    }
+                }
+                
+                // WebSocket 메시지 리스너 추가 (업로드 준비 확인)
+                const originalOnMessage = websocket.onmessage;
+                websocket.onmessage = function(event) {
+                    if (event.data.startsWith('upload_ready:') && !uploadStarted) {
+                        uploadStarted = true;
+                        showStatusMessage('info', '서버가 업로드를 준비했습니다. 파일 전송을 시작합니다.');
+                        setTimeout(sendNextChunk, 100); // 100ms 후 전송 시작
+                    } else if (event.data === 'upload_success') {
+                        showStatusMessage('success', '파일이 서버에 성공적으로 저장되었습니다.');
+                    } else if (originalOnMessage) {
+                        originalOnMessage(event);
+                    }
+                };
+            };
+            
+            reader.onerror = function() {
+                showStatusMessage('error', '파일 읽기 오류가 발생했습니다.');
+                document.getElementById('upload-btn').disabled = false;
+                document.getElementById('progress-container').style.display = 'none';
+            };
+            
+            reader.readAsArrayBuffer(selectedFile);
+        }
+
+        function showStatusMessage(type, message) {
+            const statusElement = document.getElementById('status-message');
+            statusElement.className = `status-message status-${type}`;
+            statusElement.textContent = message;
+            statusElement.style.display = 'block';
+            
+            // 에러가 아닌 경우 5초 후 자동 숨김
+            if (type !== 'error') {
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
     </script>
 </body>
