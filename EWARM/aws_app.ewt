@@ -1435,6 +1435,27 @@
             </file>
         </group>
         <group>
+            <name>http_server</name>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\core_json.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\core_json.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\http_api.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\http_api.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\task_http_server.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\task_http_server.h</name>
+            </file>
+        </group>
+        <group>
             <name>IO</name>
             <group>
                 <name>cli</name>

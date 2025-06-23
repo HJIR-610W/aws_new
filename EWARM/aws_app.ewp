@@ -436,6 +436,7 @@
                     <state>$PROJ_DIR$\..\Application\Version</state>
                     <state>$PROJ_DIR$\..\Application\Tasks\console\aws_menu</state>
                     <state>$PROJ_DIR$\..\Application\Tasks\console\hj_snow_menu</state>
+                    <state>$PROJ_DIR$\..\Application\http_server</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1393,6 +1394,27 @@
             </group>
             <file>
                 <name>$PROJ_DIR$\..\Application\FATFS\file_io.c</name>
+            </file>
+        </group>
+        <group>
+            <name>http_server</name>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\core_json.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\core_json.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\http_api.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\http_api.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\task_http_server.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\http_server\task_http_server.h</name>
             </file>
         </group>
         <group>

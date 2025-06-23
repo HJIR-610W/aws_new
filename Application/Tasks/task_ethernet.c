@@ -8,6 +8,7 @@
 
 #include "task_tcpServer.h"
 #include "task_client.h"
+#include "task_http_server.h"
 
 
 const osThreadAttr_t ethernetTxTask_attributes = {
@@ -36,7 +37,7 @@ void ethernetTask(void *arg)
   
   noti_tcpServerTask(0x00000001);
   noti_tcpClientTask(0x00000001);
-
+  noti_httpServerTask(0x00000001);
   osThreadExit();//¡æ∑· Ω√≈¥
 
 

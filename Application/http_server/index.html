@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Sensor Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ecf0f1;
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 15px;
+        }
+        .nav-menu {
+            list-style: none;
+        }
+        .nav-item {
+            margin: 5px 0;
+        }
+        .nav-link {
+            display: block;
+            padding: 15px 25px;
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        .nav-link:hover {
+            background-color: #34495e;
+            color: #ecf0f1;
+            border-left-color: #3498db;
+        }
+        .nav-link.active {
+            background-color: #3498db;
+            color: white;
+            border-left-color: #2980b9;
+        }
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 30px;
+        }
+        .page {
+            display: none;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .page.active {
+            display: block;
+        }
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .sensor-display {
+            background-color: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #2196F3;
+        }
+        .sensor-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            gap: 15px;
+        }
+        .sensor-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1976D2;
+            flex: 1;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .sensor-value span {
+            color: #0d47a1;
+            font-size: 18px;
+        }
+        .control-section {
+            background-color: #f0f8e8;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+            margin-bottom: 20px;
+        }
+        .setting-display {
+            background-color: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border: 1px solid #c8e6c9;
+        }
+        .setting-item {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 10px 0;
+        }
+        .setting-item label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .setting-item span {
+            color: #1b5e20;
+            font-size: 18px;
+            background-color: #fff;
+            padding: 5px 10px;
+            border-radius: 3px;
+            border: 1px solid #a5d6a7;
+            min-width: 80px;
+            text-align: center;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+        }
+        input[type="number"], input[type="text"] {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 300px;
+        }
+        select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: white;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .last-update {
+            color: #666;
+            font-size: 14px;
+            text-align: right;
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .accordion {
+            margin-bottom: 20px;
+        }
+        .accordion-header {
+            background-color: #34495e;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .accordion-header:hover {
+            background-color: #2c3e50;
+        }
+        .accordion-header.active {
+            background-color: #3498db;
+            border-radius: 5px 5px 0 0;
+        }
+        .accordion-content {
+            display: none;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .accordion-content.active {
+            display: block;
+        }
+        .accordion-icon {
+            transition: transform 0.3s;
+        }
+        .accordion-header.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>IoT 모니터</h2>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <div class="nav-link active" onclick="showPage('realtime')">실시간 자료</div>
+            </li>
+            <li class="nav-item">
+                <div class="nav-link" onclick="showPage('system')">시스템(설정)</div>
+            </li>
+            <li class="nav-item">
+                <div class="nav-link" onclick="showPage('sensor')">센서(설정)</div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <!-- 실시간 자료 페이지 -->
+        <div id="realtime" class="page active">
+            <h1>실시간 센서 모니터</h1>
+            <div class="sensor-display">
+                <h2>센서 데이터</h2>
+                <div id="sensor-data">
+                    <div class="sensor-row">
+                        <div class="sensor-value">기온: <span id="temperature">--</span> °C</div>
+                        <div class="sensor-value">풍향: <span id="wind_direction">--</span>°</div>
+                        <div class="sensor-value">풍속: <span id="wind_speed">--</span> m/s</div>
+						<div class="sensor-value">순간풍향: <span id="gust_direction">--</span> m/s</div>
+                        <div class="sensor-value">순간풍속: <span id="gust_speed">--</span> m/s</div>
+                    </div>
+                    <div class="sensor-row">
+					    <div class="sensor-value">강우량: <span id="rainfall">--</span> mm</div>
+                        <div class="sensor-value">기압: <span id="pressure">--</span> hPa</div>
+                        <div class="sensor-value">강우감지: <span id="rain_detected">--</span></div>
+                        <div class="sensor-value">적설: <span id="snow_depth">--</span> cm</div>
+                        <div class="sensor-value">습도: <span id="humidity">--</span> %</div>
+                    </div>
+                    <div class="sensor-row">
+						<div class="sensor-value">일사량: <span id="solar_radiation">--</span> W/m²</div>
+						<div class="sensor-value">일조시간: <span id="sunshine_hours">--</span> h</div>
+						<div class="sensor-value">지중온도 5cm,: <span id="soil_temperature_5cm">--</span> °C</div>
+						<div class="sensor-value">지중온도 10cm: <span id="soil_temperature_10cm">--</span> °C</div>
+						<div class="sensor-value">지중온도 20cm: <span id="soil_temperature_20cm">--</span> °C</div>
+                    </div>
+					 <div class="sensor-row">
+						<div class="sensor-value">지중온도 30cm,: <span id="soil_temperature_30cm">--</span> °C</div>
+						<div class="sensor-value">지중온도 50cm: <span id="soil_temperature_50cm">--</span> °C</div>
+						<div class="sensor-value">지중온도 1m: <span id="soil_temperature_1m">--</span> °C</div>
+						<div class="sensor-value">지중온도 1.5m: <span id="soil_temperature_1_5m">--</span> °C</div>
+                    </div>
+                </div>
+                <div class="last-update" id="last-update">마지막 업데이트: --</div>
+            </div>
+        </div>
+
+        <!-- 시스템 설정 페이지 -->
+        <div id="system" class="page">
+            <h1>시스템 설정</h1>
+            <div class="control-section">
+                <h2>장비 설정</h2>
+                <p>장비 ID를 설정하여 시뮬레이션 장비를 제어하세요.</p>
+                <div class="setting-display">
+                    <div class="setting-item">
+                        <label>id (변수명): <span id="current-id">--</span></label>
+                    </div>
+                    <div class="setting-item">
+                        <label>protocol_type (변수명): <span id="current-protocol">--</span></label>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="number" id="device-id" placeholder="새로운 ID 입력" min="1" max="999999">
+                    <select id="protocol-type">
+                        <option value="0">0: KMA2</option>
+                        <option value="1">1: KMA3</option>
+                    </select>
+                    <button onclick="setDevice()">설정</button>
+                </div>
+                <div id="status" class="status" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- 센서 설정 페이지 -->
+        <div id="sensor" class="page">
+            <h1>센서 설정</h1>
+            
+            <!-- 온도 센서 Accordion -->
+            <div class="accordion">
+                <button class="accordion-header" onclick="toggleAccordion('temp-accordion')">
+                    <span>🌡️ 온도 센서 설정</span>
+                    <span class="accordion-icon">▼</span>
+                </button>
+                <div id="temp-accordion" class="accordion-content">
+                    <div class="form-group">
+                        <label for="temp-model">모델:</label>
+                        <select id="temp-model" onchange="updateSensorFields('temp')">
+                            <option value="">선택하세요</option>
+                            <option value="adc">ADC 온도센서</option>
+                            <option value="serial">Serial 온도센서</option>
+                        </select>
+                    </div>
+                    <div id="temp-adc-fields" class="hidden">
+                        <div class="form-group">
+                            <label for="temp-adc-mode">모드:</label>
+                            <select id="temp-adc-mode" onchange="updateChannelOptions('temp')">
+                                <option value="single">Single-ended</option>
+                                <option value="differential">Differential</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="temp-adc-channel">채널:</label>
+                            <select id="temp-adc-channel"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="temp-adc-gain">게인:</label>
+                            <input type="number" id="temp-adc-gain" value="1" min="1" max="128">
+                        </div>
+                    </div>
+                    <div id="temp-serial-fields" class="hidden">
+                        <div class="form-group">
+                            <label for="temp-serial-physical">물리적 포트:</label>
+                            <select id="temp-serial-physical" onchange="updateSerialPorts('temp')">
+                                <option value="rs232">RS232</option>
+                                <option value="rs485">RS485</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="temp-serial-port">포트:</label>
+                            <select id="temp-serial-port"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="temp-serial-baud">통신속도:</label>
+                            <select id="temp-serial-baud">
+                                <option value="9600">9600</option>
+                                <option value="19200">19200</option>
+                                <option value="38400">38400</option>
+                                <option value="57600">57600</option>
+                                <option value="115200">115200</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="temp-serial-address">주소:</label>
+                            <input type="number" id="temp-serial-address" value="1" min="1" max="247">
+                        </div>
+                    </div>
+                    <button onclick="saveSensorConfig('temp')">온도 센서 설정 저장</button>
+                </div>
+            </div>
+
+            <!-- 습도 센서 Accordion -->
+            <div class="accordion">
+                <button class="accordion-header" onclick="toggleAccordion('hum-accordion')">
+                    <span>💧 습도 센서 설정</span>
+                    <span class="accordion-icon">▼</span>
+                </button>
+                <div id="hum-accordion" class="accordion-content">
+                    <div class="form-group">
+                        <label for="hum-model">모델:</label>
+                        <select id="hum-model" onchange="updateSensorFields('hum')">
+                            <option value="">선택하세요</option>
+                            <option value="adc">ADC 습도센서</option>
+                            <option value="serial">Serial 습도센서</option>
+                        </select>
+                    </div>
+                    <div id="hum-adc-fields" class="hidden">
+                        <div class="form-group">
+                            <label for="hum-adc-mode">모드:</label>
+                            <select id="hum-adc-mode" onchange="updateChannelOptions('hum')">
+                                <option value="single">Single-ended</option>
+                                <option value="differential">Differential</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hum-adc-channel">채널:</label>
+                            <select id="hum-adc-channel"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hum-adc-gain">게인:</label>
+                            <input type="number" id="hum-adc-gain" value="1" min="1" max="128">
+                        </div>
+                    </div>
+                    <div id="hum-serial-fields" class="hidden">
+                        <div class="form-group">
+                            <label for="hum-serial-physical">물리적 포트:</label>
+                            <select id="hum-serial-physical" onchange="updateSerialPorts('hum')">
+                                <option value="rs232">RS232</option>
+                                <option value="rs485">RS485</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hum-serial-port">포트:</label>
+                            <select id="hum-serial-port"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hum-serial-baud">통신속도:</label>
+                            <select id="hum-serial-baud">
+                                <option value="9600">9600</option>
+                                <option value="19200">19200</option>
+                                <option value="38400">38400</option>
+                                <option value="57600">57600</option>
+                                <option value="115200">115200</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hum-serial-address">주소:</label>
+                            <input type="number" id="hum-serial-address" value="1" min="1" max="247">
+                        </div>
+                    </div>
+                    <button onclick="saveSensorConfig('hum')">습도 센서 설정 저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let updateInterval;
+
+        function updateSensor() {
+            fetch('/api/sensor')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 기본 센서
+                    document.getElementById('temperature').textContent = ((data.temperature-1000)/10).toFixed(1);
+                    document.getElementById('wind_direction').textContent = (data.wind_direction/10).toFixed(1);
+                    document.getElementById('wind_speed').textContent = (data.wind_speed/10).toFixed(1);
+                    document.getElementById('gust_direction').textContent = (data.gust_direction/10).toFixed(1);        
+                    document.getElementById('gust_speed').textContent = (data.gust_speed/10).toFixed(1);
+					
+					document.getElementById('rainfall').textContent = (data.rainfall/10).toFixed(1);
+					document.getElementById('pressure').textContent = (data.pressure/10).toFixed(1);
+					document.getElementById('rain_detected').textContent = data.rain_detected ? '감지됨' : '없음';
+					document.getElementById('snow_depth').textContent = data.snow_depth.toFixed(1);
+					document.getElementById('humidity').textContent = (data.humidity/10).toFixed(1);
+
+										
+                    // 일사/일조 센서
+					document.getElementById('solar_radiation').textContent = data.solar_radiation.toFixed(0);
+					document.getElementById('sunshine_hours').textContent = data.sunshine_hours.toFixed(1);
+					document.getElementById('soil_temperature_5cm').textContent = ((data.soil_temperature_5cm-1000)/10).toFixed(1);
+					document.getElementById('soil_temperature_10cm').textContent = ((data.soil_temperature_10cm-1000)/10).toFixed(1);
+					document.getElementById('soil_temperature_20cm').textContent = ((data.soil_temperature_20cm-1000)/10).toFixed(1);
+	
+
+				    document.getElementById('soil_temperature_30cm').textContent = ((data.soil_temperature_30cm-1000)/10).toFixed(1);
+					document.getElementById('soil_temperature_50cm').textContent = ((data.soil_temperature_50cm-1000)/10).toFixed(1);
+					document.getElementById('soil_temperature_1m').textContent = ((data.soil_temperature_1m-1000)/10).toFixed(1);
+					document.getElementById('soil_temperature_1_5m').textContent = ((data.soil_temperature_1_5m-1000)/10).toFixed(1);
+					
+					
+					
+                    const now = new Date();
+                    document.getElementById('last-update').textContent =
+                        `마지막 업데이트: ${now.toLocaleTimeString()}`;
+                })
+                .catch(error => {
+                    console.error('센서 데이터 가져오기 실패:', error);
+                    // 에러 표시를 위해 모든 센서 값을 에러로 설정
+                    const sensorIds = ['temperature', 'humidity', 'pressure', 'wind_direction', 'wind_speed', 
+                                     'gust_speed', 'gust_direction','rainfall', 'rain_detected', 'snow_depth', 
+                                     'solar_radiation', 'sunshine_hours', 'soil_temperature_5cm','soil_temperature_10cm',
+									 'soil_temperature_20cm','soil_temperature_30cm','soil_temperature_50cm','soil_temperature_1m','soil_temperature_1_5m'];
+                    sensorIds.forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) element.textContent = 'ERR';
+                    });
+                });
+        }
+
+        function loadCurrentDevice() {
+            fetch('/api/device')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('current-id').textContent = data.id;
+                    document.getElementById('current-protocol').textContent = `${data.protocol_type} (${data.protocol_type === 0 ? 'KMA2' : 'KMA3'})`;
+                    document.getElementById('device-id').placeholder = `현재: ${data.id}`;
+                    document.getElementById('protocol-type').value = data.protocol_type;
+                })
+                .catch(error => {
+                    console.error('장비 설정 가져오기 실패:', error);
+                    document.getElementById('current-id').textContent = 'ERROR';
+                    document.getElementById('current-protocol').textContent = 'ERROR';
+                    document.getElementById('device-id').placeholder = '장비 ID 로드 실패';
+                });
+        }
+
+        function setDevice() {
+            const deviceId = document.getElementById('device-id').value.trim();
+            const protocolType = parseInt(document.getElementById('protocol-type').value);
+            const statusDiv = document.getElementById('status');
+
+            if (!deviceId) {
+                showStatus('장비 ID를 입력해주세요.', 'error');
+                return;
+            }
+
+            const numericId = parseInt(deviceId);
+            if (isNaN(numericId) || numericId <= 0) {
+                showStatus('유효한 양수를 입력해주세요.', 'error');
+                return;
+            }
+
+            fetch('/api/device', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    id: numericId,
+                    protocol_type: protocolType
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    const protocolName = protocolType === 0 ? 'KMA2' : 'KMA3';
+                    showStatus(`장비 ID: ${numericId}, 프로토콜: ${protocolName}으로 설정되었습니다.`, 'success');
+                    document.getElementById('current-id').textContent = numericId;
+                    document.getElementById('current-protocol').textContent = `${protocolType} (${protocolName})`;
+                    document.getElementById('device-id').value = '';
+                    document.getElementById('device-id').placeholder = `현재: ${numericId}`;
+                } else {
+                    showStatus(data.message || '장비 설정에 실패했습니다.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('장비 설정 실패:', error);
+                showStatus('서버와의 통신에 실패했습니다.', 'error');
+            });
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Enter 키로 장비 ID 설정
+        document.getElementById('device-id').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                setDevice();
+            }
+        });
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentDevice(); // 현재 장비 설정 로드
+            updateSensor(); // 즉시 한 번 업데이트
+            updateInterval = setInterval(updateSensor, 1000); // 1초마다 업데이트
+            
+            // 초기 채널 옵션 설정
+            updateChannelOptions('temp');
+            updateChannelOptions('hum');
+            updateSerialPorts('temp');
+            updateSerialPorts('hum');
+        });
+
+        // 페이지 언로드 시 정리
+        window.addEventListener('beforeunload', function() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+        });
+
+        // 페이지 내비게이션 기능
+        function showPage(pageId) {
+            // 모든 페이지 숨기기
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // 모든 내비게이션 링크 비활성화
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+            
+            // 선택된 페이지 보이기
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // 선택된 내비게이션 링크 활성화
+            const targetNavLink = document.querySelector(`[onclick="showPage('${pageId}')"]`);
+            if (targetNavLink) {
+                targetNavLink.classList.add('active');
+            }
+
+            // 센서 설정 페이지로 이동 시 현재 설정값 로드
+            if (pageId === 'sensor') {
+                loadSensorConfigs();
+            }
+        }
+
+        // 센서 모델 선택에 따른 필드 업데이트
+        function updateSensorFields(sensorType) {
+            const modelSelect = document.getElementById(`${sensorType}-model`);
+            const adcFields = document.getElementById(`${sensorType}-adc-fields`);
+            const serialFields = document.getElementById(`${sensorType}-serial-fields`);
+            
+            // 모든 필드 숨기기
+            adcFields.classList.add('hidden');
+            serialFields.classList.add('hidden');
+            
+            // 선택된 모델에 따른 필드 보이기
+            if (modelSelect.value === 'adc') {
+                adcFields.classList.remove('hidden');
+                updateChannelOptions(sensorType);
+            } else if (modelSelect.value === 'serial') {
+                serialFields.classList.remove('hidden');
+                updateSerialPorts(sensorType);
+            }
+        }
+
+        // ADC 채널 옵션 업데이트
+        function updateChannelOptions(sensorType) {
+            const modeSelect = document.getElementById(`${sensorType}-adc-mode`);
+            const channelSelect = document.getElementById(`${sensorType}-adc-channel`);
+            
+            channelSelect.innerHTML = '';
+            
+            if (modeSelect.value === 'single') {
+                // Single-ended: 0-15
+                for (let i = 0; i <= 15; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `채널 ${i}`;
+                    channelSelect.appendChild(option);
+                }
+            } else if (modeSelect.value === 'differential') {
+                // Differential: 0-7
+                for (let i = 0; i <= 7; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `채널 ${i}`;
+                    channelSelect.appendChild(option);
+                }
+            }
+        }
+
+        // Serial 포트 옵션 업데이트
+        function updateSerialPorts(sensorType) {
+            const physicalSelect = document.getElementById(`${sensorType}-serial-physical`);
+            const portSelect = document.getElementById(`${sensorType}-serial-port`);
+            
+            portSelect.innerHTML = '';
+            
+            if (physicalSelect.value === 'rs232') {
+                // RS232: 1, 2
+                for (let i = 1; i <= 2; i++) {
+                    const option = document.createElement('option');
+                    option.value = `RS232_${i}`;
+                    option.textContent = `RS232_${i}`;
+                    portSelect.appendChild(option);
+                }
+            } else if (physicalSelect.value === 'rs485') {
+                // RS485: A, B
+                ['A', 'B'].forEach(port => {
+                    const option = document.createElement('option');
+                    option.value = `RS485_${port}`;
+                    option.textContent = `RS485_${port}`;
+                    portSelect.appendChild(option);
+                });
+            }
+        }
+
+        // 센서 설정 저장
+        function saveSensorConfig(sensorType) {
+            const modelSelect = document.getElementById(`${sensorType}-model`);
+            const model = modelSelect.value;
+            
+            if (!model) {
+                alert('모델을 선택해주세요.');
+                return;
+            }
+            
+            let config = {
+                sensor: sensorType,
+                model: model
+            };
+            
+            if (model === 'adc') {
+                config.mode = document.getElementById(`${sensorType}-adc-mode`).value;
+                config.channel = document.getElementById(`${sensorType}-adc-channel`).value;
+                config.gain = document.getElementById(`${sensorType}-adc-gain`).value;
+            } else if (model === 'serial') {
+                config.physical_port = document.getElementById(`${sensorType}-serial-physical`).value;
+                config.port = document.getElementById(`${sensorType}-serial-port`).value;
+                config.baud_rate = document.getElementById(`${sensorType}-serial-baud`).value;
+                config.address = document.getElementById(`${sensorType}-serial-address`).value;
+            }
+            
+            // API 호출로 설정 저장
+            fetch(`/api/sensor/config/${sensorType}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(config)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(`${sensorType} 센서 설정이 저장되었습니다.`);
+                    console.log('센서 설정 저장 성공:', config);
+                } else {
+                    alert('센서 설정 저장에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                }
+            })
+            .catch(error => {
+                console.error('센서 설정 저장 실패:', error);
+                alert('서버와의 통신에 실패했습니다.');
+            });
+        }
+
+        // Accordion 토글 기능
+        function toggleAccordion(accordionId) {
+            const content = document.getElementById(accordionId);
+            const header = content.previousElementSibling;
+            
+            // 현재 accordion 토글
+            content.classList.toggle('active');
+            header.classList.toggle('active');
+        }
+
+        // 센서 설정값 로드
+        function loadSensorConfigs() {
+            // 온도 센서 설정 로드
+            fetch('/api/sensor/config/temp')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadSensorConfig('temp', data);
+                })
+                .catch(error => {
+                    console.error('온도 센서 설정 로드 실패:', error);
+                    // 실패 시 기본값으로 설정
+                    loadSensorConfig('temp', {
+                        model: 'adc',
+                        mode: 'single',
+                        channel: '0',
+                        gain: '1'
+                    });
+                });
+
+            // 습도 센서 설정 로드
+            fetch('/api/sensor/config/hum')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadSensorConfig('hum', data);
+                })
+                .catch(error => {
+                    console.error('습도 센서 설정 로드 실패:', error);
+                    // 실패 시 기본값으로 설정
+                    loadSensorConfig('hum', {
+                        model: 'serial',
+                        physical_port: 'rs232',
+                        port: 'RS232_1',
+                        baud_rate: '9600',
+                        address: '1'
+                    });
+                });
+        }
+
+        // 개별 센서 설정 필드 업데이트
+        function loadSensorConfig(sensorType, config) {
+            const modelSelect = document.getElementById(`${sensorType}-model`);
+            
+            // 모델 설정
+            if (config.model) {
+                modelSelect.value = config.model;
+                updateSensorFields(sensorType);
+                
+                // 모델별 세부 설정
+                if (config.model === 'adc') {
+                    if (config.mode) {
+                        document.getElementById(`${sensorType}-adc-mode`).value = config.mode;
+                        updateChannelOptions(sensorType);
+                    }
+                    if (config.channel) {
+                        document.getElementById(`${sensorType}-adc-channel`).value = config.channel;
+                    }
+                    if (config.gain) {
+                        document.getElementById(`${sensorType}-adc-gain`).value = config.gain;
+                    }
+                } else if (config.model === 'serial') {
+                    if (config.physical_port) {
+                        document.getElementById(`${sensorType}-serial-physical`).value = config.physical_port;
+                        updateSerialPorts(sensorType);
+                    }
+                    if (config.port) {
+                        document.getElementById(`${sensorType}-serial-port`).value = config.port;
+                    }
+                    if (config.baud_rate) {
+                        document.getElementById(`${sensorType}-serial-baud`).value = config.baud_rate;
+                    }
+                    if (config.address) {
+                        document.getElementById(`${sensorType}-serial-address`).value = config.address;
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

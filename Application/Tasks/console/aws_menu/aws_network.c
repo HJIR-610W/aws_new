@@ -116,7 +116,7 @@ int dec;
 int32_t aws_eth_default(void)
 {
   int choice, status;
-  char buff[ETH_DEFAUNT_CNT][20];
+  char buff[ETH_DEFAUNT_CNT][30];
   char *menu[ETH_DEFAUNT_CNT];
   int menu_cnt = 0;
 

@@ -41,6 +41,7 @@
 #include "user_heap.h"
 #include "bsp.h"
 #include "task_wdt.h"
+#include "task_http_server.h"
 
 const osThreadAttr_t kStartTask_attributes = {
     .name = "startTask",
@@ -134,7 +135,8 @@ void startTask(void *arg)
 
   panelTask_init();
   bleTask_init();
-
+  http_server_task_init();
+  
   log_boot_reason();
   osThreadExit();  // ¡æ∑· Ω√≈¥
 }
