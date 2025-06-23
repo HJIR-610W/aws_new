@@ -213,29 +213,30 @@ int32_t print_eth_info(uint16_t row, uint16_t column,  uint8_t selected)
   {
     vt100_print_frame_selected(row+1, column, "이더넷", '+', '|', '-', SMALL_W, WHITE, selected);
 
-    link_status[ETH_CLIENT_0] = get_tcp_system(ETH_CLIENT_0)->link_status;
-    tx_cnt[ETH_CLIENT_0] = get_tcp_system(ETH_CLIENT_0)->tx_cnt;
-    rx_cnt[ETH_CLIENT_0] = get_tcp_system(ETH_CLIENT_0)->rx_cnt;
-
-    vt100_print_bar(line++, column, -SMALL_W, "링크(0):%s(%s)\r\n",
-                    ITEM_LIST(link_status[ETH_CLIENT_0], linkStatusList),
-                    get_tcp_system(ETH_CLIENT_0)->client_ip_str);
-    vt100_print_bar(line++, column, -SMALL_W, "송신   :%d\r\n", tx_cnt[ETH_CLIENT_0]);
-    vt100_print_bar(line++, column, -SMALL_W, "수신   :%d\r\n", rx_cnt[ETH_CLIENT_0]);
-
-    last_time = get_tcp_system(ETH_CLIENT_0)->last_recv_time;
-    time_cvt_secTotime(last_time, &nt);
-    if (last_time == 0)
+    for (int i = 0; i < ETH_CLIENT_MAX; i++)
     {
-      vt100_print_bar(line++, column, -SMALL_W, "R시간  :-\r\n");
-    }
+      link_status[i] = get_tcp_system(i)->link_status;
+      tx_cnt[i] = get_tcp_system(i)->tx_cnt;
+      rx_cnt[i] = get_tcp_system(i)->rx_cnt;
+
+      vt100_print_bar(line++, column, -SMALL_W, "링크(%d):%s(%s)\r\n",i,
+                      ITEM_LIST(link_status[i], linkStatusList), get_tcp_system(i)->client_ip_str);
+      vt100_print_bar(line++, column, -SMALL_W, "송신   :%d\r\n", tx_cnt[i]);
+      vt100_print_bar(line++, column, -SMALL_W, "수신   :%d\r\n", rx_cnt[i]);
+
+      last_time = get_tcp_system(i)->last_recv_time;
+      time_cvt_secTotime(last_time, &nt);
+      if (last_time == 0)
+      {
+        vt100_print_bar(line++, column, -SMALL_W, "R시간  :-\r\n");
+      }
     else
     {
       vt100_print_bar(line++, column, -SMALL_W, "R시간  :%02d-%02d-%02d %02d:%02d:%02d\r\n",
                       nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
     }
 
-    last_time = get_tcp_system(ETH_CLIENT_0)->last_send_time;
+    last_time = get_tcp_system(i)->last_send_time;
     time_cvt_secTotime(last_time, &nt);
     if (last_time == 0)
     {
@@ -247,41 +248,8 @@ int32_t print_eth_info(uint16_t row, uint16_t column,  uint8_t selected)
                       nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
     }
 
-
-
-    link_status[ETH_CLIENT_1] = get_tcp_system(ETH_CLIENT_1)->link_status;
-    tx_cnt[ETH_CLIENT_1] = get_tcp_system(ETH_CLIENT_1)->tx_cnt;
-    rx_cnt[ETH_CLIENT_1] = get_tcp_system(ETH_CLIENT_1)->rx_cnt;
-
-    vt100_print_bar(line++, column, -SMALL_W, "링크(1):%s(%s)\r\n",
-                    ITEM_LIST(link_status[ETH_CLIENT_1], linkStatusList),
-                    get_tcp_system(ETH_CLIENT_1)->client_ip_str);
-    vt100_print_bar(line++, column, -SMALL_W, "송신   :%d\r\n", tx_cnt[ETH_CLIENT_1]);
-    vt100_print_bar(line++, column, -SMALL_W, "수신   :%d\r\n", rx_cnt[ETH_CLIENT_1]);
-    last_time = get_tcp_system(ETH_CLIENT_1)->last_recv_time;
-    time_cvt_secTotime(last_time, &nt);
-    if (last_time == 0)
-    {
-      vt100_print_bar(line++, column, -SMALL_W, "R시간  :-\r\n");
-    }
-    else
-    {
-      vt100_print_bar(line++, column, -SMALL_W, "R시간  :%02d-%02d-%02d %02d:%02d:%02d\r\n",
-                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
-    }
-
-    last_time = get_tcp_system(ETH_CLIENT_1)->last_send_time;
-    time_cvt_secTotime(last_time, &nt);
-    if (last_time == 0)
-    {
-      vt100_print_bar(line++, column, -SMALL_W, "T시간  :-\r\n");
-    }
-    else
-    {
-      vt100_print_bar(line++, column, -SMALL_W, "T시간  :%02d-%02d-%02d %02d:%02d:%02d\r\n",
-                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
-    }
-    vt100_print_line(line++, column, '+', '-', SMALL_W);
+  }
+  vt100_print_line(line++, column, '+', '-', SMALL_W);
   }
 
   return line - (row+1);

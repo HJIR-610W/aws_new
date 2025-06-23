@@ -8,7 +8,8 @@
 
 #define ETH_CLIENT_0 0
 #define ETH_CLIENT_1 1
-#define ETH_CLIENT_MAX 2
+#define ETH_CLIENT_2 2
+#define ETH_CLIENT_MAX 3
 
 
 

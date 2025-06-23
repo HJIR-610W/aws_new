@@ -24,7 +24,7 @@
 #define RECV_BUFF_SIZE 512
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define CLIENT_CONNECT_TIMEOUT_MS 10000 
-#define MAX_CONCURRENT_CLIENTS 2        // 최대 동시 접속 클라이언트 수
+#define MAX_CONCURRENT_CLIENTS 3        // 최대 동시 접속 클라이언트 수
 
 typedef struct
 {
@@ -422,6 +422,10 @@ void tcpServerTask(void *arg)
         }
         else
         {
+          client_slots[slot_index].status->rx_cnt = 0;
+          client_slots[slot_index].status->tx_cnt = 0;
+          client_slots[slot_index].status->last_recv_time = 0;
+          client_slots[slot_index].status->last_send_time = 0;
           task_printf(
               "TCP 서버: %s:%u에 대한 client_handler_task 생성됨 (슬롯 %d, 태스크 ID: %p)\r\n",
               client_slots[slot_index].client_ip_str, client_slots[slot_index].client_port,
@@ -461,17 +465,14 @@ void tcpServerTask_init(uint32_t flag) // flag 매개변수는 현재 사용되지 않음
 
   local_port = get_config_app()->eth_local_port;
 
-  g_tcp_status[ETH_CLIENT_0].link_status = eLINK_IDLE;  // 태스크 시작 시 업데이트
-  g_tcp_status[ETH_CLIENT_1].link_status = eLINK_IDLE; // 태스크 시작 시 업데이트
+  for (int i = 0; i < ETH_CLIENT_MAX;i++)
+  {
+    g_tcp_status[i].link_status = eLINK_IDLE;  // 태스크 시작 시 업데이트
+    client_slots[i].status = &g_tcp_status[i];
+    strcpy(client_slots[i].client_ip_str, "-");
+    client_slots[i].status->client_ip_str = client_slots[i].client_ip_str;
+  }
 
-  client_slots[ETH_CLIENT_0].status = &g_tcp_status[ETH_CLIENT_0];
-  client_slots[ETH_CLIENT_1].status = &g_tcp_status[ETH_CLIENT_1];
-
-  strcpy(client_slots[ETH_CLIENT_0].client_ip_str,"-");
-  strcpy(client_slots[ETH_CLIENT_1].client_ip_str,"-");
-
-  client_slots[ETH_CLIENT_0].status->client_ip_str = client_slots[ETH_CLIENT_0].client_ip_str;
-  client_slots[ETH_CLIENT_1].status->client_ip_str = client_slots[ETH_CLIENT_1].client_ip_str;
 
   g_tcpSeverTaskId =
       osThreadNew(tcpServerTask, (void *)(uintptr_t)local_port, &tcpServerTask_attributes);
