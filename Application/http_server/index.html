@@ -1437,8 +1437,14 @@
                         progressFill.style.width = progress + '%';
                         progressText.textContent = `${progress}% (${formatFileSize(sentBytes)}/${formatFileSize(totalSize)})`;
                         
-                        // 다음 청크 전송 (50ms 딜레이로 부드러운 진행률 표시)
-                        setTimeout(sendNextChunk, 50);
+                        // 다음 청크 즉시 전송 (최소 딜레이로 성능 향상)
+                        if (websocket.bufferedAmount === 0) {
+                            // WebSocket 버퍼가 비어있으면 즉시 전송
+                            setTimeout(sendNextChunk, 1);
+                        } else {
+                            // 버퍼에 데이터가 있으면 잠시 대기 후 전송
+                            setTimeout(sendNextChunk, 10);
+                        }
                         
                     } catch (error) {
                         showStatusMessage('error', '파일 전송 중 오류가 발생했습니다: ' + error.message);
