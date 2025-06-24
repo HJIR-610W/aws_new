@@ -77,6 +77,7 @@ typedef struct
   // **하나의 set() 함수로 모든 설정 관리**
   void (*set)(driver_t *handle, uart_set_option_t option, void *value);
   void (*get)(driver_t *handle, uart_get_option_t option, void *value);
+  int (*inject)(driver_t *handle, const uint8_t *data, uint16_t length);
 } uart_api_t;
 
 #endif

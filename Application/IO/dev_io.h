@@ -62,6 +62,7 @@ void io_put_ch(char ch);
 void io_send(uint8_t *pData,uint16_t dataLen);
 void io_puts(const char *str);
 
+int32_t io_inject(uint8_t *p_data,uint32_t data_len);
 void debug_uart_init(uint32_t baud_rate);
 
 

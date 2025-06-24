@@ -19,6 +19,8 @@
 #include "user_heap.h"
 #include "util_time.h"
 #include "cli_input.h"
+#include "task_telnet_server.h"
+#include "terminal_bridge.h"
 
 static driver_t *debug_uart = NULL;
 ;
@@ -87,6 +89,26 @@ void debug_puts_nonos(char *str)
   }
 }
 
+void io_send(uint8_t *p_in_data, uint16_t data_len)
+{
+  driver_uart_send(debug_uart, p_in_data, data_len);
+  terminal_bridge_send_output((char *)p_in_data, data_len);
+}
+
+void io_put_ch(char ch)
+{ 
+  driver_uart_send(debug_uart, (uint8_t *)&ch, 1);
+  terminal_bridge_send_output((char *)&ch, 1);
+}
+
+void io_puts(const char *str)
+{
+  int32_t len = strlen(str);
+
+
+   driver_uart_send(debug_uart, (uint8_t *)str, len);
+   terminal_bridge_send_output((char *)str, len);
+}
 
 
 #define PRINTF_HEAP_USE 1
@@ -137,8 +159,8 @@ int32_t io_printf(const char *pFmt, ...)
 #endif
   if (debug_uart && ptr)  // os구동중인지 확인
   {
-    driver_uart_send(debug_uart, (uint8_t *)ptr, strlen(ptr));
-  }
+    io_send((uint8_t *)ptr, strlen(ptr));
+    }
   else if (ptr)  // os 없으면
   {
     debug_puts_nonos(ptr);
@@ -215,24 +237,12 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
   return 0;
 }
 
-void io_send(uint8_t *p_in_data, uint16_t data_len)
-{
-  driver_uart_send(debug_uart, p_in_data, data_len);
-}
 
-void io_put_ch(char ch)
-{ 
-  driver_uart_send(debug_uart, (uint8_t *)&ch, 1); 
-}
 
-void io_puts(const char *str)
-{
-  while (*str)
-  {
-    driver_uart_send(debug_uart, (uint8_t *)str, 1);
-    str++;
-  }
-}
+
+
+
+
 
 int32_t io_recv(char *p_out_buffer, uint16_t out_size, uint32_t timeout)
 {
@@ -466,4 +476,11 @@ int io_scanf_s(const char *fmt, ...)
   va_end(args);
 
   return ret;
+}
+
+
+
+int32_t io_inject(uint8_t *p_data,uint32_t data_len)
+{
+  return driver_uart_inject(debug_uart,p_data,data_len);
 }

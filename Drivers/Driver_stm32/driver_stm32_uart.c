@@ -53,6 +53,7 @@ int32_t stm32_uart_recv(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint32
 int32_t stm32_recv_opt2(driver_t *drv, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms,
                         uint32_t timeout2_ms);
 void stm32_uart_get(driver_t *drv, uart_get_option_t cmd, void *option);
+int32_t stm32_uart_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen);
 
 void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
 {
@@ -261,7 +262,8 @@ uart_api_t stm32_uart_api = {.close = stm32_uart_close,
                              .flush_rx = stm32_uart_flush_rx,
                              .recv_opt = stm32_recv_opt,
                              .get = stm32_uart_get,
-                             .recv_ll = stm32_uart_recv_ll};
+                             .recv_ll = stm32_uart_recv_ll,
+                             .inject = stm32_uart_inject};
 
 driver_t *stm32_uart_open(int num, void *opt)
 {
@@ -676,4 +678,18 @@ void stm32_uart_get(driver_t *drv, uart_get_option_t cmd, void *option)
 void stm32_uart_close(driver_t *handle)
 {
   (void)0;
+}
+
+int32_t stm32_uart_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen)
+{
+
+  size_t xBytesSent;
+  stm32_uart_cfg_t *cfg = drv->cfg;
+
+
+  xBytesSent = xStreamBufferSend(g_stm32_xStreamBuffer[cfg->channel], pData, dataLen,
+                                 pdMS_TO_TICKS( 100 ));
+
+  return xBytesSent;
+
 }

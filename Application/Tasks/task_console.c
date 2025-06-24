@@ -18,6 +18,7 @@
 #include "vt100_command.h"
 #include "console_test.h"
 #include "system_err.h"
+#include "dev_io.h"
 driver_t *console_uart;
 
 const osThreadAttr_t consoleTask_attributes = {
@@ -65,7 +66,7 @@ void print_signature(void)
 
 void SHELL_SendDataCallback(uint8_t* buf, uint32_t len)
 {
-  driver_uart_send(console_uart, buf, len);
+  io_send(buf,len);
 }
 
 void SHELL_ReceiveDataCallback(uint8_t* buf, uint32_t len)

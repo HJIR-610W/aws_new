@@ -186,3 +186,10 @@ int32_t driver_uart_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32
 
   return api->recv_ll(drv, pBuff, rLen, timeOutMs);
 }
+
+int32_t driver_uart_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen)
+{
+  uart_api_t *api = (uart_api_t *)drv->api;
+
+  return api->inject(drv, pData, dataLen);
+}

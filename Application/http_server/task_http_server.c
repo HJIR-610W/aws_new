@@ -372,18 +372,35 @@ static void handle_client_request(int client_socket)
     if (is_websocket_request(buffer)) {
         task_printf("HTTP Server: WebSocket upgrade request detected\r\n");
         
-        char* ws_key = extract_websocket_key(buffer);
-        if (ws_key) {
-            if (websocket_handshake(client_socket, ws_key) == 0) {
-                task_printf("HTTP Server: WebSocket handshake successful\r\n");
-                websocket_handle_connection(client_socket);
+        // URL 경로 확인
+        http_request_t ws_request;
+        if (http_parse_request(buffer, bytes_received, &ws_request) == 0) {
+            task_printf("HTTP Server: WebSocket path: %s\r\n", ws_request.path);
+            
+            char* ws_key = extract_websocket_key(buffer);
+            if (ws_key) {
+                if (websocket_handshake(client_socket, ws_key) == 0) {
+                    task_printf("HTTP Server: WebSocket handshake successful\r\n");
+                    
+                    // 경로에 따라 다른 WebSocket 핸들러 호출
+                    if (strcmp(ws_request.path, "/terminal") == 0) {
+                        task_printf("HTTP Server: Starting terminal WebSocket handler\r\n");
+                        websocket_terminal_handle_connection(client_socket);
+                    } else {
+                        task_printf("HTTP Server: Starting default WebSocket handler\r\n");
+                        websocket_handle_connection(client_socket);
+                    }
+                } else {
+                    task_printf("HTTP Server: WebSocket handshake failed\r\n");
+                }
+                aws_free(ws_key);
             } else {
-                task_printf("HTTP Server: WebSocket handshake failed\r\n");
+                task_printf("HTTP Server: WebSocket key not found\r\n");
+                http_send_response(client_socket, 400, "text/plain", "Bad WebSocket Request");
             }
-            aws_free(ws_key);
         } else {
-            task_printf("HTTP Server: WebSocket key not found\r\n");
-            http_send_response(client_socket, 400, "text/plain", "Bad WebSocket Request");
+            task_printf("HTTP Server: Failed to parse WebSocket request\r\n");
+            http_send_response(client_socket, 400, "text/plain", "Bad Request");
         }
         
         aws_free(buffer);
@@ -543,7 +560,7 @@ static void http_server_task(void *argument)
         closesocket(server_socket);
     }
 
-    task_printf("HTTP Server: Task terminated\r\n");
+    task_printf("HTTP Server: Task xtermnated\r\n");
 }
 
 

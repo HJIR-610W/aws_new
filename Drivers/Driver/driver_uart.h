@@ -43,4 +43,5 @@ int32_t driver_uart_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_siz
 void driver_uart_get(driver_t *drv, uart_get_option_t cmd, void *para);
 int32_t driver_uart_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutMs);
 
+int32_t driver_uart_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen);
 #endif

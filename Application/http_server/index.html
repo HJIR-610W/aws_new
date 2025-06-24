@@ -333,9 +333,9 @@
 
         .progress-bar {
             width: 100%;
-            height: 20px;
+            height: 40px;
             background-color: #ecf0f1;
-            border-radius: 10px;
+            border-radius: 20px;
             overflow: hidden;
         }
 
@@ -343,18 +343,17 @@
             height: 100%;
             background: linear-gradient(90deg, #3498db, #2ecc71);
             transition: width 0.3s;
-            border-radius: 10px;
+            border-radius: 20px;
             position: relative;
         }
 
-        .progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
+        .progress-info {
+            text-align: center;
+            margin-top: 10px;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 16px;
+            color: #333;
+            min-height: 20px;
         }
 
         .file-info {
@@ -413,7 +412,55 @@
             background-color: #fff3cd;
             color: #856404;
         }
+
+        .terminal-container {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #333;
+            height: 600px;
+            position: relative;
+        }
+
+        .terminal-header {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .terminal-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+
+        .terminal-connected {
+            background-color: #2e7d32;
+            color: white;
+        }
+
+        .terminal-disconnected {
+            background-color: #d32f2f;
+            color: white;
+        }
+
+        .terminal-wrapper {
+            height: calc(100% - 60px);
+            background-color: #000;
+            border-radius: 4px;
+            overflow: hidden;
+        }
     </style>
+    <!-- xterm.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
 </head>
 <body>
     <div class="sidebar">
@@ -427,6 +474,9 @@
             </li>
             <li class="nav-item">
                 <div class="nav-link" onclick="showPage('sensor')">센서(설정)</div>
+            </li>
+            <li class="nav-item">
+                <div class="nav-link" onclick="showPage('monitoring')">모니터링</div>
             </li>
             <li class="nav-item">
                 <div class="nav-link" onclick="toggleSubmenu('management')">관리</div>
@@ -663,10 +713,9 @@
                 <div class="progress-container" id="progress-container">
                     <h4>업로드 진행률</h4>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill">
-                            <div class="progress-text" id="progress-text">0%</div>
-                        </div>
+                        <div class="progress-fill" id="progress-fill"></div>
                     </div>
+                    <div class="progress-info" id="progress-info">0%</div>
                 </div>
 
                 <div id="status-message" class="status-message"></div>
@@ -689,17 +738,45 @@
                 </div>
             </div>
         </div>
+
+        <!-- 모니터링 페이지 -->
+        <div id="monitoring" class="page">
+            <h1>시스템 모니터링</h1>
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    VT100 Terminal Emulator
+                    <div id="terminal-status" class="terminal-status terminal-disconnected">연결 안됨</div>
+                </div>
+                <div class="terminal-wrapper">
+                    <div id="terminal"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- xterm.js JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
     <script>
         let updateInterval;
         let websocket = null;
         let selectedFile = null;
+        let isUploading = false;
+        let uploadAborted = false;
+        
+        // Terminal 관련 변수들
+        let terminalWebSocket = null;
+        let terminal = null;
+        let fitAddon = null;
+        let inputBuffer = '';
+        let terminalReconnectAttempts = 0;
+        const maxTerminalReconnectAttempts = 10;
 
         function updateSensor() {
-            // 센서 데이터 업데이트 (2초 타임아웃)
+            // 센서 데이터 업데이트 (5초 타임아웃)
+            console.log('updateSensor 호출됨');
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5초 타임아웃
             
             fetch('/api/sensor', { signal: controller.signal })
                 .then(response => {
@@ -850,9 +927,11 @@
 
         // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('페이지 로드 완료 - 초기화 시작');
             loadCurrentDevice(); // 현재 장비 설정 로드
             updateSensor(); // 즉시 한 번 업데이트
             updateInterval = setInterval(updateSensor, 1000); // 1초마다 업데이트
+            console.log('센서 업데이트 타이머 시작');
             
             // 초기 채널 옵션 설정
             updateChannelOptions('temp');
@@ -915,9 +994,16 @@
                     if (!websocket || websocket.readyState !== WebSocket.OPEN) {
                         initWebSocket();
                     }
+                } else if (pageId === 'monitoring') {
+                    // 모니터링 페이지 진입 시 터미널 초기화
+                    console.log('모니터링 페이지 진입 - 터미널 초기화 시작');
+                    setTimeout(() => {
+                        initTerminal();
+                    }, 100); // 페이지 렌더링 완료 후 터미널 초기화
                 } else {
                     // 다른 페이지로 이동 시 WebSocket 연결 종료
                     disconnectWebSocket();
+                    disconnectTerminal();
                 }
             }
         }
@@ -1186,17 +1272,20 @@
         
         function initWebSocket() {
             if (websocket && websocket.readyState === WebSocket.OPEN) {
+                console.log('WebSocket 이미 연결됨');
                 return; // 이미 연결됨
             }
             
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.host}`;
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
             
             console.log('WebSocket 연결 시도:', wsUrl);
+            console.log('현재 location.host:', window.location.host);
             updateWSStatus('connecting', `연결 시도 중... (${reconnectAttempts + 1}/${maxReconnectAttempts})`);
             
             try {
                 websocket = new WebSocket(wsUrl);
+                console.log('WebSocket 객체 생성됨');
                 
                 // 연결 타임아웃 설정 (10초)
                 const connectTimeout = setTimeout(() => {
@@ -1367,12 +1456,25 @@
         }
 
         function clearSelection() {
+            // 업로드 중인 경우 중단
+            if (isUploading) {
+                uploadAborted = true;
+                isUploading = false;
+                console.log('업로드 중단됨');
+                showStatusMessage('info', '업로드가 중단되었습니다.');
+            }
+            
             selectedFile = null;
             document.getElementById('file-input').value = '';
             document.getElementById('file-info').style.display = 'none';
             document.getElementById('upload-btn').disabled = true;
             document.getElementById('progress-container').style.display = 'none';
-            showStatusMessage('info', '파일 선택이 취소되었습니다.');
+            document.getElementById('progress-info').textContent = '0%';
+            
+            if (!uploadAborted) {
+                showStatusMessage('info', '파일 선택이 취소되었습니다.');
+            }
+            uploadAborted = false;
         }
 
         function uploadFirmware() {
@@ -1386,6 +1488,14 @@
                 return;
             }
 
+            if (isUploading) {
+                showStatusMessage('error', '이미 업로드가 진행 중입니다.');
+                return;
+            }
+
+            isUploading = true;
+            uploadAborted = false;
+
             const reader = new FileReader();
             
             reader.onload = function(e) {
@@ -1397,16 +1507,19 @@
                 // 진행률 표시 초기화
                 const progressContainer = document.getElementById('progress-container');
                 const progressFill = document.getElementById('progress-fill');
-                const progressText = document.getElementById('progress-text');
+                const progressInfo = document.getElementById('progress-info');
                 const uploadBtn = document.getElementById('upload-btn');
                 
                 progressContainer.style.display = 'block';
                 progressFill.style.width = '0%';
-                progressText.textContent = '0%';
+                progressInfo.textContent = '0%';
                 uploadBtn.disabled = true;
                 
                 let sentBytes = 0;
                 let uploadStarted = false;
+                let uploadStartTime = null;
+                let lastSpeedUpdate = null;
+                let lastSentBytes = 0;
                 
                 showStatusMessage('info', `파일 전송 시작: ${selectedFile.name} (${formatFileSize(totalSize)})`);
                 
@@ -1415,23 +1528,38 @@
                 websocket.send(uploadStartMsg);
                 
                 function sendNextChunk() {
+                    // 업로드가 중단되었는지 확인
+                    if (uploadAborted) {
+                        console.log('업로드 중단됨 - sendNextChunk 종료');
+                        isUploading = false;
+                        uploadBtn.disabled = false;
+                        return;
+                    }
+                    
                     if (sentBytes >= totalSize) {
                         // 전송 완료 메시지 전송
                         websocket.send('upload_complete');
                         
                         progressFill.style.width = '100%';
-                        progressText.textContent = '100%';
+                        
+                        // 최종 속도 계산 및 표시
+                        const totalTime = (Date.now() - uploadStartTime) / 1000; // 초
+                        const avgSpeed = totalSize / totalTime; // bytes/sec
+                        
+                        progressInfo.textContent = `100% (${formatFileSize(totalSize)}/${formatFileSize(totalSize)}) - 완료! 평균 속도: ${formatSpeed(avgSpeed)}`;
                         
                         showStatusMessage('success', 
-                            `펌웨어 업로드 완료: ${selectedFile.name} (${formatFileSize(totalSize)})`);
+                            `펌웨어 업로드 완료: ${selectedFile.name} (${formatFileSize(totalSize)}) - 평균 속도: ${formatSpeed(avgSpeed)}`);
+                        
+                        isUploading = false;
                         uploadBtn.disabled = false;
                         
-                        // 3초 후 진행률 바 숨김
+                        // 5초 후 진행률 바 숨김
                         setTimeout(() => {
                             progressContainer.style.display = 'none';
                             progressFill.style.width = '0%';
-                            progressText.textContent = '0%';
-                        }, 3000);
+                            progressInfo.textContent = '0%';
+                        }, 5000);
                         return;
                     }
                     
@@ -1442,26 +1570,28 @@
                     
                     try {
                         // WebSocket으로 바이너리 청크 전송
+                        console.log(`청크 전송: ${sentBytes}/${totalSize} (${currentChunkSize} bytes)`);
                         websocket.send(chunk);
                         
                         sentBytes += currentChunkSize;
                         
+                        // 현재 시간
+                        const now = Date.now();
+                        
                         // 진행률 업데이트
                         const progress = Math.round((sentBytes / totalSize) * 100);
                         progressFill.style.width = progress + '%';
-                        progressText.textContent = `${progress}% (${formatFileSize(sentBytes)}/${formatFileSize(totalSize)})`;
                         
-                        // 다음 청크 즉시 전송 (최소 딜레이로 성능 향상)
-                        if (websocket.bufferedAmount === 0) {
-                            // WebSocket 버퍼가 비어있으면 즉시 전송
-                            setTimeout(sendNextChunk, 1);
-                        } else {
-                            // 버퍼에 데이터가 있으면 잠시 대기 후 전송
-                            setTimeout(sendNextChunk, 10);
-                        }
+                        // 진행률 정보만 표시 (속도는 완료 후에만)
+                        progressInfo.textContent = `${progress}% (${formatFileSize(sentBytes)}/${formatFileSize(totalSize)})`;
+                        
+                        // 프록시 환경에서는 버퍼 상태 확인이 부정확할 수 있음
+                        // 고정 딜레이로 안정적 전송
+                        setTimeout(sendNextChunk, 50); // 50ms 딜레이로 안정성 확보
                         
                     } catch (error) {
                         showStatusMessage('error', '파일 전송 중 오류가 발생했습니다: ' + error.message);
+                        isUploading = false;
                         uploadBtn.disabled = false;
                         progressContainer.style.display = 'none';
                         return;
@@ -1471,20 +1601,30 @@
                 // WebSocket 메시지 리스너 추가 (업로드 준비 확인)
                 const originalOnMessage = websocket.onmessage;
                 websocket.onmessage = function(event) {
+                    console.log('WebSocket 메시지 수신:', event.data);
+                    
                     if (event.data.startsWith('upload_ready:') && !uploadStarted) {
                         uploadStarted = true;
+                        uploadStartTime = Date.now(); // 업로드 시작 시간 기록
+                        lastSpeedUpdate = uploadStartTime;
+                        console.log('업로드 준비 완료 - 파일 전송 시작');
                         showStatusMessage('info', '서버가 업로드를 준비했습니다. 파일 전송을 시작합니다.');
-                        setTimeout(sendNextChunk, 100); // 100ms 후 전송 시작
+                        setTimeout(sendNextChunk, 1); // 1ms 후 전송 시작
                     } else if (event.data === 'upload_success') {
+                        console.log('업로드 성공 메시지 수신');
                         showStatusMessage('success', '파일이 서버에 성공적으로 저장되었습니다.');
-                    } else if (originalOnMessage) {
-                        originalOnMessage(event);
+                    } else {
+                        console.log('기타 WebSocket 메시지:', event.data);
+                        if (originalOnMessage) {
+                            originalOnMessage(event);
+                        }
                     }
                 };
             };
             
             reader.onerror = function() {
                 showStatusMessage('error', '파일 읽기 오류가 발생했습니다.');
+                isUploading = false;
                 document.getElementById('upload-btn').disabled = false;
                 document.getElementById('progress-container').style.display = 'none';
             };
@@ -1512,6 +1652,228 @@
             const sizes = ['Bytes', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatSpeed(bytesPerSecond) {
+            if (bytesPerSecond === 0) return '0 B/s';
+            const k = 1024;
+            const sizes = ['B/s', 'KB/s', 'MB/s', 'GB/s'];
+            const i = Math.floor(Math.log(bytesPerSecond) / Math.log(k));
+            return parseFloat((bytesPerSecond / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        // Terminal 관련 함수들
+        function initTerminal() {
+            if (terminal) {
+                console.log('Terminal already initialized');
+                return;
+            }
+
+            // xterm.js 터미널 생성
+            terminal = new Terminal({
+                cols: 80,
+                rows: 24,
+                cursorBlink: true,
+                cursorStyle: 'block',
+                theme: {
+                    background: '#000000',
+                    foreground: '#ffffff',
+                    cursor: '#ffffff',
+                    selection: '#ffffff30'
+                },
+                convertEol: true,
+                scrollback: 1000
+            });
+
+            // FitAddon 생성 및 로드
+            fitAddon = new FitAddon.FitAddon();
+            terminal.loadAddon(fitAddon);
+
+            // 터미널을 DOM에 연결
+            const terminalElement = document.getElementById('terminal');
+            terminal.open(terminalElement);
+            
+            // 터미널 크기 맞춤
+            fitAddon.fit();
+
+            // 키보드 입력 처리
+            terminal.onKey(({ key, domEvent }) => {
+                const ev = domEvent;
+                const printable = !ev.altKey && !ev.metaKey;
+
+                // 특수 키 처리 (Ctrl+C, Ctrl+Q 등)
+                if (ev.ctrlKey) {
+                    if (ev.code === 'KeyC') {
+                        // Ctrl+C - 즉시 전송
+                        sendToTerminal('\x03'); // ETX (End of Text)
+                        return;
+                    } else if (ev.code === 'KeyQ') {
+                        // Ctrl+Q - 즉시 전송
+                        sendToTerminal('\x11'); // DC1 (Device Control 1)
+                        return;
+                    } else if (ev.code === 'KeyD') {
+                        // Ctrl+D - 즉시 전송
+                        sendToTerminal('\x04'); // EOT (End of Transmission)
+                        return;
+                    } else if (ev.code === 'KeyZ') {
+                        // Ctrl+Z - 즉시 전송
+                        sendToTerminal('\x1a'); // SUB (Substitute)
+                        return;
+                    }
+                }
+
+                if (ev.key === 'Enter') {
+                    // Enter 키 - 입력 버퍼 전송
+                    terminal.write('\r\n');
+                    sendToTerminal(inputBuffer + '\r\n');
+                    inputBuffer = '';
+                    return;
+                }
+
+                if (ev.key === 'Backspace') {
+                    // Backspace 처리
+                    if (inputBuffer.length > 0) {
+                        inputBuffer = inputBuffer.slice(0, -1);
+                        terminal.write('\b \b');
+                    }
+                    return;
+                }
+
+                if (printable && key.length === 1) {
+                    // 일반 문자 입력
+                    inputBuffer += key;
+                    terminal.write(key);
+                }
+            });
+
+            // 윈도우 리사이즈 시 터미널 크기 조정
+            window.addEventListener('resize', () => {
+                if (fitAddon) {
+                    fitAddon.fit();
+                }
+            });
+
+            // WebSocket 연결 초기화
+            initTerminalWebSocket();
+
+            console.log('Terminal initialized');
+        }
+
+        function initTerminalWebSocket() {
+            if (terminalWebSocket && terminalWebSocket.readyState === WebSocket.OPEN) {
+                console.log('Terminal WebSocket already connected');
+                return;
+            }
+
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/terminal`;
+
+            console.log('Terminal WebSocket connecting to:', wsUrl);
+            updateTerminalStatus('connecting', '연결 중...');
+
+            try {
+                terminalWebSocket = new WebSocket(wsUrl);
+
+                terminalWebSocket.onopen = function(event) {
+                    console.log('Terminal WebSocket connected');
+                    terminalReconnectAttempts = 0;
+                    updateTerminalStatus('connected', '연결됨');
+                    
+                    // 환영 메시지 표시
+                    if (terminal) {
+                        terminal.writeln('\x1b[32m=== VT100 Terminal Connected ===\x1b[0m');
+                        terminal.writeln('터미널이 연결되었습니다. 명령어를 입력하세요.');
+                        terminal.writeln('특수키: Ctrl+C (중단), Ctrl+Q (종료), Ctrl+D (EOF), Ctrl+Z (일시정지)');
+                        terminal.write('$ ');
+                    }
+                };
+
+                terminalWebSocket.onmessage = function(event) {
+                    console.log('Terminal WebSocket message received:', event.data);
+                    
+                    if (terminal) {
+                        // 서버로부터 받은 데이터를 터미널에 출력
+                        terminal.write(event.data);
+                    }
+                };
+
+                terminalWebSocket.onclose = function(event) {
+                    console.log('Terminal WebSocket closed. Code:', event.code, 'Reason:', event.reason);
+                    updateTerminalStatus('disconnected', '연결 끊김');
+                    
+                    if (terminal) {
+                        terminal.writeln('\r\n\x1b[31m=== Connection Lost ===\x1b[0m');
+                    }
+
+                    // 재연결 시도
+                    scheduleTerminalReconnect();
+                };
+
+                terminalWebSocket.onerror = function(error) {
+                    console.error('Terminal WebSocket error:', error);
+                    updateTerminalStatus('disconnected', '연결 오류');
+                };
+
+            } catch (error) {
+                console.error('Terminal WebSocket creation failed:', error);
+                updateTerminalStatus('disconnected', '연결 실패');
+                scheduleTerminalReconnect();
+            }
+        }
+
+        function scheduleTerminalReconnect() {
+            if (terminalReconnectAttempts >= maxTerminalReconnectAttempts) {
+                console.log('Max terminal reconnect attempts reached');
+                updateTerminalStatus('disconnected', '재연결 실패');
+                return;
+            }
+
+            const delay = Math.min(1000 * Math.pow(2, terminalReconnectAttempts), 30000);
+            console.log(`Terminal reconnecting in ${delay}ms...`);
+
+            setTimeout(() => {
+                terminalReconnectAttempts++;
+                initTerminalWebSocket();
+            }, delay);
+        }
+
+        function sendToTerminal(data) {
+            if (terminalWebSocket && terminalWebSocket.readyState === WebSocket.OPEN) {
+                console.log('Sending to terminal:', JSON.stringify(data));
+                terminalWebSocket.send(data);
+            } else {
+                console.warn('Terminal WebSocket not connected');
+                if (terminal) {
+                    terminal.writeln('\r\n\x1b[31m터미널이 연결되지 않았습니다.\x1b[0m');
+                }
+            }
+        }
+
+        function disconnectTerminal() {
+            if (terminalWebSocket) {
+                console.log('Disconnecting terminal WebSocket');
+                terminalWebSocket.close();
+                terminalWebSocket = null;
+            }
+
+            if (terminal) {
+                console.log('Disposing terminal');
+                terminal.dispose();
+                terminal = null;
+                fitAddon = null;
+            }
+
+            inputBuffer = '';
+            terminalReconnectAttempts = 0;
+            updateTerminalStatus('disconnected', '연결 안됨');
+        }
+
+        function updateTerminalStatus(status, message) {
+            const statusElement = document.getElementById('terminal-status');
+            if (statusElement) {
+                statusElement.className = `terminal-status terminal-${status}`;
+                statusElement.textContent = message;
+            }
         }
     </script>
 </body>

@@ -40,12 +40,14 @@ int32_t stm32_cdc_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
 void stm32_cdc_flush_rx(driver_t *handle);
 int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen);
 int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs);
+int32_t stm32_cdc_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen);
 
 uart_api_t stm32_cdc_api={.close = stm32_cdc_close,
                            .send =stm32_cdc_send,
                            .recv =stm32_cdc_recv,
                            .flush_rx = stm32_cdc_flush_rx,
-                           .recv_opt = stm32_cdc_recv_opt};
+                           .recv_opt = stm32_cdc_recv_opt,
+                            .inject =stm32_cdc_inject};
 
 
 driver_t g_stm32_cdc;
@@ -324,4 +326,20 @@ void put_cdc_rx(uint8_t *p_data,uint16_t dataLen)
 portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
   (void)xBytesSent;
+}
+
+
+
+int32_t stm32_cdc_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen)
+{
+
+  size_t xBytesSent;
+
+
+
+  xBytesSent = xStreamBufferSend(g_stm32_cdc_buff, pData, dataLen,
+                                 pdMS_TO_TICKS( 100 ));
+
+  return xBytesSent;
+
 }

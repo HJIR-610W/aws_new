@@ -84,10 +84,10 @@ void irq_INTA_5(void *arg);
 void irq_INTB_6(void *arg);
 void irq_INTC_7(void *arg);
 void irq_INTD_8(void *arg);
+int32_t tls16c554_uart_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen);
 
-
-int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
-                           uint32_t timeout1_ms, uint32_t timeout2_ms);
+    int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
+                               uint32_t timeout1_ms, uint32_t timeout2_ms);
 uint8_t read_register(void *addr)
 {
   uint8_t data;
@@ -702,7 +702,8 @@ uart_api_t tl16c554_api = {.close = tls16c554_close,
                            .set = tls16c554_set,
                            .recv_opt = tls16c554_recv_opt,
                            .get = tls16c554_uart_get,
-                           .recv_ll = tls16c554_recv_ll};
+                           .recv_ll = tls16c554_recv_ll,
+                           .inject = tls16c554_uart_inject};
 
 void tls16c554_irq_init(driver_t *drv, uint8_t prio)
 {
@@ -1022,4 +1023,17 @@ int32_t tls16c554_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint
   return cnt;  // 데이터가 준비되지 않음
 
 
+}
+
+int32_t tls16c554_uart_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen)
+{
+  size_t xBytesAvailable;
+  size_t xBytesSent;
+  tl16c554_cfg_t *cfg = drv->cfg;
+
+
+  xBytesSent = xStreamBufferSend(g_quad_xStreamBuffer[cfg->channel], pData, dataLen,
+                                 pdMS_TO_TICKS( 100 ));
+
+  return xBytesSent;
 }
