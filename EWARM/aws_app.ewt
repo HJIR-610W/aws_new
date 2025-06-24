@@ -2153,10 +2153,10 @@
             <group>
                 <name>serial_flash</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\serial_flash\ad45db.c</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\serial_flash\at45db.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\Components\serial_flash\ad45db.h</name>
+                    <name>$PROJ_DIR$\..\Drivers\Components\serial_flash\at45db.h</name>
                 </file>
             </group>
             <group>
@@ -2260,9 +2260,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_freqInput.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_fs.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_gpio_def.h</name>
