@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>815496550</Checksum>
+        <Checksum>2518289099</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -170,7 +170,7 @@
     <Breakpoints2>
         <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\http_server\http_server.c}.332.16" 0 0 1 "" 0 "" 0</Bp0>
         <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\system_err.c}.49.5" 0 0 1 "" 0 "" 0</Bp1>
-        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Drivers\Driver\driver_freqInput.c}.198.3" 0 0 1 "" 0 "" 0</Bp2>
+        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Drivers\Driver\driver_freqInput.c}.198.7" 0 0 1 "" 0 "" 0</Bp2>
         <Count>3</Count>
     </Breakpoints2>
     <TermIOLog>
