@@ -895,16 +895,30 @@
             }
 
             // 페이지별 특별 처리
-            if (pageId === 'sensor') {
-                loadSensorConfigs();
-            } else if (pageId === 'firmware-update') {
-                // 펌웨어 업데이트 페이지 진입 시 WebSocket 연결
-                if (!websocket || websocket.readyState !== WebSocket.OPEN) {
-                    initWebSocket();
+            if (pageId === 'realtime') {
+                // 실시간 자료 페이지 진입 시 센서 데이터 업데이트 시작
+                if (!updateInterval) {
+                    updateSensor(); // 즉시 한 번 업데이트
+                    updateInterval = setInterval(updateSensor, 1000); // 1초마다 업데이트
                 }
             } else {
-                // 다른 페이지로 이동 시 WebSocket 연결 종료
-                disconnectWebSocket();
+                // 실시간 자료가 아닌 다른 페이지로 이동 시 센서 업데이트 중지
+                if (updateInterval) {
+                    clearInterval(updateInterval);
+                    updateInterval = null;
+                }
+                
+                if (pageId === 'sensor') {
+                    loadSensorConfigs();
+                } else if (pageId === 'firmware-update') {
+                    // 펌웨어 업데이트 페이지 진입 시 WebSocket 연결
+                    if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                        initWebSocket();
+                    }
+                } else {
+                    // 다른 페이지로 이동 시 WebSocket 연결 종료
+                    disconnectWebSocket();
+                }
             }
         }
 
