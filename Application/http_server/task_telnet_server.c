@@ -449,6 +449,8 @@ static void tcp_relay_handle_connection(tcp_relay_client_t* client)
     aws_free(buffer);
     task_printf("TCP Relay: Connection handler terminated\r\n");
 }
+//ctrl+c ff f8
+//ctrl+break ff f3
 
 // 공통 Telnet 프로토콜 처리 함수
 static void telnet_process_common_data(void* client_ptr, bool is_server_mode, const uint8_t* data, int len)

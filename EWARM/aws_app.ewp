@@ -1429,6 +1429,9 @@
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
             </file>
             <file>
