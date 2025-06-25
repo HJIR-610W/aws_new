@@ -41,6 +41,8 @@ static void telnet_send_prompt(telnet_client_t* client);
 static void telnet_init_client(telnet_client_t* client, int socket);
 static void telnet_cleanup_client(telnet_client_t* client);
 static telnet_client_t* telnet_find_free_client(void);
+static bool telnet_is_socket_valid(int socket);
+static int telnet_safe_send(int socket, const void* data, size_t len);
 
 static void telnet_server_mode_task(void);
 static void tcp_relay_output_callback(const char* data, size_t len);
@@ -82,11 +84,13 @@ static void telnet_init_client(telnet_client_t* client, int socket)
 
 static void telnet_cleanup_client(telnet_client_t* client)
 {
-    if (client->connected) {
+    if (client->socket >= 0) {
+        task_printf("Telnet: Closing client socket (socket: %d, connected: %s)\r\n", 
+                   client->socket, client->connected ? "true" : "false");
         closesocket(client->socket);
-        client->connected = false;
-        task_printf("Telnet: Client cleaned up (socket: %d)\r\n", client->socket);
     }
+    
+    client->connected = false;
     memset(client, 0, sizeof(telnet_client_t));
     client->socket = -1;
 }
@@ -103,21 +107,63 @@ static telnet_client_t* telnet_find_free_client(void)
 
 static void telnet_send_option(int socket, uint8_t cmd, uint8_t option)
 {
-    uint8_t buf[3] = {TELNET_IAC, cmd, option};
-    send(socket, buf, 3, 0);
+    if (!telnet_is_socket_valid(socket)) {
+        task_printf("Telnet: Cannot send option - invalid socket\r\n");
+        return;
+    }
     
-    task_printf("Telnet: Sent option - IAC %d %d\r\n", cmd, option);
+    uint8_t buf[3] = {TELNET_IAC, cmd, option};
+    if (telnet_safe_send(socket, buf, 3) >= 0) {
+        task_printf("Telnet: Sent option - IAC %d %d\r\n", cmd, option);
+    }
 }
 
 
 
+static bool telnet_is_socket_valid(int socket)
+{
+    if (socket < 0) {
+        return false;
+    }
+    
+    int error = 0;
+    socklen_t len = sizeof(error);
+    if (getsockopt(socket, SOL_SOCKET, SO_ERROR, &error, &len) < 0) {
+        return false;
+    }
+    
+    return (error == 0);
+}
+
+static int telnet_safe_send(int socket, const void* data, size_t len)
+{
+    if (!telnet_is_socket_valid(socket) || !data || len == 0) {
+        return -1;
+    }
+    
+    int result = send(socket, data, len, 0);
+    if (result < 0) {
+        if (errno == EPIPE || errno == ECONNRESET || errno == ECONNABORTED || errno == ENOTCONN) {
+            task_printf("Telnet: Send failed - connection closed (socket: %d, error: %d)\r\n", socket, errno);
+        } else if (errno == EWOULDBLOCK || errno == EAGAIN) {
+            task_printf("Telnet: Send would block (socket: %d)\r\n", socket);
+        } else {
+            task_printf("Telnet: Send error (socket: %d, error: %d)\r\n", socket, errno);
+        }
+    }
+    
+    return result;
+}
+
 static void telnet_send_response(telnet_client_t* client, const char* response)
 {
-    if (!client->connected || !response) {
+    if (!client->connected || !response || !telnet_is_socket_valid(client->socket)) {
         return;
     }
     
-    send(client->socket, response, strlen(response), 0);
+    if (telnet_safe_send(client->socket, response, strlen(response)) < 0) {
+        client->connected = false;
+    }
 }
 
 static void telnet_send_prompt(telnet_client_t* client)
@@ -135,8 +181,11 @@ static telnet_client_t* g_current_telnet_client = NULL;
 
 static void telnet_output_callback(const char* data, size_t len)
 {
-    if (g_current_telnet_client && g_current_telnet_client->connected && data && len > 0) {
-        send(g_current_telnet_client->socket, data, len, 0);
+    if (g_current_telnet_client && g_current_telnet_client->connected && 
+        telnet_is_socket_valid(g_current_telnet_client->socket) && data && len > 0) {
+        if (telnet_safe_send(g_current_telnet_client->socket, data, len) < 0) {
+            g_current_telnet_client->connected = false;
+        }
     }
 }
 
@@ -147,39 +196,7 @@ static void telnet_process_data(telnet_client_t* client, const uint8_t* data, in
 
 
 
-/*
-테라텀이 접속하면 초기에 보냄
 
-ff fb 18 ff fd 03 ff fb 03 ff fd 01 ff fb 1f ff fb 20
-텔넷 명령어 구조:
-
-FF = IAC (Interpret As Command)
-FB = WILL (옵션을 사용하겠다고 제안)
-FD = DO (상대방에게 옵션 사용을 요청)
-
-각 메시지 분석:
-
-FF FB 18 = IAC WILL TERMINAL-TYPE (클라이언트가 터미널 타입 정보를 제공하겠다고 제안)
-FF FD 03 = IAC DO SUPPRESS-GO-AHEAD (서버에게 Go-Ahead 신호 억제 요청)
-FF FB 03 = IAC WILL SUPPRESS-GO-AHEAD (클라이언트도 Go-Ahead 신호를 억제하겠다고 제안)
-FF FD 01 = IAC DO ECHO (서버에게 에코 처리 요청)
-FF FB 1F = IAC WILL NEGOTIATE-ABOUT-WINDOW-SIZE (윈도우 크기 협상 제안)
-FF FB 20 = IAC WILL TERMINAL-SPEED (터미널 속도 정보 제공 제안)
-
-서버는 각 요청에 대해 FF FC (WON'T), FF FE (DON'T), FF FB (WILL), FF FD (DO) 중 하나로 응답
-
-
-서브 옵션 
-ff fa 1f 00 7d 00 28 ff f0
-
-FF FA = IAC SB (Sub-option Begin)
-1F = NEGOTIATE-ABOUT-WINDOW-SIZE (옵션 31)
-00 7D = 가로 크기 (125 pixels/characters)
-00 28 = 세로 크기 (40 pixels/characters)
-FF F0 = IAC SE (Sub-option End)
-
-
-*/
 static void telnet_handle_client(telnet_client_t* client)
 {
     uint8_t* buffer = (uint8_t*)aws_malloc(TELNET_BUFFER_SIZE);
@@ -188,21 +205,18 @@ static void telnet_handle_client(telnet_client_t* client)
         return;
     }
     
-
     if (set_recv_timeout(client->socket, TELNET_RECV_TIMEOUT_MS) < 0) {
         task_printf("Telnet: Failed to set recv timeout for client\r\n");
         aws_free(buffer);
         return;
     }
     
-
-    //telnet_negotiate_options(client);
+    uint32_t last_activity = HAL_GetTick();
+    const uint32_t ACTIVITY_TIMEOUT_MS = 300000;
     
-
     telnet_send_response(client, TELNET_WELCOME_MSG);
     telnet_send_prompt(client);
     
-
     terminal_bridge_init();
     terminal_bridge_set_output_callback(telnet_output_callback);
     
@@ -210,29 +224,43 @@ static void telnet_handle_client(telnet_client_t* client)
     
     while (client->connected)
     {
+        uint32_t current_time = HAL_GetTick();
+        if (current_time - last_activity > ACTIVITY_TIMEOUT_MS) {
+            task_printf("Telnet: Client inactive timeout (socket: %d)\r\n", client->socket);
+            client->connected = false;
+            break;
+        }
+        
         int bytes_received = recv(client->socket, buffer, TELNET_BUFFER_SIZE, 0);
         
         if (bytes_received <= 0) {
             if (bytes_received == 0) {
-                task_printf("Telnet: Client disconnected normally\r\n");
-            } else if (errno == EAGAIN ){
-
-                continue; // Timeout, continue trying
+                task_printf("Telnet: Client disconnected normally (socket: %d)\r\n", client->socket);
+                client->connected = false;
+            } else if (errno == EAGAIN ) {
+                continue;
+            } else if (errno == ECONNRESET || errno == ECONNABORTED || errno == ENOTCONN) {
+                task_printf("Telnet: Client connection reset/aborted (socket: %d, error: %d)\r\n", client->socket, errno);
+                client->connected = false;
+            } else if (errno == EBADF || errno == EINVAL) {
+                task_printf("Telnet: Invalid socket descriptor (socket: %d, error: %d)\r\n", client->socket, errno);
+                client->connected = false;
             } else {
-                task_printf("Telnet: Client recv error: %d\r\n", errno);
+                task_printf("Telnet: Client recv error (socket: %d, error: %d)\r\n", client->socket, errno);
+                client->connected = false;
             }
             break;
         }
         
-        task_printf("Telnet: Received %d bytes from client\r\n", bytes_received);
+        last_activity = current_time;
+        task_printf("Telnet: Received %d bytes from client (socket: %d)\r\n", bytes_received, client->socket);
         telnet_process_data(client, buffer, bytes_received);
     }
     
-
     g_current_telnet_client = NULL;
     terminal_bridge_cleanup();
     aws_free(buffer);
-    task_printf("Telnet: Client handler terminated\r\n");
+    task_printf("Telnet: Client handler terminated (socket: %d)\r\n", client->socket);
 }
 
 
@@ -247,6 +275,7 @@ static void telnet_server_mode_task(void)
     uint16_t telnet_server_port = get_config_app()->dev_telnet_port;
 
     for (int i = 0; i < TELNET_MAX_CLIENTS; i++) {
+        memset(&g_telnet_clients[i], 0, sizeof(telnet_client_t));
         g_telnet_clients[i].socket = -1;
         g_telnet_clients[i].connected = false;
     }
@@ -271,6 +300,19 @@ static void telnet_server_mode_task(void)
                 server_socket = -1;
                 osDelay(SERVER_RETRY_INTERVAL_MS);
                 continue;
+            }
+            
+#ifdef SO_REUSEPORT
+            if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)) < 0)
+            {
+                task_printf("Telnet Server: SO_REUSEPORT failed, error: %d (continuing)\r\n", errno);
+            }
+#endif
+            
+            struct linger linger_opt = {0, 0};
+            if (setsockopt(server_socket, SOL_SOCKET, SO_LINGER, &linger_opt, sizeof(linger_opt)) < 0)
+            {
+                task_printf("Telnet Server: SO_LINGER failed, error: %d (continuing)\r\n", errno);
             }
 
             memset(&server_addr, 0, sizeof(server_addr));
@@ -303,12 +345,32 @@ static void telnet_server_mode_task(void)
         client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_len);
 
         if (client_socket < 0) {
-            if (errno == ECONNABORTED || errno == EINVAL) {
+            if (errno == ECONNABORTED) {
+                task_printf("Telnet Server: Connection aborted during accept (errno: %d)\r\n", errno);
+                osDelay(50);
+                continue;
+            } else if (errno == EINVAL || errno == EBADF) {
+                task_printf("Telnet Server: Invalid server socket, recreating (error: %d)\r\n", errno);
                 closesocket(server_socket);
                 server_socket = -1;
+                osDelay(SERVER_RETRY_INTERVAL_MS);
+                continue;
+            } else if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                osDelay(50);
+                continue;
+            } else if (errno == EMFILE || errno == ENFILE) {
+                task_printf("Telnet Server: Too many open files (error: %d)\r\n", errno);
+                osDelay(1000);
+                continue;
+            } else if (errno == ENOBUFS || errno == ENOMEM) {
+                task_printf("Telnet Server: No buffer space available (error: %d)\r\n", errno);
+                osDelay(1000);
+                continue;
+            } else {
+                task_printf("Telnet Server: Accept failed (error: %d)\r\n", errno);
+                osDelay(200);
+                continue;
             }
-            osDelay(100);
-            continue;
         }
 
         char client_ip_str[INET_ADDRSTRLEN];
@@ -321,21 +383,34 @@ static void telnet_server_mode_task(void)
         {
             task_printf("Telnet Server: No free client slots, rejecting connection\r\n");
             const char* reject_msg = "Server full. Please try again later.\r\n";
-            send(client_socket, reject_msg, strlen(reject_msg), 0);
+            telnet_safe_send(client_socket, reject_msg, strlen(reject_msg));
             closesocket(client_socket);
             continue;
         }
 
 
+        struct linger client_linger = {0, 0};
+        setsockopt(client_socket, SOL_SOCKET, SO_LINGER, &client_linger, sizeof(client_linger));
+        
+        int keepalive = 1;
+        setsockopt(client_socket, SOL_SOCKET, SO_KEEPALIVE, &keepalive, sizeof(keepalive));
+        
+        struct timeval send_timeout = {30, 0};
+        setsockopt(client_socket, SOL_SOCKET, SO_SNDTIMEO, &send_timeout, sizeof(send_timeout));
+        
+        struct timeval recv_timeout = {60, 0};
+        setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO, &recv_timeout, sizeof(recv_timeout));
+        
+        int nodelay = 1;
+        setsockopt(client_socket, IPPROTO_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay));
+        
+        task_printf("Telnet Server: Client socket options configured (socket: %d)\r\n", client_socket);
+        
         telnet_init_client(client, client_socket);
-
-
         telnet_handle_client(client);
         telnet_cleanup_client(client);
         
-        if (server_socket >= 0) {
-             closesocket(server_socket);
-          }
+        task_printf("Telnet Server: Client session ended, ready for next connection\r\n");
     }
 
 
@@ -522,8 +597,10 @@ static void telnet_process_command(const char* command, size_t len)
 // Unified response function
 static void telnet_send_unified_response(telnet_common_client_t* common, const char* response)
 {
-    if (common->socket > 0 && *common->connected) {
-        send(common->socket, response, strlen(response), 0);
+    if (common->socket > 0 && *common->connected && telnet_is_socket_valid(common->socket)) {
+        if (telnet_safe_send(common->socket, response, strlen(response)) < 0) {
+            *common->connected = false;
+        }
     }
 }
 
@@ -584,9 +661,12 @@ static void telnet_process_common_data(void* client_ptr, bool is_server_mode, co
                         common.line_buffer[(*common.line_pos)++] = ch;
                         
                         // Echo only for server mode with echo enabled
-                        if (is_server_mode && common.echo_enabled) {
+                        if (is_server_mode && common.echo_enabled && telnet_is_socket_valid(common.socket)) {
                             char echo_ch = ch;
-                            send(common.socket, &echo_ch, 1, 0);
+                            if (telnet_safe_send(common.socket, &echo_ch, 1) < 0) {
+                                *common.connected = false;
+                                return;
+                            }
                         }
                     }
                 }
@@ -698,10 +778,12 @@ static void tcp_relay_process_data(tcp_relay_client_t* client, const uint8_t* da
 // Output callback called by terminal bridge (client mode)
 static void tcp_relay_output_callback(const char* data, size_t len)
 {
-    if (g_tcp_relay_client.connected && data && len > 0)
+    if (g_tcp_relay_client.connected && telnet_is_socket_valid(g_tcp_relay_client.socket) && data && len > 0)
     {
         // Send standard Telnet data as-is to relay server
-        send(g_tcp_relay_client.socket, data, len, 0);
+        if (telnet_safe_send(g_tcp_relay_client.socket, data, len) < 0) {
+            g_tcp_relay_client.connected = false;
+        }
     }
 }
 
@@ -726,7 +808,7 @@ static void telnet_server_task(void* argument)
   g_telnet_server_mode_use = get_config_app()->dev_telnet_mode;
 
   if (g_telnet_server_mode_use == eTELNET_CLIENT)
-  {  // 클라이언트 방식으로 사용되며 중계 서버에 접속하는 방식이다.
+  {  
     telnet_client_mode_task();
   }
   else
