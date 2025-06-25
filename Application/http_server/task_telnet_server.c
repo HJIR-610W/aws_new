@@ -145,7 +145,7 @@ static int telnet_safe_send(int socket, const void* data, size_t len)
     if (result < 0) {
         if (errno == EPIPE || errno == ECONNRESET || errno == ECONNABORTED || errno == ENOTCONN) {
             task_printf("Telnet: Send failed - connection closed (socket: %d, error: %d)\r\n", socket, errno);
-        } else if (errno == EWOULDBLOCK || errno == EAGAIN) {
+        } else if ( errno == EAGAIN) {
             task_printf("Telnet: Send would block (socket: %d)\r\n", socket);
         } else {
             task_printf("Telnet: Send error (socket: %d, error: %d)\r\n", socket, errno);
@@ -355,7 +355,7 @@ static void telnet_server_mode_task(void)
                 server_socket = -1;
                 osDelay(SERVER_RETRY_INTERVAL_MS);
                 continue;
-            } else if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            } else if (errno == EAGAIN ) {
                 osDelay(50);
                 continue;
             } else if (errno == EMFILE || errno == ENFILE) {
@@ -389,11 +389,20 @@ static void telnet_server_mode_task(void)
         }
 
 
-        struct linger client_linger = {0, 0};
+        struct linger client_linger = {1, 2};
         setsockopt(client_socket, SOL_SOCKET, SO_LINGER, &client_linger, sizeof(client_linger));
         
         int keepalive = 1;
         setsockopt(client_socket, SOL_SOCKET, SO_KEEPALIVE, &keepalive, sizeof(keepalive));
+        
+        int keepidle = 60;   // 60sec idle before keepalive starts
+        setsockopt(client_socket, IPPROTO_TCP, TCP_KEEPIDLE, &keepidle, sizeof(keepidle));
+        
+        int keepintvl = 60;  // 10sec interval between probes
+        setsockopt(client_socket, IPPROTO_TCP, TCP_KEEPINTVL, &keepintvl, sizeof(keepintvl));
+        
+        int keepcnt = 3;     // 3 failed probes = connection closed
+        setsockopt(client_socket, IPPROTO_TCP, TCP_KEEPCNT, &keepcnt, sizeof(keepcnt));
         
         struct timeval send_timeout = {30, 0};
         setsockopt(client_socket, SOL_SOCKET, SO_SNDTIMEO, &send_timeout, sizeof(send_timeout));
