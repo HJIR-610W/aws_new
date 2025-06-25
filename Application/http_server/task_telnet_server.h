@@ -5,19 +5,19 @@
 #include <stdbool.h>
 #include "cmsis_os2.h"
 
+#include "config_app.h"
 // Telnet / 
-#define TELNET_SERVER_PORT          23
-#define TELNET_MAX_CLIENTS          2
+
+#define TELNET_MAX_CLIENTS          1
 #define TELNET_BUFFER_SIZE          512
 #define TELNET_RECV_TIMEOUT_MS      30000
 #define TELNET_LINE_BUFFER_SIZE     256
 
 //    (TCP )
-#define TELNET_RELAY_PORT           23001      //   
 #define TELNET_RECONNECT_INTERVAL   5000      //   (ms)
 
 //  
-extern int g_telnet_server_mode_use;  // 0:  , 1:  
+extern eTELNET_MODE_t g_telnet_server_mode_use;  // 0:  , 1:  
 
 // Telnet  
 #define TELNET_IAC          255  // Interpret As Command (0xFF)

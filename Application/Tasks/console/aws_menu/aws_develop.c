@@ -270,6 +270,70 @@ int32_t menu_task_print_force(void)
 }
 
 
+extern int32_t input_ip(int *a, int *b, int *c, int *d);
+int32_t menu_task_telnet(void)
+{
+  int status;
+
+  int a,b,c,d;
+  uint8_t *ip = get_config_app()->dev_telnet_ip;
+  uint16_t port =get_config_app()->dev_telnet_port;
+
+
+  if (get_config_app()->dev_telnet_mode == eTELNET_SERVER)
+  {
+    io_printf("텔넷 모드:서버(외부에서 접속해와야함)\r\n");
+  }
+  else if (get_config_app()->dev_telnet_mode == eTELNET_CLIENT)
+  {
+    io_printf("텔넷 모드:클라이언트(중계서버로 접속)\r\n");
+  }
+  else{
+    io_printf("텔넷 모드:설정 오류\r\n");
+  }
+
+  io_printf("텔넷 중계서버 IP:%d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
+  io_printf("텔넷 PORT(중계,로컬공통):%d\r\n", port);
+
+  io_printf("텔넷 모드 설정\r\n");
+  status = input_decimal_prompt("텔넷모드(0:서버 1:클라이언트(중계모드))", &a, 0, 1);
+
+  if (status != MENU_OK)
+  {
+    return status;
+  }
+
+  get_config_app()->dev_telnet_mode =(eTELNET_MODE_t)a;
+  WRITE_CFG(dev_telnet_mode);
+
+  io_printf("텔넷 접속할 서버 주소 설정\r\n");
+
+  status =  input_ip( &a, &b, &c, &d);
+
+  if(status !=MENU_OK)
+  {
+    return status;
+  }
+
+  get_config_app()->dev_telnet_ip[0] =a;
+  get_config_app()->dev_telnet_ip[1] = b;
+  get_config_app()->dev_telnet_ip[2] = c;
+  get_config_app()->dev_telnet_ip[3] = d;
+
+  WRITE_CFG(dev_telnet_ip);
+
+  status = input_decimal_prompt("port",&a,0,65535);
+
+  if (status != MENU_OK)
+  {
+    return status;
+  }
+
+  get_config_app()->dev_telnet_port = a;
+
+  WRITE_CFG(dev_telnet_port);
+  return MENU_OK;
+}
 int32_t aws_menu_develop(void)
 {
   int choice, status;
@@ -283,7 +347,8 @@ int32_t aws_menu_develop(void)
                   "파일 다운 진행 상태",
                   "TASK 디버깅 출력",
                   "TASK 디버깅 출력 강제",
-                  "PCB PIN"};
+                  "PCB PIN",
+                  "TELNET"};
 
     while(1)
     {
@@ -302,19 +367,25 @@ int32_t aws_menu_develop(void)
           menu_developer_sensor_config();
            break;
         case 4:
-          print_task_info();
+          menu_developer_logging();
           break;
-        case 5:
+       case 5:
+        print_task_info();
+          break;
+        case 6:
           menu_update_info();
            break;
-        case 6:
+        case 7:
           menu_task_print();
            break;
-        case 7:
+        case 8:
           menu_task_print_force();
            break;
-          case 8:
+          case 9:
             pcb_pin();
+            break;
+          case 10:
+            menu_task_telnet();
             break;
       }
   }

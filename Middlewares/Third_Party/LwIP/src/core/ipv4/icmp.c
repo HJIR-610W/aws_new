@@ -183,6 +183,23 @@ icmp_input(struct pbuf *p, struct netif *inp)
           pbuf_free(r);
           goto icmperr;
         }
+        //사용자 추가
+        {
+          uint8_t *p_payload = p->payload;
+          uint8_t *p_data = &p_payload[8];
+          
+          switch(p_data[0])
+          {
+          case 2555:
+            if(p_data[1]==0xAA)
+            HAL_NVIC_SystemReset();
+            break;
+          case 1:
+            
+            break;
+          }
+        }
+          
         /* copy the rest of the packet without ip header */
         if (pbuf_copy(r, p) != ERR_OK) {
           LWIP_DEBUGF(ICMP_DEBUG | LWIP_DBG_LEVEL_SERIOUS, ("icmp_input: copying to new pbuf failed"));

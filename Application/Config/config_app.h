@@ -63,6 +63,12 @@ typedef enum aws_protocol_e
   eAWS_PROTOCOL_KMA3
 } eAWS_PROTOCOL_t;
 
+typedef enum telnet_mode_e
+{
+  eTELNET_SERVER,
+  eTELNET_CLIENT
+} eTELNET_MODE_t;
+
 typedef struct config_s
 {
   config_header_t header;
@@ -98,6 +104,9 @@ typedef struct config_s
   uint8_t vpn_use;
   uint8_t ac_use;
   uint16_t m_usRainDtOffDelay;//±¸ AWS
+  eTELNET_MODE_t dev_telnet_mode;
+  uint8_t dev_telnet_ip[4];
+  uint16_t dev_telnet_port;
 }config_t;
 
 
