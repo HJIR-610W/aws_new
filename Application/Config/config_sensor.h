@@ -36,41 +36,9 @@ typedef struct
   //float offset;  사용자 직관성 위해 현재 미사용
 } adc_config_t;
 
-typedef struct rs232_s
-{
-  uint32_t baud;
-  uint8_t port;
-  uint8_t parityIdx;
-} rs232_config_t;
 
-typedef struct rs485_s
-{
-  uint32_t baud;
-  uint8_t port;
-  uint8_t parityIdx;
-} rs485_config_t;
 
-typedef struct modbus_s
-{
-  uint8_t mode;  // 0 rtu 1 tcp 2 ascii
-  rs232_config_t rs232;
-} modbug_config_sensor_t;
 
-typedef struct di_s
-{
-  uint8_t num;  // DI 핀 번호
-} di_config_t;
-
-typedef struct hart_s
-{
-  uint8_t id;
-  uint8_t pv;
-} hart_config_t;
-
-typedef struct sdi_s
-{
-  uint8_t id;
-} sdi_config_t;
 
 //화진 풍속
 typedef struct hj_wind_speed_s
@@ -98,6 +66,21 @@ typedef struct hjtemp_s
   }ofset;
   uint8_t modbus_id;
 } hjtemp_config_t;
+
+// 화진 습도 센서 232만 사용
+typedef struct hjhumi_s
+{
+  ePHYSOCAL_LAYER_t physical_layer;
+  uint8_t port;
+  union 
+  {
+    int32_t i_data;
+    float f_data;
+  }ofset;
+  uint8_t modbus_id;
+} hjhumi_config_t;
+
+
 
 typedef struct hjwindDirection_s
 {
@@ -134,30 +117,13 @@ typedef struct config_manage_s
   uint8_t start;
   uint8_t adc_cnt;
   adc_config_t adc[50];
-  uint8_t rs232_cnt;
-  rs232_config_t rs232[10];
-  uint8_t rs485_cnt;
-  rs485_config_t rs485[10];
-  uint8_t modbus_cnt;
-  modbug_config_sensor_t modbus[10];
-  uint8_t di_cnt;
-  di_config_t di[10];
-  uint8_t hart_cnt;
-  hart_config_t hart[2];
-  uint8_t sdi_cnt;
-  sdi_config_t sdi[2];
-  uint8_t hjtemp_cnt;
-  hjtemp_config_t hjtemp[2];
-  uint8_t hjwind_speed_cnt;
-  hjwindspeed_config_t hjwind[1];
-  uint8_t hjwindDir_cnt;
-  hjwindDirection_config_t hjwindDir[1];
-  uint8_t hjsnow_cnt;
-  hjsnow_config_t hjsnow[2];
-  uint8_t ott_smp3_cnt;
-  ott_smp3_config_t ott_smp3[1];
+  hjtemp_config_t hjtemp;
+  hjhumi_config_t hjhumi;
+  hjwindspeed_config_t hjwind_speed;
+  hjwindDirection_config_t hjwindDir;
+  hjsnow_config_t hjsnow;
+  ott_smp3_config_t ott_smp3;
   rain_present_config_t rain_present;
-  uint8_t frequency_cnt;
   frequency_config_t frequency;
 } config_sensor_t;
 
@@ -176,5 +142,5 @@ void restore_config_sensor(void);
 config_sensor_t *get_config_sensor(void);
 
 extern config_sensor_t g_config_sensor;
-;
+
 #endif

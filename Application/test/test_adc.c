@@ -1,4 +1,6 @@
 
+#include <string.h>
+
 #include "cli_key_code.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
@@ -12,9 +14,9 @@
 
 void test_adc(void)
 {
-  float volate=0;
+
   char buff[100];
-  driver_t *adc;
+
   uint8_t err;
   int32_t adc_raw;
 
@@ -33,7 +35,7 @@ void test_adc(void)
     snprintf(buff, sizeof(buff), "%d,%d\r\n",i,adc_raw);
     io_printf("%s",buff);
 
-    append_file("adc.csv",buff,strlen(buff));
+    append_file("adc.csv",(uint8_t *)buff,strlen(buff));
     }
     io_printf("Á¾·á\r\n");
 }

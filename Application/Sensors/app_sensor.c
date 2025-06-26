@@ -1,4 +1,18 @@
 
+/*
+센서정보는 2가지 구조체를 사용한다.
+
+1. 센서의 속성 구조체 모음
+2. 센서 속성 구조체를 가르키는 인덱스
+
+센서마다 고유의 속성을 구조체로 구현하면 새로운 모델이 추가되면 구조체길이가 변경되어
+값이 틀어진다.
+config에서는 속성정보의 index만 관리한다
+속성 구조체는 센서가 추가되면 최후에 추가되기때문에 틀어질 일이 없다.
+
+
+
+*/
 #include "app_sensor.h"
 
 #include <string.h>
@@ -105,10 +119,19 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] = {
 
 void sensor_add_common(sensor_t *sensor, uint8_t index)
 {
-  sensor->config[sensor->configCnt][0] = sensor->type;  // 해당 타입을 추가
-  sensor->config[sensor->configCnt][1] = index;
-  WRITE_CFG_MEM(&sensor->config[sensor->configCnt], sizeof(sensor->config[sensor->configCnt]));
-  sensor->configCnt++;
+  uint8_t config_cnt;
+
+  config_cnt = sensor->configCnt;
+
+  if (config_cnt >= SENSOR_CONFIG_TABLE_MAX)
+  {
+    config_cnt--;
+  }
+  sensor->config[config_cnt][0] = sensor->type;  // 해당 타입을 추가
+  sensor->config[config_cnt][1] = index;
+  WRITE_CFG_MEM(&sensor->config[config_cnt], sizeof(sensor->config[config_cnt]));
+  config_cnt++;
+  sensor->configCnt= config_cnt;
   WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
 }
 
@@ -118,143 +141,51 @@ void sensor_add_common(sensor_t *sensor, uint8_t index)
  */
 void *sensor_add(sensor_t *sensor)
 {
-  uint8_t index = 0;
+
+
 
   switch (sensor->type)
   {
     case S_T_ADC:
-      if (g_config_sensor.adc_cnt < _countof(g_config_sensor.adc))  // 할당 가능한지 판단
       {
-        index = g_config_sensor.adc_cnt;
-
-        sensor->config[sensor->configCnt][0] = sensor->type;  // 해당 타입을 추가
-        sensor->config[sensor->configCnt][1] = index;
-
-        
-        WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
-                      sizeof(sensor->config[sensor->configCnt]));
-        sensor->configCnt++;
-        WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-
-        g_config_sensor.adc_cnt++;
-        WRITE_CFG_SENSOR(adc_cnt);
-
-        return &g_config_sensor.adc[index];
-      }
-    case S_T_TEMP_232:
-    case S_T_GENERAL_232:
-    case S_T_HART:
-      if (g_config_sensor.rs232_cnt < _countof(g_config_sensor.rs232))
-      {
-        index = g_config_sensor.rs232_cnt;
-
-        sensor->config[sensor->configCnt][0] = sensor->type;  // 해당 타입을 추가
-        sensor->config[sensor->configCnt][1] = index;
-
-        WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
-                      sizeof(sensor->config[sensor->configCnt]));
-        sensor->configCnt++;
-        WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-
-        g_config_sensor.rs232_cnt++;
-
-        WRITE_CFG_SENSOR(rs232_cnt);
-        return &g_config_sensor.rs232[index];
-      }
-      return 0;
-      break;
-
-    case S_T_TEMP_485:
-    case S_T_PRESSURE_485:
-    case S_T_HUMI_RS485:
-    case S_T_GENERAL_485:
-      if (g_config_sensor.rs485_cnt < _countof(g_config_sensor.rs485))
-      {
-        index = g_config_sensor.rs485_cnt;
-        sensor->config[sensor->configCnt][0] = sensor->type;  // 해당 타입을 추가
-        sensor->config[sensor->configCnt][1] = index;
-        WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
-                      sizeof(sensor->config[sensor->configCnt]));
-        sensor->configCnt++;
-        WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-        g_config_sensor.rs485_cnt++;
-        WRITE_CFG_SENSOR(rs485_cnt);
-        return &g_config_sensor.rs485[index];
-      }
-      return 0;
-      break;
+        int cnt = g_config_sensor.adc_cnt;
+        if (cnt >= _countof(g_config_sensor.adc))  // 할당 가능한지 판단
+        {
+          cnt--;
+        }
+        sensor_add_common(sensor, cnt);
+        cnt++;
+        g_config_sensor.adc_cnt = cnt;
+        return &g_config_sensor.adc[cnt];
+       }
     case S_T_WIND_SPEED_HJ_485://
-        index = 0;
-        sensor->config[sensor->configCnt][0] = sensor->type;  // 해당 타입을 추가
-        sensor->config[sensor->configCnt][1] = index;//타입 배열에 인덱스 값
-        WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
-                      sizeof(sensor->config[sensor->configCnt]));
-        sensor->configCnt++;
-        WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-        g_config_sensor.hjwind_speed_cnt=1;
-        WRITE_CFG_SENSOR(hjwind_speed_cnt);
-        return &g_config_sensor.hjwind[index];
-
-
+      sensor_add_common(sensor, 0);
+      return &g_config_sensor.hjwind_speed;
       break;
     case S_T_HUMINITY_HJ:
-    case S_T_TEMPERATURE_HJ:
-      if (g_config_sensor.hjtemp_cnt < _countof(g_config_sensor.hjtemp))
-      {
-        index = g_config_sensor.hjtemp_cnt;
-        sensor->config[sensor->configCnt][0] = sensor->type;  // 해당 타입을 추가
-        sensor->config[sensor->configCnt][1] = index;
-        WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
-                      sizeof(sensor->config[sensor->configCnt]));
-        sensor->configCnt++;
-        WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-        g_config_sensor.hjtemp_cnt++;
-        WRITE_CFG_SENSOR(hjtemp_cnt);
-        return &g_config_sensor.hjtemp[index];
-      }
-      break;
-    case S_T_WIND_DIRECTION_HJ_485:
-        index = 0;
-        sensor->config[sensor->configCnt][0] = sensor->type;  // 해당 타입을 추가
-        sensor->config[sensor->configCnt][1] = index;
-        WRITE_CFG_MEM(&sensor->config[sensor->configCnt],
-                      sizeof(sensor->config[sensor->configCnt]));
-        sensor->configCnt++;
-        WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
-        g_config_sensor.hjwindDir_cnt=1;
-        WRITE_CFG_SENSOR(hjwindDir_cnt);
-        return &g_config_sensor.hjwindDir[index];
+      sensor_add_common(sensor, 0);
+      return &g_config_sensor.hjhumi;
 
-      break;
+    case S_T_TEMPERATURE_HJ:
+      sensor_add_common(sensor, 0);
+      return &g_config_sensor.hjtemp;
+
+    case S_T_WIND_DIRECTION_HJ_485:
+      sensor_add_common(sensor, 0);
+      return &g_config_sensor.hjwindDir;
 
     case S_T_SNOW_HJ:
-      if (g_config_sensor.hjsnow_cnt < _countof(g_config_sensor.hjwindDir))
-      {
-        index = g_config_sensor.hjsnow_cnt;
-        sensor_add_common(sensor, index);
-        g_config_sensor.hjsnow_cnt++;
-        WRITE_CFG_SENSOR(hjsnow_cnt);
-        return &g_config_sensor.hjsnow[index];
-      }
-      break;
+      sensor_add_common(sensor, 0);
+      return &g_config_sensor.hjsnow;
+
     case S_T_SOLAR_RADIATION_OTT_SMP3:
-      if (g_config_sensor.ott_smp3_cnt < _countof(g_config_sensor.ott_smp3))
-      {
-        index = g_config_sensor.ott_smp3_cnt;
-        sensor_add_common(sensor, index);
-        g_config_sensor.ott_smp3_cnt++;
-        WRITE_CFG_SENSOR(ott_smp3_cnt);
-        return &g_config_sensor.ott_smp3[index];
-      }
-      break;
+      sensor_add_common(sensor, 0);
+      return &g_config_sensor.ott_smp3;
     case S_T_RAIN_PRESENT_DI:
       sensor_add_common(sensor, 0);
       return &g_config_sensor.rain_present;
-      break;
     case S_T_FREQ:
       sensor_add_common(sensor, 0);
-      g_config_sensor.frequency_cnt++;
-      WRITE_CFG_SENSOR(frequency_cnt);
       return &g_config_sensor.frequency;
       break;
     default:
@@ -286,45 +217,22 @@ void *get_sensor_config(sensor_t *sensor)
       {
         case S_T_ADC:
           return &g_config_sensor.adc[sensor->config[i][1]];
-          break;
-        case S_T_TEMP_232:
-        case S_T_GENERAL_232:
-        case S_T_HART:
-          return &g_config_sensor.rs232[sensor->config[i][1]];
-          break;
-        case S_T_TEMP_485:
-        case S_T_PRESSURE_485:
-        case S_T_HUMI_RS485:
-        case S_T_GENERAL_485:
-          return &g_config_sensor.rs485[sensor->config[i][1]];
-          break;
-        case S_T_MODBUS:
-          return &g_config_sensor.modbus[sensor->config[i][1]];
-          break;
         case S_T_WIND_SPEED_HJ_485:
-          return &g_config_sensor.hjwind[0];
-          break;
+          return &g_config_sensor.hjwind_speed;
         case S_T_WIND_DIRECTION_HJ_485:
-          return &g_config_sensor.hjwindDir[0];
-          break;
+          return &g_config_sensor.hjwindDir;
         case S_T_TEMPERATURE_HJ:
+          return &g_config_sensor.hjtemp;
         case S_T_HUMINITY_HJ:
-          return &g_config_sensor.hjtemp[sensor->config[i][1]];
-          break;
-
-
+          return &g_config_sensor.hjhumi;
         case S_T_SNOW_HJ:
-          return &g_config_sensor.hjsnow[sensor->config[i][1]];
-          break;
+          return &g_config_sensor.hjsnow;
         case S_T_SOLAR_RADIATION_OTT_SMP3:
-          return &g_config_sensor.ott_smp3[0];
-          break;
+          return &g_config_sensor.ott_smp3;
         case S_T_RAIN_PRESENT_DI:
           return &g_config_sensor.rain_present;
-          break;
         case S_T_FREQ:
           return &g_config_sensor.frequency;
-          break;
       }
     }
   }

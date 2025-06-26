@@ -43,22 +43,8 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
 
   switch (sensor->type)
   {
-    case S_T_TEMP_232:
-    case S_T_GENERAL_232:
-    {
-      rs232_config_t *rs232_cfg = (rs232_config_t *)cfg;
-      rs232_get_portList(list, sizeof(list));
-      snprintf(out, outSize, "[%s]", list[rs232_cfg->port]);
-    }
-    break;
-    case S_T_TEMP_485:
-    case S_T_GENERAL_485:
-    {
-      rs485_config_t *rs485_cfg = (rs485_config_t *)cfg;
-      rs485_get_portList(list, sizeof(list));
-      snprintf(out, outSize, "[%s]", list[rs485_cfg->port]);
-    }
-    break;
+
+
     case S_T_SNOW_HJ:
     {
       hjsnow_config_t *hjsnow = (hjsnow_config_t *)cfg;
@@ -150,28 +136,9 @@ uint8_t print_adc_cfg( adc_config_t *adc_config, uint8_t cnt)
   return cnt;
 }
 
-uint8_t print_rs232_cfg( rs232_config_t *rs232_config, uint8_t cnt)
-{
-  const char *portNameList[10];
 
-  rs232_get_portList(portNameList, _countof(portNameList));
-  io_printf("%2d.port       :%s\r\n", cnt++, portNameList[rs232_config->port]);
-  io_printf("%2d.baud       :%d\r\n", cnt++, rs232_config->baud);
-  io_printf("%2d:paraity    :%s\r\n", cnt++, ITEM_LIST(rs232_config->parityIdx, rs232ParityList));
-  return cnt;
-}
 
-uint8_t print_rs485_cfg( rs485_config_t *rs485_config, uint8_t cnt)
-{
-  const char *portNameList[10];
 
-  rs485_get_portList(portNameList, _countof(portNameList));
-
-  io_printf("%2d.port       :%s\r\n", cnt++, portNameList[rs485_config->port]);
-  io_printf("%2d.baud       :%d\r\n", cnt++, rs485_config->baud);
-  io_printf("%2d:paraity    :%s\r\n", cnt++, ITEM_LIST(rs485_config->parityIdx, rs232ParityList));
-  return cnt;
-}
 
 #define HJWIND_CFG_FULL 0
 #define HJWIND_CFG_OFF 1
@@ -299,12 +266,7 @@ int32_t print_common_cfg( sensor_t *sensor, uint8_t c)
     case S_T_ADC:  // ADC
       cnt = print_adc_cfg( get_sensor_config(sensor), cnt);
       break;
-    case S_T_GENERAL_232:
-      cnt = print_rs232_cfg( get_sensor_config(sensor), cnt);
-      break;
-    case S_T_GENERAL_485:
-      cnt = print_rs485_cfg( get_sensor_config(sensor), cnt);
-      break;
+
     case S_T_SNOW_HJ:
       cnt = print_hjsnow_cfg( get_sensor_config(sensor), cnt);
       break;
@@ -411,120 +373,7 @@ int32_t sensor_type_set( sensor_t *sensor, const uint8_t *list, uint8_t listCnt)
   return MENU_OK;
 }
 
-// 232설정
 
-#define RS232_SET_PORT 0
-#define RS232_SET_BAUD 1
-#define RS232_SET_PARITY 2
-
-int32_t rs232_config_set( sensor_t *sensor, uint8_t cnt)
-{
-  int32_t choice;
-  int32_t status =0;
-  int32_t dec;
-  rs232_config_t *rs232;
-  const char *portList[10];
-  rs232 = get_sensor_config(sensor);
-  if (rs232 == 0)
-  {
-    sensor_add(sensor);
-    rs232 = get_sensor_config(sensor);
-    io_printf("rs232 err\r\n");
-  }
-  switch (cnt)
-  {
-    case RS232_SET_PORT:
-
-      cnt = rs232_get_portList(portList, _countof(portList));
-
-      status = select_indexFromList( portList, NULL, cnt, true,&choice);
-
-      if(status != MENU_OK)
-      {
-        break;
-      }
-        rs232->port = choice;
-        save_config_sensor();
-
-      break;
-
-    case RS232_SET_BAUD:
-      status = input_decimal_prompt("통신속도",&dec,9600, 115200);
-      if(status != MENU_OK)
-        break;
-        rs232->baud = dec;
-        save_config_sensor();
-      break;
-    case RS232_SET_PARITY:
-      status = select_indexFromList(rs232ParityList, NULL, _countof(rs232ParityList), true,&choice);
-      if(status != MENU_OK)
-        break;
-
-        rs232->parityIdx = choice;
-        save_config_sensor();
-      break;
-    default:
-      break;
-  }
-  return status;
-}
-
-#define RS485_SET_PORT 0
-#define RS485_SET_BAUD 1
-#define RS485_SET_PARITY 2
-
-int32_t rs485_config_set( sensor_t *sensor, uint8_t cnt)
-{
-  int32_t status=0;
-  int32_t dec;
-  int32_t choice;
-  rs485_config_t *rs485;
-  const char *portList[10];
-
-  rs485 = get_sensor_config(sensor);
-  if (rs485 == NULL)
-  {
-    return 0;
-  }
-  switch (cnt)
-  {
-    case RS485_SET_PORT:
-
-      cnt = rs485_get_portList(portList, _countof(portList));
-      status = select_indexFromList( portList, NULL, cnt, true,&choice);
-      if(status != MENU_OK)
-        break;
-
-        rs485->port = choice;
-        save_config_sensor();
-
-      break;
-
-    case RS485_SET_BAUD:
-      status = input_decimal_prompt("통신속도",&dec,9600, 115200);
-      if(status != MENU_OK)
-        break;
-
-        rs485->baud = dec;
-        save_config_sensor();
-
-
-      break;
-    case RS485_SET_PARITY:
-      status = select_indexFromList(rs232ParityList, NULL, _countof(rs232ParityList), true,&choice);
-      if(status != MENU_OK)
-        break;
-
-        rs485->parityIdx = choice;
-        save_config_sensor();
-
-      break;
-    default:
-      break;
-  }
-
-  return status;
-}
 
 int32_t hjwind_config_set(  sensor_t *sensor, uint8_t munu_index)
 {
@@ -1034,17 +883,13 @@ int32_t rain_hall_config_set( sensor_t *sensor, uint8_t cnt)
 */
 const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_ADC, .config_set = adc_config_set},
-    {.sensorType = S_T_TEMP_232, .config_set = rs232_config_set},
-    {.sensorType = S_T_TEMP_485, .config_set = rs485_config_set},
     {.sensorType = S_T_RAIN_HALL_05MM, .config_set = rain_hall_config_set},
     {.sensorType = S_T_RAIN_HALL_1MM, .config_set = rain_hall_config_set},
     {.sensorType = S_T_RAIN_REED_05MM, .config_set = rain_reed_config_set},
     {.sensorType = S_T_RAIN_REED_1MM, .config_set = rain_reed_config_set},
-    {.sensorType = S_T_GENERAL_232, .config_set = rs232_config_set},
     {.sensorType = S_T_WIND_DIRECTION_HJ_485, .config_set = hjwinddir_config_set},
     {.sensorType = S_T_WIND_SPEED_HJ_485, .config_set = hjwind_config_set},
     {.sensorType = S_T_SNOW_HJ, .config_set = hjsnow_config_set},
-    {.sensorType = S_T_GENERAL_485, .config_set = rs485_config_set},
     {.sensorType = S_T_TEMPERATURE_HJ, .config_set = hjtemp_config_set},
     {.sensorType = S_T_HUMINITY_HJ, .config_set = hjhumi_config_set},
     {.sensorType = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_config_set},

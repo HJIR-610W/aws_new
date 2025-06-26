@@ -135,13 +135,14 @@ typedef enum adcChType_e
   eDIFF_ADC
 } eADC_CH_TYPE_t;
 
+#define SENSOR_CONFIG_TABLE_MAX 2
 typedef struct sensor_s
 {
   float offset;
   eSENSOR_MODEL_t type;
   uint8_t configCnt;     // 센서가 가지고 있는 설정값 수 예)
-  uint8_t config[4][2];  //[0][0] 센서타입 정보 저장, [0][1] 타입이 할당받은
-                         // 설정 위치값 저장
+  uint8_t config[SENSOR_CONFIG_TABLE_MAX][2];  //[0][0] 센서타입 정보 저장, [0][1] 타입이 할당받은
+                                               // 설정 위치값 저장
 } sensor_t;
 
 

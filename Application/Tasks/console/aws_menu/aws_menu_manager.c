@@ -84,6 +84,7 @@ void config_hj_reset(void)
 {
   adc_config_t *adc_config;
   hjtemp_config_t *hjtemp_cfg;
+  hjhumi_config_t *hjhumi_cfg;
   hjwindspeed_config_t *hjwind_cfg;
   hjwindDirection_config_t *hjwindDir_cfg;
 
@@ -105,10 +106,10 @@ void config_hj_reset(void)
   // 습도 센서[화진 습도 9600]
   config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_HUMINITY_HJ;
   sensor_add(&config.sensor[A10_RELATIVE_HUMIDITY]);
-  hjtemp_cfg = get_sensor_config(&config.sensor[A10_RELATIVE_HUMIDITY]);
-  hjtemp_cfg->physical_layer = ePHYSICAL_RS485;
-  hjtemp_cfg->port = eAPP_RS485_D;
-  hjtemp_cfg->modbus_id = 1;
+  hjhumi_cfg = get_sensor_config(&config.sensor[A10_RELATIVE_HUMIDITY]);
+  hjhumi_cfg->physical_layer = ePHYSICAL_RS485;
+  hjhumi_cfg->port = eAPP_RS485_D;
+  hjhumi_cfg->modbus_id = 1;
 
   // 풍향[화진 RS485 풍향 19200]
   config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;

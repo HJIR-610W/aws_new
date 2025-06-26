@@ -10,57 +10,26 @@
 #include "user_heap.h"
 config_sensor_t g_config_sensor;
 
+const config_sensor_t g_sensor_att_default =
+    {
+        .hjhumi = {.modbus_id = 1,
+                   .ofset = 0,
+                   .physical_layer = ePHYSICAL_RS485,
+                   .port = eAPP_RS485_D},
+        .hjtemp = {.modbus_id = 1,
+                   .ofset = 0,
+                   .physical_layer = ePHYSICAL_RS485,
+                   .port = eAPP_RS485_D}
+        };
+
+
 const config_sensor_t g_config_sensor_default;
 
 bool g_config_sensor_dirty_flag=false;
 
-void limit_rs232(void)
-{
-  for (int i = 0; i < _countof(g_config_sensor.rs232); i++)
-  {
-    if (g_config_sensor.rs232[i].baud < 9600 || g_config_sensor.rs232[i].baud > 115200)
-    {
-      g_config_sensor.rs232[i].baud = 9600;
-      g_config_sensor_dirty_flag = true;
-    }
 
-    if (g_config_sensor.rs232[i].port >= eRS232_MAX)
-    {
-      g_config_sensor.rs232[i].port = 0;
-      g_config_sensor_dirty_flag = true;
-    }
 
-    if (g_config_sensor.rs232[i].parityIdx >= 2)
-    {
-      g_config_sensor.rs232[i].parityIdx = 0;
-      g_config_sensor_dirty_flag = true;
-    }
-  }
-}
 
-void limit_rs485(void)
-{
-  for (int i = 0; i < _countof(g_config_sensor.rs485); i++)
-  {
-    if (g_config_sensor.rs485[i].baud < 9600 || g_config_sensor.rs485[i].baud > 115200)
-    {
-      g_config_sensor.rs485[i].baud = 9600;
-      g_config_sensor_dirty_flag = true;
-    }
-
-    if (g_config_sensor.rs485[i].port >= eAPP_RS485_MAX)
-    {
-      g_config_sensor.rs485[i].port = 0;
-      g_config_sensor_dirty_flag = true;
-    }
-
-    if (g_config_sensor.rs485[i].parityIdx >= 2)
-    {
-      g_config_sensor.rs485[i].parityIdx = 0;
-      g_config_sensor_dirty_flag = true;
-    }
-  }
-}
 
 void limit_adc(void)
 {
@@ -76,28 +45,68 @@ void limit_adc(void)
 
 void limit_hjwind(void)
 {
-  for (int i = 0; i < _countof(g_config_sensor.hjwind); i++)
+  if (g_config_sensor.hjwind_speed.rs485_port > eAPP_RS485_MAX)
   {
-    if (g_config_sensor.hjwind[i].rs485_port > eAPP_RS485_MAX)
-    {
-      g_config_sensor.hjwind[i].rs485_port = 0;
-      g_config_sensor_dirty_flag = true;
-    }
+    g_config_sensor.hjwind_speed.rs485_port = eAPP_RS485_A;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.hjwindDir.rs485_port > eAPP_RS485_MAX)
+  {
+    g_config_sensor.hjwindDir.rs485_port = eAPP_RS485_A;
+    g_config_sensor_dirty_flag = true;
   }
 }
 
 void limit_hjtemp(void)
 {
-  for (int i = 0; i < _countof(g_config_sensor.hjtemp); i++)
+  if (g_config_sensor.hjtemp.physical_layer > ePHYSICAL_RS485)
   {
-    if (g_config_sensor.hjtemp[i].port > eAPP_RS485_MAX)
+    g_config_sensor.hjtemp.physical_layer = ePHYSICAL_RS485;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.hjtemp.physical_layer == ePHYSICAL_RS485)
+  {
+    if (g_config_sensor.hjtemp.port > eAPP_RS485_MAX)
     {
-      g_config_sensor.hjtemp[i].port = 0;
+      g_config_sensor.hjtemp.port = eAPP_RS485_D;
+      g_config_sensor_dirty_flag = true;
+    }
+  }
+  if (g_config_sensor.hjtemp.physical_layer == ePHYSICAL_RS232)
+  {
+    if (g_config_sensor.hjtemp.port > eRS232_MAX)
+    {
+      g_config_sensor.hjtemp.port = eRS232_RS485_B;
       g_config_sensor_dirty_flag = true;
     }
   }
 }
-
+void limit_hjhumi(void)
+{
+  if (g_config_sensor.hjhumi.physical_layer > ePHYSICAL_RS485)
+  {
+    g_config_sensor.hjhumi.physical_layer = ePHYSICAL_RS485;
+    g_config_sensor_dirty_flag = true;
+  }
+    if (g_config_sensor.hjhumi.physical_layer == ePHYSICAL_RS485)
+    {
+      if (g_config_sensor.hjhumi.port > eAPP_RS485_MAX)
+      {
+        g_config_sensor.hjhumi.port = eAPP_RS485_D;
+        g_config_sensor_dirty_flag = true;
+      }
+    }
+    else if (g_config_sensor.hjhumi.physical_layer == ePHYSICAL_RS232)
+    {
+      if (g_config_sensor.hjhumi.port > eRS232_MAX)
+      {
+        g_config_sensor.hjhumi.port = eRS232_RS485_B;
+        g_config_sensor_dirty_flag = true;
+      }
+    }
+  }
 
 void save_config_sensor(void)
 {
@@ -146,9 +155,9 @@ void load_config_sensor(void)
   fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
 
   limit_adc();
-  limit_rs232();
-  limit_rs485();
+
   limit_hjwind();
+  limit_hjhumi();
   limit_hjtemp();
 
   if (g_config_sensor_dirty_flag)
