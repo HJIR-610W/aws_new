@@ -23,6 +23,7 @@ typedef struct stm32_cdc_cfg_s
   uint8_t channel;// 채널 번호
   uint32_t baud;  // 설정된 통신속도
   int8_t errCode;// 드라이버 에러  상태 정보
+  bool connected;
 }stm32_cdc_cfg_t;
 
 
@@ -53,6 +54,15 @@ uart_api_t stm32_cdc_api={.close = stm32_cdc_close,
 driver_t g_stm32_cdc;
 stm32_cdc_cfg_t g_stm32_cdc_cfg;
 
+
+extern uint8_t  g_usb_cdc_connected ;
+
+
+
+void set_usb_cdc_connection(bool set)
+{
+  g_stm32_cdc_cfg.connected = set;
+}
 driver_t *stm32_cdc_open(int num,void *opt)
 {
   osSemaphoreId_t tempSem=NULL;
@@ -63,8 +73,22 @@ driver_t *stm32_cdc_open(int num,void *opt)
     return &g_stm32_cdc;
   }
 
-    usbTask_init();
+
   
+  usbTask_init();
+
+  for(int i = 0 ;i< 5; i++)
+  {
+    if (g_stm32_cdc_cfg.connected)
+    {
+      break;
+    }
+    osDelay(100);
+  }
+  
+
+
+
   g_stm32_cdc.api = &stm32_cdc_api;
   g_stm32_cdc.cfg = &g_stm32_cdc_cfg;
     
@@ -111,6 +135,10 @@ int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
     return 0;
   }
 
+  if(cfg->connected==false)
+  {
+    return -1;
+  }
   if(drv->sem)
   {
     osSemaphoreAcquire(drv->sem, osWaitForever);

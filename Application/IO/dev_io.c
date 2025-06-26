@@ -160,11 +160,8 @@ int32_t io_printf(const char *pFmt, ...)
   if (debug_uart && ptr)  // os구동중인지 확인
   {
     io_send((uint8_t *)ptr, strlen(ptr));
-    }
-  else if (ptr)  // os 없으면
-  {
-    debug_puts_nonos(ptr);
   }
+
 
 #ifdef PRINTF_HEAP_USE
   if (temp)

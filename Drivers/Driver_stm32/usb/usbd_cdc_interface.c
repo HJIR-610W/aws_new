@@ -61,7 +61,7 @@ static int8_t CDC_Itf_Init(void)
   
   return (USBD_OK);
 }
-
+extern void set_usb_cdc_connection(bool set);
 /**
   * @brief  CDC_Itf_DeInit
   *         DeInitializes the CDC media low layer
@@ -71,18 +71,20 @@ static int8_t CDC_Itf_Init(void)
 static int8_t CDC_Itf_DeInit(void)
 {
 
+      set_usb_cdc_connection(false);
   return (USBD_OK);
 }
 
-/**
-  * @brief  CDC_Itf_Control
-  *         Manage the CDC class requests
-  * @param  Cmd: Command code            
-  * @param  Buf: Buffer containing command data (request parameters)
-  * @param  Len: Number of data to be sent (in bytes)
-  * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
-  */
-static int8_t CDC_Itf_Control (uint8_t cmd, uint8_t* pbuf, uint16_t length)
+
+    /**
+     * @brief  CDC_Itf_Control
+     *         Manage the CDC class requests
+     * @param  Cmd: Command code
+     * @param  Buf: Buffer containing command data (request parameters)
+     * @param  Len: Number of data to be sent (in bytes)
+     * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
+     */
+    static int8_t CDC_Itf_Control(uint8_t cmd, uint8_t *pbuf, uint16_t length)
 { 
   switch (cmd)
   {
@@ -128,7 +130,7 @@ static int8_t CDC_Itf_Control (uint8_t cmd, uint8_t* pbuf, uint16_t length)
     break;
 
   case CDC_SET_CONTROL_LINE_STATE:
-    /* Add your code here */
+    set_usb_cdc_connection(true);
     break;
 
   case CDC_SEND_BREAK:

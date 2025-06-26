@@ -14,6 +14,7 @@
 #include "user_heap.h"
 #include "util_time.h"
 #include "config_app.h"
+#include "task_console.h"
 
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define TELNET_WELCOME_MSG "\r\n=== AWS Telnet Console ===\r\n\r\n"
@@ -79,7 +80,12 @@ static void telnet_init_client(telnet_client_t* client, int socket)
     client->window_height = 24;
     client->line_pos = 0;
     
-    task_printf("Telnet: Client initialized (socket: %d)\r\n", socket);
+    // Send initial telnet options for immediate character transmission
+    telnet_send_option(socket, TELNET_WILL, TELNET_OPT_ECHO);
+    telnet_send_option(socket, TELNET_WILL, TELNET_OPT_SGA);
+    telnet_send_option(socket, TELNET_DO, TELNET_OPT_SGA);
+    
+    task_printf("Telnet: Client initialized with options negotiation (socket: %d)\r\n", socket);
 }
 
 static void telnet_cleanup_client(telnet_client_t* client)
@@ -371,7 +377,10 @@ static void telnet_server_mode_task(void)
             }
         }
 
-        char client_ip_str[INET_ADDRSTRLEN];
+        consoleTask_start();
+
+
+            char client_ip_str[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &client_addr.sin_addr, client_ip_str, sizeof(client_ip_str));
         task_printf("Telnet Server: New client connected %s:%u (socket: %d)\r\n", 
                    client_ip_str, ntohs(client_addr.sin_port), client_socket);
@@ -622,12 +631,9 @@ static void telnet_process_common_data(void* client_ptr, bool is_server_mode, co
             case TELNET_STATE_NORMAL:
                 if (ch == TELNET_IAC) {
                     *common.state = TELNET_STATE_IAC;
-                } else if (ch == '\r') {
-                    // Skip CR (handle LF in CR+LF sequence)
-                    continue;
                 } else if (ch == '\n' || ch==0x03||ch == 0x11) {
-                    if(ch=='\n')
-                    {
+                  if (ch == '\n' || ch == '\r')
+                  {
                     // Line complete - process command (mode independent)
                     line_len = *common.line_pos;
                     common.line_buffer[line_len++] = '\n';

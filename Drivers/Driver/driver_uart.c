@@ -55,6 +55,12 @@ driver_t *driver_uart_open(int32_t num, void *opt)
 
 void driver_uart_close(driver_t *drv)
 {
+  
+    if(drv == NULL)
+  {
+    return  ;
+  }
+  
   uart_api_t *api = (uart_api_t *)drv->api;
 
   api->close(drv);
@@ -62,6 +68,10 @@ void driver_uart_close(driver_t *drv)
 
 int32_t driver_uart_send(driver_t *drv, const uint8_t *pData, uint16_t dataLen)
 {
+  if(drv == NULL)
+  {
+    return  -1;
+  }
   uart_api_t *api = (uart_api_t *)drv->api;
 
   return api->send(drv, pData, dataLen);
@@ -69,6 +79,12 @@ int32_t driver_uart_send(driver_t *drv, const uint8_t *pData, uint16_t dataLen)
 
 int32_t driver_uart_recv(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutMs)
 {
+    if(drv == NULL)
+  {
+    return  -1;
+  }
+  
+  
   uart_api_t *api = (uart_api_t *)drv->api;
 
   return api->recv(drv, pBuff, rLen, timeOutMs);
@@ -80,6 +96,11 @@ int32_t driver_uart_recv(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32_t 
  */
 int32_t driver_uart_get_charNonBlocking(driver_t *drv, uint8_t *pBuff)
 {
+    if(drv == NULL)
+  {
+    return  -1;
+  }
+  
   uart_api_t *api = (uart_api_t *)drv->api;
 
   return api->recv(drv, pBuff, 1, 0);
@@ -90,6 +111,11 @@ int32_t driver_uart_get_charNonBlocking(driver_t *drv, uint8_t *pBuff)
  */
 int32_t driver_uart_get_char(driver_t *drv, uint8_t *pBuff, uint16_t rLen)
 {
+  
+    if(drv == NULL)
+  {
+    return  -1;
+  }
   uart_api_t *api = (uart_api_t *)drv->api;
 
   return api->recv(drv, pBuff, 1, osWaitForever);
@@ -97,6 +123,11 @@ int32_t driver_uart_get_char(driver_t *drv, uint8_t *pBuff, uint16_t rLen)
 
 void driver_uart_set(driver_t *drv, uart_set_option_t cmd, void *para)
 {
+    if(drv == NULL)
+  {
+    return  ;
+  }
+  
   uart_api_t *api = (uart_api_t *)drv->api;
 
   api->set(drv, cmd, para);
@@ -104,6 +135,11 @@ void driver_uart_set(driver_t *drv, uart_set_option_t cmd, void *para)
 
 void driver_uart_get(driver_t *drv, uart_get_option_t cmd, void *para)
 {
+    if(drv == NULL)
+  {
+    return  ;
+  }
+  
   uart_api_t *api = (uart_api_t *)drv->api;
 
   api->get(drv, cmd, para);

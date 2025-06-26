@@ -2223,9 +2223,6 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_adc.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_cdc.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_charger.c</name>
             </file>
             <file>

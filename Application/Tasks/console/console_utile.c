@@ -1,13 +1,12 @@
-
 #include "console_utile.h"
 
-#include <math.h>    // For NAN, isnan, fabsf
-#include <stdarg.h>  // For va_list in io_printf stub
+#include <math.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>  // For atoi, atof (대안 입력 파싱 시)
-#include <string.h>  // For memcpy, strcmp (필요시)
+#include <stdlib.h>
+#include <string.h>
 
 #include "IO\dev_io.h"
 #include "adc_calibration.h"
@@ -26,12 +25,11 @@
 
 const char *g_unknown = "unknown";
 
-const char* enableList[] = {"미사용", "사용"};
+const char* enableList[] = {"비활성", "활성"};
 
 
 char recv_key(uint32_t timeout_ms)
 {
-  //char key;
   char ch=0;
 
   while(1)
@@ -71,7 +69,6 @@ int32_t console_scanf_s(const char* fmt, ...)
   return ret;
 }
 
-//범위 안에 값을 입력 받음
 int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_val)
 {
   int ret_scan;
@@ -106,53 +103,52 @@ int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_va
 
 int print_menu(int width, const char* title, char** menu_list, int cnt)
 {
-  int total_width = width + 8;  // 좌우 여백 및 메뉴 번호 고려
+  int total_width = width + 8;
+  char line_buffer[256];
 
-  // 타이틀 가운데 정렬
   int title_len = strlen(title);
   int title_padding = (total_width - 2 - title_len) / 2;
   int title_padding_right = total_width - 2 - title_len - title_padding;
 
-  // CTRL 문구 가운데 정렬
-  const char* ctrl_msg = "CTRL+C 이전, CTRL+Q 종료";
+  const char* ctrl_msg = "CTRL+C 뒤로, CTRL+Q 종료";
   int ctrl_len = strlen(ctrl_msg);
   int ctrl_padding = (total_width - 2 - ctrl_len) / 2;
   int ctrl_padding_right = total_width - 2 - ctrl_len - ctrl_padding;
 
-  // 상단 라인
-  io_printf("+");
-  for (int i = 0; i < total_width - 2; i++) io_printf("-");
-  io_printf("+\r\n");
+  strcpy(line_buffer, "+");
+  for (int i = 0; i < total_width - 2; i++) strcat(line_buffer, "-");
+  strcat(line_buffer, "+\r\n");
+  io_printf("%s", line_buffer);
 
-  // 타이틀 출력
-  io_printf("|");
-  for (int i = 0; i < title_padding; i++) io_printf(" ");
-  io_printf("%s", title);
-  for (int i = 0; i < title_padding_right; i++) io_printf(" ");
-  io_printf("|\r\n");
+  strcpy(line_buffer, "|");
+  for (int i = 0; i < title_padding; i++) strcat(line_buffer, " ");
+  strcat(line_buffer, title);
+  for (int i = 0; i < title_padding_right; i++) strcat(line_buffer, " ");
+  strcat(line_buffer, "|\r\n");
+  io_printf("%s", line_buffer);
 
-  // 중간 라인
-  io_printf("+");
-  for (int i = 0; i < total_width - 2; i++) io_printf("-");
-  io_printf("+\r\n");
+  strcpy(line_buffer, "+");
+  for (int i = 0; i < total_width - 2; i++) strcat(line_buffer, "-");
+  strcat(line_buffer, "+\r\n");
+  io_printf("%s", line_buffer);
 
-  // 메뉴 리스트 출력
   for (int i = 0; i < cnt; i++)
   {
-    io_printf("|  %2d. %-*s|\r\n", i + 1, width, menu_list[i]);
+    snprintf(line_buffer, sizeof(line_buffer), "|  %2d. %-*s|\r\n", i + 1, width, menu_list[i]);
+    io_printf("%s", line_buffer);
   }
 
-  // CTRL 문구
-  io_printf("|");
-  for (int i = 0; i < ctrl_padding; i++) io_printf(" ");
-  io_printf("%s", ctrl_msg);
-  for (int i = 0; i < ctrl_padding_right; i++) io_printf(" ");
-  io_printf("|\r\n");
+  strcpy(line_buffer, "|");
+  for (int i = 0; i < ctrl_padding; i++) strcat(line_buffer, " ");
+  strcat(line_buffer, ctrl_msg);
+  for (int i = 0; i < ctrl_padding_right; i++) strcat(line_buffer, " ");
+  strcat(line_buffer, "|\r\n");
+  io_printf("%s", line_buffer);
 
-  // 하단 라인
-  io_printf("+");
-  for (int i = 0; i < total_width - 2; i++) io_printf("-");
-  io_printf("+\r\n");
+  strcpy(line_buffer, "+");
+  for (int i = 0; i < total_width - 2; i++) strcat(line_buffer, "-");
+  strcat(line_buffer, "+\r\n");
+  io_printf("%s", line_buffer);
 
   return cnt;
 }
@@ -179,10 +175,6 @@ int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int3
 
 
 
-
-/**
- * @retval 0보다 크면 사용자 입력이 있음
- */
 int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t listCnt, bool number,int32_t *choice)
 {
 
@@ -239,7 +231,7 @@ int32_t choice_enable(uint8_t *enable)
   int32_t status;
   int32_t choice;
 
-  status = choice_menu(20,"사용 여부",(char **)menu,_countof(menu),&choice);
+  status = choice_menu(20,"사용 선택",(char **)menu,_countof(menu),&choice);
 
   if(status ==MENU_OK)
   {
@@ -298,7 +290,7 @@ int input_float_prompt(const char* prompt, float min, float max, float* value)
       }
       else
       {
-        io_printf("범위 오류: %.2f ~ %.2f\r\n", min, max);
+        io_printf("입력 범위: %.2f ~ %.2f\r\n", min, max);
       }
     }
     else
@@ -321,7 +313,7 @@ int check_pass(const char* title, char* password_str,int *ok)
 
   while(1)
   {
-    status = cli_scanf_s("%15s", input);  // 문자열 입력
+    status = cli_scanf_s("%15s", input);
 
     if(status == CLI_KEYCODE_CTRL_C)
     {
@@ -366,7 +358,7 @@ int confirm_continue(const char *title,int32_t* ok)
   {
     io_printf("%s(yes/no)\r\n",title);
     io_printf("입력:");
-    status = cli_scanf_s("%15s", input);  // 문자열 입력
+    status = cli_scanf_s("%15s", input);
 
     if (status == CLI_KEYCODE_CTRL_C)
     {
@@ -399,5 +391,4 @@ int confirm_continue(const char *title,int32_t* ok)
   }
   return status;
 }
-
 

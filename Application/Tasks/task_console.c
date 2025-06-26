@@ -20,7 +20,7 @@
 #include "system_err.h"
 #include "dev_io.h"
 driver_t *console_uart;
-
+static osThreadId_t s_console_task_id;
 const osThreadAttr_t consoleTask_attributes = {
   .name = "consoleTask",
   .stack_size = 2048+1024,
@@ -123,7 +123,7 @@ void consoleTask(void *arg)
 }
 
 
-
+//디버깅 포트를 사용 가능할때만 콘솔 task 실행
 void consoleTask_init(void *arg)
 {
   uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
@@ -133,10 +133,23 @@ void consoleTask_init(void *arg)
   uart_config.stop_bit = 0;
 
   console_uart = driver_uart_open(UART_10_CDC,&uart_config);
-  //console_uart = driver_uart_open(UART_0_D_SUB_0,&uart_config);
 
-  osDelay(100);
+  if(console_uart)
+  {
+    set_debug_uart_handle(console_uart);
+    if (s_console_task_id==NULL)
+      s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
+  }
+}
 
-  set_debug_uart_handle(console_uart);
-  osThreadNew(consoleTask, arg, &consoleTask_attributes);
+void consoleTask_start(void)
+{
+  if(s_console_task_id==NULL)
+  s_console_task_id = osThreadNew(consoleTask, NULL, &consoleTask_attributes);
+
+}
+
+void consoleTask_stop(void)
+{
+  
 }
