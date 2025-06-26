@@ -24,5 +24,5 @@ typedef struct {
 int websocket_handshake(int client_socket, const char* key);
 void websocket_handle_connection(int client_socket);
 void websocket_send_text_frame(int client_socket, const char* text, size_t len);
-
+void websocket_terminal_handle_connection(int client_socket);
 #endif // WEBSOCKET_H

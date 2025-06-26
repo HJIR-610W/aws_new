@@ -10,9 +10,9 @@
 typedef struct
 {
   uint16_t sReal;
-  uint16_t sMin;
-  uint16_t sMax;
-  uint16_t sSpec;
+  uint16_t sMonthRain;
+  uint16_t sHourRain;
+  uint16_t sYearRain;
 } SENSOR_RIXS_BUF;
 
 typedef struct
@@ -156,10 +156,10 @@ typedef struct
   uint16_t sHourRain;    // 1시간 강수량
   uint16_t sDayRain;     // 일간 강수량
   uint16_t sBefDayRain;  // 전일 강수량
-  uint16_t sDayCount;       
-  uint16_t sDayCountOld;    // 임시 저장 값
+
   uint16_t sMonthRain;
   uint16_t sYearRain;
+  uint16_t rain;
 
 } SENSORRAIN_BUF;
 

@@ -20,7 +20,7 @@
 #define CLIENT_CONNECT_TIMEOUT_MS 10000
 
 static osThreadId_t g_httpServerTaskId = NULL;
-static bool g_httpServerRunning = false;
+
 
 const osThreadAttr_t http_server_task_attributes = {
     .name = "http_server",
@@ -556,11 +556,7 @@ static void http_server_task(void *argument)
         task_printf("HTTP Server: Client disconnected\r\n");
     }
 
-    if (server_socket >= 0) {
-        closesocket(server_socket);
-    }
 
-    task_printf("HTTP Server: Task xtermnated\r\n");
 }
 
 
@@ -569,10 +565,5 @@ static void http_server_task(void *argument)
 void http_server_task_init(void)
 {
     g_httpServerTaskId = osThreadNew(http_server_task, NULL, &http_server_task_attributes);
-    if (g_httpServerTaskId == NULL) {
-        task_printf("HTTP Server: Failed to create task\r\n");
-        g_httpServerRunning = false;
-    } else {
-        task_printf("HTTP Server: Started successfully\r\n");
-    }
+
 }

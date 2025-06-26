@@ -1277,8 +1277,8 @@ void calculate_rain(void)
     aws_free(p_rain_days);
   }
 
-  Sysinfo.mRain.sDayCount = daily_rain;
-  Sysinfo.mRain.sDayCountOld = daily_rain;
+
+
   Sysinfo.mRain.sMinRain   = 0;      // 1분 강수량
   Sysinfo.mRain.s10MinRain = min10_rain;  // 10분 강수량
   Sysinfo.mRain.sHourRain = hourly_rain;  // 1시간강수량
@@ -1456,7 +1456,7 @@ void DUALPORT_TASK(void *arg)
     if (++nWindCnt40 >= 40)
       nWindCnt40 = 0;
 
-    pSystem->mRain.sDayCount += get_rain_mm(&sensor_err);
+    pSystem->mRain.rain += get_rain_mm(&sensor_err);
     update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
 
     // 기압

@@ -18,10 +18,10 @@ void read_chargerStatus(char *pBuff,uint16_t buffSize)
     snprintf(pBuff,buffSize,"--");
     break;
   case CHARGER_ERR_RECV_TIMEOUT:
-  snprintf(pBuff,buffSize,"통신");
+  snprintf(pBuff,buffSize,"통신 이상");
   break;
   case CHARGER_ERR_RECV_PACKET:
-  snprintf(pBuff,buffSize,"패킷");
+  snprintf(pBuff,buffSize,"패킷 이상");
   break;
   default:
   snprintf(pBuff,buffSize,"정상");

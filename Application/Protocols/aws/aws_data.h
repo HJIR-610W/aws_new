@@ -41,8 +41,8 @@ typedef struct aws_data_s2
 {
   bool enable;
   uint8_t err;
-  uint16_t max;
-  uint16_t min;
+  uint16_t hour;
+  uint16_t month;
   uint16_t data;
   uint16_t year;
   uint32_t last_time;
@@ -51,7 +51,7 @@ typedef struct aws_data_s2
     int32_t i;
     float f;
   }raw;
-} aws_data2_t;
+} aws_rain_t;
 
 typedef struct
 {
@@ -224,7 +224,7 @@ typedef struct
   aws_data_t wind_speed_avg;          // 3. 풍속 (1분 평균)
   aws_data_t wind_direction_instant;  // 4. 풍향 (1분 순간)
   aws_data_t wind_speed_instant;      // 5. 풍속 (1분 순간)
-  aws_data2_t precipitation;          // 6. 강수량 (0.5/1.0 mm)
+  aws_rain_t precipitation;          // 6. 강수량 (0.5/1.0 mm)
   aws_data_t pressure;                // 7. 기압 (1분 평균 현지 기압)
   aws_data_t precipitation_presence;  // 8. 강수 유무
   aws_data_t snowfall;                // 9. 적설

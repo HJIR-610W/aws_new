@@ -33,11 +33,6 @@ AWS_DATA_STRUCT m10MinAws;  // 10분 자료
 AWS_DATA_STRUCT mHourAws;   // 1시간 자료
 #pragma location = "SRAM_section"
 SYSTEM_INFO_AWS Sysinfo;
-
-
-
-
-
  
 
  void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v);
@@ -196,7 +191,6 @@ void SecProcess(void)
 {
   uint16_t sAvgSpeed;
   uint16_t sAvgDirection;
-  uint16_t sRain;
   uint32_t  i;
   SYSTEM_INFO_AWS *pSystem;
   uint64_t windSum=0;
@@ -362,34 +356,37 @@ void SecProcess(void)
 
 
   
-   sRain = pSystem->mRain.sDayCount - pSystem->mRain.sDayCountOld;
+    if(pSystem->mRain.rain)
+    {
+      uint16_t rain =pSystem->mRain.rain;
 
-  if (sRain != 0)
-  {
-    // 강우량 값이 변경 되었음
-    pSystem->mRain.sDayCountOld = pSystem->mRain.sDayCount;
-    pSystem->mRain.sMinRain   += sRain;  // 1분 강수량
-    pSystem->mRain.s10MinRain += sRain;  // 10분 강수량
-    pSystem->mRain.sHourRain  += sRain;  // 1시간강수량
-    pSystem->mRain.sDayRain   += sRain;  // 일간강수량
-    pSystem->mRain.sMonthRain += sRain;  // 월간 강수량
-    pSystem->mRain.sYearRain  += sRain;  // 년간 강수량
+      pSystem->mRain.sMinRain += rain;   // 1분 강수량
+      pSystem->mRain.s10MinRain += rain;  // 10분 강수량
+      pSystem->mRain.sHourRain += rain;   // 1시간강수량
+      pSystem->mRain.sDayRain += rain;    // 일간강수량
+      pSystem->mRain.sMonthRain += rain;   // 월간 강수량
+      pSystem->mRain.sYearRain += rain;    // 년간 강수량
 
-    set_rainfall_today(pSystem->mRain.sDayRain/10.0f);
-    set_rainfall_hourly(pSystem->mRain.sHourRain / 10.0f);
-    set_rainfall_monthly(pSystem->mRain.sMonthRain / 10.0f);
-    set_rainfall_yearly(pSystem->mRain.sYearRain / 10.0f);
-  }
+      set_rainfall_1min(pSystem->mRain.sMinRain/10.0f);
+      set_rainfall_today(pSystem->mRain.sDayRain / 10.0f);
+      set_rainfall_hourly(pSystem->mRain.sHourRain / 10.0f);
+      set_rainfall_monthly(pSystem->mRain.sMonthRain / 10.0f);
+      set_rainfall_yearly(pSystem->mRain.sYearRain / 10.0f);
+
+      pSystem->mRain.rain = 0;
+    }
+  
 
   mRealAws.mRainFall.sReal = pSystem->mRain.sDayRain;  // 일간강수량(초단위로 바뀌는 값)
-  // 2010. 08. 28. 수정 : 1일 강수량으로 만들기위함
-  mMinAws.mRainFall.sReal = pSystem->mRain.sDayRain;
+  mRealAws.mRainFall.sHourRain = pSystem->mRain.sHourRain;  // 1시간 강수량
+  mRealAws.mRainFall.sMonthRain = pSystem->mRain.sMonthRain;  // 월간강수량
+  mRealAws.mRainFall.sYearRain = pSystem->mRain.sYearRain;  // 연간강수량
+  
+  mMinAws.mRainFall.sReal   = pSystem->mRain.sDayRain;
   m10MinAws.mRainFall.sReal = pSystem->mRain.sDayRain;
-  mHourAws.mRainFall.sReal = pSystem->mRain.sDayRain;
+  mHourAws.mRainFall.sReal  = pSystem->mRain.sDayRain;
 
-  mRealAws.mRainFall.sMax = pSystem->mRain.sHourRain;  // 1시간 강수량
-  mRealAws.mRainFall.sMin = pSystem->mRain.sMonthRain; // 월간강수량
-  mRealAws.mRainFall.sSpec = pSystem->mRain.sYearRain; // 연간강수량
+
 
   // 강우 감지 처리 (초 단위로 처리)
   mMinAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
@@ -722,10 +719,9 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   // 강수량 처리
   // 2010. 08. 28. 수정
-  //    pAws->mRainFall.sReal   = pSystem->mRain.sMinRain; // 1분 강수량
-  pAws->mRainFall.sMax = pSystem->mRain.sHourRain;
-  pAws->mRainFall.sMin = pSystem->mRain.sMonthRain;
-  pAws->mRainFall.sSpec = pSystem->mRain.sYearRain;
+  pAws->mRainFall.sHourRain = pSystem->mRain.sHourRain;
+  pAws->mRainFall.sMonthRain = pSystem->mRain.sMonthRain;
+  pAws->mRainFall.sYearRain = pSystem->mRain.sYearRain;
   pAws->rain_1min = pSystem->mRain.sMinRain;
   pSystem->mRain.sMinRain = 0;                                  // 1분 강수량
 
@@ -835,7 +831,7 @@ void Min10Process(void)
 
   // 강수량 처리
   pAws->mRainFall.sReal = pSystem->mRain.s10MinRain;  // 10분 강수량
-  pAws->mRainFall.sMax = pSystem->mRain.sHourRain;
+  pAws->mRainFall.sHourRain = pSystem->mRain.sHourRain;
   pSystem->mRain.s10MinRain = 0;  // 10분 강수량
   set_rainfall_10min(pSystem->mRain.s10MinRain/10.0f);
 
@@ -966,9 +962,6 @@ void DayProcess(void)
   // 강수량 처리
   pSystem->mRain.sBefDayRain = pSystem->mRain.sDayRain;  // 전일강수량
   pSystem->mRain.sDayRain = 0;
-  pSystem->mRain.sDayCount=0;
-  pSystem->mRain.sDayCountOld = 0;
-
 
   set_rainfall_today(0.0f);
   set_rainfall_yesterday(pSystem->mRain.sBefDayRain/10.0f);
@@ -1262,10 +1255,10 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->wind_speed_instant.data = pAws->mWind.mSpeed.sMax;
   p_kma_data->wind_direction_instant.data = pAws->mWind.mDirection.sMax;
 
-  p_kma_data->precipitation.data = pAws->mRainFall.sReal;
-  p_kma_data->precipitation.max = pAws->mRainFall.sMax;    // 시간당 강수량량
-  p_kma_data->precipitation.min = pAws->mRainFall.sMin;    // 월간 강수량
-  p_kma_data->precipitation.year = pAws->mRainFall.sSpec;  // 연간 강수량
+  p_kma_data->precipitation.data  = pAws->mRainFall.sReal;
+  p_kma_data->precipitation.hour  = pAws->mRainFall.sHourRain;    // 시간당 강수량량
+  p_kma_data->precipitation.month = pAws->mRainFall.sMonthRain;  // 월간 강수량
+  p_kma_data->precipitation.year  = pAws->mRainFall.sYearRain;  // 연간 강수량
 
   p_kma_data->precipitation_presence.data = pAws->mRainDetect.sReal;  // 우량 감지
 

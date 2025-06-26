@@ -147,13 +147,11 @@ int32_t print_rain_info(uint16_t row, uint16_t column,uint8_t selected)
   vt100_print_frame_selected(row+1, column, "강수량", '+', '|', '-', SMALL_W, WHITE, selected);
   vt100_print_bar(line++, column, -SMALL_W, "전일:%6.1f\r\n", get_rainfall()->rainfall_yesterday);
   vt100_print_bar(line++, column, -SMALL_W, "금일:%6.1f\r\n", get_rainfall()->rainfall_today);
+  vt100_print_bar(line++, column, -SMALL_W, " 1분:%6.1f\r\n", get_rainfall()->rainfall_1min);
   vt100_print_bar(line++, column, -SMALL_W, "10분:%6.1f\r\n", get_rainfall()->rainfall_10min);
   vt100_print_bar(line++, column, -SMALL_W, "시간:%6.1f\r\n", get_rainfall()->rainfall_hourly);
   vt100_print_bar(line++, column, -SMALL_W, "월간:%6.1f\r\n", get_rainfall()->rainfall_monthly);
   vt100_print_bar(line++, column, -SMALL_W, "연간:%6.1f\r\n", get_rainfall()->rainfall_yearly);
-
-
-  vt100_print_bar(line++, column, -SMALL_W, "\r\n");
   vt100_print_line(line++, column, '+', '-', SMALL_W);
 
   return line - (row+1);
@@ -399,7 +397,7 @@ int32_t print_direct_info(uint16_t row, uint16_t column, uint8_t selected)
   {
     time_cvt_secTotime(last_time, &nt);
 
-    vt100_print_bar(line++, column, -SMALL_W, "R시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
+    vt100_print_bar(line++, column, -SMALL_W, "R시간   :%02d-%02d-%02d %02d:%02d:%02d\r\n",
                     nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 
@@ -413,7 +411,7 @@ int32_t print_direct_info(uint16_t row, uint16_t column, uint8_t selected)
   else
   {
     time_cvt_secTotime(last_time, &nt);
-    vt100_print_bar(line++, column, -SMALL_W, "T시간   :%02d-%02d-%2d %02d:%02d:%02d\r\n",
+    vt100_print_bar(line++, column, -SMALL_W, "T시간   :%02d-%02d-%02d %02d:%02d:%02d\r\n",
                     nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 

@@ -1038,7 +1038,7 @@ int32_t ntle9607_recv_handler(driver_t *uart, uint8_t *buffer, uint16_t buffer_s
 
   int32_t len = 0;
 
-  len = driver_uart_recv_crlf(uart,buffer, buffer_size, osWaitForever);
+  len = driver_uart_recv_crlf(uart,(char *)buffer, buffer_size, osWaitForever);
 
 
   return len;

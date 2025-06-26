@@ -86,7 +86,7 @@ int32_t menu_data_display(void)
               READ_X10(aws.mWind.mSpeed.sMax));
 
     io_printf("강우량(일)    : %6.1f 월: %6.1f 시간: %6.1f\r\n", READ_X10(aws.mRainFall.sReal),
-              READ_X10(aws.mRainFall.sMin), READ_X10(aws.mRainFall.sMax));
+              READ_X10(aws.mRainFall.sMonthRain), READ_X10(aws.mRainFall.sHourRain));
 
     io_printf("기압          : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n",
               READ_X10(aws.mBarometric.sReal), READ_X10(aws.mBarometric.sMin),

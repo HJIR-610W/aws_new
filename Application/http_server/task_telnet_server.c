@@ -235,32 +235,30 @@ static void telnet_handle_client(telnet_client_t* client)
         
         if (bytes_received <= 0) {
             if (bytes_received == 0) {
-                task_printf("Telnet: Client disconnected normally (socket: %d)\r\n", client->socket);
                 client->connected = false;
             } else if (errno == EAGAIN ) {
                 continue;
             } else if (errno == ECONNRESET || errno == ECONNABORTED || errno == ENOTCONN) {
-                task_printf("Telnet: Client connection reset/aborted (socket: %d, error: %d)\r\n", client->socket, errno);
+
                 client->connected = false;
             } else if (errno == EBADF || errno == EINVAL) {
-                task_printf("Telnet: Invalid socket descriptor (socket: %d, error: %d)\r\n", client->socket, errno);
+
                 client->connected = false;
             } else {
-                task_printf("Telnet: Client recv error (socket: %d, error: %d)\r\n", client->socket, errno);
                 client->connected = false;
             }
             break;
         }
         
         last_activity = current_time;
-        task_printf("Telnet: Received %d bytes from client (socket: %d)\r\n", bytes_received, client->socket);
+
         telnet_process_data(client, buffer, bytes_received);
     }
     
     g_current_telnet_client = NULL;
     terminal_bridge_cleanup();
     aws_free(buffer);
-    task_printf("Telnet: Client handler terminated (socket: %d)\r\n", client->socket);
+
 }
 
 

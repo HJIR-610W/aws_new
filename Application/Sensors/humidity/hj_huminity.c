@@ -50,6 +50,7 @@ driver_t *hjHuminity_open(int32_t num, void *opt)
           driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_232, &modbus_init);
       break;
     case ePHYSICAL_RS485:
+       modbus_init.port_num  = port;
       hj_huminity_cfg.bus_io =
           driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &modbus_init);
       break; 

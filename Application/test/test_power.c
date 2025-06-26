@@ -14,7 +14,7 @@ void test_power_signal(void)
   driver_t *do_btm;
   driver_t *do_rain_heater;
   driver_t *do_rain_det;
-  driver_t *do_rain_det_power;
+
   // DO ¿ÀÇÂ
   do_cdma = driver_do_open(DO_POWER_CDMA, 0);
   do_24v = driver_do_open(DO_POWER_HART_24V, 0);

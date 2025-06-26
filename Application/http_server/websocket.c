@@ -9,7 +9,7 @@
 #include "task_logging.h"
 #include "user_heap.h"
 #include "app_file.h"
-
+#include "terminal_bridge.h"
 // mbedTLS includes for WebSocket handshake
 #include "mbedtls/sha1.h"
 #include "mbedtls/base64.h"
