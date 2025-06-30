@@ -1,6 +1,6 @@
 /**
  * @file console_cali.c
- * @brief ADC ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ë©”ë‰´ (ìµœì¢… í†µí•© ë²„ì „)
+ * @brief ADC Ä¶¸®ºê·¹ÀÌ¼Ç ¸Ş´º (ÃÖÁ¾ ÅëÇÕ ¹öÀü)
  * @date 2025-04-22
  *
  */
@@ -10,8 +10,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>  // For atoi, atof (ëŒ€ì•ˆ ì…ë ¥ íŒŒì‹± ì‹œ)
-#include <string.h>  // For memcpy, strcmp (í•„ìš”ì‹œ)
+#include <stdlib.h>  // For atoi, atof (´ë¾È ÀÔ·Â ÆÄ½Ì ½Ã)
+#include <string.h>  // For memcpy, strcmp (ÇÊ¿ä½Ã)
 
 #include "IO\dev_io.h"
 #include "adc_calibration.h"
@@ -38,22 +38,22 @@ extern bool wait_break(uint32_t timeoutms);
 
 
 
-// --- 6. ë©”ë‰´ ì²˜ë¦¬ í•¨ìˆ˜ ---
+// --- 6. ¸Ş´º Ã³¸® ÇÔ¼ö ---
 
-/** @brief ì±„ë„ ì„ íƒ (ê³µí†µ ë¡œì§) */
+/** @brief Ã¤³Î ¼±ÅÃ (°øÅë ·ÎÁ÷) */
 int select_channel(adc_channel_type_t type, int* channel_index)
 {
   int max_ch = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? (ADS1220_NUM_SINGLE_ENDED_CHANNELS - 1)
                                                        : (ADS1220_NUM_DIFFERENTIAL_CHANNELS - 1);
-  const char* type_str = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? "ì‹±ê¸€ ì—”ë“œ" : "ì°¨ë™";
+  const char* type_str = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? "½Ì±Û ¿£µå" : "Â÷µ¿";
   char prompt[100];
-  snprintf(prompt, sizeof(prompt), "ì±„ë„ ë²ˆí˜¸ ì…ë ¥ (%s: 0 ~ %d)", type_str, max_ch);
+  snprintf(prompt, sizeof(prompt), "Ã¤³Î ¹øÈ£ ÀÔ·Â (%s: 0 ~ %d)", type_str, max_ch);
   return input_decimal_prompt(prompt, channel_index, 0, max_ch);
 }
 
 #define MENU_CALI_SINGLE 1
 #define MENU_CALI_DIFF 2
-/** @brief ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ë©”ë‰´ ì²˜ë¦¬ */
+/** @brief °øÀå Ä¶¸®ºê·¹ÀÌ¼Ç ¸Ş´º Ã³¸® */
 int handle_factory_calibration(int adc_num)
 {
   char ch;
@@ -67,14 +67,14 @@ int handle_factory_calibration(int adc_num)
   while (1)
   {
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|           ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜           |\r\n");
+    io_printf("|           °øÀå Ä¶¸®ºê·¹ÀÌ¼Ç           |\r\n");
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|  1. ì‹±ê¸€ ì—”ë“œ ì±„ë„ ìº˜ë¦¬ë¸Œë ˆì´ì…˜       |\r\n");
-    io_printf("|  2. ì°¨ë™ ì±„ë„ ìº˜ë¦¬ë¸Œë ˆì´ì…˜            |\r\n");
-    io_printf("|     CTRL+C ì´ì „,CTRL+Q ì¢…ë£Œ           |\r\n");
+    io_printf("|  1. ½Ì±Û ¿£µå Ã¤³Î Ä¶¸®ºê·¹ÀÌ¼Ç       |\r\n");
+    io_printf("|  2. Â÷µ¿ Ã¤³Î Ä¶¸®ºê·¹ÀÌ¼Ç            |\r\n");
+    io_printf("|     CTRL+C ÀÌÀü,CTRL+Q Á¾·á           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = input_decimal_prompt("ì„ íƒ", &choice, 1, 2);
+    status = input_decimal_prompt("¼±ÅÃ", &choice, 1, 2);
 
     if (status != MENU_OK)
     {
@@ -94,11 +94,11 @@ int handle_factory_calibration(int adc_num)
                            ? &p_adc->single_ended_cal[channel_index]
                            : &p_adc->differential_cal[channel_index];
 
-      io_printf("\r\n--- %s ì±„ë„ %d ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ì‹œì‘ ---\r\n", (type == 0 ? "SE" : "Diff"),
+      io_printf("\r\n--- %s Ã¤³Î %d Ä¶¸®ºê·¹ÀÌ¼Ç ½ÃÀÛ ---\r\n", (type == 0 ? "SE" : "Diff"),
                 channel_index);
 
-      // Point 1 ì…ë ¥
-      io_printf("1. ë‚®ì€ ê¸°ì¤€ì (Low Reference)ì„ ì—°ê²°í•˜ê³  ì—”í„°ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”\r\n");
+      // Point 1 ÀÔ·Â
+      io_printf("1. ³·Àº ±âÁØÁ¡(Low Reference)À» ¿¬°áÇÏ°í ¿£ÅÍ¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä\r\n");
       io_recv(&ch, 1, 60000);
 
       float avg = 0;
@@ -120,9 +120,9 @@ int handle_factory_calibration(int adc_num)
 
         if(stable_delay)
         {
-          //ì´ˆê¸°ì— ë†’ì€ê°’ì—ì„œ ì ì  ê°’ì´ ì‘ì•„ì§€ëŠ”
+          //ÃÊ±â¿¡ ³ôÀº°ª¿¡¼­ Á¡Á¡ °ªÀÌ ÀÛ¾ÆÁö´Â
           stable_delay = 0;
-          io_printf("ADCì•ˆì •í™”ë¥¼ ìœ„í•´ 5ì´ˆë’¤ ì‹œì‘ ì‹œì‘ë©ë‹ˆë‹¤\r\n");
+          io_printf("ADC¾ÈÁ¤È­¸¦ À§ÇØ 5ÃÊµÚ ½ÃÀÛ ½ÃÀÛµË´Ï´Ù\r\n");
           osDelay(5000);
           continue;
         }
@@ -134,7 +134,7 @@ int handle_factory_calibration(int adc_num)
           break;
       }
 
-      status = input_decimal_prompt("   ì¸¡ì •ëœ RAW ê°’ ì…ë ¥", (int*)&p1.raw_value,
+      status = input_decimal_prompt("   ÃøÁ¤µÈ RAW °ª ÀÔ·Â", (int*)&p1.raw_value,
                              p_adc->bits->min_raw_value, p_adc->bits->max_raw_value);
       if (status != MENU_OK)
       {
@@ -142,14 +142,14 @@ int handle_factory_calibration(int adc_num)
       }
 
       status =
-      input_float_prompt("   ë‚®ì€ ê¸°ì¤€ì ì˜ ì‹¤ì œ ê°’(ì „ì••)ì„ ì…ë ¥í•˜ì„¸ìš”.",0,0, &p1.reference_value);
+      input_float_prompt("   ³·Àº ±âÁØÁ¡ÀÇ ½ÇÁ¦ °ª(Àü¾Ğ)À» ÀÔ·ÂÇÏ¼¼¿ä.",0,0, &p1.reference_value);
       if (status != MENU_OK)
       {
         return status;
       }
 
-      // Point 2 ì…ë ¥
-      io_printf("2. ë†’ì€ ê¸°ì¤€ì (High Reference)ì„ ì—°ê²°í•˜ê³  ì—”í„°ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”\r\n");
+      // Point 2 ÀÔ·Â
+      io_printf("2. ³ôÀº ±âÁØÁ¡(High Reference)À» ¿¬°áÇÏ°í ¿£ÅÍ¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä\r\n");
       io_recv(&ch, 1, 60000);
       avg_cnt = 0;
       avg = 0;
@@ -170,7 +170,7 @@ int handle_factory_calibration(int adc_num)
         if (stable_delay)
         {
           stable_delay = 0;
-          io_printf("ADCì•ˆì •í™”ë¥¼ ìœ„í•´ 5ì´ˆë’¤ ì‹œì‘ ì‹œì‘ë©ë‹ˆë‹¤\r\n");
+          io_printf("ADC¾ÈÁ¤È­¸¦ À§ÇØ 5ÃÊµÚ ½ÃÀÛ ½ÃÀÛµË´Ï´Ù\r\n");
           osDelay(5000);
           continue;
         }
@@ -182,30 +182,30 @@ int handle_factory_calibration(int adc_num)
         if (!wait_break(10))
           break;
       }
-      status = input_decimal_prompt("ì¸¡ì •ëœ RAW ê°’ ì…ë ¥", (int*)&p2.raw_value,
+      status = input_decimal_prompt("ÃøÁ¤µÈ RAW °ª ÀÔ·Â", (int*)&p2.raw_value,
                              p_adc->bits->min_raw_value, p_adc->bits->max_raw_value);
       if (status != MENU_OK)
       {
         break;
       }
-      status = input_float_prompt("ë†’ì€ ê¸°ì¤€ì ì˜ ì‹¤ì œ ê°’(ì „ì••)ì„ ì…ë ¥í•˜ì„¸ìš”.", 0,0,&p2.reference_value);
+      status = input_float_prompt("³ôÀº ±âÁØÁ¡ÀÇ ½ÇÁ¦ °ª(Àü¾Ğ)À» ÀÔ·ÂÇÏ¼¼¿ä.", 0,0,&p2.reference_value);
       if (status != MENU_OK)
       {
         break;;
       }
 
-      // ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ì˜¨ë„ ì…ë ¥
-      g_current_temp = read_current_temperature();  // í˜„ì¬ ì˜¨ë„ ì½ê¸°
-      io_printf("í˜„ì¬ ì¸¡ì •ëœ ì˜¨ë„: %.1f Â°C\r\n", g_current_temp);
+      // Ä¶¸®ºê·¹ÀÌ¼Ç ¿Âµµ ÀÔ·Â
+      g_current_temp = read_current_temperature();  // ÇöÀç ¿Âµµ ÀĞ±â
+      io_printf("ÇöÀç ÃøÁ¤µÈ ¿Âµµ: %.1f ¡ÆC\r\n", g_current_temp);
       #if 0
       status =
-          input_float_prompt("ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ìˆ˜í–‰ ì˜¨ë„ë¥¼ ì…ë ¥í•˜ì„¸ìš” (ê¸°ë³¸ê°’: í˜„ì¬ ì˜¨ë„)", &cal_temp);
+          input_float_prompt("Ä¶¸®ºê·¹ÀÌ¼Ç ¼öÇà ¿Âµµ¸¦ ÀÔ·ÂÇÏ¼¼¿ä (±âº»°ª: ÇöÀç ¿Âµµ)", &cal_temp);
       if (status == MENU_ABORT || status == MENU_BACK)
       {
         return status;
       }
       if (status != MENU_OK)
-        cal_temp = g_current_temp;  // ì…ë ¥ ì‹¤íŒ¨ ì‹œ í˜„ì¬ ì˜¨ë„ ì‚¬ìš©
+        cal_temp = g_current_temp;  // ÀÔ·Â ½ÇÆĞ ½Ã ÇöÀç ¿Âµµ »ç¿ë
 #endif
 
       cal_temp = 25;
@@ -214,11 +214,11 @@ int handle_factory_calibration(int adc_num)
         save_adc_cali();
         io_printf("Slope:%e Offset:%e\r\n", cal_params_ptr->factory_offset,
                   cal_params_ptr->factory_offset);
-        io_printf("ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ì„±ê³µ! ì„¤ì •ì´ NVMì— ì €ì¥ë˜ì—ˆìŠµë‹ˆë‹¤.\r\n");
+        io_printf("Ä¶¸®ºê·¹ÀÌ¼Ç ¼º°ø! ¼³Á¤ÀÌ NVM¿¡ ÀúÀåµÇ¾ú½À´Ï´Ù.\r\n");
       }
       else
       {
-        io_printf("ì˜¤ë¥˜: ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ì‹¤íŒ¨.\r\n");
+        io_printf("¿À·ù: Ä¶¸®ºê·¹ÀÌ¼Ç ½ÇÆĞ.\r\n");
       }
     }
   }
@@ -226,7 +226,7 @@ int handle_factory_calibration(int adc_num)
   return status;
 }
 
-/** @brief ì˜¨ë„ ë³´ìƒ ì„¤ì • ë©”ë‰´ ì²˜ë¦¬ */
+/** @brief ¿Âµµ º¸»ó ¼³Á¤ ¸Ş´º Ã³¸® */
 int handle_temp_comp_setup(int adc_num)
 {
   int choice, channel_index, status, method_choice;
@@ -238,14 +238,14 @@ int handle_temp_comp_setup(int adc_num)
   while (1)
   {
     io_printf("+---------------------------------------+\\rn");
-    io_printf("|       --- ì˜¨ë„ ë³´ìƒ ì„¤ì • ---          |\r\n");
+    io_printf("|       --- ¿Âµµ º¸»ó ¼³Á¤ ---          |\r\n");
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|  1. ì‹±ê¸€ ì—”ë“œ ì±„ë„ ì„¤ì •               |\r\n");
-    io_printf("|  2. ì°¨ë™ ì±„ë„ ì„¤ì •                    |\r\n");
-    io_printf("|     CTRL+C ì´ì „,CTRL+Q ì¢…ë£Œ           |\r\n");
+    io_printf("|  1. ½Ì±Û ¿£µå Ã¤³Î ¼³Á¤               |\r\n");
+    io_printf("|  2. Â÷µ¿ Ã¤³Î ¼³Á¤                    |\r\n");
+    io_printf("|     CTRL+C ÀÌÀü,CTRL+Q Á¾·á           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = input_decimal_prompt("ì„ íƒ", &choice, 1, 2);
+    status = input_decimal_prompt("¼±ÅÃ", &choice, 1, 2);
     if (status == MENU_ABORT || status == MENU_BACK)
     {
       return status;
@@ -273,33 +273,33 @@ int handle_temp_comp_setup(int adc_num)
       params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? &p_adc->single_ended_cal[channel_index]
                                                        : &p_adc->differential_cal[channel_index];
 
-      // ì±„ë„ë³„ ìƒì„¸ ì„¤ì • ë£¨í”„
+      // Ã¤³Îº° »ó¼¼ ¼³Á¤ ·çÇÁ
       while (1)
       {
-        io_printf("+--- ì±„ë„ %s[%d] ì˜¨ë„ ë³´ìƒ ì„¤ì • ---+\r\n", (type == 0 ? "SE" : "Diff"),
+        io_printf("+--- Ã¤³Î %s[%d] ¿Âµµ º¸»ó ¼³Á¤ ---+\r\n", (type == 0 ? "SE" : "Diff"),
                   channel_index);
         const char* method_str;
         switch (params->comp_method)
         {
           case TEMP_COMP_COEFF:
-            method_str = "ê³„ìˆ˜ ì‚¬ìš©";
+            method_str = "°è¼ö »ç¿ë";
             break;
           case TEMP_COMP_LUT:
-            method_str = "LUT ì‚¬ìš©";
+            method_str = "LUT »ç¿ë";
             break;
           default:
-            method_str = "ì‚¬ìš© ì•ˆí•¨";
+            method_str = "»ç¿ë ¾ÈÇÔ";
             break;
         }
-        io_printf("| í˜„ì¬ ë°©ì‹: %s\r\n", method_str);
+        io_printf("| ÇöÀç ¹æ½Ä: %s\r\n", method_str);
         io_printf("+---------------------------------------+\r\n");
-        io_printf("|  1. ë³´ìƒ ë°©ì‹ ë³€ê²½                    |\r\n");
-        io_printf("|  2. ì˜¨ë„ ê³„ìˆ˜ ì„¤ì • (ë°©ì‹=ê³„ìˆ˜)        |\r\n");
-        io_printf("|  3. LUT ë°ì´í„° ì„¤ì •/ë³´ê¸° (ë°©ì‹=LUT)   |\r\n");
-        io_printf("|     CTRL+C ì´ì „,CTRL+Q ì¢…ë£Œ           |\r\n");
+        io_printf("|  1. º¸»ó ¹æ½Ä º¯°æ                    |\r\n");
+        io_printf("|  2. ¿Âµµ °è¼ö ¼³Á¤ (¹æ½Ä=°è¼ö)        |\r\n");
+        io_printf("|  3. LUT µ¥ÀÌÅÍ ¼³Á¤/º¸±â (¹æ½Ä=LUT)   |\r\n");
+        io_printf("|     CTRL+C ÀÌÀü,CTRL+Q Á¾·á           |\r\n");
         io_printf("+---------------------------------------+\r\n");
 
-        status = input_decimal_prompt("ì„ íƒ", &choice, 1, 3);
+        status = input_decimal_prompt("¼±ÅÃ", &choice, 1, 3);
         if (status == MENU_ABORT || status == MENU_BACK)
         {
           return status;
@@ -312,21 +312,21 @@ int handle_temp_comp_setup(int adc_num)
 
         switch (choice)
         {
-          case 1:  // ë°©ì‹ ë³€ê²½
-            status = input_decimal_prompt("ìƒˆ ë°©ì‹ ì„ íƒ (0:ì—†ìŒ, 1:ê³„ìˆ˜, 2:LUT)", &method_choice, 0, 2);
+          case 1:  // ¹æ½Ä º¯°æ
+            status = input_decimal_prompt("»õ ¹æ½Ä ¼±ÅÃ (0:¾øÀ½, 1:°è¼ö, 2:LUT)", &method_choice, 0, 2);
             if (status == MENU_ABORT || status == MENU_BACK)
               return status;
             params->comp_method = (temp_comp_method_t)method_choice;
-            io_printf("ë³´ìƒ ë°©ì‹ì´ ë³€ê²½ë˜ì—ˆìŠµë‹ˆë‹¤.\r\n");
-            save_adc_cali();  // NVM ì €ì¥ í•„ìš”
+            io_printf("º¸»ó ¹æ½ÄÀÌ º¯°æµÇ¾ú½À´Ï´Ù.\r\n");
+            save_adc_cali();  // NVM ÀúÀå ÇÊ¿ä
 
             break;
-          case 2:  // ê³„ìˆ˜ ì„¤ì •
+          case 2:  // °è¼ö ¼³Á¤
             if (params->comp_method == TEMP_COMP_COEFF)
             {
-              io_printf("í˜„ì¬ SlopeTC=%.6f, OffsetTC=%.6f\r\n", params->slope_temp_coeff,
+              io_printf("ÇöÀç SlopeTC=%.6f, OffsetTC=%.6f\r\n", params->slope_temp_coeff,
                         params->offset_temp_coeff);
-              status = input_float_prompt("ìƒˆ Slope TempCo ì…ë ¥",0,0, &params->slope_temp_coeff);
+              status = input_float_prompt("»õ Slope TempCo ÀÔ·Â",0,0, &params->slope_temp_coeff);
               if (status == MENU_ABORT || status == MENU_BACK)
               {
                 return status;
@@ -334,7 +334,7 @@ int handle_temp_comp_setup(int adc_num)
 
               if (status == MENU_OK)
               {
-                status = input_float_prompt("ìƒˆ Offset TempCo ì…ë ¥", 0,0,&params->offset_temp_coeff);
+                status = input_float_prompt("»õ Offset TempCo ÀÔ·Â", 0,0,&params->offset_temp_coeff);
                 if (status == MENU_ABORT || status == MENU_BACK)
                 {
                   return status;
@@ -342,27 +342,27 @@ int handle_temp_comp_setup(int adc_num)
 
                 if (status == MENU_OK)
                 {
-                  io_printf("ì˜¨ë„ ê³„ìˆ˜ê°€ ì—…ë°ì´íŠ¸ë˜ì—ˆìŠµë‹ˆë‹¤.\r\n");
-                  save_adc_cali();  // NVM ì €ì¥ í•„ìš”
+                  io_printf("¿Âµµ °è¼ö°¡ ¾÷µ¥ÀÌÆ®µÇ¾ú½À´Ï´Ù.\r\n");
+                  save_adc_cali();  // NVM ÀúÀå ÇÊ¿ä
                 }
               }
             }
             else
             {
-              io_printf("ì˜¤ë¥˜: í˜„ì¬ ë³´ìƒ ë°©ì‹ì´ 'ê³„ìˆ˜ ì‚¬ìš©'ì´ ì•„ë‹™ë‹ˆë‹¤.\r\n");
+              io_printf("¿À·ù: ÇöÀç º¸»ó ¹æ½ÄÀÌ '°è¼ö »ç¿ë'ÀÌ ¾Æ´Õ´Ï´Ù.\r\n");
             }
 
             break;
-          case 3:  // LUT ì„¤ì •/ë³´ê¸°
+          case 3:  // LUT ¼³Á¤/º¸±â
 #ifdef ADC_LUT
             if (params->comp_method == TEMP_COMP_LUT)
             {
-              // TODO: LUT ë³´ê¸° ë° í¸ì§‘ ê¸°ëŠ¥ êµ¬í˜„ (ë³µì¡í•¨)
-              // ì˜ˆì‹œ: í˜„ì¬ ì„¤ì •ëœ LUT ë³´ê¸°
-              io_printf("í˜„ì¬ LUT ë°ì´í„° (ìµœëŒ€ %dê°œ):\r\n", MAX_LUT_SIZE);
+              // TODO: LUT º¸±â ¹× ÆíÁı ±â´É ±¸Çö (º¹ÀâÇÔ)
+              // ¿¹½Ã: ÇöÀç ¼³Á¤µÈ LUT º¸±â
+              io_printf("ÇöÀç LUT µ¥ÀÌÅÍ (ÃÖ´ë %d°³):\r\n", MAX_LUT_SIZE);
               if (params->lut_size == 0)
               {
-                io_printf("  (ì„¤ì •ëœ ë°ì´í„° ì—†ìŒ)\r\n");
+                io_printf("  (¼³Á¤µÈ µ¥ÀÌÅÍ ¾øÀ½)\r\n");
               }
               else
               {
@@ -376,21 +376,21 @@ int handle_temp_comp_setup(int adc_num)
                             params->temp_comp_lut[i].offset_correction);
                 }
               }
-              io_printf("\r\nLUT ë°ì´í„° í¸ì§‘ ê¸°ëŠ¥ì€ ì´ ì˜ˆì œì— í¬í•¨ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.\r\n");
-              // ì˜ˆì‹œ LUT ì±„ìš°ê¸° í˜¸ì¶œ (ë””ë²„ê·¸ìš©)
+              io_printf("\r\nLUT µ¥ÀÌÅÍ ÆíÁı ±â´ÉÀº ÀÌ ¿¹Á¦¿¡ Æ÷ÇÔµÇÁö ¾Ê¾Ò½À´Ï´Ù.\r\n");
+              // ¿¹½Ã LUT Ã¤¿ì±â È£Ãâ (µğ¹ö±×¿ë)
               // populate_lut_example(params);
               // save_adc_cali(&g_adc_config_nvm);
             }
             else
             {
-              io_printf("ì˜¤ë¥˜: í˜„ì¬ ë³´ìƒ ë°©ì‹ì´ 'LUT ì‚¬ìš©'ì´ ì•„ë‹™ë‹ˆë‹¤.\r\n");
+              io_printf("¿À·ù: ÇöÀç º¸»ó ¹æ½ÄÀÌ 'LUT »ç¿ë'ÀÌ ¾Æ´Õ´Ï´Ù.\r\n");
             }
 
 #endif
           case 'b':
-            goto channel_setup_exit;  // ì±„ë„ ì„¤ì • ë£¨í”„ íƒˆì¶œ
+            goto channel_setup_exit;  // Ã¤³Î ¼³Á¤ ·çÇÁ Å»Ãâ
           default:
-            io_printf("ì˜ëª»ëœ ì„ íƒì…ë‹ˆë‹¤.\r\n");
+            io_printf("Àß¸øµÈ ¼±ÅÃÀÔ´Ï´Ù.\r\n");
 
             break;
         }
@@ -402,7 +402,7 @@ int handle_temp_comp_setup(int adc_num)
   // return MENU_OK;
 }
 
-/** @brief ì˜¤í”„ì…‹ ì¡°ì • ë©”ë‰´ ì²˜ë¦¬ */
+/** @brief ¿ÀÇÁ¼Â Á¶Á¤ ¸Ş´º Ã³¸® */
 int handle_offset_adjustment(int adc_num)
 {
   uint8_t err;
@@ -416,14 +416,14 @@ int handle_offset_adjustment(int adc_num)
   while (1)
   {
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|         --- ì˜¤í”„ì…‹ ì¡°ì • ---           |\r\n");
+    io_printf("|         --- ¿ÀÇÁ¼Â Á¶Á¤ ---           |\r\n");
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|  1. ì‹±ê¸€ ì—”ë“œ ì±„ë„ ì¡°ì •               |\r\n");
-    io_printf("|  2. ì°¨ë™ ì±„ë„ ì¡°ì •                    |\r\n");
-    io_printf("|     CTRL+C ì´ì „,CTRL+Q ì¢…ë£Œ           |\r\n");
+    io_printf("|  1. ½Ì±Û ¿£µå Ã¤³Î Á¶Á¤               |\r\n");
+    io_printf("|  2. Â÷µ¿ Ã¤³Î Á¶Á¤                    |\r\n");
+    io_printf("|     CTRL+C ÀÌÀü,CTRL+Q Á¾·á           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = input_decimal_prompt("ì„ íƒ", &choice, 0, 2);
+    status = input_decimal_prompt("¼±ÅÃ", &choice, 0, 2);
     if (status == MENU_ABORT || status == MENU_BACK)
     {
       return status;
@@ -453,33 +453,33 @@ int handle_offset_adjustment(int adc_num)
 
       if (!params->is_calibrated)
       {
-        io_printf("ì˜¤ë¥˜: ì´ ì±„ë„ì€ ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜ë˜ì§€ ì•Šì•„ ì˜¤í”„ì…‹ ì¡°ì • ë¶ˆê°€.\r\n");
+        io_printf("¿À·ù: ÀÌ Ã¤³ÎÀº °øÀå Ä¶¸®ºê·¹ÀÌ¼ÇµÇÁö ¾Ê¾Æ ¿ÀÇÁ¼Â Á¶Á¤ ºÒ°¡.\r\n");
         continue;
       }
 
-      // ìƒì„¸ ì¡°ì • ë©”ë‰´
+      // »ó¼¼ Á¶Á¤ ¸Ş´º
       while (1)
       {
-        io_printf("+--- ì±„ë„ %s[%d] ì˜¤í”„ì…‹ ì¡°ì • ---+\r\n", (type == 0 ? "SE" : "Diff"),
+        io_printf("+--- Ã¤³Î %s[%d] ¿ÀÇÁ¼Â Á¶Á¤ ---+\r\n", (type == 0 ? "SE" : "Diff"),
                   channel_index);
         g_current_temp = read_current_temperature();
         float current_val =
             adc_get_compensated_value((type == 0 ? (int32_t)adc_read_single_raw(channel_index, &err)
                                                  : (int32_t)adc_read_diff_raw(channel_index, &err)),
                                       params, g_current_temp);
-        io_printf("| í˜„ì¬ ì˜¨ë„: %.1fÂ°C\r\n", g_current_temp);
-        io_printf("| í˜„ì¬ ì¸¡ì •ê°’: ");
+        io_printf("| ÇöÀç ¿Âµµ: %.1f¡ÆC\r\n", g_current_temp);
+        io_printf("| ÇöÀç ÃøÁ¤°ª: ");
         if (isnan(current_val))
           io_printf("N/A\r\n");
         else
           io_printf("%.4f\r\n", current_val);
 
         io_printf("+---------------------------------------+\r\n");
-        io_printf("|  1. ì˜¤í”„ì…‹ ì¡°ì •                       |\r\n");
-        io_printf("|     CTRL+C ì´ì „,CTRL+Q ì¢…ë£Œ           |\r\n");
+        io_printf("|  1. ¿ÀÇÁ¼Â Á¶Á¤                       |\r\n");
+        io_printf("|     CTRL+C ÀÌÀü,CTRL+Q Á¾·á           |\r\n");
         io_printf("+---------------------------------------+\r\n");
 
-        status = input_decimal_prompt("ì„ íƒ", &choice, 1, 1);
+        status = input_decimal_prompt("¼±ÅÃ", &choice, 1, 1);
         if (status == MENU_ABORT || status == MENU_BACK)
         {
           return status;
@@ -490,7 +490,7 @@ int handle_offset_adjustment(int adc_num)
           continue;
         }
 
-        if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)  // ì‹±ê¸€
+        if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)  // ½Ì±Û
         {
           uint8_t err;
           raw_now = (int32_t)adc_read_single_raw(channel_index, &err);
@@ -503,7 +503,7 @@ int handle_offset_adjustment(int adc_num)
 
         if (choice == 1)
         {
-          status = input_float_prompt("ëª©í‘œ ê¸°ì¤€ê°’ ì…ë ¥", 0,0,&target_ref);
+          status = input_float_prompt("¸ñÇ¥ ±âÁØ°ª ÀÔ·Â", 0,0,&target_ref);
           if (status == MENU_ABORT || status == MENU_BACK)
           {
             return status;
@@ -523,18 +523,18 @@ int handle_offset_adjustment(int adc_num)
 
 typedef enum
 {
-  MENU_VIEW_SINGLE_CHANNEL = 1,  // 1. ì‹±ê¸€ ì—”ë“œ ì±„ë„ ìƒíƒœ ë³´ê¸° (0-16)
-  MENU_VIEW_DIFFERENTIAL = 2,    // 2. ì°¨ë™ ì±„ë„ ìƒíƒœ ë³´ê¸° (0-7)
-  MENU_VIEW_SINGLE_SUMMARY = 3,  // 3. ëª¨ë“  ì±„ë„ ìš”ì•½ ë³´ê¸°
-  MENU_VIEW_DIFF_SUMMARY = 4,    // 3. ëª¨ë“  ì±„ë„ ìš”ì•½ ë³´ê¸°
-  MENU_VIEW_SYSINFO = 5          // 4. ì‹œìŠ¤í…œ ì •ë³´ ë³´ê¸° (Res, Vref)
+  MENU_VIEW_SINGLE_CHANNEL = 1,  // 1. ½Ì±Û ¿£µå Ã¤³Î »óÅÂ º¸±â (0-16)
+  MENU_VIEW_DIFFERENTIAL = 2,    // 2. Â÷µ¿ Ã¤³Î »óÅÂ º¸±â (0-7)
+  MENU_VIEW_SINGLE_SUMMARY = 3,  // 3. ¸ğµç Ã¤³Î ¿ä¾à º¸±â
+  MENU_VIEW_DIFF_SUMMARY = 4,    // 3. ¸ğµç Ã¤³Î ¿ä¾à º¸±â
+  MENU_VIEW_SYSINFO = 5          // 4. ½Ã½ºÅÛ Á¤º¸ º¸±â (Res, Vref)
 } menu_view_t;
 
 
 
 /**
  * @brief 
- * @param adc_num  ADC IC ë²ˆí˜¸
+ * @param adc_num  ADC IC ¹øÈ£
  */
 int handle_view_status(int adc_num)
 {
@@ -553,17 +553,17 @@ int handle_view_status(int adc_num)
   while (1)
   {
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|           ì±„ë„ ìƒíƒœ ë³´ê¸°              |\r\n");
+    io_printf("|           Ã¤³Î »óÅÂ º¸±â              |\r\n");
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|  1. ì‹±ê¸€ ì—”ë“œ ì±„ë„ ìƒíƒœ ë³´ê¸° (0-18)   |\r\n");
-    io_printf("|  2. ì°¨ë™ ì±„ë„ ìƒíƒœ ë³´ê¸° (0-7)         |\r\n");
-    io_printf("|  3. ì‹±ê¸€ ì±„ë„ ëª¨ë‘ ë³´ê¸°               |\r\n");
-    io_printf("|  4. ì°¨ë™ ì±„ë„ ëª¨ë‘ ë³´ê¸°               |\r\n");
-    io_printf("|  5. ì‹œìŠ¤í…œ ì •ë³´ ë³´ê¸°                  |\r\n");
-    io_printf("|     CTRL+C ì´ì „,CTRL+Q ì¢…ë£Œ           |\r\n");
+    io_printf("|  1. ½Ì±Û ¿£µå Ã¤³Î »óÅÂ º¸±â (0-18)   |\r\n");
+    io_printf("|  2. Â÷µ¿ Ã¤³Î »óÅÂ º¸±â (0-7)         |\r\n");
+    io_printf("|  3. ½Ì±Û Ã¤³Î ¸ğµÎ º¸±â               |\r\n");
+    io_printf("|  4. Â÷µ¿ Ã¤³Î ¸ğµÎ º¸±â               |\r\n");
+    io_printf("|  5. ½Ã½ºÅÛ Á¤º¸ º¸±â                  |\r\n");
+    io_printf("|     CTRL+C ÀÌÀü,CTRL+Q Á¾·á           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = input_decimal_prompt("ì„ íƒ", &choice, 1, 5);
+    status = input_decimal_prompt("¼±ÅÃ", &choice, 1, 5);
     if (status != MENU_OK)
       break;
 
@@ -577,7 +577,7 @@ int handle_view_status(int adc_num)
         if (status != MENU_OK)
           break;
 
-        io_printf("ì‹œë¦¬ì–¼ ì˜¤ì‹¤ë¡œìŠ¤ì½”í”„ ì‚¬ìš©í•˜ë ¤ë©´ yesì…ë ¥\r\n");
+        io_printf("½Ã¸®¾ó ¿À½Ç·Î½ºÄÚÇÁ »ç¿ëÇÏ·Á¸é yesÀÔ·Â\r\n");
         user_input[0] = 0;
         if (cli_scanf_s("%6s", user_input) == CLI_KEYCODE_CTRL_C)
         {
@@ -588,7 +588,7 @@ int handle_view_status(int adc_num)
         {
           osc_use = 1;
         }
-        io_printf("íŒŒì¼ë¡œ ì €ì¥í•˜ë ¤ë©´ yesì…ë ¥\r\n");
+        io_printf("ÆÄÀÏ·Î ÀúÀåÇÏ·Á¸é yesÀÔ·Â\r\n");
         user_input[0] = 0;
         if (cli_scanf_s("%6s", user_input) == CLI_KEYCODE_CTRL_C)
         {
@@ -601,7 +601,7 @@ int handle_view_status(int adc_num)
           delete_file("adc_sample.txt");
         }
 
-        io_printf("ìŠ¤ìº” ì£¼ê¸°ë¥¼ ms ë‹¨ìœ„ë¡œ ì…ë ¥í•˜ì„¸ìš”\r\n");
+        io_printf("½ºÄµ ÁÖ±â¸¦ ms ´ÜÀ§·Î ÀÔ·ÂÇÏ¼¼¿ä\r\n");
         if (cli_scanf_s("%d", &scan_ms) == CLI_KEYCODE_CTRL_C)
         {
           return 0;
@@ -610,30 +610,30 @@ int handle_view_status(int adc_num)
         params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? &p_adc->single_ended_cal[channel_index]
                                                          : &p_adc->differential_cal[channel_index];
 
-        io_printf("\r\n--- ì±„ë„ %s[%d] ìƒì„¸ ì •ë³´ ---\r\n", (type == 0 ? "SE" : "Diff"),
+        io_printf("\r\n--- Ã¤³Î %s[%d] »ó¼¼ Á¤º¸ ---\r\n", (type == 0 ? "SE" : "Diff"),
                   channel_index);
-        io_printf("  ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜ë¨: %s\r\n", params->is_calibrated ? "ì˜ˆ" : "ì•„ë‹ˆì˜¤");
+        io_printf("  °øÀå Ä¶¸®ºê·¹ÀÌ¼ÇµÊ: %s\r\n", params->is_calibrated ? "¿¹" : "¾Æ´Ï¿À");
         if (params->is_calibrated)
         {
-          io_printf("  ê³µì¥ Slope: %.6f\r\n", params->factory_slope);
-          io_printf("  ê³µì¥ Offset: %.6f\r\n", params->factory_offset);
-          io_printf("  ê³µì¥ ìº˜ë¦¬ ì˜¨ë„: %.1f C\r\n", params->factory_cal_temp);
+          io_printf("  °øÀå Slope: %.6f\r\n", params->factory_slope);
+          io_printf("  °øÀå Offset: %.6f\r\n", params->factory_offset);
+          io_printf("  °øÀå Ä¶¸® ¿Âµµ: %.1f C\r\n", params->factory_cal_temp);
         }
 
         const char* method_str;
         switch (params->comp_method)
         {
           case TEMP_COMP_COEFF:
-            method_str = "ê³„ìˆ˜ ì‚¬ìš©";
+            method_str = "°è¼ö »ç¿ë";
             break;
           case TEMP_COMP_LUT:
-            method_str = "LUT ì‚¬ìš©";
+            method_str = "LUT »ç¿ë";
             break;
           default:
-            method_str = "ì‚¬ìš© ì•ˆí•¨";
+            method_str = "»ç¿ë ¾ÈÇÔ";
             break;
         }
-        io_printf("  ì˜¨ë„ ë³´ìƒ ë°©ì‹: %s\r\n", method_str);
+        io_printf("  ¿Âµµ º¸»ó ¹æ½Ä: %s\r\n", method_str);
         switch (params->comp_method)
         {
           case TEMP_COMP_COEFF:
@@ -643,13 +643,13 @@ int handle_view_status(int adc_num)
             break;
           case TEMP_COMP_LUT:
           {
-            io_printf("    LUT í¬ê¸°: %d / %d\r\n", params->lut_size, MAX_LUT_SIZE);
-            // LUT ë‚´ìš© í‘œì‹œ ë¡œì§ ì¶”ê°€ ê°€ëŠ¥
+            io_printf("    LUT Å©±â: %d / %d\r\n", params->lut_size, MAX_LUT_SIZE);
+            // LUT ³»¿ë Ç¥½Ã ·ÎÁ÷ Ãß°¡ °¡´É
           }
           break;
         }
         g_current_temp = read_current_temperature();
-        io_printf("  í˜„ì¬ ì¸¡ì • ê°’ (%.1f C): \r\n", g_current_temp);
+        io_printf("  ÇöÀç ÃøÁ¤ °ª (%.1f C): \r\n", g_current_temp);
 
         uint32_t start_time;
         uint32_t elased_time;
@@ -732,7 +732,7 @@ int handle_view_status(int adc_num)
             if (isnan(voltage))
             {
               io_printf("SE %2d slope:%e offset:%e raw:%10d %s\r\n", channel, params->factory_slope,
-                        params->factory_offset, raw, "ì¼ˆë¦¬ë¸Œë ˆì´ì…˜ í•„ìš”");
+                        params->factory_offset, raw, "ÄÌ¸®ºê·¹ÀÌ¼Ç ÇÊ¿ä");
             }
             else
             {
@@ -768,7 +768,7 @@ int handle_view_status(int adc_num)
             if (isnan(voltage))
             {
               io_printf("DIFF %2d slope:%e offset:%e raw:%10d %s\r\n", channel,
-                        params->factory_slope, params->factory_offset, raw, "ì¼ˆë¦¬ë¸Œë ˆì´ì…˜ í•„ìš”");
+                        params->factory_slope, params->factory_offset, raw, "ÄÌ¸®ºê·¹ÀÌ¼Ç ÇÊ¿ä");
             }
             else
             {
@@ -781,21 +781,21 @@ int handle_view_status(int adc_num)
         io_printf(VT100_CURSOR_ON);
         break;
       case MENU_VIEW_SYSINFO:
-        io_printf("\r\n    ì‹œìŠ¤í…œ ì •ë³´\r\n");
-        io_printf("  ADC í•´ìƒë„: %u ë¹„íŠ¸\r\n", p_adc->bits->resolution_bits);
-        io_printf("  ê¸°ì¤€ ì „ì•• (Vref): %.3f V\r\n", p_adc->bits->reference_voltage);
-        io_printf("  ìµœì†Œ Raw ê°’: %d\r\n", p_adc->bits->min_raw_value);
-        io_printf("  ìµœëŒ€ Raw ê°’: %d\r\n", p_adc->bits->max_raw_value);
+        io_printf("\r\n    ½Ã½ºÅÛ Á¤º¸\r\n");
+        io_printf("  ADC ÇØ»óµµ: %u ºñÆ®\r\n", p_adc->bits->resolution_bits);
+        io_printf("  ±âÁØ Àü¾Ğ (Vref): %.3f V\r\n", p_adc->bits->reference_voltage);
+        io_printf("  ÃÖ¼Ò Raw °ª: %d\r\n", p_adc->bits->min_raw_value);
+        io_printf("  ÃÖ´ë Raw °ª: %d\r\n", p_adc->bits->max_raw_value);
         break;
       default:
-        io_printf("ì˜ëª»ëœ ì„ íƒì…ë‹ˆë‹¤.\r\n");
+        io_printf("Àß¸øµÈ ¼±ÅÃÀÔ´Ï´Ù.\r\n");
         break;
     }
   }
   return status;
 }
 
-/** @brief ì„¤ì • ì €ì¥/ë¡œë“œ ë©”ë‰´ ì²˜ë¦¬ */
+/** @brief ¼³Á¤ ÀúÀå/·Îµå ¸Ş´º Ã³¸® */
 int handle_save_load(int adc_num)
 {
   int choice, status;
@@ -803,21 +803,21 @@ int handle_save_load(int adc_num)
   while (1)
   {
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|           ì„¤ì • ì €ì¥(NVM)              |\r\n");
+    io_printf("|           ¼³Á¤ ÀúÀå(NVM)              |\r\n");
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|  1. ì¼ˆë¦¬ë¸Œë ˆì´ì…˜ ê¸°ë³¸ê°’ ì ìš©          |\r\n");
-    io_printf("|  2. ì¼ˆë¦¬ë¸Œë ˆì´ì…˜ ì´ˆê¸°í™”               |\r\n");
-    io_printf("|     CTRL+C ì´ì „,CTRL+Q ì¢…ë£Œ           |\r\n");
+    io_printf("|  1. ÄÌ¸®ºê·¹ÀÌ¼Ç ±âº»°ª Àû¿ë          |\r\n");
+    io_printf("|  2. ÄÌ¸®ºê·¹ÀÌ¼Ç ÃÊ±âÈ­               |\r\n");
+    io_printf("|     CTRL+C ÀÌÀü,CTRL+Q Á¾·á           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = input_decimal_prompt("ì„ íƒ", &choice, 1, 2);
+    status = input_decimal_prompt("¼±ÅÃ", &choice, 1, 2);
     if (status != MENU_OK)
       break;
 
     switch (choice)
     {
       case 1:
-        status = confirm_continue("ê³„ì† ì§„í–‰í•˜ì‹œê² ìŠµë‹ˆê¹Œ?",&ok);
+        status = confirm_continue("°è¼Ó ÁøÇàÇÏ½Ã°Ú½À´Ï±î?",&ok);
         if(status != MENU_OK)
         {
           return status;
@@ -829,7 +829,7 @@ int handle_save_load(int adc_num)
 
         adc_config_init(&g_adc_config_ads1220, 24, 5.0f);
 
-        // ADS1220 18ê°œ
+        // ADS1220 18°³
         for (int channel = 0; channel < g_adc_config_ads1220.params_se_cnt; channel++)
         {
           g_adc_config_ads1220.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
@@ -842,7 +842,7 @@ int handle_save_load(int adc_num)
           g_adc_config_ads1220.single_ended_cal[channel].slope_temp_coeff = 1;
         }
         save_adc_cali();
-        // stm32 2ê°œ
+        // stm32 2°³
         for (int channel = 0; channel < g_adc_config_ads1220.params_di_cnt; channel++)
         {
           g_adc_config_ads1220.differential_cal[channel].comp_method = TEMP_COMP_NONE;
@@ -871,11 +871,11 @@ int handle_save_load(int adc_num)
         }
         save_adc_cali();
 
-        io_printf("NVM ì €ì¥ ì„±ê³µ\r\n");
+        io_printf("NVM ÀúÀå ¼º°ø\r\n");
 
         break;
       case 2:
-        status = confirm_continue("ê³„ì† ì§„í–‰í•˜ì‹œê² ìŠµë‹ˆê¹Œ?",&ok);
+        status = confirm_continue("°è¼Ó ÁøÇàÇÏ½Ã°Ú½À´Ï±î?",&ok);
         if (status != MENU_OK)
         {
           return status;
@@ -885,9 +885,9 @@ int handle_save_load(int adc_num)
           continue;
         }
 
-        adc_config_init(&g_adc_config_ads1220, 24, 5.0f);  // ì˜ˆì‹œ ê¸°ë³¸ê°’ìœ¼ë¡œ RAM ë¦¬ì…‹
+        adc_config_init(&g_adc_config_ads1220, 24, 5.0f);  // ¿¹½Ã ±âº»°ªÀ¸·Î RAM ¸®¼Â
 
-        adc_config_init(&g_adc_config_stm32, 12, 3.3f);  // ì˜ˆì‹œ ê¸°ë³¸ê°’ìœ¼ë¡œ RAM ë¦¬ì…‹
+        adc_config_init(&g_adc_config_stm32, 12, 3.3f);  // ¿¹½Ã ±âº»°ªÀ¸·Î RAM ¸®¼Â
         for (int channel = 0; channel < STM32_NUM_SINGLE_ENDED_CHANNELS; channel++)
         {
           g_adc_config_stm32.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
@@ -898,11 +898,11 @@ int handle_save_load(int adc_num)
           g_adc_config_stm32.single_ended_cal[channel].offset_temp_coeff = 1;
           g_adc_config_stm32.single_ended_cal[channel].slope_temp_coeff = 1;
         }
-        io_printf("ì¼ˆë¦¬ë¸Œë ˆì´ì…˜ ê°’ ì´ˆê¸°í™” ì™„ë£Œ\r\n");
-        io_printf("ì¼ˆë¦¬ë¸Œë ˆì´ì…˜ì„ ë‹¤ì‹œ ì§„í–‰í•´ì£¼ì„¸ìš”\r\n");
+        io_printf("ÄÌ¸®ºê·¹ÀÌ¼Ç °ª ÃÊ±âÈ­ ¿Ï·á\r\n");
+        io_printf("ÄÌ¸®ºê·¹ÀÌ¼ÇÀ» ´Ù½Ã ÁøÇàÇØÁÖ¼¼¿ä\r\n");
         save_adc_cali();
         break;
-        // io_printf("ì˜ëª»ëœ ì„ íƒì…ë‹ˆë‹¤.\r\n");
+        // io_printf("Àß¸øµÈ ¼±ÅÃÀÔ´Ï´Ù.\r\n");
         break;
     }
   }
@@ -911,28 +911,28 @@ int handle_save_load(int adc_num)
 
 typedef enum
 {
-  MENU_FACTORY_CALIBRATION = 1,  // 1. ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ìˆ˜í–‰
-  MENU_TEMP_COMPENSATION,        // 2. ì˜¨ë„ ë³´ìƒ ì„¤ì •
-  MENU_OFFSET_ADJUST,            // 3. ì˜¤í”„ì…‹ ì¡°ì • (ì˜ì /ë‹¨ì¼ì§€ì )
-  MENU_CHANNEL_STATUS,           // 4. ì±„ë„ ìƒíƒœ ë³´ê¸°
-  MENU_NVM_SAVE_LOAD             // 5. ì„¤ì • ì €ì¥/ë¡œë“œ (NVM)
+  MENU_FACTORY_CALIBRATION = 1,  // 1. °øÀå Ä¶¸®ºê·¹ÀÌ¼Ç ¼öÇà
+  MENU_TEMP_COMPENSATION,        // 2. ¿Âµµ º¸»ó ¼³Á¤
+  MENU_OFFSET_ADJUST,            // 3. ¿ÀÇÁ¼Â Á¶Á¤ (¿µÁ¡/´ÜÀÏÁöÁ¡)
+  MENU_CHANNEL_STATUS,           // 4. Ã¤³Î »óÅÂ º¸±â
+  MENU_NVM_SAVE_LOAD             // 5. ¼³Á¤ ÀúÀå/·Îµå (NVM)
 } menu_item_t;
 
 typedef struct
 {
-  int menu_id;                      // ì‹¤ì œ ë‚´ë¶€ ì²˜ë¦¬ìš© ID (enum)
-  const char* label;                // ë©”ë‰´ ë¬¸ìì—´
-  int (*handler)(int32_t adc_num);  // ì²˜ë¦¬ í•¨ìˆ˜
-  bool enabled;                     // ì‚¬ìš© ì—¬ë¶€
-  int display_idx;                  // ì‚¬ìš©ìì—ê²Œ ë³´ì—¬ì¤„ ë²ˆí˜¸
+  int menu_id;                      // ½ÇÁ¦ ³»ºÎ Ã³¸®¿ë ID (enum)
+  const char* label;                // ¸Ş´º ¹®ÀÚ¿­
+  int (*handler)(int32_t adc_num);  // Ã³¸® ÇÔ¼ö
+  bool enabled;                     // »ç¿ë ¿©ºÎ
+  int display_idx;                  // »ç¿ëÀÚ¿¡°Ô º¸¿©ÁÙ ¹øÈ£
 } menu_entry_t;
 
 menu_entry_t menu_table[] = {
-    {MENU_FACTORY_CALIBRATION, "ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ìˆ˜í–‰", handle_factory_calibration, true},
-    {MENU_TEMP_COMPENSATION, "ì˜¨ë„ ë³´ìƒ ì„¤ì •", handle_temp_comp_setup, false},  // ì´ì¥ë¹„ ë¯¸ì‚¬ìš©
-    {MENU_OFFSET_ADJUST, "ì˜¤í”„ì…‹ ì¡°ì •", handle_offset_adjustment, true},
-    {MENU_CHANNEL_STATUS, "ì±„ë„ ìƒíƒœ ë³´ê¸°", handle_view_status, true},
-    {MENU_NVM_SAVE_LOAD, "ì´ˆê¸°í™”", handle_save_load, true}};
+    {MENU_FACTORY_CALIBRATION, "°øÀå Ä¶¸®ºê·¹ÀÌ¼Ç ¼öÇà", handle_factory_calibration, true},
+    {MENU_TEMP_COMPENSATION, "¿Âµµ º¸»ó ¼³Á¤", handle_temp_comp_setup, false},  // ÀÌÀåºñ ¹Ì»ç¿ë
+    {MENU_OFFSET_ADJUST, "¿ÀÇÁ¼Â Á¶Á¤", handle_offset_adjustment, true},
+    {MENU_CHANNEL_STATUS, "Ã¤³Î »óÅÂ º¸±â", handle_view_status, true},
+    {MENU_NVM_SAVE_LOAD, "ÃÊ±âÈ­", handle_save_load, true}};
 
 void run_calibration_menu(int adc_num)
 {
@@ -943,26 +943,26 @@ void run_calibration_menu(int adc_num)
   while (!exit_menu)
   {
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|       *** ADC ì¼ˆë¦¬ë¸Œë ˆì´ì…˜  ***       |\r\n");
+    io_printf("|       *** ADC ÄÌ¸®ºê·¹ÀÌ¼Ç  ***       |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    // ë©”ë‰´ ì¶œë ¥
+    // ¸Ş´º Ãâ·Â
     display_idx = 1;
     for (int i = 0; i < sizeof(menu_table) / sizeof(menu_table[0]); i++)
     {
       if (menu_table[i].enabled)
       {
-        menu_table[i].display_idx = display_idx;  // ë™ì ìœ¼ë¡œ í‘œì‹œ ì¸ë±ìŠ¤ ì§€ì •
+        menu_table[i].display_idx = display_idx;  // µ¿ÀûÀ¸·Î Ç¥½Ã ÀÎµ¦½º ÁöÁ¤
         io_printf("|  %d. %-33s |\r\n", display_idx, menu_table[i].label);
 
         display_idx++;
       }
     }
 
-    io_printf("|     CTRL+C ì´ì „, CTRL+Q ì¢…ë£Œ          |\r\n");
+    io_printf("|     CTRL+C ÀÌÀü, CTRL+Q Á¾·á          |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = input_decimal_prompt("ì„ íƒ", &choice, 1, display_idx - 1);
+    status = input_decimal_prompt("¼±ÅÃ", &choice, 1, display_idx - 1);
     if (status == MENU_ABORT || status == MENU_BACK)
       return;
 
@@ -981,14 +981,14 @@ void run_calibration_menu(int adc_num)
 int aws_menu_calibration()
 {
   int choice, status;
-  char* menu[] = {"ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜",
-                  "ì±„ë„ ìƒíƒœ ë³´ê¸°",
-                  "ì´ˆê¸°í™”"};
+  char* menu[] = {"°øÀå Ä¶¸®ºê·¹ÀÌ¼Ç",
+                  "Ã¤³Î »óÅÂ º¸±â",
+                  "ÃÊ±âÈ­"};
 
   driver_adc_open(ADC_ADS1220, 0);
   do
   {
-    status = choice_menu(24, "ADC ì¼ˆë¦¬ë¸Œë ˆì´ì…˜", menu, _countof(menu), &choice);
+    status = choice_menu(24, "ADC ÄÌ¸®ºê·¹ÀÌ¼Ç", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       return status;
 

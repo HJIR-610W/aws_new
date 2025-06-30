@@ -285,7 +285,7 @@ void websocket_handle_connection(int client_socket)
     uint8_t* frame_buffer = NULL;
     size_t frame_buffer_size = 0;
     size_t total_received = 0;
-    bool expecting_continuation = false;
+   // bool expecting_continuation = false;
     
     task_printf("WebSocket: Connection established\r\n");
 
@@ -603,7 +603,7 @@ static int websocket_generate_accept_key(const char* client_key, char* accept_ke
 
 // 터미널 WebSocket 연결용 전역 변수
 static int g_terminal_client_socket = -1;
-static void (*g_terminal_output_callback)(const char* data, size_t len) = NULL;
+//static void (*g_terminal_output_callback)(const char* data, size_t len) = NULL;
 
 // 터미널 WebSocket 데이터 전송 함수
 void websocket_terminal_send_data(int client_socket, const char* data, size_t len)

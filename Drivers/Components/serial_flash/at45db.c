@@ -645,6 +645,13 @@ at45db_result_t at45db_parse_chip_info(uint8_t *chip_info, at45db_chip_info_t *i
   const char *subcode = "Standard (00h)";
   const char *variant = "00000";
   const char *revision_str = "Unknown";
+  
+  
+  (void)manufacturer;
+  (void)family;
+  (void)subcode;
+  (void)variant;
+  (void)revision_str;
 
   uint8_t id0 = chip_info[0];  // Manufacturer ID
   uint8_t id1 = chip_info[1];  // Device ID Byte 1
@@ -652,6 +659,9 @@ at45db_result_t at45db_parse_chip_info(uint8_t *chip_info, at45db_chip_info_t *i
   uint8_t edi_len = chip_info[3];
   uint8_t edi_byte1 = chip_info[4];
 
+  (void)id2;
+  (void)edi_len;
+  
   // Validate manufacturer ID
   if (id0 != 0x1F) {
     DEBUG_PRINTF("Error: Invalid Manufacturer ID: 0x%02X\r\n", id0);

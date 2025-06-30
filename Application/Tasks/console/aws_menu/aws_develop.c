@@ -29,38 +29,38 @@ extern const char* panelList[4] ;
 int32_t menu_manage_print_config_all(void)
 {
   io_printf("ID               :%d\r\n", config.id);
-  io_printf("ë¹„ë°€ë²ˆí˜¸         :%d\r\n", config.password);
-  io_printf("ì¶©ì „ê¸° ì¢…ë¥˜      :%s\r\n", ITEM_LIST(config.charger_model, g_chgList));
-  io_printf("ë¡œê·¸ ì¹´ìš´íŠ¸      :%d\r\n", nvm_get_log_cnt());
-  io_printf("í”„ë¡œí† ì½œ          :%s\r\n", ITEM_LIST(config.aws_protocol_type, protocolList));
-  io_printf("ì´ë”ë„· ì„œë¸Œë„·    :%d.%d.%d.%d\r\n", config.eth_subnet[0], config.eth_subnet[1],
+  io_printf("ºñ¹Ğ¹øÈ£         :%d\r\n", config.password);
+  io_printf("ÃæÀü±â Á¾·ù      :%s\r\n", ITEM_LIST(config.charger_model, g_chgList));
+  io_printf("·Î±× Ä«¿îÆ®      :%d\r\n", nvm_get_log_cnt());
+  io_printf("ÇÁ·ÎÅäÄİ          :%s\r\n", ITEM_LIST(config.aws_protocol_type, protocolList));
+  io_printf("ÀÌ´õ³İ ¼­ºê³İ    :%d.%d.%d.%d\r\n", config.eth_subnet[0], config.eth_subnet[1],
               config.eth_subnet[2], config.eth_subnet[3]);
-  io_printf("ì´ë”ë„· ê²Œì´íŠ¸ì›¨ì´:%d.%d.%d.%d\r\n", config.eth_gateway[0], config.eth_gateway[1],
+  io_printf("ÀÌ´õ³İ °ÔÀÌÆ®¿şÀÌ:%d.%d.%d.%d\r\n", config.eth_gateway[0], config.eth_gateway[1],
               config.eth_gateway[2], config.eth_gateway[3]);
-  io_printf("ì´ë”ë„· IP        :%d.%d.%d.%d\r\n", config.eth_ip[0], config.eth_ip[1],
+  io_printf("ÀÌ´õ³İ IP        :%d.%d.%d.%d\r\n", config.eth_ip[0], config.eth_ip[1],
               config.eth_ip[2], config.eth_ip[3]);
-  io_printf("ì´ë”ë„· ì›ê²© ì„œë²„ :%d.%d.%d.%d\r\n", config.eth_remote_server_ip[0], config.eth_remote_server_ip[1],
+  io_printf("ÀÌ´õ³İ ¿ø°İ ¼­¹ö :%d.%d.%d.%d\r\n", config.eth_remote_server_ip[0], config.eth_remote_server_ip[1],
               config.eth_remote_server_ip[2], config.eth_remote_server_ip[3]);
   ;
 
-  io_printf("ì´ë”ë„› í¬íŠ¸      :%d\r\n", config.eth_remote_server_port);
+  io_printf("ÀÌ´õ³Ó Æ÷Æ®      :%d\r\n", config.eth_remote_server_port);
 
-  io_printf("CDMA ì›ê²© ì„œë²„   :%d.%d.%d.%d\r\n", config.cdma_server_ip[0],
+  io_printf("CDMA ¿ø°İ ¼­¹ö   :%d.%d.%d.%d\r\n", config.cdma_server_ip[0],
               config.cdma_server_ip[1], config.cdma_server_ip[2], config.cdma_server_ip[3]);
-  io_printf("CDMA í¬íŠ¸        :%d\r\n", config.cdma_port);
+  io_printf("CDMA Æ÷Æ®        :%d\r\n", config.cdma_port);
 
-  io_printf("CDMA ì¢…ë¥˜        :%s\r\n", ITEM_LIST(config.cdma_model, cdmaModellList));
-  io_printf("ì´ë”ë„· ì‚¬ìš©      :%s\r\n", ITEM_LIST((int32_t)config.eth_use, enableList));
-  io_printf("CDMA ì‚¬ìš©        :%s\r\n", ITEM_LIST((int32_t)config.cdma_use, enableList));
-  io_printf("ì§ì ‘í†µì‹          :%s\r\n", ITEM_LIST((int32_t)config.direct_use, enableList));
+  io_printf("CDMA Á¾·ù        :%s\r\n", ITEM_LIST(config.cdma_model, cdmaModellList));
+  io_printf("ÀÌ´õ³İ »ç¿ë      :%s\r\n", ITEM_LIST((int32_t)config.eth_use, enableList));
+  io_printf("CDMA »ç¿ë        :%s\r\n", ITEM_LIST((int32_t)config.cdma_use, enableList));
+  io_printf("Á÷Á¢Åë½Å         :%s\r\n", ITEM_LIST((int32_t)config.direct_use, enableList));
 
-  io_printf("ì§ì ‘í†µì‹  ì†ë„    :%d\r\n", config.direct_baud);
-  io_printf("íŒ¨ë„ ì¢…ë¥˜        :%s\r\n", ITEM_LIST(config.panel_model, panelList));
+  io_printf("Á÷Á¢Åë½Å ¼Óµµ    :%d\r\n", config.direct_baud);
+  io_printf("ÆĞ³Î Á¾·ù        :%s\r\n", ITEM_LIST(config.panel_model, panelList));
   io_printf("VHF ID           :%d\r\n", config.vhf_id);
-  io_printf("VHF ê·¸ë£¹         :%d\r\n", config.vhf_group);
+  io_printf("VHF ±×·ì         :%d\r\n", config.vhf_group);
   io_printf("VHF HOST         :%d\r\n", config.vhf_host_id);
-  io_printf("VHF ì¤‘ê³„         :%d\r\n", config.vhf_repeater_id);
-  io_printf("VHF PTT ì§€ì—°     :%d\r\n", config.vhf_ptt_delay);
+  io_printf("VHF Áß°è         :%d\r\n", config.vhf_repeater_id);
+  io_printf("VHF PTT Áö¿¬     :%d\r\n", config.vhf_ptt_delay);
 
   return 0;
 }
@@ -166,7 +166,7 @@ int32_t menu_developer_logging(void)
 
   do
   {
-    io_printf("ë¡œê·¸ ì‹œì‘ ì¹´ìš´íŠ¸:%d\r\n", logging_get_logCnt());
+    io_printf("·Î±× ½ÃÀÛ Ä«¿îÆ®:%d\r\n", logging_get_logCnt());
     io_printf("start,end>>");
 
     cnt = console_scanf("%d,%d,%d", &startCnt, &endCnt);
@@ -207,7 +207,7 @@ int32_t menu_update_info(void)
     {
       progress = ((float)received_bytes/(float)total_bytes)*100.0;
     }
-    io_printf("íŒì›¨ì–´ ë‹¤ìš´:%7d/%7d [%5.2f%%]\r",received_bytes,total_bytes,progress);
+    io_printf("Æß¿ş¾î ´Ù¿î:%7d/%7d [%5.2f%%]\r",received_bytes,total_bytes,progress);
 
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
@@ -222,8 +222,8 @@ int32_t menu_task_print(void)
 {
   uint32_t id;
   int32_t ret;
-  io_printf("printf í•˜ê³  ì‹¶ì€ task idì…ë ¥í•´ì£¼ì„¸ìš”\r\n");
-  io_printf("printf ì¢…ë£Œí•˜ë ¤ë©´ 0ì„ ì…ë ¥\r\n");
+  io_printf("printf ÇÏ°í ½ÍÀº task idÀÔ·ÂÇØÁÖ¼¼¿ä\r\n");
+  io_printf("printf Á¾·áÇÏ·Á¸é 0À» ÀÔ·Â\r\n");
   io_printf(">>");
 
   ret = cli_scanf_s("%X",&id);
@@ -250,12 +250,12 @@ int32_t menu_task_print_force(void)
   int status;
   int ok=0;
 
-  io_printf("íŠ¹ì • TaskëŠ” 1íšŒì„± ì‹¤í–‰ìœ¼ë¡œ task idê°€ ìœ ì§€ ë˜ì§€ ì•ŠëŠ”ë‹¤.");
-  io_printf("ê°•ì œ ì¶œë ¥ì„ í•˜ë©´ task_prinfê°€ ê°•ì œ ì‹¤í–‰ëœë‹¤.\r\n");
+  io_printf("Æ¯Á¤ Task´Â 1È¸¼º ½ÇÇàÀ¸·Î task id°¡ À¯Áö µÇÁö ¾Ê´Â´Ù.");
+  io_printf("°­Á¦ Ãâ·ÂÀ» ÇÏ¸é task_prinf°¡ °­Á¦ ½ÇÇàµÈ´Ù.\r\n");
 
   while(1)
   {
-    status = confirm_continue("task printf ê°•ì œì¶œë ¥í•˜ê² ìŠµë‹ˆê¹Œ?",&ok);
+    status = confirm_continue("task printf °­Á¦Ãâ·ÂÇÏ°Ú½À´Ï±î?",&ok);
     if(status != MENU_OK)
     break;
 
@@ -282,21 +282,21 @@ int32_t menu_task_telnet(void)
 
   if (get_config_app()->dev_telnet_mode == eTELNET_SERVER)
   {
-    io_printf("í…”ë„· ëª¨ë“œ:ì„œë²„(ì™¸ë¶€ì—ì„œ ì ‘ì†í•´ì™€ì•¼í•¨)\r\n");
+    io_printf("ÅÚ³İ ¸ğµå:¼­¹ö(¿ÜºÎ¿¡¼­ Á¢¼ÓÇØ¿Í¾ßÇÔ)\r\n");
   }
   else if (get_config_app()->dev_telnet_mode == eTELNET_CLIENT)
   {
-    io_printf("í…”ë„· ëª¨ë“œ:í´ë¼ì´ì–¸íŠ¸(ì¤‘ê³„ì„œë²„ë¡œ ì ‘ì†)\r\n");
+    io_printf("ÅÚ³İ ¸ğµå:Å¬¶óÀÌ¾ğÆ®(Áß°è¼­¹ö·Î Á¢¼Ó)\r\n");
   }
   else{
-    io_printf("í…”ë„· ëª¨ë“œ:ì„¤ì • ì˜¤ë¥˜\r\n");
+    io_printf("ÅÚ³İ ¸ğµå:¼³Á¤ ¿À·ù\r\n");
   }
 
-  io_printf("í…”ë„· ì¤‘ê³„ì„œë²„ IP:%d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
-  io_printf("í…”ë„· PORT(ì¤‘ê³„,ë¡œì»¬ê³µí†µ):%d\r\n", port);
+  io_printf("ÅÚ³İ Áß°è¼­¹ö IP:%d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
+  io_printf("ÅÚ³İ PORT(Áß°è,·ÎÄÃ°øÅë):%d\r\n", port);
 
-  io_printf("í…”ë„· ëª¨ë“œ ì„¤ì •\r\n");
-  status = input_decimal_prompt("í…”ë„·ëª¨ë“œ(0:ì„œë²„ 1:í´ë¼ì´ì–¸íŠ¸(ì¤‘ê³„ëª¨ë“œ))", &a, 0, 1);
+  io_printf("ÅÚ³İ ¸ğµå ¼³Á¤\r\n");
+  status = input_decimal_prompt("ÅÚ³İ¸ğµå(0:¼­¹ö 1:Å¬¶óÀÌ¾ğÆ®(Áß°è¸ğµå))", &a, 0, 1);
 
   if (status != MENU_OK)
   {
@@ -306,7 +306,7 @@ int32_t menu_task_telnet(void)
   get_config_app()->dev_telnet_mode =(eTELNET_MODE_t)a;
   WRITE_CFG(dev_telnet_mode);
 
-  io_printf("í…”ë„· ì ‘ì†í•  ì„œë²„ ì£¼ì†Œ ì„¤ì •\r\n");
+  io_printf("ÅÚ³İ Á¢¼ÓÇÒ ¼­¹ö ÁÖ¼Ò ¼³Á¤\r\n");
 
   status =  input_ip( &a, &b, &c, &d);
 
@@ -339,20 +339,20 @@ int32_t aws_menu_develop(void)
   int choice, status;
 
 
-  char* menu[] = {"ì¸í„°ëŸ½íŠ¸ ì„¤ì • í™•ì¸",
-                  "ë©”ëª¨ë¦¬ í…ŒìŠ¤íŠ¸",
-                  "ì„¼ì„œ ì„¤ì • ì „ë¶€ í™•ì¸",
-                  "ë¡œê·¸ í™•ì¸",
-                  "í…ŒìŠ¤í¬ ì •ë³´",
-                  "íŒŒì¼ ë‹¤ìš´ ì§„í–‰ ìƒíƒœ",
-                  "TASK ë””ë²„ê¹… ì¶œë ¥",
-                  "TASK ë””ë²„ê¹… ì¶œë ¥ ê°•ì œ",
+  char* menu[] = {"ÀÎÅÍ·´Æ® ¼³Á¤ È®ÀÎ",
+                  "¸Ş¸ğ¸® Å×½ºÆ®",
+                  "¼¾¼­ ¼³Á¤ ÀüºÎ È®ÀÎ",
+                  "·Î±× È®ÀÎ",
+                  "Å×½ºÅ© Á¤º¸",
+                  "ÆÄÀÏ ´Ù¿î ÁøÇà »óÅÂ",
+                  "TASK µğ¹ö±ë Ãâ·Â",
+                  "TASK µğ¹ö±ë Ãâ·Â °­Á¦",
                   "PCB PIN",
                   "TELNET"};
 
     while(1)
     {
-      status = choice_menu(24, "ê°œë°œì", menu, _countof(menu),&choice);
+      status = choice_menu(24, "°³¹ßÀÚ", menu, _countof(menu),&choice);
       if (status != MENU_OK)
         return status;
 

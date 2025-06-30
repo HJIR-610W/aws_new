@@ -64,7 +64,7 @@ void reset_win(win_t *win)
 }
 
 #define SYSTEM_WD 10
-void draw_system(win_t* p_win, int* rain_count)
+void draw_system(win_t* p_win)
 {
   int row_count = 0;
   char buff[50];
@@ -82,7 +82,7 @@ void draw_system(win_t* p_win, int* rain_count)
     {
       win_printf_title(p_win, "시스템");
 
-      snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d\r\n", Date_Time.Year,
+      snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,
                Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
       win_print_row(p_win, row_count++, buff);
 
@@ -118,11 +118,11 @@ void draw_system(win_t* p_win, int* rain_count)
       }
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-      *rain_count = p_win->total_items[page];
+
       break;
     }
     default:
-      *rain_count = 0;
+
       return;
   }
 
@@ -136,7 +136,7 @@ void draw_system(win_t* p_win, int* rain_count)
 }
 
 #define RAIN_WD 8
-void draw_rain(win_t *p_win, int *rain_count)
+void draw_rain(win_t *p_win)
 {
   int row_count = 0;
   char buff[50];
@@ -177,11 +177,11 @@ void draw_rain(win_t *p_win, int *rain_count)
 
     
     p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-    *rain_count = p_win->total_items[page];
+
       break;
     }
     default:
-      *rain_count = 0;
+
       return;
   }
 
@@ -195,7 +195,7 @@ void draw_rain(win_t *p_win, int *rain_count)
 }
 
 #define CHARGER_WD 15
-void draw_charger(win_t *p_win, int *rain_count)
+void draw_charger(win_t *p_win)
 {
   uint8_t err;
   int row_count = 0;
@@ -253,11 +253,11 @@ void draw_charger(win_t *p_win, int *rain_count)
       }
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-      *rain_count = p_win->total_items[page];
+
       break;
     }
     default:
-      *rain_count = 0;
+
       return;
   }
 
@@ -271,7 +271,7 @@ void draw_charger(win_t *p_win, int *rain_count)
 }
 #define DIRECT_WD 8
 
-void draw_direct(win_t *p_win, int *rain_count)
+void draw_direct(win_t *p_win)
 {
 
   int row_count = 0;
@@ -341,11 +341,11 @@ void draw_direct(win_t *p_win, int *rain_count)
       win_print_row(p_win, row_count++, buff);
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-      *rain_count = p_win->total_items[page];
+
       break;
     }
     default:
-      *rain_count = 0;
+
       return;
   }
 
@@ -360,7 +360,7 @@ void draw_direct(win_t *p_win, int *rain_count)
 
 #define CDMA_WD 15
 
-void draw_cdma(win_t *p_win, int *rain_count)
+void draw_cdma(win_t *p_win)
 {
 
   int row_count = 0;
@@ -448,11 +448,11 @@ void draw_cdma(win_t *p_win, int *rain_count)
       win_print_row(p_win, row_count++, buff);
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-      *rain_count = p_win->total_items[page];
+
       break;
     }
     default:
-      *rain_count = 0;
+
       return;
   }
 
@@ -467,7 +467,7 @@ void draw_cdma(win_t *p_win, int *rain_count)
 
 #define ETH_WD 10
 
-void draw_eth(win_t *p_win, int *rain_count)
+void draw_eth(win_t *p_win)
 {
 
   int row_count = 0;
@@ -485,10 +485,7 @@ void draw_eth(win_t *p_win, int *rain_count)
   p_win->current_row = 0;
   calculate_window_position(p_win, p_win->view_col, win_height);
 
-  switch (page)
-  {
-    case 0:
-    {
+
       win_printf_title(p_win, "이더넷");
 
       if (get_config_app()->eth_mode == eETH_MODE_CLINET)
@@ -592,13 +589,8 @@ void draw_eth(win_t *p_win, int *rain_count)
       }
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-      *rain_count = p_win->total_items[page];
-      break;
-    }
-    default:
-      *rain_count = 0;
-      return;
-  }
+
+
 
   // Fill remaining rows with blank lines to maintain consistent window size
   while (p_win->current_row < p_win->view_row)
@@ -617,7 +609,7 @@ void draw_eth(win_t *p_win, int *rain_count)
 
 #define AWS_WD 15
 
-void draw_aws(win_t *p_win, int *rain_count)
+void draw_aws(win_t *p_win)
 {
   uint8_t err;
   int row_count = 0;
@@ -2020,7 +2012,7 @@ void draw_aws(win_t *p_win, int *rain_count)
   }
 
   p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-  *rain_count = p_win->total_items[page];
+
 
 
   // Fill remaining rows with blank lines to maintain consistent window size
@@ -2043,13 +2035,6 @@ int32_t aws_menu_veiw(void)
   win_t aws_win;
   win_t charger_win;
 
-  int system_count = 0;
-  int rain_count = 0;
-  int cdma_count = 0;
-  int direct_count = 0;
-  int eth_count = 0;
-  int aws_count = 0;
-  int charger_count = 0;
 
   win_t *windows[7];
   int window_count = 0;
@@ -2064,7 +2049,7 @@ int32_t aws_menu_veiw(void)
   create_win(&rain_win, 0, 0, 6, 26);
   create_win(&cdma_win, 0, 0, 6, 31);
   create_win(&direct_win, 0, 0, 6, 31);
-  create_win(&eth_win, 0, 0, 6, 31);
+  create_win(&eth_win, 0, 0, 15, 31);
   create_win(&aws_win, 0, 0, 19, 60);
   create_win(&charger_win, 0, 0, 6, 26);
 
@@ -2105,16 +2090,16 @@ int32_t aws_menu_veiw(void)
       }
     }
 
-    draw_system(&system_win, &system_count);
-    draw_rain(&rain_win, &rain_count);
-    draw_charger(&charger_win, &charger_count);
+    draw_system(&system_win);
+    draw_rain(&rain_win);
+    draw_charger(&charger_win);
     if (get_config_app()->cdma_use)
-      draw_cdma(&cdma_win, &cdma_count);
+      draw_cdma(&cdma_win);
     if (get_config_app()->direct_use)
-      draw_direct(&direct_win, &direct_count);
-    draw_aws(&aws_win, &aws_count);
+      draw_direct(&direct_win);
+    draw_aws(&aws_win);
     if (get_config_app()->eth_use)
-      draw_eth(&eth_win, &eth_count);
+      draw_eth(&eth_win);
 
 
     if (window_count == 0)

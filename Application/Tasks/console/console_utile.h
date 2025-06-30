@@ -8,7 +8,7 @@
 #include "console_define.h"
 
 
-#define STRING_INPUT_ERR "ì…ë ¥ì´ ì˜ëª»ë˜ì—ˆìŠµë‹ˆë‹¤"
+#define STRING_INPUT_ERR "ÀÔ·ÂÀÌ Àß¸øµÇ¾ú½À´Ï´Ù"
 
 typedef int32_t (*menu_func)(void);
 

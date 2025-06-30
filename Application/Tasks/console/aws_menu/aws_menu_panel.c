@@ -26,28 +26,28 @@ int32_t aws_menu_panel(void)
   while (1)
   {
     menu_cnt = 0;
-    snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"íŒ¨ë„ ì¢…ë¥˜:%s",ITEM_LIST(config.panel_model, panelList));
+    snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"ÆĞ³Î Á¾·ù:%s",ITEM_LIST(config.panel_model, panelList));
     menu_cnt++;
 
     if (get_config_app()->panel_model == ePANEL_MUJU)
     {
       enalbe = get_config_app()->panel_snow_use;
-      snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"ì ì„¤ ì¶œë ¥:%s", ITEM_LIST((int32_t)enalbe, enableList));
+      snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"Àû¼³ Ãâ·Â:%s", ITEM_LIST((int32_t)enalbe, enableList));
       menu_cnt++;
 
       enalbe = get_config_app()->panel_barometer_use;
-      snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"ê¸°ì•• ì¶œë ¥:%s",  ITEM_LIST((int32_t)enalbe, enableList));
+      snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"±â¾Ğ Ãâ·Â:%s",  ITEM_LIST((int32_t)enalbe, enableList));
       menu_cnt++;
     }
 
-    status = choice_menu(24, "íŒ¨ë„(ì „ê´‘íŒ)", menu, menu_cnt, &choice);
+    status = choice_menu(24, "ÆĞ³Î(Àü±¤ÆÇ)", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
     switch (choice)
     {
       case 1:
-        status = choice_menu(24, "íŒ¨ë„ ì¢…ë¥˜",(char **)panelList, _countof(panelList), &choice);
+        status = choice_menu(24, "ÆĞ³Î Á¾·ù",(char **)panelList, _countof(panelList), &choice);
         if(status != MENU_OK)
           break;
 

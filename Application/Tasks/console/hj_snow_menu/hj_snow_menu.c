@@ -26,18 +26,18 @@ int hj_snow_menu(void)
   driver_t* hjsnow;
 
   uint8_t err;
-  char* menu[] = {"ì„¤ì •ê°’ í™•ì¸", "0ì  ì¬ì¡°ì • ì‹¤í–‰","ì ì„¤ í™•ì¸"};
+  char* menu[] = {"¼³Á¤°ª È®ÀÎ", "0Á¡ ÀçÁ¶Á¤ ½ÇÇà","Àû¼³ È®ÀÎ"};
 
   hjsnow = hjsnow_opened();
   if (hjsnow == NULL)
   {
-    io_printf("í™”ì§„ ì ì„¤ ì„¼ì„œë¥¼ ì„¤ì •í•´ì£¼ì„¸ìš”\r\n");
+    io_printf("È­Áø Àû¼³ ¼¾¼­¸¦ ¼³Á¤ÇØÁÖ¼¼¿ä\r\n");
     return MENU_BACK;
   }
 
   while (1)
   {
-    status = choice_menu(AWS_MENU_WIDTH, "í™”ì§„ ì ì„¤", menu, _countof(menu), &choice);
+    status = choice_menu(AWS_MENU_WIDTH, "È­Áø Àû¼³", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break;
 
@@ -50,36 +50,36 @@ int hj_snow_menu(void)
 
     if (err)
     {
-      io_printf("í™”ì§„ ì ì„¤ì„¼ì„œ ì—ëŸ¬ %s\r\n", get_drv_err_name(err));
+      io_printf("È­Áø Àû¼³¼¾¼­ ¿¡·¯ %s\r\n", get_drv_err_name(err));
       break;
       ;
     }
 
-        io_printf("ë¸”ë¥´íˆ¬ìŠ¤ 1     :%s\r\n", hjsnow_config.config.xModel[0]);
-        io_printf("ë¸”ë¥´íˆ¬ìŠ¤ 2     :%s\r\n", hjsnow_config.config.xModel[1]);
-        io_printf("ë¸”ë¥´íˆ¬ìŠ¤ 3     :%s\r\n", hjsnow_config.config.xModel[2]);
-        io_printf("ìŠ¤ìº” ì£¼ê¸°      :%d\r\n", hjsnow_config.config.snow_scantime);
-        io_printf("ë ˆí¼ëŸ°ìŠ¤ ê¸¸ì´ 1:%d\r\n", hjsnow_config.config.snow_refdistance[0]);
-        io_printf("ë ˆí¼ëŸ°ìŠ¤ ê¸¸ì´ 2:%d\r\n", hjsnow_config.config.snow_refdistance[1]);
-        io_printf("ë ˆí¼ëŸ°ìŠ¤ ê¸¸ì´ 3:%d\r\n", hjsnow_config.config.snow_refdistance[2]);
-        io_printf("ë†’ì´           :%d\r\n", hjsnow_config.config.snow_stddistance);
-        io_printf("ìŠ¤ìº”ì˜¨ë„       :%d\r\n", hjsnow_config.config.snow_scantemp);
-        io_printf("ì˜¨ë„ ìŠ¤ìº” ëª¨ë“œ :%s\r\n",
-                  hjsnow_config.config.snow_scantempauto == 0 ? "ìˆ˜ë™" : "ìë™");
-        io_printf("í•„í„° ë ˆë²¨      :%d\r\n", hjsnow_config.config.snow_filterlevel);
-        io_printf("í•„í„° ë™ì‘      :%d\r\n", hjsnow_config.config.snow_nofiltermode);
+        io_printf("ºí¸£Åõ½º 1     :%s\r\n", hjsnow_config.config.xModel[0]);
+        io_printf("ºí¸£Åõ½º 2     :%s\r\n", hjsnow_config.config.xModel[1]);
+        io_printf("ºí¸£Åõ½º 3     :%s\r\n", hjsnow_config.config.xModel[2]);
+        io_printf("½ºÄµ ÁÖ±â      :%d\r\n", hjsnow_config.config.snow_scantime);
+        io_printf("·¹ÆÛ·±½º ±æÀÌ 1:%d\r\n", hjsnow_config.config.snow_refdistance[0]);
+        io_printf("·¹ÆÛ·±½º ±æÀÌ 2:%d\r\n", hjsnow_config.config.snow_refdistance[1]);
+        io_printf("·¹ÆÛ·±½º ±æÀÌ 3:%d\r\n", hjsnow_config.config.snow_refdistance[2]);
+        io_printf("³ôÀÌ           :%d\r\n", hjsnow_config.config.snow_stddistance);
+        io_printf("½ºÄµ¿Âµµ       :%d\r\n", hjsnow_config.config.snow_scantemp);
+        io_printf("¿Âµµ ½ºÄµ ¸ğµå :%s\r\n",
+                  hjsnow_config.config.snow_scantempauto == 0 ? "¼öµ¿" : "ÀÚµ¿");
+        io_printf("ÇÊÅÍ ·¹º§      :%d\r\n", hjsnow_config.config.snow_filterlevel);
+        io_printf("ÇÊÅÍ µ¿ÀÛ      :%d\r\n", hjsnow_config.config.snow_nofiltermode);
         }
         break;
       case 2:
         hjsnow_ctrl(hjsnow, eHJSNOW_RUN_ZERO, NULL, NULL, &err);
         if (err)
         {
-          io_printf("ëª…ë ¹ì–´ê°€ ì „ì†¡ ì‹¤íŒ¨\r\n");
+          io_printf("¸í·É¾î°¡ Àü¼Û ½ÇÆĞ\r\n");
         }
         else
         {
-          io_printf("ëª…ë ¹ì–´ê°€ ì „ì†¡ë˜ì—ˆìŠµë‹ˆë‹¤\r\n");
-          io_printf("ë ˆì´ì € í¬ì¸í„°ë¥¼ í™•ì¸í•´ì£¼ì„¸ìš”\r\n");
+          io_printf("¸í·É¾î°¡ Àü¼ÛµÇ¾ú½À´Ï´Ù\r\n");
+          io_printf("·¹ÀÌÀú Æ÷ÀÎÅÍ¸¦ È®ÀÎÇØÁÖ¼¼¿ä\r\n");
         }
 
         break;
@@ -90,16 +90,16 @@ int hj_snow_menu(void)
 
           if (err)
           {
-            io_printf("í™”ì§„ ì ì„¤ì„¼ì„œ ì—ëŸ¬ %s\r\n", get_drv_err_name(err));
+            io_printf("È­Áø Àû¼³¼¾¼­ ¿¡·¯ %s\r\n", get_drv_err_name(err));
             break;
             ;
           }
 
-          io_printf("ì„¼ì„œ 1 ì¸¡ì •:%d\r\n", system.system.CurDistance[0]);
-          io_printf("ì„¼ì„œ 2 ì¸¡ì •:%d\r\n", system.system.CurDistance[1]);
-          io_printf("ì„¼ì„œ 3 ì¸¡ì •:%d\r\n", system.system.CurDistance[2]);
-          io_printf("ì˜¨ë„:%d\r\n", system.system.innerTemp);
-          io_printf("í˜„ì¬ ì ì„¤:%d\r\n", system.system.CurSnowLevel);
+          io_printf("¼¾¼­ 1 ÃøÁ¤:%d\r\n", system.system.CurDistance[0]);
+          io_printf("¼¾¼­ 2 ÃøÁ¤:%d\r\n", system.system.CurDistance[1]);
+          io_printf("¼¾¼­ 3 ÃøÁ¤:%d\r\n", system.system.CurDistance[2]);
+          io_printf("¿Âµµ:%d\r\n", system.system.innerTemp);
+          io_printf("ÇöÀç Àû¼³:%d\r\n", system.system.CurSnowLevel);
       }
         break;
     }

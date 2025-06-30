@@ -1,14 +1,14 @@
 
 /*
-ì„¼ì„œì •ë³´ëŠ” 2ê°€ì§€ êµ¬ì¡°ì²´ë¥¼ ì‚¬ìš©í•œë‹¤.
+¼¾¼­Á¤º¸´Â 2°¡Áö ±¸Á¶Ã¼¸¦ »ç¿ëÇÑ´Ù.
 
-1. ì„¼ì„œì˜ ì†ì„± êµ¬ì¡°ì²´ ëª¨ìŒ
-2. ì„¼ì„œ ì†ì„± êµ¬ì¡°ì²´ë¥¼ ê°€ë¥´í‚¤ëŠ” ì¸ë±ìŠ¤
+1. ¼¾¼­ÀÇ ¼Ó¼º ±¸Á¶Ã¼ ¸ğÀ½
+2. ¼¾¼­ ¼Ó¼º ±¸Á¶Ã¼¸¦ °¡¸£Å°´Â ÀÎµ¦½º
 
-ì„¼ì„œë§ˆë‹¤ ê³ ìœ ì˜ ì†ì„±ì„ êµ¬ì¡°ì²´ë¡œ êµ¬í˜„í•˜ë©´ ìƒˆë¡œìš´ ëª¨ë¸ì´ ì¶”ê°€ë˜ë©´ êµ¬ì¡°ì²´ê¸¸ì´ê°€ ë³€ê²½ë˜ì–´
-ê°’ì´ í‹€ì–´ì§„ë‹¤.
-configì—ì„œëŠ” ì†ì„±ì •ë³´ì˜ indexë§Œ ê´€ë¦¬í•œë‹¤
-ì†ì„± êµ¬ì¡°ì²´ëŠ” ì„¼ì„œê°€ ì¶”ê°€ë˜ë©´ ìµœí›„ì— ì¶”ê°€ë˜ê¸°ë•Œë¬¸ì— í‹€ì–´ì§ˆ ì¼ì´ ì—†ë‹¤.
+¼¾¼­¸¶´Ù °íÀ¯ÀÇ ¼Ó¼ºÀ» ±¸Á¶Ã¼·Î ±¸ÇöÇÏ¸é »õ·Î¿î ¸ğµ¨ÀÌ Ãß°¡µÇ¸é ±¸Á¶Ã¼±æÀÌ°¡ º¯°æµÇ¾î
+°ªÀÌ Æ²¾îÁø´Ù.
+config¿¡¼­´Â ¼Ó¼ºÁ¤º¸ÀÇ index¸¸ °ü¸®ÇÑ´Ù
+¼Ó¼º ±¸Á¶Ã¼´Â ¼¾¼­°¡ Ãß°¡µÇ¸é ÃÖÈÄ¿¡ Ãß°¡µÇ±â¶§¹®¿¡ Æ²¾îÁú ÀÏÀÌ ¾ø´Ù.
 
 
 
@@ -40,7 +40,7 @@ const char *sensor_format_list[] = {
 #undef X
 };
 
-// ì§€ì›í•˜ëŠ” ì„¼ì„œ ëª©ë¡ ì •ì˜
+// Áö¿øÇÏ´Â ¼¾¼­ ¸ñ·Ï Á¤ÀÇ
 const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
 const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};
 const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_FREQ, S_T_ADC};
@@ -127,7 +127,7 @@ void sensor_add_common(sensor_t *sensor, uint8_t index)
   {
     config_cnt--;
   }
-  sensor->config[config_cnt][0] = sensor->type;  // í•´ë‹¹ íƒ€ì…ì„ ì¶”ê°€
+  sensor->config[config_cnt][0] = sensor->type;  // ÇØ´ç Å¸ÀÔÀ» Ãß°¡
   sensor->config[config_cnt][1] = index;
   WRITE_CFG_MEM(&sensor->config[config_cnt], sizeof(sensor->config[config_cnt]));
   config_cnt++;
@@ -137,7 +137,7 @@ void sensor_add_common(sensor_t *sensor, uint8_t index)
 
 
 /**
- * @brief ì„¤ì •ê°’ í• ë‹¹
+ * @brief ¼³Á¤°ª ÇÒ´ç
  */
 void *sensor_add(sensor_t *sensor)
 {
@@ -149,7 +149,7 @@ void *sensor_add(sensor_t *sensor)
     case S_T_ADC:
       {
         int cnt = g_config_sensor.adc_cnt;
-        if (cnt >= _countof(g_config_sensor.adc))  // í• ë‹¹ ê°€ëŠ¥í•œì§€ íŒë‹¨
+        if (cnt >= _countof(g_config_sensor.adc))  // ÇÒ´ç °¡´ÉÇÑÁö ÆÇ´Ü
         {
           cnt--;
         }
@@ -199,11 +199,11 @@ void *sensor_add(sensor_t *sensor)
 
 
 /**
- * @brief ì„¼ì„œíƒ€ì…ì— ë§ëŠ” ì„¤ì •ê°’ì„ ê°€ì ¸ì˜´
+ * @brief ¼¾¼­Å¸ÀÔ¿¡ ¸Â´Â ¼³Á¤°ªÀ» °¡Á®¿È
  */
 void *get_sensor_config(sensor_t *sensor)
 {
-  // configCntê°€ 0ì´ë€ê±´ ì•„ì§ ì €ì¥ëœ configê°€ ì—†ë‹¤ëŠ”ê²ƒ
+  // configCnt°¡ 0ÀÌ¶õ°Ç ¾ÆÁ÷ ÀúÀåµÈ config°¡ ¾ø´Ù´Â°Í
   if (sensor->configCnt == 0)
   {
     return 0;
@@ -236,7 +236,7 @@ void *get_sensor_config(sensor_t *sensor)
       }
     }
   }
-  // í•´ë‹¹ ì„¼ì„œ íƒ€ì… configê°€ ì„¤ì •ë˜ì–´ ìˆì§€ ì•Šìœ¼ë©´ ì¶”ê°€
+  // ÇØ´ç ¼¾¼­ Å¸ÀÔ config°¡ ¼³Á¤µÇ¾î ÀÖÁö ¾ÊÀ¸¸é Ãß°¡
   return 0;
 }
 

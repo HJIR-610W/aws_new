@@ -28,11 +28,11 @@ void MX_FATFS_Init(void)
   res = f_mount(&SDFatFS, (TCHAR const*)SDPath, 1);
   if (res != FR_OK)
   {
-    ERROR_PRINTF("SD card 마운트 실패[%s]\n", get_fresult(res));
+    ERROR_PRINTF("Failed to mount SD card[%s]\n", get_fresult(res));
   }
   else
   {
-    ERROR_PRINTF("SD card 마운트 성공\n");
+    ERROR_PRINTF("SD card mounted successfully\n");
   }
 }
 

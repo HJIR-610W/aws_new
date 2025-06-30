@@ -15,21 +15,22 @@
 #include "dev_io.h"
 #include "util_memory.h"
 #include "aws_menu_view.h"
+#include "aws_menu_manager.h"
 
 #define AWS_MENU_WIDTH 30
 int aws_menu(void)
 {
   int choice, status;
 
-  char* menu[] = { "ê¸°ë³¸ì •ë³´",
-                   "ì‹œìŠ¤í…œ",
-                   "ì„¼ì„œ",
-                   "ë„¤íŠ¸ì›Œí¬",
-                   "ë°ì´í„°",
-                   "íŒ¨ë„(ì „ê´‘íŒ)",
-                   "ì˜¤í”„ì…‹",
-                   "ì¼ˆë¦¬ë¸Œë ˆì´ì…˜",
-                   "ê´€ë¦¬"};
+  char* menu[] = { "±âº»Á¤º¸",
+                   "½Ã½ºÅÛ",
+                   "¼¾¼­",
+                   "³×Æ®¿öÅ©",
+                   "µ¥ÀÌÅÍ",
+                   "ÆĞ³Î(Àü±¤ÆÇ)",
+                   "¿ÀÇÁ¼Â",
+                   "ÄÌ¸®ºê·¹ÀÌ¼Ç",
+                   "°ü¸®"};
 
   while (1)
   {

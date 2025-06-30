@@ -29,13 +29,13 @@ const osThreadAttr_t consoleTask_attributes = {
 
 
 static const shell_command_context_t printCmd = { "menu",
-                                                  "\r\n\"menu\":기본 메뉴\r\n" ,
+                                                  "\r\n\"menu\":menu\r\n" ,
                                                    menu_root,0 };
 
-static const shell_command_context_t developCmd = {"develop", "\r\n\"develop\":개발자\r\n", menu_develop,
+static const shell_command_context_t developCmd = {"develop", "\r\n\"develop\":develop\r\n", menu_develop,
                                                  0};
 
-static const shell_command_context_t testCmd = {"test", "\r\n\"test\":보드 테스트\r\n", test_pcb, 0};
+static const shell_command_context_t testCmd = {"test", "\r\n\"test\":test\r\n", test_pcb, 0};
 
 void print_signature(void)
 {
@@ -54,11 +54,11 @@ void print_signature(void)
   io_printf("(0tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu(B\r\n");
   io_printf("(0x(B AWS                                      (0x(B\r\n"); //1111-11-11 11:11:11
   io_printf("(0x(B App  %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",major,minor,fix,rel,ct.Year,ct.Month,ct.Day,
-                                                  ct.Hour,ct.Min,ct.Sec);//os 사용전에는 직접 호출
+                                                  ct.Hour,ct.Min,ct.Sec);
   get_boot_version(&major,&minor,&fix,&rel);
   get_boot_build(&ct);
   io_printf("(0x(B Boot %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",major,minor,fix,rel,ct.Year,ct.Month,ct.Day,
-                                                  ct.Hour,ct.Min,ct.Sec);//os 사용전에는 직접 호출
+                                                  ct.Hour,ct.Min,ct.Sec);
   io_printf("(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B\r\n");
 
 }
@@ -123,7 +123,7 @@ void consoleTask(void *arg)
 }
 
 
-//디버깅 포트를 사용 가능할때만 콘솔 task 실행
+
 void consoleTask_init(void *arg)
 {
   uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};

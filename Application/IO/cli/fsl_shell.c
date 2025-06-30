@@ -379,9 +379,9 @@ static void ProcessCommand(p_shell_context_t context, const char *cmd)
 
     if ((tmpCommand != NULL) && (flag == 1U))
     {
-        context->printf(
-            "\r\nhelp를 입력하여 명령어를 확인해주세요\r\n\r\n");
-        tmpCommand = NULL;
+      context->printf("\r\nType 'help' to see the list of commands.\r\n\r\n");
+
+      tmpCommand = NULL;
     }
     else if (tmpCommand != NULL)
     {
@@ -408,9 +408,9 @@ static void ProcessCommand(p_shell_context_t context, const char *cmd)
     }
     else
     {
-        context->printf(
-            "\r\nhelp를 입력하여 명령어를 확인해주세요\r\n\r\n");
-        tmpCommand = NULL;
+      context->printf("\r\nType 'help' to see the available commands.\r\n\r\n");
+
+      tmpCommand = NULL;
     }
 }
 

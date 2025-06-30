@@ -8,7 +8,7 @@
 
 #define AWS_MENU_NET_WIDTH 30
 
-const char *ethModeList[] = {"í´ë¼ì´ì–¸íŠ¸", "ì„œë²„"};
+const char *ethModeList[] = {"Å¬¶óÀÌ¾ğÆ®", "¼­¹ö"};
 const char *cdmaModellList[] = {"NTLE9607", "TX700"};
 const char *protocolList[] = {"KMA2", "KMA3"};
 
@@ -21,7 +21,7 @@ int32_t input_ip(int *a, int *b, int *c, int *d)
   while(1)
   {
     io_printf("IP(xxx.xxx.xxx.xxx)");
-    io_printf("ì…ë ¥:");
+    io_printf("ÀÔ·Â:");
     status = cli_scanf_s("%d.%d.%d.%d", a, b, c, d);
 
     if (status == CLI_KEYCODE_CTRL_C )
@@ -39,7 +39,7 @@ int32_t input_ip(int *a, int *b, int *c, int *d)
       status = MENU_OK;
       break;
     }
-    io_printf("ê°’ì´ ì…ë ¥ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+    io_printf("°ªÀÌ ÀÔ·ÂµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
   }
 
   return status;
@@ -78,7 +78,7 @@ int dec;
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "PORT:%d", get_config_app()->eth_remote_server_port);
     menu_cnt++;
 
-    status = choice_menu(24, "ìˆ˜ì§‘ì„œë²„ ì„¤ì •", menu, menu_cnt, &choice);
+    status = choice_menu(24, "¼öÁı¼­¹ö ¼³Á¤", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
@@ -95,7 +95,7 @@ int dec;
           WRITE_CFG(eth_remote_server_ip);
         break;
       case 2:
-        status = input_decimal_prompt("í¬íŠ¸",&dec,0, 60000);
+        status = input_decimal_prompt("Æ÷Æ®",&dec,0, 60000);
         if(status != MENU_OK)
         break;
           config.eth_remote_server_port = dec;
@@ -145,7 +145,7 @@ int32_t aws_eth_default(void)
              get_config_app()->eth_local_port);
     menu_cnt++;
 
-    status = choice_menu(24, "ì´ë”ë„· ê¸°ë³¸ ì„¤ì •", menu, menu_cnt, &choice);
+    status = choice_menu(24, "ÀÌ´õ³İ ±âº» ¼³Á¤", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
@@ -161,7 +161,7 @@ int32_t aws_eth_default(void)
             config.eth_ip[2] = c;
             config.eth_ip[3] = d;
             WRITE_CFG(eth_ip);
-            io_printf_color(IO_COLOR_RED, "ë¦¬ì…‹ í›„ ì ìš©ë©ë‹ˆë‹¤\r\n");
+            io_printf_color(IO_COLOR_RED, "¸®¼Â ÈÄ Àû¿ëµË´Ï´Ù\r\n");
             break;
         case 2:  // subnet
           status = input_ip(&a, &b, &c, &d);
@@ -172,7 +172,7 @@ int32_t aws_eth_default(void)
           config.eth_subnet[2] = c;
           config.eth_subnet[3] = d;
           WRITE_CFG(eth_subnet);
-          io_printf_color(IO_COLOR_RED, "ë¦¬ì…‹ í›„ ì ìš©ë©ë‹ˆë‹¤\r\n");
+          io_printf_color(IO_COLOR_RED, "¸®¼Â ÈÄ Àû¿ëµË´Ï´Ù\r\n");
           break;
         case 3:  // gateway
           status = input_ip(&a, &b, &c, &d);
@@ -183,15 +183,15 @@ int32_t aws_eth_default(void)
           config.eth_gateway[2] = c;
           config.eth_gateway[3] = d;
           WRITE_CFG(eth_gateway);
-          io_printf_color(IO_COLOR_RED, "ë¦¬ì…‹ í›„ ì ìš©ë©ë‹ˆë‹¤\r\n");
+          io_printf_color(IO_COLOR_RED, "¸®¼Â ÈÄ Àû¿ëµË´Ï´Ù\r\n");
           break;
         case 4:  // port
-          status = input_decimal_prompt("í¬íŠ¸",&a,0,100000);
+          status = input_decimal_prompt("Æ÷Æ®",&a,0,100000);
           if(status != MENU_OK)
           break;
             config.eth_local_port = a;
             WRITE_CFG(eth_local_port);
-            io_printf_color(IO_COLOR_RED, "ë¦¬ì…‹ í›„ ì ìš©ë©ë‹ˆë‹¤\r\n");
+            io_printf_color(IO_COLOR_RED, "¸®¼Â ÈÄ Àû¿ëµË´Ï´Ù\r\n");
             break;
       }
 
@@ -225,21 +225,21 @@ int32_t aws_network_config_eth(void)
   {
     menu_cnt = 0;
 
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ë°©ì‹:%s", ITEM_LIST(get_config_app()->eth_mode, ethModeList));
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "¹æ½Ä:%s", ITEM_LIST(get_config_app()->eth_mode, ethModeList));
     menu_cnt++;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ìˆ˜ì§‘ ì„œë²„ ì •ë³´");
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "¼öÁı ¼­¹ö Á¤º¸");
     menu_cnt++;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ê¸°ë³¸ êµ¬ì„±");
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "±âº» ±¸¼º");
     menu_cnt++;
 
-    status = choice_menu(24, "ë„¤íŠ¸ì›Œí¬", menu, menu_cnt, &choice);
+    status = choice_menu(24, "³×Æ®¿öÅ©", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
     switch (choice)
     {
       case 1:
-        status = choice_menu(30,"ì´ë”ë„· ë°©ì‹",(char**)ethModeList,_countof(ethModeList),&choice);
+        status = choice_menu(30,"ÀÌ´õ³İ ¹æ½Ä",(char**)ethModeList,_countof(ethModeList),&choice);
         if(status != MENU_OK)
         {
           break;
@@ -300,7 +300,7 @@ int32_t aws_network_config_cdma(void)
     menu_cnt++;
     }
 
-    status = choice_menu(24, "CDMA ì„¤ì •", menu, menu_cnt, &choice);
+    status = choice_menu(24, "CDMA ¼³Á¤", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       break;
 
@@ -318,20 +318,20 @@ int32_t aws_network_config_cdma(void)
 
         break;
       case 2:
-        status = input_decimal_prompt("í¬íŠ¸",&dec,0,10000);
+        status = input_decimal_prompt("Æ÷Æ®",&dec,0,10000);
         if(status != MENU_OK)
         break;
           config.cdma_port = dec;
           WRITE_CFG(cdma_port);
 
         break;
-      case 3:  // ëª¨ë¸
-        status = choice_menu(30,"CDMA ëª¨ë¸",(char**)cdmaModellList,  _countof(cdmaModellList), &choice);
+      case 3:  // ¸ğµ¨
+        status = choice_menu(30,"CDMA ¸ğµ¨",(char**)cdmaModellList,  _countof(cdmaModellList), &choice);
         if( status != MENU_OK)
         break;
           config.cdma_model = (eCDMA_MODEL_t)(choice-1);
           WRITE_CFG(cdma_model);
-          io_printf_color(IO_COLOR_RED, "ë¦¬ì…‹ í›„ ì ìš©ë©ë‹ˆë‹¤\r\n");
+          io_printf_color(IO_COLOR_RED, "¸®¼Â ÈÄ Àû¿ëµË´Ï´Ù\r\n");
           break;
       case 4:
         status = choice_enable(&get_config_app()->vpn_use);
@@ -369,10 +369,10 @@ int32_t aws_network_config_direct(void)
   {
     menu_cnt = 0;
     uint8_t *ip = get_config_app()->cdma_server_ip;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "í†µì‹  ì†ë„   :%d", config.direct_baud);
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "Åë½Å ¼Óµµ   :%d", config.direct_baud);
     menu_cnt++;
 
-    status = choice_menu(24, "ì§ì ‘í†µì‹ (RS232)", menu, menu_cnt, &choice);
+    status = choice_menu(24, "Á÷Á¢Åë½Å(RS232)", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       break;
 
@@ -385,7 +385,7 @@ int32_t aws_network_config_direct(void)
         
           config.direct_baud = dec;
           WRITE_CFG(direct_baud);
-          io_printf_color(IO_COLOR_RED, "ë¦¬ì…‹ í›„ ì ìš©ë©ë‹ˆë‹¤\r\n");
+          io_printf_color(IO_COLOR_RED, "¸®¼Â ÈÄ Àû¿ëµË´Ï´Ù\r\n");
           break;
     }
 
@@ -402,11 +402,11 @@ int32_t aws_network_config(void)
 {
   int choice, status;
 
-  char *menu[] = {"ì´ë”ë„·", "CDMA", "ì§ì ‘í†µì‹ "};
+  char *menu[] = {"ÀÌ´õ³İ", "CDMA", "Á÷Á¢Åë½Å"};
 
   while (1)
   {
-    status = choice_menu(AWS_MENU_NET_WIDTH, "ìƒì„¸ ì„¤ì •", menu, _countof(menu), &choice);
+    status = choice_menu(AWS_MENU_NET_WIDTH, "»ó¼¼ ¼³Á¤", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break;
 
@@ -454,7 +454,7 @@ int32_t aws_network_use(void)
     menu_cnt = 0;
 
     make_comList(buffer, sizeof(buffer));
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ì´ë”ë„·  :%s",
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ÀÌ´õ³İ  :%s",
              ITEM_LIST((int)get_config_app()->eth_use, enableList));
     menu_cnt++;
 
@@ -462,11 +462,11 @@ int32_t aws_network_use(void)
              ITEM_LIST((int)get_config_app()->cdma_use, enableList));
     menu_cnt++;
 
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ì§ì ‘í†µì‹ :%s",
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "Á÷Á¢Åë½Å:%s",
              ITEM_LIST((int)get_config_app()->direct_use, enableList));
     menu_cnt++;
 
-    status = choice_menu(24, "ì‚¬ìš© ì—¬ë¶€", menu, menu_cnt, &choice);
+    status = choice_menu(24, "»ç¿ë ¿©ºÎ", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
@@ -477,7 +477,7 @@ int32_t aws_network_use(void)
         if (status != MENU_OK)
           break;
         WRITE_CFG(eth_use);
-        io_printf_color(IO_COLOR_RED, "ë¦¬ì…‹ í›„ ì ìš©ë©ë‹ˆë‹¤\r\n");
+        io_printf_color(IO_COLOR_RED, "¸®¼Â ÈÄ Àû¿ëµË´Ï´Ù\r\n");
         break;
       case 2:
         status = choice_enable(&get_config_app()->cdma_use);
@@ -489,7 +489,7 @@ int32_t aws_network_use(void)
           WRITE_CFG(direct_use);
         }
         WRITE_CFG(cdma_use);
-        io_printf_color(IO_COLOR_RED, "ë¦¬ì…‹ í›„ ì ìš©ë©ë‹ˆë‹¤\r\n");
+        io_printf_color(IO_COLOR_RED, "¸®¼Â ÈÄ Àû¿ëµË´Ï´Ù\r\n");
         break;
       case 3:
         status = choice_enable(&get_config_app()->direct_use);
@@ -501,7 +501,7 @@ int32_t aws_network_use(void)
           WRITE_CFG(cdma_use);
         }
         WRITE_CFG(direct_use);
-        io_printf_color(IO_COLOR_RED, "ë¦¬ì…‹ í›„ ì ìš©ë©ë‹ˆë‹¤\r\n");
+        io_printf_color(IO_COLOR_RED, "¸®¼Â ÈÄ Àû¿ëµË´Ï´Ù\r\n");
         break;
     }
 
@@ -535,15 +535,15 @@ int aws_menu_network(void)
     menu_cnt = 0;
 
     make_comList(buffer, sizeof(buffer));
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "í†µì‹  ë°©ì‹:%s",buffer);
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "Åë½Å ¹æ½Ä:%s",buffer);
     menu_cnt++;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "í†µì‹  ì„¤ì •");
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "Åë½Å ¼³Á¤");
     menu_cnt++;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "í†µì‹  í”„ë¡œí† ì½œ:%s",
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "Åë½Å ÇÁ·ÎÅäÄİ:%s",
              ITEM_LIST(get_config_app()->aws_protocol_type, protocolList));
       menu_cnt++; 
 
-    status = choice_menu(24, "ë„¤íŠ¸ì›Œí¬", menu, menu_cnt, &choice);
+    status = choice_menu(24, "³×Æ®¿öÅ©", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
@@ -556,7 +556,7 @@ int aws_menu_network(void)
         status = aws_network_config();
          break;
       case 3:
-        status = choice_menu(40,"AWS í”„ë¡œí† ì½œ",(char **)protocolList,_countof(protocolList),&choice);
+        status = choice_menu(40,"AWS ÇÁ·ÎÅäÄİ",(char **)protocolList,_countof(protocolList),&choice);
         if (status != MENU_OK)
           break;
 

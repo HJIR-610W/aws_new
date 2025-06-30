@@ -9,7 +9,7 @@
 #include "util_memory.h"
 #include "util_time.h"
 
-#define  CHECK_INPUT "ì…ë ¥ì„ í™•ì¸í•´ì£¼ì„¸ìš”\r\n"
+#define  CHECK_INPUT "ÀÔ·ÂÀ» È®ÀÎÇØÁÖ¼¼¿ä\r\n"
 int32_t menu_data_display(void)
 {
   int status;
@@ -25,7 +25,7 @@ int32_t menu_data_display(void)
 
   while(1)
   {
-  io_printf("ì‹œì‘ ì‹œê°„ì„ ì…ë ¥í•´ì£¼ì„¸ìš”(yyyy-mm-dd hh:mm)\r\n");
+  io_printf("½ÃÀÛ ½Ã°£À» ÀÔ·ÂÇØÁÖ¼¼¿ä(yyyy-mm-dd hh:mm)\r\n");
   status = cli_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
 
   if (status == CLI_KEYCODE_CTRL_C) 
@@ -41,11 +41,11 @@ int32_t menu_data_display(void)
 
   if(status != 5)
   {
-    io_printf("ì…ë ¥ì„ í™•ì¸í•´ì£¼ì„¸ìš”\r\n");
+    io_printf("ÀÔ·ÂÀ» È®ÀÎÇØÁÖ¼¼¿ä\r\n");
     continue;
   }
 
-  io_printf("ì½ì„ ê°¯ìˆ˜ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”");
+  io_printf("ÀĞÀ» °¹¼ö¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä");
   status = cli_scanf_s("%d", &cnt);
 
   if (status == CLI_KEYCODE_CTRL_C)
@@ -75,54 +75,54 @@ int32_t menu_data_display(void)
 
     io_printf("%04d-%02d-%02d %02d:%02d\r\n", nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min);
 
-    io_printf("ì˜¨ë„          :%6.1f ì¼ ìµœì†Œ: %6.1f ì¼ ìµœëŒ€: %6.1f\r\n",
+    io_printf("¿Âµµ          :%6.1f ÀÏ ÃÖ¼Ò: %6.1f ÀÏ ÃÖ´ë: %6.1f\r\n",
               READ_TEMP(aws.mTemperature.sReal), READ_TEMP(aws.mTemperature.sMin),
               (aws.mTemperature.sMax));
 
-    io_printf("í’í–¥          :%6.1f 1ë¶„ ìµœëŒ€:%6.1f\r\n", READ_X10(aws.mWind.mDirection.sReal),
+    io_printf("Ç³Çâ          :%6.1f 1ºĞ ÃÖ´ë:%6.1f\r\n", READ_X10(aws.mWind.mDirection.sReal),
               READ_X10(aws.mWind.mDirection.sMax));
 
-    io_printf("í’ì†          :%6.1f 1ë¶„ ìµœëŒ€:%6.1f\r\n", READ_X10(aws.mWind.mSpeed.sReal),
+    io_printf("Ç³¼Ó          :%6.1f 1ºĞ ÃÖ´ë:%6.1f\r\n", READ_X10(aws.mWind.mSpeed.sReal),
               READ_X10(aws.mWind.mSpeed.sMax));
 
-    io_printf("ê°•ìš°ëŸ‰(ì¼)    : %6.1f ì›”: %6.1f ì‹œê°„: %6.1f\r\n", READ_X10(aws.mRainFall.sReal),
+    io_printf("°­¿ì·®(ÀÏ)    : %6.1f ¿ù: %6.1f ½Ã°£: %6.1f\r\n", READ_X10(aws.mRainFall.sReal),
               READ_X10(aws.mRainFall.sMonthRain), READ_X10(aws.mRainFall.sHourRain));
 
-    io_printf("ê¸°ì••          : %6.1f ì¼ ìµœì†Œ: %6.1f ì¼ ìµœëŒ€: %6.1f\r\n",
+    io_printf("±â¾Ğ          : %6.1f ÀÏ ÃÖ¼Ò: %6.1f ÀÏ ÃÖ´ë: %6.1f\r\n",
               READ_X10(aws.mBarometric.sReal), READ_X10(aws.mBarometric.sMin),
               READ_X10(aws.mBarometric.sMax));
 
-    io_printf("ê°•ìš°ê°ì§€      : %6d\r\n", aws.mRainDetect.sReal);
+    io_printf("°­¿ì°¨Áö      : %6d\r\n", aws.mRainDetect.sReal);
 
-    io_printf("ì ì„¤          : %6d\r\n", aws.mSnowFall.sReal);
+    io_printf("Àû¼³          : %6d\r\n", aws.mSnowFall.sReal);
 
-    io_printf("ìŠµë„          : %6.1f ì¼ ìµœì†Œ: %6.1f ì¼ ìµœëŒ€: %6.1f\r\n", READ_X10(aws.mHumidity.sReal),
+    io_printf("½Àµµ          : %6.1f ÀÏ ÃÖ¼Ò: %6.1f ÀÏ ÃÖ´ë: %6.1f\r\n", READ_X10(aws.mHumidity.sReal),
               READ_X10(aws.mHumidity.sMin), READ_X10(aws.mHumidity.sMax));
 
-    io_printf("ì¼ì‚¬          : %7.2f í•˜ë£¨ ì´: %.2f\r\n", READ_X100(aws.mSolarRad.sReal),
+    io_printf("ÀÏ»ç          : %7.2f ÇÏ·ç ÃÑ: %.2f\r\n", READ_X100(aws.mSolarRad.sReal),
               READ_X100(aws.mSolarRad.sMax));
-    io_printf("ì¼ì¡°          : %6d  í•˜ë£¨ ì´: %d\r\n", aws.mSunshine.sReal, aws.mSunshine.sMax);
+    io_printf("ÀÏÁ¶          : %6d  ÇÏ·ç ÃÑ: %d\r\n", aws.mSunshine.sReal, aws.mSunshine.sMax);
 
-// ì§€ë©´ì˜¨ë„ / ì´ˆìƒì˜¨ë„ / ì§€ì¤‘ì˜¨ë„
+// Áö¸é¿Âµµ / ÃÊ»ó¿Âµµ / ÁöÁß¿Âµµ
 #define PRINT_RIX(label, obj)                                                           \
-  io_printf(label " : %6.1f ì¼ ìµœì†Œ: %6.1f ì¼ ìµœëŒ€: %6.1f\r\n", READ_TEMP((obj).sReal), \
+  io_printf(label " : %6.1f ÀÏ ÃÖ¼Ò: %6.1f ÀÏ ÃÖ´ë: %6.1f\r\n", READ_TEMP((obj).sReal), \
             READ_TEMP((obj).sMin), READ_TEMP((obj).sMax))
 
-    PRINT_RIX("ì§€ë©´ì˜¨ë„     ", aws.mGndTemp);
-    PRINT_RIX("ì´ˆìƒì˜¨ë„     ", aws.mGrassTemp);
+    PRINT_RIX("Áö¸é¿Âµµ     ", aws.mGndTemp);
+    PRINT_RIX("ÃÊ»ó¿Âµµ     ", aws.mGrassTemp);
 
-    PRINT_RIX("ì§€ì¤‘ì˜¨ë„  5cm", aws.mSoilTemp5cm);
-    PRINT_RIX("ì§€ì¤‘ì˜¨ë„ 10cm", aws.mSoilTemp10cm);
-    PRINT_RIX("ì§€ì¤‘ì˜¨ë„ 20cm", aws.mSoilTemp20cm);
-    PRINT_RIX("ì§€ì¤‘ì˜¨ë„ 30cm", aws.mSoilTemp30cm);
-    PRINT_RIX("ì§€ì¤‘ì˜¨ë„ 50cm", aws.mSoilTemp50cm);
-    PRINT_RIX("ì§€ì¤‘ì˜¨ë„ 1.0m", aws.mSoilTemp1_0m);
-    PRINT_RIX("ì§€ì¤‘ì˜¨ë„ 1.5m", aws.mSoilTemp1_5m);
-    PRINT_RIX("ì§€ì¤‘ì˜¨ë„ 3.0m", aws.mSoilTemp3_0m);
-    PRINT_RIX("ì§€ì¤‘ì˜¨ë„ 5.0m", aws.mSoilTemp5_0m);
+    PRINT_RIX("ÁöÁß¿Âµµ  5cm", aws.mSoilTemp5cm);
+    PRINT_RIX("ÁöÁß¿Âµµ 10cm", aws.mSoilTemp10cm);
+    PRINT_RIX("ÁöÁß¿Âµµ 20cm", aws.mSoilTemp20cm);
+    PRINT_RIX("ÁöÁß¿Âµµ 30cm", aws.mSoilTemp30cm);
+    PRINT_RIX("ÁöÁß¿Âµµ 50cm", aws.mSoilTemp50cm);
+    PRINT_RIX("ÁöÁß¿Âµµ 1.0m", aws.mSoilTemp1_0m);
+    PRINT_RIX("ÁöÁß¿Âµµ 1.5m", aws.mSoilTemp1_5m);
+    PRINT_RIX("ÁöÁß¿Âµµ 3.0m", aws.mSoilTemp3_0m);
+    PRINT_RIX("ÁöÁß¿Âµµ 5.0m", aws.mSoilTemp5_0m);
 
 #if 0 
-    // ì˜ˆë¹„ê°’ mSpare01 ~ mSpare15
+    // ¿¹ºñ°ª mSpare01 ~ mSpare15
     const SENSOR_RIX_BUF spareList[] = {
         aws.mSpare01, aws.mSpare02, aws.mSpare03, aws.mSpare04, aws.mSpare05,
         aws.mSpare06, aws.mSpare07, aws.mSpare08, aws.mSpare09, aws.mSpare10,
@@ -131,16 +131,16 @@ int32_t menu_data_display(void)
 
     for (int i = 0; i < 15; i++)
     {
-      io_printf("Spare%02d ìˆœê°„: %d ìµœì†Œ: %d ìµœëŒ€: %d\r\n", i + 1, spareList[i].sReal,
+      io_printf("Spare%02d ¼ø°£: %d ÃÖ¼Ò: %d ÃÖ´ë: %d\r\n", i + 1, spareList[i].sReal,
                    spareList[i].sMin, spareList[i].sMax);
     }
 #endif
-    // ìƒíƒœê°’ ì¶œë ¥
+    // »óÅÂ°ª Ãâ·Â
     io_printf("Status sReal: 0x%04X sMin: 0x%04X sMax: 0x%04X\r\n", aws.mStatus.sReal,
               aws.mStatus.sMin, aws.mStatus.sMax);
 
 #if 0 
-    // ì˜ˆë¹„ ë°ì´í„° (cDataSpare) ì¶œë ¥
+    // ¿¹ºñ µ¥ÀÌÅÍ (cDataSpare) Ãâ·Â
     io_printf("Data Spare:");
     for (int i = 0; i < sizeof(aws.cDataSpare); i++)
     {
@@ -160,12 +160,12 @@ int aws_menu_data(void)
 {
   int choice;
   int status;
-  char* menu[] = {"1ë¶„ìë£Œ í™•ì¸",
-                  "1ë¶„ìë£Œ í¸ì§‘(êµ¬í˜„ ì˜ˆì •)"};
+  char* menu[] = {"1ºĞÀÚ·á È®ÀÎ",
+                  "1ºĞÀÚ·á ÆíÁı(±¸Çö ¿¹Á¤)"};
 
   while (1)
   {
-    status = choice_menu(AWS_DATA_MENU_WITDH, "ë°ì´í„°", menu, _countof(menu), &choice);
+    status = choice_menu(AWS_DATA_MENU_WITDH, "µ¥ÀÌÅÍ", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break ;
 

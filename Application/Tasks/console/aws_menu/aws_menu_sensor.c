@@ -16,7 +16,7 @@
 #include "vt100_command.h"
 #include "hj_temp_menu\hjtemp_menu.h"
 const char *adcChModeList[] = {"single", "diff"};
-const char *unusedList[] = {"ë¯¸ì‚¬ìš©"};
+const char *unusedList[] = {"¹Ì»ç¿ë"};
 const char *rs232ParityList[] = {"none", "even", "odd"};
 const char *physical_list[] = {"RS232", "RS485"};
 
@@ -167,10 +167,10 @@ uint8_t print_hjwindDir_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
   return cnt;
 }
 
-// í™”ì§„ ì˜¨ë„
+// È­Áø ¿Âµµ
 
-/*nn.ë¬¼ë¦¬ì¥ì¹˜  :RS232|RS485
-  nn.í¬íŠ¸      :n
+/*nn.¹°¸®ÀåÄ¡  :RS232|RS485
+  nn.Æ÷Æ®      :n
 */
 #define HJTEMP_CFG_PHYSICAL_LAYER 0
 #define HJTEMP_CFG_PORT 1
@@ -180,7 +180,7 @@ uint8_t print_hjtemp_cfg( hjtemp_config_t *hjtempCfg, uint8_t cnt)
 {
   const char *portNameList[10];
 
-  io_printf("%2d.ë¬¼ë¦¬ì¥ì¹˜   :%s\r\n", cnt++, physical_list[hjtempCfg->physical_layer]);  // ê³ ì •
+  io_printf("%2d.¹°¸®ÀåÄ¡   :%s\r\n", cnt++, physical_list[hjtempCfg->physical_layer]);  // °íÁ¤
 
   if (hjtempCfg->physical_layer == ePHYSICAL_RS232)
   {
@@ -190,9 +190,9 @@ uint8_t print_hjtemp_cfg( hjtemp_config_t *hjtempCfg, uint8_t cnt)
   {
     rs485_get_portList(portNameList, _countof(portNameList));
   }
-  io_printf("%2d.í¬íŠ¸       :%s\r\n", cnt++, portNameList[hjtempCfg->port]);  // ê³ ì •
-  io_printf("%2d.ëª¨ë“œë²„ìŠ¤ ID:%d\r\n", cnt++, hjtempCfg->modbus_id);           // ê³ ì •
-  io_printf("%2d.ì˜¨ìŠµë„ ë©”ë‰´[ì œì–´]\r\n", cnt++);                                   // ê³ ì •
+  io_printf("%2d.Æ÷Æ®       :%s\r\n", cnt++, portNameList[hjtempCfg->port]);  // °íÁ¤
+  io_printf("%2d.¸ğµå¹ö½º ID:%d\r\n", cnt++, hjtempCfg->modbus_id);           // °íÁ¤
+  io_printf("%2d.¿Â½Àµµ ¸Ş´º[Á¦¾î]\r\n", cnt++);                                   // °íÁ¤
   return cnt;
 }
 
@@ -203,8 +203,8 @@ uint8_t print_ott_smp3_cfg( ott_smp3_config_t *ott, uint8_t cnt)
   const char *portNameList[10];
 
   rs485_get_portList(portNameList, _countof(portNameList));
-  io_printf("%2d.í¬íŠ¸       :%s\r\n", cnt++, portNameList[ott->port]);  // ê³ ì •
-  io_printf("%2d.MODBUS ID  :%d\r\n", cnt++, ott->modbus_id);           // ê³ ì •
+  io_printf("%2d.Æ÷Æ®       :%s\r\n", cnt++, portNameList[ott->port]);  // °íÁ¤
+  io_printf("%2d.MODBUS ID  :%d\r\n", cnt++, ott->modbus_id);           // °íÁ¤
   return cnt;
 }
 
@@ -213,7 +213,7 @@ uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt
 {
 
 
-  io_printf("%2d.ì§€ì—°ì‹œê°„       :%d\r\n", cnt++, rain_present->delay);  // ê³ ì •
+  io_printf("%2d.Áö¿¬½Ã°£       :%d\r\n", cnt++, rain_present->delay);  // °íÁ¤
 
   return cnt;
 }
@@ -221,7 +221,7 @@ uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt
 
 uint8_t print_freq_cfg(frequency_config_t *freq, uint8_t cnt)
 {
-  io_printf("%2d.ì±„ë„       :%d\r\n", cnt++, freq->channel);
+  io_printf("%2d.Ã¤³Î       :%d\r\n", cnt++, freq->channel);
   io_printf("%2d.factor     :%f\r\n", cnt++, freq->scale_factor);
 
   return cnt;
@@ -234,8 +234,8 @@ uint8_t print_hjsnow_cfg( hjsnow_config_t *hjsnow, uint8_t cnt)
 {
   const char *portNameList[10];
 
-  io_printf("%2d.ë¬¼ë¦¬ì¥ì¹˜   :%s\r\n", cnt++,
-              physical_list[hjsnow->physical_layer]);  // ê³ ì •
+  io_printf("%2d.¹°¸®ÀåÄ¡   :%s\r\n", cnt++,
+              physical_list[hjsnow->physical_layer]);  // °íÁ¤
 
   if (hjsnow->physical_layer == ePHYSICAL_RS232)
   {
@@ -246,14 +246,14 @@ uint8_t print_hjsnow_cfg( hjsnow_config_t *hjsnow, uint8_t cnt)
     rs485_get_portList(portNameList, _countof(portNameList));
   }
 
-  io_printf("%2d.port        :%s\r\n", cnt++, portNameList[hjsnow->port]);  // ê³ ì •
-  io_printf("%2d.í™”ì§„ ì ì„¤ ë©”ë‰´(ì œì–´)\r\n", cnt++);
+  io_printf("%2d.port        :%s\r\n", cnt++, portNameList[hjsnow->port]);  // °íÁ¤
+  io_printf("%2d.È­Áø Àû¼³ ¸Ş´º(Á¦¾î)\r\n", cnt++);
   
   return cnt;
 }
 
 /*
- ì„¼ì„œ ê°œë³„
+ ¼¾¼­ °³º°
  */
 int32_t print_common_cfg( sensor_t *sensor, uint8_t c)
 {
@@ -308,7 +308,7 @@ int32_t select_indexMenu( sensor_t *sensor,int *choice)
     indexMax = funcCnt;
 
 
-    status = input_decimal_prompt("ë²ˆí˜¸ë¥¼ ì„ íƒí•´ ì£¼ì„¸ìš”",&index,0,indexMax-1);
+    status = input_decimal_prompt("¹øÈ£¸¦ ¼±ÅÃÇØ ÁÖ¼¼¿ä",&index,0,indexMax-1);
 
 
     if(status != MENU_OK)
@@ -323,7 +323,7 @@ int32_t select_indexMenu( sensor_t *sensor,int *choice)
   return status;
 }
 /**
- * @brief indexë¡œ ì €ì¥ëœ ì„¼ì„œ ëª©ë¡ì„ ë¬¸ìì—´ ëª©ë¡ìœ¼ë¡œ ê°€ì ¸ì˜¤ê¸°
+ * @brief index·Î ÀúÀåµÈ ¼¾¼­ ¸ñ·ÏÀ» ¹®ÀÚ¿­ ¸ñ·ÏÀ¸·Î °¡Á®¿À±â
  */
 uint16_t gen_sensorItemList(const char **itemListOut, const uint8_t *idxList, uint8_t listCnt)
 {
@@ -350,7 +350,7 @@ void set_type(sensor_t *sensor)
   }
 }
 /**
- * @brief ì„¼ì„œ ëª¨ë¸ ë³€ê²½
+ * @brief ¼¾¼­ ¸ğµ¨ º¯°æ
  */
 int32_t sensor_type_set( sensor_t *sensor, const uint8_t *list, uint8_t listCnt)
 {
@@ -462,7 +462,7 @@ int32_t hjwinddir_config_set( sensor_t *sensor, uint8_t menu_index)
 }
 
 /*
-0.type:í™”ì§„ RS485 9600
+0.type:È­Áø RS485 9600
 1.port:EX1 RS485 A
 */
 
@@ -545,7 +545,7 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
   hjtemp = get_sensor_config(sensor);
   if (hjtemp == NULL)
   {
-    ERROR_PRINTF("í™”ì§„ ì˜¨ìŠµë„ ì„¤ì •ê°’ NULL");    
+    ERROR_PRINTF("È­Áø ¿Â½Àµµ ¼³Á¤°ª NULL");    
     return MENU_OK;
   }
 
@@ -615,7 +615,7 @@ int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
   ott = get_sensor_config(sensor);
   if (ott == NULL)
   {
-    ERROR_PRINTF("OTT ì¼ì‚¬ ì„¤ì •ê°’ NULL");
+    ERROR_PRINTF("OTT ÀÏ»ç ¼³Á¤°ª NULL");
     return 0;
   }
 
@@ -657,14 +657,14 @@ int32_t rain_present_config_set(sensor_t *sensor, uint8_t menu_index)
   rain_present = get_sensor_config(sensor);
   if (rain_present == NULL)
   {
-    ERROR_PRINTF("ê°•ìš° ê°ì§€ NULL");
+    ERROR_PRINTF("°­¿ì °¨Áö NULL");
     return 0;
   }
 
   switch (menu_index)
   {
     case RAIN_PRESENT_DELAY:
-      status = input_decimal_prompt("ì§€ì—°ì‹œê°„(s)", &dec, 1, 10);
+      status = input_decimal_prompt("Áö¿¬½Ã°£(s)", &dec, 1, 10);
       if (status != MENU_OK)
         break;
       rain_present->delay = dec;
@@ -696,14 +696,14 @@ int32_t general_freq_config_set(sensor_t *sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case GENERAL_FREQ_CHANNEL:
-      status = input_decimal_prompt("ì±„ë„", &dec, 0, 1);
+      status = input_decimal_prompt("Ã¤³Î", &dec, 0, 1);
       if (status != MENU_OK)
         break;
       freq->channel = dec;
       save_config_sensor();
       break;
     case GENERAL_FREQ_SCALE_FACTOR:
-      status = input_float_prompt("ë³€í™˜ì‹ factor", -100000, 100000, &factor);
+      status = input_float_prompt("º¯È¯½Ä factor", -100000, 100000, &factor);
       if (status != MENU_OK)
         break;
       freq->scale_factor = factor;
@@ -725,7 +725,7 @@ int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
   hjsnow = get_sensor_config(sensor);
   if (hjsnow == NULL)
   {
-    ERROR_PRINTF("í™”ì§„ ì ì„¤ì„¤ ì„¤ì •ê°’ NULL");
+    ERROR_PRINTF("È­Áø Àû¼³¼³ ¼³Á¤°ª NULL");
     return 0;
   }
   switch (menu_index)
@@ -789,7 +789,7 @@ int32_t adc_config_set( sensor_t *sensor, uint8_t menu_index)
   adc = get_sensor_config(sensor);
   switch (menu_index)
   {
-    case ADC_SET_CH_MODE:  // 1.ì±„ë„ ëª¨ë“œ
+    case ADC_SET_CH_MODE:  // 1.Ã¤³Î ¸ğµå
       status = select_indexFromList(adcChModeList, NULL, _countof(adcChModeList), true,&choice);
       if (status !=MENU_OK)
         break;
@@ -800,7 +800,7 @@ int32_t adc_config_set( sensor_t *sensor, uint8_t menu_index)
 
       break;
     case ADC_SET_CHANNLEL:  // channel;
-      status = input_decimal_prompt("ì±„ë„",&dec, 0, 17);
+      status = input_decimal_prompt("Ã¤³Î",&dec, 0, 17);
       if(status !=MENU_OK)
       break;
 
@@ -877,9 +877,9 @@ int32_t rain_hall_config_set( sensor_t *sensor, uint8_t cnt)
 
 
 /*
-ì„¼ì„œ ëª¨ë¸ê³¼ ëª¨ë¸ ì„¤ì • í•¨ìˆ˜ ì—°ê²°
+¼¾¼­ ¸ğµ¨°ú ¸ğµ¨ ¼³Á¤ ÇÔ¼ö ¿¬°á
 
-ì„¼ì„œê°€ ì¶”ê°€ë˜ê±°ë‚˜ ì„¼ì„œê³ ìœ ì˜ ì„¤ì •ê°’ì„ ë³€ê²½í•˜ë ¤ë©´ ì²˜ë¦¬ í•¨ìˆ˜ë¥¼ ì‘ì„±í•´ì•¼í•œë‹¤.
+¼¾¼­°¡ Ãß°¡µÇ°Å³ª ¼¾¼­°íÀ¯ÀÇ ¼³Á¤°ªÀ» º¯°æÇÏ·Á¸é Ã³¸® ÇÔ¼ö¸¦ ÀÛ¼ºÇØ¾ßÇÑ´Ù.
 */
 const config_sen_func_t sen_func[] = {
     {.sensorType = S_T_ADC, .config_set = adc_config_set},
@@ -901,7 +901,7 @@ int32_t sensor_set( sensor_t *sensor, uint8_t choice)
   int32_t status=MENU_OK;
 
   for (int i = 0; i < _countof(sen_func); i++)
-  {  // ì„¼ì„œë§ˆë‹¤ ê³ ìœ ì˜ ì²˜ë¦¬ í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•œë‹¤.
+  {  // ¼¾¼­¸¶´Ù °íÀ¯ÀÇ Ã³¸® ÇÔ¼ö¸¦ »ç¿ëÇÑ´Ù.
     if (sen_func[i].sensorType == sensor->type)
     {
       status = sen_func[i].config_set( sensor, choice -1);
@@ -913,7 +913,7 @@ int32_t sensor_set( sensor_t *sensor, uint8_t choice)
 }
 
 /*
-ì„¼ì„œ ì„¤ì •
+¼¾¼­ ¼³Á¤
 
 
 */
@@ -922,15 +922,15 @@ int32_t menu_sensor_default_2( eSENSOR_LIST_t list)
   int32_t status = 0;
   int32_t choice  = 0;
 
-  // ì„ íƒëœ ì„¼ì„œì˜ ì„¤ì • ì •ë³´ë¥¼ ê°€ì ¸ì˜¨ë‹¤.
+  // ¼±ÅÃµÈ ¼¾¼­ÀÇ ¼³Á¤ Á¤º¸¸¦ °¡Á®¿Â´Ù.
   sensor_t *sensor = &get_config_app()->sensor[(int)list];
   do
   {
     /*
-    ì„¼ì„œì˜ í˜„ì¬ ì •ë³´ë¥¼ ì¶œë ¥í•˜ê³ , ìˆ˜ì •ì„ ì›í•˜ëŠ” í•­ëª©ì˜ ë²ˆí˜¸ë¥¼ ì…ë ¥ë°›ëŠ”ë‹¤.
-    0.type       :í™”ì§„ RS485 9600
+    ¼¾¼­ÀÇ ÇöÀç Á¤º¸¸¦ Ãâ·ÂÇÏ°í, ¼öÁ¤À» ¿øÇÏ´Â Ç×¸ñÀÇ ¹øÈ£¸¦ ÀÔ·Â¹Ş´Â´Ù.
+    0.type       :È­Áø RS485 9600
     1.port        :EX1 RS485 A
-    ì´ëŸ° í™”ë©´ì´ ë‚˜íƒ€ë‚¨ë‚¨
+    ÀÌ·± È­¸éÀÌ ³ªÅ¸³²³²
     */
     status = select_indexMenu(sensor,&choice);
     if (status != MENU_OK)
@@ -938,13 +938,13 @@ int32_t menu_sensor_default_2( eSENSOR_LIST_t list)
     
     switch (choice)
     {
-      case 0:  // ì„¼ì„œê°€ ì‚¬ìš©í•˜ê³ ìí•˜ëŠ” ì„¼ì„œ íƒ€ì…ì„ ì„¤ì •í•œë‹¤.
-               // ì„¼ì„œë§ˆë‹¤ ì§€ì›ê°€ëŠ¥í•œ ëª©ë¡ì„ ë„˜ê²¨ì§€ê³  ì¶œë ¥í•˜ì—¬ ì„ íƒí•˜ë„ë¡ í•œë‹¤.
+      case 0:  // ¼¾¼­°¡ »ç¿ëÇÏ°íÀÚÇÏ´Â ¼¾¼­ Å¸ÀÔÀ» ¼³Á¤ÇÑ´Ù.
+               // ¼¾¼­¸¶´Ù Áö¿ø°¡´ÉÇÑ ¸ñ·ÏÀ» ³Ñ°ÜÁö°í Ãâ·ÂÇÏ¿© ¼±ÅÃÇÏµµ·Ï ÇÑ´Ù.
         status =sensor_type_set( sensor, supported_sensors[list].list, supported_sensors[list].cnt);
         break;
-      default:  // ì„¼ì„œ íƒ€ì…ì´ ì•„ë‹Œ ì„¼ì„œ ê³ ìœ  ì†ì„±ë“¤ì€ ì´ í•¨ìˆ˜ ì—ì„œ ì²˜ë¦¬í•œë‹¤.
-        // í˜„ì¬ì˜ ì„¼ì„œ ì •ë³´ì™€ ì‚¬ìš©ìê°€ ìˆ˜ì •í•˜ê³ ìí•œ í•­ëª© ë²ˆí˜¸ë¥¼ ë„˜ê¸´ë‹¤.
-        status = sensor_set(sensor, choice);  // ì„¼ì„œë³„ ì„¤ì •ê°’ ë³€ê²½
+      default:  // ¼¾¼­ Å¸ÀÔÀÌ ¾Æ´Ñ ¼¾¼­ °íÀ¯ ¼Ó¼ºµéÀº ÀÌ ÇÔ¼ö ¿¡¼­ Ã³¸®ÇÑ´Ù.
+        // ÇöÀçÀÇ ¼¾¼­ Á¤º¸¿Í »ç¿ëÀÚ°¡ ¼öÁ¤ÇÏ°íÀÚÇÑ Ç×¸ñ ¹øÈ£¸¦ ³Ñ±ä´Ù.
+        status = sensor_set(sensor, choice);  // ¼¾¼­º° ¼³Á¤°ª º¯°æ
         break;
     }
 
@@ -956,13 +956,13 @@ int32_t menu_sensor_default_2( eSENSOR_LIST_t list)
 }
 
 /*
- 0.ê¸°ì˜¨          :ë¯¸ì‚¬ìš©                                  ,  32.ì „ì²œë³µì‚¬      :ë¯¸ì‚¬ìš©
- 1.í’í–¥          :ë¯¸ì‚¬ìš©                                  ,  33.ë°˜ì‚¬ë³µì‚¬      :ë¯¸ì‚¬ìš©
- 2.í’ì†          :ë¯¸ì‚¬ìš©                                  ,  34.ì§ë‹¬          :ë¯¸ì‚¬ìš©
-...ê³„ì†
+ 0.±â¿Â          :¹Ì»ç¿ë                                  ,  32.ÀüÃµº¹»ç      :¹Ì»ç¿ë
+ 1.Ç³Çâ          :¹Ì»ç¿ë                                  ,  33.¹İ»çº¹»ç      :¹Ì»ç¿ë
+ 2.Ç³¼Ó          :¹Ì»ç¿ë                                  ,  34.Á÷´Ş          :¹Ì»ç¿ë
+...°è¼Ó
 
-ì—¬ê¸°ì„œ ìˆ˜ì •í•˜ê³  ì‹¶ì€ ì„¼ì„œë²ˆí˜¸ë¥¼ ì…ë ¥
-ì„¼ì„œë²ˆí˜¸ëŠ” ì •í•´ì§„ ìˆœì„œëŒ€ë¡œ ì…ë ¥ë˜ì–´ì•¼í•¨
+¿©±â¼­ ¼öÁ¤ÇÏ°í ½ÍÀº ¼¾¼­¹øÈ£¸¦ ÀÔ·Â
+¼¾¼­¹øÈ£´Â Á¤ÇØÁø ¼ø¼­´ë·Î ÀÔ·ÂµÇ¾î¾ßÇÔ
 
  */
 int32_t print_menu_sensor(void)
@@ -999,7 +999,7 @@ int32_t aws_menu_sensor(void)
 
   do
   {
-    // ëª¨ë“  ì„¼ì„œì˜ ì¶œë ¥, ê¸°ë³¸ì •ë³´ ì¶œë ¥
+    // ¸ğµç ¼¾¼­ÀÇ Ãâ·Â, ±âº»Á¤º¸ Ãâ·Â
     status = select_indexFromList( NULL, print_menu_sensor, 0, false,&choice);
     if (status != MENU_OK)
           break;
@@ -1008,6 +1008,6 @@ int32_t aws_menu_sensor(void)
     break;
   }while(1);
 
-  io_printf("ì¥ë¹„ë¦¬ì…‹ í›„ ì„¤ì •ê°’ì´ ì ìš©ë©ë‹ˆë‹¤.\r\n");
+  io_printf("Àåºñ¸®¼Â ÈÄ ¼³Á¤°ªÀÌ Àû¿ëµË´Ï´Ù.\r\n");
   return status;
 }
