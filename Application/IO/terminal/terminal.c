@@ -9,7 +9,44 @@
 #include <stdarg.h>
 #include <string.h>
 
-
+static int get_visual_width(const char* str)
+{
+  int width = 0;
+  int i = 0;
+  
+  while (str[i] != '\0') 
+  {
+    unsigned char c = (unsigned char)str[i];
+    
+    if (c < 0x80) 
+    {
+      width++;
+      i++;
+    }
+    else if ((c & 0xE0) == 0xC0) 
+    {
+      width++;
+      i += 2;
+    }
+    else if ((c & 0xF0) == 0xE0) 
+    {
+      width += 2;
+      i += 3;
+    }
+    else if ((c & 0xF8) == 0xF0) 
+    {
+      width += 2;
+      i += 4;
+    }
+    else 
+    {
+      width++;
+      i++;
+    }
+  }
+  
+  return width;
+}
 
 extern int32_t io_printf(const char * pFmt, ...);
 
@@ -33,7 +70,7 @@ void terminal_print_line(char del, char l, size_t width)
 void terminal_print_centered(const char* text, char border, size_t width)
 {
     // Text size
-    size_t b = strlen(text);
+    size_t b = get_visual_width(text);
     // Left empty space
     size_t a = (width - b) / 2;
     // Right empty space
@@ -46,19 +83,19 @@ void terminal_print_centered(const char* text, char border, size_t width)
 void terminal_print_centered_selected(const char* text, char border, size_t width, color_t col)
 {
   // Text size
-  size_t b = strlen(text);
+  size_t b = get_visual_width(text);
   // Left empty space
   size_t a = (width - b) / 2;
   // Right empty space
   size_t c = width - a - b;
 
   // [b]<empty>[text]<empty>[b]
-  if(col)//colÀÌ ¹àÀº ÆÄ¶û
+  if(col)//colì´ ë°ì€ íŒŒë‘
   {
     io_printf("%c\x1b[94m%*.s%s%*.s\x1b[0m%c\r\n", border, a, "", text, c, "", border);
 
   }
-  else//¹İÀü
+  else//ë°˜ì „
   {
     io_printf("%c\x1b[7m%*.s%s%*.s\x1b[0m%c\r\n", border, a, "", text, c, "", border);
   }

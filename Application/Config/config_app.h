@@ -74,24 +74,24 @@ typedef struct config_s
   config_header_t header;
   uint8_t start;  //  bool restart_required;
   uint16_t id;
-  sensor_t sensor[SENSOR_LIST_MAX];//¿©±â¼­´Â 
+  sensor_t sensor[SENSOR_LIST_MAX];//ì—¬ê¸°ì„œëŠ” 
   uint16_t password;
-  eCHARGER_MODEL_t charger_model;  // ¼³Á¤ ÈÄ ¸®¼Â ¿ä±¸µÊ
+  eCHARGER_MODEL_t charger_model;  // ì„¤ì • í›„ ë¦¬ì…‹ ìš”êµ¬ë¨
   eAWS_PROTOCOL_t aws_protocol_type;
   eETH_MODE_t eth_mode;
-  uint8_t eth_subnet[4];    // ¼³Á¤ ÈÄ ¸®¼Â ¿ä±¸µÊ
-  uint8_t eth_gateway[4];   // ¼³Á¤ ÈÄ ¸®¼Â ¿ä±¸µÊ
-  uint8_t eth_ip[4];        // ¼³Á¤ ÈÄ ¸®¼Â ¿ä±¸µÊ
+  uint8_t eth_subnet[4];    // ì„¤ì • í›„ ë¦¬ì…‹ ìš”êµ¬ë¨
+  uint8_t eth_gateway[4];   // ì„¤ì • í›„ ë¦¬ì…‹ ìš”êµ¬ë¨
+  uint8_t eth_ip[4];        // ì„¤ì • í›„ ë¦¬ì…‹ ìš”êµ¬ë¨
   uint8_t eth_remote_server_ip[4];
   uint16_t eth_remote_server_port;
-  uint16_t eth_local_port;   // ¼³Á¤ ÈÄ ¸®¼Â ¿ä±¸µÊ
+  uint16_t eth_local_port;   // ì„¤ì • í›„ ë¦¬ì…‹ ìš”êµ¬ë¨
   uint8_t cdma_server_ip[4];
   uint16_t cdma_port;
-  eCDMA_MODEL_t cdma_model;  // ¼³Á¤ ÈÄ ¸®¼Â ¿ä±¸µÊ
-  uint8_t eth_use;              // ¼³Á¤ ÈÄ ¸®¼Â ¿ä±¸µÊ
-  uint8_t cdma_use;             // ¼³Á¤ ÈÄ ¸®¼Â ¿ä±¸µÊ
-  uint8_t direct_use;           // ¼³Á¤ ÈÄ ¸®¼Â ¿ä±¸µÊ
-  uint32_t direct_baud;      // ¼³Á¤ ÈÄ ¸®¼Â ¿ä±¸µÊ
+  eCDMA_MODEL_t cdma_model;  // ì„¤ì • í›„ ë¦¬ì…‹ ìš”êµ¬ë¨
+  uint8_t eth_use;              // ì„¤ì • í›„ ë¦¬ì…‹ ìš”êµ¬ë¨
+  uint8_t cdma_use;             // ì„¤ì • í›„ ë¦¬ì…‹ ìš”êµ¬ë¨
+  uint8_t direct_use;           // ì„¤ì • í›„ ë¦¬ì…‹ ìš”êµ¬ë¨
+  uint32_t direct_baud;      // ì„¤ì • í›„ ë¦¬ì…‹ ìš”êµ¬ë¨
   ePANEL_MODEL_t panel_model;
   uint8_t panel_snow_use;
   uint8_t panel_barometer_use;
@@ -103,7 +103,7 @@ typedef struct config_s
   uint8_t encrypt_use;
   uint8_t vpn_use;
   uint8_t ac_use;
-  uint16_t m_usRainDtOffDelay;//±¸ AWS
+  uint16_t m_usRainDtOffDelay;//êµ¬ AWS
   eTELNET_MODE_t dev_telnet_mode;
   uint8_t dev_telnet_ip[4];
   uint16_t dev_telnet_port;

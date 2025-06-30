@@ -8,18 +8,18 @@
 #include "task_logging.h"
 #include "user_heap.h"
 #include "dev_io.h"
-// ÅÍ¹Ì³Î ºê¸®Áö Àü¿ª º¯¼ö
+// í„°ë¯¸ë„ ë¸Œë¦¬ì§€ ì „ì—­ ë³€ìˆ˜
 static void (*g_terminal_output_callback)(const char* data, size_t len) = NULL;
 static bool g_bridge_initialized = false;
 
 
 void terminal_bridge_init(void)
 {
-    // TODO: ÄÜ¼Ö ½Ã½ºÅÛ ÃÊ±âÈ­ ±¸Çö
+    // TODO: ì½˜ì†” ì‹œìŠ¤í…œ ì´ˆê¸°í™” êµ¬í˜„
 
     if (!g_bridge_initialized) {
         g_bridge_initialized = true;
-        task_printf("Terminal Bridge: ÃÊ±âÈ­ ¿Ï·á - ÄÜ¼Ö ½Ã½ºÅÛ ¿¬°á ÇÊ¿ä\r\n");
+        task_printf("Terminal Bridge: ì´ˆê¸°í™” ì™„ë£Œ - ì½˜ì†” ì‹œìŠ¤í…œ ì—°ê²° í•„ìš”\r\n");
     }
 
 
@@ -27,7 +27,7 @@ void terminal_bridge_init(void)
 
 void terminal_bridge_send_command(const char* command, size_t len)
 {
-    // TODO: À¥ ÅÍ¹Ì³Î¿¡¼­ ¹ŞÀº ¸í·ÉÀ» ½ÇÁ¦ ÄÜ¼Ö ½Ã½ºÅÛÀ¸·Î Àü´Ş
+    // TODO: ì›¹ í„°ë¯¸ë„ì—ì„œ ë°›ì€ ëª…ë ¹ì„ ì‹¤ì œ ì½˜ì†” ì‹œìŠ¤í…œìœ¼ë¡œ ì „ë‹¬
 
     
     if (!g_bridge_initialized || !command || len == 0) {
@@ -42,26 +42,26 @@ void terminal_bridge_send_command(const char* command, size_t len)
 
 void terminal_bridge_set_output_callback(void (*callback)(const char* data, size_t len))
 {
-    // TODO: ÄÜ¼Ö Ãâ·ÂÀ» À¥ ÅÍ¹Ì³Î·Î º¸³»´Â Äİ¹é ÇÔ¼ö ¼³Á¤
+    // TODO: ì½˜ì†” ì¶œë ¥ì„ ì›¹ í„°ë¯¸ë„ë¡œ ë³´ë‚´ëŠ” ì½œë°± í•¨ìˆ˜ ì„¤ì •
     
     g_terminal_output_callback = callback;
-    task_printf("Terminal Bridge: Ãâ·Â Äİ¹é ¼³Á¤ ¿Ï·á\r\n");
+    task_printf("Terminal Bridge: ì¶œë ¥ ì½œë°± ì„¤ì • ì™„ë£Œ\r\n");
 }
 
 void terminal_bridge_cleanup(void)
 {
-    // TODO: ÅÍ¹Ì³Î ºê¸®Áö Á¤¸® ¹× ÄÜ¼Ö ½Ã½ºÅÛ ¿¬°á ÇØÁ¦
+    // TODO: í„°ë¯¸ë„ ë¸Œë¦¬ì§€ ì •ë¦¬ ë° ì½˜ì†” ì‹œìŠ¤í…œ ì—°ê²° í•´ì œ
 
         g_terminal_output_callback = NULL;
         g_bridge_initialized = false;
 
 }
 
-// Ãß°¡ À¯Æ¿¸®Æ¼ ÇÔ¼öµé (ÇÊ¿ä¿¡ µû¶ó ±¸Çö)
+// ì¶”ê°€ ìœ í‹¸ë¦¬í‹° í•¨ìˆ˜ë“¤ (í•„ìš”ì— ë”°ë¼ êµ¬í˜„)
 
 void terminal_bridge_send_output(const char* data, size_t len)
 {
-    // TODO: ÄÜ¼Ö ½Ã½ºÅÛ¿¡¼­ ÀÌ ÇÔ¼ö¸¦ È£ÃâÇÏ¿© Ãâ·ÂÀ» À¥ ÅÍ¹Ì³Î·Î Àü¼Û
+    // TODO: ì½˜ì†” ì‹œìŠ¤í…œì—ì„œ ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•˜ì—¬ ì¶œë ¥ì„ ì›¹ í„°ë¯¸ë„ë¡œ ì „ì†¡
 
     
     if (g_terminal_output_callback && data && len > 0) {
@@ -71,13 +71,13 @@ void terminal_bridge_send_output(const char* data, size_t len)
 
 bool terminal_bridge_is_initialized(void)
 {
-    // TODO: ÅÍ¹Ì³Î ºê¸®Áö ÃÊ±âÈ­ »óÅÂ È®ÀÎ
+    // TODO: í„°ë¯¸ë„ ë¸Œë¦¬ì§€ ì´ˆê¸°í™” ìƒíƒœ í™•ì¸
     return g_bridge_initialized;
 }
 
 void terminal_bridge_send_prompt(void)
 {
-    // TODO: ÇÁ·ÒÇÁÆ® ¹®ÀÚ¿­À» À¥ ÅÍ¹Ì³Î·Î Àü¼Û
+    // TODO: í”„ë¡¬í”„íŠ¸ ë¬¸ìì—´ì„ ì›¹ í„°ë¯¸ë„ë¡œ ì „ì†¡
     
     const char* prompt = "$ ";
     terminal_bridge_send_output(prompt, strlen(prompt));

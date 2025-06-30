@@ -43,7 +43,7 @@ extern uint32_t is_serverErr(void);
 #define MIC_LEVEL_7 7 
 #define MIC_LEVEL_8 8 
 
-/// @brief at ¸í·É¾î¿Í ÀÀ´ä ¸ñ·Ï
+/// @brief at ëª…ë ¹ì–´ì™€ ì‘ë‹µ ëª©ë¡
 const atCmd_t cmd_ntle9607[] = {{AT_ASYNC_RECV_REBOOT, "^MODE: 9"},
                                 {AT_ASYNC_RECV_TCP_DISCONNECTED, "*TCPDISCONNECTED"},
                                 {AT_ASYNC_RECV_SMS, "+CMTI"},
@@ -111,7 +111,7 @@ static void ntle9607_modem_send(const char *data,uint16_t dataLen)
 }
 
 /*
-async task¿¡¼­ ¸¸ ¼ö½ÅµÇµµ·ÏÇÑ ÀÀ´äÀ» È®ÀÎ
+async taskì—ì„œ ë§Œ ìˆ˜ì‹ ë˜ë„ë¡í•œ ì‘ë‹µì„ í™•ì¸
 */
 static M_RET_t ntle9607_asyncRecv_response(char *pBuff,uint16_t buffSize)
 {
@@ -127,7 +127,7 @@ static M_RET_t ntle9607_asyncRecv_response(char *pBuff,uint16_t buffSize)
 }
 
 /*
-tcp task¿¡¼­¸¸ ¼ö½ÅµÇµµ·ÏÇÑ ÀÀ´äÀ» È®ÀÎ
+tcp taskì—ì„œë§Œ ìˆ˜ì‹ ë˜ë„ë¡í•œ ì‘ë‹µì„ í™•ì¸
 */
 static M_RET_t ntle9607_tcpRecv_response(char *pBuff,uint16_t buffSize)
 {
@@ -201,16 +201,16 @@ static M_RET_t ntle9607_check_tcpResp(const char *const*pAckList,uint32_t ackLis
     return RET_TIME_OUT;
 }
 /*
-¼ö½ÅµÈ ¹®ÀÚ¼ö½Å ¸í·É¾î ¿¡¼­ ÀüÈ­¹øÈ£È­ ¹®ÀÚ³»¿ëÀ» ÃßÃâ
-msg ¹®ÀÚ¼ö½Å ¸í·É¾î
-sms ¹®ÀÚ±¸Á¶Ã¼
+ìˆ˜ì‹ ëœ ë¬¸ììˆ˜ì‹  ëª…ë ¹ì–´ ì—ì„œ ì „í™”ë²ˆí˜¸í™” ë¬¸ìë‚´ìš©ì„ ì¶”ì¶œ
+msg ë¬¸ììˆ˜ì‹  ëª…ë ¹ì–´
+sms ë¬¸ìêµ¬ì¡°ì²´
 
 *SMS*MTREAD: 2022032815044236,"01053730725","313374"
 
 */
 static void parse_sms(char* msg,sms_t *pSms)
 {
-    char* argv[10] = { NULL };// ¸Å°³°ª ¸ñ·Ï
+    char* argv[10] = { NULL };// ë§¤ê°œê°’ ëª©ë¡
     char* ptr;
     uint32_t cnt;
     uint32_t len;
@@ -224,14 +224,14 @@ static void parse_sms(char* msg,sms_t *pSms)
       return ;
     }
     
-    ptr = (char *)h_findnum((char *)argv[2]);//ÀüÈ­¹øÈ£ ¹®ÀÚ¿­ ¸®ÅÏ
+    ptr = (char *)h_findnum((char *)argv[2]);//ì „í™”ë²ˆí˜¸ ë¬¸ìì—´ ë¦¬í„´
 
     if(ptr)
     {
         strcpy_safe(pSms->num,sizeof(pSms->num),ptr);    
     }
 
-    ptr = argv[3]+1;//¹®ÀÚ³»¿ë ¸®ÅÏ
+    ptr = argv[3]+1;//ë¬¸ìë‚´ìš© ë¦¬í„´
     
     if (ptr)
     {
@@ -248,8 +248,8 @@ static void parse_sms(char* msg,sms_t *pSms)
 
 M_RET_t ntle9607_read_sms(sms_t *pSms)
 {
-    const char *cmd    = "AT*SMS*MTREAD=0\r\n";//ÃÖ±Ù ¹®ÀÚ 1°³ ÀĞ±â
-    const char *delCmd = "AT*SMS*ALLDEL=3\r\n";//ÀüºÎ »èÁ¦
+    const char *cmd    = "AT*SMS*MTREAD=0\r\n";//ìµœê·¼ ë¬¸ì 1ê°œ ì½ê¸°
+    const char *delCmd = "AT*SMS*ALLDEL=3\r\n";//ì „ë¶€ ì‚­ì œ
     const char *ackList[] = {"*SMS*MTREAD","+CMS ERROR"};  
     char buff[310];
     uint32_t idx=0;
@@ -266,7 +266,7 @@ M_RET_t ntle9607_read_sms(sms_t *pSms)
             case 0:
                 ret = RET_OK;
                 parse_sms(buff,pSms);
-                modem_sends(delCmd); // ÀĞÀº ¸Ş½ÃÁö´Â Áö¿î´Ù
+                modem_sends(delCmd); // ì½ì€ ë©”ì‹œì§€ëŠ” ì§€ìš´ë‹¤
                 osDelay(1000);
                 break;
             case 1:
@@ -516,13 +516,13 @@ M_RET_t ntle9607_init(void)
     M_RET_t ret = RET_OK;
  
 
-    ntle9607_modem_sends("ATE0V1\r\n");//E0 ¿¡ÄÚ ±İÁö V1 ÀÀ´äÀº ¾Æ½ºÅ° ÇüÅÂ
+    ntle9607_modem_sends("ATE0V1\r\n");//E0 ì—ì½” ê¸ˆì§€ V1 ì‘ë‹µì€ ì•„ìŠ¤í‚¤ í˜•íƒœ
     osDelay(500);
-    ntle9607_modem_sends("AT*ST*REGSTS\r\n");//³×Æ®¿öÅ© ¼­ºñ½º »óÅÂ Á¶È¸
+    ntle9607_modem_sends("AT*ST*REGSTS\r\n");//ë„¤íŠ¸ì›Œí¬ ì„œë¹„ìŠ¤ ìƒíƒœ ì¡°íšŒ
     osDelay(500);
     /*
     *ST*REGSTS:2,0,0 
-    2 ¼­ºñ½º °¡´É´É
+    2 ì„œë¹„ìŠ¤ ê°€ëŠ¥ëŠ¥
     */
     return ret;
 }
@@ -548,7 +548,7 @@ void ntle9607_write_ip(uint8_t ip[4],uint16_t port)
       sscanf(buff,"*ANET*SOCKPA:%d",&code);
       switch(code)
       {
-        case 1:// Àü¼Û ½ÇÆĞ
+        case 1:// ì „ì†¡ ì‹¤íŒ¨
           ret = RET_OK;
           break;
       }
@@ -612,7 +612,7 @@ void ntle9607_reset(uint8_t resetType,uint32_t delayMs)
         {
             if(is_modemBoot())
             {
-                osDelay(5000);// ºÎÆÃÈÄ ¾ÈÁ¤È­ 
+                osDelay(5000);// ë¶€íŒ…í›„ ì•ˆì •í™” 
                 break;;
             }
             osDelay(1000);
@@ -650,7 +650,7 @@ M_RET_t ntle9607_recv_tcp(uint8_t *buff,uint16_t buffSize,uint16_t *recvLen,uint
     
 M_RET_t ntle9607_send_tcp(uint8_t *data,uint16_t dataLen)
 {
-    const char *ackList[]={"*ANET*SOCKWR"};//*ANET*SOCKWR:1 ¼º°ø,*ANET*SOCKWR:0 ½ÇÆĞ
+    const char *ackList[]={"*ANET*SOCKWR"};//*ANET*SOCKWR:1 ì„±ê³µ,*ANET*SOCKWR:0 ì‹¤íŒ¨
     char buff[512+64];
     uint32_t findex;
     int32_t len;
@@ -677,7 +677,7 @@ M_RET_t ntle9607_send_tcp(uint8_t *data,uint16_t dataLen)
       code = buff[13];//
       switch(code)
       {
-        case '0':// Àü¼Û ½ÇÆĞ
+        case '0':// ì „ì†¡ ì‹¤íŒ¨
           ret = RET_FAIL_SEND;
           break;
 	    case '1':
@@ -756,14 +756,14 @@ M_RET_t ntle9607_read_rssi(int16_t *rssi)
 }
 
 /**
- * @brief dtmf ÄÚµå ÃßÃâ 
- * @retval dtmf ÄÚµå
+ * @brief dtmf ì½”ë“œ ì¶”ì¶œ 
+ * @retval dtmf ì½”ë“œ
  */
 char ntle9607_get_dtmf(char *data)
 {
     char dtmfCode;
 
- // "+RXDTMF: 1"¿¡¼­ dtmf ÄÚµå¸¸ ÃßÃâ
+ // "+RXDTMF: 1"ì—ì„œ dtmf ì½”ë“œë§Œ ì¶”ì¶œ
     dtmfCode = data[9];
 
     return dtmfCode;
@@ -782,64 +782,64 @@ void ntle9607_vpn_init(void)
   char buff[512];
     M_RET_t ret = RET_FAIL;
   /*
-  Àü¿øÀÌ ÅõÀÔµÇ¸é vpn ÀÚµ¿¿¬°áÀÌ ½ÃµµµÇ´ÂµíÇÑ, ¸ğµ© Àü¿ø ¸®¼ÂÈÄ vpn »óÅÂÀĞ±â ÇÏ¸é 
-  connected °¡ µÇ´Â °æ¿ì Á¸Àç
-  ¾î¶²°æ¿ì¿¡´Â ¾Æ¹«¸® »óÅÂÈ®ÀÎÇØµµ ¿¬°áÀÌ ¾ÈµÊ,ÀÌ»óÅÂ¿¡¼­ ²°´ÙÄÑ°í »óÅÂ¸¸ È®ÀÎÇÏ¸é ¿¬°áÀÌ µÇ¾îÀÖÀ½
-  ±×·¡¼­ ÀÏ´Ü ºÎÆÃµÇ¸é ¿¬°áÀÌ µÇ¾ú´ÂÁö È®ÀÎÇÏ°í ¾ÈµÇ¾îÀÖÀ¸¸é ¿¬°á ¸í·É¾î¸¦ ½Ãµµ
+  ì „ì›ì´ íˆ¬ì…ë˜ë©´ vpn ìë™ì—°ê²°ì´ ì‹œë„ë˜ëŠ”ë“¯í•œ, ëª¨ë€ ì „ì› ë¦¬ì…‹í›„ vpn ìƒíƒœì½ê¸° í•˜ë©´ 
+  connected ê°€ ë˜ëŠ” ê²½ìš° ì¡´ì¬
+  ì–´ë–¤ê²½ìš°ì—ëŠ” ì•„ë¬´ë¦¬ ìƒíƒœí™•ì¸í•´ë„ ì—°ê²°ì´ ì•ˆë¨,ì´ìƒíƒœì—ì„œ ê»ë‹¤ì¼œê³  ìƒíƒœë§Œ í™•ì¸í•˜ë©´ ì—°ê²°ì´ ë˜ì–´ìˆìŒ
+  ê·¸ë˜ì„œ ì¼ë‹¨ ë¶€íŒ…ë˜ë©´ ì—°ê²°ì´ ë˜ì—ˆëŠ”ì§€ í™•ì¸í•˜ê³  ì•ˆë˜ì–´ìˆìœ¼ë©´ ì—°ê²° ëª…ë ¹ì–´ë¥¼ ì‹œë„
   */
 
-  for(j = 0 ; j < 5; j++)//¾à 15ÃÊ µ¿¾È vpn ·Î±×ÀÎ »óÅÂ È®ÀÎ
+  for(j = 0 ; j < 5; j++)//ì•½ 15ì´ˆ ë™ì•ˆ vpn ë¡œê·¸ì¸ ìƒíƒœ í™•ì¸
   {
-    /* vpn ¿¬°á µÇ¾ú´ÂÁö È®ÀÎ */
+    /* vpn ì—°ê²° ë˜ì—ˆëŠ”ì§€ í™•ì¸ */
     ntle9607_modem_sends(satus_cmt);
 
     ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
     
     if(ret == RET_OK)
     {
-      //¿¬°áÀÌ ¿Ï·áµÇ¾úÀ¸¸é ºüÁ®³ª¿È
+      //ì—°ê²°ì´ ì™„ë£Œë˜ì—ˆìœ¼ë©´ ë¹ ì ¸ë‚˜ì˜´
       goto LOOP_EXIT;
     }
   }
 
   ntle9607_modem_sends(disconnect_cmd);// 
-  osDelay(2000);// Á¤ÇØÁø Áö¿¬ ½Ã°£Àº ¾øÀ½, Àû´çÈ÷ Áö¿¬ 
+  osDelay(2000);// ì •í•´ì§„ ì§€ì—° ì‹œê°„ì€ ì—†ìŒ, ì ë‹¹íˆ ì§€ì—° 
   ntle9607_modem_sends(connect_cmd);
-  osDelay(2000);// Á¤ÇØÁø Áö¿¬ ½Ã°£Àº ¾øÀ½, Àû´çÈ÷ Áö¿¬
+  osDelay(2000);// ì •í•´ì§„ ì§€ì—° ì‹œê°„ì€ ì—†ìŒ, ì ë‹¹íˆ ì§€ì—°
 
   for(j = 0 ; j< 2; j++)
   {
     for(i = 0 ; i < 5;i++)
     {
-      /*vpn ¿¬°á µÇ¾ú´ÂÁö È®ÀÎ*/
+      /*vpn ì—°ê²° ë˜ì—ˆëŠ”ì§€ í™•ì¸*/
       ntle9607_modem_sends(satus_cmt);
 
       ret = ntle9607_check_tcpResp(ackList,CNT_OF(ackList),&idx,buff,sizeof(buff),200);
       if(ret == RET_OK)
       {
-        //¿¬°áÀÌ ¿Ï·áµÇ¾úÀ¸¸é ºüÁ®³ª¿È
+        //ì—°ê²°ì´ ì™„ë£Œë˜ì—ˆìœ¼ë©´ ë¹ ì ¸ë‚˜ì˜´
         goto LOOP_EXIT;
       }
                   
       osDelay(1000);
     }
     
-    if(j == 0)// j==0ÀÏ¶§ ¿¬°áÀÌ ¾ÈµÇ¸é ´Ù½Ã ¿¬°áÁ¾·á ¸í·É¾î Àü¼ÛÇÏ°í ´Ù½Ã ¿¬°á½Ãµµ
+    if(j == 0)// j==0ì¼ë•Œ ì—°ê²°ì´ ì•ˆë˜ë©´ ë‹¤ì‹œ ì—°ê²°ì¢…ë£Œ ëª…ë ¹ì–´ ì „ì†¡í•˜ê³  ë‹¤ì‹œ ì—°ê²°ì‹œë„
     {
-      ntle9607_modem_sends(disconnect_cmd);// Àß¸øµÈ ¿¬°á  ÇØÁ¦ 
+      ntle9607_modem_sends(disconnect_cmd);// ì˜ëª»ëœ ì—°ê²°  í•´ì œ 
       osDelay(5000);
       ntle9607_modem_sends(connect_cmd);
     }
   }
 
 LOOP_EXIT:
-  (void)(0);//warning ¶§¹®¿¡ ³ÖÀ½
+  (void)(0);//warning ë•Œë¬¸ì— ë„£ìŒ
 
 }
 
 
 /**
- * @brief ¾ÈÁ¤ÀûÀÎ Àü¿ø Â÷´ÜÀ» À§ÇØ¼­ ¾Æ·¡¿Í °°ÀÌ AT CMD ½ÇÇàÀÌ ÇÊ¿ä ÇÕ´Ï´Ù.
+ * @brief ì•ˆì •ì ì¸ ì „ì› ì°¨ë‹¨ì„ ìœ„í•´ì„œ ì•„ë˜ì™€ ê°™ì´ AT CMD ì‹¤í–‰ì´ í•„ìš” í•©ë‹ˆë‹¤.
  */
 void ntle9607_off_powerSafe(void)
 {
@@ -847,7 +847,7 @@ void ntle9607_off_powerSafe(void)
 
     ntle9607_modem_sends(cmd);
 
-    osDelay(11000);//¿£Æ¼¸ğ¾Æ¿¡¼­ ±ÇÀåÇÑ Áö¿¬½Ã°£(email)
+    osDelay(11000);//ì—”í‹°ëª¨ì•„ì—ì„œ ê¶Œì¥í•œ ì§€ì—°ì‹œê°„(email)
 }
 
 
@@ -1014,17 +1014,17 @@ void ntle9607_recv_bin(driver_t *uart, uint8_t *p_data, uint16_t data_len)
   int32_t readCnt;
   int32_t len;
 
-  cnt = data_len - 7;  //*TCPRD=4<CR><LF>¿¡¼­ ¼ıÀÚÀÇ ÀÚ¸®¼ö
+  cnt = data_len - 7;  //*TCPRD=4<CR><LF>ì—ì„œ ìˆ«ìì˜ ìë¦¬ìˆ˜
 
   if (cnt < sizeof(temp))
   {
     memset(temp, 0x00, sizeof(temp));
     memcpy(temp, &p_data[7], cnt);
-    readCnt = atoi((char *)temp);  // ¼ö½Å Ã³¸®ÇØ¾ßÇÒ tcp data ±æÀÌ¸¦ °è»ê
+    readCnt = atoi((char *)temp);  // ìˆ˜ì‹  ì²˜ë¦¬í•´ì•¼í•  tcp data ê¸¸ì´ë¥¼ ê³„ì‚°
 
-    len = driver_uart_recv(uart, (uint8_t *)temp, 1, 1000);  // ÃÖÁ¾ tcp data ¹öÆÛ¿¡¼­ °¡Á®¿È
+    len = driver_uart_recv(uart, (uint8_t *)temp, 1, 1000);  // ìµœì¢… tcp data ë²„í¼ì—ì„œ ê°€ì ¸ì˜´
     len = driver_uart_recv(uart, (uint8_t *)temp, readCnt,
-                           1000);  // ÃÖÁ¾ tcp data ¹öÆÛ¿¡¼­ °¡Á®¿È
+                           1000);  // ìµœì¢… tcp data ë²„í¼ì—ì„œ ê°€ì ¸ì˜´
 
     if (len)
     {

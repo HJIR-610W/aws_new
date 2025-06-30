@@ -9,43 +9,43 @@
 #include "util_memory.h"
 
 #define PT100_CNT 2
-#define MIN_TEMP -42  // ÃÖ¼Ò ¿Âµµ
-#define MAX_TEMP 62   // ÃÖ´ë ¿Âµµ
+#define MIN_TEMP -42  // ìµœì†Œ ì˜¨ë„
+#define MAX_TEMP 62   // ìµœëŒ€ ì˜¨ë„
 #define TABLE_SIZE (MAX_TEMP - MIN_TEMP + 1)
 
-// PT100 ÀúÇ× Å×ÀÌºí
-const float pt100_table[TABLE_SIZE] = {83.48,  83.88,  // -¡Æ42C ~ --41¡ÆC
+// PT100 ì €í•­ í…Œì´ë¸”
+const float pt100_table[TABLE_SIZE] = {83.48,  83.88,  // -Â°42C ~ --41Â°C
                                        84.27,  84.67,  85.06,  85.46,  85.85,
-                                       86.25,  86.64,  87.04,  87.43,  87.83,  // -40¡ÆC ~ -31¡ÆC
+                                       86.25,  86.64,  87.04,  87.43,  87.83,  // -40Â°C ~ -31Â°C
                                        88.22,  88.62,  89.01,  89.40,  89.80,
-                                       90.19,  90.59,  90.98,  91.37,  91.77,  // -30¡ÆC ~ -21¡ÆC
+                                       90.19,  90.59,  90.98,  91.37,  91.77,  // -30Â°C ~ -21Â°C
                                        92.16,  92.55,  92.95,  93.34,  93.73,
-                                       94.12,  94.52,  94.91,  95.30,  95.69,  // -20¡ÆC ~ -11¡ÆC
+                                       94.12,  94.52,  94.91,  95.30,  95.69,  // -20Â°C ~ -11Â°C
                                        96.09,  96.48,  96.87,  97.26,  97.65,
-                                       98.04,  98.44,  98.83,  99.22,  99.61,  // -10¡ÆC ~  -1¡ÆC
+                                       98.04,  98.44,  98.83,  99.22,  99.61,  // -10Â°C ~  -1Â°C
                                        100.00, 100.39, 100.78, 101.17, 101.56,
-                                       101.95, 102.34, 102.73, 103.12, 103.51,  //   0¡ÆC ~   9¡ÆC
+                                       101.95, 102.34, 102.73, 103.12, 103.51,  //   0Â°C ~   9Â°C
                                        103.90, 104.29, 104.68, 105.07, 105.46,
-                                       105.85, 106.24, 106.63, 107.02, 107.40,  //  10¡ÆC ~  19¡ÆC
+                                       105.85, 106.24, 106.63, 107.02, 107.40,  //  10Â°C ~  19Â°C
                                        107.79, 108.18, 108.57, 108.96, 109.35,
-                                       109.73, 110.12, 110.51, 110.90, 111.29,  //  20¡ÆC ~  29¡ÆC
+                                       109.73, 110.12, 110.51, 110.90, 111.29,  //  20Â°C ~  29Â°C
                                        111.67, 112.06, 112.45, 112.83, 113.22,
-                                       113.61, 114.00, 114.38, 114.77, 115.15,  //  30¡ÆC ~  39¡ÆC
+                                       113.61, 114.00, 114.38, 114.77, 115.15,  //  30Â°C ~  39Â°C
                                        115.54, 115.93, 116.31, 116.70, 117.08,
-                                       117.47, 117.86, 118.24, 118.63, 119.01,  //  40¡ÆC ~  49¡ÆC
+                                       117.47, 117.86, 118.24, 118.63, 119.01,  //  40Â°C ~  49Â°C
                                        119.40, 119.78, 120.17, 120.55, 120.94,
-                                       121.32, 121.71, 122.09, 122.47, 122.86,  //  50¡ÆC ~  59¡ÆC
-                                       123.24, 123.63, 124.01};                 // 60¡ÆC ~ 62¡ÆC
+                                       121.32, 121.71, 122.09, 122.47, 122.86,  //  50Â°C ~  59Â°C
+                                       123.24, 123.63, 124.01};                 // 60Â°C ~ 62Â°C
 
-// ÀúÇ×°ªÀ» ±â¹İÀ¸·Î ¿Âµµ¸¦ °è»êÇÏ´Â ÇÔ¼ö (¼±Çü º¸°£¹ı »ç¿ë)
+// ì €í•­ê°’ì„ ê¸°ë°˜ìœ¼ë¡œ ì˜¨ë„ë¥¼ ê³„ì‚°í•˜ëŠ” í•¨ìˆ˜ (ì„ í˜• ë³´ê°„ë²• ì‚¬ìš©)
 float pt100_resistance_to_temperature(float resistance)
 {
-  // ¹üÀ§¸¦ ¹ş¾î³­ °æ¿ì
+  // ë²”ìœ„ë¥¼ ë²—ì–´ë‚œ ê²½ìš°
 
   if (bigger_float(resistance, pt100_table[TABLE_SIZE - 1]) ||
       less_float(resistance, pt100_table[0]))
   {
-    return 9999.0;  // ¿À·ù ÄÚµå
+    return 9999.0;  // ì˜¤ë¥˜ ì½”ë“œ
   }
 
   for (int i = 0; i < TABLE_SIZE - 1; i++)
@@ -53,7 +53,7 @@ float pt100_resistance_to_temperature(float resistance)
     if (bigger_equal_float(resistance, pt100_table[i]) &&
         less_equal_float(resistance, pt100_table[i + 1]))
     {
-      // ¼±Çü º¸°£¹ı Àû¿ë
+      // ì„ í˜• ë³´ê°„ë²• ì ìš©
       double temp1 = MIN_TEMP + i;
       double temp2 = MIN_TEMP + i + 1;
       double res1 = pt100_table[i];
@@ -63,7 +63,7 @@ float pt100_resistance_to_temperature(float resistance)
     }
   }
 
-  return 9999.0;  // ¿À·ù ÄÚµå
+  return 9999.0;  // ì˜¤ë¥˜ ì½”ë“œ
 }
 
  const float kConstanctA = 1.2454e-3;
@@ -79,7 +79,7 @@ typedef struct pt100_cfg_s
 
 #define PT100_ADC_AVG_CNT 1
 /**
- * @brief ¿Âµµ ´ÜÀ§ µµ 12.56µµ
+ * @brief ì˜¨ë„ ë‹¨ìœ„ ë„ 12.56ë„
  */
 float read_pt100_temperature(driver_t *driver,uint8_t *err)
 {
@@ -105,7 +105,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   if (cfg->channel == PT100_A)
   {
     voltage = adc_read_single_avg(adc_ch, err, PT100_ADC_AVG_CNT);
-    resistance = voltage;  // ÀÌÃ¤³ÎÀºÀº ÇÏµå¿ş¾î ¼³°è Æ¯¼º»ó ÀúÇ×ÀÌµÊ,°ü·Ã ÀÚ·á Âü°í
+    resistance = voltage;  // ì´ì±„ë„ì€ì€ í•˜ë“œì›¨ì–´ ì„¤ê³„ íŠ¹ì„±ìƒ ì €í•­ì´ë¨,ê´€ë ¨ ìë£Œ ì°¸ê³ 
     temperature = pt100_resistance_to_temperature(resistance);
     return temperature;
   }
@@ -113,7 +113,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   if (cfg->channel == PT100_B)
   {
     voltage = adc_read_single_avg(adc_ch, err, PT100_ADC_AVG_CNT);
-    resistance = voltage;  // ÀÌÃ¤³ÎÀºÀº ÇÏµå¿ş¾î ¼³°è Æ¯¼º»ó ÀúÇ×ÀÌµÊ,°ü·Ã ÀÚ·á Âü°í
+    resistance = voltage;  // ì´ì±„ë„ì€ì€ í•˜ë“œì›¨ì–´ ì„¤ê³„ íŠ¹ì„±ìƒ ì €í•­ì´ë¨,ê´€ë ¨ ìë£Œ ì°¸ê³ 
     temperature = pt100_resistance_to_temperature(resistance);
     return temperature;
   }
@@ -177,13 +177,13 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   sAdval  = adc_read_single_avg(adc_ch, err,10);
 
 
-  //¿©±â¼­ ºÎÅÍ ±âÁ¸ AWS ¿Âµµ ÄÚµåÀÎµ¥ ÀÌÇØ°¡ ¾ÈµÊ.ÀÏ´Ü »ç¿ë
-  //¿øºĞ¼®: sSpanÀº -40,60µµ ADC°ª 
-  sSpan    = fullset - offset;   //ÀúÇ× 1°³´ç ADC°ª ,79%,77%·Î offset %ÃâÃ³ ¸ğ¸§¸§
-  sMinus45 = (int32_t)(((float)sSpan / 38.97) * 0.79);//¿ø ºĞ¼®:38.97= 123.24-84.27
+  //ì—¬ê¸°ì„œ ë¶€í„° ê¸°ì¡´ AWS ì˜¨ë„ ì½”ë“œì¸ë° ì´í•´ê°€ ì•ˆë¨.ì¼ë‹¨ ì‚¬ìš©
+  //ì›ë¶„ì„: sSpanì€ -40,60ë„ ADCê°’ 
+  sSpan    = fullset - offset;   //ì €í•­ 1ê°œë‹¹ ADCê°’ ,79%,77%ë¡œ offset %ì¶œì²˜ ëª¨ë¦„ë¦„
+  sMinus45 = (int32_t)(((float)sSpan / 38.97) * 0.79);//ì› ë¶„ì„:38.97= 123.24-84.27
   sPlus65  = (int32_t)(((float)sSpan / 38.97) * 0.77);
 
-  sSpan   = ((fullset + sMinus45) - (offset - sPlus65));//¹üÀ§¸¦ ´õ ³Ğ°Ô ÁÜ?
+  sSpan   = ((fullset + sMinus45) - (offset - sPlus65));//ë²”ìœ„ë¥¼ ë” ë„“ê²Œ ì¤Œ?
   errTmp = (int32_t)((float)sSpan * 0.05); 
 
 
@@ -192,9 +192,9 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   {
     if(sSpan > 0)
     {
-      x = 40.53 / (float)sSpan;     //40.53= 124.01(62µµ)-83.48(-42µµ),  AD Convertion Value °ªÀ» ÀúÇ× Å×ÀÌºí¿¡ ¸ÂÃã
-      resistance = (float)(sAdval - (offset- sMinus45)) * x + pt100_table[0]; //  ÀúÇ×°ª °Ë»ö ÇÏ±âÀ§ÇØ Àü¾ĞÀ» ÀúÇ×À¸·Î º¯È¯
-      //f´Â ÀúÇ×°ª
+      x = 40.53 / (float)sSpan;     //40.53= 124.01(62ë„)-83.48(-42ë„),  AD Convertion Value ê°’ì„ ì €í•­ í…Œì´ë¸”ì— ë§ì¶¤
+      resistance = (float)(sAdval - (offset- sMinus45)) * x + pt100_table[0]; //  ì €í•­ê°’ ê²€ìƒ‰ í•˜ê¸°ìœ„í•´ ì „ì••ì„ ì €í•­ìœ¼ë¡œ ë³€í™˜
+      //fëŠ” ì €í•­ê°’
       temperature = pt100_resistance_to_temperature(resistance);
     }
     else

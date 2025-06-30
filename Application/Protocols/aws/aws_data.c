@@ -9,7 +9,7 @@
 
 #include "task_measure.h"
 
-kma_data_t g_kma_inst;//½Ç½Ã°£, ¼ø°£ÀÚ·á, Æò±Õ³½ ÀÚ·á
+kma_data_t g_kma_inst;//ì‹¤ì‹œê°„, ìˆœê°„ìžë£Œ, í‰ê· ë‚¸ ìžë£Œ
 kma_data_t g_kma_1min;
 kma_data_t g_kma_10min;
 kma_data_t g_kma_hour;
@@ -23,7 +23,7 @@ kma_data_ex_t g_kma_1Hour_ex;
 rainfall_t g_rainfall;
 sunshine_t g_sunshine;
 
-// ½ÇÁ¦ ¼öÁýµÈ µ¥ÀÌÅÍ¸¦ AWS¿¡¼­ ¿ä±¸ÇÏ´Â ÇüÅÂ·Î ÀúÀåÇØ¾ßÇÑ´Ù.
+// ì‹¤ì œ ìˆ˜ì§‘ëœ ë°ì´í„°ë¥¼ AWSì—ì„œ ìš”êµ¬í•˜ëŠ” í˜•íƒœë¡œ ì €ìž¥í•´ì•¼í•œë‹¤.
 
 #define AWS_CVT_TEMP(x) (x == TEMP_ERR_VAL ? -9999 : (x + 100) * 10)
 #define AWS_CVT_HUMI(x) (x == HUMI_ERR_VAL ? -9999 : (x * 10))
@@ -38,7 +38,7 @@ sunshine_t g_sunshine;
 #define UNUSED_SENSOR_VAL -999
 
     /**
-     * @brief ¼¾¼­ µ¥ÀÌÅÍ¸¦ AWS ÀÚ·áÇüÀ¸·Î º¯È¯È¯
+     * @brief ì„¼ì„œ ë°ì´í„°ë¥¼ AWS ìžë£Œí˜•ìœ¼ë¡œ ë³€í™˜í™˜
      */
     void
     cvt_sensorToAWS(sensor_t *p_sensor, sensor_data_t *p_data, kma_data_t *p_kma)
@@ -46,41 +46,41 @@ sunshine_t g_sunshine;
 
 
 
-  // 1. ±â¿Â (1ºÐ Æò±Õ)  Ç¥Çö ¹üÀ§ 500~1500 [(°üÃø°ª + 100)*100]
+  // 1. ê¸°ì˜¨ (1ë¶„ í‰ê· )  í‘œí˜„ ë²”ìœ„ 500~1500 [(ê´€ì¸¡ê°’ + 100)*100]
   p_kma->temperature = p_sensor[A1_TEMPERATURE].type
                            ? (int16_t)AWS_CVT_TEMP(p_data[A1_TEMPERATURE].data.f)
                            : UNUSED_SENSOR_VAL;
 
-  // 2. Ç³Çâ (1ºÐ Æò±Õ) Ç¥Çö¹üÀ§ ¡æ 1 ¢¦ 3599 (°üÃø°ª ¡¿ 10)
+  // 2. í’í–¥ (1ë¶„ í‰ê· ) í‘œí˜„ë²”ìœ„ â†’ 1 ï½ž 3599 (ê´€ì¸¡ê°’ Ã— 10)
   p_kma->wind_direction_avg =
       p_sensor[A2_WIND_DIRECTION].type
           ? (int16_t)AWS_CVT_WIND_DIRECTION(p_data[A2_WIND_DIRECTION].data.f)
           : UNUSED_SENSOR_VAL;
 
-  // 3. Ç³¼Ó (1ºÐ Æò±Õ) Ç¥Çö¹üÀ§ ¡æ 1 ¢¦ 1000 (°üÃø°ª ¡¿ 10)
+  // 3. í’ì† (1ë¶„ í‰ê· ) í‘œí˜„ë²”ìœ„ â†’ 1 ï½ž 1000 (ê´€ì¸¡ê°’ Ã— 10)
   p_kma->wind_speed_avg = p_sensor[A3_WIND_SPEED].type
                               ? (int16_t)AWS_CVT_WIND_SPEED(p_data[A3_WIND_SPEED].data.f)
                               : UNUSED_SENSOR_VAL;
 
-  // 4. Ç³Çâ (1ºÐ ¼ø°£) Ç¥Çö¹üÀ§ ¡æ 0 ¢¦ 3599 (°üÃø°ª ¡¿ 10)
+  // 4. í’í–¥ (1ë¶„ ìˆœê°„) í‘œí˜„ë²”ìœ„ â†’ 0 ï½ž 3599 (ê´€ì¸¡ê°’ Ã— 10)
 
 
-  // 5. Ç³¼Ó (1ºÐ ¼ø°£) Ç¥Çö¹üÀ§ ¡æ 0 ¢¦ 1000 (°üÃø°ª ¡¿ 10
+  // 5. í’ì† (1ë¶„ ìˆœê°„) í‘œí˜„ë²”ìœ„ â†’ 0 ï½ž 1000 (ê´€ì¸¡ê°’ Ã— 10
 
 
-  // 6. °­¼ö·® (0.5/1.0 mm) Ç¥Çö¹üÀ§ ¡æ 0 ¢¦ 32767 (°üÃø°ª ¡¿ 10)
+  // 6. ê°•ìˆ˜ëŸ‰ (0.5/1.0 mm) í‘œí˜„ë²”ìœ„ â†’ 0 ï½ž 32767 (ê´€ì¸¡ê°’ Ã— 10)
   p_kma->precipitation = p_sensor[A6_RAINFALL_DOT5_1MM].type
                              ? (int16_t)(p_data[A6_RAINFALL_DOT5_1MM].data.i)
                              : UNUSED_SENSOR_VAL;
 
-  // 7. ±â¾Ð (1ºÐ Æò±Õ ÇöÁö ±â¾Ð) Ç¥Çö¹üÀ§ ¡æ 5000 ¢¦ 11000 (°üÃø°ª ¡¿ 10
+  // 7. ê¸°ì•• (1ë¶„ í‰ê·  í˜„ì§€ ê¸°ì••) í‘œí˜„ë²”ìœ„ â†’ 5000 ï½ž 11000 (ê´€ì¸¡ê°’ Ã— 10
   p_kma->pressure = p_sensor[A6_RAINFALL_DOT5_1MM].type
                         ? (int16_t)AWS_CVT_BAROMETER(p_data[A7_PRESSURE].data.f)
                         : UNUSED_SENSOR_VAL;
 
   if (p_sensor[A8_RAIN_PRESENT].type)
   {
-    // 8. °­¼ö À¯¹«
+    // 8. ê°•ìˆ˜ ìœ ë¬´
     if (p_data[A8_RAIN_PRESENT].data.b == true)
     {
       p_kma->precipitation_presence = 10;
@@ -95,214 +95,214 @@ sunshine_t g_sunshine;
     p_kma->precipitation_presence = UNUSED_SENSOR_VAL;
   }
 
-  // 9. Àû¼³  Ç¥Çö¹üÀ§: 0 ~ 4095 (°üÃø°ª * 10)
+  // 9. ì ì„¤  í‘œí˜„ë²”ìœ„: 0 ~ 4095 (ê´€ì¸¡ê°’ * 10)
   p_kma->snowfall = p_sensor[A9_SNOW_DEPTH].type
                         ? (int16_t)AWS_CVT_DEFAULT(p_data[A9_SNOW_DEPTH].data.f)
                         : UNUSED_SENSOR_VAL;
 
-  // 10. »ó´ë½Àµµ (1ºÐ Æò±Õ) Ç¥Çö¹üÀ§: 0 ~ 1000 (°üÃø°ª * 10)
+  // 10. ìƒëŒ€ìŠµë„ (1ë¶„ í‰ê· ) í‘œí˜„ë²”ìœ„: 0 ~ 1000 (ê´€ì¸¡ê°’ * 10)
   p_kma->relative_humidity = p_sensor[A10_RELATIVE_HUMIDITY].type
                                  ? (int16_t)(AWS_CVT_HUMI(p_data[A10_RELATIVE_HUMIDITY].data.f))
                                  : UNUSED_SENSOR_VAL;
 
-  // 11. °­¼ö·® (0.1 mm) Ç¥Çö¹üÀ§ ¡æ 0 ¢¦ 32767 (°üÃø°ª ¡¿ 10)
+  // 11. ê°•ìˆ˜ëŸ‰ (0.1 mm) í‘œí˜„ë²”ìœ„ â†’ 0 ï½ž 32767 (ê´€ì¸¡ê°’ Ã— 10)
   p_kma->precipitation_fine = p_sensor[A11_RAINFALL_DOT1MM].type
                                   ? (int16_t)(AWS_CVT_DEFAULT(p_data[A11_RAINFALL_DOT1MM].data.f))
                                   : UNUSED_SENSOR_VAL;
 
-  // 1. ÀÏ»ç (´©Àû°ª)Ç¥Çö¹üÀ§: 0 ~ 32767 [°üÃø°ª(MJ/m©÷) * 100]
+  // 1. ì¼ì‚¬ (ëˆ„ì ê°’)í‘œí˜„ë²”ìœ„: 0 ~ 32767 [ê´€ì¸¡ê°’(MJ/mÂ²) * 100]
   p_kma->solar_radiation = p_sensor[B1_SOLAR_RADIATION].type
                                ? (int16_t)(p_data[B1_SOLAR_RADIATION].data.f * 100)
                                : UNUSED_SENSOR_VAL;
 
-  // 2. ÀÏÁ¶ (´©Àû ½Ã°£)Ç¥Çö¹üÀ§: 0 ~ 65535 [´©Àû½Ã°£(ÃÊ ´ÜÀ§)]
+  // 2. ì¼ì¡° (ëˆ„ì  ì‹œê°„)í‘œí˜„ë²”ìœ„: 0 ~ 65535 [ëˆ„ì ì‹œê°„(ì´ˆ ë‹¨ìœ„)]
   p_kma->sunshine_duration = p_sensor[B2_SUNSHINE_DURATION].type
                                  ? (int16_t)(p_data[B2_SUNSHINE_DURATION].data.f)
                                  : UNUSED_SENSOR_VAL;
 
-  // 3. Áö¸é¿Âµµ (1ºÐ Æò±Õ)Ç¥Çö¹üÀ§: 500 ~ 2000 [(°üÃø°ª + 100) * 10]
+  // 3. ì§€ë©´ì˜¨ë„ (1ë¶„ í‰ê· )í‘œí˜„ë²”ìœ„: 500 ~ 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
   p_kma->surface_temperature = p_sensor[B3_GROUND_TEMPERATURE].type
                                    ? (int16_t)AWS_CVT_G(p_data[B3_GROUND_TEMPERATURE].data.f)
                                    : UNUSED_SENSOR_VAL;
 
-  // 4. ÃÊ»ó¿Âµµ (1ºÐ Æò±Õ)Ç¥Çö¹üÀ§: 500 ~ 2000 [(°üÃø°ª + 100) * 10]
+  // 4. ì´ˆìƒì˜¨ë„ (1ë¶„ í‰ê· )í‘œí˜„ë²”ìœ„: 500 ~ 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
   p_kma->grass_temperature = p_sensor[B4_SURFACE_TEMPERATURE].type
                                  ? (int16_t)AWS_CVT_G(p_data[B4_SURFACE_TEMPERATURE].data.f * 1000)
                                  : UNUSED_SENSOR_VAL;
 
-  // 5. ÁöÁß¿Âµµ (5cm, 1ºÐ Æò±Õ)
+  // 5. ì§€ì¤‘ì˜¨ë„ (5cm, 1ë¶„ í‰ê· )
   p_kma->soil_temperature_5cm = p_sensor[B5_SOIL_TEMPERATURE_5CM].type
                                     ? (int16_t)AWS_CVT_G(p_data[B5_SOIL_TEMPERATURE_5CM].data.f)
                                     : UNUSED_SENSOR_VAL;
 
-  // 6. ÁöÁß¿Âµµ (10cm, 1ºÐ Æò±Õ)
+  // 6. ì§€ì¤‘ì˜¨ë„ (10cm, 1ë¶„ í‰ê· )
   p_kma->soil_temperature_10cm = p_sensor[B6_SOIL_TEMPERATURE_10CM].type
                                      ? (int16_t)AWS_CVT_G(p_data[B6_SOIL_TEMPERATURE_10CM].data.f)
                                      : UNUSED_SENSOR_VAL;
 
-  // 7. ÁöÁß¿Âµµ (20cm, 1ºÐ Æò±Õ)
+  // 7. ì§€ì¤‘ì˜¨ë„ (20cm, 1ë¶„ í‰ê· )
   p_kma->soil_temperature_20cm = p_sensor[B7_SOIL_TEMPERATURE_20CM].type
                                      ? (int16_t)AWS_CVT_G(p_data[B7_SOIL_TEMPERATURE_20CM].data.f)
                                      : UNUSED_SENSOR_VAL;
 
-  // 8. ÁöÁß¿Âµµ (30cm, 1ºÐ Æò±Õ)
+  // 8. ì§€ì¤‘ì˜¨ë„ (30cm, 1ë¶„ í‰ê· )
   p_kma->soil_temperature_30cm = p_sensor[B8_SOIL_TEMPERATURE_30CM].type
                                      ? (int16_t)AWS_CVT_G(p_data[B8_SOIL_TEMPERATURE_30CM].data.f)
                                      : UNUSED_SENSOR_VAL;
 
-  // 9. ÁöÁß¿Âµµ (50cm, 1ºÐ Æò±Õ)
+  // 9. ì§€ì¤‘ì˜¨ë„ (50cm, 1ë¶„ í‰ê· )
   p_kma->soil_temperature_50cm = p_sensor[B9_SOIL_TEMPERATURE_50CM].type
                                      ? (int16_t)AWS_CVT_G(p_data[B9_SOIL_TEMPERATURE_50CM].data.f)
                                      : UNUSED_SENSOR_VAL;
 
-  // 10. ÁöÁß¿Âµµ (1.0m, 1ºÐ Æò±Õ)
+  // 10. ì§€ì¤‘ì˜¨ë„ (1.0m, 1ë¶„ í‰ê· )
   p_kma->soil_temperature_1m = p_sensor[B10_SOIL_TEMPERATURE_100CM].type
                                    ? (int16_t)AWS_CVT_G(p_data[B10_SOIL_TEMPERATURE_100CM].data.f)
                                    : UNUSED_SENSOR_VAL;
 
-  // 11. ÁöÁß¿Âµµ (1.5m, 1ºÐ Æò±Õ)
+  // 11. ì§€ì¤‘ì˜¨ë„ (1.5m, 1ë¶„ í‰ê· )
   p_kma->soil_temperature_1_5m = p_sensor[B11_SOIL_TEMPERATURE_150CM].type
                                      ? (int16_t)AWS_CVT_G(p_data[B11_SOIL_TEMPERATURE_150CM].data.f)
                                      : UNUSED_SENSOR_VAL;
 
-  // 12. ÁöÁß¿Âµµ (3.0m, 1ºÐ Æò±Õ)
+  // 12. ì§€ì¤‘ì˜¨ë„ (3.0m, 1ë¶„ í‰ê· )
   p_kma->soil_temperature_3m = p_sensor[B12_SOIL_TEMPERATURE_300CM].type
                                    ? (int16_t)AWS_CVT_G(p_data[B12_SOIL_TEMPERATURE_300CM].data.f)
                                    : UNUSED_SENSOR_VAL;
 
-  // 13. ÁöÁß¿Âµµ (5.0m, 1ºÐ Æò±Õ)
+  // 13. ì§€ì¤‘ì˜¨ë„ (5.0m, 1ë¶„ í‰ê· )
   p_kma->soil_temperature_5m = p_sensor[B13_SOIL_TEMPERATURE_500CM].type
                                    ? (int16_t)AWS_CVT_G(p_data[B13_SOIL_TEMPERATURE_500CM].data.f)
                                    : UNUSED_SENSOR_VAL;
 
-  // 1. 1Ãþ ¿î°í (1ºÐ Æò±Õ)Ç¥Çö¹üÀ§: 0 ~ 8000 (°üÃø°ª[m])
+  // 1. 1ì¸µ ìš´ê³  (1ë¶„ í‰ê· )í‘œí˜„ë²”ìœ„: 0 ~ 8000 (ê´€ì¸¡ê°’[m])
   p_kma->cloud_height_1st =
       p_sensor[C1_CLOUD_BASE1].type ? (int16_t)(p_data[C1_CLOUD_BASE1].data.i) : UNUSED_SENSOR_VAL;
 
-  // 2. 2Ãþ ¿î°í (1ºÐ Æò±Õ)Ç¥Çö¹üÀ§: 0 ~ 8000 (°üÃø°ª[m])
+  // 2. 2ì¸µ ìš´ê³  (1ë¶„ í‰ê· )í‘œí˜„ë²”ìœ„: 0 ~ 8000 (ê´€ì¸¡ê°’[m])
   p_kma->cloud_height_2nd =
       p_sensor[C2_CLOUD_BASE2].type ? (int16_t)(p_data[C2_CLOUD_BASE2].data.i) : UNUSED_SENSOR_VAL;
 
-  // 3. 3Ãþ ¿î°í (1ºÐ Æò±Õ)Ç¥Çö¹üÀ§: 0 ~ 8000 (°üÃø°ª[m])
+  // 3. 3ì¸µ ìš´ê³  (1ë¶„ í‰ê· )í‘œí˜„ë²”ìœ„: 0 ~ 8000 (ê´€ì¸¡ê°’[m])
   p_kma->cloud_height_3rd =
       p_sensor[C3_CLOUD_BASE3].type ? (int16_t)(p_data[C3_CLOUD_BASE3].data.i) : UNUSED_SENSOR_VAL;
 
-  // 4. ¿î·® Ç¥Çö¹üÀ§: 0 ~ 10 (°üÃø°ª)
+  // 4. ìš´ëŸ‰ í‘œí˜„ë²”ìœ„: 0 ~ 10 (ê´€ì¸¡ê°’)
   p_kma->cloud_amount =
       p_sensor[C4_CLOUD_COVER].type ? (int16_t)(p_data[C4_CLOUD_COVER].data.i) : UNUSED_SENSOR_VAL;
 
-  // 5. ½ÃÁ¤ (1ºÐ Æò±Õ)Ç¥Çö¹üÀ§: 0 ~ 50000 (°üÃø°ª[m])
+  // 5. ì‹œì • (1ë¶„ í‰ê· )í‘œí˜„ë²”ìœ„: 0 ~ 50000 (ê´€ì¸¡ê°’[m])
   p_kma->visibility =
       p_sensor[C5_VISIBILITY].type ? (int16_t)(p_data[C5_VISIBILITY].data.i) : UNUSED_SENSOR_VAL;
 
-  // 6. PM10 (ºÐÁø³óµµ)Ç¥Çö¹üÀ§: 1 ~ 3599 (°üÃø°ª [¥ìg/m©ø] ¡¿ 10)
+  // 6. PM10 (ë¶„ì§„ë†ë„)í‘œí˜„ë²”ìœ„: 1 ~ 3599 (ê´€ì¸¡ê°’ [Î¼g/mÂ³] Ã— 10)
   p_kma->pm10_concentration =
       p_sensor[C6_PM10].type ? (int16_t)(p_data[C6_PM10].data.f * 10) : UNUSED_SENSOR_VAL;
 
-  // 7. PM2.5 (ºÐÁø³óµµ)Ç¥Çö¹üÀ§: 1 ~ 3599 (°üÃø°ª [¥ìg/m©ø] ¡¿ 10)
+  // 7. PM2.5 (ë¶„ì§„ë†ë„)í‘œí˜„ë²”ìœ„: 1 ~ 3599 (ê´€ì¸¡ê°’ [Î¼g/mÂ³] Ã— 10)
   p_kma->pm25_concentration =
       p_sensor[C7_PM2DOT5].type ? (int16_t)(p_data[C7_PM2DOT5].data.f * 1000) : UNUSED_SENSOR_VAL;
 
-  // 8. ¼øº¹»ç (1ºÐ Æò±Õ)
+  // 8. ìˆœë³µì‚¬ (1ë¶„ í‰ê· )
   p_kma->net_radiation =
       p_sensor[C8_NET_RADIATION].type
           ? (int16_t)(p_data[C8_NET_RADIATION].data.f * 1000)
-          : UNUSED_SENSOR_VAL;  //  Ç¥Çö¹üÀ§: 0 ~ 32767 (°üÃø°ª[W/m©÷] + 1000) ¡¿ 10
+          : UNUSED_SENSOR_VAL;  //  í‘œí˜„ë²”ìœ„: 0 ~ 32767 (ê´€ì¸¡ê°’[W/mÂ²] + 1000) Ã— 10
 
-  // 9. ÀüÃµº¹»ç (1ºÐ Æò±Õ)
+  // 9. ì „ì²œë³µì‚¬ (1ë¶„ í‰ê· )
   p_kma->total_radiation =
       p_sensor[C9_TOTAL_RADIATION].type
           ? (int16_t)(p_data[C9_TOTAL_RADIATION].data.f * 1000)
-          : UNUSED_SENSOR_VAL;  //  Ç¥Çö¹üÀ§: 0 ~ 32767 (°üÃø°ª[W/m©÷] + 1000) ¡¿ 10
+          : UNUSED_SENSOR_VAL;  //  í‘œí˜„ë²”ìœ„: 0 ~ 32767 (ê´€ì¸¡ê°’[W/mÂ²] + 1000) Ã— 10
 
-  // 10. ¹Ý»çº¹»ç (1ºÐ Æò±Õ)
+  // 10. ë°˜ì‚¬ë³µì‚¬ (1ë¶„ í‰ê· )
   p_kma->reflected_radiation =
       p_sensor[C10_REFLECTED_RADIATION].type
           ? (int16_t)(p_data[C10_REFLECTED_RADIATION].data.f * 1000)
-          : UNUSED_SENSOR_VAL;  // »ç Ç¥Çö¹üÀ§: 0 ~ 32767 (°üÃø°ª[W/m©÷] + 1000) ¡¿ 10
+          : UNUSED_SENSOR_VAL;  // ì‚¬ í‘œí˜„ë²”ìœ„: 0 ~ 32767 (ê´€ì¸¡ê°’[W/mÂ²] + 1000) Ã— 10
 
-  // 11. Á÷´Þº¹»ç (1ºÐ Æò±Õ)
+  // 11. ì§ë‹¬ë³µì‚¬ (1ë¶„ í‰ê· )
   p_kma->direct_radiation =
       p_sensor[C11_DIRECT_SOLAR].type
           ? (int16_t)(p_data[C11_DIRECT_SOLAR].data.f * 1000)
-          : UNUSED_SENSOR_VAL;  //  Ç¥Çö¹üÀ§: 0 ~ 32767 (°üÃø°ª[W/m©÷] + 1000) ¡¿ 10
+          : UNUSED_SENSOR_VAL;  //  í‘œí˜„ë²”ìœ„: 0 ~ 32767 (ê´€ì¸¡ê°’[W/mÂ²] + 1000) Ã— 10
 
-  // 12. ÇöÀç ÀÏ±â
+  // 12. í˜„ìž¬ ì¼ê¸°
   p_kma->current_weather = p_sensor[C12_CURRENT_WEATHER].type
                                ? (int16_t)(p_data[C12_CURRENT_WEATHER].data.f * 1000)
-                               : UNUSED_SENSOR_VAL;  //  Ç¥Çö¹üÀ§: 0 ~ 99 (°üÃø°ª)
+                               : UNUSED_SENSOR_VAL;  //  í‘œí˜„ë²”ìœ„: 0 ~ 99 (ê´€ì¸¡ê°’)
 
-  // 1. Åä¾ç¼öºÐ (10 cm)
+  // 1. í† ì–‘ìˆ˜ë¶„ (10 cm)
   p_kma->soil_moisture_10cm = p_sensor[N1_SOIL_MOISTURE_10CM].type
                                   ? (int16_t)(p_data[N1_SOIL_MOISTURE_10CM].data.f * 1000)
-                                  : UNUSED_SENSOR_VAL;  //  Ç¥Çö¹üÀ§: 0 ~ 1000 (°üÃø°ª * 10)
+                                  : UNUSED_SENSOR_VAL;  //  í‘œí˜„ë²”ìœ„: 0 ~ 1000 (ê´€ì¸¡ê°’ * 10)
 
-  // 2. Åä¾ç¼öºÐ (20 cm)
+  // 2. í† ì–‘ìˆ˜ë¶„ (20 cm)
   p_kma->soil_moisture_20cm = p_sensor[N2_SOIL_MOISTURE_20CM].type
                                   ? (int16_t)(p_data[N2_SOIL_MOISTURE_20CM].data.f * 1000)
-                                  : UNUSED_SENSOR_VAL;  // Ç¥Çö¹üÀ§: 0 ~ 1000 (°üÃø°ª * 10)
+                                  : UNUSED_SENSOR_VAL;  // í‘œí˜„ë²”ìœ„: 0 ~ 1000 (ê´€ì¸¡ê°’ * 10)
 
-  // 3. Åä¾ç¼öºÐ (30 cm)
+  // 3. í† ì–‘ìˆ˜ë¶„ (30 cm)
   p_kma->soil_moisture_30cm = p_sensor[N3_SOIL_MOISTURE_30CM].type
                                   ? (int16_t)(p_data[N3_SOIL_MOISTURE_30CM].data.f * 1000)
-                                  : UNUSED_SENSOR_VAL;  //  Ç¥Çö¹üÀ§: 0 ~ 1000 (°üÃø°ª * 10)
+                                  : UNUSED_SENSOR_VAL;  //  í‘œí˜„ë²”ìœ„: 0 ~ 1000 (ê´€ì¸¡ê°’ * 10)
 
-  // 4. Åä¾ç¼öºÐ (50 cm)
+  // 4. í† ì–‘ìˆ˜ë¶„ (50 cm)
   p_kma->soil_moisture_50cm = p_sensor[N4_SOIL_MOISTURE_50CM].type
                                   ? (int16_t)(p_data[N4_SOIL_MOISTURE_50CM].data.f * 1000)
-                                  : UNUSED_SENSOR_VAL;  // Ç¥Çö¹üÀ§: 0 ~ 1000 (°üÃø°ª * 10)
+                                  : UNUSED_SENSOR_VAL;  // í‘œí˜„ë²”ìœ„: 0 ~ 1000 (ê´€ì¸¡ê°’ * 10)
 
-  // 5. Á¶µµ·® (1ºÐ Æò±Õ)
+  // 5. ì¡°ë„ëŸ‰ (1ë¶„ í‰ê· )
   p_kma->illuminance = p_sensor[N5_ILLUMINANCE].type
                            ? (int16_t)(p_data[N5_ILLUMINANCE].data.f * 1000)
-                           : UNUSED_SENSOR_VAL;  // Ç¥Çö¹üÀ§: 0 ~ 32767 (°üÃø°ª * 100)
+                           : UNUSED_SENSOR_VAL;  // í‘œí˜„ë²”ìœ„: 0 ~ 32767 (ê´€ì¸¡ê°’ * 100)
 
-  // 6. Ç³¼Ó (1.5 m, 1ºÐ Æò±Õ)
+  // 6. í’ì† (1.5 m, 1ë¶„ í‰ê· )
   p_kma->wind_speed_1_5m = p_sensor[N6_WIND_VELOCITY_150CM].type
                                ? (int16_t)(p_data[N6_WIND_VELOCITY_150CM].data.f * 1000)
-                               : UNUSED_SENSOR_VAL;  //  Ç¥Çö¹üÀ§: 0 ~ 1000 (°üÃø°ª * 10)
+                               : UNUSED_SENSOR_VAL;  //  í‘œí˜„ë²”ìœ„: 0 ~ 1000 (ê´€ì¸¡ê°’ * 10)
 
-  // 7. Ç³¼Ó (4.0 m, 1ºÐ Æò±Õ)
+  // 7. í’ì† (4.0 m, 1ë¶„ í‰ê· )
   p_kma->wind_speed_4m = p_sensor[N7_WIND_VELOCITY_400CM].type
                              ? (int16_t)(p_data[N7_WIND_VELOCITY_400CM].data.f * 1000)
-                             : UNUSED_SENSOR_VAL;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå),
-                                                   // Ç¥Çö¹üÀ§: 0 ~ 1000 (°üÃø°ª * 10)
+                             : UNUSED_SENSOR_VAL;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ),
+                                                   // í‘œí˜„ë²”ìœ„: 0 ~ 1000 (ê´€ì¸¡ê°’ * 10)
 
-  // 8. ¼ø°£ Ç³¼Ó (1.5 m)
+  // 8. ìˆœê°„ í’ì† (1.5 m)
   p_kma->instant_wind_speed_1_5m =
       p_sensor[N8_INSTANT_VELOCITY_150CM].type
           ? (int16_t)(p_data[N8_INSTANT_VELOCITY_150CM].data.f * 1000)
-          : UNUSED_SENSOR_VAL;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                                // (°üÃø°ª * 10)
+          : UNUSED_SENSOR_VAL;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                                // (ê´€ì¸¡ê°’ * 10)
 
-  // 9. ¼ø°£ Ç³¼Ó (4.0 m)
+  // 9. ìˆœê°„ í’ì† (4.0 m)
   p_kma->instant_wind_speed_4m =
       p_sensor[N9_INSTANT_VELOCITY_400CM].type
           ? (int16_t)(p_data[N9_INSTANT_VELOCITY_400CM].data.f * 1000)
-          : UNUSED_SENSOR_VAL;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                                // (°üÃø°ª * 10)
+          : UNUSED_SENSOR_VAL;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                                // (ê´€ì¸¡ê°’ * 10)
 
-  // 10. ±â¿Â (0.5 m)
+  // 10. ê¸°ì˜¨ (0.5 m)
   p_kma->temperature_0_5m =
       p_sensor[N10_AIR_TEMPERATURE_50CM].type
           ? (int16_t)(p_data[N10_AIR_TEMPERATURE_50CM].data.f * 1000)
-          : UNUSED_SENSOR_VAL;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                // 1500 [(°üÃø°ª + 100) * 10]
+          : UNUSED_SENSOR_VAL;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                // 1500 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 11. ±â¿Â (4.0 m)
+  // 11. ê¸°ì˜¨ (4.0 m)
   p_kma->temperature_4m = p_sensor[N11_AIR_TEMPERATURE_400CM].type
                               ? (int16_t)(p_data[N11_AIR_TEMPERATURE_400CM].data.f * 1000)
-                              : UNUSED_SENSOR_VAL;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå),
-                                                    // Ç¥Çö¹üÀ§: 500 ~ 1500 [(°üÃø°ª + 100) * 10]
+                              : UNUSED_SENSOR_VAL;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ),
+                                                    // í‘œí˜„ë²”ìœ„: 500 ~ 1500 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 12. ½Àµµ (0.5 m, 1ºÐ Æò±Õ)// »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-  // (°üÃø°ª * 10)
+  // 12. ìŠµë„ (0.5 m, 1ë¶„ í‰ê· )// ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+  // (ê´€ì¸¡ê°’ * 10)
   p_kma->humidity_0_5m = p_sensor[N12_HUMIDITY_50CM].type
                              ? (int16_t)(p_data[N12_HUMIDITY_50CM].data.f * 10)
                              : UNUSED_SENSOR_VAL;
 
-  // 13. ½Àµµ (4.0 m, 1ºÐ Æò±Õ) // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-  // (°üÃø°ª * 10)
+  // 13. ìŠµë„ (4.0 m, 1ë¶„ í‰ê· ) // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+  // (ê´€ì¸¡ê°’ * 10)
   p_kma->humidity_4m = p_sensor[N13_HUMIDITY_400CM].type
                            ? (int16_t)(p_data[N13_HUMIDITY_400CM].data.f * 10)
                            : UNUSED_SENSOR_VAL;

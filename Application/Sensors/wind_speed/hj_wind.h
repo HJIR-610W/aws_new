@@ -5,7 +5,7 @@
 #include "dev_io.h"
 #include "wind_define.h"
 
-#define HJ_WIND 100  // Ç³Çâ Ç³¼Ó °°ÀÌ Ã³¸®
+#define HJ_WIND 100  // í’í–¥ í’ì† ê°™ì´ ì²˜ë¦¬
 
 #define HJ_WIND_CHANNEL_SPEED 1
 #define HJ_WIND_CHANNEL_DIRECTION 2

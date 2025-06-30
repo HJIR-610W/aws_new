@@ -78,7 +78,7 @@ const char *html_source1 =   "<!DOCTYPE html>"
     "      margin-top: 10px;"
     "    }"
     "    .user-message {"
-    "      color: green;" /* »ç¿ëÀÚ ÀÔ·ÂÀ» ³ì»öÀ¸·Î Ç¥½Ã */
+    "      color: green;" /* ì‚¬ìš©ì ì…ë ¥ì„ ë…¹ìƒ‰ìœ¼ë¡œ í‘œì‹œ */
     "    }"
     "  </style>"
     "</head>"
@@ -90,7 +90,7 @@ const char *html_source1 =   "<!DOCTYPE html>"
     "      <input type=\"file\" id=\"file-input\">"
     "      <button id=\"send-file\">Send File</button>"
     "    </div>"
-    "    <progress id=\"progress-bar\" value=\"0\" max=\"100\"></progress>" /* Progress Bar Ãß°¡ */
+    "    <progress id=\"progress-bar\" value=\"0\" max=\"100\"></progress>" /* Progress Bar ì¶”ê°€ */
     "  </div>"
     "  <script>"
     "    const consoleDiv = document.getElementById('console');"
@@ -118,7 +118,7 @@ const char *html_source2= "    socket.onopen = () => {"
     "    inputField.addEventListener('keypress', (event) => {"
     "      if (event.key === 'Enter' && inputField.value.trim() !== '') {"
     "        const command = inputField.value.trim();"
-    "        appendToConsole('<span class=\"user-message\">USER: ' + command + '</span>');" // ³ì»ö ½ºÅ¸ÀÏ Àû¿ë"
+    "        appendToConsole('<span class=\"user-message\">USER: ' + command + '</span>');" // ë…¹ìƒ‰ ìŠ¤íƒ€ì¼ ì ìš©"
     "        socket.send(command);"
     "        inputField.value = '';"
     "      }"
@@ -169,7 +169,7 @@ const char *html_source2= "    socket.onopen = () => {"
     ""
     "    function appendToConsole(message) {"
     "      const messageDiv = document.createElement('div');"
-    "      messageDiv.innerHTML  = message;" // HTML ÅÂ±× ÇØ¼®"
+    "      messageDiv.innerHTML  = message;" // HTML íƒœê·¸ í•´ì„"
     "      consoleDiv.appendChild(messageDiv);"
     "      consoleDiv.scrollTop = consoleDiv.scrollHeight;"
     "    }"
@@ -189,7 +189,7 @@ const char *websocket_handshake_response =
 
 typedef enum opcode_e
 {
-  eOPCODE_CONTINUATION,//°è¼Ó ÇÁ·¹ÀÓ
+  eOPCODE_CONTINUATION,//ê³„ì† í”„ë ˆì„
   eOPCODE_TEXT_FRAME,
   eOPCODE_BINARY_FRAME,
   eOPCODE_CLOSE_FRAME,
@@ -198,7 +198,7 @@ typedef enum opcode_e
 }eOPCODE_t;
 
 
-// Èò»ö 16x16 ICO ÆÄÀÏ µ¥ÀÌÅÍ
+// í°ìƒ‰ 16x16 ICO íŒŒì¼ ë°ì´í„°
 const uint8_t favicon_ico[] = {
     0x00, 0x00, 0x01, 0x00, // ICONDIR: Reserved, Type, Count
     0x01, 0x00, 0x10, 0x10, // ICONDIR: Width, Height
@@ -272,34 +272,34 @@ void generate_websocket_accept_key(const char *key, char *accept_key) {
 int extract_sec_websocket_key(const char *request, char *key_buffer, size_t buffer_size) {
     const char *key_start = strstr(request, "Sec-WebSocket-Key: ");
     if (!key_start) {
-        // Å°¿öµå°¡ ¾øÀ» °æ¿ì
+        // í‚¤ì›Œë“œê°€ ì—†ì„ ê²½ìš°
         return -1;
     }
 
-    // "Sec-WebSocket-Key: "ÀÇ ±æÀÌ (Å° °ªÀÇ ½ÃÀÛ À§Ä¡·Î ÀÌµ¿)
+    // "Sec-WebSocket-Key: "ì˜ ê¸¸ì´ (í‚¤ ê°’ì˜ ì‹œì‘ ìœ„ì¹˜ë¡œ ì´ë™)
     key_start += strlen("Sec-WebSocket-Key: ");
 
-    // Å°ÀÇ ³¡À» Ã£±â (CRLF ±âÁØ)
+    // í‚¤ì˜ ëì„ ì°¾ê¸° (CRLF ê¸°ì¤€)
     const char *key_end = strstr(key_start, "\r\n");
     if (!key_end) {
-        // ³¡À» Ã£Áö ¸øÇßÀ» °æ¿ì
+        // ëì„ ì°¾ì§€ ëª»í–ˆì„ ê²½ìš°
         return -1;
     }
 
-    // Å°ÀÇ ±æÀÌ °è»ê
+    // í‚¤ì˜ ê¸¸ì´ ê³„ì‚°
     size_t key_length = key_end - key_start;
 
-    // ¹öÆÛ Å©±â °Ë»ç
+    // ë²„í¼ í¬ê¸° ê²€ì‚¬
     if (key_length >= buffer_size) {
-        // ¹öÆÛ°¡ ³Ê¹« ÀÛ¾Æ¼­ Å°¸¦ º¹»çÇÒ ¼ö ¾øÀ½
+        // ë²„í¼ê°€ ë„ˆë¬´ ì‘ì•„ì„œ í‚¤ë¥¼ ë³µì‚¬í•  ìˆ˜ ì—†ìŒ
         return -1;
     }
 
-    // Å° °ªÀ» ¹öÆÛ·Î º¹»ç
+    // í‚¤ ê°’ì„ ë²„í¼ë¡œ ë³µì‚¬
     strncpy(key_buffer, key_start, key_length);
     key_buffer[key_length] = '\0'; // null-terminate
 
-    return 0; // ¼º°ø
+    return 0; // ì„±ê³µ
 }
 
 
@@ -309,39 +309,39 @@ int extract_sec_websocket_key(const char *request, char *key_buffer, size_t buff
 
 void websocket_send_data(int conn, const char *message) {
 
-    char buffer[SEND_DATA_BUFF_SIZE]; // °íÁ¤ Å©±â ¹öÆÛ
+    char buffer[SEND_DATA_BUFF_SIZE]; // ê³ ì • í¬ê¸° ë²„í¼
     size_t message_len = strlen(message);
-    size_t header_len = 2; // ±âº» Çì´õ ±æÀÌ
+    size_t header_len = 2; // ê¸°ë³¸ í—¤ë” ê¸¸ì´
 
-    size_t sent_bytes = 0; // ÀÌ¹Ì º¸³½ ¹ÙÀÌÆ® ¼ö
+    size_t sent_bytes = 0; // ì´ë¯¸ ë³´ë‚¸ ë°”ì´íŠ¸ ìˆ˜
 
     while (sent_bytes < message_len) {
-        size_t remaining = message_len - sent_bytes; // ³²Àº µ¥ÀÌÅÍ Å©±â
+        size_t remaining = message_len - sent_bytes; // ë‚¨ì€ ë°ì´í„° í¬ê¸°
         size_t payload_size = (remaining > (SEND_DATA_BUFF_SIZE - 10)) ? (SEND_DATA_BUFF_SIZE - 10) : remaining;
 
-        header_len = 2; // ±âº» Çì´õ ÃÊ±âÈ­
-        buffer[0] = (sent_bytes + payload_size < message_len) ? 0x01 : 0x81; // FIN ÇÃ·¡±× ¼³Á¤
+        header_len = 2; // ê¸°ë³¸ í—¤ë” ì´ˆê¸°í™”
+        buffer[0] = (sent_bytes + payload_size < message_len) ? 0x01 : 0x81; // FIN í”Œë˜ê·¸ ì„¤ì •
 
-        // Payload Length Ã³¸®
+        // Payload Length ì²˜ë¦¬
         if (payload_size <= 125) {
-            buffer[1] = payload_size; // 7ºñÆ® ±æÀÌ
+            buffer[1] = payload_size; // 7ë¹„íŠ¸ ê¸¸ì´
         } else if (payload_size <= 65535) {
-            buffer[1] = 126; // 2¹ÙÀÌÆ®·Î ±æÀÌ¸¦ Ç¥½Ã
-            buffer[2] = (payload_size >> 8) & 0xFF; // »óÀ§ ¹ÙÀÌÆ®
-            buffer[3] = payload_size & 0xFF;        // ÇÏÀ§ ¹ÙÀÌÆ®
-            header_len = 4; // 2¹ÙÀÌÆ® Ãß°¡µÊ
+            buffer[1] = 126; // 2ë°”ì´íŠ¸ë¡œ ê¸¸ì´ë¥¼ í‘œì‹œ
+            buffer[2] = (payload_size >> 8) & 0xFF; // ìƒìœ„ ë°”ì´íŠ¸
+            buffer[3] = payload_size & 0xFF;        // í•˜ìœ„ ë°”ì´íŠ¸
+            header_len = 4; // 2ë°”ì´íŠ¸ ì¶”ê°€ë¨
         } else {
-            buffer[1] = 127; // 8¹ÙÀÌÆ®·Î ±æÀÌ¸¦ Ç¥½Ã
+            buffer[1] = 127; // 8ë°”ì´íŠ¸ë¡œ ê¸¸ì´ë¥¼ í‘œì‹œ
             for (int i = 0; i < 8; i++) {
-                buffer[2 + i] = (payload_size >> (8 * (7 - i))) & 0xFF; // 8¹ÙÀÌÆ® ±æÀÌ ¼³Á¤
+                buffer[2 + i] = (payload_size >> (8 * (7 - i))) & 0xFF; // 8ë°”ì´íŠ¸ ê¸¸ì´ ì„¤ì •
             }
-            header_len = 10; // 8¹ÙÀÌÆ® Ãß°¡µÊ
+            header_len = 10; // 8ë°”ì´íŠ¸ ì¶”ê°€ë¨
         }
 
-        // ¸Ş½ÃÁö º¹»ç
+        // ë©”ì‹œì§€ ë³µì‚¬
         memcpy(&buffer[header_len], &message[sent_bytes], payload_size);
 
-        // µ¥ÀÌÅÍ Àü¼Û
+        // ë°ì´í„° ì „ì†¡
         size_t total_len = header_len + payload_size;
         ssize_t len = send(conn, buffer, total_len, 0);
 
@@ -350,7 +350,7 @@ void websocket_send_data(int conn, const char *message) {
             return;
         }
 
-        sent_bytes += payload_size; // º¸³½ ¹ÙÀÌÆ® ´©Àû
+        sent_bytes += payload_size; // ë³´ë‚¸ ë°”ì´íŠ¸ ëˆ„ì 
     }
 }
 
@@ -372,7 +372,7 @@ void handle_websocket_handshake(int conn, const char *request)
 
 int decode_websocket_frame(int conn, uint8_t *output, size_t outputSize, size_t *payload_length,uint8_t *op)
 {
-  uint8_t header[14];    // WebSocket Çì´õ ÃÖ´ë Å©±â (ÃÖ´ë 14¹ÙÀÌÆ®)
+  uint8_t header[14];    // WebSocket í—¤ë” ìµœëŒ€ í¬ê¸° (ìµœëŒ€ 14ë°”ì´íŠ¸)
   size_t header_length = 0;
 
   uint8_t fin ;
@@ -384,11 +384,11 @@ int decode_websocket_frame(int conn, uint8_t *output, size_t outputSize, size_t 
   uint8_t init=1;
   do
   {
-    // 1. Çì´õ ¼ö½Å
+    // 1. í—¤ë” ìˆ˜ì‹ 
     int ret = recv(conn, &header[0], 2,0);
     if (ret <= 0)
     {
-      return -1;  // ¿À·ù ¹ß»ı
+      return -1;  // ì˜¤ë¥˜ ë°œìƒ
     }
     header_length += ret;
 
@@ -405,13 +405,13 @@ int decode_websocket_frame(int conn, uint8_t *output, size_t outputSize, size_t 
     *op = opcode;
     }
     
-    // Close Frame Ã³¸®
+    // Close Frame ì²˜ë¦¬
     if (opcode == 0x8) 
     {  // Close Frame
-       return -1;  // ¿¬°á Á¾·á¸¦ ³ªÅ¸³¿
+       return -1;  // ì—°ê²° ì¢…ë£Œë¥¼ ë‚˜íƒ€ëƒ„
     }
 
-    // 3. Extended Payload Length Ã³¸®
+    // 3. Extended Payload Length ì²˜ë¦¬
     if (length == 126)
     {
        int ret = recv(conn, &header[2], 2,0);
@@ -443,7 +443,7 @@ int decode_websocket_frame(int conn, uint8_t *output, size_t outputSize, size_t 
 
 
 
-    // 4. Masking Key Ã³¸®
+    // 4. Masking Key ì²˜ë¦¬
     uint8_t mask_key[4] = {0};
     if (mask)
     {
@@ -458,7 +458,7 @@ int decode_websocket_frame(int conn, uint8_t *output, size_t outputSize, size_t 
         offset += 4;
     }
 
-    // 5. Payload µ¥ÀÌÅÍ ¼ö½Å (Å©±â Á¦ÇÑ Àû¿ë)
+    // 5. Payload ë°ì´í„° ìˆ˜ì‹  (í¬ê¸° ì œí•œ ì ìš©)
     size_t total_received = 0;
     size_t to_read = length > outputSize ? outputSize : length;
 
@@ -466,22 +466,22 @@ int decode_websocket_frame(int conn, uint8_t *output, size_t outputSize, size_t 
       
     }
 while (total_received < to_read) {
-    // ÀĞ¾î¾ß ÇÒ Å©±â °è»ê
+    // ì½ì–´ì•¼ í•  í¬ê¸° ê³„ì‚°
     size_t chunk_size = (to_read - total_received) > 1024 ? 1024 : (to_read - total_received);
 
-    // µ¥ÀÌÅÍ¸¦ ÀĞÀ½
+    // ë°ì´í„°ë¥¼ ì½ìŒ
     int ret = recv(conn, &output[total_payload_len+total_received], chunk_size, 0);
     if (ret <= 0) {
-        // ¼ÒÄÏ ¿À·ù Ã³¸®
+        // ì†Œì¼“ ì˜¤ë¥˜ ì²˜ë¦¬
       //  perror("Socket read error (payload)");
-        return -1;  // µ¥ÀÌÅÍ ¼ö½Å ½ÇÆĞ
+        return -1;  // ë°ì´í„° ìˆ˜ì‹  ì‹¤íŒ¨
     }
 
-    total_received += ret; // ¼ö½ÅµÈ ¹ÙÀÌÆ®¸¦ ´©Àû
+    total_received += ret; // ìˆ˜ì‹ ëœ ë°”ì´íŠ¸ë¥¼ ëˆ„ì 
 }
 
 
-    // Ãß°¡ µ¥ÀÌÅÍ¸¦ ¹«½ÃÇÏ°í -2 ¹İÈ¯
+    // ì¶”ê°€ ë°ì´í„°ë¥¼ ë¬´ì‹œí•˜ê³  -2 ë°˜í™˜
     if (length > outputSize) {
         size_t remaining = length - outputSize;
         uint8_t discard_buffer[256];
@@ -494,10 +494,10 @@ while (total_received < to_read) {
             }
             remaining -= ret;
         }
-        return -2; // µ¥ÀÌÅÍ ÃÊ°ú ¹ß»ı
+        return -2; // ë°ì´í„° ì´ˆê³¼ ë°œìƒ
     }
 
-    // 6. ¸¶½ºÅ· ÇØÁ¦
+    // 6. ë§ˆìŠ¤í‚¹ í•´ì œ
     if (mask)
     {
         for (size_t i = 0; i < to_read; i++)
@@ -506,10 +506,10 @@ while (total_received < to_read) {
         }
     }
         total_payload_len += length;
-  }while(fin!=0x80);//¸¶Áö¸· ÇÁ·¹ÀÓÀÌ ¾Æ´Ï¸é°è¼Ó¼Ó
+  }while(fin!=0x80);//ë§ˆì§€ë§‰ í”„ë ˆì„ì´ ì•„ë‹ˆë©´ê³„ì†ì†
 
 *payload_length = total_payload_len;
-    return 0;  // ¼º°ø
+    return 0;  // ì„±ê³µ
 }
 
 
@@ -542,7 +542,7 @@ char *inputList[3]={0,0,0};
     {
       switch(opcode)
       {
-        case 0x02://ÆÄÀÏ
+        case 0x02://íŒŒì¼
         if(length <= UPLOAD_FILE_SIZE)
         {
           if(g_fwBuff==NULL)
@@ -559,7 +559,7 @@ char *inputList[3]={0,0,0};
           websocket_send_data(conn, "The file size exceeds the allocated memory.");
         }
         break;
-        case 0x01://¹®ÀÚ
+        case 0x01://ë¬¸ì
 
 
         parse_argsWithToken(payLoad,inputList,' ');
@@ -579,7 +579,7 @@ char *inputList[3]={0,0,0};
                 websocket_send_data(conn, outBuff);
                 if(g_767UpdateReq==true)
                 {
-                  osDelay(2000);// tcpµ¥ÀÌÅÍ Àü¼Û Áö¿¬, tcp¿É¼ÇÃ³¸® °ËÅä
+                  osDelay(2000);// tcpë°ì´í„° ì „ì†¡ ì§€ì—°, tcpì˜µì…˜ì²˜ë¦¬ ê²€í† 
                   closesocket(conn);
                   update_frimware767();
                 }

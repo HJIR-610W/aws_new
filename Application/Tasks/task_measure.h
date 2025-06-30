@@ -12,7 +12,7 @@ typedef enum data_type_e
   eDATA_TYPE_B
 } eDATA_TYPE_t;
 
-//ÃøÁ¤ Task´Â ¼¾¼­¸¦ ÃøÁ¤ÇÏ°í ¾Æ·¡¿Í °°Àº Å¸ÀÔÀ¸·Î Àü´Ş
+//ì¸¡ì • TaskëŠ” ì„¼ì„œë¥¼ ì¸¡ì •í•˜ê³  ì•„ë˜ì™€ ê°™ì€ íƒ€ì…ìœ¼ë¡œ ì „ë‹¬
 typedef struct sensor_data_s
 {
   union aws_data
@@ -41,7 +41,7 @@ typedef struct sensor_data_s
   uint8_t enable : 1;
 } sensor_data_t;
 
-//250ms¸¶´Ù ¼öÁıÇÏ´Â µ¥ÀÌÅÍ
+//250msë§ˆë‹¤ ìˆ˜ì§‘í•˜ëŠ” ë°ì´í„°
 typedef enum reading_250
 {
   eA2_WIND_DIRECTION,
@@ -50,12 +50,12 @@ typedef enum reading_250
 
 typedef struct measure_data_250ms
 {
-  sensor_data_t data[2];//Ç³Çâ Ç³¼Ó
+  sensor_data_t data[2];//í’í–¥ í’ì†
 } measure_data_250ms_t;
 
 typedef struct measure_data_1s
 {
-  sensor_data_t data[SENSOR_LIST_MAX];//Ç³Çâ Ç³¼Ó ÀÎµ¦½º´Â ¹Ì»ç¿ë
+  sensor_data_t data[SENSOR_LIST_MAX];//í’í–¥ í’ì† ì¸ë±ìŠ¤ëŠ” ë¯¸ì‚¬ìš©
 } measure_data_1s_t;
 
 typedef struct

@@ -134,7 +134,7 @@ void load_config_adc(void)
 
 config_adc_t *get_config_adc(void)
 {
-  // ÇÊ¿ä½Ã ÀûÀıÇÑ Á¶Ä¡ Ã³¸®
+  // í•„ìš”ì‹œ ì ì ˆí•œ ì¡°ì¹˜ ì²˜ë¦¬
   return &g_config_adc;
 }
 

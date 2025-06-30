@@ -58,7 +58,7 @@ void directTask(void *arg)
       startTime  = osKernelGetTickCount();
     }
     
-    // ¸µÅ©´Ù¿î±îÁö ³²Àº ½Ã°£ °è»ê
+    // ë§í¬ë‹¤ìš´ê¹Œì§€ ë‚¨ì€ ì‹œê°„ ê³„ì‚°
     uint32_t now = osKernelGetTickCount();
     uint32_t elapsed = now - startTime;
 
@@ -66,7 +66,7 @@ void directTask(void *arg)
     {
       g_direct_system.link_status = eDIRECT_LINK_DOWN;
       g_direct_system.linkdown_remain_ms = 0;
-      startTime = now;  // ¸®¼Â
+      startTime = now;  // ë¦¬ì…‹
     }
     else
     {

@@ -1,7 +1,7 @@
 #ifndef IO_RETARGET_H
 #define IO_RETARGET_H
 
-// POSIX °ü·Ã »ó¼ö Á¤ÀÇ
+// POSIX ê´€ë ¨ ìƒìˆ˜ ì •ì˜
 #define EBADF 9          // Bad file descriptor
 #define ENOENT 2         // No such file or directory
 #define STDIN_FILENO 0   // Standard input

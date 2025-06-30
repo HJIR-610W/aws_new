@@ -51,7 +51,7 @@ void hart_task(void *arg)
 {
   uint8_t buff[50];
   uint8_t cmd[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x02, 0x80, 0x00, 0x00, 0x82};
-  //À¯´Ï¹ö¼³ ¸í·É¾î 0,HART Ver
+  //ìœ ë‹ˆë²„ì„¤ ëª…ë ¹ì–´ 0,HART Ver
   int32_t len;
 
   while (1)
@@ -93,12 +93,12 @@ void test_hart(void)
   g_hart_sel = driver_do_open(DO_HART_SEL, &do_config);
   g_power_24 = driver_do_open(DO_POWER_HART_24V, &do_config);
 
-  driver_do_high(g_power_24);  // HART 24V¸¦ °ø±Þ
+  driver_do_high(g_power_24);  // HART 24Vë¥¼ ê³µê¸‰
 
   g_hart_reset = driver_do_open(DO_HART_RESET, &do_config);
 
   driver_do_high(g_hart_sel);
-  driver_do_low(g_hart_reset);  // HART ¸®¼Â
+  driver_do_low(g_hart_reset);  // HART ë¦¬ì…‹
   osDelay(10);
   driver_do_high(g_hart_reset);
 

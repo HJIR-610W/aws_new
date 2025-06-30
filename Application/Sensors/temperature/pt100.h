@@ -7,8 +7,8 @@
 #include "temperature_define.h"
 
 
-#define PT100_A 0 //½Ì±ÛÃ¤³Î 16 °íÁ¤µÊ 
-#define PT100_B 1 //½Ì±ÛÃ¤³Î 17 °íÁ¤µÊ
+#define PT100_A 0 //ì‹±ê¸€ì±„ë„ 16 ê³ ì •ë¨ 
+#define PT100_B 1 //ì‹±ê¸€ì±„ë„ 17 ê³ ì •ë¨
 
 void *pt100_open(uint8_t num,void *opt);
 

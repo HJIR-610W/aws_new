@@ -31,7 +31,7 @@ typedef struct no_init_s
   uint32_t key;
   char rstLog[RST_LOG_MAX];
 }no_init_t;
-__no_init volatile no_init_t noInitData @ 0x20000004; //ÀÌ ÁÖ¼Ò¿¡ ÇÒ´çµÇµµ·Ï ÇÑ´Ù IAR Àü¿ë
+__no_init volatile no_init_t noInitData @ 0x20000004; //ì´ ì£¼ì†Œì— í• ë‹¹ë˜ë„ë¡ í•œë‹¤ IAR ì „ìš©
 
 
 
@@ -41,7 +41,7 @@ void reset_system(const char * pFmt, ...)
   uint32_t len=0;
   va_list ap;
 
-    __disable_irq();;//TODO ÀÎÅÍ·´Æ® ºñÈ°¼º ÄÚµå »ğÀÔ
+    __disable_irq();;//TODO ì¸í„°ëŸ½íŠ¸ ë¹„í™œì„± ì½”ë“œ ì‚½ì…
 
     snprintf(&buff[len], sizeof(buff), "RST,%04d-%02d-%02d %02d:%02d:%02d,", Date_Time.Year,
                Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
@@ -52,7 +52,7 @@ void reset_system(const char * pFmt, ...)
     vsnprintf(&buff[len], sizeof(buff)-len,pFmt, ap);
     va_end(ap);
 
-    strcpy((char *)noInitData.rstLog,  buff);//¸®¼Â ¿øÀÎ ±â·Ï
+    strcpy((char *)noInitData.rstLog,  buff);//ë¦¬ì…‹ ì›ì¸ ê¸°ë¡
 
     noInitData.key = 0x5a5a5a5a;
     HAL_NVIC_SystemReset();
@@ -81,7 +81,7 @@ void error_print(const char *pFmt, ...)
 static osTimerId_t s_reset_timer_id;
 
 
-// Å¸ÀÌ¸Ó Äİ¹é ÇÔ¼ö
+// íƒ€ì´ë¨¸ ì½œë°± í•¨ìˆ˜
 void rtu_reset_callback(void *argument)
 {
   HAL_NVIC_SystemReset();
@@ -89,24 +89,24 @@ void rtu_reset_callback(void *argument)
 
 void reset_system_delay(uint32_t delay_seconds)
 {
-  // Å¸ÀÌ¸Ó ¼Ó¼º ¼³Á¤
+  // íƒ€ì´ë¨¸ ì†ì„± ì„¤ì •
   osTimerAttr_t timer_attr = {.name = "DelayTimer", .attr_bits = 0, .cb_mem = NULL, .cb_size = 0};
 
-  // ¿ø¼¦ Å¸ÀÌ¸Ó »ı¼º (ÇÑ ¹ø¸¸ ½ÇÇà)
+  // ì›ìƒ· íƒ€ì´ë¨¸ ìƒì„± (í•œ ë²ˆë§Œ ì‹¤í–‰)
   s_reset_timer_id = osTimerNew(rtu_reset_callback, osTimerOnce, NULL, &timer_attr);
 
   if (s_reset_timer_id != NULL)
   {
-    // Å¸ÀÌ¸Ó ½ÃÀÛ (delay_seconds¸¦ Æ½ ´ÜÀ§·Î º¯È¯)
+    // íƒ€ì´ë¨¸ ì‹œì‘ (delay_secondsë¥¼ í‹± ë‹¨ìœ„ë¡œ ë³€í™˜)
     osStatus_t status = osTimerStart(s_reset_timer_id, delay_seconds * osKernelGetTickFreq());
 
     if (status != osOK)
     {
-      task_printf("Å¸ÀÌ¸Ó ½ÃÀÛ ½ÇÆĞ\n");
+      task_printf("íƒ€ì´ë¨¸ ì‹œì‘ ì‹¤íŒ¨\n");
     }
   }
   else
   {
-    task_printf("Å¸ÀÌ¸Ó »ı¼º ½ÇÆĞ\n");
+    task_printf("íƒ€ì´ë¨¸ ìƒì„± ì‹¤íŒ¨\n");
   }
 }

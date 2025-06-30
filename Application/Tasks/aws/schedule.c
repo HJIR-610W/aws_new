@@ -24,13 +24,13 @@
 #define HOUR_PROC 2
 
 #pragma location = "SRAM_section"
-AWS_DATA_STRUCT mRealAws;   // ½Ç½Ã°£ ÀÚ·á
+AWS_DATA_STRUCT mRealAws;   // ì‹¤ì‹œê°„ ìë£Œ
 #pragma location = "SRAM_section"
-AWS_DATA_STRUCT mMinAws;    // 1ºĞ ÀÚ·á
+AWS_DATA_STRUCT mMinAws;    // 1ë¶„ ìë£Œ
 #pragma location = "SRAM_section"
-AWS_DATA_STRUCT m10MinAws;  // 10ºĞ ÀÚ·á
+AWS_DATA_STRUCT m10MinAws;  // 10ë¶„ ìë£Œ
 #pragma location = "SRAM_section"
-AWS_DATA_STRUCT mHourAws;   // 1½Ã°£ ÀÚ·á
+AWS_DATA_STRUCT mHourAws;   // 1ì‹œê°„ ìë£Œ
 #pragma location = "SRAM_section"
 SYSTEM_INFO_AWS Sysinfo;
  
@@ -48,10 +48,10 @@ SYSTEM_INFO_AWS Sysinfo;
 
  /*
 
- lowlevel init È£ÃâÀü¿¡ SystemInit_ExtMemCtl ¿©±â¿¡¼­ FSMC ÃÊ±âÈ­¸¦ ÇØ¼­
- ÃÊ±âÈ­µÈ ¼½¼Ç,ÃÊ±âÈ­µÇÁö ¾ÊÀº ¼½¼ÇÀ» Ã³¸®ÇØÁà¾ßÇÏ´Âµ¥
- FSMC ÃÊ±âÈ­¿¡ ¹®Á¦°¡ ÀÖ¾î. ÀÏ´Ü
- main¿¡¼­ FSMC ÃÊ±âÈ­ÇÑ ´ÙÀ½ ¼öµ¿À¸·Î FSMC¿µ¿ª¿¡ ¹èÄ¡µÈ º¯¼ö¸¦ 0À¸·Î ÃÊ±âÈ­
+ lowlevel init í˜¸ì¶œì „ì— SystemInit_ExtMemCtl ì—¬ê¸°ì—ì„œ FSMC ì´ˆê¸°í™”ë¥¼ í•´ì„œ
+ ì´ˆê¸°í™”ëœ ì„¹ì…˜,ì´ˆê¸°í™”ë˜ì§€ ì•Šì€ ì„¹ì…˜ì„ ì²˜ë¦¬í•´ì¤˜ì•¼í•˜ëŠ”ë°
+ FSMC ì´ˆê¸°í™”ì— ë¬¸ì œê°€ ìˆì–´. ì¼ë‹¨
+ mainì—ì„œ FSMC ì´ˆê¸°í™”í•œ ë‹¤ìŒ ìˆ˜ë™ìœ¼ë¡œ FSMCì˜ì—­ì— ë°°ì¹˜ëœ ë³€ìˆ˜ë¥¼ 0ìœ¼ë¡œ ì´ˆê¸°í™”
  */
  void manual_bss_init(void)
  {
@@ -71,10 +71,10 @@ void AwsMinMaxInit(void)
 
   pSystem = &Sysinfo;
 
-  mRealAws.mWind.mDirection.sMax = 0; //ÀÏ ÃÖ´ë Ç³Çâ
-  mRealAws.mWind.mSpeed.sMax = 0;    // ÀÏ ÃÖ´ë Ç³¼Ó
+  mRealAws.mWind.mDirection.sMax = 0; //ì¼ ìµœëŒ€ í’í–¥
+  mRealAws.mWind.mSpeed.sMax = 0;    // ì¼ ìµœëŒ€ í’ì†
 
-  mRealAws.mTemperature.sMin = 9999;  // ÀÏÀÏ ÃÖ´ë ÃÖ¼Ò °ª ÃÊ±âÈ­
+  mRealAws.mTemperature.sMin = 9999;  // ì¼ì¼ ìµœëŒ€ ìµœì†Œ ê°’ ì´ˆê¸°í™”
   mRealAws.mTemperature.sMax = 0;
 
   for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
@@ -104,10 +104,10 @@ void AwsMinMaxInit(void)
 
 
 
-  pSystem->shSnowFallOld = mRealAws.mSnowFall.sReal;  // ÇöÀç Àû¼³À» ¿Å±ä´Ù.
+  pSystem->shSnowFallOld = mRealAws.mSnowFall.sReal;  // í˜„ì¬ ì ì„¤ì„ ì˜®ê¸´ë‹¤.
 
-  //ÁöÁß¿Âµµ 5cm
-  mRealAws.mSoilTemp5cm.sMin = 9999; //ÀÏ ÃÖ´ë ÃÖ¼Ò °ª ÃÊ±âÈ­ 
+  //ì§€ì¤‘ì˜¨ë„ 5cm
+  mRealAws.mSoilTemp5cm.sMin = 9999; //ì¼ ìµœëŒ€ ìµœì†Œ ê°’ ì´ˆê¸°í™” 
   mRealAws.mSoilTemp5cm.sMax = 0;
 
   for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
@@ -116,8 +116,8 @@ void AwsMinMaxInit(void)
     pSystem->mSoil5Buf[i].sMax = 0;
   }
 
-  // ÁöÁß¿Âµµ 10cm
-  mRealAws.mSoilTemp10cm.sMin = 9999;  // ÀÏ ÃÖ´ë ÃÖ¼Ò °ª ÃÊ±âÈ­
+  // ì§€ì¤‘ì˜¨ë„ 10cm
+  mRealAws.mSoilTemp10cm.sMin = 9999;  // ì¼ ìµœëŒ€ ìµœì†Œ ê°’ ì´ˆê¸°í™”
   mRealAws.mSoilTemp10cm.sMax = 0;
 
   for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
@@ -125,8 +125,8 @@ void AwsMinMaxInit(void)
     pSystem->mSoil10Buf[i].sMin = 9999;
     pSystem->mSoil10Buf[i].sMax = 0;
   }
-  // ÁöÁß¿Âµµ 20cm
-  mRealAws.mSoilTemp20cm.sMin = 9999;  // ÀÏ ÃÖ´ë ÃÖ¼Ò °ª ÃÊ±âÈ­
+  // ì§€ì¤‘ì˜¨ë„ 20cm
+  mRealAws.mSoilTemp20cm.sMin = 9999;  // ì¼ ìµœëŒ€ ìµœì†Œ ê°’ ì´ˆê¸°í™”
   mRealAws.mSoilTemp20cm.sMax = 0;
 
   for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
@@ -135,8 +135,8 @@ void AwsMinMaxInit(void)
     pSystem->mSoil20Buf[i].sMax = 0;
   }
 
-  // ÁöÁß¿Âµµ 30cm
-  mRealAws.mSoilTemp30cm.sMin = 9999;  // ÀÏ ÃÖ´ë ÃÖ¼Ò °ª ÃÊ±âÈ­
+  // ì§€ì¤‘ì˜¨ë„ 30cm
+  mRealAws.mSoilTemp30cm.sMin = 9999;  // ì¼ ìµœëŒ€ ìµœì†Œ ê°’ ì´ˆê¸°í™”
   mRealAws.mSoilTemp30cm.sMax = 0;
 
   for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
@@ -145,8 +145,8 @@ void AwsMinMaxInit(void)
     pSystem->mSoil30Buf[i].sMax = 0;
   }
 
-  // ÁöÁß¿Âµµ 50cm
-  mRealAws.mSoilTemp50cm.sMin = 9999;  // ÀÏ ÃÖ´ë ÃÖ¼Ò °ª ÃÊ±âÈ­
+  // ì§€ì¤‘ì˜¨ë„ 50cm
+  mRealAws.mSoilTemp50cm.sMin = 9999;  // ì¼ ìµœëŒ€ ìµœì†Œ ê°’ ì´ˆê¸°í™”
   mRealAws.mSoilTemp50cm.sMax = 0;
 
   for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
@@ -155,8 +155,8 @@ void AwsMinMaxInit(void)
     pSystem->mSoil50Buf[i].sMax = 0;
   }
 
-  // ÁöÁß¿Âµµ 100cm
-  mRealAws.mSoilTemp1_0m.sMin = 9999;  // ÀÏ ÃÖ´ë ÃÖ¼Ò °ª ÃÊ±âÈ­
+  // ì§€ì¤‘ì˜¨ë„ 100cm
+  mRealAws.mSoilTemp1_0m.sMin = 9999;  // ì¼ ìµœëŒ€ ìµœì†Œ ê°’ ì´ˆê¸°í™”
   mRealAws.mSoilTemp1_0m.sMax = 0;
 
   for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
@@ -165,8 +165,8 @@ void AwsMinMaxInit(void)
     pSystem->mSoil100Buf[i].sMax = 0;
   }
 
-    // ÁöÁß¿Âµµ 1.5m
-  mRealAws.mSoilTemp1_5m.sMin = 9999;  // ÀÏ ÃÖ´ë ÃÖ¼Ò °ª ÃÊ±âÈ­
+    // ì§€ì¤‘ì˜¨ë„ 1.5m
+  mRealAws.mSoilTemp1_5m.sMin = 9999;  // ì¼ ìµœëŒ€ ìµœì†Œ ê°’ ì´ˆê¸°í™”
   mRealAws.mSoilTemp1_5m.sMax = 0;
 
   for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
@@ -175,7 +175,7 @@ void AwsMinMaxInit(void)
     pSystem->mSoil150Buf[i].sMax = 0;
   }
 
-  pSystem->m_cOffDelayFlag = 0;  // Rain Detecter ÀÇ ÇöÀç¸¦  Off»óÅÂ·Î ¸¸µç´Ù
+  pSystem->m_cOffDelayFlag = 0;  // Rain Detecter ì˜ í˜„ì¬ë¥¼  Offìƒíƒœë¡œ ë§Œë“ ë‹¤
   mRealAws.mRainDetect.sReal = 0;
 }
 
@@ -200,7 +200,7 @@ void SecProcess(void)
 
   pSystem = &Sysinfo;
 
-  // 1ºĞ ´©ÀûÀ» ±¸ÇÏ±â À§ÇÑ ÇÕ
+  // 1ë¶„ ëˆ„ì ì„ êµ¬í•˜ê¸° ìœ„í•œ í•©
   pSystem->mTempBuf[MIN1_PROC].lTot += mRealAws.mTemperature.sReal;
   pSystem->mTempBuf[MIN1_PROC].sAddCnt++;
   pSystem->mBaroBuf[MIN1_PROC].lTot += mRealAws.mBarometric.sReal;
@@ -208,7 +208,7 @@ void SecProcess(void)
   pSystem->mHumidBuf[MIN1_PROC].lTot += mRealAws.mHumidity.sReal;
   pSystem->mHumidBuf[MIN1_PROC].sAddCnt++;
 
-  // 2017.04.03 Ãß°¡
+  // 2017.04.03 ì¶”ê°€
   pSystem->mSoil5Buf[MIN1_PROC].lTot += mRealAws.mSoilTemp5cm.sReal;
   pSystem->mSoil5Buf[MIN1_PROC].sAddCnt++;
 
@@ -230,9 +230,9 @@ void SecProcess(void)
   pSystem->mSoil150Buf[MIN1_PROC].lTot += mRealAws.mSoilTemp1_5m.sReal;
   pSystem->mSoil150Buf[MIN1_PROC].sAddCnt++;
 
-  // ÁöÁß ¿Âµµ 5  ÃÖ¼Ò ÃÖ´ë ±¸ÇÏ±â
+  // ì§€ì¤‘ ì˜¨ë„ 5  ìµœì†Œ ìµœëŒ€ êµ¬í•˜ê¸°
   AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal, &mRealAws.mSoilTemp5cm.sMin,
-                &mRealAws.mSoilTemp5cm.sMax);  // ÀÏ°£ ÃÖ°í ÃÖ¼Ò ¿Âµµ
+                &mRealAws.mSoilTemp5cm.sMax);  // ì¼ê°„ ìµœê³  ìµœì†Œ ì˜¨ë„
   AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal,
                 &pSystem->mSoil5Buf[MIN1_PROC].sMin,
                 &pSystem->mSoil5Buf[MIN1_PROC].sMax);
@@ -243,9 +243,9 @@ void SecProcess(void)
                 &pSystem->mSoil5Buf[HOUR_PROC].sMin,
                 &pSystem->mSoil5Buf[HOUR_PROC].sMax);
 
-  // ÁöÁß¿Âµµ 10 ÃÖ¼Ò ÃÖ´ë ±¸ÇÏ±â
+  // ì§€ì¤‘ì˜¨ë„ 10 ìµœì†Œ ìµœëŒ€ êµ¬í•˜ê¸°
   AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal, &mRealAws.mSoilTemp10cm.sMin,
-                &mRealAws.mSoilTemp10cm.sMax);  // ÀÏ°£ ÃÖ°í ÃÖ¼Ò ¿Âµµ
+                &mRealAws.mSoilTemp10cm.sMax);  // ì¼ê°„ ìµœê³  ìµœì†Œ ì˜¨ë„
   AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal,
                 &pSystem->mSoil10Buf[MIN1_PROC].sMin,
                 &pSystem->mSoil10Buf[MIN1_PROC].sMax);
@@ -256,9 +256,9 @@ void SecProcess(void)
                 &pSystem->mSoil10Buf[HOUR_PROC].sMin,
                 &pSystem->mSoil10Buf[HOUR_PROC].sMax);
 
-  // ÁöÁß¿Âµµ 20  ÃÖ¼Ò ÃÖ´ë ±¸ÇÏ±â
+  // ì§€ì¤‘ì˜¨ë„ 20  ìµœì†Œ ìµœëŒ€ êµ¬í•˜ê¸°
   AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal, &mRealAws.mSoilTemp20cm.sMin,
-                &mRealAws.mSoilTemp20cm.sMax);  // ÀÏ°£ ÃÖ°í ÃÖ¼Ò ¿Âµµ
+                &mRealAws.mSoilTemp20cm.sMax);  // ì¼ê°„ ìµœê³  ìµœì†Œ ì˜¨ë„
   AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal,
                 &pSystem->mSoil20Buf[MIN1_PROC].sMin,
                 &pSystem->mSoil20Buf[MIN1_PROC].sMax);
@@ -269,9 +269,9 @@ void SecProcess(void)
                 &pSystem->mSoil20Buf[HOUR_PROC].sMin,
                 &pSystem->mSoil20Buf[HOUR_PROC].sMax);
 
-  // ÁöÁß¿Âµµ 30 ÃÖ¼Ò ÃÖ´ë ±¸ÇÏ±â
+  // ì§€ì¤‘ì˜¨ë„ 30 ìµœì†Œ ìµœëŒ€ êµ¬í•˜ê¸°
   AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal, &mRealAws.mSoilTemp30cm.sMin,
-                &mRealAws.mSoilTemp30cm.sMax);  // ÀÏ°£ ÃÖ°í ÃÖ¼Ò ¿Âµµ
+                &mRealAws.mSoilTemp30cm.sMax);  // ì¼ê°„ ìµœê³  ìµœì†Œ ì˜¨ë„
   AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal,
                 &pSystem->mSoil30Buf[MIN1_PROC].sMin,
                 &pSystem->mSoil30Buf[MIN1_PROC].sMax);
@@ -282,9 +282,9 @@ void SecProcess(void)
                 &pSystem->mSoil30Buf[HOUR_PROC].sMin,
                 &pSystem->mSoil30Buf[HOUR_PROC].sMax);
 
-  // ÁöÁß¿Âµµ 50 ÃÖ¼Ò ÃÖ´ë ±¸ÇÏ±â
+  // ì§€ì¤‘ì˜¨ë„ 50 ìµœì†Œ ìµœëŒ€ êµ¬í•˜ê¸°
   AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal, &mRealAws.mSoilTemp50cm.sMin,
-                &mRealAws.mSoilTemp50cm.sMax);  // ÀÏ°£ ÃÖ°í ÃÖ¼Ò ¿Âµµ
+                &mRealAws.mSoilTemp50cm.sMax);  // ì¼ê°„ ìµœê³  ìµœì†Œ ì˜¨ë„
   AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal,
                 &pSystem->mSoil50Buf[MIN1_PROC].sMin,
                 &pSystem->mSoil50Buf[MIN1_PROC].sMax);
@@ -295,9 +295,9 @@ void SecProcess(void)
                 &pSystem->mSoil50Buf[HOUR_PROC].sMin,
                 &pSystem->mSoil50Buf[HOUR_PROC].sMax);
 
-  // ÁöÁß¿Âµµ 1_0 ÃÖ¼Ò ÃÖ´ë ±¸ÇÏ±â
+  // ì§€ì¤‘ì˜¨ë„ 1_0 ìµœì†Œ ìµœëŒ€ êµ¬í•˜ê¸°
   AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal, &mRealAws.mSoilTemp1_0m.sMin,
-                &mRealAws.mSoilTemp1_0m.sMax);  // ÀÏ°£ ÃÖ°í ÃÖ¼Ò ¿Âµµ
+                &mRealAws.mSoilTemp1_0m.sMax);  // ì¼ê°„ ìµœê³  ìµœì†Œ ì˜¨ë„
   AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal,
                 &pSystem->mSoil100Buf[MIN1_PROC].sMin,
                 &pSystem->mSoil100Buf[MIN1_PROC].sMax);
@@ -308,9 +308,9 @@ void SecProcess(void)
                 &pSystem->mSoil100Buf[HOUR_PROC].sMin,
                 &pSystem->mSoil100Buf[HOUR_PROC].sMax);
 
-  // ÁöÁß¿Âµµ 1_5 ÃÖ¼Ò ÃÖ´ë ±¸ÇÏ±â
+  // ì§€ì¤‘ì˜¨ë„ 1_5 ìµœì†Œ ìµœëŒ€ êµ¬í•˜ê¸°
   AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal, &mRealAws.mSoilTemp1_5m.sMin,
-                &mRealAws.mSoilTemp1_5m.sMax);  // ÀÏ°£ ÃÖ°í ÃÖ¼Ò ¿Âµµ
+                &mRealAws.mSoilTemp1_5m.sMax);  // ì¼ê°„ ìµœê³  ìµœì†Œ ì˜¨ë„
   AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal,
                 &pSystem->mSoil150Buf[MIN1_PROC].sMin,
                 &pSystem->mSoil150Buf[MIN1_PROC].sMax);
@@ -321,11 +321,11 @@ void SecProcess(void)
                 &pSystem->mSoil150Buf[HOUR_PROC].sMin,
                 &pSystem->mSoil150Buf[HOUR_PROC].sMax);
 
-  // 2017 . 04 . 03 Ãß°¡ ³¡
+  // 2017 . 04 . 03 ì¶”ê°€ ë
 
-  // ¿Âµµ ÃÖ¼Ò ÃÖ´ë ±¸ÇÏ±â
+  // ì˜¨ë„ ìµœì†Œ ìµœëŒ€ êµ¬í•˜ê¸°
   AwsMinMaxProc(mRealAws.mTemperature.sReal, &mRealAws.mTemperature.sMin,
-                &mRealAws.mTemperature.sMax);  // ÀÏ°£ ÃÖ°í ÃÖ¼Ò ¿Âµµ
+                &mRealAws.mTemperature.sMax);  // ì¼ê°„ ìµœê³  ìµœì†Œ ì˜¨ë„
   AwsMinMaxProc(mRealAws.mTemperature.sReal, &pSystem->mTempBuf[MIN1_PROC].sMin,
                 &pSystem->mTempBuf[MIN1_PROC].sMax);
   AwsMinMaxProc(mRealAws.mTemperature.sReal,
@@ -334,9 +334,9 @@ void SecProcess(void)
   AwsMinMaxProc(mRealAws.mTemperature.sReal, &pSystem->mTempBuf[HOUR_PROC].sMin,
                 &pSystem->mTempBuf[HOUR_PROC].sMax);
 
-  // ±â¾Ğ ÃÖ¼Ò ÃÖ´ë ±¸ÇÏ±â
+  // ê¸°ì•• ìµœì†Œ ìµœëŒ€ êµ¬í•˜ê¸°
   AwsMinMaxProc(mRealAws.mBarometric.sReal, &mRealAws.mBarometric.sMin,
-                &mRealAws.mBarometric.sMax);  // ÀÏ°£ ÃÖ°í ÃÖ¼Ò ±â¾Ğ
+                &mRealAws.mBarometric.sMax);  // ì¼ê°„ ìµœê³  ìµœì†Œ ê¸°ì••
   AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[MIN1_PROC].sMin,
                 &pSystem->mBaroBuf[MIN1_PROC].sMax);
   AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[MIN10_PROC].sMin,
@@ -344,9 +344,9 @@ void SecProcess(void)
   AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[HOUR_PROC].sMin,
                 &pSystem->mBaroBuf[HOUR_PROC].sMax);
 
-  // ½Àµµ ÃÖ¼Ò ÃÖ´ë ±¸ÇÏ±â
+  // ìŠµë„ ìµœì†Œ ìµœëŒ€ êµ¬í•˜ê¸°
   AwsMinMaxProc(mRealAws.mHumidity.sReal, &mRealAws.mHumidity.sMin,
-                &mRealAws.mHumidity.sMax);  // ÀÏ°£ ÃÖ°í ÃÖ¼Ò ½Àµµ
+                &mRealAws.mHumidity.sMax);  // ì¼ê°„ ìµœê³  ìµœì†Œ ìŠµë„
   AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[MIN1_PROC].sMin,
                 &pSystem->mHumidBuf[MIN1_PROC].sMax);
   AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[MIN10_PROC].sMin,
@@ -360,12 +360,12 @@ void SecProcess(void)
     {
       uint16_t rain =pSystem->mRain.rain;
 
-      pSystem->mRain.sMinRain += rain;   // 1ºĞ °­¼ö·®
-      pSystem->mRain.s10MinRain += rain;  // 10ºĞ °­¼ö·®
-      pSystem->mRain.sHourRain += rain;   // 1½Ã°£°­¼ö·®
-      pSystem->mRain.sDayRain += rain;    // ÀÏ°£°­¼ö·®
-      pSystem->mRain.sMonthRain += rain;   // ¿ù°£ °­¼ö·®
-      pSystem->mRain.sYearRain += rain;    // ³â°£ °­¼ö·®
+      pSystem->mRain.sMinRain += rain;   // 1ë¶„ ê°•ìˆ˜ëŸ‰
+      pSystem->mRain.s10MinRain += rain;  // 10ë¶„ ê°•ìˆ˜ëŸ‰
+      pSystem->mRain.sHourRain += rain;   // 1ì‹œê°„ê°•ìˆ˜ëŸ‰
+      pSystem->mRain.sDayRain += rain;    // ì¼ê°„ê°•ìˆ˜ëŸ‰
+      pSystem->mRain.sMonthRain += rain;   // ì›”ê°„ ê°•ìˆ˜ëŸ‰
+      pSystem->mRain.sYearRain += rain;    // ë…„ê°„ ê°•ìˆ˜ëŸ‰
 
       set_rainfall_1min(pSystem->mRain.sMinRain/10.0f);
       set_rainfall_today(pSystem->mRain.sDayRain / 10.0f);
@@ -377,10 +377,10 @@ void SecProcess(void)
     }
   
 
-  mRealAws.mRainFall.sReal = pSystem->mRain.sDayRain;  // ÀÏ°£°­¼ö·®(ÃÊ´ÜÀ§·Î ¹Ù²î´Â °ª)
-  mRealAws.mRainFall.sHourRain = pSystem->mRain.sHourRain;  // 1½Ã°£ °­¼ö·®
-  mRealAws.mRainFall.sMonthRain = pSystem->mRain.sMonthRain;  // ¿ù°£°­¼ö·®
-  mRealAws.mRainFall.sYearRain = pSystem->mRain.sYearRain;  // ¿¬°£°­¼ö·®
+  mRealAws.mRainFall.sReal = pSystem->mRain.sDayRain;  // ì¼ê°„ê°•ìˆ˜ëŸ‰(ì´ˆë‹¨ìœ„ë¡œ ë°”ë€ŒëŠ” ê°’)
+  mRealAws.mRainFall.sHourRain = pSystem->mRain.sHourRain;  // 1ì‹œê°„ ê°•ìˆ˜ëŸ‰
+  mRealAws.mRainFall.sMonthRain = pSystem->mRain.sMonthRain;  // ì›”ê°„ê°•ìˆ˜ëŸ‰
+  mRealAws.mRainFall.sYearRain = pSystem->mRain.sYearRain;  // ì—°ê°„ê°•ìˆ˜ëŸ‰
   
   mMinAws.mRainFall.sReal   = pSystem->mRain.sDayRain;
   m10MinAws.mRainFall.sReal = pSystem->mRain.sDayRain;
@@ -388,19 +388,19 @@ void SecProcess(void)
 
 
 
-  // °­¿ì °¨Áö Ã³¸® (ÃÊ ´ÜÀ§·Î Ã³¸®)
+  // ê°•ìš° ê°ì§€ ì²˜ë¦¬ (ì´ˆ ë‹¨ìœ„ë¡œ ì²˜ë¦¬)
   mMinAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
   m10MinAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
   mHourAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
 
-  // 1ºĞ ÀÚ·á¸¦ 10ºĞ ÀÚ·á¿¡ º¹»ç
+  // 1ë¶„ ìë£Œë¥¼ 10ë¶„ ìë£Œì— ë³µì‚¬
   //    memcpy((char *)&(m10MinAws.mRainFall), (char *)&(mMinAws.mRainFall),
   //    sizeof(SENSOR_RIXS_BUF));
-  // 1ºĞ ÀÚ·á¸¦ 1½Ã°£ ÀÚ·á¿¡ º¹»ç
+  // 1ë¶„ ìë£Œë¥¼ 1ì‹œê°„ ìë£Œì— ë³µì‚¬
   //    memcpy((char *)&(mHourAws.mRainFall), (char *)&(mMinAws.mRainFall),
   //    sizeof(SENSOR_RIXS_BUF));
 
-  // Ç³Çâ Ç³¼Ó Ã³¸® & 3ÃÊ ÀÌµ¿ Æò±Õ Ã³¸®
+  // í’í–¥ í’ì† ì²˜ë¦¬ & 3ì´ˆ ì´ë™ í‰ê·  ì²˜ë¦¬
 #define WIND_INSTANCT_CNT 12
   windSum = 0;
   
@@ -420,13 +420,13 @@ void SecProcess(void)
 
 
   {
-    // 12»ùÇÃ¸µÇÑ ÀÚ·á¸¦ Æò±ÕÇØ¼­ ¼ø°£ Ç³Çâ,Ç³¼Ó »êÃâÃâ
+    // 12ìƒ˜í”Œë§í•œ ìë£Œë¥¼ í‰ê· í•´ì„œ ìˆœê°„ í’í–¥,í’ì† ì‚°ì¶œì¶œ
     float wind_avg_u = wind_sum_u / WIND_INSTANCT_CNT;
     float wind_avg_v = wind_sum_v / WIND_INSTANCT_CNT;
     uint16_t wind_speed = 0;
     uint16_t wind_deg = 0;
     int aws_speed;
-    // ÁÖÀÇ:wind_avg °ª ÀÚÃ¼°¡ aws ´ÜÀ§ÀÌ´Ù.
+    // ì£¼ì˜:wind_avg ê°’ ìì²´ê°€ aws ë‹¨ìœ„ì´ë‹¤.
     aws_speed = (int)(UVToSpeed(wind_avg_u, wind_avg_v));
 
     wind_speed = (uint16_t)aws_speed;
@@ -441,49 +441,49 @@ void SecProcess(void)
     mRealAws.mWind.mSpeed.sReal = wind_speed;
     mRealAws.mWind.mDirection.sReal = wind_deg;
 
-    if (wind_speed >= mRealAws.mWind.mSpeed.sMax)  // ÀÏ°£ ÃÖ´ë Ç³¼Ó
+    if (wind_speed >= mRealAws.mWind.mSpeed.sMax)  // ì¼ê°„ ìµœëŒ€ í’ì†
     {
       mRealAws.mWind.mSpeed.sMax = wind_speed;
-      mRealAws.mWind.mDirection.sMax = wind_deg;  // Ç³¼ÓÀÌ ÃÖ´ëÀÏ¶§ÀÇ Ç³ÇâÇâ
+      mRealAws.mWind.mDirection.sMax = wind_deg;  // í’ì†ì´ ìµœëŒ€ì¼ë•Œì˜ í’í–¥í–¥
     }
 
-    if (wind_speed >= pSystem->mWind[0].sGustSpeedMax)  // 1ºĞ ÃÖ´ë Ç³¼Ó
+    if (wind_speed >= pSystem->mWind[0].sGustSpeedMax)  // 1ë¶„ ìµœëŒ€ í’ì†
     {
       pSystem->mWind[0].sGustSpeedMax = wind_speed;
       pSystem->mWind[0].sGustDircMax = wind_deg;
     }
 
-    if (wind_speed >= pSystem->mWind[1].sGustSpeedMax)  // 10ºĞ ÃÖ´ë Ç³¼Ó
+    if (wind_speed >= pSystem->mWind[1].sGustSpeedMax)  // 10ë¶„ ìµœëŒ€ í’ì†
     {
       pSystem->mWind[1].sGustSpeedMax = wind_speed;
       pSystem->mWind[1].sGustDircMax = wind_deg;
     }
 
-    if (wind_speed >= pSystem->mWind[2].sGustSpeedMax)  // 1½Ã°£ ÃÖ´ë Ç³¼Ó
+    if (wind_speed >= pSystem->mWind[2].sGustSpeedMax)  // 1ì‹œê°„ ìµœëŒ€ í’ì†
     {
       pSystem->mWind[2].sGustSpeedMax = wind_speed;
       pSystem->mWind[2].sGustDircMax = wind_deg;
     }
   }
-  // 3ÃÊ ÀÌµ¿ Æò±Õ(1ÃÊ Sample)
-  //    mRealAws.mWind.mDirection.sReal   = sAvgDirection; // 1ÃÊ Ç³Çâ
-  //    Dualport.c¿¡¼­ Ã³¸®ÇÔ(0.25ÃÊ °£°İÀ¸·Î)
-  // ÀÏ»ç ÀÏÁ¶ Ã³¸®
+  // 3ì´ˆ ì´ë™ í‰ê· (1ì´ˆ Sample)
+  //    mRealAws.mWind.mDirection.sReal   = sAvgDirection; // 1ì´ˆ í’í–¥
+  //    Dualport.cì—ì„œ ì²˜ë¦¬í•¨(0.25ì´ˆ ê°„ê²©ìœ¼ë¡œ)
+  // ì¼ì‚¬ ì¼ì¡° ì²˜ë¦¬
   if (mRealAws.mSunshine.sReal)
   {
-    mRealAws.mSunshine.sMax += 1;  // ¸®¾ó°ª ´©Àû  2017.03.22
+    mRealAws.mSunshine.sMax += 1;  // ë¦¬ì–¼ê°’ ëˆ„ì   2017.03.22
 
-    pSystem->mSun[MIN1_PROC].nSunshineTot += 1;  // 1ºĞ ´©Àû ÀÏÁ¶
+    pSystem->mSun[MIN1_PROC].nSunshineTot += 1;  // 1ë¶„ ëˆ„ì  ì¼ì¡°
     
     pSystem->mSunshine.nMonthSunshine +=1;
     pSystem->mSunshine.nYearSunshine +=1;
 
   }
 
-  if (mRealAws.mSolarRad.sReal != 9999)  // ¿¡·¯°ªÀÌ ¾Æ´Ï¸é ´©ÀûÀÏ»ç¸¦ ±¸ÇÑ´Ù.
-    pSystem->mSun[MIN1_PROC].nSolarTot += mRealAws.mSolarRad.sReal;  // 1ºĞ ´©Àû ÀÏ»ç
+  if (mRealAws.mSolarRad.sReal != 9999)  // ì—ëŸ¬ê°’ì´ ì•„ë‹ˆë©´ ëˆ„ì ì¼ì‚¬ë¥¼ êµ¬í•œë‹¤.
+    pSystem->mSun[MIN1_PROC].nSolarTot += mRealAws.mSolarRad.sReal;  // 1ë¶„ ëˆ„ì  ì¼ì‚¬
 
-  if (pSystem->m_cOffDelayFlag)  // °­¿ì °¨Áö ·çÆ¾
+  if (pSystem->m_cOffDelayFlag)  // ê°•ìš° ê°ì§€ ë£¨í‹´
   {
     if (get_rain_present_config()->delay >= 1)
     {
@@ -512,7 +512,7 @@ void Sec10Process(void)
 
   pSystem = &Sysinfo;
 
-  // Ç³Çâ Ç³¼Ó Ã³¸®
+  // í’í–¥ í’ì† ì²˜ë¦¬
   u = v = 0.0;
   nSpeedTot = 0;
 
@@ -529,7 +529,7 @@ void Sec10Process(void)
   if (sAcnt)
   {
     pSystem->mWind[MIN1_PROC].uTot +=
-        (u / (float)sAcnt);  // 10ÃÊ Æò±ÕÀ» ±¸ÇÑÈÄ ÇÕ»êÇÑ´Ù
+        (u / (float)sAcnt);  // 10ì´ˆ í‰ê· ì„ êµ¬í•œí›„ í•©ì‚°í•œë‹¤
     pSystem->mWind[MIN1_PROC].vTot += (v / (float)sAcnt);  //       "
 
     pSystem->mWind[MIN1_PROC].lSpeedTot += (nSpeedTot / sAcnt);  //       "
@@ -539,10 +539,10 @@ void Sec10Process(void)
 
 void AwsMinMaxTotSave(SENSOR_RIX_BUF *pSensor, SENSORPROC_BUF *pSensorTmp,
                       uint16_t sInitValue)
-// pSensor    : Æò±Õ ÃÖ¼Ò ÃÖ´ë °ª µé¾î°¥ À§Ä¡
-// pSensorTmp : ÀÓ½Ã·Î ¿¬»êÀ» À§ÇÑ ÇÊµå
-// sInitValue : ÃÖ°í ÃÖ¼Ò °ª ÃÊ±âÈ­
-// sAddCnt    : Æò±Õ °ªÀ» ±¸ÇÏ±â À§ÇÑ ´©Àû È½¼ö
+// pSensor    : í‰ê·  ìµœì†Œ ìµœëŒ€ ê°’ ë“¤ì–´ê°ˆ ìœ„ì¹˜
+// pSensorTmp : ì„ì‹œë¡œ ì—°ì‚°ì„ ìœ„í•œ í•„ë“œ
+// sInitValue : ìµœê³  ìµœì†Œ ê°’ ì´ˆê¸°í™”
+// sAddCnt    : í‰ê·  ê°’ì„ êµ¬í•˜ê¸° ìœ„í•œ ëˆ„ì  íšŸìˆ˜
 {
   if (pSensorTmp->sAddCnt)
     pSensor->sReal = (uint16_t)(pSensorTmp->lTot / pSensorTmp->sAddCnt);
@@ -559,10 +559,10 @@ void AwsMinMaxTotSave(SENSOR_RIX_BUF *pSensor, SENSORPROC_BUF *pSensorTmp,
 
 int WindMinMaxAvgSave(SENSOR_WIND_BUF *pSensor, SENSORWIND_BUF *pWindTmp,
                       SENSOR_WIND_BUF *pInit)
-// *pSensor     : Æò±Õ ÃÖ¼Ò ÃÖ´ë °ª µé¾î°¥ À§Ä¡
-// *pWindTmp    : ÀÓ½Ã·Î ¿¬»êÀ» À§ÇÑ ÇÊµå
-// sInitValue   : µ¹Ç³ ÃÊ±âÈ­°ª
-// sAddCnt      : Æò±Õ °ªÀ» ±¸ÇÏ±â À§ÇÑ ´©Àû È½¼ö
+// *pSensor     : í‰ê·  ìµœì†Œ ìµœëŒ€ ê°’ ë“¤ì–´ê°ˆ ìœ„ì¹˜
+// *pWindTmp    : ì„ì‹œë¡œ ì—°ì‚°ì„ ìœ„í•œ í•„ë“œ
+// sInitValue   : ëŒí’ ì´ˆê¸°í™”ê°’
+// sAddCnt      : í‰ê·  ê°’ì„ êµ¬í•˜ê¸° ìœ„í•œ ëˆ„ì  íšŸìˆ˜
 {
   float avg_u;
   float avg_v;
@@ -571,10 +571,10 @@ int WindMinMaxAvgSave(SENSOR_WIND_BUF *pSensor, SENSORWIND_BUF *pWindTmp,
   avg_u = pWindTmp->uTot / (float)pWindTmp->sAddCnt;
   avg_v = pWindTmp->vTot / (float)pWindTmp->sAddCnt;
 
-  // »ùÇÃ¸µµÈ°Ô ÀÖÀ¸¸é Æò±Õ
+  // ìƒ˜í”Œë§ëœê²Œ ìˆìœ¼ë©´ í‰ê· 
   if (pWindTmp->sAddCnt)
   {
-    // avg ÀÚÃ¼°¡ awv´ÜÀ§
+    // avg ìì²´ê°€ awvë‹¨ìœ„
     awv_wind_speed = (int)UVToSpeed(avg_u, avg_v);
 
     pSensor->mSpeed.sReal = (uint16_t)awv_wind_speed;
@@ -584,7 +584,7 @@ int WindMinMaxAvgSave(SENSOR_WIND_BUF *pSensor, SENSORWIND_BUF *pWindTmp,
     pSensor->mSpeed.sReal = 0;
   }
 
-  // Ç³¼ÓÀÌ 0ÀÌ¸é Ç³Çâµµ 0À¸·Î Ã³¸®
+  // í’ì†ì´ 0ì´ë©´ í’í–¥ë„ 0ìœ¼ë¡œ ì²˜ë¦¬
   if (pSensor->mSpeed.sReal == 0)
   {
     pSensor->mDirection.sReal = 0;
@@ -607,10 +607,10 @@ int WindMinMaxAvgSave(SENSOR_WIND_BUF *pSensor, SENSORWIND_BUF *pWindTmp,
 }
 
 /*
-1ºĞÀÌ ‰çÀ»¶§ Ã³¸® ³»¿ë
-¿Âµµ, ½Àµµ, ±â¾Ğ ÀÏÁ¶, ÀÏ»ç 10ºĞ ´©Àû, ¹× 1ºĞ ÃÖ¼Ò ÃÖ°í Ã³¸®
-ÀÏÁ¶ ¾Æ·ç ÃÑ ´©Àû¿¡ Ã³¸®
-°­¼ö·® 1ºĞ
+1ë¶„ì´ ë¬ì„ë•Œ ì²˜ë¦¬ ë‚´ìš©
+ì˜¨ë„, ìŠµë„, ê¸°ì•• ì¼ì¡°, ì¼ì‚¬ 10ë¶„ ëˆ„ì , ë° 1ë¶„ ìµœì†Œ ìµœê³  ì²˜ë¦¬
+ì¼ì¡° ì•„ë£¨ ì´ ëˆ„ì ì— ì²˜ë¦¬
+ê°•ìˆ˜ëŸ‰ 1ë¶„
 */
 void MinProcess(DATE_TIME_BUF *pDate)
 {
@@ -622,108 +622,108 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pSystem = &Sysinfo;
   pAws = &mMinAws;
 
-  pAws->mDate.cMonth = pDate->Month;  // ¿ùÀÏ ½ÃºĞ¸¸ ±â·Ï
+  pAws->mDate.cMonth = pDate->Month;  // ì›”ì¼ ì‹œë¶„ë§Œ ê¸°ë¡
   pAws->mDate.cDay = pDate->Day;
   pAws->mDate.cHour = pDate->Hour;
   pAws->mDate.cMin = pDate->Min;
 
-  // ¿Âµµ
+  // ì˜¨ë„
   AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[MIN1_PROC],
                    mRealAws.mTemperature.sReal);
-  // 1ºĞ Æò±ÕÀ» ±¸ÇÑ °ªÀ» 10ºĞ ´©Àû¿¡ ´õÇÑ´Ù
+  // 1ë¶„ í‰ê· ì„ êµ¬í•œ ê°’ì„ 10ë¶„ ëˆ„ì ì— ë”í•œë‹¤
   pSystem->mTempBuf[MIN10_PROC].lTot += pAws->mTemperature.sReal;  
   pSystem->mTempBuf[MIN10_PROC].sAddCnt++;
 
-  // ±â¾Ğ
+  // ê¸°ì••
   AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[MIN1_PROC],
                    mRealAws.mBarometric.sReal);
   pSystem->mBaroBuf[MIN10_PROC].lTot += pAws->mBarometric.sReal;
   pSystem->mBaroBuf[MIN10_PROC].sAddCnt++;
 
-  // ½Àµµ
+  // ìŠµë„
   AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[MIN1_PROC],
                    mRealAws.mHumidity.sReal);
   pSystem->mHumidBuf[MIN10_PROC].lTot += pAws->mHumidity.sReal;
   pSystem->mHumidBuf[MIN10_PROC].sAddCnt++;
 
   pSystem->mSun[MIN10_PROC].nSunshineTot += pSystem->mSun[MIN1_PROC].nSunshineTot;
-  // ´ÜÀ§º¯È¯ W/M2 -> MJ/M2
+  // ë‹¨ìœ„ë³€í™˜ W/M2 -> MJ/M2
   pSystem->mSun[MIN10_PROC].nSolarTot += pSystem->mSun[MIN1_PROC].nSolarTot / 1000000;  
 
-  // Ç³Çâ Ç³¼Ó
+  // í’í–¥ í’ì†
   WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN1_PROC], &mRealAws.mWind);
   DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,
                &pSystem->mWind[MIN10_PROC].uTot,
                &pSystem->mWind[MIN10_PROC].vTot);
-  pSystem->mWind[MIN10_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal;  // 1ºĞ "
+  pSystem->mWind[MIN10_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal;  // 1ë¶„ "
   pSystem->mWind[MIN10_PROC].sAddCnt++;
 
-  // ÀÏ»ç ÀÏÁ¶
-  // ÀÏÁ¶ 1ºĞ ´©Àû°ª
+  // ì¼ì‚¬ ì¼ì¡°
+  // ì¼ì¡° 1ë¶„ ëˆ„ì ê°’
   pAws->mSunshine.sReal = pSystem->mSun[MIN1_PROC].nSunshineTot;     
-  pAws->mSunshine.sMax += pAws->mSunshine.sReal;  // ÇÏ·ç ÃÑ ÀÏÁ¶
+  pAws->mSunshine.sMax += pAws->mSunshine.sReal;  // í•˜ë£¨ ì´ ì¼ì¡°
   pSystem->mSun[MIN1_PROC].nSunshineTot = 0;
 
-  pAws->mSolarRad.sReal =  pSystem->mSun[MIN1_PROC].nSolarTot / 1000;  // ÀÏ»ç 1ºĞ   ´©Àû°ª  KJ/m2
+  pAws->mSolarRad.sReal =  pSystem->mSun[MIN1_PROC].nSolarTot / 1000;  // ì¼ì‚¬ 1ë¶„   ëˆ„ì ê°’  KJ/m2
   pSystem->mSun[MIN1_PROC].nSolarTot = 0;
   pSystem->mSun[MIN10_PROC].nSolarTot += pAws->mSolarRad.sReal;
-  pAws->mSolarRad.sMax += pAws->mSolarRad.sReal;  // ÇÏ·ç ÃÑ ÀÏ»ç
+  pAws->mSolarRad.sMax += pAws->mSolarRad.sReal;  // í•˜ë£¨ ì´ ì¼ì‚¬
   mRealAws.mSolarRad.sMax = pAws->mSolarRad.sMax;
   m10MinAws.mSolarRad.sMax = pAws->mSolarRad.sMax;
   mHourAws.mSolarRad.sMax = pAws->mSolarRad.sMax;
 
-  // ÁöÁß  ¿Âµµ 2017.04.03
+  // ì§€ì¤‘  ì˜¨ë„ 2017.04.03
   AwsMinMaxTotSave(&pAws->mSoilTemp5cm, &pSystem->mSoil5Buf[MIN1_PROC],
                    mRealAws.mSoilTemp5cm.sReal);
   pSystem->mSoil5Buf[MIN10_PROC].lTot +=
-      pAws->mSoilTemp5cm.sReal;  // 1ºĞ Æò±ÕÀ» ±¸ÇÑ °ªÀ» 10ºĞ ´©Àû¿¡ ´õÇÑ´Ù
+      pAws->mSoilTemp5cm.sReal;  // 1ë¶„ í‰ê· ì„ êµ¬í•œ ê°’ì„ 10ë¶„ ëˆ„ì ì— ë”í•œë‹¤
   pSystem->mSoil5Buf[MIN10_PROC].sAddCnt++;
 
   AwsMinMaxTotSave(&pAws->mSoilTemp10cm, &pSystem->mSoil10Buf[MIN1_PROC],
                    mRealAws.mSoilTemp10cm.sReal);
   pSystem->mSoil10Buf[MIN10_PROC].lTot +=
-      pAws->mSoilTemp10cm.sReal;  // 1ºĞ Æò±ÕÀ» ±¸ÇÑ °ªÀ» 10ºĞ ´©Àû¿¡ ´õÇÑ´Ù
+      pAws->mSoilTemp10cm.sReal;  // 1ë¶„ í‰ê· ì„ êµ¬í•œ ê°’ì„ 10ë¶„ ëˆ„ì ì— ë”í•œë‹¤
   pSystem->mSoil10Buf[MIN10_PROC].sAddCnt++;
 
   AwsMinMaxTotSave(&pAws->mSoilTemp20cm, &pSystem->mSoil20Buf[MIN1_PROC],
                    mRealAws.mSoilTemp20cm.sReal);
   pSystem->mSoil20Buf[MIN10_PROC].lTot +=
-      pAws->mSoilTemp20cm.sReal;  // 1ºĞ Æò±ÕÀ» ±¸ÇÑ °ªÀ» 10ºĞ ´©Àû¿¡ ´õÇÑ´Ù
+      pAws->mSoilTemp20cm.sReal;  // 1ë¶„ í‰ê· ì„ êµ¬í•œ ê°’ì„ 10ë¶„ ëˆ„ì ì— ë”í•œë‹¤
   pSystem->mSoil20Buf[MIN10_PROC].sAddCnt++;
 
   AwsMinMaxTotSave(&pAws->mSoilTemp30cm, &pSystem->mSoil30Buf[MIN1_PROC],
                    mRealAws.mSoilTemp30cm.sReal);
   pSystem->mSoil30Buf[MIN10_PROC].lTot +=
-      pAws->mSoilTemp30cm.sReal;  // 1ºĞ Æò±ÕÀ» ±¸ÇÑ °ªÀ» 10ºĞ ´©Àû¿¡ ´õÇÑ´Ù
+      pAws->mSoilTemp30cm.sReal;  // 1ë¶„ í‰ê· ì„ êµ¬í•œ ê°’ì„ 10ë¶„ ëˆ„ì ì— ë”í•œë‹¤
   pSystem->mSoil30Buf[MIN10_PROC].sAddCnt++;
 
   AwsMinMaxTotSave(&pAws->mSoilTemp50cm, &pSystem->mSoil50Buf[MIN1_PROC],
                    mRealAws.mSoilTemp50cm.sReal);
-  // 1ºĞ Æò±ÕÀ» ±¸ÇÑ °ªÀ» 10ºĞ ´©Àû¿¡ ´õÇÑ´Ù
+  // 1ë¶„ í‰ê· ì„ êµ¬í•œ ê°’ì„ 10ë¶„ ëˆ„ì ì— ë”í•œë‹¤
   pSystem->mSoil50Buf[MIN10_PROC].lTot += pAws->mSoilTemp50cm.sReal;  
   pSystem->mSoil50Buf[MIN10_PROC].sAddCnt++;
 
   AwsMinMaxTotSave(&pAws->mSoilTemp1_0m, &pSystem->mSoil100Buf[MIN1_PROC],
                    mRealAws.mSoilTemp1_0m.sReal);
-  // 1ºĞ Æò±ÕÀ» ±¸ÇÑ °ªÀ» 10ºĞ ´©Àû¿¡ ´õÇÑ´Ù
+  // 1ë¶„ í‰ê· ì„ êµ¬í•œ ê°’ì„ 10ë¶„ ëˆ„ì ì— ë”í•œë‹¤
   pSystem->mSoil100Buf[MIN10_PROC].lTot += pAws->mSoilTemp1_0m.sReal; 
   pSystem->mSoil100Buf[MIN10_PROC].sAddCnt++;
 
   AwsMinMaxTotSave(&pAws->mSoilTemp1_5m, &pSystem->mSoil150Buf[MIN1_PROC],
                    mRealAws.mSoilTemp1_5m.sReal);
 
-  // 1ºĞ Æò±ÕÀ» ±¸ÇÑ °ªÀ» 10ºĞ ´©Àû¿¡ ´õÇÑ´Ù
+  // 1ë¶„ í‰ê· ì„ êµ¬í•œ ê°’ì„ 10ë¶„ ëˆ„ì ì— ë”í•œë‹¤
   pSystem->mSoil150Buf[MIN10_PROC].lTot  +=  pAws->mSoilTemp1_5m.sReal; 
   pSystem->mSoil150Buf[MIN10_PROC].sAddCnt++;
-  // ÁöÁß¿Âµµ Ã³¸® ³¡
+  // ì§€ì¤‘ì˜¨ë„ ì²˜ë¦¬ ë
 
-  // °­¼ö·® Ã³¸®
-  // 2010. 08. 28. ¼öÁ¤
+  // ê°•ìˆ˜ëŸ‰ ì²˜ë¦¬
+  // 2010. 08. 28. ìˆ˜ì •
   pAws->mRainFall.sHourRain = pSystem->mRain.sHourRain;
   pAws->mRainFall.sMonthRain = pSystem->mRain.sMonthRain;
   pAws->mRainFall.sYearRain = pSystem->mRain.sYearRain;
   pAws->rain_1min = pSystem->mRain.sMinRain;
-  pSystem->mRain.sMinRain = 0;                                  // 1ºĞ °­¼ö·®
+  pSystem->mRain.sMinRain = 0;                                  // 1ë¶„ ê°•ìˆ˜ëŸ‰
 
   set_rainfall_1min(0);
 
@@ -742,8 +742,8 @@ void MinProcess(DATE_TIME_BUF *pDate)
 }
 
 void Min10Process(void)
-// 10ºĞÀÌ ‰çÀ»¶§ Ã³¸® ³»¿ë
-// ¿Âµµ, ½Àµµ, ±â¾Ğ ÀÏÁ¶, ÀÏ»ç 1½Ã°£ ´©Àû, ¹× 10ºĞ ÃÖ¼Ò ÃÖ°í Ã³¸®
+// 10ë¶„ì´ ë¬ì„ë•Œ ì²˜ë¦¬ ë‚´ìš©
+// ì˜¨ë„, ìŠµë„, ê¸°ì•• ì¼ì¡°, ì¼ì‚¬ 1ì‹œê°„ ëˆ„ì , ë° 10ë¶„ ìµœì†Œ ìµœê³  ì²˜ë¦¬
 {
   SYSTEM_INFO_AWS *pSystem;
   AWS_DATA_STRUCT *pAws;
@@ -752,34 +752,34 @@ void Min10Process(void)
   pSystem = &Sysinfo;
   pAws = &m10MinAws;
 
-  // ¿Âµµ
+  // ì˜¨ë„
   AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[MIN10_PROC],
                    mRealAws.mTemperature.sReal);
   pSystem->mTempBuf[HOUR_PROC].lTot += pAws->mTemperature.sReal;
   pSystem->mTempBuf[HOUR_PROC].sAddCnt++;
 
-  // ±â¾Ğ
+  // ê¸°ì••
   AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[MIN10_PROC],
                    mRealAws.mBarometric.sReal);
   pSystem->mBaroBuf[HOUR_PROC].lTot += pAws->mBarometric.sReal;
   pSystem->mBaroBuf[HOUR_PROC].sAddCnt++;
 
-  // ½Àµµ
+  // ìŠµë„
   AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[MIN10_PROC],
                    mRealAws.mHumidity.sReal);
   pSystem->mHumidBuf[HOUR_PROC].lTot += pAws->mHumidity.sReal;
   pSystem->mHumidBuf[HOUR_PROC].sAddCnt++;
 
-  // Ç³Çâ Ç³¼Ó
+  // í’í–¥ í’ì†
   WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN10_PROC],
-                    &mRealAws.mWind);  // 10ºĞ
+                    &mRealAws.mWind);  // 10ë¶„
   DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,
                &pSystem->mWind[HOUR_PROC].uTot,
                &pSystem->mWind[HOUR_PROC].vTot);
-  pSystem->mWind[HOUR_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal;  // 1½Ã°£ "
+  pSystem->mWind[HOUR_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal;  // 1ì‹œê°„ "
   pSystem->mWind[HOUR_PROC].sAddCnt++;
 
-  // ÀÏ»ç ÀÏÁ¶
+  // ì¼ì‚¬ ì¼ì¡°
   pSystem->mSun[HOUR_PROC].nSolarTot += pSystem->mSun[MIN10_PROC].nSolarTot;
   pSystem->mSun[HOUR_PROC].nSunshineTot +=
       pSystem->mSun[MIN10_PROC].nSunshineTot;
@@ -791,7 +791,7 @@ void Min10Process(void)
   pSystem->mSun[MIN10_PROC].nSolarTot = 0;
   pSystem->mSun[HOUR_PROC].nSolarTot += pAws->mSolarRad.sReal;
 
-  // ÁöÁß ¿Âµµ Ã³¸® Ãß°¡ 17.04.03
+  // ì§€ì¤‘ ì˜¨ë„ ì²˜ë¦¬ ì¶”ê°€ 17.04.03
   AwsMinMaxTotSave(&pAws->mSoilTemp5cm, &pSystem->mSoil5Buf[MIN10_PROC],
                    mRealAws.mSoilTemp5cm.sReal);
   pSystem->mSoil5Buf[HOUR_PROC].lTot += pAws->mSoilTemp5cm.sReal;
@@ -827,18 +827,18 @@ void Min10Process(void)
   pSystem->mSoil150Buf[HOUR_PROC].lTot += pAws->mSoilTemp1_5m.sReal;
   pSystem->mSoil150Buf[HOUR_PROC].sAddCnt++;
 
-  // ÁöÁß ¿Âµµ Ã³¸® ³¡
+  // ì§€ì¤‘ ì˜¨ë„ ì²˜ë¦¬ ë
 
-  // °­¼ö·® Ã³¸®
-  pAws->mRainFall.sReal = pSystem->mRain.s10MinRain;  // 10ºĞ °­¼ö·®
+  // ê°•ìˆ˜ëŸ‰ ì²˜ë¦¬
+  pAws->mRainFall.sReal = pSystem->mRain.s10MinRain;  // 10ë¶„ ê°•ìˆ˜ëŸ‰
   pAws->mRainFall.sHourRain = pSystem->mRain.sHourRain;
-  pSystem->mRain.s10MinRain = 0;  // 10ºĞ °­¼ö·®
+  pSystem->mRain.s10MinRain = 0;  // 10ë¶„ ê°•ìˆ˜ëŸ‰
   set_rainfall_10min(pSystem->mRain.s10MinRain/10.0f);
 
 #if 0 
-// 2010. 11. 30. ¼öÁ¤ Àû¼³·® Ã³¸®
-	shSnow = mRealAws.mSnowFall.sReal - pSystem->shSnowFallOld;											// ½Ç Àû¼³¿¡¼­ ¿¹ÀüÀû¼³(10ºĞÀü)À» »«´Ù
-	if(shSnow >= 0)																							// +ÀÎ °æ¿ì´Â ´«ÀÌ ¿Â°ÍÀÓ
+// 2010. 11. 30. ìˆ˜ì • ì ì„¤ëŸ‰ ì²˜ë¦¬
+	shSnow = mRealAws.mSnowFall.sReal - pSystem->shSnowFallOld;											// ì‹¤ ì ì„¤ì—ì„œ ì˜ˆì „ì ì„¤(10ë¶„ì „)ì„ ëº€ë‹¤
+	if(shSnow >= 0)																							// +ì¸ ê²½ìš°ëŠ” ëˆˆì´ ì˜¨ê²ƒì„
 	{
 		m10MinAws.mSnowFall.sReal = shSnow;	
 	}
@@ -846,7 +846,7 @@ void Min10Process(void)
 	{
 		m10MinAws.mSnowFall.sReal = 0;	
 	}	
-	pSystem->shSnowFallOld 	= mRealAws.mSnowFall.sReal;														// ÇöÀç Àû¼³À§Ä¡¸¦ ¿Å°Ü ³õ´Â´Ù.
+	pSystem->shSnowFallOld 	= mRealAws.mSnowFall.sReal;														// í˜„ì¬ ì ì„¤ìœ„ì¹˜ë¥¼ ì˜®ê²¨ ë†“ëŠ”ë‹¤.
 #else
       m10MinAws.mSnowFall.sReal = mRealAws.mSnowFall.sReal;
 #endif
@@ -854,15 +854,15 @@ void Min10Process(void)
 
 
 /*
-ÇÑ½Ã°£ ÀÚ·á Ã³¸® Ç×¸ñ
-¿Âµµ
-±â¾Ğ
-½Àµµ
-Ç³Çâ
-Ç³¼Ó
-ÀÏ»ç
-ÀÏÁ¶
-ÁöÁß¿Âµµ
+í•œì‹œê°„ ìë£Œ ì²˜ë¦¬ í•­ëª©
+ì˜¨ë„
+ê¸°ì••
+ìŠµë„
+í’í–¥
+í’ì†
+ì¼ì‚¬
+ì¼ì¡°
+ì§€ì¤‘ì˜¨ë„
 */
 void HourProcess(DATE_TIME_BUF *pDate)
 {
@@ -872,24 +872,24 @@ void HourProcess(DATE_TIME_BUF *pDate)
   pSystem = &Sysinfo;
   pAws = &mHourAws;
 
-  // ¿Âµµ
+  // ì˜¨ë„
   AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[HOUR_PROC],
                    mRealAws.mTemperature.sReal);
-  // ±â¾Ğ
+  // ê¸°ì••
   AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[HOUR_PROC],
                    mRealAws.mBarometric.sReal);
-  // ½Àµµ
+  // ìŠµë„
   AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[HOUR_PROC],
                    mRealAws.mHumidity.sReal);
-  // Ç³Çâ Ç³¼Ó
+  // í’í–¥ í’ì†
   WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[HOUR_PROC], &mRealAws.mWind);
-  // ÀÏ»ç ÀÏÁ¶
+  // ì¼ì‚¬ ì¼ì¡°
   pAws->mSunshine.sReal = pSystem->mSun[HOUR_PROC].nSunshineTot;
   pSystem->mSun[HOUR_PROC].nSunshineTot = 0;
   pAws->mSolarRad.sReal = pSystem->mSun[HOUR_PROC].nSolarTot;
   pSystem->mSun[HOUR_PROC].nSolarTot = 0;
 
-  // ÁöÁß¿Âµµ Ã³¸® 2017.04.03
+  // ì§€ì¤‘ì˜¨ë„ ì²˜ë¦¬ 2017.04.03
 
   AwsMinMaxTotSave(&pAws->mSoilTemp5cm, &pSystem->mSoil5Buf[HOUR_PROC],
                    mRealAws.mSoilTemp5cm.sReal);
@@ -905,12 +905,12 @@ void HourProcess(DATE_TIME_BUF *pDate)
                    mRealAws.mSoilTemp1_0m.sReal);
   AwsMinMaxTotSave(&pAws->mSoilTemp1_5m, &pSystem->mSoil150Buf[HOUR_PROC],
                    mRealAws.mSoilTemp1_5m.sReal);
-  // ÁöÁß ¿Âµµ Ã³¸® ³¡
+  // ì§€ì¤‘ ì˜¨ë„ ì²˜ë¦¬ ë
 
-  // °­¼ö·® Ã³¸®
-  // 2010. 08. 28. ¼öÁ¤
-  //    pAws->mRainFall.sReal    = pSystem->mRain.sHourRain; // 1½Ã°£ °­¼ö·®
-  pSystem->mRain.sHourRain = 0;  // 1½Ã°£ °­¼ö·®
+  // ê°•ìˆ˜ëŸ‰ ì²˜ë¦¬
+  // 2010. 08. 28. ìˆ˜ì •
+  //    pAws->mRainFall.sReal    = pSystem->mRain.sHourRain; // 1ì‹œê°„ ê°•ìˆ˜ëŸ‰
+  pSystem->mRain.sHourRain = 0;  // 1ì‹œê°„ ê°•ìˆ˜ëŸ‰
 
   set_rainfall_hourly(0.0f);
   set_sunshine_hourly(0);
@@ -922,45 +922,45 @@ void DayProcess(void)
 
   pSystem = &Sysinfo;
 
-  mRealAws.mWind.mDirection.sMax = 0; //ÀÏ ÃÖ´ë Ç³Çâ ÃÊ±âÈ­
-  mRealAws.mWind.mSpeed.sMax = 0;    //ÀÏ ÃÖ´ë Ç³¼Ó ÃÊ±âÈ­
+  mRealAws.mWind.mDirection.sMax = 0; //ì¼ ìµœëŒ€ í’í–¥ ì´ˆê¸°í™”
+  mRealAws.mWind.mSpeed.sMax = 0;    //ì¼ ìµœëŒ€ í’ì† ì´ˆê¸°í™”
 
-  mRealAws.mTemperature.sMin = mRealAws.mTemperature.sReal;//ÀÏ ÃÖÀú ±â¿Â ÃÊ±âÈ­
+  mRealAws.mTemperature.sMin = mRealAws.mTemperature.sReal;//ì¼ ìµœì € ê¸°ì˜¨ ì´ˆê¸°í™”
   mRealAws.mTemperature.sMax = 0;
 
-  mRealAws.mBarometric.sMin = 9999; //ÀÏ ÃÖÀú ±â¾Ğ ÃÊ±âÈ­
+  mRealAws.mBarometric.sMin = 9999; //ì¼ ìµœì € ê¸°ì•• ì´ˆê¸°í™”
   mRealAws.mBarometric.sMax = 0;
 
-  mRealAws.mHumidity.sMin = 9999;  // ÀÏ ÃÖÀú ½Àµµ ÃÊ±âÈ­
+  mRealAws.mHumidity.sMin = 9999;  // ì¼ ìµœì € ìŠµë„ ì´ˆê¸°í™”
   mRealAws.mHumidity.sMax = 0;
 
-  mRealAws.mSoilTemp5cm.sMin  = 9999;  // ÀÏ ÃÖÀú ÁöÁß ¿Âµµ 5cm
+  mRealAws.mSoilTemp5cm.sMin  = 9999;  // ì¼ ìµœì € ì§€ì¤‘ ì˜¨ë„ 5cm
   mRealAws.mSoilTemp5cm.sMax = 0;
 
-  mRealAws.mSoilTemp10cm.sMin = 9999;  // ÀÏ ÃÖÀú ÁöÁß ¿Âµµ 10cm
+  mRealAws.mSoilTemp10cm.sMin = 9999;  // ì¼ ìµœì € ì§€ì¤‘ ì˜¨ë„ 10cm
   mRealAws.mSoilTemp10cm.sMax = 0;
 
-  mRealAws.mSoilTemp20cm.sMin = 9999;  // ÀÏ ÃÖÀú ÁöÁß ¿Âµµ 20cm
+  mRealAws.mSoilTemp20cm.sMin = 9999;  // ì¼ ìµœì € ì§€ì¤‘ ì˜¨ë„ 20cm
   mRealAws.mSoilTemp20cm.sMax = 0;
 
-  mRealAws.mSoilTemp30cm.sMin = 9999;  // ÀÏ ÃÖÀú ÁöÁß ¿Âµµ 30cm
+  mRealAws.mSoilTemp30cm.sMin = 9999;  // ì¼ ìµœì € ì§€ì¤‘ ì˜¨ë„ 30cm
   mRealAws.mSoilTemp30cm.sMax = 0;
 
-  mRealAws.mSoilTemp50cm.sMin = 9999;  // ÀÏ ÃÖÀú ÁöÁß ¿Âµµ 50cm
+  mRealAws.mSoilTemp50cm.sMin = 9999;  // ì¼ ìµœì € ì§€ì¤‘ ì˜¨ë„ 50cm
   mRealAws.mSoilTemp50cm.sMax = 0;
 
-  mRealAws.mSoilTemp1_0m.sMin = 9999;  // ÀÏ ÃÖÀú ÁöÁß ¿Âµµ 1m
+  mRealAws.mSoilTemp1_0m.sMin = 9999;  // ì¼ ìµœì € ì§€ì¤‘ ì˜¨ë„ 1m
   mRealAws.mSoilTemp1_0m.sMax = 0;
 
-  mRealAws.mSoilTemp1_5m.sMin = 9999;  // ÀÏ ÃÖÀú ÁöÁß ¿Âµµ 1.5cm
+  mRealAws.mSoilTemp1_5m.sMin = 9999;  // ì¼ ìµœì € ì§€ì¤‘ ì˜¨ë„ 1.5cm
   mRealAws.mSoilTemp1_5m.sMax = 0;
   
-  mRealAws.mSunshine.sMax = 0;  // ÇÏ·ç ÃÑ ÀÏÁ¶
-  mMinAws.mSunshine.sMax = 0;   // ÇÏ·ç ÃÑ ÀÏÁ¶
-  mMinAws.mSolarRad.sMax = 0;   // ÇÏ·ç ÃÑ ÀÏ»ç
+  mRealAws.mSunshine.sMax = 0;  // í•˜ë£¨ ì´ ì¼ì¡°
+  mMinAws.mSunshine.sMax = 0;   // í•˜ë£¨ ì´ ì¼ì¡°
+  mMinAws.mSolarRad.sMax = 0;   // í•˜ë£¨ ì´ ì¼ì‚¬
 
-  // °­¼ö·® Ã³¸®
-  pSystem->mRain.sBefDayRain = pSystem->mRain.sDayRain;  // ÀüÀÏ°­¼ö·®
+  // ê°•ìˆ˜ëŸ‰ ì²˜ë¦¬
+  pSystem->mRain.sBefDayRain = pSystem->mRain.sDayRain;  // ì „ì¼ê°•ìˆ˜ëŸ‰
   pSystem->mRain.sDayRain = 0;
 
   set_rainfall_today(0.0f);
@@ -986,10 +986,10 @@ void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v)
 {
   float fAngle;
 
-  fAngle = (float)sDirc / 10;  // 3599¸¦ 359
+  fAngle = (float)sDirc / 10;  // 3599ë¥¼ 359
 
 #if 0
-/* Memory Table¿¡ÀÇÇÑ ¿¬»ê¼Óµµ´Â 250usÁ¤µµ ¼Ò¿äµÊ */
+/* Memory Tableì—ì˜í•œ ì—°ì‚°ì†ë„ëŠ” 250usì •ë„ ì†Œìš”ë¨ */
     if(nAngle <= 90)
     {
         nTt = (90 - nAngle);
@@ -1020,32 +1020,32 @@ void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v)
 #endif
 
 #if 1
-  /* maker Ãø Á¦°ø ÇÔ¼ö »ç¿ë */
-  /* MakerÃø Á¦°ø ÇÔ¼ö´Â 2.2ms Á¤µµ ½Ã°£ÀÌ ¼Ò¿äµÊ */
+  /* maker ì¸¡ ì œê³µ í•¨ìˆ˜ ì‚¬ìš© */
+  /* Makerì¸¡ ì œê³µ í•¨ìˆ˜ëŠ” 2.2ms ì •ë„ ì‹œê°„ì´ ì†Œìš”ë¨ */
   if (fAngle <= 90)
-  {  // 1 »óÇÑ Ã³¸®
+  {  // 1 ìƒí•œ ì²˜ë¦¬
     *dir_u += (float)sSpeed * (float)sin((double)fAngle * D2R);
     *dir_v += (float)sSpeed * (float)cos((double)fAngle * D2R);
   }
   else if (fAngle <= 180)
-  {  // 2 »óÇÑ Ã³¸®
+  {  // 2 ìƒí•œ ì²˜ë¦¬
     *dir_u += (float)sSpeed * (float)cos(((double)fAngle - 90.0) * D2R);
     *dir_v += (float)sSpeed * (float)sin(((double)fAngle - 90.0) * D2R) * -1.0;
   }
   else if (fAngle <= 270)
-  {  // 3 »óÇÑ Ã³¸®
+  {  // 3 ìƒí•œ ì²˜ë¦¬
     *dir_u += (float)sSpeed * (float)sin(((double)fAngle - 180.0) * D2R) * -1.0;
     *dir_v += (float)sSpeed * (float)cos(((double)fAngle - 180.0) * D2R) * -1.0;
   }
   else
-  {  // 4 »óÇÑ Ã³¸®
+  {  // 4 ìƒí•œ ì²˜ë¦¬
     *dir_u += (float)sSpeed * (float)cos(((double)fAngle - 270.0) * D2R) * -1.0;
     *dir_v += (float)sSpeed * (float)sin(((double)fAngle - 270.0) * D2R);
   }
-/* maker Ãø Á¦°ø ÇÔ¼ö »ç¿ë ³¡ */
+/* maker ì¸¡ ì œê³µ í•¨ìˆ˜ ì‚¬ìš© ë */
 #endif
 }
-// AWS´ãÀ§ ÃøÁ¤°ª *10
+// AWSë‹´ìœ„ ì¸¡ì •ê°’ *10
 uint16_t UVToDirc(float u_tmp, float v_tmp)
 {
   uint16_t sDirc;
@@ -1089,7 +1089,7 @@ uint16_t UVToDirc(float u_tmp, float v_tmp)
   return (sDirc);
 }
 
-// ´ÜÀ§ m/s
+// ë‹¨ìœ„ m/s
 float UVToSpeed(float u_tmp, float v_tmp)
 {
   float wind_speed;
@@ -1114,25 +1114,25 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
     SecProcess();
     if (pDate->Sec % 10 == 0)
     { 
-      Sec10Process(); // ¸Å 10ÃÊ ¸¶´Ù Ã³¸®
+      Sec10Process(); // ë§¤ 10ì´ˆ ë§ˆë‹¤ ì²˜ë¦¬
     }
     pOldDate->Sec = pDate->Sec;
   }
     if (pDate->Min != pOldDate->Min)
-    { /* ºĞÀÌ ¹Ù±Ğ¶§ Ã³¸®						*/
+    { /* ë¶„ì´ ë°”ê·ˆë•Œ ì²˜ë¦¬						*/
       MinProcess(pDate);
       update_kma_data(eAWS_DATA_1MIN);
       g_1min_data_updated = 1;
       pOldDate->Min = pDate->Min;
       if (pDate->Min % 10 == 0)
-      {  // ¸Å 10ºĞ ¸¶´Ù Ã³¸®
+      {  // ë§¤ 10ë¶„ ë§ˆë‹¤ ì²˜ë¦¬
         Min10Process();
         update_kma_data(eAWS_DATA_10MIN);
       }
     }
 
     if (pDate->Hour != pOldDate->Hour)
-    { /* ½Ã°£ÀÌ ¹Ù²ğ¶§ Ã³¸®					*/
+    { /* ì‹œê°„ì´ ë°”ë€”ë•Œ ì²˜ë¦¬					*/
       HourProcess(pDate);
       update_kma_data(eAWS_DATA_HOUR);
       pOldDate->Hour = pDate->Hour;
@@ -1145,9 +1145,9 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
     }
 
     if (pDate->Month != pOldDate->Month)
-    { /* ´ŞÀÌ ¹Ù²ğ¶§ Ã³¸®						*/
-      // ¿ù°£ °­¼ö·® ±â·Ï
-      // ±İ¿ù ¿ù°£ °­¼ö·® »èÁ¦
+    { /* ë‹¬ì´ ë°”ë€”ë•Œ ì²˜ë¦¬						*/
+      // ì›”ê°„ ê°•ìˆ˜ëŸ‰ ê¸°ë¡
+      // ê¸ˆì›” ì›”ê°„ ê°•ìˆ˜ëŸ‰ ì‚­ì œ
       MonthProcess();
       pOldDate->Month = pDate->Month;
     }
@@ -1192,38 +1192,38 @@ void update_kma_data(eAWS_DATA_MIN_t min)
 
   p_kma_data = get_kma_data((eAWS_DATA_MIN_t)min);
 
-  // ¿Âµµ
+  // ì˜¨ë„
   p_kma_data->temperature.data = pAws->mTemperature.sReal;
   p_kma_data->temperature.max = pAws->mTemperature.sMax;
   p_kma_data->temperature.min = pAws->mTemperature.sMin;
 
-  // ±â¾Ğ
+  // ê¸°ì••
   p_kma_data->pressure.max = pAws->mBarometric.sMax;
   p_kma_data->pressure.min = pAws->mBarometric.sMin;
   p_kma_data->pressure.data = pAws->mBarometric.sReal;
 
-  // ½Àµµ
+  // ìŠµë„
   p_kma_data->relative_humidity.data = pAws->mHumidity.sReal;
   p_kma_data->relative_humidity.max = pAws->mHumidity.sMin;
   p_kma_data->relative_humidity.min = pAws->mHumidity.sMin;
 
-  // Ç³Çâ
+  // í’í–¥
   p_kma_data->wind_direction_avg.data = pAws->mWind.mDirection.sReal;
   p_kma_data->wind_direction_avg.max = pAws->mWind.mDirection.sMax;
 
-  // Ç³¼Ó
+  // í’ì†
   p_kma_data->wind_speed_avg.data = pAws->mWind.mSpeed.sReal;
   p_kma_data->wind_speed_avg.max = pAws->mWind.mSpeed.sMax;
 
-  // ÀÏÁ¶
+  // ì¼ì¡°
   p_kma_data->sunshine_duration.data = pAws->mSunshine.sReal;
-  p_kma_data->sunshine_duration.max = pAws->mSunshine.sMax;  // ÇÏ·ç ÃÑ ÀÏÁ¶
+  p_kma_data->sunshine_duration.max = pAws->mSunshine.sMax;  // í•˜ë£¨ ì´ ì¼ì¡°
 
-  // ÀÏ»ç
+  // ì¼ì‚¬
   p_kma_data->solar_radiation.data = pAws->mSolarRad.sReal;
-  p_kma_data->solar_radiation.max = pAws->mSolarRad.sMax;  // ÀÏ°£
+  p_kma_data->solar_radiation.max = pAws->mSolarRad.sMax;  // ì¼ê°„
 
-  // ÁöÁß ¿Âµµ
+  // ì§€ì¤‘ ì˜¨ë„
   p_kma_data->soil_temperature_5cm.data = pAws->mSoilTemp5cm.sReal;
   p_kma_data->soil_temperature_5cm.max = pAws->mSoilTemp5cm.sMax;
   p_kma_data->soil_temperature_5cm.min = pAws->mSoilTemp5cm.sMin;
@@ -1256,11 +1256,11 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->wind_direction_instant.data = pAws->mWind.mDirection.sMax;
 
   p_kma_data->precipitation.data  = pAws->mRainFall.sReal;
-  p_kma_data->precipitation.hour  = pAws->mRainFall.sHourRain;    // ½Ã°£´ç °­¼ö·®·®
-  p_kma_data->precipitation.month = pAws->mRainFall.sMonthRain;  // ¿ù°£ °­¼ö·®
-  p_kma_data->precipitation.year  = pAws->mRainFall.sYearRain;  // ¿¬°£ °­¼ö·®
+  p_kma_data->precipitation.hour  = pAws->mRainFall.sHourRain;    // ì‹œê°„ë‹¹ ê°•ìˆ˜ëŸ‰ëŸ‰
+  p_kma_data->precipitation.month = pAws->mRainFall.sMonthRain;  // ì›”ê°„ ê°•ìˆ˜ëŸ‰
+  p_kma_data->precipitation.year  = pAws->mRainFall.sYearRain;  // ì—°ê°„ ê°•ìˆ˜ëŸ‰
 
-  p_kma_data->precipitation_presence.data = pAws->mRainDetect.sReal;  // ¿ì·® °¨Áö
+  p_kma_data->precipitation_presence.data = pAws->mRainDetect.sReal;  // ìš°ëŸ‰ ê°ì§€
 
   p_kma_data->snowfall.data = pAws->mSnowFall.sReal;
 

@@ -128,7 +128,7 @@ void load_config_sensor(void)
 
 
 #if 0 
-  //Ã¼Å© 
+  //ì²´í¬ 
   crc_result = false;
   
   config_sensor_t *p_config = aws_malloc(sizeof(config_sensor_t));
@@ -168,11 +168,11 @@ void load_config_sensor(void)
 
 config_sensor_t *get_config_sensor(void)
 {
-  // ÇÊ¿ä½Ã ÀûÀıÇÑ Á¶Ä¡ Ã³¸®
+  // í•„ìš”ì‹œ ì ì ˆí•œ ì¡°ì¹˜ ì²˜ë¦¬
   return &g_config_sensor;
 }
 
-//task ½ÇÇà ¾ÈµÇ°Ô ÇÏ°í ¾÷µ¥ÀÌÆ® ÈÄ Àåºñ Àç½ÃÀÛ
+//task ì‹¤í–‰ ì•ˆë˜ê²Œ í•˜ê³  ì—…ë°ì´íŠ¸ í›„ ì¥ë¹„ ì¬ì‹œì‘
 void config_sensor_reset(void)
 {
   memset(&g_config_sensor,0,sizeof(g_config_sensor));
@@ -191,7 +191,7 @@ void backup_config_sensor(void)
   f_ret = write_file(PATH_CONFIG_SENSOR_BIN, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor), 0);
   if (f_ret == FR_OK)
   {
-    io_printf("0:config_sensor.bin ÀúÀåµÇ¾ú½À´Ï´Ù.\r\n");
+    io_printf("0:config_sensor.bin ì €ì¥ë˜ì—ˆìŠµë‹ˆë‹¤.\r\n");
   }
 }
 
@@ -211,7 +211,7 @@ void restore_config_sensor(void)
     
     if(f_ret != FR_OK)
     {
-      io_printf("ÆÄÀÏ ÀĞ±â ¿À·ù  %d\r\n",f_ret);
+      io_printf("íŒŒì¼ ì½ê¸° ì˜¤ë¥˜  %d\r\n",f_ret);
       aws_free(p_config);
       return ;
     }
@@ -222,13 +222,13 @@ void restore_config_sensor(void)
         {
           memcpy(&g_config_sensor, p_config, sizeof(config_sensor_t));
           crc_result = true;
-          io_printf("0:config_sensor.bin º¹±¸µÇ¾ú½À´Ï´Ù.\r\n");
+          io_printf("0:config_sensor.bin ë³µêµ¬ë˜ì—ˆìŠµë‹ˆë‹¤.\r\n");
         }
       }
     
       if (crc_result == false)
       {
-        io_printf("Ã¼Å©¼¶ ¿À·ù\r\n");
+        io_printf("ì²´í¬ì„¬ ì˜¤ë¥˜\r\n");
       }
  
  

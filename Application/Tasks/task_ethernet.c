@@ -14,13 +14,13 @@
 
 const osThreadAttr_t ethernetTxTask_attributes = {
   .name = "ethernetTask",
-  .stack_size = 1024*3,//2048¹ÙÀÌÆ®°¡ ÇÒ´çµÊ ÇÏÁö¸¸ 4¹ÙÀÌÆ® ´ÜÀ§·Î ½ºÅÃÀº ±¸¼ºµÊ
+  .stack_size = 1024*3,//2048ë°”ì´íŠ¸ê°€ í• ë‹¹ë¨ í•˜ì§€ë§Œ 4ë°”ì´íŠ¸ ë‹¨ìœ„ë¡œ ìŠ¤íƒì€ êµ¬ì„±ë¨
   .priority = (osPriority_t) osPriorityRealtime,
 };
 
 
 /**
- * @brief ÀÌ´õ³İ ÃÊ±âÈ­ ÇØÁÖ°í Á¾·á
+ * @brief ì´ë”ë„· ì´ˆê¸°í™” í•´ì£¼ê³  ì¢…ë£Œ
  */
 void ethernetTask(void *arg)
 {
@@ -40,7 +40,7 @@ void ethernetTask(void *arg)
   noti_tcpClientTask(0x00000001);
   noti_httpServerTask(0x00000001);
   noti_telnetServerTask(0x00000001);
-  osThreadExit();//Á¾·á ½ÃÅ´
+  osThreadExit();//ì¢…ë£Œ ì‹œí‚´
 
 
 }

@@ -69,7 +69,7 @@ void SMS_Reset(sms_t *sms)
 {
 
   reset_system_delay(5);
-  snprintf(&sms->msg[0], sizeof(sms->msg) ,"%s","Àåºñ°¡ ¸®¼ÂµË´Ï´Ù");
+  snprintf(&sms->msg[0], sizeof(sms->msg) ,"%s","ì¥ë¹„ê°€ ë¦¬ì…‹ë©ë‹ˆë‹¤");
 
   _iCellular->send_sms(sms->num, sms->msg);
 }
@@ -90,7 +90,7 @@ void SMS_Reconnect_TCP(sms_t *sms)
 
   set_cdma_retarget(true);
 	
-  sprintf(sms->msg, "TCP IP/PORT¸¦ º¯°æÇÕ´Ï´Ù.");
+  sprintf(sms->msg, "TCP IP/PORTë¥¼ ë³€ê²½í•©ë‹ˆë‹¤.");
 
   _iCellular->send_sms(sms->num, sms->msg);
 }
@@ -113,7 +113,7 @@ void SMS_SET_VPN(sms_t *sms)
 
   _iCellular->read_vpn_config((char *)&vpn_info, sizeof(vpn_info));
 
-  vpn_info.ip[3] = 0;  // ¹®ÀÚ¿­ null;
+  vpn_info.ip[3] = 0;  // ë¬¸ìì—´ null;
 
   snprintf(sms->msg, sizeof(sms->msg), "%s", (char *)&vpn_info);
 
@@ -135,7 +135,7 @@ void SMS_Read_Mem(sms_t *sms)
   }
   else
   {
-    snprintf(sms->msg, sizeof(sms->msg), "ÆÄ¶ó¹ÌÅÍ ¿À·ù");
+    snprintf(sms->msg, sizeof(sms->msg), "íŒŒë¼ë¯¸í„° ì˜¤ë¥˜");
   }
 
   _iCellular->send_sms(sms->num, sms->msg);
@@ -156,7 +156,7 @@ void SMS_Read_Config(sms_t *sms)
   }
   else
   {
-    snprintf(sms->msg, sizeof(sms->msg), "ÆÄ¶ó¹ÌÅÍ ¿À·ù");
+    snprintf(sms->msg, sizeof(sms->msg), "íŒŒë¼ë¯¸í„° ì˜¤ë¥˜");
   }
 
   _iCellular->send_sms(sms->num, sms->msg);
@@ -219,7 +219,7 @@ void sms_cmd(sms_t *sms)
   }
 	else
 	{
-	//AWS(±¸) SMS¹æ½Ä Ã³¸®
+	//AWS(êµ¬) SMSë°©ì‹ ì²˜ë¦¬
 		CheckReadSMS(sms->msg,sms->num);
 	}
 }

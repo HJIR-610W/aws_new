@@ -19,8 +19,8 @@ void bsp_cdma_power_on(void);
 void bsp_cdma_power_off(void);
 
 
-float bsp_read_battery(void);    // º¸µå Àü¿ø
-float bsp_read_temperature(void);// º¸µå ¿Âµµ
+float bsp_read_battery(void);    // ë³´ë“œ ì „ì›
+float bsp_read_temperature(void);// ë³´ë“œ ì˜¨ë„
 
 bool bsp_door_opened(void);
 

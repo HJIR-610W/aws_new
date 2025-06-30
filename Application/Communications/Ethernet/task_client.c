@@ -54,7 +54,7 @@ static void tcp_client_service(int sock)
 
   if (set_recv_timeout(sock, CLIENT_CONNECT_TIMEOUT_MS) < 0)
   {
-    task_printf("Å¸ÀÓ¾Æ¿ô ¼³Á¤ ½ÇÆÐ\r\n");
+    task_printf("íƒ€ìž„ì•„ì›ƒ ì„¤ì • ì‹¤íŒ¨\r\n");
     return;
   }
 
@@ -67,7 +67,7 @@ static void tcp_client_service(int sock)
       err_code = errno;
       if (err_code == EAGAIN )//|| err_code == EWOULDBLOCK)
       {
-        continue;//Å¸ÀÓ¾Æ¿ô
+        continue;//íƒ€ìž„ì•„ì›ƒ
       }
       else
       {
@@ -98,7 +98,7 @@ static void tcp_client_service(int sock)
           ret = send(sock, tx_buffer+total, len-total, 0);
           if (ret <= 0)
           {
-            task_printf("Àü¼Û ½ÇÆÐ errno=%d\r\n", errno);
+            task_printf("ì „ì†¡ ì‹¤íŒ¨ errno=%d\r\n", errno);
             send_error = true;
             break;
           }
@@ -122,7 +122,7 @@ static void tcp_client_service(int sock)
     }
   }
 
-  // ¿¬°á Á¾·á »óÅÂ·Î °»½Å
+  // ì—°ê²° ì¢…ë£Œ ìƒíƒœë¡œ ê°±ì‹ 
   g_tcp_client_status.link_status = eLINK_DOWN;
 }
 
@@ -158,17 +158,17 @@ void tcpClientTask(void *arg)
         server_addr.sin_port = htons(config->eth_remote_server_port);
         server_addr.sin_addr.s_addr = inet_addr(server_ip); // example: "192.168.0.10"
 
-        task_printf("¼­¹ö ¿¬°á ½ÃÀÛ %s:%d...\r\n", server_ip, config->eth_remote_server_port);
+        task_printf("ì„œë²„ ì—°ê²° ì‹œìž‘ %s:%d...\r\n", server_ip, config->eth_remote_server_port);
 
         if (connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
         {
-          task_printf("¿¬°á ½ÇÆÐ Àç½Ãµµ\r\n");
+          task_printf("ì—°ê²° ì‹¤íŒ¨ ìž¬ì‹œë„\r\n");
           closesocket(sock);
           osDelay(SERVER_RETRY_INTERVAL_MS);
           continue;
         }
 
-        task_printf("¿¬°á ¼º°ø\r\n");
+        task_printf("ì—°ê²° ì„±ê³µ\r\n");
         g_tcp_client_status.link_status = eLINK_UP;
         tcp_client_service(sock);
         g_tcp_client_status.link_status = eLINK_IDLE;

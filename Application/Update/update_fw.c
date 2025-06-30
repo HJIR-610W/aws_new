@@ -17,20 +17,20 @@ __no_init volatile uint32_t SystemMagicValue;
 
 typedef struct fwHeader_s
 {
-  uint32_t ver;          // ¼½¼Ç Çì´õ Á¤º¸,1
-  uint32_t section;      // Æß¿ş¾î,const,lib  (1Æß¿ş¾î,2 const ,3 lib)
-  uint32_t hw_code;      // ÇÏµå¿ş¾î (1 µğ¹Ù½º, 2 M2M)
-  uint32_t nick;         // È­Áø, ºñÁ¯
-  uint32_t offset;       // ½ÃÀÛÁÖ¼Ò,0x00008000
-  uint32_t len;          // ±æÀÌ
-  uint32_t section_ver;  // section ¹öÀü
-  uint32_t time;         // Çì´õ »ı¼º ³¯Â¥
-  uint32_t restore;      // 0xFFFFFFFF ÀÌ¸é nick ¹«½ÃÇÏ°í ¾÷µ¥ÀÌÆ®
-  uint32_t pcb_n;        // Àû¿ë°¡´ÉÇÑ PCB ¹öÀü
-  uint32_t pcb[50];      // PCB ¹öÀü ¸ñ·Ï
-  uint8_t reserved[5];   // 4ÀÇ ¹è¼ö Á¤·Ä
+  uint32_t ver;          // ì„¹ì…˜ í—¤ë” ì •ë³´,1
+  uint32_t section;      // íŒì›¨ì–´,const,lib  (1íŒì›¨ì–´,2 const ,3 lib)
+  uint32_t hw_code;      // í•˜ë“œì›¨ì–´ (1 ë””ë°”ìŠ¤, 2 M2M)
+  uint32_t nick;         // í™”ì§„, ë¹„ì ¼
+  uint32_t offset;       // ì‹œì‘ì£¼ì†Œ,0x00008000
+  uint32_t len;          // ê¸¸ì´
+  uint32_t section_ver;  // section ë²„ì „
+  uint32_t time;         // í—¤ë” ìƒì„± ë‚ ì§œ
+  uint32_t restore;      // 0xFFFFFFFF ì´ë©´ nick ë¬´ì‹œí•˜ê³  ì—…ë°ì´íŠ¸
+  uint32_t pcb_n;        // ì ìš©ê°€ëŠ¥í•œ PCB ë²„ì „
+  uint32_t pcb[50];      // PCB ë²„ì „ ëª©ë¡
+  uint8_t reserved[5];   // 4ì˜ ë°°ìˆ˜ ì •ë ¬
   uint32_t fw_CRC;
-  uint32_t head_CRC;  // Çì´õÀÇ Çì´õÀÇ crc32
+  uint32_t head_CRC;  // í—¤ë”ì˜ í—¤ë”ì˜ crc32
 } fw_header_t;
 
 bool g_firmware_update_required=false;
@@ -101,7 +101,7 @@ uint8_t check_firmware(uint8_t local)
 
   if (fret == FR_OK && (file_size < FW_SIZE_MAX))
   {
-    io_printf("Å©±â:%d\r\n",file_size);
+    io_printf("í¬ê¸°:%d\r\n",file_size);
     p_buffer = aws_malloc(file_size);
 
     if (p_buffer ==NULL)
@@ -124,7 +124,7 @@ uint8_t check_firmware(uint8_t local)
           {
             aws_free(p_buffer);
           }
-          io_printf("Á¦Ç° ºÒÀÏÄ¡\r\n");
+          io_printf("ì œí’ˆ ë¶ˆì¼ì¹˜\r\n");
           return FW_ERR_MFG;
         }
 
@@ -134,7 +134,7 @@ uint8_t check_firmware(uint8_t local)
           {
             aws_free(p_buffer);
           }
-          io_printf("º°Äª ºÒÀÏÄ¡\r\n");
+          io_printf("ë³„ì¹­ ë¶ˆì¼ì¹˜\r\n");
           return FW_ERR_AREA;
         }
 
@@ -154,7 +154,7 @@ uint8_t check_firmware(uint8_t local)
           {
             aws_free(p_buffer);
           }
-          io_printf("PCB ¹öÀü ºÒÀÏÄ¡\r\n");
+          io_printf("PCB ë²„ì „ ë¶ˆì¼ì¹˜\r\n");
           return FW_ERR_PCB;
         }
       }
@@ -164,7 +164,7 @@ uint8_t check_firmware(uint8_t local)
         {
           aws_free(p_buffer);
         }
-        io_printf("CRC ºÒÀÏÄ¡\r\n");
+        io_printf("CRC ë¶ˆì¼ì¹˜\r\n");
         return FW_FILE_CRC_ERR;
       }
     }

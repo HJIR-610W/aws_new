@@ -69,12 +69,12 @@ static const char *autocomplete(const char *input)
 }
 
 
-// ÁÙ ÀüÃ¼ Áö¿ì°í »õ·Î Ãâ·Â (È÷½ºÅä¸® ºÒ·¯¿Ã ¶§ »ç¿ë)
+// ì¤„ ì „ì²´ ì§€ìš°ê³  ìƒˆë¡œ ì¶œë ¥ (ížˆìŠ¤í† ë¦¬ ë¶ˆëŸ¬ì˜¬ ë•Œ ì‚¬ìš©)
 static void clear_line_and_print(const char *buf, int len)
 {
   uart_puts("\r");
 }
-// ÁÙ ´Ù½Ã ±×¸®±â (»ðÀÔ, »èÁ¦ µî)
+// ì¤„ ë‹¤ì‹œ ê·¸ë¦¬ê¸° (ì‚½ìž…, ì‚­ì œ ë“±)
 static void refresh_line(const char *buf, int len, int cursor_pos)
 {
   uart_puts("\r");
@@ -282,7 +282,7 @@ int cli_scanf_s(const char *fmt, ...)
   }
 
   va_start(args, fmt);
-  ret = vsscanf_s(input, fmt, args);  // vsscanf_s »ç¿ë!
+  ret = vsscanf_s(input, fmt, args);  // vsscanf_s ì‚¬ìš©!
   va_end(args);
 
   return ret;

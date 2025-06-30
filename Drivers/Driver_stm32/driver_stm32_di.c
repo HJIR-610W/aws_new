@@ -255,23 +255,23 @@ void Read_GPIO_Config(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_InitTypeDef *
 {
   uint32_t pin_pos = 0;
 
-  // ги ю╖д║ ╟Х╩Й (0~15)
+  // М∙─ Л°└Л╧≤ ЙЁ└Л┌╟ (0~15)
   for (pin_pos = 0; pin_pos < 16; pin_pos++)
   {
     if ((GPIO_Pin >> pin_pos) & 0x1)
       break;
   }
 
-  // MODER (2╨Яф╝ ╢Г 1ги)
+  // MODER (2К╧└М┼╦ К▀╧ 1М∙─)
   out->Mode = (GPIOx->MODER >> (pin_pos * 2)) & 0x3;
 
-  // OTYPER (1╨Яф╝ ╢Г 1ги)
-  out->Mode |= ((GPIOx->OTYPER >> pin_pos) & 0x1) << 4;  // OpenDrainюл╦И OR╥н г╔╫ц ╟║╢и
+  // OTYPER (1К╧└М┼╦ К▀╧ 1М∙─)
+  out->Mode |= ((GPIOx->OTYPER >> pin_pos) & 0x1) << 4;  // OpenDrainЛ²╢К╘╢ ORК║° М▒°Л▀° Й╟─К┼╔
 
-  // OSPEEDR (2╨Яф╝ ╢Г 1ги)
+  // OSPEEDR (2К╧└М┼╦ К▀╧ 1М∙─)
   out->Speed = (GPIOx->OSPEEDR >> (pin_pos * 2)) & 0x3;
 
-  // PUPDR (2╨Яф╝ ╢Г 1ги)
+  // PUPDR (2К╧└М┼╦ К▀╧ 1М∙─)
   out->Pull = (GPIOx->PUPDR >> (pin_pos * 2)) & 0x3;
 
   // AFR[0] for pin 0~7, AFR[1] for pin 8~15
@@ -284,14 +284,14 @@ void Read_GPIO_Config(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_InitTypeDef *
     out->Alternate = (GPIOx->AFR[1] >> ((pin_pos - 8) * 4)) & 0xF;
   }
 
-  // Pin а╓╨╦ ╠в╢К╥н юЗюЕ
+  // Pin Л═∙КЁ╢ Й╥╦К▄─К║° Л═─Л·╔
   out->Pin = GPIO_Pin;
 }
 
 
 
 
-// GPIO гию╩ юнем╥╢ф╝ ╦П╣Е╥н цй╠Бх╜го╢б гт╪Ж
+// GPIO М∙─Л²└ Л²╦М└╟К÷╫М┼╦ К╙╗К⌠°К║° Л╢┬Й╦╟М≥■М∙≤К┼■ М∙╗Л┬≤
 void GPIO_InputInterrupt_Init(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin,
                               eDI_TRIGGER_t trigger, uint16_t prio)
 {
@@ -299,12 +299,12 @@ void GPIO_InputInterrupt_Init(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin,
 
   
   Read_GPIO_Config(GPIOx,GPIO_Pin,&GPIO_InitStruct);
-  // 2. GPIO ги ╪Ёа╓ (ют╥б ╦П╣Е, г╝╬В/г╝╢ы©Н)
+  // 2. GPIO М∙─ Л└╓Л═∙ (Л·┘К═╔ К╙╗К⌠°, М▓─Л≈┘/М▓─К▀╓Л ╢)
   GPIO_InitStruct.Pin = GPIO_Pin;
-  GPIO_InitStruct.Mode = eDI_RISING_FALLING;  // ╠Б╨╩юШю╦╥н ╬Г ©╖аЖ╥н ╪Ёа╓
+  GPIO_InitStruct.Mode = eDI_RISING_FALLING;  // Й╦╟КЁ╦Л═│Л°╪К║° Л√▒ Л≈ёЛ╖─К║° Л└╓Л═∙
   //GPIO_InitStruct.Pull = GPIO_NOPULL;
 
-  // ф╝╦╝╟е ╦П╣Е ╪Ёа╓ (Rising, Falling ╤г╢б Both)
+  // М┼╦К╕╛Й╠╟ К╙╗К⌠° Л└╓Л═∙ (Rising, Falling К≤░К┼■ Both)
   if (trigger == eDI_RISING)
   {
     GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
@@ -320,13 +320,13 @@ void GPIO_InputInterrupt_Init(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin,
 
   HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
 
-  // 3. EXTI юнем╥╢ф╝ ©Л╪╠╪Ью╖ ╧в х╟╪╨х╜ ╪Ёа╓ (ги ╧Ьхё©║ ╣Ш╦╔ IRQ ╪Ёа╓)
+  // 3. EXTI Л²╦М└╟К÷╫М┼╦ Л ╟Л└═Л┬°Л°└ К╟▐ М≥°Л└╠М≥■ Л└╓Л═∙ (М∙─ К╡┬М≤╦Л≈░ К■╟К╔╦ IRQ Л└╓Л═∙)
 
   IRQn_Type irq;
 
   irq = get_irqFromPin(GPIO_Pin);
 
-  // юнем╥╢ф╝ ©Л╪╠╪Ью╖ ╪Ёа╓ (©Л╪╠╪Ью╖ 2, гою╖ ©Л╪╠╪Ью╖ 0ю╦╥н ╪Ёа╓)
+  // Л²╦М└╟К÷╫М┼╦ Л ╟Л└═Л┬°Л°└ Л└╓Л═∙ (Л ╟Л└═Л┬°Л°└ 2, М∙≤Л°└ Л ╟Л└═Л┬°Л°└ 0Л°╪К║° Л└╓Л═∙)
   HAL_NVIC_SetPriority(irq, prio, 0);
   HAL_NVIC_EnableIRQ(irq);
 }

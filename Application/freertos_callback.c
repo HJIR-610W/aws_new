@@ -13,27 +13,27 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
 void vApplicationMallocFailedHook(void);
 void vApplicationIdleHook( void )
 {
-  /* vApplicationIdleHook() ÇÔ¼ö´Â FreeRTOSConfig.h¿¡¼­ configUSE_IDLE_HOOK°¡ 1·Î ¼³Á¤µÇ¾î ÀÖ¾î¾ß¸¸
-     È£ÃâµË´Ï´Ù. ÀÌ ÇÔ¼ö´Â idle ÅÂ½ºÅ©°¡ ÇÑ ¹ø ½ÇÇàµÉ ¶§¸¶´Ù È£ÃâµË´Ï´Ù. ÀÌ ÈÅ ÇÔ¼ö¿¡ Ãß°¡µÇ´Â
-     ÄÚµå¿¡¼­´Â **Àý´ë·Î ºí·ÎÅ· µ¿ÀÛÀ» ½ÃµµÇØ¼­´Â ¾È µË´Ï´Ù** (¿¹: xQueueReceive()¸¦ ºí·ÎÅ· ½Ã°£°ú
-     ÇÔ²² È£ÃâÇÏ°Å³ª, vTaskDelay()¸¦ È£ÃâÇÏ´Â °æ¿ì µî).
+  /* vApplicationIdleHook() í•¨ìˆ˜ëŠ” FreeRTOSConfig.hì—ì„œ configUSE_IDLE_HOOKê°€ 1ë¡œ ì„¤ì •ë˜ì–´ ìžˆì–´ì•¼ë§Œ
+     í˜¸ì¶œë©ë‹ˆë‹¤. ì´ í•¨ìˆ˜ëŠ” idle íƒœìŠ¤í¬ê°€ í•œ ë²ˆ ì‹¤í–‰ë  ë•Œë§ˆë‹¤ í˜¸ì¶œë©ë‹ˆë‹¤. ì´ í›… í•¨ìˆ˜ì— ì¶”ê°€ë˜ëŠ”
+     ì½”ë“œì—ì„œëŠ” **ì ˆëŒ€ë¡œ ë¸”ë¡œí‚¹ ë™ìž‘ì„ ì‹œë„í•´ì„œëŠ” ì•ˆ ë©ë‹ˆë‹¤** (ì˜ˆ: xQueueReceive()ë¥¼ ë¸”ë¡œí‚¹ ì‹œê°„ê³¼
+     í•¨ê»˜ í˜¸ì¶œí•˜ê±°ë‚˜, vTaskDelay()ë¥¼ í˜¸ì¶œí•˜ëŠ” ê²½ìš° ë“±).
 
-     ¸¸¾à ¾ÖÇÃ¸®ÄÉÀÌ¼Ç¿¡¼­ vTaskDelete() API ÇÔ¼ö¸¦ »ç¿ëÇÑ´Ù¸é
-     (ÀÌ µ¥¸ð ¾ÖÇÃ¸®ÄÉÀÌ¼ÇÀÌ ±×·¸°Ô ÇÏµíÀÌ),
-     vApplicationIdleHook() ÇÔ¼ö°¡ È£ÃâÇÑ ÇÔ¼ö·Î ¹Ýµå½Ã **¸®ÅÏ(return)** ÇÏµµ·Ï ÇÏ´Â °Íµµ
-     Áß¿äÇÕ´Ï´Ù.
+     ë§Œì•½ ì• í”Œë¦¬ì¼€ì´ì…˜ì—ì„œ vTaskDelete() API í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•œë‹¤ë©´
+     (ì´ ë°ëª¨ ì• í”Œë¦¬ì¼€ì´ì…˜ì´ ê·¸ë ‡ê²Œ í•˜ë“¯ì´),
+     vApplicationIdleHook() í•¨ìˆ˜ê°€ í˜¸ì¶œí•œ í•¨ìˆ˜ë¡œ ë°˜ë“œì‹œ **ë¦¬í„´(return)** í•˜ë„ë¡ í•˜ëŠ” ê²ƒë„
+     ì¤‘ìš”í•©ë‹ˆë‹¤.
 
-     ±× ÀÌÀ¯´Â, **»èÁ¦µÈ ÅÂ½ºÅ©°¡ »ç¿ëÇß´ø ¸Þ¸ð¸®¸¦ ÇØÁ¦(clean up)ÇÏ´Â Ã¥ÀÓÀÌ idle ÅÂ½ºÅ©¿¡ ÀÖ±â
-     ¶§¹®**ÀÔ´Ï´Ù. */
+     ê·¸ ì´ìœ ëŠ”, **ì‚­ì œëœ íƒœìŠ¤í¬ê°€ ì‚¬ìš©í–ˆë˜ ë©”ëª¨ë¦¬ë¥¼ í•´ì œ(clean up)í•˜ëŠ” ì±…ìž„ì´ idle íƒœìŠ¤í¬ì— ìžˆê¸°
+     ë•Œë¬¸**ìž…ë‹ˆë‹¤. */
 }
 
 char g_task_name[20];
 
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 {
-  /* configCHECK_FOR_STACK_OVERFLOW°¡ 1 ¶Ç´Â 2·Î Á¤ÀÇµÇ¾î ÀÖÀ¸¸é
-     ·±Å¸ÀÓ Áß ½ºÅÃ ¿À¹öÇÃ·Î¿ì(overflow) °Ë»ç°¡ ¼öÇàµË´Ï´Ù.
-     ÀÌ ÈÅ ÇÔ¼ö´Â ½ºÅÃ ¿À¹öÇÃ·Î¿ì°¡ °¨ÁöµÇ¾úÀ» ¶§ È£ÃâµË´Ï´Ù. */
+  /* configCHECK_FOR_STACK_OVERFLOWê°€ 1 ë˜ëŠ” 2ë¡œ ì •ì˜ë˜ì–´ ìžˆìœ¼ë©´
+     ëŸ°íƒ€ìž„ ì¤‘ ìŠ¤íƒ ì˜¤ë²„í”Œë¡œìš°(overflow) ê²€ì‚¬ê°€ ìˆ˜í–‰ë©ë‹ˆë‹¤.
+     ì´ í›… í•¨ìˆ˜ëŠ” ìŠ¤íƒ ì˜¤ë²„í”Œë¡œìš°ê°€ ê°ì§€ë˜ì—ˆì„ ë•Œ í˜¸ì¶œë©ë‹ˆë‹¤. */
 
    snprintf(g_task_name,sizeof(g_task_name),"SOF,%s",pcTaskName);
    io_printf("SOF,%s",g_task_name);
@@ -43,20 +43,20 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 
 void vApplicationMallocFailedHook(void)
 {
-/* vApplicationMallocFailedHook() ÇÔ¼ö´Â ¿ÀÁ÷
-   FreeRTOSConfig.h¿¡¼­ configUSE_MALLOC_FAILED_HOOKÀÌ 1·Î ¼³Á¤µÈ °æ¿ì¿¡¸¸ È£ÃâµË´Ï´Ù.
-   ÀÌ ÇÔ¼ö´Â pvPortMalloc() È£ÃâÀÌ ½ÇÆÐÇßÀ» ¶§ ½ÇÇàµÇ´Â **ÈÅ ÇÔ¼ö(hook function)**ÀÔ´Ï´Ù.
-   pvPortMalloc()Àº Ä¿³Î ³»ºÎ¿¡¼­ ÅÂ½ºÅ©, Å¥, Å¸ÀÌ¸Ó ¶Ç´Â ¼¼¸¶Æ÷¾î¸¦ »ý¼ºÇÒ ¶§ È£ÃâµË´Ï´Ù.
-   ¶ÇÇÑ µ¥¸ð ¾ÖÇÃ¸®ÄÉÀÌ¼ÇÀÇ ¿©·¯ ºÎºÐ¿¡¼­µµ È£ÃâµË´Ï´Ù.
+/* vApplicationMallocFailedHook() í•¨ìˆ˜ëŠ” ì˜¤ì§
+   FreeRTOSConfig.hì—ì„œ configUSE_MALLOC_FAILED_HOOKì´ 1ë¡œ ì„¤ì •ëœ ê²½ìš°ì—ë§Œ í˜¸ì¶œë©ë‹ˆë‹¤.
+   ì´ í•¨ìˆ˜ëŠ” pvPortMalloc() í˜¸ì¶œì´ ì‹¤íŒ¨í–ˆì„ ë•Œ ì‹¤í–‰ë˜ëŠ” **í›… í•¨ìˆ˜(hook function)**ìž…ë‹ˆë‹¤.
+   pvPortMalloc()ì€ ì»¤ë„ ë‚´ë¶€ì—ì„œ íƒœìŠ¤í¬, í, íƒ€ì´ë¨¸ ë˜ëŠ” ì„¸ë§ˆí¬ì–´ë¥¼ ìƒì„±í•  ë•Œ í˜¸ì¶œë©ë‹ˆë‹¤.
+   ë˜í•œ ë°ëª¨ ì• í”Œë¦¬ì¼€ì´ì…˜ì˜ ì—¬ëŸ¬ ë¶€ë¶„ì—ì„œë„ í˜¸ì¶œë©ë‹ˆë‹¤.
 
-   ¸¸¾à heap_1.c ¶Ç´Â heap_2.c¸¦ »ç¿ëÇÏ´Â °æ¿ì, pvPortMalloc()ÀÌ »ç¿ëÇÒ ¼ö ÀÖ´Â heapÀÇ Å©±â´Â
-   FreeRTOSConfig.h¿¡ Á¤ÀÇµÈ configTOTAL_HEAP_SIZE¿¡ ÀÇÇØ °áÁ¤µË´Ï´Ù.
-   ÇöÀç ³²¾Æ ÀÖ´Â heapÀÇ Å©±â¸¦ È®ÀÎÇÏ·Á¸é xPortGetFreeHeapSize() API ÇÔ¼ö¸¦ »ç¿ëÇÒ ¼ö ÀÖ½À´Ï´Ù.
-   ´Ü, ÀÌ ÇÔ¼ö´Â ³²¾Æ ÀÖ´Â heapÀÌ ¾ó¸¶³ª Á¶°¢(fragmented)³ª ÀÖ´ÂÁö´Â ¾Ë·ÁÁÖÁö ¾Ê½À´Ï´Ù.
+   ë§Œì•½ heap_1.c ë˜ëŠ” heap_2.cë¥¼ ì‚¬ìš©í•˜ëŠ” ê²½ìš°, pvPortMalloc()ì´ ì‚¬ìš©í•  ìˆ˜ ìžˆëŠ” heapì˜ í¬ê¸°ëŠ”
+   FreeRTOSConfig.hì— ì •ì˜ëœ configTOTAL_HEAP_SIZEì— ì˜í•´ ê²°ì •ë©ë‹ˆë‹¤.
+   í˜„ìž¬ ë‚¨ì•„ ìžˆëŠ” heapì˜ í¬ê¸°ë¥¼ í™•ì¸í•˜ë ¤ë©´ xPortGetFreeHeapSize() API í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•  ìˆ˜ ìžˆìŠµë‹ˆë‹¤.
+   ë‹¨, ì´ í•¨ìˆ˜ëŠ” ë‚¨ì•„ ìžˆëŠ” heapì´ ì–¼ë§ˆë‚˜ ì¡°ê°(fragmented)ë‚˜ ìžˆëŠ”ì§€ëŠ” ì•Œë ¤ì£¼ì§€ ì•ŠìŠµë‹ˆë‹¤.
 */
   
-  size_t free_heap = xPortGetFreeHeapSize();            // ÇöÀç »ç¿ë °¡´ÉÇÑ Èü Å©±â
-  size_t min_free_heap = xPortGetMinimumEverFreeHeapSize(); // ÇÁ·Î±×·¥ ½ÇÇà Áß °¡Àå ÀÛ¾Ò´ø Èü Å©±â
+  size_t free_heap = xPortGetFreeHeapSize();            // í˜„ìž¬ ì‚¬ìš© ê°€ëŠ¥í•œ íž™ í¬ê¸°
+  size_t min_free_heap = xPortGetMinimumEverFreeHeapSize(); // í”„ë¡œê·¸ëž¨ ì‹¤í–‰ ì¤‘ ê°€ìž¥ ìž‘ì•˜ë˜ íž™ í¬ê¸°
 
   io_printf("Free Heap Size          : %u bytes\r\n", (unsigned int)free_heap);
   io_printf("Minimum Ever Free Heap : %u bytes\r\n", (unsigned int)min_free_heap);

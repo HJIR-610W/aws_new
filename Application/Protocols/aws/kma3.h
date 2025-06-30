@@ -5,16 +5,16 @@
 #include "aws_data.h"
 #include "app_sensor.h"
 #include "kma_define.h"
-// ±Ô°İ¼­ ÇÁ·ÎÅäÄİ ¹öÀü
+// ê·œê²©ì„œ í”„ë¡œí† ì½œ ë²„ì „
 #define KMA3_PROTOCOL_YEAR 2018
 #define KMA3_PROTOCOL_MONTH 2
 #define KMA3_PROTOCOL_DAY 1
 
-// È¾¼º ±â»óÃ» °ü·Ã ¾÷Ã¼ Å×½ºÆ®½Ã Ä¸ÃÄÇÑ ÇÁ·¹ÀÓ
+// íš¡ì„± ê¸°ìƒì²­ ê´€ë ¨ ì—…ì²´ í…ŒìŠ¤íŠ¸ì‹œ ìº¡ì³í•œ í”„ë ˆì„
 // FA FB 11 0A 18 18 0C 06 10 07 00 01 4F 01 4F 41 42 3F 00 00 00 00 00 00 00 18 BD FF FE
-// ³â 17
-// ¿ù 10
-// ÀÏ 24
+// ë…„ 17
+// ì›” 10
+// ì¼ 24
 
 uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend, uint16_t lpSendSize, kma_data_ex_t *aws);
 uint16_t make_kma3_resp(uint8_t *out, char dataType,  uint8_t dataNum, uint16_t id,

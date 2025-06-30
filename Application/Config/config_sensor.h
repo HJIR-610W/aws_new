@@ -26,21 +26,21 @@ typedef struct
   uint8_t channel;
   int32_t highScale;
   int32_t lowScale;
-  int32_t scale;    // ¿øº»°ª¿¡ ¸î¹è °öÇØÁ³´ÙÀÇ ÀÇ¹Ì highScale 100, lowScale 0ÀÌ¸é
-                    // 0~100À¸·Î °ªÀÌ ³ª¿È
-                    //  scale 10ÀÌ¸é ÃÖÁ¾ °ªÀº ³ª´©±â 10ÇØ¾ßÇÔ
-  int32_t outMaxV;  // ¼¾¼­ÀÇ Ãâ·Â Àü¾Ğ ÃÖ°í
-  int32_t outMinV;  // ¼¾¼­ÀÇ Ãâ·Â Àü¾Ğ ÃÖÀú
-  //float voltage_offset; // ¼¾¼­°ª = (Àü¾Ğ + Àü¾Ğ_¿ÀÇÁ¼Â)*gain + offset
+  int32_t scale;    // ì›ë³¸ê°’ì— ëª‡ë°° ê³±í•´ì¡Œë‹¤ì˜ ì˜ë¯¸ highScale 100, lowScale 0ì´ë©´
+                    // 0~100ìœ¼ë¡œ ê°’ì´ ë‚˜ì˜´
+                    //  scale 10ì´ë©´ ìµœì¢… ê°’ì€ ë‚˜ëˆ„ê¸° 10í•´ì•¼í•¨
+  int32_t outMaxV;  // ì„¼ì„œì˜ ì¶œë ¥ ì „ì•• ìµœê³ 
+  int32_t outMinV;  // ì„¼ì„œì˜ ì¶œë ¥ ì „ì•• ìµœì €
+  //float voltage_offset; // ì„¼ì„œê°’ = (ì „ì•• + ì „ì••_ì˜¤í”„ì…‹)*gain + offset
   //float gain;
-  //float offset;  »ç¿ëÀÚ Á÷°ü¼º À§ÇØ ÇöÀç ¹Ì»ç¿ë
+  //float offset;  ì‚¬ìš©ì ì§ê´€ì„± ìœ„í•´ í˜„ì¬ ë¯¸ì‚¬ìš©
 } adc_config_t;
 
 
 
 
 
-//È­Áø Ç³¼Ó
+//í™”ì§„ í’ì†
 typedef struct hj_wind_speed_s
 {
   uint8_t rs485_port;
@@ -54,7 +54,7 @@ typedef enum physical_layer_e
   ePHYSICAL_RS485
 }ePHYSOCAL_LAYER_t;
 
-// È­Áø ¿Âµµ ¼¾¼­ 232¸¸ »ç¿ë
+// í™”ì§„ ì˜¨ë„ ì„¼ì„œ 232ë§Œ ì‚¬ìš©
 typedef struct hjtemp_s
 {
   ePHYSOCAL_LAYER_t physical_layer;
@@ -67,7 +67,7 @@ typedef struct hjtemp_s
   uint8_t modbus_id;
 } hjtemp_config_t;
 
-// È­Áø ½Àµµ ¼¾¼­ 232¸¸ »ç¿ë
+// í™”ì§„ ìŠµë„ ì„¼ì„œ 232ë§Œ ì‚¬ìš©
 typedef struct hjhumi_s
 {
   ePHYSOCAL_LAYER_t physical_layer;
@@ -87,7 +87,7 @@ typedef struct hjwindDirection_s
   uint8_t rs485_port;
 } hjwindDirection_config_t;
 
-// È­Áø Àû¼³ 232,485
+// í™”ì§„ ì ì„¤ 232,485
 typedef struct hjsnow_config_s
 {
   ePHYSOCAL_LAYER_t physical_layer;

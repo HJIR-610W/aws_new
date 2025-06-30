@@ -8,9 +8,9 @@
 #include "os_user_def.h"
 #include "system_err.h"
 
-#define FRAM_LOCK_USE 1 /* Mutex »ç¿ëÇÒÁö ¼±ÅÃ */
+#define FRAM_LOCK_USE 1 /* Mutex ì‚¬ìš©í• ì§€ ì„ íƒ */
 
-#define FRAM_1024     0 /* FRAM ¿ë·®  1ÀÌ¸é 1024¿ë·® »ç¿ë*/
+#define FRAM_1024     0 /* FRAM ìš©ëŸ‰  1ì´ë©´ 1024ìš©ëŸ‰ ì‚¬ìš©*/
 
 #define WRSR 	0x01
 #define WRITE 0x02
@@ -46,8 +46,8 @@ driver_t *fm25lc_open(void)
   
   g_fm25cl.cfg = &g_fm25lc_cfg;
 
-  g_fm25lc_cfg.spi_io = driver_spi_open(STM_SPI_1);     // IC »ç¿ëÇØ ÇÊ¿äÇÑ ÇÏµå¿ş¾î ¿¬°á
-  g_fm25lc_cfg.cs_io = driver_do_open(DO_FRAM_CS, 0);   // IC »ç¿ë¿¡ ÇÊ¿äÇÑ ÇÏµå¿ş¿© ¿¬°á
+  g_fm25lc_cfg.spi_io = driver_spi_open(STM_SPI_1);     // IC ì‚¬ìš©í•´ í•„ìš”í•œ í•˜ë“œì›¨ì–´ ì—°ê²°
+  g_fm25lc_cfg.cs_io = driver_do_open(DO_FRAM_CS, 0);   // IC ì‚¬ìš©ì— í•„ìš”í•œ í•˜ë“œì›¨ì—¬ ì—°ê²°
 
   OS_CREATE_BINARY_SEM(g_fm25lc_cfg.sem);
 
@@ -126,13 +126,13 @@ void fm25_status_parse(uint8_t status)
 
   // WPEN: Write Protect Enable (Bit 7)
   if (status & (1 << 7))
-    DEBUG_PRINTF("  WPEN = 1 ¡æ WP ÇÉÀÇ ¾²±â º¸È£ ±â´ÉÀÌ È°¼ºÈ­µÊ\r\n");
+    DEBUG_PRINTF("  WPEN = 1 â†’ WP í•€ì˜ ì“°ê¸° ë³´í˜¸ ê¸°ëŠ¥ì´ í™œì„±í™”ë¨\r\n");
   else
-    DEBUG_PRINTF("  WPEN = 0 ¡æ WP ÇÉ ¹«½Ã\r\n");
+    DEBUG_PRINTF("  WPEN = 0 â†’ WP í•€ ë¬´ì‹œ\r\n");
 
   // Bits 6~4: Don't care, always 0
   if (status & 0x70)
-    DEBUG_PRINTF("  [°æ°í] Bit 4~6ÀÌ 0ÀÌ ¾Æ´Ô (¿¹»óÄ¡ ¸øÇÑ °ª)\r\n");
+    DEBUG_PRINTF("  [ê²½ê³ ] Bit 4~6ì´ 0ì´ ì•„ë‹˜ (ì˜ˆìƒì¹˜ ëª»í•œ ê°’)\r\n");
 
   // BP1/BP0: Block Protect
   uint8_t bp = (status >> 2) & 0x03;
@@ -140,32 +140,32 @@ void fm25_status_parse(uint8_t status)
   switch (bp)
   {
     case 0:
-      bp_desc = "º¸È£ ¾ÈÇÔ";
+      bp_desc = "ë³´í˜¸ ì•ˆí•¨";
       break;
     case 1:
-      bp_desc = "»óÀ§ 1/4 (0x1800~0x1FFF) º¸È£";
+      bp_desc = "ìƒìœ„ 1/4 (0x1800~0x1FFF) ë³´í˜¸";
       break;
     case 2:
-      bp_desc = "»óÀ§ 1/2 (0x1000~0x1FFF) º¸È£";
+      bp_desc = "ìƒìœ„ 1/2 (0x1000~0x1FFF) ë³´í˜¸";
       break;
     case 3:
-      bp_desc = "ÀüÃ¼ º¸È£ (0x0000~0x1FFF)";
+      bp_desc = "ì „ì²´ ë³´í˜¸ (0x0000~0x1FFF)";
       break;
     default:
-      bp_desc = "¾Ë ¼ö ¾øÀ½";
+      bp_desc = "ì•Œ ìˆ˜ ì—†ìŒ";
       break;
   }
-  DEBUG_PRINTF("  BP1:BP0 = %d:%d ¡æ %s\r\n", (bp >> 1) & 1, bp & 1, bp_desc);
+  DEBUG_PRINTF("  BP1:BP0 = %d:%d â†’ %s\r\n", (bp >> 1) & 1, bp & 1, bp_desc);
 
   // WEL: Write Enable Latch (Bit 1)
   if (status & (1 << 1))
-    DEBUG_PRINTF("  WEL = 1 ¡æ ¾²±â °¡´É »óÅÂ\r\n");
+    DEBUG_PRINTF("  WEL = 1 â†’ ì“°ê¸° ê°€ëŠ¥ ìƒíƒœ\r\n");
   else
-    DEBUG_PRINTF("  WEL = 0 ¡æ ¾²±â ºñÈ°¼ºÈ­ »óÅÂ\r\n");
+    DEBUG_PRINTF("  WEL = 0 â†’ ì“°ê¸° ë¹„í™œì„±í™” ìƒíƒœ\r\n");
 
-  // Bit 0: Ç×»ó 0 (ÀĞ±â Àü¿ë)
+  // Bit 0: í•­ìƒ 0 (ì½ê¸° ì „ìš©)
   if (status & 0x01)
-    DEBUG_PRINTF("  [ÁÖÀÇ] Bit 0ÀÌ 1·Î ¼³Á¤µÊ (ºñÁ¤»ó »óÅÂ)\r\n");
+    DEBUG_PRINTF("  [ì£¼ì˜] Bit 0ì´ 1ë¡œ ì„¤ì •ë¨ (ë¹„ì •ìƒ ìƒíƒœ)\r\n");
 }
 
 uint8_t fm25cl_read_status(driver_t *fm25cl)

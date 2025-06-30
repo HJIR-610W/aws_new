@@ -30,25 +30,25 @@ driver_t *driver_rs485_open(uint32_t num, void *opt)
       g_rs485_cfg[num].uart_io = driver_uart_open(UART_6_RS485_A, opt);
       g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_A, 0);
       g_rs485[num].name = "RS485_A";
-      driver_do_low(g_rs485_cfg[num].do_io);  // ¼ö½Å ¸ðµå
+      driver_do_low(g_rs485_cfg[num].do_io);  // ìˆ˜ì‹  ëª¨ë“œ
       break;
     case RS485_B:
       g_rs485[num].name = "RS485_B";
       g_rs485_cfg[num].uart_io = driver_uart_open(UART_7_RS485_B, opt);
       g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_B, 0);
-      driver_do_low(g_rs485_cfg[num].do_io);  // ¼ö½Å ¸ðµå
+      driver_do_low(g_rs485_cfg[num].do_io);  // ìˆ˜ì‹  ëª¨ë“œ
       break;
     case RS485_C:
       g_rs485[num].name = "RS485_C";
       g_rs485_cfg[num].uart_io = driver_uart_open(UART_2_EXT_A, opt);
       g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_C, 0);
-      driver_do_low(g_rs485_cfg[num].do_io);  // ¼ö½Å ¸ðµå
+      driver_do_low(g_rs485_cfg[num].do_io);  // ìˆ˜ì‹  ëª¨ë“œ
       break;
     case RS485_D:
       g_rs485[num].name = "RS485_D";
       g_rs485_cfg[num].uart_io = driver_uart_open(UART_3_EXT_B, opt);
       g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_D, 0);
-      driver_do_low(g_rs485_cfg[num].do_io);  // ¼ö½Å ¸ðµå
+      driver_do_low(g_rs485_cfg[num].do_io);  // ìˆ˜ì‹  ëª¨ë“œ
       break;
   }
 
@@ -61,11 +61,11 @@ driver_t *driver_rs485_open(uint32_t num, void *opt)
 }
 
 /**
- * @brief RS485 µ¥ÀÌÅÍ Àü¼Û
+ * @brief RS485 ë°ì´í„° ì „ì†¡
  * @param drv
  * @param pData
  * @param dataLen
- * @retval -1 Àü¼Û ¿À·ù, 0>= Àü¼ÛµÈ µ¥ÀÌÅÍ ¼ö
+ * @retval -1 ì „ì†¡ ì˜¤ë¥˜, 0>= ì „ì†¡ëœ ë°ì´í„° ìˆ˜
  */
 int32_t driver_rs485_send(driver_t *drv, uint8_t *pData, uint16_t dataLen)
 {
@@ -75,12 +75,12 @@ int32_t driver_rs485_send(driver_t *drv, uint8_t *pData, uint16_t dataLen)
 
   OS_PEND_SEM(drv->sem, osWaitForever);
 
-  // TODO:ÀÌ µå¶óÀÌ¹ö¸¦ È£ÃâÇÏ´Â taskº¸´Ù ¿ì¼±³ôÀº°÷ÀÌ ÀÖÀ¸¸é osDelay 1ÀÌ»ó Áö¿¬µÊµÊ
-  driver_do_high(cfg->do_io);  // Ãâ·ÂÀ¸·Î ¼³Á¤
+  // TODO:ì´ ë“œë¼ì´ë²„ë¥¼ í˜¸ì¶œí•˜ëŠ” taskë³´ë‹¤ ìš°ì„ ë†’ì€ê³³ì´ ìžˆìœ¼ë©´ osDelay 1ì´ìƒ ì§€ì—°ë¨ë¨
+  driver_do_high(cfg->do_io);  // ì¶œë ¥ìœ¼ë¡œ ì„¤ì •
   osDelay(1);
   cnt = driver_uart_send(cfg->uart_io, pData, dataLen);
   osDelay(1);
-  driver_do_low(cfg->do_io);  // ÀÔ·ÂÀ¸·Î ¼³Á¤
+  driver_do_low(cfg->do_io);  // ìž…ë ¥ìœ¼ë¡œ ì„¤ì •
 
 
   OS_POST_SEM(drv->sem);
@@ -90,10 +90,10 @@ int32_t driver_rs485_send(driver_t *drv, uint8_t *pData, uint16_t dataLen)
 }
 
 /**
- * @brief RS485 ¼ö½Å
- * @param timeOutms Å¸ÀÓ¾Æ¿ô½Ã°£µ¿¾È¸¸ µ¥ÀÌÅÍ ¼ö½Å, µ¥ÀÌÅÍ°¡ °è¼Ó µé¾î¿Íµµ ¹«½ÃÇÏ°í µü Á¤ÇØÁø
- * ½Ã°£¸¸¼ö½Å
- * @retval -1¿¡·¯,0 ¼ö½Å¾øÀ½, 1ÀÌ»ó ¼ö½ÅµÈ µ¥ÀÌÅÍ ±æÀÌ
+ * @brief RS485 ìˆ˜ì‹ 
+ * @param timeOutms íƒ€ìž„ì•„ì›ƒì‹œê°„ë™ì•ˆë§Œ ë°ì´í„° ìˆ˜ì‹ , ë°ì´í„°ê°€ ê³„ì† ë“¤ì–´ì™€ë„ ë¬´ì‹œí•˜ê³  ë”± ì •í•´ì§„
+ * ì‹œê°„ë§Œìˆ˜ì‹ 
+ * @retval -1ì—ëŸ¬,0 ìˆ˜ì‹ ì—†ìŒ, 1ì´ìƒ ìˆ˜ì‹ ëœ ë°ì´í„° ê¸¸ì´
  */
 int32_t driver_rs485_recv(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutms)
 {
@@ -106,15 +106,15 @@ int32_t driver_rs485_recv(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32_t
 }
 
 /**
- * @brief 2°¡Áö Å¸ÀÓ¾Æ¿ô Àû¿ëÇÏ¿© ¼ö½Å
- * timeout1Àº ÀüÃ¼ ¼ö½Å ´ë±â ½Ã°£
- * timeout2´Â ¿¬¼Ó ¹ÙÀÌÆ®°£ ´ë±â ½Ã°£
- * ¿¹)¾î¶°ÇÑ ÆÐÅ¶À» ¼ö½ÅÇÏ´Âµ¥ µ¥ÀÌÅÍ°£ ¼ö½Å ½Ã°£Àº °ÅÀÇ ¿¬¼ÓÀûÀÌ´Ù
- * ¿¹¸¦ µé¾î ³¡À» °áÁ¤ÇÏ±â ¾î·Á¿î ÆÐÅ¶ÀÌ ÀÖ´Ù¸é È¿°úÀû
- * timeout1 2ÃÊ
+ * @brief 2ê°€ì§€ íƒ€ìž„ì•„ì›ƒ ì ìš©í•˜ì—¬ ìˆ˜ì‹ 
+ * timeout1ì€ ì „ì²´ ìˆ˜ì‹  ëŒ€ê¸° ì‹œê°„
+ * timeout2ëŠ” ì—°ì† ë°”ì´íŠ¸ê°„ ëŒ€ê¸° ì‹œê°„
+ * ì˜ˆ)ì–´ë– í•œ íŒ¨í‚·ì„ ìˆ˜ì‹ í•˜ëŠ”ë° ë°ì´í„°ê°„ ìˆ˜ì‹  ì‹œê°„ì€ ê±°ì˜ ì—°ì†ì ì´ë‹¤
+ * ì˜ˆë¥¼ ë“¤ì–´ ëì„ ê²°ì •í•˜ê¸° ì–´ë ¤ìš´ íŒ¨í‚·ì´ ìžˆë‹¤ë©´ íš¨ê³¼ì 
+ * timeout1 2ì´ˆ
  * timeout2 2ms
- * ¸í·É¾î º¸³»°í 2ÃÊ°£ ±â´Ù¸®°í ÀÏ´Ü ±× ¾È¿¡ 1¹ÙÀÌÆ®¶óµµ ¼ö½ÅµÇ¸é ÆÐÅ¶ÀÌ
- * ¼ö½ÅµÇ±â ½ÃÀÛ ÀÇ¹Ì ±×·±µ¥ 2ms ¾È¿¡ ±×´ÙÀ½ µ¥ÀÌÅÍ°¡ ¼ö½Å¾ÈµÇ¸é Á¾·á·Î ÆÇ´Ü
+ * ëª…ë ¹ì–´ ë³´ë‚´ê³  2ì´ˆê°„ ê¸°ë‹¤ë¦¬ê³  ì¼ë‹¨ ê·¸ ì•ˆì— 1ë°”ì´íŠ¸ë¼ë„ ìˆ˜ì‹ ë˜ë©´ íŒ¨í‚·ì´
+ * ìˆ˜ì‹ ë˜ê¸° ì‹œìž‘ ì˜ë¯¸ ê·¸ëŸ°ë° 2ms ì•ˆì— ê·¸ë‹¤ìŒ ë°ì´í„°ê°€ ìˆ˜ì‹ ì•ˆë˜ë©´ ì¢…ë£Œë¡œ íŒë‹¨
  * @details 
  * #test
  */

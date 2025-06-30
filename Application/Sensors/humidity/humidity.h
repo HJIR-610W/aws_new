@@ -24,7 +24,7 @@
 #define GENERAL_V 2
 #endif
 
-#define TEMP_HJ_HUMINITY 102  // RS485Æ÷Æ® A°íÁ¤ »ç¿ë
+#define TEMP_HJ_HUMINITY 102  // RS485í¬íŠ¸ Aê³ ì • ì‚¬ìš©
 
 
 driver_t *humidity_open(int32_t num,void *opt);

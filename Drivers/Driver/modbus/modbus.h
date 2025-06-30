@@ -55,7 +55,7 @@ typedef struct
   uint16_t *regs;
   uint16_t regsCnt;
   uint32_t status;
-  uint32_t wait_ms;  // rs485 ÃÖ¼Ò ´ë±â ½Ã°£
+  uint32_t wait_ms;  // rs485 ìµœì†Œ ëŒ€ê¸° ì‹œê°„
 } modbus_t;
 
 typedef struct regs_s

@@ -1,6 +1,6 @@
 /**
  * @file driver_di.h
- * @brief µðÁöÅÐ ÀÔ·Â µå¶óÀÌ¹ö ÀÎÅÍÆäÀÌ½º
+ * @brief ë””ì§€í„¸ ìž…ë ¥ ë“œë¼ì´ë²„ ì¸í„°íŽ˜ì´ìŠ¤
  * @version 2.1
  * @date 2024
  */
@@ -13,98 +13,98 @@
 #include <stdbool.h>
 
 // ============================================================================
-// µðÁöÅÐ ÀÔ·Â Ã¤³Î Á¤ÀÇ
+// ë””ì§€í„¸ ìž…ë ¥ ì±„ë„ ì •ì˜
 // ============================================================================
 
-// STM32 ³×ÀÌÆ¼ºê GPIO Ã¤³Î
-#define DI_0_ADC_RDY    0           ///< ADC ÁØºñ ½ÅÈ£
-#define DI_1_RTC_IRQ    1           ///< RTC ÀÎÅÍ·´Æ®
-#define DI_RAIN_REED    2           ///< °­¿ì·®°è ¸®µå ½ºÀ§Ä¡
-#define DI_RAIN_HALL    3           ///< °­¿ì·®°è È¦ ¼¾¼­
-#define DI_RAIN_HALL_ERR 4          ///< °­¿ì È¦ ¼¾¼­ ¿¡·¯
-#define DI_QUAD_UARTA_1 5           ///< Äõµå UART A1 ÀÎÅÍ·´Æ®
-#define DI_QUAD_UARTB_2 6           ///< Äõµå UART B2 ÀÎÅÍ·´Æ®
-#define DI_QUAD_UARTC_3 7           ///< Äõµå UART C3 ÀÎÅÍ·´Æ®
-#define DI_QUAD_UARTD_4 8           ///< Äõµå UART D4 ÀÎÅÍ·´Æ®
-#define DI_QUAD_UARTA_5 9           ///< Äõµå UART A5 ÀÎÅÍ·´Æ®
-#define DI_QUAD_UARTB_6 10          ///< Äõµå UART B6 ÀÎÅÍ·´Æ®
-#define DI_QUAD_UARTC_7 11          ///< Äõµå UART C7 ÀÎÅÍ·´Æ®
-#define DI_QUAD_UARTD_8 12          ///< Äõµå UART D8 ÀÎÅÍ·´Æ®
-#define DI_HART_CD      13          ///< HART Ä³¸®¾î °¨Áö
-#define DI_USER_BTN     14          ///< »ç¿ëÀÚ ÀÎÅÍÆäÀÌ½º ¹öÆ°
-#define DI_BTM_STATUS   15          ///< ºí·çÅõ½º ¸ðµâ »óÅÂ
-#define DI_RAIN_DETECT  16          ///< °­¿ì °¨Áö ¼¾¼­
+// STM32 ë„¤ì´í‹°ë¸Œ GPIO ì±„ë„
+#define DI_0_ADC_RDY    0           ///< ADC ì¤€ë¹„ ì‹ í˜¸
+#define DI_1_RTC_IRQ    1           ///< RTC ì¸í„°ëŸ½íŠ¸
+#define DI_RAIN_REED    2           ///< ê°•ìš°ëŸ‰ê³„ ë¦¬ë“œ ìŠ¤ìœ„ì¹˜
+#define DI_RAIN_HALL    3           ///< ê°•ìš°ëŸ‰ê³„ í™€ ì„¼ì„œ
+#define DI_RAIN_HALL_ERR 4          ///< ê°•ìš° í™€ ì„¼ì„œ ì—ëŸ¬
+#define DI_QUAD_UARTA_1 5           ///< ì¿¼ë“œ UART A1 ì¸í„°ëŸ½íŠ¸
+#define DI_QUAD_UARTB_2 6           ///< ì¿¼ë“œ UART B2 ì¸í„°ëŸ½íŠ¸
+#define DI_QUAD_UARTC_3 7           ///< ì¿¼ë“œ UART C3 ì¸í„°ëŸ½íŠ¸
+#define DI_QUAD_UARTD_4 8           ///< ì¿¼ë“œ UART D4 ì¸í„°ëŸ½íŠ¸
+#define DI_QUAD_UARTA_5 9           ///< ì¿¼ë“œ UART A5 ì¸í„°ëŸ½íŠ¸
+#define DI_QUAD_UARTB_6 10          ///< ì¿¼ë“œ UART B6 ì¸í„°ëŸ½íŠ¸
+#define DI_QUAD_UARTC_7 11          ///< ì¿¼ë“œ UART C7 ì¸í„°ëŸ½íŠ¸
+#define DI_QUAD_UARTD_8 12          ///< ì¿¼ë“œ UART D8 ì¸í„°ëŸ½íŠ¸
+#define DI_HART_CD      13          ///< HART ìºë¦¬ì–´ ê°ì§€
+#define DI_USER_BTN     14          ///< ì‚¬ìš©ìž ì¸í„°íŽ˜ì´ìŠ¤ ë²„íŠ¼
+#define DI_BTM_STATUS   15          ///< ë¸”ë£¨íˆ¬ìŠ¤ ëª¨ë“ˆ ìƒíƒœ
+#define DI_RAIN_DETECT  16          ///< ê°•ìš° ê°ì§€ ì„¼ì„œ
 
-// ¿ÜºÎ ÀÔ·Â Ã¤³Î (PCF8575)
-#define DI_EXT_0        100         ///< ¿ÜºÎ ÀÔ·Â 0 (µµ¾î ¼¾¼­)
-#define DI_EXT_1        101         ///< ¿ÜºÎ ÀÔ·Â 1
-#define DI_EXT_2        102         ///< ¿ÜºÎ ÀÔ·Â 2
-#define DI_EXT_3        103         ///< ¿ÜºÎ ÀÔ·Â 3
-#define DI_EXT_4        105         ///< ¿ÜºÎ ÀÔ·Â 4
-#define DI_EXT_5        106         ///< ¿ÜºÎ ÀÔ·Â 5
+// ì™¸ë¶€ ìž…ë ¥ ì±„ë„ (PCF8575)
+#define DI_EXT_0        100         ///< ì™¸ë¶€ ìž…ë ¥ 0 (ë„ì–´ ì„¼ì„œ)
+#define DI_EXT_1        101         ///< ì™¸ë¶€ ìž…ë ¥ 1
+#define DI_EXT_2        102         ///< ì™¸ë¶€ ìž…ë ¥ 2
+#define DI_EXT_3        103         ///< ì™¸ë¶€ ìž…ë ¥ 3
+#define DI_EXT_4        105         ///< ì™¸ë¶€ ìž…ë ¥ 4
+#define DI_EXT_5        106         ///< ì™¸ë¶€ ìž…ë ¥ 5
 
 // ============================================================================
-// °ø°³ API ÇÔ¼öµé
+// ê³µê°œ API í•¨ìˆ˜ë“¤
 // ============================================================================
 
 /**
- * @brief ³í¸®Àû Ã¤³Î ¹øÈ£·Î DI µå¶óÀÌ¹ö ¿­±â
+ * @brief ë…¼ë¦¬ì  ì±„ë„ ë²ˆí˜¸ë¡œ DI ë“œë¼ì´ë²„ ì—´ê¸°
  * 
- * @param logical_channel ³í¸®Àû DI Ã¤³Î ¹øÈ£ (DI_xxx »ó¼ö »ç¿ë)
- * @param opt ¼±ÅÃÀû ¼³Á¤ ¸Å°³º¯¼ö
- * @return µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º Æ÷ÀÎÅÍ ¶Ç´Â ¿¡·¯ ½Ã NULL
+ * @param logical_channel ë…¼ë¦¬ì  DI ì±„ë„ ë²ˆí˜¸ (DI_xxx ìƒìˆ˜ ì‚¬ìš©)
+ * @param opt ì„ íƒì  ì„¤ì • ë§¤ê°œë³€ìˆ˜
+ * @return ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤ í¬ì¸í„° ë˜ëŠ” ì—ëŸ¬ ì‹œ NULL
  */
 driver_t *driver_di_open(uint32_t logical_channel, void *opt);
 
 /**
- * @brief Ã¤³Î ÀÌ¸§À¸·Î DI µå¶óÀÌ¹ö ¿­±â
+ * @brief ì±„ë„ ì´ë¦„ìœ¼ë¡œ DI ë“œë¼ì´ë²„ ì—´ê¸°
  * 
- * @param channel_name Ã¤³Î ÀÌ¸§
- * @param opt ¼±ÅÃÀû ¼³Á¤ ¸Å°³º¯¼ö  
- * @return µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º Æ÷ÀÎÅÍ ¶Ç´Â ¿¡·¯ ½Ã NULL
+ * @param channel_name ì±„ë„ ì´ë¦„
+ * @param opt ì„ íƒì  ì„¤ì • ë§¤ê°œë³€ìˆ˜  
+ * @return ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤ í¬ì¸í„° ë˜ëŠ” ì—ëŸ¬ ì‹œ NULL
  */
 driver_t *driver_di_open_by_name(const char *channel_name, void *opt);
 
 /**
- * @brief DI µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º ´Ý±â
+ * @brief DI ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤ ë‹«ê¸°
  * 
- * @param drv µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º Æ÷ÀÎÅÍ
+ * @param drv ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤ í¬ì¸í„°
  */
 void driver_di_close(driver_t *drv);
 
 /**
- * @brief µðÁöÅÐ ÀÔ·Â »óÅÂ ÀÐ±â
+ * @brief ë””ì§€í„¸ ìž…ë ¥ ìƒíƒœ ì½ê¸°
  * 
- * @param drv µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º Æ÷ÀÎÅÍ
- * @return ÀÔ·Â »óÅÂ (0=LOW, 1=HIGH) ¶Ç´Â À½¼ö ¿¡·¯ ÄÚµå
+ * @param drv ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤ í¬ì¸í„°
+ * @return ìž…ë ¥ ìƒíƒœ (0=LOW, 1=HIGH) ë˜ëŠ” ìŒìˆ˜ ì—ëŸ¬ ì½”ë“œ
  */
 int32_t driver_di_read(driver_t *drv);
 
 /**
- * @brief DI µå¶óÀÌ¹ö ¼³Á¤
+ * @brief DI ë“œë¼ì´ë²„ ì„¤ì •
  * 
- * @param drv µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º Æ÷ÀÎÅÍ
- * @param cmd ¼³Á¤ ¸í·É
- * @param option ¼³Á¤ ¿É¼Ç µ¥ÀÌÅÍ
+ * @param drv ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤ í¬ì¸í„°
+ * @param cmd ì„¤ì • ëª…ë ¹
+ * @param option ì„¤ì • ì˜µì…˜ ë°ì´í„°
  */
 void driver_di_set(driver_t *drv, di_set_option_t cmd, void *option);
 
 /**
- * @brief µð¹Ù¿î½Ì°ú ÇÔ²² ÀÔ·Â ÀÐ±â
+ * @brief ë””ë°”ìš´ì‹±ê³¼ í•¨ê»˜ ìž…ë ¥ ì½ê¸°
  * 
- * @param drv µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º Æ÷ÀÎÅÍ
- * @param debounce_ms µð¹Ù¿î½º ½Ã°£ (¹Ð¸®ÃÊ)
- * @return µð¹Ù¿î½ºµÈ ÀÔ·Â »óÅÂ (0=LOW, 1=HIGH) ¶Ç´Â À½¼ö ¿¡·¯ ÄÚµå
+ * @param drv ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤ í¬ì¸í„°
+ * @param debounce_ms ë””ë°”ìš´ìŠ¤ ì‹œê°„ (ë°€ë¦¬ì´ˆ)
+ * @return ë””ë°”ìš´ìŠ¤ëœ ìž…ë ¥ ìƒíƒœ (0=LOW, 1=HIGH) ë˜ëŠ” ìŒìˆ˜ ì—ëŸ¬ ì½”ë“œ
  */
 int32_t driver_di_read_debounced(driver_t *drv, uint32_t debounce_ms);
 
 /**
- * @brief ¹öÆ° ´©¸§ °¨Áö (È¦µå Å¸ÀÓ Áö¿ø)
+ * @brief ë²„íŠ¼ ëˆ„ë¦„ ê°ì§€ (í™€ë“œ íƒ€ìž„ ì§€ì›)
  * 
- * @param drv µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º Æ÷ÀÎÅÍ
- * @param hold_time_ms ÇÊ¿äÇÑ È¦µå ½Ã°£ (¹Ð¸®ÃÊ) (0 = ´Ü¼ø ´©¸§ °¨Áö)
- * @param debounce_ms µð¹Ù¿î½º ½Ã°£ (¹Ð¸®ÃÊ)
- * @return Á¶°ÇÀÌ ¸¸Á·µÇ¸é true, ¾Æ´Ï¸é false
+ * @param drv ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤ í¬ì¸í„°
+ * @param hold_time_ms í•„ìš”í•œ í™€ë“œ ì‹œê°„ (ë°€ë¦¬ì´ˆ) (0 = ë‹¨ìˆœ ëˆ„ë¦„ ê°ì§€)
+ * @param debounce_ms ë””ë°”ìš´ìŠ¤ ì‹œê°„ (ë°€ë¦¬ì´ˆ)
+ * @return ì¡°ê±´ì´ ë§Œì¡±ë˜ë©´ true, ì•„ë‹ˆë©´ false
  */
 bool driver_di_is_low(driver_t *drv, uint32_t hold_time_ms, uint32_t debounce_ms);
 

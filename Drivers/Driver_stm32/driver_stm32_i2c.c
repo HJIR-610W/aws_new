@@ -26,7 +26,7 @@ void MX_I2C1_Init(void *opt)
   HAL_StatusTypeDef status = HAL_OK;
 
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;//Ç¥ÁØ ¼Óµµ 100KHz
+  hi2c1.Init.ClockSpeed = 100000;//í‘œì¤€ ì†ë„ 100KHz
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -48,7 +48,7 @@ void MX_I2C2_Init(void *arg)
   HAL_StatusTypeDef status = HAL_OK;
 
   hi2c2.Instance = I2C2;
-  hi2c2.Init.ClockSpeed = 100000;//Ç¥ÁØ ¼Óµµ 100KHz
+  hi2c2.Init.ClockSpeed = 100000;//í‘œì¤€ ì†ë„ 100KHz
   hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c2.Init.OwnAddress1 = 0;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -71,35 +71,35 @@ void i2c1_bus_recovery(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-  // 1. SCL/SDA ÇÉÀ» GPIO·Î Àç¼³Á¤ (Open-Drain)
+  // 1. SCL/SDA í•€ì„ GPIOë¡œ ì¬ì„¤ì • (Open-Drain)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
-  // SCL ÃÊ±âÈ­
+  // SCL ì´ˆê¸°í™”
   GPIO_InitStruct.Pin = I2C1_SCL_PIN;
   HAL_GPIO_Init(I2C1_SCL_GPIO_Port, &GPIO_InitStruct);
 
-  // SDA´Â ÀÔ·ÂÀ¸·Î ¼³Á¤ (»óÅÂ °¨Áö¿ë)
+  // SDAëŠ” ì…ë ¥ìœ¼ë¡œ ì„¤ì • (ìƒíƒœ ê°ì§€ìš©)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pin = I2C1_SDA_PIN;
   HAL_GPIO_Init(I2C1_SDA_GPIO_Port, &GPIO_InitStruct);
 
-  // 2. SDA »óÅÂ È®ÀÎ
+  // 2. SDA ìƒíƒœ í™•ì¸
   if (HAL_GPIO_ReadPin(I2C1_SDA_GPIO_Port, I2C1_SDA_PIN) == GPIO_PIN_RESET)
   {
-    // 3. SDA°¡ LOWÀÎ °æ¿ì: SCLÀ» pulsingÇÏ¿© ¹ö½º º¹±¸ ½Ãµµ
+    // 3. SDAê°€ LOWì¸ ê²½ìš°: SCLì„ pulsingí•˜ì—¬ ë²„ìŠ¤ ë³µêµ¬ ì‹œë„
     for (int i = 0; i < 9; i++)
     {
       HAL_GPIO_WritePin(I2C1_SCL_GPIO_Port, I2C1_SCL_PIN, GPIO_PIN_SET);
-      HAL_Delay(1);  // ÃÖ¼Ò 4us ÀÌ»ó, ¿©±â¼± 1ms
+      HAL_Delay(1);  // ìµœì†Œ 4us ì´ìƒ, ì—¬ê¸°ì„  1ms
       HAL_GPIO_WritePin(I2C1_SCL_GPIO_Port, I2C1_SCL_PIN, GPIO_PIN_RESET);
       HAL_Delay(1);
     }
 
-    // 4. STOP Á¶°Ç ½Ãµµ: SDA high »óÅÂ·Î SCLÀ» high·Î ÇÏ¸é¼­ SDAµµ high
+    // 4. STOP ì¡°ê±´ ì‹œë„: SDA high ìƒíƒœë¡œ SCLì„ highë¡œ í•˜ë©´ì„œ SDAë„ high
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
     GPIO_InitStruct.Pin = I2C1_SDA_PIN;
     HAL_GPIO_Init(I2C1_SDA_GPIO_Port, &GPIO_InitStruct);
@@ -109,7 +109,7 @@ void i2c1_bus_recovery(void)
     HAL_Delay(1);
   }
 
-  // 5. ÇÉÀ» ¿ø·¡´ë·Î º¹±¸ (I2C ¸ğµå·Î ´Ù½Ã ÃÊ±âÈ­ ÇÊ¿ä)
+  // 5. í•€ì„ ì›ë˜ëŒ€ë¡œ ë³µêµ¬ (I2C ëª¨ë“œë¡œ ë‹¤ì‹œ ì´ˆê¸°í™” í•„ìš”)
   HAL_GPIO_DeInit(I2C1_SCL_GPIO_Port, I2C1_SCL_PIN);
   HAL_GPIO_DeInit(I2C1_SDA_GPIO_Port, I2C1_SDA_PIN);
 }
@@ -119,7 +119,7 @@ void i2c2_bus_recovery(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-  // 1. SCL/SDA ÇÉÀ» GPIO Open-Drain ¸ğµå·Î ÀüÈ¯
+  // 1. SCL/SDA í•€ì„ GPIO Open-Drain ëª¨ë“œë¡œ ì „í™˜
   __HAL_RCC_GPIOH_CLK_ENABLE();
 
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
@@ -130,15 +130,15 @@ void i2c2_bus_recovery(void)
   GPIO_InitStruct.Pin = I2C2_SCL_PIN;
   HAL_GPIO_Init(I2C2_SCL_GPIO_Port, &GPIO_InitStruct);
 
-  // SDA = PH5¸¦ ÀÔ·ÂÀ¸·Î ¼³Á¤ÇÏ¿© »óÅÂ °¨Áö
+  // SDA = PH5ë¥¼ ì…ë ¥ìœ¼ë¡œ ì„¤ì •í•˜ì—¬ ìƒíƒœ ê°ì§€
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pin = I2C2_SDA_PIN;
   HAL_GPIO_Init(I2C2_SDA_GPIO_Port, &GPIO_InitStruct);
 
-  // 2. SDA »óÅÂ°¡ LOWÀÌ¸é º¹±¸ ÁøÇà
+  // 2. SDA ìƒíƒœê°€ LOWì´ë©´ ë³µêµ¬ ì§„í–‰
   if (HAL_GPIO_ReadPin(I2C2_SDA_GPIO_Port, I2C2_SDA_PIN) == GPIO_PIN_RESET)
   {
-    // 3. SCL Å¬·°À» 9¹ø Ãâ·ÂÇÏ¿© stuck ÇØÁ¦ ½Ãµµ
+    // 3. SCL í´ëŸ­ì„ 9ë²ˆ ì¶œë ¥í•˜ì—¬ stuck í•´ì œ ì‹œë„
     for (int i = 0; i < 9; i++)
     {
       HAL_GPIO_WritePin(I2C2_SCL_GPIO_Port, I2C2_SCL_PIN, GPIO_PIN_SET);
@@ -147,7 +147,7 @@ void i2c2_bus_recovery(void)
       HAL_Delay(1);
     }
 
-    // 4. STOP Á¶°Ç °­Á¦: SDA¸¦ high·Î À¯ÁöÇÏ¸ç SCL high
+    // 4. STOP ì¡°ê±´ ê°•ì œ: SDAë¥¼ highë¡œ ìœ ì§€í•˜ë©° SCL high
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
     GPIO_InitStruct.Pin = I2C2_SDA_PIN;
     HAL_GPIO_Init(I2C2_SDA_GPIO_Port, &GPIO_InitStruct);
@@ -157,7 +157,7 @@ void i2c2_bus_recovery(void)
     HAL_Delay(1);
   }
 
-  // 5. ÇÉ º¹±¸: HAL_I2C_Init() Àü¿¡ GPIO ÇØÁ¦ ÇÊ¿ä
+  // 5. í•€ ë³µêµ¬: HAL_I2C_Init() ì „ì— GPIO í•´ì œ í•„ìš”
   HAL_GPIO_DeInit(I2C2_SCL_GPIO_Port, I2C2_SCL_PIN);
   HAL_GPIO_DeInit(I2C2_SDA_GPIO_Port, I2C2_SDA_PIN);
 }

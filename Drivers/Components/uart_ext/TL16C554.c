@@ -14,16 +14,16 @@
 #include "system_err.h"
 #include "util_memory.h"
 
-#define STREAMBUFFER_USE 1  // µ¥ÀÌÅÍ ¼ö½ÅÀ» freertos ½ºÆ®¸² ¹öÆÛ »ç¿ë½Ã
+#define STREAMBUFFER_USE 1  // ë°ì´í„° ìˆ˜ì‹ ì„ freertos ìŠ¤íŠ¸ë¦¼ ë²„í¼ ì‚¬ìš©ì‹œ
 
 #define UART_CLOCK_FREQ 3686400
 
-// DLAB ºñÆ® ¸¶½ºÅ©
-#define DLAB_BIT 0x80  // LCR ·¹Áö½ºÅÍÀÇ DLAB ºñÆ®
+// DLAB ë¹„íŠ¸ ë§ˆìŠ¤í¬
+#define DLAB_BIT 0x80  // LCR ë ˆì§€ìŠ¤í„°ì˜ DLAB ë¹„íŠ¸
 
-#define LSR_DR 0x01  // Data Ready ºñÆ®
-// LSRÀÇ ºñÆ® ¸¶½ºÅ©
-#define LSR_THRE 0x20  // Transmitter Holding Register Empty ºñÆ®
+#define LSR_DR 0x01  // Data Ready ë¹„íŠ¸
+// LSRì˜ ë¹„íŠ¸ ë§ˆìŠ¤í¬
+#define LSR_THRE 0x20  // Transmitter Holding Register Empty ë¹„íŠ¸
 #define LSR_TEMT 0x40
 
 volatile uint8_t *exUartBaseAddress[8] = {
@@ -41,12 +41,12 @@ volatile uint8_t *exUartBaseAddress[8] = {
 #define IIR(BASE) (void *)(BASE + 0x02)
 #define LCR(BASE) (void *)(BASE + 0x03)
 #define MCR(BASE) (void *)(BASE + 0x04)
-#define LSR(BASE) (void *)(BASE + 0x05)  // ¶óÀÎ»óÅÂ ·¹Áö½ºÅÍÅÍ
+#define LSR(BASE) (void *)(BASE + 0x05)  // ë¼ì¸ìƒíƒœ ë ˆì§€ìŠ¤í„°í„°
 
 #define MSR(BASE) (void *)(BASE + 0x06)
 #define SCR(BASE) (void *)(BASE + 0x07)
 
-// ·¹Áö½ºÅÍ ¿ÀÇÁ¼Â
+// ë ˆì§€ìŠ¤í„° ì˜¤í”„ì…‹
 #define DLL_OFFSET 0x00  // Divisor Latch Low
 #define DLM_OFFSET 0x01  // Divisor Latch High
 #define LCR_OFFSET 0x03  // Line Control Register
@@ -97,18 +97,18 @@ uint8_t read_register(void *addr)
   return data;
 }
 
-// ·¹Áö½ºÅÍ ¾²±â ÇÔ¼ö
+// ë ˆì§€ìŠ¤í„° ì“°ê¸° í•¨ìˆ˜
 void write_register(void *addr, uint8_t value) { *((volatile uint8_t *)addr) = value; }
 
-// º¸¿Àµå·¹ÀÌÆ® È®ÀÎ ÇÔ¼ö
+// ë³´ì˜¤ë“œë ˆì´íŠ¸ í™•ì¸ í•¨ìˆ˜
 void check_baud_rate(int uart_num)
 {
   uint8_t data;
 
   data = read_register(LCR(exUartBaseAddress[uart_num]));
-  // LCRÀÇ DLAB ºñÆ®¸¦ 1·Î ¼³Á¤ÇÏ¿© DLL ¹× DLM Á¢±Ù Çã¿ë
+  // LCRì˜ DLAB ë¹„íŠ¸ë¥¼ 1ë¡œ ì„¤ì •í•˜ì—¬ DLL ë° DLM ì ‘ê·¼ í—ˆìš©
 
-  data |= 0x80;  // DLAB ºñÆ® ¼³Á¤
+  data |= 0x80;  // DLAB ë¹„íŠ¸ ì„¤ì •
 
   write_register(LCR(exUartBaseAddress[uart_num]), data);
 
@@ -117,12 +117,12 @@ void check_baud_rate(int uart_num)
 
   data = read_register(LCR(exUartBaseAddress[uart_num]));
 
-  // DLAB ºñÆ®¸¦ ´Ù½Ã 0À¸·Î ¼³Á¤ÇÏ¿© DLL ¹× DLM Á¢±Ù ºñÇã¿ë
+  // DLAB ë¹„íŠ¸ë¥¼ ë‹¤ì‹œ 0ìœ¼ë¡œ ì„¤ì •í•˜ì—¬ DLL ë° DLM ì ‘ê·¼ ë¹„í—ˆìš©
   data &= ~0x80;
 
   write_register(LCR(exUartBaseAddress[uart_num]), data);
 
-  // Divisor °è»ê (DLMÀº »óÀ§ ¹ÙÀÌÆ®, DLLÀº ÇÏÀ§ ¹ÙÀÌÆ®)
+  // Divisor ê³„ì‚° (DLMì€ ìƒìœ„ ë°”ì´íŠ¸, DLLì€ í•˜ìœ„ ë°”ì´íŠ¸)
   uint16_t divisor = (dlm_value << 8) | dll_value;
 
   if (divisor == 0)
@@ -131,40 +131,40 @@ void check_baud_rate(int uart_num)
     return;
   }
 
-  // º¸¿Àµå·¹ÀÌÆ® °è»ê
+  // ë³´ì˜¤ë“œë ˆì´íŠ¸ ê³„ì‚°
   uint32_t baud_rate = UART_CLOCK_FREQ / (16 * divisor);
   io_printf("Calculated Baud Rate: %u\n", baud_rate);
 }
 
-// º¸¿Àµå·¹ÀÌÆ® ¼³Á¤ ÇÔ¼ö
+// ë³´ì˜¤ë“œë ˆì´íŠ¸ ì„¤ì • í•¨ìˆ˜
 void set_baud_rate(int uart_num, uint32_t baud_rate)
 {
   uint16_t divisor = UART_CLOCK_FREQ / (16 * baud_rate);
 
-  // DLAB ºñÆ®¸¦ 1·Î ¼³Á¤ÇÏ¿© DLL°ú DLM¿¡ Á¢±Ù °¡´ÉÇÏ°Ô ÇÔ
+  // DLAB ë¹„íŠ¸ë¥¼ 1ë¡œ ì„¤ì •í•˜ì—¬ DLLê³¼ DLMì— ì ‘ê·¼ ê°€ëŠ¥í•˜ê²Œ í•¨
   uint8_t lcr_value = read_register(LCR(exUartBaseAddress[uart_num]));
   write_register(LCR(exUartBaseAddress[uart_num]), lcr_value | DLAB_BIT);
 
-  // Divisor °ª ¼³Á¤
+  // Divisor ê°’ ì„¤ì •
   write_register(DLL(exUartBaseAddress[uart_num]),
-                 divisor & 0xFF);  // ÇÏÀ§ ¹ÙÀÌÆ® ¼³Á¤
+                 divisor & 0xFF);  // í•˜ìœ„ ë°”ì´íŠ¸ ì„¤ì •
   write_register(DLM(exUartBaseAddress[uart_num]),
-                 (divisor >> 8) & 0xFF);  // »óÀ§ ¹ÙÀÌÆ® ¼³Á¤
+                 (divisor >> 8) & 0xFF);  // ìƒìœ„ ë°”ì´íŠ¸ ì„¤ì •
 
-  // DLAB ºñÆ®¸¦ 0À¸·Î ´Ù½Ã ¼³Á¤ÇÏ¿© DLL°ú DLM Á¢±Ù ºñÇã¿ë
+  // DLAB ë¹„íŠ¸ë¥¼ 0ìœ¼ë¡œ ë‹¤ì‹œ ì„¤ì •í•˜ì—¬ DLLê³¼ DLM ì ‘ê·¼ ë¹„í—ˆìš©
   write_register(LCR(exUartBaseAddress[uart_num]), lcr_value & ~DLAB_BIT);
 }
 
-#define PEN (1 << 3)  // ÆĞ¸®Æ¼ È°¼ºÈ­ ºñÆ®
-#define EPS (1 << 4)  // Â¦¼ö ÆĞ¸®Æ¼ ºñÆ®
-#define SP (1 << 5)   // °­Á¦ ÆĞ¸®Æ¼ ºñÆ®
-// ÆĞ¸®Æ¼ ¼³Á¤ ÇÔ¼ö
+#define PEN (1 << 3)  // íŒ¨ë¦¬í‹° í™œì„±í™” ë¹„íŠ¸
+#define EPS (1 << 4)  // ì§ìˆ˜ íŒ¨ë¦¬í‹° ë¹„íŠ¸
+#define SP (1 << 5)   // ê°•ì œ íŒ¨ë¦¬í‹° ë¹„íŠ¸
+// íŒ¨ë¦¬í‹° ì„¤ì • í•¨ìˆ˜
 void set_parity(uint8_t uart_num, uint8_t parity_mode)
 {
   volatile uint8_t lcr;
 
   lcr = read_register(LCR(exUartBaseAddress[uart_num]));
-  uint8_t lcr_val = lcr & 0xC7;  // LCR¿¡¼­ parity °ü·Ã ºñÆ®(3~5)¸¸ ÃÊ±âÈ­
+  uint8_t lcr_val = lcr & 0xC7;  // LCRì—ì„œ parity ê´€ë ¨ ë¹„íŠ¸(3~5)ë§Œ ì´ˆê¸°í™”
 
   switch (parity_mode)
   {
@@ -186,7 +186,7 @@ void set_parity(uint8_t uart_num, uint8_t parity_mode)
       lcr_val |= PEN | EPS | SP;
       break;
     default:
-      return;  // Àß¸øµÈ ÀÔ·Â°ªÀÌ¸é ¹«½Ã
+      return;  // ì˜ëª»ëœ ì…ë ¥ê°’ì´ë©´ ë¬´ì‹œ
   }
 
   write_register(LCR(exUartBaseAddress[uart_num]), lcr_val);
@@ -209,18 +209,18 @@ void quad_init(driver_t *tls16c554, void *opt)
   int baud_rate = config->baud;
   int uart_num = cfg->channel;
 
-  // º¸¿Àµå·¹ÀÌÆ® ¼³Á¤À» À§ÇÑ Divisor °è»ê
+  // ë³´ì˜¤ë“œë ˆì´íŠ¸ ì„¤ì •ì„ ìœ„í•œ Divisor ê³„ì‚°
   uint16_t divisor = UART_CLOCK_FREQ / (16 * baud_rate);
 
-  // DLAB ºñÆ® ¼³Á¤ (LCRÀÇ MSB ºñÆ®) 1·Î ÇØ¾ß ºĞÁÖºñ ·¹Áö½ºÅÍ Á¢±Ù °¡´É
+  // DLAB ë¹„íŠ¸ ì„¤ì • (LCRì˜ MSB ë¹„íŠ¸) 1ë¡œ í•´ì•¼ ë¶„ì£¼ë¹„ ë ˆì§€ìŠ¤í„° ì ‘ê·¼ ê°€ëŠ¥
   write_register(LCR(exUartBaseAddress[uart_num]), 0x80);
 
-  // DLL°ú DLM¿¡ divisor °ª ¼³Á¤
+  // DLLê³¼ DLMì— divisor ê°’ ì„¤ì •
 
   write_register(DLL(exUartBaseAddress[uart_num]), divisor & 0xFF);
   write_register(DLM(exUartBaseAddress[uart_num]), (divisor >> 8) & 0xFF);
 
-  // DLAB ºñÆ®¸¦ 0À¸·Î ¼³Á¤ÇÏ¿© LCR ¼³Á¤, »óÅÂ·¹Áö½ºÅÍ Á¢±Ù °¡´É
+  // DLAB ë¹„íŠ¸ë¥¼ 0ìœ¼ë¡œ ì„¤ì •í•˜ì—¬ LCR ì„¤ì •, ìƒíƒœë ˆì§€ìŠ¤í„° ì ‘ê·¼ ê°€ëŠ¥
   write_register(LCR(exUartBaseAddress[uart_num]), 0x03);
 
   if (config->parityIdx == PARITY_NONE)
@@ -238,19 +238,19 @@ void quad_init(driver_t *tls16c554, void *opt)
   set_parity(uart_num, parity_mode);
 
   /*
-  FIFO ¼³Á¤ (FCR) Æ®¸®°Å ·¹º§ 1¹ÙÀÌÆ®
+  FIFO ì„¤ì • (FCR) íŠ¸ë¦¬ê±° ë ˆë²¨ 1ë°”ì´íŠ¸
   */
   write_register(FCR(exUartBaseAddress[uart_num]),
                  0x07);  // FIFO enable, RX/TX FIFO reset
 
-  // MCR ¼³Á¤ (ÇÊ¿ä¿¡ µû¶ó Ãß°¡ ¼³Á¤)
+  // MCR ì„¤ì • (í•„ìš”ì— ë”°ë¼ ì¶”ê°€ ì„¤ì •)
   write_register(MCR(exUartBaseAddress[uart_num]), 0x08);
 
-// ÀÎÅÍ·´Æ® ¼³Á¤ Bit 3,2,1
-#define IER_RDA 0x01           // µ¥ÀÌÅÍ°¡ ¼ö½ÅµÊ
-#define IER_THRE 0x02          // ¼Û½Å¹öÆÛ ºó»óÅÂ
-#define IER_LINE_STATUS 0x04   // ¶óÀÎ»óÅÂ º¯°æµÊµÊ
-#define IER_MODEM_STATUS 0x08  // ¸ğµ© »óÅÂ º¯°æµÊ
+// ì¸í„°ëŸ½íŠ¸ ì„¤ì • Bit 3,2,1
+#define IER_RDA 0x01           // ë°ì´í„°ê°€ ìˆ˜ì‹ ë¨
+#define IER_THRE 0x02          // ì†¡ì‹ ë²„í¼ ë¹ˆìƒíƒœ
+#define IER_LINE_STATUS 0x04   // ë¼ì¸ìƒíƒœ ë³€ê²½ë¨ë¨
+#define IER_MODEM_STATUS 0x08  // ëª¨ë€ ìƒíƒœ ë³€ê²½ë¨
 #if STREAMBUFFER_USE
   flag = IER_RDA | IER_LINE_STATUS | IER_MODEM_STATUS;
 
@@ -269,15 +269,15 @@ void quad_init(driver_t *tls16c554, void *opt)
 }
 
 /**
- * @brief 1¹ÙÀÌÆ® Àü¼Û
- * @retval <0 ¿À·ù,1 Á¤»ó Àü¼Û¼Û
+ * @brief 1ë°”ì´íŠ¸ ì „ì†¡
+ * @retval <0 ì˜¤ë¥˜,1 ì •ìƒ ì „ì†¡ì†¡
  */
 int32_t send_data(uint8_t channel, uint8_t data)
 {
   uint32_t startTime;
 
 
-  // ¼Û½Å ¹öÆÛ°¡ ºñ¾îÀÖÀ» ¶§±îÁö ´ë±â
+  // ì†¡ì‹  ë²„í¼ê°€ ë¹„ì–´ìˆì„ ë•Œê¹Œì§€ ëŒ€ê¸°
   startTime = osKernelGetTickCount();
 
   do
@@ -288,24 +288,24 @@ int32_t send_data(uint8_t channel, uint8_t data)
     }
   } while ((read_register(LSR(exUartBaseAddress[channel])) & LSR_THRE) == 0);
 
-  // µ¥ÀÌÅÍ¸¦ THR¿¡ ¾¹´Ï´Ù.
+  // ë°ì´í„°ë¥¼ THRì— ì”ë‹ˆë‹¤.
   write_register(THR(exUartBaseAddress[channel]), data);
 
   return 1;
 }
 
-// µ¥ÀÌÅÍ ÀĞ±â ÇÔ¼ö
+// ë°ì´í„° ì½ê¸° í•¨ìˆ˜
 int read_byte(int uart_num, uint8_t *data)
 {
-  // LSRÀÇ DR ºñÆ®¸¦ È®ÀÎÇÏ¿© ¼ö½Å ¹öÆÛ¿¡ µ¥ÀÌÅÍ°¡ ÀÖ´ÂÁö È®ÀÎ
+  // LSRì˜ DR ë¹„íŠ¸ë¥¼ í™•ì¸í•˜ì—¬ ìˆ˜ì‹  ë²„í¼ì— ë°ì´í„°ê°€ ìˆëŠ”ì§€ í™•ì¸
   if (read_register(LSR(exUartBaseAddress[uart_num])) & LSR_DR)
   {
-    *data = read_register(RBR(exUartBaseAddress[uart_num]));  // RBR¿¡¼­ µ¥ÀÌÅÍ ÀĞ±â
-    return 1;                                                 // µ¥ÀÌÅÍ ÀĞ±â ¼º°ø
+    *data = read_register(RBR(exUartBaseAddress[uart_num]));  // RBRì—ì„œ ë°ì´í„° ì½ê¸°
+    return 1;                                                 // ë°ì´í„° ì½ê¸° ì„±ê³µ
   }
   else
   {
-    return 0;  // µ¥ÀÌÅÍ°¡ ÁØºñµÇÁö ¾ÊÀ½
+    return 0;  // ë°ì´í„°ê°€ ì¤€ë¹„ë˜ì§€ ì•ŠìŒ
   }
 }
 
@@ -313,28 +313,28 @@ int quad_recv_byte(driver_t *drv, uint8_t *data)
 {
   tl16c554_cfg_t *cfg = drv->cfg;
 
-  // LSRÀÇ DR ºñÆ®¸¦ È®ÀÎÇÏ¿© ¼ö½Å ¹öÆÛ¿¡ µ¥ÀÌÅÍ°¡ ÀÖ´ÂÁö È®ÀÎ
+  // LSRì˜ DR ë¹„íŠ¸ë¥¼ í™•ì¸í•˜ì—¬ ìˆ˜ì‹  ë²„í¼ì— ë°ì´í„°ê°€ ìˆëŠ”ì§€ í™•ì¸
   if (read_register(LSR(exUartBaseAddress[cfg->channel])) & LSR_DR)
   {
-    *data = read_register(RBR(exUartBaseAddress[cfg->channel]));  // RBR¿¡¼­ µ¥ÀÌÅÍ ÀĞ±â
-    return 1;                                                     // µ¥ÀÌÅÍ ÀĞ±â ¼º°ø
+    *data = read_register(RBR(exUartBaseAddress[cfg->channel]));  // RBRì—ì„œ ë°ì´í„° ì½ê¸°
+    return 1;                                                     // ë°ì´í„° ì½ê¸° ì„±ê³µ
   }
   else
   {
-    return 0;  // µ¥ÀÌÅÍ°¡ ÁØºñµÇÁö ¾ÊÀ½
+    return 0;  // ë°ì´í„°ê°€ ì¤€ë¹„ë˜ì§€ ì•ŠìŒ
   }
 }
 
 /**
- * @brief Å¸ÀÓ¾Æ¿ôÀ»ÁÖ°í ÃÖ¼Ò 1¹ÙÀÌÆ® ¼ö½ÅµÈ ÀÌÈÄºÎÅÍ dataTimeOutMsµ¿¾È µ¥ÀÌÅÍ
- * ¼ö½Å ¸øÇÏ¸é Á¾·á Ã³¸®
+ * @brief íƒ€ì„ì•„ì›ƒì„ì£¼ê³  ìµœì†Œ 1ë°”ì´íŠ¸ ìˆ˜ì‹ ëœ ì´í›„ë¶€í„° dataTimeOutMsë™ì•ˆ ë°ì´í„°
+ * ìˆ˜ì‹  ëª»í•˜ë©´ ì¢…ë£Œ ì²˜ë¦¬
  *
- * ¿¹)modbus È°¿ë
+ * ì˜ˆ)modbus í™œìš©
  */
 uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,
                                  uint32_t waitTimeOutMs, uint32_t dataTimeOutMs)
 {
-#if STREAMBUFFER_USE  // ·¹Áö½ºÅÍ Á÷Á¢ Á¢±Ù
+#if STREAMBUFFER_USE  // ë ˆì§€ìŠ¤í„° ì§ì ‘ ì ‘ê·¼
   uint32_t starTick;
   uint32_t stopTick;
   uint32_t elapseTick;
@@ -356,18 +356,18 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSiz
   startTime = osKernelGetTickCount();
   while (1)
   {
-    /* ½ºÆ®¸² ¹öÆÛ¿¡¼­ ÀĞÀ» ¼ö ÀÖ´Â µ¥ÀÌÅÍ Å©±â È®ÀÎ */
+    /* ìŠ¤íŠ¸ë¦¼ ë²„í¼ì—ì„œ ì½ì„ ìˆ˜ ìˆëŠ” ë°ì´í„° í¬ê¸° í™•ì¸ */
     xBytesAvailable = xStreamBufferBytesAvailable(g_quad_xStreamBuffer[cfg->channel]);
 
     if (remainBuffSize < xBytesAvailable)
     {
-      xBytesAvailable = remainBuffSize;  // ¹öÆÛ ¼ö¸¸Å­¸¸ ÀĞ±â
+      xBytesAvailable = remainBuffSize;  // ë²„í¼ ìˆ˜ë§Œí¼ë§Œ ì½ê¸°
     }
 
     starTick = osKernelGetTickCount();
     if (xBytesAvailable > 0)
     {
-      /* µ¥ÀÌÅÍ¸¦ ÀĞÀ» ¼ö ÀÖ´Ù¸é, µ¥ÀÌÅÍ¸¦ ¼ö½Å */
+      /* ë°ì´í„°ë¥¼ ì½ì„ ìˆ˜ ìˆë‹¤ë©´, ë°ì´í„°ë¥¼ ìˆ˜ì‹  */
       xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[cfg->channel], (void *)&pBuff[cnt],
                                         xBytesAvailable, pdMS_TO_TICKS(timeout));
 
@@ -379,7 +379,7 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSiz
     }
     else
     {
-      /*µ¥ÀÌÅÍ¸¦ ±â´Ù·Á¾ß ÇÑ´Ù¸é ÃÖ¼Ò 1°³°¡ ¼ö½ÅµÉ¶§±îÁö ´ë±â*/
+      /*ë°ì´í„°ë¥¼ ê¸°ë‹¤ë ¤ì•¼ í•œë‹¤ë©´ ìµœì†Œ 1ê°œê°€ ìˆ˜ì‹ ë ë•Œê¹Œì§€ ëŒ€ê¸°*/
       xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[cfg->channel], (void *)&pBuff[cnt], 1,
                                         pdMS_TO_TICKS(timeout));
       if (xBytesRead == 1)
@@ -388,8 +388,8 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSiz
         waitCnt++;
       }
     }
-    // µ¥ÀÌÅÍ°¡ ÇÏ³ª¶óµµ ¼ö½ÅµÇ±â Àü±îÁö´Â ÃÑ Áö¿¬½Ã°£¸¸Å­ ±â´Ù¸®°í
-    // µ¥ÀÌÅÍ°¡ ÇÏ³ª¶óµµ ¼ö½ÅµÈ ÀÌÈÄ ºÎÅÍ´Â µ¥ÀÌÅÍ Å¸ÀÓ¾Æ¿ô ¸¸Å­ ±â´Ù¸²
+    // ë°ì´í„°ê°€ í•˜ë‚˜ë¼ë„ ìˆ˜ì‹ ë˜ê¸° ì „ê¹Œì§€ëŠ” ì´ ì§€ì—°ì‹œê°„ë§Œí¼ ê¸°ë‹¤ë¦¬ê³ 
+    // ë°ì´í„°ê°€ í•˜ë‚˜ë¼ë„ ìˆ˜ì‹ ëœ ì´í›„ ë¶€í„°ëŠ” ë°ì´í„° íƒ€ì„ì•„ì›ƒ ë§Œí¼ ê¸°ë‹¤ë¦¼
     if (once && cnt)
     {
       once = false;
@@ -399,14 +399,14 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSiz
     stopTick = osKernelGetTickCount();
     elapseTick = stopTick - starTick;
 
-    if (once)  // µ¥ÀÌÅÍ°¡ ÇÏ³ªµµ ¼ö½Å¾ÈµÇ¾úÀ¸¸é °æ°ú½Ã°£ È®ÀÎ
+    if (once)  // ë°ì´í„°ê°€ í•˜ë‚˜ë„ ìˆ˜ì‹ ì•ˆë˜ì—ˆìœ¼ë©´ ê²½ê³¼ì‹œê°„ í™•ì¸
     {
       if (elapseTick >= timeout)
       {
         return 0;
       }
     }
-    else  // µ¥ÀÌÅÍ°¡ ÇÏ³ª¶óµµ ¼ö½ÅµÇ¾úÀ¸¸é ÃÖÃÊºÎÅÍ
+    else  // ë°ì´í„°ê°€ í•˜ë‚˜ë¼ë„ ìˆ˜ì‹ ë˜ì—ˆìœ¼ë©´ ìµœì´ˆë¶€í„°
     {
       if ((stopTick - startTime) > waitTimeOutMs || cnt >= buffSize)
       {
@@ -444,7 +444,7 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSiz
     }
   }
 
-  return cnt;  // µ¥ÀÌÅÍ°¡ ÁØºñµÇÁö ¾ÊÀ½
+  return cnt;  // ë°ì´í„°ê°€ ì¤€ë¹„ë˜ì§€ ì•ŠìŒ
 
 #endif
 
@@ -454,7 +454,7 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSiz
 uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,
                                   uint32_t waitTimeOutMs, uint32_t dataTimeOutMs)
 {
-#if STREAMBUFFER_USE  // ·¹Áö½ºÅÍ Á÷Á¢ Á¢±Ù
+#if STREAMBUFFER_USE  // ë ˆì§€ìŠ¤í„° ì§ì ‘ ì ‘ê·¼
   uint32_t starTick;
   uint32_t stopTick;
   uint32_t elapseTick;
@@ -475,18 +475,18 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
   startTime = osKernelGetTickCount();
   while (1)
   {
-    /* ½ºÆ®¸² ¹öÆÛ¿¡¼­ ÀĞÀ» ¼ö ÀÖ´Â µ¥ÀÌÅÍ Å©±â È®ÀÎ */
+    /* ìŠ¤íŠ¸ë¦¼ ë²„í¼ì—ì„œ ì½ì„ ìˆ˜ ìˆëŠ” ë°ì´í„° í¬ê¸° í™•ì¸ */
     xBytesAvailable = xStreamBufferBytesAvailable(g_quad_xStreamBuffer[cfg->channel]);
 
     if (remainBuffSize < xBytesAvailable)
     {
-      xBytesAvailable = remainBuffSize;  // ¹öÆÛ ¼ö¸¸Å­¸¸ ÀĞ±â
+      xBytesAvailable = remainBuffSize;  // ë²„í¼ ìˆ˜ë§Œí¼ë§Œ ì½ê¸°
     }
 
     starTick = osKernelGetTickCount();
     if (xBytesAvailable > 0)
     {
-      /* µ¥ÀÌÅÍ¸¦ ÀĞÀ» ¼ö ÀÖ´Ù¸é, µ¥ÀÌÅÍ¸¦ ¼ö½Å */
+      /* ë°ì´í„°ë¥¼ ì½ì„ ìˆ˜ ìˆë‹¤ë©´, ë°ì´í„°ë¥¼ ìˆ˜ì‹  */
       xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[cfg->channel], (void *)&pBuff[cnt],
                                         xBytesAvailable, pdMS_TO_TICKS(timeout));
 
@@ -498,7 +498,7 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
     }
     else
     {
-      /*µ¥ÀÌÅÍ¸¦ ±â´Ù·Á¾ß ÇÑ´Ù¸é ÃÖ¼Ò 1°³°¡ ¼ö½ÅµÉ¶§±îÁö ´ë±â*/
+      /*ë°ì´í„°ë¥¼ ê¸°ë‹¤ë ¤ì•¼ í•œë‹¤ë©´ ìµœì†Œ 1ê°œê°€ ìˆ˜ì‹ ë ë•Œê¹Œì§€ ëŒ€ê¸°*/
       xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[cfg->channel], (void *)&pBuff[cnt], 1,
                                         pdMS_TO_TICKS(timeout));
       if (xBytesRead == 1)
@@ -507,8 +507,8 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
         waitCnt++;
       }
     }
-    // µ¥ÀÌÅÍ°¡ ÇÏ³ª¶óµµ ¼ö½ÅµÇ±â Àü±îÁö´Â ÃÑ Áö¿¬½Ã°£¸¸Å­ ±â´Ù¸®°í
-    // µ¥ÀÌÅÍ°¡ ÇÏ³ª¶óµµ ¼ö½ÅµÈ ÀÌÈÄ ºÎÅÍ´Â µ¥ÀÌÅÍ Å¸ÀÓ¾Æ¿ô ¸¸Å­ ±â´Ù¸²
+    // ë°ì´í„°ê°€ í•˜ë‚˜ë¼ë„ ìˆ˜ì‹ ë˜ê¸° ì „ê¹Œì§€ëŠ” ì´ ì§€ì—°ì‹œê°„ë§Œí¼ ê¸°ë‹¤ë¦¬ê³ 
+    // ë°ì´í„°ê°€ í•˜ë‚˜ë¼ë„ ìˆ˜ì‹ ëœ ì´í›„ ë¶€í„°ëŠ” ë°ì´í„° íƒ€ì„ì•„ì›ƒ ë§Œí¼ ê¸°ë‹¤ë¦¼
     if (once && cnt)
     {
       once = false;
@@ -518,14 +518,14 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
     stopTick = osKernelGetTickCount();
     elapseTick = stopTick - starTick;
 
-    if (once)  // µ¥ÀÌÅÍ°¡ ÇÏ³ªµµ ¼ö½Å¾ÈµÇ¾úÀ¸¸é °æ°ú½Ã°£ È®ÀÎ
+    if (once)  // ë°ì´í„°ê°€ í•˜ë‚˜ë„ ìˆ˜ì‹ ì•ˆë˜ì—ˆìœ¼ë©´ ê²½ê³¼ì‹œê°„ í™•ì¸
     {
       if (elapseTick >= timeout)
       {
         return 0;
       }
     }
-    else  // µ¥ÀÌÅÍ°¡ ÇÏ³ª¶óµµ ¼ö½ÅµÇ¾úÀ¸¸é ÃÖÃÊºÎÅÍ
+    else  // ë°ì´í„°ê°€ í•˜ë‚˜ë¼ë„ ìˆ˜ì‹ ë˜ì—ˆìœ¼ë©´ ìµœì´ˆë¶€í„°
     {
       if ((stopTick - startTime) > waitTimeOutMs || cnt >= buffSize)
       {
@@ -563,7 +563,7 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
     }
   }
 
-  return cnt;  // µ¥ÀÌÅÍ°¡ ÁØºñµÇÁö ¾ÊÀ½
+  return cnt;  // ë°ì´í„°ê°€ ì¤€ë¹„ë˜ì§€ ì•ŠìŒ
 
 #endif
 
@@ -571,11 +571,11 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
 }
 
 #define UART_IIR_INTTERUPT_PENDING 0x01
-#define UART_IIR_RX_LINE_STAT 0x06   // ¼ö½Å ¶óÀÎ »óÅÂ (OE, PE, FE, BI)
-#define UART_IIR_RX_DATA_AVAIL 0x04  // ¼ö½Å µ¥ÀÌÅÍ »ç¿ë °¡´É (FIFO ¸ğµå¿¡¼­ Æ®¸®°Å ·¹º§ µµ´Ş)
-#define UART_IIR_CHAR_TIMEOUT 0x0c   // ¹®ÀÚ Å¸ÀÓ¾Æ¿ô ¹ß»ı
-#define UART_IIR_THRE 0x02           // ¼Û½Å±â È¦µù ·¹Áö½ºÅÍ ºñ¾î ÀÖÀ½ (THRE)
-#define UART_IIR_MODEM_STATUS 0x00   // ¸ğµ© »óÅÂ º¯È­ (CTS, DSR, RI, DCD)
+#define UART_IIR_RX_LINE_STAT 0x06   // ìˆ˜ì‹  ë¼ì¸ ìƒíƒœ (OE, PE, FE, BI)
+#define UART_IIR_RX_DATA_AVAIL 0x04  // ìˆ˜ì‹  ë°ì´í„° ì‚¬ìš© ê°€ëŠ¥ (FIFO ëª¨ë“œì—ì„œ íŠ¸ë¦¬ê±° ë ˆë²¨ ë„ë‹¬)
+#define UART_IIR_CHAR_TIMEOUT 0x0c   // ë¬¸ì íƒ€ì„ì•„ì›ƒ ë°œìƒ
+#define UART_IIR_THRE 0x02           // ì†¡ì‹ ê¸° í™€ë”© ë ˆì§€ìŠ¤í„° ë¹„ì–´ ìˆìŒ (THRE)
+#define UART_IIR_MODEM_STATUS 0x00   // ëª¨ë€ ìƒíƒœ ë³€í™” (CTS, DSR, RI, DCD)
 
 int g_channel;
 void irq_tl16c554(driver_t *drv)
@@ -598,13 +598,13 @@ void irq_tl16c554(driver_t *drv)
 
     switch (interruptType)
     {
-      case UART_IIR_RX_DATA_AVAIL:                                   // µ¥ÀÌÅÍ ¼ö½Å
-        data = read_register(RBR(exUartBaseAddress[cfg->channel]));  // RBR¿¡¼­ µ¥ÀÌÅÍ ÀĞ±â
+      case UART_IIR_RX_DATA_AVAIL:                                   // ë°ì´í„° ìˆ˜ì‹ 
+        data = read_register(RBR(exUartBaseAddress[cfg->channel]));  // RBRì—ì„œ ë°ì´í„° ì½ê¸°
 
-        /* µ¥ÀÌÅÍ¸¦ ½ºÆ®¸² ¹öÆÛ¿¡ Àü¼Û */
+        /* ë°ì´í„°ë¥¼ ìŠ¤íŠ¸ë¦¼ ë²„í¼ì— ì „ì†¡ */
         xBytesSent = xStreamBufferSendFromISR(g_quad_xStreamBuffer[cfg->channel], &data, 1,
                                               &xHigherPriorityTaskWoken);
-        /* ³ôÀº ¿ì¼±¼øÀ§ÀÇ ÅÂ½ºÅ©°¡ ±ú¾î³ª¾ß ÇÏ¸é ÄÁÅØ½ºÆ® ½ºÀ§Äª ¿äÃ» */
+        /* ë†’ì€ ìš°ì„ ìˆœìœ„ì˜ íƒœìŠ¤í¬ê°€ ê¹¨ì–´ë‚˜ì•¼ í•˜ë©´ ì»¨í…ìŠ¤íŠ¸ ìŠ¤ìœ„ì¹­ ìš”ì²­ */
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
         if (!(xBytesSent > 0))
@@ -618,18 +618,18 @@ void irq_tl16c554(driver_t *drv)
         break;
       case UART_IIR_RX_LINE_STAT:  // Receiver Line Status
         // Handle Line Error
-        lineStatus = read_register(LSR(exUartBaseAddress[cfg->channel]));  // RBR¿¡¼­ µ¥ÀÌÅÍ ÀĞ±â
+        lineStatus = read_register(LSR(exUartBaseAddress[cfg->channel]));  // RBRì—ì„œ ë°ì´í„° ì½ê¸°
         (void)lineStatus;
         // Check for specific errors
         break;
 
       case UART_IIR_MODEM_STATUS:  // Modem Status
         // Handle Modem Status
-        modemStatus = read_register(MSR(exUartBaseAddress[cfg->channel]));  // RBR¿¡¼­ µ¥ÀÌÅÍ ÀĞ±â
+        modemStatus = read_register(MSR(exUartBaseAddress[cfg->channel]));  // RBRì—ì„œ ë°ì´í„° ì½ê¸°
         (void)modemStatus;
         break;
       case UART_IIR_CHAR_TIMEOUT:
-        reg = read_register(RBR(exUartBaseAddress[cfg->channel]));  // RBR¿¡¼­ µ¥ÀÌÅÍ ÀĞ±â
+        reg = read_register(RBR(exUartBaseAddress[cfg->channel]));  // RBRì—ì„œ ë°ì´í„° ì½ê¸°
         (void)reg;
         break;
         break;
@@ -657,17 +657,17 @@ void irq_INTC_7(void *arg) { irq_tl16c554((driver_t *)arg); }
 
 void irq_INTD_8(void *arg) { irq_tl16c554((driver_t *)arg); }
 
-// DMA ÇÚµé·¯ ¼±¾ğ
+// DMA í•¸ë“¤ëŸ¬ ì„ ì–¸
 DMA_HandleTypeDef hdma_memtomem;
 
 
 
-// DMA Àü¼Û ¿Ï·á Äİ¹é ÇÔ¼ö
+// DMA ì „ì†¡ ì™„ë£Œ ì½œë°± í•¨ìˆ˜
 void HAL_DMA_XferCpltCallback(DMA_HandleTypeDef *hdma)
 {
   if (hdma->Instance == DMA2_Stream0)
-  {                        // DMA ½ºÆ®¸² È®ÀÎ
-    io_printf("ok\n");  // Àü¼Û ¿Ï·á ¸Ş½ÃÁö Ãâ·Â
+  {                        // DMA ìŠ¤íŠ¸ë¦¼ í™•ì¸
+    io_printf("ok\n");  // ì „ì†¡ ì™„ë£Œ ë©”ì‹œì§€ ì¶œë ¥
   }
 }
 void HAL_DMA_XferErrorCallback(DMA_HandleTypeDef *hdma) { io_printf("DMA Transfer Error\n"); }
@@ -675,10 +675,10 @@ void HAL_DMA_XferErrorCallback(DMA_HandleTypeDef *hdma) { io_printf("DMA Transfe
 void tls16c554_send_DMA(int num, const uint8_t *pData, uint16_t dataLen)
 {
   uint32_t dest_address = (uint32_t)THR(exUartBaseAddress[num]);
-  // DMA Àü¼Û ½ÃÀÛ
+  // DMA ì „ì†¡ ì‹œì‘
   if (HAL_DMA_Start_IT(&hdma_memtomem, (uint32_t)pData, dest_address, dataLen) != HAL_OK)
   {
-    // DMA ½ÃÀÛ ½ÇÆĞ Ã³¸®
+    // DMA ì‹œì‘ ì‹¤íŒ¨ ì²˜ë¦¬
     io_printf("DMA Start Failed\n");
     while (1);
   }
@@ -724,9 +724,9 @@ void tls16c554_irq_init(driver_t *drv, uint8_t prio)
   driver_di_set(cfg->irq_io, DI_SET_INTERRUPT, &isr_cfg);
 }
 
-/// @brief 8Ã¤³Î
-/// @param num Ã¤³Î ¹øÈ£
-/// @param opt ÃÊ±â ¼³Á¤ ±¸Á¶Ã¼ uart_config_t
+/// @brief 8ì±„ë„
+/// @param num ì±„ë„ ë²ˆí˜¸
+/// @param opt ì´ˆê¸° ì„¤ì • êµ¬ì¡°ì²´ uart_config_t
 /// @return
 driver_t *tls16c554_open(uint32_t num, void *opt)
 {
@@ -748,10 +748,10 @@ driver_t *tls16c554_open(uint32_t num, void *opt)
   tls16c554_driver[num].opened = true;
   tls16c554_driver[num].api = &tl16c554_api;
 
-  // RX µ¥ÀÌÅÍ ¼ö½Å ¹öÆÛ¸¦ ÇÒ´ç, Æ®¸®°Å ·¹º§ 1·Î ¼³Á¤Á¤
+  // RX ë°ì´í„° ìˆ˜ì‹  ë²„í¼ë¥¼ í• ë‹¹, íŠ¸ë¦¬ê±° ë ˆë²¨ 1ë¡œ ì„¤ì •ì •
   g_quad_xStreamBuffer[num] = xStreamBufferCreate(g_streamBuffSizeList[num], 1);
 
-  // Ã¤³Î´ç ÀÎÅÍ·´Æ® ¼³Á¤Á¤
+  // ì±„ë„ë‹¹ ì¸í„°ëŸ½íŠ¸ ì„¤ì •ì •
   switch (num)
   {
     case TL16C554_UART_1_D_SUB:
@@ -780,7 +780,7 @@ driver_t *tls16c554_open(uint32_t num, void *opt)
       break;
   }
 
-  // ÃÊ±âÈ­
+  // ì´ˆê¸°í™”
   quad_init(&tls16c554_driver[num], opt);
 
 
@@ -824,9 +824,9 @@ int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen)
   } while ((read_register(LSR(exUartBaseAddress[cfg->channel])) & LSR_TEMT) == 0);
 
   /*
-  ¼Û½Å ·¹Áö½ºÅÍ ºñ¾îÀÖÀ½
-  THR ¹× TSRÀÌ ¸ğµÎ ºñ¾îÀÖÀ» ¶§ ¼³Á¤µÊ
-  THR¿¡ ¹®ÀÚ°¡ ·ÎµåµÇ¸é LSR6Àº Å¬¸®¾îµÇ¸ç ¹®ÀÚ°¡ ¿ÏÀüÈ÷ ¼Û½ÅµÉ ¶§ ±îÁö À¯ÁöµÊ
+  ì†¡ì‹  ë ˆì§€ìŠ¤í„° ë¹„ì–´ìˆìŒ
+  THR ë° TSRì´ ëª¨ë‘ ë¹„ì–´ìˆì„ ë•Œ ì„¤ì •ë¨
+  THRì— ë¬¸ìê°€ ë¡œë“œë˜ë©´ LSR6ì€ í´ë¦¬ì–´ë˜ë©° ë¬¸ìê°€ ì™„ì „íˆ ì†¡ì‹ ë  ë•Œ ê¹Œì§€ ìœ ì§€ë¨
   */
 
   OS_POST_SEM(handle->sem);
@@ -836,7 +836,7 @@ int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen)
 
 int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {
-#if STREAMBUFFER_USE  // ·¹Áö½ºÅÍ Á÷Á¢ Á¢±Ù
+#if STREAMBUFFER_USE  // ë ˆì§€ìŠ¤í„° ì§ì ‘ ì ‘ê·¼
   uint32_t starTick;
   uint32_t stopTick;
   uint32_t elapseTick;
@@ -857,18 +857,18 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
 
   while (1)
   {
-    /* ½ºÆ®¸² ¹öÆÛ¿¡¼­ ÀĞÀ» ¼ö ÀÖ´Â µ¥ÀÌÅÍ Å©±â È®ÀÎ */
+    /* ìŠ¤íŠ¸ë¦¼ ë²„í¼ì—ì„œ ì½ì„ ìˆ˜ ìˆëŠ” ë°ì´í„° í¬ê¸° í™•ì¸ */
     xBytesAvailable = xStreamBufferBytesAvailable(g_quad_xStreamBuffer[channel]);
 
     if (remainBuffSize < xBytesAvailable)
     {
-      xBytesAvailable = remainBuffSize;  // ¹öÆÛ ¼ö¸¸Å­¸¸ ÀĞ±â
+      xBytesAvailable = remainBuffSize;  // ë²„í¼ ìˆ˜ë§Œí¼ë§Œ ì½ê¸°
     }
 
     starTick = osKernelGetTickCount();
     if (xBytesAvailable > 0)
     {
-      /* µ¥ÀÌÅÍ¸¦ ÀĞÀ» ¼ö ÀÖ´Ù¸é, µ¥ÀÌÅÍ¸¦ ¼ö½Å */
+      /* ë°ì´í„°ë¥¼ ì½ì„ ìˆ˜ ìˆë‹¤ë©´, ë°ì´í„°ë¥¼ ìˆ˜ì‹  */
       xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[channel], (void *)&pBuff[cnt],
                                         xBytesAvailable, pdMS_TO_TICKS(timeout));
 
@@ -880,7 +880,7 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
     }
     else
     {
-      /*µ¥ÀÌÅÍ¸¦ ±â´Ù·Á¾ß ÇÑ´Ù¸é ÃÖ¼Ò 1°³°¡ ¼ö½ÅµÉ¶§±îÁö ´ë±â*/
+      /*ë°ì´í„°ë¥¼ ê¸°ë‹¤ë ¤ì•¼ í•œë‹¤ë©´ ìµœì†Œ 1ê°œê°€ ìˆ˜ì‹ ë ë•Œê¹Œì§€ ëŒ€ê¸°*/
       xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[channel], (void *)&pBuff[cnt], 1,
                                         pdMS_TO_TICKS(timeout));
       if (xBytesRead == 1)
@@ -924,7 +924,7 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
     }
   }
 
-  return cnt;  // µ¥ÀÌÅÍ°¡ ÁØºñµÇÁö ¾ÊÀ½
+  return cnt;  // ë°ì´í„°ê°€ ì¤€ë¹„ë˜ì§€ ì•ŠìŒ
 
 #endif
 }
@@ -1020,7 +1020,7 @@ int32_t tls16c554_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint
     }
   }
 
-  return cnt;  // µ¥ÀÌÅÍ°¡ ÁØºñµÇÁö ¾ÊÀ½
+  return cnt;  // ë°ì´í„°ê°€ ì¤€ë¹„ë˜ì§€ ì•ŠìŒ
 
 
 }

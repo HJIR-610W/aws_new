@@ -55,7 +55,7 @@ __weak uint8_t BSP_SD_Init(void)
     return MSD_ERROR;
   }
   /* HAL SD initialization */
-  sd_state = HAL_SD_Init(&hsd);//¿©±â¼­ enale ¸í·É¾î ½ÇÇà½Ã Å¸ÀÓ¾Æ¿ô ¹ß»ıÇÏ´Â °æ¿ì Á¸Àç
+  sd_state = HAL_SD_Init(&hsd);//ì—¬ê¸°ì„œ enale ëª…ë ¹ì–´ ì‹¤í–‰ì‹œ íƒ€ì„ì•„ì›ƒ ë°œìƒí•˜ëŠ” ê²½ìš° ì¡´ì¬
  
 
   /* Configure SD Bus width (4 bits mode selected) */

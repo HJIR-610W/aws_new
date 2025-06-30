@@ -133,10 +133,10 @@ int32_t read_rainHallErr(void)
 {
   if(driver_di_read(g_hallStatusDriver))
   {
-    return 0;//Á¤»ó
+    return 0;//ì •ìƒ
   }
 
-  return 1;//¿¡·¯ 
+  return 1;//ì—ëŸ¬ 
 }
 
 

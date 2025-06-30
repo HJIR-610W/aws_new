@@ -24,7 +24,7 @@
 #define RECV_BUFF_SIZE 512
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define CLIENT_CONNECT_TIMEOUT_MS 10000 
-#define MAX_CONCURRENT_CLIENTS 3        // ÃÖ´ë µ¿½Ã Á¢¼Ó Å¬¶óÀÌ¾ğÆ® ¼ö
+#define MAX_CONCURRENT_CLIENTS 3        // ìµœëŒ€ ë™ì‹œ ì ‘ì† í´ë¼ì´ì–¸íŠ¸ ìˆ˜
 
 typedef struct
 {
@@ -58,7 +58,7 @@ const osThreadAttr_t clientHandlerTask_attributes = {
 
 
 static void client_handler_task(void *argument);
-static void server_service_for_client(int sock, client_slot_t* slot); // server_service ¼öÁ¤º»
+static void server_service_for_client(int sock, client_slot_t* slot); // server_service ìˆ˜ì •ë³¸
 
 tcp_system_t *get_tcp_system(uint32_t number)
 {
@@ -67,7 +67,7 @@ tcp_system_t *get_tcp_system(uint32_t number)
 
 void noti_tcpServerTask(uint32_t flag)
 {
-  if(g_tcpSeverTaskId != NULL) // NULL Ã¼Å© Ãß°¡
+  if(g_tcpSeverTaskId != NULL) // NULL ì²´í¬ ì¶”ê°€
   {
     osThreadFlagsSet(g_tcpSeverTaskId,  flag);
   }
@@ -80,7 +80,7 @@ int set_recv_timeout(int sockfd, uint32_t timeout_ms)
     timeout.tv_usec = (timeout_ms % 1000) * 1000;
 
     if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
-      task_printf("SO_RCVTIMEO ¼³Á¤¿¡ ½ÇÆĞÇß½À´Ï´Ù. ¿À·ù ¹øÈ£: %d\r\n", errno);
+      task_printf("SO_RCVTIMEO ì„¤ì •ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤. ì˜¤ë¥˜ ë²ˆí˜¸: %d\r\n", errno);
 
       return -1;
     }
@@ -106,12 +106,12 @@ static void server_service_for_client(int sock, client_slot_t* slot)
     return;
   }
 
-  task_printf("Å¬¶óÀÌ¾ğÆ® ÇÚµé·¯: Å¬¶óÀÌ¾ğÆ® %s:%u (¼ÒÄÏ %d) Ã³¸® Áß\r\n", slot->client_ip_str,
+  task_printf("í´ë¼ì´ì–¸íŠ¸ í•¸ë“¤ëŸ¬: í´ë¼ì´ì–¸íŠ¸ %s:%u (ì†Œì¼“ %d) ì²˜ë¦¬ ì¤‘\r\n", slot->client_ip_str,
             slot->client_port, sock);
 
   if (set_recv_timeout(sock, CLIENT_CONNECT_TIMEOUT_MS) < 0)
   {
-    task_printf("Å¬¶óÀÌ¾ğÆ® ÇÚµé·¯ (%s:%u): ¼ÒÄÏ %d¿¡ ´ëÇÑ Å¸ÀÓ¾Æ¿ô ¼³Á¤ ½ÇÆĞ\r\n",
+    task_printf("í´ë¼ì´ì–¸íŠ¸ í•¸ë“¤ëŸ¬ (%s:%u): ì†Œì¼“ %dì— ëŒ€í•œ íƒ€ì„ì•„ì›ƒ ì„¤ì • ì‹¤íŒ¨\r\n",
               slot->client_ip_str, slot->client_port, sock);
     vPortFree(p_rx_buffer);
     return;
@@ -121,36 +121,36 @@ static void server_service_for_client(int sock, client_slot_t* slot)
   {
     ret = recv(sock, p_rx_buffer, RECV_BUFF_SIZE, 0);
 
-    if (ret < 0) // recv ¿À·ù
+    if (ret < 0) // recv ì˜¤ë¥˜
     {
       err_code = errno;
       if (err_code == EAGAIN )//|| err_code == EWOULDBLOCK)
       {
        //  task_printf("Client Handler (%s:%u): recv timeout on socket %d\r\n", slot->client_ip_str, slot->client_port, sock);
-        continue;  // Å¸ÀÓ¾Æ¿ô, ´ÙÀ½ ¼ö½Å ½Ãµµ
+        continue;  // íƒ€ì„ì•„ì›ƒ, ë‹¤ìŒ ìˆ˜ì‹  ì‹œë„
       }
       else
       {
-        task_printf("Å¬¶óÀÌ¾ğÆ® ÇÚµé·¯ (%s:%u): ¼ÒÄÏ %d¿¡¼­ ¼ö½Å ¿À·ù ¹ß»ı, ¿À·ù ¹øÈ£: %d\r\n",
+        task_printf("í´ë¼ì´ì–¸íŠ¸ í•¸ë“¤ëŸ¬ (%s:%u): ì†Œì¼“ %dì—ì„œ ìˆ˜ì‹  ì˜¤ë¥˜ ë°œìƒ, ì˜¤ë¥˜ ë²ˆí˜¸: %d\r\n",
                   slot->client_ip_str, slot->client_port, sock, err_code);
 
-        break; // ±× ¿Ü ¿À·ù´Â ·çÇÁ Á¾·á
+        break; // ê·¸ ì™¸ ì˜¤ë¥˜ëŠ” ë£¨í”„ ì¢…ë£Œ
       }
     }
-    else if (ret == 0) // »ó´ë¹æÀÌ ¿¬°á Á¤»ó Á¾·á
+    else if (ret == 0) // ìƒëŒ€ë°©ì´ ì—°ê²° ì •ìƒ ì¢…ë£Œ
     {
-      task_printf("Å¬¶óÀÌ¾ğÆ® ÇÚµé·¯ (%s:%u): ¼ÒÄÏ %d¿¡¼­ »ó´ëÃøÀÌ ¿¬°áÀ» Á¾·áÇÔ\r\n",
+      task_printf("í´ë¼ì´ì–¸íŠ¸ í•¸ë“¤ëŸ¬ (%s:%u): ì†Œì¼“ %dì—ì„œ ìƒëŒ€ì¸¡ì´ ì—°ê²°ì„ ì¢…ë£Œí•¨\r\n",
                 slot->client_ip_str, slot->client_port, sock);
 
-      break; // ·çÇÁ Á¾·á
+      break; // ë£¨í”„ ì¢…ë£Œ
     }
-    else // µ¥ÀÌÅÍ ¼ö½Å ¼º°ø (ret > 0)
+    else // ë°ì´í„° ìˆ˜ì‹  ì„±ê³µ (ret > 0)
     {
       slot->status->last_recv_time = time_timestamp();
-      UPDATE_CNT(slot->status->rx_cnt, 99);  // ½º·¹µå ¾ÈÀüÇÑ Ä«¿îÅÍ ¾÷µ¥ÀÌÆ®
+      UPDATE_CNT(slot->status->rx_cnt, 99);  // ìŠ¤ë ˆë“œ ì•ˆì „í•œ ì¹´ìš´í„° ì—…ë°ì´íŠ¸
       len = kma_cmd_handler(p_rx_buffer, ret, tx_buffer, eREQ_SOURCE_ETH);
 
-      if (len > 0) // ÀÀ´äÇÒ µ¥ÀÌÅÍ°¡ ÀÖ´Â °æ¿ì
+      if (len > 0) // ì‘ë‹µí•  ë°ì´í„°ê°€ ìˆëŠ” ê²½ìš°
       {
         int32_t total_sent = 0;
         bool send_error = false;
@@ -159,24 +159,24 @@ static void server_service_for_client(int sock, client_slot_t* slot)
         {
           ret = send(sock, tx_buffer + total_sent, len - total_sent, 0);
           slot->status->last_send_time = time_timestamp();
-          if (ret <= 0)  // send ¿À·ù ¶Ç´Â ¿¬°á Á¾·á
+          if (ret <= 0)  // send ì˜¤ë¥˜ ë˜ëŠ” ì—°ê²° ì¢…ë£Œ
           {
             err_code = errno;
             task_printf(
-                "Å¬¶óÀÌ¾ğÆ® ÇÚµé·¯ (%s:%u): ¼ÒÄÏ %d¿¡¼­ Àü¼Û ½ÇÆĞ, Àü¼Û %d/%d ¹ÙÀÌÆ®, ¿À·ù ¹øÈ£: "
+                "í´ë¼ì´ì–¸íŠ¸ í•¸ë“¤ëŸ¬ (%s:%u): ì†Œì¼“ %dì—ì„œ ì „ì†¡ ì‹¤íŒ¨, ì „ì†¡ %d/%d ë°”ì´íŠ¸, ì˜¤ë¥˜ ë²ˆí˜¸: "
                 "%d\r\n",
                 slot->client_ip_str, slot->client_port, sock, total_sent, len,
                 (ret < 0 ? err_code : 0));
 
             send_error = true;
-            break; // ³»ºÎ send ·çÇÁ Á¾·á
+            break; // ë‚´ë¶€ send ë£¨í”„ ì¢…ë£Œ
           }
           total_sent += ret;
         }
 
         if (send_error)
         {
-          break; // ¿ÜºÎ ¼­ºñ½º ·çÇÁ Á¾·á
+          break; // ì™¸ë¶€ ì„œë¹„ìŠ¤ ë£¨í”„ ì¢…ë£Œ
         }
 
         UPDATE_CNT(slot->status->tx_cnt, 99);  
@@ -184,17 +184,17 @@ static void server_service_for_client(int sock, client_slot_t* slot)
         if (get_firmware_update())
         {
           task_printf(
-              "Å¬¶óÀÌ¾ğÆ® ÇÚµé·¯ (%s:%u): TCP¸¦ ÅëÇØ Æß¿ş¾î ¾÷µ¥ÀÌÆ® Æ®¸®°ÅµÊ. ½Ã½ºÅÛÀ» "
-              "¸®¼ÂÇÕ´Ï´Ù.\r\n",
+              "í´ë¼ì´ì–¸íŠ¸ í•¸ë“¤ëŸ¬ (%s:%u): TCPë¥¼ í†µí•´ íŒì›¨ì–´ ì—…ë°ì´íŠ¸ íŠ¸ë¦¬ê±°ë¨. ì‹œìŠ¤í…œì„ "
+              "ë¦¬ì…‹í•©ë‹ˆë‹¤.\r\n",
               slot->client_ip_str, slot->client_port);
 
           closesocket(sock);
-          reset_system( "TCP client update"); //¸®ÅÏ ¾øÀ½
+          reset_system( "TCP client update"); //ë¦¬í„´ ì—†ìŒ
         }
       }
     }
   }
-  task_printf("Å¬¶óÀÌ¾ğÆ® ÇÚµé·¯ (%s:%u): ¼ÒÄÏ %d¿¡ ´ëÇÑ ¼­ºñ½º ·çÇÁ Á¾·á\r\n", slot->client_ip_str, slot->client_port, sock);
+  task_printf("í´ë¼ì´ì–¸íŠ¸ í•¸ë“¤ëŸ¬ (%s:%u): ì†Œì¼“ %dì— ëŒ€í•œ ì„œë¹„ìŠ¤ ë£¨í”„ ì¢…ë£Œ\r\n", slot->client_ip_str, slot->client_port, sock);
 
 
   vPortFree(p_rx_buffer);
@@ -213,18 +213,18 @@ static void client_handler_task(void *argument)
   server_service_for_client(client_socket_fd, slot);
 
   closesocket(client_socket_fd);
-  task_printf("Å¬¶óÀÌ¾ğÆ® ÇÚµé·¯ ÅÂ½ºÅ©: Å¬¶óÀÌ¾ğÆ® ¼ÒÄÏ %d (%s:%u) ´İÈû\r\n", client_socket_fd,
+  task_printf("í´ë¼ì´ì–¸íŠ¸ í•¸ë“¤ëŸ¬ íƒœìŠ¤í¬: í´ë¼ì´ì–¸íŠ¸ ì†Œì¼“ %d (%s:%u) ë‹«í˜\r\n", client_socket_fd,
             slot->client_ip_str, slot->client_port);
 
   if (osMutexAcquire(client_slots_mutex, osWaitForever) == osOK)
   {
     slot->isActive = false;
-    slot->taskId = NULL; // ÅÂ½ºÅ© ID ÃÊ±âÈ­
+    slot->taskId = NULL; // íƒœìŠ¤í¬ ID ì´ˆê¸°í™”
     slot->client_socket = -1;
     osMutexRelease(client_slots_mutex);
   } else {
     task_printf(
-        "¿À·ù: Á¤¸®¸¦ À§ÇØ client_handler_task°¡ client_slots_mutex¸¦ È¹µæÇÏÁö ¸øÇß½À´Ï´Ù.\r\n");
+        "ì˜¤ë¥˜: ì •ë¦¬ë¥¼ ìœ„í•´ client_handler_taskê°€ client_slots_mutexë¥¼ íšë“í•˜ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.\r\n");
   }
 
   slot->status->link_status = eLINK_DOWN;
@@ -239,14 +239,14 @@ void tcpServerTask(void *arg)
   int32_t new_conn_sock = -1;
   socklen_t remotehost_size;
   struct sockaddr_in server_addr, remote_addr;
-  struct sockaddr_in old_client_info; // IP ·Î±ë¿ë
+  struct sockaddr_in old_client_info; // IP ë¡œê¹…ìš©
   int error_val = 0;
   socklen_t len_error = sizeof(error_val);
-  uint16_t local_port = (uint16_t)(uintptr_t)arg; // void*¸¦ uint16_t·Î ¾ÈÀüÇÏ°Ô º¯È¯
+  uint16_t local_port = (uint16_t)(uintptr_t)arg; // void*ë¥¼ uint16_të¡œ ì•ˆì „í•˜ê²Œ ë³€í™˜
 
   char client_ip_str_buffer[INET_ADDRSTRLEN];
 
-  // client_slots ÃÊ±âÈ­
+  // client_slots ì´ˆê¸°í™”
   if (osMutexAcquire(client_slots_mutex, osWaitForever) == osOK) {
       for (int i = 0; i < MAX_CONCURRENT_CLIENTS; ++i) {
           client_slots[i].isActive = false;
@@ -256,7 +256,7 @@ void tcpServerTask(void *arg)
       osMutexRelease(client_slots_mutex);
   } else {
     task_printf(
-        "Ä¡¸íÀû ¿À·ù: ÃÊ±âÈ­¸¦ À§ÇØ tcpServerTask°¡ client_slots_mutex¸¦ È¹µæÇÏÁö ¸øÇß½À´Ï´Ù.\r\n");
+        "ì¹˜ëª…ì  ì˜¤ë¥˜: ì´ˆê¸°í™”ë¥¼ ìœ„í•´ tcpServerTaskê°€ client_slots_mutexë¥¼ íšë“í•˜ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.\r\n");
 
     return;
   }
@@ -271,14 +271,14 @@ void tcpServerTask(void *arg)
 
   while (1)
   {
-    // 1. ¸®½º´× ¼ÒÄÏ »ı¼º
-    if (listen_sock < 0) // ÀÌÀü ·çÇÁ¿¡¼­ ¼ÒÄÏÀÌ ´İÇû°Å³ª ÃÊ±â »óÅÂ
+    // 1. ë¦¬ìŠ¤ë‹ ì†Œì¼“ ìƒì„±
+    if (listen_sock < 0) // ì´ì „ ë£¨í”„ì—ì„œ ì†Œì¼“ì´ ë‹«í˜”ê±°ë‚˜ ì´ˆê¸° ìƒíƒœ
     {
         listen_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (listen_sock < 0)
         {
           task_printf(
-              "TCP ¼­¹ö: ¼ö½Å ´ë±â¿ë ¼ÒÄÏ »ı¼º ½ÇÆĞ, ¿À·ù ¹øÈ£: %d. %dms ÈÄ Àç½ÃµµÇÕ´Ï´Ù.\r\n",
+              "TCP ì„œë²„: ìˆ˜ì‹  ëŒ€ê¸°ìš© ì†Œì¼“ ìƒì„± ì‹¤íŒ¨, ì˜¤ë¥˜ ë²ˆí˜¸: %d. %dms í›„ ì¬ì‹œë„í•©ë‹ˆë‹¤.\r\n",
               errno, SERVER_RETRY_INTERVAL_MS);
 
           osDelay(SERVER_RETRY_INTERVAL_MS);
@@ -287,7 +287,7 @@ void tcpServerTask(void *arg)
 
         if (setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
         {
-          task_printf("TCP ¼­¹ö: SO_REUSEADDR ¼³Á¤ ½ÇÆĞ, ¿À·ù ¹øÈ£: %d.\r\n", errno);
+          task_printf("TCP ì„œë²„: SO_REUSEADDR ì„¤ì • ì‹¤íŒ¨, ì˜¤ë¥˜ ë²ˆí˜¸: %d.\r\n", errno);
 
           closesocket(listen_sock);
           listen_sock = -1;
@@ -295,11 +295,11 @@ void tcpServerTask(void *arg)
           continue;
         }
 
-        // SO_ERROR È®ÀÎ (¼±ÅÃÀû)
+        // SO_ERROR í™•ì¸ (ì„ íƒì )
         if (getsockopt(listen_sock, SOL_SOCKET, SO_ERROR, &error_val, &len_error) < 0 || error_val != 0)
         {
           task_printf(
-              "TCP ¼­¹ö: ¼ÒÄÏ »ı¼º ¶Ç´Â setsockopt ÀÌÈÄ ¿À·ù ¹ß»ı. ¿À·ù°ª: %d, errno: %d.\r\n",
+              "TCP ì„œë²„: ì†Œì¼“ ìƒì„± ë˜ëŠ” setsockopt ì´í›„ ì˜¤ë¥˜ ë°œìƒ. ì˜¤ë¥˜ê°’: %d, errno: %d.\r\n",
               error_val, errno);
 
           closesocket(listen_sock);
@@ -315,7 +315,7 @@ void tcpServerTask(void *arg)
 
         if (bind(listen_sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
         {
-          task_printf("TCP ¼­¹ö: Æ÷Æ® %u ¹ÙÀÎµù ½ÇÆĞ, ¿À·ù ¹øÈ£: %d.\r\n", local_port, errno);
+          task_printf("TCP ì„œë²„: í¬íŠ¸ %u ë°”ì¸ë”© ì‹¤íŒ¨, ì˜¤ë¥˜ ë²ˆí˜¸: %d.\r\n", local_port, errno);
 
           closesocket(listen_sock);
           listen_sock = -1;
@@ -323,57 +323,57 @@ void tcpServerTask(void *arg)
           continue;
         }
 
-        if (listen(listen_sock, MAX_CONCURRENT_CLIENTS + 1) < 0) // ¹é·Î±×´Â µ¿½Ã Å¬¶óÀÌ¾ğÆ® ¼öº¸´Ù ¾à°£ Å©°Ô
+        if (listen(listen_sock, MAX_CONCURRENT_CLIENTS + 1) < 0) // ë°±ë¡œê·¸ëŠ” ë™ì‹œ í´ë¼ì´ì–¸íŠ¸ ìˆ˜ë³´ë‹¤ ì•½ê°„ í¬ê²Œ
         {
-          task_printf("TCP ¼­¹ö: ¼ö½Å ´ë±â(listen) ½ÇÆĞ, ¿À·ù ¹øÈ£: %d.\r\n", errno);
+          task_printf("TCP ì„œë²„: ìˆ˜ì‹  ëŒ€ê¸°(listen) ì‹¤íŒ¨, ì˜¤ë¥˜ ë²ˆí˜¸: %d.\r\n", errno);
 
           closesocket(listen_sock);
           listen_sock = -1;
           osDelay(SERVER_RETRY_INTERVAL_MS);
           continue;
         }
-        task_printf("TCP ¼­¹ö: Æ÷Æ® %u¿¡¼­ ¼ö½Å ´ë±â Áß (¼ÒÄÏ: %d).\r\n", local_port, listen_sock);
+        task_printf("TCP ì„œë²„: í¬íŠ¸ %uì—ì„œ ìˆ˜ì‹  ëŒ€ê¸° ì¤‘ (ì†Œì¼“: %d).\r\n", local_port, listen_sock);
 
 
     }
 
-    // 2. Å¬¶óÀÌ¾ğÆ® ¿¬°á ¼ö¶ô
+    // 2. í´ë¼ì´ì–¸íŠ¸ ì—°ê²° ìˆ˜ë½
     remotehost_size = sizeof(remote_addr);
     new_conn_sock = accept(listen_sock, (struct sockaddr *)&remote_addr, &remotehost_size);
 
     if (new_conn_sock < 0)
     {
       task_printf(
-          "TCP ¼­¹ö: accept() ½ÇÆĞ, ¿À·ù ¹øÈ£: %d. ÇÊ¿ä ½Ã ¼ö½Å ´ë±â ¼ÒÄÏÀ» ´Ù½Ã »ı¼ºÇÕ´Ï´Ù.\r\n",
+          "TCP ì„œë²„: accept() ì‹¤íŒ¨, ì˜¤ë¥˜ ë²ˆí˜¸: %d. í•„ìš” ì‹œ ìˆ˜ì‹  ëŒ€ê¸° ì†Œì¼“ì„ ë‹¤ì‹œ ìƒì„±í•©ë‹ˆë‹¤.\r\n",
           errno);
 
-      // accept ½ÇÆĞ ½Ã ¸®½º´× ¼ÒÄÏ ÀÚÃ¼¿¡ ¹®Á¦°¡ ÀÖÀ» ¼ö ÀÖÀ½.
-      // ECONNABORTED, EMFILE, ENFILE µîÀÇ ¿À·ù¿¡ µû¶ó ¸®½º´× ¼ÒÄÏÀ» ´İ°í ´Ù½Ã ½Ãµµ.
+      // accept ì‹¤íŒ¨ ì‹œ ë¦¬ìŠ¤ë‹ ì†Œì¼“ ìì²´ì— ë¬¸ì œê°€ ìˆì„ ìˆ˜ ìˆìŒ.
+      // ECONNABORTED, EMFILE, ENFILE ë“±ì˜ ì˜¤ë¥˜ì— ë”°ë¼ ë¦¬ìŠ¤ë‹ ì†Œì¼“ì„ ë‹«ê³  ë‹¤ì‹œ ì‹œë„.
       if (errno == ECONNABORTED || errno == EINVAL)
-      {  // EINVALÀº listen_sockÀÌ ´õ ÀÌ»ó À¯È¿ÇÏÁö ¾ÊÀ½À» ÀÇ¹ÌÇÒ ¼ö ÀÖÀ½
+      {  // EINVALì€ listen_sockì´ ë” ì´ìƒ ìœ íš¨í•˜ì§€ ì•ŠìŒì„ ì˜ë¯¸í•  ìˆ˜ ìˆìŒ
         closesocket(listen_sock);
-        listen_sock = -1;  // ´ÙÀ½ ·çÇÁ¿¡¼­ ¸®½º´× ¼ÒÄÏ Àç»ı¼º
+        listen_sock = -1;  // ë‹¤ìŒ ë£¨í”„ì—ì„œ ë¦¬ìŠ¤ë‹ ì†Œì¼“ ì¬ìƒì„±
       }
-        osDelay(100); // ÂªÀº Áö¿¬ ÈÄ ´ÙÀ½ accept ½Ãµµ ¶Ç´Â ¼ÒÄÏ Àç»ı¼º
+        osDelay(100); // ì§§ì€ ì§€ì—° í›„ ë‹¤ìŒ accept ì‹œë„ ë˜ëŠ” ì†Œì¼“ ì¬ìƒì„±
         continue;
     }
 
-    // »õ Å¬¶óÀÌ¾ğÆ® Á¤º¸ ·Î±ë
+    // ìƒˆ í´ë¼ì´ì–¸íŠ¸ ì •ë³´ ë¡œê¹…
     inet_ntop(AF_INET, &remote_addr.sin_addr, client_ip_str_buffer, sizeof(client_ip_str_buffer));
     if (old_client_info.sin_addr.s_addr != remote_addr.sin_addr.s_addr ||
         old_client_info.sin_port != remote_addr.sin_port)
     {
-      task_printf("TCP ¼­¹ö: %s:%u ·ÎºÎÅÍ ¼ÒÄÏ %d¿¡¼­ ¿¬°á ¼ö¶ô\r\n", client_ip_str_buffer,
+      task_printf("TCP ì„œë²„: %s:%u ë¡œë¶€í„° ì†Œì¼“ %dì—ì„œ ì—°ê²° ìˆ˜ë½\r\n", client_ip_str_buffer,
                 ntohs(remote_addr.sin_port), new_conn_sock);
 
       old_client_info = remote_addr;
     }
 
-    // Keepalive ¼³Á¤
+    // Keepalive ì„¤ì •
     enable_keepalive(new_conn_sock, 60000, 60000, 2);
 
 
-    // 3. »ç¿ë °¡´ÉÇÑ Å¬¶óÀÌ¾ğÆ® ½½·Ô Ã£°í ÇÚµé·¯ ÅÂ½ºÅ© »ı¼º
+    // 3. ì‚¬ìš© ê°€ëŠ¥í•œ í´ë¼ì´ì–¸íŠ¸ ìŠ¬ë¡¯ ì°¾ê³  í•¸ë“¤ëŸ¬ íƒœìŠ¤í¬ ìƒì„±
     int slot_index = -1;
     if (osMutexAcquire(client_slots_mutex, osWaitForever) == osOK)
     {
@@ -382,7 +382,7 @@ void tcpServerTask(void *arg)
             if (!client_slots[i].isActive)
             {
                 slot_index = i;
-                client_slots[i].isActive = true; // ½½·Ô »ç¿ë Ç¥½Ã
+                client_slots[i].isActive = true; // ìŠ¬ë¡¯ ì‚¬ìš© í‘œì‹œ
                 client_slots[i].client_socket = new_conn_sock;
                 strncpy(client_slots[i].client_ip_str, client_ip_str_buffer, INET_ADDRSTRLEN-1);
                 client_slots[i].client_ip_str[INET_ADDRSTRLEN-1] = '\0';
@@ -393,7 +393,7 @@ void tcpServerTask(void *arg)
         osMutexRelease(client_slots_mutex);
     } else {
       task_printf(
-          "¿À·ù: ½½·Ô °Ë»öÀ» À§ÇØ tcpServerTask°¡ client_slots_mutex¸¦ È¹µæÇÏÁö ¸øÇß½À´Ï´Ù.\r\n");
+          "ì˜¤ë¥˜: ìŠ¬ë¡¯ ê²€ìƒ‰ì„ ìœ„í•´ tcpServerTaskê°€ client_slots_mutexë¥¼ íšë“í•˜ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.\r\n");
 
       closesocket(new_conn_sock);  
       new_conn_sock = -1;
@@ -407,12 +407,12 @@ void tcpServerTask(void *arg)
         client_slots[slot_index].taskId = osThreadNew(client_handler_task, &client_slots[slot_index], &clientHandlerTask_attributes);
         if (client_slots[slot_index].taskId == NULL)
         {
-          task_printf("TCP ¼­¹ö: %s:%u¿¡ ´ëÇÑ client_handler_task »ı¼º ½ÇÆĞ.\r\n",
+          task_printf("TCP ì„œë²„: %s:%uì— ëŒ€í•œ client_handler_task ìƒì„± ì‹¤íŒ¨.\r\n",
                     client_slots[slot_index].client_ip_str, client_slots[slot_index].client_port);
 
-          closesocket(new_conn_sock);  // ÅÂ½ºÅ© »ı¼º ½ÇÆĞ ½Ã ¼ÒÄÏ ´İ±â
+          closesocket(new_conn_sock);  // íƒœìŠ¤í¬ ìƒì„± ì‹¤íŒ¨ ì‹œ ì†Œì¼“ ë‹«ê¸°
           new_conn_sock = -1;
-          // ½½·Ô ´Ù½Ã ºñÈ°¼ºÈ­
+          // ìŠ¬ë¡¯ ë‹¤ì‹œ ë¹„í™œì„±í™”
           if (osMutexAcquire(client_slots_mutex, osWaitForever) == osOK)
           {
             client_slots[slot_index].isActive = false;
@@ -427,37 +427,37 @@ void tcpServerTask(void *arg)
           client_slots[slot_index].status->last_recv_time = 0;
           client_slots[slot_index].status->last_send_time = 0;
           task_printf(
-              "TCP ¼­¹ö: %s:%u¿¡ ´ëÇÑ client_handler_task »ı¼ºµÊ (½½·Ô %d, ÅÂ½ºÅ© ID: %p)\r\n",
+              "TCP ì„œë²„: %s:%uì— ëŒ€í•œ client_handler_task ìƒì„±ë¨ (ìŠ¬ë¡¯ %d, íƒœìŠ¤í¬ ID: %p)\r\n",
               client_slots[slot_index].client_ip_str, client_slots[slot_index].client_port,
               slot_index, client_slots[slot_index].taskId);
           task_printf("%04d-%02d-%02d %02d:%02d:%02d\r\n",Date_Time.Year,Date_Time.Month,Date_Time.Day,
             Date_Time.Hour,Date_Time.Min,Date_Time.Sec);
-          new_conn_sock = -1;  // ¼ÒÄÏ Á¦¾î±ÇÀÌ ÇÚµé·¯ ÅÂ½ºÅ©·Î ³Ñ¾î°¨
+          new_conn_sock = -1;  // ì†Œì¼“ ì œì–´ê¶Œì´ í•¸ë“¤ëŸ¬ íƒœìŠ¤í¬ë¡œ ë„˜ì–´ê°
         }
     }
-    else // »ç¿ë °¡´ÉÇÑ ½½·Ô ¾øÀ½ (ÃÖ´ë Å¬¶óÀÌ¾ğÆ® ¼ö µµ´Ş)
+    else // ì‚¬ìš© ê°€ëŠ¥í•œ ìŠ¬ë¡¯ ì—†ìŒ (ìµœëŒ€ í´ë¼ì´ì–¸íŠ¸ ìˆ˜ ë„ë‹¬)
     {
-      task_printf("TCP ¼­¹ö: ÃÖ´ë µ¿½Ã Á¢¼ÓÀÚ ¼ö(%d) µµ´Ş. %s:%uÀÇ ¿¬°áÀ» °ÅºÎÇÕ´Ï´Ù.\r\n",
+      task_printf("TCP ì„œë²„: ìµœëŒ€ ë™ì‹œ ì ‘ì†ì ìˆ˜(%d) ë„ë‹¬. %s:%uì˜ ì—°ê²°ì„ ê±°ë¶€í•©ë‹ˆë‹¤.\r\n",
                 MAX_CONCURRENT_CLIENTS, client_ip_str_buffer, ntohs(remote_addr.sin_port));
 
       closesocket(new_conn_sock);
       new_conn_sock = -1;
-      osDelay(100);  // Àá½Ã ÈÄ ´Ù½Ã accept ½Ãµµ (³Ê¹« ºü¸¥ ·çÇÁ ¹æÁö)
+      osDelay(100);  // ì ì‹œ í›„ ë‹¤ì‹œ accept ì‹œë„ (ë„ˆë¬´ ë¹ ë¥¸ ë£¨í”„ ë°©ì§€)
     }
   } // end while(1) for server
 }
 
 
-void tcpServerTask_init(uint32_t flag) // flag ¸Å°³º¯¼ö´Â ÇöÀç »ç¿ëµÇÁö ¾ÊÀ½
+void tcpServerTask_init(uint32_t flag) // flag ë§¤ê°œë³€ìˆ˜ëŠ” í˜„ì¬ ì‚¬ìš©ë˜ì§€ ì•ŠìŒ
 {
   uint16_t local_port;
 
-  // ¹ÂÅØ½º »ı¼º
-  client_slots_mutex = osMutexNew(NULL); // ±âº» ¼Ó¼ºÀ¸·Î ¹ÂÅØ½º »ı¼º
+  // ë®¤í…ìŠ¤ ìƒì„±
+  client_slots_mutex = osMutexNew(NULL); // ê¸°ë³¸ ì†ì„±ìœ¼ë¡œ ë®¤í…ìŠ¤ ìƒì„±
   if (client_slots_mutex == NULL) {
-    task_printf("Ä¡¸íÀû ¿À·ù: client_slots_mutex »ı¼º ½ÇÆĞ.\r\n");
+    task_printf("ì¹˜ëª…ì  ì˜¤ë¥˜: client_slots_mutex ìƒì„± ì‹¤íŒ¨.\r\n");
 
-    // ½Ã½ºÅÛ ÃÊ±âÈ­ ½ÇÆĞ Ã³¸®
+    // ì‹œìŠ¤í…œ ì´ˆê¸°í™” ì‹¤íŒ¨ ì²˜ë¦¬
     return;
   }
 
@@ -467,7 +467,7 @@ void tcpServerTask_init(uint32_t flag) // flag ¸Å°³º¯¼ö´Â ÇöÀç »ç¿ëµÇÁö ¾ÊÀ½
 
   for (int i = 0; i < ETH_CLIENT_MAX;i++)
   {
-    g_tcp_status[i].link_status = eLINK_IDLE;  // ÅÂ½ºÅ© ½ÃÀÛ ½Ã ¾÷µ¥ÀÌÆ®
+    g_tcp_status[i].link_status = eLINK_IDLE;  // íƒœìŠ¤í¬ ì‹œì‘ ì‹œ ì—…ë°ì´íŠ¸
     client_slots[i].status = &g_tcp_status[i];
     strcpy(client_slots[i].client_ip_str, "-");
     client_slots[i].status->client_ip_str = client_slots[i].client_ip_str;
@@ -477,12 +477,12 @@ void tcpServerTask_init(uint32_t flag) // flag ¸Å°³º¯¼ö´Â ÇöÀç »ç¿ëµÇÁö ¾ÊÀ½
   g_tcpSeverTaskId =
       osThreadNew(tcpServerTask, (void *)(uintptr_t)local_port, &tcpServerTask_attributes);
   if (g_tcpSeverTaskId == NULL) {
-    task_printf("Ä¡¸íÀû ¿À·ù: tcpServerTask »ı¼º ½ÇÆĞ.\r\n");
+    task_printf("ì¹˜ëª…ì  ì˜¤ë¥˜: tcpServerTask ìƒì„± ì‹¤íŒ¨.\r\n");
 
     osMutexDelete(client_slots_mutex);
 
   } else {
-    task_printf("TCP ¼­¹ö ÅÂ½ºÅ© ÃÊ±âÈ­ ¿Ï·á. ³×Æ®¿öÅ©¸¦ ±â´Ù¸®´Â Áß...\r\n");
+    task_printf("TCP ì„œë²„ íƒœìŠ¤í¬ ì´ˆê¸°í™” ì™„ë£Œ. ë„¤íŠ¸ì›Œí¬ë¥¼ ê¸°ë‹¤ë¦¬ëŠ” ì¤‘...\r\n");
   }
 }
 

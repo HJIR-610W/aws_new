@@ -21,7 +21,7 @@
 
 #define NICK_MINILOGGER_HJ   (0U)
 
-#define APP_VERSION        0x01000000U   // ¹ÙÀÌÆ® ´ÜÀ§
+#define APP_VERSION        0x01000000U   // ë°”ì´íŠ¸ ë‹¨ìœ„
 
 typedef struct section_info_s
 {
@@ -38,6 +38,6 @@ typedef struct section_info_s
 
 
 
-#define DEBUG_MODE_EN 0   // µğ¹ö±ë½Ã 1·ÎÇÏ¿© »ç¿ë
+#define DEBUG_MODE_EN 0   // ë””ë²„ê¹…ì‹œ 1ë¡œí•˜ì—¬ ì‚¬ìš©
 
 #endif

@@ -8,7 +8,7 @@
 #include "driver_interface.h"
 #include "driver_uart_def.h"
 
-//Ç×»ó 0ºÎÅÍ ½ÃÀÛÇØ¾ßÇÔ
+//í•­ìƒ 0ë¶€í„° ì‹œì‘í•´ì•¼í•¨
 #define TL16C554_UART_1_D_SUB   0
 #define TL16C554_UART_2_TTL_TTL 1
 #define TL16C554_UART_3_RS232_A 2

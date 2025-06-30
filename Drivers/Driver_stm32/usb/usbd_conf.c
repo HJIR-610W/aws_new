@@ -108,7 +108,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
   }
 
 
-  //SOF ÇÉÀº ºñÈ°¼º ÇÏ¿© VBUS »ç¿ë ¾ÈÇÏ°Ô ÇÑ´Ù.
+  //SOF í•€ì€ ë¹„í™œì„± í•˜ì—¬ VBUS ì‚¬ìš© ì•ˆí•˜ê²Œ í•œë‹¤.
   GPIO_InitStruct.Pin = USB_OTG_FS_SOF_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -118,7 +118,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 
   HAL_GPIO_WritePin(USB_OTG_FS_SOF_GPIO_Port,USB_OTG_FS_SOF_Pin, GPIO_PIN_SET);
 
-  //ÆÄ¿ö °¨Áö½ÅÈ£´Â ÀÔ·ÂÀ¸·Î ¼³Á¤ ±×·¯³ª host »ç¿ë ¾ÈÇÒ°Å¶ó¼­ »ç¿ëÀº ¾ÈÇÔ
+  //íŒŒì›Œ ê°ì§€ì‹ í˜¸ëŠ” ìž…ë ¥ìœ¼ë¡œ ì„¤ì • ê·¸ëŸ¬ë‚˜ host ì‚¬ìš© ì•ˆí• ê±°ë¼ì„œ ì‚¬ìš©ì€ ì•ˆí•¨
   GPIO_InitStruct.Pin = USB_OTG_PWR_FAIL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;

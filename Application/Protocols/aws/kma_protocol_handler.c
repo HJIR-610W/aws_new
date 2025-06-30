@@ -23,7 +23,7 @@
 #include "util_time.h"
 #include "schedule.h"
 
-#define REQ_BLOCK_BEFORE_SEC 5 //³Ê¹« ÀÌ¸¥ ¿äÃ»Àº ¹«½Ã 
+#define REQ_BLOCK_BEFORE_SEC 5 //ë„ˆë¬´ ì´ë¥¸ ìš”ì²­ì€ ë¬´ì‹œ 
 
 #define KMA_HEADER_START 0xFAFB
 #define KMA_HEADER_END 0xFFFE
@@ -32,17 +32,17 @@
 
 typedef enum
 {
-  eKMA_COMMAND_TYPE_AI,  // ¼ø°£ÀÚ·á
-  eKMA_COMMAND_TYPE_AB,  // 1ºÐ ÀÚ·á
-  eKMA_COMMAND_TYPE_AQ,  // 1ºÐ °ú°Å ÀÚ·á
-  eKMA_COMMAND_TYPE_AV,  // µ¥ÀÌÅÍ·Î°Å ¹öÀü
-  eKMA_COMMAND_TYPE_AR,  // µ¥ÀÌÅÍ·Î°Å ¸®¼Â
-  eKMA_COMMAND_TYPE_AO,  // Àü¿ø¸®¼Â ¶Ç´Â ¸ðµ©¸®¼Â ¶Ç´Â Àû¼³¼¾¼­ ¸®¼Â
-  eKMA_COMMAND_TYPE_AD,  // ÁöÁ¡¹øÈ£ ¼³Á¤
-  eKMA_COMMAND_TYPE_AT,  // ³¯Â¥, ½Ã°£ ¼³Á¤
-  eKMA_COMMAND_TYPE_AW,  // ¾ÏÈ£ ¼³Á¤
-  eKMA_COMMAND_TYPE_AC,  // ÀúÀåµ¥ÀÌÅÍ »èÁ¦
-  eKMA_COMMAND_TYPE_AP,  // ºñ°ø½Ä È­Áø Ãß°¡
+  eKMA_COMMAND_TYPE_AI,  // ìˆœê°„ìžë£Œ
+  eKMA_COMMAND_TYPE_AB,  // 1ë¶„ ìžë£Œ
+  eKMA_COMMAND_TYPE_AQ,  // 1ë¶„ ê³¼ê±° ìžë£Œ
+  eKMA_COMMAND_TYPE_AV,  // ë°ì´í„°ë¡œê±° ë²„ì „
+  eKMA_COMMAND_TYPE_AR,  // ë°ì´í„°ë¡œê±° ë¦¬ì…‹
+  eKMA_COMMAND_TYPE_AO,  // ì „ì›ë¦¬ì…‹ ë˜ëŠ” ëª¨ëŽ€ë¦¬ì…‹ ë˜ëŠ” ì ì„¤ì„¼ì„œ ë¦¬ì…‹
+  eKMA_COMMAND_TYPE_AD,  // ì§€ì ë²ˆí˜¸ ì„¤ì •
+  eKMA_COMMAND_TYPE_AT,  // ë‚ ì§œ, ì‹œê°„ ì„¤ì •
+  eKMA_COMMAND_TYPE_AW,  // ì•”í˜¸ ì„¤ì •
+  eKMA_COMMAND_TYPE_AC,  // ì €ìž¥ë°ì´í„° ì‚­ì œ
+  eKMA_COMMAND_TYPE_AP,  // ë¹„ê³µì‹ í™”ì§„ ì¶”ê°€
   eKMA_COMMAND_TYPE_UNKNOWN
 } eKMA_COMMAND_TYPE_t;
 
@@ -115,7 +115,7 @@ bool is_kma2_protocol(uint8_t *input, uint32_t len)
   uint16_t end_marker = GetWord(&input[len - 2]);
   if (end_marker != KMA_HEADER_END)
   {
-    return false;  // ³¡ ¸¶Ä¿ ºÒÀÏÄ¡
+    return false;  // ë ë§ˆì»¤ ë¶ˆì¼ì¹˜
   }
 
   const uint8_t *checksum_data_ptr = &input[2];
@@ -159,27 +159,27 @@ void kma_unpack(uint8_t *packet,kma3_command_request_t *req)
 
 }
 
-#define KMA2_DATA_FORMAT_ESSENTIAL_SELECTIVE 0  // ÇÊ¼ö ¹× ¼±ÅÃ°üÃø
-#define KMA2_DATA_FORMAT_ESSENTIAL 1            // ÇÊ¼ö°üÃø
-#define KMA2_DATA_FORMAT_PRECIPITATION 2        // °­¼ö·®°üÃø
+#define KMA2_DATA_FORMAT_ESSENTIAL_SELECTIVE 0  // í•„ìˆ˜ ë° ì„ íƒê´€ì¸¡
+#define KMA2_DATA_FORMAT_ESSENTIAL 1            // í•„ìˆ˜ê´€ì¸¡
+#define KMA2_DATA_FORMAT_PRECIPITATION 2        // ê°•ìˆ˜ëŸ‰ê´€ì¸¡
 
 uint8_t calculate_kma2_data_format_no(const kma_data_ex_t *p_kma)
 {
   bool selective_elements = false;
 
-  if (p_kma->solar_radiation.enable ||        // a. ÀÏ»ç
-      p_kma->sunshine_duration.enable ||      // b. ÀÏÁ¶
-      p_kma->surface_temperature.enable ||    // c. Áö¸é¿Âµµ
-      p_kma->grass_temperature.enable ||      // d. ÃÊ»ó¿Âµµ
-      p_kma->soil_temperature_5cm.enable ||   // e. ÁöÁß¿Âµµ 5cm
-      p_kma->soil_temperature_10cm.enable ||  // f. ÁöÁß¿Âµµ 10cm
-      p_kma->soil_temperature_20cm.enable ||  // g. ÁöÁß¿Âµµ 20cm
-      p_kma->soil_temperature_30cm.enable ||  // h. ÁöÁß¿Âµµ 30cm
-      p_kma->soil_temperature_50cm.enable ||  // i. ÁöÁß¿Âµµ 50cm
-      p_kma->soil_temperature_1m.enable ||    // j. ÁöÁß¿Âµµ 1.0m
-      p_kma->soil_temperature_1_5m.enable ||  // k. ÁöÁß¿Âµµ 1.5m
-      p_kma->soil_temperature_3m.enable ||    // l. ÁöÁß¿Âµµ 3.0m
-      p_kma->soil_temperature_5m.enable       // m. ÁöÁß¿Âµµ 5.0m
+  if (p_kma->solar_radiation.enable ||        // a. ì¼ì‚¬
+      p_kma->sunshine_duration.enable ||      // b. ì¼ì¡°
+      p_kma->surface_temperature.enable ||    // c. ì§€ë©´ì˜¨ë„
+      p_kma->grass_temperature.enable ||      // d. ì´ˆìƒì˜¨ë„
+      p_kma->soil_temperature_5cm.enable ||   // e. ì§€ì¤‘ì˜¨ë„ 5cm
+      p_kma->soil_temperature_10cm.enable ||  // f. ì§€ì¤‘ì˜¨ë„ 10cm
+      p_kma->soil_temperature_20cm.enable ||  // g. ì§€ì¤‘ì˜¨ë„ 20cm
+      p_kma->soil_temperature_30cm.enable ||  // h. ì§€ì¤‘ì˜¨ë„ 30cm
+      p_kma->soil_temperature_50cm.enable ||  // i. ì§€ì¤‘ì˜¨ë„ 50cm
+      p_kma->soil_temperature_1m.enable ||    // j. ì§€ì¤‘ì˜¨ë„ 1.0m
+      p_kma->soil_temperature_1_5m.enable ||  // k. ì§€ì¤‘ì˜¨ë„ 1.5m
+      p_kma->soil_temperature_3m.enable ||    // l. ì§€ì¤‘ì˜¨ë„ 3.0m
+      p_kma->soil_temperature_5m.enable       // m. ì§€ì¤‘ì˜¨ë„ 5.0m
   )
   {
     selective_elements = true;
@@ -187,7 +187,7 @@ uint8_t calculate_kma2_data_format_no(const kma_data_ex_t *p_kma)
 
   if (selective_elements)
   {
-    return KMA2_DATA_FORMAT_ESSENTIAL_SELECTIVE;  // ÀÚ·áÇü½Ä 0: ÇÊ¼ö ¹× ¼±ÅÃ°üÃø
+    return KMA2_DATA_FORMAT_ESSENTIAL_SELECTIVE;  // ìžë£Œí˜•ì‹ 0: í•„ìˆ˜ ë° ì„ íƒê´€ì¸¡
   }
 
   bool precipitation_active = p_kma->precipitation.enable || p_kma->precipitation_fine.enable;
@@ -198,7 +198,7 @@ uint8_t calculate_kma2_data_format_no(const kma_data_ex_t *p_kma)
       !p_kma->relative_humidity.enable && 
       !p_kma->snowfall.enable &&
       !p_kma->precipitation_presence.enable;
-  //°­¿ì·®¸¸ ¼±ÅÃµÈ °æ¿ì 
+  //ê°•ìš°ëŸ‰ë§Œ ì„ íƒëœ ê²½ìš° 
   if (precipitation_active && other_major_essentials_inactive)
   {
     return KMA2_DATA_FORMAT_PRECIPITATION;  
@@ -258,7 +258,7 @@ void cvt_kma3_to_kma2(kma_data_ex_t *p_kma3, kma2_response_t *p_kma2)
   p_kma2->Z_logger_status = calculate_old_Z_status(p_kma3->X_sensorStatus); 
 }
 
-    // ¼ø°£ ÀÚ·á
+    // ìˆœê°„ ìžë£Œ
 uint16_t kma_cmd_handler_AI(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t data_format_no;
@@ -278,7 +278,7 @@ uint16_t kma_cmd_handler_AI(uint8_t *rx_frame, uint8_t *tx_frame)
   switch (get_config_app()->aws_protocol_type)
   {
     case eAWS_PROTOCOL_KMA2:
-      //¼¾¼­ »ç¿ë ¿©ºÎ¸¦ Á¶»çÇØ¼­ ÀÚ·ÎÇü½ÄÀ» °áÁ¤ÇÑ´Ù.
+      //ì„¼ì„œ ì‚¬ìš© ì—¬ë¶€ë¥¼ ì¡°ì‚¬í•´ì„œ ìžë¡œí˜•ì‹ì„ ê²°ì •í•œë‹¤.
       data_format_no = calculate_kma2_data_format_no(p_kma3_data);
       
       cvt_kma3_to_kma2(p_kma3_data, &kma2_response);
@@ -310,7 +310,7 @@ uint16_t kma_cmd_handler_AI(uint8_t *rx_frame, uint8_t *tx_frame)
   return len;
 }
 
-// 1ºÐ ÀÚ·á
+// 1ë¶„ ìžë£Œ
 uint16_t kma_cmd_handler_AB(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t data[200];
@@ -320,7 +320,7 @@ uint16_t kma_cmd_handler_AB(uint8_t *rx_frame, uint8_t *tx_frame)
   kma2_response_t kma2_response;
   uint8_t data_format_no;
 
-  //¾ÆÁ÷ 1ºÐ ÀÚ·á°¡ ¾÷µ¥ÀÌÆ® µÇÁö ¾Ê¾ÒÀ¸¸é ÀÀ´ä ¾ÈÇÑ´Ù. 
+  //ì•„ì§ 1ë¶„ ìžë£Œê°€ ì—…ë°ì´íŠ¸ ë˜ì§€ ì•Šì•˜ìœ¼ë©´ ì‘ë‹µ ì•ˆí•œë‹¤. 
   if (!check_1min_data_updated())
   {
     return 0;
@@ -418,9 +418,9 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
   return status;
 }
   /*
-  AWS(±¸) KMA2¿¡¼­´Â ¼¾¼­ ¿¡·¯´Â 16bit·Î Ã³¸®µÊ(AWS ±Ô°ÝÂü°í)
-  KMA3¿¡¼­´Â 64bit·Î Ã³¸®µÊ(AWS ±Ô°Ý¼­ Âü°í)
-  µû¶ó¼­ 16bit·Î Ã³¸®µÇ´ø°ÍÀ» 64bit·Î º¯È¯ÇØÁÜ
+  AWS(êµ¬) KMA2ì—ì„œëŠ” ì„¼ì„œ ì—ëŸ¬ëŠ” 16bitë¡œ ì²˜ë¦¬ë¨(AWS ê·œê²©ì°¸ê³ )
+  KMA3ì—ì„œëŠ” 64bitë¡œ ì²˜ë¦¬ë¨(AWS ê·œê²©ì„œ ì°¸ê³ )
+  ë”°ë¼ì„œ 16bitë¡œ ì²˜ë¦¬ë˜ë˜ê²ƒì„ 64bitë¡œ ë³€í™˜í•´ì¤Œ
   */
   void update_old_status(uint16_t status, uint8_t kma3_status[8])
   {
@@ -511,7 +511,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     p_kma_ex->precipitation_presence.data = p_aws_old->mRainDetect.sReal;
     p_kma_ex->snowfall.data = p_aws_old->mSnowFall.sReal;
     p_kma_ex->relative_humidity.data = p_aws_old->mHumidity.sReal;
-    p_kma_ex->precipitation_fine.data = 0;  // ¹Ì»ç¿ë
+    p_kma_ex->precipitation_fine.data = 0;  // ë¯¸ì‚¬ìš©
 
     p_kma_ex->solar_radiation.data = p_aws_old->mSolarRad.sReal;
     p_kma_ex->sunshine_duration.data = p_aws_old->mSunshine.sReal;
@@ -547,7 +547,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     }
   }
 
-  //ÇöÀç°ª ±âÁØÀ¸·Î enableÀû¿ë
+  //í˜„ìž¬ê°’ ê¸°ì¤€ìœ¼ë¡œ enableì ìš©
   void update_sensor_enable(kma_data_ex_t *p_kma)
   {
     kma_data_ex_t *p_kma_avg;
@@ -618,7 +618,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     p_kma->temp1_8.enable = p_kma_avg->temp1_8.enable;
     p_kma->tacometer.enable = p_kma_avg->tacometer.enable;
     }
-      // 1ºÐ °ú°Å ÀÚ·á
+      // 1ë¶„ ê³¼ê±° ìžë£Œ
   uint16_t kma_cmd_handler_AQ(uint8_t *rx_frame, uint8_t *tx_frame)
   {
 
@@ -665,10 +665,10 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     tx_frame[8] = rx_frame[8];
     tx_frame[9] = rx_frame[9];
 
-    //¿äÃ» ½Ã°£
+    //ìš”ì²­ ì‹œê°„
     poll_t = SetTime(pDate->Year, pDate->Month, pDate->Day, pDate->Hour, pDate->Min, 0);
 
-    //ÇöÀç ½Ã°£
+    //í˜„ìž¬ ì‹œê°„
     cur_t =
         SetTime(Date_Time.Year, Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, 0);
     if ((poll_t == cur_t) && (Date_Time.Sec < 5))
@@ -722,7 +722,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     return len;
   }
 
-// ½Ã°£ ¼³Á¤
+// ì‹œê°„ ì„¤ì •
 uint16_t kma_cmd_handler_AT(uint8_t *frame, uint8_t *send)
 {
   uint8_t packet[50];
@@ -749,7 +749,7 @@ uint16_t kma_cmd_handler_AT(uint8_t *frame, uint8_t *send)
   return len;
 }
 
-// ·Î°Å ¹öÀü ÀÀ´ä
+// ë¡œê±° ë²„ì „ ì‘ë‹µ
 uint32_t kma_cmd_handler_AV(uint8_t *packet, uint8_t *txBuff)
 {
   uint8_t data[30];
@@ -758,7 +758,7 @@ uint32_t kma_cmd_handler_AV(uint8_t *packet, uint8_t *txBuff)
 
   switch (config.aws_protocol_type)
   {
-    case eAWS_PROTOCOL_KMA3:  // KMA3 153¹ÙÀÌÆ®Çü
+    case eAWS_PROTOCOL_KMA3:  // KMA3 153ë°”ì´íŠ¸í˜•
       version[0] = KMA3_PROTOCOL_YEAR % 100;
       version[1] = KMA3_PROTOCOL_MONTH;
       version[2] = KMA3_PROTOCOL_DAY;
@@ -775,9 +775,9 @@ uint32_t kma_cmd_handler_AV(uint8_t *packet, uint8_t *txBuff)
   SetWord(&data[cnt], 0xFAFB);
   cnt += 2;
 
-  data[cnt++] = version[0];  // ¥± ÇÁ·ÎÅäÄÝ ¹öÀü ³â
-  data[cnt++] = version[0];  // ¥± ÇÁ·ÎÅäÄÝ ¹öÀü ¿ù
-  data[cnt++] = version[0];  // ¥± ÇÁ·ÎÅäÄÝ ¹öÀü ¿ù
+  data[cnt++] = version[0];  // â…¡ í”„ë¡œí† ì½œ ë²„ì „ ë…„
+  data[cnt++] = version[0];  // â…¡ í”„ë¡œí† ì½œ ë²„ì „ ì›”
+  data[cnt++] = version[0];  // â…¡ í”„ë¡œí† ì½œ ë²„ì „ ì›”
 
   SetWord(&data[cnt], config.id);
   cnt += 2;
@@ -796,7 +796,7 @@ uint32_t kma_cmd_handler_AV(uint8_t *packet, uint8_t *txBuff)
   return cnt;
 }
 
-// ¸®¼Â
+// ë¦¬ì…‹
 uint16_t kma_cmd_handler_AR(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t packet[50];
@@ -828,7 +828,7 @@ uint16_t kma_cmd_handler_AO(uint8_t *rx_frame, uint8_t *send)
   return len;
 }
 
-// ¾ÏÈ£ ¼³Á¤
+// ì•”í˜¸ ì„¤ì •
 uint16_t kma_cmd_handler_AW(uint8_t *rx_frame, uint8_t *tx_frame)
 {
 
@@ -849,7 +849,7 @@ uint16_t kma_cmd_handler_AW(uint8_t *rx_frame, uint8_t *tx_frame)
   return len;
 }
 
-// µ¥ÀÌÅÍ »èÁ¦
+// ë°ì´í„° ì‚­ì œ
 uint16_t kma_cmd_handler_AC(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t packet[50];
@@ -865,7 +865,7 @@ uint16_t kma_cmd_handler_AC(uint8_t *rx_frame, uint8_t *tx_frame)
   return len;
 }
 
-//±âÁ¸¿¡ ¾ø´Âµ¥ È­Áø¿¡¼­ ÀÀ¿ëÇØ¼­ Ãß°¡ÇÑµíÇÔ
+//ê¸°ì¡´ì— ì—†ëŠ”ë° í™”ì§„ì—ì„œ ì‘ìš©í•´ì„œ ì¶”ê°€í•œë“¯í•¨
 uint16_t kma_cmd_handler_AP(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t ip[4];
@@ -897,7 +897,7 @@ uint16_t kma_cmd_handler_AP(uint8_t *rx_frame, uint8_t *tx_frame)
 
 
 /**
- * @retval Àü¼Û ±æÀÌ
+ * @retval ì „ì†¡ ê¸¸ì´
  */
 int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffer, eREQ_SOURCE_t source)
 {
@@ -936,7 +936,7 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
 
     kma_unpack(rx_frame, &request);
 
-  if (request.command_str[1] == 'D')  // ÁöÁ¡¹øÈ£ ¼³Á¤,AWS(±¸)¿¡¼­ ÀÌ·¸°Ô Ã³¸®ÇÔ
+  if (request.command_str[1] == 'D')  // ì§€ì ë²ˆí˜¸ ì„¤ì •,AWS(êµ¬)ì—ì„œ ì´ë ‡ê²Œ ì²˜ë¦¬í•¨
   {
     if (request.password == config.id)
     {
@@ -949,44 +949,44 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
     return 0;
   }
 
-  // ¹Ýµå½Ã 0À¸·Î ÃÊ±âÈ­
+  // ë°˜ë“œì‹œ 0ìœ¼ë¡œ ì´ˆê¸°í™”
   memset(tx_buffer, 0, KMA_TX_BUFFER_SIZE);
 
   cmd_type = kma_get_command_type(request.command_str);
 
   switch (cmd_type)
   {
-    case eKMA_COMMAND_TYPE_AI:  // ¼ø°£ÀÚ·á
+    case eKMA_COMMAND_TYPE_AI:  // ìˆœê°„ìžë£Œ
       len = kma_cmd_handler_AI((uint8_t *)rx_frame, tx_buffer);
       break;
-    case eKMA_COMMAND_TYPE_AB:                          // 1ºÐÀÚ·á(ÃÖ±Ù 1ºÐ ÀÚ·á ¿ä±¸)
-      len = kma_cmd_handler_AB((uint8_t *)rx_frame, tx_buffer);  // µ¿ÀÏÇÑ ÇÔ¼ö·Î Ã³¸®
+    case eKMA_COMMAND_TYPE_AB:                          // 1ë¶„ìžë£Œ(ìµœê·¼ 1ë¶„ ìžë£Œ ìš”êµ¬)
+      len = kma_cmd_handler_AB((uint8_t *)rx_frame, tx_buffer);  // ë™ì¼í•œ í•¨ìˆ˜ë¡œ ì²˜ë¦¬
       break;
-    case eKMA_COMMAND_TYPE_AQ:  // 1ºÐ °ú°Å ÀÚ·á(CÇÑ¿¡ °ú°Å ½Ã°£À» ÀÔ·ÂÇÏ¿© °ú°ÅÀÚ·á ¿ä±¸)
-      len = kma_cmd_handler_AQ((uint8_t *)rx_frame, tx_buffer);  // µ¿ÀÏÇÑ ÇÔ¼ö·Î Ã³¸®
+    case eKMA_COMMAND_TYPE_AQ:  // 1ë¶„ ê³¼ê±° ìžë£Œ(Cí•œì— ê³¼ê±° ì‹œê°„ì„ ìž…ë ¥í•˜ì—¬ ê³¼ê±°ìžë£Œ ìš”êµ¬)
+      len = kma_cmd_handler_AQ((uint8_t *)rx_frame, tx_buffer);  // ë™ì¼í•œ í•¨ìˆ˜ë¡œ ì²˜ë¦¬
       break;
-    case eKMA_COMMAND_TYPE_AV:  // µ¥ÀÌÅÍ·Î°Å ¹öÀü
+    case eKMA_COMMAND_TYPE_AV:  // ë°ì´í„°ë¡œê±° ë²„ì „
       len = kma_cmd_handler_AV((uint8_t *)rx_frame, tx_buffer);
       break;
-    case eKMA_COMMAND_TYPE_AR:  // µ¥ÀÌÅÍ·Î°Å ¸®¼Â
+    case eKMA_COMMAND_TYPE_AR:  // ë°ì´í„°ë¡œê±° ë¦¬ì…‹
       len = kma_cmd_handler_AR((uint8_t *)rx_frame, tx_buffer);
       osDelay(10);
       break;
-    case eKMA_COMMAND_TYPE_AO:  // Àü¿ø¸®¼Â ¶Ç´Â ¸ðµ© ¸®¼Â ¶Ç´Â Àû¼³¼¾¼­ ¸®¼Â
+    case eKMA_COMMAND_TYPE_AO:  // ì „ì›ë¦¬ì…‹ ë˜ëŠ” ëª¨ëŽ€ ë¦¬ì…‹ ë˜ëŠ” ì ì„¤ì„¼ì„œ ë¦¬ì…‹
       len = kma_cmd_handler_AO((uint8_t *)rx_frame, tx_buffer);
       break;
-    case eKMA_COMMAND_TYPE_AD:  // ÁöÁ¡¹øÈ£ ¼³Á¤
+    case eKMA_COMMAND_TYPE_AD:  // ì§€ì ë²ˆí˜¸ ì„¤ì •
       break;
-    case eKMA_COMMAND_TYPE_AT:  // ³¯Â¥,½Ã°£ ¼³Á¤
+    case eKMA_COMMAND_TYPE_AT:  // ë‚ ì§œ,ì‹œê°„ ì„¤ì •
       len = kma_cmd_handler_AT((uint8_t *)rx_frame, tx_buffer);
       break;
-    case eKMA_COMMAND_TYPE_AW:  // ¾ÏÈ£ ¼³Á¤
+    case eKMA_COMMAND_TYPE_AW:  // ì•”í˜¸ ì„¤ì •
       len = kma_cmd_handler_AW((uint8_t *)rx_frame, tx_buffer);
       break;
-    case eKMA_COMMAND_TYPE_AC:  // ÀúÀåµ¥ÀÌÅÍ »èÁ¦
+    case eKMA_COMMAND_TYPE_AC:  // ì €ìž¥ë°ì´í„° ì‚­ì œ
       len = kma_cmd_handler_AC((uint8_t *)rx_frame, tx_buffer);
       break;
-    case eKMA_COMMAND_TYPE_AP:  // ±¹¸³°ø¿ø ProtocolÀü¿ë : ¿ø°Ý CDMA ¿ø°Ý TCP  IP & PORT º¯°æ
+    case eKMA_COMMAND_TYPE_AP:  // êµ­ë¦½ê³µì› Protocolì „ìš© : ì›ê²© CDMA ì›ê²© TCP  IP & PORT ë³€ê²½
       len = kma_cmd_handler_AP((uint8_t *)rx_frame, tx_buffer);
       break;
     default:

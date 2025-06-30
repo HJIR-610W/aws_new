@@ -28,7 +28,7 @@ int_sub_t g_exti_3_gpio;
 int_sub_t g_exti_4_gpio;
 int_sub_t g_exti_5_9_gpio[5];
 int_sub_t g_exti_10_15_gpio[6];
-mcu_interrupt_list_t g_mcu_isr_list[82];//WWDG_IRQn ╫цюш
+mcu_interrupt_list_t g_mcu_isr_list[82];//WWDG_IRQn Л▀°Л·▒
 
 
 void mcu_interrupt_init(void)
@@ -168,7 +168,7 @@ void EXTI0_IRQHandler(void)
   
   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_0) != RESET)
   {
-    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);  // юнем╥╢ф╝ гц╥║╠в е╛╦╝╬Н
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);  // Л²╦М└╟К÷╫М┼╦ М■▄К·≤Й╥╦ М│╢К╕╛Л√╢
 
     handle =  g_mcu_isr_list[EXTI0_IRQn].isrList->handle;
     call   =  g_mcu_isr_list[EXTI0_IRQn].isrList->call;
@@ -189,7 +189,7 @@ void EXTI1_IRQHandler(void)
   
   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1) != RESET)
   {
-    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);  // юнем╥╢ф╝ гц╥║╠в е╛╦╝╬Н
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);  // Л²╦М└╟К÷╫М┼╦ М■▄К·≤Й╥╦ М│╢К╕╛Л√╢
 
     handle = g_mcu_isr_list[EXTI1_IRQn].isrList->handle;
     call   =  g_mcu_isr_list[EXTI1_IRQn].isrList->call;
@@ -208,7 +208,7 @@ void EXTI2_IRQHandler(void)
   
   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_2) != RESET)
   {
-    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);  // юнем╥╢ф╝ гц╥║╠в е╛╦╝╬Н
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);  // Л²╦М└╟К÷╫М┼╦ М■▄К·≤Й╥╦ М│╢К╕╛Л√╢
 
     handle = g_mcu_isr_list[EXTI2_IRQn].isrList->handle;
     call   =  g_mcu_isr_list[EXTI2_IRQn].isrList->call;
@@ -228,7 +228,7 @@ void EXTI3_IRQHandler(void)
   
   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_3) != RESET)
   {
-    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);  // юнем╥╢ф╝ гц╥║╠в е╛╦╝╬Н
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);  // Л²╦М└╟К÷╫М┼╦ М■▄К·≤Й╥╦ М│╢К╕╛Л√╢
 
     handle = g_mcu_isr_list[EXTI3_IRQn].isrList->handle;
     call   =  g_mcu_isr_list[EXTI3_IRQn].isrList->call;
@@ -248,7 +248,7 @@ void EXTI4_IRQHandler(void)
   
   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_4) != RESET)
   {
-    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);  // юнем╥╢ф╝ гц╥║╠в е╛╦╝╬Н
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);  // Л²╦М└╟К÷╫М┼╦ М■▄К·≤Й╥╦ М│╢К╕╛Л√╢
 
     handle = g_mcu_isr_list[EXTI4_IRQn].isrList->handle;
     call   =  g_mcu_isr_list[EXTI4_IRQn].isrList->call;
@@ -266,12 +266,12 @@ void EXTI9_5_IRQHandler(void)
   void (*call)(void *)=NULL;
 
 
-    // PA10 ~ PA15юг юнем╥╢ф╝ х╝юн ╧в е╛╦╝╬Н
+    // PA10 ~ PA15Л²≤ Л²╦М└╟К÷╫М┼╦ М≥∙Л²╦ К╟▐ М│╢К╕╛Л√╢
     for (uint32_t pin = GPIO_PIN_5; pin <= GPIO_PIN_9; pin <<= 1)
     {
         if (__HAL_GPIO_EXTI_GET_IT(pin) != RESET)
         {
-            __HAL_GPIO_EXTI_CLEAR_IT(pin);  // юнем╥╢ф╝ гц╥║╠в е╛╦╝╬Н
+            __HAL_GPIO_EXTI_CLEAR_IT(pin);  // Л²╦М└╟К÷╫М┼╦ М■▄К·≤Й╥╦ М│╢К╕╛Л√╢
             if (pin == GPIO_PIN_5)
             {
                 handle = g_mcu_isr_list[EXTI9_5_IRQn].isrList[0].handle;
@@ -323,21 +323,21 @@ void EXTI9_5_IRQHandler(void)
 
 
 
-// юнем╥╢ф╝ гз╣И╥╞ ╠╦гЖ
+// Л²╦М└╟К÷╫М┼╦ М∙╦К⌠╓К÷╛ Й╣╛М≤└
 void EXTI15_10_IRQHandler(void)
 {
   void *handle=NULL;;
   void (*call)(void *)=NULL;
 
 
-    // PA10 ~ PA15юг юнем╥╢ф╝ х╝юн ╧в е╛╦╝╬Н
+    // PA10 ~ PA15Л²≤ Л²╦М└╟К÷╫М┼╦ М≥∙Л²╦ К╟▐ М│╢К╕╛Л√╢
     for (uint32_t pin = GPIO_PIN_10; pin <= GPIO_PIN_15; pin <<= 1)
     {
         if (__HAL_GPIO_EXTI_GET_IT(pin) != RESET)
         {
-            __HAL_GPIO_EXTI_CLEAR_IT(pin);  // юнем╥╢ф╝ гц╥║╠в е╛╦╝╬Н
+            __HAL_GPIO_EXTI_CLEAR_IT(pin);  // Л²╦М└╟К÷╫М┼╦ М■▄К·≤Й╥╦ М│╢К╕╛Л√╢
 
-            // юнем╥╢ф╝ ╧ъ╩Щ ╫ц ги╨╟╥н ╪ЖгЮгр юш╬В
+            // Л²╦М└╟К÷╫М┼╦ К╟°Л┐² Л▀° М∙─КЁ└К║° Л┬≤М√┴М∙═ Л·▒Л≈┘
             if (pin == GPIO_PIN_10)
             {
                 handle = g_mcu_isr_list[EXTI15_10_IRQn].isrList[0].handle;

@@ -29,17 +29,17 @@ typedef struct
     uint16_t LoadVolt12;        // nAIN_LV12
     uint16_t AdcDummy1;
 
-    // ¿¬»êµÈ µ¥ÀÌÅÍ
+    // ì—°ì‚°ëœ ë°ì´í„°
     uint16_t SrcPower1;         // 0.1W step
     uint16_t SrcPower2;         // 0.1W step
-    uint16_t BattVoltN;         // ¹èÅÍ¸® ÇÕ»ê Àü¾Ğ
-    uint16_t LoadCurrN;         // 24V ±âÁØÀ¸·Î È¯»êÇÑ Àü·ù
+    uint16_t BattVoltN;         // ë°°í„°ë¦¬ í•©ì‚° ì „ì••
+    uint16_t LoadCurrN;         // 24V ê¸°ì¤€ìœ¼ë¡œ í™˜ì‚°í•œ ì „ë¥˜
     uint16_t LoadPower;         // BattVoltN * LoadCurrN
     uint16_t AdcDummy2;
-    uint16_t BatAvgVolt1;       // ¹èÅÍ¸®1 Æò±Õ Àü¾Ğ
-    uint16_t BatAvgVolt2;       // ¹èÅÍ¸®2 Æò±Õ Àü¾Ğ
+    uint16_t BatAvgVolt1;       // ë°°í„°ë¦¬1 í‰ê·  ì „ì••
+    uint16_t BatAvgVolt2;       // ë°°í„°ë¦¬2 í‰ê·  ì „ì••
 
-                                // eTempSens_t ¼ø¼­·Î ¹èÄ¡
+                                // eTempSens_t ìˆœì„œë¡œ ë°°ì¹˜
     int16_t RoomTemp;       // 25   -> 25`C
     int16_t Humidity;       // 30       -> 30%
     int16_t ChgTemp1;       // 385  -> 38.5`C,  -102 -> -10.2`C
@@ -54,24 +54,24 @@ typedef struct
     uint8_t AcPwStat2;  // 0:AcOk, 1:AcAlarm, 2:AcFault(not used)
 
                         // Load Status
-    uint8_t LoadStat1;  // ÇöÀç Load »óÅÂ  0:off, 1:on
+    uint8_t LoadStat1;  // í˜„ì¬ Load ìƒíƒœ  0:off, 1:on
     uint8_t LoadStat2;
     uint8_t LoadStat3;
     uint8_t LoadStat4;
 
-    uint8_t ComPingCnt[4];      // ÇÎ½ÅÈ£°¡ µé¾î¿Â È½¼ö
-    uint8_t LoadTogCnt[4];      // ·Îµå Åä±Û È½¼ö
-    uint32_t LoadTogTime[4];    // ·Îµå¸¦ Åä±ÛÇÑ ½Ã°£
-    uint32_t SysResetTime;      // ½Ã½ºÅÛ ÆÄ¿ö ¿Â ½Ã°£
+    uint8_t ComPingCnt[4];      // í•‘ì‹ í˜¸ê°€ ë“¤ì–´ì˜¨ íšŸìˆ˜
+    uint8_t LoadTogCnt[4];      // ë¡œë“œ í† ê¸€ íšŸìˆ˜
+    uint32_t LoadTogTime[4];    // ë¡œë“œë¥¼ í† ê¸€í•œ ì‹œê°„
+    uint32_t SysResetTime;      // ì‹œìŠ¤í…œ íŒŒì›Œ ì˜¨ ì‹œê°„
 
     uint8_t ExtPortInp;             // B1:ACPW2Mode, B0:ACPW1Mode
     uint8_t ExtPortOut;             // B1:AcAlarm2, B0:AcAlarm1
     uint8_t ErrLedStat;             // V1006 // B4:ERRLED_BIT_ACPW, B3:ERRLED_BIT_FCSHDN, B2:ERRLED_BIT_BTEMP, B1:ERRLED_BIT_CTEMP, B0:ERRLED_BIT_OVCHG
     uint8_t ExtPortDummy2;
 
-    int8_t MstMcuInit;              // TFTMCU °¡ ÃÊ±âÈ­ÇÑ »óÅÂ
-    uint8_t MstMcuConnect;      // TFTMCU ¿¬°á»óÅÂ
-    uint8_t MstPwOffStat;           // SLVMCU LCD ON,OFF»óÅÂ
+    int8_t MstMcuInit;              // TFTMCU ê°€ ì´ˆê¸°í™”í•œ ìƒíƒœ
+    uint8_t MstMcuConnect;      // TFTMCU ì—°ê²°ìƒíƒœ
+    uint8_t MstPwOffStat;           // SLVMCU LCD ON,OFFìƒíƒœ
     uint8_t MstDummy1;
 }SYSTEM_TypeDef;
 
@@ -220,8 +220,8 @@ int32_t recv_smartCharger(void *rs232_driver,uint8_t *pbuff,int32_t buffSize)
 	return -1;
 }
 
-SYSTEM_TypeDef chg_system;//TODO:heapÀ¸·Î º¯°æ
-static uint8_t buff[sizeof(SYSTEM_TypeDef)+20]; //TODO:heapÀ¸·Î º¯°æ
+SYSTEM_TypeDef chg_system;//TODO:heapìœ¼ë¡œ ë³€ê²½
+static uint8_t buff[sizeof(SYSTEM_TypeDef)+20]; //TODO:heapìœ¼ë¡œ ë³€ê²½
 void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err)
 {
   hjsmartCharger_cfg_t *cfg = chg->cfg;
@@ -230,12 +230,12 @@ void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err
   uint16_t val;
 
 
-  data[0] = 1;  // ÀÇ¹Ì¾øÀ½
-  data[1] = 10; // »óÅÂÀĞ±â
+  data[0] = 1;  // ì˜ë¯¸ì—†ìŒ
+  data[1] = 10; // ìƒíƒœì½ê¸°
 
   val = 0;
   memcpy(&data[2],&val,2);
-  val = 22;  //22¹ÙÀÌÆ®¸¸ ÀĞ¾î¿È
+  val = 22;  //22ë°”ì´íŠ¸ë§Œ ì½ì–´ì˜´
   memcpy(&data[4],&val,2);
   
   len = Make_SmartChgFrame(buff,sizeof(buff),0x50,data,6);

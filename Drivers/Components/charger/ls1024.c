@@ -80,7 +80,7 @@ void ls1024_read(driver_t *driver, charger_data_t *charger_data, uint8_t *err)
     // Load1
     charger_data->load1Current  = (float)reg[13] / 100.0f; // 0x310D
 
-    // Unused (Ãß°¡ ¼Ö¶ó ¹× ¹èÅÍ¸®´Â ÇöÀç ¹Ì»ç¿ë)
+    // Unused (ì¶”ê°€ ì†”ë¼ ë° ë°°í„°ë¦¬ëŠ” í˜„ì¬ ë¯¸ì‚¬ìš©)
     charger_data->solar2Volt    = 0.0f;
     charger_data->solar2Current = 0.0f;
     charger_data->battery2      = 0.0f;

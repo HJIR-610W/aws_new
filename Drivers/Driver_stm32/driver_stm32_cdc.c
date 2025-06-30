@@ -19,10 +19,10 @@
 typedef struct stm32_cdc_cfg_s
 {
   UART_HandleTypeDef *handle;
-  void *txcSem;   // Àü¼Û ¿Ï·á ¾Ë¸² ¼¼¸¶Æ÷¾î
-  uint8_t channel;// Ã¤³Î ¹øÈ£
-  uint32_t baud;  // ¼³Á¤µÈ Åë½Å¼Óµµ
-  int8_t errCode;// µå¶óÀÌ¹ö ¿¡·¯  »óÅÂ Á¤º¸
+  void *txcSem;   // ì „ì†¡ ì™„ë£Œ ì•Œë¦¼ ì„¸ë§ˆí¬ì–´
+  uint8_t channel;// ì±„ë„ ë²ˆí˜¸
+  uint32_t baud;  // ì„¤ì •ëœ í†µì‹ ì†ë„
+  int8_t errCode;// ë“œë¼ì´ë²„ ì—ëŸ¬  ìƒíƒœ ì •ë³´
   bool connected;
 }stm32_cdc_cfg_t;
 
@@ -144,7 +144,7 @@ int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
     osSemaphoreAcquire(drv->sem, osWaitForever);
   }
 
-  osSemaphoreAcquire(cfg->txcSem, 0);// ÀÌÀü¿¡ Ã³¸® ¸øÇÑ°Ç Á¦°Å 
+  osSemaphoreAcquire(cfg->txcSem, 0);// ì´ì „ì— ì²˜ë¦¬ ëª»í•œê±´ ì œê±° 
   waitTime = calculate_txWaitTimeMs(cfg->baud,dataLen);
   retVal = cdc_send(pData,dataLen);
 
@@ -192,18 +192,18 @@ int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t t
 
     while(1)
     {
-        /* ½ºÆ®¸² ¹öÆÛ¿¡¼­ ÀĞÀ» ¼ö ÀÖ´Â µ¥ÀÌÅÍ Å©±â È®ÀÎ */
+        /* ìŠ¤íŠ¸ë¦¼ ë²„í¼ì—ì„œ ì½ì„ ìˆ˜ ìˆëŠ” ë°ì´í„° í¬ê¸° í™•ì¸ */
         xBytesAvailable = xStreamBufferBytesAvailable( g_stm32_cdc_buff );
 
         if(remainBuffSize < xBytesAvailable)
         {
-          xBytesAvailable = remainBuffSize;// ¹öÆÛ ¼ö¸¸Å­¸¸ ÀĞ±â
+          xBytesAvailable = remainBuffSize;// ë²„í¼ ìˆ˜ë§Œí¼ë§Œ ì½ê¸°
         }
 
         starTick = xTaskGetTickCount();
         if( xBytesAvailable > 0 )
         {
-            /* µ¥ÀÌÅÍ¸¦ ÀĞÀ» ¼ö ÀÖ´Ù¸é, µ¥ÀÌÅÍ¸¦ ¼ö½Å */
+            /* ë°ì´í„°ë¥¼ ì½ì„ ìˆ˜ ìˆë‹¤ë©´, ë°ì´í„°ë¥¼ ìˆ˜ì‹  */
             xBytesRead = xStreamBufferReceive( g_stm32_cdc_buff, ( void * ) &pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS( timeout ) );
             
             if(xBytesRead >0)
@@ -214,7 +214,7 @@ int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t t
         }
         else
         {
-            /*µ¥ÀÌÅÍ¸¦ ±â´Ù·Á¾ß ÇÑ´Ù¸é ÃÖ¼Ò 1°³°¡ ¼ö½ÅµÉ¶§±îÁö ´ë±â*/
+            /*ë°ì´í„°ë¥¼ ê¸°ë‹¤ë ¤ì•¼ í•œë‹¤ë©´ ìµœì†Œ 1ê°œê°€ ìˆ˜ì‹ ë ë•Œê¹Œì§€ ëŒ€ê¸°*/
             xBytesRead = xStreamBufferReceive( g_stm32_cdc_buff, ( void * ) &pBuff[cnt], 1, pdMS_TO_TICKS( timeout ) );
             if(xBytesRead ==1)
             {
@@ -266,18 +266,18 @@ int32_t stm32_cdc_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *
 
   while(1)
   {
-        /* ½ºÆ®¸² ¹öÆÛ¿¡¼­ ÀĞÀ» ¼ö ÀÖ´Â µ¥ÀÌÅÍ Å©±â È®ÀÎ */
+        /* ìŠ¤íŠ¸ë¦¼ ë²„í¼ì—ì„œ ì½ì„ ìˆ˜ ìˆëŠ” ë°ì´í„° í¬ê¸° í™•ì¸ */
         xBytesAvailable = xStreamBufferBytesAvailable( g_stm32_cdc_buff );
 
         if(remainBuffSize < xBytesAvailable)
         {
-          xBytesAvailable = remainBuffSize;// ¹öÆÛ ¼ö¸¸Å­¸¸ ÀĞ±â
+          xBytesAvailable = remainBuffSize;// ë²„í¼ ìˆ˜ë§Œí¼ë§Œ ì½ê¸°
         }
 
         starTick = xTaskGetTickCount();
         if( xBytesAvailable > 0 )
         {
-            /* µ¥ÀÌÅÍ¸¦ ÀĞÀ» ¼ö ÀÖ´Ù¸é, µ¥ÀÌÅÍ¸¦ ¼ö½Å */
+            /* ë°ì´í„°ë¥¼ ì½ì„ ìˆ˜ ìˆë‹¤ë©´, ë°ì´í„°ë¥¼ ìˆ˜ì‹  */
             xBytesRead = xStreamBufferReceive( g_stm32_cdc_buff, ( void * ) &pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS( timeout ) );
             
             if(xBytesRead >0)
@@ -288,7 +288,7 @@ int32_t stm32_cdc_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *
         }
         else
         {
-            /*µ¥ÀÌÅÍ¸¦ ±â´Ù·Á¾ß ÇÑ´Ù¸é ÃÖ¼Ò 1°³°¡ ¼ö½ÅµÉ¶§±îÁö ´ë±â*/
+            /*ë°ì´í„°ë¥¼ ê¸°ë‹¤ë ¤ì•¼ í•œë‹¤ë©´ ìµœì†Œ 1ê°œê°€ ìˆ˜ì‹ ë ë•Œê¹Œì§€ ëŒ€ê¸°*/
             xBytesRead = xStreamBufferReceive( g_stm32_cdc_buff, ( void * ) &pBuff[cnt], 1, pdMS_TO_TICKS( timeout ) );
             if(xBytesRead ==1)
             {
@@ -350,7 +350,7 @@ void put_cdc_rx(uint8_t *p_data,uint16_t dataLen)
   if(g_stm32_cdc_buff)
   {
   xBytesSent = xStreamBufferSendFromISR(g_stm32_cdc_buff,p_data, dataLen, &xHigherPriorityTaskWoken);
-/* ³ôÀº ¿ì¼±¼øÀ§ÀÇ ÅÂ½ºÅ©°¡ ±ú¾î³ª¾ß ÇÏ¸é ÄÁÅØ½ºÆ® ½ºÀ§Äª ¿äÃ» */
+/* ë†’ì€ ìš°ì„ ìˆœìœ„ì˜ íƒœìŠ¤í¬ê°€ ê¹¨ì–´ë‚˜ì•¼ í•˜ë©´ ì»¨í…ìŠ¤íŠ¸ ìŠ¤ìœ„ì¹­ ìš”ì²­ */
 portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
   (void)xBytesSent;

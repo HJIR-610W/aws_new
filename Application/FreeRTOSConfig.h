@@ -73,7 +73,7 @@
 #define configUSE_TRACE_FACILITY                 1
 #define configUSE_16_BIT_TICKS                   0
 #define configUSE_MUTEXES                        1
-#define configQUEUE_REGISTRY_SIZE                8 //Å¥,¼¼¸¶Æ÷¾î µî µğ¹ö±ë ÃßÀû¸ñÀû,0ÀÌ¸é ¹Ì»ç¿ë
+#define configQUEUE_REGISTRY_SIZE                8 //í,ì„¸ë§ˆí¬ì–´ ë“± ë””ë²„ê¹… ì¶”ì ëª©ì ,0ì´ë©´ ë¯¸ì‚¬ìš©
 #define configCHECK_FOR_STACK_OVERFLOW           2 //
 #define configUSE_RECURSIVE_MUTEXES              1
 #define configUSE_MALLOC_FAILED_HOOK             1
@@ -81,14 +81,14 @@
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION  0
 /* USER CODE BEGIN MESSAGE_BUFFER_LENGTH_TYPE */
 
-#define configUSE_STATS_FORMATTING_FUNCTIONS 1  //task »óÅÂ ÃßÀû vTaskList »ç¿ëÇÏ·Á¸é
-#define configGENERATE_RUN_TIME_STATS        1 // task ½ÇÇàÁß »óÅÂ È®ÀÎ vTaskGetRunTimeStats
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1  //task ìƒíƒœ ì¶”ì  vTaskList ì‚¬ìš©í•˜ë ¤ë©´
+#define configGENERATE_RUN_TIME_STATS        1 // task ì‹¤í–‰ì¤‘ ìƒíƒœ í™•ì¸ vTaskGetRunTimeStats
 
 
 
 
  
-#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()  YourTimerInitFunction()  // »ç¿ëÀÚ ÄÚµå¿¡¼­ ±¸Çö
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()  YourTimerInitFunction()  // ì‚¬ìš©ì ì½”ë“œì—ì„œ êµ¬í˜„
 #define portGET_RUN_TIME_COUNTER_VALUE()         YourTimerGetCounterValue()
 
 /* Defaults to size_t for backward compatibility, but can be changed
@@ -102,7 +102,7 @@
 
 /* Software timer definitions. */
 #define configUSE_TIMERS                         1
-#define configTIMER_TASK_PRIORITY                ( 24 ) //Áß°£°ª
+#define configTIMER_TASK_PRIORITY                ( 24 ) //ì¤‘ê°„ê°’
 #define configTIMER_QUEUE_LENGTH                 10
 #define configTIMER_TASK_STACK_DEPTH             256
 

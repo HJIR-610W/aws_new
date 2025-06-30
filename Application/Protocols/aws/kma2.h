@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "kma_define.h"
-// AWS(±¸)¿¡¼­ szProtocolVersion[3]¿¡ ¼³Á¤µÈ°ª 
+// AWS(êµ¬)ì—ì„œ szProtocolVersion[3]ì— ì„¤ì •ëœê°’ 
 #define KMA2_PROTOCOL_YEAR 9
 #define KMA2_PROTOCOL_MONTH 5
 #define KMA2_PROTOCOL_DAY 1
@@ -33,8 +33,8 @@ typedef struct
   int16_t L8;
   int16_t L9;
   int16_t L10;
-  int16_t solar_radiation;  //aÀÏ»ç»ç
-  int16_t sunshine_duration;  //bÀÏÁ¶Á¶
+  int16_t solar_radiation;  //aì¼ì‚¬ì‚¬
+  int16_t sunshine_duration;  //bì¼ì¡°ì¡°
   int16_t surface_temperature;  //c
   int16_t grass_temperature;   //d
   int16_t soil_temperature_5cm; //e

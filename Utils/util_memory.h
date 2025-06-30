@@ -20,7 +20,7 @@
 
 #define TOSTRING(x) #x
 #define OFFSET_OF_STRUCT(s,m) ((size_t)&(((s*)0)->m))
-#define OFFSET_S(start,stop) ((unsigned int)stop - (unsigned int)start) //µÎ ¸Ş¸ğ¸®»çÀÌ Å©±â
+#define OFFSET_S(start,stop) ((unsigned int)stop - (unsigned int)start) //ë‘ ë©”ëª¨ë¦¬ì‚¬ì´ í¬ê¸°
 #define MEMBER_SIZE(type, member) sizeof(((type *)0)->member)
 
 #define MAX_ARGV 10
@@ -32,17 +32,17 @@
     index = (index + 1) % max;                \
   } while (0)
 
-/*»ç¿ë ¿¹
-¹öÆÛ°¡ 3°³·Î 3°³ÀÇ »ùÇÃÀ» Æò±Õ³»´Â ÄÚµå¿¡¼­
-¹öÆÛ°¡ ´Ù Â÷Áö Àü±îÁö´Â ÀúÀåÇÑ »ùÇÃ¼ö¸¸Å­¸¸ Æò±Õ³»°í
-»ùÇÃÀÌ ´ÙÂù»óÅÂ¿¡¼­´Â ¹öÆÛ°¹¼ö ¸¸Å­ Æò±ÕÀ» ³¾¶§ »ç¿ë
+/*ì‚¬ìš© ì˜ˆ
+ë²„í¼ê°€ 3ê°œë¡œ 3ê°œì˜ ìƒ˜í”Œì„ í‰ê· ë‚´ëŠ” ì½”ë“œì—ì„œ
+ë²„í¼ê°€ ë‹¤ ì°¨ì§€ ì „ê¹Œì§€ëŠ” ì €ì¥í•œ ìƒ˜í”Œìˆ˜ë§Œí¼ë§Œ í‰ê· ë‚´ê³ 
+ìƒ˜í”Œì´ ë‹¤ì°¬ìƒíƒœì—ì„œëŠ” ë²„í¼ê°¯ìˆ˜ ë§Œí¼ í‰ê· ì„ ë‚¼ë•Œ ì‚¬ìš©
 
-index°¡ maxº¸´Ù ÀÛÀ¸¸é ¹öÆÛ°¡ ÇÑ¹øÀÌ¶óµµ ¿ÏÀüÈ÷ ÂùÀûÀÌ ¾øÀ¸¸é
-¹öÆÛ°¡ maxº¸´Ù °°°Å³ª Å©¸é ÇÑ¹øÀº ¿ÏÀüÈ÷ Âù »óÅÂ°¡ µÈ´Ù.
+indexê°€ maxë³´ë‹¤ ì‘ìœ¼ë©´ ë²„í¼ê°€ í•œë²ˆì´ë¼ë„ ì™„ì „íˆ ì°¬ì ì´ ì—†ìœ¼ë©´
+ë²„í¼ê°€ maxë³´ë‹¤ ê°™ê±°ë‚˜ í¬ë©´ í•œë²ˆì€ ì™„ì „íˆ ì°¬ ìƒíƒœê°€ ëœë‹¤.
 
-max°¡ 20ÀÌ¸é index´Â 0~19»çÀÌÀÎµ¥
-20~40»çÀÌ °ªÀ» ¸ğµâ·¯ ¿¬»êÇØµµ µ¿ÀÏÇÑ °ªÀÌ´Ù.
-´ë½Å ÀÌ¹öÆÛ°¡ ¿ÏÀüÈ÷ ÂùÀûÀÌ ÀÖ´ÂÁö ÆÇ´ÜÇÒ¼ö ÀÖ°Ô ÇÑ´Ù.
+maxê°€ 20ì´ë©´ indexëŠ” 0~19ì‚¬ì´ì¸ë°
+20~40ì‚¬ì´ ê°’ì„ ëª¨ë“ˆëŸ¬ ì—°ì‚°í•´ë„ ë™ì¼í•œ ê°’ì´ë‹¤.
+ëŒ€ì‹  ì´ë²„í¼ê°€ ì™„ì „íˆ ì°¬ì ì´ ìˆëŠ”ì§€ íŒë‹¨í• ìˆ˜ ìˆê²Œ í•œë‹¤.
 */
 #define CIRCULAR_PUSH2(arr, index, value, max) \
   do                                           \
@@ -73,7 +73,7 @@ void hex_to_binary_string(uint16_t hex_value, char *binary_str, int bit_length);
 uint16_t swap_uint16(uint16_t value);
 
 uint16_t  GetWord(uint8_t* lpBuff);
-void    SetWord(uint8_t *lpBuff, uint16_t shVal);		// Big EndiandÀ¸·Î ÃëÇÔ
+void    SetWord(uint8_t *lpBuff, uint16_t shVal);		// Big Endiandìœ¼ë¡œ ì·¨í•¨
 void SetU32(uint8_t* lpBuff, uint32_t lVal);
 
     uint32_t parse_args2(char* str, char* argv[], uint32_t argvCnt);

@@ -33,12 +33,12 @@ filter_data_t g_pre_data[SENSOR_LIST_MAX];
 
  const float kSunshine_threshold = 0.8f;
 
-#define MAKE_TEMP(x) (uint16_t)((x + 100) * 10)  // ±â¿Â, Áö¸é¿Âµµ, ÁöÁß¿Âµµ, ÃÊ»ó¿Âµµ
-#define MAKE_RADI(x) (uint16_t)((x + 100) * 10)  // ¼øº¹»ç, ÀüÃµº¹»ç, ¹İ»çº¹»ç µî
-#define MAKE_PRESSURE(x) (uint16_t)((x) * 10)    // ±â¾Ğ
-#define MAKE_X10(x) (uint16_t)((x) * 10)         // Ç³¼Ó, Ç³Çâ, ½Àµµ, Åä¾ç¼öºĞ µî
-#define MAKE_X100(x) (uint16_t)((x) * 100)       // ÀÏ»ç·®, Á¶µµ·® µî
-#define MAKE_DIRECT(x) (uint16_t)(x)             // ¿î°í, ½ÃÁ¤, ÇöÀçÀÏ±â, Å¸ÄÚ¹ÌÅÍ µî Á¤¼ö°ª
+#define MAKE_TEMP(x) (uint16_t)((x + 100) * 10)  // ê¸°ì˜¨, ì§€ë©´ì˜¨ë„, ì§€ì¤‘ì˜¨ë„, ì´ˆìƒì˜¨ë„
+#define MAKE_RADI(x) (uint16_t)((x + 100) * 10)  // ìˆœë³µì‚¬, ì „ì²œë³µì‚¬, ë°˜ì‚¬ë³µì‚¬ ë“±
+#define MAKE_PRESSURE(x) (uint16_t)((x) * 10)    // ê¸°ì••
+#define MAKE_X10(x) (uint16_t)((x) * 10)         // í’ì†, í’í–¥, ìŠµë„, í† ì–‘ìˆ˜ë¶„ ë“±
+#define MAKE_X100(x) (uint16_t)((x) * 100)       // ì¼ì‚¬ëŸ‰, ì¡°ë„ëŸ‰ ë“±
+#define MAKE_DIRECT(x) (uint16_t)(x)             // ìš´ê³ , ì‹œì •, í˜„ì¬ì¼ê¸°, íƒ€ì½”ë¯¸í„° ë“± ì •ìˆ˜ê°’
 
 
 
@@ -89,12 +89,12 @@ void MegaErrorCheck(SYSTEM_INFO_AWS *pSystem, uint16_t  *sRetVal, uint16_t  sCom
   }
 }
 
-//ÀÚ±â À¯µµ½Ä ±âÁØ
-#define WIND_SPEED_ACCURACY_BELOW_10MPS 0.5f  // 0.5m/s  10m/s ¹Ì¸¸
-#define WIND_SPEED_ACCURACY_ABOVE_10MPS 0.5f  // 5%      10m/s ÀÌ»ó
+//ìê¸° ìœ ë„ì‹ ê¸°ì¤€
+#define WIND_SPEED_ACCURACY_BELOW_10MPS 0.5f  // 0.5m/s  10m/s ë¯¸ë§Œ
+#define WIND_SPEED_ACCURACY_ABOVE_10MPS 0.5f  // 5%      10m/s ì´ìƒ
 
-#define WIND_SPEED_ACCURACY_LT_10MPS 0.5f  // 0.5m/s  10m/s ¹Ì¸¸
-#define WIND_SPEED_ACCURACY_GE_10MPS 0.05f  // 5%      10m/s ÀÌ»ó
+#define WIND_SPEED_ACCURACY_LT_10MPS 0.5f  // 0.5m/s  10m/s ë¯¸ë§Œ
+#define WIND_SPEED_ACCURACY_GE_10MPS 0.05f  // 5%      10m/s ì´ìƒ
 
 uint16_t WindSpeedCalc(uint8_t *sensor_err)
 {
@@ -116,18 +116,18 @@ uint16_t WindSpeedCalc(uint8_t *sensor_err)
   wind_speed = p_sensor[A3_WIND_SPEED].data.f;
 
 
-  if (wind_speed < 10.0f)  // 10m/s ¹Ì¸¸ÀÌ¸é 0.5m/s Á¤È®µµ °¡Á®¾ßÇÔÇÔ
+  if (wind_speed < 10.0f)  // 10m/s ë¯¸ë§Œì´ë©´ 0.5m/s ì •í™•ë„ ê°€ì ¸ì•¼í•¨í•¨
   {
     wind_speed = validate_sensor_value_min(wind_speed, 0.0f, WIND_SPEED_ACCURACY_LT_10MPS, &err);
 
     if (err)
     {
-      *sensor_err = 1<<4;//°ª¿¡·¯´Â »óÀ§ ´Ïºí·Î Ç¥Çö
+      *sensor_err = 1<<4;//ê°’ì—ëŸ¬ëŠ” ìƒìœ„ ë‹ˆë¸”ë¡œ í‘œí˜„
       return AWS_DATA_ERR_VAL;
     }
 
   }
-  else //10m/s ÀÌ»óÀÌ¸é  ÃøÁ¤°ªÀÇ 5%
+  else //10m/s ì´ìƒì´ë©´  ì¸¡ì •ê°’ì˜ 5%
   {
     accuracy = wind_speed * WIND_SPEED_ACCURACY_GE_10MPS;
 
@@ -135,7 +135,7 @@ uint16_t WindSpeedCalc(uint8_t *sensor_err)
 
     if (err)
     {
-      *sensor_err = 2 << 4;  // °ª¿¡·¯´Â »óÀ§ ´Ïºí·Î Ç¥Çö
+      *sensor_err = 2 << 4;  // ê°’ì—ëŸ¬ëŠ” ìƒìœ„ ë‹ˆë¸”ë¡œ í‘œí˜„
       return AWS_DATA_ERR_VAL;
     }
   }
@@ -143,7 +143,7 @@ uint16_t WindSpeedCalc(uint8_t *sensor_err)
   return (uint16_t)(truncate_to_1_decimal(wind_speed) * 10);
 }
 
-#define WIND_DIRECTION_ACCURACY 5.0f//5µµ
+#define WIND_DIRECTION_ACCURACY 5.0f//5ë„
 uint16_t  WindDirecCalc(uint8_t *sensor_err)
 {
   uint8_t err=0;
@@ -182,7 +182,7 @@ uint16_t  WindDirecCalc(uint8_t *sensor_err)
   return (uint16_t)(truncate_to_1_decimal(wind_direction) * 10);
 }
 
-#define TEMPERATURE_ACCURACY 0.3 //0.3µµ
+#define TEMPERATURE_ACCURACY 0.3 //0.3ë„
 uint16_t TempCalc(uint8_t *sensor_err)
  {
    uint8_t err = 0;
@@ -218,11 +218,11 @@ uint16_t TempCalc(uint8_t *sensor_err)
 
 
    /**
-    * ¿Âµµ¸¦ ¼Ò¼öÁ¡ 1Â°ÀÚ¸®¸¸ »ç¿ëÇÔ
-    * ¸¸¾à -0.002µµ¶ó¸é (99.998*10  = 999 °¡ Àü¼ÛµÊ)
-    * 999¸¦ º¹±¸ÇÏ¸é -0.1µµ°¡ µÇ¹ö¸² µû¶ó¼­ Ã³À½ºÎÅÍ ¼Ò¼öÁ¡ 1Â°¸®±îÁö¸¸ Ã³¸®ÇØ¾ßÇÔ
+    * ì˜¨ë„ë¥¼ ì†Œìˆ˜ì  1ì§¸ìë¦¬ë§Œ ì‚¬ìš©í•¨
+    * ë§Œì•½ -0.002ë„ë¼ë©´ (99.998*10  = 999 ê°€ ì „ì†¡ë¨)
+    * 999ë¥¼ ë³µêµ¬í•˜ë©´ -0.1ë„ê°€ ë˜ë²„ë¦¼ ë”°ë¼ì„œ ì²˜ìŒë¶€í„° ì†Œìˆ˜ì  1ì§¸ë¦¬ê¹Œì§€ë§Œ ì²˜ë¦¬í•´ì•¼í•¨
     */
-   return (uint16_t)((truncate_to_1_decimal(temperature) + 100) * 10);  // AWS µ¥ÀÌÅÍ ÇüÀ¸·Î º¯È¯ ((ÃøÁ¤°ª+100) *10)
+   return (uint16_t)((truncate_to_1_decimal(temperature) + 100) * 10);  // AWS ë°ì´í„° í˜•ìœ¼ë¡œ ë³€í™˜ ((ì¸¡ì •ê°’+100) *10)
 }
 
 #define PRESSURE_ACCURACY 0.5f //0.5hPa
@@ -259,13 +259,13 @@ uint16_t  BarometricCalc(uint8_t *sensor_err)
     return AWS_DATA_ERR_VAL;
   }
 
-  return (uint16_t)(truncate_to_1_decimal(pressure) * 10);  // AWS µ¥ÀÌÅÍ ÇüÀ¸·Î º¯È¯ ÃøÁ¤°ª *10
+  return (uint16_t)(truncate_to_1_decimal(pressure) * 10);  // AWS ë°ì´í„° í˜•ìœ¼ë¡œ ë³€í™˜ ì¸¡ì •ê°’ *10
 }
 
 
 #define HUMINITY_0_90_ACCURACY 3.0f    // 3%
 #define HUMINITY_91_100_ACCURACY 5.0f  // 5%
-//3%·Î ÀÏ°ı Àû¿ë
+//3%ë¡œ ì¼ê´„ ì ìš©
 uint16_t HumidityCalc(uint8_t *sensor_err)
 {
   uint8_t err=0;
@@ -300,15 +300,15 @@ uint16_t HumidityCalc(uint8_t *sensor_err)
     return AWS_DATA_ERR_VAL;
   }
 
-  return (uint16_t)(truncate_to_1_decimal(huminity) * 10);  // AWS µ¥ÀÌÅÍ ÇüÀ¸·Î º¯È¯ ÃøÁ¤°ª *10
+  return (uint16_t)(truncate_to_1_decimal(huminity) * 10);  // AWS ë°ì´í„° í˜•ìœ¼ë¡œ ë³€í™˜ ì¸¡ì •ê°’ *10
 }
 
 /*
-ÀÏ»ç
+ì¼ì‚¬
 
-AWS(±¸)
-return°ª :: errorÀÎ °æ¿ì 9999, Á¤»óÀÎ °æ¿ì: 0 - 1000
-ÀÚ·áÀÇ Ç¥ÇöÀº 0 - 1600±îÁö W/m2
+AWS(êµ¬)
+returnê°’ :: errorì¸ ê²½ìš° 9999, ì •ìƒì¸ ê²½ìš°: 0 - 1000
+ìë£Œì˜ í‘œí˜„ì€ 0 - 1600ê¹Œì§€ W/m2
 
 
 */
@@ -452,7 +452,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
   }
 
   return (uint16_t)((truncate_to_1_decimal(temperature) + 100) *
-                    10);  // AWS µ¥ÀÌÅÍ ÇüÀ¸·Î º¯È¯ ((ÃøÁ¤°ª+100) *10)
+                    10);  // AWS ë°ì´í„° í˜•ìœ¼ë¡œ ë³€í™˜ ((ì¸¡ì •ê°’+100) *10)
 }
 
 
@@ -478,7 +478,7 @@ bool is_over_threshold(float sample, float threshold, float epsilon)
 
   }
 
-  // ÀÏÁ¶
+  // ì¼ì¡°
 uint8_t SunshineCalc(uint8_t *err)
 {
   sensor_data_t *p_sensor = g_p_raw->data;
@@ -501,7 +501,7 @@ void dualport_init(void)
 }
 
 /**
- * @brief mm ¿ì·® 
+ * @brief mm ìš°ëŸ‰ 
  */
 uint16_t get_rain_mm(uint8_t *sensor_err)
 {
@@ -509,12 +509,12 @@ uint16_t get_rain_mm(uint8_t *sensor_err)
   uint16_t rain = 0;
   sensor_data_t *p_sensor = g_p_raw->data;
 
-  //¿ì·®Àº È¦¼¾¼­ÀÎ °æ¿ì¿¡¸¸ ¿¡·¯ Ã¼Å©µÊ
+  //ìš°ëŸ‰ì€ í™€ì„¼ì„œì¸ ê²½ìš°ì—ë§Œ ì—ëŸ¬ ì²´í¬ë¨
   *sensor_err = (uint16_t)p_sensor[A6_RAINFALL_DOT5_1MM].err;
   
   rain = MAKE_X10(p_sensor[A6_RAINFALL_DOT5_1MM].data.f);
 
-  p_sensor[A6_RAINFALL_DOT5_1MM].data.f = 0;// ¿ì·®Àº ÀÌÀü°ªÀ» ÃÊ±âÈ­ÇØÁà¾ßÇÔ
+  p_sensor[A6_RAINFALL_DOT5_1MM].data.f = 0;// ìš°ëŸ‰ì€ ì´ì „ê°’ì„ ì´ˆê¸°í™”í•´ì¤˜ì•¼í•¨
 
   return rain;
 }
@@ -550,8 +550,8 @@ AWS_DATA_STRUCT *get_aws_data(int min)
 
 
 /*
-250ms¸¶´Ù ¾÷µ¥ÀÌÆ®µÇ´Â ½Ç½Ã°£°ªÀ» ¾÷µ¥ÀÌÆ® ÇÑ´Ù.
-±âÁ¸ AWS(±¸)ÀÚ·áÇüÀ» AWS(½Å)ÀÚ·áÇüÀ¸·Î º¯È¯ÇÑ´Ù.
+250msë§ˆë‹¤ ì—…ë°ì´íŠ¸ë˜ëŠ” ì‹¤ì‹œê°„ê°’ì„ ì—…ë°ì´íŠ¸ í•œë‹¤.
+ê¸°ì¡´ AWS(êµ¬)ìë£Œí˜•ì„ AWS(ì‹ )ìë£Œí˜•ìœ¼ë¡œ ë³€í™˜í•œë‹¤.
 */
 void update_kma_real(void)
 {
@@ -561,17 +561,17 @@ void update_kma_real(void)
   p_kma3 = get_kma_data(eAWS_DATA_AVG);
   p_raw = get_kma_data(eAWS_DATA_RAW);
 
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   p_kma3->temperature.data = mRealAws.mTemperature.sReal;
   p_kma3->temperature.err = get_sensor_err(A1_TEMPERATURE);
   p_kma3->temperature.max = mRealAws.mTemperature.sMax;
   p_kma3->temperature.min = mRealAws.mTemperature.sMin;
 
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   p_kma3->wind_direction_avg.data = mRealAws.mWind.mDirection.sReal;
   p_kma3->wind_direction_avg.err = get_sensor_err(A2_WIND_DIRECTION);
   p_kma3->wind_direction_avg.max = mRealAws.mWind.mDirection.sMax;
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   p_kma3->wind_speed_avg.data = mRealAws.mWind.mSpeed.sReal;
   p_kma3->wind_speed_avg.err = get_sensor_err(A3_WIND_SPEED);
   p_kma3->wind_speed_avg.max = mRealAws.mWind.mSpeed.sMax;
@@ -582,170 +582,170 @@ void update_kma_real(void)
   p_kma3->wind_direction_instant.data = mRealAws.mWind.mDirection.sMax;
   p_kma3->wind_direction_instant.err = 0;
 
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   p_kma3->precipitation.data = mRealAws.mRainFall.sReal;
   p_kma3->precipitation.err = get_sensor_err(A6_RAINFALL_DOT5_1MM);
 
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   p_kma3->pressure.data = mRealAws.mBarometric.sReal;
   p_kma3->pressure.err = get_sensor_err(A7_PRESSURE);
   p_kma3->pressure.max = mRealAws.mBarometric.sMax;
   p_kma3->pressure.min = mRealAws.mBarometric.sMin;
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   p_kma3->precipitation_presence.data = mRealAws.mRainDetect.sReal;
   p_kma3->precipitation_presence.err = get_sensor_err(A8_RAIN_PRESENT);
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   p_kma3->snowfall.data = mRealAws.mSnowFall.sReal;
   p_kma3->snowfall.err = get_sensor_err(A9_SNOW_DEPTH);
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   p_kma3->relative_humidity.data = mRealAws.mHumidity.sReal;
   p_kma3->relative_humidity.err = get_sensor_err(A10_RELATIVE_HUMIDITY);
   p_kma3->relative_humidity.max = mRealAws.mHumidity.sMax;
   p_kma3->relative_humidity.min = mRealAws.mHumidity.sMin;
 
-  //[¹Ì»ç¿ë] °­¼ö·® 0.1 (¿øº»°ªÀ¸·Î Ç¥Çö)
+  //[ë¯¸ì‚¬ìš©] ê°•ìˆ˜ëŸ‰ 0.1 (ì›ë³¸ê°’ìœ¼ë¡œ í‘œí˜„)
   p_kma3->precipitation_fine.data = p_raw->precipitation_fine.data;
   p_kma3->precipitation_fine.err = get_sensor_err(A11_RAINFALL_DOT1MM);
 
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   p_kma3->solar_radiation.data = mRealAws.mSolarRad.sReal;
   p_kma3->solar_radiation.err = get_sensor_err(B1_SOLAR_RADIATION);
   p_kma3->solar_radiation.max = mRealAws.mSolarRad.sMax;
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   p_kma3->sunshine_duration.data = mRealAws.mSunshine.sReal;
   p_kma3->sunshine_duration.err = get_sensor_err(B2_SUNSHINE_DURATION);
   p_kma3->sunshine_duration.max = mRealAws.mSunshine.sMax;
 
-  //[¹Ì»ç¿ë] 3. Áö¸é¿Âµµ (1ºĞ Æò±Õ)
+  //[ë¯¸ì‚¬ìš©] 3. ì§€ë©´ì˜¨ë„ (1ë¶„ í‰ê· )
   p_kma3->surface_temperature.data = p_raw->surface_temperature.data;
   p_kma3->surface_temperature.err = get_sensor_err(B3_GROUND_TEMPERATURE);
 
-  //[¹Ì»ç¿ë] 4. ÃÊ»ó¿Âµµ (1ºĞ Æò±Õ)
+  //[ë¯¸ì‚¬ìš©] 4. ì´ˆìƒì˜¨ë„ (1ë¶„ í‰ê· )
   p_kma3->grass_temperature.data = p_raw->grass_temperature.data;
   p_kma3->grass_temperature.err = get_sensor_err(B4_SURFACE_TEMPERATURE);
 
-  //[»ç¿ë]  5. ÁöÁß¿Âµµ (5cm, 1ºĞ Æò±Õ)
+  //[ì‚¬ìš©]  5. ì§€ì¤‘ì˜¨ë„ (5cm, 1ë¶„ í‰ê· )
   p_kma3->soil_temperature_5cm.data = mRealAws.mSoilTemp5cm.sReal;
   p_kma3->soil_temperature_5cm.min = mRealAws.mSoilTemp5cm.sMin;
   p_kma3->soil_temperature_5cm.max = mRealAws.mSoilTemp5cm.sMax; 
   p_kma3->soil_temperature_5cm.err = get_sensor_err(B5_SOIL_TEMPERATURE_5CM);
-  //[»ç¿ë] 6. ÁöÁß¿Âµµ (10cm, 1ºĞ Æò±Õ)
+  //[ì‚¬ìš©] 6. ì§€ì¤‘ì˜¨ë„ (10cm, 1ë¶„ í‰ê· )
   p_kma3->soil_temperature_10cm.data = mRealAws.mSoilTemp10cm.sReal;
   p_kma3->soil_temperature_10cm.min = mRealAws.mSoilTemp10cm.sMin;
   p_kma3->soil_temperature_10cm.max = mRealAws.mSoilTemp10cm.sMax;
   p_kma3->soil_temperature_10cm.err = get_sensor_err(B6_SOIL_TEMPERATURE_10CM);
-  //[»ç¿ë] 7. ÁöÁß¿Âµµ (20cm, 1ºĞ Æò±Õ)
+  //[ì‚¬ìš©] 7. ì§€ì¤‘ì˜¨ë„ (20cm, 1ë¶„ í‰ê· )
   p_kma3->soil_temperature_20cm.data = mRealAws.mSoilTemp20cm.sReal;
   p_kma3->soil_temperature_20cm.min = mRealAws.mSoilTemp20cm.sMin;
   p_kma3->soil_temperature_20cm.max = mRealAws.mSoilTemp20cm.sMax;
   p_kma3->soil_temperature_20cm.err = get_sensor_err(B7_SOIL_TEMPERATURE_20CM);
-  //[»ç¿ë]  8. ÁöÁß¿Âµµ (30cm, 1ºĞ Æò±Õ)
+  //[ì‚¬ìš©]  8. ì§€ì¤‘ì˜¨ë„ (30cm, 1ë¶„ í‰ê· )
   p_kma3->soil_temperature_30cm.data = mRealAws.mSoilTemp30cm.sReal;
   p_kma3->soil_temperature_30cm.min = mRealAws.mSoilTemp30cm.sMin;
   p_kma3->soil_temperature_30cm.max = mRealAws.mSoilTemp30cm.sMax;
   p_kma3->soil_temperature_30cm.err = get_sensor_err(B8_SOIL_TEMPERATURE_30CM);
-  //[»ç¿ë]  9. ÁöÁß¿Âµµ (50cm, 1ºĞ Æò±Õ)
+  //[ì‚¬ìš©]  9. ì§€ì¤‘ì˜¨ë„ (50cm, 1ë¶„ í‰ê· )
   p_kma3->soil_temperature_50cm.data = mRealAws.mSoilTemp50cm.sReal;
   p_kma3->soil_temperature_50cm.min = mRealAws.mSoilTemp50cm.sMin;
   p_kma3->soil_temperature_50cm.max = mRealAws.mSoilTemp50cm.sMax;
   p_kma3->soil_temperature_50cm.err = get_sensor_err(B9_SOIL_TEMPERATURE_50CM);
-  //[»ç¿ë] 10. ÁöÁß¿Âµµ (1.0m, 1ºĞ Æò±Õ)
+  //[ì‚¬ìš©] 10. ì§€ì¤‘ì˜¨ë„ (1.0m, 1ë¶„ í‰ê· )
   p_kma3->soil_temperature_1m.data = mRealAws.mSoilTemp1_0m.sReal;
   p_kma3->soil_temperature_1m.min = mRealAws.mSoilTemp1_0m.sMin;
   p_kma3->soil_temperature_1m.max = mRealAws.mSoilTemp1_0m.sMax;
   p_kma3->soil_temperature_1m.err = get_sensor_err(B10_SOIL_TEMPERATURE_100CM);
-  //[»ç¿ë] 11. ÁöÁß¿Âµµ (1.5m, 1ºĞ Æò±Õ)
+  //[ì‚¬ìš©] 11. ì§€ì¤‘ì˜¨ë„ (1.5m, 1ë¶„ í‰ê· )
   p_kma3->soil_temperature_1_5m.data = mRealAws.mSoilTemp1_5m.sReal;
   p_kma3->soil_temperature_1_5m.min = mRealAws.mSoilTemp1_5m.sMin;
   p_kma3->soil_temperature_1_5m.max = mRealAws.mSoilTemp1_5m.sMax;
   p_kma3->soil_temperature_1_5m.err = get_sensor_err(B11_SOIL_TEMPERATURE_150CM);
 
-  // [¹Ì»ç¿ë] 12. ÁöÁß¿Âµµ(3.0m, 1ºĞ Æò±Õ) 
+  // [ë¯¸ì‚¬ìš©] 12. ì§€ì¤‘ì˜¨ë„(3.0m, 1ë¶„ í‰ê· ) 
   p_kma3 -> soil_temperature_3m.data =  p_raw->soil_temperature_3m.data;
   p_kma3->soil_temperature_3m.err = get_sensor_err(B12_SOIL_TEMPERATURE_300CM);
 
-  //[¹Ì»ç¿ë] 13. ÁöÁß¿Âµµ (5.0m, 1ºĞ Æò±Õ)
+  //[ë¯¸ì‚¬ìš©] 13. ì§€ì¤‘ì˜¨ë„ (5.0m, 1ë¶„ í‰ê· )
   p_kma3->soil_temperature_5m.data = p_raw->soil_temperature_5m.data;
   p_kma3->soil_temperature_5m.err = get_sensor_err(B13_SOIL_TEMPERATURE_500CM);
 
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->cloud_height_1st.data = p_raw->cloud_height_1st.data;
   p_kma3->cloud_height_1st.err = get_sensor_err(C1_CLOUD_BASE1);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->cloud_height_2nd.data = p_raw->cloud_height_2nd.data;
   p_kma3->cloud_height_2nd.err = get_sensor_err(C2_CLOUD_BASE2);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->cloud_height_3rd.data = p_raw->cloud_height_3rd.data;
   p_kma3->cloud_height_3rd.err = get_sensor_err(C3_CLOUD_BASE3);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->cloud_amount.data = p_raw->cloud_amount.data;
   p_kma3->cloud_amount.err = get_sensor_err(C4_CLOUD_COVER);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->visibility.data = p_raw->visibility.data;
   p_kma3->visibility.err = get_sensor_err(C5_VISIBILITY);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->pm10_concentration.data = p_raw->pm10_concentration.data;
   p_kma3->pm10_concentration.err = get_sensor_err(C6_PM10);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->pm25_concentration.data = p_raw->pm25_concentration.data;
   p_kma3->pm25_concentration.err = get_sensor_err(C7_PM2DOT5);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->net_radiation.data = p_raw->net_radiation.data;
   p_kma3->net_radiation.err = get_sensor_err(C8_NET_RADIATION);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->total_radiation.data = p_raw->total_radiation.data;
   p_kma3->total_radiation.err = get_sensor_err(C9_TOTAL_RADIATION);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->reflected_radiation.data = p_raw->reflected_radiation.data;
   p_kma3->reflected_radiation.err = get_sensor_err(C10_REFLECTED_RADIATION);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->direct_radiation.data = p_raw->direct_radiation.data;
   p_kma3->direct_radiation.err = get_sensor_err(C11_DIRECT_SOLAR);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->current_weather.data = p_raw->current_weather.data;
   p_kma3->current_weather.err = get_sensor_err(C12_CURRENT_WEATHER);
 
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->soil_moisture_10cm.data = p_raw->soil_moisture_10cm.data;
   p_kma3->soil_moisture_10cm.err = get_sensor_err(N1_SOIL_MOISTURE_10CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->soil_moisture_20cm.data = p_raw->soil_moisture_20cm.data;
   p_kma3->soil_moisture_20cm.err = get_sensor_err(N2_SOIL_MOISTURE_20CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->soil_moisture_30cm.data = p_raw->soil_moisture_30cm.data;
   p_kma3->soil_moisture_30cm.err = get_sensor_err(N3_SOIL_MOISTURE_30CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->soil_moisture_50cm.data = p_raw->soil_moisture_50cm.data;
   p_kma3->soil_moisture_50cm.err = get_sensor_err(N4_SOIL_MOISTURE_50CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->illuminance.data = p_raw->illuminance.data;
   p_kma3->illuminance.err = get_sensor_err(N5_ILLUMINANCE);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->wind_speed_1_5m.data = p_raw->wind_speed_1_5m.data;
   p_kma3->wind_speed_1_5m.err = get_sensor_err(N6_WIND_VELOCITY_150CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->wind_speed_4m.data = p_raw->wind_speed_4m.data;
   p_kma3->wind_speed_4m.err = get_sensor_err(N7_WIND_VELOCITY_400CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->instant_wind_speed_1_5m.data = p_raw->instant_wind_speed_1_5m.data;
   p_kma3->instant_wind_speed_1_5m.err = get_sensor_err(N8_INSTANT_VELOCITY_150CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->instant_wind_speed_4m.data = p_raw->instant_wind_speed_4m.data;
   p_kma3->instant_wind_speed_4m.err = get_sensor_err(N9_INSTANT_VELOCITY_400CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->temperature_0_5m.data = p_raw->temperature_0_5m.data;
   p_kma3->temperature_0_5m.err = get_sensor_err(N10_AIR_TEMPERATURE_50CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->temperature_4m.data = p_raw->temperature_4m.data;
   p_kma3->temperature_4m.err = get_sensor_err(N11_AIR_TEMPERATURE_400CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->humidity_0_5m.data = p_raw->humidity_0_5m.data;
   p_kma3->humidity_0_5m.err = get_sensor_err(N12_HUMIDITY_50CM);
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->humidity_4m.data = p_raw->humidity_4m.data;
   p_kma3->humidity_4m.err = get_sensor_err(N13_HUMIDITY_400CM);
 
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   p_kma3->tacometer.data = p_raw->tacometer.data;
   p_kma3->tacometer.err = get_sensor_err(I1_TACHOMETER);
 
@@ -760,133 +760,133 @@ void update_kma_real(void)
   set_sunshine_monthly(Sysinfo.mSunshine.nMonthSunshine);
   set_sunshine_monthly(Sysinfo.mSunshine.nYearSunshine);
 
-  //¿¡·¯ º¯¼ö ¾÷µ¥ÀÌÆ® 
-  //[»ç¿ë]
+  //ì—ëŸ¬ ë³€ìˆ˜ ì—…ë°ì´íŠ¸ 
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(A1_TEMPERATURE, p_kma3->X_sensorStatus, get_sensor_err(A1_TEMPERATURE));
   kma3_update_sensor_status(A2_WIND_DIRECTION, p_kma3->X_sensorStatus,
                             get_sensor_err(A2_WIND_DIRECTION));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(A3_WIND_SPEED, p_kma3->X_sensorStatus, get_sensor_err(A3_WIND_SPEED));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(A6_RAINFALL_DOT5_1MM, p_kma3->X_sensorStatus,
                             get_sensor_err(A6_RAINFALL_DOT5_1MM));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(A7_PRESSURE, p_kma3->X_sensorStatus, get_sensor_err(A7_PRESSURE));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(A8_RAIN_PRESENT, p_kma3->X_sensorStatus,
                             get_sensor_err(A8_RAIN_PRESENT));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(A9_SNOW_DEPTH, p_kma3->X_sensorStatus, get_sensor_err(A9_SNOW_DEPTH));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(A10_RELATIVE_HUMIDITY, p_kma3->X_sensorStatus,
                             get_sensor_err(A10_RELATIVE_HUMIDITY));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(A11_RAINFALL_DOT1MM, p_kma3->X_sensorStatus, get_sensor_err(A11_RAINFALL_DOT1MM));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(B1_SOLAR_RADIATION, p_kma3->X_sensorStatus,
                             get_sensor_err(B1_SOLAR_RADIATION));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(B2_SUNSHINE_DURATION, p_kma3->X_sensorStatus,
                             get_sensor_err(B2_SUNSHINE_DURATION));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(B5_SOIL_TEMPERATURE_5CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B5_SOIL_TEMPERATURE_5CM));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(B6_SOIL_TEMPERATURE_10CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B6_SOIL_TEMPERATURE_10CM));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(B7_SOIL_TEMPERATURE_20CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B7_SOIL_TEMPERATURE_20CM));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(B8_SOIL_TEMPERATURE_30CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B8_SOIL_TEMPERATURE_30CM));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(B9_SOIL_TEMPERATURE_50CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B9_SOIL_TEMPERATURE_50CM));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(B10_SOIL_TEMPERATURE_100CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B10_SOIL_TEMPERATURE_100CM));
-  //[»ç¿ë]
+  //[ì‚¬ìš©]
   kma3_update_sensor_status(B11_SOIL_TEMPERATURE_150CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B11_SOIL_TEMPERATURE_150CM));
 
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(B12_SOIL_TEMPERATURE_300CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B12_SOIL_TEMPERATURE_300CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(B13_SOIL_TEMPERATURE_500CM, p_kma3->X_sensorStatus,
                             get_sensor_err(B13_SOIL_TEMPERATURE_500CM));
 
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C1_CLOUD_BASE1, p_kma3->X_sensorStatus, get_sensor_err(C1_CLOUD_BASE1));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C2_CLOUD_BASE2, p_kma3->X_sensorStatus, get_sensor_err(C2_CLOUD_BASE2));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C3_CLOUD_BASE3, p_kma3->X_sensorStatus, get_sensor_err(C3_CLOUD_BASE3));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C4_CLOUD_COVER, p_kma3->X_sensorStatus, get_sensor_err(C4_CLOUD_COVER));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C5_VISIBILITY, p_kma3->X_sensorStatus, get_sensor_err(C5_VISIBILITY));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C6_PM10, p_kma3->X_sensorStatus, get_sensor_err(C6_PM10));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C7_PM2DOT5, p_kma3->X_sensorStatus, get_sensor_err(C7_PM2DOT5));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C8_NET_RADIATION, p_kma3->X_sensorStatus,
                             get_sensor_err(C8_NET_RADIATION));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C9_TOTAL_RADIATION, p_kma3->X_sensorStatus,
                             get_sensor_err(C9_TOTAL_RADIATION));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C10_REFLECTED_RADIATION, p_kma3->X_sensorStatus,
                             get_sensor_err(C10_REFLECTED_RADIATION));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C11_DIRECT_SOLAR, p_kma3->X_sensorStatus,
                             get_sensor_err(C11_DIRECT_SOLAR));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(C12_CURRENT_WEATHER, p_kma3->X_sensorStatus,
                             get_sensor_err(C12_CURRENT_WEATHER));
 
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N1_SOIL_MOISTURE_10CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N1_SOIL_MOISTURE_10CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N2_SOIL_MOISTURE_20CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N2_SOIL_MOISTURE_20CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N3_SOIL_MOISTURE_30CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N3_SOIL_MOISTURE_30CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N4_SOIL_MOISTURE_50CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N4_SOIL_MOISTURE_50CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N5_ILLUMINANCE, p_kma3->X_sensorStatus, get_sensor_err(N5_ILLUMINANCE));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N6_WIND_VELOCITY_150CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N6_WIND_VELOCITY_150CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N7_WIND_VELOCITY_400CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N7_WIND_VELOCITY_400CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N8_INSTANT_VELOCITY_150CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N8_INSTANT_VELOCITY_150CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N9_INSTANT_VELOCITY_400CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N9_INSTANT_VELOCITY_400CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N10_AIR_TEMPERATURE_50CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N10_AIR_TEMPERATURE_50CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N11_AIR_TEMPERATURE_400CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N11_AIR_TEMPERATURE_400CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N12_HUMIDITY_50CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N12_HUMIDITY_50CM));
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(N13_HUMIDITY_400CM, p_kma3->X_sensorStatus,
                             get_sensor_err(N13_HUMIDITY_400CM));
 
-  //[¹Ì»ç¿ë]
+  //[ë¯¸ì‚¬ìš©]
   kma3_update_sensor_status(I1_TACHOMETER, p_kma3->X_sensorStatus, get_sensor_err(I1_TACHOMETER));
 
 
@@ -898,10 +898,10 @@ void update_kma_real(void)
 }
 
 /**
- * @brief ¼¾¼­ »ç¿ë¿©ºÎ ¼³Á¤
+ * @brief ì„¼ì„œ ì‚¬ìš©ì—¬ë¶€ ì„¤ì •
  * @details 
- * TODO: ¼¾¼­´Â »ç¿ë¿©ºÎ´Â ºÎÆÃ½Ã °áÁ¤µÇ±â¶§¹®¿¡ ÇÑ¹ø¸¸ È£Ãâ µÇ¸é µÊ
- * ÇÑ¹ø¸¸ È£Ãâ µÇµµ·Ï °³¼± ÇÊ¿ä¿ä
+ * TODO: ì„¼ì„œëŠ” ì‚¬ìš©ì—¬ë¶€ëŠ” ë¶€íŒ…ì‹œ ê²°ì •ë˜ê¸°ë•Œë¬¸ì— í•œë²ˆë§Œ í˜¸ì¶œ ë˜ë©´ ë¨
+ * í•œë²ˆë§Œ í˜¸ì¶œ ë˜ë„ë¡ ê°œì„  í•„ìš”ìš”
  * 
  */
 void check_sensor_use(void)
@@ -980,12 +980,12 @@ void check_sensor_use(void)
 
 
 /*
-¿øº»°ªÀ» ¾÷µ¥ÀÌÆ®ÇÑ´Ù.
-¿øº»°ªÀ» aws ÀÚ·áÇüÀ¸·Î º¸°üÇÑ´Ù.
+ì›ë³¸ê°’ì„ ì—…ë°ì´íŠ¸í•œë‹¤.
+ì›ë³¸ê°’ì„ aws ìë£Œí˜•ìœ¼ë¡œ ë³´ê´€í•œë‹¤.
 */
 /*
-¿øº»°ªÀ» ¾÷µ¥ÀÌÆ®ÇÑ´Ù.
-¿øº»°ªÀ» aws ÀÚ·áÇüÀ¸·Î º¸°üÇÑ´Ù.
+ì›ë³¸ê°’ì„ ì—…ë°ì´íŠ¸í•œë‹¤.
+ì›ë³¸ê°’ì„ aws ìë£Œí˜•ìœ¼ë¡œ ë³´ê´€í•œë‹¤.
 */
 void update_raw(void)
 {
@@ -1005,8 +1005,8 @@ void update_raw(void)
   p_kma_data->precipitation.raw.f = g_p_raw->data[A6_RAINFALL_DOT5_1MM].data.f;
   p_kma_data->precipitation.err = g_p_raw->data[A6_RAINFALL_DOT5_1MM].err;
 
-  // °­¼ö·®Àº 250ms¸¶´Ù Ã³¸®µÇ±â´ë¹®¿¡ ÀÌÀü°ª À¯Áö°¡ ¾ø¾î¼­ ¸¶Áö¸·À¸·Î ¿ì·®ÀÌ ¹ß»ıÇÑ ½Ã°£À¸·Î
-  // Ã³¸®ÇÑ´Ù.
+  // ê°•ìˆ˜ëŸ‰ì€ 250msë§ˆë‹¤ ì²˜ë¦¬ë˜ê¸°ëŒ€ë¬¸ì— ì´ì „ê°’ ìœ ì§€ê°€ ì—†ì–´ì„œ ë§ˆì§€ë§‰ìœ¼ë¡œ ìš°ëŸ‰ì´ ë°œìƒí•œ ì‹œê°„ìœ¼ë¡œ
+  // ì²˜ë¦¬í•œë‹¤.
   if (p_kma_data->precipitation.raw.f)
     p_kma_data->precipitation.last_time = time_timestamp();
 
@@ -1028,8 +1028,8 @@ void update_raw(void)
   p_kma_data->solar_radiation.raw.f = g_p_raw->data[B1_SOLAR_RADIATION].data.f;
   p_kma_data->solar_radiation.err = g_p_raw->data[B1_SOLAR_RADIATION].err;
 
-  // ÀÏÁ¶´Â ±âÁØ°ª°ú Â÷ÀÌ°¡ 0.01Â÷ÀÌ¶ó¸é °°Àº °ªÀ¸·Î Ã³¸®ÇÏÀÚ
-  // Àü¾ĞÀÌ Æ¯Á¤Àü¾Ğ ÀÌ»óÀÎ°æ¿ì 1(ÀÏÁ¶ ÀÖÀ½)À¸·Î Ã³¸®¸®
+  // ì¼ì¡°ëŠ” ê¸°ì¤€ê°’ê³¼ ì°¨ì´ê°€ 0.01ì°¨ì´ë¼ë©´ ê°™ì€ ê°’ìœ¼ë¡œ ì²˜ë¦¬í•˜ì
+  // ì „ì••ì´ íŠ¹ì •ì „ì•• ì´ìƒì¸ê²½ìš° 1(ì¼ì¡° ìˆìŒ)ìœ¼ë¡œ ì²˜ë¦¬ë¦¬
   if (is_over_threshold(g_p_raw->data[B2_SUNSHINE_DURATION].data.f, kSunshine_threshold, 0.01))
   {
     p_kma_data->sunshine_duration.raw.f = 1;
@@ -1212,7 +1212,7 @@ void update_unused_data(kma_data_ex_t *p_dest, kma_data_ex_t *p_source)
 #define RAIN_DAYS_SIZE (366 * sizeof(uint16_t))
 
 /*
-SDÄ«µå¿¡ ±â·ÏµÈ RAIN_01.rcd 1ºĞ ¿ì·® ÆÄÀÏÀ» ÀüºÎ ÀĞ¾î¼­ ¿¬»ê»ê
+SDì¹´ë“œì— ê¸°ë¡ëœ RAIN_01.rcd 1ë¶„ ìš°ëŸ‰ íŒŒì¼ì„ ì „ë¶€ ì½ì–´ì„œ ì—°ì‚°ì‚°
 */
 void calculate_rain(void)
 {
@@ -1242,7 +1242,7 @@ void calculate_rain(void)
     min10_rain =
         get_10min_accu(DATA_SIZE_16, p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
 
-    //ÀüÀÏ ¿ì·® 1ÀÏÀü ½Ã°£°è»ê
+    //ì „ì¼ ìš°ëŸ‰ 1ì¼ì „ ì‹œê°„ê³„ì‚°
     subtract_seconds(&pre_date, 86400);
 
     if(pre_date.Year != ct.Year)
@@ -1267,11 +1267,11 @@ void calculate_rain(void)
     set_rainfall_10min(min10_rain / 10.0f);
     set_rainfall_yesterday(yesterday_rain/10.0f);
 
-#if 0 //ÇÊ¿ä½Ã Ãâ·Â
-    io_printf("ÀÏ°£ ¿ì·®:%.1f\r\n", daily_rain / 10.0f);
-    io_printf("½Ã°£ ¿ì·®:%.1f\r\n", hourly_rain / 10.0f);
-    io_printf("¿ù°£ ¿ì·®:%.1f\r\n", monthly_rain / 10.0f);
-    io_printf("³â°£ ¿ì·®:%.1f\r\n", yearly_rain / 10.0f);
+#if 0 //í•„ìš”ì‹œ ì¶œë ¥
+    io_printf("ì¼ê°„ ìš°ëŸ‰:%.1f\r\n", daily_rain / 10.0f);
+    io_printf("ì‹œê°„ ìš°ëŸ‰:%.1f\r\n", hourly_rain / 10.0f);
+    io_printf("ì›”ê°„ ìš°ëŸ‰:%.1f\r\n", monthly_rain / 10.0f);
+    io_printf("ë…„ê°„ ìš°ëŸ‰:%.1f\r\n", yearly_rain / 10.0f);
 #endif
     aws_free(p_rain_1min);
     aws_free(p_rain_days);
@@ -1279,13 +1279,13 @@ void calculate_rain(void)
 
 
 
-  Sysinfo.mRain.sMinRain   = 0;      // 1ºĞ °­¼ö·®
-  Sysinfo.mRain.s10MinRain = min10_rain;  // 10ºĞ °­¼ö·®
-  Sysinfo.mRain.sHourRain = hourly_rain;  // 1½Ã°£°­¼ö·®
-  Sysinfo.mRain.sDayRain = daily_rain;    // ÀÏ°£°­¼ö·®
-  Sysinfo.mRain.sBefDayRain = yesterday_rain;//ÀüÀÏ ¿ì·®
-  Sysinfo.mRain.sMonthRain = monthly_rain;  // ¿ù°£ °­¼ö·®
-  Sysinfo.mRain.sYearRain = yearly_rain;    // ³â°£ °­¼ö·®
+  Sysinfo.mRain.sMinRain   = 0;      // 1ë¶„ ê°•ìˆ˜ëŸ‰
+  Sysinfo.mRain.s10MinRain = min10_rain;  // 10ë¶„ ê°•ìˆ˜ëŸ‰
+  Sysinfo.mRain.sHourRain = hourly_rain;  // 1ì‹œê°„ê°•ìˆ˜ëŸ‰
+  Sysinfo.mRain.sDayRain = daily_rain;    // ì¼ê°„ê°•ìˆ˜ëŸ‰
+  Sysinfo.mRain.sBefDayRain = yesterday_rain;//ì „ì¼ ìš°ëŸ‰
+  Sysinfo.mRain.sMonthRain = monthly_rain;  // ì›”ê°„ ê°•ìˆ˜ëŸ‰
+  Sysinfo.mRain.sYearRain = yearly_rain;    // ë…„ê°„ ê°•ìˆ˜ëŸ‰
 
 
 }
@@ -1316,10 +1316,10 @@ void calculate_sunshine(void)
     yearly_sunshine = get_yearly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
 
 #if 0 
-    io_printf("ÀÏ°£ ÀÏÁ¶:%d\r\n", daily_sunshine);
-    io_printf("½Ã°£ ÀÏÁ¶:%d\r\n", hourly_sunshine);
-    io_printf("¿ù°£ ÀÏÁ¶:%d\r\n", monthly_sunshine);
-    io_printf("³â°£ ÀÏÁ¶:%d\r\n", yearly_sunshine);
+    io_printf("ì¼ê°„ ì¼ì¡°:%d\r\n", daily_sunshine);
+    io_printf("ì‹œê°„ ì¼ì¡°:%d\r\n", hourly_sunshine);
+    io_printf("ì›”ê°„ ì¼ì¡°:%d\r\n", monthly_sunshine);
+    io_printf("ë…„ê°„ ì¼ì¡°:%d\r\n", yearly_sunshine);
 #endif
     set_sunshine_monthly(monthly_sunshine);
     set_sunshine_yearly(yearly_sunshine);
@@ -1333,7 +1333,7 @@ void calculate_sunshine(void)
 
 #define MS_TO_SCAN(ms) ((uint16_t)((float)ms/0.25))
 /**
- * ¿¡·¯°¡ Á¸ÀçÇÏ¸é Å¸ÀÓ¾Æ¿ô Àü±îÁö´Â ÀÌÀü°ª À¯Áö
+ * ì—ëŸ¬ê°€ ì¡´ì¬í•˜ë©´ íƒ€ì„ì•„ì›ƒ ì „ê¹Œì§€ëŠ” ì´ì „ê°’ ìœ ì§€
  */
 uint16_t filter_data(eSENSOR_LIST_t sensor_index,uint16_t data, uint8_t error,uint8_t *f_err)
 {
@@ -1404,20 +1404,20 @@ void DUALPORT_TASK(void *arg)
   calculate_sunshine();
   filter_init();
 
-  //Á¦Ç° ºÎÆÃ½Ã¿¡´Â Ã³À½ ÃøÁ¤ÇÏ´Â °ªÀ» Áï½Ã ¹İ¿µ
+  //ì œí’ˆ ë¶€íŒ…ì‹œì—ëŠ” ì²˜ìŒ ì¸¡ì •í•˜ëŠ” ê°’ì„ ì¦‰ì‹œ ë°˜ì˜
   for (int i = 0; i < SENSOR_LIST_MAX; i++)
   {
     g_pre_data[i].delay = MS_TO_SCAN(10);
   }
-    // ¸Ş¸ğ¸®¸¦ ¾Æ³¢±âÀ§ÇØ g_p_raw ÇÏ³ª¸¸ »ç¿ë
+    // ë©”ëª¨ë¦¬ë¥¼ ì•„ë¼ê¸°ìœ„í•´ g_p_raw í•˜ë‚˜ë§Œ ì‚¬ìš©
     g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
 
-  osDelay(2000);//1ÃÊ¸¶´Ù ¾÷µ¥ÀÌÆ® ÇÏ´Â Å×½ºÆ®°¡ ÃÖ¼Ò 1È¸ÀÌ»ó ¾÷µ¥ÀÌÆ® µÇ±æ ´ë±â 
+  osDelay(2000);//1ì´ˆë§ˆë‹¤ ì—…ë°ì´íŠ¸ í•˜ëŠ” í…ŒìŠ¤íŠ¸ê°€ ìµœì†Œ 1íšŒì´ìƒ ì—…ë°ì´íŠ¸ ë˜ê¸¸ ëŒ€ê¸° 
   time_old = Date_Time;
   while (1)
   {
-    is_measurement_1s(g_p_raw, 0);                      // ¾÷µ¥ÀÌÆ®µÈ °ª ¾øÀ¸¸é ÀÌÀü°ª À¯Áö
-    if (is_measurement_250(&g_raw_250, osWaitForever))  // 250ms¸¶´Ù ÃÖ½Å°ª »ç¿ë
+    is_measurement_1s(g_p_raw, 0);                      // ì—…ë°ì´íŠ¸ëœ ê°’ ì—†ìœ¼ë©´ ì´ì „ê°’ ìœ ì§€
+    if (is_measurement_250(&g_raw_250, osWaitForever))  // 250msë§ˆë‹¤ ìµœì‹ ê°’ ì‚¬ìš©
     {
       g_p_raw->data[A2_WIND_DIRECTION] = g_raw_250.data[eA2_WIND_DIRECTION];
       g_p_raw->data[A3_WIND_SPEED] = g_raw_250.data[eA3_WIND_SPEED];
@@ -1428,27 +1428,27 @@ void DUALPORT_TASK(void *arg)
     check_sensor_use();
     update_raw();
 
-    // ¿Âµµ
+    // ì˜¨ë„
     data = TempCalc(&sensor_err);
     pAws->mTemperature.sReal = filter_data(A1_TEMPERATURE, data, sensor_err, &f_err);
     update_sensor_err(A1_TEMPERATURE, f_err);
 
-    // Ç³Çâ
+    // í’í–¥
     data =  WindDirecCalc(&sensor_err);
     sDirec = filter_data(A2_WIND_DIRECTION, data, sensor_err,&f_err);
     update_sensor_err(A2_WIND_DIRECTION, f_err);
     ;
 
-    // Ç³¼Ó
+    // í’ì†
     data = WindSpeedCalc(&sensor_err);
     sSpeed = filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
     update_sensor_err(A3_WIND_SPEED, f_err);
 
-    pSystem->mRealWind.sAvg3Speed[nWindCnt12] = sSpeed;   // Ç³¼Ó  3 ÃÊ Æò±Õ
-    pSystem->mRealWind.sAvg10Speed[nWindCnt40] = sSpeed;  // Ç³¼Ó 10 ÃÊ Æò±Õ
+    pSystem->mRealWind.sAvg3Speed[nWindCnt12] = sSpeed;   // í’ì†  3 ì´ˆ í‰ê· 
+    pSystem->mRealWind.sAvg10Speed[nWindCnt40] = sSpeed;  // í’ì† 10 ì´ˆ í‰ê· 
 
-    pSystem->mRealWind.sAvg3Direction[nWindCnt12] = sDirec;   // Ç³Çâ  3 ÃÊ Æò±Õ
-    pSystem->mRealWind.sAvg10Direction[nWindCnt40] = sDirec;  // Ç³Çâ 10 ÃÊ Æò±Õ
+    pSystem->mRealWind.sAvg3Direction[nWindCnt12] = sDirec;   // í’í–¥  3 ì´ˆ í‰ê· 
+    pSystem->mRealWind.sAvg10Direction[nWindCnt40] = sDirec;  // í’í–¥ 10 ì´ˆ í‰ê· 
     pSystem->mRealWind.sWrFlag[nWindCnt40] = 1;
 
     if (++nWindCnt12 >= 12)
@@ -1459,13 +1459,13 @@ void DUALPORT_TASK(void *arg)
     pSystem->mRain.rain += get_rain_mm(&sensor_err);
     update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
 
-    // ±â¾Ğ
+    // ê¸°ì••
     data = BarometricCalc(&sensor_err);
     pAws->mBarometric.sReal = filter_data(A7_PRESSURE, data, sensor_err, &f_err);
     update_sensor_err(A7_PRESSURE, f_err);
 
-    //°­¿ì °¨Áö
-    if (is_raining(&sensor_err))  // Off Delay Àû¿ë ÇÔ
+    //ê°•ìš° ê°ì§€
+    if (is_raining(&sensor_err))  // Off Delay ì ìš© í•¨
     {
       update_sensor_err(A8_RAIN_PRESENT, sensor_err);
 
@@ -1473,61 +1473,61 @@ void DUALPORT_TASK(void *arg)
       pSystem->m_shOffDelayRemain = get_rain_present_config()->delay;
       pSystem->m_cOffDelayFlag = 1;
     }
-    // Àû¼³
+    // ì ì„¤
     data = SnowCalc(&sensor_err);
     pAws->mSnowFall.sReal = filter_data(A9_SNOW_DEPTH, data, sensor_err, &f_err);
     update_sensor_err(A9_SNOW_DEPTH, f_err);
 
-    // »ó´ë½Àµµ
+    // ìƒëŒ€ìŠµë„
     data = HumidityCalc(&sensor_err);
     pAws->mHumidity.sReal = filter_data(A10_RELATIVE_HUMIDITY, data, sensor_err, &f_err);
     update_sensor_err(A10_RELATIVE_HUMIDITY, f_err);
 
-    // ÀÏ»ç
+    // ì¼ì‚¬
     data = SolarRadCalc(&sensor_err);
     pAws->mSolarRad.sReal = filter_data(B1_SOLAR_RADIATION, data, sensor_err, &f_err);
     update_sensor_err(B1_SOLAR_RADIATION, f_err);
 
-    // ÀÏÁ¶
+    // ì¼ì¡°
     data = SunshineCalc(&sensor_err);
     pAws->mSunshine.sReal = filter_data(B2_SUNSHINE_DURATION, data, sensor_err, &f_err);
     update_sensor_err(B2_SUNSHINE_DURATION, f_err);
 
-    // ÁöÁß¿Âµµ 5cm
+    // ì§€ì¤‘ì˜¨ë„ 5cm
     data = TempCalcExt(SOLITEMP5CM_CHN, &sensor_err);
     pAws->mSoilTemp5cm.sReal = filter_data(B5_SOIL_TEMPERATURE_5CM, data, sensor_err, &f_err);
     update_sensor_err(B5_SOIL_TEMPERATURE_5CM, f_err);
 
-    // ÁöÁß¿Âµµ 10cm
+    // ì§€ì¤‘ì˜¨ë„ 10cm
     data = TempCalcExt(SOLITEMP10CM_CHN, &sensor_err);
     pAws->mSoilTemp10cm.sReal = filter_data(B6_SOIL_TEMPERATURE_10CM, data, sensor_err, &f_err);
     update_sensor_err(B6_SOIL_TEMPERATURE_10CM, f_err);
 
-    // ÁöÁß¿Âµµ 20cm
+    // ì§€ì¤‘ì˜¨ë„ 20cm
     data = TempCalcExt(SOLITEMP20CM_CHN, &sensor_err);
     pAws->mSoilTemp20cm.sReal = filter_data(B7_SOIL_TEMPERATURE_20CM, data, sensor_err, &f_err);
     update_sensor_err(B7_SOIL_TEMPERATURE_20CM, f_err);
 
-      // ÁöÁß¿Âµµ 30cm
+      // ì§€ì¤‘ì˜¨ë„ 30cm
     data = TempCalcExt(SOLITEMP30CM_CHN, &sensor_err);
     pAws->mSoilTemp30cm.sReal = filter_data(B8_SOIL_TEMPERATURE_30CM, data, sensor_err, &f_err);
     update_sensor_err(B8_SOIL_TEMPERATURE_30CM, f_err);
 
-    // ÁöÁß¿Âµµ 50cm
+    // ì§€ì¤‘ì˜¨ë„ 50cm
     data = TempCalcExt(SOLITEMP50CM_CHN, &sensor_err);
     pAws->mSoilTemp50cm.sReal = filter_data(B9_SOIL_TEMPERATURE_50CM, data, sensor_err, &f_err);
     update_sensor_err(B9_SOIL_TEMPERATURE_50CM, f_err);
-    // ÁöÁß¿Âµµ 1m
+    // ì§€ì¤‘ì˜¨ë„ 1m
     data = TempCalcExt(SOLITEMP1_0M_CHN, &sensor_err);
     pAws->mSoilTemp1_0m.sReal = filter_data(B10_SOIL_TEMPERATURE_100CM, data, sensor_err, &f_err);
     update_sensor_err(B10_SOIL_TEMPERATURE_100CM, f_err);
 
-    // ÁöÁß¿Âµµ 1.5m
+    // ì§€ì¤‘ì˜¨ë„ 1.5m
     data = TempCalcExt(SOLITEMP1_5M_CHN, &sensor_err);
     pAws->mSoilTemp1_5m.sReal = filter_data(B11_SOIL_TEMPERATURE_150CM, data, sensor_err, &f_err);
     update_sensor_err(B11_SOIL_TEMPERATURE_150CM, f_err);
 
-    // ¼¾¼­ ºÒ·® Ã³¸®
+    // ì„¼ì„œ ë¶ˆëŸ‰ ì²˜ë¦¬
     pAws->mStatus.sReal = 0;
 
     if (kma_is_sensor_error(A6_RAINFALL_DOT5_1MM))
@@ -1563,7 +1563,7 @@ void DUALPORT_TASK(void *arg)
     schedule_process(&ct, &time_old);
 
     update_kma_real();
-    // ÇöÀç °ª¿¬»ê ¾ø´Â Ç×¸ñÀº ¿øº»°ªÀ¸·Î Ã³¸®
+    // í˜„ì¬ ê°’ì—°ì‚° ì—†ëŠ” í•­ëª©ì€ ì›ë³¸ê°’ìœ¼ë¡œ ì²˜ë¦¬
     //update_unused_data(get_kma_data(eAWS_DATA_AVG), get_kma_data(eAWS_DATA_RAW));
     update_unused_data(get_kma_data(eAWS_DATA_1MIN), get_kma_data(eAWS_DATA_RAW));
   }

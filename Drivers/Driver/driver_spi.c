@@ -84,44 +84,44 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 
 uint32_t getSPI1ClockFrequency(void) 
 {
-  uint32_t systemClock = HAL_RCC_GetSysClockFreq(); // ╫ц╫╨еш е╛╥╟ ╟║а╝©ю╠Б
-  uint32_t apb2Prescaler = (RCC->CFGR & RCC_CFGR_PPRE2) >> 13; // APB2 га╦╝╫╨диюо╥╞ цъцБ
+  uint32_t systemClock = HAL_RCC_GetSysClockFreq(); // Л▀°Л┼╓М┘° М│╢К÷╜ Й╟─Л═╦Л≤╓Й╦╟
+  uint32_t apb2Prescaler = (RCC->CFGR & RCC_CFGR_PPRE2) >> 13; // APB2 М■└К╕╛Л┼╓Л╪─Л²╪К÷╛ Л╤■Л╤°
 
-  // APB2 га╦╝╫╨диюо╥╞ ╟╙©║ ╣Ш╤С Ё╙╢╟╪ю ╪Ёа╓
+  // APB2 М■└К╕╛Л┼╓Л╪─Л²╪К÷╛ Й╟▓Л≈░ К■╟К²╪ К┌≤К┬≈Л┘┬ Л└╓Л═∙
   uint32_t apb2Divider;
   if (apb2Prescaler < 4) 
   {
-    apb2Divider = 1; // га╦╝╫╨диюо╥╞ ╟╙юл 0b000(╨паж ╬Ью╫)юо ╤╖
+    apb2Divider = 1; // М■└К╕╛Л┼╓Л╪─Л²╪К÷╛ Й╟▓Л²╢ 0b000(К╤└Лё╪ Л≈├Л²▄)Л²╪ К∙▄
   } 
   else 
   {
-    apb2Divider = 2 << (apb2Prescaler - 4); // га╦╝╫╨диюо╥╞ ╟╙юл 0b100(╨паж ╫цюш)╨нем
+    apb2Divider = 2 << (apb2Prescaler - 4); // М■└К╕╛Л┼╓Л╪─Л²╪К÷╛ Й╟▓Л²╢ 0b100(К╤└Лё╪ Л▀°Л·▒)К╤─М└╟
   }
 
-  uint32_t apb2Clock = systemClock / apb2Divider; // APB2 е╛╥╟ ╟Х╩Й
-  return apb2Clock; // SPI1юг ╦чюн е╛╥╟ ╪с╣╣ ╧щх╞
+  uint32_t apb2Clock = systemClock / apb2Divider; // APB2 М│╢К÷╜ ЙЁ└Л┌╟
+  return apb2Clock; // SPI1Л²≤ К╘■Л²╦ М│╢К÷╜ Л├█К▐└ К╟≤М≥≤
 }
 
 uint32_t getSPI2ClockFrequency(void) {
-  uint32_t systemClock = HAL_RCC_GetSysClockFreq(); // ╫ц╫╨еш е╛╥╟ ╟║а╝©ю╠Б
-  uint32_t apb1Prescaler = (RCC->CFGR & RCC_CFGR_PPRE1) >> 10; // APB1 га╦╝╫╨диюо╥╞ цъцБ
+  uint32_t systemClock = HAL_RCC_GetSysClockFreq(); // Л▀°Л┼╓М┘° М│╢К÷╜ Й╟─Л═╦Л≤╓Й╦╟
+  uint32_t apb1Prescaler = (RCC->CFGR & RCC_CFGR_PPRE1) >> 10; // APB1 М■└К╕╛Л┼╓Л╪─Л²╪К÷╛ Л╤■Л╤°
 
-  // APB1 га╦╝╫╨диюо╥╞ ╟╙©║ ╣Ш╤С Ё╙╢╟╪ю ╪Ёа╓
+  // APB1 М■└К╕╛Л┼╓Л╪─Л²╪К÷╛ Й╟▓Л≈░ К■╟К²╪ К┌≤К┬≈Л┘┬ Л└╓Л═∙
   uint32_t apb1Divider;
   if (apb1Prescaler < 4) {
-      apb1Divider = 1; // га╦╝╫╨диюо╥╞ ╟╙юл 0b000(╨паж ╬Ью╫)юо ╤╖
+      apb1Divider = 1; // М■└К╕╛Л┼╓Л╪─Л²╪К÷╛ Й╟▓Л²╢ 0b000(К╤└Лё╪ Л≈├Л²▄)Л²╪ К∙▄
   } else {
-      apb1Divider = 2 << (apb1Prescaler - 4); // га╦╝╫╨диюо╥╞ ╟╙юл 0b100(╨паж ╫цюш)╨нем
+      apb1Divider = 2 << (apb1Prescaler - 4); // М■└К╕╛Л┼╓Л╪─Л²╪К÷╛ Й╟▓Л²╢ 0b100(К╤└Лё╪ Л▀°Л·▒)К╤─М└╟
   }
 
-  uint32_t apb1Clock = systemClock / apb1Divider; // APB1 е╛╥╟ ╟Х╩Й
-  return apb1Clock; // SPI2юг ╦чюн е╛╥╟ ╪с╣╣ ╧щх╞
+  uint32_t apb1Clock = systemClock / apb1Divider; // APB1 М│╢К÷╜ ЙЁ└Л┌╟
+  return apb1Clock; // SPI2Л²≤ К╘■Л²╦ М│╢К÷╜ Л├█К▐└ К╟≤М≥≤
 }
 
-// ╩Г©Кюз╟║ ©Ьго╢б SPI е╛╥╟©║ ╦б╢б baudRatePrescaler ╟╙ю╩ ╧щх╞го╢б гт╪Ж
+// Л┌╛Л ╘Л·░Й╟─ Л⌡░М∙≤К┼■ SPI М│╢К÷╜Л≈░ К╖·К┼■ baudRatePrescaler Й╟▓Л²└ К╟≤М≥≤М∙≤К┼■ М∙╗Л┬≤
 uint32_t getBaudRatePrescaler(uint32_t desiredSpiClock,uint32_t pclk)
 {
-  // га╦╝╫╨диюо╥╞ ╟╙ евюл╨М (STM32 HAL©║╪╜ ╩Г©К╣г╢б ╟╙)
+  // М■└К╕╛Л┼╓Л╪─Л²╪К÷╛ Й╟▓ М┘▄Л²╢К╦■ (STM32 HALЛ≈░Л└° Л┌╛Л ╘К░≤К┼■ Й╟▓)
   const uint32_t prescalers[] = {
       SPI_BAUDRATEPRESCALER_2,
       SPI_BAUDRATEPRESCALER_4,
@@ -134,18 +134,18 @@ uint32_t getBaudRatePrescaler(uint32_t desiredSpiClock,uint32_t pclk)
   };
 
 
-  // ╫га╕ ╨паж ╟╙ евюл╨М
+  // Л▀╓Л═° К╤└Лё╪ Й╟▓ М┘▄Л²╢К╦■
   const uint32_t actualDivisors[] = {2, 4, 8, 16, 32, 64, 128, 256};
 
   for (int i = 0; i < 8; i++) {
-      // PCLK╦╕ гЖюГ ╨паж ╟╙ю╦╥н Ё╙╢╚ SPI е╛╥╟ ╪с╣╣
+      // PCLKК╔╪ М≤└Л·╛ К╤└Лё╪ Й╟▓Л°╪К║° К┌≤К┬┬ SPI М│╢К÷╜ Л├█К▐└
       uint32_t calculatedSpiClock = pclk / actualDivisors[i];
       if (calculatedSpiClock <= desiredSpiClock) {
-          return prescalers[i]; // юШюЩгя prescaler ╧щх╞
+          return prescalers[i]; // Л═│Л═┬М∙° prescaler К╟≤М≥≤
       }
   }
 
-  // ©Ьго╢б SPI е╛╥╟ ╪с╣╣╟║ Ёй╧╚ Ё╥ю╩ ╟Ф©Л цж╢К га╦╝╫╨диюо╥╞ ╧щх╞
+  // Л⌡░М∙≤К┼■ SPI М│╢К÷╜ Л├█К▐└Й╟─ К└┬К╛╢ К┌╝Л²└ Й╡╫Л ╟ Л╣°К▄─ М■└К╕╛Л┼╓Л╪─Л²╪К÷╛ К╟≤М≥≤
   return SPI_BAUDRATEPRESCALER_256;
 }
 
@@ -171,7 +171,7 @@ uint32_t get_spi_prescaler(SPI_HandleTypeDef *hspi,uint32_t freq)
 
 
 
-//SPIцж╢К е╛╥╟ю╨ ╣©юше╛╥╟юг юЩ╧щ 
+//SPIЛ╣°К▄─ М│╢К÷╜Л²─ К▐≥Л·▒М│╢К÷╜Л²≤ Л═┬К╟≤ 
 void stm32_spi_init(SPI_HandleTypeDef *hspi)
 {
   if(hspi->Instance == SPI1)

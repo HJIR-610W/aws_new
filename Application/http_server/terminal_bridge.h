@@ -5,13 +5,13 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-// ÅÍ¹Ì³Î ºê¸®Áö ±âº» ÀÎÅÍÆäÀÌ½º ÇÔ¼öµé
+// í„°ë¯¸ë„ ë¸Œë¦¬ì§€ ê¸°ë³¸ ì¸í„°í˜ì´ìŠ¤ í•¨ìˆ˜ë“¤
 void terminal_bridge_init(void);
 void terminal_bridge_send_command(const char* command, size_t len);
 void terminal_bridge_set_output_callback(void (*callback)(const char* data, size_t len));
 void terminal_bridge_cleanup(void);
 
-// Ãß°¡ À¯Æ¿¸®Æ¼ ÇÔ¼öµé
+// ì¶”ê°€ ìœ í‹¸ë¦¬í‹° í•¨ìˆ˜ë“¤
 void terminal_bridge_send_output(const char* data, size_t len);
 bool terminal_bridge_is_initialized(void);
 void terminal_bridge_send_prompt(void);

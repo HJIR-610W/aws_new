@@ -12,7 +12,7 @@ driver_t * driver_fram_open(int num)
   switch(num)
   {
     case FRAM_FM25LC:
-      driver = fm25lc_open();  // IC¸¦ ¿¬´Ù.
+      driver = fm25lc_open();  // ICë¥¼ ì—°ë‹¤.
       break;
   }
 

@@ -8,7 +8,7 @@ config_adc_adv_t g_adc_config_stm32;
 config_adc_adv_t g_adc_config_ads1220;
 
 
-float g_current_temp = 25.0f;  // °øÀå ÃÊ±âÈ­½Ã ¿Âµµ°¡ 25¶ó°í ÇÏÀÚ
+float g_current_temp = 25.0f;  // ê³µì¥ ì´ˆê¸°í™”ì‹œ ì˜¨ë„ê°€ 25ë¼ê³  í•˜ì
 
 int32_t (*adc_printf)(const char* , ...);
 
@@ -33,18 +33,18 @@ config_adc_adv_t *get_adc_config(int type)
 
 
 
-// ---  LUT º¸°£ ÇÔ¼ö ---
-/** @brief ¿Âµµ LUT¿¡¼­ ÇöÀç ¿Âµµ¿¡ ÇØ´çÇÏ´Â º¸»ó °è¼ö¸¦ ¼±Çü º¸°£ÇÕ´Ï´Ù. LUT´Â ¿Âµµ·Î Á¤·ÄµÇ¾î
- * ÀÖ¾î¾ß ÇÕ´Ï´Ù. */
+// ---  LUT ë³´ê°„ í•¨ìˆ˜ ---
+/** @brief ì˜¨ë„ LUTì—ì„œ í˜„ì¬ ì˜¨ë„ì— í•´ë‹¹í•˜ëŠ” ë³´ìƒ ê³„ìˆ˜ë¥¼ ì„ í˜• ë³´ê°„í•©ë‹ˆë‹¤. LUTëŠ” ì˜¨ë„ë¡œ ì •ë ¬ë˜ì–´
+ * ìˆì–´ì•¼ í•©ë‹ˆë‹¤. */
  bool interpolate_lut(const temp_lut_point_t lut[], uint8_t size, float current_temp,
                                 float* interp_slope_mult, float* interp_offset_corr)
 {
   if (lut == NULL || size == 0 || interp_slope_mult == NULL || interp_offset_corr == NULL)
   {
-    return false;  // ±âº» ÆÄ¶ó¹ÌÅÍ ¿À·ù
+    return false;  // ê¸°ë³¸ íŒŒë¼ë¯¸í„° ì˜¤ë¥˜
   }
 
-  // LUT Å©±â°¡ 1ÀÎ °æ¿ì
+  // LUT í¬ê¸°ê°€ 1ì¸ ê²½ìš°
   if (size == 1)
   {
     *interp_slope_mult = lut[0].slope_multiplier;
@@ -52,7 +52,7 @@ config_adc_adv_t *get_adc_config(int type)
     return true;
   }
 
-  // ÇöÀç ¿Âµµ°¡ LUT ¹üÀ§ ¹ÛÀÎ °æ¿ì: °¡Àå °¡±î¿î ³¡Á¡ °ª »ç¿ë (Clamping)
+  // í˜„ì¬ ì˜¨ë„ê°€ LUT ë²”ìœ„ ë°–ì¸ ê²½ìš°: ê°€ì¥ ê°€ê¹Œìš´ ëì  ê°’ ì‚¬ìš© (Clamping)
   if (current_temp <= lut[0].temperature)
   {
     *interp_slope_mult = lut[0].slope_multiplier;
@@ -66,7 +66,7 @@ config_adc_adv_t *get_adc_config(int type)
     return true;
   }
 
-  // ÇöÀç ¿Âµµ¸¦ Æ÷ÇÔÇÏ´Â µÎ LUT Æ÷ÀÎÆ® Ã£±â (LUT´Â ¿Âµµ·Î Á¤·Ä °¡Á¤)
+  // í˜„ì¬ ì˜¨ë„ë¥¼ í¬í•¨í•˜ëŠ” ë‘ LUT í¬ì¸íŠ¸ ì°¾ê¸° (LUTëŠ” ì˜¨ë„ë¡œ ì •ë ¬ ê°€ì •)
   for (uint8_t i = 0; i < size - 1; ++i)
   {
     if (current_temp >= lut[i].temperature && current_temp <= lut[i + 1].temperature)
@@ -74,9 +74,9 @@ config_adc_adv_t *get_adc_config(int type)
       const temp_lut_point_t* p1 = &lut[i];
       const temp_lut_point_t* p2 = &lut[i + 1];
 
-      // ¼±Çü º¸°£
+      // ì„ í˜• ë³´ê°„
       float temp_range = p2->temperature - p1->temperature;
-      // ¿Âµµ ¹üÀ§°¡ 0¿¡ °¡±î¿ì¸é º¸°£ ºÒ°¡ (¶Ç´Â p1 °ª »ç¿ë)
+      // ì˜¨ë„ ë²”ìœ„ê°€ 0ì— ê°€ê¹Œìš°ë©´ ë³´ê°„ ë¶ˆê°€ (ë˜ëŠ” p1 ê°’ ì‚¬ìš©)
       if (fabsf(temp_range) < 1e-6f)
       {
         *interp_slope_mult = p1->slope_multiplier;
@@ -94,9 +94,9 @@ config_adc_adv_t *get_adc_config(int type)
     }
   }
 
-  // ¿©±â±îÁö ¿À¸é ¾ÈµÊ (¹üÀ§ Ã¼Å©¿¡¼­ °É·È¾î¾ß ÇÔ)
+  // ì—¬ê¸°ê¹Œì§€ ì˜¤ë©´ ì•ˆë¨ (ë²”ìœ„ ì²´í¬ì—ì„œ ê±¸ë ¸ì–´ì•¼ í•¨)
   if (adc_printf)
-    adc_printf("¿À·ù: LUT º¸°£ Áß ·ÎÁ÷ ¿À·ù.\n");
+    adc_printf("ì˜¤ë¥˜: LUT ë³´ê°„ ì¤‘ ë¡œì§ ì˜¤ë¥˜.\n");
   return false;
 }
 
@@ -118,13 +118,13 @@ void adc_config_map(void)
 }
 
 
-// --- 4. ÃÊ±âÈ­ ÇÔ¼ö ---
+// --- 4. ì´ˆê¸°í™” í•¨ìˆ˜ ---
 bool adc_config_init(config_adc_adv_t* cfg, uint32_t resolution_bits, float reference_voltage)
 {
   if (cfg == NULL || resolution_bits == 0 || resolution_bits > 32 || reference_voltage <= 0.0f)
   {
     if (adc_printf)
-      adc_printf("¿À·ù: adc_config_init ÆÄ¶ó¹ÌÅÍ ¿À·ù.\n");
+      adc_printf("ì˜¤ë¥˜: adc_config_init íŒŒë¼ë¯¸í„° ì˜¤ë¥˜.\n");
     return false;
   }
 
@@ -133,7 +133,7 @@ bool adc_config_init(config_adc_adv_t* cfg, uint32_t resolution_bits, float refe
   cfg->bits->resolution_bits = resolution_bits;
   cfg->bits->reference_voltage = reference_voltage;
 
-  int32_t range_limit = (1L << (resolution_bits - 1));  // »óÀ§ ºñÆ®´Â ºÎÈ£ ºñÆ®
+  int32_t range_limit = (1L << (resolution_bits - 1));  // ìƒìœ„ ë¹„íŠ¸ëŠ” ë¶€í˜¸ ë¹„íŠ¸
   cfg->bits->min_raw_value = -range_limit;
   cfg->bits->max_raw_value = range_limit - 1;
 
@@ -143,7 +143,7 @@ bool adc_config_init(config_adc_adv_t* cfg, uint32_t resolution_bits, float refe
                                                   .factory_offset = 0.0f,
                                                   .factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP,
                                                   .is_calibrated = false,
-                                                  .comp_method = TEMP_COMP_NONE,  // ±âº»: º¸»ó ¾øÀ½
+                                                  .comp_method = TEMP_COMP_NONE,  // ê¸°ë³¸: ë³´ìƒ ì—†ìŒ
                                                   .slope_temp_coeff = 0.0f,
                                                   .offset_temp_coeff = 0.0f,
                                                   .lut_size = 0};
@@ -161,12 +161,12 @@ bool adc_config_init(config_adc_adv_t* cfg, uint32_t resolution_bits, float refe
                            .lut_size = 0};
   }
   if (adc_printf)
-    adc_printf("ADC ¼³Á¤ ÃÊ±âÈ­ ¿Ï·á: Res=%u, Vref=%.2fV, MaxRaw=%u\n", cfg->bits->resolution_bits,
+    adc_printf("ADC ì„¤ì • ì´ˆê¸°í™” ì™„ë£Œ: Res=%u, Vref=%.2fV, MaxRaw=%u\n", cfg->bits->resolution_bits,
                cfg->bits->reference_voltage, cfg->bits->max_raw_value);
   return true;
 }
 
-// --- °øÀå Ä¶¸®ºê·¹ÀÌ¼Ç ÇÔ¼ö ---
+// --- ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜ í•¨ìˆ˜ ---
 bool adc_perform_factory_calibration(config_adc_adv_t* cfg, adc_cal_params_t* cal_params,
                                      adc_cal_point_t p1, adc_cal_point_t p2, float cal_temp)
 {
@@ -184,7 +184,7 @@ bool adc_perform_factory_calibration(config_adc_adv_t* cfg, adc_cal_params_t* ca
   }
   if (p1.raw_value > cfg->bits->max_raw_value || p2.raw_value > cfg->bits->max_raw_value)
   {
-     /* °æ°í */
+     /* ê²½ê³  */
   }
 
   cal_params->factory_slope =
@@ -192,16 +192,16 @@ bool adc_perform_factory_calibration(config_adc_adv_t* cfg, adc_cal_params_t* ca
   cal_params->factory_offset = p1.reference_value - cal_params->factory_slope * (float)p1.raw_value;
   cal_params->factory_cal_temp = cal_temp;
   cal_params->is_calibrated = true;
-  // comp_method, °è¼ö, LUT´Â ÀÌ ÇÔ¼ö¿¡¼­ º¯°æÇÏÁö ¾ÊÀ½ (º°µµ ¼³Á¤)
+  // comp_method, ê³„ìˆ˜, LUTëŠ” ì´ í•¨ìˆ˜ì—ì„œ ë³€ê²½í•˜ì§€ ì•ŠìŒ (ë³„ë„ ì„¤ì •)
 
   if (adc_printf)
-    adc_printf("°øÀå Ä¶¸®ºê·¹ÀÌ¼Ç ¼º°ø (%.1f¡ÆC): Slope=%.6f, Offset=%.6f\n", cal_temp,
+    adc_printf("ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ì„±ê³µ (%.1fÂ°C): Slope=%.6f, Offset=%.6f\n", cal_temp,
                cal_params->factory_slope, cal_params->factory_offset);
   save_adc_cali();  
   return true;
 }
 
-// --- ÃÖÁ¾ º¸»ó °ª °è»ê ÇÔ¼ö (º¸»ó ¹æ¹ı ¼±ÅÃ ·ÎÁ÷ Æ÷ÇÔ) ---
+// --- ìµœì¢… ë³´ìƒ ê°’ ê³„ì‚° í•¨ìˆ˜ (ë³´ìƒ ë°©ë²• ì„ íƒ ë¡œì§ í¬í•¨) ---
 float adc_get_compensated_value(int32_t raw_value, const adc_cal_params_t* cal_params,
                                 float current_temperature)
 {
@@ -235,15 +235,15 @@ float adc_get_compensated_value(int32_t raw_value, const adc_cal_params_t* cal_p
       }
       else
       {
-        // fprintf(stderr, "°æ°í: LUT º¸°£ ½ÇÆĞ, °øÀå Ä¶¸®ºê·¹ÀÌ¼Ç °ª »ç¿ë.\n");
-        // º¸°£ ½ÇÆĞ ½Ã °øÀå °ª »ç¿ë (À§¿¡¼­ ÀÌ¹Ì ÃÊ±âÈ­µÊ)
+        // fprintf(stderr, "ê²½ê³ : LUT ë³´ê°„ ì‹¤íŒ¨, ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ê°’ ì‚¬ìš©.\n");
+        // ë³´ê°„ ì‹¤íŒ¨ ì‹œ ê³µì¥ ê°’ ì‚¬ìš© (ìœ„ì—ì„œ ì´ë¯¸ ì´ˆê¸°í™”ë¨)
       }
       break;
     }
 #endif
     case TEMP_COMP_NONE:
     default:
-      // º¸»ó ¾øÀ½, °øÀå °ª ±×´ë·Î »ç¿ë
+      // ë³´ìƒ ì—†ìŒ, ê³µì¥ ê°’ ê·¸ëŒ€ë¡œ ì‚¬ìš©
       break;
   }
 
@@ -252,7 +252,7 @@ float adc_get_compensated_value(int32_t raw_value, const adc_cal_params_t* cal_p
 
 
 
-// --- µ¿Àû ¿ÀÇÁ¼Â Á¶Á¤ ÇÔ¼ö (º¸»ó ¹æ¹ı °í·Á) ---
+// --- ë™ì  ì˜¤í”„ì…‹ ì¡°ì • í•¨ìˆ˜ (ë³´ìƒ ë°©ë²• ê³ ë ¤) ---
 bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,
                                    adc_channel_type_t ch_type, int ch_idx, float current_temp,
                                    float target_ref, int32_t raw_now)
@@ -266,7 +266,7 @@ bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_p
   float eff_slope = cal_params->factory_slope;
   float offset_correction = 0.0f;
 
-  // ÇöÀç ¿Âµµ¿¡¼­ÀÇ À¯È¿ ±â¿ï±â ¹× ¿ÀÇÁ¼Â º¸Á¤·® °è»ê
+  // í˜„ì¬ ì˜¨ë„ì—ì„œì˜ ìœ íš¨ ê¸°ìš¸ê¸° ë° ì˜¤í”„ì…‹ ë³´ì •ëŸ‰ ê³„ì‚°
   switch (cal_params->comp_method)
   {
     case TEMP_COMP_COEFF:
@@ -284,21 +284,21 @@ bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_p
                           &slope_mult, &offset_correction))
       {
         eff_slope *= slope_mult;
-      }  // º¸°£ ½ÇÆĞ ½Ã factory_slope »ç¿ë, offset_correctionÀº 0.0 À¯Áö
+      }  // ë³´ê°„ ì‹¤íŒ¨ ì‹œ factory_slope ì‚¬ìš©, offset_correctionì€ 0.0 ìœ ì§€
       break;
     }
 #endif
     case TEMP_COMP_NONE:
     default:
-      break;  // º¸»ó ¾øÀ½
+      break;  // ë³´ìƒ ì—†ìŒ
   }
 
-  // »õ factory_offset °è»ê: target = eff_slope * raw + (new_factory_offset + offset_correction)
+  // ìƒˆ factory_offset ê³„ì‚°: target = eff_slope * raw + (new_factory_offset + offset_correction)
   float new_factory_offset = target_ref - eff_slope * (float)raw_now - offset_correction;
 
   if (adc_printf)
     adc_printf(
-        "Ã¤³Î %d ¿ÀÇÁ¼Â Á¶Á¤ (%.1f¡ÆC): Raw=%u, ¸ñÇ¥=%.3f -> »õ Factory Offset=%.6f (±âÁ¸=%.6f)\n",
+        "ì±„ë„ %d ì˜¤í”„ì…‹ ì¡°ì • (%.1fÂ°C): Raw=%u, ëª©í‘œ=%.3f -> ìƒˆ Factory Offset=%.6f (ê¸°ì¡´=%.6f)\n",
         ch_idx, current_temp, raw_now, target_ref, new_factory_offset, cal_params->factory_offset);
 
   cal_params->factory_offset = new_factory_offset;
@@ -310,9 +310,9 @@ void populate_lut(adc_cal_params_t* params)
 {
 #ifdef ADC_LUT
   if (!params || MAX_LUT_SIZE < 3)
-    return;  // ÃÖ¼Ò 3°³ Æ÷ÀÎÆ® °¡Á¤
+    return;  // ìµœì†Œ 3ê°œ í¬ì¸íŠ¸ ê°€ì •
   params->lut_size = 3;
-  // ¿Âµµ ¿À¸§Â÷¼øÀ¸·Î Á¤·ÄµÇ¾î¾ß ÇÔ
+  // ì˜¨ë„ ì˜¤ë¦„ì°¨ìˆœìœ¼ë¡œ ì •ë ¬ë˜ì–´ì•¼ í•¨
   params->temp_comp_lut[0] = (temp_lut_point_t){
       .temperature = 0.0f, .slope_multiplier = 1.02f, .offset_correction = -0.05f};
   params->temp_comp_lut[1] = (temp_lut_point_t){

@@ -48,7 +48,7 @@ int websocket_handshake(int client_socket, const char* key)
     
     task_printf("WebSocket: Processing handshake with key: %s\r\n", key);
     
-    // RFC 6455¿¡ µû¸¥ ¿Ã¹Ù¸¥ Accept Å° »ı¼º
+    // RFC 6455ì— ë”°ë¥¸ ì˜¬ë°”ë¥¸ Accept í‚¤ ìƒì„±
     if (websocket_generate_accept_key(key, accept_key, sizeof(accept_key)) != 0) {
         task_printf("WebSocket: Failed to generate accept key\r\n");
         return -1;
@@ -299,7 +299,7 @@ void websocket_handle_connection(int client_socket)
 
         task_printf("WebSocket: Received %d bytes\r\n", bytes_received);
 
-        // ÇÁ·¹ÀÓ ¹öÆÛ°¡ ¾øÀ¸¸é »õ·Î ÇÒ´ç
+        // í”„ë ˆì„ ë²„í¼ê°€ ì—†ìœ¼ë©´ ìƒˆë¡œ í• ë‹¹
         if (frame_buffer == NULL) {
             frame_buffer_size = bytes_received;
             frame_buffer = (uint8_t*)aws_malloc(frame_buffer_size);
@@ -310,7 +310,7 @@ void websocket_handle_connection(int client_socket)
             memcpy(frame_buffer, buffer, bytes_received);
             total_received = bytes_received;
         } else {
-            // ±âÁ¸ ÇÁ·¹ÀÓ ¹öÆÛ¿¡ »õ µ¥ÀÌÅÍ Ãß°¡
+            // ê¸°ì¡´ í”„ë ˆì„ ë²„í¼ì— ìƒˆ ë°ì´í„° ì¶”ê°€
             size_t new_size = total_received + bytes_received;
             uint8_t* new_buffer = (uint8_t*)aws_malloc(new_size);
             if (new_buffer == NULL) {
@@ -327,13 +327,13 @@ void websocket_handle_connection(int client_socket)
             total_received = new_size;
         }
 
-        // ÇÁ·¹ÀÓ ÆÄ½Ì ½Ãµµ
+        // í”„ë ˆì„ íŒŒì‹± ì‹œë„
         ws_frame_t frame;
         int frame_size = websocket_parse_frame(frame_buffer, total_received, &frame);
         
         if (frame_size < 0) {
-            // ÇÁ·¹ÀÓÀÌ ¿Ï·áµÇÁö ¾Ê¾ÒÀ¸¸é ´õ ±â´Ù¸²
-            if (total_received < 65536) { // ÃÖ´ë 64KB±îÁö ¹öÆÛ¸µ
+            // í”„ë ˆì„ì´ ì™„ë£Œë˜ì§€ ì•Šì•˜ìœ¼ë©´ ë” ê¸°ë‹¤ë¦¼
+            if (total_received < 65536) { // ìµœëŒ€ 64KBê¹Œì§€ ë²„í¼ë§
                 continue;
             } else {
                 task_printf("WebSocket: Frame too large, discarding\r\n");
@@ -344,7 +344,7 @@ void websocket_handle_connection(int client_socket)
             }
         }
 
-        // ¿ÏÀüÇÑ ÇÁ·¹ÀÓÀ» ¹Ş¾ÒÀ¸¸é Ã³¸®
+        // ì™„ì „í•œ í”„ë ˆì„ì„ ë°›ì•˜ìœ¼ë©´ ì²˜ë¦¬
         task_printf("WebSocket: Complete frame received (size: %d)\r\n", frame_size);
 
         task_printf("WebSocket: Parsed frame - opcode: 0x%02X, fin: %d, masked: %d, payload_len: %zu\r\n", 
@@ -378,20 +378,20 @@ void websocket_handle_connection(int client_socket)
                                 
                                 websocket_handle_file_upload_start(client_socket, filename_start, file_size);
                                 
-                                // ±âÁ¸ ¹öÆÛ Á¤¸®
+                                // ê¸°ì¡´ ë²„í¼ ì •ë¦¬
                                 if (upload_state.buffer) {
                                     aws_free(upload_state.buffer);
                                     upload_state.buffer = NULL;
                                 }
                                 
-                                // ¾÷·Îµå »óÅÂ ÃÊ±âÈ­
+                                // ì—…ë¡œë“œ ìƒíƒœ ì´ˆê¸°í™”
                                 strncpy(upload_state.filename, filename_start, sizeof(upload_state.filename) - 1);
                                 upload_state.filename[sizeof(upload_state.filename) - 1] = '\0';
                                 upload_state.total_size = file_size;
                                 upload_state.received_size = 0;
-                                upload_state.is_receiving = false; // ¹öÆÛ ÇÒ´ç ÈÄ¿¡ true·Î ¼³Á¤
+                                upload_state.is_receiving = false; // ë²„í¼ í• ë‹¹ í›„ì— trueë¡œ ì„¤ì •
                                 
-                                if (file_size > 0 && file_size <= (10 * 1024 * 1024)) { // 10MB Á¦ÇÑ
+                                if (file_size > 0 && file_size <= (10 * 1024 * 1024)) { // 10MB ì œí•œ
                                     upload_state.buffer = (uint8_t*)aws_malloc(file_size);
                                     if (upload_state.buffer) {
                                         upload_state.is_receiving = true;
@@ -410,7 +410,7 @@ void websocket_handle_connection(int client_socket)
                             if (upload_state.is_receiving) {
                                 websocket_handle_file_upload_complete(client_socket);
                                 
-                                // ÆÄÀÏ ÀúÀå
+                                // íŒŒì¼ ì €ì¥
                                 if (websocket_save_uploaded_file(upload_state.filename, 
                                                                upload_state.buffer, 
                                                                upload_state.received_size) == 0) {
@@ -418,7 +418,7 @@ void websocket_handle_connection(int client_socket)
                                               upload_state.filename, upload_state.received_size);
                                 }
                                 
-                                // »óÅÂ ÃÊ±âÈ­
+                                // ìƒíƒœ ì´ˆê¸°í™”
                                 if (upload_state.buffer) {
                                     aws_free(upload_state.buffer);
                                     upload_state.buffer = NULL;
@@ -437,7 +437,7 @@ void websocket_handle_connection(int client_socket)
                 if (upload_state.is_receiving && upload_state.buffer) {
                     websocket_handle_file_upload_chunk(client_socket, frame.payload, frame.payload_len);
                     
-                    // µ¥ÀÌÅÍ¸¦ ¹öÆÛ¿¡ º¹»ç
+                    // ë°ì´í„°ë¥¼ ë²„í¼ì— ë³µì‚¬
                     size_t copy_size = frame.payload_len;
                     if (upload_state.received_size + copy_size > upload_state.total_size) {
                         copy_size = upload_state.total_size - upload_state.received_size;
@@ -480,7 +480,7 @@ void websocket_handle_connection(int client_socket)
                 break;
         }
         
-        // ³²Àº µ¥ÀÌÅÍ°¡ ÀÖ´ÂÁö È®ÀÎ
+        // ë‚¨ì€ ë°ì´í„°ê°€ ìˆëŠ”ì§€ í™•ì¸
         if (frame_size < (int)total_received) {
             size_t remaining = total_received - frame_size;
             uint8_t* new_buffer = (uint8_t*)aws_malloc(remaining);
@@ -495,14 +495,14 @@ void websocket_handle_connection(int client_socket)
                 total_received = 0;
             }
         } else {
-            // ÇÁ·¹ÀÓ Ã³¸® ¿Ï·á, ¹öÆÛ Á¤¸®
+            // í”„ë ˆì„ ì²˜ë¦¬ ì™„ë£Œ, ë²„í¼ ì •ë¦¬
             aws_free(frame_buffer);
             frame_buffer = NULL;
             total_received = 0;
         }
     }
 
-    // ¿¬°á Á¾·á ½Ã ¸ğµç ¸Ş¸ğ¸® Á¤¸®
+    // ì—°ê²° ì¢…ë£Œ ì‹œ ëª¨ë“  ë©”ëª¨ë¦¬ ì •ë¦¬
     if (frame_buffer) {
         aws_free(frame_buffer);
     }
@@ -526,8 +526,8 @@ static void websocket_handle_file_upload_start(int client_socket, const char* fi
 
 static void websocket_handle_file_upload_chunk(int client_socket, const uint8_t* data, size_t len)
 {
-    // Ã»Å© ¼ö½Å È®ÀÎ (¼±ÅÃ»çÇ×)
-    // ³Ê¹« ¸¹Àº ·Î±×¸¦ ¹æÁöÇÏ±â À§ÇØ ÁÖ¼® Ã³¸® °¡´É
+    // ì²­í¬ ìˆ˜ì‹  í™•ì¸ (ì„ íƒì‚¬í•­)
+    // ë„ˆë¬´ ë§ì€ ë¡œê·¸ë¥¼ ë°©ì§€í•˜ê¸° ìœ„í•´ ì£¼ì„ ì²˜ë¦¬ ê°€ëŠ¥
     // task_printf("WebSocket: Received chunk: %zu bytes\r\n", len);
 }
 
@@ -548,8 +548,8 @@ static int websocket_save_uploaded_file(const char* filename, const uint8_t* dat
     
     task_printf("WebSocket: Saving uploaded file to %s (%zu bytes)\r\n", file_path, size);
     
-    // app_file.hÀÇ write_file ÇÔ¼ö »ç¿ë (¼¼¸¶Æ÷¾î·Î º¸È£µÊ)
-    // offset 0¿¡¼­ ÀüÃ¼ ÆÄÀÏÀ» »õ·Î ÀÛ¼º
+    // app_file.hì˜ write_file í•¨ìˆ˜ ì‚¬ìš© (ì„¸ë§ˆí¬ì–´ë¡œ ë³´í˜¸ë¨)
+    // offset 0ì—ì„œ ì „ì²´ íŒŒì¼ì„ ìƒˆë¡œ ì‘ì„±
     res = write_file(file_path, (uint8_t*)data, (uint32_t)size, 0);
     
     if (res != FR_OK) {
@@ -568,7 +568,7 @@ static int websocket_generate_accept_key(const char* client_key, char* accept_ke
         return -1;
     }
     
-    // 1. Å¬¶óÀÌ¾ğÆ® Å°¿Í WebSocket ¸ÅÁ÷ ½ºÆ®¸µÀ» ¿¬°á
+    // 1. í´ë¼ì´ì–¸íŠ¸ í‚¤ì™€ WebSocket ë§¤ì§ ìŠ¤íŠ¸ë§ì„ ì—°ê²°
     char combined_key[128];
     int combined_len = snprintf(combined_key, sizeof(combined_key), "%s%s", client_key, WS_MAGIC_STRING);
     
@@ -579,7 +579,7 @@ static int websocket_generate_accept_key(const char* client_key, char* accept_ke
     
     task_printf("WebSocket: Combined key: %s\r\n", combined_key);
     
-    // 2. SHA-1 ÇØ½Ã °è»ê
+    // 2. SHA-1 í•´ì‹œ ê³„ì‚°
     unsigned char sha1_output[20];
     int ret = mbedtls_sha1_ret((const unsigned char*)combined_key, combined_len, sha1_output);
     if (ret != 0) {
@@ -587,7 +587,7 @@ static int websocket_generate_accept_key(const char* client_key, char* accept_ke
         return -1;
     }
     
-    // 3. Base64 ÀÎÄÚµù
+    // 3. Base64 ì¸ì½”ë”©
     size_t olen = 0;
     ret = mbedtls_base64_encode((unsigned char*)accept_key, accept_key_size - 1, &olen, sha1_output, 20);
     if (ret != 0) {
@@ -601,11 +601,11 @@ static int websocket_generate_accept_key(const char* client_key, char* accept_ke
     return 0;
 }
 
-// ÅÍ¹Ì³Î WebSocket ¿¬°á¿ë Àü¿ª º¯¼ö
+// í„°ë¯¸ë„ WebSocket ì—°ê²°ìš© ì „ì—­ ë³€ìˆ˜
 static int g_terminal_client_socket = -1;
 static void (*g_terminal_output_callback)(const char* data, size_t len) = NULL;
 
-// ÅÍ¹Ì³Î WebSocket µ¥ÀÌÅÍ Àü¼Û ÇÔ¼ö
+// í„°ë¯¸ë„ WebSocket ë°ì´í„° ì „ì†¡ í•¨ìˆ˜
 void websocket_terminal_send_data(int client_socket, const char* data, size_t len)
 {
     if (client_socket < 0 || !data || len == 0) {
@@ -615,7 +615,7 @@ void websocket_terminal_send_data(int client_socket, const char* data, size_t le
     websocket_send_text_frame(client_socket, data, len);
 }
 
-// ÅÍ¹Ì³Î ºê¸®Áö¿¡¼­ WebSocketÀ¸·Î µ¥ÀÌÅÍ Àü¼ÛÇÏ´Â Äİ¹é ÇÔ¼ö
+// í„°ë¯¸ë„ ë¸Œë¦¬ì§€ì—ì„œ WebSocketìœ¼ë¡œ ë°ì´í„° ì „ì†¡í•˜ëŠ” ì½œë°± í•¨ìˆ˜
 static void terminal_to_websocket_callback(const char* data, size_t len)
 {
     if (g_terminal_client_socket >= 0 && data && len > 0) {
@@ -623,7 +623,7 @@ static void terminal_to_websocket_callback(const char* data, size_t len)
     }
 }
 
-// ÅÍ¹Ì³Î WebSocket ¿¬°á Ã³¸® ÇÔ¼ö
+// í„°ë¯¸ë„ WebSocket ì—°ê²° ì²˜ë¦¬ í•¨ìˆ˜
 void websocket_terminal_handle_connection(int client_socket)
 {
     uint8_t* buffer = (uint8_t*)aws_malloc(WS_BUFFER_SIZE);
@@ -634,13 +634,13 @@ void websocket_terminal_handle_connection(int client_socket)
     
     g_terminal_client_socket = client_socket;
     
-    // ÅÍ¹Ì³Î ºê¸®Áö ÃÊ±âÈ­ ¹× Äİ¹é ¼³Á¤
+    // í„°ë¯¸ë„ ë¸Œë¦¬ì§€ ì´ˆê¸°í™” ë° ì½œë°± ì„¤ì •
     terminal_bridge_init();
     terminal_bridge_set_output_callback(terminal_to_websocket_callback);
     
     task_printf("Terminal WebSocket: Connection established\r\n");
     
-    // È¯¿µ ¸Ş½ÃÁö Àü¼Û
+    // í™˜ì˜ ë©”ì‹œì§€ ì „ì†¡
     const char* welcome_msg = "\r\n=== Terminal WebSocket Connected ===\r\n";
     websocket_terminal_send_data(client_socket, welcome_msg, strlen(welcome_msg));
     
@@ -659,7 +659,7 @@ void websocket_terminal_handle_connection(int client_socket)
         
         task_printf("Terminal WebSocket: Received %d bytes\r\n", bytes_received);
         
-        // ÇÁ·¹ÀÓ ¹öÆÛ °ü¸® (±âÁ¸ À¥¼ÒÄÏ°ú µ¿ÀÏÇÑ ·ÎÁ÷)
+        // í”„ë ˆì„ ë²„í¼ ê´€ë¦¬ (ê¸°ì¡´ ì›¹ì†Œì¼“ê³¼ ë™ì¼í•œ ë¡œì§)
         if (frame_buffer == NULL) {
             frame_buffer_size = bytes_received;
             frame_buffer = (uint8_t*)aws_malloc(frame_buffer_size);
@@ -686,7 +686,7 @@ void websocket_terminal_handle_connection(int client_socket)
             total_received = new_size;
         }
         
-        // ÇÁ·¹ÀÓ ÆÄ½Ì
+        // í”„ë ˆì„ íŒŒì‹±
         ws_frame_t frame;
         int frame_size = websocket_parse_frame(frame_buffer, total_received, &frame);
         
@@ -702,7 +702,7 @@ void websocket_terminal_handle_connection(int client_socket)
             }
         }
         
-        // ÇÁ·¹ÀÓ Ã³¸®
+        // í”„ë ˆì„ ì²˜ë¦¬
         switch (frame.opcode) {
             case WS_OPCODE_TEXT:
                 {
@@ -713,7 +713,7 @@ void websocket_terminal_handle_connection(int client_socket)
                         
                         task_printf("Terminal WebSocket: Received command: %s\r\n", text_msg);
                         
-                        // ÅÍ¹Ì³Î ºê¸®Áö·Î ¸í·É Àü¼Û
+                        // í„°ë¯¸ë„ ë¸Œë¦¬ì§€ë¡œ ëª…ë ¹ ì „ì†¡
                         terminal_bridge_send_command(text_msg, frame.payload_len);
                         
                         aws_free(text_msg);
@@ -744,7 +744,7 @@ void websocket_terminal_handle_connection(int client_socket)
                 break;
         }
         
-        // ³²Àº µ¥ÀÌÅÍ Ã³¸® (±âÁ¸ À¥¼ÒÄÏ°ú µ¿ÀÏÇÑ ·ÎÁ÷)
+        // ë‚¨ì€ ë°ì´í„° ì²˜ë¦¬ (ê¸°ì¡´ ì›¹ì†Œì¼“ê³¼ ë™ì¼í•œ ë¡œì§)
         if (frame_size < (int)total_received) {
             size_t remaining = total_received - frame_size;
             uint8_t* new_buffer = (uint8_t*)aws_malloc(remaining);
@@ -765,7 +765,7 @@ void websocket_terminal_handle_connection(int client_socket)
         }
     }
     
-    // ¿¬°á Á¾·á ½Ã Á¤¸®
+    // ì—°ê²° ì¢…ë£Œ ì‹œ ì •ë¦¬
     if (frame_buffer) {
         aws_free(frame_buffer);
     }
@@ -775,4 +775,4 @@ void websocket_terminal_handle_connection(int client_socket)
     task_printf("Terminal WebSocket: Connection handler terminated\r\n");
 }
 
-// ÅÍ¹Ì³Î ºê¸®Áö ÇÔ¼öµéÀº terminal_bridge.c¿¡¼­ ±¸ÇöµÊ
+// í„°ë¯¸ë„ ë¸Œë¦¬ì§€ í•¨ìˆ˜ë“¤ì€ terminal_bridge.cì—ì„œ êµ¬í˜„ë¨

@@ -24,7 +24,7 @@ uint16_t String2Ushort(char *szStr, uint32_t nLen)
 }
 
 
-time_t ConvertDate_TMX400(char * szDate)  // StringÀ» ³¯Â¥ ½Ã°£ µ¥ÀÌÅÍ·Î
+time_t ConvertDate_TMX400(char * szDate)  // Stringì„ ë‚ ì§œ ì‹œê°„ ë°ì´í„°ë¡œ
 {
   time_t tmRet;
   char szTemp[5];
@@ -86,10 +86,10 @@ bool CheckReadSMS(char *sms_msg,char *sms_number)
 
   //  4. IP Address: 192.168.123.231
   //  5. TCP Port  : 09000
-  //  6. TCP Connection À¯Áö½Ã°£ : 00020 ÃÊ
-  //  6. ÀÏ·Ã  ¹øÈ£: 00001
-  //  7. Àü¼ÛÀÏÀÚ  : 20150406
-  //  8. ÀüÀÏ½Ã°£  : 153645
+  //  6. TCP Connection ìœ ì§€ì‹œê°„ : 00020 ì´ˆ
+  //  6. ì¼ë ¨  ë²ˆí˜¸: 00001
+  //  7. ì „ì†¡ì¼ì  : 20150406
+  //  8. ì „ì¼ì‹œê°„  : 153645
   //  9. BCC       : b
 
   //  HR36012313192.168.123.231090000000000001201504061827003
@@ -98,7 +98,7 @@ bool CheckReadSMS(char *sms_msg,char *sms_number)
 
   if (strncmp(sms_msg, "HR", 2) != 0)
   {
-    return false;  // START CODE ¸ÂÁö¾ÊÀ½
+    return false;  // START CODE ë§ì§€ì•ŠìŒ
   }
 
   snprintf(password,sizeof(password),"%04d",get_config_app()->password);
@@ -119,10 +119,10 @@ bool CheckReadSMS(char *sms_msg,char *sms_number)
   cCmd = String2Ushort(sms_msg + 8, 2);
   switch (cCmd)
   {
-    case 12:  // TimeSync ¸í·É ¼öÇàÇÏ¸é ´Ü¸»±â ResetÈÄ System½Ã°£À» ´Ü¸»±â¿Í ¸ÂÃá´Ù
-      //½Ã°£µ¿±âÈ­
+    case 12:  // TimeSync ëª…ë ¹ ìˆ˜í–‰í•˜ë©´ ë‹¨ë§ê¸° Resetí›„ Systemì‹œê°„ì„ ë‹¨ë§ê¸°ì™€ ë§ì¶˜ë‹¤
+      //ì‹œê°„ë™ê¸°í™”
       break;
-    case 13:  // ÀÓÀÇ(SMS Àü¼Û)ÀÇ IP¿Í Port·Î Á¢¼Ó ÀÏÁ¤½Ã°£µ¿¾È
+    case 13:  // ì„ì˜(SMS ì „ì†¡)ì˜ IPì™€ Portë¡œ ì ‘ì† ì¼ì •ì‹œê°„ë™ì•ˆ
 
       ip[0] = (uint8_t)String2Ushort(sms_msg + 10, 3);
       ip[1] = (uint8_t)String2Ushort(sms_msg + 14, 3);
@@ -137,7 +137,7 @@ bool CheckReadSMS(char *sms_msg,char *sms_number)
       set_cdma_retarget(true);
 
       break;
-    case 14:  // Á¢¼ÓÇÒ Server IP & Port¸¦ ¹Ù²Û´Ù
+    case 14:  // ì ‘ì†í•  Server IP & Portë¥¼ ë°”ê¾¼ë‹¤
       ip[0] = (uint8_t)String2Ushort(sms_msg + 10, 3);
       ip[1] = (uint8_t)String2Ushort(sms_msg + 14, 3);
       ip[2] = (uint8_t)String2Ushort(sms_msg + 18, 3);
@@ -149,6 +149,6 @@ bool CheckReadSMS(char *sms_msg,char *sms_number)
       set_config_app_cdma_port(port);
 
       break;
-  }  // SMS ¼ö½Å ³»¿ëÀÎÁö¸¦ Ã¼Å©ÇÑ´Ù.
+  }  // SMS ìˆ˜ì‹  ë‚´ìš©ì¸ì§€ë¥¼ ì²´í¬í•œë‹¤.
   return true;
 }

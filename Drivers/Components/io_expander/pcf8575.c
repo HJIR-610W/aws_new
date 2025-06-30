@@ -20,7 +20,7 @@ typedef struct pcf8575_cfg_s
   void *irq_io;
   uint16_t address;
   uint16_t port_data;
-  uint16_t dir;//ÀĞ±â 1, ¾²±â 0
+  uint16_t dir;//ì½ê¸° 1, ì“°ê¸° 0
 }pcf8575_cfg_t;
 
 
@@ -80,11 +80,11 @@ driver_t *pcf8575_open(uint32_t num,void *opt)
     dir |= DIR_IN(GPIO_PIN7);
     
 
-    pcf8575_write(&g_pcf8575,(uint16_t)dir);//¹æÇâÀ» ¼³Á¤ÇÑ´Ù.
+    pcf8575_write(&g_pcf8575,(uint16_t)dir);//ë°©í–¥ì„ ì„¤ì •í•œë‹¤.
     
     for(int i = 0 ;i < 8; i++)
     {
-      pcf8575_write_pin(&g_pcf8575,1<<i,1);//ÀüºÎ High Ãâ·Â
+      pcf8575_write_pin(&g_pcf8575,1<<i,1);//ì „ë¶€ High ì¶œë ¥
     }
 
 
@@ -140,7 +140,7 @@ void pcf8575_irq(void)
 
 
 
-//ÇÏµåÄÚµù ÇÔ,0..7 ÀÔ·Â, 8..15Ãâ·Â ÃßÈÄ ¼öÁ¤
+//í•˜ë“œì½”ë”© í•¨,0..7 ì…ë ¥, 8..15ì¶œë ¥ ì¶”í›„ ìˆ˜ì •
 int32_t pcf8575_write8(driver_t *drv,uint8_t port_data)
 {
   uint8_t data[2];
@@ -178,7 +178,7 @@ int pcf8575_read8(driver_t *drv,uint16_t *port_data)
  return 0; 
 }
 
-// »óÀ§ 8bit°¡ Ãâ·Â,ÇÏÀ§ 8bit ÀÔ·Â·Â
+// ìƒìœ„ 8bitê°€ ì¶œë ¥,í•˜ìœ„ 8bit ì…ë ¥ë ¥
 uint16_t pcf8575_read_pin(driver_t *drv,uint16_t pin)
 {
   uint8_t data[2];
@@ -199,7 +199,7 @@ uint16_t pcf8575_read_pin(driver_t *drv,uint16_t pin)
   return 0;
 }
 
-//»óÀ§ 8bit°¡ Ãâ·Â
+//ìƒìœ„ 8bitê°€ ì¶œë ¥
 int pcf8575_write_pin(driver_t *drv,uint16_t pin,uint16_t high)
 {
   uint8_t data[2];

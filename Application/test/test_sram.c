@@ -5,25 +5,25 @@
 
 #include "dev_io.h"
 #define printf io_printf
-// ев╫╨ф╝гр ╦ч╦П╦╝ е╘╠Б (4MB)
+// М┘▄Л┼╓М┼╦М∙═ К╘■К╙╗К╕╛ М│╛Й╦╟ (4MB)
 #define MEM_SIZE (4 * 1024 * 1024)
-// ев╫╨ф╝гр ╦ч╦П╦╝ ╫цюш аж╪р (║з║з║з║з║з ╫га╕ го╣Е©Ч╬Н аж╪р╥н ╨╞╟Ф гй╪Ж ║з║з║з║з║з)
-#define MEM_ADDRESS 0x64000000 // ©╧╫ц аж╪р (STM32 FSMC ╣Н)
+// М┘▄Л┼╓М┼╦М∙═ К╘■К╙╗К╕╛ Л▀°Л·▒ Лё╪Л├▄ (Б≤┘Б≤┘Б≤┘Б≤┘Б≤┘ Л▀╓Л═° М∙≤К⌠°Л⌡╗Л√╢ Лё╪Л├▄К║° КЁ─Й╡╫ М∙└Л┬≤ Б≤┘Б≤┘Б≤┘Б≤┘Б≤┘)
+#define MEM_ADDRESS 0x64000000 // Л≤┬Л▀° Лё╪Л├▄ (STM32 FSMC К⌠╠)
 
-// ╦ч╦П╦╝ ев╫╨ф╝ гт╪Ж (volatile фВюнем ╩Г©К)
-// ptr: ев╫╨ф╝гр ╦ч╦П╦╝ ╫цюш аж╪р (volatile)
-// size: ев╫╨ф╝гр ╦ч╦П╦╝ е╘╠Б (╧ыюлф╝)
-// ╧щх╞╟╙: 0 ╪╨╟Ь, -1 ╫гфп
-int memory_test_mapped(volatile unsigned char *ptr, size_t size) { // volatile цъ╟║
+// К╘■К╙╗К╕╛ М┘▄Л┼╓М┼╦ М∙╗Л┬≤ (volatile М▐╛Л²╦М└╟ Л┌╛Л ╘)
+// ptr: М┘▄Л┼╓М┼╦М∙═ К╘■К╙╗К╕╛ Л▀°Л·▒ Лё╪Л├▄ (volatile)
+// size: М┘▄Л┼╓М┼╦М∙═ К╘■К╙╗К╕╛ М│╛Й╦╟ (К╟■Л²╢М┼╦)
+// К╟≤М≥≤Й╟▓: 0 Л└╠ЙЁ╣, -1 Л▀╓М▄╗
+int memory_test_mapped(volatile unsigned char *ptr, size_t size) { // volatile Л╤■Й╟─
     size_t i;
     unsigned char pattern;
     unsigned char read_val;
 
-    // фВюнем ю╞х©╪╨ ╟к╩Г╢б юл ╫цЁ╙╦╝©ю©║╪╜╢б ╩Щ╥╚ (го╣Е©Ч╬Н аж╪р ╟║а╓юл╧г╥н)
+    // М▐╛Л²╦М└╟ Л°═М ╗Л└╠ Й╡─Л┌╛К┼■ Л²╢ Л▀°К┌≤К╕╛Л≤╓Л≈░Л└°К┼■ Л┐²К·╣ (М∙≤К⌠°Л⌡╗Л√╢ Лё╪Л├▄ Й╟─Л═∙Л²╢К╞─К║°)
     printf("Starting memory test for %zu bytes at mapped address 0x%lX...\n\r",
-           size, (unsigned long)ptr); // аж╪р╟╙ аВа╒ цБ╥б
+           size, (unsigned long)ptr); // Лё╪Л├▄Й╟▓ Л╖│Л═▒ Л╤°К═╔
 
-    // --- ев╫╨ф╝ фпео 1: аж╪р ╠Б╧щ фпео ╬╡╠Б (i % 256) ---
+    // --- М┘▄Л┼╓М┼╦ М▄╗М└╢ 1: Лё╪Л├▄ Й╦╟К╟≤ М▄╗М└╢ Л⌠╟Й╦╟ (i % 256) ---
     printf("Phase 1: Writing address-based pattern (i %% 256)...\n\r");
     for (i = 0; i < size; ++i) {
         pattern = (unsigned char)(i % 256);
@@ -34,7 +34,7 @@ int memory_test_mapped(volatile unsigned char *ptr, size_t size) { // volatile ц
     }
     printf("  Write phase complete.\n\r");
 
-    // --- ев╫╨ф╝ фпео 1: ╟каУ ---
+    // --- М┘▄Л┼╓М┼╦ М▄╗М└╢ 1: Й╡─Л╕² ---
     printf("Phase 2: Verifying address-based pattern...\n\r");
     for (i = 0; i < size; ++i) {
         pattern = (unsigned char)(i % 256);
@@ -55,11 +55,11 @@ int memory_test_mapped(volatile unsigned char *ptr, size_t size) { // volatile ц
     printf("Phase 1 & 2 (Address-based pattern) PASSED.\n\r\n\r");
 
 
-    // --- ев╫╨ф╝ фпео 2: 0xAA фпео ╬╡╠Б ╧в ╟каУ ---
+    // --- М┘▄Л┼╓М┼╦ М▄╗М└╢ 2: 0xAA М▄╗М└╢ Л⌠╟Й╦╟ К╟▐ Й╡─Л╕² ---
     printf("Phase 3: Writing 0xAA pattern...\n\r");
-    // memsetю╨ volatile фВюнем©║ аВа╒ ╩Г©Кго╠Б ╬Н╥а©О ╪Ж южю╫ -> ╥Гга ╩Г©К ╠гюЕ
+    // memsetЛ²─ volatile М▐╛Л²╦М└╟Л≈░ Л╖│Л═▒ Л┌╛Л ╘М∙≤Й╦╟ Л√╢К═╓Л ╦ Л┬≤ Л·┬Л²▄ -> Кё╗М■└ Л┌╛Л ╘ Й╤▄Л·╔
     for (i = 0; i < size; ++i) ptr[i] = 0xAA;
-    // ╤г╢б volatileю╩ ╟М╥агя memset ╠╦гЖ гй©Д
+    // К≤░К┼■ volatileЛ²└ ЙЁ═К═╓М∙° memset Й╣╛М≤└ М∙└Л ■
     printf("  Write phase complete.\n\r");
 
     printf("Phase 4: Verifying 0xAA pattern...\n\r");
@@ -79,7 +79,7 @@ int memory_test_mapped(volatile unsigned char *ptr, size_t size) { // volatile ц
     printf("  Verification complete.\n\r");
     printf("Phase 3 & 4 (0xAA pattern) PASSED.\n\r\n\r");
 
-    // --- ев╫╨ф╝ фпео 3: 0x55 фпео ╬╡╠Б ╧в ╟каУ ---
+    // --- М┘▄Л┼╓М┼╦ М▄╗М└╢ 3: 0x55 М▄╗М└╢ Л⌠╟Й╦╟ К╟▐ Й╡─Л╕² ---
     printf("Phase 5: Writing 0x55 pattern...\n\r");
     for (i = 0; i < size; ++i) ptr[i] = 0x55;
     printf("  Write phase complete.\n\r");
@@ -102,14 +102,14 @@ int memory_test_mapped(volatile unsigned char *ptr, size_t size) { // volatile ц
     printf("Phase 5 & 6 (0x55 pattern) PASSED.\n\r\n\r");
 
     printf("All memory test phases PASSED!\n\r");
-    return 0; // ╪╨╟Ь
+    return 0; // Л└╠ЙЁ╣
 }
 
 
 int test_sram()
 
 {
-    // ╦ч╦П╦╝ аж╪р╥н аВа╒ фВюнем ╩Щ╪╨ (volatile е╟©Ж╣Е гй╪Ж!)
+    // К╘■К╙╗К╕╛ Лё╪Л├▄К║° Л╖│Л═▒ М▐╛Л²╦М└╟ Л┐²Л└╠ (volatile М┌╓Л⌡▄К⌠° М∙└Л┬≤!)
     volatile unsigned char *memory_region = (volatile unsigned char *)MEM_ADDRESS;
     int result = -1;
 
@@ -117,10 +117,10 @@ int test_sram()
            (unsigned long)memory_region, (size_t)MEM_SIZE);
 
 
-    // ╦ч╦П╦╝ ев╫╨ф╝ ╫ггЮ
+    // К╘■К╙╗К╕╛ М┘▄Л┼╓М┼╦ Л▀╓М√┴
     result = memory_test_mapped(memory_region, MEM_SIZE);
 
-    // ╦ч╦П╦╝ ╦егн╣х го╣Е©Ч╬Н ©╣©╙ю╨ free() гоаЖ ╬й╫ю╢о╢ы.
+    // К╘■К╙╗К╕╛ К╖╓М∙▒К░° М∙≤К⌠°Л⌡╗Л√╢ Л≤│Л≈╜Л²─ free() М∙≤Л╖─ Л∙┼Л┼╣К▀┬К▀╓.
 
     if (result == 0) {
         printf("Overall Memory Test Result: SUCCESS\n\r");

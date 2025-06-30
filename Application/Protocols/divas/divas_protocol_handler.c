@@ -26,13 +26,13 @@ typedef struct
   uint8_t Min;
   uint8_t Sec;
   uint8_t CMD;
-  uint8_t DATA[1];  // °¡º¯ ±æÀÌ µ¥ÀÌÅÍ
-  // ÀÌÈÄ ETX, SUM
+  uint8_t DATA[1];  // ê°€ë³€ ê¸¸ì´ ë°ì´í„°
+  // ì´í›„ ETX, SUM
 } __attribute__((packed)) divas_frame_t;
 
 #define DIVAS_FRAME_OFFSET(field) ((size_t)&(((divas_frame_t *)0)->field))
 
-//µğ¹Ù½º ¸í·É¾î Á¤ÀÇ
+//ë””ë°”ìŠ¤ ëª…ë ¹ì–´ ì •ì˜
 #define DIVAS_CMD_RD_INDEX 0x01
 #define DIVAS_CMD_RD_VERSION 0x15
 #define DIVAS_CMD_RD_CFG_OFS 0x29
@@ -43,21 +43,21 @@ typedef struct
 #define DIVAS_CMD_RESET     0x74
 #define DIVAS_CMD_RD_SYSLOG 0x07
 
-//ÀÀ´ä ÇÁ·¹ÀÓ ¿¡·¯ ¿©ºÎ
+//ì‘ë‹µ í”„ë ˆì„ ì—ëŸ¬ ì—¬ë¶€
 #define ASCII_ACK 0x06
 #define ASCII_NAK 0x15
 
-//NAK ¿¡ µû¸¥ ¿¡·¯ ÄÚµå
-#define RES_FSIZE_ERROR 32       // Ã³À½¿¡ º¸³½ TOTAL »çÀÌÁî¿Í ÆĞÅ¶¸¶´Ù º¸³½ »çÀÌÁî°¡ ´Ù¸¥°æ¿ì
-#define RES_FILE_WRITE_ERROR 39  // ÆÄÀÏ ¾²±â ¿À·ù
-#define RES_OVERFLOW_ERROR 40  // ¹öÆÛ ¿À¹öÇÃ·Î¿ì
+//NAK ì— ë”°ë¥¸ ì—ëŸ¬ ì½”ë“œ
+#define RES_FSIZE_ERROR 32       // ì²˜ìŒì— ë³´ë‚¸ TOTAL ì‚¬ì´ì¦ˆì™€ íŒ¨í‚·ë§ˆë‹¤ ë³´ë‚¸ ì‚¬ì´ì¦ˆê°€ ë‹¤ë¥¸ê²½ìš°
+#define RES_FILE_WRITE_ERROR 39  // íŒŒì¼ ì“°ê¸° ì˜¤ë¥˜
+#define RES_OVERFLOW_ERROR 40  // ë²„í¼ ì˜¤ë²„í”Œë¡œìš°
 
 #define RES_CMD_ERR 0x80
 
 #define DIVAS_FRAME_CMD_OFFSET  11
 #define DIVAS_FRAME_DATA_OFFSET 12
 
-#define DIVAS_FRAME_OVERHEAD 14 //STX(1) ±æÀÌ(2) ½ÃÄö½º(1) ³â¿ùÀÏ½ÃºĞÃÊ(7) ¸í·É¾î(1) SUM(1) ETX(1)
+#define DIVAS_FRAME_OVERHEAD 14 //STX(1) ê¸¸ì´(2) ì‹œí€€ìŠ¤(1) ë…„ì›”ì¼ì‹œë¶„ì´ˆ(7) ëª…ë ¹ì–´(1) SUM(1) ETX(1)
 
 uint32_t g_download_file_size = 0;
 uint32_t g_received_bytes;
@@ -79,9 +79,9 @@ uint32_t get_received_bytes(void)
 
 
 /**
- * @brief µğ¹Ù½º ÇÁ·¹ÀÓ »ı¼º
- * @param rx_frame ¼ö½Å¹ŞÀº ÇÁ·¹ÀÓ
- * @param p_in_data Àü¼Û µ¥ÀÌÅÍ(NULLÀÌ¸é ÀÌ¹Ì p_out_data¿¡ ¸Ş¸ğ¸® È°¿ë
+ * @brief ë””ë°”ìŠ¤ í”„ë ˆì„ ìƒì„±
+ * @param rx_frame ìˆ˜ì‹ ë°›ì€ í”„ë ˆì„
+ * @param p_in_data ì „ì†¡ ë°ì´í„°(NULLì´ë©´ ì´ë¯¸ p_out_dataì— ë©”ëª¨ë¦¬ í™œìš©
  */
 uint16_t make_divas_frame(uint8_t cmd, uint8_t *rx_frame, const uint8_t *p_in_data, uint16_t data_length,
                          uint8_t *p_out_data, uint16_t buffer_size)
@@ -125,7 +125,7 @@ uint16_t make_divas_frame(uint8_t cmd, uint8_t *rx_frame, const uint8_t *p_in_da
 
   for (i = 1; i < cnt; i++)
   {
-    sum += p_out_data[i];  // Ã¼Å©¼¶,LENºÎÅÍ µ¥ÀÌÅÍ±îÁö
+    sum += p_out_data[i];  // ì²´í¬ì„¬,LENë¶€í„° ë°ì´í„°ê¹Œì§€
   }
 
   p_out_data[cnt++] = 0x03;  //[     ]ETX
@@ -207,7 +207,7 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
     rtnstat = ASCII_ACK;
   } while (0);
 
-  // ¸®ÅÏ»óÅÂ
+  // ë¦¬í„´ìƒíƒœ
   data[cnt++] = rtnstat;
 
   if (rtnstat == ASCII_ACK)
@@ -223,7 +223,7 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
   }
 
   return make_divas_frame(DIVAS_CMD_FW_DOWNLOAD, rx_frame, data, cnt, tx_frame,
-                         KMA_TX_BUFFER_SIZE);  // 200 ÁÖÀÇ ÇÏµåÄÚµù
+                         KMA_TX_BUFFER_SIZE);  // 200 ì£¼ì˜ í•˜ë“œì½”ë”©
 }
 
 uint16_t divas_fw_update(uint8_t *rx_frame, uint8_t *tx_frame)
@@ -322,7 +322,7 @@ uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame)
       break;
     }
     
-    //¿äÃ» ±æÀÌ°¡ Àü¼Û°¡´ÉÇÑ ¹öÆÛº¸´Ù Å©¸é ¿¡·¯ 
+    //ìš”ì²­ ê¸¸ì´ê°€ ì „ì†¡ê°€ëŠ¥í•œ ë²„í¼ë³´ë‹¤ í¬ë©´ ì—ëŸ¬ 
     if (request.length >= (KMA_TX_BUFFER_SIZE - DIVAS_FRAME_OVERHEAD-1))
     {
       tx_data[cnt++] = ASCII_NAK;
@@ -357,7 +357,7 @@ uint16_t
     uint8_t config_type;
     uint16_t offset;
     uint16_t length;
-    //uint8_t data[]; // µ¥ÀÌÅÍ 
+    //uint8_t data[]; // ë°ì´í„° 
   } request;
 #pragma pack(pop)
 uint8_t *p_data;
@@ -403,10 +403,10 @@ uint8_t *p_data;
 
 
 
-/// @brief ½Ã½ºÅÛ ¸ğ´ÏÅÍ¸µ Á¤º¸ ÀĞ±â
+/// @brief ì‹œìŠ¤í…œ ëª¨ë‹ˆí„°ë§ ì •ë³´ ì½ê¸°
 /// @param rx_frame 
 /// @param tx_frame 
-/// @return tx ÇÁ·¹ÀÓ ±æÀÌ
+/// @return tx í”„ë ˆì„ ê¸¸ì´
 uint16_t divas_read_system(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
@@ -431,7 +431,7 @@ uint16_t divas_read_system(uint8_t *rx_frame, uint8_t *tx_frame)
   
   do
   {
-    // ¿äÃ» ±æÀÌ°¡ Àü¼Û°¡´ÉÇÑ ¹öÆÛº¸´Ù Å©¸é ¿¡·¯
+    // ìš”ì²­ ê¸¸ì´ê°€ ì „ì†¡ê°€ëŠ¥í•œ ë²„í¼ë³´ë‹¤ í¬ë©´ ì—ëŸ¬
     if (request.length >= (KMA_TX_BUFFER_SIZE - DIVAS_FRAME_OVERHEAD - 1))
     {
       tx_data[cnt++] = ASCII_NAK;

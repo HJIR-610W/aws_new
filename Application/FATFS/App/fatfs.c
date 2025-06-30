@@ -28,11 +28,11 @@ void MX_FATFS_Init(void)
   res = f_mount(&SDFatFS, (TCHAR const*)SDPath, 1);
   if (res != FR_OK)
   {
-    ERROR_PRINTF("SD card ¸¶¿îÆ® ½ÇÆĞ[%s]\n", get_fresult(res));
+    ERROR_PRINTF("SD card ë§ˆìš´íŠ¸ ì‹¤íŒ¨[%s]\n", get_fresult(res));
   }
   else
   {
-    ERROR_PRINTF("SD card ¸¶¿îÆ® ¼º°ø\n");
+    ERROR_PRINTF("SD card ë§ˆìš´íŠ¸ ì„±ê³µ\n");
   }
 }
 
@@ -40,7 +40,7 @@ void MX_FATFS_DeInit(void)
 {
   FRESULT res;
 
-  // SD µå¶óÀÌºê ¸¶¿îÆ® ÇØÁ¦
+  // SD ë“œë¼ì´ë¸Œ ë§ˆìš´íŠ¸ í•´ì œ
   res = f_mount(NULL, (TCHAR const *)SDPath, 1);
   if (res != FR_OK)
   {
@@ -48,7 +48,7 @@ void MX_FATFS_DeInit(void)
   }
 
 
-  // µå¶óÀÌ¹ö ¾ğ¸µÅ©
+  // ë“œë¼ì´ë²„ ì–¸ë§í¬
   FATFS_UnLinkDriver(SDPath);
 
 }
@@ -70,12 +70,12 @@ DWORD get_fattime(void)
 
   DWORD fattime = 0;
 
-  fattime |= ((DWORD)(t->tm_year - 80) & 0x7F) << 25;  // (tm_year: 1900³â ±âÁØ, FAT´Â 1980³â ±âÁØ)
-  fattime |= ((DWORD)(t->tm_mon + 1) & 0x0F) << 21;    // tm_mon: 0~11 ¡æ 1~12
-  fattime |= ((DWORD)t->tm_mday & 0x1F) << 16;         // ÀÏ
-  fattime |= ((DWORD)t->tm_hour & 0x1F) << 11;         // ½Ã
-  fattime |= ((DWORD)t->tm_min & 0x3F) << 5;           // ºĞ
-  fattime |= ((DWORD)(t->tm_sec / 2) & 0x1F);          // ÃÊ (2ÃÊ ´ÜÀ§)
+  fattime |= ((DWORD)(t->tm_year - 80) & 0x7F) << 25;  // (tm_year: 1900ë…„ ê¸°ì¤€, FATëŠ” 1980ë…„ ê¸°ì¤€)
+  fattime |= ((DWORD)(t->tm_mon + 1) & 0x0F) << 21;    // tm_mon: 0~11 â†’ 1~12
+  fattime |= ((DWORD)t->tm_mday & 0x1F) << 16;         // ì¼
+  fattime |= ((DWORD)t->tm_hour & 0x1F) << 11;         // ì‹œ
+  fattime |= ((DWORD)t->tm_min & 0x3F) << 5;           // ë¶„
+  fattime |= ((DWORD)(t->tm_sec / 2) & 0x1F);          // ì´ˆ (2ì´ˆ ë‹¨ìœ„)
 
   return fattime;
 }

@@ -6,15 +6,15 @@
 #include "driver_485_def.h"
 #include "driver_interface.h"
 
-// »ç¿ë°¡´ÉÇÑ ¸ðµå¹ö½º Á¾·ù
+// ì‚¬ìš©ê°€ëŠ¥í•œ ëª¨ë“œë²„ìŠ¤ ì¢…ë¥˜
 #define DRIVER_MODBUS_MSTER_RTU_OVER_485 100
 #define DRIVER_MODBUS_MSTER_RTU_OVER_232 101
 /*
-¸ðµå¹ö½º ÃÊ±âÈ­¸¦ À§ÇØ Á¦°øÇÏ´Â Á¤º¸, °¢°¢ÀÇ µå¶óÀÌ¹ö¿¡¼­ È®ÀÎÇÏ¿© ¼öµ¿À¸·Î ±âÀÔ
-RS485´Â 2°³ »ç¿ë °¡´É´É
+ëª¨ë“œë²„ìŠ¤ ì´ˆê¸°í™”ë¥¼ ìœ„í•´ ì œê³µí•˜ëŠ” ì •ë³´, ê°ê°ì˜ ë“œë¼ì´ë²„ì—ì„œ í™•ì¸í•˜ì—¬ ìˆ˜ë™ìœ¼ë¡œ ê¸°ìž…
+RS485ëŠ” 2ê°œ ì‚¬ìš© ê°€ëŠ¥ëŠ¥
 */
-#define MODBUS_MSTER_RTU_OVER_485_PORTA RS485_A  // »ç¿ë °¡´ÉÇÑ ¸ðµå¹ö½º Æ÷Æ®
-#define MODBUS_MSTER_RTU_OVER_485_PORTB RS485_B  // »ç¿ë °¡´ÉÇÑ ¸ðµå¹ö½º Æ÷Æ®
+#define MODBUS_MSTER_RTU_OVER_485_PORTA RS485_A  // ì‚¬ìš© ê°€ëŠ¥í•œ ëª¨ë“œë²„ìŠ¤ í¬íŠ¸
+#define MODBUS_MSTER_RTU_OVER_485_PORTB RS485_B  // ì‚¬ìš© ê°€ëŠ¥í•œ ëª¨ë“œë²„ìŠ¤ í¬íŠ¸
 
 #ifndef MODBUS_INIT_T
 #define MODBUS_INIT_T

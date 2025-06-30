@@ -13,7 +13,7 @@
 extern void manual_bss_init(void);
 
 /*
-�ý��� ���� Ŭ��:168MHz
+시스템 동작 클럭:168MHz
 */
 void SystemClock_Config(void)
 {
@@ -51,7 +51,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;  // 2�� �ϸ� uart 1200bps
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;  // 2로 하면 uart 1200bps
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
@@ -73,18 +73,18 @@ int main(void)
 #if DEBUG_MODE_EN
       if (is_debug_mode())
   {
-    __HAL_DBGMCU_FREEZE_IWDG();  // ����� �� ��ġ�� ī��Ʈ ����
-    __HAL_DBGMCU_FREEZE_RTC();   // ����� �� rtc Ÿ�̸� ����
+    __HAL_DBGMCU_FREEZE_IWDG();  // 디버깅 시 와치독 카운트 멈춤
+    __HAL_DBGMCU_FREEZE_RTC();   // 디버깅 시 rtc 타이머 멈춤
   }
 #endif
 
-  HAL_Init();  // Ÿ�̸� 4�� �ʱ�ȭ HAL Ÿ�̸� ƽ ���ͷ�Ʈ�� ���
+  HAL_Init();  // 타이머 4를 초기화 HAL 타이머 틱 인터럽트로 사용
 
   SystemClock_Config();
 
   driver_stm32_bsp_init();
 
-  MX_FSMC_Init();  // TODO: SRAM�ʱ�ȭ,SystemInit_ExtMemCtl ���Լ��� �����ؾ���
+  MX_FSMC_Init();  // TODO: SRAM초기화,SystemInit_ExtMemCtl 이함수에 적용해야함
 
   manual_bss_init();
 

@@ -5,7 +5,7 @@
 
 #include "temperature_define.h"
 
-// »ç¿ë°¡´ÉÇÑ ¿Âµµ¼¾¼­ ¸ñ·Ï
+// ì‚¬ìš©ê°€ëŠ¥í•œ ì˜¨ë„ì„¼ì„œ ëª©ë¡
 #ifndef GENERAL_ADC
 #define GENERAL_ADC 0
 #endif
@@ -16,10 +16,10 @@
 
 #define TEMP_PT100_A 100
 #define TEMP_PT100_B 101
-#define TEMP_HJ_TEMPERATURE 102  // RS485Æ÷Æ® A°íÁ¤ »ç¿ë
-// ¼¾¼­ ¸ñ·Ï ³¡ ÃÑ 5°³
+#define TEMP_HJ_TEMPERATURE 102  // RS485í¬íŠ¸ Aê³ ì • ì‚¬ìš©
+// ì„¼ì„œ ëª©ë¡ ë ì´ 5ê°œ
 
-// ¿¡·¯ °ª
+// ì—ëŸ¬ ê°’
 #define TEMP_ERR_VAL 1000
 driver_t *temperature_open(uint32_t num, void *opt);
 float temperature_read(driver_t *driver, uint8_t *err);

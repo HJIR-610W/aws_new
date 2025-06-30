@@ -20,7 +20,7 @@ int32_t menu_develop(p_shell_context_t ctx, int32_t argc, char **argv)
   int status;
   int ok;
 
-  status = check_pass("ÁøÇà ÄÚµå ÀÔ·ÂÇØÁÖ¼¼¿ä", "1601",&ok);
+  status = check_pass("ì§„í–‰ ì½”ë“œ ì…ë ¥í•´ì£¼ì„¸ìš”", "1601",&ok);
   if(status == MENU_OK && ok==1)
     aws_menu_develop();
   

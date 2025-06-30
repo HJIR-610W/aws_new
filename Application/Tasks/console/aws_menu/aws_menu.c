@@ -4,8 +4,7 @@
 #include "aws_develop.h"
 #include "aws_menu_cali.h"
 #include "aws_menu_data.h"
-#include "aws_menu_display.h"
-#include "aws_menu_manager.h"
+
 #include "aws_menu_offset.h"
 #include "aws_menu_panel.h"
 #include "aws_menu_sensor.h"
@@ -15,21 +14,22 @@
 #include "console_utile.h"
 #include "dev_io.h"
 #include "util_memory.h"
+#include "aws_menu_view.h"
 
 #define AWS_MENU_WIDTH 30
 int aws_menu(void)
 {
   int choice, status;
 
-  char* menu[] = { "±âº»Á¤º¸",
-                   "½Ã½ºÅÛ",
-                   "¼¾¼­",
-                   "³×Æ®¿öÅ©",
-                   "µ¥ÀÌÅÍ",
-                   "ÆĞ³Î(Àü±¤ÆÇ)",
-                   "¿ÀÇÁ¼Â",
-                   "ÄÌ¸®ºê·¹ÀÌ¼Ç",
-                   "°ü¸®"};
+  char* menu[] = { "ê¸°ë³¸ì •ë³´",
+                   "ì‹œìŠ¤í…œ",
+                   "ì„¼ì„œ",
+                   "ë„¤íŠ¸ì›Œí¬",
+                   "ë°ì´í„°",
+                   "íŒ¨ë„(ì „ê´‘íŒ)",
+                   "ì˜¤í”„ì…‹",
+                   "ì¼ˆë¦¬ë¸Œë ˆì´ì…˜",
+                   "ê´€ë¦¬"};
 
   while (1)
   {
@@ -40,7 +40,7 @@ int aws_menu(void)
     switch (choice)
     {
       case 1:
-        aws_menu_display();
+        aws_menu_veiw();
         break;
       case 2:
         aws_menu_system();

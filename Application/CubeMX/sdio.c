@@ -9,31 +9,31 @@ DMA_HandleTypeDef hdma_sdio_tx;
 
 uint32_t getSDIOClockFrequency(void)
 {
-    uint32_t systemClock = HAL_RCC_GetSysClockFreq(); // ½Ã½ºÅÛ Å¬·° °¡Á®¿À±â
-    uint32_t ahbPrescaler = (RCC->CFGR & RCC_CFGR_HPRE) >> 4; // AHB ÇÁ¸®½ºÄÉÀÏ·¯ ÃßÃâ
+    uint32_t systemClock = HAL_RCC_GetSysClockFreq(); // ì‹œìŠ¤í…œ í´ëŸ­ ê°€ì ¸ì˜¤ê¸°
+    uint32_t ahbPrescaler = (RCC->CFGR & RCC_CFGR_HPRE) >> 4; // AHB í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ ì¶”ì¶œ
 
-    // AHB ÇÁ¸®½ºÄÉÀÏ·¯ °ª¿¡ µû¶ó ³ª´°¼À ¼³Á¤
+    // AHB í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ ê°’ì— ë”°ë¼ ë‚˜ëˆ—ì…ˆ ì„¤ì •
     uint32_t ahbDivider;
     if (ahbPrescaler < 8) {
-        ahbDivider = 1; // ÇÁ¸®½ºÄÉÀÏ·¯ °ªÀÌ 0b0000(ºÐÁÖ ¾øÀ½)ÀÏ ¶§
+        ahbDivider = 1; // í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ ê°’ì´ 0b0000(ë¶„ì£¼ ì—†ìŒ)ì¼ ë•Œ
     } else {
-        ahbDivider = 2 << (ahbPrescaler - 8); // ÇÁ¸®½ºÄÉÀÏ·¯ °ªÀÌ 0b1000(ºÐÁÖ ½ÃÀÛ)ºÎÅÍ
+        ahbDivider = 2 << (ahbPrescaler - 8); // í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ ê°’ì´ 0b1000(ë¶„ì£¼ ì‹œìž‘)ë¶€í„°
     }
 
-    uint32_t ahbClock = systemClock / ahbDivider; // AHB Å¬·° °è»ê
-    return ahbClock; // SDIOÀÇ ¸ÞÀÎ Å¬·° ¼Óµµ ¹ÝÈ¯
+    uint32_t ahbClock = systemClock / ahbDivider; // AHB í´ëŸ­ ê³„ì‚°
+    return ahbClock; // SDIOì˜ ë©”ì¸ í´ëŸ­ ì†ë„ ë°˜í™˜
 }
 
 uint32_t calculateSDIOClockDiv(uint32_t ahbClock, uint32_t desiredSDIOClock) {
-    // SDIOÀÇ ÃÖ´ë Çã¿ë ¼Óµµ´Â 25 MHzÀÌ¹Ç·Î, ÀÌ¸¦ ÃÊ°úÇÏÁö ¾Êµµ·Ï Á¦ÇÑÇÕ´Ï´Ù.
+    // SDIOì˜ ìµœëŒ€ í—ˆìš© ì†ë„ëŠ” 25 MHzì´ë¯€ë¡œ, ì´ë¥¼ ì´ˆê³¼í•˜ì§€ ì•Šë„ë¡ ì œí•œí•©ë‹ˆë‹¤.
     if (desiredSDIOClock > 25000000) {
         desiredSDIOClock = 25000000;
     }
 
-    // SDIO Å¬·° ºÐÁÖ±â¸¦ °è»êÇÕ´Ï´Ù.
+    // SDIO í´ëŸ­ ë¶„ì£¼ê¸°ë¥¼ ê³„ì‚°í•©ë‹ˆë‹¤.
     uint32_t clockDiv = ((ahbClock / (2 * desiredSDIOClock)) - 2);
 
-    // SDIOÀÇ ClockDiv ·¹Áö½ºÅÍ´Â 0ºÎÅÍ 255±îÁö Áö¿øÇÏ¹Ç·Î, ¹üÀ§¸¦ ¹þ¾î³ª¸é ÃÖ´ë°ªÀ¸·Î Á¦ÇÑÇÕ´Ï´Ù.
+    // SDIOì˜ ClockDiv ë ˆì§€ìŠ¤í„°ëŠ” 0ë¶€í„° 255ê¹Œì§€ ì§€ì›í•˜ë¯€ë¡œ, ë²”ìœ„ë¥¼ ë²—ì–´ë‚˜ë©´ ìµœëŒ€ê°’ìœ¼ë¡œ ì œí•œí•©ë‹ˆë‹¤.
     if (clockDiv > 255) {
         clockDiv = 255;
     }
@@ -173,9 +173,9 @@ void hal_sd_init(void)
 
 void hal_sd_deinit(void)
 {
-  __HAL_RCC_SDIO_CLK_DISABLE();//Å¬·°¸¸ disableÇØµµ sdio ·¹Áö½ºÅÍ 0ÀÌµÈ, ÀÌ»óÇÔ.
+  __HAL_RCC_SDIO_CLK_DISABLE();//í´ëŸ­ë§Œ disableí•´ë„ sdio ë ˆì§€ìŠ¤í„° 0ì´ëœ, ì´ìƒí•¨.
   __HAL_RCC_SDIO_FORCE_RESET();
-  HAL_Delay(1);  // ÃÖ¼Ò Áö¿¬ ÇÊ¿ä
+  HAL_Delay(1);  // ìµœì†Œ ì§€ì—° í•„ìš”
   __HAL_RCC_SDIO_RELEASE_RESET();
 
   __HAL_RCC_SDIO_CLK_ENABLE();

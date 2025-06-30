@@ -6,16 +6,16 @@
 #include "driver_uart_def.h"
 
 #define UART_0_D_SUB_0 0  // VHF
-#define UART_1_TTL 1      // ºí·çÅõ½º ¸ğµâ
-#define UART_2_EXT_A 2    // »ç¿ëÀÚ0
-#define UART_3_EXT_B 3    // »ç¿ëÀÚ1
-#define UART_4_EXT_C 4    // »ç¿ëÀÚ2
-#define UART_5_EXT_D 5    // »ç¿ëÀÚ3
+#define UART_1_TTL 1      // ë¸”ë£¨íˆ¬ìŠ¤ ëª¨ë“ˆ
+#define UART_2_EXT_A 2    // ì‚¬ìš©ì0
+#define UART_3_EXT_B 3    // ì‚¬ìš©ì1
+#define UART_4_EXT_C 4    // ì‚¬ìš©ì2
+#define UART_5_EXT_D 5    // ì‚¬ìš©ì3
 #define UART_6_RS485_A 6  // RS485 A
 #define UART_7_RS485_B 7  // RS485 B
 #define UART_8_CDMA 8     // CDMA
-#define UART_9_SDI 9      // SDIÅë½Å
-#define UART_10_CDC 10    // USB µğ¹ö±ë
+#define UART_9_SDI 9      // SDIí†µì‹ 
+#define UART_10_CDC 10    // USB ë””ë²„ê¹…
 
 #define UART_ERR_TIMEOUT -1
 #define UART_ERR_SIZE -2
@@ -32,7 +32,7 @@ int32_t driver_uart_recv_crlf(driver_t *drv, char *pBuff, uint16_t bSize,
 
 void driver_uart_set(driver_t *uart, uart_set_option_t cmd, void *para);
 
-// ¹Ø¿¡ µÎÇÔ¼ö´Â ´ëÃ¼ ÇÊ¿ä
+// ë°‘ì— ë‘í•¨ìˆ˜ëŠ” ëŒ€ì²´ í•„ìš”
 int32_t driver_uart_get_char(driver_t *drv, uint8_t *pBuff, uint16_t rLen);
 int32_t driver_uart_get_charNonBlocking(driver_t *drv, uint8_t *pBuff);
 

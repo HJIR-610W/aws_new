@@ -18,11 +18,11 @@ typedef enum driver_type
 
 typedef struct driver_s
 {
-  const char *name;       //driver ÀÌ¸§
-  const void* api;        //driver api ¸ğÀ½
-  void* cfg;              //driver ÀÚÃ¼ ¼Ó¼º
-  bool opened;            //driver ÃÊ±âÈ­ ¿©ºÎ 
-  void* sem;              //°øÀ¯ÀÚ¿ø Ãæµ¹
+  const char *name;       //driver ì´ë¦„
+  const void* api;        //driver api ëª¨ìŒ
+  void* cfg;              //driver ìì²´ ì†ì„±
+  bool opened;            //driver ì´ˆê¸°í™” ì—¬ë¶€ 
+  void* sem;              //ê³µìœ ìì› ì¶©ëŒ
   uint8_t instance_id;
   eDRIVER_TYPE_t driver_type;
 }driver_t;

@@ -7,10 +7,10 @@
 
 
 
-extern AWS_DATA_STRUCT mRealAws;   // �ǽð� �ڷ�
-extern AWS_DATA_STRUCT mMinAws;    // 1�� �ڷ�
-extern AWS_DATA_STRUCT m10MinAws;  // 10�� �ڷ�
-extern AWS_DATA_STRUCT mHourAws;   // 1 �ð� �ڷ�
+extern AWS_DATA_STRUCT mRealAws;   // 실시간 자료
+extern AWS_DATA_STRUCT mMinAws;    // 1분 자료
+extern AWS_DATA_STRUCT m10MinAws;  // 10분 자료
+extern AWS_DATA_STRUCT mHourAws;   // 1 시간 자료
 
 extern SYSTEM_INFO_AWS Sysinfo;
 

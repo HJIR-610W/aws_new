@@ -13,28 +13,28 @@
 
 int getPinNumber(uint16_t pin) {
   if (pin == 0) {
-    return -1; // ÀÔ·ÂÀÌ 0ÀÎ °æ¿ì, À¯È¿ÇÏÁö ¾ÊÀ½
+    return -1; // ì…ë ¥ì´ 0ì¸ ê²½ìš°, ìœ íš¨í•˜ì§€ ì•ŠìŒ
   }
 
   int position = 0;
   while (pin != 0) {
     if (pin & 1) {
-      return position; // Ã¹ ¹øÂ°·Î 1ÀÎ ºñÆ®ÀÇ À§Ä¡ ¹İÈ¯
+      return position; // ì²« ë²ˆì§¸ë¡œ 1ì¸ ë¹„íŠ¸ì˜ ìœ„ì¹˜ ë°˜í™˜
     }
     pin >>= 1;
     position++;
   }
-  return -1; // ºñÆ®°¡ 1ÀÎ À§Ä¡°¡ ¾øÀ¸¸é -1 ¹İÈ¯
+  return -1; // ë¹„íŠ¸ê°€ 1ì¸ ìœ„ì¹˜ê°€ ì—†ìœ¼ë©´ -1 ë°˜í™˜
 }
 
 
 
 void hex_to_binary_string(uint16_t hex_value, char *binary_str, int bit_length) {
-    // bit_length¸¸Å­ÀÇ ÀÌÁø¼ö ¹®ÀÚ¿­ »ı¼º
+    // bit_lengthë§Œí¼ì˜ ì´ì§„ìˆ˜ ë¬¸ìì—´ ìƒì„±
     for (int i = bit_length - 1; i >= 0; i--) {
         binary_str[bit_length - 1 - i] = (hex_value & (1 << i)) ? '1' : '0';
     }
-    binary_str[bit_length] = '\0';  // ¹®ÀÚ¿­ Á¾·á ¹®ÀÚ Ãß°¡
+    binary_str[bit_length] = '\0';  // ë¬¸ìì—´ ì¢…ë£Œ ë¬¸ì ì¶”ê°€
 }
 
 
@@ -61,7 +61,7 @@ uint16_t  GetWord(uint8_t* lpBuff)
     return(shVal);
 }   
 
-void    SetWord(uint8_t *lpBuff, uint16_t shVal)		// Big EndiandÀ¸·Î ÃëÇÔ
+void    SetWord(uint8_t *lpBuff, uint16_t shVal)		// Big Endiandìœ¼ë¡œ ì·¨í•¨
 {
     lpBuff[0] = (uint8_t)(shVal >> 8);
     lpBuff[1] = (uint8_t)shVal;
@@ -218,11 +218,11 @@ bool isDigit(uint8_t d)
 
 
 /**
- * @brief ¹®ÀÚ¿­ º¹»ç, È®½Ç¸® ¹®ÀÚ¿­·Î ¸¸µê
- * @param det ´ë»ó ÁÖ¼Ò
- * @param detSize ´ë»ó ÁÖ¼Ò Å©±â
- * @param src ¼Ò½º
- * @todo ÄÚµå°¡ È¿À²ÀûÀÌ ¾Ê¾Æ¼­ ÃÖÀûÈ­ ÄÚµå ÀÛ¼ºÇÊ¿ä
+ * @brief ë¬¸ìì—´ ë³µì‚¬, í™•ì‹¤ë¦¬ ë¬¸ìì—´ë¡œ ë§Œë“¦
+ * @param det ëŒ€ìƒ ì£¼ì†Œ
+ * @param detSize ëŒ€ìƒ ì£¼ì†Œ í¬ê¸°
+ * @param src ì†ŒìŠ¤
+ * @todo ì½”ë“œê°€ íš¨ìœ¨ì ì´ ì•Šì•„ì„œ ìµœì í™” ì½”ë“œ ì‘ì„±í•„ìš”
  */
 void strcpy_safe(char* det, size_t detSize, const char* src)
 {
@@ -334,7 +334,7 @@ uint8_t	 make_sum(uint8_t *lpRcv, uint32_t len)
 
 
 /**
- * @brief ºÎµ¿¼Ò¼öÁ¡ ºñ±³ ÇÔ¼ö a¿Í b°¡ °°Àº°¡
+ * @brief ë¶€ë™ì†Œìˆ˜ì  ë¹„êµ í•¨ìˆ˜ aì™€ bê°€ ê°™ì€ê°€
  * @retval 
 */
 bool equal_float(float x, float y)
@@ -362,7 +362,7 @@ bool equal_float(float x, float y)
 }
 
 /**
- * @brief ºÎµ¿¼Ò¼öÁ¡ ºñ±³ ÇÔ¼ö a°¡ bº¸´Ù ÀÛÀº°¡?
+ * @brief ë¶€ë™ì†Œìˆ˜ì  ë¹„êµ í•¨ìˆ˜ aê°€ bë³´ë‹¤ ì‘ì€ê°€?
  * @retval 
 */
 bool less_float(float a, float b)
@@ -371,7 +371,7 @@ bool less_float(float a, float b)
 }
 
 /**
- * @brief ºÎµ¿¼Ò¼öÁ¡ ºñ±³ ÇÔ¼ö a°¡ bº¸´Ù Å«°¡?
+ * @brief ë¶€ë™ì†Œìˆ˜ì  ë¹„êµ í•¨ìˆ˜ aê°€ bë³´ë‹¤ í°ê°€?
  * 
 */
 bool bigger_float(float a, float b)
@@ -389,7 +389,7 @@ bool less_equal_float(float a, float b)
 	return a < b || equal_float(a, b);
 }
 
-// º¯È¯ ¿£µğ¾È 
+// ë³€í™˜ ì—”ë””ì•ˆ 
 uint16_t cvt_u16_endian(const uint8_t* buf)
 {
   return ((uint16_t)buf[0] << 8) | buf[1];

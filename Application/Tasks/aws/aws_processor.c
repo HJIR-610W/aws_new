@@ -23,11 +23,11 @@
 #define DEG2RAD (M_PI / 180.0)
 #define RAD2DEG (180.0 / M_PI)
 
-#define SAMPLING_INTERVAL_MS 250  // 0.25ÃÊ (¹Ğ¸®ÃÊ ´ÜÀ§)
-#define SAMPLES_PER_GUST 12  // 3ÃÊ / 0.25ÃÊ
+#define SAMPLING_INTERVAL_MS 250  // 0.25ì´ˆ (ë°€ë¦¬ì´ˆ ë‹¨ìœ„)
+#define SAMPLES_PER_GUST 12  // 3ì´ˆ / 0.25ì´ˆ
 #define SAMPLES_PER_MINUTE 240 
 #define MINUTES_PER_10MIN 10
-#define MINUTES_PER_DAY 1440   //ÇÏ·ç ÃÖ´ë Ç³Çâ Ç³¼Ó
+#define MINUTES_PER_DAY 1440   //í•˜ë£¨ ìµœëŒ€ í’í–¥ í’ì†
 
 
 
@@ -59,7 +59,7 @@ wind_t g_wind_gust_1min;
 
 
 
-//¿Âµµ
+//ì˜¨ë„
 #define TEMP_SAMPLES_PER_MINUTE 6
 static uint16_t g_1min_temp_avg[TEMP_SAMPLES_PER_MINUTE];
 static uint8_t g_1min_temp_avg_idx=0;
@@ -69,7 +69,7 @@ void wind1min_add_sample(wind_t* wind, uint8_t *err)
 {
     windVector_t windVector;
 
-  // Ç³Çâ Ç³¼ÓÀ» º¤ÅÍ·Î º¯È¯ÇÑ µÚ ÀúÀå
+  // í’í–¥ í’ì†ì„ ë²¡í„°ë¡œ ë³€í™˜í•œ ë’¤ ì €ì¥
   calculate_windToVector(wind, &windVector);
   
   
@@ -98,16 +98,16 @@ void calculate_avgWind(uint32_t N, float* ws, float* wd, float* composite_speed,
   float avg_u = sum_u / N;
   float avg_v = sum_v / N;
 
-  //printf("Æò±Õ u=%.4f v=%.4f\n", avg_u, avg_v);
+  //printf("í‰ê·  u=%.4f v=%.4f\n", avg_u, avg_v);
 
   float speed = sqrtf(avg_u * avg_u + avg_v * avg_v);
 
   *composite_speed = speed;
 
-  if (speed < 0.01f)  // 0.01m/s ´Â ±×³É 0À¸·Î Ã³¸®
+  if (speed < 0.01f)  // 0.01m/s ëŠ” ê·¸ëƒ¥ 0ìœ¼ë¡œ ì²˜ë¦¬
   {
-    *wind_dir = 0.0f;  // ¹«Ç³ÀÌ¸é Ç³ÇâÀº ÀÇ¹Ì ¾øÀ½
-    //printf("[Ç³¼Ó %f]\r\n", speed);
+    *wind_dir = 0.0f;  // ë¬´í’ì´ë©´ í’í–¥ì€ ì˜ë¯¸ ì—†ìŒ
+    //printf("[í’ì† %f]\r\n", speed);
   }
   else
   {
@@ -133,9 +133,9 @@ void calculate_vectorToWin(windVector_t* windVector, wind_t *wind )
 
   wind->speed = speed;
 
-  if (speed < 0.01f)  // 0.01m/s ´Â ±×³É 0À¸·Î Ã³¸®
+  if (speed < 0.01f)  // 0.01m/s ëŠ” ê·¸ëƒ¥ 0ìœ¼ë¡œ ì²˜ë¦¬
   {
-    wind->direction = 0.0f;  // ¹«Ç³ÀÌ¸é Ç³ÇâÀº ÀÇ¹Ì ¾øÀ½
+    wind->direction = 0.0f;  // ë¬´í’ì´ë©´ í’í–¥ì€ ì˜ë¯¸ ì—†ìŒ
   }
   else
   {
@@ -167,14 +167,14 @@ windVector_t calculate_average_vector(const windVector_t* buffer, uint32_t count
 
 
 /**
- * @brief Ç³Çâ,Ç³¼ÓÀ» º¤ÅÍº¯È¯ÇÏ¿© ÀúÀåÀå
+ * @brief í’í–¥,í’ì†ì„ ë²¡í„°ë³€í™˜í•˜ì—¬ ì €ì¥ì¥
  */
 void windInst_add_sample(wind_t* wind, uint8_t *err)
 {
   windVector_t windVector;
 
 
-  // Ç³Çâ Ç³¼ÓÀ» º¤ÅÍ·Î º¯È¯ÇÑ µÚ ÀúÀå
+  // í’í–¥ í’ì†ì„ ë²¡í„°ë¡œ ë³€í™˜í•œ ë’¤ ì €ì¥
   calculate_windToVector(wind, &windVector);
 
   CIRCULAR_PUSH2(g_inst_vector_buffer, g_inst_buffer_idx, windVector,
@@ -183,7 +183,7 @@ void windInst_add_sample(wind_t* wind, uint8_t *err)
 
 }
 
-//¼ø°£ Ç³Çâ Ç³¼Ó
+//ìˆœê°„ í’í–¥ í’ì†
 wind_t calculate_windInst(void)
 {
 
@@ -208,7 +208,7 @@ wind_t wind;
 
 
 
-// ¼ø°£ Ç³Çâ Ç³¼Ó
+// ìˆœê°„ í’í–¥ í’ì†
 wind_t calculate_wind1min(void)
 {
   wind_t wind;
@@ -250,14 +250,14 @@ wind_t find_max_gust(const wind_t* buffer, uint32_t count)
   return max_gust;
 }
 
-// ¸Å 1ºĞ¸¶´Ù Áö³­ 10°³ÀÇ 1ºĞ°ª Áß¿¡¼­ ÃÖ´ñ°ªÀ» 10ºĞ ÃÖ´ë¼ø°£Ç³Çâ¤ıÇ³¼ÓÀ¸·Î »êÃâÇÑ´Ù
+// ë§¤ 1ë¶„ë§ˆë‹¤ ì§€ë‚œ 10ê°œì˜ 1ë¶„ê°’ ì¤‘ì—ì„œ ìµœëŒ“ê°’ì„ 10ë¶„ ìµœëŒ€ìˆœê°„í’í–¥ã†í’ì†ìœ¼ë¡œ ì‚°ì¶œí•œë‹¤
 void wind10min_add_gust(wind_t *wind)
 {
   CIRCULAR_PUSH2(g_10min_max_gust_buffer, g_10min_buffer_idx, *wind,
                  _countof(g_10min_max_gust_buffer));
 }
 
-//1ºĞ¸¶´Ù ÀÌÇÔ¼ö È£Ãâ½Ã ÃÖ±Ù 10ºĞ°ª 10°³ °ªÁß ÃÖ´ñ°ª »êÃâ
+//1ë¶„ë§ˆë‹¤ ì´í•¨ìˆ˜ í˜¸ì¶œì‹œ ìµœê·¼ 10ë¶„ê°’ 10ê°œ ê°’ì¤‘ ìµœëŒ“ê°’ ì‚°ì¶œ
 wind_t find_max_10min_gust(void)
 {
   return find_max_gust(g_10min_max_gust_buffer,_countof(g_10min_max_gust_buffer));
@@ -275,20 +275,20 @@ void wind_process_250ms(wind_t* wind_sample, uint8_t spd_err, uint8_t dir_err)
     wind.speed = 0.0f;
   }
 
-  // Ç³Çâ Ç³¼ÓÀ» º¤ÅÍ·Î º¯È¯
+  // í’í–¥ í’ì†ì„ ë²¡í„°ë¡œ ë³€í™˜
   calculate_windToVector(&wind, &current_vector);
 
-  //1ºĞ Æò±Õ
+  //1ë¶„ í‰ê· 
   g_1min_vector_buffer[g_1min_buffer_idx] = current_vector;
 
-  //3ÃÊ ¼ø°£ Ç³Çâ Ç³¼Ó 250ms »ùÇÃ
+  //3ì´ˆ ìˆœê°„ í’í–¥ í’ì† 250ms ìƒ˜í”Œ
 
 
   CIRCULAR_PUSH2(g_inst_vector_buffer, g_inst_buffer_idx, current_vector, SAMPLES_PER_GUST);
 
-  //¸Å 0.25ÃÊ °£°İÀ¸·Î 3ÃÊ µ¿¾È 12°³ÀÇ »ùÇÃ¸µ µÈ ÀÚ·á¸¦ Æò±ÕÇÏ°í 0.25ÃÊ °£°İÀ¸·Î ÀÌµ¿Æò±ÕÇÏ¿©
-  //¼ø°£Ç³Çâ¤ıÇ³¼ÓÀ» »êÃâÇÑ´Ù.
-  //250ms ÀÌµ¿ÇØ°¡¸é¼­ ÃÖ±Ù 12»ùÇÃÀÚ·á¸¦ Æò±ÕÇÑ´Ù.
+  //ë§¤ 0.25ì´ˆ ê°„ê²©ìœ¼ë¡œ 3ì´ˆ ë™ì•ˆ 12ê°œì˜ ìƒ˜í”Œë§ ëœ ìë£Œë¥¼ í‰ê· í•˜ê³  0.25ì´ˆ ê°„ê²©ìœ¼ë¡œ ì´ë™í‰ê· í•˜ì—¬
+  //ìˆœê°„í’í–¥ã†í’ì†ì„ ì‚°ì¶œí•œë‹¤.
+  //250ms ì´ë™í•´ê°€ë©´ì„œ ìµœê·¼ 12ìƒ˜í”Œìë£Œë¥¼ í‰ê· í•œë‹¤.
   if (g_inst_buffer_idx >= SAMPLES_PER_GUST)
   {
     windVector_t avg_inst_vector = calculate_average_vector(g_inst_vector_buffer, SAMPLES_PER_GUST);
@@ -320,7 +320,7 @@ void wind_process_250ms(wind_t* wind_sample, uint8_t spd_err, uint8_t dir_err)
    i_wind_speed_inst = (int32_t)(wind_gust_inst.speed * 1000);
    i_wind_direction_inst = (int32_t)(wind_gust_inst.direction * 1000);
 
-   //250ms ½Ç½Ã°£ ÃÖ´ë°ª °è»ê»ê,½Ç½Ã°£Àº ºĞÀÌ ¹Ù²î¸é ÃÊ±âÈ­
+   //250ms ì‹¤ì‹œê°„ ìµœëŒ€ê°’ ê³„ì‚°ì‚°,ì‹¤ì‹œê°„ì€ ë¶„ì´ ë°”ë€Œë©´ ì´ˆê¸°í™”
    if (i_wind_speed > i_wind_speed_inst)
    {
      i_wind_speed_inst = i_wind_speed;
@@ -444,7 +444,7 @@ uint16_t get_aws_snow(void)
 }
 
 
-//ÀÏ»ç
+//ì¼ì‚¬
 uint16_t get_aws_solar_radiation(void)
 {
   uint16_t rain;
@@ -578,8 +578,8 @@ float get_wind_speed(uint8_t *err)
 
 typedef struct
 {
-  uint8_t error_active;       // ÇöÀç ¿¡·¯ »óÅÂÀÎÁö ¿©ºÎ
-  uint32_t error_start_time;  // ¿¡·¯°¡ ½ÃÀÛµÈ ½Ã°£
+  uint8_t error_active;       // í˜„ì¬ ì—ëŸ¬ ìƒíƒœì¸ì§€ ì—¬ë¶€
+  uint32_t error_start_time;  // ì—ëŸ¬ê°€ ì‹œì‘ëœ ì‹œê°„
 } error_timer_t;
 
 
@@ -587,24 +587,24 @@ int is_error_timeout(error_timer_t* timer, uint8_t err_now, uint32_t now)
 {
   if (err_now == 0)
   {
-    // Á¤»ó »óÅÂ¸é Å¸ÀÌ¸Ó ÃÊ±âÈ­
+    // ì •ìƒ ìƒíƒœë©´ íƒ€ì´ë¨¸ ì´ˆê¸°í™”
     timer->error_active = 0;
     timer->error_start_time = 0;
-    return 0;  // Å¸ÀÓ¾Æ¿ô ¾Æ´Ô
+    return 0;  // íƒ€ì„ì•„ì›ƒ ì•„ë‹˜
   }
 
   if (!timer->error_active)
   {
-    // ¿¡·¯ »óÅÂ ÁøÀÔ ½Ã Å¸ÀÌ¸Ó ½ÃÀÛ
+    // ì—ëŸ¬ ìƒíƒœ ì§„ì… ì‹œ íƒ€ì´ë¨¸ ì‹œì‘
     timer->error_active = 1;
     timer->error_start_time = now;
     return 0;
   }
 
-  // ÀÌ¹Ì ¿¡·¯ »óÅÂ ¡æ ½Ã°£ È®ÀÎ
+  // ì´ë¯¸ ì—ëŸ¬ ìƒíƒœ â†’ ì‹œê°„ í™•ì¸
   if ((now - timer->error_start_time) >= ERROR_TIMEOUT_MS)
   {
-    return 1;  // Å¸ÀÓ¾Æ¿ô ¹ß»ı
+    return 1;  // íƒ€ì„ì•„ì›ƒ ë°œìƒ
   }
 
   return 0;
@@ -708,13 +708,13 @@ void aws_data_task(void* arg)
       continue;
     }
 
-    update_kma_raw();//¿øº» °ªÀ» ÀúÀåÇÑ´Ù.
+    update_kma_raw();//ì›ë³¸ ê°’ì„ ì €ì¥í•œë‹¤.
 
-    //ÀÚ·á ±Ô°İ Ã³¸® 
+    //ìë£Œ ê·œê²© ì²˜ë¦¬ 
     wind.direction = get_wind_direction(&wind_dir_err);
     wind.speed = get_wind_speed(&wind_spd_err);
 
-    wind_process_250ms(&wind,wind_spd_err,wind_dir_err);//250ms¸¶´Ù ÀÌµ¿Æò±Õ
+    wind_process_250ms(&wind,wind_spd_err,wind_dir_err);//250msë§ˆë‹¤ ì´ë™í‰ê· 
 
     g_kma_inst.wind_speed_avg = get_aws_wind_speed_avg();
     g_kma_inst.wind_direction_avg = get_aws_wind_direction_avg();
@@ -723,7 +723,7 @@ void aws_data_task(void* arg)
     g_kma_inst.wind_direction_instant = get_aws_wind_direction_gust();
 
     g_kma_inst.precipitation += get_aws_rain();
-    g_kma_inst.precipitation_presence = get_aws_raining();//»ùÇÃ¸µ ½Ã°£ 1ºĞ,´õ ºü¸£°Ô Ã³¸®¸®
+    g_kma_inst.precipitation_presence = get_aws_raining();//ìƒ˜í”Œë§ ì‹œê°„ 1ë¶„,ë” ë¹ ë¥´ê²Œ ì²˜ë¦¬ë¦¬
     g_kma_inst.snowfall = get_aws_snow();
 
     if (ct.Sec != ot.Sec)
@@ -755,7 +755,7 @@ void aws_data_task(void* arg)
 
     if (ct.Day != ot.Day)
     {
-      g_kma_inst.precipitation = 0;//±İÀÏ °­¿ì·®
+      g_kma_inst.precipitation = 0;//ê¸ˆì¼ ê°•ìš°ëŸ‰
     }
 
     }//while

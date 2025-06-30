@@ -1,21 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "FreeRTOS.h"  // pvPortMalloc, vPortFree »ç¿ë ½Ã ÇÊ¿ä
+#include "FreeRTOS.h"  // pvPortMalloc, vPortFree ì‚¬ìš© ì‹œ í•„ìš”
 #include "IO\dev_io.h"
 #include "app_dataLogging.h"
 #include "aws_data.h"
 #include "cli_input.h"
-#include "cmsis_os2.h"  // CMSIS-OS2 API Çì´õ
+#include "cmsis_os2.h"  // CMSIS-OS2 API í—¤ë”
 #include "console_define.h"
 #include "console_utile.h"
 #include "old_aws_define.h"
-#include "task.h"  // (pvPortMalloc, vPortFree´Â task.h ¶Ç´Â FreeRTOS.h¿¡ ÀÖÀ» ¼ö ÀÖÀ½)
+#include "task.h"  // (pvPortMalloc, vPortFreeëŠ” task.h ë˜ëŠ” FreeRTOS.hì— ìˆì„ ìˆ˜ ìˆìŒ)
 #include "util_time.h"
 
 
 
-// eTaskState ¿­°ÅÇüÀ» ¹®ÀÚ¿­·Î º¯È¯ÇÏ´Â ÇïÆÛ ÇÔ¼ö
+// eTaskState ì—´ê±°í˜•ì„ ë¬¸ìì—´ë¡œ ë³€í™˜í•˜ëŠ” í—¬í¼ í•¨ìˆ˜
 static const char *prvTaskStateToString(eTaskState eState)
 {
   switch (eState)
@@ -31,34 +31,34 @@ static const char *prvTaskStateToString(eTaskState eState)
     case eDeleted:
       return "Deleted";
     case eInvalid:
-      return "Invalid";  // ¹ß»ıÇØ¼­´Â ¾È µÊ
+      return "Invalid";  // ë°œìƒí•´ì„œëŠ” ì•ˆ ë¨
     default:
       return "Unknown";
   }
 }
 
-// qsort¸¦ À§ÇÑ ºñ±³ ÇÔ¼ö:
-// 1. uxBasePriority ±âÁØ ³»¸²Â÷¼ø (³ôÀº ¿ì¼±¼øÀ§ ¸ÕÀú)
-// 2. uxBasePriority°¡ °°À¸¸é, xTaskNumber ±âÁØ ¿À¸§Â÷¼ø (configUSE_TRACE_FACILITY == 1 ÀÏ ¶§)
-// 3. xTaskNumberµµ ¾ø°Å³ª °°À¸¸é, xHandle (ÁÖ¼Ò°ª) ±âÁØ ¿À¸§Â÷¼ø
+// qsortë¥¼ ìœ„í•œ ë¹„êµ í•¨ìˆ˜:
+// 1. uxBasePriority ê¸°ì¤€ ë‚´ë¦¼ì°¨ìˆœ (ë†’ì€ ìš°ì„ ìˆœìœ„ ë¨¼ì €)
+// 2. uxBasePriorityê°€ ê°™ìœ¼ë©´, xTaskNumber ê¸°ì¤€ ì˜¤ë¦„ì°¨ìˆœ (configUSE_TRACE_FACILITY == 1 ì¼ ë•Œ)
+// 3. xTaskNumberë„ ì—†ê±°ë‚˜ ê°™ìœ¼ë©´, xHandle (ì£¼ì†Œê°’) ê¸°ì¤€ ì˜¤ë¦„ì°¨ìˆœ
 static int compareTaskBasePriority(const void *a, const void *b)
 {
   const TaskStatus_t *taskA = (const TaskStatus_t *)a;
   const TaskStatus_t *taskB = (const TaskStatus_t *)b;
 
-  // 1. ±âº» ¿ì¼±¼øÀ§(uxBasePriority) ±âÁØ ³»¸²Â÷¼ø Á¤·Ä
+  // 1. ê¸°ë³¸ ìš°ì„ ìˆœìœ„(uxBasePriority) ê¸°ì¤€ ë‚´ë¦¼ì°¨ìˆœ ì •ë ¬
   if (taskA->uxBasePriority < taskB->uxBasePriority)
   {
-    return 1;  // taskB°¡ taskAº¸´Ù ¿ì¼± (°ªÀÌ ÀÛÀ¸¹Ç·Î µÚ·Î)
+    return 1;  // taskBê°€ taskAë³´ë‹¤ ìš°ì„  (ê°’ì´ ì‘ìœ¼ë¯€ë¡œ ë’¤ë¡œ)
   }
   if (taskA->uxBasePriority > taskB->uxBasePriority)
   {
-    return -1;  // taskA°¡ taskBº¸´Ù ¿ì¼± (°ªÀÌ Å©¹Ç·Î ¾ÕÀ¸·Î)
+    return -1;  // taskAê°€ taskBë³´ë‹¤ ìš°ì„  (ê°’ì´ í¬ë¯€ë¡œ ì•ìœ¼ë¡œ)
   }
 
-  // ±âº» ¿ì¼±¼øÀ§°¡ °°Àº °æ¿ì, º¸Á¶ Á¤·Ä ±âÁØ Àû¿ë
+  // ê¸°ë³¸ ìš°ì„ ìˆœìœ„ê°€ ê°™ì€ ê²½ìš°, ë³´ì¡° ì •ë ¬ ê¸°ì¤€ ì ìš©
 #if (configUSE_TRACE_FACILITY == 1)
-  // 2. ÅÂ½ºÅ© ¹øÈ£(xTaskNumber) ±âÁØ ¿À¸§Â÷¼ø Á¤·Ä
+  // 2. íƒœìŠ¤í¬ ë²ˆí˜¸(xTaskNumber) ê¸°ì¤€ ì˜¤ë¦„ì°¨ìˆœ ì •ë ¬
   if (taskA->xTaskNumber < taskB->xTaskNumber)
   {
     return -1;
@@ -68,8 +68,8 @@ static int compareTaskBasePriority(const void *a, const void *b)
     return 1;
   }
 #else
-  // configUSE_TRACE_FACILITY°¡ 0ÀÌ¸é xTaskNumber ÇÊµå°¡ ¾ø°Å³ª À¯È¿ÇÏÁö ¾ÊÀ½
-  // 3. ÅÂ½ºÅ© ÇÚµé(xHandle - ÁÖ¼Ò°ª) ±âÁØ ¿À¸§Â÷¼ø Á¤·Ä (°íÀ¯¼ºÀ» º¸ÀåÇÏ±â À§ÇÔ)
+  // configUSE_TRACE_FACILITYê°€ 0ì´ë©´ xTaskNumber í•„ë“œê°€ ì—†ê±°ë‚˜ ìœ íš¨í•˜ì§€ ì•ŠìŒ
+  // 3. íƒœìŠ¤í¬ í•¸ë“¤(xHandle - ì£¼ì†Œê°’) ê¸°ì¤€ ì˜¤ë¦„ì°¨ìˆœ ì •ë ¬ (ê³ ìœ ì„±ì„ ë³´ì¥í•˜ê¸° ìœ„í•¨)
   if ((uintptr_t)taskA->xHandle < (uintptr_t)taskB->xHandle)
   {
     return -1;
@@ -80,7 +80,7 @@ static int compareTaskBasePriority(const void *a, const void *b)
   }
 #endif
 
-  return 0;  // ¸ğµç Á¤·Ä ±âÁØÀÌ µ¿ÀÏ
+  return 0;  // ëª¨ë“  ì •ë ¬ ê¸°ì¤€ì´ ë™ì¼
 }
 void print_task_info(void)
 {
@@ -107,7 +107,7 @@ void print_task_info(void)
 
 #if (configUSE_TRACE_FACILITY == 1)
   if (uxArraySize > 1)
-  {  // ÅÂ½ºÅ©°¡ 2°³ ÀÌ»óÀÏ ¶§¸¸ Á¤·Ä ÀÇ¹Ì ÀÖÀ½
+  {  // íƒœìŠ¤í¬ê°€ 2ê°œ ì´ìƒì¼ ë•Œë§Œ ì •ë ¬ ì˜ë¯¸ ìˆìŒ
     qsort(pxTaskStatusArray, uxArraySize, sizeof(TaskStatus_t), compareTaskBasePriority);
   }
 #endif  // configUSE_TRACE_FACILITY
@@ -134,7 +134,7 @@ void print_task_info(void)
       "Info: configGENERATE_RUN_TIME_STATS is 0. CPU usage statistics are unavailable.\r\n");
 #endif
 
-  // Çì´õ Ãâ·Â
+  // í—¤ë” ì¶œë ¥
   io_printf("%-18s %-10s %-9s %-7s %-10s %-16s %-5s", "Name", "Handle", "State", "PrioC/B",
                "StackBase", "StackHWM_Free(B)", "Task#");
 #if (configGENERATE_RUN_TIME_STATS == 1)
@@ -211,7 +211,7 @@ void print_task_info(void)
   io_printf("%s\r\n", separator_line);
 
 #if (configGENERATE_RUN_TIME_STATS == 1)
-  io_printf("CPU(%%): ulTotalRunTime ´ëºñ °¢ ÅÂ½ºÅ©ÀÇ ulRunTimeCounter ºñÀ² (±Ù»çÄ¡).\r\n");
+  io_printf("CPU(%%): ulTotalRunTime ëŒ€ë¹„ ê° íƒœìŠ¤í¬ì˜ ulRunTimeCounter ë¹„ìœ¨ (ê·¼ì‚¬ì¹˜).\r\n");
 #endif
   io_printf(
       "--------------------------------------------------------------------------------------------"

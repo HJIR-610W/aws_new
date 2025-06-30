@@ -8,7 +8,7 @@
 
 #define BOOT_INFO_START_ADDRESS (0x08000188U) 
 /**
- * @brief ºÎÆ® ¹öÀü ÀÐ±â
+ * @brief ë¶€íŠ¸ ë²„ì „ ì½ê¸°
  * a.b.c.d
  */
 uint32_t get_boot_version(uint8_t *a,uint8_t *b,uint8_t *c,uint8_t *d)
@@ -31,7 +31,7 @@ uint32_t get_boot_version(uint8_t *a,uint8_t *b,uint8_t *c,uint8_t *d)
 #define TIME_ZONE_SOULE 32400
 #endif
 /**
- * @brief ºÎÆ® ºôµå ½Ã°£ ÀÐ±â
+ * @brief ë¶€íŠ¸ ë¹Œë“œ ì‹œê°„ ì½ê¸°
  */
 void get_boot_build(DATE_TIME_BUF *build)
 {
@@ -45,5 +45,5 @@ uint32_t get_bootPCB(void)
 {
   section_info_t *info = (section_info_t *)BOOT_INFO_START_ADDRESS;
 
-  return info->pcb[0];//ºÎÆ®·Î´õ¿¡ PCB ÀÎµ¦½º 0 PCB°íÀ¯ ¹öÀü ±â·Ï
+  return info->pcb[0];//ë¶€íŠ¸ë¡œë”ì— PCB ì¸ë±ìŠ¤ 0 PCBê³ ìœ  ë²„ì „ ê¸°ë¡
 }

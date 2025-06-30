@@ -30,7 +30,7 @@ void logging_set_logCnt(uint32_t cnt)
 
 //2015-05-24 22:46:35,measure task
 /*
-·Î±×°¡ 64¹ÙÀÌÆ®¾¿ ÀúÀåµÇµµ·Ï ÇÑ´Ù.
+ë¡œê·¸ê°€ 64ë°”ì´íŠ¸ì”© ì €ìž¥ë˜ë„ë¡ í•œë‹¤.
 */
 int32_t save_log(const char *log)
 {
@@ -64,9 +64,9 @@ int32_t save_log(const char *log)
     }
     }
 
-    buff[sizeof(buff)-1]=0;//¸¶Áö¸· NULL Ã³¸®¸®
+    buff[sizeof(buff)-1]=0;//ë§ˆì§€ë§‰ NULL ì²˜ë¦¬ë¦¬
 
-    totalBytes = index * LOG_LEN_MAX;  // ÀúÀåµÈ ·Î±× ¹ÙÀÌÆ®
+    totalBytes = index * LOG_LEN_MAX;  // ì €ìž¥ëœ ë¡œê·¸ ë°”ì´íŠ¸
 
     err = write_file((char *)kSystem_log_path,(uint8_t*)buff,sizeof(buff),totalBytes);
 
@@ -96,7 +96,7 @@ int logging_read_log(uint32_t log_q_cnt, sysLog_t *loggingMsg)
   {
     if(loggingMsg->msg[i] != ' ')
     {
-       //½ºÆäÀÌ½º¹Ì¸¸
+       //ìŠ¤íŽ˜ì´ìŠ¤ë¯¸ë§Œ
       if(loggingMsg->msg[i] <0x20 || loggingMsg->msg[i] > 126)
       {
           loggingMsg->msg[i] = 0;

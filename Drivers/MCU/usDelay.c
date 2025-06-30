@@ -8,18 +8,18 @@
 void usDelay_init(void) {
     //if (!(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk))
     {
-        CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; // DWT Å¸ÀÌ¸Ó È°¼ºÈ­
-        DWT->CYCCNT = 0; // »çÀÌÅ¬ Ä«¿îÅÍ ÃÊ±âÈ­
-        DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk; // »çÀÌÅ¬ Ä«¿îÅÍ È°¼ºÈ­
+        CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; // DWT íƒ€ì´ë¨¸ í™œì„±í™”
+        DWT->CYCCNT = 0; // ì‚¬ì´í´ ì¹´ìš´í„° ì´ˆê¸°í™”
+        DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk; // ì‚¬ì´í´ ì¹´ìš´í„° í™œì„±í™”
     }
 }
 
 
 void usDelay(uint32_t us) {
-    uint32_t start = DWT->CYCCNT; // ½ÃÀÛ ½ÃÁ¡ÀÇ »çÀÌÅ¬ Ä«¿îÅÍ ÀÐ±â
-    uint32_t delayTicks = us * (SystemCoreClock / 1000000); // Áö¿¬ÇÒ »çÀÌÅ¬ ¼ö °è»ê (1us ´ÜÀ§)
+    uint32_t start = DWT->CYCCNT; // ì‹œìž‘ ì‹œì ì˜ ì‚¬ì´í´ ì¹´ìš´í„° ì½ê¸°
+    uint32_t delayTicks = us * (SystemCoreClock / 1000000); // ì§€ì—°í•  ì‚¬ì´í´ ìˆ˜ ê³„ì‚° (1us ë‹¨ìœ„)
 
-    while ((DWT->CYCCNT - start) < delayTicks); // »çÀÌÅ¬ÀÌ ÃæºÐÈ÷ Áö³¯ ¶§±îÁö ´ë±â
+    while ((DWT->CYCCNT - start) < delayTicks); // ì‚¬ì´í´ì´ ì¶©ë¶„ížˆ ì§€ë‚  ë•Œê¹Œì§€ ëŒ€ê¸°
 }
 
 uint32_t mcu_get_clk(void)

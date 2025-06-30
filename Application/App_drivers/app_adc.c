@@ -142,7 +142,7 @@ float cvt_voltate_to_data(adc_config_t *adc_config,uint8_t *err)
   float scale;
   float input;
 
-  //y = slope*ÃøÁ¤°ª+¿ÀÇÁ¼Â
+  //y = slope*ì¸¡ì •ê°’+ì˜¤í”„ì…‹
 
   scale = (float)(adc_config->highScale - adc_config->lowScale)/(float)adc_config->scale;
   input = (float)(adc_config->outMaxV - adc_config->outMinV)/1000.0f;
@@ -172,19 +172,19 @@ float cvt_data_to_voltage(adc_config_t *adc_config, float sensor_value)
   float input;
   float voltage;
 
-  // scale = (high - low) / scale°ª
+  // scale = (high - low) / scaleê°’
   scale = (float)(adc_config->highScale - adc_config->lowScale) / (float)adc_config->scale;
   input = (float)(adc_config->outMaxV - adc_config->outMinV) / 1000.0f;
 
-  // ±âÁ¸ Àü¾Ð ¼¾¼­°ª º¯È¯ ¼ö½Ä ±âÁØÀÇ ¿ª»ê
+  // ê¸°ì¡´ ì „ì•• ì„¼ì„œê°’ ë³€í™˜ ìˆ˜ì‹ ê¸°ì¤€ì˜ ì—­ì‚°
   slope = scale / input;
   offset = ((float)adc_config->lowScale / (float)adc_config->scale) -
            slope * ((float)adc_config->outMinV / 1000.0f);
 
-  // ¿ªÇÔ¼ö·Î Àü¾Ð °è»ê
+  // ì—­í•¨ìˆ˜ë¡œ ì „ì•• ê³„ì‚°
   voltage = (sensor_value - offset) / slope;
 
-  return voltage;  // ´ÜÀ§: V
+  return voltage;  // ë‹¨ìœ„: V
 }
 
 

@@ -15,14 +15,14 @@
 #define RET_EINVAL 1
 #define RET_IO_ERR 2
 
-#define RV8803_SEC_100th 0x10  // 100ºĞÀÇ 1ÃÊ
-#define RV8803_SEC 0x11        // ÃÊ (Seconds)
-#define RV8803_MIN 0x12        // ºĞ (Minutes)
-#define RV8803_HOUR 0x13       // ½Ã (Hours)
-#define RV8803_WEEK 0x14       // ¿äÀÏ (Weekday)
-#define RV8803_DAY 0x15        // ÀÏ (Date)
-#define RV8803_MONTH 0x16      // ¿ù (Month)
-#define RV8803_YEAR 0x17       // ³â (Year)
+#define RV8803_SEC_100th 0x10  // 100ë¶„ì˜ 1ì´ˆ
+#define RV8803_SEC 0x11        // ì´ˆ (Seconds)
+#define RV8803_MIN 0x12        // ë¶„ (Minutes)
+#define RV8803_HOUR 0x13       // ì‹œ (Hours)
+#define RV8803_WEEK 0x14       // ìš”ì¼ (Weekday)
+#define RV8803_DAY 0x15        // ì¼ (Date)
+#define RV8803_MONTH 0x16      // ì›” (Month)
+#define RV8803_YEAR 0x17       // ë…„ (Year)
 
 #define RV8803_RAM			0x07
 #define RV8803_ALARM_MIN	0x08
@@ -63,8 +63,8 @@
 #define RTC_VL_BACKUP_SWITCH  _BITUL(4) /* Backup switchover happened */
 
 
-#define BIT_0(bit) (~GENMASK(bit, bit))   // bit 1°³¸¸ 0À¸·Î 
-#define BIT_FIELD_0(h,l) ~GENMASK(h, l)   // ¹üÀ§ bit¸¸ 0À¸·Î
+#define BIT_0(bit) (~GENMASK(bit, bit))   // bit 1ê°œë§Œ 0ìœ¼ë¡œ 
+#define BIT_FIELD_0(h,l) ~GENMASK(h, l)   // ë²”ìœ„ bitë§Œ 0ìœ¼ë¡œ
 
 
 
@@ -94,7 +94,7 @@ static int32_t rv8803_regs_init(driver_t *rv8803)
     uint8_t reg=0;
     int32_t err;
     rv8803_cfg_t *cfg = (rv8803_cfg_t *)rv8803->cfg;
-    //offset °ª  aging correction,0Àº ÃÊ±â°ª
+    //offset ê°’  aging correction,0ì€ ì´ˆê¸°ê°’
     
     err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_OSC_OFFSET,&reg,1);
 
@@ -103,7 +103,7 @@ static int32_t rv8803_regs_init(driver_t *rv8803)
 		return RET_IO_ERR;
     }
 
-    reg = 0x00;//ÃÊ±âÈ­°ª
+    reg = 0x00;//ì´ˆê¸°í™”ê°’
     err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_CTRL,&reg,1);
     
 	if(err)
@@ -147,7 +147,7 @@ static int rv8803_regs_reset(driver_t *rv8803)
 
 /**
  * @param en 0 disable, 1 enable
- * 1ÃÊ ÁÖ±â ÀÎÅÍ·´Æ®
+ * 1ì´ˆ ì£¼ê¸° ì¸í„°ëŸ½íŠ¸
 */
 int32_t rv8803_set_periodTimeUpdateIrq(driver_t *rv8803,uint8_t en)
 {
@@ -156,7 +156,7 @@ int32_t rv8803_set_periodTimeUpdateIrq(driver_t *rv8803,uint8_t en)
     rv8803_cfg_t *cfg = (rv8803_cfg_t *)rv8803->cfg;
 
     err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_EXT, &reg,1);
-    //ÃÊ±â¿¡ ÀĞÀ¸¸é 0x40
+    //ì´ˆê¸°ì— ì½ìœ¼ë©´ 0x40
 	if(err)
     {
 		return RET_IO_ERR;
@@ -173,7 +173,7 @@ int32_t rv8803_set_periodTimeUpdateIrq(driver_t *rv8803,uint8_t en)
 	
 
     err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_FLAG, &reg,1);
-    //ÃÊ±â¿¡ ÀĞÀ¸¸é 0x04
+    //ì´ˆê¸°ì— ì½ìœ¼ë©´ 0x04
 	if(err)
     {
 		return RET_IO_ERR;
@@ -263,21 +263,21 @@ int32_t rv8803_read(driver_t *rv8803, DATE_TIME_BUF *ct)
   uint8_t *date = date1;
   int32_t err;
 
-  // FLAG ·¹Áö½ºÅÍ ÀĞ±â
+  // FLAG ë ˆì§€ìŠ¤í„° ì½ê¸°
   err = stm32_i2c_read(cfg->i2c_io, cfg->address, RV8803_FLAG, &reg, 1);
   if (err)
     return RET_IO_ERR;
 
-  // Àü¿ø º¹±¸ ¿©ºÎ È®ÀÎ
+  // ì „ì› ë³µêµ¬ ì—¬ë¶€ í™•ì¸
   if (reg & RV8803_FLAG_V2F)
     return RET_EINVAL;
 
-  // 0x10 (100th sec)ºÎÅÍ 8¹ÙÀÌÆ® ÀĞ±â: 100th, sec, min, hour, week, day, month, year
+  // 0x10 (100th sec)ë¶€í„° 8ë°”ì´íŠ¸ ì½ê¸°: 100th, sec, min, hour, week, day, month, year
   err = stm32_i2c_read(cfg->i2c_io, cfg->address, RV8803_SEC_100th, date, 8);
   if (err)
     return RET_IO_ERR;
 
-  // ÃÊ°¡ 59ÀÌ¸é ÇÑ¹ø ´õ ÀĞ¾î¼­ ¹Ù²î¾ú´ÂÁö È®ÀÎ
+  // ì´ˆê°€ 59ì´ë©´ í•œë²ˆ ë” ì½ì–´ì„œ ë°”ë€Œì—ˆëŠ”ì§€ í™•ì¸
   if ((date1[1] & 0x7F) == bin2bcd(59))
   {
     err = stm32_i2c_read(cfg->i2c_io, cfg->address, RV8803_SEC_100th, date2, 8);
@@ -288,7 +288,7 @@ int32_t rv8803_read(driver_t *rv8803, DATE_TIME_BUF *ct)
       date = date2;
   }
 
-  // BCD ¡æ binary º¯È¯
+  // BCD â†’ binary ë³€í™˜
   ct->SubSec = bcd2bin(date[0] & 0x7F);  // 100th sec
   ct->Sec = bcd2bin(date[1] & 0x7F);
   ct->Min = bcd2bin(date[2] & 0x7F);

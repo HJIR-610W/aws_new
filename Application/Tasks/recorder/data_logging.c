@@ -51,7 +51,7 @@ int32_t save_data(DATE_TIME_BUF *ct,
   time_t t_now, t_prev;
   DATE_TIME_BUF nt;
 
-  // ÀÔ·Â ½Ã°£ ÃÊ±âÈ­
+  // ì…ë ¥ ì‹œê°„ ì´ˆê¸°í™”
   time_input.tm_year = ct->Year - 1900;
   time_input.tm_mon = ct->Month - 1;
   time_input.tm_mday = ct->Day;
@@ -64,8 +64,8 @@ int32_t save_data(DATE_TIME_BUF *ct,
   {
     return 1;
   }
-  // ÀúÀåÇÒ ½ÃÁ¡Àº ÀÔ·Â ½Ã°£ - ÀúÀå ÁÖ±â
-  t_prev = t_now ;//- (logging_min * 60);//±âÁ¸ ·¹ÄÚ´õ È£È¯ 
+  // ì €ì¥í•  ì‹œì ì€ ì…ë ¥ ì‹œê°„ - ì €ì¥ ì£¼ê¸°
+  t_prev = t_now ;//- (logging_min * 60);//ê¸°ì¡´ ë ˆì½”ë” í˜¸í™˜ 
 
   if (localtime_s(&t_prev ,&prev_tm) != 0)
   {
@@ -80,7 +80,7 @@ int32_t save_data(DATE_TIME_BUF *ct,
   nt.Min = prev_tm.tm_min;
   nt.Sec = 0;
 
-  // offset °è»ê
+  // offset ê³„ì‚°
   long offset =  get_minute_offset(&nt, logging_min);
   if (offset < 0)
   {
@@ -88,7 +88,7 @@ int32_t save_data(DATE_TIME_BUF *ct,
     return 1;
   }
 
-  // ÆÄÀÏ °æ·Î °è»ê
+  // íŒŒì¼ ê²½ë¡œ ê³„ì‚°
   int folder_idx = nt.Year % 10;
   char folder_name[10];
   char file_name[128];
@@ -137,8 +137,8 @@ int32_t load_data(DATE_TIME_BUF *ct, uint8_t *pDataBuff,
 
   for (uint32_t i = 0; i < readCnt; i++)
   {
-    // ? offset °è»ê ±âÁØ ½Ã°£Àº ÀúÀå Á¾·á ½Ã°£ - ÀúÀå ÁÖ±â
-    time_t t_prev = t_now - 60;  // 1ºĞ ÀúÀå ÁÖ±â ±âÁØ (È®Àå °¡´É: save_cycle_min * 60)
+    // ? offset ê³„ì‚° ê¸°ì¤€ ì‹œê°„ì€ ì €ì¥ ì¢…ë£Œ ì‹œê°„ - ì €ì¥ ì£¼ê¸°
+    time_t t_prev = t_now - 60;  // 1ë¶„ ì €ì¥ ì£¼ê¸° ê¸°ì¤€ (í™•ì¥ ê°€ëŠ¥: save_cycle_min * 60)
 
     struct tm cur_tm;
     if (localtime_s(&t_prev,&cur_tm) != 0)
@@ -151,7 +151,7 @@ int32_t load_data(DATE_TIME_BUF *ct, uint8_t *pDataBuff,
     int file_month = cur_tm.tm_mon + 1;
     int file_day = cur_tm.tm_mday;
 
-    // Æú´õ ¹× ÆÄÀÏ¸í °è»ê
+    // í´ë” ë° íŒŒì¼ëª… ê³„ì‚°
     int folder_idx = file_year % 10;
     char folder_name[10];
     char file_name[128];
@@ -160,7 +160,7 @@ int32_t load_data(DATE_TIME_BUF *ct, uint8_t *pDataBuff,
    // snprintf(file_name, sizeof(file_name), "%s/%s_%04d%02d%02d.dat", folder_name,
     //         get_data_type_str(dataType), file_year, file_month, file_day);
 
-    // offset °è»ê
+    // offset ê³„ì‚°
     struct tm base_tm = {0};
     base_tm.tm_year = file_year - 1900;
     base_tm.tm_mon = 0;
@@ -176,13 +176,13 @@ int32_t load_data(DATE_TIME_BUF *ct, uint8_t *pDataBuff,
     }
 
     long seconds_diff = (long)difftime(t_prev, t_base);
-    long offsetEntry = seconds_diff / 60;  // 1ºĞ ÁÖ±â ±âÁØ
+    long offsetEntry = seconds_diff / 60;  // 1ë¶„ ì£¼ê¸° ê¸°ì¤€
     uint32_t byte_offset = offsetEntry * dataSizePerEntry;
 
      load_data_from_file(file_name, pBuff, dataSizePerEntry, byte_offset);
 
     pBuff += dataSizePerEntry;
-    t_now += 60;  // ´ÙÀ½ ºĞ ¡æ ÀÔ·Â ½Ã°£ Áõ°¡
+    t_now += 60;  // ë‹¤ìŒ ë¶„ â†’ ì…ë ¥ ì‹œê°„ ì¦ê°€
   }
 
   return 0;
@@ -194,14 +194,14 @@ int32_t save_data_to_file(const char *path, const uint8_t *data, uint32_t dataLe
   FRESULT res;
   UINT bytesWritten;
 
-  // ÆÄÀÏ ¿­±â (ÀĞ±â/¾²±â, ¾øÀ¸¸é »ı¼º)
+  // íŒŒì¼ ì—´ê¸° (ì½ê¸°/ì“°ê¸°, ì—†ìœ¼ë©´ ìƒì„±)
   res = f_open(&file, path, FA_WRITE | FA_OPEN_ALWAYS);
   if (res != FR_OK)
   {
     return res;
   }
 
-  // ÁöÁ¤ offsetÀ¸·Î ÀÌµ¿
+  // ì§€ì • offsetìœ¼ë¡œ ì´ë™
   res = f_lseek(&file, offset);
   if (res != FR_OK)
   {
@@ -210,16 +210,16 @@ int32_t save_data_to_file(const char *path, const uint8_t *data, uint32_t dataLe
     return res;
   }
 
-  // µ¥ÀÌÅÍ ¾²±â
+  // ë°ì´í„° ì“°ê¸°
   res = f_write(&file, data, dataLen, &bytesWritten);
   if (res != FR_OK || bytesWritten != dataLen)
   {
 
     f_close(&file);
-    return res != FR_OK ? res : FR_INT_ERR;  // partial write ¡æ INT_ERR·Î º¯È¯
+    return res != FR_OK ? res : FR_INT_ERR;  // partial write â†’ INT_ERRë¡œ ë³€í™˜
   }
 
-  // ÆÄÀÏ ´İ±â
+  // íŒŒì¼ ë‹«ê¸°
   res = f_close(&file);
   if (res != FR_OK)
   {
@@ -245,14 +245,14 @@ int32_t load_data_from_file(const char *path, uint8_t *dst, uint32_t dataLen, ui
     return FR_INVALID_PARAMETER;
   }
 
-  // ÆÄÀÏ ¿­±â (ÀĞ±â Àü¿ë)
+  // íŒŒì¼ ì—´ê¸° (ì½ê¸° ì „ìš©)
   res = f_open(&file, path, FA_READ);
   if (res != FR_OK)
   {
     return res;
   }
 
-  // ¿ÀÇÁ¼Â ÀÌµ¿
+  // ì˜¤í”„ì…‹ ì´ë™
   res = f_lseek(&file, offset);
   if (res != FR_OK)
   {
@@ -260,11 +260,11 @@ int32_t load_data_from_file(const char *path, uint8_t *dst, uint32_t dataLen, ui
     return res;
   }
 
-  // µ¥ÀÌÅÍ ÀĞ±â
+  // ë°ì´í„° ì½ê¸°
   res = f_read(&file, dst, dataLen, &bytesRead);
   if (res != FR_OK || bytesRead != dataLen)
   {
-    // ºÎÁ· ºÎºĞ 0À¸·Î ÃÊ±âÈ­
+    // ë¶€ì¡± ë¶€ë¶„ 0ìœ¼ë¡œ ì´ˆê¸°í™”
     if (bytesRead < dataLen)
     {
       //memset(dst + bytesRead, 0, dataLen - bytesRead);
@@ -273,7 +273,7 @@ int32_t load_data_from_file(const char *path, uint8_t *dst, uint32_t dataLen, ui
     return (res != FR_OK) ? res : FR_INT_ERR;  
   }
 
-  // ÆÄÀÏ ´İ±â
+  // íŒŒì¼ ë‹«ê¸°
   res = f_close(&file);
   if (res != FR_OK)
   {

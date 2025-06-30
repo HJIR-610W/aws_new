@@ -14,7 +14,7 @@
 #include "lwip/sys.h"
 #include "lwip/tcpip.h"
 
-// »ç¿ëÀÚ ¼³Á¤°ªÀ» ÀúÀåÇÒ ±¸Á¶Ã¼
+// ì‚¬ìš©ì ì„¤ì •ê°’ì„ ì €ì¥í•  êµ¬ì¡°ì²´
 typedef struct
 {
   uint8_t eth_ip[4];
@@ -32,10 +32,10 @@ eth_eth_config_t eth_config;
 #define STATIC_IPH_HL(ip_hdr) ((ip_hdr->_v_hl) & 0x0F)
 static u16_t ping_seq_num = 0;
 
-// Ã¼Å©¼¶ °è»ê
+// ì²´í¬ì„¬ ê³„ì‚°
 static u16_t ping_checksum(void *data, int len) { return inet_chksum(data, len); }
 
-// Ping Àü¼Û
+// Ping ì „ì†¡
 static err_t ping_send(int s, struct sockaddr_in *to)
 {
 
@@ -69,7 +69,7 @@ static err_t ping_send(int s, struct sockaddr_in *to)
   return sendto(s, buf, sizeof(buf), 0, (struct sockaddr *)to, sizeof(*to));
 }
 
-// Ping ¼ö½Å
+// Ping ìˆ˜ì‹ 
 static err_t ping_recv(int s, struct sockaddr_in *from)
 {
   char buf[64];
@@ -97,25 +97,25 @@ void ping_task(const char *target_ip)
 {
 
   struct sockaddr_in dest_addr;
-  char send_buf[40];   // Ping µ¥ÀÌÅÍ ¹öÆÛ
-  char recv_buf[128];  // ¼ö½Å µ¥ÀÌÅÍ ¹öÆÛ
+  char send_buf[40];   // Ping ë°ì´í„° ë²„í¼
+  char recv_buf[128];  // ìˆ˜ì‹  ë°ì´í„° ë²„í¼
   int sock;
-  int seq = 0;  // ICMP Echo RequestÀÇ ½ÃÄö½º ¹øÈ£
+  int seq = 0;  // ICMP Echo Requestì˜ ì‹œí€€ìŠ¤ ë²ˆí˜¸
 
 
  
 
-  // ´ë»ó ÁÖ¼Ò ¼³Á¤
+  // ëŒ€ìƒ ì£¼ì†Œ ì„¤ì •
   memset(&dest_addr, 0, sizeof(dest_addr));
   dest_addr.sin_family = AF_INET;
   dest_addr.sin_addr.s_addr = inet_addr(target_ip);
-  dest_addr.sin_port = 0;  // ICMP´Â Æ÷Æ® »ç¿ë ¾È ÇÔ
+  dest_addr.sin_port = 0;  // ICMPëŠ” í¬íŠ¸ ì‚¬ìš© ì•ˆ í•¨
 
 
   io_printf("Pinging %s with %d bytes of data:\r\n", target_ip, PING_DATA_SIZE);
 
 
-  // ¼ÒÄÏ »ı¼º
+  // ì†Œì¼“ ìƒì„±
   sock = socket(AF_INET, SOCK_RAW, IP_PROTO_ICMP);
   if (sock < 0)
   {
@@ -123,7 +123,7 @@ void ping_task(const char *target_ip)
     return;
   }
 
-  // ¼Û¼ö½Å Å¸ÀÓ¾Æ¿ô ¼³Á¤
+  // ì†¡ìˆ˜ì‹  íƒ€ì„ì•„ì›ƒ ì„¤ì •
   struct timeval timeout;
   timeout.tv_sec = 1;
   timeout.tv_usec = 0;
@@ -143,14 +143,14 @@ void ping_task(const char *target_ip)
     socklen_t from_len = sizeof(from_addr);
     int recv_len;
 
-    // ICMP Echo Request »ı¼º
+    // ICMP Echo Request ìƒì„±
     icmp_hdr->type = ICMP_ECHO;
     icmp_hdr->code = 0;
-    icmp_hdr->chksum = 0;          // ÇÏµå¿ş¾î¿¡¼­ Ã³¸® ÇÔ
-    icmp_hdr->id = htons(0x1234);  // ÀÓÀÇÀÇ ½Äº°ÀÚ
+    icmp_hdr->chksum = 0;          // í•˜ë“œì›¨ì–´ì—ì„œ ì²˜ë¦¬ í•¨
+    icmp_hdr->id = htons(0x1234);  // ì„ì˜ì˜ ì‹ë³„ì
     icmp_hdr->seqno = htons(seq++);
-    // Ping µ¥ÀÌÅÍ Àü¼Û
-    uint32_t start_time = osKernelGetTickCount();  // ½ÃÀÛ ½Ã°£ ÃøÁ¤
+    // Ping ë°ì´í„° ì „ì†¡
+    uint32_t start_time = osKernelGetTickCount();  // ì‹œì‘ ì‹œê°„ ì¸¡ì •
     if (sendto(sock, send_buf, sizeof(send_buf), 0, (struct sockaddr *)&dest_addr,
                sizeof(dest_addr)) < 0)
     {
@@ -159,17 +159,17 @@ void ping_task(const char *target_ip)
 
     }
 
-    // Ping ÀÀ´ä ¼ö½Å
+    // Ping ì‘ë‹µ ìˆ˜ì‹ 
     recv_len =
         recvfrom(sock, recv_buf, sizeof(recv_buf), 0, (struct sockaddr *)&from_addr, &from_len);
 
     if (recv_len > 0)
     {
  
-      uint32_t end_time = osKernelGetTickCount();  // Á¾·á ½Ã°£ ÃøÁ¤
+      uint32_t end_time = osKernelGetTickCount();  // ì¢…ë£Œ ì‹œê°„ ì¸¡ì •
       uint32_t rtt = (end_time - start_time);
 
-      // TTL È®ÀÎ
+      // TTL í™•ì¸
       struct ip_hdr *ip_hdr = (struct ip_hdr *)recv_buf;
       int ttl = ip_hdr->_ttl;
 
@@ -182,20 +182,20 @@ void ping_task(const char *target_ip)
       close(sock);
 
     }
-    // 1ÃÊ °£°İÀ¸·Î ´ë±â
+    // 1ì´ˆ ê°„ê²©ìœ¼ë¡œ ëŒ€ê¸°
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
       break;
     }
   }
 
-  // ¼ÒÄÏ ´İ±â
+  // ì†Œì¼“ ë‹«ê¸°
   close(sock);
 
 
 
 }
-// Ping ½ÇÇà
+// Ping ì‹¤í–‰
 void lwip_ping_test(const char *target_ip)
 {
   struct sockaddr_in addr;
@@ -204,7 +204,7 @@ void lwip_ping_test(const char *target_ip)
   s = socket(AF_INET, SOCK_RAW, IP_PROTO_ICMP);
   if (s < 0)
   {
-    io_printf("Ping: ¼ÒÄÏ »ı¼º ½ÇÆĞ\r\n");
+    io_printf("Ping: ì†Œì¼“ ìƒì„± ì‹¤íŒ¨\r\n");
     return;
   }
 
@@ -223,59 +223,59 @@ void lwip_ping_test(const char *target_ip)
     }
     else
     {
-      io_printf("Ping: ¿äÃ» Àü¼Û ½ÇÆĞ\r\n");
+      io_printf("Ping: ìš”ì²­ ì „ì†¡ ì‹¤íŒ¨\r\n");
     }
 
     sys_msleep(PING_DELAY_MS);
   }
 
   closesocket(s);
-  io_printf("Ping Å×½ºÆ® Á¾·á\r\n");
+  io_printf("Ping í…ŒìŠ¤íŠ¸ ì¢…ë£Œ\r\n");
 }
 
-// »ç¿ëÀÚ ÀÔ·ÂÀ¸·Î ³×Æ®¿öÅ© ¼³Á¤
+// ì‚¬ìš©ì ì…ë ¥ìœ¼ë¡œ ë„¤íŠ¸ì›Œí¬ ì„¤ì •
 void network_setup_from_user(void)
 {
   char ip_str[32], netmask_str[32], gw_str[32];
 
-  io_printf("\r\n[ ³×Æ®¿öÅ© ¼³Á¤À» ÁøÇàÇÕ´Ï´Ù. ]\r\n");
+  io_printf("\r\n[ ë„¤íŠ¸ì›Œí¬ ì„¤ì •ì„ ì§„í–‰í•©ë‹ˆë‹¤. ]\r\n");
 
-  // IP ÁÖ¼Ò ÀÔ·Â
-  io_printf("IP ÁÖ¼Ò¸¦ ÀÔ·ÂÇÏ¼¼¿ä (¿¹: 192.168.1.100): ");
+  // IP ì£¼ì†Œ ì…ë ¥
+  io_printf("IP ì£¼ì†Œë¥¼ ì…ë ¥í•˜ì„¸ìš” (ì˜ˆ: 192.168.1.100): ");
   cli_scanf_s("%31s", ip_str);
 
-  // ¼­ºê³İ ¸¶½ºÅ© ÀÔ·Â
-  io_printf("¼­ºê³İ ¸¶½ºÅ©¸¦ ÀÔ·ÂÇÏ¼¼¿ä (¿¹: 255.255.255.0): ");
+  // ì„œë¸Œë„· ë§ˆìŠ¤í¬ ì…ë ¥
+  io_printf("ì„œë¸Œë„· ë§ˆìŠ¤í¬ë¥¼ ì…ë ¥í•˜ì„¸ìš” (ì˜ˆ: 255.255.255.0): ");
   cli_scanf_s("%31s", netmask_str);
 
-  // °ÔÀÌÆ®¿şÀÌ ÀÔ·Â
-  io_printf("°ÔÀÌÆ®¿şÀÌ¸¦ ÀÔ·ÂÇÏ¼¼¿ä (¿¹: 192.168.1.1): ");
+  // ê²Œì´íŠ¸ì›¨ì´ ì…ë ¥
+  io_printf("ê²Œì´íŠ¸ì›¨ì´ë¥¼ ì…ë ¥í•˜ì„¸ìš” (ì˜ˆ: 192.168.1.1): ");
   cli_scanf_s("%31s", gw_str);
 
-  // ¹®ÀÚ¿­À» ¼ıÀÚ ¹è¿­·Î º¯È¯
+  // ë¬¸ìì—´ì„ ìˆ«ì ë°°ì—´ë¡œ ë³€í™˜
   ip4_addr_t ipaddr, netmask, gw;
   if (!ip4addr_aton(ip_str, &ipaddr))
   {
-    io_printf("Àß¸øµÈ IP ÁÖ¼ÒÀÔ´Ï´Ù.\r\n");
+    io_printf("ì˜ëª»ëœ IP ì£¼ì†Œì…ë‹ˆë‹¤.\r\n");
     return;
   }
   if (!ip4addr_aton(netmask_str, &netmask))
   {
-    io_printf("Àß¸øµÈ ¼­ºê³İ ¸¶½ºÅ©ÀÔ´Ï´Ù.\r\n");
+    io_printf("ì˜ëª»ëœ ì„œë¸Œë„· ë§ˆìŠ¤í¬ì…ë‹ˆë‹¤.\r\n");
     return;
   }
   if (!ip4addr_aton(gw_str, &gw))
   {
-    io_printf("Àß¸øµÈ °ÔÀÌÆ®¿şÀÌÀÔ´Ï´Ù.\r\n");
+    io_printf("ì˜ëª»ëœ ê²Œì´íŠ¸ì›¨ì´ì…ë‹ˆë‹¤.\r\n");
     return;
   }
 
-  // IP Á¤º¸ º¹»ç
+  // IP ì •ë³´ ë³µì‚¬
   memcpy(eth_config.eth_ip, &ipaddr, sizeof(eth_config.eth_ip));
   memcpy(eth_config.eth_subnet, &netmask, sizeof(eth_config.eth_subnet));
   memcpy(eth_config.eth_gateway, &gw, sizeof(eth_config.eth_gateway));
 
-  io_printf("\r\n³×Æ®¿öÅ© ¼³Á¤ ¿Ï·á:\r\n");
+  io_printf("\r\në„¤íŠ¸ì›Œí¬ ì„¤ì • ì™„ë£Œ:\r\n");
   io_printf("IP: %s\r\n", ip4addr_ntoa(&ipaddr));
   io_printf("Netmask: %s\r\n", ip4addr_ntoa(&netmask));
   io_printf("Gateway: %s\r\n", ip4addr_ntoa(&gw));
@@ -283,17 +283,17 @@ void network_setup_from_user(void)
 
 
 extern void MX_LWIP_Init(uint8_t ip[4],uint8_t mask[4],uint8_t gateway[4]);
-// ÀüÃ¼ Å×½ºÆ® ÇÔ¼ö
+// ì „ì²´ í…ŒìŠ¤íŠ¸ í•¨ìˆ˜
 
 int g_lwip_init=0;
 void test_eth(void)
 {
   char ping_ip_str[32];
 
-  io_printf("\r\n[ Ethernet + Ping Å×½ºÆ® ½ÃÀÛ ]\r\n");
+  io_printf("\r\n[ Ethernet + Ping í…ŒìŠ¤íŠ¸ ì‹œì‘ ]\r\n");
 
 #if 0 
-  // »ç¿ëÀÚ·ÎºÎÅÍ ³×Æ®¿öÅ© ¼³Á¤ ÀÔ·Â¹Ş±â
+  // ì‚¬ìš©ìë¡œë¶€í„° ë„¤íŠ¸ì›Œí¬ ì„¤ì • ì…ë ¥ë°›ê¸°
   network_setup_from_user();
 #else
   eth_config.eth_ip[0]=192;
@@ -312,24 +312,24 @@ void test_eth(void)
   eth_config.eth_subnet[3]=0;  
   
 #endif
-  // ³×Æ®¿öÅ© ÀÎÅÍÆäÀÌ½º ÃÊ±âÈ­
-  io_printf("\r\n³×Æ®¿öÅ© ÀÎÅÍÆäÀÌ½º ÃÊ±âÈ­ Áß...\r\n");
+  // ë„¤íŠ¸ì›Œí¬ ì¸í„°í˜ì´ìŠ¤ ì´ˆê¸°í™”
+  io_printf("\r\në„¤íŠ¸ì›Œí¬ ì¸í„°í˜ì´ìŠ¤ ì´ˆê¸°í™” ì¤‘...\r\n");
   if (g_lwip_init==0)
   {
     g_lwip_init = 1;
      MX_LWIP_Init(eth_config.eth_ip, eth_config.eth_subnet, eth_config.eth_gateway);
   }
-  io_printf("³×Æ®¿öÅ© ÀÎÅÍÆäÀÌ½º ÃÊ±âÈ­ ¿Ï·á\r\n");
+  io_printf("ë„¤íŠ¸ì›Œí¬ ì¸í„°í˜ì´ìŠ¤ ì´ˆê¸°í™” ì™„ë£Œ\r\n");
   
 
-  // »ç¿ëÀÚ·ÎºÎÅÍ Ping ´ë»ó ÀÔ·Â
-  io_printf("\r\nPing Å×½ºÆ®¸¦ ½ÇÇàÇÕ´Ï´Ù.\r\n");
-  io_printf("IPv4 ÁÖ¼Ò Çü½ÄÀ¸·Î ÀÔ·ÂÇØÁÖ¼¼¿ä (¿¹: 192.168.1.1)\r\n");
-  io_printf("ÀÔ·Â>");
+  // ì‚¬ìš©ìë¡œë¶€í„° Ping ëŒ€ìƒ ì…ë ¥
+  io_printf("\r\nPing í…ŒìŠ¤íŠ¸ë¥¼ ì‹¤í–‰í•©ë‹ˆë‹¤.\r\n");
+  io_printf("IPv4 ì£¼ì†Œ í˜•ì‹ìœ¼ë¡œ ì…ë ¥í•´ì£¼ì„¸ìš” (ì˜ˆ: 192.168.1.1)\r\n");
+  io_printf("ì…ë ¥>");
   cli_scanf_s("%31s", ping_ip_str);
 
-  // Ping ½ÇÇà
+  // Ping ì‹¤í–‰
   //lwip_ping_test(ping_ip_str);
   ping_task(ping_ip_str);
-   io_printf("\r\n[ Ethernet + Ping Å×½ºÆ® Á¾·á ]\r\n");
+   io_printf("\r\n[ Ethernet + Ping í…ŒìŠ¤íŠ¸ ì¢…ë£Œ ]\r\n");
 }

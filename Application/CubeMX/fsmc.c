@@ -1,6 +1,6 @@
 /**
  * @file           fsmc.c
- * @brief          fsmc ÃÊ±âÈ­
+ * @brief          fsmc ì´ˆê¸°í™”
  * @author         t
  * @date           2025-01-01
  * @version        v1.0.0
@@ -57,15 +57,15 @@ void MX_FSMC_Init(void)
   hsram1.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
 
   /* Timing */
-  /* FSMC SRAM Å¸ÀÌ¹Ö ¼³Á¤ (ÀĞ±â/¾²±â ¼Óµµ Á¶Àı) */
- /* FSMC SRAM Å¸ÀÌ¹Ö ¼³Á¤ */
+  /* FSMC SRAM íƒ€ì´ë° ì„¤ì • (ì½ê¸°/ì“°ê¸° ì†ë„ ì¡°ì ˆ) */
+ /* FSMC SRAM íƒ€ì´ë° ì„¤ì • */
  Timing.AddressSetupTime       = 1;  
  Timing.AddressHoldTime        = 1;  
  Timing.DataSetupTime          = 2;  
  Timing.BusTurnAroundDuration  = 1;  
- Timing.CLKDivision            = 2;  //  ºñµ¿±â ¸ğµå¿¡¼­´Â ¹«½Ã,0¼³Á¤½Ã assert ¹ß»ı
- Timing.DataLatency            = 2;  //  ºñµ¿±â ¸ğµå¿¡¼­´Â ¹«½Ã
- Timing.AccessMode             = FSMC_ACCESS_MODE_A;  // ±âº» ¾×¼¼½º ¸ğµå
+ Timing.CLKDivision            = 2;  //  ë¹„ë™ê¸° ëª¨ë“œì—ì„œëŠ” ë¬´ì‹œ,0ì„¤ì •ì‹œ assert ë°œìƒ
+ Timing.DataLatency            = 2;  //  ë¹„ë™ê¸° ëª¨ë“œì—ì„œëŠ” ë¬´ì‹œ
+ Timing.AccessMode             = FSMC_ACCESS_MODE_A;  // ê¸°ë³¸ ì•¡ì„¸ìŠ¤ ëª¨ë“œ
 
   /* ExtTiming */
 
@@ -107,11 +107,11 @@ void MX_FSMC_Init(void)
   Timing.AccessMode = FSMC_ACCESS_MODE_A;
   /* ExtTiming */
   ExtTiming.AddressSetupTime      = 4;
-  ExtTiming.AddressHoldTime       =  1;//0À¸·Î ÇÏ¸é assert ¹ß»ı, Àç°ËÅä
+  ExtTiming.AddressHoldTime       =  1;//0ìœ¼ë¡œ í•˜ë©´ assert ë°œìƒ, ì¬ê²€í† 
   ExtTiming.DataSetupTime         = 10;
   ExtTiming.BusTurnAroundDuration = 10;
- Timing.CLKDivision            = 2;  //  ºñµ¿±â ¸ğµå¿¡¼­´Â ¹«½Ã,0¼³Á¤½Ã assert ¹ß»ı
- Timing.DataLatency            = 2;  //  ºñµ¿±â ¸ğµå¿¡¼­´Â ¹«½Ã
+ Timing.CLKDivision            = 2;  //  ë¹„ë™ê¸° ëª¨ë“œì—ì„œëŠ” ë¬´ì‹œ,0ì„¤ì •ì‹œ assert ë°œìƒ
+ Timing.DataLatency            = 2;  //  ë¹„ë™ê¸° ëª¨ë“œì—ì„œëŠ” ë¬´ì‹œ
  
  
   ExtTiming.AccessMode = FSMC_ACCESS_MODE_A;

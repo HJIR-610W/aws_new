@@ -40,72 +40,72 @@ typedef struct
 
   
 /// @struct iCellular_t
-/// @brief ¼¿·ê·¯ ¸ğµ© ÀÎÅÍÆäÀÌ½º
+/// @brief ì…€ë£°ëŸ¬ ëª¨ë€ ì¸í„°í˜ì´ìŠ¤
 typedef struct iCellular
 {
  
     driver_t *io_uart;
 
-    uint32_t resetDelay;  // ¸ğµ© ¸®¼Â ÈÄ Áö¿¬½Ã°£
+    uint32_t resetDelay;  // ëª¨ë€ ë¦¬ì…‹ í›„ ì§€ì—°ì‹œê°„
 
     /**
-     * @brief ¸ğµ© ºÎÆÃÀÌ ¿Ï·áµÇ¸é ÃÊ±âÈ­ ÇØÁà¾ß ÇÏ´Â°Íµé ¸ğÀ½
+     * @brief ëª¨ë€ ë¶€íŒ…ì´ ì™„ë£Œë˜ë©´ ì´ˆê¸°í™” í•´ì¤˜ì•¼ í•˜ëŠ”ê²ƒë“¤ ëª¨ìŒ
      * 
-     * @return ÃÊ±âÈ­ °á°ú
+     * @return ì´ˆê¸°í™” ê²°ê³¼
      */
     M_RET_t (*init)(void);
-    M_RET_t (*send_sms)(char *num,char *msg);            // SMS Àü¼Û
-    M_RET_t (*read_sms)(sms_t *pSms);           // °¡Àå ÃÖ½Å¿¡ ¼ö½ÅµÈ SMS ÀĞ±â
-    M_RET_t (*read_num)(char *prNum,uint16_t numSize);          // ¸ğµ© ¹øÈ­¹øÈ£ ÀĞ±â
-    M_RET_t (*read_rssi)(int16_t *);            // ¼ö½Å°¨µµ 
+    M_RET_t (*send_sms)(char *num,char *msg);            // SMS ì „ì†¡
+    M_RET_t (*read_sms)(sms_t *pSms);           // ê°€ì¥ ìµœì‹ ì— ìˆ˜ì‹ ëœ SMS ì½ê¸°
+    M_RET_t (*read_num)(char *prNum,uint16_t numSize);          // ëª¨ë€ ë²ˆí™”ë²ˆí˜¸ ì½ê¸°
+    M_RET_t (*read_rssi)(int16_t *);            // ìˆ˜ì‹ ê°ë„ 
     
     /**
-     * @brief tcp ¼­¹ö Á¤º¸
-     * @param ip ¼­¹ö ip 
-     * @param port ¼­¹ö Æ÷Æ®
+     * @brief tcp ì„œë²„ ì •ë³´
+     * @param ip ì„œë²„ ip 
+     * @param port ì„œë²„ í¬íŠ¸
      */
     void    (*write_ip)(uint8_t ip[4],uint16_t port);  
-    M_RET_t (*open_tcp)(void);                           // tcp ¼ÒÄÏ ¿­±â
-    M_RET_t (*close_tcp)(void);                          // tcp ¼ÒÄÏ ´İ±â
-    M_RET_t (*open_ppp)(void);                           // ppp ¿­±â
-    M_RET_t (*close_ppp)(void);                          // ppp ´İ±â 
-    M_RET_t (*send_tcp)(uint8_t *data,uint16_t dataLen); // tcp µ¥ÀÌÅÍ Àü¼Û
+    M_RET_t (*open_tcp)(void);                           // tcp ì†Œì¼“ ì—´ê¸°
+    M_RET_t (*close_tcp)(void);                          // tcp ì†Œì¼“ ë‹«ê¸°
+    M_RET_t (*open_ppp)(void);                           // ppp ì—´ê¸°
+    M_RET_t (*close_ppp)(void);                          // ppp ë‹«ê¸° 
+    M_RET_t (*send_tcp)(uint8_t *data,uint16_t dataLen); // tcp ë°ì´í„° ì „ì†¡
     
     /**
-     * @brief tcp µ¥ÀÌÅÍ ¼ö½Å
-     * @param buff ¼ö½Å¹öÆÛ
-     * @param buffSize ¹öÆÛ »çÀÌÁî
-     * @param recvLen  ¼ö½ÅµÈ µ¥ÀÌÅÍ ±æÀÌ
-     * @param timeOutMs ¼ö½Å ´ë±â ½Ã°£
+     * @brief tcp ë°ì´í„° ìˆ˜ì‹ 
+     * @param buff ìˆ˜ì‹ ë²„í¼
+     * @param buffSize ë²„í¼ ì‚¬ì´ì¦ˆ
+     * @param recvLen  ìˆ˜ì‹ ëœ ë°ì´í„° ê¸¸ì´
+     * @param timeOutMs ìˆ˜ì‹  ëŒ€ê¸° ì‹œê°„
      * 
      * @return M_RET_t
      */
-    M_RET_t (*recv_tcp)(uint8_t *buff,uint16_t buffSize,uint16_t *recvLen,uint32_t timeOutMs); // tcp µ¥ÀÌÅÍ ¼ö½Å
+    M_RET_t (*recv_tcp)(uint8_t *buff,uint16_t buffSize,uint16_t *recvLen,uint32_t timeOutMs); // tcp ë°ì´í„° ìˆ˜ì‹ 
     
     /**
-     * @brief ¸ğµ©À» ¸®¼ÂÇÔ
-     * @param resetType ¸®¼ÂÀÇ Á¾·ù
-     * @param delayMs   ¸®¼Â ÈÄ Áö¿¬½Ã°£(¸ğµ© ¾ÈÁ¤È­ ½Ã°£(ÇÊ¿ä½Ã))
+     * @brief ëª¨ë€ì„ ë¦¬ì…‹í•¨
+     * @param resetType ë¦¬ì…‹ì˜ ì¢…ë¥˜
+     * @param delayMs   ë¦¬ì…‹ í›„ ì§€ì—°ì‹œê°„(ëª¨ë€ ì•ˆì •í™” ì‹œê°„(í•„ìš”ì‹œ))
      */
     void (*reset)(uint8_t resetType,uint32_t delayMs);
 
     /**
-     * @brief ¸ğµ©¿¡¼­ ¼ö½ÅµÈ ¹®ÀÚ¿­¿¡¼­ dtmf¸¸ ÃßÃâ
-     * @param data ¼ö½ÅµÈ ¹®ÀÚ¿­
+     * @brief ëª¨ë€ì—ì„œ ìˆ˜ì‹ ëœ ë¬¸ìì—´ì—ì„œ dtmfë§Œ ì¶”ì¶œ
+     * @param data ìˆ˜ì‹ ëœ ë¬¸ìì—´
      * 
-     * @return dtmf(¿¹ '1')
+     * @return dtmf(ì˜ˆ '1')
      *  
      */
     char (*get_dtmf)(char *data);
     
-    void (*vpn_init)(void);// VPN ÃÊ±âÈ­
+    void (*vpn_init)(void);// VPN ì´ˆê¸°í™”
     
     /**
-     * @brief ¸ğµ©Àü¿øÀ» Â÷´ÜÇÏ±âÀü¿¡ ¾ÈÁ¤ÀûÀÎ ¸ğµ© »ç¿ëÀ» À§ÇØ ½ÇÇàÇØÁà¾ßÇÏ´Â at ¸í·É¾î
+     * @brief ëª¨ë€ì „ì›ì„ ì°¨ë‹¨í•˜ê¸°ì „ì— ì•ˆì •ì ì¸ ëª¨ë€ ì‚¬ìš©ì„ ìœ„í•´ ì‹¤í–‰í•´ì¤˜ì•¼í•˜ëŠ” at ëª…ë ¹ì–´
      */
     void (*off_powerSafe)(void);
     /**
-     * @brief ÀüÈ­°Ç »ç¶÷ ¹øÈ£ ÃßÃâ
+     * @brief ì „í™”ê±´ ì‚¬ëŒ ë²ˆí˜¸ ì¶”ì¶œ
      */
     M_RET_t (*read_ringNum)(char *pData,char *prNum,uint16_t numSize); 
     M_RET_t (*recv_call)(void);

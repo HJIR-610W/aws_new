@@ -47,7 +47,7 @@ void make_sunshine_1min_path(uint16_t year, char *buffer, int32_t buffer_size)
 }
 
 /**
- * @brief ÇöÀç ¿ù¿¡¼­ ºÎÅÍ ÇöÀç ½Ã°£±îÁö byteÅ©±â ¸¸Å­ offset
+ * @brief í˜„ì¬ ì›”ì—ì„œ ë¶€í„° í˜„ì¬ ì‹œê°„ê¹Œì§€ byteí¬ê¸° ë§Œí¼ offset
  */
 uint32_t timeToOffsetMonth(time_t currnet_tick, uint8_t min,uint16_t byte)
 {
@@ -104,7 +104,7 @@ uint32_t timeToOffsetYear(time_t currnet_tick, uint8_t min,uint16_t byte)
 }
 
 
-// ÇÏ·ç ±âÁØ ¿ÀÇÁ¼Â °è»ê ÇÔ¼ö
+// í•˜ë£¨ ê¸°ì¤€ ì˜¤í”„ì…‹ ê³„ì‚° í•¨ìˆ˜
 uint32_t timeToOffsetDay(time_t current_tick, uint8_t min, uint16_t byte)
 {
   time_t ts;
@@ -113,7 +113,7 @@ uint32_t timeToOffsetDay(time_t current_tick, uint8_t min, uint16_t byte)
   uint8_t month, day;
   uint32_t offset;
 
-  // min ´ÜÀ§·Î Á¤·Ä
+  // min ë‹¨ìœ„ë¡œ ì •ë ¬
   current_tick -= current_tick % (min * 60);
 
   year = GetYear(current_tick);
@@ -143,7 +143,7 @@ int get_last_day(int year, int month)
 {
   if(month == 2)
   {
-    // À±³â Ã¼Å©
+    // ìœ¤ë…„ ì²´í¬
     if((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
       return 29;
     else
@@ -160,11 +160,11 @@ int get_last_day(int year, int month)
 }
 
 /**
- * @brief µ¥ÀÌÅÍ ÀúÀå 1°³ÀÇ µ¥ÀÌÅÍ¸¸ ÀúÀåµÊ
+ * @brief ë°ì´í„° ì €ì¥ 1ê°œì˜ ë°ì´í„°ë§Œ ì €ì¥ë¨
  * 
- * ¿ù´ÜÀ§·Î ÀúÀå
- * 2025-01-01 00:00:00 µ¥ÀÌÅÍ´Â 2024-12-31 ¸¶Áö¸· ÀÚ·á·Î ÀúÀå
- * 2025-02-01 00:00:00 dms 2025-01-31 ¸¶Áö¸· ÀÚ·á·Î ÀúÀåÀå
+ * ì›”ë‹¨ìœ„ë¡œ ì €ì¥
+ * 2025-01-01 00:00:00 ë°ì´í„°ëŠ” 2024-12-31 ë§ˆì§€ë§‰ ìë£Œë¡œ ì €ì¥
+ * 2025-02-01 00:00:00 dms 2025-01-31 ë§ˆì§€ë§‰ ìë£Œë¡œ ì €ì¥ì¥
  */
 int32_t write_data_month(DATE_TIME_BUF *p_date, void *p_data,uint16_t dataLen, uint8_t type,uint8_t period_min)
 {
@@ -192,10 +192,10 @@ int32_t write_data_month(DATE_TIME_BUF *p_date, void *p_data,uint16_t dataLen, u
 
   if(year_offset == 0)
   {
-    year  = year-1; // Àü³âµµ¿¡ ÀúÀåÇØ¾ßÇÔ
+    year  = year-1; // ì „ë…„ë„ì— ì €ì¥í•´ì•¼í•¨
 
   }
-  if(month_offset == 0)// 1ÀÏ 0½Ã0ºĞ ÀÌ¸é ÀÌ°Ç Àü´Ş ÀÚ·áÀÓ
+  if(month_offset == 0)// 1ì¼ 0ì‹œ0ë¶„ ì´ë©´ ì´ê±´ ì „ë‹¬ ìë£Œì„
   {
     last_day = get_last_day(p_date->Year,monthList[month]);
     month_offset = timeToOffsetMonth(SetTime(year, monthList[month], last_day, 23, 60-period_min, 0), period_min, dataLen) + dataLen;
@@ -241,10 +241,10 @@ int32_t read_data_month(DATE_TIME_BUF *p_date, void *p_buff,uint16_t readLen, ui
 
   if(year_offset == 0)
   {
-    year  = year-1; // Àü³âµµ¿¡ ÀúÀåÇØ¾ßÇÔ
+    year  = year-1; // ì „ë…„ë„ì— ì €ì¥í•´ì•¼í•¨
 
   }
-  if(month_offset == 0)// 1ÀÏ 0½Ã0ºĞ ÀÌ¸é ÀÌ°Ç Àü´Ş ÀÚ·áÀÓ
+  if(month_offset == 0)// 1ì¼ 0ì‹œ0ë¶„ ì´ë©´ ì´ê±´ ì „ë‹¬ ìë£Œì„
   {
     last_day = get_last_day(p_date->Year,monthList[month]);
     month_offset = timeToOffsetMonth(SetTime(year, monthList[month], last_day, 23, 60-period_min, 0), period_min, readLen) + readLen;
@@ -289,9 +289,9 @@ int32_t read_data_month_bulk(DATE_TIME_BUF *p_date, void *p_buff, uint16_t readL
 
   if (year_offset == 0)
   {
-    year = year - 1;  // Àü³âµµ¿¡ ÀúÀåÇØ¾ßÇÔ
+    year = year - 1;  // ì „ë…„ë„ì— ì €ì¥í•´ì•¼í•¨
   }
-  if (month_offset == 0)  // 1ÀÏ 0½Ã0ºĞ ÀÌ¸é ÀÌ°Ç Àü´Ş ÀÚ·áÀÓ
+  if (month_offset == 0)  // 1ì¼ 0ì‹œ0ë¶„ ì´ë©´ ì´ê±´ ì „ë‹¬ ìë£Œì„
   {
     last_day = get_last_day(p_date->Year, monthList[month]);
     month_offset =
@@ -325,24 +325,24 @@ uint32_t TimeToAddress(time_t tmStart, uint16_t sec,uint32_t byte)
     int32_t     nTotalSec;
     uint32_t     nAddress;
 
-    // ÀÔ·Â ÀÏ½ÃÀÇ ´ç³â 1¿ù 1ÀÏ 00:00:00À» ±âÁØ½Ã°£À¸·Î ÇÔ.
+    // ì…ë ¥ ì¼ì‹œì˜ ë‹¹ë…„ 1ì›” 1ì¼ 00:00:00ì„ ê¸°ì¤€ì‹œê°„ìœ¼ë¡œ í•¨.
     tmStart     -= tmStart % sec;
     nYear       = GetYear(tmStart);
     tmTemp      = SetTime(nYear, 1, 1, 0, 0, 0);
 
-    // (ÀÔ·Â ÀÏ½Ã - ±âÁØ½Ã°¢) / (60ÃÊ * 10ºĞ) * 2 Byte= Address
+    // (ì…ë ¥ ì¼ì‹œ - ê¸°ì¤€ì‹œê°) / (60ì´ˆ * 10ë¶„) * 2 Byte= Address
     ts          = tmStart - tmTemp;
     nTotalSec   = GetTotalSeconds(ts);
-   // nAddress    = nTotalSec /(sec/byte);            // 10ºĞ´ÜÀ§ µ¥ÀÌÅÍ¸¦ ¾ò±â À§ÇÔ.
+   // nAddress    = nTotalSec /(sec/byte);            // 10ë¶„ë‹¨ìœ„ ë°ì´í„°ë¥¼ ì–»ê¸° ìœ„í•¨.
     if(nTotalSec)
     {
       
-     nAddress = nTotalSec/sec*byte;                                       // nTotalSec / (10ºĞ * 60ÃÊ) = Word µ¥ÀÌÅ¸ ´ÜÀ§ °¹¼ö
+     nAddress = nTotalSec/sec*byte;                                       // nTotalSec / (10ë¶„ * 60ì´ˆ) = Word ë°ì´íƒ€ ë‹¨ìœ„ ê°¯ìˆ˜
     }
     else
     {
         nAddress = 0;
-    }// Word µ¥ÀÌÅ¸ ´ÜÀ§ °¹¼ö  * 2 = Byte´ÜÀ§ Address
+    }// Word ë°ì´íƒ€ ë‹¨ìœ„ ê°¯ìˆ˜  * 2 = Byteë‹¨ìœ„ Address
 
     return nAddress;
 }
@@ -364,12 +364,12 @@ int32_t write_data_year(DATE_TIME_BUF *pDate, void *pInData, uint32_t dataSize, 
   year = GetYear(tmCurrent) % 10;
   nAddr = TimeToAddress(tmCurrent, periodMin * 60, sensorDataSize);
 
-  if (nAddr == 0)  // ÇØ°¡ ¹Ù²î°Ô µÇ¸é
+  if (nAddr == 0)  // í•´ê°€ ë°”ë€Œê²Œ ë˜ë©´
   {
     nAddr = TimeToAddress(SetTime(pDate->Year - 1, 12, 31, 23, 60 - periodMin, 0), periodMin * 60,
                           sensorDataSize) +
             sensorDataSize;
-    year = yearList[GetYear(tmCurrent) % 10];  // Àü³âµµ¿¡ ÀúÀåÇØ¾ßÇÔ
+    year = yearList[GetYear(tmCurrent) % 10];  // ì „ë…„ë„ì— ì €ì¥í•´ì•¼í•¨
   }
 
 
@@ -390,16 +390,16 @@ int32_t write_data_year(DATE_TIME_BUF *pDate, void *pInData, uint32_t dataSize, 
 }
 
 /**
- * @brief   :ÇÔ¼ö ¼³¸í
- * @param   :ÆÄ¶ó¸ŞÅÍ ¼³¸í
- * @retval  :1 Á¤»ó, 0¿¡·¯
+ * @brief   :í•¨ìˆ˜ ì„¤ëª…
+ * @param   :íŒŒë¼ë©”í„° ì„¤ëª…
+ * @retval  :1 ì •ìƒ, 0ì—ëŸ¬
  * @note :
- *   1ºĞ ÀúÀå½Ã 2000-01-01 00:01:00 ~ 2001-01-01 00:00:00  1³â ÀúÀå,
- *  10ºĞ ÀúÀå½Ã 2000-01-01 00:10:00 ~ 2001-01-01 00:00:00  1³â ÀúÀå
+ *   1ë¶„ ì €ì¥ì‹œ 2000-01-01 00:01:00 ~ 2001-01-01 00:00:00  1ë…„ ì €ì¥,
+ *  10ë¶„ ì €ì¥ì‹œ 2000-01-01 00:10:00 ~ 2001-01-01 00:00:00  1ë…„ ì €ì¥
  */
 uint8_t read_sensorDataMulti(DATE_TIME_BUF *pDate, uint32_t dataSize, int32_t ReadCnt,
                              uint8_t cSystem, uint32_t periodMin, uint8_t *pOutBuff,
-                             uint32_t buffSize)  // nReadRainCnt´Â Word°¹¼öÀÓ
+                             uint32_t buffSize)  // nReadRainCntëŠ” Wordê°¯ìˆ˜ì„
 {
   char path[50];
   uint8_t yearList[10] = {9, 0, 1, 2, 3, 4, 5, 6, 7, 8};
@@ -421,12 +421,12 @@ uint8_t read_sensorDataMulti(DATE_TIME_BUF *pDate, uint32_t dataSize, int32_t Re
   year = GetYear(tmCurrent) % 10;
   nAddr = TimeToAddress(tmCurrent, 60 * periodMin, dataSize);
 
-  if (nAddr == 0)  // ÇØ°¡ ¹Ù²î¸é
+  if (nAddr == 0)  // í•´ê°€ ë°”ë€Œë©´
   {
     nAddrOld = TimeToAddress(SetTime(pDate->Year - 1, 12, 31, 23, 60 - periodMin, 0),
                              periodMin * 60, dataSize) +
                dataSize;
-    yearOld = yearList[GetYear(tmCurrent) % 10];  // Àü³âµµ ÀúÀå ¸Ş¸ğ¸®¿¡ ¿¬¼ÓÇÏ¿© ÀúÀå
+    yearOld = yearList[GetYear(tmCurrent) % 10];  // ì „ë…„ë„ ì €ì¥ ë©”ëª¨ë¦¬ì— ì—°ì†í•˜ì—¬ ì €ì¥
 
 
 
@@ -444,7 +444,7 @@ uint8_t read_sensorDataMulti(DATE_TIME_BUF *pDate, uint32_t dataSize, int32_t Re
       goto FUNTION_RETURN;
     }
   }
-  // 1°³ ÀÌ»ó ÀĞ±â ÀÌ¸ç ÇØ°¡¹Ù²î¾úÀ¸¸é ÀÌ¹Ì ÀÌÀü´Ü°è¿¡¼­ 1°³´Â ÀĞ¾ú±â¿¡ 1°³´Â »©°í ÀĞÀ½
+  // 1ê°œ ì´ìƒ ì½ê¸° ì´ë©° í•´ê°€ë°”ë€Œì—ˆìœ¼ë©´ ì´ë¯¸ ì´ì „ë‹¨ê³„ì—ì„œ 1ê°œëŠ” ì½ì—ˆê¸°ì— 1ê°œëŠ” ë¹¼ê³  ì½ìŒ
   if (nAddr == 0)
   {
     ReadCnt = ReadCnt - 1;

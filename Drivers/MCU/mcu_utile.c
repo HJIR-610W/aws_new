@@ -4,7 +4,7 @@
 
 
 /*
-GPIOxÀÇ Å¬·°ÀÌ enable ¾ÈµÇ¾î ÀÖÀ¸¸é enable ÇØÁÜ
+GPIOxì˜ í´ëŸ­ì´ enable ì•ˆë˜ì–´ ìˆìœ¼ë©´ enable í•´ì¤Œ
 */
 void board_clk_gpio(GPIO_TypeDef *GPIOx)
 {
@@ -67,23 +67,23 @@ void board_config_gpio(GPIO_TypeDef *GPIOx,uint32_t pin,uint32_t mode,uint32_t p
   HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
 }
 
-// APB2 Å¸ÀÌ¸Ó Å¬·° ÁÖÆÄ¼ö °è»ê
+// APB2 íƒ€ì´ë¨¸ í´ëŸ­ ì£¼íŒŒìˆ˜ ê³„ì‚°
  uint32_t get_apb2_timer_clock(void)
 {
   uint32_t pclk2 = HAL_RCC_GetPCLK2Freq();
 
-  // APB2 ÇÁ¸®½ºÄÉÀÏ·¯°¡ 1ÀÌ ¾Æ´Ñ °æ¿ì Å¸ÀÌ¸Ó Å¬·°Àº PCLK2 ¡¿ 2
-  // APB2 ÇÁ¸®½ºÄÉÀÏ·¯°¡ 1ÀÎ °æ¿ì Å¸ÀÌ¸Ó Å¬·°Àº PCLK2¿Í µ¿ÀÏ
+  // APB2 í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ê°€ 1ì´ ì•„ë‹Œ ê²½ìš° íƒ€ì´ë¨¸ í´ëŸ­ì€ PCLK2 Ã— 2
+  // APB2 í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ê°€ 1ì¸ ê²½ìš° íƒ€ì´ë¨¸ í´ëŸ­ì€ PCLK2ì™€ ë™ì¼
   uint32_t ppre2 = (RCC->CFGR & RCC_CFGR_PPRE2) >> RCC_CFGR_PPRE2_Pos;
 
   if (ppre2 == 0)
   {
-    // ºĞÁÖ ¾øÀ½ (APB2 ÇÁ¸®½ºÄÉÀÏ·¯ = 1)
+    // ë¶„ì£¼ ì—†ìŒ (APB2 í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ = 1)
     return pclk2;
   }
   else
   {
-    // ºĞÁÖ ÀÖÀ½ (APB2 ÇÁ¸®½ºÄÉÀÏ·¯ > 1)
+    // ë¶„ì£¼ ìˆìŒ (APB2 í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ > 1)
     return pclk2 * 2;
   }
 }

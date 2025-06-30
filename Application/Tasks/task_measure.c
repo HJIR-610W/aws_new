@@ -1,12 +1,12 @@
 /**
  * @file           task_measure.c
- * @brief          ÇÏµå¿ş¾î°¡ Á¦°ø°¡´ÉÇÑ ¼¾¼­¸¦ 250ms,1ÃÊ¸¶´Ù ÃøÁ¤
+ * @brief          í•˜ë“œì›¨ì–´ê°€ ì œê³µê°€ëŠ¥í•œ ì„¼ì„œë¥¼ 250ms,1ì´ˆë§ˆë‹¤ ì¸¡ì •
  * @author         t
  * @date           2025-01-01
  * @version        v1.0.0
  *
  * @note
- *  - ¼¾¼­ °ªÀº 250ms,1ÃÊ ÁÖ±â·Î ÀĞ¾î ¸Ş½ÃÁö Å¥·Î Àü´ŞµÊ
+ *  - ì„¼ì„œ ê°’ì€ 250ms,1ì´ˆ ì£¼ê¸°ë¡œ ì½ì–´ ë©”ì‹œì§€ íë¡œ ì „ë‹¬ë¨
  *
  * @details
  * v1.0.0 2025-04-15
@@ -65,30 +65,30 @@ const osThreadAttr_t kMeasure1sTask_attributes = {
 
 
 const uint32_t kMesaureTimeOutMs = 50;
-static sensor_t g_sensor_config_bk[SENSOR_LIST_MAX];  // config ¼¾¼­ÀÇ º¹»çº»
+static sensor_t g_sensor_config_bk[SENSOR_LIST_MAX];  // config ì„¼ì„œì˜ ë³µì‚¬ë³¸
 static driver_t *g_sensor_driver[SENSOR_LIST_MAX];
 
 
 osMessageQueueId_t g_reading_250ms_queue;
 osMessageQueueId_t g_reading_1s_queue;
 
-measure_data_250ms_t g_reading_250;//Task ½ÇÇà ½Ã°£ ÃøÁ¤¿ë
-measure_data_1s_t g_reading_1;//Task ½ÇÇà ½Ã°£ ÃøÁ¤¿ë
-exec_time_t g_exec_250ms_time; //Task ½ÇÇà ½Ã°£ ÃøÁ¤¿ë
-exec_time_t g_exec_1s_time;//Task ½ÇÇà ½Ã°£ ÃøÁ¤¿ë
+measure_data_250ms_t g_reading_250;//Task ì‹¤í–‰ ì‹œê°„ ì¸¡ì •ìš©
+measure_data_1s_t g_reading_1;//Task ì‹¤í–‰ ì‹œê°„ ì¸¡ì •ìš©
+exec_time_t g_exec_250ms_time; //Task ì‹¤í–‰ ì‹œê°„ ì¸¡ì •ìš©
+exec_time_t g_exec_1s_time;//Task ì‹¤í–‰ ì‹œê°„ ì¸¡ì •ìš©
 
 driver_t *get_sensor_driver(eSENSOR_LIST_t sensor)
 {
   return g_sensor_driver[sensor];
 }
 
-    // Task ½ÇÇà ½Ã°£ ÃøÁ¤¿ë
+    // Task ì‹¤í–‰ ì‹œê°„ ì¸¡ì •ìš©
     void elapse_start(exec_time_t *p_time)
 { 
   p_time->start_time = HAL_GetTick(); 
 }
 
-//Task ½ÇÇà ½Ã°£ ÃøÁ¤¿ë
+//Task ì‹¤í–‰ ì‹œê°„ ì¸¡ì •ìš©
 void elapse_stop(exec_time_t *p_time)
 {
   p_time->elapsed_time = HAL_GetTick() - p_time->start_time;
@@ -100,7 +100,7 @@ void elapse_stop(exec_time_t *p_time)
 
 
 /**
- * @brief ÃøÁ¤ µ¥ÀÌÅÍ Àü¼Û
+ * @brief ì¸¡ì • ë°ì´í„° ì „ì†¡
  */
 void send_measurement(void *queue,void *data)
 {
@@ -115,7 +115,7 @@ void send_measurement(void *queue,void *data)
 }
 
 /**
- * @brief ÃøÁ¤ µ¥ÀÌÅÍ È®ÀÎ
+ * @brief ì¸¡ì • ë°ì´í„° í™•ì¸
  */
 bool is_measurement_250(void *data,uint32_t timeout)
 {
@@ -155,16 +155,16 @@ bool is_measurement_1s( void *data,uint32_t timeout)
 }
 
 /**
- *  ¼¾¼­ ¸ğµ¨¿¡ ÇØ´çÇÏ´Â µå¶óÀÌ¹ö ¹øÈ£¸¦ ³Ñ°ÜÁØ´Ù.
- *  ¿¹)
- *  measureÅ×½ºÆ®°¡ Á¦°ø°¡´ÉÇÑ ¼¾¼­¸ñ·ÏÀÌ ÀÖ°í
- *  ¼¾¼­¿¡ ÇØ´çÇÏ´Â ½ÇÁ¦ ¸ğµ¨ÀÌ ÀÖ´Ù. ±×°ÍÀ» ¿¬°á½ÃÄÑÁØ´Ù
- *  type:¿Âµµ¼¾¼­ -> pt100 À» »ç¿ëÇÏ°Ú´Ù.
+ *  ì„¼ì„œ ëª¨ë¸ì— í•´ë‹¹í•˜ëŠ” ë“œë¼ì´ë²„ ë²ˆí˜¸ë¥¼ ë„˜ê²¨ì¤€ë‹¤.
+ *  ì˜ˆ)
+ *  measureí…ŒìŠ¤íŠ¸ê°€ ì œê³µê°€ëŠ¥í•œ ì„¼ì„œëª©ë¡ì´ ìˆê³ 
+ *  ì„¼ì„œì— í•´ë‹¹í•˜ëŠ” ì‹¤ì œ ëª¨ë¸ì´ ìˆë‹¤. ê·¸ê²ƒì„ ì—°ê²°ì‹œì¼œì¤€ë‹¤
+ *  type:ì˜¨ë„ì„¼ì„œ -> pt100 ì„ ì‚¬ìš©í•˜ê² ë‹¤.
  *  
  * */
 int32_t get_driverNum(eSENSOR_MODEL_t type)
 {
-  int32_t num = -1;  // Ç×¸ñ ¾øÀ½
+  int32_t num = -1;  // í•­ëª© ì—†ìŒ
 
   switch (type)
   {
@@ -213,7 +213,7 @@ int32_t get_driverNum(eSENSOR_MODEL_t type)
 }
 
 /**
- * @brief »ç¿ëÇÏ´Â ¼¾¼­ ÃÊ±âÈ­
+ * @brief ì‚¬ìš©í•˜ëŠ” ì„¼ì„œ ì´ˆê¸°í™”
  */
 void sensor_init(void)
 {
@@ -221,17 +221,17 @@ void sensor_init(void)
   void *para = NULL;
   sensor_t *p_sensor;
 
-  //ÇÁ·Î±×·¥ ½ÇÇà Áß ¼³Á¤°ª º¯°æµÇ¾îµµ ¿µÇâ ¾øµµ·Ï ÃøÁ¤ Task´Â ¼³Á¤°ª º¹»çº»À¸·Î µ¿ÀÛ
+  //í”„ë¡œê·¸ë¨ ì‹¤í–‰ ì¤‘ ì„¤ì •ê°’ ë³€ê²½ë˜ì–´ë„ ì˜í–¥ ì—†ë„ë¡ ì¸¡ì • TaskëŠ” ì„¤ì •ê°’ ë³µì‚¬ë³¸ìœ¼ë¡œ ë™ì‘
   memcpy(g_sensor_config_bk, config.sensor, sizeof(g_sensor_config_bk));
 
   p_sensor = g_sensor_config_bk;
 
-  adc_init();  // ADC Ç×»ó ÃÊ±âÈ­
+  adc_init();  // ADC í•­ìƒ ì´ˆê¸°í™”
 
-  //»ç¿ëÇÏ´Â ¼¾¼­ÀÇ µå¶óÀÌ¹ö¸¦ ÃÊ±âÈ­ ÇÑ´Ù.
+  //ì‚¬ìš©í•˜ëŠ” ì„¼ì„œì˜ ë“œë¼ì´ë²„ë¥¼ ì´ˆê¸°í™” í•œë‹¤.
   for (int i = 0; i < SENSOR_LIST_MAX; i++)
   {
-    if (p_sensor[i].type)  // 0ÀÌ ¾Æ´Ï¸é »ç¿ëÀ¸·Î ¼³Á¤µÈ°Í
+    if (p_sensor[i].type)  // 0ì´ ì•„ë‹ˆë©´ ì‚¬ìš©ìœ¼ë¡œ ì„¤ì •ëœê²ƒ
     {
       switch (i)
       {
@@ -332,7 +332,7 @@ void sensor_init(void)
           num = get_driverNum(p_sensor[N10_AIR_TEMPERATURE_50CM].type);
           g_sensor_driver[N10_AIR_TEMPERATURE_50CM] = temperature_open(num, 0);
           break;
-        default://ÇöÀç ±¸ÇöµÇ¾î ÀÖÁö ¾ÊÀº ¼¾¼­ µå¶óÀÌ¹ö´Â ADC¸¸ »ç¿ëÇÏµµ·ÏÇÔ
+        default://í˜„ì¬ êµ¬í˜„ë˜ì–´ ìˆì§€ ì•Šì€ ì„¼ì„œ ë“œë¼ì´ë²„ëŠ” ADCë§Œ ì‚¬ìš©í•˜ë„ë¡í•¨
         num = get_driverNum(p_sensor[i].type);
         para = get_sensor_config(&p_sensor[i]);
         g_sensor_driver[i] = general_adc_open(num, para);
@@ -341,12 +341,12 @@ void sensor_init(void)
     }
   }
 
-  //¼¾¼­»ç¿ë ¿©ºÎ¸¦ ¾÷µ¥ÀÌÆ®ÇÑ´Ù.
+  //ì„¼ì„œì‚¬ìš© ì—¬ë¶€ë¥¼ ì—…ë°ì´íŠ¸í•œë‹¤.
   for (int i = 0; i < SENSOR_LIST_MAX; i++)
   { 
-    if (get_config_app()->sensor[i].type)  // »ç¿ëÀ¸·Î ¼³Á¤µÇ¾ú´ÂÁö È®ÀÎ
+    if (get_config_app()->sensor[i].type)  // ì‚¬ìš©ìœ¼ë¡œ ì„¤ì •ë˜ì—ˆëŠ”ì§€ í™•ì¸
     {
-      g_reading_1.data[i].enable = 1;  // Ç³Çâ,Ç³¼ÓÀº »ç¿ëÇÏÁö ¾Ê´Â´Ù.
+      g_reading_1.data[i].enable = 1;  // í’í–¥,í’ì†ì€ ì‚¬ìš©í•˜ì§€ ì•ŠëŠ”ë‹¤.
 
       switch (i)
       {
@@ -364,7 +364,7 @@ void sensor_init(void)
 
   }
 
-  //¼¾¼­ µ¥ÀÌÅÍÀÇ Å¸ÀÔÀ» Á¤ÀÇÇÑ´Ù.
+  //ì„¼ì„œ ë°ì´í„°ì˜ íƒ€ì…ì„ ì •ì˜í•œë‹¤.
   g_reading_1.data[A1_TEMPERATURE].data_type = eDATA_TYPE_F;
   g_reading_1.data[A2_WIND_DIRECTION].data_type = eDATA_TYPE_F;
   g_reading_1.data[A3_WIND_SPEED].data_type = eDATA_TYPE_F;
@@ -417,7 +417,7 @@ void sensor_init(void)
   }
 
 /**
- * @brief 250ms¸¶´Ù ÃøÁ¤
+ * @brief 250msë§ˆë‹¤ ì¸¡ì •
  */
 void measure_250ms(void)
 {
@@ -465,13 +465,13 @@ void measure_1s(void)
 
 
 
-      // AWS¼¾¼­¸¸ Ã³¸®
+      // AWSì„¼ì„œë§Œ ì²˜ë¦¬
       for (sensor_type = A1_TEMPERATURE; sensor_type <= I1_TACHOMETER;
            (eSENSOR_LIST_t)sensor_type++)
       {
         model = sensor[sensor_type].type;
 
-        if (model)  // ¸ğµ¨ÀÌ Á¸ÀçÇÏ¸é »ç¿ëÇÔÀ» ÀÇ¹Ì
+        if (model)  // ëª¨ë¸ì´ ì¡´ì¬í•˜ë©´ ì‚¬ìš©í•¨ì„ ì˜ë¯¸
         {
           adc = 0;
           switch (sensor_type)
@@ -612,9 +612,9 @@ void measure1s_task(void *arg)
 }
 
 /**
- * @brief 250ms,1s ¸¶´Ù ¼¾¼­ µ¥ÀÌÅÍ ¼öÁı
- * 250ms Ç³Çâ Ç³¼Ó Àü¿ëÀ¸·Î Ã³¸®
- * 1s´Â ÀÏ¹İ ¼¾¼­Ã³¸®
+ * @brief 250ms,1s ë§ˆë‹¤ ì„¼ì„œ ë°ì´í„° ìˆ˜ì§‘
+ * 250ms í’í–¥ í’ì† ì „ìš©ìœ¼ë¡œ ì²˜ë¦¬
+ * 1sëŠ” ì¼ë°˜ ì„¼ì„œì²˜ë¦¬
  */
 void measureTask_init(void)
 {

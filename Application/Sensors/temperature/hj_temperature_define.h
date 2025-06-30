@@ -9,25 +9,25 @@
 
 typedef struct
 {
-  uint16_t temperature;          // 40001 ¿Âµµ (-4000 ~ 12500)
-  uint16_t humidity;             // 40002 ½Àµµ (0 ~ 10000)
-  uint16_t temp_alarm;           // 40003 ¿Âµµ ÀÌ»ó ¾Ë¶÷ (0, 1)
-  uint16_t humi_alarm;           // 40004 ½Àµµ ÀÌ»ó ¾Ë¶÷ (0, 1)
+  uint16_t temperature;          // 40001 ì˜¨ë„ (-4000 ~ 12500)
+  uint16_t humidity;             // 40002 ìŠµë„ (0 ~ 10000)
+  uint16_t temp_alarm;           // 40003 ì˜¨ë„ ì´ìƒ ì•ŒëŒ (0, 1)
+  uint16_t humi_alarm;           // 40004 ìŠµë„ ì´ìƒ ì•ŒëŒ (0, 1)
   uint16_t sw_version;           // 40005 SW Version (0100 ~ 9999)
   uint16_t hw_version;           // 40006 HW Version (0100 ~ 9999)
   uint16_t device_id;            // 40007 Device ID (1 ~ 255)
-  uint16_t heater_power;         // 40008 Heater Àü·ù ¼³Á¤ (20, 110, 200)
-  uint16_t heater_on_time;       // 40009 Heater ON ½Ã°£ ¼³Á¤ (100 ~ 10000)
-  uint16_t primary_temp_offset;  // 40010 Primary ¿Âµµ OFFSET ¼³Á¤ (-500 ~ 500)
-  uint16_t primary_humi_offset;  // 40011 Primary ½Àµµ OFFSET ¼³Á¤ (-1000 ~ 1000)
-  uint16_t aux_temp_offset;      // 40012 Auxiliary ¿Âµµ OFFSET ¼³Á¤ (-500 ~ 500)
-  uint16_t aux_humi_offset;      // 40013 Auxiliary ½Àµµ OFFSET ¼³Á¤ (-1000 ~ 1000)
-  uint16_t primary_temp;         // 40014 Primary ¿Âµµ (-4000 ~ 12500)
-  uint16_t primary_humi;         // 40015 Primary ½Àµµ (0 ~ 10000)
-  uint16_t aux_temp;             // 40016 Auxiliary ¿Âµµ (-4000 ~ 12500)
-  uint16_t aux_humi;             // 40017 Auxiliary ½Àµµ (0 ~ 10000)
+  uint16_t heater_power;         // 40008 Heater ì „ë¥˜ ì„¤ì • (20, 110, 200)
+  uint16_t heater_on_time;       // 40009 Heater ON ì‹œê°„ ì„¤ì • (100 ~ 10000)
+  uint16_t primary_temp_offset;  // 40010 Primary ì˜¨ë„ OFFSET ì„¤ì • (-500 ~ 500)
+  uint16_t primary_humi_offset;  // 40011 Primary ìŠµë„ OFFSET ì„¤ì • (-1000 ~ 1000)
+  uint16_t aux_temp_offset;      // 40012 Auxiliary ì˜¨ë„ OFFSET ì„¤ì • (-500 ~ 500)
+  uint16_t aux_humi_offset;      // 40013 Auxiliary ìŠµë„ OFFSET ì„¤ì • (-1000 ~ 1000)
+  uint16_t primary_temp;         // 40014 Primary ì˜¨ë„ (-4000 ~ 12500)
+  uint16_t primary_humi;         // 40015 Primary ìŠµë„ (0 ~ 10000)
+  uint16_t aux_temp;             // 40016 Auxiliary ì˜¨ë„ (-4000 ~ 12500)
+  uint16_t aux_humi;             // 40017 Auxiliary ìŠµë„ (0 ~ 10000)
   uint16_t reserved[13];         // 40018 ~ 40030
-  uint16_t heater_on_control;    // 40031 Heater ON Á¦¾î (0x00FF)
+  uint16_t heater_on_control;    // 40031 Heater ON ì œì–´ (0x00FF)
 } hjtemp_register_map_t;
 
 

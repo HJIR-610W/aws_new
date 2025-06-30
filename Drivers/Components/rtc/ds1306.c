@@ -84,14 +84,14 @@ int32_t ds1306_write_reg(driver_t *ds1306,uint8_t reg,uint8_t val)
 
 }
 
-#define DS1306_WRITE 0x80 // ¾²±â ¸í·É¾î (¸í·É¾îÀÇ ÃÖ»óÀ§ ºñÆ®¸¦ 1·Î ¼³Á¤)
-#define DS1306_CONTROL_REG 0x0F // Á¦¾î ·¹Áö½ºÅÍ ÁÖ
-#define DS1306_READ 0x00           // ÀĞ±â ¸í·É¾î (¸í·É¾îÀÇ ÃÖ»óÀ§ ºñÆ®¸¦ 0À¸·Î ¼³Á¤)
-#define DS1306_SECONDS_REG 0x00    // ÃÊ ·¹Áö½ºÅÍ ÁÖ¼Ò
-#define DS1306_MINUTES_REG 0x01    // ºĞ ·¹Áö½ºÅÍ ÁÖ¼Ò
-#define DS1306_HOURS_REG 0x02      // ½Ã ·¹Áö½ºÅÍ ÁÖ¼Ò
+#define DS1306_WRITE 0x80 // ì“°ê¸° ëª…ë ¹ì–´ (ëª…ë ¹ì–´ì˜ ìµœìƒìœ„ ë¹„íŠ¸ë¥¼ 1ë¡œ ì„¤ì •)
+#define DS1306_CONTROL_REG 0x0F // ì œì–´ ë ˆì§€ìŠ¤í„° ì£¼
+#define DS1306_READ 0x00           // ì½ê¸° ëª…ë ¹ì–´ (ëª…ë ¹ì–´ì˜ ìµœìƒìœ„ ë¹„íŠ¸ë¥¼ 0ìœ¼ë¡œ ì„¤ì •)
+#define DS1306_SECONDS_REG 0x00    // ì´ˆ ë ˆì§€ìŠ¤í„° ì£¼ì†Œ
+#define DS1306_MINUTES_REG 0x01    // ë¶„ ë ˆì§€ìŠ¤í„° ì£¼ì†Œ
+#define DS1306_HOURS_REG 0x02      // ì‹œ ë ˆì§€ìŠ¤í„° ì£¼ì†Œ
 
-// BCD µ¥ÀÌÅÍ¸¦ ÀÌÁø¼ö·Î º¯È¯ÇÏ´Â ÇÔ¼ö
+// BCD ë°ì´í„°ë¥¼ ì´ì§„ìˆ˜ë¡œ ë³€í™˜í•˜ëŠ” í•¨ìˆ˜
 uint8_t BCD_to_Decimal(uint8_t bcd)
 {
     return ((bcd >> 4) * 10) + (bcd & 0x0F);
@@ -101,37 +101,37 @@ uint8_t DecToBCD(uint8_t dec)
     return ((dec / 10) << 4) | (dec % 10);
 }
 
-// DS1306¿¡¼­ ÇöÀç ½Ã°£ ÀĞ±â ÇÔ¼ö
+// DS1306ì—ì„œ í˜„ì¬ ì‹œê°„ ì½ê¸° í•¨ìˆ˜
 void ds1306_read_time(driver_t *ds1306, DATE_TIME_BUF *t) {
-    uint8_t time_data[7] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}; // ÃÊ, ºĞ, ½Ã, ÀÏ, ¿ù, ¿äÀÏ, ³â µ¥ÀÌÅÍ¸¦ ÀúÀåÇÒ ¹è¿­
-    uint8_t reg_address = DS1306_READ | DS1306_SECONDS_REG;            // ½ÃÀÛ ·¹Áö½ºÅÍ ÁÖ¼Ò (ÃÊ)
+    uint8_t time_data[7] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}; // ì´ˆ, ë¶„, ì‹œ, ì¼, ì›”, ìš”ì¼, ë…„ ë°ì´í„°ë¥¼ ì €ì¥í•  ë°°ì—´
+    uint8_t reg_address = DS1306_READ | DS1306_SECONDS_REG;            // ì‹œì‘ ë ˆì§€ìŠ¤í„° ì£¼ì†Œ (ì´ˆ)
     ds1306_cfg_t *cfg = (ds1306_cfg_t *)ds1306->cfg;
 
-    // SPI µ¿±âÈ­
+    // SPI ë™ê¸°í™”
     driverex_spi_pend_sem(cfg->spi_io);
     driver_do_high(cfg->cs_io);
 
-    // ½ÃÀÛ ·¹Áö½ºÅÍ ÁÖ¼Ò Àü¼Û (ÀĞ±â ¸ğµå)
+    // ì‹œì‘ ë ˆì§€ìŠ¤í„° ì£¼ì†Œ ì „ì†¡ (ì½ê¸° ëª¨ë“œ)
     driverex_spi_send_byte(cfg->spi_io, reg_address);
 
-    // ÃÊ, ºĞ, ½Ã, ÀÏ, ¿ù, ¿äÀÏ, ³â µ¥ÀÌÅÍ¸¦ ¼ö½Å
+    // ì´ˆ, ë¶„, ì‹œ, ì¼, ì›”, ìš”ì¼, ë…„ ë°ì´í„°ë¥¼ ìˆ˜ì‹ 
     driverex_spi_read_bytes(cfg->spi_io, time_data, 7);
 
-    // SPI Åë½Å Á¾·á
+    // SPI í†µì‹  ì¢…ë£Œ
     driver_do_low(cfg->cs_io);
     driverex_spi_post_sem(cfg->spi_io);
 
-    // BCD µ¥ÀÌÅÍ¸¦ ÀÌÁø¼ö·Î º¯È¯
-    t->Sec  = BCD_to_Decimal(time_data[DS1306_SECONDS]); // ÃÊ
-    t->Min  = BCD_to_Decimal(time_data[DS1306_MINUTES]); // ºĞ
-    t->Hour = BCD_to_Decimal(time_data[DS1306_HOURS]); // ½Ã
+    // BCD ë°ì´í„°ë¥¼ ì´ì§„ìˆ˜ë¡œ ë³€í™˜
+    t->Sec  = BCD_to_Decimal(time_data[DS1306_SECONDS]); // ì´ˆ
+    t->Min  = BCD_to_Decimal(time_data[DS1306_MINUTES]); // ë¶„
+    t->Hour = BCD_to_Decimal(time_data[DS1306_HOURS]); // ì‹œ
 
-    //t->Day  = BCD_to_Decimal(time_data[3]); // ¿äÀÏ (Day of Week)
+    //t->Day  = BCD_to_Decimal(time_data[3]); // ìš”ì¼ (Day of Week)
 
-    t->Day  = BCD_to_Decimal(time_data[DS1306_DAY]); // ÀÏ
-    t->Month= BCD_to_Decimal(time_data[DS1306_MONTH]); // ¿ù
+    t->Day  = BCD_to_Decimal(time_data[DS1306_DAY]); // ì¼
+    t->Month= BCD_to_Decimal(time_data[DS1306_MONTH]); // ì›”
 
-    t->Year = BCD_to_Decimal(time_data[DS1306_YEAR])+2000; // ³â
+    t->Year = BCD_to_Decimal(time_data[DS1306_YEAR])+2000; // ë…„
 }
 
 void ds1306_set_time(driver_t *driver,DATE_TIME_BUF *ct)
@@ -151,7 +151,7 @@ void ds1306_init(driver_t *ds1306)
 
   ds1306_write_reg(ds1306,0x0f,00);  //WP,1Hz,AIE1,AIE0 
   ds1306_write_reg(ds1306,0x11,00);//TRICKLE CHARGE REGISTER
-  ds1306_read_reg(ds1306,0x10,&val);//»óÅÂ ·¹Áö½ºÅÍÅÍ
+  ds1306_read_reg(ds1306,0x10,&val);//ìƒíƒœ ë ˆì§€ìŠ¤í„°í„°
   ds1306_read_reg(ds1306,0x07,&val);
    
 }

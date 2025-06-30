@@ -208,7 +208,7 @@ void check_config_app(void)
 
     }
   }
-  //È­Áø ¿Â½Àµµ ½Àµµ ¹üÀ§ È®ÀÎ
+  //í™”ì§„ ì˜¨ìŠµë„ ìŠµë„ ë²”ìœ„ í™•ì¸
   if (config.sensor[A10_RELATIVE_HUMIDITY].type == S_T_HUMINITY_HJ)
   {
     p_config = get_sensor_config(&config.sensor[A10_RELATIVE_HUMIDITY]);
@@ -332,7 +332,7 @@ void load_config_app(void)
 
 config_t *get_config_app(void)
 { 
-  //ÇÊ¿ä½Ã ÀûÀıÇÑ Á¶Ä¡ Ã³¸® 
+  //í•„ìš”ì‹œ ì ì ˆí•œ ì¡°ì¹˜ ì²˜ë¦¬ 
   return &config; 
 }
 
@@ -361,8 +361,8 @@ void set_config_app_cdma_ip(uint8_t ip[4])
 
 
 /**
- * @brief config_app °ªÀ» °øÀåÃÊ±âÈ­°ªÀ¸·Î ¼³Á¤
- * ÀúÀåµÇÁö´Â ¾ÊÀ½ 
+ * @brief config_app ê°’ì„ ê³µì¥ì´ˆê¸°í™”ê°’ìœ¼ë¡œ ì„¤ì •
+ * ì €ì¥ë˜ì§€ëŠ” ì•ŠìŒ 
  */
  
 void config_app_reset(void)
@@ -412,7 +412,7 @@ void make_comList(char *out, uint16_t outsize)
 
   if (len == 0)
   {
-    snprintf(&out[len], outsize - len, "¹Ì»ç¿ë");
+    snprintf(&out[len], outsize - len, "ë¯¸ì‚¬ìš©");
   }
 }
 
@@ -424,7 +424,7 @@ void backup_config_app(void)
   f_ret = write_file(PATH_CONFIG_APP_BIN,(uint8_t *)&config,sizeof(config),0);
   if(f_ret == FR_OK)
   {
-    io_printf("0:config_app.bin ÀúÀåµÇ¾ú½À´Ï´Ù.\r\n");
+    io_printf("0:config_app.bin ì €ì¥ë˜ì—ˆìŠµë‹ˆë‹¤.\r\n");
   }
 }
 
@@ -442,7 +442,7 @@ void restore_config_app(void)
     
     if(f_ret != FR_OK)
     {
-      io_printf("ÆÄÀÏ ÀĞ±â ¿À·ù  %d\r\n",f_ret);
+      io_printf("íŒŒì¼ ì½ê¸° ì˜¤ë¥˜  %d\r\n",f_ret);
       aws_free(p_config);
       return ;
     }
@@ -453,13 +453,13 @@ void restore_config_app(void)
         {
           memcpy(&config, p_config, sizeof(config_t));
           crc_result = true;
-          io_printf("0:config_app.bin º¹±¸µÇ¾ú½À´Ï´Ù.\r\n");
+          io_printf("0:config_app.bin ë³µêµ¬ë˜ì—ˆìŠµë‹ˆë‹¤.\r\n");
         }
       }
     
       if (crc_result == false)
       {
-        io_printf("Ã¼Å©¼¶ ¿À·ù\r\n");
+        io_printf("ì²´í¬ì„¬ ì˜¤ë¥˜\r\n");
       }
  
  

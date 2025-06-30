@@ -129,12 +129,12 @@
 
 #define LWIP_TCP_KEEPALIVE 1
 
-#define MEMP_NUM_NETCONN                5 //ȭ�� Ŭ���̾�Ʈ, ������,����õ Ŭ���̾�Ʈ,������Ʈ 
+#define MEMP_NUM_NETCONN                5 //화진 클라이언트, 웹서버,소하천 클라이언트,업데이트 
 #define LWIP_SO_RCVTIMEO                1
 #define LWIP_SO_SNDTIMEO                1
 #define LWIP_RAW 1
 
-#define DEFAULT_RAW_RECVMBOX_SIZE 10  //raw ��Ŷ�� ���Ϲڽ� ũ�� (void *)*10
+#define DEFAULT_RAW_RECVMBOX_SIZE 10  //raw 패킷용 메일박스 크기 (void *)*10
 
 #ifdef __cplusplus
 }

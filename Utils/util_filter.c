@@ -1,6 +1,6 @@
 #include "util_filter.h"
 #include <math.h>
-// float ¡¾16,777,216
+// float Â±16,777,216
 float recursiveAvg(double pre_avg, float adc, int cnt)
 {
   float avg;
@@ -19,7 +19,7 @@ float recursive_avg_i(float pre_avg, int32_t adc, int cnt)
   return avg;
 }
 
-//°ªÀÌ ÃÖ¼Ò°ªÀÌÇÏÀÌ¸ç Àı´ë¿ÀÂ÷ ¹ş¾î³ª¸é ¿¡·¯, ±×¿Ü ÃÖÀú°ª »ç¿ë
+//ê°’ì´ ìµœì†Œê°’ì´í•˜ì´ë©° ì ˆëŒ€ì˜¤ì°¨ ë²—ì–´ë‚˜ë©´ ì—ëŸ¬, ê·¸ì™¸ ìµœì €ê°’ ì‚¬ìš©
 float validate_sensor_value_min(float value, float min, float abs_tol, uint8_t* err)
 {
   if (err)
@@ -29,7 +29,7 @@ float validate_sensor_value_min(float value, float min, float abs_tol, uint8_t* 
   {
     if (fabsf(value - min) <= abs_tol)
     {
-      return min;  // º¸Á¤ÇÏ¿© ¹İÈ¯
+      return min;  // ë³´ì •í•˜ì—¬ ë°˜í™˜
     }
     else
     {
@@ -39,7 +39,7 @@ float validate_sensor_value_min(float value, float min, float abs_tol, uint8_t* 
     }
   }
 
-  return value;  // Á¤»ó°ª
+  return value;  // ì •ìƒê°’
 }
 
 float validate_sensor_value_max(float value, float max, float abs_tol, uint8_t* err)
@@ -51,7 +51,7 @@ float validate_sensor_value_max(float value, float max, float abs_tol, uint8_t* 
   {
     if (fabsf(value - max) <= abs_tol)
     {
-      return max;  // º¸Á¤ÇÏ¿© ¹İÈ¯
+      return max;  // ë³´ì •í•˜ì—¬ ë°˜í™˜
     }
     else
     {
@@ -61,5 +61,5 @@ float validate_sensor_value_max(float value, float max, float abs_tol, uint8_t* 
     }
   }
 
-  return value;  // Á¤»ó°ª
+  return value;  // ì •ìƒê°’
 }

@@ -19,59 +19,59 @@ void send_panel_aws_std(driver_t *panel_port)
 
   packet[cnt++] = 0x02;  // STX
 
-  // A: ³¯Â¥ YYMMDD
+  // A: ë‚ ì§œ YYMMDD
   sprintf((char *)&packet[cnt], "A%02d%02d%02d", pDate->Year % 100, pDate->Month, pDate->Day);
   cnt += 7;
 
-  // B: ½Ã°£ HHMM
+  // B: ì‹œê°„ HHMM
   sprintf((char *)&packet[cnt], "B%02d%02d", pDate->Hour, pDate->Min);
   cnt += 5;
 
-  // C: Ç³Çâ (degree)
+  // C: í’í–¥ (degree)
   sprintf((char *)&packet[cnt], "C%03d", p_kma->wind_direction_avg.data / 10);
   cnt += 4;
 
-  // D: Ç³¼Ó (0.1 m/s ´ÜÀ§)
+  // D: í’ì† (0.1 m/s ë‹¨ìœ„)
   sprintf((char *)&packet[cnt], "D%03d", p_kma->wind_speed_avg.data);
   cnt += 4;
 
-  // E: ±â¿Â (nttt: ºÎÈ£ + 3ÀÚ¸®)
+  // E: ê¸°ì˜¨ (nttt: ë¶€í˜¸ + 3ìë¦¬)
   if (p_kma->temperature.data >= 1000)
     sprintf((char *)&packet[cnt], "E0%03d", p_kma->temperature.data - 1000);
   else
     sprintf((char *)&packet[cnt], "E1%03d", 1000 - p_kma->temperature.data);
   cnt += 5;
 
-  // F: ¿À´Ã °­¼ö·®
+  // F: ì˜¤ëŠ˜ ê°•ìˆ˜ëŸ‰
   sprintf((char *)&packet[cnt], "F%04d", (uint16_t)(get_rainfall()->rainfall_today * 10));
   cnt += 5;
 
-  // G: ¾îÁ¦ °­¼ö·®
+  // G: ì–´ì œ ê°•ìˆ˜ëŸ‰
   sprintf((char *)&packet[cnt], "G%04d", (uint16_t)(get_rainfall()->rainfall_yesterday * 10));
   cnt += 5;
 
-  // H: °­¼öÀ¯¹«
+  // H: ê°•ìˆ˜ìœ ë¬´
   sprintf((char *)&packet[cnt], "H%d", p_kma->precipitation_presence.data ? 1 : 0);
   cnt += 2;
 
-  // I: ±â¾Ğ
+  // I: ê¸°ì••
   sprintf((char *)&packet[cnt], "I%05d", p_kma->pressure.data);
   cnt += 6;
 
-  // J: ½Àµµ
+  // J: ìŠµë„
   sprintf((char *)&packet[cnt], "J%03d", p_kma->relative_humidity.data / 10);
   cnt += 4;
 
-  // K: Àû¼³
+  // K: ì ì„¤
   sprintf((char *)&packet[cnt], "K%04d", p_kma->snowfall.data);
   cnt += 5;
 
-  // M: ¿¹ºñ (°ø¹é 4ÀÚ¸®)
+  // M: ì˜ˆë¹„ (ê³µë°± 4ìë¦¬)
   sprintf((char *)&packet[cnt], "    ");
   cnt += 4;
 
   packet[cnt++] = 0x03;  // ETX
 
-  // Àü¼Û
+  // ì „ì†¡
   driver_uart_send(panel_port, packet, cnt);
 }

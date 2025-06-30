@@ -13,7 +13,7 @@
 #pragma pack(push, 1)
 typedef struct 
 {
-  char msg[LOG_LEN_MAX];  // ¹®ÀÚ¿­¸¸ ÀúÀå
+  char msg[LOG_LEN_MAX];  // ë¬¸ìì—´ë§Œ ì €ì¥
 }sysLog_t;
 #pragma pack(pop)
 

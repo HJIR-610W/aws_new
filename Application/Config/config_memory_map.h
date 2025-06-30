@@ -2,10 +2,10 @@
 #define CONFIG_MEMORY_MAP_H
 
 
-#define CONFIG_ADC_START_ADDRESS    0x00000000 // 0x0000~0x03FF 1024¹ÙÀÌÆ® ADCÄÌ¸®ºê·¹ÀÌ¼Ç¿ë
-#define CONFIG_SENSOR_START_ADDRESS 0x00000400 // 0x0400~0x0FFF 1024¹ÙÀÌÆ® ¼¾¼­ config¿ë
-#define CONFIG_START_ADDRESS        0x00000C00 // 0x0C00~0x1FFF 2048¹ÙÀÌÆ® ½Ã½ºÅÛ config¿ë
-#define CONFIG_NVM_START_ADDRESS    0x00001000 // 0x1000~0x13FF 1024¹ÙÀÌÆ® ¼¾¼­ °ª ÀúÀå¿ë
+#define CONFIG_ADC_START_ADDRESS    0x00000000 // 0x0000~0x03FF 1024ë°”ì´íŠ¸ ADCì¼ˆë¦¬ë¸Œë ˆì´ì…˜ìš©
+#define CONFIG_SENSOR_START_ADDRESS 0x00000400 // 0x0400~0x0FFF 1024ë°”ì´íŠ¸ ì„¼ì„œ configìš©
+#define CONFIG_START_ADDRESS        0x00000C00 // 0x0C00~0x1FFF 2048ë°”ì´íŠ¸ ì‹œìŠ¤í…œ configìš©
+#define CONFIG_NVM_START_ADDRESS    0x00001000 // 0x1000~0x13FF 1024ë°”ì´íŠ¸ ì„¼ì„œ ê°’ ì €ìž¥ìš©
 #define CONFIG_CALI_START_ADDRESS   0x00001400 
 #endif
 

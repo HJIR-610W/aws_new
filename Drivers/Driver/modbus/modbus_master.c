@@ -183,8 +183,8 @@ int32_t parse_recv(uint8_t *pInData, uint16_t dataLen, uint16_t *pOutRegs, uint1
   return err;
 }
 
-#define MODBUS_START_TIMEOUT_MS 50  // ΩΩ∑π¿Ã∫Í∞° ¥ ∞‘ ¡Ÿºˆ µµ ¿÷¥¬∞… ∞Ì∑¡
-#define MODBUS_DATA_TIMEOUT_MS 20   // º±¡°ø° ¿««— ¡ˆø¨ ∞Ì∑¡
+#define MODBUS_START_TIMEOUT_MS 50  // Ïä¨Î†àÏù¥Î∏åÍ∞Ä Îä¶Í≤å Ï§ÑÏàò ÎèÑ ÏûàÎäîÍ±∏ Í≥†Î†§
+#define MODBUS_DATA_TIMEOUT_MS 20   // ÏÑ†Ï†êÏóê ÏùòÌïú ÏßÄÏó∞ Í≥†Î†§
 
 int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
 {
@@ -197,7 +197,7 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
   modbus_cfg_t *cfg = drv->cfg;
   uint32_t delay;
 
-  //  øÏº± ¡÷º“ + ±‚¥… + √÷º“ 1πŸ¿Ã∆Æ µ•¿Ã≈Õ ºˆΩ≈
+  //  Ïö∞ÏÑ† Ï£ºÏÜå + Í∏∞Îä• + ÏµúÏÜå 1Î∞îÏù¥Ìä∏ Îç∞Ïù¥ÌÑ∞ ÏàòÏã†
   if (cfg->modbusType == eMODBUS_RS232)
   {
     ret = MODBUS_232_RECV(cfg->bus_io, rx_buf, 3, MODBUS_START_TIMEOUT_MS);
@@ -213,45 +213,45 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
   }
 
   func_code = rx_buf[1];
-  // ±‚¥… ƒ⁄µÂø° µ˚∂Û øπªÛµ«¥¬ µ•¿Ã≈Õ ±Ê¿Ã ∞·¡§
-  // ø©±‚º± Read Holding Registers (0x03) ¿¿¥‰¿ª øπΩ√∑Œ ªÁøÎ
+  // Í∏∞Îä• ÏΩîÎìúÏóê Îî∞Îùº ÏòàÏÉÅÎêòÎäî Îç∞Ïù¥ÌÑ∞ Í∏∏Ïù¥ Í≤∞Ï†ï
+  // Ïó¨Í∏∞ÏÑ† Read Holding Registers (0x03) ÏùëÎãµÏùÑ ÏòàÏãúÎ°ú ÏÇ¨Ïö©
   switch (func_code)
   {
     case 0x01:               // Read Coils
     case 0x02:               // Read Discrete Inputs
     case 0x03:               // Read Holding Registers
     case 0x04:               // Read Input Registers
-    case 0x2B:               // Encapsulated Interface (√ﬂ∞° √≥∏Æ « ø‰«“ ºˆµµ ¿÷¿Ω)
+    case 0x2B:               // Encapsulated Interface (Ï∂îÍ∞Ä Ï≤òÎ¶¨ ÌïÑÏöîÌï† ÏàòÎèÑ ÏûàÏùå)
       data_len = rx_buf[2];  // Byte count
       break;
     case 0x05:       // Write Single Coil
     case 0x06:       // Write Single Register
     case 0x0F:       // Write Multiple Coils
     case 0x10:       // Write Multiple Registers
-      data_len = 6;  // ∞Ì¡§ ¿¿¥‰ ±Ê¿Ã (¡÷º“ + ±‚¥… ¡¶ø‹)
+      data_len = 6;  // Í≥†Ï†ï ÏùëÎãµ Í∏∏Ïù¥ (Ï£ºÏÜå + Í∏∞Îä• Ï†úÏô∏)
       break;
     case 0x08:       // Diagnostic
-      data_len = 4;  // ¿œπ›¿˚¿Œ ¿¿¥‰
+      data_len = 4;  // ÏùºÎ∞òÏ†ÅÏù∏ ÏùëÎãµ
       break;
     default:
-      // øπø‹ ¿¿¥‰¿Œ¡ˆ »Æ¿Œ
+      // ÏòàÏô∏ ÏùëÎãµÏù∏ÏßÄ ÌôïÏù∏
       if (func_code & 0x80)
       {
-        data_len = 1;  // ExceptionCode 1πŸ¿Ã∆Æ
+        data_len = 1;  // ExceptionCode 1Î∞îÏù¥Ìä∏
       }
       else
       {
-        return -99;  // πÃ¡ˆø¯ ±‚¥… ƒ⁄µÂ
+        return -99;  // ÎØ∏ÏßÄÏõê Í∏∞Îä• ÏΩîÎìú
       }
       break;
   }
 
-  //  ¿¸√º ∆–≈∂ ±Ê¿Ã ∞ËªÍ
-  total_len = 3 + data_len + 2;  // «Ï¥ı(3) + µ•¿Ã≈Õ + CRC(2)
+  //  Ï†ÑÏ≤¥ Ìå®ÌÇ∑ Í∏∏Ïù¥ Í≥ÑÏÇ∞
+  total_len = 3 + data_len + 2;  // Ìó§Îçî(3) + Îç∞Ïù¥ÌÑ∞ + CRC(2)
   if (total_len > buf_size)
     return -3;
 
-  // baudø° ∏¬√Á 1πŸ¿Ã∆Æ Ω√∞£æ»ø° µ•¿Ã≈Õ æ»ø¿¥¬¡ˆ ∆«¥‹
+  // baudÏóê ÎßûÏ∂∞ 1Î∞îÏù¥Ìä∏ ÏãúÍ∞ÑÏïàÏóê Îç∞Ïù¥ÌÑ∞ ÏïàÏò§ÎäîÏßÄ ÌåêÎã®
   switch (cfg->modbusType)
   {
     case eMODBUS_RS485:
@@ -280,7 +280,7 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
         default:
       break;
   }
-  //  ≥™∏”¡ˆ µ•¿Ã≈Õ ºˆΩ≈
+  //  ÎÇòÎ®∏ÏßÄ Îç∞Ïù¥ÌÑ∞ ÏàòÏã†
   if (cfg->modbusType == eMODBUS_RS232)
   {
     ret = MODBUS_232_RECV_TIMEOUT(cfg->bus_io, &rx_buf[3], data_len + 2, delay, delay);
@@ -294,17 +294,17 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
     if (ret != data_len + 2)
       return -4;
 
-    // CRC »Æ¿Œ
+    // CRC ÌôïÏù∏
     crc_calc = calcCRC(rx_buf, total_len - 2);
     crc_recv = rx_buf[total_len - 2] << 8 | (rx_buf[total_len - 1]);
     if (crc_calc != crc_recv)
     {
       LOG_MEM(rx_buf, total_len,(uint32_t)rx_buf,16);
       ERROR_PRINTF("recv:%X,cal:%X\r\n",crc_recv,crc_calc);
-      return -5;  // CRC ø°∑Ø
+      return -5;  // CRC ÏóêÎü¨
     }
 
-    return total_len;  // ¿Ø»ø«— ∆–≈∂ ±Ê¿Ã ∏Æ≈œ
+    return total_len;  // Ïú†Ìö®Ìïú Ìå®ÌÇ∑ Í∏∏Ïù¥ Î¶¨ÌÑ¥
   }
 
 int32_t modbus_master_req(driver_t *drv, modbus_t *modbus)
@@ -330,7 +330,7 @@ int32_t modbus_master_req(driver_t *drv, modbus_t *modbus)
 }
 
 /**
- * @brief ∆Ø¡§ ¡÷º“ø° ∞™ æ≤±‚
+ * @brief ÌäπÏ†ï Ï£ºÏÜåÏóê Í∞í Ïì∞Í∏∞
  * @param slave_id
  * @param address
  * @param val
@@ -352,7 +352,7 @@ int32_t modbus_write_single_reg(driver_t *drv, uint8_t slave_id, uint16_t addres
   modbus.regsCnt = sizeof(reg) / sizeof(reg[0]);
   modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
 
-  modbus.reg[0] = val;  // Ω√¿€
+  modbus.reg[0] = val;  // ÏãúÏûë
 
   if (modbus_master_req(drv, &modbus) == RET_OK)
   {
@@ -429,7 +429,7 @@ int32_t modbus_read_hold_reg(driver_t *drv, uint8_t slave_id, uint16_t address, 
   modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
 
   ret = modbus_master_req(drv, &modbus);
-  g_modbusLastErr = ret;  // µπˆ±Î¿ª ¿ß«ÿ ∏µÂπˆΩ∫ ∏∂¡ˆ∏∑ ∞·∞˙∞™¿ª ¿˙¿Â
+  g_modbusLastErr = ret;  // ÎîîÎ≤ÑÍπÖÏùÑ ÏúÑÌï¥ Î™®ÎìúÎ≤ÑÏä§ ÎßàÏßÄÎßâ Í≤∞Í≥ºÍ∞íÏùÑ Ï†ÄÏû•
   if (ret == RET_OK)
   {
     for (int i = 0; i < regCnt; i++)
@@ -473,7 +473,7 @@ int32_t modbus_read_input_reg(driver_t *drv, uint8_t slave_id, uint16_t address,
   modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
 
   ret = modbus_master_req(drv, &modbus);
-  g_modbusLastErr = ret;  // µπˆ±Î¿ª ¿ß«ÿ ∏µÂπˆΩ∫ ∏∂¡ˆ∏∑ ∞·∞˙∞™¿ª ¿˙¿Â
+  g_modbusLastErr = ret;  // ÎîîÎ≤ÑÍπÖÏùÑ ÏúÑÌï¥ Î™®ÎìúÎ≤ÑÏä§ ÎßàÏßÄÎßâ Í≤∞Í≥ºÍ∞íÏùÑ Ï†ÄÏû•
   if (ret == RET_OK)
   {
     for (int i = 0; i < regCnt; i++)
@@ -496,8 +496,8 @@ void send_query(driver_t *drv, modbus_t *pmodbus)
   uint16_t cnt = 0;
   uint16_t crc;
 
-  g_buff.data[cnt++] = pmodbus->id;  // ¿¸ø™∫Øºˆ º±æ«œ∞Ì ¿ÃπÆ¿Â Ω««‡«œ∏È
-                                     // ¿Ã¥ı≥›¿Ã ¿ÃªÛ«‘ ¿Ã«ÿ∫“∞°..»Ï.
+  g_buff.data[cnt++] = pmodbus->id;  // Ï†ÑÏó≠Î≥ÄÏàò ÏÑ†Ïñ∏ÌïòÍ≥† Ïù¥Î¨∏Ïû• Ïã§ÌñâÌïòÎ©¥
+                                     // Ïù¥ÎçîÎÑ∑Ïù¥ Ïù¥ÏÉÅÌï® Ïù¥Ìï¥Î∂àÍ∞Ä..Ìù†.
   g_buff.data[cnt++] = pmodbus->fc;
   g_buff.data[cnt++] = highByte(pmodbus->regAdd);
   g_buff.data[cnt++] = lowByte(pmodbus->regAdd);

@@ -35,13 +35,13 @@ typedef struct uart_optTimeOut_s
 typedef enum uart_recv_opt_s
 {
   /*
-   цж╪р 1╧ыюлф╝ ╪Ж╫е хд ф╞а╓ ╫ц╟ё╣©╬х ╣╔юлем ╪Ж╫е ╬Ь╢б╟Ф©Л ╦╝ео
-   ╠в╩Гюл ╢К╠Б╫ц╟ёюл цй╟З╣г╦И ╦╝ео
-   ©╧)га╥╧юс ╢К╠Б╫ц╟ё 100ms,╣╔юлем ╢К╠Б╫ц╟ё 2ms
-   100ms╣©╬х ╣╔юлем ╪Ж╫е ╬Ью╦╦И ╦╝ео
-   100msга╥╧юс ╫ц╟ё╣©╬х ╣╔юлем╟║ ╪Ж╫е╣г╟М ©╛╪сгь╪╜ ╣╔юлем ╢К╠Б╫ц╟ё ╣©╬х ╣╔юлем
-   ╪Ж╫е ╬Ью╦╦И га╥╧юс ╫ц╟ёюл Ё╡╬р╢ы╟М го╢У╤С╟М ╦╝ео
-   - modbus ╟╟ю╨ ╟Ф©Л ю╞©К
+   Л╣°Л├▄ 1К╟■Л²╢М┼╦ Л┬≤Л▀═ М⌡└ М┼╧Л═∙ Л▀°Й╟└К▐≥Л∙┬ К█╟Л²╢М└╟ Л┬≤Л▀═ Л≈├К┼■Й╡╫Л ╟ К╕╛М└╢
+   Й╥╦Л┌╛Л²╢ К▄─Й╦╟Л▀°Й╟└Л²╢ Л╢┬ЙЁ╪К░≤К╘╢ К╕╛М└╢
+   Л≤┬)М■└К═┬Л·└ К▄─Й╦╟Л▀°Й╟└ 100ms,К█╟Л²╢М└╟ К▄─Й╦╟Л▀°Й╟└ 2ms
+   100msК▐≥Л∙┬ К█╟Л²╢М└╟ Л┬≤Л▀═ Л≈├Л°╪К╘╢ К╕╛М└╢
+   100msМ■└К═┬Л·└ Л▀°Й╟└К▐≥Л∙┬ К█╟Л²╢М└╟Й╟─ Л┬≤Л▀═К░≤ЙЁ═ Л≈╟Л├█М∙╢Л└° К█╟Л²╢М└╟ К▄─Й╦╟Л▀°Й╟└ К▐≥Л∙┬ К█╟Л²╢М└╟
+   Л┬≤Л▀═ Л≈├Л°╪К╘╢ М■└К═┬Л·└ Л▀°Й╟└Л²╢ К┌╗Л∙≤К▀╓ЙЁ═ М∙≤К█■К²╪ЙЁ═ К╕╛М└╢
+   - modbus Й╟≥Л²─ Й╡╫Л ╟ Л°═Л ╘
   */
   eUART_OPT_DATA_TIMEOUT_1,
 
@@ -49,18 +49,18 @@ typedef enum uart_recv_opt_s
 
 typedef enum
 {
-  UART_SET_BAUDRATE,   // ╨╦╣Е╥╧юлф╝ ╪Ёа╓
-  UART_SET_MODE,       // ╦П╣Е ╪Ёа╓ (юо╧щ, DMA, юЗюЭ╥б)
-  UART_SET_CALLBACK,   // дщ╧И гт╪Ж ╣Н╥о
-  UART_SET_PARITY,     // фп╦╝ф╪ ╪Ёа╓
-  UART_SET_STOP_BITS,  // а╓аЖ ╨Яф╝ ╪Ёа╓
-  UART_SET_DATA_BITS,  // ╣╔юлем ╨Яф╝ ╪Ёа╓
-  UART_SET_FLOW_CTRL,  // хЕ╦╖ а╕╬Н ╪Ёа╓ (CTS/RTS)
+  UART_SET_BAUDRATE,   // КЁ╢К⌠°К═┬Л²╢М┼╦ Л└╓Л═∙
+  UART_SET_MODE,       // К╙╗К⌠° Л└╓Л═∙ (Л²╪К╟≤, DMA, Л═─Л═└К═╔)
+  UART_SET_CALLBACK,   // Л╫°К╟╠ М∙╗Л┬≤ К⌠╠К║²
+  UART_SET_PARITY,     // М▄╗К╕╛М▀╟ Л└╓Л═∙
+  UART_SET_STOP_BITS,  // Л═∙Л╖─ К╧└М┼╦ Л└╓Л═∙
+  UART_SET_DATA_BITS,  // К█╟Л²╢М└╟ К╧└М┼╦ Л└╓Л═∙
+  UART_SET_FLOW_CTRL,  // М²░К╕└ Л═°Л√╢ Л└╓Л═∙ (CTS/RTS)
 } uart_set_option_t;
 
 typedef enum
 {
-  UART_GET_CONFIG  // ╪Ёа╓╟╙ юп╠Б
+  UART_GET_CONFIG  // Л└╓Л═∙Й╟▓ Л²╫Й╦╟
 } uart_get_option_t;
 typedef struct
 {
@@ -74,7 +74,7 @@ typedef struct
   int32_t (*recv_opt)(driver_t *drv, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms,
                       uint32_t timeout2_ms);
 
-  // **гоЁ╙юг set() гт╪Ж╥н ╦П╣Г ╪Ёа╓ ╟Э╦╝**
+  // **М∙≤К┌≤Л²≤ set() М∙╗Л┬≤К║° К╙╗К⌠═ Л└╓Л═∙ Й╢─К╕╛**
   void (*set)(driver_t *handle, uart_set_option_t option, void *value);
   void (*get)(driver_t *handle, uart_get_option_t option, void *value);
   int (*inject)(driver_t *handle, const uint8_t *data, uint16_t length);

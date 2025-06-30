@@ -8,60 +8,60 @@
 #define SENSOR_ERR_COMM 1
 #define SENSOR_ERR_VAL  2
 
-//Àåºñ°¡ ÃøÁ¤°¡´ÉÇÑ µ¥ÀÌÅÍ,ÀÌ¸§,printf ¿¡ »ç¿ëµÉ formatÀ» Á¤ÀÇÀÇ
+//ìž¥ë¹„ê°€ ì¸¡ì •ê°€ëŠ¥í•œ ë°ì´í„°,ì´ë¦„,printf ì— ì‚¬ìš©ë  formatì„ ì •ì˜ì˜
 #define SENSOR_LIST                                      \
-  X(A1_TEMPERATURE,             "±â¿Â", "%-5.2fC,")      \
-  X(A2_WIND_DIRECTION,          "Ç³Çâ", "%-6.2f")        \
-  X(A3_WIND_SPEED,              "Ç³¼Ó", "%-5.2fm/s,")    \
-  X(A6_RAINFALL_DOT5_1MM,       "°­¼ö·®", "%-dmm")       \
-  X(A7_PRESSURE,                "±â¾Ð", "%-5.2fbar")     \
-  X(A8_RAIN_PRESENT,            "°­¼öÀ¯¹«", "%-d")       \
-  X(A9_SNOW_DEPTH,              "Àû¼³", "%-dmm")         \
-  X(A10_RELATIVE_HUMIDITY,      "»ó´ë½Àµµ", "%-5.2f")    \
-  X(A11_RAINFALL_DOT1MM,        "°­¼ö·® 0.1", "%-dmm")       \
-  X(B1_SOLAR_RADIATION,         "ÀÏ»ç", "%-5.2f")        \
-  X(B2_SUNSHINE_DURATION,       "ÀÏÁ¶", "%-5.2f")        \
-  X(B3_GROUND_TEMPERATURE,      "Áö¸é¿Âµµ", "%-5.2f")    \
-  X(B4_SURFACE_TEMPERATURE,     "ÃÊ»ó¿Âµµ", "%-5.2f")    \
-  X(B5_SOIL_TEMPERATURE_5CM,    "ÁöÁß¿Âµµ 5cm", "%-5.2f")    \
-  X(B6_SOIL_TEMPERATURE_10CM,   "ÁöÁß¿Âµµ 10cm", "%-5.2f")    \
-  X(B7_SOIL_TEMPERATURE_20CM,   "ÁöÁß¿Âµµ 20cm", "%-5.2f")    \
-  X(B8_SOIL_TEMPERATURE_30CM,   "ÁöÁß¿Âµµ 30cm", "%-5.2f")    \
-  X(B9_SOIL_TEMPERATURE_50CM,   "ÁöÁß¿Âµµ 50cm", "%-5.2f")    \
-  X(B10_SOIL_TEMPERATURE_100CM, "ÁöÁß¿Âµµ 1m", "%-5.2f")    \
-  X(B11_SOIL_TEMPERATURE_150CM, "ÁöÁß¿Âµµ 1.5m", "%-5.2f")    \
-  X(B12_SOIL_TEMPERATURE_300CM, "ÁöÁß¿Âµµ 3m", "%-5.2f")    \
-  X(B13_SOIL_TEMPERATURE_500CM, "ÁöÁß¿Âµµ 5m", "%-5.2f")    \
-  X(C1_CLOUD_BASE1,             "¿î°í1", "%-5.2f")        \
-  X(C2_CLOUD_BASE2,             "¿î°í2", "%-5.2f")        \
-  X(C3_CLOUD_BASE3,             "¿î°í3", "%-5.2f")        \
-  X(C4_CLOUD_COVER,             "¿î·®", "%-5.2f")        \
-  X(C5_VISIBILITY,              "½ÃÁ¤", "%-5.2f")        \
-  X(C6_PM10,                    "¹Ì¼¼¸ÕÁö 1.0", "%-5.2f")    \
-  X(C7_PM2DOT5,                 "¹Ì¼¼¸ÕÁö 2.5", "%-5.2f")    \
-  X(C8_NET_RADIATION,           "¼øº¹»ç", "%-5.2f")      \
-  X(C9_TOTAL_RADIATION,         "ÀüÃµº¹»ç", "%-5.2f")    \
-  X(C10_REFLECTED_RADIATION,    "¹Ý»çº¹»ç", "%-5.2f")    \
-  X(C11_DIRECT_SOLAR,           "Á÷´ÞÀÏ»ç", "%-5.2f")    \
-  X(C12_CURRENT_WEATHER,        "ÇöÀçÀÏ±â", "%-5.2f")    \
-  X(N1_SOIL_MOISTURE_10CM,      "Åä¾ç¼öºÐ 10cm", "%-5.2f")    \
-  X(N2_SOIL_MOISTURE_20CM,      "Åä¾ç¼öºÐ 20cm", "%-5.2f")    \
-  X(N3_SOIL_MOISTURE_30CM,      "Åä¾ç¼öºÐ 30cm", "%-5.2f")    \
-  X(N4_SOIL_MOISTURE_50CM,      "Åä¾ç¼öºÐ 50cm", "%-5.2f")    \
-  X(N5_ILLUMINANCE,             "Á¶µµ·®", "%-5.2f")      \
-  X(N6_WIND_VELOCITY_150CM,     "Ç³¼Ó 1.5m", "%-5.2f")        \
-  X(N7_WIND_VELOCITY_400CM,     "Ç³¼Ó 4.0m", "%-5.2f")        \
-  X(N8_INSTANT_VELOCITY_150CM,  "¼ø°£Ç³¼Ó 1.5m", "%-5.2f")    \
-  X(N9_INSTANT_VELOCITY_400CM,  "¼ø°£Ç³¼Ó 4.0m", "%-5.2f")    \
-  X(N10_AIR_TEMPERATURE_50CM,   "±â¿Â 50cm", "%-5.2fC")       \
-  X(N11_AIR_TEMPERATURE_400CM,  "±â¿Â 4m", "%-5.2f")        \
-  X(N12_HUMIDITY_50CM,          "½Àµµ 50cm", "%-5.2f")        \
-  X(N13_HUMIDITY_400CM,         "½Àµµ 4m", "%-5.2f")        \
-  X(I1_TACHOMETER,              "Å¸ÄÚ¹ÌÅÍ", "%-5.2f")    
+  X(A1_TEMPERATURE,             "ê¸°ì˜¨", "%-5.2fC,")      \
+  X(A2_WIND_DIRECTION,          "í’í–¥", "%-6.2f")        \
+  X(A3_WIND_SPEED,              "í’ì†", "%-5.2fm/s,")    \
+  X(A6_RAINFALL_DOT5_1MM,       "ê°•ìˆ˜ëŸ‰", "%-dmm")       \
+  X(A7_PRESSURE,                "ê¸°ì••", "%-5.2fbar")     \
+  X(A8_RAIN_PRESENT,            "ê°•ìˆ˜ìœ ë¬´", "%-d")       \
+  X(A9_SNOW_DEPTH,              "ì ì„¤", "%-dmm")         \
+  X(A10_RELATIVE_HUMIDITY,      "ìƒëŒ€ìŠµë„", "%-5.2f")    \
+  X(A11_RAINFALL_DOT1MM,        "ê°•ìˆ˜ëŸ‰ 0.1", "%-dmm")       \
+  X(B1_SOLAR_RADIATION,         "ì¼ì‚¬", "%-5.2f")        \
+  X(B2_SUNSHINE_DURATION,       "ì¼ì¡°", "%-5.2f")        \
+  X(B3_GROUND_TEMPERATURE,      "ì§€ë©´ì˜¨ë„", "%-5.2f")    \
+  X(B4_SURFACE_TEMPERATURE,     "ì´ˆìƒì˜¨ë„", "%-5.2f")    \
+  X(B5_SOIL_TEMPERATURE_5CM,    "ì§€ì¤‘ì˜¨ë„ 5cm", "%-5.2f")    \
+  X(B6_SOIL_TEMPERATURE_10CM,   "ì§€ì¤‘ì˜¨ë„ 10cm", "%-5.2f")    \
+  X(B7_SOIL_TEMPERATURE_20CM,   "ì§€ì¤‘ì˜¨ë„ 20cm", "%-5.2f")    \
+  X(B8_SOIL_TEMPERATURE_30CM,   "ì§€ì¤‘ì˜¨ë„ 30cm", "%-5.2f")    \
+  X(B9_SOIL_TEMPERATURE_50CM,   "ì§€ì¤‘ì˜¨ë„ 50cm", "%-5.2f")    \
+  X(B10_SOIL_TEMPERATURE_100CM, "ì§€ì¤‘ì˜¨ë„ 1m", "%-5.2f")    \
+  X(B11_SOIL_TEMPERATURE_150CM, "ì§€ì¤‘ì˜¨ë„ 1.5m", "%-5.2f")    \
+  X(B12_SOIL_TEMPERATURE_300CM, "ì§€ì¤‘ì˜¨ë„ 3m", "%-5.2f")    \
+  X(B13_SOIL_TEMPERATURE_500CM, "ì§€ì¤‘ì˜¨ë„ 5m", "%-5.2f")    \
+  X(C1_CLOUD_BASE1,             "ìš´ê³ 1", "%-5.2f")        \
+  X(C2_CLOUD_BASE2,             "ìš´ê³ 2", "%-5.2f")        \
+  X(C3_CLOUD_BASE3,             "ìš´ê³ 3", "%-5.2f")        \
+  X(C4_CLOUD_COVER,             "ìš´ëŸ‰", "%-5.2f")        \
+  X(C5_VISIBILITY,              "ì‹œì •", "%-5.2f")        \
+  X(C6_PM10,                    "ë¯¸ì„¸ë¨¼ì§€ 1.0", "%-5.2f")    \
+  X(C7_PM2DOT5,                 "ë¯¸ì„¸ë¨¼ì§€ 2.5", "%-5.2f")    \
+  X(C8_NET_RADIATION,           "ìˆœë³µì‚¬", "%-5.2f")      \
+  X(C9_TOTAL_RADIATION,         "ì „ì²œë³µì‚¬", "%-5.2f")    \
+  X(C10_REFLECTED_RADIATION,    "ë°˜ì‚¬ë³µì‚¬", "%-5.2f")    \
+  X(C11_DIRECT_SOLAR,           "ì§ë‹¬ì¼ì‚¬", "%-5.2f")    \
+  X(C12_CURRENT_WEATHER,        "í˜„ìž¬ì¼ê¸°", "%-5.2f")    \
+  X(N1_SOIL_MOISTURE_10CM,      "í† ì–‘ìˆ˜ë¶„ 10cm", "%-5.2f")    \
+  X(N2_SOIL_MOISTURE_20CM,      "í† ì–‘ìˆ˜ë¶„ 20cm", "%-5.2f")    \
+  X(N3_SOIL_MOISTURE_30CM,      "í† ì–‘ìˆ˜ë¶„ 30cm", "%-5.2f")    \
+  X(N4_SOIL_MOISTURE_50CM,      "í† ì–‘ìˆ˜ë¶„ 50cm", "%-5.2f")    \
+  X(N5_ILLUMINANCE,             "ì¡°ë„ëŸ‰", "%-5.2f")      \
+  X(N6_WIND_VELOCITY_150CM,     "í’ì† 1.5m", "%-5.2f")        \
+  X(N7_WIND_VELOCITY_400CM,     "í’ì† 4.0m", "%-5.2f")        \
+  X(N8_INSTANT_VELOCITY_150CM,  "ìˆœê°„í’ì† 1.5m", "%-5.2f")    \
+  X(N9_INSTANT_VELOCITY_400CM,  "ìˆœê°„í’ì† 4.0m", "%-5.2f")    \
+  X(N10_AIR_TEMPERATURE_50CM,   "ê¸°ì˜¨ 50cm", "%-5.2fC")       \
+  X(N11_AIR_TEMPERATURE_400CM,  "ê¸°ì˜¨ 4m", "%-5.2f")        \
+  X(N12_HUMIDITY_50CM,          "ìŠµë„ 50cm", "%-5.2f")        \
+  X(N13_HUMIDITY_400CM,         "ìŠµë„ 4m", "%-5.2f")        \
+  X(I1_TACHOMETER,              "íƒ€ì½”ë¯¸í„°", "%-5.2f")    
 
 
 
-// Á¦°ø °¡´ÉÇÑ ¼¾¼­ µ¥ÀÌÅÍ,AWS Ç×¸ñ
+// ì œê³µ ê°€ëŠ¥í•œ ì„¼ì„œ ë°ì´í„°,AWS í•­ëª©
 typedef enum sensor_list_e
 {
 #define X(name, name2,format) name,
@@ -71,9 +71,9 @@ typedef enum sensor_list_e
 } eSENSOR_LIST_t;
 
 
-//¼¾¼­ ¸ðµ¨,ÀÌ¸§ Á¤ÀÇ
+//ì„¼ì„œ ëª¨ë¸,ì´ë¦„ ì •ì˜
 #define SENSOR_MODEL_LIST                             \
-  X(S_T_UNSUED, "¹Ì»ç¿ë")                             \
+  X(S_T_UNSUED, "ë¯¸ì‚¬ìš©")                             \
   X(S_T_ADC, "ADC")                                   \
   X(S_T_TEMP_232, "RS232")                            \
   X(S_T_TEMP_485, "RS485")                            \
@@ -82,25 +82,25 @@ typedef enum sensor_list_e
   X(S_T_FREQ_0, "FREQ_0")                             \
   X(S_T_RAIN_REED_05MM, "REED 0.5mm")                 \
   X(S_T_RAIN_REED_1MM, "REED 1mm")                    \
-  X(S_T_RAIN_HALL_05MM, "È­Áø HALL 0.5mm")            \
-  X(S_T_RAIN_HALL_1MM, "È­Áø HALL 1mm")               \
+  X(S_T_RAIN_HALL_05MM, "í™”ì§„ HALL 0.5mm")            \
+  X(S_T_RAIN_HALL_1MM, "í™”ì§„ HALL 1mm")               \
   X(S_T_DI_0, "DI_0")                                 \
-  X(S_T_SNOW_HJ, "È­Áø Àû¼³")                         \
+  X(S_T_SNOW_HJ, "í™”ì§„ ì ì„¤")                         \
   X(S_T_GENERAL_232, "GENERAL_RS232")                 \
-  X(S_T_WIND_SPEED_HJ_485, "È­Áø Ç³¼Ó")               \
-  X(S_T_WIND_DIRECTION_HJ_485, "È­Áø Ç³Çâ")           \
-  X(S_T_HUMINITY_HJ, "È­Áø ¿Â½Àµµ")                   \
+  X(S_T_WIND_SPEED_HJ_485, "í™”ì§„ í’ì†")               \
+  X(S_T_WIND_DIRECTION_HJ_485, "í™”ì§„ í’í–¥")           \
+  X(S_T_HUMINITY_HJ, "í™”ì§„ ì˜¨ìŠµë„")                   \
   X(S_T_WIND_SPEED_MAX_VAL, "WIND_SPEED_MAX")         \
   X(S_T_WIND_DIRECTION_MAX_VAL, "WIND_DIRECTION_MAX") \
   X(S_T_PRESSURE_485, "PRESSURE_RS485")               \
   X(S_T_HUMI_RS485, "HUMI_RS485")                     \
-  X(S_T_RAIN_PRESENT_DI, "È­Áø °­¿ì°¨Áö")             \
+  X(S_T_RAIN_PRESENT_DI, "í™”ì§„ ê°•ìš°ê°ì§€")             \
   X(S_T_GENERAL_485, "GENERAL_485")                   \
   X(S_T_PT100_A, "PT100_A")                           \
   X(S_T_PT100_B, "PT100_B")                           \
   X(S_T_FREQ, "GENERAL_FREQ")                             \
   X(S_T_SUNSHINE, "SUNSHINE")                         \
-  X(S_T_SOLAR_RADIATION_OTT_SMP3, "ÀÏ»ç OTT SMP3")    \
+  X(S_T_SOLAR_RADIATION_OTT_SMP3, "ì¼ì‚¬ OTT SMP3")    \
   X(S_T_SOIL_TEMP_5CM, "SOIL_TEMP_5CM")               \
   X(S_T_SOIL_TEMP_10CM, "SOIL_TEMP_10CM")             \
   X(S_T_SOIL_TEMP_20CM, "SOIL_TEMP_20CM")             \
@@ -111,7 +111,7 @@ typedef enum sensor_list_e
   X(S_T_SOIL_TEMP_300CM, "SOIL_TEMP_300CM")           \
   X(S_T_SOIL_TEMP_500CM, "SOIL_TEMP_500CM")           \
   X(S_T_GENERAL, "GENERAL")                           \
-  X(S_T_TEMPERATURE_HJ, "È­Áø ¿Â½Àµµ")                \
+  X(S_T_TEMPERATURE_HJ, "í™”ì§„ ì˜¨ìŠµë„")                \
 
 
 typedef enum sensor_model_e
@@ -140,9 +140,9 @@ typedef struct sensor_s
 {
   float offset;
   eSENSOR_MODEL_t type;
-  uint8_t configCnt;     // ¼¾¼­°¡ °¡Áö°í ÀÖ´Â ¼³Á¤°ª ¼ö ¿¹)
-  uint8_t config[SENSOR_CONFIG_TABLE_MAX][2];  //[0][0] ¼¾¼­Å¸ÀÔ Á¤º¸ ÀúÀå, [0][1] Å¸ÀÔÀÌ ÇÒ´ç¹ÞÀº
-                                               // ¼³Á¤ À§Ä¡°ª ÀúÀå
+  uint8_t configCnt;     // ì„¼ì„œê°€ ê°€ì§€ê³  ìžˆëŠ” ì„¤ì •ê°’ ìˆ˜ ì˜ˆ)
+  uint8_t config[SENSOR_CONFIG_TABLE_MAX][2];  //[0][0] ì„¼ì„œíƒ€ìž… ì •ë³´ ì €ìž¥, [0][1] íƒ€ìž…ì´ í• ë‹¹ë°›ì€
+                                               // ì„¤ì • ìœ„ì¹˜ê°’ ì €ìž¥
 } sensor_t;
 
 
@@ -152,7 +152,7 @@ rain_present_config_t *get_rain_present_config(void);
 
 extern const char *g_sensor_model_list[SENSOR_MODEL_MAX];
 
-// TODO:ÇÏµå ÄÚµùµÊ, ¼Ò½ºÆÄÀÏ°ú ÀÏÄ¡½ÃÄÑ¾ßÇÔ ÁÖÀÇ
+// TODO:í•˜ë“œ ì½”ë”©ë¨, ì†ŒìŠ¤íŒŒì¼ê³¼ ì¼ì¹˜ì‹œì¼œì•¼í•¨ ì£¼ì˜
 extern const uint8_t temperatureList[4];
 extern const uint8_t windDirectionList[3];
 extern const uint8_t windSpeedList[4];

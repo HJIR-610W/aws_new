@@ -55,7 +55,7 @@ extern "C" {
   typedef struct atCmd_s
   {
     eAT_COMMAND_t cmd;
-    char *cmdStr;  // at ¸í·É¾î ¶Ç´Â ÀÀ´ä
+    char *cmdStr;  // at ëª…ë ¹ì–´ ë˜ëŠ” ì‘ë‹µ
     void (*fsend)(void);
   } atCmd_t;
 

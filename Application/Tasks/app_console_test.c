@@ -22,33 +22,33 @@ void print_gpio_states_in_table_old()
   const char *port_names[] = {"GPIOA", "GPIOB", "GPIOC", "GPIOD", "GPIOE",
                               "GPIOF", "GPIOG", "GPIOH", "GPIOI"};
   uint8_t num_ports = sizeof(ports) / sizeof(ports[0]);
-  uint8_t max_pins = 16;  // GPIO ÇÉÀº ÃÖ´ë 16°³
+  uint8_t max_pins = 16;  // GPIO í•€ì€ ìµœëŒ€ 16ê°œ
 
-  // 1. Ã¹ ¹øÂ° Çà: Æ÷Æ® ÀÌ¸§ Ãâ·Â
+  // 1. ì²« ë²ˆì§¸ í–‰: í¬íŠ¸ ì´ë¦„ ì¶œë ¥
   for (uint8_t i = 0; i < num_ports; i++)
   {
-    io_printf("%-8s ", port_names[i]);  // Æ÷Æ® ÀÌ¸§ °£°İ Á¤·Ä
+    io_printf("%-8s ", port_names[i]);  // í¬íŠ¸ ì´ë¦„ ê°„ê²© ì •ë ¬
   }
   io_printf("\r\n");
 
-  // 2. °¢ ÇÉ »óÅÂ¸¦ Çà ´ÜÀ§·Î Ãâ·Â
+  // 2. ê° í•€ ìƒíƒœë¥¼ í–‰ ë‹¨ìœ„ë¡œ ì¶œë ¥
   for (uint8_t pin = 0; pin < max_pins; pin++)
   {
     for (uint8_t i = 0; i < num_ports; i++)
     {
       GPIO_TypeDef *port = ports[i];
 
-      // ÇÉÀÌ ÀÔ·Â ¸ğµåÀÎÁö È®ÀÎ
-      if (port->MODER & (0x3 << (pin * 2)))  // ÀÔ·Â ¸ğµå°¡ ¾Æ´Ñ °æ¿ì
+      // í•€ì´ ì…ë ¥ ëª¨ë“œì¸ì§€ í™•ì¸
+      if (port->MODER & (0x3 << (pin * 2)))  // ì…ë ¥ ëª¨ë“œê°€ ì•„ë‹Œ ê²½ìš°
       {
-        io_printf("%2d:%-5s ", pin, "-");  // Ãâ·Â ¸ğµå°¡ ¾Æ´Ñ ÇÉ Ç¥½Ã
+        io_printf("%2d:%-5s ", pin, "-");  // ì¶œë ¥ ëª¨ë“œê°€ ì•„ë‹Œ í•€ í‘œì‹œ
       }
       else
       {
         uint8_t pin_state =
-            (port->IDR & (1 << pin)) ? 1 : 0;  // IDR¿¡¼­ ÇÉ »óÅÂ ÀĞ±â
+            (port->IDR & (1 << pin)) ? 1 : 0;  // IDRì—ì„œ í•€ ìƒíƒœ ì½ê¸°
         io_printf("%2d:%-5s ", pin,
-                     pin_state ? "HIGH" : "LOW");  // ÇÉ ¹øÈ£¿Í »óÅÂ Ãâ·Â
+                     pin_state ? "HIGH" : "LOW");  // í•€ ë²ˆí˜¸ì™€ ìƒíƒœ ì¶œë ¥
       }
     }
     io_printf("\r\n");
@@ -62,33 +62,33 @@ void print_gpio_states_in_table()
   const char *port_names[] = {"GPIOA", "GPIOB", "GPIOC", "GPIOD", "GPIOE",
                               "GPIOF", "GPIOG", "GPIOH", "GPIOI"};
   uint8_t num_ports = sizeof(ports) / sizeof(ports[0]);
-  uint8_t max_pins = 16;  // GPIO ÇÉÀº ÃÖ´ë 16°³
+  uint8_t max_pins = 16;  // GPIO í•€ì€ ìµœëŒ€ 16ê°œ
 
-  // 1. Ã¹ ¹øÂ° Çà: Æ÷Æ® ÀÌ¸§ Ãâ·Â
+  // 1. ì²« ë²ˆì§¸ í–‰: í¬íŠ¸ ì´ë¦„ ì¶œë ¥
   for (uint8_t i = 0; i < num_ports; i++)
   {
-    io_printf("%-8s ", port_names[i]);  // Æ÷Æ® ÀÌ¸§ °£°İ Á¤·Ä
+    io_printf("%-8s ", port_names[i]);  // í¬íŠ¸ ì´ë¦„ ê°„ê²© ì •ë ¬
   }
   io_printf("\r\n");
 
-  // 2. °¢ ÇÉ »óÅÂ¸¦ Çà ´ÜÀ§·Î Ãâ·Â
+  // 2. ê° í•€ ìƒíƒœë¥¼ í–‰ ë‹¨ìœ„ë¡œ ì¶œë ¥
   for (uint8_t pin = 0; pin < max_pins; pin++)
   {
     for (uint8_t i = 0; i < num_ports; i++)
     {
       GPIO_TypeDef *port = ports[i];
 
-      // ÇÉÀÌ ÀÔ·Â ¸ğµåÀÎÁö È®ÀÎ
-      if (port->MODER & (0x3 << (pin * 2)))  // ÀÔ·Â ¸ğµå°¡ ¾Æ´Ñ °æ¿ì
+      // í•€ì´ ì…ë ¥ ëª¨ë“œì¸ì§€ í™•ì¸
+      if (port->MODER & (0x3 << (pin * 2)))  // ì…ë ¥ ëª¨ë“œê°€ ì•„ë‹Œ ê²½ìš°
       {
-        io_printf("%2d:%-5s ", pin, "-");  // Ãâ·Â ¸ğµå°¡ ¾Æ´Ñ ÇÉ Ç¥½Ã
+        io_printf("%2d:%-5s ", pin, "-");  // ì¶œë ¥ ëª¨ë“œê°€ ì•„ë‹Œ í•€ í‘œì‹œ
       }
       else
       {
         uint8_t pin_state =
-            (port->IDR & (1 << pin)) ? 1 : 0;  // IDR¿¡¼­ ÇÉ »óÅÂ ÀĞ±â
+            (port->IDR & (1 << pin)) ? 1 : 0;  // IDRì—ì„œ í•€ ìƒíƒœ ì½ê¸°
         io_printf("%2d:%-5s ", pin,
-                     pin_state ? "HIGH" : "LOW");  // ÇÉ ¹øÈ£¿Í »óÅÂ Ãâ·Â
+                     pin_state ? "HIGH" : "LOW");  // í•€ ë²ˆí˜¸ì™€ ìƒíƒœ ì¶œë ¥
       }
     }
     io_printf("\r\n");
@@ -97,9 +97,9 @@ void print_gpio_states_in_table()
 
 #include <stdio.h>
 
-#include "stm32f4xx.h"  // HAL ¶óÀÌºê·¯¸® Çì´õ Æ÷ÇÔ
+#include "stm32f4xx.h"  // HAL ë¼ì´ë¸ŒëŸ¬ë¦¬ í—¤ë” í¬í•¨
 
-#define printf io_printf  // »ç¿ëÀÚ ½ºÅ¸ÀÏ¿¡ ¸ÂÃá printf ¸ÅÅ©·Î Á¤ÀÇ
+#define printf io_printf  // ì‚¬ìš©ì ìŠ¤íƒ€ì¼ì— ë§ì¶˜ printf ë§¤í¬ë¡œ ì •ì˜
 
 void print_gpio_output_states()
 {
@@ -108,34 +108,34 @@ void print_gpio_output_states()
   const char *port_names[] = {"GPIOA", "GPIOB", "GPIOC", "GPIOD", "GPIOE",
                               "GPIOF", "GPIOG", "GPIOH", "GPIOI"};
   uint8_t num_ports = sizeof(ports) / sizeof(ports[0]);
-  uint8_t max_pins = 16;  // GPIO ÇÉÀº ÃÖ´ë 16°³
+  uint8_t max_pins = 16;  // GPIO í•€ì€ ìµœëŒ€ 16ê°œ
 
-  // 1. Ã¹ ¹øÂ° Çà: Æ÷Æ® ÀÌ¸§ Ãâ·Â
+  // 1. ì²« ë²ˆì§¸ í–‰: í¬íŠ¸ ì´ë¦„ ì¶œë ¥
   for (uint8_t i = 0; i < num_ports; i++)
   {
-    io_printf("%-8s ", port_names[i]);  // Æ÷Æ® ÀÌ¸§ °£°İ Á¤·Ä
+    io_printf("%-8s ", port_names[i]);  // í¬íŠ¸ ì´ë¦„ ê°„ê²© ì •ë ¬
   }
   io_printf("\r\n");
 
-  // 2. °¢ ÇÉ »óÅÂ¸¦ Çà ´ÜÀ§·Î Ãâ·Â
+  // 2. ê° í•€ ìƒíƒœë¥¼ í–‰ ë‹¨ìœ„ë¡œ ì¶œë ¥
   for (uint8_t pin = 0; pin < max_pins; pin++)
   {
     for (uint8_t i = 0; i < num_ports; i++)
     {
       GPIO_TypeDef *port = ports[i];
 
-      // ÇÉÀÌ Ãâ·Â ¸ğµåÀÎÁö È®ÀÎ
+      // í•€ì´ ì¶œë ¥ ëª¨ë“œì¸ì§€ í™•ì¸
       if ((port->MODER & (0x3 << (pin * 2))) !=
-          (0x1 << (pin * 2)))  // Ãâ·Â ¸ğµå È®ÀÎ (MODER = 01)
+          (0x1 << (pin * 2)))  // ì¶œë ¥ ëª¨ë“œ í™•ì¸ (MODER = 01)
       {
-        io_printf("%2d:%-5s ", pin, "-");  // Ãâ·Â ¸ğµå°¡ ¾Æ´Ñ ÇÉ Ç¥½Ã
+        io_printf("%2d:%-5s ", pin, "-");  // ì¶œë ¥ ëª¨ë“œê°€ ì•„ë‹Œ í•€ í‘œì‹œ
       }
       else
       {
         uint8_t pin_state =
-            (port->ODR & (1 << pin)) ? 1 : 0;  // ODR¿¡¼­ ÇÉ »óÅÂ ÀĞ±â
+            (port->ODR & (1 << pin)) ? 1 : 0;  // ODRì—ì„œ í•€ ìƒíƒœ ì½ê¸°
         io_printf("%2d:%-5s ", pin,
-                     pin_state ? "HIGH" : "LOW");  // ÇÉ ¹øÈ£¿Í »óÅÂ Ãâ·Â
+                     pin_state ? "HIGH" : "LOW");  // í•€ ë²ˆí˜¸ì™€ ìƒíƒœ ì¶œë ¥
       }
     }
     io_printf("\r\n");
@@ -185,21 +185,21 @@ int32_t pcb_pin(void)
     {
       GPIO_TypeDef *port = ports[j];
       if ((port->MODER & (0x3 << (pin * 2))) ==
-          (0x1 << (pin * 2)))  // Ãâ·Â ¸ğµå È®ÀÎ (MODER = 01)
+          (0x1 << (pin * 2)))  // ì¶œë ¥ ëª¨ë“œ í™•ì¸ (MODER = 01)
       {
-        uint8_t pin_state = (port->ODR & (1 << pin)) ? 1 : 0;  // ODR Ãâ·Â·Â
+        uint8_t pin_state = (port->ODR & (1 << pin)) ? 1 : 0;  // ODR ì¶œë ¥ë ¥
         vt100_printfColor(GREEN, "%-20s[%d] ", pcbPinNameList[j][pin],
-                          pin_state);  // Ãâ·ÂÇÉÀÌ ¾Æ´Ñ°æ¿ì
+                          pin_state);  // ì¶œë ¥í•€ì´ ì•„ë‹Œê²½ìš°
       }
-      else if ((port->MODER & (0x3 << (pin * 2))) == 0)  // ÀÔ·Â·Â
+      else if ((port->MODER & (0x3 << (pin * 2))) == 0)  // ì…ë ¥ë ¥
       {
         uint8_t pin_state =
-            (port->IDR & (1 << pin)) ? 1 : 0;  // IDR¿¡¼­ ÇÉ »óÅÂ ÀĞ±â
+            (port->IDR & (1 << pin)) ? 1 : 0;  // IDRì—ì„œ í•€ ìƒíƒœ ì½ê¸°
         vt100_printfColor(WHITE, "%-20s[%d] ", pcbPinNameList[j][pin],
-                          pin_state);  // Ãâ·ÂÇÉÀÌ ¾Æ´Ñ°æ¿ì
+                          pin_state);  // ì¶œë ¥í•€ì´ ì•„ë‹Œê²½ìš°
       }
       else if ((port->MODER & (0x3 << (pin * 2))) ==
-               (0x11 << (pin * 2)))  // Ãâ·Â ¸ğµå È®ÀÎ (MODER = 01)
+               (0x11 << (pin * 2)))  // ì¶œë ¥ ëª¨ë“œ í™•ì¸ (MODER = 01)
       {
         vt100_printfColor(YELLOW, "%-20s[A] ", pcbPinNameList[j][pin]);
       }
@@ -225,22 +225,22 @@ int32_t pcb_pin(void)
     {
       GPIO_TypeDef *port = ports[j];
       if ((port->MODER & (0x3 << (pin * 2))) ==
-          (0x1 << (pin * 2)))  // Ãâ·Â ¸ğµå È®ÀÎ (MODER = 01)
+          (0x1 << (pin * 2)))  // ì¶œë ¥ ëª¨ë“œ í™•ì¸ (MODER = 01)
       {
         uint8_t pin_state =
-            (port->ODR & (1 << pin)) ? 1 : 0;  // ODR¿¡¼­ ÇÉ »óÅÂ ÀĞ±â
+            (port->ODR & (1 << pin)) ? 1 : 0;  // ODRì—ì„œ í•€ ìƒíƒœ ì½ê¸°
         vt100_printfColor(GREEN, "%-20s[%d] ", pcbPinNameList[j][pin],
-                          pin_state);  // Ãâ·ÂÇÉÀÌ ¾Æ´Ñ°æ¿ì
+                          pin_state);  // ì¶œë ¥í•€ì´ ì•„ë‹Œê²½ìš°
       }
-      else if ((port->MODER & (0x3 << (pin * 2))) == 0)  // ÀÔ·Â·Â
+      else if ((port->MODER & (0x3 << (pin * 2))) == 0)  // ì…ë ¥ë ¥
       {
         uint8_t pin_state =
-            (port->IDR & (1 << pin)) ? 1 : 0;  // IDR¿¡¼­ ÇÉ »óÅÂ ÀĞ±â
+            (port->IDR & (1 << pin)) ? 1 : 0;  // IDRì—ì„œ í•€ ìƒíƒœ ì½ê¸°
         vt100_printfColor(WHITE, "%-20s[%d] ", pcbPinNameList[j][pin],
-                          pin_state);  // Ãâ·ÂÇÉÀÌ ¾Æ´Ñ°æ¿ì
+                          pin_state);  // ì¶œë ¥í•€ì´ ì•„ë‹Œê²½ìš°
       }
       else if ((port->MODER & (0x3 << (pin * 2))) ==
-               (0x11 << (pin * 2)))  // Ãâ·Â ¸ğµå È®ÀÎ (MODER = 01)
+               (0x11 << (pin * 2)))  // ì¶œë ¥ ëª¨ë“œ í™•ì¸ (MODER = 01)
       {
         vt100_printfColor(YELLOW, "%-20s[A] ", pcbPinNameList[j][pin]);
       }

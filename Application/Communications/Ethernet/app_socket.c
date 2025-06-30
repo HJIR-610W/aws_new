@@ -5,23 +5,23 @@
 void enable_keepalive(int sock, int idle_time, int interval, int max_probes) {
     int optval = 1;
 
-    // Keep-Alive È°¼ºÈ­
+    // Keep-Alive í™œì„±í™”
     if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval)) < 0) {
         io_printf("Failed to enable Keep-Alive\n");
         return;
     }
 
-    // À¯ÈÞ ½Ã°£ ¼³Á¤ (Ã¹ ¹øÂ° Keep-Alive ÆÐÅ¶ Àü ´ë±â ½Ã°£)
+    // ìœ íœ´ ì‹œê°„ ì„¤ì • (ì²« ë²ˆì§¸ Keep-Alive íŒ¨í‚· ì „ ëŒ€ê¸° ì‹œê°„)
     if (setsockopt(sock, IPPROTO_TCP, TCP_KEEPIDLE, &idle_time, sizeof(idle_time)) < 0) {
         io_printf("Failed to set Keep-Alive idle time\n");
     }
 
-    // Keep-Alive ÆÐÅ¶ °£°Ý
+    // Keep-Alive íŒ¨í‚· ê°„ê²©
     if (setsockopt(sock, IPPROTO_TCP, TCP_KEEPINTVL, &interval, sizeof(interval)) < 0) {
         io_printf("Failed to set Keep-Alive interval\n");
     }
 
-    // Keep-Alive ÆÐÅ¶ Àü¼Û ½ÇÆÐ Çã¿ë È½¼ö
+    // Keep-Alive íŒ¨í‚· ì „ì†¡ ì‹¤íŒ¨ í—ˆìš© íšŸìˆ˜
     if (setsockopt(sock, IPPROTO_TCP, TCP_KEEPCNT, &max_probes, sizeof(max_probes)) < 0) {
         io_printf("Failed to set Keep-Alive probe count\n");
     }

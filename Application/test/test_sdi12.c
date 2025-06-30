@@ -44,15 +44,15 @@ uint8_t set_even_parity(uint8_t data)
 {
   uint8_t parity = 0;
 
-  // 0~6ºñÆ®±îÁö XOR ¿¬»êÇÏ¿© ÆĞ¸®Æ¼ °è»ê (Â¦¼ö ÆĞ¸®Æ¼)
+  // 0~6ë¹„íŠ¸ê¹Œì§€ XOR ì—°ì‚°í•˜ì—¬ íŒ¨ë¦¬í‹° ê³„ì‚° (ì§ìˆ˜ íŒ¨ë¦¬í‹°)
   for (int i = 0; i < 7; i++)
   {
     parity ^= (data >> i) & 1;
   }
 
-  // ÆĞ¸®Æ¼ ºñÆ®¸¦ 7¹øÂ° ºñÆ®¿¡ ¼³Á¤
-  data &= 0x7F;           // »óÀ§ ºñÆ®(7¹øÂ° ºñÆ®) ÃÊ±âÈ­
-  data |= (parity << 7);  // ÆĞ¸®Æ¼ ºñÆ®¸¦ 7¹øÂ° ºñÆ®¿¡ ¼³Á¤
+  // íŒ¨ë¦¬í‹° ë¹„íŠ¸ë¥¼ 7ë²ˆì§¸ ë¹„íŠ¸ì— ì„¤ì •
+  data &= 0x7F;           // ìƒìœ„ ë¹„íŠ¸(7ë²ˆì§¸ ë¹„íŠ¸) ì´ˆê¸°í™”
+  data |= (parity << 7);  // íŒ¨ë¦¬í‹° ë¹„íŠ¸ë¥¼ 7ë²ˆì§¸ ë¹„íŠ¸ì— ì„¤ì •
 
   return data;
 }
@@ -87,46 +87,46 @@ void sdi_uart_tx_set(void)
 
 void send_uart6_break()
 {
-  USART6->CR1 |= USART_CR1_SBK;         // Break ½ÅÈ£ ½ÃÀÛ
-  while (USART6->CR1 & USART_CR1_SBK);  // Break ½ÅÈ£°¡ ³¡³¯ ¶§±îÁö ´ë±â
+  USART6->CR1 |= USART_CR1_SBK;         // Break ì‹ í˜¸ ì‹œì‘
+  while (USART6->CR1 & USART_CR1_SBK);  // Break ì‹ í˜¸ê°€ ëë‚  ë•Œê¹Œì§€ ëŒ€ê¸°
 }
 
 volatile uint32_t g_int_num = UART_IT_RXNE;
 void sdi_send(uint8_t *cmd, uint16_t dataLen)
 {
-  // TX ¶óÀÎÀº ¼Û½Å ¸ğµå¿¡¼­´Â idle ÀÏ¶§ High ÀÌ°í ¼ö½Å ¸ğµå·Î ÀüÈ¯µÇ¸é low°¡ Ãâ·ÂµÊ
+  // TX ë¼ì¸ì€ ì†¡ì‹  ëª¨ë“œì—ì„œëŠ” idle ì¼ë•Œ High ì´ê³  ìˆ˜ì‹  ëª¨ë“œë¡œ ì „í™˜ë˜ë©´ lowê°€ ì¶œë ¥ë¨
 
-  // SDI´Â 7bit data 1bit parity ¶ó¼­ µ¥ÀÌÅÍ¿¡ parity¸¦ ³Ö¾îÁà¾ß ÇÑ´Ù.
+  // SDIëŠ” 7bit data 1bit parity ë¼ì„œ ë°ì´í„°ì— parityë¥¼ ë„£ì–´ì¤˜ì•¼ í•œë‹¤.
   for (int i = 0; i < dataLen; i++)
   {
     cmd[i] = set_even_parity(cmd[i]);
   }
 #if 0 
-  SDI_UART_DISABLE();  //uart¸¦ ºñÈ°¼º È­ ½ÃÅ²´Ù.
-  sdi_uart_tx_reset(); //uart tx gpio·Î º¯°æ
-  SDI_RX_INT_DISABLE();    //rxÀÎÅÍ·´ºê ºñÈ°¼º
+  SDI_UART_DISABLE();  //uartë¥¼ ë¹„í™œì„± í™” ì‹œí‚¨ë‹¤.
+  sdi_uart_tx_reset(); //uart tx gpioë¡œ ë³€ê²½
+  SDI_RX_INT_DISABLE();    //rxì¸í„°ëŸ½ë¸Œ ë¹„í™œì„±
 
-  SDI_DIR_TX_ON();   // µå¶óÀÌ¹ö ic¸¦ ¼Û½Å  ¸ğµå·Î ¼³Á¤ 
-  SDI_TXD_HIGH();    // SDI ¶óÀÎÀ» High·Î ¸¸µç´Ù.
+  SDI_DIR_TX_ON();   // ë“œë¼ì´ë²„ icë¥¼ ì†¡ì‹   ëª¨ë“œë¡œ ì„¤ì • 
+  SDI_TXD_HIGH();    // SDI ë¼ì¸ì„ Highë¡œ ë§Œë“ ë‹¤.
   osDelay(12);
-  SDI_TXD_LOW();     // SDI ¶óÀÎÀ» Low·Î ¸¸µç´Ù.
+  SDI_TXD_LOW();     // SDI ë¼ì¸ì„ Lowë¡œ ë§Œë“ ë‹¤.
   osDelay(9);
-  sdi_uart_tx_set(); // uart tx gpio¸¦ uart »ç¿ëÀ¸·Î Àç¼³Á¤
-  SDI_UART_ENABLE();  //uart¸¦ È°¼ºÈ­ ½ÃÅ²´Ù.
-  SDI_SEND(cmd,dataLen); //µ¥ÀÌÅÍ Àü¼Û
+  sdi_uart_tx_set(); // uart tx gpioë¥¼ uart ì‚¬ìš©ìœ¼ë¡œ ì¬ì„¤ì •
+  SDI_UART_ENABLE();  //uartë¥¼ í™œì„±í™” ì‹œí‚¨ë‹¤.
+  SDI_SEND(cmd,dataLen); //ë°ì´í„° ì „ì†¡
   osDelay(1);
-  SDI_DIR_TX_OFF(); //µå¶óÀÌ¹ö ic¸¦ ¼ö½Å ¸ğµå·Î ¼³Á¤
-  SDI_RX_INT_ENABLE();  //uart ¼ö½Å ÀÎÅÍ·´Æ® Çã¿ë
+  SDI_DIR_TX_OFF(); //ë“œë¼ì´ë²„ icë¥¼ ìˆ˜ì‹  ëª¨ë“œë¡œ ì„¤ì •
+  SDI_RX_INT_ENABLE();  //uart ìˆ˜ì‹  ì¸í„°ëŸ½íŠ¸ í—ˆìš©
 #else
   (void)g_int_num;
 
-  SDI_DIR_TX_ON();     // µå¶óÀÌ¹ö ic¸¦ ¼Û½Å  ¸ğµå·Î ¼³Á¤
+  SDI_DIR_TX_ON();     // ë“œë¼ì´ë²„ icë¥¼ ì†¡ì‹   ëª¨ë“œë¡œ ì„¤ì •
   send_uart6_break();  // 8.333ms
-  send_uart6_break();  // 8.333ms SDI12  ±Ô°İ¿¡ ¼¾¼­¸¦ ±ú¿ì±â À§ÇØ TX break ½ÅÈ£ 12ms low
-  osDelay(10);         // marking Áï 1ÀÌ 8.3ms µ¿¾È À¯ÁöµÇ¾î¾ßÇÔ
-  SDI_SEND(cmd, dataLen);  // µ¥ÀÌÅÍ Àü¼Û
+  send_uart6_break();  // 8.333ms SDI12  ê·œê²©ì— ì„¼ì„œë¥¼ ê¹¨ìš°ê¸° ìœ„í•´ TX break ì‹ í˜¸ 12ms low
+  osDelay(10);         // marking ì¦‰ 1ì´ 8.3ms ë™ì•ˆ ìœ ì§€ë˜ì–´ì•¼í•¨
+  SDI_SEND(cmd, dataLen);  // ë°ì´í„° ì „ì†¡
   osDelay(1);
-  SDI_DIR_TX_OFF();  // µå¶óÀÌ¹ö ic¸¦ ¼ö½Å ¸ğµå·Î ¼³Á¤ 15ms¾È¿¡ ÀÀ´äÇØ¾ßÇÑ´Ù°íÇÔ
+  SDI_DIR_TX_OFF();  // ë“œë¼ì´ë²„ icë¥¼ ìˆ˜ì‹  ëª¨ë“œë¡œ ì„¤ì • 15msì•ˆì— ì‘ë‹µí•´ì•¼í•œë‹¤ê³ í•¨
 
 
 #endif
@@ -135,14 +135,14 @@ void sdi_send(uint8_t *cmd, uint16_t dataLen)
 void sdiTask(void *arg)
 {
   uint8_t buff[50];
-  uint8_t cmd[] = {"0XR3!"};  // ·¹ÄÚ´õ  ?I
+  uint8_t cmd[] = {"0XR3!"};  // ë ˆì½”ë”  ?I
   // uint8_t cmd[]={0x00,0xff,0x00};
   int32_t len;
 
   SDI_DIR_TX_OFF();
 
-  io_printf("0XR3 ÀÌ·± ¹®ÀÚ¿­ÀÌ Ãâ·ÂµÇ¸é Á¤»ó\r\n");
-  io_printf("CTRL+Q Á¾·á·á\r\n");
+  io_printf("0XR3 ì´ëŸ° ë¬¸ìì—´ì´ ì¶œë ¥ë˜ë©´ ì •ìƒ\r\n");
+  io_printf("CTRL+Q ì¢…ë£Œë£Œ\r\n");
 
   while (1)
   {
@@ -152,7 +152,7 @@ void sdiTask(void *arg)
     {
       for(int i = 0; i< len; i++)
       {
-        buff[i]&=0x7F;//even Æä¸®Æ¼ Á¦°Å 
+        buff[i]&=0x7F;//even í˜ë¦¬í‹° ì œê±° 
       }
       LOG_MEM(buff,len,0,16);
     }

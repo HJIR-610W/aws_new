@@ -60,16 +60,16 @@ int32_t menu_manage_update()
   char buff[20];
   uint32_t len;
 
-  io_printf("10ÃÊµÚ¿¡ ÆÄÀÏÀ» Àü¼ÛÇØÁÖ¼¼¿ä\r\n");
+  io_printf("10ì´ˆë’¤ì— íŒŒì¼ì„ ì „ì†¡í•´ì£¼ì„¸ìš”\r\n");
   osDelay(10000);
 
   if (download_file(save_file, buff, 0, &len, 512 * 1024) == 0)
   {
-    io_printf("ÆÄÀÏ Å©±â:%d\r\n", len);
+    io_printf("íŒŒì¼ í¬ê¸°:%d\r\n", len);
   }
   else
   {
-    io_printf("ÆÄÀÏ ¼ö½Å ¿À·ù\r\n");
+    io_printf("íŒŒì¼ ìˆ˜ì‹  ì˜¤ë¥˜\r\n");
   }
 
   return 0;
@@ -93,17 +93,17 @@ void config_hj_reset(void)
 
   config_app_reset();
 
-  // config Áß ¼¾¼­ ¼³Á¤Á¤º¸¸¸ È­Áø¿¡ ¸Â°Ô ¼³Á¤ÇÑ´Ù
+  // config ì¤‘ ì„¼ì„œ ì„¤ì •ì •ë³´ë§Œ í™”ì§„ì— ë§ê²Œ ì„¤ì •í•œë‹¤
   config_sensor_reset();
 
-  // ¿Âµµ ¼¾¼­[È­Áø ¿Âµµ 9600]
+  // ì˜¨ë„ ì„¼ì„œ[í™”ì§„ ì˜¨ë„ 9600]
   config.sensor[A1_TEMPERATURE].type = S_T_TEMPERATURE_HJ;
   sensor_add(&config.sensor[A1_TEMPERATURE]);
   hjtemp_cfg = get_sensor_config(&config.sensor[A1_TEMPERATURE]);
   hjtemp_cfg->physical_layer = ePHYSICAL_RS485;
   hjtemp_cfg->port = eAPP_RS485_D;
   hjtemp_cfg->modbus_id = 1;
-  // ½Àµµ ¼¾¼­[È­Áø ½Àµµ 9600]
+  // ìŠµë„ ì„¼ì„œ[í™”ì§„ ìŠµë„ 9600]
   config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_HUMINITY_HJ;
   sensor_add(&config.sensor[A10_RELATIVE_HUMIDITY]);
   hjhumi_cfg = get_sensor_config(&config.sensor[A10_RELATIVE_HUMIDITY]);
@@ -111,13 +111,13 @@ void config_hj_reset(void)
   hjhumi_cfg->port = eAPP_RS485_D;
   hjhumi_cfg->modbus_id = 1;
 
-  // Ç³Çâ[È­Áø RS485 Ç³Çâ 19200]
+  // í’í–¥[í™”ì§„ RS485 í’í–¥ 19200]
   config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;
   sensor_add(&config.sensor[A2_WIND_DIRECTION]);
   hjwindDir_cfg = get_sensor_config(&config.sensor[A2_WIND_DIRECTION]);
   hjwindDir_cfg->rs485_port = RS485_A;
 
-  // Ç³¼Ó[È­Áø RS485 Ç³¼Ó 19200]
+  // í’ì†[í™”ì§„ RS485 í’ì† 19200]
   config.sensor[A3_WIND_SPEED].type = S_T_WIND_SPEED_HJ_485;
   sensor_add(&config.sensor[A3_WIND_SPEED]);
   hjwind_cfg = get_sensor_config(&config.sensor[A3_WIND_SPEED]);
@@ -125,20 +125,20 @@ void config_hj_reset(void)
   hjwind_cfg->full = 3200;
   hjwind_cfg->offset = 0;
 
-  // °­¿ì°¨Áö[È­Áø Á¢Á¡]
+  // ê°•ìš°ê°ì§€[í™”ì§„ ì ‘ì ]
   config.sensor[A8_RAIN_PRESENT].type = S_T_RAIN_PRESENT_DI;
 
-  // °­¼ö·®[¸®µåÇü]
+  // ê°•ìˆ˜ëŸ‰[ë¦¬ë“œí˜•]
   config.sensor[A6_RAINFALL_DOT5_1MM].type = S_T_RAIN_REED_1MM;
 
-  // Àû¼³[È­Áø RS485 19200]
+  // ì ì„¤[í™”ì§„ RS485 19200]
   config.sensor[A9_SNOW_DEPTH].type = S_T_SNOW_HJ;
   sensor_add(&config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg = get_sensor_config(&config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg->physical_layer = ePHYSICAL_RS232;
   hjsnow_cfg->port = eRS232_HART_D;
 
-  // ±â¾Ğ[RM YOUNG]
+  // ê¸°ì••[RM YOUNG]
   config.sensor[A7_PRESSURE].type = S_T_ADC;
   sensor_add(&config.sensor[A7_PRESSURE]);
   adc_config = get_sensor_config(&config.sensor[A7_PRESSURE]);
@@ -150,7 +150,7 @@ void config_hj_reset(void)
   adc_config->outMaxV = 1000;
   adc_config->outMinV = 0;
 
-  // ÀÏ»ç CMP3 0~1.0VDC
+  // ì¼ì‚¬ CMP3 0~1.0VDC
   config.sensor[B1_SOLAR_RADIATION].type = S_T_ADC;
   sensor_add(&config.sensor[B1_SOLAR_RADIATION]);
   adc_config = get_sensor_config(&config.sensor[B1_SOLAR_RADIATION]);
@@ -162,8 +162,8 @@ void config_hj_reset(void)
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
-  // ÀÏÁ¶ CSD3 ¼¾¼­ Ãâ·Â : 120 w/m2 ÀÌ»óÀÏ ¶§ 1 VDC, ÀÌÇÏÀÏ ¶§ 0 VDC
-  // ¼¾¼­°ª ÀÚÃ¼¸¦ Àü¾ĞÀ¸·Î ¹Ş´Â´Ù
+  // ì¼ì¡° CSD3 ì„¼ì„œ ì¶œë ¥ : 120 w/m2 ì´ìƒì¼ ë•Œ 1 VDC, ì´í•˜ì¼ ë•Œ 0 VDC
+  // ì„¼ì„œê°’ ìì²´ë¥¼ ì „ì••ìœ¼ë¡œ ë°›ëŠ”ë‹¤
   config.sensor[B2_SUNSHINE_DURATION].type = S_T_ADC;
   sensor_add(&config.sensor[B2_SUNSHINE_DURATION]);
   adc_config = get_sensor_config(&config.sensor[B2_SUNSHINE_DURATION]);
@@ -175,7 +175,7 @@ void config_hj_reset(void)
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
-  // ÁöÁß¿Âµµ 5cm
+  // ì§€ì¤‘ì˜¨ë„ 5cm
   config.sensor[B5_SOIL_TEMPERATURE_5CM].type = S_T_ADC;
   sensor_add(&config.sensor[B5_SOIL_TEMPERATURE_5CM]);
   adc_config = get_sensor_config(&config.sensor[B5_SOIL_TEMPERATURE_5CM]);
@@ -187,7 +187,7 @@ void config_hj_reset(void)
   adc_config->outMaxV = 1000;
   adc_config->outMinV = 0;
 
-  // ÁöÁß¿Âµµ 10cm
+  // ì§€ì¤‘ì˜¨ë„ 10cm
   config.sensor[B6_SOIL_TEMPERATURE_10CM].type = S_T_ADC;
   sensor_add(&config.sensor[B6_SOIL_TEMPERATURE_10CM]);
   adc_config = get_sensor_config(&config.sensor[B6_SOIL_TEMPERATURE_10CM]);
@@ -199,7 +199,7 @@ void config_hj_reset(void)
   adc_config->outMaxV = 1000;
   adc_config->outMinV = 0;
 
-  // ÁöÁß¿Âµµ 20cm
+  // ì§€ì¤‘ì˜¨ë„ 20cm
   config.sensor[B7_SOIL_TEMPERATURE_20CM].type = S_T_ADC;
   sensor_add(&config.sensor[B7_SOIL_TEMPERATURE_20CM]);
   adc_config = get_sensor_config(&config.sensor[B7_SOIL_TEMPERATURE_20CM]);
@@ -211,7 +211,7 @@ void config_hj_reset(void)
   adc_config->outMaxV = 1000;
   adc_config->outMinV = 0;
 
-  // ÁöÁß¿Âµµ 30cm
+  // ì§€ì¤‘ì˜¨ë„ 30cm
   config.sensor[B8_SOIL_TEMPERATURE_30CM].type = S_T_ADC;
   sensor_add(&config.sensor[B8_SOIL_TEMPERATURE_30CM]);
   adc_config = get_sensor_config(&config.sensor[B8_SOIL_TEMPERATURE_30CM]);
@@ -223,7 +223,7 @@ void config_hj_reset(void)
   adc_config->outMaxV = 1000;
   adc_config->outMinV = 0;
 
-  // ÁöÁß¿Âµµ 50cm
+  // ì§€ì¤‘ì˜¨ë„ 50cm
   config.sensor[B9_SOIL_TEMPERATURE_50CM].type = S_T_ADC;
   sensor_add(&config.sensor[B9_SOIL_TEMPERATURE_50CM]);
   adc_config = get_sensor_config(&config.sensor[B9_SOIL_TEMPERATURE_50CM]);
@@ -235,7 +235,7 @@ void config_hj_reset(void)
   adc_config->outMaxV = 1000;
   adc_config->outMinV = 0;
 
-  // ÁöÁß¿Âµµ 1m
+  // ì§€ì¤‘ì˜¨ë„ 1m
   config.sensor[B10_SOIL_TEMPERATURE_100CM].type = S_T_ADC;
   sensor_add(&config.sensor[B10_SOIL_TEMPERATURE_100CM]);
   adc_config = get_sensor_config(&config.sensor[B10_SOIL_TEMPERATURE_100CM]);
@@ -247,7 +247,7 @@ void config_hj_reset(void)
   adc_config->outMaxV = 1000;
   adc_config->outMinV = 0;
 
-  // ÁöÁß¿Âµµ 1.5m
+  // ì§€ì¤‘ì˜¨ë„ 1.5m
   config.sensor[B11_SOIL_TEMPERATURE_150CM].type = S_T_ADC;
   sensor_add(&config.sensor[B11_SOIL_TEMPERATURE_150CM]);
   adc_config = get_sensor_config(&config.sensor[B11_SOIL_TEMPERATURE_150CM]);
@@ -270,11 +270,11 @@ int32_t menu_manage_config_backup()
   int choice;
   int ok;
 
-   char *menu[] = {"¹é¾÷", "º¹±¸"};
+   char *menu[] = {"ë°±ì—…", "ë³µêµ¬"};
 
   while (1)
   {
-    status = choice_menu(AWS_MANAGER_MENU_WITDH, "¼³Á¤ ¹é¾÷/º¹±¸", menu, _countof(menu), &choice);
+    status = choice_menu(AWS_MANAGER_MENU_WITDH, "ì„¤ì • ë°±ì—…/ë³µêµ¬", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break; 
 
@@ -282,10 +282,10 @@ int32_t menu_manage_config_backup()
     {
       case 1:
         backup_config();
-        io_printf("SDÄ«µå¿¡ ¹é¾÷µÇ¾ú½À´Ï´Ù\r\n");
+        io_printf("SDì¹´ë“œì— ë°±ì—…ë˜ì—ˆìŠµë‹ˆë‹¤\r\n");
         break;
       case 2:
-        status = confirm_continue("SDÄ«µå¿¡¼­ ¼³Á¤°ªÀ» ºÒ·¯¿É´Ï´Ù",&ok);
+        status = confirm_continue("SDì¹´ë“œì—ì„œ ì„¤ì •ê°’ì„ ë¶ˆëŸ¬ì˜µë‹ˆë‹¤",&ok);
         if(status!=MENU_OK)
         break;
         if(ok)
@@ -304,10 +304,10 @@ int32_t menu_manage_sentor_edit()
   int32_t cnt;
   int choice;
   int status;
-   char *menu[] = {"¿ì·® ÀÚ·á ÆíÁı",
-                        "ÀÏÁ¶ ÀÚ·á ÆíÁı",
-                        "¿ì·® ÀÚ·á È®ÀÎ",
-                        "ÀÏÁ¶ ÀÚ·á È®ÀÎ"};
+   char *menu[] = {"ìš°ëŸ‰ ìë£Œ í¸ì§‘",
+                        "ì¼ì¡° ìë£Œ í¸ì§‘",
+                        "ìš°ëŸ‰ ìë£Œ í™•ì¸",
+                        "ì¼ì¡° ìë£Œ í™•ì¸"};
 
   char start_time[30];
   char end_time[30];  // 2025-01-01 00:00:00
@@ -317,7 +317,7 @@ int32_t menu_manage_sentor_edit()
     int ok;
   while (1)
   {
-    status = choice_menu(24, "µ¥ÀÌÅÍ ÆíÁı", menu, _countof(menu), &choice);
+    status = choice_menu(24, "ë°ì´í„° í¸ì§‘", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       return status;
 
@@ -325,13 +325,13 @@ int32_t menu_manage_sentor_edit()
     {
       case 1:
       case 2:
-        io_printf("½ÃÀÛ½Ã°£ÀÔ·Â(¿¹:2025-01-01 00:01:00)\r\n");
+        io_printf("ì‹œì‘ì‹œê°„ì…ë ¥(ì˜ˆ:2025-01-01 00:01:00)\r\n");
         io_printf(">>");
         cli_scanf_s("%[^\n]", start_time, (unsigned)_countof(start_time));
-        io_printf("Á¾·á½Ã°£ÀÔ·Â(¿¹:2025-01-01 00:01:00)\r\n");
+        io_printf("ì¢…ë£Œì‹œê°„ì…ë ¥(ì˜ˆ:2025-01-01 00:01:00)\r\n");
         io_printf(">>");
         cli_scanf_s("%[^\n]", end_time, (unsigned)_countof(end_time));
-        io_printf("°© ÀÔ·Â\r\n");
+        io_printf("ê°‘ ì…ë ¥\r\n");
         io_printf(">>");
         cli_scanf_s("%d", &value);
         ;
@@ -344,16 +344,16 @@ int32_t menu_manage_sentor_edit()
           filename = "SUNSHINE_01.rcd";
         }
 
-        status = confirm_continue("°è¼Ó ÁøÇàÇÏ°Ú´Ï±î?",&ok);
+        status = confirm_continue("ê³„ì† ì§„í–‰í•˜ê² ë‹ˆê¹Œ?",&ok);
         if(status!=MENU_OK)
         break;
         if(ok)
         {
-          io_printf("¹üÀ§¸¦ ³Ğ°Ô ÇÏ¸é ÆíÁı¿¡ ¼ö½ÊÃÊ°¡ ¼Ò¿äµÉ ¼ö ÀÖ½À´Ï´Ù\r\n");
+          io_printf("ë²”ìœ„ë¥¼ ë„“ê²Œ í•˜ë©´ í¸ì§‘ì— ìˆ˜ì‹­ì´ˆê°€ ì†Œìš”ë  ìˆ˜ ìˆìŠµë‹ˆë‹¤\r\n");
           ret = write_bulk_data_range(filename, start_time, end_time, value);
           if (ret < 0)
           {
-            io_printf("¿¡·¯ ¹ß»ı ÄÚµå:%d\r\n", ret);
+            io_printf("ì—ëŸ¬ ë°œìƒ ì½”ë“œ:%d\r\n", ret);
           }
           io_printf("OK\r\n");
         }
@@ -368,10 +368,10 @@ int32_t menu_manage_sentor_edit()
         int hour;
         int min;
         int read_cnt;
-        io_printf("½ÃÀÛ½Ã°£ÀÔ·Â(¿¹:2025-01-01 00:01)\r\n");
+        io_printf("ì‹œì‘ì‹œê°„ì…ë ¥(ì˜ˆ:2025-01-01 00:01)\r\n");
         io_printf(">>");
         cli_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
-        io_printf("ÀĞÀ» °¹¼ö ÀÔ·Â\r\n");
+        io_printf("ì½ì„ ê°¯ìˆ˜ ì…ë ¥\r\n");
         io_printf(">>");
         cli_scanf_s("%d", &read_cnt);
         DATE_TIME_BUF ct;
@@ -412,7 +412,7 @@ int32_t menu_manage_update_fw()
 
   while(1)
   {
-    status  = confirm_continue("Æß¿ş¾î ¾÷µ¥ÀÌÆ®¸¦ ÁøÇàÇÒ±î¿ä?",&ok);
+    status  = confirm_continue("íŒì›¨ì–´ ì—…ë°ì´íŠ¸ë¥¼ ì§„í–‰í• ê¹Œìš”?",&ok);
     if(status != MENU_OK)
     break;
     
@@ -424,8 +424,8 @@ int32_t menu_manage_update_fw()
     
       if (check_firmware(UPDATE_LOCAL) == 0)
       {
-        io_printf("Àåºñ°¡ ¸®¼ÂµÇ¸é¼­ ¾÷µ¥ÀÌÆ®°¡ ÁøÇàµË´Ï´Ù\r\n");
-        io_printf("»óÅÂ LED°¡ Á¡¸êµË´Ï´Ù\r\n");
+        io_printf("ì¥ë¹„ê°€ ë¦¬ì…‹ë˜ë©´ì„œ ì—…ë°ì´íŠ¸ê°€ ì§„í–‰ë©ë‹ˆë‹¤\r\n");
+        io_printf("ìƒíƒœ LEDê°€ ì ë©¸ë©ë‹ˆë‹¤\r\n");
 
         set_magic_value(MAGIC_UPDATE_FW_LACAL);
         reset_system("USER update");
@@ -441,9 +441,9 @@ int32_t menu_manage_log_reset(void)
   int status;
   int log_cnt;
 
-  io_printf("ÇöÀç ·Î±× Ä«¿îÆ®:%d\r\n", get_config_nvm()->log_q_cnt );
+  io_printf("í˜„ì¬ ë¡œê·¸ ì¹´ìš´íŠ¸:%d\r\n", get_config_nvm()->log_q_cnt );
 
-  status = input_decimal_prompt("·Î±× Ä«¿îÆ® ÀÔ·ÂÇØÁÖ¼¼¿ä", &log_cnt, 0, LOG_COUNT_MAX);
+  status = input_decimal_prompt("ë¡œê·¸ ì¹´ìš´íŠ¸ ì…ë ¥í•´ì£¼ì„¸ìš”", &log_cnt, 0, LOG_COUNT_MAX);
   if(status == MENU_OK)
   {
     nvm_set_log_cnt(log_cnt);
@@ -455,8 +455,8 @@ int32_t menu_manage_log_reset(void)
   {
     int choice, status;
     int ok;
-    char *menu[] = {"AWS È­Áø ±âº» ¼³Á¤", "°øÀå ÃÊ±âÈ­", "¼³Á¤ ¹é¾÷", "¿ì·®,ÀÏÁ¶ ÀÚ·á ÃÊ±âÈ­",
-                    "·Î±× Ä«¿îÆ® ÃÊ±âÈ­"};
+    char *menu[] = {"AWS í™”ì§„ ê¸°ë³¸ ì„¤ì •", "ê³µì¥ ì´ˆê¸°í™”", "ì„¤ì • ë°±ì—…", "ìš°ëŸ‰,ì¼ì¡° ìë£Œ ì´ˆê¸°í™”",
+                    "ë¡œê·¸ ì¹´ìš´íŠ¸ ì´ˆê¸°í™”"};
 
     while (1)
     {
@@ -467,18 +467,18 @@ int32_t menu_manage_log_reset(void)
       switch (choice)
       {
         case 1:
-          status = confirm_continue("¼¾¼­ ±¸¼ºÀ» È­Áø ±âº»°ªÀ¸·Î ÃÊ±âÈ­ÇÕ´Ï´Ù", &ok);
+          status = confirm_continue("ì„¼ì„œ êµ¬ì„±ì„ í™”ì§„ ê¸°ë³¸ê°’ìœ¼ë¡œ ì´ˆê¸°í™”í•©ë‹ˆë‹¤", &ok);
           if (status != MENU_OK)
             break;
 
           if (ok)
           {
             config_hj_reset();
-            io_printf("ÃÊ±âÈ­ µÇ¾ú½À´Ï´Ù");
+            io_printf("ì´ˆê¸°í™” ë˜ì—ˆìŠµë‹ˆë‹¤");
           }
           break;
         case 2:
-          status = confirm_continue("¼³Á¤°ªÀ» °øÀåÃÊ±âÈ­ÇÕ´Ï´Ù", &ok);
+          status = confirm_continue("ì„¤ì •ê°’ì„ ê³µì¥ì´ˆê¸°í™”í•©ë‹ˆë‹¤", &ok);
 
           if (status != MENU_OK)
             break;
@@ -488,7 +488,7 @@ int32_t menu_manage_log_reset(void)
             save_config_app();
             config_sensor_reset();
             save_config_sensor();
-            io_printf("°øÀå ÃÊ±âÈ­ µÇ¾ú½À´Ï´Ù\r\n");
+            io_printf("ê³µì¥ ì´ˆê¸°í™” ë˜ì—ˆìŠµë‹ˆë‹¤\r\n");
           }
           break;
         case 3:
@@ -514,11 +514,11 @@ int32_t menu_manage_log_reset(void)
   int aws_menu_manager(void)
   {
     int choice, status;
-    char *menu[] = {"¹öÀü", "Àåºñ¸®¼Â", "¼³Á¤ º¯°æ", "Æß¿ş¾î ¾÷µ¥ÀÌÆ®"};
+    char *menu[] = {"ë²„ì „", "ì¥ë¹„ë¦¬ì…‹", "ì„¤ì • ë³€ê²½", "íŒì›¨ì–´ ì—…ë°ì´íŠ¸"};
 
     while (1)
     {
-      status = choice_menu(24, "¼³Á¤", menu, _countof(menu), &choice);
+      status = choice_menu(24, "ì„¤ì •", menu, _countof(menu), &choice);
       if (status != MENU_OK)
         return status;
 

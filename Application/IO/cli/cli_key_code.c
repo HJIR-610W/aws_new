@@ -3,7 +3,7 @@
 #include "cmsis_os2.h"
 #include "pcb_define.h"
 
-extern uint32_t millis(void);  // ÇöÀç ms¸¦ °¡Á®¿À´Â ÇÔ¼ö (ÇÃ·§Æû¿¡ ¸Â°Ô ±¸Çö)
+extern uint32_t millis(void);  // í˜„ìž¬ msë¥¼ ê°€ì ¸ì˜¤ëŠ” í•¨ìˆ˜ (í”Œëž«í¼ì— ë§žê²Œ êµ¬í˜„)
 
 int32_t get_key(uint32_t timeout_ms)
 {
@@ -11,7 +11,7 @@ int32_t get_key(uint32_t timeout_ms)
   uint32_t start_time = HAL_GetTick();
   uint32_t elapsed = 0;
 
-  // 1. Ã¹ ¹øÂ° ¹ÙÀÌÆ® ¼ö½Å (ÃÖ´ë timeout_ms±îÁö ±â´Ù¸²)
+  // 1. ì²« ë²ˆì§¸ ë°”ì´íŠ¸ ìˆ˜ì‹  (ìµœëŒ€ timeout_msê¹Œì§€ ê¸°ë‹¤ë¦¼)
   while (1)
   {
     uint32_t remain = timeout_ms - elapsed;
@@ -32,7 +32,7 @@ int32_t get_key(uint32_t timeout_ms)
     }
   }
 
-  // 2. Ã¹ ¹ÙÀÌÆ® Ã³¸®
+  // 2. ì²« ë°”ì´íŠ¸ ì²˜ë¦¬
   if (ch == 0x1B)
   {
     char seq[2];
@@ -95,12 +95,12 @@ int32_t get_key(uint32_t timeout_ms)
     return KEY_CODE_UNKNOWN;
   }
 
-  // 3. Ctrl Å° Á¶ÇÕ
+  // 3. Ctrl í‚¤ ì¡°í•©
   if (ch >= 0x01 && ch <= 0x1A)
   {
     return (int32_t)ch;
   }
 
-  // 4. ÀÏ¹Ý Å°
+  // 4. ì¼ë°˜ í‚¤
   return (int32_t)ch;
 }

@@ -10,7 +10,7 @@
 #define ADS1220_NUM_SINGLE_ENDED_CHANNELS 18// ads1210
 #define ADS1220_NUM_DIFFERENTIAL_CHANNELS 8
 #define DEFAULT_FACTORY_CAL_TEMP 25.0f
-#define MAX_LUT_SIZE 10  // ¿Âµµ º¸»ó LUT ÃÖ´ë Å©±â
+#define MAX_LUT_SIZE 10  // ì˜¨ë„ ë³´ìƒ LUT ìµœëŒ€ í¬ê¸°
 
 #define STM32_NUM_SINGLE_ENDED_CHANNELS 2  // stm32
 
@@ -22,40 +22,40 @@ typedef enum
 
 typedef enum
 {
-  TEMP_COMP_NONE = 0,   // ¿Âµµ º¸»ó ¾øÀ½
-  TEMP_COMP_COEFF = 1,  // ¿Âµµ °è¼ö »ç¿ë
-  TEMP_COMP_LUT = 2     // ·è¾÷ Å×ÀÌºí(LUT) »ç¿ë
+  TEMP_COMP_NONE = 0,   // ì˜¨ë„ ë³´ìƒ ì—†ìŒ
+  TEMP_COMP_COEFF = 1,  // ì˜¨ë„ ê³„ìˆ˜ ì‚¬ìš©
+  TEMP_COMP_LUT = 2     // ë£©ì—… í…Œì´ë¸”(LUT) ì‚¬ìš©
 } temp_comp_method_t;
 
 
 typedef struct
 {
-  float temperature;        // ÇØ´ç ¿£Æ®¸®ÀÇ ¿Âµµ (C)
-  float slope_multiplier;   // factory_slope¿¡ °öÇÒ °ª (±âÁØ¿Âµµ¿¡¼­ 1.0)
-  float offset_correction;  // factory_offset¿¡ ´õÇÒ °ª (±âÁØ¿Âµµ¿¡¼­ 0.0)
+  float temperature;        // í•´ë‹¹ ì—”íŠ¸ë¦¬ì˜ ì˜¨ë„ (C)
+  float slope_multiplier;   // factory_slopeì— ê³±í•  ê°’ (ê¸°ì¤€ì˜¨ë„ì—ì„œ 1.0)
+  float offset_correction;  // factory_offsetì— ë”í•  ê°’ (ê¸°ì¤€ì˜¨ë„ì—ì„œ 0.0)
 } temp_lut_point_t;
 
 
 typedef struct
 {
-  // °øÀå Ä¶¸®ºê·¹ÀÌ¼Ç Á¤º¸
+  // ê³µì¥ ìº˜ë¦¬ë¸Œë ˆì´ì…˜ ì •ë³´
   float factory_slope;
   float factory_offset;
   float factory_offset_trim;
   float factory_cal_temp;
   bool is_calibrated;
 
-  // º¸»ó ¹æ¹ı ¼±ÅÃ
+  // ë³´ìƒ ë°©ë²• ì„ íƒ
   temp_comp_method_t comp_method;
 
-  // ¹æ¹ı 1: °è¼ö »ç¿ë ½Ã
+  // ë°©ë²• 1: ê³„ìˆ˜ ì‚¬ìš© ì‹œ
   float slope_temp_coeff;
   float offset_temp_coeff;
 #ifdef ADC_LUT
-  // ¹æ¹ı 2: LUT »ç¿ë ½Ã (NVM ·Îµå/ÀúÀå ÇÊ¿ä)
+  // ë°©ë²• 2: LUT ì‚¬ìš© ì‹œ (NVM ë¡œë“œ/ì €ì¥ í•„ìš”)
   temp_lut_point_t temp_comp_lut[MAX_LUT_SIZE];
 #endif
-  uint8_t lut_size;  // LUT¿¡ ÀúÀåµÈ ½ÇÁ¦ Æ÷ÀÎÆ® ¼ö
+  uint8_t lut_size;  // LUTì— ì €ì¥ëœ ì‹¤ì œ í¬ì¸íŠ¸ ìˆ˜
 
 } adc_cal_params_t;
 
@@ -63,8 +63,8 @@ typedef struct resolution_s
 {
   uint32_t resolution_bits;
   float reference_voltage;
-  int32_t min_raw_value;  ///< ADC ÃÖ¼Ò ¿ø½Ã °ª (¿¹: -2^23)
-  int32_t max_raw_value;  ///< ADC ÃÖ´ë ¿ø½Ã °ª (¿¹: 2^23 - 1)
+  int32_t min_raw_value;  ///< ADC ìµœì†Œ ì›ì‹œ ê°’ (ì˜ˆ: -2^23)
+  int32_t max_raw_value;  ///< ADC ìµœëŒ€ ì›ì‹œ ê°’ (ì˜ˆ: 2^23 - 1)
 } config_adc_bits_t;
 
 typedef struct

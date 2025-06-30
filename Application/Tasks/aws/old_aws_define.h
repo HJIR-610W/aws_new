@@ -1,5 +1,5 @@
 /*
-±¸ AWS¿¡¼­ »ç¿ëÇÏ´ø º¯¼ö ±×´ë·Î »ç¿ë
+êµ¬ AWSì—ì„œ ì‚¬ìš©í•˜ë˜ ë³€ìˆ˜ ê·¸ëŒ€ë¡œ ì‚¬ìš©
 */
 
 #ifndef OLD_AWS_DEFINE_H
@@ -35,8 +35,8 @@ typedef struct
 
 typedef struct
 {
-  SENSOR_RX_BUF mDirection;  // Ç³Çâ
-  SENSOR_RX_BUF mSpeed;      // Ç³¼Ó
+  SENSOR_RX_BUF mDirection;  // í’í–¥
+  SENSOR_RX_BUF mSpeed;      // í’ì†
 } SENSOR_WIND_BUF;
 
 typedef struct
@@ -51,25 +51,25 @@ typedef struct
 {  //
   LOG_DATE_BUF mDate;
   SENSOR_WIND_BUF mWind;
-  SENSOR_RIX_BUF mTemperature;   // ¿Âµµ
-  SENSOR_RIXS_BUF mRainFall;     // °­¿ì
-  SENSOR_R_BUF mRainDetect;      // °­¿ì°¨Áö
-  SENSOR_RIX_BUF mBarometric;    // ±â¾Ğ
-  SENSOR_RIX_BUF mHumidity;      // ½Àµµ
-  SENSOR_RX_BUF mSolarRad;       // ÀÏ»ç
-  SENSOR_RX_BUF mSunshine;       // ÀÏÁ¶
-  SENSOR_R_BUF mSnowFall;        // Àû¼³
-  SENSOR_RIX_BUF mGndTemp;       // Áö¸é¿Âµµ
-  SENSOR_RIX_BUF mGrassTemp;     // ÃÊ»ó¿Âµµ
-  SENSOR_RIX_BUF mSoilTemp5cm;   // ÁöÁß¿Âµµ  5cm
-  SENSOR_RIX_BUF mSoilTemp10cm;  // ÁöÁß¿Âµµ 10cm
-  SENSOR_RIX_BUF mSoilTemp20cm;  // ÁöÁß¿Âµµ 20cm
-  SENSOR_RIX_BUF mSoilTemp30cm;  // ÁöÁß¿Âµµ 30cm
-  SENSOR_RIX_BUF mSoilTemp50cm;  // ÁöÁß¿Âµµ 50cm
-  SENSOR_RIX_BUF mSoilTemp1_0m;  // ÁöÁß¿Âµµ   1m
-  SENSOR_RIX_BUF mSoilTemp1_5m;  // ÁöÁß¿Âµµ 1.5m
-  SENSOR_RIX_BUF mSoilTemp3_0m;  // ÁöÁß¿Âµµ 3.0m
-  SENSOR_RIX_BUF mSoilTemp5_0m;  // ÁöÁß¿Âµµ 5.0m
+  SENSOR_RIX_BUF mTemperature;   // ì˜¨ë„
+  SENSOR_RIXS_BUF mRainFall;     // ê°•ìš°
+  SENSOR_R_BUF mRainDetect;      // ê°•ìš°ê°ì§€
+  SENSOR_RIX_BUF mBarometric;    // ê¸°ì••
+  SENSOR_RIX_BUF mHumidity;      // ìŠµë„
+  SENSOR_RX_BUF mSolarRad;       // ì¼ì‚¬
+  SENSOR_RX_BUF mSunshine;       // ì¼ì¡°
+  SENSOR_R_BUF mSnowFall;        // ì ì„¤
+  SENSOR_RIX_BUF mGndTemp;       // ì§€ë©´ì˜¨ë„
+  SENSOR_RIX_BUF mGrassTemp;     // ì´ˆìƒì˜¨ë„
+  SENSOR_RIX_BUF mSoilTemp5cm;   // ì§€ì¤‘ì˜¨ë„  5cm
+  SENSOR_RIX_BUF mSoilTemp10cm;  // ì§€ì¤‘ì˜¨ë„ 10cm
+  SENSOR_RIX_BUF mSoilTemp20cm;  // ì§€ì¤‘ì˜¨ë„ 20cm
+  SENSOR_RIX_BUF mSoilTemp30cm;  // ì§€ì¤‘ì˜¨ë„ 30cm
+  SENSOR_RIX_BUF mSoilTemp50cm;  // ì§€ì¤‘ì˜¨ë„ 50cm
+  SENSOR_RIX_BUF mSoilTemp1_0m;  // ì§€ì¤‘ì˜¨ë„   1m
+  SENSOR_RIX_BUF mSoilTemp1_5m;  // ì§€ì¤‘ì˜¨ë„ 1.5m
+  SENSOR_RIX_BUF mSoilTemp3_0m;  // ì§€ì¤‘ì˜¨ë„ 3.0m
+  SENSOR_RIX_BUF mSoilTemp5_0m;  // ì§€ì¤‘ì˜¨ë„ 5.0m
   SENSOR_RIX_BUF mSpare01;       //
   SENSOR_RIX_BUF mSpare02;
   SENSOR_RIX_BUF mSpare03;
@@ -86,13 +86,13 @@ typedef struct
   SENSOR_RIX_BUF mSpare14;
   SENSOR_RIX_BUF mSpare15;
   SENSOR_RIX_BUF mStatus;
-// sReal(Àü¾Ğ)
+// sReal(ì „ì••)
 #define DCFAIL_BIT 0x0001         //X0
 #define BATTERYFAIL_BIT 0x0002    //X1
-#define AC110V_BIT 0x0000         //X2 X3:AC Àü¾Ğ  --> 00(110V), 01(220V), 11(AC Off)
+#define AC110V_BIT 0x0000         //X2 X3:AC ì „ì••  --> 00(110V), 01(220V), 11(AC Off)
 #define AC220V_BIT 0x0004         
 #define ACOFF_BIT 0x000C
-#define LOGGERDOOR_BIT 0x0010     //X4 ·Î°ÅÀá±İ»óÅÂ: 0(´İÈû), 1(¿­¸²)
+#define LOGGERDOOR_BIT 0x0010     //X4 ë¡œê±°ì ê¸ˆìƒíƒœ: 0(ë‹«í˜), 1(ì—´ë¦¼)
 // sMin
 #define WINDSPEEDFAIL_BIT   0x0001
 #define WINDDIRECFAIL_BIT   0x0002
@@ -113,8 +113,8 @@ typedef struct
 
 typedef struct
 {
-  uint16_t sGustDircMax;   // 1ºĞ 0.25ÃÊ Ç³¼Ó ÃÖ´ëÀÏ¶§ÀÇ Ç³Çâ
-  uint16_t sGustSpeedMax;  // 1ºĞ 0.25ÃÊ Ç³¼Ó ÃÖ´ë
+  uint16_t sGustDircMax;   // 1ë¶„ 0.25ì´ˆ í’ì† ìµœëŒ€ì¼ë•Œì˜ í’í–¥
+  uint16_t sGustSpeedMax;  // 1ë¶„ 0.25ì´ˆ í’ì† ìµœëŒ€
   float uTot;
   float vTot;
   uint64_t lSpeedTot;
@@ -123,8 +123,8 @@ typedef struct
 } SENSORWIND_BUF;
 typedef struct
 {
-  uint32_t nYearSunshine;   // ¿¬°£ ÀÏÁ¶·®
-  uint32_t nMonthSunshine;  // ¿ù°£ ÀÏÁ¶·®
+  uint32_t nYearSunshine;   // ì—°ê°„ ì¼ì¡°ëŸ‰
+  uint32_t nMonthSunshine;  // ì›”ê°„ ì¼ì¡°ëŸ‰
 } NONVOLATILE_BUF;
 
 typedef struct
@@ -136,26 +136,26 @@ typedef struct
   uint16_t sAvg10Direction[40];  //
   uint16_t sWrFlag[40];
 
-  uint16_t sChangeInCnt;  // Dual Port Ram¿¡¼­ µé¾î¿Â Data¸¦ System Memory·Î
-                          // ¿Å±â´Â Ä«¿îÆ®
+  uint16_t sChangeInCnt;  // Dual Port Ramì—ì„œ ë“¤ì–´ì˜¨ Dataë¥¼ System Memoryë¡œ
+                          // ì˜®ê¸°ëŠ” ì¹´ìš´íŠ¸
 } SENSORWIND_REAL;
 
 typedef struct
 {
-  uint16_t sMax;  // ÃÖ°í
-  uint16_t sMin;  // ÃÖ¼Ò
-  uint64_t lTot;  // Æò±ÕÀ» ±¸ÇÏ±â À§ÇÑ º¯¼ö
+  uint16_t sMax;  // ìµœê³ 
+  uint16_t sMin;  // ìµœì†Œ
+  uint64_t lTot;  // í‰ê· ì„ êµ¬í•˜ê¸° ìœ„í•œ ë³€ìˆ˜
   uint16_t sAddCnt;
 } SENSORPROC_BUF;
 
 typedef struct
 {
-  // ÀÏ°£ °­¼ö·®À» ¸Å 0½Ã¿¡ ClearÇÏ°í ±×ÈÄ¿¡´Â ÀÏ°£ °­¼ö·®À» °è¼Ó Áõ°¡ ½ÃÅ²´Ù
-  uint16_t sMinRain;     // 1ºĞ °­¼ö·®
-  uint16_t s10MinRain;   // 10ºĞ °­¼ö·®
-  uint16_t sHourRain;    // 1½Ã°£ °­¼ö·®
-  uint16_t sDayRain;     // ÀÏ°£ °­¼ö·®
-  uint16_t sBefDayRain;  // ÀüÀÏ °­¼ö·®
+  // ì¼ê°„ ê°•ìˆ˜ëŸ‰ì„ ë§¤ 0ì‹œì— Clearí•˜ê³  ê·¸í›„ì—ëŠ” ì¼ê°„ ê°•ìˆ˜ëŸ‰ì„ ê³„ì† ì¦ê°€ ì‹œí‚¨ë‹¤
+  uint16_t sMinRain;     // 1ë¶„ ê°•ìˆ˜ëŸ‰
+  uint16_t s10MinRain;   // 10ë¶„ ê°•ìˆ˜ëŸ‰
+  uint16_t sHourRain;    // 1ì‹œê°„ ê°•ìˆ˜ëŸ‰
+  uint16_t sDayRain;     // ì¼ê°„ ê°•ìˆ˜ëŸ‰
+  uint16_t sBefDayRain;  // ì „ì¼ ê°•ìˆ˜ëŸ‰
 
   uint16_t sMonthRain;
   uint16_t sYearRain;
@@ -165,18 +165,18 @@ typedef struct
 
 typedef struct
 {
-  uint32_t nSolarTot;  // Æò±ÕÀ» ±¸ÇÏ±â À§ÇÑ º¯¼ö
+  uint32_t nSolarTot;  // í‰ê· ì„ êµ¬í•˜ê¸° ìœ„í•œ ë³€ìˆ˜
   uint32_t nSunshineTot;
   uint16_t sAddCnt;
 } SENSORSUN_BUF;
 
 typedef struct
 {
-  uint16_t sSolarVoltage;    // ÅÂ¾çÀüÁö ¶Ç´Â ÃæÀü Àü¾Ğ
-  uint16_t sSolarCurrent;    // ÃæÀü Àü·ù
-  uint16_t sBatteryVoltage;  // ¹åµ¥¸® Àü¾Ğ
-  uint16_t sLoad1Current;    // ºÎÇÏÀü·ù 1(½Ã½ºÅÛ)
-  uint16_t sLoad2Current;    // ºÎÇÏÀü·ù 2 ±âÅ¸
+  uint16_t sSolarVoltage;    // íƒœì–‘ì „ì§€ ë˜ëŠ” ì¶©ì „ ì „ì••
+  uint16_t sSolarCurrent;    // ì¶©ì „ ì „ë¥˜
+  uint16_t sBatteryVoltage;  // ë°§ë°ë¦¬ ì „ì••
+  uint16_t sLoad1Current;    // ë¶€í•˜ì „ë¥˜ 1(ì‹œìŠ¤í…œ)
+  uint16_t sLoad2Current;    // ë¶€í•˜ì „ë¥˜ 2 ê¸°íƒ€
 
 } POWERMAN_BUF;
 
@@ -188,19 +188,19 @@ typedef struct
 
 typedef struct
 {
-  uint32_t nYearSunshine;   // ¿¬°£ ÀÏÁ¶·®
-  uint32_t nMonthSunshine;  // ¿ù°£ ÀÏÁ¶·®
+  uint32_t nYearSunshine;   // ì—°ê°„ ì¼ì¡°ëŸ‰
+  uint32_t nMonthSunshine;  // ì›”ê°„ ì¼ì¡°ëŸ‰
 }SUNSHINE_BUF;
 
 typedef struct
 {
-  SENSORWIND_REAL mRealWind;  // Dual Port Ram¿¡¼­ µé¾î¿Â Data
-  SENSORWIND_BUF mWind[3];  // 0: ºĞ , 1: 10ºĞ , 2: 1½Ã°£
-  SENSORPROC_BUF mTempBuf[3];   // 0: ºĞ , 1: 10ºĞ , 2: 1½Ã°£
-  SENSORPROC_BUF mBaroBuf[3];   // 0: ºĞ , 1: 10ºĞ , 2: 1½Ã°£
-  SENSORPROC_BUF mHumidBuf[3];  // 0: ºĞ , 1: 10ºĞ , 2: 1½Ã°£
+  SENSORWIND_REAL mRealWind;  // Dual Port Ramì—ì„œ ë“¤ì–´ì˜¨ Data
+  SENSORWIND_BUF mWind[3];  // 0: ë¶„ , 1: 10ë¶„ , 2: 1ì‹œê°„
+  SENSORPROC_BUF mTempBuf[3];   // 0: ë¶„ , 1: 10ë¶„ , 2: 1ì‹œê°„
+  SENSORPROC_BUF mBaroBuf[3];   // 0: ë¶„ , 1: 10ë¶„ , 2: 1ì‹œê°„
+  SENSORPROC_BUF mHumidBuf[3];  // 0: ë¶„ , 1: 10ë¶„ , 2: 1ì‹œê°„
   SENSORRAIN_BUF mRain;
-  SENSORSUN_BUF mSun[3];  // 0: ºĞ , 1: 10ºĞ , 2: 1½Ã°£
+  SENSORSUN_BUF mSun[3];  // 0: ë¶„ , 1: 10ë¶„ , 2: 1ì‹œê°„
   SENSORPROC_BUF mGndBuf[3];
   SENSORPROC_BUF mGrassBuf[3];
   SENSORPROC_BUF mSoil5Buf[3];
@@ -211,31 +211,31 @@ typedef struct
   SENSORPROC_BUF mSoil100Buf[3];
   SENSORPROC_BUF mSoil150Buf[3];
   SUNSHINE_BUF mSunshine;
-  uint16_t shSnowFallOld;  // 10ºĞ ´©Àû Àû¼³·®À» ±¸ÇÏ±âÀ§ÇÑ 10ºĞÀü Àû¼³(½ÇÀû¼³)
-   // Count¸¦ 10ÃÊ ÀÌ»óÀÏ °æ¿ì 9999·Î ¼³Á¤ÇÑ´Ù(Mega640ÀÇ ¸®¼Â½Ã ´ëÀÀ ÇÏ±âÀ§ÇÔ)
-  uint8_t cMegaErrCnt[15];  // Error Count¸¦ 10ÃÊ ÀÌ»óÀÏ °æ¿ì 9999·Î
-                            // ¼³Á¤ÇÑ´Ù(Mega640ÀÇ ¸®¼Â½Ã ´ëÀÀ ÇÏ±âÀ§ÇÔ)
+  uint16_t shSnowFallOld;  // 10ë¶„ ëˆ„ì  ì ì„¤ëŸ‰ì„ êµ¬í•˜ê¸°ìœ„í•œ 10ë¶„ì „ ì ì„¤(ì‹¤ì ì„¤)
+   // Countë¥¼ 10ì´ˆ ì´ìƒì¼ ê²½ìš° 9999ë¡œ ì„¤ì •í•œë‹¤(Mega640ì˜ ë¦¬ì…‹ì‹œ ëŒ€ì‘ í•˜ê¸°ìœ„í•¨)
+  uint8_t cMegaErrCnt[15];  // Error Countë¥¼ 10ì´ˆ ì´ìƒì¼ ê²½ìš° 9999ë¡œ
+                            // ì„¤ì •í•œë‹¤(Mega640ì˜ ë¦¬ì…‹ì‹œ ëŒ€ì‘ í•˜ê¸°ìœ„í•¨)
 
   short m_shOffDelayRemain;  // OffDelay Remain Time(sec)
-  uint8_t m_cOffDelayFlag;   // Off Delay Flag 1:ÀÏ¶§ Ã³¸®
+  uint8_t m_cOffDelayFlag;   // Off Delay Flag 1:ì¼ë•Œ ì²˜ë¦¬
   short m_usRainDtOffDelay;
-} SYSTEM_INFO_AWS; //1352¹ÙÀÌÆ® 
+} SYSTEM_INFO_AWS; //1352ë°”ì´íŠ¸ 
 
 
 typedef struct
 {
-  uint8_t m_cViDestID;     // °¡»ó ¸ñÀûÁö ÁÖ¼Ò
-  uint8_t m_cViSourID;     // °¡»ó º¸³½ ÁÖ¼Ò
-  uint8_t m_cTransDestID;  // º¯È¯ ¸ñÀûÁö ÁÖ¼Ò
-  uint8_t m_cTransTrsID;   // º¯È¯ Áß°è ÁÖ¼Ò
+  uint8_t m_cViDestID;     // ê°€ìƒ ëª©ì ì§€ ì£¼ì†Œ
+  uint8_t m_cViSourID;     // ê°€ìƒ ë³´ë‚¸ ì£¼ì†Œ
+  uint8_t m_cTransDestID;  // ë³€í™˜ ëª©ì ì§€ ì£¼ì†Œ
+  uint8_t m_cTransTrsID;   // ë³€í™˜ ì¤‘ê³„ ì£¼ì†Œ
 } VIRTUAL_IDGROUP_TABLE;
 
 typedef struct
 {
-  uint16_t sOffset;      // AD Convertion ÃÖ¼Ò°ª
-  uint16_t sFull;        // AD Convertion ÃÖ°í°ª
+  uint16_t sOffset;      // AD Convertion ìµœì†Œê°’
+  uint16_t sFull;        // AD Convertion ìµœê³ ê°’
   uint16_t sUse;         // 0: Use 1: NotUse
-  uint16_t sChanDefine;  // Ã·ÀÚ:chan -> 0:Temp, 1:WindDirc, 2:Humid, 3:Barometric
+  uint16_t sChanDefine;  // ì²¨ì:chan -> 0:Temp, 1:WindDirc, 2:Humid, 3:Barometric
                          // 4:Solar Rad, 5:SnowFall
 } CALIB_BUF;
 
@@ -249,7 +249,7 @@ typedef enum eChargerType_
 
 typedef struct
 {
-  uint8_t m_cAlmId;  // °æº¸±¹ ID
+  uint8_t m_cAlmId;  // ê²½ë³´êµ­ ID
   uint8_t m_cRev[2];
   uint8_t m_cSystemGrp;   // System Group Number
   uint8_t m_cHstId;       // Loop Back Destination   Id
@@ -258,32 +258,32 @@ typedef struct
   uint16_t m_usTxPttGap;  // PTT Gap Time Configration Memory
   uint8_t m_cRstCnt;      // Host RTU Reset Count
   uint8_t m_cMsgQueIn;    // Message Que Input Count
-  uint8_t m_cMessageNum[20][8];  // °æº¸±¹ Configration°ú °°ÀÌ ÇÏ±âÀ§ÇÔ(6°³ »ç¿ë 2°³ ¿¹ºñ)
-  VIRTUAL_IDGROUP_TABLE m_ViGRP[64];  // °¡»óID Æ÷¿öµù Áß°è ¼³Á¤
-  uint32_t m_usVhfTmout;                 // Loop Back½Ã Time Out½Ã°£ ¼³Á¤
-  uint8_t m_cToneSec;                 // Tone Áö¿¬ ½Ã°£
-  uint8_t m_cNoiseSec;                // Noise Áö¿¬ ½Ã°£
+  uint8_t m_cMessageNum[20][8];  // ê²½ë³´êµ­ Configrationê³¼ ê°™ì´ í•˜ê¸°ìœ„í•¨(6ê°œ ì‚¬ìš© 2ê°œ ì˜ˆë¹„)
+  VIRTUAL_IDGROUP_TABLE m_ViGRP[64];  // ê°€ìƒID í¬ì›Œë”© ì¤‘ê³„ ì„¤ì •
+  uint32_t m_usVhfTmout;                 // Loop Backì‹œ Time Outì‹œê°„ ì„¤ì •
+  uint8_t m_cToneSec;                 // Tone ì§€ì—° ì‹œê°„
+  uint8_t m_cNoiseSec;                // Noise ì§€ì—° ì‹œê°„
   uint8_t m_cEvSendCount;
 
 } SYSTEM_CONFIG_AWS;
 
-#define WINDSPEED_CHN 36   // Pulse Input Á¤ÀÇ
-#define TEMPERATURE_CHN 0  // AD Converter Input Á¤ÀÇ
-#define SUNSHINE_CHN 2     // ÀÏÁ¶ ¼¾¼­
-#define WINDDIREC_CHN 3    // AD Converter Input Á¤ÀÇ
-#define HUMIDITY_CHN 4     // ½Àµµ
-#define BAROMETRIC_CHN 5   // ±â¾Ğ
-#define SNOWFALL_CHN 6     // Àû¼³·®
-#define SOLARRAD_CHN 7     // ÀÏ»ç·®
-// Ãß°¡ 2017. 03.22 //
-#define SOLITEMP5CM_CHN 8    // ÁöÁß¿Âµµ 5Cm [A08] mSoilTemp5cm
-#define SOLITEMP50CM_CHN 9   // ÁöÁß¿Âµµ 50Cm [A09] mSoilTemp50cm
-#define SOLITEMP1_0M_CHN 10  // ÁöÁß¿Âµµ 1.0m [A10] mSoilTemp1_0m
-#define SOLITEMP1_5M_CHN 11  // ÁöÁß¿Âµµ 1.5m [A11] mSoilTemp1_5m
+#define WINDSPEED_CHN 36   // Pulse Input ì •ì˜
+#define TEMPERATURE_CHN 0  // AD Converter Input ì •ì˜
+#define SUNSHINE_CHN 2     // ì¼ì¡° ì„¼ì„œ
+#define WINDDIREC_CHN 3    // AD Converter Input ì •ì˜
+#define HUMIDITY_CHN 4     // ìŠµë„
+#define BAROMETRIC_CHN 5   // ê¸°ì••
+#define SNOWFALL_CHN 6     // ì ì„¤ëŸ‰
+#define SOLARRAD_CHN 7     // ì¼ì‚¬ëŸ‰
+// ì¶”ê°€ 2017. 03.22 //
+#define SOLITEMP5CM_CHN 8    // ì§€ì¤‘ì˜¨ë„ 5Cm [A08] mSoilTemp5cm
+#define SOLITEMP50CM_CHN 9   // ì§€ì¤‘ì˜¨ë„ 50Cm [A09] mSoilTemp50cm
+#define SOLITEMP1_0M_CHN 10  // ì§€ì¤‘ì˜¨ë„ 1.0m [A10] mSoilTemp1_0m
+#define SOLITEMP1_5M_CHN 11  // ì§€ì¤‘ì˜¨ë„ 1.5m [A11] mSoilTemp1_5m
 
-#define SOLITEMP10CM_CHN 12  // ÁöÁß¿Âµµ 10Cm [ ] mSoilTemp10cm	ÀÓ½Ã
-#define SOLITEMP20CM_CHN 13  // ÁöÁß¿Âµµ 20Cm [ ] mSoilTemp20cm 	ÀÓ½Ã
-#define SOLITEMP30CM_CHN 14  // ÁöÁß¿Âµµ 30Cm [ ] mSoilTemp30cm	ÀÓ½Ã
+#define SOLITEMP10CM_CHN 12  // ì§€ì¤‘ì˜¨ë„ 10Cm [ ] mSoilTemp10cm	ì„ì‹œ
+#define SOLITEMP20CM_CHN 13  // ì§€ì¤‘ì˜¨ë„ 20Cm [ ] mSoilTemp20cm 	ì„ì‹œ
+#define SOLITEMP30CM_CHN 14  // ì§€ì¤‘ì˜¨ë„ 30Cm [ ] mSoilTemp30cm	ì„ì‹œ
 
 #define MEGASPEED_ERR_CHAN 0
 #define MEGADIREC_ERR_CHAN 1

@@ -13,27 +13,27 @@
 #if 0 
 
 /**
- * @brief ÇÎÅ×½ºÆ®¸¦ ÇÏ°í °á°ú°ªÀ» ¸Ş½ÃÁöÇü½ÄÀ¸·Î Àü´Ş
+ * @brief í•‘í…ŒìŠ¤íŠ¸ë¥¼ í•˜ê³  ê²°ê³¼ê°’ì„ ë©”ì‹œì§€í˜•ì‹ìœ¼ë¡œ ì „ë‹¬
  */
 void ping_task(const void *arg)
 {
-    ping_req_t *params = (ping_req_t *)arg;  // ¸Å°³º¯¼ö ±¸Á¶Ã¼
+    ping_req_t *params = (ping_req_t *)arg;  // ë§¤ê°œë³€ìˆ˜ êµ¬ì¡°ì²´
     struct sockaddr_in dest_addr;
-    char send_buf[40];  // Ping µ¥ÀÌÅÍ ¹öÆÛ
-    char recv_buf[128]; // ¼ö½Å µ¥ÀÌÅÍ ¹öÆÛ
+    char send_buf[40];  // Ping ë°ì´í„° ë²„í¼
+    char recv_buf[128]; // ìˆ˜ì‹  ë°ì´í„° ë²„í¼
     int sock;
-    int seq = 0;        // ICMP Echo RequestÀÇ ½ÃÄö½º ¹øÈ£
+    int seq = 0;        // ICMP Echo Requestì˜ ì‹œí€€ìŠ¤ ë²ˆí˜¸
     int i;
     int len;
     uint8_t recved_cnt=0;
     char message[200]={"{\"message\":\"unknown err\"}"};
-    // ´ë»ó ÁÖ¼Ò ¼³Á¤
+    // ëŒ€ìƒ ì£¼ì†Œ ì„¤ì •
     memset(&dest_addr, 0, sizeof(dest_addr));
     dest_addr.sin_family = AF_INET;
     dest_addr.sin_addr.s_addr = inet_addr(params->dest_ip);
-    dest_addr.sin_port = 0; // ICMP´Â Æ÷Æ® »ç¿ë ¾È ÇÔ
+    dest_addr.sin_port = 0; // ICMPëŠ” í¬íŠ¸ ì‚¬ìš© ì•ˆ í•¨
 
-    // ¼ÒÄÏ »ı¼º
+    // ì†Œì¼“ ìƒì„±
     sock = socket(AF_INET, SOCK_RAW, IP_PROTO_ICMP);
     if (sock < 0) {
           send_response("{\"message\":\"sock fail\"}");
@@ -41,7 +41,7 @@ void ping_task(const void *arg)
         return;
     }
 
-    // ¼Û¼ö½Å Å¸ÀÓ¾Æ¿ô ¼³Á¤
+    // ì†¡ìˆ˜ì‹  íƒ€ì„ì•„ì›ƒ ì„¤ì •
     struct timeval timeout;
     timeout.tv_sec = 1;
     timeout.tv_usec = 0;
@@ -61,14 +61,14 @@ void ping_task(const void *arg)
        socklen_t from_len = sizeof(from_addr);
        int recv_len;
 
-        // ICMP Echo Request »ı¼º
+        // ICMP Echo Request ìƒì„±
         icmp_hdr->type = ICMP_ECHO;
         icmp_hdr->code = 0;
-        icmp_hdr->chksum = 0;//ÇÏµå¿ş¾î¿¡¼­ Ã³¸® ÇÔ
-        icmp_hdr->id = htons(0x1234); // ÀÓÀÇÀÇ ½Äº°ÀÚ
+        icmp_hdr->chksum = 0;//í•˜ë“œì›¨ì–´ì—ì„œ ì²˜ë¦¬ í•¨
+        icmp_hdr->id = htons(0x1234); // ì„ì˜ì˜ ì‹ë³„ì
         icmp_hdr->seqno = htons(seq++);
-        // Ping µ¥ÀÌÅÍ Àü¼Û
-        uint32_t start_time = osKernelSysTick();  // ½ÃÀÛ ½Ã°£ ÃøÁ¤
+        // Ping ë°ì´í„° ì „ì†¡
+        uint32_t start_time = osKernelSysTick();  // ì‹œì‘ ì‹œê°„ ì¸¡ì •
         if (sendto(sock, send_buf, sizeof(send_buf), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr)) < 0)
         {
           send_response("{\"message\":\"send timeout\"}");
@@ -76,16 +76,16 @@ void ping_task(const void *arg)
           osThreadTerminate(NULL);
         }
 
-        // Ping ÀÀ´ä ¼ö½Å
+        // Ping ì‘ë‹µ ìˆ˜ì‹ 
         recv_len = recvfrom(sock, recv_buf, sizeof(recv_buf), 0, (struct sockaddr *)&from_addr, &from_len);
 
         if (recv_len > 0) 
         {
           recved_cnt++;
-            uint32_t end_time = osKernelSysTick();  // Á¾·á ½Ã°£ ÃøÁ¤
+            uint32_t end_time = osKernelSysTick();  // ì¢…ë£Œ ì‹œê°„ ì¸¡ì •
             uint32_t rtt = (end_time - start_time) ;
 
-            // TTL È®ÀÎ
+            // TTL í™•ì¸
             struct ip_hdr *ip_hdr = (struct ip_hdr *)recv_buf;
             int ttl = ip_hdr->_ttl;
 
@@ -97,11 +97,11 @@ void ping_task(const void *arg)
           close(sock);
           osThreadTerminate(NULL);
         }
-        // 1ÃÊ °£°İÀ¸·Î ´ë±â
+        // 1ì´ˆ ê°„ê²©ìœ¼ë¡œ ëŒ€ê¸°
         osDelay(1000);
     }
 
-    // ¼ÒÄÏ ´İ±â
+    // ì†Œì¼“ ë‹«ê¸°
     close(sock);
 
     if(recved_cnt == 0)

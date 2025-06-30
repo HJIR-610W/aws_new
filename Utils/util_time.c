@@ -116,10 +116,10 @@ long GetTotalSeconds(time_t ts)
 }
 
 bool isLeapYear(int year) { return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0); }
-// year: ¿¬µµ (¿¹: 2025)
-// month: ¿ù (1 ~ 12)
-// day: ÀÏ (1 ~ 31)
-// ¸®ÅÏ°ª: ÇØ´ç ¿¬µµÀÇ 1¿ù 1ÀÏºÎÅÍ ¸î ¹øÂ° ³¯ÀÎÁö (1 ~ 365 ¶Ç´Â 366)
+// year: ì—°ë„ (ì˜ˆ: 2025)
+// month: ì›” (1 ~ 12)
+// day: ì¼ (1 ~ 31)
+// ë¦¬í„´ê°’: í•´ë‹¹ ì—°ë„ì˜ 1ì›” 1ì¼ë¶€í„° ëª‡ ë²ˆì§¸ ë‚ ì¸ì§€ (1 ~ 365 ë˜ëŠ” 366)
 int dayOfYear(int year, int month, int day)
 {
   static const uint16_t days_until_month[12] = {0,   31,  59,  90,  120, 151,
@@ -128,7 +128,7 @@ int dayOfYear(int year, int month, int day)
                                                      182, 213, 244, 274, 305, 335};
 
   if (month < 1 || month > 12 || day < 1 || day > 31)
-    return -1;  // Àß¸øµÈ ³¯Â¥ ÀÔ·Â
+    return -1;  // ì˜ëª»ëœ ë‚ ì§œ ì…ë ¥
 
   const uint16_t *table = isLeapYear(year) ? days_until_month_leap : days_until_month;
   return table[month - 1] + day;
@@ -145,7 +145,7 @@ void subtract_seconds(DATE_TIME_BUF *dt, uint32_t seconds)
 }
 
 
-//ÇöÀç ºĞÀÌ ÇØÀÇ ½ÃÀÛºÎÅÍ ¸î¹øÂ° ºĞÀÎÁö È®ÀÎ
+//í˜„ì¬ ë¶„ì´ í•´ì˜ ì‹œì‘ë¶€í„° ëª‡ë²ˆì§¸ ë¶„ì¸ì§€ í™•ì¸
 int offset_min(DATE_TIME_BUF *t)
 {
   DATE_TIME_BUF base;

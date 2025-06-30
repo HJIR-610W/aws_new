@@ -10,19 +10,19 @@
 #include "panel_common.h"
 
 /*
-(1) Ç³Çâ
-(2) Àû¼³,±â¾Ğ,¿ù,ÀÏ,½Ã,ºĞ
-(3) ¿Âµµ,ÀÏ ÃÖ°í ¿Âµµ,ÀÏ ÃÖÀú ¿Âµµ, ½Àµµ
-(4) Ç³¼Ó,¿¬°£¿ì·®,±İÀÏ ¿ì·®,ÀüÀÏ ¿ì·®
+(1) í’í–¥
+(2) ì ì„¤,ê¸°ì••,ì›”,ì¼,ì‹œ,ë¶„
+(3) ì˜¨ë„,ì¼ ìµœê³  ì˜¨ë„,ì¼ ìµœì € ì˜¨ë„, ìŠµë„
+(4) í’ì†,ì—°ê°„ìš°ëŸ‰,ê¸ˆì¼ ìš°ëŸ‰,ì „ì¼ ìš°ëŸ‰
 
-AWS(½Å)
+AWS(ì‹ )
 (1) 51 01 05 02 01 0C 15
 (2) 51 02 00 00 11 20 20 20 30 2E 30 20 20 20 20 35 35 30 2E 38 20 20 20 30 35 33 30 30 33 30 30 C1
 (3) 51 03 00 00 14 20 32 36 2E 33 20 32 36 2E 33 2D 31 30 30 2E 20 34 34 2E 33 BE
 (4) 51 04 00 00 11 39 39 39 2E 38 20 20 20 30 20 20 20 30 20 20 20 30 D6
 
 
-AWS(±¸)
+AWS(êµ¬)
 (1) 51 01 05 02 01 00 09
 (2) 51 02 00 00 11 20 20 20 30 2E 30 20 20 20 31 39 39 39 2E 39 20 20 20 30 31 32 39 30 30 34 39 E4
 (3) 51 03 00 00 14 38 39 39 2E 39 38 39 39 2E 39 2D 31 30 30 2E 39 39 39 2E 39 37
@@ -43,7 +43,7 @@ void send_panel_muju(
   p_kma =get_kma_data(eAWS_DATA_AVG);
 
 
-// ¹«ÁÖ ±â»ó »óÈ²ÆÇ¿ë 
+// ë¬´ì£¼ ê¸°ìƒ ìƒí™©íŒìš© 
 framemk[cnt++] 		= 'Q';																	//Start Code 'Q'
 framemk[cnt++] 		= 0x01;																	// ID
 framemk[cnt++] 		= 0x05;																	// Status
@@ -66,24 +66,24 @@ framemk[cnt++] 		= 17;																	// Length
 
 if(get_config_app()->panel_snow_use)
 {
-// SNOW FALL Ãß°¡(2012. 03. 26)
+// SNOW FALL ì¶”ê°€(2012. 03. 26)
 sprintf(&framemk[cnt],"%6.1f   ", (float)p_kma->snowfall.data / 10.0);
 cnt					+= 9;
-//SNOW FALL Ãß°¡(2012. 03. 26)  --³¡--
+//SNOW FALL ì¶”ê°€(2012. 03. 26)  --ë--
 }
 
 if(get_config_app()->panel_barometer_use)
 {
 
-// ±â¾Ğ FALL Ãß°¡(2013. 05. 21)
+// ê¸°ì•• FALL ì¶”ê°€(2013. 05. 21)
 sprintf(&framemk[cnt],"%6.1f   ", (float)p_kma->pressure.data / 10);
 cnt					+= 9;
-// ±â¾Ğ FALL Ãß°¡(2013. 05. 21)  --³¡--
+// ê¸°ì•• FALL ì¶”ê°€(2013. 05. 21)  --ë--
 
 }
 
 sprintf(&framemk[cnt],"%02d%02d%02d%02d", pDate->Month, pDate->Day,
-                       pDate->Hour, pDate->Min);						// ¿ùÀÏ½ÃºĞ 
+                       pDate->Hour, pDate->Min);						// ì›”ì¼ì‹œë¶„ 
 cnt					+= 8;
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
 driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
@@ -97,13 +97,13 @@ framemk[cnt++] 		= 0x00;																	// Status
 framemk[cnt++] 		= 0x00;																	// Start Address
 framemk[cnt++] 		= 20;																	// Length
 
-sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.data - 1000.0))/10.0);			// ¿Âµµ ÇöÀç
+sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.data - 1000.0))/10.0);			// ì˜¨ë„ í˜„ì¬
 cnt					+= 5;
-sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.max - 1000.0))/10.0);				// ÀÏ ÃÖ°í¿Âµµ
+sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.max - 1000.0))/10.0);				// ì¼ ìµœê³ ì˜¨ë„
 cnt					+= 5;
-sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.min - 1000.0))/10.0);				// ÀÏ ÃÖÀú¿Âµµ
+sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.min - 1000.0))/10.0);				// ì¼ ìµœì €ì˜¨ë„
 cnt					+= 5;
-sprintf(&framemk[cnt],"%5.1f", (float)p_kma->relative_humidity.data/10.0);							// ½Àµµ ÇöÀç
+sprintf(&framemk[cnt],"%5.1f", (float)p_kma->relative_humidity.data/10.0);							// ìŠµë„ í˜„ì¬
 cnt					+= 5;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
@@ -117,13 +117,13 @@ framemk[cnt++] 		= 0x00;																	// Status
 framemk[cnt++] 		= 0x00;																	// Start Address
 framemk[cnt++] 		= 17;																	// Length
 
-sprintf(&framemk[cnt],"%5.1f", (float)p_kma->wind_speed_avg.data / 10.0);						// Ç³¼Ó
+sprintf(&framemk[cnt],"%5.1f", (float)p_kma->wind_speed_avg.data / 10.0);						// í’ì†
 cnt					+= 5;
-sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_yearly*10) );					// ¿¬°£ ´©°è °­¿ì·®
+sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_yearly*10) );					// ì—°ê°„ ëˆ„ê³„ ê°•ìš°ëŸ‰
 cnt					+= 4;
-sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_today*10) );						// ±İÀÏ  °­¿ì·®
+sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_today*10) );						// ê¸ˆì¼  ê°•ìš°ëŸ‰
 cnt					+= 4;
-sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_yesterday*10) );					// ÀüÀÏ  °­¿ì·®
+sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_yesterday*10) );					// ì „ì¼  ê°•ìš°ëŸ‰
 cnt					+= 4;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);

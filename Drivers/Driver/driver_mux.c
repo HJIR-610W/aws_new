@@ -34,9 +34,9 @@
 uint8_t is_gpio_set(GPIO_TypeDef *GPIOx, uint16_t pin)
 {
   if (GPIOx->ODR & pin)
-    return 1;  // ODR¿Ã 1¿Ã∏È 1 π›»Ø
+    return 1;  // ODRÏù¥ 1Ïù¥Î©¥ 1 Î∞òÌôò
   else
-    return 0;  // ODR¿Ã 0¿Ã∏È 0 π›»Ø
+    return 0;  // ODRÏù¥ 0Ïù¥Î©¥ 0 Î∞òÌôò
 }
 
 void adc_single_mux_set(uint16_t channel)
@@ -114,7 +114,7 @@ void adc_single_mux_set(uint16_t channel)
     }
   }
 
-  // √§≥Œ º±≈√
+  // Ï±ÑÎÑê ÏÑ†ÌÉù
   GPIO_TypeDef *portList[3] = {OUT_ADC_SEL_A0_GPIO_Port,
                                OUT_ADC_SEL_A1_GPIO_Port,
                                OUT_ADC_SEL_A2_GPIO_Port};
@@ -139,7 +139,7 @@ void adc_single_mux_set(uint16_t channel)
 /**
  * @brief
  *
- * sel2 sel1 sel0 ¡÷º“
+ * sel2 sel1 sel0 Ï£ºÏÜå
  * 0    0    0    0
  * 0    0    1    1
  * 0    1    0    2
@@ -173,9 +173,9 @@ void mux_set(uint8_t add)
 }
 
 /**
- * @brief √§≥Œ 0,1,2,3,4,5,6,7
+ * @brief Ï±ÑÎÑê 0,1,2,3,4,5,6,7
  *
- * sel2 sel1 sel0 √§≥Œ
+ * sel2 sel1 sel0 Ï±ÑÎÑê
  * 0    0    0    0
  * 0    0    1    1
  * 0    1    0    2
@@ -211,7 +211,7 @@ void adc_diff_mux_set(uint16_t channel)
 
 void adc_mux_init(void)
 {
-  // ADC √§≥Œ MUX √ ±‚»≠»≠
+  // ADC Ï±ÑÎÑê MUX Ï¥àÍ∏∞ÌôîÌôî
 
   board_config_gpio(OUT_ADC_SEL_A0_GPIO_Port, OUT_ADC_SEL_A0_Pin,
                     GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
@@ -225,7 +225,7 @@ void adc_mux_init(void)
                     GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
   board_set_gpio(OUT_ADC_SEL_A2_GPIO_Port, OUT_ADC_SEL_A2_Pin, GPIO_PIN_RESET);
 
-  // odd even rtc ¡ﬂ º±≈√ mux √ ±‚»≠
+  // odd even rtc Ï§ë ÏÑ†ÌÉù mux Ï¥àÍ∏∞Ìôî
   board_set_gpio(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin, GPIO_PIN_SET);
   board_config_gpio(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin,
                     GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);

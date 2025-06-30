@@ -164,13 +164,13 @@ void stm32_adc_close(driver_t *handle)
 }
 
 
-// ADC º¯È¯ ¿Ï·á ÀÎÅÍ·´Æ® Äİ¹é
+// ADC ë³€í™˜ ì™„ë£Œ ì¸í„°ëŸ½íŠ¸ ì½œë°±
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
   if (hadc->Instance == ADC1)
   {
     adcValue = HAL_ADC_GetValue(hadc);
-    osSemaphoreRelease(stm32_adc_config.adcIrqSem);  // ¼¼¸¶Æ÷¾î ÇØÁ¦
+    osSemaphoreRelease(stm32_adc_config.adcIrqSem);  // ì„¸ë§ˆí¬ì–´ í•´ì œ
   }
 }
 
@@ -182,7 +182,7 @@ void iar_adcCompleted(void *driver)
   if (cfg->handle->Instance == ADC1)
   {
     adcValue = HAL_ADC_GetValue(cfg->handle);
-    osSemaphoreRelease(stm32_adc_config.adcIrqSem);  // ¼¼¸¶Æ÷¾î ÇØÁ¦
+    osSemaphoreRelease(stm32_adc_config.adcIrqSem);  // ì„¸ë§ˆí¬ì–´ í•´ì œ
   }
 }
 
@@ -190,8 +190,8 @@ void iar_adcCompleted(void *driver)
 #define ADC_TIMEOUT_MS  100
 
 /*
-Ã¤³Î 0: ADC_CHANNEL_3
-Ã¤³Î 1: ADC_CHANNEL_4
+ì±„ë„ 0: ADC_CHANNEL_3
+ì±„ë„ 1: ADC_CHANNEL_4
 */
 int32_t stm32_adc_read_single(driver_t *handle,int channel,uint16_t avgCnt,uint8_t *err)
 {
@@ -208,27 +208,27 @@ int32_t stm32_adc_read_single(driver_t *handle,int channel,uint16_t avgCnt,uint8
   else if (channel == 1)
     sConfig.Channel = ADC_CHANNEL_4;
   else
-    return 0;  // Áö¿øµÇÁö ¾Ê´Â Ã¤³Î
+    return 0;  // ì§€ì›ë˜ì§€ ì•ŠëŠ” ì±„ë„
 
   sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
 
   if (HAL_ADC_ConfigChannel(cfg->handle, &sConfig) != HAL_OK)
   {
-     osSemaphoreRelease(handle->sem);  // ¼¼¸¶Æ÷¾î ÇØÁ¦
+     osSemaphoreRelease(handle->sem);  // ì„¸ë§ˆí¬ì–´ í•´ì œ
     return 0;
   }
 
   
   for (uint32_t i = 0; i < avgCnt; i++)
   {
-    HAL_ADC_Start_IT(cfg->handle);  // ADC º¯È¯ ½ÃÀÛ (ÀÎÅÍ·´Æ® »ç¿ë)
+    HAL_ADC_Start_IT(cfg->handle);  // ADC ë³€í™˜ ì‹œì‘ (ì¸í„°ëŸ½íŠ¸ ì‚¬ìš©)
 
-    // º¯È¯ ¿Ï·á±îÁö ´ë±â (¼¼¸¶Æ÷¾î)
+    // ë³€í™˜ ì™„ë£Œê¹Œì§€ ëŒ€ê¸° (ì„¸ë§ˆí¬ì–´)
     if (osSemaphoreAcquire(cfg->adcIrqSem, ADC_TIMEOUT_MS) != osOK)
     {
-      osSemaphoreRelease(handle->sem);  // ¼¼¸¶Æ÷¾î ÇØÁ¦
-      return 0;  // Å¸ÀÓ¾Æ¿ô ¹ß»ı ½Ã 0 ¹İÈ¯
+      osSemaphoreRelease(handle->sem);  // ì„¸ë§ˆí¬ì–´ í•´ì œ
+      return 0;  // íƒ€ì„ì•„ì›ƒ ë°œìƒ ì‹œ 0 ë°˜í™˜
     }
 
     sum += adcValue;
@@ -236,8 +236,8 @@ int32_t stm32_adc_read_single(driver_t *handle,int channel,uint16_t avgCnt,uint8
 
   avg = sum/avgCnt;
 
-   osSemaphoreRelease(handle->sem);  // ¼¼¸¶Æ÷¾î ÇØÁ¦
-  return avg;  // Æò±Õ°ª ¹İÈ¯
+   osSemaphoreRelease(handle->sem);  // ì„¸ë§ˆí¬ì–´ í•´ì œ
+  return avg;  // í‰ê· ê°’ ë°˜í™˜
 }
 
 

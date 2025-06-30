@@ -5,12 +5,12 @@
 #include "driver_interface.h"
 #include "driver_do_define.h"
 
-#define DO_EXT_0 100  //App Á¤ÀÇµÇÁö ¾ÊÀ½
-#define DO_EXT_1 101  // App Á¤ÀÇµÇÁö ¾ÊÀ½
-#define DO_EXT_2 102  // App Á¤ÀÇµÇÁö ¾ÊÀ½
-#define DO_EXT_3 103  // App Á¤ÀÇµÇÁö ¾ÊÀ½
-#define DO_EXT_4 104  // App Á¤ÀÇµÇÁö ¾ÊÀ½
-#define DO_EXT_5 105  // App Á¤ÀÇµÇÁö ¾ÊÀ½
+#define DO_EXT_0 100  //App ì •ì˜ë˜ì§€ ì•ŠìŒ
+#define DO_EXT_1 101  // App ì •ì˜ë˜ì§€ ì•ŠìŒ
+#define DO_EXT_2 102  // App ì •ì˜ë˜ì§€ ì•ŠìŒ
+#define DO_EXT_3 103  // App ì •ì˜ë˜ì§€ ì•ŠìŒ
+#define DO_EXT_4 104  // App ì •ì˜ë˜ì§€ ì•ŠìŒ
+#define DO_EXT_5 105  // App ì •ì˜ë˜ì§€ ì•ŠìŒ
 
 #define DO_POWER_CDMA      0  // BSP
 #define DO_POWER_HART_24V  1  // BSP

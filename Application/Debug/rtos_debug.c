@@ -18,17 +18,17 @@
 
 void YourTimerInitFunction(void) 
 {
-  // Cortex-MÀÇ DWT¸¦ È°¼ºÈ­
+  // Cortex-Mì˜ DWTë¥¼ í™œì„±í™”
 
   if(CoreDebug->DEMCR &CoreDebug_DEMCR_TRCENA_Msk == 0)
   {
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;  // DWT Enable
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;            // Cycle Counter Enable
-    DWT->CYCCNT = 0;                                // Counter ÃÊ±âÈ­
+    DWT->CYCCNT = 0;                                // Counter ì´ˆê¸°í™”
   }
 }
 
 uint32_t YourTimerGetCounterValue(void) 
 {
-  return DWT->CYCCNT;  // Cycle Counter °ª ¹ÝÈ¯
+  return DWT->CYCCNT;  // Cycle Counter ê°’ ë°˜í™˜
 }

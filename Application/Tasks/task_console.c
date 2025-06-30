@@ -29,13 +29,13 @@ const osThreadAttr_t consoleTask_attributes = {
 
 
 static const shell_command_context_t printCmd = { "menu",
-                                                  "\r\n\"menu\":±âº» ¸Ş´º\r\n" ,
+                                                  "\r\n\"menu\":ê¸°ë³¸ ë©”ë‰´\r\n" ,
                                                    menu_root,0 };
 
-static const shell_command_context_t developCmd = {"develop", "\r\n\"develop\":°³¹ßÀÚ\r\n", menu_develop,
+static const shell_command_context_t developCmd = {"develop", "\r\n\"develop\":ê°œë°œì\r\n", menu_develop,
                                                  0};
 
-static const shell_command_context_t testCmd = {"test", "\r\n\"test\":º¸µå Å×½ºÆ®\r\n", test_pcb, 0};
+static const shell_command_context_t testCmd = {"test", "\r\n\"test\":ë³´ë“œ í…ŒìŠ¤íŠ¸\r\n", test_pcb, 0};
 
 void print_signature(void)
 {
@@ -54,11 +54,11 @@ void print_signature(void)
   io_printf("(0tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu(B\r\n");
   io_printf("(0x(B AWS                                      (0x(B\r\n"); //1111-11-11 11:11:11
   io_printf("(0x(B App  %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",major,minor,fix,rel,ct.Year,ct.Month,ct.Day,
-                                                  ct.Hour,ct.Min,ct.Sec);//os »ç¿ëÀü¿¡´Â Á÷Á¢ È£Ãâ
+                                                  ct.Hour,ct.Min,ct.Sec);//os ì‚¬ìš©ì „ì—ëŠ” ì§ì ‘ í˜¸ì¶œ
   get_boot_version(&major,&minor,&fix,&rel);
   get_boot_build(&ct);
   io_printf("(0x(B Boot %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",major,minor,fix,rel,ct.Year,ct.Month,ct.Day,
-                                                  ct.Hour,ct.Min,ct.Sec);//os »ç¿ëÀü¿¡´Â Á÷Á¢ È£Ãâ
+                                                  ct.Hour,ct.Min,ct.Sec);//os ì‚¬ìš©ì „ì—ëŠ” ì§ì ‘ í˜¸ì¶œ
   io_printf("(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B\r\n");
 
 }
@@ -123,7 +123,7 @@ void consoleTask(void *arg)
 }
 
 
-//µğ¹ö±ë Æ÷Æ®¸¦ »ç¿ë °¡´ÉÇÒ¶§¸¸ ÄÜ¼Ö task ½ÇÇà
+//ë””ë²„ê¹… í¬íŠ¸ë¥¼ ì‚¬ìš© ê°€ëŠ¥í• ë•Œë§Œ ì½˜ì†” task ì‹¤í–‰
 void consoleTask_init(void *arg)
 {
   uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};

@@ -21,7 +21,7 @@ void compute_daily_data(uint8_t type, void *data_minutes, void *data_days, int y
 {
   uint32_t i;
   uint32_t day_index = 0;
-  uint32_t minute_index = 1;  // 00:01ºÎÅÍ ½ÃÀÛ
+  uint32_t minute_index = 1;  // 00:01ë¶€í„° ì‹œì‘
 
   uint32_t days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
@@ -97,9 +97,9 @@ int32_t get_daily_accu(uint8_t type, const void *data_days, int year, int month,
 {
   int index = dayOfYear(year, month, day);
   if (index <= 0 || index > 366)
-    return -1;  // ¿À·ù °ª (unsigned -1)
+    return -1;  // ì˜¤ë¥˜ ê°’ (unsigned -1)
 
-  index -= 1;  // 0-based ÀÎµ¦½º
+  index -= 1;  // 0-based ì¸ë±ìŠ¤
 
   if (type == 16)
   {
@@ -112,7 +112,7 @@ int32_t get_daily_accu(uint8_t type, const void *data_days, int year, int month,
     return src[index];
   }
 
-  return -1;  // Àß¸øµÈ type
+  return -1;  // ì˜ëª»ëœ type
 }
 
 uint16_t get_monthly_accu(uint8_t type,const void *data_days, int year, int month)
@@ -153,7 +153,7 @@ uint32_t get_yearly_accu(uint8_t type, const void *data_days, int year, int mont
   }
   else
   {
-    return 0;  // Àß¸øµÈ type
+    return 0;  // ì˜ëª»ëœ type
   }
 
   return sum;
@@ -169,7 +169,7 @@ uint32_t get_hourly_accu(uint8_t type, const void *data_minutes, int year, int m
   if (doy <= 0 || doy > DATA_DAYS_IN_YEAR)
     return 0xFFFFFFFF;
 
-  // ½ÃÀÛ ÀÎµ¦½º: 00ºĞ ±âÁØ (ÁÖÀÇ: +1ÀÌ¸é 00:01ºÎÅÍ ½ÃÀÛÇÏ´Â °æ¿ìÀÓ, ¿©±â¼± 00:00ºÎÅÍ)
+  // ì‹œì‘ ì¸ë±ìŠ¤: 00ë¶„ ê¸°ì¤€ (ì£¼ì˜: +1ì´ë©´ 00:01ë¶€í„° ì‹œì‘í•˜ëŠ” ê²½ìš°ì„, ì—¬ê¸°ì„  00:00ë¶€í„°)
   uint32_t start_index = (doy - 1) * DATA_MINUTES_PER_DAY + hour * 60;
 
   uint32_t sum = 0;
@@ -211,7 +211,7 @@ void index_to_datetime(uint16_t year, uint32_t index, DATE_TIME_BUF *dt)
   base_tm.tm_min = 0;
   base_tm.tm_sec = 0;
 
-  // index ºĞ ¸¸Å­ Ãß°¡
+  // index ë¶„ ë§Œí¼ ì¶”ê°€
   time_t base_time = mktime(&base_tm);
   base_time += index * 60;
 
@@ -219,7 +219,7 @@ void index_to_datetime(uint16_t year, uint32_t index, DATE_TIME_BUF *dt)
 
   localtime_s(&base_time, &result );
 
-  // °á°ú ±¸Á¶Ã¼ Ã¤¿ì±â
+  // ê²°ê³¼ êµ¬ì¡°ì²´ ì±„ìš°ê¸°
   dt->Year = result.tm_year + 1900;
   dt->Month = result.tm_mon + 1;
   dt->Day = result.tm_mday;

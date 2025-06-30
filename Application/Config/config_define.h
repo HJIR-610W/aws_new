@@ -7,7 +7,7 @@
 
 #define CONFIG_MAGIC 0x5a5a5a5a
 
-// 4¹ÙÀÌÆ® Á¤·Ä ÇÊ¼ö
+// 4ë°”ì´íŠ¸ ì •ë ¬ í•„ìˆ˜
 typedef struct config_header_s
 {
   uint32_t magicNum;

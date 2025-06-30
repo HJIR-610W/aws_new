@@ -38,7 +38,7 @@ void parse_ads1220_register(driver_t *drv)
 {
   uint8_t reg;
 
-  DEBUG_PRINTF("\r\n==== ADS1220 ·¹Áö½ºÅÍ ¼³Á¤°ª==== \r\n");
+  DEBUG_PRINTF("\r\n==== ADS1220 ë ˆì§€ìŠ¤í„° ì„¤ì •ê°’==== \r\n");
   // Register 0: MUX[7:4], GAIN[3:1], PGA_BYPASS[0]
   read_reg(drv, ADS1220_REG_0, 1, &reg);
   DEBUG_PRINTF("REG0 (0x%02X): 0x%02X\r\n", ADS1220_REG_0, reg);
@@ -47,7 +47,7 @@ void parse_ads1220_register(driver_t *drv)
   switch ((reg >> 4) & 0x0F)
   {
     case 0x0:
-      DEBUG_PRINTF("0000 - AIN0 - AIN1 (±âº»°ª)");
+      DEBUG_PRINTF("0000 - AIN0 - AIN1 (ê¸°ë³¸ê°’)");
       break;
     case 0x1:
       DEBUG_PRINTF("0001 - AIN0 - AIN2");
@@ -86,7 +86,7 @@ void parse_ads1220_register(driver_t *drv)
       DEBUG_PRINTF("1100 - REFP0 - REFN0");
       break;
     case 0xD:
-      DEBUG_PRINTF("1101 - AVDD - AVSS (¸ğ´ÏÅÍ)");
+      DEBUG_PRINTF("1101 - AVDD - AVSS (ëª¨ë‹ˆí„°)");
       break;
     case 0xE:
       DEBUG_PRINTF("1110 - AINP - AINN shorted");
@@ -95,13 +95,13 @@ void parse_ads1220_register(driver_t *drv)
       DEBUG_PRINTF("1111 - Reserved");
       break;
   }
-  DEBUG_PRINTF("        // ÀÔ·Â ´ÙÁß ¼±ÅÃ\r\n");
+  DEBUG_PRINTF("        // ì…ë ¥ ë‹¤ì¤‘ ì„ íƒ\r\n");
 
   DEBUG_PRINTF("  GAIN      [3:1]: ");
   switch ((reg >> 1) & 0x07)
   {
     case 0:
-      DEBUG_PRINTF("000 - Gain = 1 (±âº»°ª)");
+      DEBUG_PRINTF("000 - Gain = 1 (ê¸°ë³¸ê°’)");
       break;
     case 1:
       DEBUG_PRINTF("001 - Gain = 2");
@@ -125,10 +125,10 @@ void parse_ads1220_register(driver_t *drv)
       DEBUG_PRINTF("111 - Gain = 128");
       break;
   }
-  DEBUG_PRINTF("              // PGA ÀÌµæ ¼³Á¤\r\n");
+  DEBUG_PRINTF("              // PGA ì´ë“ ì„¤ì •\r\n");
 
-  DEBUG_PRINTF("  PGA Bypass[0]  : %s             // ³»ºÎ ÀúÀâÀ½ PGA ¿ìÈ¸ ¿©ºÎ\r\n",
-            (reg & 0x01) ? "1 - ¿ìÈ¸ÇÔ (Bypassed)" : "0 - »ç¿ëÇÔ (Enabled)");
+  DEBUG_PRINTF("  PGA Bypass[0]  : %s             // ë‚´ë¶€ ì €ì¡ìŒ PGA ìš°íšŒ ì—¬ë¶€\r\n",
+            (reg & 0x01) ? "1 - ìš°íšŒí•¨ (Bypassed)" : "0 - ì‚¬ìš©í•¨ (Enabled)");
 
   // Register 1: DR[7:5], MODE[4:3], CM[2], TS[1], BCS[0]
   read_reg(drv, ADS1220_REG_1, 1, &reg);
@@ -162,7 +162,7 @@ void parse_ads1220_register(driver_t *drv)
       DEBUG_PRINTF("111 - Reserved\r\n");
       break;
   }
-  DEBUG_PRINTF("                        // Ãâ·Â »ùÇÃ¸µ ¼Óµµ ¼³Á¤\r\n");
+  DEBUG_PRINTF("                        // ì¶œë ¥ ìƒ˜í”Œë§ ì†ë„ ì„¤ì •\r\n");
 
   DEBUG_PRINTF("  Mode      [4:3]: ");
   switch ((reg >> 3) & 0x03)
@@ -180,14 +180,14 @@ void parse_ads1220_register(driver_t *drv)
       DEBUG_PRINTF("11 - Reserved\r\n");
       break;
   }
-  DEBUG_PRINTF("                        // º¯È¯ Å¬·° µ¿ÀÛ ¸ğµå ¼³Á¤\r\n");
+  DEBUG_PRINTF("                        // ë³€í™˜ í´ëŸ­ ë™ì‘ ëª¨ë“œ ì„¤ì •\r\n");
 
-  DEBUG_PRINTF("  CM        [2]  : %s                // °øÅë ¸ğµå Á¦°Å ±â´É\r\n",
+  DEBUG_PRINTF("  CM        [2]  : %s                // ê³µí†µ ëª¨ë“œ ì œê±° ê¸°ëŠ¥\r\n",
             (reg & 0x04) ? "1 - Enabled" : "0 - Disabled");
-  DEBUG_PRINTF("  Temp Sensor[1] : %s              // ³»ºÎ ¿Âµµ ¼¾¼­ »ç¿ë\r\n",
+  DEBUG_PRINTF("  Temp Sensor[1] : %s              // ë‚´ë¶€ ì˜¨ë„ ì„¼ì„œ ì‚¬ìš©\r\n",
             (reg & 0x02) ? "1 - Enabled" : "0 - Disabled");
-  DEBUG_PRINTF("  Burn-out  [0]  : %s                // 10uA ¹ø¾Æ¿ô Àü·ù ¼Ò½º\r\n",
-            (reg & 0x01) ? "1 - On" : "0 - Off (±âº»°ª)");
+  DEBUG_PRINTF("  Burn-out  [0]  : %s                // 10uA ë²ˆì•„ì›ƒ ì „ë¥˜ ì†ŒìŠ¤\r\n",
+            (reg & 0x01) ? "1 - On" : "0 - Off (ê¸°ë³¸ê°’)");
 
   // Register 2: VREF[7:6], 50/60[5:4], PSW[3], IDAC[2:0]
   read_reg(drv, ADS1220_REG_2, 1, &reg);
@@ -197,46 +197,46 @@ void parse_ads1220_register(driver_t *drv)
   switch ((reg >> 6) & 0x03)
   {
     case 0:
-      DEBUG_PRINTF("00 - Internal 2.048V (±âº»°ª)");
+      DEBUG_PRINTF("00 - Internal 2.048V (ê¸°ë³¸ê°’)");
       break;
     case 1:
-      DEBUG_PRINTF("01 - External REF0 »ç¿ë");
+      DEBUG_PRINTF("01 - External REF0 ì‚¬ìš©");
       break;
     case 2:
       DEBUG_PRINTF("10 - AIN0/REFP1, AIN3/REFN1");
       break;
     case 3:
-      DEBUG_PRINTF("11 - AVDD - AVSS »ç¿ë");
+      DEBUG_PRINTF("11 - AVDD - AVSS ì‚¬ìš©");
       break;
   }
-  DEBUG_PRINTF("        // ±âÁØ Àü¾Ğ ¼±ÅÃ\r\n");
+  DEBUG_PRINTF("        // ê¸°ì¤€ ì „ì•• ì„ íƒ\r\n");
 
   DEBUG_PRINTF("  50/60Hz Rej[5:4]: ");
   switch ((reg >> 4) & 0x03)
   {
     case 0:
-      DEBUG_PRINTF("00 - ÇÊÅÍ ºñÈ°¼ºÈ­(±âº»°ª)");
+      DEBUG_PRINTF("00 - í•„í„° ë¹„í™œì„±í™”(ê¸°ë³¸ê°’)");
       break;
     case 1:
-      DEBUG_PRINTF("01 - 50Hz & 60Hz µ¿½Ã Á¦°Å");
+      DEBUG_PRINTF("01 - 50Hz & 60Hz ë™ì‹œ ì œê±°");
       break;
     case 2:
-      DEBUG_PRINTF("10 - 50Hz Á¦°Å¸¸");
+      DEBUG_PRINTF("10 - 50Hz ì œê±°ë§Œ");
       break;
     case 3:
-      DEBUG_PRINTF("11 - 60Hz Á¦°Å¸¸");
+      DEBUG_PRINTF("11 - 60Hz ì œê±°ë§Œ");
       break;
   }
-  DEBUG_PRINTF("    // FIR ÇÊÅÍ ±¸¼º\r\n");
+  DEBUG_PRINTF("    // FIR í•„í„° êµ¬ì„±\r\n");
 
-  DEBUG_PRINTF("  PSW       [3]  : %s           // Low-side ½ºÀ§Ä¡ µ¿ÀÛ ¼³Á¤\r\n",
-            (reg & 0x08) ? "1 - ÀÚµ¿ µ¿ÀÛ" : "0 - Ç×»ó ¿­¸²(±âº»°ª)");
+  DEBUG_PRINTF("  PSW       [3]  : %s           // Low-side ìŠ¤ìœ„ì¹˜ ë™ì‘ ì„¤ì •\r\n",
+            (reg & 0x08) ? "1 - ìë™ ë™ì‘" : "0 - í•­ìƒ ì—´ë¦¼(ê¸°ë³¸ê°’)");
 
   DEBUG_PRINTF("  IDAC Curr[2:0]: ");
   switch (reg & 0x07)
   {
     case 0:
-      DEBUG_PRINTF("000 - Off (±âº»°ª)");
+      DEBUG_PRINTF("000 - Off (ê¸°ë³¸ê°’)");
       break;
     case 1:
       DEBUG_PRINTF("001 - 10 uA");
@@ -260,7 +260,7 @@ void parse_ads1220_register(driver_t *drv)
       DEBUG_PRINTF("111 - 1500 uA");
       break;
   }
-  DEBUG_PRINTF("           // IDAC1 ¹× IDAC2 Àü·ù ¼³Á¤\r\n");
+  DEBUG_PRINTF("           // IDAC1 ë° IDAC2 ì „ë¥˜ ì„¤ì •\r\n");
 
   // Register 3: IDAC1[7:5], IDAC2[4:2], GPIO_DIR[1], GPIO_DAT[0]
   read_reg(drv, ADS1220_REG_3, 1, &reg);
@@ -272,7 +272,7 @@ void parse_ads1220_register(driver_t *drv)
   switch ((reg >> 5) & 0x07)
   {
     case 0:
-      DEBUG_PRINTF("000 - Disabled (±âº»°ª)");
+      DEBUG_PRINTF("000 - Disabled (ê¸°ë³¸ê°’)");
       break;
     case 1:
       DEBUG_PRINTF("001 - AIN0/REFP1");
@@ -296,13 +296,13 @@ void parse_ads1220_register(driver_t *drv)
       DEBUG_PRINTF("111 - Reserved");
       break;
   }
-  DEBUG_PRINTF("        // IDAC1 ¶ó¿ìÆÃ Ã¤³Î ¼³Á¤\r\n");
+  DEBUG_PRINTF("        // IDAC1 ë¼ìš°íŒ… ì±„ë„ ì„¤ì •\r\n");
 
   DEBUG_PRINTF("  IDAC2 MUX [4:2]: ");
   switch ((reg >> 2) & 0x07)
   {
     case 0:
-      DEBUG_PRINTF("000 - Disabled (±âº»°ª)");
+      DEBUG_PRINTF("000 - Disabled (ê¸°ë³¸ê°’)");
       break;
     case 1:
       DEBUG_PRINTF("001 - AIN0/REFP1");
@@ -326,12 +326,12 @@ void parse_ads1220_register(driver_t *drv)
       DEBUG_PRINTF("111 - Reserved");
       break;
   }
-  DEBUG_PRINTF("        // IDAC2 ¶ó¿ìÆÃ Ã¤³Î ¼³Á¤\r\n");
+  DEBUG_PRINTF("        // IDAC2 ë¼ìš°íŒ… ì±„ë„ ì„¤ì •\r\n");
 
-  DEBUG_PRINTF("  DRDY Mode  [1] : %s              // DRDY ÇÉ µ¿ÀÛ ¹æ½Ä\r\n",
-            (reg & 0x02) ? "1 - DOUT/DRDY¿Í DRDY µ¿½Ã¿¡ Ãâ·Â" : "0 - DRDY Àü¿ë ÇÉ »ç¿ë (±âº»°ª)");
+  DEBUG_PRINTF("  DRDY Mode  [1] : %s              // DRDY í•€ ë™ì‘ ë°©ì‹\r\n",
+            (reg & 0x02) ? "1 - DOUT/DRDYì™€ DRDY ë™ì‹œì— ì¶œë ¥" : "0 - DRDY ì „ìš© í•€ ì‚¬ìš© (ê¸°ë³¸ê°’)");
 
-  DEBUG_PRINTF("  Reserved   [0] : %d                    // ¿¹¾àºñÆ® (Ç×»ó 0)\r\n", reg & 0x01);
+  DEBUG_PRINTF("  Reserved   [0] : %d                    // ì˜ˆì•½ë¹„íŠ¸ (í•­ìƒ 0)\r\n", reg & 0x01);
 
   DEBUG_PRINTF("\r\n==========\r\n");
 }
@@ -460,8 +460,8 @@ void ads1220_reset_sw(driver_t *drv)
  * @brief
  * 
  * 1LSB = (2*Vref/Gain)/s^24
- * ¾çÀÇ ÃÖ´ë °ª 0x7FFFFF  8388607
- * À½ÀÇ ÃÖ´ë °ª 0x800000 -8388608
+ * ì–‘ì˜ ìµœëŒ€ ê°’ 0x7FFFFF  8388607
+ * ìŒì˜ ìµœëŒ€ ê°’ 0x800000 -8388608
  * Vref = 5V
  * 1LSB = 0.000001192092896
  * 0.596 uV
@@ -469,9 +469,9 @@ void ads1220_reset_sw(driver_t *drv)
  * Vref = 6V
  * 0.715 uV
  * 
- * ¾çÀÇ ÃÖ´ë ÀÔ·Â°ªÀº Vref/Gain-1LSB
- * Vref= 5VÀÌ¸é        4.999999404V
- * À½ÀÇ ÃÖ´ë ÀÔ·Â°ªÀº -4.999999404V
+ * ì–‘ì˜ ìµœëŒ€ ì…ë ¥ê°’ì€ Vref/Gain-1LSB
+ * Vref= 5Vì´ë©´        4.999999404V
+ * ìŒì˜ ìµœëŒ€ ì…ë ¥ê°’ì€ -4.999999404V
  * ADC = (Vin/Vref)*2^23 
  *
  */
@@ -487,7 +487,7 @@ int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
     osSemaphoreAcquire(g_dataReadySem,0);
     ads1220_start_conv(drv);
        
-    status = osSemaphoreAcquire(g_dataReadySem, 60);//Å¸ÀÓ¾Æ¿ô 5ms ÁÜ
+    status = osSemaphoreAcquire(g_dataReadySem, 60);//íƒ€ì„ì•„ì›ƒ 5ms ì¤Œ
 
     if(status == osErrorTimeout)
     {
@@ -497,7 +497,7 @@ int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
 
     driverex_spi_pend_sem(cfg->spi_io);
     driver_do_low(cfg->cs_io);
-    //ÀÌ ¸í·É¾î Àü¼ÛµÇ¸é drdy ÇÉ ¿Ã¶ó°¨
+    //ì´ ëª…ë ¹ì–´ ì „ì†¡ë˜ë©´ drdy í•€ ì˜¬ë¼ê°
     driverex_spi_send_byte(cfg->spi_io,ADS1220_CMD_RDATA);
 
     data = driverex_spi_read_byte(cfg->spi_io);
@@ -566,8 +566,8 @@ void ads1210_init(driver_t *drv)
     }
 
     /*
-    gain 1,2,4´Â PGA¾øÀÌ »ç¿ë°¡´ÉÇØ¼­ ºñÈ°¼º °¡´É
-    ÀÌ¶§´Â °ÔÀÎÀÌ ½ºÀ§Ä¡µåÄ³ÆĞ½ÃÅÍ±¸Á¶·Î ¾ò¾îÁü
+    gain 1,2,4ëŠ” PGAì—†ì´ ì‚¬ìš©ê°€ëŠ¥í•´ì„œ ë¹„í™œì„± ê°€ëŠ¥
+    ì´ë•ŒëŠ” ê²Œì¸ì´ ìŠ¤ìœ„ì¹˜ë“œìºíŒ¨ì‹œí„°êµ¬ì¡°ë¡œ ì–»ì–´ì§
     0 PGA_BYPASS:1b
     */
 
@@ -581,11 +581,11 @@ void ads1210_init(driver_t *drv)
     write_reg(drv,ADS1220_REG_0, 1, &reg);  
 
     /*
-    7:5 DR   :000b 20sps      µ¥ÀÌÅÍ ¼Óµµ
-    4:3 MODE :00b             µ¿ÀÛ ¸ğµå
-      2 CM   :0b                ´ÜÀÏ º¯È¯
-      1 TS   :0b                ¿Âµµ¼¾¼­ ºñÈ°¼º
-      0 BCS  :0b                10uA Àü·ù ¼Ò½º ºñÈ°¼º
+    7:5 DR   :000b 20sps      ë°ì´í„° ì†ë„
+    4:3 MODE :00b             ë™ì‘ ëª¨ë“œ
+      2 CM   :0b                ë‹¨ì¼ ë³€í™˜
+      1 TS   :0b                ì˜¨ë„ì„¼ì„œ ë¹„í™œì„±
+      0 BCS  :0b                10uA ì „ë¥˜ ì†ŒìŠ¤ ë¹„í™œì„±
     */
     reg = 0x00;
     reg |= (0x00)<<5;
@@ -594,9 +594,9 @@ void ads1210_init(driver_t *drv)
     write_reg(drv,ADS1220_REG_1, 1, &reg);
     /*
      7:6 VREF   01b REFP0,REFN0
-     5:4 50/60  01b 50Hz,60Hz Á¦°Å 
-       3 PSW     1b ·Î¿ì»çÀÌµå Àü¿ø ½ºÀ§Ä¡ ´İÈû
-     2:0 IDAC  000b ²ô±â
+     5:4 50/60  01b 50Hz,60Hz ì œê±° 
+       3 PSW     1b ë¡œìš°ì‚¬ì´ë“œ ì „ì› ìŠ¤ìœ„ì¹˜ ë‹«í˜
+     2:0 IDAC  000b ë„ê¸°
     */
     reg =  (0x01)<<6;
     reg |= (0x01)<<3;
@@ -604,10 +604,10 @@ void ads1210_init(driver_t *drv)
     write_reg(drv,ADS1220_REG_2, 1, &reg);
 
     /*
-    7:5 I1MUX 000b IDAC1 ºñÈ°¼ºÈ­
-    4:2 I2MUX 000b IDAC2 ºñÈ°¼ºÈ­
-      1 DRDYM   0b DRDY ÇÉ¸¸ »ç¿ë
-      0 ¹Ì»ç¿ë
+    7:5 I1MUX 000b IDAC1 ë¹„í™œì„±í™”
+    4:2 I2MUX 000b IDAC2 ë¹„í™œì„±í™”
+      1 DRDYM   0b DRDY í•€ë§Œ ì‚¬ìš©
+      0 ë¯¸ì‚¬ìš©
     */
     reg = 0x00;
     write_reg(drv,ADS1220_REG_3, 1, &reg);
@@ -673,11 +673,11 @@ void ads1220_close(driver_t *drv)
 {
   osSemaphoreAcquire(drv->sem, osWaitForever);
 
-  osSemaphoreRelease(drv->sem);  // ¼¼¸¶Æ÷¾î ÇØÁ¦
+  osSemaphoreRelease(drv->sem);  // ì„¸ë§ˆí¬ì–´ í•´ì œ
 }
 
 
-//³í¸® Ã¤³ÎÀ» ¹°¸®Ã¤³Î·Î º¯È¯ ÇØ¾ß ÇÔ
+//ë…¼ë¦¬ ì±„ë„ì„ ë¬¼ë¦¬ì±„ë„ë¡œ ë³€í™˜ í•´ì•¼ í•¨
 const uint8_t user_adc_single_channel[18]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29,2,6};
 
 int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
@@ -694,7 +694,7 @@ int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 
   ads1220_set_singleChannel(drv, channel % 4);
 
-  osDelay(2);//Ã¤³Î ¹Ù²Ù°í ¾ÈÁ¤È­ À§ÇØ 
+  osDelay(2);//ì±„ë„ ë°”ê¾¸ê³  ì•ˆì •í™” ìœ„í•´ 
 
   for (int i = 0; i < avg; i++)
   {
@@ -709,7 +709,7 @@ int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 
   adc = sum/valid_cnt;
   
-  osSemaphoreRelease(drv->sem);  // ¼¼¸¶Æ÷¾î ÇØÁ¦
+  osSemaphoreRelease(drv->sem);  // ì„¸ë§ˆí¬ì–´ í•´ì œ
   return adc;
 }
 
@@ -722,7 +722,7 @@ int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 
   osSemaphoreAcquire(drv->sem, osWaitForever);
 
-  //Â÷µ¿ Ã¤³Î 0,1,2,3,4,5,6,7 Àº ADS1220¿¡¼­´Â 0Ã¤³Î·Î¸¸ ÃøÁ¤ÇÏ¸ç  MUX°¡ Ã¤³ÎÀÌ µÊ
+  //ì°¨ë™ ì±„ë„ 0,1,2,3,4,5,6,7 ì€ ADS1220ì—ì„œëŠ” 0ì±„ë„ë¡œë§Œ ì¸¡ì •í•˜ë©°  MUXê°€ ì±„ë„ì´ ë¨
 
   ads1220_set_diffChannel(drv, channel / 8);
 
@@ -740,7 +740,7 @@ int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
  
   adc = (int32_t)average;
 
-  osSemaphoreRelease(drv->sem);  // ¼¼¸¶Æ÷¾î ÇØÁ¦
+  osSemaphoreRelease(drv->sem);  // ì„¸ë§ˆí¬ì–´ í•´ì œ
 
   return adc;
 

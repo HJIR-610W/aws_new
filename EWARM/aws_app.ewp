@@ -1459,6 +1459,15 @@
                 </file>
             </group>
             <group>
+                <name>lcd</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\IO\lcd\view_driver.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\IO\lcd\view_driver.h</name>
+                </file>
+            </group>
+            <group>
                 <name>terminal</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\IO\terminal\terminal.c</name>
@@ -1781,12 +1790,6 @@
                         <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_data.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_display.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_display.h</name>
-                    </file>
-                    <file>
                         <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_manager.c</name>
                     </file>
                     <file>
@@ -1800,6 +1803,12 @@
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_sensor.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_view.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_view.h</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_network.c</name>

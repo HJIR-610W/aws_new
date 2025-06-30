@@ -23,20 +23,20 @@ TIM_HandleTypeDef htim12;
 
 #include "stm32f4xx_hal.h"
 
-// TIM12 Å¬·° ÁÖÆÄ¼ö °è»ê ÇÔ¼ö
+// TIM12 í´ëŸ­ ì£¼íŒŒìˆ˜ ê³„ì‚° í•¨ìˆ˜
 uint32_t Get_TIM12_ClockFrequency(void) 
 {
     uint32_t timer_clock;
-    uint32_t apb1_prescaler = (RCC->CFGR & RCC_CFGR_PPRE1) >> 10; // APB1 ÇÁ¸®½ºÄÉÀÏ·¯ °ª ÃßÃâ
+    uint32_t apb1_prescaler = (RCC->CFGR & RCC_CFGR_PPRE1) >> 10; // APB1 í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ ê°’ ì¶”ì¶œ
 
     if (apb1_prescaler < 4) 
     {
-        // APB1 ÇÁ¸®½ºÄÉÀÏ·¯°¡ 1ÀÎ °æ¿ì, Å¸ÀÌ¸Ó Å¬·° = APB1 Å¬·°
+        // APB1 í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ê°€ 1ì¸ ê²½ìš°, íƒ€ì´ë¨¸ í´ëŸ­ = APB1 í´ëŸ­
         timer_clock = HAL_RCC_GetPCLK1Freq();
     }
     else 
     {
-        // APB1 ÇÁ¸®½ºÄÉÀÏ·¯°¡ 2 ÀÌ»óÀÎ °æ¿ì, Å¸ÀÌ¸Ó Å¬·° = APB1 Å¬·° * 2
+        // APB1 í”„ë¦¬ìŠ¤ì¼€ì¼ëŸ¬ê°€ 2 ì´ìƒì¸ ê²½ìš°, íƒ€ì´ë¨¸ í´ëŸ­ = APB1 í´ëŸ­ * 2
         timer_clock = HAL_RCC_GetPCLK1Freq() * 2;
     }
 
@@ -45,70 +45,70 @@ uint32_t Get_TIM12_ClockFrequency(void)
 
 void Set_PWM_Frequency(uint32_t frequency, uint8_t duty_cycle)
 {
-    uint32_t timer_clock = Get_TIM12_ClockFrequency();  // TIM12ÀÇ Å¬·° ÁÖÆÄ¼ö
+    uint32_t timer_clock = Get_TIM12_ClockFrequency();  // TIM12ì˜ í´ëŸ­ ì£¼íŒŒìˆ˜
     uint32_t prescaler;
     uint32_t arr;
 
-    // `Prescaler`¸¦ ¸ÕÀú Å©°Ô ¼³Á¤ÇÏ¿© `ARR`ÀÌ 16ºñÆ® ³»¿¡ µé¾î¿Àµµ·Ï Á¶Á¤
+    // `Prescaler`ë¥¼ ë¨¼ì € í¬ê²Œ ì„¤ì •í•˜ì—¬ `ARR`ì´ 16ë¹„íŠ¸ ë‚´ì— ë“¤ì–´ì˜¤ë„ë¡ ì¡°ì •
     for (prescaler = 1; prescaler <= 65536; prescaler++)
     {
         arr = (timer_clock / (prescaler * frequency)) - 1;
 
-        // `ARR` °ªÀÌ 16ºñÆ®¸¦ ÃÊ°úÇÏÁö ¾ÊÀ¸¸é ·çÇÁ¸¦ Á¾·á
+        // `ARR` ê°’ì´ 16ë¹„íŠ¸ë¥¼ ì´ˆê³¼í•˜ì§€ ì•Šìœ¼ë©´ ë£¨í”„ë¥¼ ì¢…ë£Œ
         if (arr <= 65535)
         {
             break;
         }
     }
 
-    // TIM12ÀÇ ºÐÁÖ±â(Prescaler)¿Í ARR(ÁÖ±â) ¼³Á¤
-    __HAL_TIM_SET_PRESCALER(&htim12, prescaler-1);  // Prescaler ¼³Á¤
-    __HAL_TIM_SET_AUTORELOAD(&htim12, arr);       // ARR ¼³Á¤
+    // TIM12ì˜ ë¶„ì£¼ê¸°(Prescaler)ì™€ ARR(ì£¼ê¸°) ì„¤ì •
+    __HAL_TIM_SET_PRESCALER(&htim12, prescaler-1);  // Prescaler ì„¤ì •
+    __HAL_TIM_SET_AUTORELOAD(&htim12, arr);       // ARR ì„¤ì •
 
-    // µàÆ¼ »çÀÌÅ¬ ¼³Á¤: CCR2 = (ARR + 1) * (µàÆ¼ »çÀÌÅ¬ %) / 100
+    // ë“€í‹° ì‚¬ì´í´ ì„¤ì •: CCR2 = (ARR + 1) * (ë“€í‹° ì‚¬ì´í´ %) / 100
     uint32_t ccr_value = ((arr + 1) * duty_cycle) / 100;
-    __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_2, ccr_value); // CCR2¿¡ µàÆ¼ ¼³Á¤
+    __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_2, ccr_value); // CCR2ì— ë“€í‹° ì„¤ì •
 }
 
 
 
 void TIM12_PWM_Init(void)
 {
-    __HAL_RCC_TIM12_CLK_ENABLE();  // TIM12 Å¬·° È°¼ºÈ­
+    __HAL_RCC_TIM12_CLK_ENABLE();  // TIM12 í´ëŸ­ í™œì„±í™”
 
-    // TIM12 PWM ¼³Á¤ (±âº» ¼³Á¤)
+    // TIM12 PWM ì„¤ì • (ê¸°ë³¸ ì„¤ì •)
     TIM_OC_InitTypeDef sConfigOC;
     htim12.Instance = TIM12;
     htim12.Init.Prescaler = 0;
     htim12.Init.CounterMode = TIM_COUNTERMODE_UP;
-    htim12.Init.Period = 1000 - 1;  // ±âº» ÁÖ±â ¼³Á¤ (ARR)
+    htim12.Init.Period = 1000 - 1;  // ê¸°ë³¸ ì£¼ê¸° ì„¤ì • (ARR)
     htim12.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     HAL_TIM_PWM_Init(&htim12);
 
-    // PWM ¸ðµå ¼³Á¤ (Ã¤³Î 2)
+    // PWM ëª¨ë“œ ì„¤ì • (ì±„ë„ 2)
     sConfigOC.OCMode = TIM_OCMODE_PWM1;
     sConfigOC.Pulse = 500;  // Duty cycle 50%
     sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
     sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
     HAL_TIM_PWM_ConfigChannel(&htim12, &sConfigOC, TIM_CHANNEL_2);
 
-    // PWM ½ÃÀÛ (PH9 ÇÉ)
+    // PWM ì‹œìž‘ (PH9 í•€)
 
 }
 
 void runled_init(void)
 {
-    // GPIO Æ÷Æ® H Å¬·° È°¼ºÈ­
+    // GPIO í¬íŠ¸ H í´ëŸ­ í™œì„±í™”
     __HAL_RCC_GPIOH_CLK_ENABLE();
   
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    // PH9 ÇÉ ¼³Á¤: TIM12 Ã¤³Î 2 ´ëÃ¼ ±â´É (AF) ¸ðµå
+    // PH9 í•€ ì„¤ì •: TIM12 ì±„ë„ 2 ëŒ€ì²´ ê¸°ëŠ¥ (AF) ëª¨ë“œ
     GPIO_InitStruct.Pin = OUT_SYS_RUN_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;      // ´ëÃ¼ ±â´É, Çª½Ã Ç® Ãâ·Â
-    GPIO_InitStruct.Pull = GPIO_NOPULL;          // Ç®¾÷/Ç®´Ù¿î ºñÈ°¼ºÈ­
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW; // ¼Óµµ ¼³Á¤
-    GPIO_InitStruct.Alternate = GPIO_AF9_TIM12;  // TIM12ÀÇ ´ëÃ¼ ±â´É 9¹ø ¼³Á¤
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;      // ëŒ€ì²´ ê¸°ëŠ¥, í‘¸ì‹œ í’€ ì¶œë ¥
+    GPIO_InitStruct.Pull = GPIO_NOPULL;          // í’€ì—…/í’€ë‹¤ìš´ ë¹„í™œì„±í™”
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW; // ì†ë„ ì„¤ì •
+    GPIO_InitStruct.Alternate = GPIO_AF9_TIM12;  // TIM12ì˜ ëŒ€ì²´ ê¸°ëŠ¥ 9ë²ˆ ì„¤ì •
     HAL_GPIO_Init(OUT_SYS_RUN_GPIO_Port, &GPIO_InitStruct);
 }
 

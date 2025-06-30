@@ -13,7 +13,7 @@
 #define HTTP_BUFFER_SIZE 4096
 #define HTTP_MAX_CLIENTS 5
 #define HTTP_RECV_TIMEOUT_MS 30000
-#define HTTP_MAX_FILE_SIZE (64 * 1024)  // 64KB ÆÄÀÏ Å©±â Á¦ÇÑ
+#define HTTP_MAX_FILE_SIZE (64 * 1024)  // 64KB íŒŒì¼ í¬ê¸° ì œí•œ
 
 typedef enum {
     HTTP_METHOD_GET = 0,

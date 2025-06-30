@@ -28,7 +28,7 @@ typedef struct di_isr_set_cfg_s
 typedef enum
 {
   DI_SET_INTERRUPT,
-  DI_SET_PULL_R//Ǯ��, Ǯ�ٿ�   
+  DI_SET_PULL_R//풀업, 풀다운   
 }di_set_option_t;
 
 

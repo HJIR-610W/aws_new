@@ -92,7 +92,7 @@ int32_t driver_uart_recv(driver_t *drv, uint8_t *pBuff, uint16_t rLen, uint32_t 
 
 
 /**
- * @brief ´ë±â ¾øÀÌ 1¹ÙÀÌÆ® ¼ö½Å
+ * @brief ëŒ€ê¸° ì—†ì´ 1ë°”ì´íŠ¸ ìˆ˜ì‹ 
  */
 int32_t driver_uart_get_charNonBlocking(driver_t *drv, uint8_t *pBuff)
 {
@@ -107,7 +107,7 @@ int32_t driver_uart_get_charNonBlocking(driver_t *drv, uint8_t *pBuff)
 }
 
 /**
- * @brief 1¹ÙÀÌÆ® ÀÔ·ÂÀÖÀ»¶§ ±îÁö ´ë±â
+ * @brief 1ë°”ì´íŠ¸ ì…ë ¥ìˆì„ë•Œ ê¹Œì§€ ëŒ€ê¸°
  */
 int32_t driver_uart_get_char(driver_t *drv, uint8_t *pBuff, uint16_t rLen)
 {
@@ -176,7 +176,7 @@ int32_t driver_uart_recv_crlf(driver_t *drv, char *pBuff, uint16_t bSize, uint32
       if ((data == '\r') || (data == '\n'))
       {
         pBuff[cnt - 1] = 0;
-        return (cnt - 1); /* \r ¶Ç´Â \n ¸¦ Á¦¿ÜÇÑ ¹®ÀÚ¿­ ±æÀÌ ¸®ÅÏ*/
+        return (cnt - 1); /* \r ë˜ëŠ” \n ë¥¼ ì œì™¸í•œ ë¬¸ìì—´ ê¸¸ì´ ë¦¬í„´*/
       }
 
       if (cnt == bSize)

@@ -5,7 +5,7 @@
 #include "aws_menu.h"
 #include "aws_menu_cali.h"
 #include "aws_menu_data.h"
-#include "aws_menu_display.h"
+
 #include "aws_menu_manager.h"
 #include "aws_menu_offset.h"
 #include "aws_menu_panel.h"
@@ -31,25 +31,25 @@ int hjtemperature_menu(void)
   driver_t* hjhumi;
 
   uint8_t err;
-  char* menu[] = {"¼³Á¤°ª È®ÀÎ(±¸Çö ¿¹Á¤)","¿Âµµ ¿ÀÇÁ¼Â º¯°æ" ,"½Àµµ ¿ÀÇÁ¼Â º¯°æ","¿Â½Àµµ È®ÀÎ"};
+  char* menu[] = {"ì„¤ì •ê°’ í™•ì¸(êµ¬í˜„ ì˜ˆì •)","ì˜¨ë„ ì˜¤í”„ì…‹ ë³€ê²½" ,"ìŠµë„ ì˜¤í”„ì…‹ ë³€ê²½","ì˜¨ìŠµë„ í™•ì¸"};
 
   hjtemp = hjtemp_opened();
   if (hjtemp == NULL)
   {
-    io_printf("È­Áø ¿Âµµ¸¦ ¼³Á¤ÇØÁÖ¼¼¿ä\r\n");
+    io_printf("í™”ì§„ ì˜¨ë„ë¥¼ ì„¤ì •í•´ì£¼ì„¸ìš”\r\n");
     return MENU_BACK;
   }
 
   hjhumi = hjHumi_opened();
   if(hjhumi == NULL)
   {
-    io_printf("È­Áø ½Àµµ¸¦ ¼³Á¤ÇØÁÖ¼¼¿ä\r\n");
+    io_printf("í™”ì§„ ìŠµë„ë¥¼ ì„¤ì •í•´ì£¼ì„¸ìš”\r\n");
     return MENU_BACK;
   }
 
       while (1)
   {
-    status = choice_menu(AWS_MENU_WIDTH, "È­Áø ¿Â½Àµµ", menu, _countof(menu), &choice);
+    status = choice_menu(AWS_MENU_WIDTH, "í™”ì§„ ì˜¨ìŠµë„", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break;
 
@@ -81,8 +81,8 @@ int hjtemperature_menu(void)
         hjtemperature_ctrl(hjtemp, eTEMP_GET_OFFSET, NULL, (void*)&data, &err);
         if (err == 0)
         {
-          io_printf("ÇöÀç ¿Âµµ ¿ÀÇÁ¼Â:%.2f\r\n", ((float)data / 100.0f));
-          status = confirm_continue("¿ÀÇÁ¼ÂÀ» º¯°æÇÏ½Ã°Ú½À´Ï±î?", &ok);
+          io_printf("í˜„ì¬ ì˜¨ë„ ì˜¤í”„ì…‹:%.2f\r\n", ((float)data / 100.0f));
+          status = confirm_continue("ì˜¤í”„ì…‹ì„ ë³€ê²½í•˜ì‹œê² ìŠµë‹ˆê¹Œ?", &ok);
           if (status != MENU_OK)
             break;
 
@@ -90,7 +90,7 @@ int hjtemperature_menu(void)
           {
             float f_offset;
 
-            status = input_float_prompt("¿ÀÇÁ¼ÂÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä",-5,5,&f_offset);
+            status = input_float_prompt("ì˜¤í”„ì…‹ì„ ì…ë ¥í•´ì£¼ì„¸ìš”",-5,5,&f_offset);
             if(status !=MENU_OK)
             break;
             
@@ -101,7 +101,7 @@ int hjtemperature_menu(void)
         }
         else
         {
-          io_printf("ÀåÄ¡¿¡ Á¢±ÙÇÒ ¼ö ¾ø½À´Ï´Ù.\r\n");
+          io_printf("ì¥ì¹˜ì— ì ‘ê·¼í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\r\n");
         }
       }
         break;
@@ -118,13 +118,13 @@ int hjtemperature_menu(void)
 
           if (err == 0)
           {
-            io_printf("ÇöÀç ½Àµµ ¿ÀÇÁ¼Â:%.2f\r\n", ((float)data / 100.0f));
-            status = confirm_continue("¿ÀÇÁ¼ÂÀ» º¯°æÇÏ½Ã°Ú½À´Ï±î?", &ok);
+            io_printf("í˜„ì¬ ìŠµë„ ì˜¤í”„ì…‹:%.2f\r\n", ((float)data / 100.0f));
+            status = confirm_continue("ì˜¤í”„ì…‹ì„ ë³€ê²½í•˜ì‹œê² ìŠµë‹ˆê¹Œ?", &ok);
             if (status != MENU_OK)
               break;
             if (ok)
             {
-              status = input_float_prompt("¿ÀÇÁ¼ÂÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä",-5, 5, &f_offset);
+              status = input_float_prompt("ì˜¤í”„ì…‹ì„ ì…ë ¥í•´ì£¼ì„¸ìš”",-5, 5, &f_offset);
               if(status !=MENU_OK)
               break;
                 data = (uint16_t)(f_offset * 100);
@@ -135,7 +135,7 @@ int hjtemperature_menu(void)
           }
           else
           {
-            io_printf("ÀåÄ¡¿¡ Á¢±ÙÇÒ ¼ö ¾ø½À´Ï´Ù.\r\n");
+            io_printf("ì¥ì¹˜ì— ì ‘ê·¼í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\r\n");
           }
         }
 
@@ -147,20 +147,20 @@ int hjtemperature_menu(void)
 
         if(err == 0)
         {
-          io_printf("¿Âµµ:%.2f\r\n",temp);
+          io_printf("ì˜¨ë„:%.2f\r\n",temp);
         }
         else
         {
-          io_printf("¿Âµµ Åë½Å ½ÇÆĞ %s\r\n", get_drv_err_name(err));
+          io_printf("ì˜¨ë„ í†µì‹  ì‹¤íŒ¨ %s\r\n", get_drv_err_name(err));
         }
         float humi;
         humi = hjHuminity_read(hjhumi,&err);
         if(err==0)
         {
-          io_printf("½Àµµ:%.2f\r\n", humi);
+          io_printf("ìŠµë„:%.2f\r\n", humi);
         }
         else{
-          io_printf("½Àµµ Åë½Å ½ÇÆĞ %s\r\n", get_drv_err_name(err));
+          io_printf("ìŠµë„ í†µì‹  ì‹¤íŒ¨ %s\r\n", get_drv_err_name(err));
         }
       }
     }

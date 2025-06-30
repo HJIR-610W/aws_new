@@ -421,7 +421,7 @@ int DbgConsole_Printf(const char* fmt_s, ...)
 
     va_start(ap, fmt_s);
 	
-	len = vprintf_s(fmt_s,ap); // ÀÌ ÇÔ¼ö »ç¿ëÇÒ¶§¸¸ low level io Ãâ·Â ¾ÈµÇ°Ô ÇÏ°í ±æÀÌ¸¦ ±¸ÇÏ´Â ¿ëµµ·Î »ç¿ë
+	len = vprintf_s(fmt_s,ap); // ì´ í•¨ìˆ˜ ì‚¬ìš©í• ë•Œë§Œ low level io ì¶œë ¥ ì•ˆë˜ê²Œ í•˜ê³  ê¸¸ì´ë¥¼ êµ¬í•˜ëŠ” ìš©ë„ë¡œ ì‚¬ìš©
 
     if(len)
     {
@@ -449,7 +449,7 @@ int DbgConsole_Printf(const char* fmt_s, ...)
 
     va_start(ap, fmt_s);
     
-    buffSize = get_formatted_length_v(fmt_s, ap)+2;//NULL + ¿©ºĞ 
+    buffSize = get_formatted_length_v(fmt_s, ap)+2;//NULL + ì—¬ë¶„ 
 
     pBuff = (char *)aws_malloc(buffSize);
 
@@ -722,7 +722,7 @@ static uint32_t DbgConsole_ScanIgnoreWhiteSpace(const char** s)
         else if ((*c != '%') || ((*c == '%') && (*(c + 1) == '%')))
         {
             /* Ordinary characters. */
-           // c++; //FIX:ÀÌ°Å Çã¿ëÇÏ¸é µ¿ÀÛ ÀÌ»ó
+           // c++; //FIX:ì´ê±° í—ˆìš©í•˜ë©´ ë™ì‘ ì´ìƒ
             if (*p == *c)
             {
                 n_decode++;

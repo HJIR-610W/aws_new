@@ -249,7 +249,7 @@ void driver_stm32_bsp_init(void)
 
 
 
-  //QUAD UART Ä¨À» ¸®¼ÂÇØÁØ´Ù. H->L 
+  //QUAD UART ì¹©ì„ ë¦¬ì…‹í•´ì¤€ë‹¤. H->L 
   board_set_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_PIN_SET);
   board_config_gpio(EX_UART_RST_A_GPIO_Port,EX_UART_RST_A_PIN,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
 
@@ -260,7 +260,7 @@ void driver_stm32_bsp_init(void)
   board_set_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_PIN_RESET);
   board_set_gpio(EX_UART_RST_B_GPIO_Port, EX_UART_RST_B_PIN, GPIO_PIN_RESET);
  
-  //RS485 A,BÀÇ ¹æÇâÀ» ÀÔ·ÂÀ¸·Î ¼³Á¤ÇÑ´Ù.
+  //RS485 A,Bì˜ ë°©í–¥ì„ ìž…ë ¥ìœ¼ë¡œ ì„¤ì •í•œë‹¤.
 
   board_set_gpio(OUT_DIR_RS485_A_GPIO_Port, OUT_DIR_RS485_A_PIN, GPIO_PIN_RESET);
   board_config_gpio(OUT_DIR_RS485_A_GPIO_Port,OUT_DIR_RS485_A_PIN,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
@@ -283,7 +283,7 @@ void driver_stm32_bsp_init(void)
   board_config_gpio(OUT_SPI2_NSS_GPIO_Port,OUT_SPI2_NSS_PIN,GPIO_MODE_OUTPUT_PP,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
 
 
-  board_set_gpio(DO_SEL_IF_UART_GPIO_Port, SEL_IF_UART_Pin, GPIO_PIN_RESET);//±âº»Àº UART·Î »ç¿ë
+  board_set_gpio(DO_SEL_IF_UART_GPIO_Port, SEL_IF_UART_Pin, GPIO_PIN_RESET);//ê¸°ë³¸ì€ UARTë¡œ ì‚¬ìš©
   board_config_gpio(DO_SEL_IF_UART_GPIO_Port,SEL_IF_UART_Pin,GPIO_MODE_OUTPUT_OD,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
 
   board_set_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_PIN_RESET);//24V
@@ -293,10 +293,10 @@ void driver_stm32_bsp_init(void)
   board_set_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_PIN_RESET);//24V
   board_config_gpio(DO_RESET_H_GPIO_Port,DO_RESET_H_Pin,GPIO_MODE_OUTPUT_OD,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
 
-  board_set_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_PIN_SET);//VBUS ºñÈ°¼º
+  board_set_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_PIN_SET);//VBUS ë¹„í™œì„±
   board_config_gpio(USB_OTG_FS_SOF_GPIO_Port,USB_OTG_FS_SOF_Pin,GPIO_MODE_OUTPUT_OD,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
 
-  //¹Ì»ç¿ë
+  //ë¯¸ì‚¬ìš©
   board_config_gpio(USB_OTG_PWR_FAIL_GPIO_Port,USB_OTG_PWR_FAIL_Pin,GPIO_MODE_INPUT,GPIO_NOPULL,GPIO_SPEED_FREQ_LOW,0);
 
  }
@@ -318,7 +318,7 @@ void driver_stm32_bsp_init(void)
    __HAL_RCC_GPIOH_CLK_ENABLE();
    __HAL_RCC_GPIOI_CLK_ENABLE();
 
-   // QUAD UART Ä¨À» ¸®¼ÂÇØÁØ´Ù. H->L
+   // QUAD UART ì¹©ì„ ë¦¬ì…‹í•´ì¤€ë‹¤. H->L
    board_set_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_PIN_SET);
    board_config_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
                      GPIO_SPEED_FREQ_LOW, 0);
@@ -331,7 +331,7 @@ void driver_stm32_bsp_init(void)
    board_set_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_PIN_RESET);
    board_set_gpio(EX_UART_RST_B_GPIO_Port, EX_UART_RST_B_PIN, GPIO_PIN_RESET);
 
-   //[RS485] ¹æÇâÀ» ÀÔ·ÂÀ¸·Î ¼³Á¤ÇÑ´Ù.
+   //[RS485] ë°©í–¥ì„ ìž…ë ¥ìœ¼ë¡œ ì„¤ì •í•œë‹¤.
    board_set_gpio(OUT_DIR_RS485_A_GPIO_Port, OUT_DIR_RS485_A_PIN, GPIO_PIN_RESET);
    board_config_gpio(OUT_DIR_RS485_A_GPIO_Port, OUT_DIR_RS485_A_PIN, GPIO_MODE_OUTPUT_PP,
                      GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
@@ -348,7 +348,7 @@ void driver_stm32_bsp_init(void)
    board_config_gpio(OUT_RS485_DIR_D_GPIO_Port, OUT_RS485_DIR_D_PIN, GPIO_MODE_OUTPUT_PP,
                      GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
-  //[SPI CS] HIGH·Î ÇÑ´Ù.
+  //[SPI CS] HIGHë¡œ í•œë‹¤.
    board_set_gpio(OUT_SPI1_NSS_GPIO_Port, OUT_SPI1_NSS_PIN, GPIO_PIN_SET);
    board_config_gpio(OUT_SPI1_NSS_GPIO_Port, OUT_SPI1_NSS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
                      GPIO_SPEED_FREQ_LOW, 0);
@@ -361,36 +361,36 @@ void driver_stm32_bsp_init(void)
    board_config_gpio(OUT_SPI2_NSS_GPIO_Port, OUT_SPI2_NSS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
                      GPIO_SPEED_FREQ_LOW, 0);
 
-   // UART_5_EXT_D ´Â HART¿Í RS232 ¼±ÅÃ»ç¿ë Æ÷Æ®ÀÌ´Ù. RS232¸¦ ±âº»¼³Á¤ÇÑ´Ù.
+   // UART_5_EXT_D ëŠ” HARTì™€ RS232 ì„ íƒì‚¬ìš© í¬íŠ¸ì´ë‹¤. RS232ë¥¼ ê¸°ë³¸ì„¤ì •í•œë‹¤.
    board_set_gpio(DO_SEL_IF_UART_GPIO_Port, SEL_IF_UART_Pin, GPIO_PIN_RESET);
    board_config_gpio(DO_SEL_IF_UART_GPIO_Port, SEL_IF_UART_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
                      GPIO_SPEED_FREQ_LOW, 0);
 
-   //[Àü¿ø]CDMA 12V Àü¿øÀº Â÷´ÜÇÑ´Ù.
+   //[ì „ì›]CDMA 12V ì „ì›ì€ ì°¨ë‹¨í•œë‹¤.
    board_set_gpio(OUT_PWR_CDMA_GPIO_Port, OUT_PWR_CDMA_PIN, GPIO_PIN_RESET);
    board_config_gpio(OUT_PWR_CDMA_GPIO_Port, OUT_PWR_CDMA_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
                      GPIO_SPEED_FREQ_LOW, 0);
 
-   //[Àü¿ø]HART 24V´Â Â÷´ÜÇÑ´Ù.
+   //[ì „ì›]HART 24VëŠ” ì°¨ë‹¨í•œë‹¤.
    board_set_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_PIN_RESET);
    board_config_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
                      GPIO_SPEED_FREQ_LOW, 0);
-   //[Àü¿ø]°­¿ì°¨Áö Àü¿øÀº Ç×»ó Ãâ·Â
+   //[ì „ì›]ê°•ìš°ê°ì§€ ì „ì›ì€ í•­ìƒ ì¶œë ¥
    board_set_gpio(DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port, DO_POWER_RAIN_DECT_DIGITAL_PIN,
                   GPIO_PIN_SET);
    board_config_gpio(DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port, DO_POWER_RAIN_DECT_DIGITAL_PIN,
                      GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
-   // HART IC¸¦ RESET »óÅÂ·Î ¸¸µç´Ù.
+   // HART ICë¥¼ RESET ìƒíƒœë¡œ ë§Œë“ ë‹¤.
    board_set_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_PIN_RESET);
    board_config_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
                      GPIO_SPEED_FREQ_LOW, 0);
 
-   board_set_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_PIN_SET);  // VBUS ºñÈ°¼º
+   board_set_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_PIN_SET);  // VBUS ë¹„í™œì„±
    board_config_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
                      GPIO_SPEED_FREQ_LOW, 0);
 
-   // ¹Ì»ç¿ë
+   // ë¯¸ì‚¬ìš©
    board_config_gpio(USB_OTG_PWR_FAIL_GPIO_Port, USB_OTG_PWR_FAIL_Pin, GPIO_MODE_INPUT, GPIO_NOPULL,
                      GPIO_SPEED_FREQ_LOW, 0);
  }

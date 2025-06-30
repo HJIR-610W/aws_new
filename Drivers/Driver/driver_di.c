@@ -1,10 +1,10 @@
 /**
  * @file driver_di.c
- * @brief µğÁöÅĞ ÀÔ·Â µå¶óÀÌ¹ö ¶ó¿ìÆÃ ·¹ÀÌ¾î
+ * @brief ë””ì§€í„¸ ì…ë ¥ ë“œë¼ì´ë²„ ë¼ìš°íŒ… ë ˆì´ì–´
  * @version 2.1
  * @date 2024
  * 
- * @details ³í¸®Àû DI Ã¤³ÎÀ» ÀûÀıÇÑ ¹é¿£µå µå¶óÀÌ¹ö·Î ¶ó¿ìÆÃÇÏ´Â ´Ü¼øÇÑ ±¸Çö
+ * @details ë…¼ë¦¬ì  DI ì±„ë„ì„ ì ì ˆí•œ ë°±ì—”ë“œ ë“œë¼ì´ë²„ë¡œ ë¼ìš°íŒ…í•˜ëŠ” ë‹¨ìˆœí•œ êµ¬í˜„
  * 
  * @author wth
  */
@@ -23,27 +23,27 @@
 
 
 typedef enum {
-    DI_BACKEND_STM32_GPIO = 0,         ///< STM32 ³×ÀÌÆ¼ºê GPIO
-    DI_BACKEND_PCF8575                 ///< PCF8575 I2C È®Àå±â
+    DI_BACKEND_STM32_GPIO = 0,         ///< STM32 ë„¤ì´í‹°ë¸Œ GPIO
+    DI_BACKEND_PCF8575                 ///< PCF8575 I2C í™•ì¥ê¸°
 } di_backend_type_t;
 
 /**
- * @brief DI Ã¤³Î ¸ÊÇÎ ¿£Æ®¸®
+ * @brief DI ì±„ë„ ë§µí•‘ ì—”íŠ¸ë¦¬
  */
 typedef struct {
-    uint32_t logical_channel;          ///< ³í¸®Àû DI Ã¤³Î ¹øÈ£
-    di_backend_type_t backend_type;    ///< ¹é¿£µå µå¶óÀÌ¹ö Å¸ÀÔ
-    uint32_t physical_channel;         ///< ¹é¿£µå µå¶óÀÌ¹öÀÇ ¹°¸®Àû Ã¤³Î
-    const char *name;                  ///< Ã¤³Î ÀÌ¸§
+    uint32_t logical_channel;          ///< ë…¼ë¦¬ì  DI ì±„ë„ ë²ˆí˜¸
+    di_backend_type_t backend_type;    ///< ë°±ì—”ë“œ ë“œë¼ì´ë²„ íƒ€ì…
+    uint32_t physical_channel;         ///< ë°±ì—”ë“œ ë“œë¼ì´ë²„ì˜ ë¬¼ë¦¬ì  ì±„ë„
+    const char *name;                  ///< ì±„ë„ ì´ë¦„
 } di_channel_map_t;
 
 /**
- * @brief DI Ã¤³Î ¸ÊÇÎ Å×ÀÌºí
+ * @brief DI ì±„ë„ ë§µí•‘ í…Œì´ë¸”
  * 
- * @note »õ·Î¿î Ã¤³ÎÀ» Ãß°¡ÇÏ°Å³ª ¸ÊÇÎÀ» º¯°æÇÏ·Á¸é ÀÌ Å×ÀÌºí¸¸ ¼öÁ¤ÇÏ¸é µË´Ï´Ù.
+ * @note ìƒˆë¡œìš´ ì±„ë„ì„ ì¶”ê°€í•˜ê±°ë‚˜ ë§µí•‘ì„ ë³€ê²½í•˜ë ¤ë©´ ì´ í…Œì´ë¸”ë§Œ ìˆ˜ì •í•˜ë©´ ë©ë‹ˆë‹¤.
  */
 static const di_channel_map_t s_di_channel_map[] = {
-    // STM32 GPIO Ã¤³Îµé
+    // STM32 GPIO ì±„ë„ë“¤
     { DI_0_ADC_RDY,     DI_BACKEND_STM32_GPIO, STM32_DI_0_ADC_RDY,     "ADC_READY" },
     { DI_1_RTC_IRQ,     DI_BACKEND_STM32_GPIO, STM32_DI_1_RTC_IRQ,     "RTC_IRQ" },
     { DI_RAIN_REED,     DI_BACKEND_STM32_GPIO, STM32_DI_RAIN_REED,     "RAIN_REED" },
@@ -62,7 +62,7 @@ static const di_channel_map_t s_di_channel_map[] = {
     { DI_BTM_STATUS,    DI_BACKEND_STM32_GPIO, STM32_DI_BTM_STATUS,    "BT_STATUS" },
     { DI_RAIN_DETECT,   DI_BACKEND_STM32_GPIO, STM32_DI_RAIN_DETECT,   "RAIN_DETECT" },
     
-    // PCF8575 ¿ÜºÎ Ã¤³Îµé
+    // PCF8575 ì™¸ë¶€ ì±„ë„ë“¤
     { DI_EXT_0,         DI_BACKEND_PCF8575,    DI_PCF8575_0,           "EXT_INPUT_0" },
     { DI_EXT_1,         DI_BACKEND_PCF8575,    DI_PCF8575_1,           "EXT_INPUT_1" },
     { DI_EXT_2,         DI_BACKEND_PCF8575,    DI_PCF8575_2,           "EXT_INPUT_2" },
@@ -74,22 +74,22 @@ static const di_channel_map_t s_di_channel_map[] = {
 #define DI_CHANNEL_MAP_SIZE (sizeof(s_di_channel_map) / sizeof(s_di_channel_map[0]))
 
 // ============================================================================
-// µğ¹Ù¿î½Ì¿ë »óÅÂ ¸Ó½Å
+// ë””ë°”ìš´ì‹±ìš© ìƒíƒœ ë¨¸ì‹ 
 // ============================================================================
 
 typedef enum {
-    FSM_STATE_IDLE,                    ///< ÃÊ±â »óÅÂ, ¹öÆ° ´©¸§ ´ë±â
-    FSM_STATE_DEBOUNCING_PRESS,        ///< ¹öÆ° ´©¸§ °¨Áö, µğ¹Ù¿î½Ì ÁøÇà Áß
-    FSM_STATE_CONFIRMED_PRESS,         ///< ¾ÈÁ¤ÀûÀÎ ¹öÆ° ´©¸§ È®ÀÎ
-    FSM_STATE_DEBOUNCING_RELEASE       ///< ¹öÆ° ³õÀ½ °¨Áö, µğ¹Ù¿î½Ì ÁøÇà Áß
+    FSM_STATE_IDLE,                    ///< ì´ˆê¸° ìƒíƒœ, ë²„íŠ¼ ëˆ„ë¦„ ëŒ€ê¸°
+    FSM_STATE_DEBOUNCING_PRESS,        ///< ë²„íŠ¼ ëˆ„ë¦„ ê°ì§€, ë””ë°”ìš´ì‹± ì§„í–‰ ì¤‘
+    FSM_STATE_CONFIRMED_PRESS,         ///< ì•ˆì •ì ì¸ ë²„íŠ¼ ëˆ„ë¦„ í™•ì¸
+    FSM_STATE_DEBOUNCING_RELEASE       ///< ë²„íŠ¼ ë†“ìŒ ê°ì§€, ë””ë°”ìš´ì‹± ì§„í–‰ ì¤‘
 } fsm_state_t;
 
 
 /**
- * @brief ³í¸®Àû Ã¤³Î ¹øÈ£·Î Ã¤³Î ¸ÊÇÎ Ã£±â
+ * @brief ë…¼ë¦¬ì  ì±„ë„ ë²ˆí˜¸ë¡œ ì±„ë„ ë§µí•‘ ì°¾ê¸°
  * 
- * @param logical_channel ³í¸®Àû Ã¤³Î ¹øÈ£
- * @return Ã¤³Î ¸ÊÇÎ ¿£Æ®¸® Æ÷ÀÎÅÍ ¶Ç´Â NULL
+ * @param logical_channel ë…¼ë¦¬ì  ì±„ë„ ë²ˆí˜¸
+ * @return ì±„ë„ ë§µí•‘ ì—”íŠ¸ë¦¬ í¬ì¸í„° ë˜ëŠ” NULL
  */
 static const di_channel_map_t *find_channel_map(uint32_t logical_channel)
 {
@@ -102,10 +102,10 @@ static const di_channel_map_t *find_channel_map(uint32_t logical_channel)
 }
 
 /**
- * @brief Ã¤³Î ÀÌ¸§À¸·Î Ã¤³Î ¸ÊÇÎ Ã£±â
+ * @brief ì±„ë„ ì´ë¦„ìœ¼ë¡œ ì±„ë„ ë§µí•‘ ì°¾ê¸°
  * 
- * @param channel_name Ã¤³Î ÀÌ¸§
- * @return Ã¤³Î ¸ÊÇÎ ¿£Æ®¸® Æ÷ÀÎÅÍ ¶Ç´Â NULL
+ * @param channel_name ì±„ë„ ì´ë¦„
+ * @return ì±„ë„ ë§µí•‘ ì—”íŠ¸ë¦¬ í¬ì¸í„° ë˜ëŠ” NULL
  */
 static const di_channel_map_t *find_channel_map_by_name(const char *channel_name)
 {
@@ -122,12 +122,12 @@ static const di_channel_map_t *find_channel_map_by_name(const char *channel_name
 }
 
 /**
- * @brief ¹é¿£µå µå¶óÀÌ¹ö open ÇÔ¼ö È£Ãâ
+ * @brief ë°±ì—”ë“œ ë“œë¼ì´ë²„ open í•¨ìˆ˜ í˜¸ì¶œ
  * 
- * @param backend_type ¹é¿£µå Å¸ÀÔ
- * @param physical_channel ¹°¸®Àû Ã¤³Î ¹øÈ£
- * @param opt ¿É¼Ç
- * @return µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º Æ÷ÀÎÅÍ ¶Ç´Â NULL
+ * @param backend_type ë°±ì—”ë“œ íƒ€ì…
+ * @param physical_channel ë¬¼ë¦¬ì  ì±„ë„ ë²ˆí˜¸
+ * @param opt ì˜µì…˜
+ * @return ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤ í¬ì¸í„° ë˜ëŠ” NULL
  */
 static driver_t *open_backend_driver(di_backend_type_t backend_type, 
                                      uint32_t physical_channel, 
@@ -146,12 +146,12 @@ static driver_t *open_backend_driver(di_backend_type_t backend_type,
 }
 
 /**
- * @brief ¹öÆ° »óÅÂ ¸Ó½Å ±¸Çö
+ * @brief ë²„íŠ¼ ìƒíƒœ ë¨¸ì‹  êµ¬í˜„
  * 
- * @param drv µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º
- * @param hold_time_ms È¦µå ½Ã°£ (¹Ğ¸®ÃÊ)
- * @param debounce_ms µğ¹Ù¿î½º ½Ã°£ (¹Ğ¸®ÃÊ)
- * @return Á¶°Ç ¸¸Á· ½Ã true
+ * @param drv ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤
+ * @param hold_time_ms í™€ë“œ ì‹œê°„ (ë°€ë¦¬ì´ˆ)
+ * @param debounce_ms ë””ë°”ìš´ìŠ¤ ì‹œê°„ (ë°€ë¦¬ì´ˆ)
+ * @return ì¡°ê±´ ë§Œì¡± ì‹œ true
  */
 static bool button_state_machine(driver_t *drv, uint32_t hold_time_ms, uint32_t debounce_ms)
 {
@@ -159,7 +159,7 @@ static bool button_state_machine(driver_t *drv, uint32_t hold_time_ms, uint32_t 
     uint32_t event_start_tick = 0;
     uint32_t press_confirm_tick = 0;
     
-    // ÀÌ¹Ì HIGHÀÌ¸é Áï½Ã false ¹İÈ¯
+    // ì´ë¯¸ HIGHì´ë©´ ì¦‰ì‹œ false ë°˜í™˜
     if (driver_di_read(drv) == INPUT_HIGH) {
         return false;
     }
@@ -169,7 +169,7 @@ static bool button_state_machine(driver_t *drv, uint32_t hold_time_ms, uint32_t 
         int32_t read_result = driver_di_read(drv);
         
         if (read_result < 0) {
-            return false;  // ÀĞ±â ¿¡·¯
+            return false;  // ì½ê¸° ì—ëŸ¬
         }
         
         uint8_t input_state = (uint8_t)read_result;
@@ -184,13 +184,13 @@ static bool button_state_machine(driver_t *drv, uint32_t hold_time_ms, uint32_t 
                 
             case FSM_STATE_DEBOUNCING_PRESS:
                 if (input_state == INPUT_HIGH) {
-                    state = FSM_STATE_IDLE;  // ¹Ù¿î½Ì °¨Áö
+                    state = FSM_STATE_IDLE;  // ë°”ìš´ì‹± ê°ì§€
                 } else if ((current_tick - event_start_tick) >= debounce_ms) {
                     state = FSM_STATE_CONFIRMED_PRESS;
                     press_confirm_tick = current_tick;
                     
                     if (hold_time_ms == 0) {
-                        return true;  // ´Ü¼ø ´©¸§ °¨Áö
+                        return true;  // ë‹¨ìˆœ ëˆ„ë¦„ ê°ì§€
                     }
                 }
                 break;
@@ -201,16 +201,16 @@ static bool button_state_machine(driver_t *drv, uint32_t hold_time_ms, uint32_t 
                     event_start_tick = current_tick;
                 } else {
                     if ((current_tick - press_confirm_tick) >= hold_time_ms) {
-                        return true;  // È¦µå ½Ã°£ Á¶°Ç ¸¸Á·
+                        return true;  // í™€ë“œ ì‹œê°„ ì¡°ê±´ ë§Œì¡±
                     }
                 }
                 break;
                 
             case FSM_STATE_DEBOUNCING_RELEASE:
                 if (input_state == INPUT_LOW) {
-                    state = FSM_STATE_CONFIRMED_PRESS;  // ¹Ù¿î½Ì °¨Áö
+                    state = FSM_STATE_CONFIRMED_PRESS;  // ë°”ìš´ì‹± ê°ì§€
                 } else if ((current_tick - event_start_tick) >= debounce_ms) {
-                    return false;  // È®½ÇÇÑ ¸±¸®Áî - È¦µå ½Ã°£ ºÎÁ·
+                    return false;  // í™•ì‹¤í•œ ë¦´ë¦¬ì¦ˆ - í™€ë“œ ì‹œê°„ ë¶€ì¡±
                 }
                 break;
                 
@@ -219,7 +219,7 @@ static bool button_state_machine(driver_t *drv, uint32_t hold_time_ms, uint32_t 
                 break;
         }
         
-        // ¹«ÇÑ ·çÇÁ ¹æÁö (Å¸ÀÓ¾Æ¿ô)
+        // ë¬´í•œ ë£¨í”„ ë°©ì§€ (íƒ€ì„ì•„ì›ƒ)
         if ((current_tick - event_start_tick) > (hold_time_ms + debounce_ms + 5000)) {
             return false;
         }
@@ -230,7 +230,7 @@ static bool button_state_machine(driver_t *drv, uint32_t hold_time_ms, uint32_t 
 
 
 /**
- * @brief ³í¸®Àû Ã¤³Î ¹øÈ£·Î DI µå¶óÀÌ¹ö ¿­±â
+ * @brief ë…¼ë¦¬ì  ì±„ë„ ë²ˆí˜¸ë¡œ DI ë“œë¼ì´ë²„ ì—´ê¸°
  */
 driver_t *driver_di_open(uint32_t logical_channel, void *opt)
 {
@@ -253,7 +253,7 @@ driver_t *driver_di_open(uint32_t logical_channel, void *opt)
 }
 
 /**
- * @brief Ã¤³Î ÀÌ¸§À¸·Î DI µå¶óÀÌ¹ö ¿­±â
+ * @brief ì±„ë„ ì´ë¦„ìœ¼ë¡œ DI ë“œë¼ì´ë²„ ì—´ê¸°
  */
 driver_t *driver_di_open_by_name(const char *channel_name, void *opt)
 {
@@ -276,7 +276,7 @@ driver_t *driver_di_open_by_name(const char *channel_name, void *opt)
 }
 
 /**
- * @brief DI µå¶óÀÌ¹ö ´İ±â
+ * @brief DI ë“œë¼ì´ë²„ ë‹«ê¸°
  */
 void driver_di_close(driver_t *drv)
 {
@@ -291,7 +291,7 @@ void driver_di_close(driver_t *drv)
 }
 
 /**
- * @brief µğÁöÅĞ ÀÔ·Â »óÅÂ ÀĞ±â
+ * @brief ë””ì§€í„¸ ì…ë ¥ ìƒíƒœ ì½ê¸°
  */
 int32_t driver_di_read(driver_t *drv)
 {
@@ -308,7 +308,7 @@ int32_t driver_di_read(driver_t *drv)
 }
 
 /**
- * @brief DI µå¶óÀÌ¹ö ¼³Á¤
+ * @brief DI ë“œë¼ì´ë²„ ì„¤ì •
  */
 void driver_di_set(driver_t *drv, di_set_option_t cmd, void *option)
 {
@@ -323,7 +323,7 @@ void driver_di_set(driver_t *drv, di_set_option_t cmd, void *option)
 }
 
 /**
- * @brief µğ¹Ù¿î½Ì°ú ÇÔ²² ÀÔ·Â ÀĞ±â
+ * @brief ë””ë°”ìš´ì‹±ê³¼ í•¨ê»˜ ì…ë ¥ ì½ê¸°
  */
 int32_t driver_di_read_debounced(driver_t *drv, uint32_t debounce_ms)
 {
@@ -352,18 +352,18 @@ int32_t driver_di_read_debounced(driver_t *drv, uint32_t debounce_ms)
         }
         
         if (current_state != last_state) {
-            // »óÅÂ º¯È­ °¨Áö, µğ¹Ù¿î½º Å¸ÀÌ¸Ó Àç½ÃÀÛ
+            // ìƒíƒœ ë³€í™” ê°ì§€, ë””ë°”ìš´ìŠ¤ íƒ€ì´ë¨¸ ì¬ì‹œì‘
             stable_start = osKernelGetTickCount();
             last_state = current_state;
         } else {
-            // »óÅÂ ¾ÈÁ¤, µğ¹Ù¿î½º ½Ã°£ È®ÀÎ
+            // ìƒíƒœ ì•ˆì •, ë””ë°”ìš´ìŠ¤ ì‹œê°„ í™•ì¸
             uint32_t elapsed = osKernelGetTickCount() - stable_start;
             if (elapsed >= debounce_ms) {
                 return current_state;
             }
         }
         
-        // Å¸ÀÓ¾Æ¿ô º¸È£
+        // íƒ€ì„ì•„ì›ƒ ë³´í˜¸
         if ((osKernelGetTickCount() - stable_start) > (debounce_ms + 1000)) {
             return last_state;
         }
@@ -371,7 +371,7 @@ int32_t driver_di_read_debounced(driver_t *drv, uint32_t debounce_ms)
 }
 
 /**
- * @brief ¹öÆ° ´©¸§ °¨Áö (È¦µå Å¸ÀÓ Áö¿ø)
+ * @brief ë²„íŠ¼ ëˆ„ë¦„ ê°ì§€ (í™€ë“œ íƒ€ì„ ì§€ì›)
  */
 bool driver_di_is_low(driver_t *drv, uint32_t hold_time_ms, uint32_t debounce_ms)
 {

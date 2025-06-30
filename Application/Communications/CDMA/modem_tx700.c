@@ -53,23 +53,23 @@ driver_t g_tx700_drv;
 
     /*
 
-    ¼­¹ö°¡ ½ÇÇàÁßÀÌ ¾Æ´Ñ»óÅÂ¿¡¼­ AT$$TCP_SCOP=0ÀÌ°ÍÀ» ÇÏ¸é
-    ¼­¹ö°¡ ½ÇÇàµÉ¶§±îÁö °è¼Ó Á¢¼Ó½ÃµµÇÏ´ÂµíÇÔ
-    ¼ö½ÊÃÊ Áö³ª¼­ ¼­¹ö°¡ ½ÇÇàÀÌµÇ¸é ±×¶§ ¿¬°áµÊ
-    ¸ğµ©ÀÌ ¼­¹öÁ¢¼ÓÀÇ Å¸ÀÓ¾Æ¿ôÀ» ¾ó¸¶·Î Çß´ÂÁö´Â ¾Ë¼ö ¾øÀ½
+    ì„œë²„ê°€ ì‹¤í–‰ì¤‘ì´ ì•„ë‹Œìƒíƒœì—ì„œ AT$$TCP_SCOP=0ì´ê²ƒì„ í•˜ë©´
+    ì„œë²„ê°€ ì‹¤í–‰ë ë•Œê¹Œì§€ ê³„ì† ì ‘ì†ì‹œë„í•˜ëŠ”ë“¯í•¨
+    ìˆ˜ì‹­ì´ˆ ì§€ë‚˜ì„œ ì„œë²„ê°€ ì‹¤í–‰ì´ë˜ë©´ ê·¸ë•Œ ì—°ê²°ë¨
+    ëª¨ë€ì´ ì„œë²„ì ‘ì†ì˜ íƒ€ì„ì•„ì›ƒì„ ì–¼ë§ˆë¡œ í–ˆëŠ”ì§€ëŠ” ì•Œìˆ˜ ì—†ìŒ
 
-    ÀüÈ¯ ¿¬°áµÊ
+    ì „í™˜ ì—°ê²°ë¨
     $$TELL: 751, VOICE : CONNECT USER
 
-    ÀüÈ­°¡ ¿¬°áµÈ »óÅÂ¿¡¼­ »ó´ë°¡ ²÷À»¶§
+    ì „í™”ê°€ ì—°ê²°ëœ ìƒíƒœì—ì„œ ìƒëŒ€ê°€ ëŠì„ë•Œ
     NO CARRIER
     $$TELL: 754, VOICE : NETWORK RELEASE
 
-    ÀüÈ­¸¦ ¹ŞÁö ¾ÊÀº »óÅÂ¿¡¼­ »ó´ë°¡ ÀüÈ­¸¦ ²÷À»¶§
+    ì „í™”ë¥¼ ë°›ì§€ ì•Šì€ ìƒíƒœì—ì„œ ìƒëŒ€ê°€ ì „í™”ë¥¼ ëŠì„ë•Œ
     $$TELL: 754, VOICE : NETWORK RELEASE
     */
 
-    /// @brief at ¸í·É¾î¿Í ÀÀ´ä ¸ñ·Ï
+    /// @brief at ëª…ë ¹ì–´ì™€ ì‘ë‹µ ëª©ë¡
     const atCmd_t cmd_tx700[] = {
         {AT_ASYNC_RECV_TCP_DISCONNECTED, "$$TELL: 605"},  //$$TELL: 605, TCP : TCP ???? ????
         {AT_ASYNC_RECV_SMS, "+CMTI"},            //+CMTI: "ME",0
@@ -145,7 +145,7 @@ static void tx700_modem_send(const char *data,uint16_t dataLen)
 }
 
 /*
-async task¿¡¼­ ¸¸ ¼ö½ÅµÇµµ·ÏÇÑ ÀÀ´äÀ» È®ÀÎ
+async taskì—ì„œ ë§Œ ìˆ˜ì‹ ë˜ë„ë¡í•œ ì‘ë‹µì„ í™•ì¸
 */
 static M_RET_t tx700_asyncRecv_response(char *pBuff,uint16_t buffSize)
 {
@@ -161,7 +161,7 @@ static M_RET_t tx700_asyncRecv_response(char *pBuff,uint16_t buffSize)
 }
 
 /*
-tcp task¿¡¼­¸¸ ¼ö½ÅµÇµµ·ÏÇÑ ÀÀ´äÀ» È®ÀÎ
+tcp taskì—ì„œë§Œ ìˆ˜ì‹ ë˜ë„ë¡í•œ ì‘ë‹µì„ í™•ì¸
 */
 static M_RET_t tx700_tcpRecv_response(char *pBuff,uint16_t buffSize)
 {
@@ -242,53 +242,53 @@ static M_RET_t tx700_check_tcpResp(const char *const*pAckList,uint32_t ackListCn
 */
 int extract_sms(char* sms, char* p_out_number, int number_size, char* p_out_msg, int msg_size)
 {
-    // 1. ÀÔ·Â À¯È¿¼º °Ë»ç
+    // 1. ì…ë ¥ ìœ íš¨ì„± ê²€ì‚¬
     if (sms == NULL || p_out_number == NULL || p_out_msg == NULL || number_size <= 0 || msg_size <= 0)
     {
         return -1;
     }
 
-    // Ãâ·Â ¹öÆÛ¸¦ ¾ÈÀüÇÏ°Ô ÃÊ±âÈ­
+    // ì¶œë ¥ ë²„í¼ë¥¼ ì•ˆì „í•˜ê²Œ ì´ˆê¸°í™”
     *p_out_number = '\0';
     *p_out_msg = '\0';
 
-    // 2. ÀüÈ­¹øÈ£ ÃßÃâ
+    // 2. ì „í™”ë²ˆí˜¸ ì¶”ì¶œ
     const char* first_comma = strchr(sms, ',');
     if (first_comma == NULL) return -1;
 
     const char* num_start = strchr(first_comma, '"');
     if (num_start == NULL) return -1;
-    num_start++; // µû¿ÈÇ¥(") ´ÙÀ½À¸·Î ÀÌµ¿
+    num_start++; // ë”°ì˜´í‘œ(") ë‹¤ìŒìœ¼ë¡œ ì´ë™
 
     const char* num_end = strchr(num_start, '"');
     if (num_end == NULL) return -1;
 
     size_t num_len = num_end - num_start;
-    // ¹öÆÛ Å©±â¸¦ ³ÑÁö ¾Êµµ·Ï º¹»çÇÒ ±æÀÌ °è»ê
+    // ë²„í¼ í¬ê¸°ë¥¼ ë„˜ì§€ ì•Šë„ë¡ ë³µì‚¬í•  ê¸¸ì´ ê³„ì‚°
     size_t num_to_copy = (num_len >= number_size) ? (number_size - 1) : num_len;
     
     strncpy(p_out_number, num_start, num_to_copy);
-    p_out_number[num_to_copy] = '\0'; // NULL Á¾·á ¹®ÀÚ Ãß°¡
+    p_out_number[num_to_copy] = '\0'; // NULL ì¢…ë£Œ ë¬¸ì ì¶”ê°€
 
-    // 3. ¸Ş½ÃÁö ÃßÃâ
+    // 3. ë©”ì‹œì§€ ì¶”ì¶œ
     const char* msg_start = strrchr(sms, ',');
     if (msg_start == NULL) return -1;
-    msg_start++; // ½°Ç¥(,) ´ÙÀ½À¸·Î ÀÌµ¿
+    msg_start++; // ì‰¼í‘œ(,) ë‹¤ìŒìœ¼ë¡œ ì´ë™
 
     size_t msg_len = strlen(msg_start);
-    // ¹öÆÛ Å©±â¸¦ ³ÑÁö ¾Êµµ·Ï º¹»çÇÒ ±æÀÌ °è»ê
+    // ë²„í¼ í¬ê¸°ë¥¼ ë„˜ì§€ ì•Šë„ë¡ ë³µì‚¬í•  ê¸¸ì´ ê³„ì‚°
     size_t msg_to_copy = (msg_len >= msg_size) ? (msg_size - 1) : msg_len;
 
     strncpy(p_out_msg, msg_start, msg_to_copy);
-    p_out_msg[msg_to_copy] = '\0'; // NULL Á¾·á ¹®ÀÚ Ãß°¡
+    p_out_msg[msg_to_copy] = '\0'; // NULL ì¢…ë£Œ ë¬¸ì ì¶”ê°€
 
-    return 0; // ¼º°ø
+    return 0; // ì„±ê³µ
 }
 
 M_RET_t tx700_read_sms(sms_t *p_sms)
 {
-  const char *cmd = "AT+CMGR=0\r\n";           // ÃÖ±Ù ¹®ÀÚ 1°³ ÀĞ±â
-  const char *delCmd = "AT+CMGD=,4\r\n";   // ÀüºÎ »èÁ¦
+  const char *cmd = "AT+CMGR=0\r\n";           // ìµœê·¼ ë¬¸ì 1ê°œ ì½ê¸°
+  const char *delCmd = "AT+CMGD=,4\r\n";   // ì „ë¶€ ì‚­ì œ
   const char *ackList[] = {"+CMGR"};
   char buff[310];
   uint32_t idx = 0;
@@ -306,7 +306,7 @@ M_RET_t tx700_read_sms(sms_t *p_sms)
       case 0:
         ret = RET_OK;
         results = extract_sms(buff, p_sms->num, sizeof(p_sms->num), p_sms->msg, sizeof(p_sms->msg));
-        modem_sends(delCmd);  // ÀĞÀº ¸Ş½ÃÁö´Â Áö¿î´Ù
+        modem_sends(delCmd);  // ì½ì€ ë©”ì‹œì§€ëŠ” ì§€ìš´ë‹¤
         break;
       case 1:
         ret = RET_FAIL_RESP;
@@ -502,7 +502,7 @@ M_RET_t tx700_init(void)
 {
     M_RET_t ret = RET_OK;
 
-    tx700_modem_sends("ATE0V1\r\n");//E0 ¿¡ÄÚ ±İÁö V1 ÀÀ´äÀº ¾Æ½ºÅ° ÇüÅÂ
+    tx700_modem_sends("ATE0V1\r\n");//E0 ì—ì½” ê¸ˆì§€ V1 ì‘ë‹µì€ ì•„ìŠ¤í‚¤ í˜•íƒœ
     osDelay(100);
     tx700_modem_sends("AT$$TCP_NULLPERMISSION=1\r\n"); 
     osDelay(100);
@@ -578,7 +578,7 @@ void tx700_reset(uint8_t resetType,uint32_t delayMs)
         {
             if(is_modemBoot())
             {
-                osDelay(5000);// ºÎÆÃÈÄ ¾ÈÁ¤È­ 
+                osDelay(5000);// ë¶€íŒ…í›„ ì•ˆì •í™” 
                 break;;
             }
             osDelay(1000);
@@ -728,8 +728,8 @@ M_RET_t tx700_read_rssi(int16_t *rssi)
 }
 
 /**
- * @brief dtmf ÄÚµå ÃßÃâ 
- * @retval dtmf ÄÚµå
+ * @brief dtmf ì½”ë“œ ì¶”ì¶œ 
+ * @retval dtmf ì½”ë“œ
  */
 char tx700_get_dtmf(char *data)
 {
@@ -751,7 +751,7 @@ void tx700_vpn_init(void)
 
 
 /**
- * @brief ¾ÈÁ¤ÀûÀÎ Àü¿ø Â÷´ÜÀ» À§ÇØ¼­ ¾Æ·¡¿Í °°ÀÌ AT CMD ½ÇÇàÀÌ ÇÊ¿ä ÇÕ´Ï´Ù.
+ * @brief ì•ˆì •ì ì¸ ì „ì› ì°¨ë‹¨ì„ ìœ„í•´ì„œ ì•„ë˜ì™€ ê°™ì´ AT CMD ì‹¤í–‰ì´ í•„ìš” í•©ë‹ˆë‹¤.
  */
 void tx700_off_powerSafe(void)
 {

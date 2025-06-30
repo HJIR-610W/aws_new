@@ -39,7 +39,7 @@ typedef struct modem_status_s
   char tx_cnt;
   char rx_cnt;
   eCDMA_LINK_STATUS_t link_status;
-  char network_service_msg[50];//³×Æ®¿öÅ© »óÅÂ
+  char network_service_msg[50];//ë„¤íŠ¸ì›Œí¬ ìƒíƒœ
   char network_name[20];//STK,KT
   uint32_t last_send_time;
   uint32_t last_recv_time;

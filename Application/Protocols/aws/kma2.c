@@ -11,9 +11,9 @@
 #include "util_time.h"
 
 
-#define KMA2_DATA_CONTENT_ESSENTIAL_SELECTIVE_LEN 91  // ÇÊ¼ö ¹× ¼±ÅÃ ¸ğµÎ °üÃø ½Ã
-#define KMA2_DATA_CONTENT_ESSENTIAL_LEN 45            // ÇÊ¼ö °üÃø ½Ã
-#define KMA2_DATA_CONTENT_PRECIPITATION_LEN 16        // °­¼ö·® °üÃø ½Ã
+#define KMA2_DATA_CONTENT_ESSENTIAL_SELECTIVE_LEN 91  // í•„ìˆ˜ ë° ì„ íƒ ëª¨ë‘ ê´€ì¸¡ ì‹œ
+#define KMA2_DATA_CONTENT_ESSENTIAL_LEN 45            // í•„ìˆ˜ ê´€ì¸¡ ì‹œ
+#define KMA2_DATA_CONTENT_PRECIPITATION_LEN 16        // ê°•ìˆ˜ëŸ‰ ê´€ì¸¡ ì‹œ
 
 uint16_t make_kma2_essential(uint8_t *buffer, kma2_response_t *p_aws)
 {
@@ -210,16 +210,16 @@ uint16_t make_kma2_response(uint8_t *rx_frame, uint8_t *data, uint16_t data_len,
   SetWord(&tx_frame[offset], KMA_HEADER_START);
   offset += 2;
 
-  tx_frame[offset++] = KMA2_PROTOCOL_YEAR%100; // rx_frame[2];  // ÇÁ·ÎÅäÄİ ¹öÀü ³â
-  tx_frame[offset++] = KMA2_PROTOCOL_MONTH;    // rx_frame[3];  // ÇÁ·ÎÅäÄİ ¹öÀü ¿ù
-  tx_frame[offset++] = KMA2_PROTOCOL_DAY;      // rx_frame[4];  // ÇÁ·ÎÅäÄİ ¹öÀü ÀÏ
+  tx_frame[offset++] = KMA2_PROTOCOL_YEAR%100; // rx_frame[2];  // í”„ë¡œí† ì½œ ë²„ì „ ë…„
+  tx_frame[offset++] = KMA2_PROTOCOL_MONTH;    // rx_frame[3];  // í”„ë¡œí† ì½œ ë²„ì „ ì›”
+  tx_frame[offset++] = KMA2_PROTOCOL_DAY;      // rx_frame[4];  // í”„ë¡œí† ì½œ ë²„ì „ ì¼
 
   tx_frame[offset++] = Date_Time.Year%100;
   tx_frame[offset++] = Date_Time.Month;
   tx_frame[offset++] = Date_Time.Day;
   tx_frame[offset++] = Date_Time.Hour;
   tx_frame[offset++] = Date_Time.Min;
-  tx_frame[offset++] = rx_frame[16];  //¸í·É¾î[1]
+  tx_frame[offset++] = rx_frame[16];  //ëª…ë ¹ì–´[1]
 
   tx_frame[offset++] = data_format_no;
 

@@ -53,14 +53,14 @@ typedef uint32_t STATUS_t;
 
 typedef struct
 {
-    uint8_t call_connected;//0 ²÷±è,1 ¿¬°áµÊ
-    uint8_t server_closed;//1 ²÷±è
-    uint8_t modemPwr;//0 Àü¿ø ²¨Áü,1ÄÑÁü(AT ¸í·É¾î Ã³¸® °¡´É »óÅÂ)
-    uint8_t tcp_connected;//0 ¿¬°á ¾ÈµÊ, 1 ¿¬°áµÊ
-    uint8_t networkStatus;//0 ³×Æ®¿öÅ© µî·Ï¾ÈµÊ, 1 µî·ÏµÊ
+    uint8_t call_connected;//0 ëŠê¹€,1 ì—°ê²°ë¨
+    uint8_t server_closed;//1 ëŠê¹€
+    uint8_t modemPwr;//0 ì „ì› êº¼ì§,1ì¼œì§(AT ëª…ë ¹ì–´ ì²˜ë¦¬ ê°€ëŠ¥ ìƒíƒœ)
+    uint8_t tcp_connected;//0 ì—°ê²° ì•ˆë¨, 1 ì—°ê²°ë¨
+    uint8_t networkStatus;//0 ë„¤íŠ¸ì›Œí¬ ë“±ë¡ì•ˆë¨, 1 ë“±ë¡ë¨
     int16_t rssi;
-    uint8_t modemReboot;//¿ÀÁ÷ Task A¿¡¼­ 1ÀÎÁö¸¸ È®ÀÎ
-    uint8_t init;//0 ÃÊ±âÈ­ ¾ÈµÊ, 1 ÃÊ±âÈ­µÊ
+    uint8_t modemReboot;//ì˜¤ì§ Task Aì—ì„œ 1ì¸ì§€ë§Œ í™•ì¸
+    uint8_t init;//0 ì´ˆê¸°í™” ì•ˆë¨, 1 ì´ˆê¸°í™”ë¨
     uint8_t smsRecvCnt;
     uint8_t ringReceived;
     uint8_t ringCnt;
@@ -69,7 +69,7 @@ typedef struct
     uint8_t tcpData[1];
     uint16_t tcpDataLen;
     uint8_t smsSendOk;
-    uint8_t dial;//1 ÀüÈ­ ¿¬°áµÊ,0 ÀüÈ­ ²÷±è
+    uint8_t dial;//1 ì „í™” ì—°ê²°ë¨,0 ì „í™” ëŠê¹€
     uint8_t phoneNumChecked;
 }modemEx_t;
 
@@ -176,7 +176,7 @@ void modem_sends(const char *pData)
 }
 
 
-/*ÅÚ¶óµò ±âÁØÀ¸·Î º¯È¯
+/*í…”ë¼ë”˜ ê¸°ì¤€ìœ¼ë¡œ ë³€í™˜
 0 113 dBm or less
 1 111 dBm
 2~30 109~52dBm (109~108dBm= rssi 2, 107~106dBm= rssi 3 ,,, 55~54dBm= rssi 29 53~52dBm= rssi 30)
@@ -218,7 +218,7 @@ int32_t convert_rssi_nt9607totx700(int32_t rssi)
 			}
 		}
 
-		if (tx700rssi == 0)//À§ÀÇ for¿¡¼­ Ã£Áö ¸øÇÔ
+		if (tx700rssi == 0)//ìœ„ì˜ forì—ì„œ ì°¾ì§€ ëª»í•¨
 		{
 			tx700rssi = 99;
 		}
@@ -239,7 +239,7 @@ void modem_init(void)
     char num[20];
 
     modem_set_dial(MODEM_DIAL_OFF);   
-// ¸ğµ© ºÎÆÃÇÏ°í ¸í·É¾î ½Ãµµ½Ã ÀÎ½Ä ¾ÈµÇ´Â °æ¿ì°¡ Á¸Àç
+// ëª¨ë€ ë¶€íŒ…í•˜ê³  ëª…ë ¹ì–´ ì‹œë„ì‹œ ì¸ì‹ ì•ˆë˜ëŠ” ê²½ìš°ê°€ ì¡´ì¬
 
     for(uint32_t i = 0 ; i < 3;i++)
     {
@@ -300,13 +300,13 @@ bool is_vpn_enabled(void)
 
 #define CONNECT_TIMEOUT_MS 43200000
 /**
- * @brief ¸ğµ© ÃÊ±âÈ­ 
- * tcp ip Åë½ÅÀ» À§ÇØ ¼­¹ö Á¢¼Ó
- * @return ¼­¹ö Á¢¼ÓÀÌ µÇ¾î¾ß ¸®ÅÏÇÔ
+ * @brief ëª¨ë€ ì´ˆê¸°í™” 
+ * tcp ip í†µì‹ ì„ ìœ„í•´ ì„œë²„ ì ‘ì†
+ * @return ì„œë²„ ì ‘ì†ì´ ë˜ì–´ì•¼ ë¦¬í„´í•¨
 */
 STATUS_t connect_tcp(eConnect_Type_t type)
 {
-    uint8_t connectionCnt = 2;// ÃÊ±âhW ¸®¼ÂµÊ
+    uint8_t connectionCnt = 2;// ì´ˆê¸°hW ë¦¬ì…‹ë¨
     uint8_t ip[4];
     uint16_t port;
     STATUS_t connection = STATUS_FAIL;
@@ -319,13 +319,13 @@ STATUS_t connect_tcp(eConnect_Type_t type)
     {
         if(type == eCONNECT_TCP_WDT)
         {
-            if(connectionCnt == 1)  // ¼­¹ö ¿¬°á 1È¸ ½Ãµµ ½ÇÆĞ¸é sw ¸®¼Â
+            if(connectionCnt == 1)  // ì„œë²„ ì—°ê²° 1íšŒ ì‹œë„ ì‹¤íŒ¨ë©´ sw ë¦¬ì…‹
             {
                 log_printf(L_INFO,"MODEM SW RESET");
                 _iCellular->reset(M_RESET_SW,20000);
                 type = eCONNECT_MODEM_REBOOT;
             }
-            else if(connectionCnt == 2)// 2È¸ ½Ãµµ ½ÇÆĞ¸é hw ¸®¼Â
+            else if(connectionCnt == 2)// 2íšŒ ì‹œë„ ì‹¤íŒ¨ë©´ hw ë¦¬ì…‹
             {
                 log_printf(L_INFO, "MODEM HW RESET");
                 _iCellular->off_powerSafe();
@@ -336,7 +336,7 @@ STATUS_t connect_tcp(eConnect_Type_t type)
             else if(connectionCnt == 3) 
             {
                 connectionCnt = 2;
-                if((osKernelGetTickCount()-start_time)>CONNECT_TIMEOUT_MS)//12½Ã°£
+                if((osKernelGetTickCount()-start_time)>CONNECT_TIMEOUT_MS)//12ì‹œê°„
                 {
                   log_printf(L_INFO, "MODEM RESET TIMEOUT");    
                   connectionCnt = 0;
@@ -404,12 +404,12 @@ STATUS_t connect_tcp(eConnect_Type_t type)
 }
 
 /**
- * @brief tcp µ¥ÀÌÅÍ ¼ö½Å
- * @param pBuff ¼ö½ÅÃ³¸® ¹öÆÛ
- * @param buffSize pBuffÀÇ »çÀÌÁî
- * @param pLen ¼ö½ÅµÈ µ¥ÀÌÅÍ ±æÀÌ
- * @param timeOutMs ¼ö½Å ´ë±â ½Ã°£
- * @retval 0 ¼ö½ÅµÊ,1 ¼ö½Å¾øÀ½
+ * @brief tcp ë°ì´í„° ìˆ˜ì‹ 
+ * @param pBuff ìˆ˜ì‹ ì²˜ë¦¬ ë²„í¼
+ * @param buffSize pBuffì˜ ì‚¬ì´ì¦ˆ
+ * @param pLen ìˆ˜ì‹ ëœ ë°ì´í„° ê¸¸ì´
+ * @param timeOutMs ìˆ˜ì‹  ëŒ€ê¸° ì‹œê°„
+ * @retval 0 ìˆ˜ì‹ ë¨,1 ìˆ˜ì‹ ì—†ìŒ
  */
 uint32_t recv_tcp(uint8_t *pBuff,uint16_t buffSize,uint16_t *pLen,uint32_t timeOutMs)
 {
@@ -459,8 +459,8 @@ void get_ip(uint8_t *prIp,uint16_t *pPort)
 #define PING_TIMEOUT_MS 120000
 
 /**
- * @brief ¸ğµ©ÀÌ ¸®¼ÂµÇ¾ú´ÂÁö Ã¼Å©
- * @retval true ¸®¼ÂµÊ, false ¸®¼Â¾ÈµÊ
+ * @brief ëª¨ë€ì´ ë¦¬ì…‹ë˜ì—ˆëŠ”ì§€ ì²´í¬
+ * @retval true ë¦¬ì…‹ë¨, false ë¦¬ì…‹ì•ˆë¨
  */
 bool is_modemBoot(void)
 {
@@ -480,8 +480,8 @@ bool is_modemBoot(void)
 }
 
 /**
- * @brief ¼­¹ö°¡ ¼ÒÄÏÀ» ´İ¾Ò´ÂÁö Ã¼Å©
- * @retval true ¼ÒÄÏ ´İÈû, false ÀÌ»ó¾øÀ½
+ * @brief ì„œë²„ê°€ ì†Œì¼“ì„ ë‹«ì•˜ëŠ”ì§€ ì²´í¬
+ * @retval true ì†Œì¼“ ë‹«í˜, false ì´ìƒì—†ìŒ
  */
 bool is_serverErr(void)
 {
@@ -503,8 +503,8 @@ bool is_serverErr(void)
 
 
 /**
- * @brief ip°¡ º¯°æµÇ¾ú´ÂÁö ÆÇ´Ü
- * @retval true ip º¯°æ¿äÃ»,false ¿äÃ»¾øÀ½
+ * @brief ipê°€ ë³€ê²½ë˜ì—ˆëŠ”ì§€ íŒë‹¨
+ * @retval true ip ë³€ê²½ìš”ì²­,false ìš”ì²­ì—†ìŒ
  */ 
 bool is_ipChanged(void)
 {
@@ -520,11 +520,11 @@ bool is_ipChanged(void)
 
 
 /**
- * @brief async °ü·Ã at ÀÀ´ä¶Ç´Â µ¥ÀÌÅÍ ¼ö½Å
- * @param cmd ¼ö½ÅµÈ cmd index
- * @param pBuff ¼ö½Å ¹öÆÛ
- * @param buffSize pBuff »çÀÌÁî
- * @retval 0 ¼ö½Å,1¼ö½Å¾øÀ½
+ * @brief async ê´€ë ¨ at ì‘ë‹µë˜ëŠ” ë°ì´í„° ìˆ˜ì‹ 
+ * @param cmd ìˆ˜ì‹ ëœ cmd index
+ * @param pBuff ìˆ˜ì‹  ë²„í¼
+ * @param buffSize pBuff ì‚¬ì´ì¦ˆ
+ * @retval 0 ìˆ˜ì‹ ,1ìˆ˜ì‹ ì—†ìŒ
  */
 uint32_t wait_asyncResp(uint32_t *cmd,char *pBuff,uint16_t buffSize)
 {
@@ -563,10 +563,10 @@ uint32_t wait_asyncResp(uint32_t *cmd,char *pBuff,uint16_t buffSize)
 }
 
 /**
- * @brief async°ü·Ã µ¥ÀÌÅÍ ¸Ş½ÃÁöÅ¥ ÀúÀå
- * @param cmd ¼ö½ÅµÈ ¸í·É¾î index
- * @param pData ¼ö½ÅµÈ ¸í·É¾î ÀÀ´ä ¶Ç´Â µ¥ÀÌÅÍ
- * @param dataLen pDataÀÇ ±æÀÌ
+ * @brief asyncê´€ë ¨ ë°ì´í„° ë©”ì‹œì§€í ì €ì¥
+ * @param cmd ìˆ˜ì‹ ëœ ëª…ë ¹ì–´ index
+ * @param pData ìˆ˜ì‹ ëœ ëª…ë ¹ì–´ ì‘ë‹µ ë˜ëŠ” ë°ì´í„°
+ * @param dataLen pDataì˜ ê¸¸ì´
  */
 void put_asyncResp(uint32_t cmd,char *pData,uint16_t dataLen)
 {
@@ -597,11 +597,11 @@ void put_asyncResp(uint32_t cmd,char *pData,uint16_t dataLen)
 }
 
 /**
- * @brief tcp ÀÀ´ä¼ö½Å
- * @param cmd ¼ö½ÅµÈ ¸í·É¾î cmd index
- * @param pBuff ¼ö½ÅµÈ AT ÀÀ´ä
- * @param buffSize pBuff ¹öÆÛ Å©±â
- * @retval 0 Á¤»ó,1 ¼ö½ÅµÈ ÀÀ´ä ¾øÀ½
+ * @brief tcp ì‘ë‹µìˆ˜ì‹ 
+ * @param cmd ìˆ˜ì‹ ëœ ëª…ë ¹ì–´ cmd index
+ * @param pBuff ìˆ˜ì‹ ëœ AT ì‘ë‹µ
+ * @param buffSize pBuff ë²„í¼ í¬ê¸°
+ * @retval 0 ì •ìƒ,1 ìˆ˜ì‹ ëœ ì‘ë‹µ ì—†ìŒ
  */ 
 uint32_t wait_tcpResp(uint32_t *cmd,char *pBuff,uint16_t buffSize)
 {
@@ -621,10 +621,10 @@ uint32_t wait_tcpResp(uint32_t *cmd,char *pBuff,uint16_t buffSize)
 }
 
 /**
- * @brief tcp ÀÀ´ä ¸Ş½ÃÁö Å¥ Àü¼Û
- * @param cmd ¸í·É¾î index
- * @param pData ¼ö½ÅµÈ tcp°ü·Ã at ¸í·É¾î ÀÀ´ä¶Ç´Â µ¥ÀÌÅ¸
- * @param dataLen pDataÀÇ ±æÀÌ
+ * @brief tcp ì‘ë‹µ ë©”ì‹œì§€ í ì „ì†¡
+ * @param cmd ëª…ë ¹ì–´ index
+ * @param pData ìˆ˜ì‹ ëœ tcpê´€ë ¨ at ëª…ë ¹ì–´ ì‘ë‹µë˜ëŠ” ë°ì´íƒ€
+ * @param dataLen pDataì˜ ê¸¸ì´
  */
 void put_tcpResp(uint32_t cmd,uint8_t *pData,uint16_t dataLen)
 {
@@ -645,14 +645,14 @@ void put_tcpResp(uint32_t cmd,uint8_t *pData,uint16_t dataLen)
 
 
 /**
- * @brief ÀüÈ­¸¦ ²÷±â
+ * @brief ì „í™”ë¥¼ ëŠê¸°
  */ 
 void off_call(void)
 {
     modem_sends(s_p_atCmd[AT_ASYNC_OFF_VOICE].cmdStr);
 }
 /**
- * @brief ¹ß½Å ÁßÁö
+ * @brief ë°œì‹  ì¤‘ì§€
  */
 void dial_off(void)
 {
@@ -660,9 +660,9 @@ void dial_off(void)
 }
 
 /**
- * @brief ¼ö½ÅÇÑ SMS ÀÖ´ÂÁö È®ÀÎ
- * @retval true ¼ö½ÅÇÑ sms ÀÖÀ½
- *         false ¼ö½ÅÇÑ sms ¾øÀ½
+ * @brief ìˆ˜ì‹ í•œ SMS ìˆëŠ”ì§€ í™•ì¸
+ * @retval true ìˆ˜ì‹ í•œ sms ìˆìŒ
+ *         false ìˆ˜ì‹ í•œ sms ì—†ìŒ
  */ 
 bool is_smsRx(void)
 {
@@ -672,7 +672,7 @@ bool is_smsRx(void)
 
     if(s_modem.smsRecvCnt)
     {
-        s_modem.smsRecvCnt--;// ÀĞÀº ÈÄ Áö¿ö¾ß ÇÏ´ÂÁö ÃßÈÄ 
+        s_modem.smsRecvCnt--;// ì½ì€ í›„ ì§€ì›Œì•¼ í•˜ëŠ”ì§€ ì¶”í›„ 
         is = true;
     }
 
@@ -682,11 +682,11 @@ bool is_smsRx(void)
 }
 
 /**
- * @brief ÀüÈ­°¡ ¼ö½ÅµÇ¾ú´ÂÁö È®ÀÎ
- * @param prNum ¼ö½ÅµÈ ÀüÈ­¹øÈ£
- * @param numSize num ¹öÆÛÀÇ Å©±â
- * @param prCnt º§¸® ¿ï¸° È½¼ö
- * @retval ture ¼ö½ÅµÊ, false ¼ö½Å¾øÀ½
+ * @brief ì „í™”ê°€ ìˆ˜ì‹ ë˜ì—ˆëŠ”ì§€ í™•ì¸
+ * @param prNum ìˆ˜ì‹ ëœ ì „í™”ë²ˆí˜¸
+ * @param numSize num ë²„í¼ì˜ í¬ê¸°
+ * @param prCnt ë²¨ë¦¬ ìš¸ë¦° íšŸìˆ˜
+ * @retval ture ìˆ˜ì‹ ë¨, false ìˆ˜ì‹ ì—†ìŒ
 */
 bool is_ringReceived(char *prNum,uint16_t numSize,uint16_t *prCnt)
 {
@@ -708,9 +708,9 @@ bool is_ringReceived(char *prNum,uint16_t numSize,uint16_t *prCnt)
 
 
 /**
- * @brief ¼ö½ÅÂ÷´Ü ¹øÈ£ÀÎÁö È®ÀÎ
- * @retval true  Â÷´Ü ¹øÈ£
- *         false Â÷´Ü ¹øÈ£ ¾Æ´Ô
+ * @brief ìˆ˜ì‹ ì°¨ë‹¨ ë²ˆí˜¸ì¸ì§€ í™•ì¸
+ * @retval true  ì°¨ë‹¨ ë²ˆí˜¸
+ *         false ì°¨ë‹¨ ë²ˆí˜¸ ì•„ë‹˜
  */
 bool is_rejectCallNum(char *callNum)
 {
@@ -738,7 +738,7 @@ return false;
 
 }
 /**
- * @brief ¼ö½ÅµÈ ÀüÈ­ Á¤º¸ ÃÊ±âÈ­
+ * @brief ìˆ˜ì‹ ëœ ì „í™” ì •ë³´ ì´ˆê¸°í™”
  */
 void modem_clear_ring(void)
 {
@@ -771,7 +771,7 @@ bool modem_is_dialOk(void)
 }
 
 /**
- * @brief ¹ß½ÅÀüÈ­ ¸ñ·Ï ºñ¿ò
+ * @brief ë°œì‹ ì „í™” ëª©ë¡ ë¹„ì›€
  */
 void flush_reqCall(void)
 {
@@ -780,9 +780,9 @@ void flush_reqCall(void)
 }
 
 /**
- * @brief ÀüÈ­¹ß½Å ¿äÃ»
- * @param num ¼ö½ÅÀÚ ÀüÈ­¹øÈ£
- * @param waitTimeOutMs ÀüÈ­ ´ë±â ½Ã°£,ÀÌ½Ã°£µ¿¾È ¾È¹ŞÀ¸¸é ÀÚµ¿ Á¾·á
+ * @brief ì „í™”ë°œì‹  ìš”ì²­
+ * @param num ìˆ˜ì‹ ì ì „í™”ë²ˆí˜¸
+ * @param waitTimeOutMs ì „í™” ëŒ€ê¸° ì‹œê°„,ì´ì‹œê°„ë™ì•ˆ ì•ˆë°›ìœ¼ë©´ ìë™ ì¢…ë£Œ
  */
 void dial_call(char *num,uint32_t waitTimeOutMs)
 {
@@ -916,10 +916,10 @@ void at_ring_received(uint32_t cmd,char *pData,uint16_t dataLen)
 }
 
 /**
- * @brief ½Ã¸®¾ó dtmf ¼ö½Å Ã³¸®
- * @param cmd ÇöÀç ¹Ì»ç¿ë
+ * @brief ì‹œë¦¬ì–¼ dtmf ìˆ˜ì‹  ì²˜ë¦¬
+ * @param cmd í˜„ì¬ ë¯¸ì‚¬ìš©
  * @param pData at 
- * @param dataLen at ±æÀÌ
+ * @param dataLen at ê¸¸ì´
  */
 void at_dtmf(uint32_t cmd,char *pData,uint16_t dataLen)
 {
@@ -935,10 +935,10 @@ void at_dtmf(uint32_t cmd,char *pData,uint16_t dataLen)
 }
 
 /**
- * @brief ÀüÈ­²÷±è ÀÎ½ÄÈÄ Ã³¸®
- * @param cmd ÇöÀç ¹Ì»ç¿ë
- * @param pData ¼ö½ÅµÈ at 
- * @param dataLen ¼ö½ÃµÈ at ±æÀÌ
+ * @brief ì „í™”ëŠê¹€ ì¸ì‹í›„ ì²˜ë¦¬
+ * @param cmd í˜„ì¬ ë¯¸ì‚¬ìš©
+ * @param pData ìˆ˜ì‹ ëœ at 
+ * @param dataLen ìˆ˜ì‹œëœ at ê¸¸ì´
  */
 void at_voice_end(uint32_t cmd,char *pData,uint16_t dataLen)
 {
@@ -954,9 +954,9 @@ void at_voice_end(uint32_t cmd,char *pData,uint16_t dataLen)
 
 
 /**
- * @brief ¼­¹ö¿¡¼­ ¼ö½ÅµÈ tcp µ¥ÀÌÅÍ¸¦ tcp task Àü´Ş
- * @param data tcp µ¥ÀÌÅÍ
- * @param dataLen tcp µ¥ÀÌÅÍ ±æÀÌ
+ * @brief ì„œë²„ì—ì„œ ìˆ˜ì‹ ëœ tcp ë°ì´í„°ë¥¼ tcp task ì „ë‹¬
+ * @param data tcp ë°ì´í„°
+ * @param dataLen tcp ë°ì´í„° ê¸¸ì´
  */
 void put_tcpData(uint8_t *data, uint16_t dataLen)
 {
@@ -1002,12 +1002,12 @@ void put_smsResp(uint32_t cmd,char *pData,uint16_t dataLen)
 
 
 /**
- * @brief tcp µ¥ÀÌÅÍ ¼ö½Å Ã³¸®
- * TCPµ¥ÀÌÅÍ°¡ ¼ö½ÅµÇ¸é *TCPRD=4<CR><LF> ÇüÅÂÀÇ ¸Ş½ÃÁö°¡ ¼ö½ÅµÊ
- * 4´Â Ã³¸®ÇØ¾ßÇÒ µ¥ÀÌÅÍ ±æÀÌÀÓ
- * @param cmd ¸í·É¾î index,ÇöÀç ¹Ì»ç¿ë
- * @param pData ¼ö½ÅµÈ AT µ¥ÀÌÅÍ
- * @param dataLen ¼ö½ÅµÈ AT µ¥ÀÌÅÍ ±æÀÌ
+ * @brief tcp ë°ì´í„° ìˆ˜ì‹  ì²˜ë¦¬
+ * TCPë°ì´í„°ê°€ ìˆ˜ì‹ ë˜ë©´ *TCPRD=4<CR><LF> í˜•íƒœì˜ ë©”ì‹œì§€ê°€ ìˆ˜ì‹ ë¨
+ * 4ëŠ” ì²˜ë¦¬í•´ì•¼í•  ë°ì´í„° ê¸¸ì´ì„
+ * @param cmd ëª…ë ¹ì–´ index,í˜„ì¬ ë¯¸ì‚¬ìš©
+ * @param pData ìˆ˜ì‹ ëœ AT ë°ì´í„°
+ * @param dataLen ìˆ˜ì‹ ëœ AT ë°ì´í„° ê¸¸ì´
  */
 void at_async_tcp_recv(uint8_t *p_data,uint16_t data_len)
 {
@@ -1017,8 +1017,8 @@ void at_async_tcp_recv(uint8_t *p_data,uint16_t data_len)
 
 
 /**
- * @brief ¸ğµ©¿¡¼­ ¼ö½ÅµÇ´Â AT¸í·É¾î Ã³¸®
- * @param argument task »ı¼º½Ã ¸Å°³º¯¼ö
+ * @brief ëª¨ë€ì—ì„œ ìˆ˜ì‹ ë˜ëŠ” ATëª…ë ¹ì–´ ì²˜ë¦¬
+ * @param argument task ìƒì„±ì‹œ ë§¤ê°œë³€ìˆ˜
  */
 void modemAtTask(void  *argument)
 {
@@ -1050,40 +1050,40 @@ void modemAtTask(void  *argument)
         switch (at_cmd)
         {
           case AT_ASYNC_RECV_REBOOT:
-              at_reboot(idx, buff, len);  // ¸ğµ©ÀÌ ¸®¼ÂµÇ¾ú´Ù´Â ºÎÆÃ ¸Ş½ÃÁö¸¦ ¹ŞÀ½
+              at_reboot(idx, buff, len);  // ëª¨ë€ì´ ë¦¬ì…‹ë˜ì—ˆë‹¤ëŠ” ë¶€íŒ… ë©”ì‹œì§€ë¥¼ ë°›ìŒ
             break;
             case AT_ASYNC_RECV_SMS:
-                at_sms_received(idx,buff,len);//SMS°¡ ¼ö½ÃµÇ¾ú´Ù´Â ¾Ë¸²À» ¹ŞÀ½
+                at_sms_received(idx,buff,len);//SMSê°€ ìˆ˜ì‹œë˜ì—ˆë‹¤ëŠ” ì•Œë¦¼ì„ ë°›ìŒ
             break;
             case AT_ASYNC_RECV_RING:
-                at_ring_received(idx,buff,len);//ÀüÈ­ ¼ö½ÅµÇ¾ú´Ù´Â ¸Ş½ÃÁö¸¦ ¹ŞÀ½
+                at_ring_received(idx,buff,len);//ì „í™” ìˆ˜ì‹ ë˜ì—ˆë‹¤ëŠ” ë©”ì‹œì§€ë¥¼ ë°›ìŒ
             break;
             case AT_ASYNC_RESP_VOICE_END:
-                  at_voice_end(idx,buff,len);// ÀüÈ­°¡ ²÷°å´Ù´Â ¸Ş½ÃÁö¸¦ ¹ŞÀ½
+                  at_voice_end(idx,buff,len);// ì „í™”ê°€ ëŠê²¼ë‹¤ëŠ” ë©”ì‹œì§€ë¥¼ ë°›ìŒ
             break;
-            case AT_ASYNC_RECV_DTMF://DTMF¸¦ ¹ŞÀ½
+            case AT_ASYNC_RECV_DTMF://DTMFë¥¼ ë°›ìŒ
                 at_dtmf(idx,buff,len);
             break;
-            case AT_ASYNC_RECV_TCP_DATA://tcp data¸¦ ¹ŞÀ½
+            case AT_ASYNC_RECV_TCP_DATA://tcp dataë¥¼ ë°›ìŒ
                 at_async_tcp_recv((uint8_t *)buff,len);
             break;
-            case AT_ASYNC_RECV_TCP_DISCONNECTED://tcp °¡ ²÷°å´Ù´Â ¸Ş½ÃÁö¸¦ ¹ŞÀ½
+            case AT_ASYNC_RECV_TCP_DISCONNECTED://tcp ê°€ ëŠê²¼ë‹¤ëŠ” ë©”ì‹œì§€ë¥¼ ë°›ìŒ
                 at_async_tcp_disconnected(idx,buff,len);
             break;
-            case AT_SYNC_SMS_READ_RESP_OK:  // SMS ÀĞ±â¿¡ ´ëÇÑ ÀÀ´ä
+            case AT_SYNC_SMS_READ_RESP_OK:  // SMS ì½ê¸°ì— ëŒ€í•œ ì‘ë‹µ
               if (_iCellular->sms_handler)
               {
                 _iCellular->sms_handler(_iCellular->io_uart, buff, len);
                 break;
               }
-            case AT_ASYNC_OPEN_VOICE_RESP:  // ÀüÈ­°¡ ¿¬°áµÇ¾ú´ÂÁö ÀÀ´ä
-            case AT_SYNC_GET_RSSI_RESP:    // ¼ö½Å°¨µµ ¸í·É¾î¿¡ ´ëÇÑ ÀÀ´ä
+            case AT_ASYNC_OPEN_VOICE_RESP:  // ì „í™”ê°€ ì—°ê²°ë˜ì—ˆëŠ”ì§€ ì‘ë‹µ
+            case AT_SYNC_GET_RSSI_RESP:    // ìˆ˜ì‹ ê°ë„ ëª…ë ¹ì–´ì— ëŒ€í•œ ì‘ë‹µ
 
-            case AT_ASYNC_SMS_READ_RESP_ERR:// SMS ÀĞ±â ¿¡·¯¿¡´ëÇÑ ÀÀ´ä
+            case AT_ASYNC_SMS_READ_RESP_ERR:// SMS ì½ê¸° ì—ëŸ¬ì—ëŒ€í•œ ì‘ë‹µ
             case AT_ASYNC_DIAL_RESP:
                 put_asyncResp(idx,buff,len);
                 break;
-            case AT_SMS_SEND_RESP:        // SMS Àü¼Û¿¡´ëÇÑ ÀÀ´ä
+            case AT_SMS_SEND_RESP:        // SMS ì „ì†¡ì—ëŒ€í•œ ì‘ë‹µ
                 put_smsResp(idx,buff,len);
                 break;
             case AT_TCP_WRITE_IP_RESP:
@@ -1113,7 +1113,7 @@ void modemAtTask(void  *argument)
 
 
 /**
-* @brief ¼¿·ê·¯ ÀÎÅÍÆäÀÌ½º ÃÊ±âÈ­
+* @brief ì…€ë£°ëŸ¬ ì¸í„°í˜ì´ìŠ¤ ì´ˆê¸°í™”
 */
 void iCellular_init(void)
 {
@@ -1209,18 +1209,18 @@ void iCellular_init(void)
 
 
 /**
- * @brief tcp Åë½Å
- * @param argument task ¸Å°³º¯¼ö
+ * @brief tcp í†µì‹ 
+ * @param argument task ë§¤ê°œë³€ìˆ˜
 */
 void modemTcpTask(void  *argument)
 {
-    uint8_t buff[512+32];//tcp data 512 + ±âÅ¸
+    uint8_t buff[512+32];//tcp data 512 + ê¸°íƒ€
     uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
     uint8_t err=0;
     uint16_t len;
     uint32_t start_time=0;
     M_RET_t ret;
-    eConnect_Type_t type = ePOWER_RESET;//ÃÊ±â¿¡´Â Àü¿ø¸®¼ÂÀÌ ¹ß»ıÇÏ¿´´Ù°í³Ñ°ÜÁÜ
+    eConnect_Type_t type = ePOWER_RESET;//ì´ˆê¸°ì—ëŠ” ì „ì›ë¦¬ì…‹ì´ ë°œìƒí•˜ì˜€ë‹¤ê³ ë„˜ê²¨ì¤Œ
 
     g_cdma_system.link_status = eCDMA_LINK_IDLE;
     g_modem_config.connection_timeoutms = 3600000;
@@ -1240,17 +1240,17 @@ void modemTcpTask(void  *argument)
         {
           ret = _iCellular->recv_tcp(buff, sizeof(buff), &len, 0);
 
-          switch (ret)  // Åë½Å ÀÌ»ó ¾øÀ½
+          switch (ret)  // í†µì‹  ì´ìƒ ì—†ìŒ
           {
             case RET_OK:
-              if (len)  // ¼ö½ÅµÈ µ¥ÀÌÅÍ°¡ ÀÖÀ½
+              if (len)  // ìˆ˜ì‹ ëœ ë°ì´í„°ê°€ ìˆìŒ
               {
                 start_time = osKernelGetTickCount();
                 g_cdma_system.last_recv_time = time_timestamp();
                 UPDATE_CNT(g_cdma_system.rx_cnt, 99);
                 len = kma_cmd_handler(buff, len, tx_buffer, eREQ_SOURCE_CDMA);
 
-                if (len)  // Àü¼ÛÇÒ µ¥ÀÌÅÍÀÖ´Ù¸é
+                if (len)  // ì „ì†¡í•  ë°ì´í„°ìˆë‹¤ë©´
                 {
                   g_cdma_system.last_send_time = time_timestamp();
                   UPDATE_CNT(g_cdma_system.tx_cnt, 99);
@@ -1285,7 +1285,7 @@ void modemTcpTask(void  *argument)
           }
 
           if ((osKernelGetTickCount() - start_time) >
-              g_modem_config.connection_timeoutms) /*ÀÏÁ¤ ±â°£µ¿¾È pingÀÌ ÇÑ¹øÀÌ¶óµµ ¼ö½Å ¾ÈµÇ¸é*/
+              g_modem_config.connection_timeoutms) /*ì¼ì • ê¸°ê°„ë™ì•ˆ pingì´ í•œë²ˆì´ë¼ë„ ìˆ˜ì‹  ì•ˆë˜ë©´*/
           {
             type = eCONNECT_TCP_WDT;
             break;

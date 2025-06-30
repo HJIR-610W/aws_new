@@ -8,6 +8,45 @@
 #include "dev_io.h"
 #include "terminal.h"
 
+static int get_visual_width(const char* str)
+{
+  int width = 0;
+  int i = 0;
+  
+  while (str[i] != '\0') 
+  {
+    unsigned char c = (unsigned char)str[i];
+    
+    if (c < 0x80) 
+    {
+      width++;
+      i++;
+    }
+    else if ((c & 0xE0) == 0xC0) 
+    {
+      width++;
+      i += 2;
+    }
+    else if ((c & 0xF0) == 0xE0) 
+    {
+      width += 2;
+      i += 3;
+    }
+    else if ((c & 0xF8) == 0xF0) 
+    {
+      width += 2;
+      i += 4;
+    }
+    else 
+    {
+      width++;
+      i++;
+    }
+  }
+  
+  return width;
+}
+
  void vt100_set_cursorPos(uint8_t line, uint8_t col)
 {
      // ESC [ Pl ; Pc H
@@ -20,8 +59,10 @@ void vt100_print_bar(uint32_t line,uint32_t col,int32_t width,const char * pFmt,
     char buff[150];
     va_list ap;  
     int32_t len;
-       char temp[3] = { 0,0,0 };
-    int tempCnt = 0;
+    int32_t actual_width;
+    int visual_width;
+    int padding_needed;
+    int i;
 
     io_printf("\x1B[%d;%dH",line,col);
 
@@ -30,27 +71,31 @@ void vt100_print_bar(uint32_t line,uint32_t col,int32_t width,const char * pFmt,
     va_end(ap);
     len = strnlen_s((char *)buff,0xFFFF);
     
-     for (int i = 0; i < len; i++)
+    for (i = 0; i < len; i++)
     {
         if (buff[i] == '\r' || buff[i] == '\n')
         {
-            temp[tempCnt++] = buff[i];
-            buff[i] = 0;
-            if (tempCnt == 2)
-            {
-                break;
-            }
+            buff[i] = '\0';
+            break;
         }
     }
 
-    if (temp[0])
-    {
-        io_printf("|%*s|%s", width, buff,temp);
+    actual_width = (width < 0) ? -width : width;
+    visual_width = get_visual_width(buff);
+    
+    padding_needed = actual_width - visual_width - 2;
+    
+    if (padding_needed < 0) {
+        padding_needed = 0;
     }
-    else
-    {
-        io_printf("|%*s|", width, buff);
+    
+    io_printf("|%s", buff);
+    
+    for (i = 0; i < padding_needed; i++) {
+        io_printf(" ");
     }
+    
+    io_printf("|");
 
     return ; 
 }

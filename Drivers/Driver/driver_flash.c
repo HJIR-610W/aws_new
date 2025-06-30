@@ -16,7 +16,7 @@ driver_t * driver_flash_open(int num)
   switch(num)
   {
     case FALSH_AT45DB:
-      driver = at45db_open(num);  // IC¸¦ ¿¬´Ù.
+      driver = at45db_open(num);  // ICë¥¼ ì—°ë‹¤.
       break;
   }
 

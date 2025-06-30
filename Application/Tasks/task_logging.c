@@ -18,8 +18,8 @@
 #include "os_user_def.h"
 typedef enum logging_cmd_e
 {
-  eLOGGING_LOG,      // ·Î±ë task·Î ·Î±×¸¦ Àü¼Û ÇÒ ¶§ »ç¿ë
-  eLOGGING_DATA,      // ·Î±ë task·Î µ¥ÀÌÅÍ¸¦ Àü¼Û ÇÒ ¶§ »ç¿ë
+  eLOGGING_LOG,      // ë¡œê¹… taskë¡œ ë¡œê·¸ë¥¼ ì „ì†¡ í•  ë•Œ ì‚¬ìš©
+  eLOGGING_DATA,      // ë¡œê¹… taskë¡œ ë°ì´í„°ë¥¼ ì „ì†¡ í•  ë•Œ ì‚¬ìš©
   eLOGGING_RAIN 
 } eLOGGING_CMD_t;
 
@@ -95,7 +95,7 @@ void log_printf(log_level_t level, const char *pFmt, ...)
 
   time_get(&ct);
 
-  // 1. ³¯Â¥/½Ã°£
+  // 1. ë‚ ì§œ/ì‹œê°„
   len = snprintf(logging.data, sizeof(logging.data),
                  "%04d-%02d-%02d %02d:%02d:%02d,", 
                  ct.Year, ct.Month, ct.Day,
@@ -103,12 +103,12 @@ void log_printf(log_level_t level, const char *pFmt, ...)
 
   if (len < 0 || len >= 64) return;
 
-  // 2. ·Î±× ·¹º§ Ãß°¡ 
+  // 2. ë¡œê·¸ ë ˆë²¨ ì¶”ê°€ 
   const char *level_str = log_level_str(level);
   len += snprintf(&logging.data[len], sizeof(logging.data) - len,
                   "%s,", level_str);
 
-  // 3. ¸Ş½ÃÁö
+  // 3. ë©”ì‹œì§€
   va_start(ap, pFmt);
   int msg_len = vsnprintf(&logging.data[len],
                           sizeof(logging.data) - len, pFmt, ap);
@@ -117,12 +117,12 @@ void log_printf(log_level_t level, const char *pFmt, ...)
   len += (msg_len > 0) ? msg_len : 0;
   if (len > 60) len = 60;
 
-  // 4. °ø¹é ÆĞµù
+  // 4. ê³µë°± íŒ¨ë”©
   for (int i = len; i < 61; i++) {
     logging.data[i] = ' ';
   }
 
-  // 5. Á¾·á Ã³¸®
+  // 5. ì¢…ë£Œ ì²˜ë¦¬
   logging.data[61] = '\r';
   logging.data[62] = '\n';
   logging.data[63] = '\0';
@@ -188,7 +188,7 @@ int32_t write_sunshine_1min(DATE_TIME_BUF *nt, uint16_t sunshine_1min)
 #define OFFSET_OF_RAIN() (uint32_t)(&(((AWS_DATA_STRUCT *)0)->rain_1min))
 
 /**
- * @brief SD¾²±â Ã³¸®¸®
+ * @brief SDì“°ê¸° ì²˜ë¦¬ë¦¬
  */
 void loggingTask(void *arg)
 {
@@ -206,7 +206,7 @@ void loggingTask(void *arg)
 
   while (1)
   {
-    // ¸Ş½ÃÁö Å¥¿¡¼­ µ¥ÀÌÅÍ ¼ö½Å
+    // ë©”ì‹œì§€ íì—ì„œ ë°ì´í„° ìˆ˜ì‹ 
     if (osMessageQueueGet(g_loggingQueue, &logging, NULL, osWaitForever) == osOK)
     {
 
@@ -248,8 +248,8 @@ void loggingTask_init(void)
 {
   log_set_output(log_out_queue);
   /*
-   ·Î±×°¡ µ¿½Ã¿¡ Àü¼ÛµÉ°ÍÀ» °í·ÁÇÏ¿© Àû´çÇÑ °¹¼ö ÇÊ¿ä
-   Å¥°¡ ºÎÁ·ÇÏ¸é ·Î±× ÀúÀåÀÌ ¾ÈµÉ ¼ö ÀÖÀ½
+   ë¡œê·¸ê°€ ë™ì‹œì— ì „ì†¡ë ê²ƒì„ ê³ ë ¤í•˜ì—¬ ì ë‹¹í•œ ê°¯ìˆ˜ í•„ìš”
+   íê°€ ë¶€ì¡±í•˜ë©´ ë¡œê·¸ ì €ì¥ì´ ì•ˆë  ìˆ˜ ìˆìŒ
   */
   g_loggingQueue = osMessageQueueNew(5, sizeof(logging_t), NULL);
 

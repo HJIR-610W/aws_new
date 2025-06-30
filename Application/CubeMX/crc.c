@@ -71,10 +71,10 @@ uint32_t crc32_hw_with_padding(const uint8_t *data, size_t len)
 
   uint32_t crc;
 
-  // Step 1: Á¤·ÄµÈ ºÎºÐ (4¹ÙÀÌÆ® ´ÜÀ§)
+  // Step 1: ì •ë ¬ëœ ë¶€ë¶„ (4ë°”ì´íŠ¸ ë‹¨ìœ„)
   crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)data, word_count);
 
-  // Step 2: ³²Àº ¹ÙÀÌÆ® Ã³¸® (0ÆÐµù)
+  // Step 2: ë‚¨ì€ ë°”ì´íŠ¸ ì²˜ë¦¬ (0íŒ¨ë”©)
   if (remain > 0) {
     uint32_t last = 0;
     for (size_t i = 0; i < remain; i++)

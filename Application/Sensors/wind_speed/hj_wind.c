@@ -25,19 +25,19 @@ void set_hjwind(void *handle, wind_set_option_t option, void *value);
 
 
 
-/* AWS AVR ¿¡¼­ °¡Á®¿È
-  È­ÁøÆ¼¿£¾ÆÀÌ AWS Ç³Çâ Ç³¼Ó°è  PROTOCOL Á¤ÀÇ
+/* AWS AVR ì—ì„œ ê°€ì ¸ì˜´
+  í™”ì§„í‹°ì—”ì•„ì´ AWS í’í–¥ í’ì†ê³„  PROTOCOL ì •ì˜
         .Data Table.
         Start Code     	0  	: 0x02 			-> STX
-        Unit ID		   	1	: 0x01 - 0x0f 	-> Àåºñ ID
-        Command			2	: 0xXX          -> 01:ÆÄ¶ó¸ŞÅ¸ ¼³Á¤, 02:Data Read, 03: Write
-  & Read Data Size       4	: 0x02			-> µ¥ÀÌÅÍÀÇ »çÀÌÁî Data            5	: n
-  -> Àü¼ÛµÇ´Â µ¥ÀÌÅÍ ASCII Çü½Ä Check Sum		6	: 1      		-> ID - Data
-  n ±îÁöÀÇ ÇÕ End Code 		7	: 0x03			-> ETX
+        Unit ID		   	1	: 0x01 - 0x0f 	-> ì¥ë¹„ ID
+        Command			2	: 0xXX          -> 01:íŒŒë¼ë©”íƒ€ ì„¤ì •, 02:Data Read, 03: Write
+  & Read Data Size       4	: 0x02			-> ë°ì´í„°ì˜ ì‚¬ì´ì¦ˆ Data            5	: n
+  -> ì „ì†¡ë˜ëŠ” ë°ì´í„° ASCII í˜•ì‹ Check Sum		6	: 1      		-> ID - Data
+  n ê¹Œì§€ì˜ í•© End Code 		7	: 0x03			-> ETX
 */
 
-// 02 01 02 01 01 05 03   Ç³¼Ó
-// 02 02 02 01 01 06 03   Ç³Çâ
+// 02 01 02 01 01 05 03   í’ì†
+// 02 02 02 01 01 06 03   í’í–¥
 uint16_t make_hjwind(uint8_t *sSend, uint8_t id)
 {
   uint8_t cnt = 0;
@@ -72,8 +72,8 @@ bool is_hjwin(uint8_t *frame, uint16_t len)
 }
 
 #define WIND_DATA_MAX 9990
-//ÀÌÄÚµå´Â ±¸Çü AWSÄÚµå¿Í µ¿ÀÏ
-//Ç³¼Ó¼¾¼­ÀÇ °ªÀº Ç³¼Ó°ªÀÚÃ¼°¡ ¾Æ´Ñ ÆŞ½º°ªÀÓ
+//ì´ì½”ë“œëŠ” êµ¬í˜• AWSì½”ë“œì™€ ë™ì¼
+//í’ì†ì„¼ì„œì˜ ê°’ì€ í’ì†ê°’ìì²´ê°€ ì•„ë‹Œ í„ìŠ¤ê°’ì„
 float calculate_wind_speed(uint16_t wind_pulse)
 {
 
@@ -92,7 +92,7 @@ float calculate_wind_speed(uint16_t wind_pulse)
   {
     span = fullset - offset;
 
-    errTmp = (uint32_t)((float)span * 0.05);  // offsetº¸´Ù 5% Å©°í Fullº¸´Ù 5% ÀÛÀ» °Í
+    errTmp = (uint32_t)((float)span * 0.05);  // offsetë³´ë‹¤ 5% í¬ê³  Fullë³´ë‹¤ 5% ì‘ì„ ê²ƒ
 
     if (wind_pulse < (fullset + errTmp))
     {
@@ -129,9 +129,9 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
   driver_rs485_flush_rx(cfg->rs485_io);
   driver_rs485_send(cfg->rs485_io, send, len);
    
-  // µ¶¶óÀÌÆ®°¡ ÀÀ´äÀ»Ç×»ó ÀÏÁ¤ÇÑ ½Ã°£¾È¿¡ º¸³»´Â°ÍÀÌ ¾Æ´Ô
-  // 2ms ¾È¿¡ ÀÀ´ä¿À´Â °æ¿ìµµ ÀÖ°í 50ms Áö³ª°í ÀÀ´ä ¿À´Â °æ¿ìµµ ÀÖÀ½
-  // µû¶ó¼­ µ¶¶óÀÌÆ® Å×½ºÆ®½Ã¿¡´Â Ã¹¹øÂ° ¹ÙÀÌÆ® ´ë±â ½Ã°£À» 50ms ÇØ¾ß ¼ö½Å Ã³¸®µÊ
+  // ë…ë¼ì´íŠ¸ê°€ ì‘ë‹µì„í•­ìƒ ì¼ì •í•œ ì‹œê°„ì•ˆì— ë³´ë‚´ëŠ”ê²ƒì´ ì•„ë‹˜
+  // 2ms ì•ˆì— ì‘ë‹µì˜¤ëŠ” ê²½ìš°ë„ ìˆê³  50ms ì§€ë‚˜ê³  ì‘ë‹µ ì˜¤ëŠ” ê²½ìš°ë„ ìˆìŒ
+  // ë”°ë¼ì„œ ë…ë¼ì´íŠ¸ í…ŒìŠ¤íŠ¸ì‹œì—ëŠ” ì²«ë²ˆì§¸ ë°”ì´íŠ¸ ëŒ€ê¸° ì‹œê°„ì„ 50ms í•´ì•¼ ìˆ˜ì‹  ì²˜ë¦¬ë¨
 
 
   len = driver_rs485_recv_opt(cfg->rs485_io, recv, sizeof(recv), 50,5); 
@@ -168,8 +168,8 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
     return NAN;
   }
 
-  return (float)((float)windData / 10.0);//Ç³ÇâÀº 10¹è µÈ °ªÀÌ ¼ö½ÅµÊ
-  //Ç³Çâ1234°¡ ¼ö½Å -> 123.4µµÀÓ µû¶ó¼­ µå¶óÀÌ¹öÀÇ °ªÀÇ ´ÜÀ§´Â µµÀÓ, µû¶ó¼­ 10À¸·Î ³ª´«°ªÀ» ¸®ÅÏÅÏ
+  return (float)((float)windData / 10.0);//í’í–¥ì€ 10ë°° ëœ ê°’ì´ ìˆ˜ì‹ ë¨
+  //í’í–¥1234ê°€ ìˆ˜ì‹  -> 123.4ë„ì„ ë”°ë¼ì„œ ë“œë¼ì´ë²„ì˜ ê°’ì˜ ë‹¨ìœ„ëŠ” ë„ì„, ë”°ë¼ì„œ 10ìœ¼ë¡œ ë‚˜ëˆˆê°’ì„ ë¦¬í„´í„´
 
 }
 
@@ -191,7 +191,7 @@ driver_t g_hjwind_driver;
 
 /**
  * @details
- * °íÁ¤µÈ ¼Óµµ·Î »ç¿ëÇÏ´Â ¼¾¼­µéÀº Æ÷Æ®¼³Á¤¸¸ ¸Å°³º¯¼ö·Î ¹Ş¾Æ¼­ Ã³¸®
+ * ê³ ì •ëœ ì†ë„ë¡œ ì‚¬ìš©í•˜ëŠ” ì„¼ì„œë“¤ì€ í¬íŠ¸ì„¤ì •ë§Œ ë§¤ê°œë³€ìˆ˜ë¡œ ë°›ì•„ì„œ ì²˜ë¦¬
  */
 driver_t *hjwind_open(uint8_t num, void *opt)
 {

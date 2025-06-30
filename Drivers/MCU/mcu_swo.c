@@ -1,24 +1,24 @@
 
 #include "stm32f4xx_hal.h"
 
-// SWO √‚∑¬ «‘ºˆ
+// SWO Ï∂úÎ†• Ìï®Ïàò
 void SWO_PrintChar(char c) {
-    if (ITM->TCR & ITM_TCR_ITMENA_Msk) {        // ITM »∞º∫»≠ »Æ¿Œ
-        if (ITM->TER & (1UL << 0)) {            // ∆˜∆Æ 0 »∞º∫»≠ »Æ¿Œ
-            while (ITM->PORT[0].u32 == 0);      // ∆˜∆Æ∞° ∫ÒæÓ¿÷¥¬¡ˆ »Æ¿Œ
-            ITM->PORT[0].u8 = c;                // µ•¿Ã≈Õ ¿¸º€
+    if (ITM->TCR & ITM_TCR_ITMENA_Msk) {        // ITM ÌôúÏÑ±Ìôî ÌôïÏù∏
+        if (ITM->TER & (1UL << 0)) {            // Ìè¨Ìä∏ 0 ÌôúÏÑ±Ìôî ÌôïÏù∏
+            while (ITM->PORT[0].u32 == 0);      // Ìè¨Ìä∏Í∞Ä ÎπÑÏñ¥ÏûàÎäîÏßÄ ÌôïÏù∏
+            ITM->PORT[0].u8 = c;                // Îç∞Ïù¥ÌÑ∞ Ï†ÑÏÜ°
         }
     }
 }
 
-// πÆ¿⁄ø≠ √‚∑¬ øπ¡¶
+// Î¨∏ÏûêÏó¥ Ï∂úÎ†• ÏòàÏ†ú
 void swo_puts(const char *str)
 {
     while (*str) {
-    if (ITM->TCR & ITM_TCR_ITMENA_Msk) {        // ITM »∞º∫»≠ »Æ¿Œ
-        if (ITM->TER & (1UL << 0)) {            // ∆˜∆Æ 0 »∞º∫»≠ »Æ¿Œ
-            while (ITM->PORT[0].u32 == 0);      // ∆˜∆Æ∞° ∫ÒæÓ¿÷¥¬¡ˆ »Æ¿Œ
-            ITM->PORT[0].u8 = *str++;                // µ•¿Ã≈Õ ¿¸º€
+    if (ITM->TCR & ITM_TCR_ITMENA_Msk) {        // ITM ÌôúÏÑ±Ìôî ÌôïÏù∏
+        if (ITM->TER & (1UL << 0)) {            // Ìè¨Ìä∏ 0 ÌôúÏÑ±Ìôî ÌôïÏù∏
+            while (ITM->PORT[0].u32 == 0);      // Ìè¨Ìä∏Í∞Ä ÎπÑÏñ¥ÏûàÎäîÏßÄ ÌôïÏù∏
+            ITM->PORT[0].u8 = *str++;                // Îç∞Ïù¥ÌÑ∞ Ï†ÑÏÜ°
         }
     }
     }

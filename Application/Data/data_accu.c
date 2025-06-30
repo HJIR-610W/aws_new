@@ -8,7 +8,7 @@
 #include "app_dataLogging.h"
 #include "app_file.h"
 #include "dev_io.h"
-#include "ff.h"  // FatFs °ü·Ã Çì´õ
+#include "ff.h"  // FatFs ê´€ë ¨ í—¤ë”
 #include "task_logging.h"
 #include "user_heap.h"
 #include "utile_data.h"
@@ -17,7 +17,7 @@
 #define MINUTES_PER_DAY 1440
 #define DAYS_IN_YEAR 366
 
-// 1ºĞ¸¶´Ù ÀúÀåµÈ 1³âÄ¡ ¿ì·®·® µ¥ÀÌÅÍ ÀĞ±â
+// 1ë¶„ë§ˆë‹¤ ì €ì¥ëœ 1ë…„ì¹˜ ìš°ëŸ‰ëŸ‰ ë°ì´í„° ì½ê¸°
 int32_t read_rain_1min(uint16_t year, uint16_t *rain_data, uint32_t read_size)
 {
   char path[50];
@@ -36,7 +36,7 @@ int32_t read_rain_1min(uint16_t year, uint16_t *rain_data, uint32_t read_size)
   return 1;
 }
 
-//1ºĞ¸¶´Ù ÀúÀåµÈ 1³âÄ¡ ÀÏÁ¶ µ¥ÀÌÅÍ ÀĞ±â
+//1ë¶„ë§ˆë‹¤ ì €ì¥ëœ 1ë…„ì¹˜ ì¼ì¡° ë°ì´í„° ì½ê¸°
 int32_t read_sunshine_1min(uint16_t year, uint16_t *sunshine_data, uint32_t read_size)
 {
   char path[50];
@@ -66,11 +66,11 @@ int get_hourly_rain(uint16_t *rain_minutes, int year, int month, int day, int ho
   if (doy <= 0 || doy > DAYS_IN_YEAR)
     return -1;
 
-  // ½ÃÀÛ ½Ã°£Àº Ç×»ó Á¤½Ã 0ºĞDA
+  // ì‹œì‘ ì‹œê°„ì€ í•­ìƒ ì •ì‹œ 0ë¶„DA
   uint32_t start_index = (doy - 1) * MINUTES_PER_DAY + hour * 60 + 0 + 1;
 
   uint32_t sum = 0;
-  for (int i = 0; i <= min; i++)  // 0ºĞºÎÅÍ ÇöÀç ºĞ±îÁö Æ÷ÇÔ (min Æ÷ÇÔ)
+  for (int i = 0; i <= min; i++)  // 0ë¶„ë¶€í„° í˜„ì¬ ë¶„ê¹Œì§€ í¬í•¨ (min í¬í•¨)
   {
     sum += rain_minutes[start_index + i];
   }
@@ -83,7 +83,7 @@ void compute_daily_rain(uint16_t *rain_minutes, uint16_t *rain_days, int year)
 {
   uint32_t i;
   uint32_t day_index = 0;
-  uint32_t minute_index = 1;  // 00:01ºÎÅÍ ½ÃÀÛ
+  uint32_t minute_index = 1;  // 00:01ë¶€í„° ì‹œì‘
 
   uint16_t days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
@@ -137,7 +137,7 @@ uint16_t get_daily_rain(const uint16_t *rain_days, int year, int month, int day)
   if (index <= 0 || index > 366)
     return -1;
 
-  return rain_days[index - 1];  // ¹è¿­ index´Â 0-based
+  return rain_days[index - 1];  // ë°°ì—´ indexëŠ” 0-based
 }
 
 uint16_t get_monthly_rain(const uint16_t *rain_days, int year, int month, int day)
@@ -150,7 +150,7 @@ uint16_t get_monthly_rain(const uint16_t *rain_days, int year, int month, int da
 }
 
 /**
- * @brief ÀÏ°£ ¿ì·® ÀÚ·á·Î ³â°£ ¿ì·® °è»ê
+ * @brief ì¼ê°„ ìš°ëŸ‰ ìë£Œë¡œ ë…„ê°„ ìš°ëŸ‰ ê³„ì‚°
  */
 uint16_t get_yearly_rain(const uint16_t *rain_days, int year, int month, int day)
 {
@@ -164,23 +164,23 @@ uint16_t get_yearly_rain(const uint16_t *rain_days, int year, int month, int day
   uint16_t sum = 0;
   for (int i = 0; i < doy; i++)
   {
-    sum += rain_days[i];  // rain_days´Â 0-based
+    sum += rain_days[i];  // rain_daysëŠ” 0-based
   }
 
   return sum;
 }
 
 /**
- * @brief 1ºĞ ÀÚ·á·Î 10ºĞ ¿ì·® »êÃâ
- * 00:01:00 ~ 00:10:00 10ºĞ ´©Àû ÀÚ·á
- * ¿¹)
- * ¿äÃ»½Ã°£ÀÌ 00:02:00ÀÌ¸é
+ * @brief 1ë¶„ ìë£Œë¡œ 10ë¶„ ìš°ëŸ‰ ì‚°ì¶œ
+ * 00:01:00 ~ 00:10:00 10ë¶„ ëˆ„ì  ìë£Œ
+ * ì˜ˆ)
+ * ìš”ì²­ì‹œê°„ì´ 00:02:00ì´ë©´
  * 00:01:00
  * 00:02:00
- * ´©Àû »êÃâ
- * ¿äÃ»½Ã°£ÀÌ 00:10:00ÀÌ¸é
+ * ëˆ„ì  ì‚°ì¶œ
+ * ìš”ì²­ì‹œê°„ì´ 00:10:00ì´ë©´
  * 00:10:00 
- * ´©Àû»êÃâ
+ * ëˆ„ì ì‚°ì¶œ
  */
 uint32_t get_10min_rain(const uint16_t *rain_minutes, int year, int month, int day, int hour,
                          int min)

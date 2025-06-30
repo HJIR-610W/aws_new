@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 
-// CRC-16 CCITT Å×ÀÌºí (´ÙÇ×½Ä 0x1021, ÃÊ±â°ª 0xFFFF)
+// CRC-16 CCITT í…Œì´ë¸” (ë‹¤í•­ì‹ 0x1021, ì´ˆê¸°ê°’ 0xFFFF)
 static const uint16_t crc16Table[256] = {
     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
     0x8108, 0x9129, 0xA14A, 0xB16B, 0xC18C, 0xD1AD, 0xE1CE, 0xF1EF,
@@ -40,15 +40,15 @@ static const uint16_t crc16Table[256] = {
     0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
 };
 
-// Å×ÀÌºí ±â¹İ CRC-16 CCITT °è»ê ÇÔ¼ö
+// í…Œì´ë¸” ê¸°ë°˜ CRC-16 CCITT ê³„ì‚° í•¨ìˆ˜
 uint16_t crc16_ccitt_table(uint8_t* data, uint16_t dataLen)
  {
  uint16_t i;
  uint8_t index;
-  uint16_t crc = 0xffff; // ÃÊ±â°ª
+  uint16_t crc = 0xffff; // ì´ˆê¸°ê°’
   for ( i = 0; i < dataLen; i++) {
-     index = (crc >> 8) ^ data[i]; // Å×ÀÌºí ÀÎµ¦½º °è»ê
-    crc = (crc << 8) ^ crc16Table[index]; // Å×ÀÌºí ÂüÁ¶¿Í XOR
+     index = (crc >> 8) ^ data[i]; // í…Œì´ë¸” ì¸ë±ìŠ¤ ê³„ì‚°
+    crc = (crc << 8) ^ crc16Table[index]; // í…Œì´ë¸” ì°¸ì¡°ì™€ XOR
   }
   return crc;
 }
@@ -58,10 +58,10 @@ uint16_t Cal_CRC16_xmodem(uint8_t* data, uint16_t dataLen)
  {
  uint16_t i;
  uint8_t index;
-  uint16_t crc = 0; // ÃÊ±â°ª
+  uint16_t crc = 0; // ì´ˆê¸°ê°’
   for ( i = 0; i < dataLen; i++) {
-     index = (crc >> 8) ^ data[i]; // Å×ÀÌºí ÀÎµ¦½º °è»ê
-    crc = (crc << 8) ^ crc16Table[index]; // Å×ÀÌºí ÂüÁ¶¿Í XOR
+     index = (crc >> 8) ^ data[i]; // í…Œì´ë¸” ì¸ë±ìŠ¤ ê³„ì‚°
+    crc = (crc << 8) ^ crc16Table[index]; // í…Œì´ë¸” ì°¸ì¡°ì™€ XOR
   }
   return crc;
 }

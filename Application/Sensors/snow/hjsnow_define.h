@@ -11,27 +11,27 @@
 
 typedef struct
 {
-  uint16_t CurDistance[3];  // channelº° ½ÇÁ¦ ÃøÁ¤°Å¸®°ª
-  int16_t CurLevel[3];      // channelº° ³ôÀÌ
-  int16_t CurSnowLevel;     // 3Á¡ÀÇ Æò±ÕÇÑ ³ôÀÌ
-  uint32_t LastScanTime;    // ¸¶Áö¸·À¸·Î ½ºÄµÇÑ½Ã°£
+  uint16_t CurDistance[3];  // channelë³„ ì‹¤ì œ ì¸¡ì •ê±°ë¦¬ê°’
+  int16_t CurLevel[3];      // channelë³„ ë†’ì´
+  int16_t CurSnowLevel;     // 3ì ì˜ í‰ê· í•œ ë†’ì´
+  uint32_t LastScanTime;    // ë§ˆì§€ë§‰ìœ¼ë¡œ ìŠ¤ìº”í•œì‹œê°„
 
-  uint8_t CurConnStat[3];  // ºí·çÅõ½º Connection »óÅÂ
+  uint8_t CurConnStat[3];  // ë¸”ë£¨íˆ¬ìŠ¤ Connection ìƒíƒœ
   uint8_t HeaterStat;
 #define SNOW_STAT_HEAT_ON 1
 #define SNOW_STAT_HEAT_OFF 0
   uint8_t snow_debugprint;  // 0: not print , 1: print
 #define SNOW_STAT_DEBUGPRINT_ON 1
 #define SNOW_STAT_DEBUGPRINT_OFF 0
-  // eTempSens_t ¼ø¼­·Î ¹èÄ¡
+  // eTempSens_t ìˆœì„œë¡œ ë°°ì¹˜
   int16_t innerTemp;    // 25 	-> 25`C
   int16_t Humidity;     // 30		-> 30%
   int16_t snow_vitemp;  // virtual temp (temp + 40)
-                        // Æò»ó½Ã filter Àû¿ëÇÏ°í Test½Ã¿¡¸¸ »¬¼öÀÖ´Ù
+                        // í‰ìƒì‹œ filter ì ìš©í•˜ê³  Testì‹œì—ë§Œ ëº„ìˆ˜ìˆë‹¤
   uint8_t ComPingCnt[4];
-  uint32_t SysResetTime;  // ½Ã½ºÅÛ ÆÄ¿ö ¿Â ½Ã°£
-  int8_t MstMcuInit;      // TFT Mcu°¡ ÃÊ±âÈ­ÇÑ »óÅÂ
-  int8_t cfg_status;      // 0 Á¤»ó 1 ¿À·ù
+  uint32_t SysResetTime;  // ì‹œìŠ¤í…œ íŒŒì›Œ ì˜¨ ì‹œê°„
+  int8_t MstMcuInit;      // TFT Mcuê°€ ì´ˆê¸°í™”í•œ ìƒíƒœ
+  int8_t cfg_status;      // 0 ì •ìƒ 1 ì˜¤ë¥˜
 } SYSTEM_TypeDef;         // System
 
 #define PROTOCOL_TYPE_t uint8_t
@@ -45,25 +45,25 @@ typedef struct
   uint8_t xModel[3][6];   // bluetooth laser model
                           //		uint8_t  temp_heaton;						// value + 40
                           //		uint8_t  temp_heatoff;					// value + 40
-                          //		uint8_t  heat_automan;					// È÷ÅÍ »ç¿ëÀ¯¹«(¿©¸§¿¡
-                          //¿Âµµ¿¡À¸ÇÑ ¿Àµ¿ÀÛ¹æÁö) : 0 : manual , 1 : auto
+                          //		uint8_t  heat_automan;					// íˆí„° ì‚¬ìš©ìœ ë¬´(ì—¬ë¦„ì—
+                          //ì˜¨ë„ì—ìœ¼í•œ ì˜¤ë™ì‘ë°©ì§€) : 0 : manual , 1 : auto
   uint16_t DeviceID;      //
-  uint8_t snow_scantime;  // 0:real , 1:1ºĞ , 5ºĞ , 10ºĞ , 30ºĞ, 60ºĞ
+  uint8_t snow_scantime;  // 0:real , 1:1ë¶„ , 5ë¶„ , 10ë¶„ , 30ë¶„, 60ë¶„
 #define SNOW_HEAT_AUTO 1
 #define SNOW_HEAT_MANUAL 0
-  uint32_t snow_stddistance;  // ±âÁØ ³ôÀÌ Áö¸éÀ¸·Î ºÎÅÍ ÀåÄ¡ÀÇ ³ôÀÌ
+  uint32_t snow_stddistance;  // ê¸°ì¤€ ë†’ì´ ì§€ë©´ìœ¼ë¡œ ë¶€í„° ì¥ì¹˜ì˜ ë†’ì´
 
   uint32_t snow_refdistance[3];  // calibration point distance
   uint8_t snow_runflag;          // 0: Not scan , 1: scan
 
-  uint8_t snow_scantemp;  // value + 40 : snow scan °¡µ¿ ¿Âµµ : off¿Âµµ : snow_scantemp - 2µµ ³·ÀºÁ¡
+  uint8_t snow_scantemp;  // value + 40 : snow scan ê°€ë™ ì˜¨ë„ : offì˜¨ë„ : snow_scantemp - 2ë„ ë‚®ì€ì 
   uint8_t snow_scantempauto;  // 0: manual 1: auto mode,
 #define SNOW_SCAN_AUTO 1
 #define SNOW_SCAN_MANUAL 0
 
   uint16_t snow_filterlevel;
   uint8_t snow_nofiltermode;  // 1: run mode(filter) , 0:test mode(non filter)
-  // µğ¹ÙÀÌ½ºº° ¼³Á¤°ªµé..
+  // ë””ë°”ì´ìŠ¤ë³„ ì„¤ì •ê°’ë“¤..
   uint16_t FactorySet;
 
   uint8_t Com1PingTime;  // 0:off, 1m~60m
@@ -72,10 +72,10 @@ typedef struct
   uint8_t Com4PingTime;  // TBD
 
   ///////////////////////////////
-  char Password[PASSNUMBER_MAX];             // DTMF ¹× SMS TCP/IP Åë½Å½Ã ºñ¹Ğ¹øÈ£
+  char Password[PASSNUMBER_MAX];             // DTMF ë° SMS TCP/IP í†µì‹ ì‹œ ë¹„ë°€ë²ˆí˜¸
   uint8_t WatchDogSec[WATCHDOG_BUFFER_MAX];  // 0 ~ 9:off, 10 ~ 240sec,
-  PROTOCOL_TYPE_t protocolType;  // Åë½Å ÇÁ·ÎÅäÄİ, 0 È­Áø(¿äÃ» ÀÀ´ä) 1 ¿ş´õÇÇ¾Æ(ÀÏ¹æÀü¼Û)
-  uint32_t txPeriodSec;  //  ¿ş´õÇÇ¾Æ Àü¼Û ÁÖ±â sec
+  PROTOCOL_TYPE_t protocolType;  // í†µì‹  í”„ë¡œí† ì½œ, 0 í™”ì§„(ìš”ì²­ ì‘ë‹µ) 1 ì›¨ë”í”¼ì•„(ì¼ë°©ì „ì†¡)
+  uint32_t txPeriodSec;  //  ì›¨ë”í”¼ì•„ ì „ì†¡ ì£¼ê¸° sec
   uint8_t snowScanCnt;
 } CONFIG_TypeDef;  // Config		LOGMSG_BUFFER_MAX
 #endif

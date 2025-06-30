@@ -10,14 +10,14 @@
 #include "util_memory.h"
 #include "util_time.h"
 
-#define KMA3_DATA_LEN 135  // ¥¶ ÀÚ·á³»¿ë ¿µ¿ª¿¡ Àü¼ÛµÇ´Â µ¥ÀÌÅÍÀÇ ÃÑ ±æÀÌ °íÁ¤ÀÓ
+#define KMA3_DATA_LEN 135  // â…¦ ìë£Œë‚´ìš© ì˜ì—­ì— ì „ì†¡ë˜ëŠ” ë°ì´í„°ì˜ ì´ ê¸¸ì´ ê³ ì •ì„
 
 #define DCFAIL_BIT 0x0001
 #define BATTERYFAIL_BIT 0x0002
-#define AC110V_BIT 0x0000  //     2 3:AC Àü¾Ğ    --> 00:110 V, 01:220V, 11:AC Off
+#define AC110V_BIT 0x0000  //     2 3:AC ì „ì••    --> 00:110 V, 01:220V, 11:AC Off
 #define AC220V_BIT 0x0004
 #define ACOFF_BIT 0x000C
-#define LOGGERDOOR_BIT 0x0010  //     4 : ·Î°ÅÀá±İ»óÅÂ : 0 : ´İÈû , 1 : ¿­¸²
+#define LOGGERDOOR_BIT 0x0010  //     4 : ë¡œê±°ì ê¸ˆìƒíƒœ : 0 : ë‹«í˜ , 1 : ì—´ë¦¼
 // sMin
 #define WINDSPEEDFAIL_BIT 0x0001
 #define WINDDIRECFAIL_BIT 0x0002
@@ -30,9 +30,9 @@
 // sMax
 #define RAINFAIL_BIT 0x0001
 
-// ¼¾¼­ »óÅÂ¸¦ 8¹ÙÀÌÆ® *8 ÃÑ 64bit Àü¼ÛÇÑ´Ù.
-// ¹Ì¸® ¼¾¼­»óÅÂ¸¦ ¼³Á¤ÇÑ´Ù.
-uint8_t g_sensorStatus_kma3[8];  // 64°³ÀÇ ¼¾¼­ÀÇ »óÅÂ Ç¥½Ã
+// ì„¼ì„œ ìƒíƒœë¥¼ 8ë°”ì´íŠ¸ *8 ì´ 64bit ì „ì†¡í•œë‹¤.
+// ë¯¸ë¦¬ ì„¼ì„œìƒíƒœë¥¼ ì„¤ì •í•œë‹¤.
+uint8_t g_sensorStatus_kma3[8];  // 64ê°œì˜ ì„¼ì„œì˜ ìƒíƒœ í‘œì‹œ
 void kma3_set_sensor_error(eSENSOR_LIST_t sensorNum)
 {
   int quot;
@@ -90,13 +90,13 @@ void kma_update_sensor_err(eSENSOR_LIST_t sensor_num, uint8_t err)
 }
 
 /*
-bit 0 Ç³Çâ
-bit 1 Ç³¼Ó
-bit 2 ¿Âµµ
-bit 3 °­¼öÀ¯¹«
-bit 4 °­¼ö·®¼¾¼­
-bit 5 ½Àµµ ¼¾¼­
-bit 6 ±â¾Ğ ¼¾¼­
+bit 0 í’í–¥
+bit 1 í’ì†
+bit 2 ì˜¨ë„
+bit 3 ê°•ìˆ˜ìœ ë¬´
+bit 4 ê°•ìˆ˜ëŸ‰ì„¼ì„œ
+bit 5 ìŠµë„ ì„¼ì„œ
+bit 6 ê¸°ì•• ì„¼ì„œ
 
 bit 15 FAN
  */
@@ -190,88 +190,88 @@ uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend, uint16_t lpSendSize, kma_da
   }
 
   SetWord(&lpSend[cnt],
-          aws->temperature.enable ? aws->temperature.data : unusedSensor);  // A-1 ±â¿Â
+          aws->temperature.enable ? aws->temperature.data : unusedSensor);  // A-1 ê¸°ì˜¨
   cnt += 2;
   SetWord(&lpSend[cnt], aws->wind_direction_avg.enable ? aws->wind_direction_avg.data
-                                                       : unusedSensor);  // A-2 Ç³Çâ
+                                                       : unusedSensor);  // A-2 í’í–¥
   cnt += 2;
   SetWord(&lpSend[cnt],
-          aws->wind_speed_avg.enable ? aws->wind_speed_avg.data : unusedSensor);  // A-3 Ç³¼Ó
+          aws->wind_speed_avg.enable ? aws->wind_speed_avg.data : unusedSensor);  // A-3 í’ì†
   cnt += 2;
   SetWord(&lpSend[cnt], aws->wind_direction_instant.enable ? aws->wind_direction_instant.data
-                                                           : unusedSensor);  // A-4 ¼ø°£ Ç³Çâ
+                                                           : unusedSensor);  // A-4 ìˆœê°„ í’í–¥
   cnt += 2;
   SetWord(&lpSend[cnt], aws->wind_speed_instant.enable ? aws->wind_speed_instant.data
-                                                       : unusedSensor);  // A-5 ¼ø°£ Ç³¼Ó
+                                                       : unusedSensor);  // A-5 ìˆœê°„ í’ì†
   cnt += 2;
   SetWord(&lpSend[cnt],
-          aws->precipitation.enable ? aws->precipitation.data : unusedSensor);  // A-6 °­¼ö·®
+          aws->precipitation.enable ? aws->precipitation.data : unusedSensor);  // A-6 ê°•ìˆ˜ëŸ‰
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->pressure.enable ? aws->pressure.data : unusedSensor);  // A-7 ±â¾Ğ
+  SetWord(&lpSend[cnt], aws->pressure.enable ? aws->pressure.data : unusedSensor);  // A-7 ê¸°ì••
   cnt += 2;
   SetWord(&lpSend[cnt], aws->precipitation_presence.enable ? aws->precipitation_presence.data
-                                                           : unusedSensor);  // A-8 °­¼öÀ¯¹«
+                                                           : unusedSensor);  // A-8 ê°•ìˆ˜ìœ ë¬´
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->snowfall.enable ? aws->snowfall.data : unusedSensor);  // A-9 Àû¼³
+  SetWord(&lpSend[cnt], aws->snowfall.enable ? aws->snowfall.data : unusedSensor);  // A-9 ì ì„¤
   cnt += 2;
   SetWord(&lpSend[cnt], aws->relative_humidity.enable ? aws->relative_humidity.data
-                                                      : unusedSensor);  // A-10 »ó´ë½Àµµ
+                                                      : unusedSensor);  // A-10 ìƒëŒ€ìŠµë„
   cnt += 2;
   SetWord(&lpSend[cnt],
-          aws->solar_radiation.enable ? aws->solar_radiation.data : unusedSensor);  // A-11 °­¼ö·®
+          aws->solar_radiation.enable ? aws->solar_radiation.data : unusedSensor);  // A-11 ê°•ìˆ˜ëŸ‰
   cnt += 2;
   SetWord(&lpSend[cnt],
-          aws->solar_radiation.enable ? aws->solar_radiation.data : unusedSensor);  // B-1 ÀÏ»ç
+          aws->solar_radiation.enable ? aws->solar_radiation.data : unusedSensor);  // B-1 ì¼ì‚¬
   cnt += 2;
   SetWord(&lpSend[cnt],
-          aws->sunshine_duration.enable ? aws->sunshine_duration.data : unusedSensor);  // B-2 ÀÏÁ¶
+          aws->sunshine_duration.enable ? aws->sunshine_duration.data : unusedSensor);  // B-2 ì¼ì¡°
   cnt += 2;
   SetWord(&lpSend[cnt], aws->surface_temperature.enable ? aws->surface_temperature.data
-                                                        : unusedSensor);  // B-3 Áö¸é¿Âµµ
+                                                        : unusedSensor);  // B-3 ì§€ë©´ì˜¨ë„
   cnt += 2;
   SetWord(&lpSend[cnt], aws->grass_temperature.enable ? aws->grass_temperature.data
-                                                      : unusedSensor);  // B-4 ÃÊ»ó¿Âµµ
+                                                      : unusedSensor);  // B-4 ì´ˆìƒì˜¨ë„
   cnt += 2;
   SetWord(&lpSend[cnt], aws->soil_temperature_5cm.enable ? aws->soil_temperature_5cm.data
-                                                         : unusedSensor);  // B-5 ÁöÁß¿Âµµ 5cm
+                                                         : unusedSensor);  // B-5 ì§€ì¤‘ì˜¨ë„ 5cm
   cnt += 2;
   SetWord(&lpSend[cnt], aws->soil_temperature_10cm.enable ? aws->soil_temperature_10cm.data
-                                                          : unusedSensor);  // B-6 ÁöÁß¿Âµµ 10cm
+                                                          : unusedSensor);  // B-6 ì§€ì¤‘ì˜¨ë„ 10cm
   cnt += 2;
   SetWord(&lpSend[cnt], aws->soil_temperature_20cm.enable ? aws->soil_temperature_20cm.data
-                                                          : unusedSensor);  // B-7 ÁöÁß¿Âµµ 20cm
+                                                          : unusedSensor);  // B-7 ì§€ì¤‘ì˜¨ë„ 20cm
   cnt += 2;
   SetWord(&lpSend[cnt], aws->soil_temperature_30cm.enable ? aws->soil_temperature_30cm.data
-                                                          : unusedSensor);  // B-8 ÁöÁß¿Âµµ 30cm
+                                                          : unusedSensor);  // B-8 ì§€ì¤‘ì˜¨ë„ 30cm
   cnt += 2;
   SetWord(&lpSend[cnt], aws->soil_temperature_50cm.enable ? aws->soil_temperature_50cm.data
-                                                          : unusedSensor);  // B-9 ÁöÁß¿Âµµ 50cm
+                                                          : unusedSensor);  // B-9 ì§€ì¤‘ì˜¨ë„ 50cm
   cnt += 2;
   SetWord(&lpSend[cnt], aws->soil_temperature_1m.enable ? aws->soil_temperature_1m.data
-                                                        : unusedSensor);  // B-10 ÁöÁß¿Âµµ 1.0m
+                                                        : unusedSensor);  // B-10 ì§€ì¤‘ì˜¨ë„ 1.0m
   cnt += 2;
   SetWord(&lpSend[cnt], aws->soil_temperature_1_5m.enable ? aws->soil_temperature_1_5m.data
-                                                          : unusedSensor);  // B-11 ÁöÁß¿Âµµ 1.5m
+                                                          : unusedSensor);  // B-11 ì§€ì¤‘ì˜¨ë„ 1.5m
   cnt += 2;
   SetWord(&lpSend[cnt], aws->soil_temperature_3m.enable ? aws->soil_temperature_3m.data
-                                                        : unusedSensor);  // B-12 ÁöÁß¿Âµµ 3.0m
+                                                        : unusedSensor);  // B-12 ì§€ì¤‘ì˜¨ë„ 3.0m
   cnt += 2;
   SetWord(&lpSend[cnt], aws->soil_temperature_5m.enable ? aws->soil_temperature_5m.data
-                                                        : unusedSensor);  // B-13 ÁöÁß¿Âµµ 5.0m
+                                                        : unusedSensor);  // B-13 ì§€ì¤‘ì˜¨ë„ 5.0m
   cnt += 2;
   SetWord(&lpSend[cnt], aws->cloud_height_1st.enable ? aws->cloud_height_1st.data
-                                                     : unusedSensor);  // C-1 1Ãş ¿î°í
+                                                     : unusedSensor);  // C-1 1ì¸µ ìš´ê³ 
   cnt += 2;
   SetWord(&lpSend[cnt], aws->cloud_height_2nd.enable ? aws->cloud_height_2nd.data
-                                                     : unusedSensor);  // C-2 2Ãş ¿î°í
+                                                     : unusedSensor);  // C-2 2ì¸µ ìš´ê³ 
   cnt += 2;
   SetWord(&lpSend[cnt], aws->cloud_height_3rd.enable ? aws->cloud_height_3rd.data
-                                                     : unusedSensor);  // C-3 3Ãş ¿î°í
+                                                     : unusedSensor);  // C-3 3ì¸µ ìš´ê³ 
   cnt += 2;
   SetWord(&lpSend[cnt],
-          aws->cloud_amount.enable ? aws->cloud_amount.data : unusedSensor);  // C-4 ¿î·®
+          aws->cloud_amount.enable ? aws->cloud_amount.data : unusedSensor);  // C-4 ìš´ëŸ‰
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->visibility.enable ? aws->visibility.data : unusedSensor);  // C-5 ½ÃÁ¤
+  SetWord(&lpSend[cnt], aws->visibility.enable ? aws->visibility.data : unusedSensor);  // C-5 ì‹œì •
   cnt += 2;
   SetWord(&lpSend[cnt], aws->pm10_concentration.enable ? aws->pm10_concentration.data
                                                        : unusedSensor);  // C-6 PM10
@@ -280,19 +280,19 @@ uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend, uint16_t lpSendSize, kma_da
                                                        : unusedSensor);  // C-7 PM2.5
   cnt += 2;
   SetWord(&lpSend[cnt],
-          aws->net_radiation.enable ? aws->net_radiation.data : unusedSensor);  // C-8 ¼øº¹»ç
+          aws->net_radiation.enable ? aws->net_radiation.data : unusedSensor);  // C-8 ìˆœë³µì‚¬
   cnt += 2;
   SetWord(&lpSend[cnt],
-          aws->total_radiation.enable ? aws->total_radiation.data : unusedSensor);  // C-9 ÀüÃµº¹»ç
+          aws->total_radiation.enable ? aws->total_radiation.data : unusedSensor);  // C-9 ì „ì²œë³µì‚¬
   cnt += 2;
   SetWord(&lpSend[cnt], aws->reflected_radiation.enable ? aws->reflected_radiation.data
-                                                        : unusedSensor);  // C-10 ¹İ»çº¹»ç
+                                                        : unusedSensor);  // C-10 ë°˜ì‚¬ë³µì‚¬
   cnt += 2;
   SetWord(&lpSend[cnt], aws->direct_radiation.enable ? aws->direct_radiation.data
-                                                     : unusedSensor);  // C-11 Á÷´ŞÀÏ»ç
+                                                     : unusedSensor);  // C-11 ì§ë‹¬ì¼ì‚¬
   cnt += 2;
   SetWord(&lpSend[cnt],
-          aws->current_weather.enable ? aws->current_weather.data : unusedSensor);  // C-12 ÇöÀçÀÏ±â
+          aws->current_weather.enable ? aws->current_weather.data : unusedSensor);  // C-12 í˜„ì¬ì¼ê¸°
   cnt += 2;
 
 
@@ -342,7 +342,7 @@ uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend, uint16_t lpSendSize, kma_da
   SetWord(&lpSend[cnt], aws->humidity_4m.enable ? aws->humidity_4m.data : unusedSensor);  // N-13
   cnt += 2;
 
-  // temp1 ¿¹ºñ
+  // temp1 ì˜ˆë¹„
 
     SetWord(&lpSend[cnt], aws->temp1_0.enable ? aws->temp1_0.data : unusedSensor);
     cnt += 2;
@@ -372,7 +372,7 @@ uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend, uint16_t lpSendSize, kma_da
     cnt += 2;
 
   SetWord(&lpSend[cnt],
-          aws->tacometer.enable ? aws->tacometer.data : unusedSensor);  // I-1 Å¸ÄÚ¹ÌÅÍ
+          aws->tacometer.enable ? aws->tacometer.data : unusedSensor);  // I-1 íƒ€ì½”ë¯¸í„°
   cnt += 2;
 
   for(int i = 0 ; i< 8; i++)
@@ -380,7 +380,7 @@ uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend, uint16_t lpSendSize, kma_da
     lpSend[cnt++]  = aws->X_sensorStatus[i];
   }
 
-  lpSend[cnt++] = (uint8_t)aws->Y_volateStatus;  // »óÅÂ (DC Àü¾Ğ, ¹åµ¥¸®, Àü¾Ğ, ·Î°Å Àá±İ)
+  lpSend[cnt++] = (uint8_t)aws->Y_volateStatus;  // ìƒíƒœ (DC ì „ì••, ë°§ë°ë¦¬, ì „ì••, ë¡œê±° ì ê¸ˆ)
 
   return (cnt);
 }
@@ -391,39 +391,39 @@ uint16_t make_kma3_resp(uint8_t *out, char dataType,  uint8_t dataNum, uint16_t 
   uint16_t cnt = 0;
 
 
-  SetWord(&out[cnt], 0xFAFB);  // ¥°½ÃÀÛ Ç¥½Ã
+  SetWord(&out[cnt], 0xFAFB);  // â… ì‹œì‘ í‘œì‹œ
   cnt += 2;
 
-  out[cnt++] = KMA3_PROTOCOL_YEAR % 100;  // ¥± ÇÁ·ÎÅäÄİ ¹öÀü ³â
-  out[cnt++] = KMA3_PROTOCOL_MONTH;       // ¥± ÇÁ·ÎÅäÄİ ¹öÀü ¿ù
-  out[cnt++] = KMA3_PROTOCOL_DAY;         // ¥± ÇÁ·ÎÅäÄİ ¹öÀü ¿ù
+  out[cnt++] = KMA3_PROTOCOL_YEAR % 100;  // â…¡ í”„ë¡œí† ì½œ ë²„ì „ ë…„
+  out[cnt++] = KMA3_PROTOCOL_MONTH;       // â…¡ í”„ë¡œí† ì½œ ë²„ì „ ì›”
+  out[cnt++] = KMA3_PROTOCOL_DAY;         // â…¡ í”„ë¡œí† ì½œ ë²„ì „ ì›”
 
-  //³âµµ°¡ ¼³Á¤µÇ¾îÀÖÁö ¾Ê´Ù¸é
+  //ë…„ë„ê°€ ì„¤ì •ë˜ì–´ìˆì§€ ì•Šë‹¤ë©´
   if(out[cnt]==0)
   {
-    out[cnt++] = Date_Time.Year%100;  // ¥² ³¯Â¥ ³â
-    out[cnt++] = Date_Time.Month;    // ¥² ³¯Â¥ ¿ù
-    out[cnt++] = Date_Time.Day;     // ¥² ³¯Â¥ ÀÏ
-    out[cnt++] = Date_Time.Hour;    // ¥² ³¯Â¥ ½Ã
-    out[cnt++] = Date_Time.Min;     // ¥² ³¯Â¥ ºĞ
+    out[cnt++] = Date_Time.Year%100;  // â…¢ ë‚ ì§œ ë…„
+    out[cnt++] = Date_Time.Month;    // â…¢ ë‚ ì§œ ì›”
+    out[cnt++] = Date_Time.Day;     // â…¢ ë‚ ì§œ ì¼
+    out[cnt++] = Date_Time.Hour;    // â…¢ ë‚ ì§œ ì‹œ
+    out[cnt++] = Date_Time.Min;     // â…¢ ë‚ ì§œ ë¶„
   }
   else
   {
     cnt += 5;
   }
 
-  out[cnt++] = dataType;   // ¥³ ÀÚ·á±¸ºĞ
-  out[cnt++] = dataNum;    // ¥´ ÀÚ·áÇü½Ä ¹øÈ£
-  SetWord(&out[cnt], id);  // ¥µ ÁöÁ¡¹øÈ£
+  out[cnt++] = dataType;   // â…£ ìë£Œêµ¬ë¶„
+  out[cnt++] = dataNum;    // â…¤ ìë£Œí˜•ì‹ ë²ˆí˜¸
+  SetWord(&out[cnt], id);  // â…¥ ì§€ì ë²ˆí˜¸
   cnt += 2;
 
-  memcpy(&out[cnt], data, dataLen);  // ¥¶ ÀÚ·á ³»¿ë
+  memcpy(&out[cnt], data, dataLen);  // â…¦ ìë£Œ ë‚´ìš©
   cnt += dataLen;
 
-  SetWord(&out[cnt], crc16_ccitt_table(&out[2], cnt - 2));  // ¥· CRC16-CCITT
+  SetWord(&out[cnt], crc16_ccitt_table(&out[2], cnt - 2));  // â…§ CRC16-CCITT
   cnt += 2;
 
-  SetWord(&out[cnt], 0xFFFE);  // ¥¸ ³¡Ç¥½Ã
+  SetWord(&out[cnt], 0xFFFE);  // â…¨ ëí‘œì‹œ
   cnt += 2;
 
   return (cnt);
@@ -450,9 +450,9 @@ memset(out, 0, outSize);
 SetWord(&out[cnt], 0xFAFB);
 cnt += 2;
 
-out[cnt++] = KMA3_PROTOCOL_YEAR % 100; // ¥± ÇÁ·ÎÅäÄİ ¹öÀü ³â
-out[cnt++] = KMA3_PROTOCOL_MONTH;      // ¥± ÇÁ·ÎÅäÄİ ¹öÀü ¿ù
-out[cnt++] = KMA3_PROTOCOL_DAY;        // ¥± ÇÁ·ÎÅäÄİ ¹öÀü ¿ù
+out[cnt++] = KMA3_PROTOCOL_YEAR % 100; // â…¡ í”„ë¡œí† ì½œ ë²„ì „ ë…„
+out[cnt++] = KMA3_PROTOCOL_MONTH;      // â…¡ í”„ë¡œí† ì½œ ë²„ì „ ì›”
+out[cnt++] = KMA3_PROTOCOL_DAY;        // â…¡ í”„ë¡œí† ì½œ ë²„ì „ ì›”
 
 SetWord(&out[cnt], id);
 cnt += 2;

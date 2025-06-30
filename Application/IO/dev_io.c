@@ -13,7 +13,7 @@
 #include "pcb_define.h"
 #include "stm32f4xx_hal.h"
 #include "system_err.h"
-#include "FreeRTOS.h"  // pvPortMalloc, vPortFree »ç¿ë ½Ã ÇÊ¿ä
+#include "FreeRTOS.h"  // pvPortMalloc, vPortFree ì‚¬ìš© ì‹œ í•„ìš”
 #include "terminal.h"
 #include "tlsf.h"
 #include "user_heap.h"
@@ -39,38 +39,38 @@ void debug_uart_init(uint32_t baud_rate)
     pclk = HAL_RCC_GetPCLK1Freq();
   }
 
-  // 1. UART3 ¹× GPIO Å¬·° È°¼ºÈ­
-  RCC->APB1ENR |= RCC_APB1ENR_USART3EN;  // UART3 Å¬·° È°¼ºÈ­
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;   // GPIOB Å¬·° È°¼ºÈ­
+  // 1. UART3 ë° GPIO í´ëŸ­ í™œì„±í™”
+  RCC->APB1ENR |= RCC_APB1ENR_USART3EN;  // UART3 í´ëŸ­ í™œì„±í™”
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;   // GPIOB í´ëŸ­ í™œì„±í™”
 
-  RCC->APB1RSTR |= RCC_APB1RSTR_USART3RST;   // USART3 ¸®¼Â È°¼ºÈ­
-  RCC->APB1RSTR &= ~RCC_APB1RSTR_USART3RST;  // USART3 ¸®¼Â ºñÈ°¼ºÈ­
+  RCC->APB1RSTR |= RCC_APB1RSTR_USART3RST;   // USART3 ë¦¬ì…‹ í™œì„±í™”
+  RCC->APB1RSTR &= ~RCC_APB1RSTR_USART3RST;  // USART3 ë¦¬ì…‹ ë¹„í™œì„±í™”
 
-  // 2. GPIO ÇÉ ¼³Á¤ (PB10: TX, PB11: RX)
-  GPIOB->MODER &= ~(GPIO_MODER_MODER10 | GPIO_MODER_MODER11);     // ÃÊ±âÈ­
-  GPIOB->MODER |= (GPIO_MODER_MODER10_1 | GPIO_MODER_MODER11_1);  // AF ¸ğµå ¼³Á¤
-  GPIOB->AFR[1] &= ~((0xF << (2 * 4)) | (0xF << (3 * 4)));        // AFR[1] Å¬¸®¾î (ÇÉ 10, 11)
+  // 2. GPIO í•€ ì„¤ì • (PB10: TX, PB11: RX)
+  GPIOB->MODER &= ~(GPIO_MODER_MODER10 | GPIO_MODER_MODER11);     // ì´ˆê¸°í™”
+  GPIOB->MODER |= (GPIO_MODER_MODER10_1 | GPIO_MODER_MODER11_1);  // AF ëª¨ë“œ ì„¤ì •
+  GPIOB->AFR[1] &= ~((0xF << (2 * 4)) | (0xF << (3 * 4)));        // AFR[1] í´ë¦¬ì–´ (í•€ 10, 11)
   GPIOB->AFR[1] |= (7 << (2 * 4)) | (7 << (3 * 4));               // AF7 (USART3)
 
-  // 3. UART ¼³Á¤
-  debug_uart_base->CR1 &= ~USART_CR1_UE;  // UART ºñÈ°¼ºÈ­
+  // 3. UART ì„¤ì •
+  debug_uart_base->CR1 &= ~USART_CR1_UE;  // UART ë¹„í™œì„±í™”
 
-  // BRR ·¹Áö½ºÅÍ ¼³Á¤
+  // BRR ë ˆì§€ìŠ¤í„° ì„¤ì •
   debug_uart_base->BRR = UART_BRR_SAMPLING16(pclk, baud_rate);
 
-  // (2) µ¥ÀÌÅÍ ºñÆ®, ÆĞ¸®Æ¼, Á¤Áö ºñÆ® ¼³Á¤
-  debug_uart_base->CR1 &= ~USART_CR1_M;     // 8 µ¥ÀÌÅÍ ºñÆ®
-  debug_uart_base->CR2 &= ~USART_CR2_STOP;  // 1 Á¤Áö ºñÆ®
-  debug_uart_base->CR1 &= ~USART_CR1_PCE;   // ÆĞ¸®Æ¼ ºñÈ°¼ºÈ­
+  // (2) ë°ì´í„° ë¹„íŠ¸, íŒ¨ë¦¬í‹°, ì •ì§€ ë¹„íŠ¸ ì„¤ì •
+  debug_uart_base->CR1 &= ~USART_CR1_M;     // 8 ë°ì´í„° ë¹„íŠ¸
+  debug_uart_base->CR2 &= ~USART_CR2_STOP;  // 1 ì •ì§€ ë¹„íŠ¸
+  debug_uart_base->CR1 &= ~USART_CR1_PCE;   // íŒ¨ë¦¬í‹° ë¹„í™œì„±í™”
 
-  // (3) ¼Û½Å(TX) ¹× ¼ö½Å(RX) È°¼ºÈ­
-  debug_uart_base->CR1 |= USART_CR1_TE;  // ¼Û½Å È°¼ºÈ­
+  // (3) ì†¡ì‹ (TX) ë° ìˆ˜ì‹ (RX) í™œì„±í™”
+  debug_uart_base->CR1 |= USART_CR1_TE;  // ì†¡ì‹  í™œì„±í™”
 
-  // (4) UART È°¼ºÈ­
-  debug_uart_base->CR1 |= USART_CR1_UE;  // UART È°¼ºÈ­
+  // (4) UART í™œì„±í™”
+  debug_uart_base->CR1 |= USART_CR1_UE;  // UART í™œì„±í™”
 
-  // (5) ¼Û½Å ÁØºñ È®ÀÎ
-  while (!(debug_uart_base->SR & USART_SR_TC));  // ¼Û½Å ¿Ï·á ÇÃ·¡±× È®ÀÎ
+  // (5) ì†¡ì‹  ì¤€ë¹„ í™•ì¸
+  while (!(debug_uart_base->SR & USART_SR_TC));  // ì†¡ì‹  ì™„ë£Œ í”Œë˜ê·¸ í™•ì¸
 }
 
 void set_debug_uart_handle(driver_t *drv) { debug_uart = drv; }
@@ -78,14 +78,14 @@ void set_debug_uart_handle(driver_t *drv) { debug_uart = drv; }
 driver_t *get_debug_uart_handle(void) { return debug_uart; }
 
 /**
- * @brief os±¸µ¿ ¾øÀ»¶§ »ç¿ë
+ * @brief osêµ¬ë™ ì—†ì„ë•Œ ì‚¬ìš©
  */
 void debug_puts_nonos(char *str)
 {
   while (*str)
   {
-    while (!(debug_uart_base->SR & USART_SR_TXE));  // ¼Û½Å ¹öÆÛ°¡ ºñ¾îÀÖ´ÂÁö È®ÀÎ
-    debug_uart_base->DR = (uint8_t)*str++;          // µ¥ÀÌÅÍ ·¹Áö½ºÅÍ¿¡ ¹®ÀÚ ¼Û½Å
+    while (!(debug_uart_base->SR & USART_SR_TXE));  // ì†¡ì‹  ë²„í¼ê°€ ë¹„ì–´ìˆëŠ”ì§€ í™•ì¸
+    debug_uart_base->DR = (uint8_t)*str++;          // ë°ì´í„° ë ˆì§€ìŠ¤í„°ì— ë¬¸ì ì†¡ì‹ 
   }
 }
 
@@ -125,7 +125,7 @@ int32_t io_printf(const char *pFmt, ...)
   va_list ap;
   int32_t len;
 
-  // ¸ÕÀú format ÈÄ lenÀÇ ±æÀÌ¸¦ È®ÀÎ ÈÄ ¸Ş¸ğ¸®¸¦ ÇÒ´çÈÄ ÃÖÁ¾ Ã³¸®
+  // ë¨¼ì € format í›„ lenì˜ ê¸¸ì´ë¥¼ í™•ì¸ í›„ ë©”ëª¨ë¦¬ë¥¼ í• ë‹¹í›„ ìµœì¢… ì²˜ë¦¬
   va_start(ap, pFmt);
   len = vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
   va_end(ap);
@@ -133,7 +133,7 @@ int32_t io_printf(const char *pFmt, ...)
 #if PRINTF_HEAP_USE
   if (len > (sizeof(buff) - 1))  //
   {
-    temp = aws_malloc(len + 1);  // nullÆ÷ÇÔ
+    temp = aws_malloc(len + 1);  // nullí¬í•¨
     if (temp)
     {
       va_start(ap, pFmt);
@@ -143,12 +143,12 @@ int32_t io_printf(const char *pFmt, ...)
     }
     else
     {
-      return 1;  // ¸Ş¸ğ¸® ÇÒ´ç ¿¡·¯
+      return 1;  // ë©”ëª¨ë¦¬ í• ë‹¹ ì—ëŸ¬
     }
   }
   else
   {
-    ptr = buff;  // 1¹ÙÀÌÆ®¸¸ Àü¼ÛÇÏ°Ô µÇ¸é ¹öÆÛ·Î Ã³¸®
+    ptr = buff;  // 1ë°”ì´íŠ¸ë§Œ ì „ì†¡í•˜ê²Œ ë˜ë©´ ë²„í¼ë¡œ ì²˜ë¦¬
   }
 #else
   va_start(ap, pFmt);
@@ -157,7 +157,7 @@ int32_t io_printf(const char *pFmt, ...)
 
   ptr = printf_buff;
 #endif
-  if (debug_uart && ptr)  // os±¸µ¿ÁßÀÎÁö È®ÀÎ
+  if (debug_uart && ptr)  // osêµ¬ë™ì¤‘ì¸ì§€ í™•ì¸
   {
     io_send((uint8_t *)ptr, strlen(ptr));
   }
@@ -191,7 +191,7 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
   va_end(ap_copy);
 
 #if PRINTF_HEAP_USE
-  if (len > (sizeof(buff) - 1))  // 1¹ÙÀÌÆ® ÃÊ°ú¸é ¸Ş¸ğ¸® µ¿Àû ÇÒ´ç
+  if (len > (sizeof(buff) - 1))  // 1ë°”ì´íŠ¸ ì´ˆê³¼ë©´ ë©”ëª¨ë¦¬ ë™ì  í• ë‹¹
   {
     total_len = len + 1 ;  // null
     temp = pvPortMalloc(total_len);
@@ -202,19 +202,19 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
     }
     else
     {
-      return 1;  // ¸Ş¸ğ¸® ÇÒ´ç ½ÇÆĞ
+      return 1;  // ë©”ëª¨ë¦¬ í• ë‹¹ ì‹¤íŒ¨
     }
   }
   else
   {
-    ptr = buff;  // ¾ÆÁÖ ÂªÀº ¸Ş½ÃÁö´Â ÀÓ½Ã ¹öÆÛ »ç¿ë
+    ptr = buff;  // ì•„ì£¼ ì§§ì€ ë©”ì‹œì§€ëŠ” ì„ì‹œ ë²„í¼ ì‚¬ìš©
   }
 #else
   vsnprintf_s(printf_buff, sizeof(printf_buff), pFmt, ap);
   ptr = printf_buff;
 #endif
 
-  // Àü¼Û: RTOS ¿©ºÎ¿¡ µû¶ó
+  // ì „ì†¡: RTOS ì—¬ë¶€ì— ë”°ë¼
   if (debug_uart && ptr)
   {
     driver_uart_send(debug_uart, (uint8_t *)ptr, strlen(ptr));
@@ -393,8 +393,8 @@ uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd,
 
 
 /**
- * @brief Task¿¡¼­ µğ¹ö±ë¿ëÀ¸·Î Ãâ·Â ÇÏ°í ½ÍÀ»¶§
- *         ÄÜ¼Ö ¸Ş´º¿¡¼­ task id¸¦ ¼³Á¤ÇØÁÖ¸é id°¡ ÀÏÄ¡ÇÏ´Â task´Â 
+ * @brief Taskì—ì„œ ë””ë²„ê¹…ìš©ìœ¼ë¡œ ì¶œë ¥ í•˜ê³  ì‹¶ì„ë•Œ
+ *         ì½˜ì†” ë©”ë‰´ì—ì„œ task idë¥¼ ì„¤ì •í•´ì£¼ë©´ idê°€ ì¼ì¹˜í•˜ëŠ” taskëŠ” 
  *         printf 
  */
 
@@ -442,7 +442,7 @@ void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)
   for (uint32_t i = 0; i < length; i++)
   {
     if (i % 16 == 0)
-      task_printf("%04X: ", (unsigned int)i);  // ÁÖ¼Ò/ÀÎµ¦½º Ãâ·Â
+      task_printf("%04X: ", (unsigned int)i);  // ì£¼ì†Œ/ì¸ë±ìŠ¤ ì¶œë ¥
 
     task_printf("%02X ", data[i]);
 

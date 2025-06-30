@@ -64,7 +64,7 @@ int wdt_task_register(const char *name, uint32_t timeout_ms)
     }
   }
 
-  ERROR_PRINTF("´õÀÌ»ó taskµî·Ï ¸øÇØ¿ä");
+  ERROR_PRINTF("ë”ì´ìƒ taskë“±ë¡ ëª»í•´ìš”");
   return -1;
 }
 

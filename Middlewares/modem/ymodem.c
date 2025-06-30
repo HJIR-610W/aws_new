@@ -234,13 +234,13 @@ uint32_t write_ramFile(uint8_t * address,uint8_t *data,uint32_t dataLen)
                 packet_size = PACKET_1K_SIZE;
                 break;
             case EOT:
-                status = (HAL_StatusTypeDef)4;//颇老场
+                status = (HAL_StatusTypeDef)4;//   铣 
                 break;
             case CA:
                 if(io_recv((char *)&char1,1,timeout)&&(char1==CA))
                 {
                     packet_size = 2;
-                    status = (HAL_StatusTypeDef)5;// 俊矾 
+                    status = (HAL_StatusTypeDef)5;//      
                 }
                 else
                 {
@@ -724,7 +724,7 @@ int32_t download_file(int32_t (*write_file)(char *path,uint32_t offset,uint8_t *
                 return 5;
                 break;
                 
-                case 4:// 颇老场
+                case 4://    铣 
                 err = 0;
                                                         io_put_ch(CA);
                                         io_put_ch(CA);

@@ -53,14 +53,14 @@ void check_sd_card(void)
 
   now_sd_inserted = BSP_PlatformIsDetected();
 
-  // SD Ä«µå »óÅÂ°¡ º¯°æµÈ °æ¿ì
+  // SD ì¹´ë“œ ìƒíƒœê°€ ë³€ê²½ëœ ê²½ìš°
   if (now_sd_inserted != pre_sd_inserted)
   {
-    pre_sd_inserted = now_sd_inserted;  // »óÅÂ °»½Å
+    pre_sd_inserted = now_sd_inserted;  // ìƒíƒœ ê°±ì‹ 
 
     if (now_sd_inserted)
     {
-      ERROR_PRINTF("SDÄ«µå »ğÀÔµÊ\r\n");
+      ERROR_PRINTF("SDì¹´ë“œ ì‚½ì…ë¨\r\n");
       OS_PEND_SEM(get_file_sem(), osWaitForever);
       MX_FATFS_DeInit();
       hal_sd_deinit();
@@ -72,16 +72,16 @@ void check_sd_card(void)
     }
     else
     {
-      ERROR_PRINTF("SDÄ«µå Á¦°ÅµÊ\r\n");
+      ERROR_PRINTF("SDì¹´ë“œ ì œê±°ë¨\r\n");
       OS_PEND_SEM(get_file_sem(), osWaitForever);
       MX_FATFS_DeInit();
       hal_sd_deinit();
-      g_sd_diskio_error = 1;  // Á¦°Å ½Ã¿¡µµ ¿¡·¯ »óÅÂ·Î ÀüÈ¯
+      g_sd_diskio_error = 1;  // ì œê±° ì‹œì—ë„ ì—ëŸ¬ ìƒíƒœë¡œ ì „í™˜
       OS_POST_SEM(get_file_sem());
     }
   }
 
-  // Ä«µå°¡ »ğÀÔµÈ »óÅÂ¿¡¼­ ¿À·ù°¡ °¨ÁöµÈ °æ¿ì
+  // ì¹´ë“œê°€ ì‚½ì…ëœ ìƒíƒœì—ì„œ ì˜¤ë¥˜ê°€ ê°ì§€ëœ ê²½ìš°
   if (now_sd_inserted && g_sd_diskio_error)
   {
     ERROR_PRINTF("g_sd_diskio_error %d\r\n", g_sd_diskio_error);

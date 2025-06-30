@@ -11,15 +11,15 @@
 
 /*
 
-51 01 05 02 01 0C 15     //Ç³Çâ
+51 01 05 02 01 0C 15     //í’í–¥
 51 02 00 00 14 20 20 30 2E 30 20 32 36 2E 33 20 20 30 2E 30 20 20 30 2E 30 69
-//Ç³¼Ó,¿Âµµ,±İÀÏ¿ì·®,ÀüÀÏ¿ì·®
-AWS(±¸)
+//í’ì†,ì˜¨ë„,ê¸ˆì¼ìš°ëŸ‰,ì „ì¼ìš°ëŸ‰
+AWS(êµ¬)
 51 02 00 00 14 20 20 30 2E 30 38 39 39 2E 39 20 20 30 2E 30 20 20 30 2E 30 91
 
 */
 // ========================================================================================================== //
-//                          ÇÑ¼º ÀüÀÚ Protocol°ú °ø¿ë
+//                          í•œì„± ì „ì Protocolê³¼ ê³µìš©
 // ========================================================================================================== //
 void	send_panel_hansung(driver_t *panel_port)
 {
@@ -51,9 +51,9 @@ void	send_panel_hansung(driver_t *panel_port)
 	framemk[cnt++] 		= 0x00;																	// Start Address
 	framemk[cnt++] 		= 20;																	// Length
 	
-	sprintf(&framemk[cnt]," %4.1f", (float)p_kma->wind_speed_avg.data / 10.0); //½ÇÃø°ª Àü¼Û
+	sprintf(&framemk[cnt]," %4.1f", (float)p_kma->wind_speed_avg.data / 10.0); //ì‹¤ì¸¡ê°’ ì „ì†¡
 	cnt					+= 5;
-	sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.data - 1000.0))/10.0); //½ÇÃø°ª Àü¼Û
+	sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.data - 1000.0))/10.0); //ì‹¤ì¸¡ê°’ ì „ì†¡
 	cnt					+= 5;
 	sprintf(&framemk[cnt],"%5.1f%5.1f", (float)get_rainfall()->rainfall_today, (float)get_rainfall()->rainfall_yesterday);
 	cnt					+= 10;

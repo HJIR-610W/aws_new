@@ -58,8 +58,8 @@ void test_rain(void)
   driver_di_set(rain_reed, DI_SET_INTERRUPT, &isr_cfg);
 
 
-  io_printf("¿ì·®À» 1ÃÊ °£°İÀ¸·Î ÀÔ·ÂÇØÁÖ¼¼¿ä\r\n");
-  io_printf("¿ì·®°¨Áö(µğÁöÅĞ ÁÖÆÄ¼öÇü)\r\n");
+  io_printf("ìš°ëŸ‰ì„ 1ì´ˆ ê°„ê²©ìœ¼ë¡œ ì…ë ¥í•´ì£¼ì„¸ìš”\r\n");
+  io_printf("ìš°ëŸ‰ê°ì§€(ë””ì§€í„¸ ì£¼íŒŒìˆ˜í˜•)\r\n");
   hall_status = driver_di_read(rain_hall_err);
 
   
@@ -76,11 +76,11 @@ void test_rain(void)
       }
       if(hall_status == 1)
       {
-        io_printf("È¦¼¾¼­ Á¤»ó\r\n");
+        io_printf("í™€ì„¼ì„œ ì •ìƒ\r\n");
       }
       else
       {
-        io_printf("È¦¼¾¼­ ¿¡·¯\r\n");
+        io_printf("í™€ì„¼ì„œ ì—ëŸ¬\r\n");
       }
       prev_hall_status = hall_status;
     }
@@ -89,13 +89,13 @@ void test_rain(void)
     if(g_reed_rain)
     {
       g_reed_rain = false;
-      io_printf("¸®µå ¿ì·®\r\n");
+      io_printf("ë¦¬ë“œ ìš°ëŸ‰\r\n");
     }
 
     if (g_hall_rain)
     {
       g_hall_rain = false;
-      io_printf("È¦ ¿ì·®\r\n");
+      io_printf("í™€ ìš°ëŸ‰\r\n");
     }
 
     if (read_sensor_rainPresent(rain_present,&err))
@@ -111,10 +111,10 @@ void test_rain(void)
       prev_rain_present_status = rain_present_status;
        if (rain_present_status == 1)
       {
-        io_printf("¿ì·® °¨Áö\r\n");
+        io_printf("ìš°ëŸ‰ ê°ì§€\r\n");
       }
       else{
-        io_printf("¿ì·® °¨Áö ÇØÁ¦\r\n");
+        io_printf("ìš°ëŸ‰ ê°ì§€ í•´ì œ\r\n");
       }
     }
 

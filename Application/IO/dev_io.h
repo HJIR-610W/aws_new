@@ -54,7 +54,7 @@ void dev_io_write(dev_io_t *dev, uint8_t *data, uint32_t dataLen, uint32_t opt);
 uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd, void *opt);
 void dev_io_flush(dev_io_t *dev);
 
-
+int32_t io_vprintf(const char *pFmt, va_list ap);
 int32_t io_printf(const char * pFmt, ...);
 void io_printf_color(int color, const char *pFmt, ...);
 int32_t io_recv(char *out, uint16_t outSize, uint32_t timeout);

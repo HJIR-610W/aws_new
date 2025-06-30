@@ -7,8 +7,8 @@
 
 #include "fatfs.h"
 
-#define MAX_FILENAME_LEN 100  // ¹ÝÈ¯ÇÒ ÆÄÀÏ ÀÌ¸§ÀÇ ÃÖ´ë ±æÀÌ
-#define MAX_FILES_TO_FIND 1   // Ã£À» ÆÄÀÏÀÇ ÃÖ´ë °³¼ö (°á°ú¸¦ ÀúÀåÇÒ ¹è¿­ÀÇ Å©±â)
+#define MAX_FILENAME_LEN 100  // ë°˜í™˜í•  íŒŒì¼ ì´ë¦„ì˜ ìµœëŒ€ ê¸¸ì´
+#define MAX_FILES_TO_FIND 1   // ì°¾ì„ íŒŒì¼ì˜ ìµœëŒ€ ê°œìˆ˜ (ê²°ê³¼ë¥¼ ì €ìž¥í•  ë°°ì—´ì˜ í¬ê¸°)
 
 void file_init(void);
 

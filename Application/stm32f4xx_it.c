@@ -25,39 +25,39 @@ static const  uint32_t exc_ret[6]={0xFFFFFFF1,0xFFFFFFF9,0xFFFFFFFD,0xFFFFFFE1,0
 
 void fault_uart_init(uint32_t baud_rate)
 {
-    // 1. UART3 ¹× GPIO Å¬·° È°¼ºÈ­
-    RCC->APB1ENR |= RCC_APB1ENR_USART3EN;  // UART3 Å¬·° È°¼ºÈ­
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;   // GPIOB Å¬·° È°¼ºÈ­
+    // 1. UART3 ë° GPIO í´ëŸ­ í™œì„±í™”
+    RCC->APB1ENR |= RCC_APB1ENR_USART3EN;  // UART3 í´ëŸ­ í™œì„±í™”
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;   // GPIOB í´ëŸ­ í™œì„±í™”
 
-    RCC->APB1RSTR |= RCC_APB1RSTR_USART3RST;  // USART3 ¸®¼Â È°¼ºÈ­
-    RCC->APB1RSTR &= ~RCC_APB1RSTR_USART3RST; // USART3 ¸®¼Â ºñÈ°¼ºÈ­
+    RCC->APB1RSTR |= RCC_APB1RSTR_USART3RST;  // USART3 ë¦¬ì…‹ í™œì„±í™”
+    RCC->APB1RSTR &= ~RCC_APB1RSTR_USART3RST; // USART3 ë¦¬ì…‹ ë¹„í™œì„±í™”
     
-    // 2. GPIO ÇÉ ¼³Á¤ (PB10: TX, PB11: RX)
-    GPIOB->MODER &= ~(GPIO_MODER_MODER10 | GPIO_MODER_MODER11);  // ÃÊ±âÈ­
-    GPIOB->MODER |= (GPIO_MODER_MODER10_1 | GPIO_MODER_MODER11_1); // AF ¸ğµå ¼³Á¤
-    GPIOB->AFR[1] &= ~((0xF << (2 * 4)) | (0xF << (3 * 4))); // AFR[1] Å¬¸®¾î (ÇÉ 10, 11)
+    // 2. GPIO í•€ ì„¤ì • (PB10: TX, PB11: RX)
+    GPIOB->MODER &= ~(GPIO_MODER_MODER10 | GPIO_MODER_MODER11);  // ì´ˆê¸°í™”
+    GPIOB->MODER |= (GPIO_MODER_MODER10_1 | GPIO_MODER_MODER11_1); // AF ëª¨ë“œ ì„¤ì •
+    GPIOB->AFR[1] &= ~((0xF << (2 * 4)) | (0xF << (3 * 4))); // AFR[1] í´ë¦¬ì–´ (í•€ 10, 11)
     GPIOB->AFR[1] |= (7 << (2 * 4)) | (7 << (3 * 4));         // AF7 (USART3)
 
-    // 3. UART ¼³Á¤
-    USART3->CR1 &= ~USART_CR1_UE;  // UART ºñÈ°¼ºÈ­
+    // 3. UART ì„¤ì •
+    USART3->CR1 &= ~USART_CR1_UE;  // UART ë¹„í™œì„±í™”
 
 
-    // BRR ·¹Áö½ºÅÍ ¼³Á¤
+    // BRR ë ˆì§€ìŠ¤í„° ì„¤ì •
     USART3->BRR =     UART_BRR_SAMPLING16(16000000, baud_rate);
 
-    // (2) µ¥ÀÌÅÍ ºñÆ®, ÆĞ¸®Æ¼, Á¤Áö ºñÆ® ¼³Á¤
-    USART3->CR1 &= ~USART_CR1_M;    // 8 µ¥ÀÌÅÍ ºñÆ®
-    USART3->CR2 &= ~USART_CR2_STOP; // 1 Á¤Áö ºñÆ®
-    USART3->CR1 &= ~USART_CR1_PCE;  // ÆĞ¸®Æ¼ ºñÈ°¼ºÈ­
+    // (2) ë°ì´í„° ë¹„íŠ¸, íŒ¨ë¦¬í‹°, ì •ì§€ ë¹„íŠ¸ ì„¤ì •
+    USART3->CR1 &= ~USART_CR1_M;    // 8 ë°ì´í„° ë¹„íŠ¸
+    USART3->CR2 &= ~USART_CR2_STOP; // 1 ì •ì§€ ë¹„íŠ¸
+    USART3->CR1 &= ~USART_CR1_PCE;  // íŒ¨ë¦¬í‹° ë¹„í™œì„±í™”
 
-    // (3) ¼Û½Å(TX) ¹× ¼ö½Å(RX) È°¼ºÈ­
-    USART3->CR1 |= USART_CR1_TE;   // ¼Û½Å È°¼ºÈ­
+    // (3) ì†¡ì‹ (TX) ë° ìˆ˜ì‹ (RX) í™œì„±í™”
+    USART3->CR1 |= USART_CR1_TE;   // ì†¡ì‹  í™œì„±í™”
 
-    // (4) UART È°¼ºÈ­
-    USART3->CR1 |= USART_CR1_UE;   // UART È°¼ºÈ­
+    // (4) UART í™œì„±í™”
+    USART3->CR1 |= USART_CR1_UE;   // UART í™œì„±í™”
 
-    // (5) ¼Û½Å ÁØºñ È®ÀÎ
-    while (!(USART3->SR & USART_SR_TC));  // ¼Û½Å ¿Ï·á ÇÃ·¡±× È®ÀÎ
+    // (5) ì†¡ì‹  ì¤€ë¹„ í™•ì¸
+    while (!(USART3->SR & USART_SR_TC));  // ì†¡ì‹  ì™„ë£Œ í”Œë˜ê·¸ í™•ì¸
 }
 
 void fault_printf(const char * pFmt, ...)
@@ -74,8 +74,8 @@ void fault_printf(const char * pFmt, ...)
         
   while(*ptr)
   {
-        while (!(USART3->SR & USART_SR_TXE));  // ¼Û½Å ¹öÆÛ°¡ ºñ¾îÀÖ´ÂÁö È®ÀÎ
-        USART3->DR = (uint8_t)*ptr++;              // µ¥ÀÌÅÍ ·¹Áö½ºÅÍ¿¡ ¹®ÀÚ ¼Û½Å
+        while (!(USART3->SR & USART_SR_TXE));  // ì†¡ì‹  ë²„í¼ê°€ ë¹„ì–´ìˆëŠ”ì§€ í™•ì¸
+        USART3->DR = (uint8_t)*ptr++;              // ë°ì´í„° ë ˆì§€ìŠ¤í„°ì— ë¬¸ì ì†¡ì‹ 
   }
 
 }
@@ -168,7 +168,7 @@ void analyze_fault(uint32_t cfsr, uint32_t hfsr, uint32_t mmfar, uint32_t bfar)
 
 void HardFault_Handler(void)
 {
-  reg_msp = __get_MSP()+16;//ÀÌÄÚµåÀü¿¡ push 4°³ÀÇ ·¹Áö½ºÅÍ µ¿ÀÛÇØ¼­ MSP°¡ º¯°æµÊ
+  reg_msp = __get_MSP()+16;//ì´ì½”ë“œì „ì— push 4ê°œì˜ ë ˆì§€ìŠ¤í„° ë™ì‘í•´ì„œ MSPê°€ ë³€ê²½ë¨
   reg_psp = __get_PSP();
   reg_lr = __get_LR();
     
@@ -290,19 +290,19 @@ void ETH_IRQHandler(void)
 void RTC_WKUP_IRQHandler(void)
 {
   #if 0
-    // 1. RTC ¿şÀÌÅ©¾÷ ÀÎÅÍ·´Æ® ¹ß»ı ¿©ºÎ¸¦ È®ÀÎ
+    // 1. RTC ì›¨ì´í¬ì—… ì¸í„°ëŸ½íŠ¸ ë°œìƒ ì—¬ë¶€ë¥¼ í™•ì¸
     if (__HAL_RTC_WAKEUPTIMER_GET_FLAG(&hrtc, RTC_FLAG_WUTF) != RESET) {
-        // 2. ÀÎÅÍ·´Æ® ÇÃ·¡±×¸¦ Å¬¸®¾î
+        // 2. ì¸í„°ëŸ½íŠ¸ í”Œë˜ê·¸ë¥¼ í´ë¦¬ì–´
         __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);
     }
 
-    // 3. EXTI Line 22ÀÇ Ææµù ºñÆ®¸¦ Å¬¸®¾î
+    // 3. EXTI Line 22ì˜ íœë”© ë¹„íŠ¸ë¥¼ í´ë¦¬ì–´
     __HAL_RTC_WAKEUPTIMER_EXTI_CLEAR_FLAG();
     #endif
-        // 1. RTC ISR ·¹Áö½ºÅÍ¿¡¼­ WUTF ºñÆ®¸¦ Å¬¸®¾îÇÕ´Ï´Ù.
+        // 1. RTC ISR ë ˆì§€ìŠ¤í„°ì—ì„œ WUTF ë¹„íŠ¸ë¥¼ í´ë¦¬ì–´í•©ë‹ˆë‹¤.
     RTC->ISR &= ~RTC_ISR_WUTF;
 
-    // 2. EXTI PR ·¹Áö½ºÅÍ¿¡¼­ EXTI Line 22 (RTC ¿şÀÌÅ©¾÷) Ææµù ºñÆ®¸¦ Å¬¸®¾îÇÕ´Ï´Ù.
+    // 2. EXTI PR ë ˆì§€ìŠ¤í„°ì—ì„œ EXTI Line 22 (RTC ì›¨ì´í¬ì—…) íœë”© ë¹„íŠ¸ë¥¼ í´ë¦¬ì–´í•©ë‹ˆë‹¤.
     EXTI->PR = EXTI_PR_PR22;
 
 }
@@ -314,7 +314,7 @@ void FPU_IRQHandler(void)
 }
 
 
-// ADC ÀÎÅÍ·´Æ® ÇÚµé·¯
+// ADC ì¸í„°ëŸ½íŠ¸ í•¸ë“¤ëŸ¬
 extern ADC_HandleTypeDef hadc1;
 void ADC_IRQHandler(void)
 {

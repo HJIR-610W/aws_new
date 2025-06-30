@@ -19,22 +19,22 @@ void test_di(void)
   const char *di_names[DI_COUNT] = {"DI_EXT_0", "DI_EXT_1", "DI_EXT_2",
                                     "DI_EXT_3", "DI_EXT_4", "DI_EXT_5"};
 
-  int32_t prev_state[DI_COUNT] = {-1, -1, -1, -1, -1, -1};  // ÃÊ±â°ª -1: ¾ÆÁ÷ ÀĞÁö ¾ÊÀ½
+  int32_t prev_state[DI_COUNT] = {-1, -1, -1, -1, -1, -1};  // ì´ˆê¸°ê°’ -1: ì•„ì§ ì½ì§€ ì•ŠìŒ
 
-  io_printf("DI_EXT_0 ~ DI_EXT_5 »óÅÂ ¸ğ´ÏÅÍ¸µ ½ÃÀÛ\r\n");
-  io_printf("1ÃÊ¸¶´Ù »óÅÂ¸¦ ÀĞ¾î º¯°æ ½Ã Ãâ·ÂµË´Ï´Ù. CTRL+Q·Î Á¾·á\r\n");
+  io_printf("DI_EXT_0 ~ DI_EXT_5 ìƒíƒœ ëª¨ë‹ˆí„°ë§ ì‹œì‘\r\n");
+  io_printf("1ì´ˆë§ˆë‹¤ ìƒíƒœë¥¼ ì½ì–´ ë³€ê²½ ì‹œ ì¶œë ¥ë©ë‹ˆë‹¤. CTRL+Që¡œ ì¢…ë£Œ\r\n");
 
-  // DI Æ÷Æ® ¿­±â
+  // DI í¬íŠ¸ ì—´ê¸°
   for (int i = 0; i < DI_COUNT; i++)
   {
     di_ports[i] = driver_di_open(di_nums[i], 0);
     if (di_ports[i] == NULL)
     {
-      io_printf("%s open ½ÇÆĞ\r\n", di_names[i]);
+      io_printf("%s open ì‹¤íŒ¨\r\n", di_names[i]);
     }
     else
     {
-      io_printf("%s open ¼º°ø\r\n", di_names[i]);
+      io_printf("%s open ì„±ê³µ\r\n", di_names[i]);
     }
   }
 
@@ -47,19 +47,19 @@ void test_di(void)
         int32_t state = driver_di_read(di_ports[i]);
         if (state >= 0 && state != prev_state[i])
         {
-          io_printf("%s »óÅÂ º¯°æ: %s\r\n", di_names[i], (state == 1) ? "High" : "Low");
+          io_printf("%s ìƒíƒœ ë³€ê²½: %s\r\n", di_names[i], (state == 1) ? "High" : "Low");
           prev_state[i] = state;
         }
         else if (state < 0)
         {
-          io_printf("%s read ¿¡·¯: %d\r\n", di_names[i], state);
+          io_printf("%s read ì—ëŸ¬: %d\r\n", di_names[i], state);
         }
       }
     }
 
     if (get_key(100) == KEY_CODE_CTRL_Q) 
     {
-      io_printf("Å×½ºÆ® Á¾·á\r\n");
+      io_printf("í…ŒìŠ¤íŠ¸ ì¢…ë£Œ\r\n");
       break;
     }
   }
@@ -74,21 +74,21 @@ void test_do(void)
   const char *do_names[DO_COUNT] = {"DO_EXT_0", "DO_EXT_1", "DO_EXT_2",
                                     "DO_EXT_3", "DO_EXT_4", "DO_EXT_5"};
 
-  io_printf("DO_EXT_0 ~ DO_EXT_5 ÀÎÅÍ·¢Æ¼ºê Å×½ºÆ® ½ÃÀÛ\r\n");
-  io_printf("ÀÔ·Â ¿¹: 0,low  ¶Ç´Â  3,high (¹øÈ£,»óÅÂ)\r\n");
-  io_printf("CTRL+C ÀÔ·Â ½Ã Á¾·á\r\n");
+  io_printf("DO_EXT_0 ~ DO_EXT_5 ì¸í„°ë™í‹°ë¸Œ í…ŒìŠ¤íŠ¸ ì‹œì‘\r\n");
+  io_printf("ì…ë ¥ ì˜ˆ: 0,low  ë˜ëŠ”  3,high (ë²ˆí˜¸,ìƒíƒœ)\r\n");
+  io_printf("CTRL+C ì…ë ¥ ì‹œ ì¢…ë£Œ\r\n");
 
-  // DO Æ÷Æ® ¿­±â
+  // DO í¬íŠ¸ ì—´ê¸°
   for (int i = 0; i < DO_COUNT; i++)
   {
     do_ports[i] = driver_do_open(do_nums[i], 0);
     if (do_ports[i] == NULL)
     {
-      io_printf("%s open ½ÇÆĞ\r\n", do_names[i]);
+      io_printf("%s open ì‹¤íŒ¨\r\n", do_names[i]);
     }
     else
     {
-      io_printf("%s open ¼º°ø\r\n", do_names[i]);
+      io_printf("%s open ì„±ê³µ\r\n", do_names[i]);
     }
   }
 
@@ -97,47 +97,47 @@ void test_do(void)
     int num;
     char state_str[10] = {0};
 
-    io_printf("Ãâ·Â Á¦¾î ÀÔ·Â ´ë±â (¹øÈ£,»óÅÂ) > ");
+    io_printf("ì¶œë ¥ ì œì–´ ì…ë ¥ ëŒ€ê¸° (ë²ˆí˜¸,ìƒíƒœ) > ");
     int ret = cli_scanf_s("%d,%9s", &num, state_str,sizeof(state_str));
 
     if (ret == CLI_KEYCODE_CTRL_C)
     {
-      io_printf("\r\nCTRL+C °¨Áö: Å×½ºÆ® Á¾·á\r\n");
+      io_printf("\r\nCTRL+C ê°ì§€: í…ŒìŠ¤íŠ¸ ì¢…ë£Œ\r\n");
       break;
     }
     else if (ret == 2)
     {
       if (num < 0 || num >= DO_COUNT)
       {
-        io_printf("Àß¸øµÈ ¹øÈ£ÀÔ´Ï´Ù. 0 ~ %d ¹üÀ§¸¸ Çã¿ë\r\n", DO_COUNT - 1);
+        io_printf("ì˜ëª»ëœ ë²ˆí˜¸ì…ë‹ˆë‹¤. 0 ~ %d ë²”ìœ„ë§Œ í—ˆìš©\r\n", DO_COUNT - 1);
         continue;
       }
 
       if (do_ports[num] == NULL)
       {
-        io_printf("%s´Â ¿­¸®Áö ¾Ê¾Ò½À´Ï´Ù\r\n", do_names[num]);
+        io_printf("%sëŠ” ì—´ë¦¬ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤\r\n", do_names[num]);
         continue;
       }
 
-      // Ãâ·Â Á¦¾î
+      // ì¶œë ¥ ì œì–´
       if (strcasecmp(state_str, "low") == 0 || strcmp(state_str, "0") == 0)
       {
         driver_do_low(do_ports[num]);
-        io_printf("%s Ãâ·Â: Low\r\n", do_names[num]);
+        io_printf("%s ì¶œë ¥: Low\r\n", do_names[num]);
       }
       else if (strcasecmp(state_str, "high") == 0 || strcmp(state_str, "1") == 0)
       {
         driver_do_high(do_ports[num]);
-        io_printf("%s Ãâ·Â: High\r\n", do_names[num]);
+        io_printf("%s ì¶œë ¥: High\r\n", do_names[num]);
       }
       else
       {
-        io_printf("»óÅÂ´Â low ¶Ç´Â high ¸¸ Çã¿ë\r\n");
+        io_printf("ìƒíƒœëŠ” low ë˜ëŠ” high ë§Œ í—ˆìš©\r\n");
       }
     }
     else
     {
-      io_printf("ÀÔ·Â Çü½Ä ¿À·ù. ¿¹: 2,low ¶Ç´Â 3,high\r\n");
+      io_printf("ì…ë ¥ í˜•ì‹ ì˜¤ë¥˜. ì˜ˆ: 2,low ë˜ëŠ” 3,high\r\n");
     }
   }
 

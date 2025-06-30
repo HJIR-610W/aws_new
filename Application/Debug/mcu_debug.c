@@ -6,14 +6,14 @@
 #include "stm32f4xx.h"
 
 
-/* IRQ Å×ÀÌºí Á¤ÀÇ */
+/* IRQ í…Œì´ë¸” ì •ì˜ */
 typedef struct
 {
   int irq_num;
   const char* name;
 } IRQ_Info;
 
-/* IRQ ÀÌ¸§ Å×ÀÌºí */
+/* IRQ ì´ë¦„ í…Œì´ë¸” */
 IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {1, "PVD"},
                         {2, "TAMP_STAMP"},
@@ -98,7 +98,7 @@ IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {81, "FPU"}};
 #define NUM_IRQS (sizeof(IRQ_Table) / sizeof(IRQ_Info))
 
-/* EXTI ¶óÀÎÀÇ GPIO ¸ÅÇÎ È®ÀÎ */
+/* EXTI ë¼ì¸ì˜ GPIO ë§¤í•‘ í™•ì¸ */
 const char* GetEXTIPortPinMapping(uint8_t exti_line)
 {
   static char buffer[32];
@@ -165,12 +165,12 @@ const char* GetEXTIPortPinMapping(uint8_t exti_line)
   return buffer;
 }
 
-/* EXTI ±×·ì ÀÎÅÍ·´Æ® ¸ÅÇÎ (¿¹: EXTI9_5, EXTI15_10) */
+/* EXTI ê·¸ë£¹ ì¸í„°ëŸ½íŠ¸ ë§¤í•‘ (ì˜ˆ: EXTI9_5, EXTI15_10) */
 const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
 {
   static char buffer[128];
   char temp[32];
-  buffer[0] = '\0';  // ÃÊ±âÈ­
+  buffer[0] = '\0';  // ì´ˆê¸°í™”
 
   for (uint8_t line = start_line; line < start_line + 5; line++)
   {
@@ -182,7 +182,7 @@ const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
     }
   }
 
-  // ¸¶Áö¸· ½°Ç¥ Á¦°Å
+  // ë§ˆì§€ë§‰ ì‰¼í‘œ ì œê±°
   size_t len = strlen(buffer);
   if (len > 0 && buffer[len - 1] == ',')
   {
@@ -196,7 +196,7 @@ const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
 
 #include "stm32f4xx.h"
 
-// DMA1 ½ºÆ®¸² ¿äÃ» ¸ÅÇÎ Å×ÀÌºí
+// DMA1 ìŠ¤íŠ¸ë¦¼ ìš”ì²­ ë§¤í•‘ í…Œì´ë¸”
 const char* dma1_mapping[8][8] = {
     {"SPI3_RX", "I2C1_RX", "TIM4_CH1", "I2S3_EXT_RX", "UART5_RX", "UART8_TX",
      "TIM5_CH3", "-"},  // Stream 0
@@ -216,7 +216,7 @@ const char* dma1_mapping[8][8] = {
      "-"}  // Stream 7
 };
 
-// DMA2 ½ºÆ®¸² ¿äÃ» ¸ÅÇÎ Å×ÀÌºí
+// DMA2 ìŠ¤íŠ¸ë¦¼ ìš”ì²­ ë§¤í•‘ í…Œì´ë¸”
 const char* dma2_mapping[8][8] = {
     {"ADC1", "-", "ADC3", "SPI1_RX", "SPI4_RX", "-", "TIM5_CH3",
      "-"},  // Stream 0
@@ -230,25 +230,25 @@ const char* dma2_mapping[8][8] = {
     {"-", "-", "TIM1_CH4", "-", "USART1_TX", "-", "-", "-"}   // Stream 7
 };
 
-// DMA ½ºÆ®¸² Á¤º¸¸¦ ¹İÈ¯ÇÏ´Â ÇÔ¼ö
+// DMA ìŠ¤íŠ¸ë¦¼ ì •ë³´ë¥¼ ë°˜í™˜í•˜ëŠ” í•¨ìˆ˜
 void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum,
                                   uint8_t stream)
 {
-  // ¸ÅÇÎ Å×ÀÌºí ¼±ÅÃ
+  // ë§¤í•‘ í…Œì´ë¸” ì„ íƒ
   const char*(*mapping)[8] = (dmaNum == 1) ? dma1_mapping : dma2_mapping;
 
-  // DMA ½ºÆ®¸²ÀÇ Ã¤³Î ¼±ÅÃ È®ÀÎ
+  // DMA ìŠ¤íŠ¸ë¦¼ì˜ ì±„ë„ ì„ íƒ í™•ì¸
   DMA_Stream_TypeDef* dmaStream =
       (dmaNum == 1)
           ? ((DMA_Stream_TypeDef*)((uint32_t)DMA1_Stream0 + stream * 0x18))
           : ((DMA_Stream_TypeDef*)((uint32_t)DMA2_Stream0 + stream * 0x18));
   uint8_t channel = (dmaStream->CR & DMA_SxCR_CHSEL) >> DMA_SxCR_CHSEL_Pos;
 
-  // ½ºÆ®¸² ¹× Ã¤³Î Á¤º¸ Ãâ·Â
+  // ìŠ¤íŠ¸ë¦¼ ë° ì±„ë„ ì •ë³´ ì¶œë ¥
   snprintf(buff, buffSize, "%s (Ch:%d)", mapping[stream][channel], channel);
 }
 
-/* ¼Ò½º µğÅ×ÀÏ °¡Á®¿À±â */
+/* ì†ŒìŠ¤ ë””í…Œì¼ ê°€ì ¸ì˜¤ê¸° */
 const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 {
   uint32_t reg1;
@@ -537,7 +537,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
   return buffer;
 }
 
-/* ¸ğµç ÀÎÅÍ·´Æ® Ãâ·Â */
+/* ëª¨ë“  ì¸í„°ëŸ½íŠ¸ ì¶œë ¥ */
 void PrintAllInterrupts(void)
 {
   uint32_t iser_value;
@@ -556,7 +556,7 @@ void PrintAllInterrupts(void)
 
   for (irq_num = 0; irq_num < NUM_IRQS; irq_num++)
   {
-    // NVIC È°¼ºÈ­ È®ÀÎ
+    // NVIC í™œì„±í™” í™•ì¸
     if (irq_num < 32)
     {
       iser_value = NVIC->ISER[0];
@@ -597,14 +597,14 @@ void PrintAllInterrupts(void)
 #include "dev_io.h"
 #include "stm32f4xx.h"
 
-/* IRQ Å×ÀÌºí ±¸Á¶Ã¼ */
+/* IRQ í…Œì´ë¸” êµ¬ì¡°ì²´ */
 typedef struct
 {
   int irq_num;
   const char* name;
 } IRQ_Info;
 
-/* STM32F407 Á¤È®ÇÑ IRQ ÀÌ¸§ Å×ÀÌºí (82°³ ÀÎÅÍ·´Æ®) */
+/* STM32F407 ì •í™•í•œ IRQ ì´ë¦„ í…Œì´ë¸” (82ê°œ ì¸í„°ëŸ½íŠ¸) */
 IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {1, "PVD"},
                         {2, "TAMP_STAMP"},
@@ -689,7 +689,7 @@ IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {81, "FPU"}};
 #define NUM_IRQS (sizeof(IRQ_Table) / sizeof(IRQ_Info))
 
-/* EXTI ¶óÀÎÀÇ GPIO ¸ÅÇÎ È®ÀÎ */
+/* EXTI ë¼ì¸ì˜ GPIO ë§¤í•‘ í™•ì¸ */
 const char* GetEXTIPortPinMapping(uint8_t exti_line)
 {
   static char buffer[32];
@@ -756,7 +756,7 @@ const char* GetEXTIPortPinMapping(uint8_t exti_line)
   return buffer;
 }
 
-/* EXTI ±×·ì ÀÎÅÍ·´Æ® ¸ÅÇÎ */
+/* EXTI ê·¸ë£¹ ì¸í„°ëŸ½íŠ¸ ë§¤í•‘ */
 const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
 {
   static char buffer[128];
@@ -782,7 +782,7 @@ const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
   return buffer;
 }
 
-/* STM32F407 Àü¿ë DMA1 ½ºÆ®¸² Ã¤³Î ¸ÅÇÎ Å×ÀÌºí */
+/* STM32F407 ì „ìš© DMA1 ìŠ¤íŠ¸ë¦¼ ì±„ë„ ë§¤í•‘ í…Œì´ë¸” */
 const char* dma1_mapping[8][8] = {
     {"SPI3_RX", "I2C1_RX", "TIM4_CH1", "I2S3_EXT_RX", "UART5_RX", "RESERVED", "TIM5_CH3",
      "TIM5_UP"},
@@ -796,7 +796,7 @@ const char* dma1_mapping[8][8] = {
     {"I2C1_TX", "TIM2_CH2", "TIM4_UP", "TIM2_CH1", "TIM3_CH1", "USART2_TX", "TIM5_UP", "DAC2"},
     {"SPI3_TX", "I2C1_TX", "TIM4_CH3", "TIM2_CH4", "UART5_TX", "TIM3_CH3", "I2C2_TX", "TIM4_CC"}};
 
-/* STM32F407 Á¤È®ÇÑ DMA2 ½ºÆ®¸² Ã¤³Î ¸ÅÇÎ Å×ÀÌºí */
+/* STM32F407 ì •í™•í•œ DMA2 ìŠ¤íŠ¸ë¦¼ ì±„ë„ ë§¤í•‘ í…Œì´ë¸” */
 const char* dma2_mapping[8][8] = {
     {"ADC1", "RESERVED", "ADC3", "SPI1_RX", "RESERVED", "USART6_RX", "TIM1_CH1/CH2/CH3", "TIM8_UP"},
     {"RESERVED", "DCMI", "ADC3", "RESERVED", "RESERVED", "USART6_RX", "TIM1_CH1", "TIM8_CH1"},
@@ -811,7 +811,7 @@ const char* dma2_mapping[8][8] = {
     {"RESERVED", "TIM8_UP", "TIM8_CH4/TRIG/COM", "TIM1_CH4/TRIG/COM", "USART1_TX", "TIM1_UP",
      "USART6_TX", "USART1_TX"}};
 
-/* DMA ½ºÆ®¸² Á¤º¸¸¦ ¹İÈ¯ÇÏ´Â ÇÔ¼ö */
+/* DMA ìŠ¤íŠ¸ë¦¼ ì •ë³´ë¥¼ ë°˜í™˜í•˜ëŠ” í•¨ìˆ˜ */
 void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum, uint8_t stream)
 {
   const char*(*mapping)[8] = (dmaNum == 1) ? dma1_mapping : dma2_mapping;
@@ -825,7 +825,7 @@ void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum,
   snprintf(buff, buffSize, "%s (Ch:%d)", mapping[stream][channel], channel);
 }
 
-/* ÀÎÅÍ·´Æ® ¼Ò½º µğÅ×ÀÏ °¡Á®¿À±â */
+/* ì¸í„°ëŸ½íŠ¸ ì†ŒìŠ¤ ë””í…Œì¼ ê°€ì ¸ì˜¤ê¸° */
 const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 {
   uint32_t reg1, reg;
@@ -858,7 +858,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
                GetEXTIGroupMapping((reg1 & 0xFC00), 10));
       break;
 
-    // USART/UART (STM32F407¿¡¼­ Áö¿øÇÏ´Â °Í¸¸)
+    // USART/UART (STM32F407ì—ì„œ ì§€ì›í•˜ëŠ” ê²ƒë§Œ)
     case USART1_IRQn:
     case USART2_IRQn:
     case USART3_IRQn:
@@ -879,7 +879,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       break;
     }
 
-    // SPI (STM32F407¿¡¼­ Áö¿øÇÏ´Â °Í¸¸)
+    // SPI (STM32F407ì—ì„œ ì§€ì›í•˜ëŠ” ê²ƒë§Œ)
     case SPI1_IRQn:
     case SPI2_IRQn:
     case SPI3_IRQn:
@@ -891,7 +891,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       break;
     }
 
-    // DMA ½ºÆ®¸²µé
+    // DMA ìŠ¤íŠ¸ë¦¼ë“¤
     case DMA1_Stream0_IRQn:
       Print_DMA_Stream_Peripherals(temp, sizeof(temp), 1, 0);
       goto DMA_PRINT;
@@ -949,7 +949,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
                (reg & DMA_SxCR_TCIE) != 0, (reg & DMA_SxCR_HTIE) != 0, (reg & DMA_SxCR_TEIE) != 0);
       break;
 
-    // Å¸ÀÌ¸Óµé
+    // íƒ€ì´ë¨¸ë“¤
     case TIM1_BRK_TIM9_IRQn:
       reg = TIM1->DIER;
       reg1 = TIM9->DIER;
@@ -1236,7 +1236,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       return buffer;
   }
 
-  /* ¸ğµç ÀÎÅÍ·´Æ® Ãâ·Â */
+  /* ëª¨ë“  ì¸í„°ëŸ½íŠ¸ ì¶œë ¥ */
   void PrintAllInterrupts(void)
   {
     uint32_t iser_value;
@@ -1252,7 +1252,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 
     for (irq_num = 0; irq_num < NUM_IRQS; irq_num++)
     {
-      // NVIC È°¼ºÈ­ È®ÀÎ
+      // NVIC í™œì„±í™” í™•ì¸
       if (irq_num < 32)
       {
         iser_value = NVIC->ISER[0];
@@ -1293,14 +1293,14 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 #include "dev_io.h"
 #include "stm32f4xx.h"
 
-/* IRQ Å×ÀÌºí ±¸Á¶Ã¼ */
+/* IRQ í…Œì´ë¸” êµ¬ì¡°ì²´ */
 typedef struct
 {
   int irq_num;
   const char* name;
 } IRQ_Info;
 
-/* STM32F407 Á¤È®ÇÑ IRQ ÀÌ¸§ Å×ÀÌºí (82°³ ÀÎÅÍ·´Æ®) */
+/* STM32F407 ì •í™•í•œ IRQ ì´ë¦„ í…Œì´ë¸” (82ê°œ ì¸í„°ëŸ½íŠ¸) */
 IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {1, "PVD"},
                         {2, "TAMP_STAMP"},
@@ -1385,7 +1385,7 @@ IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {81, "FPU"}};
 #define NUM_IRQS (sizeof(IRQ_Table) / sizeof(IRQ_Info))
 
-/* EXTI ¶óÀÎÀÇ GPIO ¸ÅÇÎ È®ÀÎ */
+/* EXTI ë¼ì¸ì˜ GPIO ë§¤í•‘ í™•ì¸ */
 const char* GetEXTIPortPinMapping(uint8_t exti_line)
 {
   static char buffer[32];
@@ -1452,7 +1452,7 @@ const char* GetEXTIPortPinMapping(uint8_t exti_line)
   return buffer;
 }
 
-/* EXTI ±×·ì ÀÎÅÍ·´Æ® ¸ÅÇÎ */
+/* EXTI ê·¸ë£¹ ì¸í„°ëŸ½íŠ¸ ë§¤í•‘ */
 const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
 {
   static char buffer[128];
@@ -1478,7 +1478,7 @@ const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
   return buffer;
 }
 
-/* STM32F407 °ø½Ä DMA1 ½ºÆ®¸² Ã¤³Î ¸ÅÇÎ Å×ÀÌºí (RM0090 Table 43) */
+/* STM32F407 ê³µì‹ DMA1 ìŠ¤íŠ¸ë¦¼ ì±„ë„ ë§¤í•‘ í…Œì´ë¸” (RM0090 Table 43) */
 const char* dma1_mapping[8][8] = {
     {"SPI3_RX", "I2C1_RX", "TIM4_CH1", "I2S3_EXT_RX", "UART5_RX", "UART8_TX", "TIM5_CH3/TIM5_UP",
      "SPI3_TX"},
@@ -1495,7 +1495,7 @@ const char* dma1_mapping[8][8] = {
      "TIM5_UP", "-"},
     {"-", "TIM6_UP", "I2C2_RX", "I2C2_RX", "USART3_TX", "DAC1", "DAC2", "I2C2_TX"}};
 
-/* STM32F407 °ø½Ä DMA2 ½ºÆ®¸² Ã¤³Î ¸ÅÇÎ Å×ÀÌºí (RM0090 Table 44) */
+/* STM32F407 ê³µì‹ DMA2 ìŠ¤íŠ¸ë¦¼ ì±„ë„ ë§¤í•‘ í…Œì´ë¸” (RM0090 Table 44) */
 const char* dma2_mapping[8][8] = {
     {"ADC1", "-", "ADC3", "SPI1_RX", "SPI4_RX", "-", "TIM1_CH1/TIM1_CH2/TIM1_CH3", "-"},
     {"-", "DCMI", "ADC3", "-", "-", "USART6_RX", "SPI6_RX", "DCMI"},
@@ -1508,7 +1508,7 @@ const char* dma2_mapping[8][8] = {
     {"-", "TIM8_UP", "TIM8_CH1", "TIM8_CH2", "TIM8_CH3", "SPI5_RX", "SPI5_TX",
      "TIM8_CH4/TIM8_TRIG/TIM8_COM"}};
 
-/* DMA ½ºÆ®¸² Á¤º¸¸¦ ¹İÈ¯ÇÏ´Â ÇÔ¼ö (»ó¼¼ Á¤º¸ Æ÷ÇÔ) */
+/* DMA ìŠ¤íŠ¸ë¦¼ ì •ë³´ë¥¼ ë°˜í™˜í•˜ëŠ” í•¨ìˆ˜ (ìƒì„¸ ì •ë³´ í¬í•¨) */
 void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum, uint8_t stream)
 {
   const char*(*mapping)[8] = (dmaNum == 1) ? dma1_mapping : dma2_mapping;
@@ -1520,7 +1520,7 @@ void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum,
   uint8_t channel = (dmaStream->CR & DMA_SxCR_CHSEL) >> DMA_SxCR_CHSEL_Pos;
   uint32_t cr = dmaStream->CR;
 
-  // ¹æÇâ È®ÀÎ
+  // ë°©í–¥ í™•ì¸
   const char* direction = "";
   if (cr & DMA_SxCR_DIR_1)
   {
@@ -1535,13 +1535,13 @@ void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum,
     direction = "_P2M";  // Peripheral to Memory
   }
 
-  // È°¼ºÈ­ »óÅÂ È®ÀÎ
+  // í™œì„±í™” ìƒíƒœ í™•ì¸
   const char* status = (cr & DMA_SxCR_EN) ? "ACTIVE" : "IDLE";
 
   snprintf(buff, buffSize, "%s (Ch:%d%s,%s)", mapping[stream][channel], channel, direction, status);
 }
 
-/* ÀÎÅÍ·´Æ® ¼Ò½º µğÅ×ÀÏ °¡Á®¿À±â */
+/* ì¸í„°ëŸ½íŠ¸ ì†ŒìŠ¤ ë””í…Œì¼ ê°€ì ¸ì˜¤ê¸° */
 const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 {
   uint32_t reg1, reg;
@@ -1574,7 +1574,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
                GetEXTIGroupMapping((reg1 & 0xFC00), 10));
       break;
 
-    // USART/UART (STM32F407¿¡¼­ Áö¿øÇÏ´Â °Í¸¸)
+    // USART/UART (STM32F407ì—ì„œ ì§€ì›í•˜ëŠ” ê²ƒë§Œ)
     case USART1_IRQn:
     case USART2_IRQn:
     case USART3_IRQn:
@@ -1595,7 +1595,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       break;
     }
 
-    // SPI (STM32F407¿¡¼­ Áö¿øÇÏ´Â °Í¸¸)
+    // SPI (STM32F407ì—ì„œ ì§€ì›í•˜ëŠ” ê²ƒë§Œ)
     case SPI1_IRQn:
     case SPI2_IRQn:
     case SPI3_IRQn:
@@ -1607,7 +1607,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       break;
     }
 
-    // DMA ½ºÆ®¸²µé
+    // DMA ìŠ¤íŠ¸ë¦¼ë“¤
     case DMA1_Stream0_IRQn:
       Print_DMA_Stream_Peripherals(temp, sizeof(temp), 1, 0);
       goto DMA_PRINT;
@@ -1665,7 +1665,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
                (reg & DMA_SxCR_TCIE) != 0, (reg & DMA_SxCR_HTIE) != 0, (reg & DMA_SxCR_TEIE) != 0);
       break;
 
-    // Å¸ÀÌ¸Óµé
+    // íƒ€ì´ë¨¸ë“¤
     case TIM1_BRK_TIM9_IRQn:
       reg = TIM1->DIER;
       reg1 = TIM9->DIER;
@@ -1964,7 +1964,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       return buffer;
   }
 
-  /* ¸ğµç ÀÎÅÍ·´Æ® Ãâ·Â */
+  /* ëª¨ë“  ì¸í„°ëŸ½íŠ¸ ì¶œë ¥ */
   void PrintAllInterrupts(void)
   {
     uint32_t iser_value;
@@ -1980,7 +1980,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 
     for (irq_num = 0; irq_num < NUM_IRQS; irq_num++)
     {
-      // NVIC È°¼ºÈ­ È®ÀÎ
+      // NVIC í™œì„±í™” í™•ì¸
       if (irq_num < 32)
       {
         iser_value = NVIC->ISER[0];

@@ -29,7 +29,7 @@
 #define b10000000   0x80
 
 
-//·¹Áö½ºÅÍ 0
+//ë ˆì§€ìŠ¤í„° 0
 #define ADS1220_MUX_AIN0_AIN1  0x00
 #define ADS1220_MUX_AIN0_AIN2  0x10
 #define ADS1220_MUX_AIN0_AIN3  0x20
@@ -52,7 +52,7 @@
 
 
 
-//·¹Áö½ºÅÍ 1
+//ë ˆì§€ìŠ¤í„° 1
 #define REG1_DR_20           0x00
 #define REG1_DR_45           0x20
 #define REG1_DR_90           0x40
@@ -76,7 +76,7 @@
 #define REG1_BCS_OFF         0x00
 #define REG1_BCS_ON         0x01
 
-//·¹Áî½ºÅÍ 2
+//ë ˆì¦ˆìŠ¤í„° 2
 #define REG2_VREF_INT    0x00
 #define REG2_VREF_EX_DED 0x40
 #define REG2_VREF_EX_AIN 0x80
@@ -99,7 +99,7 @@
 #define ADS1220_IDAC_1000   0x06
 #define ADS1220_IDAC_2000   0x07
 
-//·¹Áö½ºÅÍ 3
+//ë ˆì§€ìŠ¤í„° 3
 #define ADS1220_IDAC1_OFF   0x00
 #define ADS1220_IDAC1_AIN0  0x20
 #define ADS1220_IDAC1_AIN1  0x40
@@ -119,8 +119,8 @@
 #define ADS1220_DRDY_MODE   0x02
 
 
-#define ADS1220_CMD_RESET       0x06 /* ·¹Áö½ºÅÍ°ª ¸®¼ÂµÊ, ÀÌ¸í·ÉÀÌ¿ì 50us +32*tclk Áö¿¬ ÇÊ¿ä*/
-#define ADS1220_CMD_START_SYNC  0x08 /* single shot ¸ğµå¿¡¼­ »ç¿ë*/
+#define ADS1220_CMD_RESET       0x06 /* ë ˆì§€ìŠ¤í„°ê°’ ë¦¬ì…‹ë¨, ì´ëª…ë ¹ì´ìš° 50us +32*tclk ì§€ì—° í•„ìš”*/
+#define ADS1220_CMD_START_SYNC  0x08 /* single shot ëª¨ë“œì—ì„œ ì‚¬ìš©*/
 #define ADS1220_CMD_POWERDOWN   0x02
 #define ADS1220_CMD_RDATA       0x10
 #define ADS1220_CMD_RREG        0x20

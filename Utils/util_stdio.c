@@ -4,7 +4,7 @@
 
 int32_t get_formatted_length_v(const char *format, va_list args)
 {
-    // vsnprintf¸¦ »ç¿ëÇÏ¿© ±æÀÌ °è»ê
+    // vsnprintfë¥¼ ì‚¬ìš©í•˜ì—¬ ê¸¸ì´ ê³„ì‚°
     int len = vsnprintf(NULL, 0, format, args);
     return len;
 }

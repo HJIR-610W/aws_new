@@ -50,7 +50,7 @@ void bsp_status_led_set(int mode)
   }
 }
 
-//CDMA Àü¿ø Á¦¾î 
+//CDMA ì „ì› ì œì–´ 
 
 void bsp_cdma_power_on(void)
 {
@@ -119,7 +119,7 @@ void bsp_power_init(void)
 
 
 
-//RS232 DÆ÷Æ®¸¦ HART·Î ÇÒÁö RS232 ÇÒÁö ¼±ÅÃ 
+//RS232 Dí¬íŠ¸ë¥¼ HARTë¡œ í• ì§€ RS232 í• ì§€ ì„ íƒ 
 
 
 void bsp_set_portd_hart_mode(void)
@@ -162,9 +162,9 @@ void bsp_adc_init(void)
 }
 
 /*
-°ø±ŞÀü¾Ğ ÃÖ´ë ÀÔ·ÂÀ» 15V·Î ÇÏÀÚ
+ê³µê¸‰ì „ì•• ìµœëŒ€ ì…ë ¥ì„ 15Vë¡œ í•˜ì
 0~2.5V => 0~15V
-12V(Àü¾Ğ)
+12V(ì „ì••)
 |
 49.9K
 |-------1K---ADC
@@ -191,7 +191,7 @@ float bsp_read_battery(void)
 
 
 /*
-¿ÂµµÃøÁ¤Á¤
+ì˜¨ë„ì¸¡ì •ì •
 3.3V(VREF)
 |
 10K(R1)
@@ -200,13 +200,13 @@ float bsp_read_battery(void)
 |
 GND
 
-25µµ¶ó¸é 3.3V/2 = 1.65v°¡ ADCµÇ¾î¾ßÇÔ
-3.3V *(NTC/(R1+NTC)) = ADCÀü¾Ğ°ª
+25ë„ë¼ë©´ 3.3V/2 = 1.65vê°€ ADCë˜ì–´ì•¼í•¨
+3.3V *(NTC/(R1+NTC)) = ADCì „ì••ê°’
 NTC = (ADC*R1)/(3.3V-ADC)
 */
 
-#define VREF 3.3f           // ADC ±âÁØ Àü¾Ğ
-#define R1 10000.0f   // 10k¥Ø Ç®¾÷ ÀúÇ×
+#define VREF 3.3f           // ADC ê¸°ì¤€ ì „ì••
+#define R1 10000.0f   // 10kÎ© í’€ì—… ì €í•­
 
 typedef struct {
   float temperature;
@@ -214,10 +214,10 @@ typedef struct {
 } NTC_Lookup;
 
 /*
-LNSK16G103 NTC½á¹Ì½ºÅÍ
-10k¥Ø (25µµ ±âÁØ)
-¿Âµµ¿¡ µû¶ó ÀúÇ×ÀÌ º¯ÇÔ
-¿Âµµ°¡ ³ô¾ÆÁú¼ö·Ï ÀúÇ×ÀÌ °¨¼Ò
+LNSK16G103 NTCì¨ë¯¸ìŠ¤í„°
+10kÎ© (25ë„ ê¸°ì¤€)
+ì˜¨ë„ì— ë”°ë¼ ì €í•­ì´ ë³€í•¨
+ì˜¨ë„ê°€ ë†’ì•„ì§ˆìˆ˜ë¡ ì €í•­ì´ ê°ì†Œ
 */
 const NTC_Lookup ntc_table[] = {
   { -40.0, 200800 }, { -35.0, 152900 }, { -30.0, 117200 }, { -25.0, 90510 },
@@ -235,16 +235,16 @@ const NTC_Lookup ntc_table[] = {
 float ntc_resistance_to_temperature(float resistance)
 {
   if (resistance >= ntc_table[0].resistance)
-    return ntc_table[0].temperature;  // ÃÖ¼Ò ¿Âµµ ÀÌÇÏ
+    return ntc_table[0].temperature;  // ìµœì†Œ ì˜¨ë„ ì´í•˜
   if (resistance <= ntc_table[TABLE_SIZE - 1].resistance)
-    return ntc_table[TABLE_SIZE - 1].temperature;  // ÃÖ´ë ¿Âµµ ÀÌ»ó
+    return ntc_table[TABLE_SIZE - 1].temperature;  // ìµœëŒ€ ì˜¨ë„ ì´ìƒ
 
-  // Å×ÀÌºí¿¡¼­ ÀûÀıÇÑ ¹üÀ§¸¦ Ã£À½
+  // í…Œì´ë¸”ì—ì„œ ì ì ˆí•œ ë²”ìœ„ë¥¼ ì°¾ìŒ
   for (int i = 0; i < TABLE_SIZE - 1; i++)
   {
     if (resistance <= ntc_table[i].resistance && resistance > ntc_table[i + 1].resistance)
     {
-      // ¼±Çü º¸°£¹ı Àû¿ë
+      // ì„ í˜• ë³´ê°„ë²• ì ìš©
       float temp1 = ntc_table[i].temperature;
       float temp2 = ntc_table[i + 1].temperature;
       float res1 = ntc_table[i].resistance;
@@ -255,7 +255,7 @@ float ntc_resistance_to_temperature(float resistance)
     }
   }
 
-  return 0.0f; // ÀÌ·ĞÀûÀ¸·Î µµ´ŞÇÏÁö ¾ÊÀ½
+  return 0.0f; // ì´ë¡ ì ìœ¼ë¡œ ë„ë‹¬í•˜ì§€ ì•ŠìŒ
 }
 
 #define TEMP_AVERAGE_SAMPLES 50

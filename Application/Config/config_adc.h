@@ -8,10 +8,10 @@
 
 typedef struct adc_calibraion_s
 {
-  int32_t offset;         //   0v ÀÔ·Â ½Ã ADC°ª
-  int32_t fullset;        // refv ÀÔ·Â ½Ã ADC °ª
+  int32_t offset;         //   0v ì…ë ¥ ì‹œ ADCê°’
+  int32_t fullset;        // refv ì…ë ¥ ì‹œ ADC ê°’
   int32_t offset_input;   //   0mv
-  int32_t fullset_input;  // 5000mv ¿¹)5v refÀÏ ¶§
+  int32_t fullset_input;  // 5000mv ì˜ˆ)5v refì¼ ë•Œ
   float gain;
 } adc_calibraion_t;
 

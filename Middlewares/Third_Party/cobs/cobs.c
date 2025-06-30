@@ -4,52 +4,52 @@
 #include <stdint.h>
 
 uint16_t cobs_decode(const uint8_t *input, uint16_t length, uint8_t *output) {
-    uint16_t read_index = 0;  // ÀÔ·Â ¹öÆÛ ÀĞ±â ÀÎµ¦½º
-    uint16_t write_index = 0; // Ãâ·Â ¹öÆÛ ¾²±â ÀÎµ¦½º
-    uint8_t code;             // COBS ÄÚµå ¹ÙÀÌÆ®
+    uint16_t read_index = 0;  // ì…ë ¥ ë²„í¼ ì½ê¸° ì¸ë±ìŠ¤
+    uint16_t write_index = 0; // ì¶œë ¥ ë²„í¼ ì“°ê¸° ì¸ë±ìŠ¤
+    uint8_t code;             // COBS ì½”ë“œ ë°”ì´íŠ¸
 
     while (read_index < length) {
-        code = input[read_index++];  // ÄÚµå ¹ÙÀÌÆ® ÀĞ±â
+        code = input[read_index++];  // ì½”ë“œ ë°”ì´íŠ¸ ì½ê¸°
 
-        // À¯È¿ÇÏÁö ¾ÊÀº ÄÚµå ¹ÙÀÌÆ®´Â ¿¡·¯ Ã³¸®
+        // ìœ íš¨í•˜ì§€ ì•Šì€ ì½”ë“œ ë°”ì´íŠ¸ëŠ” ì—ëŸ¬ ì²˜ë¦¬
         if (code == 0 || read_index + code - 1 > length) {
-            return 0;  // ¿À·ù¸¦ ³ªÅ¸³»±â À§ÇØ 0À» ¹İÈ¯
+            return 0;  // ì˜¤ë¥˜ë¥¼ ë‚˜íƒ€ë‚´ê¸° ìœ„í•´ 0ì„ ë°˜í™˜
         }
 
-        // ÄÚµå ¹ÙÀÌÆ®¿¡ ÀÇÇØ ÁöÁ¤µÈ ¹ÙÀÌÆ® º¹»ç
+        // ì½”ë“œ ë°”ì´íŠ¸ì— ì˜í•´ ì§€ì •ëœ ë°”ì´íŠ¸ ë³µì‚¬
         for (uint8_t i = 1; i < code; i++) {
             output[write_index++] = input[read_index++];
         }
 
-        // ÄÚµå ¹ÙÀÌÆ®°¡ ÃÖ´ë °ªÀÌ ¾Æ´Ñ °æ¿ì `0x00` Ãß°¡
+        // ì½”ë“œ ë°”ì´íŠ¸ê°€ ìµœëŒ€ ê°’ì´ ì•„ë‹Œ ê²½ìš° `0x00` ì¶”ê°€
         if (code != 0xFF && read_index < length) {
             output[write_index++] = 0;
         }
     }
 
-    return write_index;  // µğÄÚµùµÈ µ¥ÀÌÅÍÀÇ ±æÀÌ¸¦ ¹İÈ¯
+    return write_index;  // ë””ì½”ë”©ëœ ë°ì´í„°ì˜ ê¸¸ì´ë¥¼ ë°˜í™˜
 }
 
 
 uint16_t cobs_encode(const uint8_t *input, uint16_t length, uint8_t *output) {
-    uint16_t read_index = 0;       // ÀÔ·Â ¹öÆÛ¿¡¼­ ÀĞÀ» À§Ä¡
-    uint16_t write_index = 1;      // Ãâ·Â ¹öÆÛ¿¡¼­ ¾µ À§Ä¡ (ÄÚµå ¹ÙÀÌÆ® °ø°£À» À§ÇØ 1ºÎÅÍ ½ÃÀÛ)
-    uint16_t code_index = 0;       // ÄÚµå ¹ÙÀÌÆ®ÀÇ À§Ä¡
-    uint8_t code = 1;              // ÄÚµå ¹ÙÀÌÆ® (±âº»°ªÀº 1)
+    uint16_t read_index = 0;       // ì…ë ¥ ë²„í¼ì—ì„œ ì½ì„ ìœ„ì¹˜
+    uint16_t write_index = 1;      // ì¶œë ¥ ë²„í¼ì—ì„œ ì“¸ ìœ„ì¹˜ (ì½”ë“œ ë°”ì´íŠ¸ ê³µê°„ì„ ìœ„í•´ 1ë¶€í„° ì‹œì‘)
+    uint16_t code_index = 0;       // ì½”ë“œ ë°”ì´íŠ¸ì˜ ìœ„ì¹˜
+    uint8_t code = 1;              // ì½”ë“œ ë°”ì´íŠ¸ (ê¸°ë³¸ê°’ì€ 1)
 
-    // ÀÔ·Â ¹öÆÛÀÇ ¸ğµç ¹ÙÀÌÆ®¸¦ Ã³¸®
+    // ì…ë ¥ ë²„í¼ì˜ ëª¨ë“  ë°”ì´íŠ¸ë¥¼ ì²˜ë¦¬
     while (read_index < length) {
         if (input[read_index] == 0) {
-            // `0x00` ¹ÙÀÌÆ®¸¦ ¸¸³ª¸é, ÇöÀç code °ªÀ» ¼³Á¤ÇÏ°í »õ·Î¿î ºí·ÏÀ» ½ÃÀÛ
+            // `0x00` ë°”ì´íŠ¸ë¥¼ ë§Œë‚˜ë©´, í˜„ì¬ code ê°’ì„ ì„¤ì •í•˜ê³  ìƒˆë¡œìš´ ë¸”ë¡ì„ ì‹œì‘
             output[code_index] = code;
-            code_index = write_index++; // »õ·Î¿î ÄÚµå ¹ÙÀÌÆ® À§Ä¡
-            code = 1;                   // »õ·Î¿î ºí·ÏÀÇ ÃÊ±â°ª
+            code_index = write_index++; // ìƒˆë¡œìš´ ì½”ë“œ ë°”ì´íŠ¸ ìœ„ì¹˜
+            code = 1;                   // ìƒˆë¡œìš´ ë¸”ë¡ì˜ ì´ˆê¸°ê°’
         } else {
-            // `0x00`ÀÌ ¾Æ´Ñ ¹ÙÀÌÆ®¸¦ Ãâ·Â ¹öÆÛ¿¡ º¹»ç
+            // `0x00`ì´ ì•„ë‹Œ ë°”ì´íŠ¸ë¥¼ ì¶œë ¥ ë²„í¼ì— ë³µì‚¬
             output[write_index++] = input[read_index];
             code++;
 
-            // code°¡ ÃÖ´ë°ª(255)ÀÌ µÇ¸é, °­Á¦·Î »õ·Î¿î ºí·ÏÀ» ½ÃÀÛ
+            // codeê°€ ìµœëŒ€ê°’(255)ì´ ë˜ë©´, ê°•ì œë¡œ ìƒˆë¡œìš´ ë¸”ë¡ì„ ì‹œì‘
             if (code == 0xFF) {
                 output[code_index] = code;
                 code_index = write_index++;
@@ -59,11 +59,11 @@ uint16_t cobs_encode(const uint8_t *input, uint16_t length, uint8_t *output) {
         read_index++;
     }
 
-    // ¸¶Áö¸· ÄÚµå ¹ÙÀÌÆ® ¼³Á¤
+    // ë§ˆì§€ë§‰ ì½”ë“œ ë°”ì´íŠ¸ ì„¤ì •
     output[code_index] = code;
 
-    // ÆĞÅ¶ÀÇ ³¡À» Ç¥½ÃÇÏ±â À§ÇØ `0x00` Ãß°¡
+    // íŒ¨í‚·ì˜ ëì„ í‘œì‹œí•˜ê¸° ìœ„í•´ `0x00` ì¶”ê°€
     output[write_index++] = 0;
 
-    return write_index; // ÀÎÄÚµùµÈ µ¥ÀÌÅÍÀÇ ±æÀÌ¸¦ ¹İÈ¯
+    return write_index; // ì¸ì½”ë”©ëœ ë°ì´í„°ì˜ ê¸¸ì´ë¥¼ ë°˜í™˜
 }

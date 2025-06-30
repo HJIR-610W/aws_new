@@ -9,7 +9,7 @@
 
 
 /*
-ø‹∫Œ SRAM:IS61WV204816BLL-xxTLI 4MB
+Ïô∏Î∂Ä SRAM:IS61WV204816BLL-xxTLI 4MB
 MCU SRAM:192KB(112+16+64(CCM))
 112:0x20000000 ~ -0x2001BFFF
  16:0x2001C000 ~  0x2001FFFF
@@ -17,8 +17,8 @@ MCU SRAM:192KB(112+16+64(CCM))
 
 PCB 0.1 20241021
 PCB 0.3 20250120
-√ﬂ∞°:USB,HART,ªÁøÎ¿⁄ πˆ∆∞
-ºˆ¡§:¿¸ø¯ ¡¶æÓ »∏∑Œ,¡÷∆ƒºˆ »∏∑Œ µÓ
+Ï∂îÍ∞Ä:USB,HART,ÏÇ¨Ïö©Ïûê Î≤ÑÌäº
+ÏàòÏ†ï:Ï†ÑÏõê Ï†úÏñ¥ ÌöåÎ°ú,Ï£ºÌååÏàò ÌöåÎ°ú Îì±
 
 */
 #define AWS_PCB_VER 5  //0.1=> 1, 0.3 => 3 ,0.5 => 5
@@ -172,8 +172,8 @@ PCB 0.3 20250120
 #define IN_ADC1_IN4_PIN           GPIO_PIN_4
 #define IN_ADC1_IN3_GPIO_Port     GPIOA
 #define UNUSED_A5_PIN             GPIO_PIN_5
-#define UNSUED_A5_GPIO_Port       GPIOA      //#πÃªÁøÎ
-#define IN_RAIN_HALL_ERR_Pin         GPIO_PIN_6 //»¶ ºæº≠ ø°∑Ø ∞®¡ˆ
+#define UNSUED_A5_GPIO_Port       GPIOA      //#ÎØ∏ÏÇ¨Ïö©
+#define IN_RAIN_HALL_ERR_Pin         GPIO_PIN_6 //ÌôÄ ÏÑºÏÑú ÏóêÎü¨ Í∞êÏßÄ
 #define IN_RAIN_HALL_ERR_GPIO_Port   GPIOA
 #define ETH_CRS_DV_PIN            GPIO_PIN_7
 #define ETH_CRS_DV_GPIO_Port      GPIOA
@@ -472,7 +472,7 @@ PCB 0.3 20250120
 #define IN_ADC1_IN3_GPIO_Port GPIOA
 #define DO_CON_PWR_RAIN_PIN GPIO_PIN_5
 #define DO_CON_PWR_RAIN_GPIO_Port GPIOA       
-#define IN_RAIN_HALL_ERR_Pin GPIO_PIN_6  // »¶ ºæº≠ ø°∑Ø ∞®¡ˆ
+#define IN_RAIN_HALL_ERR_Pin GPIO_PIN_6  // ÌôÄ ÏÑºÏÑú ÏóêÎü¨ Í∞êÏßÄ
 #define IN_RAIN_HALL_ERR_GPIO_Port GPIOA
 #define ETH_CRS_DV_PIN GPIO_PIN_7
 #define ETH_CRS_DV_GPIO_Port GPIOA

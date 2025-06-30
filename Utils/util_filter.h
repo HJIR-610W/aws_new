@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-// float ¡¾16,777,216
+// float Â±16,777,216
 float recursiveAvg(double pre_avg, float adc, int cnt);
 
 float recursive_avg_i(float pre_avg, int32_t adc, int cnt);

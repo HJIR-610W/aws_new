@@ -7,8 +7,8 @@
 #include "util_time.h"
 #include "dev_io.h"
 
-#define ERROR_PRINTF_USE 1 // ½Ã½ºÅÛ ¿¡·¯ Ãâ·Â
-#define DEBUG_PRINTF_USE 1 // µğ¹ö±ë ÇÊ¿ä½Ã
+#define ERROR_PRINTF_USE 1 // ì‹œìŠ¤í…œ ì—ëŸ¬ ì¶œë ¥
+#define DEBUG_PRINTF_USE 1 // ë””ë²„ê¹… í•„ìš”ì‹œ
 
 #define PRINTF_BASE(fmt, ...)                                                               \
   error_print("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \

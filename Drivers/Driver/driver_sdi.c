@@ -29,7 +29,7 @@ driver_t *driver_sdi_open(uint32_t num,void *opt)
   case SDI_0:
       g_sdi_cfg[num].uart_io =  driver_uart_open(UART_9_SDI,opt);
       g_sdi_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_A,0); 
-      driver_do_low(g_sdi_cfg[num].do_io);//¼ö½Å ¸ðµå
+      driver_do_low(g_sdi_cfg[num].do_io);//ìˆ˜ì‹  ëª¨ë“œ
 
     if( g_sdi_list[num].sem == NULL)
     {

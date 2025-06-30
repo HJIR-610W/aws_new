@@ -72,27 +72,27 @@ void log_boot_reason(void)
   else
       log_printf(L_INFO,"Boot: unknown");
 
-    // ¸®¼Â ÇÃ·¡±× ÃÊ±âÈ­
+    // ë¦¬ì…‹ í”Œë˜ê·¸ ì´ˆê¸°í™”
     RCC->CSR |= RCC_CSR_RMVF;
 }
 
 
 /**
- * @brief ÇÑ¹ø ¼öÇàÇÏ°í Á¾·áµÉ Task
- * ÃÊ±âÈ­ ÀÛ¾÷ ¼öÇà
- * ¿ì¼±¼øÀ§´Â °¡Àå³ô°Ô ¼³Á¤ÇÏ¿© startTask°¡ Á¾·áµÇ±â±îÁö ´Ù¸¥ Task°¡
- * ½ÇÇà µÇÁö ¾Êµµ·Ï ÇÔ
+ * @brief í•œë²ˆ ìˆ˜í–‰í•˜ê³  ì¢…ë£Œë  Task
+ * ì´ˆê¸°í™” ì‘ì—… ìˆ˜í–‰
+ * ìš°ì„ ìˆœìœ„ëŠ” ê°€ì¥ë†’ê²Œ ì„¤ì •í•˜ì—¬ startTaskê°€ ì¢…ë£Œë˜ê¸°ê¹Œì§€ ë‹¤ë¥¸ Taskê°€
+ * ì‹¤í–‰ ë˜ì§€ ì•Šë„ë¡ í•¨
  */
 void startTask(void *arg)
 {
   if(testTask_init()==true)
   {
-    osThreadExit();  // Á¾·á ½ÃÅ´
+    osThreadExit();  // ì¢…ë£Œ ì‹œí‚´
   }
 
-  consoleTask_init(0);//µğ¹ö±ë printf »ç¿ë ÇØ¾ßÇØ¼­ ¸ÕÀú ÃÊ±âÈ­ 
+  consoleTask_init(0);//ë””ë²„ê¹… printf ì‚¬ìš© í•´ì•¼í•´ì„œ ë¨¼ì € ì´ˆê¸°í™” 
   wdtTask_init();
-  mcu_interrupt_init();  // ÃÖ¿ì¼± ½ÇÇà
+  mcu_interrupt_init();  // ìµœìš°ì„  ì‹¤í–‰
 
   bsp_init();
   usDelay_init();
@@ -140,7 +140,7 @@ void startTask(void *arg)
   //http_server_task_init();
   telnet_server_task_init();
   log_boot_reason();
-  osThreadExit();  // Á¾·á ½ÃÅ´
+  osThreadExit();  // ì¢…ë£Œ ì‹œí‚´
 }
 
 void startTask_init(void)

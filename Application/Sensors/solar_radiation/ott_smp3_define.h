@@ -4,51 +4,51 @@
 
 #include <stdint.h>
 
-// ±âº» ·¹Áö½ºÅÍ Á¤ÀÇ (0x04 Read Input Registers Àü¿ë)
-#define REG_IO_DEVICE_TYPE 0        // U16: ÀåÄ¡ Å¸ÀÔ
-#define REG_IO_DATAMODEL_VERSION 1  // U16: µ¥ÀÌÅÍ ¸ðµ¨ ¹öÀü
-#define REG_IO_OPERATIONAL_MODE 2   // U16: ÀÛµ¿ ¸ðµå (1=Normal)
-#define REG_IO_STATUS_FLAGS 3       // U16: »óÅÂ ÇÃ·¡±×
-#define REG_IO_SCALE_FACTOR 4       // S16: ½ºÄÉÀÏ ÆÑÅÍ
+// ê¸°ë³¸ ë ˆì§€ìŠ¤í„° ì •ì˜ (0x04 Read Input Registers ì „ìš©)
+#define REG_IO_DEVICE_TYPE 0        // U16: ìž¥ì¹˜ íƒ€ìž…
+#define REG_IO_DATAMODEL_VERSION 1  // U16: ë°ì´í„° ëª¨ë¸ ë²„ì „
+#define REG_IO_OPERATIONAL_MODE 2   // U16: ìž‘ë™ ëª¨ë“œ (1=Normal)
+#define REG_IO_STATUS_FLAGS 3       // U16: ìƒíƒœ í”Œëž˜ê·¸
+#define REG_IO_SCALE_FACTOR 4       // S16: ìŠ¤ì¼€ì¼ íŒ©í„°
 
-// ¼¾¼­ µ¥ÀÌÅÍ
-#define REG_IO_SENSOR1_DATA 5      // S16: º¸Á¤µÈ ÀÏ»ç·® (W/m©÷)
-#define REG_IO_RAW_SENSOR1_DATA 6  // S16: ¿ø µ¥ÀÌÅÍ
-#define REG_IO_STDEV_SENSOR1 7     // S16: Ç¥ÁØÆíÂ÷
-#define REG_IO_BODY_TEMPERATURE 8  // S16: º»Ã¼ ¿Âµµ (0.1¡ÆC)
-#define REG_IO_EXT_POWER_SENSOR 9  // S16: ¿ÜºÎ Àü¿ø Àü¾Ð (0.1V)
-#define REG_IO_TILT 15             // U16: ±â¿ï±â (0.1¡Æ)
-#define REG_IO_RH 16               // U16: ³»ºÎ »ó´ë½Àµµ (0.1%)
+// ì„¼ì„œ ë°ì´í„°
+#define REG_IO_SENSOR1_DATA 5      // S16: ë³´ì •ëœ ì¼ì‚¬ëŸ‰ (W/mÂ²)
+#define REG_IO_RAW_SENSOR1_DATA 6  // S16: ì› ë°ì´í„°
+#define REG_IO_STDEV_SENSOR1 7     // S16: í‘œì¤€íŽ¸ì°¨
+#define REG_IO_BODY_TEMPERATURE 8  // S16: ë³¸ì²´ ì˜¨ë„ (0.1Â°C)
+#define REG_IO_EXT_POWER_SENSOR 9  // S16: ì™¸ë¶€ ì „ì› ì „ì•• (0.1V)
+#define REG_IO_TILT 15             // U16: ê¸°ìš¸ê¸° (0.1Â°)
+#define REG_IO_RH 16               // U16: ë‚´ë¶€ ìƒëŒ€ìŠµë„ (0.1%)
 
-// °íÁ¤¼Ò¼öÁ¡ ¡æ ½Ç¼ö º¯È¯¿ë ½ºÄÉÀÏ ÆÑÅÍ
+// ê³ ì •ì†Œìˆ˜ì  â†’ ì‹¤ìˆ˜ ë³€í™˜ìš© ìŠ¤ì¼€ì¼ íŒ©í„°
 #define SCALE_FACTOR_DIV100 2
 #define SCALE_FACTOR_DIV10 1
 #define SCALE_FACTOR_NONE 0
 #define SCALE_FACTOR_MUL10 -1
 
-// ½Ç¼öÇü µ¥ÀÌÅÍ (Floating Point Registers, 32bit, 2·¹Áö½ºÅÍ »ç¿ë)
+// ì‹¤ìˆ˜í˜• ë°ì´í„° (Floating Point Registers, 32bit, 2ë ˆì§€ìŠ¤í„° ì‚¬ìš©)
 
-#define REG_U_DEVICE_TYPE 10000       // U16: ÀåÄ¡ Å¸ÀÔ
-#define REG_U_OPERATIONAL_MODE 10001  // U16: ÀÛµ¿ ¸ðµå
-#define REG_U_ERROR_CODE 10002        // U16: ÃÖ±Ù ¿¡·¯ ÄÚµå
-#define REG_U_STATUS_FLAGS 10003      // U16: »óÅÂ ÇÃ·¡±×
-#define REG_U_BATCH_NR 10004          // U16: Á¦Á¶ ¿¬µµ
-#define REG_U_SERIAL_NR 10005         // U16: ½Ã¸®¾ó ¹øÈ£
-#define REG_FL_SENSOR1_DATA 10006      // F32: ½Ç¼öÇü º¸Á¤ ÀÏ»ç·® (W/m©÷)
-#define REG_FL_STDEV_SENSOR1 10008     // F32: ½Ç¼öÇü Ç¥ÁØÆíÂ÷
-#define REG_FL_BODY_TEMPERATURE 10014  // F32: ¿Âµµ (¡ÆK)
-#define REG_FL_EXT_POWER_SENSOR 10016  // F32: ¿ÜºÎ Àü¾Ð
-#define REG_FL_TILT 10020              // F32: ±â¿ï±â (¡Æ)
-#define REG_FL_RH 10022                // F32: »ó´ë½Àµµ (%)
+#define REG_U_DEVICE_TYPE 10000       // U16: ìž¥ì¹˜ íƒ€ìž…
+#define REG_U_OPERATIONAL_MODE 10001  // U16: ìž‘ë™ ëª¨ë“œ
+#define REG_U_ERROR_CODE 10002        // U16: ìµœê·¼ ì—ëŸ¬ ì½”ë“œ
+#define REG_U_STATUS_FLAGS 10003      // U16: ìƒíƒœ í”Œëž˜ê·¸
+#define REG_U_BATCH_NR 10004          // U16: ì œì¡° ì—°ë„
+#define REG_U_SERIAL_NR 10005         // U16: ì‹œë¦¬ì–¼ ë²ˆí˜¸
+#define REG_FL_SENSOR1_DATA 10006      // F32: ì‹¤ìˆ˜í˜• ë³´ì • ì¼ì‚¬ëŸ‰ (W/mÂ²)
+#define REG_FL_STDEV_SENSOR1 10008     // F32: ì‹¤ìˆ˜í˜• í‘œì¤€íŽ¸ì°¨
+#define REG_FL_BODY_TEMPERATURE 10014  // F32: ì˜¨ë„ (Â°K)
+#define REG_FL_EXT_POWER_SENSOR 10016  // F32: ì™¸ë¶€ ì „ì••
+#define REG_FL_TILT 10020              // F32: ê¸°ìš¸ê¸° (Â°)
+#define REG_FL_RH 10022                // F32: ìƒëŒ€ìŠµë„ (%)
 
-// ±âÅ¸ Á¤º¸ (½Ã¸®¾ó ³Ñ¹ö, Æß¿þ¾î µî)
-#define REG_IO_BATCH_NUMBER 41      // U16: »ý»ê ¿¬µµ (YY)
-#define REG_IO_SERIAL_NUMBER 42     // U16: ½Ã¸®¾ó ³Ñ¹ö
+// ê¸°íƒ€ ì •ë³´ (ì‹œë¦¬ì–¼ ë„˜ë²„, íŽŒì›¨ì–´ ë“±)
+#define REG_IO_BATCH_NUMBER 41      // U16: ìƒì‚° ì—°ë„ (YY)
+#define REG_IO_SERIAL_NUMBER 42     // U16: ì‹œë¦¬ì–¼ ë„˜ë²„
 #define REG_IO_SOFTWARE_VERSION 43  // U16
 #define REG_IO_HARDWARE_VERSION 44  // U16
-#define REG_IO_NODE_ID 45           // U16: Modbus ÁÖ¼Ò (Slave ID)
+#define REG_IO_NODE_ID 45           // U16: Modbus ì£¼ì†Œ (Slave ID)
 
-// ºñÆ®ÇÊµå ±¸Á¶Ã¼ Á¤ÀÇ (ÃÑ 16ºñÆ®)
+// ë¹„íŠ¸í•„ë“œ êµ¬ì¡°ì²´ ì •ì˜ (ì´ 16ë¹„íŠ¸)
 typedef struct
 {
   uint16_t signal_quality : 1;        // Bit 0

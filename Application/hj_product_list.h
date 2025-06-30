@@ -27,15 +27,15 @@
 typedef struct section_info_s
 {
   char signature[4];
-  uint32_t ver;//Æß¿ş¾î ¹öÀü
-  uint32_t section;//ÆÄÀÏÀÌ ÀúÀåµÇ´Â ¿µ¿ª
-  uint32_t hw_code;//Á¦Ç° ±¸ºĞ
-  uint32_t nick_code;//ÆÇ¸Å½Ã ÀÌ¸§
-  uint32_t offset;//Æß¿ş¾î½ÃÀÛÁÖ¼Ò
+  uint32_t ver;//íŒì›¨ì–´ ë²„ì „
+  uint32_t section;//íŒŒì¼ì´ ì €ì¥ë˜ëŠ” ì˜ì—­
+  uint32_t hw_code;//ì œí’ˆ êµ¬ë¶„
+  uint32_t nick_code;//íŒë§¤ì‹œ ì´ë¦„
+  uint32_t offset;//íŒì›¨ì–´ì‹œì‘ì£¼ì†Œ
   uint32_t section_ver;
-  uint32_t time;//ºôµå ½Ã°£
-  uint32_t area;//Áö¿ª
-  uint32_t pcb_n;//Àû¿ë°¡´ÉÇÑ PCB¹öÀü ¸ñ·Ï
+  uint32_t time;//ë¹Œë“œ ì‹œê°„
+  uint32_t area;//ì§€ì—­
+  uint32_t pcb_n;//ì ìš©ê°€ëŠ¥í•œ PCBë²„ì „ ëª©ë¡
   uint32_t pcb[4];
 }section_info_t;
 

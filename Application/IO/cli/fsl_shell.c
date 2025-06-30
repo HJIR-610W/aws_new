@@ -380,7 +380,7 @@ static void ProcessCommand(p_shell_context_t context, const char *cmd)
     if ((tmpCommand != NULL) && (flag == 1U))
     {
         context->printf(
-            "\r\nhelp╦╕ ют╥бго©╘ ╦М╥и╬Н╦╕ х╝юнгьаж╪╪©Д\r\n\r\n");
+            "\r\nhelpК╔╪ Л·┘К═╔М∙≤Л≈╛ К╙┘К═╧Л√╢К╔╪ М≥∙Л²╦М∙╢Лё╪Л└╦Л ■\r\n\r\n");
         tmpCommand = NULL;
     }
     else if (tmpCommand != NULL)
@@ -409,7 +409,7 @@ static void ProcessCommand(p_shell_context_t context, const char *cmd)
     else
     {
         context->printf(
-            "\r\nhelp╦╕ ют╥бго©╘ ╦М╥и╬Н╦╕ х╝юнгьаж╪╪©Д\r\n\r\n");
+            "\r\nhelpК╔╪ Л·┘К═╔М∙≤Л≈╛ К╙┘К═╧Л√╢К╔╪ М≥∙Л²╦М∙╢Лё╪Л└╦Л ■\r\n\r\n");
         tmpCommand = NULL;
     }
 }

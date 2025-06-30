@@ -4,14 +4,14 @@
 #include "app_version.h"
 #include "util_time.h"
 
-#define MCU_SRAM_START_ADDR 0x20000000   // MCU SRAM ½ÃÀÛ ÁÖ¼Ò
+#define MCU_SRAM_START_ADDR 0x20000000   // MCU SRAM ì‹œì‘ ì£¼ì†Œ
 
 #define SYSTEM_SHARE_VAR_ADDR MCU_SRAM_START_ADDR
 #pragma location = SYSTEM_SHARE_VAR_ADDR
 __no_init volatile uint32_t _shareData;
 
 
-#define APP_INFO_START_ADDRESS (0x08000188 + 0x00010000) // º¤ÅÍ°¡ ³¡³ª´Â °÷
+#define APP_INFO_START_ADDRESS (0x08000188 + 0x00010000) // ë²¡í„°ê°€ ëë‚˜ëŠ” ê³³
 #pragma location = APP_INFO_START_ADDRESS
 __root const section_info_t g_kappInfo = {.signature ={'A','P','P',' '},\
                                             .ver = INFO_VER,\
@@ -81,7 +81,7 @@ uint32_t get_app_version(uint8_t *major, uint8_t *minor, uint8_t *patch, uint8_t
 #define TIME_ZONE_SOULE 32400
 #endif
 /**
- * @brief ºÎÆ® ºôµå ½Ã°£ ÀĞ±â
+ * @brief ë¶€íŠ¸ ë¹Œë“œ ì‹œê°„ ì½ê¸°
  */
 void get_app_build(DATE_TIME_BUF *build)
 {
@@ -113,7 +113,7 @@ uint32_t get_appNick(void) { return g_kappInfo.nick_code; }
  * 
 
 
-INFO:test ÇÁ·Î±×·¥À» »ç¿ëÇÏÁö ¾ÊÀ¸·Á¸é ¾ø¾îµµ µÇ´Â ÇÔ¼ö
+INFO:test í”„ë¡œê·¸ë¨ì„ ì‚¬ìš©í•˜ì§€ ì•Šìœ¼ë ¤ë©´ ì—†ì–´ë„ ë˜ëŠ” í•¨ìˆ˜
 */
 void set_testKey(uint32_t key) 
 {

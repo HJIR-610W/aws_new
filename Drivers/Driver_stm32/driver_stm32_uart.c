@@ -20,12 +20,12 @@
 typedef struct stm32_uart_cfg_s
 {
   UART_HandleTypeDef *handle;
-  void *txcSem;     // Àü¼Û ¿Ï·á ¾Ë¸² ¼¼¸¶Æ÷¾î
-  uint8_t channel;  // Ã¤³Î ¹øÈ£
+  void *txcSem;     // ì „ì†¡ ì™„ë£Œ ì•Œë¦¼ ì„¸ë§ˆí¬ì–´
+  uint8_t channel;  // ì±„ë„ ë²ˆí˜¸
   uint8_t parityIdx;
-  int8_t errCode;  // µå¶óÀÌ¹ö ¿¡·¯  »óÅÂ Á¤º¸
+  int8_t errCode;  // ë“œë¼ì´ë²„ ì—ëŸ¬  ìƒíƒœ ì •ë³´
   uint8_t dma_use;
-  uint32_t baud;  // ¼³Á¤µÈ Åë½Å¼Óµµ
+  uint32_t baud;  // ì„¤ì •ëœ í†µì‹ ì†ë„
 } stm32_uart_cfg_t;
 
 
@@ -98,7 +98,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
 }
 
 
-// USART3 ÃÊ±âÈ­ ÇÔ¼ö
+// USART3 ì´ˆê¸°í™” í•¨ìˆ˜
 static void MX_USART3_UART_Init(uint32_t baud, uint8_t parity, uint8_t dataLen, uint8_t stop)
 {
   huart3.Instance = USART3;
@@ -142,7 +142,7 @@ static void MX_USART3_UART_Init(uint32_t baud, uint8_t parity, uint8_t dataLen, 
   }
 }
 
-// USART4 ÃÊ±âÈ­ ÇÔ¼ö
+// USART4 ì´ˆê¸°í™” í•¨ìˆ˜
 static void MX_USART6_UART_Init(uint32_t baud, uint8_t parity, uint8_t dataLen, uint8_t stop)
 {
   huart6.Instance = USART6;
@@ -340,25 +340,25 @@ HAL_StatusTypeDef UART_SetBaudAndParity(UART_HandleTypeDef *huart, uint32_t baud
       setParity = UART_PARITY_EVEN;
       break;
     case 3:
-      setParity = huart->Init.Parity;  // º¯°æ ¾ÈÇÔ
+      setParity = huart->Init.Parity;  // ë³€ê²½ ì•ˆí•¨
       break;
   }
-  // UART Åë½ÅÀ» ÀÏ½ÃÀûÀ¸·Î ÁßÁö
+  // UART í†µì‹ ì„ ì¼ì‹œì ìœ¼ë¡œ ì¤‘ì§€
   status = HAL_UART_DeInit(huart);
   if (status != HAL_OK)
   {
-    return status;  // UART ÇØÁ¦ ½ÇÆĞ ½Ã ¿¡·¯ ¹İÈ¯
+    return status;  // UART í•´ì œ ì‹¤íŒ¨ ì‹œ ì—ëŸ¬ ë°˜í™˜
   }
 
-  // UART ¼³Á¤ º¯°æ
-  huart->Init.BaudRate = baudrate;  // º¸µå·¹ÀÌÆ® ¼³Á¤
+  // UART ì„¤ì • ë³€ê²½
+  huart->Init.BaudRate = baudrate;  // ë³´ë“œë ˆì´íŠ¸ ì„¤ì •
 
-  huart->Init.Parity = setParity;  // ÆĞ¸®Æ¼ ¼³Á¤ (UART_PARITY_NONE,
-                                   // UART_PARITY_EVEN, UART_PARITY_ODD Áß ¼±ÅÃ)
+  huart->Init.Parity = setParity;  // íŒ¨ë¦¬í‹° ì„¤ì • (UART_PARITY_NONE,
+                                   // UART_PARITY_EVEN, UART_PARITY_ODD ì¤‘ ì„ íƒ)
 
-  // UART Åë½Å ÀçÃÊ±âÈ­
+  // UART í†µì‹  ì¬ì´ˆê¸°í™”
   status = HAL_UART_Init(huart);
-  return status;  // UART ÃÊ±âÈ­ ¼º°ø ¿©ºÎ ¹İÈ¯
+  return status;  // UART ì´ˆê¸°í™” ì„±ê³µ ì—¬ë¶€ ë°˜í™˜
 }
 
 
@@ -366,10 +366,10 @@ HAL_StatusTypeDef UART_SetBaudAndParity(UART_HandleTypeDef *huart, uint32_t baud
 
 
 /*
-ÃÖÃÊÀÌÀÇ ÇÑ¹ø¹ÙÀÌÆ®°¡ ¼ö½ÅµÈ »óÅÂ¿¡¼­ Æ¯Á¤ ½Ã°£µ¿¾È UART RX ¶óÀÎÀÌ
-High ÀÖÀ¸¸é idle ÀÎÅÍ·´Æ® ¹ß»ı
-uart ÀÏ¹İÀûÀ¸·Î ÇÑ¹ø¿¡ µé¾î¿Â´Ù¸é Àû¿ë°¡´ÉÇÑ ¹æ¹ı
-±×·¯³ª,¹ÙÀÌÆ®ÀÇ Àç¼ö½Å ½Ã°£ÀÌ ³Ê¹« Âª´Ù¸é ¹®Á¦°¡µÉ ¿ä¼Ò´Â ÀÖÀ½
+ìµœì´ˆì´ì˜ í•œë²ˆë°”ì´íŠ¸ê°€ ìˆ˜ì‹ ëœ ìƒíƒœì—ì„œ íŠ¹ì • ì‹œê°„ë™ì•ˆ UART RX ë¼ì¸ì´
+High ìˆìœ¼ë©´ idle ì¸í„°ëŸ½íŠ¸ ë°œìƒ
+uart ì¼ë°˜ì ìœ¼ë¡œ í•œë²ˆì— ë“¤ì–´ì˜¨ë‹¤ë©´ ì ìš©ê°€ëŠ¥í•œ ë°©ë²•
+ê·¸ëŸ¬ë‚˜,ë°”ì´íŠ¸ì˜ ì¬ìˆ˜ì‹  ì‹œê°„ì´ ë„ˆë¬´ ì§§ë‹¤ë©´ ë¬¸ì œê°€ë  ìš”ì†ŒëŠ” ìˆìŒ
 */
 
 void HAL_UART_IDLECallback(UART_HandleTypeDef *huart) { __asm("BKPT #0"); }
@@ -379,10 +379,10 @@ void USART3_IRQHandler(void) { HAL_UART_IRQHandler(&huart3); }
 void USART6_IRQHandler(void) { HAL_UART_IRQHandler(&huart6); }
 
 /*
-UART TX ¿Ï·á Ã³¸®
-DMA »ç¿ëÇØ¼­ µ¥ÀÌÅÍ Àü¼Û½Ã ¸¶Áö¸· µ¥ÀÌÅÍ°¡ Àü¼ÛµÇ°í ³ª¸é
-Àü¼Û¿Ï·á ÀÎÅÍ·´Æ® ¹ß»ı
-DMA Àü¼Û¿Ï·á°¡ ¾Æ´Ñ UART TX Àü¼Û ¿Ï·á·Î Àü¼Û¿Ï·á¸¦ Ã³¸®ÇØ¾ßÇÔ
+UART TX ì™„ë£Œ ì²˜ë¦¬
+DMA ì‚¬ìš©í•´ì„œ ë°ì´í„° ì „ì†¡ì‹œ ë§ˆì§€ë§‰ ë°ì´í„°ê°€ ì „ì†¡ë˜ê³  ë‚˜ë©´
+ì „ì†¡ì™„ë£Œ ì¸í„°ëŸ½íŠ¸ ë°œìƒ
+DMA ì „ì†¡ì™„ë£Œê°€ ì•„ë‹Œ UART TX ì „ì†¡ ì™„ë£Œë¡œ ì „ì†¡ì™„ë£Œë¥¼ ì²˜ë¦¬í•´ì•¼í•¨
 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -410,7 +410,7 @@ if (huart->Instance == USART3)
     {
       __asm("BKPT #0");
     }
-    /* ³ôÀº ¿ì¼±¼øÀ§ÀÇ ÅÂ½ºÅ©°¡ ±ú¾î³ª¾ß ÇÏ¸é ÄÁÅØ½ºÆ® ½ºÀ§Äª ¿äÃ» */
+    /* ë†’ì€ ìš°ì„ ìˆœìœ„ì˜ íƒœìŠ¤í¬ê°€ ê¹¨ì–´ë‚˜ì•¼ í•˜ë©´ ì»¨í…ìŠ¤íŠ¸ ìŠ¤ìœ„ì¹­ ìš”ì²­ */
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     HAL_UART_Receive_IT(&huart3, (uint8_t *)&rxData[STM32_UART_0_CDMA], 1);
   }
@@ -422,7 +422,7 @@ if (huart->Instance == USART3)
     {
       __asm("BKPT #0");
     }
-    /* ³ôÀº ¿ì¼±¼øÀ§ÀÇ ÅÂ½ºÅ©°¡ ±ú¾î³ª¾ß ÇÏ¸é ÄÁÅØ½ºÆ® ½ºÀ§Äª ¿äÃ» */
+    /* ë†’ì€ ìš°ì„ ìˆœìœ„ì˜ íƒœìŠ¤í¬ê°€ ê¹¨ì–´ë‚˜ì•¼ í•˜ë©´ ì»¨í…ìŠ¤íŠ¸ ìŠ¤ìœ„ì¹­ ìš”ì²­ */
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
     HAL_UART_Receive_IT(&huart6, (uint8_t *)&rxData[STM32_UART_1_SDI], 1);
@@ -431,11 +431,11 @@ if (huart->Instance == USART3)
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
-  uint32_t isrflags = READ_REG(huart->Instance->SR);  // ÀÌ ½ÃÄö½º¸¦ ¼öÇàÇÏ¸é ¿¡·¯°¡Áö¿öÁü
+  uint32_t isrflags = READ_REG(huart->Instance->SR);  // ì´ ì‹œí€€ìŠ¤ë¥¼ ìˆ˜í–‰í•˜ë©´ ì—ëŸ¬ê°€ì§€ì›Œì§
   uint32_t data = READ_REG(huart->Instance->DR);
   if (huart->Instance == USART1)
   {
-    // ¿À·ù Á¾·ù È®ÀÎ
+    // ì˜¤ë¥˜ ì¢…ë¥˜ í™•ì¸
     uint32_t error = HAL_UART_GetError(huart);
 
     if (error & HAL_UART_ERROR_PE)
@@ -455,7 +455,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
       __asm("BKPT #0");
     }
 
-    // ÇÊ¿äÇÑ Ãß°¡ ¿À·ù Ã³¸® ÀÛ¾÷ ¼öÇà
+    // í•„ìš”í•œ ì¶”ê°€ ì˜¤ë¥˜ ì²˜ë¦¬ ì‘ì—… ìˆ˜í–‰
   }
 }
 
@@ -465,7 +465,7 @@ uint32_t calculate_txWaitTimeMs(uint32_t baud, uint16_t dataLen)
 {
   uint32_t waitTime;
 
-  waitTime = (uint32_t)(((dataLen * 10) / (float)baud) * 1000) + 100;  // 100Á¤µµ ±âº» delay ÇØÁÜ
+  waitTime = (uint32_t)(((dataLen * 10) / (float)baud) * 1000) + 100;  // 100ì •ë„ ê¸°ë³¸ delay í•´ì¤Œ
 
   return waitTime;
 }
@@ -487,7 +487,7 @@ int32_t stm32_uart_send(driver_t *drv, const uint8_t *pData, uint16_t dataLen)
     osSemaphoreAcquire(drv->sem, osWaitForever);
   }
 
-  osSemaphoreAcquire(cfg->txcSem, 0);  // ÀÌÀü¿¡ Ã³¸® ¸øÇÑ°Ç Á¦°Å
+  osSemaphoreAcquire(cfg->txcSem, 0);  // ì´ì „ì— ì²˜ë¦¬ ëª»í•œê±´ ì œê±°
   waitTime = calculate_txWaitTimeMs(cfg->baud, dataLen);
   status = HAL_UART_Transmit_DMA(cfg->handle, pData, dataLen);
 
@@ -537,18 +537,18 @@ int32_t stm32_uart_recv(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint32
 
   while (1)
   {
-    /* ½ºÆ®¸² ¹öÆÛ¿¡¼­ ÀĞÀ» ¼ö ÀÖ´Â µ¥ÀÌÅÍ Å©±â È®ÀÎ */
+    /* ìŠ¤íŠ¸ë¦¼ ë²„í¼ì—ì„œ ì½ì„ ìˆ˜ ìˆëŠ” ë°ì´í„° í¬ê¸° í™•ì¸ */
     xBytesAvailable = xStreamBufferBytesAvailable(g_stm32_xStreamBuffer[channel]);
 
     if (remainBuffSize < xBytesAvailable)
     {
-      xBytesAvailable = remainBuffSize;  // ¹öÆÛ ¼ö¸¸Å­¸¸ ÀĞ±â
+      xBytesAvailable = remainBuffSize;  // ë²„í¼ ìˆ˜ë§Œí¼ë§Œ ì½ê¸°
     }
 
     starTick = xTaskGetTickCount();
     if (xBytesAvailable > 0)
     {
-      /* µ¥ÀÌÅÍ¸¦ ÀĞÀ» ¼ö ÀÖ´Ù¸é, µ¥ÀÌÅÍ¸¦ ¼ö½Å */
+      /* ë°ì´í„°ë¥¼ ì½ì„ ìˆ˜ ìˆë‹¤ë©´, ë°ì´í„°ë¥¼ ìˆ˜ì‹  */
       xBytesRead = xStreamBufferReceive(g_stm32_xStreamBuffer[channel], (void *)&pBuff[cnt],
                                         xBytesAvailable, pdMS_TO_TICKS(timeout));
 
@@ -560,7 +560,7 @@ int32_t stm32_uart_recv(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint32
     }
     else
     {
-      /*µ¥ÀÌÅÍ¸¦ ±â´Ù·Á¾ß ÇÑ´Ù¸é ÃÖ¼Ò 1°³°¡ ¼ö½ÅµÉ¶§±îÁö ´ë±â*/
+      /*ë°ì´í„°ë¥¼ ê¸°ë‹¤ë ¤ì•¼ í•œë‹¤ë©´ ìµœì†Œ 1ê°œê°€ ìˆ˜ì‹ ë ë•Œê¹Œì§€ ëŒ€ê¸°*/
       xBytesRead = xStreamBufferReceive(g_stm32_xStreamBuffer[channel], (void *)&pBuff[cnt], 1,
                                         pdMS_TO_TICKS(timeout));
       if (xBytesRead == 1)
@@ -593,7 +593,7 @@ void stm32_uart_set(driver_t *drv, uart_set_option_t cmd, void *option)
     case eUART_SET_CONFIG:
       cfg_baud = (uart_config_t *)option;
       UART_SetBaudAndParity(cfg->handle, cfg_baud->baud,
-                            3);  // parity´Â º¯°æ ¾ÈÇÔ
+                            3);  // parityëŠ” ë³€ê²½ ì•ˆí•¨
       break;
   }
 }
@@ -610,20 +610,20 @@ int32_t stm32_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size, uin
   int32_t received = 0;
   uint8_t *p = buffer;
 
-  // Step 1: Ã¹ ¹ÙÀÌÆ® ¼ö½Å (timeout1 »ç¿ë)
+  // Step 1: ì²« ë°”ì´íŠ¸ ìˆ˜ì‹  (timeout1 ì‚¬ìš©)
   int32_t ret = stm32_uart_recv(drv, p, 1, timeout1_ms);
   if (ret <= 0)
-    return 0;  // Ã¹ ¹ÙÀÌÆ® ¼ö½Å ½ÇÆĞ, ¼ö½Å ¾øÀ½
+    return 0;  // ì²« ë°”ì´íŠ¸ ìˆ˜ì‹  ì‹¤íŒ¨, ìˆ˜ì‹  ì—†ìŒ
 
   received += ret;
   p += ret;
 
-  // Step 2: Ãß°¡ ¹ÙÀÌÆ® ¼ö½Å ·çÇÁ (timeout2 »ç¿ë)
+  // Step 2: ì¶”ê°€ ë°”ì´íŠ¸ ìˆ˜ì‹  ë£¨í”„ (timeout2 ì‚¬ìš©)
   while (received < buffer_size)
   {
     ret = stm32_uart_recv(drv, p, 1, timeout2_ms);
     if (ret <= 0)
-      break;  // timeout2 ¾È¿¡ ¼ö½ÅµÈ °Ô ¾øÀ¸¸é Á¾·á
+      break;  // timeout2 ì•ˆì— ìˆ˜ì‹ ëœ ê²Œ ì—†ìœ¼ë©´ ì¢…ë£Œ
 
     received += ret;
     p += ret;
@@ -634,7 +634,7 @@ int32_t stm32_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size, uin
 
 
 /**
- * @brief osÀÚ¿ø ¾øÀÌ Á÷Á¢ ÀĞ±â 
+ * @brief osìì› ì—†ì´ ì§ì ‘ ì½ê¸° 
  */
 int32_t stm32_uart_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {

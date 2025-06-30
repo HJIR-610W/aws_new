@@ -30,45 +30,45 @@ uint16_t send_panel_hj(driver_t *panel_port)
     cnt     += 7;
     sprintf(&framemk[cnt],"B%02d%02d", pDate->Hour, pDate->Min);                                // B HHMM
     cnt     += 5;
-    sprintf(&framemk[cnt],"C%03d", p_kma->wind_direction_avg.data / 10);                          // C Ç³Çâ 000 - 360
+    sprintf(&framemk[cnt],"C%03d", p_kma->wind_direction_avg.data / 10);                          // C í’í–¥ 000 - 360
     cnt     += 4;
-    sprintf(&framemk[cnt],"D%03d", p_kma->wind_speed_avg.data);                                   // D Ç³¼Ó 000 -750   (°üÃø°ª * 10)
+    sprintf(&framemk[cnt],"D%03d", p_kma->wind_speed_avg.data);                                   // D í’ì† 000 -750   (ê´€ì¸¡ê°’ * 10)
     cnt     += 4;
 
     if(p_kma->temperature.data >= 1000)
-        sprintf(&framemk[cnt],"E0%03d", p_kma->temperature.data - 1000);                       // E ¿Âµµ -500 - 500 (°üÃø°ª * 10)
+        sprintf(&framemk[cnt],"E0%03d", p_kma->temperature.data - 1000);                       // E ì˜¨ë„ -500 - 500 (ê´€ì¸¡ê°’ * 10)
     else
-        sprintf(&framemk[cnt],"E1%03d", 1000 - p_kma->temperature.data);                       // E ¿Âµµ -500 - 500 (°üÃø°ª * 10)
+        sprintf(&framemk[cnt],"E1%03d", 1000 - p_kma->temperature.data);                       // E ì˜¨ë„ -500 - 500 (ê´€ì¸¡ê°’ * 10)
 
     cnt     += 5;
 
-    sprintf(&framemk[cnt],"F%04d", (uint16_t)(get_rainfall()->rainfall_today*10));                                    // F ¿À´Ã °­¼ö·® 0000 - 9999 mm (°üÃø°ª * 10)
+    sprintf(&framemk[cnt],"F%04d", (uint16_t)(get_rainfall()->rainfall_today*10));                                    // F ì˜¤ëŠ˜ ê°•ìˆ˜ëŸ‰ 0000 - 9999 mm (ê´€ì¸¡ê°’ * 10)
     cnt     += 5;
-    sprintf(&framemk[cnt],"G%04d", (uint16_t)(get_rainfall()->rainfall_yesterday*10));                                 // G ¾îÁ¦ °­¼ö·® 0000 - 9999 mm (°üÃø°ª * 10)
+    sprintf(&framemk[cnt],"G%04d", (uint16_t)(get_rainfall()->rainfall_yesterday*10));                                 // G ì–´ì œ ê°•ìˆ˜ëŸ‰ 0000 - 9999 mm (ê´€ì¸¡ê°’ * 10)
     cnt     += 5;
 
-    sprintf(&framemk[cnt],"H%01d", p_kma->precipitation_presence.data); //AWS(±¸)µ¿ÀÏÃ³¸® À¯:10 ¹«:0                    // H °­¼ö À¯¹« 1: À¯ 0: ¹«
+    sprintf(&framemk[cnt],"H%01d", p_kma->precipitation_presence.data); //AWS(êµ¬)ë™ì¼ì²˜ë¦¬ ìœ :10 ë¬´:0                    // H ê°•ìˆ˜ ìœ ë¬´ 1: ìœ  0: ë¬´
     cnt     += 2;
-    sprintf(&framemk[cnt],"I%05d", p_kma->pressure.data);                                    // I ±â¾Ğ 05000 - 11000 hPa(°üÃø°ª * 10)
+    sprintf(&framemk[cnt],"I%05d", p_kma->pressure.data);                                    // I ê¸°ì•• 05000 - 11000 hPa(ê´€ì¸¡ê°’ * 10)
     cnt     += 6;
-    sprintf(&framemk[cnt],"J%03d", p_kma->relative_humidity.data / 10);                                 // J ½Àµµ 000 - 100 %
+    sprintf(&framemk[cnt],"J%03d", p_kma->relative_humidity.data / 10);                                 // J ìŠµë„ 000 - 100 %
     cnt     += 4;
-    sprintf(&framemk[cnt],"K%04d", p_kma->snowfall.data);                                      // K Àû¼³ 0000 - 9999 cm (°üÃø°ª * 10)
+    sprintf(&framemk[cnt],"K%04d", p_kma->snowfall.data);                                      // K ì ì„¤ 0000 - 9999 cm (ê´€ì¸¡ê°’ * 10)
     cnt     += 5;
 
     if(p_kma->temperature.min >= 1000)
-        sprintf(&framemk[cnt],"L0%03d", p_kma->temperature.min - 1000);                       // E ¿Âµµ -500 - 500 (°üÃø°ª * 10)
+        sprintf(&framemk[cnt],"L0%03d", p_kma->temperature.min - 1000);                       // E ì˜¨ë„ -500 - 500 (ê´€ì¸¡ê°’ * 10)
     else
-        sprintf(&framemk[cnt],"L1%03d", 1000 - p_kma->temperature.min);                       // E ¿Âµµ -500 - 500 (°üÃø°ª * 10)
+        sprintf(&framemk[cnt],"L1%03d", 1000 - p_kma->temperature.min);                       // E ì˜¨ë„ -500 - 500 (ê´€ì¸¡ê°’ * 10)
     cnt     += 5;
 
     if(p_kma->temperature.max >= 1000)
-        sprintf(&framemk[cnt],"M0%03d", p_kma->temperature.max  - 1000);                       // E ¿Âµµ -500 - 500 (°üÃø°ª * 10)
+        sprintf(&framemk[cnt],"M0%03d", p_kma->temperature.max  - 1000);                       // E ì˜¨ë„ -500 - 500 (ê´€ì¸¡ê°’ * 10)
     else
-        sprintf(&framemk[cnt],"M1%03d", 1000 - p_kma->temperature.max );                       // E ¿Âµµ -500 - 500 (°üÃø°ª * 10)
+        sprintf(&framemk[cnt],"M1%03d", 1000 - p_kma->temperature.max );                       // E ì˜¨ë„ -500 - 500 (ê´€ì¸¡ê°’ * 10)
     cnt     += 5;
 
-    sprintf(&framemk[cnt],"    ");                                                              // ¿¹ºñ 
+    sprintf(&framemk[cnt],"    ");                                                              // ì˜ˆë¹„ 
     cnt     += 4;
 
     framemk[cnt++]  = 0x03;                                                                     // ETX      

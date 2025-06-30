@@ -21,7 +21,7 @@ void asw_tlsf_init(size_t size)
 
   if (tlsf_handle == NULL)
   {
-        // ÃÊ±âÈ­ ½ÇÆÐ Ã³¸®
+        // ì´ˆê¸°í™” ì‹¤íŒ¨ ì²˜ë¦¬
         while (1);
   }
 }

@@ -7,15 +7,15 @@
 #include "util_memory.h"
 #include "util_time.h"
 
-#define KMA2_PRINT_LABEL_WIDTH 38  // Äİ·Ğ ¾Õ±îÁöÀÇ ·¹ÀÌºíÀÌ Â÷ÁöÇÒ ÃÖ´ë ³Êºñ (Á¶Á¤ °¡´É)
+#define KMA2_PRINT_LABEL_WIDTH 38  // ì½œë¡  ì•ê¹Œì§€ì˜ ë ˆì´ë¸”ì´ ì°¨ì§€í•  ìµœëŒ€ ë„ˆë¹„ (ì¡°ì • ê°€ëŠ¥)
 
-// ºñÆ® Ã¼Å©¸¦ À§ÇÑ ¸ÅÅ©·Î
+// ë¹„íŠ¸ ì²´í¬ë¥¼ ìœ„í•œ ë§¤í¬ë¡œ
 #define IS_BIT_SET(value, bit_pos) (((value) >> (bit_pos)) & 0x01)
 
-// KMA2 ÇÁ·ÎÅäÄİ »ó¼ö Á¤ÀÇ (ÀÌÀü°ú µ¿ÀÏ)
+// KMA2 í”„ë¡œí† ì½œ ìƒìˆ˜ ì •ì˜ (ì´ì „ê³¼ ë™ì¼)
 #define KMA2_HEADER_START 0xFAFB
 #define KMA2_HEADER_END 0xFFFE
-// ... (±âÅ¸ KMA2 »ó¼ö Á¤ÀÇ´Â ÀÌÀü ´äº¯ ³»¿ë°ú µ¿ÀÏÇÏ°Ô À¯Áö) ...
+// ... (ê¸°íƒ€ KMA2 ìƒìˆ˜ ì •ì˜ëŠ” ì´ì „ ë‹µë³€ ë‚´ìš©ê³¼ ë™ì¼í•˜ê²Œ ìœ ì§€) ...
 #define KMA2_CMD_REQUEST_LEN 29
 #define KMA2_DATA_FORMAT_ESSENTIAL_SELECTIVE 0
 #define KMA2_DATA_FORMAT_ESSENTIAL 1
@@ -95,7 +95,7 @@ void print_kma3_command_request(const kma3_command_request_t* req)
   task_printf("----------------------------\r\n");
 }
 
-// is_kma2_observation_packet_valid ÇÔ¼ö (ÀÌÀü°ú µ¿ÀÏ)
+// is_kma2_observation_packet_valid í•¨ìˆ˜ (ì´ì „ê³¼ ë™ì¼)
 bool is_kma2_observation_packet_valid(const uint8_t* buffer, size_t len,
                                       uint8_t* out_data_format_no, uint16_t* out_data_content_len)
 {
@@ -156,7 +156,7 @@ bool is_kma2_observation_packet_valid(const uint8_t* buffer, size_t len,
   return true;
 }
 
-// parse_kma2_data_content ÇÔ¼ö (ÀÌÀü°ú µ¿ÀÏ)
+// parse_kma2_data_content í•¨ìˆ˜ (ì´ì „ê³¼ ë™ì¼)
 bool parse_kma2_data_content(const uint8_t* content_buffer, uint8_t data_format_no,
                              uint16_t content_len, kma2_observation_fields_t* fields)
 {
@@ -211,7 +211,7 @@ bool parse_kma2_data_content(const uint8_t* content_buffer, uint8_t data_format_
     for (int i = 0; i < 10; ++i)
     {
       if (offset + 2 > content_len && data_format_no != KMA2_DATA_FORMAT_PRECIPITATION && i >= 5)
-        break; /* Precipitation L1-L5 ±îÁö¸¸ */
+        break; /* Precipitation L1-L5 ê¹Œì§€ë§Œ */
       fields->raw_L[i] = kma2_get_u16_big_endian(content_buffer + offset);
       offset += 2;
       fields->valid_L[i] = true;
@@ -311,7 +311,7 @@ bool parse_kma2_data_content(const uint8_t* content_buffer, uint8_t data_format_
   return true;
 }
 
-// --- KMA2 µ¥ÀÌÅÍ Ãâ·Â ÇÔ¼ö (»óÅÂ X, Y, Z »ó¼¼ Ãâ·Â Ãß°¡) ---
+// --- KMA2 ë°ì´í„° ì¶œë ¥ í•¨ìˆ˜ (ìƒíƒœ X, Y, Z ìƒì„¸ ì¶œë ¥ ì¶”ê°€) ---
 void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
                                  const kma2_observation_fields_t* fields)
 {
@@ -320,13 +320,13 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
   CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
   WORD saved_attributes;
 
-  // ÇöÀç ÄÜ¼Ö ¼Ó¼º ÀúÀå
+  // í˜„ì¬ ì½˜ì†” ì†ì„± ì €ì¥
   GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
   saved_attributes = consoleInfo.wAttributes;
 #endif
 
   task_printf("--- KMA2 Observation Data ---\r\n");
-  // %-*s : ³Êºñ¸¸Å­ ¹®ÀÚ¿­ Ãâ·Â, ¿ŞÂÊ Á¤·Ä, ºÎÁ·ÇÏ¸é °ø¹é Ã¤¿ò
+  // %-*s : ë„ˆë¹„ë§Œí¼ ë¬¸ìì—´ ì¶œë ¥, ì™¼ìª½ ì •ë ¬, ë¶€ì¡±í•˜ë©´ ê³µë°± ì±„ì›€
   task_printf("%-*s : 0x%04X\r\n", KMA2_PRINT_LABEL_WIDTH, "Header Mark",
               swap_bytes_uint16(header->start_mark));
   task_printf("%-*s : 20%02d-%02d-%02d\r\n", KMA2_PRINT_LABEL_WIDTH, "Protocol Ver",
@@ -424,7 +424,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
                   fields->soil_temp_5cm);
       task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "f. Soil Temp 10cm",
                   fields->soil_temp_10cm);
-      // ... (±âÅ¸ ÁöÁß¿Âµµ Ãâ·Â) ...
+      // ... (ê¸°íƒ€ ì§€ì¤‘ì˜¨ë„ ì¶œë ¥) ...
       task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "m. Soil Temp 5m",
                   fields->soil_temp_5m);
     }
@@ -440,25 +440,25 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
 
   if (fields->valid_X) {
     printf("  %-*s : 0x%02X\n", KMA2_PRINT_LABEL_WIDTH - 2, "X. Datalogger Voltage Status", fields->status_X);
-    // BIT 0: DCÀÔ·ÂÀü¾Ğ
+    // BIT 0: DCì…ë ¥ì „ì••
     printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 0 (DC Input Volt)", IS_BIT_SET(fields->status_X, 0) ? "Abnormal" : "Normal");
-    // BIT 1: ¹èÅÍ¸® Àü¾Ğ
+    // BIT 1: ë°°í„°ë¦¬ ì „ì••
     printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 1 (Battery Volt)", IS_BIT_SET(fields->status_X, 1) ? "Abnormal" : "Normal");
-    // BIT 2, 3: AC Àü¾Ğ
-    uint8_t ac_status = (fields->status_X >> 2) & 0x03; // ºñÆ® 2¿Í 3 ÃßÃâ
+    // BIT 2, 3: AC ì „ì••
+    uint8_t ac_status = (fields->status_X >> 2) & 0x03; // ë¹„íŠ¸ 2ì™€ 3 ì¶”ì¶œ
     const char* ac_str = "Unknown";
     if (ac_status == 0x00) ac_str = "110V";
     else if (ac_status == 0x01) ac_str = "220V";
-    else if (ac_status == 0x03) ac_str = "AC OFF"; // ¹®¼­»ó 11 (ÀÌÁø¼ö 3)
-    else ac_str = "Reserved/Unknown"; // 0x02 (ÀÌÁø¼ö 2)´Â Á¤ÀÇµÇÁö ¾ÊÀ½
+    else if (ac_status == 0x03) ac_str = "AC OFF"; // ë¬¸ì„œìƒ 11 (ì´ì§„ìˆ˜ 3)
+    else ac_str = "Reserved/Unknown"; // 0x02 (ì´ì§„ìˆ˜ 2)ëŠ” ì •ì˜ë˜ì§€ ì•ŠìŒ
     printf("    %-*s : %s (0x%02X)\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 2-3 (AC Volt)", ac_str, ac_status);
-    // BIT 4: µ¥ÀÌÅÍ·Î°ÅÇÔ Àá±İ»óÅÂ
+    // BIT 4: ë°ì´í„°ë¡œê±°í•¨ ì ê¸ˆìƒíƒœ
     printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 4 (Logger Door)", IS_BIT_SET(fields->status_X, 4) ? "Open" : "Closed");
-    // BIT 5: ¿¹ºñ 1
+    // BIT 5: ì˜ˆë¹„ 1
     printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 5 (Reserve 1)", IS_BIT_SET(fields->status_X, 5) ? "Abnormal" : "Normal");
-    // BIT 6: ¿¹ºñ 2
+    // BIT 6: ì˜ˆë¹„ 2
     printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 6 (Reserve 2)", IS_BIT_SET(fields->status_X, 6) ? "Abnormal" : "Normal");
-    // BIT 7: ¿¹ºñ 3
+    // BIT 7: ì˜ˆë¹„ 3
     printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 7 (Reserve 3)", IS_BIT_SET(fields->status_X, 7) ? "Abnormal" : "Normal");
   }
 
@@ -476,7 +476,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
     }
   }
 
-  if (fields->valid_Z && header->data_format_no == KMA2_DATA_FORMAT_PRECIPITATION) { // Z´Â °­¼ö·®°üÃø(2) Çü½ÄÀÏ ¶§ ÀÇ¹Ì ÀÖÀ½
+  if (fields->valid_Z && header->data_format_no == KMA2_DATA_FORMAT_PRECIPITATION) { // ZëŠ” ê°•ìˆ˜ëŸ‰ê´€ì¸¡(2) í˜•ì‹ì¼ ë•Œ ì˜ë¯¸ ìˆìŒ
     printf("  %-*s : 0x%02X\n", KMA2_PRINT_LABEL_WIDTH - 2, "Z. Logger Sensor Status (Precip)", fields->status_Z);
     printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 0 (Rainfall Sensor)", IS_BIT_SET(fields->status_Z, 0) ? "Abnormal" : "Normal");
     printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 1 (Reserve Z1)", IS_BIT_SET(fields->status_Z, 1) ? "Abnormal" : "Normal");
@@ -491,7 +491,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
                 fields->status_X);
 
     bool is_abnormal;
-    // BIT 0: DCÀÔ·ÂÀü¾Ğ
+    // BIT 0: DCì…ë ¥ì „ì••
     is_abnormal = IS_BIT_SET(fields->status_X, 0);
 #ifdef _WIN32
     if (is_abnormal)
@@ -504,7 +504,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
       SetConsoleTextAttribute(hConsole, saved_attributes);
 #endif
 
-    // BIT 1: ¹èÅÍ¸® Àü¾Ğ
+    // BIT 1: ë°°í„°ë¦¬ ì „ì••
     is_abnormal = IS_BIT_SET(fields->status_X, 1);
 #ifdef _WIN32
     if (is_abnormal)
@@ -517,7 +517,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
       SetConsoleTextAttribute(hConsole, saved_attributes);
 #endif
 
-    // BIT 2, 3: AC Àü¾Ğ
+    // BIT 2, 3: AC ì „ì••
     uint8_t ac_status_val = (fields->status_X >> 2) & 0x03;
     const char* ac_str = "Unknown";
 
@@ -537,14 +537,14 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
                 ac_str, ac_status_val);
 
 
-    // BIT 4: µ¥ÀÌÅÍ·Î°ÅÇÔ Àá±İ»óÅÂ
-    is_abnormal = IS_BIT_SET(fields->status_X, 4);  // 'Open'À» Abnormal·Î °£ÁÖ
+    // BIT 4: ë°ì´í„°ë¡œê±°í•¨ ì ê¸ˆìƒíƒœ
+    is_abnormal = IS_BIT_SET(fields->status_X, 4);  // 'Open'ì„ Abnormalë¡œ ê°„ì£¼
 
     task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 4 (Logger Door)",
                 is_abnormal ? "Open" : "Closed");
 
 
-    // BIT 5, 6, 7: ¿¹ºñ
+    // BIT 5, 6, 7: ì˜ˆë¹„
     for (int i = 5; i <= 7; ++i)
     {
       is_abnormal = IS_BIT_SET(fields->status_X, i);
@@ -582,7 +582,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
                 "Z. Logger Sensor Status (Precip)", fields->status_Z);
     const char* sensor_names_Z[] = {"Rainfall Sensor", "Reserve Z1", "Reserve Z2", "Reserve Z3"};
     for (int i = 0; i < 4; ++i)
-    {  // Z´Â 4ºñÆ®¸¸ À¯È¿ (¹®¼­»ó)
+    {  // ZëŠ” 4ë¹„íŠ¸ë§Œ ìœ íš¨ (ë¬¸ì„œìƒ)
       bool is_abnormal = IS_BIT_SET(fields->status_Z, i);
       sprintf(label_buf, "BIT %d (%s)", i, sensor_names_Z[i]);
 
@@ -647,200 +647,200 @@ typedef struct
   uint8_t dataNum;
   uint16_t id;
 
-  // 1. ±â¿Â (1ºĞ Æò±Õ)
-  uint16_t temperature;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~ 1500
-                         // (°üÃø°ª * 10)
+  // 1. ê¸°ì˜¨ (1ë¶„ í‰ê· )
+  uint16_t temperature;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~ 1500
+                         // (ê´€ì¸¡ê°’ * 10)
 
-  // 2. Ç³Çâ (1ºĞ Æò±Õ)
-  uint16_t wind_direction_avg;  // »ç¿ëºñÆ®: 11, À¯È¿¹üÀ§: 0 ~ 4095 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 3599
-                                // (°üÃø°ª * 10)
+  // 2. í’í–¥ (1ë¶„ í‰ê· )
+  uint16_t wind_direction_avg;  // ì‚¬ìš©ë¹„íŠ¸: 11, ìœ íš¨ë²”ìœ„: 0 ~ 4095 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 3599
+                                // (ê´€ì¸¡ê°’ * 10)
 
-  // 3. Ç³¼Ó (1ºĞ Æò±Õ)
-  uint16_t wind_speed_avg;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                            // (°üÃø°ª * 10)
+  // 3. í’ì† (1ë¶„ í‰ê· )
+  uint16_t wind_speed_avg;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                            // (ê´€ì¸¡ê°’ * 10)
 
-  // 4. Ç³Çâ (1ºĞ ¼ø°£)
-  uint16_t wind_direction_instant;  // »ç¿ëºñÆ®: 11, À¯È¿¹üÀ§: 0 ~ 4095 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~
-                                    // 3599 (°üÃø°ª * 10)
+  // 4. í’í–¥ (1ë¶„ ìˆœê°„)
+  uint16_t wind_direction_instant;  // ì‚¬ìš©ë¹„íŠ¸: 11, ìœ íš¨ë²”ìœ„: 0 ~ 4095 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~
+                                    // 3599 (ê´€ì¸¡ê°’ * 10)
 
-  // 5. Ç³¼Ó (1ºĞ ¼ø°£)
-  uint16_t wind_speed_instant;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                                // (°üÃø°ª * 10)
+  // 5. í’ì† (1ë¶„ ìˆœê°„)
+  uint16_t wind_speed_instant;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                                // (ê´€ì¸¡ê°’ * 10)
 
-  // 6. °­¼ö·® (0.5/1.0 mm)
-  uint16_t precipitation;  // »ç¿ëºñÆ®: 14, À¯È¿¹üÀ§: 0 ~ 32767 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 32767
+  // 6. ê°•ìˆ˜ëŸ‰ (0.5/1.0 mm)
+  uint16_t precipitation;  // ì‚¬ìš©ë¹„íŠ¸: 14, ìœ íš¨ë²”ìœ„: 0 ~ 32767 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 32767
 
-  // 7. ±â¾Ğ (1ºĞ Æò±Õ ÇöÁö ±â¾Ğ)
-  uint16_t pressure;  // »ç¿ëºñÆ®: 13, À¯È¿¹üÀ§: 0 ~ 16383 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 5000 ~ 11000
+  // 7. ê¸°ì•• (1ë¶„ í‰ê·  í˜„ì§€ ê¸°ì••)
+  uint16_t pressure;  // ì‚¬ìš©ë¹„íŠ¸: 13, ìœ íš¨ë²”ìœ„: 0 ~ 16383 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 5000 ~ 11000
 
-  // 8. °­¼ö À¯¹«
-  uint16_t precipitation_presence;  // »ç¿ëºñÆ®: 3, À¯È¿¹üÀ§: 0 ~ 15 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 = °­¼ö
-                                    // ¾øÀ½, 1 = °­¼ö ÀÖÀ½
+  // 8. ê°•ìˆ˜ ìœ ë¬´
+  uint16_t precipitation_presence;  // ì‚¬ìš©ë¹„íŠ¸: 3, ìœ íš¨ë²”ìœ„: 0 ~ 15 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 = ê°•ìˆ˜
+                                    // ì—†ìŒ, 1 = ê°•ìˆ˜ ìˆìŒ
 
-  // 9. Àû¼³
+  // 9. ì ì„¤
   uint16_t
-      snowfall;  // »ç¿ëºñÆ®: 11, À¯È¿¹üÀ§: 0 ~ 4095 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 4095 (°üÃø°ª * 10)
+      snowfall;  // ì‚¬ìš©ë¹„íŠ¸: 11, ìœ íš¨ë²”ìœ„: 0 ~ 4095 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 4095 (ê´€ì¸¡ê°’ * 10)
 
-  // 10. »ó´ë½Àµµ (1ºĞ Æò±Õ)
-  uint16_t relative_humidity;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                               // (°üÃø°ª * 10)
+  // 10. ìƒëŒ€ìŠµë„ (1ë¶„ í‰ê· )
+  uint16_t relative_humidity;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                               // (ê´€ì¸¡ê°’ * 10)
 
-  // 11. °­¼ö·® (0.1 mm)
+  // 11. ê°•ìˆ˜ëŸ‰ (0.1 mm)
   uint16_t
-      precipitation_fine;  // »ç¿ëºñÆ®: 14, À¯È¿¹üÀ§: 0 ~ 32767 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 32767
+      precipitation_fine;  // ì‚¬ìš©ë¹„íŠ¸: 14, ìœ íš¨ë²”ìœ„: 0 ~ 32767 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 32767
 
-  // 1. ÀÏ»ç (´©Àû°ª)
-  uint16_t solar_radiation;  // »ç¿ëºñÆ®: 14, À¯È¿¹üÀ§: 0 ~ 32767 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 32767
-                             // [°üÃø°ª(MJ/m©÷) * 100]
+  // 1. ì¼ì‚¬ (ëˆ„ì ê°’)
+  uint16_t solar_radiation;  // ì‚¬ìš©ë¹„íŠ¸: 14, ìœ íš¨ë²”ìœ„: 0 ~ 32767 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 32767
+                             // [ê´€ì¸¡ê°’(MJ/mÂ²) * 100]
 
-  // 2. ÀÏÁ¶ (´©Àû ½Ã°£)
-  uint16_t sunshine_duration;  // »ç¿ëºñÆ®: 15, À¯È¿¹üÀ§: 0 ~ 65535 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 65535
-                               // [´©Àû½Ã°£(ÃÊ ´ÜÀ§)]
+  // 2. ì¼ì¡° (ëˆ„ì  ì‹œê°„)
+  uint16_t sunshine_duration;  // ì‚¬ìš©ë¹„íŠ¸: 15, ìœ íš¨ë²”ìœ„: 0 ~ 65535 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 65535
+                               // [ëˆ„ì ì‹œê°„(ì´ˆ ë‹¨ìœ„)]
 
-  // 3. Áö¸é¿Âµµ (1ºĞ Æò±Õ)
-  uint16_t surface_temperature;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                 // 2000 [(°üÃø°ª + 100) * 10]
+  // 3. ì§€ë©´ì˜¨ë„ (1ë¶„ í‰ê· )
+  uint16_t surface_temperature;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                 // 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 4. ÃÊ»ó¿Âµµ (1ºĞ Æò±Õ)
-  uint16_t grass_temperature;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~ 2000
-                               // [(°üÃø°ª + 100) * 10]
+  // 4. ì´ˆìƒì˜¨ë„ (1ë¶„ í‰ê· )
+  uint16_t grass_temperature;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~ 2000
+                               // [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 5. ÁöÁß¿Âµµ (5cm, 1ºĞ Æò±Õ)
-  uint16_t soil_temperature_5cm;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                  // 2000 [(°üÃø°ª + 100) * 10]
+  // 5. ì§€ì¤‘ì˜¨ë„ (5cm, 1ë¶„ í‰ê· )
+  uint16_t soil_temperature_5cm;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                  // 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 6. ÁöÁß¿Âµµ (10cm, 1ºĞ Æò±Õ)
-  uint16_t soil_temperature_10cm;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                   // 2000 [(°üÃø°ª + 100) * 10]
+  // 6. ì§€ì¤‘ì˜¨ë„ (10cm, 1ë¶„ í‰ê· )
+  uint16_t soil_temperature_10cm;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                   // 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 7. ÁöÁß¿Âµµ (20cm, 1ºĞ Æò±Õ)
-  uint16_t soil_temperature_20cm;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                   // 2000 [(°üÃø°ª + 100) * 10]
+  // 7. ì§€ì¤‘ì˜¨ë„ (20cm, 1ë¶„ í‰ê· )
+  uint16_t soil_temperature_20cm;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                   // 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 8. ÁöÁß¿Âµµ (30cm, 1ºĞ Æò±Õ)
-  uint16_t soil_temperature_30cm;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                   // 2000 [(°üÃø°ª + 100) * 10]
+  // 8. ì§€ì¤‘ì˜¨ë„ (30cm, 1ë¶„ í‰ê· )
+  uint16_t soil_temperature_30cm;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                   // 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 9. ÁöÁß¿Âµµ (50cm, 1ºĞ Æò±Õ)
-  uint16_t soil_temperature_50cm;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                   // 2000 [(°üÃø°ª + 100) * 10]
+  // 9. ì§€ì¤‘ì˜¨ë„ (50cm, 1ë¶„ í‰ê· )
+  uint16_t soil_temperature_50cm;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                   // 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 10. ÁöÁß¿Âµµ (1.0m, 1ºĞ Æò±Õ)
-  uint16_t soil_temperature_1m;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                 // 2000 [(°üÃø°ª + 100) * 10]
+  // 10. ì§€ì¤‘ì˜¨ë„ (1.0m, 1ë¶„ í‰ê· )
+  uint16_t soil_temperature_1m;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                 // 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 11. ÁöÁß¿Âµµ (1.5m, 1ºĞ Æò±Õ)
-  uint16_t soil_temperature_1_5m;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                   // 2000 [(°üÃø°ª + 100) * 10]
+  // 11. ì§€ì¤‘ì˜¨ë„ (1.5m, 1ë¶„ í‰ê· )
+  uint16_t soil_temperature_1_5m;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                   // 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 12. ÁöÁß¿Âµµ (3.0m, 1ºĞ Æò±Õ)
-  uint16_t soil_temperature_3m;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                 // 2000 [(°üÃø°ª + 100) * 10]
+  // 12. ì§€ì¤‘ì˜¨ë„ (3.0m, 1ë¶„ í‰ê· )
+  uint16_t soil_temperature_3m;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                 // 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 13. ÁöÁß¿Âµµ (5.0m, 1ºĞ Æò±Õ)
-  uint16_t soil_temperature_5m;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~
-                                 // 2000 [(°üÃø°ª + 100) * 10]
+  // 13. ì§€ì¤‘ì˜¨ë„ (5.0m, 1ë¶„ í‰ê· )
+  uint16_t soil_temperature_5m;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~
+                                 // 2000 [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 1. 1Ãş ¿î°í (1ºĞ Æò±Õ)
-  uint16_t cloud_height_1st;  // »ç¿ëºñÆ®: 12, À¯È¿¹üÀ§: 0 ~ 8191 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 8000
-                              // (°üÃø°ª[m])
+  // 1. 1ì¸µ ìš´ê³  (1ë¶„ í‰ê· )
+  uint16_t cloud_height_1st;  // ì‚¬ìš©ë¹„íŠ¸: 12, ìœ íš¨ë²”ìœ„: 0 ~ 8191 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 8000
+                              // (ê´€ì¸¡ê°’[m])
 
-  // 2. 2Ãş ¿î°í (1ºĞ Æò±Õ)
-  uint16_t cloud_height_2nd;  // »ç¿ëºñÆ®: 12, À¯È¿¹üÀ§: 0 ~ 8191 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 8000
-                              // (°üÃø°ª[m])
+  // 2. 2ì¸µ ìš´ê³  (1ë¶„ í‰ê· )
+  uint16_t cloud_height_2nd;  // ì‚¬ìš©ë¹„íŠ¸: 12, ìœ íš¨ë²”ìœ„: 0 ~ 8191 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 8000
+                              // (ê´€ì¸¡ê°’[m])
 
-  // 3. 3Ãş ¿î°í (1ºĞ Æò±Õ)
-  uint16_t cloud_height_3rd;  // »ç¿ëºñÆ®: 12, À¯È¿¹üÀ§: 0 ~ 8191 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 8000
-                              // (°üÃø°ª[m])
+  // 3. 3ì¸µ ìš´ê³  (1ë¶„ í‰ê· )
+  uint16_t cloud_height_3rd;  // ì‚¬ìš©ë¹„íŠ¸: 12, ìœ íš¨ë²”ìœ„: 0 ~ 8191 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 8000
+                              // (ê´€ì¸¡ê°’[m])
 
-  // 4. ¿î·®
-  uint16_t cloud_amount;  // »ç¿ëºñÆ®: 3, À¯È¿¹üÀ§: 0 ~ 15 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 10 (°üÃø°ª)
+  // 4. ìš´ëŸ‰
+  uint16_t cloud_amount;  // ì‚¬ìš©ë¹„íŠ¸: 3, ìœ íš¨ë²”ìœ„: 0 ~ 15 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 10 (ê´€ì¸¡ê°’)
 
-  // 5. ½ÃÁ¤ (1ºĞ Æò±Õ)
+  // 5. ì‹œì • (1ë¶„ í‰ê· )
   uint16_t
-      visibility;  // »ç¿ëºñÆ®: 15, À¯È¿¹üÀ§: 0 ~ 65535 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 50000 (°üÃø°ª[m])
+      visibility;  // ì‚¬ìš©ë¹„íŠ¸: 15, ìœ íš¨ë²”ìœ„: 0 ~ 65535 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 50000 (ê´€ì¸¡ê°’[m])
 
-  // 6. PM10 (ºĞÁø³óµµ)
-  uint16_t pm10_concentration;  // »ç¿ëºñÆ®: 11, À¯È¿¹üÀ§: 0 ~ 4095 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 1 ~ 3599
-                                // (°üÃø°ª [¥ìg/m©ø] ¡¿ 10)
+  // 6. PM10 (ë¶„ì§„ë†ë„)
+  uint16_t pm10_concentration;  // ì‚¬ìš©ë¹„íŠ¸: 11, ìœ íš¨ë²”ìœ„: 0 ~ 4095 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 1 ~ 3599
+                                // (ê´€ì¸¡ê°’ [Î¼g/mÂ³] Ã— 10)
 
-  // 7. PM2.5 (ºĞÁø³óµµ)
-  uint16_t pm25_concentration;  // »ç¿ëºñÆ®: 11, À¯È¿¹üÀ§: 0 ~ 4095 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 1 ~ 3599
-                                // (°üÃø°ª [¥ìg/m©ø] ¡¿ 10)
+  // 7. PM2.5 (ë¶„ì§„ë†ë„)
+  uint16_t pm25_concentration;  // ì‚¬ìš©ë¹„íŠ¸: 11, ìœ íš¨ë²”ìœ„: 0 ~ 4095 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 1 ~ 3599
+                                // (ê´€ì¸¡ê°’ [Î¼g/mÂ³] Ã— 10)
 
-  // 8. ¼øº¹»ç (1ºĞ Æò±Õ)
-  uint16_t net_radiation;  // »ç¿ëºñÆ®: 14, À¯È¿¹üÀ§: 0 ~ 32767 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 32767
-                           // (°üÃø°ª[W/m©÷] + 1000) ¡¿ 10
+  // 8. ìˆœë³µì‚¬ (1ë¶„ í‰ê· )
+  uint16_t net_radiation;  // ì‚¬ìš©ë¹„íŠ¸: 14, ìœ íš¨ë²”ìœ„: 0 ~ 32767 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 32767
+                           // (ê´€ì¸¡ê°’[W/mÂ²] + 1000) Ã— 10
 
-  // 9. ÀüÃµº¹»ç (1ºĞ Æò±Õ)
-  uint16_t total_radiation;  // »ç¿ëºñÆ®: 14, À¯È¿¹üÀ§: 0 ~ 32767 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 32767
-                             // (°üÃø°ª[W/m©÷] + 1000) ¡¿ 10
+  // 9. ì „ì²œë³µì‚¬ (1ë¶„ í‰ê· )
+  uint16_t total_radiation;  // ì‚¬ìš©ë¹„íŠ¸: 14, ìœ íš¨ë²”ìœ„: 0 ~ 32767 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 32767
+                             // (ê´€ì¸¡ê°’[W/mÂ²] + 1000) Ã— 10
 
-  // 10. ¹İ»çº¹»ç (1ºĞ Æò±Õ)
-  uint16_t reflected_radiation;  // »ç¿ëºñÆ®: 14, À¯È¿¹üÀ§: 0 ~ 32767 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~
-                                 // 32767 (°üÃø°ª[W/m©÷] + 1000) ¡¿ 10
+  // 10. ë°˜ì‚¬ë³µì‚¬ (1ë¶„ í‰ê· )
+  uint16_t reflected_radiation;  // ì‚¬ìš©ë¹„íŠ¸: 14, ìœ íš¨ë²”ìœ„: 0 ~ 32767 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~
+                                 // 32767 (ê´€ì¸¡ê°’[W/mÂ²] + 1000) Ã— 10
 
-  // 11. Á÷´Şº¹»ç (1ºĞ Æò±Õ)
-  uint16_t direct_radiation;  // »ç¿ëºñÆ®: 14, À¯È¿¹üÀ§: 0 ~ 32767 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 32767
-                              // (°üÃø°ª[W/m©÷] + 1000) ¡¿ 10
+  // 11. ì§ë‹¬ë³µì‚¬ (1ë¶„ í‰ê· )
+  uint16_t direct_radiation;  // ì‚¬ìš©ë¹„íŠ¸: 14, ìœ íš¨ë²”ìœ„: 0 ~ 32767 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 32767
+                              // (ê´€ì¸¡ê°’[W/mÂ²] + 1000) Ã— 10
 
-  // 12. ÇöÀç ÀÏ±â
+  // 12. í˜„ì¬ ì¼ê¸°
   uint16_t
-      current_weather;  // »ç¿ëºñÆ®: 6, À¯È¿¹üÀ§: 0 ~ 127 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 99 (°üÃø°ª)
+      current_weather;  // ì‚¬ìš©ë¹„íŠ¸: 6, ìœ íš¨ë²”ìœ„: 0 ~ 127 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 99 (ê´€ì¸¡ê°’)
 
   uint16_t temp0[4];
 
-  // 1. Åä¾ç¼öºĞ (10 cm)
-  uint16_t soil_moisture_10cm;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                                // (°üÃø°ª * 10)
+  // 1. í† ì–‘ìˆ˜ë¶„ (10 cm)
+  uint16_t soil_moisture_10cm;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                                // (ê´€ì¸¡ê°’ * 10)
 
-  // 2. Åä¾ç¼öºĞ (20 cm)
-  uint16_t soil_moisture_20cm;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                                // (°üÃø°ª * 10)
+  // 2. í† ì–‘ìˆ˜ë¶„ (20 cm)
+  uint16_t soil_moisture_20cm;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                                // (ê´€ì¸¡ê°’ * 10)
 
-  // 3. Åä¾ç¼öºĞ (30 cm)
-  uint16_t soil_moisture_30cm;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                                // (°üÃø°ª * 10)
+  // 3. í† ì–‘ìˆ˜ë¶„ (30 cm)
+  uint16_t soil_moisture_30cm;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                                // (ê´€ì¸¡ê°’ * 10)
 
-  // 4. Åä¾ç¼öºĞ (50 cm)
-  uint16_t soil_moisture_50cm;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                                // (°üÃø°ª * 10)
+  // 4. í† ì–‘ìˆ˜ë¶„ (50 cm)
+  uint16_t soil_moisture_50cm;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                                // (ê´€ì¸¡ê°’ * 10)
 
-  // 5. Á¶µµ·® (1ºĞ Æò±Õ)
-  uint16_t illuminance;  // »ç¿ëºñÆ®: 14, À¯È¿¹üÀ§: 0 ~ 32767 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 32767
-                         // (°üÃø°ª * 100)
+  // 5. ì¡°ë„ëŸ‰ (1ë¶„ í‰ê· )
+  uint16_t illuminance;  // ì‚¬ìš©ë¹„íŠ¸: 14, ìœ íš¨ë²”ìœ„: 0 ~ 32767 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 32767
+                         // (ê´€ì¸¡ê°’ * 100)
 
-  // 6. Ç³¼Ó (1.5 m, 1ºĞ Æò±Õ)
-  uint16_t wind_speed_1_5m;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                             // (°üÃø°ª * 10)
+  // 6. í’ì† (1.5 m, 1ë¶„ í‰ê· )
+  uint16_t wind_speed_1_5m;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                             // (ê´€ì¸¡ê°’ * 10)
 
-  // 7. Ç³¼Ó (4.0 m, 1ºĞ Æò±Õ)
-  uint16_t wind_speed_4m;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                           // (°üÃø°ª * 10)
+  // 7. í’ì† (4.0 m, 1ë¶„ í‰ê· )
+  uint16_t wind_speed_4m;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                           // (ê´€ì¸¡ê°’ * 10)
 
-  // 8. ¼ø°£ Ç³¼Ó (1.5 m)
-  uint16_t instant_wind_speed_1_5m;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~
-                                     // 1000 (°üÃø°ª * 10)
+  // 8. ìˆœê°„ í’ì† (1.5 m)
+  uint16_t instant_wind_speed_1_5m;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~
+                                     // 1000 (ê´€ì¸¡ê°’ * 10)
 
-  // 9. ¼ø°£ Ç³¼Ó (4.0 m)
-  uint16_t instant_wind_speed_4m;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~
-                                   // 1000 (°üÃø°ª * 10)
+  // 9. ìˆœê°„ í’ì† (4.0 m)
+  uint16_t instant_wind_speed_4m;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~
+                                   // 1000 (ê´€ì¸¡ê°’ * 10)
 
-  // 10. ±â¿Â (0.5 m)
-  uint16_t temperature_0_5m;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~ 1500
-                              // [(°üÃø°ª + 100) * 10]
+  // 10. ê¸°ì˜¨ (0.5 m)
+  uint16_t temperature_0_5m;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~ 1500
+                              // [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 11. ±â¿Â (4.0 m)
-  uint16_t temperature_4m;  // »ç¿ëºñÆ®: 10, À¯È¿¹üÀ§: 0 ~ 2047 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 500 ~ 1500
-                            // [(°üÃø°ª + 100) * 10]
+  // 11. ê¸°ì˜¨ (4.0 m)
+  uint16_t temperature_4m;  // ì‚¬ìš©ë¹„íŠ¸: 10, ìœ íš¨ë²”ìœ„: 0 ~ 2047 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 500 ~ 1500
+                            // [(ê´€ì¸¡ê°’ + 100) * 10]
 
-  // 12. ½Àµµ (0.5 m, 1ºĞ Æò±Õ)
-  uint16_t humidity_0_5m;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000
-                           // (°üÃø°ª * 10)
+  // 12. ìŠµë„ (0.5 m, 1ë¶„ í‰ê· )
+  uint16_t humidity_0_5m;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000
+                           // (ê´€ì¸¡ê°’ * 10)
 
-  // 13. ½Àµµ (4.0 m, 1ºĞ Æò±Õ)
+  // 13. ìŠµë„ (4.0 m, 1ë¶„ í‰ê· )
   uint16_t
-      humidity_4m;  // »ç¿ëºñÆ®: 9, À¯È¿¹üÀ§: 0 ~ 1023 (ÀÎÄ¡ ÄÚµå), Ç¥Çö¹üÀ§: 0 ~ 1000 (°üÃø°ª * 10)
+      humidity_4m;  // ì‚¬ìš©ë¹„íŠ¸: 9, ìœ íš¨ë²”ìœ„: 0 ~ 1023 (ì¸ì¹˜ ì½”ë“œ), í‘œí˜„ë²”ìœ„: 0 ~ 1000 (ê´€ì¸¡ê°’ * 10)
 
   uint16_t temp1[9];
 
@@ -868,129 +868,129 @@ void parse_kma3_response(const uint8_t* frame, uint32_t bytes_read)
   const kma_data_t* kma_data = (kma_data_t*)frame;
 
       task_printf("=============================================================\r\n");
-  task_printf("½ÃÀÛ Ç¥½Ã    : 0x%04X\r\n", big_endian_to_little_endian(kma_data->header) & 0xFFFF);
-  task_printf("ÇÁ·ÎÅäÄİ ¹öÀü: %02d-%02d-%02d\r\n", kma_data->protocol_year, kma_data->protocol_month,
+  task_printf("ì‹œì‘ í‘œì‹œ    : 0x%04X\r\n", big_endian_to_little_endian(kma_data->header) & 0xFFFF);
+  task_printf("í”„ë¡œí† ì½œ ë²„ì „: %02d-%02d-%02d\r\n", kma_data->protocol_year, kma_data->protocol_month,
          kma_data->protocol_day);
-  task_printf("³¯Â¥/½Ã°£    : %02d-%02d-%02d %02d:%02d\r\n", kma_data->year, kma_data->month,
+  task_printf("ë‚ ì§œ/ì‹œê°„    : %02d-%02d-%02d %02d:%02d\r\n", kma_data->year, kma_data->month,
          kma_data->day, kma_data->hour, kma_data->min);
-  task_printf("ÀÚ·á ±¸ºĞ    : %c\r\n", kma_data->dataType);
+  task_printf("ìë£Œ êµ¬ë¶„    : %c\r\n", kma_data->dataType);
 
   switch (kma_data->dataNum)
   {
     case 0:
     case 1:
     case 2:
-      dataNumName = "¹Ì»ç¿ë";
+      dataNumName = "ë¯¸ì‚¬ìš©";
       break;
     case 3:
-      dataNumName = "ÀÏ¹İ¿ë";
+      dataNumName = "ì¼ë°˜ìš©";
       break;
     case 0x0c:
-      dataNumName = "°üÃø¿ä¼Ò¿¡µû¶ó ºÎ¿©(5~255)";
+      dataNumName = "ê´€ì¸¡ìš”ì†Œì—ë”°ë¼ ë¶€ì—¬(5~255)";
       break;
     default:
-      dataNumName = "¿À·ù";
+      dataNumName = "ì˜¤ë¥˜";
       break;
   }
-  task_printf("ÀÚ·áÇü½Ä¹øÈ£ : %s\r\n", dataNumName);
-  task_printf("ÁöÁ¡ ¹øÈ£    : %d\r\n", big_endian_to_little_endian(kma_data->id));
+  task_printf("ìë£Œí˜•ì‹ë²ˆí˜¸ : %s\r\n", dataNumName);
+  task_printf("ì§€ì  ë²ˆí˜¸    : %d\r\n", big_endian_to_little_endian(kma_data->id));
 
-  // °üÃø µ¥ÀÌÅÍ Ãâ·Â
-  task_printf("A-1  ±â¿Â      Temperature            : %5.2fµµC\r\n",
+  // ê´€ì¸¡ ë°ì´í„° ì¶œë ¥
+  task_printf("A-1  ê¸°ì˜¨      Temperature            : %5.2fë„C\r\n",
          (big_endian_to_little_endian(kma_data->temperature) - 1000) / 10.0);
-  task_printf("A-2  Ç³Çâ Wind Direction Avg          : %5.2fµµ\r\n",
+  task_printf("A-2  í’í–¥ Wind Direction Avg          : %5.2fë„\r\n",
          big_endian_to_little_endian(kma_data->wind_direction_avg) / 10.0);
-  task_printf("A-3  Ç³¼Ó Wind Speed Avg              : %5.2fm/s\r\n",
+  task_printf("A-3  í’ì† Wind Speed Avg              : %5.2fm/s\r\n",
          big_endian_to_little_endian(kma_data->wind_speed_avg) / 10.0);
-  task_printf("A-4  ¼ø°£ Ç³Çâ Wind Direction Instant : %5.2fµµ\r\n",
+  task_printf("A-4  ìˆœê°„ í’í–¥ Wind Direction Instant : %5.2fë„\r\n",
          big_endian_to_little_endian(kma_data->wind_direction_instant) / 10.0);
-  task_printf("A-5  ¼ø°£ Ç³¼Ó Wind Speed Instant     : %5.2fm/s\r\n",
+  task_printf("A-5  ìˆœê°„ í’ì† Wind Speed Instant     : %5.2fm/s\r\n",
          big_endian_to_little_endian(kma_data->wind_speed_instant) / 10.0);
-  task_printf("A-6  °­¼ö·®    Precipitation          : %dmm\r\n",
+  task_printf("A-6  ê°•ìˆ˜ëŸ‰    Precipitation          : %dmm\r\n",
          big_endian_to_little_endian(kma_data->precipitation));
-  task_printf("A-7  ±â¾Ğ      Pressure               : %5.2fhPa\r\n",
+  task_printf("A-7  ê¸°ì••      Pressure               : %5.2fhPa\r\n",
          big_endian_to_little_endian(kma_data->pressure) / 10.0);
-  task_printf("A-8  °­¼ö À¯¹« Precipitation Presence : %d\r\n",
+  task_printf("A-8  ê°•ìˆ˜ ìœ ë¬´ Precipitation Presence : %d\r\n",
          big_endian_to_little_endian(kma_data->precipitation_presence));
-  task_printf("A-9  Àû¼³      Snowfall               : %5.2fcm\r\n",
+  task_printf("A-9  ì ì„¤      Snowfall               : %5.2fcm\r\n",
          big_endian_to_little_endian(kma_data->snowfall) / 10.0);
-  task_printf("A-10 »ó´ë½Àµµ  Relative Humidity      : %5.2f%%\r\n",
+  task_printf("A-10 ìƒëŒ€ìŠµë„  Relative Humidity      : %5.2f%%\r\n",
          big_endian_to_little_endian(kma_data->relative_humidity) / 10.0);
-  task_printf("A-12 °­¼ö·®    Precipitation Fine     : %d\r\n",
+  task_printf("A-12 ê°•ìˆ˜ëŸ‰    Precipitation Fine     : %d\r\n",
          big_endian_to_little_endian(kma_data->precipitation_fine));
 
-  task_printf("B-1  ÀÏ»ç      Solar Radiation        : %d\r\n",
+  task_printf("B-1  ì¼ì‚¬      Solar Radiation        : %d\r\n",
          big_endian_to_little_endian(kma_data->solar_radiation));
-  task_printf("B-2  ÀÏÁ¶      Sunshine Duration      : %d\r\n",
+  task_printf("B-2  ì¼ì¡°      Sunshine Duration      : %d\r\n",
          big_endian_to_little_endian(kma_data->sunshine_duration));
-  task_printf("B-3  Áö¸é¿Âµµ  Surface Temperature    : %d\r\n",
+  task_printf("B-3  ì§€ë©´ì˜¨ë„  Surface Temperature    : %d\r\n",
          big_endian_to_little_endian(kma_data->surface_temperature));
-  task_printf("B-4  ÃÊ»ó¿Âµµ  Grass Temperature      : %d\r\n",
+  task_printf("B-4  ì´ˆìƒì˜¨ë„  Grass Temperature      : %d\r\n",
          big_endian_to_little_endian(kma_data->grass_temperature));
-  task_printf("B-5  ÁöÁß¿Âµµ  Soil Temperature 5cm   : %d\r\n",
+  task_printf("B-5  ì§€ì¤‘ì˜¨ë„  Soil Temperature 5cm   : %d\r\n",
          big_endian_to_little_endian(kma_data->soil_temperature_5cm));
-  task_printf("B-6  ÁöÁß¿Âµµ  Soil Temperature 10cm  : %d\r\n",
+  task_printf("B-6  ì§€ì¤‘ì˜¨ë„  Soil Temperature 10cm  : %d\r\n",
          big_endian_to_little_endian(kma_data->soil_temperature_10cm));
-  task_printf("B-7  ÁöÁß¿Âµµ  Soil Temperature 20cm  : %d\r\n",
+  task_printf("B-7  ì§€ì¤‘ì˜¨ë„  Soil Temperature 20cm  : %d\r\n",
          big_endian_to_little_endian(kma_data->soil_temperature_20cm));
-  task_printf("B-8  ÁöÁß¿Âµµ  Soil Temperature 30cm  : %d\r\n",
+  task_printf("B-8  ì§€ì¤‘ì˜¨ë„  Soil Temperature 30cm  : %d\r\n",
          big_endian_to_little_endian(kma_data->soil_temperature_30cm));
-  task_printf("B-9  ÁöÁß¿Âµµ  Soil Temperature 50cm  : %d\r\n",
+  task_printf("B-9  ì§€ì¤‘ì˜¨ë„  Soil Temperature 50cm  : %d\r\n",
          big_endian_to_little_endian(kma_data->soil_temperature_50cm));
-  task_printf("B-10 ÁöÁß¿Âµµ  Soil Temperature 1m    : %d\r\n",
+  task_printf("B-10 ì§€ì¤‘ì˜¨ë„  Soil Temperature 1m    : %d\r\n",
          big_endian_to_little_endian(kma_data->soil_temperature_1m));
-  task_printf("B-11 ÁöÁß¿Âµµ  Soil Temperature 1.5m  : %d\r\n",
+  task_printf("B-11 ì§€ì¤‘ì˜¨ë„  Soil Temperature 1.5m  : %d\r\n",
          big_endian_to_little_endian(kma_data->soil_temperature_1_5m));
-  task_printf("B-12 ÁöÁß¿Âµµ  Soil Temperature 3m    : %d\r\n",
+  task_printf("B-12 ì§€ì¤‘ì˜¨ë„  Soil Temperature 3m    : %d\r\n",
          big_endian_to_little_endian(kma_data->soil_temperature_3m));
-  task_printf("B-13 ÁöÁß¿Âµµ  Soil Temperature 5m    : %d\r\n",
+  task_printf("B-13 ì§€ì¤‘ì˜¨ë„  Soil Temperature 5m    : %d\r\n",
          big_endian_to_little_endian(kma_data->soil_temperature_5m));
 
-  task_printf("C-1  1Ãş ¿î°í Cloud Height 1st        : %d\r\n",
+  task_printf("C-1  1ì¸µ ìš´ê³  Cloud Height 1st        : %d\r\n",
          big_endian_to_little_endian(kma_data->cloud_height_1st));
-  task_printf("C-2  2Ãş ¿î°í Cloud Height 2nd        : %d\r\n",
+  task_printf("C-2  2ì¸µ ìš´ê³  Cloud Height 2nd        : %d\r\n",
          big_endian_to_little_endian(kma_data->cloud_height_2nd));
-  task_printf("C-3  3Ãş ¿î°í Cloud Height 3rd        : %d\r\n",
+  task_printf("C-3  3ì¸µ ìš´ê³  Cloud Height 3rd        : %d\r\n",
          big_endian_to_little_endian(kma_data->cloud_height_3rd));
-  task_printf("C-4  ¿î·®     Cloud Amount            : %d\r\n",
+  task_printf("C-4  ìš´ëŸ‰     Cloud Amount            : %d\r\n",
          big_endian_to_little_endian(kma_data->cloud_amount));
-  task_printf("C-5  ½ÃÁ¤     Visibility              : %d\r\n",
+  task_printf("C-5  ì‹œì •     Visibility              : %d\r\n",
          big_endian_to_little_endian(kma_data->visibility));
   task_printf("C-6  PM10     PM10 Concentration      : %d\r\n",
          big_endian_to_little_endian(kma_data->pm10_concentration));
   task_printf("C-7  PM2.5    Concentration           : %d\r\n",
          big_endian_to_little_endian(kma_data->pm25_concentration));
-  task_printf("C-8  ¼øº¹»ç   Net Radiation           : %d\r\n",
+  task_printf("C-8  ìˆœë³µì‚¬   Net Radiation           : %d\r\n",
          big_endian_to_little_endian(kma_data->net_radiation));
-  task_printf("C-9  ÀüÃµº¹»ç Total Radiation         : %d\r\n",
+  task_printf("C-9  ì „ì²œë³µì‚¬ Total Radiation         : %d\r\n",
          big_endian_to_little_endian(kma_data->total_radiation));
-  task_printf("C-10 ¹İ»çº¹»ç Reflected Radiation     : %d\r\n",
+  task_printf("C-10 ë°˜ì‚¬ë³µì‚¬ Reflected Radiation     : %d\r\n",
          big_endian_to_little_endian(kma_data->reflected_radiation));
-  task_printf("C-11 Á÷´ŞÀÏ»ç Direct Radiation        : %d\r\n",
+  task_printf("C-11 ì§ë‹¬ì¼ì‚¬ Direct Radiation        : %d\r\n",
          big_endian_to_little_endian(kma_data->direct_radiation));
-  task_printf("C-12 ÇöÀçÀÏ±â Current Weather         : %d\r\n",
+  task_printf("C-12 í˜„ì¬ì¼ê¸° Current Weather         : %d\r\n",
          big_endian_to_little_endian(kma_data->current_weather));
 
 
-  // ¹è¿­ µ¥ÀÌÅÍ Ãâ·Â
+  // ë°°ì—´ ë°ì´í„° ì¶œë ¥
   for (int i = 0; i < 4; i++)
   {
     task_printf("L_%d:%d\r\n", i + 1, big_endian_to_little_endian(kma_data->temp0[i]));
   }
 
-  task_printf("N-1  Åä¾ç¼öºĞ soil_moisture_10cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_10cm));
-  task_printf("N-2  Åä¾ç¼öºĞ soil_moisture_20cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_20cm));
-  task_printf("N-3  Åä¾ç¼öºĞ soil_moisture_30cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_30cm));
-  task_printf("N-4  Åä¾ç¼öºĞ soil_moisture_50cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_50cm));
-  task_printf("N-5  Á¶µµ·®   illuminance             : %d\r\n", big_endian_to_little_endian(kma_data->illuminance));
-  task_printf("N-6  Ç³¼Ó     wind_speed_1_5m         : %d\r\n", big_endian_to_little_endian(kma_data->wind_speed_1_5m));
-  task_printf("N-7  Ç³¼Ó     wind_speed_4m           : %d\r\n", big_endian_to_little_endian(kma_data->wind_speed_4m));
-  task_printf("N-8  ¼ø°£Ç³¼Ó instant_wind_speed_1_5m : %d\r\n", big_endian_to_little_endian(kma_data->instant_wind_speed_1_5m));
-  task_printf("N-9  ¼ø°£Ç³¼Ó instant_wind_speed_4m   : %d\r\n", big_endian_to_little_endian(kma_data->instant_wind_speed_4m));
-  task_printf("N-10 ±â¿Â     temperature_0_5m;       : %d\r\n", big_endian_to_little_endian(kma_data->temperature_0_5m));
-  task_printf("N-11 ±â¿Â     temperature_4m          : %d\r\n", big_endian_to_little_endian(kma_data->temperature_4m));
-  task_printf("N-12 ½Àµµ     humidity_0_5m           : %d\r\n", big_endian_to_little_endian(kma_data->humidity_0_5m));
-  task_printf("N-13 ½Àµµ     humidity_4m             : %d\r\n", big_endian_to_little_endian(kma_data->humidity_4m));
+  task_printf("N-1  í† ì–‘ìˆ˜ë¶„ soil_moisture_10cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_10cm));
+  task_printf("N-2  í† ì–‘ìˆ˜ë¶„ soil_moisture_20cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_20cm));
+  task_printf("N-3  í† ì–‘ìˆ˜ë¶„ soil_moisture_30cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_30cm));
+  task_printf("N-4  í† ì–‘ìˆ˜ë¶„ soil_moisture_50cm      : %d\r\n", big_endian_to_little_endian(kma_data->soil_moisture_50cm));
+  task_printf("N-5  ì¡°ë„ëŸ‰   illuminance             : %d\r\n", big_endian_to_little_endian(kma_data->illuminance));
+  task_printf("N-6  í’ì†     wind_speed_1_5m         : %d\r\n", big_endian_to_little_endian(kma_data->wind_speed_1_5m));
+  task_printf("N-7  í’ì†     wind_speed_4m           : %d\r\n", big_endian_to_little_endian(kma_data->wind_speed_4m));
+  task_printf("N-8  ìˆœê°„í’ì† instant_wind_speed_1_5m : %d\r\n", big_endian_to_little_endian(kma_data->instant_wind_speed_1_5m));
+  task_printf("N-9  ìˆœê°„í’ì† instant_wind_speed_4m   : %d\r\n", big_endian_to_little_endian(kma_data->instant_wind_speed_4m));
+  task_printf("N-10 ê¸°ì˜¨     temperature_0_5m;       : %d\r\n", big_endian_to_little_endian(kma_data->temperature_0_5m));
+  task_printf("N-11 ê¸°ì˜¨     temperature_4m          : %d\r\n", big_endian_to_little_endian(kma_data->temperature_4m));
+  task_printf("N-12 ìŠµë„     humidity_0_5m           : %d\r\n", big_endian_to_little_endian(kma_data->humidity_0_5m));
+  task_printf("N-13 ìŠµë„     humidity_4m             : %d\r\n", big_endian_to_little_endian(kma_data->humidity_4m));
 
 
   for (int i = 0; i < 9; i++)
