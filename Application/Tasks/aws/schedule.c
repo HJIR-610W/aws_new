@@ -356,25 +356,25 @@ void SecProcess(void)
 
 
   
-    if(pSystem->mRain.rain)
-    {
-      uint16_t rain =pSystem->mRain.rain;
+  if(pSystem->mRain.rain)
+  {
+    uint16_t rain =pSystem->mRain.rain;
 
-      pSystem->mRain.sMinRain += rain;   // 1분 강수량
-      pSystem->mRain.s10MinRain += rain;  // 10분 강수량
-      pSystem->mRain.sHourRain += rain;   // 1시간강수량
-      pSystem->mRain.sDayRain += rain;    // 일간강수량
-      pSystem->mRain.sMonthRain += rain;   // 월간 강수량
-      pSystem->mRain.sYearRain += rain;    // 년간 강수량
+    pSystem->mRain.sMinRain += rain;   // 1분 강수량
+    pSystem->mRain.s10MinRain += rain;  // 10분 강수량
+    pSystem->mRain.sHourRain += rain;   // 1시간강수량
+    pSystem->mRain.sDayRain += rain;    // 일간강수량
+    pSystem->mRain.sMonthRain += rain;   // 월간 강수량
+    pSystem->mRain.sYearRain += rain;    // 년간 강수량
 
-      set_rainfall_1min(pSystem->mRain.sMinRain/10.0f);
-      set_rainfall_today(pSystem->mRain.sDayRain / 10.0f);
-      set_rainfall_hourly(pSystem->mRain.sHourRain / 10.0f);
-      set_rainfall_monthly(pSystem->mRain.sMonthRain / 10.0f);
-      set_rainfall_yearly(pSystem->mRain.sYearRain / 10.0f);
+    set_rainfall_1min(pSystem->mRain.sMinRain/10.0f);
+    set_rainfall_today(pSystem->mRain.sDayRain / 10.0f);
+    set_rainfall_hourly(pSystem->mRain.sHourRain / 10.0f);
+    set_rainfall_monthly(pSystem->mRain.sMonthRain / 10.0f);
+    set_rainfall_yearly(pSystem->mRain.sYearRain / 10.0f);
 
-      pSystem->mRain.rain = 0;
-    }
+    pSystem->mRain.rain = 0;
+  }
   
 
   mRealAws.mRainFall.sReal = pSystem->mRain.sDayRain;  // 일간강수량(초단위로 바뀌는 값)
@@ -382,7 +382,7 @@ void SecProcess(void)
   mRealAws.mRainFall.sMonthRain = pSystem->mRain.sMonthRain;  // 월간강수량
   mRealAws.mRainFall.sYearRain = pSystem->mRain.sYearRain;  // 연간강수량
   
-  mMinAws.mRainFall.sReal   = pSystem->mRain.sDayRain;
+
   m10MinAws.mRainFall.sReal = pSystem->mRain.sDayRain;
   mHourAws.mRainFall.sReal  = pSystem->mRain.sDayRain;
 
@@ -719,11 +719,12 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   // 강수량 처리
   // 2010. 08. 28. 수정
+  pAws->mRainFall.sReal = pSystem->mRain.sDayRain;
   pAws->mRainFall.sHourRain = pSystem->mRain.sHourRain;
   pAws->mRainFall.sMonthRain = pSystem->mRain.sMonthRain;
   pAws->mRainFall.sYearRain = pSystem->mRain.sYearRain;
   pAws->rain_1min = pSystem->mRain.sMinRain;
-  pSystem->mRain.sMinRain = 0;                                  // 1분 강수량
+  pSystem->mRain.sMinRain = 0;                             
 
   set_rainfall_1min(0);
 
