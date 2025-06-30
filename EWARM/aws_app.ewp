@@ -1888,6 +1888,12 @@
                 <name>$PROJ_DIR$\..\Application\Tasks\task_measure.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_menu.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\Tasks\task_menu.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\Tasks\task_monitor.c</name>
             </file>
             <file>
@@ -2814,6 +2820,9 @@
             <file>
                 <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\netif\zepif.c</name>
             </file>
+        </group>
+        <group>
+            <name>menu</name>
         </group>
         <group>
             <name>modem</name>
