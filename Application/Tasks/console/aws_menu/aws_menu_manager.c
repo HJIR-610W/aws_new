@@ -301,13 +301,13 @@ int32_t menu_manage_config_backup()
 
 int32_t menu_manage_sentor_edit()
 {
-  int32_t cnt;
+
   int choice;
   int status;
    char *menu[] = {"우량 자료 편집",
-                        "일조 자료 편집",
-                        "우량 자료 확인",
-                        "일조 자료 확인"};
+                   "일조 자료 편집",
+                   "우량 자료 확인",
+                   "일조 자료 확인"};
 
   char start_time[30];
   char end_time[30];  // 2025-01-01 00:00:00
@@ -325,6 +325,35 @@ int32_t menu_manage_sentor_edit()
     {
       case 1:
       case 2:
+        if(confirm_continue("해당년도 자료 모두 0으로 초기화 할까요?",&ok)==MENU_OK && ok ==1)
+        {
+
+            
+          snprintf(start_time, sizeof(start_time), "%04d-01-01 00:01:00", Date_Time.Year);
+          snprintf(end_time, sizeof(end_time), "%04d-01-01 00:00:00", Date_Time.Year + 1);
+          if (choice == 1)
+          {
+            filename = "RAIN_01.rcd";
+            ret = write_bulk_data_range(filename, start_time, end_time, value);
+            if (ret < 0)
+            {
+              io_printf("에러 발생 코드:%d\r\n", ret);
+            }
+          }
+          else
+          {
+            filename = "SUNSHINE_01.rcd";
+            ret = write_bulk_data_range(filename, start_time, end_time, value);
+            if (ret < 0)
+            {
+              io_printf("에러 발생 코드:%d\r\n", ret);
+            }
+          }
+        }
+        else
+        {
+
+
         io_printf("시작시간입력(예:2025-01-01 00:01:00)\r\n");
         io_printf(">>");
         cli_scanf_s("%[^\n]", start_time, (unsigned)_countof(start_time));
@@ -335,11 +364,11 @@ int32_t menu_manage_sentor_edit()
         io_printf(">>");
         cli_scanf_s("%d", &value);
         ;
-        if (cnt == 1)
+        if (choice == 1)
         {
           filename = "RAIN_01.rcd";
         }
-        else if (cnt == 2)
+        else if (choice == 2)
         {
           filename = "SUNSHINE_01.rcd";
         }
@@ -357,6 +386,7 @@ int32_t menu_manage_sentor_edit()
           }
           io_printf("OK\r\n");
         }
+      }
         break;
 
       case 3:
@@ -387,7 +417,7 @@ int32_t menu_manage_sentor_edit()
         {
           uint16_t data;
           uint8_t type;
-          type = cnt == 2 ? LOGGING_RAIN_1MIN : LOGGING_SUNSHINE_1MIN;
+          type = choice == 3 ? LOGGING_RAIN_1MIN : LOGGING_SUNSHINE_1MIN;
           read_sensorDataMulti(&ct, sizeof(uint16_t), 1, type, 1, (uint8_t *)&data, sizeof(data));
           io_printf("%04d-%02d-%02d %02d:%02d:00 %5d\r\n", ct.Year, ct.Month, ct.Day, ct.Hour,
                     ct.Min, data);

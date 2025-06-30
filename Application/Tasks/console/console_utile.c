@@ -27,44 +27,7 @@ const char *g_unknown = "unknown";
 
 const char* enableList[] = {"비활성", "활성"};
 
-static int get_visual_width(const char* str)
-{
-  int width = 0;
-  int i = 0;
-  
-  while (str[i] != '\0') 
-  {
-    unsigned char c = (unsigned char)str[i];
-    
-    if (c < 0x80) 
-    {
-      width++;
-      i++;
-    }
-    else if ((c & 0xE0) == 0xC0) 
-    {
-      width++;
-      i += 2;
-    }
-    else if ((c & 0xF0) == 0xE0) 
-    {
-      width += 2;
-      i += 3;
-    }
-    else if ((c & 0xF8) == 0xF0) 
-    {
-      width += 2;
-      i += 4;
-    }
-    else 
-    {
-      width++;
-      i++;
-    }
-  }
-  
-  return width;
-}
+
 
 char recv_key(uint32_t timeout_ms)
 {

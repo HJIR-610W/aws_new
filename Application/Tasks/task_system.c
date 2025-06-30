@@ -60,7 +60,7 @@ void check_sd_card(void)
 
     if (now_sd_inserted)
     {
-      ERROR_PRINTF("SD카드 삽입됨\r\n");
+      ERROR_PRINTF("SD card inserted\r\n");
       OS_PEND_SEM(get_file_sem(), osWaitForever);
       MX_FATFS_DeInit();
       hal_sd_deinit();
@@ -72,7 +72,7 @@ void check_sd_card(void)
     }
     else
     {
-      ERROR_PRINTF("SD카드 제거됨\r\n");
+      ERROR_PRINTF("SD card removed\r\n");
       OS_PEND_SEM(get_file_sem(), osWaitForever);
       MX_FATFS_DeInit();
       hal_sd_deinit();
