@@ -227,7 +227,7 @@ void calculate_window_position(win_t* win, int win_width, int win_height)
 	win->start_x = g_layout.next_x;
 	win->start_y = g_layout.next_y;
 	
-	g_layout.next_x += win_width + 2;
+	g_layout.next_x += win_width + 1;
 	if (win_height > g_layout.row_height) {
 		g_layout.row_height = win_height;
 	}

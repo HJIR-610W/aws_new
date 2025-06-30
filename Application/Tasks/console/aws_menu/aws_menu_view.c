@@ -2025,6 +2025,33 @@ void draw_aws(win_t *p_win)
 
 }
 
+#define CHARGER_WD 15
+void draw_config(win_t *p_win)
+{
+  uint8_t err;
+  int row_count = 5;
+  char buff[50];
+  char temp[20];
+  int page = 0;
+  int win_height = p_win->view_row + 3;
+
+  p_win->total_pages = 1;
+  p_win->current_row = 0;
+  calculate_window_position(p_win, p_win->view_col, win_height);
+
+
+  win_printf_title(p_win, "¼³Á¤");
+
+
+
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    win_printf(p_win, "");
+  }
+
+  win_print_close(p_win);
+}
 int32_t aws_menu_veiw(void)
 {
   win_t system_win;
@@ -2034,14 +2061,14 @@ int32_t aws_menu_veiw(void)
   win_t eth_win;
   win_t aws_win;
   win_t charger_win;
-
-
+  win_t config_win;
   win_t *windows[7];
   int window_count = 0;
-  int current_win = 5;
+  int current_win = 5;//aws
   app_mode_t mode = MODE_SELECT;
 
-    io_printf(VT100_CLEAR_SCREEN);
+
+  io_printf(VT100_CLEAR_SCREEN);
   io_printf(VT100_CURSOR_OFF);
 
 
@@ -2052,6 +2079,7 @@ int32_t aws_menu_veiw(void)
   create_win(&eth_win, 0, 0, 15, 31);
   create_win(&aws_win, 0, 0, 19, 60);
   create_win(&charger_win, 0, 0, 6, 26);
+  create_win(&config_win, 0, 0, 4, 22);
 
   while (1)
   {
@@ -2066,6 +2094,7 @@ int32_t aws_menu_veiw(void)
     reset_win(&eth_win);
     reset_win(&aws_win);
     reset_win(&charger_win);
+    reset_win(&config_win);
 
     windows[window_count++] = &system_win;
     windows[window_count++] = &rain_win;
@@ -2074,9 +2103,12 @@ int32_t aws_menu_veiw(void)
       windows[window_count++] = &cdma_win;
     if (get_config_app()->direct_use)
       windows[window_count++] = &direct_win;
+    windows[window_count++] = &aws_win;
     if (get_config_app()->eth_use)
       windows[window_count++] = &eth_win;
-    windows[window_count++] = &aws_win;
+    windows[window_count++] = &config_win;
+
+
 
     if (current_win < window_count)
     {
@@ -2100,7 +2132,7 @@ int32_t aws_menu_veiw(void)
     draw_aws(&aws_win);
     if (get_config_app()->eth_use)
       draw_eth(&eth_win);
-
+    draw_config(&config_win);
 
     if (window_count == 0)
     {
