@@ -33,13 +33,6 @@ typedef struct fm25l_cfg_s
 
 
 
-
-void driver_spi_init(driver_spi_t *spi,uint32_t num);
-void driver_spi_send_byte(driver_spi_t *spi, uint8_t value);
-void driver_spi_send_bytes(driver_spi_t *spi,uint8_t *data,uint16_t dataLen);
-uint8_t driver_spi_read_byte(driver_spi_t *spi);
-
-
 driver_t *driver_spi_open(int num);
 void driverex_spi_send_byte(driver_t *spi, uint8_t value);
 void driverex_spi_send_bytes(driver_t *spi,uint8_t *data,uint16_t dataLen);

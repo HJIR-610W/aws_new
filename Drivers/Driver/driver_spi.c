@@ -8,6 +8,7 @@
 
 #define SPI_TIME_OUT 0x1000
 
+
 typedef struct spi_api_s
 {
   void (*set_cs)(void *handle, void *gpioHandle, uint32_t state);
@@ -217,114 +218,11 @@ void stm32_spi_init(SPI_HandleTypeDef *hspi)
 
 
 
-
-
-
-void stm32_spi_send_byte(void *hspi, uint8_t value)
-{
-	HAL_StatusTypeDef status = HAL_OK;
-
-  status = HAL_SPI_Transmit((SPI_HandleTypeDef *)hspi, (uint8_t*) &value, 1, SPI_TIME_OUT);
-
-	if(status != HAL_OK)
-	{
-          ERROR_PRINTF("stm32_spi_send_byte %d", status);
-  }
-}
-
-
-void stm32_spi_send_bytes(void *hspi,uint8_t *data,uint16_t dataLen)
-{
-  HAL_StatusTypeDef status;
-
-	status = HAL_SPI_Transmit((SPI_HandleTypeDef*)hspi, (uint8_t*) data, dataLen, SPI_TIME_OUT);
-
-	if(status != HAL_OK)
-	{
-          ERROR_PRINTF("stm32_spi_send_bytes %d", status);
-  }
-}
-
-uint8_t stm32_spi_read_byte(void *hspi)
-{
-	HAL_StatusTypeDef status = HAL_OK;
-	uint8_t readvalue=0x00;
-  
-  
-  status = HAL_SPI_Receive((SPI_HandleTypeDef *)hspi, (uint8_t*) &readvalue, 1, SPI_TIME_OUT);
-
-
-  if(status != HAL_OK)
-  {
-    ERROR_PRINTF("stm32_spi_read_byte %d", status);
-  }
-
-        return readvalue;
-
-}
-
-
-uint8_t stm32_spi_read_bytes(void *hspi,uint8_t *pBuff,uint16_t rLen)
-{
-	HAL_StatusTypeDef status = HAL_OK;
- 
-  status = HAL_SPI_Receive((SPI_HandleTypeDef *)hspi, (uint8_t*)pBuff, rLen, SPI_TIME_OUT);
-
-
-	if(status != HAL_OK)
-	{
-          ERROR_PRINTF("stm32_spi_read_bytes %d", status);
-          return 1;
-  }
-
-	return 0;
-
-}
-
-
-void driver_spi_send_byte(driver_spi_t *spi, uint8_t value)
-{
-  spi_api_t *api = (spi_api_t *)spi->api;
-  spi_cfg_t *cfg = (spi_cfg_t *)spi->apiCfg;
-
-  api->send_byte(cfg->handle,value);
-}
-
-
-void driver_spi_send_bytes(driver_spi_t *spi,uint8_t *data,uint16_t dataLen)
-{
-  spi_api_t *api = (spi_api_t *)spi->api;
-  spi_cfg_t *cfg = (spi_cfg_t *)spi->apiCfg;
-
-  api->send_bytes(cfg->handle,data,dataLen);
-}
-
-uint8_t driver_spi_read_byte(driver_spi_t *spi)
-{
-  uint8_t data;
-
-   spi_api_t *api = (spi_api_t *)spi->api;
-  spi_cfg_t *cfg = (spi_cfg_t *)spi->apiCfg;
-
-  data = api->read_byte(cfg->handle);
-
-  return data;
-}
-
-
-
-
-
-
-
 static stm32_spi_cfg_t stm32_spi1_cfg;
 static stm32_spi_cfg_t stm32_spi2_cfg;
 static driver_t spi1={.opened=false};
 static driver_t spi2={.opened=false};
-static spi_api_t g_spi_api={.send_byte  = stm32_spi_send_byte,
-                            .send_bytes = stm32_spi_send_bytes,
-                            .read_byte  = stm32_spi_read_byte,
-                            .read_bytes = stm32_spi_read_bytes};
+
 
 driver_t *driver_spi_open(int num)
 {
@@ -340,7 +238,6 @@ driver_t *driver_spi_open(int num)
       stm32_spi_init(&hspi1);
       stm32_spi1_cfg.handle = &hspi1;
       spi1.cfg = &stm32_spi1_cfg;
-      spi1.api = &g_spi_api;
       if(spi1.sem == NULL)
       {
         spi1.sem = osSemaphoreNew(1, 1, NULL); 
@@ -357,7 +254,6 @@ driver_t *driver_spi_open(int num)
       stm32_spi_init(&hspi2);
       stm32_spi2_cfg.handle = &hspi2;
       spi2.cfg = &stm32_spi2_cfg;
-      spi2.api = &g_spi_api;
       if(spi2.sem == NULL)
       {
         spi2.sem = osSemaphoreNew(1, 1, NULL); 
@@ -371,63 +267,85 @@ driver_t *driver_spi_open(int num)
 
 }
 
-void driverex_spi_send_byte(driver_t *spi, uint8_t value)
+void driverex_spi_send_byte(driver_t *drv, uint8_t value)
 {
-  spi_api_t *api = (spi_api_t*)spi->api;
+  spi_cfg_t *cfg = (spi_cfg_t *)drv->cfg;
+  HAL_StatusTypeDef status = HAL_OK;
 
-  api->send_byte((( stm32_spi_cfg_t*)spi->cfg)->handle,value);
+  status = HAL_SPI_Transmit((SPI_HandleTypeDef *)cfg->handle, (uint8_t *)&value, 1, SPI_TIME_OUT);
 
-}
-
-void driverex_spi_send_bytes(driver_t *spi,uint8_t *data,uint16_t dataLen)
-{
-  spi_api_t *api = (spi_api_t*)spi->api;
-
-  api->send_bytes((( stm32_spi_cfg_t*)spi->cfg)->handle,data,dataLen);
-
-}
-
-uint8_t driverex_spi_read_byte(driver_t *spi)
-{
-  uint8_t data;
-  spi_api_t *api = (spi_api_t*)spi->api;
-
-  data = api->read_byte((( stm32_spi_cfg_t*)spi->cfg)->handle);
-
-  return data;
-}
-
-
-uint8_t driverex_spi_read_bytes(driver_t *spi,uint8_t *pBuff,uint16_t rLen)
-{
-
-
-  spi_api_t *api = (spi_api_t*)spi->api;
-
-  api->read_bytes((( stm32_spi_cfg_t*)spi->cfg)->handle,pBuff,rLen);
-
-    return 0;
-
-}
-
-
-
-void driverex_spi_pend_sem(driver_t *spi)
-{
-  if(spi->sem)
+  if (status != HAL_OK)
   {
-    osSemaphoreAcquire(spi->sem, osWaitForever);
+    ERROR_PRINTF("stm32_spi_send_byte %d", status);
+  }
+
+
+}
+
+void driverex_spi_send_bytes(driver_t *drv,uint8_t *data,uint16_t dataLen)
+{
+  HAL_StatusTypeDef status;
+  spi_cfg_t *cfg = (spi_cfg_t *)drv->cfg;
+
+  status = HAL_SPI_Transmit((SPI_HandleTypeDef *)cfg->handle, (uint8_t *)data, dataLen, SPI_TIME_OUT);
+
+  if (status != HAL_OK)
+  {
+    ERROR_PRINTF("stm32_spi_send_bytes %d", status);
   }
 }
 
-void driverex_spi_post_sem(driver_t *spi)
+uint8_t driverex_spi_read_byte(driver_t *drv)
 {
-  if(spi->sem)
+  HAL_StatusTypeDef status = HAL_OK;
+  uint8_t readvalue = 0x00;
+  spi_cfg_t *cfg = drv->cfg;
+
+  status = HAL_SPI_Receive((SPI_HandleTypeDef *)cfg->handle, (uint8_t *)&readvalue, 1, SPI_TIME_OUT);
+
+  if (status != HAL_OK)
   {
-    osSemaphoreRelease(spi->sem);
+    ERROR_PRINTF("stm32_spi_read_byte %d", status);
+  }
+
+  return readvalue;
+}
+
+
+uint8_t driverex_spi_read_bytes(driver_t *drv,uint8_t *p_buff,uint16_t read_len)
+{
+  HAL_StatusTypeDef status = HAL_OK;
+  spi_cfg_t *cfg = (spi_cfg_t *)drv->cfg;
+
+  status =
+      HAL_SPI_Receive((SPI_HandleTypeDef *)cfg->handle, (uint8_t *)p_buff, read_len, SPI_TIME_OUT);
+
+  if (status != HAL_OK)
+  {
+    ERROR_PRINTF("stm32_spi_read_bytes %d", status);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+
+void driverex_spi_pend_sem(driver_t *drv)
+{
+  if(drv->sem)
+  {
+    osSemaphoreAcquire(drv->sem, osWaitForever);
   }
 }
 
+void driverex_spi_post_sem(driver_t *drv)
+{
+  if(drv->sem)
+  {
+    osSemaphoreRelease(drv->sem);
+  }
+}
 
 
 void SPI1_IRQHandler(void)

@@ -2157,6 +2157,15 @@
                 </file>
             </group>
             <group>
+                <name>lcd</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\lcd\st7920.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\lcd\st7920.h</name>
+                </file>
+            </group>
+            <group>
                 <name>rtc</name>
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\Components\rtc\bcd.c</name>
