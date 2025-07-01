@@ -1209,6 +1209,12 @@
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_fram.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_lcd.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_lcd.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_rs232.c</name>
             </file>
             <file>
@@ -1977,6 +1983,9 @@
                 <name>$PROJ_DIR$\..\Application\test\test_hart.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\test\test_lcd.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\test\test_meomoy.c</name>
             </file>
             <file>
@@ -2304,6 +2313,15 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_interface.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_lcd.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_lcd.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\driver_lcd_define.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_led.c</name>
             </file>
             <file>
@@ -2332,12 +2350,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_sdi.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_spi.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver\driver_spi.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_uart.c</name>
@@ -2413,6 +2425,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_rtc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_spi.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_spi.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_uart.c</name>

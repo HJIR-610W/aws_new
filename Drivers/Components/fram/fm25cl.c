@@ -61,7 +61,7 @@ driver_t *fm25lc_open(void)
 
   driver_do_low(cfg->cs_io);    
 
-  driverex_spi_send_byte(cfg->spi_io,cmd);
+  driver_spi_send_byte(cfg->spi_io,cmd);
   driver_do_high(cfg->cs_io);
 }
 
@@ -78,15 +78,15 @@ void fm25cl_write(driver_t *fm25cl,uint32_t offset,uint8_t *pData,uint16_t wLen)
 
     driver_do_low(cfg->cs_io);
 
-    driverex_spi_send_byte(cfg->spi_io,WRITE);
+    driver_spi_send_byte(cfg->spi_io,WRITE);
 #if FRAM_1024
     FRAM_SPI_WRITE_BYTE((addr>>16)&0xFF);
 #endif
-    driverex_spi_send_byte(cfg->spi_io,(offset>>8)&0xFF);
-    driverex_spi_send_byte(cfg->spi_io,offset&0xFF);
+    driver_spi_send_byte(cfg->spi_io,(offset>>8)&0xFF);
+    driver_spi_send_byte(cfg->spi_io,offset&0xFF);
 
     osDelay(1);
-    driverex_spi_send_bytes(cfg->spi_io,pData,wLen);
+    driver_spi_send_bytes(cfg->spi_io,pData,wLen);
     driver_do_high(cfg->cs_io);
 
 }
@@ -98,16 +98,16 @@ void fm25cl_read(driver_t *fm25cl,uint32_t offset,uint8_t *pBuff,uint16_t rLen)
 
   driver_do_low(cfg->cs_io);
 
-  driverex_spi_send_byte(cfg->spi_io, READ);
+  driver_spi_send_byte(cfg->spi_io, READ);
 #if FRAM_1024
-        driverex_spi_send_byte(cfg->spi_io,(offset>>16)&0xFF);
+        driver_spi_send_byte(cfg->spi_io,(offset>>16)&0xFF);
 #endif    
-        driverex_spi_send_byte(cfg->spi_io,(offset>>8)&0xFF);
-        driverex_spi_send_byte(cfg->spi_io,offset&0xFF);
+        driver_spi_send_byte(cfg->spi_io,(offset>>8)&0xFF);
+        driver_spi_send_byte(cfg->spi_io,offset&0xFF);
 
     for(i=0;i<rLen;i++)
     {
-        pBuff[i] = driverex_spi_read_byte(cfg->spi_io);
+        pBuff[i] = driver_spi_read_byte(cfg->spi_io);
 
     }
     
@@ -175,8 +175,8 @@ uint8_t fm25cl_read_status(driver_t *fm25cl)
     
 
     driver_do_low(cfg->cs_io);
-    driverex_spi_send_byte(cfg->spi_io,RDSR);
-    data = driverex_spi_read_byte(cfg->spi_io);
+    driver_spi_send_byte(cfg->spi_io,RDSR);
+    data = driver_spi_read_byte(cfg->spi_io);
     driver_do_high(cfg->cs_io);
 
     fm25_status_parse(data);

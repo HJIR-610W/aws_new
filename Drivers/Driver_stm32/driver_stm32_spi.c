@@ -9,14 +9,6 @@
 #define SPI_TIME_OUT 0x1000
 
 
-typedef struct spi_api_s
-{
-  void (*set_cs)(void *handle, void *gpioHandle, uint32_t state);
-  void (*send_byte)(void *handle, uint8_t val);
-  void (*send_bytes)(void *handle, uint8_t *pData, uint16_t dataLen);
-  uint8_t (*read_byte)(void *handle);
-  uint8_t (*read_bytes)(void *handle, uint8_t *pData, uint16_t dataLen);
-} spi_api_t;
 
 typedef struct spi_cfg_s
 {
@@ -218,8 +210,9 @@ void stm32_spi_init(SPI_HandleTypeDef *hspi)
 
 
 
-
-static driver_t spi1={.opened=false};
+spi_cfg_t spi1_cfg;
+spi_cfg_t spi2_cfg;
+static driver_t spi1 = {.opened = false};
 static driver_t spi2={.opened=false};
 
 
@@ -235,8 +228,8 @@ driver_t *driver_spi_open(int num)
       spi1.driver_type = eDRIVER_SPI;
       spi1.name = "STM32_SPI1";
       stm32_spi_init(&hspi1);
-      stm32_spi1_cfg.handle = &hspi1;
-      spi1.cfg = &stm32_spi1_cfg;
+      spi1_cfg.handle = &hspi1;
+      spi1.cfg = &spi1_cfg;
       if(spi1.sem == NULL)
       {
         spi1.sem = osSemaphoreNew(1, 1, NULL); 
@@ -251,8 +244,8 @@ driver_t *driver_spi_open(int num)
       spi2.driver_type = eDRIVER_SPI;
       spi2.name = "STM32_SPI2";
       stm32_spi_init(&hspi2);
-      stm32_spi2_cfg.handle = &hspi2;
-      spi2.cfg = &stm32_spi2_cfg;
+      spi2_cfg.handle = &hspi2;
+      spi2.cfg = &spi2_cfg;
       if(spi2.sem == NULL)
       {
         spi2.sem = osSemaphoreNew(1, 1, NULL); 

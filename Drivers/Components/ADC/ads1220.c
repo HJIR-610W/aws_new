@@ -343,7 +343,7 @@ void write_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs,uint8_t *pData
     ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
 
 
-    driverex_spi_pend_sem(cfg->spi_io);
+    driver_spi_pend_sem(cfg->spi_io);
 
     driver_do_low(cfg->cs_io);
 
@@ -351,16 +351,16 @@ void write_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs,uint8_t *pData
 
     data = ADS1220_CMD_WREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03));
  
-    driverex_spi_send_byte(cfg->spi_io,data);
+    driver_spi_send_byte(cfg->spi_io,data);
 
     for (i=0; i< numRegs; i++)
     {
-        driverex_spi_send_byte(cfg->spi_io,*pData++);
+        driver_spi_send_byte(cfg->spi_io,*pData++);
     }
    
     driver_do_high( cfg->cs_io);
 
-    driverex_spi_post_sem(cfg->spi_io);
+    driver_spi_post_sem(cfg->spi_io);
 }
 
 void read_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff)
@@ -370,7 +370,7 @@ void read_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff
     uint8_t data;
     ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
 
-    driverex_spi_pend_sem(cfg->spi_io);
+    driver_spi_pend_sem(cfg->spi_io);
 
     driver_do_low(cfg->cs_io);
 
@@ -378,17 +378,17 @@ void read_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff
     
     data = (ADS1220_CMD_RREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03)));
 
-    driverex_spi_send_byte(cfg->spi_io,data);
+    driver_spi_send_byte(cfg->spi_io,data);
 
     for (i=0; i< numRegs; i++)
     {
-        val = driverex_spi_read_byte(cfg->spi_io);
+        val = driver_spi_read_byte(cfg->spi_io);
         *pBuff++ = val;
     }
    
     driver_do_high( cfg->cs_io);
     
-    driverex_spi_post_sem(cfg->spi_io);
+    driver_spi_post_sem(cfg->spi_io);
 
 }
 
@@ -396,16 +396,16 @@ void ads1220_start_conv(driver_t *drv)
 {
     ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
 
-    driverex_spi_pend_sem(cfg->spi_io);
+    driver_spi_pend_sem(cfg->spi_io);
 
     driver_do_low( cfg->cs_io);
     
     usDelay(50);
-    driverex_spi_send_byte(cfg->spi_io,ADS1220_CMD_SYNC);
+    driver_spi_send_byte(cfg->spi_io,ADS1220_CMD_SYNC);
    
     driver_do_high( cfg->cs_io);
     
-   driverex_spi_post_sem(cfg->spi_io);
+   driver_spi_post_sem(cfg->spi_io);
     
 }
 
@@ -445,15 +445,15 @@ void ads1220_reset_sw(driver_t *drv)
 {
     ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
 
-    driverex_spi_pend_sem(cfg->spi_io);
+    driver_spi_pend_sem(cfg->spi_io);
 
     driver_do_low(cfg->cs_io);
 
-    driverex_spi_send_byte(cfg->spi_io,ADS1220_CMD_RESET);
+    driver_spi_send_byte(cfg->spi_io,ADS1220_CMD_RESET);
 
     driver_do_high(cfg->cs_io);
 
-    driverex_spi_post_sem(cfg->spi_io);
+    driver_spi_post_sem(cfg->spi_io);
 }
 
 /**
@@ -495,14 +495,14 @@ int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
         return 0;
     }
 
-    driverex_spi_pend_sem(cfg->spi_io);
+    driver_spi_pend_sem(cfg->spi_io);
     driver_do_low(cfg->cs_io);
     //이 명령어 전송되면 drdy 핀 올라감
-    driverex_spi_send_byte(cfg->spi_io,ADS1220_CMD_RDATA);
+    driver_spi_send_byte(cfg->spi_io,ADS1220_CMD_RDATA);
 
-    data = driverex_spi_read_byte(cfg->spi_io);
-    data = (data << 8) |driverex_spi_read_byte(cfg->spi_io);
-    data = (data << 8) |driverex_spi_read_byte(cfg->spi_io);
+    data = driver_spi_read_byte(cfg->spi_io);
+    data = (data << 8) |driver_spi_read_byte(cfg->spi_io);
+    data = (data << 8) |driver_spi_read_byte(cfg->spi_io);
 
     if (data & 0x00800000)
     {
@@ -511,7 +511,7 @@ int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
 
     driver_do_high( cfg->cs_io);
     *err = 0;
-    driverex_spi_post_sem(cfg->spi_io);
+    driver_spi_post_sem(cfg->spi_io);
     
     return data;
 }

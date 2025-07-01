@@ -5,11 +5,13 @@
 
 #include "st7920.h"
 #include <string.h>
-#include "driver_stm32_spi.h"
+#include "driver_spi.h"
 #include "driver_stm32_do.h"
 #include "driver_do.h"
 #include "pcb_define.h"
 #include "driver_lcd_define.h"
+#include "mcu_utile.h"
+#include "usDelay.h"
 
 #define ST7920_WIDTH 128
 #define ST7920_HEIGHT 64
@@ -53,14 +55,26 @@ static st7920_t st7920_instance;
 static driver_t st7920_driver;
 static uint8_t framebuffer[ST7920_HEIGHT][ST7920_WIDTH / 8];  // 그래픽 모드용 프레임버퍼
 
-lcd_api_t lcd_api = {.clear_screen = st7920_clear_screen};
+lcd_api_t lcd_api = {
+    .set_position = st7920_set_position,
+    .write_string = st7920_write_string,
+    .clear_screen = st7920_clear_screen,
+    .home = st7920_home,
+    .display_on = st7920_display_on,
+    .display_off = st7920_display_off
+};
 
 
-void st7920_delay_ms(uint32_t ms)
+inline void st7920_delay_ms(uint32_t ms)
 {
 
   osDelay(ms);
   
+}
+
+inline void st7920_delay_us(uint32_t us_delay)
+{
+  usDelay(us_delay);
 }
 
 driver_t *st7920_open(void)
@@ -133,9 +147,9 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
     st7920_delay_us(1);
     
     // ST7920 시리얼 프로토콜: 동기바이트 + 상위4비트 + 하위4비트
-    driverex_spi_send_byte(cfg->spi_io, sync);
-    driverex_spi_send_byte(cfg->spi_io, data & 0xF0);
-    driverex_spi_send_byte(cfg->spi_io, (data << 4) & 0xF0);
+    driver_spi_send_byte(cfg->spi_io, sync);
+    driver_spi_send_byte(cfg->spi_io, data & 0xF0);
+    driver_spi_send_byte(cfg->spi_io, (data << 4) & 0xF0);
     
     st7920_delay_us(1);
     driver_do_low(cfg->cs_io);  // 통신 종료

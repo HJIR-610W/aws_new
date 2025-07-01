@@ -168,7 +168,7 @@ static void at45db_write_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t a
 
   uint8_t szCmd[4];
 
-  driverex_spi_pend_sem(cfg->spi_io);
+  driver_spi_pend_sem(cfg->spi_io);
 
   
   driver_do_low(cfg->cs_io);
@@ -186,13 +186,13 @@ static void at45db_write_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t a
   szCmd[2] = (uint8_t)((address>>8) & AT45DB_ADDR_HIGH_MASK);
   szCmd[3] = (uint8_t)address;
 
-  driverex_spi_send_bytes(cfg->spi_io,szCmd,4);
+  driver_spi_send_bytes(cfg->spi_io,szCmd,4);
 
-  driverex_spi_send_bytes(cfg->spi_io,(uint8_t *)string,buf_len);
+  driver_spi_send_bytes(cfg->spi_io,(uint8_t *)string,buf_len);
 
   driver_do_high(cfg->cs_io);
 
-  driverex_spi_post_sem(cfg->spi_io);
+  driver_spi_post_sem(cfg->spi_io);
   
 }
 
@@ -205,8 +205,8 @@ static void at45db_page_write_cmd(driver_t *drv, uint32_t page)
   FlashSend_Byte((uint8_t)(page <<1));
 #else
 
-  driverex_spi_send_byte(cfg->spi_io,(uint8_t)(page >> 8));
-  driverex_spi_send_byte(cfg->spi_io,(uint8_t)(page));
+  driver_spi_send_byte(cfg->spi_io,(uint8_t)(page >> 8));
+  driver_spi_send_byte(cfg->spi_io,(uint8_t)(page));
 
 #endif
 }
@@ -222,26 +222,26 @@ static void at45db_buffer_to_memory(driver_t *drv, uint8_t buffer_choice, uint32
   at45db_cfg_t *cfg=(at45db_cfg_t*)drv->cfg;
   
   
-  driverex_spi_pend_sem(cfg->spi_io);
+  driver_spi_pend_sem(cfg->spi_io);
 
   driver_do_low(cfg->cs_io);
 
     if(buffer_choice == AT45DB_BUFFER2)
     {
-      driverex_spi_send_byte(cfg->spi_io, AT45DB_CMD_BUFFER2_TO_MEMORY);
+      driver_spi_send_byte(cfg->spi_io, AT45DB_CMD_BUFFER2_TO_MEMORY);
     }
     else
     {
-      driverex_spi_send_byte(cfg->spi_io, AT45DB_CMD_BUFFER1_TO_MEMORY);
+      driver_spi_send_byte(cfg->spi_io, AT45DB_CMD_BUFFER1_TO_MEMORY);
     }
 
     at45db_page_write_cmd(drv, page);
 
-    driverex_spi_send_byte(cfg->spi_io,BYTE_DUMMY);
+    driver_spi_send_byte(cfg->spi_io,BYTE_DUMMY);
 
   driver_do_high(cfg->cs_io);
 
-  driverex_spi_post_sem(cfg->spi_io);
+  driver_spi_post_sem(cfg->spi_io);
 }
 
 
@@ -251,17 +251,17 @@ static void at45db_reg_read(driver_t *drv, uint8_t cmd, uint8_t *info, uint8_t l
 
 
   memset(info,  0, len);
-  driverex_spi_pend_sem(cfg->spi_io);
+  driver_spi_pend_sem(cfg->spi_io);
 
   driver_do_low(cfg->cs_io);
-  driverex_spi_send_byte(cfg->spi_io,cmd);
+  driver_spi_send_byte(cfg->spi_io,cmd);
 
-  driverex_spi_read_bytes(cfg->spi_io,info,len);
+  driver_spi_read_bytes(cfg->spi_io,info,len);
 
 
   driver_do_high(cfg->cs_io);
 
-  driverex_spi_post_sem(cfg->spi_io);
+  driver_spi_post_sem(cfg->spi_io);
 }
 
 
@@ -271,15 +271,15 @@ static void at45db_reg_write(driver_t *drv, uint8_t *cmd)
 
 
 
-  driverex_spi_pend_sem(cfg->spi_io);
+  driver_spi_pend_sem(cfg->spi_io);
 
   driver_do_low(cfg->cs_io);
-  driverex_spi_send_bytes(cfg->spi_io,cmd,4);
+  driver_spi_send_bytes(cfg->spi_io,cmd,4);
 ;
 
   driver_do_high(cfg->cs_io);
 
-  driverex_spi_post_sem(cfg->spi_io);
+  driver_spi_post_sem(cfg->spi_io);
   
 }
 
@@ -349,26 +349,26 @@ static void at45db_memory_to_buffer(driver_t *drv, uint8_t buffer_choice, uint32
     at45db_cfg_t *cfg=(at45db_cfg_t*)drv->cfg;
     
 
-  driverex_spi_pend_sem(cfg->spi_io);
+  driver_spi_pend_sem(cfg->spi_io);
 
   driver_do_low(cfg->cs_io);
   
     if(buffer_choice == AT45DB_BUFFER2)
     {
-      driverex_spi_send_byte(cfg->spi_io, AT45DB_CMD_MEMORY_TO_BUFFER2);
+      driver_spi_send_byte(cfg->spi_io, AT45DB_CMD_MEMORY_TO_BUFFER2);
     }
     else
     {
-      driverex_spi_send_byte(cfg->spi_io, AT45DB_CMD_MEMORY_TO_BUFFER1);
+      driver_spi_send_byte(cfg->spi_io, AT45DB_CMD_MEMORY_TO_BUFFER1);
     }
 
   at45db_page_write_cmd(drv, page);
 
-  driverex_spi_send_byte(cfg->spi_io,BYTE_DUMMY);
+  driver_spi_send_byte(cfg->spi_io,BYTE_DUMMY);
   
   driver_do_high(cfg->cs_io);
 
-  driverex_spi_post_sem(cfg->spi_io);
+  driver_spi_post_sem(cfg->spi_io);
 }
 /**
  * @brief Read data from AT45DB internal buffer
@@ -384,7 +384,7 @@ static void at45db_read_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t ad
     at45db_cfg_t *cfg=(at45db_cfg_t*)drv->cfg;
 
 
-  driverex_spi_pend_sem(cfg->spi_io);
+  driver_spi_pend_sem(cfg->spi_io);
 
   driver_do_low(cfg->cs_io);
 
@@ -402,11 +402,11 @@ static void at45db_read_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t ad
     szCmd[4] = BYTE_DUMMY;
 
 
-  driverex_spi_send_bytes(cfg->spi_io,(uint8_t *)szCmd,5);
-  driverex_spi_read_bytes(cfg->spi_io,(uint8_t *)string,buf_len);
+  driver_spi_send_bytes(cfg->spi_io,(uint8_t *)szCmd,5);
+  driver_spi_read_bytes(cfg->spi_io,(uint8_t *)string,buf_len);
   
   driver_do_high(cfg->cs_io);
-  driverex_spi_post_sem(cfg->spi_io);
+  driver_spi_post_sem(cfg->spi_io);
 
 
 }

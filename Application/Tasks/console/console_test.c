@@ -19,6 +19,7 @@
 #include "aws_menu_cali.h"
 #include "test_adc.h"
 #include "test_flash.h"
+#include "test_lcd.h"
 
 int run_test_root()
 {
@@ -45,6 +46,7 @@ int run_test_root()
     io_printf("| 15. 파일시스템                        |\r\n");
     io_printf("| 16. ADC선형성                         |\r\n");
     io_printf("| 17. FLASH 메모리                      |\r\n");
+    io_printf("| 18. CLCD                              |\r\n");
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
@@ -103,6 +105,9 @@ int run_test_root()
       break;
       case 17:
       test_flash();
+      break;
+      case 18:
+      test_lcd();
       break;
            default : break;
     }

@@ -2028,11 +2028,8 @@ void draw_aws(win_t *p_win)
 #define CHARGER_WD 15
 void draw_config(win_t *p_win)
 {
-  uint8_t err;
-  int row_count = 5;
-  char buff[50];
-  char temp[20];
-  int page = 0;
+
+
   int win_height = p_win->view_row + 3;
 
   p_win->total_pages = 1;
@@ -2041,7 +2038,6 @@ void draw_config(win_t *p_win)
 
 
   win_printf_title(p_win, "¼³Á¤");
-
 
 
 

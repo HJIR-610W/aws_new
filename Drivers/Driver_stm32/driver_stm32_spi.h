@@ -3,23 +3,13 @@
 #ifndef DRIVER_SPI_H
 #define DRIVER_SPI_H
 
-
-
-
-#include "cmsis_os.h"
-
 #include <stdint.h>
 
+#include "cmsis_os.h"
 #include "driver_interface.h"
 
 #define STM_SPI_1 0
 #define STM_SPI_2 1
-
-
-
-
-
-
 
 
 driver_t *driver_spi_open(int num);
