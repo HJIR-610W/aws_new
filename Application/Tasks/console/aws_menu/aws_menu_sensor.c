@@ -382,7 +382,7 @@ int32_t sensor_model_set( sensor_t *sensor, const uint8_t *model_list, uint8_t l
   {
     return status;
   }
-  sensor->type = (eSENSOR_TYPE_t)model_list[choice];
+  sensor->type = (eSENSOR_TYPE_MODEL_t)model_list[choice];
   set_type(sensor);
 
   return MENU_OK;
@@ -916,7 +916,7 @@ int32_t sensor_set( sensor_t *p_sensor, uint8_t choice)
 /*
 센서 설정
 */
-int32_t menu_sensor( eSENSOR_TYPE_LIST_t list)
+int32_t menu_sensor( eSENSOR_TYPE_t list)
 {
   int32_t status = 0;
   int32_t choice  = 0;
@@ -1000,7 +1000,7 @@ int32_t aws_menu_sensor(void)
     status = select_index_from_table( NULL, print_menu_sensor, 0, false,&choice);
     if (status != MENU_OK)
           break;
-    status = menu_sensor((eSENSOR_TYPE_LIST_t)(choice));
+    status = menu_sensor((eSENSOR_TYPE_t)(choice));
     if(status ==MENU_ABORT)
     break;
   }while(1);

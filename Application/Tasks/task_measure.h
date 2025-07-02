@@ -58,6 +58,7 @@ typedef struct measure_data_1s
   sensor_data_t data[SENSOR_LIST_MAX];//풍향 풍속 인덱스는 미사용
 } measure_data_1s_t;
 
+//단순 정보 표시용 센서 측정에 얼마나 시간이 걸리는지 측정하기 위한 용도
 typedef struct
 {
   uint32_t start_time;

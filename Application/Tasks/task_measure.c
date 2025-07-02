@@ -80,7 +80,7 @@ measure_data_1s_t g_reading_1;//Task 실행 시간 측정용
 exec_time_t g_exec_250ms_time; //Task 실행 시간 측정용
 exec_time_t g_exec_1s_time;//Task 실행 시간 측정용
 
-driver_t *get_sensor_driver(eSENSOR_TYPE_LIST_t sensor)
+driver_t *get_sensor_driver(eSENSOR_TYPE_t sensor)
 {
   return g_sensor_driver[sensor];
 }
@@ -169,7 +169,7 @@ bool is_measurement_1s( void *data,uint32_t timeout)
  *  
  * */
 // ADDMODEL:센서 추가시 수정해야함
-int32_t get_driver_number(eSENSOR_TYPE_t type)
+int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
 {
   int32_t num = -1;  // 항목 없음
 
@@ -461,15 +461,15 @@ void measure_1s(void)
   int32_t iData;
   float adc;
   float fData;
-  eSENSOR_TYPE_t model;
-  eSENSOR_TYPE_LIST_t sensor_type;
+  eSENSOR_TYPE_MODEL_t model;
+  eSENSOR_TYPE_t sensor_type;
   sensor_data_t *pa_reading_1s = g_reading_1.data;
   sensor_t *sensor = g_sensor_config_bk;
 
 
       // AWS센서만 처리
       for (sensor_type = A1_TEMPERATURE; sensor_type <= I1_TACHOMETER;
-           (eSENSOR_TYPE_LIST_t)sensor_type++)
+           (eSENSOR_TYPE_t)sensor_type++)
       {
         model = sensor[sensor_type].type;
 

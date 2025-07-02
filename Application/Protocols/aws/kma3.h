@@ -24,11 +24,11 @@ uint16_t make_kma3_resp_RODTWC(uint8_t *out, uint16_t outSize, uint16_t id, uint
     const char *result);
 
 
-void kma_update_sensor_err(eSENSOR_TYPE_LIST_t sensor_num, uint8_t err);
-void kma_update_sensor_err(eSENSOR_TYPE_LIST_t sensor_num, uint8_t err);
-bool kma_is_sensor_error(eSENSOR_TYPE_LIST_t sensor_num);
-void kma3_set_sensor_status(eSENSOR_TYPE_LIST_t sensor_num,uint8_t sensor[8]);
-void kma3_clear_sensor_status(eSENSOR_TYPE_LIST_t sensor_num, uint8_t sensor[8]);
-bool kma3_is_sensor_error(eSENSOR_TYPE_LIST_t sensor_num,uint8_t sensor[8]);
-void kma3_update_sensor_status(eSENSOR_TYPE_LIST_t sensor_num,uint8_t sensor[8], uint8_t err);
+void kma_update_sensor_err(eSENSOR_TYPE_t sensor_num, uint8_t err);
+void kma_update_sensor_err(eSENSOR_TYPE_t sensor_num, uint8_t err);
+bool kma_is_sensor_error(eSENSOR_TYPE_t sensor_num);
+void kma3_set_sensor_status(eSENSOR_TYPE_t sensor_num,uint8_t sensor[8]);
+void kma3_clear_sensor_status(eSENSOR_TYPE_t sensor_num, uint8_t sensor[8]);
+bool kma3_is_sensor_error(eSENSOR_TYPE_t sensor_num,uint8_t sensor[8]);
+void kma3_update_sensor_status(eSENSOR_TYPE_t sensor_num,uint8_t sensor[8], uint8_t err);
 #endif

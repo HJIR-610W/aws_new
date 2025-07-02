@@ -68,7 +68,7 @@ typedef enum sensor_list_e
   SENSOR_LIST
 #undef X
       SENSOR_LIST_MAX
-} eSENSOR_TYPE_LIST_t;
+} eSENSOR_TYPE_t;
 
 //ADDMODEL:센서 타입이 추가되면 여기에도 추가해야함
 //센서 모델,이름 정의
@@ -96,7 +96,7 @@ typedef enum sensor_model_e
   SENSOR_TYPE_LIST
 #undef X
       SENSOR_TYPE_MAX
-} eSENSOR_TYPE_t;
+} eSENSOR_TYPE_MODEL_t;
 
 //센서별 모델 리스트와, 갯수
 typedef struct sensor_table_s
@@ -116,7 +116,7 @@ typedef enum adcChType_e
 typedef struct sensor_s
 {
   float offset;
-  eSENSOR_TYPE_t type;
+  eSENSOR_TYPE_MODEL_t type;
   uint8_t configCnt;     // 센서가 가지고 있는 설정값 수 예)
   uint8_t config[SENSOR_CONFIG_TABLE_MAX][2];  //[0][0] 센서타입 정보 저장, [0][1] 타입이 할당받은
                                                // 설정 위치값 저장

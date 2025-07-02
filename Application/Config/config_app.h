@@ -144,7 +144,7 @@ void config_app_reset(void) ;
 void save_config_app(void);
 void load_config_app(void);
 void save_config_app_field(eCONFIG_APP_FIELD_t field);
-void set_sensor_offset(eSENSOR_TYPE_LIST_t sensor,float offset);
+void set_sensor_offset(eSENSOR_TYPE_t sensor,float offset);
 void backup_config_app(void);
 void restore_config_app(void);
 config_t *get_config_app(void);

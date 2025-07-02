@@ -10,14 +10,14 @@
 #include "driver_adc.h"
 #include "util_memory.h"
 
-extern driver_t *get_sensor_driver(eSENSOR_TYPE_LIST_t sensor);
-extern int32_t get_driver_number(eSENSOR_TYPE_t type) ;
+extern driver_t *get_sensor_driver(eSENSOR_TYPE_t sensor);
+extern int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type) ;
 
 
 static uint8_t
     s_offset_sensor_index[SENSOR_LIST_MAX];
 
-void inline_print_offset_sensor(uint8_t cnt,eSENSOR_TYPE_LIST_t sensor)
+void inline_print_offset_sensor(uint8_t cnt,eSENSOR_TYPE_t sensor)
 {
   sensor_t *p_sensor;
   p_sensor = &get_config_app()->sensor[sensor];
