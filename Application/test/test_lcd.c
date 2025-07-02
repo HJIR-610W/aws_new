@@ -23,7 +23,7 @@ void test_lcd(void)
     
     io_printf("LCD Test\r\n");
     io_printf("Select LCD Type: CLCD or TERMINAL\r\n");
-#if 0 
+#if 1
     if (cli_scanf_s("%19s", lcd_type) == CLI_KEYCODE_CTRL_C)
     {
         return;
@@ -55,11 +55,7 @@ void test_lcd(void)
     
     io_printf("LCD Test Start (%s) - Press CTRL+Q to exit\r\n", lcd_type);
     
-    driver_lcd_set_position(g_lcd_driver, 0, 0);
-    driver_lcd_write_string(g_lcd_driver, "1");
-    get_key(0xffffffff);
-    
-    return ;
+
                     
                     
     if(lcd_driver_num == DRIVER_CLCD)
@@ -73,11 +69,11 @@ void test_lcd(void)
             
             for(int i = 0; i < 10; i++)
             {
-                driver_lcd_clear_screen(g_lcd_driver);
+              
                 
                 for(int j = 0; j < 16; j++)
                 {
-                    display_str[j] = '0' + counter;
+                    display_str[j] = '0' + j;
                 }
                 display_str[16] = '\0';
                 

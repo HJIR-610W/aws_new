@@ -38,8 +38,8 @@
 
 /* 시리얼 인터페이스 동기화 바이트 - ST7920은 3바이트 시퀀스로 통신 */
 #define ST7920_SYNC_BYTE 0xF8
-#define ST7920_SYNC_CMD 0xFA   // 명령 전송시 첫 바이트
-#define ST7920_SYNC_DATA 0xFE  // 데이터 전송시 첫 바이트
+#define ST7920_SYNC_CMD 0xF8   // 명령 전송시 첫 바이트
+#define ST7920_SYNC_DATA 0xFA  // 데이터 전송시 첫 바이트
 
 typedef struct
 {
@@ -123,7 +123,7 @@ void st7920_reset(driver_t *drv)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
-        driver_do_high(cfg->cs_io);
+        driver_do_low(cfg->cs_io);
         
     // 하드웨어 리셋 시퀀스 - DO_LCD_RESET 핀 사용
     driver_do_low(cfg->rst_io);
@@ -133,18 +133,31 @@ void st7920_reset(driver_t *drv)
     
     // ST7920 초기화 시퀀스 - 3번 반복으로 안정화
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
-    st7920_delay_ms(1);
+    st7920_delay_ms(5);
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
     st7920_delay_ms(1);
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
     st7920_delay_ms(1);
     
-    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL|0x04);
+    // 기본 명령 세트 확인 - 확장 기능 비활성화
+    st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
     st7920_delay_ms(1);
+    
+    // 디스플레이 제어 - 디스플레이 ON, 커서 OFF, 깜박임 OFF
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL | ST7920_DISPLAY_ON);
+    st7920_delay_ms(1);
+    
+    // 화면 지우기
     st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR); 
     st7920_delay_ms(20);
-    st7920_send_cmd(drv, ST7920_CMD_ENTRY_MODE_SET | 0x02);  // 커서 증가, 시프트 없음
+    
+    // 엔트리 모드 설정 - 커서 증가, 시프트 없음
+    st7920_send_cmd(drv, ST7920_CMD_ENTRY_MODE_SET | 0x02);
     st7920_delay_ms(1);
+    
+    // 홈 위치로 이동
+    st7920_send_cmd(drv, ST7920_CMD_RETURN_HOME);
+    st7920_delay_ms(2);
     
     cfg->initialized = true;
 }
@@ -154,7 +167,7 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
 
-    driver_do_low(cfg->cs_io);
+    driver_do_high(cfg->cs_io);
     st7920_delay_us(1);
     
     // ST7920 시리얼 프로토콜: 동기바이트 + 상위4비트 + 하위4비트
@@ -163,7 +176,7 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
     driver_spi_send_byte(cfg->spi_io, (data << 4) & 0xF0);
     
     st7920_delay_us(1);
-    driver_do_high(cfg->cs_io);  // 통신 종료
+    driver_do_low(cfg->cs_io);  // 통신 종료
     st7920_delay_us(100);  // 명령 처리 시간 확보
 }
 
@@ -212,6 +225,7 @@ void st7920_clear_screen(driver_t *drv)
     }
     else
     {
+        // 문자 모드: DISPLAY_CLEAR 명령으로 한번에 지우기
         st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
         st7920_delay_ms(2);  // 클리어 명령은 1.6ms 필요
     }
@@ -260,10 +274,15 @@ void st7920_set_graphic_mode(driver_t *drv, bool enable)
 }
 
 /*
-First line:  0x80 ~ 0x8F (16문자)
-Second line: 0x90 ~ 0x9F (16문자)  
-Third line:  0xA0 ~ 0xAF (16문자)
-Fourth line: 0xB0 ~ 0xBF (16문자)
+ST7920 실제 DDRAM 주소 매핑 (수정됨):
+First line:  0x80 ~ 0x8F (16문자) - 화면 1행
+Second line: 0x90 ~ 0x9F (16문자) - 화면 2행  
+Third line:  0x88 ~ 0x8F, 0x90 ~ 0x97 (16문자) - 화면 3행 (주소가 겹침)
+Fourth line: 0x98 ~ 0x9F, 0xA0 ~ 0xA7 (16문자) - 화면 4행 (주소가 겹침)
+
+실제로는 다음과 같이 매핑:
+Row 2: 0x88 ~ 0x8F (8문자) + 0x90 ~ 0x97 (8문자) = 16문자
+Row 3: 0x98 ~ 0x9F (8문자) + 0xA0 ~ 0xA7 (8문자) = 16문자
 */
 void st7920_set_position(driver_t *drv, uint8_t x, uint8_t y)
 {
@@ -274,22 +293,30 @@ void st7920_set_position(driver_t *drv, uint8_t x, uint8_t y)
         return;  // 잘못된 입력 무시
     }
     
-    // 각 라인별 시작 주소 직접 계산
+    // ST7920의 실제 DDRAM 주소 매핑 (간소화)
     switch (y) {
-        case 0:  // First line
+        case 0:  // First line (화면 1행)
             addr = 0x80 + x;
             break;
             
-        case 1:  // Second line  
+        case 1:  // Second line (화면 2행)
             addr = 0x90 + x;
             break;
             
-        case 2:  // Third line
-            addr = 0xA0 + x;
+        case 2:  // Third line (화면 3행)
+            addr = 0x88 + x;
+            // 범위 체크: 0x88~0x97 (16문자)
+            if (addr > 0x97) {
+                return; // 범위 초과
+            }
             break;
             
-        case 3:  // Fourth line
-            addr = 0xB0 + x;
+        case 3:  // Fourth line (화면 4행)
+            addr = 0x98 + x;
+            // 범위 체크: 0x98~0xA7 (16문자)
+            if (addr > 0xA7) {
+                return; // 범위 초과
+            }
             break;
             
         default:
