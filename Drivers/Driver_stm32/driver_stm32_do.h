@@ -17,7 +17,7 @@
 #define STM32_DO_HART_RTS        6
 #define STM32_DO_POWER_24V       7
 #define STM32_DO_HART_RESET      8
-#define STM32_DO_BTM_PWRC        9
+#define STM32_DO_LCD_RESET        9
 #define STM32_DO_DIR_SDI        10
 #define STM32_DO_DIR_RS485_A    11
 #define STM32_DO_DIR_RS485_B    12
@@ -25,8 +25,8 @@
 #define STM32_DO_DIR_RS485_D    14
 #define STM32_DO_POWER_RAIN_DECT_DIGITAL  15
 #define STM32_DO_POWER_RAIN_DECT_ANALOG 16
-
-#define STM32_DO_MAX           17
+#define STM32_DO_LCD_CS 17
+#define STM32_DO_MAX           18
 
 
 driver_t *stm32_do_open(int num,void *opt);

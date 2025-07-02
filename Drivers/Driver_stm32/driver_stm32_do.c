@@ -40,7 +40,7 @@ const stm32_do_cfg_t HART_SEL_cfg = {.port = DO_SEL_IF_UART_GPIO_Port, .pin = SE
 const stm32_do_cfg_t HART_RTS_cfg = {.port = DO_RTS_H_GPIO_Port, .pin = DO_RTS_H_Pin};
 const stm32_do_cfg_t POWER_24V_cfg = {.port = DO_CON_PWR_S24_GPIO_Port, .pin = DO_CON_PWR_S24_Pin};
 const stm32_do_cfg_t HART_RESET_cfg = {.port = DO_RESET_H_GPIO_Port, .pin = DO_RESET_H_Pin};
-const stm32_do_cfg_t BTM_PWRC_cfg = {.port = DO_BTM_PWRC_GPIO_Port, .pin = DO_BTM_PWRC_Pin};
+
 const stm32_do_cfg_t DIR_RS485_C_cfg = {.port = OUT_RS485_DIR_C_GPIO_Port,
                                         .pin = OUT_RS485_DIR_C_PIN};
 const stm32_do_cfg_t DIR_RS485_D_cfg = {.port = OUT_RS485_DIR_D_GPIO_Port,
@@ -52,24 +52,24 @@ const stm32_do_cfg_t CON_PWR_RAIN_DECT_cfg = {.port = DO_POWER_RAIN_DECT_DIGITAL
 const stm32_do_cfg_t CON_PWR_RAIN_cfg = {.port = DO_CON_PWR_RAIN_GPIO_Port,
                                          .pin = DO_CON_PWR_RAIN_PIN};
 
+const stm32_do_cfg_t LCD_CS_cfg = {.port = DO_STATUS_BTM_GPIO_Port, .pin = DO_STATUS_BTM_Pin};
+const stm32_do_cfg_t LCD_RESET_cfg = {.port = DO_BTM_PWRC_GPIO_Port, .pin = DO_BTM_PWRC_Pin};
+
 driver_t g_stm32_do_list[STM32_DO_MAX];
 
-const driver_t g_stm[]={
-   [0]={.cfg = &(stm32_do_cfg_t){.port=OUT_SPI1_NSS_GPIO_Port,.pin=OUT_SPI1_NSS_PIN}}};
+const driver_t g_stm[] = {
+    [0] = {.cfg = &(stm32_do_cfg_t){.port = OUT_SPI1_NSS_GPIO_Port, .pin = OUT_SPI1_NSS_PIN}}};
 
-
-
-
-void stm32_do_init(const stm32_do_cfg_t *cfg,void *opt)
+void stm32_do_init(const stm32_do_cfg_t *cfg, void *opt)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  do_config_t *do_config=opt;
+  do_config_t *do_config = opt;
   uint32_t mode = GPIO_MODE_OUTPUT_PP;
-  uint32_t pull =GPIO_NOPULL;
+  uint32_t pull = GPIO_NOPULL;
 
-  if(opt)
+  if (opt)
   {
-    if(do_config->mode == DO_OUT_OD)
+    if (do_config->mode == DO_OUT_OD)
     {
       mode = GPIO_MODE_OUTPUT_OD;
     }
@@ -78,22 +78,20 @@ void stm32_do_init(const stm32_do_cfg_t *cfg,void *opt)
       mode = GPIO_MODE_OUTPUT_PP;
     }
 
-    if(do_config->pullup == DO_PULL_UP)
+    if (do_config->pullup == DO_PULL_UP)
     {
       pull = GPIO_PULLUP;
     }
-    else if(do_config->pullup == DO_PULL_DOWN)
+    else if (do_config->pullup == DO_PULL_DOWN)
     {
       pull = GPIO_PULLDOWN;
     }
-
   }
   board_clk_gpio(cfg->port);
   GPIO_InitStruct.Pin = cfg->pin;
   GPIO_InitStruct.Mode = mode;
   GPIO_InitStruct.Pull = pull;
-  HAL_GPIO_Init(cfg->port ,&GPIO_InitStruct);
-
+  HAL_GPIO_Init(cfg->port, &GPIO_InitStruct);
 }
 
 driver_t *stm32_do_open(int num,void *opt)
@@ -144,9 +142,10 @@ driver_t *stm32_do_open(int num,void *opt)
       g_stm32_do_list[num].cfg = (void *)&HART_RESET_cfg;
       stm32_do_init(&HART_RESET_cfg, opt);
       break;
-    case STM32_DO_BTM_PWRC:
-      g_stm32_do_list[num].cfg = (void *)&BTM_PWRC_cfg;
-      stm32_do_init(&BTM_PWRC_cfg, opt);
+    case STM32_DO_LCD_RESET:
+      g_stm32_do_list[num].name = "STM32_DO_LCD_RESET";
+      g_stm32_do_list[num].cfg = (void *)&LCD_RESET_cfg;
+      stm32_do_init(&LCD_RESET_cfg, opt);
 
       break;
     case STM32_DO_DIR_SDI:
@@ -178,6 +177,11 @@ driver_t *stm32_do_open(int num,void *opt)
       g_stm32_do_list[num].name = "STM32_DO_POWER_RAIN_DECT_ANALOG";
        g_stm32_do_list[num].cfg = (void *)&CON_PWR_RAIN_cfg;
       stm32_do_init(&CON_PWR_RAIN_cfg, opt);
+      break;
+    case STM32_DO_LCD_CS:
+      g_stm32_do_list[num].name = "STM32_DO_LCD_CS";
+      g_stm32_do_list[num].cfg = (void *)&LCD_CS_cfg;
+      stm32_do_init(&LCD_CS_cfg, opt);
       break;
   }
   return &g_stm32_do_list[num];

@@ -5,14 +5,15 @@
 
 #include "st7920.h"
 #include <string.h>
-#include "driver_spi.h"
+#include "driver_stm32_spi.h"
 #include "driver_stm32_do.h"
 #include "driver_do.h"
 #include "pcb_define.h"
 #include "driver_lcd_define.h"
 #include "mcu_utile.h"
 #include "usDelay.h"
-
+#include <math.h>
+#include <stdlib.h>
 #define ST7920_WIDTH 128
 #define ST7920_HEIGHT 64
 
@@ -55,13 +56,18 @@ static st7920_t st7920_instance;
 static driver_t st7920_driver;
 static uint8_t framebuffer[ST7920_HEIGHT][ST7920_WIDTH / 8];  // 그래픽 모드용 프레임버퍼
 
+static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode);
+
 lcd_api_t lcd_api = {
     .set_position = st7920_set_position,
     .write_string = st7920_write_string,
     .clear_screen = st7920_clear_screen,
     .home = st7920_home,
     .display_on = st7920_display_on,
-    .display_off = st7920_display_off
+    .display_off = st7920_display_off,
+    .set_mode = st7920_set_mode,
+    .set_pixel = st7920_set_pixel,
+    .draw_line = st7920_draw_line
 };
 
 
@@ -90,16 +96,19 @@ driver_t *st7920_open(void)
         return NULL;
     }
 
-    st7920_instance.cs_io = driver_do_open(DO_FLASH_CS, NULL);
+    st7920_instance.cs_io = driver_do_open(DO_LCD_CS, NULL);
     if(!st7920_instance.cs_io)
     {
         return NULL;
     }
 
-    st7920_instance.rst_io = driver_do_open(DO_HART_RESET, NULL);
+    st7920_instance.rst_io = driver_do_open(DO_LCD_RESET, NULL);
 
     st7920_instance.initialized = false;
     st7920_instance.graphic_mode = false;
+    
+    // CS 초기 상태를 high로 설정 (inactive)
+    driver_do_high(st7920_instance.cs_io);
     
     st7920_driver.cfg = &st7920_instance;
     st7920_driver.opened = true;
@@ -114,26 +123,28 @@ void st7920_reset(driver_t *drv)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
-    // 하드웨어 리셋 시퀀스
-    driver_do_high(cfg->cs_io);
-    st7920_delay_ms(10);
-    driver_do_low(cfg->cs_io);
+        driver_do_high(cfg->cs_io);
+        
+    // 하드웨어 리셋 시퀀스 - DO_LCD_RESET 핀 사용
+    driver_do_low(cfg->rst_io);
+    st7920_delay_ms(100);
+    driver_do_high(cfg->rst_io);
     st7920_delay_ms(50);
     
     // ST7920 초기화 시퀀스 - 3번 반복으로 안정화
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
-    st7920_delay_ms(5);
+    st7920_delay_ms(1);
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
-    st7920_delay_us(100);
+    st7920_delay_ms(1);
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
-    st7920_delay_us(100);
+    st7920_delay_ms(1);
     
-    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL);
-    st7920_delay_us(100);
-    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);  // 1.6ms 필요
-    st7920_delay_ms(2);
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL|0x04);
+    st7920_delay_ms(1);
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR); 
+    st7920_delay_ms(20);
     st7920_send_cmd(drv, ST7920_CMD_ENTRY_MODE_SET | 0x02);  // 커서 증가, 시프트 없음
-    st7920_delay_us(100);
+    st7920_delay_ms(1);
     
     cfg->initialized = true;
 }
@@ -142,8 +153,8 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
-    // CS active high로 통신 시작
-    driver_do_high(cfg->cs_io);
+
+    driver_do_low(cfg->cs_io);
     st7920_delay_us(1);
     
     // ST7920 시리얼 프로토콜: 동기바이트 + 상위4비트 + 하위4비트
@@ -152,7 +163,7 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
     driver_spi_send_byte(cfg->spi_io, (data << 4) & 0xF0);
     
     st7920_delay_us(1);
-    driver_do_low(cfg->cs_io);  // 통신 종료
+    driver_do_high(cfg->cs_io);  // 통신 종료
     st7920_delay_us(100);  // 명령 처리 시간 확보
 }
 
@@ -248,22 +259,44 @@ void st7920_set_graphic_mode(driver_t *drv, bool enable)
     }
 }
 
+/*
+First line:  0x80 ~ 0x8F (16문자)
+Second line: 0x90 ~ 0x9F (16문자)  
+Third line:  0xA0 ~ 0xAF (16문자)
+Fourth line: 0xB0 ~ 0xBF (16문자)
+*/
 void st7920_set_position(driver_t *drv, uint8_t x, uint8_t y)
 {
-    uint8_t addr = 0x80;
+    uint8_t addr;
     
-    if(y >= 2)
-    {
-        addr += 0x20;
-        y -= 2;
+    // 입력 범위 체크
+    if (x > 15 || y > 3) {
+        return;  // 잘못된 입력 무시
     }
     
-    if(y == 1)
-    {
-        addr += 0x10;
+    // 각 라인별 시작 주소 직접 계산
+    switch (y) {
+        case 0:  // First line
+            addr = 0x80 + x;
+            break;
+            
+        case 1:  // Second line  
+            addr = 0x90 + x;
+            break;
+            
+        case 2:  // Third line
+            addr = 0xA0 + x;
+            break;
+            
+        case 3:  // Fourth line
+            addr = 0xB0 + x;
+            break;
+            
+        default:
+            return;  // 잘못된 y 값
     }
     
-    addr += x;
+    // SET DDRAM ADDRESS 명령 전송
     st7920_send_cmd(drv, addr);
     st7920_delay_us(100);
 }
@@ -434,3 +467,18 @@ void st7920_example(void)
     st7920_set_pixel(lcd, 64, 32, true);
 }
 */
+
+static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode)
+{
+    switch(lcd_mode)
+    {
+        case eLCD_MODE_CHARACTER:
+            st7920_set_graphic_mode(drv, false);
+            break;
+        case eLCD_MODE_GRAPHIC:
+            st7920_set_graphic_mode(drv, true);
+            break;
+        default:
+            break;
+    }
+}

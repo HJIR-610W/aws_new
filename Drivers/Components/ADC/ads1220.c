@@ -10,13 +10,13 @@
 #include "driver_di.h"
 #include "driver_do.h"
 #include "driver_mux.h"
-#include "driver_spi.h"
+
 #include "mcu_interrupt.h"
 #include "os_user_def.h"
 #include "usDelay.h"
 #include "util_memory.h"
 #include "system_err.h"
-
+#include "driver_stm32_spi.h"
 typedef struct ads1220_cfg_s
 {
   driver_t *spi_io;

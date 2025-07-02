@@ -32,7 +32,7 @@
 #define DI_QUAD_UARTD_8 12          ///< 쿼드 UART D8 인터럽트
 #define DI_HART_CD      13          ///< HART 캐리어 감지
 #define DI_USER_BTN     14          ///< 사용자 인터페이스 버튼
-#define DI_BTM_STATUS   15          ///< 블루투스 모듈 상태
+
 #define DI_RAIN_DETECT  16          ///< 강우 감지 센서
 
 // 외부 입력 채널 (PCF8575)

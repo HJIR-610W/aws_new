@@ -1,13 +1,12 @@
 
 
-#include "driver_spi.h"
+#include "driver_stm32_spi.h"
 
 #include "cmsis_os.h"
 #include "stm32f4xx_hal.h"
 #include "system_err.h"
-
+#include "os_user_def.h"
 #define SPI_TIME_OUT 0x1000
-
 
 
 typedef struct spi_cfg_s
@@ -176,14 +175,14 @@ void stm32_spi_init(SPI_HandleTypeDef *hspi)
     hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
     hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
     hspi1.Init.NSS = SPI_NSS_SOFT;
-    hspi1.Init.BaudRatePrescaler = get_spi_prescaler(hspi,10500000);;
+    hspi1.Init.BaudRatePrescaler = get_spi_prescaler(hspi,1312500);;//고정된 분주비라서 원하는데오 딱 안떨어짐
     hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
     hspi1.Init.CRCPolynomial = 10;
     if (HAL_SPI_Init(&hspi1) != HAL_OK)
     {
-      ERROR_PRINTF("spi");
+      ERROR_PRINTF("spi 1");
     }
   }
   else if(hspi->Instance == SPI2)
@@ -195,14 +194,14 @@ void stm32_spi_init(SPI_HandleTypeDef *hspi)
     hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
     hspi2.Init.CLKPhase = SPI_PHASE_2EDGE;
     hspi2.Init.NSS = SPI_NSS_SOFT;
-    hspi2.Init.BaudRatePrescaler = get_spi_prescaler(hspi,10500000);;
+    hspi2.Init.BaudRatePrescaler = get_spi_prescaler(hspi,1000000);;
     hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
     hspi2.Init.CRCPolynomial = 10;
     if (HAL_SPI_Init(&hspi2) != HAL_OK)
     {
-      ERROR_PRINTF("spi");
+      ERROR_PRINTF("spi 2");
     }
   }
 
@@ -325,18 +324,12 @@ uint8_t driver_spi_read_bytes(driver_t *drv,uint8_t *p_buff,uint16_t read_len)
 
 void driver_spi_pend_sem(driver_t *drv)
 {
-  if(drv->sem)
-  {
-    osSemaphoreAcquire(drv->sem, osWaitForever);
-  }
+  OS_PEND_SEM(drv->sem,osWaitForever);
 }
 
 void driver_spi_post_sem(driver_t *drv)
 {
-  if(drv->sem)
-  {
-    osSemaphoreRelease(drv->sem);
-  }
+  OS_POST_SEM(drv->sem);
 }
 
 

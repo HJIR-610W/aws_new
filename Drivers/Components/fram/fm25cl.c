@@ -4,7 +4,7 @@
 
 #include "driver_do.h"
 #include "driver_fram_define.h"
-#include "driver_spi.h"
+#include "driver_stm32_spi.h"
 #include "os_user_def.h"
 #include "system_err.h"
 

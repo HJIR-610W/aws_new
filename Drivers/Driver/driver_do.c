@@ -67,8 +67,8 @@ driver_t *driver_do_open(uint32_t num,void *opt)
     case DO_HART_RESET:
     driver = stm32_do_open(STM32_DO_HART_RESET,opt);
     break;
-    case DO_BTM_PWCTRL:
-      driver = stm32_do_open(STM32_DO_BTM_PWRC,opt);
+    case DO_LCD_RESET:
+      driver = stm32_do_open(STM32_DO_LCD_RESET,opt);
       break;
     case DO_DIR_RS485_C:
       driver = stm32_do_open(STM32_DO_DIR_RS485_C, opt);
@@ -81,6 +81,9 @@ driver_t *driver_do_open(uint32_t num,void *opt)
       break;
     case DO_POWER_RAIN_DECT_ANALOG:
       driver = stm32_do_open(STM32_DO_POWER_RAIN_DECT_ANALOG, opt);
+      break;
+    case DO_LCD_CS:
+      driver = stm32_do_open(STM32_DO_LCD_CS, opt);
       break;
   }
 

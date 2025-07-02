@@ -7,7 +7,7 @@
 #include "cmsis_os.h"
 #include "driver_do.h"
 #include "driver_flash_define.h"
-#include "driver_spi.h"
+#include "driver_stm32_spi.h"
 #include "os_user_def.h"
 #include "system_err.h"
 #include "usDelay.h"
@@ -169,8 +169,9 @@ static void at45db_write_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t a
   uint8_t szCmd[4];
 
   driver_spi_pend_sem(cfg->spi_io);
-
   
+
+
   driver_do_low(cfg->cs_io);
 
   if(buffer_choice == AT45DB_BUFFER2)

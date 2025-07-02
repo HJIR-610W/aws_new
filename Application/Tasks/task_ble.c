@@ -88,8 +88,8 @@ void bleTask_init(void)
   
   g_ble_drv = driver_uart_open(UART_1_TTL,&uart_config);
 
-  g_btm_power  = driver_do_open(DO_BTM_PWCTRL,0);
-  g_btm_status = driver_di_open(DI_BTM_STATUS,0);
+  g_btm_power  = driver_do_open(DO_LCD_RESET,0);
+
 
   
   driver_do_high(g_btm_power);

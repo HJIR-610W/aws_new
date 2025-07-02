@@ -3,8 +3,8 @@
 #include "ds1306.h"
 
 #include "driver_do.h"
-#include "driver_spi.h"
-#include "driver_spi.h"
+#include "driver_stm32_spi.h"
+#include "driver_stm32_spi.h"
 #include "driver_di.h"
 #include "driver_do.h"
 

@@ -81,3 +81,34 @@ void driver_lcd_display_off(driver_t *drv)
 
   api->display_off(drv);
 }
+
+void driver_lcd_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode)
+{
+  if (drv == NULL)
+    return;
+  lcd_api_t *api = (lcd_api_t *)drv->api;
+
+  if(api->set_mode != NULL)
+    api->set_mode(drv, lcd_mode);
+}
+
+void driver_lcd_set_pixel(driver_t *drv, uint8_t x, uint8_t y, bool on)
+{
+  if (drv == NULL)
+    return;
+  lcd_api_t *api = (lcd_api_t *)drv->api;
+
+  if(api->set_pixel != NULL)
+    api->set_pixel(drv, x, y, on);
+}
+
+void driver_lcd_draw_line(driver_t *drv, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, bool on)
+{
+  if (drv == NULL)
+    return;
+  lcd_api_t *api = (lcd_api_t *)drv->api;
+
+  if(api->draw_line != NULL)
+    api->draw_line(drv, x1, y1, x2, y2, on);
+}
+

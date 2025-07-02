@@ -14,7 +14,7 @@
 
 #define DO_POWER_CDMA      0  // BSP
 #define DO_POWER_HART_24V  1  // BSP
-#define DO_BTM_PWCTRL      2  // BSP
+#define DO_LCD_RESET      2  // BSP
 #define DO_POWER_RAIN_DECT_DIGITAL 3  // BSP
 #define DO_POWER_RAIN_DECT_ANALOG 4  // BSP J37.1
 
@@ -30,6 +30,8 @@
 #define DO_HART_RESET    14
 #define DO_DIR_RS485_C   15
 #define DO_DIR_RS485_D   16
+
+#define DO_LCD_CS   17       
 
 
 

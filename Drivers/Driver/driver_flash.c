@@ -1,7 +1,7 @@
 
 #include <string.h>
 #include "driver_flash.h"
-#include "driver_spi.h"
+#include "driver_stm32_spi.h"
 #include "driver_do.h"
 #include "at45db.h"
 
