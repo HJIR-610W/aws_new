@@ -8,7 +8,7 @@
 
 #include "driver_interface.h"
 
-#define DRIVER_LCD 0
+#define DRIVER_CLCD 0
 #define DRIVER_LCD_TERMNINAL 1
 
 driver_t *driver_lcd_open(int num);

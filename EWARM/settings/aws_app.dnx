@@ -14,10 +14,10 @@
     <StLinkDriver>
         <stlinkserialNo>13004800040000393333574E</stlinkserialNo>
         <stlinkfoundProbes />
-        <stlinkResetStyle>0</stlinkResetStyle>
-        <stlinkResetStrategy>0</stlinkResetStrategy>
         <CStepIntDis>_ 0</CStepIntDis>
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
+        <stlinkResetStyle>0</stlinkResetStyle>
+        <stlinkResetStrategy>0</stlinkResetStrategy>
     </StLinkDriver>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>1395235927</Checksum>
+        <Checksum>1372221244</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -164,6 +164,14 @@
         <ShowTimeSum>1</ShowTimeSum>
         <SumSortOrder>0</SumSortOrder>
     </EventLog>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usbd_cdc_interface.c}.1.1" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_manager.c}.367.9" 0 0 1 "" 0 "" 0</Bp1>
+        <Count>2</Count>
+    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -173,6 +181,10 @@
         <LogFile>_ ""</LogFile>
         <Category>_ 0</Category>
     </LogFile>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>3</Mode>
@@ -186,16 +198,4 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usbd_cdc_interface.c}.1.1" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_manager.c}.367.9" 0 0 1 "" 0 "" 0</Bp1>
-        <Count>2</Count>
-    </Breakpoints2>
-    <Aliases>
-        <Count>0</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
 </settings>

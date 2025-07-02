@@ -141,7 +141,7 @@ void check_config_app(void)
 
   for (int i = 0; i < _countof(config.sensor); i++)
   {
-    if (config.sensor[i].type > SENSOR_MODEL_MAX)
+    if (config.sensor[i].type > SENSOR_TYPE_MAX)
     {
       config.sensor[i].type = S_T_UNSUED;
       g_config_app_dirty_flag = true;

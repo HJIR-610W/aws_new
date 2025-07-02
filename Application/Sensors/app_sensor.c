@@ -10,21 +10,17 @@
 config에서는 속성정보의 index만 관리한다
 속성 구조체는 센서가 추가되면 최후에 추가되기때문에 틀어질 일이 없다.
 
-
-
 */
 #include "app_sensor.h"
 
 #include <string.h>
 
-
 #include "config_app.h"
 #include "util_memory.h"
 
-
-const char *g_sensor_model_list[] = {
+const char *g_sensor_model_table[] = {
 #define X(name, format) format,
-    SENSOR_MODEL_LIST
+    SENSOR_TYPE_LIST
 #undef X
 };
 
@@ -44,29 +40,18 @@ const char *sensor_format_list[] = {
 const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
 const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};
 const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_FREQ, S_T_ADC};
-const uint8_t windDirectionInstantList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_MAX_VAL};
-const uint8_t windSpeedInstantList[] = {S_T_UNSUED, S_T_WIND_SPEED_MAX_VAL};
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
                             S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM};
 const uint8_t pressureList[] = {S_T_UNSUED, S_T_ADC};
 const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI};
 const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ};
 const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMINITY_HJ, S_T_ADC};
-const uint8_t sunShineList[] = {S_T_UNSUED, S_T_SUNSHINE, S_T_ADC};
 const uint8_t solarRadiationList[] = {S_T_UNSUED, S_T_SOLAR_RADIATION_OTT_SMP3, S_T_ADC};
-const uint8_t soilTemp5cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_5CM, S_T_ADC};
-const uint8_t soilTemp10cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_10CM, S_T_ADC};
-const uint8_t soilTemp20cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_20CM, S_T_ADC};
-const uint8_t soilTemp30cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_30CM, S_T_ADC};
-const uint8_t soilTemp50cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_50CM, S_T_ADC};
-const uint8_t soilTemp100cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_100CM, S_T_ADC};
-const uint8_t soilTemp150cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_150CM, S_T_ADC};
-const uint8_t soilTemp300cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_300CM, S_T_ADC};
-const uint8_t soilTemp500cmList[] = {S_T_UNSUED, S_T_SOIL_TEMP_500CM, S_T_ADC};
-const uint8_t temperature50cmList[] = {S_T_UNSUED, S_T_PT100_B};
 const uint8_t defaultList[] = {S_T_UNSUED, S_T_ADC};
+//ADDMODEL:센서모델이 추가되거나 타입이 추가되면 여기 수정해야함
 
-const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] = {
+//ADDMODEL:센서 모델 이 추가되면 여기추가 시켜야함
+const sensor_model_entry_t sensor_table[SENSOR_LIST_MAX] = {
     {.list = temperatureList, .cnt = sizeof(temperatureList)},        // A1_TEMPERATURE
     {.list = windDirectionList, .cnt = sizeof(windDirectionList)},    // A2_WIND_DIRECTION
     {.list = windSpeedList, .cnt = sizeof(windSpeedList)},            // A3_WIND_SPEED
@@ -110,12 +95,11 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] = {
     {.list = defaultList, .cnt = sizeof(defaultList)},                // N7_WIND_VELOCITY_400CM
     {.list = defaultList, .cnt = sizeof(defaultList)},                // N8_INSTANT_VELOCITY_150CM
     {.list = defaultList, .cnt = sizeof(defaultList)},                // N9_INSTANT_VELOCITY_400CM
-    {.list = temperature50cmList, .cnt = sizeof(temperature50cmList)},  // N10_AIR_TEMPERATURE_50CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // N11_AIR_TEMPERATURE_400CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // N12_HUMIDITY_50CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                  // N13_HUMIDITY_400CM
-    {.list = defaultList, .cnt = sizeof(defaultList)}};                  // I1_TACHOMETER
-
+    {.list = defaultList, .cnt = sizeof(defaultList)},                // N10_AIR_TEMPERATURE_50CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},                // N11_AIR_TEMPERATURE_400CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},                // N12_HUMIDITY_50CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},                // N13_HUMIDITY_400CM
+    {.list = defaultList, .cnt = sizeof(defaultList)}};               // I1_TACHOMETER
 
 void sensor_add_common(sensor_t *sensor, uint8_t index)
 {
@@ -201,6 +185,7 @@ void *sensor_add(sensor_t *sensor)
 /**
  * @brief 센서타입에 맞는 설정값을 가져옴
  */
+//ADDMODEL:센서타입이 추가하면 설정값 구조체에 여기세 추가 해야함 
 void *get_sensor_config(sensor_t *sensor)
 {
   // configCnt가 0이란건 아직 저장된 config가 없다는것

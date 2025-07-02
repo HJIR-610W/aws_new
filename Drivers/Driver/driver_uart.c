@@ -229,3 +229,8 @@ int32_t driver_uart_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen
 
   return api->inject(drv, pData, dataLen);
 }
+
+
+
+
+

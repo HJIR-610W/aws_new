@@ -33,7 +33,7 @@
 // 센서 상태를 8바이트 *8 총 64bit 전송한다.
 // 미리 센서상태를 설정한다.
 uint8_t g_sensorStatus_kma3[8];  // 64개의 센서의 상태 표시
-void kma3_set_sensor_error(eSENSOR_LIST_t sensorNum)
+void kma3_set_sensor_error(eSENSOR_TYPE_LIST_t sensorNum)
 {
   int quot;
   int rem;
@@ -44,7 +44,7 @@ void kma3_set_sensor_error(eSENSOR_LIST_t sensorNum)
   g_sensorStatus_kma3[quot] |= 1 << rem;
 }
 
-void kma3_clear_sensor_error(eSENSOR_LIST_t sensorNum)
+void kma3_clear_sensor_error(eSENSOR_TYPE_LIST_t sensorNum)
 {
   int quot;
   int rem;
@@ -59,7 +59,7 @@ void kma3_clear_sensor_error(eSENSOR_LIST_t sensorNum)
 
 
 
-bool kma_is_sensor_error(eSENSOR_LIST_t sensor_num)
+bool kma_is_sensor_error(eSENSOR_TYPE_LIST_t sensor_num)
 {
   int quot;
   int rem;
@@ -77,7 +77,7 @@ bool kma_is_sensor_error(eSENSOR_LIST_t sensor_num)
   }
 }
 
-void kma_update_sensor_err(eSENSOR_LIST_t sensor_num, uint8_t err)
+void kma_update_sensor_err(eSENSOR_TYPE_LIST_t sensor_num, uint8_t err)
 {
   if (err)
   {
@@ -471,7 +471,7 @@ cnt += 2;
 return cnt;
 }
 
-void kma3_set_sensor_status(eSENSOR_LIST_t sensor_num, uint8_t sensor[8])
+void kma3_set_sensor_status(eSENSOR_TYPE_LIST_t sensor_num, uint8_t sensor[8])
 {
   int quot;
   int rem;
@@ -482,7 +482,7 @@ void kma3_set_sensor_status(eSENSOR_LIST_t sensor_num, uint8_t sensor[8])
   sensor[quot] |= 1 << rem;
 }
 
-void kma3_clear_sensor_status(eSENSOR_LIST_t sensor_num, uint8_t sensor[8])
+void kma3_clear_sensor_status(eSENSOR_TYPE_LIST_t sensor_num, uint8_t sensor[8])
 {
   int quot;
   int rem;
@@ -493,7 +493,7 @@ void kma3_clear_sensor_status(eSENSOR_LIST_t sensor_num, uint8_t sensor[8])
   sensor[quot] &= ~(1 << rem);
 }
 
-bool kma3_is_sensor_error(eSENSOR_LIST_t sensor_num, uint8_t sensor[8])
+bool kma3_is_sensor_error(eSENSOR_TYPE_LIST_t sensor_num, uint8_t sensor[8])
 {
   int quot;
   int rem;
@@ -511,7 +511,7 @@ bool kma3_is_sensor_error(eSENSOR_LIST_t sensor_num, uint8_t sensor[8])
   }
 }
 
-void kma3_update_sensor_status(eSENSOR_LIST_t sensor_num, uint8_t sensor[8], uint8_t err)
+void kma3_update_sensor_status(eSENSOR_TYPE_LIST_t sensor_num, uint8_t sensor[8], uint8_t err)
 {
   if (err)
   {

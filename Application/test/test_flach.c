@@ -16,7 +16,7 @@ void test_flash(void)
   flash = driver_flash_open(FALSH_AT45DB);
   if (flash == NULL)
   {
-    io_printf("Flash ë“œë¼ì´ë²„ ì—´ê¸° ì‹¤íŒ¨\r\n");
+    io_printf("Flash µå¶óÀÌ¹ö ¿­±â ½ÇÆĞ\r\n");
     return;
   }
 
@@ -24,25 +24,25 @@ void test_flash(void)
   {
     write_data[i] = i;
   }
-    // ì“°ê¸°
+    // ¾²±â
     driver_flash_write(flash, TEST_ADDR, write_data, sizeof(write_data));
 
 
-  // ì½ê¸°
+  // ÀĞ±â
   driver_flash_read(flash, TEST_ADDR, read_data, sizeof(read_data), sizeof(read_data));
 
 
-  // ë¹„êµ
+  // ºñ±³
   if (memcmp(write_data, read_data, TEST_SIZE) == 0)
   {
-    io_printf("Flash í…ŒìŠ¤íŠ¸ ì„±ê³µ \r\n");
+    io_printf("Flash Å×½ºÆ® ¼º°ø \r\n");
   }
   else
   {
-    io_printf("Flash í…ŒìŠ¤íŠ¸ ì‹¤íŒ¨ \r\n");
-    io_printf("ì“°ê¸°ê°’: ");
+    io_printf("Flash Å×½ºÆ® ½ÇÆĞ \r\n");
+    io_printf("¾²±â°ª: ");
     LOG_MEM(write_data, TEST_SIZE, 0, 160);
-    io_printf("ì½ì€ê°’: ");
+    io_printf("ÀĞÀº°ª: ");
     LOG_MEM(read_data, TEST_SIZE, 0, 160);
   }
 }

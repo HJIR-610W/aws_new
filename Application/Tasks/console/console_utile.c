@@ -177,7 +177,7 @@ int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int3
 
 
 
-int32_t select_indexFromList(const char* list[], int32_t (*func)(), uint16_t listCnt, bool number,int32_t *choice)
+int32_t select_index_from_table(const char* list[], int32_t (*func)(), uint16_t listCnt, bool number,int32_t *choice)
 {
 
   int index = 0;

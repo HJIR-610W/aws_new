@@ -7,7 +7,7 @@ static driver_t *p_s_lcd = NULL;
 
 void clcd_init(void)
 {
-    p_s_lcd = driver_lcd_open(DRIVER_LCD);
+    p_s_lcd = driver_lcd_open(DRIVER_CLCD);
     if(p_s_lcd)
     {
         driver_lcd_display_on(p_s_lcd);

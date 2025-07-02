@@ -20,13 +20,13 @@ void test_adc(void)
   uint8_t err;
   int32_t adc_raw;
 
-  io_printf("ADC ì„ í˜•ì„± í…ŒìŠ¤íŠ¸\r\n");
+  io_printf("ADC ¼±Çü¼º Å×½ºÆ®\r\n");
 
 
-  //0~5Vê¹Œì§€ 1mv ì”© ìž…ë ¥ë°›ì•„ì„œ ì„ í˜•ì„± í…ŒìŠ¤íŠ¸ìš© ìƒ˜í”Œ ìˆ˜ì§‘
+  //0~5V±îÁö 1mv ¾¿ ÀÔ·Â¹Þ¾Æ¼­ ¼±Çü¼º Å×½ºÆ®¿ë »ùÇÃ ¼öÁý
   for (int i = 0; i < 5000; i++)
   {
-    io_printf("ì‹±ê¸€ ì±„ë„  0ì „ì•• %dmvìž…ë ¥í•˜ê³  ì•„ë¬´í‚¤ë‚˜ ìž…ë ¥í•˜ì„¸ìš”\r\n",i);
+    io_printf("½Ì±Û Ã¤³Î  0Àü¾Ð %dmvÀÔ·ÂÇÏ°í ¾Æ¹«Å°³ª ÀÔ·ÂÇÏ¼¼¿ä\r\n",i);
 
     if(get_key(osWaitForever)==KEY_CODE_CTRL_Q)
     break;
@@ -37,5 +37,5 @@ void test_adc(void)
 
     append_file("adc.csv",(uint8_t *)buff,strlen(buff));
     }
-    io_printf("ì¢…ë£Œ\r\n");
+    io_printf("Á¾·á\r\n");
 }

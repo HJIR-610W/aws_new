@@ -12,39 +12,39 @@ void test_rtc(void)
 {
   DATE_TIME_BUF Date_Time;
   driver_t *rtc;
-  io_printf("RTC í…ŒìŠ¤íŠ¸ ì‹œì‘ (1ì´ˆë§ˆë‹¤ í˜„ì¬ ì‹œê°„ ì¶œë ¥)\r\n");
-  io_printf("CTRL+Q ì…ë ¥ ì‹œ ì¢…ë£Œ\r\n");
+  io_printf("RTC Å×½ºÆ® ½ÃÀÛ (1ÃÊ¸¶´Ù ÇöÀç ½Ã°£ Ãâ·Â)\r\n");
+  io_printf("CTRL+Q ÀÔ·Â ½Ã Á¾·á\r\n");
 
-  // RTC ë“œë¼ì´ë²„ ì˜¤í”ˆ
+  // RTC µå¶óÀÌ¹ö ¿ÀÇÂ
   rtc = driver_rtc_open(RTC_RV8803, 0);
   if (rtc == NULL)
   {
-    io_printf("RTC ì˜¤í”ˆ ì‹¤íŒ¨!\r\n");
+    io_printf("RTC ¿ÀÇÂ ½ÇÆĞ!\r\n");
     return;
   }
   else
   {
-    io_printf("RTC ì˜¤í”ˆ ì„±ê³µ\r\n");
+    io_printf("RTC ¿ÀÇÂ ¼º°ø\r\n");
   }
 
   while (1)
   {
-    // RTC ì½ê¸°
+    // RTC ÀĞ±â
     if (driver_rtc_read(rtc, &Date_Time) == 0)
     {
-      // ì‹œê°„ ì¶œë ¥
-      io_printf("í˜„ì¬ ì‹œê°„: %04d-%02d-%02d %02d:%02d:%02d\r\n", Date_Time.Year,
+      // ½Ã°£ Ãâ·Â
+      io_printf("ÇöÀç ½Ã°£: %04d-%02d-%02d %02d:%02d:%02d\r\n", Date_Time.Year,
                    Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
     }
     else
     {
-      io_printf("RTC ì½ê¸° ì‹¤íŒ¨\r\n");
+      io_printf("RTC ÀĞ±â ½ÇÆĞ\r\n");
     }
 
-    // 1ì´ˆ ëŒ€ê¸° ë° í‚¤ ì²´í¬
+    // 1ÃÊ ´ë±â ¹× Å° Ã¼Å©
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
-      io_printf("í…ŒìŠ¤íŠ¸ ì¢…ë£Œ (CTRL+Q ê°ì§€)\r\n");
+      io_printf("Å×½ºÆ® Á¾·á (CTRL+Q °¨Áö)\r\n");
       break;
     }
   }

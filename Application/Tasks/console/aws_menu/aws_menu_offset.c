@@ -1,26 +1,23 @@
+#include "Sensors\barometer\barometer.h"
+#include "Sensors\temperature\temperature.h"
+#include "app_adc.h"
+#include "cli_input.h"
 #include "config_app.h"
+#include "config_sensor.h"
 #include "console_define.h"
 #include "console_utile.h"
 #include "dev_io.h"
-#include "util_memory.h"
-#include "config_sensor.h"
-#include "cli_input.h"
-
-#include "Sensors\temperature\temperature.h"
-#include "Sensors\barometer\barometer.h"
 #include "driver_adc.h"
-#include "app_adc.h"
-#include "console_utile.h"
+#include "util_memory.h"
 
-
-extern driver_t *get_sensor_driver(eSENSOR_LIST_t sensor);
-extern int32_t get_driverNum(eSENSOR_MODEL_t type) ;
+extern driver_t *get_sensor_driver(eSENSOR_TYPE_LIST_t sensor);
+extern int32_t get_driver_number(eSENSOR_TYPE_t type) ;
 
 
 static uint8_t
     s_offset_sensor_index[SENSOR_LIST_MAX];
 
-void inline_print_offset_sensor(uint8_t cnt,eSENSOR_LIST_t sensor)
+void inline_print_offset_sensor(uint8_t cnt,eSENSOR_TYPE_LIST_t sensor)
 {
   sensor_t *p_sensor;
   p_sensor = &get_config_app()->sensor[sensor];
@@ -67,7 +64,7 @@ int32_t menu_offset_pressure(void)
   int status;
   int ok;
 
-  driver_num = get_driverNum(get_config_app()->sensor[A7_PRESSURE].type);
+  driver_num = get_driver_number(get_config_app()->sensor[A7_PRESSURE].type);
 
   if (driver_num != GENERAL_ADC)
   {

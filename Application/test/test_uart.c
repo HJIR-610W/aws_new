@@ -18,7 +18,7 @@
 uint32_t count_trailing_zeros(uint32_t x)
 {
     if (x == 0)
-        return 32; // ì •ì˜ë˜ì§€ ì•Šì€ ë™ìž‘ì— ëŒ€í•œ ë³´í˜¸
+        return 32; // Á¤ÀÇµÇÁö ¾ÊÀº µ¿ÀÛ¿¡ ´ëÇÑ º¸È£
 
     uint32_t pos = 0;
     while ((x & 1) == 0)
@@ -37,7 +37,7 @@ bool is_gpio_interrupt_enabled(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
   uint32_t exticr_index = pin_num / 4;
   uint32_t exticr_shift = (pin_num % 4) * 4;
 
-  // 1. SYSCFGì—ì„œ í¬íŠ¸ í™•ì¸
+  // 1. SYSCFG¿¡¼­ Æ÷Æ® È®ÀÎ
   exti_port_val = (SYSCFG->EXTICR[exticr_index] >> exticr_shift) & 0xF;
 
   uint32_t gpio_port_index = 0xFF;
@@ -62,13 +62,13 @@ bool is_gpio_interrupt_enabled(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
   if (exti_port_val != gpio_port_index)
   {
-    io_printf("í¬íŠ¸ ë§¤í•‘ ë¶ˆì¼ì¹˜: SYSCFG = %u, ê¸°ëŒ€ê°’ = %u\r\n", exti_port_val, gpio_port_index);
+    io_printf("Æ÷Æ® ¸ÅÇÎ ºÒÀÏÄ¡: SYSCFG = %u, ±â´ë°ª = %u\r\n", exti_port_val, gpio_port_index);
     return false;
   }
 
   if (!(EXTI->IMR & (1 << pin_num)))
   {
-    io_printf("EXTI ì¸í„°ëŸ½íŠ¸ ë§ˆìŠ¤í¬ë¨ (IMR[%d] = 0)\r\n", pin_num);
+    io_printf("EXTI ÀÎÅÍ·´Æ® ¸¶½ºÅ©µÊ (IMR[%d] = 0)\r\n", pin_num);
     return false;
   }
 
@@ -82,7 +82,7 @@ bool is_gpio_interrupt_enabled(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
   if (!(NVIC->ISER[irq / 32] & (1 << (irq % 32))))
   {
-    io_printf("NVIC ISER[%d] ë¹„í™œì„±í™”ë¨\r\n", irq);
+    io_printf("NVIC ISER[%d] ºñÈ°¼ºÈ­µÊ\r\n", irq);
     return false;
   }
 
@@ -93,7 +93,7 @@ bool is_gpio_interrupt_enabled(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
   bool rising = (EXTI->RTSR & (1 << pin_num)) != 0;
   bool falling = (EXTI->FTSR & (1 << pin_num)) != 0;
 
-  io_printf("GPIO ì¸í„°ëŸ½íŠ¸ ì„¤ì •ë¨: í¬íŠ¸=GPIO%c, í•€=%d\r\n", 'A' + gpio_port_index, pin_num);
+  io_printf("GPIO ÀÎÅÍ·´Æ® ¼³Á¤µÊ: Æ÷Æ®=GPIO%c, ÇÉ=%d\r\n", 'A' + gpio_port_index, pin_num);
   io_printf("  IRQn = %d\r\n", irq);
   io_printf("  NVIC PreemptPriority = %lu\r\n", preempt_priority);
   io_printf("  NVIC SubPriority = %lu\r\n", sub_priority);
@@ -113,7 +113,7 @@ static uint32_t GPIO_PortToIndex(GPIO_TypeDef *GPIOx)
     if (GPIOx == GPIOG) return 6;
     if (GPIOx == GPIOH) return 7;
     if (GPIOx == GPIOI) return 8;
-    return 0xFFFFFFFF;  // ì˜¤ë¥˜
+    return 0xFFFFFFFF;  // ¿À·ù
 }
 
 void trigger_gpio_interrupt(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
@@ -123,20 +123,20 @@ void trigger_gpio_interrupt(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
     if (port_index == 0xFFFFFFFF)
         return;
 
-    pin_num = count_trailing_zeros(GPIO_Pin);  // GPIO_PIN_10 â†’ 10 (IARì´ë©´ ëŒ€ì²´ í•¨ìˆ˜ ì‚¬ìš©)
+    pin_num = count_trailing_zeros(GPIO_Pin);  // GPIO_PIN_10 ¡æ 10 (IARÀÌ¸é ´ëÃ¼ ÇÔ¼ö »ç¿ë)
 
 #if 1
-    // 1. SYSCFG EXTICR ì„¤ì •
+    // 1. SYSCFG EXTICR ¼³Á¤
     uint32_t exticr_index = pin_num / 4;
     uint32_t exticr_shift = (pin_num % 4) * 4;
 
     SYSCFG->EXTICR[exticr_index] &= ~(0xF << exticr_shift);
     SYSCFG->EXTICR[exticr_index] |=  (port_index << exticr_shift);
 
-    // 2. EXTI IMR í™œì„±í™”
+    // 2. EXTI IMR È°¼ºÈ­
     EXTI->IMR |= (1 << pin_num);
 
-    // 3. NVIC IRQ ì„¤ì •
+    // 3. NVIC IRQ ¼³Á¤
     IRQn_Type irq;
     if (pin_num <= 4)
         irq = (IRQn_Type)(EXTI0_IRQn + pin_num);
@@ -148,7 +148,7 @@ void trigger_gpio_interrupt(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
     HAL_NVIC_SetPriority(irq, 0, 0);
     HAL_NVIC_EnableIRQ(irq);
 #endif
-    // 4. ì†Œí”„íŠ¸ì›¨ì–´ ì¸í„°ëŸ½íŠ¸ ë°œìƒ
+    // 4. ¼ÒÇÁÆ®¿þ¾î ÀÎÅÍ·´Æ® ¹ß»ý
 //    EXTI->SWIER |= (1 << pin_num);
 }
 
@@ -176,29 +176,29 @@ void test_uart(void)
    int rs232_number = -1;
 
 
-   io_printf("RS232 VHF,TTL,A,B,C,D,CDMA í…ŒìŠ¤íŠ¸\r\n");
-   io_printf("ì£¼ì˜:RS232 A,BëŠ” í•˜ë“œì›¨ì–´ì í¼ ì„¤ì • í•„ìš”\r\n");
+   io_printf("RS232 VHF,TTL,A,B,C,D,CDMA Å×½ºÆ®\r\n");
+   io_printf("ÁÖÀÇ:RS232 A,B´Â ÇÏµå¿þ¾îÁ¡ÆÛ ¼³Á¤ ÇÊ¿ä\r\n");
 
-   io_printf("í¬íŠ¸ ì´ë¦„ì„ ìž…ë ¥í•´ì£¼ì„¸ìš”\r\n");
+   io_printf("Æ÷Æ® ÀÌ¸§À» ÀÔ·ÂÇØÁÖ¼¼¿ä\r\n");
    if (cli_scanf_s("%7s", buff) == CLI_KEYCODE_CTRL_C)
    {
      return;
    }
 
-  io_printf("ê¸°ëŠ¥:1ì´ˆë§ˆë‹¤ ê° í¬íŠ¸ì´ë¦„ ì „ì†¡ë˜ë©° 1ì´ˆ ëŒ€ê¸°,ìž…ë ¥ ì—ì½”ì²˜ë¦¬í•¨\r\n");
-  io_printf("í†µì‹  ì†ë„ë¥¼ ìž…ë ¥í•´ì£¼ì„¸ìš”\r\n");
+  io_printf("±â´É:1ÃÊ¸¶´Ù °¢ Æ÷Æ®ÀÌ¸§ Àü¼ÛµÇ¸ç 1ÃÊ ´ë±â,ÀÔ·Â ¿¡ÄÚÃ³¸®ÇÔ\r\n");
+  io_printf("Åë½Å ¼Óµµ¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä\r\n");
 
-  if (input_decimal_prompt("í†µì‹  ì†ë„ë¥¼ ìž…ë ¥í•´ì£¼ì„¸ìš”", &baud, 1200, 115200) != MENU_OK)
+  if (input_decimal_prompt("Åë½Å ¼Óµµ¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä", &baud, 1200, 115200) != MENU_OK)
   {
     baud = 57600;
-    io_printf("ê¸°ë³¸ ì†ë„ë¡œ ì„¤ì •í•©ë‹ˆë‹¤.%d\r\n", baud);
+    io_printf("±âº» ¼Óµµ·Î ¼³Á¤ÇÕ´Ï´Ù.%d\r\n", baud);
   }
-  io_printf("ì´ì œ í…ŒìŠ¤íŠ¸ ì§„í–‰í•˜ì„¸ìš” CTRL+Q ì¢…ë£Œ\r\n");
+  io_printf("ÀÌÁ¦ Å×½ºÆ® ÁøÇàÇÏ¼¼¿ä CTRL+Q Á¾·á\r\n");
 
 
   uart_config.baud = baud;
   uart_config.parityIdx = PARITY_NONE;
-  uart_config.stop_bit = 0;
+  uart_config.stop_bit = UART_STOPBITS_1;
   uart_config.dataLen = UART_DATA_LEN_8;
 
   for (int n = 0; n < _countof(rs232_port_name);n++)
@@ -213,7 +213,7 @@ void test_uart(void)
   
   if (rs232_number ==-1)
   {
-    io_printf("í¬íŠ¸ ì´ë¦„ì„ í™•ì¸í•´ì£¼ì„¸ìš”\r\n");
+    io_printf("Æ÷Æ® ÀÌ¸§À» È®ÀÎÇØÁÖ¼¼¿ä\r\n");
     return ;
   }
 

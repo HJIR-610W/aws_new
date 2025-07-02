@@ -5,6 +5,7 @@
 #include "driver_lcd.h"
 #include "Components\lcd\st7920.h"
 #include "driver_lcd_define.h"
+#include "Components\lcd\vt100_terminal.h"
 
 driver_t *driver_lcd_open(int num)
 {
@@ -12,10 +13,11 @@ driver_t *driver_lcd_open(int num)
 
   switch (num)
   {
-    case DRIVER_LCD:
+    case DRIVER_CLCD:
       driver = st7920_open();
       break;
-
+    case DRIVER_LCD_TERMNINAL:
+      driver = vt100_terminal_open();
     default:
       break;
   }

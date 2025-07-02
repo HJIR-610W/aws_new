@@ -2,62 +2,94 @@
 #include "cmsis_os2.h"
 #include "dev_io.h"
 #include "driver_lcd.h"
+#include "cli_input.h"
+#include <string.h>
 
 void test_lcd(void)
 {
     driver_t *g_lcd_driver;
     uint8_t counter = 0;
-    char display_str[17]; // 16ë¬¸ì + NULL
+    char display_str[17]; // 16¹®ÀÚ + NULL
+    char lcd_type[20];
+    int lcd_driver_num = -1;
     
-    // LCD ë“œë¼ì´ë²„ ì—´ê¸°
-    g_lcd_driver = driver_lcd_open(DRIVER_LCD);
+    const char *lcd_type_names[] = {"CLCD", "TERMINAL"};
+    const int lcd_driver_nums[] = {DRIVER_CLCD, DRIVER_LCD_TERMNINAL};
+    
+    io_printf("LCD Å×½ºÆ®\r\n");
+    io_printf("LCD Å¸ÀÔÀ» ¼±ÅÃÇÏ¼¼¿ä: CLCD ¶Ç´Â TERMINAL\r\n");
+    
+    // »ç¿ëÀÚ·ÎºÎÅÍ LCD Å¸ÀÔ ÀÔ·Â¹Ş±â
+    if (cli_scanf_s("%19s", lcd_type) == CLI_KEYCODE_CTRL_C)
+    {
+        return;
+    }
+    
+    // ÀÔ·ÂµÈ Å¸ÀÔ°ú ¸ÅÄª
+    for(int i = 0; i < 2; i++)
+    {
+        if(strcmp(lcd_type, lcd_type_names[i]) == 0)
+        {
+            lcd_driver_num = lcd_driver_nums[i];
+            break;
+        }
+    }
+    
+    if(lcd_driver_num == -1)
+    {
+        io_printf("Àß¸øµÈ LCD Å¸ÀÔÀÔ´Ï´Ù. CLCD ¶Ç´Â TERMINALÀ» ÀÔ·ÂÇÏ¼¼¿ä.\r\n");
+        return;
+    }
+    
+    // LCD µå¶óÀÌ¹ö ¿­±â
+    g_lcd_driver = driver_lcd_open(lcd_driver_num);
     if(g_lcd_driver == NULL)
     {
         io_printf("LCD driver open failed\r\n");
         return;
     }
     
-    // LCD ë””ìŠ¤í”Œë ˆì´ ì¼œê¸°
+    // LCD µğ½ºÇÃ·¹ÀÌ ÄÑ±â
     driver_lcd_display_on(g_lcd_driver);
     
-    io_printf("LCD Test Start - Press CTRL+Q to exit\r\n");
+    io_printf("LCD Test Start (%s) - Press CTRL+Q to exit\r\n", lcd_type);
     
     while (1)
     {
-        // í™”ë©´ ì§€ìš°ê¸°
+        // È­¸é Áö¿ì±â
         driver_lcd_clear_screen(g_lcd_driver);
         
-        // 0~9ê¹Œì§€ 16ë¬¸ìë¡œ ì±„ìš°ê¸°
+        // 0~9±îÁö 16¹®ÀÚ·Î Ã¤¿ì±â
         for(int i = 0; i < 16; i++)
         {
             display_str[i] = '0' + counter;
         }
         display_str[16] = '\0';
         
-        // ëª¨ë“  í–‰(0~3)ì— ê°™ì€ ìˆ«ì ì¶œë ¥
+        // ¸ğµç Çà(0~3)¿¡ °°Àº ¼ıÀÚ Ãâ·Â
         for(int row = 0; row < 4; row++)
         {
             driver_lcd_set_position(g_lcd_driver, 0, row);
             driver_lcd_write_string(g_lcd_driver, display_str);
         }
         
-        // ì¹´ìš´í„° ì¦ê°€ (0~9 ìˆœí™˜)
+        // Ä«¿îÅÍ Áõ°¡ (0~9 ¼øÈ¯)
         counter++;
         if(counter > 9)
         {
             counter = 0;
         }
         
-        // CTRL+Q ì²´í¬ (1ì´ˆ ëŒ€ê¸°í•˜ë©´ì„œ)
+        // CTRL+Q Ã¼Å© (1ÃÊ ´ë±âÇÏ¸é¼­)
         if (get_key(1000) == KEY_CODE_CTRL_Q)
         {
             break;
         }
     }
     
-    // ì¢…ë£Œì‹œ í™”ë©´ ì§€ìš°ê¸°
+    // Á¾·á½Ã È­¸é Áö¿ì±â
     driver_lcd_clear_screen(g_lcd_driver);
     
-    // ì¢…ë£Œ ë©”ì‹œì§€
+    // Á¾·á ¸Ş½ÃÁö
     io_printf("LCD Test End\r\n");
 }

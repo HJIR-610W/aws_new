@@ -98,7 +98,7 @@ int32_t menu_developer_memory(void)
 
   const char *memList[] = {"flash", "fram"};
 
-  status = select_indexFromList( memList, NULL, _countof(memList), true,&choice);
+  status = select_index_from_table( memList, NULL, _countof(memList), true,&choice);
 
   if (status != MENU_OK)
   {
@@ -142,7 +142,7 @@ int32_t menu_developer_sensor_config(void)
     io_printf("%13s:%d",sensor_name_list[i], config.sensor[i].configCnt);
     for (int j = 0; j < 4; j++)
     {
-      io_printf("[%-15s.%d]", ITEM_LIST(config.sensor[i].config[j][0], g_sensor_model_list),
+      io_printf("[%-15s.%d]", ITEM_LIST(config.sensor[i].config[j][0], g_sensor_model_table),
                   config.sensor[i].config[j][1]);
     }
 

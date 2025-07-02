@@ -22,7 +22,7 @@ const osThreadAttr_t kTestTask_attributes = {
 
 void testTask(void *arg)
 {
-  mcu_interrupt_init();  // ìµœìš°ì„  ì‹¤í–‰
+  mcu_interrupt_init();  // ÃÖ¿ì¼± ½ÇÇà
   consoleTask_init((void *)1);
   osDelay(1000);
   usDelay_init();
@@ -36,7 +36,7 @@ void testTask(void *arg)
   
   file_init();
 
-  osThreadExit();  // ì¢…ë£Œ ì‹œí‚´
+  osThreadExit();  // Á¾·á ½ÃÅ´
 
 }
 
@@ -49,7 +49,7 @@ bool testTask_init(void)
   user_btn = driver_di_open(DI_USER_BTN,0);
 
   
-  //ì‚¬ìš©ìê°€ 5ì´ˆì´ìƒ ë²„íŠ¼ì„ ëˆ„ë¥´ë©´ testTask ì‹¤í–‰
+  //»ç¿ëÀÚ°¡ 5ÃÊÀÌ»ó ¹öÆ°À» ´©¸£¸é testTask ½ÇÇà
   if(driver_di_is_low(user_btn,1000,10))
   {
     osThreadNew(testTask, NULL, &kTestTask_attributes);

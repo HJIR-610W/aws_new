@@ -10,6 +10,9 @@
  *
  * @details
  * v1.0.0 2025-04-15
+ * 
+ * 
+ * 센서가 추가되면 해야 할것
  */
 
 #include "task_measure.h"
@@ -77,7 +80,7 @@ measure_data_1s_t g_reading_1;//Task 실행 시간 측정용
 exec_time_t g_exec_250ms_time; //Task 실행 시간 측정용
 exec_time_t g_exec_1s_time;//Task 실행 시간 측정용
 
-driver_t *get_sensor_driver(eSENSOR_LIST_t sensor)
+driver_t *get_sensor_driver(eSENSOR_TYPE_LIST_t sensor)
 {
   return g_sensor_driver[sensor];
 }
@@ -155,14 +158,18 @@ bool is_measurement_1s( void *data,uint32_t timeout)
 }
 
 /**
- *  센서 모델에 해당하는 드라이버 번호를 넘겨준다.
+ *  센서 모델과 타입에 해당하는 드라이버 번호를 넘겨준다.
  *  예)
  *  measure테스트가 제공가능한 센서목록이 있고
  *  센서에 해당하는 실제 모델이 있다. 그것을 연결시켜준다
  *  type:온도센서 -> pt100 을 사용하겠다.
+ * 
+ *  타입:물리적인 값의 구분(온도,습도 등등)
+ *  모델:타임의 모델(ADC형, 시리얼 타입형 등등)
  *  
  * */
-int32_t get_driverNum(eSENSOR_MODEL_t type)
+// ADDMODEL:센서 추가시 수정해야함
+int32_t get_driver_number(eSENSOR_TYPE_t type)
 {
   int32_t num = -1;  // 항목 없음
 
@@ -199,14 +206,14 @@ int32_t get_driverNum(eSENSOR_MODEL_t type)
     case S_T_TEMPERATURE_HJ:
       num = TEMP_HJ_TEMPERATURE;
       break;
-  case S_T_HUMINITY_HJ:
-    num = TEMP_HJ_HUMINITY;
-    break;
-  case S_T_SOLAR_RADIATION_OTT_SMP3:
-    num = OTT_SMP3_MODBUS;
+    case S_T_HUMINITY_HJ:
+      num = TEMP_HJ_HUMINITY;
+     break;
+    case S_T_SOLAR_RADIATION_OTT_SMP3:
+      num = OTT_SMP3_MODBUS;
      break;
     case S_T_FREQ:
-    num = GENERAL_FREQ;
+      num = GENERAL_FREQ;
     break;
   }
   return num;
@@ -236,104 +243,104 @@ void sensor_init(void)
       switch (i)
       {
         case A1_TEMPERATURE:
-          num = get_driverNum(p_sensor[A1_TEMPERATURE].type);
+          num = get_driver_number(p_sensor[A1_TEMPERATURE].type);
           para = get_sensor_config(&p_sensor[A1_TEMPERATURE]);
           g_sensor_driver[A1_TEMPERATURE] = temperature_open(num, para);
           break;
         case A10_RELATIVE_HUMIDITY:
-          num = get_driverNum(p_sensor[A10_RELATIVE_HUMIDITY].type);
+          num = get_driver_number(p_sensor[A10_RELATIVE_HUMIDITY].type);
           para = get_sensor_config(&p_sensor[A10_RELATIVE_HUMIDITY]);
           g_sensor_driver[A10_RELATIVE_HUMIDITY] = humidity_open(num, para);
           break;
         case A3_WIND_SPEED:
-          num = get_driverNum(p_sensor[A3_WIND_SPEED].type);
+          num = get_driver_number(p_sensor[A3_WIND_SPEED].type);
           para = get_sensor_config(&p_sensor[A3_WIND_SPEED]);
           g_sensor_driver[A3_WIND_SPEED] = windSpeed_open(num, para);
           break;
         case A2_WIND_DIRECTION:
-          num = get_driverNum(p_sensor[A2_WIND_DIRECTION].type);
+          num = get_driver_number(p_sensor[A2_WIND_DIRECTION].type);
           para = get_sensor_config(&p_sensor[A2_WIND_DIRECTION]);
           g_sensor_driver[A2_WIND_DIRECTION] = windSpeed_open(num, para);
           break;
         case A9_SNOW_DEPTH:
-          num = get_driverNum(p_sensor[A9_SNOW_DEPTH].type);
+          num = get_driver_number(p_sensor[A9_SNOW_DEPTH].type);
           para = get_sensor_config(&p_sensor[A9_SNOW_DEPTH]);
           g_sensor_driver[A9_SNOW_DEPTH] = snow_open(num, para);
           break;
         case A6_RAINFALL_DOT5_1MM:
-          num = get_driverNum(p_sensor[A6_RAINFALL_DOT5_1MM].type);
+          num = get_driver_number(p_sensor[A6_RAINFALL_DOT5_1MM].type);
           g_sensor_driver[A6_RAINFALL_DOT5_1MM] = rain_open(num, 0);
           break;
         case A8_RAIN_PRESENT:
           g_sensor_driver[A8_RAIN_PRESENT] = rainPresent_open(RAIN_PRESENT_DI, 0);
           break;
         case A7_PRESSURE:
-          num = get_driverNum(p_sensor[A7_PRESSURE].type);
+          num = get_driver_number(p_sensor[A7_PRESSURE].type);
           para = get_sensor_config(&p_sensor[A7_PRESSURE]);
           g_sensor_driver[A7_PRESSURE] = barometer_open(num, para);
           break;
         
         case B5_SOIL_TEMPERATURE_5CM:
-          num = get_driverNum(p_sensor[B5_SOIL_TEMPERATURE_5CM].type);
+          num = get_driver_number(p_sensor[B5_SOIL_TEMPERATURE_5CM].type);
           para = get_sensor_config(&p_sensor[B5_SOIL_TEMPERATURE_5CM]);
           g_sensor_driver[B5_SOIL_TEMPERATURE_5CM] = barometer_open(num, para);
           break;
         case B6_SOIL_TEMPERATURE_10CM:
-          num = get_driverNum(p_sensor[B6_SOIL_TEMPERATURE_10CM].type);
+          num = get_driver_number(p_sensor[B6_SOIL_TEMPERATURE_10CM].type);
           para = get_sensor_config(&p_sensor[B6_SOIL_TEMPERATURE_10CM]);
           g_sensor_driver[B6_SOIL_TEMPERATURE_10CM] = barometer_open(num, para);
           break;
         case B7_SOIL_TEMPERATURE_20CM:
-          num = get_driverNum(p_sensor[B7_SOIL_TEMPERATURE_20CM].type);
+          num = get_driver_number(p_sensor[B7_SOIL_TEMPERATURE_20CM].type);
           para = get_sensor_config(&p_sensor[B7_SOIL_TEMPERATURE_20CM]);
           g_sensor_driver[B7_SOIL_TEMPERATURE_20CM] = barometer_open(num, para);
           break;
         case B8_SOIL_TEMPERATURE_30CM:
-          num = get_driverNum(p_sensor[B8_SOIL_TEMPERATURE_30CM].type);
+          num = get_driver_number(p_sensor[B8_SOIL_TEMPERATURE_30CM].type);
           para = get_sensor_config(&p_sensor[B8_SOIL_TEMPERATURE_30CM]);
           g_sensor_driver[B8_SOIL_TEMPERATURE_30CM] = barometer_open(num, para);
           break;
         case B9_SOIL_TEMPERATURE_50CM:
-          num = get_driverNum(p_sensor[B9_SOIL_TEMPERATURE_50CM].type);
+          num = get_driver_number(p_sensor[B9_SOIL_TEMPERATURE_50CM].type);
           para = get_sensor_config(&p_sensor[B9_SOIL_TEMPERATURE_50CM]);
           g_sensor_driver[B9_SOIL_TEMPERATURE_50CM] = barometer_open(num, para);
           break;
         case B10_SOIL_TEMPERATURE_100CM:
-          num = get_driverNum(p_sensor[B10_SOIL_TEMPERATURE_100CM].type);
+          num = get_driver_number(p_sensor[B10_SOIL_TEMPERATURE_100CM].type);
           para = get_sensor_config(&p_sensor[B10_SOIL_TEMPERATURE_100CM]);
           g_sensor_driver[B10_SOIL_TEMPERATURE_100CM] = barometer_open(num, para);
           break;
         case B11_SOIL_TEMPERATURE_150CM:
-          num = get_driverNum(p_sensor[B11_SOIL_TEMPERATURE_150CM].type);
+          num = get_driver_number(p_sensor[B11_SOIL_TEMPERATURE_150CM].type);
           para = get_sensor_config(&p_sensor[B11_SOIL_TEMPERATURE_150CM]);
           g_sensor_driver[B11_SOIL_TEMPERATURE_150CM] = barometer_open(num, para);
           break;
         case B12_SOIL_TEMPERATURE_300CM:
-          num = get_driverNum(p_sensor[B12_SOIL_TEMPERATURE_300CM].type);
+          num = get_driver_number(p_sensor[B12_SOIL_TEMPERATURE_300CM].type);
           para = get_sensor_config(&p_sensor[B12_SOIL_TEMPERATURE_300CM]);
           g_sensor_driver[B12_SOIL_TEMPERATURE_300CM] = barometer_open(num, para);
           break;
         case B13_SOIL_TEMPERATURE_500CM:
-          num = get_driverNum(p_sensor[B13_SOIL_TEMPERATURE_500CM].type);
+          num = get_driver_number(p_sensor[B13_SOIL_TEMPERATURE_500CM].type);
           para = get_sensor_config(&p_sensor[B13_SOIL_TEMPERATURE_500CM]);
           g_sensor_driver[B13_SOIL_TEMPERATURE_500CM] = barometer_open(num, para);
           break;
         case B2_SUNSHINE_DURATION:
-          num = get_driverNum(p_sensor[B2_SUNSHINE_DURATION].type);
+          num = get_driver_number(p_sensor[B2_SUNSHINE_DURATION].type);
           para = get_sensor_config(&p_sensor[B2_SUNSHINE_DURATION]);
           g_sensor_driver[B2_SUNSHINE_DURATION] = sunshine_open(num, para);
           break;
         case B1_SOLAR_RADIATION:
-          num = get_driverNum(p_sensor[B1_SOLAR_RADIATION].type);
+          num = get_driver_number(p_sensor[B1_SOLAR_RADIATION].type);
           para = get_sensor_config(&p_sensor[B1_SOLAR_RADIATION]);
           g_sensor_driver[B1_SOLAR_RADIATION] = solar_radiation_open(num, para);
           break;
         case N10_AIR_TEMPERATURE_50CM:
-          num = get_driverNum(p_sensor[N10_AIR_TEMPERATURE_50CM].type);
+          num = get_driver_number(p_sensor[N10_AIR_TEMPERATURE_50CM].type);
           g_sensor_driver[N10_AIR_TEMPERATURE_50CM] = temperature_open(num, 0);
           break;
         default://현재 구현되어 있지 않은 센서 드라이버는 ADC만 사용하도록함
-        num = get_driverNum(p_sensor[i].type);
+        num = get_driver_number(p_sensor[i].type);
         para = get_sensor_config(&p_sensor[i]);
         g_sensor_driver[i] = general_adc_open(num, para);
         break;
@@ -451,23 +458,18 @@ void measure_1s(void)
 {
   bool bData;
   uint8_t read_err;
-
-
   int32_t iData;
   float adc;
   float fData;
-
-  eSENSOR_MODEL_t model;
-  eSENSOR_LIST_t sensor_type;
+  eSENSOR_TYPE_t model;
+  eSENSOR_TYPE_LIST_t sensor_type;
   sensor_data_t *pa_reading_1s = g_reading_1.data;
   sensor_t *sensor = g_sensor_config_bk;
 
 
-
-
       // AWS센서만 처리
       for (sensor_type = A1_TEMPERATURE; sensor_type <= I1_TACHOMETER;
-           (eSENSOR_LIST_t)sensor_type++)
+           (eSENSOR_TYPE_LIST_t)sensor_type++)
       {
         model = sensor[sensor_type].type;
 
@@ -565,6 +567,7 @@ void measure_1s(void)
               pa_reading_1s[B13_SOIL_TEMPERATURE_500CM].err = read_err;
               break;
             default:
+
             fData = general_adc_read(g_sensor_driver[sensor_type],&read_err);
             pa_reading_1s[sensor_type].data.f = fData+ sensor[sensor_type].offset;
             break;

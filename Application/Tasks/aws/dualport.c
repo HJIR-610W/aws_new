@@ -49,14 +49,14 @@ uint8_t g_kma_err[SENSOR_LIST_MAX];
 measure_data_250ms_t g_raw_250;
 
 
-void update_sensor_err(eSENSOR_LIST_t sensor, uint8_t code)
+void update_sensor_err(eSENSOR_TYPE_LIST_t sensor, uint8_t code)
 {
   g_kma_err[sensor] = code;
 
   kma_update_sensor_err(sensor,code);
 }
 
-uint8_t get_sensor_err(eSENSOR_LIST_t sensor)
+uint8_t get_sensor_err(eSENSOR_TYPE_LIST_t sensor)
 {
   return   g_kma_err[sensor];
 }
@@ -1335,7 +1335,7 @@ void calculate_sunshine(void)
 /**
  * 에러가 존재하면 타임아웃 전까지는 이전값 유지
  */
-uint16_t filter_data(eSENSOR_LIST_t sensor_index,uint16_t data, uint8_t error,uint8_t *f_err)
+uint16_t filter_data(eSENSOR_TYPE_LIST_t sensor_index,uint16_t data, uint8_t error,uint8_t *f_err)
 {
   uint8_t delay=0;
   uint16_t ret_data;

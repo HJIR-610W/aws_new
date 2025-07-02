@@ -19,18 +19,18 @@ void test_rs485(void)
   const char *rs485_port_name[RS485_PORT_MAX]={"A","B","C","D"};
 
 
-  io_printf("RS485 A,B,C,D í…ŒìŠ¤íŠ¸\r\n");
-  io_printf("ì£¼ì˜:RS485 C,DëŠ” í•˜ë“œì›¨ì–´ì í¼ ì„¤ì • í•„ìš”\r\n");
-  io_printf("ê¸°ëŠ¥:1ì´ˆë§ˆë‹¤ ê° í¬íŠ¸ì´ë¦„ ì „ì†¡ë˜ë©° 1ì´ˆ ëŒ€ê¸°,ì…ë ¥ ì—ì½”ì²˜ë¦¬í•¨\r\n");
+  io_printf("RS485 A,B,C,D Å×½ºÆ®\r\n");
+  io_printf("ÁÖÀÇ:RS485 C,D´Â ÇÏµå¿ş¾îÁ¡ÆÛ ¼³Á¤ ÇÊ¿ä\r\n");
+  io_printf("±â´É:1ÃÊ¸¶´Ù °¢ Æ÷Æ®ÀÌ¸§ Àü¼ÛµÇ¸ç 1ÃÊ ´ë±â,ÀÔ·Â ¿¡ÄÚÃ³¸®ÇÔ\r\n");
 
-  io_printf("í†µì‹  ì†ë„ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”\r\n");
+  io_printf("Åë½Å ¼Óµµ¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä\r\n");
 
-  if(input_decimal_prompt("í†µì‹  ì†ë„ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”", &baud, 1200, 115200)!= MENU_OK)
+  if(input_decimal_prompt("Åë½Å ¼Óµµ¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä", &baud, 1200, 115200)!= MENU_OK)
   {
     baud=57600;
-    io_printf("ê¸°ë³¸ ì†ë„ë¡œ ì„¤ì •í•©ë‹ˆë‹¤.%d\r\n", baud);
+    io_printf("±âº» ¼Óµµ·Î ¼³Á¤ÇÕ´Ï´Ù.%d\r\n", baud);
   }
-  io_printf("ì´ì œ í…ŒìŠ¤íŠ¸ ì§„í–‰í•˜ì„¸ìš” CTRL+Q ì¢…ë£Œ\r\n");
+  io_printf("ÀÌÁ¦ Å×½ºÆ® ÁøÇàÇÏ¼¼¿ä CTRL+Q Á¾·á\r\n");
 
   uart_config.baud = baud;
   uart_config.parityIdx = PARITY_NONE;

@@ -2138,6 +2138,12 @@
                 <file>
                     <name>$PROJ_DIR$\..\Drivers\Components\lcd\st7920.h</name>
                 </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\lcd\vt100_terminal.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Drivers\Components\lcd\vt100_terminal.h</name>
+                </file>
             </group>
             <group>
                 <name>rtc</name>
