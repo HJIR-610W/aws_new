@@ -25,7 +25,7 @@ void test_flash(void)
     write_data[i] = i;
   }
     // 쓰기
-    driver_flash_write(flash, TEST_ADDR, write_data, sizeof(write_data));
+   // driver_flash_write(flash, TEST_ADDR, write_data, sizeof(write_data));
 
 
   // 읽기

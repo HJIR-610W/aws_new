@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>2107013828</Checksum>
+        <Checksum>825049666</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -107,17 +107,18 @@
         <Fmt4>uint8_t[4]	3	0</Fmt4>
     </array_types>
     <watch_formats>
-        <Fmt0>{W}1:buff	4	2</Fmt0>
-        <Fmt1>{W}1:crc	4	0</Fmt1>
-        <Fmt2>{W}1:crc_received	4	0</Fmt2>
-        <Fmt3>{W}1:data	4	0</Fmt3>
-        <Fmt4>{W}1:data16	4	0</Fmt4>
-        <Fmt5>{W}1:g_int_num	4	0</Fmt5>
-        <Fmt6>{W}1:last_day	3	0</Fmt6>
-        <Fmt7>{W}1:port	3	0</Fmt7>
-        <Fmt8>{W}1:recv_crc	4	0</Fmt8>
-        <Fmt9>{W}1:sensor_data[A6_RAINFALL_DOT5_1MM].data.i	4	0</Fmt9>
-        <Fmt10>{W}1:year	3	0</Fmt10>
+        <Fmt0>{W}1:addr	4	0</Fmt0>
+        <Fmt1>{W}1:buff	4	2</Fmt1>
+        <Fmt2>{W}1:crc	4	0</Fmt2>
+        <Fmt3>{W}1:crc_received	4	0</Fmt3>
+        <Fmt4>{W}1:data	4	0</Fmt4>
+        <Fmt5>{W}1:data16	4	0</Fmt5>
+        <Fmt6>{W}1:g_int_num	4	0</Fmt6>
+        <Fmt7>{W}1:last_day	3	0</Fmt7>
+        <Fmt8>{W}1:port	3	0</Fmt8>
+        <Fmt9>{W}1:recv_crc	4	0</Fmt9>
+        <Fmt10>{W}1:sensor_data[A6_RAINFALL_DOT5_1MM].data.i	4	0</Fmt10>
+        <Fmt11>{W}1:year	3	0</Fmt11>
     </watch_formats>
     <Trace2>
         <Enabled>0</Enabled>
@@ -168,10 +169,9 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Drivers\Driver_stm32\usb\usbd_cdc_interface.c}.1.1" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_manager.c}.367.9" 0 0 1 "" 0 "" 0</Bp1>
-        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\test\test_lcd.c}.68.13" 0 0 1 "" 0 "" 0</Bp2>
-        <Count>3</Count>
+        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\task_menu.c}.29.6" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Drivers\Components\lcd\st7920.c}.289.3" 0 0 1 "" 0 "" 0</Bp1>
+        <Count>2</Count>
     </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>

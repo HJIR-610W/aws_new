@@ -94,7 +94,6 @@ void test_lcd(void)
                     goto exit_test;
                 }
             }
-#if 0 
             driver_lcd_set_mode(g_lcd_driver, eLCD_MODE_GRAPHIC);
             driver_lcd_clear_screen(g_lcd_driver);
             
@@ -120,7 +119,6 @@ void test_lcd(void)
                     goto exit_test;
                 }
             }
-#endif
         }
     }
     else

@@ -12,5 +12,6 @@ void clcd_display_on(void);
 void clcd_display_off(void);
 void clcd_set_position(int row, int col);
 void clcd_write_string(const char *str);
+void clcd_write_string_at(int row, int col, const char *str);
 
 #endif

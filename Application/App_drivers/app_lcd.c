@@ -25,7 +25,7 @@ void clcd_printf(int row, int col, char const* const _Format, ...)
     vsnprintf(buffer, sizeof(buffer), _Format, args);
     va_end(args);
     
-    driver_lcd_set_position(p_s_lcd, col, row);
+    driver_lcd_set_position(p_s_lcd, row, col);
     driver_lcd_write_string(p_s_lcd, buffer);
 }
 
@@ -56,11 +56,19 @@ void clcd_display_off(void)
 void clcd_set_position(int row, int col)
 {
     if(p_s_lcd == NULL) return;
-    driver_lcd_set_position(p_s_lcd, col, row);
+    driver_lcd_set_position(p_s_lcd, row, col);
 }
 
 void clcd_write_string(const char *str)
 {
     if(p_s_lcd == NULL) return;
     driver_lcd_write_string(p_s_lcd, str);
+}
+
+void clcd_write_string_at(int row, int col, const char *str)
+{
+    if(p_s_lcd == NULL) return;
+    
+    // 새로운 driver_lcd_write_string_at 함수 사용
+    driver_lcd_write_string_at(p_s_lcd, row, col, str);
 }

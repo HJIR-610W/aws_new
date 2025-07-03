@@ -27,6 +27,9 @@
 #define ST7920_CMD_SET_CGRAM_ADDR 0x40
 #define ST7920_CMD_SET_DDRAM_ADDR 0x80
 
+//확장 명령어
+#define ST7920_CMD_SET_SR 0x02
+
 /* 기능 설정 비트 */
 #define ST7920_FUNCTION_SET_8BIT 0x10
 #define ST7920_FUNCTION_SET_EXTEND 0x04   // 확장 명령 세트 활성화
@@ -36,9 +39,8 @@
 #define ST7920_CURSOR_ON 0x02
 #define ST7920_BLINK_ON 0x01
 
-/* 시리얼 인터페이스 동기화 바이트 - ST7920은 3바이트 시퀀스로 통신 */
-#define ST7920_SYNC_BYTE 0xF8
-#define ST7920_SYNC_CMD 0xF8   // 명령 전송시 첫 바이트
+
+#define ST7920_SYNC_CMD  0xF8   // 명령 전송시 첫 바이트
 #define ST7920_SYNC_DATA 0xFA  // 데이터 전송시 첫 바이트
 
 typedef struct
@@ -57,10 +59,12 @@ static driver_t st7920_driver;
 static uint8_t framebuffer[ST7920_HEIGHT][ST7920_WIDTH / 8];  // 그래픽 모드용 프레임버퍼
 
 static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode);
+static void st7920_write_string_api(driver_t *drv, const char *str);
 
 lcd_api_t lcd_api = {
     .set_position = st7920_set_position,
-    .write_string = st7920_write_string,
+    .write_string = st7920_write_string_api,
+    .write_string_at = st7920_write_string,
     .clear_screen = st7920_clear_screen,
     .home = st7920_home,
     .display_on = st7920_display_on,
@@ -107,7 +111,7 @@ driver_t *st7920_open(void)
     st7920_instance.initialized = false;
     st7920_instance.graphic_mode = false;
     
-    // CS 초기 상태를 high로 설정 (inactive)
+    // CS 초기 상태를 high로 설정 (active high이므로 초기값은 high)
     driver_do_high(st7920_instance.cs_io);
     
     st7920_driver.cfg = &st7920_instance;
@@ -123,7 +127,8 @@ void st7920_reset(driver_t *drv)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
-        driver_do_low(cfg->cs_io);
+    // CS 초기화 - 비활성화 상태
+    driver_do_low(cfg->cs_io);
         
     // 하드웨어 리셋 시퀀스 - DO_LCD_RESET 핀 사용
     driver_do_low(cfg->rst_io);
@@ -131,7 +136,8 @@ void st7920_reset(driver_t *drv)
     driver_do_high(cfg->rst_io);
     st7920_delay_ms(50);
     
-    // ST7920 초기화 시퀀스 - 3번 반복으로 안정화
+    // ST7920 초기화 시퀀스 - 참고 라이브러리 기반
+    // 1단계: 기본 8비트 기능 설정을 3번 반복 (안정화)
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
     st7920_delay_ms(5);
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
@@ -139,23 +145,31 @@ void st7920_reset(driver_t *drv)
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
     st7920_delay_ms(1);
     
-    // 기본 명령 세트 확인 - 확장 기능 비활성화
+    // 2단계: 기본 명령 세트 확정
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
     st7920_delay_ms(1);
     
-    // 디스플레이 제어 - 디스플레이 ON, 커서 OFF, 깜박임 OFF
-    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL | ST7920_DISPLAY_ON);
-    st7920_delay_ms(1);
-    
-    // 화면 지우기
-    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR); 
-    st7920_delay_ms(20);
-    
-    // 엔트리 모드 설정 - 커서 증가, 시프트 없음
+    // 3단계: 엔트리 모드 설정 - 커서 자동 증가, 시프트 없음
     st7920_send_cmd(drv, ST7920_CMD_ENTRY_MODE_SET | 0x02);
     st7920_delay_ms(1);
     
-    // 홈 위치로 이동
+    // 4단계: CGRAM 주소 초기화
+    st7920_send_cmd(drv, ST7920_CMD_SET_CGRAM_ADDR);
+    st7920_delay_ms(1);
+    
+    // 5단계: DDRAM 주소 초기화
+    st7920_send_cmd(drv, ST7920_CMD_SET_DDRAM_ADDR);
+    st7920_delay_ms(1);
+    
+    // 6단계: 디스플레이 제어 - 디스플레이 ON, 커서 OFF, 깜박임 OFF
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL | ST7920_DISPLAY_ON);
+    st7920_delay_ms(1);
+    
+    // 7단계: 화면 지우기
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR); 
+    st7920_delay_ms(20);
+    
+    // 8단계: 홈 위치로 이동
     st7920_send_cmd(drv, ST7920_CMD_RETURN_HOME);
     st7920_delay_ms(2);
     
@@ -166,69 +180,40 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
-
-    driver_do_high(cfg->cs_io);
+    // ST7920 시리얼 통신 시퀀스 - 참고 라이브러리 기반
+    driver_do_high(cfg->cs_io);  // CS HIGH (활성화)
     st7920_delay_us(1);
     
-    // ST7920 시리얼 프로토콜: 동기바이트 + 상위4비트 + 하위4비트
-    driver_spi_send_byte(cfg->spi_io, sync);
-    driver_spi_send_byte(cfg->spi_io, data & 0xF0);
-    driver_spi_send_byte(cfg->spi_io, (data << 4) & 0xF0);
+    // 3바이트 시리얼 프로토콜
+    driver_spi_send_byte(cfg->spi_io, sync);                    // 동기 바이트 (0xF8 or 0xFA)
+    driver_spi_send_byte(cfg->spi_io, data & 0xF0);            // 상위 4비트
+    driver_spi_send_byte(cfg->spi_io, (data << 4) & 0xF0);     // 하위 4비트
     
-    st7920_delay_us(1);
-    driver_do_low(cfg->cs_io);  // 통신 종료
-    st7920_delay_us(100);  // 명령 처리 시간 확보
+    driver_do_low(cfg->cs_io);   // CS LOW (비활성화)
+    st7920_delay_us(100);        // 명령 처리 대기
 }
 
 void st7920_send_cmd(driver_t *drv, uint8_t cmd)
 {
     st7920_send_byte(drv, ST7920_SYNC_CMD, cmd);
-    st7920_delay_us(100);
+
 }
 
 void st7920_send_data(driver_t *drv, uint8_t data)
 {
     st7920_send_byte(drv, ST7920_SYNC_DATA, data);
-    st7920_delay_us(100);
+
 }
 
 void st7920_clear_screen(driver_t *drv)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
-    if(cfg->graphic_mode)
-    {
-        memset(framebuffer, 0, sizeof(framebuffer));
-        
-        // 그래픽 메모리는 상하 2개 영역으로 분할됨
-        // 상단 32줄 (Y=0~31, X=0~7)
-        for(int y = 0; y < 32; y++)
-        {
-            st7920_send_cmd(drv, 0x80 | y);  // Y 주소
-            st7920_send_cmd(drv, 0x80);      // X 주소 (상단 영역)
-            for(int x = 0; x < 16; x++)
-            {
-                st7920_send_data(drv, 0x00);
-            }
-        }
-        
-        // 하단 32줄 (Y=32~63, X=8~15)
-        for(int y = 0; y < 32; y++)
-        {
-            st7920_send_cmd(drv, 0x80 | y);  // Y 주소
-            st7920_send_cmd(drv, 0x88);      // X 주소 (하단 영역)
-            for(int x = 0; x < 16; x++)
-            {
-                st7920_send_data(drv, 0x00);
-            }
-        }
-    }
-    else
-    {
+
         // 문자 모드: DISPLAY_CLEAR 명령으로 한번에 지우기
         st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
         st7920_delay_ms(2);  // 클리어 명령은 1.6ms 필요
-    }
+  
 }
 
 void st7920_home(driver_t *drv)
@@ -253,82 +238,97 @@ void st7920_set_graphic_mode(driver_t *drv, bool enable)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
-    if(enable)
+    if(enable && !cfg->graphic_mode)
     {
+        // 그래픽 모드 활성화 - U8g2 기반 시퀀스
         // 1단계: 확장 명령 세트 활성화
         st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | ST7920_FUNCTION_SET_EXTEND);
-        st7920_delay_us(100);
-        // 2단계: 그래픽 모드 활성화
+        st7920_delay_ms(1);
+        
+        // 2단계: 그래픽 모드 활성화 (확장 + 그래픽)
         st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | 
                            ST7920_FUNCTION_SET_EXTEND | ST7920_FUNCTION_SET_GRAPHIC);
-        st7920_delay_us(100);
+        st7920_delay_ms(1);
+        
         cfg->graphic_mode = true;
     }
-    else
+    else if(!enable && cfg->graphic_mode)
     {
-        // 기본 명령 세트로 복귀
+        // 문자 모드로 복귀
+        // 1단계: 확장 명령 세트만 활성화 (그래픽 비활성화)
+        st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | ST7920_FUNCTION_SET_EXTEND);
+        st7920_delay_ms(1);
+        
+        // 2단계: 기본 명령 세트로 완전 복귀
         st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
-        st7920_delay_us(100);
+        st7920_delay_ms(1);
+        
         cfg->graphic_mode = false;
     }
 }
 
-/*
-ST7920 실제 DDRAM 주소 매핑 (수정됨):
-First line:  0x80 ~ 0x8F (16문자) - 화면 1행
-Second line: 0x90 ~ 0x9F (16문자) - 화면 2행  
-Third line:  0x88 ~ 0x8F, 0x90 ~ 0x97 (16문자) - 화면 3행 (주소가 겹침)
-Fourth line: 0x98 ~ 0x9F, 0xA0 ~ 0xA7 (16문자) - 화면 4행 (주소가 겹침)
-
-실제로는 다음과 같이 매핑:
-Row 2: 0x88 ~ 0x8F (8문자) + 0x90 ~ 0x97 (8문자) = 16문자
-Row 3: 0x98 ~ 0x9F (8문자) + 0xA0 ~ 0xA7 (8문자) = 16문자
-*/
-void st7920_set_position(driver_t *drv, uint8_t x, uint8_t y)
+void st7920_set_position(driver_t *drv, uint8_t row, uint8_t col)
 {
-    uint8_t addr;
-    
-    // 입력 범위 체크
-    if (x > 15 || y > 3) {
-        return;  // 잘못된 입력 무시
-    }
-    
-    // ST7920의 실제 DDRAM 주소 매핑 (간소화)
-    switch (y) {
-        case 0:  // First line (화면 1행)
-            addr = 0x80 + x;
-            break;
-            
-        case 1:  // Second line (화면 2행)
-            addr = 0x90 + x;
-            break;
-            
-        case 2:  // Third line (화면 3행)
-            addr = 0x88 + x;
-            // 범위 체크: 0x88~0x97 (16문자)
-            if (addr > 0x97) {
-                return; // 범위 초과
-            }
-            break;
-            
-        case 3:  // Fourth line (화면 4행)
-            addr = 0x98 + x;
-            // 범위 체크: 0x98~0xA7 (16문자)
-            if (addr > 0xA7) {
-                return; // 범위 초과
-            }
-            break;
-            
-        default:
-            return;  // 잘못된 y 값
-    }
-    
-    // SET DDRAM ADDRESS 명령 전송
-    st7920_send_cmd(drv, addr);
-    st7920_delay_us(100);
+  uint8_t addr;
+
+
+
+  if (row == 0) {
+    addr = 0x80 + col;  
+  }
+  else if (row == 1) {
+    addr = 0x90 + col;  
+  }
+  else if (row == 2) {
+    addr = 0xA0 + col;  
+  }
+  else {  // row == 3
+    addr = 0xB0 + col;  
+  }
+
+  st7920_send_cmd(drv, addr);   
+
 }
 
-void st7920_write_string(driver_t *drv, const char *str)
+
+
+void st7920_write_string(driver_t *drv, int row, int col, const char *str)
+{
+    if (!str || row > 3 || col > 15 || row < 0 || col < 0) {
+        return;
+    }
+    
+    int current_row = row;
+    int current_col = col;
+    
+    // 첫 문자 위치 설정
+    st7920_set_position(drv, current_row, current_col);
+    
+    while (*str && current_row <= 3) {
+        // ST7920의 8+8 문자 분할 주소 매핑을 고려한 문자 출력
+        while (*str && current_col < 16) {
+            // 8번째 문자 (col=8)에서 주소 점프 발생
+            if (current_col == 8) {
+                st7920_set_position(drv, current_row, current_col);
+            }
+            
+            st7920_send_data(drv, *str++);
+            current_col++;
+        }
+        
+        // 행 끝에 도달하면 다음 행으로 이동
+        if (*str && current_col >= 16) {
+            current_row++;
+            current_col = 0;
+            if (current_row <= 3) {
+                st7920_set_position(drv, current_row, current_col);
+            }
+        }
+    }
+}
+
+// 기존 함수와의 호환성을 위한 래퍼 함수
+void st7920_write_string_simple(driver_t *drv, const char *str)
 {
     while(*str)
     {
@@ -508,4 +508,11 @@ static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode)
         default:
             break;
     }
+}
+
+// API 호환성을 위한 래퍼 함수
+static void st7920_write_string_api(driver_t *drv, const char *str)
+{
+    // 현재 커서 위치에서 문자열 출력 (기존 동작 유지)
+    st7920_write_string_simple(drv, str);
 }

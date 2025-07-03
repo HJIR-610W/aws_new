@@ -11,8 +11,9 @@ typedef enum{
 
 typedef struct lcd_api_s
 {
-  void (*set_position)(driver_t *drv, uint8_t x, uint8_t y);
+  void (*set_position)(driver_t *drv, uint8_t row, uint8_t col);
   void (*write_string)(driver_t *drv, const char *str);
+  void (*write_string_at)(driver_t *drv, int row, int col, const char *str);
   void (*clear_screen)(driver_t *drv);
   void (*home)(driver_t *drv);
   void (*display_on)(driver_t *drv);

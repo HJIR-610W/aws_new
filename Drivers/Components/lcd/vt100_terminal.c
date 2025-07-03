@@ -139,10 +139,20 @@ static void vt100_display_off(driver_t *drv)
     vt100_io_puts(drv,"\033[?25l");
 }
 
+static void vt100_write_string_at(driver_t *drv, int row, int col, const char *str)
+{
+    if (!str || row < 0 || col < 0) return;
+    
+    // 위치 설정 후 문자열 출력
+    vt100_set_position(drv, row, col);
+    vt100_write_string(drv, str);
+}
+
 // VT100 터미널 LCD API 구조체
 static lcd_api_t vt100_lcd_api = {
     .set_position = vt100_set_position,
     .write_string = vt100_write_string,
+    .write_string_at = vt100_write_string_at,
     .clear_screen = vt100_clear_screen,
     .home = vt100_home,
     .display_on = vt100_display_on,

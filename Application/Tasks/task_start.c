@@ -29,6 +29,7 @@
 #include "Tasks\task_panel.h"
 #include "Tasks\task_system.h"
 #include "Utils\util_time.h"
+#include "Tasks\task_menu.h"
 #include "app_dataLogging.h"
 #include "app_logging.h"
 #include "fatfs.h"
@@ -98,7 +99,9 @@ void startTask(void *arg)
   usDelay_init();
 
 
-  config_manager_init();
+  config_manager_init();// 우선 실행 
+  
+  menuTask_init();
   flash_init();
   file_init();
   logging_init();

@@ -14,8 +14,9 @@
 
 driver_t *driver_lcd_open(int num);
 
-void driver_lcd_set_position(driver_t *drv, uint8_t x, uint8_t y);
+void driver_lcd_set_position(driver_t *drv, uint8_t row, uint8_t col);
 void driver_lcd_write_string(driver_t *drv, const char *str);
+void driver_lcd_write_string_at(driver_t *drv, int row, int col, const char *str);
 void driver_lcd_clear_screen(driver_t *drv);
 void driver_lcd_home(driver_t *drv);
 void driver_lcd_display_on(driver_t *drv);
