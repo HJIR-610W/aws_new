@@ -72,3 +72,25 @@ void clcd_write_string_at(int row, int col, const char *str)
     // 새로운 driver_lcd_write_string_at 함수 사용
     driver_lcd_write_string_at(p_s_lcd, row, col, str);
 }
+
+
+
+void clcd_set_mode(eLCD_MODE_t lcd_mode)
+{
+   driver_lcd_set_mode(p_s_lcd,  lcd_mode);
+
+}
+void clcd_set_pixel( uint8_t x, uint8_t y, bool on)
+{
+
+ driver_lcd_set_pixel(p_s_lcd,  x,  y,  on);
+}
+
+extern void st7920_flush_buffer(driver_t *drv);
+
+void clcd_flush_buffer(void)
+{
+  st7920_flush_buffer(p_s_lcd);
+}
+
+

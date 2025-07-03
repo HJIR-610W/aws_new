@@ -173,6 +173,8 @@ void st7920_reset(driver_t *drv)
     st7920_send_cmd(drv, ST7920_CMD_RETURN_HOME);
     st7920_delay_ms(2);
     
+    
+
     cfg->initialized = true;
 }
 
@@ -190,7 +192,7 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
     driver_spi_send_byte(cfg->spi_io, (data << 4) & 0xF0);     // 하위 4비트
     
     driver_do_low(cfg->cs_io);   // CS LOW (비활성화)
-    st7920_delay_us(100);        // 명령 처리 대기
+    st7920_delay_us(30);        // 명령 처리 대기
 }
 
 void st7920_send_cmd(driver_t *drv, uint8_t cmd)
@@ -205,14 +207,61 @@ void st7920_send_data(driver_t *drv, uint8_t data)
 
 }
 
+/**
+ * @brief 프레임버퍼의 내용을 LCD 화면 전체에 올바르게 전송합니다.
+ */
+void st7920_flush_buffer(driver_t *drv)
+{
+    st7920_t *cfg = (st7920_t *)drv->cfg;
+    if(!cfg->graphic_mode) return;
+    
+    // 상단 영역 (Y: 0~31)
+    for (uint8_t y = 0; y < 32; y++)
+    {
+        st7920_send_cmd(drv, 0x80 | y);      // Y 주소 설정
+        st7920_send_cmd(drv, 0x80);          // X 주소 0으로 설정
+        
+        // 한 행의 8바이트를 연속 전송 (X 주소 자동 증가)
+        for (uint8_t x_byte = 0; x_byte < 16; x_byte++)
+        {
+            st7920_send_data(drv, framebuffer[y][x_byte]);
+        }
+    }
+    
+    // 하단 영역 (Y: 32~63)
+    for (uint8_t y = 32; y < 64; y++)
+    {
+        st7920_send_cmd(drv, 0x80 | (y-32));  // Y 주소 설정
+        st7920_send_cmd(drv, 0x88);           // X 주소 8로 설정
+        
+        // 한 행의 8바이트를 연속 전송
+        for (uint8_t x_byte = 0; x_byte < 16; x_byte++)
+        {
+            st7920_send_data(drv, framebuffer[y][x_byte]);
+        }
+    }
+}
 void st7920_clear_screen(driver_t *drv)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
+    
+    
+    if(cfg->graphic_mode)
+    {
+      
+      memset(framebuffer,0,sizeof(framebuffer));
+     
+      st7920_flush_buffer(drv);
+      
+    }
+    else
+    {
     
 
         // 문자 모드: DISPLAY_CLEAR 명령으로 한번에 지우기
         st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
         st7920_delay_ms(2);  // 클리어 명령은 1.6ms 필요
+    }
   
 }
 
@@ -271,24 +320,32 @@ void st7920_set_position(driver_t *drv, uint8_t row, uint8_t col)
 {
   uint8_t addr;
 
-
-
-  if (row == 0) {
-    addr = 0x80 + col;  
+  if (row == 0)
+  {
+    addr = 0x80 + col;
   }
-  else if (row == 1) {
-    addr = 0x90 + col;  
+  else if (row == 1)
+  {
+    addr = 0x90 + col;
   }
-  else if (row == 2) {
-    addr = 0xA0 + col;  
+  else if (row == 2)
+  {
+
+    addr = 0x88 + col;
   }
-  else {  // row == 3
-    addr = 0xB0 + col;  
+  else if (row == 3)
+  {
+
+    addr = 0x98 + col;
+  }
+  else
+  {
+    return; // 잘못된 row
   }
 
-  st7920_send_cmd(drv, addr);   
-
+  st7920_send_cmd(drv, addr);
 }
+
 
 
 
@@ -336,13 +393,14 @@ void st7920_write_string_simple(driver_t *drv, const char *str)
     }
 }
 
+// 오직 프레임버퍼의 픽셀 값만 변경하는 함수
 void st7920_set_pixel(driver_t *drv, uint8_t x, uint8_t y, bool on)
 {
-    st7920_t *cfg = (st7920_t *)drv->cfg;
-    
-    if(x >= ST7920_WIDTH || y >= ST7920_HEIGHT || !cfg->graphic_mode)
+    // 좌표 경계 값 체크
+    if(x >= ST7920_WIDTH || y >= ST7920_HEIGHT)
         return;
     
+    // 수정할 바이트 및 비트 위치 계산
     uint8_t byte_x = x / 8;
     uint8_t bit_x = x % 8;
     
@@ -355,20 +413,6 @@ void st7920_set_pixel(driver_t *drv, uint8_t x, uint8_t y, bool on)
     {
         framebuffer[y][byte_x] &= ~(0x80 >> bit_x);
     }
-    
-    // ST7920 그래픽 메모리 매핑: 128x64 = 상단32줄(0~7) + 하단32줄(8~15)
-    uint8_t row = y;
-    uint8_t col = byte_x;
-    
-    if(row >= 32)  // 하단 영역
-    {
-        row -= 32;
-        col += 8;
-    }
-    
-    st7920_send_cmd(drv, 0x80 | row);  // Y 주소 설정
-    st7920_send_cmd(drv, 0x80 | col);  // X 주소 설정
-    st7920_send_data(drv, framebuffer[y][byte_x]);
 }
 
 void st7920_draw_line(driver_t *drv, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, bool on)
