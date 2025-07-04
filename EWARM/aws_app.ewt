@@ -1215,6 +1215,12 @@
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_adc.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_button.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_button.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_charger.c</name>
             </file>
             <file>

@@ -5,7 +5,7 @@
 #include "app_lcd.h"
 #include "../App_drivers/lcd/font_16x8.h"
 #include "../App_drivers/lcd/font_6x8.h"
-
+#include "app_button.h"
 
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
@@ -58,7 +58,7 @@ void draw_char_p_6x8(int start_x, int start_y)
 }
 
 extern void st7920_flush_buffer(driver_t *drv);
-void menuTask(void *arg)
+void menuTask_(void *arg)
 {
   clcd_init();
   
@@ -93,13 +93,53 @@ void menuTask(void *arg)
 
     
     clcd_flush_buffer();
-#if 0 
-    // clcd_write_string_at( 0,0,"123456789abcdefg");
-    // clcd_write_string_at( 1,0,"23456789abcdefgh");
-     clcd_write_string_at( 2,8,"3456789a");
-       clcd_write_string_at( 3,8,"456789ab");
-#endif
+
     osDelay(1000);  // 2초마다 페이지 전환
+  }
+}
+
+
+
+
+
+void menuTask(void *arg)
+{
+  int32_t key;
+  char display_char[2] = {0, 0}; // Single character string with null terminator
+  
+  clcd_init();
+  app_button_init(); // Initialize button system
+  
+  clcd_set_mode(eLCD_MODE_GRAPHIC);
+  
+  // Clear screen initially
+  clcd_clear();
+  clcd_write_string_at(0, 0, "Ready for input:");
+    
+  while(1)
+  {
+    key = get_button_key(100); // Check for keys every 100ms
+    
+    // Check if key is a lowercase alphabet letter (a-z)
+    if (key >= 'a' && key <= 'z') {
+      // Clear the display area first
+      clcd_clear();
+      
+      // Convert key to character and display at row 0, col 0
+      display_char[0] = (char)key;
+      clcd_write_string_at(0, 0, display_char);
+      
+      // Optional: Add some feedback
+      clcd_write_string_at(1, 0, "Key pressed!");
+    }
+    else if (key != KEY_CODE_NONE) {
+      // Optional: Handle other keys or show feedback
+      clcd_clear();
+      clcd_write_string_at(0, 0, "Not lowercase");
+    }
+    
+    // Small delay to prevent excessive CPU usage
+    osDelay(10);
   }
 }
 

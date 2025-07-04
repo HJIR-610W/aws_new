@@ -101,7 +101,7 @@ void startTask(void *arg)
 
   config_manager_init();// 우선 실행 
   
- // menuTask_init();
+  menuTask_init();
   flash_init();
   file_init();
   logging_init();

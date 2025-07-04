@@ -13,7 +13,7 @@
 #include "driver_uart.h"
 
 /* VT100 터미널 기본 크기 */
-#define VT100_DEFAULT_ROWS    4
+#define VT100_DEFAULT_ROWS    8
 #define VT100_DEFAULT_COLS    20
 
 /* VT100 이스케이프 시퀀스 */
@@ -64,17 +64,17 @@ void vt100_io_puts(driver_t *drv,char *string)
   driver_uart_send(vt100->uart_io, (uint8_t *)string, strlen(string));
 }
 // VT100 터미널용 LCD API 함수들
-static void vt100_set_position(driver_t *drv, uint8_t x, uint8_t y)
+static void vt100_set_position(driver_t *drv, uint8_t row, uint8_t col)
 {
     vt100_terminal_t *term = (vt100_terminal_t *)drv->cfg;
        
-    if(x < term->max_cols && y < term->max_rows)
+    if(col < term->max_cols && row < term->max_rows)
     {
-        term->cursor_x = x;
-        term->cursor_y = y;
+        term->cursor_x = col;
+        term->cursor_y = row;
         
         // VT100 커서 위치 설정 명령 전송
-        vt100_io_pirntf(drv, "\x1B[%d;%dH", y + 1, x + 1);
+        vt100_io_pirntf(drv, "\x1B[%d;%dH", row + 1, col + 1);
 
     
     }

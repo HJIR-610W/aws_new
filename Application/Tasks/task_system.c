@@ -12,6 +12,7 @@
 #include "os_user_def.h"
 #include "system_err.h"
 #include "fatfs.h"
+#include "app_button.h"
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
@@ -104,8 +105,10 @@ void systemTask(void *arg)
 
   pre_sd_inserted = BSP_PlatformIsDetected();
 
+
   while (1)
   {
+    scan_button();
     bsp_rtc_update();
 
     if ((osKernelGetTickCount() - start_time)>1000)
@@ -121,7 +124,7 @@ void systemTask(void *arg)
       check_sd_card();
     }
 
-    osDelay(500);
+    osDelay(100);
   }
 }
 
@@ -132,6 +135,8 @@ void systemTask_init(uint32_t para)
 {
   if(para==PARA_RUN_MODE)
   {
+    
+    app_button_init();
     userBtn_init();
     
     charger_init(get_config_app()->charger_model);
