@@ -192,7 +192,7 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
     driver_spi_send_byte(cfg->spi_io, (data << 4) & 0xF0);     // 하위 4비트
     
     driver_do_low(cfg->cs_io);   // CS LOW (비활성화)
-    st7920_delay_us(30);        // 명령 처리 대기
+    st7920_delay_us(100);        // 명령 처리 대기
 }
 
 void st7920_send_cmd(driver_t *drv, uint8_t cmd)

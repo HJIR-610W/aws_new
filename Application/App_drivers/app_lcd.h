@@ -19,4 +19,5 @@ void clcd_write_string_at(int row, int col, const char *str);
 void clcd_set_mode(eLCD_MODE_t lcd_mode);
 void clcd_set_pixel( uint8_t x, uint8_t y, bool on);
 void clcd_flush_buffer(void);
+void clcd_put_ch(int row, int col, uint8_t ch);
 #endif
