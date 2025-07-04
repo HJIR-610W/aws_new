@@ -6,8 +6,33 @@
  * @version        v1.0.0
  *
  * @note
- * 0x64000000 NE2 SRAM
- * 0x68000000 NE3 QUAD UART
+ * FSMC Bank Address Ranges:
+ * 
+ * NE1 (FSMC_NORSRAM_BANK1): 0x60000000 - 0x63FFFFFF (64MB)
+ *   - ST7920 LCD Controller (8-bit interface)
+ *   - Base Address: 0x60000000
+ *   - Address Range: 64MB
+ * 
+ * NE2 (FSMC_NORSRAM_BANK2): 0x64000000 - 0x67FFFFFF (64MB)  
+ *   - External SRAM (16-bit interface)
+ *   - Base Address: 0x64000000
+ *   - Current Usage: SRAM memory expansion
+ * 
+ * NE3 (FSMC_NORSRAM_BANK3): 0x68000000 - 0x6BFFFFFF (64MB)
+ *   - QUAD UART Controller (8-bit interface)  
+ *   - Base Address: 0x68000000
+ *   - Current Usage: Serial communication expansion
+ * 
+ * NE4 (FSMC_NORSRAM_BANK4): 0x6C000000 - 0x6FFFFFFF (64MB)
+ *   - Reserved/Unused
+ *   - Available for future expansion
+ *
+ * GPIO Pin Assignments:
+ * - PD7: FSMC_NE1 (LCD Controller Chip Select)
+ * - PG9: FSMC_NE2 (SRAM Chip Select) 
+ * - PG10: FSMC_NE3 (UART Chip Select)
+ * - PD4: FSMC_NOE (Output Enable)
+ * - PD5: FSMC_NWE (Write Enable)
  */
 
 #include <string.h>
@@ -20,21 +45,55 @@
 
 SRAM_HandleTypeDef hsram1;
 SRAM_HandleTypeDef hsram2;
+SRAM_HandleTypeDef hsram_lcd;  // ST7920 LCD Controller
 
-/* FSMC initialization function */
+
 void MX_FSMC_Init(void)
 {
-  /* USER CODE BEGIN FSMC_Init 0 */
-
-  /* USER CODE END FSMC_Init 0 */
 
   FSMC_NORSRAM_TimingTypeDef Timing = {0};
   FSMC_NORSRAM_TimingTypeDef ExtTiming = {0};
-  /* USER CODE BEGIN FSMC_Init 1 */
-
-  /* USER CODE END FSMC_Init 1 */
 
 
+  // ST7920 LCD Controller (NE1 Bank)
+  /** Perform the ST7920 LCD Controller initialization sequence
+  */
+  hsram_lcd.Instance = FSMC_NORSRAM_DEVICE;
+  hsram_lcd.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
+  /* hsram_lcd.Init */
+  hsram_lcd.Init.NSBank = FSMC_NORSRAM_BANK1;
+  hsram_lcd.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
+  hsram_lcd.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
+  hsram_lcd.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_8;
+  hsram_lcd.Init.BurstAccessMode = FSMC_BURST_ACCESS_MODE_DISABLE;
+  hsram_lcd.Init.WaitSignalPolarity = FSMC_WAIT_SIGNAL_POLARITY_LOW;
+  hsram_lcd.Init.WrapMode = FSMC_WRAP_MODE_DISABLE;
+  hsram_lcd.Init.WaitSignalActive = FSMC_WAIT_TIMING_BEFORE_WS;
+  hsram_lcd.Init.WriteOperation = FSMC_WRITE_OPERATION_ENABLE;
+  hsram_lcd.Init.WaitSignal = FSMC_WAIT_SIGNAL_DISABLE;
+  hsram_lcd.Init.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
+  hsram_lcd.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
+  hsram_lcd.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
+  hsram_lcd.Init.PageSize = FSMC_PAGE_SIZE_NONE;
+
+
+    
+    
+  /* ST7920 LCD Controller Timing (168MHz FSMC Clock = 5.95ns per cycle) */
+  Timing.AddressSetupTime       = 2;   // Address setup: 2 * 5.95ns = 11.9ns 
+  Timing.AddressHoldTime        = 4;   // Address hold: 4 * 5.95ns = 23.89ns   
+  Timing.DataSetupTime          = 26;  // Data setup: 26 * 5.95ns = 154.7ns
+  Timing.BusTurnAroundDuration  = 7;   // Bus turn around: 7 * 5.95ns = 41.65ns
+  Timing.CLKDivision            = 2;   // Clock division (ignored in async mode)
+  Timing.DataLatency            = 2;   // Data latency (ignored in async mode)
+  Timing.AccessMode             = FSMC_ACCESS_MODE_A;  // Basic access mode
+
+#if 0
+  if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
+  {
+    ERROR_PRINTF("fsmc lcd");
+  }
+#endif
 #if 1 
   //SRAM
   /** Perform the SRAM1 memory initialization sequence

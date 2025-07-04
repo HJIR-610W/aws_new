@@ -67,6 +67,9 @@ void menuTask(void *arg)
   {
     clcd_clear();
     
+
+    
+
     // Display sequential ASCII characters
     // 128 pixels / 6 pixels per character = 21 characters per row max
     // 64 pixels / 8 pixels per row = 8 rows max
@@ -87,6 +90,7 @@ void menuTask(void *arg)
         }
       }
     }
+
     
     clcd_flush_buffer();
 #if 0 

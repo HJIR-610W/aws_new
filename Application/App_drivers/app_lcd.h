@@ -20,4 +20,5 @@ void clcd_set_mode(eLCD_MODE_t lcd_mode);
 void clcd_set_pixel( uint8_t x, uint8_t y, bool on);
 void clcd_flush_buffer(void);
 void clcd_put_ch(int row, int col, uint8_t ch);
+void clcd_put_hangul(int row, int col, uint16_t unicode);
 #endif

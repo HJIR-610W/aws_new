@@ -34,8 +34,14 @@
 
 extern SRAM_HandleTypeDef hsram1;
 extern SRAM_HandleTypeDef hsram2;
+extern SRAM_HandleTypeDef hsram_lcd;  // ST7920 LCD Controller
 
 /* USER CODE BEGIN Private defines */
+
+// ST7920 LCD Controller FSMC Address Definitions
+#define ST7920_LCD_BASE_ADDR    0x60000000UL    // NE1 Bank base address
+#define ST7920_LCD_CMD_ADDR     (ST7920_LCD_BASE_ADDR | 0x00)  // Command/Status register
+#define ST7920_LCD_DATA_ADDR    (ST7920_LCD_BASE_ADDR | 0x02)  // Data register
 
 /* USER CODE END Private defines */
 

@@ -3,6 +3,9 @@
  * @brief ST7920 128x64 그래픽 LCD 드라이버 (시리얼 인터페이스)
  */
 
+#define ST7920_SPI_USE 0
+
+
 #include "st7920.h"
 #include <string.h>
 #include "driver_stm32_spi.h"
@@ -14,6 +17,10 @@
 #include "usDelay.h"
 #include <math.h>
 #include <stdlib.h>
+
+
+
+
 #define ST7920_WIDTH 128
 #define ST7920_HEIGHT 64
 
@@ -42,6 +49,17 @@
 
 #define ST7920_SYNC_CMD  0xF8   // 명령 전송시 첫 바이트
 #define ST7920_SYNC_DATA 0xFA  // 데이터 전송시 첫 바이트
+
+
+#if (ST7920_SPI_USE==0)
+
+#define LCD_COMMAND_ADDRESS ((uint32_t)(0x60000000)) 
+#define LCD_DATA_ADDRESS    ((uint32_t)(0x60000001)) 
+
+
+volatile uint8_t* p_lcd_cmd  = (volatile uint8_t*)LCD_COMMAND_ADDRESS;
+volatile uint8_t* p_lcd_data = (volatile uint8_t*)LCD_DATA_ADDRESS;
+#endif
 
 typedef struct
 {
@@ -94,6 +112,7 @@ driver_t *st7920_open(void)
         return &st7920_driver;
     }
 
+#if ST7920_SPI_USE
     st7920_instance.spi_io = driver_spi_open(STM_SPI_1);
     if(!st7920_instance.spi_io)
     {
@@ -105,6 +124,10 @@ driver_t *st7920_open(void)
     {
         return NULL;
     }
+    
+        driver_do_high(st7920_instance.cs_io);
+#endif
+    
 
     st7920_instance.rst_io = driver_do_open(DO_LCD_RESET, NULL);
 
@@ -112,7 +135,7 @@ driver_t *st7920_open(void)
     st7920_instance.graphic_mode = false;
     
     // CS 초기 상태를 high로 설정 (active high이므로 초기값은 high)
-    driver_do_high(st7920_instance.cs_io);
+
     
     st7920_driver.cfg = &st7920_instance;
     st7920_driver.opened = true;
@@ -128,8 +151,9 @@ void st7920_reset(driver_t *drv)
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
     // CS 초기화 - 비활성화 상태
+#if ST7920_SPI_USE
     driver_do_low(cfg->cs_io);
-        
+#endif
     // 하드웨어 리셋 시퀀스 - DO_LCD_RESET 핀 사용
     driver_do_low(cfg->rst_io);
     st7920_delay_ms(100);
@@ -180,6 +204,7 @@ void st7920_reset(driver_t *drv)
 
 void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
 {
+
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
     // ST7920 시리얼 통신 시퀀스 - 참고 라이브러리 기반
@@ -193,17 +218,28 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
     
     driver_do_low(cfg->cs_io);   // CS LOW (비활성화)
     st7920_delay_us(100);        // 명령 처리 대기
+
 }
 
 void st7920_send_cmd(driver_t *drv, uint8_t cmd)
 {
+  #if ST7920_SPI_USE 
     st7920_send_byte(drv, ST7920_SYNC_CMD, cmd);
-
+#else
+    *p_lcd_cmd = cmd;
+    
+#endif
 }
 
 void st7920_send_data(driver_t *drv, uint8_t data)
 {
+    #if ST7920_SPI_USE 
+  
     st7920_send_byte(drv, ST7920_SYNC_DATA, data);
+#else  
+        *p_lcd_data = data;
+        
+#endif
 
 }
 

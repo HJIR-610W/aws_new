@@ -1169,6 +1169,12 @@
                 <file>
                     <name>$PROJ_DIR$\..\Application\App_drivers\lcd\font_6x8.h</name>
                 </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\App_drivers\lcd\hangul_font.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\App_drivers\lcd\hangul_font.h</name>
+                </file>
             </group>
             <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_adc.c</name>

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "lcd/font_6x8.h"
+#include "lcd/hangul_font.h"
 
 static driver_t *p_s_lcd = NULL;
 
@@ -121,6 +122,40 @@ void clcd_put_ch(int row, int col, uint8_t ch)
             {
                 clcd_set_pixel(start_x + x, start_y + y, 1);
             }
+        }
+    }
+}
+
+void clcd_put_hangul(int row, int col, uint16_t unicode)
+{
+    if(p_s_lcd == NULL) return;
+    
+    // Find the character in hangul_chars array
+    for(int i = 0; i < hangul_chars_count; i++)
+    {
+        if(hangul_chars[i].unicode == unicode)
+        {
+            // Calculate position in pixels (16x16 font)
+            int start_x = col * HANGUL_FONT_WIDTH;
+            int start_y = row * HANGUL_FONT_HEIGHT;
+            
+            // Check bounds for 128x64 display
+            if(start_x + HANGUL_FONT_WIDTH > 128 || start_y + HANGUL_FONT_HEIGHT > 64) return;
+            
+            // Draw character pixel by pixel
+            const uint8_t *char_data = hangul_chars[i].bitmap;
+            for (int y = 0; y < HANGUL_FONT_HEIGHT; y++)
+            {
+                uint16_t row_data = (char_data[y*2] << 8) | char_data[y*2 + 1];
+                for (int x = 0; x < HANGUL_FONT_WIDTH; x++)
+                {
+                    if (row_data & (0x8000 >> x))  // Check bit from MSB
+                    {
+                        clcd_set_pixel(start_x + x, start_y + y, 1);
+                    }
+                }
+            }
+            return;
         }
     }
 }
