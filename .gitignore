@@ -1,5 +1,24 @@
-/EWARM/fw/Obj
-/EWARM/fw/List
-/EWARM/release/Obj
-/EWARM/release/List
+# IAR 빌드 출력물
+*.bak
+*.dep
+*.ewd
+*.ewp
+*.ewt
+*.eww
+*.hex
+*.bin
+*.out
+*.sim
+*.map
+*.lst
+*.dbg
+*.obj
+*.o
+*.wsdt
+*.dbx
+*.dnx
 *.tmp
+
+# 빌드 폴더
+Debug/
+Release/

@@ -440,6 +440,7 @@
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls</state>
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS</state>
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include</state>
+                    <state>$PROJ_DIR$\..\Application\Tasks\lcd_menu</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1492,15 +1493,6 @@
                 </file>
             </group>
             <group>
-                <name>lcd</name>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\IO\lcd\view_driver.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\IO\lcd\view_driver.h</name>
-                </file>
-            </group>
-            <group>
                 <name>terminal</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\IO\terminal\terminal.c</name>
@@ -1876,6 +1868,21 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\console\console_utile.h</name>
+                </file>
+            </group>
+            <group>
+                <name>lcd_menu</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\lcd_menu\lcd_driver.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\lcd_menu\lcd_driver.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\lcd_menu\view_driver.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\lcd_menu\view_driver.h</name>
                 </file>
             </group>
             <group>

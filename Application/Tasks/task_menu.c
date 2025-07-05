@@ -1,11 +1,14 @@
 
-
+#include <stdio.h>
 #include "task_menu.h"
 #include "cmsis_os2.h"
 #include "app_lcd.h"
 #include "../App_drivers/lcd/font_16x8.h"
 #include "../App_drivers/lcd/font_6x8.h"
 #include "app_button.h"
+#include "lcd_driver.h"
+
+#include "util_time.h"
 
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
@@ -101,45 +104,144 @@ void menuTask_(void *arg)
 
 
 
+void draw_water_page(lcd_win_t* win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+	static int water_level = 85;
+	static float water_flow = 12.5f;
+	static float water_temp = 22.3f;
+	static float water_ph = 7.2f;
+	static float water_turbidity = 1.2f;
+	static float water_pressure = 2.1f;
+
+	
+
+	
+  win->current_row = 0;
+	
+
+	
+	// 각 행별 데이터 출력
+	snprintf(buff, sizeof(buff), "Level: %d%%", water_level);
+	lcd_print_row(win, row_count++, buff);
+	
+	snprintf(buff, sizeof(buff), "Flow: %.1fL/min", water_flow);
+	lcd_print_row(win, row_count++, buff);
+	
+	snprintf(buff, sizeof(buff), "Temp: %.1fC", water_temp);
+	lcd_print_row(win, row_count++, buff);
+	
+	snprintf(buff, sizeof(buff), "pH: %.2f", water_ph);
+	lcd_print_row(win, row_count++, buff);
+	
+	snprintf(buff, sizeof(buff), "Turbidity: %.1fNTU", water_turbidity);
+	lcd_print_row(win, row_count++, buff);
+	
+	snprintf(buff, sizeof(buff), "Pressure: %.1fbar", water_pressure);
+	lcd_print_row(win, row_count++, buff);
+
+  
+  	snprintf(buff, sizeof(buff), "Press5ure: %.1fbar", water_pressure);
+	lcd_print_row(win, row_count++, buff);
+  
+  	snprintf(buff, sizeof(buff), "Pres4sure: %.1fbar", water_pressure);
+	lcd_print_row(win, row_count++, buff);
+  
+  	snprintf(buff, sizeof(buff), "Pres3sure: %.1fbar", water_pressure);
+	lcd_print_row(win, row_count++, buff);
+  
+  	snprintf(buff, sizeof(buff), "Pr2essure: %.1fbar", water_pressure);
+	lcd_print_row(win, row_count++, buff);
+	// 페이지별 데이터 설정
+	win->total_items[page] = row_count;
+}
+
+void draw_system_page(lcd_win_t* win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+	static int water_level = 85;
+	static float water_flow = 12.5f;
+	static float water_temp = 22.3f;
+	static float water_ph = 7.2f;
+	static float water_turbidity = 1.2f;
+	static float water_pressure = 2.1f;
+
+        win->current_row = 0;
+
+        // LCD 화면 클리어
+
+	
+	// 각 행별 데이터 출력
+
+	lcd_print_row(win, row_count++, "SYTEM");
+	
+	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,Date_Time.Month,
+Date_Time.Day,Date_Time.Hour,Date_Time.Min,Date_Time.Sec);
+	lcd_print_row(win, row_count++, buff);
+	
+	snprintf(buff, sizeof(buff), "1Temp: %.1fC", water_temp);
+	lcd_print_row(win, row_count++, buff);
+	
+	snprintf(buff, sizeof(buff), "1pH: %.2f", water_ph);
+	lcd_print_row(win, row_count++, buff);
+	
+	snprintf(buff, sizeof(buff), "Tur1bidity: %.1fNTU", water_turbidity);
+	lcd_print_row(win, row_count++, buff);
+	
+	snprintf(buff, sizeof(buff), "Pres1sure: %.1fbar", water_pressure);
+	lcd_print_row(win, row_count++, buff);
+
+	// 페이지별 데이터 설정
+	win->total_items[page] = row_count;
+}
+
 
 void menuTask(void *arg)
 {
+  
   int32_t key;
-  char display_char[2] = {0, 0}; // Single character string with null terminator
+		lcd_win_t  lcd_win;
+  
   
   clcd_init();
-  app_button_init(); // Initialize button system
+
   
-  clcd_set_mode(eLCD_MODE_GRAPHIC);
+ // clcd_set_mode(eLCD_MODE_GRAPHIC);
   
-  // Clear screen initially
+
   clcd_clear();
   clcd_write_string_at(0, 0, "Ready for input:");
+  
+  
+  	lcd_create_win(&lcd_win);
     
-  while(1)
-  {
-    key = get_button_key(100); // Check for keys every 100ms
-    
-    // Check if key is a lowercase alphabet letter (a-z)
-    if (key >= 'a' && key <= 'z') {
-      // Clear the display area first
-      clcd_clear();
+    	lcd_win.total_pages = 2;
       
-      // Convert key to character and display at row 0, col 0
-      display_char[0] = (char)key;
-      clcd_write_string_at(0, 0, display_char);
       
-      // Optional: Add some feedback
-      clcd_write_string_at(1, 0, "Key pressed!");
-    }
-    else if (key != KEY_CODE_NONE) {
-      // Optional: Handle other keys or show feedback
-      clcd_clear();
-      clcd_write_string_at(0, 0, "Not lowercase");
-    }
+
+	while (1) {
+		// 현재 페이지에 따라 데이터 표시
+		if (lcd_win.current_page == 0) {
+			draw_system_page(&lcd_win);
+		} else {
+			draw_water_page(&lcd_win);
+		}
     
-    // Small delay to prevent excessive CPU usage
-    osDelay(10);
+    		// 키 입력 처리
+		int key = lcd_get_key_input();
+		
+		if (key == LCD_KEY_ESC) {
+			break; // 프로그램 종료
+		} else if(key !=-1){
+			// 모든 키 입력을 스크롤/페이지 핸들러로 전달
+			lcd_handle_scroll(&lcd_win, key);
+		}
+    
+    
   }
 }
 

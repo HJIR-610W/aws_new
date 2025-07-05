@@ -1,0 +1,46 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"os_user_def.h": "c",
+			"driver_spi.h": "c",
+			"driver_flash_define.h": "c",
+			"driver_freqinput.h": "c",
+			"driver_interface.h": "c",
+			"app_sensor.h": "c",
+			"general_frequency.h": "c",
+			"sockets.h": "c",
+			"user_heap.h": "c",
+			"aws_data.h": "c",
+			"system_err.h": "c",
+			"stm32f4xx_hal.h": "c",
+			"pcb_define.h": "c",
+			"util_time.h": "c",
+			"task_tcpserver.h": "c",
+			"config_app.h": "c",
+			"config_sensor.h": "c",
+			"cli_key_code.h": "c",
+			"dev_io.h": "c",
+			"driver_gpio_def.h": "c",
+			"driver_stm32_do.h": "c",
+			"hart_parser.h": "c",
+			"driver_lcd.h": "c",
+			"mcu_utile.h": "c",
+			"usdelay.h": "c",
+			"st7920.h": "c",
+			"vt100_terminal.h": "c",
+			"driver_stm32_uart.h": "c",
+			"driver_uart_def.h": "c",
+			"console_utile.h": "c",
+			"hjtemp_menu.h": "c",
+			"console_define.h": "c",
+			"app_lcd.h": "c",
+			"driver_uart.h": "c",
+			"cmsis_os2.h": "c"
+		}
+	}
+}
