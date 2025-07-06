@@ -1,5 +1,7 @@
 
 #include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 #include "task_menu.h"
 #include "cmsis_os2.h"
 #include "app_lcd.h"
@@ -7,14 +9,24 @@
 #include "../App_drivers/lcd/font_6x8.h"
 #include "app_button.h"
 #include "lcd_driver.h"
-
 #include "util_time.h"
+#include "config_app.h"
+#include "console_utile.h"
+#include "task_logging.h"
+#include "bsp_di.h"
+#include "bsp.h"
+#include "aws_data.h"
+#include "app_charger.h"
 
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
     .stack_size = 1024,
-    .priority = (osPriority_t)osPriorityBelowNormal,
+    .priority = (osPriority_t)osPriorityRealtime,
 };
+
+extern const char *doorStatusList[2];
+extern const char *generalStatusList[2];
+
 int display_page = 0;
 const char *menu_lines[4] = {
     "123456789abcdefg",
@@ -23,6 +35,30 @@ const char *menu_lines[4] = {
     "456789abcdefghij"
 };
 
+void make_centered(char *buffer, size_t buf_size, const char *text, int width)
+{
+  int text_len = strlen(text);
+
+
+  if (text_len >= width || buf_size <= 1)
+  {
+    snprintf(buffer, buf_size, "%.*s", (int)buf_size - 1, text);
+    return;
+  }
+  int left_padding = (width - text_len) / 2;
+  int written = snprintf(buffer, buf_size, "%*s%s", left_padding, "", text);
+  if (written < 0 || written >= buf_size - 1)
+  {
+    return;
+  }
+
+  for (int i = written; i < width && i < buf_size - 1; i++)
+  {
+    buffer[i] = ' ';
+  }
+  int end_pos = (width < buf_size) ? width : (int)buf_size - 1;
+  buffer[end_pos] = '\0';
+}
 
 void draw_char_h(int start_x, int start_y)
 {
@@ -104,145 +140,510 @@ void menuTask_(void *arg)
 
 
 
-void draw_water_page(lcd_win_t* win)
-{
-	int row_count = 0;
-	int page = win->current_page;
-	char buff[LCD_COLS + 1];
-	static int water_level = 85;
-	static float water_flow = 12.5f;
-	static float water_temp = 22.3f;
-	static float water_ph = 7.2f;
-	static float water_turbidity = 1.2f;
-	static float water_pressure = 2.1f;
-
-	
-
-	
-  win->current_row = 0;
-	
-
-	
-	// 각 행별 데이터 출력
-	snprintf(buff, sizeof(buff), "Level: %d%%", water_level);
-	lcd_print_row(win, row_count++, buff);
-	
-	snprintf(buff, sizeof(buff), "Flow: %.1fL/min", water_flow);
-	lcd_print_row(win, row_count++, buff);
-	
-	snprintf(buff, sizeof(buff), "Temp: %.1fC", water_temp);
-	lcd_print_row(win, row_count++, buff);
-	
-	snprintf(buff, sizeof(buff), "pH: %.2f", water_ph);
-	lcd_print_row(win, row_count++, buff);
-	
-	snprintf(buff, sizeof(buff), "Turbidity: %.1fNTU", water_turbidity);
-	lcd_print_row(win, row_count++, buff);
-	
-	snprintf(buff, sizeof(buff), "Pressure: %.1fbar", water_pressure);
-	lcd_print_row(win, row_count++, buff);
-
-  
-  	snprintf(buff, sizeof(buff), "Press5ure: %.1fbar", water_pressure);
-	lcd_print_row(win, row_count++, buff);
-  
-  	snprintf(buff, sizeof(buff), "Pres4sure: %.1fbar", water_pressure);
-	lcd_print_row(win, row_count++, buff);
-  
-  	snprintf(buff, sizeof(buff), "Pres3sure: %.1fbar", water_pressure);
-	lcd_print_row(win, row_count++, buff);
-  
-  	snprintf(buff, sizeof(buff), "Pr2essure: %.1fbar", water_pressure);
-	lcd_print_row(win, row_count++, buff);
-	// 페이지별 데이터 설정
-	win->total_items[page] = row_count;
-}
-
+#define SYSTEM_WD 10
 void draw_system_page(lcd_win_t* win)
 {
 	int row_count = 0;
 	int page = win->current_page;
 	char buff[LCD_COLS + 1];
-	static int water_level = 85;
-	static float water_flow = 12.5f;
-	static float water_temp = 22.3f;
-	static float water_ph = 7.2f;
-	static float water_turbidity = 1.2f;
-	static float water_pressure = 2.1f;
+	const char *message;
 
-        win->current_row = 0;
+	win->current_row = 0;
 
-        // LCD 화면 클리어
-
-	
-	// 각 행별 데이터 출력
-
-	lcd_print_row(win, row_count++, "SYTEM");
-	
-	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,Date_Time.Month,
-Date_Time.Day,Date_Time.Hour,Date_Time.Min,Date_Time.Sec);
+	make_centered(buff, sizeof(buff), "SYSTEM", LCD_COLS);
 	lcd_print_row(win, row_count++, buff);
 	
-	snprintf(buff, sizeof(buff), "1Temp: %.1fC", water_temp);
+	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
+	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
 	lcd_print_row(win, row_count++, buff);
 	
-	snprintf(buff, sizeof(buff), "1pH: %.2f", water_ph);
+	snprintf(buff, sizeof(buff), "%-*s: %d", SYSTEM_WD, "ID", get_config_app()->id);
 	lcd_print_row(win, row_count++, buff);
 	
-	snprintf(buff, sizeof(buff), "Tur1bidity: %.1fNTU", water_turbidity);
+	snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "DOOR",
+	         ITEM_LIST(IS_DOOR_OPENED(), doorStatusList));
 	lcd_print_row(win, row_count++, buff);
 	
-	snprintf(buff, sizeof(buff), "Pres1sure: %.1fbar", water_pressure);
+	if (get_logging_system()->status_group)
+	{
+		message = "ON";
+	}
+	else
+	{
+		message = "OFF";
+	}
+	
+	snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "LOGGING", message);
 	lcd_print_row(win, row_count++, buff);
-
-	// 페이지별 데이터 설정
+	
+	snprintf(buff, sizeof(buff), "%-*s: %.1f", SYSTEM_WD, "BATTERY V", bsp_read_battery());
+	lcd_print_row(win, row_count++, buff);
+	
+	snprintf(buff, sizeof(buff), "%-*s: %.1f", SYSTEM_WD, "TEMP C", bsp_read_temperature());
+	lcd_print_row(win, row_count++, buff);
+	
+	if (get_config_app()->ac_use)
+	{
+		snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "AC", "ON");
+		lcd_print_row(win, row_count++, buff);
+	}
+	
 	win->total_items[page] = row_count;
 }
 
+#define RAIN_WD 8
+void draw_rain_page(lcd_win_t *win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+
+	win->current_row = 0;
+
+	make_centered(buff, sizeof(buff), "RAIN", LCD_COLS);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "YESTERDAY", get_rainfall()->rainfall_yesterday);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "TODAY", get_rainfall()->rainfall_today);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "1MIN", get_rainfall()->rainfall_1min);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "10MIN", get_rainfall()->rainfall_10min);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "HOUR", get_rainfall()->rainfall_hourly);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "YEAR", get_rainfall()->rainfall_yearly);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "MONTH", get_rainfall()->rainfall_monthly);
+	lcd_print_row(win, row_count++, buff);
+
+	win->total_items[page] = row_count;
+}
+
+#define CHARGER_WD 15
+void draw_charger_page(lcd_win_t *win)
+{
+	uint8_t err;
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+	char temp[20];
+
+	win->current_row = 0;
+
+	make_centered(buff, sizeof(buff), "CHARGER", LCD_COLS);
+	lcd_print_row(win, row_count++, buff);
+
+	read_chargerStatus(temp, sizeof(temp));
+	snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "STATUS", temp);
+	lcd_print_row(win, row_count++, buff);
+
+	if (is_chargerValid())
+	{
+		snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "SOLAR V",
+		         read_solarVoltage1(&err));
+		lcd_print_row(win, row_count++, buff);
+
+		snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "SOLAR A",
+		         read_solarCurrrent1(&err));
+		lcd_print_row(win, row_count++, buff);
+
+		snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "BATTERY V",
+		         read_batteryVoltage1(&err));
+		lcd_print_row(win, row_count++, buff);
+
+		snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "LOAD A",
+		         read_loadCurrent1(&err));
+		lcd_print_row(win, row_count++, buff);
+	}
+	else
+	{
+		snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "SOLAR V", "-");
+		lcd_print_row(win, row_count++, buff);
+
+		snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "SOLAR A", "-");
+		lcd_print_row(win, row_count++, buff);
+
+		snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "BATTERY V", "-");
+		lcd_print_row(win, row_count++, buff);
+
+		snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "LOAD A", "-");
+		lcd_print_row(win, row_count++, buff);
+	}
+
+	win->total_items[page] = row_count;
+}
+
+void draw_cdma_page(lcd_win_t *win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+
+	win->current_row = 0;
+
+	make_centered(buff, sizeof(buff), "CDMA", LCD_COLS);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
+	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "STATUS: %s", "CONNECTED");
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "SIGNAL: %d", 85);
+	lcd_print_row(win, row_count++, buff);
+
+	win->total_items[page] = row_count;
+}
+
+void draw_direct_page(lcd_win_t *win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+
+	win->current_row = 0;
+
+	make_centered(buff, sizeof(buff), "DIRECT", LCD_COLS);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
+	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "STATUS: %s", "READY");
+	lcd_print_row(win, row_count++, buff);
+
+	win->total_items[page] = row_count;
+}
+
+void draw_ethernet_page(lcd_win_t *win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+
+	win->current_row = 0;
+
+	make_centered(buff, sizeof(buff), "ETHERNET", LCD_COLS);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
+	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "LINK: %s", "UP");
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "IP: 192.168.1.100");
+	lcd_print_row(win, row_count++, buff);
+
+	win->total_items[page] = row_count;
+}
+
+void draw_aws_avg_page(lcd_win_t *win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+
+	win->current_row = 0;
+
+	make_centered(buff, sizeof(buff), "AWS AVG", LCD_COLS);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
+	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "TEMP: %.1fC", 23.5f);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "HUMID: %.1f%%", 65.2f);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "WIND: %.1fm/s", 3.2f);
+	lcd_print_row(win, row_count++, buff);
+
+	win->total_items[page] = row_count;
+}
+
+void draw_aws_1min_page(lcd_win_t *win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+
+	win->current_row = 0;
+
+	make_centered(buff, sizeof(buff), "AWS 1MIN", LCD_COLS);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
+	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "TEMP: %.1fC", 23.8f);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "HUMID: %.1f%%", 64.8f);
+	lcd_print_row(win, row_count++, buff);
+
+	win->total_items[page] = row_count;
+}
+
+void draw_aws_10min_page(lcd_win_t *win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+
+	win->current_row = 0;
+
+	make_centered(buff, sizeof(buff), "AWS 10MIN", LCD_COLS);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
+	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "TEMP: %.1fC", 23.3f);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "HUMID: %.1f%%", 65.5f);
+	lcd_print_row(win, row_count++, buff);
+
+	win->total_items[page] = row_count;
+}
+
+void draw_aws_hour_page(lcd_win_t *win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+
+	win->current_row = 0;
+
+	make_centered(buff, sizeof(buff), "AWS HOUR", LCD_COLS);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
+	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "TEMP: %.1fC", 22.9f);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "HUMID: %.1f%%", 66.1f);
+	lcd_print_row(win, row_count++, buff);
+
+	win->total_items[page] = row_count;
+}
+
+void draw_aws_raw_page(lcd_win_t *win)
+{
+	int row_count = 0;
+	int page = win->current_page;
+	char buff[LCD_COLS + 1];
+
+	win->current_row = 0;
+
+	make_centered(buff, sizeof(buff), "AWS RAW", LCD_COLS);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
+	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "RAW1: %d", 1234);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "RAW2: %d", 5678);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "RAW3: %d", 9012);
+	lcd_print_row(win, row_count++, buff);
+
+	win->total_items[page] = row_count;
+}
+
+void config_set_menu(void)
+{
+
+}
+
+#define PAGE_SYSTEM 0
+#define PAGE_RAIN 1
+#define PAGE_CHARGER 2
+#define PAGE_CDMA 3
+#define PAGE_DIRECT 4
+#define PAGE_ETH       5
+#define PAGE_AWS_AVG   6
+#define PAGE_AWS_1MIN  7
+#define PAGE_AWS_10MIN 8
+#define PAGE_AWS_HOUR  9
+#define PAGE_AWS_RAW   10
 
 void menuTask(void *arg)
 {
-  
-  int32_t key;
-		lcd_win_t  lcd_win;
-  
-  
-  clcd_init();
+	int32_t key;
+	lcd_win_t lcd_win;
+	int32_t page_count = 0;
+	int32_t page_list[15];
+	uint32_t last_update_time = 0;
+	const uint32_t UPDATE_INTERVAL = 1000; // 1초마다 업데이트
 
-  
- // clcd_set_mode(eLCD_MODE_GRAPHIC);
-  
-
-  clcd_clear();
-  clcd_write_string_at(0, 0, "Ready for input:");
-  
-  
-  	lcd_create_win(&lcd_win);
-    
-    	lcd_win.total_pages = 2;
-      
-      
-
-	while (1) {
-		// 현재 페이지에 따라 데이터 표시
-		if (lcd_win.current_page == 0) {
-			draw_system_page(&lcd_win);
-		} else {
-			draw_water_page(&lcd_win);
-		}
-    
-    		// 키 입력 처리
-		int key = lcd_get_key_input();
+	clcd_init();
+	clcd_clear();
+	
+	lcd_create_win(&lcd_win);
+	
+	while (1)
+	{
+		// 페이지 목록 구성
+		page_count = 0;
+		page_list[page_count++] = PAGE_SYSTEM;
+		page_list[page_count++] = PAGE_RAIN;
+		page_list[page_count++] = PAGE_CHARGER;
 		
-		if (key == LCD_KEY_ESC) {
-			break; // 프로그램 종료
-		} else if(key !=-1){
-			// 모든 키 입력을 스크롤/페이지 핸들러로 전달
-			lcd_handle_scroll(&lcd_win, key);
+		if (get_config_app()->cdma_use)
+		{
+			page_list[page_count++] = PAGE_CDMA;
 		}
-    
-    
-  }
+		
+		if (get_config_app()->direct_use)
+		{
+			page_list[page_count++] = PAGE_DIRECT;
+		}
+		
+		if (get_config_app()->eth_use)
+		{
+			page_list[page_count++] = PAGE_ETH;
+		}
+		
+		page_list[page_count++] = PAGE_AWS_AVG;
+		page_list[page_count++] = PAGE_AWS_1MIN;
+		page_list[page_count++] = PAGE_AWS_10MIN;
+		page_list[page_count++] = PAGE_AWS_HOUR;
+		page_list[page_count++] = PAGE_AWS_RAW;
+		
+		lcd_win.total_pages = page_count;
+		
+		// 현재 시간 체크
+		uint32_t current_time = osKernelGetTickCount();
+		bool should_update = (current_time - last_update_time) >= UPDATE_INTERVAL;
+		
+		if (should_update)
+		{
+			lcd_clear_win(&lcd_win);
+			
+			// 현재 페이지에 따라 적절한 화면 그리기 함수 호출
+			switch (page_list[lcd_win.current_page])
+			{
+				case PAGE_SYSTEM:
+					draw_system_page(&lcd_win);
+					break;
+				case PAGE_RAIN:
+					draw_rain_page(&lcd_win);
+					break;
+				case PAGE_CHARGER:
+					draw_charger_page(&lcd_win);
+					break;
+				case PAGE_CDMA:
+					draw_cdma_page(&lcd_win);
+					break;
+				case PAGE_DIRECT:
+					draw_direct_page(&lcd_win);
+					break;
+				case PAGE_ETH:
+					draw_ethernet_page(&lcd_win);
+					break;
+				case PAGE_AWS_AVG:
+					draw_aws_avg_page(&lcd_win);
+					break;
+				case PAGE_AWS_1MIN:
+					draw_aws_1min_page(&lcd_win);
+					break;
+				case PAGE_AWS_10MIN:
+					draw_aws_10min_page(&lcd_win);
+					break;
+				case PAGE_AWS_HOUR:
+					draw_aws_hour_page(&lcd_win);
+					break;
+				case PAGE_AWS_RAW:
+					draw_aws_raw_page(&lcd_win);
+					break;
+				default:
+					break;
+			}
+			
+			last_update_time = current_time;
+		}
+		
+		// 키 입력 처리
+		key = lcd_get_key_input();
+		
+		if (key == LCD_KEY_ESC)
+		{
+			config_set_menu();
+		}
+		else if (key != -1)
+		{
+			lcd_handle_scroll(&lcd_win, key);
+			// 키 입력 시 즉시 화면 업데이트
+			lcd_clear_win(&lcd_win);
+			
+			switch (page_list[lcd_win.current_page])
+			{
+				case PAGE_SYSTEM:
+					draw_system_page(&lcd_win);
+					break;
+				case PAGE_RAIN:
+					draw_rain_page(&lcd_win);
+					break;
+				case PAGE_CHARGER:
+					draw_charger_page(&lcd_win);
+					break;
+				case PAGE_CDMA:
+					draw_cdma_page(&lcd_win);
+					break;
+				case PAGE_DIRECT:
+					draw_direct_page(&lcd_win);
+					break;
+				case PAGE_ETH:
+					draw_ethernet_page(&lcd_win);
+					break;
+				case PAGE_AWS_AVG:
+					draw_aws_avg_page(&lcd_win);
+					break;
+				case PAGE_AWS_1MIN:
+					draw_aws_1min_page(&lcd_win);
+					break;
+				case PAGE_AWS_10MIN:
+					draw_aws_10min_page(&lcd_win);
+					break;
+				case PAGE_AWS_HOUR:
+					draw_aws_hour_page(&lcd_win);
+					break;
+				case PAGE_AWS_RAW:
+					draw_aws_raw_page(&lcd_win);
+					break;
+				default:
+					break;
+			}
+		}
+		
+		osDelay(100); // 100ms 딜레이로 CPU 사용률 조절
+	}
 }
 
 void menuTask_init(void)

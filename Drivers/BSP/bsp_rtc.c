@@ -13,7 +13,7 @@ void rtcIrqCallBack(void *arg)
 
 void bsp_rtc_init(void)
 {
-  g_rtc = driver_rtc_open(RTC_RV8803,0);
+  g_rtc = driver_rtc_open(RTC_DS1306,0);
 
   driver_rtc_read(g_rtc,&Date_Time);
 
