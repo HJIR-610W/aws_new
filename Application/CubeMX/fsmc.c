@@ -88,7 +88,7 @@ void MX_FSMC_Init(void)
   Timing.DataLatency            = 2;   // Data latency (ignored in async mode)
   Timing.AccessMode             = FSMC_ACCESS_MODE_A;  // Basic access mode
 
-#if 0
+#if 1
   if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
   {
     ERROR_PRINTF("fsmc lcd");

@@ -106,11 +106,30 @@ void draw_char_p_6x8(int start_x, int start_y)
 }
 
 extern void st7920_flush_buffer(driver_t *drv);
-void menuTask2(void *arg)
+
+
+extern volatile uint8_t* p_lcd_cmd ;
+extern volatile uint8_t* p_lcd_data ;
+void test_lcd_toggle(void)
+{
+  while(1)
+  {
+    
+    *p_lcd_data =0x01;
+    osDelay(10);
+    *p_lcd_data =0x00;    
+     osDelay(100);
+  }
+}
+void menuTask(void *arg)
 {
   clcd_init();
   
+  
+  test_lcd_toggle();
+  
   clcd_set_mode(eLCD_MODE_GRAPHIC);
+  
   while (1)
   {
     clcd_clear();
@@ -668,7 +687,7 @@ void config_set_menu(void)
 #define PAGE_AWS_HOUR  9
 #define PAGE_AWS_RAW   10
 
-void menuTask(void *arg)
+void menuTask0(void *arg)
 {
 	int32_t key;
 	lcd_win_t lcd_win;
