@@ -138,12 +138,12 @@ void lcd_handle_scroll(lcd_win_t* win, int key)
 	}
 }
 
-int lcd_get_key_input(void)
+int lcd_get_key_input(uint32_t timeout_ms)
 {
 	int key;
 
-	key = get_button_key(1000);
+        key = get_button_key(timeout_ms);
 
-	return key;
+        return key;
 
 }

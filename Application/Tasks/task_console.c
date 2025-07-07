@@ -132,7 +132,7 @@ void consoleTask_init(void *arg)
   uart_config.parityIdx = 0;
   uart_config.stop_bit = 0;
 
-  console_uart = driver_uart_open(UART_8_CDMA,&uart_config);
+  console_uart = driver_uart_open(UART_10_CDC,&uart_config);
 
   if(console_uart)
   {

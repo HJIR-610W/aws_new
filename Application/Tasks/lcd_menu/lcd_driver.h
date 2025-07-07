@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+  
 #define LCD_ROWS 8
 #define LCD_COLS 20
 #define LCD_PAGE_MAX 10
@@ -37,7 +39,7 @@ void lcd_refresh_win(lcd_win_t* win);
 
 // Navigation functions
 void lcd_handle_scroll(lcd_win_t* win, int key);
-int lcd_get_key_input(void);
+int lcd_get_key_input(uint32_t timeout_ms);
 
 // Key definitions (Enter 제거)
 #define LCD_KEY_UP    1

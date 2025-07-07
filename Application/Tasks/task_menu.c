@@ -17,15 +17,24 @@
 #include "bsp.h"
 #include "aws_data.h"
 #include "app_charger.h"
+#include "task_cellular.h"
+#include "util_time.h"
+#include "time_define.h"
+#include "task_direct.h"
+#include "task_tcpServer.h"
+#include "task_client.h"
+#include "tcp_define.h"
 
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
-    .stack_size = 1024,
+    .stack_size = 2048,
     .priority = (osPriority_t)osPriorityRealtime,
 };
 
 extern const char *doorStatusList[2];
 extern const char *generalStatusList[2];
+
+extern const char *linkStatusList[3];;
 
 int display_page = 0;
 const char *menu_lines[4] = {
@@ -97,7 +106,7 @@ void draw_char_p_6x8(int start_x, int start_y)
 }
 
 extern void st7920_flush_buffer(driver_t *drv);
-void menuTask_(void *arg)
+void menuTask2(void *arg)
 {
   clcd_init();
   
@@ -105,14 +114,7 @@ void menuTask_(void *arg)
   while (1)
   {
     clcd_clear();
-    
 
-    
-
-    // Display sequential ASCII characters
-    // 128 pixels / 6 pixels per character = 21 characters per row max
-    // 64 pixels / 8 pixels per row = 8 rows max
-    // Display only 21 characters per row for 8 rows
     uint8_t ascii_char = '0';  // Start with '0' (ASCII 48)
     
     for(int row = 0; row < 8; row++)
@@ -133,7 +135,7 @@ void menuTask_(void *arg)
     
     clcd_flush_buffer();
 
-    osDelay(1000);  // 2초마다 페이지 전환
+    osDelay(1000);  // Page change every 2 seconds
   }
 }
 
@@ -281,71 +283,244 @@ void draw_charger_page(lcd_win_t *win)
 	win->total_items[page] = row_count;
 }
 
+#define CDMA_WD 15
 void draw_cdma_page(lcd_win_t *win)
 {
 	int row_count = 0;
 	int page = win->current_page;
 	char buff[LCD_COLS + 1];
+	char num[20];
+	DATE_TIME_BUF nt;
+	uint32_t last_time;
 
 	win->current_row = 0;
 
 	make_centered(buff, sizeof(buff), "CDMA", LCD_COLS);
 	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
-	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
+	snprintf(buff, sizeof(buff), "%-*s: %s", CDMA_WD, "LINK",
+	         ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
 	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "STATUS: %s", "CONNECTED");
+	if (get_cdma_system()->num[0] != '0')
+	{
+		num[0] = '-';
+		num[1] = 0;
+	}
+	else
+	{
+		snprintf(num, sizeof(num), "%s", get_cdma_system()->num);
+	}
+	snprintf(buff, sizeof(buff), "%-*s: %s", CDMA_WD, "PHONE", num);
 	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "SIGNAL: %d", 85);
+	if (get_cdma_system()->rssi == -1)
+	{
+		snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "RSSI");
+	}
+	else
+	{
+		snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "RSSI", get_cdma_system()->rssi);
+	}
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "TX", get_cdma_system()->tx_cnt);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "RX", get_cdma_system()->rx_cnt);
+	lcd_print_row(win, row_count++, buff);
+
+	last_time = get_cdma_system()->last_recv_time;
+	if (last_time == 0)
+	{
+		snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "R TIME");
+	}
+	else
+	{
+		time_cvt_secTotime(last_time, &nt);
+		snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "R TIME",
+		         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+	}
+	lcd_print_row(win, row_count++, buff);
+
+	last_time = get_cdma_system()->last_send_time;
+	if (last_time == 0)
+	{
+		snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "T TIME");
+	}
+	else
+	{
+		time_cvt_secTotime(last_time, &nt);
+		snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "T TIME",
+		         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+	}
 	lcd_print_row(win, row_count++, buff);
 
 	win->total_items[page] = row_count;
 }
 
+#define DIRECT_WD 8
 void draw_direct_page(lcd_win_t *win)
 {
 	int row_count = 0;
 	int page = win->current_page;
 	char buff[LCD_COLS + 1];
+	DATE_TIME_BUF nt;
+	uint32_t last_time;
+	uint32_t remain_sec;
 
 	win->current_row = 0;
 
 	make_centered(buff, sizeof(buff), "DIRECT", LCD_COLS);
 	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
-	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
+	snprintf(buff, sizeof(buff), "%-*s: %s", DIRECT_WD, "LINK",
+	         ITEM_LIST(get_direct_system()->link_status, linkStatusList));
 	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "STATUS: %s", "READY");
+	remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms / 1000.0);
+	snprintf(buff, sizeof(buff), "%-*s: %ds", DIRECT_WD, "TIMEOUT", remain_sec);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %d", DIRECT_WD, "TX", get_direct_system()->tx_cnt);
+	lcd_print_row(win, row_count++, buff);
+
+	snprintf(buff, sizeof(buff), "%-*s: %d", DIRECT_WD, "RX", get_direct_system()->rx_cnt);
+	lcd_print_row(win, row_count++, buff);
+
+	last_time = get_direct_system()->last_recv_time;
+	if (last_time == 0)
+	{
+		snprintf(buff, sizeof(buff), "%-*s: -", DIRECT_WD, "R TIME");
+	}
+	else
+	{
+		time_cvt_secTotime(last_time, &nt);
+		snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "R TIME",
+		         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+	}
+	lcd_print_row(win, row_count++, buff);
+
+	last_time = get_direct_system()->last_send_time;
+	if (last_time == 0)
+	{
+		snprintf(buff, sizeof(buff), "%-*s: -", DIRECT_WD, "T TIME");
+	}
+	else
+	{
+		time_cvt_secTotime(last_time, &nt);
+		snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "T TIME",
+		         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+	}
 	lcd_print_row(win, row_count++, buff);
 
 	win->total_items[page] = row_count;
 }
 
+#define ETH_WD 10
 void draw_ethernet_page(lcd_win_t *win)
 {
 	int row_count = 0;
 	int page = win->current_page;
 	char buff[LCD_COLS + 1];
+	DATE_TIME_BUF nt;
+	eLINK_STATUS_t link_status[ETH_CLIENT_MAX];
+	uint8_t tx_cnt[ETH_CLIENT_MAX];
+	uint8_t rx_cnt[ETH_CLIENT_MAX];
+	uint32_t last_time;
 
 	win->current_row = 0;
 
 	make_centered(buff, sizeof(buff), "ETHERNET", LCD_COLS);
 	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
-	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-	lcd_print_row(win, row_count++, buff);
+	if (get_config_app()->eth_mode == eETH_MODE_CLINET)
+	{
+		snprintf(buff, sizeof(buff), "%-*s: %s", ETH_WD, "LINK",
+		         ITEM_LIST(get_tcp_client_system()->link_status, linkStatusList));
+		lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "LINK: %s", "UP");
-	lcd_print_row(win, row_count++, buff);
+		snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "TX", get_tcp_client_system()->tx_cnt);
+		lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "IP: 192.168.1.100");
-	lcd_print_row(win, row_count++, buff);
+		snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "RX", get_tcp_client_system()->rx_cnt);
+		lcd_print_row(win, row_count++, buff);
+
+		last_time = get_tcp_client_system()->last_recv_time;
+		if (last_time == 0)
+		{
+			snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "R TIME");
+		}
+		else
+		{
+			time_cvt_secTotime(last_time, &nt);
+			snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "R TIME",
+			         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+		}
+		lcd_print_row(win, row_count++, buff);
+
+		last_time = get_tcp_client_system()->last_send_time;
+		if (last_time == 0)
+		{
+			snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "T TIME");
+		}
+		else
+		{
+			time_cvt_secTotime(last_time, &nt);
+			snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "T TIME",
+			         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+		}
+		lcd_print_row(win, row_count++, buff);
+	}
+	else
+	{
+		for (int i = 0; i < ETH_CLIENT_MAX; i++)
+		{
+			link_status[i] = get_tcp_system(i)->link_status;
+			tx_cnt[i] = get_tcp_system(i)->tx_cnt;
+			rx_cnt[i] = get_tcp_system(i)->rx_cnt;
+		}
+
+		for (int i = 0; i < ETH_CLIENT_MAX; i++)
+		{
+			snprintf(buff, sizeof(buff), "LINK%d: %s(%s)", i,
+			         ITEM_LIST(link_status[i], linkStatusList),
+			         get_tcp_system(i)->client_ip_str);
+			lcd_print_row(win, row_count++, buff);
+
+			snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "TX", tx_cnt[i]);
+			lcd_print_row(win, row_count++, buff);
+
+			snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "RX", rx_cnt[i]);
+			lcd_print_row(win, row_count++, buff);
+
+			last_time = get_tcp_system(i)->last_recv_time;
+			if (last_time == 0)
+			{
+				snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "R TIME");
+			}
+			else
+			{
+				time_cvt_secTotime(last_time, &nt);
+				snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "R TIME",
+				         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+			}
+			lcd_print_row(win, row_count++, buff);
+
+			last_time = get_tcp_system(i)->last_send_time;
+			if (last_time == 0)
+			{
+				snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "T TIME");
+			}
+			else
+			{
+				time_cvt_secTotime(last_time, &nt);
+				snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "T TIME",
+				         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+			}
+			lcd_print_row(win, row_count++, buff);
+		}
+	}
 
 	win->total_items[page] = row_count;
 }
@@ -499,8 +674,7 @@ void menuTask(void *arg)
 	lcd_win_t lcd_win;
 	int32_t page_count = 0;
 	int32_t page_list[15];
-	uint32_t last_update_time = 0;
-	const uint32_t UPDATE_INTERVAL = 1000; // 1초마다 업데이트
+
 
 	clcd_init();
 	clcd_clear();
@@ -509,7 +683,7 @@ void menuTask(void *arg)
 	
 	while (1)
 	{
-		// 페이지 목록 구성
+		// Configure page list
 		page_count = 0;
 		page_list[page_count++] = PAGE_SYSTEM;
 		page_list[page_count++] = PAGE_RAIN;
@@ -537,60 +711,46 @@ void menuTask(void *arg)
 		page_list[page_count++] = PAGE_AWS_RAW;
 		
 		lcd_win.total_pages = page_count;
-		
-		// 현재 시간 체크
-		uint32_t current_time = osKernelGetTickCount();
-		bool should_update = (current_time - last_update_time) >= UPDATE_INTERVAL;
-		
-		if (should_update)
-		{
-			lcd_clear_win(&lcd_win);
-			
-			// 현재 페이지에 따라 적절한 화면 그리기 함수 호출
-			switch (page_list[lcd_win.current_page])
-			{
-				case PAGE_SYSTEM:
-					draw_system_page(&lcd_win);
-					break;
-				case PAGE_RAIN:
-					draw_rain_page(&lcd_win);
-					break;
-				case PAGE_CHARGER:
-					draw_charger_page(&lcd_win);
-					break;
-				case PAGE_CDMA:
-					draw_cdma_page(&lcd_win);
-					break;
-				case PAGE_DIRECT:
-					draw_direct_page(&lcd_win);
-					break;
-				case PAGE_ETH:
-					draw_ethernet_page(&lcd_win);
-					break;
-				case PAGE_AWS_AVG:
-					draw_aws_avg_page(&lcd_win);
-					break;
-				case PAGE_AWS_1MIN:
-					draw_aws_1min_page(&lcd_win);
-					break;
-				case PAGE_AWS_10MIN:
-					draw_aws_10min_page(&lcd_win);
-					break;
-				case PAGE_AWS_HOUR:
-					draw_aws_hour_page(&lcd_win);
-					break;
-				case PAGE_AWS_RAW:
-					draw_aws_raw_page(&lcd_win);
-					break;
-				default:
-					break;
-			}
-			
-			last_update_time = current_time;
-		}
-		
-		// 키 입력 처리
-		key = lcd_get_key_input();
+
+                switch (page_list[lcd_win.current_page])
+                {
+                  case PAGE_SYSTEM:
+                    draw_system_page(&lcd_win);
+                    break;
+                  case PAGE_RAIN:
+                    draw_rain_page(&lcd_win);
+                    break;
+                  case PAGE_CHARGER:
+                    draw_charger_page(&lcd_win);
+                    break;
+                  case PAGE_CDMA:
+                    draw_cdma_page(&lcd_win);
+                    break;
+                  case PAGE_DIRECT:
+                    draw_direct_page(&lcd_win);
+                    break;
+                  case PAGE_ETH:
+                    draw_ethernet_page(&lcd_win);
+                    break;
+                  case PAGE_AWS_AVG:
+                    draw_aws_avg_page(&lcd_win);
+                    break;
+                  case PAGE_AWS_1MIN:
+                    draw_aws_1min_page(&lcd_win);
+                    break;
+                  case PAGE_AWS_10MIN:
+                    draw_aws_10min_page(&lcd_win);
+                    break;
+                  case PAGE_AWS_HOUR:
+                    draw_aws_hour_page(&lcd_win);
+                    break;
+                  case PAGE_AWS_RAW:
+                    draw_aws_raw_page(&lcd_win);
+                    break;
+                  default:
+                    break;
+                }
+                key = lcd_get_key_input(1000);
 		
 		if (key == LCD_KEY_ESC)
 		{
@@ -599,50 +759,11 @@ void menuTask(void *arg)
 		else if (key != -1)
 		{
 			lcd_handle_scroll(&lcd_win, key);
-			// 키 입력 시 즉시 화면 업데이트
-			lcd_clear_win(&lcd_win);
-			
-			switch (page_list[lcd_win.current_page])
-			{
-				case PAGE_SYSTEM:
-					draw_system_page(&lcd_win);
-					break;
-				case PAGE_RAIN:
-					draw_rain_page(&lcd_win);
-					break;
-				case PAGE_CHARGER:
-					draw_charger_page(&lcd_win);
-					break;
-				case PAGE_CDMA:
-					draw_cdma_page(&lcd_win);
-					break;
-				case PAGE_DIRECT:
-					draw_direct_page(&lcd_win);
-					break;
-				case PAGE_ETH:
-					draw_ethernet_page(&lcd_win);
-					break;
-				case PAGE_AWS_AVG:
-					draw_aws_avg_page(&lcd_win);
-					break;
-				case PAGE_AWS_1MIN:
-					draw_aws_1min_page(&lcd_win);
-					break;
-				case PAGE_AWS_10MIN:
-					draw_aws_10min_page(&lcd_win);
-					break;
-				case PAGE_AWS_HOUR:
-					draw_aws_hour_page(&lcd_win);
-					break;
-				case PAGE_AWS_RAW:
-					draw_aws_raw_page(&lcd_win);
-					break;
-				default:
-					break;
-			}
+
+	
 		}
 		
-		osDelay(100); // 100ms 딜레이로 CPU 사용률 조절
+		osDelay(100); // 100ms delay to control CPU usage
 	}
 }
 

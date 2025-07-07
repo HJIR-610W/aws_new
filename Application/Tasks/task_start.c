@@ -91,7 +91,7 @@ void startTask(void *arg)
     osThreadExit();  // 종료 시킴
   }
 
- // consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화 
+  consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화 
   wdtTask_init();
   mcu_interrupt_init();  // 최우선 실행
 
@@ -112,8 +112,8 @@ void startTask(void *arg)
   dataLogging_init();
   loggingTask_init();
 
- // dualportTask_init();
-//  measureTask_init();
+  dualportTask_init();
+  measureTask_init();
 
   if (get_config_app()->cdma_use)
   {
