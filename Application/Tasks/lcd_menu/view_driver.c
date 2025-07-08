@@ -12,7 +12,7 @@
 #define KEY_RIGHT 77
 
 
-static layout_t g_layout = {1, 1, 20, 0};
+static layout_t g_layout = {1, 1, 150, 80};
 
 
 int lcd_printf(char const* const _Format, ...)

@@ -28,7 +28,7 @@ void app_button_init(void)
     uart_config_t uart_config;
 
     // UART configuration for serial key input
-    uart_config.baud = 57600;
+    uart_config.baud = 19200;
     uart_config.dataLen = 8;
     uart_config.parityIdx = 0;
     uart_config.stop_bit = 1;

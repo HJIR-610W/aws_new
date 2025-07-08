@@ -12,6 +12,7 @@
 #define DRIVER_CLCD 0
 #define DRIVER_LCD_TERMNINAL 1
 
+
 driver_t *driver_lcd_open(int num);
 
 void driver_lcd_set_position(driver_t *drv, uint8_t row, uint8_t col);

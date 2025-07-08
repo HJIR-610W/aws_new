@@ -76,24 +76,22 @@ void MX_FSMC_Init(void)
   hsram_lcd.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
   hsram_lcd.Init.PageSize = FSMC_PAGE_SIZE_NONE;
 
+// Write Timing 설정 (더 보수적으로)
+  Timing.AddressSetupTime = 3;
+  Timing.AddressHoldTime = 15;//의미 없음 사용 안함 
+  Timing.DataSetupTime = 20;
+  Timing.BusTurnAroundDuration = 5;
+  Timing.CLKDivision = 16;
+  Timing.DataLatency = 17;
+  Timing.AccessMode = FSMC_ACCESS_MODE_A;
 
-    
-    
-  /* ST7920 LCD Controller Timing (168MHz FSMC Clock = 5.95ns per cycle) */
-  Timing.AddressSetupTime       = 2;   // Address setup: 2 * 5.95ns = 11.9ns 
-  Timing.AddressHoldTime        = 4;   // Address hold: 4 * 5.95ns = 23.89ns   
-  Timing.DataSetupTime          = 26;  // Data setup: 26 * 5.95ns = 154.7ns
-  Timing.BusTurnAroundDuration  = 7;   // Bus turn around: 7 * 5.95ns = 41.65ns
-  Timing.CLKDivision            = 2;   // Clock division (ignored in async mode)
-  Timing.DataLatency            = 2;   // Data latency (ignored in async mode)
-  Timing.AccessMode             = FSMC_ACCESS_MODE_A;  // Basic access mode
 
-#if 1
-  if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
-  {
+
+if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
+{
     ERROR_PRINTF("fsmc lcd");
   }
-#endif
+
 #if 1 
   //SRAM
   /** Perform the SRAM1 memory initialization sequence

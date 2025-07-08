@@ -65,8 +65,8 @@ PCB 0.3 20250120
 #define IN_SDIO_DETECT_GPIO_Port      GPIOD
 #define OUT_CON_PWR_DSEN_PIN          GPIO_PIN_6
 #define OUT_CON_PWR_DSEN_GPIO_Port    GPIOD
-#define OUT_FLASH_CS_PIN              GPIO_PIN_7
-#define OUT_FLASH_CS_GPIO_Port        GPIOD
+#define FSMC_NE1_PIN              GPIO_PIN_7
+#define FSMC_NE1_GPIO_Port        GPIOD
 
 #define NOT_USED_PE2_Pin             GPIO_PIN_2
 #define NOT_USED_PE2_GPIO_Port       GPIOE
@@ -277,8 +277,8 @@ PCB 0.3 20250120
 #define FSMC_NWE_GPIO_Port      GPIOD   
 #define UNUSED_PIN_D6           GPIO_PIN_6 
 #define UNUSED_PIN_D6_GPIO_Port GPIOD
-#define OUT_FLASH_CS_PIN            GPIO_PIN_7
-#define OUT_FLASH_CS_GPIO_Port      GPIOD
+#define FSMC_NE1_PIN            GPIO_PIN_7
+#define FSMC_NE1_GPIO_Port      GPIOD
 #define FSMC_D13_PIN            GPIO_PIN_8
 #define FSMC_D13_GPIO_Port      GPIOD
 #define FSMC_D14_PIN            GPIO_PIN_9
@@ -579,8 +579,8 @@ PCB 0.3 20250120
 #define DO_POWER_RAIN_DECT_DIGITAL_PIN GPIO_PIN_6
 #define DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port GPIOD
 
-#define OUT_FLASH_CS_PIN GPIO_PIN_7
-#define OUT_FLASH_CS_GPIO_Port GPIOD
+#define FSMC_NE1_PIN GPIO_PIN_7
+#define FSMC_NE1_GPIO_Port GPIOD
 #define FSMC_D13_PIN GPIO_PIN_8
 #define FSMC_D13_GPIO_Port GPIOD
 #define FSMC_D14_PIN GPIO_PIN_9

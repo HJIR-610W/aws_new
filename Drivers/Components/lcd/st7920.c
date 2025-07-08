@@ -4,7 +4,8 @@
  */
 
 #define ST7920_SPI_USE 0
-
+#define ST7920_GPIO_USE 0
+#define ST7920_MEM_USE 1
 
 #include "st7920.h"
 #include <string.h>
@@ -51,11 +52,9 @@
 #define ST7920_SYNC_DATA 0xFA  // 데이터 전송시 첫 바이트
 
 
-#if (ST7920_SPI_USE==0)
-
+#if ST7920_MEM_USE
 #define LCD_COMMAND_ADDRESS ((uint32_t)(0x60000000)) 
 #define LCD_DATA_ADDRESS    ((uint32_t)(0x60000001)) 
-
 
 volatile uint8_t* p_lcd_cmd  = (volatile uint8_t*)LCD_COMMAND_ADDRESS;
 volatile uint8_t* p_lcd_data = (volatile uint8_t*)LCD_DATA_ADDRESS;
@@ -105,6 +104,310 @@ inline void st7920_delay_us(uint32_t us_delay)
   usDelay(us_delay);
 }
 
+void st7920_gpio_init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    // Enable GPIO clocks
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+    __HAL_RCC_GPIOE_CLK_ENABLE();
+    __HAL_RCC_GPIOF_CLK_ENABLE();
+    
+    // Configure RS (Register Select) - FSMC_A0 pin as GPIO output
+    GPIO_InitStruct.Pin = FSMC_A0;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(FSMC_A0_GPIO_Port, &GPIO_InitStruct);
+    
+    // Configure RW (Read/Write) - FSMC_NWE pin as GPIO output
+    GPIO_InitStruct.Pin = FSMC_NWE_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(FSMC_NWE_GPIO_Port, &GPIO_InitStruct);
+    
+    // Configure E (Enable) - FSMC_NE1 pin as GPIO output
+    GPIO_InitStruct.Pin = FSMC_NE1_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(FSMC_NE1_GPIO_Port, &GPIO_InitStruct);
+    
+    // Configure 8-bit Data Bus (D0-D7) as GPIO outputs
+    // FSMC_D0-D1 on GPIOD (Pins 14-15)
+    GPIO_InitStruct.Pin = FSMC_D0_PIN | FSMC_D1_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(FSMC_D0_GPIO_Port, &GPIO_InitStruct);
+    
+    // FSMC_D2-D3 on GPIOD (Pins 0-1)
+    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_PIN;
+    HAL_GPIO_Init(FSMC_D2_GPIO_Port, &GPIO_InitStruct);
+    
+    // FSMC_D4-D7 on GPIOE (Pins 7-10)
+    GPIO_InitStruct.Pin = FSMC_D4_PIN | FSMC_D5_PIN | FSMC_D6_PIN | FSMC_D7_PIN;
+    HAL_GPIO_Init(FSMC_D4_GPIO_Port, &GPIO_InitStruct);
+    
+    // Initialize control signals to idle state
+    HAL_GPIO_WritePin(FSMC_A0_GPIO_Port, FSMC_A0, GPIO_PIN_RESET);        // RS = 0
+    HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_PIN, GPIO_PIN_SET);     // RW = 1 (Read mode)
+    HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_PIN, GPIO_PIN_RESET);   // E = 0 (Disabled)
+}
+
+#if ST7920_GPIO_USE
+
+
+
+
+void st7920_gpio_set_data_bus(uint8_t data)
+{
+    // Set D0 (GPIOD Pin 14)
+    HAL_GPIO_WritePin(FSMC_D0_GPIO_Port, FSMC_D0_PIN, (data & 0x01) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    
+    // Set D1 (GPIOD Pin 15)
+    HAL_GPIO_WritePin(FSMC_D1_GPIO_Port, FSMC_D1_PIN, (data & 0x02) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    
+    // Set D2 (GPIOD Pin 0)
+    HAL_GPIO_WritePin(FSMC_D2_GPIO_Port, FSMC_D2, (data & 0x04) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    
+    // Set D3 (GPIOD Pin 1)
+    HAL_GPIO_WritePin(FSMC_D3_GPIO_Port, FSMC_D3_PIN, (data & 0x08) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    
+    // Set D4 (GPIOE Pin 7)
+    HAL_GPIO_WritePin(FSMC_D4_GPIO_Port, FSMC_D4_PIN, (data & 0x10) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    
+    // Set D5 (GPIOE Pin 8)
+    HAL_GPIO_WritePin(FSMC_D5_GPIO_Port, FSMC_D5_PIN, (data & 0x20) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    
+    // Set D6 (GPIOE Pin 9)
+    HAL_GPIO_WritePin(FSMC_D6_GPIO_Port, FSMC_D6_PIN, (data & 0x40) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    
+    // Set D7 (GPIOE Pin 10)
+    HAL_GPIO_WritePin(FSMC_D7_GPIO_Port, FSMC_D7_PIN, (data & 0x80) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+
+void st7920_gpio_set_data_bus_input(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    // Configure 8-bit Data Bus (D0-D7) as inputs for reading
+    // FSMC_D0-D1 on GPIOD (Pins 14-15)
+    GPIO_InitStruct.Pin = FSMC_D0_PIN | FSMC_D1_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(FSMC_D0_GPIO_Port, &GPIO_InitStruct);
+    
+    // FSMC_D2-D3 on GPIOD (Pins 0-1)
+    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_PIN;
+    HAL_GPIO_Init(FSMC_D2_GPIO_Port, &GPIO_InitStruct);
+    
+    // FSMC_D4-D7 on GPIOE (Pins 7-10)
+    GPIO_InitStruct.Pin = FSMC_D4_PIN | FSMC_D5_PIN | FSMC_D6_PIN | FSMC_D7_PIN;
+    HAL_GPIO_Init(FSMC_D4_GPIO_Port, &GPIO_InitStruct);
+}
+
+void st7920_gpio_set_data_bus_output(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    // Configure 8-bit Data Bus (D0-D7) as outputs for writing
+    // FSMC_D0-D1 on GPIOD (Pins 14-15)
+    GPIO_InitStruct.Pin = FSMC_D0_PIN | FSMC_D1_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(FSMC_D0_GPIO_Port, &GPIO_InitStruct);
+    
+    // FSMC_D2-D3 on GPIOD (Pins 0-1)
+    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_PIN;
+    HAL_GPIO_Init(FSMC_D2_GPIO_Port, &GPIO_InitStruct);
+    
+    // FSMC_D4-D7 on GPIOE (Pins 7-10)
+    GPIO_InitStruct.Pin = FSMC_D4_PIN | FSMC_D5_PIN | FSMC_D6_PIN | FSMC_D7_PIN;
+    HAL_GPIO_Init(FSMC_D4_GPIO_Port, &GPIO_InitStruct);
+}
+
+uint8_t st7920_gpio_read_data_bus(void)
+{
+    uint8_t data = 0;
+    
+    // Read D0 (GPIOD Pin 14)
+    if (HAL_GPIO_ReadPin(FSMC_D0_GPIO_Port, FSMC_D0_PIN) == GPIO_PIN_SET)
+        data |= 0x01;
+    
+    // Read D1 (GPIOD Pin 15)
+    if (HAL_GPIO_ReadPin(FSMC_D1_GPIO_Port, FSMC_D1_PIN) == GPIO_PIN_SET)
+        data |= 0x02;
+    
+    // Read D2 (GPIOD Pin 0)
+    if (HAL_GPIO_ReadPin(FSMC_D2_GPIO_Port, FSMC_D2) == GPIO_PIN_SET)
+        data |= 0x04;
+    
+    // Read D3 (GPIOD Pin 1)
+    if (HAL_GPIO_ReadPin(FSMC_D3_GPIO_Port, FSMC_D3_PIN) == GPIO_PIN_SET)
+        data |= 0x08;
+    
+    // Read D4 (GPIOE Pin 7)
+    if (HAL_GPIO_ReadPin(FSMC_D4_GPIO_Port, FSMC_D4_PIN) == GPIO_PIN_SET)
+        data |= 0x10;
+    
+    // Read D5 (GPIOE Pin 8)
+    if (HAL_GPIO_ReadPin(FSMC_D5_GPIO_Port, FSMC_D5_PIN) == GPIO_PIN_SET)
+        data |= 0x20;
+    
+    // Read D6 (GPIOE Pin 9)
+    if (HAL_GPIO_ReadPin(FSMC_D6_GPIO_Port, FSMC_D6_PIN) == GPIO_PIN_SET)
+        data |= 0x40;
+    
+    // Read D7 (GPIOE Pin 10)
+    if (HAL_GPIO_ReadPin(FSMC_D7_GPIO_Port, FSMC_D7_PIN) == GPIO_PIN_SET)
+        data |= 0x80;
+    
+    return data;
+}
+
+#define ST7920_E_HIGH()     HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_PIN,GPIO_PIN_RESET  );
+
+#define ST7920_E_LOW()     HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_PIN, GPIO_PIN_SET); 
+
+#define ST7920_CMD_SET()  HAL_GPIO_WritePin(FSMC_A0_GPIO_Port, FSMC_A0, GPIO_PIN_RESET);  // RS = 0 for command
+#define ST7920_DATA_SET()   HAL_GPIO_WritePin(FSMC_A0_GPIO_Port, FSMC_A0, GPIO_PIN_SET);    // RS = 1 for data
+
+#define ST7920_W_SET()     HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_PIN, GPIO_PIN_RESET); // Set RW = 0 for write operation
+#define ST7920_R_SET()      HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_PIN, GPIO_PIN_SET); // Set RW = 0 for write operation
+
+void st7920_gpio_write_byte(uint8_t data, bool is_cmd)
+{
+
+    // Set RS (Register Select) pin
+    if (is_cmd) {
+      ST7920_CMD_SET();
+       
+    } else {
+      ST7920_DATA_SET();
+    }
+         ST7920_W_SET();
+
+    // Set data on data bus
+    st7920_gpio_set_data_bus(data);
+
+    // Small setup time
+   // st7920_delay_us(1);
+        ST7920_E_HIGH();
+
+    ST7920_E_LOW();
+
+  //  st7920_delay_us(1);
+
+
+    
+
+  //  st7920_delay_us(1);
+
+}
+
+    
+ 
+uint8_t st7920_gpio_read_byte(bool is_cmd)
+{
+    uint8_t data = 0;
+    
+    // Set data bus to input mode
+    st7920_gpio_set_data_bus_input();
+    
+    // Set RS (Register Select) pin
+    if (is_cmd) {
+        ST7920_CMD_SET();  // RS = 0 for status/command register
+    } else {
+        ST7920_DATA_SET(); // RS = 1 for data register
+    }
+    
+    // Set RW = 1 for read operation
+    ST7920_R_SET();
+    
+    // Setup time
+    st7920_delay_us(1);
+    
+    // Enable pulse (E high)
+    ST7920_E_HIGH();
+    
+    // Enable pulse width (minimum 450ns for ST7920)
+    st7920_delay_us(1);
+    
+    // Read data from data bus
+    data = st7920_gpio_read_data_bus();
+    
+    // Enable pulse (E low)
+    ST7920_E_LOW();
+    
+    // Restore data bus to output mode
+    st7920_gpio_set_data_bus_output();
+    
+    // Hold time
+    st7920_delay_us(1);
+    
+    return data;
+}
+#endif
+
+uint8_t st7920_read_status(driver_t *drv)
+{
+    uint8_t status = 0;
+    
+#if ST7920_SPI_USE
+    // SPI mode doesn't support status reading in standard implementation
+    return 0x00;
+#endif
+
+#if ST7920_GPIO_USE
+    status = st7920_gpio_read_byte(true);  // true = read status register
+#endif
+
+#if ST7920_MEM_USE
+    status = *p_lcd_cmd;  // Read status register via memory mapping
+#endif
+
+    return status;
+}
+
+uint8_t st7920_read_data(driver_t *drv)
+{
+    uint8_t data = 0;
+    
+#if ST7920_SPI_USE
+    // SPI mode doesn't support data reading in standard implementation
+    return 0x00;
+#endif
+
+#if ST7920_GPIO_USE
+    data = st7920_gpio_read_byte(false);  // false = read data register
+#endif
+
+#if ST7920_MEM_USE
+    data = *p_lcd_data;  // Read data register via memory mapping
+#endif
+
+    return data;
+}
+
+bool st7920_is_busy(driver_t *drv)
+{
+    uint8_t status = st7920_read_status(drv);
+    return (status & 0x80) != 0;  // Bit 7 is busy flag
+}
+
+void st7920_wait_ready(driver_t *drv)
+{
+    uint32_t timeout = 10000;  // 10ms timeout
+    
+    while (st7920_is_busy(drv) && timeout > 0) {
+        st7920_delay_us(1);
+        timeout--;
+    }
+}
+
 driver_t *st7920_open(void)
 {
     if(st7920_driver.opened)
@@ -125,17 +428,18 @@ driver_t *st7920_open(void)
         return NULL;
     }
     
-        driver_do_high(st7920_instance.cs_io);
+    driver_do_high(st7920_instance.cs_io);
 #endif
-    
+
+#if ST7920_GPIO_USE
+    // Initialize GPIO pins for FSMC interface
+    st7920_gpio_init();
+#endif
 
     st7920_instance.rst_io = driver_do_open(DO_LCD_RESET, NULL);
 
     st7920_instance.initialized = false;
     st7920_instance.graphic_mode = false;
-    
-    // CS 초기 상태를 high로 설정 (active high이므로 초기값은 high)
-
     
     st7920_driver.cfg = &st7920_instance;
     st7920_driver.opened = true;
@@ -223,24 +527,40 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
 
 void st7920_send_cmd(driver_t *drv, uint8_t cmd)
 {
-  #if ST7920_SPI_USE 
+#if ST7920_SPI_USE 
     st7920_send_byte(drv, ST7920_SYNC_CMD, cmd);
-#else
-    *p_lcd_cmd = cmd;
+#endif
     
+#if ST7920_GPIO_USE
+    st7920_gpio_write_byte(cmd, true);  // true = command mode
+    st7920_delay_us(72);  // ST7920 command execution time
+#endif
+
+#if ST7920_MEM_USE
+
+    *p_lcd_cmd = cmd;
+
+    st7920_delay_us(72);  // ST7920 command execution time (typical)
 #endif
 }
 
 void st7920_send_data(driver_t *drv, uint8_t data)
 {
-    #if ST7920_SPI_USE 
-  
+#if ST7920_SPI_USE 
     st7920_send_byte(drv, ST7920_SYNC_DATA, data);
-#else  
-        *p_lcd_data = data;
-        
 #endif
+    
+#if ST7920_GPIO_USE
+    st7920_gpio_write_byte(data, false);  // false = data mode
+    st7920_delay_us(72);  // ST7920 data write time
+#endif
+    
+#if ST7920_MEM_USE
 
+    *p_lcd_data = data;
+
+    st7920_delay_us(72);  // ST7920 data write time (typical)
+#endif
 }
 
 /**

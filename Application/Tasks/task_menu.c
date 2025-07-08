@@ -25,10 +25,11 @@
 #include "task_client.h"
 #include "tcp_define.h"
 
+#include "view_driver.h"
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
     .stack_size = 2048,
-    .priority = (osPriority_t)osPriorityRealtime,
+    .priority = (osPriority_t)osPriorityBelowNormal,
 };
 
 extern const char *doorStatusList[2];
@@ -108,55 +109,7 @@ void draw_char_p_6x8(int start_x, int start_y)
 extern void st7920_flush_buffer(driver_t *drv);
 
 
-extern volatile uint8_t* p_lcd_cmd ;
-extern volatile uint8_t* p_lcd_data ;
-void test_lcd_toggle(void)
-{
-  while(1)
-  {
-    
-    *p_lcd_data =0x01;
-    osDelay(10);
-    *p_lcd_data =0x00;    
-     osDelay(100);
-  }
-}
-void menuTask(void *arg)
-{
-  clcd_init();
-  
-  
-  test_lcd_toggle();
-  
-  clcd_set_mode(eLCD_MODE_GRAPHIC);
-  
-  while (1)
-  {
-    clcd_clear();
 
-    uint8_t ascii_char = '0';  // Start with '0' (ASCII 48)
-    
-    for(int row = 0; row < 8; row++)
-    {
-      for(int col = 0; col < 21; col++)
-      {
-        clcd_put_ch(row, col, ascii_char);
-        ascii_char++;
-        
-        // Wrap around if we go beyond printable ASCII
-        if(ascii_char > 0x7E)
-        {
-          ascii_char = 0x20;  // Reset to space character
-        }
-      }
-    }
-
-    
-    clcd_flush_buffer();
-
-    osDelay(1000);  // Page change every 2 seconds
-  }
-}
 
 
 
@@ -209,7 +162,16 @@ void draw_system_page(lcd_win_t* win)
 		lcd_print_row(win, row_count++, buff);
 	}
 	
-	win->total_items[page] = row_count;
+	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
+  
+  
+    while (win->current_row < win->view_row)
+  {
+     lcd_print_row(win, row_count++, "                    ");
+  }
+
+  
+  
 }
 
 #define RAIN_WD 8
@@ -245,7 +207,14 @@ void draw_rain_page(lcd_win_t *win)
 	snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "MONTH", get_rainfall()->rainfall_monthly);
 	lcd_print_row(win, row_count++, buff);
 
-	win->total_items[page] = row_count;
+	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
+  
+  
+    while (win->current_row < win->view_row)
+  {
+     lcd_print_row(win, row_count++, "                    ");
+  }
+
 }
 
 #define CHARGER_WD 15
@@ -299,7 +268,13 @@ void draw_charger_page(lcd_win_t *win)
 		lcd_print_row(win, row_count++, buff);
 	}
 
-	win->total_items[page] = row_count;
+	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
+  
+    while (win->current_row < win->view_row)
+  {
+     lcd_print_row(win, row_count++, "                    ");
+  }
+
 }
 
 #define CDMA_WD 15
@@ -375,7 +350,12 @@ void draw_cdma_page(lcd_win_t *win)
 	}
 	lcd_print_row(win, row_count++, buff);
 
-	win->total_items[page] = row_count;
+	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
+  
+      while (win->current_row < win->view_row)
+  {
+     lcd_print_row(win, row_count++, "                    ");
+  }
 }
 
 #define DIRECT_WD 8
@@ -433,7 +413,7 @@ void draw_direct_page(lcd_win_t *win)
 	}
 	lcd_print_row(win, row_count++, buff);
 
-	win->total_items[page] = row_count;
+	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
 }
 
 #define ETH_WD 10
@@ -541,7 +521,7 @@ void draw_ethernet_page(lcd_win_t *win)
 		}
 	}
 
-	win->total_items[page] = row_count;
+	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
 }
 
 void draw_aws_avg_page(lcd_win_t *win)
@@ -568,7 +548,34 @@ void draw_aws_avg_page(lcd_win_t *win)
 	snprintf(buff, sizeof(buff), "WIND: %.1fm/s", 3.2f);
 	lcd_print_row(win, row_count++, buff);
 
-	win->total_items[page] = row_count;
+  	snprintf(buff, sizeof(buff), "WIND7: %.1fm/s", 3.2f);
+	lcd_print_row(win, row_count++, buff);
+  
+  	snprintf(buff, sizeof(buff), "WIND6: %.1fm/s", 3.2f);
+	lcd_print_row(win, row_count++, buff);
+  
+  	snprintf(buff, sizeof(buff), "WIND5: %.1fm/s", 3.2f);
+	lcd_print_row(win, row_count++, buff);
+  
+  	snprintf(buff, sizeof(buff), "WIND4: %.1fm/s", 3.2f);
+	lcd_print_row(win, row_count++, buff);
+  
+  	snprintf(buff, sizeof(buff), "WIND3: %.1fm/s", 3.2f);
+	lcd_print_row(win, row_count++, buff);
+  
+  	snprintf(buff, sizeof(buff), "WIND2: %.1fm/s", 3.2f);
+	lcd_print_row(win, row_count++, buff);
+  
+  	snprintf(buff, sizeof(buff), "WIND2: %.1fm/s", 3.2f);
+	lcd_print_row(win, row_count++, buff);
+  
+  
+	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
+  
+      while (win->current_row < win->view_row)
+  {
+     lcd_print_row(win, row_count++, "                    ");
+  }
 }
 
 void draw_aws_1min_page(lcd_win_t *win)
@@ -687,7 +694,7 @@ void config_set_menu(void)
 #define PAGE_AWS_HOUR  9
 #define PAGE_AWS_RAW   10
 
-void menuTask0(void *arg)
+void menuTask(void *arg)
 {
 	int32_t key;
 	lcd_win_t lcd_win;
@@ -696,13 +703,16 @@ void menuTask0(void *arg)
 
 
 	clcd_init();
-	clcd_clear();
+  
+  clcd_set_mode(eLCD_MODE_GRAPHIC);
+  
+
 	
 	lcd_create_win(&lcd_win);
 	
+  
 	while (1)
-	{
-		// Configure page list
+  {
 		page_count = 0;
 		page_list[page_count++] = PAGE_SYSTEM;
 		page_list[page_count++] = PAGE_RAIN;
@@ -769,6 +779,9 @@ void menuTask0(void *arg)
                   default:
                     break;
                 }
+           
+                clcd_flush_buffer();
+						
                 key = lcd_get_key_input(1000);
 		
 		if (key == LCD_KEY_ESC)
@@ -782,7 +795,7 @@ void menuTask0(void *arg)
 	
 		}
 		
-		osDelay(100); // 100ms delay to control CPU usage
+
 	}
 }
 

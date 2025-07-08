@@ -29,7 +29,7 @@ const do_api_t do_api = {.low = stm32_do_low,
 const stm32_do_cfg_t CDMA_PWR_cfg = {.port = OUT_PWR_CDMA_GPIO_Port, .pin = OUT_PWR_CDMA_PIN};
 const stm32_do_cfg_t FRAM_CS_cfg = {.port = OUT_SPI1_NSS_GPIO_Port, .pin = OUT_SPI1_NSS_PIN};
 const stm32_do_cfg_t RTC_CS_cfg = {.port = OUT_SPI1_CS_RTC_GPIO_Port, .pin = OUT_RV8803_EVI_Pin};
-const stm32_do_cfg_t FLASH_CS_cfg = {.port = OUT_FLASH_CS_GPIO_Port, .pin = OUT_FLASH_CS_PIN};
+const stm32_do_cfg_t FLASH_CS_cfg = {.port = FSMC_NE1_GPIO_Port, .pin = FSMC_NE1_PIN};
 const stm32_do_cfg_t ADC_CS_cfg = {.port = OUT_SPI2_NSS_GPIO_Port, .pin = OUT_SPI2_NSS_PIN};
 const stm32_do_cfg_t DIR_RS485_A_cfg = {.port = OUT_DIR_RS485_A_GPIO_Port,
                                         .pin = OUT_DIR_RS485_A_PIN};

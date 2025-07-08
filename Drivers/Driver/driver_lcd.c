@@ -7,6 +7,8 @@
 #include "driver_lcd_define.h"
 #include "Components\lcd\vt100_terminal.h"
 
+
+
 driver_t *driver_lcd_open(int num)
 {
   driver_t *driver = NULL;
@@ -18,6 +20,8 @@ driver_t *driver_lcd_open(int num)
       break;
     case DRIVER_LCD_TERMNINAL:
       driver = vt100_terminal_open();
+      break;
+
     default:
       break;
   }

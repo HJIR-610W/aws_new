@@ -78,8 +78,14 @@ void lcd_print_row(lcd_win_t* win, int row_index, const char* text)
 		memcpy(display_text, text, copy_len);
 		
 		// LCD에 출력
-		lcd_write_string(display_text);
+		//lcd_write_string(display_text);
 		
+    for(int i = 0 ; i< LCD_COLS;i++)
+    {
+      //clcd_put_ch(display_row,i,' ');
+      clcd_put_ch(display_row,i,display_text[i]);
+    }
+    
 		win->current_row++;
 	}
 }
@@ -96,7 +102,7 @@ void lcd_handle_scroll(lcd_win_t* win, int key)
 	int page = win->current_page;
 	
 	switch (key) {
-          case KEY_CODE_UP:  // 위로 스크롤
+          case '8':  // 위로 스크롤
             if (win->scroll_offset[page] > 0)
             {
               win->scroll_offset[page] -= win->view_row;
@@ -107,7 +113,7 @@ void lcd_handle_scroll(lcd_win_t* win, int key)
             }
             break;
 
-          case KEY_CODE_DOWN:  // 아래로 스크롤
+          case '2':  // 아래로 스크롤
             if (win->scroll_offset[page] + win->view_row < win->total_items[page])
             {
               win->scroll_offset[page] += win->view_row;
@@ -122,14 +128,14 @@ void lcd_handle_scroll(lcd_win_t* win, int key)
             }
             break;
 
-          case KEY_CODE_LEFT:  // 이전 페이지
+          case '4':  // 이전 페이지
             if (win->current_page > 0)
             {
               win->current_page--;
             }
             break;
 
-          case KEY_CODE_RIGHT:  // 다음 페이지
+          case '6':  // 다음 페이지
             if (win->current_page < win->total_pages - 1)
             {
               win->current_page++;

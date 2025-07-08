@@ -37,4 +37,19 @@ void st7920_draw_bitmap(driver_t *drv, uint8_t x, uint8_t y, uint8_t width, uint
 void st7920_delay_us(uint32_t us);
 void st7920_delay_ms(uint32_t ms);
 
+/* GPIO 제어 함수 */
+void st7920_gpio_init(void);
+void st7920_gpio_set_data_bus(uint8_t data);
+void st7920_gpio_write_byte(uint8_t data, bool is_cmd);
+void st7920_gpio_set_data_bus_input(void);
+void st7920_gpio_set_data_bus_output(void);
+uint8_t st7920_gpio_read_data_bus(void);
+uint8_t st7920_gpio_read_byte(bool is_cmd);
+
+/* 레지스터 읽기 함수 */
+uint8_t st7920_read_status(driver_t *drv);
+uint8_t st7920_read_data(driver_t *drv);
+bool st7920_is_busy(driver_t *drv);
+void st7920_wait_ready(driver_t *drv);
+
 #endif

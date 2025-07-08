@@ -122,6 +122,10 @@ void clcd_put_ch(int row, int col, uint8_t ch)
             {
                 clcd_set_pixel(start_x + x, start_y + y, 1);
             }
+            else
+            {
+                              clcd_set_pixel(start_x + x, start_y + y, 0);
+            }
         }
     }
 }
