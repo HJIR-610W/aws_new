@@ -54,20 +54,11 @@ void driver_stm32_bsp_init(void)
   HAL_GPIO_WritePin(OUT_CON_PWR_DSEN_GPIO_Port, OUT_CON_PWR_DSEN_PIN, GPIO_PIN_SET);
 
 
-  HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_PIN, GPIO_PIN_SET);
-
-
+  
 
   HAL_GPIO_WritePin(GPIOB, OUT_CON_PWR_485_PIN|CON_PWR_TC_PIN, GPIO_PIN_SET);
 
 
-
-
- GPIO_InitStruct.Pin = FSMC_NE1_PIN;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  //HAL_GPIO_Init(FSMC_NE1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PEPin PEPin */
   GPIO_InitStruct.Pin = NOT_USED_PE2_Pin|NOT_USED_PE6_Pin;

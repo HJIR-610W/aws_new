@@ -24,7 +24,7 @@ void test_lcd(void)
     io_printf("LCD Test\r\n");
     io_printf("Select LCD Type: CLCD or TERMINAL\r\n");
 #if 1
-    if (cli_scanf_s("%19s", lcd_type) == CLI_KEYCODE_CTRL_C)
+    if (cli_scanf_s("%s", lcd_type,sizeof(lcd_type)) == CLI_KEYCODE_CTRL_C)
     {
         return;
     }

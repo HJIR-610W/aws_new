@@ -185,3 +185,4 @@ void vt100_print_line(uint8_t line,uint8_t colum,char del, char l, size_t width)
       vt100_set_cursorPos(line,colum);
     io_printf("%c%.*s%c\r\n", del, width, linebuff, del);
 }
+

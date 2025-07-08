@@ -340,3 +340,4 @@ extern "C" {
 /*! @} */
 
 #endif /* _FSL_COMMON_H_ */
+

@@ -11,6 +11,12 @@
 #define READ_X100(x) ((float)(x) / 100.0f)          // 일사량, 조도량 등
 #define READ_DIRECT(x) ((uint16_t)(x))  // 운고, 시정, 현재일기, 타코미터 등 (정수값 그대로)
 
+//[AWS = (관측값+100)/10, 관측값 = (x-1000)/10]
+#define KMA_TO_TEMPERATURE(x) ((float)((x - 1000) / 10.0f))
+#define KMA_TO_GENERAL(x) ((float)(x / 10.0f))
+#define KMA_TO_1000(x) ((float)((x - 1000) / 10.0f))
+#define KMA_TO_ILLUMINANCE(x) ((x) / 100.0f)
+#define KMA_TO_RADI(x) ((x) / 10.0f - 100.0f)
 
 // 새롭게 추가
 typedef enum aws_data_min_s

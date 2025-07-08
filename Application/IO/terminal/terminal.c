@@ -90,12 +90,12 @@ void terminal_print_centered_selected(const char* text, char border, size_t widt
   size_t c = width - a - b;
 
   // [b]<empty>[text]<empty>[b]
-  if(col)//colì´ ë°ì€ íŒŒë‘
+  if(col)//colÀÌ ¹àÀº ÆÄ¶û
   {
     io_printf("%c\x1b[94m%*.s%s%*.s\x1b[0m%c\r\n", border, a, "", text, c, "", border);
 
   }
-  else//ë°˜ì „
+  else//¹İÀü
   {
     io_printf("%c\x1b[7m%*.s%s%*.s\x1b[0m%c\r\n", border, a, "", text, c, "", border);
   }
@@ -122,3 +122,4 @@ void terminal_print_frame(const char* text, char a, char b, char tb, size_t widt
     // Reset color
     terminal_reset_color();
 }
+

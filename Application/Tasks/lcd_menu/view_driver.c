@@ -6,13 +6,8 @@
 
 #include "app_button.h"
 
-#define KEY_UP 72
-#define KEY_DOWN 80
-#define KEY_LEFT 75
-#define KEY_RIGHT 77
 
-
-static layout_t g_layout = {1, 1, 150, 80};
+static layout_t g_layout = {1, 1, 125, 0};
 
 
 int lcd_printf(char const* const _Format, ...)
@@ -210,13 +205,12 @@ void handle_navigation_ptr(win_t** windows, int win_count, int* current_win, int
 	}
 }
 
-
-int get_key_input()
+int view_get_key_input(uint32_t timeout_ms)
 {
   int key;
-  
-  key = get_button_key(100);
-	return key;
+
+  key = get_key(timeout_ms);
+  return key;
 }
 
 

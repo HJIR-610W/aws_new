@@ -421,7 +421,7 @@ int DbgConsole_Printf(const char* fmt_s, ...)
 
     va_start(ap, fmt_s);
 	
-	len = vprintf_s(fmt_s,ap); // 이 함수 사용할때만 low level io 출력 안되게 하고 길이를 구하는 용도로 사용
+	len = vprintf_s(fmt_s,ap); // ?? ??? ???????? low level io ??? ???? ??? ????? ????? ?��?? ???
 
     if(len)
     {
@@ -449,7 +449,7 @@ int DbgConsole_Printf(const char* fmt_s, ...)
 
     va_start(ap, fmt_s);
     
-    buffSize = get_formatted_length_v(fmt_s, ap)+2;//NULL + 여분 
+    buffSize = get_formatted_length_v(fmt_s, ap)+2;//NULL + ???? 
 
     pBuff = (char *)aws_malloc(buffSize);
 
@@ -722,7 +722,7 @@ static uint32_t DbgConsole_ScanIgnoreWhiteSpace(const char** s)
         else if ((*c != '%') || ((*c == '%') && (*(c + 1) == '%')))
         {
             /* Ordinary characters. */
-           // c++; //FIX:이거 허용하면 동작 이상
+           // c++; //FIX:??? ?????? ???? ???
             if (*p == *c)
             {
                 n_decode++;
@@ -1283,6 +1283,7 @@ int fgetc(FILE* f)
 
 
 #endif
+
 
 
 

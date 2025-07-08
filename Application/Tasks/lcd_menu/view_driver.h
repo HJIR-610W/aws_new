@@ -5,8 +5,15 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+#include "cli_key_code.h"
+#define KEY_BREAK KEY_CODE_CTRL_Q
+#define KEY_ENTER KEY_CODE_ENTER
+#define KEY_UP KEY_CODE_UP
+#define KEY_DOWN KEY_CODE_DOWN
+#define KEY_LEFT KEY_CODE_LEFT
+#define KEY_RIGHT KEY_CODE_RIGHT
 
-#define KEY_ENTER 13
 #define ALIGN_UP(val, align)  (((val) + ((align) - 1)) / (align) * (align))
 
 
@@ -41,26 +48,25 @@ typedef struct {
 	int row_height;  // 현재 행의 최대 높이 (세로 정렬용)
 } layout_t;
 
-// Window management functions
+
 void create_win(win_t* win, int start_x, int start_y, int view_row, int view_col);
 void win_printf(win_t* win, const char* pFmt, ...);
 void win_printf_title(win_t* win, const char* pFmt, ...);
 void win_print_close(win_t* win);
 void win_print_row(win_t* win, int row_index, const char* buff);
 
-// Scroll and navigation functions
+
 void handle_scroll(win_t* win, int key);
 void handle_navigation_ptr(win_t** windows, int win_count, int* current_win, int key);
 
-// Layout functions
+
 void calculate_window_position(win_t* win, int win_width, int win_height);
 void reset_layout(void);
 
-// Input function
-int get_key_input(void);
 
-// Global layout accessor
-layout_t* get_layout(void);
+int view_get_key_input(uint32_t timeout_ms);
+
+ layout_t* get_layout(void);
 
 #ifdef __cplusplus
 }

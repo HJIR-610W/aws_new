@@ -44,7 +44,7 @@ void test_filesystem(void)
     list_directory(buff);
 
     io_printf("경로를 입력하세요>>\r\n");
-    ret = cli_scanf_s("%19s", buff, sizeof(buff));
+    ret = cli_scanf_s("%s", buff, sizeof(buff));
 
     if (ret == CLI_KEYCODE_CTRL_C)
     {

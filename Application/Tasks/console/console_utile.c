@@ -315,7 +315,7 @@ int check_pass(const char* title, char* password_str,int *ok)
 
   while(1)
   {
-    status = cli_scanf_s("%15s", input);
+    status = cli_scanf_s("%s", input,sizeof(input));
 
     if(status == CLI_KEYCODE_CTRL_C)
     {
@@ -360,7 +360,7 @@ int confirm_continue(const char *title,int32_t* ok)
   {
     io_printf("%s(yes/no)\r\n",title);
     io_printf("ют╥б:");
-    status = cli_scanf_s("%15s", input);
+    status = cli_scanf_s("%s", input,sizeof(input));
 
     if (status == CLI_KEYCODE_CTRL_C)
     {

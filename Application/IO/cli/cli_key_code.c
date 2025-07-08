@@ -3,7 +3,7 @@
 #include "cmsis_os2.h"
 #include "pcb_define.h"
 
-extern uint32_t millis(void);  // 현재 ms를 가져오는 함수 (플랫폼에 맞게 구현)
+extern uint32_t millis(void);  // ???? ms?? ???????? ??? (?��????? ?��? ????)
 
 int32_t get_key(uint32_t timeout_ms)
 {
@@ -11,7 +11,7 @@ int32_t get_key(uint32_t timeout_ms)
   uint32_t start_time = HAL_GetTick();
   uint32_t elapsed = 0;
 
-  // 1. 첫 번째 바이트 수신 (최대 timeout_ms까지 기다림)
+  // 1. u ??�� ????? ???? (??? timeout_ms???? ????)
   while (1)
   {
     uint32_t remain = timeout_ms - elapsed;
@@ -32,7 +32,7 @@ int32_t get_key(uint32_t timeout_ms)
     }
   }
 
-  // 2. 첫 바이트 처리
+  // 2. u ????? o??
   if (ch == 0x1B)
   {
     char seq[2];
@@ -95,12 +95,13 @@ int32_t get_key(uint32_t timeout_ms)
     return KEY_CODE_UNKNOWN;
   }
 
-  // 3. Ctrl 키 조합
+  // 3. Ctrl ? ????
   if (ch >= 0x01 && ch <= 0x1A)
   {
     return (int32_t)ch;
   }
 
-  // 4. 일반 키
+  // 4. ??? ?
   return (int32_t)ch;
 }
+

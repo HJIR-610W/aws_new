@@ -579,7 +579,7 @@ int handle_view_status(int adc_num)
 
         io_printf("시리얼 오실로스코프 사용하려면 yes입력\r\n");
         user_input[0] = 0;
-        if (cli_scanf_s("%6s", user_input) == CLI_KEYCODE_CTRL_C)
+        if (cli_scanf_s("%s", user_input,sizeof(user_input)) == CLI_KEYCODE_CTRL_C)
         {
           return 0;
         }
@@ -590,7 +590,7 @@ int handle_view_status(int adc_num)
         }
         io_printf("파일로 저장하려면 yes입력\r\n");
         user_input[0] = 0;
-        if (cli_scanf_s("%6s", user_input) == CLI_KEYCODE_CTRL_C)
+        if (cli_scanf_s("%s", user_input, sizeof(user_input)) == CLI_KEYCODE_CTRL_C)
         {
           return 0;
         }

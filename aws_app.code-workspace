@@ -40,7 +40,8 @@
 			"console_define.h": "c",
 			"app_lcd.h": "c",
 			"driver_uart.h": "c",
-			"cmsis_os2.h": "c"
+			"cmsis_os2.h": "c",
+			"view_driver.h": "c"
 		}
 	}
 }

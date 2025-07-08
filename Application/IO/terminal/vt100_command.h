@@ -27,3 +27,4 @@ void vt100_print_frame_selected(uint8_t line, uint8_t colum, const char *text, c
   size_t width, color_t col,uint8_t selected);
   
 #endif
+

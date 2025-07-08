@@ -69,12 +69,12 @@ static const char *autocomplete(const char *input)
 }
 
 
-// 줄 전체 지우고 새로 출력 (히스토리 불러올 때 사용)
+//      u                (     ?  ?          )
 static void clear_line_and_print(const char *buf, int len)
 {
   uart_puts("\r");
 }
-// 줄 다시 그리기 (삽입, 삭제 등)
+//     ?   ?    (    ,        )
 static void refresh_line(const char *buf, int len, int cursor_pos)
 {
   uart_puts("\r");
@@ -282,7 +282,7 @@ int cli_scanf_s(const char *fmt, ...)
   }
 
   va_start(args, fmt);
-  ret = vsscanf_s(input, fmt, args);  // vsscanf_s 사용!
+  ret = vsscanf_s(input, fmt, args);  // vsscanf_s    !
   va_end(args);
 
   return ret;
@@ -301,3 +301,4 @@ int cli_vscanf_s(const char *fmt, va_list args)
   ret = vsscanf_s(input, fmt, args);
   return ret;
 }
+

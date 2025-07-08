@@ -180,7 +180,7 @@ void test_uart(void)
    io_printf("주의:RS232 A,B는 하드웨어점퍼 설정 필요\r\n");
 
    io_printf("포트 이름을 입력해주세요\r\n");
-   if (cli_scanf_s("%7s", buff) == CLI_KEYCODE_CTRL_C)
+   if (cli_scanf_s("%s", buff,sizeof(buff)) == CLI_KEYCODE_CTRL_C)
    {
      return;
    }

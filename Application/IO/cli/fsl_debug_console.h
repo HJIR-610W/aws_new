@@ -215,3 +215,4 @@ int DbgConsole_GetcharNonBlocking(void);
 /*! @} */
 
 #endif /* _FSL_DEBUGCONSOLE_H_ */
+

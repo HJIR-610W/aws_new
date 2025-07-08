@@ -26,16 +26,24 @@
 #include "tcp_define.h"
 
 #include "view_driver.h"
+#include "task_measure.h"
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
     .stack_size = 2048,
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
 
-extern const char *doorStatusList[2];
+extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
+extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용
+extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
+extern const char *linkStatusList[3];
 extern const char *generalStatusList[2];
+const char *doorStatusList_lcd[2]={"CLOSED","OPENED"};
+const char *linkStatusList_lcd[3] = {"-", "UP", "DOWN"};
+const char *ethlinkStatusList_lcd[3] = {"-", "U", "D"};
 
-extern const char *linkStatusList[3];;
+
+
 
 int display_page = 0;
 const char *menu_lines[4] = {
@@ -133,27 +141,27 @@ void draw_system_page(lcd_win_t* win)
 	
 	snprintf(buff, sizeof(buff), "%-*s: %d", SYSTEM_WD, "ID", get_config_app()->id);
 	lcd_print_row(win, row_count++, buff);
-	
-	snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "DOOR",
-	         ITEM_LIST(IS_DOOR_OPENED(), doorStatusList));
-	lcd_print_row(win, row_count++, buff);
+
+        snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "DOOR",
+                 ITEM_LIST(IS_DOOR_OPENED(), doorStatusList_lcd));
+        lcd_print_row(win, row_count++, buff);
 	
 	if (get_logging_system()->status_group)
 	{
-		message = "ON";
+		message = "ERROR";
 	}
 	else
 	{
-		message = "OFF";
+		message = "NORMAL";
 	}
 	
 	snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "LOGGING", message);
 	lcd_print_row(win, row_count++, buff);
 	
-	snprintf(buff, sizeof(buff), "%-*s: %.1f", SYSTEM_WD, "BATTERY V", bsp_read_battery());
+	snprintf(buff, sizeof(buff), "%-*s: %.1f", SYSTEM_WD, "SYS VOLT", bsp_read_battery());
 	lcd_print_row(win, row_count++, buff);
 	
-	snprintf(buff, sizeof(buff), "%-*s: %.1f", SYSTEM_WD, "TEMP C", bsp_read_temperature());
+	snprintf(buff, sizeof(buff), "%-*s: %.1f", SYSTEM_WD, "SYS TEMP", bsp_read_temperature());
 	lcd_print_row(win, row_count++, buff);
 	
 	if (get_config_app()->ac_use)
@@ -217,7 +225,7 @@ void draw_rain_page(lcd_win_t *win)
 
 }
 
-#define CHARGER_WD 15
+#define CHARGER_WD 10
 void draw_charger_page(lcd_win_t *win)
 {
 	uint8_t err;
@@ -416,7 +424,8 @@ void draw_direct_page(lcd_win_t *win)
 	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
 }
 
-#define ETH_WD 10
+//:192.168.123.123
+#define ETH_WD 2
 void draw_ethernet_page(lcd_win_t *win)
 {
 	int row_count = 0;
@@ -436,7 +445,7 @@ void draw_ethernet_page(lcd_win_t *win)
 	if (get_config_app()->eth_mode == eETH_MODE_CLINET)
 	{
 		snprintf(buff, sizeof(buff), "%-*s: %s", ETH_WD, "LINK",
-		         ITEM_LIST(get_tcp_client_system()->link_status, linkStatusList));
+		         ITEM_LIST(get_tcp_client_system()->link_status, linkStatusList_lcd));
 		lcd_print_row(win, row_count++, buff);
 
 		snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "TX", get_tcp_client_system()->tx_cnt);
@@ -448,12 +457,12 @@ void draw_ethernet_page(lcd_win_t *win)
 		last_time = get_tcp_client_system()->last_recv_time;
 		if (last_time == 0)
 		{
-			snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "R TIME");
+			snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "RT");
 		}
 		else
 		{
 			time_cvt_secTotime(last_time, &nt);
-			snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "R TIME",
+			snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "RT",
 			         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
 		}
 		lcd_print_row(win, row_count++, buff);
@@ -461,12 +470,12 @@ void draw_ethernet_page(lcd_win_t *win)
 		last_time = get_tcp_client_system()->last_send_time;
 		if (last_time == 0)
 		{
-			snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "T TIME");
+			snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "TT");
 		}
 		else
 		{
 			time_cvt_secTotime(last_time, &nt);
-			snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "T TIME",
+			snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "TT",
 			         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
 		}
 		lcd_print_row(win, row_count++, buff);
@@ -482,8 +491,9 @@ void draw_ethernet_page(lcd_win_t *win)
 
 		for (int i = 0; i < ETH_CLIENT_MAX; i++)
 		{
-			snprintf(buff, sizeof(buff), "LINK%d: %s(%s)", i,
-			         ITEM_LIST(link_status[i], linkStatusList),
+			//L0:D/192.168.123.123 
+			snprintf(buff, sizeof(buff), "L%d:%s(%s)", i,
+			         ITEM_LIST(link_status[i], ethlinkStatusList_lcd),
 			         get_tcp_system(i)->client_ip_str);
 			lcd_print_row(win, row_count++, buff);
 
@@ -496,12 +506,12 @@ void draw_ethernet_page(lcd_win_t *win)
 			last_time = get_tcp_system(i)->last_recv_time;
 			if (last_time == 0)
 			{
-				snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "R TIME");
+				snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "RT");
 			}
 			else
 			{
 				time_cvt_secTotime(last_time, &nt);
-				snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "R TIME",
+				snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "RT",
 				         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
 			}
 			lcd_print_row(win, row_count++, buff);
@@ -509,12 +519,12 @@ void draw_ethernet_page(lcd_win_t *win)
 			last_time = get_tcp_system(i)->last_send_time;
 			if (last_time == 0)
 			{
-				snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "T TIME");
+				snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "TT");
 			}
 			else
 			{
 				time_cvt_secTotime(last_time, &nt);
-				snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "T TIME",
+				snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "TT",
 				         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
 			}
 			lcd_print_row(win, row_count++, buff);
@@ -524,55 +534,87 @@ void draw_ethernet_page(lcd_win_t *win)
 	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
 }
 
-void draw_aws_avg_page(lcd_win_t *win)
+#define AWS_WD 6
+void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
 {
 	int row_count = 0;
 	int page = win->current_page;
 	char buff[LCD_COLS + 1];
+  kma_data_ex_t *p_kma = NULL;
+  uint8_t err;
+  win->current_row = 0;
+  char err_buf[32];
+  const char *aws_title_list[] = {"AVG", "1MIN", "10MIN", "HOUR", "RAW"};
 
-	win->current_row = 0;
+  snprintf(buff, sizeof(buff), "AWS %s %.2fs/%.2fs", aws_title_list[(int)min],
+           (float)g_exec_250ms_time.elapsed_time / 1000.0f,
+           (float)g_exec_1s_time.elapsed_time / 1000.0f);
 
-	make_centered(buff, sizeof(buff), "AWS AVG", LCD_COLS);
-	lcd_print_row(win, row_count++, buff);
+  lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
-	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "TEMP: %.1fC", 23.5f);
-	lcd_print_row(win, row_count++, buff);
+  p_kma = get_kma_data((eAWS_DATA_MIN_t)min);
 
-	snprintf(buff, sizeof(buff), "HUMID: %.1f%%", 65.2f);
-	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "WIND: %.1fm/s", 3.2f);
-	lcd_print_row(win, row_count++, buff);
+  if (p_kma->temperature.enable)
+	{
+		err = p_kma->temperature.err;
+		if (err)
+		{
+			make_error_string(err, err_buf, sizeof(err_buf));
+			snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "TEMP", err_buf);
+		}
+		else
+		{
+			if (min == eAWS_DATA_RAW)
+			{
+				float f_data = p_kma->temperature.raw.f;
+				snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "TEMP", f_data);
+			}
+		}
+    lcd_print_row(win, row_count++, buff);
+  }
 
-  	snprintf(buff, sizeof(buff), "WIND7: %.1fm/s", 3.2f);
-	lcd_print_row(win, row_count++, buff);
+  // 강수량
+  if (p_kma->precipitation.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
+  {
+    err = p_kma->precipitation.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "RAIN", err_buf);
+    }
+    else
+    {
+      if (min == eAWS_DATA_RAW)
+      {
+        uint32_t last_time = p_kma->precipitation.last_time;
+        DATE_TIME_BUF nt;
+
+        if (last_time == 0)
+        {
+          snprintf(buff, sizeof(buff), "%-*s:--", AWS_WD, "RAIN(t)");
+        }
+        else
+        {
+          time_cvt_secTotime(last_time, &nt);
+					//RAIN(t):250101000000
+          snprintf(buff, sizeof(buff), "%-*s:%02d%02d%02d%02d%02d%02d", AWS_WD, "RAIN(t)",
+                   nt.Year%100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+        }
+      }
+      else
+      {
+        snprintf(buff, sizeof(buff), "%-*s:%6.1f mm", AWS_WD, "RAIN",
+                 KMA_TO_GENERAL(p_kma->precipitation.data));
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
   
-  	snprintf(buff, sizeof(buff), "WIND6: %.1fm/s", 3.2f);
-	lcd_print_row(win, row_count++, buff);
-  
-  	snprintf(buff, sizeof(buff), "WIND5: %.1fm/s", 3.2f);
-	lcd_print_row(win, row_count++, buff);
-  
-  	snprintf(buff, sizeof(buff), "WIND4: %.1fm/s", 3.2f);
-	lcd_print_row(win, row_count++, buff);
-  
-  	snprintf(buff, sizeof(buff), "WIND3: %.1fm/s", 3.2f);
-	lcd_print_row(win, row_count++, buff);
-  
-  	snprintf(buff, sizeof(buff), "WIND2: %.1fm/s", 3.2f);
-	lcd_print_row(win, row_count++, buff);
-  
-  	snprintf(buff, sizeof(buff), "WIND2: %.1fm/s", 3.2f);
-	lcd_print_row(win, row_count++, buff);
-  
-  
-	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
-  
-      while (win->current_row < win->view_row)
+  while (win->current_row < win->view_row)
   {
      lcd_print_row(win, row_count++, "                    ");
   }
@@ -762,19 +804,19 @@ void menuTask(void *arg)
                     draw_ethernet_page(&lcd_win);
                     break;
                   case PAGE_AWS_AVG:
-                    draw_aws_avg_page(&lcd_win);
+                    draw_aws_avg_page(&lcd_win, eAWS_DATA_AVG);
                     break;
                   case PAGE_AWS_1MIN:
-                    draw_aws_1min_page(&lcd_win);
+                    draw_aws_avg_page(&lcd_win, eAWS_DATA_1MIN);
                     break;
                   case PAGE_AWS_10MIN:
-                    draw_aws_10min_page(&lcd_win);
+                    draw_aws_avg_page(&lcd_win, eAWS_DATA_10MIN);
                     break;
                   case PAGE_AWS_HOUR:
-                    draw_aws_hour_page(&lcd_win);
+                    draw_aws_avg_page(&lcd_win, eAWS_DATA_HOUR);
                     break;
                   case PAGE_AWS_RAW:
-                    draw_aws_raw_page(&lcd_win);
+                    draw_aws_avg_page(&lcd_win, eAWS_DATA_RAW);
                     break;
                   default:
                     break;
@@ -782,7 +824,7 @@ void menuTask(void *arg)
            
                 clcd_flush_buffer();
 						
-                key = lcd_get_key_input(1000);
+                key = lcd_get_key_input(500);
 		
 		if (key == LCD_KEY_ESC)
 		{

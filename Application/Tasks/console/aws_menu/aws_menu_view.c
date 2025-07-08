@@ -2,7 +2,7 @@
 
 #include "aws_menu_view.h"
 
-#include "lcd\view_driver.h"
+#include "view_driver.h"
 
 #include "util_time.h"
 
@@ -22,6 +22,7 @@
 #include "task_client.h"
 #include "task_measure.h"
 #include "vt100_command.h"
+
 const char *linkStatusList[3] = {"-", "UP", "DOWN"};
 const char *doorStatusList[2] = {"닫힘", "열림"};
 const char *generalStatusList[2] = {"정상", "비정상"};
@@ -43,15 +44,15 @@ void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size)
 
   if (val_err && comm_err)
   {
-    snprintf(buffer, buffer_size, "E(값%u,통신%u)", val_err, comm_err);
+    snprintf(buffer, buffer_size, "E(V%u,C%u)", val_err, comm_err);
   }
   else if (val_err)
   {
-    snprintf(buffer, buffer_size, "E(값%u)", val_err);
+    snprintf(buffer, buffer_size, "E(V%u)", val_err);
   }
   else if (comm_err)
   {
-    snprintf(buffer, buffer_size, "E(통신%u)", comm_err);
+    snprintf(buffer, buffer_size, "E(C%u)", comm_err);
   }
 }
 
@@ -600,12 +601,6 @@ void draw_eth(win_t *p_win)
 
   win_print_close(p_win);
 }
-//[AWS = (관측값+100)/10, 관측값 = (x-1000)/10]
-#define KMA_TO_TEMPERATURE(x) ((float)((x - 1000) / 10.0f))
-#define KMA_TO_GENERAL(x) ((float)(x / 10.0f))
-#define KMA_TO_1000(x) ((float)((x - 1000) / 10.0f))
-#define KMA_TO_ILLUMINANCE(x) ((x) / 100.0f)
-#define KMA_TO_RADI(x) ((x) / 10.0f - 100.0f)
 
 #define AWS_WD 15
 
@@ -2145,7 +2140,7 @@ int32_t aws_menu_veiw(void)
     io_printf("\x1B[%d;1H", layout->next_y + layout->row_height + 2);
     io_printf("");
 
-    int key = get_key_input(1000);
+    int key = view_get_key_input(1000);
 
     if (key == KEY_ENTER)
     {  // Enter
