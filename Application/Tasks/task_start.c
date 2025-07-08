@@ -98,7 +98,6 @@ void startTask(void *arg)
   bsp_init();
   usDelay_init();
 
-
   config_manager_init();// 우선 실행 
   
   menuTask_init();
@@ -112,13 +111,15 @@ void startTask(void *arg)
   dataLogging_init();
   loggingTask_init();
 
-  dualportTask_init();
-  measureTask_init();
+//  measureTask_init();
+//  dualportTask_init();
+
 
   if (get_config_app()->cdma_use)
   {
     cellularTask_init();
   }
+  
   if (get_config_app()->direct_use)
   {
     directTask_init();

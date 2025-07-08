@@ -381,5 +381,23 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
       break;
   }
 
+  p_kma_data->temperature.enable = 1;
+  p_kma_data->wind_direction_avg.enable = 1;
+  p_kma_data->wind_speed_avg.enable = 1;
+  p_kma_data->wind_direction_instant.enable = 1;
+  p_kma_data->wind_speed_instant.enable = 1;
+  p_kma_data->precipitation.enable = 1;
+  p_kma_data->pressure.enable = 1;
+
+  p_kma_data->precipitation_presence.enable = 1;
+
+  p_kma_data->snowfall.enable = 1;
+  p_kma_data->relative_humidity.enable = 1;
+
+  p_kma_data->solar_radiation.enable = 1;
+  p_kma_data->sunshine_duration.enable = 1;
+  p_kma_data->soil_temperature_5cm.enable = 1;
+  p_kma_data->soil_temperature_10cm.enable = 1;
+
   return p_kma_data;
 }

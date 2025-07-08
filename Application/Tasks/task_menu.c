@@ -537,14 +537,16 @@ void draw_ethernet_page(lcd_win_t *win)
 #define AWS_WD 6
 void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
 {
-	int row_count = 0;
-	int page = win->current_page;
-	char buff[LCD_COLS + 1];
-  kma_data_ex_t *p_kma = NULL;
-  uint8_t err;
-  win->current_row = 0;
-  char err_buf[32];
   const char *aws_title_list[] = {"AVG", "1MIN", "10MIN", "HOUR", "RAW"};
+  char buff[LCD_COLS + 1];
+  char err_buf[32];
+  uint8_t err;
+  int row_count = 0;
+  int page = win->current_page;
+  float data, data_min, data_max;
+  kma_data_ex_t *p_kma = NULL;
+
+  win->current_row = 0;
 
   snprintf(buff, sizeof(buff), "AWS %s %.2fs/%.2fs", aws_title_list[(int)min],
            (float)g_exec_250ms_time.elapsed_time / 1000.0f,
@@ -552,9 +554,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
 
   lcd_print_row(win, row_count++, buff);
 
-
   p_kma = get_kma_data((eAWS_DATA_MIN_t)min);
-
 
   if (p_kma->temperature.enable)
 	{
@@ -566,12 +566,96 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
 		}
 		else
 		{
-			if (min == eAWS_DATA_RAW)
-			{
 				float f_data = p_kma->temperature.raw.f;
 				snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "TEMP", f_data);
-			}
+
 		}
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 풍향
+  if (p_kma->wind_direction_avg.enable)
+  {
+    err = p_kma->wind_direction_avg.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "WIND D", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->wind_direction_avg.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f", AWS_WD, "WIND D", f_data);
+      }
+      else
+      {
+        data = KMA_TO_GENERAL(p_kma->wind_direction_avg.data);
+        data_max = KMA_TO_GENERAL(p_kma->wind_direction_avg.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f", AWS_WD, "WIND D", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 풍속
+  if (p_kma->wind_speed_avg.enable)
+  {
+    err = p_kma->wind_speed_avg.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "WIND S", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->wind_speed_avg.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "WIND S", f_data);
+      }
+      else
+      {
+        data = KMA_TO_GENERAL(p_kma->wind_speed_avg.data);
+        data_max = KMA_TO_GENERAL(p_kma->wind_speed_avg.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f m/s", AWS_WD, "WIND S", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 순간 풍향
+  if (p_kma->wind_direction_avg.enable &&
+      (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR && page != eAWS_DATA_RAW))
+  {
+    err = p_kma->wind_direction_avg.err;
+    if (err)
+    {
+      snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "GUST WIND D");
+    }
+    else
+    {
+      snprintf(buff, sizeof(buff), "%-*s: %7.1f", AWS_WD, "GUST WIND D",
+               KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 순간 풍속
+  if (p_kma->wind_speed_avg.enable &&
+      (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR && page != eAWS_DATA_RAW))
+  {
+    err = p_kma->wind_speed_avg.err;
+    if (err)
+    {
+      snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "GUST WIND S");
+    }
+    else
+    {
+      snprintf(buff, sizeof(buff), "%-*s: %7.1f m/s", AWS_WD, "GUST WIND S",
+               KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
+    }
     lcd_print_row(win, row_count++, buff);
   }
 
@@ -611,6 +695,424 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
     }
     lcd_print_row(win, row_count++, buff);
   }
+  // 기압
+  if (p_kma->pressure.enable)
+  {
+    err = p_kma->pressure.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "BARO", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->pressure.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f hPa", AWS_WD, "BARO", f_data);
+      }
+      else
+      {
+        data = KMA_TO_GENERAL(p_kma->pressure.data);
+        data_min = KMA_TO_GENERAL(p_kma->pressure.min);
+        data_max = KMA_TO_GENERAL(p_kma->pressure.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f hPa", AWS_WD, "BARO", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 강수유무
+  if (p_kma->precipitation_presence.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
+  {
+    err = p_kma->precipitation_presence.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "RAIN_P", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->precipitation_presence.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %5d", AWS_WD, "RAIN_P", (int)f_data);
+      }
+      else
+      {
+        snprintf(buff, sizeof(buff), "%-*s: %5d", AWS_WD, "RAIN_P",
+                 p_kma->precipitation_presence.data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+  // 적설
+  if (p_kma->snowfall.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
+  {
+    err = p_kma->snowfall.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SNOW", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        int data = (int)p_kma->snowfall.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7d mm", AWS_WD, "SNOW", data);
+      }
+      else
+      {
+        snprintf(buff, sizeof(buff), "%-*s: %7d mm", AWS_WD, "SNOW", p_kma->snowfall.data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 상대습도
+  if (p_kma->relative_humidity.enable)
+  {
+    err = p_kma->relative_humidity.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "HUMI", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->relative_humidity.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "HUMI", f_data);
+      }
+      else
+      {
+        data = KMA_TO_GENERAL(p_kma->relative_humidity.data);
+        data_min = KMA_TO_GENERAL(p_kma->relative_humidity.min);
+        data_max = KMA_TO_GENERAL(p_kma->relative_humidity.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f %%", AWS_WD,"HUMI", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 일사
+  if (p_kma->solar_radiation.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
+  {
+    err = p_kma->solar_radiation.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOLAR R", err_buf);
+    }
+    else
+    {
+      switch (page)
+      {
+        case eAWS_DATA_RAW:
+        {
+          float f_data = p_kma->solar_radiation.raw.f;
+          snprintf(buff, sizeof(buff), "%-*s: %7.2f WJ/m2", AWS_WD, "SOLAR R", f_data);
+          break;
+        }
+        case eAWS_DATA_AVG:
+        {
+          float solar_radiation = p_kma->solar_radiation.data;
+          snprintf(buff, sizeof(buff), "%-*s: %7.1f WJ/m2", AWS_WD, "SOLAR R", solar_radiation);
+          break;
+        }
+        default:
+        {
+          float solar_radiation = p_kma->solar_radiation.data;
+          snprintf(buff, sizeof(buff), "%-*s: %7.1f KJ/m2", AWS_WD, "SOLAR R", solar_radiation);
+          break;
+        }
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 일조
+  if (p_kma->sunshine_duration.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
+  {
+    err = p_kma->sunshine_duration.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOLAR D", err_buf);
+    }
+    else
+    {
+      switch (page)
+      {
+        case eAWS_DATA_RAW:
+        {
+          float f_data = p_kma->sunshine_duration.raw.f;
+          bool sunshine_duration = (f_data == 1.0f);
+          snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOLAR D",
+                   sunshine_duration ? "ON" : "OFF");
+          break;
+        }
+        case eAWS_DATA_AVG:
+        {
+          bool sunshine_duration = (p_kma->sunshine_duration.data == 1);
+          snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOLAR D",
+                   sunshine_duration ? "ON" : "OFF");
+          break;
+        }
+        default:
+          snprintf(buff, sizeof(buff), "%-*s: %5d s", AWS_WD, "SOLAR D",
+                   p_kma->sunshine_duration.data);
+          break;
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 지중온도 5cm
+  if (p_kma->soil_temperature_5cm.enable)
+  {
+    err = p_kma->soil_temperature_5cm.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOIL T 5cm", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->soil_temperature_5cm.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "SOIL T 5cm", f_data);
+      }
+      else
+      {
+        data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.data);
+        data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.min);
+        data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD,
+                 "SOIL T 5cm", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 지중온도 10cm
+  if (p_kma->soil_temperature_10cm.enable)
+  {
+    err = p_kma->soil_temperature_10cm.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOIL T 10cm", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->soil_temperature_10cm.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "SOIL T 10cm", f_data);
+      }
+      else
+      {
+        data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.data);
+        data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.min);
+        data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD,"SOIL T 10cm", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 지중온도 20cm
+  if (p_kma->soil_temperature_20cm.enable)
+  {
+    err = p_kma->soil_temperature_20cm.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOIL T 20cm", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->soil_temperature_20cm.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "SOIL T 20cm", f_data);
+      }
+      else
+      {
+        data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.data);
+        data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.min);
+        data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD,"SOIL T 20cm", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 지중온도 30cm
+  if (p_kma->soil_temperature_30cm.enable)
+  {
+    err = p_kma->soil_temperature_30cm.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOIL T 30cm", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->soil_temperature_30cm.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "SOIL T 30cm", f_data);
+      }
+      else
+      {
+        data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.data);
+        data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.min);
+        data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD,"SOIL T 30cm", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+  // 지중온도 50cm
+  if (p_kma->soil_temperature_50cm.enable)
+  {
+    err = p_kma->soil_temperature_50cm.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOIL T 50cm", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->soil_temperature_50cm.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "SOIL T 50cm", f_data);
+      }
+      else
+      {
+        data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.data);
+        data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.min);
+        data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD,
+                 "SOIL T 50cm", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 지중온도 1m
+  if (p_kma->soil_temperature_1m.enable)
+  {
+    err = p_kma->soil_temperature_1m.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOIL T 1m", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->soil_temperature_1m.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "SOIL T 1m", f_data);
+      }
+      else
+      {
+        data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.data);
+        data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.min);
+        data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD, "SOIL T 1m",  data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 지중온도 1.5m
+  if (p_kma->soil_temperature_1_5m.enable)
+  {
+    err = p_kma->soil_temperature_1_5m.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOIL T 1.5m", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->soil_temperature_1_5m.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "SOIL T 1.5m", f_data);
+      }
+      else
+      {
+        data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.data);
+        data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.min);
+        data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD,"SOIL T 1.5m", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 지중온도 3m
+  if (p_kma->soil_temperature_3m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
+  {
+    err = p_kma->soil_temperature_3m.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOIL T 3m", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->soil_temperature_3m.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "SOIL T 3m", f_data);
+      }
+      else
+      {
+        data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.data);
+        data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.min);
+        data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD, "SOIL T 3m", data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
+
+  // 지중온도 5m
+  if (p_kma->soil_temperature_5m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
+  {
+    err = p_kma->soil_temperature_5m.err;
+    if (err)
+    {
+      make_error_string(err, err_buf, sizeof(err_buf));
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "SOIL T 5m", err_buf);
+    }
+    else
+    {
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->soil_temperature_5m.raw.f;
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "SOIL T 5m", f_data);
+      }
+      else
+      {
+        data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.data);
+        data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.min);
+        data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD, "SOIL T 5m",data);
+      }
+    }
+    lcd_print_row(win, row_count++, buff);
+  }
 
   win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
   
@@ -618,106 +1120,18 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
   {
      lcd_print_row(win, row_count++, "                    ");
   }
+
+
+
+
 }
 
-void draw_aws_1min_page(lcd_win_t *win)
-{
-	int row_count = 0;
-	int page = win->current_page;
-	char buff[LCD_COLS + 1];
 
-	win->current_row = 0;
 
-	make_centered(buff, sizeof(buff), "AWS 1MIN", LCD_COLS);
-	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
-	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "TEMP: %.1fC", 23.8f);
-	lcd_print_row(win, row_count++, buff);
 
-	snprintf(buff, sizeof(buff), "HUMID: %.1f%%", 64.8f);
-	lcd_print_row(win, row_count++, buff);
 
-	win->total_items[page] = row_count;
-}
-
-void draw_aws_10min_page(lcd_win_t *win)
-{
-	int row_count = 0;
-	int page = win->current_page;
-	char buff[LCD_COLS + 1];
-
-	win->current_row = 0;
-
-	make_centered(buff, sizeof(buff), "AWS 10MIN", LCD_COLS);
-	lcd_print_row(win, row_count++, buff);
-
-	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
-	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-	lcd_print_row(win, row_count++, buff);
-
-	snprintf(buff, sizeof(buff), "TEMP: %.1fC", 23.3f);
-	lcd_print_row(win, row_count++, buff);
-
-	snprintf(buff, sizeof(buff), "HUMID: %.1f%%", 65.5f);
-	lcd_print_row(win, row_count++, buff);
-
-	win->total_items[page] = row_count;
-}
-
-void draw_aws_hour_page(lcd_win_t *win)
-{
-	int row_count = 0;
-	int page = win->current_page;
-	char buff[LCD_COLS + 1];
-
-	win->current_row = 0;
-
-	make_centered(buff, sizeof(buff), "AWS HOUR", LCD_COLS);
-	lcd_print_row(win, row_count++, buff);
-
-	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
-	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-	lcd_print_row(win, row_count++, buff);
-
-	snprintf(buff, sizeof(buff), "TEMP: %.1fC", 22.9f);
-	lcd_print_row(win, row_count++, buff);
-
-	snprintf(buff, sizeof(buff), "HUMID: %.1f%%", 66.1f);
-	lcd_print_row(win, row_count++, buff);
-
-	win->total_items[page] = row_count;
-}
-
-void draw_aws_raw_page(lcd_win_t *win)
-{
-	int row_count = 0;
-	int page = win->current_page;
-	char buff[LCD_COLS + 1];
-
-	win->current_row = 0;
-
-	make_centered(buff, sizeof(buff), "AWS RAW", LCD_COLS);
-	lcd_print_row(win, row_count++, buff);
-
-	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
-	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-	lcd_print_row(win, row_count++, buff);
-
-	snprintf(buff, sizeof(buff), "RAW1: %d", 1234);
-	lcd_print_row(win, row_count++, buff);
-
-	snprintf(buff, sizeof(buff), "RAW2: %d", 5678);
-	lcd_print_row(win, row_count++, buff);
-
-	snprintf(buff, sizeof(buff), "RAW3: %d", 9012);
-	lcd_print_row(win, row_count++, buff);
-
-	win->total_items[page] = row_count;
-}
 
 void config_set_menu(void)
 {
@@ -824,7 +1238,7 @@ void menuTask(void *arg)
            
                 clcd_flush_buffer();
 						
-                key = lcd_get_key_input(500);
+                key = lcd_get_key_input(1000);
 		
 		if (key == LCD_KEY_ESC)
 		{

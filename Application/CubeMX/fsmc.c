@@ -77,9 +77,9 @@ void MX_FSMC_Init(void)
   hsram_lcd.Init.PageSize = FSMC_PAGE_SIZE_NONE;
 
 // Write Timing 설정 (더 보수적으로)
-  Timing.AddressSetupTime = 3;
+  Timing.AddressSetupTime = 4;
   Timing.AddressHoldTime = 15;//의미 없음 사용 안함 
-  Timing.DataSetupTime = 20;
+  Timing.DataSetupTime = 15;
   Timing.BusTurnAroundDuration = 5;
   Timing.CLKDivision = 16;
   Timing.DataLatency = 17;

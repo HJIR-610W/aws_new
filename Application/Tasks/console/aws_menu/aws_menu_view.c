@@ -2070,7 +2070,7 @@ int32_t aws_menu_veiw(void)
   create_win(&eth_win, 0, 0, 15, 31);
   create_win(&aws_win, 0, 0, 19, 60);
   create_win(&charger_win, 0, 0, 6, 26);
-  create_win(&config_win, 0, 0, 4, 22);
+  create_win(&config_win, 0, 0, 8, 22);
 
   while (1)
   {

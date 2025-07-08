@@ -1412,21 +1412,22 @@ void DUALPORT_TASK(void *arg)
     // 메모리를 아끼기위해 g_p_raw 하나만 사용
     g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
 
-  osDelay(2000);//1초마다 업데이트 하는 테스트가 최소 1회이상 업데이트 되길 대기 
+
   time_old = Date_Time;
   while (1)
   {
     is_measurement_1s(g_p_raw, 0);                      // 업데이트된 값 없으면 이전값 유지
     if (is_measurement_250(&g_raw_250, osWaitForever))  // 250ms마다 최신값 사용
     {
-      g_p_raw->data[eA2_WIND_DIRECTION] = g_raw_250.data[eA2_WIND_DIRECTION];
-      g_p_raw->data[eA3_WIND_SPEED] = g_raw_250.data[eA3_WIND_SPEED];
+      g_p_raw->data[A2_WIND_DIRECTION] = g_raw_250.data[eA2_WIND_DIRECTION];
+      g_p_raw->data[A3_WIND_SPEED] = g_raw_250.data[eA3_WIND_SPEED];
     }
 
     ct = Date_Time;
 
     check_sensor_use();
     update_raw();
+
 
     // 온도
     data = TempCalc(&sensor_err);
@@ -1437,7 +1438,7 @@ void DUALPORT_TASK(void *arg)
     data =  WindDirecCalc(&sensor_err);
     sDirec = filter_data(A2_WIND_DIRECTION, data, sensor_err,&f_err);
     update_sensor_err(A2_WIND_DIRECTION, f_err);
-    ;
+
 
     // 풍속
     data = WindSpeedCalc(&sensor_err);
