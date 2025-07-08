@@ -5398,10 +5398,6 @@
             <name>$PROJ_DIR$\..\Application\Tasks\task_menu.c</name>
             <outputs>
                 <tool>
-                    <name>ICCARM</name>
-                    <file> 1551</file>
-                </tool>
-                <tool>
                     <name>__cstat</name>
                     <file> 939</file>
                 </tool>

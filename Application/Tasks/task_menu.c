@@ -123,28 +123,28 @@ extern void st7920_flush_buffer(driver_t *drv);
 
 
 #define SYSTEM_WD 10
-void draw_system_page(lcd_win_t* win)
+void draw_system_page(lcd_win_t* p_win)
 {
 	int row_count = 0;
-	int page = win->current_page;
+	int page = p_win->current_page;
 	char buff[LCD_COLS + 1];
 	const char *message;
 
-	win->current_row = 0;
+	p_win->current_row = 0;
 
 	make_centered(buff, sizeof(buff), "SYSTEM", LCD_COLS);
-	lcd_print_row(win, row_count++, buff);
+	lcd_print_row(p_win, row_count++, buff);
 	
 	snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year, Date_Time.Month,
 	         Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-	lcd_print_row(win, row_count++, buff);
+	lcd_print_row(p_win, row_count++, buff);
 	
 	snprintf(buff, sizeof(buff), "%-*s: %d", SYSTEM_WD, "ID", get_config_app()->id);
-	lcd_print_row(win, row_count++, buff);
+	lcd_print_row(p_win, row_count++, buff);
 
         snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "DOOR",
                  ITEM_LIST(IS_DOOR_OPENED(), doorStatusList_lcd));
-        lcd_print_row(win, row_count++, buff);
+        lcd_print_row(p_win, row_count++, buff);
 	
 	if (get_logging_system()->status_group)
 	{
@@ -156,26 +156,26 @@ void draw_system_page(lcd_win_t* win)
 	}
 	
 	snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "LOGGING", message);
-	lcd_print_row(win, row_count++, buff);
+	lcd_print_row(p_win, row_count++, buff);
 	
 	snprintf(buff, sizeof(buff), "%-*s: %.1f", SYSTEM_WD, "SYS VOLT", bsp_read_battery());
-	lcd_print_row(win, row_count++, buff);
+	lcd_print_row(p_win, row_count++, buff);
 	
 	snprintf(buff, sizeof(buff), "%-*s: %.1f", SYSTEM_WD, "SYS TEMP", bsp_read_temperature());
-	lcd_print_row(win, row_count++, buff);
+	lcd_print_row(p_win, row_count++, buff);
 	
 	if (get_config_app()->ac_use)
 	{
 		snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "AC", "ON");
-		lcd_print_row(win, row_count++, buff);
+		lcd_print_row(p_win, row_count++, buff);
 	}
 	
-	win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
+	p_win->total_items[page] =  ALIGN_UP(row_count, p_win->current_row ); 
   
   
-    while (win->current_row < win->view_row)
+    while (p_win->current_row < p_win->view_row)
   {
-     lcd_print_row(win, row_count++, "                    ");
+     lcd_print_row(p_win, row_count++, "                    ");
   }
 
   
@@ -535,24 +535,24 @@ void draw_ethernet_page(lcd_win_t *win)
 }
 
 #define AWS_WD 6
-void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
+void draw_aws_avg_page(lcd_win_t *p_win, eAWS_DATA_MIN_t min)
 {
   const char *aws_title_list[] = {"AVG", "1MIN", "10MIN", "HOUR", "RAW"};
   char buff[LCD_COLS + 1];
   char err_buf[32];
   uint8_t err;
   int row_count = 0;
-  int page = win->current_page;
+  int page = p_win->current_page;
   float data, data_min, data_max;
   kma_data_ex_t *p_kma = NULL;
 
-  win->current_row = 0;
+  p_win->current_row = 0;
 
   snprintf(buff, sizeof(buff), "AWS %s %.2fs/%.2fs", aws_title_list[(int)min],
            (float)g_exec_250ms_time.elapsed_time / 1000.0f,
            (float)g_exec_1s_time.elapsed_time / 1000.0f);
 
-  lcd_print_row(win, row_count++, buff);
+  lcd_print_row(p_win, row_count++, buff);
 
   p_kma = get_kma_data((eAWS_DATA_MIN_t)min);
 
@@ -570,7 +570,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
 				snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "TEMP", f_data);
 
 		}
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 풍향
@@ -596,7 +596,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f", AWS_WD, "WIND D", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 풍속
@@ -622,7 +622,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f m/s", AWS_WD, "WIND S", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 순간 풍향
@@ -639,7 +639,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
       snprintf(buff, sizeof(buff), "%-*s: %7.1f", AWS_WD, "GUST WIND D",
                KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 순간 풍속
@@ -656,7 +656,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
       snprintf(buff, sizeof(buff), "%-*s: %7.1f m/s", AWS_WD, "GUST WIND S",
                KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 강수량
@@ -693,7 +693,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
                  KMA_TO_GENERAL(p_kma->precipitation.data));
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
   // 기압
   if (p_kma->pressure.enable)
@@ -719,7 +719,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f hPa", AWS_WD, "BARO", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 강수유무
@@ -744,7 +744,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
                  p_kma->precipitation_presence.data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
   // 적설
   if (p_kma->snowfall.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
@@ -767,7 +767,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7d mm", AWS_WD, "SNOW", p_kma->snowfall.data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 상대습도
@@ -794,7 +794,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f %%", AWS_WD,"HUMI", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 일사
@@ -830,7 +830,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         }
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 일조
@@ -867,7 +867,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
           break;
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 지중온도 5cm
@@ -895,7 +895,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
                  "SOIL T 5cm", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 지중온도 10cm
@@ -922,7 +922,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD,"SOIL T 10cm", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 지중온도 20cm
@@ -949,7 +949,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD,"SOIL T 20cm", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 지중온도 30cm
@@ -976,7 +976,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD,"SOIL T 30cm", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
   // 지중온도 50cm
   if (p_kma->soil_temperature_50cm.enable)
@@ -1003,7 +1003,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
                  "SOIL T 50cm", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 지중온도 1m
@@ -1030,7 +1030,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD, "SOIL T 1m",  data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 지중온도 1.5m
@@ -1057,7 +1057,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD,"SOIL T 1.5m", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 지중온도 3m
@@ -1084,7 +1084,7 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD, "SOIL T 3m", data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
   // 지중온도 5m
@@ -1111,14 +1111,14 @@ void draw_aws_avg_page(lcd_win_t *win, eAWS_DATA_MIN_t min)
         snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD, "SOIL T 5m",data);
       }
     }
-    lcd_print_row(win, row_count++, buff);
+    lcd_print_row(p_win, row_count++, buff);
   }
 
-  win->total_items[page] =  ALIGN_UP(row_count, win->current_row ); 
+  p_win->total_items[page] =  ALIGN_UP(row_count, p_win->current_row ); 
   
-  while (win->current_row < win->view_row)
+  while (p_win->current_row < p_win->view_row)
   {
-     lcd_print_row(win, row_count++, "                    ");
+     lcd_print_row(p_win, row_count++, "                    ");
   }
 
 
