@@ -9,24 +9,7 @@
 
 #define MAX_COLS 100
 
-
 static driver_t *p_s_lcd = NULL;
-
-void clcd_printf(int row, int col, char const* const _Format, ...)
-{
-    if(p_s_lcd == NULL) return;
-    
-    char buffer[128];
-    va_list args;
-    
-    va_start(args, _Format);
-    vsnprintf(buffer, sizeof(buffer), _Format, args);
-    va_end(args);
-    
-    driver_lcd_set_position(p_s_lcd, row, col);
-    driver_lcd_write_string(p_s_lcd, buffer);
-}
-
 
 
 void screen_home(void)
@@ -52,17 +35,6 @@ void screen_set_cursor(int row, int col)
     if(p_s_lcd == NULL) return;
     driver_lcd_set_position(p_s_lcd, row, col);
 }
-
-
-void clcd_write_string_at(int row, int col, const char *str)
-{
-    if(p_s_lcd == NULL) return;
-    
-    // 새로운 driver_lcd_write_string_at 함수 사용
-    driver_lcd_write_string_at(p_s_lcd, row, col, str);
-}
-
-
 
 void screen_set_mode(eLCD_MODE_t lcd_mode)
 {

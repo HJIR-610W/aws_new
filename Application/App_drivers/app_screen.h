@@ -7,13 +7,13 @@
 
 #include "driver_lcd.h"
 
-void clcd_printf(int row, int col, char const* const _Format, ...);
+
 void screen_home(void);
 void screen_display_on(void);
 void screen_display_off(void);
 void screen_set_cursor(int row, int col);
 
-void clcd_write_string_at(int row, int col, const char *str);
+
 
 void screen_set_mode(eLCD_MODE_t lcd_mode);
 void screen_set_pixel( uint8_t x, uint8_t y, bool on);
