@@ -1129,6 +1129,7 @@ void print_logo(void)
     }
   }
   clcd_refresh();
+  osDelay(1000);
 }
 /*
 화면이 페이지이다
@@ -1143,11 +1144,10 @@ void menuTask(void *arg)
   screen_t lcd_win;
   uint32_t start_time;
 
-  clcd_init();
-
+  screen_init();
+  
   print_logo();
 
-  osDelay(1000);
   screen_create(&lcd_win,SCREEN_ROWS,SCREEN_COLS);
 
   start_time = OS_GET_TICK();

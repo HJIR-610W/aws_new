@@ -26,7 +26,8 @@ extern "C" {
     int total_pages;
   } screen_t;
 
-	void screen_clear(screen_t *p_win);
+void screen_init(void);
+void screen_clear(screen_t *p_win);
 void screen_create(screen_t* win,int rows,int cols);
 void screen_print_row(screen_t* win, int row_index, const char* text);
 void screen_printf_row(screen_t* win, int row_index, const char* format, ...);

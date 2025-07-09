@@ -11,6 +11,10 @@
 #define MAX_COLS 100
 
 
+void screen_init(void)
+{
+  clcd_init();
+}
 
 void screen_set_cursor(int row, int col)
 {
