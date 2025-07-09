@@ -5,22 +5,11 @@
 
 
 #include "app_button.h"
-
+#include "dev_io.h"
 
 static layout_t g_layout = {1, 1, 125, 0};
 
 
-int lcd_printf(char const* const _Format, ...)
-{
-	va_list args;
-	int result;
-	
-	va_start(args, _Format);
-	result = vprintf(_Format, args);
-	va_end(args);
-	
-	return result;
-}
 
 layout_t* get_layout(void)
 {
@@ -55,7 +44,7 @@ void win_printf(win_t* win, const char* pFmt, ...)
 	if (win->current_row >= win->view_row)
 		return;
 
-	lcd_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
+	io_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
 	va_start(ap, pFmt);
 	int len;
 	buff[0] = '|';
@@ -68,7 +57,7 @@ void win_printf(win_t* win, const char* pFmt, ...)
 	}
 	buff[win->view_col - 1] = '|';
 	buff[win->view_col] = '\0';
-	lcd_printf("%s\n", buff);
+	io_printf("%s\n", buff);
 
 	win->current_row++;
 }
@@ -78,15 +67,15 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 	char buff[150];
 	va_list ap;
 
-	lcd_printf("\x1B[%d;%dH", win->start_y, win->start_x);
+	io_printf("\x1B[%d;%dH", win->start_y, win->start_x);
 
-	lcd_printf("+");
+	io_printf("+");
 	for (int i = 0; i < win->view_col - 2; i++) {
-		lcd_printf("-");
+		io_printf("-");
 	}
-	lcd_printf("+\n");
+	io_printf("+\n");
 
-	lcd_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
+	io_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
 	va_start(ap, pFmt);
 	int len = 1;
 	buff[0] = '|';
@@ -110,29 +99,29 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 	buff[win->view_col] = '\0';
 
 	if (win->is_focused) {
-		lcd_printf("|\x1B[32m%.*s\x1B[0m|\n", win->view_col - 2, &buff[1]);
+		io_printf("|\x1B[32m%.*s\x1B[0m|\n", win->view_col - 2, &buff[1]);
 	} else if (win->is_selected) {
-		lcd_printf("|\x1B[7m%.*s\x1B[0m|\n", win->view_col - 2, &buff[1]);
+		io_printf("|\x1B[7m%.*s\x1B[0m|\n", win->view_col - 2, &buff[1]);
 	} else {
-		lcd_printf("%s\n", buff);
+		io_printf("%s\n", buff);
 	}
 
-	lcd_printf("\x1B[%d;%dH", win->start_y + 2, win->start_x);
-	lcd_printf("+");
+	io_printf("\x1B[%d;%dH", win->start_y + 2, win->start_x);
+	io_printf("+");
 	for (int i = 0; i < win->view_col - 2; i++) {
-		lcd_printf("-");
+		io_printf("-");
 	}
-	lcd_printf("+\n");
+	io_printf("+\n");
 }
 
 void win_print_close(win_t* win)
 {
-	lcd_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
-	lcd_printf("+");
+	io_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
+	io_printf("+");
 	for (int i = 0; i < win->view_col - 2; i++) {
-		lcd_printf("-");
+		io_printf("-");
 	}
-	lcd_printf("+\n");
+	io_printf("+\n");
 }
 
 void win_print_row(win_t* win, int row_index, const char* buff)

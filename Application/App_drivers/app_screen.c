@@ -207,10 +207,13 @@ void screen_off(screen_page_t* p_screen)
   screen_clear(p_screen);
   screen_printf_row(p_screen, 3, "      Screen Off");
   screen_refresh();
+
+
 }
 
 void screen_on(screen_page_t* p_screen)
 {
+
   screen_clear(p_screen);
   screen_printf_row(p_screen, 3, "      Screen On");
   screen_refresh();
