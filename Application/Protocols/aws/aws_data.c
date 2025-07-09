@@ -399,5 +399,12 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->soil_temperature_5cm.enable = 1;
   p_kma_data->soil_temperature_10cm.enable = 1;
 
+  p_kma_data->soil_temperature_20cm.enable = 1;
+  p_kma_data->soil_temperature_30cm.enable = 1;
+  p_kma_data->soil_temperature_50cm.enable = 1;
+  p_kma_data->soil_temperature_1m.enable = 1;
+  p_kma_data->soil_temperature_1_5m.enable = 1;
+  p_kma_data->soil_temperature_3m.enable = 1;
+
   return p_kma_data;
 }

@@ -1,155 +1,195 @@
 #include "lcd_driver.h"
-#include <string.h>
+
 #include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
 
-#include "app_button.h"
+
 #include "app_lcd.h"
-
 #include "cli_key_code.h"
-void lcd_clear(void)
+
+#define MAX_COLS 100
+
+
+
+void screen_set_cursor(int row, int col)
 {
-	clcd_clear();
+  clcd_set_position(row,col);
 }
 
-void lcd_set_cursor(int row, int col)
+
+void screen_create(screen_t* win, int rows, int cols)
 {
-	clcd_set_position(row,col);
+  win->current_row = 0;
+  win->view_row = rows;
+
+  win->view_col = cols;
+
+  if (cols > MAX_COLS)
+  {
+    win->view_col = MAX_COLS;
+  }
+
+  win->current_page = 0;
+  win->total_pages = 1;
+  
+  for (int i = 0; i < SCREEN_PAGE_MAX; i++)
+  {
+    win->scroll_offset[i] = 0;
+    win->total_items[i] = 0;
+  }
 }
 
-void lcd_write_char(char c)
+void screen_print_row(screen_t* win, int row_index, const char* text)
 {
-	char buff[2]={0,0};
+  int display_row;
+  int cols;
+  int i;
+  int text_len;
+  int page;
+  
+  cols = win->view_col;
 
-	buff[0] = c;
+  if (win->current_row >= win->view_row)
+    return;
+  
+  page = win->current_page;
+  
 
-	clcd_write_string(buff);
-}
-
-void lcd_write_string(const char* str)
-{
-	clcd_write_string(str);
-}
-
-// LCD 윈도우 관리 함수들
-void lcd_create_win(lcd_win_t* win)
-{
-	win->current_row = 0;
-	win->view_row = LCD_ROWS;
-	win->view_col = LCD_COLS;
-	win->current_page = 0;
-	win->total_pages = 1;
-	
-	for (int i = 0; i < LCD_PAGE_MAX; i++) {
-		win->scroll_offset[i] = 0;
-		win->total_items[i] = 0;
-	}
-}
-
-void lcd_clear_win(lcd_win_t* win)
-{
-	lcd_clear();
-	win->current_row = 0;
-}
-
-void lcd_print_row(lcd_win_t* win, int row_index, const char* text)
-{
-	if (win->current_row >= win->view_row)
-		return;
-	
-	int page = win->current_page;
-	
-	// 스크롤 범위 체크
-	if (row_index >= win->scroll_offset[page] && 
-		row_index < win->scroll_offset[page] + win->view_row) {
-		
-		int display_row = row_index - win->scroll_offset[page];
-		
-		// 커서를 해당 행으로 이동
-		lcd_set_cursor(display_row, 0);
-		
-		// 텍스트를 LCD 너비에 맞게 조정
-		char display_text[LCD_COLS + 1];
-		memset(display_text, ' ', LCD_COLS);
-		display_text[LCD_COLS] = '\0';
-		
-		// 텍스트 복사 (LCD 너비 초과하면 잘림)
-		int text_len = strlen(text);
-		int copy_len = (text_len > LCD_COLS) ? LCD_COLS : text_len;
-		memcpy(display_text, text, copy_len);
-		
-		// LCD에 출력
-		//lcd_write_string(display_text);
-		
-    for(int i = 0 ; i< LCD_COLS;i++)
+  if (row_index >= win->scroll_offset[page] && 
+    row_index < win->scroll_offset[page] + win->view_row)
     {
-      //clcd_put_ch(display_row,i,' ');
-      clcd_put_ch(display_row,i,display_text[i]);
-    }
+       display_row = row_index - win->scroll_offset[page];
     
-		win->current_row++;
-	}
+      screen_set_cursor(display_row, 0);
+
+      text_len = strlen(text);
+
+      for ( i = 0; i < text_len; i++)
+      {
+        clcd_put_ch(display_row, i, text[i]);
+      }
+
+      for ( i = text_len; i < cols; i++)
+      {
+        clcd_put_ch(display_row, i,' ');
+      }
+
+    win->current_row++;
+  }
 }
 
-void lcd_refresh_win(lcd_win_t* win)
+
+
+void screen_printf_row(screen_t* win, int row_index, const char* format, ...)
 {
-	// LCD 전체 새로고침
-	lcd_clear();
-	win->current_row = 0;
+  char s_format_buffer[MAX_COLS];  // 정적 버퍼 크기는 필요에 따라 조정
+  va_list args;
+  int display_row;
+  int cols;
+  int i;
+  int text_len;
+  int page;
+
+  if (win->current_row >= win->view_row)
+  {
+    return;
+  }
+
+  // 가변 인자를 문자열로 포맷팅
+  va_start(args, format);
+  vsnprintf(s_format_buffer, sizeof(s_format_buffer), format, args);
+  va_end(args);
+
+  cols = win->view_col;
+  page = win->current_page;
+
+
+  if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + win->view_row)
+  {
+    display_row = row_index - win->scroll_offset[page];
+
+    screen_set_cursor(display_row, 0);
+
+    text_len = strlen(s_format_buffer);
+
+    // 텍스트 출력
+    for (i = 0; i < text_len && i < cols; i++)
+    {
+      clcd_put_ch(display_row, i, s_format_buffer[i]);
+    }
+
+    // 나머지 공간을 공백으로 채움
+    for (i = text_len; i < cols; i++)
+    {
+      clcd_put_ch(display_row, i, ' ');
+    }
+
+    win->current_row++;
+  }
 }
 
-void lcd_handle_scroll(lcd_win_t* win, int key)
+
+
+void screen_clear_row(screen_t* win, int row_index)
 {
-	int page = win->current_page;
-	
-	switch (key) {
-          case '8':  // 위로 스크롤
-            if (win->scroll_offset[page] > 0)
-            {
-              win->scroll_offset[page] -= win->view_row;
-              if (win->scroll_offset[page] < 0)
-              {
-                win->scroll_offset[page] = 0;
-              }
-            }
-            break;
+  int i;
+  int display_row;
+  int page = win->current_page;
 
-          case '2':  // 아래로 스크롤
-            if (win->scroll_offset[page] + win->view_row < win->total_items[page])
-            {
-              win->scroll_offset[page] += win->view_row;
-              if (win->scroll_offset[page] + win->view_row > win->total_items[page])
-              {
-                win->scroll_offset[page] = win->total_items[page] - win->view_row;
-                if (win->scroll_offset[page] < 0)
-                {
-                  win->scroll_offset[page] = 0;
-                }
-              }
-            }
-            break;
+  if (win->current_row >= win->view_row)
+  {
+    return;
+  }
 
-          case '4':  // 이전 페이지
-            if (win->current_page > 0)
-            {
-              win->current_page--;
-            }
-            break;
+  display_row = row_index - win->scroll_offset[page];
 
-          case '6':  // 다음 페이지
-            if (win->current_page < win->total_pages - 1)
-            {
-              win->current_page++;
-            }
-            break;
-	}
+
+  // 나머지 공간을 공백으로 채움
+  for (i = 0; i < win->view_col; i++)
+  {
+    clcd_put_ch(display_row, i, ' ');
+  }
+    win->current_row++;
 }
 
-int lcd_get_key_input(uint32_t timeout_ms)
-{
-	int key;
+  void screen_handle_scroll(screen_t * win, int key)
+  {
+    int page = win->current_page;
+    int new_offset = 0;
 
-        key = get_button_key(timeout_ms);
+    switch (key)
+    {
+      case '8':  // 위로 스크롤
+        if (win->scroll_offset[page] > 0)
+        {
+          win->scroll_offset[page] -= win->view_row;
+          if (win->scroll_offset[page] < 0)
+          {
+            win->scroll_offset[page] = 0;
+          }
+        }
+        break;
+      case '2':  // 아래로 스크롤
+        new_offset = win->scroll_offset[page] + win->view_row;
 
-        return key;
-
+        if (new_offset < win->total_items[page])
+        {
+          win->scroll_offset[page] = new_offset;
+        }
+        break;
+      case '4':  // 이전 페이지
+       if (win->current_page > 0)
+       {
+          win->current_page--;
+       }
+       break;
+       case '6':  // 다음 페이지
+       if (win->current_page < win->total_pages - 1)
+       {
+          win->current_page++;
+       }
+       break;
+  }
 }
+

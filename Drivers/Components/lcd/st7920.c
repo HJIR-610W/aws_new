@@ -446,6 +446,8 @@ driver_t *st7920_open(void)
     st7920_driver.api = &lcd_api;
 
     st7920_reset(&st7920_driver);
+
+    st7920_set_mode(&st7920_driver,eLCD_MODE_GRAPHIC);
     
     return &st7920_driver;
 }

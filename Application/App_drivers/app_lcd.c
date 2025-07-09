@@ -90,7 +90,7 @@ void clcd_set_pixel( uint8_t x, uint8_t y, bool on)
 
 extern void st7920_flush_buffer(driver_t *drv);
 
-void clcd_flush_buffer(void)
+void clcd_refresh(void)
 {
   st7920_flush_buffer(p_s_lcd);
 }

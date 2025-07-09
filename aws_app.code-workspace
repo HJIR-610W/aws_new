@@ -42,7 +42,10 @@
 			"driver_uart.h": "c",
 			"cmsis_os2.h": "c",
 			"view_driver.h": "c",
-			"stdbool.h": "c"
+			"stdbool.h": "c",
+			"stdio.h": "c",
+			"lcd_driver.h": "c",
+			"app_button.h": "c"
 		}
 	}
 }
