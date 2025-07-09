@@ -41,12 +41,30 @@ typedef struct
   int chunk_scroll_use;
 } screen_page_t;
 
+
+typedef struct
+{
+  int current_row;
+  int view_row;
+  int view_col;
+  int scroll_offset;
+  int total_items;
+  int selected_index;
+} screen_menu_t;
+
+
+
 void screen_init(void);
-void screen_clear(screen_page_t* p_win);
+void screen_clear(int rows,int cols);
 void screen_page_create(screen_page_t* win, int rows, int cols);
 void screen_printf_row(screen_page_t* win, int row_index, const char* format, ...);
 void screen_clear_row(screen_page_t* win, int row_index);
 void screen_handle_scroll(screen_page_t* win, int key);
+void screen_menu_handle(screen_menu_t* win, int key);
 void screen_off(screen_page_t* p_screen);
 void screen_on(screen_page_t* p_screen);
+void screen_menu_create(screen_menu_t* win, int rows, int cols);
+void screen_menu_clear(screen_menu_t* win);
+void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* format, ...);
+void screen_menu_clear_row(screen_menu_t* win, int row_index);
 #endif
