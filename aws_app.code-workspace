@@ -50,7 +50,8 @@
 			"menu_system.h": "c",
 			"stdint.h": "c",
 			"stdarg.h": "c",
-			"bsp.h": "c"
+			"bsp.h": "c",
+			"menu_handler.h": "c"
 		}
 	}
 }

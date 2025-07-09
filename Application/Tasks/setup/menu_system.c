@@ -11,11 +11,15 @@
 #include "config_app.h"
 #include "menu_handler.h"
 #include "bsp_rtc.h"
+#include "console_utile.h"
 
 #define SCREEN_COLS 20
-#define SYSTEM_WD 5
+#define SYSTEM_WD 8
 
 #define MENU_PRINTF screen_menu_printf_row
+
+const char* g_chargerList_lcd[] = {"SMART", "LS1024"};
+
 
 //DATE:2025-11-11
 //TIME:00:00:00
@@ -33,6 +37,10 @@ void draw_menu_system_page(screen_menu_t* p_win)
               Date_Time.Sec);
 
   MENU_PRINTF(p_win, row_count++, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
+  MENU_PRINTF(p_win, row_count++, "%-*s:%d", SYSTEM_WD, "PASS", get_config_app()->password);
+  MENU_PRINTF(p_win, row_count++, "%-*s:%s", SYSTEM_WD, "CHARGER",
+              ITEM_LIST(get_config_app()->charger_model, g_chargerList_lcd));
+
   p_win->total_items = row_count;
 
   while (p_win->current_row < p_win->view_row)
@@ -46,6 +54,7 @@ void draw_menu_system_page(screen_menu_t* p_win)
 
 int32_t menu_system(void)
 {
+  int32_t choice;
   int32_t status;
   int32_t key;
   int32_t page_count = 0;
@@ -117,11 +126,28 @@ int32_t menu_system(void)
         if(status !=MENU_OK)
           break;
         config.id = val;
-
-
+        WRITE_CFG(id);
       }
         break;
-      
+      case 3:
+      {
+        int val = get_config_app()->password;
+
+        status = input_decimal("ID", 0, 65535, &val, SIGN_DISABLE);
+        if (status != MENU_OK)
+          break;
+        config.password = val;
+        WRITE_CFG(password);
+      }
+      break;
+      case 4:
+      {
+        status = print_menu_list(g_chargerList_lcd,_countof(g_chargerList_lcd),&choice);
+        if (status != MENU_OK)
+          break;
+      config.charger_model = (eCHARGER_MODEL_t)choice;
+      WRITE_CFG(charger_model);
+      }
       default:
         break;
       }

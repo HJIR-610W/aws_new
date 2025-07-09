@@ -34,6 +34,7 @@ int32_t print_menu_list(const char* menu_list[], int32_t menu_count, int* choice
   int scroll_offset = 0;
   int max_display_rows = (menu_count < MAX_ROWS) ? menu_count : MAX_ROWS;
 
+  screen_clear(MAX_ROWS,MAX_COLS);
   while (true)
   {
     for (int i = 0; i < max_display_rows; i++)
