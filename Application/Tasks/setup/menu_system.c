@@ -10,9 +10,10 @@
 #include "app_button.h"
 #include "config_app.h"
 #include "menu_handler.h"
+#include "bsp_rtc.h"
 
 #define SCREEN_COLS 20
-#define SYSTEM_WD 10
+#define SYSTEM_WD 5
 
 #define MENU_PRINTF screen_menu_printf_row
 
@@ -65,6 +66,49 @@ int32_t menu_system(void)
     {
       switch (menu.selected_index)
       {
+        case 0:
+        {
+          string_fmt_t strfmt;
+          DATE_TIME_BUF nt;
+          strfmt.fmt = "%04d-%02d-%02d";
+          snprintf(strfmt.data, sizeof(strfmt.data), "%04d-%02d-%02d",Date_Time.Year,Date_Time.Month,Date_Time.Day);
+          status = input_fmt(&strfmt, "DATE");
+          if (status != MENU_OK)
+            break;
+          int year;
+          int month;
+          int day;
+          sscanf(strfmt.data, strfmt.fmt,&year,&month,&day);
+          nt =Date_Time;
+          nt.Year = year;
+          nt.Month = month;
+          nt.Day = day;
+          bsp_rtc_set(&nt);
+          bsp_rtc_update();
+        }
+        break;
+      case 1:
+      {
+        string_fmt_t strfmt;
+        DATE_TIME_BUF nt;
+        strfmt.fmt = "%02d:%02d:%02d";
+        snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, Date_Time.Hour, Date_Time.Min,
+                 Date_Time.Sec);
+        status = input_fmt(&strfmt, "TIME");
+        if (status != MENU_OK)
+          break;
+        int hour;
+        int min;
+        int sec;
+        sscanf(strfmt.data, strfmt.fmt, &hour, &min, &sec);
+        nt = Date_Time;
+        nt.Hour = hour;
+        nt.Min = min;
+        nt.Sec = sec;
+        bsp_rtc_set(&nt);
+        bsp_rtc_update();
+      }
+      break;
       case 2:
       {
         int val = get_config_app()->id;

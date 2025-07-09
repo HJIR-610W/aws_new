@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 
 #include "menu_handler.h"
 #include "app_button.h"
@@ -13,6 +14,13 @@
 #include "util_memory.h"
 #define MAX_ROWS 8
 #define MAX_COLS 20
+#define MAX_FIELDS 6
+
+typedef struct
+{
+  int start;
+  int len;
+} fmt_field_t;
 
 int32_t print_menu_list(const char* menu_list[], int32_t menu_count, int* choice)
 {
@@ -266,5 +274,193 @@ int32_t input_decimal(const char *title, int min, int max, int *val,int sign_use
         return MENU_ABORT;
       }
 
+  }
+}
+
+int input_fmt(string_fmt_t* strfmt, const char* title)
+{
+  fmt_field_t fields[MAX_FIELDS];
+  int field_count = 0;
+  int fmt_len;
+  const char* fmt;
+  int data_index = 0;
+  char display[21];
+  int i, j, width;
+  int current_field = 0;
+  int cursor_pos = 0;
+  uint32_t last_blink;
+  int blink_state = 1;
+  int32_t key;
+  int f;
+  
+  if (strfmt == NULL || title == NULL || strfmt->fmt == NULL)
+  {
+    return MENU_ERROR;
+  }
+  
+  fmt_len = strlen(strfmt->fmt);
+  fmt = strfmt->fmt;
+  memset(display, 0, sizeof(display));
+  
+  screen_clear(MAX_ROWS, MAX_COLS);
+  
+  // Format string 파싱하여 편집 가능한 필드들 찾기
+  for (i = 0; i < fmt_len && data_index < (int)sizeof(display) - 1; i++)
+  {
+    if (fmt[i] == '%')
+    {
+      width = 0;
+      i++;
+      while (i < fmt_len && isdigit(fmt[i]))
+      {
+        width = width * 10 + (fmt[i] - '0');
+        i++;
+      }
+      if (i < fmt_len && fmt[i] == 'd')
+      {
+        if (field_count < MAX_FIELDS)
+        {
+          fields[field_count].start = data_index;
+          fields[field_count].len = width;
+          // 기본값으로 0으로 채우기
+          for (j = 0; j < width && data_index < (int)sizeof(display) - 1; j++)
+          {
+            display[data_index++] = '0';
+          }
+          field_count++;
+        }
+      }
+    }
+    else
+    {
+      if (data_index < (int)sizeof(display) - 1)
+      {
+        display[data_index++] = fmt[i];
+      }
+    }
+  }
+  display[data_index] = '\0';
+  
+  // 기존 데이터가 있으면 복사
+  if (strfmt->data[0] != '\0')
+  {
+    strncpy(display, strfmt->data, sizeof(display) - 1);
+    display[sizeof(display) - 1] = '\0';
+  }
+  
+  // 첫 번째 필드에 커서 위치
+  cursor_pos = (field_count > 0) ? fields[current_field].start : 0;
+  last_blink = OS_GET_TICK();
+  
+  while (1)
+  {
+    // 화면 출력
+    screen_printf(0, 0, "%s", title);
+    screen_printf(1, 0, "%s", display);
+    screen_printf(2, 0, "Field: %d/%d", current_field + 1, field_count);
+    screen_printf(3, 0, "Cursor: %d", cursor_pos);
+    
+    // 커서 깜빡임 처리 (500ms 간격)
+    if (OS_GET_TICK() - last_blink >= 500)
+    {
+      last_blink = OS_GET_TICK();
+      blink_state = !blink_state;
+    }
+    
+    // 커서 위치의 문자만 깜빡이게 표시
+    if (cursor_pos < (int)strlen(display))
+    {
+      char display_char = blink_state ? display[cursor_pos] : ' ';
+      screen_put_ch(1, cursor_pos, display_char);
+    }
+    
+    screen_refresh();
+    
+    key = get_button_key(10);
+    if (key == -1) continue;
+    
+    // 키 입력 시 커서 즉시 표시
+    blink_state = 1;
+    last_blink = OS_GET_TICK();
+    screen_printf(1, 0, "%s", display);
+    
+    switch (key)
+    {
+      case SCREEN_KEY_LEFT:
+        // 이전 편집 가능한 필드로 이동
+        do {
+          if (cursor_pos > 0) cursor_pos--;
+          else break;
+          for (f = 0; f < field_count; f++)
+          {
+            if (cursor_pos >= fields[f].start && cursor_pos < fields[f].start + fields[f].len)
+            {
+              current_field = f;
+              goto left_done;
+            }
+          }
+        } while (1);
+        left_done:;
+        break;
+        
+      case SCREEN_KEY_RIGHT:
+        // 다음 편집 가능한 필드로 이동
+        do {
+          if (cursor_pos < (int)strlen(display) - 1) cursor_pos++;
+          else break;
+          for (f = 0; f < field_count; f++)
+          {
+            if (cursor_pos >= fields[f].start && cursor_pos < fields[f].start + fields[f].len)
+            {
+              current_field = f;
+              goto right_done;
+            }
+          }
+        } while (1);
+        right_done:;
+        break;
+        
+      case KEY_CODE_ENTER:
+        // 데이터 저장 및 콜백 호출
+        if (strfmt->data != NULL)
+        {
+          strncpy(strfmt->data, display, sizeof(strfmt->data) - 1);
+          strfmt->data[sizeof(strfmt->data) - 1] = '\0';
+        }
+        return MENU_OK;
+        
+      case KEY_CODE_CTRL_C:
+        return MENU_BACK;
+        
+      case KEY_CODE_CTRL_Q:
+        return MENU_ABORT;
+        
+      default:
+        // 숫자 입력 처리
+        if (key >= '0' && key <= '9')
+        {
+          if (current_field < field_count && 
+              cursor_pos >= fields[current_field].start &&
+              cursor_pos < fields[current_field].start + fields[current_field].len)
+          {
+            display[cursor_pos] = (char)key;
+            screen_put_ch(1, cursor_pos, display[cursor_pos]);
+            
+            // 다음 위치로 커서 이동
+            if (!(current_field == field_count - 1 && 
+                  cursor_pos == fields[current_field].start + fields[current_field].len - 1))
+            {
+              cursor_pos++;
+              if (cursor_pos >= fields[current_field].start + fields[current_field].len && 
+                  current_field < field_count - 1)
+              {
+                current_field++;
+                cursor_pos = fields[current_field].start;
+              }
+            }
+          }
+        }
+        break;
+    }
   }
 }
