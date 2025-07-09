@@ -42,11 +42,11 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>2094353778</Checksum>
+        <Checksum>3251253368</Checksum>
     </DebugChecksum>
     <Disassembly>
-        <InstrCount>0</InstrCount>
         <MixedMode>1</MixedMode>
+        <InstrCount>0</InstrCount>
     </Disassembly>
     <CodeCoverage>
         <Enabled>0</Enabled>
@@ -169,8 +169,7 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\task_menu.c}.1138.3" 0 0 1 "" 0 "" 0</Bp0>
-        <Count>1</Count>
+        <Count>0</Count>
     </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>

@@ -9,24 +9,31 @@ extern "C" {
   
 #define SCREEN_PAGE_MAX 10
 
-typedef struct
-{
-	int current_row;
-	int view_row;
-	int view_col;
-	int scroll_offset[SCREEN_PAGE_MAX];
-	int total_items[SCREEN_PAGE_MAX];
-	int current_page;
-	int total_pages;
-} screen_t;
+  typedef enum
+  {
+    SCREEN_STATE_OFF,
+    SCREEN_STATE_ON
+  } eSCREEN_STATE_t;
 
+  typedef struct
+  {
+    int current_row;
+    int view_row;
+    int view_col;
+    int scroll_offset[SCREEN_PAGE_MAX];
+    int total_items[SCREEN_PAGE_MAX];
+    int current_page;
+    int total_pages;
+  } screen_t;
+
+	void screen_clear(screen_t *p_win);
 void screen_create(screen_t* win,int rows,int cols);
 void screen_print_row(screen_t* win, int row_index, const char* text);
 void screen_printf_row(screen_t* win, int row_index, const char* format, ...);
 void screen_clear_row(screen_t* win, int row_index);
 void screen_handle_scroll(screen_t* win, int key);
-
-
+void screen_off(screen_t* p_screen);
+void screen_on(screen_t* p_screen);
 #ifdef __cplusplus
 }
 #endif

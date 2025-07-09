@@ -27,6 +27,8 @@
 #include "time_define.h"
 #include "util_time.h"
 #include "view_driver.h"
+#include "pcb_define.h"
+#include "os_user_def.h"
 
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
 extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용
@@ -36,17 +38,20 @@ extern const char *generalStatusList[2];
 
 #define SCREEN_COLS 20
 #define SCREEN_ROWS 8
+#define SCREEN_OFF_TIMEOUT_MS 10000
 
-const char *doorStatusList_lcd[2]={"CLOSED","OPENED"};
+
+
+    const char *doorStatusList_lcd[2] = {"CLOSED", "OPENED"};
 const char *linkStatusList_lcd[3] = {"-", "UP", "DOWN"};
 const char *ethlinkStatusList_lcd[3] = {"-", "U", "D"};
-
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
     .stack_size = 2048,
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
 
+eSCREEN_STATE_t g_screen_state = SCREEN_STATE_ON;
 
 void make_centered(char *buffer, size_t buf_size, const char *text, int width)
 {
@@ -1100,43 +1105,52 @@ static const uint8_t s_hwajin_logo[64][16] = {
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 };
 
+
+void print_logo(void)
+{
+  uint8_t data;
+  for (int row = 0; row < 64; row++)
+  {
+    for (int col = 0; col < 16; col++)
+    {
+      data = s_hwajin_logo[row][col];
+
+      for (int b = 0; b < 8; b++)
+      {
+        if (data & (0x80 >> b))
+        {
+          clcd_set_pixel(col * 8 + b, row, 1);
+        }
+        else
+        {
+          clcd_set_pixel(col * 8 + b, row, 0);
+        }
+      }
+    }
+  }
+  clcd_refresh();
+}
 /*
 화면이 페이지이다
 LEFT,RIGHT로 페이지 전환
 UP,DOWN으로 페이지 스크롤
 */
-void menuTask(void *arg){
-      
-      int32_t key;
-int32_t page_count = 0;
-int32_t page_list[PAGE_MAX];
-screen_t lcd_win;
-uint8_t data;
-clcd_init();
-
-for (int row = 0; row < 64; row++)
+void menuTask(void *arg)
 {
-  for (int col = 0; col < 16; col++)
-  {
-    data = s_hwajin_logo[row][col];
+  int32_t key;
+  int32_t page_count = 0;
+  int32_t page_list[PAGE_MAX];
+  screen_t lcd_win;
+  uint32_t start_time;
 
-    for (int b = 0; b < 8; b++)
-    {
-      if (data & (0x80 >> b))
-      {
-        clcd_set_pixel(col*8+b,row,1);
-      }
-      else
-      {
-        clcd_set_pixel(col * 8 + b,row, 0);
-      }
-    }
-  }
-  }
-  clcd_refresh();
+  clcd_init();
+
+  print_logo();
+
   osDelay(1000);
   screen_create(&lcd_win,SCREEN_ROWS,SCREEN_COLS);
-  
+
+  start_time = OS_GET_TICK();
   while (1)
   {
     page_count = 0;
@@ -1209,14 +1223,31 @@ for (int row = 0; row < 64; row++)
     else if (key != -1)
     {
       screen_handle_scroll(&lcd_win, key);
+      start_time = OS_GET_TICK();
+
     }
-  }
+
+    if ((OS_GET_TICK() - start_time) > SCREEN_OFF_TIMEOUT_MS)
+    {
+      g_screen_state = SCREEN_STATE_OFF;
+      screen_off(&lcd_win);
+    }
+
+    while (g_screen_state == SCREEN_STATE_OFF)
+    {
+      key = get_button_key(100);
+      if (key == KEY_CODE_ENTER)
+      {
+        screen_on(&lcd_win);
+        g_screen_state = SCREEN_STATE_ON;
+        start_time = OS_GET_TICK();
+      }
+    }
+    }
 }
 
 void menuTask_init(void)
 {
-
-
   osThreadNew(menuTask, NULL, &kMenuTask_attributes);
 }
 

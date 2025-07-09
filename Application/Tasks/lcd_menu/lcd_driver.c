@@ -7,7 +7,7 @@
 
 #include "app_lcd.h"
 #include "cli_key_code.h"
-
+#include "cmsis_os2.h"
 #define MAX_COLS 100
 
 
@@ -17,6 +17,20 @@ void screen_set_cursor(int row, int col)
   clcd_set_position(row,col);
 }
 
+
+void screen_clear(screen_t *p_win)
+{
+  for(int row = 0 ; row <p_win->view_row;row++)
+  {
+    for (int i = 0; i < p_win->view_col; i++)
+    {
+      clcd_put_ch(row, i, ' ');
+    }
+  }
+
+  p_win->current_row = 0;
+
+}
 
 void screen_create(screen_t* win, int rows, int cols)
 {
@@ -193,3 +207,19 @@ void screen_clear_row(screen_t* win, int row_index)
   }
 }
 
+
+
+void screen_off(screen_t *p_screen)
+{
+  screen_clear(p_screen);
+  screen_printf_row(p_screen, 3, "      Screen Off");
+  clcd_refresh();
+}
+
+void screen_on(screen_t* p_screen)
+{
+  screen_clear(p_screen);
+  screen_printf_row(p_screen, 3, "      Screen On");
+  clcd_refresh();
+  osDelay(1000);
+}
