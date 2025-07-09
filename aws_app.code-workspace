@@ -45,7 +45,11 @@
 			"stdbool.h": "c",
 			"stdio.h": "c",
 			"lcd_driver.h": "c",
-			"app_button.h": "c"
+			"app_button.h": "c",
+			"app_screen.h": "c",
+			"menu_system.h": "c",
+			"stdint.h": "c",
+			"stdarg.h": "c"
 		}
 	}
 }

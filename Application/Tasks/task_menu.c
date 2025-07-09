@@ -27,7 +27,7 @@
 #include "view_driver.h"
 #include "pcb_define.h"
 #include "os_user_def.h"
-
+#include "setup\menu_setup.h"
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
 extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용
 extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
@@ -1148,6 +1148,8 @@ void menuTask(void *arg)
 
   screen_page_create(&lcd_win,SCREEN_ROWS,SCREEN_COLS);
 
+  lcd_win.chunk_scroll_use = 1;
+  lcd_win.multi_page_use = 1;
   start_time = OS_GET_TICK();
   while (1)
   {
@@ -1214,9 +1216,9 @@ void menuTask(void *arg)
 
     key =  get_button_key(1000);
 
-    if (key == KEY_CODE_ESC)
+    if (key == KEY_CODE_CTRL_A)
     {
-      config_set_menu();
+      setup_root();
     }
     else if (key != -1)
     {

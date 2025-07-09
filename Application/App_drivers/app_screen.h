@@ -19,15 +19,14 @@ void screen_set_mode(eLCD_MODE_t lcd_mode);
 void screen_set_pixel( uint8_t x, uint8_t y, bool on);
 void screen_refresh(void);
 void screen_put_ch(int row, int col, uint8_t ch);
-
+void screen_printf(int row, int col, const char* format, ...);
 
 #define SCREEN_PAGE_MAX 10
 
-typedef enum
-{
-  SCREEN_STATE_OFF,
-  SCREEN_STATE_ON
-} eSCREEN_STATE_t;
+    typedef enum {
+      SCREEN_STATE_OFF,
+      SCREEN_STATE_ON
+    } eSCREEN_STATE_t;
 
 typedef struct
 {
@@ -38,6 +37,8 @@ typedef struct
   int total_items[SCREEN_PAGE_MAX];
   int current_page;
   int total_pages;
+  int multi_page_use;
+  int chunk_scroll_use;
 } screen_page_t;
 
 void screen_init(void);

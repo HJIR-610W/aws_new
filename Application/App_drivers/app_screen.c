@@ -7,7 +7,8 @@
 #include "driver_lcd.h"
 #include "cmsis_os2.h"
 
-#define MAX_COLS 100
+#define MAX_COLS 21
+
 
 static driver_t *p_s_lcd = NULL;
 
@@ -93,6 +94,32 @@ void screen_page_create(screen_page_t* win, int rows, int cols)
   }
 }
 
+void screen_printf(int row, int col, const char* format, ...)
+{
+  char s_format_buffer[MAX_COLS];  // 정적 버퍼 크기는 필요에 따라 조정
+  va_list args;
+  int i;
+  int len;
+  va_start(args, format);
+  vsnprintf(s_format_buffer, sizeof(s_format_buffer), format, args);
+  va_end(args);
+
+  screen_set_cursor(row, col);
+
+  len = strlen(s_format_buffer);
+
+  // 텍스트 출력
+  for (i = 0; i < len && i < MAX_COLS; i++)
+  {
+    screen_put_ch(row, col+i, s_format_buffer[i]);
+  }
+
+  // 나머지 공간을 공백으로 채움
+  for (i = len; i < MAX_COLS; i++)
+  {
+    screen_put_ch(row, i, ' ');
+  }
+}
 
 void screen_printf_row(screen_page_t* win, int row_index, const char* format, ...)
 {
@@ -172,7 +199,13 @@ void screen_handle_scroll(screen_page_t* win, int key)
     case '8':  // 위로 스크롤
       if (win->scroll_offset[page] > 0)
       {
+        if(win->chunk_scroll_use)
+        {
         win->scroll_offset[page] -= win->view_row;
+        }
+        else{
+          win->scroll_offset[page] -= 1;
+        }
         if (win->scroll_offset[page] < 0)
         {
           win->scroll_offset[page] = 0;
@@ -180,7 +213,15 @@ void screen_handle_scroll(screen_page_t* win, int key)
       }
       break;
     case '2':  // 아래로 스크롤
-      new_offset = win->scroll_offset[page] + win->view_row;
+      if(win->chunk_scroll_use)
+      {
+        new_offset = win->scroll_offset[page] + win->view_row;
+      }
+      else
+      {
+        new_offset = win->scroll_offset[page] + 1;
+      }
+
 
       if (new_offset < win->total_items[page])
       {
@@ -188,15 +229,18 @@ void screen_handle_scroll(screen_page_t* win, int key)
       }
       break;
     case '4':  // 이전 페이지
-      if (win->current_page > 0)
-      {
-        win->current_page--;
-      }
+        if (win->multi_page_use&&(win->current_page > 0))
+        {
+          win->current_page--;
+        }
       break;
     case '6':  // 다음 페이지
-      if (win->current_page < win->total_pages - 1)
+      if (win->multi_page_use)
       {
-        win->current_page++;
+        if (win->current_page < win->total_pages - 1)
+        {
+          win->current_page++;
+        }
       }
       break;
   }
