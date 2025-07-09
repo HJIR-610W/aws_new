@@ -77,20 +77,19 @@ static uint8_t framebuffer[ST7920_HEIGHT][ST7920_WIDTH / 8];  // 그래픽 모�
 
 static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode);
 static void st7920_write_string_api(driver_t *drv, const char *str);
+void st7920_flush_buffer(driver_t *drv);
 
-lcd_api_t lcd_api = {
-    .set_position = st7920_set_position,
-    .write_string = st7920_write_string_api,
-    .write_string_at = st7920_write_string,
-    .clear_screen = st7920_clear_screen,
-    .home = st7920_home,
-    .display_on = st7920_display_on,
-    .display_off = st7920_display_off,
-    .set_mode = st7920_set_mode,
-    .set_pixel = st7920_set_pixel,
-    .draw_line = st7920_draw_line
-};
-
+lcd_api_t lcd_api = {.set_position = st7920_set_position,
+                     .write_string = st7920_write_string_api,
+                     .write_string_at = st7920_write_string,
+                     .clear_screen = st7920_clear_screen,
+                     .home = st7920_home,
+                     .display_on = st7920_display_on,
+                     .display_off = st7920_display_off,
+                     .set_mode = st7920_set_mode,
+                     .set_pixel = st7920_set_pixel,
+                     .draw_line = st7920_draw_line,
+                     .flush = st7920_flush_buffer};
 
 inline void st7920_delay_ms(uint32_t ms)
 {

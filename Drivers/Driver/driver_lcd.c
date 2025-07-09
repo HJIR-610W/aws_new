@@ -126,3 +126,16 @@ void driver_lcd_write_string_at(driver_t *drv, int row, int col, const char *str
   if(api->write_string_at != NULL)
     api->write_string_at(drv, row, col, str);
 }
+
+
+void driver_lcd_flush(driver_t *drv)
+{
+  if (drv == NULL )
+    return;
+
+  lcd_api_t *api = (lcd_api_t *)drv->api;
+
+  if(api->flush)
+  api->flush(drv);
+
+}

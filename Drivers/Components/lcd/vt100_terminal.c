@@ -36,8 +36,9 @@ typedef struct {
 static vt100_terminal_t vt100_instance;
 static driver_t vt100_driver;
 
+static uint8_t framebuffer[VT100_DEFAULT_ROWS][VT100_DEFAULT_COLS];  
 
-
+void vt100_flush_buffer(driver_t *drv);
 void vt100_io_pirntf(driver_t *drv,const char *pFmt, ...)
 {
     vt100_terminal_t *vt100 = (vt100_terminal_t*)(drv->cfg);
@@ -149,15 +150,14 @@ static void vt100_write_string_at(driver_t *drv, int row, int col, const char *s
 }
 
 // VT100 터미널 LCD API 구조체
-static lcd_api_t vt100_lcd_api = {
-    .set_position = vt100_set_position,
-    .write_string = vt100_write_string,
-    .write_string_at = vt100_write_string_at,
-    .clear_screen = vt100_clear_screen,
-    .home = vt100_home,
-    .display_on = vt100_display_on,
-    .display_off = vt100_display_off
-};
+static lcd_api_t vt100_lcd_api = {.set_position = vt100_set_position,
+                                  .write_string = vt100_write_string,
+                                  .write_string_at = vt100_write_string_at,
+                                  .clear_screen = vt100_clear_screen,
+                                  .home = vt100_home,
+                                  .display_on = vt100_display_on,
+                                  .display_off = vt100_display_off,
+                                  .flush = vt100_flush_buffer};
 
 driver_t* vt100_terminal_open(void)
 {
@@ -190,4 +190,19 @@ driver_t* vt100_terminal_open(void)
     vt100_io_puts(&vt100_driver ,"\033[?25h");  // 커서 표시
 
     return &vt100_driver;
+}
+
+void vt100_flush_buffer(driver_t *drv)
+{
+  vt100_terminal_t *term = (vt100_terminal_t *)drv->cfg;
+  char buff[VT100_DEFAULT_COLS+1];
+
+
+  for (int row; row < VT100_DEFAULT_ROWS; row++)
+  {
+    vt100_set_position(drv, row, 0);
+    strncpy(buff, framebuffer[row], VT100_DEFAULT_COLS);
+    buff[VT100_DEFAULT_COLS] = 0;
+    vt100_io_puts(&vt100_driver, buff);
+  }
 }

@@ -9,14 +9,13 @@
 #include "../App_drivers/lcd/font_6x8.h"
 #include "app_button.h"
 #include "app_charger.h"
-#include "app_lcd.h"
+#include "app_screen.h"
 #include "aws_data.h"
 #include "bsp.h"
 #include "bsp_di.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "console_utile.h"
-#include "lcd_driver.h"
 #include "task_cellular.h"
 #include "task_client.h"
 #include "task_direct.h"
@@ -80,7 +79,7 @@ void make_centered(char *buffer, size_t buf_size, const char *text, int width)
 
 
 #define SYSTEM_WD 10
-void draw_system_page(screen_t* p_win)
+void draw_system_page(screen_page_t* p_win)
 {
   int row_count = 0;
   int page = p_win->current_page;
@@ -120,7 +119,7 @@ void draw_system_page(screen_t* p_win)
 }
 
 #define RAIN_WD 8
-void draw_rain_page(screen_t *p_win)
+void draw_rain_page(screen_page_t *p_win)
 {
   int row_count = 0;
   int page = p_win->current_page;
@@ -162,7 +161,7 @@ void draw_rain_page(screen_t *p_win)
 }
 
 #define CHARGER_WD 10
-void draw_charger_page(screen_t *p_win)
+void draw_charger_page(screen_page_t *p_win)
 {
   uint8_t err;
   int row_count = 0;
@@ -208,7 +207,7 @@ void draw_charger_page(screen_t *p_win)
 }
 
 #define CDMA_WD 15
-void draw_cdma_page(screen_t *p_win)
+void draw_cdma_page(screen_page_t *p_win)
 {
   int row_count = 0;
   int page = p_win->current_page;
@@ -284,7 +283,7 @@ void draw_cdma_page(screen_t *p_win)
 }
 
 #define DIRECT_WD 8
-void draw_direct_page(screen_t *p_win)
+void draw_direct_page(screen_page_t *p_win)
 {
   int row_count = 0;
   int page = p_win->current_page;
@@ -342,7 +341,7 @@ void draw_direct_page(screen_t *p_win)
 
 //:192.168.123.123
 #define ETH_WD 2
-void draw_ethernet_page(screen_t *p_win)
+void draw_ethernet_page(screen_page_t *p_win)
 {
   int row_count = 0;
   int page = p_win->current_page;
@@ -446,7 +445,7 @@ void draw_ethernet_page(screen_t *p_win)
 }
 
 #define AWS_WD 11
-void draw_aws_page(screen_t *p_win, eAWS_DATA_MIN_t min)
+void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
 {
   const char *aws_title_list[] = {"AVG", "1MIN", "10MIN", "HOUR", "RAW"};
   char err_buf[32];
@@ -1119,16 +1118,16 @@ void print_logo(void)
       {
         if (data & (0x80 >> b))
         {
-          clcd_set_pixel(col * 8 + b, row, 1);
+          screen_set_pixel(col * 8 + b, row, 1);
         }
         else
         {
-          clcd_set_pixel(col * 8 + b, row, 0);
+          screen_set_pixel(col * 8 + b, row, 0);
         }
       }
     }
   }
-  clcd_refresh();
+  screen_refresh();
   osDelay(1000);
 }
 /*
@@ -1141,14 +1140,14 @@ void menuTask(void *arg)
   int32_t key;
   int32_t page_count = 0;
   int32_t page_list[PAGE_MAX];
-  screen_t lcd_win;
+  screen_page_t lcd_win;
   uint32_t start_time;
 
   screen_init();
   
   print_logo();
 
-  screen_create(&lcd_win,SCREEN_ROWS,SCREEN_COLS);
+  screen_page_create(&lcd_win,SCREEN_ROWS,SCREEN_COLS);
 
   start_time = OS_GET_TICK();
   while (1)
@@ -1212,7 +1211,7 @@ void menuTask(void *arg)
     break;
     }
            
-    clcd_refresh();
+    screen_refresh();
 
     key =  get_button_key(1000);
 

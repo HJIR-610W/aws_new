@@ -1236,16 +1236,16 @@
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_fram.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\App_drivers\app_lcd.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Application\App_drivers\app_lcd.h</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_rs232.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\App_drivers\app_rs485.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_screen.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Application\App_drivers\app_screen.h</name>
             </file>
         </group>
         <group>
@@ -1906,12 +1906,6 @@
             </group>
             <group>
                 <name>lcd_menu</name>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Tasks\lcd_menu\lcd_driver.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Tasks\lcd_menu\lcd_driver.h</name>
-                </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\lcd_menu\view_driver.c</name>
                 </file>

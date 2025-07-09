@@ -25,4 +25,5 @@ void driver_lcd_display_off(driver_t *drv);
 void driver_lcd_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode);
 void driver_lcd_set_pixel(driver_t *drv, uint8_t x, uint8_t y, bool on);
 void driver_lcd_draw_line(driver_t *drv, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, bool on);
+void driver_lcd_flush(driver_t *drv);
 #endif
