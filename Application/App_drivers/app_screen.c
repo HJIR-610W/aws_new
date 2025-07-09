@@ -5,12 +5,10 @@
 #include <string.h>
 
 #include "driver_lcd.h"
-#include "lcd/font_6x8.h"
-#include "lcd/hangul_font.h"
 #include "cmsis_os2.h"
 
 #define MAX_COLS 100
-extern void st7920_flush_buffer(driver_t* drv);
+
 
 static driver_t *p_s_lcd = NULL;
 
@@ -84,37 +82,7 @@ void screen_refresh(void)
 
 void screen_put_ch(int row, int col, uint8_t ch)
 {
-    if(p_s_lcd == NULL) return;
-    
-    // Check if character is in printable range
-    if(ch < 0x20 || ch > 0x7E) return;
-    
-    // Calculate position in pixels (6x8 font)
-    int start_x = 1+col * FONT_6X8_WIDTH;
-    int start_y = row * FONT_6X8_HEIGHT;
-    
-    // Check bounds for 128x64 display
-    if(start_x + FONT_6X8_WIDTH > 128 || start_y + FONT_6X8_HEIGHT > 64) return;
-    
-    // Get character data from font table (ch - 0x20 gives index)
-    const uint8_t *char_data = font_6x8[ch - 0x20];
-    
-    // Draw character pixel by pixel
-    for (int y = 0; y < FONT_6X8_HEIGHT; y++)
-    {
-        uint8_t row_data = char_data[y];
-        for (int x = 0; x < FONT_6X8_WIDTH; x++)
-        {
-            if (row_data & (0x10 >> x))  // Check bit from bit 4 (6-bit font uses bits 4-0)
-            {
-                screen_set_pixel(start_x + x, start_y + y, 1);
-            }
-            else
-            {
-                screen_set_pixel(start_x + x, start_y + y, 0);
-            }
-        }
-    }
+    driver_lcd_put_ch(p_s_lcd,row,col,ch);
 }
 
 

@@ -139,3 +139,14 @@ void driver_lcd_flush(driver_t *drv)
   api->flush(drv);
 
 }
+
+void driver_lcd_put_ch(driver_t *drv, int row, int col, uint8_t ch)
+{
+  if (drv == NULL)
+    return;
+
+  lcd_api_t *api = (lcd_api_t *)drv->api;
+
+  if (api->put_ch)
+    api->put_ch(drv,row,col,ch);
+}

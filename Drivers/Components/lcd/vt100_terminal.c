@@ -39,6 +39,8 @@ static driver_t vt100_driver;
 static uint8_t framebuffer[VT100_DEFAULT_ROWS][VT100_DEFAULT_COLS];  
 
 void vt100_flush_buffer(driver_t *drv);
+void vt100_put_ch(driver_t *drv, int row, int col, uint8_t ch);
+
 void vt100_io_pirntf(driver_t *drv,const char *pFmt, ...)
 {
     vt100_terminal_t *vt100 = (vt100_terminal_t*)(drv->cfg);
@@ -157,7 +159,8 @@ static lcd_api_t vt100_lcd_api = {.set_position = vt100_set_position,
                                   .home = vt100_home,
                                   .display_on = vt100_display_on,
                                   .display_off = vt100_display_off,
-                                  .flush = vt100_flush_buffer};
+                                  .flush = vt100_flush_buffer,
+                                  .put_ch = vt100_put_ch};
 
 driver_t* vt100_terminal_open(void)
 {
@@ -192,10 +195,12 @@ driver_t* vt100_terminal_open(void)
     return &vt100_driver;
 }
 
+
 void vt100_flush_buffer(driver_t *drv)
 {
   vt100_terminal_t *term = (vt100_terminal_t *)drv->cfg;
   char buff[VT100_DEFAULT_COLS+1];
+
 
 
   for (int row; row < VT100_DEFAULT_ROWS; row++)
@@ -205,4 +210,9 @@ void vt100_flush_buffer(driver_t *drv)
     buff[VT100_DEFAULT_COLS] = 0;
     vt100_io_puts(&vt100_driver, buff);
   }
+}
+
+void vt100_put_ch(driver_t *drv, int row, int col, uint8_t ch)
+{
+    framebuffer[row][col] = ch;
 }

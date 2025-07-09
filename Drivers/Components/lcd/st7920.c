@@ -19,7 +19,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-
+#include "font\font_6x8.h"
 
 
 #define ST7920_WIDTH 128
@@ -78,6 +78,7 @@ static uint8_t framebuffer[ST7920_HEIGHT][ST7920_WIDTH / 8];  // 그래픽 모�
 static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode);
 static void st7920_write_string_api(driver_t *drv, const char *str);
 void st7920_flush_buffer(driver_t *drv);
+void st7920_put_ch(driver_t *drv, int row, int col, uint8_t ch);
 
 lcd_api_t lcd_api = {.set_position = st7920_set_position,
                      .write_string = st7920_write_string_api,
@@ -89,7 +90,8 @@ lcd_api_t lcd_api = {.set_position = st7920_set_position,
                      .set_mode = st7920_set_mode,
                      .set_pixel = st7920_set_pixel,
                      .draw_line = st7920_draw_line,
-                     .flush = st7920_flush_buffer};
+                     .flush = st7920_flush_buffer,
+                     .put_ch = st7920_put_ch};
 
 inline void st7920_delay_ms(uint32_t ms)
 {
@@ -564,6 +566,48 @@ void st7920_send_data(driver_t *drv, uint8_t data)
 #endif
 }
 
+uint8_t reverse_bits(uint8_t b)
+{
+  uint8_t reversed_b = 0;
+  for (int i = 0; i < 8; i++)
+  {
+    reversed_b <<= 1;  // 결과 비트를 왼쪽으로 한 칸 이동
+    if (b & 1)         // 원본의 최하위 비트가 1이면
+    {
+      reversed_b |= 1;  // 결과의 최하위 비트를 1로 설정
+    }
+    b >>= 1;  // 원본 비트를 오른쪽으로 한 칸 이동
+  }
+  return reversed_b;
+}
+
+void rotate_screen(int degree, int width, int height, uint8_t *screen)
+{
+  // 180도 회전만 처리합니다.
+  if (degree != 180)
+  {
+    return;
+  }
+
+  int buffer_size = (width * height) / 8;
+
+  // --- 단계 1: 버퍼의 바이트 순서 뒤집기 ---
+  // 메모리 시작부터 절반까지만 순회하며 양 끝의 바이트를 교환합니다.
+  for (int i = 0; i < buffer_size / 2; i++)
+  {
+    uint8_t temp = screen[i];
+    screen[i] = screen[buffer_size - 1 - i];
+    screen[buffer_size - 1 - i] = temp;
+  }
+
+  // --- 단계 2: 각 바이트의 비트 순서 뒤집기 ---
+  // 모든 바이트를 순회하며 비트 순서를 뒤집습니다.
+  for (int i = 0; i < buffer_size; i++)
+  {
+    screen[i] = reverse_bits(screen[i]);
+  }
+}
+
 /**
  * @brief 프레임버퍼의 내용을 LCD 화면 전체에 올바르게 전송합니다.
  */
@@ -571,7 +615,8 @@ void st7920_flush_buffer(driver_t *drv)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
     if(!cfg->graphic_mode) return;
-    
+
+    rotate_screen(180, ST7920_WIDTH , ST7920_HEIGHT, (uint8_t *)framebuffer);
     // 상단 영역 (Y: 0~31)
     for (uint8_t y = 0; y < 32; y++)
     {
@@ -597,6 +642,7 @@ void st7920_flush_buffer(driver_t *drv)
             st7920_send_data(drv, framebuffer[y][x_byte]);
         }
     }
+    rotate_screen(180, ST7920_WIDTH, ST7920_HEIGHT, (uint8_t *)framebuffer);
 }
 void st7920_clear_screen(driver_t *drv)
 {
@@ -916,4 +962,40 @@ static void st7920_write_string_api(driver_t *drv, const char *str)
 {
     // 현재 커서 위치에서 문자열 출력 (기존 동작 유지)
     st7920_write_string_simple(drv, str);
+}
+
+void st7920_put_ch(driver_t *drv, int row, int col, uint8_t ch)
+{
+
+  // Check if character is in printable range
+  if (ch < 0x20 || ch > 0x7E)
+    return;
+
+  // Calculate position in pixels (6x8 font)
+  int start_x = 1 + col * FONT_6X8_WIDTH;
+  int start_y = row * FONT_6X8_HEIGHT;
+
+  // Check bounds for 128x64 display
+  if (start_x + FONT_6X8_WIDTH > 128 || start_y + FONT_6X8_HEIGHT > 64)
+    return;
+
+  // Get character data from font table (ch - 0x20 gives index)
+  const uint8_t *char_data = font_6x8[ch - 0x20];
+
+  // Draw character pixel by pixel
+  for (int y = 0; y < FONT_6X8_HEIGHT; y++)
+  {
+    uint8_t row_data = char_data[y];
+    for (int x = 0; x < FONT_6X8_WIDTH; x++)
+    {
+      if (row_data & (0x10 >> x))  // Check bit from bit 4 (6-bit font uses bits 4-0)
+      {
+        st7920_set_pixel(drv,start_x + x, start_y + y, 1);
+      }
+      else
+      {
+        st7920_set_pixel(drv,start_x + x, start_y + y, 0);
+      }
+    }
+  }
 }

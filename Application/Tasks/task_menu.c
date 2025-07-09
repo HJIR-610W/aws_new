@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../App_drivers/lcd/font_16x8.h"
-#include "../App_drivers/lcd/font_6x8.h"
+
 #include "app_button.h"
 #include "app_charger.h"
 #include "app_screen.h"
