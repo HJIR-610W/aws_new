@@ -38,6 +38,12 @@ extern const char* physical_list[2];
 
 
 #define ADC_PAGE_MODE 0
+#define ADC_PAGE_CHANNEL 1
+#define ADC_PAGE_HIGH_VALUE 2
+#define ADC_PAGE_LOW_VALUE 3
+#define ADC_PAGE_SCALE 4
+#define ADC_PAGE_MAX_MV 5
+#define ADC_PAGE_MIN_MV 6
 
 
 
@@ -45,16 +51,26 @@ void draw_adc_page(screen_menu_t* p_win,adc_config_t *adc_config)
 {
   int row_count = 1;
 
-
   screen_update_list(p_win, row_count, ADC_PAGE_MODE);
   M_PRINTF(p_win, row_count++, "%-*s:%s",E_L_W, "Adc Mode",ITEM_LIST(adc_config->mode, (char*)adcChModeList));
-  M_PRINTF(p_win, row_count++, "%-*s:%s",E_L_W,  "Adc Mode", "%s",  ITEM_LIST(adc_config->mode, (char *)adcChModeList));
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Channel", "%d", adc_config->channel);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "High Value", "%d", adc_config->highScale);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Low Value", "%d", adc_config->lowScale);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Scale", "%d", adc_config->scale);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Max mV", "%d", adc_config->outMaxV);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Min mV", "%d", adc_config->outMinV);
+
+  screen_update_list(p_win, row_count, ADC_PAGE_CHANNEL);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Channel", adc_config->channel);
+
+  screen_update_list(p_win, row_count, ADC_PAGE_HIGH_VALUE);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "High Value", adc_config->highScale);
+
+  screen_update_list(p_win, row_count, ADC_PAGE_LOW_VALUE);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Low Value", adc_config->lowScale);
+
+  screen_update_list(p_win, row_count, ADC_PAGE_SCALE);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Scale", adc_config->scale);
+
+  screen_update_list(p_win, row_count, ADC_PAGE_MAX_MV);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Max mV", adc_config->outMaxV);
+
+  screen_update_list(p_win, row_count, ADC_PAGE_MIN_MV);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Min mV", adc_config->outMinV);
 
   p_win->total_items = row_count;
 
@@ -80,6 +96,153 @@ const char *safe_name(const char **names,int name_count,int index)
 
   return names[index];
 
+}
+
+#define HJSNOW_PAGE_PHYSICAL 0
+#define HJSNOW_PAGE_PORT 1
+#define HJSNOW_PAGE_SNOW_MENU 2
+void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
+{
+  int row_count = 1;
+  const char *name_table[10];
+  int list_cnt;
+  uint8_t port_number;
+
+  screen_update_list(p_win, row_count, HJSNOW_PAGE_PHYSICAL);
+  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Physical", 
+           ITEM_LIST(hjsnow_config->physical_layer, physical_list));
+
+  if (hjsnow_config->physical_layer == ePHYSICAL_RS232)
+  {
+    list_cnt = rs232_get_portList(name_table, _countof(name_table));
+    port_number = hjsnow_config->port;
+  }
+  else
+  {
+    list_cnt = rs485_get_portList(name_table, _countof(name_table));
+    port_number = hjsnow_config->port;
+  }
+
+  screen_update_list(p_win, row_count, HJSNOW_PAGE_PORT);
+  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
+
+  screen_update_list(p_win, row_count, HJSNOW_PAGE_SNOW_MENU);
+  M_PRINTF(p_win, row_count++, "SnowMenu");
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
+}
+
+#define HJWIND_PAGE_FULLSET 0
+#define HJWIND_PAGE_OFFSET 1
+#define HJWIND_PAGE_PORT 2
+void draw_hjwind_page(screen_menu_t* p_win, hjwindspeed_config_t* hjwind_config)
+{
+  int row_count = 1;
+  const char *name_table[10];
+  int list_cnt;
+
+  list_cnt = rs485_get_portList(name_table, _countof(name_table));
+
+  screen_update_list(p_win, row_count, HJWIND_PAGE_FULLSET);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Fullset", hjwind_config->full);
+
+  screen_update_list(p_win, row_count, HJWIND_PAGE_OFFSET);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Offset", hjwind_config->offset);
+
+  screen_update_list(p_win, row_count, HJWIND_PAGE_PORT);
+  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, hjwind_config->rs485_port));
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
+}
+
+#define HJWINDDIR_PAGE_PORT 0
+void draw_hjwindDir_page(screen_menu_t* p_win, hjwindDirection_config_t* hjwindDir_config)
+{
+  int row_count = 1;
+  const char *name_table[10];
+  int list_cnt;
+
+  list_cnt = rs485_get_portList(name_table, _countof(name_table));
+
+  screen_update_list(p_win, row_count, HJWINDDIR_PAGE_PORT);
+  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, hjwindDir_config->rs485_port));
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
+}
+
+#define OTT_SMP3_PAGE_PORT 0
+#define OTT_SMP3_PAGE_MODBUS_ID 1
+void draw_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t* ott_smp3_config)
+{
+  int row_count = 1;
+  const char *name_table[10];
+  int list_cnt;
+
+  list_cnt = rs485_get_portList(name_table, _countof(name_table));
+
+  screen_update_list(p_win, row_count, OTT_SMP3_PAGE_PORT);
+  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, ott_smp3_config->port));
+
+  screen_update_list(p_win, row_count, OTT_SMP3_PAGE_MODBUS_ID);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "MODBUS ID", ott_smp3_config->modbus_id);
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
+}
+
+#define RAIN_PRESENT_PAGE_DELAY 0
+void draw_rain_present_page(screen_menu_t* p_win, rain_present_config_t* rain_present_config)
+{
+  int row_count = 1;
+
+  screen_update_list(p_win, row_count, RAIN_PRESENT_PAGE_DELAY);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Delay Time", rain_present_config->delay);
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
+}
+
+#define FREQ_PAGE_CHANNEL 0
+#define FREQ_PAGE_SCALE_FACTOR 1
+void draw_freq_page(screen_menu_t* p_win, frequency_config_t* freq_config)
+{
+  int row_count = 1;
+
+  screen_update_list(p_win, row_count, FREQ_PAGE_CHANNEL);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Channel", freq_config->channel);
+
+  screen_update_list(p_win, row_count, FREQ_PAGE_SCALE_FACTOR);
+  M_PRINTF(p_win, row_count++, "%-*s:%.3f", E_L_W, "Scale Factor", freq_config->scale_factor);
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
 }
 
 #define HJTEMP_PAGE_PHYSICAL 0
@@ -136,8 +299,29 @@ void draw_sensor_page(screen_menu_t* p_win, sensor_t *p_sensor)
     case S_T_ADC:
       draw_adc_page(p_win, get_sensor_config(p_sensor));
       break;
+    case S_T_SNOW_HJ:
+      draw_hjsnow_page(p_win, get_sensor_config(p_sensor));
+      break;
+    case S_T_WIND_DIRECTION_HJ_485:
+      draw_hjwindDir_page(p_win, get_sensor_config(p_sensor));
+      break;
+    case S_T_WIND_SPEED_HJ_485:
+      draw_hjwind_page(p_win, get_sensor_config(p_sensor));
+      break;
     case S_T_TEMPERATURE_HJ:
       draw_hjtemp_page(p_win, get_sensor_config(p_sensor));
+      break;
+    case S_T_HUMINITY_HJ:
+      draw_hjtemp_page(p_win, get_sensor_config(p_sensor));
+      break;
+    case S_T_SOLAR_RADIATION_OTT_SMP3:
+      draw_ott_smp3_page(p_win, get_sensor_config(p_sensor));
+      break;
+    case S_T_RAIN_PRESENT_DI:
+      draw_rain_present_page(p_win, get_sensor_config(p_sensor));
+      break;
+    case S_T_FREQ:
+      draw_freq_page(p_win, get_sensor_config(p_sensor));
       break;
     default :
       p_win->total_items = row_count;
@@ -232,19 +416,179 @@ typedef struct
 
 int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
 {
+  int32_t status = 0;
+  int32_t choice;
+  int32_t dec;
+  adc_config_t* adc;
 
+  adc = get_sensor_config(sensor);
+  if (adc == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case ADC_PAGE_MODE:
+      choice = adc->mode;
+      status = print_menu_list(adcChModeList, _countof(adcChModeList), &choice);
+      if (status != MENU_OK)
+        break;
+      adc->mode = choice;
+      save_config_sensor();
+      break;
+    case ADC_PAGE_CHANNEL:
+      status = input_decimal("Channel", 0, 17, &dec);
+      if (status != MENU_OK)
+        break;
+      adc->channel = dec;
+      save_config_sensor();
+      break;
+    case ADC_PAGE_HIGH_VALUE:
+      status = input_decimal("High Value", -1000000, 1000000, &dec);
+      if (status != MENU_OK)
+        break;
+      adc->highScale = dec;
+      save_config_sensor();
+      break;
+    case ADC_PAGE_LOW_VALUE:
+      status = input_decimal("Low Value", -1000000, 1000000, &dec);
+      if (status != MENU_OK)
+        break;
+      adc->lowScale = dec;
+      save_config_sensor();
+      break;
+    case ADC_PAGE_SCALE:
+      status = input_decimal("Scale", -1000000, 1000000, &dec);
+      if (status != MENU_OK)
+        break;
+      adc->scale = dec;
+      save_config_sensor();
+      break;
+    case ADC_PAGE_MAX_MV:
+      status = input_decimal("Max mV", -1000000, 1000000, &dec);
+      if (status != MENU_OK)
+        break;
+      adc->outMaxV = dec;
+      save_config_sensor();
+      break;
+    case ADC_PAGE_MIN_MV:
+      status = input_decimal("Min mV", -1000000, 1000000, &dec);
+      if (status != MENU_OK)
+        break;
+      adc->outMinV = dec;
+      save_config_sensor();
+      break;
+  }
+
+  return status;
 }
 int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
 {
+  int32_t status = 0;
+  int32_t dec;
+  float factor;
+  frequency_config_t* freq;
 
+  freq = get_sensor_config(sensor);
+  if (freq == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case FREQ_PAGE_CHANNEL:
+      status = input_decimal("Channel", 0, 1, &dec);
+      if (status != MENU_OK)
+        break;
+      freq->channel = dec;
+      save_config_sensor();
+      break;
+    case FREQ_PAGE_SCALE_FACTOR:
+      dec = (int32_t)(freq->scale_factor * 1000);
+      status = input_decimal("Scale Factor(*1000)", -100000000, 100000000, &dec);
+      if (status != MENU_OK)
+        break;
+      freq->scale_factor = (float)dec / 1000.0f;
+      save_config_sensor();
+      break;
+  }
+
+  return status;
 }
 int32_t hjwinddir_setup( sensor_t *sensor, uint8_t menu_index)
 {
+  int32_t status = 0;
+  int32_t choice;
+  hjwindDirection_config_t* hjwindDir;
+  const char* portList[10];
+  uint16_t portListCnt;
 
+  hjwindDir = get_sensor_config(sensor);
+  if (hjwindDir == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case HJWINDDIR_PAGE_PORT:
+      portListCnt = rs485_get_portList(portList, _countof(portList));
+      choice = hjwindDir->rs485_port;
+      status = print_menu_list(portList, portListCnt, &choice);
+      if (status != MENU_OK)
+        break;
+      hjwindDir->rs485_port = choice;
+      save_config_sensor();
+      break;
+  }
+
+  return status;
 }
 int32_t hjwind_setup( sensor_t *sensor, uint8_t menu_index)
 {
+  int32_t status = 0;
+  int32_t choice;
+  int32_t dec;
+  hjwindspeed_config_t* hjwind;
+  const char* portList[10];
+  uint16_t portListCnt;
 
+  hjwind = get_sensor_config(sensor);
+  if (hjwind == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case HJWIND_PAGE_FULLSET:
+      status = input_decimal("FULLSET", 0, 999999, &dec);
+      if (status != MENU_OK)
+        break;
+      hjwind->full = dec;
+      save_config_sensor();
+      break;
+    case HJWIND_PAGE_OFFSET:
+      status = input_decimal("OFFSET", 0, 999999, &dec);
+      if (status != MENU_OK)
+        break;
+      hjwind->offset = dec;
+      save_config_sensor();
+      break;
+    case HJWIND_PAGE_PORT:
+      portListCnt = rs485_get_portList(portList, _countof(portList));
+      choice = hjwind->rs485_port;
+      status = print_menu_list(portList, portListCnt, &choice);
+      if (status != MENU_OK)
+        break;
+      hjwind->rs485_port = choice;
+      save_config_sensor();
+      break;
+  }
+
+  return status;
 }
 int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
 {
@@ -321,8 +665,68 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
 }
 
 int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index) {}
-int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index) {}
-int32_t rain_present_setup(sensor_t* sensor, uint8_t menu_index) {}
+int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
+{
+  int32_t status = 0;
+  int32_t choice;
+  int32_t dec;
+  ott_smp3_config_t* ott_smp3;
+  const char* portList[10];
+  uint16_t portListCnt;
+
+  ott_smp3 = get_sensor_config(sensor);
+  if (ott_smp3 == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case OTT_SMP3_PAGE_PORT:
+      portListCnt = rs485_get_portList(portList, _countof(portList));
+      choice = ott_smp3->port;
+      status = print_menu_list(portList, portListCnt, &choice);
+      if (status != MENU_OK)
+        break;
+      ott_smp3->port = choice;
+      save_config_sensor();
+      break;
+    case OTT_SMP3_PAGE_MODBUS_ID:
+      status = input_decimal("MODBUS ID", 0, 247, &dec);
+      if (status != MENU_OK)
+        break;
+      ott_smp3->modbus_id = dec;
+      save_config_sensor();
+      break;
+  }
+
+  return status;
+}
+int32_t rain_present_setup(sensor_t* sensor, uint8_t menu_index)
+{
+  int32_t status = 0;
+  int32_t dec;
+  rain_present_config_t* rain_present;
+
+  rain_present = get_sensor_config(sensor);
+  if (rain_present == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case RAIN_PRESENT_PAGE_DELAY:
+      status = input_decimal("Delay Time", 1, 10, &dec);
+      if (status != MENU_OK)
+        break;
+      rain_present->delay = dec;
+      save_config_sensor();
+      break;
+  }
+
+  return status;
+}
 
 const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_ADC, .config_set = general_adc_setup},
