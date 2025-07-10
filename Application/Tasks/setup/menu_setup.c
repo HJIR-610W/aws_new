@@ -1,8 +1,10 @@
 
 #include "menu_handler.h"
+#include "menu_network.h"
+#include "menu_sensor.h"
 #include "menu_system.h"
 #include "util_memory.h"
-#include "menu_sensor.h"
+
 void setup_root(void)
 {
   const char* menu_list[] = {"SYSTEM",
@@ -33,7 +35,8 @@ void setup_root(void)
       case 1:
         status = setup_menu_sensor();
          break;
-      case 2:  // SYSTEM
+      case 2:
+        status = setup_menu_network();
         break;
       case 3:  // SYSTEM
         break;

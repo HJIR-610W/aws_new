@@ -51,7 +51,8 @@
 			"stdint.h": "c",
 			"stdarg.h": "c",
 			"bsp.h": "c",
-			"menu_handler.h": "c"
+			"menu_handler.h": "c",
+			"menu_network.h": "c"
 		}
 	}
 }
