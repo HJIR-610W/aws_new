@@ -1907,6 +1907,12 @@
                     <name>$PROJ_DIR$\..\Application\Tasks\setup\menu_network.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\setup\menu_offset.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\setup\menu_panel.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\setup\menu_sensor.c</name>
                 </file>
                 <file>

@@ -4,6 +4,8 @@
 #include "menu_sensor.h"
 #include "menu_system.h"
 #include "util_memory.h"
+#include "menu_offset.h"
+#include "menu_panel.h"
 
 void setup_root(void)
 {
@@ -40,8 +42,12 @@ void setup_root(void)
         break;
       case 3:  // SYSTEM
         break;
-      case 4:  // SYSTEM
-        break;
+      case 4:  
+        status = setup_menu_panel();
+         break;
+      case 5:
+       status = setup_menu_offset();
+       break;
       default:
         break;
       }

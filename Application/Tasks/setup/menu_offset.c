@@ -1,0 +1,203 @@
+#include "menu_offset.h"
+
+#include "app_adc.h"
+#include "app_key.h"
+#include "app_screen.h"
+#include "app_sensor.h"
+#include "cli_key_code.h"
+#include "config_app.h"
+#include "config_sensor.h"
+#include "console_utile.h"
+#include "driver_adc.h"
+#include "menu_handler.h"
+#include "util_memory.h"
+#include "view_driver.h"
+
+#define SCREEN_COLS 20
+#define OFFSET_WD 12
+
+#define M_PRINTF screen_menu_printf_row
+
+static const eSENSOR_TYPE_t g_offset_sensor_list[] = {
+  A1_TEMPERATURE,
+  A10_RELATIVE_HUMIDITY,
+  A7_PRESSURE,
+  B1_SOLAR_RADIATION,
+  B2_SUNSHINE_DURATION,
+  B3_GROUND_TEMPERATURE,
+  B4_SURFACE_TEMPERATURE,
+  B5_SOIL_TEMPERATURE_5CM,
+  B6_SOIL_TEMPERATURE_10CM,
+  B7_SOIL_TEMPERATURE_20CM,
+  B8_SOIL_TEMPERATURE_30CM,
+  B9_SOIL_TEMPERATURE_50CM,
+  B10_SOIL_TEMPERATURE_100CM,
+  B11_SOIL_TEMPERATURE_150CM,
+  B12_SOIL_TEMPERATURE_300CM,
+  B13_SOIL_TEMPERATURE_500CM
+};
+
+#define OFFSET_SENSOR_COUNT (sizeof(g_offset_sensor_list) / sizeof(g_offset_sensor_list[0]))
+
+void draw_offset_page(screen_menu_t* p_win)
+{
+  int32_t row_count = 0;
+  sensor_t* p_sensor;
+
+  p_win->current_row = 0;
+
+  for (int32_t i = 0; i < OFFSET_SENSOR_COUNT && row_count < p_win->view_row; i++)
+  {
+    p_sensor = &get_config_app()->sensor[g_offset_sensor_list[i]];
+
+    screen_update_list(p_win, row_count, i);
+    M_PRINTF(p_win, row_count++, "%-*s:%7.3f", OFFSET_WD,
+             sensor_name_list[g_offset_sensor_list[i]], p_sensor->offset);
+  }
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
+}
+
+int32_t setup_pressure_offset(eSENSOR_TYPE_t sensor_type)
+{
+  uint8_t error;
+  int32_t choice;
+  int32_t status = MENU_OK;
+  float calibrated_voltage;
+  float measured_value;
+  float new_offset;
+  float reference_value;
+  float voltage;
+  adc_config_t* cfg;
+  sensor_t* p_sensor;
+
+  p_sensor = &get_config_app()->sensor[sensor_type];
+
+  if (p_sensor->type != S_T_ADC)
+  {
+    status = input_float("Offset Value", -1000.0f, 1000.0f, &p_sensor->offset, "%8.3f");
+    if (status == MENU_OK)
+    {
+      WRITE_CFG(sensor[sensor_type].offset);
+    }
+    return status;
+  }
+
+  cfg = get_sensor_config(p_sensor);
+  if (cfg == NULL)
+  {
+    return MENU_ERROR;
+  }
+
+  voltage = adc_read_single_avg(cfg->channel, &error, 10);
+  measured_value = voltage;
+
+  screen_clear(8, 20);
+  screen_printf(0, 0, "Current: %.3f", measured_value);
+  screen_printf(1, 0, "ADC Ch%d: %.3fV", cfg->channel, voltage);
+  screen_refresh();
+
+  status = input_float("Reference Value", -1000.0f, 1000.0f, &reference_value, "%8.3f");
+  if (status != MENU_OK)
+  {
+    return status;
+  }
+
+  new_offset = reference_value - measured_value;
+
+  screen_clear(8, 20);
+  screen_printf(0, 0, "New Offset:");
+  screen_printf(1, 0, "%.3f", new_offset);
+  screen_printf(2, 0, "Apply? Y/N");
+  screen_refresh();
+
+  choice = 0;
+  const char* confirm_menu[] = {"No", "Yes"};
+  status = print_menu_list(confirm_menu, 2, &choice);
+
+  if (status == MENU_OK && choice == 1)
+  {
+    p_sensor->offset = new_offset;
+    WRITE_CFG(sensor[sensor_type].offset);
+
+    adc_set_offset_trim(eSINGLE_ADC, cfg->channel, new_offset);
+  }
+
+  return status;
+}
+
+int32_t setup_sensor_offset(eSENSOR_TYPE_t sensor_type)
+{
+  int32_t status;
+  sensor_t* p_sensor;
+
+  p_sensor = &get_config_app()->sensor[sensor_type];
+
+  switch (sensor_type)
+  {
+    case A7_PRESSURE:
+      status = setup_pressure_offset(sensor_type);
+      break;
+
+    default:
+      status = input_float("Offset Value", -1000.0f, 1000.0f, &p_sensor->offset, "%8.3f");
+      if (status == MENU_OK)
+      {
+        WRITE_CFG(sensor[sensor_type].offset);
+      }
+      break;
+  }
+
+  return status;
+}
+
+int32_t setup_menu_offset(void)
+{
+  int32_t choice = 0;
+  int32_t index;
+  int32_t key;
+  int32_t status;
+  eSENSOR_TYPE_t selected_sensor;
+  screen_menu_t menu;
+
+  screen_menu_create(&menu, 8, 20);
+
+  while (1)
+  {
+    draw_offset_page(&menu);
+    screen_refresh();
+
+    key = get_button_key(1000);
+
+    if (key == KEY_CODE_CTRL_Q)
+    {
+      break;
+    }
+    else if (key == KEY_CODE_CTRL_C)
+    {
+      break;
+    }
+
+    if (key == KEY_CODE_ENTER)
+    {
+      index = menu.selected_index;
+
+      if (index < OFFSET_SENSOR_COUNT)
+      {
+        selected_sensor = g_offset_sensor_list[index];
+        status = setup_sensor_offset(selected_sensor);
+      }
+    }
+    else if (key != KEY_CODE_NONE)
+    {
+      screen_menu_handle(&menu, key);
+    }
+  }
+
+  return convert_key_to_status(key);
+}
