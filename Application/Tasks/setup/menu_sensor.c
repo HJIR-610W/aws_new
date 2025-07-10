@@ -142,11 +142,8 @@ void draw_sensor_page(screen_menu_t* p_win, sensor_t *p_sensor)
     default :
       p_win->total_items = row_count;
 
-      while (p_win->current_row < p_win->view_row)
-      {
-        screen_menu_clear_row(p_win, row_count++);
-      }
-    break;
+      screen_clear_unsued_line(p_win);
+      break;
   }
 
 }
@@ -405,25 +402,18 @@ void draw_menu_sensor_page(screen_menu_t* p_win)
     M_PRINTF(p_win, row_count++, "%s", sensor_name_eng_list[i]);
   }
 
-
-
   p_win->total_items = row_count;
 
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_clear_unsued_line(p_win);
 }
-
-
 
 int32_t setup_menu_sensor(void)
 {
   int32_t choice;
   int32_t status;
   int32_t key;
-  screen_menu_t menu;
   int32_t index;
+  screen_menu_t menu;
 
   screen_menu_create(&menu, 8, 20);
 

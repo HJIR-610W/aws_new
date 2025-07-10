@@ -69,4 +69,5 @@ void screen_menu_clear(screen_menu_t* win);
 void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* format, ...);
 void screen_menu_clear_row(screen_menu_t* win, int row_index);
 void screen_update_list(screen_menu_t* p_screen, int index, int id);
+void screen_clear_unsued_line(screen_menu_t* p_win);
 #endif

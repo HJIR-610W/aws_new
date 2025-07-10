@@ -385,6 +385,9 @@ void screen_menu_clear_row(screen_menu_t* win, int row_index)
   }
   win->current_row++;
 }
+
+
+
 void screen_off(screen_page_t* p_screen)
 {
   screen_clear(p_screen->view_row,p_screen->view_col);
@@ -415,4 +418,12 @@ void screen_update_list(screen_menu_t * p_screen,int index,int id)
 {
   if(index<sizeof(p_screen->index_list))
   p_screen->index_list[index] = id;
+}
+
+void screen_clear_unsued_line(screen_menu_t* p_win)
+{
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, p_win->current_row );
+  }
 }
