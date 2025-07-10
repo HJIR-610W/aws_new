@@ -235,7 +235,7 @@ void draw_freq_page(screen_menu_t* p_win, frequency_config_t* freq_config)
   M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Channel", freq_config->channel);
 
   screen_update_list(p_win, row_count, FREQ_PAGE_SCALE_FACTOR);
-  M_PRINTF(p_win, row_count++, "%-*s:%.3f", E_L_W, "Scale Factor", freq_config->scale_factor);
+  M_PRINTF(p_win, row_count++, "%-*s:%.4f", E_L_W, "Scale Factor", freq_config->scale_factor);
 
   p_win->total_items = row_count;
 
@@ -335,10 +335,10 @@ void draw_sensor_page(screen_menu_t* p_win, sensor_t *p_sensor)
 int32_t setup_select_menu_index(sensor_t* p_sensor, int* choice)
 {
 
-  int32_t status;
+
   int32_t key;
   screen_menu_t menu;
-  int32_t index;
+
 
   screen_menu_create(&menu, 8, 20);
 
@@ -599,7 +599,57 @@ int32_t hjwind_setup( sensor_t *sensor, uint8_t menu_index)
 }
 int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
 {
+  int32_t status = 0;
+  int32_t choice;
+  hjsnow_config_t* hjsnow;
+  const char* portList[10];
+  uint16_t portListCnt;
 
+  hjsnow = get_sensor_config(sensor);
+  if (hjsnow == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case HJSNOW_PAGE_PHYSICAL:
+      choice = hjsnow->physical_layer;
+      status = print_menu_list(physical_list, _countof(physical_list), &choice);
+      if (status != MENU_OK)
+        break;
+      hjsnow->physical_layer = (ePHYSOCAL_LAYER_t)(choice);
+      save_config_sensor();
+      break;
+    case HJSNOW_PAGE_PORT:
+      if (hjsnow->physical_layer == ePHYSICAL_RS232)
+      {
+        portListCnt = rs232_get_portList(portList, _countof(portList));
+        choice = hjsnow->port;
+        status = print_menu_list(portList, portListCnt, &choice);
+        if (status != MENU_OK)
+          break;
+        hjsnow->port = choice;
+        save_config_sensor();
+      }
+      else
+      {
+        portListCnt = rs485_get_portList(portList, _countof(portList));
+        choice = hjsnow->port;
+        status = print_menu_list(portList, portListCnt, &choice);
+        if (status != MENU_OK)
+          break;
+        hjsnow->port = choice;
+        save_config_sensor();
+      }
+      break;
+    case HJSNOW_PAGE_SNOW_MENU:
+      // TODO: Implement snow menu call
+      // status = hj_snow_menu();
+      break;
+  }
+
+  return status;
 }
 
 int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
@@ -671,7 +721,68 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index) {}
+int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
+{
+  int32_t status = 0;
+  int32_t choice;
+  int32_t dec = 0;
+  hjhumi_config_t* hjhumi;
+  const char* portList[10];
+  uint16_t portListCnt;
+
+  hjhumi = get_sensor_config(sensor);
+  if (hjhumi == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case HJTEMP_PAGE_PHYSICAL:
+      choice = hjhumi->physical_layer;
+      status = print_menu_list(physical_list, _countof(physical_list), &choice);
+      if (status != MENU_OK)
+        break;
+      hjhumi->physical_layer = (ePHYSOCAL_LAYER_t)(choice);
+      save_config_sensor();
+      break;
+    case HJTEMP_PAGE_PORT:
+      if (hjhumi->physical_layer == ePHYSICAL_RS232)
+      {
+        portListCnt = rs232_get_portList(portList, _countof(portList));
+        choice = hjhumi->rs232_port;
+        status = print_menu_list(portList, portListCnt, &choice);
+        if (status != MENU_OK)
+          break;
+        hjhumi->rs232_port = choice;
+        save_config_sensor();
+      }
+      else
+      {
+        portListCnt = rs485_get_portList(portList, _countof(portList));
+        choice = hjhumi->rs485_port;
+        status = print_menu_list(portList, portListCnt, &choice);
+        if (status != MENU_OK)
+          break;
+        hjhumi->rs485_port = choice;
+        save_config_sensor();
+      }
+      break;
+    case HJTEMP_PAGE_MODBUS_ID:
+      status = input_decimal("ID", 0, 247, &dec);
+      if (status != MENU_OK)
+        break;
+      hjhumi->modbus_id = dec;
+      save_config_sensor();
+      break;
+    case HJTEMP_PAGE_TEMP_MENU:
+      // TODO: Implement humidity menu call
+      // status = hjhumidity_menu();
+      break;
+  }
+
+  return status;
+}
 int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
 {
   int32_t status = 0;
@@ -820,10 +931,10 @@ void draw_menu_sensor_page(screen_menu_t* p_win)
 
 int32_t setup_menu_sensor(void)
 {
-  int32_t choice;
-  int32_t status;
+
+
   int32_t key;
-  int32_t index;
+
   screen_menu_t menu;
 
   screen_menu_create(&menu, 8, 20);

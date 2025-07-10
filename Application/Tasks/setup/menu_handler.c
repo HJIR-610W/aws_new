@@ -520,6 +520,8 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
     p++;
   }
   
+  total_width++;
+  
   // 소수점 확인 및 decimal_places 파싱
   if (*p == '.')
   {
@@ -646,7 +648,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
       {
         cursor_pos++;
         // 소수점 건너뛰기
-        if (dot_pos >= 0 && cursor_pos == dot_pos)
+        if (dot_pos >= 0 && cursor_pos == dot_pos && cursor_pos < total_width - 1)
         {
           cursor_pos++;
         }
@@ -722,7 +724,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
         {
           cursor_pos++;
           // 소수점 건너뛰기
-          if (dot_pos >= 0 && cursor_pos == dot_pos)
+          if (dot_pos >= 0 && cursor_pos == dot_pos && cursor_pos < total_width - 1)
           {
             cursor_pos++;
           }
