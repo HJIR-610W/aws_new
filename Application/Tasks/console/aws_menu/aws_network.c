@@ -1,3 +1,7 @@
+
+/*
+This file must be encoded in EUC-KR
+*/
 #include "cli_input.h"
 #include "config_app.h"
 #include "console_define.h"
@@ -8,9 +12,9 @@
 
 #define AWS_MENU_NET_WIDTH 30
 
-const char *ethModeList[] = {"클라이언트", "서버"};
-const char *cdmaModellList[] = {"NTLE9607", "TX700"};
-const char *protocolList[] = {"KMA2", "KMA3"};
+const char *eth_mode_list[] = {"Client", "Server"};
+const char *cdma_model_list[] = {"NTLE9607", "TX700"};
+const char *protocol_list[] = {"KMA2", "KMA3"};
 
 
 
@@ -225,7 +229,7 @@ int32_t aws_network_config_eth(void)
   {
     menu_cnt = 0;
 
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "방식:%s", ITEM_LIST(get_config_app()->eth_mode, ethModeList));
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "방식:%s", ITEM_LIST(get_config_app()->eth_mode, eth_mode_list));
     menu_cnt++;
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "수집 서버 정보");
     menu_cnt++;
@@ -239,7 +243,7 @@ int32_t aws_network_config_eth(void)
     switch (choice)
     {
       case 1:
-        status = choice_menu(30,"이더넷 방식",(char**)ethModeList,_countof(ethModeList),&choice);
+        status = choice_menu(30,"이더넷 방식",(char**)eth_mode_list,_countof(eth_mode_list),&choice);
         if(status != MENU_OK)
         {
           break;
@@ -291,7 +295,7 @@ int32_t aws_network_config_cdma(void)
     menu_cnt++;
 
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "MODEL:%s",
-             ITEM_LIST(config.cdma_model, cdmaModellList));
+             ITEM_LIST(config.cdma_model, cdma_model_list));
     menu_cnt++;
     if (config.cdma_model == eCDMA_NTLE9607)
     {
@@ -326,7 +330,7 @@ int32_t aws_network_config_cdma(void)
 
         break;
       case 3:  // 모델
-        status = choice_menu(30,"CDMA 모델",(char**)cdmaModellList,  _countof(cdmaModellList), &choice);
+        status = choice_menu(30,"CDMA 모델",(char**)cdma_model_list,  _countof(cdma_model_list), &choice);
         if( status != MENU_OK)
         break;
           config.cdma_model = (eCDMA_MODEL_t)(choice-1);
@@ -540,7 +544,7 @@ int aws_menu_network(void)
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "통신 설정");
     menu_cnt++;
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "통신 프로토콜:%s",
-             ITEM_LIST(get_config_app()->aws_protocol_type, protocolList));
+             ITEM_LIST(get_config_app()->aws_protocol_type, protocol_list));
       menu_cnt++; 
 
     status = choice_menu(24, "네트워크", menu, menu_cnt, &choice);
@@ -556,7 +560,7 @@ int aws_menu_network(void)
         status = aws_network_config();
          break;
       case 3:
-        status = choice_menu(40,"AWS 프로토콜",(char **)protocolList,_countof(protocolList),&choice);
+        status = choice_menu(40,"AWS 프로토콜",(char **)protocol_list,_countof(protocol_list),&choice);
         if (status != MENU_OK)
           break;
 
