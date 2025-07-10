@@ -78,12 +78,12 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
       if (hjtemp->physical_layer == ePHYSICAL_RS232)
       {
         rs232_get_portList(list, sizeof(list));
-        snprintf(out, outSize, "[%s][A.%d]", list[hjtemp->port], hjtemp->modbus_id);
+        snprintf(out, outSize, "[%s][A.%d]", list[hjtemp->rs232_port], hjtemp->modbus_id);
       }
       else
       {
         rs485_get_portList(list, sizeof(list));
-        snprintf(out, outSize, "[%s][A.%d]", list[hjtemp->port], hjtemp->modbus_id);
+        snprintf(out, outSize, "[%s][A.%d]", list[hjtemp->rs485_port], hjtemp->modbus_id);
       }
     }
     break;
@@ -188,19 +188,22 @@ uint8_t print_hjwindDir_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
 uint8_t print_hjtemp_cfg(hjtemp_config_t *hjtempCfg, uint8_t cnt)
 {
   const char *name_table[10];
-
+  int port;
+  
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "통신방식", "%s", physical_list[hjtempCfg->physical_layer]);
 
   if (hjtempCfg->physical_layer == ePHYSICAL_RS232)
   {
     rs232_get_portList(name_table, _countof(name_table));
+    port = hjtempCfg->rs232_port;
   }
   else
   {
     rs485_get_portList(name_table, _countof(name_table));
+        port = hjtempCfg->rs485_port;
   }
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "포트", "%s", name_table[hjtempCfg->port]);
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "포트", "%s", name_table[port]);
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "모드버스 ID", "%d", hjtempCfg->modbus_id);
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "온습도 메뉴", "[제어]");
 
@@ -352,6 +355,20 @@ uint16_t get_sensor_model_list(const char **model_list, const uint8_t *idxList, 
 
   return i;
 }
+
+uint16_t get_sensor_model_eng_list(const char **model_list, const uint8_t *idxList, uint8_t listCnt)
+{
+  int i;
+
+  for (i = 0; i < listCnt; i++)
+  {
+    model_list[i] = g_sensor_model_eng_table[idxList[i]];
+  }
+
+  return i;
+}
+
+
 
 void set_type(sensor_t *sensor)
 {
@@ -513,7 +530,7 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
   
         if(status != MENU_OK)
           break;
-          hjtemp->port = choice;
+          hjtemp->rs232_port = choice;
           save_config_sensor();
       }
       else
@@ -523,7 +540,7 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
       if (status!= MENU_OK)
         break;
 
-          hjtemp->port = choice;
+          hjtemp->rs485_port = choice;
           save_config_sensor();
 
       break;
@@ -582,7 +599,7 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
         if(status !=MENU_OK)
         break;
 
-          hjtemp->port = choice;
+          hjtemp->rs232_port = choice;
           save_config_sensor();
       }
       else
@@ -592,7 +609,7 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
 
         if(status !=MENU_OK)
         break;
-        hjtemp->port = choice;
+        hjtemp->rs485_port = choice;
         save_config_sensor();
       }
       break;

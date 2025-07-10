@@ -12,7 +12,7 @@
 #include "os_user_def.h"
 #include "system_err.h"
 #include "fatfs.h"
-#include "app_button.h"
+#include "app_key.h"
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
@@ -108,7 +108,7 @@ void systemTask(void *arg)
 
   while (1)
   {
-    scan_button();
+    scan_key();
     bsp_rtc_update();
 
     if ((osKernelGetTickCount() - start_time)>1000)
@@ -136,7 +136,7 @@ void systemTask_init(uint32_t para)
   if(para==PARA_RUN_MODE)
   {
     
-    app_button_init();
+    app_key_init();
     userBtn_init();
     
     charger_init(get_config_app()->charger_model);

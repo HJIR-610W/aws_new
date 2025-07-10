@@ -7,14 +7,9 @@
 
 
 
-
-
-
-void app_button_init(void);
+void app_key_init(void);
 int32_t get_button_key(uint32_t timeout_ms);
-void scan_button(void);
+void scan_key(void);
 
 
-
-
-#endif // APP_BUTTON_H
+#endif 

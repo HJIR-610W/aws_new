@@ -6,7 +6,7 @@
 #include <ctype.h>
 
 #include "menu_handler.h"
-#include "app_button.h"
+#include "app_key.h"
 #include "app_screen.h"
 #include "cli_key_code.h"
 #include "os_user_def.h"
@@ -30,9 +30,14 @@ int32_t print_menu_list(const char* menu_list[], int32_t menu_count, int* choice
     return MENU_BACK;
   }
 
-  int current_selection = 0;
-  int scroll_offset = 0;
+  int current_selection = *choice;
   int max_display_rows = (menu_count < MAX_ROWS) ? menu_count : MAX_ROWS;
+  
+  // Calculate initial scroll_offset based on current_selection
+  int scroll_offset = 0;
+  if (current_selection >= MAX_ROWS) {
+    scroll_offset = current_selection - MAX_ROWS + 1;
+  }
 
   screen_clear(MAX_ROWS,MAX_COLS);
   while (true)
@@ -60,7 +65,7 @@ int32_t print_menu_list(const char* menu_list[], int32_t menu_count, int* choice
 
     switch (key)
     {
-      case '8':  // Up arrow
+      case KEY_CODE_UP:  // Up arrow
         if (current_selection > 0)
         {
           current_selection--;
@@ -71,7 +76,7 @@ int32_t print_menu_list(const char* menu_list[], int32_t menu_count, int* choice
         }
         break;
 
-      case '2':  // Down arrow
+      case KEY_CODE_DOWN:  // Down arrow
         if (current_selection < menu_count - 1)
         {
           current_selection++;
@@ -101,12 +106,9 @@ int32_t print_menu_list(const char* menu_list[], int32_t menu_count, int* choice
   return status;
 }
 
-#define SCREEN_KEY_UP    'w'
-#define SCREEN_KEY_DOWN  's'
-#define SCREEN_KEY_RIGHT 'd'
-#define SCREEN_KEY_LEFT  'a'
 
-int32_t input_decimal(const char *title, int min, int max, int *val,int sign_use)
+
+int32_t input_decimal(const char *title, int min, int max, int *val)
 {
   char buff[MAX_COLS + 1] = {0};
   int cursor_pos = 0;
@@ -114,13 +116,16 @@ int32_t input_decimal(const char *title, int min, int max, int *val,int sign_use
   uint32_t last_blink;
   int blink_state = 1;
   int place, step, delta, new_val;
-  
+  int sign_use=0;
   // 입력 검증
   if (val == NULL || title == NULL || min > max)
   {
     return MENU_ERROR;
   }
 
+  if(min<0)
+  sign_use = 1;
+  
   // 최대 자릿수 계산 (음수 고려)
   int temp_max = (abs(max) > abs(min)) ? abs(max) : abs(min);
   if (temp_max == 0) temp_max = 1;
@@ -202,21 +207,21 @@ int32_t input_decimal(const char *title, int min, int max, int *val,int sign_use
       step = (int)pow(10, place);
     }
 
-    if (key == SCREEN_KEY_LEFT)
+    if (key == KEY_CODE_LEFT)
     {
       if (cursor_pos > 0)
       {
         cursor_pos--;
       }
     }
-    else if (key == SCREEN_KEY_RIGHT)
+    else if (key == KEY_CODE_RIGHT)
     {
       if (cursor_pos < number_width - 1)  // 부호 포함 전체 길이 내에서 이동
       {
         cursor_pos++;
       }
     }
-    if(key == SCREEN_KEY_UP || key== SCREEN_KEY_DOWN)
+    if (key == KEY_CODE_UP || key == KEY_CODE_DOWN)
     {
       if (cursor_pos == 0&&sign_use)  // 부호 위치
       {
@@ -232,7 +237,7 @@ int32_t input_decimal(const char *title, int min, int max, int *val,int sign_use
       else
       {
         uint8_t ch = buff[cursor_pos];
-        if (key == SCREEN_KEY_UP)
+        if (key == KEY_CODE_UP)
         {
           ch += 1;
           if (ch > '9')
@@ -241,7 +246,7 @@ int32_t input_decimal(const char *title, int min, int max, int *val,int sign_use
            }
            buff[cursor_pos] = ch;
          }
-         else if (key == SCREEN_KEY_DOWN)
+         else if (key == KEY_CODE_DOWN)
          {
            ch -= 1;
            if(ch<'0')
@@ -387,7 +392,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
     
     switch (key)
     {
-      case SCREEN_KEY_LEFT:
+      case KEY_CODE_LEFT:
         // 이전 편집 가능한 필드로 이동
         do {
           if (cursor_pos > 0) cursor_pos--;
@@ -404,7 +409,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
         left_done:;
         break;
         
-      case SCREEN_KEY_RIGHT:
+      case KEY_CODE_RIGHT:
         // 다음 편집 가능한 필드로 이동
         do {
           if (cursor_pos < (int)strlen(display) - 1) cursor_pos++;
@@ -464,4 +469,20 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
         break;
     }
   }
+}
+
+int32_t convert_key_to_status(int key)
+{
+  int32_t status;
+
+  if (key == KEY_CODE_CTRL_Q)
+  {
+    status = MENU_ABORT;
+  }
+  else if (key == KEY_CODE_CTRL_C)
+  {
+    status = MENU_BACK;
+  }
+
+  return status;
 }

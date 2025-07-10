@@ -4,7 +4,7 @@
 #include <string.h>
 
 
-#include "app_button.h"
+#include "app_key.h"
 #include "dev_io.h"
 
 static layout_t g_layout = {1, 1, 125, 0};

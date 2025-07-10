@@ -1,4 +1,4 @@
-#include "app_button.h"
+#include "app_key.h"
 #include "cmsis_os2.h"
 
 #include "util_memory.h"
@@ -8,41 +8,33 @@
 #include "pcb_define.h"
 
 
-// Button message queue size
-#define BUTTON_QUEUE_SIZE 16
+#define BUTTON_QUEUE_SIZE 5
 
 static driver_t *serial_key = NULL;
 
-// Message queue handle (exported for other modules)
+
 osMessageQueueId_t button_queue_handle = NULL;
 
 
 
-// Message queue attributes
-const osMessageQueueAttr_t button_queue_attributes = {
-    .name = "button_queue"
-};
 
-void app_button_init(void)
+void app_key_init(void)
 {
     uart_config_t uart_config;
 
-    // UART configuration for serial key input
     uart_config.baud = 19200;
     uart_config.dataLen = 8;
-    uart_config.parityIdx = 0;
-    uart_config.stop_bit = 1;
+    uart_config.parityIdx = PARITY_NONE;
+    uart_config.stop_bit = UART_STOP_BIT_1;
 
-    serial_key = driver_uart_open(UART_8_CDMA, &uart_config);
+    serial_key = driver_uart_open(UART_0_D_SUB_0, &uart_config);
 
-    // Create message queue for button events
-    button_queue_handle = osMessageQueueNew(BUTTON_QUEUE_SIZE, sizeof(int32_t), &button_queue_attributes);
-    
-    if (button_queue_handle == NULL) {
-        // Handle error - queue creation failed
+    button_queue_handle = osMessageQueueNew(BUTTON_QUEUE_SIZE, sizeof(int32_t), NULL);
+
+    if (button_queue_handle == NULL)
+    {
         return;
     }
-
 
 }
 
@@ -55,7 +47,7 @@ int32_t get_button_key(uint32_t timeout_ms)
         return -1;
     }
 
-    // Get key from message queue
+
     status = osMessageQueueGet(button_queue_handle, &key, NULL, timeout_ms);
     
     if (status == osOK) {
@@ -67,15 +59,15 @@ int32_t get_button_key(uint32_t timeout_ms)
 
 void button_put_key(int32_t key)
 {
-    if (button_queue_handle == NULL) {
+    if (button_queue_handle == NULL)
+    {
         return;
     }
 
-    // Put key into message queue (non-blocking)
     osMessageQueuePut(button_queue_handle, &key, 0, 0);
 }
 
-// Process received data and convert to key codes
+
 static int32_t process_serial_data(uint8_t *data, int len)
 {
     static uint8_t escape_sequence[3] = {0};
@@ -134,7 +126,7 @@ static int32_t process_serial_data(uint8_t *data, int len)
         return KEY_CODE_UNKNOWN;
     }
 
-    // Reset escape sequence
+
     escape_index = 0;
 
     // Handle Ctrl key combinations
@@ -147,33 +139,27 @@ static int32_t process_serial_data(uint8_t *data, int len)
 }
 
 
-
-// Legacy function for compatibility
-void button_init(void)
+void scan_key(void)
 {
-    app_button_init();
-}
+    int len;
+    uint8_t data[10];
+    int key;
 
-
-// Legacy function for compatibility (called every 100ms)
-void scan_button(void)
-{
-  int len;
-  uint8_t data[10];
-  int key;
-        if (serial_key != NULL) {
-            len = driver_uart_recv(serial_key, data, _countof(data), 0);
+    if (serial_key != NULL)
+    {
+        len = driver_uart_recv(serial_key, data, _countof(data), 0);
+    
+        if (len > 0)
+        {
+        // Process each received byte
+        for (int i = 0; i < len; i++) {
+            key = process_serial_data(&data[i], 1);
             
-            if (len > 0) {
-                // Process each received byte
-                for (int i = 0; i < len; i++) {
-                    key = process_serial_data(&data[i], 1);
-                    
-                    if (key != KEY_CODE_NONE) {
-                        // Put processed key into message queue
-                        button_put_key(key);
-                    }
-                }
+            if (key != KEY_CODE_NONE) {
+                // Put processed key into message queue
+                button_put_key(key);
             }
         }
+        }
+    }
 }

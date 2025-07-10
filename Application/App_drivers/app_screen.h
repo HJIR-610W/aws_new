@@ -50,6 +50,7 @@ typedef struct
   int scroll_offset;
   int total_items;
   int selected_index;
+  uint8_t index_list[10];
 } screen_menu_t;
 
 
@@ -67,4 +68,5 @@ void screen_menu_create(screen_menu_t* win, int rows, int cols);
 void screen_menu_clear(screen_menu_t* win);
 void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* format, ...);
 void screen_menu_clear_row(screen_menu_t* win, int row_index);
+void screen_update_list(screen_menu_t* p_screen, int index, int id);
 #endif

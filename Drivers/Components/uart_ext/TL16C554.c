@@ -158,6 +158,7 @@ void set_baud_rate(int uart_num, uint32_t baud_rate)
 #define PEN (1 << 3)  // 패리티 활성화 비트
 #define EPS (1 << 4)  // 짝수 패리티 비트
 #define SP (1 << 5)   // 강제 패리티 비트
+#define STB (1 << 2)  // Stop bit 설정 비트
 // 패리티 설정 함수
 void set_parity(uint8_t uart_num, uint8_t parity_mode)
 {
@@ -192,6 +193,30 @@ void set_parity(uint8_t uart_num, uint8_t parity_mode)
   write_register(LCR(exUartBaseAddress[uart_num]), lcr_val);
 }
 
+void set_stop_bit(uint8_t uart_num, uint8_t stop_bits)
+{
+  volatile uint8_t lcr;
+
+  // 현재 LCR 레지스터 값 읽기
+  lcr = read_register(LCR(exUartBaseAddress[uart_num]));
+
+  switch (stop_bits)
+  {
+    case 0:         // 1 stop bit
+      lcr &= ~STB;  // STB 비트 클리어
+      break;
+
+    case 1:        // 1.5 stop bits (5-bit word) 또는 2 stop bits (6,7,8-bit word)
+      lcr |= STB;  // STB 비트 설정
+      break;
+
+    default:
+      return;  
+  }
+
+
+  write_register(LCR(exUartBaseAddress[uart_num]), lcr);
+}
 void quad_init(driver_t *tls16c554, void *opt)
 {
   uint8_t parity_mode;

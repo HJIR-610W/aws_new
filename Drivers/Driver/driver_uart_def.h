@@ -12,6 +12,8 @@
 
 #define UART_DATA_LEN_8 0
 #define UART_DATA_LEN_9 1
+
+#define UART_STOP_BIT_1 1
 typedef struct uart_baud_config_s
 {
   int baud;

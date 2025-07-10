@@ -24,11 +24,25 @@ const char *g_sensor_model_table[] = {
 #undef X
 };
 
+const char *g_sensor_model_eng_table[] = {
+#define X(name, format) format,
+    SENSOR_TYPE_ENG_LIST
+#undef X
+};
+  
+
 const char *sensor_name_list[] = {
 #define X(name, name2, format) name2,
     SENSOR_LIST
 #undef X
 };
+
+const char *sensor_name_eng_list[] = {
+#define X(name, name2, format) name2,
+    SENSOR_ENG_LIST
+#undef X
+};
+
 
 const char *sensor_format_list[] = {
 #define X(name, name2, format) format,

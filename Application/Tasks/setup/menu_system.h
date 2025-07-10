@@ -5,6 +5,6 @@
 
 #include <stdint.h>
 
-int32_t menu_system(void);
+int32_t setup_menu_system(void);
 
 #endif

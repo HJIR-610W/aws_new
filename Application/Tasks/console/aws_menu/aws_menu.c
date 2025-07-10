@@ -44,7 +44,7 @@ int aws_menu(void)
         aws_menu_veiw();
         break;
       case 2:
-        aws_menu_system();
+        aws_setup_menu_system();
         break;
       case 3:
         aws_menu_sensor();

@@ -59,7 +59,7 @@ int32_t input_date( DATE_TIME_BUF* nt)
 
 #define SYSTEM_MENU_WITDH 30
 
-int aws_menu_system(void)
+int aws_setup_menu_system(void)
 {
   int choice, status;
 

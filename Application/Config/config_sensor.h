@@ -58,7 +58,9 @@ typedef enum physical_layer_e
 typedef struct hjtemp_s
 {
   ePHYSOCAL_LAYER_t physical_layer;
-  uint8_t port;
+  uint8_t rs485_port;
+  uint8_t rs232_port;
+
   union 
   {
     int32_t i_data;
@@ -71,7 +73,8 @@ typedef struct hjtemp_s
 typedef struct hjhumi_s
 {
   ePHYSOCAL_LAYER_t physical_layer;
-  uint8_t port;
+  uint8_t rs485_port;
+  uint8_t rs232_port;
   union 
   {
     int32_t i_data;

@@ -29,7 +29,7 @@ driver_t *hjHuminity_open(int32_t num, void *opt)
   modbus_init_t modbus_init;
   hjtemp_config_t *hjtemp = opt;
 
-  int32_t port = hjtemp->port;
+  int32_t port;
 
   if (hjHumi_drv.opened)
   {
@@ -45,12 +45,12 @@ driver_t *hjHuminity_open(int32_t num, void *opt)
   switch (hjtemp->physical_layer)
   {
     case ePHYSICAL_RS232:
-      modbus_init.port_num =  uart_num_to_driver_num(port);
+      modbus_init.port_num =  uart_num_to_driver_num(hjtemp->rs232_port);
       hj_huminity_cfg.bus_io =
           driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_232, &modbus_init);
       break;
     case ePHYSICAL_RS485:
-       modbus_init.port_num  = port;
+       modbus_init.port_num  = hjtemp->rs485_port;
       hj_huminity_cfg.bus_io =
           driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &modbus_init);
       break; 

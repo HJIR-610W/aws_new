@@ -189,16 +189,16 @@ void check_config_app(void)
       switch (p_hj_temp->physical_layer)
       {
         case ePHYSICAL_RS485:
-          if (p_hj_temp->port > eAPP_RS485_MAX)
+          if (p_hj_temp->rs485_port > eAPP_RS485_MAX)
           {
-            p_hj_temp->port = eAPP_RS485_A;
+            p_hj_temp->rs485_port = eAPP_RS485_A;
             g_config_app_dirty_flag = true;
           }
             break;
         case ePHYSICAL_RS232:
-          if (p_hj_temp->port > eRS232_MAX)
+          if (p_hj_temp->rs232_port > eRS232_MAX)
           {
-            p_hj_temp->port = eRS232_RS485_A;
+            p_hj_temp->rs232_port = eRS232_RS485_A;
             g_config_app_dirty_flag = true;
           }
           break;
@@ -231,16 +231,16 @@ void check_config_app(void)
       switch (p_hj_temp->physical_layer)
       {
         case ePHYSICAL_RS485:
-          if (p_hj_temp->port > eAPP_RS485_MAX)
+          if (p_hj_temp->rs485_port > eAPP_RS485_MAX)
           {
-            p_hj_temp->port = eAPP_RS485_A;
+            p_hj_temp->rs485_port = eAPP_RS485_A;
             g_config_app_dirty_flag = true;
           }
           break;
         case ePHYSICAL_RS232:
-          if (p_hj_temp->port > eRS232_MAX)
+          if (p_hj_temp->rs232_port > eRS232_MAX)
           {
-            p_hj_temp->port = eRS232_RS485_A;
+            p_hj_temp->rs232_port = eRS232_RS485_A;
             g_config_app_dirty_flag = true;
           }
           break;

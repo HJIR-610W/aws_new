@@ -2,6 +2,7 @@
 #include "menu_handler.h"
 #include "menu_system.h"
 #include "util_memory.h"
+#include "menu_sensor.h"
 void setup_root(void)
 {
   const char* menu_list[] = {"SYSTEM",
@@ -15,7 +16,7 @@ void setup_root(void)
                              "ADMIN"};
 
   int status;
-  int choice;
+  int choice=0;
 
   do
   {
@@ -27,10 +28,11 @@ void setup_root(void)
       switch (choice)
       {
       case 0: //SYSTEM
-        status =  menu_system(); 
+        status =  setup_menu_system(); 
         break;
-      case 1:  // SYSTEM
-        break;
+      case 1:
+        status = setup_menu_sensor();
+         break;
       case 2:  // SYSTEM
         break;
       case 3:  // SYSTEM

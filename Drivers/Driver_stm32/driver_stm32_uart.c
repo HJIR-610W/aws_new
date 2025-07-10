@@ -112,14 +112,17 @@ static void MX_USART3_UART_Init(uint32_t baud, uint8_t parity, uint8_t dataLen, 
     huart3.Init.WordLength = UART_WORDLENGTH_9B;
   }
 
-  if (stop)
+  switch(stop)
   {
-    huart3.Init.StopBits = UART_STOPBITS_2;
+    case 2:
+      huart3.Init.StopBits = UART_STOPBITS_2;
+      break;
+    case 0:
+    case 1:
+      huart3.Init.StopBits = UART_STOPBITS_1;
+      break;
   }
-  else
-  {
-    huart3.Init.StopBits = UART_STOPBITS_1;
-  }
+
   switch (parity)
   {
     case PARITY_EVEN:
@@ -156,14 +159,19 @@ static void MX_USART6_UART_Init(uint32_t baud, uint8_t parity, uint8_t dataLen, 
     huart6.Init.WordLength = UART_WORDLENGTH_9B;
   }
 
-  if (stop)
-  {
-    huart6.Init.StopBits = UART_STOPBITS_2;
-  }
-  else
-  {
-    huart6.Init.StopBits = UART_STOPBITS_1;
-  }
+
+    switch (stop)
+    {
+      case 2:
+        huart6.Init.StopBits = UART_STOPBITS_2;
+        break;
+      case 0:
+      case 1:
+        huart6.Init.StopBits = UART_STOPBITS_1;
+        break;
+    }
+
+
   switch (parity)
   {
     case PARITY_EVEN:

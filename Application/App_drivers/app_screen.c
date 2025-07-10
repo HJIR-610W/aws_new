@@ -6,6 +6,7 @@
 
 #include "driver_lcd.h"
 #include "cmsis_os2.h"
+#include "cli_key_code.h"
 
 #define MAX_COLS 21
 
@@ -227,7 +228,7 @@ void screen_handle_scroll(screen_page_t* win, int key)
 
   switch (key)
   {
-    case '8':  // 위로 스크롤
+    case KEY_CODE_UP:  // 위로 스크롤
       if (win->scroll_offset[page] > 0)
       {
         if(win->chunk_scroll_use)
@@ -243,7 +244,7 @@ void screen_handle_scroll(screen_page_t* win, int key)
         }
       }
       break;
-    case '2':  // 아래로 스크롤
+    case KEY_CODE_DOWN:  // 아래로 스크롤
       if(win->chunk_scroll_use)
       {
         new_offset = win->scroll_offset[page] + win->view_row;
@@ -259,13 +260,13 @@ void screen_handle_scroll(screen_page_t* win, int key)
         win->scroll_offset[page] = new_offset;
       }
       break;
-    case '4':  // 이전 페이지
-        if (win->multi_page_use&&(win->current_page > 0))
-        {
-          win->current_page--;
-        }
+    case KEY_CODE_LEFT:  // 이전 페이지
+      if (win->multi_page_use && (win->current_page > 0))
+      {
+        win->current_page--;
+      }
       break;
-    case '6':  // 다음 페이지
+    case KEY_CODE_RIGHT:  // 다음 페이지
       if (win->multi_page_use)
       {
         if (win->current_page < win->total_pages - 1)
@@ -336,7 +337,7 @@ void screen_menu_handle(screen_menu_t* win, int key)
 {
   switch (key)
   {
-    case '8':  // 위로 이동
+    case KEY_CODE_UP:  // 위로 이동
       if (win->selected_index > 0)
       {
         win->selected_index--;
@@ -348,8 +349,8 @@ void screen_menu_handle(screen_menu_t* win, int key)
         }
       }
       break;
-      
-    case '2':  // 아래로 이동
+
+    case KEY_CODE_DOWN:  // 아래로 이동
       if (win->selected_index < win->total_items - 1)
       {
         win->selected_index++;
@@ -387,16 +388,15 @@ void screen_menu_clear_row(screen_menu_t* win, int row_index)
 void screen_off(screen_page_t* p_screen)
 {
   screen_clear(p_screen->view_row,p_screen->view_col);
+  p_screen->current_row = 0;
   screen_printf_row(p_screen, 3, "      Screen Off");
   screen_refresh();
-
-
 }
 
 void screen_on(screen_page_t* p_screen)
 {
-
   screen_clear(p_screen->view_row,p_screen->view_col);
+    p_screen->current_row = 0;
   screen_printf_row(p_screen, 3, "      Screen On");
   screen_refresh();
   osDelay(1000);
@@ -409,4 +409,10 @@ void screen_init(void)
   {
     driver_lcd_display_on(p_s_lcd);
   }
+}
+
+void screen_update_list(screen_menu_t * p_screen,int index,int id)
+{
+  if(index<sizeof(p_screen->index_list))
+  p_screen->index_list[index] = id;
 }

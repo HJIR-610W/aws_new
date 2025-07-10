@@ -8,14 +8,13 @@ typedef enum
 {
   KEY_CODE_NONE = 0,
 
-  // ??? ?
   KEY_CODE_ENTER = '\n',
   KEY_CODE_BACKSPACE = 0x08,
   KEY_CODE_TAB = '\t',
   KEY_CODE_ESC = 0x1B,
   KEY_CODE_SPACE = ' ',
 
-  // ????? (ESC ??????)
+
   KEY_CODE_UP = 1000,
   KEY_CODE_DOWN,
   KEY_CODE_LEFT,
@@ -27,7 +26,7 @@ typedef enum
   KEY_CODE_PAGEUP,
   KEY_CODE_PAGEDOWN,
 
-  // Ctrl ? ???? (Ctrl+A~Z ?? 0x01~0x1A)
+
   KEY_CODE_CTRL_A = 0x01,
   KEY_CODE_CTRL_B = 0x02,
   KEY_CODE_CTRL_C = 0x03,
@@ -55,7 +54,6 @@ typedef enum
   KEY_CODE_CTRL_Y = 0x19,
   KEY_CODE_CTRL_Z = 0x1A,
 
-  // ???
   KEY_CODE_UNKNOWN = 0xFFFF
 
 } keycode_t;

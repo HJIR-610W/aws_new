@@ -15,11 +15,11 @@ const config_sensor_t g_sensor_att_default =
         .hjhumi = {.modbus_id = 1,
                    .ofset = 0,
                    .physical_layer = ePHYSICAL_RS485,
-                   .port = eAPP_RS485_D},
+                   .rs485_port = eAPP_RS485_D},
         .hjtemp = {.modbus_id = 1,
                    .ofset = 0,
                    .physical_layer = ePHYSICAL_RS485,
-                   .port = eAPP_RS485_D}
+                   .rs485_port = eAPP_RS485_D}
         };
 
 
@@ -68,17 +68,17 @@ void limit_hjtemp(void)
 
   if (g_config_sensor.hjtemp.physical_layer == ePHYSICAL_RS485)
   {
-    if (g_config_sensor.hjtemp.port > eAPP_RS485_MAX)
+    if (g_config_sensor.hjtemp.rs485_port > eAPP_RS485_MAX)
     {
-      g_config_sensor.hjtemp.port = eAPP_RS485_D;
+      g_config_sensor.hjtemp.rs485_port = eAPP_RS485_D;
       g_config_sensor_dirty_flag = true;
     }
   }
   if (g_config_sensor.hjtemp.physical_layer == ePHYSICAL_RS232)
   {
-    if (g_config_sensor.hjtemp.port > eRS232_MAX)
+    if (g_config_sensor.hjtemp.rs232_port > eRS232_MAX)
     {
-      g_config_sensor.hjtemp.port = eRS232_RS485_B;
+      g_config_sensor.hjtemp.rs232_port = eRS232_RS485_B;
       g_config_sensor_dirty_flag = true;
     }
   }
@@ -92,17 +92,17 @@ void limit_hjhumi(void)
   }
     if (g_config_sensor.hjhumi.physical_layer == ePHYSICAL_RS485)
     {
-      if (g_config_sensor.hjhumi.port > eAPP_RS485_MAX)
+      if (g_config_sensor.hjhumi.rs485_port > eAPP_RS485_MAX)
       {
-        g_config_sensor.hjhumi.port = eAPP_RS485_D;
+        g_config_sensor.hjhumi.rs485_port = eAPP_RS485_D;
         g_config_sensor_dirty_flag = true;
       }
     }
     else if (g_config_sensor.hjhumi.physical_layer == ePHYSICAL_RS232)
     {
-      if (g_config_sensor.hjhumi.port > eRS232_MAX)
+      if (g_config_sensor.hjhumi.rs232_port > eRS232_MAX)
       {
-        g_config_sensor.hjhumi.port = eRS232_RS485_B;
+        g_config_sensor.hjhumi.rs232_port = eRS232_RS485_B;
         g_config_sensor_dirty_flag = true;
       }
     }

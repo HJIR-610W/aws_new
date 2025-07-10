@@ -2,16 +2,15 @@
 
 #include "menu_system.h"
 
+#include "app_key.h"
 #include "app_screen.h"
-#include "util_time.h"
-#include "cli_key_code.h"
-#include "view_driver.h"
-
-#include "app_button.h"
-#include "config_app.h"
-#include "menu_handler.h"
 #include "bsp_rtc.h"
+#include "cli_key_code.h"
+#include "config_app.h"
 #include "console_utile.h"
+#include "menu_handler.h"
+#include "util_time.h"
+#include "view_driver.h"
 
 #define SCREEN_COLS 20
 #define SYSTEM_WD 8
@@ -20,24 +19,36 @@
 
 const char* g_chargerList_lcd[] = {"SMART", "LS1024"};
 
+#define SYSTEM_MENU_DATE     0
+#define SYSTEM_MENU_TIME     1
+#define SYSTEM_MENU_ID       2
+#define SYSTEM_MENU_PASSWORD 3
+#define SYSTEM_MENU_CHARGER  4
+
+
+
 
 //DATE:2025-11-11
 //TIME:00:00:00
-void draw_menu_system_page(screen_menu_t* p_win)
+void draw_setup_menu_system_page(screen_menu_t* p_win)
 {
   int row_count = 0;
-  char buff[SCREEN_COLS + 1];
 
   p_win->current_row = 0;
 
+  screen_update_list(p_win,row_count,SYSTEM_MENU_DATE);
   MENU_PRINTF(p_win, row_count++, "%-*s:%04d-%02d-%02d", SYSTEM_WD, "DATE", Date_Time.Year,
               Date_Time.Month, Date_Time.Day);
 
-  MENU_PRINTF(p_win, row_count++, "%-*s:%02d:%02d:%02d", SYSTEM_WD,"TIME", Date_Time.Hour, Date_Time.Min,
-              Date_Time.Sec);
+  screen_update_list(p_win,row_count,SYSTEM_MENU_TIME);
+  MENU_PRINTF(p_win, row_count++, "%-*s:%02d:%02d:%02d", SYSTEM_WD, "TIME", Date_Time.Hour,
+              Date_Time.Min, Date_Time.Sec);
 
+  screen_update_list(p_win,row_count,SYSTEM_MENU_ID);
   MENU_PRINTF(p_win, row_count++, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
+  screen_update_list(p_win,row_count,SYSTEM_MENU_PASSWORD);
   MENU_PRINTF(p_win, row_count++, "%-*s:%d", SYSTEM_WD, "PASS", get_config_app()->password);
+  screen_update_list(p_win,row_count,SYSTEM_MENU_CHARGER);
   MENU_PRINTF(p_win, row_count++, "%-*s:%s", SYSTEM_WD, "CHARGER",
               ITEM_LIST(get_config_app()->charger_model, g_chargerList_lcd));
 
@@ -52,30 +63,38 @@ void draw_menu_system_page(screen_menu_t* p_win)
 
 
 
-int32_t menu_system(void)
+int32_t setup_menu_system(void)
 {
-  int32_t choice;
+  int32_t choice=0;
   int32_t status;
   int32_t key;
-  int32_t page_count = 0;
-  int32_t page_list[1];
   screen_menu_t menu;
-  uint32_t start_time;
+  int32_t index;
 
   screen_menu_create(&menu, 8, 20);
 
   while(1)
   {
-    draw_menu_system_page(&menu);
+    draw_setup_menu_system_page(&menu);
     screen_refresh();
 
     key = get_button_key(1000);
 
+    if(key==KEY_CODE_CTRL_Q)
+    {
+      break;
+    }
+    else if(key == KEY_CODE_CTRL_C)
+    {
+      break;
+    }
     if(key == KEY_CODE_ENTER)
     {
-      switch (menu.selected_index)
+      index = menu.selected_index;
+
+      switch (menu.index_list[index])
       {
-        case 0:
+        case SYSTEM_MENU_DATE:
         {
           string_fmt_t strfmt;
           DATE_TIME_BUF nt;
@@ -96,51 +115,50 @@ int32_t menu_system(void)
           bsp_rtc_update();
         }
         break;
-      case 1:
-      {
-        string_fmt_t strfmt;
-        DATE_TIME_BUF nt;
-        strfmt.fmt = "%02d:%02d:%02d";
-        snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, Date_Time.Hour, Date_Time.Min,
-                 Date_Time.Sec);
-        status = input_fmt(&strfmt, "TIME");
-        if (status != MENU_OK)
-          break;
-        int hour;
-        int min;
-        int sec;
-        sscanf(strfmt.data, strfmt.fmt, &hour, &min, &sec);
-        nt = Date_Time;
-        nt.Hour = hour;
-        nt.Min = min;
-        nt.Sec = sec;
-        bsp_rtc_set(&nt);
-        bsp_rtc_update();
-      }
+        case SYSTEM_MENU_TIME:
+        {
+          string_fmt_t strfmt;
+          DATE_TIME_BUF nt;
+          strfmt.fmt = "%02d:%02d:%02d";
+          snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, Date_Time.Hour, Date_Time.Min,
+                   Date_Time.Sec);
+          status = input_fmt(&strfmt, "TIME");
+          if (status != MENU_OK)
+            break;
+          int hour;
+          int min;
+          int sec;
+          sscanf(strfmt.data, strfmt.fmt, &hour, &min, &sec);
+          nt = Date_Time;
+          nt.Hour = hour;
+          nt.Min = min;
+          nt.Sec = sec;
+          bsp_rtc_set(&nt);
+          bsp_rtc_update();
+        }
       break;
-      case 2:
+      case SYSTEM_MENU_ID:
       {
         int val = get_config_app()->id;
-
-        status = input_decimal("ID", 0, 255, &val, SIGN_DISABLE);
+        status = input_decimal("ID", 0, 255, &val);
         if(status !=MENU_OK)
           break;
         config.id = val;
         WRITE_CFG(id);
       }
         break;
-      case 3:
-      {
-        int val = get_config_app()->password;
+        case SYSTEM_MENU_PASSWORD:
+        {
+          int val = get_config_app()->password;
 
-        status = input_decimal("ID", 0, 65535, &val, SIGN_DISABLE);
-        if (status != MENU_OK)
-          break;
-        config.password = val;
-        WRITE_CFG(password);
-      }
+          status = input_decimal("PASSWORD", 0, 65535, &val);
+          if (status != MENU_OK)
+            break;
+          config.password = val;
+          WRITE_CFG(password);
+        }
       break;
-      case 4:
+      case SYSTEM_MENU_CHARGER:
       {
         status = print_menu_list(g_chargerList_lcd,_countof(g_chargerList_lcd),&choice);
         if (status != MENU_OK)
@@ -152,11 +170,11 @@ int32_t menu_system(void)
         break;
       }
     }
-    else if (key != -1)
+    else if (key != KEY_CODE_NONE)
     {
       screen_menu_handle(&menu, key);
     }
   }
 
-  return status;
+  return convert_key_to_status(key);
 }
