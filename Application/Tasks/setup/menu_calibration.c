@@ -118,7 +118,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
 
   p_adc = &g_adc_config_ads1220;
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "Channel (0-%d):", 
                 (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? 17 : 7);
   screen_refresh();
@@ -133,18 +133,18 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
                        ? &p_adc->single_ended_cal[channel]
                        : &p_adc->differential_cal[channel];
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "Low Ref Ready?");
   screen_refresh();
 
-  status = print_menu_list(confirm_menu, 2, &choice);
+  status = input_combobox("Start calibration P1?", confirm_menu, 2, &choice);
   if (status != MENU_OK || choice == 0)
     return status;
 
   avg = 0;
   avg_cnt = 0;
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "Reading Low...");
   screen_printf(1, 0, "Press any key");
   screen_refresh();
@@ -163,7 +163,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     avg_cnt++;
     avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
-    screen_clear(8, 20);
+    screen_clear();
     screen_printf(0, 0, "RAW:%d", adc_raw);
     screen_printf(1, 0, "AVG:%.0f", avg);
     screen_printf(2, 0, "Press any key");
@@ -173,35 +173,28 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
       break;
   }
 
-  screen_clear(8, 20);
-  screen_printf(0, 0, "Low RAW:");
-  screen_refresh();
-
+  screen_clear();
+  p1.raw_value = (int32_t)avg;
   status = input_decimal("Low RAW", p_adc->bits->min_raw_value, 
                         p_adc->bits->max_raw_value, (int32_t*)&p1.raw_value);
   if (status != MENU_OK)
     return status;
 
+    p1.reference_value = 0.5;
   status = input_float("Low Value", -1000.0f, 1000.0f, &p1.reference_value, "%8.3f");
   if (status != MENU_OK)
     return status;
 
-  screen_clear(8, 20);
-  screen_printf(0, 0, "High Ref Ready?");
-  screen_refresh();
-
+  screen_clear();
   choice = 0;
-  status = print_menu_list(confirm_menu, 2, &choice);
+  status = input_combobox("Start calibration P2?", confirm_menu, 2, &choice);
   if (status != MENU_OK || choice == 0)
     return status;
 
   avg = 0;
   avg_cnt = 0;
 
-  screen_clear(8, 20);
-  screen_printf(0, 0, "Reading High...");
-  screen_printf(1, 0, "Press any key");
-  screen_refresh();
+  screen_clear();
 
   while (1)
   {
@@ -217,7 +210,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     avg_cnt++;
     avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
-    screen_clear(8, 20);
+    screen_clear();
     screen_printf(0, 0, "RAW:%d", adc_raw);
     screen_printf(1, 0, "AVG:%.0f", avg);
     screen_printf(2, 0, "Press any key");
@@ -227,15 +220,16 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
       break;
   }
 
-  screen_clear(8, 20);
-  screen_printf(0, 0, "High RAW:");
-  screen_refresh();
+  screen_clear();
 
+
+  p2.raw_value = (int32_t)avg;
   status = input_decimal("High RAW", p_adc->bits->min_raw_value, 
                         p_adc->bits->max_raw_value, (int32_t*)&p2.raw_value);
   if (status != MENU_OK)
     return status;
 
+    p2.reference_value = 4.5;
   status = input_float("High Value", -1000.0f, 1000.0f, &p2.reference_value, "%8.3f");
   if (status != MENU_OK)
     return status;
@@ -246,7 +240,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   {
     save_adc_cali();
     
-    screen_clear(8, 20);
+    screen_clear();
     screen_printf(0, 0, "Calibration OK");
     screen_refresh();
     
@@ -256,7 +250,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   }
   else
   {
-    screen_clear(8, 20);
+    screen_clear();
     screen_printf(0, 0, "Calibration");
     screen_printf(1, 0, "Failed");
     screen_refresh();
@@ -325,7 +319,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
 {
   const adc_cal_params_t* params;
   uint8_t err;
-  int32_t channel;
+  int32_t channel=0;
   int32_t raw;
   int32_t status;
   float voltage;
@@ -333,7 +327,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
 
   p_adc = &g_adc_config_ads1220;
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "Channel (0-%d):", 
                 (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? 17 : 7);
   screen_refresh();
@@ -348,7 +342,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
                ? &p_adc->single_ended_cal[channel]
                : &p_adc->differential_cal[channel];
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "Ch%d %s", channel, 
                 (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? "SE" : "DIFF");
   screen_printf(1, 0, "Cal:%s", params->is_calibrated ? "YES" : "NO");
@@ -369,7 +363,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
     g_current_temp = read_current_temperature();
     voltage = adc_get_compensated_value(raw, params, g_current_temp);
 
-    screen_clear(8, 20);
+    screen_clear();
     screen_printf(0, 0, "Ch%d RAW:%d", channel, raw);
     if (isnan(voltage))
     {
@@ -379,7 +373,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
     {
       screen_printf(1, 0, "V:%.6f", voltage);
     }
-    screen_printf(2, 0, "Temp:%.1f", g_current_temp);
+
     screen_refresh();
 
     if (get_button_key(500) != -1)
@@ -540,11 +534,9 @@ int32_t cali_setup_menu_init(void)
   int32_t choice = 0;
   int32_t status;
 
-  screen_clear(8, 20);
-  screen_printf(0, 0, "Init Calibration?");
-  screen_refresh();
+  screen_clear();
 
-  status = print_menu_list(confirm_menu, 2, &choice);
+  status = input_combobox("Init Calibration?", confirm_menu,2, &choice);
 
   if (status == MENU_OK && choice == 1)
   {
@@ -589,13 +581,11 @@ int32_t cali_setup_menu_init(void)
 
     save_adc_cali();
 
-    screen_clear(8, 20);
-    screen_printf(0, 0, "Init Complete");
-    screen_refresh();
+    screen_clear();
+    show_popup("Calibraion","Init Complete");
 
-    const char* ok_menu[] = {"OK"};
-    choice = 0;
-    print_menu_list(ok_menu, 1, &choice);
+
+    osDelay(2000);
   }
 
   return status;
@@ -649,6 +639,8 @@ int32_t setup_menu_calibration(void)
         default:
           break;
       }
+      if(status == MENU_ABORT)
+      break;
     }
     else if (key != -1)
     {

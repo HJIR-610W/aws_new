@@ -1230,7 +1230,7 @@ void menuTask(void *arg)
     if ((OS_GET_TICK() - start_time) > SCREEN_OFF_TIMEOUT_MS)
     {
       g_screen_state = SCREEN_STATE_OFF;
-      screen_off(&lcd_win);
+      screen_off();
     }
 
     while (g_screen_state == SCREEN_STATE_OFF)
@@ -1238,7 +1238,7 @@ void menuTask(void *arg)
       key = get_button_key(100);
       if (key == KEY_CODE_ENTER)
       {
-        screen_on(&lcd_win);
+        screen_on();
         g_screen_state = SCREEN_STATE_ON;
         start_time = OS_GET_TICK();
       }

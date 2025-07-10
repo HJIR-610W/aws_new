@@ -97,7 +97,7 @@ int32_t setup_pressure_offset(eSENSOR_TYPE_t sensor_type)
   voltage = adc_read_single_avg(cfg->channel, &error, 10);
   measured_value = voltage;
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "Current: %.3f", measured_value);
   screen_printf(1, 0, "ADC Ch%d: %.3fV", cfg->channel, voltage);
   screen_refresh();
@@ -110,7 +110,7 @@ int32_t setup_pressure_offset(eSENSOR_TYPE_t sensor_type)
 
   new_offset = reference_value - measured_value;
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "New Offset:");
   screen_printf(1, 0, "%.3f", new_offset);
   screen_printf(2, 0, "Apply? Y/N");

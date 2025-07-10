@@ -956,7 +956,7 @@ int32_t setup_menu_sensor(void)
     }
     if (key == KEY_CODE_ENTER)
     {
-      screen_clear(menu.view_row,menu.view_col);
+      screen_clear();
       setup_sensor((eSENSOR_TYPE_t)menu.selected_index);
     }
     else if (key != KEY_CODE_NONE)

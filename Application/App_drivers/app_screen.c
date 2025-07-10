@@ -11,8 +11,27 @@
 #define MAX_COLS 21
 
 
-static driver_t *p_s_lcd = NULL;
 
+
+static driver_t *p_s_lcd = NULL;
+static screen_instance_t s_screen;
+
+void screen_init(void)
+{
+  p_s_lcd = driver_lcd_open(DRIVER_CLCD);
+  if (p_s_lcd)
+  {
+    driver_lcd_display_on(p_s_lcd);
+    s_screen.height_pixcel = 64;
+    s_screen.width_pixel = 128;
+    s_screen.font_rows = 8;
+    s_screen.font_cols = 20;
+  }
+}
+screen_instance_t* screen_get_instance(void)
+{
+  return &s_screen;
+}
 
 void screen_home(void)
 {
@@ -60,11 +79,11 @@ void screen_put_ch(int row, int col, uint8_t ch)
 }
 
 
-void screen_clear(int rows,int cols)
+void screen_clear(void)
 {
-  for (int row = 0; row <rows; row++)
+  for (int row = 0; row <s_screen.font_rows; row++)
   {
-    for (int i = 0; i < cols; i++)
+    for (int i = 0; i < s_screen.font_cols; i++)
     {
       screen_put_ch(row, i, ' ');
     }
@@ -388,31 +407,21 @@ void screen_menu_clear_row(screen_menu_t* win, int row_index)
 
 
 
-void screen_off(screen_page_t* p_screen)
+void screen_off(void)
 {
-  screen_clear(p_screen->view_row,p_screen->view_col);
-  p_screen->current_row = 0;
-  screen_printf_row(p_screen, 3, "      Screen Off");
+  screen_clear();
+  screen_printf(3, 0, "      Screen Off");
   screen_refresh();
 }
 
-void screen_on(screen_page_t* p_screen)
+void screen_on(void)
 {
-  screen_clear(p_screen->view_row,p_screen->view_col);
-    p_screen->current_row = 0;
-  screen_printf_row(p_screen, 3, "      Screen On");
+  screen_clear();
+  screen_printf(3, 0, "      Screen On");
   screen_refresh();
   osDelay(1000);
 }
 
-void screen_init(void)
-{
-  p_s_lcd = driver_lcd_open(DRIVER_CLCD);
-  if (p_s_lcd)
-  {
-    driver_lcd_display_on(p_s_lcd);
-  }
-}
 
 void screen_update_list(screen_menu_t * p_screen,int index,int id)
 {
@@ -427,3 +436,6 @@ void screen_clear_unsued_line(screen_menu_t* p_win)
     screen_menu_clear_row(p_win, p_win->current_row );
   }
 }
+
+
+

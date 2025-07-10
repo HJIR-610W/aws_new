@@ -117,7 +117,7 @@ int32_t setup_eth_config(void)
 
   while (1)
   {
-    screen_clear(8, 20);
+    screen_clear();
     status = print_menu_list(eth_menu, _countof(eth_menu), &choice);
     
     if (status != MENU_OK)
@@ -201,7 +201,7 @@ int32_t setup_cdma_config(void)
 
   while (1)
   {
-    screen_clear(8, 20);
+    screen_clear();
     status = print_menu_list(cdma_menu, _countof(cdma_menu), &choice);
     
     if (status != MENU_OK)

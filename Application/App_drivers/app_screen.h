@@ -7,6 +7,17 @@
 
 #include "driver_lcd.h"
 
+typedef struct screen_instance
+{
+  int32_t width_pixel;
+  int32_t height_pixcel;
+  int8_t font_w;
+  int8_t font_h;
+  int8_t font_rows;
+  int8_t font_cols;
+} screen_instance_t;
+
+screen_instance_t* screen_get_instance(void);
 
 void screen_home(void);
 void screen_display_on(void);
@@ -56,14 +67,14 @@ typedef struct
 
 
 void screen_init(void);
-void screen_clear(int rows,int cols);
+void screen_clear(void);
 void screen_page_create(screen_page_t* win, int rows, int cols);
 void screen_printf_row(screen_page_t* win, int row_index, const char* format, ...);
 void screen_clear_row(screen_page_t* win, int row_index);
 void screen_handle_scroll(screen_page_t* win, int key);
 void screen_menu_handle(screen_menu_t* win, int key);
-void screen_off(screen_page_t* p_screen);
-void screen_on(screen_page_t* p_screen);
+void screen_off(void);
+void screen_on(void);
 void screen_menu_create(screen_menu_t* win, int rows, int cols);
 void screen_menu_clear(screen_menu_t* win);
 void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* format, ...);

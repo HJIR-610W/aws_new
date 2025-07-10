@@ -39,7 +39,7 @@ int32_t print_menu_list(const char* menu_list[], int32_t menu_count, int* choice
     scroll_offset = current_selection - MAX_ROWS + 1;
   }
 
-  screen_clear(MAX_ROWS,MAX_COLS);
+  screen_clear();
   while (true)
   {
     for (int i = 0; i < max_display_rows; i++)
@@ -154,7 +154,7 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
   cursor_pos = 0; // 부호 위치(맨 왼쪽)부터 시작
   last_blink = OS_GET_TICK();
   
-  screen_clear(MAX_ROWS, MAX_COLS);
+  screen_clear();
 
   while (1)
   {
@@ -308,7 +308,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
   fmt = strfmt->fmt;
   memset(display, 0, sizeof(display));
   
-  screen_clear(MAX_ROWS, MAX_COLS);
+  screen_clear();
   
   // Format string 파싱하여 편집 가능한 필드들 찾기
   for (i = 0; i < fmt_len && data_index < (int)sizeof(display) - 1; i++)
@@ -587,7 +587,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
   cursor_pos = 0; // 첫 번째 자리부터 시작
   last_blink = OS_GET_TICK();
   
-  screen_clear(MAX_ROWS, MAX_COLS);
+  screen_clear();
 
   while (1)
   {
@@ -770,4 +770,207 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
       return MENU_ABORT;
     }
   }
+}
+
+int32_t input_combobox(const char* title, const char* item_list[], int32_t item_count, int* choice)
+{
+  const char** combo_list;
+  int32_t current_selection;
+  int32_t max_display_rows;
+  int32_t scroll_offset;
+  int32_t status = MENU_OK;
+
+  if (item_count <= 0 || choice == NULL || title == NULL || item_list == NULL)
+  {
+    return MENU_ERROR;
+  }
+
+  current_selection = *choice;
+  if (current_selection < 0 || current_selection >= item_count)
+  {
+    current_selection = 0;
+  }
+
+  combo_list = item_list;
+  max_display_rows = (item_count < MAX_ROWS - 2) ? item_count : (MAX_ROWS - 2);
+  
+  scroll_offset = 0;
+  if (current_selection >= max_display_rows) 
+  {
+    scroll_offset = current_selection - max_display_rows + 1;
+  }
+
+  screen_clear();
+
+  while (1)
+  {
+    screen_printf(0, 0, "%s", title);
+    
+    for (int32_t i = 0; i < max_display_rows; i++)
+    {
+      int32_t item_index = scroll_offset + i;
+      if (item_index >= item_count)
+        break;
+
+      if (item_index == current_selection)
+      {
+        screen_printf(i + 1, 0, "*%s", combo_list[item_index]);
+      }
+      else
+      {
+        screen_printf(i + 1, 0, " %s", combo_list[item_index]);
+      }
+    }
+
+    if (item_count > max_display_rows)
+    {
+      screen_printf(MAX_ROWS - 1, 0, "Page %d/%d", 
+                    (scroll_offset / max_display_rows) + 1,
+                    (item_count - 1) / max_display_rows + 1);
+    }
+
+    screen_refresh();
+
+    int32_t key = get_button_key(100);
+
+    switch (key)
+    {
+      case KEY_CODE_UP:
+        if (current_selection > 0)
+        {
+          current_selection--;
+          if (current_selection < scroll_offset)
+          {
+            scroll_offset--;
+          }
+        }
+        break;
+
+      case KEY_CODE_DOWN:
+        if (current_selection < item_count - 1)
+        {
+          current_selection++;
+          if (current_selection >= scroll_offset + max_display_rows)
+          {
+            scroll_offset++;
+          }
+        }
+        break;
+
+      case KEY_CODE_ENTER:
+        *choice = current_selection;
+        return MENU_OK;
+
+      case KEY_CODE_CTRL_Q:
+        status = MENU_ABORT;
+        break;
+
+      case KEY_CODE_CTRL_C:
+        status = MENU_BACK;
+        break;
+
+      default:
+        break;
+    }
+
+    if (status != MENU_OK)
+      break;
+  }
+
+  return status;
+}
+
+
+
+int32_t show_popup(const char *title, const char *message)
+{
+  const int32_t popup_width = 100;
+  const int32_t popup_height = 48;
+  const int32_t screen_width = 128;
+  const int32_t screen_height = 64;
+  int32_t key;
+  int32_t message_len;
+  int32_t popup_x;
+  int32_t popup_y;
+  int32_t title_len;
+  int32_t title_row;
+  int32_t title_start_col;
+  screen_instance_t *p_screen;
+
+  if (title == NULL)
+  {
+    return MENU_ERROR;
+  }
+
+  p_screen = screen_get_instance();
+  
+  popup_x = (screen_width - popup_width) / 2;
+  popup_y = (screen_height - popup_height) / 2;
+  
+ // screen_set_mode(LCD_MODE_GRAPHIC);
+
+  for (int32_t y = popup_y; y < popup_y + popup_height; y++)
+  {
+    for (int32_t x = popup_x; x < popup_x + popup_width; x++)
+    {
+      if (y == popup_y || y == popup_y + popup_height - 1 ||
+          x == popup_x || x == popup_x + popup_width - 1)
+      {
+        screen_set_pixel(x, y, true);
+      }
+      else
+      {
+        screen_set_pixel(x, y, false);
+      }
+    }
+  }
+
+  for (int32_t y = popup_y + 12; y < popup_y + 14; y++)
+  {
+    for (int32_t x = popup_x + 1; x < popup_x + popup_width - 1; x++)
+    {
+      screen_set_pixel(x, y, true);
+    }
+  }
+
+  //screen_set_mode(LCD_MODE_TEXT);
+  
+  title_len = strlen(title);
+  title_row = (popup_y + 6) / 8;
+  title_start_col = (popup_x + (popup_width - title_len * 6) / 2) / 6;
+  
+  for (int32_t i = 0; i < title_len && title_start_col + i < 20; i++)
+  {
+    screen_put_ch(title_row, title_start_col + i, title[i]);
+  }
+
+  if (message != NULL)
+  {
+    message_len = strlen(message);
+    int32_t message_row = (popup_y + 20) / 8;
+    int32_t message_start_col = (popup_x + (popup_width - message_len * 6) / 2) / 6;
+    
+    for (int32_t i = 0; i < message_len && message_start_col + i < 20; i++)
+    {
+      screen_put_ch(message_row, message_start_col + i, message[i]);
+    }
+  }
+
+  screen_refresh();
+
+  while (1)
+  {
+    key = get_button_key(100);
+    
+    if (key == KEY_CODE_ENTER || key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
+    {
+      break;
+    }
+  }
+
+  //screen_set_mode(LCD_MODE_TEXT);
+  screen_clear();
+  screen_refresh();
+
+  return convert_key_to_status(key);
 }

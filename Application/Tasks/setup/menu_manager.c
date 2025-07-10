@@ -122,7 +122,7 @@ int32_t setup_menu_version(void)
   char buff[30];
   DATE_TIME_BUF ct;
 
-  screen_clear(8, 20);
+  screen_clear();
 
   get_app_version(&major, &minor, &fix, &rel);
   get_app_build(&ct);
@@ -151,7 +151,7 @@ int32_t setup_menu_reset(void)
   int32_t choice = 0;
   int32_t status;
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "Device Reset?");
   screen_refresh();
 
@@ -171,7 +171,7 @@ int32_t setup_menu_update(void)
   int32_t choice = 0;
   int32_t status;
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "Firmware Update?");
   screen_refresh();
 
@@ -181,7 +181,7 @@ int32_t setup_menu_update(void)
   {
     if (check_firmware(UPDATE_LOCAL) == 0)
     {
-      screen_clear(8, 20);
+      screen_clear();
       screen_printf(0, 0, "Updating...");
       screen_refresh();
 
@@ -200,7 +200,7 @@ int32_t setup_menu_hj_reset(void)
   int32_t choice = 0;
   int32_t status;
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "HJ Config Reset?");
   screen_refresh();
 
@@ -210,7 +210,7 @@ int32_t setup_menu_hj_reset(void)
   {
     config_hj_reset();
     
-    screen_clear(8, 20);
+    screen_clear();
     screen_printf(0, 0, "Reset Complete");
     screen_refresh();
     
@@ -228,7 +228,7 @@ int32_t setup_menu_init(void)
   int32_t choice = 0;
   int32_t status;
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "Config Init?");
   screen_refresh();
 
@@ -241,7 +241,7 @@ int32_t setup_menu_init(void)
     config_sensor_reset();
     save_config_sensor();
     
-    screen_clear(8, 20);
+    screen_clear();
     screen_printf(0, 0, "Init Complete");
     screen_refresh();
     
@@ -288,7 +288,7 @@ int32_t setup_menu_backup(void)
         {
           backup_config();
           
-          screen_clear(8, 20);
+          screen_clear();
           screen_printf(0, 0, "Backup Complete");
           screen_refresh();
           
@@ -303,7 +303,7 @@ int32_t setup_menu_backup(void)
           const char* confirm_menu[] = {"No", "Yes"};
           int32_t choice = 0;
           
-          screen_clear(8, 20);
+          screen_clear();
           screen_printf(0, 0, "Restore Config?");
           screen_refresh();
           
@@ -313,7 +313,7 @@ int32_t setup_menu_backup(void)
           {
             restore_config();
             
-            screen_clear(8, 20);
+            screen_clear();
             screen_printf(0, 0, "Restore Complete");
             screen_refresh();
             
@@ -342,7 +342,7 @@ int32_t setup_menu_log_reset(void)
   int32_t log_cnt;
   int32_t status;
 
-  screen_clear(8, 20);
+  screen_clear();
   screen_printf(0, 0, "Log Cnt:%d", get_config_nvm()->log_q_cnt);
   screen_printf(1, 0, "New Count:");
   screen_refresh();
@@ -353,7 +353,7 @@ int32_t setup_menu_log_reset(void)
   {
     nvm_set_log_cnt(log_cnt);
     
-    screen_clear(8, 20);
+    screen_clear();
     screen_printf(0, 0, "Log Reset");
     screen_printf(1, 0, "Count:%d", log_cnt);
     screen_refresh();
