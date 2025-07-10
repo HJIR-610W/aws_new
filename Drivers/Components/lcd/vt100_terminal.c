@@ -198,15 +198,13 @@ driver_t* vt100_terminal_open(void)
 
 void vt100_flush_buffer(driver_t *drv)
 {
-  vt100_terminal_t *term = (vt100_terminal_t *)drv->cfg;
   char buff[VT100_DEFAULT_COLS+1];
 
 
-
-  for (int row; row < VT100_DEFAULT_ROWS; row++)
+  for (int row=0; row < VT100_DEFAULT_ROWS; row++)
   {
     vt100_set_position(drv, row, 0);
-    strncpy(buff, framebuffer[row], VT100_DEFAULT_COLS);
+    strncpy(buff, (char *)framebuffer[row], VT100_DEFAULT_COLS);
     buff[VT100_DEFAULT_COLS] = 0;
     vt100_io_puts(&vt100_driver, buff);
   }

@@ -487,6 +487,7 @@ int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t dec;
+
   float factor;
   frequency_config_t* freq;
 
@@ -506,11 +507,17 @@ int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case FREQ_PAGE_SCALE_FACTOR:
+      status= input_float("Scale Factor",-1000,1000,&factor,"%6.4f");
+      #if 0 
       dec = (int32_t)(freq->scale_factor * 1000);
       status = input_decimal("Scale Factor(*1000)", -100000000, 100000000, &dec);
       if (status != MENU_OK)
         break;
       freq->scale_factor = (float)dec / 1000.0f;
+      #endif
+      if (status != MENU_OK)
+        break;
+      freq->scale_factor = factor;
       save_config_sensor();
       break;
   }

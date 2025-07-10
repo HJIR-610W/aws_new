@@ -486,3 +486,286 @@ int32_t convert_key_to_status(int key)
 
   return status;
 }
+
+int32_t input_float(const char *title, float min, float max, float *val, const char *fmt)
+{
+  char buff[MAX_COLS + 1] = {0};
+  int cursor_pos = 0;
+  int total_width = 0;
+  int decimal_places = 0;
+  int integer_places = 0;
+  uint32_t last_blink;
+  int blink_state = 1;
+  int sign_use = 0;
+  int dot_pos = -1;
+  float temp_val;
+  int i;
+  
+  // 입력 검증
+  if (val == NULL || title == NULL || min > max || fmt == NULL)
+  {
+    return MENU_ERROR;
+  }
+  
+  // fmt 파라미터 분석 (예: "%6.1f")
+  // %[total_width].[decimal_places]f 형식
+  const char *p = fmt;
+  if (*p != '%') return MENU_ERROR;
+  p++;
+  
+  // total_width 파싱
+  while (*p >= '0' && *p <= '9')
+  {
+    total_width = total_width * 10 + (*p - '0');
+    p++;
+  }
+  
+  // 소수점 확인 및 decimal_places 파싱
+  if (*p == '.')
+  {
+    p++;
+    while (*p >= '0' && *p <= '9')
+    {
+      decimal_places = decimal_places * 10 + (*p - '0');
+      p++;
+    }
+  }
+  
+  if (*p != 'f') return MENU_ERROR;
+  
+  // 부호 사용 여부 결정
+  if (min < 0.0f)
+  {
+    sign_use = 1;
+  }
+  
+  // integer_places 계산 (부호 + 정수부 + 소수점)
+  integer_places = total_width - decimal_places;
+  if (decimal_places > 0) integer_places--; // 소수점 자리
+  if (sign_use) integer_places--; // 부호 자리
+  
+  // 버퍼 크기 제한
+  if (total_width >= MAX_COLS) total_width = MAX_COLS - 1;
+  
+  // 현재 값으로 버퍼 초기화
+  if (sign_use)
+  {
+    if (decimal_places > 0)
+    {
+      snprintf(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, *val);
+    }
+    else
+    {
+      snprintf(buff, sizeof(buff), "%+0*d", total_width, (int)*val);
+    }
+  }
+  else
+  {
+    if (decimal_places > 0)
+    {
+      snprintf(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, *val);
+    }
+    else
+    {
+      snprintf(buff, sizeof(buff), "%0*d", total_width, (int)*val);
+    }
+  }
+  buff[sizeof(buff) - 1] = '\0';
+  
+  // 소수점 위치 찾기
+  for (i = 0; i < total_width; i++)
+  {
+    if (buff[i] == '.')
+    {
+      dot_pos = i;
+      break;
+    }
+  }
+  
+  cursor_pos = 0; // 첫 번째 자리부터 시작
+  last_blink = OS_GET_TICK();
+  
+  screen_clear(MAX_ROWS, MAX_COLS);
+
+  while (1)
+  {
+    // 화면 출력
+    screen_printf(0, 0, "%s", title);
+    if (sign_use)
+    {
+      screen_printf(1, 0, "Min: %+*.*f", total_width, decimal_places, min);
+      screen_printf(2, 0, "Max: %+*.*f", total_width, decimal_places, max);
+    }
+    else
+    {
+      screen_printf(1, 0, "Min: %*.*f", total_width, decimal_places, min);
+      screen_printf(2, 0, "Max: %*.*f", total_width, decimal_places, max);
+    }
+
+    screen_printf(3, 0, "Val:%s", buff);
+    
+    // 커서 깜빡임 처리 (500ms 간격)
+    if (OS_GET_TICK() - last_blink >= 500)
+    {
+      last_blink = OS_GET_TICK();
+      blink_state = !blink_state;
+    }
+    
+    // 커서 위치의 문자만 깜빡이게 표시
+    if (cursor_pos < total_width)
+    {
+      char display_char = blink_state ? buff[cursor_pos] : ' ';
+      screen_put_ch(3, 4 + cursor_pos, display_char);
+    }
+
+    screen_refresh();
+
+    int32_t key = get_button_key(10);  // 10ms 대기
+    if (key == -1) continue;
+
+    // 키 입력 시 커서 즉시 표시
+    blink_state = 1;
+    last_blink = OS_GET_TICK();
+    screen_printf(3, 0, "Val:%s", buff);
+
+    if (key == KEY_CODE_LEFT)
+    {
+      if (cursor_pos > 0)
+      {
+        cursor_pos--;
+        // 소수점 건너뛰기
+        if (dot_pos >= 0 && cursor_pos == dot_pos)
+        {
+          cursor_pos--;
+        }
+      }
+    }
+    else if (key == KEY_CODE_RIGHT)
+    {
+      if (cursor_pos < total_width - 1)
+      {
+        cursor_pos++;
+        // 소수점 건너뛰기
+        if (dot_pos >= 0 && cursor_pos == dot_pos)
+        {
+          cursor_pos++;
+        }
+      }
+    }
+    else if (key == KEY_CODE_UP || key == KEY_CODE_DOWN)
+    {
+      if (cursor_pos == 0 && sign_use)  // 부호 위치
+      {
+        if (buff[0] == '-')
+        {
+          buff[0] = '+';
+        }
+        else if (buff[0] == '+')
+        {
+          buff[0] = '-';
+        }
+      }
+      else if (dot_pos < 0 || cursor_pos != dot_pos)  // 소수점이 아닌 위치
+      {
+        uint8_t ch = buff[cursor_pos];
+        if (key == KEY_CODE_UP)
+        {
+          ch += 1;
+          if (ch > '9')
+          {
+            ch = '9';
+          }
+          buff[cursor_pos] = ch;
+        }
+        else if (key == KEY_CODE_DOWN)
+        {
+          ch -= 1;
+          if (ch < '0')
+          {
+            ch = '0';
+          }
+          buff[cursor_pos] = ch;
+        }
+      }
+      
+      // 범위 체크
+      temp_val = atof(buff);
+      if (temp_val < min)
+      {
+        if (sign_use)
+        {
+          snprintf(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, min);
+        }
+        else
+        {
+          snprintf(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, min);
+        }
+      }
+      else if (temp_val > max)
+      {
+        if (sign_use)
+        {
+          snprintf(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, max);
+        }
+        else
+        {
+          snprintf(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, max);
+        }
+      }
+    }
+    else if (key >= '0' && key <= '9')
+    {
+      if ((cursor_pos > 0 || sign_use == 0) && (dot_pos < 0 || cursor_pos != dot_pos))
+      {
+        buff[cursor_pos] = key;
+        if (cursor_pos < total_width - 1)
+        {
+          cursor_pos++;
+          // 소수점 건너뛰기
+          if (dot_pos >= 0 && cursor_pos == dot_pos)
+          {
+            cursor_pos++;
+          }
+        }
+        
+        // 범위 체크
+        temp_val = atof(buff);
+        if (temp_val < min)
+        {
+          if (sign_use)
+          {
+            snprintf(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, min);
+          }
+          else
+          {
+            snprintf(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, min);
+          }
+        }
+        else if (temp_val > max)
+        {
+          if (sign_use)
+          {
+            snprintf(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, max);
+          }
+          else
+          {
+            snprintf(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, max);
+          }
+        }
+      }
+    }
+    else if (key == KEY_CODE_ENTER)
+    {
+      *val = atof(buff);
+      return MENU_OK;
+    }
+    else if (key == KEY_CODE_CTRL_C)
+    {
+      return MENU_BACK;
+    }
+    else if (key == KEY_CODE_CTRL_Q)
+    {
+      return MENU_ABORT;
+    }
+  }
+}

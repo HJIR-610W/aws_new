@@ -23,5 +23,6 @@ typedef struct string_fmt_s
 int32_t print_menu_list(const char* menu_list[], int32_t menu_count, int* choice);
 int32_t input_decimal(const char* title, int min, int max, int* val);
 int input_fmt(string_fmt_t* strfmt, const char* title);
+int32_t input_float(const char *title, float min, float max, float *val, const char *fmt);
 int32_t convert_key_to_status(int key);
 #endif
