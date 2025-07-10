@@ -9,16 +9,14 @@
 #include "menu_handler.h"
 #include "view_driver.h"
 #include "util_memory.h"
+#include "string\const_string.h"
 
 #define SCREEN_COLS 20
 #define NETWORK_WD 10
 
 #define M_PRINTF screen_menu_printf_row
 
-const char* g_ethModeList[] = {"Client", "Server"};
-const char* g_cdmaModelList[] = {"NTLE9607", "TX700"};
-const char* g_protocolList[] = {"KMA2", "KMA3"};
-const char* g_enableList[] = {"Disable", "Enable"};
+
 
 #define NETWORK_MENU_ETH_USE 0
 #define NETWORK_MENU_CDMA_USE 1
@@ -36,15 +34,15 @@ void draw_network_main_page(screen_menu_t* p_win)
 
   screen_update_list(p_win, row_count, NETWORK_MENU_ETH_USE);
   M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Eth Use", 
-           ITEM_LIST(get_config_app()->eth_use, g_enableList));
+           ITEM_LIST(get_config_app()->eth_use, enable_list_eng));
 
   screen_update_list(p_win, row_count, NETWORK_MENU_CDMA_USE);
   M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "CDMA Use", 
-           ITEM_LIST(get_config_app()->cdma_use, g_enableList));
+           ITEM_LIST(get_config_app()->cdma_use, enable_list_eng));
 
   screen_update_list(p_win, row_count, NETWORK_MENU_DIRECT_USE);
   M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Direct Use", 
-           ITEM_LIST(get_config_app()->direct_use, g_enableList));
+           ITEM_LIST(get_config_app()->direct_use, enable_list_eng));
 
   screen_update_list(p_win, row_count, NETWORK_MENU_ETH_CONFIG);
   M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Eth Config");
@@ -57,7 +55,7 @@ void draw_network_main_page(screen_menu_t* p_win)
 
   screen_update_list(p_win, row_count, NETWORK_MENU_AWS_PROTOCOL);
   M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Protocol", 
-           ITEM_LIST(get_config_app()->aws_protocol_type, g_protocolList));
+           ITEM_LIST(get_config_app()->aws_protocol_type, protocol_list_eng));
 
   p_win->total_items = row_count;
 
@@ -129,7 +127,7 @@ int32_t setup_eth_config(void)
     {
       case 0: // Mode
         choice = get_config_app()->eth_mode;
-        status = print_menu_list(g_ethModeList, _countof(g_ethModeList), &choice);
+        status = print_menu_list(eth_mode_list_eng, _countof(eth_mode_list_eng), &choice);
         if (status == MENU_OK)
         {
           get_config_app()->eth_mode = choice;
@@ -229,7 +227,7 @@ int32_t setup_cdma_config(void)
         break;
       case 2: // Model
         choice = get_config_app()->cdma_model;
-        status = print_menu_list(g_cdmaModelList, _countof(g_cdmaModelList), &choice);
+        status = print_menu_list(cdma_model_list_eng, _countof(cdma_model_list_eng), &choice);
         if (status == MENU_OK)
         {
           get_config_app()->cdma_model = choice;
@@ -238,7 +236,7 @@ int32_t setup_cdma_config(void)
         break;
       case 3: // VPN Use
         choice = get_config_app()->vpn_use;
-        status = print_menu_list(g_enableList, _countof(g_enableList), &choice);
+        status = print_menu_list(enable_list_eng, _countof(enable_list_eng), &choice);
         if (status == MENU_OK)
         {
           get_config_app()->vpn_use = choice;
@@ -304,7 +302,7 @@ int32_t setup_menu_network(void)
       {
         case NETWORK_MENU_ETH_USE:
           choice = get_config_app()->eth_use;
-          status = print_menu_list(g_enableList, _countof(g_enableList), &choice);
+          status = print_menu_list(enable_list_eng, _countof(enable_list_eng), &choice);
           if (status == MENU_OK)
           {
             get_config_app()->eth_use = choice;
@@ -313,7 +311,7 @@ int32_t setup_menu_network(void)
           break;
         case NETWORK_MENU_CDMA_USE:
           choice = get_config_app()->cdma_use;
-          status = print_menu_list(g_enableList, _countof(g_enableList), &choice);
+          status = print_menu_list(enable_list_eng, _countof(enable_list_eng), &choice);
           if (status == MENU_OK)
           {
             get_config_app()->cdma_use = choice;
@@ -327,7 +325,7 @@ int32_t setup_menu_network(void)
           break;
         case NETWORK_MENU_DIRECT_USE:
           choice = get_config_app()->direct_use;
-          status = print_menu_list(g_enableList, _countof(g_enableList), &choice);
+          status = print_menu_list(enable_list_eng, _countof(enable_list_eng), &choice);
           if (status == MENU_OK)
           {
             get_config_app()->direct_use = choice;
@@ -350,7 +348,7 @@ int32_t setup_menu_network(void)
           break;
         case NETWORK_MENU_AWS_PROTOCOL:
           choice = get_config_app()->aws_protocol_type;
-          status = print_menu_list(g_protocolList, _countof(g_protocolList), &choice);
+          status = print_menu_list(protocol_list_eng, _countof(protocol_list_eng), &choice);
           if (status == MENU_OK)
           {
             get_config_app()->aws_protocol_type = choice;

@@ -473,7 +473,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
 
 int32_t convert_key_to_status(int key)
 {
-  int32_t status;
+  int32_t status =MENU_OK;
 
   if (key == KEY_CODE_CTRL_Q)
   {

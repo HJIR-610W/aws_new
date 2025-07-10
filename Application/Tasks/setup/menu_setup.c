@@ -6,7 +6,8 @@
 #include "util_memory.h"
 #include "menu_offset.h"
 #include "menu_panel.h"
-
+#include "menu_calibration.h"
+#include "menu_manager.h"
 void setup_root(void)
 {
   const char* menu_list[] = {"SYSTEM",
@@ -48,8 +49,13 @@ void setup_root(void)
       case 5:
        status = setup_menu_offset();
        break;
-      default:
+      case 6:
+      status =setup_menu_calibration();
+      break;
+      case 7:
+        status = setup_menu_manager();
         break;
+        default : break;
       }
 
       if(status == MENU_ABORT)

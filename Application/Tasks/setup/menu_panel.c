@@ -8,13 +8,14 @@
 #include "menu_handler.h"
 #include "util_memory.h"
 #include "view_driver.h"
+#include "string\const_string.h"
 
 #define SCREEN_COLS 20
 #define PANEL_WD 8
 
 #define MENU_PRINTF screen_menu_printf_row
 
-const char* g_panelList_lcd[] = {"AWS STD", "HJ STD", "MOOJU", "HANSUNG"};
+
 
 #define PANEL_MENU_MODEL    0
 #define PANEL_MENU_SNOW     1
@@ -28,17 +29,17 @@ void draw_setup_menu_panel_page(screen_menu_t* p_win)
 
   screen_update_list(p_win, row_count, PANEL_MENU_MODEL);
   MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "MODEL",
-              ITEM_LIST(get_config_app()->panel_model, g_panelList_lcd));
+              ITEM_LIST(get_config_app()->panel_model, panel_list_eng));
 
   if (get_config_app()->panel_model == ePANEL_MUJU)
   {
     screen_update_list(p_win, row_count, PANEL_MENU_SNOW);
     MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "SNOW",
-                ITEM_LIST((int32_t)get_config_app()->panel_snow_use, enableList));
+                ITEM_LIST((int32_t)get_config_app()->panel_snow_use, enable_list_eng));
 
     screen_update_list(p_win, row_count, PANEL_MENU_BAROMETER);
     MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "BAROM",
-                ITEM_LIST((int32_t)get_config_app()->panel_barometer_use, enableList));
+                ITEM_LIST((int32_t)get_config_app()->panel_barometer_use, enable_list_eng));
   }
 
   p_win->total_items = row_count;
@@ -83,7 +84,8 @@ int32_t setup_menu_panel(void)
       {
         case PANEL_MENU_MODEL:
         {
-          status = print_menu_list(g_panelList_lcd, _countof(g_panelList_lcd), &choice);
+          choice = config.panel_model;
+          status = print_menu_list(panel_list_eng, _countof(panel_list_eng), &choice);
           if (status != MENU_OK)
             break;
           config.panel_model = (ePANEL_MODEL_t)choice;
@@ -93,23 +95,24 @@ int32_t setup_menu_panel(void)
 
         case PANEL_MENU_SNOW:
         {
-          bool enable = get_config_app()->panel_snow_use;
-          status = print_menu_list(enableList, _countof(enableList), &choice);
-          if (status != MENU_OK)
-            break;
-          config.panel_snow_use = (uint8_t)choice;
-          WRITE_CFG(panel_snow_use);
+           choice = get_config_app()->panel_snow_use;
+
+           status = print_menu_list(enable_list_eng, _countof(enable_list_eng), &choice);
+           if (status != MENU_OK)
+             break;
+           config.panel_snow_use = (uint8_t)choice;
+           WRITE_CFG(panel_snow_use);
         }
         break;
 
         case PANEL_MENU_BAROMETER:
         {
-          bool enable = get_config_app()->panel_barometer_use;
-          status = print_menu_list(enableList, _countof(enableList), &choice);
-          if (status != MENU_OK)
-            break;
-          config.panel_barometer_use = (uint8_t)choice;
-          WRITE_CFG(panel_barometer_use);
+           choice = get_config_app()->panel_barometer_use;
+           status = print_menu_list(enable_list_eng, _countof(enable_list_eng), &choice);
+           if (status != MENU_OK)
+             break;
+           config.panel_barometer_use = (uint8_t)choice;
+           WRITE_CFG(panel_barometer_use);
         }
         break;
 

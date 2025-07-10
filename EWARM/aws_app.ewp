@@ -1867,7 +1867,13 @@
             <group>
                 <name>setup</name>
                 <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\setup\menu_calibration.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\setup\menu_handler.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\setup\menu_manager.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\setup\menu_network.c</name>
@@ -1886,6 +1892,12 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Tasks\setup\menu_system.c</name>
+                </file>
+            </group>
+            <group>
+                <name>string</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Application\Tasks\string\const_string.c</name>
                 </file>
             </group>
             <file>
