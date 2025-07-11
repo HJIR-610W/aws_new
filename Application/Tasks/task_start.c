@@ -115,17 +115,17 @@ void startTask(void *arg)
 //  dualportTask_init();
 
 
-  if (get_config_app()->cdma_use)
+  if (get_config_app()->cdma_active)
   {
     cellularTask_init();
   }
   
-  if (get_config_app()->direct_use)
+  if (get_config_app()->direct_active)
   {
     directTask_init();
   }
 
-  if (get_config_app()->eth_use)
+  if (get_config_app()->eth_active)
   {
     if(get_config_app()->eth_mode==eETH_MODE_CLINET)
     {

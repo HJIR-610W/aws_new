@@ -148,17 +148,17 @@ int32_t mcu_pin(p_shell_context_t ctx, int32_t argc, char **argv)
 
   if (strncmp(argv[1], "di", 2) == 0)
   {
-    io_printf(VT100_CLEAR_SCREEN);
-    io_printf(VT100_CURSOR_OFF);
+    io_printf(ES_CLEAR_SCREEN);
+    io_printf(ES_CURSOR_OFF);
     do
     {
-      io_printf(VT100_CURSOR_HOME);
+      io_printf(ES_CURSOR_HOME_ALT);
       print_gpio_states_in_table();
 
       io_recv(&ch, 1, 100);
     } while (ch != ASCII_CODE_CTRL_Q);
 
-    io_printf(VT100_CURSOR_ON);
+    io_printf(ES_CURSOR_ON);
   }
   else if (strncmp(argv[1], "do", 2) == 0)
   {

@@ -126,7 +126,7 @@ void draw_system(win_t* p_win)
 
       win_printf_row(p_win, row_count++, "%s: %.1f", m_l("장비 온도C",SYSTEM_WD), bsp_read_temperature());
 
-      if (get_config_app()->ac_use)
+      if (get_config_app()->ac_active)
       {
         win_printf_row(p_win, row_count++, "%s: %s",  m_l("AC",SYSTEM_WD),"정상");
       }
@@ -1926,10 +1926,8 @@ int32_t aws_menu_veiw(void)
   int current_win = 5;//aws
   app_mode_t mode = MODE_SELECT;
 
-
-  io_printf(VT100_CLEAR_SCREEN);
-  io_printf(VT100_CURSOR_OFF);
-
+  io_printf(ES_CLEAR_SCREEN);
+  io_printf(ES_CURSOR_OFF);
 
   create_win(&system_win, 0, 0, 6, 26);
   create_win(&rain_win, 0, 0, 6, 26);
@@ -1942,7 +1940,7 @@ int32_t aws_menu_veiw(void)
 
   while (1)
   {
-    io_printf(VT100_CURSOR_HOME);
+    io_printf(ES_CURSOR_HOME);
     reset_layout();
     window_count = 0;
 
@@ -1958,14 +1956,14 @@ int32_t aws_menu_veiw(void)
     windows[window_count++] = &system_win;
     windows[window_count++] = &rain_win;
     windows[window_count++] = &charger_win;
-    if (get_config_app()->cdma_use)
+    if (get_config_app()->cdma_active)
       windows[window_count++] = &cdma_win;
-    if (get_config_app()->direct_use)
+    if (get_config_app()->direct_active)
       windows[window_count++] = &direct_win;
     windows[window_count++] = &aws_win;
-    if (get_config_app()->eth_use)
+    if (get_config_app()->eth_active)
       windows[window_count++] = &eth_win;
-    windows[window_count++] = &config_win;
+ //   windows[window_count++] = &config_win;
 
 
 
@@ -1984,14 +1982,14 @@ int32_t aws_menu_veiw(void)
     draw_system(&system_win);
     draw_rain(&rain_win);
     draw_charger(&charger_win);
-    if (get_config_app()->cdma_use)
+    if (get_config_app()->cdma_active)
       draw_cdma(&cdma_win);
-    if (get_config_app()->direct_use)
+    if (get_config_app()->direct_active)
       draw_direct(&direct_win);
     draw_aws(&aws_win);
-    if (get_config_app()->eth_use)
+    if (get_config_app()->eth_active)
       draw_eth(&eth_win);
-    draw_config(&config_win);
+  //  draw_config(&config_win);
 
     if (window_count == 0)
     {
@@ -2037,5 +2035,7 @@ int32_t aws_menu_veiw(void)
   }
 
   io_printf("\r\n");
+
+  io_printf(ES_CURSOR_ON);
   return 1;
 }

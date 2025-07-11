@@ -28,6 +28,7 @@
 #include "pcb_define.h"
 #include "os_user_def.h"
 #include "setup\menu_setup.h"
+#include "util_stdio.h"
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
 extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용
 extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
@@ -51,29 +52,7 @@ const osThreadAttr_t kMenuTask_attributes = {
 
 eSCREEN_STATE_t g_screen_state = SCREEN_STATE_ON;
 
-void make_centered(char *buffer, size_t buf_size, const char *text, int width)
-{
-  int text_len = strlen(text);
 
-  if (text_len >= width || buf_size <= 1)
-  {
-    snprintf(buffer, buf_size, "%.*s", (int)buf_size - 1, text);
-    return;
-  }
-  int left_padding = (width - text_len) / 2;
-  int written = snprintf(buffer, buf_size, "%*s%s", left_padding, "", text);
-  if (written < 0 || written >= buf_size - 1)
-  {
-    return;
-  }
-
-  for (int i = written; i < width && i < buf_size - 1; i++)
-  {
-    buffer[i] = ' ';
-  }
-  int end_pos = (width < buf_size) ? width : (int)buf_size - 1;
-  buffer[end_pos] = '\0';
-}
 
 
 
@@ -102,7 +81,7 @@ void draw_system_page(screen_page_t* p_win)
   screen_printf_row(p_win, row_count++, "%-*s:%.1f", SYSTEM_WD, "SYS VOLT", bsp_read_battery());
   screen_printf_row(p_win, row_count++, "%-*s:%.1f", SYSTEM_WD, "SYS TEMP", bsp_read_temperature());
   
-  if (get_config_app()->ac_use)
+  if (get_config_app()->ac_active)
   {
     screen_printf_row(p_win, row_count++, "%-*s:%s", SYSTEM_WD, "AC", "ON");
   }
@@ -1158,11 +1137,11 @@ void menuTask(void *arg)
     page_list[page_count++] = PAGE_RAIN;
     page_list[page_count++] = PAGE_CHARGER;
     
-    if (get_config_app()->cdma_use)
+    if (get_config_app()->cdma_active)
       page_list[page_count++] = PAGE_CDMA;
-    if (get_config_app()->direct_use)
+    if (get_config_app()->direct_active)
       page_list[page_count++] = PAGE_DIRECT;
-    if (get_config_app()->eth_use)
+    if (get_config_app()->eth_active)
       page_list[page_count++] = PAGE_ETH;
     
     page_list[page_count++] = PAGE_AWS_AVG;

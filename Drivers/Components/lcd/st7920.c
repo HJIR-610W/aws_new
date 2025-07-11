@@ -81,7 +81,6 @@ void st7920_flush_buffer(driver_t *drv);
 void st7920_put_ch(driver_t *drv, int row, int col, uint8_t ch);
 
 lcd_api_t lcd_api = {.set_position = st7920_set_position,
-                     .write_string = st7920_write_string_api,
                      .write_string_at = st7920_write_string,
                      .clear_screen = st7920_clear_screen,
                      .home = st7920_home,

@@ -300,7 +300,7 @@ int32_t aws_network_config_cdma(void)
     if (config.cdma_model == eCDMA_NTLE9607)
     {
       snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "VPN   :%s",
-               ITEM_LIST(config.vpn_use, enableList));
+               ITEM_LIST(config.vpn_active, enableList));
     menu_cnt++;
     }
 
@@ -338,10 +338,10 @@ int32_t aws_network_config_cdma(void)
           io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
           break;
       case 4:
-        status = choice_enable(&get_config_app()->vpn_use);
+        status = choice_enable(&get_config_app()->vpn_active);
         if (status != MENU_OK)
           break;
-        WRITE_CFG(vpn_use);
+        WRITE_CFG(vpn_active);
       
         break;
     }
@@ -459,15 +459,15 @@ int32_t aws_network_use(void)
 
     make_comList(buffer, sizeof(buffer));
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "이더넷  :%s",
-             ITEM_LIST((int)get_config_app()->eth_use, enableList));
+             ITEM_LIST((int)get_config_app()->eth_active, enableList));
     menu_cnt++;
 
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "CDMA    :%s",
-             ITEM_LIST((int)get_config_app()->cdma_use, enableList));
+             ITEM_LIST((int)get_config_app()->cdma_active, enableList));
     menu_cnt++;
 
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "직접통신:%s",
-             ITEM_LIST((int)get_config_app()->direct_use, enableList));
+             ITEM_LIST((int)get_config_app()->direct_active, enableList));
     menu_cnt++;
 
     status = choice_menu(24, "사용 여부", menu, menu_cnt, &choice);
@@ -477,34 +477,34 @@ int32_t aws_network_use(void)
     switch (choice)
     {
       case 1:
-        status = choice_enable(&get_config_app()->eth_use);
+        status = choice_enable(&get_config_app()->eth_active);
         if (status != MENU_OK)
           break;
-        WRITE_CFG(eth_use);
+        WRITE_CFG(eth_active);
         io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
       case 2:
-        status = choice_enable(&get_config_app()->cdma_use);
+        status = choice_enable(&get_config_app()->cdma_active);
         if (status != MENU_OK)
           break;
-        if (get_config_app()->direct_use)
+        if (get_config_app()->direct_active)
         {
-          get_config_app()->direct_use = 0;
-          WRITE_CFG(direct_use);
+          get_config_app()->direct_active = 0;
+          WRITE_CFG(direct_active);
         }
-        WRITE_CFG(cdma_use);
+        WRITE_CFG(cdma_active);
         io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
       case 3:
-        status = choice_enable(&get_config_app()->direct_use);
+        status = choice_enable(&get_config_app()->direct_active);
         if (status != MENU_OK)
           break;
-        if(get_config_app()->cdma_use)
+        if(get_config_app()->cdma_active)
         {
-          get_config_app()->cdma_use = 0;
-          WRITE_CFG(cdma_use);
+          get_config_app()->cdma_active = 0;
+          WRITE_CFG(cdma_active);
         }
-        WRITE_CFG(direct_use);
+        WRITE_CFG(direct_active);
         io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
     }

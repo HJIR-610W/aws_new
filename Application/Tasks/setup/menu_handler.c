@@ -12,6 +12,8 @@
 #include "os_user_def.h"
 
 #include "util_memory.h"
+#include "util_stdio.h"
+
 #define MAX_ROWS 8
 #define MAX_COLS 20
 #define MAX_FIELDS 6
@@ -111,11 +113,12 @@ int32_t print_menu_list(const char* menu_list[], int32_t menu_count, int* choice
 int32_t input_decimal(const char *title, int min, int max, int *val)
 {
   char buff[MAX_COLS + 1] = {0};
+  
   int cursor_pos = 0;
   int number_width = 0;
   uint32_t last_blink;
   int blink_state = 1;
-  int place, step, delta, new_val;
+
   int sign_use=0;
   // 입력 검증
   if (val == NULL || title == NULL || min > max)
@@ -123,24 +126,29 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
     return MENU_ERROR;
   }
 
-  if(min<0)
-  sign_use = 1;
-  
-  // 최대 자릿수 계산 (음수 고려)
-  int temp_max = (abs(max) > abs(min)) ? abs(max) : abs(min);
-  if (temp_max == 0) temp_max = 1;
+    screen_clear();
+    make_centered(buff, sizeof(buff), title, MAX_COLS);
+    screen_printf(0, 0, "%s", buff);
 
-  if(sign_use)
-  number_width = (int)log10(temp_max) + 2;
-  else
-    number_width = (int)log10(temp_max) + 1;
-  if (min < 0)
-  {
-    if(sign_use)
-    number_width +=2; // 음수 부호 고려
+    if (min < 0)
+      sign_use = 1;
+
+    // 최대 자릿수 계산 (음수 고려)
+    int temp_max = (abs(max) > abs(min)) ? abs(max) : abs(min);
+    if (temp_max == 0)
+      temp_max = 1;
+
+    if (sign_use)
+      number_width = (int)log10(temp_max) + 2;
     else
-    number_width +=1;
-  }
+      number_width = (int)log10(temp_max) + 1;
+    if (min < 0)
+    {
+      if (sign_use)
+        number_width += 2;  // 음수 부호 고려
+      else
+        number_width += 1;
+    }
   // 버퍼 크기 제한
   if (number_width >= MAX_COLS) number_width = MAX_COLS - 1;
   
@@ -154,12 +162,13 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
   cursor_pos = 0; // 부호 위치(맨 왼쪽)부터 시작
   last_blink = OS_GET_TICK();
   
-  screen_clear();
+
+
 
   while (1)
   {
     // 화면 출력
-    screen_printf(0, 0, "%s", title);
+
     if(sign_use)
     {
       screen_printf(1, 0, "Min: %+0*d", number_width, min);
@@ -200,12 +209,7 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
     last_blink = OS_GET_TICK();
     screen_printf(3, 0, "Val:%s", buff);
 
-    // 현재 커서 위치에서 자릿수 계산 (부호 위치 제외)
-    if (cursor_pos > 0)
-    {
-      place = number_width - 1 - cursor_pos;
-      step = (int)pow(10, place);
-    }
+
 
     if (key == KEY_CODE_LEFT)
     {
@@ -291,6 +295,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
   const char* fmt;
   int data_index = 0;
   char display[21];
+  char buff[MAX_COLS];
   int i, j, width;
   int current_field = 0;
   int cursor_pos = 0;
@@ -361,7 +366,8 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
   while (1)
   {
     // 화면 출력
-    screen_printf(0, 0, "%s", title);
+    make_centered(buff,sizeof(buff),title,MAX_COLS);
+    screen_printf(0, 0, "%s", buff);
     screen_printf(1, 0, "%s", display);
     screen_printf(2, 0, "Field: %d/%d", current_field + 1, field_count);
     screen_printf(3, 0, "Cursor: %d", cursor_pos);
@@ -535,6 +541,11 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
   
   if (*p != 'f') return MENU_ERROR;
   
+    screen_clear();
+
+  make_centered(buff,sizeof(buff),title,MAX_COLS);
+  screen_printf(0, 0, "%s", buff);
+  
   // 부호 사용 여부 결정
   if (min < 0.0f)
   {
@@ -587,12 +598,12 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
   cursor_pos = 0; // 첫 번째 자리부터 시작
   last_blink = OS_GET_TICK();
   
-  screen_clear();
+
 
   while (1)
   {
     // 화면 출력
-    screen_printf(0, 0, "%s", title);
+
     if (sign_use)
     {
       screen_printf(1, 0, "Min: %+*.*f", total_width, decimal_places, min);
@@ -779,8 +790,11 @@ int32_t input_combobox(const char* title, const char* item_list[], int32_t item_
   int32_t max_display_rows;
   int32_t scroll_offset;
   int32_t status = MENU_OK;
+  int total_width = MAX_COLS;  // 좌우 여백 및 메뉴 번호 고려
+  char buff[MAX_COLS+1];
+  int len=0;
 
-  if (item_count <= 0 || choice == NULL || title == NULL || item_list == NULL)
+      if (item_count <= 0 || choice == NULL || title == NULL || item_list == NULL)
   {
     return MENU_ERROR;
   }
@@ -802,9 +816,19 @@ int32_t input_combobox(const char* title, const char* item_list[], int32_t item_
 
   screen_clear();
 
+  // 타이틀 가운데 정렬
+  int title_len = utf8_strlen(title);
+  int title_padding = (total_width - 2 - title_len) / 2;
+
+  
+  for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
+
+  snprintf(&buff[len], sizeof(buff) - len, "%s", title);
+  screen_printf(0, 0, "%s", buff);
+
   while (1)
   {
-    screen_printf(0, 0, "%s", title);
+
     
     for (int32_t i = 0; i < max_display_rows; i++)
     {
@@ -895,14 +919,14 @@ int32_t show_popup(const char *title, const char *message)
   int32_t title_len;
   int32_t title_row;
   int32_t title_start_col;
-  screen_instance_t *p_screen;
+
 
   if (title == NULL)
   {
     return MENU_ERROR;
   }
 
-  p_screen = screen_get_instance();
+
   
   popup_x = (screen_width - popup_width) / 2;
   popup_y = (screen_height - popup_height) / 2;
@@ -973,4 +997,84 @@ int32_t show_popup(const char *title, const char *message)
   screen_refresh();
 
   return convert_key_to_status(key);
+}
+
+
+
+int32_t input_active(const char *title, int32_t *choice)
+{
+  const char *yes = "[Yes] No ";
+  const char *no =  " Yes [No]";
+  int key;
+  int enabled = *choice;
+
+  char buff[50];
+  int len=0;
+  int total_width = MAX_COLS;  // 좌우 여백 및 메뉴 번호 고려
+
+  // 타이틀 가운데 정렬
+  int title_len = utf8_strlen(title);
+  int title_padding = (total_width - 2 - title_len) / 2;
+
+  for (int i = 0; i < title_padding; i++)
+  buff[len++]=' ';
+
+  snprintf(&buff[len],sizeof(buff)-len,"%s",title);
+
+  screen_clear();
+
+  screen_printf(0, 0, "%s", buff);
+
+  while (1)
+  {
+    len = 0;
+    if (enabled)
+    {
+
+          // 타이틀 가운데 정렬
+          int title_len = utf8_strlen(yes);
+      int title_padding = (total_width - 2 - title_len) / 2;
+
+      for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
+
+      snprintf(&buff[len], sizeof(buff) - len, "%s", yes);
+
+    }
+    else
+    {
+      // 타이틀 가운데 정렬
+      int title_len = utf8_strlen(no);
+      int title_padding = (total_width - 2 - title_len) / 2;
+
+      for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
+
+      snprintf(&buff[len], sizeof(buff) - len, "%s", no);
+    }
+    screen_printf(1, 0, "%s", buff);
+    screen_refresh();
+
+    key = get_button_key(100);
+
+    if (key == KEY_CODE_ENTER || key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
+    {
+      break;
+    }
+    if(key == KEY_CODE_RIGHT)
+    {
+      if(enabled==1)
+      {
+        enabled = 0;
+      }
+    }
+    else if(key == KEY_CODE_LEFT)
+    {
+      if(enabled==0)
+      {
+        enabled = 1;
+      }
+    }
+   }
+
+   *choice = enabled;
+   return convert_key_to_status(key);
 }

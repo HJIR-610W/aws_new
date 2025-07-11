@@ -54,7 +54,9 @@
 			"menu_handler.h": "c",
 			"menu_network.h": "c",
 			"const_string.h": "c",
-			"util_memory.h": "c"
+			"util_memory.h": "c",
+			"util_escape_sequence.h": "c",
+			"util_stdio.h": "c"
 		}
 	}
 }

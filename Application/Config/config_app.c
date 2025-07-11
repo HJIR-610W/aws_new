@@ -30,21 +30,21 @@ const config_t config_app_default = {.id = 0,
                                      .cdma_server_ip = {192, 168, 1, 1},
                                      .cdma_port = 0,
                                      .cdma_model = eCDMA_NTLE9607,
-                                     .eth_use = false,
-                                     .cdma_use = false,
-                                     .direct_use = false,
+                                     .eth_active = false,
+                                     .cdma_active = false,
+                                     .direct_active = false,
                                      .direct_baud = 19200,
                                      .panel_model = ePANEL_AWS_STD,
-                                     .panel_snow_use = true,
-                                     .panel_barometer_use = true,
+                                     .panel_snow_active = true,
+                                     .panel_barometer_active = true,
                                      .vhf_id = 0,
                                      .vhf_group = 0,
                                      .vhf_host_id = 0,
                                      .vhf_repeater_id = 0,
                                      .vhf_ptt_delay = 10,
-                                     .encrypt_use = false,
-                                     .vpn_use = false,
-                                     .ac_use = false,
+                                     .encrypt_active = false,
+                                     .vpn_active = false,
+                                     .ac_active = false,
                                      .dev_telnet_ip = {112, 221, 177, 172},
                                      .dev_telnet_port = 23001,
                                      .dev_telnet_mode = eTELNET_SERVER};
@@ -101,40 +101,40 @@ void check_config_app(void)
     g_config_app_dirty_flag = true;
   }
 
-  if (config.panel_snow_use > 1)
+  if (config.panel_snow_active > 1)
   {
-    config.panel_snow_use = config_app_default.panel_snow_use;
+    config.panel_snow_active = config_app_default.panel_snow_active;
     g_config_app_dirty_flag = true;
   }
 
-  if ((int)config.panel_barometer_use > 1)
+  if ((int)config.panel_barometer_active > 1)
   {
-    config.panel_barometer_use = config_app_default.panel_barometer_use;
+    config.panel_barometer_active = config_app_default.panel_barometer_active;
     g_config_app_dirty_flag = true;
   }
 
-  if (config.eth_use > 1)
+  if (config.eth_active > 1)
   {
-    config.eth_use = config_app_default.eth_use;
+    config.eth_active = config_app_default.eth_active;
     g_config_app_dirty_flag = true;
   }
 
-  if(config.direct_use >1)
+  if(config.direct_active >1)
   {
-    config.direct_use = config_app_default.direct_use;
+    config.direct_active = config_app_default.direct_active;
     g_config_app_dirty_flag = true;
   }
 
-  if (config.cdma_use > 1)
+  if (config.cdma_active > 1)
   {
-    config.cdma_use = config_app_default.cdma_use;
+    config.cdma_active = config_app_default.cdma_active;
     g_config_app_dirty_flag = true;
   }
 
-  if (config.direct_use && config.cdma_use)
+  if (config.direct_active && config.cdma_active)
   {
-    config.direct_use = 0;
-    config.cdma_use = 1;
+    config.direct_active = 0;
+    config.cdma_active = 1;
     g_config_app_dirty_flag = true;
   }
 
@@ -261,15 +261,15 @@ void check_config_app(void)
     }
   }
 
-  if (config.panel_snow_use > 1)
+  if (config.panel_snow_active > 1)
   {
-    config.panel_snow_use = config_app_default.panel_snow_use;
+    config.panel_snow_active = config_app_default.panel_snow_active;
     g_config_app_dirty_flag = true;
   }
 
-  if (config.panel_barometer_use > 1)
+  if (config.panel_barometer_active > 1)
   {
-    config.panel_barometer_use = config_app_default.panel_barometer_use;
+    config.panel_barometer_active = config_app_default.panel_barometer_active;
     g_config_app_dirty_flag = true;
   }
 }
@@ -397,15 +397,15 @@ void save_config_app_field(eCONFIG_APP_FIELD_t field)
 void make_comList(char *out, uint16_t outsize)
 {
   int32_t len = 0;
-  if (config.eth_use)
+  if (config.eth_active)
   {
     len = snprintf(&out[len], outsize - len, "[ETH]");
   }
-  if (config.cdma_use)
+  if (config.cdma_active)
   {
     len += snprintf(&out[len], outsize - len, "[CDMA]");
   }
-  if (config.direct_use)
+  if (config.direct_active)
   {
     len += snprintf(&out[len], outsize - len, "[DIRECT]");
   }

@@ -11,18 +11,11 @@
 #include <stdio.h>
 
 #include "driver_uart.h"
+#include "util_escape_sequence.h"
 
-/* VT100 터미널 기본 크기 */
+
 #define VT100_DEFAULT_ROWS    8
 #define VT100_DEFAULT_COLS    20
-
-/* VT100 이스케이프 시퀀스 */
-#define VT100_CLEAR_SCREEN    "\033[2J"     // 화면 지우기
-#define VT100_CURSOR_HOME     "\033[H"      // 커서 홈으로
-#define VT100_CURSOR_SHOW     "\033[?25h"   // 커서 표시
-#define VT100_CURSOR_HIDE     "\033[?25l"   // 커서 숨기기
-#define VT100_CURSOR_POS      "\033[%d;%dH" // 커서 위치 설정
-
 
 typedef struct {
     driver_t *uart_io;
@@ -35,8 +28,8 @@ typedef struct {
 
 static vt100_terminal_t vt100_instance;
 static driver_t vt100_driver;
-
 static uint8_t framebuffer[VT100_DEFAULT_ROWS][VT100_DEFAULT_COLS];  
+
 
 void vt100_flush_buffer(driver_t *drv);
 void vt100_put_ch(driver_t *drv, int row, int col, uint8_t ch);
@@ -46,8 +39,8 @@ void vt100_io_pirntf(driver_t *drv,const char *pFmt, ...)
     vt100_terminal_t *vt100 = (vt100_terminal_t*)(drv->cfg);
     
     if(!vt100->initialized || pFmt == NULL) return;
-    
-    char buffer[266];  // 충분한 버퍼 크기
+
+    char buffer[VT100_DEFAULT_COLS*2];  // 충분한 버퍼 크기
     va_list args;
     
     va_start(args, pFmt);
@@ -83,17 +76,6 @@ static void vt100_set_position(driver_t *drv, uint8_t row, uint8_t col)
     }
 }
 
-static void vt100_write_string(driver_t *drv, const char *str)
-{
-    vt100_terminal_t *term = (vt100_terminal_t *)drv->cfg;
-    
-    if(!term->initialized || str == NULL) return;
-    
-
-    vt100_io_pirntf(drv, "%s", str);
-
-
-}
 
 
 static void vt100_clear_screen(driver_t *drv)
@@ -101,9 +83,9 @@ static void vt100_clear_screen(driver_t *drv)
     vt100_terminal_t *term = (vt100_terminal_t *)drv->cfg;
     
     if(!term->initialized) return;
-    
-    // VT100 화면 지우기 및 커서 홈으로
-    vt100_io_puts(drv, "\x1B[2J\x1B[f");
+
+    vt100_io_puts(drv, ES_CLEAR_SCREEN);
+    vt100_io_puts(drv, ES_CURSOR_HOME);
 
     term->cursor_x = 0;
     term->cursor_y = 0;
@@ -115,8 +97,7 @@ static void vt100_home(driver_t *drv)
     
     if(!term->initialized) return;
     
-    // VT100 커서 홈으로
-    vt100_io_puts(drv, "\033[H");
+    vt100_io_puts(drv, ES_CURSOR_HOME);
 
     term->cursor_x = 0;
     term->cursor_y = 0;
@@ -127,9 +108,8 @@ static void vt100_display_on(driver_t *drv)
     vt100_terminal_t *term = (vt100_terminal_t *)drv->cfg;
     
     if(!term->initialized) return;
-    
-    // VT100 화면 켜기 (커서 표시)
-    vt100_io_puts(drv, "\033[?25h");
+
+    vt100_io_puts(drv, ES_CLEAR_SCREEN);
 }
 
 static void vt100_display_off(driver_t *drv)
@@ -137,9 +117,8 @@ static void vt100_display_off(driver_t *drv)
     vt100_terminal_t *term = (vt100_terminal_t *)drv->cfg;
     
     if(!term->initialized) return;
-    
-    // VT100 화면 끄기 (커서 숨기기)
-    vt100_io_puts(drv,"\033[?25l");
+
+    vt100_io_puts(drv, ES_CLEAR_SCREEN);
 }
 
 static void vt100_write_string_at(driver_t *drv, int row, int col, const char *str)
@@ -148,12 +127,11 @@ static void vt100_write_string_at(driver_t *drv, int row, int col, const char *s
     
     // 위치 설정 후 문자열 출력
     vt100_set_position(drv, row, col);
-    vt100_write_string(drv, str);
+    vt100_io_puts(drv,(char *)str);
 }
 
 // VT100 터미널 LCD API 구조체
 static lcd_api_t vt100_lcd_api = {.set_position = vt100_set_position,
-                                  .write_string = vt100_write_string,
                                   .write_string_at = vt100_write_string_at,
                                   .clear_screen = vt100_clear_screen,
                                   .home = vt100_home,
@@ -166,40 +144,39 @@ driver_t* vt100_terminal_open(void)
 {
   uart_config_t uart_config;
 
-    if(vt100_driver.opened)
-    {
-        return &vt100_driver;
-    }
+  if(vt100_driver.opened)
+  {
+      return &vt100_driver;
+  }
 
   uart_config.baud = 115200;
   uart_config.parityIdx = PARITY_NONE;
-  uart_config.stop_bit = 0;
+  uart_config.stop_bit = UART_STOP_BIT_1;
   uart_config.dataLen = UART_DATA_LEN_8;
 
-        // VT100 터미널 초기화
-    vt100_instance.initialized = true;
-    vt100_instance.cursor_x = 0;
-    vt100_instance.cursor_y = 0;
-    vt100_instance.max_rows = 24;  // 표준 터미널 크기
-    vt100_instance.max_cols = 80;
-    vt100_instance.uart_io = driver_uart_open(UART_8_CDMA,&uart_config);
-    vt100_driver.cfg = &vt100_instance;
-    vt100_driver.api = &vt100_lcd_api;
-    vt100_driver.opened = true;
-    
-    // VT100 터미널 초기화 시퀀스
-    vt100_io_puts(&vt100_driver ,"\033[2J");  // 화면 지우기
-    vt100_io_puts(&vt100_driver ,"\033[H");    // 커서 홈으로
-    vt100_io_puts(&vt100_driver ,"\033[?25h");  // 커서 표시
 
-    return &vt100_driver;
+  vt100_instance.initialized = true;
+  vt100_instance.cursor_x = 0;
+  vt100_instance.cursor_y = 0;
+  vt100_instance.max_rows = VT100_DEFAULT_ROWS;  // 표준 터미널 크기
+  vt100_instance.max_cols = VT100_DEFAULT_COLS;
+  vt100_instance.uart_io = driver_uart_open(UART_0_D_SUB_0,&uart_config);
+  vt100_driver.cfg = &vt100_instance;
+  vt100_driver.api = &vt100_lcd_api;
+  vt100_driver.opened = true;
+    
+
+  vt100_io_puts(&vt100_driver, ES_CLEAR_SCREEN); 
+  vt100_io_puts(&vt100_driver, ES_CURSOR_HOME);
+  vt100_io_puts(&vt100_driver, ES_CURSOR_OFF);
+
+  return &vt100_driver;
 }
 
 
 void vt100_flush_buffer(driver_t *drv)
 {
   char buff[VT100_DEFAULT_COLS+1];
-
 
   for (int row=0; row < VT100_DEFAULT_ROWS; row++)
   {

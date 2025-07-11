@@ -35,11 +35,11 @@ void draw_setup_menu_panel_page(screen_menu_t* p_win)
   {
     screen_update_list(p_win, row_count, PANEL_MENU_SNOW);
     MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "SNOW",
-                ITEM_LIST((int32_t)get_config_app()->panel_snow_use, enable_list_eng));
+                ITEM_LIST((int32_t)get_config_app()->panel_snow_active, enable_list_eng));
 
     screen_update_list(p_win, row_count, PANEL_MENU_BAROMETER);
     MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "BAROM",
-                ITEM_LIST((int32_t)get_config_app()->panel_barometer_use, enable_list_eng));
+                ITEM_LIST((int32_t)get_config_app()->panel_barometer_active, enable_list_eng));
   }
 
   p_win->total_items = row_count;
@@ -95,24 +95,24 @@ int32_t setup_menu_panel(void)
 
         case PANEL_MENU_SNOW:
         {
-           choice = get_config_app()->panel_snow_use;
+           choice = get_config_app()->panel_snow_active;
 
            status = print_menu_list(enable_list_eng, _countof(enable_list_eng), &choice);
            if (status != MENU_OK)
              break;
-           config.panel_snow_use = (uint8_t)choice;
-           WRITE_CFG(panel_snow_use);
+           config.panel_snow_active = (uint8_t)choice;
+           WRITE_CFG(panel_snow_active);
         }
         break;
 
         case PANEL_MENU_BAROMETER:
         {
-           choice = get_config_app()->panel_barometer_use;
+           choice = get_config_app()->panel_barometer_active;
            status = print_menu_list(enable_list_eng, _countof(enable_list_eng), &choice);
            if (status != MENU_OK)
              break;
-           config.panel_barometer_use = (uint8_t)choice;
-           WRITE_CFG(panel_barometer_use);
+           config.panel_barometer_active = (uint8_t)choice;
+           WRITE_CFG(panel_barometer_active);
         }
         break;
 

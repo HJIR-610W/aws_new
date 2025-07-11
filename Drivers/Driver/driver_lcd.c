@@ -42,17 +42,7 @@ void driver_lcd_set_position(driver_t *drv, uint8_t row, uint8_t col)
 
 }
 
-void driver_lcd_write_string(driver_t *drv, const char *str)
-{
-  if (drv == NULL)
-  {
-    return;
-  }
 
-  lcd_api_t *api = (lcd_api_t *)drv->api;
-
-  api->write_string(drv, str);
-}
 void driver_lcd_clear_screen(driver_t *drv)
 {
   if (drv == NULL)
@@ -116,16 +106,6 @@ void driver_lcd_draw_line(driver_t *drv, uint8_t x1, uint8_t y1, uint8_t x2, uin
     api->draw_line(drv, x1, y1, x2, y2, on);
 }
 
-void driver_lcd_write_string_at(driver_t *drv, int row, int col, const char *str)
-{
-  if (drv == NULL || str == NULL)
-    return;
-    
-  lcd_api_t *api = (lcd_api_t *)drv->api;
-  
-  if(api->write_string_at != NULL)
-    api->write_string_at(drv, row, col, str);
-}
 
 
 void driver_lcd_flush(driver_t *drv)
@@ -149,4 +129,15 @@ void driver_lcd_put_ch(driver_t *drv, int row, int col, uint8_t ch)
 
   if (api->put_ch)
     api->put_ch(drv,row,col,ch);
+}
+
+void driver_write_string_at(driver_t *drv, int row, int col, const char *str)
+{
+  if (drv == NULL)
+    return;
+
+  lcd_api_t *api = (lcd_api_t *)drv->api;
+
+  if (api->write_string_at)
+    api->write_string_at(drv, row, col, str);
 }

@@ -50,9 +50,9 @@ int32_t menu_manage_print_config_all(void)
   io_printf("CDMA 포트        :%d\r\n", config.cdma_port);
 
   io_printf("CDMA 종류        :%s\r\n", ITEM_LIST(config.cdma_model, cdmaModellList));
-  io_printf("이더넷 사용      :%s\r\n", ITEM_LIST((int32_t)config.eth_use, enableList));
-  io_printf("CDMA 사용        :%s\r\n", ITEM_LIST((int32_t)config.cdma_use, enableList));
-  io_printf("직접통신         :%s\r\n", ITEM_LIST((int32_t)config.direct_use, enableList));
+  io_printf("이더넷 사용      :%s\r\n", ITEM_LIST((int32_t)config.eth_active, enableList));
+  io_printf("CDMA 사용        :%s\r\n", ITEM_LIST((int32_t)config.cdma_active, enableList));
+  io_printf("직접통신         :%s\r\n", ITEM_LIST((int32_t)config.direct_active, enableList));
 
   io_printf("직접통신 속도    :%d\r\n", config.direct_baud);
   io_printf("패널 종류        :%s\r\n", ITEM_LIST(config.panel_model, panelList));

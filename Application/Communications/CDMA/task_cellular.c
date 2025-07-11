@@ -292,7 +292,7 @@ bool is_vpn_enabled(void)
 
   if(get_config_app()->cdma_model == eCDMA_NTLE9607)
   {
-    return get_config_app()->vpn_use;
+    return get_config_app()->vpn_active;
   }
 
   return false;

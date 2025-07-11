@@ -64,7 +64,7 @@ framemk[cnt++] 		= 0x00;																	// Status
 framemk[cnt++] 		= 0x00;																	// Start Address
 framemk[cnt++] 		= 17;																	// Length
 
-if(get_config_app()->panel_snow_use)
+if(get_config_app()->panel_snow_active)
 {
 // SNOW FALL 추가(2012. 03. 26)
 sprintf(&framemk[cnt],"%6.1f   ", (float)p_kma->snowfall.data / 10.0);
@@ -72,7 +72,7 @@ cnt					+= 9;
 //SNOW FALL 추가(2012. 03. 26)  --끝--
 }
 
-if(get_config_app()->panel_barometer_use)
+if(get_config_app()->panel_barometer_active)
 {
 
 // 기압 FALL 추가(2013. 05. 21)

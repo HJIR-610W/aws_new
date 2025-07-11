@@ -713,14 +713,14 @@ int handle_view_status(int adc_num)
         int32_t raw;
         float voltage;
 
-        io_printf(VT100_CLEAR_SCREEN);
-        io_printf(VT100_CURSOR_OFF);
+        io_printf(ES_CLEAR_SCREEN);
+        io_printf(ES_CURSOR_OFF);
 
         type = ADC_CHANNEL_TYPE_SINGLE_ENDED;
 
         do
         {
-          io_printf(VT100_CURSOR_HOME);
+          io_printf(ES_CURSOR_HOME_ALT);
           for (int channel = 0; channel < 18; channel++)
           {
             params = &p_adc->single_ended_cal[channel];
@@ -742,7 +742,7 @@ int handle_view_status(int adc_num)
           }
         } while (wait_break(100));
       }
-        io_printf(VT100_CURSOR_ON);
+        io_printf(ES_CURSOR_ON);
 
         break;
       case MENU_VIEW_DIFF_SUMMARY:
@@ -750,14 +750,14 @@ int handle_view_status(int adc_num)
         int32_t raw;
         float voltage;
 
-        io_printf(VT100_CLEAR_SCREEN);
-        io_printf(VT100_CURSOR_OFF);
+        io_printf(ES_CLEAR_SCREEN);
+        io_printf(ES_CURSOR_OFF);
 
         type = ADC_CHANNEL_TYPE_SINGLE_ENDED;
 
         do
         {
-          io_printf(VT100_CURSOR_HOME);
+          io_printf(ES_CURSOR_HOME_ALT);
           for (int channel = 0; channel < 8; channel++)
           {
             params = &p_adc->differential_cal[channel];
@@ -778,7 +778,7 @@ int handle_view_status(int adc_num)
           }
         } while (wait_break(500));
       }
-        io_printf(VT100_CURSOR_ON);
+        io_printf(ES_CURSOR_ON);
         break;
       case MENU_VIEW_SYSINFO:
         io_printf("\r\n    시스템 정보\r\n");

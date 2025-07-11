@@ -1,6 +1,7 @@
 
 #include "util_stdio.h"
 
+#include <string.h>
 
 int32_t get_formatted_length_v(const char *format, va_list args)
 {
@@ -28,4 +29,28 @@ size_t utf8_strlen(const char* s)
     s++;
   }
   return count;
+}
+
+void make_centered(char *buffer, size_t buf_size, const char *text, int width)
+{
+  int text_len = strlen(text);
+
+  if (text_len >= width || buf_size <= 1)
+  {
+    snprintf(buffer, buf_size, "%.*s", (int)buf_size - 1, text);
+    return;
+  }
+  int left_padding = (width - text_len) / 2;
+  int written = snprintf(buffer, buf_size, "%*s%s", left_padding, "", text);
+  if (written < 0 || written >= buf_size - 1)
+  {
+    return;
+  }
+
+  for (int i = written; i < width && i < buf_size - 1; i++)
+  {
+    buffer[i] = ' ';
+  }
+  int end_pos = (width < buf_size) ? width : (int)buf_size - 1;
+  buffer[end_pos] = '\0';
 }

@@ -88,21 +88,21 @@ typedef struct config_s
   uint8_t cdma_server_ip[4];
   uint16_t cdma_port;
   eCDMA_MODEL_t cdma_model;  // 설정 후 리셋 요구됨
-  uint8_t eth_use;              // 설정 후 리셋 요구됨
-  uint8_t cdma_use;             // 설정 후 리셋 요구됨
-  uint8_t direct_use;           // 설정 후 리셋 요구됨
+  uint8_t eth_active;              // 설정 후 리셋 요구됨
+  uint8_t cdma_active;             // 설정 후 리셋 요구됨
+  uint8_t direct_active;           // 설정 후 리셋 요구됨
   uint32_t direct_baud;      // 설정 후 리셋 요구됨
   ePANEL_MODEL_t panel_model;
-  uint8_t panel_snow_use;
-  uint8_t panel_barometer_use;
+  uint8_t panel_snow_active;
+  uint8_t panel_barometer_active;
   uint8_t vhf_id;
   uint8_t vhf_group;
   uint8_t vhf_host_id;
   uint8_t vhf_repeater_id;
   uint16_t vhf_ptt_delay;
-  uint8_t encrypt_use;
-  uint8_t vpn_use;
-  uint8_t ac_use;
+  uint8_t encrypt_active;
+  uint8_t vpn_active;
+  uint8_t ac_active;
   uint16_t m_usRainDtOffDelay;//구 AWS
   eTELNET_MODE_t dev_telnet_mode;
   uint8_t dev_telnet_ip[4];

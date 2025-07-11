@@ -79,8 +79,8 @@ void test_lcd(void)
                 
                 for(int row = 0; row < 4; row++)
                 {
-                    driver_lcd_set_position(g_lcd_driver, 0, row);
-                    driver_lcd_write_string(g_lcd_driver, display_str);
+
+                    driver_write_string_at(g_lcd_driver,row,0, display_str);
                 }
                 
                 counter++;
@@ -135,8 +135,8 @@ void test_lcd(void)
             
             for(int row = 0; row < 4; row++)
             {
-                driver_lcd_set_position(g_lcd_driver, 0, row);
-                driver_lcd_write_string(g_lcd_driver, display_str);
+
+                driver_write_string_at(g_lcd_driver, row,0,display_str);
             }
             
             counter++;

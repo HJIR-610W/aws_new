@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>2105634270</Checksum>
+        <Checksum>1077495667</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -172,7 +172,8 @@
         <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\setup\menu_setup.c}.0.1" 0 0 1 "" 0 "" 0</Bp0>
         <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\setup\menu_setup.c}.0.1" 0 0 1 "" 0 "" 0</Bp1>
         <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\setup\menu_sensor.c}.0.1" 0 0 1 "" 0 "" 0</Bp2>
-        <Count>3</Count>
+        <Bp3>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Application\Tasks\setup\menu_network.c}.160.9" 0 0 1 "" 0 "" 0</Bp3>
+        <Count>4</Count>
     </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
