@@ -22,10 +22,11 @@
 #include "vt100_command.h"
 #include "cli_input.h"
 #include "cli_key_code.h"
+#include "util_stdio.h"
 
 const char *g_unknown = "unknown";
 
-const char* enableList[] = {"ºñÈ°¼º", "È°¼º"};
+const char* enableList[] = {"ë¹„í™œì„±", "í™œì„±"};
 
 
 
@@ -102,59 +103,67 @@ int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_va
 }
 
 
+
+
+//utf8 ì „ìš©
 int print_menu(int width, const char* title, char** menu_list, int cnt)
 {
-  int total_width = width + 8;  // ÁÂ¿ì ¿©¹é ¹× ¸Ş´º ¹øÈ£ °í·Á
+  char buff[50];
+  int len;
+  int total_width = width + 8;  // ì¢Œìš° ì—¬ë°± ë° ë©”ë‰´ ë²ˆí˜¸ ê³ ë ¤
 
-  // Å¸ÀÌÆ² °¡¿îµ¥ Á¤·Ä
-  int title_len = strlen(title);
+  // íƒ€ì´í‹€ ê°€ìš´ë° ì •ë ¬
+  int title_len = utf8_strlen(title);
   int title_padding = (total_width - 2 - title_len) / 2;
   int title_padding_right = total_width - 2 - title_len - title_padding;
 
-  // CTRL ¹®±¸ °¡¿îµ¥ Á¤·Ä
-  const char* ctrl_msg = "CTRL+C ÀÌÀü, CTRL+Q Á¾·á";
-  int ctrl_len = strlen(ctrl_msg);
+  // CTRL ë¬¸êµ¬ ê°€ìš´ë° ì •ë ¬
+  const char* ctrl_msg = "CTRL+C ì´ì „, CTRL+Q ì¢…ë£Œ";
+  int ctrl_len = utf8_strlen(ctrl_msg);
   int ctrl_padding = (total_width - 2 - ctrl_len) / 2;
   int ctrl_padding_right = total_width - 2 - ctrl_len - ctrl_padding;
 
-  // »ó´Ü ¶óÀÎ
+  // ìƒë‹¨ ë¼ì¸
   io_printf("+");
   for (int i = 0; i < total_width - 2; i++) io_printf("-");
   io_printf("+\r\n");
 
-  // Å¸ÀÌÆ² Ãâ·Â
+  // íƒ€ì´í‹€ ì¶œë ¥
   io_printf("|");
   for (int i = 0; i < title_padding; i++) io_printf(" ");
   io_printf("%s", title);
   for (int i = 0; i < title_padding_right; i++) io_printf(" ");
   io_printf("|\r\n");
 
-  // Áß°£ ¶óÀÎ
+  // ì¤‘ê°„ ë¼ì¸
   io_printf("+");
   for (int i = 0; i < total_width - 2; i++) io_printf("-");
   io_printf("+\r\n");
 
-  // ¸Ş´º ¸®½ºÆ® Ãâ·Â
+  // ë©”ë‰´ ë¦¬ìŠ¤íŠ¸ ì¶œë ¥
   for (int i = 0; i < cnt; i++)
   {
-    io_printf("|  %2d. %-*s|\r\n", i + 1, width, menu_list[i]);
+    len = snprintf(buff, sizeof(buff), "|  %2d. %-s", i+1, menu_list[i]);
+    io_printf(buff);
+    len = total_width - utf8_strlen(buff) - 1;
+    for (int i = 0; i < len; i++) io_printf(" ");
+    io_printf("|\r\n");
   }
 
-  // CTRL ¹®±¸
+  // CTRL ë¬¸êµ¬
   io_printf("|");
   for (int i = 0; i < ctrl_padding; i++) io_printf(" ");
   io_printf("%s", ctrl_msg);
   for (int i = 0; i < ctrl_padding_right; i++) io_printf(" ");
   io_printf("|\r\n");
 
-  // ÇÏ´Ü ¶óÀÎ
+  // í•˜ë‹¨ ë¼ì¸
   io_printf("+");
   for (int i = 0; i < total_width - 2; i++) io_printf("-");
   io_printf("+\r\n");
 
   return cnt;
 }
-
 int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int32_t *choice)
 {
   int32_t max_number;
@@ -165,7 +174,7 @@ int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int3
 
   max_number = print_menu(width, title, menu_list,cnt);
 
-  status = input_decimal_prompt("¼±ÅÃ", choice, 1, max_number);
+  status = input_decimal_prompt("ì„ íƒ", choice, 1, max_number);
   if (status == MENU_ABORT || status == MENU_BACK)
     return status;
   if (status == MENU_OK)
@@ -213,7 +222,7 @@ int32_t select_index_from_table(const char* list[], int32_t (*func)(), uint16_t 
       indexMax = listCnt;
     }
 
-    status = input_decimal_prompt("¹øÈ£¸¦ ¼±ÅÃÇØÁÖ¼¼¿ä",&index,0,indexMax-1);
+    status = input_decimal_prompt("ë²ˆí˜¸ë¥¼ ì„ íƒí•´ì£¼ì„¸ìš”",&index,0,indexMax-1);
     if(status!=MENU_OK)
     break;
 
@@ -229,11 +238,11 @@ int32_t select_index_from_table(const char* list[], int32_t (*func)(), uint16_t 
 
 int32_t choice_enable(uint8_t *enable)
 {
-  const char *menu[]={"¹Ì»ç¿ë","»ç¿ë"};
+  const char *menu[]={"ë¯¸ì‚¬ìš©","ì‚¬ìš©"};
   int32_t status;
   int32_t choice;
 
-  status = choice_menu(20,"»ç¿ë ¼±ÅÃ",(char **)menu,_countof(menu),&choice);
+  status = choice_menu(20,"ì‚¬ìš© ì„ íƒ",(char **)menu,_countof(menu),&choice);
 
   if(status ==MENU_OK)
   {
@@ -292,7 +301,7 @@ int input_float_prompt(const char* prompt, float min, float max, float* value)
       }
       else
       {
-        io_printf("ÀÔ·Â ¹üÀ§: %.2f ~ %.2f\r\n", min, max);
+        io_printf("ì…ë ¥ ë²”ìœ„: %.2f ~ %.2f\r\n", min, max);
       }
     }
     else
@@ -359,7 +368,7 @@ int confirm_continue(const char *title,int32_t* ok)
   while (1)
   {
     io_printf("%s(yes/no)\r\n",title);
-    io_printf("ÀÔ·Â:");
+    io_printf("ì…ë ¥:");
     status = cli_scanf_s("%s", input,sizeof(input));
 
     if (status == CLI_KEYCODE_CTRL_C)

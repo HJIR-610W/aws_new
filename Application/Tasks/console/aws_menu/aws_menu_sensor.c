@@ -21,7 +21,7 @@
 
 #define ENTRY_LABEL_WIDTH 16
 const char *adcChModeList[] = {"Single", "Diff"};
-const char *unusedList[] = {"¹Ì»ç¿ë"};
+const char *unusedList[] = {"ë¯¸ì‚¬ìš©"};
 const char *rs232ParityList[] = {"None", "Even", "Odd"};
 const char *physical_list[] = {"RS232", "RS485"};
 
@@ -176,10 +176,10 @@ uint8_t print_hjwindDir_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
   return cnt;
 }
 
-// È­Áø ¿Âµµ
+// í™”ì§„ ì˜¨ë„
 
-/*nn.Åë½Å¹æ½Ä  :RS232|RS485
-  nn.Æ÷Æ®      :n
+/*nn.í†µì‹ ë°©ì‹  :RS232|RS485
+  nn.í¬íŠ¸      :n
 */
 #define HJTEMP_CFG_PHYSICAL_LAYER 0
 #define HJTEMP_CFG_PORT 1
@@ -190,7 +190,7 @@ uint8_t print_hjtemp_cfg(hjtemp_config_t *hjtempCfg, uint8_t cnt)
   const char *name_table[10];
   int port;
   
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Åë½Å¹æ½Ä", "%s", physical_list[hjtempCfg->physical_layer]);
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "í†µì‹ ë°©ì‹", "%s", physical_list[hjtempCfg->physical_layer]);
 
   if (hjtempCfg->physical_layer == ePHYSICAL_RS232)
   {
@@ -203,9 +203,9 @@ uint8_t print_hjtemp_cfg(hjtemp_config_t *hjtempCfg, uint8_t cnt)
         port = hjtempCfg->rs485_port;
   }
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Æ÷Æ®", "%s", name_table[port]);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "¸ğµå¹ö½º ID", "%d", hjtempCfg->modbus_id);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "¿Â½Àµµ ¸Ş´º", "[Á¦¾î]");
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "í¬íŠ¸", "%s", name_table[port]);
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "ëª¨ë“œë²„ìŠ¤ ID", "%d", hjtempCfg->modbus_id);
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "ì˜¨ìŠµë„ ë©”ë‰´", "[ì œì–´]");
 
   return cnt;
 }
@@ -217,7 +217,7 @@ uint8_t print_ott_smp3_cfg(ott_smp3_config_t *ott, uint8_t cnt)
    const char *portNameList[10];
 
    rs485_get_portList(portNameList, _countof(portNameList));
-   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Æ÷Æ®", "%s", portNameList[ott->port]);
+   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "í¬íŠ¸", "%s", portNameList[ott->port]);
    ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "MODBUS ID", "%d", ott->modbus_id);
    return cnt;
 }
@@ -226,7 +226,7 @@ uint8_t print_ott_smp3_cfg(ott_smp3_config_t *ott, uint8_t cnt)
 uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt)
 {
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Áö¿¬½Ã°£", "%d", rain_present->delay);
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "ì§€ì—°ì‹œê°„", "%d", rain_present->delay);
 
   return cnt;
 }
@@ -234,8 +234,8 @@ uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt
 
 uint8_t print_freq_cfg(frequency_config_t *freq, uint8_t cnt)
 {
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Ã¤³Î", "%d", freq->channel);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "º¸Á¤°è¼ö", "%f", freq->scale_factor);
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "ì±„ë„", "%d", freq->channel);
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "ë³´ì •ê³„ìˆ˜", "%f", freq->scale_factor);
 
   return cnt;
 }
@@ -247,7 +247,7 @@ uint8_t print_hjsnow_cfg(hjsnow_config_t *hjsnow, uint8_t cnt)
 {
   const char *portNameList[10];
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Åë½Å¹æ½Ä", "%s", physical_list[hjsnow->physical_layer]);
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "í†µì‹ ë°©ì‹", "%s", physical_list[hjsnow->physical_layer]);
 
   if (hjsnow->physical_layer == ePHYSICAL_RS232)
   {
@@ -258,30 +258,30 @@ uint8_t print_hjsnow_cfg(hjsnow_config_t *hjsnow, uint8_t cnt)
     rs485_get_portList(portNameList, _countof(portNameList));
   }
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Åë½ÅÆ÷Æ®", "%s", portNameList[hjsnow->port]);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "È­Áø Àû¼³ ¸Ş´º", "(Á¦¾î)");
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "í†µì‹ í¬íŠ¸", "%s", portNameList[hjsnow->port]);
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "í™”ì§„ ì ì„¤ ë©”ë‰´", "(ì œì–´)");
 
   return cnt;
 }
 
 /**
- * @brief ¼¾¼­ °³º° ¼³Á¤ °¡´ÉÇÑ Ç×¸ñ ¸ñ·ÏÀ» Ãâ·Â
- * @retval °¢ ¼¾¼­¼³Á¤°¡´ÉÇÑ Ç×¸ñ¼ö
+ * @brief ì„¼ì„œ ê°œë³„ ì„¤ì • ê°€ëŠ¥í•œ í•­ëª© ëª©ë¡ì„ ì¶œë ¥
+ * @retval ê° ì„¼ì„œì„¤ì •ê°€ëŠ¥í•œ í•­ëª©ìˆ˜
  *
  *
- 0.Á¾·ù            :È­Áø ¿Â½Àµµ
- 1.Åë½Å¹æ½Ä        :RS485
- 2.Æ÷Æ®            :RS232/RS485 B
- 3.¸ğµå¹ö½º ID     :1
- 4.¿Â½Àµµ ¸Ş´º     :[Á¦¾î]
+ 0.ì¢…ë¥˜            :í™”ì§„ ì˜¨ìŠµë„
+ 1.í†µì‹ ë°©ì‹        :RS485
+ 2.í¬íŠ¸            :RS232/RS485 B
+ 3.ëª¨ë“œë²„ìŠ¤ ID     :1
+ 4.ì˜¨ìŠµë„ ë©”ë‰´     :[ì œì–´]
 
- ÀÌ·¯ÇÑ ¼³Á¤¸Ş´º°¡ ³ªÅ¸³ª¸ç ¸®ÅÏ°ªÀº ¼³Á¤Ç×¸ñµé °¹¼ö
+ ì´ëŸ¬í•œ ì„¤ì •ë©”ë‰´ê°€ ë‚˜íƒ€ë‚˜ë©° ë¦¬í„´ê°’ì€ ì„¤ì •í•­ëª©ë“¤ ê°¯ìˆ˜
  */
 int32_t print_common_cfg( sensor_t *sensor, uint8_t c)
 {
   int32_t cnt = 0;
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Á¾·ù", "%s", g_sensor_model_table[sensor->type]);
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "ì¢…ë¥˜", "%s", g_sensor_model_table[sensor->type]);
 
   switch (sensor->type)
   {
@@ -328,7 +328,7 @@ int32_t select_menu_index( sensor_t *sensor,int *choice)
   {
     entry_count = print_common_cfg(sensor, 0);
 
-    status = input_decimal_prompt("¹øÈ£¸¦ ¼±ÅÃÇØ ÁÖ¼¼¿ä", &index, 0, entry_count - 1);
+    status = input_decimal_prompt("ë²ˆí˜¸ë¥¼ ì„ íƒí•´ ì£¼ì„¸ìš”", &index, 0, entry_count - 1);
 
     if(status != MENU_OK)
       break;
@@ -342,7 +342,7 @@ int32_t select_menu_index( sensor_t *sensor,int *choice)
   return status;
 }
 /**
- * @brief index·Î ÀúÀåµÈ ¼¾¼­ ¸ñ·ÏÀ» ¹®ÀÚ¿­ ¸ñ·ÏÀ¸·Î °¡Á®¿À±â
+ * @brief indexë¡œ ì €ì¥ëœ ì„¼ì„œ ëª©ë¡ì„ ë¬¸ìì—´ ëª©ë¡ìœ¼ë¡œ ê°€ì ¸ì˜¤ê¸°
  */
 uint16_t get_sensor_model_list(const char **model_list, const uint8_t *idxList, uint8_t listCnt)
 {
@@ -383,7 +383,7 @@ void set_type(sensor_t *sensor)
   }
 }
 /**
- * @brief ¼¾¼­ ¸ğµ¨ º¯°æ
+ * @brief ì„¼ì„œ ëª¨ë¸ ë³€ê²½
  */
 int32_t sensor_model_set( sensor_t *sensor, const uint8_t *model_list, uint8_t list_cnt)
 {
@@ -494,7 +494,7 @@ int32_t hjwinddir_config_set( sensor_t *sensor, uint8_t menu_index)
 }
 
 /*
-0.type:È­Áø RS485 9600
+0.type:í™”ì§„ RS485 9600
 1.port:EX1 RS485 A
 */
 
@@ -577,7 +577,7 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
   hjtemp = get_sensor_config(sensor);
   if (hjtemp == NULL)
   {
-    ERROR_PRINTF("È­Áø ¿Â½Àµµ ¼³Á¤°ª NULL");    
+    ERROR_PRINTF("í™”ì§„ ì˜¨ìŠµë„ ì„¤ì •ê°’ NULL");    
     return MENU_OK;
   }
 
@@ -647,7 +647,7 @@ int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
   ott = get_sensor_config(sensor);
   if (ott == NULL)
   {
-    ERROR_PRINTF("OTT ÀÏ»ç ¼³Á¤°ª NULL");
+    ERROR_PRINTF("OTT ì¼ì‚¬ ì„¤ì •ê°’ NULL");
     return 0;
   }
 
@@ -689,14 +689,14 @@ int32_t rain_present_config_set(sensor_t *sensor, uint8_t menu_index)
   rain_present = get_sensor_config(sensor);
   if (rain_present == NULL)
   {
-    ERROR_PRINTF("°­¿ì °¨Áö NULL");
+    ERROR_PRINTF("ê°•ìš° ê°ì§€ NULL");
     return 0;
   }
 
   switch (menu_index)
   {
     case RAIN_PRESENT_DELAY:
-      status = input_decimal_prompt("Áö¿¬½Ã°£(s)", &dec, 1, 10);
+      status = input_decimal_prompt("ì§€ì—°ì‹œê°„(s)", &dec, 1, 10);
       if (status != MENU_OK)
         break;
       rain_present->delay = dec;
@@ -728,14 +728,14 @@ int32_t general_freq_config_set(sensor_t *sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case GENERAL_FREQ_CHANNEL:
-      status = input_decimal_prompt("Ã¤³Î", &dec, 0, 1);
+      status = input_decimal_prompt("ì±„ë„", &dec, 0, 1);
       if (status != MENU_OK)
         break;
       freq->channel = dec;
       save_config_sensor();
       break;
     case GENERAL_FREQ_SCALE_FACTOR:
-      status = input_float_prompt("º¯È¯½Ä º¸Á¤°è¼ö", -100000, 100000, &factor);
+      status = input_float_prompt("ë³€í™˜ì‹ ë³´ì •ê³„ìˆ˜", -100000, 100000, &factor);
       if (status != MENU_OK)
         break;
       freq->scale_factor = factor;
@@ -758,7 +758,7 @@ int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
   hjsnow = get_sensor_config(sensor);
   if (hjsnow == NULL)
   {
-    ERROR_PRINTF("È­Áø Àû¼³¼³ ¼³Á¤°ª NULL");
+    ERROR_PRINTF("í™”ì§„ ì ì„¤ì„¤ ì„¤ì •ê°’ NULL");
     return 0;
   }
   switch (menu_index)
@@ -822,7 +822,7 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
   adc = get_sensor_config(sensor);
   switch (menu_index)
   {
-    case ADC_SET_CH_MODE:  // 1.Ã¤³Î ¸ğµå
+    case ADC_SET_CH_MODE:  // 1.ì±„ë„ ëª¨ë“œ
       status = select_index_from_table(adcChModeList, NULL, _countof(adcChModeList), true,&choice);
       if (status !=MENU_OK)
         break;
@@ -833,7 +833,7 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
 
       break;
     case ADC_SET_CHANNLEL:  // channel;
-      status = input_decimal_prompt("Ã¤³Î",&dec, 0, 17);
+      status = input_decimal_prompt("ì±„ë„",&dec, 0, 17);
       if(status !=MENU_OK)
       break;
 
@@ -899,8 +899,8 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
 
 
 /*
-¼¾¼­ ¸ğµ¨°ú ¸ğµ¨ ¼³Á¤ ÇÔ¼ö ¿¬°á
-¼¾¼­°¡ Ãß°¡µÇ°Å³ª ¼¾¼­°íÀ¯ÀÇ ¼³Á¤°ªÀ» º¯°æÇÏ·Á¸é Ã³¸® ÇÔ¼ö¸¦ ÀÛ¼ºÇØ¾ßÇÑ´Ù.
+ì„¼ì„œ ëª¨ë¸ê³¼ ëª¨ë¸ ì„¤ì • í•¨ìˆ˜ ì—°ê²°
+ì„¼ì„œê°€ ì¶”ê°€ë˜ê±°ë‚˜ ì„¼ì„œê³ ìœ ì˜ ì„¤ì •ê°’ì„ ë³€ê²½í•˜ë ¤ë©´ ì²˜ë¦¬ í•¨ìˆ˜ë¥¼ ì‘ì„±í•´ì•¼í•œë‹¤.
 */
 const sensor_config_entry_t g_sensor_config_table[] = {
     {.sensor_type = S_T_ADC, .config_set = general_adc_config_set},
@@ -919,7 +919,7 @@ int32_t sensor_set( sensor_t *p_sensor, uint8_t choice)
   int32_t status=MENU_OK;
 
   for (int i = 0; i < _countof(g_sensor_config_table); i++)
-  {  // ¼¾¼­¸¶´Ù °íÀ¯ÀÇ Ã³¸® ÇÔ¼ö¸¦ »ç¿ëÇÑ´Ù.
+  {  // ì„¼ì„œë§ˆë‹¤ ê³ ìœ ì˜ ì²˜ë¦¬ í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•œë‹¤.
     if (g_sensor_config_table[i].sensor_type == p_sensor->type)
     {
       status = g_sensor_config_table[i].config_set(p_sensor, choice - 1);
@@ -931,22 +931,22 @@ int32_t sensor_set( sensor_t *p_sensor, uint8_t choice)
 }
 
 /*
-¼¾¼­ ¼³Á¤
+ì„¼ì„œ ì„¤ì •
 */
 int32_t menu_sensor( eSENSOR_TYPE_t list)
 {
   int32_t status = 0;
   int32_t choice  = 0;
 
-  // ¼±ÅÃµÈ ¼¾¼­ÀÇ ¼³Á¤ Á¤º¸¸¦ °¡Á®¿Â´Ù.
+  // ì„ íƒëœ ì„¼ì„œì˜ ì„¤ì • ì •ë³´ë¥¼ ê°€ì ¸ì˜¨ë‹¤.
   sensor_t *sensor = &get_config_app()->sensor[(int)list];
   do
   {
     /*
-    ¼¾¼­ÀÇ ÇöÀç Á¤º¸¸¦ Ãâ·ÂÇÏ°í, ¼öÁ¤À» ¿øÇÏ´Â Ç×¸ñÀÇ ¹øÈ£¸¦ ÀÔ·Â¹Ş´Â´Ù.
-    0.type       :È­Áø RS485 9600
+    ì„¼ì„œì˜ í˜„ì¬ ì •ë³´ë¥¼ ì¶œë ¥í•˜ê³ , ìˆ˜ì •ì„ ì›í•˜ëŠ” í•­ëª©ì˜ ë²ˆí˜¸ë¥¼ ì…ë ¥ë°›ëŠ”ë‹¤.
+    0.type       :í™”ì§„ RS485 9600
     1.port        :EX1 RS485 A
-    ÀÌ·± È­¸éÀÌ ³ªÅ¸³²³²
+    ì´ëŸ° í™”ë©´ì´ ë‚˜íƒ€ë‚¨ë‚¨
     */
     status = select_menu_index(sensor,&choice);
     if (status != MENU_OK)
@@ -954,13 +954,13 @@ int32_t menu_sensor( eSENSOR_TYPE_t list)
     
     switch (choice)
     {
-      case 0:  // ¼¾¼­°¡ »ç¿ëÇÏ°íÀÚÇÏ´Â ¼¾¼­ Å¸ÀÔÀ» ¼³Á¤ÇÑ´Ù.
-               // ¼¾¼­¸¶´Ù Áö¿ø°¡´ÉÇÑ ¸ñ·ÏÀ» ³Ñ°ÜÁö°í Ãâ·ÂÇÏ¿© ¼±ÅÃÇÏµµ·Ï ÇÑ´Ù.
+      case 0:  // ì„¼ì„œê°€ ì‚¬ìš©í•˜ê³ ìí•˜ëŠ” ì„¼ì„œ íƒ€ì…ì„ ì„¤ì •í•œë‹¤.
+               // ì„¼ì„œë§ˆë‹¤ ì§€ì›ê°€ëŠ¥í•œ ëª©ë¡ì„ ë„˜ê²¨ì§€ê³  ì¶œë ¥í•˜ì—¬ ì„ íƒí•˜ë„ë¡ í•œë‹¤.
         status =sensor_model_set( sensor, sensor_table[list].list, sensor_table[list].cnt);
         break;
-      default:  // ¼¾¼­ Å¸ÀÔÀÌ ¾Æ´Ñ ¼¾¼­ °íÀ¯ ¼Ó¼ºµéÀº ÀÌ ÇÔ¼ö ¿¡¼­ Ã³¸®ÇÑ´Ù.
-        // ÇöÀçÀÇ ¼¾¼­ Á¤º¸¿Í »ç¿ëÀÚ°¡ ¼öÁ¤ÇÏ°íÀÚÇÑ Ç×¸ñ ¹øÈ£¸¦ ³Ñ±ä´Ù.
-        status = sensor_set(sensor, choice);  // ¼¾¼­º° ¼³Á¤°ª º¯°æ
+      default:  // ì„¼ì„œ íƒ€ì…ì´ ì•„ë‹Œ ì„¼ì„œ ê³ ìœ  ì†ì„±ë“¤ì€ ì´ í•¨ìˆ˜ ì—ì„œ ì²˜ë¦¬í•œë‹¤.
+        // í˜„ì¬ì˜ ì„¼ì„œ ì •ë³´ì™€ ì‚¬ìš©ìê°€ ìˆ˜ì •í•˜ê³ ìí•œ í•­ëª© ë²ˆí˜¸ë¥¼ ë„˜ê¸´ë‹¤.
+        status = sensor_set(sensor, choice);  // ì„¼ì„œë³„ ì„¤ì •ê°’ ë³€ê²½
         break;
     }
 
@@ -972,13 +972,13 @@ int32_t menu_sensor( eSENSOR_TYPE_t list)
 }
 
 /*
- 0.±â¿Â          :¹Ì»ç¿ë                                  ,  32.ÀüÃµº¹»ç      :¹Ì»ç¿ë
- 1.Ç³Çâ          :¹Ì»ç¿ë                                  ,  33.¹İ»çº¹»ç      :¹Ì»ç¿ë
- 2.Ç³¼Ó          :¹Ì»ç¿ë                                  ,  34.Á÷´Ş          :¹Ì»ç¿ë
-...°è¼Ó
+ 0.ê¸°ì˜¨          :ë¯¸ì‚¬ìš©                                  ,  32.ì „ì²œë³µì‚¬      :ë¯¸ì‚¬ìš©
+ 1.í’í–¥          :ë¯¸ì‚¬ìš©                                  ,  33.ë°˜ì‚¬ë³µì‚¬      :ë¯¸ì‚¬ìš©
+ 2.í’ì†          :ë¯¸ì‚¬ìš©                                  ,  34.ì§ë‹¬          :ë¯¸ì‚¬ìš©
+...ê³„ì†
 
-¿©±â¼­ ¼öÁ¤ÇÏ°í ½ÍÀº ¼¾¼­¹øÈ£¸¦ ÀÔ·Â
-¼¾¼­¹øÈ£´Â Á¤ÇØÁø ¼ø¼­´ë·Î ÀÔ·ÂµÇ¾î¾ßÇÔ
+ì—¬ê¸°ì„œ ìˆ˜ì •í•˜ê³  ì‹¶ì€ ì„¼ì„œë²ˆí˜¸ë¥¼ ì…ë ¥
+ì„¼ì„œë²ˆí˜¸ëŠ” ì •í•´ì§„ ìˆœì„œëŒ€ë¡œ ì…ë ¥ë˜ì–´ì•¼í•¨
  */
 int32_t print_menu_sensor(void)
 {
@@ -1013,7 +1013,7 @@ int32_t aws_menu_sensor(void)
 
   do
   {
-    // ¸ğµç ¼¾¼­ÀÇ Ãâ·Â, ±âº»Á¤º¸ Ãâ·Â
+    // ëª¨ë“  ì„¼ì„œì˜ ì¶œë ¥, ê¸°ë³¸ì •ë³´ ì¶œë ¥
     status = select_index_from_table( NULL, print_menu_sensor, 0, false,&choice);
     if (status != MENU_OK)
           break;
@@ -1022,6 +1022,6 @@ int32_t aws_menu_sensor(void)
     break;
   }while(1);
 
-  io_printf("Àåºñ¸®¼Â ÈÄ ¼³Á¤°ªÀÌ Àû¿ëµË´Ï´Ù.\r\n");
+  io_printf("ì¥ë¹„ë¦¬ì…‹ í›„ ì„¤ì •ê°’ì´ ì ìš©ë©ë‹ˆë‹¤.\r\n");
   return status;
 }

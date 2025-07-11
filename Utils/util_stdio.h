@@ -10,5 +10,5 @@
 
 
 int32_t get_formatted_length_v(const char *format, va_list args);
-
+size_t utf8_strlen(const char* s);
 #endif

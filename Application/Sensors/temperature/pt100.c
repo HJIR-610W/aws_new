@@ -9,43 +9,43 @@
 #include "util_memory.h"
 
 #define PT100_CNT 2
-#define MIN_TEMP -42  // 최소 온도
-#define MAX_TEMP 62   // 최대 온도
+#define MIN_TEMP -42  // 理쒖냼 ?⑤룄
+#define MAX_TEMP 62   // 理쒕? ?⑤룄
 #define TABLE_SIZE (MAX_TEMP - MIN_TEMP + 1)
 
-// PT100 저항 테이블
-const float pt100_table[TABLE_SIZE] = {83.48,  83.88,  // -°42C ~ --41°C
+// PT100 ????뚯씠釉?
+const float pt100_table[TABLE_SIZE] = {83.48,  83.88,  // -째42C ~ --41째C
                                        84.27,  84.67,  85.06,  85.46,  85.85,
-                                       86.25,  86.64,  87.04,  87.43,  87.83,  // -40°C ~ -31°C
+                                       86.25,  86.64,  87.04,  87.43,  87.83,  // -40째C ~ -31째C
                                        88.22,  88.62,  89.01,  89.40,  89.80,
-                                       90.19,  90.59,  90.98,  91.37,  91.77,  // -30°C ~ -21°C
+                                       90.19,  90.59,  90.98,  91.37,  91.77,  // -30째C ~ -21째C
                                        92.16,  92.55,  92.95,  93.34,  93.73,
-                                       94.12,  94.52,  94.91,  95.30,  95.69,  // -20°C ~ -11°C
+                                       94.12,  94.52,  94.91,  95.30,  95.69,  // -20째C ~ -11째C
                                        96.09,  96.48,  96.87,  97.26,  97.65,
-                                       98.04,  98.44,  98.83,  99.22,  99.61,  // -10°C ~  -1°C
+                                       98.04,  98.44,  98.83,  99.22,  99.61,  // -10째C ~  -1째C
                                        100.00, 100.39, 100.78, 101.17, 101.56,
-                                       101.95, 102.34, 102.73, 103.12, 103.51,  //   0°C ~   9°C
+                                       101.95, 102.34, 102.73, 103.12, 103.51,  //   0째C ~   9째C
                                        103.90, 104.29, 104.68, 105.07, 105.46,
-                                       105.85, 106.24, 106.63, 107.02, 107.40,  //  10°C ~  19°C
+                                       105.85, 106.24, 106.63, 107.02, 107.40,  //  10째C ~  19째C
                                        107.79, 108.18, 108.57, 108.96, 109.35,
-                                       109.73, 110.12, 110.51, 110.90, 111.29,  //  20°C ~  29°C
+                                       109.73, 110.12, 110.51, 110.90, 111.29,  //  20째C ~  29째C
                                        111.67, 112.06, 112.45, 112.83, 113.22,
-                                       113.61, 114.00, 114.38, 114.77, 115.15,  //  30°C ~  39°C
+                                       113.61, 114.00, 114.38, 114.77, 115.15,  //  30째C ~  39째C
                                        115.54, 115.93, 116.31, 116.70, 117.08,
-                                       117.47, 117.86, 118.24, 118.63, 119.01,  //  40°C ~  49°C
+                                       117.47, 117.86, 118.24, 118.63, 119.01,  //  40째C ~  49째C
                                        119.40, 119.78, 120.17, 120.55, 120.94,
-                                       121.32, 121.71, 122.09, 122.47, 122.86,  //  50°C ~  59°C
-                                       123.24, 123.63, 124.01};                 // 60°C ~ 62°C
+                                       121.32, 121.71, 122.09, 122.47, 122.86,  //  50째C ~  59째C
+                                       123.24, 123.63, 124.01};                 // 60째C ~ 62째C
 
-// 저항값을 기반으로 온도를 계산하는 함수 (선형 보간법 사용)
+// ???컪??湲곕컲?쇰줈 ?⑤룄瑜?怨꾩궛?섎뒗 ?⑥닔 (?좏삎 蹂닿컙踰??ъ슜)
 float pt100_resistance_to_temperature(float resistance)
 {
-  // 범위를 벗어난 경우
+  // 踰붿쐞瑜?踰쀬뼱??寃쎌슦
 
   if (bigger_float(resistance, pt100_table[TABLE_SIZE - 1]) ||
       less_float(resistance, pt100_table[0]))
   {
-    return 9999.0;  // 오류 코드
+    return 9999.0;  // ?ㅻ쪟 肄붾뱶
   }
 
   for (int i = 0; i < TABLE_SIZE - 1; i++)
@@ -53,7 +53,7 @@ float pt100_resistance_to_temperature(float resistance)
     if (bigger_equal_float(resistance, pt100_table[i]) &&
         less_equal_float(resistance, pt100_table[i + 1]))
     {
-      // 선형 보간법 적용
+      // ?좏삎 蹂닿컙踰??곸슜
       double temp1 = MIN_TEMP + i;
       double temp2 = MIN_TEMP + i + 1;
       double res1 = pt100_table[i];
@@ -63,7 +63,7 @@ float pt100_resistance_to_temperature(float resistance)
     }
   }
 
-  return 9999.0;  // 오류 코드
+  return 9999.0;  // ?ㅻ쪟 肄붾뱶
 }
 
  const float kConstanctA = 1.2454e-3;
@@ -79,7 +79,7 @@ typedef struct pt100_cfg_s
 
 #define PT100_ADC_AVG_CNT 1
 /**
- * @brief 온도 단위 도 12.56도
+ * @brief ?⑤룄 ?⑥쐞 ??12.56??
  */
 float read_pt100_temperature(driver_t *driver,uint8_t *err)
 {
@@ -105,7 +105,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   if (cfg->channel == PT100_A)
   {
     voltage = adc_read_single_avg(adc_ch, err, PT100_ADC_AVG_CNT);
-    resistance = voltage;  // 이채널은은 하드웨어 설계 특성상 저항이됨,관련 자료 참고
+    resistance = voltage;  // ?댁콈?먯?? ?섎뱶?⑥뼱 ?ㅺ퀎 ?뱀꽦?????씠??愿???먮즺 李멸퀬
     temperature = pt100_resistance_to_temperature(resistance);
     return temperature;
   }
@@ -113,7 +113,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   if (cfg->channel == PT100_B)
   {
     voltage = adc_read_single_avg(adc_ch, err, PT100_ADC_AVG_CNT);
-    resistance = voltage;  // 이채널은은 하드웨어 설계 특성상 저항이됨,관련 자료 참고
+    resistance = voltage;  // ?댁콈?먯?? ?섎뱶?⑥뼱 ?ㅺ퀎 ?뱀꽦?????씠??愿???먮즺 李멸퀬
     temperature = pt100_resistance_to_temperature(resistance);
     return temperature;
   }
@@ -177,13 +177,13 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   sAdval  = adc_read_single_avg(adc_ch, err,10);
 
 
-  //여기서 부터 기존 AWS 온도 코드인데 이해가 안됨.일단 사용
-  //원분석: sSpan은 -40,60도 ADC값 
-  sSpan    = fullset - offset;   //저항 1개당 ADC값 ,79%,77%로 offset %출처 모름름
-  sMinus45 = (int32_t)(((float)sSpan / 38.97) * 0.79);//원 분석:38.97= 123.24-84.27
+  //?ш린??遺??湲곗〈 AWS ?⑤룄 肄붾뱶?몃뜲 ?댄빐媛 ?덈맖.?쇰떒 ?ъ슜
+  //?먮텇?? sSpan? -40,60??ADC媛?
+  sSpan    = fullset - offset;   //???1媛쒕떦 ADC媛?,79%,77%濡?offset %異쒖쿂 紐⑤쫫由?
+  sMinus45 = (int32_t)(((float)sSpan / 38.97) * 0.79);//??遺꾩꽍:38.97= 123.24-84.27
   sPlus65  = (int32_t)(((float)sSpan / 38.97) * 0.77);
 
-  sSpan   = ((fullset + sMinus45) - (offset - sPlus65));//범위를 더 넓게 줌?
+  sSpan   = ((fullset + sMinus45) - (offset - sPlus65));//踰붿쐞瑜????볤쾶 以?
   errTmp = (int32_t)((float)sSpan * 0.05); 
 
 
@@ -192,9 +192,9 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   {
     if(sSpan > 0)
     {
-      x = 40.53 / (float)sSpan;     //40.53= 124.01(62도)-83.48(-42도),  AD Convertion Value 값을 저항 테이블에 맞춤
-      resistance = (float)(sAdval - (offset- sMinus45)) * x + pt100_table[0]; //  저항값 검색 하기위해 전압을 저항으로 변환
-      //f는 저항값
+      x = 40.53 / (float)sSpan;     //40.53= 124.01(62??-83.48(-42??,  AD Convertion Value 媛믪쓣 ????뚯씠釉붿뿉 留욎땄
+      resistance = (float)(sAdval - (offset- sMinus45)) * x + pt100_table[0]; //  ???컪 寃???섍린?꾪빐 ?꾩븬?????쑝濡?蹂??
+      //f?????컪
       temperature = pt100_resistance_to_temperature(resistance);
     }
     else

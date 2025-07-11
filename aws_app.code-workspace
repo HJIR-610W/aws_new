@@ -53,7 +53,8 @@
 			"bsp.h": "c",
 			"menu_handler.h": "c",
 			"menu_network.h": "c",
-			"const_string.h": "c"
+			"const_string.h": "c",
+			"util_memory.h": "c"
 		}
 	}
 }

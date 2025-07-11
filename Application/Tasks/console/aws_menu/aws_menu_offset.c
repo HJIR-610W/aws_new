@@ -22,7 +22,7 @@ void inline_print_offset_sensor(uint8_t cnt,eSENSOR_TYPE_t sensor)
   sensor_t *p_sensor;
   p_sensor = &get_config_app()->sensor[sensor];
   s_offset_sensor_index[cnt] = sensor;
-  io_printf("%2d.%-14s ¿ÀÇÁ¼Â:%9.3f \r\n", cnt, sensor_name_list[sensor], p_sensor->offset);
+  io_printf("%2d.%-14s ì˜¤í”„ì…‹:%9.3f \r\n", cnt, sensor_name_list[sensor], p_sensor->offset);
   
 }
 int32_t print_offset_sensor(void)
@@ -68,7 +68,7 @@ int32_t menu_offset_pressure(void)
 
   if (driver_num != GENERAL_ADC)
   {
-    io_printf("ADC°¡ ¾Æ´Õ´Ï´Ù\r\n");
+    io_printf("ADCê°€ ì•„ë‹™ë‹ˆë‹¤\r\n");
     return 0;
   }
 
@@ -76,22 +76,22 @@ int32_t menu_offset_pressure(void)
   driver = get_sensor_driver(A7_PRESSURE);
   temperature = read_sensor_barometer(driver, &error);
 
-  io_printf("%s Àåºñ °ª:%fhpa\r\n", sensor_name_list[A7_PRESSURE], temperature);
-  io_printf("ÇöÀå °ª ÀÔ·ÂÇØÁÖ¼¼¿ä\r\n");
-  io_printf("ÀÔ·Â:");
+  io_printf("%s ì¥ë¹„ ê°’:%fhpa\r\n", sensor_name_list[A7_PRESSURE], temperature);
+  io_printf("í˜„ì¥ ê°’ ì…ë ¥í•´ì£¼ì„¸ìš”\r\n");
+  io_printf("ì…ë ¥:");
   if(cli_scanf_s("%f",&local_temperature)>0)
   {
     voltage = adc_read_single_avg(config->channel,&error,10);
-    io_printf("ÇöÀç ADC ½Ì±Û %d Àü¾Ğ:%fv\r\n",config->channel,voltage);
+    io_printf("í˜„ì¬ ADC ì‹±ê¸€ %d ì „ì••:%fv\r\n",config->channel,voltage);
     calibrated_voltage = cvt_data_to_voltage(config,local_temperature);
-    io_printf("¿ä±¸µÇ´Â Àü¾Ğ:%f\r\n", calibrated_voltage);
-    status  = confirm_continue("¿ÀÇÁ¼ÂÀ» Á¶Á¤ÇÕ´Ï´Ù",&ok);
+    io_printf("ìš”êµ¬ë˜ëŠ” ì „ì••:%f\r\n", calibrated_voltage);
+    status  = confirm_continue("ì˜¤í”„ì…‹ì„ ì¡°ì •í•©ë‹ˆë‹¤",&ok);
     if(status != MENU_OK)
     if(ok)
     {
       float new_offset = calibrated_voltage - voltage;
       adc_set_offset_trim(eSINGLE_ADC, config->channel, new_offset);
-      io_printf("ÇöÀå¼¾¼­¿¡¸Â°Ô ¿ÀÇÁ¼Â %f Àû¿ëµË´Ï´Ù\n",new_offset);
+      io_printf("í˜„ì¥ì„¼ì„œì—ë§ê²Œ ì˜¤í”„ì…‹ %f ì ìš©ë©ë‹ˆë‹¤\n",new_offset);
     }
 
   }
@@ -109,20 +109,20 @@ int aws_menu_offset(void)
   while (1)
   {
     max_number = print_offset_sensor();
-    status = input_decimal_prompt("¼±ÅÃ", &choice, 0, max_number-1);//¼öÀ§  Á¦¿Ü
+    status = input_decimal_prompt("ì„ íƒ", &choice, 0, max_number-1);//ìˆ˜ìœ„  ì œì™¸
 
     if (status != MENU_OK)
     {
       break;
     }
 
-    io_printf("%s offset À» ÀÔ·ÂÇØÁÖ¼¼¿ä\r\n", sensor_name_list[s_offset_sensor_index[choice]]);
-    io_printf("ÀÔ·Â:");
+    io_printf("%s offset ì„ ì…ë ¥í•´ì£¼ì„¸ìš”\r\n", sensor_name_list[s_offset_sensor_index[choice]]);
+    io_printf("ì…ë ¥:");
     if(cli_scanf_s("%f", &offset)>0)
     {
       config.sensor[s_offset_sensor_index[choice]].offset = offset;
       WRITE_CFG(sensor[s_offset_sensor_index[choice]].offset);
-      io_printf("¼öÁ¤µÇ¾ú½À´Ï´Ù\r\n");
+      io_printf("ìˆ˜ì •ë˜ì—ˆìŠµë‹ˆë‹¤\r\n");
     }
 
     switch (s_offset_sensor_index[choice])

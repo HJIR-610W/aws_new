@@ -140,8 +140,8 @@ bool check_hjsnow(uint8_t *pdata, uint16_t datalen)
 }
 
 
-//요청  02 00 21 02 00 2C 4F 03 
-//응답 02 00 21 2D A2 0A 19 01 6A 0C D2 D3 5E 02 B3 CB A1 E0 00 00 A9 44 6D 38 01 01 01 00 00 00 19 00 2E 00 00 00 00 00 00 00 80 43 6D 38 00 00 00 00 06 D8 03 
+//?붿껌  02 00 21 02 00 2C 4F 03 
+//?묐떟 02 00 21 2D A2 0A 19 01 6A 0C D2 D3 5E 02 B3 CB A1 E0 00 00 A9 44 6D 38 01 01 01 00 00 00 19 00 2E 00 00 00 00 00 00 00 80 43 6D 38 00 00 00 00 06 D8 03 
 int32_t read_hjSnowFall(dev_io_t *dev, uint8_t *err)
 {
  // driver_t *p_driver;

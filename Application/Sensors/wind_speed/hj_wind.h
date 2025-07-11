@@ -5,7 +5,7 @@
 #include "dev_io.h"
 #include "wind_define.h"
 
-#define HJ_WIND 100  // 풍향 풍속 같이 처리
+#define HJ_WIND 100  // ?랁뼢 ?띿냽 媛숈씠 泥섎━
 
 #define HJ_WIND_CHANNEL_SPEED 1
 #define HJ_WIND_CHANNEL_DIRECTION 2

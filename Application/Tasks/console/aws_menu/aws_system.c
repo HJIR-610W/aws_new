@@ -9,7 +9,7 @@
 #include "console_scanf.h"
 #include "cli_input.h"
 
-const char* g_chargerList[] = {"È­Áø ½º¸¶Æ®", "LS1024"};
+const char* g_chargerList[] = {"í™”ì§„ ìŠ¤ë§ˆíŠ¸", "LS1024"};
 
 
 int32_t input_date( DATE_TIME_BUF* nt)
@@ -51,7 +51,7 @@ int32_t input_date( DATE_TIME_BUF* nt)
       status = MENU_OK;
       break;
     }
-    io_printf("ÀÔ·ÂÀ» È®ÀÎÇØÁÖ¼¼¿ä");
+    io_printf("ì…ë ¥ì„ í™•ì¸í•´ì£¼ì„¸ìš”");
   }
   return status;
 }
@@ -79,19 +79,19 @@ int aws_setup_menu_system(void)
   {
     menu_cnt = 0;
     make_timeToStr(&Date_Time, buffer, sizeof(buffer));
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "½Ã°£    :%s",buffer);
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ì‹œê°„    :%s",buffer);
     menu_cnt++;
 
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ID      :%d", get_config_app()->id);
     menu_cnt++;
 
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ºñ¹Ğ¹øÈ£:%d",get_config_app()->password);
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ë¹„ë°€ë²ˆí˜¸:%d",get_config_app()->password);
     menu_cnt++;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ÃæÀü±â  :%s",
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ì¶©ì „ê¸°  :%s",
              ITEM_LIST(get_config_app()->charger_model, g_chargerList));
     menu_cnt++;
 
-    status = choice_menu(SYSTEM_MENU_WITDH, "½Ã½ºÅÛ", menu, menu_cnt, &choice);
+    status = choice_menu(SYSTEM_MENU_WITDH, "ì‹œìŠ¤í…œ", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
@@ -115,19 +115,19 @@ int aws_setup_menu_system(void)
 
         break;
       case 3:  // password
-        status = input_decimal_prompt("ºñ¹Ğ¹øÈ£",&dec,0, 9999);
+        status = input_decimal_prompt("ë¹„ë°€ë²ˆí˜¸",&dec,0, 9999);
         if(status != MENU_OK)
           break;
           config.password = dec;
           WRITE_CFG(password);
         break;
       case 4:  // charger type
-        status = choice_menu(24,"ÃæÀü±â Á¾·ù",(char **)g_chargerList,_countof(g_chargerList),&choice);
+        status = choice_menu(24,"ì¶©ì „ê¸° ì¢…ë¥˜",(char **)g_chargerList,_countof(g_chargerList),&choice);
         if(status != MENU_OK)
           break;
           config.charger_model = (eCHARGER_MODEL_t)(choice-1);
           WRITE_CFG(charger_model);
-          io_printf_color(IO_COLOR_RED,"¸®¼Â ÈÄ Àû¿ëµË´Ï´Ù\r\n");
+          io_printf_color(IO_COLOR_RED,"ë¦¬ì…‹ í›„ ì ìš©ë©ë‹ˆë‹¤\r\n");
           break;
     }
 

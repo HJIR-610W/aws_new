@@ -27,7 +27,7 @@ int run_test_root()
   while (1)
   {
     io_printf("+---------------------------------------+\r\n");
-    io_printf("|             TEST ¸Ş´º                 |\r\n");
+    io_printf("|             TEST ë©”ë‰´                 |\r\n");
     io_printf("+---------------------------------------+\r\n");
     io_printf("|  1. HART                              |\r\n");
     io_printf("|  2. SRAM                              |\r\n");
@@ -37,20 +37,20 @@ int run_test_root()
     io_printf("|  6. RAIN                              |\r\n");
     io_printf("|  7. ADC                               |\r\n");
     io_printf("|  8. COUNT                             |\r\n");
-    io_printf("|  9. µğÁöÅĞ ÀÔ·Â(I0~I5)                |\r\n");
-    io_printf("| 10. µğÁöÅĞ Ãâ·Â(D0~D5)                |\r\n");
-    io_printf("| 11. Àü¿ø(24V,CDMA,¸ğµâ,È÷ÅÍ,¿ì·®D)    |\r\n");
-    io_printf("| 12. ¸ğµå¹ö½º(±¸Çö ¿¹Á¤)               |\r\n");
-    io_printf("| 13. ÀÌ´õ³İ                            |\r\n");
-    io_printf("| 14. ½Ã°£                              |\r\n");
-    io_printf("| 15. ÆÄÀÏ½Ã½ºÅÛ                        |\r\n");
-    io_printf("| 16. ADC¼±Çü¼º                         |\r\n");
-    io_printf("| 17. FLASH ¸Ş¸ğ¸®                      |\r\n");
+    io_printf("|  9. ë””ì§€í„¸ ì…ë ¥(I0~I5)                |\r\n");
+    io_printf("| 10. ë””ì§€í„¸ ì¶œë ¥(D0~D5)                |\r\n");
+    io_printf("| 11. ì „ì›(24V,CDMA,ëª¨ë“ˆ,íˆí„°,ìš°ëŸ‰D)    |\r\n");
+    io_printf("| 12. ëª¨ë“œë²„ìŠ¤(êµ¬í˜„ ì˜ˆì •)               |\r\n");
+    io_printf("| 13. ì´ë”ë„·                            |\r\n");
+    io_printf("| 14. ì‹œê°„                              |\r\n");
+    io_printf("| 15. íŒŒì¼ì‹œìŠ¤í…œ                        |\r\n");
+    io_printf("| 16. ADCì„ í˜•ì„±                         |\r\n");
+    io_printf("| 17. FLASH ë©”ëª¨ë¦¬                      |\r\n");
     io_printf("| 18. CLCD                              |\r\n");
-    io_printf("|     CTRL+C ÀÌÀü,CTRL+Q Á¾·á           |\r\n");
+    io_printf("|     CTRL+C ì´ì „,CTRL+Q ì¢…ë£Œ           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = input_decimal_prompt("¼±ÅÃ", &choice, 1, 18);
+    status = input_decimal_prompt("ì„ íƒ", &choice, 1, 18);
     if (status == MENU_ABORT || status == MENU_BACK)
       return status;
     if (status != MENU_OK)

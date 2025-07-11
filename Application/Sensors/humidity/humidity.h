@@ -24,7 +24,7 @@
 #define GENERAL_V 2
 #endif
 
-#define TEMP_HJ_HUMINITY 102  // RS485포트 A고정 사용
+#define TEMP_HJ_HUMINITY 102  // RS485?ы듃 A怨좎젙 ?ъ슜
 
 
 driver_t *humidity_open(int32_t num,void *opt);

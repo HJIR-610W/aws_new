@@ -6,7 +6,8 @@
 
 #include "app_key.h"
 #include "dev_io.h"
-
+#include "console_utile.h"
+#include "util_stdio.h"
 static layout_t g_layout = {1, 1, 125, 0};
 
 
@@ -40,24 +41,26 @@ void win_printf(win_t* win, const char* pFmt, ...)
 {
 	char buff[150];
 	va_list ap;
+	int len;
+
 
 	if (win->current_row >= win->view_row)
 		return;
 
 	io_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
 	va_start(ap, pFmt);
-	int len;
+
+
 	buff[0] = '|';
 	len = 1;
 	len += vsnprintf((char*)&buff[1], sizeof(buff) - 2, (char*)pFmt, ap);
 	va_end(ap);
 
-	for (int i = len; i < win->view_col - 1; i++) {
-		buff[i] = ' ';
-	}
-	buff[win->view_col - 1] = '|';
-	buff[win->view_col] = '\0';
-	io_printf("%s\n", buff);
+		io_printf(buff);
+		len = win->view_col - utf8_strlen(buff)-1;
+		for (int i = 0; i < len; i++) io_printf(" ");
+		io_printf("|\r\n");
+
 
 	win->current_row++;
 }
@@ -66,45 +69,53 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 {
 	char buff[150];
 	va_list ap;
+	int len=0;
+  int remain_len;
+
 
 	io_printf("\x1B[%d;%dH", win->start_y, win->start_x);
 
+
+	//상단 +----+ 출력
 	io_printf("+");
 	for (int i = 0; i < win->view_col - 2; i++) {
 		io_printf("-");
 	}
 	io_printf("+\n");
 
+	//타이틀 출력
 	io_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
+
 	va_start(ap, pFmt);
-	int len = 1;
-	buff[0] = '|';
-	len += vsnprintf(&buff[1], sizeof(buff) - 2, pFmt, ap);
+
+	len += vsnprintf(&buff[0], sizeof(buff) - 2, pFmt, ap);
 	va_end(ap);
 	
-	if (win->total_pages > 1) {
-		char page_info[20];
-		snprintf(page_info, sizeof(page_info), " [%d/%d]", win->current_page + 1, win->total_pages);
-		int page_len = (int)strlen(page_info);
-		for (int i = 0; i < page_len && len + i < win->view_col - 1; i++) {
-			buff[len + i] = page_info[i];
-		}
-		len += page_len;
+	if (win->total_pages > 1)
+	{
+    len+=snprintf(&buff[len], sizeof(buff)-len, " [%d/%d]", win->current_page + 1, win->total_pages);
 	}
 
-	for (int i = len; i < win->view_col - 1; i++) {
-		buff[i] = ' ';
-	}
-	buff[win->view_col - 1] = '|';
-	buff[win->view_col] = '\0';
+  remain_len = win->view_col - utf8_strlen(buff)  -2;
 
-	if (win->is_focused) {
-		io_printf("|\x1B[32m%.*s\x1B[0m|\n", win->view_col - 2, &buff[1]);
-	} else if (win->is_selected) {
-		io_printf("|\x1B[7m%.*s\x1B[0m|\n", win->view_col - 2, &buff[1]);
-	} else {
-		io_printf("%s\n", buff);
+  for (int i = 0; i < remain_len; i++)
+  {
+    buff[len++] = ' ';
+  }
+
+  buff[len++] = '\0';
+
+	if (win->is_focused)
+	{
+		io_printf("|\x1B[32m%s\x1B[0m|\r\n",  &buff[0]);
 	}
+	else if (win->is_selected)
+	{
+		io_printf("|\x1B[7m%s\x1B[0m|\r\n",  &buff[0]);
+	} else
+	{
+    io_printf("|%s|\r\n", buff);
+  }
 
 	io_printf("\x1B[%d;%dH", win->start_y + 2, win->start_x);
 	io_printf("+");

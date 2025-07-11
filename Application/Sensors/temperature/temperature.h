@@ -5,7 +5,7 @@
 
 #include "temperature_define.h"
 
-// 사용가능한 온도센서 목록
+// ?ъ슜媛?ν븳 ?⑤룄?쇱꽌 紐⑸줉
 #ifndef GENERAL_ADC
 #define GENERAL_ADC 0
 #endif
@@ -16,10 +16,10 @@
 
 #define TEMP_PT100_A 100
 #define TEMP_PT100_B 101
-#define TEMP_HJ_TEMPERATURE 102  // RS485포트 A고정 사용
-// 센서 목록 끝 총 5개
+#define TEMP_HJ_TEMPERATURE 102  // RS485?ы듃 A怨좎젙 ?ъ슜
+// ?쇱꽌 紐⑸줉 ??珥?5媛?
 
-// 에러 값
+// ?먮윭 媛?
 #define TEMP_ERR_VAL 1000
 driver_t *temperature_open(uint32_t num, void *opt);
 float temperature_read(driver_t *driver, uint8_t *err);

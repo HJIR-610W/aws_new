@@ -2,6 +2,7 @@
 
 #include "aws_menu_view.h"
 
+#include <string.h>
 #include "view_driver.h"
 
 #include "util_time.h"
@@ -22,12 +23,32 @@
 #include "task_client.h"
 #include "task_measure.h"
 #include "vt100_command.h"
-
+#include "util_stdio.h"
 const char *linkStatusList[3] = {"-", "UP", "DOWN"};
-const char *doorStatusList[2] = {"´İÈû", "¿­¸²"};
-const char *generalStatusList[2] = {"Á¤»ó", "ºñÁ¤»ó"};
+const char *doorStatusList[2] = {"ë‹«í˜", "ì—´ë¦¼"};
+const char *generalStatusList[2] = {"ì •ìƒ", "ë¹„ì •ìƒ"};
 
+//utf8ìš© ìê°„ ì¼ì •í•˜ê²Œ ë§Œë“œëŠ” make_label
+char *m_l(char *label,int width)
+{
+  int len;
+  int remain;
+  static char buff[15];
 
+  strcpy_safe(buff,sizeof(buff),label);
+  len = strlen(buff);
+
+  remain = width - utf8_strlen(label);
+
+  for (int i = 0; i < remain; i++)
+  {
+    buff[len++] = ' ';
+  }
+  buff[len]=0;
+  
+  return buff;
+
+}
 void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size)
 {
   if (!buffer || buffer_size == 0)
@@ -38,7 +59,7 @@ void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size)
 
   if (val_err == 0 && comm_err == 0)
   {
-    buffer[0] = '\0';  // ¿¡·¯ ¾øÀ½
+    buffer[0] = '\0';  // ì—ëŸ¬ ì—†ìŒ
     return;
   }
 
@@ -81,40 +102,40 @@ void draw_system(win_t* p_win)
   {
     case 0:
     {
-      win_printf_title(p_win, "½Ã½ºÅÛ");
+      win_printf_title(p_win, "ì‹œìŠ¤í…œ");
 
       snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,
                Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
       win_print_row(p_win, row_count++, buff);
 
-      snprintf(buff, sizeof(buff), "%-*s: %d", SYSTEM_WD, "ID", get_config_app()->id);
+      snprintf(buff, sizeof(buff), "%s: %d", m_l("ID",SYSTEM_WD), get_config_app()->id);
       win_print_row(p_win, row_count++, buff);
 
-      snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "¹® »óÅÂ",
-               ITEM_LIST(IS_DOOR_OPENED(), doorStatusList));
+      snprintf(buff, sizeof(buff), "%s: %s", m_l("ë¬¸ ìƒíƒœ",SYSTEM_WD),ITEM_LIST(IS_DOOR_OPENED(), doorStatusList));
       win_print_row(p_win, row_count++, buff);
 
       if (get_logging_system()->status_group)
       {
-        message = "¿À·ù";
+        message = "ì˜¤ë¥˜";
       }
       else
       {
-        message = "Á¤»ó";
+        message = "ì •ìƒ";
       }
 
-      snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "ÀúÀå ±â´É", message);
+      snprintf(buff, sizeof(buff), "%s: %s", m_l("ì €ì¥ ê¸°ëŠ¥",SYSTEM_WD), message);
       win_print_row(p_win, row_count++, buff);
 
-      snprintf(buff, sizeof(buff), "%-*s: %.1f", SYSTEM_WD, "Àåºñ Àü¿øV", bsp_read_battery());
+      snprintf(buff, sizeof(buff), "%s: %.1f", m_l("ì¥ë¹„ ì „ì›V", SYSTEM_WD),
+               bsp_read_battery());
       win_print_row(p_win, row_count++, buff);
 
-      snprintf(buff, sizeof(buff), "%-*s: %.1f", SYSTEM_WD, "Àåºñ ¿ÂµµC", bsp_read_temperature());
+      snprintf(buff, sizeof(buff), "%s: %.1f", m_l("ì¥ë¹„ ì˜¨ë„C",SYSTEM_WD), bsp_read_temperature());
       win_print_row(p_win, row_count++, buff);
 
       if (get_config_app()->ac_use)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %s", SYSTEM_WD, "AC","Á¤»ó");
+        snprintf(buff, sizeof(buff), "%s: %s",  m_l("AC",SYSTEM_WD),"ì •ìƒ");
         win_print_row(p_win, row_count++,  buff);
       }
 
@@ -152,28 +173,28 @@ void draw_rain(win_t *p_win)
   {
     case 0:
   {
-    win_printf_title(p_win, "°­¼ö·®");
+    win_printf_title(p_win, "ê°•ìˆ˜ëŸ‰");
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "ÀüÀÏ", get_rainfall()->rainfall_yesterday);
+    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "ì „ì¼", get_rainfall()->rainfall_yesterday);
     win_print_row(p_win, row_count++, buff);
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "±İÀÏ", get_rainfall()->rainfall_today);
+    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "ê¸ˆì¼", get_rainfall()->rainfall_today);
     win_print_row(p_win, row_count++, buff);
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "1ºĞ", get_rainfall()->rainfall_1min);
+    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "1ë¶„", get_rainfall()->rainfall_1min);
     win_print_row(p_win, row_count++, buff);
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "10ºĞ", get_rainfall()->rainfall_10min);
+    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "10ë¶„", get_rainfall()->rainfall_10min);
     win_print_row(p_win, row_count++, buff);
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "½Ã°£", get_rainfall()->rainfall_hourly);
+    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "ì‹œê°„", get_rainfall()->rainfall_hourly);
     win_print_row(p_win, row_count++, buff);
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "¿¬°£",  get_rainfall()->rainfall_yearly);
+    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "ì—°ê°„",  get_rainfall()->rainfall_yearly);
     win_print_row(p_win, row_count++, buff);
 
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "¿ù°£", get_rainfall()->rainfall_monthly);
+    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "ì›”ê°„", get_rainfall()->rainfall_monthly);
     win_print_row(p_win, row_count++, buff);
 
     
@@ -213,43 +234,43 @@ void draw_charger(win_t *p_win)
   {
     case 0:
     {
-      win_printf_title(p_win, "ÃæÀü±â");
+      win_printf_title(p_win, "ì¶©ì „ê¸°");
       read_chargerStatus(temp, sizeof(temp));
 
-      snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "»óÅÂ", temp);
+      snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "ìƒíƒœ", temp);
       win_print_row(p_win, row_count++, buff);
 
       if (is_chargerValid())
       {
-        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "ÃæÀüÀü¾Ğ(V)",
+        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "ì¶©ì „ì „ì••(V)",
                  read_solarVoltage1(&err));
         win_print_row(p_win, row_count++, buff);
 
-        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "ÃæÀüÀü·ù(A)",
+        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "ì¶©ì „ì „ë¥˜(A)",
                  read_solarCurrrent1(&err));
         win_print_row(p_win, row_count++, buff);
 
-        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "¹èÅÍ¸® Àü¾Ğ(V)",
+        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "ë°°í„°ë¦¬ ì „ì••(V)",
                  read_batteryVoltage1(&err));
         win_print_row(p_win, row_count++, buff);
 
-        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "ºÎÇÏ 1 Àü·ù(A)",
+        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "ë¶€í•˜ 1 ì „ë¥˜(A)",
                  read_loadCurrent1(&err));
         win_print_row(p_win, row_count++, buff);
 
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "ÃæÀüÀü¾Ğ(V)", "-");
+        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "ì¶©ì „ì „ì••(V)", "-");
         win_print_row(p_win, row_count++, buff);
 
-        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "ÃæÀüÀü·ù(A)", "-");
+        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "ì¶©ì „ì „ë¥˜(A)", "-");
         win_print_row(p_win, row_count++, buff);
 
-        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "¹èÅÍ¸® Àü¾Ğ(V)", "-");
+        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "ë°°í„°ë¦¬ ì „ì••(V)", "-");
         win_print_row(p_win, row_count++, buff);
 
-        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "ºÎÇÏ 1 Àü·ù(A)","-");
+        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "ë¶€í•˜ 1 ì „ë¥˜(A)","-");
         win_print_row(p_win, row_count++, buff);
       }
 
@@ -272,6 +293,7 @@ void draw_charger(win_t *p_win)
 }
 #define DIRECT_WD 8
 
+
 void draw_direct(win_t *p_win)
 {
 
@@ -293,50 +315,50 @@ void draw_direct(win_t *p_win)
   {
     case 0:
     {
-      win_printf_title(p_win, "Á÷Á¢Åë½Å");
+      win_printf_title(p_win, "ì§ì ‘í†µì‹ ");
 
-      // ¸µÅ© »óÅÂ
-      snprintf(buff, sizeof(buff), "%-*s: %s", DIRECT_WD, "¸µÅ©",
+      // ë§í¬ ìƒíƒœ
+      snprintf(buff, sizeof(buff), "%s: %s", m_l("ë§í¬",DIRECT_WD),
                ITEM_LIST(get_direct_system()->link_status, linkStatusList));
       win_print_row(p_win, row_count++, buff);
 
-      // Å¸ÀÓ¾Æ¿ô (³²Àº ½Ã°£)
+      // íƒ€ì„ì•„ì›ƒ (ë‚¨ì€ ì‹œê°„)
       remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms / 1000.0);
-      snprintf(buff, sizeof(buff), "%-*s: %ds", DIRECT_WD, "Å¸ÀÓ¾Æ¿ô", remain_sec);
+      snprintf(buff, sizeof(buff), "%s: %ds", m_l("íƒ€ì„ì•„ì›ƒ", DIRECT_WD), remain_sec);
       win_print_row(p_win, row_count++, buff);
 
-      // ¼Û½Å Ä«¿îÆ®
-      snprintf(buff, sizeof(buff), "%-*s: %d", DIRECT_WD, "¼Û½Å", get_direct_system()->tx_cnt);
+      // ì†¡ì‹  ì¹´ìš´íŠ¸
+      snprintf(buff, sizeof(buff), "%s: %d", m_l("ì†¡ì‹ ", DIRECT_WD), get_direct_system()->tx_cnt);
       win_print_row(p_win, row_count++, buff);
 
-      // ¼ö½Å Ä«¿îÆ®
-      snprintf(buff, sizeof(buff), "%-*s: %d", DIRECT_WD, "¼ö½Å", get_direct_system()->rx_cnt);
+      // ìˆ˜ì‹  ì¹´ìš´íŠ¸
+      snprintf(buff, sizeof(buff), "%s: %d", m_l("ìˆ˜ì‹ ", DIRECT_WD), get_direct_system()->rx_cnt);
       win_print_row(p_win, row_count++, buff);
 
-      // ¸¶Áö¸· ¼ö½Å ½Ã°£
+      // ë§ˆì§€ë§‰ ìˆ˜ì‹  ì‹œê°„
       last_time = get_direct_system()->last_recv_time;
       if (last_time == 0)
       {
-        snprintf(buff, sizeof(buff), "%-*s: -", DIRECT_WD, "R½Ã°£");
+        snprintf(buff, sizeof(buff), "%s: -", m_l("Rì‹œê°„", DIRECT_WD));
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "R½Ã°£",
+        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "Rì‹œê°„",
                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
       win_print_row(p_win, row_count++, buff);
 
-      // ¸¶Áö¸· ¼Û½Å ½Ã°£
+      // ë§ˆì§€ë§‰ ì†¡ì‹  ì‹œê°„
       last_time = get_direct_system()->last_send_time;
       if (last_time == 0)
       {
-        snprintf(buff, sizeof(buff), "%-*s: -", DIRECT_WD, "T½Ã°£");
+        snprintf(buff, sizeof(buff), "%-*s: -", DIRECT_WD, "Tì‹œê°„");
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "T½Ã°£",
+        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "Tì‹œê°„",
                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
       win_print_row(p_win, row_count++, buff);
@@ -383,12 +405,12 @@ void draw_cdma(win_t *p_win)
     {
       win_printf_title(p_win, "CDMA");
 
-      // ¸µÅ© »óÅÂ
-      snprintf(buff, sizeof(buff), "%-*s: %s", CDMA_WD, "¸µÅ©",
+      // ë§í¬ ìƒíƒœ
+      snprintf(buff, sizeof(buff), "%-*s: %s", CDMA_WD, "ë§í¬",
                ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
       win_print_row(p_win, row_count++, buff);
 
-      // ÀüÈ­¹øÈ£
+      // ì „í™”ë²ˆí˜¸
       if (get_cdma_system()->num[0] != '0')
       {
         num[0] = '-';
@@ -398,52 +420,52 @@ void draw_cdma(win_t *p_win)
       {
         snprintf(num, sizeof(num), "%s", get_cdma_system()->num);
       }
-      snprintf(buff, sizeof(buff), "%-*s: %s", CDMA_WD, "ÀüÈ­¹øÈ£", num);
+      snprintf(buff, sizeof(buff), "%-*s: %s", CDMA_WD, "ì „í™”ë²ˆí˜¸", num);
       win_print_row(p_win, row_count++, buff);
 
-      // ¼ö½Å°¨µµ
+      // ìˆ˜ì‹ ê°ë„
       if (get_cdma_system()->rssi == -1)
       {
-        snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "¼ö½Å°¨µµ");
+        snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "ìˆ˜ì‹ ê°ë„");
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "¼ö½Å°¨µµ", get_cdma_system()->rssi);
+        snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "ìˆ˜ì‹ ê°ë„", get_cdma_system()->rssi);
       }
       win_print_row(p_win, row_count++, buff);
 
-      // ¼Û½Å Ä«¿îÆ®
-      snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "¼Û½Å", get_cdma_system()->tx_cnt);
+      // ì†¡ì‹  ì¹´ìš´íŠ¸
+      snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "ì†¡ì‹ ", get_cdma_system()->tx_cnt);
       win_print_row(p_win, row_count++, buff);
 
-      // ¼ö½Å Ä«¿îÆ®
-      snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "¼ö½Å", get_cdma_system()->rx_cnt);
+      // ìˆ˜ì‹  ì¹´ìš´íŠ¸
+      snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "ìˆ˜ì‹ ", get_cdma_system()->rx_cnt);
       win_print_row(p_win, row_count++, buff);
 
-      // ¸¶Áö¸· ¼ö½Å ½Ã°£
+      // ë§ˆì§€ë§‰ ìˆ˜ì‹  ì‹œê°„
       last_time = get_cdma_system()->last_recv_time;
       if (last_time == 0)
       {
-        snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "R½Ã°£");
+        snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "Rì‹œê°„");
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "R½Ã°£",
+        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "Rì‹œê°„",
                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
       win_print_row(p_win, row_count++, buff);
 
-      // ¸¶Áö¸· ¼Û½Å ½Ã°£
+      // ë§ˆì§€ë§‰ ì†¡ì‹  ì‹œê°„
       last_time = get_cdma_system()->last_send_time;
       if (last_time == 0)
       {
-        snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "T½Ã°£");
+        snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "Tì‹œê°„");
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "T½Ã°£",
+        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "Tì‹œê°„",
                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
       win_print_row(p_win, row_count++, buff);
@@ -487,102 +509,102 @@ void draw_eth(win_t *p_win)
   calculate_window_position(p_win, p_win->view_col, win_height);
 
 
-      win_printf_title(p_win, "ÀÌ´õ³İ");
+      win_printf_title(p_win, "ì´ë”ë„·");
 
       if (get_config_app()->eth_mode == eETH_MODE_CLINET)
       {
-        // Å¬¶óÀÌ¾ğÆ® ¸ğµå
+        // í´ë¼ì´ì–¸íŠ¸ ëª¨ë“œ
         link_status[ETH_CLIENT_0] = get_tcp_client_system()->link_status;
         tx_cnt[ETH_CLIENT_0] = get_tcp_client_system()->tx_cnt;
         rx_cnt[ETH_CLIENT_0] = get_tcp_client_system()->rx_cnt;
 
-        // ¸µÅ© »óÅÂ
-        snprintf(buff, sizeof(buff), "%-*s: %s", ETH_WD, "¸µÅ©",
+        // ë§í¬ ìƒíƒœ
+        snprintf(buff, sizeof(buff), "%-*s: %s", ETH_WD, "ë§í¬",
                  ITEM_LIST(link_status[ETH_CLIENT_0], linkStatusList));
         win_print_row(p_win, row_count++, buff);
 
-        // ¼Û½Å Ä«¿îÆ®
-        snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "¼Û½Å", tx_cnt[ETH_CLIENT_0]);
+        // ì†¡ì‹  ì¹´ìš´íŠ¸
+        snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "ì†¡ì‹ ", tx_cnt[ETH_CLIENT_0]);
         win_print_row(p_win, row_count++, buff);
 
-        // ¼ö½Å Ä«¿îÆ®
-        snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "¼ö½Å", rx_cnt[ETH_CLIENT_0]);
+        // ìˆ˜ì‹  ì¹´ìš´íŠ¸
+        snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "ìˆ˜ì‹ ", rx_cnt[ETH_CLIENT_0]);
         win_print_row(p_win, row_count++, buff);
 
-        // ¸¶Áö¸· ¼ö½Å ½Ã°£
+        // ë§ˆì§€ë§‰ ìˆ˜ì‹  ì‹œê°„
         last_time = get_tcp_client_system()->last_recv_time;
         if (last_time == 0)
         {
-          snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "R½Ã°£");
+          snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "Rì‹œê°„");
         }
         else
         {
           time_cvt_secTotime(last_time, &nt);
-          snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "R½Ã°£",
+          snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "Rì‹œê°„",
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
         win_print_row(p_win, row_count++, buff);
 
-        // ¸¶Áö¸· ¼Û½Å ½Ã°£
+        // ë§ˆì§€ë§‰ ì†¡ì‹  ì‹œê°„
         last_time = get_tcp_client_system()->last_send_time;
         if (last_time == 0)
         {
-          snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "T½Ã°£");
+          snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "Tì‹œê°„");
         }
         else
         {
           time_cvt_secTotime(last_time, &nt);
-          snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "T½Ã°£",
+          snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "Tì‹œê°„",
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
         win_print_row(p_win, row_count++, buff);
       }
       else
       {
-        // ¼­¹ö ¸ğµå - ¿©·¯ Å¬¶óÀÌ¾ğÆ® Ã³¸®
+        // ì„œë²„ ëª¨ë“œ - ì—¬ëŸ¬ í´ë¼ì´ì–¸íŠ¸ ì²˜ë¦¬
         for (int i = 0; i < ETH_CLIENT_MAX; i++)
         {
           link_status[i] = get_tcp_system(i)->link_status;
           tx_cnt[i] = get_tcp_system(i)->tx_cnt;
           rx_cnt[i] = get_tcp_system(i)->rx_cnt;
 
-          // ¸µÅ© »óÅÂ (Å¬¶óÀÌ¾ğÆ® ¹øÈ£¿Í IP Æ÷ÇÔ)
-          snprintf(buff, sizeof(buff), "¸µÅ©(%d): %s(%s)", i,
+          // ë§í¬ ìƒíƒœ (í´ë¼ì´ì–¸íŠ¸ ë²ˆí˜¸ì™€ IP í¬í•¨)
+          snprintf(buff, sizeof(buff), "ë§í¬(%d): %s(%s)", i,
                    ITEM_LIST(link_status[i], linkStatusList), get_tcp_system(i)->client_ip_str);
           win_print_row(p_win, row_count++, buff);
 
-          // ¼Û½Å Ä«¿îÆ®
-          snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "¼Û½Å", tx_cnt[i]);
+          // ì†¡ì‹  ì¹´ìš´íŠ¸
+          snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "ì†¡ì‹ ", tx_cnt[i]);
           win_print_row(p_win, row_count++, buff);
 
-          // ¼ö½Å Ä«¿îÆ®
-          snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "¼ö½Å", rx_cnt[i]);
+          // ìˆ˜ì‹  ì¹´ìš´íŠ¸
+          snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "ìˆ˜ì‹ ", rx_cnt[i]);
           win_print_row(p_win, row_count++, buff);
 
-          // ¸¶Áö¸· ¼ö½Å ½Ã°£
+          // ë§ˆì§€ë§‰ ìˆ˜ì‹  ì‹œê°„
           last_time = get_tcp_system(i)->last_recv_time;
           if (last_time == 0)
           {
-            snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "R½Ã°£");
+            snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "Rì‹œê°„");
           }
           else
           {
             time_cvt_secTotime(last_time, &nt);
-            snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "R½Ã°£",
+            snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "Rì‹œê°„",
                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
           }
           win_print_row(p_win, row_count++, buff);
 
-          // ¸¶Áö¸· ¼Û½Å ½Ã°£
+          // ë§ˆì§€ë§‰ ì†¡ì‹  ì‹œê°„
           last_time = get_tcp_system(i)->last_send_time;
           if (last_time == 0)
           {
-            snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "T½Ã°£");
+            snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "Tì‹œê°„");
           }
           else
           {
             time_cvt_secTotime(last_time, &nt);
-            snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "T½Ã°£",
+            snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "Tì‹œê°„",
                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
           }
           win_print_row(p_win, row_count++, buff);
@@ -616,144 +638,144 @@ void draw_aws(win_t *p_win)
   kma_data_ex_t *p_kma = NULL;
   float data, data_min, data_max;
 
-  const char *aws_title_list[] = {"¼ø°£(Æò±Õ)", "1ºĞ", "10ºĞ", "ÇÑ½Ã°£", "RAW"};
+  const char *aws_title_list[] = {"ìˆœê°„(í‰ê· )", "1ë¶„", "10ë¶„", "í•œì‹œê°„", "RAW"};
   p_win->current_row = 0;
-  p_win->total_pages = 5;  // 0~4: ¼ø°£, 1ºĞ, 10ºĞ, ÇÑ½Ã°£, RAW
+  p_win->total_pages = 5;  // 0~4: ìˆœê°„, 1ë¶„, 10ë¶„, í•œì‹œê°„, RAW
   calculate_window_position(p_win, p_win->view_col, win_height);
 
   page = p_win->current_page;
   p_kma = get_kma_data((eAWS_DATA_MIN_t)page);
 
-  // Å¸ÀÌÆ² ¼³Á¤
+  // íƒ€ì´í‹€ ì„¤ì •
   snprintf(buff, sizeof(buff), "AWS %s %.2fs/%.2fs", aws_title_list[page],
            (float)g_exec_250ms_time.elapsed_time / 1000.0f,
            (float)g_exec_1s_time.elapsed_time / 1000.0f);
   win_printf_title(p_win, buff);
 
-  // ¿Âµµ
+  // ì˜¨ë„
   if (p_kma->temperature.enable)
   {
     err = p_kma->temperature.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "±â¿Â", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ê¸°ì˜¨", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->temperature.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "±â¿Â", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ê¸°ì˜¨", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->temperature.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->temperature.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->temperature.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ÃÖ¼Ò:%7.1f C,ÃÖ´ë:%7.1f C", AWS_WD, "±â¿Â",
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ìµœì†Œ:%7.1f C,ìµœëŒ€:%7.1f C", AWS_WD, "ê¸°ì˜¨",
                  data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // Ç³Çâ
+  // í’í–¥
   if (p_kma->wind_direction_avg.enable)
   {
     err = p_kma->wind_direction_avg.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Ç³Çâ", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "í’í–¥", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->wind_direction_avg.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f µµ", AWS_WD, "Ç³Çâ", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f ë„", AWS_WD, "í’í–¥", f_data);
       }
       else
       {
         data = KMA_TO_GENERAL(p_kma->wind_direction_avg.data);
         data_max = KMA_TO_GENERAL(p_kma->wind_direction_avg.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f µµ,ÃÖ´ë:%7.1f µµ", AWS_WD, "Ç³Çâ", data,
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f ë„,ìµœëŒ€:%7.1f ë„", AWS_WD, "í’í–¥", data,
                  data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // Ç³¼Ó
+  // í’ì†
   if (p_kma->wind_speed_avg.enable)
   {
     err = p_kma->wind_speed_avg.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Ç³¼Ó", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "í’ì†", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->wind_speed_avg.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "Ç³¼Ó", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "í’ì†", f_data);
       }
       else
       {
         data = KMA_TO_GENERAL(p_kma->wind_speed_avg.data);
         data_max = KMA_TO_GENERAL(p_kma->wind_speed_avg.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f m/s,ÃÖ´ë:%7.1f m/s", AWS_WD, "Ç³¼Ó", data,
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f m/s,ìµœëŒ€:%7.1f m/s", AWS_WD, "í’ì†", data,
                  data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¼ø°£ Ç³Çâ
+  // ìˆœê°„ í’í–¥
   if (p_kma->wind_direction_avg.enable &&
       (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR && page != eAWS_DATA_RAW))
   {
     err = p_kma->wind_direction_avg.err;
     if (err)
     {
-      snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "¼ø°£ Ç³Çâ");
+      snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ìˆœê°„ í’í–¥");
     }
     else
     {
-      snprintf(buff, sizeof(buff), "%-*s: %7.1f µµ", AWS_WD, "¼ø°£ Ç³Çâ",
+      snprintf(buff, sizeof(buff), "%-*s: %7.1f ë„", AWS_WD, "ìˆœê°„ í’í–¥",
                KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¼ø°£ Ç³¼Ó
+  // ìˆœê°„ í’ì†
   if (p_kma->wind_speed_avg.enable &&
       (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR && page != eAWS_DATA_RAW))
   {
     err = p_kma->wind_speed_avg.err;
     if (err)
     {
-      snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "¼ø°£ Ç³¼Ó");
+      snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ìˆœê°„ í’ì†");
     }
     else
     {
-      snprintf(buff, sizeof(buff), "%-*s: %7.1f m/s", AWS_WD, "¼ø°£ Ç³¼Ó",
+      snprintf(buff, sizeof(buff), "%-*s: %7.1f m/s", AWS_WD, "ìˆœê°„ í’ì†",
                KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // °­¼ö·®
+  // ê°•ìˆ˜ëŸ‰
   if (p_kma->precipitation.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->precipitation.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "°­¼ö·®", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ê°•ìˆ˜ëŸ‰", err_buf);
     }
     else
     {
@@ -764,161 +786,161 @@ void draw_aws(win_t *p_win)
 
         if (last_time == 0)
         {
-          snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "°­¼ö·®(time)");
+          snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ê°•ìˆ˜ëŸ‰(time)");
         }
         else
         {
           time_cvt_secTotime(last_time, &nt);
           snprintf(buff, sizeof(buff), "%-*s: %04d-%02d-%02d %02d:%02d:%02d", AWS_WD,
-                   "°­¼ö·®(time)", nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+                   "ê°•ìˆ˜ëŸ‰(time)", nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f mm", AWS_WD, "°­¼ö·®",
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f mm", AWS_WD, "ê°•ìˆ˜ëŸ‰",
                  KMA_TO_GENERAL(p_kma->precipitation.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ±â¾Ğ
+  // ê¸°ì••
   if (p_kma->pressure.enable)
   {
     err = p_kma->pressure.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "±â¾Ğ", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ê¸°ì••", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->pressure.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f hPa", AWS_WD, "±â¾Ğ", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f hPa", AWS_WD, "ê¸°ì••", f_data);
       }
       else
       {
         data = KMA_TO_GENERAL(p_kma->pressure.data);
         data_min = KMA_TO_GENERAL(p_kma->pressure.min);
         data_max = KMA_TO_GENERAL(p_kma->pressure.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f hPa,ÃÖ¼Ò:%7.1f hPa,ÃÖ´ë:%7.1f hPa", AWS_WD,
-                 "±â¾Ğ", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f hPa,ìµœì†Œ:%7.1f hPa,ìµœëŒ€:%7.1f hPa", AWS_WD,
+                 "ê¸°ì••", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // °­¼öÀ¯¹«
+  // ê°•ìˆ˜ìœ ë¬´
   if (p_kma->precipitation_presence.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->precipitation_presence.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "°­¼öÀ¯¹«", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ê°•ìˆ˜ìœ ë¬´", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->precipitation_presence.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %5d", AWS_WD, "°­¼öÀ¯¹«", (int)f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %5d", AWS_WD, "ê°•ìˆ˜ìœ ë¬´", (int)f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %5d", AWS_WD, "°­¼öÀ¯¹«",
+        snprintf(buff, sizeof(buff), "%-*s: %5d", AWS_WD, "ê°•ìˆ˜ìœ ë¬´",
                  p_kma->precipitation_presence.data);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
-  // Àû¼³
+  // ì ì„¤
   if (p_kma->snowfall.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->snowfall.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Àû¼³", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì ì„¤", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         int data = (int)p_kma->snowfall.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7d mm", AWS_WD, "Àû¼³", data);
+        snprintf(buff, sizeof(buff), "%-*s: %7d mm", AWS_WD, "ì ì„¤", data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7d mm", AWS_WD, "Àû¼³", p_kma->snowfall.data);
+        snprintf(buff, sizeof(buff), "%-*s: %7d mm", AWS_WD, "ì ì„¤", p_kma->snowfall.data);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // »ó´ë½Àµµ
+  // ìƒëŒ€ìŠµë„
   if (p_kma->relative_humidity.enable)
   {
     err = p_kma->relative_humidity.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "»ó´ë½Àµµ", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ìƒëŒ€ìŠµë„", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->relative_humidity.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "»ó´ë½Àµµ", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "ìƒëŒ€ìŠµë„", f_data);
       }
       else
       {
         data = KMA_TO_GENERAL(p_kma->relative_humidity.data);
         data_min = KMA_TO_GENERAL(p_kma->relative_humidity.min);
         data_max = KMA_TO_GENERAL(p_kma->relative_humidity.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f %%,ÃÖ¼Ò:%7.1f %%,ÃÖ´ë:%7.1f %%", AWS_WD,
-                 "»ó´ë½Àµµ", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f %%,ìµœì†Œ:%7.1f %%,ìµœëŒ€:%7.1f %%", AWS_WD,
+                 "ìƒëŒ€ìŠµë„", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // °­¼ö·®(0.1)
+  // ê°•ìˆ˜ëŸ‰(0.1)
   if (p_kma->precipitation_fine.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->precipitation_fine.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "°­¼ö·®(0.1)", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ê°•ìˆ˜ëŸ‰(0.1)", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->precipitation_fine.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f mm", AWS_WD, "°­¼ö·®(0.1)", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f mm", AWS_WD, "ê°•ìˆ˜ëŸ‰(0.1)", f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f mm", AWS_WD, "°­¼ö·®(0.1)",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f mm", AWS_WD, "ê°•ìˆ˜ëŸ‰(0.1)",
                  KMA_TO_GENERAL(p_kma->precipitation_fine.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÀÏ»ç
+  // ì¼ì‚¬
   if (p_kma->solar_radiation.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->solar_radiation.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÀÏ»ç", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì¼ì‚¬", err_buf);
     }
     else
     {
@@ -927,19 +949,19 @@ void draw_aws(win_t *p_win)
         case eAWS_DATA_RAW:
         {
           float f_data = p_kma->solar_radiation.raw.f;
-          snprintf(buff, sizeof(buff), "%-*s: %7.2f WJ/m2", AWS_WD, "ÀÏ»ç", f_data);
+          snprintf(buff, sizeof(buff), "%-*s: %7.2f WJ/m2", AWS_WD, "ì¼ì‚¬", f_data);
           break;
         }
         case eAWS_DATA_AVG:
         {
           float solar_radiation = p_kma->solar_radiation.data;
-          snprintf(buff, sizeof(buff), "%-*s: %7.1f WJ/m2", AWS_WD, "ÀÏ»ç", solar_radiation);
+          snprintf(buff, sizeof(buff), "%-*s: %7.1f WJ/m2", AWS_WD, "ì¼ì‚¬", solar_radiation);
           break;
         }
         default:
         {
           float solar_radiation = p_kma->solar_radiation.data;
-          snprintf(buff, sizeof(buff), "%-*s: %7.1f KJ/m2", AWS_WD, "ÀÏ»ç", solar_radiation);
+          snprintf(buff, sizeof(buff), "%-*s: %7.1f KJ/m2", AWS_WD, "ì¼ì‚¬", solar_radiation);
           break;
         }
       }
@@ -947,14 +969,14 @@ void draw_aws(win_t *p_win)
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÀÏÁ¶
+  // ì¼ì¡°
   if (p_kma->sunshine_duration.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->sunshine_duration.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÀÏÁ¶", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì¼ì¡°", err_buf);
     }
     else
     {
@@ -964,1043 +986,1043 @@ void draw_aws(win_t *p_win)
         {
           float f_data = p_kma->sunshine_duration.raw.f;
           bool sunshine_duration = (f_data == 1.0f);
-          snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÀÏÁ¶",
+          snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì¼ì¡°",
                    sunshine_duration ? "ON" : "OFF");
           break;
         }
         case eAWS_DATA_AVG:
         {
           bool sunshine_duration = (p_kma->sunshine_duration.data == 1);
-          snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÀÏÁ¶",
+          snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì¼ì¡°",
                    sunshine_duration ? "ON" : "OFF");
           break;
         }
         default:
-          snprintf(buff, sizeof(buff), "%-*s: %5d s", AWS_WD, "ÀÏÁ¶",
+          snprintf(buff, sizeof(buff), "%-*s: %5d s", AWS_WD, "ì¼ì¡°",
                    p_kma->sunshine_duration.data);
           break;
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
-  // Áö¸é¿Âµµ
+  // ì§€ë©´ì˜¨ë„
   if (p_kma->surface_temperature.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->surface_temperature.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Áö¸é¿Âµµ", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§€ë©´ì˜¨ë„", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->surface_temperature.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "Áö¸é¿Âµµ", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì§€ë©´ì˜¨ë„", f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD, "Áö¸é¿Âµµ",
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD, "ì§€ë©´ì˜¨ë„",
                  KMA_TO_TEMPERATURE(p_kma->surface_temperature.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÃÊ»ó¿Âµµ
+  // ì´ˆìƒì˜¨ë„
   if (p_kma->grass_temperature.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->grass_temperature.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÃÊ»ó¿Âµµ", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì´ˆìƒì˜¨ë„", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->grass_temperature.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ÃÊ»ó¿Âµµ", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì´ˆìƒì˜¨ë„", f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD, "ÃÊ»ó¿Âµµ",
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C", AWS_WD, "ì´ˆìƒì˜¨ë„",
                  KMA_TO_TEMPERATURE(p_kma->grass_temperature.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÁöÁß¿Âµµ 5cm
+  // ì§€ì¤‘ì˜¨ë„ 5cm
   if (p_kma->soil_temperature_5cm.enable)
   {
     err = p_kma->soil_temperature_5cm.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÁöÁß¿Âµµ 5cm", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 5cm", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_5cm.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ÁöÁß¿Âµµ 5cm", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 5cm", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ÃÖ¼Ò:%7.1f C,ÃÖ´ë:%7.1f C", AWS_WD,
-                 "ÁöÁß¿Âµµ 5cm", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ìµœì†Œ:%7.1f C,ìµœëŒ€:%7.1f C", AWS_WD,
+                 "ì§€ì¤‘ì˜¨ë„ 5cm", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÁöÁß¿Âµµ 10cm
+  // ì§€ì¤‘ì˜¨ë„ 10cm
   if (p_kma->soil_temperature_10cm.enable)
   {
     err = p_kma->soil_temperature_10cm.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÁöÁß¿Âµµ 10cm", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 10cm", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_10cm.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ÁöÁß¿Âµµ 10cm", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 10cm", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ÃÖ¼Ò:%7.1f C,ÃÖ´ë:%7.1f C", AWS_WD,
-                 "ÁöÁß¿Âµµ 10cm", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ìµœì†Œ:%7.1f C,ìµœëŒ€:%7.1f C", AWS_WD,
+                 "ì§€ì¤‘ì˜¨ë„ 10cm", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÁöÁß¿Âµµ 20cm
+  // ì§€ì¤‘ì˜¨ë„ 20cm
   if (p_kma->soil_temperature_20cm.enable)
   {
     err = p_kma->soil_temperature_20cm.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÁöÁß¿Âµµ 20cm", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 20cm", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_20cm.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ÁöÁß¿Âµµ 20cm", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 20cm", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ÃÖ¼Ò:%7.1f C,ÃÖ´ë:%7.1f C", AWS_WD,
-                 "ÁöÁß¿Âµµ 20cm", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ìµœì†Œ:%7.1f C,ìµœëŒ€:%7.1f C", AWS_WD,
+                 "ì§€ì¤‘ì˜¨ë„ 20cm", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÁöÁß¿Âµµ 30cm
+  // ì§€ì¤‘ì˜¨ë„ 30cm
   if (p_kma->soil_temperature_30cm.enable)
   {
     err = p_kma->soil_temperature_30cm.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÁöÁß¿Âµµ 30cm", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 30cm", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_30cm.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ÁöÁß¿Âµµ 30cm", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 30cm", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ÃÖ¼Ò:%7.1f C,ÃÖ´ë:%7.1f C", AWS_WD,
-                 "ÁöÁß¿Âµµ 30cm", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ìµœì†Œ:%7.1f C,ìµœëŒ€:%7.1f C", AWS_WD,
+                 "ì§€ì¤‘ì˜¨ë„ 30cm", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
-  // ÁöÁß¿Âµµ 50cm
+  // ì§€ì¤‘ì˜¨ë„ 50cm
   if (p_kma->soil_temperature_50cm.enable)
   {
     err = p_kma->soil_temperature_50cm.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÁöÁß¿Âµµ 50cm", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 50cm", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_50cm.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ÁöÁß¿Âµµ 50cm", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 50cm", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ÃÖ¼Ò:%7.1f C,ÃÖ´ë:%7.1f C", AWS_WD,
-                 "ÁöÁß¿Âµµ 50cm", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ìµœì†Œ:%7.1f C,ìµœëŒ€:%7.1f C", AWS_WD,
+                 "ì§€ì¤‘ì˜¨ë„ 50cm", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÁöÁß¿Âµµ 1m
+  // ì§€ì¤‘ì˜¨ë„ 1m
   if (p_kma->soil_temperature_1m.enable)
   {
     err = p_kma->soil_temperature_1m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÁöÁß¿Âµµ 1m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 1m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_1m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ÁöÁß¿Âµµ 1m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 1m", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ÃÖ¼Ò:%7.1f C,ÃÖ´ë:%7.1f C", AWS_WD,
-                 "ÁöÁß¿Âµµ 1m", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ìµœì†Œ:%7.1f C,ìµœëŒ€:%7.1f C", AWS_WD,
+                 "ì§€ì¤‘ì˜¨ë„ 1m", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÁöÁß¿Âµµ 1.5m
+  // ì§€ì¤‘ì˜¨ë„ 1.5m
   if (p_kma->soil_temperature_1_5m.enable)
   {
     err = p_kma->soil_temperature_1_5m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÁöÁß¿Âµµ 1.5m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 1.5m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_1_5m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ÁöÁß¿Âµµ 1.5m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 1.5m", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ÃÖ¼Ò:%7.1f C,ÃÖ´ë:%7.1f C", AWS_WD,
-                 "ÁöÁß¿Âµµ 1.5m", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ìµœì†Œ:%7.1f C,ìµœëŒ€:%7.1f C", AWS_WD,
+                 "ì§€ì¤‘ì˜¨ë„ 1.5m", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÁöÁß¿Âµµ 3m
+  // ì§€ì¤‘ì˜¨ë„ 3m
   if (p_kma->soil_temperature_3m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->soil_temperature_3m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÁöÁß¿Âµµ 3m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 3m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_3m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ÁöÁß¿Âµµ 3m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 3m", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ÃÖ¼Ò:%7.1f C,ÃÖ´ë:%7.1f C", AWS_WD,
-                 "ÁöÁß¿Âµµ 3m", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ìµœì†Œ:%7.1f C,ìµœëŒ€:%7.1f C", AWS_WD,
+                 "ì§€ì¤‘ì˜¨ë„ 3m", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÁöÁß¿Âµµ 5m
+  // ì§€ì¤‘ì˜¨ë„ 5m
   if (p_kma->soil_temperature_5m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->soil_temperature_5m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÁöÁß¿Âµµ 5m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 5m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_5m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ÁöÁß¿Âµµ 5m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ì§€ì¤‘ì˜¨ë„ 5m", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.max);
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ÃÖ¼Ò:%7.1f C,ÃÖ´ë:%7.1f C", AWS_WD,
-                 "ÁöÁß¿Âµµ 5m", data, data_min, data_max);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f C,ìµœì†Œ:%7.1f C,ìµœëŒ€:%7.1f C", AWS_WD,
+                 "ì§€ì¤‘ì˜¨ë„ 5m", data, data_min, data_max);
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¿î°í 1Ãş
+  // ìš´ê³  1ì¸µ
   if (p_kma->cloud_height_1st.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->cloud_height_1st.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "¿î°í 1Ãş", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ìš´ê³  1ì¸µ", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->cloud_height_1st.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m", AWS_WD, "¿î°í 1Ãş", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m", AWS_WD, "ìš´ê³  1ì¸µ", f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f m", AWS_WD, "¿î°í 1Ãş",
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f m", AWS_WD, "ìš´ê³  1ì¸µ",
                  KMA_TO_GENERAL(p_kma->cloud_height_1st.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¿î°í 2Ãş
+  // ìš´ê³  2ì¸µ
   if (p_kma->cloud_height_2nd.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->cloud_height_2nd.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "¿î°í 2Ãş", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ìš´ê³  2ì¸µ", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->cloud_height_2nd.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m", AWS_WD, "¿î°í 2Ãş", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m", AWS_WD, "ìš´ê³  2ì¸µ", f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f m", AWS_WD, "¿î°í 2Ãş",
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f m", AWS_WD, "ìš´ê³  2ì¸µ",
                  KMA_TO_GENERAL(p_kma->cloud_height_2nd.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¿î°í 3Ãş
+  // ìš´ê³  3ì¸µ
   if (p_kma->cloud_height_3rd.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->cloud_height_3rd.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "¿î°í 3Ãş", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ìš´ê³  3ì¸µ", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->cloud_height_3rd.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m", AWS_WD, "¿î°í 3Ãş", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m", AWS_WD, "ìš´ê³  3ì¸µ", f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f m", AWS_WD, "¿î°í 3Ãş",
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f m", AWS_WD, "ìš´ê³  3ì¸µ",
                  KMA_TO_GENERAL(p_kma->cloud_height_3rd.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¿î·®
+  // ìš´ëŸ‰
   if (p_kma->cloud_amount.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->cloud_amount.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "¿î·®", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ìš´ëŸ‰", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->cloud_amount.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f", AWS_WD, "¿î·®", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f", AWS_WD, "ìš´ëŸ‰", f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.1f", AWS_WD, "¿î·®",
+        snprintf(buff, sizeof(buff), "%-*s: %7.1f", AWS_WD, "ìš´ëŸ‰",
                  KMA_TO_GENERAL(p_kma->cloud_amount.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ½ÃÁ¤
+  // ì‹œì •
   if (p_kma->visibility.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->visibility.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "½ÃÁ¤", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì‹œì •", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->visibility.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m", AWS_WD, "½ÃÁ¤", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m", AWS_WD, "ì‹œì •", f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m", AWS_WD, "½ÃÁ¤",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m", AWS_WD, "ì‹œì •",
                  KMA_TO_GENERAL(p_kma->visibility.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¹Ì¼¼¸ÕÁö PM10
+  // ë¯¸ì„¸ë¨¼ì§€ PM10
   if (p_kma->pm10_concentration.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->pm10_concentration.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "¹Ì¼¼¸ÕÁö PM10", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ë¯¸ì„¸ë¨¼ì§€ PM10", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->pm10_concentration.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f ug/m3", AWS_WD, "¹Ì¼¼¸ÕÁö PM10", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f ug/m3", AWS_WD, "ë¯¸ì„¸ë¨¼ì§€ PM10", f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f ug/m3", AWS_WD, "¹Ì¼¼¸ÕÁö PM10",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f ug/m3", AWS_WD, "ë¯¸ì„¸ë¨¼ì§€ PM10",
                  KMA_TO_GENERAL(p_kma->pm10_concentration.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¹Ì¼¼¸ÕÁö PM2.5
+  // ë¯¸ì„¸ë¨¼ì§€ PM2.5
   if (p_kma->pm25_concentration.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->pm25_concentration.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "¹Ì¼¼¸ÕÁö PM2.5", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ë¯¸ì„¸ë¨¼ì§€ PM2.5", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->pm25_concentration.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f ug/m3", AWS_WD, "¹Ì¼¼¸ÕÁö PM2.5", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f ug/m3", AWS_WD, "ë¯¸ì„¸ë¨¼ì§€ PM2.5", f_data);
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f ug/m3", AWS_WD, "¹Ì¼¼¸ÕÁö PM2.5",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f ug/m3", AWS_WD, "ë¯¸ì„¸ë¨¼ì§€ PM2.5",
                  KMA_TO_GENERAL(p_kma->pm25_concentration.data));
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
-  // ¼øº¹»ç
+  // ìˆœë³µì‚¬
   if (p_kma->net_radiation.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->net_radiation.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "¼øº¹»ç", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ìˆœë³µì‚¬", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->net_radiation.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "¼øº¹»ç", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "ìˆœë³µì‚¬", f_data);
       }
       else if (page == eAWS_DATA_AVG || page == eAWS_DATA_1MIN)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "¼øº¹»ç",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "ìˆœë³µì‚¬",
                  KMA_TO_RADI(p_kma->net_radiation.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: -", AWS_WD, "¼øº¹»ç");
+        snprintf(buff, sizeof(buff), "%-*s: -", AWS_WD, "ìˆœë³µì‚¬");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÀüÃµº¹»ç
+  // ì „ì²œë³µì‚¬
   if (p_kma->total_radiation.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->total_radiation.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÀüÃµº¹»ç", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì „ì²œë³µì‚¬", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->total_radiation.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "ÀüÃµº¹»ç", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "ì „ì²œë³µì‚¬", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "ÀüÃµº¹»ç",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "ì „ì²œë³µì‚¬",
                  KMA_TO_RADI(p_kma->total_radiation.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ÀüÃµº¹»ç");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ì „ì²œë³µì‚¬");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¹İ»çº¹»ç
+  // ë°˜ì‚¬ë³µì‚¬
   if (p_kma->reflected_radiation.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->reflected_radiation.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "¹İ»çº¹»ç", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ë°˜ì‚¬ë³µì‚¬", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->reflected_radiation.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "¹İ»çº¹»ç", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "ë°˜ì‚¬ë³µì‚¬", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "¹İ»çº¹»ç",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "ë°˜ì‚¬ë³µì‚¬",
                  KMA_TO_RADI(p_kma->reflected_radiation.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "¹İ»çº¹»ç");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ë°˜ì‚¬ë³µì‚¬");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // Á÷´ŞÀÏ»ç
+  // ì§ë‹¬ì¼ì‚¬
   if (p_kma->direct_radiation.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->direct_radiation.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Á÷´ŞÀÏ»ç", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì§ë‹¬ì¼ì‚¬", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->direct_radiation.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "Á÷´ŞÀÏ»ç", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "ì§ë‹¬ì¼ì‚¬", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "Á÷´ŞÀÏ»ç",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f W/m2", AWS_WD, "ì§ë‹¬ì¼ì‚¬",
                  KMA_TO_RADI(p_kma->direct_radiation.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "Á÷´ŞÀÏ»ç");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ì§ë‹¬ì¼ì‚¬");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ÇöÀçÀÏ±â
+  // í˜„ì¬ì¼ê¸°
   if (p_kma->current_weather.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->current_weather.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ÇöÀçÀÏ±â", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "í˜„ì¬ì¼ê¸°", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->current_weather.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f", AWS_WD, "ÇöÀçÀÏ±â", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f", AWS_WD, "í˜„ì¬ì¼ê¸°", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f", AWS_WD, "ÇöÀçÀÏ±â",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f", AWS_WD, "í˜„ì¬ì¼ê¸°",
                  KMA_TO_GENERAL(p_kma->current_weather.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ÇöÀçÀÏ±â");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "í˜„ì¬ì¼ê¸°");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
-  // Åä¾ç¼öºĞ 10cm
+  // í† ì–‘ìˆ˜ë¶„ 10cm
   if (p_kma->soil_moisture_10cm.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->soil_moisture_10cm.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Åä¾ç¼öºĞ 10cm", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 10cm", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_moisture_10cm.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "Åä¾ç¼öºĞ 10cm", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 10cm", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "Åä¾ç¼öºĞ 10cm",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 10cm",
                  KMA_TO_GENERAL(p_kma->soil_moisture_10cm.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "Åä¾ç¼öºĞ 10cm");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 10cm");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // Åä¾ç¼öºĞ 20cm
+  // í† ì–‘ìˆ˜ë¶„ 20cm
   if (p_kma->soil_moisture_20cm.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->soil_moisture_20cm.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Åä¾ç¼öºĞ 20cm", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 20cm", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_moisture_20cm.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "Åä¾ç¼öºĞ 20cm", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 20cm", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "Åä¾ç¼öºĞ 20cm",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 20cm",
                  KMA_TO_GENERAL(p_kma->soil_moisture_20cm.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "Åä¾ç¼öºĞ 20cm");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 20cm");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // Åä¾ç¼öºĞ 30cm
+  // í† ì–‘ìˆ˜ë¶„ 30cm
   if (p_kma->soil_moisture_30cm.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->soil_moisture_30cm.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Åä¾ç¼öºĞ 30cm", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 30cm", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_moisture_30cm.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "Åä¾ç¼öºĞ 30cm", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 30cm", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "Åä¾ç¼öºĞ 30cm",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 30cm",
                  KMA_TO_GENERAL(p_kma->soil_moisture_30cm.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "Åä¾ç¼öºĞ 30cm");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 30cm");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // Åä¾ç¼öºĞ 50cm
+  // í† ì–‘ìˆ˜ë¶„ 50cm
   if (p_kma->soil_moisture_50cm.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->soil_moisture_50cm.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Åä¾ç¼öºĞ 50cm", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 50cm", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_moisture_50cm.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "Åä¾ç¼öºĞ 50cm", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 50cm", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "Åä¾ç¼öºĞ 50cm",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 50cm",
                  KMA_TO_GENERAL(p_kma->soil_moisture_50cm.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "Åä¾ç¼öºĞ 50cm");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "í† ì–‘ìˆ˜ë¶„ 50cm");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // Á¶µµ
+  // ì¡°ë„
   if (p_kma->illuminance.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->illuminance.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Á¶µµ", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ì¡°ë„", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->illuminance.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f klux", AWS_WD, "Á¶µµ", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f klux", AWS_WD, "ì¡°ë„", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f klux", AWS_WD, "Á¶µµ",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f klux", AWS_WD, "ì¡°ë„",
                  KMA_TO_ILLUMINANCE(p_kma->illuminance.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "Á¶µµ");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ì¡°ë„");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
-  // Ç³¼Ó 1.5m
+  // í’ì† 1.5m
   if (p_kma->wind_speed_1_5m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->wind_speed_1_5m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Ç³¼Ó 1.5m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "í’ì† 1.5m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->wind_speed_1_5m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "Ç³¼Ó 1.5m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "í’ì† 1.5m", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "Ç³¼Ó 1.5m",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "í’ì† 1.5m",
                  KMA_TO_GENERAL(p_kma->wind_speed_1_5m.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "Ç³¼Ó 1.5m");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "í’ì† 1.5m");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // Ç³¼Ó 4m
+  // í’ì† 4m
   if (p_kma->wind_speed_4m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->wind_speed_4m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Ç³¼Ó 4.0m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "í’ì† 4.0m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->wind_speed_4m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "Ç³¼Ó 4.0m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "í’ì† 4.0m", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "Ç³¼Ó 4.0m",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "í’ì† 4.0m",
                  KMA_TO_GENERAL(p_kma->wind_speed_4m.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "Ç³¼Ó 4.0m");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "í’ì† 4.0m");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¼ø°£Ç³¼Ó 1.5m
+  // ìˆœê°„í’ì† 1.5m
   if (p_kma->instant_wind_speed_1_5m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->instant_wind_speed_1_5m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "¼ø°£Ç³¼Ó 1.5m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ìˆœê°„í’ì† 1.5m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->instant_wind_speed_1_5m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "¼ø°£Ç³¼Ó 1.5m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "ìˆœê°„í’ì† 1.5m", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "¼ø°£Ç³¼Ó 1.5m",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "ìˆœê°„í’ì† 1.5m",
                  KMA_TO_GENERAL(p_kma->instant_wind_speed_1_5m.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "¼ø°£Ç³¼Ó 1.5m");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ìˆœê°„í’ì† 1.5m");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ¼ø°£Ç³¼Ó 4.0m
+  // ìˆœê°„í’ì† 4.0m
   if (p_kma->instant_wind_speed_4m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->instant_wind_speed_4m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "¼ø°£Ç³¼Ó 4.0m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ìˆœê°„í’ì† 4.0m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->instant_wind_speed_4m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "¼ø°£Ç³¼Ó 4.0m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "ìˆœê°„í’ì† 4.0m", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "¼ø°£Ç³¼Ó 4.0m",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f m/s", AWS_WD, "ìˆœê°„í’ì† 4.0m",
                  KMA_TO_GENERAL(p_kma->instant_wind_speed_4m.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "¼ø°£Ç³¼Ó 4.0m");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ìˆœê°„í’ì† 4.0m");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
-  // ±â¿Â 0.5m
+  // ê¸°ì˜¨ 0.5m
   if (p_kma->temperature_0_5m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->temperature_0_5m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "±â¿Â 0.5m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ê¸°ì˜¨ 0.5m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->temperature_0_5m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "±â¿Â 0.5m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ê¸°ì˜¨ 0.5m", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "±â¿Â 0.5m",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ê¸°ì˜¨ 0.5m",
                  KMA_TO_TEMPERATURE(p_kma->temperature_0_5m.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "±â¿Â 0.5m");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ê¸°ì˜¨ 0.5m");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ±â¿Â 4.0m
+  // ê¸°ì˜¨ 4.0m
   if (p_kma->temperature_4m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->temperature_4m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "±â¿Â 4.0m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ê¸°ì˜¨ 4.0m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->temperature_4m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "±â¿Â 4.0m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ê¸°ì˜¨ 4.0m", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "±â¿Â 4.0m",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f C", AWS_WD, "ê¸°ì˜¨ 4.0m",
                  KMA_TO_TEMPERATURE(p_kma->temperature_4m.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "±â¿Â 4.0m");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ê¸°ì˜¨ 4.0m");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ½Àµµ 0.5m
+  // ìŠµë„ 0.5m
   if (p_kma->humidity_0_5m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->humidity_0_5m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "½Àµµ 0.5m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ìŠµë„ 0.5m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->humidity_0_5m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "½Àµµ 0.5m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "ìŠµë„ 0.5m", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "½Àµµ 0.5m",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "ìŠµë„ 0.5m",
                  KMA_TO_GENERAL(p_kma->humidity_0_5m.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "½Àµµ 0.5m");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ìŠµë„ 0.5m");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // ½Àµµ 4.0m
+  // ìŠµë„ 4.0m
   if (p_kma->humidity_4m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->humidity_4m.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "½Àµµ 4.0m", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "ìŠµë„ 4.0m", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->humidity_4m.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "½Àµµ 4.0m", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "ìŠµë„ 4.0m", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "½Àµµ 4.0m",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f %%", AWS_WD, "ìŠµë„ 4.0m",
                  KMA_TO_GENERAL(p_kma->humidity_4m.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "½Àµµ 4.0m");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "ìŠµë„ 4.0m");
       }
     }
     win_print_row(p_win, row_count++, buff);
   }
 
-  // Å¸ÄÚ¹ÌÅÍ
+  // íƒ€ì½”ë¯¸í„°
   if (p_kma->tacometer.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
     err = p_kma->tacometer.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "Å¸ÄÚ¹ÌÅÍ", err_buf);
+      snprintf(buff, sizeof(buff), "%-*s: %s", AWS_WD, "íƒ€ì½”ë¯¸í„°", err_buf);
     }
     else
     {
       if (page == eAWS_DATA_RAW)
       {
         float f_data = p_kma->tacometer.raw.f;
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f rpm", AWS_WD, "Å¸ÄÚ¹ÌÅÍ", f_data);
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f rpm", AWS_WD, "íƒ€ì½”ë¯¸í„°", f_data);
       }
       else if (page == eAWS_DATA_AVG)
       {
-        snprintf(buff, sizeof(buff), "%-*s: %7.2f rpm", AWS_WD, "Å¸ÄÚ¹ÌÅÍ",
+        snprintf(buff, sizeof(buff), "%-*s: %7.2f rpm", AWS_WD, "íƒ€ì½”ë¯¸í„°",
                  KMA_TO_GENERAL(p_kma->tacometer.data));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "Å¸ÄÚ¹ÌÅÍ");
+        snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "íƒ€ì½”ë¯¸í„°");
       }
     }
     win_print_row(p_win, row_count++, buff);
@@ -2032,7 +2054,7 @@ void draw_config(win_t *p_win)
   calculate_window_position(p_win, p_win->view_col, win_height);
 
 
-  win_printf_title(p_win, "¼³Á¤");
+  win_printf_title(p_win, "ì„¤ì •");
 
 
 
@@ -2068,7 +2090,7 @@ int32_t aws_menu_veiw(void)
   create_win(&cdma_win, 0, 0, 6, 31);
   create_win(&direct_win, 0, 0, 6, 31);
   create_win(&eth_win, 0, 0, 15, 31);
-  create_win(&aws_win, 0, 0, 19, 60);
+  create_win(&aws_win, 0, 0, 19, 62);
   create_win(&charger_win, 0, 0, 6, 26);
   create_win(&config_win, 0, 0, 8, 22);
 

@@ -25,19 +25,19 @@ void set_hjwind(void *handle, wind_set_option_t option, void *value);
 
 
 
-/* AWS AVR 에서 가져옴
-  화진티엔아이 AWS 풍향 풍속계  PROTOCOL 정의
+/* AWS AVR ?먯꽌 媛?몄샂
+  ?붿쭊?곗뿏?꾩씠 AWS ?랁뼢 ?띿냽怨? PROTOCOL ?뺤쓽
         .Data Table.
         Start Code     	0  	: 0x02 			-> STX
-        Unit ID		   	1	: 0x01 - 0x0f 	-> 장비 ID
-        Command			2	: 0xXX          -> 01:파라메타 설정, 02:Data Read, 03: Write
-  & Read Data Size       4	: 0x02			-> 데이터의 사이즈 Data            5	: n
-  -> 전송되는 데이터 ASCII 형식 Check Sum		6	: 1      		-> ID - Data
-  n 까지의 합 End Code 		7	: 0x03			-> ETX
+        Unit ID		   	1	: 0x01 - 0x0f 	-> ?λ퉬 ID
+        Command			2	: 0xXX          -> 01:?뚮씪硫뷀? ?ㅼ젙, 02:Data Read, 03: Write
+  & Read Data Size       4	: 0x02			-> ?곗씠?곗쓽 ?ъ씠利?Data            5	: n
+  -> ?꾩넚?섎뒗 ?곗씠??ASCII ?뺤떇 Check Sum		6	: 1      		-> ID - Data
+  n 源뚯?????End Code 		7	: 0x03			-> ETX
 */
 
-// 02 01 02 01 01 05 03   풍속
-// 02 02 02 01 01 06 03   풍향
+// 02 01 02 01 01 05 03   ?띿냽
+// 02 02 02 01 01 06 03   ?랁뼢
 uint16_t make_hjwind(uint8_t *sSend, uint8_t id)
 {
   uint8_t cnt = 0;
@@ -72,8 +72,8 @@ bool is_hjwin(uint8_t *frame, uint16_t len)
 }
 
 #define WIND_DATA_MAX 9990
-//이코드는 구형 AWS코드와 동일
-//풍속센서의 값은 풍속값자체가 아닌 펄스값임
+//?댁퐫?쒕뒗 援ы삎 AWS肄붾뱶? ?숈씪
+//?띿냽?쇱꽌??媛믪? ?띿냽媛믪옄泥닿? ?꾨땶 ?꾩뒪媛믪엫
 float calculate_wind_speed(uint16_t wind_pulse)
 {
 
@@ -92,7 +92,7 @@ float calculate_wind_speed(uint16_t wind_pulse)
   {
     span = fullset - offset;
 
-    errTmp = (uint32_t)((float)span * 0.05);  // offset보다 5% 크고 Full보다 5% 작을 것
+    errTmp = (uint32_t)((float)span * 0.05);  // offset蹂대떎 5% ?ш퀬 Full蹂대떎 5% ?묒쓣 寃?
 
     if (wind_pulse < (fullset + errTmp))
     {
@@ -129,9 +129,9 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
   driver_rs485_flush_rx(cfg->rs485_io);
   driver_rs485_send(cfg->rs485_io, send, len);
    
-  // 독라이트가 응답을항상 일정한 시간안에 보내는것이 아님
-  // 2ms 안에 응답오는 경우도 있고 50ms 지나고 응답 오는 경우도 있음
-  // 따라서 독라이트 테스트시에는 첫번째 바이트 대기 시간을 50ms 해야 수신 처리됨
+  // ?낅씪?댄듃媛 ?묐떟?꾪빆???쇱젙???쒓컙?덉뿉 蹂대궡?붽쾬???꾨떂
+  // 2ms ?덉뿉 ?묐떟?ㅻ뒗 寃쎌슦???덇퀬 50ms 吏?섍퀬 ?묐떟 ?ㅻ뒗 寃쎌슦???덉쓬
+  // ?곕씪???낅씪?댄듃 ?뚯뒪?몄떆?먮뒗 泥ル쾲吏?諛붿씠???湲??쒓컙??50ms ?댁빞 ?섏떊 泥섎━??
 
 
   len = driver_rs485_recv_opt(cfg->rs485_io, recv, sizeof(recv), 50,5); 
@@ -168,8 +168,8 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
     return NAN;
   }
 
-  return (float)((float)windData / 10.0);//풍향은 10배 된 값이 수신됨
-  //풍향1234가 수신 -> 123.4도임 따라서 드라이버의 값의 단위는 도임, 따라서 10으로 나눈값을 리턴턴
+  return (float)((float)windData / 10.0);//?랁뼢? 10諛???媛믪씠 ?섏떊??
+  //?랁뼢1234媛 ?섏떊 -> 123.4?꾩엫 ?곕씪???쒕씪?대쾭??媛믪쓽 ?⑥쐞???꾩엫, ?곕씪??10?쇰줈 ?섎늿媛믪쓣 由ы꽩??
 
 }
 
@@ -191,7 +191,7 @@ driver_t g_hjwind_driver;
 
 /**
  * @details
- * 고정된 속도로 사용하는 센서들은 포트설정만 매개변수로 받아서 처리
+ * 怨좎젙???띾룄濡??ъ슜?섎뒗 ?쇱꽌?ㅼ? ?ы듃?ㅼ젙留?留ㅺ컻蹂?섎줈 諛쏆븘??泥섎━
  */
 driver_t *hjwind_open(uint8_t num, void *opt)
 {
