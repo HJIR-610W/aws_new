@@ -53,7 +53,7 @@ void create_win(win_t* win, int start_x, int start_y, int view_row, int view_col
 void win_printf(win_t* win, const char* pFmt, ...);
 void win_printf_title(win_t* win, const char* pFmt, ...);
 void win_print_close(win_t* win);
-void win_print_row(win_t* win, int row_index, const char* buff);
+void win_printf_row(win_t* win, int row_index, const char* pFmt, ...);
 
 
 void handle_scroll(win_t* win, int key);

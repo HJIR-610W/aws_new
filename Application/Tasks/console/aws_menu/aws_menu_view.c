@@ -106,13 +106,13 @@ void draw_system(win_t* p_win)
 
       snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,
                Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       snprintf(buff, sizeof(buff), "%s: %d", m_l("ID",SYSTEM_WD), get_config_app()->id);
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       snprintf(buff, sizeof(buff), "%s: %s", m_l("문 상태",SYSTEM_WD),ITEM_LIST(IS_DOOR_OPENED(), doorStatusList));
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       if (get_logging_system()->status_group)
       {
@@ -124,19 +124,19 @@ void draw_system(win_t* p_win)
       }
 
       snprintf(buff, sizeof(buff), "%s: %s", m_l("저장 기능",SYSTEM_WD), message);
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       snprintf(buff, sizeof(buff), "%s: %.1f", m_l("장비 전원V", SYSTEM_WD),
                bsp_read_battery());
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       snprintf(buff, sizeof(buff), "%s: %.1f", m_l("장비 온도C",SYSTEM_WD), bsp_read_temperature());
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       if (get_config_app()->ac_use)
       {
         snprintf(buff, sizeof(buff), "%s: %s",  m_l("AC",SYSTEM_WD),"정상");
-        win_print_row(p_win, row_count++,  buff);
+        win_printf_row(p_win, row_count++,  buff);
       }
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
@@ -151,7 +151,7 @@ void draw_system(win_t* p_win)
   // Fill remaining rows with blank lines to maintain consistent window size
   while (p_win->current_row < p_win->view_row)
   {
-    win_printf(p_win, "");
+    win_printf_row(p_win, row_count++, "");
   }
 
   win_print_close(p_win);
@@ -176,26 +176,26 @@ void draw_rain(win_t *p_win)
     win_printf_title(p_win, "강수량");
 
     snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "전일", get_rainfall()->rainfall_yesterday);
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
 
     snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "금일", get_rainfall()->rainfall_today);
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
 
     snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "1분", get_rainfall()->rainfall_1min);
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
 
     snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "10분", get_rainfall()->rainfall_10min);
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
 
     snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "시간", get_rainfall()->rainfall_hourly);
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
 
     snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "연간",  get_rainfall()->rainfall_yearly);
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
 
 
     snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "월간", get_rainfall()->rainfall_monthly);
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
 
     
     p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
@@ -210,7 +210,7 @@ void draw_rain(win_t *p_win)
   // Fill remaining rows with blank lines to maintain consistent window size
   while (p_win->current_row < p_win->view_row)
   {
-    win_printf(p_win, "");
+    win_printf_row(p_win, row_count++, "");
   }
 
   win_print_close(p_win);
@@ -238,40 +238,40 @@ void draw_charger(win_t *p_win)
       read_chargerStatus(temp, sizeof(temp));
 
       snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "상태", temp);
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       if (is_chargerValid())
       {
         snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "충전전압(V)",
                  read_solarVoltage1(&err));
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
         snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "충전전류(A)",
                  read_solarCurrrent1(&err));
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
         snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "배터리 전압(V)",
                  read_batteryVoltage1(&err));
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
         snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "부하 1 전류(A)",
                  read_loadCurrent1(&err));
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
       }
       else
       {
         snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "충전전압(V)", "-");
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
         snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "충전전류(A)", "-");
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
         snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "배터리 전압(V)", "-");
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
         snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "부하 1 전류(A)","-");
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
       }
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
@@ -286,7 +286,7 @@ void draw_charger(win_t *p_win)
   // Fill remaining rows with blank lines to maintain consistent window size
   while (p_win->current_row < p_win->view_row)
   {
-    win_printf(p_win, "");
+    win_printf_row(p_win, row_count++, "");
   }
 
   win_print_close(p_win);
@@ -320,20 +320,20 @@ void draw_direct(win_t *p_win)
       // 링크 상태
       snprintf(buff, sizeof(buff), "%s: %s", m_l("링크",DIRECT_WD),
                ITEM_LIST(get_direct_system()->link_status, linkStatusList));
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 타임아웃 (남은 시간)
       remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms / 1000.0);
       snprintf(buff, sizeof(buff), "%s: %ds", m_l("타임아웃", DIRECT_WD), remain_sec);
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 송신 카운트
       snprintf(buff, sizeof(buff), "%s: %d", m_l("송신", DIRECT_WD), get_direct_system()->tx_cnt);
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 수신 카운트
       snprintf(buff, sizeof(buff), "%s: %d", m_l("수신", DIRECT_WD), get_direct_system()->rx_cnt);
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 마지막 수신 시간
       last_time = get_direct_system()->last_recv_time;
@@ -347,7 +347,7 @@ void draw_direct(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "R시간",
                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 마지막 송신 시간
       last_time = get_direct_system()->last_send_time;
@@ -361,7 +361,7 @@ void draw_direct(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "T시간",
                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
 
@@ -375,7 +375,7 @@ void draw_direct(win_t *p_win)
   // Fill remaining rows with blank lines to maintain consistent window size
   while (p_win->current_row < p_win->view_row)
   {
-    win_printf(p_win, "");
+    win_printf_row(p_win, row_count++, "");
   }
 
   win_print_close(p_win);
@@ -408,7 +408,7 @@ void draw_cdma(win_t *p_win)
       // 링크 상태
       snprintf(buff, sizeof(buff), "%-*s: %s", CDMA_WD, "링크",
                ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 전화번호
       if (get_cdma_system()->num[0] != '0')
@@ -421,7 +421,7 @@ void draw_cdma(win_t *p_win)
         snprintf(num, sizeof(num), "%s", get_cdma_system()->num);
       }
       snprintf(buff, sizeof(buff), "%-*s: %s", CDMA_WD, "전화번호", num);
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 수신감도
       if (get_cdma_system()->rssi == -1)
@@ -432,15 +432,15 @@ void draw_cdma(win_t *p_win)
       {
         snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "수신감도", get_cdma_system()->rssi);
       }
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 송신 카운트
       snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "송신", get_cdma_system()->tx_cnt);
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 수신 카운트
       snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "수신", get_cdma_system()->rx_cnt);
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 마지막 수신 시간
       last_time = get_cdma_system()->last_recv_time;
@@ -454,7 +454,7 @@ void draw_cdma(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "R시간",
                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       // 마지막 송신 시간
       last_time = get_cdma_system()->last_send_time;
@@ -468,7 +468,7 @@ void draw_cdma(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "T시간",
                  nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
-      win_print_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, buff);
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
 
@@ -482,7 +482,7 @@ void draw_cdma(win_t *p_win)
   // Fill remaining rows with blank lines to maintain consistent window size
   while (p_win->current_row < p_win->view_row)
   {
-    win_printf(p_win, "");
+    win_printf_row(p_win, row_count++, "");
   }
 
   win_print_close(p_win);
@@ -521,15 +521,15 @@ void draw_eth(win_t *p_win)
         // 링크 상태
         snprintf(buff, sizeof(buff), "%-*s: %s", ETH_WD, "링크",
                  ITEM_LIST(link_status[ETH_CLIENT_0], linkStatusList));
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
         // 송신 카운트
         snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "송신", tx_cnt[ETH_CLIENT_0]);
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
         // 수신 카운트
         snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "수신", rx_cnt[ETH_CLIENT_0]);
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
         // 마지막 수신 시간
         last_time = get_tcp_client_system()->last_recv_time;
@@ -543,7 +543,7 @@ void draw_eth(win_t *p_win)
           snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "R시간",
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
 
         // 마지막 송신 시간
         last_time = get_tcp_client_system()->last_send_time;
@@ -557,7 +557,7 @@ void draw_eth(win_t *p_win)
           snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "T시간",
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
-        win_print_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, buff);
       }
       else
       {
@@ -571,15 +571,15 @@ void draw_eth(win_t *p_win)
           // 링크 상태 (클라이언트 번호와 IP 포함)
           snprintf(buff, sizeof(buff), "링크(%d): %s(%s)", i,
                    ITEM_LIST(link_status[i], linkStatusList), get_tcp_system(i)->client_ip_str);
-          win_print_row(p_win, row_count++, buff);
+          win_printf_row(p_win, row_count++, buff);
 
           // 송신 카운트
           snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "송신", tx_cnt[i]);
-          win_print_row(p_win, row_count++, buff);
+          win_printf_row(p_win, row_count++, buff);
 
           // 수신 카운트
           snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "수신", rx_cnt[i]);
-          win_print_row(p_win, row_count++, buff);
+          win_printf_row(p_win, row_count++, buff);
 
           // 마지막 수신 시간
           last_time = get_tcp_system(i)->last_recv_time;
@@ -593,7 +593,7 @@ void draw_eth(win_t *p_win)
             snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "R시간",
                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
           }
-          win_print_row(p_win, row_count++, buff);
+          win_printf_row(p_win, row_count++, buff);
 
           // 마지막 송신 시간
           last_time = get_tcp_system(i)->last_send_time;
@@ -607,7 +607,7 @@ void draw_eth(win_t *p_win)
             snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "T시간",
                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
           }
-          win_print_row(p_win, row_count++, buff);
+          win_printf_row(p_win, row_count++, buff);
         }
       }
 
@@ -618,7 +618,7 @@ void draw_eth(win_t *p_win)
   // Fill remaining rows with blank lines to maintain consistent window size
   while (p_win->current_row < p_win->view_row)
   {
-    win_printf(p_win, "");
+    win_printf_row(p_win, row_count++, "");
   }
 
   win_print_close(p_win);
@@ -677,7 +677,7 @@ void draw_aws(win_t *p_win)
                  data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 풍향
@@ -704,7 +704,7 @@ void draw_aws(win_t *p_win)
                  data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 풍속
@@ -731,7 +731,7 @@ void draw_aws(win_t *p_win)
                  data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 순간 풍향
@@ -748,7 +748,7 @@ void draw_aws(win_t *p_win)
       snprintf(buff, sizeof(buff), "%-*s: %7.1f 도", AWS_WD, "순간 풍향",
                KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 순간 풍속
@@ -765,7 +765,7 @@ void draw_aws(win_t *p_win)
       snprintf(buff, sizeof(buff), "%-*s: %7.1f m/s", AWS_WD, "순간 풍속",
                KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 강수량
@@ -801,7 +801,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_GENERAL(p_kma->precipitation.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 기압
@@ -829,7 +829,7 @@ void draw_aws(win_t *p_win)
                  "기압", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 강수유무
@@ -854,7 +854,7 @@ void draw_aws(win_t *p_win)
                  p_kma->precipitation_presence.data);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
   // 적설
   if (p_kma->snowfall.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
@@ -877,7 +877,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: %7d mm", AWS_WD, "적설", p_kma->snowfall.data);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 상대습도
@@ -905,7 +905,7 @@ void draw_aws(win_t *p_win)
                  "상대습도", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 강수량(0.1)
@@ -930,7 +930,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_GENERAL(p_kma->precipitation_fine.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 일사
@@ -966,7 +966,7 @@ void draw_aws(win_t *p_win)
         }
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 일조
@@ -1003,7 +1003,7 @@ void draw_aws(win_t *p_win)
           break;
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
   // 지면온도
   if (p_kma->surface_temperature.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
@@ -1027,7 +1027,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_TEMPERATURE(p_kma->surface_temperature.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 초상온도
@@ -1052,7 +1052,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_TEMPERATURE(p_kma->grass_temperature.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 지중온도 5cm
@@ -1080,7 +1080,7 @@ void draw_aws(win_t *p_win)
                  "지중온도 5cm", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 지중온도 10cm
@@ -1108,7 +1108,7 @@ void draw_aws(win_t *p_win)
                  "지중온도 10cm", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 지중온도 20cm
@@ -1136,7 +1136,7 @@ void draw_aws(win_t *p_win)
                  "지중온도 20cm", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 지중온도 30cm
@@ -1164,7 +1164,7 @@ void draw_aws(win_t *p_win)
                  "지중온도 30cm", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
   // 지중온도 50cm
   if (p_kma->soil_temperature_50cm.enable)
@@ -1191,7 +1191,7 @@ void draw_aws(win_t *p_win)
                  "지중온도 50cm", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 지중온도 1m
@@ -1219,7 +1219,7 @@ void draw_aws(win_t *p_win)
                  "지중온도 1m", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 지중온도 1.5m
@@ -1247,7 +1247,7 @@ void draw_aws(win_t *p_win)
                  "지중온도 1.5m", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 지중온도 3m
@@ -1275,7 +1275,7 @@ void draw_aws(win_t *p_win)
                  "지중온도 3m", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 지중온도 5m
@@ -1303,7 +1303,7 @@ void draw_aws(win_t *p_win)
                  "지중온도 5m", data, data_min, data_max);
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 운고 1층
@@ -1328,7 +1328,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_GENERAL(p_kma->cloud_height_1st.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 운고 2층
@@ -1353,7 +1353,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_GENERAL(p_kma->cloud_height_2nd.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 운고 3층
@@ -1378,7 +1378,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_GENERAL(p_kma->cloud_height_3rd.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 운량
@@ -1403,7 +1403,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_GENERAL(p_kma->cloud_amount.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 시정
@@ -1428,7 +1428,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_GENERAL(p_kma->visibility.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 미세먼지 PM10
@@ -1453,7 +1453,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_GENERAL(p_kma->pm10_concentration.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 미세먼지 PM2.5
@@ -1478,7 +1478,7 @@ void draw_aws(win_t *p_win)
                  KMA_TO_GENERAL(p_kma->pm25_concentration.data));
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
   // 순복사
   if (p_kma->net_radiation.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
@@ -1506,7 +1506,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: -", AWS_WD, "순복사");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 전천복사
@@ -1535,7 +1535,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "전천복사");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 반사복사
@@ -1564,7 +1564,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "반사복사");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 직달일사
@@ -1593,7 +1593,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "직달일사");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 현재일기
@@ -1622,7 +1622,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "현재일기");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
   // 토양수분 10cm
   if (p_kma->soil_moisture_10cm.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
@@ -1650,7 +1650,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "토양수분 10cm");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 토양수분 20cm
@@ -1679,7 +1679,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "토양수분 20cm");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 토양수분 30cm
@@ -1708,7 +1708,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "토양수분 30cm");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 토양수분 50cm
@@ -1737,7 +1737,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "토양수분 50cm");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 조도
@@ -1766,7 +1766,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "조도");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
   // 풍속 1.5m
   if (p_kma->wind_speed_1_5m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
@@ -1794,7 +1794,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "풍속 1.5m");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 풍속 4m
@@ -1823,7 +1823,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "풍속 4.0m");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 순간풍속 1.5m
@@ -1852,7 +1852,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "순간풍속 1.5m");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 순간풍속 4.0m
@@ -1881,7 +1881,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "순간풍속 4.0m");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
   // 기온 0.5m
   if (p_kma->temperature_0_5m.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
@@ -1909,7 +1909,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "기온 0.5m");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 기온 4.0m
@@ -1938,7 +1938,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "기온 4.0m");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 습도 0.5m
@@ -1967,7 +1967,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "습도 0.5m");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 습도 4.0m
@@ -1996,7 +1996,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "습도 4.0m");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   // 타코미터
@@ -2025,7 +2025,7 @@ void draw_aws(win_t *p_win)
         snprintf(buff, sizeof(buff), "%-*s: --", AWS_WD, "타코미터");
       }
     }
-    win_print_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, buff);
   }
 
   p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
@@ -2035,7 +2035,7 @@ void draw_aws(win_t *p_win)
   // Fill remaining rows with blank lines to maintain consistent window size
   while (p_win->current_row < p_win->view_row)
   {
-    win_printf(p_win, "");
+    win_printf_row(p_win, row_count++, "");
   }
 
   win_print_close(p_win);
@@ -2045,7 +2045,7 @@ void draw_aws(win_t *p_win)
 #define CHARGER_WD 15
 void draw_config(win_t *p_win)
 {
-
+  int row_count=0;
 
   int win_height = p_win->view_row + 3;
 
@@ -2060,7 +2060,7 @@ void draw_config(win_t *p_win)
 
   while (p_win->current_row < p_win->view_row)
   {
-    win_printf(p_win, "");
+    win_printf_row(p_win, row_count++, "");
   }
 
   win_print_close(p_win);

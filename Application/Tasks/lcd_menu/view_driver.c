@@ -37,34 +37,6 @@ void create_win(win_t* win, int start_x, int start_y, int view_row, int view_col
 	}
 }
 
-void win_printf(win_t* win, const char* pFmt, ...)
-{
-	char buff[150];
-	va_list ap;
-	int len;
-
-
-	if (win->current_row >= win->view_row)
-		return;
-
-	io_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
-	va_start(ap, pFmt);
-
-
-	buff[0] = '|';
-	len = 1;
-	len += vsnprintf((char*)&buff[1], sizeof(buff) - 2, (char*)pFmt, ap);
-	va_end(ap);
-
-		io_printf(buff);
-		len = win->view_col - utf8_strlen(buff)-1;
-		for (int i = 0; i < len; i++) io_printf(" ");
-		io_printf("|\r\n");
-
-
-	win->current_row++;
-}
-
 void win_printf_title(win_t* win, const char* pFmt, ...)
 {
 	char buff[150];
@@ -135,15 +107,35 @@ void win_print_close(win_t* win)
 	io_printf("+\n");
 }
 
-void win_print_row(win_t* win, int row_index, const char* buff)
+
+void win_printf_row(win_t* win, int row_index, const char* pFmt, ...)
 {
+	char buff[150];
+	va_list ap;
+	int i;
+	int len;
+	int page;
+
 	if (win->current_row >= win->view_row)
 		return;
 	
-	int page = win->current_page;
+	page = win->current_page;
 	if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + win->view_row)
 	{
-		win_printf(win, "%s", buff);
+		io_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
+		va_start(ap, pFmt);
+
+		buff[0] = '|';
+		len = 1;
+		len += vsnprintf((char*)&buff[1], sizeof(buff) - 2, (char*)pFmt, ap);
+		va_end(ap);
+
+		io_printf(buff);
+		len = win->view_col - utf8_strlen(buff) - 1;
+		for (i = 0; i < len; i++) io_printf(" ");
+		io_printf("|\r\n");
+
+		win->current_row++;
 	}
 }
 
