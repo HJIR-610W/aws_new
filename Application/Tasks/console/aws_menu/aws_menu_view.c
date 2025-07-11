@@ -33,7 +33,7 @@ char *m_l(char *label,int width)
 {
   int len;
   int remain;
-  static char buff[15];
+  static char buff[20];
 
   strcpy_safe(buff,sizeof(buff),label);
   len = strlen(buff);
@@ -88,11 +88,10 @@ void reset_win(win_t *win)
 #define SYSTEM_WD 10
 void draw_system(win_t* p_win)
 {
-  int row_count = 0;
-  char buff[50];
-  int page=0;
-  int win_height = p_win->view_row + 3;
   const char *message;
+  int page = 0;
+  int row_count = 0;
+  int win_height = p_win->view_row + 3;
    p_win->total_pages = 1;
   p_win->current_row = 0;
   calculate_window_position(p_win, p_win->view_col, win_height);
@@ -104,15 +103,12 @@ void draw_system(win_t* p_win)
     {
       win_printf_title(p_win, "시스템");
 
-      snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,
-               Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,
+                     Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
 
-      snprintf(buff, sizeof(buff), "%s: %d", m_l("ID",SYSTEM_WD), get_config_app()->id);
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %d", m_l("ID",SYSTEM_WD), get_config_app()->id);
 
-      snprintf(buff, sizeof(buff), "%s: %s", m_l("문 상태",SYSTEM_WD),ITEM_LIST(IS_DOOR_OPENED(), doorStatusList));
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %s", m_l("문 상태",SYSTEM_WD),ITEM_LIST(IS_DOOR_OPENED(), doorStatusList));
 
       if (get_logging_system()->status_group)
       {
@@ -123,20 +119,16 @@ void draw_system(win_t* p_win)
         message = "정상";
       }
 
-      snprintf(buff, sizeof(buff), "%s: %s", m_l("저장 기능",SYSTEM_WD), message);
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %s", m_l("저장 기능",SYSTEM_WD), message);
 
-      snprintf(buff, sizeof(buff), "%s: %.1f", m_l("장비 전원V", SYSTEM_WD),
-               bsp_read_battery());
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %.1f", m_l("장비 전원V", SYSTEM_WD),
+                     bsp_read_battery());
 
-      snprintf(buff, sizeof(buff), "%s: %.1f", m_l("장비 온도C",SYSTEM_WD), bsp_read_temperature());
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %.1f", m_l("장비 온도C",SYSTEM_WD), bsp_read_temperature());
 
       if (get_config_app()->ac_use)
       {
-        snprintf(buff, sizeof(buff), "%s: %s",  m_l("AC",SYSTEM_WD),"정상");
-        win_printf_row(p_win, row_count++,  buff);
+        win_printf_row(p_win, row_count++, "%s: %s",  m_l("AC",SYSTEM_WD),"정상");
       }
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
@@ -160,9 +152,8 @@ void draw_system(win_t* p_win)
 #define RAIN_WD 8
 void draw_rain(win_t *p_win)
 {
-  int row_count = 0;
-  char buff[50];
   int page = 0;
+  int row_count = 0;
   int win_height = p_win->view_row + 3;
 
   p_win->total_pages = 1;
@@ -175,29 +166,22 @@ void draw_rain(win_t *p_win)
   {
     win_printf_title(p_win, "강수량");
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "전일", get_rainfall()->rainfall_yesterday);
-    win_printf_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("전일",RAIN_WD), get_rainfall()->rainfall_yesterday);
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "금일", get_rainfall()->rainfall_today);
-    win_printf_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("금일",RAIN_WD), get_rainfall()->rainfall_today);
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "1분", get_rainfall()->rainfall_1min);
-    win_printf_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("1분",RAIN_WD), get_rainfall()->rainfall_1min);
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "10분", get_rainfall()->rainfall_10min);
-    win_printf_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("10분",RAIN_WD), get_rainfall()->rainfall_10min);
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "시간", get_rainfall()->rainfall_hourly);
-    win_printf_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("시간",RAIN_WD), get_rainfall()->rainfall_hourly);
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "연간",  get_rainfall()->rainfall_yearly);
-    win_printf_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("연간",RAIN_WD), get_rainfall()->rainfall_yearly);
 
 
-    snprintf(buff, sizeof(buff), "%-*s: %6.1f", SYSTEM_WD, "월간", get_rainfall()->rainfall_monthly);
-    win_printf_row(p_win, row_count++, buff);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("월간",RAIN_WD), get_rainfall()->rainfall_monthly);
 
-    
+
     p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
 
       break;
@@ -219,11 +203,10 @@ void draw_rain(win_t *p_win)
 #define CHARGER_WD 15
 void draw_charger(win_t *p_win)
 {
-  uint8_t err;
-  int row_count = 0;
-  char buff[50];
   char temp[20];
+  uint8_t err;
   int page = 0;
+  int row_count = 0;
   int win_height = p_win->view_row + 3;
 
   p_win->total_pages = 1;
@@ -237,41 +220,32 @@ void draw_charger(win_t *p_win)
       win_printf_title(p_win, "충전기");
       read_chargerStatus(temp, sizeof(temp));
 
-      snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "상태", temp);
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %s", m_l("상태", CHARGER_WD), temp);
 
       if (is_chargerValid())
       {
-        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "충전전압(V)",
-                 read_solarVoltage1(&err));
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %.2f", m_l("충전전압(V)", CHARGER_WD),
+                       read_solarVoltage1(&err));
 
-        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "충전전류(A)",
-                 read_solarCurrrent1(&err));
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %.2f", m_l("충전전류(A)", CHARGER_WD),
+                       read_solarCurrrent1(&err));
 
-        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "배터리 전압(V)",
-                 read_batteryVoltage1(&err));
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %.2f", m_l("배터리 전압(V)", CHARGER_WD),
+                       read_batteryVoltage1(&err));
 
-        snprintf(buff, sizeof(buff), "%-*s: %.2f", CHARGER_WD, "부하 1 전류(A)",
-                 read_loadCurrent1(&err));
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %.2f", m_l("부하 1 전류(A)", CHARGER_WD),
+                       read_loadCurrent1(&err));
 
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "충전전압(V)", "-");
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %s", m_l("충전전압(V)", CHARGER_WD), "-");
 
-        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "충전전류(A)", "-");
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %s", m_l("충전전류(A)", CHARGER_WD), "-");
 
-        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "배터리 전압(V)", "-");
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %s", m_l("배터리 전압(V)", CHARGER_WD), "-");
 
-        snprintf(buff, sizeof(buff), "%-*s: %s", CHARGER_WD, "부하 1 전류(A)","-");
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %s", m_l("부하 1 전류(A)", CHARGER_WD), "-");
       }
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
@@ -296,16 +270,12 @@ void draw_charger(win_t *p_win)
 
 void draw_direct(win_t *p_win)
 {
-
-  int row_count = 0;
-  char buff[50];
-
-  int page = 0;
-  int win_height = p_win->view_row + 3;
-
   DATE_TIME_BUF nt;
   uint32_t last_time;
   uint32_t remain_sec;
+  int page = 0;
+  int row_count = 0;
+  int win_height = p_win->view_row + 3;
 
   p_win->total_pages = 1;
   p_win->current_row = 0;
@@ -318,50 +288,44 @@ void draw_direct(win_t *p_win)
       win_printf_title(p_win, "직접통신");
 
       // 링크 상태
-      snprintf(buff, sizeof(buff), "%s: %s", m_l("링크",DIRECT_WD),
-               ITEM_LIST(get_direct_system()->link_status, linkStatusList));
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %s", m_l("링크",DIRECT_WD),
+                     ITEM_LIST(get_direct_system()->link_status, linkStatusList));
 
       // 타임아웃 (남은 시간)
       remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms / 1000.0);
-      snprintf(buff, sizeof(buff), "%s: %ds", m_l("타임아웃", DIRECT_WD), remain_sec);
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %ds", m_l("타임아웃", DIRECT_WD), remain_sec);
 
       // 송신 카운트
-      snprintf(buff, sizeof(buff), "%s: %d", m_l("송신", DIRECT_WD), get_direct_system()->tx_cnt);
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %d", m_l("송신", DIRECT_WD), get_direct_system()->tx_cnt);
 
       // 수신 카운트
-      snprintf(buff, sizeof(buff), "%s: %d", m_l("수신", DIRECT_WD), get_direct_system()->rx_cnt);
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %d", m_l("수신", DIRECT_WD), get_direct_system()->rx_cnt);
 
       // 마지막 수신 시간
       last_time = get_direct_system()->last_recv_time;
       if (last_time == 0)
       {
-        snprintf(buff, sizeof(buff), "%s: -", m_l("R시간", DIRECT_WD));
+        win_printf_row(p_win, row_count++, "%s: -", m_l("R시간", DIRECT_WD));
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "R시간",
-                 nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+        win_printf_row(p_win, row_count++, "%s: %02d-%02d-%02d %02d:%02d:%02d", m_l("R시간", DIRECT_WD),
+                       nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
-      win_printf_row(p_win, row_count++, buff);
 
       // 마지막 송신 시간
       last_time = get_direct_system()->last_send_time;
       if (last_time == 0)
       {
-        snprintf(buff, sizeof(buff), "%-*s: -", DIRECT_WD, "T시간");
+        win_printf_row(p_win, row_count++, "%s: -", m_l("T시간", DIRECT_WD));
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "T시간",
-                 nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+        win_printf_row(p_win, row_count++, "%s: %02d-%02d-%02d %02d:%02d:%02d", m_l("T시간", DIRECT_WD),
+                       nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
-      win_printf_row(p_win, row_count++, buff);
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
 
@@ -385,15 +349,12 @@ void draw_direct(win_t *p_win)
 
 void draw_cdma(win_t *p_win)
 {
-
-  int row_count = 0;
-  char buff[50];
   char num[20];
-  int page = 0;
-  int win_height = p_win->view_row + 3;
-
   DATE_TIME_BUF nt;
   uint32_t last_time;
+  int page = 0;
+  int row_count = 0;
+  int win_height = p_win->view_row + 3;
 
   p_win->total_pages = 1;
   p_win->current_row = 0;
@@ -406,9 +367,8 @@ void draw_cdma(win_t *p_win)
       win_printf_title(p_win, "CDMA");
 
       // 링크 상태
-      snprintf(buff, sizeof(buff), "%-*s: %s", CDMA_WD, "링크",
-               ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %s", m_l("링크", CDMA_WD),
+                     ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
 
       // 전화번호
       if (get_cdma_system()->num[0] != '0')
@@ -420,55 +380,49 @@ void draw_cdma(win_t *p_win)
       {
         snprintf(num, sizeof(num), "%s", get_cdma_system()->num);
       }
-      snprintf(buff, sizeof(buff), "%-*s: %s", CDMA_WD, "전화번호", num);
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %s", m_l("전화번호", CDMA_WD), num);
 
       // 수신감도
       if (get_cdma_system()->rssi == -1)
       {
-        snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "수신감도");
+        win_printf_row(p_win, row_count++, "%s: -", m_l("수신감도", CDMA_WD));
       }
       else
       {
-        snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "수신감도", get_cdma_system()->rssi);
+        win_printf_row(p_win, row_count++, "%s: %d", m_l("수신감도", CDMA_WD), get_cdma_system()->rssi);
       }
-      win_printf_row(p_win, row_count++, buff);
 
       // 송신 카운트
-      snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "송신", get_cdma_system()->tx_cnt);
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %d", m_l("송신", CDMA_WD), get_cdma_system()->tx_cnt);
 
       // 수신 카운트
-      snprintf(buff, sizeof(buff), "%-*s: %d", CDMA_WD, "수신", get_cdma_system()->rx_cnt);
-      win_printf_row(p_win, row_count++, buff);
+      win_printf_row(p_win, row_count++, "%s: %d", m_l("수신", CDMA_WD), get_cdma_system()->rx_cnt);
 
       // 마지막 수신 시간
       last_time = get_cdma_system()->last_recv_time;
       if (last_time == 0)
       {
-        snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "R시간");
+        win_printf_row(p_win, row_count++, "%s: -", m_l("R시간", CDMA_WD));
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "R시간",
-                 nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+        win_printf_row(p_win, row_count++, "%s: %02d-%02d-%02d %02d:%02d:%02d", m_l("R시간", CDMA_WD),
+                       nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
-      win_printf_row(p_win, row_count++, buff);
 
       // 마지막 송신 시간
       last_time = get_cdma_system()->last_send_time;
       if (last_time == 0)
       {
-        snprintf(buff, sizeof(buff), "%-*s: -", CDMA_WD, "T시간");
+        win_printf_row(p_win, row_count++, "%s: -", m_l("T시간", CDMA_WD));
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "T시간",
-                 nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+        win_printf_row(p_win, row_count++, "%s: %02d-%02d-%02d %02d:%02d:%02d", m_l("T시간", CDMA_WD),
+                       nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
-      win_printf_row(p_win, row_count++, buff);
 
       p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
 
@@ -492,17 +446,14 @@ void draw_cdma(win_t *p_win)
 
 void draw_eth(win_t *p_win)
 {
-
-  int row_count = 0;
-  char buff[50];
-  int page = 0;
-  int win_height = p_win->view_row + 3;
-
-  DATE_TIME_BUF nt;
   eLINK_STATUS_t link_status[ETH_CLIENT_MAX];
   uint8_t tx_cnt[ETH_CLIENT_MAX];
   uint8_t rx_cnt[ETH_CLIENT_MAX];
+  DATE_TIME_BUF nt;
   uint32_t last_time;
+  int page = 0;
+  int row_count = 0;
+  int win_height = p_win->view_row + 3;
 
   p_win->total_pages = 1;
   p_win->current_row = 0;
@@ -519,45 +470,40 @@ void draw_eth(win_t *p_win)
         rx_cnt[ETH_CLIENT_0] = get_tcp_client_system()->rx_cnt;
 
         // 링크 상태
-        snprintf(buff, sizeof(buff), "%-*s: %s", ETH_WD, "링크",
-                 ITEM_LIST(link_status[ETH_CLIENT_0], linkStatusList));
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %s", m_l("링크", ETH_WD),
+                       ITEM_LIST(link_status[ETH_CLIENT_0], linkStatusList));
 
         // 송신 카운트
-        snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "송신", tx_cnt[ETH_CLIENT_0]);
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %d", m_l("송신", ETH_WD), tx_cnt[ETH_CLIENT_0]);
 
         // 수신 카운트
-        snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "수신", rx_cnt[ETH_CLIENT_0]);
-        win_printf_row(p_win, row_count++, buff);
+        win_printf_row(p_win, row_count++, "%s: %d", m_l("수신", ETH_WD), rx_cnt[ETH_CLIENT_0]);
 
         // 마지막 수신 시간
         last_time = get_tcp_client_system()->last_recv_time;
         if (last_time == 0)
         {
-          snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "R시간");
+          win_printf_row(p_win, row_count++, "%s: -", m_l("R시간", ETH_WD));
         }
         else
         {
           time_cvt_secTotime(last_time, &nt);
-          snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "R시간",
-                   nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+          win_printf_row(p_win, row_count++, "%s: %02d-%02d-%02d %02d:%02d:%02d", m_l("R시간", ETH_WD),
+                         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
-        win_printf_row(p_win, row_count++, buff);
 
         // 마지막 송신 시간
         last_time = get_tcp_client_system()->last_send_time;
         if (last_time == 0)
         {
-          snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "T시간");
+          win_printf_row(p_win, row_count++, "%s: -", m_l("T시간", ETH_WD));
         }
         else
         {
           time_cvt_secTotime(last_time, &nt);
-          snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "T시간",
-                   nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+          win_printf_row(p_win, row_count++, "%s: %02d-%02d-%02d %02d:%02d:%02d", m_l("T시간", ETH_WD),
+                         nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
-        win_printf_row(p_win, row_count++, buff);
       }
       else
       {
@@ -569,45 +515,40 @@ void draw_eth(win_t *p_win)
           rx_cnt[i] = get_tcp_system(i)->rx_cnt;
 
           // 링크 상태 (클라이언트 번호와 IP 포함)
-          snprintf(buff, sizeof(buff), "링크(%d): %s(%s)", i,
-                   ITEM_LIST(link_status[i], linkStatusList), get_tcp_system(i)->client_ip_str);
-          win_printf_row(p_win, row_count++, buff);
+          win_printf_row(p_win, row_count++, "링크(%d): %s(%s)", i,
+                         ITEM_LIST(link_status[i], linkStatusList), get_tcp_system(i)->client_ip_str);
 
           // 송신 카운트
-          snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "송신", tx_cnt[i]);
-          win_printf_row(p_win, row_count++, buff);
+          win_printf_row(p_win, row_count++, "%s: %d", m_l("송신", ETH_WD), tx_cnt[i]);
 
           // 수신 카운트
-          snprintf(buff, sizeof(buff), "%-*s: %d", ETH_WD, "수신", rx_cnt[i]);
-          win_printf_row(p_win, row_count++, buff);
+          win_printf_row(p_win, row_count++, "%s: %d", m_l("수신", ETH_WD), rx_cnt[i]);
 
           // 마지막 수신 시간
           last_time = get_tcp_system(i)->last_recv_time;
           if (last_time == 0)
           {
-            snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "R시간");
+            win_printf_row(p_win, row_count++, "%s: -", m_l("R시간", ETH_WD));
           }
           else
           {
             time_cvt_secTotime(last_time, &nt);
-            snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "R시간",
-                     nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+            win_printf_row(p_win, row_count++, "%s: %02d-%02d-%02d %02d:%02d:%02d", m_l("R시간", ETH_WD),
+                           nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
           }
-          win_printf_row(p_win, row_count++, buff);
 
           // 마지막 송신 시간
           last_time = get_tcp_system(i)->last_send_time;
           if (last_time == 0)
           {
-            snprintf(buff, sizeof(buff), "%-*s: -", ETH_WD, "T시간");
+            win_printf_row(p_win, row_count++, "%s: -", m_l("T시간", ETH_WD));
           }
           else
           {
             time_cvt_secTotime(last_time, &nt);
-            snprintf(buff, sizeof(buff), "%-*s: %02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "T시간",
-                     nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+            win_printf_row(p_win, row_count++, "%s: %02d-%02d-%02d %02d:%02d:%02d", m_l("T시간", ETH_WD),
+                           nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
           }
-          win_printf_row(p_win, row_count++, buff);
         }
       }
 
@@ -2042,7 +1983,7 @@ void draw_aws(win_t *p_win)
 
 }
 
-#define CHARGER_WD 15
+#define CHARGER_WD 20
 void draw_config(win_t *p_win)
 {
   int row_count=0;
