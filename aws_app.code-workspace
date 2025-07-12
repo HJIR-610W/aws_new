@@ -56,7 +56,9 @@
 			"const_string.h": "c",
 			"util_memory.h": "c",
 			"util_escape_sequence.h": "c",
-			"util_stdio.h": "c"
+			"util_stdio.h": "c",
+			"driver_do.h": "c",
+			"bsp_do.h": "c"
 		}
 	}
 }

@@ -2402,6 +2402,12 @@
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver\driver_uart_def.h</name>
             </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\drv_power.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\Driver\drv_power.h</name>
+            </file>
         </group>
         <group>
             <name>Driver_stm32</name>

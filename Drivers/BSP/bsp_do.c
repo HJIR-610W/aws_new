@@ -1,27 +1,64 @@
 
-#include "driver_do.h"
+#include "bsp_do.h"
+#include "bsp.h"
 
-driver_t *app_do[6];
+typedef struct mcu_gpio_instance_s
+{
+  GPIO_InitTypeDef gpio;
+  GPIO_TypeDef *gpio_hanle;
+} mcu_gpio_instance_t;
+
+const GPIO_InitTypeDef gpio_default;
+
+
+
+
+
+    void  bsp_cdma_power_init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  board_clk_gpio(OUT_PWR_CDMA_GPIO_Port);
+  GPIO_InitStruct.Pin = OUT_PWR_CDMA_PIN;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(OUT_PWR_CDMA_GPIO_Port, &GPIO_InitStruct);
+}
 
 void bsp_do_init(void)
 {
-  app_do[0]  = driver_do_open(DO_EXT_0,0);
-  app_do[1]  = driver_do_open(DO_EXT_1,0);
-  app_do[2]  = driver_do_open(DO_EXT_2,0);
-  app_do[3]  = driver_do_open(DO_EXT_3,0);
-  app_do[4]  = driver_do_open(DO_EXT_4,0);
-  app_do[5]  = driver_do_open(DO_EXT_5,0);
+
+      bsp_cdma_power_init();
+   
 }
 
+#define BSP_DO_CDMA_POWER_LOW() HAL_GPIO_WritePin(OUT_PWR_CDMA_GPIO_Port, OUT_PWR_CDMA_PIN,GPIO_PIN_RESET)
+#define BSP_DO_CDMA_POWER_HIGH() \
+  HAL_GPIO_WritePin(OUT_PWR_CDMA_GPIO_Port, OUT_PWR_CDMA_PIN, GPIO_PIN_RESET)
 
-void bsp_write_do(int32_t num,int32_t status)
+
+void bsp_do_low(int num)
 {
-  if(status)
+  switch (num)
   {
-    driver_do_high(app_do[num]);
+    case BSP_CDMA_POWER:
+      BSP_DO_CDMA_POWER_LOW();
+      break;
+
+    default:
+      break;
   }
-  else
+}
+
+void bsp_do_high(int num)
+{
+  switch (num)
   {
-    driver_do_low(app_do[num]);
+    case BSP_CDMA_POWER:
+
+      break;
+
+    default:
+      break;
   }
 }

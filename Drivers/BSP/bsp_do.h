@@ -1,17 +1,15 @@
 
-#ifndef APP_DO_H
-#define APP_DO_H
+#ifndef BSP_DO_H
+#define BSP_DO_H
 
-#define APP_DO_0 0
-#define APP_DO_1 1
-#define APP_DO_2 2
-#define APP_DO_3 3
-#define APP_DO_4 4
-#define APP_DO_5 5
 
-#include <stdint.h>
+
+
+#define BSP_CDMA_POWER 0
+
 
 void bsp_do_init(void);
-void bsp_write_do(int32_t num,int32_t status);
+void bsp_do_low(int num);
+void bsp_do_high(int num);
 
 #endif
