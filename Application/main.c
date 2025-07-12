@@ -3,13 +3,14 @@
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "crc.h"
-#include "driver_stm32_bsp.h"
+
 #include "fsmc.h"
-#include "pcb_define.h"
+
 #include "task_start.h"
 #include "test_sram.h"
 #include "user_heap.h"
 #include "system_err.h"
+#include "bsp.h"
 extern void manual_bss_init(void);
 
 /*
@@ -69,20 +70,18 @@ int is_debug_mode(void) { return (CoreDebug->DHCSR & (1 << 0)) != 0; }
 
 int main(void)
 {
-
-#if DEBUG_MODE_EN
-      if (is_debug_mode())
+   if (is_debug_mode())
   {
     __HAL_DBGMCU_FREEZE_IWDG();  // 디버깅 시 와치독 카운트 멈춤
     __HAL_DBGMCU_FREEZE_RTC();   // 디버깅 시 rtc 타이머 멈춤
   }
-#endif
+
 
   HAL_Init();  // 타이머 4를 초기화 HAL 타이머 틱 인터럽트로 사용
 
   SystemClock_Config();
 
-  driver_stm32_bsp_init();
+  bsp_init();
 
   MX_FSMC_Init();  // TODO: SRAM초기화,SystemInit_ExtMemCtl 이함수에 적용해야함
 

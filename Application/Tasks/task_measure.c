@@ -44,7 +44,7 @@
 #include "config_app.h"
 #include "driver_do.h"
 #include "task_logging.h"
-#include "usDelay.h"
+#include "bsp_delay.h"
 #include "util_memory.h"
 #include "util_time.h"
 #include "aws_processor.h"

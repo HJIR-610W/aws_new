@@ -6,12 +6,12 @@
 
 #include "FreeRTOS.h"
 #include "cmsis_os2.h"
-#include "mcu_swo.h"
+#include "bsp_swo.h"
 #include "semphr.h"
 #include "stm32f4xx_hal.h"
 #include "stream_buffer.h"
 #include "system_err.h"
-#include "usDelay.h"
+#include "bsp_delay.h"
 #include "util_memory.h"
 
 #define STM32_UART_CDMA_BUFF_SIZE 512

@@ -4,7 +4,7 @@
 #define BSP_H_
 
 #include <stdbool.h>
-
+#include "pcb_define.h"
 #include "bsp_do.h"
 #include "bsp_di.h"
 #include "bsp_rtc.h"
@@ -27,4 +27,12 @@ bool bsp_door_opened(void);
 void bsp_status_led_on(void);  // MCU RUN LED
 void bsp_status_led_off(void);
 void bsp_status_led_set(int mode);
+
+
+void board_clk_gpio(GPIO_TypeDef *GPIOx);
+
+void board_set_gpio(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState);
+void board_config_gpio(GPIO_TypeDef *GPIOx,uint32_t pin,uint32_t mode,uint32_t pull,uint32_t speed,uint32_t alternate);
+
+uint32_t get_apb2_timer_clock(void);
 #endif

@@ -14,8 +14,8 @@
 #include "driver_do.h"
 #include "pcb_define.h"
 #include "driver_lcd_define.h"
-#include "mcu_utile.h"
-#include "usDelay.h"
+#include "bsp.h"
+#include "bsp_delay.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -76,7 +76,7 @@ static driver_t st7920_driver;
 static uint8_t framebuffer[ST7920_HEIGHT][ST7920_WIDTH / 8];  // 그래픽 모드용 프레임버퍼
 
 static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode);
-static void st7920_write_string_api(driver_t *drv, const char *str);
+
 void st7920_flush_buffer(driver_t *drv);
 void st7920_put_ch(driver_t *drv, int row, int col, uint8_t ch);
 
@@ -956,12 +956,7 @@ static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode)
     }
 }
 
-// API 호환성을 위한 래퍼 함수
-static void st7920_write_string_api(driver_t *drv, const char *str)
-{
-    // 현재 커서 위치에서 문자열 출력 (기존 동작 유지)
-    st7920_write_string_simple(drv, str);
-}
+
 
 void st7920_put_ch(driver_t *drv, int row, int col, uint8_t ch)
 {

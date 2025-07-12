@@ -1,8 +1,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "mcu_utile.h"
-#include "pcb_define.h"
+#include "bsp.h"
+
 
 #define IS_ODD_MUX_ACTIVE() \
   (is_gpio_set(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin) == 1)

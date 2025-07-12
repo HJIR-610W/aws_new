@@ -272,8 +272,188 @@ float bsp_read_temperature(void)
   return ntc_resistance_to_temperature(resistance);
 }
 
+
+/*
+GPIOx의 클럭이 enable 안되어 있으면 enable 해줌
+*/
+void board_clk_gpio(GPIO_TypeDef *GPIOx)
+{
+  if(GPIOx == GPIOA && (READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN) == 0))
+  {
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+  }
+  else if(GPIOx == GPIOB && (READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOBEN) == 0))
+  {
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+  }
+  else if(GPIOx == GPIOC && (READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOCEN) == 0))
+  {
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+  }
+  else if(GPIOx == GPIOD && (READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIODEN) == 0))
+  {
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+  }
+  else if(GPIOx == GPIOE && (READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOEEN) == 0))
+  {
+    __HAL_RCC_GPIOE_CLK_ENABLE();
+  }
+  else if(GPIOx == GPIOF && (READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOFEN) == 0))
+  {
+    __HAL_RCC_GPIOF_CLK_ENABLE();
+  }
+  else if(GPIOx == GPIOG && (READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOGEN) == 0))
+  {
+    __HAL_RCC_GPIOG_CLK_ENABLE();
+  }
+  else if(GPIOx == GPIOH && (READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOHEN) == 0))
+  {
+    __HAL_RCC_GPIOH_CLK_ENABLE();
+  }
+  else if(GPIOx == GPIOI && (READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOIEN) == 0))
+  {
+    __HAL_RCC_GPIOI_CLK_ENABLE();
+  }
+}
+
+
+void board_set_gpio(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState)
+{
+  board_clk_gpio(GPIOx);
+  HAL_GPIO_WritePin(GPIOx,GPIO_Pin,PinState);
+}
+
+void board_config_gpio(GPIO_TypeDef *GPIOx,uint32_t pin,uint32_t mode,uint32_t pull,uint32_t speed,uint32_t alternate)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  board_clk_gpio(GPIOx);
+
+  GPIO_InitStruct.Pin   = pin;
+  GPIO_InitStruct.Mode  = mode;
+  GPIO_InitStruct.Pull  = pull;
+  GPIO_InitStruct.Speed = speed;
+  GPIO_InitStruct.Alternate = alternate;
+  HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
+}
+
+// APB2 타이머 클럭 주파수 계산
+ uint32_t get_apb2_timer_clock(void)
+{
+  uint32_t pclk2 = HAL_RCC_GetPCLK2Freq();
+
+  // APB2 프리스케일러가 1이 아닌 경우 타이머 클럭은 PCLK2 × 2
+  // APB2 프리스케일러가 1인 경우 타이머 클럭은 PCLK2와 동일
+  uint32_t ppre2 = (RCC->CFGR & RCC_CFGR_PPRE2) >> RCC_CFGR_PPRE2_Pos;
+
+  if (ppre2 == 0)
+  {
+    // 분주 없음 (APB2 프리스케일러 = 1)
+    return pclk2;
+  }
+  else
+  {
+    // 분주 있음 (APB2 프리스케일러 > 1)
+    return pclk2 * 2;
+  }
+}
+
+
 void bsp_init(void)
 {
+  
+
+
+
+   __HAL_RCC_GPIOA_CLK_ENABLE();
+   __HAL_RCC_GPIOB_CLK_ENABLE();
+   __HAL_RCC_GPIOC_CLK_ENABLE();
+   __HAL_RCC_GPIOD_CLK_ENABLE();
+   __HAL_RCC_GPIOE_CLK_ENABLE();
+   __HAL_RCC_GPIOF_CLK_ENABLE();
+   __HAL_RCC_GPIOG_CLK_ENABLE();
+   __HAL_RCC_GPIOH_CLK_ENABLE();
+   __HAL_RCC_GPIOI_CLK_ENABLE();
+
+   // QUAD UART 칩을 리셋해준다. H->L
+   board_set_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_PIN_SET);
+   board_config_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                     GPIO_SPEED_FREQ_LOW, 0);
+
+   board_set_gpio(EX_UART_RST_B_GPIO_Port, EX_UART_RST_B_PIN, GPIO_PIN_SET);
+   board_config_gpio(EX_UART_RST_B_GPIO_Port, EX_UART_RST_B_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                     GPIO_SPEED_FREQ_LOW, 0);
+   HAL_Delay(10);
+
+   board_set_gpio(EX_UART_RST_A_GPIO_Port, EX_UART_RST_A_PIN, GPIO_PIN_RESET);
+   board_set_gpio(EX_UART_RST_B_GPIO_Port, EX_UART_RST_B_PIN, GPIO_PIN_RESET);
+
+   //[RS485] 방향을 입력으로 설정한다.
+   board_set_gpio(OUT_DIR_RS485_A_GPIO_Port, OUT_DIR_RS485_A_PIN, GPIO_PIN_RESET);
+   board_config_gpio(OUT_DIR_RS485_A_GPIO_Port, OUT_DIR_RS485_A_PIN, GPIO_MODE_OUTPUT_PP,
+                     GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+
+   board_set_gpio(OUT_DIR_RS485_B_GPIO_Port, OUT_DIR_RS485_B_PIN, GPIO_PIN_RESET);
+   board_config_gpio(OUT_DIR_RS485_B_GPIO_Port, OUT_DIR_RS485_B_PIN, GPIO_MODE_OUTPUT_PP,
+                     GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+
+   board_set_gpio(OUT_RS485_DIR_C_GPIO_Port, OUT_RS485_DIR_C_PIN, GPIO_PIN_RESET);
+   board_config_gpio(OUT_RS485_DIR_C_GPIO_Port, OUT_RS485_DIR_C_PIN, GPIO_MODE_OUTPUT_PP,
+                     GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+
+   board_set_gpio(OUT_RS485_DIR_D_GPIO_Port, OUT_RS485_DIR_D_PIN, GPIO_PIN_RESET);
+   board_config_gpio(OUT_RS485_DIR_D_GPIO_Port, OUT_RS485_DIR_D_PIN, GPIO_MODE_OUTPUT_PP,
+                     GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+
+  //[SPI CS] HIGH로 한다.
+   board_set_gpio(OUT_SPI1_NSS_GPIO_Port, OUT_SPI1_NSS_PIN, GPIO_PIN_SET);
+   board_config_gpio(OUT_SPI1_NSS_GPIO_Port, OUT_SPI1_NSS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                     GPIO_SPEED_FREQ_LOW, 0);
+
+   board_set_gpio(OUT_SPI1_CS_RTC_GPIO_Port, OUT_RV8803_EVI_Pin, GPIO_PIN_SET);
+   board_config_gpio(OUT_SPI1_CS_RTC_GPIO_Port, OUT_RV8803_EVI_Pin, GPIO_MODE_OUTPUT_PP,
+                     GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+
+   board_set_gpio(OUT_SPI2_NSS_GPIO_Port, OUT_SPI2_NSS_PIN, GPIO_PIN_RESET);
+   board_config_gpio(OUT_SPI2_NSS_GPIO_Port, OUT_SPI2_NSS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                     GPIO_SPEED_FREQ_LOW, 0);
+
+   // UART_5_EXT_D 는 HART와 RS232 선택사용 포트이다. RS232를 기본설정한다.
+   board_set_gpio(DO_SEL_IF_UART_GPIO_Port, SEL_IF_UART_Pin, GPIO_PIN_RESET);
+   board_config_gpio(DO_SEL_IF_UART_GPIO_Port, SEL_IF_UART_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                     GPIO_SPEED_FREQ_LOW, 0);
+
+   //[전원]CDMA 12V 전원은 차단한다.
+   board_set_gpio(OUT_PWR_CDMA_GPIO_Port, OUT_PWR_CDMA_PIN, GPIO_PIN_RESET);
+   board_config_gpio(OUT_PWR_CDMA_GPIO_Port, OUT_PWR_CDMA_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                     GPIO_SPEED_FREQ_LOW, 0);
+
+   //[전원]HART 24V는 차단한다.
+   board_set_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_PIN_RESET);
+   board_config_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                     GPIO_SPEED_FREQ_LOW, 0);
+   //[전원]강우감지 전원은 항상 출력
+   board_set_gpio(DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port, DO_POWER_RAIN_DECT_DIGITAL_PIN,
+                  GPIO_PIN_SET);
+   board_config_gpio(DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port, DO_POWER_RAIN_DECT_DIGITAL_PIN,
+                     GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+
+   // HART IC를 RESET 상태로 만든다.
+   board_set_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_PIN_RESET);
+   board_config_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                     GPIO_SPEED_FREQ_LOW, 0);
+
+   board_set_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_PIN_SET);  // VBUS 비활성
+   board_config_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                     GPIO_SPEED_FREQ_LOW, 0);
+
+   // 미사용
+   board_config_gpio(USB_OTG_PWR_FAIL_GPIO_Port, USB_OTG_PWR_FAIL_Pin, GPIO_MODE_INPUT, GPIO_NOPULL,
+                     GPIO_SPEED_FREQ_LOW, 0);
+
+ 
+ 
+ 
   bsp_rtc_init();
   bsp_power_init();
   bsp_door_status_init();

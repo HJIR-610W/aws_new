@@ -2089,12 +2089,6 @@
             <name>$PROJ_DIR$\..\Application\main.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Application\pcb_define.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\Application\pcb_define.h</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\Application\stm32f4xx_hal_msp.c</name>
         </file>
         <file>
@@ -2127,6 +2121,12 @@
                 <name>$PROJ_DIR$\..\Drivers\BSP\bsp.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_delay.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_delay.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\BSP\bsp_di.c</name>
             </file>
             <file>
@@ -2139,10 +2139,28 @@
                 <name>$PROJ_DIR$\..\Drivers\BSP\bsp_do.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_interrupt.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_interrupt.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Drivers\BSP\bsp_rtc.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\BSP\bsp_rtc.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_swo.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\bsp_swo.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\pcb_define.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Drivers\BSP\pcb_define.h</name>
             </file>
         </group>
         <group>
@@ -2454,9 +2472,6 @@
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_adc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_bsp.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_cdc.c</name>
             </file>
             <file>
@@ -2494,24 +2509,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Drivers\Driver_stm32\driver_stm32_uart.h</name>
-            </file>
-        </group>
-        <group>
-            <name>MCU</name>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\MCU\mcu_interrupt.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\MCU\mcu_swo.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\MCU\mcu_swo.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\MCU\mcu_utile.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Drivers\MCU\usDelay.c</name>
             </file>
         </group>
         <group>
