@@ -2,6 +2,7 @@
 #include "bsp_di.h"
 #include "pcf8575.h"
 #include "util_memory.h"
+#include "pcb_define.h"
 
 typedef struct bsp_do_inst_s
 {
@@ -9,9 +10,41 @@ typedef struct bsp_do_inst_s
   GPIO_TypeDef *port;
 } bsp_do_inst_t;
 
-const bsp_do_inst_t do_inst[BSP_DI_MCU_MAX] = {
-    [BSP_DI_USER_BTN] = {.init = {.Pin = DI_SW_SYS_Pin, .Pull = GPIO_PULLUP},
-                         .port = DI_SW_SYS_GPIO_Port}};
+const bsp_do_inst_t do_inst[BSP_DO_MAX] = {
+    [BSP_DO_POWER_CDMA] = {.init = {.Pin = OUT_PWR_CDMA_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                           .port = OUT_PWR_CDMA_GPIO_Port},
+    [BSP_DO_POWER_HART_24V] = {.init = {.Pin = DO_CON_PWR_S24_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                               .port = DO_CON_PWR_S24_GPIO_Port},
+    [BSP_DO_LCD_RESET] = {.init = {.Pin = DO_RESET_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                          .port = DO_RESET_H_GPIO_Port},
+    [BSP_DO_POWER_RAIN_DECT_DIGITAL] = {.init = {.Pin = DO_POWER_RAIN_DECT_DIGITAL_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                                        .port = DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port},
+    [BSP_DO_POWER_RAIN_DECT_ANALOG] = {.init = {.Pin = DO_CON_PWR_RAIN_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                                       .port = DO_CON_PWR_RAIN_GPIO_Port},
+    [BSP_DO_ADC_NCS] = {.init = {.Pin = OUT_SPI2_NSS_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
+                        .port = OUT_SPI2_NSS_GPIO_Port},
+    [BSP_DO_FRAM_CS] = {.init = {.Pin = OUT_SPI1_NSS_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
+                        .port = OUT_SPI1_NSS_GPIO_Port},
+    [BSP_DO_RTC_CS] = {.init = {.Pin = OUT_RV8803_EVI_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
+                       .port = OUT_SPI1_CS_RTC_GPIO_Port},
+    [BSP_DO_FLASH_CS] = {.init = {.Pin = NOR_RESET_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
+                         .port = NOR_RESET_GPIO_Port},
+    [BSP_DO_DIR_SDI] = {.init = {.Pin = OUT_DIR_SDI_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                        .port = OUT_DIR_SDI_GPIO_Port},
+    [BSP_DO_DIR_RS485_A] = {.init = {.Pin = OUT_DIR_RS485_A_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                            .port = OUT_DIR_RS485_A_GPIO_Port},
+    [BSP_DO_DIR_RS485_B] = {.init = {.Pin = OUT_DIR_RS485_B_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                            .port = OUT_DIR_RS485_B_GPIO_Port},
+    [BSP_DO_HART_SEL] = {.init = {.Pin = SEL_IF_UART_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                         .port = DO_SEL_IF_UART_GPIO_Port},
+    [BSP_DO_HART_RTS] = {.init = {.Pin = DO_RTS_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                         .port = DO_RTS_H_GPIO_Port},
+    [BSP_DO_HART_RESET] = {.init = {.Pin = DO_RESET_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                           .port = DO_RESET_H_GPIO_Port},
+    [BSP_DO_DIR_RS485_C] = {.init = {.Pin = OUT_RS485_DIR_C_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                            .port = OUT_RS485_DIR_C_GPIO_Port},
+    [BSP_DO_DIR_RS485_D] = {.init = {.Pin = OUT_RS485_DIR_D_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                            .port = OUT_RS485_DIR_D_GPIO_Port}};
 
 void bsp_do_gpio_init(int do_number)
 {

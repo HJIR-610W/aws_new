@@ -21,12 +21,12 @@ typedef struct pcf8575_instance_s
   void *irq_io;
   uint16_t address;
   uint16_t port_data;
-  uint16_t dir;  // 읽기 1, 쓰기 0
-  uint8_t pin[16];
+  uint16_t dir;  // 핀 방향: 1=INPUT(읽기), 0=OUTPUT(쓰기)
+  uint8_t pin[16];  // 핀 번호 매핑 배열: pin[물리핀번호] = 논리핀번호
   void *sem;
 } pcf8575_inst_t;
 
-pcf8575_inst_t pcf8575_inst[PCF8575_MAX] = {[PCF8575_0X20]={.opened = 0,.dir = 0x08,.address = 0x20}};
+pcf8575_inst_t pcf8575_inst[PCF8575_MAX] = {[PCF8575_0X20]={.opened = 0,.dir = 0x00FF,.address = 0x20}};
 
 int pcf8575_write(int number, uint16_t port_data)
 {
@@ -71,7 +71,7 @@ int find_pin(uint8_t *pin,int num)
     }
   }
 
-  return 0;
+  return -1;
 }
 
 int32_t pcf8575_w_pin(int number, int pin, int high)
@@ -99,23 +99,21 @@ int32_t pcf8575_w_pin(int number, int pin, int high)
 int32_t pcf8575_write_pin(int number, int high)
 {
   int pin;
-  switch (number)
+  
+  for(int inst = 0; inst < PCF8575_MAX; inst++)
   {
-    case DO_PCF8575_0:
-    case DO_PCF8575_1:
-    case DO_PCF8575_2:
-    case DO_PCF8575_3:
-    case DO_PCF8575_4:
-    case DO_PCF8575_5:
-    case DO_PCF8575_6:
-    case DO_PCF8575_7:
-      pin = find_pin(pcf8575_inst[PCF8575_0X20].pin, number);
-      pcf8575_w_pin(PCF8575_0X20, pin, high);
-      break;
-
-    default:
-      break;
+    pin = find_pin(pcf8575_inst[inst].pin, number);
+    if(pin != -1)
+    {
+      if((pcf8575_inst[inst].dir & (1 << pin)) == 0)
+      {
+        pcf8575_w_pin(inst, pin, high);
+        return 0;
+      }
+    }
   }
+  
+  return -1;
 }
 
 
@@ -125,27 +123,23 @@ int32_t pcf8575_write_pin(int number, int high)
  */
 int32_t pcf8575_read_pin(int number)
 {
-  uint16_t pin;
-  uint16_t port_data=0;
-  switch (number)
+  int pin;
+  uint16_t port_data = 0;
+  
+  for(int inst = 0; inst < PCF8575_MAX; inst++)
   {
-    case DI_PCF8575_0:
-    case DI_PCF8575_1:
-    case DI_PCF8575_2:
-    case DI_PCF8575_3:
-    case DI_PCF8575_4:
-    case DI_PCF8575_5:
-    case DI_PCF8575_6:
-    case DI_PCF8575_7:
-      pin = find_pin(pcf8575_inst[PCF8575_0X20].pin, number);
-      pcf8575_read(PCF8575_0X20, &port_data);
-      return ((port_data&pin)>0);
-
-      break;
-
-    default:
-      break;
+    pin = find_pin(pcf8575_inst[inst].pin, number);
+    if(pin != -1)
+    {
+      if((pcf8575_inst[inst].dir & (1 << pin)) != 0)
+      {
+        pcf8575_read(inst, &port_data);
+        return ((port_data & (1 << pin)) > 0);
+      }
+    }
   }
+  
+  return 0;
 }
 
 
@@ -191,9 +185,9 @@ void pcf8575_init(void)
         OS_CREATE_BINARY_SEM(pcf8575_inst[PCF8575_0X20].sem);
 
         pcf8575_write(PCF8575_0X20,(uint16_t)dir);  // 방향을 설정한다.
-        for (int i = 0; i < 8; i++)
+        for (int i = 8; i < 16; i++)
         {
-          pcf8575_write_pin(pcf8575_inst[PCF8575_0X20].pin[i],  1);  // 전부 High 출력
+          pcf8575_write_pin(pcf8575_inst[PCF8575_0X20].pin[i],  1);  // DO 핀들 전부 High 출력
         }
         break;
     }
