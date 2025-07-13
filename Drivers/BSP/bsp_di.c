@@ -138,6 +138,7 @@ int32_t bsp_di_read(int32_t di_number)
     default:
       break;
   }
+  return -99;
 }
 
 

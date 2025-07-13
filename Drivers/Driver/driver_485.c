@@ -76,7 +76,7 @@ int32_t driver_rs485_send(driver_t *drv, uint8_t *pData, uint16_t dataLen)
   OS_PEND_SEM(drv->sem, osWaitForever);
 
   // TODO:이 드라이버를 호출하는 task보다 우선높은곳이 있으면 osDelay 1이상 지연됨됨
-  drv_do_high(cfg->dir_do_num);  // 출력으로 설정
+  bsp_do_high(cfg->dir_do_num);  // 출력으로 설정
   osDelay(1);
   cnt = driver_uart_send(cfg->uart_io, pData, dataLen);
   osDelay(1);

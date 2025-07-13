@@ -257,7 +257,7 @@ int32_t pcb_pin(void)
 
 int32_t print_di(p_shell_context_t ctx, int32_t argc, char **argv)
 {
-  driver_t *din;
+
   int32_t input;
   int di_list[8];
 
