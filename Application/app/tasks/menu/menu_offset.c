@@ -158,7 +158,7 @@ int32_t setup_sensor_offset(eSENSOR_TYPE_t sensor_type)
 
 int32_t setup_menu_offset(void)
 {
-  int32_t choice = 0;
+
   int32_t index;
   int32_t key;
   int32_t status;

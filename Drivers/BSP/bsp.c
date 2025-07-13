@@ -7,6 +7,16 @@
 #include "driver_di.h"
 #include "driver_do.h"
 #include "driver_led.h"
+#include "test_sram.h"
+#include "user_heap.h"
+#include "system_err.h"
+
+#include "config_app.h"
+#include "crc.h"
+
+#include "fsmc.h"
+#include "tlsf.h"
+
 
 static driver_t *g_power_cdma;
 static driver_t *g_power_rain_detect_digital;
@@ -17,6 +27,170 @@ static driver_t *g_adc_stm;
 static driver_t *g_door_status;
 static driver_t *g_port_mode;
 static driver_t *g_status_led;
+
+
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_tim.h"
+
+TIM_HandleTypeDef        htim4;
+
+HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
+{
+  RCC_ClkInitTypeDef    clkconfig;
+  uint32_t              uwTimclock, uwAPB1Prescaler = 0U;
+
+  uint32_t              uwPrescalerValue = 0U;
+  uint32_t              pFLatency;
+  HAL_StatusTypeDef     status;
+
+  /* Enable TIM4 clock */
+  __HAL_RCC_TIM4_CLK_ENABLE();
+
+  /* Get clock configuration */
+  HAL_RCC_GetClockConfig(&clkconfig, &pFLatency);
+
+  /* Get APB1 prescaler */
+  uwAPB1Prescaler = clkconfig.APB1CLKDivider;
+  /* Compute TIM4 clock */
+  if (uwAPB1Prescaler == RCC_HCLK_DIV1)
+  {
+    uwTimclock = HAL_RCC_GetPCLK1Freq();
+  }
+  else
+  {
+    uwTimclock = 2UL * HAL_RCC_GetPCLK1Freq();
+  }
+
+  /* Compute the prescaler value to have TIM4 counter clock equal to 1MHz */
+  uwPrescalerValue = (uint32_t) ((uwTimclock / 1000000U) - 1U);
+
+  /* Initialize TIM4 */
+  htim4.Instance = TIM4;
+
+  /* Initialize TIMx peripheral as follow:
+
+  + Period = [(TIM4CLK/1000) - 1]. to have a (1/1000) s time base.
+  + Prescaler = (uwTimclock/1000000 - 1) to have a 1MHz counter clock.
+  + ClockDivision = 0
+  + Counter direction = Up
+  */
+  htim4.Init.Period = (1000000U / 1000U) - 1U;
+  htim4.Init.Prescaler = uwPrescalerValue;
+  htim4.Init.ClockDivision = 0;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+
+  status = HAL_TIM_Base_Init(&htim4);
+  if (status == HAL_OK)
+  {
+    /* Start the TIM time Base generation in interrupt mode */
+    status = HAL_TIM_Base_Start_IT(&htim4);
+    if (status == HAL_OK)
+    {
+    /* Enable the TIM4 global Interrupt */
+        HAL_NVIC_EnableIRQ(TIM4_IRQn);
+      /* Configure the SysTick IRQ priority */
+      if (TickPriority < (1UL << __NVIC_PRIO_BITS))
+      {
+        /* Configure the TIM IRQ priority */
+        HAL_NVIC_SetPriority(TIM4_IRQn, TickPriority, 0U);
+        uwTickPrio = TickPriority;
+      }
+      else
+      {
+        status = HAL_ERROR;
+      }
+    }
+  }
+
+ /* Return function status */
+  return status;
+}
+
+/**
+  * @brief  Suspend Tick increment.
+  * @note   Disable the tick increment by disabling TIM4 update interrupt.
+  * @param  None
+  * @retval None
+  */
+void HAL_SuspendTick(void)
+{
+  /* Disable TIM4 update Interrupt */
+  __HAL_TIM_DISABLE_IT(&htim4, TIM_IT_UPDATE);
+}
+
+/**
+  * @brief  Resume Tick increment.
+  * @note   Enable the tick increment by Enabling TIM4 update interrupt.
+  * @param  None
+  * @retval None
+  */
+void HAL_ResumeTick(void)
+{
+  /* Enable TIM4 Update interrupt */
+  __HAL_TIM_ENABLE_IT(&htim4, TIM_IT_UPDATE);
+}
+
+
+
+void HAL_MspInit(void)
+{
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+  __HAL_RCC_PWR_CLK_ENABLE();
+  HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
+
+}
+
+
+
+/*
+시스템 동작 클럭:168MHz
+*/
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Configure the main internal regulator output voltage
+   */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+   * in the RCC_OscInitTypeDef structure.
+   */
+  RCC_OscInitStruct.OscillatorType =
+      RCC_OSCILLATORTYPE_LSE | RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_OFF;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 25;
+  RCC_OscInitStruct.PLL.PLLN = 336;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    ERROR_PRINTF("SystemClock_Config");
+  }
+
+  /** Initializes the CPU, AHB and APB buses clocks
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
+                                RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;  // 2로 하면 uart 1200bps
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  {
+    ERROR_PRINTF("SystemClock_Config");
+  }
+}
+
+
 
 
 void bsp_status_led_init(void)
@@ -359,11 +533,26 @@ void board_config_gpio(GPIO_TypeDef *GPIOx,uint32_t pin,uint32_t mode,uint32_t p
 }
 
 
+extern void manual_bss_init(void);
+
+
+int is_debug_mode(void)
+{ 
+  return (CoreDebug->DHCSR & (1 << 0)) != 0; 
+}
+
 void bsp_init(void)
 {
   
+   if (is_debug_mode())
+  {
+    __HAL_DBGMCU_FREEZE_IWDG();  // 디버깅 시 와치독 카운트 멈춤
+    __HAL_DBGMCU_FREEZE_RTC();   // 디버깅 시 rtc 타이머 멈춤
+  }
 
+  HAL_Init();  // 타이머 4를 초기화 HAL 타이머 틱 인터럽트로 사용
 
+  SystemClock_Config();
 
    __HAL_RCC_GPIOA_CLK_ENABLE();
    __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -452,7 +641,15 @@ void bsp_init(void)
                      GPIO_SPEED_FREQ_LOW, 0);
 
  
- 
+   MX_FSMC_Init();  // TODO: SRAM초기화,SystemInit_ExtMemCtl 이함수에 적용해야함
+   
+   
+  manual_bss_init();
+
+  MX_CRC_Init();
+
+  asw_tlsf_init(POOL_SIZE);
+   
  
   bsp_rtc_init();
   bsp_power_init();
@@ -463,3 +660,12 @@ void bsp_init(void)
   bsp_do_init();
   bsp_status_led_init();
 }
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim->Instance == TIM4)
+  {
+    HAL_IncTick();
+  }
+}
+  

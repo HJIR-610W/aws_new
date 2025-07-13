@@ -27,7 +27,7 @@
 #include "view_driver.h"
 #include "pcb_define.h"
 #include "os_user_def.h"
-#include "setup\menu_setup.h"
+#include "menu\menu_setup.h"
 #include "util_stdio.h"
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
 extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용

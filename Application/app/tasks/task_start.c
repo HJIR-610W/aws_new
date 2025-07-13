@@ -19,8 +19,7 @@
 #include "bsp_interrupt.h"
 #include "bsp.h"
 #include "bsp_delay.h"
-#include "Tasks\aws\dualport.h"
-#include "Tasks\task_ble.h"
+#include "Tasks\task_aws.h"
 #include "Tasks\task_console.h"
 #include "Tasks\task_ethernet.h"
 #include "Tasks\task_isrEvent.h"
@@ -140,7 +139,7 @@ void startTask(void *arg)
   }
 
   panelTask_init();
-  bleTask_init();
+
   //http_server_task_init();
   telnet_server_task_init();
   log_boot_reason();

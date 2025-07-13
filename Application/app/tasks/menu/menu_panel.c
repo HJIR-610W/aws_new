@@ -8,7 +8,7 @@
 #include "menu_handler.h"
 #include "util_memory.h"
 #include "view_driver.h"
-#include "string\const_string.h"
+#include "common\const_string.h"
 
 #define SCREEN_COLS 20
 #define PANEL_WD 8

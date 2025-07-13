@@ -1,4 +1,4 @@
-#include "dualport.h"
+#include "task_aws.h"
 
 #include <stdbool.h>
 #include <math.h>
@@ -16,9 +16,9 @@
 #include "util_filter.h"
 #include "util_time.h"
 #include "kma3.h"
-#include "Data\data_accu.h"
+#include "logging\data_accu.h"
 #include "dev_io.h"
-#include "Data\utile_data.h"
+#include "logging\utile_data.h"
 #include "util_memory.h"
 
 typedef struct filter_data_s

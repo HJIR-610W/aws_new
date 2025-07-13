@@ -9,7 +9,7 @@
 #include "menu_handler.h"
 #include "view_driver.h"
 #include "util_memory.h"
-#include "string\const_string.h"
+#include "common\const_string.h"
 
 #define SCREEN_COLS 20
 #define NETWORK_WD 10

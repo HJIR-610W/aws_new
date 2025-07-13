@@ -13,6 +13,7 @@
 #include "util_memory.h"
 #include "view_driver.h"
 #include "app_adc.h"
+#include "util_stdio.h"
 
 extern config_adc_adv_t g_adc_config_ads1220;
 extern config_adc_adv_t g_adc_config_stm32;
@@ -387,7 +388,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
 void draw_cali_menu_view_summary(screen_page_t* p_win)
 {
   int row_count = 0;
-  int page = p_win->current_page;
+  //int page = p_win->current_page;
   char buff[SCREEN_COLS + 1];
   const char* message;
   const adc_cal_params_t* params;

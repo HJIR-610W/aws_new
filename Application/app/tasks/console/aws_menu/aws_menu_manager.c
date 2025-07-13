@@ -18,7 +18,7 @@
 #include "boot_version.h"
 #include "app_flash.h"
 #include "config_manager.h"
-#include "Data\utile_data.h"
+#include "logging\utile_data.h"
 #include "app_logging.h"
 
 int32_t menu_manage_version()
