@@ -5,7 +5,7 @@
 
 #include "app_file.h"
 #include "app_version.h"
-#include "crc.h"
+#include "drv_crc.h"
 #include "dev_io.h"
 #include "user_heap.h"
 config_sensor_t g_config_sensor;
@@ -114,7 +114,7 @@ void save_config_sensor(void)
 
 
   g_config_sensor.start = 0;
-  crc = crc32_hw_with_padding(&g_config_sensor.start,
+  crc = drv_crc32_with_padding(&g_config_sensor.start,
                               sizeof(config_sensor_t) - sizeof(g_config_sensor.header));
 
   g_config_sensor.header.magicNum = CONFIG_MAGIC;
@@ -217,7 +217,7 @@ void restore_config_sensor(void)
     }
       if (p_config->header.magicNum == CONFIG_MAGIC)
       {
-        crc = crc32_hw_with_padding(&p_config->start, sizeof(config_sensor_t) - sizeof(p_config->header));
+        crc = drv_crc32_with_padding(&p_config->start, sizeof(config_sensor_t) - sizeof(p_config->header));
         if (crc == p_config->header.crc)
         {
           memcpy(&g_config_sensor, p_config, sizeof(config_sensor_t));

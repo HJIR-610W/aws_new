@@ -12,7 +12,7 @@
 #include "system_err.h"
 
 #include "config_app.h"
-#include "crc.h"
+#include "bsp_crc.h"
 
 #include "fsmc.h"
 #include "tlsf.h"
@@ -657,10 +657,9 @@ void bsp_init(void)
 
   manual_bss_init();
 
-  MX_CRC_Init();
+  user_tlsf_init(POOL_SIZE);
 
-  tlsf_init(POOL_SIZE);
-
+  bsp_crc_init();
   bsp_rtc_init();
   bsp_power_init();
   bsp_door_status_init();

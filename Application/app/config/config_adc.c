@@ -5,7 +5,7 @@
 #include "app_version.h"
 #include "config_memory_map.h"
 #include "adc_calibration.h"
-#include "crc.h"
+#include "drv_crc.h"
 #include <math.h>
 
 config_adc_t g_config_adc;

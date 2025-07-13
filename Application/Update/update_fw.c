@@ -1,17 +1,18 @@
 
 
-
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
-#include "app_file.h"
-#include "crc.h"
 #include "update_fw.h"
-#include "user_heap.h"
-#include "dev_io.h"
-#include "hj_product_list.h"
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
+
+#include "app_file.h"
 #include "app_version.h"
+#include "dev_io.h"
+#include "drv_crc.h"
+#include "hj_product_list.h"
 #include "system_err.h"
+#include "user_heap.h"
 #pragma location = 0x20000000
 __no_init volatile uint32_t SystemMagicValue;
 
@@ -55,7 +56,7 @@ bool check_fw(uint8_t *p_fw_data, uint32_t len)
   uint32_t crc;
   fw_header_t *p_header = (fw_header_t *)p_fw_data;
 
-  crc = crc32_hw_with_padding(p_fw_data + sizeof(fw_header_t),len-sizeof(fw_header_t));
+  crc = drv_crc32_with_padding(p_fw_data + sizeof(fw_header_t),len-sizeof(fw_header_t));
 
   if(crc == p_header->fw_CRC)
   {
@@ -114,7 +115,7 @@ uint8_t check_firmware(uint8_t local)
       uint32_t crc;
       fw_header_t *p_header = (fw_header_t *) p_buffer;
 
-      crc = crc32_hw_with_padding(p_buffer + sizeof(fw_header_t), file_size - sizeof(fw_header_t));
+      crc = drv_crc32_with_padding(p_buffer + sizeof(fw_header_t), file_size - sizeof(fw_header_t));
       
       if (crc == p_header->fw_CRC)
       {

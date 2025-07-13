@@ -9,8 +9,8 @@
 #include "app_version.h"
 #include "config_app.h"
 #include "config_sensor.h"
-#include "crc.h"
 #include "dev_io.h"
+#include "drv_crc.h"
 #include "user_heap.h"
 
 config_t config;
@@ -283,7 +283,7 @@ void save_config_app(void)
 
 
   config.start = 0;
-  crc = crc32_hw_with_padding( &config.start,sizeof(config_t)-sizeof(config.header));
+  crc = drv_crc32_with_padding( &config.start,sizeof(config_t)-sizeof(config.header));
   
   config.header.magicNum = CONFIG_MAGIC;
   config.header.crc = crc;
@@ -448,7 +448,7 @@ void restore_config_app(void)
     }
       if (p_config->header.magicNum == CONFIG_MAGIC)
       {
-        crc = crc32_hw_with_padding(&p_config->start, sizeof(config_t) - sizeof(p_config->header));
+        crc = drv_crc32_with_padding(&p_config->start, sizeof(config_t) - sizeof(p_config->header));
         if (crc == p_config->header.crc)
         {
           memcpy(&config, p_config, sizeof(config_t));

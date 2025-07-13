@@ -1727,10 +1727,10 @@
                     <name>$PROJ_DIR$\..\Application\app\version\boot_version.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\app\version\boot_version.h</name>
+                    <name>$PROJ_DIR$\..\Application\app\version\boot_version.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\app\version\hj_product_list.h</name>
+                    <name>$PROJ_DIR$\..\Application\app\version\hj_product_list.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\version\project_def.h</name>
@@ -1742,10 +1742,10 @@
             <group>
                 <name>CDMA</name>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\at_cmd.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\at_cmd.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\modem_if.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\modem_if.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.c</name>
@@ -1775,7 +1775,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\task_cellular.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\task_cellular.h</name>
                 </file>
             </group>
             <group>
@@ -1784,7 +1784,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\Direct\task_direct.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\Direct\task_direct.h</name>
                 </file>
             </group>
             <group>
@@ -1849,13 +1849,13 @@
                         <name>$PROJ_DIR$\..\Application\file_system\FATFS\Target\bsp_driver_sd.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\application\file_system\FATFS\Target\bsp_driver_sd.h</name>
+                        <name>$PROJ_DIR$\..\Application\file_system\FATFS\Target\bsp_driver_sd.h</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\Application\file_system\FATFS\Target\fatfs_platform.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\application\file_system\FATFS\Target\fatfs_platform.h</name>
+                        <name>$PROJ_DIR$\..\Application\file_system\FATFS\Target\fatfs_platform.h</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\file_system\FATFS\Target\ffconf.h</name>
@@ -1952,13 +1952,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -1974,7 +1974,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -1987,7 +1987,7 @@
             <name>$PROJ_DIR$\..\Application\main.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Application\os_user_def.h</name>
+            <name>$PROJ_DIR$\..\application\os_user_def.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\application\system_err.c</name>
@@ -2000,7 +2000,10 @@
             <group>
                 <name>cubemx</name>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\bsp\cubemx\crc.c</name>
+                    <name>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.c</name>
@@ -2084,7 +2087,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -2183,7 +2186,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</name>
                 </file>
             </group>
             <group>
@@ -2341,6 +2344,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver\driver_uart_def.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\driver\drv_crc.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver\drv_power.c</name>

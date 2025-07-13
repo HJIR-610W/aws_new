@@ -2,7 +2,7 @@
 #define UPDATE_FW_H
 
 #include <stdint.h>
-
+#include <stdbool.h>
 #define UPDATE_FW__REMOTE_PATH "0:Firmware/Remote/remoFw.bin"
 
 #define UPDATE_LOCAL 0

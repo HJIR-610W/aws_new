@@ -58,7 +58,11 @@
 			"util_escape_sequence.h": "c",
 			"util_stdio.h": "c",
 			"driver_do.h": "c",
-			"bsp_do.h": "c"
+			"bsp_do.h": "c",
+			"drv_crc.h": "c",
+			"bsp_crc.h": "c",
+			"math.h": "c",
+			"app_version.h": "c"
 		}
 	}
 }
