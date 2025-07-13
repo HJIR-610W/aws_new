@@ -16,18 +16,19 @@
 #define DI_PCF8575_6 6
 #define DI_PCF8575_7 7
 
-#define DO_PCF8575_0 0
-#define DO_PCF8575_1 1
-#define DO_PCF8575_2 2
-#define DO_PCF8575_3 3
-#define DO_PCF8575_4 4
-#define DO_PCF8575_5 5
-#define DO_PCF8575_6 6
-#define DO_PCF8575_7 7
+#define DO_PCF8575_0 8
+#define DO_PCF8575_1 9
+#define DO_PCF8575_2 10
+#define DO_PCF8575_3 11
+#define DO_PCF8575_4 12
+#define DO_PCF8575_5 13
+#define DO_PCF8575_6 14
+#define DO_PCF8575_7 15
 
 
 
-driver_t *pcf8575_di_open(uint32_t num,void *opt);
-driver_t *pcf8575_do_open(uint32_t num,void *opt);
+void pcf8575_init(void);
+int32_t pcf8575_read_pin(int number);
+int32_t pcf8575_write_pin(int number, int high);
 
 #endif

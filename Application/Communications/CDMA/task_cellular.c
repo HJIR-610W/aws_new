@@ -9,7 +9,7 @@
 #include "at_cmd.h"
 #include "config_app.h"
 #include "dev_io.h"
-#include "driver_do.h"
+#include "drv_do.h"
 #include "driver_uart.h"
 #include "kma_protocol_handler.h"
 #include "modem_if.h"

@@ -35,7 +35,7 @@ void isrEventTask(void *arg)
       switch(cmd)
       {
         case eRTC_INT:
-        bsp_rtc_update();
+
         break;
         case eRAIN_REED_INT:
         task_printf("eRAIN_REED_INT\r\n");

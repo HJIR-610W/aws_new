@@ -5,25 +5,25 @@
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "dev_io.h"
-#include "driver_di.h"
-#include "driver_do.h"
+#include "drv_di.h"
+#include "bsp_do.h"
 #include "driver_uart.h"
 #include "pcb_define.h"
-
+#include "drv_power.h"
 
 extern UART_HandleTypeDef huart6;
 
 #define SDI_TXD_HIGH() HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET)
 #define SDI_TXD_LOW() HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET)
 
-#define SDI_DIR_TX_OFF() driver_do_low(g_sdi_dir)
-#define SDI_DIR_TX_ON() driver_do_high(g_sdi_dir)
+#define SDI_DIR_TX_OFF() bsp_do_low(BSP_DO_DIR_SDI)
+#define SDI_DIR_TX_ON() bsp_do_high(BSP_DO_DIR_SDI)
 
 #define SDI_SEND(data, len) driver_uart_send(g_sdi_uart, data, len)
 #define SDI_RECV(buff, buffSize, timeout) driver_uart_recv(g_sdi_uart, buff, buffSize, timeout)
 
-#define HART_POWER_ON() driver_do_high(g_power_24)
-#define HART_POWER_OFF() driver_do_low(g_power_24)
+#define HART_POWER_ON() drv_power_on(DRV_POWER_HART_24V)
+#define HART_POWER_OFF() drv_power_off(DRV_POWER_HART_24V)
 
 #define SDI_RX_INT_DISABLE() __HAL_UART_DISABLE_IT(&huart6, UART_IT_RXNE)
 #define SDI_RX_INT_ENABLE() __HAL_UART_ENABLE_IT(&huart6, UART_IT_RXNE)
@@ -32,7 +32,7 @@ extern UART_HandleTypeDef huart6;
 #define SDI_UART_ENABLE() __HAL_UART_ENABLE(&huart6)
 
 driver_t *g_sdi_uart;
-driver_t *g_sdi_dir;
+
 
 const osThreadAttr_t sdiTask_attributes = {
     .name = "sdiTask",
@@ -166,7 +166,7 @@ void sdiTask(void *arg)
 void test_sdi12(void)
 {
   uart_config_t uart_config = {.dataLen = UART_DATA_LEN_8, .stop_bit = 0};
-  do_config_t do_config;
+
 
   uart_config.baud = 1200;
   uart_config.parityIdx = PARITY_NONE;
@@ -175,10 +175,7 @@ void test_sdi12(void)
 
   g_sdi_uart = driver_uart_open(UART_9_SDI, &uart_config);
 
-  do_config.mode = DO_OUT_OD;
-  do_config.pullup = DO_NO_PULL;
 
-  g_sdi_dir = driver_do_open(DO_DIR_SDI, &do_config);
 
   sdiTask(0);
 }

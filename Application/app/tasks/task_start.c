@@ -13,8 +13,6 @@
 #include "Config\config_app.h"
 #include "Config\config_manager.h"
 #include "Config\config_sensor.h"
-#include "Drivers\Driver\driver_led.h"
-#include "Drivers\Driver\driver_rtc.h"
 #include "IO\dev_io.h"
 #include "bsp_interrupt.h"
 #include "bsp.h"
@@ -43,7 +41,7 @@
 #include "task_wdt.h"
 #include "task_http_server.h"
 #include "task_telnet_server.h"
-
+#include "driver.h"
 
 const osThreadAttr_t kStartTask_attributes = {
     .name = "startTask",
@@ -85,6 +83,7 @@ void log_boot_reason(void)
  */
 void startTask(void *arg)
 {
+  drv_init();
   if(testTask_init()==true)
   {
     osThreadExit();  // 종료 시킴
@@ -94,7 +93,6 @@ void startTask(void *arg)
   wdtTask_init();
   mcu_interrupt_init();  // 최우선 실행
 
-  bsp_init();
   usDelay_init();
 
   config_manager_init();// 우선 실행 

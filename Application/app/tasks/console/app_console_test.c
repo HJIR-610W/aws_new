@@ -7,8 +7,8 @@
 #include "app_rs485.h"
 #include "app_sensor.h"
 #include "dev_io.h"
-#include "driver_di.h"
-#include "driver_do.h"
+#include "drv_di.h"
+#include "drv_do.h"
 #include "pcb_define.h"
 #include "util_memory.h"
 #include "vt100_command.h"
@@ -259,46 +259,27 @@ int32_t print_di(p_shell_context_t ctx, int32_t argc, char **argv)
 {
   driver_t *din;
   int32_t input;
+  int di_list[8];
+
+  di_list[0] = DRV_DI_0;
+  di_list[1] = DRV_DI_1;
+  di_list[2] = DRV_DI_2;
+  di_list[3] = DRV_DI_3;
+  di_list[4] = DRV_DI_4;
+  di_list[5] = DRV_DI_5;
+  di_list[6] = DRV_DI_6;
+  di_list[7] = DRV_DI_7;
 
   for (int i = 0; i < 8; i++)
   {
-    din = driver_di_open(DI_EXT_0 + i, 0);
-    if (din)
-    {
-      input = driver_di_read(din);
-      io_printf("EXT_%d:%d\r\n", i, input);
-    }
+    input = drv_di_read(di_list[i]);
+    io_printf("EXT_%d:%d\r\n", i, input);
+
   }
   return 0;
 }
 
-int32_t ctrl_do(p_shell_context_t ctx, int32_t argc, char **argv)
-{
 
-  char *endptr;
-  int32_t pin;
-  int32_t pin_state;
-  driver_t *dout;
-
-  pin = strtol(argv[1], &endptr, 10);
-  pin_state = strtol(argv[2], &endptr, 10);
-
-  dout = driver_do_open(pin, 0);
-
-  if (dout)
-  {
-    if (pin_state)
-    {
-      driver_do_high(dout);
-    }
-    else
-    {
-      driver_do_low(dout);
-    }
-  }
-
-  return 0;
-}
 
 int32_t test_pcb(p_shell_context_t ctx, int32_t argc, char **argv)
 {

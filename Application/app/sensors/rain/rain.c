@@ -8,13 +8,12 @@
 #include "Sensors\rain\rain.h"
 #include "task_isrEvent.h"
 #include "pcb_define.h"
-#include "driver_di.h"
+#include "drv_di.h"
 #include "util_time.h"
 
 
 rain_data_t rain_data;
 
-driver_t *g_hallStatusDriver;
 
 static uint16_t g_rainPulse;
 static osSemaphoreId_t g_rainSemId = NULL;
@@ -58,7 +57,7 @@ uint16_t get_rain(uint16_t cnt)
 }
 
 
-void rainReedCallBack(void *arg)
+void rain_reed_callback(void *arg)
 {
   uint32_t current_time = OS_GET_TICK();
 
@@ -69,7 +68,7 @@ void rainReedCallBack(void *arg)
   }
 }
 
-void rainHallCallBack(void *arg)
+void rain_hall_callback(void *arg)
 {
   uint32_t current_time = OS_GET_TICK();
 
@@ -92,51 +91,40 @@ void rain_init(uint32_t num)
   driver_t *rain_pulse;
   di_isr_set_cfg_t isr_cfg;
 
-
   g_rainSemId = osSemaphoreNew(1, 1, NULL); 
-  g_hallStatusDriver  = driver_di_open(DI_RAIN_HALL_ERR,0);
 
   switch (num)
   {
   case RAIN_REED_05MM:
   case RAIN_REED_1MM:
-  rain_pulse = driver_di_open(DI_RAIN_REED,0);
-
-  isr_cfg.call    = rainReedCallBack;
-  isr_cfg.name    = "rain_pulse";
-  isr_cfg.trigger = eDI_FALLING;
-  isr_cfg.prio    = 5;
-  driver_di_set(rain_pulse,DI_SET_INTERRUPT,&isr_cfg);
+    isr_cfg.call    = rain_reed_callback;
+    isr_cfg.name    = "rain_pulse";
+    isr_cfg.trigger = eDI_FALLING;
+    isr_cfg.prio    = 5;
+    drv_di_set_interrupt(DI_RAIN_REED, &isr_cfg);
   break;
   
   case RAIN_HALL_05MM:
   case RAIN_HALL_1MM:
-    rain_pulse = driver_di_open(DI_RAIN_HALL,0);
-
-    isr_cfg.call    = rainHallCallBack;
-    isr_cfg.name    = "rain_pulse";
+    isr_cfg.call    = rain_hall_callback;
+    isr_cfg.name    = "rain_hall";
     isr_cfg.trigger = eDI_FALLING;
     isr_cfg.prio    = 5;
-
-    driver_di_set(rain_pulse,DI_SET_INTERRUPT,&isr_cfg);
-
-  break;
+    drv_di_set_interrupt(DI_RAIN_HALL, &isr_cfg);
+    break;
   }
 }
 
 
 
-
-
-
 int32_t read_rainHallErr(void)
 {
-  if(driver_di_read(g_hallStatusDriver))
+  if (drv_di_read(DI_RAIN_HALL_ERR))
   {
-    return 0;//?뺤긽
+    return 0;
   }
 
-  return 1;//?먮윭 
+  return 1; 
 }
 
 
@@ -149,7 +137,6 @@ typedef struct rain_cfg_s
 
 driver_t rain_driver;
 rain_cfg_t rain_cfg;
-
 
 
 driver_t *rain_open(int32_t num,void *opt)

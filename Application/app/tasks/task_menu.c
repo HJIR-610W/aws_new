@@ -74,7 +74,7 @@ void draw_system_page(screen_page_t* p_win)
 
   screen_printf_row(p_win, row_count++, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
   screen_printf_row(p_win, row_count++, "%-*s:%s", SYSTEM_WD, "DOOR",
-                 ITEM_LIST(IS_DOOR_OPENED(), doorStatusList_lcd));
+                    ITEM_LIST(is_door_opened(), doorStatusList_lcd));
 
   message = get_logging_system()->status_group?"ERROR":"NORMAL";
   screen_printf_row(p_win, row_count++, "%-*s:%s", SYSTEM_WD,   "LOGGING", message);

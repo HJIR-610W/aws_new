@@ -4,7 +4,7 @@
 
 #include "app_key.h"
 #include "app_screen.h"
-#include "bsp_rtc.h"
+#include "drv_rtc.h"
 #include "cli_key_code.h"
 #include "config_app.h"
 #include "console_utile.h"
@@ -111,8 +111,8 @@ int32_t setup_menu_system(void)
           nt.Year = year;
           nt.Month = month;
           nt.Day = day;
-          bsp_rtc_set(&nt);
-          bsp_rtc_update();
+          drv_rtc_set(&nt);
+          drv_rtc_read(&Date_Time);
         }
         break;
         case SYSTEM_MENU_TIME:
@@ -133,8 +133,8 @@ int32_t setup_menu_system(void)
           nt.Hour = hour;
           nt.Min = min;
           nt.Sec = sec;
-          bsp_rtc_set(&nt);
-          bsp_rtc_update();
+          drv_rtc_set(&nt);
+          drv_rtc_read(&Date_Time);
         }
       break;
       case SYSTEM_MENU_ID:

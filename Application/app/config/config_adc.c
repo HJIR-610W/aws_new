@@ -93,7 +93,7 @@ void save_config_adc(void)
   uint8_t major,minor,fix,rel;
 
   g_config_adc.start = 0;
-  crc = crc32_hw_with_padding(&g_config_adc.start,
+  crc = drv_crc32_with_padding(&g_config_adc.start,
                               sizeof(config_adc_t) - sizeof(g_config_adc.header));
 
   g_config_adc.header.magicNum = CONFIG_MAGIC;

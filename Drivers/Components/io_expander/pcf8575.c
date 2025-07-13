@@ -9,456 +9,193 @@
 #include "driver_do_define.h"
 #include "pcf8575.h"
 #include "system_err.h"
-
+#include "os_user_def.h"
 
 #define PCF8575_0X20 0
+#define PCF8575_MAX 1
 
-
-typedef struct pcf8575_cfg_s
+typedef struct pcf8575_instance_s
 {
+  bool opened;
   void *i2c_io;
   void *irq_io;
   uint16_t address;
   uint16_t port_data;
-  uint16_t dir;//읽기 1, 쓰기 0
-}pcf8575_cfg_t;
+  uint16_t dir;  // 읽기 1, 쓰기 0
+  uint8_t pin[16];
+  void *sem;
+} pcf8575_inst_t;
 
+pcf8575_inst_t pcf8575_inst[PCF8575_MAX] = {[PCF8575_0X20]={.opened = 0,.dir = 0x08,.address = 0x20}};
 
-int32_t pcf8575_write8(driver_t *drv,uint8_t port_data);
-int32_t pcf8575_read8(driver_t *drv,uint16_t *port_data);
-int pcf8575_write_pin(driver_t *drv,uint16_t pin,uint16_t high);
-int pcf8575_write(driver_t *drv,uint16_t port_data);
-
-
-gpio_api_t pcf8575_gpio_api ={.write8 = pcf8575_write8,
-                              .read8  = pcf8575_read8,
-                              .write_pin = pcf8575_write_pin};
-
-pcf8575_cfg_t g_pcf8575_cfg;
-driver_t g_pcf8575;
-
-driver_t *pcf8575_open(uint32_t num,void *opt)
-{
-  i2c_open_opt_t i2c_open_opt;
-  uint16_t dir=0;
-
-  if(g_pcf8575.opened)
-  {
-    return &g_pcf8575;
-  }
-
-  switch (num)
-  {
-  case PCF8575_0X20:
-
-    i2c_open_opt.freq = 400000;
-
-    g_pcf8575_cfg.i2c_io =  driver_stm32_i2c_open(STM32_I2C_2,&i2c_open_opt);
-    g_pcf8575_cfg.address = 0x20;
-    g_pcf8575.opened = true;
-    g_pcf8575.api  =&pcf8575_gpio_api;
-    g_pcf8575.cfg = &g_pcf8575_cfg;
-
-#if 0 
-    if(g_pcf8575.sem == NULL)
-    {
-      g_pcf8575.sem = osSemaphoreNew(1, 1, NULL);
-
-      if(g_pcf8575.sem ==NULL)
-      {
-    ERROR_PRINTF("SystemClock_Config");
-      }
-    }
-#endif
-    dir |= DIR_IN(GPIO_PIN0);
-    dir |= DIR_IN(GPIO_PIN1);
-    dir |= DIR_IN(GPIO_PIN2);
-    dir |= DIR_IN(GPIO_PIN3);
-    dir |= DIR_IN(GPIO_PIN4);
-    dir |= DIR_IN(GPIO_PIN5);
-    dir |= DIR_IN(GPIO_PIN6);
-    dir |= DIR_IN(GPIO_PIN7);
-    
-
-    pcf8575_write(&g_pcf8575,(uint16_t)dir);//방향을 설정한다.
-    
-    for(int i = 0 ;i < 8; i++)
-    {
-      pcf8575_write_pin(&g_pcf8575,1<<i,1);//전부 High 출력
-    }
-
-
-    break;
-  }
-
-  return &g_pcf8575;
-}
-
-
-
-
-
-
-int pcf8575_write(driver_t *drv,uint16_t port_data)
+int pcf8575_write(int number, uint16_t port_data)
 {
   uint8_t data[2];
-  pcf8575_cfg_t *cfg = (pcf8575_cfg_t *)drv->cfg;
 
-  cfg->port_data = port_data; 
+  OS_PEND_SEM(pcf8575_inst[number].sem,osWaitForever);
+  pcf8575_inst[number].port_data = port_data; 
 
   memcpy(data,&port_data,2);
 
-  stm32_i2c_send_byte(cfg->i2c_io,cfg->address,data,2);
+  stm32_i2c_send_byte(pcf8575_inst[number].i2c_io, pcf8575_inst[number].address, data, 2);
 
+  OS_POST_SEM(pcf8575_inst[number].sem);
   return 0;
 }
 
 
-int pcf8575_read(driver_t *drv,uint16_t *port_data)
+int pcf8575_read(int number,uint16_t *port_data)
 {
   uint8_t data[2];
 
-  pcf8575_cfg_t *cfg = (pcf8575_cfg_t *)drv->cfg;
+  OS_PEND_SEM(pcf8575_inst[number].sem, osWaitForever);
 
-  stm32_i2c_recv_byte(cfg->i2c_io,cfg->address,data,2);
+
+  stm32_i2c_recv_byte(pcf8575_inst[number].i2c_io, pcf8575_inst[number].address, data, 2);
 
   *port_data = ((uint16_t)data[0]) | ((uint16_t)data[1]<<8)&0xFF00;
-
- return 0; 
+  OS_POST_SEM(pcf8575_inst[number].sem);
+  return 0; 
 }
 
 
 
 
-
-void pcf8575_irq(void)
+int find_pin(uint8_t *pin,int num)
 {
-  
-}
-
-
-
-
-
-//하드코딩 함,0..7 입력, 8..15출력 추후 수정
-int32_t pcf8575_write8(driver_t *drv,uint8_t port_data)
-{
-  uint8_t data[2];
-  uint8_t data16;
-  pcf8575_cfg_t *cfg = (pcf8575_cfg_t *)drv->cfg;
-
-  data16 = port_data<<8|0xFF;
-
-  cfg->port_data = port_data; 
-
-  memcpy(data,&data16,2);
-
-  stm32_i2c_send_byte(cfg->i2c_io,cfg->address,data,2);
-
-  return 0;
-}
-
-
-
-int pcf8575_read8(driver_t *drv,uint16_t *port_data)
-{
-  uint8_t data[2];
-
-  uint16_t data16;
-  pcf8575_cfg_t *cfg = (pcf8575_cfg_t *)drv->cfg;
-
-  stm32_i2c_recv_byte(cfg->i2c_io,cfg->address,data,2);
-
- 
-
-   data16 = ((uint16_t)data[0]) | ((uint16_t)data[1]<<8)&0xFF00;
-
-   *port_data = data16&0x00FF;
-
- return 0; 
-}
-
-// 상위 8bit가 출력,하위 8bit 입력력
-uint16_t pcf8575_read_pin(driver_t *drv,uint16_t pin)
-{
-  uint8_t data[2];
-  uint16_t read_pin = 0;
-  uint16_t data16;
-  pcf8575_cfg_t *cfg = (pcf8575_cfg_t *)drv->cfg;
-
-  stm32_i2c_recv_byte(cfg->i2c_io,cfg->address,data,2);
-
-  data16 = ((uint16_t)data[0]) | ((uint16_t)data[1]<<8)&0xFF00;
-
-  read_pin = (1<<pin);
-  if(data16 &read_pin)
+  for(int i = 0 ; i<16;i++)
   {
-    return 1;
+    if(pin[i]==num)
+    {
+      return i;
+    }
   }
 
   return 0;
 }
 
-//상위 8bit가 출력
-int pcf8575_write_pin(driver_t *drv,uint16_t pin,uint16_t high)
+int32_t pcf8575_w_pin(int number, int pin, int high)
 {
-  uint8_t data[2];
-  uint16_t data16;
-  pcf8575_cfg_t *cfg = (pcf8575_cfg_t *)drv->cfg;
-
-  stm32_i2c_recv_byte(cfg->i2c_io,cfg->address,data,2);
-  data16 = ((uint16_t)data[0]) | ((uint16_t)data[1]<<8)&0xFF00;
+  uint16_t port_data=0;
+  uint16_t w_pin=0;
+  pcf8575_read(number, &port_data);
 
   if(high)
   {
-    data16 = data16 | (pin << 8);
+    w_pin = 1<<pin;
+    port_data |= w_pin;
+    pcf8575_write(number,port_data);
   }
   else
   {
-    data16 = data16 & (~(pin << 8));
+    w_pin = ~(1 << pin);
+    port_data &= w_pin;
+    pcf8575_write(number, port_data);
   }
-
-
-  cfg->port_data |= data16;
-  data16 |=0x00FF;
-
-
-  memcpy(data,&data16,2);
-
-  stm32_i2c_send_byte(cfg->i2c_io,cfg->address,data,2);
 
   return 0;
 }
 
-
-
-void pcf8575_di_close(driver_t *drv);
-int32_t pcf8575_di_read(driver_t *drv);
-void pcf8575_di_set(driver_t *drv,di_set_option_t cmd,void *option);
-
-const di_api_t pcf8575_di_api={.close = pcf8575_di_close,
-                               .read  = pcf8575_di_read,
-                               .set   = pcf8575_di_set};
-
-typedef struct pcf8575_di_cfg_s
+int32_t pcf8575_write_pin(int number, int high)
 {
-  driver_t *pcf8575_io;
-  uint16_t channel;
-}pcf8575_di_cfg_t,pcf8575_do_cfg_t;
-
-driver_t g_pcf8575_di_list[8];
-pcf8575_di_cfg_t pcf8575_di_cfg[8];
-
-
-
-driver_t *pcf8575_di_open(uint32_t num,void *opt)
-{
-
-
-
-
-  if(g_pcf8575_di_list[num].opened)
+  int pin;
+  switch (number)
   {
-    return &g_pcf8575_di_list[num];
+    case DO_PCF8575_0:
+    case DO_PCF8575_1:
+    case DO_PCF8575_2:
+    case DO_PCF8575_3:
+    case DO_PCF8575_4:
+    case DO_PCF8575_5:
+    case DO_PCF8575_6:
+    case DO_PCF8575_7:
+      pin = find_pin(pcf8575_inst[PCF8575_0X20].pin, number);
+      pcf8575_w_pin(PCF8575_0X20, pin, high);
+      break;
+
+    default:
+      break;
   }
+}
 
-  
-  g_pcf8575_di_list[num].cfg = &pcf8575_di_cfg[num];
-  g_pcf8575_di_list[num].api = &pcf8575_di_api;
 
-  switch(num)
+/**
+ * @brief pin 읽기
+ * @retval 0 low, 1high
+ */
+int32_t pcf8575_read_pin(int number)
+{
+  uint16_t pin;
+  uint16_t port_data=0;
+  switch (number)
   {
     case DI_PCF8575_0:
-    pcf8575_di_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_di_cfg[num].channel = num;
-    break;
     case DI_PCF8575_1:
-    pcf8575_di_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_di_cfg[num].channel = num;
-    break;
     case DI_PCF8575_2:
-    pcf8575_di_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_di_cfg[num].channel = num;
-    break;
     case DI_PCF8575_3:
-    pcf8575_di_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_di_cfg[num].channel = num;
-    break;
     case DI_PCF8575_4:
-    pcf8575_di_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_di_cfg[num].channel = num;
-    break;
     case DI_PCF8575_5:
-    pcf8575_di_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_di_cfg[num].channel = num;
-    break;
     case DI_PCF8575_6:
-    pcf8575_di_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_di_cfg[num].channel = num;
-    break;
     case DI_PCF8575_7:
-    pcf8575_di_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_di_cfg[num].channel = num;
-    break;
+      pin = find_pin(pcf8575_inst[PCF8575_0X20].pin, number);
+      pcf8575_read(PCF8575_0X20, &port_data);
+      return ((port_data&pin)>0);
 
+      break;
+
+    default:
+      break;
   }
-
-  return &g_pcf8575_di_list[num];
 }
 
 
 
-void pcf8575_di_close(driver_t *drv)
+
+void pcf8575_init(void)
 {
-
-}
-
-
-void pcf8575_di_set(driver_t *drv,di_set_option_t cmd,void *option)
-{
-
-
-}
-
-
-int32_t pcf8575_di_read(driver_t *drv)
-{
-  pcf8575_di_cfg_t *cfg = drv->cfg;
-  driver_t *pcf;
-
-  pcf = cfg->pcf8575_io;
-
-  gpio_api_t *api = (gpio_api_t*)pcf->api;
-
-
-  uint16_t data;
-
-   api->read8(pcf,&data);
-
-  if(data&(1<<cfg->channel))
-  {
-    return 1;
-  }
-
-  return 0;
+  i2c_open_opt_t i2c_open_opt;
+  uint16_t dir = 0;
+  int number;
+  i2c_open_opt.freq = 400000;
   
-
-}
-
-
-
-
-driver_t g_pcf8575_do_list[8];
-pcf8575_do_cfg_t pcf8575_do_cfg[8];
-
-void pcf8575_low(driver_t *handle);
-void pcf8575_high(driver_t *handle);
-void pcf8575_do_close(driver_t *handle);
-void pcf8575_do_set(driver_t *handle, do_set_option_t option, void *value);
-
-
-const do_api_t pcf8575_do_api={.close = pcf8575_do_close,
-                               .set = pcf8575_do_set,
-                               .low  = pcf8575_low,
-                               .high   = pcf8575_high};
-
-
-driver_t *pcf8575_do_open(uint32_t num,void *opt)
-{
-
-
-  if(g_pcf8575_do_list[num].opened)
+  for(int i = 0 ; i< sizeof(pcf8575_inst)/sizeof(pcf8575_inst_t);i++)
   {
-    return &g_pcf8575_do_list[num];
+    switch(i)
+    {
+      case PCF8575_0X20:
+        if (pcf8575_inst[PCF8575_0X20].opened)
+        break;
+        
+        pcf8575_inst[PCF8575_0X20].opened = true;
+        pcf8575_inst[PCF8575_0X20].i2c_io = driver_stm32_i2c_open(STM32_I2C_2, &i2c_open_opt);
+        pcf8575_inst[PCF8575_0X20].pin[0] = DI_PCF8575_0;
+        pcf8575_inst[PCF8575_0X20].pin[1] = DI_PCF8575_1;
+        pcf8575_inst[PCF8575_0X20].pin[2] = DI_PCF8575_2;
+        pcf8575_inst[PCF8575_0X20].pin[3] = DI_PCF8575_3;
+        pcf8575_inst[PCF8575_0X20].pin[4] = DI_PCF8575_4;
+        pcf8575_inst[PCF8575_0X20].pin[5] = DI_PCF8575_5;
+        pcf8575_inst[PCF8575_0X20].pin[6] = DI_PCF8575_6;
+        pcf8575_inst[PCF8575_0X20].pin[7] = DI_PCF8575_7;
+
+        pcf8575_inst[PCF8575_0X20].pin[8]  = DO_PCF8575_0;
+        pcf8575_inst[PCF8575_0X20].pin[9]  = DO_PCF8575_1;
+        pcf8575_inst[PCF8575_0X20].pin[10] = DO_PCF8575_2;
+        pcf8575_inst[PCF8575_0X20].pin[11] = DO_PCF8575_3;
+        pcf8575_inst[PCF8575_0X20].pin[12] = DO_PCF8575_4;
+        pcf8575_inst[PCF8575_0X20].pin[13] = DO_PCF8575_5;
+        pcf8575_inst[PCF8575_0X20].pin[14] = DO_PCF8575_6;
+        pcf8575_inst[PCF8575_0X20].pin[15] = DO_PCF8575_7;
+
+        dir = pcf8575_inst[PCF8575_0X20].dir;
+
+        OS_CREATE_BINARY_SEM(pcf8575_inst[PCF8575_0X20].sem);
+
+        pcf8575_write(PCF8575_0X20,(uint16_t)dir);  // 방향을 설정한다.
+        for (int i = 0; i < 8; i++)
+        {
+          pcf8575_write_pin(pcf8575_inst[PCF8575_0X20].pin[i],  1);  // 전부 High 출력
+        }
+        break;
+    }
   }
-
-  
-  g_pcf8575_do_list[num].cfg = &pcf8575_do_cfg[num];
-  g_pcf8575_do_list[num].api = &pcf8575_do_api;
-
-  switch(num)
-  {
-    case DI_PCF8575_0:
-    pcf8575_do_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_do_cfg[num].channel = 0;
-    break;
-    case DI_PCF8575_1:
-    pcf8575_do_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_do_cfg[num].channel = 1;
-    break;
-    case DI_PCF8575_2:
-    pcf8575_do_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_do_cfg[num].channel = 2;
-    break;
-    case DI_PCF8575_3:
-    pcf8575_do_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_do_cfg[num].channel = 3;
-    break;
-    case DI_PCF8575_4:
-    pcf8575_do_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_do_cfg[num].channel = 4;
-    break;
-    case DI_PCF8575_5:
-    pcf8575_do_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_do_cfg[num].channel = 5;
-    break;
-    case DI_PCF8575_6:
-    pcf8575_do_cfg[num].pcf8575_io = pcf8575_open(PCF8575_0X20,NULL);
-    pcf8575_do_cfg[num].channel = 6;
-    break;
-
-
-  }
-
-  return &g_pcf8575_do_list[num];
-}
-
-
-void pcf8575_low(driver_t *drv)
-{
-  pcf8575_do_cfg_t *cfg = drv->cfg;
-  driver_t *pcf;
-
-  pcf = cfg->pcf8575_io;
-
-  const gpio_api_t *api = pcf->api;
-
-
-
-
-  api->write_pin(pcf,1<<cfg->channel,0);
-}
-
-void pcf8575_high(driver_t *drv)
-{
-  pcf8575_do_cfg_t *cfg = drv->cfg;
-  driver_t *pcf;
-
-  pcf = cfg->pcf8575_io;
-
-  const gpio_api_t *api = pcf->api;
-
-
-
-
-  api->write_pin(pcf,1<<cfg->channel,1);
-}
-
-
-void pcf8575_do_close(driver_t *handle)
-{
-
-}
-
-void pcf8575_do_set(driver_t *handle, do_set_option_t option, void *value)
-{
-
-}
-
-//TODO:
-int32_t pcf8575_do_read(driver_t *drv,uint8_t *err)
-{
-
-
-  return 0;
 }

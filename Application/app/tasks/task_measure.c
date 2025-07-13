@@ -42,7 +42,7 @@
 #include "aws_data.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
-#include "driver_do.h"
+#include "drv_do.h"
 #include "task_logging.h"
 #include "bsp_delay.h"
 #include "util_memory.h"

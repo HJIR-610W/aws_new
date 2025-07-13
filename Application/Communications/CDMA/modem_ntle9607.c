@@ -11,6 +11,7 @@
 #include "driver_uart.h"
 
 #include "bsp.h"
+#include "drv_power.h"
 extern void EwFree( void* aMemory );
 extern void* EwAlloc( int aSize );
 extern void modem_sends(const char *pData);
@@ -597,11 +598,11 @@ void ntle9607_reset(uint8_t resetType,uint32_t delayMs)
         ntle9607_resetSW();
         break;
         case M_RESET_HW:
-        bsp_cdma_power_off();
-        osDelay(2000);
-        bsp_cdma_power_on();
+          drv_power_off(DRV_POWER_CDMA);
+          osDelay(2000);
+          drv_power_on(DRV_POWER_CDMA);
 
-        break;
+          break;
     }
 
 #if 1 

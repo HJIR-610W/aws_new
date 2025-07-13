@@ -10,8 +10,7 @@
 #include "st7920.h"
 #include <string.h>
 #include "driver_stm32_spi.h"
-#include "driver_stm32_do.h"
-#include "driver_do.h"
+#include "bsp_do.h"
 #include "pcb_define.h"
 #include "driver_lcd_define.h"
 #include "bsp.h"
@@ -63,8 +62,8 @@ volatile uint8_t* p_lcd_data = (volatile uint8_t*)LCD_DATA_ADDRESS;
 typedef struct
 {
   driver_t *spi_io;
-  driver_t *cs_io;  // CS는 active high
-  driver_t *rst_io;
+  int cs_do_num;  // CS는 active high
+  int rst_do_num;
   bool initialized;
   bool graphic_mode;
 } st7920_t;
@@ -422,13 +421,13 @@ driver_t *st7920_open(void)
         return NULL;
     }
 
-    st7920_instance.cs_io = driver_do_open(DO_LCD_CS, NULL);
-    if(!st7920_instance.cs_io)
+    st7920_instance.cs_do_num = driver_do_open(DO_LCD_CS, NULL);
+    if(!st7920_instance.cs_do_num)
     {
         return NULL;
     }
     
-    driver_do_high(st7920_instance.cs_io);
+    bsp_do_high(st7920_instance.cs_do_num);
 #endif
 
 #if ST7920_GPIO_USE
@@ -436,7 +435,7 @@ driver_t *st7920_open(void)
     st7920_gpio_init();
 #endif
 
-    st7920_instance.rst_io = driver_do_open(DO_LCD_RESET, NULL);
+    st7920_instance.rst_do_num = BSP_DO_LCD_RESET;
 
     st7920_instance.initialized = false;
     st7920_instance.graphic_mode = false;
@@ -458,12 +457,12 @@ void st7920_reset(driver_t *drv)
     
     // CS 초기화 - 비활성화 상태
 #if ST7920_SPI_USE
-    driver_do_low(cfg->cs_io);
+    bsp_do_low(cfg->cs_do_num);
 #endif
     // 하드웨어 리셋 시퀀스 - DO_LCD_RESET 핀 사용
-    driver_do_low(cfg->rst_io);
+    bsp_do_low(cfg->rst_do_num);
     st7920_delay_ms(100);
-    driver_do_high(cfg->rst_io);
+    bsp_do_high(cfg->rst_do_num);
     st7920_delay_ms(50);
     
     // ST7920 초기화 시퀀스 - 참고 라이브러리 기반
@@ -514,7 +513,7 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
     st7920_t *cfg = (st7920_t *)drv->cfg;
     
     // ST7920 시리얼 통신 시퀀스 - 참고 라이브러리 기반
-    driver_do_high(cfg->cs_io);  // CS HIGH (활성화)
+    bsp_do_high(cfg->cs_do_num);  // CS HIGH (활성화)
     st7920_delay_us(1);
     
     // 3바이트 시리얼 프로토콜
@@ -522,7 +521,7 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
     driver_spi_send_byte(cfg->spi_io, data & 0xF0);            // 상위 4비트
     driver_spi_send_byte(cfg->spi_io, (data << 4) & 0xF0);     // 하위 4비트
     
-    driver_do_low(cfg->cs_io);   // CS LOW (비활성화)
+    bsp_do_low(cfg->cs_do_num);   // CS LOW (비활성화)
     st7920_delay_us(100);        // 명령 처리 대기
 
 }

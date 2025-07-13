@@ -5,8 +5,8 @@
 #include "cli_key_code.h"
 #include "console_utile.h"
 #include "dev_io.h"
-#include "driver_di.h"
-#include "driver_do.h"
+#include "drv_di.h"
+#include "drv_do.h"
 #include "test_dinOut.h"
 #include  "driver_freqInput.h"
 

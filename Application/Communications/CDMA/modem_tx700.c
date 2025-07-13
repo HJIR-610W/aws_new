@@ -10,6 +10,7 @@
 #include "util_memory.h"
 
 #include "bsp.h"
+#include "drv_power.h"
 
 
 
@@ -563,11 +564,11 @@ void tx700_reset(uint8_t resetType,uint32_t delayMs)
         tx700_resetSW();
         break;
         case M_RESET_HW:
-        bsp_cdma_power_off();
-        osDelay(2000);
-        bsp_cdma_power_on();
+          drv_power_off(DRV_POWER_CDMA);
+          osDelay(2000);
+          drv_power_on(DRV_POWER_CDMA);
 
-        break;
+          break;
     }
 
 #if 1 

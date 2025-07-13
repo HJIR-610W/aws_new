@@ -6,22 +6,12 @@
 #include "cli_key_code.h"
 #include "console_utile.h"
 #include "dev_io.h"
-#include "driver_do.h"
+#include "drv_do.h"
+
+#include "drv_power.h"
+
 void test_power_signal(void)
 {
-  driver_t *do_cdma;
-  driver_t *do_24v;
-  driver_t *do_btm;
-  driver_t *do_rain_heater;
-  driver_t *do_rain_det;
-
-  // DO 오픈
-  do_cdma = driver_do_open(DO_POWER_CDMA, 0);
-  do_24v = driver_do_open(DO_POWER_HART_24V, 0);
-  do_btm = driver_do_open(DO_LCD_RESET, 0);
-  do_rain_heater = driver_do_open(DO_POWER_RAIN_DECT_ANALOG,0);
-  do_rain_det = driver_do_open(DO_POWER_RAIN_DECT_DIGITAL, 0);
-
 
   io_printf("파워 신호 제어 테스트 시작\r\n");
   io_printf("입력 예: cdma,on  또는  24v,off  또는  btm,on\r\n");
@@ -50,12 +40,12 @@ void test_power_signal(void)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          driver_do_high(do_cdma);  
+          drv_power_on(DRV_POWER_CDMA);  
           io_printf("CDMA: ON (Low)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          driver_do_low(do_cdma);  
+          drv_power_off(DRV_POWER_CDMA);
           io_printf("CDMA: OFF (High)\r\n");
         }
         else
@@ -67,12 +57,12 @@ void test_power_signal(void)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          driver_do_high(do_24v);  // ACTIVE_H → on=High
+          drv_power_on(DRV_POWER_HART_24V);  // ACTIVE_H → on=High
           io_printf("24V: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          driver_do_low(do_24v);  // ACTIVE_H → off=Low
+          drv_power_off(DRV_POWER_HART_24V);  // ACTIVE_H → off=Low
           io_printf("24V: OFF (Low)\r\n");
         }
         else
@@ -84,12 +74,12 @@ void test_power_signal(void)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          driver_do_high(do_btm);  
+          drv_power_on(RV_POWER_LCD_RESET);  
           io_printf("BTM: ON (Low)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          driver_do_low(do_btm);  
+          drv_power_off(RV_POWER_LCD_RESET);  
           io_printf("BTM: OFF (High)\r\n");
         }
         else
@@ -101,12 +91,12 @@ void test_power_signal(void)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          driver_do_high(do_rain_heater);  // ACTIVE_H → on=High
+          drv_power_on(DO_POWER_RAIN_DECT_ANALOG);  // ACTIVE_H → on=High
           io_printf("rain: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          driver_do_low(do_rain_heater);  // ACTIVE_H → off=Low
+          drv_power_off(DO_POWER_RAIN_DECT_ANALOG);  // ACTIVE_H → off=Low
           io_printf("rain: OFF (Low)\r\n");
         }
         else
@@ -118,12 +108,12 @@ void test_power_signal(void)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          driver_do_high(do_rain_det);  // ACTIVE_H → on=High
+          drv_power_on(DO_POWER_RAIN_DECT_DIGITAL);  // ACTIVE_H → on=High
           io_printf("raind: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          driver_do_low(do_rain_det);  // ACTIVE_H → off=Low
+          drv_power_off(DO_POWER_RAIN_DECT_DIGITAL);  // ACTIVE_H → off=Low
           io_printf("raind: OFF (Low)\r\n");
         }
         else
@@ -144,6 +134,6 @@ void test_power_signal(void)
 
   // 필요시 닫기 (생략 가능)
   // driver_do_close(do_cdma);
-  // driver_do_close(do_24v);
-  // driver_do_close(do_btm);
+  // driver_do_close(DRV_POWER_HART_24V);
+  // driver_do_close(RV_POWER_LCD_RESET);
 }

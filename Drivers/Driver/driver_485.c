@@ -2,14 +2,14 @@
 
 #include "driver_485.h"
 
-#include "driver_do.h"
+#include "bsp_do.h"
 #include "driver_uart.h"
 #include "os_user_def.h"
 #include "pcb_define.h"
 typedef struct rs485_cfg_s
 {
   driver_t *uart_io;
-  driver_t *do_io;
+  int dir_do_num;
 } rs485_cfg_t;
 
 rs485_cfg_t g_rs485_cfg[RS485_MAX];
@@ -28,27 +28,27 @@ driver_t *driver_rs485_open(uint32_t num, void *opt)
   {
     case RS485_A:
       g_rs485_cfg[num].uart_io = driver_uart_open(UART_6_RS485_A, opt);
-      g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_A, 0);
+      g_rs485_cfg[num].dir_do_num =BSP_DO_DIR_RS485_A;
       g_rs485[num].name = "RS485_A";
-      driver_do_low(g_rs485_cfg[num].do_io);  // 수신 모드
+      bsp_do_low(g_rs485_cfg[num].dir_do_num);  // 수신 모드
       break;
     case RS485_B:
       g_rs485[num].name = "RS485_B";
       g_rs485_cfg[num].uart_io = driver_uart_open(UART_7_RS485_B, opt);
-      g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_B, 0);
-      driver_do_low(g_rs485_cfg[num].do_io);  // 수신 모드
+      g_rs485_cfg[num].dir_do_num = BSP_DO_DIR_RS485_B;
+      bsp_do_low(g_rs485_cfg[num].dir_do_num);  // 수신 모드
       break;
     case RS485_C:
       g_rs485[num].name = "RS485_C";
       g_rs485_cfg[num].uart_io = driver_uart_open(UART_2_EXT_A, opt);
-      g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_C, 0);
-      driver_do_low(g_rs485_cfg[num].do_io);  // 수신 모드
+      g_rs485_cfg[num].dir_do_num = BSP_DO_DIR_RS485_C;
+      bsp_do_low(g_rs485_cfg[num].dir_do_num);  // 수신 모드
       break;
     case RS485_D:
       g_rs485[num].name = "RS485_D";
       g_rs485_cfg[num].uart_io = driver_uart_open(UART_3_EXT_B, opt);
-      g_rs485_cfg[num].do_io = driver_do_open(DO_DIR_RS485_D, 0);
-      driver_do_low(g_rs485_cfg[num].do_io);  // 수신 모드
+      g_rs485_cfg[num].dir_do_num = BSP_DO_DIR_RS485_D;
+      bsp_do_low(g_rs485_cfg[num].dir_do_num);  // 수신 모드
       break;
   }
 
@@ -76,11 +76,11 @@ int32_t driver_rs485_send(driver_t *drv, uint8_t *pData, uint16_t dataLen)
   OS_PEND_SEM(drv->sem, osWaitForever);
 
   // TODO:이 드라이버를 호출하는 task보다 우선높은곳이 있으면 osDelay 1이상 지연됨됨
-  driver_do_high(cfg->do_io);  // 출력으로 설정
+  drv_do_high(cfg->dir_do_num);  // 출력으로 설정
   osDelay(1);
   cnt = driver_uart_send(cfg->uart_io, pData, dataLen);
   osDelay(1);
-  driver_do_low(cfg->do_io);  // 입력으로 설정
+  bsp_do_low(cfg->dir_do_num);  // 입력으로 설정
 
 
   OS_POST_SEM(drv->sem);

@@ -62,7 +62,23 @@
 			"drv_crc.h": "c",
 			"bsp_crc.h": "c",
 			"math.h": "c",
-			"app_version.h": "c"
+			"app_version.h": "c",
+			"bsp_rtc.h": "c",
+			"rv8803.h": "c",
+			"driver_stm32_rtc.h": "c",
+			"driver_rtc_define.h": "c",
+			"bsp_led.h": "c",
+			"drv_di.h": "c",
+			"bsp_di.h": "c",
+			"driver_di_def.h": "c",
+			"rain_present.h": "c",
+			"stdlib.h": "c",
+			"drv_power.h": "c",
+			"bsp_interrupt.h": "c",
+			"bsp_delay.h": "c",
+			"drv_do.h": "c",
+			"driver_lcd_define.h": "c",
+			"pcf8575.h": "c"
 		}
 	}
 }

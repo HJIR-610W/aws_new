@@ -4,7 +4,7 @@
 
 #include "rv8803.h"
 #include "driver_stm32_i2c.h"
-#include "driver_di.h"
+#include "bsp_di.h"
 
 #include "bits_.h"
 #include "built_.h"
@@ -73,7 +73,7 @@ typedef struct rv8803_cfg_s
 {
   uint8_t address;
   void *i2c_io;
-  void *irq_io;
+  int irq_di_num;
   void *sem;
 }rv8803_cfg_t;
 
@@ -232,7 +232,7 @@ driver_t *rv8803_open(void)
 
   rv8803_driver.opened = true;
   rv8803_cfg.i2c_io = driver_stm32_i2c_open(STM32_I2C_1,0);
-  rv8803_cfg.irq_io = driver_di_open(DI_1_RTC_IRQ,0);
+  rv8803_cfg.irq_di_num = BSP_DI_1_RTC_IRQ;
   rv8803_cfg.address = 0x32;
   rv8803_driver.cfg = &rv8803_cfg;
   rv8803_driver.api = &rv8803_api;

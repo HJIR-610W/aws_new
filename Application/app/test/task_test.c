@@ -7,7 +7,7 @@
 #include "bsp.h"
 #include "cmsis_os2.h"
 #include "config_manager.h"
-#include "driver_di.h"
+#include "drv_di.h"
 #include "bsp_interrupt.h"
 #include "os_user_def.h"
 #include "task_console.h"
@@ -29,7 +29,7 @@ void testTask(void *arg)
   bsp_init();
 
   adc_init();
-  bsp_status_led_set(LED_BLINK);
+
   systemTask_init(PARA_TEST_MODE);
   config_manager_init();
   flash_init();
@@ -40,21 +40,30 @@ void testTask(void *arg)
 
 }
 
-
 bool testTask_init(void)
-{ 
-  driver_t *user_btn;
+{
+  uint32_t pressed_time = 0;
 
-
-  user_btn = driver_di_open(DI_USER_BTN,0);
-
-  
-  //사용자가 5초이상 버튼을 누르면 testTask 실행
-  if(driver_di_is_low(user_btn,1000,10))
+  // 5초(5000ms) 동안 버튼 상태를 감시
+  while (1)
   {
-    osThreadNew(testTask, NULL, &kTestTask_attributes);
-    return true;
+    if (drv_di_read(DI_USER_BTN) == 0)  // 버튼 LOW 상태인가?
+    {
+      pressed_time += 10;  // 10ms 단위로 누적
+      if (pressed_time >= 5000)
+      {
+        osThreadNew(testTask, NULL, &kTestTask_attributes);
+        return true;
+      }
+    }
+    else
+    {
+      // 버튼이 LOW가 아니면 시간 초기화
+      pressed_time = 0;
+    }
+
+    osDelay(10);  // 10ms마다 체크
   }
 
-  return false;
+  return false;  // 이 위치까지는 사실상 도달하지 않음
 }

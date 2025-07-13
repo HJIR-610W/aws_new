@@ -8,8 +8,8 @@
 #define FREQ_MEAURE_C 1
 
 #define FREQ_MAX 2
-driver_t *driver_freq_open(uint32_t num);
 
+driver_t *driver_freq_open(uint32_t num);
 float driver_freq_read(driver_t *drv,uint8_t *err);
 float driver_freq_read_duty(driver_t *drv,uint8_t *err);
 

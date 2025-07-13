@@ -2,7 +2,7 @@
 
 #include "fm25cl.h"
 
-#include "driver_do.h"
+#include "bsp_do.h"
 #include "driver_fram_define.h"
 #include "driver_stm32_spi.h"
 #include "os_user_def.h"
@@ -22,8 +22,8 @@
 typedef struct fm25lc_cfg_s
 {
   driver_t *spi_io;
-  driver_t *cs_io;
-  driver_t *sem;
+  int cs_do_num;
+  void *sem;
 } fm25lc_cfg_t;
 
 void fm25cl_read(driver_t *fm25cl, uint32_t offset, uint8_t *pBuff,
@@ -31,7 +31,7 @@ void fm25cl_read(driver_t *fm25cl, uint32_t offset, uint8_t *pBuff,
 void fm25cl_write(driver_t *fm25cl, uint32_t offset, uint8_t *pData, uint16_t wLen);
 
 
-    driver_t g_fm25cl;
+driver_t g_fm25cl;
 fm25lc_cfg_t g_fm25lc_cfg;
 const fram_api_t fram_api = {.read = fm25cl_read, .write = fm25cl_write};
 
@@ -47,8 +47,7 @@ driver_t *fm25lc_open(void)
   g_fm25cl.cfg = &g_fm25lc_cfg;
 
   g_fm25lc_cfg.spi_io = driver_spi_open(STM_SPI_1);     // IC 사용해 필요한 하드웨어 연결
-  g_fm25lc_cfg.cs_io = driver_do_open(DO_FRAM_CS, 0);   // IC 사용에 필요한 하드웨여 연결
-
+  g_fm25lc_cfg.cs_do_num = BSP_DO_FRAM_CS;
   OS_CREATE_BINARY_SEM(g_fm25lc_cfg.sem);
 
   return &g_fm25cl;
@@ -57,12 +56,11 @@ driver_t *fm25lc_open(void)
 
  void fram_cmd(driver_t *fm25cl,uint8_t cmd)
 {
-   fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
+  fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
 
-  driver_do_low(cfg->cs_io);    
-
+  bsp_do_low(cfg->cs_do_num);    
   driver_spi_send_byte(cfg->spi_io,cmd);
-  driver_do_high(cfg->cs_io);
+  bsp_do_high(cfg->cs_do_num);
 }
 
 
@@ -76,7 +74,7 @@ void fm25cl_write(driver_t *fm25cl,uint32_t offset,uint8_t *pData,uint16_t wLen)
    fram_cmd(fm25cl,WREN);
 #endif
 
-    driver_do_low(cfg->cs_io);
+    bsp_do_low(cfg->cs_do_num);
 
     driver_spi_send_byte(cfg->spi_io,WRITE);
 #if FRAM_1024
@@ -87,7 +85,7 @@ void fm25cl_write(driver_t *fm25cl,uint32_t offset,uint8_t *pData,uint16_t wLen)
 
     osDelay(1);
     driver_spi_send_bytes(cfg->spi_io,pData,wLen);
-    driver_do_high(cfg->cs_io);
+    bsp_do_high(cfg->cs_do_num);
 
 }
 
@@ -96,7 +94,8 @@ void fm25cl_read(driver_t *fm25cl,uint32_t offset,uint8_t *pBuff,uint16_t rLen)
   fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
   uint32_t i;
 
-  driver_do_low(cfg->cs_io);
+  OS_PEND_SEM(fm25cl->sem,osWaitForever);
+  bsp_do_low(cfg->cs_do_num);
 
   driver_spi_send_byte(cfg->spi_io, READ);
 #if FRAM_1024
@@ -111,9 +110,9 @@ void fm25cl_read(driver_t *fm25cl,uint32_t offset,uint8_t *pBuff,uint16_t rLen)
 
     }
     
-    driver_do_high(cfg->cs_io);
-  
+    bsp_do_high(cfg->cs_do_num);
 
+    OS_POST_SEM(fm25cl->sem);
 }
 
 
@@ -172,23 +171,22 @@ uint8_t fm25cl_read_status(driver_t *fm25cl)
 {
   fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
   uint8_t data=0;
-    
 
-    driver_do_low(cfg->cs_io);
-    driver_spi_send_byte(cfg->spi_io,RDSR);
-    data = driver_spi_read_byte(cfg->spi_io);
-    driver_do_high(cfg->cs_io);
+  bsp_do_low(cfg->cs_do_num);
+  driver_spi_send_byte(cfg->spi_io,RDSR);
+  data = driver_spi_read_byte(cfg->spi_io);
+  bsp_do_high(cfg->cs_do_num);
 
-    fm25_status_parse(data);
+  fm25_status_parse(data);
 
 
-    return data;
-    
+  return data;
+
 }
 
-uint8_t data;
+
 void fm25cl_init(driver_t *fm25cl)
 {
-
+  uint8_t data;
   data = fm25cl_read_status(fm25cl);
 }

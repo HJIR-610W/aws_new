@@ -1,39 +1,78 @@
 
-#include "driver_rtc.h"
+#include "bsp_rtc.h"
+#include "driver_stm32_rtc.h"
+#include "ds1306.h"
+#include "rv8803.h"
 
-#include "task_isrEvent.h"
-#include "util_time.h"
+#define BSP_RTC_DS1306 0
+#define BSP_RTC_RV8803 1
+#define BSP_RTC_MCU    2
 
-driver_t *g_rtc;
-
-void rtcIrqCallBack(void *arg)
-{
-  os_send_isrEvent(eRTC_INT,0);
-}
+static driver_t *rtc_driver = NULL;
 
 void bsp_rtc_init(void)
 {
-  g_rtc = driver_rtc_open(RTC_RV8803,0);
+  int rtc_number = BSP_RTC_RV8803;
 
-  driver_rtc_read(g_rtc,&Date_Time);
-
-}
-
-
-void bsp_rtc_update(void)
-{
-  DATE_TIME_BUF nt={0};
-  
-
-  if(driver_rtc_read(g_rtc,&nt) !=0)
+  switch (rtc_number)
   {
-    driver_rtc_read(g_rtc,&nt);
+    case BSP_RTC_DS1306:
+      rtc_driver = ds1306_open();
+      break;
+    case BSP_RTC_RV8803:
+      rtc_driver = rv8803_open();
+      break;
+    case BSP_RTC_MCU:
+      rtc_driver = driver_stm32_rtc_open(STM32_RTC, 0);
+      break;
   }
-  Date_Time = nt;
+}
+int32_t bsp_rtc_read(DATE_TIME_BUF *t)
+{
+  const rtc_api_t *api;
+
+  if (rtc_driver == NULL)
+  {
+    return 1;
+  }
+
+  api = ((driver_t *)rtc_driver)->api;
+
+  if (api == NULL)
+  {
+    return 2;
+  }
+
+  return api->read(rtc_driver, t);
 }
 
-
-void bsp_rtc_set(DATE_TIME_BUF *ct)
+int32_t bsp_rtc_set_date(int year, int month, int day)
 {
-  driver_rtc_set(g_rtc,eRTC_SET_TIME,ct);
+  return 0;
+
+}
+int32_t bsp_rtc_set_time(int year, int month, int day)
+{
+return 0;
+
+}
+int32_t bsp_rtc_set(DATE_TIME_BUF *nt)
+{
+  const rtc_api_t *api;
+
+  if (rtc_driver == NULL)
+  {
+    return 1;
+  }
+
+  api = ((driver_t *)rtc_driver)->api;
+
+  if (api == NULL)
+  {
+    return 2;
+  }
+
+  api->set(rtc_driver, eRTC_SET_TIME, nt);
+  
+  return 0;
 }

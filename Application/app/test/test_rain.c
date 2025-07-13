@@ -2,9 +2,10 @@
 
 #include "cli_key_code.h"
 #include "dev_io.h"
-#include "driver_di.h"
-#include "driver_do.h"
+#include "drv_di.h"
+#include "drv_do.h"
 #include "Sensors\rain_present\rain_present.h"
+#include "drv_power.h"
 bool g_reed_rain=false;
 
 void test_rain_reed_callBack(void *arg)
@@ -22,11 +23,7 @@ void test_rain_hall_callBack(void *arg)
 void test_rain(void)
 {
   di_isr_set_cfg_t isr_cfg;
-  driver_t *rain_reed;
-  driver_t *rain_hall;
-  driver_t *rain_hall_err;
-  driver_t *rain_present;
-  driver_t *rain_det_power;
+
   uint8_t err=0;
   int hall_status;
   int prev_hall_status;
@@ -34,40 +31,34 @@ void test_rain(void)
   int prev_rain_present_status=-1;
   int once=1;
 
-  rain_det_power = driver_do_open(DO_POWER_RAIN_DECT_DIGITAL, 0);
 
-  driver_do_high(rain_det_power);
 
-  rain_present = rainPresent_open(RAIN_PRESENT_DI,0);
+  drv_power_on(DO_POWER_RAIN_DECT_DIGITAL);
 
-  rain_hall_err = driver_di_open(DI_RAIN_HALL_ERR, 0);
-  rain_hall = driver_di_open(DI_RAIN_HALL, 0);
+
 
   isr_cfg.call = test_rain_hall_callBack;
   isr_cfg.name = "rain_hall";
   isr_cfg.trigger = eDI_FALLING;
   isr_cfg.prio = 5;
-  driver_di_set(rain_hall, DI_SET_INTERRUPT, &isr_cfg);
+  drv_di_set_interrupt(DI_RAIN_HALL, &isr_cfg);
 
-  rain_reed = driver_di_open(DI_RAIN_REED, 0);
 
   isr_cfg.call = test_rain_reed_callBack ;
   isr_cfg.name = "rain_reed";
   isr_cfg.trigger = eDI_FALLING;
   isr_cfg.prio = 5;
-  driver_di_set(rain_reed, DI_SET_INTERRUPT, &isr_cfg);
-
+  drv_di_set_interrupt(DI_RAIN_REED, &isr_cfg);
 
   io_printf("우량을 1초 간격으로 입력해주세요\r\n");
   io_printf("우량감지(디지털 주파수형)\r\n");
-  hall_status = driver_di_read(rain_hall_err);
+  hall_status = drv_di_read(DI_RAIN_HALL_ERR);
 
-  
-  prev_hall_status = hall_status;
+    prev_hall_status = hall_status;
 
   while (1)
   {
-    hall_status = driver_di_read(rain_hall_err);
+    hall_status = drv_di_read(DI_RAIN_HALL_ERR);
     if (once ||hall_status != prev_hall_status)
     {
       if(once==1)
@@ -98,7 +89,7 @@ void test_rain(void)
       io_printf("홀 우량\r\n");
     }
 
-    if (read_sensor_rainPresent(rain_present,&err))
+    if (read_sensor_rainPresent(0,&err))
     {
       rain_present_status = 1;
     }

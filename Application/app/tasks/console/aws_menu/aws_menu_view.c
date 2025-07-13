@@ -24,6 +24,7 @@
 #include "task_measure.h"
 #include "vt100_command.h"
 #include "util_stdio.h"
+#include "task_system.h"
 const char *linkStatusList[3] = {"-", "UP", "DOWN"};
 const char *doorStatusList[2] = {"닫힘", "열림"};
 const char *generalStatusList[2] = {"정상", "비정상"};
@@ -108,7 +109,8 @@ void draw_system(win_t* p_win)
 
       win_printf_row(p_win, row_count++, "%s: %d", m_l("ID",SYSTEM_WD), get_config_app()->id);
 
-      win_printf_row(p_win, row_count++, "%s: %s", m_l("문 상태",SYSTEM_WD),ITEM_LIST(IS_DOOR_OPENED(), doorStatusList));
+      win_printf_row(p_win, row_count++, "%s: %s", m_l("문 상태", SYSTEM_WD),
+                     ITEM_LIST(is_door_opened(), doorStatusList));
 
       if (get_logging_system()->status_group)
       {

@@ -2,12 +2,12 @@
 #include "cmsis_os2.h"
 #include "ds1306.h"
 
-#include "driver_do.h"
-#include "driver_stm32_spi.h"
-#include "driver_stm32_spi.h"
-#include "driver_di.h"
-#include "driver_do.h"
 
+#include "driver_stm32_spi.h"
+#include "driver_stm32_spi.h"
+
+#include "bsp_do.h"
+#include "bsp_di.h"
 #define DS1306_SECONDS  0x00
 #define DS1306_MINUTES  0x01
 #define DS1306_HOURS    0x02
@@ -20,8 +20,8 @@
 typedef struct ds1306_cfg_s
 {
   void *spi_io;
-  void *cs_io;
-  void *irq_io;
+  int cs_do_num;
+  int irq_di_num;
   void *sem;
 }ds1306_cfg_t;
 
@@ -49,14 +49,14 @@ int32_t ds1306_read_reg(driver_t *ds1306, uint8_t reg,uint8_t *rval)
 
   driver_spi_pend_sem(cfg->spi_io);
 
-  driver_do_high(cfg->cs_io);
+  bsp_do_high(cfg->cs_do_num);
 
 
   driver_spi_send_byte(cfg->spi_io,reg);
     
   *rval = driver_spi_read_byte(cfg->spi_io);
 
-  driver_do_low(cfg->cs_io);
+  bsp_do_low(cfg->cs_do_num);
 
   driver_spi_post_sem(cfg->spi_io);
   
@@ -71,13 +71,13 @@ int32_t ds1306_write_reg(driver_t *ds1306,uint8_t reg,uint8_t val)
 
   driver_spi_pend_sem(cfg->spi_io);
 
-  driver_do_high(cfg->cs_io);
+  bsp_do_high(cfg->cs_do_num);
     
   reg = reg + 0x80;
   driver_spi_send_byte(cfg->spi_io,reg);
   driver_spi_send_byte(cfg->spi_io,val);
 
-  driver_do_low(cfg->cs_io);
+  bsp_do_low(cfg->cs_do_num);
  
    driver_spi_post_sem(cfg->spi_io);
   return err;
@@ -109,7 +109,7 @@ void ds1306_read_time(driver_t *ds1306, DATE_TIME_BUF *t) {
 
     // SPI 동기화
     driver_spi_pend_sem(cfg->spi_io);
-    driver_do_high(cfg->cs_io);
+    bsp_do_high(cfg->cs_do_num);
 
     // 시작 레지스터 주소 전송 (읽기 모드)
     driver_spi_send_byte(cfg->spi_io, reg_address);
@@ -118,7 +118,7 @@ void ds1306_read_time(driver_t *ds1306, DATE_TIME_BUF *t) {
     driver_spi_read_bytes(cfg->spi_io, time_data, 7);
 
     // SPI 통신 종료
-    driver_do_low(cfg->cs_io);
+    bsp_do_low(cfg->cs_do_num);
     driver_spi_post_sem(cfg->spi_io);
 
     // BCD 데이터를 이진수로 변환
@@ -167,9 +167,9 @@ driver_t *ds1306_open(void)
 
   ds1306_driver.opened = true;
   ds1306_cfg.spi_io = driver_spi_open(STM_SPI_1);
-  ds1306_cfg.cs_io  = driver_do_open(DO_RTC_CS,0);
-  ds1306_cfg.irq_io = driver_di_open(DI_1_RTC_IRQ,0);
-  
+  ds1306_cfg.cs_do_num  = BSP_DO_RTC_CS;
+  ds1306_cfg.irq_di_num = BSP_DI_1_RTC_IRQ;
+
   ds1306_driver.cfg = &ds1306_cfg;
   ds1306_driver.api = &rtc_api;
 

@@ -1,30 +1,23 @@
 
+#include "bsp.h"
+#include "bsp_led.h"
 
-
-#include "driver_led.h"
-
-#include "pcb_define.h"
-
-
-
-
-typedef struct  led_cfg_s
+typedef struct  led_inst_s
 {
   GPIO_TypeDef *port;
   uint16_t pin;
-}led_cfg_t;
+} led_inst_t;
 
-
-led_cfg_t runLedCfg={.port = OUT_SYS_RUN_GPIO_Port,.pin = OUT_SYS_RUN_Pin};
-
-driver_t g_runLed={.cfg= &runLedCfg};
+led_inst_t led_inst[BSP_LED_MAX] = {
+    [BSP_LED_RUN].port = OUT_SYS_RUN_GPIO_Port, [BSP_LED_RUN].pin = OUT_SYS_RUN_Pin};
 
 TIM_HandleTypeDef htim12;
 
-#include "stm32f4xx_hal.h"
+void bsp_led_set_blink_freq(int led_number, int freq, int high_duty);
 
-// TIM12 클럭 주파수 계산 함수
-uint32_t Get_TIM12_ClockFrequency(void) 
+
+    // TIM12 클럭 주파수 계산 함수
+    uint32_t Get_TIM12_ClockFrequency(void)
 {
     uint32_t timer_clock;
     uint32_t apb1_prescaler = (RCC->CFGR & RCC_CFGR_PPRE1) >> 10; // APB1 프리스케일러 값 추출
@@ -96,7 +89,7 @@ void TIM12_PWM_Init(void)
 
 }
 
-void runled_init(void)
+void led_run_init(void)
 {
     // GPIO 포트 H 클럭 활성화
     __HAL_RCC_GPIOH_CLK_ENABLE();
@@ -110,75 +103,81 @@ void runled_init(void)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW; // 속도 설정
     GPIO_InitStruct.Alternate = GPIO_AF9_TIM12;  // TIM12의 대체 기능 9번 설정
     HAL_GPIO_Init(OUT_SYS_RUN_GPIO_Port, &GPIO_InitStruct);
+
+    TIM12_PWM_Init();
 }
 
 
 
-driver_t *driver_led_open(uint32_t num)
+void bsp_led_init(void)
 {
-  
-  
-  switch(num)
+  for (int led_number = 0; led_number < sizeof(led_inst) / sizeof(led_inst_t); led_number++)
   {
-    case LED_SYS_RUN:
-      if(g_runLed.opened == true)
-      {
+    switch (led_number)
+    {
+      case BSP_LED_RUN:
+        led_run_init();
+        bsp_led_set_blink_freq(BSP_LED_RUN,1,10);
+        break;
+    }
+  }
 
-        return &g_runLed;
-      }
-        g_runLed.opened = true;
-        runled_init();
-        TIM12_PWM_Init();
-        
-        return &g_runLed;
+}
+
+
+
+void bsp_led_on(int led_number)
+{
+  switch (led_number)
+  {
+  case BSP_LED_RUN:
+    HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
+    break;
+  default:
+     HAL_GPIO_WritePin(led_inst[led_number].port, led_inst[led_number].pin,GPIO_PIN_RESET);
     break;
   }
 
-    return 0;
+
 }
 
-void driver_led_set(driver_t *drv,uint8_t cmd,void *option)
+void bsp_led_off(int led_number)
 {
-  led_freq_cfg_t *cfg;
-
-  switch (cmd)
+  switch (led_number)
   {
-  case LED_CMD_SET_TOGGLE_FREQ:
-    {
-      cfg = (led_freq_cfg_t *)option;
-      Set_PWM_Frequency(cfg->freq,cfg->highDuty);
-    }
+    case BSP_LED_RUN:
+      HAL_TIM_PWM_Stop(&htim12, TIM_CHANNEL_2);
+      break;
+    default:
+      HAL_GPIO_WritePin(led_inst[led_number].port, led_inst[led_number].pin, GPIO_PIN_SET);
+      break;
+  }
+
+}
+
+void bsp_led_toggle(int led_number)
+{
+  switch (led_number)
+  {
+    case BSP_LED_RUN:
+      break;
+    default:
+      HAL_GPIO_TogglePin(led_inst[led_number].port, led_inst[led_number].pin);
+      break;
+  }
+
+}
+
+
+void bsp_led_set_blink_freq(int led_number,int freq,int high_duty)
+{
+  switch (led_number)
+  {
+  case BSP_LED_RUN:
+    Set_PWM_Frequency(freq,high_duty);
     break;
-  case LED_CMD_START:
-      HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
-  break;
-  case LED_CMD_STOP:
-    HAL_TIM_PWM_Stop(&htim12, TIM_CHANNEL_2);
-    break;
+
   default:
     break;
   }
 }
-
-
-void driver_led_on(driver_t *led)
-{
-  led_cfg_t *cfg = (led_cfg_t *)led->cfg;
-  
-  HAL_GPIO_WritePin(cfg->port,cfg->pin,GPIO_PIN_RESET);
-}
-
-void driver_led_off(driver_t *led)
-{
-  led_cfg_t *cfg = (led_cfg_t *)led->cfg;
-  
-  HAL_GPIO_WritePin(cfg->port,cfg->pin,GPIO_PIN_SET);
-}
-
-void driver_led_toggle(driver_t *led)
-{
-    led_cfg_t *cfg = (led_cfg_t *)led->cfg;
-    
-  HAL_GPIO_TogglePin(cfg->port,cfg->pin);
-}
-

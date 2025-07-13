@@ -3,10 +3,12 @@
 #ifndef RAIN_PRESENT_H
 #define RAIN_PRESENT_H
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
+
 #include "app_sensor.h"
 #include "driver_interface.h"
-
 
 #define RAIN_PRESENT_DI 100
 

@@ -2,12 +2,12 @@
 #include "cmsis_os.h"
 #include "driver_sdi.h"
 #include "driver_uart.h"
-#include "driver_do.h"
+#include "bsp_do.h"
 
 typedef struct sdi_cfg_s
 {
   driver_t *uart_io;
-  driver_t *do_io;
+  int dir_do_num;
 }sdi_cfg_t;
 
 sdi_cfg_t g_sdi_cfg[1];
@@ -28,8 +28,8 @@ driver_t *driver_sdi_open(uint32_t num,void *opt)
   {
   case SDI_0:
       g_sdi_cfg[num].uart_io =  driver_uart_open(UART_9_SDI,opt);
-      g_sdi_cfg[num].do_io   =  driver_do_open(DO_DIR_RS485_A,0); 
-      driver_do_low(g_sdi_cfg[num].do_io);//수신 모드
+      g_sdi_cfg[num].dir_do_num   =  BSP_DO_DIR_RS485_A ;
+      bsp_do_low(g_sdi_cfg[num].dir_do_num);//수신 모드
 
     if( g_sdi_list[num].sem == NULL)
     {
@@ -54,10 +54,10 @@ void driver_sdi_sends(driver_t *drv,uint8_t *pData,uint16_t dataLen)
   {
     osSemaphoreAcquire(drv->sem, osWaitForever);
   }
-  driver_do_high(cfg->do_io);
+  bsp_do_high(cfg->dir_do_num);
   osDelay(1);
   driver_uart_send(cfg->uart_io,pData,dataLen);
-  driver_do_low(cfg->do_io);
+  bsp_do_low(cfg->dir_do_num);
   osDelay(1);
   if(drv->sem)
   {

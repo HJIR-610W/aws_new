@@ -7,20 +7,40 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "driver_di_def.h"
 
-#define APP_DI_0 0
-#define APP_DI_1 1
-#define APP_DI_2 2
-#define APP_DI_3 3
-#define APP_DI_4 4
-#define APP_DI_5 5
+#define BSP_DI_0_ADC_RDY 0
+#define BSP_DI_HART_CD 1
+#define BSP_DI_1_RTC_IRQ 2
+#define BSP_DI_USER_BTN 3
+#define BSP_DI_RAIN_REED 4
+#define BSP_DI_RAIN_HALL 5
+#define BSP_DI_RAIN_HALL_ERR 6
+#define BSP_DI_RAIN_DETECT 7
 
+#define BSP_DI_QUAD_UARTA_1 8
+#define BSP_DI_QUAD_UARTB_2 9
+#define BSP_DI_QUAD_UARTC_3 10
+#define BSP_DI_QUAD_UARTD_4 11
+#define BSP_DI_QUAD_UARTA_5 12
+#define BSP_DI_QUAD_UARTB_6 13
+#define BSP_DI_QUAD_UARTC_7 14
+#define BSP_DI_QUAD_UARTD_8 15
 
-#define IS_DOOR_OPENED() bsp_read_di(APP_DI_0)
-#define IS_DI_PRESSED(n)  bsp_di_pressed(n)
+#define BSP_DI_0 16
+#define BSP_DI_1 17
+#define BSP_DI_2 18
+#define BSP_DI_3 19
+#define BSP_DI_4 20
+#define BSP_DI_5 21
+#define BSP_DI_6 22
+#define BSP_DI_7 23
+#define BSP_DI_8 24
+
+#define BSP_DI_MCU_MAX 25
 
 void bsp_di_init(void);
-int32_t bsp_read_di(int32_t num);
-bool bsp_di_pressed(int32_t num);
+int32_t bsp_di_read(int32_t num);
 
+void bsp_di_set_interrupt(int di_number, di_isr_set_cfg_t *isr_cfg);
 #endif

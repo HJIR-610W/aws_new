@@ -5,7 +5,7 @@
 
 #include "util_time.h"
 #include "config_app.h"
-#include "bsp_rtc.h"
+#include "drv_rtc.h"
 #include "console_scanf.h"
 #include "cli_input.h"
 
@@ -102,8 +102,8 @@ int aws_setup_menu_system(void)
           if(status != MENU_OK)
             break;
 
-          bsp_rtc_set(&nt);
-          bsp_rtc_update();
+          drv_rtc_set(&nt);
+          drv_rtc_read(&Date_Time);
 
         break;
       case 2:  // id

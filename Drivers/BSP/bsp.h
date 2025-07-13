@@ -15,18 +15,14 @@
 
 void bsp_init(void);
 
-void bsp_cdma_power_on(void);
-void bsp_cdma_power_off(void);
 
 
 float bsp_read_battery(void);    // 보드 전원
 float bsp_read_temperature(void);// 보드 온도
 
-bool bsp_door_opened(void);
 
-void bsp_status_led_on(void);  // MCU RUN LED
-void bsp_status_led_off(void);
-void bsp_status_led_set(int mode);
+
+
 
 
 void board_clk_gpio(GPIO_TypeDef *GPIOx);

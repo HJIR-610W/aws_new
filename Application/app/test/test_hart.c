@@ -2,31 +2,28 @@
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "dev_io.h"
-#include "driver_di.h"
-#include "driver_do.h"
+#include "drv_di.h"
+#include "drv_do.h"
 #include "driver_uart.h"
 
 #include "cli_key_code.h"
 #include "hart_parser.h"
-
-#define HART_TX_ON() driver_do_low(g_hart_rts)
-#define HART_TX_OFF() driver_do_high(g_hart_rts)
-#define IS_HART_CD() driver_di_read(g_hart_cd)
+#include "drv_power.h"
+#include "bsp_do.h"
+#include "bsp_di.h"
+#define HART_TX_ON() bsp_do_low(BSP_DO_HART_RTS)
+#define HART_TX_OFF() bsp_do_high(BSP_DO_HART_RTS)
+#define IS_HART_CD() bsp_di_read(BSP_DI_HART_CD)
 #define HART_SEND(data, len) driver_uart_send(g_hart_uart, data, len)
 #define HART_RECV(buff, buffSize, timeout) driver_uart_recv(g_hart_uart, buff, buffSize, timeout)
 
-#define HART_POWER_ON() driver_do_high(g_power_24)
-#define HART_POWER_OFF() driver_do_low(g_power_24)
+#define HART_POWER_ON() drv_power_on(DRV_POWER_HART_24V)
+#define HART_POWER_OFF() drv_power_off(DRV_POWER_HART_24V)
 
 #define HART_RESET_L()
 #define HART_RESET_H()
 
 driver_t *g_hart_uart;
-driver_t *g_hart_rts;
-driver_t *g_hart_cd;
-driver_t *g_hart_sel;
-driver_t *g_power_24;
-driver_t *g_hart_reset;
 
 const osThreadAttr_t hardTask_attributes = {
     .name = "hartTask",
@@ -76,7 +73,7 @@ void hart_task(void *arg)
 void test_hart(void)
 {
   uart_config_t uart_config = {.dataLen = UART_DATA_LEN_8, .stop_bit = 0};
-  do_config_t do_config;
+
 
   uart_config.baud = 1200;
   uart_config.parityIdx = PARITY_ODD;
@@ -84,23 +81,13 @@ void test_hart(void)
   uart_config.dataLen = UART_DATA_LEN_8;
 
   g_hart_uart = driver_uart_open(UART_5_EXT_D, &uart_config);
-  g_hart_cd = driver_di_open(DI_HART_CD, 0);
 
-  do_config.mode = DO_OUT_PP;
-  do_config.pullup = DO_NO_PULL;
-
-  g_hart_rts = driver_do_open(DO_HART_RTS, &do_config);
-  g_hart_sel = driver_do_open(DO_HART_SEL, &do_config);
-  g_power_24 = driver_do_open(DO_POWER_HART_24V, &do_config);
-
-  driver_do_high(g_power_24);  // HART 24V를 공급
-
-  g_hart_reset = driver_do_open(DO_HART_RESET, &do_config);
-
-  driver_do_high(g_hart_sel);
-  driver_do_low(g_hart_reset);  // HART 리셋
+  drv_power_on(DRV_POWER_HART_24V); 
+  
+  bsp_do_high(BSP_DO_HART_SEL);
+  bsp_do_low(BSP_DO_HART_RESET);  
   osDelay(10);
-  driver_do_high(g_hart_reset);
+  bsp_do_high(BSP_DO_HART_RESET);
 
   hart_task(0);
 }

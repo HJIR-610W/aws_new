@@ -4,7 +4,7 @@
 
 
 #include <stdint.h>
-#include "driver_rtc.h"
+#include "drv_rtc.h"
 #include "hj_product_list.h"
 
 #define MAKE_FW_VERSION(major, minor, bugfix,rel) (((major) << 24) | ((minor) << 16) | (bugfix<<9) |(rel))

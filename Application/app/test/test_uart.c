@@ -8,7 +8,7 @@
 #include "cli_input.h"
 #include "util_memory.h"
 #include "pcb_define.h"
-#include "driver_do.h"
+#include "drv_do.h"
 #define UART_PORT_MAX 7
 
 #include <stdbool.h>

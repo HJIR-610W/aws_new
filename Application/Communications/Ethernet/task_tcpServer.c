@@ -8,7 +8,7 @@
 #include "cmsis_os.h"
 #include "config_app.h"
 #include "dev_io.h"
-#include "driver_rtc.h"
+#include "drv_rtc.h"
 #include "kma_protocol_handler.h"
 #include "lwip.h"
 #include "lwip/inet.h"     

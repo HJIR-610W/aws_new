@@ -11,11 +11,11 @@
 #include <string.h>
 #include "driver_stm32_spi.h"
 #include "driver_stm32_do.h"
-#include "driver_do.h"
+#include "bsp_do.h"
 #include "pcb_define.h"
 #include "driver_lcd_define.h"
-#include "mcu_utile.h"
-#include "usDelay.h"
+
+#include "bsp_delay.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -58,7 +58,7 @@ volatile uint8_t* p_lcd_cs2_data = (volatile uint8_t*)LCD_CS2_DATA_ADDRESS;
 typedef struct
 {
   driver_t *spi_io;
-  driver_t *rst_io;
+  int rst_do_num;
   bool initialized;
   bool graphic_mode;
   uint8_t current_page;
@@ -75,7 +75,6 @@ static void jhd12864_write_string_api(driver_t *drv, const char *str);
 
 lcd_api_t jhd12864_lcd_api = {
     .set_position = jhd12864_set_position,
-    .write_string = jhd12864_write_string_api,
     .write_string_at = jhd12864_write_string,
     .clear_screen = jhd12864_clear_screen,
     .home = jhd12864_home,
@@ -439,7 +438,7 @@ driver_t *jhd12864_open(void)
         return NULL;
     }
     
-    driver_do_high(jhd12864_instance.cs_io);
+    bsp_do_high(jhd12864_instance.cs_io);
 #endif
 
 #if JHD12864_GPIO_USE
@@ -447,7 +446,7 @@ driver_t *jhd12864_open(void)
     jhd12864_gpio_init();
 #endif
 
-    jhd12864_instance.rst_io = driver_do_open(DO_LCD_RESET, NULL);
+    jhd12864_instance.rst_do_num = BSP_DO_LCD_RESET;
 
     jhd12864_instance.initialized = false;
     jhd12864_instance.graphic_mode = true;  // JHD12864 is primarily a graphic LCD
@@ -469,9 +468,9 @@ void jhd12864_reset(driver_t *drv)
     jhd12864_t *cfg = (jhd12864_t *)drv->cfg;
     
     // 하드웨어 리셋 시퀀스
-    driver_do_low(cfg->rst_io);
+    bsp_do_low(cfg->rst_do_num);
     jhd12864_delay_ms(100);
-    driver_do_high(cfg->rst_io);
+    bsp_do_high(cfg->rst_do_num);
     jhd12864_delay_ms(50);
     
     // JHD12864 초기화 시퀀스 - 양쪽 CS 모두 초기화

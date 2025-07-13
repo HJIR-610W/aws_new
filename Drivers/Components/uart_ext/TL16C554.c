@@ -7,13 +7,13 @@
 #include "FreeRTOS.h"
 #include "cmsis_os2.h"
 #include "dev_io.h"
-#include "driver_di.h"
+#include "bsp_di.h"
 #include "os_user_def.h"
 #include "pcb_define.h"
 #include "stream_buffer.h"
 #include "system_err.h"
 #include "util_memory.h"
-
+#include "bsp_di.h"
 #define STREAMBUFFER_USE 1  // 데이터 수신을 freertos 스트림 버퍼 사용시
 
 #define UART_CLOCK_FREQ 3686400
@@ -64,7 +64,7 @@ volatile uint8_t *exUartBaseAddress[8] = {
 
 typedef struct tl16c554_cfg_s
 {
-  driver_t *irq_io;
+int irq_di_num;
   uint8_t channel;
   uint32_t baud;
   uint8_t parityIdx;
@@ -290,7 +290,7 @@ void quad_init(driver_t *tls16c554, void *opt)
   isr_cfg.prio = 6;
   isr_cfg.handle = tls16c554;
 
-  driver_di_set(cfg->irq_io, DI_SET_INTERRUPT, &isr_cfg);
+  bsp_di_set_interrupt(cfg->irq_di_num, &isr_cfg);
 }
 
 /**
@@ -746,7 +746,7 @@ void tls16c554_irq_init(driver_t *drv, uint8_t prio)
   isr_cfg.prio = prio;
   isr_cfg.handle = drv;
 
-  driver_di_set(cfg->irq_io, DI_SET_INTERRUPT, &isr_cfg);
+  driver_di_set(cfg->irq_di_num, DI_SET_INTERRUPT, &isr_cfg);
 }
 
 /// @brief 8채널
@@ -780,29 +780,28 @@ driver_t *tls16c554_open(uint32_t num, void *opt)
   switch (num)
   {
     case TL16C554_UART_1_D_SUB:
-      g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTA_1, 0);
+      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTA_1;
       break;
     case TL16C554_UART_2_TTL_TTL:
-      g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTB_2, 0);
+      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTB_2;
       break;
     case TL16C554_UART_3_RS232_A:
-      g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTC_3, 0);
+      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTC_3;
       break;
     case TL16C554_UART_4_RS232_B:
-      g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTD_4, 0);
+      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTD_4;
       break;
     case TL16C554_UART_5_RS485_A:
-      g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTA_5, 0);
+      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTA_5;
       break;
     case TL16C554_UART_6_RS485_B:
-      g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTB_6, 0);
+      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTB_6;
       break;
     case TL16C554_UART_7_RS232_C:
-      g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTC_7, 0);
+      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTC_7;
       break;
     case TL16C554_UART_8_RS232_D:
-      g_tl16c554_cfg[num].irq_io = driver_di_open(DI_QUAD_UARTD_8, 0);
-      break;
+      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTD_8;
   }
 
   // 초기화
