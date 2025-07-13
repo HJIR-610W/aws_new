@@ -110,7 +110,7 @@ void load_config_adc(void)
 
 
 #if 0
-    config_adc_t *p_config = aws_malloc(sizeof(config_adc_t));
+    config_adc_t *p_config = user_malloc(sizeof(config_adc_t));
 
   fram_read(CONFIG_ADC_START_ADDRESS, (uint8_t *)p_config, sizeof(config_adc_t));
 
@@ -128,7 +128,7 @@ void load_config_adc(void)
   {
    //config_adc_reset();
   }
-  aws_free(p_config);
+  user_free(p_config);
   #endif
 }
 

@@ -205,7 +205,7 @@ static void telnet_process_data(telnet_client_t* client, const uint8_t* data, in
 
 static void telnet_handle_client(telnet_client_t* client)
 {
-    uint8_t* buffer = (uint8_t*)aws_malloc(TELNET_BUFFER_SIZE);
+    uint8_t* buffer = (uint8_t*)user_malloc(TELNET_BUFFER_SIZE);
     if (buffer == NULL) {
         task_printf("Telnet: Failed to allocate buffer for client\r\n");
         return;
@@ -213,7 +213,7 @@ static void telnet_handle_client(telnet_client_t* client)
     
     if (set_recv_timeout(client->socket, TELNET_RECV_TIMEOUT_MS) < 0) {
         task_printf("Telnet: Failed to set recv timeout for client\r\n");
-        aws_free(buffer);
+        user_free(buffer);
         return;
     }
     
@@ -263,7 +263,7 @@ static void telnet_handle_client(telnet_client_t* client)
     
     g_current_telnet_client = NULL;
     terminal_bridge_cleanup();
-    aws_free(buffer);
+    user_free(buffer);
 
 }
 
@@ -513,7 +513,7 @@ static void tcp_relay_connect(tcp_relay_client_t* client)
 
 static void tcp_relay_handle_connection(tcp_relay_client_t* client)
 {
-    uint8_t* buffer = (uint8_t*)aws_malloc(TELNET_BUFFER_SIZE);
+    uint8_t* buffer = (uint8_t*)user_malloc(TELNET_BUFFER_SIZE);
     if (buffer == NULL)
     {
         task_printf("TCP Relay: Failed to allocate buffer\r\n");
@@ -523,7 +523,7 @@ static void tcp_relay_handle_connection(tcp_relay_client_t* client)
     if (set_recv_timeout(client->socket, 5000) < 0)
     {
         task_printf("TCP Relay: Failed to set recv timeout\r\n");
-        aws_free(buffer);
+        user_free(buffer);
         return;
     }
     
@@ -559,7 +559,7 @@ static void tcp_relay_handle_connection(tcp_relay_client_t* client)
     }
     client->connected = false;
     
-    aws_free(buffer);
+    user_free(buffer);
 
 }
 //ctrl+c ff f8

@@ -503,7 +503,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
   uint32_t startClk, endClk, elapsed;
   FRESULT res;
 #if !STATIC_RAM_USE
-  uint8_t *buffer = (uint8_t *)aws_malloc(TEST_BUFFER_SIZE);
+  uint8_t *buffer = (uint8_t *)user_malloc(TEST_BUFFER_SIZE);
   if (buffer == NULL)
   {
       io_printf("메모리 할당 실패\r\n");
@@ -521,7 +521,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
   {
     io_printf("Failed to open file for write (Error: %d)\r\n", res);
 #if !STATIC_RAM_USE
-    aws_free(buffer);
+    user_free(buffer);
 #endif
     return res;
   }
@@ -542,7 +542,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
       io_printf("Write error at %lu bytes (Error: %d)\r\n", totalBytes, res);
       f_close(&file);
 #if !STATIC_RAM_USE
-      aws_free(buffer);
+      user_free(buffer);
 #endif
       return res;
     }
@@ -572,7 +572,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
   {
     io_printf("Failed to open file for read (Error: %d)\r\n", res);
 #if !STATIC_RAM_USE
-    aws_free(buffer);
+    user_free(buffer);
 #endif
     return res;
   }
@@ -592,7 +592,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
       io_printf("Read error at %lu bytes (Error: %d)\r\n", totalBytes, res);
       f_close(&file);
 #if !STATIC_RAM_USE
-      aws_free(buffer);
+      user_free(buffer);
 #endif
       return res;
     }
@@ -610,7 +610,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
 
   f_close(&file);
 #if !STATIC_RAM_USE
-  aws_free(buffer);
+  user_free(buffer);
 #endif
   return FR_OK;
 }

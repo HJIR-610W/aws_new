@@ -1223,8 +1223,8 @@ void calculate_rain(void)
   uint16_t yearly_rain = 0;
   uint16_t min10_rain = 0;
   uint16_t yesterday_rain=0;
-  uint16_t *p_rain_1min = aws_malloc(RAIN_TOTAL);
-  uint16_t *p_rain_days = aws_malloc(RAIN_DAYS_SIZE);
+  uint16_t *p_rain_1min = user_malloc(RAIN_TOTAL);
+  uint16_t *p_rain_days = user_malloc(RAIN_DAYS_SIZE);
   DATE_TIME_BUF pre_date;
 
   ct = Date_Time;
@@ -1273,8 +1273,8 @@ void calculate_rain(void)
     io_printf("월간 우량:%.1f\r\n", monthly_rain / 10.0f);
     io_printf("년간 우량:%.1f\r\n", yearly_rain / 10.0f);
 #endif
-    aws_free(p_rain_1min);
-    aws_free(p_rain_days);
+    user_free(p_rain_1min);
+    user_free(p_rain_days);
   }
 
 
@@ -1300,8 +1300,8 @@ void calculate_sunshine(void)
   uint16_t hourly_sunshine = 0;
   uint16_t monthly_sunshine = 0;
   uint16_t yearly_sunshine = 0;
-  uint16_t *p_sunshine_1min = aws_malloc(SUNSHINE_TOTAL);
-  uint16_t *p_sunshine_days = aws_malloc(SUNSHINE_DAYS_SIZE);
+  uint16_t *p_sunshine_1min = user_malloc(SUNSHINE_TOTAL);
+  uint16_t *p_sunshine_days = user_malloc(SUNSHINE_DAYS_SIZE);
 
   (void)daily_sunshine;
   (void)hourly_sunshine;
@@ -1324,8 +1324,8 @@ void calculate_sunshine(void)
     set_sunshine_monthly(monthly_sunshine);
     set_sunshine_yearly(yearly_sunshine);
 
-    aws_free(p_sunshine_1min);
-    aws_free(p_sunshine_days);
+    user_free(p_sunshine_1min);
+    user_free(p_sunshine_days);
   }
   Sysinfo.mSunshine.nYearSunshine = yearly_sunshine;
   Sysinfo.mSunshine.nMonthSunshine = monthly_sunshine;
@@ -1410,7 +1410,7 @@ void DUALPORT_TASK(void *arg)
     g_pre_data[i].delay = MS_TO_SCAN(10);
   }
     // 메모리를 아끼기위해 g_p_raw 하나만 사용
-    g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
+    g_p_raw = user_malloc(sizeof(measure_data_1s_t));
 
 
   time_old = Date_Time;

@@ -298,7 +298,7 @@ void load_config_app(void)
 #if 0
   crc_result = false;
 
-  config_t *p_config = aws_malloc(sizeof(config_t));
+  config_t *p_config = user_malloc(sizeof(config_t));
 
   fram_read(CONFIG_START_ADDRESS, (uint8_t *)p_config, sizeof(config_t));
 
@@ -315,7 +315,7 @@ void load_config_app(void)
   if (crc_result == false)
   {
   }
-  aws_free(p_config);
+  user_free(p_config);
 #endif
   fram_read(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
 
@@ -434,7 +434,7 @@ void restore_config_app(void)
   bool crc_result= false;
   uint32_t crc;
   FRESULT f_ret;
-  p_config = aws_malloc(sizeof(config_t));
+  p_config = user_malloc(sizeof(config_t));
 
   if(p_config)
   {
@@ -443,7 +443,7 @@ void restore_config_app(void)
     if(f_ret != FR_OK)
     {
       io_printf("File read error  %d\r\n", f_ret);
-      aws_free(p_config);
+      user_free(p_config);
       return ;
     }
       if (p_config->header.magicNum == CONFIG_MAGIC)
@@ -464,7 +464,7 @@ void restore_config_app(void)
  
  
 
-    aws_free(p_config);
+    user_free(p_config);
   }
 }
 

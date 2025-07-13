@@ -135,7 +135,7 @@ int32_t io_printf(const char *pFmt, ...)
 #if PRINTF_HEAP_USE
   if (len > (sizeof(buff) - 1))  //
   {
-    temp = aws_malloc(len + 1);  // null포함
+    temp = user_malloc(len + 1);  // null포함
     if (temp)
     {
       va_start(ap, pFmt);
@@ -168,7 +168,7 @@ int32_t io_printf(const char *pFmt, ...)
 #ifdef PRINTF_HEAP_USE
   if (temp)
   {
-    aws_free(temp);
+    user_free(temp);
   }
 #endif
   return 0;

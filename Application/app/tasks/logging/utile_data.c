@@ -499,7 +499,7 @@ int write_bulk_data_range(const char *name, const char *start_datetime,
     {
       DATE_TIME_BUF nt;
       uint32_t offset = 1;
-      uint8_t *p_buffer = aws_malloc(write_cnt*sizeof(uint16_t));
+      uint8_t *p_buffer = user_malloc(write_cnt*sizeof(uint16_t));
 
       for(int i = 0;i<write_cnt;i++)
       {
@@ -509,7 +509,7 @@ int write_bulk_data_range(const char *name, const char *start_datetime,
       make_filename(start_time.Year % 10, path, name);
       fret = write_file(path, (uint8_t *)p_buffer, write_cnt * sizeof(uint16_t),
                         offset * sizeof(uint16_t));
-      aws_free(p_buffer);
+      user_free(p_buffer);
       if (fret != FR_OK)
       {
         return -1;
@@ -525,7 +525,7 @@ int write_bulk_data_range(const char *name, const char *start_datetime,
   {
     uint32_t start_offset= offset_min(&start_time);
     uint32_t cnt = offset_min(&end_time) -  start_offset + 1;
-    uint16_t *p_buffer = aws_malloc(cnt*sizeof(uint16_t));
+    uint16_t *p_buffer = user_malloc(cnt*sizeof(uint16_t));
 
     for(int i = 0 ; i< cnt; i++)
     {
@@ -535,7 +535,7 @@ int write_bulk_data_range(const char *name, const char *start_datetime,
 
     fret = write_file(path, (uint8_t*)p_buffer, cnt * sizeof(uint16_t), start_offset);
 
-    aws_free(p_buffer);
+    user_free(p_buffer);
     
     if(fret !=FR_OK)
     {
@@ -556,7 +556,7 @@ int write_bulk_data_range(const char *name, const char *start_datetime,
 
     make_filename(start_time.Year % 10, path, name);
 
-    uint16_t *p_buffer = aws_malloc(write_cnt*sizeof(uint16_t));
+    uint16_t *p_buffer = user_malloc(write_cnt*sizeof(uint16_t));
 
         if(p_buffer ==0)
     {
@@ -569,7 +569,7 @@ int write_bulk_data_range(const char *name, const char *start_datetime,
     }
 
     fret = write_file(path,(uint8_t *)p_buffer,write_cnt*sizeof(uint16_t),offset);
-    aws_free(p_buffer);
+    user_free(p_buffer);
     if(fret != FR_OK)
     {
       return -1;
@@ -579,7 +579,7 @@ int write_bulk_data_range(const char *name, const char *start_datetime,
 
     if (remain_cnt)
     {
-      p_buffer = aws_malloc(remain_cnt * sizeof(uint16_t));
+      p_buffer = user_malloc(remain_cnt * sizeof(uint16_t));
     
     if(p_buffer ==0)
     {
@@ -592,7 +592,7 @@ int write_bulk_data_range(const char *name, const char *start_datetime,
     }
     make_filename(end_time.Year % 10, path, name);
     fret = write_file(path, (uint8_t *)p_buffer, remain_cnt * sizeof(uint16_t), sizeof(uint16_t));
-    aws_free(p_buffer);
+    user_free(p_buffer);
     if (fret != FR_OK)
     {
       return -1;
@@ -614,7 +614,7 @@ static int write_data_block(const char *name, uint16_t year, uint32_t offset, ui
   if (count == 0)
     return 0;
 
-  uint16_t *buffer = aws_malloc(count * VALUE_SIZE);
+  uint16_t *buffer = user_malloc(count * VALUE_SIZE);
   if (!buffer)
     return -1;
 
@@ -624,7 +624,7 @@ static int write_data_block(const char *name, uint16_t year, uint32_t offset, ui
   make_filename(year % 10, path, name);
 
   int res = write_file(path, (uint8_t *)buffer, count * VALUE_SIZE, offset * VALUE_SIZE);
-  aws_free(buffer);
+  user_free(buffer);
   return (res == FR_OK) ? 0 : -1;
 }
 

@@ -20,7 +20,7 @@ void http_api_handle_sensor_get(int client_socket)
     return;
   }
 
-  char* json_response = aws_malloc(2048);
+  char* json_response = user_malloc(2048);
   if (json_response == NULL)
   {
     http_send_response(client_socket, 500, "application/json",
@@ -60,12 +60,12 @@ void http_api_handle_sensor_get(int client_socket)
       p_kma->soil_temperature_1m.data, p_kma->soil_temperature_1_5m.data);
 
   http_send_response(client_socket, 200, "application/json", json_response);
-  aws_free(json_response);
+  user_free(json_response);
 }
 
 void http_api_handle_device_get(int client_socket)
 {
-    char *json_response = aws_malloc(256);
+    char *json_response = user_malloc(256);
     if (json_response == NULL) {
         http_send_response(client_socket, 500, "application/json", 
             "{\"status\":\"error\",\"message\":\"Memory allocation failed\"}");
@@ -77,7 +77,7 @@ void http_api_handle_device_get(int client_socket)
         1001, 0);
 
     http_send_response(client_socket, 200, "application/json", json_response);
-    aws_free(json_response);
+    user_free(json_response);
 }
 
 void http_api_handle_device_post(int client_socket, const char* body)
@@ -118,7 +118,7 @@ void http_api_handle_device_post(int client_socket, const char* body)
         task_printf("HTTP API: Device configuration updated - ID: %d, Protocol: %d\r\n", new_id, new_protocol);
         http_send_response(client_socket, 200, "application/json", "{\"status\":\"success\"}");
     } else {
-        char *error_msg = aws_malloc(256);
+        char *error_msg = user_malloc(256);
         if (error_msg == NULL) {
             http_send_response(client_socket, 500, "application/json", 
                 "{\"status\":\"error\",\"message\":\"Memory allocation failed\"}");
@@ -133,13 +133,13 @@ void http_api_handle_device_post(int client_socket, const char* body)
             snprintf(error_msg, 256, "{\"status\":\"error\",\"message\":\"Missing required fields\"}");
         }
         http_send_response(client_socket, 400, "application/json", error_msg);
-        aws_free(error_msg);
+        user_free(error_msg);
     }
 }
 
 void http_api_handle_sensor_config_get(int client_socket, const char* sensor_type)
 {
-    char *json_response = aws_malloc(512);
+    char *json_response = user_malloc(512);
     if (json_response == NULL) {
         http_send_response(client_socket, 500, "application/json", 
             "{\"status\":\"error\",\"message\":\"Memory allocation failed\"}");
@@ -166,14 +166,14 @@ void http_api_handle_sensor_config_get(int client_socket, const char* sensor_typ
             "\"address\":1"
             "}");
     } else {
-        aws_free(json_response);
+        user_free(json_response);
         http_send_response(client_socket, 404, "application/json", 
             "{\"status\":\"error\",\"message\":\"Sensor type not found\"}");
         return;
     }
     
     http_send_response(client_socket, 200, "application/json", json_response);
-    aws_free(json_response);
+    user_free(json_response);
 }
 
 void http_api_handle_sensor_config_post(int client_socket, const char* body, const char* sensor_type)

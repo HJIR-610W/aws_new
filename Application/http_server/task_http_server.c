@@ -56,7 +56,7 @@ static int set_recv_timeout(int sockfd, uint32_t timeout_ms)
 
 void http_send_response(int client_socket, int status_code, const char* content_type, const char* body)
 {
-    char *response = aws_malloc(HTTP_BUFFER_SIZE);
+    char *response = user_malloc(HTTP_BUFFER_SIZE);
     if (response == NULL) {
         task_printf("HTTP Server: Failed to allocate response buffer\r\n");
         return;
@@ -96,7 +96,7 @@ void http_send_response(int client_socket, int status_code, const char* content_
     }
 
     task_printf("HTTP Server: Sent response %d %s (%d bytes)\r\n", status_code, status_text, content_length);
-    aws_free(response);
+    user_free(response);
 }
 
 static int is_websocket_request(const char* buffer)
@@ -158,7 +158,7 @@ static char* extract_websocket_key(const char* buffer)
         return NULL;
     }
     
-    char* key = aws_malloc(key_len + 1);
+    char* key = user_malloc(key_len + 1);
     if (key) {
         strncpy(key, key_start, key_len);
         key[key_len] = '\0';
@@ -254,7 +254,7 @@ void http_handle_index_page(int client_socket)
         return;
     }
     
-    file_content = (uint8_t*)aws_malloc(file_size + 1);
+    file_content = (uint8_t*)user_malloc(file_size + 1);
     if (file_content == NULL) {
         task_printf("HTTP Server: Failed to allocate memory for file content\r\n");
         http_send_response(client_socket, 200, "text/html; charset=utf-8", fallback_html_content);
@@ -264,7 +264,7 @@ void http_handle_index_page(int client_socket)
     res = read_file((char*)file_path, file_content, (uint32_t)file_size, 0);
     if (res != FR_OK) {
         task_printf("HTTP Server: Failed to read file from SD card (error: %d)\r\n", res);
-        aws_free(file_content);
+        user_free(file_content);
         http_send_response(client_socket, 200, "text/html; charset=utf-8", fallback_html_content);
         return;
     }
@@ -274,7 +274,7 @@ void http_handle_index_page(int client_socket)
     task_printf("HTTP Server: Successfully read %lu bytes from index.html\r\n", (unsigned long)file_size);
     http_send_response(client_socket, 200, "text/html; charset=utf-8", (char*)file_content);
     
-    aws_free(file_content);
+    user_free(file_content);
 }
 
 void http_handle_static_file(int client_socket, const char* file_path, const char* content_type)
@@ -300,7 +300,7 @@ void http_handle_static_file(int client_socket, const char* file_path, const cha
         return;
     }
     
-    file_content = (uint8_t*)aws_malloc(file_size);
+    file_content = (uint8_t*)user_malloc(file_size);
     if (file_content == NULL) {
         task_printf("HTTP Server: Failed to allocate memory for static file\r\n");
         http_send_response(client_socket, 500, "text/plain", "Internal server error");
@@ -310,17 +310,17 @@ void http_handle_static_file(int client_socket, const char* file_path, const cha
     res = read_file(full_path, file_content, (uint32_t)file_size, 0);
     if (res != FR_OK) {
         task_printf("HTTP Server: Failed to read static file (error: %d)\r\n", res);
-        aws_free(file_content);
+        user_free(file_content);
         http_send_response(client_socket, 500, "text/plain", "Internal server error");
         return;
     }
     
     task_printf("HTTP Server: Successfully read %lu bytes from %s\r\n", (unsigned long)file_size, full_path);
     
-    char *response = aws_malloc(HTTP_BUFFER_SIZE);
+    char *response = user_malloc(HTTP_BUFFER_SIZE);
     if (response == NULL) {
         task_printf("HTTP Server: Failed to allocate response buffer for static file\r\n");
-        aws_free(file_content);
+        user_free(file_content);
         http_send_response(client_socket, 500, "text/plain", "Internal server error");
         return;
     }
@@ -337,13 +337,13 @@ void http_handle_static_file(int client_socket, const char* file_path, const cha
     send(client_socket, response, header_length, 0);
     send(client_socket, file_content, file_size, 0);
     
-    aws_free(response);
-    aws_free(file_content);
+    user_free(response);
+    user_free(file_content);
 }
 
 static void handle_client_request(int client_socket)
 {
-    char *buffer = aws_malloc(HTTP_BUFFER_SIZE);
+    char *buffer = user_malloc(HTTP_BUFFER_SIZE);
     if (buffer == NULL) {
         task_printf("HTTP Server: Failed to allocate buffer memory\r\n");
         http_send_response(client_socket, 500, "text/plain", "Internal Server Error");
@@ -354,7 +354,7 @@ static void handle_client_request(int client_socket)
 
     if (set_recv_timeout(client_socket, HTTP_RECV_TIMEOUT_MS) < 0) {
         task_printf("HTTP Server: Failed to set recv timeout\r\n");
-        aws_free(buffer);
+        user_free(buffer);
         return;
     }
 
@@ -362,7 +362,7 @@ static void handle_client_request(int client_socket)
     
     if (bytes_received <= 0) {
         task_printf("HTTP Server: No data received from client\r\n");
-        aws_free(buffer);
+        user_free(buffer);
         return;
     }
 
@@ -393,7 +393,7 @@ static void handle_client_request(int client_socket)
                 } else {
                     task_printf("HTTP Server: WebSocket handshake failed\r\n");
                 }
-                aws_free(ws_key);
+                user_free(ws_key);
             } else {
                 task_printf("HTTP Server: WebSocket key not found\r\n");
                 http_send_response(client_socket, 400, "text/plain", "Bad WebSocket Request");
@@ -403,14 +403,14 @@ static void handle_client_request(int client_socket)
             http_send_response(client_socket, 400, "text/plain", "Bad Request");
         }
         
-        aws_free(buffer);
+        user_free(buffer);
         return;
     }
 
     http_request_t request;
     if (http_parse_request(buffer, bytes_received, &request) < 0) {
         http_send_response(client_socket, 400, "text/plain", "Bad Request");
-        aws_free(buffer);
+        user_free(buffer);
         return;
     }
 
@@ -475,7 +475,7 @@ static void handle_client_request(int client_socket)
         http_send_response(client_socket, 404, "text/plain", "Not Found");
     }
     
-    aws_free(buffer);
+    user_free(buffer);
 }
 
 static void http_server_task(void *argument)

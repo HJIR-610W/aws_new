@@ -166,7 +166,7 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
       g_received_bytes = 0;
       if(p_fw_buffer == NULL)
       {
-        p_fw_buffer = aws_malloc(FW_DOWNLOAD_BUFFER_SIZE); 
+        p_fw_buffer = user_malloc(FW_DOWNLOAD_BUFFER_SIZE); 
       }
     }
 
@@ -193,7 +193,7 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
       if (p_fw_buffer)
       {
         fret = write_file(UPDATE_FW__REMOTE_PATH, p_fw_buffer, totsize, 0);
-        aws_free(p_fw_buffer);
+        user_free(p_fw_buffer);
 
         if (fret != FR_OK)
         {

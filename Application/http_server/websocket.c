@@ -219,7 +219,7 @@ static void websocket_handle_binary_download(int client_socket, const char* file
         return;
     }
 
-    file_buffer = (uint8_t*)aws_malloc(file_size);
+    file_buffer = (uint8_t*)user_malloc(file_size);
     if (file_buffer == NULL) {
         task_printf("WebSocket: Failed to allocate memory for file: %lu bytes\r\n", (unsigned long)file_size);
         
@@ -231,7 +231,7 @@ static void websocket_handle_binary_download(int client_socket, const char* file
     res = read_file(file_path, file_buffer, (uint32_t)file_size, 0);
     if (res != FR_OK) {
         task_printf("WebSocket: Failed to read file: %s (error: %d)\r\n", filename, res);
-        aws_free(file_buffer);
+        user_free(file_buffer);
         
         const char* error_msg = "File read failed";
         websocket_send_text_frame(client_socket, error_msg, strlen(error_msg));
@@ -243,7 +243,7 @@ static void websocket_handle_binary_download(int client_socket, const char* file
     task_printf("WebSocket: Binary file download completed - %s (%lu bytes)\r\n", 
                 filename, (unsigned long)file_size);
     
-    aws_free(file_buffer);
+    user_free(file_buffer);
 }
 
 void websocket_send_text_frame(int client_socket, const char* text, size_t len)
@@ -275,7 +275,7 @@ void websocket_send_text_frame(int client_socket, const char* text, size_t len)
 
 void websocket_handle_connection(int client_socket)
 {
-    uint8_t* buffer = (uint8_t*)aws_malloc(WS_BUFFER_SIZE);
+    uint8_t* buffer = (uint8_t*)user_malloc(WS_BUFFER_SIZE);
     if (buffer == NULL) {
         task_printf("WebSocket: Failed to allocate buffer\r\n");
         return;
@@ -302,7 +302,7 @@ void websocket_handle_connection(int client_socket)
         // 프레임 버퍼가 없으면 새로 할당
         if (frame_buffer == NULL) {
             frame_buffer_size = bytes_received;
-            frame_buffer = (uint8_t*)aws_malloc(frame_buffer_size);
+            frame_buffer = (uint8_t*)user_malloc(frame_buffer_size);
             if (frame_buffer == NULL) {
                 task_printf("WebSocket: Failed to allocate frame buffer\r\n");
                 break;
@@ -312,16 +312,16 @@ void websocket_handle_connection(int client_socket)
         } else {
             // 기존 프레임 버퍼에 새 데이터 추가
             size_t new_size = total_received + bytes_received;
-            uint8_t* new_buffer = (uint8_t*)aws_malloc(new_size);
+            uint8_t* new_buffer = (uint8_t*)user_malloc(new_size);
             if (new_buffer == NULL) {
                 task_printf("WebSocket: Failed to reallocate frame buffer\r\n");
-                aws_free(frame_buffer);
+                user_free(frame_buffer);
                 frame_buffer = NULL;
                 break;
             }
             memcpy(new_buffer, frame_buffer, total_received);
             memcpy(new_buffer + total_received, buffer, bytes_received);
-            aws_free(frame_buffer);
+            user_free(frame_buffer);
             frame_buffer = new_buffer;
             frame_buffer_size = new_size;
             total_received = new_size;
@@ -337,7 +337,7 @@ void websocket_handle_connection(int client_socket)
                 continue;
             } else {
                 task_printf("WebSocket: Frame too large, discarding\r\n");
-                aws_free(frame_buffer);
+                user_free(frame_buffer);
                 frame_buffer = NULL;
                 total_received = 0;
                 continue;
@@ -353,7 +353,7 @@ void websocket_handle_connection(int client_socket)
         switch (frame.opcode) {
             case WS_OPCODE_TEXT:
                 {
-                    char* text_msg = (char*)aws_malloc(frame.payload_len + 1);
+                    char* text_msg = (char*)user_malloc(frame.payload_len + 1);
                     if (text_msg) {
                         memcpy(text_msg, frame.payload, frame.payload_len);
                         text_msg[frame.payload_len] = '\0';
@@ -380,7 +380,7 @@ void websocket_handle_connection(int client_socket)
                                 
                                 // 기존 버퍼 정리
                                 if (upload_state.buffer) {
-                                    aws_free(upload_state.buffer);
+                                    user_free(upload_state.buffer);
                                     upload_state.buffer = NULL;
                                 }
                                 
@@ -392,7 +392,7 @@ void websocket_handle_connection(int client_socket)
                                 upload_state.is_receiving = false; // 버퍼 할당 후에 true로 설정
                                 
                                 if (file_size > 0 && file_size <= (10 * 1024 * 1024)) { // 10MB 제한
-                                    upload_state.buffer = (uint8_t*)aws_malloc(file_size);
+                                    upload_state.buffer = (uint8_t*)user_malloc(file_size);
                                     if (upload_state.buffer) {
                                         upload_state.is_receiving = true;
                                         task_printf("WebSocket: Upload buffer allocated successfully (%zu bytes)\r\n", file_size);
@@ -420,14 +420,14 @@ void websocket_handle_connection(int client_socket)
                                 
                                 // 상태 초기화
                                 if (upload_state.buffer) {
-                                    aws_free(upload_state.buffer);
+                                    user_free(upload_state.buffer);
                                     upload_state.buffer = NULL;
                                 }
                                 upload_state.is_receiving = false;
                             }
                         }
                         
-                        aws_free(text_msg);
+                        user_free(text_msg);
                     }
                 }
                 break;
@@ -462,9 +462,9 @@ void websocket_handle_connection(int client_socket)
             case WS_OPCODE_CLOSE:
                 task_printf("WebSocket: Close frame received\r\n");
                 if (upload_state.buffer) {
-                    aws_free(upload_state.buffer);
+                    user_free(upload_state.buffer);
                 }
-                aws_free(buffer);
+                user_free(buffer);
                 return;
 
             case WS_OPCODE_PING:
@@ -483,20 +483,20 @@ void websocket_handle_connection(int client_socket)
         // 남은 데이터가 있는지 확인
         if (frame_size < (int)total_received) {
             size_t remaining = total_received - frame_size;
-            uint8_t* new_buffer = (uint8_t*)aws_malloc(remaining);
+            uint8_t* new_buffer = (uint8_t*)user_malloc(remaining);
             if (new_buffer) {
                 memcpy(new_buffer, frame_buffer + frame_size, remaining);
-                aws_free(frame_buffer);
+                user_free(frame_buffer);
                 frame_buffer = new_buffer;
                 total_received = remaining;
             } else {
-                aws_free(frame_buffer);
+                user_free(frame_buffer);
                 frame_buffer = NULL;
                 total_received = 0;
             }
         } else {
             // 프레임 처리 완료, 버퍼 정리
-            aws_free(frame_buffer);
+            user_free(frame_buffer);
             frame_buffer = NULL;
             total_received = 0;
         }
@@ -504,14 +504,14 @@ void websocket_handle_connection(int client_socket)
 
     // 연결 종료 시 모든 메모리 정리
     if (frame_buffer) {
-        aws_free(frame_buffer);
+        user_free(frame_buffer);
     }
     if (upload_state.buffer) {
-        aws_free(upload_state.buffer);
+        user_free(upload_state.buffer);
         upload_state.buffer = NULL;
         upload_state.is_receiving = false;
     }
-    aws_free(buffer);
+    user_free(buffer);
     task_printf("WebSocket: Connection handler terminated\r\n");
 }
 
@@ -626,7 +626,7 @@ static void terminal_to_websocket_callback(const char* data, size_t len)
 // 터미널 WebSocket 연결 처리 함수
 void websocket_terminal_handle_connection(int client_socket)
 {
-    uint8_t* buffer = (uint8_t*)aws_malloc(WS_BUFFER_SIZE);
+    uint8_t* buffer = (uint8_t*)user_malloc(WS_BUFFER_SIZE);
     if (buffer == NULL) {
         task_printf("Terminal WebSocket: Failed to allocate buffer\r\n");
         return;
@@ -662,7 +662,7 @@ void websocket_terminal_handle_connection(int client_socket)
         // 프레임 버퍼 관리 (기존 웹소켓과 동일한 로직)
         if (frame_buffer == NULL) {
             frame_buffer_size = bytes_received;
-            frame_buffer = (uint8_t*)aws_malloc(frame_buffer_size);
+            frame_buffer = (uint8_t*)user_malloc(frame_buffer_size);
             if (frame_buffer == NULL) {
                 task_printf("Terminal WebSocket: Failed to allocate frame buffer\r\n");
                 break;
@@ -671,16 +671,16 @@ void websocket_terminal_handle_connection(int client_socket)
             total_received = bytes_received;
         } else {
             size_t new_size = total_received + bytes_received;
-            uint8_t* new_buffer = (uint8_t*)aws_malloc(new_size);
+            uint8_t* new_buffer = (uint8_t*)user_malloc(new_size);
             if (new_buffer == NULL) {
                 task_printf("Terminal WebSocket: Failed to reallocate frame buffer\r\n");
-                aws_free(frame_buffer);
+                user_free(frame_buffer);
                 frame_buffer = NULL;
                 break;
             }
             memcpy(new_buffer, frame_buffer, total_received);
             memcpy(new_buffer + total_received, buffer, bytes_received);
-            aws_free(frame_buffer);
+            user_free(frame_buffer);
             frame_buffer = new_buffer;
             frame_buffer_size = new_size;
             total_received = new_size;
@@ -695,7 +695,7 @@ void websocket_terminal_handle_connection(int client_socket)
                 continue;
             } else {
                 task_printf("Terminal WebSocket: Frame too large, discarding\r\n");
-                aws_free(frame_buffer);
+                user_free(frame_buffer);
                 frame_buffer = NULL;
                 total_received = 0;
                 continue;
@@ -706,7 +706,7 @@ void websocket_terminal_handle_connection(int client_socket)
         switch (frame.opcode) {
             case WS_OPCODE_TEXT:
                 {
-                    char* text_msg = (char*)aws_malloc(frame.payload_len + 1);
+                    char* text_msg = (char*)user_malloc(frame.payload_len + 1);
                     if (text_msg) {
                         memcpy(text_msg, frame.payload, frame.payload_len);
                         text_msg[frame.payload_len] = '\0';
@@ -716,16 +716,16 @@ void websocket_terminal_handle_connection(int client_socket)
                         // 터미널 브리지로 명령 전송
                         terminal_bridge_send_command(text_msg, frame.payload_len);
                         
-                        aws_free(text_msg);
+                        user_free(text_msg);
                     }
                 }
                 break;
                 
             case WS_OPCODE_CLOSE:
                 task_printf("Terminal WebSocket: Close frame received\r\n");
-                aws_free(buffer);
+                user_free(buffer);
                 if (frame_buffer) {
-                    aws_free(frame_buffer);
+                    user_free(frame_buffer);
                 }
                 terminal_bridge_cleanup();
                 g_terminal_client_socket = -1;
@@ -747,19 +747,19 @@ void websocket_terminal_handle_connection(int client_socket)
         // 남은 데이터 처리 (기존 웹소켓과 동일한 로직)
         if (frame_size < (int)total_received) {
             size_t remaining = total_received - frame_size;
-            uint8_t* new_buffer = (uint8_t*)aws_malloc(remaining);
+            uint8_t* new_buffer = (uint8_t*)user_malloc(remaining);
             if (new_buffer) {
                 memcpy(new_buffer, frame_buffer + frame_size, remaining);
-                aws_free(frame_buffer);
+                user_free(frame_buffer);
                 frame_buffer = new_buffer;
                 total_received = remaining;
             } else {
-                aws_free(frame_buffer);
+                user_free(frame_buffer);
                 frame_buffer = NULL;
                 total_received = 0;
             }
         } else {
-            aws_free(frame_buffer);
+            user_free(frame_buffer);
             frame_buffer = NULL;
             total_received = 0;
         }
@@ -767,9 +767,9 @@ void websocket_terminal_handle_connection(int client_socket)
     
     // 연결 종료 시 정리
     if (frame_buffer) {
-        aws_free(frame_buffer);
+        user_free(frame_buffer);
     }
-    aws_free(buffer);
+    user_free(buffer);
     terminal_bridge_cleanup();
     g_terminal_client_socket = -1;
     task_printf("Terminal WebSocket: Connection handler terminated\r\n");

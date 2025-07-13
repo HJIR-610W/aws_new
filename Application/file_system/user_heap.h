@@ -6,9 +6,9 @@
 
 #define POOL_SIZE (1024*1024 * 3)  
 
-void asw_tlsf_init(size_t size);
-void *aws_malloc(size_t size);
-void aws_free(void *ptr);
+void user_tlsf_init(size_t size);
+void *user_malloc(size_t size);
+void user_free(void *ptr);
 
 
 #endif

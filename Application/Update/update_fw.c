@@ -102,7 +102,7 @@ uint8_t check_firmware(uint8_t local)
   if (fret == FR_OK && (file_size < FW_SIZE_MAX))
   {
     io_printf("크기:%d\r\n",file_size);
-    p_buffer = aws_malloc(file_size);
+    p_buffer = user_malloc(file_size);
 
     if (p_buffer ==NULL)
     {
@@ -122,7 +122,7 @@ uint8_t check_firmware(uint8_t local)
         {
           if (p_buffer)
           {
-            aws_free(p_buffer);
+            user_free(p_buffer);
           }
           io_printf("제품 불일치\r\n");
           return FW_ERR_MFG;
@@ -132,7 +132,7 @@ uint8_t check_firmware(uint8_t local)
         {
           if (p_buffer)
           {
-            aws_free(p_buffer);
+            user_free(p_buffer);
           }
           io_printf("별칭 불일치\r\n");
           return FW_ERR_AREA;
@@ -152,7 +152,7 @@ uint8_t check_firmware(uint8_t local)
         {
           if (p_buffer)
           {
-            aws_free(p_buffer);
+            user_free(p_buffer);
           }
           io_printf("PCB 버전 불일치\r\n");
           return FW_ERR_PCB;
@@ -162,7 +162,7 @@ uint8_t check_firmware(uint8_t local)
       {
         if (p_buffer)
         {
-          aws_free(p_buffer);
+          user_free(p_buffer);
         }
         io_printf("CRC 불일치\r\n");
         return FW_FILE_CRC_ERR;

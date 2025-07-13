@@ -131,7 +131,7 @@ void load_config_sensor(void)
   //체크 
   crc_result = false;
   
-  config_sensor_t *p_config = aws_malloc(sizeof(config_sensor_t));
+  config_sensor_t *p_config = user_malloc(sizeof(config_sensor_t));
 
   fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)p_config, sizeof(config_sensor_t));
 
@@ -150,7 +150,7 @@ void load_config_sensor(void)
   {
 
   }
-  aws_free(p_config);
+  user_free(p_config);
 #endif
   fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
 
@@ -203,7 +203,7 @@ void restore_config_sensor(void)
   FRESULT f_ret;
   
   
-  p_config = (config_sensor_t*)aws_malloc(sizeof(config_sensor_t));
+  p_config = (config_sensor_t*)user_malloc(sizeof(config_sensor_t));
 
   if(p_config)
   {
@@ -212,7 +212,7 @@ void restore_config_sensor(void)
     if(f_ret != FR_OK)
     {
       io_printf("파일 읽기 오류  %d\r\n",f_ret);
-      aws_free(p_config);
+      user_free(p_config);
       return ;
     }
       if (p_config->header.magicNum == CONFIG_MAGIC)
@@ -233,6 +233,6 @@ void restore_config_sensor(void)
  
  
 
-    aws_free(p_config);
+    user_free(p_config);
   }
 }

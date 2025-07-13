@@ -451,7 +451,7 @@ int DbgConsole_Printf(const char* fmt_s, ...)
     
     buffSize = get_formatted_length_v(fmt_s, ap)+2;//NULL + ???? 
 
-    pBuff = (char *)aws_malloc(buffSize);
+    pBuff = (char *)user_malloc(buffSize);
 
     if(pBuff)
     {
@@ -462,7 +462,7 @@ int DbgConsole_Printf(const char* fmt_s, ...)
         
        // uart_send(CLI_PORT,(uint8_t*)pBuff,len);
         DbgConsole_Puts(pBuff);
-        aws_free(pBuff);
+        user_free(pBuff);
     }
     
     return len;

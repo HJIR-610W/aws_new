@@ -694,7 +694,7 @@ void aws_data_task(void* arg)
   uint8_t wind_spd_err;
   uint8_t wind_dir_err;
   uint8_t err=0;
-  g_p_raw = aws_malloc(sizeof(measure_data_1s_t));
+  g_p_raw = user_malloc(sizeof(measure_data_1s_t));
 
   ct = Date_Time;
   ot = ct;

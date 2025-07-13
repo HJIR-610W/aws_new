@@ -1950,7 +1950,7 @@
             <name>$PROJ_DIR$\..\Application\main.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\application\os_user_def.h</name>
+            <name>$PROJ_DIR$\..\Application\os_user_def.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\application\system_err.c</name>
@@ -1998,6 +1998,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_board_mem.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_delay.c</name>
@@ -2491,7 +2494,7 @@
         </group>
     </group>
     <group>
-        <name>low_Level_Interface</name>
+        <name>low_level_interface</name>
         <file>
             <name>$PROJ_DIR$\..\system\iar_io_retarget.c</name>
         </file>
