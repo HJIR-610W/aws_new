@@ -13,7 +13,7 @@
 #include "app_adc.h"
 #include "config_adc.h"
 #include "console_define.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "fsl_shell.h"
 #include "bsp.h"
 #include "bsp_delay.h"

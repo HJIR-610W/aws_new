@@ -16,6 +16,7 @@
 #include "util_memory.h"
 
 #include "app_sensor.h"
+#include "const_string.h"
 #define SCREEN_COLS 20
 #define SYSTEM_WD 8
 
@@ -34,7 +35,7 @@ extern const char* adcChModeList[2];
 extern const char* physical_list[2];
 
 
-#define E_L_W 8
+#define E_L_W 10
 
 
 #define ADC_PAGE_MODE 0
@@ -55,7 +56,10 @@ void draw_adc_page(screen_menu_t* p_win,adc_config_t *adc_config)
   M_PRINTF(p_win, row_count++, "%-*s:%s",E_L_W, "Adc Mode",ITEM_LIST(adc_config->mode, (char*)adcChModeList));
 
   screen_update_list(p_win, row_count, ADC_PAGE_CHANNEL);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Channel", adc_config->channel);
+  if(adc_config->mode == ADC_CFG_MODE_SE)
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Channel", adc_config->single_channel);
+  else
+    M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Channel", adc_config->diff_channel);
 
   screen_update_list(p_win, row_count, ADC_PAGE_HIGH_VALUE);
   M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "High Value", adc_config->highScale);
@@ -119,7 +123,7 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
   }
   else
   {
-    list_cnt = rs485_get_portList(name_table, _countof(name_table));
+    list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
     port_number = hjsnow_config->port;
   }
 
@@ -146,7 +150,7 @@ void draw_hjwind_page(screen_menu_t* p_win, hjwindspeed_config_t* hjwind_config)
   const char *name_table[10];
   int list_cnt;
 
-  list_cnt = rs485_get_portList(name_table, _countof(name_table));
+  list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
 
   screen_update_list(p_win, row_count, HJWIND_PAGE_FULLSET);
   M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Fullset", hjwind_config->full);
@@ -172,7 +176,7 @@ void draw_hjwindDir_page(screen_menu_t* p_win, hjwindDirection_config_t* hjwindD
   const char *name_table[10];
   int list_cnt;
 
-  list_cnt = rs485_get_portList(name_table, _countof(name_table));
+  list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
 
   screen_update_list(p_win, row_count, HJWINDDIR_PAGE_PORT);
   M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, hjwindDir_config->rs485_port));
@@ -193,7 +197,7 @@ void draw_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t* ott_smp3_config
   const char *name_table[10];
   int list_cnt;
 
-  list_cnt = rs485_get_portList(name_table, _countof(name_table));
+  list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
 
   screen_update_list(p_win, row_count, OTT_SMP3_PAGE_PORT);
   M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, ott_smp3_config->port));
@@ -268,7 +272,7 @@ void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
   }
   else
   {
-    list_cnt = rs485_get_portList(name_table, _countof(name_table));
+    list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
     port_number = hjtemp_config->rs485_port;
   }
 
@@ -396,7 +400,7 @@ int32_t setup_sensor_model_set(sensor_t* sensor, const uint8_t* model_list, uint
 
   choice = find_index_sensor_type(model_list,list_cnt,sensor->type);
 
-  status = print_menu_list(model_list_string,  model_list_count, &choice);
+  status = input_combobox("Sensor Model",model_list_string,  model_list_count, &choice);
 
   if (status != MENU_OK)
   {
@@ -431,17 +435,30 @@ int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
   {
     case ADC_PAGE_MODE:
       choice = adc->mode;
-      status = print_menu_list(adcChModeList, _countof(adcChModeList), &choice);
+      status = input_combobox("ADC Mode",adcChModeList, _countof(adcChModeList), &choice);
       if (status != MENU_OK)
         break;
       adc->mode = choice;
       save_config_sensor();
       break;
     case ADC_PAGE_CHANNEL:
-      status = input_decimal("Channel", 0, 17, &dec);
-      if (status != MENU_OK)
-        break;
-      adc->channel = dec;
+     if (adc->mode == ADC_CFG_MODE_SE)
+      {
+          choice = adc->single_channel;
+          status = input_combobox("SE Channel", adc_se_list, _countof(adc_se_list), &choice);
+          if (status != MENU_OK)
+            break;
+          adc->single_channel = choice;
+      }
+      else
+      {
+        choice = adc->diff_channel;
+        status = input_combobox("Diff Channel", adc_diff_list, _countof(adc_diff_list), &choice);
+        if (status != MENU_OK)
+          break;
+        adc->diff_channel = choice;
+      }
+
       save_config_sensor();
       break;
     case ADC_PAGE_HIGH_VALUE:
@@ -541,9 +558,9 @@ int32_t hjwinddir_setup( sensor_t *sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case HJWINDDIR_PAGE_PORT:
-      portListCnt = rs485_get_portList(portList, _countof(portList));
+      portListCnt = drv_rs485_get_portList(portList, _countof(portList));
       choice = hjwindDir->rs485_port;
-      status = print_menu_list(portList, portListCnt, &choice);
+      status = input_combobox("RS485 Port",portList, portListCnt, &choice);
       if (status != MENU_OK)
         break;
       hjwindDir->rs485_port = choice;
@@ -585,9 +602,9 @@ int32_t hjwind_setup( sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case HJWIND_PAGE_PORT:
-      portListCnt = rs485_get_portList(portList, _countof(portList));
+      portListCnt = drv_rs485_get_portList(portList, _countof(portList));
       choice = hjwind->rs485_port;
-      status = print_menu_list(portList, portListCnt, &choice);
+      status = input_combobox("RS485 Port",portList, portListCnt, &choice);
       if (status != MENU_OK)
         break;
       hjwind->rs485_port = choice;
@@ -615,7 +632,7 @@ int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
   {
     case HJSNOW_PAGE_PHYSICAL:
       choice = hjsnow->physical_layer;
-      status = print_menu_list(physical_list, _countof(physical_list), &choice);
+      status = input_combobox("Port Type", physical_list, _countof(physical_list), &choice);
       if (status != MENU_OK)
         break;
       hjsnow->physical_layer = (ePHYSOCAL_LAYER_t)(choice);
@@ -626,7 +643,7 @@ int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
       {
         portListCnt = rs232_get_portList(portList, _countof(portList));
         choice = hjsnow->port;
-        status = print_menu_list(portList, portListCnt, &choice);
+        status = input_combobox("RS232 Port",portList, portListCnt, &choice);
         if (status != MENU_OK)
           break;
         hjsnow->port = choice;
@@ -634,9 +651,9 @@ int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
       }
       else
       {
-        portListCnt = rs485_get_portList(portList, _countof(portList));
+        portListCnt = drv_rs485_get_portList(portList, _countof(portList));
         choice = hjsnow->port;
-        status = print_menu_list(portList, portListCnt, &choice);
+        status = input_combobox("RS485 Port",portList, portListCnt, &choice);
         if (status != MENU_OK)
           break;
         hjsnow->port = choice;
@@ -672,7 +689,7 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
   {
     case HJTEMP_PAGE_PHYSICAL:
       choice = hjtemp->physical_layer;
-      status = print_menu_list(physical_list, _countof(physical_list), &choice);
+      status = input_combobox("Port Type",physical_list, _countof(physical_list), &choice);
       if (status != MENU_OK)
         break;
       hjtemp->physical_layer = (ePHYSOCAL_LAYER_t)(choice);
@@ -683,7 +700,7 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
       {
         portListCnt = rs232_get_portList(portList, _countof(portList));
         choice = hjtemp->rs232_port;
-        status = print_menu_list(portList, portListCnt, &choice);
+        status = input_combobox("RS232 Port",portList, portListCnt, &choice);
 
         if (status != MENU_OK)
           break;
@@ -692,9 +709,9 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
       }
       else
       {
-        portListCnt = rs485_get_portList(portList, _countof(portList));
+        portListCnt = drv_rs485_get_portList(portList, _countof(portList));
         choice = hjtemp->rs485_port;
-        status = print_menu_list(portList,  portListCnt,  &choice);
+        status = input_combobox("RS485 Port",portList, portListCnt, &choice);
         if (status != MENU_OK)
           break;
 
@@ -740,7 +757,7 @@ int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
   {
     case HJTEMP_PAGE_PHYSICAL:
       choice = hjhumi->physical_layer;
-      status = print_menu_list(physical_list, _countof(physical_list), &choice);
+      status = input_combobox("Port Type",physical_list, _countof(physical_list), &choice);
       if (status != MENU_OK)
         break;
       hjhumi->physical_layer = (ePHYSOCAL_LAYER_t)(choice);
@@ -751,7 +768,7 @@ int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
       {
         portListCnt = rs232_get_portList(portList, _countof(portList));
         choice = hjhumi->rs232_port;
-        status = print_menu_list(portList, portListCnt, &choice);
+        status = input_combobox("RS232 Port",portList, portListCnt, &choice);
         if (status != MENU_OK)
           break;
         hjhumi->rs232_port = choice;
@@ -759,9 +776,9 @@ int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
       }
       else
       {
-        portListCnt = rs485_get_portList(portList, _countof(portList));
+        portListCnt = drv_rs485_get_portList(portList, _countof(portList));
         choice = hjhumi->rs485_port;
-        status = print_menu_list(portList, portListCnt, &choice);
+        status = input_combobox("RS485 Port",portList, portListCnt, &choice);
         if (status != MENU_OK)
           break;
         hjhumi->rs485_port = choice;
@@ -801,9 +818,9 @@ int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case OTT_SMP3_PAGE_PORT:
-      portListCnt = rs485_get_portList(portList, _countof(portList));
+      portListCnt = drv_rs485_get_portList(portList, _countof(portList));
       choice = ott_smp3->port;
-      status = print_menu_list(portList, portListCnt, &choice);
+      status = input_combobox("RS485 Port",portList, portListCnt, &choice);
       if (status != MENU_OK)
         break;
       ott_smp3->port = choice;

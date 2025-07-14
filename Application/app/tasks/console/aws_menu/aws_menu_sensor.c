@@ -60,7 +60,7 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
       }
       else
       {
-        rs485_get_portList(list, sizeof(list));
+        drv_rs485_get_portList(list, sizeof(list));
         snprintf(out, outSize, "[%s]", list[hjsnow->port]);
       }
     }
@@ -68,7 +68,7 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
     case S_T_ADC:
     {
       adc_config_t *adc_cfg = (adc_config_t *)cfg;
-      snprintf(out, outSize, "[%s.%d]", adcChModeList[adc_cfg->mode], adc_cfg->channel);
+      snprintf(out, outSize, "[%s.%d]", adcChModeList[adc_cfg->mode], adc_cfg->single_channel);
     }
     break;
     case S_T_HUMINITY_HJ:
@@ -82,7 +82,7 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
       }
       else
       {
-        rs485_get_portList(list, sizeof(list));
+        drv_rs485_get_portList(list, sizeof(list));
         snprintf(out, outSize, "[%s][A.%d]", list[hjtemp->rs485_port], hjtemp->modbus_id);
       }
     }
@@ -90,21 +90,21 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
     case S_T_WIND_DIRECTION_HJ_485:
     {
       hjwindDirection_config_t *hjwindDir = (hjwindDirection_config_t *)cfg;
-      rs485_get_portList(list, sizeof(list));
+      drv_rs485_get_portList(list, sizeof(list));
       snprintf(out, outSize, "[%s]", list[hjwindDir->rs485_port]);
     }
     break;
     case S_T_WIND_SPEED_HJ_485:
     {
       hjwindspeed_config_t *hjwind = (hjwindspeed_config_t *)cfg;
-      rs485_get_portList(list, sizeof(list));
+      drv_rs485_get_portList(list, sizeof(list));
       snprintf(out, outSize, "[%s]", list[hjwind->rs485_port]);
     }
     break;
     case S_T_SOLAR_RADIATION_OTT_SMP3:
     {
       ott_smp3_config_t *ott = (ott_smp3_config_t *)cfg;
-      rs485_get_portList(list, sizeof(list));
+      drv_rs485_get_portList(list, sizeof(list));
       snprintf(out, outSize, "[%s][A.%d]", list[ott->port], ott->modbus_id);
     }
     break;
@@ -132,8 +132,10 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
 uint8_t print_adc_cfg( adc_config_t *adc_config, uint8_t cnt)
 {
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Adc Mode", "%s", ITEM_LIST(adc_config->mode, adcChModeList));
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Adc Mode", "%s", ITEM_LIST(adc_config->mode, adcChModeList));
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Channel", "%d", adc_config->channel);
+  if(adc_config->mode ==0)
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Channel", "%d", adc_config->single_channel);
+  else
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Channel", "%d", adc_config->diff_channel);
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "High Value", "%d", adc_config->highScale);
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Low Value", "%d", adc_config->lowScale);
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Scale", "%d", adc_config->scale);
@@ -156,7 +158,7 @@ uint8_t print_hjwind_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
 {
   const char *name_table[10];
 
-  rs485_get_portList(name_table, _countof(name_table));
+  drv_rs485_get_portList(name_table, _countof(name_table));
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Fullset", "%d", hjwindCfg->full);
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Offset", "%d", hjwindCfg->offset);
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Port", "%s", name_table[hjwindCfg->rs485_port]);
@@ -169,7 +171,7 @@ uint8_t print_hjwindDir_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
 {
   const char *name_table[10];
 
-  rs485_get_portList(name_table, _countof(name_table));
+  drv_rs485_get_portList(name_table, _countof(name_table));
 
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Port", "%s", name_table[hjwindCfg->rs485_port]);
 
@@ -199,7 +201,7 @@ uint8_t print_hjtemp_cfg(hjtemp_config_t *hjtempCfg, uint8_t cnt)
   }
   else
   {
-    rs485_get_portList(name_table, _countof(name_table));
+    drv_rs485_get_portList(name_table, _countof(name_table));
         port = hjtempCfg->rs485_port;
   }
 
@@ -216,7 +218,7 @@ uint8_t print_ott_smp3_cfg(ott_smp3_config_t *ott, uint8_t cnt)
 {
    const char *portNameList[10];
 
-   rs485_get_portList(portNameList, _countof(portNameList));
+   drv_rs485_get_portList(portNameList, _countof(portNameList));
    ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "포트", "%s", portNameList[ott->port]);
    ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "MODBUS ID", "%d", ott->modbus_id);
    return cnt;
@@ -255,7 +257,7 @@ uint8_t print_hjsnow_cfg(hjsnow_config_t *hjsnow, uint8_t cnt)
   }
   else
   {
-    rs485_get_portList(portNameList, _countof(portNameList));
+    drv_rs485_get_portList(portNameList, _countof(portNameList));
   }
 
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "통신포트", "%s", portNameList[hjsnow->port]);
@@ -446,7 +448,7 @@ int32_t hjwind_config_set(  sensor_t *sensor, uint8_t munu_index)
       
       break;
     case HJWIND_CFG_PORT:
-      port_cnt = rs485_get_portList(portList, _countof(portList));
+      port_cnt = drv_rs485_get_portList(portList, _countof(portList));
       status = select_index_from_table( portList, NULL, port_cnt, true,&choice);
       if(status !=MENU_OK)
       break;
@@ -478,7 +480,7 @@ int32_t hjwinddir_config_set( sensor_t *sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case HJWIND_DIR_CFG_PORT:
-      port_cnt = rs485_get_portList(portList, _countof(portList));
+      port_cnt = drv_rs485_get_portList(portList, _countof(portList));
 
       status = select_index_from_table( portList, NULL, port_cnt, true,&choice);
       if (status != MENU_OK)
@@ -535,7 +537,7 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
       }
       else
       {
-        portListCnt = rs485_get_portList(portList, _countof(portList));
+        portListCnt = drv_rs485_get_portList(portList, _countof(portList));
         status = select_index_from_table( portList, NULL, portListCnt, true,&choice);
       if (status!= MENU_OK)
         break;
@@ -604,7 +606,7 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
       }
       else
       {
-        portListCnt = rs485_get_portList(portList, _countof(portList));
+        portListCnt = drv_rs485_get_portList(portList, _countof(portList));
         status = select_index_from_table( portList, NULL, portListCnt, true,&choice);
 
         if(status !=MENU_OK)
@@ -654,7 +656,7 @@ int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case OTT_SMP3_CFG_PORT:
-      portListCnt = rs485_get_portList(portList, _countof(portList));
+      portListCnt = drv_rs485_get_portList(portList, _countof(portList));
       status = select_index_from_table( portList, NULL, portListCnt, true,&choice);
 
       if (status  != MENU_OK)
@@ -785,7 +787,7 @@ int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
         }
       else
       {
-        portCnt = rs485_get_portList(portList, _countof(portList));
+        portCnt = drv_rs485_get_portList(portList, _countof(portList));
         status = select_index_from_table( portList, NULL, portCnt, true,&choice);
         if (status != MENU_OK)
         break;
@@ -833,11 +835,20 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
 
       break;
     case ADC_SET_CHANNLEL:  // channel;
-      status = input_decimal_prompt("채널",&dec, 0, 17);
+      if(adc->mode ==0)
+      {
+      status = input_decimal_prompt("싱글 채널",&dec, 0, 17);
       if(status !=MENU_OK)
       break;
+             adc->single_channel = dec;
+      }
+      else
+      {
+      status = input_decimal_prompt("차동 채널",&dec, 0, 8);
+      if(status !=MENU_OK)
+       adc->diff_channel = dec;
+      }
 
-        adc->channel = dec;
         save_config_sensor();
 
       break;

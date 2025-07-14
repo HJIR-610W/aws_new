@@ -1106,7 +1106,7 @@
                     <item>model_list_string</item>
                     <item>name_table</item>
                     <item>buff</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

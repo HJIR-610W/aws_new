@@ -84,7 +84,16 @@
 			"task.h": "c",
 			"fm25cl.h": "c",
 			"app_logging.h": "c",
-			"at45db.h": "c"
+			"at45db.h": "c",
+			"ads1220_reg.h": "c",
+			"drv_adc.h": "c",
+			"driver_adc_define.h": "c",
+			"driver_stm32_adc.h": "c",
+			"bsp_adc.h": "c",
+			"ads1220.h": "c",
+			"adc_calibration.h": "c",
+			"config_adc.h": "c",
+			"pt100.h": "c"
 		}
 	}
 }

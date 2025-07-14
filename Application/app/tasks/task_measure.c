@@ -233,7 +233,7 @@ void sensor_init(void)
 
   p_sensor = g_sensor_config_bk;
 
-  adc_init();  // ADC 항상 초기화
+  
 
   //사용하는 센서의 드라이버를 초기화 한다.
   for (int i = 0; i < SENSOR_LIST_MAX; i++)

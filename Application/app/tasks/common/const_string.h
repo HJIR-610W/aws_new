@@ -9,4 +9,6 @@ extern const char* eth_mode_list_eng[2];// = {"Client", "Server"};
 extern const char* cdma_model_list_eng[2];// = {"NTLE9607", "TX700"};
 extern const char* protocol_list_eng[2];  // = {"KMA2", "KMA3"};
 
+extern const char* adc_se_list[16] ;
+extern const char* adc_diff_list[8] ;
 #endif

@@ -20,6 +20,7 @@ float drv_system_read(int num)
       break;
     case DRV_SYS_TEMPERATURE:
       value = bsp_read_temperature();
+      break;
     default:
     value = 0;
       break;

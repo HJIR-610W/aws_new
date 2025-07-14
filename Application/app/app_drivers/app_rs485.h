@@ -15,7 +15,7 @@ typedef enum RS485_PORT_e
 } eRS485_PORT_t;
 
 
-uint16_t rs485_get_portList(const char **list,uint16_t listMax);
+uint16_t drv_rs485_get_portList(const char **list,uint16_t listMax);
 
 
 #endif

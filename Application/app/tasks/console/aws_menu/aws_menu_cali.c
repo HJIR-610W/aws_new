@@ -22,7 +22,7 @@
 #include "console_define.h"
 #include "console_scanf.h"
 #include "console_utile.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "fsl_shell.h"
 #include "bsp.h"
 #include "bsp_delay.h"
@@ -111,11 +111,11 @@ int handle_factory_calibration(int adc_num)
 
         if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
         {
-          adc_raw = (int32_t)adc_read_single_raw(channel_index, &err);
+          adc_raw = (int32_t)drv_adc_single_raw_read(channel_index,1, &err);
         }
         else if (type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
         {
-          adc_raw = (int32_t)adc_read_diff_raw(channel_index, &err);
+          adc_raw = (int32_t)drv_adc_diff_raw_read(channel_index, 1,&err);
         }
 
         if(stable_delay)
@@ -160,11 +160,11 @@ int handle_factory_calibration(int adc_num)
 
         if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
         {
-          adc_raw = (int32_t)adc_read_single_raw(channel_index, &err);
+          adc_raw = (int32_t)drv_adc_single_raw_read(channel_index, 1,&err);
         }
         else if (type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
         {
-          adc_raw = (int32_t)adc_read_diff_raw(channel_index, &err);
+          adc_raw = (int32_t)drv_adc_diff_raw_read(channel_index,1, &err);
         }
 
         if (stable_delay)
@@ -463,10 +463,10 @@ int handle_offset_adjustment(int adc_num)
         io_printf("+--- 채널 %s[%d] 오프셋 조정 ---+\r\n", (type == 0 ? "SE" : "Diff"),
                   channel_index);
         g_current_temp = read_current_temperature();
-        float current_val =
-            adc_get_compensated_value((type == 0 ? (int32_t)adc_read_single_raw(channel_index, &err)
-                                                 : (int32_t)adc_read_diff_raw(channel_index, &err)),
-                                      params, g_current_temp);
+        float current_val = adc_get_compensated_value(
+            (type == 0 ? (int32_t)drv_adc_single_raw_read(channel_index, 1, &err)
+                       : (int32_t)drv_adc_diff_raw_read(channel_index, 1,&err)),
+            params, g_current_temp);
         io_printf("| 현재 온도: %.1f°C\r\n", g_current_temp);
         io_printf("| 현재 측정값: ");
         if (isnan(current_val))
@@ -493,12 +493,12 @@ int handle_offset_adjustment(int adc_num)
         if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)  // 싱글
         {
           uint8_t err;
-          raw_now = (int32_t)adc_read_single_raw(channel_index, &err);
+          raw_now = (int32_t)drv_adc_single_raw_read(channel_index,1, &err);
         }
         else if (type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
         {
           uint8_t err;
-          raw_now = adc_read_diff_raw(channel_index, &err);
+          raw_now = drv_adc_diff_raw_read(channel_index,1, &err);
         }
 
         if (choice == 1)
@@ -657,8 +657,8 @@ int handle_view_status(int adc_num)
         do
         {
           start_time = mcu_get_clk();
-          int32_t raw_adc = (type == 0 ? (int32_t)adc_read_single_raw(channel_index, &err)
-                                       : adc_read_diff_raw(channel_index, &err));
+          int32_t raw_adc = (type == 0 ? (int32_t)drv_adc_single_raw_read(channel_index, 1, &err)
+                                       : drv_adc_diff_raw_read(channel_index,1, &err));
           elased_time = cal_elapsed_us(start_time);
           float current_val = adc_get_compensated_value(raw_adc, params, g_current_temp);
 
@@ -725,7 +725,7 @@ int handle_view_status(int adc_num)
           {
             params = &p_adc->single_ended_cal[channel];
 
-            raw = (int32_t)adc_read_single_raw(channel, &err);
+            raw = (int32_t)drv_adc_single_raw_read(channel, 1,&err);
 
             voltage = adc_get_compensated_value(raw, params, g_current_temp);
 
@@ -762,7 +762,7 @@ int handle_view_status(int adc_num)
           {
             params = &p_adc->differential_cal[channel];
 
-            raw = adc_read_diff_raw(channel, &err);
+            raw = drv_adc_diff_raw_read(channel, 1,&err);
 
             voltage = adc_get_compensated_value(raw, params, g_current_temp);
             if (isnan(voltage))
@@ -985,7 +985,7 @@ int aws_menu_calibration()
                   "채널 상태 보기",
                   "초기화"};
 
-  driver_adc_open(ADC_ADS1220, 0);
+  
   do
   {
     status = choice_menu(24, "ADC 켈리브레이션", menu, _countof(menu), &choice);

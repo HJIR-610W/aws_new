@@ -8,7 +8,7 @@
 
 #include "Sensors\solar_radiation\solar_radiation.h"
 #include "Sensors\general\general_adc.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "app_sensor.h"
 
 #include "solarRadiation_define.h"

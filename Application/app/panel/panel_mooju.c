@@ -1,6 +1,7 @@
 
 
 #include <stdint.h>
+#include "cmsis_os2.h"
 #include "old_aws_define.h"
 #include "config_app.h"
 #include "util_time.h"

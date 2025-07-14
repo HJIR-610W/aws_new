@@ -35,9 +35,9 @@ void limit_adc(void)
 {
   for (int i = 0; i < _countof(g_config_sensor.adc); i++)
   {
-    if (g_config_sensor.adc[i].channel > 17)
+    if (g_config_sensor.adc[i].single_channel > 17)
     {
-      g_config_sensor.adc[i].channel = 0;
+      g_config_sensor.adc[i].single_channel = 0;
       g_config_sensor_dirty_flag = true;
     }
   }

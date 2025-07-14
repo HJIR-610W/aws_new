@@ -8,7 +8,7 @@
 
 #include "Sensors\sunshine\sunshine.h"
 #include "sunshine_define.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "app_sensor.h"
 
 #include "dev_io.h"

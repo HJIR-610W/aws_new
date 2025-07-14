@@ -8,6 +8,7 @@
 #include "driver_uart.h"
 #include "util_memory.h"
 #include "panel_common.h"
+#include "cmsis_os2.h"
 
 /*
 

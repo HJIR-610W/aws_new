@@ -8,7 +8,7 @@
 #include "drv_di.h"
 #include "drv_do.h"
 #include "driver_uart.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "app_adc.h"
 #include "app_file.h"
 
@@ -30,8 +30,8 @@ void test_adc(void)
 
     if(get_key(osWaitForever)==KEY_CODE_CTRL_Q)
     break;
-    
-    adc_raw = (int32_t)adc_read_single_raw(0, &err);
+
+    adc_raw = (int32_t)drv_adc_single_raw_read(0,1, &err);
     snprintf(buff, sizeof(buff), "%d,%d\r\n",i,adc_raw);
     io_printf("%s",buff);
 

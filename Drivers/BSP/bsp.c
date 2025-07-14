@@ -6,7 +6,6 @@
 #include "bsp_do.h"
 #include "bsp_i2c.h"
 #include "config_app.h"
-#include "driver_adc.h"
 #include "drv_di.h"
 #include "drv_do.h"
 #include "drv_led.h"
@@ -18,11 +17,10 @@
 #include "tlsf.h"
 #include "user_heap.h"
 #include "bsp_delay.h"
+#include "bsp_adc.h"
 
-static driver_t *g_adc_stm;
 
 uint32_t g_pcb_version = AWS_PCB_VER;
-
 
 TIM_HandleTypeDef        htim4;
 
@@ -189,11 +187,6 @@ void SystemClock_Config(void)
 
 
 
-void bsp_adc_init(void)
-{
-  g_adc_stm = driver_adc_open(ADC_STM32, 0);
-}
-
 /*
 공급전압 최대 입력을 15V로 하자
 0~2.5V => 0~15V
@@ -214,7 +207,7 @@ float bsp_read_battery(void)
   float voltage;
   float battery;
 
-  voltage = driver_adc_single_read(g_adc_stm, ADC_STM32_S_CH_0, BATTERY_AVERAGE_SAMPLES, &err);
+  voltage = bsp_adc_single_read_voltage(BSP_ADC_STM32_SE_CH_0, BATTERY_AVERAGE_SAMPLES, &err);
 
   battery = voltage * slope + offset;
 
@@ -298,7 +291,7 @@ float bsp_read_temperature(void)
   float voltage;
   float resistance;
 
-  voltage = driver_adc_single_read(g_adc_stm, ADC_STM32_S_CH_1, TEMP_AVERAGE_SAMPLES, &err);
+  voltage = bsp_adc_single_read_voltage(BSP_ADC_STM32_SE_CH_1, TEMP_AVERAGE_SAMPLES, &err);
 
   resistance = (voltage * R1) /(VREF - voltage);
 
@@ -511,6 +504,7 @@ void bsp_init(void)
 
   user_tlsf_init(POOL_SIZE);
 
+  bsp_interrupt_init();  // 최우선 실행
   bsp_delay_init();
   bsp_adc_init();
 

@@ -8,7 +8,7 @@
 #include "drv_system.h"
 #include "drv_fram.h"
 #include "drv_flash.h"
-
+#include "drv_adc.h"
 void drv_init(void)
 {
   drv_rtc_init();
@@ -19,4 +19,5 @@ void drv_init(void)
   drv_system_init();
   drv_flash_init(); 
   drv_fram_init();
+  drv_adc_init();
 }

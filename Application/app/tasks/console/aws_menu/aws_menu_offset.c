@@ -7,7 +7,7 @@
 #include "console_define.h"
 #include "console_utile.h"
 #include "dev_io.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "util_memory.h"
 
 extern driver_t *get_sensor_driver(eSENSOR_TYPE_t sensor);
@@ -81,8 +81,8 @@ int32_t menu_offset_pressure(void)
   io_printf("입력:");
   if(cli_scanf_s("%f",&local_temperature)>0)
   {
-    voltage = adc_read_single_avg(config->channel,&error,10);
-    io_printf("현재 ADC 싱글 %d 전압:%fv\r\n",config->channel,voltage);
+    voltage = drv_adc_single_read_voltage(config->single_channel, 10,&error);
+    io_printf("현재 ADC 싱글 %d 전압:%fv\r\n",config->single_channel,voltage);
     calibrated_voltage = cvt_data_to_voltage(config,local_temperature);
     io_printf("요구되는 전압:%f\r\n", calibrated_voltage);
     status  = confirm_continue("오프셋을 조정합니다",&ok);
@@ -90,7 +90,7 @@ int32_t menu_offset_pressure(void)
     if(ok)
     {
       float new_offset = calibrated_voltage - voltage;
-      adc_set_offset_trim(eSINGLE_ADC, config->channel, new_offset);
+      drv_adc_set_offset( config->single_channel, new_offset);
       io_printf("현장센서에맞게 오프셋 %f 적용됩니다\n",new_offset);
     }
 

@@ -7,12 +7,12 @@
 #include "bsp_di.h"
 #include "bsp_do.h"
 #include "bsp_interrupt.h"
+#include "bsp_mux.h"
+#include "bsp_spi.h"
 #include "cmsis_os.h"
 #include "dev_io.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "driver_adc_define.h"
-#include "driver_mux.h"
-#include "bsp_spi.h"
 #include "os_user_def.h"
 #include "system_err.h"
 #include "util_memory.h"
@@ -25,22 +25,23 @@ typedef struct ads1220_cfg_s
   void *sem;
   uint8_t diffChCnt;
   uint8_t singleChCnt;
-}ads1220_cfg_t;
+  bool opened;
+}ads1220_instance_t;
+
+ads1220_instance_t ads1220_inst;
+osSemaphoreId_t g_dataReadySem = NULL;
+
+void read_reg( uint8_t startAddress, uint8_t numRegs, uint8_t *pBuff);
 
 
 
-void read_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff);
-
-
-osSemaphoreId_t g_dataReadySem=NULL;
-
-void parse_ads1220_register(driver_t *drv)
+void parse_ads1220_register()
 {
   uint8_t reg;
 
   DEBUG_PRINTF("\r\n==== ADS1220 레지스터 설정값==== \r\n");
   // Register 0: MUX[7:4], GAIN[3:1], PGA_BYPASS[0]
-  read_reg(drv, ADS1220_REG_0, 1, &reg);
+  read_reg( ADS1220_REG_0, 1, &reg);
   DEBUG_PRINTF("REG0 (0x%02X): 0x%02X\r\n", ADS1220_REG_0, reg);
 
   DEBUG_PRINTF("  MUX       [7:4]: ");
@@ -131,7 +132,7 @@ void parse_ads1220_register(driver_t *drv)
             (reg & 0x01) ? "1 - 우회함 (Bypassed)" : "0 - 사용함 (Enabled)");
 
   // Register 1: DR[7:5], MODE[4:3], CM[2], TS[1], BCS[0]
-  read_reg(drv, ADS1220_REG_1, 1, &reg);
+  read_reg( ADS1220_REG_1, 1, &reg);
   DEBUG_PRINTF("REG1 (0x%02X): 0x%02X\r\n", ADS1220_REG_1, reg);
 
   DEBUG_PRINTF("  Data rate [7:5]: ");
@@ -190,7 +191,7 @@ void parse_ads1220_register(driver_t *drv)
             (reg & 0x01) ? "1 - On" : "0 - Off (기본값)");
 
   // Register 2: VREF[7:6], 50/60[5:4], PSW[3], IDAC[2:0]
-  read_reg(drv, ADS1220_REG_2, 1, &reg);
+  read_reg( ADS1220_REG_2, 1, &reg);
   DEBUG_PRINTF("REG2 (0x%02X): 0x%02X\r\n", ADS1220_REG_2, reg);
 
   DEBUG_PRINTF("  VREF      [7:6]: ");
@@ -263,9 +264,9 @@ void parse_ads1220_register(driver_t *drv)
   DEBUG_PRINTF("           // IDAC1 및 IDAC2 전류 설정\r\n");
 
   // Register 3: IDAC1[7:5], IDAC2[4:2], GPIO_DIR[1], GPIO_DAT[0]
-  read_reg(drv, ADS1220_REG_3, 1, &reg);
+  read_reg( ADS1220_REG_3, 1, &reg);
   // Register 3: I1MUX[7:5], I2MUX[4:2], DRDYM[1], Reserved[0]
-  read_reg(drv, ADS1220_REG_3, 1, &reg);
+  read_reg( ADS1220_REG_3, 1, &reg);
   DEBUG_PRINTF("REG3 (0x%02X): 0x%02X\r\n", ADS1220_REG_3, reg);
 
   DEBUG_PRINTF("  IDAC1 MUX [7:5]: ");
@@ -336,96 +337,84 @@ void parse_ads1220_register(driver_t *drv)
   DEBUG_PRINTF("\r\n==========\r\n");
 }
 
-void write_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs,uint8_t *pData)
+void write_reg(uint8_t startAddress,uint8_t numRegs,uint8_t *pData)
 {
-    uint32_t i;
-    uint8_t data;
-    ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
+  uint32_t i;
+  uint8_t data;
 
+  bsp_spi_pend_sem(ads1220_inst.spi_num);
+  bsp_do_low(ads1220_inst.cs_do_num);
+  bsp_us_delay(50);
 
-    bsp_spi_pend_sem(cfg->spi_num);
+  data = ADS1220_CMD_WREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03));
 
-    bsp_do_low(cfg->cs_do_num);
+  bsp_spi_send_byte(ads1220_inst.spi_num,data);
 
-    bsp_us_delay(50);
+  for (i=0; i< numRegs; i++)
+  {
+      bsp_spi_send_byte(ads1220_inst.spi_num,*pData++);
+  }
 
-    data = ADS1220_CMD_WREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03));
- 
-    bsp_spi_send_byte(cfg->spi_num,data);
-
-    for (i=0; i< numRegs; i++)
-    {
-        bsp_spi_send_byte(cfg->spi_num,*pData++);
-    }
-   
-    bsp_do_high( cfg->cs_do_num);
-
-    bsp_spi_post_sem(cfg->spi_num);
+  bsp_do_high(ads1220_inst.cs_do_num);
+  bsp_spi_post_sem(ads1220_inst.spi_num);
 }
 
-void read_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff)
+void read_reg(uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff)
 {
     uint32_t i;
     uint8_t val=0;
     uint8_t data;
-    ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
 
-    bsp_spi_pend_sem(cfg->spi_num);
 
-    bsp_do_low(cfg->cs_do_num);
+    bsp_spi_pend_sem(ads1220_inst.spi_num);
+
+    bsp_do_low(ads1220_inst.cs_do_num);
 
     bsp_us_delay(50);
     
     data = (ADS1220_CMD_RREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03)));
 
-    bsp_spi_send_byte(cfg->spi_num,data);
+    bsp_spi_send_byte(ads1220_inst.spi_num,data);
 
     for (i=0; i< numRegs; i++)
     {
-        val = bsp_spi_read_byte(cfg->spi_num);
+        val = bsp_spi_read_byte(ads1220_inst.spi_num);
         *pBuff++ = val;
     }
-   
-    bsp_do_high( cfg->cs_do_num);
-    
-    bsp_spi_post_sem(cfg->spi_num);
+
+    bsp_do_high(ads1220_inst.cs_do_num);
+    bsp_spi_post_sem(ads1220_inst.spi_num);
 
 }
 
-void ads1220_start_conv(driver_t *drv)
+void ads1220_start_conv(void)
 {
-    ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
-
-    bsp_spi_pend_sem(cfg->spi_num);
-
-    bsp_do_low( cfg->cs_do_num);
-    
-    bsp_us_delay(50);
-    bsp_spi_send_byte(cfg->spi_num,ADS1220_CMD_SYNC);
+  bsp_spi_pend_sem(ads1220_inst.spi_num);
+  bsp_do_low(ads1220_inst.cs_do_num);
+  bsp_us_delay(50);
+  bsp_spi_send_byte(ads1220_inst.spi_num,ADS1220_CMD_SYNC);
+  bsp_do_high(ads1220_inst.cs_do_num);
+  bsp_spi_post_sem(ads1220_inst.spi_num);
    
-    bsp_do_high( cfg->cs_do_num);
-    
-   bsp_spi_post_sem(cfg->spi_num);
-    
 }
 
-void ads1220_set_singleChannel(driver_t *drv,uint32_t ch)
+void ads1220_set_singleChannel(uint32_t ch)
 {
     uint8_t reg=0;
  
-    read_reg(drv,ADS1220_REG_0, 0x01, &reg);
+    read_reg(ADS1220_REG_0, 0x01, &reg);
         
     reg = (reg&0x0F) |((ch<<4)|0x80);
    
-    write_reg(drv,ADS1220_REG_0,0x01,&reg);
+    write_reg(ADS1220_REG_0,0x01,&reg);
 
 }
 
-void ads1220_set_diffChannel(driver_t *drv,uint32_t ch)
+void ads1220_set_diffChannel(uint32_t ch)
 {
   uint8_t reg=0;
     
-  read_reg(drv,ADS1220_REG_0, 0x01, &reg);
+  read_reg(ADS1220_REG_0, 0x01, &reg);
 
   switch(ch)
   {
@@ -437,23 +426,22 @@ void ads1220_set_diffChannel(driver_t *drv,uint32_t ch)
     break;
   }
     
-    write_reg(drv,ADS1220_REG_0,0x01,&reg);
+    write_reg(ADS1220_REG_0,0x01,&reg);
 
 }
 
-void ads1220_reset_sw(driver_t *drv)
+void ads1220_reset_sw(void)
 {
-    ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
 
-    bsp_spi_pend_sem(cfg->spi_num);
+  bsp_spi_pend_sem(ads1220_inst.spi_num);
 
-    bsp_do_low(cfg->cs_do_num);
+  bsp_do_low(ads1220_inst.cs_do_num);
 
-    bsp_spi_send_byte(cfg->spi_num,ADS1220_CMD_RESET);
+  bsp_spi_send_byte(ads1220_inst.spi_num,ADS1220_CMD_RESET);
 
-    bsp_do_high(cfg->cs_do_num);
+  bsp_do_high(ads1220_inst.cs_do_num);
 
-    bsp_spi_post_sem(cfg->spi_num);
+  bsp_spi_post_sem(ads1220_inst.spi_num);
 }
 
 /**
@@ -476,16 +464,16 @@ void ads1220_reset_sw(driver_t *drv)
  *
  */
 
-int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
+int32_t ads1220_read_adc(uint8_t *err)
 {
     osStatus status;
     int32_t data=0;
-    ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
+
     
     *err = 1;
 
     osSemaphoreAcquire(g_dataReadySem,0);
-    ads1220_start_conv(drv);
+    ads1220_start_conv();
        
     status = osSemaphoreAcquire(g_dataReadySem, 60);//타임아웃 5ms 줌
 
@@ -495,45 +483,45 @@ int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
         return 0;
     }
 
-    bsp_spi_pend_sem(cfg->spi_num);
-    bsp_do_low(cfg->cs_do_num);
+    bsp_spi_pend_sem(ads1220_inst.spi_num);
+    bsp_do_low(ads1220_inst.cs_do_num);
     //이 명령어 전송되면 drdy 핀 올라감
-    bsp_spi_send_byte(cfg->spi_num,ADS1220_CMD_RDATA);
+    bsp_spi_send_byte(ads1220_inst.spi_num,ADS1220_CMD_RDATA);
 
-    data = bsp_spi_read_byte(cfg->spi_num);
-    data = (data << 8) |bsp_spi_read_byte(cfg->spi_num);
-    data = (data << 8) |bsp_spi_read_byte(cfg->spi_num);
+    data = bsp_spi_read_byte(ads1220_inst.spi_num);
+    data = (data << 8) |bsp_spi_read_byte(ads1220_inst.spi_num);
+    data = (data << 8) |bsp_spi_read_byte(ads1220_inst.spi_num);
 
     if (data & 0x00800000)
     {
         data |= 0xff000000;
     }
 
-    bsp_do_high( cfg->cs_do_num);
+    bsp_do_high(ads1220_inst.cs_do_num);
     *err = 0;
-    bsp_spi_post_sem(cfg->spi_num);
+    bsp_spi_post_sem(ads1220_inst.spi_num);
     
     return data;
 }
 
-int32_t ads1220_read_single_ch(driver_t *drv,int32_t ch,uint8_t *err)
+int32_t ads1220_read_single_ch(int32_t ch,uint8_t *err)
 {
     int32_t data=0;
     
 
 
-    data = ads1220_read_adc(drv,err);
+    data = ads1220_read_adc(err);
      
     return data;
 }
 
-int32_t ads1220_read_diff_ch(driver_t *drv,int32_t ch,uint8_t *err)
+int32_t ads1220_read_diff_ch(int32_t ch,uint8_t *err)
 {
     int32_t data;
 
 
 
-    data = ads1220_read_adc(drv,err);
+    data = ads1220_read_adc(err);
      
     return data;
 }
@@ -543,11 +531,11 @@ void irq_dataReady(void *arg)
     osSemaphoreRelease(g_dataReadySem);
 }
 
-void ads1210_init(driver_t *drv)
+void ads1210_initialize(void)
 {
     uint8_t reg;
     di_isr_set_cfg_t isr_cfg;
-    ads1220_cfg_t *cfg = (ads1220_cfg_t*)drv->cfg;
+
 
     g_dataReadySem = osSemaphoreNew(1, 0, NULL);
 
@@ -558,12 +546,8 @@ void ads1210_init(driver_t *drv)
 
     bsp_di_set_interrupt(BSP_DI_0_ADC_RDY,&isr_cfg);
 
-    ads1220_reset_sw(drv);
-  
-    if(drv->sem == NULL)
-    {
-        drv->sem = osSemaphoreNew(1, 1, NULL); 
-    }
+    ads1220_reset_sw();
+
 
     /*
     gain 1,2,4는 PGA없이 사용가능해서 비활성 가능
@@ -578,7 +562,7 @@ void ads1210_init(driver_t *drv)
     reg = 0x00;
  
 
-    write_reg(drv,ADS1220_REG_0, 1, &reg);  
+    write_reg(ADS1220_REG_0, 1, &reg);  
 
     /*
     7:5 DR   :000b 20sps      데이터 속도
@@ -591,7 +575,7 @@ void ads1210_init(driver_t *drv)
     reg |= (0x00)<<5;
 
 
-    write_reg(drv,ADS1220_REG_1, 1, &reg);
+    write_reg(ADS1220_REG_1, 1, &reg);
     /*
      7:6 VREF   01b REFP0,REFN0
      5:4 50/60  01b 50Hz,60Hz 제거 
@@ -601,7 +585,7 @@ void ads1210_init(driver_t *drv)
     reg =  (0x01)<<6;
     reg |= (0x01)<<3;
     reg |= (0x00)<<4;
-    write_reg(drv,ADS1220_REG_2, 1, &reg);
+    write_reg(ADS1220_REG_2, 1, &reg);
 
     /*
     7:5 I1MUX 000b IDAC1 비활성화
@@ -610,7 +594,7 @@ void ads1210_init(driver_t *drv)
       0 미사용
     */
     reg = 0x00;
-    write_reg(drv,ADS1220_REG_3, 1, &reg);
+    write_reg(ADS1220_REG_3, 1, &reg);
 
 #if DEBUG_PRINTF_USE
     parse_ads1220_register(drv);
@@ -623,84 +607,32 @@ void ads1210_init(driver_t *drv)
 
 
 
-void ads1220_close(driver_t *handle);
-int32_t ads1220_single_read(driver_t *handle,int channel,uint16_t avg,uint8_t *err);
-void ads1220_set(driver_t *handle, adc_set_option_t option, void *value);
-int32_t ads1220_diff_read(driver_t *handle,int channel,uint16_t avg,uint8_t *err);
 
-
-const adc_api_t ads1220_api ={.close = ads1220_close,
-                           .read_single = ads1220_single_read,
-                           .read_diff = ads1220_diff_read,
-                           .set = ads1220_set};
-
-driver_t ads1220_driver;
-ads1220_cfg_t ads1220_cfg;
-
-
-driver_t *ads1220_open(uint32_t num,void *pot)
-{
-  if(ads1220_driver.opened)
-  {
-    return &ads1220_driver;
-  }
-
-  ads1220_driver.opened = true;
-
-  ads1220_driver.name = "ADC_ADS1220";
-
-  ads1220_cfg.spi_num = BSP_SPI_2;
-  ads1220_cfg.cs_do_num  = BSP_DO_ADC_NCS;
-  ads1220_cfg.irq_di_num = BSP_DI_0_ADC_RDY;
-
-  ads1220_driver.cfg = &ads1220_cfg;
-  ads1220_driver.api = &ads1220_api;
-
-  if(ads1220_driver.sem == NULL)
-  {
-    ads1220_driver.sem = osSemaphoreNew(1, 1, NULL); 
-  }
-  
-  bsp_spi_init(ads1220_cfg.spi_num);
-
-  adc_mux_init();
-  ads1210_init(&ads1220_driver);
-
-  return &ads1220_driver;
-}
-
-
-
-void ads1220_close(driver_t *drv)
-{
-  osSemaphoreAcquire(drv->sem, osWaitForever);
-
-  osSemaphoreRelease(drv->sem);  // 세마포어 해제
-}
 
 
 //논리 채널을 물리채널로 변환 해야 함
 const uint8_t user_adc_single_channel[18]={0,1,4,5,8,9,12,13,16,17,20,21,24,25,28,29,2,6};
 
-int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
+int32_t ads1220_single_read(int channel,uint16_t avg,uint8_t *err)
 {
   int32_t adc;
   int32_t sum=0;
   int32_t valid_cnt = 0;
 
-  osSemaphoreAcquire(drv->sem, osWaitForever);
+
+  OS_PEND_SEM(ads1220_inst.sem,osWaitForever);
 
   channel = user_adc_single_channel[channel];
 
   adc_single_mux_set(channel);
 
-  ads1220_set_singleChannel(drv, channel % 4);
+  ads1220_set_singleChannel( channel % 4);
 
   osDelay(2);//채널 바꾸고 안정화 위해 
 
   for (int i = 0; i < avg; i++)
   {
-    adc = ads1220_read_single_ch(drv,channel%4,err);
+    adc = ads1220_read_single_ch(channel%4,err);
   
     if(*err == 0)
     {
@@ -711,28 +643,28 @@ int32_t ads1220_single_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
 
   adc = sum/valid_cnt;
   
-  osSemaphoreRelease(drv->sem);  // 세마포어 해제
+  OS_POST_SEM(ads1220_inst.sem);
   return adc;
 }
 
-int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
+int32_t ads1220_diff_read(int channel,uint16_t avg,uint8_t *err)
 {
 
   int32_t adc;
   uint8_t valid_cnt=0;
   float average=0;
 
-  osSemaphoreAcquire(drv->sem, osWaitForever);
+  osSemaphoreAcquire(ads1220_inst.sem, osWaitForever);
 
   //차동 채널 0,1,2,3,4,5,6,7 은 ADS1220에서는 0채널로만 측정하며  MUX가 채널이 됨
 
-  ads1220_set_diffChannel(drv, channel / 8);
+  ads1220_set_diffChannel( channel / 8);
 
   adc_diff_mux_set(channel);
 
   for(int i = 0 ; i< avg;i++)
   {
-    adc = ads1220_read_diff_ch(drv,channel/8,err);
+    adc = ads1220_read_diff_ch(channel/8,err);
     if(*err ==0)
     {
       valid_cnt++;
@@ -742,21 +674,31 @@ int32_t ads1220_diff_read(driver_t *drv,int channel,uint16_t avg,uint8_t *err)
  
   adc = (int32_t)average;
 
-  osSemaphoreRelease(drv->sem);  // 세마포어 해제
+  osSemaphoreRelease(ads1220_inst.sem);  // 세마포어 해제
 
   return adc;
 
 }
 
-
-void ads1220_set(driver_t *drv, adc_set_option_t option, void *value)
+void ads1220_init(void)
 {
+  if (ads1220_inst.opened)
+  {
+    return;
+  }
 
+  ads1220_inst.spi_num = BSP_SPI_2;
+  ads1220_inst.cs_do_num = BSP_DO_ADC_NCS;
+  ads1220_inst.irq_di_num = BSP_DI_0_ADC_RDY;
 
-  OS_PEND_SEM(drv->sem,osWaitForever);
+  OS_CREATE_BINARY_SEM(ads1220_inst.sem);
 
+  bsp_di_init();
+  bsp_do_init();
+  bsp_spi_init(ads1220_inst.spi_num);
 
-  OS_POST_SEM(drv->sem);
+  adc_mux_init();
+  ads1210_initialize();
 
-
+  ads1220_inst.opened = true;
 }

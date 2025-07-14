@@ -8,7 +8,7 @@
 #include "config_app.h"
 #include "config_sensor.h"
 #include "console_utile.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "menu_handler.h"
 #include "util_memory.h"
 #include "view_driver.h"
@@ -94,12 +94,12 @@ int32_t setup_pressure_offset(eSENSOR_TYPE_t sensor_type)
     return MENU_ERROR;
   }
 
-  voltage = adc_read_single_avg(cfg->channel, &error, 10);
+  voltage = drv_adc_single_read_voltage(cfg->single_channel, 10,&error);
   measured_value = voltage;
 
   screen_clear();
   screen_printf(0, 0, "Current: %.3f", measured_value);
-  screen_printf(1, 0, "ADC Ch%d: %.3fV", cfg->channel, voltage);
+  screen_printf(1, 0, "ADC Ch%d: %.3fV", cfg->single_channel, voltage);
   screen_refresh();
 
   status = input_float("Reference Value", -1000.0f, 1000.0f, &reference_value, "%8.3f");
@@ -110,22 +110,18 @@ int32_t setup_pressure_offset(eSENSOR_TYPE_t sensor_type)
 
   new_offset = reference_value - measured_value;
 
-  screen_clear();
-  screen_printf(0, 0, "New Offset:");
-  screen_printf(1, 0, "%.3f", new_offset);
-  screen_printf(2, 0, "Apply? Y/N");
-  screen_refresh();
+
 
   choice = 0;
-  const char* confirm_menu[] = {"No", "Yes"};
-  status = print_menu_list(confirm_menu, 2, &choice);
+
+  status = input_active("Apply?",  &choice);
 
   if (status == MENU_OK && choice == 1)
   {
     p_sensor->offset = new_offset;
     WRITE_CFG(sensor[sensor_type].offset);
 
-    adc_set_offset_trim(eSINGLE_ADC, cfg->channel, new_offset);
+    drv_adc_set_offset( cfg->single_channel, new_offset);
   }
 
   return status;

@@ -746,7 +746,7 @@ void tls16c554_irq_init(driver_t *drv, uint8_t prio)
   isr_cfg.prio = prio;
   isr_cfg.handle = drv;
 
-  driver_di_set(cfg->irq_di_num, DI_SET_INTERRUPT, &isr_cfg);
+  bsp_di_set_interrupt(cfg->irq_di_num,  &isr_cfg);
 }
 
 /// @brief 8채널

@@ -25,7 +25,7 @@ driver_t *rs485_drivers[eAPP_RS485_MAX];
 
 
 
-uint16_t rs485_get_portList(const char **list,uint16_t listMax)
+uint16_t drv_rs485_get_portList(const char **list,uint16_t listMax)
 {
   int i=0;
   for( i = 0; i <_countof(rs485_define);i++)

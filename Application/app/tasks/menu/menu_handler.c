@@ -369,8 +369,8 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
     make_centered(buff,sizeof(buff),title,MAX_COLS);
     screen_printf(0, 0, "%s", buff);
     screen_printf(1, 0, "%s", display);
-    screen_printf(2, 0, "Field: %d/%d", current_field + 1, field_count);
-    screen_printf(3, 0, "Cursor: %d", cursor_pos);
+   // screen_printf(2, 0, "Field: %d/%d", current_field + 1, field_count);
+   // screen_printf(3, 0, "Cursor: %d", cursor_pos);
     
     // 커서 깜빡임 처리 (500ms 간격)
     if (OS_GET_TICK() - last_blink >= 500)
@@ -806,7 +806,7 @@ int32_t input_combobox(const char* title, const char* item_list[], int32_t item_
   }
 
   combo_list = item_list;
-  max_display_rows = (item_count < MAX_ROWS - 2) ? item_count : (MAX_ROWS - 2);
+  max_display_rows = (item_count < MAX_ROWS - 1) ? item_count : (MAX_ROWS - 1);
   
   scroll_offset = 0;
   if (current_selection >= max_display_rows) 
@@ -846,12 +846,6 @@ int32_t input_combobox(const char* title, const char* item_list[], int32_t item_
       }
     }
 
-    if (item_count > max_display_rows)
-    {
-      screen_printf(MAX_ROWS - 1, 0, "Page %d/%d", 
-                    (scroll_offset / max_display_rows) + 1,
-                    (item_count - 1) / max_display_rows + 1);
-    }
 
     screen_refresh();
 
@@ -1077,4 +1071,53 @@ int32_t input_active(const char *title, int32_t *choice)
 
    *choice = enabled;
    return convert_key_to_status(key);
+}
+
+int32_t show_ok(const char *title,const char *msg)
+{
+  const char *yes = "[OK]";
+  int key;
+
+
+  char buff[50];
+  int len = 0;
+  int total_width = MAX_COLS;  // 좌우 여백 및 메뉴 번호 고려
+
+  // 타이틀 가운데 정렬
+  int title_len = utf8_strlen(title);
+  int title_padding = (total_width - 2 - title_len) / 2;
+
+  for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
+
+  snprintf(&buff[len], sizeof(buff) - len, "%s", title);
+
+  screen_clear();
+
+  screen_printf(0, 0, "%s", buff);
+  screen_printf(1, 0, "%s", msg);
+
+  while (1)
+  {
+    len = 0;
+
+    int title_len = utf8_strlen(yes);
+    int title_padding = (total_width - 2 - title_len) / 2;
+
+    for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
+
+    snprintf(&buff[len], sizeof(buff) - len, "%s", yes);
+
+    screen_printf(2, 0, "%s", buff);
+    screen_refresh();
+
+    key = get_button_key(100);
+
+    if (key == KEY_CODE_ENTER || key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
+    {
+      break;
+    }
+  }
+
+
+  return convert_key_to_status(key);
 }

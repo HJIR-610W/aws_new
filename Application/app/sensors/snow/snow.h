@@ -3,7 +3,7 @@
 #define SENSOR_SNOW_H_
 
 #include "Sensors\snow\hj_snow.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "app_sensor.h"
 
 

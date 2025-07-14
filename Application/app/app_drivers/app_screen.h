@@ -55,6 +55,7 @@ typedef struct
 
 typedef struct
 {
+  char title[16+1];
   int current_row;
   int view_row;
   int view_col;

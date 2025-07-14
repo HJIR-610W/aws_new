@@ -7,13 +7,14 @@
 #include "cli_key_code.h"
 #include "config_adc.h"
 #include "console_utile.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "menu_handler.h"
 #include "util_filter.h"
 #include "util_memory.h"
 #include "view_driver.h"
 #include "app_adc.h"
 #include "util_stdio.h"
+#include "const_string.h"
 
 extern config_adc_adv_t g_adc_config_ads1220;
 extern config_adc_adv_t g_adc_config_stm32;
@@ -22,7 +23,6 @@ extern float g_current_temp;
 #define SCREEN_COLS 20
 #define CALI_WD 8
 
-#define MENU_PRINTF screen_menu_printf_row
 
 #define CALI_MENU_FACTORY       0
 #define CALI_MENU_VIEW          1
@@ -35,14 +35,17 @@ extern float g_current_temp;
 #define VIEW_MENU_DIFF          1
 #define VIEW_MENU_SUMMARY       2
 
+#define MENU_PRINTF screen_menu_printf_row
+
 void draw_setup_menu_calibration_page(screen_menu_t* p_win)
 {
   int32_t row_count = 0;
 
+
   p_win->current_row = 0;
 
   screen_update_list(p_win, row_count, CALI_MENU_FACTORY);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "FACTORY");
+  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "FACTORY CALI");
 
   screen_update_list(p_win, row_count, CALI_MENU_VIEW);
   MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "VIEW");
@@ -103,7 +106,7 @@ void draw_cali_setup_menu_view_page(screen_menu_t* p_win)
 
 int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
 {
-  const char* confirm_menu[] = {"No", "Yes"};
+
   uint8_t err;
   int32_t adc_raw;
   int32_t avg_cnt;
@@ -119,14 +122,16 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
 
   p_adc = &g_adc_config_ads1220;
 
-  screen_clear();
-  screen_printf(0, 0, "Channel (0-%d):", 
-                (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? 17 : 7);
-  screen_refresh();
+  if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+  {
+    status = input_combobox("Select SE Ch", adc_se_list, _countof(adc_se_list), &channel);
+  }
+  else
+  {
+    status =
+        input_combobox("Select DIFF Ch", adc_diff_list, _countof(adc_diff_list), &channel);
+  }
 
-  status = input_decimal("Channel", 0, 
-                        (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? 17 : 7, 
-                        &channel);
   if (status != MENU_OK)
     return status;
 
@@ -135,10 +140,9 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
                        : &p_adc->differential_cal[channel];
 
   screen_clear();
-  screen_printf(0, 0, "Low Ref Ready?");
-  screen_refresh();
 
-  status = input_combobox("Start calibration P1?", confirm_menu, 2, &choice);
+  choice = 0;
+  status = input_active("Start calibration P1?", &choice);
   if (status != MENU_OK || choice == 0)
     return status;
 
@@ -146,19 +150,17 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   avg_cnt = 0;
 
   screen_clear();
-  screen_printf(0, 0, "Reading Low...");
-  screen_printf(1, 0, "Press any key");
-  screen_refresh();
+
 
   while (1)
   {
     if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
     {
-      adc_raw = (int32_t)adc_read_single_raw(channel, &err);
+      adc_raw = (int32_t)drv_adc_single_raw_read(channel, 1,&err);
     }
     else
     {
-      adc_raw = (int32_t)adc_read_diff_raw(channel, &err);
+      adc_raw = (int32_t)drv_adc_diff_raw_read(channel,1, &err);
     }
 
     avg_cnt++;
@@ -188,7 +190,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
 
   screen_clear();
   choice = 0;
-  status = input_combobox("Start calibration P2?", confirm_menu, 2, &choice);
+  status = input_active("Start calibration P2?",  &choice);
   if (status != MENU_OK || choice == 0)
     return status;
 
@@ -201,11 +203,11 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   {
     if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
     {
-      adc_raw = (int32_t)adc_read_single_raw(channel, &err);
+      adc_raw = (int32_t)drv_adc_single_raw_read(channel, 1,&err);
     }
     else
     {
-      adc_raw = (int32_t)adc_read_diff_raw(channel, &err);
+      adc_raw = (int32_t)drv_adc_diff_raw_read(channel,1, &err);
     }
 
     avg_cnt++;
@@ -240,25 +242,13 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   if (adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, cal_temp))
   {
     save_adc_cali();
-    
-    screen_clear();
-    screen_printf(0, 0, "Calibration OK");
-    screen_refresh();
-    
-    const char* ok_menu[] = {"OK"};
-    choice = 0;
-    print_menu_list(ok_menu, 1, &choice);
+   
+    show_ok("Calibration", "Success");
   }
   else
   {
-    screen_clear();
-    screen_printf(0, 0, "Calibration");
-    screen_printf(1, 0, "Failed");
-    screen_refresh();
-    
-    const char* ok_menu[] = {"OK"};
-    choice = 0;
-    print_menu_list(ok_menu, 1, &choice);
+   
+    show_ok("Calibration","Failed");
   }
 
   return status;
@@ -306,6 +296,9 @@ int32_t cali_setup_menu_factory(void)
         default:
           break;
       }
+      
+      if(status == MENU_ABORT)
+        return status;
     }
     else if (key != -1)
     {
@@ -328,14 +321,15 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
 
   p_adc = &g_adc_config_ads1220;
 
-  screen_clear();
-  screen_printf(0, 0, "Channel (0-%d):", 
-                (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? 17 : 7);
-  screen_refresh();
+  if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+  {
+    status = input_combobox("SE Channel", adc_se_list, _countof(adc_se_list), &channel);
+  }
+  else
+  {
+    status = input_combobox("DIFF Channel", adc_diff_list, _countof(adc_diff_list), &channel);
+  }
 
-  status = input_decimal("Channel", 0, 
-                        (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? 17 : 7, 
-                        &channel);
   if (status != MENU_OK)
     return status;
 
@@ -344,27 +338,22 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
                : &p_adc->differential_cal[channel];
 
   screen_clear();
-  screen_printf(0, 0, "Ch%d %s", channel, 
-                (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? "SE" : "DIFF");
-  screen_printf(1, 0, "Cal:%s", params->is_calibrated ? "YES" : "NO");
-  screen_printf(2, 0, "Press any key");
-  screen_refresh();
+
 
   while (1)
   {
     if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
     {
-      raw = (int32_t)adc_read_single_raw(channel, &err);
+      raw = (int32_t)drv_adc_single_raw_read(channel,1, &err);
     }
     else
     {
-      raw = adc_read_diff_raw(channel, &err);
+      raw = drv_adc_diff_raw_read(channel,1, &err);
     }
 
     g_current_temp = read_current_temperature();
     voltage = adc_get_compensated_value(raw, params, g_current_temp);
 
-    screen_clear();
     screen_printf(0, 0, "Ch%d RAW:%d", channel, raw);
     if (isnan(voltage))
     {
@@ -390,7 +379,7 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
   int row_count = 0;
   //int page = p_win->current_page;
   char buff[SCREEN_COLS + 1];
-  const char* message;
+
   const adc_cal_params_t* params;
   int32_t raw;
   float voltage;
@@ -411,7 +400,7 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
   for (int32_t channel = 0; channel < 18; channel++)
   {
     params = &p_adc->single_ended_cal[channel];
-    raw = (int32_t)adc_read_single_raw(channel, &err);
+    raw = (int32_t)drv_adc_single_raw_read(channel,1, &err);
     voltage = adc_get_compensated_value(raw, params, g_current_temp);
 
     if (isnan(voltage))
@@ -434,9 +423,9 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
 
 int32_t cali_setup_menu_view_summary(void)
 {
-  int32_t index;
+
   int32_t key;
-  int32_t status;
+
   screen_page_t lcd_win;
   
   screen_page_create(&lcd_win,8,20);
@@ -519,6 +508,9 @@ int32_t cali_setup_menu_view(void)
         default:
           break;
       }
+      
+      if(status == MENU_ABORT)
+        return status;
     }
     else if (key != -1)
     {
@@ -531,13 +523,12 @@ int32_t cali_setup_menu_view(void)
 
 int32_t cali_setup_menu_init(void)
 {
-  const char* confirm_menu[] = {"No", "Yes"};
   int32_t choice = 0;
   int32_t status;
 
   screen_clear();
-
-  status = input_combobox("Init Calibration?", confirm_menu,2, &choice);
+  
+  status = input_active("Init Calibration?", &choice);
 
   if (status == MENU_OK && choice == 1)
   {
@@ -599,12 +590,14 @@ int32_t setup_menu_calibration(void)
   int32_t status;
   screen_menu_t menu;
 
-  adc_init();
 
   screen_menu_create(&menu, 8, 20);
 
+  snprintf(menu.title, sizeof(menu.title), "%s", "Calibraion");
+
   while (1)
   {
+
     draw_setup_menu_calibration_page(&menu);
     screen_refresh();
 
@@ -641,7 +634,7 @@ int32_t setup_menu_calibration(void)
           break;
       }
       if(status == MENU_ABORT)
-      break;
+      return  status;
     }
     else if (key != -1)
     {

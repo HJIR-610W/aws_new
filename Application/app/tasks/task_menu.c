@@ -40,7 +40,7 @@ extern const char *generalStatusList[2];
 
 #define SCREEN_COLS 20
 #define SCREEN_ROWS 8
-#define SCREEN_OFF_TIMEOUT_MS 10000
+#define SCREEN_OFF_TIMEOUT_MS 3600000
 
 
 
@@ -454,8 +454,16 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     }
     else
     {
-      float f_data = p_kma->temperature.raw.f;
-      screen_printf_row(p_win, row_count++, "%-*s:%6.1f", AWS_WD, "TEMP", f_data);
+      if (page == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->temperature.raw.f;
+        screen_printf_row(p_win, row_count++, "%-*s:%6.1f", AWS_WD, "TEMP", f_data);
+      }
+      else
+      {
+         data = KMA_TO_TEMPERATURE(p_kma->temperature.data);
+        screen_printf_row(p_win, row_count++, "%-*s:%6.1f", AWS_WD, "TEMP", data);
+      }
     }
   }
 
@@ -583,21 +591,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "BARO", err_buf);
+      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "BAROMETER", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->pressure.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f", AWS_WD, "BARO", f_data);
+        screen_printf_row(p_win, row_count++, "%-*s:%6.1f", AWS_WD, "BAROMETER", f_data);
       }
       else
       {
         data = KMA_TO_GENERAL(p_kma->pressure.data);
         data_min = KMA_TO_GENERAL(p_kma->pressure.min);
         data_max = KMA_TO_GENERAL(p_kma->pressure.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f", AWS_WD, "BARO", data);
+        screen_printf_row(p_win, row_count++, "%-*s:%6.1f", AWS_WD, "BAROMETER", data);
       }
     }
   }
@@ -1121,9 +1129,9 @@ void menuTask(void *arg)
   int32_t key;
   int32_t page_count = 0;
   int32_t page_list[PAGE_MAX];
-  screen_page_t lcd_win;
   uint32_t start_time;
-
+  screen_page_t lcd_win;
+  
   screen_init();
   
   print_logo();

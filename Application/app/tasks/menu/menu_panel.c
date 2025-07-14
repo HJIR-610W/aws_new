@@ -97,7 +97,7 @@ int32_t setup_menu_panel(void)
         {
            choice = get_config_app()->panel_snow_active;
 
-           status = print_menu_list(enable_list_eng, _countof(enable_list_eng), &choice);
+           status = input_active("Snow Active", &choice);
            if (status != MENU_OK)
              break;
            config.panel_snow_active = (uint8_t)choice;
@@ -108,7 +108,7 @@ int32_t setup_menu_panel(void)
         case PANEL_MENU_BAROMETER:
         {
            choice = get_config_app()->panel_barometer_active;
-           status = print_menu_list(enable_list_eng, _countof(enable_list_eng), &choice);
+           status = input_active("Barometer Active", &choice);
            if (status != MENU_OK)
              break;
            config.panel_barometer_active = (uint8_t)choice;

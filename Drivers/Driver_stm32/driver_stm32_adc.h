@@ -4,7 +4,11 @@
 
 #include "driver_adc_define.h"
 
+#define STM32_ADC_SE_CH_0 0
+#define STM32_ADC_SE_CH_1 1
+#define STM32_ADC_SE_MAX 2
 
-driver_t *driver_stm32_adc_open(uint32_t num,void *opt);
+void stm32_adc_init(void);
+int32_t stm32_adc_read_single(int channel, uint16_t avgCnt, uint8_t *err);
 
 #endif

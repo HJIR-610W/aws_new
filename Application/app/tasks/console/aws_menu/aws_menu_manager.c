@@ -143,7 +143,7 @@ void config_hj_reset(void)
   config.sensor[A7_PRESSURE].type = S_T_ADC;
   sensor_add(&config.sensor[A7_PRESSURE]);
   adc_config = get_sensor_config(&config.sensor[A7_PRESSURE]);
-  adc_config->channel = single_channel++;
+  adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->highScale = 200000;
   adc_config->lowScale = 0;
@@ -155,7 +155,7 @@ void config_hj_reset(void)
   config.sensor[B1_SOLAR_RADIATION].type = S_T_ADC;
   sensor_add(&config.sensor[B1_SOLAR_RADIATION]);
   adc_config = get_sensor_config(&config.sensor[B1_SOLAR_RADIATION]);
-  adc_config->channel = single_channel++;
+  adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->highScale = 5000;  // 5v
   adc_config->lowScale = 0;      // 0v
@@ -168,7 +168,7 @@ void config_hj_reset(void)
   config.sensor[B2_SUNSHINE_DURATION].type = S_T_ADC;
   sensor_add(&config.sensor[B2_SUNSHINE_DURATION]);
   adc_config = get_sensor_config(&config.sensor[B2_SUNSHINE_DURATION]);
-  adc_config->channel = single_channel++;
+  adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->highScale = 5000;
   adc_config->lowScale = 0;
@@ -180,7 +180,7 @@ void config_hj_reset(void)
   config.sensor[B5_SOIL_TEMPERATURE_5CM].type = S_T_ADC;
   sensor_add(&config.sensor[B5_SOIL_TEMPERATURE_5CM]);
   adc_config = get_sensor_config(&config.sensor[B5_SOIL_TEMPERATURE_5CM]);
-  adc_config->channel = single_channel++;
+  adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
@@ -192,7 +192,7 @@ void config_hj_reset(void)
   config.sensor[B6_SOIL_TEMPERATURE_10CM].type = S_T_ADC;
   sensor_add(&config.sensor[B6_SOIL_TEMPERATURE_10CM]);
   adc_config = get_sensor_config(&config.sensor[B6_SOIL_TEMPERATURE_10CM]);
-  adc_config->channel = single_channel++;
+  adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
@@ -204,7 +204,7 @@ void config_hj_reset(void)
   config.sensor[B7_SOIL_TEMPERATURE_20CM].type = S_T_ADC;
   sensor_add(&config.sensor[B7_SOIL_TEMPERATURE_20CM]);
   adc_config = get_sensor_config(&config.sensor[B7_SOIL_TEMPERATURE_20CM]);
-  adc_config->channel = single_channel++;
+  adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
@@ -216,7 +216,7 @@ void config_hj_reset(void)
   config.sensor[B8_SOIL_TEMPERATURE_30CM].type = S_T_ADC;
   sensor_add(&config.sensor[B8_SOIL_TEMPERATURE_30CM]);
   adc_config = get_sensor_config(&config.sensor[B8_SOIL_TEMPERATURE_30CM]);
-  adc_config->channel = single_channel++;
+  adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
@@ -228,7 +228,7 @@ void config_hj_reset(void)
   config.sensor[B9_SOIL_TEMPERATURE_50CM].type = S_T_ADC;
   sensor_add(&config.sensor[B9_SOIL_TEMPERATURE_50CM]);
   adc_config = get_sensor_config(&config.sensor[B9_SOIL_TEMPERATURE_50CM]);
-  adc_config->channel = single_channel++;
+  adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
@@ -240,7 +240,7 @@ void config_hj_reset(void)
   config.sensor[B10_SOIL_TEMPERATURE_100CM].type = S_T_ADC;
   sensor_add(&config.sensor[B10_SOIL_TEMPERATURE_100CM]);
   adc_config = get_sensor_config(&config.sensor[B10_SOIL_TEMPERATURE_100CM]);
-  adc_config->channel = single_channel++;
+  adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
@@ -252,7 +252,7 @@ void config_hj_reset(void)
   config.sensor[B11_SOIL_TEMPERATURE_150CM].type = S_T_ADC;
   sensor_add(&config.sensor[B11_SOIL_TEMPERATURE_150CM]);
   adc_config = get_sensor_config(&config.sensor[B11_SOIL_TEMPERATURE_150CM]);
-  adc_config->channel = single_channel++;
+  adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;

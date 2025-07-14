@@ -4,7 +4,7 @@
 
 
 #include "soil_temperature.h"
-#include "driver_adc.h"
+#include "drv_adc.h"
 #include "app_sensor.h"
 #include "dev_io.h"
 #include "Sensors\general\general_adc.h"

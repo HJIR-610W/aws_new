@@ -292,7 +292,7 @@ FRESULT append_file(char *path, uint8_t *data, uint32_t dataLen)
   return res;
 }
 
-#include "ff.h"
+
 
 // 파일이 존재하면 삭제하는 함수
 FRESULT delete_file(const char *fileName)
@@ -622,7 +622,7 @@ void *get_file_sem(void)
   return g_fileSem;
 }
 
-void file_init(void)
+void filesystem_init(void)
 {
   MX_SDIO_SD_Init();
   MX_FATFS_Init();

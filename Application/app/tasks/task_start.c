@@ -83,24 +83,21 @@ void log_boot_reason(void)
  */
 void startTask(void *arg)
 {
-  drv_init();
+  drv_init();// 에플리케이션에서 사용하는 드라이버 초기화
   if(testTask_init()==true)
   {
     osThreadExit();  // 종료 시킴
   }
 
-  consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화 
+
+  consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화
   wdtTask_init();
-  mcu_interrupt_init();  // 최우선 실행
 
-
-
-  config_manager_init();// 우선 실행 
-  
   menuTask_init();
 
-  file_init();
-  logging_init();
+  config_manager_init();  // 우선 실행
+  filesystem_init();//SD카드 초기화 및 파일시스템 초기화 
+  logging_init();//운영 로그 기록 기능 초기화
 
   systemTask_init(PARA_RUN_MODE);
 
@@ -108,8 +105,8 @@ void startTask(void *arg)
   dataLogging_init();
   loggingTask_init();
 
-//  measureTask_init();
-//  dualportTask_init();
+  measureTask_init();
+  dualportTask_init();
 
 
   if (get_config_app()->cdma_active)

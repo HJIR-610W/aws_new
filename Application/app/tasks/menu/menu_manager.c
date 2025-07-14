@@ -155,7 +155,8 @@ int32_t setup_menu_reset(void)
   screen_printf(0, 0, "Device Reset?");
   screen_refresh();
 
-  status = print_menu_list(confirm_menu, 2, &choice);
+  
+  status = input_active("Reset device?",  &choice);
 
   if (status == MENU_OK && choice == 1)
   {

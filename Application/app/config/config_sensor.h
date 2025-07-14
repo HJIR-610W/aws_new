@@ -17,13 +17,15 @@
 
 #define SENSOR_ERR_CFG 2
 
-
+#define ADC_CFG_MODE_SE 0
+#define ADC_FG_MODE_DIFF 1
 
 
 typedef struct
 {
   uint8_t mode;  // 0 single, 1 diff
-  uint8_t channel;
+  uint8_t single_channel;
+  uint8_t diff_channel;
   int32_t highScale;
   int32_t lowScale;
   int32_t scale;    // 원본값에 몇배 곱해졌다의 의미 highScale 100, lowScale 0이면

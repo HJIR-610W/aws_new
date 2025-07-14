@@ -22,17 +22,17 @@ const osThreadAttr_t kTestTask_attributes = {
 
 void testTask(void *arg)
 {
-  mcu_interrupt_init();  // 최우선 실행
+  bsp_interrupt_init();  // 최우선 실행
   consoleTask_init((void *)1);
   osDelay(1000);
 
 
-  adc_init();
+
 
   systemTask_init(PARA_TEST_MODE);
   config_manager_init();
   
-  file_init();
+  filesystem_init();
 
   osThreadExit();  // 종료 시킴
 

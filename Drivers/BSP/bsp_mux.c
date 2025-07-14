@@ -3,29 +3,21 @@
 
 #include "bsp.h"
 
+#define IS_ODD_MUX_ACTIVE() (is_gpio_set(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin) == 1)
+#define IS_EVEN_MUX_ACTIVE() (is_gpio_set(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin) == 1)
+#define IS_RTD_MUX_ACTIVE() (is_gpio_set(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin) == 1)
 
-#define IS_ODD_MUX_ACTIVE() \
-  (is_gpio_set(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin) == 1)
-#define IS_EVEN_MUX_ACTIVE() \
-  (is_gpio_set(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin) == 1)
-#define IS_RTD_MUX_ACTIVE() \
-  (is_gpio_set(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin) == 1)
-
-#define ODD_MUX_DEACTIVE()                                        \
-  HAL_GPIO_WritePin(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin, \
-                    GPIO_PIN_RESET);
-#define EVEN_MUX_DEACTIVE()                                         \
-  HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin, \
-                    GPIO_PIN_RESET);
-#define RTD_MUX_DEACTIVE()                                        \
-  HAL_GPIO_WritePin(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin, \
-                    GPIO_PIN_RESET);
+#define ODD_MUX_DEACTIVE() \
+  HAL_GPIO_WritePin(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin, GPIO_PIN_RESET);
+#define EVEN_MUX_DEACTIVE() \
+  HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin, GPIO_PIN_RESET);
+#define RTD_MUX_DEACTIVE() \
+  HAL_GPIO_WritePin(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin, GPIO_PIN_RESET);
 
 #define ODD_MUX_ACTIVE() \
   HAL_GPIO_WritePin(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin, GPIO_PIN_SET);
-#define EVEN_MUX_ACTIVE()                                           \
-  HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin, \
-                    GPIO_PIN_SET);
+#define EVEN_MUX_ACTIVE() \
+  HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin, GPIO_PIN_SET);
 #define RTD_MUX_ACTIVE() \
   HAL_GPIO_WritePin(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin, GPIO_PIN_SET);
 
@@ -53,20 +45,17 @@ void adc_single_mux_set(uint16_t channel)
     // odd mux enable
     if (is_gpio_set(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin) == 0)
     {
-      HAL_GPIO_WritePin(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin,
-                        GPIO_PIN_SET);
+      HAL_GPIO_WritePin(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin, GPIO_PIN_SET);
     }
     // even mux disable
     if (is_gpio_set(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin) == 1)
     {
-      HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin,
-                        GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin, GPIO_PIN_RESET);
     }
     // rtd mux disable
     if (is_gpio_set(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin) == 1)
     {
-      HAL_GPIO_WritePin(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin,
-                        GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin, GPIO_PIN_RESET);
     }
   }
 
@@ -75,20 +64,17 @@ void adc_single_mux_set(uint16_t channel)
     // odd mux disable
     if (is_gpio_set(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin) == 1)
     {
-      HAL_GPIO_WritePin(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin,
-                        GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin, GPIO_PIN_RESET);
     }
     // even mux enable
     if (is_gpio_set(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin) == 0)
     {
-      HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin,
-                        GPIO_PIN_SET);
+      HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin, GPIO_PIN_SET);
     }
     // rtd mux disable
     if (is_gpio_set(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin) == 1)
     {
-      HAL_GPIO_WritePin(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin,
-                        GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin, GPIO_PIN_RESET);
     }
   }
 
@@ -97,29 +83,24 @@ void adc_single_mux_set(uint16_t channel)
     // odd mux disable
     if (is_gpio_set(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin) == 1)
     {
-      HAL_GPIO_WritePin(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin,
-                        GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin, GPIO_PIN_RESET);
     }
     // even mux enable
     if (is_gpio_set(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin) == 1)
     {
-      HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin,
-                        GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin, GPIO_PIN_RESET);
     }
     // rtd mux disable
     if (is_gpio_set(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin) == 0)
     {
-      HAL_GPIO_WritePin(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin,
-                        GPIO_PIN_SET);
+      HAL_GPIO_WritePin(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin, GPIO_PIN_SET);
     }
   }
 
   // 채널 선택
-  GPIO_TypeDef *portList[3] = {OUT_ADC_SEL_A0_GPIO_Port,
-                               OUT_ADC_SEL_A1_GPIO_Port,
+  GPIO_TypeDef *portList[3] = {OUT_ADC_SEL_A0_GPIO_Port, OUT_ADC_SEL_A1_GPIO_Port,
                                OUT_ADC_SEL_A2_GPIO_Port};
-  uint16_t pinList[3] = {OUT_ADC_SEL_A0_Pin, OUT_ADC_SEL_A1_Pin,
-                         OUT_ADC_SEL_A2_Pin};
+  uint16_t pinList[3] = {OUT_ADC_SEL_A0_Pin, OUT_ADC_SEL_A1_Pin, OUT_ADC_SEL_A2_Pin};
 
   for (int i = 0; i < 3; i++)
   {
@@ -151,11 +132,9 @@ void adc_single_mux_set(uint16_t channel)
  */
 void mux_set(uint8_t add)
 {
-  GPIO_TypeDef *portList[3] = {OUT_ADC_SEL_A0_GPIO_Port,
-                               OUT_ADC_SEL_A1_GPIO_Port,
+  GPIO_TypeDef *portList[3] = {OUT_ADC_SEL_A0_GPIO_Port, OUT_ADC_SEL_A1_GPIO_Port,
                                OUT_ADC_SEL_A2_GPIO_Port};
-  uint16_t pinList[3] = {OUT_ADC_SEL_A0_Pin, OUT_ADC_SEL_A1_Pin,
-                         OUT_ADC_SEL_A2_Pin};
+  uint16_t pinList[3] = {OUT_ADC_SEL_A0_Pin, OUT_ADC_SEL_A1_Pin, OUT_ADC_SEL_A2_Pin};
 
   for (int i = 0; i < 3; i++)
   {
@@ -213,28 +192,28 @@ void adc_mux_init(void)
 {
   // ADC 채널 MUX 초기화화
 
-  board_config_gpio(OUT_ADC_SEL_A0_GPIO_Port, OUT_ADC_SEL_A0_Pin,
-                    GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(OUT_ADC_SEL_A0_GPIO_Port, OUT_ADC_SEL_A0_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                    GPIO_SPEED_FREQ_LOW, 0);
   board_set_gpio(OUT_ADC_SEL_A0_GPIO_Port, OUT_ADC_SEL_A0_Pin, GPIO_PIN_RESET);
 
-  board_config_gpio(OUT_ADC_SEL_A1_GPIO_Port, OUT_ADC_SEL_A1_Pin,
-                    GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(OUT_ADC_SEL_A1_GPIO_Port, OUT_ADC_SEL_A1_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                    GPIO_SPEED_FREQ_LOW, 0);
   board_set_gpio(OUT_ADC_SEL_A1_GPIO_Port, OUT_ADC_SEL_A1_Pin, GPIO_PIN_RESET);
 
-  board_config_gpio(OUT_ADC_SEL_A2_GPIO_Port, OUT_ADC_SEL_A2_Pin,
-                    GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(OUT_ADC_SEL_A2_GPIO_Port, OUT_ADC_SEL_A2_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                    GPIO_SPEED_FREQ_LOW, 0);
   board_set_gpio(OUT_ADC_SEL_A2_GPIO_Port, OUT_ADC_SEL_A2_Pin, GPIO_PIN_RESET);
 
   // odd even rtc 중 선택 mux 초기화
   board_set_gpio(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin, GPIO_PIN_SET);
-  board_config_gpio(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin,
-                    GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(OUT_ADC_EN_ODD_GPIO_Port, OUT_ADC_EN_ODD_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                    GPIO_SPEED_FREQ_LOW, 0);
 
   board_set_gpio(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin, GPIO_PIN_SET);
-  board_config_gpio(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin,
-                    GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(OUT_ADC_EN_EVEN_GPIO_Port, OUT_ADC_EN_EVEN_Pin, GPIO_MODE_OUTPUT_PP,
+                    GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
   board_set_gpio(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin, GPIO_PIN_SET);
-  board_config_gpio(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin,
-                    GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(OUT_ADC_EN_RTD_GPIO_Port, OUT_ADC_EN_RTD_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                    GPIO_SPEED_FREQ_LOW, 0);
 }

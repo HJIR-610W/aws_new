@@ -88,7 +88,7 @@ void rain_hall_callback(void *arg)
 
 void rain_init(uint32_t num)
 {
-  driver_t *rain_pulse;
+
   di_isr_set_cfg_t isr_cfg;
 
   g_rainSemId = osSemaphoreNew(1, 1, NULL); 

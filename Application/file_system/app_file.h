@@ -10,7 +10,7 @@
 #define MAX_FILENAME_LEN 100  // 반환할 파일 이름의 최대 길이
 #define MAX_FILES_TO_FIND 1   // 찾을 파일의 최대 개수 (결과를 저장할 배열의 크기)
 
-void file_init(void);
+void filesystem_init(void);
 
 FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset);
 FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset);

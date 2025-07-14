@@ -160,7 +160,8 @@ int32_t setup_menu_system(void)
       break;
       case SYSTEM_MENU_CHARGER:
       {
-        status = print_menu_list(g_chargerList_lcd,_countof(g_chargerList_lcd),&choice);
+        choice = get_config_app()->charger_model;
+        status = input_combobox("Charger",g_chargerList_lcd,_countof(g_chargerList_lcd),&choice);
         if (status != MENU_OK)
           break;
       config.charger_model = (eCHARGER_MODEL_t)choice;

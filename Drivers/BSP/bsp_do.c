@@ -22,7 +22,7 @@ typedef struct bsp_do_inst_s
                                         .port = DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port},
     [BSP_DO_POWER_RAIN_DECT_ANALOG] = {.init = {.Pin = DO_CON_PWR_RAIN_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
                                        .port = DO_CON_PWR_RAIN_GPIO_Port},
-    [BSP_DO_ADC_NCS] = {.init = {.Pin = OUT_SPI2_NSS_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
+    [BSP_DO_ADC_NCS] = {.init = {.Pin = OUT_SPI2_NSS_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_PULLUP, .Speed = GPIO_SPEED_FREQ_HIGH},
                         .port = OUT_SPI2_NSS_GPIO_Port},
     [BSP_DO_FRAM_CS] = {.init = {.Pin = OUT_SPI1_NSS_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
                         .port = OUT_SPI1_NSS_GPIO_Port},

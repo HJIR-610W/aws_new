@@ -12,9 +12,13 @@ typedef struct bsp_di_inst_s
 {
   GPIO_InitTypeDef init;
   GPIO_TypeDef *port;
+  bool opened;
 } bsp_di_inst_t;
 
-const bsp_di_inst_t di_inst[BSP_DI_QUAD_UARTD_8+1] = {
+const bsp_di_inst_t di_inst[BSP_DI_QUAD_UARTD_8 + 1] = {
+
+    [BSP_DI_0_ADC_RDY] = {.init = {.Pin = IN_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
+                          .port = IN_SPI2_DRDY_GPIO_Port},
     [BSP_DI_USER_BTN] = {.init = {.Pin = DI_SW_SYS_Pin, .Pull = GPIO_PULLUP},
                          .port = DI_SW_SYS_GPIO_Port},
     [BSP_DI_RAIN_REED] = {.init = {.Pin = IN_RAIN_REED_Pin, .Pull = GPIO_PULLUP},
@@ -58,37 +62,41 @@ void bsp_di_init(void)
 {
   for (int di_num = 0; di_num < BSP_DI_MCU_MAX; di_num++)
   {
-    switch (di_num)
-    {
-      case BSP_DI_USER_BTN:
-      case BSP_DI_RAIN_REED:
-      case BSP_DI_RAIN_HALL:
-      case BSP_DI_RAIN_HALL_ERR:
-      case BSP_DI_RAIN_DETECT:
-      case BSP_DI_QUAD_UARTA_1:
-      case BSP_DI_QUAD_UARTB_2:
-      case BSP_DI_QUAD_UARTC_3:
-      case BSP_DI_QUAD_UARTD_4:
-      case BSP_DI_QUAD_UARTA_5:
-      case BSP_DI_QUAD_UARTB_6:
-      case BSP_DI_QUAD_UARTC_7:
-      case BSP_DI_QUAD_UARTD_8:
-        bsp_di_gpio_init(di_num);
-        break; 
-      case BSP_DI_0:
-      case BSP_DI_1:
-      case BSP_DI_2:
-      case BSP_DI_3:
-      case BSP_DI_4:
-      case BSP_DI_5:
-      case BSP_DI_6:
-      case BSP_DI_7:
-       pcf8575_init();
-      break;
+    if (di_inst[di_num].opened)
+    continue;
+    
+      switch (di_num)
+      {
+        case BSP_DI_0_ADC_RDY:
+        case BSP_DI_USER_BTN:
+        case BSP_DI_RAIN_REED:
+        case BSP_DI_RAIN_HALL:
+        case BSP_DI_RAIN_HALL_ERR:
+        case BSP_DI_RAIN_DETECT:
+        case BSP_DI_QUAD_UARTA_1:
+        case BSP_DI_QUAD_UARTB_2:
+        case BSP_DI_QUAD_UARTC_3:
+        case BSP_DI_QUAD_UARTD_4:
+        case BSP_DI_QUAD_UARTA_5:
+        case BSP_DI_QUAD_UARTB_6:
+        case BSP_DI_QUAD_UARTC_7:
+        case BSP_DI_QUAD_UARTD_8:
+          bsp_di_gpio_init(di_num);
+          break;
+        case BSP_DI_0:
+        case BSP_DI_1:
+        case BSP_DI_2:
+        case BSP_DI_3:
+        case BSP_DI_4:
+        case BSP_DI_5:
+        case BSP_DI_6:
+        case BSP_DI_7:
+          pcf8575_init();
+          break;
 
-      default:
-        break;
-    }
+        default:
+          break;
+      }
   }
 }
 
@@ -96,6 +104,7 @@ int32_t bsp_di_read(int32_t di_number)
 {
   switch (di_number)
   {
+    case BSP_DI_0_ADC_RDY:
     case BSP_DI_USER_BTN:
     case BSP_DI_RAIN_REED:
     case BSP_DI_RAIN_HALL:
@@ -260,6 +269,7 @@ void bsp_di_set_interrupt(int di_number, di_isr_set_cfg_t *isr_cfg)
   uint16_t pin;
   switch (di_number)
   {
+    case BSP_DI_0_ADC_RDY:
     case BSP_DI_USER_BTN:
     case BSP_DI_RAIN_REED:
     case BSP_DI_RAIN_HALL:

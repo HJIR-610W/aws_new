@@ -5,12 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cmsis_os2.h"
+
 
 #include "app_file.h"
 #include "config_nvm.h"
 #include "util_time.h"
-
+#include "os_user_def.h"
 
 
 const char *kSystem_log_path = "0:System/log.txt";

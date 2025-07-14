@@ -17,5 +17,5 @@ typedef struct exti_isr_cfg_s
 }exti_isr_cfg_t;
 
 void exti_register(exti_isr_cfg_t *cfg);
-void mcu_interrupt_init(void);
+void bsp_interrupt_init(void);
 #endif
