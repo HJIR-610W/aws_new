@@ -9,7 +9,7 @@
 
 #include "st7920.h"
 #include <string.h>
-#include "driver_stm32_spi.h"
+#include "bsp_spi.h"
 #include "bsp_do.h"
 #include "pcb_define.h"
 #include "driver_lcd_define.h"
@@ -61,7 +61,7 @@ volatile uint8_t* p_lcd_data = (volatile uint8_t*)LCD_DATA_ADDRESS;
 
 typedef struct
 {
-  driver_t *spi_io;
+  int spi_num;
   int cs_do_num;  // CS는 active high
   int rst_do_num;
   bool initialized;
@@ -100,7 +100,7 @@ inline void st7920_delay_ms(uint32_t ms)
 
 inline void st7920_delay_us(uint32_t us_delay)
 {
-  usDelay(us_delay);
+  bsp_us_delay(us_delay);
 }
 
 void st7920_gpio_init(void)
@@ -415,19 +415,20 @@ driver_t *st7920_open(void)
     }
 
 #if ST7920_SPI_USE
-    st7920_instance.spi_io = driver_spi_open(STM_SPI_1);
-    if(!st7920_instance.spi_io)
+    st7920_instance.spi_num = BSP_SPI_1;
+    if(!st7920_instance.spi_num)
     {
         return NULL;
     }
 
-    st7920_instance.cs_do_num = driver_do_open(DO_LCD_CS, NULL);
+    st7920_instance.cs_do_num = DO_LCD_CS;
     if(!st7920_instance.cs_do_num)
     {
         return NULL;
     }
-    
-    bsp_do_high(st7920_instance.cs_do_num);
+
+    bsp_spi_init(st7920_instance.spi_num);
+     bsp_do_high(st7920_instance.cs_do_num);
 #endif
 
 #if ST7920_GPIO_USE
@@ -517,9 +518,9 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
     st7920_delay_us(1);
     
     // 3바이트 시리얼 프로토콜
-    driver_spi_send_byte(cfg->spi_io, sync);                    // 동기 바이트 (0xF8 or 0xFA)
-    driver_spi_send_byte(cfg->spi_io, data & 0xF0);            // 상위 4비트
-    driver_spi_send_byte(cfg->spi_io, (data << 4) & 0xF0);     // 하위 4비트
+    bsp_spi_send_byte(cfg->spi_num, sync);                    // 동기 바이트 (0xF8 or 0xFA)
+    bsp_spi_send_byte(cfg->spi_num, data & 0xF0);            // 상위 4비트
+    bsp_spi_send_byte(cfg->spi_num, (data << 4) & 0xF0);     // 하위 4비트
     
     bsp_do_low(cfg->cs_do_num);   // CS LOW (비활성화)
     st7920_delay_us(100);        // 명령 처리 대기

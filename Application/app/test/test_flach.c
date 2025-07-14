@@ -2,23 +2,18 @@
 #include <string.h>  // for memcmp
 
 #include "dev_io.h"
-#include "driver_flash.h"
+#include "drv_flash.h"
 
 #define TEST_ADDR 0
 #define TEST_SIZE 600
 
 void test_flash(void)
 {
-  driver_t *flash;
+
   uint8_t write_data[TEST_SIZE] ;
   uint8_t read_data[TEST_SIZE] = {0};
 
-  flash = driver_flash_open(FALSH_AT45DB);
-  if (flash == NULL)
-  {
-    io_printf("Flash 드라이버 열기 실패\r\n");
-    return;
-  }
+
 
   for (int i = 0; i < TEST_SIZE;i++)
   {
@@ -29,7 +24,7 @@ void test_flash(void)
 
 
   // 읽기
-  driver_flash_read(flash, TEST_ADDR, read_data, sizeof(read_data), sizeof(read_data));
+  drv_flash_read( TEST_ADDR, read_data, sizeof(read_data), sizeof(read_data));
 
 
   // 비교

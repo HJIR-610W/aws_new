@@ -9,13 +9,13 @@
 #include "app_dataLogging.h"
 #include "app_file.h"
 #include "app_logging.h"
-
-#include "old_aws_define.h"
-#include "util_time.h"
 #include "dev_io.h"
-#include "system_err.h"
 #include "fatfs.h"
+#include "old_aws_define.h"
 #include "os_user_def.h"
+#include "system_err.h"
+#include "util_time.h"
+
 typedef enum logging_cmd_e
 {
   eLOGGING_LOG,      // 로깅 task로 로그를 전송 할 때 사용

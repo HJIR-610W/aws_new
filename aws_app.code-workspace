@@ -79,7 +79,12 @@
 			"drv_do.h": "c",
 			"driver_lcd_define.h": "c",
 			"pcf8575.h": "c",
-			"driver_stm32_i2c.h": "c"
+			"driver_stm32_i2c.h": "c",
+			"bsp_spi.h": "c",
+			"task.h": "c",
+			"fm25cl.h": "c",
+			"app_logging.h": "c",
+			"at45db.h": "c"
 		}
 	}
 }

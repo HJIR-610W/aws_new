@@ -3,7 +3,7 @@
 
 
 #include "config_define.h"
-#include "app_fram.h"
+#include "drv_fram.h"
 
 
 typedef struct adc_calibraion_s
@@ -23,10 +23,9 @@ typedef struct adc_cali_s
   adc_calibraion_t diff[8];
 } config_adc_t;
 
-#define WRITE_ADC(x)                                                                       \
-  fram_write((uint32_t)OFFSET_OF_STRUCT(config_adc_t, x), (uint8_t *)&g_config_adc.x, \
-             sizeof(g_config_adc.x));
-
+#define WRITE_ADC(x)                                                                      \
+  drv_fram_write((uint32_t)OFFSET_OF_STRUCT(config_adc_t, x), (uint8_t *)&g_config_adc.x, \
+                 sizeof(g_config_adc.x));
 
 extern config_adc_t g_config_adc;
 

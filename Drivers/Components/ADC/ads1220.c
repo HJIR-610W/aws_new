@@ -7,19 +7,19 @@
 #include "bsp_di.h"
 #include "bsp_do.h"
 #include "bsp_interrupt.h"
-#include "cmsis_os2.h"
+#include "cmsis_os.h"
 #include "dev_io.h"
 #include "driver_adc.h"
 #include "driver_adc_define.h"
 #include "driver_mux.h"
-#include "driver_stm32_spi.h"
+#include "bsp_spi.h"
 #include "os_user_def.h"
 #include "system_err.h"
 #include "util_memory.h"
 
 typedef struct ads1220_cfg_s
 {
-  driver_t *spi_io;
+  int spi_num;
   int cs_do_num;
   int irq_di_num;
   void *sem;
@@ -343,24 +343,24 @@ void write_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs,uint8_t *pData
     ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
 
 
-    driver_spi_pend_sem(cfg->spi_io);
+    bsp_spi_pend_sem(cfg->spi_num);
 
     bsp_do_low(cfg->cs_do_num);
 
-    usDelay(50);
+    bsp_us_delay(50);
 
     data = ADS1220_CMD_WREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03));
  
-    driver_spi_send_byte(cfg->spi_io,data);
+    bsp_spi_send_byte(cfg->spi_num,data);
 
     for (i=0; i< numRegs; i++)
     {
-        driver_spi_send_byte(cfg->spi_io,*pData++);
+        bsp_spi_send_byte(cfg->spi_num,*pData++);
     }
    
     bsp_do_high( cfg->cs_do_num);
 
-    driver_spi_post_sem(cfg->spi_io);
+    bsp_spi_post_sem(cfg->spi_num);
 }
 
 void read_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff)
@@ -370,25 +370,25 @@ void read_reg(driver_t *drv,uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff
     uint8_t data;
     ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
 
-    driver_spi_pend_sem(cfg->spi_io);
+    bsp_spi_pend_sem(cfg->spi_num);
 
     bsp_do_low(cfg->cs_do_num);
 
-    usDelay(50);
+    bsp_us_delay(50);
     
     data = (ADS1220_CMD_RREG | (((startAddress<<2) & 0x0c) |((numRegs-1)&0x03)));
 
-    driver_spi_send_byte(cfg->spi_io,data);
+    bsp_spi_send_byte(cfg->spi_num,data);
 
     for (i=0; i< numRegs; i++)
     {
-        val = driver_spi_read_byte(cfg->spi_io);
+        val = bsp_spi_read_byte(cfg->spi_num);
         *pBuff++ = val;
     }
    
     bsp_do_high( cfg->cs_do_num);
     
-    driver_spi_post_sem(cfg->spi_io);
+    bsp_spi_post_sem(cfg->spi_num);
 
 }
 
@@ -396,16 +396,16 @@ void ads1220_start_conv(driver_t *drv)
 {
     ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
 
-    driver_spi_pend_sem(cfg->spi_io);
+    bsp_spi_pend_sem(cfg->spi_num);
 
     bsp_do_low( cfg->cs_do_num);
     
-    usDelay(50);
-    driver_spi_send_byte(cfg->spi_io,ADS1220_CMD_SYNC);
+    bsp_us_delay(50);
+    bsp_spi_send_byte(cfg->spi_num,ADS1220_CMD_SYNC);
    
     bsp_do_high( cfg->cs_do_num);
     
-   driver_spi_post_sem(cfg->spi_io);
+   bsp_spi_post_sem(cfg->spi_num);
     
 }
 
@@ -445,15 +445,15 @@ void ads1220_reset_sw(driver_t *drv)
 {
     ads1220_cfg_t *cfg=(ads1220_cfg_t*)drv->cfg;
 
-    driver_spi_pend_sem(cfg->spi_io);
+    bsp_spi_pend_sem(cfg->spi_num);
 
     bsp_do_low(cfg->cs_do_num);
 
-    driver_spi_send_byte(cfg->spi_io,ADS1220_CMD_RESET);
+    bsp_spi_send_byte(cfg->spi_num,ADS1220_CMD_RESET);
 
     bsp_do_high(cfg->cs_do_num);
 
-    driver_spi_post_sem(cfg->spi_io);
+    bsp_spi_post_sem(cfg->spi_num);
 }
 
 /**
@@ -495,14 +495,14 @@ int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
         return 0;
     }
 
-    driver_spi_pend_sem(cfg->spi_io);
+    bsp_spi_pend_sem(cfg->spi_num);
     bsp_do_low(cfg->cs_do_num);
     //이 명령어 전송되면 drdy 핀 올라감
-    driver_spi_send_byte(cfg->spi_io,ADS1220_CMD_RDATA);
+    bsp_spi_send_byte(cfg->spi_num,ADS1220_CMD_RDATA);
 
-    data = driver_spi_read_byte(cfg->spi_io);
-    data = (data << 8) |driver_spi_read_byte(cfg->spi_io);
-    data = (data << 8) |driver_spi_read_byte(cfg->spi_io);
+    data = bsp_spi_read_byte(cfg->spi_num);
+    data = (data << 8) |bsp_spi_read_byte(cfg->spi_num);
+    data = (data << 8) |bsp_spi_read_byte(cfg->spi_num);
 
     if (data & 0x00800000)
     {
@@ -511,7 +511,7 @@ int32_t ads1220_read_adc(driver_t *drv,uint8_t *err)
 
     bsp_do_high( cfg->cs_do_num);
     *err = 0;
-    driver_spi_post_sem(cfg->spi_io);
+    bsp_spi_post_sem(cfg->spi_num);
     
     return data;
 }
@@ -649,7 +649,7 @@ driver_t *ads1220_open(uint32_t num,void *pot)
 
   ads1220_driver.name = "ADC_ADS1220";
 
-  ads1220_cfg.spi_io = driver_spi_open(STM_SPI_2);
+  ads1220_cfg.spi_num = BSP_SPI_2;
   ads1220_cfg.cs_do_num  = BSP_DO_ADC_NCS;
   ads1220_cfg.irq_di_num = BSP_DI_0_ADC_RDY;
 
@@ -660,6 +660,8 @@ driver_t *ads1220_open(uint32_t num,void *pot)
   {
     ads1220_driver.sem = osSemaphoreNew(1, 1, NULL); 
   }
+  
+  bsp_spi_init(ads1220_cfg.spi_num);
 
   adc_mux_init();
   ads1210_init(&ads1220_driver);

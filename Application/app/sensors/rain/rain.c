@@ -101,7 +101,7 @@ void rain_init(uint32_t num)
     isr_cfg.name    = "rain_pulse";
     isr_cfg.trigger = eDI_FALLING;
     isr_cfg.prio    = 5;
-    drv_di_set_interrupt(DI_RAIN_REED, &isr_cfg);
+    drv_di_set_interrupt(DRV_DI_RAIN_REED, &isr_cfg);
   break;
   
   case RAIN_HALL_05MM:
@@ -110,7 +110,7 @@ void rain_init(uint32_t num)
     isr_cfg.name    = "rain_hall";
     isr_cfg.trigger = eDI_FALLING;
     isr_cfg.prio    = 5;
-    drv_di_set_interrupt(DI_RAIN_HALL, &isr_cfg);
+    drv_di_set_interrupt(DRV_DI_RAIN_HALL, &isr_cfg);
     break;
   }
 }
@@ -119,7 +119,7 @@ void rain_init(uint32_t num)
 
 int32_t read_rainHallErr(void)
 {
-  if (drv_di_read(DI_RAIN_HALL_ERR))
+  if (drv_di_read(DRV_DI_RAIN_HALL_ERR))
   {
     return 0;
   }

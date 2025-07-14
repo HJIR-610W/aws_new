@@ -3,17 +3,17 @@
 
 #include <string.h>
 
-#include "driver_stm32_i2c.h"
+
 #include "os_user_def.h"
 #include "system_err.h"
-
+#include "bsp_i2c.h"
 #define PCF8575_0X20 0
 #define PCF8575_MAX 1
 
 typedef struct pcf8575_instance_s
 {
   bool opened;
-  void *i2c_io;
+  int i2c_num;
   void *sem;
   uint16_t address;
   uint16_t dir;  // 핀 방향: 1=INPUT(읽기), 0=OUTPUT(쓰기)
@@ -44,7 +44,7 @@ pcf8575_result_t pcf8575_write_port(int number, uint16_t port_data)
   data[0] = (uint8_t)(port_data & 0xFF);
   data[1] = (uint8_t)((port_data >> 8) & 0xFF);
 
-  result = stm32_i2c_send_byte(pcf8575_inst[number].i2c_io, pcf8575_inst[number].address, data, 2);
+  result = bsp_i2c_send_byte(pcf8575_inst[number].i2c_num, pcf8575_inst[number].address, data, 2);
   
   if(result == 0)
   {
@@ -68,7 +68,7 @@ pcf8575_result_t pcf8575_read_port(int number, uint16_t *port_data)
 
   OS_PEND_SEM(pcf8575_inst[number].sem, osWaitForever);
 
-  result = stm32_i2c_recv_byte(pcf8575_inst[number].i2c_io, pcf8575_inst[number].address, data, 2);
+  result = bsp_i2c_recv_byte(pcf8575_inst[number].i2c_num, pcf8575_inst[number].address, data, 2);
   
   if(result == 0)
   {
@@ -222,16 +222,14 @@ int32_t pcf8575_read_pin(int number)
 pcf8575_result_t pcf8575_init(void)
 {
   pcf8575_result_t result;
-  i2c_open_opt_t i2c_open_opt;
-
 
   if (pcf8575_inst[PCF8575_0X20].opened)
   {
     return PCF8575_OK;  
   }
 
-  i2c_open_opt.freq = 400000;
-  pcf8575_inst[PCF8575_0X20].i2c_io = driver_stm32_i2c_open(STM32_I2C_2, &i2c_open_opt);
+
+  pcf8575_inst[PCF8575_0X20].i2c_num = STM32_I2C_2;
 
 
   pcf8575_inst[PCF8575_0X20].pin[0] = DI_PCF8575_0;
@@ -269,6 +267,8 @@ pcf8575_result_t pcf8575_init(void)
   uint16_t initial_state =
       pcf8575_inst[PCF8575_0X20].initial_output | pcf8575_inst[PCF8575_0X20].dir;
 
+  bsp_i2c_init(pcf8575_inst[PCF8575_0X20].i2c_num);
+  
   result = pcf8575_write_port(PCF8575_0X20, initial_state);
   if (result != PCF8575_OK)
   {

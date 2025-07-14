@@ -25,6 +25,7 @@
 #include "vt100_command.h"
 #include "util_stdio.h"
 #include "task_system.h"
+#include "drv_system.h"
 const char *linkStatusList[3] = {"-", "UP", "DOWN"};
 const char *doorStatusList[2] = {"닫힘", "열림"};
 const char *generalStatusList[2] = {"정상", "비정상"};
@@ -124,7 +125,7 @@ void draw_system(win_t* p_win)
       win_printf_row(p_win, row_count++, "%s: %s", m_l("저장 기능",SYSTEM_WD), message);
 
       win_printf_row(p_win, row_count++, "%s: %.1f", m_l("장비 전원V", SYSTEM_WD),
-                     bsp_read_battery());
+                     drv_system_read(DRV_SYS_BATTERY));
 
       win_printf_row(p_win, row_count++, "%s: %.1f", m_l("장비 온도C",SYSTEM_WD), bsp_read_temperature());
 

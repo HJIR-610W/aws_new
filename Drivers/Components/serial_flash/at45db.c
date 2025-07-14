@@ -4,14 +4,11 @@
 
 #include <string.h>
 
-#include "cmsis_os.h"
+#include "bsp_delay.h"
 #include "bsp_do.h"
-#include "driver_flash_define.h"
-#include "driver_stm32_spi.h"
+#include "bsp_spi.h"
 #include "os_user_def.h"
 #include "system_err.h"
-#include "bsp_delay.h"
-
 
 // AT45DB Command Definitions
 #define AT45DB_CMD_DEVICE_ID                0x9F    // Read Device ID
@@ -60,74 +57,60 @@
 #define STATUS_REGISTER                    AT45DB_CMD_STATUS_REGISTER
 #define BYTE_DUMMY 				0x00 			// Dummy Byte
 
-typedef struct ad45db_cfg_s
+typedef struct ad45db_instance_s
 {
-  driver_t *spi_io;
-  int cs_do_num;
   at45db_chip_info_t chip_info;
+  int spi_num;
+  int cs_do_num;
+  void *sem;
+  bool opened;
+} at45db_instance_t;
 
-} at45db_cfg_t;
 
 
-// Forward declarations - Core driver functions
-int32_t at45db_write(driver_t *drv, uint32_t offset, uint8_t *pData, uint32_t dataLen);
-void at45db_read(driver_t *drv, uint32_t offset, uint8_t *pBuff, uint32_t buffSize,
+int32_t at45db_write( uint32_t offset, uint8_t *pData, uint32_t dataLen);
+void at45db_read( uint32_t offset, uint8_t *pBuff, uint32_t buffSize,
                  uint32_t readLen) ;
-void at45db_read_page(driver_t *drv, uint32_t ReadAddr, uint8_t *readbuff);
-void at45db_write_page(driver_t *drv, uint32_t WriteAddr, uint8_t *writebuff);
-at45db_result_t at45db_init(driver_t *drv);
-
-// Forward declarations - Internal hardware functions
+void at45db_read_page( uint32_t ReadAddr, uint8_t *readbuff);
+void at45db_write_page( uint32_t WriteAddr, uint8_t *writebuff);
 static void at45db_delay(uint32_t usec);
-static void at45db_write_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t address, const char *string, uint32_t buf_len);
-static void at45db_page_write_cmd(driver_t *drv, uint32_t page);
-static void at45db_buffer_to_memory(driver_t *drv, uint8_t buffer_choice, uint32_t page);
-static void at45db_reg_read(driver_t *drv, uint8_t cmd, uint8_t *info, uint8_t len);
-static void at45db_reg_write(driver_t *drv, uint8_t *cmd);
-static void at45db_wait_ready(driver_t *drv);
-static void at45db_memory_to_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t page);
-static void at45db_read_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t address, char *string, uint16_t buf_len);
-
-// Forward declarations - Utility functions
+static void at45db_write_buffer( uint8_t buffer_choice, uint32_t address, const char *string, uint32_t buf_len);
+static void at45db_page_write_cmd( uint32_t page);
+static void at45db_buffer_to_memory( uint8_t buffer_choice, uint32_t page);
+static void at45db_reg_read( uint8_t cmd, uint8_t *info, uint8_t len);
+static void at45db_reg_write( uint8_t *cmd);
+static void at45db_wait_ready(void);
+static void at45db_memory_to_buffer( uint8_t buffer_choice, uint32_t page);
+static void at45db_read_buffer( uint8_t buffer_choice, uint32_t address, char *string, uint16_t buf_len);
 at45db_result_t at45db_find_device_info(uint8_t density_code, at45db_device_info_t *device_info);
 at45db_result_t at45db_parse_chip_info(uint8_t *chip_info, at45db_chip_info_t *info);
 
+at45db_result_t at45db_initialize(void);
 
-const static flash_api_t at45db_api = {
-      .read_page = at45db_read_page,
-      .write_page = at45db_write_page,
-      .write = at45db_write,
-      .read = at45db_read
-    };
+static at45db_instance_t at45db_inst;
 
-static driver_t ad45db;
-static at45db_cfg_t cfg;
-
-driver_t *at45db_open(int32_t num)
+void at45db_init(void)
 {
-  if (ad45db.opened)
+  if (at45db_inst.opened)
   {
-    return &ad45db;
+    return ;
   }
 
-  ad45db.opened = true;
-  ad45db.api = &at45db_api;
-  ad45db.cfg = &cfg;
-  ad45db.instance_id = num;
-  ad45db.driver_type = eDRIVER_FLASH;
-  ad45db.name = "at45db";
+  at45db_inst.opened = true;
+  at45db_inst.spi_num = BSP_SPI_1;               
+  at45db_inst.cs_do_num  = BSP_DO_FLASH_CS;
 
-  cfg.spi_io = driver_spi_open(STM_SPI_1);               
-  cfg.cs_do_num  = BSP_DO_FLASH_CS;           
+  OS_CREATE_BINARY_SEM(at45db_inst.sem);
+  bsp_spi_init(at45db_inst.spi_num);
 
-  OS_CREATE_BINARY_SEM(ad45db.sem);
-
-  if (at45db_init(&ad45db) != AT45DB_OK) {
+  if (at45db_initialize() != AT45DB_OK)
+  {
     DEBUG_PRINTF("Error: AT45DB initialization failed\r\n");
-    ad45db.opened = false;
-    return NULL;
+    at45db_inst.opened = false;
+    return ;
   }
-  return &ad45db;
+
+  at45db_inst.opened = true;
 }
 
 
@@ -150,7 +133,7 @@ static const at45db_device_info_t at45db_device_table[] = {
 
 static void at45db_delay(uint32_t usec)
 {
-  usDelay(usec);
+  bsp_us_delay(usec);
 }
 
 
@@ -162,17 +145,17 @@ static void at45db_delay(uint32_t usec)
  * @param string: Data to write
  * @param buf_len: Length of data to write
  */
-static void at45db_write_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t address, const char *string, uint32_t buf_len)
+static void at45db_write_buffer( uint8_t buffer_choice, uint32_t address, const char *string, uint32_t buf_len)
 {
-  at45db_cfg_t *cfg=(at45db_cfg_t*)drv->cfg;
+
 
   uint8_t szCmd[4];
 
-  driver_spi_pend_sem(cfg->spi_io);
+  bsp_spi_pend_sem(at45db_inst.spi_num);
   
 
 
-  bsp_do_low(cfg->cs_do_num);
+  bsp_do_low(at45db_inst.cs_do_num);
 
   if(buffer_choice == AT45DB_BUFFER2)
   {
@@ -187,27 +170,27 @@ static void at45db_write_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t a
   szCmd[2] = (uint8_t)((address>>8) & AT45DB_ADDR_HIGH_MASK);
   szCmd[3] = (uint8_t)address;
 
-  driver_spi_send_bytes(cfg->spi_io,szCmd,4);
+  bsp_spi_send_bytes(at45db_inst.spi_num,szCmd,4);
 
-  driver_spi_send_bytes(cfg->spi_io,(uint8_t *)string,buf_len);
+  bsp_spi_send_bytes(at45db_inst.spi_num,(uint8_t *)string,buf_len);
 
-  bsp_do_high(cfg->cs_do_num);
+  bsp_do_high(at45db_inst.cs_do_num);
 
-  driver_spi_post_sem(cfg->spi_io);
+  bsp_spi_post_sem(at45db_inst.spi_num);
   
 }
 
-static void at45db_page_write_cmd(driver_t *drv, uint32_t page)
+static void at45db_page_write_cmd( uint32_t page)
 {
-    at45db_cfg_t *cfg=(at45db_cfg_t*)drv->cfg;
+
 
 #ifdef	AT45DB321/*PAGE SIZE == 512 */
   FlashSend_Byte((uint8_t)(page >>7));
   FlashSend_Byte((uint8_t)(page <<1));
 #else
 
-  driver_spi_send_byte(cfg->spi_io,(uint8_t)(page >> 8));
-  driver_spi_send_byte(cfg->spi_io,(uint8_t)(page));
+  bsp_spi_send_byte(at45db_inst.spi_num,(uint8_t)(page >> 8));
+  bsp_spi_send_byte(at45db_inst.spi_num,(uint8_t)(page));
 
 #endif
 }
@@ -218,69 +201,66 @@ static void at45db_page_write_cmd(driver_t *drv, uint32_t page)
  * @param buffer_choice: Buffer selection (AT45DB_BUFFER1 or AT45DB_BUFFER2)
  * @param page: Target page number
  */
-static void at45db_buffer_to_memory(driver_t *drv, uint8_t buffer_choice, uint32_t page)
+static void at45db_buffer_to_memory( uint8_t buffer_choice, uint32_t page)
 {
-  at45db_cfg_t *cfg=(at45db_cfg_t*)drv->cfg;
-  
-  
-  driver_spi_pend_sem(cfg->spi_io);
 
-  bsp_do_low(cfg->cs_do_num);
+  
+  
+  bsp_spi_pend_sem(at45db_inst.spi_num);
+
+  bsp_do_low(at45db_inst.cs_do_num);
 
     if(buffer_choice == AT45DB_BUFFER2)
     {
-      driver_spi_send_byte(cfg->spi_io, AT45DB_CMD_BUFFER2_TO_MEMORY);
+      bsp_spi_send_byte(at45db_inst.spi_num, AT45DB_CMD_BUFFER2_TO_MEMORY);
     }
     else
     {
-      driver_spi_send_byte(cfg->spi_io, AT45DB_CMD_BUFFER1_TO_MEMORY);
+      bsp_spi_send_byte(at45db_inst.spi_num, AT45DB_CMD_BUFFER1_TO_MEMORY);
     }
 
-    at45db_page_write_cmd(drv, page);
+    at45db_page_write_cmd( page);
 
-    driver_spi_send_byte(cfg->spi_io,BYTE_DUMMY);
+    bsp_spi_send_byte(at45db_inst.spi_num,BYTE_DUMMY);
 
-  bsp_do_high(cfg->cs_do_num);
+  bsp_do_high(at45db_inst.cs_do_num);
 
-  driver_spi_post_sem(cfg->spi_io);
+  bsp_spi_post_sem(at45db_inst.spi_num);
 }
 
 
-static void at45db_reg_read(driver_t *drv, uint8_t cmd, uint8_t *info, uint8_t len)
+static void at45db_reg_read( uint8_t cmd, uint8_t *info, uint8_t len)
 {
-  at45db_cfg_t *cfg=(at45db_cfg_t*)drv->cfg;
+
 
 
   memset(info,  0, len);
-  driver_spi_pend_sem(cfg->spi_io);
+  bsp_spi_pend_sem(at45db_inst.spi_num);
 
-  bsp_do_low(cfg->cs_do_num);
-  driver_spi_send_byte(cfg->spi_io,cmd);
+  bsp_do_low(at45db_inst.cs_do_num);
+  bsp_spi_send_byte(at45db_inst.spi_num,cmd);
 
-  driver_spi_read_bytes(cfg->spi_io,info,len);
+  bsp_spi_read_bytes(at45db_inst.spi_num,info,len);
 
 
-  bsp_do_high(cfg->cs_do_num);
+  bsp_do_high(at45db_inst.cs_do_num);
 
-  driver_spi_post_sem(cfg->spi_io);
+  bsp_spi_post_sem(at45db_inst.spi_num);
 }
 
 
-static void at45db_reg_write(driver_t *drv, uint8_t *cmd)
+static void at45db_reg_write( uint8_t *cmd)
 {
-  at45db_cfg_t *cfg=(at45db_cfg_t*)drv->cfg;
 
+  bsp_spi_pend_sem(at45db_inst.spi_num);
 
-
-  driver_spi_pend_sem(cfg->spi_io);
-
-  bsp_do_low(cfg->cs_do_num);
-  driver_spi_send_bytes(cfg->spi_io,cmd,4);
+  bsp_do_low(at45db_inst.cs_do_num);
+  bsp_spi_send_bytes(at45db_inst.spi_num,cmd,4);
 ;
 
-  bsp_do_high(cfg->cs_do_num);
+  bsp_do_high(at45db_inst.cs_do_num);
 
-  driver_spi_post_sem(cfg->spi_io);
+  bsp_spi_post_sem(at45db_inst.spi_num);
   
 }
 
@@ -290,14 +270,14 @@ static void at45db_reg_write(driver_t *drv, uint8_t *cmd)
  * @param drv: Driver instance
  * @note Polls the status register until ready bit is set or timeout occurs
  */
-static void at45db_wait_ready(driver_t *drv)
+static void at45db_wait_ready(void)
 {
   uint8_t status_reg;
   uint16_t timeout_count = 0;
 
   while(1)
   {
-    at45db_reg_read(drv, AT45DB_CMD_STATUS_REGISTER, &status_reg, 1);
+    at45db_reg_read( AT45DB_CMD_STATUS_REGISTER, &status_reg, 1);
 
     // Check if device is ready (bit 7 = 1 means ready)
     if(status_reg & AT45DB_STATUS_READY_BUSY_BIT) break;
@@ -317,10 +297,10 @@ static void at45db_wait_ready(driver_t *drv)
   * @retval :
   */
 // WriteAddr : Page Address (512)
-void at45db_write_page(driver_t *drv,uint32_t WriteAddr, uint8_t *writebuff)
+void at45db_write_page(uint32_t WriteAddr, uint8_t *writebuff)
 {
-  at45db_cfg_t *cfg = (at45db_cfg_t*)drv->cfg;
-  uint16_t pageSize = cfg->chip_info.current_page_size;
+
+  uint16_t pageSize = at45db_inst.chip_info.current_page_size;
   uint8_t readCnt = 1;
 
   // For devices with smaller page sizes, may need multiple operations
@@ -330,10 +310,10 @@ void at45db_write_page(driver_t *drv,uint32_t WriteAddr, uint8_t *writebuff)
 
   for(uint16_t i = 0; i < readCnt; i++)
   {
-    at45db_write_buffer(drv, AT45DB_BUFFER1, 0, (const char *) writebuff, pageSize);
-    usDelay(10);
-    at45db_buffer_to_memory(drv, AT45DB_BUFFER1, WriteAddr * readCnt + i);
-    at45db_wait_ready(drv);
+    at45db_write_buffer( AT45DB_BUFFER1, 0, (const char *) writebuff, pageSize);
+    bsp_us_delay(10);
+    at45db_buffer_to_memory( AT45DB_BUFFER1, WriteAddr * readCnt + i);
+    at45db_wait_ready();
     writebuff += pageSize;
   }
 }
@@ -344,32 +324,30 @@ void at45db_write_page(driver_t *drv,uint32_t WriteAddr, uint8_t *writebuff)
  * @param buffer_choice: Buffer selection (AT45DB_BUFFER1 or AT45DB_BUFFER2)
  * @param page: Source page number
  */
-static void at45db_memory_to_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t page)
+static void at45db_memory_to_buffer( uint8_t buffer_choice, uint32_t page)
 {
-  
-    at45db_cfg_t *cfg=(at45db_cfg_t*)drv->cfg;
-    
+      
 
-  driver_spi_pend_sem(cfg->spi_io);
+  bsp_spi_pend_sem(at45db_inst.spi_num);
 
-  bsp_do_low(cfg->cs_do_num);
+  bsp_do_low(at45db_inst.cs_do_num);
   
     if(buffer_choice == AT45DB_BUFFER2)
     {
-      driver_spi_send_byte(cfg->spi_io, AT45DB_CMD_MEMORY_TO_BUFFER2);
+      bsp_spi_send_byte(at45db_inst.spi_num, AT45DB_CMD_MEMORY_TO_BUFFER2);
     }
     else
     {
-      driver_spi_send_byte(cfg->spi_io, AT45DB_CMD_MEMORY_TO_BUFFER1);
+      bsp_spi_send_byte(at45db_inst.spi_num, AT45DB_CMD_MEMORY_TO_BUFFER1);
     }
 
-  at45db_page_write_cmd(drv, page);
+  at45db_page_write_cmd( page);
 
-  driver_spi_send_byte(cfg->spi_io,BYTE_DUMMY);
+  bsp_spi_send_byte(at45db_inst.spi_num,BYTE_DUMMY);
   
-  bsp_do_high(cfg->cs_do_num);
+  bsp_do_high(at45db_inst.cs_do_num);
 
-  driver_spi_post_sem(cfg->spi_io);
+  bsp_spi_post_sem(at45db_inst.spi_num);
 }
 /**
  * @brief Read data from AT45DB internal buffer
@@ -379,15 +357,13 @@ static void at45db_memory_to_buffer(driver_t *drv, uint8_t buffer_choice, uint32
  * @param string: Buffer to store read data
  * @param buf_len: Length of data to read
  */
-static void at45db_read_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t address, char *string, uint16_t buf_len)
+static void at45db_read_buffer( uint8_t buffer_choice, uint32_t address, char *string, uint16_t buf_len)
 {
   char szCmd[5];
-    at45db_cfg_t *cfg=(at45db_cfg_t*)drv->cfg;
 
+  bsp_spi_pend_sem(at45db_inst.spi_num);
 
-  driver_spi_pend_sem(cfg->spi_io);
-
-  bsp_do_low(cfg->cs_do_num);
+  bsp_do_low(at45db_inst.cs_do_num);
 
     if(buffer_choice == AT45DB_BUFFER2)
     {
@@ -403,18 +379,17 @@ static void at45db_read_buffer(driver_t *drv, uint8_t buffer_choice, uint32_t ad
     szCmd[4] = BYTE_DUMMY;
 
 
-  driver_spi_send_bytes(cfg->spi_io,(uint8_t *)szCmd,5);
-  driver_spi_read_bytes(cfg->spi_io,(uint8_t *)string,buf_len);
+  bsp_spi_send_bytes(at45db_inst.spi_num,(uint8_t *)szCmd,5);
+  bsp_spi_read_bytes(at45db_inst.spi_num,(uint8_t *)string,buf_len);
   
-  bsp_do_high(cfg->cs_do_num);
-  driver_spi_post_sem(cfg->spi_io);
+  bsp_do_high(at45db_inst.cs_do_num);
+  bsp_spi_post_sem(at45db_inst.spi_num);
 
 
 }
-void at45db_read_page(driver_t *drv,uint32_t ReadAddr,uint8_t *readbuff)
+void at45db_read_page(uint32_t ReadAddr,uint8_t *readbuff)
 {
-  at45db_cfg_t *cfg = (at45db_cfg_t*)drv->cfg;
-  uint16_t pageSize = cfg->chip_info.current_page_size;
+  uint16_t pageSize = at45db_inst.chip_info.current_page_size;
   uint8_t readCnt = 1;
 
   // For devices with smaller page sizes, may need multiple operations
@@ -424,16 +399,16 @@ void at45db_read_page(driver_t *drv,uint32_t ReadAddr,uint8_t *readbuff)
   
   for(uint16_t i = 0; i < readCnt; i++)
   {
-    at45db_memory_to_buffer(drv, AT45DB_BUFFER1, (uint32_t) ReadAddr * readCnt + i);
-    at45db_wait_ready(drv);
-    at45db_read_buffer(drv, AT45DB_BUFFER1, 0, (char*) readbuff, pageSize);
-    at45db_wait_ready(drv);
+    at45db_memory_to_buffer( AT45DB_BUFFER1, (uint32_t) ReadAddr * readCnt + i);
+    at45db_wait_ready();
+    at45db_read_buffer( AT45DB_BUFFER1, 0, (char*) readbuff, pageSize);
+    at45db_wait_ready();
     readbuff += pageSize;
   }
 }
 
 const char *_eicpart=NULL;//"AT45DB641E-SHN2B"; /* IC Part Number */
-at45db_result_t at45db_init(driver_t *drv)
+at45db_result_t at45db_initialize(void)
 {
   static const uint8_t protect_enable[4] = AT45DB_CMD_SECTOR_PROTECT_ENABLE;
   static const uint8_t page_binary_mode[4] = AT45DB_CMD_BINARY_PAGE_SIZE;
@@ -449,11 +424,11 @@ at45db_result_t at45db_init(driver_t *drv)
   // Byte[3] Extended Device Information String Leghth 0x01
   // Byte[4] EDI Byte 1                                0x00 
     
-  at45db_cfg_t *cfg = (at45db_cfg_t*)drv->cfg;
-  
-  at45db_reg_read(drv, AT45DB_CMD_DEVICE_ID, chip_info, 5);
 
-  at45db_result_t result = at45db_parse_chip_info(chip_info, &cfg->chip_info);
+  
+  at45db_reg_read( AT45DB_CMD_DEVICE_ID, chip_info, 5);
+
+  at45db_result_t result = at45db_parse_chip_info(chip_info, &at45db_inst.chip_info);
   if (result != AT45DB_OK) {
     DEBUG_PRINTF("Error: Failed to parse chip info\r\n");
     return result;
@@ -461,18 +436,18 @@ at45db_result_t at45db_init(driver_t *drv)
 
   osDelay(1);
 
-  at45db_reg_read(drv, AT45DB_CMD_STATUS_REGISTER, &reg, 1);
+  at45db_reg_read( AT45DB_CMD_STATUS_REGISTER, &reg, 1);
   
   // Check if binary page size mode is enabled
   if ((reg & AT45DB_STATUS_PAGE_SIZE_BIT) == 0) {
     DEBUG_PRINTF("Switching to binary page size mode...\r\n");
-    at45db_reg_write(drv, (uint8_t *)protect_enable);
-    at45db_wait_ready(drv);
-    at45db_reg_write(drv, (uint8_t *)page_binary_mode);
-    at45db_wait_ready(drv);
+    at45db_reg_write( (uint8_t *)protect_enable);
+    at45db_wait_ready();
+    at45db_reg_write( (uint8_t *)page_binary_mode);
+    at45db_wait_ready();
     
     // Verify the switch
-    at45db_reg_read(drv, AT45DB_CMD_STATUS_REGISTER, &reg, 1);
+    at45db_reg_read( AT45DB_CMD_STATUS_REGISTER, &reg, 1);
     if ((reg & AT45DB_STATUS_PAGE_SIZE_BIT) == 0) {
       DEBUG_PRINTF("Error: Failed to switch to binary page size mode\r\n");
       return AT45DB_ERROR;
@@ -480,17 +455,17 @@ at45db_result_t at45db_init(driver_t *drv)
   }
 
   // Set current page size and other info
-  cfg->chip_info.is_binary_mode = (reg & AT45DB_STATUS_PAGE_SIZE_BIT) ? true : false;
-  cfg->chip_info.current_page_size = cfg->chip_info.is_binary_mode ? 
-                                     cfg->chip_info.device_info.page_size_binary : 
-                                     cfg->chip_info.device_info.page_size_standard;
-  cfg->chip_info.total_capacity_bytes = (cfg->chip_info.device_info.capacity_bits / 8);
-  cfg->chip_info.is_initialized = true;
+  at45db_inst.chip_info.is_binary_mode = (reg & AT45DB_STATUS_PAGE_SIZE_BIT) ? true : false;
+  at45db_inst.chip_info.current_page_size = at45db_inst.chip_info.is_binary_mode ? 
+                                     at45db_inst.chip_info.device_info.page_size_binary : 
+                                     at45db_inst.chip_info.device_info.page_size_standard;
+  at45db_inst.chip_info.total_capacity_bytes = (at45db_inst.chip_info.device_info.capacity_bits / 8);
+  at45db_inst.chip_info.is_initialized = true;
 
   DEBUG_PRINTF("AT45DB initialization completed successfully\r\n");
-  DEBUG_PRINTF("  Mode: %s\r\n", cfg->chip_info.is_binary_mode ? "Binary" : "Standard");
-  DEBUG_PRINTF("  Current page size: %u bytes\r\n", cfg->chip_info.current_page_size);
-  DEBUG_PRINTF("  Total capacity: %lu bytes\r\n", cfg->chip_info.total_capacity_bytes);
+  DEBUG_PRINTF("  Mode: %s\r\n", at45db_inst.chip_info.is_binary_mode ? "Binary" : "Standard");
+  DEBUG_PRINTF("  Current page size: %u bytes\r\n", at45db_inst.chip_info.current_page_size);
+  DEBUG_PRINTF("  Total capacity: %lu bytes\r\n", at45db_inst.chip_info.total_capacity_bytes);
 
   at45db_delay(10);
   
@@ -498,18 +473,15 @@ at45db_result_t at45db_init(driver_t *drv)
 
 }
 
-at45db_result_t at45db_get_chip_info(driver_t *drv, at45db_chip_info_t *info)
+at45db_result_t at45db_get_chip_info( at45db_chip_info_t *info)
 {
-  if (!drv || !info) {
-    return AT45DB_ERROR;
-  }
-  
-  at45db_cfg_t *cfg = (at45db_cfg_t*)drv->cfg;
-  if (!cfg->chip_info.is_initialized) {
+
+  if (!at45db_inst.chip_info.is_initialized)
+  {
     return AT45DB_INIT_FAILED;
   }
   
-  memcpy(info, &cfg->chip_info, sizeof(at45db_chip_info_t));
+  memcpy(info, &at45db_inst.chip_info, sizeof(at45db_chip_info_t));
   return AT45DB_OK;
 }
 
@@ -518,11 +490,11 @@ at45db_result_t at45db_get_chip_info(driver_t *drv, at45db_chip_info_t *info)
 /**
  * @brief Flash read like RAM access
  */
-void at45db_read(driver_t *drv, uint32_t offset, uint8_t *p_buff, uint32_t buff_size,
+void at45db_read( uint32_t offset, uint8_t *p_buff, uint32_t buff_size,
                  uint32_t read_len)
 {
-  at45db_cfg_t *cfg = (at45db_cfg_t*)drv->cfg;
-  uint32_t page_size = cfg->chip_info.current_page_size;
+
+  uint32_t page_size = at45db_inst.chip_info.current_page_size;
   uint8_t buff[2112]; // Maximum possible page size for AT45DB256
   uint32_t page_quot = offset / page_size;
   uint32_t page_rem = offset % page_size;
@@ -535,12 +507,12 @@ void at45db_read(driver_t *drv, uint32_t offset, uint8_t *p_buff, uint32_t buff_
     read_len = buff_size;
   }
 
-  OS_PEND_SEM(drv->sem, osWaitForever);
+  OS_PEND_SEM(at45db_inst.sem, osWaitForever);
 
   // Case 1: When start position is not page-aligned (unaligned)
   if (page_rem > 0)
   {
-    at45db_read_page(drv, page_quot, buff);
+    at45db_read_page( page_quot, buff);
     uint32_t first_read = (read_len < remain) ? read_len : remain;
     memcpy(&p_buff[0], &buff[page_rem], first_read);
     page_quot++;
@@ -550,7 +522,7 @@ void at45db_read(driver_t *drv, uint32_t offset, uint8_t *p_buff, uint32_t buff_
   // Case 2: Read full pages
   while ((read_len - read_cnt) >= page_size)
   {
-    at45db_read_page(drv, page_quot, buff);
+    at45db_read_page( page_quot, buff);
     memcpy(&p_buff[read_cnt], buff, page_size);
     page_quot++;
     read_cnt += page_size;
@@ -559,33 +531,33 @@ void at45db_read(driver_t *drv, uint32_t offset, uint8_t *p_buff, uint32_t buff_
   // Case 3: Read partial last page (if any remaining)
   if (read_len > read_cnt)
   {
-    at45db_read_page(drv, page_quot, buff);
+    at45db_read_page( page_quot, buff);
     memcpy(&p_buff[read_cnt], buff, read_len - read_cnt);
   }
 
-  OS_POST_SEM(drv->sem);
+  OS_POST_SEM(at45db_inst.sem);
 }
 
 
-int32_t at45db_write(driver_t *drv, uint32_t offset, uint8_t *p_data, uint32_t data_len)
+int32_t at45db_write( uint32_t offset, uint8_t *p_data, uint32_t data_len)
 {
-  at45db_cfg_t *cfg = (at45db_cfg_t*)drv->cfg;
-  uint32_t page_size = cfg->chip_info.current_page_size;
+
+  uint32_t page_size = at45db_inst.chip_info.current_page_size;
   uint8_t buff[2112]; // Maximum possible page size for AT45DB256
   uint32_t page_quot = offset / page_size;
   uint32_t page_rem = offset % page_size;
   uint32_t remain = page_size - page_rem;
   uint32_t written = 0;
 
-  OS_PEND_SEM(drv->sem, osWaitForever);
+  OS_PEND_SEM(at45db_inst.sem, osWaitForever);
 
   // When start position is not page-aligned (unaligned)
   if (page_rem > 0)
   {
-    at45db_read_page(drv, page_quot, buff);
+    at45db_read_page( page_quot, buff);
     uint32_t first_write = (data_len < remain) ? data_len : remain;
     memcpy(&buff[page_rem], &p_data[0], first_write);
-    at45db_write_page(drv, page_quot, buff);
+    at45db_write_page( page_quot, buff);
     page_quot++;
     written += first_write;
   }
@@ -594,7 +566,7 @@ int32_t at45db_write(driver_t *drv, uint32_t offset, uint8_t *p_data, uint32_t d
   while ((data_len - written) >= page_size)
   {
     memcpy(buff, &p_data[written], page_size);
-    at45db_write_page(drv, page_quot, buff);
+    at45db_write_page( page_quot, buff);
     page_quot++;
     written += page_size;
   }
@@ -602,12 +574,12 @@ int32_t at45db_write(driver_t *drv, uint32_t offset, uint8_t *p_data, uint32_t d
   // Write partial last page (if any remaining)
   if (data_len > written)
   {
-    at45db_read_page(drv, page_quot, buff);
+    at45db_read_page( page_quot, buff);
     memcpy(buff, &p_data[written], data_len - written);
-    at45db_write_page(drv, page_quot, buff);
+    at45db_write_page( page_quot, buff);
   }
 
-  OS_POST_SEM(drv->sem);
+  OS_POST_SEM(at45db_inst.sem);
   return 0;
 }
 

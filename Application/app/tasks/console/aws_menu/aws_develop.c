@@ -19,7 +19,8 @@
 #include "console_rtos.h"
 #include "divas_protocol_handler.h"
 #include "app_console_test.h"
-
+#include "cmsis_os.h"
+#include "drv_flash.h"
 extern const char* g_chgList[2];
 extern const char *protocolList[2];
 extern const char *cdmaModellList[2];
@@ -78,13 +79,13 @@ void print_flash(uint32_t start, uint32_t size, uint32_t width)
 
   for (i = 0; i < quot; i++)
   {
-    flash_read(start + i * 512, buff, 512, 512);
+    drv_flash_read(start + i * 512, buff, 512, 512);
     LOG_MEM(buff, sizeof(buff), start + i * 512, width);
   }
 
   if (rem)
   {
-    flash_read(start + i * 512, buff, 512, rem);
+    drv_flash_read(start + i * 512, buff, 512, rem);
     LOG_MEM(buff, rem, start + i * 512, width);
   }
 }

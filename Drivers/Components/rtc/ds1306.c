@@ -3,8 +3,8 @@
 #include "ds1306.h"
 
 
-#include "driver_stm32_spi.h"
-#include "driver_stm32_spi.h"
+#include "bsp_spi.h"
+#include "bsp_spi.h"
 
 #include "bsp_do.h"
 #include "bsp_di.h"
@@ -19,7 +19,7 @@
 
 typedef struct ds1306_cfg_s
 {
-  void *spi_io;
+  int spi_num;
   int cs_do_num;
   int irq_di_num;
   void *sem;
@@ -47,18 +47,18 @@ int32_t ds1306_read_reg(driver_t *ds1306, uint8_t reg,uint8_t *rval)
   int32_t err=0;
   ds1306_cfg_t *cfg=(ds1306_cfg_t*)ds1306->cfg;
 
-  driver_spi_pend_sem(cfg->spi_io);
+  bsp_spi_pend_sem(cfg->spi_num);
 
   bsp_do_high(cfg->cs_do_num);
 
 
-  driver_spi_send_byte(cfg->spi_io,reg);
+  bsp_spi_send_byte(cfg->spi_num,reg);
     
-  *rval = driver_spi_read_byte(cfg->spi_io);
+  *rval = bsp_spi_read_byte(cfg->spi_num);
 
   bsp_do_low(cfg->cs_do_num);
 
-  driver_spi_post_sem(cfg->spi_io);
+  bsp_spi_post_sem(cfg->spi_num);
   
   return err;
 }
@@ -69,17 +69,17 @@ int32_t ds1306_write_reg(driver_t *ds1306,uint8_t reg,uint8_t val)
     int32_t err=0;
   ds1306_cfg_t *cfg=(ds1306_cfg_t*)ds1306->cfg;
 
-  driver_spi_pend_sem(cfg->spi_io);
+  bsp_spi_pend_sem(cfg->spi_num);
 
   bsp_do_high(cfg->cs_do_num);
     
   reg = reg + 0x80;
-  driver_spi_send_byte(cfg->spi_io,reg);
-  driver_spi_send_byte(cfg->spi_io,val);
+  bsp_spi_send_byte(cfg->spi_num,reg);
+  bsp_spi_send_byte(cfg->spi_num,val);
 
   bsp_do_low(cfg->cs_do_num);
  
-   driver_spi_post_sem(cfg->spi_io);
+   bsp_spi_post_sem(cfg->spi_num);
   return err;
 
 }
@@ -108,18 +108,18 @@ void ds1306_read_time(driver_t *ds1306, DATE_TIME_BUF *t) {
     ds1306_cfg_t *cfg = (ds1306_cfg_t *)ds1306->cfg;
 
     // SPI 동기화
-    driver_spi_pend_sem(cfg->spi_io);
+    bsp_spi_pend_sem(cfg->spi_num);
     bsp_do_high(cfg->cs_do_num);
 
     // 시작 레지스터 주소 전송 (읽기 모드)
-    driver_spi_send_byte(cfg->spi_io, reg_address);
+    bsp_spi_send_byte(cfg->spi_num, reg_address);
 
     // 초, 분, 시, 일, 월, 요일, 년 데이터를 수신
-    driver_spi_read_bytes(cfg->spi_io, time_data, 7);
+    bsp_spi_read_bytes(cfg->spi_num, time_data, 7);
 
     // SPI 통신 종료
     bsp_do_low(cfg->cs_do_num);
-    driver_spi_post_sem(cfg->spi_io);
+    bsp_spi_post_sem(cfg->spi_num);
 
     // BCD 데이터를 이진수로 변환
     t->Sec  = BCD_to_Decimal(time_data[DS1306_SECONDS]); // 초
@@ -166,7 +166,7 @@ driver_t *ds1306_open(void)
   }
 
   ds1306_driver.opened = true;
-  ds1306_cfg.spi_io = driver_spi_open(STM_SPI_1);
+  ds1306_cfg.spi_num = BSP_SPI_1;
   ds1306_cfg.cs_do_num  = BSP_DO_RTC_CS;
   ds1306_cfg.irq_di_num = BSP_DI_1_RTC_IRQ;
 
@@ -178,6 +178,7 @@ driver_t *ds1306_open(void)
     ds1306_driver.sem = osSemaphoreNew(1, 1, NULL); 
   }
 
+  bsp_spi_init(ds1306_cfg.spi_num);
   ds1306_init(&ds1306_driver);
 
   return &ds1306_driver;

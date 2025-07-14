@@ -5,12 +5,10 @@
 #include "config_nvm.h"
 #include "config_sensor.h"
 
-#include "app_fram.h"
+#include "drv_fram.h"
 
 void config_manager_init(void)
 {
-
-  fram_init();
 
   load_config_app();
   load_config_adc();

@@ -1,15 +1,12 @@
-#include "pcb_define.h"
-
-#include "os_user_def.h"
-
 #include "rv8803.h"
-#include "driver_stm32_i2c.h"
-#include "bsp_di.h"
 
-#include "bits_.h"
-#include "built_.h"
 #include "bcd.h"
-
+#include "bits_.h"
+#include "bsp_di.h"
+#include "built_.h"
+#include "os_user_def.h"
+#include "pcb_define.h"
+#include "bsp_i2c.h"
 
 #define RET_OK     0
 #define RET_EINVAL 1
@@ -72,7 +69,7 @@
 typedef struct rv8803_cfg_s
 {
   uint8_t address;
-  void *i2c_io;
+  int i2c_num;
   int irq_di_num;
   void *sem;
 }rv8803_cfg_t;
@@ -96,7 +93,7 @@ static int32_t rv8803_regs_init(driver_t *rv8803)
     rv8803_cfg_t *cfg = (rv8803_cfg_t *)rv8803->cfg;
     //offset 값  aging correction,0은 초기값
     
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_OSC_OFFSET,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_OSC_OFFSET,&reg,1);
 
 	if (err)
     {
@@ -104,7 +101,7 @@ static int32_t rv8803_regs_init(driver_t *rv8803)
     }
 
     reg = 0x00;//초기화값
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_CTRL,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_CTRL,&reg,1);
     
 	if(err)
     {
@@ -115,7 +112,7 @@ static int32_t rv8803_regs_init(driver_t *rv8803)
     regs[1] = 0;
     regs[2] = 0;
 
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_ALARM_MIN,regs,3);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_ALARM_MIN,regs,3);
 
 	if (err)
     {
@@ -123,7 +120,7 @@ static int32_t rv8803_regs_init(driver_t *rv8803)
     }
 
     reg = 0;
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_RAM,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_RAM,&reg,1);
 
 	return err;
 }
@@ -155,7 +152,7 @@ int32_t rv8803_set_periodTimeUpdateIrq(driver_t *rv8803,uint8_t en)
     int32_t err;
     rv8803_cfg_t *cfg = (rv8803_cfg_t *)rv8803->cfg;
 
-    err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_EXT, &reg,1);
+    err = bsp_i2c_read(cfg->i2c_num,cfg->address,RV8803_EXT, &reg,1);
     //초기에 읽으면 0x40
 	if(err)
     {
@@ -164,7 +161,7 @@ int32_t rv8803_set_periodTimeUpdateIrq(driver_t *rv8803,uint8_t en)
 
 
     reg = reg & ~(1<<5);//USEL = 0, 1sec 
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_EXT,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_EXT,&reg,1);
 
     if(err)
     {
@@ -172,7 +169,7 @@ int32_t rv8803_set_periodTimeUpdateIrq(driver_t *rv8803,uint8_t en)
     }
 	
 
-    err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_FLAG, &reg,1);
+    err = bsp_i2c_read(cfg->i2c_num,cfg->address,RV8803_FLAG, &reg,1);
     //초기에 읽으면 0x04
 	if(err)
     {
@@ -180,14 +177,14 @@ int32_t rv8803_set_periodTimeUpdateIrq(driver_t *rv8803,uint8_t en)
     }
 
 
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_FLAG,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_FLAG,&reg,1);
 
     if(err)
     {
         return RET_IO_ERR;
     }
 
-    err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_CTRL, &reg,1);
+    err = bsp_i2c_read(cfg->i2c_num,cfg->address,RV8803_CTRL, &reg,1);
 
 	if(err)
     {
@@ -204,7 +201,7 @@ int32_t rv8803_set_periodTimeUpdateIrq(driver_t *rv8803,uint8_t en)
         reg = reg | ~(1<<5);
     }
 
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_CTRL,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_CTRL,&reg,1);
 
     if(err)
     {
@@ -231,7 +228,7 @@ driver_t *rv8803_open(void)
   }
 
   rv8803_driver.opened = true;
-  rv8803_cfg.i2c_io = driver_stm32_i2c_open(STM32_I2C_1,0);
+  rv8803_cfg.i2c_num = STM32_I2C_1;
   rv8803_cfg.irq_di_num = BSP_DI_1_RTC_IRQ;
   rv8803_cfg.address = 0x32;
   rv8803_driver.cfg = &rv8803_cfg;
@@ -240,7 +237,7 @@ driver_t *rv8803_open(void)
 
   OS_CREATE_BINARY_SEM(rv8803_driver.sem);
 
-
+  bsp_i2c_init(rv8803_cfg.i2c_num);
   rv8803_init(&rv8803_driver);
 
   return &rv8803_driver;
@@ -264,7 +261,7 @@ int32_t rv8803_read(driver_t *rv8803, DATE_TIME_BUF *ct)
   int32_t err;
 
   // FLAG 레지스터 읽기
-  err = stm32_i2c_read(cfg->i2c_io, cfg->address, RV8803_FLAG, &reg, 1);
+  err = bsp_i2c_read(cfg->i2c_num, cfg->address, RV8803_FLAG, &reg, 1);
   if (err)
     return RET_IO_ERR;
 
@@ -273,14 +270,14 @@ int32_t rv8803_read(driver_t *rv8803, DATE_TIME_BUF *ct)
     return RET_EINVAL;
 
   // 0x10 (100th sec)부터 8바이트 읽기: 100th, sec, min, hour, week, day, month, year
-  err = stm32_i2c_read(cfg->i2c_io, cfg->address, RV8803_SEC_100th, date, 8);
+  err = bsp_i2c_read(cfg->i2c_num, cfg->address, RV8803_SEC_100th, date, 8);
   if (err)
     return RET_IO_ERR;
 
   // 초가 59이면 한번 더 읽어서 바뀌었는지 확인
   if ((date1[1] & 0x7F) == bin2bcd(59))
   {
-    err = stm32_i2c_read(cfg->i2c_io, cfg->address, RV8803_SEC_100th, date2, 8);
+    err = bsp_i2c_read(cfg->i2c_num, cfg->address, RV8803_SEC_100th, date2, 8);
     if (err)
       return RET_IO_ERR;
 
@@ -308,7 +305,7 @@ uint8_t date[7];
     uint8_t reg;
     int32_t err;
     rv8803_cfg_t *cfg = (rv8803_cfg_t *)rv8803->cfg;
-    err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_CTRL, &reg,1);
+    err = bsp_i2c_read(cfg->i2c_num,cfg->address,RV8803_CTRL, &reg,1);
 
     if(err)
     {
@@ -317,7 +314,7 @@ uint8_t date[7];
 
     reg = reg | RV8803_CTRL_RESET;
 
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_CTRL,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_CTRL,&reg,1);
 
 	if(err)
 	{
@@ -329,7 +326,7 @@ uint8_t date[7];
 	date[2]  =  bin2bcd(hour);
 
 
-  err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_SEC,date,3);
+  err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_SEC,date,3);
 
 	if(err)
 	{
@@ -338,7 +335,7 @@ uint8_t date[7];
 
 
     reg = reg & ~RV8803_CTRL_RESET;
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_CTRL,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_CTRL,&reg,1);
 
 	if(err)
 	{
@@ -347,7 +344,7 @@ uint8_t date[7];
 
 	//mutex_lock(&rv8803->flags_lock);
 
-  err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_FLAG, &reg,1);
+  err = bsp_i2c_read(cfg->i2c_num,cfg->address,RV8803_FLAG, &reg,1);
 
     if(err)
     {
@@ -366,7 +363,7 @@ uint8_t date[7];
 
     reg = reg & ~(RV8803_FLAG_V1F | RV8803_FLAG_V2F);
 
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_FLAG,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_FLAG,&reg,1);
 
 	return err;
 }
@@ -386,7 +383,7 @@ int32_t rv8803_set_date(driver_t *rv8803,uint16_t year, int8_t mon, uint8_t day)
     int32_t err;
     rv8803_cfg_t *cfg = (rv8803_cfg_t *)rv8803->cfg;
 
-    err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_CTRL, &reg,1);
+    err = bsp_i2c_read(cfg->i2c_num,cfg->address,RV8803_CTRL, &reg,1);
 
     if(err)
     {
@@ -395,7 +392,7 @@ int32_t rv8803_set_date(driver_t *rv8803,uint16_t year, int8_t mon, uint8_t day)
 
     reg = reg | RV8803_CTRL_RESET;
 
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_CTRL,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_CTRL,&reg,1);
 
 	if(err)
 	{
@@ -407,7 +404,7 @@ int32_t rv8803_set_date(driver_t *rv8803,uint16_t year, int8_t mon, uint8_t day)
 	date[2]  = bin2bcd(year % 100);
 
 
-  err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_DAY,date,3);
+  err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_DAY,date,3);
 
 	if(err)
 	{
@@ -416,7 +413,7 @@ int32_t rv8803_set_date(driver_t *rv8803,uint16_t year, int8_t mon, uint8_t day)
 
 
     reg = reg & ~RV8803_CTRL_RESET;
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_CTRL,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_CTRL,&reg,1);
 
 	if(err)
 	{
@@ -425,7 +422,7 @@ int32_t rv8803_set_date(driver_t *rv8803,uint16_t year, int8_t mon, uint8_t day)
 
 	//mutex_lock(&rv8803->flags_lock);
 
-  err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_FLAG, &reg,1);
+  err = bsp_i2c_read(cfg->i2c_num,cfg->address,RV8803_FLAG, &reg,1);
 
     if(err)
     {
@@ -444,7 +441,7 @@ int32_t rv8803_set_date(driver_t *rv8803,uint16_t year, int8_t mon, uint8_t day)
 
     reg = reg & ~(RV8803_FLAG_V1F | RV8803_FLAG_V2F);
 
-    err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_FLAG,&reg,1);
+    err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_FLAG,&reg,1);
 
 	return err;
 }
@@ -484,7 +481,7 @@ int32_t rv8803_init(driver_t *rv8803)
   DATE_TIME_BUF nt={.Year=2000,.Month = 1,.Day =1,.Hour = 0,.Min = 0,.Sec =0};
   rv8803_cfg_t *cfg = (rv8803_cfg_t *)rv8803->cfg;
 
-  err = stm32_i2c_read(cfg->i2c_io,cfg->address,RV8803_FLAG,&reg,1);
+  err = bsp_i2c_read(cfg->i2c_num,cfg->address,RV8803_FLAG,&reg,1);
 
 
  
@@ -503,7 +500,7 @@ if (reg & RV8803_FLAG_V2F)//Voltage Low Flag2
   }
       reg = reg & ~(RV8803_FLAG_V1F | RV8803_FLAG_V2F);
 
-      err =  stm32_i2c_send(cfg->i2c_io, cfg->address,RV8803_FLAG,&reg,1);
+      err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_FLAG,&reg,1);
 
       rv8803_set_time(rv8803,&nt);
 

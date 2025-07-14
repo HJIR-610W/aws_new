@@ -289,7 +289,7 @@ void save_config_app(void)
   config.header.crc = crc;
   config.header.version = get_app_version(0,0,0,0); 
 
-  fram_write(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config)); 
+  drv_fram_write(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config)); 
 }
 
 void load_config_app(void)
@@ -300,7 +300,7 @@ void load_config_app(void)
 
   config_t *p_config = user_malloc(sizeof(config_t));
 
-  fram_read(CONFIG_START_ADDRESS, (uint8_t *)p_config, sizeof(config_t));
+  drv_fram_read(CONFIG_START_ADDRESS, (uint8_t *)p_config, sizeof(config_t));
 
   if (p_config->header.magicNum == CONFIG_MAGIC)
   {
@@ -317,7 +317,7 @@ void load_config_app(void)
   }
   user_free(p_config);
 #endif
-  fram_read(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
+  drv_fram_read(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
 
   check_config_app();
 
@@ -386,7 +386,8 @@ void save_config_app_field(eCONFIG_APP_FIELD_t field)
     case eCONFIG_APP_SENSOR:
       member_size = MEMBER_SIZE(config_t,sensor);
       offset = OFFSET_OF_STRUCT(config_t,sensor);
-      fram_write(CONFIG_START_ADDRESS + (uint32_t)offset, (uint8_t *)config.sensor, member_size);
+      drv_fram_write(CONFIG_START_ADDRESS + (uint32_t)offset, (uint8_t *)config.sensor,
+                     member_size);
       break;
 
     default:

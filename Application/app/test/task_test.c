@@ -25,14 +25,12 @@ void testTask(void *arg)
   mcu_interrupt_init();  // 최우선 실행
   consoleTask_init((void *)1);
   osDelay(1000);
-  usDelay_init();
-  bsp_init();
+
 
   adc_init();
 
   systemTask_init(PARA_TEST_MODE);
   config_manager_init();
-  flash_init();
   
   file_init();
 
@@ -47,10 +45,10 @@ bool testTask_init(void)
   // 5초(5000ms) 동안 버튼 상태를 감시
   while (1)
   {
-    if (drv_di_read(DI_USER_BTN) == 0)  // 버튼 LOW 상태인가?
+    if (drv_di_read(DRV_DI_USER_BTN) == 0)  // 버튼 LOW 상태인가?
     {
       pressed_time += 10;  // 10ms 단위로 누적
-      if (pressed_time >= 5000)
+      if (pressed_time >= 1000)
       {
         osThreadNew(testTask, NULL, &kTestTask_attributes);
         return true;

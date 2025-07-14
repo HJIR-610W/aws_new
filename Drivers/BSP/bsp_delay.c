@@ -5,7 +5,7 @@
 
 #include "stm32f4xx_hal.h"
 
-void usDelay_init(void) {
+void bsp_delay_init(void) {
     //if (!(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk))
     {
         CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; // DWT 타이머 활성화
@@ -15,7 +15,7 @@ void usDelay_init(void) {
 }
 
 
-void usDelay(uint32_t us) {
+void bsp_us_delay(uint32_t us) {
     uint32_t start = DWT->CYCCNT; // 시작 시점의 사이클 카운터 읽기
     uint32_t delayTicks = us * (SystemCoreClock / 1000000); // 지연할 사이클 수 계산 (1us 단위)
 

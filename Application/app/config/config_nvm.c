@@ -1,6 +1,6 @@
 
 #include "config_nvm.h"
-#include "app_fram.h"
+#include "drv_fram.h"
 #include "drv_crc.h"
 #include "app_version.h"
 
@@ -8,7 +8,7 @@ config_nvm_t g_config_nvm;
 
 void load_config_nvm(void)
 {
-    fram_read(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(g_config_nvm));
+  drv_fram_read(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(g_config_nvm));
 }
 
 void save_config_nvm(void)
@@ -24,8 +24,7 @@ void save_config_nvm(void)
     g_config_nvm.header.crc = crc;
     g_config_nvm.header.version = get_app_version(0,0,0,0);
 
-    fram_write(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(g_config_nvm));
-
+    drv_fram_write(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(g_config_nvm));
 }
 
 config_nvm_t *get_config_nvm(void)

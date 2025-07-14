@@ -21,6 +21,7 @@
 #include "task_logging.h"
 #include "task_measure.h"
 #include "task_tcpServer.h"
+#include "task_system.h"
 #include "tcp_define.h"
 #include "time_define.h"
 #include "util_time.h"
@@ -29,6 +30,8 @@
 #include "os_user_def.h"
 #include "menu\menu_setup.h"
 #include "util_stdio.h"
+#include "drv_system.h"
+
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
 extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용
 extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
@@ -78,8 +81,8 @@ void draw_system_page(screen_page_t* p_win)
 
   message = get_logging_system()->status_group?"ERROR":"NORMAL";
   screen_printf_row(p_win, row_count++, "%-*s:%s", SYSTEM_WD,   "LOGGING", message);
-  screen_printf_row(p_win, row_count++, "%-*s:%.1f", SYSTEM_WD, "SYS VOLT", bsp_read_battery());
-  screen_printf_row(p_win, row_count++, "%-*s:%.1f", SYSTEM_WD, "SYS TEMP", bsp_read_temperature());
+  screen_printf_row(p_win, row_count++, "%-*s:%.1f", SYSTEM_WD, "SYS VOLT", drv_system_read(DRV_SYS_BATTERY));
+  screen_printf_row(p_win, row_count++, "%-*s:%.1f", SYSTEM_WD, "SYS TEMP", drv_system_read(DRV_SYS_TEMPERATURE));
   
   if (get_config_app()->ac_active)
   {

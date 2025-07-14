@@ -14,6 +14,7 @@
 #include "fatfs.h"
 #include "app_key.h"
 #include "drv_rtc.h"
+#include "drv_system.h"
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
@@ -34,7 +35,7 @@ void userBtn_init(void)
   isr_cfg.trigger = eDI_FALLING;
   isr_cfg.prio = 5;
 
-  drv_di_set_interrupt(DI_USER_BTN, &isr_cfg);
+  drv_di_set_interrupt(DRV_DI_USER_BTN, &isr_cfg);
 }
 
 extern uint8_t g_sd_diskio_error;
@@ -127,7 +128,7 @@ void systemTask(void *arg)
       update_charger();
       System.battery_error = read_batteryVoltage1(&err) < 10.0f?1:0;
       System.ac_status = 1;//220v
-      System.dc_error = bsp_read_battery()<11.0f?1:0;
+      System.dc_error = drv_system_read(DRV_SYS_BATTERY)<11.0f?1:0;
 
       check_sd_card();
     }

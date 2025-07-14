@@ -5,19 +5,20 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "app_fram.h"
+#include "drv_fram.h"
 #include "app_sensor.h"
 #include "config_define.h"
 #include "config_memory_map.h"
 #include "util_memory.h"
 #include "tcp_define.h"
 
-#define WRITE_CFG(x)                                                                               \
-  fram_write(CONFIG_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_t, x), (uint8_t *)&config.x, \
-             sizeof(config.x));
+#define WRITE_CFG(x)                                                             \
+  drv_fram_write(CONFIG_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_t, x), \
+                 (uint8_t *)&config.x, sizeof(config.x));
 
-#define WRITE_CFG_MEM(dataAdd, len) \
-  fram_write(CONFIG_START_ADDRESS + (uint32_t)OFFSET_S(&config, dataAdd), (uint8_t *)dataAdd, len);
+#define WRITE_CFG_MEM(dataAdd, len)                                                               \
+  drv_fram_write(CONFIG_START_ADDRESS + (uint32_t)OFFSET_S(&config, dataAdd), (uint8_t *)dataAdd, \
+                 len);
 
 typedef enum eth_mode_e
 {

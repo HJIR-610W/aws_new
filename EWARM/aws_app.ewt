@@ -1199,13 +1199,7 @@
                     <name>$PROJ_DIR$\..\Application\app\app_drivers\app_charger.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\app_drivers\app_file.c</name>
-                </file>
-                <file>
                     <name>$PROJ_DIR$\..\Application\app\app_drivers\app_flash.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\app\app_drivers\app_fram.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\app_drivers\app_key.c</name>
@@ -1727,7 +1721,7 @@
                     <name>$PROJ_DIR$\..\Application\app\version\boot_version.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\app\version\boot_version.h</name>
+                    <name>$PROJ_DIR$\..\Application\app\version\boot_version.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\version\hj_product_list.h</name>
@@ -1742,10 +1736,10 @@
             <group>
                 <name>CDMA</name>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\at_cmd.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\at_cmd.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\modem_if.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\modem_if.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.c</name>
@@ -1775,7 +1769,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\task_cellular.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\task_cellular.h</name>
                 </file>
             </group>
             <group>
@@ -1784,7 +1778,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\Direct\task_direct.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\Direct\task_direct.h</name>
                 </file>
             </group>
             <group>
@@ -1881,6 +1875,12 @@
                 </file>
             </group>
             <file>
+                <name>$PROJ_DIR$\..\application\file_system\app_file.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\application\file_system\app_file.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\Application\file_system\user_heap.c</name>
             </file>
             <file>
@@ -1911,13 +1911,13 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\terminal_bridge.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
@@ -1952,13 +1952,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -1974,7 +1974,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -2061,6 +2061,21 @@
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_do.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_flash.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_flash.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_fram.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_led.c</name>
             </file>
             <file>
@@ -2071,6 +2086,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_rtc.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_spi.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_swo.c</name>
@@ -2105,13 +2123,13 @@
                     <name>$PROJ_DIR$\..\drivers\Components\charger\hjsmartCharger.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\charger\hjsmartCharger.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\charger\hjsmartCharger.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\charger\ls1024.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\charger\ls1024.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\charger\ls1024.h</name>
                 </file>
             </group>
             <group>
@@ -2120,7 +2138,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\fram\fm25cl.h</name>
                 </file>
             </group>
             <group>
@@ -2183,7 +2201,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</name>
                 </file>
             </group>
             <group>
@@ -2201,7 +2219,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554.h</name>
                 </file>
             </group>
         </group>
@@ -2262,24 +2280,6 @@
                 <name>$PROJ_DIR$\..\drivers\driver\driver_do_define.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_flash.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_flash.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_flash_define.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_fram.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_fram.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_fram_define.h</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\drivers\driver\driver_freqInput.c</name>
             </file>
             <file>
@@ -2334,37 +2334,28 @@
                 <name>$PROJ_DIR$\..\drivers\driver\drv_crc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\driver\drv_crc.h</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\drivers\driver\drv_di.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\drv_di.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver\drv_do.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\driver\drv_do.h</name>
+                <name>$PROJ_DIR$\..\drivers\driver\drv_flash.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\driver\drv_fram.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver\drv_led.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\driver\drv_led.h</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\drivers\driver\drv_power.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\drv_power.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver\drv_rtc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\driver\drv_rtc.h</name>
+                <name>$PROJ_DIR$\..\drivers\driver\drv_system.c</name>
             </file>
         </group>
         <group>
@@ -2409,19 +2400,7 @@
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_i2c.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_i2c.h</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_spi.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_spi.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.c</name>

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
+#include "FreeRTOS.h"  // pvPortMalloc, vPortFree 사용 시 필요
 #include "Protocols\divas\divas_protocol_handler.h"
 #include "app_dataLogging.h"
 #include "app_version.h"

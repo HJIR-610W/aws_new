@@ -120,7 +120,7 @@ void save_config_sensor(void)
   g_config_sensor.header.magicNum = CONFIG_MAGIC;
   g_config_sensor.header.crc = crc;
   g_config_sensor.header.version = get_app_version(0,0,0,0);
-  fram_write(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
+  drv_fram_write(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
 }
 
 void load_config_sensor(void)
@@ -133,7 +133,7 @@ void load_config_sensor(void)
   
   config_sensor_t *p_config = user_malloc(sizeof(config_sensor_t));
 
-  fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)p_config, sizeof(config_sensor_t));
+  drv_fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)p_config, sizeof(config_sensor_t));
 
   if (p_config->header.magicNum == CONFIG_MAGIC)
   {
@@ -152,7 +152,7 @@ void load_config_sensor(void)
   }
   user_free(p_config);
 #endif
-  fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
+  drv_fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
 
   limit_adc();
 

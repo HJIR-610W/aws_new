@@ -9,7 +9,7 @@
 
 #include "jhd12864.h"
 #include <string.h>
-#include "driver_stm32_spi.h"
+#include "bsp_spi.h"
 #include "driver_stm32_do.h"
 #include "bsp_do.h"
 #include "pcb_define.h"
@@ -57,7 +57,7 @@ volatile uint8_t* p_lcd_cs2_data = (volatile uint8_t*)LCD_CS2_DATA_ADDRESS;
 
 typedef struct
 {
-  driver_t *spi_io;
+  int spi_num;
   int rst_do_num;
   bool initialized;
   bool graphic_mode;
@@ -92,7 +92,7 @@ inline void jhd12864_delay_ms(uint32_t ms)
 
 inline void jhd12864_delay_us(uint32_t us_delay)
 {
-  usDelay(us_delay);
+  bsp_us_delay(us_delay);
 }
 
 jhd12864_cs_t jhd12864_get_cs_from_x(uint8_t x)
@@ -426,8 +426,8 @@ driver_t *jhd12864_open(void)
     }
 
 #if JHD12864_SPI_USE
-    jhd12864_instance.spi_io = driver_spi_open(STM_SPI_1);
-    if(!jhd12864_instance.spi_io)
+    jhd12864_instance.spi_num = bsp_spi_open(BSP_SPI_1);
+    if(!jhd12864_instance.spi_num)
     {
         return NULL;
     }

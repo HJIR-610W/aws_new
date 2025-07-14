@@ -3,8 +3,7 @@
 #include "fm25cl.h"
 
 #include "bsp_do.h"
-#include "driver_fram_define.h"
-#include "driver_stm32_spi.h"
+#include "bsp_spi.h"
 #include "os_user_def.h"
 #include "system_err.h"
 
@@ -19,100 +18,91 @@
 #define RDSR 	0x05
 #define WREN 	0x06
 
-typedef struct fm25lc_cfg_s
+typedef struct fm25lc_instance_s
 {
-  driver_t *spi_io;
+  int spi_num;
   int cs_do_num;
   void *sem;
-} fm25lc_cfg_t;
+  bool opened;
+} fm25lc_instance_t;
 
-void fm25cl_read(driver_t *fm25cl, uint32_t offset, uint8_t *pBuff,
-                 uint16_t rLen) ;
-void fm25cl_write(driver_t *fm25cl, uint32_t offset, uint8_t *pData, uint16_t wLen);
+void fm25cl_read( uint32_t offset, uint8_t *pBuff,uint16_t rLen) ;
+void fm25cl_write( uint32_t offset, uint8_t *pData, uint16_t wLen);
+uint8_t fm25cl_read_status(void);
 
 
-driver_t g_fm25cl;
-fm25lc_cfg_t g_fm25lc_cfg;
-const fram_api_t fram_api = {.read = fm25cl_read, .write = fm25cl_write};
+fm25lc_instance_t fm25lc_inst;
 
-driver_t *fm25lc_open(void)
+
+void fm25lc_init(void)
 {
-  if (g_fm25cl.opened)
-  {
-    return &g_fm25cl;
-  }
-  g_fm25cl.opened = true;
-  g_fm25cl.api = &fram_api;
+  uint8_t data;
   
-  g_fm25cl.cfg = &g_fm25lc_cfg;
+  if (fm25lc_inst.opened)
+  {
+    return;
+  }
+  fm25lc_inst.opened = true;
+  fm25lc_inst.spi_num = BSP_SPI_1;     // IC 사용해 필요한 하드웨어 연결
+  fm25lc_inst.cs_do_num = BSP_DO_FRAM_CS;
 
-  g_fm25lc_cfg.spi_io = driver_spi_open(STM_SPI_1);     // IC 사용해 필요한 하드웨어 연결
-  g_fm25lc_cfg.cs_do_num = BSP_DO_FRAM_CS;
-  OS_CREATE_BINARY_SEM(g_fm25lc_cfg.sem);
+  OS_CREATE_BINARY_SEM(fm25lc_inst.sem);
+  bsp_spi_init(fm25lc_inst.spi_num);
 
-  return &g_fm25cl;
+  data = fm25cl_read_status();
 }
 
 
- void fram_cmd(driver_t *fm25cl,uint8_t cmd)
+ void fram_cmd(uint8_t cmd)
 {
-  fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
-
-  bsp_do_low(cfg->cs_do_num);    
-  driver_spi_send_byte(cfg->spi_io,cmd);
-  bsp_do_high(cfg->cs_do_num);
+  bsp_do_low(fm25lc_inst.cs_do_num);
+  bsp_spi_send_byte(fm25lc_inst.spi_num, cmd);
+  bsp_do_high(fm25lc_inst.cs_do_num);
 }
 
-
-
-void fm25cl_write(driver_t *fm25cl,uint32_t offset,uint8_t *pData,uint16_t wLen)
+void fm25cl_write(uint32_t offset,uint8_t *pData,uint16_t wLen)
 {
-  fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
-
   
 #if !FRAM_1024
-   fram_cmd(fm25cl,WREN);
+   fram_cmd(WREN);
 #endif
-
-    bsp_do_low(cfg->cs_do_num);
-
-    driver_spi_send_byte(cfg->spi_io,WRITE);
+    bsp_do_low(fm25lc_inst.cs_do_num);
+    bsp_spi_send_byte(fm25lc_inst.spi_num,WRITE);
 #if FRAM_1024
     FRAM_SPI_WRITE_BYTE((addr>>16)&0xFF);
 #endif
-    driver_spi_send_byte(cfg->spi_io,(offset>>8)&0xFF);
-    driver_spi_send_byte(cfg->spi_io,offset&0xFF);
+    bsp_spi_send_byte(fm25lc_inst.spi_num,(offset>>8)&0xFF);
+    bsp_spi_send_byte(fm25lc_inst.spi_num,offset&0xFF);
 
     osDelay(1);
-    driver_spi_send_bytes(cfg->spi_io,pData,wLen);
-    bsp_do_high(cfg->cs_do_num);
+    bsp_spi_send_bytes(fm25lc_inst.spi_num,pData,wLen);
+    bsp_do_high(fm25lc_inst.cs_do_num);
 
 }
 
-void fm25cl_read(driver_t *fm25cl,uint32_t offset,uint8_t *pBuff,uint16_t rLen)
+void fm25cl_read(uint32_t offset,uint8_t *pBuff,uint16_t rLen)
 {
-  fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
   uint32_t i;
 
-  OS_PEND_SEM(fm25cl->sem,osWaitForever);
-  bsp_do_low(cfg->cs_do_num);
+  OS_PEND_SEM(fm25lc_inst.sem, osWaitForever);
+  bsp_do_low(fm25lc_inst.cs_do_num);
 
-  driver_spi_send_byte(cfg->spi_io, READ);
+  bsp_spi_send_byte(fm25lc_inst.spi_num, READ);
 #if FRAM_1024
-        driver_spi_send_byte(cfg->spi_io,(offset>>16)&0xFF);
+        bsp_spi_send_byte(fm25lc_inst.spi_num,(offset>>16)&0xFF);
 #endif    
-        driver_spi_send_byte(cfg->spi_io,(offset>>8)&0xFF);
-        driver_spi_send_byte(cfg->spi_io,offset&0xFF);
+        bsp_spi_send_byte(fm25lc_inst.spi_num,(offset>>8)&0xFF);
+        bsp_spi_send_byte(fm25lc_inst.spi_num,offset&0xFF);
 
     for(i=0;i<rLen;i++)
     {
-        pBuff[i] = driver_spi_read_byte(cfg->spi_io);
+        pBuff[i] = bsp_spi_read_byte(fm25lc_inst.spi_num);
 
     }
     
-    bsp_do_high(cfg->cs_do_num);
+    bsp_do_high(fm25lc_inst.cs_do_num);
 
-    OS_POST_SEM(fm25cl->sem);
+    OS_POST_SEM(fm25lc_inst.sem);
 }
 
 
@@ -167,26 +157,18 @@ void fm25_status_parse(uint8_t status)
     DEBUG_PRINTF("  [주의] Bit 0이 1로 설정됨 (비정상 상태)\r\n");
 }
 
-uint8_t fm25cl_read_status(driver_t *fm25cl)
+uint8_t fm25cl_read_status(void)
 {
-  fm25lc_cfg_t *cfg=(fm25lc_cfg_t*)fm25cl->cfg;
   uint8_t data=0;
 
-  bsp_do_low(cfg->cs_do_num);
-  driver_spi_send_byte(cfg->spi_io,RDSR);
-  data = driver_spi_read_byte(cfg->spi_io);
-  bsp_do_high(cfg->cs_do_num);
+  bsp_do_low(fm25lc_inst.cs_do_num);
+  bsp_spi_send_byte(fm25lc_inst.spi_num, RDSR);
+  data = bsp_spi_read_byte(fm25lc_inst.spi_num);
+  bsp_do_high(fm25lc_inst.cs_do_num);
 
   fm25_status_parse(data);
 
 
   return data;
 
-}
-
-
-void fm25cl_init(driver_t *fm25cl)
-{
-  uint8_t data;
-  data = fm25cl_read_status(fm25cl);
 }

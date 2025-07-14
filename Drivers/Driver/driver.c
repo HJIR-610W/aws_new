@@ -5,6 +5,10 @@
 #include "drv_di.h"
 #include "drv_do.h"
 #include "drv_power.h"
+#include "drv_system.h"
+#include "drv_fram.h"
+#include "drv_flash.h"
+
 void drv_init(void)
 {
   drv_rtc_init();
@@ -12,5 +16,6 @@ void drv_init(void)
   drv_do_init();
   drv_di_init();
   drv_power_init();
-  
+  drv_system_init();
+  drv_flash_init();  
 }

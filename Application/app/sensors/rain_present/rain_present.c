@@ -20,7 +20,7 @@ bool read_sensor_rainPresent(driver_t *driver,uint8_t *err)
 {
   bool data=true;
 
-  if (drv_di_read(DI_RAIN_DETECT>0))
+  if (drv_di_read(DRV_DI_RAIN_DETECT>0))
   {
     data = false;
   }

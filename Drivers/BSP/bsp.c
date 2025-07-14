@@ -1,36 +1,28 @@
 
 #include "bsp.h"
 
+#include "bsp_crc.h"
 #include "bsp_di.h"
 #include "bsp_do.h"
+#include "bsp_i2c.h"
+#include "config_app.h"
 #include "driver_adc.h"
 #include "drv_di.h"
 #include "drv_do.h"
 #include "drv_led.h"
-#include "test_sram.h"
-#include "user_heap.h"
-#include "system_err.h"
-
-#include "config_app.h"
-#include "bsp_crc.h"
-
 #include "fsmc.h"
-#include "tlsf.h"
-
-
-static driver_t *g_power_cdma;
-static driver_t *g_power_rain_detect_digital;
-static driver_t *g_power_hart_24v;
-static driver_t *g_power_rain_detect_analog;
-
-static driver_t *g_adc_stm;
-static driver_t *g_door_status;
-static driver_t *g_port_mode;
-static driver_t *g_status_led;
-
-
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_tim.h"
+#include "system_err.h"
+#include "test_sram.h"
+#include "tlsf.h"
+#include "user_heap.h"
+#include "bsp_delay.h"
+
+static driver_t *g_adc_stm;
+
+uint32_t g_pcb_version = AWS_PCB_VER;
+
 
 TIM_HandleTypeDef        htim4;
 
@@ -403,10 +395,7 @@ void board_config_gpio(GPIO_TypeDef *GPIOx,uint32_t pin,uint32_t mode,uint32_t p
 extern void manual_bss_init(void);
 
 
-int is_debug_mode(void)
-{ 
-  return (CoreDebug->DHCSR & (1 << 0)) != 0; 
-}
+
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -506,13 +495,9 @@ void board_gpio_init(void)
                     GPIO_SPEED_FREQ_LOW, 0);
 }
 
+
 void bsp_init(void)
 {
-  if (is_debug_mode())
-  {
-    __HAL_DBGMCU_FREEZE_IWDG();  // 디버깅 시 와치독 카운트 멈춤
-    __HAL_DBGMCU_FREEZE_RTC();   // 디버깅 시 rtc 타이머 멈춤
-  }
 
   HAL_Init();  // 타이머 4를 초기화 HAL 타이머 틱 인터럽트로 사용
 
@@ -526,9 +511,7 @@ void bsp_init(void)
 
   user_tlsf_init(POOL_SIZE);
 
-  bsp_crc_init();
-  bsp_rtc_init();
-
+  bsp_delay_init();
   bsp_adc_init();
 
 

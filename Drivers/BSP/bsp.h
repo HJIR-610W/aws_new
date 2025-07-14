@@ -14,21 +14,11 @@
 
 
 void bsp_init(void);
-
-
-
 float bsp_read_battery(void);    // 보드 전원
 float bsp_read_temperature(void);// 보드 온도
-
-
-
-
-
-
 void board_clk_gpio(GPIO_TypeDef *GPIOx);
-
 void board_set_gpio(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState);
 void board_config_gpio(GPIO_TypeDef *GPIOx,uint32_t pin,uint32_t mode,uint32_t pull,uint32_t speed,uint32_t alternate);
-
 uint32_t get_apb2_timer_clock(void);
+
 #endif

@@ -2,7 +2,7 @@
 
 #include "Tasks\task_start.h"
 
-#include "App_drivers\app_file.h"
+#include "app_file.h"
 
 #include "App_drivers\app_flash.h"
 
@@ -93,12 +93,12 @@ void startTask(void *arg)
   wdtTask_init();
   mcu_interrupt_init();  // 최우선 실행
 
-  usDelay_init();
+
 
   config_manager_init();// 우선 실행 
   
   menuTask_init();
-  //flash_init();
+
   file_init();
   logging_init();
 

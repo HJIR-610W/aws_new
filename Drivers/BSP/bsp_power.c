@@ -6,6 +6,7 @@ void bsp_power_init(void)
 {
   //bsp do에서 초기화됨
 }
+
 void bsp_power_on(int num)
 {
   switch(num)

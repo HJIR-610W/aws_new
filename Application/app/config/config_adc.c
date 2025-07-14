@@ -100,7 +100,7 @@ void save_config_adc(void)
   g_config_adc.header.crc = crc;
   g_config_adc.header.version = get_app_version(&major,&minor,&fix,&rel);
 
-  fram_write(CONFIG_ADC_START_ADDRESS, (uint8_t *)&g_config_adc, sizeof(g_config_adc));
+  drv_fram_write(CONFIG_ADC_START_ADDRESS, (uint8_t *)&g_config_adc, sizeof(g_config_adc));
 }
 
 
@@ -112,7 +112,7 @@ void load_config_adc(void)
 #if 0
     config_adc_t *p_config = user_malloc(sizeof(config_adc_t));
 
-  fram_read(CONFIG_ADC_START_ADDRESS, (uint8_t *)p_config, sizeof(config_adc_t));
+  drv_fram_read(CONFIG_ADC_START_ADDRESS, (uint8_t *)p_config, sizeof(config_adc_t));
 
   if (p_config->header.magicNum == CONFIG_MAGIC)
   {
@@ -148,11 +148,11 @@ extern config_adc_nvm_t g_adc_config_nvm;
 
 void save_adc_cali(void)
 {
-  fram_write(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config_nvm, sizeof(g_adc_config_nvm));
+  drv_fram_write(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config_nvm, sizeof(g_adc_config_nvm));
 }
 
 void load_adc_cali(void)
 {
-  fram_read(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config_nvm, sizeof(g_adc_config_nvm));
+  drv_fram_read(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config_nvm, sizeof(g_adc_config_nvm));
   adc_config_map();
 }

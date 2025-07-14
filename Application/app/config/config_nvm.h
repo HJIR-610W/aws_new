@@ -14,10 +14,9 @@ typedef struct sensor_nvm_S
 void load_config_nvm(void);
 void save_config_nvm(void);
 
-#define WRITE_NVM(x)                                                          \
-  fram_write(CONFIG_NVM_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_nvm_t, x), \
-             (uint8_t *)&g_config_nvm.x, sizeof(g_config_nvm.x));
-
+#define WRITE_NVM(x)                                                                     \
+  drv_fram_write(CONFIG_NVM_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_nvm_t, x), \
+                 (uint8_t *)&g_config_nvm.x, sizeof(g_config_nvm.x));
 
 config_nvm_t *get_config_nvm(void);
 void nvm_set_log_cnt(uint32_t value);

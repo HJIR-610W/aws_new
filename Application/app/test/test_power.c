@@ -74,12 +74,12 @@ void test_power_signal(void)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          drv_power_on(RV_POWER_LCD_RESET);  
+          drv_power_on(DRV_POWER_LCD_RESET);  
           io_printf("BTM: ON (Low)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          drv_power_off(RV_POWER_LCD_RESET);  
+          drv_power_off(DRV_POWER_LCD_RESET);  
           io_printf("BTM: OFF (High)\r\n");
         }
         else
@@ -91,12 +91,12 @@ void test_power_signal(void)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          drv_power_on(DO_POWER_RAIN_DECT_ANALOG);  // ACTIVE_H ¡æ on=High
+          drv_power_on(DRV_POWER_RAIN_DECT_ANALOG);  // ACTIVE_H ¡æ on=High
           io_printf("rain: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          drv_power_off(DO_POWER_RAIN_DECT_ANALOG);  // ACTIVE_H ¡æ off=Low
+          drv_power_off(DRV_POWER_RAIN_DECT_ANALOG);  // ACTIVE_H ¡æ off=Low
           io_printf("rain: OFF (Low)\r\n");
         }
         else
@@ -108,12 +108,12 @@ void test_power_signal(void)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          drv_power_on(DO_POWER_RAIN_DECT_DIGITAL);  // ACTIVE_H ¡æ on=High
+          drv_power_on(DRV_POWER_RAIN_DECT_DIGITAL);  // ACTIVE_H ¡æ on=High
           io_printf("raind: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          drv_power_off(DO_POWER_RAIN_DECT_DIGITAL);  // ACTIVE_H ¡æ off=Low
+          drv_power_off(DRV_POWER_RAIN_DECT_DIGITAL);  // ACTIVE_H ¡æ off=Low
           io_printf("raind: OFF (Low)\r\n");
         }
         else

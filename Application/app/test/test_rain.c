@@ -33,7 +33,7 @@ void test_rain(void)
 
 
 
-  drv_power_on(DO_POWER_RAIN_DECT_DIGITAL);
+  drv_power_on(DRV_POWER_RAIN_DECT_DIGITAL);
 
 
 
@@ -41,24 +41,24 @@ void test_rain(void)
   isr_cfg.name = "rain_hall";
   isr_cfg.trigger = eDI_FALLING;
   isr_cfg.prio = 5;
-  drv_di_set_interrupt(DI_RAIN_HALL, &isr_cfg);
+  drv_di_set_interrupt(DRV_DI_RAIN_HALL, &isr_cfg);
 
 
   isr_cfg.call = test_rain_reed_callBack ;
   isr_cfg.name = "rain_reed";
   isr_cfg.trigger = eDI_FALLING;
   isr_cfg.prio = 5;
-  drv_di_set_interrupt(DI_RAIN_REED, &isr_cfg);
+  drv_di_set_interrupt(DRV_DI_RAIN_REED, &isr_cfg);
 
   io_printf("우량을 1초 간격으로 입력해주세요\r\n");
   io_printf("우량감지(디지털 주파수형)\r\n");
-  hall_status = drv_di_read(DI_RAIN_HALL_ERR);
+  hall_status = drv_di_read(DRV_DI_RAIN_HALL_ERR);
 
     prev_hall_status = hall_status;
 
   while (1)
   {
-    hall_status = drv_di_read(DI_RAIN_HALL_ERR);
+    hall_status = drv_di_read(DRV_DI_RAIN_HALL_ERR);
     if (once ||hall_status != prev_hall_status)
     {
       if(once==1)

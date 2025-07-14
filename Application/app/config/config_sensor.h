@@ -6,7 +6,7 @@
 
 #include <stdbool.h>
 
-#include "app_fram.h"
+#include "drv_fram.h"
 #include "config_define.h"
 #include "driver_uart.h"
 #include "app_rs232.h"
@@ -130,10 +130,9 @@ typedef struct config_manage_s
   frequency_config_t frequency;
 } config_sensor_t;
 
-#define WRITE_CFG_SENSOR(x)                                                                \
-  fram_write(CONFIG_SENSOR_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_sensor_t, x), \
-             (uint8_t *)&g_config_sensor.x, sizeof(g_config_sensor.x));
-
+#define WRITE_CFG_SENSOR(x)                                                                    \
+  drv_fram_write(CONFIG_SENSOR_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_sensor_t, x), \
+                 (uint8_t *)&g_config_sensor.x, sizeof(g_config_sensor.x));
 
 void save_config_sensor(void);
 void load_config_sensor(void);

@@ -33,7 +33,8 @@ typedef struct {
     bool is_initialized;
 } at45db_chip_info_t;
 
-driver_t *at45db_open(int32_t num);
-at45db_result_t at45db_get_chip_info(driver_t *drv, at45db_chip_info_t *info);
-
+void at45db_init(void);
+at45db_result_t at45db_get_chip_info( at45db_chip_info_t *info);
+int32_t at45db_write(uint32_t offset, uint8_t *pData, uint32_t dataLen);
+void at45db_read(uint32_t offset, uint8_t *pBuff, uint32_t buffSize, uint32_t readLen);
 #endif

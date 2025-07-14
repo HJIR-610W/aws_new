@@ -6,11 +6,12 @@
 
 typedef struct bsp_do_inst_s
 {
+  bool opened;
   GPIO_InitTypeDef init;
   GPIO_TypeDef *port;
 } bsp_do_inst_t;
 
-const bsp_do_inst_t do_inst[BSP_DO_MAX] = {
+ bsp_do_inst_t do_inst[BSP_DO_MAX] = {
     [BSP_DO_POWER_CDMA] = {.init = {.Pin = OUT_PWR_CDMA_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
                            .port = OUT_PWR_CDMA_GPIO_Port},
     [BSP_DO_POWER_HART_24V] = {.init = {.Pin = DO_CON_PWR_S24_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
@@ -62,39 +63,43 @@ void bsp_do_init(void)
 {
   for (int do_num = 0; do_num < BSP_DO_MAX; do_num++)
   {
-    switch (do_num)
-    {
-      case BSP_DO_POWER_CDMA:
-      case BSP_DO_POWER_HART_24V:
-      case BSP_DO_LCD_RESET:
-      case BSP_DO_POWER_RAIN_DECT_DIGITAL:
-      case BSP_DO_POWER_RAIN_DECT_ANALOG:
-      case BSP_DO_ADC_NCS:
-      case BSP_DO_FRAM_CS:
-      case BSP_DO_RTC_CS:
-      case BSP_DO_FLASH_CS:
-      case BSP_DO_DIR_SDI:
-      case BSP_DO_DIR_RS485_A:
-      case BSP_DO_DIR_RS485_B:
-      case BSP_DO_HART_SEL:
-      case BSP_DO_HART_RTS:
-      case BSP_DO_HART_RESET:
-      case BSP_DO_DIR_RS485_C:
-      case BSP_DO_DIR_RS485_D:
-        bsp_do_gpio_init(do_num);
-        break;
-      case BSP_DO_EXT_0:  // App 정의되지 않음
-      case BSP_DO_EXT_1:  // App 정의되지 않음
-      case BSP_DO_EXT_2:  // App 정의되지 않음
-      case BSP_DO_EXT_3:  // App 정의되지 않음
-      case BSP_DO_EXT_4:  // App 정의되지 않음
-      case BSP_DO_EXT_5:  // App 정의되지 않음
-        pcf8575_init();
-        break;
+    if (do_inst[do_num].opened)
+      continue;
+      switch (do_num)
+      {
+        case BSP_DO_POWER_CDMA:
+        case BSP_DO_POWER_HART_24V:
+        case BSP_DO_LCD_RESET:
+        case BSP_DO_POWER_RAIN_DECT_DIGITAL:
+        case BSP_DO_POWER_RAIN_DECT_ANALOG:
+        case BSP_DO_ADC_NCS:
+        case BSP_DO_FRAM_CS:
+        case BSP_DO_RTC_CS:
+        case BSP_DO_FLASH_CS:
+        case BSP_DO_DIR_SDI:
+        case BSP_DO_DIR_RS485_A:
+        case BSP_DO_DIR_RS485_B:
+        case BSP_DO_HART_SEL:
+        case BSP_DO_HART_RTS:
+        case BSP_DO_HART_RESET:
+        case BSP_DO_DIR_RS485_C:
+        case BSP_DO_DIR_RS485_D:
+          bsp_do_gpio_init(do_num);
+          do_inst[do_num].opened = true;
+          break;
+        case BSP_DO_EXT_0:  // App 정의되지 않음
+        case BSP_DO_EXT_1:  // App 정의되지 않음
+        case BSP_DO_EXT_2:  // App 정의되지 않음
+        case BSP_DO_EXT_3:  // App 정의되지 않음
+        case BSP_DO_EXT_4:  // App 정의되지 않음
+        case BSP_DO_EXT_5:  // App 정의되지 않음
+          pcf8575_init();
+          do_inst[do_num].opened = true;
+          break;
 
-      default:
-        break;
-    }
+        default:
+          break;
+      }
   }
 }
 

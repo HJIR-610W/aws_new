@@ -10,7 +10,6 @@
 #define BSP_POWER_RAIN_DECT_DIGITAL 4
 
 
-
 void bsp_power_init(void);
 void bsp_power_on(int num);
 void bsp_power_off(int num);

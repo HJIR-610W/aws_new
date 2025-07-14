@@ -8,6 +8,11 @@
 #include "os_user_def.h"
 
 
+#define AWS_PCB_0_1 1
+#define AWS_PCB_0_3 3
+#define AWS_PCB_0_5 5
+
+
 /*
 외부 SRAM:IS61WV204816BLL-xxTLI 4MB
 MCU SRAM:192KB(112+16+64(CCM))
@@ -21,7 +26,7 @@ PCB 0.3 20250120
 수정:전원 제어 회로,주파수 회로 등
 
 */
-#define AWS_PCB_VER 5  //0.1=> 1, 0.3 => 3 ,0.5 => 5
+#define AWS_PCB_VER AWS_PCB_0_5  // 0.1=> 1, 0.3 => 3 ,0.5 => 5
 
 #if (AWS_PCB_VER==1)
 #define IN_RAIN_ERR_Pin              GPIO_PIN_6
