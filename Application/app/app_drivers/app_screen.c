@@ -128,7 +128,13 @@ void screen_menu_create(screen_menu_t* win, int rows, int cols)
 
   win->scroll_offset = 0;
   win->total_items = 0;
-  win->selected_index = 0;  // 첫 번째 항목이 기본 선택
+  win->selected_index = 0;  // 첫 번째 메뉴 항목이 기본 선택
+  memset(win->title, 0, sizeof(win->title));  // 타이틀 초기화
+}
+
+void screen_menu_title(screen_menu_t *win,const char *title)
+{
+  snprintf(win->title, sizeof(win->title), "%s",title);
 }
 
 void screen_menu_clear(screen_menu_t* win)
@@ -306,6 +312,32 @@ void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* forma
   int i;
   int text_len;
   char selection_indicator;
+  int title_offset = 0;
+
+  // 타이틀이 있으면 항상 첫 번째 행에 타이틀 표시 (스크롤과 무관하게)
+  if (strlen(win->title) > 0)
+  {
+    if (win->current_row == 0)
+    {
+      screen_set_cursor(0, 0);
+      text_len = strlen(win->title);
+      
+      // 타이틀은 선택 표시 없이 출력
+      for (i = 0; i < text_len && i < win->view_col; i++)
+      {
+        screen_put_ch(0, i, win->title[i]);
+      }
+      
+      // 나머지 공간을 공백으로 채움
+      for (i = text_len; i < win->view_col; i++)
+      {
+        screen_put_ch(0, i, ' ');
+      }
+      
+      win->current_row++;
+    }
+    title_offset = 1;
+  }
 
   if (win->current_row >= win->view_row)
   {
@@ -319,9 +351,10 @@ void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* forma
 
   cols = win->view_col;
 
-  if (row_index >= win->scroll_offset && row_index < win->scroll_offset + win->view_row)
+  // 타이틀 오프셋을 고려하여 스크롤 범위 조정
+  if (row_index >= win->scroll_offset && row_index < win->scroll_offset + win->view_row - title_offset)
   {
-    display_row = row_index - win->scroll_offset;
+    display_row = row_index - win->scroll_offset + title_offset;
 
     screen_set_cursor(display_row, 0);
 
@@ -354,12 +387,17 @@ void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* forma
 }
 void screen_menu_handle(screen_menu_t* win, int key)
 {
+  int title_offset = (strlen(win->title) > 0) ? 1 : 0;
+  int effective_view_row = win->view_row - title_offset;
+  
   switch (key)
   {
     case KEY_CODE_UP:  // 위로 이동
       if (win->selected_index > 0)
       {
-        win->selected_index--;
+
+               win->selected_index--;
+    
         
         // 선택된 항목이 화면 위쪽을 벗어나면 스크롤
         if (win->selected_index < win->scroll_offset)
@@ -375,9 +413,9 @@ void screen_menu_handle(screen_menu_t* win, int key)
         win->selected_index++;
         
         // 선택된 항목이 화면 아래쪽을 벗어나면 스크롤
-        if (win->selected_index >= win->scroll_offset + win->view_row)
+        if (win->selected_index >= win->scroll_offset + effective_view_row)
         {
-          win->scroll_offset = win->selected_index - win->view_row + 1;
+          win->scroll_offset = win->selected_index - effective_view_row + 1;
         }
       }
       break;
@@ -388,14 +426,14 @@ void screen_menu_clear_row(screen_menu_t* win, int row_index)
 {
   int i;
   int display_row;
-
+  int title_offset = (strlen(win->title) > 0) ? 1 : 0;
 
   if (win->current_row >= win->view_row)
   {
     return;
   }
 
-  display_row = row_index - win->scroll_offset;
+  display_row = row_index - win->scroll_offset + title_offset;
 
   // 나머지 공간을 공백으로 채움
   for (i = 0; i < win->view_col; i++)

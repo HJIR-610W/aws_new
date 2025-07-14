@@ -435,7 +435,7 @@ int32_t setup_menu_manager(void)
   screen_menu_t menu;
 
   screen_menu_create(&menu, 8, 20);
-
+  screen_menu_title(&menu,"MANAGER");
   while (1)
   {
     draw_setup_menu_manager_page(&menu);

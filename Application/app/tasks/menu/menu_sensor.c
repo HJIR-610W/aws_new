@@ -955,7 +955,7 @@ int32_t setup_menu_sensor(void)
   screen_menu_t menu;
 
   screen_menu_create(&menu, 8, 20);
-
+  screen_menu_title(&menu, "SENSOR");
   while (1)
   {
     draw_menu_sensor_page(&menu);

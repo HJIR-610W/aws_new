@@ -59,7 +59,7 @@ int32_t setup_menu_panel(void)
   screen_menu_t menu;
 
   screen_menu_create(&menu, 8, 20);
-
+  screen_menu_title(&menu, "PANEL");
   while (1)
   {
     draw_setup_menu_panel_page(&menu);
@@ -85,7 +85,7 @@ int32_t setup_menu_panel(void)
         case PANEL_MENU_MODEL:
         {
           choice = config.panel_model;
-          status = print_menu_list(panel_list_eng, _countof(panel_list_eng), &choice);
+          status = input_combobox("Panel Model",panel_list_eng, _countof(panel_list_eng), &choice);
           if (status != MENU_OK)
             break;
           config.panel_model = (ePANEL_MODEL_t)choice;

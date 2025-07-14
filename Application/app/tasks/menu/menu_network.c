@@ -10,7 +10,7 @@
 #include "view_driver.h"
 #include "util_memory.h"
 #include "common\const_string.h"
-
+#include "app_screen.h"
 #define SCREEN_COLS 20
 #define NETWORK_WD 10
 
@@ -45,13 +45,13 @@ void draw_network_main_page(screen_menu_t* p_win)
            ITEM_LIST(get_config_app()->direct_active, enable_list_eng));
 
   screen_update_list(p_win, row_count, NETWORK_MENU_ETH_CONFIG);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Eth Config");
+  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Ethernet");
 
   screen_update_list(p_win, row_count, NETWORK_MENU_CDMA_CONFIG);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "CDMA Config");
+  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "CDMA");
 
   screen_update_list(p_win, row_count, NETWORK_MENU_DIRECT_CONFIG);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Direct Config");
+  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Direct");
 
   screen_update_list(p_win, row_count, NETWORK_MENU_AWS_PROTOCOL);
   M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Protocol", 
@@ -276,7 +276,10 @@ int32_t setup_menu_network(void)
   screen_menu_t menu;
   int32_t index;
 
+
+  
   screen_menu_create(&menu, 8, 20);
+  screen_menu_title(&menu, "NETWORK");
 
   while (1)
   {
@@ -302,7 +305,7 @@ int32_t setup_menu_network(void)
       {
         case NETWORK_MENU_ETH_USE:
           choice = get_config_app()->eth_active;
-          status = input_active("Ethernet", &choice);
+          status = input_active("Use Ethernet?", &choice);
           if (status == MENU_OK)
           {
             get_config_app()->eth_active = choice;
@@ -311,7 +314,7 @@ int32_t setup_menu_network(void)
           break;
         case NETWORK_MENU_CDMA_USE:
           choice = get_config_app()->cdma_active;
-          status = input_active("Cdma",  &choice);
+          status = input_active("Use Cdma?",  &choice);
           if (status == MENU_OK)
           {
             get_config_app()->cdma_active = choice;
@@ -325,7 +328,7 @@ int32_t setup_menu_network(void)
           break;
         case NETWORK_MENU_DIRECT_USE:
           choice = get_config_app()->direct_active;
-          status = input_active("Direct",  &choice);
+          status = input_active("Use Direct?",  &choice);
           if (status == MENU_OK)
           {
             get_config_app()->direct_active = choice;

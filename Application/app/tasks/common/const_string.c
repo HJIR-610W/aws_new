@@ -1,6 +1,6 @@
 
 
-const char* enable_list_eng[] = {"Disable", "Enable"};
+const char* enable_list_eng[] = {"Disabled", "Enabled"};
 
 const char* panel_list_eng[] = {"AWS STD", "HJ STD", "MOOJU", "HANSUNG"};
 

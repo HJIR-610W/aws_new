@@ -139,12 +139,12 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_setup.c</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_manager.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_power.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\CDMA\modem_if.h</file>
+            <file>$PROJ_DIR$\..\application\communications\CDMA\modem_if.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\old_aws_sms.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\CDMA\task_cellular.h</file>
+            <file>$PROJ_DIR$\..\application\communications\CDMA\task_cellular.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\Direct\task_direct.h</file>
+            <file>$PROJ_DIR$\..\application\communications\Direct\task_direct.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\Ethernet\app_socket.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_lcd.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_rs485.c</file>
@@ -165,7 +165,7 @@
             <file>$PROJ_DIR$\..\application\app\version\hj_product_list.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\modem_sms.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\CDMA\at_cmd.h</file>
+            <file>$PROJ_DIR$\..\application\communications\CDMA\at_cmd.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\old_aws_sms.c</file>
             <file>$PROJ_DIR$\..\Application\app\version\boot_version.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_meomoy.c</file>
@@ -193,7 +193,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.c</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.c</file>
-            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\application\os_user_def.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.h</file>
@@ -1987,7 +1987,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\raw_priv.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip4_frag.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_utile.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_core.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ethip6.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp.h</file>
@@ -1995,7 +1995,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif_opts.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\aws_processor.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_offset.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\tcp_priv.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcpbase.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netbuf.h</file>
@@ -2050,7 +2050,7 @@
             <file>$PROJ_DIR$\..\application\app\test\test_power.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_sdi12.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\aws\parse_aws.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\slipif.h</file>
@@ -2068,13 +2068,13 @@
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_dataLogging.h</file>
             <file>$PROJ_DIR$\..\application\app\test\task_test.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_adc.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\utile_data.h</file>
             <file>$PROJ_DIR$\..\Middlewares\modem\ymodem.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_fram.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_calibration.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_power.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_flash.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_ethernet.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bits_.h</file>
@@ -2146,7 +2146,7 @@
             <file>$PROJ_DIR$\release\Obj\panel.xcl</file>
             <file>$PROJ_DIR$\release\Obj\drv_fram.__cstat.et</file>
             <file>$PROJ_DIR$\..\Application\test\test_dinOut.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\Ethernet\task_client.h</file>
+            <file>$PROJ_DIR$\..\application\communications\Ethernet\task_client.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_led.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\system_stm32f4xx.o</file>
             <file>$PROJ_DIR$\release\Obj\drv_di.xcl</file>
@@ -2165,7 +2165,7 @@
             <file>$PROJ_DIR$\..\Application\test\test_lcd.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ip4.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\arch.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\Ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\Ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sys.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcpip.h</file>
             <file>$TOOLKIT_DIR$\inc\c\time.h</file>
@@ -4778,7 +4778,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2074 1796 1183 1871 2099 1706 1521 1500 2176 1961 1960 2346 2339 513 1446 1837 1989 2041 2067 1953</file>
+                    <file> 2074 1796 1183 1871 2099 1706 1521 1500 2176 1961 1960 2346 2339 513 1446 1837 1989 2041 2067 1953 1997 1900 335 340 326 2085 2031 1439 2137</file>
                 </tool>
             </inputs>
         </file>

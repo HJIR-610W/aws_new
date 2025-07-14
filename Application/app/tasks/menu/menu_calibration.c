@@ -53,6 +53,8 @@ void draw_setup_menu_calibration_page(screen_menu_t* p_win)
   screen_update_list(p_win, row_count, CALI_MENU_INIT);
   MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "INIT");
 
+
+
   p_win->total_items = row_count;
 
   while (p_win->current_row < p_win->view_row)
@@ -262,7 +264,7 @@ int32_t cali_setup_menu_factory(void)
   screen_menu_t menu;
 
   screen_menu_create(&menu, 8, 20);
-
+  screen_menu_title(&menu, "Factory Cali");
   while (1)
   {
     draw_cali_setup_menu_factory_page(&menu);
@@ -470,7 +472,7 @@ int32_t cali_setup_menu_view(void)
   screen_menu_t menu;
 
   screen_menu_create(&menu, 8, 20);
-
+  screen_menu_title(&menu, "VIEW");
   while (1)
   {
     draw_cali_setup_menu_view_page(&menu);
@@ -593,7 +595,7 @@ int32_t setup_menu_calibration(void)
 
   screen_menu_create(&menu, 8, 20);
 
-  snprintf(menu.title, sizeof(menu.title), "%s", "Calibraion");
+  screen_menu_title(&menu, "Calibraion");
 
   while (1)
   {
