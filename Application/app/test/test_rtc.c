@@ -12,29 +12,29 @@ void test_rtc(void)
 {
   DATE_TIME_BUF Date_Time;
   driver_t *rtc;
-  io_printf("RTC Å×½ºÆ® ½ÃÀÛ (1ÃÊ¸¶´Ù ÇöÀç ½Ã°£ Ãâ·Â)\r\n");
-  io_printf("CTRL+Q ÀÔ·Â ½Ã Á¾·á\r\n");
+  io_printf("RTC í…ŒìŠ¤íŠ¸ ì‹œì‘ (1ì´ˆë§ˆë‹¤ í˜„ì¬ ì‹œê°„ ì¶œë ¥)\r\n");
+  io_printf("CTRL+Q ì…ë ¥ ì‹œ ì¢…ë£Œ\r\n");
 
   drv_rtc_init();
 
   while (1)
   {
-    // RTC ÀĞ±â
+    // RTC ì½ê¸°
     if (drv_rtc_read(&Date_Time) == 0)
     {
-      // ½Ã°£ Ãâ·Â
-      io_printf("ÇöÀç ½Ã°£: %04d-%02d-%02d %02d:%02d:%02d\r\n", Date_Time.Year,
+      // ì‹œê°„ ì¶œë ¥
+      io_printf("í˜„ì¬ ì‹œê°„: %04d-%02d-%02d %02d:%02d:%02d\r\n", Date_Time.Year,
                    Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
     }
     else
     {
-      io_printf("RTC ÀĞ±â ½ÇÆĞ\r\n");
+      io_printf("RTC ì½ê¸° ì‹¤íŒ¨\r\n");
     }
 
-    // 1ÃÊ ´ë±â ¹× Å° Ã¼Å©
+    // 1ì´ˆ ëŒ€ê¸° ë° í‚¤ ì²´í¬
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
-      io_printf("Å×½ºÆ® Á¾·á (CTRL+Q °¨Áö)\r\n");
+      io_printf("í…ŒìŠ¤íŠ¸ ì¢…ë£Œ (CTRL+Q ê°ì§€)\r\n");
       break;
     }
   }

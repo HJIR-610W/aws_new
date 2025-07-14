@@ -6,14 +6,14 @@
 #include "stm32f4xx.h"
 
 
-/* IRQ 테이블 정의 */
+/* IRQ ?뚯씠釉??뺤쓽 */
 typedef struct
 {
   int irq_num;
   const char* name;
 } IRQ_Info;
 
-/* IRQ 이름 테이블 */
+/* IRQ ?대쫫 ?뚯씠釉?*/
 IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {1, "PVD"},
                         {2, "TAMP_STAMP"},
@@ -98,7 +98,7 @@ IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {81, "FPU"}};
 #define NUM_IRQS (sizeof(IRQ_Table) / sizeof(IRQ_Info))
 
-/* EXTI 라인의 GPIO 매핑 확인 */
+/* EXTI ?쇱씤??GPIO 留ㅽ븨 ?뺤씤 */
 const char* GetEXTIPortPinMapping(uint8_t exti_line)
 {
   static char buffer[32];
@@ -165,12 +165,12 @@ const char* GetEXTIPortPinMapping(uint8_t exti_line)
   return buffer;
 }
 
-/* EXTI 그룹 인터럽트 매핑 (예: EXTI9_5, EXTI15_10) */
+/* EXTI 洹몃９ ?명꽣?쏀듃 留ㅽ븨 (?? EXTI9_5, EXTI15_10) */
 const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
 {
   static char buffer[128];
   char temp[32];
-  buffer[0] = '\0';  // 초기화
+  buffer[0] = '\0';  // 珥덇린??
 
   for (uint8_t line = start_line; line < start_line + 5; line++)
   {
@@ -182,7 +182,7 @@ const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
     }
   }
 
-  // 마지막 쉼표 제거
+  // 留덉?留??쇳몴 ?쒓굅
   size_t len = strlen(buffer);
   if (len > 0 && buffer[len - 1] == ',')
   {
@@ -196,7 +196,7 @@ const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
 
 #include "stm32f4xx.h"
 
-// DMA1 스트림 요청 매핑 테이블
+// DMA1 ?ㅽ듃由??붿껌 留ㅽ븨 ?뚯씠釉?
 const char* dma1_mapping[8][8] = {
     {"SPI3_RX", "I2C1_RX", "TIM4_CH1", "I2S3_EXT_RX", "UART5_RX", "UART8_TX",
      "TIM5_CH3", "-"},  // Stream 0
@@ -216,7 +216,7 @@ const char* dma1_mapping[8][8] = {
      "-"}  // Stream 7
 };
 
-// DMA2 스트림 요청 매핑 테이블
+// DMA2 ?ㅽ듃由??붿껌 留ㅽ븨 ?뚯씠釉?
 const char* dma2_mapping[8][8] = {
     {"ADC1", "-", "ADC3", "SPI1_RX", "SPI4_RX", "-", "TIM5_CH3",
      "-"},  // Stream 0
@@ -230,25 +230,25 @@ const char* dma2_mapping[8][8] = {
     {"-", "-", "TIM1_CH4", "-", "USART1_TX", "-", "-", "-"}   // Stream 7
 };
 
-// DMA 스트림 정보를 반환하는 함수
+// DMA ?ㅽ듃由??뺣낫瑜?諛섑솚?섎뒗 ?⑥닔
 void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum,
                                   uint8_t stream)
 {
-  // 매핑 테이블 선택
+  // 留ㅽ븨 ?뚯씠釉??좏깮
   const char*(*mapping)[8] = (dmaNum == 1) ? dma1_mapping : dma2_mapping;
 
-  // DMA 스트림의 채널 선택 확인
+  // DMA ?ㅽ듃由쇱쓽 梨꾨꼸 ?좏깮 ?뺤씤
   DMA_Stream_TypeDef* dmaStream =
       (dmaNum == 1)
           ? ((DMA_Stream_TypeDef*)((uint32_t)DMA1_Stream0 + stream * 0x18))
           : ((DMA_Stream_TypeDef*)((uint32_t)DMA2_Stream0 + stream * 0x18));
   uint8_t channel = (dmaStream->CR & DMA_SxCR_CHSEL) >> DMA_SxCR_CHSEL_Pos;
 
-  // 스트림 및 채널 정보 출력
+  // ?ㅽ듃由?諛?梨꾨꼸 ?뺣낫 異쒕젰
   snprintf(buff, buffSize, "%s (Ch:%d)", mapping[stream][channel], channel);
 }
 
-/* 소스 디테일 가져오기 */
+/* ?뚯뒪 ?뷀뀒??媛?몄삤湲?*/
 const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 {
   uint32_t reg1;
@@ -537,7 +537,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
   return buffer;
 }
 
-/* 모든 인터럽트 출력 */
+/* 紐⑤뱺 ?명꽣?쏀듃 異쒕젰 */
 void PrintAllInterrupts(void)
 {
   uint32_t iser_value;
@@ -556,7 +556,7 @@ void PrintAllInterrupts(void)
 
   for (irq_num = 0; irq_num < NUM_IRQS; irq_num++)
   {
-    // NVIC 활성화 확인
+    // NVIC ?쒖꽦???뺤씤
     if (irq_num < 32)
     {
       iser_value = NVIC->ISER[0];
@@ -597,14 +597,14 @@ void PrintAllInterrupts(void)
 #include "dev_io.h"
 #include "stm32f4xx.h"
 
-/* IRQ 테이블 구조체 */
+/* IRQ ?뚯씠釉?援ъ“泥?*/
 typedef struct
 {
   int irq_num;
   const char* name;
 } IRQ_Info;
 
-/* STM32F407 정확한 IRQ 이름 테이블 (82개 인터럽트) */
+/* STM32F407 ?뺥솗??IRQ ?대쫫 ?뚯씠釉?(82媛??명꽣?쏀듃) */
 IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {1, "PVD"},
                         {2, "TAMP_STAMP"},
@@ -689,7 +689,7 @@ IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {81, "FPU"}};
 #define NUM_IRQS (sizeof(IRQ_Table) / sizeof(IRQ_Info))
 
-/* EXTI 라인의 GPIO 매핑 확인 */
+/* EXTI ?쇱씤??GPIO 留ㅽ븨 ?뺤씤 */
 const char* GetEXTIPortPinMapping(uint8_t exti_line)
 {
   static char buffer[32];
@@ -756,7 +756,7 @@ const char* GetEXTIPortPinMapping(uint8_t exti_line)
   return buffer;
 }
 
-/* EXTI 그룹 인터럽트 매핑 */
+/* EXTI 洹몃９ ?명꽣?쏀듃 留ㅽ븨 */
 const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
 {
   static char buffer[128];
@@ -782,7 +782,7 @@ const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
   return buffer;
 }
 
-/* STM32F407 전용 DMA1 스트림 채널 매핑 테이블 */
+/* STM32F407 ?꾩슜 DMA1 ?ㅽ듃由?梨꾨꼸 留ㅽ븨 ?뚯씠釉?*/
 const char* dma1_mapping[8][8] = {
     {"SPI3_RX", "I2C1_RX", "TIM4_CH1", "I2S3_EXT_RX", "UART5_RX", "RESERVED", "TIM5_CH3",
      "TIM5_UP"},
@@ -796,7 +796,7 @@ const char* dma1_mapping[8][8] = {
     {"I2C1_TX", "TIM2_CH2", "TIM4_UP", "TIM2_CH1", "TIM3_CH1", "USART2_TX", "TIM5_UP", "DAC2"},
     {"SPI3_TX", "I2C1_TX", "TIM4_CH3", "TIM2_CH4", "UART5_TX", "TIM3_CH3", "I2C2_TX", "TIM4_CC"}};
 
-/* STM32F407 정확한 DMA2 스트림 채널 매핑 테이블 */
+/* STM32F407 ?뺥솗??DMA2 ?ㅽ듃由?梨꾨꼸 留ㅽ븨 ?뚯씠釉?*/
 const char* dma2_mapping[8][8] = {
     {"ADC1", "RESERVED", "ADC3", "SPI1_RX", "RESERVED", "USART6_RX", "TIM1_CH1/CH2/CH3", "TIM8_UP"},
     {"RESERVED", "DCMI", "ADC3", "RESERVED", "RESERVED", "USART6_RX", "TIM1_CH1", "TIM8_CH1"},
@@ -811,7 +811,7 @@ const char* dma2_mapping[8][8] = {
     {"RESERVED", "TIM8_UP", "TIM8_CH4/TRIG/COM", "TIM1_CH4/TRIG/COM", "USART1_TX", "TIM1_UP",
      "USART6_TX", "USART1_TX"}};
 
-/* DMA 스트림 정보를 반환하는 함수 */
+/* DMA ?ㅽ듃由??뺣낫瑜?諛섑솚?섎뒗 ?⑥닔 */
 void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum, uint8_t stream)
 {
   const char*(*mapping)[8] = (dmaNum == 1) ? dma1_mapping : dma2_mapping;
@@ -825,7 +825,7 @@ void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum,
   snprintf(buff, buffSize, "%s (Ch:%d)", mapping[stream][channel], channel);
 }
 
-/* 인터럽트 소스 디테일 가져오기 */
+/* ?명꽣?쏀듃 ?뚯뒪 ?뷀뀒??媛?몄삤湲?*/
 const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 {
   uint32_t reg1, reg;
@@ -858,7 +858,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
                GetEXTIGroupMapping((reg1 & 0xFC00), 10));
       break;
 
-    // USART/UART (STM32F407에서 지원하는 것만)
+    // USART/UART (STM32F407?먯꽌 吏?먰븯??寃껊쭔)
     case USART1_IRQn:
     case USART2_IRQn:
     case USART3_IRQn:
@@ -879,7 +879,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       break;
     }
 
-    // SPI (STM32F407에서 지원하는 것만)
+    // SPI (STM32F407?먯꽌 吏?먰븯??寃껊쭔)
     case SPI1_IRQn:
     case SPI2_IRQn:
     case SPI3_IRQn:
@@ -891,7 +891,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       break;
     }
 
-    // DMA 스트림들
+    // DMA ?ㅽ듃由쇰뱾
     case DMA1_Stream0_IRQn:
       Print_DMA_Stream_Peripherals(temp, sizeof(temp), 1, 0);
       goto DMA_PRINT;
@@ -949,7 +949,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
                (reg & DMA_SxCR_TCIE) != 0, (reg & DMA_SxCR_HTIE) != 0, (reg & DMA_SxCR_TEIE) != 0);
       break;
 
-    // 타이머들
+    // ??대㉧??
     case TIM1_BRK_TIM9_IRQn:
       reg = TIM1->DIER;
       reg1 = TIM9->DIER;
@@ -1236,7 +1236,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       return buffer;
   }
 
-  /* 모든 인터럽트 출력 */
+  /* 紐⑤뱺 ?명꽣?쏀듃 異쒕젰 */
   void PrintAllInterrupts(void)
   {
     uint32_t iser_value;
@@ -1252,7 +1252,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 
     for (irq_num = 0; irq_num < NUM_IRQS; irq_num++)
     {
-      // NVIC 활성화 확인
+      // NVIC ?쒖꽦???뺤씤
       if (irq_num < 32)
       {
         iser_value = NVIC->ISER[0];
@@ -1293,14 +1293,14 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 #include "dev_io.h"
 #include "stm32f4xx.h"
 
-/* IRQ 테이블 구조체 */
+/* IRQ ?뚯씠釉?援ъ“泥?*/
 typedef struct
 {
   int irq_num;
   const char* name;
 } IRQ_Info;
 
-/* STM32F407 정확한 IRQ 이름 테이블 (82개 인터럽트) */
+/* STM32F407 ?뺥솗??IRQ ?대쫫 ?뚯씠釉?(82媛??명꽣?쏀듃) */
 IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {1, "PVD"},
                         {2, "TAMP_STAMP"},
@@ -1385,7 +1385,7 @@ IRQ_Info IRQ_Table[] = {{0, "WWDG"},
                         {81, "FPU"}};
 #define NUM_IRQS (sizeof(IRQ_Table) / sizeof(IRQ_Info))
 
-/* EXTI 라인의 GPIO 매핑 확인 */
+/* EXTI ?쇱씤??GPIO 留ㅽ븨 ?뺤씤 */
 const char* GetEXTIPortPinMapping(uint8_t exti_line)
 {
   static char buffer[32];
@@ -1452,7 +1452,7 @@ const char* GetEXTIPortPinMapping(uint8_t exti_line)
   return buffer;
 }
 
-/* EXTI 그룹 인터럽트 매핑 */
+/* EXTI 洹몃９ ?명꽣?쏀듃 留ㅽ븨 */
 const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
 {
   static char buffer[128];
@@ -1478,7 +1478,7 @@ const char* GetEXTIGroupMapping(uint16_t exti_mask, uint8_t start_line)
   return buffer;
 }
 
-/* STM32F407 공식 DMA1 스트림 채널 매핑 테이블 (RM0090 Table 43) */
+/* STM32F407 怨듭떇 DMA1 ?ㅽ듃由?梨꾨꼸 留ㅽ븨 ?뚯씠釉?(RM0090 Table 43) */
 const char* dma1_mapping[8][8] = {
     {"SPI3_RX", "I2C1_RX", "TIM4_CH1", "I2S3_EXT_RX", "UART5_RX", "UART8_TX", "TIM5_CH3/TIM5_UP",
      "SPI3_TX"},
@@ -1495,7 +1495,7 @@ const char* dma1_mapping[8][8] = {
      "TIM5_UP", "-"},
     {"-", "TIM6_UP", "I2C2_RX", "I2C2_RX", "USART3_TX", "DAC1", "DAC2", "I2C2_TX"}};
 
-/* STM32F407 공식 DMA2 스트림 채널 매핑 테이블 (RM0090 Table 44) */
+/* STM32F407 怨듭떇 DMA2 ?ㅽ듃由?梨꾨꼸 留ㅽ븨 ?뚯씠釉?(RM0090 Table 44) */
 const char* dma2_mapping[8][8] = {
     {"ADC1", "-", "ADC3", "SPI1_RX", "SPI4_RX", "-", "TIM1_CH1/TIM1_CH2/TIM1_CH3", "-"},
     {"-", "DCMI", "ADC3", "-", "-", "USART6_RX", "SPI6_RX", "DCMI"},
@@ -1508,7 +1508,7 @@ const char* dma2_mapping[8][8] = {
     {"-", "TIM8_UP", "TIM8_CH1", "TIM8_CH2", "TIM8_CH3", "SPI5_RX", "SPI5_TX",
      "TIM8_CH4/TIM8_TRIG/TIM8_COM"}};
 
-/* DMA 스트림 정보를 반환하는 함수 (상세 정보 포함) */
+/* DMA ?ㅽ듃由??뺣낫瑜?諛섑솚?섎뒗 ?⑥닔 (?곸꽭 ?뺣낫 ?ы븿) */
 void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum, uint8_t stream)
 {
   const char*(*mapping)[8] = (dmaNum == 1) ? dma1_mapping : dma2_mapping;
@@ -1520,7 +1520,7 @@ void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum,
   uint8_t channel = (dmaStream->CR & DMA_SxCR_CHSEL) >> DMA_SxCR_CHSEL_Pos;
   uint32_t cr = dmaStream->CR;
 
-  // 방향 확인
+  // 諛⑺뼢 ?뺤씤
   const char* direction = "";
   if (cr & DMA_SxCR_DIR_1)
   {
@@ -1535,13 +1535,13 @@ void Print_DMA_Stream_Peripherals(char* buff, uint16_t buffSize, uint8_t dmaNum,
     direction = "_P2M";  // Peripheral to Memory
   }
 
-  // 활성화 상태 확인
+  // ?쒖꽦???곹깭 ?뺤씤
   const char* status = (cr & DMA_SxCR_EN) ? "ACTIVE" : "IDLE";
 
   snprintf(buff, buffSize, "%s (Ch:%d%s,%s)", mapping[stream][channel], channel, direction, status);
 }
 
-/* 인터럽트 소스 디테일 가져오기 */
+/* ?명꽣?쏀듃 ?뚯뒪 ?뷀뀒??媛?몄삤湲?*/
 const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 {
   uint32_t reg1, reg;
@@ -1574,7 +1574,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
                GetEXTIGroupMapping((reg1 & 0xFC00), 10));
       break;
 
-    // USART/UART (STM32F407에서 지원하는 것만)
+    // USART/UART (STM32F407?먯꽌 吏?먰븯??寃껊쭔)
     case USART1_IRQn:
     case USART2_IRQn:
     case USART3_IRQn:
@@ -1595,7 +1595,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       break;
     }
 
-    // SPI (STM32F407에서 지원하는 것만)
+    // SPI (STM32F407?먯꽌 吏?먰븯??寃껊쭔)
     case SPI1_IRQn:
     case SPI2_IRQn:
     case SPI3_IRQn:
@@ -1607,7 +1607,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       break;
     }
 
-    // DMA 스트림들
+    // DMA ?ㅽ듃由쇰뱾
     case DMA1_Stream0_IRQn:
       Print_DMA_Stream_Peripherals(temp, sizeof(temp), 1, 0);
       goto DMA_PRINT;
@@ -1665,7 +1665,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
                (reg & DMA_SxCR_TCIE) != 0, (reg & DMA_SxCR_HTIE) != 0, (reg & DMA_SxCR_TEIE) != 0);
       break;
 
-    // 타이머들
+    // ??대㉧??
     case TIM1_BRK_TIM9_IRQn:
       reg = TIM1->DIER;
       reg1 = TIM9->DIER;
@@ -1964,7 +1964,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       return buffer;
   }
 
-  /* 모든 인터럽트 출력 */
+  /* 紐⑤뱺 ?명꽣?쏀듃 異쒕젰 */
   void PrintAllInterrupts(void)
   {
     uint32_t iser_value;
@@ -1980,7 +1980,7 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
 
     for (irq_num = 0; irq_num < NUM_IRQS; irq_num++)
     {
-      // NVIC 활성화 확인
+      // NVIC ?쒖꽦???뺤씤
       if (irq_num < 32)
       {
         iser_value = NVIC->ISER[0];

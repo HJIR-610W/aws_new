@@ -3,7 +3,7 @@
 
 void bsp_fram_init(void)
 {
-  fm25cl_init();
+   fm25lc_init();
 }
 void bsp_fram_read(uint32_t offset, unsigned char* pBuff, uint16_t rLen)
 {

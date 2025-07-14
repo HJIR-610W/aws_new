@@ -19,8 +19,8 @@ void test_freq(void)
   uint8_t err=0;
 
 
-  io_printf("ÃÖ¼Ò ÁÖÆÄ¼ö ¾à 15.26 Hz ÀÌ»óºÎÅÍ ÃøÁ¤°¡´É\r\n");
-  io_printf("¾Æ¹«Å°³ª ÀÔ·ÂÇÏ¸é ÃøÁ¤ ½ÃÀÛ");
+  io_printf("ìµœì†Œ ì£¼íŒŒìˆ˜ ì•½ 15.26 Hz ì´ìƒë¶€í„° ì¸¡ì •ê°€ëŠ¥\r\n");
+  io_printf("ì•„ë¬´í‚¤ë‚˜ ì…ë ¥í•˜ë©´ ì¸¡ì • ì‹œì‘");
   get_key(0xFFFFFFFF);
 
   count_b = driver_freq_open(FREQ_MEAURE_B);
@@ -35,7 +35,7 @@ void test_freq(void)
 
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
-      io_printf("Å×½ºÆ® Á¾·á (CTRL+Q °¨Áö)\r\n");
+      io_printf("í…ŒìŠ¤íŠ¸ ì¢…ë£Œ (CTRL+Q ê°ì§€)\r\n");
       break;
     }
   }

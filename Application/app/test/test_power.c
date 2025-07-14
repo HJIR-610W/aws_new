@@ -13,26 +13,26 @@
 void test_power_signal(void)
 {
 
-  io_printf("ÆÄ¿ö ½ÅÈ£ Á¦¾î Å×½ºÆ® ½ÃÀÛ\r\n");
-  io_printf("ÀÔ·Â ¿¹: cdma,on  ¶Ç´Â  24v,off  ¶Ç´Â  btm,on\r\n");
-  io_printf("CTRL+C ÀÔ·Â ½Ã Á¾·á\r\n");
+  io_printf("íŒŒì›Œ ì‹ í˜¸ ì œì–´ í…ŒìŠ¤íŠ¸ ì‹œì‘\r\n");
+  io_printf("ì…ë ¥ ì˜ˆ: cdma,on  ë˜ëŠ”  24v,off  ë˜ëŠ”  btm,on\r\n");
+  io_printf("CTRL+C ì…ë ¥ ì‹œ ì¢…ë£Œ\r\n");
 
   while (1)
   {
   static  char signal[20] = {0};
   static   char cmd[10] = {0};
 
-    io_printf("ÀÔ·Â ´ë±â (cdma/24v/btm/heater/raind,on/off) > ");
+    io_printf("ì…ë ¥ ëŒ€ê¸° (cdma/24v/btm/heater/raind,on/off) > ");
     int ret = cli_scanf_s("%19[^,],%9s", signal, sizeof(signal), cmd, sizeof(cmd));
 
     if (ret == CLI_KEYCODE_CTRL_C)
     {
-      io_printf("\r\nCTRL+C °¨Áö: Å×½ºÆ® Á¾·á\r\n");
+      io_printf("\r\nCTRL+C ê°ì§€: í…ŒìŠ¤íŠ¸ ì¢…ë£Œ\r\n");
       break;
     }
     else if (ret == 2)
     {
-      // ¼Ò¹®ÀÚ·Î º¯È¯ (´ë¼Ò¹®ÀÚ ±¸ºĞ ¾øÀÌ)
+      // ì†Œë¬¸ìë¡œ ë³€í™˜ (ëŒ€ì†Œë¬¸ì êµ¬ë¶„ ì—†ì´)
       for (int i = 0; signal[i]; i++) signal[i] = (char)tolower(signal[i]);
       for (int i = 0; cmd[i]; i++) cmd[i] = (char)tolower(cmd[i]);
 
@@ -50,24 +50,24 @@ void test_power_signal(void)
         }
         else
         {
-          io_printf("¸í·É¾î´Â on ¶Ç´Â off¸¸ Çã¿ë\r\n");
+          io_printf("ëª…ë ¹ì–´ëŠ” on ë˜ëŠ” offë§Œ í—ˆìš©\r\n");
         }
       }
       else if (strcmp(signal, "24v") == 0)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          drv_power_on(DRV_POWER_HART_24V);  // ACTIVE_H ¡æ on=High
+          drv_power_on(DRV_POWER_HART_24V);  // ACTIVE_H â†’ on=High
           io_printf("24V: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          drv_power_off(DRV_POWER_HART_24V);  // ACTIVE_H ¡æ off=Low
+          drv_power_off(DRV_POWER_HART_24V);  // ACTIVE_H â†’ off=Low
           io_printf("24V: OFF (Low)\r\n");
         }
         else
         {
-          io_printf("¸í·É¾î´Â on ¶Ç´Â off¸¸ Çã¿ë\r\n");
+          io_printf("ëª…ë ¹ì–´ëŠ” on ë˜ëŠ” offë§Œ í—ˆìš©\r\n");
         }
       }
       else if (strcmp(signal, "btm") == 0)
@@ -84,55 +84,55 @@ void test_power_signal(void)
         }
         else
         {
-          io_printf("¸í·É¾î´Â on ¶Ç´Â off¸¸ Çã¿ë\r\n");
+          io_printf("ëª…ë ¹ì–´ëŠ” on ë˜ëŠ” offë§Œ í—ˆìš©\r\n");
         }
       }
       else if (strcmp(signal, "heater") == 0)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          drv_power_on(DRV_POWER_RAIN_DECT_ANALOG);  // ACTIVE_H ¡æ on=High
+          drv_power_on(DRV_POWER_RAIN_DECT_ANALOG);  // ACTIVE_H â†’ on=High
           io_printf("rain: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          drv_power_off(DRV_POWER_RAIN_DECT_ANALOG);  // ACTIVE_H ¡æ off=Low
+          drv_power_off(DRV_POWER_RAIN_DECT_ANALOG);  // ACTIVE_H â†’ off=Low
           io_printf("rain: OFF (Low)\r\n");
         }
         else
         {
-          io_printf("¸í·É¾î´Â on ¶Ç´Â off¸¸ Çã¿ë\r\n");
+          io_printf("ëª…ë ¹ì–´ëŠ” on ë˜ëŠ” offë§Œ í—ˆìš©\r\n");
         }
       }
       else if (strcmp(signal, "raind") == 0)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          drv_power_on(DRV_POWER_RAIN_DECT_DIGITAL);  // ACTIVE_H ¡æ on=High
+          drv_power_on(DRV_POWER_RAIN_DECT_DIGITAL);  // ACTIVE_H â†’ on=High
           io_printf("raind: ON (High)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          drv_power_off(DRV_POWER_RAIN_DECT_DIGITAL);  // ACTIVE_H ¡æ off=Low
+          drv_power_off(DRV_POWER_RAIN_DECT_DIGITAL);  // ACTIVE_H â†’ off=Low
           io_printf("raind: OFF (Low)\r\n");
         }
         else
         {
-          io_printf("¸í·É¾î´Â on ¶Ç´Â off¸¸ Çã¿ë\r\n");
+          io_printf("ëª…ë ¹ì–´ëŠ” on ë˜ëŠ” offë§Œ í—ˆìš©\r\n");
         }
       }
       else
       {
-        io_printf("¾Ë ¼ö ¾ø´Â ½ÅÈ£¸íÀÔ´Ï´Ù. cdma, 24v, btm,rain¸¸ Çã¿ë\r\n");
+        io_printf("ì•Œ ìˆ˜ ì—†ëŠ” ì‹ í˜¸ëª…ì…ë‹ˆë‹¤. cdma, 24v, btm,rainë§Œ í—ˆìš©\r\n");
       }
     }
     else
     {
-      io_printf("ÀÔ·Â Çü½Ä ¿À·ù. ¿¹: cdma,on ¶Ç´Â 24v,off\r\n");
+      io_printf("ì…ë ¥ í˜•ì‹ ì˜¤ë¥˜. ì˜ˆ: cdma,on ë˜ëŠ” 24v,off\r\n");
     }
   }
 
-  // ÇÊ¿ä½Ã ´İ±â (»ı·« °¡´É)
+  // í•„ìš”ì‹œ ë‹«ê¸° (ìƒëµ ê°€ëŠ¥)
   // driver_do_close(do_cdma);
   // driver_do_close(DRV_POWER_HART_24V);
   // driver_do_close(RV_POWER_LCD_RESET);

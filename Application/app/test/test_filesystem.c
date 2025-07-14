@@ -21,34 +21,34 @@ void test_filesystem(void)
 
 
 
-  //ÆÄÀÏ ¾²±â ,ÀÐ±â ¼Óµµ Å×½ºÆ®
+  //íŒŒì¼ ì“°ê¸° ,ì½ê¸° ì†ë„ í…ŒìŠ¤íŠ¸
   test_file_rw_speed("0:1mb.txt",1024*1024);
 
-  //ÆÄÀÏ ÀÐ±â,¾²±â ºñ±³ Å×½ºÆ®
+  //íŒŒì¼ ì½ê¸°,ì“°ê¸° ë¹„êµ í…ŒìŠ¤íŠ¸
   write_file(TEST_FILE_NAME, TEST_MSG, TEST_MSG_LEN, 0);
   read_file(TEST_FILE_NAME, temp, TEST_MSG_LEN, 0);
 
   if (strncmp((char *)temp, TEST_MSG, TEST_MSG_LEN) == 0)
   {
-    io_printf("ÆÄÀÏ ¾²±â ÀÐ±â Á¤»ó \r\n");
+    io_printf("íŒŒì¼ ì“°ê¸° ì½ê¸° ì •ìƒ \r\n");
   }
   else
   {
-    io_printf("ÆÄÀÏ ¾²±â ÀÐ±â ½ÇÆÐ \r\n");
+    io_printf("íŒŒì¼ ì“°ê¸° ì½ê¸° ì‹¤íŒ¨ \r\n");
   }
 
 
-  io_printf("'0:'¸ñ·ÏÀ» Ãâ·ÂÇÕ´Ï´Ù.\r\n");
+  io_printf("'0:'ëª©ë¡ì„ ì¶œë ¥í•©ë‹ˆë‹¤.\r\n");
   while(1)
   {
     list_directory(buff);
 
-    io_printf("°æ·Î¸¦ ÀÔ·ÂÇÏ¼¼¿ä>>\r\n");
+    io_printf("ê²½ë¡œë¥¼ ìž…ë ¥í•˜ì„¸ìš”>>\r\n");
     ret = cli_scanf_s("%s", buff, sizeof(buff));
 
     if (ret == CLI_KEYCODE_CTRL_C)
     {
-      io_printf("Å×½ºÆ® Á¾·á\r\n");
+      io_printf("í…ŒìŠ¤íŠ¸ ì¢…ë£Œ\r\n");
       break;
     }
     

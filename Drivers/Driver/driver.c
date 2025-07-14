@@ -17,5 +17,6 @@ void drv_init(void)
   drv_di_init();
   drv_power_init();
   drv_system_init();
-  drv_flash_init();  
+  drv_flash_init(); 
+  drv_fram_init();
 }

@@ -48,7 +48,7 @@ void hart_task(void *arg)
 {
   uint8_t buff[50];
   uint8_t cmd[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x02, 0x80, 0x00, 0x00, 0x82};
-  //À¯´Ï¹ö¼³ ¸í·É¾î 0,HART Ver
+  //ìœ ë‹ˆë²„ì„¤ ëª…ë ¹ì–´ 0,HART Ver
   int32_t len;
 
   while (1)

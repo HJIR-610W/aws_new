@@ -19,25 +19,25 @@ void test_flash(void)
   {
     write_data[i] = i;
   }
-    // ¾²±â
+    // ì“°ê¸°
    // driver_flash_write(flash, TEST_ADDR, write_data, sizeof(write_data));
 
 
-  // ÀĞ±â
+  // ì½ê¸°
   drv_flash_read( TEST_ADDR, read_data, sizeof(read_data), sizeof(read_data));
 
 
-  // ºñ±³
+  // ë¹„êµ
   if (memcmp(write_data, read_data, TEST_SIZE) == 0)
   {
-    io_printf("Flash Å×½ºÆ® ¼º°ø \r\n");
+    io_printf("Flash í…ŒìŠ¤íŠ¸ ì„±ê³µ \r\n");
   }
   else
   {
-    io_printf("Flash Å×½ºÆ® ½ÇÆĞ \r\n");
-    io_printf("¾²±â°ª: ");
+    io_printf("Flash í…ŒìŠ¤íŠ¸ ì‹¤íŒ¨ \r\n");
+    io_printf("ì“°ê¸°ê°’: ");
     LOG_MEM(write_data, TEST_SIZE, 0, 160);
-    io_printf("ÀĞÀº°ª: ");
+    io_printf("ì½ì€ê°’: ");
     LOG_MEM(read_data, TEST_SIZE, 0, 160);
   }
 }

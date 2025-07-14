@@ -22,7 +22,7 @@ const osThreadAttr_t kTestTask_attributes = {
 
 void testTask(void *arg)
 {
-  mcu_interrupt_init();  // ÃÖ¿ì¼± ½ÇÇà
+  mcu_interrupt_init();  // ìµœìš°ì„  ì‹¤í–‰
   consoleTask_init((void *)1);
   osDelay(1000);
 
@@ -34,7 +34,7 @@ void testTask(void *arg)
   
   file_init();
 
-  osThreadExit();  // Á¾·á ½ÃÅ´
+  osThreadExit();  // ì¢…ë£Œ ì‹œí‚´
 
 }
 
@@ -42,12 +42,12 @@ bool testTask_init(void)
 {
   uint32_t pressed_time = 0;
 
-  // 5ÃÊ(5000ms) µ¿¾È ¹öÆ° »óÅÂ¸¦ °¨½Ã
+  // 5ì´ˆ(5000ms) ë™ì•ˆ ë²„íŠ¼ ìƒíƒœë¥¼ ê°ì‹œ
   while (1)
   {
-    if (drv_di_read(DRV_DI_USER_BTN) == 0)  // ¹öÆ° LOW »óÅÂÀÎ°¡?
+    if (drv_di_read(DRV_DI_USER_BTN) == 0)  // ë²„íŠ¼ LOW ìƒíƒœì¸ê°€?
     {
-      pressed_time += 10;  // 10ms ´ÜÀ§·Î ´©Àû
+      pressed_time += 10;  // 10ms ë‹¨ìœ„ë¡œ ëˆ„ì 
       if (pressed_time >= 1000)
       {
         osThreadNew(testTask, NULL, &kTestTask_attributes);
@@ -56,12 +56,12 @@ bool testTask_init(void)
     }
     else
     {
-      // ¹öÆ°ÀÌ LOW°¡ ¾Æ´Ï¸é ½Ã°£ ÃÊ±âÈ­
-      pressed_time = 0;
+      // ë²„íŠ¼ì´ LOWê°€ ì•„ë‹ˆë©´ ì‹œê°„ ì´ˆê¸°í™”
+      break;
     }
 
-    osDelay(10);  // 10ms¸¶´Ù Ã¼Å©
+    osDelay(10);  // 10msë§ˆë‹¤ ì²´í¬
   }
 
-  return false;  // ÀÌ À§Ä¡±îÁö´Â »ç½Ç»ó µµ´ŞÇÏÁö ¾ÊÀ½
+  return false;  // ì´ ìœ„ì¹˜ê¹Œì§€ëŠ” ì‚¬ì‹¤ìƒ ë„ë‹¬í•˜ì§€ ì•ŠìŒ
 }

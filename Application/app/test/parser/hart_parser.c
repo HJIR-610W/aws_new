@@ -46,7 +46,7 @@ static void parse_status_bytes(uint8_t status1, uint8_t status2)
   printf("---- Status Byte Analysis ----\n\r");
   printf("Status Byte 1: 0x%02X\n\r", status1);
 
-  if (status1 & (1 << 7))  // Åë½Å ¿À·ù
+  if (status1 & (1 << 7))  // í†µì‹  ì˜¤ë¥˜
   {
     printf(" (Communication Error Detected)\n\r");
     if (status1 & (1 << 6)) printf(" - Parity Error\n\r");
@@ -57,9 +57,9 @@ static void parse_status_bytes(uint8_t status1, uint8_t status2)
     if (status1 & (1 << 0)) printf(" - Overflow (Undefined)\n\r");
     printf("Status Byte 2: 0x%02X (should be 0 when communication error)\n\r", status2);
   }
-  else  // Command ÀÀ´ä ÇØ¼®
+  else  // Command ì‘ë‹µ í•´ì„
   {
-    // Ç¥ÁØ »óÅÂ ÄÚµå ÇØ¼®
+    // í‘œì¤€ ìƒíƒœ ì½”ë“œ í•´ì„
     switch (status1)
     {
     case 0x00: printf(" - No command-specific error\n\r"); break;
@@ -80,7 +80,7 @@ static void parse_status_bytes(uint8_t status1, uint8_t status2)
       break;
     }
 
-    // »óÅÂ ¹ÙÀÌÆ® 2 ÇØ¼®
+    // ìƒíƒœ ë°”ì´íŠ¸ 2 í•´ì„
     printf("Status Byte 2: 0x%02X\n\r", status2);
     if (status2 & (1 << 7)) printf(" - Field device malfunction\n\r");
     if (status2 & (1 << 6)) printf(" - Configuration changed\n\r");
@@ -107,13 +107,13 @@ static const char* get_manufacturer_name(uint16_t id)
   {
     switch (expanded_device_type)
     {
-    case 0x62DC: return "·¹ÀÌ´Ù61";
-    case 0x62DD: return "¾Ğ·Â½Ä";
-    case 0x62BE: return "·¹ÀÌ´Ù64";
+    case 0x62DC: return "ë ˆì´ë‹¤61";
+    case 0x62DD: return "ì••ë ¥ì‹";
+    case 0x62BE: return "ë ˆì´ë‹¤64";
     default: return "Unknown VEGA Device";
     }
   }
-  else if (manufacturer_id == 0x0017)  // Emerson ¿¹½Ã
+  else if (manufacturer_id == 0x0017)  // Emerson ì˜ˆì‹œ
   {
     switch (expanded_device_type)
     {
@@ -121,14 +121,14 @@ static const char* get_manufacturer_name(uint16_t id)
     default: return "Unknown Emerson Device";
     }
   }
-  // ´Ù¸¥ Á¦Á¶»çµµ ÇÊ¿ä ½Ã Ãß°¡
+  // ë‹¤ë¥¸ ì œì¡°ì‚¬ë„ í•„ìš” ì‹œ ì¶”ê°€
   return "Unknown Device Type";
 }
 
 
 static void parse_command_0_response_7(const uint8_t* data, uint8_t len)
 {
-  if (len < 2 + 22)  // »óÅÂÄÚµå(2) + ÃÖ¼Ò 22¹ÙÀÌÆ® µ¥ÀÌÅÍ ÇÊ¿ä
+  if (len < 2 + 22)  // ìƒíƒœì½”ë“œ(2) + ìµœì†Œ 22ë°”ì´íŠ¸ ë°ì´í„° í•„ìš”
   {
     printf("Error: Command 0 response too short (expected at least 24 bytes including status, got %d).\n\r", len);
     return;
@@ -141,7 +141,7 @@ static void parse_command_0_response_7(const uint8_t* data, uint8_t len)
 
 
 
-  const uint8_t* rdata = &data[2];  // ½ÇÁ¦ ÀÀ´ä µ¥ÀÌÅÍ´Â Status 2¹ÙÀÌÆ® ÀÌÈÄºÎÅÍ
+  const uint8_t* rdata = &data[2];  // ì‹¤ì œ ì‘ë‹µ ë°ì´í„°ëŠ” Status 2ë°”ì´íŠ¸ ì´í›„ë¶€í„°
 
   uint8_t fixed_value = rdata[0];
   uint16_t expanded_device_type = (rdata[1] << 8) | rdata[2];
@@ -305,10 +305,10 @@ static void parse_start_delimiter_detailed(uint8_t sd)
   uint8_t physical_layer = (sd >> 3) & 0x03;
   uint8_t frame_type = sd & 0x07;
 
-  // ÁÖ¼Ò Å¸ÀÔ ÇØ¼®
+  // ì£¼ì†Œ íƒ€ì… í•´ì„
   const char* address_type_str = (address_type == 0) ? "Short Address (Polling)" : "Long Address (Unique)";
 
-  // Expansion ÇØ¼®
+  // Expansion í•´ì„
   const char* expansion_str;
   switch (expansion_bytes)
   {
@@ -316,10 +316,10 @@ static void parse_start_delimiter_detailed(uint8_t sd)
   case 1: expansion_str = "1 Expansion Byte"; break;
   case 2: expansion_str = "2 Expansion Bytes"; break;
   case 3: expansion_str = "3 Expansion Bytes"; break;
-  default: expansion_str = "Invalid"; break;  // ÀÌ·Ğ»ó ºÒ°¡
+  default: expansion_str = "Invalid"; break;  // ì´ë¡ ìƒ ë¶ˆê°€
   }
 
-  // ¹°¸® °èÃş ÇØ¼®
+  // ë¬¼ë¦¬ ê³„ì¸µ í•´ì„
   const char* phy_str;
   switch (physical_layer)
   {
@@ -328,7 +328,7 @@ static void parse_start_delimiter_detailed(uint8_t sd)
   default: phy_str = "Reserved/Unknown"; break;
   }
 
-  // ÇÁ·¹ÀÓ Å¸ÀÔ ÇØ¼®
+  // í”„ë ˆì„ íƒ€ì… í•´ì„
   const char* frame_str;
   switch (frame_type)
   {
@@ -426,7 +426,7 @@ void hart_parse(uint8_t* packet, uint16_t len)
 
   if (strcmp(frame_type_str, "Field Device to Master") == 0)
   {
-    // ÀÀ´äÀÌ¸é Commandº°·Î ÆÄ½Ì
+    // ì‘ë‹µì´ë©´ Commandë³„ë¡œ íŒŒì‹±
     switch (command)
     {
     case 0x00: 
@@ -436,7 +436,7 @@ void hart_parse(uint8_t* packet, uint16_t len)
       }
       else
       {
-        printf("ÇÏÆ®¹öÀü È®ÀÎ\r\n\r");
+        printf("í•˜íŠ¸ë²„ì „ í™•ì¸\r\n\r");
       }
       break;
     case 0x01: parse_command_1_response(data, byte_count); break;
