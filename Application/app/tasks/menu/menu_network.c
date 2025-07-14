@@ -100,6 +100,53 @@ int32_t input_ip_address(const char* title, uint8_t* ip)
   return status;
 }
 
+// 이더넷 메뉴 정의
+#define ETH_MENU_MODE 0
+#define ETH_MENU_LOCAL_IP 1
+#define ETH_MENU_SUBNET 2
+#define ETH_MENU_GATEWAY 3
+#define ETH_MENU_LOCAL_PORT 4
+#define ETH_MENU_REMOTE_IP 5
+#define ETH_MENU_REMOTE_PORT 6
+
+void draw_eth_config_page(screen_menu_t* p_win)
+{
+  int row_count = 0;
+
+  p_win->current_row = 0;
+
+  screen_update_list(p_win, row_count, ETH_MENU_MODE);
+  M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Mode", 
+           ITEM_LIST(get_config_app()->eth_mode, eth_mode_list_eng));
+
+  screen_update_list(p_win, row_count, ETH_MENU_LOCAL_IP);
+  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Local IP");
+
+  screen_update_list(p_win, row_count, ETH_MENU_SUBNET);
+  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Subnet");
+
+  screen_update_list(p_win, row_count, ETH_MENU_GATEWAY);
+  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Gateway");
+
+  screen_update_list(p_win, row_count, ETH_MENU_LOCAL_PORT);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", NETWORK_WD, "Local Port", 
+           get_config_app()->eth_local_port);
+
+  screen_update_list(p_win, row_count, ETH_MENU_REMOTE_IP);
+  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Remote IP");
+
+  screen_update_list(p_win, row_count, ETH_MENU_REMOTE_PORT);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", NETWORK_WD, "Remote Port", 
+           get_config_app()->eth_remote_server_port);
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
+}
+
 int32_t setup_eth_config(void)
 {
   int32_t choice = 0;
@@ -107,165 +154,294 @@ int32_t setup_eth_config(void)
   int32_t key;
   screen_menu_t menu;
   int32_t dec;
+  int32_t index;
 
   screen_menu_create(&menu, 8, 20);
-
-  const char* eth_menu[] = {
-    "Mode", "Local IP", "Subnet", "Gateway", 
-    "Local Port", "Remote IP", "Remote Port"
-  };
+  screen_menu_title(&menu, "ETHERNET");
 
   while (1)
   {
-    screen_clear();
-    status = print_menu_list(eth_menu, _countof(eth_menu), &choice);
-    
-    if (status != MENU_OK)
-      break;
+    draw_eth_config_page(&menu);
+    screen_refresh();
 
-    switch (choice)
+    key = get_button_key(1000);
+
+    if (key == KEY_CODE_CTRL_Q)
     {
-      case 0: // Mode
-        choice = get_config_app()->eth_mode;
-        status = input_combobox("Eth Mode",eth_mode_list_eng, _countof(eth_mode_list_eng), &choice);
-        if (status == MENU_OK)
-        {
-          get_config_app()->eth_mode = choice;
-          WRITE_CFG(eth_mode);
-        }
-        break;
-      case 1: // Local IP
-        status = input_ip_address("Local IP", get_config_app()->eth_ip);
-        if (status == MENU_OK)
-        {
-          WRITE_CFG(eth_ip);
-        }
-        break;
-      case 2: // Subnet
-        status = input_ip_address("Subnet", get_config_app()->eth_subnet);
-        if (status == MENU_OK)
-        {
-          WRITE_CFG(eth_subnet);
-        }
-        break;
-      case 3: // Gateway
-        status = input_ip_address("Gateway", get_config_app()->eth_gateway);
-        if (status == MENU_OK)
-        {
-          WRITE_CFG(eth_gateway);
-        }
-        break;
-      case 4: // Local Port
-        dec = get_config_app()->eth_local_port;
-        status = input_decimal("Local Port", 0, 65535, &dec);
-        if (status == MENU_OK)
-        {
-          get_config_app()->eth_local_port = dec;
-          WRITE_CFG(eth_local_port);
-        }
-        break;
-      case 5: // Remote IP
-        status = input_ip_address("Remote IP", get_config_app()->eth_remote_server_ip);
-        if (status == MENU_OK)
-        {
-          WRITE_CFG(eth_remote_server_ip);
-        }
-        break;
-      case 6: // Remote Port
-        dec = get_config_app()->eth_remote_server_port;
-        status = input_decimal("Remote Port", 0, 65535, &dec);
-        if (status == MENU_OK)
-        {
-          get_config_app()->eth_remote_server_port = dec;
-          WRITE_CFG(eth_remote_server_port);
-        }
-        break;
+      break;
+    }
+    else if (key == KEY_CODE_CTRL_C)
+    {
+      break;
     }
 
-    if (status == MENU_ABORT)
-      break;
+    if (key == KEY_CODE_ENTER)
+    {
+      index = menu.selected_index;
+
+      switch (menu.index_list[index])
+      {
+        case ETH_MENU_MODE:
+          choice = get_config_app()->eth_mode;
+          status = input_combobox("Eth Mode",eth_mode_list_eng, _countof(eth_mode_list_eng), &choice);
+          if (status == MENU_OK)
+          {
+            get_config_app()->eth_mode = choice;
+            WRITE_CFG(eth_mode);
+          }
+          break;
+        case ETH_MENU_LOCAL_IP:
+          status = input_ip_address("Local IP", get_config_app()->eth_ip);
+          if (status == MENU_OK)
+          {
+            WRITE_CFG(eth_ip);
+          }
+          break;
+        case ETH_MENU_SUBNET:
+          status = input_ip_address("Subnet", get_config_app()->eth_subnet);
+          if (status == MENU_OK)
+          {
+            WRITE_CFG(eth_subnet);
+          }
+          break;
+        case ETH_MENU_GATEWAY:
+          status = input_ip_address("Gateway", get_config_app()->eth_gateway);
+          if (status == MENU_OK)
+          {
+            WRITE_CFG(eth_gateway);
+          }
+          break;
+        case ETH_MENU_LOCAL_PORT:
+          dec = get_config_app()->eth_local_port;
+          status = input_decimal("Local Port", 0, 65535, &dec);
+          if (status == MENU_OK)
+          {
+            get_config_app()->eth_local_port = dec;
+            WRITE_CFG(eth_local_port);
+          }
+          break;
+        case ETH_MENU_REMOTE_IP:
+          status = input_ip_address("Remote IP", get_config_app()->eth_remote_server_ip);
+          if (status == MENU_OK)
+          {
+            WRITE_CFG(eth_remote_server_ip);
+          }
+          break;
+        case ETH_MENU_REMOTE_PORT:
+          dec = get_config_app()->eth_remote_server_port;
+          status = input_decimal("Remote Port", 0, 65535, &dec);
+          if (status == MENU_OK)
+          {
+            get_config_app()->eth_remote_server_port = dec;
+            WRITE_CFG(eth_remote_server_port);
+          }
+          break;
+      }
+
+      if (status == MENU_ABORT)
+        break;
+    }
+    else if (key != KEY_CODE_NONE)
+    {
+      screen_menu_handle(&menu, key);
+    }
   }
 
-  return status;
+  return convert_key_to_status(key);
+}
+
+// CDMA 메뉴 정의
+#define CDMA_MENU_SERVER_IP 0
+#define CDMA_MENU_PORT 1
+#define CDMA_MENU_MODEL 2
+#define CDMA_MENU_VPN 3
+
+void draw_cdma_config_page(screen_menu_t* p_win)
+{
+  int row_count = 0;
+
+  p_win->current_row = 0;
+
+  screen_update_list(p_win, row_count, CDMA_MENU_SERVER_IP);
+  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Server IP");
+
+  screen_update_list(p_win, row_count, CDMA_MENU_PORT);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", NETWORK_WD, "Port", 
+           get_config_app()->cdma_port);
+
+  screen_update_list(p_win, row_count, CDMA_MENU_MODEL);
+  M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Model", 
+           ITEM_LIST(get_config_app()->cdma_model, cdma_model_list_eng));
+
+  screen_update_list(p_win, row_count, CDMA_MENU_VPN);
+  M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "VPN", 
+           ITEM_LIST(get_config_app()->vpn_active, enable_list_eng));
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
 }
 
 int32_t setup_cdma_config(void)
 {
   int32_t choice = 0;
   int32_t status;
+  int32_t key;
+  screen_menu_t menu;
   int32_t dec;
+  int32_t index;
 
-  const char* cdma_menu[] = {
-    "Server IP", "Port", "Model", "VPN"
-  };
+  screen_menu_create(&menu, 8, 20);
+  screen_menu_title(&menu, "CDMA");
 
   while (1)
   {
-    screen_clear();
-    status = print_menu_list(cdma_menu, _countof(cdma_menu), &choice);
-    
-    if (status != MENU_OK)
-      break;
+    draw_cdma_config_page(&menu);
+    screen_refresh();
 
-    switch (choice)
+    key = get_button_key(1000);
+
+    if (key == KEY_CODE_CTRL_Q)
     {
-      case 0: // Server IP
-        status = input_ip_address("Server IP", get_config_app()->cdma_server_ip);
-        if (status == MENU_OK)
-        {
-          WRITE_CFG(cdma_server_ip);
-        }
-        break;
-      case 1: // Port
-        dec = get_config_app()->cdma_port;
-        status = input_decimal("Port", 0, 65535, &dec);
-        if (status == MENU_OK)
-        {
-          get_config_app()->cdma_port = dec;
-          WRITE_CFG(cdma_port);
-        }
-        break;
-      case 2: // Model
-        choice = get_config_app()->cdma_model;
-        status = input_combobox("Cdma Model",cdma_model_list_eng, _countof(cdma_model_list_eng), &choice);
-        if (status == MENU_OK)
-        {
-          get_config_app()->cdma_model = choice;
-          WRITE_CFG(cdma_model);
-        }
-        break;
-      case 3: // VPN Use
-        choice = get_config_app()->vpn_active;
-        status = input_active("VPN", &choice);
-        if (status == MENU_OK)
-        {
-          get_config_app()->vpn_active = choice;
-          WRITE_CFG(vpn_active);
-        }
-        break;
+      break;
+    }
+    else if (key == KEY_CODE_CTRL_C)
+    {
+      break;
     }
 
-    if (status == MENU_ABORT)
-      break;
+    if (key == KEY_CODE_ENTER)
+    {
+      index = menu.selected_index;
+
+      switch (menu.index_list[index])
+      {
+        case CDMA_MENU_SERVER_IP:
+          status = input_ip_address("Server IP", get_config_app()->cdma_server_ip);
+          if (status == MENU_OK)
+          {
+            WRITE_CFG(cdma_server_ip);
+          }
+          break;
+        case CDMA_MENU_PORT:
+          dec = get_config_app()->cdma_port;
+          status = input_decimal("Port", 0, 65535, &dec);
+          if (status == MENU_OK)
+          {
+            get_config_app()->cdma_port = dec;
+            WRITE_CFG(cdma_port);
+          }
+          break;
+        case CDMA_MENU_MODEL:
+          choice = get_config_app()->cdma_model;
+          status = input_combobox("Cdma Model",cdma_model_list_eng, _countof(cdma_model_list_eng), &choice);
+          if (status == MENU_OK)
+          {
+            get_config_app()->cdma_model = choice;
+            WRITE_CFG(cdma_model);
+          }
+          break;
+        case CDMA_MENU_VPN:
+          choice = get_config_app()->vpn_active;
+          status = input_active("VPN", &choice);
+          if (status == MENU_OK)
+          {
+            get_config_app()->vpn_active = choice;
+            WRITE_CFG(vpn_active);
+          }
+          break;
+      }
+
+      if (status == MENU_ABORT)
+        break;
+    }
+    else if (key != KEY_CODE_NONE)
+    {
+      screen_menu_handle(&menu, key);
+    }
   }
 
-  return status;
+  return convert_key_to_status(key);
+}
+
+// DIRECT 메뉴 정의
+#define DIRECT_MENU_BAUD_RATE 0
+
+void draw_direct_config_page(screen_menu_t* p_win)
+{
+  int row_count = 0;
+
+  p_win->current_row = 0;
+
+  screen_update_list(p_win, row_count, DIRECT_MENU_BAUD_RATE);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", NETWORK_WD, "Baud Rate", 
+           get_config_app()->direct_baud);
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
 }
 
 int32_t setup_direct_config(void)
 {
   int32_t status;
+  int32_t key;
+  screen_menu_t menu;
   int32_t dec;
+  int32_t index;
 
-  dec = get_config_app()->direct_baud;
-  status = input_decimal("Baud Rate", 1200, 115200, &dec);
-  if (status == MENU_OK)
+  screen_menu_create(&menu, 8, 20);
+  screen_menu_title(&menu, "DIRECT");
+
+  while (1)
   {
-    get_config_app()->direct_baud = dec;
-    WRITE_CFG(direct_baud);
+    draw_direct_config_page(&menu);
+    screen_refresh();
+
+    key = get_button_key(1000);
+
+    if (key == KEY_CODE_CTRL_Q)
+    {
+      break;
+    }
+    else if (key == KEY_CODE_CTRL_C)
+    {
+      break;
+    }
+
+    if (key == KEY_CODE_ENTER)
+    {
+      index = menu.selected_index;
+
+      switch (menu.index_list[index])
+      {
+        case DIRECT_MENU_BAUD_RATE:
+          dec = get_config_app()->direct_baud;
+          status = input_decimal("Baud Rate", 1200, 115200, &dec);
+          if (status == MENU_OK)
+          {
+            get_config_app()->direct_baud = dec;
+            WRITE_CFG(direct_baud);
+          }
+          break;
+      }
+
+      if (status == MENU_ABORT)
+        break;
+    }
+    else if (key != KEY_CODE_NONE)
+    {
+      screen_menu_handle(&menu, key);
+    }
   }
 
-  return status;
+  return convert_key_to_status(key);
 }
 
 int32_t setup_menu_network(void)
