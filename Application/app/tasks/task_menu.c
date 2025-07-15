@@ -49,7 +49,7 @@ const char *linkStatusList_lcd[3] = {"-", "UP", "DOWN"};
 const char *ethlinkStatusList_lcd[3] = {"-", "U", "D"};
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
-    .stack_size = 2048,
+    .stack_size = 2560,
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
 

@@ -32,21 +32,21 @@ void draw_aws_setup_page(screen_menu_t* p_win)
   p_win->current_row = 0;
 
   screen_update_list(p_win, row_count, AWS_SETUP_SYSTEM);
-  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "SYSTEM");
+  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "System");
   screen_update_list(p_win, row_count, AWS_SETUP_SENSOR);
-  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "SENSOR");
+  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "Sensor");
   screen_update_list(p_win, row_count, AWS_SETUP_NETWORK);
-  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "NETWORK");
+  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "Network");
   screen_update_list(p_win, row_count, AWS_SETUP_DATA);
-  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "DATA");
+  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "Data");
   screen_update_list(p_win, row_count, AWS_SETUP_PANEL);
-  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "PANEL");
+  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "Panel");
   screen_update_list(p_win, row_count, AWS_SETUP_OFFSET);
-  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "OFFSET");
+  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "Offset");
   screen_update_list(p_win, row_count, AWS_SETUP_CALI);
-  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "CALIBRATION");
+  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "Calibraion");
   screen_update_list(p_win, row_count, AWS_SETUP_MANAGER);
-  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "MANAGER");
+  MENU_PRINTF(p_win, row_count++, "%-*s", SETUP_WD, "Manager");
 
   p_win->total_items = row_count;
 
@@ -62,7 +62,7 @@ void setup_root(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, "AWS SETUP");
+  screen_menu_create(&menu, "AWS Setup");
 
   while(1)
   {

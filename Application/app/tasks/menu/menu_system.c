@@ -71,7 +71,7 @@ int32_t setup_menu_system(void)
   screen_menu_t menu;
   int32_t index;
 
-  screen_menu_create(&menu, "SYSTEM");
+  screen_menu_create(&menu, "System");
 ;
   while(1)
   {
@@ -100,7 +100,7 @@ int32_t setup_menu_system(void)
           DATE_TIME_BUF nt;
           strfmt.fmt = "%04d-%02d-%02d";
           snprintf(strfmt.data, sizeof(strfmt.data), "%04d-%02d-%02d",Date_Time.Year,Date_Time.Month,Date_Time.Day);
-          status = input_fmt(&strfmt, "DATE");
+          status = input_fmt(&strfmt, "Date");
           if (status != MENU_OK)
             break;
           int year;
@@ -122,7 +122,7 @@ int32_t setup_menu_system(void)
           strfmt.fmt = "%02d:%02d:%02d";
           snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, Date_Time.Hour, Date_Time.Min,
                    Date_Time.Sec);
-          status = input_fmt(&strfmt, "TIME");
+          status = input_fmt(&strfmt, "Time");
           if (status != MENU_OK)
             break;
           int hour;
@@ -151,7 +151,7 @@ int32_t setup_menu_system(void)
         {
           int val = get_config_app()->password;
 
-          status = input_decimal("PASSWORD", 0, 65535, &val);
+          status = input_decimal("Password", 0, 65535, &val);
           if (status != MENU_OK)
             break;
           config.password = val;

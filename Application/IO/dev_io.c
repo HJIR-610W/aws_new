@@ -111,7 +111,7 @@ void io_puts(const char *str)
 }
 
 
-#define PRINTF_HEAP_USE 0
+#define PRINTF_HEAP_USE 1
 
 
 int32_t io_printf(const char *pFmt, ...)

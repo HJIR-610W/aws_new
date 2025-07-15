@@ -1941,6 +1941,8 @@ int32_t aws_menu_veiw(void)
   create_win(&charger_win, 0, 0, 6, 26);
   create_win(&config_win, 0, 0, 8, 22);
 
+
+
   while (1)
   {
     io_printf(ES_CURSOR_HOME);

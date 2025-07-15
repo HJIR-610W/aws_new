@@ -834,6 +834,7 @@ int32_t show_popup(const char *title, const char *message)
     return MENU_ERROR;
   }
 
+  screen_clear();
 
   
   popup_x = (screen_width - popup_width) / 2;

@@ -45,13 +45,13 @@ void draw_setup_menu_calibration_page(screen_menu_t* p_win)
   p_win->current_row = 0;
 
   screen_update_list(p_win, row_count, CALI_MENU_FACTORY);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "FACTORY CALI");
+  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Factory Cali");
 
   screen_update_list(p_win, row_count, CALI_MENU_VIEW);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "VIEW");
+  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "View");
 
   screen_update_list(p_win, row_count, CALI_MENU_INIT);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "INIT");
+  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Init");
 
 
 
@@ -70,10 +70,10 @@ void draw_cali_setup_menu_factory_page(screen_menu_t* p_win)
   p_win->current_row = 0;
 
   screen_update_list(p_win, row_count, FACTORY_MENU_SINGLE);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "SINGLE");
+  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Single");
 
   screen_update_list(p_win, row_count, FACTORY_MENU_DIFF);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "DIFF");
+  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Diff");
 
   p_win->total_items = row_count;
 
@@ -90,13 +90,13 @@ void draw_cali_setup_menu_view_page(screen_menu_t* p_win)
   p_win->current_row = 0;
 
   screen_update_list(p_win, row_count, VIEW_MENU_SINGLE);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "SINGLE");
+  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Single");
 
   screen_update_list(p_win, row_count, VIEW_MENU_DIFF);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "DIFF");
+  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Diff");
 
   screen_update_list(p_win, row_count, VIEW_MENU_SUMMARY);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "SUMMARY");
+  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Summary");
 
   p_win->total_items = row_count;
 
@@ -471,7 +471,7 @@ int32_t cali_setup_menu_view(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, "VIEW");
+  screen_menu_create(&menu, "View");
 
   while (1)
   {

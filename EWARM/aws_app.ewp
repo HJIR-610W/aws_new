@@ -1526,6 +1526,9 @@
                         <name>$PROJ_DIR$\..\application\app\tasks\logging\app_logging.c</name>
                     </file>
                     <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\logging\aws_data_handler.c</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\application\app\tasks\logging\data_accu.c</name>
                     </file>
                     <file>
@@ -1698,10 +1701,10 @@
             <group>
                 <name>CDMA</name>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\at_cmd.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\at_cmd.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\modem_if.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\modem_if.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.c</name>
@@ -1731,7 +1734,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\task_cellular.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\task_cellular.h</name>
                 </file>
             </group>
             <group>
@@ -1740,7 +1743,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\Direct\task_direct.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\Direct\task_direct.h</name>
                 </file>
             </group>
             <group>
@@ -1873,13 +1876,13 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\terminal_bridge.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
@@ -1936,7 +1939,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -2100,7 +2103,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -2109,7 +2112,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -2154,7 +2157,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</name>
                 </file>
             </group>
             <group>

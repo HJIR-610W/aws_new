@@ -17,6 +17,7 @@
 #include "util_time.h"
 #include "view_driver.h"
 #include "app_logging.h"
+#include "aws_data_handler.h"
 
 extern void config_hj_reset(void);
 
@@ -33,7 +34,8 @@ extern void config_hj_reset(void);
 #define CONFIG_MENU_HJ_RESET    0
 #define CONFIG_MENU_INIT        1
 #define CONFIG_MENU_BACKUP      2
-#define CONFIG_MENU_LOG_RESET   3
+#define CONFIG_RAIN_INIT        3
+#define CONFIG_MENU_LOG_RESET   4
 
 #define BACKUP_MENU_SAVE        0
 #define BACKUP_MENU_RESTORE     1
@@ -45,16 +47,16 @@ void draw_setup_menu_manager_page(screen_menu_t* p_win)
   p_win->current_row = 0;
 
   screen_update_list(p_win, row_count, MANAGER_MENU_VERSION);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "VERSION");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Version");
 
   screen_update_list(p_win, row_count, MANAGER_MENU_RESET);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "RESET");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Device Reset");
 
   screen_update_list(p_win, row_count, MANAGER_MENU_CONFIG);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "CONFIG");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Settings Change");
 
   screen_update_list(p_win, row_count, MANAGER_MENU_UPDATE);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "UPDATE");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Firmware update");
 
   p_win->total_items = row_count;
 
@@ -71,16 +73,19 @@ void draw_setup_menu_config_page(screen_menu_t* p_win)
   p_win->current_row = 0;
 
   screen_update_list(p_win, row_count, CONFIG_MENU_HJ_RESET);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "HJ RESET");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "HJ Reset");
 
   screen_update_list(p_win, row_count, CONFIG_MENU_INIT);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "INIT");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Factory Reset");
 
   screen_update_list(p_win, row_count, CONFIG_MENU_BACKUP);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "BACKUP");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Backup Config");
+
+  screen_update_list(p_win, row_count, CONFIG_RAIN_INIT);
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Rain,Sun Reset");
 
   screen_update_list(p_win, row_count, CONFIG_MENU_LOG_RESET);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "LOG RST");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Log Count Reset");
 
   p_win->total_items = row_count;
 
@@ -97,10 +102,10 @@ void draw_setup_menu_backup_page(screen_menu_t* p_win)
   p_win->current_row = 0;
 
   screen_update_list(p_win, row_count, BACKUP_MENU_SAVE);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "SAVE");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Save");
 
   screen_update_list(p_win, row_count, BACKUP_MENU_RESTORE);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "RESTORE");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Restore");
 
   p_win->total_items = row_count;
 
@@ -110,15 +115,37 @@ void draw_setup_menu_backup_page(screen_menu_t* p_win)
   }
 }
 
+#define DATA_RESET_MENU_RAIN 0
+#define DATA_RESET_MENU_SUN  1
+
+void draw_rain_reset_page(screen_menu_t *p_win)
+{
+  int32_t row_count = 0;
+
+  p_win->current_row = 0;
+
+  screen_update_list(p_win, row_count, DATA_RESET_MENU_RAIN);
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Reset Rain Data to 0");
+
+  screen_update_list(p_win, row_count, DATA_RESET_MENU_SUN);
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Reset Sun Data to 0");
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
+}
 int32_t setup_menu_version(void)
 {
-  const char* confirm_menu[] = {"OK"};
+
   uint8_t fix;
   uint8_t major;
   uint8_t minor;
   uint8_t rel;
-  int32_t choice = 0;
-  int32_t status;
+
+
   char buff[30];
   DATE_TIME_BUF ct;
 
@@ -142,12 +169,11 @@ int32_t setup_menu_version(void)
 
   get_button_key(0xFFFFFFFF);
 
-  return status;
+  return MENU_OK;
 }
 
 int32_t setup_menu_reset(void)
 {
-  const char* confirm_menu[] = {"No", "Yes"};
   int32_t choice = 0;
   int32_t status;
 
@@ -182,7 +208,7 @@ int32_t setup_menu_update(void)
       screen_refresh();
       osDelay(2000);
       set_magic_value(MAGIC_UPDATE_FW_LACAL);
-      reset_system("USER update");
+      reset_system("User Update");
     }
   }
 
@@ -233,7 +259,7 @@ int32_t setup_menu_backup(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu,"AWS SETUP");
+  screen_menu_create(&menu,"Backup");
 
   while (1)
   {
@@ -290,28 +316,99 @@ int32_t setup_menu_backup(void)
   return convert_key_to_status(key);
 }
 
+int32_t setup_menu_rain_reset(void)
+{
+  int32_t index;
+  int32_t key;
+  int32_t status;
+  screen_menu_t menu;
+
+  screen_menu_create(&menu, "Rain Sun Reset");
+
+  while (1)
+  {
+    draw_rain_reset_page(&menu);
+    screen_refresh();
+
+    key = get_button_key(1000);
+
+    if (key == KEY_CODE_CTRL_Q)
+    {
+      break;
+    }
+    else if (key == KEY_CODE_CTRL_C)
+    {
+      break;
+    }
+
+    if (key == KEY_CODE_ENTER)
+    {
+      index = menu.selected_index;
+
+      switch (menu.index_list[index])
+      {
+      case DATA_RESET_MENU_RAIN:
+      {
+        int32_t choice = 0;
+        status = input_active("Initialize all to 0?", &choice);
+        if (status == MENU_OK && choice == 1)
+        {
+           if(rain_file_zero(Date_Time.Year)==0)
+             show_popup("Info", "Completed");
+           else{
+             show_popup("Info", "Failed to complete");
+           }
+        }
+      }
+      break;
+
+      case DATA_RESET_MENU_SUN:
+      {
+        int32_t choice = 0;
+        status = input_active("Initialize all to 0?", &choice);
+
+        if (status == MENU_OK && choice == 1)
+        {
+          if(sunshine_file_zero(Date_Time.Year)==0)
+          show_popup("Info", "Completed");
+          else
+          show_popup("Info", "Failed to complete");
+        }
+      }
+      break;
+
+      default:
+        break;
+      }
+    }
+    else if (key != KEY_CODE_NONE)
+    {
+      screen_menu_handle(&menu, key);
+    }
+  }
+
+  return convert_key_to_status(key);
+}
+
 int32_t setup_menu_log_reset(void)
 {
   int32_t log_cnt;
   int32_t status;
 
-  screen_clear();
-  screen_printf(0, 0, "Log Cnt:%d", get_config_nvm()->log_q_cnt);
-  screen_printf(1, 0, "New Count:");
-  screen_refresh();
 
+  log_cnt = get_config_nvm()->log_q_cnt;
   status = input_decimal("Log Count", 0, LOG_COUNT_MAX, &log_cnt);
   
   if (status == MENU_OK)
   {
     nvm_set_log_cnt(log_cnt);
     
-    show_ok("LOG RESET","log count:0");
+    show_ok("Log Reset","log count:0");
   }
 
   return status;
 }
-
+//설정변경
 int32_t setup_menu_config(void)
 {
   int32_t index;
@@ -319,7 +416,7 @@ int32_t setup_menu_config(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, "MANAGER");
+  screen_menu_create(&menu, "Manager");
 
   while (1)
   {
@@ -344,15 +441,19 @@ int32_t setup_menu_config(void)
       switch (menu.index_list[index])
       {
         case CONFIG_MENU_HJ_RESET:
-          status = setup_menu_hj_reset();
+          status = setup_menu_hj_reset();//1.AWS 화진 기본 설정
           break;
 
         case CONFIG_MENU_INIT:
-          status = setup_menu_init();
+          status = setup_menu_init();//2.공장 초기화
           break;
 
         case CONFIG_MENU_BACKUP:
-          status = setup_menu_backup();
+          status = setup_menu_backup();//설정 백업
+          break;
+
+        case CONFIG_RAIN_INIT:
+          status = setup_menu_rain_reset();
           break;
 
         case CONFIG_MENU_LOG_RESET:
@@ -362,6 +463,8 @@ int32_t setup_menu_config(void)
         default:
           break;
       }
+      if(status == MENU_ABORT)
+        return status;
     }
     else if (key != KEY_CODE_NONE)
     {
@@ -422,6 +525,8 @@ int32_t setup_menu_manager(void)
         default:
           break;
       }
+            if(status == MENU_ABORT)
+        return status;
     }
     else if (key != KEY_CODE_NONE)
     {

@@ -429,10 +429,6 @@ void screen_menu_clear_row(screen_menu_t* win, int row_index)
   int display_row;
   int title_offset = (strlen(win->title) > 0) ? 1 : 0;
 
-  if (win->current_row >= win->view_row)
-  {
-    return;
-  }
 
   display_row = row_index - win->scroll_offset + title_offset;
 
@@ -441,6 +437,7 @@ void screen_menu_clear_row(screen_menu_t* win, int row_index)
   {
     screen_put_ch(display_row, i, ' ');
   }
+  
   win->current_row++;
 }
 

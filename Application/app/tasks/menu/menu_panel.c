@@ -28,17 +28,17 @@ void draw_setup_menu_panel_page(screen_menu_t* p_win)
   p_win->current_row = 0;
 
   screen_update_list(p_win, row_count, PANEL_MENU_MODEL);
-  MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "MODEL",
+  MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "Moel",
               ITEM_LIST(get_config_app()->panel_model, panel_list_eng));
 
   if (get_config_app()->panel_model == ePANEL_MUJU)
   {
     screen_update_list(p_win, row_count, PANEL_MENU_SNOW);
-    MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "SNOW",
+    MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "Snow",
                 ITEM_LIST((int32_t)get_config_app()->panel_snow_active, enable_list_eng));
 
     screen_update_list(p_win, row_count, PANEL_MENU_BAROMETER);
-    MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "BAROM",
+    MENU_PRINTF(p_win, row_count++, "%-*s:%s", PANEL_WD, "Baro",
                 ITEM_LIST((int32_t)get_config_app()->panel_barometer_active, enable_list_eng));
   }
 
@@ -58,7 +58,7 @@ int32_t setup_menu_panel(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu,  "PANEL");
+  screen_menu_create(&menu,  "Panel");
 
   while (1)
   {

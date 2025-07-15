@@ -113,7 +113,7 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
   uint8_t port_number;
 
   screen_update_list(p_win, row_count, HJSNOW_PAGE_PHYSICAL);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Physical", 
+  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port Type", 
            ITEM_LIST(hjsnow_config->physical_layer, physical_list));
 
   if (hjsnow_config->physical_layer == ePHYSICAL_RS232)
@@ -262,7 +262,7 @@ void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
 
 
   screen_update_list(p_win, row_count, HJTEMP_PAGE_PHYSICAL);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Physical", 
+  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port Type", 
            ITEM_LIST(hjtemp_config->physical_layer, physical_list));
 
   if (hjtemp_config->physical_layer == ePHYSICAL_RS232)
@@ -330,24 +330,24 @@ void draw_sensor_page(screen_menu_t* p_win, sensor_t *p_sensor)
     default :
       p_win->total_items = row_count;
 
-      screen_clear_unsued_line(p_win);
+
       break;
   }
-
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
 }
 
-int32_t setup_select_menu_index(sensor_t* p_sensor, int* choice)
+int32_t setup_select_menu_index(sensor_t *p_sensor, int *choice, eSENSOR_TYPE_t type)
 {
-
-
   int32_t key;
   screen_menu_t menu;
 
+  screen_menu_create(&menu, sensor_name_eng_list[type]);
 
-  screen_menu_create(&menu, "SENSOR");
 
-  
-  while (1)
+    while (1)
   {
     draw_sensor_page(&menu,p_sensor);
     screen_refresh();
@@ -673,7 +673,7 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
 
 {
   int32_t status;
-  int32_t choice;
+   int32_t choice;
   int32_t dec = 0;
   hjtemp_config_t* hjtemp;
   const char* portList[10];
@@ -907,7 +907,7 @@ int32_t setup_sensor(eSENSOR_TYPE_t list)
     1.port        :EX1 RS485 A
     이런 화면이 나타남남
     */
-    status = setup_select_menu_index(sensor, &choice);
+    status = setup_select_menu_index(sensor, &choice,list);
     if (status != MENU_OK)
       break;
 
@@ -954,7 +954,7 @@ int32_t setup_menu_sensor(void)
 
   screen_menu_t menu;
 
-  screen_menu_create(&menu, "SENSOR");
+  screen_menu_create(&menu, "Sensor");
 
   while (1)
   {

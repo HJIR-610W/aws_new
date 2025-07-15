@@ -156,7 +156,7 @@ int32_t setup_eth_config(void)
   int32_t dec;
   int32_t index;
 
-  screen_menu_create(&menu,  "ETHERNET");
+  screen_menu_create(&menu,  "Ethernet");
 
 
   while (1)
@@ -396,7 +396,7 @@ int32_t setup_direct_config(void)
   int32_t dec;
   int32_t index;
 
-  screen_menu_create(&menu, "DIRECT");
+  screen_menu_create(&menu, "Direct");
 
 
   while (1)
@@ -452,7 +452,7 @@ int32_t setup_menu_network(void)
   screen_menu_t menu;
   int32_t index;
 
-  screen_menu_create(&menu, "NETWORK");
+  screen_menu_create(&menu, "Network");
 
 
   while (1)

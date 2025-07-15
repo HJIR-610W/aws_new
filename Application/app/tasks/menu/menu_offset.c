@@ -157,7 +157,7 @@ int32_t setup_menu_offset(void)
   eSENSOR_TYPE_t selected_sensor;
   screen_menu_t menu;
 
-  screen_menu_create(&menu,  "OFFSET");
+  screen_menu_create(&menu,  "Offset");
 
   while (1)
   {
