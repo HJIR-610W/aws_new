@@ -11,6 +11,7 @@
 #include "app_screen.h"
 #include "cli_key_code.h"
 #include  "app_key.h"
+#include "menu_data.h"
 
 #define AWS_SETUP_SYSTEM 0
 #define AWS_SETUP_SENSOR 1
@@ -96,6 +97,7 @@ void setup_root(void)
           status = setup_menu_network();
           break;
         case AWS_SETUP_DATA:  // SYSTEM
+          status  = setup_menu_data();
           break;
         case AWS_SETUP_PANEL:
           status = setup_menu_panel();

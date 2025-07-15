@@ -397,13 +397,14 @@ int32_t setup_menu_log_reset(void)
 
 
   log_cnt = get_config_nvm()->log_q_cnt;
-  status = input_decimal("Log Count", 0, LOG_COUNT_MAX, &log_cnt);
+
+  status = input_decimal("Log Count", 0, 2147483647, &log_cnt);
   
   if (status == MENU_OK)
   {
     nvm_set_log_cnt(log_cnt);
-    
-    show_ok("Log Reset","log count:0");
+
+    show_popup("Log Reset", "log count:0");
   }
 
   return status;

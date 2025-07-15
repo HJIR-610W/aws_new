@@ -93,9 +93,9 @@ void screen_clear(void)
 void screen_page_create(screen_page_t* win, int rows, int cols)
 {
   win->current_row = 0;
-  win->view_row = rows;
+  win->view_row = s_screen.font_rows;
 
-  win->view_col = cols;
+  win->view_col = s_screen.font_cols;
 
   if (cols > MAX_COLS)
   {

@@ -245,12 +245,12 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   {
     save_adc_cali();
    
-    show_ok("Calibration", "Success");
+    show_popup("Calibration", "Success");
   }
   else
   {
-   
-    show_ok("Calibration","Failed");
+
+    show_popup("Calibration", "Failed");
   }
 
   return status;

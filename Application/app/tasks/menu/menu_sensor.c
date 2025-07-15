@@ -35,7 +35,7 @@ extern const char* adcChModeList[2];
 extern const char* physical_list[2];
 
 
-#define E_L_W 10
+#define E_L_W 9
 
 
 #define ADC_PAGE_MODE 0
@@ -113,7 +113,7 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
   uint8_t port_number;
 
   screen_update_list(p_win, row_count, HJSNOW_PAGE_PHYSICAL);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port Type", 
+  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Com Type", 
            ITEM_LIST(hjsnow_config->physical_layer, physical_list));
 
   if (hjsnow_config->physical_layer == ePHYSICAL_RS232)
@@ -262,7 +262,7 @@ void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
 
 
   screen_update_list(p_win, row_count, HJTEMP_PAGE_PHYSICAL);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port Type", 
+  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Com Type", 
            ITEM_LIST(hjtemp_config->physical_layer, physical_list));
 
   if (hjtemp_config->physical_layer == ePHYSICAL_RS232)
@@ -280,7 +280,7 @@ void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
   M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
 
   screen_update_list(p_win, row_count, HJTEMP_PAGE_MODBUS_ID);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Modbus ID", hjtemp_config->modbus_id);
+  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "M bus ID", hjtemp_config->modbus_id);
   
   screen_update_list(p_win, row_count, HJTEMP_PAGE_TEMP_MENU);
   M_PRINTF(p_win, row_count++, "TempMenu");
