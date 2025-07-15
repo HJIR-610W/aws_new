@@ -42,7 +42,7 @@
 #include "task_http_server.h"
 #include "task_telnet_server.h"
 #include "driver.h"
-
+#include "drv_rtc.h"
 const osThreadAttr_t kStartTask_attributes = {
     .name = "startTask",
     .stack_size = 2048,
@@ -84,6 +84,7 @@ void log_boot_reason(void)
 void startTask(void *arg)
 {
   drv_init();// 에플리케이션에서 사용하는 드라이버 초기화
+  drv_rtc_read(&Date_Time);
   if(testTask_init()==true)
   {
     osThreadExit();  // 종료 시킴

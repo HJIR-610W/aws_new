@@ -263,8 +263,8 @@ int32_t cali_setup_menu_factory(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20);
-  screen_menu_title(&menu, "Factory Cali");
+  screen_menu_create(&menu, 8, 20, "Factory Cali");
+
   while (1)
   {
     draw_cali_setup_menu_factory_page(&menu);
@@ -471,8 +471,8 @@ int32_t cali_setup_menu_view(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20);
-  screen_menu_title(&menu, "VIEW");
+  screen_menu_create(&menu, 8, 20, "VIEW");
+
   while (1)
   {
     draw_cali_setup_menu_view_page(&menu);
@@ -592,10 +592,9 @@ int32_t setup_menu_calibration(void)
   int32_t status;
   screen_menu_t menu;
 
+  screen_menu_create(&menu, 8, 20, "Calibraion");
 
-  screen_menu_create(&menu, 8, 20);
 
-  screen_menu_title(&menu, "Calibraion");
 
   while (1)
   {

@@ -62,8 +62,8 @@ void setup_root(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20);
-  screen_menu_title(&menu, "AWS Setup");
+  screen_menu_create(&menu, 8, 20 ,"AWS Setup");
+
 
   while(1)
   {

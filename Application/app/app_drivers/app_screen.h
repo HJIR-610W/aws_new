@@ -39,8 +39,11 @@ void screen_printf(int row, int col, const char* format, ...);
       SCREEN_STATE_ON
     } eSCREEN_STATE_t;
 
+
+
 typedef struct
 {
+  screen_instance_t screen;
   int current_row;
   int view_row;
   int view_col;
@@ -55,7 +58,8 @@ typedef struct
 
 typedef struct
 {
-  char title[16+1];
+  screen_instance_t screen;
+  char title[16 + 1];
   int current_row;
   int view_row;
   int view_col;
@@ -76,11 +80,11 @@ void screen_handle_scroll(screen_page_t* win, int key);
 void screen_menu_handle(screen_menu_t* win, int key);
 void screen_off(void);
 void screen_on(void);
-void screen_menu_create(screen_menu_t* win, int rows, int cols);
+void screen_menu_create(screen_menu_t* win, int rows, int cols,const char *titile);
 void screen_menu_clear(screen_menu_t* win);
 void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* format, ...);
 void screen_menu_clear_row(screen_menu_t* win, int row_index);
 void screen_update_list(screen_menu_t* p_screen, int index, int id);
 void screen_clear_unsued_line(screen_menu_t* p_win);
-void screen_menu_title(screen_menu_t* win, const char* title);
+
 #endif

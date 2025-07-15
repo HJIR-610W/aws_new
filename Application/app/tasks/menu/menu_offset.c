@@ -1,6 +1,6 @@
 #include "menu_offset.h"
 
-#include "app_adc.h"
+
 #include "app_key.h"
 #include "app_screen.h"
 #include "app_sensor.h"
@@ -13,7 +13,7 @@
 #include "util_memory.h"
 #include "view_driver.h"
 
-#define SCREEN_COLS 20
+#define SCREEN_COLS 16
 #define OFFSET_WD 12
 
 #define M_PRINTF screen_menu_printf_row
@@ -61,10 +61,14 @@ void draw_offset_page(screen_menu_t* p_win)
   {
     screen_menu_clear_row(p_win, row_count++);
   }
+
+  screen_refresh();
 }
 
+//ADC 자체의 오프셋을 수정하려면 이함수 추후 사용
 int32_t setup_pressure_offset(eSENSOR_TYPE_t sensor_type)
 {
+  char buff[17];
   uint8_t error;
   int32_t choice;
   int32_t status = MENU_OK;
@@ -98,6 +102,7 @@ int32_t setup_pressure_offset(eSENSOR_TYPE_t sensor_type)
   measured_value = voltage;
 
   screen_clear();
+  
   screen_printf(0, 0, "Current: %.3f", measured_value);
   screen_printf(1, 0, "ADC Ch%d: %.3fV", cfg->single_channel, voltage);
   screen_refresh();
@@ -134,39 +139,29 @@ int32_t setup_sensor_offset(eSENSOR_TYPE_t sensor_type)
 
   p_sensor = &get_config_app()->sensor[sensor_type];
 
-  switch (sensor_type)
+  status = input_float("Offset Value", -1000.0f, 1000.0f, &p_sensor->offset, "%8.3f");
+  if (status == MENU_OK)
   {
-    case A7_PRESSURE:
-      status = setup_pressure_offset(sensor_type);
-      break;
-
-    default:
-      status = input_float("Offset Value", -1000.0f, 1000.0f, &p_sensor->offset, "%8.3f");
-      if (status == MENU_OK)
-      {
-        WRITE_CFG(sensor[sensor_type].offset);
-      }
-      break;
+    WRITE_CFG(sensor[sensor_type].offset);
   }
+
 
   return status;
 }
 
 int32_t setup_menu_offset(void)
 {
-
   int32_t index;
   int32_t key;
   int32_t status;
   eSENSOR_TYPE_t selected_sensor;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20);
-  screen_menu_title(&menu,"OFFSET");
+  screen_menu_create(&menu, 8, 20,  "OFFSET");
+
   while (1)
   {
     draw_offset_page(&menu);
-    screen_refresh();
 
     key = get_button_key(1000);
 

@@ -25,7 +25,7 @@ void screen_init(void)
     s_screen.height_pixcel = 64;
     s_screen.width_pixel = 128;
     s_screen.font_rows = 8;
-    s_screen.font_cols = 20;
+    s_screen.font_cols = 16;
   }
 }
 screen_instance_t* screen_get_instance(void)
@@ -114,7 +114,7 @@ void screen_page_create(screen_page_t* win, int rows, int cols)
   }
 }
 
-void screen_menu_create(screen_menu_t* win, int rows, int cols)
+void screen_menu_create(screen_menu_t* win, int rows, int cols,const char *titile)
 {
   win->current_row = 0;
   win->view_row = rows;
@@ -129,12 +129,16 @@ void screen_menu_create(screen_menu_t* win, int rows, int cols)
   win->scroll_offset = 0;
   win->total_items = 0;
   win->selected_index = 0;  // 첫 번째 메뉴 항목이 기본 선택
-  memset(win->title, 0, sizeof(win->title));  // 타이틀 초기화
-}
+  
+  if(titile)
+  {
+    snprintf(win->title,sizeof(win->title),"%s",titile);
+  }
+  else
+  {
+    memset(win->title, 0, sizeof(win->title));  // 타이틀 초기화
+  }
 
-void screen_menu_title(screen_menu_t *win,const char *title)
-{
-  snprintf(win->title, sizeof(win->title), "%s",title);
 }
 
 void screen_menu_clear(screen_menu_t* win)

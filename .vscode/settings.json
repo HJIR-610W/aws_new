@@ -1,4 +1,6 @@
 {
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
   "files.associations": {
     "os_user_def.h": "c",
     "driver_spi.h": "c",
@@ -8,6 +10,5 @@
     "app_sensor.h": "c",
     "general_frequency.h": "c",
     "sockets.h": "c"
-  },
-  "cmake.sourceDirectory": "D:/WTH/1.Projects/4.Dev/16.AWS/1.FW/aws_app/Middlewares/Third_Party/mbedTLS/programs/pkey"
+  }
 }

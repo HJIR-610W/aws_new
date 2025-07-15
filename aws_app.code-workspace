@@ -93,7 +93,8 @@
 			"ads1220.h": "c",
 			"adc_calibration.h": "c",
 			"config_adc.h": "c",
-			"pt100.h": "c"
+			"pt100.h": "c",
+			"driver.h": "c"
 		}
 	}
 }

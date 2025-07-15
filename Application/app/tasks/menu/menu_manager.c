@@ -261,7 +261,7 @@ int32_t setup_menu_backup(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20);
+  screen_menu_create(&menu, 8, 20,"AWS SETUP");
 
   while (1)
   {
@@ -374,7 +374,7 @@ int32_t setup_menu_config(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20);
+  screen_menu_create(&menu, 8, 20,"MANAGER");
 
   while (1)
   {
@@ -434,8 +434,8 @@ int32_t setup_menu_manager(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20);
-  screen_menu_title(&menu,"MANAGER");
+  screen_menu_create(&menu, 8, 20, "MANAGER");
+
   while (1)
   {
     draw_setup_menu_manager_page(&menu);

@@ -1095,7 +1095,7 @@
             <IarPane-34105>
                 <expressions>
                     <item>g_mcu_isr_list</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>
