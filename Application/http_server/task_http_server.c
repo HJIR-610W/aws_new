@@ -24,7 +24,7 @@ static osThreadId_t g_httpServerTaskId = NULL;
 
 const osThreadAttr_t http_server_task_attributes = {
     .name = "http_server",
-    .stack_size = 4096,
+    .stack_size = TASK_HTTP_SERVER_STACK_SIZE,
     .priority = (osPriority_t)osPriorityRealtime2,
 };
 

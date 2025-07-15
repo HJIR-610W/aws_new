@@ -95,7 +95,9 @@
 			"config_adc.h": "c",
 			"pt100.h": "c",
 			"driver.h": "c",
-			"app_key.h": "c"
+			"app_key.h": "c",
+			"freertos.h": "c",
+			"task_cellular.h": "c"
 		}
 	}
 }

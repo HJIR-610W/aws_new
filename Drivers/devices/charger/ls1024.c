@@ -37,11 +37,11 @@ driver_t *ls1024_open(int32_t num,void *opt)
     return &ls1024_driver;
   }
 
-  modbus_init.baud = 19200;
+  modbus_init.baud = 115200;
   modbus_init.parityIdx = 0;
   modbus_init.stop = 1;
 
-  modbus_init.port_num = RS485_C;
+  modbus_init.port_num = RS485_B;
   ls1024_cfg.bus_io = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &modbus_init);
 
   ls1024_driver.cfg = &ls1024_cfg;

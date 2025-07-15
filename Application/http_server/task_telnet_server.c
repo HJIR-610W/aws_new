@@ -29,7 +29,7 @@ static tcp_relay_client_t g_tcp_relay_client = {0};
 
 const osThreadAttr_t telnet_server_task_attributes = {
     .name = "telnet_server",
-    .stack_size = 2048,
+    .stack_size = TASK_TELNET_SERVER_STACK_SIZE,
     .priority = (osPriority_t)osPriorityRealtime2,
 };
 

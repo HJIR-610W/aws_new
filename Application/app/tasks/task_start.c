@@ -2,6 +2,7 @@
 
 #include "Tasks\task_start.h"
 
+#include "cmsis_os2.h"
 #include "app_file.h"
 
 #include "App_drivers\app_flash.h"
@@ -45,7 +46,7 @@
 #include "drv_rtc.h"
 const osThreadAttr_t kStartTask_attributes = {
     .name = "startTask",
-    .stack_size = 2048,
+    .stack_size = TASK_START_STACK_SIZE,
     .priority = (osPriority_t)osPriorityRealtime7,
 };
 

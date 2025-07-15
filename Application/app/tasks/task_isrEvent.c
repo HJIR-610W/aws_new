@@ -4,12 +4,12 @@
 #include "bsp.h"
 #include "dev_io.h"
 #include "task_isrEvent.h"
-
+#include "FreeRTOS.h"
 #include "Sensors\rain\rain.h"
 
 const osThreadAttr_t kIsrEventTask_attributes = {
   .name = "isr_event",
-  .stack_size = 1024,
+  .stack_size = TASK_ISR_EVENT_STACK_SIZE,
   .priority = (osPriority_t) osPriorityRealtime2,
 };
 

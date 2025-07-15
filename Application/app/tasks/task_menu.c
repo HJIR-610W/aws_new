@@ -31,7 +31,7 @@
 #include "menu\menu_setup.h"
 #include "util_stdio.h"
 #include "drv_system.h"
-
+#include "FreeRTOS.h"
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
 extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용
 extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
@@ -49,7 +49,7 @@ const char *linkStatusList_lcd[3] = {"-", "UP", "DOWN"};
 const char *ethlinkStatusList_lcd[3] = {"-", "U", "D"};
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
-    .stack_size = 2560,
+    .stack_size = TASK_MENU_STACK_SIZE,
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
 

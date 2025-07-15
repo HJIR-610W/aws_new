@@ -4,12 +4,12 @@
 
 #include "dev_io.h"
 #include "system_err.h"
-
+#include "FreeRTOS.h"
 #define TASK_MAX 10
 
 const osThreadAttr_t kWdtTask_attributes = {
     .name = "wdt",
-    .stack_size = 1024,
+    .stack_size = TASK_WDT_STACK_SIZE,
     .priority = (osPriority_t)osPriorityRealtime1};
 
 typedef struct

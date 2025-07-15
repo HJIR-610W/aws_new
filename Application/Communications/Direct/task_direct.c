@@ -8,11 +8,12 @@
 #include "task_isrEvent.h"
 #include "update_fw.h"
 #include "system_err.h"
+#include "FreeRTOS.h"
 #define DIRECT_TIMEOUT_MS 600000
 
 const osThreadAttr_t directTask_attributes = {
     .name = "directTask",
-    .stack_size = 2048,
+    .stack_size = TASK_DIRECT_STACK_SIZE,
     .priority = (osPriority_t)osPriorityNormal,
 };
 

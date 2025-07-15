@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "FreeRTOS.h"
 #include "app_logging.h"
 #include "at_cmd.h"
 #include "config_app.h"
@@ -21,8 +21,9 @@
 #include "update_fw.h"
 #include "util_time.h"
 #include "task_wdt.h"
-
+#include "FreeRTOS.h"
 #include "bsp.h"
+
 typedef enum{
 	ePOWER_RESET,
 	eCONNECT_TCP_WDT,
@@ -93,20 +94,20 @@ typedef struct
 
 const osThreadAttr_t kAtTask_attributes = {
   .name = "cdma AT",
-  .stack_size = 2048,
+  .stack_size = TASK_AT_STACK_SIZE,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 const osThreadAttr_t kTcpTask_attributes = {
   .name = "cdma TCP",
-  .stack_size = 3072,
+  .stack_size = TASK_TCP_CDMA_STACK_SIZE,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 
 const osThreadAttr_t kAsyncTask_attributes = {
   .name = "cdma ASYNC",
-  .stack_size = 2048,
+  .stack_size = TASK_ASYNC_STACK_SIZE,
   .priority = (osPriority_t) osPriorityNormal,
 };
 

@@ -5,7 +5,7 @@
 
 #include "app_sensor.h"
 #include "aws_data.h"
-
+#include "FreeRTOS.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "config_nvm.h"
@@ -1572,7 +1572,7 @@ void DUALPORT_TASK(void *arg)
 
 const osThreadAttr_t KdualportTask_attributes = {
     .name = "DUALPORT_TASK",
-    .stack_size = 2048,
+    .stack_size = TASK_DUALPORT_STACK_SIZE,
     .priority = (osPriority_t)osPriorityRealtime1,
 };
 void dualportTask_init(void)

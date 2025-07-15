@@ -18,7 +18,7 @@
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
-    .stack_size = 2048,
+    .stack_size = TASK_SYSTEM_STACK_SIZE,
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
 

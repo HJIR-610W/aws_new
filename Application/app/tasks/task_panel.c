@@ -1,12 +1,12 @@
 
 #include "cmsis_os2.h"
-
+#include "FreeRTOS.h"
 
 #include "Panel\panel.h"
 
 const osThreadAttr_t kPanelTask_attributes = {
     .name = "panelTask",
-    .stack_size = 768,
+    .stack_size = TASK_PANEL_STACK_SIZE,
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
 

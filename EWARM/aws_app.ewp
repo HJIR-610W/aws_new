@@ -1271,12 +1271,6 @@
                         <name>$PROJ_DIR$\..\application\app\sensors\general\general_frequency.h</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\general\general_virtual.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\general\general_virtual.h</name>
-                    </file>
-                    <file>
                         <name>$PROJ_DIR$\..\Application\app\sensors\general\sensor_general.c</name>
                     </file>
                     <file>
@@ -1879,7 +1873,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -2085,7 +2079,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -2097,7 +2091,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\fram\fm25cl.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.h</name>
                 </file>
             </group>
             <group>
@@ -2106,7 +2100,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -2115,7 +2109,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -2154,13 +2148,13 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\rtc\ds1306.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</name>
                 </file>
             </group>
             <group>
