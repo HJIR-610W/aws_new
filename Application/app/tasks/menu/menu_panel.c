@@ -58,7 +58,7 @@ int32_t setup_menu_panel(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20, "PANEL");
+  screen_menu_create(&menu,  "PANEL");
 
   while (1)
   {

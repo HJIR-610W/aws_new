@@ -68,11 +68,11 @@ void draw_offset_page(screen_menu_t* p_win)
 //ADC 자체의 오프셋을 수정하려면 이함수 추후 사용
 int32_t setup_pressure_offset(eSENSOR_TYPE_t sensor_type)
 {
-  char buff[17];
+
   uint8_t error;
   int32_t choice;
   int32_t status = MENU_OK;
-  float calibrated_voltage;
+
   float measured_value;
   float new_offset;
   float reference_value;
@@ -157,7 +157,7 @@ int32_t setup_menu_offset(void)
   eSENSOR_TYPE_t selected_sensor;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20,  "OFFSET");
+  screen_menu_create(&menu,  "OFFSET");
 
   while (1)
   {

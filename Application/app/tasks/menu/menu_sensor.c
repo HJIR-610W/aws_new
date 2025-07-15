@@ -344,7 +344,7 @@ int32_t setup_select_menu_index(sensor_t* p_sensor, int* choice)
   screen_menu_t menu;
 
 
-  screen_menu_create(&menu, 8, 20,"SENSOR");
+  screen_menu_create(&menu, "SENSOR");
 
   
   while (1)
@@ -954,7 +954,7 @@ int32_t setup_menu_sensor(void)
 
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20 ,"SENSOR");
+  screen_menu_create(&menu, "SENSOR");
 
   while (1)
   {

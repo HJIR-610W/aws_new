@@ -140,7 +140,7 @@ int32_t setup_menu_version(void)
 
   screen_refresh();
 
-  status = print_menu_list(confirm_menu, 1, &choice);
+  get_button_key(0xFFFFFFFF);
 
   return status;
 }
@@ -168,15 +168,10 @@ int32_t setup_menu_reset(void)
 
 int32_t setup_menu_update(void)
 {
-  const char* confirm_menu[] = {"No", "Yes"};
   int32_t choice = 0;
   int32_t status;
 
-  screen_clear();
-  screen_printf(0, 0, "Firmware Update?");
-  screen_refresh();
-
-  status = print_menu_list(confirm_menu, 2, &choice);
+  status = input_active("Firmware Update?",&choice);
 
   if (status == MENU_OK && choice == 1)
   {
@@ -185,7 +180,7 @@ int32_t setup_menu_update(void)
       screen_clear();
       screen_printf(0, 0, "Updating...");
       screen_refresh();
-
+      osDelay(2000);
       set_magic_value(MAGIC_UPDATE_FW_LACAL);
       reset_system("USER update");
     }
@@ -197,27 +192,15 @@ int32_t setup_menu_update(void)
 
 int32_t setup_menu_hj_reset(void)
 {
-  const char* confirm_menu[] = {"No", "Yes"};
   int32_t choice = 0;
   int32_t status;
 
-  screen_clear();
-  screen_printf(0, 0, "HJ Config Reset?");
-  screen_refresh();
-
-  status = print_menu_list(confirm_menu, 2, &choice);
+  status = input_active("HJ Config Reset?", &choice);
 
   if (status == MENU_OK && choice == 1)
   {
     config_hj_reset();
-    
-    screen_clear();
-    screen_printf(0, 0, "Reset Complete");
-    screen_refresh();
-    
-    const char* ok_menu[] = {"OK"};
-    choice = 0;
-    print_menu_list(ok_menu, 1, &choice);
+    show_popup("Info","Reset Complete");
   }
 
   return status;
@@ -225,15 +208,10 @@ int32_t setup_menu_hj_reset(void)
 
 int32_t setup_menu_init(void)
 {
-  const char* confirm_menu[] = {"No", "Yes"};
   int32_t choice = 0;
   int32_t status;
 
-  screen_clear();
-  screen_printf(0, 0, "Config Init?");
-  screen_refresh();
-
-  status = print_menu_list(confirm_menu, 2, &choice);
+  status = input_active("Config Init",&choice);
 
   if (status == MENU_OK && choice == 1)
   {
@@ -241,14 +219,8 @@ int32_t setup_menu_init(void)
     save_config_app();
     config_sensor_reset();
     save_config_sensor();
-    
-    screen_clear();
-    screen_printf(0, 0, "Init Complete");
-    screen_refresh();
-    
-    const char* ok_menu[] = {"OK"};
-    choice = 0;
-    print_menu_list(ok_menu, 1, &choice);
+
+    show_popup("Info", "Init Complete");
   }
 
   return status;
@@ -261,7 +233,7 @@ int32_t setup_menu_backup(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20,"AWS SETUP");
+  screen_menu_create(&menu,"AWS SETUP");
 
   while (1)
   {
@@ -288,39 +260,19 @@ int32_t setup_menu_backup(void)
         case BACKUP_MENU_SAVE:
         {
           backup_config();
-          
-          screen_clear();
-          screen_printf(0, 0, "Backup Complete");
-          screen_refresh();
-          
-          const char* ok_menu[] = {"OK"};
-          int32_t choice = 0;
-          print_menu_list(ok_menu, 1, &choice);
+          show_popup("Info", "Backup Complete");
         }
         break;
 
         case BACKUP_MENU_RESTORE:
         {
-          const char* confirm_menu[] = {"No", "Yes"};
           int32_t choice = 0;
-          
-          screen_clear();
-          screen_printf(0, 0, "Restore Config?");
-          screen_refresh();
-          
-          status = print_menu_list(confirm_menu, 2, &choice);
-          
+          status = input_active("Restore Config?", &choice);
+
           if (status == MENU_OK && choice == 1)
           {
             restore_config();
-            
-            screen_clear();
-            screen_printf(0, 0, "Restore Complete");
-            screen_refresh();
-            
-            const char* ok_menu[] = {"OK"};
-            choice = 0;
-            print_menu_list(ok_menu, 1, &choice);
+            show_popup("Info", "Restore Complete");
           }
         }
         break;
@@ -354,14 +306,7 @@ int32_t setup_menu_log_reset(void)
   {
     nvm_set_log_cnt(log_cnt);
     
-    screen_clear();
-    screen_printf(0, 0, "Log Reset");
-    screen_printf(1, 0, "Count:%d", log_cnt);
-    screen_refresh();
-    
-    const char* ok_menu[] = {"OK"};
-    int32_t choice = 0;
-    print_menu_list(ok_menu, 1, &choice);
+    show_ok("LOG RESET","log count:0");
   }
 
   return status;
@@ -374,7 +319,7 @@ int32_t setup_menu_config(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20,"MANAGER");
+  screen_menu_create(&menu, "MANAGER");
 
   while (1)
   {
@@ -434,7 +379,7 @@ int32_t setup_menu_manager(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20, "MANAGER");
+  screen_menu_create(&menu,  "MANAGER");
 
   while (1)
   {

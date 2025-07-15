@@ -5,10 +5,11 @@
 #include <string.h>
 
 #include "driver_lcd.h"
+#include "driver_lcd.h"
 #include "cmsis_os2.h"
 #include "cli_key_code.h"
 
-#define MAX_COLS 21
+#define MAX_COLS 20
 
 
 
@@ -25,7 +26,7 @@ void screen_init(void)
     s_screen.height_pixcel = 64;
     s_screen.width_pixel = 128;
     s_screen.font_rows = 8;
-    s_screen.font_cols = 16;
+    s_screen.font_cols = 20;
   }
 }
 screen_instance_t* screen_get_instance(void)
@@ -57,10 +58,7 @@ void screen_set_cursor(int row, int col)
     driver_lcd_set_position(p_s_lcd, row, col);
 }
 
-void screen_set_mode(eLCD_MODE_t lcd_mode)
-{
-   driver_lcd_set_mode(p_s_lcd,  lcd_mode);
-}
+
 
 void screen_set_pixel( uint8_t x, uint8_t y, bool on)
 {
@@ -114,14 +112,13 @@ void screen_page_create(screen_page_t* win, int rows, int cols)
   }
 }
 
-void screen_menu_create(screen_menu_t* win, int rows, int cols,const char *titile)
+void screen_menu_create(screen_menu_t* win,const char *titile)
 {
   win->current_row = 0;
-  win->view_row = rows;
+  win->view_row = s_screen.font_rows;
+  win->view_col = s_screen.font_cols;
 
-  win->view_col = cols;
-
-  if (cols > MAX_COLS)
+  if (win->view_col > MAX_COLS)
   {
     win->view_col = MAX_COLS;
   }

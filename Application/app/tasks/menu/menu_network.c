@@ -156,7 +156,7 @@ int32_t setup_eth_config(void)
   int32_t dec;
   int32_t index;
 
-  screen_menu_create(&menu, 8, 20, "ETHERNET");
+  screen_menu_create(&menu,  "ETHERNET");
 
 
   while (1)
@@ -294,7 +294,7 @@ int32_t setup_cdma_config(void)
   int32_t dec;
   int32_t index;
 
-  screen_menu_create(&menu, 8, 20 ,"CDMA");
+  screen_menu_create(&menu, "CDMA");
 ;
 
   while (1)
@@ -396,7 +396,7 @@ int32_t setup_direct_config(void)
   int32_t dec;
   int32_t index;
 
-  screen_menu_create(&menu, 8, 20 ,"DIRECT");
+  screen_menu_create(&menu, "DIRECT");
 
 
   while (1)
@@ -452,7 +452,7 @@ int32_t setup_menu_network(void)
   screen_menu_t menu;
   int32_t index;
 
-  screen_menu_create(&menu, 8, 20 ,"NETWORK");
+  screen_menu_create(&menu, "NETWORK");
 
 
   while (1)

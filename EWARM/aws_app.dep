@@ -140,21 +140,21 @@
             <file>$PROJ_DIR$\..\Application\app\test\test_hart.c</file>
             <file>$PROJ_DIR$\..\Application\app\version\app_version.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_sdi12.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\CDMA\modem_if.h</file>
+            <file>$PROJ_DIR$\..\application\communications\CDMA\modem_if.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\modem_sms.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\CDMA\at_cmd.h</file>
+            <file>$PROJ_DIR$\..\application\communications\CDMA\at_cmd.h</file>
             <file>$PROJ_DIR$\..\Application\app\version\boot_version.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\modem_tx700.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_flach.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_uart.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\CDMA\task_cellular.h</file>
+            <file>$PROJ_DIR$\..\application\communications\CDMA\task_cellular.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\old_aws_sms.c</file>
             <file>$PROJ_DIR$\..\application\app\version\hj_product_list.h</file>
             <file>$PROJ_DIR$\..\application\app\version\boot_version.h</file>
             <file>$PROJ_DIR$\..\application\app\version\app_version.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\Direct\task_direct.h</file>
+            <file>$PROJ_DIR$\..\application\communications\Direct\task_direct.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_rain.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_rs485.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_lcd.c</file>
@@ -168,7 +168,7 @@
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\old_aws_sms.h</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100.c</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</file>
@@ -1791,7 +1791,7 @@
             <file>$PROJ_DIR$\release\Obj\at45db.o</file>
             <file>$PROJ_DIR$\release\Obj\bsp_i2c.o</file>
             <file>$PROJ_DIR$\release\Obj\app_key.__cstat.et</file>
-            <file>$PROJ_DIR$\..\application\Communications\Ethernet\task_client.h</file>
+            <file>$PROJ_DIR$\..\application\communications\Ethernet\task_client.h</file>
             <file>$PROJ_DIR$\release\Obj\system_stm32f4xx.o</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ip.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_do.__cstat.et</file>
@@ -1828,7 +1828,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\inet.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
             <file>$PROJ_DIR$\..\Application\Tasks\console\console_test.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\Ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\Ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\release\Obj\memp.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sys.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_di.xcl</file>
@@ -2209,7 +2209,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\aws\old_aws_define.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcp.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_system.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dns.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcpbase.h</file>
@@ -2237,12 +2237,12 @@
             <file>$PROJ_DIR$\..\application\app\config\config_app.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\config.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\application\app\sensors\barometer\barometer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\base64.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_time.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\data_logging.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\divas\aws_monitor.h</file>
@@ -2250,7 +2250,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\ppp\ppp_opts.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_dataLogging.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_power.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\Ethernet\eth_icmp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\nd6.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_offset.h</file>
@@ -2260,20 +2260,20 @@
             <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_start.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_logging.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_manager.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_manager.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\timers.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\semphr.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\queue.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_cali.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_cali.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\freertos_mpool.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_nvm.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_data.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_data.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_view.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_offset.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_system.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_network.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_sensor.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_offset.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_network.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_sensor.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\autoip.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\dhcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
@@ -2312,14 +2312,14 @@
             <file>$PROJ_DIR$\..\application\app\tasks\logging\utile_data.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_utile.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_define.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_di.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\threading.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\httpd_structs.h</file>
@@ -2700,7 +2700,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2193 1706 1487 2002 1805 1505 1650 1985 1626 299 312 289 1569 1862 1681 1872 1276 1836 1775</file>
+                    <file> 2193 1706 1487 2002 1805 1505 1650 1985 1626 1569 1862 1681 1872 299 312 289 1276 1836 1775</file>
                 </tool>
             </inputs>
         </file>
@@ -4114,7 +4114,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2214 1706 1487 2002 1805 1505 1650 242 2188 2138 1626 1569 1862 1681 1872 2328 2339 2338 2331 2332 296 312 307 2333 2329 2335 468 2221 1276 1836 1775 2193 1985 299 289 2327 2305 2306 2336 1982 2349 2046 471 2203 449 2287</file>
+                    <file> 2214 1706 1487 2002 1805 1505 1650 242 2188 2138 1626 1569 1862 1681 1872 2328 2339 2338 2331 2332 296 312 307 2333 2329 2335 468 2221 1276 1836 1775 2193 1985 2327 2305 2306 2336 1982 2349 2046 471 2203 449 2287</file>
                 </tool>
             </inputs>
         </file>
@@ -4137,7 +4137,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2351 1706 1487 2002 1805 1505 1650 2221 1276 1836 1862 1775 2193 1985 1626 299 312 289 148 2208 442 1847 1782 1767 318 303 279 146 147 272 2229 2331 2339 2338 2332 296 307 2333 2329 2335 468 1569 1517 2303 2262 2305 2306 2349 2046 458 185 168 2203 2254</file>
+                    <file> 2351 1706 1487 2002 1805 1505 1650 2221 1276 1836 1862 1775 2193 1985 1626 148 2208 442 1847 1782 1767 318 312 303 279 146 147 272 2229 2331 2339 2338 2332 296 307 2333 2329 2335 468 1569 1517 2303 2262 2305 2306 2349 2046 458 185 168 2203 2254</file>
                 </tool>
             </inputs>
         </file>
@@ -4160,7 +4160,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2291 1706 1487 2002 1805 1505 1650 2221 1276 1836 1862 1775 2193 1985 1626 299 312 289 2208 442 1847 1782 1767 318 303 279 2229 2331 2339 2338 2332 296 307 2333 2329 2335 468 1569 1517 2305 2306 2349 2046 2203</file>
+                    <file> 2291 1706 1487 2002 1805 1505 1650 2221 1276 1836 1862 1775 2193 1985 1626 2208 442 1847 1782 1767 318 312 303 279 2229 2331 2339 2338 2332 296 307 2333 2329 2335 468 1569 1517 2305 2306 2349 2046 2203</file>
                 </tool>
             </inputs>
         </file>
@@ -4229,7 +4229,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2314 1626 1569 1487 2002 1805 1505 1650 1862 1681 1872 2221 1706 1276 1836 1775 2251 2193 1985 299 312 289 2238 281 275 1764 1532 1766 2000 1747 2008 1977 1997 1768 1756 2105 1992 2021 2019 2025 2108 2110 2063 2089 2120 2131 2084 2107 2043 2157 2096 2151 2147 2149 2114 2183 2133 2109 2116 2086 2078 2058 2162 2139 2092 2136 2144 2150 2135 2081 2123 1864 174 263 266 303 279 272 318 1767 442 1847 1782 2229 2331 2339 2338 2332 296 307 2333 2329 2335 468 1517 2305 2306 144 135 137 1786 149 2204 2232 1823 2245 2203 2323 449 2205</file>
+                    <file> 2314 1626 1569 1487 2002 1805 1505 1650 1862 1681 1872 2221 1706 1276 1836 1775 2251 2193 1985 2238 281 275 1764 1532 1766 2000 1747 2008 1977 1997 1768 1756 2105 1992 2021 2019 2025 2108 2110 2063 2089 2120 2131 2084 2107 2043 2157 2096 2151 2147 2149 2114 2183 2133 2109 2116 2086 2078 2058 2162 2139 2092 2136 2144 2150 2135 2081 2123 1864 174 263 266 303 279 312 272 318 1767 442 1847 1782 2229 2331 2339 2338 2332 296 307 2333 2329 2335 468 1517 2305 2306 144 135 137 1786 149 2204 2232 1823 2245 2203 2323 449 2205</file>
                 </tool>
             </inputs>
         </file>
@@ -4298,7 +4298,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2248 1706 1487 2002 1805 1505 1650 2221 1276 1836 1862 1775 2193 1985 1626 299 312 289 2339 2338 2331 2332 296 307 2333 2329 2335 468 1569 2229 1517 2305 2306 2336 1982 2349 2046 2203</file>
+                    <file> 2248 1706 1487 2002 1805 1505 1650 2221 1276 1836 1862 1775 2193 1985 1626 2339 2338 2331 2332 296 312 307 2333 2329 2335 468 1569 2229 1517 2305 2306 2336 1982 2349 2046 2203</file>
                 </tool>
             </inputs>
         </file>
@@ -4430,7 +4430,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2288 1706 1487 2002 1805 1505 1650 2221 1276 1836 1862 1775 2193 1985 1626 299 312 289 2229 2331 2339 2338 2332 296 307 2333 2329 2335 468 1569 1517 2305 2306 2349 2046 2203 2287</file>
+                    <file> 2288 1706 1487 2002 1805 1505 1650 2221 1276 1836 1862 1775 2193 1985 1626 2229 2331 2339 2338 2332 296 312 307 2333 2329 2335 468 1569 1517 2305 2306 2349 2046 2203 2287</file>
                 </tool>
             </inputs>
         </file>
@@ -4453,7 +4453,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2221 1706 1487 2002 1805 1505 1650 1276 1836 1862 1775 2193 1985 1626 299 312 289 272 318 1767 303 279 442 1847 1782 2229 2331 2339 2338 2332 296 307 2333 2329 2335 468 1569 1517 2305 2306 2349 2046 2291 2203 2287</file>
+                    <file> 2221 1706 1487 2002 1805 1505 1650 1276 1836 1862 1775 2193 1985 1626 272 318 312 1767 303 279 442 1847 1782 2229 2331 2339 2338 2332 296 307 2333 2329 2335 468 1569 1517 2305 2306 2349 2046 2291 2203 2287</file>
                 </tool>
             </inputs>
         </file>
@@ -4522,7 +4522,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2253 197 1706 1487 2002 1805 1505 1650 216 1749 1976 221 1764 1532 1766 2000 1747 2008 1977 1997 1768 1756 2105 1992 2021 2019 1836 1862 2025 2108 2110 2063 2089 2120 2131 2084 2107 2043 2157 2096 2151 2147 2149 2114 2183 2133 2109 2116 2086 2078 2058 2162 2139 2092 2136 2144 2150 2135 2081 2123 1864 213 217 275 174 1276 2178 2179 170 2176 2166 2185 2173 2154 2129 2132 2146 2140 2004 1981 222 193 2372 144 296 312 1626 307 135 1767 137 149 1786 1517 1823 2229 2331 2339 2338 2332 2333 2329 2335 468 1569 2303 185 1985 279 281 263 266 303 272 318 442 1847 1782 265 2190 2238 2201 2301 2389 2289 2204 2232 2386 2245 2314 2243 2254 2363 458 210 2015 211 1848 1810 1797 1769 1821 2066 1838 1813 2046 2060 2113 2076 2061 1819 1759 2024 1809 2091 2072 2065 2039 1518 2103 2055 1755 1858 2009 1983 2137 2104 1803 1828 2124 1754 1938 1492 1788 1972 1989 1825 2064 220 1843 155 1682 2385 208 2213 191 1870 1820 2053 1681 1872 163 2388</file>
+                    <file> 2253 197 1706 1487 2002 1805 1505 1650 216 1749 1976 221 1764 1532 1766 2000 1747 2008 1977 1997 1768 1756 2105 1992 2021 2019 1836 1862 2025 2108 2110 2063 2089 2120 2131 2084 2107 2043 2157 2096 2151 2147 2149 2114 2183 2133 2109 2116 2086 2078 2058 2162 2139 2092 2136 2144 2150 2135 2081 2123 1864 213 217 275 174 1276 2178 2179 170 2176 2166 2185 2173 2154 2129 2132 2146 2140 2004 1981 222 193 2372 144 296 312 1626 307 135 1767 137 149 1786 1517 1823 2229 2331 2339 2338 2332 2333 2329 2335 468 1569 2303 185 1985 279 281 263 266 303 272 318 442 1847 1782 265 2190 2238 2201 2301 2389 2289 2204 2232 2386 2245 2314 2243 2254 2363 458 210 2015 211 1848 1810 1797 1769 1821 2066 1838 1813 2046 2060 2113 2076 2061 1819 1759 2024 1809 2091 2072 2065 2039 1518 2103 2055 1755 1858 2009 1983 2137 2104 1803 1828 2124 1754 1938 1492 1788 1972 1989 1825 2064 220 1843 155 1682 2385 208 2213 191 1870 1820 2053 1681 1872 163 2388 2208</file>
                 </tool>
             </inputs>
         </file>
@@ -4591,7 +4591,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2345 1706 1487 2002 1805 1505 1650 2221 1276 1836 1862 1775 2193 1985 1626 299 312 289 2229 2331 2339 2338 2332 296 307 2333 2329 2335 468 1569 1517 2305 2306 2349 2046 2203 2287</file>
+                    <file> 2345 1706 1487 2002 1805 1505 1650 2221 1276 1836 1862 1775 2193 1985 1626 2229 2331 2339 2338 2332 296 312 307 2333 2329 2335 468 1569 1517 2305 2306 2349 2046 2203 2287</file>
                 </tool>
             </inputs>
         </file>
@@ -4637,7 +4637,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1706 1487 2002 1805 1505 1650 1569 1862 1821 2066 1681 1872 2188 2138 2046 2349 1626 2306 2221 1276 1836 1775 2193 1985 299 312 289 174 468 449</file>
+                    <file> 1706 1487 2002 1805 1505 1650 1569 1862 1821 2066 1681 1872 2188 2138 2046 2349 1626 2306 2221 1276 1836 1775 2193 1985 174 468 449</file>
                 </tool>
             </inputs>
         </file>
@@ -4660,7 +4660,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2349 1706 1487 2002 1805 1505 1650 1626 2046 2306 2288 2321 2291 468 1569 1862 2248 2345 2214 2351 2193 1985 299 312 289 1775 2221 1276 1836</file>
+                    <file> 2349 1706 1487 2002 1805 1505 1650 1626 2046 2306 2288 2321 2291 468 1569 1862 2248 2345 2214 2351 2193 1985 1775 2221 1276 1836</file>
                 </tool>
             </inputs>
         </file>

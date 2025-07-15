@@ -62,8 +62,7 @@ void setup_root(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, 8, 20 ,"AWS Setup");
-
+  screen_menu_create(&menu, "AWS SETUP");
 
   while(1)
   {
@@ -126,16 +125,3 @@ void setup_root(void)
 
 
 }
-
-  const char* menu_list[] = {"SYSTEM",
-                             "SENSOR",
-                             "NETWORK",
-                             "DATA",
-                             "PANEL",
-                             "OFFSET",
-                             "CALIBRATION",
-                             "MANAGER",
-                             "ADMIN"};
-
-  int status;
-  int choice=0;

@@ -94,7 +94,8 @@
 			"adc_calibration.h": "c",
 			"config_adc.h": "c",
 			"pt100.h": "c",
-			"driver.h": "c"
+			"driver.h": "c",
+			"app_key.h": "c"
 		}
 	}
 }

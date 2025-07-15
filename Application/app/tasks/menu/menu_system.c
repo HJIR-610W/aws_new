@@ -71,7 +71,7 @@ int32_t setup_menu_system(void)
   screen_menu_t menu;
   int32_t index;
 
-  screen_menu_create(&menu, 8, 20 ,"SYSTEM");
+  screen_menu_create(&menu, "SYSTEM");
 ;
   while(1)
   {
