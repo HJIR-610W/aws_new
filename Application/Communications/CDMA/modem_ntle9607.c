@@ -8,7 +8,7 @@
 
 #include "modem_ntle9607.h"
 #include "at_cmd.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 
 #include "bsp.h"
 #include "drv_power.h"
@@ -1008,7 +1008,7 @@ M_RET_t ntle_9607_at_direct(char *at,char *outBuffer,uint16_t outSize)
 }
 
 extern void put_tcpData(uint8_t *data, uint16_t dataLen);
-void ntle9607_recv_bin(driver_t *uart, uint8_t *p_data, uint16_t data_len)
+void ntle9607_recv_bin(int32_t uart, uint8_t *p_data, uint16_t data_len)
 {
   uint16_t cnt;
   uint8_t temp[512 + 32];
@@ -1023,8 +1023,8 @@ void ntle9607_recv_bin(driver_t *uart, uint8_t *p_data, uint16_t data_len)
     memcpy(temp, &p_data[7], cnt);
     readCnt = atoi((char *)temp);  // 수신 처리해야할 tcp data 길이를 계산
 
-    len = driver_uart_recv(uart, (uint8_t *)temp, 1, 1000);  // 최종 tcp data 버퍼에서 가져옴
-    len = driver_uart_recv(uart, (uint8_t *)temp, readCnt,
+    len = drv_uart_recv(uart, (uint8_t *)temp, 1, 1000);  // 최종 tcp data 버퍼에서 가져옴
+    len = drv_uart_recv(uart, (uint8_t *)temp, readCnt,
                            1000);  // 최종 tcp data 버퍼에서 가져옴
 
     if (len)
@@ -1034,12 +1034,12 @@ void ntle9607_recv_bin(driver_t *uart, uint8_t *p_data, uint16_t data_len)
   }
 }
 
-int32_t ntle9607_recv_handler(driver_t *uart, uint8_t *buffer, uint16_t buffer_size)
+int32_t ntle9607_recv_handler(int32_t uart, uint8_t *buffer, uint16_t buffer_size)
 {
 
   int32_t len = 0;
 
-  len = driver_uart_recv_crlf(uart,(char *)buffer, buffer_size, osWaitForever);
+  len = drv_uart_recv_crlf(uart,(char *)buffer, buffer_size, osWaitForever);
 
 
   return len;

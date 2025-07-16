@@ -16,7 +16,7 @@ driver_t *snow_open(int32_t num,void *opt)
   switch (num)
   {
     case SNOW_HJ:
-    driver = hjsnow_open(HJ_SNOW,opt);
+    driver = hjsnow_open(opt);
     break;
   }
 

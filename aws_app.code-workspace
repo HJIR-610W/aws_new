@@ -97,7 +97,15 @@
 			"driver.h": "c",
 			"app_key.h": "c",
 			"freertos.h": "c",
-			"task_cellular.h": "c"
+			"task_cellular.h": "c",
+			"driver_485.h": "c",
+			"dev_charger.h": "c",
+			"bsp_uart.h": "c",
+			"driver_rs485.h": "c",
+			"driver_stm32_cdc.h": "c",
+			"tl16c554.h": "c",
+			"semphr.h": "c",
+			"drv_rs232.h": "c"
 		}
 	}
 }

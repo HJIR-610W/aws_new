@@ -8,8 +8,8 @@
 
 #include "app_rs232.h"
 #include "app_rs485.h"
-#include "driver_485.h"
-#include "driver_uart.h"
+#include "drv_rs485.h"
+#include "drv_rs232.h"
 #include "pcb_define.h"
 #include "stm32f4xx_hal.h"
 #include "system_err.h"
@@ -22,7 +22,7 @@
 #include "task_telnet_server.h"
 #include "terminal_bridge.h"
 
-static driver_t *debug_uart = NULL;
+static int32_t debug_uart_num = -1;
 ;
 USART_TypeDef *debug_uart_base = USART1;
 
@@ -73,9 +73,9 @@ void debug_uart_init(uint32_t baud_rate)
   while (!(debug_uart_base->SR & USART_SR_TC));  // 송신 완료 플래그 확인
 }
 
-void set_debug_uart_handle(driver_t *drv) { debug_uart = drv; }
+void set_debug_uart_handle(int32_t drv) { debug_uart_num = drv; }
 
-driver_t *get_debug_uart_handle(void) { return debug_uart; }
+int32_t get_debug_uart_handle(void) { return debug_uart_num; }
 
 /**
  * @brief os구동 없을때 사용
@@ -91,13 +91,13 @@ void debug_puts_nonos(char *str)
 
 void io_send(uint8_t *p_in_data, uint16_t data_len)
 {
-  driver_uart_send(debug_uart, p_in_data, data_len);
+  drv_uart_send(debug_uart_num, p_in_data, data_len);
   terminal_bridge_send_output((char *)p_in_data, data_len);
 }
 
 void io_put_ch(char ch)
-{ 
-  driver_uart_send(debug_uart, (uint8_t *)&ch, 1);
+{
+  drv_uart_send(debug_uart_num, (uint8_t *)&ch, 1);
   terminal_bridge_send_output((char *)&ch, 1);
 }
 
@@ -105,9 +105,8 @@ void io_puts(const char *str)
 {
   int32_t len = strlen(str);
 
-
-   driver_uart_send(debug_uart, (uint8_t *)str, len);
-   terminal_bridge_send_output((char *)str, len);
+  drv_uart_send(debug_uart_num, (uint8_t *)str, len);
+  terminal_bridge_send_output((char *)str, len);
 }
 
 
@@ -159,7 +158,7 @@ int32_t io_printf(const char *pFmt, ...)
 
   ptr = printf_buff;
 #endif
-  if (debug_uart && ptr)  // os구동중인지 확인
+  if (debug_uart_num!= -1 && ptr)  // os구동중인지 확인
   {
     io_send((uint8_t *)ptr, strlen(ptr));
   }
@@ -217,9 +216,9 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
 #endif
 
   // 전송: RTOS 여부에 따라
-  if (debug_uart && ptr)
+  if (debug_uart_num!=-1 && ptr)
   {
-    driver_uart_send(debug_uart, (uint8_t *)ptr, strlen(ptr));
+    drv_uart_send(debug_uart_num, (uint8_t *)ptr, strlen(ptr));
   }
   else if (ptr)
   {
@@ -247,7 +246,7 @@ int32_t io_recv(char *p_out_buffer, uint16_t out_size, uint32_t timeout)
 {
   int32_t cnt;
 
-  cnt = driver_uart_recv(debug_uart, (uint8_t *)p_out_buffer, out_size, timeout);
+  cnt = drv_uart_recv(debug_uart_num, (uint8_t *)p_out_buffer, out_size, timeout);
 
   return cnt;
 }
@@ -352,10 +351,10 @@ void dev_io_write(dev_io_t *dev, uint8_t *data, uint32_t dataLen, uint32_t opt)
   switch (dev->io)
   {
     case eRS485_IO:
-      driver_rs485_send(dev->driver, data, dataLen);
+      drv_rs485_send(dev->num, data, dataLen);
       break;
     case eRS232_IO:
-      driver_uart_send(dev->driver, data, dataLen);
+      drv_uart_send(dev->num, data, dataLen);
       break;
   }
 }
@@ -365,10 +364,10 @@ void dev_io_flush(dev_io_t *dev)
   switch (dev->io)
   {
     case eRS485_IO:
-      driver_rs485_flush_rx(dev->driver);
+      drv_rs485_flush_rx(dev->num);
       break;
     case eRS232_IO:
-      driver_uart_flush_rx(dev->driver);
+      drv_uart_flush_rx(dev->num);
       break;
   }
 }
@@ -382,11 +381,11 @@ uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd,
   switch (dev->io)
   {
     case eRS485_IO:
-       return driver_rs485_recv_opt(dev->driver, out, dataLen, pdevopt->waitTimeOutMs,data_timeout);
+       return drv_rs485_recv_opt(dev->num, out, dataLen, pdevopt->waitTimeOutMs,data_timeout);
       break;
     case eRS232_IO:
 
-      return driver_uart_recv_opt(dev->driver, out, dataLen, pdevopt->waitTimeOutMs, data_timeout);
+      return drv_uart_recv_opt(dev->num, out, dataLen, pdevopt->waitTimeOutMs, data_timeout);
       break;
   }
   return 0;
@@ -481,5 +480,5 @@ int io_scanf_s(const char *fmt, ...)
 
 int32_t io_inject(uint8_t *p_data,uint32_t data_len)
 {
-  return driver_uart_inject(debug_uart,p_data,data_len);
+  return drv_uart_inject(debug_uart_num, p_data, data_len);
 }

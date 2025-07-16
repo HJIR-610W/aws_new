@@ -10,7 +10,8 @@
 #include "config_app.h"
 #include "dev_io.h"
 #include "drv_do.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
+#include "bsp_uart.h"
 #include "kma_protocol_handler.h"
 #include "modem_if.h"
 #include "modem_ntle9607.h"
@@ -168,12 +169,12 @@ void flush_reqCall(void);
 
 void modem_send(uint8_t *pData,uint16_t dataLen)
 {
-  driver_uart_send(_iCellular->io_uart, pData, dataLen);
+  drv_uart_send(_iCellular->io_uart, pData, dataLen);
 }
 
 void modem_sends(const char *pData)
 {
-  driver_uart_send(_iCellular->io_uart,  (uint8_t *)pData, strlen(pData));
+  drv_uart_send(_iCellular->io_uart,  (uint8_t *)pData, strlen(pData));
 }
 
 
@@ -1035,7 +1036,7 @@ void modemAtTask(void  *argument)
 
    len = _iCellular->recv_handler(_iCellular->io_uart,(uint8_t *)buff,sizeof(buff));
 
-    if(len<=0||len==UART_ERR_SIZE || len == UART_ERR_TIMEOUT)
+    if(len<=0)
     {
       continue;
     }
@@ -1120,7 +1121,7 @@ void iCellular_init(void)
 {
   uart_config_t uart_config;
 
-  driver_t *cdma_uart;
+  int cdma_uart;
 
  
   
@@ -1129,7 +1130,9 @@ void iCellular_init(void)
   uart_config.parityIdx = 0;
   uart_config.stop_bit = 0;
 
-  cdma_uart = driver_uart_open(UART_8_CDMA, &uart_config);
+  cdma_uart = BSP_UART_8_CDMA;
+  
+  bsp_uart_init(BSP_UART_8_CDMA, &uart_config);
 
   _iCellular = &g_iCellular;
 

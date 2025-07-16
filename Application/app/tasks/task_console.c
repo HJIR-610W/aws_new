@@ -10,7 +10,7 @@
 #include "cli\fsl_shell.h"
 #include "cli\fsl_debug_console.h"
 #include "cli\console_scanf.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "dev_io.h"
 #include "task_isrEvent.h"
 #include "util_time.h"
@@ -19,7 +19,8 @@
 #include "console_test.h"
 #include "system_err.h"
 #include "dev_io.h"
-driver_t *console_uart;
+int32_t console_uart_num = -1;
+
 static osThreadId_t s_console_task_id;
 const osThreadAttr_t consoleTask_attributes = {
   .name = "consoleTask",
@@ -71,7 +72,7 @@ void SHELL_SendDataCallback(uint8_t* buf, uint32_t len)
 
 void SHELL_ReceiveDataCallback(uint8_t* buf, uint32_t len)
 {
-    driver_uart_get_char(console_uart, buf, len);
+    drv_uart_get_char(console_uart_num, buf, len);
 }
 
 void consoleTask(void *arg)
@@ -126,17 +127,20 @@ void consoleTask(void *arg)
 
 void consoleTask_init(void *arg)
 {
+  int32_t result;
   uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
   uart_config.baud = 115200;
-  uart_config.parityIdx = 0;
-  uart_config.stop_bit = 0;
+  uart_config.parityIdx = PARITY_NONE;
+  uart_config.stop_bit = UART_STOP_BIT_1;
 
-  console_uart = driver_uart_open(UART_10_CDC,&uart_config);
+  console_uart_num = DRV_UART_10_CDC;
 
-  if(console_uart)
+  result = drv_uart_init(console_uart_num, &uart_config);
+
+  if(console_uart_num)
   {
-    set_debug_uart_handle(console_uart);
+    set_debug_uart_handle(console_uart_num);
     if (s_console_task_id==NULL)
       s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
   }

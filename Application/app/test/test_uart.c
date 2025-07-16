@@ -4,7 +4,7 @@
 #include "cli_key_code.h"
 #include "console_utile.h"
 #include "dev_io.h"
-#include "driver_uart.h"
+#include "bsp_uart.h"
 #include "cli_input.h"
 #include "util_memory.h"
 #include "pcb_define.h"
@@ -158,18 +158,18 @@ uint8_t g_uart_ll=0;
 void test_uart(void)
 {
   uart_config_t uart_config;
-  driver_t *uart_driver=NULL;
+  int32_t uart_driver=NULL;
   char buff[30];
   char rx_buff[50];
    char *rs232_port_name[UART_PORT_MAX] = {"VHF", "TTL", "A", "B", "C", "D","CDMA"};
    const int32_t rs232_drv_num[UART_PORT_MAX] =
-   { UART_0_D_SUB_0,
-     UART_1_TTL,
-     UART_2_EXT_A,
-     UART_3_EXT_B,
-     UART_4_EXT_C,
-     UART_5_EXT_D,
-     UART_8_CDMA };
+   { BSP_UART_0_D_SUB_0,
+     BSP_UART_1_TTL,
+     BSP_UART_2_EXT_A,
+     BSP_UART_3_EXT_B,
+     BSP_UART_4_EXT_C,
+     BSP_UART_5_EXT_D,
+     BSP_UART_8_CDMA };
 
    int baud;
    int len;
@@ -205,7 +205,8 @@ void test_uart(void)
   {
     if(strcmp(buff, rs232_port_name[n])==0)
     {
-      uart_driver = driver_uart_open(rs232_drv_num[n], &uart_config);
+      uart_driver =rs232_drv_num[n];
+      bsp_uart_init(uart_driver, &uart_config);
       rs232_number = n;
       break;
     }
@@ -223,17 +224,17 @@ void test_uart(void)
   while (1)
   {
     snprintf(buff, sizeof(buff), "RS232 %s\r\n", rs232_port_name[rs232_number]);
-    len = driver_uart_send(uart_driver, (uint8_t*)buff, strlen(buff));
+    len = bsp_uart_send(uart_driver, (uint8_t*)buff, strlen(buff));
     if (len < 0)
     {
       snprintf(buff, sizeof(buff), "RS232 %s error\r\n", rs232_port_name[rs232_number]);
       io_printf(buff);
     }
 
-    len = driver_uart_recv(uart_driver, (uint8_t*)rx_buff, sizeof(rx_buff), 2000);
+    len = bsp_uart_recv(uart_driver, (uint8_t*)rx_buff, sizeof(rx_buff), 2000);
     if (len)
     {
-      driver_uart_send(uart_driver, (uint8_t*)rx_buff, len);
+      bsp_uart_send(uart_driver, (uint8_t*)rx_buff, len);
     }
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
@@ -243,7 +244,7 @@ void test_uart(void)
     if (g_uart_ll)
     {
       g_uart_ll = 0;
-      len = driver_uart_recv_ll(uart_driver, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
+      len = bsp_uart_recv_ll(uart_driver, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
     }
   }
 }

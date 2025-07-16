@@ -4,11 +4,11 @@
 
 #include "aws_data.h"
 #include "driver_interface.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "old_aws_define.h"
 #include "util_time.h"
 
-void send_panel_aws_std(driver_t *panel_port)
+void send_panel_aws_std(int32_t panel_port_num)
 {
 
   uint8_t packet[64];
@@ -73,5 +73,5 @@ void send_panel_aws_std(driver_t *panel_port)
   packet[cnt++] = 0x03;  // ETX
 
   // 전송
-  driver_uart_send(panel_port, packet, cnt);
+  drv_uart_send(panel_port_num, packet, cnt);
 }

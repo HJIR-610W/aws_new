@@ -7,8 +7,8 @@
 #include "app_rs485.h"
 #include "app_sensor.h"
 #include "dev_io.h"
-#include "driver_485.h"
-#include "driver_uart.h"
+#include "drv_rs485.h"
+#include "drv_rs232.h"
 #include "snow_define.h"
 #include "util_memory.h"
 #include "config_sensor.h"
@@ -20,46 +20,51 @@
 #define WATCHDOG_BUFFER_MAX 12  // 32bit size
 #define PASSNUMBER_MAX 5
 
-typedef struct hjsnow_cfg_s
+#define COM_TYPE_RS232 0
+#define COM_TYPE_RS485 1
+
+typedef struct hjsnow_inst_s
 {
-  driver_t *io;
+  int32_t rs232_num;
+  int32_t rs485_num;
   void *sem;
-  int32_t channel;
-} hjsnow_cfg_t;
+  int32_t com_type;
+  bool opened;
+} hjsnow_instance_t;
+
+hjsnow_instance_t hjsnow_instance;
 
 
+    // SNOWFALL Command
+    typedef enum {
+      //	CMD_SNOW_START	= 0xC0,
+      CMD_SNOW_START = 0x20, // 00
+      CMD_SNOW_READ_STAT,    // 01
 
-// SNOWFALL Command
-typedef enum
-{
-  //	CMD_SNOW_START	= 0xC0,
-  CMD_SNOW_START = 0x20,  // 00
-  CMD_SNOW_READ_STAT,     // 01
+      CMD_SNOW_SET_RTC, // 02
+      CMD_SNOW_GET_RTC, // 03
 
-  CMD_SNOW_SET_RTC,  // 02
-  CMD_SNOW_GET_RTC,  // 03
+      CMD_SNOW_SCAN_CTRL,   // 04
+      CMD_SNOW_HEATER_CTRL, // 05
 
-  CMD_SNOW_SCAN_CTRL,    // 04
-  CMD_SNOW_HEATER_CTRL,  // 05
+      CMD_SNOW_FOR_LOOP,  // 06
+      CMD_SNOW_PING_TEST, // 07
 
-  CMD_SNOW_FOR_LOOP,   // 06
-  CMD_SNOW_PING_TEST,  // 07
+      CMD_SNOW_CFG_READ,  // 08
+      CMD_SNOW_CFG_WRITE, // 09
 
-  CMD_SNOW_CFG_READ,   // 08
-  CMD_SNOW_CFG_WRITE,  // 09
+      CMD_SNOW_QUECNT_RD,  // 0A
+      CMD_SNOW_QUECNT_CLR, // 0B
+      CMD_SNOW_QUEDATA_RD, // 0C
 
-  CMD_SNOW_QUECNT_RD,   // 0A
-  CMD_SNOW_QUECNT_CLR,  // 0B
-  CMD_SNOW_QUEDATA_RD,  // 0C
+      CMD_SNOW_SYS_RESET, // 0D
 
-  CMD_SNOW_SYS_RESET,  // 0D
+      CMD_SNOW_FW_DOWN1,
+      CMD_SNOW_FW_CHECK1,
+      CMD_SNOW_FW_DOWN2,
+      CMD_SNOW_FW_CHECK2,
 
-  CMD_SNOW_FW_DOWN1,
-  CMD_SNOW_FW_CHECK1,
-  CMD_SNOW_FW_DOWN2,
-  CMD_SNOW_FW_CHECK2,
-
-} eCMD_SNOW_t;
+    } eCMD_SNOW_t;
 uint8_t make_snowFrame(uint8_t *pFrame, uint8_t Cmd, uint8_t DataLen)
 {
   uint8_t i;
@@ -151,7 +156,7 @@ int32_t read_hjSnowFall(dev_io_t *dev, uint8_t *err)
   uint8_t para[2];
   uint8_t paraCnt = 0;
   uint16_t offset = (uint16_t)(int)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
-  //hjsnow_cfg_t *cfg;
+  //hjsnow_instance_t *cfg;
   devIoTimeOutopt_t opt;
   *err = 1;
 
@@ -202,15 +207,15 @@ int32_t read_hjSnowFall(dev_io_t *dev, uint8_t *err)
 
 
 driver_t hjsnow_driver;
-hjsnow_cfg_t hjsnow_cfg;
+hjsnow_instance_t hjsnow_inst;
 
 int32_t read_hjsnow(driver_t *driver, uint8_t *err);
 
 snow_api_t snow_api = {.read = read_hjsnow};
 
-driver_t *hjsnow_open(int32_t num, void *opt)
+driver_t *hjsnow_open(void *opt)
 {
- int32_t port;
+ int32_t port_num;
  hjsnow_config_t *hjsnow = opt;
 
 
@@ -231,16 +236,17 @@ driver_t *hjsnow_open(int32_t num, void *opt)
       uart_config_t uart_config;
 
       uart_config.baud = 19200;
-      uart_config.dataLen = 8;
-      uart_config.parityIdx = 0;
-      uart_config.stop_bit = 1;
+      uart_config.dataLen = UART_DATA_LEN_8;
+      uart_config.parityIdx = PARITY_NONE;
+      uart_config.stop_bit = UART_STOP_BIT_1;
 
-      hjsnow_cfg.channel = 1;
+      hjsnow_inst.com_type = COM_TYPE_RS232;
 
-      port = uart_num_to_driver_num(rs232_config->port);
-      hjsnow_cfg.io = driver_uart_open(port, &uart_config);
+      port_num = uart_num_to_driver_num(rs232_config->port);
+      hjsnow_inst.rs232_num = port_num;
+      drv_uart_init(port_num, &uart_config);
 
-      hjsnow_driver.cfg = &hjsnow_cfg;
+      hjsnow_driver.cfg = &hjsnow_inst;
       hjsnow_driver.api = &snow_api;
     }
     break;
@@ -252,35 +258,36 @@ driver_t *hjsnow_open(int32_t num, void *opt)
       uart_config.dataLen = 8;
       uart_config.parityIdx = 0;
       uart_config.stop_bit = 1;
-      hjsnow_cfg.io = driver_rs485_open(hjsnow->port, &uart_config);
-      hjsnow_cfg.channel = 0;
-      hjsnow_driver.cfg = &hjsnow_cfg;
+      hjsnow_inst.rs485_num = hjsnow->port;
+      drv_rs485_init(hjsnow_inst.rs485_num, &uart_config);
+      hjsnow_driver.cfg = &hjsnow_inst;
       hjsnow_driver.api = &snow_api;
     }
     break;
   }
-  OS_CREATE_BINARY_SEM(hjsnow_cfg.sem);
+  OS_CREATE_BINARY_SEM(hjsnow_inst.sem);
 
   return &hjsnow_driver;
 }
 
 int32_t read_hjsnow(driver_t *driver, uint8_t *err)
 {
-  hjsnow_cfg_t *pcfg = driver->cfg;
+  hjsnow_instance_t *pcfg = driver->cfg;
   int32_t snow = 0;
   dev_io_t dev_io;
 
   OS_PEND_SEM(pcfg->sem,osWaitForever);
 
-  dev_io.driver = pcfg->io;
 
-  if (pcfg->channel == 0)  // 485
+  if (pcfg->com_type == COM_TYPE_RS485)  // 485
   {
     dev_io.io = eRS485_IO;
+    dev_io.num = pcfg->rs485_num;
   }
   else
   {
     dev_io.io = eRS232_IO;
+    dev_io.num = pcfg->rs232_num;
   }
 
   snow =  read_hjSnowFall(&dev_io, err);
@@ -301,15 +308,15 @@ void hjsnow_read_config(driver_t *driver,uint8_t *p_out,uint16_t out_size,uint8_
  // uint8_t paraCnt = 0;
  // uint16_t offset = (uint16_t)(int)&((SYSTEM_TypeDef *)0)->CurSnowLevel;
   devIoTimeOutopt_t opt;
-  hjsnow_cfg_t *pcfg = driver->cfg;
+  hjsnow_instance_t *pcfg = driver->cfg;
   // int32_t snow = 0;
   dev_io_t dev_io;
 
 
   OS_PEND_SEM(pcfg->sem,osWaitForever);
-  dev_io.driver = pcfg->io;
 
-  if (pcfg->channel == 0)  // 485
+
+  if (pcfg->com_type == COM_TYPE_RS485)  // 485
   {
     dev_io.io = eRS485_IO;
   }
@@ -351,7 +358,7 @@ void hjsnow_read_config(driver_t *driver,uint8_t *p_out,uint16_t out_size,uint8_
 void hjsnow_read_system(driver_t *driver, uint8_t *p_out, uint16_t out_size, uint8_t *err)
 {
   const uint8_t request[] = {0x02, 0x00, 0x21, 0x02, 0x00, 0x32, 0x55, 0x03};
-  hjsnow_cfg_t *pcfg = driver->cfg;
+  hjsnow_instance_t *pcfg = driver->cfg;
   uint8_t frame[100];
   static uint16_t len;
 
@@ -362,9 +369,8 @@ void hjsnow_read_system(driver_t *driver, uint8_t *p_out, uint16_t out_size, uin
 
   OS_PEND_SEM(pcfg->sem, osWaitForever);
   
-  dev_io.driver = pcfg->io;
 
-  if (pcfg->channel == 0)  // 485
+  if (pcfg->com_type == COM_TYPE_RS485)  // 485
   {
     dev_io.io = eRS485_IO;
   }
@@ -408,14 +414,15 @@ void hjsnow_read_system(driver_t *driver, uint8_t *p_out, uint16_t out_size, uin
 void hjsnow_run_zero(driver_t *driver,uint8_t *err)
 {
   const uint8_t request[] = {0x02, 0x00, 0x24, 0x02, 0x04, 0x01, 0x2B, 0x03};
-  hjsnow_cfg_t *pcfg = driver->cfg;
+  hjsnow_instance_t *pcfg = driver->cfg;
   dev_io_t dev_io;
   uint16_t len;
-    uint8_t frame[50];
-    devIoTimeOutopt_t opt;
-    dev_io.driver = pcfg->io;
+  uint8_t frame[50];
+  devIoTimeOutopt_t opt;
 
-    if (pcfg->channel == 0)  // 485
+
+
+    if (pcfg->com_type == COM_TYPE_RS485)  // 485
     {
       dev_io.io = eRS485_IO;
     }

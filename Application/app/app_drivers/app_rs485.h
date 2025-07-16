@@ -9,8 +9,8 @@ typedef enum RS485_PORT_e
 {
   eAPP_RS485_A,
   eAPP_RS485_B,
-  eAPP_RS485_C,
-  eAPP_RS485_D,
+  eAPP_RS485_RS232_C,
+  eAPP_RS485_RS232_D,
   eAPP_RS485_MAX
 } eRS485_PORT_t;
 

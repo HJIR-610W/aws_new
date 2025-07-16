@@ -46,7 +46,7 @@ typedef enum dev_io_e
 typedef struct dev_io_s
 {
   eDEV_IO_t io;
-  void *driver;
+  int32_t num;
   void *config;
 }dev_io_t;
 
@@ -68,9 +68,9 @@ void debug_uart_init(uint32_t baud_rate);
 
 
 void debug_puts_nonos(char *str);
-void set_debug_uart_handle(driver_t *drv);
+void set_debug_uart_handle(int32_t drv);
 
-driver_t * get_debug_uart_handle(void);
+int32_t get_debug_uart_handle(void);
 void LOG_MEM(uint8_t* src, uint32_t size, uint32_t startAddr,uint32_t col);
 
 

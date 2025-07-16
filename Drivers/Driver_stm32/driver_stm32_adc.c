@@ -12,11 +12,10 @@ typedef struct
   void *sem;
 }adc_instance_t;
 
-
-
-    adc_instance_t adc_instance = {.hadc.Instance = ADC1};
+adc_instance_t adc_instance = {.hadc.Instance = ADC1};
 osSemaphoreId_t adcSemaphore;
 volatile uint32_t adcValue = 0;
+
 ADC_HandleTypeDef *get_adc_handle(void)
 {
   return &adc_instance.hadc;
@@ -90,17 +89,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
   }
 }
 
-void iar_adcCompleted(void *driver)
-{
-  driver_t *drv = driver;
-    adc_instance_t *cfg = drv->cfg;
-
-    if (adc_instance.hadc.Instance == ADC1)
-    {
-      adcValue = HAL_ADC_GetValue(&adc_instance.hadc);
-      osSemaphoreRelease(adc_instance.adcIrqSem);  // 세마포어 해제
-    }
-}
 
 
 #define ADC_TIMEOUT_MS  100
@@ -109,7 +97,7 @@ void iar_adcCompleted(void *driver)
 채널 0: ADC_CHANNEL_3
 채널 1: ADC_CHANNEL_4
 */
-int32_t stm32_adc_read_single(int channel,uint16_t avgCnt,uint8_t *err)
+int32_t stm32_adc_read_single(int channel,uint16_t average_count,uint8_t *err)
 {
   ADC_ChannelConfTypeDef sConfig = {0};
   uint32_t sum = 0;
@@ -134,7 +122,7 @@ int32_t stm32_adc_read_single(int channel,uint16_t avgCnt,uint8_t *err)
   }
 
   
-  for (uint32_t i = 0; i < avgCnt; i++)
+  for (uint32_t i = 0; i < average_count; i++)
   {
     HAL_ADC_Start_IT(&adc_instance.hadc);  // ADC 변환 시작 (인터럽트 사용)
 
@@ -148,9 +136,10 @@ int32_t stm32_adc_read_single(int channel,uint16_t avgCnt,uint8_t *err)
     sum += adcValue;
   }
 
-  avg = sum/avgCnt;
+  avg = sum/average_count;
 
   osSemaphoreRelease(adc_instance.sem);  // 세마포어 해제
+  
   return avg;  // 평균값 반환
 }
 
@@ -168,6 +157,7 @@ void stm32_adc_init(void)
   {
     adc_instance.adcIrqSem = osSemaphoreNew(1, 0, NULL);
   }
+
   MX_ADC_Init(&adc_instance.hadc);
 
   adc_instance.opened = true;

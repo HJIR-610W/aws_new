@@ -10,7 +10,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "util_escape_sequence.h"
 
 
@@ -18,7 +18,7 @@
 #define VT100_DEFAULT_COLS    20
 
 typedef struct {
-    driver_t *uart_io;
+    int32_t uart_io;
     bool initialized;
     uint8_t cursor_x;
     uint8_t cursor_y;
@@ -49,7 +49,7 @@ void vt100_io_pirntf(driver_t *drv,const char *pFmt, ...)
     
     if(len > 0 && len < sizeof(buffer))
     {
-        driver_uart_send(vt100->uart_io, (uint8_t*)buffer, len);
+        drv_uart_send(vt100->uart_io, (uint8_t*)buffer, len);
     }
 }
 
@@ -57,7 +57,7 @@ void vt100_io_puts(driver_t *drv,char *string)
 {
   vt100_terminal_t *vt100 = (vt100_terminal_t *)(drv->cfg);
 
-  driver_uart_send(vt100->uart_io, (uint8_t *)string, strlen(string));
+  drv_uart_send(vt100->uart_io, (uint8_t *)string, strlen(string));
 }
 // VT100 터미널용 LCD API 함수들
 static void vt100_set_position(driver_t *drv, uint8_t row, uint8_t col)
@@ -160,7 +160,9 @@ driver_t* vt100_terminal_open(void)
   vt100_instance.cursor_y = 0;
   vt100_instance.max_rows = VT100_DEFAULT_ROWS;  // 표준 터미널 크기
   vt100_instance.max_cols = VT100_DEFAULT_COLS;
-  vt100_instance.uart_io = driver_uart_open(UART_0_D_SUB_0,&uart_config);
+  vt100_instance.uart_io = DRV_UART_0_D_SUB_0;
+
+  drv_uart_init(vt100_instance.uart_io, &uart_config);
   vt100_driver.cfg = &vt100_instance;
   vt100_driver.api = &vt100_lcd_api;
   vt100_driver.opened = true;

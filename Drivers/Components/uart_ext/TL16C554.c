@@ -64,30 +64,41 @@ volatile uint8_t *exUartBaseAddress[8] = {
 
 typedef struct tl16c554_cfg_s
 {
-int irq_di_num;
+  int irq_di_num;
   uint8_t channel;
   uint32_t baud;
   uint8_t parityIdx;
-} tl16c554_cfg_t;
+  StreamBufferHandle_t xStreamBuffer;
+  bool opened;
+  void *sem;
+
+} tl16c554_instance_t;
+
+tl16c554_instance_t tl16c554_inst[TL16C554_UART_MAX] = {
+    [TL16C554_UART_1_D_SUB] = {.irq_di_num = BSP_DI_QUAD_UARTA_1},
+    [TL16C554_UART_2_TTL_TTL] = {.irq_di_num = BSP_DI_QUAD_UARTB_2},
+    [TL16C554_UART_3_RS232_A] = {.irq_di_num = BSP_DI_QUAD_UARTC_3},
+    [TL16C554_UART_4_RS232_B] = {.irq_di_num = BSP_DI_QUAD_UARTD_4},
+    [TL16C554_UART_5_RS485_A] = {.irq_di_num = BSP_DI_QUAD_UARTA_5},
+    [TL16C554_UART_6_RS485_B] = {.irq_di_num = BSP_DI_QUAD_UARTB_6},
+    [TL16C554_UART_7_RS232_C] = {.irq_di_num = BSP_DI_QUAD_UARTC_7},
+    [TL16C554_UART_8_RS232_D] = {.irq_di_num = BSP_DI_QUAD_UARTD_8}};
 
 const uint8_t g_streamBuffSizeList[TL16C554_UART_MAX] = {
     QUAD_1_BUFF_SIZE, QUAD_2_BUFF_SIZE, QUAD_3_BUFF_SIZE, QUAD_4_BUFF_SIZE,
     QUAD_5_BUFF_SIZE, QUAD_6_BUFF_SIZE, QUAD_7_BUFF_SIZE, QUAD_8_BUFF_SIZE};
 
-StreamBufferHandle_t g_quad_xStreamBuffer[TL16C554_UART_MAX];
 
-void irq_INTA_1(void *arg);
-void irq_INTB_2(void *arg);
-void irq_INTC_3(void *arg);
-void irq_INTD_4(void *arg);
-void irq_INTA_5(void *arg);
-void irq_INTB_6(void *arg);
-void irq_INTC_7(void *arg);
-void irq_INTD_8(void *arg);
-int32_t tls16c554_uart_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen);
 
-    int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
-                               uint32_t timeout1_ms, uint32_t timeout2_ms);
+void irq_INTA_1(int32_t arg);
+void irq_INTB_2(int32_t  arg);
+void irq_INTC_3(int32_t  arg);
+void irq_INTD_4(int32_t  arg);
+void irq_INTA_5(int32_t  arg);
+void irq_INTB_6(int32_t  arg);
+void irq_INTC_7(int32_t  arg);
+void irq_INTD_8(int32_t  arg);
+
 uint8_t read_register(void *addr)
 {
   uint8_t data;
@@ -217,22 +228,22 @@ void set_stop_bit(uint8_t uart_num, uint8_t stop_bits)
 
   write_register(LCR(exUartBaseAddress[uart_num]), lcr);
 }
-void quad_init(driver_t *tls16c554, void *opt)
+void quad_init(int uart_num, void *opt)
 {
   uint8_t parity_mode;
   uint8_t flag = 0;
   uint8_t g_reg;
   uart_config_t *config = opt;
   di_isr_set_cfg_t isr_cfg;
-  tl16c554_cfg_t *cfg = tls16c554->cfg;
 
-  void (*isrTable[TL16C554_UART_MAX])(void *) = {irq_INTA_1, irq_INTB_2, irq_INTC_3, irq_INTD_4,
+
+  void (*isrTable[TL16C554_UART_MAX])(int32_t ) = {irq_INTA_1, irq_INTB_2, irq_INTC_3, irq_INTD_4,
                                                  irq_INTA_5, irq_INTB_6, irq_INTC_7, irq_INTD_8};
   const char *isrNameTable[TL16C554_UART_MAX] = {
       TOSTRING(irq_INTB_1), TOSTRING(irq_INTB_2), TOSTRING(irq_INTC_3), TOSTRING(irq_INTD_4),
       TOSTRING(irq_INTA_5), TOSTRING(irq_INTB_6), TOSTRING(irq_INTC_7), TOSTRING(irq_INTD_8)};
   int baud_rate = config->baud;
-  int uart_num = cfg->channel;
+
 
   // 보오드레이트 설정을 위한 Divisor 계산
   uint16_t divisor = UART_CLOCK_FREQ / (16 * baud_rate);
@@ -241,7 +252,6 @@ void quad_init(driver_t *tls16c554, void *opt)
   write_register(LCR(exUartBaseAddress[uart_num]), 0x80);
 
   // DLL과 DLM에 divisor 값 설정
-
   write_register(DLL(exUartBaseAddress[uart_num]), divisor & 0xFF);
   write_register(DLM(exUartBaseAddress[uart_num]), (divisor >> 8) & 0xFF);
 
@@ -288,9 +298,9 @@ void quad_init(driver_t *tls16c554, void *opt)
   isr_cfg.name = isrNameTable[uart_num];
   isr_cfg.trigger = eDI_RISING_FALLING;
   isr_cfg.prio = 6;
-  isr_cfg.handle = tls16c554;
+  isr_cfg.handle = uart_num;
 
-  bsp_di_set_interrupt(cfg->irq_di_num, &isr_cfg);
+  bsp_di_set_interrupt(tl16c554_inst[uart_num].irq_di_num, &isr_cfg);
 }
 
 /**
@@ -334,14 +344,13 @@ int read_byte(int uart_num, uint8_t *data)
   }
 }
 
-int quad_recv_byte(driver_t *drv, uint8_t *data)
+int quad_recv_byte(int num, uint8_t *data)
 {
-  tl16c554_cfg_t *cfg = drv->cfg;
 
   // LSR의 DR 비트를 확인하여 수신 버퍼에 데이터가 있는지 확인
-  if (read_register(LSR(exUartBaseAddress[cfg->channel])) & LSR_DR)
+  if (read_register(LSR(exUartBaseAddress[num])) & LSR_DR)
   {
-    *data = read_register(RBR(exUartBaseAddress[cfg->channel]));  // RBR에서 데이터 읽기
+    *data = read_register(RBR(exUartBaseAddress[num]));  // RBR에서 데이터 읽기
     return 1;                                                     // 데이터 읽기 성공
   }
   else
@@ -356,7 +365,7 @@ int quad_recv_byte(driver_t *drv, uint8_t *data)
  *
  * 예)modbus 활용
  */
-uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,
+uint16_t tls16c554_uart_recvsOpt(int num, uint8_t *pBuff, uint16_t buffSize,
                                  uint32_t waitTimeOutMs, uint32_t dataTimeOutMs)
 {
 #if STREAMBUFFER_USE  // 레지스터 직접 접근
@@ -377,12 +386,12 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSiz
   (void)waitTimeOut;
   timeout = waitTimeOutMs;
 
-  tl16c554_cfg_t *cfg = drv->cfg;
+
   startTime = osKernelGetTickCount();
   while (1)
   {
     /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
-    xBytesAvailable = xStreamBufferBytesAvailable(g_quad_xStreamBuffer[cfg->channel]);
+    xBytesAvailable = xStreamBufferBytesAvailable(tl16c554_inst[num].xStreamBuffer);
 
     if (remainBuffSize < xBytesAvailable)
     {
@@ -393,7 +402,7 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSiz
     if (xBytesAvailable > 0)
     {
       /* 데이터를 읽을 수 있다면, 데이터를 수신 */
-      xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[cfg->channel], (void *)&pBuff[cnt],
+      xBytesRead = xStreamBufferReceive(tl16c554_inst[num].xStreamBuffer, (void *)&pBuff[cnt],
                                         xBytesAvailable, pdMS_TO_TICKS(timeout));
 
       if (xBytesRead > 0)
@@ -405,7 +414,7 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSiz
     else
     {
       /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
-      xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[cfg->channel], (void *)&pBuff[cnt], 1,
+      xBytesRead = xStreamBufferReceive(tl16c554_inst[num].xStreamBuffer, (void *)&pBuff[cnt], 1,
                                         pdMS_TO_TICKS(timeout));
       if (xBytesRead == 1)
       {
@@ -476,7 +485,7 @@ uint16_t tls16c554_uart_recvsOpt(driver_t *drv, uint8_t *pBuff, uint16_t buffSiz
   // return 0;
 }
 
-uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,
+uint16_t tls16c554_uart_recvsOpt2(int num, uint8_t *pBuff, uint16_t buffSize,
                                   uint32_t waitTimeOutMs, uint32_t dataTimeOutMs)
 {
 #if STREAMBUFFER_USE  // 레지스터 직접 접근
@@ -493,7 +502,7 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
   size_t cnt = 0;
   uint8_t waitCnt = 0;
   bool once = true;
-  tl16c554_cfg_t *cfg = drv->cfg;
+
 
   timeout = waitTimeOutMs;
 
@@ -501,7 +510,7 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
   while (1)
   {
     /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
-    xBytesAvailable = xStreamBufferBytesAvailable(g_quad_xStreamBuffer[cfg->channel]);
+    xBytesAvailable = xStreamBufferBytesAvailable(tl16c554_inst[num].xStreamBuffer);
 
     if (remainBuffSize < xBytesAvailable)
     {
@@ -512,7 +521,7 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
     if (xBytesAvailable > 0)
     {
       /* 데이터를 읽을 수 있다면, 데이터를 수신 */
-      xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[cfg->channel], (void *)&pBuff[cnt],
+      xBytesRead = xStreamBufferReceive(tl16c554_inst[num].xStreamBuffer, (void *)&pBuff[cnt],
                                         xBytesAvailable, pdMS_TO_TICKS(timeout));
 
       if (xBytesRead > 0)
@@ -524,7 +533,7 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
     else
     {
       /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
-      xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[cfg->channel], (void *)&pBuff[cnt], 1,
+      xBytesRead = xStreamBufferReceive(tl16c554_inst[num].xStreamBuffer, (void *)&pBuff[cnt], 1,
                                         pdMS_TO_TICKS(timeout));
       if (xBytesRead == 1)
       {
@@ -603,7 +612,7 @@ uint16_t tls16c554_uart_recvsOpt2(driver_t *drv, uint8_t *pBuff, uint16_t buffSi
 #define UART_IIR_MODEM_STATUS 0x00   // 모뎀 상태 변화 (CTS, DSR, RI, DCD)
 
 int g_channel;
-void irq_tl16c554(driver_t *drv)
+void irq_tl16c554(int num)
 {
   uint8_t iir;
   uint8_t interruptType;
@@ -613,10 +622,10 @@ void irq_tl16c554(driver_t *drv)
   uint8_t modemStatus;
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   size_t xBytesSent;
-  tl16c554_cfg_t *cfg = drv->cfg;
 
-  g_channel = cfg->channel;
-  while (((iir = read_register(IIR(exUartBaseAddress[cfg->channel]))) &
+
+
+  while (((iir = read_register(IIR(exUartBaseAddress[num]))) &
           UART_IIR_INTTERUPT_PENDING) == 0)
   {
     interruptType = iir & 0x0F;
@@ -624,10 +633,10 @@ void irq_tl16c554(driver_t *drv)
     switch (interruptType)
     {
       case UART_IIR_RX_DATA_AVAIL:                                   // 데이터 수신
-        data = read_register(RBR(exUartBaseAddress[cfg->channel]));  // RBR에서 데이터 읽기
+        data = read_register(RBR(exUartBaseAddress[num]));           // RBR에서 데이터 읽기
 
         /* 데이터를 스트림 버퍼에 전송 */
-        xBytesSent = xStreamBufferSendFromISR(g_quad_xStreamBuffer[cfg->channel], &data, 1,
+        xBytesSent = xStreamBufferSendFromISR(tl16c554_inst[num].xStreamBuffer, &data, 1,
                                               &xHigherPriorityTaskWoken);
         /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
@@ -639,22 +648,22 @@ void irq_tl16c554(driver_t *drv)
         break;
       case UART_IIR_THRE:  // Transmitter Holding Register Empty
         // Handle TX Ready
-        write_register(THR(exUartBaseAddress[cfg->channel]), '1');
+        write_register(THR(exUartBaseAddress[num]), '1');
         break;
       case UART_IIR_RX_LINE_STAT:  // Receiver Line Status
         // Handle Line Error
-        lineStatus = read_register(LSR(exUartBaseAddress[cfg->channel]));  // RBR에서 데이터 읽기
+        lineStatus = read_register(LSR(exUartBaseAddress[num])); // RBR에서 데이터 읽기
         (void)lineStatus;
         // Check for specific errors
         break;
 
       case UART_IIR_MODEM_STATUS:  // Modem Status
         // Handle Modem Status
-        modemStatus = read_register(MSR(exUartBaseAddress[cfg->channel]));  // RBR에서 데이터 읽기
+        modemStatus = read_register(MSR(exUartBaseAddress[num])); // RBR에서 데이터 읽기
         (void)modemStatus;
         break;
       case UART_IIR_CHAR_TIMEOUT:
-        reg = read_register(RBR(exUartBaseAddress[cfg->channel]));  // RBR에서 데이터 읽기
+        reg = read_register(RBR(exUartBaseAddress[num])); // RBR에서 데이터 읽기
         (void)reg;
         break;
         break;
@@ -666,21 +675,21 @@ void irq_tl16c554(driver_t *drv)
   }
 }
 
-void irq_INTA_1(void *arg) { irq_tl16c554((driver_t *)arg); }
+void irq_INTA_1(int32_t arg) { irq_tl16c554((int)arg); }
 
-void irq_INTB_2(void *arg) { irq_tl16c554((driver_t *)arg); }
+void irq_INTB_2(int32_t arg) { irq_tl16c554((int)arg); }
 
-void irq_INTC_3(void *arg) { irq_tl16c554((driver_t *)arg); }
+void irq_INTC_3(int32_t arg) { irq_tl16c554((int)arg); }
 
-void irq_INTD_4(void *arg) { irq_tl16c554((driver_t *)arg); }
+void irq_INTD_4(int32_t arg) { irq_tl16c554((int)arg); }
 
-void irq_INTA_5(void *arg) { irq_tl16c554((driver_t *)arg); }
+void irq_INTA_5(int32_t arg) { irq_tl16c554((int)arg); }
 
-void irq_INTB_6(void *arg) { irq_tl16c554((driver_t *)arg); }
+void irq_INTB_6(int32_t arg) { irq_tl16c554((int)arg); }
 
-void irq_INTC_7(void *arg) { irq_tl16c554((driver_t *)arg); }
+void irq_INTC_7(int32_t arg) { irq_tl16c554((int)arg); }
 
-void irq_INTD_8(void *arg) { irq_tl16c554((driver_t *)arg); }
+void irq_INTD_8(int32_t arg) { irq_tl16c554((int)arg); }
 
 // DMA 핸들러 선언
 DMA_HandleTypeDef hdma_memtomem;
@@ -709,128 +718,77 @@ void tls16c554_send_DMA(int num, const uint8_t *pData, uint16_t dataLen)
   }
 }
 
-driver_t tls16c554_driver[TL16C554_UART_MAX];
-tl16c554_cfg_t g_tl16c554_cfg[TL16C554_UART_MAX];
 
-void tls16c554_close(driver_t *handle);
-int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen);
-int32_t tls16c554_recv(driver_t *handle, uint8_t *buffer, uint16_t length, uint32_t timeOutMs);
-int32_t tls16c554_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs);
-void tls16c554_flush_rx(driver_t *handle);
 
-void tls16c554_set(driver_t *handle, uart_set_option_t option, void *value);
-void tls16c554_uart_get(driver_t *drv, uart_get_option_t cmd, void *option);
-uart_api_t tl16c554_api = {.close = tls16c554_close,
-                           .send = tls16c554_send,
-                           .recv = tls16c554_recv,
-                           .flush_rx = tls16c554_flush_rx,
-                           .set = tls16c554_set,
-                           .recv_opt = tls16c554_recv_opt,
-                           .get = tls16c554_uart_get,
-                           .recv_ll = tls16c554_recv_ll,
-                           .inject = tls16c554_uart_inject};
-
-void tls16c554_irq_init(driver_t *drv, uint8_t prio)
+void tls16c554_irq_init(int num, uint8_t prio)
 {
   di_isr_set_cfg_t isr_cfg;
-  tl16c554_cfg_t *cfg = drv->cfg;
 
-  void (*isrTable[TL16C554_UART_MAX])(void *) = {irq_INTA_1, irq_INTB_2, irq_INTC_3, irq_INTD_4,
+
+  void (*isrTable[TL16C554_UART_MAX])(int32_t) = {irq_INTA_1, irq_INTB_2, irq_INTC_3, irq_INTD_4,
                                                  irq_INTA_5, irq_INTB_6, irq_INTC_7, irq_INTD_8};
   const char *isrNameTable[TL16C554_UART_MAX] = {
       TOSTRING(irq_INTB_1), TOSTRING(irq_INTB_2), TOSTRING(irq_INTC_3), TOSTRING(irq_INTD_4),
       TOSTRING(irq_INTA_5), TOSTRING(irq_INTB_6), TOSTRING(irq_INTC_7), TOSTRING(irq_INTD_8)};
-  isr_cfg.call = isrTable[cfg->channel];
-  isr_cfg.name = isrNameTable[cfg->channel];
+  isr_cfg.call = isrTable[num];
+  isr_cfg.name = isrNameTable[num];
   isr_cfg.trigger = eDI_RISING;
   isr_cfg.prio = prio;
-  isr_cfg.handle = drv;
+  isr_cfg.handle = num;
 
-  bsp_di_set_interrupt(cfg->irq_di_num,  &isr_cfg);
+  bsp_di_set_interrupt(tl16c554_inst[num].irq_di_num, &isr_cfg);
 }
 
 /// @brief 8채널
 /// @param num 채널 번호
 /// @param opt 초기 설정 구조체 uart_config_t
 /// @return
-driver_t *tls16c554_open(uint32_t num, void *opt)
+int32_t tls16c554_init(int32_t num, void *opt)
 {
   uart_config_t *config = opt;
-  const char *portNameList[8] = {"QUAD_1_VHF", "QUAD_2_MODULE", "QUAD_3_RS232_A", "QUAD_4_RS232_B",
-                                 "QUAD_5_RS485_A", "QUAD_6_RS485_B", "QUAD_7_RS232_C", "QUAD_8_RS232_D"};
 
-  if (tls16c554_driver[num].opened)
+
+  if (tl16c554_inst[num].opened)
   {
-    return &tls16c554_driver[num];
+    return 1;
   }
 
-  g_tl16c554_cfg[num].channel = num;
-  g_tl16c554_cfg[num].baud = config->baud;
-  g_tl16c554_cfg[num].parityIdx = config->parityIdx;
+  tl16c554_inst[num].channel = num;
+  tl16c554_inst[num].baud = config->baud;
+  tl16c554_inst[num].parityIdx = config->parityIdx;
+  tl16c554_inst[num].opened = true;
 
-  tls16c554_driver[num].cfg = &g_tl16c554_cfg[num];
-  tls16c554_driver[num].name = portNameList[num];
-  tls16c554_driver[num].opened = true;
-  tls16c554_driver[num].api = &tl16c554_api;
 
   // RX 데이터 수신 버퍼를 할당, 트리거 레벨 1로 설정정
-  g_quad_xStreamBuffer[num] = xStreamBufferCreate(g_streamBuffSizeList[num], 1);
+  tl16c554_inst[num].xStreamBuffer = xStreamBufferCreate(g_streamBuffSizeList[num], 1);
 
-  // 채널당 인터럽트 설정정
-  switch (num)
-  {
-    case TL16C554_UART_1_D_SUB:
-      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTA_1;
-      break;
-    case TL16C554_UART_2_TTL_TTL:
-      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTB_2;
-      break;
-    case TL16C554_UART_3_RS232_A:
-      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTC_3;
-      break;
-    case TL16C554_UART_4_RS232_B:
-      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTD_4;
-      break;
-    case TL16C554_UART_5_RS485_A:
-      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTA_5;
-      break;
-    case TL16C554_UART_6_RS485_B:
-      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTB_6;
-      break;
-    case TL16C554_UART_7_RS232_C:
-      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTC_7;
-      break;
-    case TL16C554_UART_8_RS232_D:
-      g_tl16c554_cfg[num].irq_di_num = BSP_DI_QUAD_UARTD_8;
-  }
+ 
 
   // 초기화
-  quad_init(&tls16c554_driver[num], opt);
+  quad_init(num, opt);
 
 
-  OS_CREATE_BINARY_SEM(tls16c554_driver[num].sem);
+  OS_CREATE_BINARY_SEM(tl16c554_inst[num].sem);
 
 
-  return &tls16c554_driver[num];
+  return 0;
 }
 
-void tls16c554_close(driver_t *handle) {}
+void tls16c554_close(int num) {}
 
-int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen)
+int32_t tls16c554_send(int num, const uint8_t *pData, uint16_t dataLen)
 {
-  driver_t *drv = handle;
-  tl16c554_cfg_t *cfg = drv->cfg;
   int32_t cnt = 0;
   uint32_t startTime;
 
 
-  OS_PEND_SEM(handle->sem, osWaitForever);
+  OS_PEND_SEM(tl16c554_inst[num].sem, osWaitForever);
 
 
   while (dataLen)
   {
     dataLen--;
-    if (send_data(cfg->channel, *pData++) == 1)
+    if (send_data(num, *pData++) == 1)
     {
       cnt++;
     }
@@ -845,7 +803,7 @@ int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen)
       cnt = -1;
       break;
     }
-  } while ((read_register(LSR(exUartBaseAddress[cfg->channel])) & LSR_TEMT) == 0);
+  } while ((read_register(LSR(exUartBaseAddress[num])) & LSR_TEMT) == 0);
 
   /*
   송신 레지스터 비어있음
@@ -853,12 +811,12 @@ int32_t tls16c554_send(driver_t *handle, const uint8_t *pData, uint16_t dataLen)
   THR에 문자가 로드되면 LSR6은 클리어되며 문자가 완전히 송신될 때 까지 유지됨
   */
 
-  OS_POST_SEM(handle->sem);
+  OS_POST_SEM(tl16c554_inst[num].sem);
 
   return cnt;
 }
 
-int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
+int32_t tls16c554_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {
 #if STREAMBUFFER_USE  // 레지스터 직접 접근
   uint32_t starTick;
@@ -870,19 +828,18 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
   size_t xBytesRead;
   size_t remainBuffSize = buffSize;
   size_t cnt = 0;
-  driver_t *drv = handle;
-  tl16c554_cfg_t *cfg = drv->cfg;
-  uint8_t channel = cfg->channel;
+
+
   timeout = timeOutMs;
 
   (void)lastTick;
 
-  OS_PEND_SEM(handle->sem, osWaitForever);
+  OS_PEND_SEM(tl16c554_inst[uart_num].sem, osWaitForever);
 
   while (1)
   {
     /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
-    xBytesAvailable = xStreamBufferBytesAvailable(g_quad_xStreamBuffer[channel]);
+    xBytesAvailable = xStreamBufferBytesAvailable(tl16c554_inst[uart_num].xStreamBuffer);
 
     if (remainBuffSize < xBytesAvailable)
     {
@@ -893,7 +850,7 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
     if (xBytesAvailable > 0)
     {
       /* 데이터를 읽을 수 있다면, 데이터를 수신 */
-      xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[channel], (void *)&pBuff[cnt],
+      xBytesRead = xStreamBufferReceive(tl16c554_inst[uart_num].xStreamBuffer, (void *)&pBuff[cnt],
                                         xBytesAvailable, pdMS_TO_TICKS(timeout));
 
       if (xBytesRead > 0)
@@ -905,7 +862,7 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
     else
     {
       /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
-      xBytesRead = xStreamBufferReceive(g_quad_xStreamBuffer[channel], (void *)&pBuff[cnt], 1,
+      xBytesRead = xStreamBufferReceive(tl16c554_inst[uart_num].xStreamBuffer, (void *)&pBuff[cnt], 1,
                                         pdMS_TO_TICKS(timeout));
       if (xBytesRead == 1)
       {
@@ -919,7 +876,7 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
     if (elapseTick >= timeout || cnt >= buffSize)
     {
 
-      OS_POST_SEM(handle->sem);
+      OS_POST_SEM(tl16c554_inst[uart_num].sem);
 
       return cnt;
     }
@@ -953,54 +910,52 @@ int32_t tls16c554_recv(driver_t *handle, uint8_t *pBuff, uint16_t buffSize, uint
 #endif
 }
 
-void tls16c554_flush_rx(driver_t *drv)
+void tls16c554_flush_rx(int num)
 {
   uint8_t data;
 
-  while (tls16c554_recv(drv, &data, 1, 0));
+  while (tls16c554_recv(num, &data, 1, 0));
 
 
 }
-int32_t tls16c554_available(driver_t *handle) { return 0; }
+int32_t tls16c554_available(int num) { return 0; }
 
-void tls16c554_set(driver_t *handle, uart_set_option_t option, void *value)
+void tls16c554_set(int num, uart_set_option_t option, void *value)
 {
-  driver_t *drv = handle;
-  tl16c554_cfg_t *cfg = drv->cfg;
+
   uart_config_t *config;
 
   switch (option)
   {
     case eUART_SET_CONFIG:
       config = (uart_config_t *)option;
-
-      set_baud_rate(cfg->channel, config->baud);
+      set_baud_rate(num, config->baud);
       break;
   }
 }
 
-void tls16c554_uart_get(driver_t *drv, uart_get_option_t cmd, void *option)
+void tls16c554_uart_get(int num, uart_get_option_t cmd, void *option)
 {
   uart_config_t *opt_cfg = option;
-  tl16c554_cfg_t *cfg;
 
-  cfg = (tl16c554_cfg_t *)drv->cfg;
+
+
   switch (cmd)
   {
     case UART_GET_CONFIG:
-      opt_cfg->baud = cfg->baud;
-      opt_cfg->parityIdx = cfg->parityIdx;
+      opt_cfg->baud = tl16c554_inst[num].baud;
+      opt_cfg->parityIdx = tl16c554_inst[num].parityIdx;
       break;
   }
 }
-int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
+int32_t tls16c554_recv_opt(int uart_num, uint8_t *buffer, uint16_t buffer_size,
                            uint32_t timeout1_ms, uint32_t timeout2_ms)
 {
 
   int32_t received = 0;
   uint8_t *p = buffer;
 
-  int32_t ret = tls16c554_recv(drv, p, 1, timeout1_ms);
+  int32_t ret = tls16c554_recv(uart_num, p, 1, timeout1_ms);
   if (ret <= 0)
     return 0;  
 
@@ -1009,7 +964,7 @@ int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
 
   while (received < buffer_size)
   {
-    ret = tls16c554_recv(drv, p, 1, timeout2_ms);
+    ret = tls16c554_recv(uart_num, p, 1, timeout2_ms);
     if (ret <= 0)
       break; 
 
@@ -1020,19 +975,19 @@ int32_t tls16c554_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
   return received;
 }
 
-int32_t tls16c554_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
+int32_t tls16c554_recv_ll(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {
 
   uint32_t startTick;
   uint16_t cnt = 0;
-  tl16c554_cfg_t *cfg = drv->cfg;
+
 
   startTick = HAL_GetTick();
   while (1)
   {
-    if (read_register(LSR(exUartBaseAddress[cfg->channel])) & LSR_DR)
+    if (read_register(LSR(exUartBaseAddress[uart_num])) & LSR_DR)
     {
-      pBuff[cnt++] = read_register(RBR(exUartBaseAddress[cfg->channel]));
+      pBuff[cnt++] = read_register(RBR(exUartBaseAddress[uart_num]));
     }
     if (cnt == buffSize)
     {
@@ -1049,14 +1004,13 @@ int32_t tls16c554_recv_ll(driver_t *drv, uint8_t *pBuff, uint16_t buffSize, uint
 
 }
 
-int32_t tls16c554_uart_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen)
+int32_t tls16c554_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
 {
-  size_t xBytesAvailable;
+
   size_t xBytesSent;
-  tl16c554_cfg_t *cfg = drv->cfg;
 
 
-  xBytesSent = xStreamBufferSend(g_quad_xStreamBuffer[cfg->channel], pData, dataLen,
+  xBytesSent = xStreamBufferSend(tl16c554_inst[num].xStreamBuffer, pData, dataLen,
                                  pdMS_TO_TICKS( 100 ));
 
   return xBytesSent;

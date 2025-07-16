@@ -1,12 +1,13 @@
 
 #include "cmsis_os.h"
 #include "driver_sdi.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "bsp_do.h"
+#include "bsp_uart.h"
 
 typedef struct sdi_cfg_s
 {
-  driver_t *uart_io;
+  int uart_num;
   int dir_do_num;
 }sdi_cfg_t;
 
@@ -27,9 +28,11 @@ driver_t *driver_sdi_open(uint32_t num,void *opt)
   switch (num)
   {
   case SDI_0:
-      g_sdi_cfg[num].uart_io =  driver_uart_open(UART_9_SDI,opt);
-      g_sdi_cfg[num].dir_do_num   =  BSP_DO_DIR_RS485_A ;
-      bsp_do_low(g_sdi_cfg[num].dir_do_num);//수신 모드
+    g_sdi_cfg[num].uart_num = BSP_UART_9_SDI;
+    g_sdi_cfg[num].dir_do_num = BSP_DO_DIR_RS485_A;
+    bsp_do_low(g_sdi_cfg[num].dir_do_num); // 수신 모드
+
+    bsp_uart_init(g_sdi_cfg[num].uart_num, opt);
 
     if( g_sdi_list[num].sem == NULL)
     {
@@ -56,7 +59,7 @@ void driver_sdi_sends(driver_t *drv,uint8_t *pData,uint16_t dataLen)
   }
   bsp_do_high(cfg->dir_do_num);
   osDelay(1);
-  driver_uart_send(cfg->uart_io,pData,dataLen);
+  drv_uart_send(cfg->uart_num,pData,dataLen);
   bsp_do_low(cfg->dir_do_num);
   osDelay(1);
   if(drv->sem)
@@ -77,7 +80,7 @@ uint16_t len;
     osSemaphoreAcquire(drv->sem, osWaitForever);
   }
 
-  len = driver_uart_recv(cfg->uart_io,pBuff,rLen, timeOutms);
+  len = drv_uart_recv(cfg->uart_num,pBuff,rLen, timeOutms);
 
   if(drv->sem)
   {

@@ -12,8 +12,8 @@ typedef struct exti_isr_cfg_s
   uint16_t prio;
   uint16_t gpio_pin;
   uint16_t irq;
-  void *handle;
-  void (*call)(void *);
+  int32_t handle;
+  void (*call)(int32_t );
 }exti_isr_cfg_t;
 
 void exti_register(exti_isr_cfg_t *cfg);

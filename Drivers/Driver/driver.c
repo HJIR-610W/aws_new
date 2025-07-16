@@ -1,5 +1,3 @@
-
-
 #include "drv_rtc.h"
 #include "drv_led.h"
 #include "drv_di.h"
@@ -9,6 +7,9 @@
 #include "drv_fram.h"
 #include "drv_flash.h"
 #include "drv_adc.h"
+#include "drv_rs485.h"
+#include "drv_rs232.h"
+
 void drv_init(void)
 {
   drv_rtc_init();
@@ -20,4 +21,5 @@ void drv_init(void)
   drv_flash_init(); 
   drv_fram_init();
   drv_adc_init();
+
 }

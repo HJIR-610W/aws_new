@@ -7,7 +7,7 @@
 #include "config_app.h"
 #include "drv_di.h"
 #include "drv_do.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "task_isrEvent.h"
 #include "os_user_def.h"
 #include "system_err.h"
@@ -22,7 +22,7 @@ const osThreadAttr_t kSystemTask_attributes = {
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
 
-void userBtnCallBack(void *arg)
+void userBtnCallBack(int32_t arg)
 { 
   os_send_isrEvent(eUSER_BTN_INT, 0); 
 }

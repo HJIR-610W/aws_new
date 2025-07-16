@@ -58,7 +58,7 @@ void test_do(void)
   const uint32_t do_nums[DO_COUNT] = {DRV_DO_EXT_0, DRV_DO_EXT_1, DRV_DO_EXT_2, DRV_DO_EXT_3, DRV_DO_EXT_4, DRV_DO_EXT_5};
   const char *do_names[DO_COUNT] = {"DRV_DO_EXT_0", "DRV_DO_EXT_1", "DRV_DO_EXT_2",
                                     "DRV_DO_EXT_3", "DRV_DO_EXT_4", "DRV_DO_EXT_5"};
-  int do_list[8];
+
 
 
   io_printf("DO_EXT_0 ~ DO_EXT_5 인터랙티브 테스트 시작\r\n");

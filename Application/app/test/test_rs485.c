@@ -3,7 +3,7 @@
 
 #include "cli_key_code.h"
 #include "dev_io.h"
-#include "driver_485.h"
+#include "drv_rs485.h"
 #include "console_utile.h"
 
 #define RS485_PORT_MAX 4
@@ -12,7 +12,7 @@ void test_rs485(void)
 {
   uart_config_t uart_config;
   int len;
-  driver_t *port[RS485_PORT_MAX];
+  int32_t port[RS485_PORT_MAX];
   char buff[30];
   char rx_buff[50];
   int baud=57600;
@@ -37,26 +37,30 @@ void test_rs485(void)
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 
-  port[0] = driver_rs485_open(RS485_A, &uart_config);
-  port[1] = driver_rs485_open(RS485_B, &uart_config);
-  port[2] = driver_rs485_open(RS485_C, &uart_config);
-  port[3] = driver_rs485_open(RS485_D, &uart_config);
+  port[0] =RS485_A;
+  drv_rs485_init(RS485_A, &uart_config);
+  port[1] = RS485_B;
+  drv_rs485_init(RS485_B, &uart_config);
+  port[2] = RS485_RS232_C;
+  drv_rs485_init(RS485_RS232_C, &uart_config);
+  port[3] = RS485_RS232_D;
+  drv_rs485_init(RS485_RS232_D, &uart_config);
   
   while(1)
   {
     for (int i = 0; i < RS485_PORT_MAX; i++)
     {
       snprintf(buff,sizeof(buff),"RS485 %s\r\n",rs485_port_name[i]);
-      len = driver_rs485_send(port[i], (uint8_t*)buff, strlen(buff));
+      len = drv_rs485_send(port[i], (uint8_t*)buff, strlen(buff));
       if(len<0)
       {
         snprintf(buff, sizeof(buff), "RS485 %s failed\r\n", rs485_port_name[i]);
         io_printf(buff);
       }
-      len = driver_rs485_recv(port[i], (uint8_t*)rx_buff, sizeof(rx_buff), 2000);
+      len = drv_rs485_recv(port[i], (uint8_t*)rx_buff, sizeof(rx_buff), 2000);
       if(len)
       {
-        driver_rs485_send(port[i], (uint8_t*)rx_buff, len);
+        drv_rs485_send(port[i], (uint8_t*)rx_buff, len);
       }
       if (get_key(100) == KEY_CODE_CTRL_Q)
       {

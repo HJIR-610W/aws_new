@@ -1,6 +1,6 @@
 
-#include "driver_485.h"
-#include "driver_uart.h"
+#include "drv_rs485.h"
+#include "drv_rs232.h"
 #include "app_rs485.h"
 #include "util_memory.h"
 typedef struct app_rs485_s
@@ -11,8 +11,8 @@ typedef struct app_rs485_s
 
 const app_rs485_t rs485_define[] = {{.num = RS485_A, .name = "485 A"},
                                     {.num = RS485_B, .name = "485 B"},
-                                    {.num = RS485_C, .name = "232/485 A"},
-                                    {.num = RS485_D, .name = "232/485 B"}};
+                                    {.num = RS485_RS232_C, .name = "232/485 A"},
+                                    {.num = RS485_RS232_D, .name = "232/485 B"}};
 
 bool app_rs485Open[eAPP_RS485_MAX];
 

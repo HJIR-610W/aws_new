@@ -7,7 +7,7 @@
 #include "dev_io.h"
 #include "drv_di.h"
 #include "drv_do.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "drv_adc.h"
 #include "app_adc.h"
 #include "app_file.h"

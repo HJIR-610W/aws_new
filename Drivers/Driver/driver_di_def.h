@@ -18,10 +18,10 @@ eDI_RISING_FALLING
 typedef struct di_isr_set_cfg_s
 {
   const char *name;
-  void (*call)(void *);
+  void (*call)(int32_t );
   eDI_TRIGGER_t trigger;
   uint16_t prio;
-  void *handle;
+  int32_t handle;
 }di_isr_set_cfg_t;
 
 

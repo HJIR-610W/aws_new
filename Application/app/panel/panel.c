@@ -5,22 +5,21 @@
 #include "panel_hansung.h"
 #include "panel_aws_std.h"
 #include "panel_hj.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "config_app.h"
 
-driver_t *g_panel_uart;
+int32_t g_panel_uart  =  DRV_UART_4_EXT_C;
 
 void panel_init(void)
 {
-
   uart_config_t uart_config;
-  
+ 
   uart_config.baud = 9600;
   uart_config.dataLen = UART_DATA_LEN_8;
-  uart_config.parityIdx = 0;
-  uart_config.stop_bit = 0;
+  uart_config.parityIdx = PARITY_NONE;
+  uart_config.stop_bit = UART_STOP_BIT_1;
 
-  g_panel_uart = driver_uart_open(UART_4_EXT_C, &uart_config);
+  drv_uart_init(g_panel_uart, &uart_config);
 }
 
 

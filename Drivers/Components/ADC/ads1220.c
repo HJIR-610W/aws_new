@@ -526,7 +526,7 @@ int32_t ads1220_read_diff_ch(int32_t ch,uint8_t *err)
     return data;
 }
 
-void irq_dataReady(void *arg)
+void irq_dataReady(int32_t arg)
 {
     osSemaphoreRelease(g_dataReadySem);
 }

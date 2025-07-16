@@ -2,32 +2,27 @@
 #include "cmsis_os2.h"
 
 #include "util_memory.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "dev_io.h"
 #include "cli_key_code.h"
 #include "pcb_define.h"
 
-
 #define BUTTON_QUEUE_SIZE 5
 
-static driver_t *serial_key = NULL;
+static int32_t serial_key = DRV_UART_0_D_SUB_0;
 
-
-osMessageQueueId_t button_queue_handle = NULL;
-
-
-
+    osMessageQueueId_t button_queue_handle = NULL;
 
 void app_key_init(void)
 {
     uart_config_t uart_config;
 
     uart_config.baud = 19200;
-    uart_config.dataLen = 8;
+    uart_config.dataLen = UART_DATA_LEN_8;
     uart_config.parityIdx = PARITY_NONE;
     uart_config.stop_bit = UART_STOP_BIT_1;
 
-    serial_key = driver_uart_open(UART_0_D_SUB_0, &uart_config);
+    drv_uart_init(serial_key, &uart_config);
 
     button_queue_handle = osMessageQueueNew(BUTTON_QUEUE_SIZE, sizeof(int32_t), NULL);
 
@@ -145,21 +140,20 @@ void scan_key(void)
     uint8_t data[10];
     int key;
 
-    if (serial_key != NULL)
+
+    len = drv_uart_recv(serial_key, data, _countof(data), 0);
+
+    if (len > 0)
     {
-        len = driver_uart_recv(serial_key, data, _countof(data), 0);
-    
-        if (len > 0)
-        {
-        // Process each received byte
-        for (int i = 0; i < len; i++) {
-            key = process_serial_data(&data[i], 1);
-            
-            if (key != KEY_CODE_NONE) {
-                // Put processed key into message queue
-                button_put_key(key);
-            }
-        }
+    // Process each received byte
+    for (int i = 0; i < len; i++) {
+        key = process_serial_data(&data[i], 1);
+        
+        if (key != KEY_CODE_NONE) {
+            // Put processed key into message queue
+            button_put_key(key);
         }
     }
+    }
+
 }

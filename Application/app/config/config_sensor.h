@@ -8,7 +8,7 @@
 
 #include "drv_fram.h"
 #include "config_define.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "app_rs232.h"
 #include "app_rs485.h"
 #include "config_memory_map.h"

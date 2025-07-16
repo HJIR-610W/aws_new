@@ -5,5 +5,5 @@
 
 #include "driver_interface.h"
 
-void send_panel_aws_std(driver_t *panel_port);
+void send_panel_aws_std(int32_t panel_port);
 #endif

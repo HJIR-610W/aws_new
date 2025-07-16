@@ -852,7 +852,7 @@ $$BinRecv:<NUL><SOH>2<CR><LF>
 */
 
 extern void put_tcpData(uint8_t *data, uint16_t dataLen);
-void tx700_recv_bin(driver_t *port, uint8_t *p_data, uint16_t data_len)
+void tx700_recv_bin(int32_t port, uint8_t *p_data, uint16_t data_len)
 {
   uint16_t len;
 
@@ -867,7 +867,7 @@ void tx700_recv_bin(driver_t *port, uint8_t *p_data, uint16_t data_len)
 
 }
 
-int32_t tx700_recv_handler(driver_t *uart,uint8_t *buffer, uint16_t buffer_size)
+int32_t tx700_recv_handler(int32_t uart,uint8_t *buffer, uint16_t buffer_size)
 {
   uint32_t startTime = osKernelGetTickCount();
   uint16_t cnt = 0;
@@ -878,7 +878,7 @@ int32_t tx700_recv_handler(driver_t *uart,uint8_t *buffer, uint16_t buffer_size)
 
   while (1)
   {
-    if (driver_uart_recv(uart, &ch, 1, osWaitForever) == 1)
+    if (drv_uart_recv(uart, &ch, 1, osWaitForever) == 1)
     {
       buffer[cnt++] = ch;
 
@@ -922,7 +922,7 @@ int32_t tx700_recv_handler(driver_t *uart,uint8_t *buffer, uint16_t buffer_size)
 
 extern void put_asyncResp(uint32_t cmd,char *pData,uint16_t dataLen);
 
-void tx700_sms_handler(driver_t *uart,char *data,uint16_t data_len)
+void tx700_sms_handler(int32_t uart,char *data,uint16_t data_len)
 {
   char buff[200];
   int32_t len=data_len;
@@ -932,7 +932,7 @@ void tx700_sms_handler(driver_t *uart,char *data,uint16_t data_len)
 
   buff[len++] = ',';
 
-  recv_len = driver_uart_recv_crlf(uart, &buff[len], sizeof(buff) - len, 2000);
+  recv_len = drv_uart_recv_crlf(uart, &buff[len], sizeof(buff) - len, 2000);
 
   total_len = recv_len +len;
   buff[total_len] = 0;

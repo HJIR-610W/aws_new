@@ -44,11 +44,11 @@ M_RET_t tx700_set_vpn(char *id,char *pw,uint8_t ip[4],uint16_t port);
 M_RET_t tx700_at_direct(char *at,char *outBuffer,uint16_t outSize);
 
 M_RET_t tx700_check_network_service(char *msgOut,uint16_t msgSize);
-void tx700_recv_bin(driver_t *port, uint8_t *p_data, uint16_t data_len);
+void tx700_recv_bin(int32_t port, uint8_t *p_data, uint16_t data_len);
 uint32_t tx700_get_count(void) ;
-int32_t tx700_recv_handler(driver_t *uart,uint8_t *buffer, uint16_t buffer_size);
-void tx700_sms_handler(driver_t *uart,char *data,uint16_t data_len);
- extern const atCmd_t cmd_tx700[36];
+int32_t tx700_recv_handler(int32_t uart, uint8_t *buffer, uint16_t buffer_size);
+void tx700_sms_handler(int32_t uart, char *data, uint16_t data_len);
+extern const atCmd_t cmd_tx700[36];
 
 #ifdef __cplusplus
 }

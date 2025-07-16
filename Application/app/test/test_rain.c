@@ -8,14 +8,14 @@
 #include "drv_power.h"
 bool g_reed_rain=false;
 
-void test_rain_reed_callBack(void *arg)
+void test_rain_reed_callBack(int32_t arg)
 {
   g_reed_rain = true;
 }
 
 bool g_hall_rain = false;
 
-void test_rain_hall_callBack(void *arg)
+void test_rain_hall_callBack(int32_t arg)
 {
   g_hall_rain = true;
 }

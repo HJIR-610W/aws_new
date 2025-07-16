@@ -9,8 +9,8 @@
 typedef struct int_sub_s
 {
   int gpio_pin;
-  void *handle;
-  void (*call)(void *);
+  int32_t handle;
+  void (*call)(int32_t );
 }int_sub_t;
 
 
@@ -162,8 +162,8 @@ void SDIO_IRQHandler(void)
 
 void EXTI0_IRQHandler(void)
 {
-  void *handle=NULL;;
-  void (*call)(void *)=NULL;
+  int32_t handle;;
+  void (*call)(int32_t )=NULL;
    
   
   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_0) != RESET)
@@ -183,8 +183,8 @@ void EXTI0_IRQHandler(void)
 }
 void EXTI1_IRQHandler(void)
 {
-  void *handle=NULL;;
-  void (*call)(void *)=NULL;
+  int32_t handle;
+  void (*call)(int32_t )=NULL;
    
   
   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1) != RESET)
@@ -202,8 +202,8 @@ void EXTI1_IRQHandler(void)
 }
 void EXTI2_IRQHandler(void)
 {
-  void *handle=NULL;;
-  void (*call)(void *)=NULL;
+  int32_t handle;
+  void (*call)(int32_t)=NULL;
    
   
   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_2) != RESET)
@@ -222,8 +222,8 @@ void EXTI2_IRQHandler(void)
 
 void EXTI3_IRQHandler(void)
 {
-  void *handle=NULL;;
-  void (*call)(void *)=NULL;
+  int32_t handle;;
+  void (*call)(int32_t )=NULL;
    
   
   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_3) != RESET)
@@ -242,8 +242,8 @@ void EXTI3_IRQHandler(void)
 
 void EXTI4_IRQHandler(void)
 {
-  void *handle=NULL;;
-  void (*call)(void *)=NULL;
+  int32_t handle;;
+  void (*call)(int32_t)=NULL;
    
   
   if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_4) != RESET)
@@ -262,8 +262,8 @@ void EXTI4_IRQHandler(void)
 
 void EXTI9_5_IRQHandler(void)
 {
-  void *handle=NULL;;
-  void (*call)(void *)=NULL;
+  int32_t handle;;
+  void (*call)(int32_t )=NULL;
 
 
     // PA10 ~ PA15의 인터럽트 확인 및 클리어
@@ -326,8 +326,8 @@ void EXTI9_5_IRQHandler(void)
 // 인터럽트 핸들러 구현
 void EXTI15_10_IRQHandler(void)
 {
-  void *handle=NULL;;
-  void (*call)(void *)=NULL;
+  int32_t handle;;
+  void (*call)(int32_t )=NULL;
 
 
     // PA10 ~ PA15의 인터럽트 확인 및 클리어

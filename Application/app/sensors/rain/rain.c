@@ -57,7 +57,7 @@ uint16_t get_rain(uint16_t cnt)
 }
 
 
-void rain_reed_callback(void *arg)
+void rain_reed_callback(int32_t arg)
 {
   uint32_t current_time = OS_GET_TICK();
 
@@ -68,7 +68,7 @@ void rain_reed_callback(void *arg)
   }
 }
 
-void rain_hall_callback(void *arg)
+void rain_hall_callback(int32_t arg)
 {
   uint32_t current_time = OS_GET_TICK();
 

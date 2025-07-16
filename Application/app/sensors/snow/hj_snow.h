@@ -7,7 +7,7 @@
 #define HJ_SNOW 0
 
 
-driver_t *hjsnow_open(int32_t num,void *opt);
+driver_t *hjsnow_open(void *opt);
 
 
 typedef struct hjsnow_set_distance_s

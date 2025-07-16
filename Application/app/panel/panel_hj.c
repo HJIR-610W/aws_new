@@ -5,7 +5,7 @@
 
 #include "aws_data.h"
 #include "driver_interface.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 
 /*
 02 41 32 34 31 32 31 31 42 30 30 31 35 43 32 37 39 44 39 39 39 45 30 32 36 37 46 30 30 30 30 47 30
@@ -13,7 +13,7 @@
 20 03
 <STX>A241211B0015C279D999E0267F0000G0000H0I05509J043K9999L1100M0267    <ETX>
 */
-uint16_t send_panel_hj(driver_t *panel_port)
+uint16_t send_panel_hj(int32_t panel_port_num)
 {
     char framemk[50];
     uint8_t 	cnt = 0;
@@ -71,10 +71,9 @@ uint16_t send_panel_hj(driver_t *panel_port)
     sprintf(&framemk[cnt],"    ");                                                              // 예비 
     cnt     += 4;
 
-    framemk[cnt++]  = 0x03;                                                                     // ETX      
-    
+    framemk[cnt++]  = 0x03;                                                                     // ETX
 
-    driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
+    drv_uart_send(panel_port_num, (uint8_t *)framemk, cnt);
     return cnt;
 		
 }

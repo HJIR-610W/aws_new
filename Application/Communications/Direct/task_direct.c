@@ -4,7 +4,7 @@
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "dev_io.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "task_isrEvent.h"
 #include "update_fw.h"
 #include "system_err.h"
@@ -18,7 +18,7 @@ const osThreadAttr_t directTask_attributes = {
 };
 
 static direct_system_t g_direct_system;
-driver_t *direct_driver;
+static int32_t g_direct_uart_num;
 
 direct_system_t *get_direct_system(void)
 { 
@@ -39,7 +39,7 @@ void directTask(void *arg)
   
   while (1)
   {
-    len = driver_uart_recv_opt(direct_driver,rx_buff,sizeof(rx_buff),10000,10);
+    len = drv_uart_recv_opt(g_direct_uart_num,rx_buff,sizeof(rx_buff),10000,10);
     if(len)
     {
       g_direct_system.link_status = eDIRECT_LINK_UP;
@@ -48,7 +48,7 @@ void directTask(void *arg)
       len = kma_cmd_handler(rx_buff, len, tx_buffer, eREQ_SOURCE_DIRECT);
       if(len)
       {
-        driver_uart_send(direct_driver, tx_buffer, len);
+        drv_uart_send(g_direct_uart_num, tx_buffer, len);
         UPDATE_CNT(g_direct_system.tx_cnt, 99);
         g_direct_system.last_send_time = time_timestamp();
         if (get_firmware_update())
@@ -90,10 +90,15 @@ void directTask_init(void)
   g_direct_system.rx_cnt = 0;
 
   uart_config.baud = get_config_app()->direct_baud;
-  uart_config.parityIdx = 0;
-  uart_config.stop_bit = 0;
+  uart_config.parityIdx = PARITY_NONE;
+  uart_config.stop_bit = UART_STOP_BIT_1;
 
-  direct_driver = driver_uart_open(UART_8_CDMA,&uart_config);
+  g_direct_uart_num = DRV_UART_8_CDMA;
+
+  if(drv_uart_init(g_direct_uart_num, &uart_config) !=1)
+  {
+    io_printf("direct_task err\r\n");
+  }
 
   osThreadNew(directTask, NULL, &directTask_attributes);
 }

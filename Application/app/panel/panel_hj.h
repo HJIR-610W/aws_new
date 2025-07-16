@@ -6,5 +6,5 @@
 
 #include "driver_interface.h"
 
-uint16_t send_panel_hj(driver_t *panel_port);
+uint16_t send_panel_hj(int32_t panel_port);
 #endif

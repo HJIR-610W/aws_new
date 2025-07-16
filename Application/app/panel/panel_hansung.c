@@ -5,7 +5,7 @@
 #include "config_app.h"
 #include "util_time.h"
 #include "aws_data.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "util_memory.h"
 #include "panel_common.h"
 #include "cmsis_os2.h"
@@ -22,7 +22,7 @@ AWS(구)
 // ========================================================================================================== //
 //                          한성 전자 Protocol과 공용
 // ========================================================================================================== //
-void	send_panel_hansung(driver_t *panel_port)
+void send_panel_hansung(int32_t panel_port_num)
 {
     char   framemk[60];
 	uint8_t 	cnt = 0;
@@ -41,7 +41,7 @@ void	send_panel_hansung(driver_t *panel_port)
 	framemk[cnt++]		= radd_dirc((uint32_t)(p_kma->wind_direction_avg.data / 10.0));
 	framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
 
-  driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
+	drv_uart_send(panel_port_num, (uint8_t *)framemk, cnt);
 
 	osDelay(500);																				// 500 ms
 	
@@ -60,6 +60,5 @@ void	send_panel_hansung(driver_t *panel_port)
 	cnt					+= 10;
 	framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
 
-	driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
-
+	drv_uart_send(panel_port_num, (uint8_t *)framemk, cnt);
 }

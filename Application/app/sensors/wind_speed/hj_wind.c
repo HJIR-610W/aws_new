@@ -8,14 +8,14 @@
 #include "app_sensor.h"
 #include "cmsis_os2.h"
 #include "dev_io.h"
-#include "driver_485.h"
-#include "driver_uart.h"
+#include "drv_rs485.h"
+#include "drv_rs232.h"
 #include "util_memory.h"
 #include "config_sensor.h"
 
 typedef struct hjwind_cfg_s
 {
-  driver_t *rs485_io;
+  int32_t  rs485_num;
 } hjwind_cfg_t;
 
 
@@ -24,20 +24,8 @@ float read_hjwind(void *driver, uint8_t type, uint8_t *err);
 void set_hjwind(void *handle, wind_set_option_t option, void *value);
 
 
-
-/* AWS AVR ?먯꽌 媛?몄샂
-  ?붿쭊?곗뿏?꾩씠 AWS ?랁뼢 ?띿냽怨? PROTOCOL ?뺤쓽
-        .Data Table.
-        Start Code     	0  	: 0x02 			-> STX
-        Unit ID		   	1	: 0x01 - 0x0f 	-> ?λ퉬 ID
-        Command			2	: 0xXX          -> 01:?뚮씪硫뷀? ?ㅼ젙, 02:Data Read, 03: Write
-  & Read Data Size       4	: 0x02			-> ?곗씠?곗쓽 ?ъ씠利?Data            5	: n
-  -> ?꾩넚?섎뒗 ?곗씠??ASCII ?뺤떇 Check Sum		6	: 1      		-> ID - Data
-  n 源뚯?????End Code 		7	: 0x03			-> ETX
-*/
-
-// 02 01 02 01 01 05 03   ?띿냽
-// 02 02 02 01 01 06 03   ?랁뼢
+// 02 01 02 01 01 05 03 
+// 02 02 02 01 01 06 03
 uint16_t make_hjwind(uint8_t *sSend, uint8_t id)
 {
   uint8_t cnt = 0;
@@ -72,8 +60,7 @@ bool is_hjwin(uint8_t *frame, uint16_t len)
 }
 
 #define WIND_DATA_MAX 9990
-//?댁퐫?쒕뒗 援ы삎 AWS肄붾뱶? ?숈씪
-//?띿냽?쇱꽌??媛믪? ?띿냽媛믪옄泥닿? ?꾨땶 ?꾩뒪媛믪엫
+
 float calculate_wind_speed(uint16_t wind_pulse)
 {
 
@@ -92,7 +79,7 @@ float calculate_wind_speed(uint16_t wind_pulse)
   {
     span = fullset - offset;
 
-    errTmp = (uint32_t)((float)span * 0.05);  // offset蹂대떎 5% ?ш퀬 Full蹂대떎 5% ?묒쓣 寃?
+    errTmp = (uint32_t)((float)span * 0.05);  
 
     if (wind_pulse < (fullset + errTmp))
     {
@@ -119,22 +106,15 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
   uint8_t recv[10];
   uint16_t len;
   uint16_t windData = 0;
-
-  
-
   hjwind_cfg_t *cfg = ((driver_t *)driver)->cfg;
 
   len = make_hjwind(send, channel);
 
-  driver_rs485_flush_rx(cfg->rs485_io);
-  driver_rs485_send(cfg->rs485_io, send, len);
+  drv_rs485_flush_rx(cfg->rs485_num);
+  drv_rs485_send(cfg->rs485_num, send, len);
    
-  // ?낅씪?댄듃媛 ?묐떟?꾪빆???쇱젙???쒓컙?덉뿉 蹂대궡?붽쾬???꾨떂
-  // 2ms ?덉뿉 ?묐떟?ㅻ뒗 寃쎌슦???덇퀬 50ms 吏?섍퀬 ?묐떟 ?ㅻ뒗 寃쎌슦???덉쓬
-  // ?곕씪???낅씪?댄듃 ?뚯뒪?몄떆?먮뒗 泥ル쾲吏?諛붿씠???湲??쒓컙??50ms ?댁빞 ?섏떊 泥섎━??
 
-
-  len = driver_rs485_recv_opt(cfg->rs485_io, recv, sizeof(recv), 50,5); 
+  len = drv_rs485_recv_opt(cfg->rs485_num, recv, sizeof(recv), 50,5); 
 
   if(len == 0)
   {
@@ -168,8 +148,8 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
     return NAN;
   }
 
-  return (float)((float)windData / 10.0);//?랁뼢? 10諛???媛믪씠 ?섏떊??
-  //?랁뼢1234媛 ?섏떊 -> 123.4?꾩엫 ?곕씪???쒕씪?대쾭??媛믪쓽 ?⑥쐞???꾩엫, ?곕씪??10?쇰줈 ?섎늿媛믪쓣 由ы꽩??
+  return (float)((float)windData / 10.0);
+
 
 }
 
@@ -189,10 +169,7 @@ wind_api_t hjwind_api = {.read = read_hjwind, .set = set_hjwind};
 hjwind_cfg_t g_hjwind_cfg;
 driver_t g_hjwind_driver;
 
-/**
- * @details
- * 怨좎젙???띾룄濡??ъ슜?섎뒗 ?쇱꽌?ㅼ? ?ы듃?ㅼ젙留?留ㅺ컻蹂?섎줈 諛쏆븘??泥섎━
- */
+
 driver_t *hjwind_open(uint8_t num, void *opt)
 {
   uart_config_t uart_config;
@@ -210,7 +187,8 @@ driver_t *hjwind_open(uint8_t num, void *opt)
   uart_config.dataLen = 8;
   uart_config.stop_bit = 1;
 
-  g_hjwind_cfg.rs485_io = driver_rs485_open((int)hjwind_config->rs485_port, &uart_config);
+  g_hjwind_cfg.rs485_num = hjwind_config->rs485_port;
+  drv_rs485_init((int)hjwind_config->rs485_port, &uart_config);
 
   g_hjwind_driver.name = "hj_wind";
   g_hjwind_driver.cfg = &g_hjwind_cfg;

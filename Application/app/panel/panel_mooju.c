@@ -6,7 +6,7 @@
 #include "config_app.h"
 #include "util_time.h"
 #include "aws_data.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "util_memory.h"
 #include "panel_common.h"
 
@@ -30,8 +30,7 @@ AWS(구)
 (4) 51 04 00 00 11 20 20 30 2E 30 2020 20 30 20 20 20 30 20 20 20 30 93
 */
 
-void send_panel_muju(
-        driver_t *panel_port)
+void send_panel_muju(int32_t panel_port_num)
 {
   char   framemk[60];
 	uint8_t 	cnt = 0;
@@ -52,7 +51,7 @@ framemk[cnt++] 		= 0x02;																	// Start Address
 framemk[cnt++] 		= 0x01;																	// Length
 framemk[cnt++]		= radd_dirc( (uint32_t)(p_kma->wind_direction_avg.data/ 10.0));
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
-driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
+drv_uart_send(panel_port_num, (uint8_t *)framemk, cnt);
 // 51 01 05 02 01 01 0A 
 
 
@@ -87,7 +86,7 @@ sprintf(&framemk[cnt],"%02d%02d%02d%02d", pDate->Month, pDate->Day,
                        pDate->Hour, pDate->Min);						// 월일시분 
 cnt					+= 8;
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
-driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
+drv_uart_send(panel_port_num, (uint8_t *)framemk, cnt);
 
 osDelay(500);																				// 500 ms
                         
@@ -108,7 +107,7 @@ sprintf(&framemk[cnt],"%5.1f", (float)p_kma->relative_humidity.data/10.0);						
 cnt					+= 5;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
-driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
+drv_uart_send(panel_port_num, (uint8_t *)framemk, cnt);
 osDelay(500);																				// 500 ms
 
 cnt					= 0;
@@ -128,7 +127,7 @@ sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_yesterday*10) )
 cnt					+= 4;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
-driver_uart_send(panel_port,(uint8_t *)framemk,cnt);
+drv_uart_send(panel_port_num, (uint8_t *)framemk, cnt);
 osDelay(500);																				// 500 ms
 
 }

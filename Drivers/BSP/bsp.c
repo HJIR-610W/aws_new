@@ -18,6 +18,8 @@
 #include "user_heap.h"
 #include "bsp_delay.h"
 #include "bsp_adc.h"
+#include "bsp_uart.h"
+#include "bsp_rs485.h"
 
 
 uint32_t g_pcb_version = AWS_PCB_VER;
@@ -207,7 +209,7 @@ float bsp_read_battery(void)
   float voltage;
   float battery;
 
-  voltage = bsp_adc_single_read_voltage(BSP_ADC_STM32_SE_CH_0, BATTERY_AVERAGE_SAMPLES, &err);
+  voltage = bsp_adc_single_read_voltage(BSP_ADC_SYS_BATTERY, BATTERY_AVERAGE_SAMPLES, &err);
 
   battery = voltage * slope + offset;
 
@@ -291,7 +293,7 @@ float bsp_read_temperature(void)
   float voltage;
   float resistance;
 
-  voltage = bsp_adc_single_read_voltage(BSP_ADC_STM32_SE_CH_1, TEMP_AVERAGE_SAMPLES, &err);
+  voltage = bsp_adc_single_read_voltage(BSP_ADC_SYS_TEMP, TEMP_AVERAGE_SAMPLES, &err);
 
   resistance = (voltage * R1) /(VREF - voltage);
 
@@ -433,12 +435,12 @@ void board_gpio_init(void)
   board_config_gpio(OUT_DIR_RS485_B_GPIO_Port, OUT_DIR_RS485_B_PIN, GPIO_MODE_OUTPUT_PP,
                     GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
-  board_set_gpio(OUT_RS485_DIR_C_GPIO_Port, OUT_RS485_DIR_C_PIN, GPIO_PIN_RESET);
-  board_config_gpio(OUT_RS485_DIR_C_GPIO_Port, OUT_RS485_DIR_C_PIN, GPIO_MODE_OUTPUT_PP,
+  board_set_gpio(OUT_RS485_RS232_DIR_C_GPIO_Port, OUT_RS485_RS232_DIR_C_PIN, GPIO_PIN_RESET);
+  board_config_gpio(OUT_RS485_RS232_DIR_C_GPIO_Port, OUT_RS485_RS232_DIR_C_PIN, GPIO_MODE_OUTPUT_PP,
                     GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
-  board_set_gpio(OUT_RS485_DIR_D_GPIO_Port, OUT_RS485_DIR_D_PIN, GPIO_PIN_RESET);
-  board_config_gpio(OUT_RS485_DIR_D_GPIO_Port, OUT_RS485_DIR_D_PIN, GPIO_MODE_OUTPUT_PP,
+  board_set_gpio(OUT_RS485_RS232_DIR_D_GPIO_Port, OUT_RS485_RS232_DIR_D_PIN, GPIO_PIN_RESET);
+  board_config_gpio(OUT_RS485_RS232_DIR_D_GPIO_Port, OUT_RS485_RS232_DIR_D_PIN, GPIO_MODE_OUTPUT_PP,
                     GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
   //[SPI CS] HIGH로 한다.

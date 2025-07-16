@@ -45,9 +45,9 @@ M_RET_t ntle_9607_at_direct(char *at,char *outBuffer,uint16_t outSize);
 
 M_RET_t ntle9607_check_network_service(char *msgOut,uint16_t msgSize);
 
-void ntle9607_recv_bin(driver_t *uart, uint8_t *pData, uint16_t dataLen);
+void ntle9607_recv_bin(int32_t uart, uint8_t *pData, uint16_t dataLen);
 uint32_t ntle9607_get_count(void) ;
-int32_t ntle9607_recv_handler(driver_t *uart, uint8_t *buffer, uint16_t buffer_size);
+int32_t ntle9607_recv_handler(int32_t uart, uint8_t *buffer, uint16_t buffer_size);
 extern const atCmd_t cmd_ntle9607[];
 
 #ifdef __cplusplus

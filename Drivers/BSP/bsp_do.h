@@ -18,8 +18,8 @@
 #define BSP_DO_HART_SEL 12     
 #define BSP_DO_HART_RTS 13    
 #define BSP_DO_HART_RESET 14
-#define BSP_DO_DIR_RS485_C 15
-#define BSP_DO_DIR_RS485_D 16
+#define BSP_DO_DIR_RS485_RS232_C 15
+#define BSP_DO_DIR_RS485_RS232_D 16
 
 #define BSP_DO_EXT_0 17 
 #define BSP_DO_EXT_1 18  

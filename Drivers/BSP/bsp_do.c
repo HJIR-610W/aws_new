@@ -42,10 +42,10 @@ typedef struct bsp_do_inst_s
                          .port = DO_RTS_H_GPIO_Port},
     [BSP_DO_HART_RESET] = {.init = {.Pin = DO_RESET_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
                            .port = DO_RESET_H_GPIO_Port},
-    [BSP_DO_DIR_RS485_C] = {.init = {.Pin = OUT_RS485_DIR_C_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = OUT_RS485_DIR_C_GPIO_Port},
-    [BSP_DO_DIR_RS485_D] = {.init = {.Pin = OUT_RS485_DIR_D_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = OUT_RS485_DIR_D_GPIO_Port}};
+    [BSP_DO_DIR_RS485_RS232_C] = {.init = {.Pin = OUT_RS485_RS232_DIR_C_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                            .port = OUT_RS485_RS232_DIR_C_GPIO_Port},
+    [BSP_DO_DIR_RS485_RS232_D] = {.init = {.Pin = OUT_RS485_RS232_DIR_D_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                            .port = OUT_RS485_RS232_DIR_D_GPIO_Port}};
 
 void bsp_do_gpio_init(int do_number)
 {
@@ -82,8 +82,8 @@ void bsp_do_init(void)
         case BSP_DO_HART_SEL:
         case BSP_DO_HART_RTS:
         case BSP_DO_HART_RESET:
-        case BSP_DO_DIR_RS485_C:
-        case BSP_DO_DIR_RS485_D:
+        case BSP_DO_DIR_RS485_RS232_C:
+        case BSP_DO_DIR_RS485_RS232_D:
           bsp_do_gpio_init(do_num);
           do_inst[do_num].opened = true;
           break;
@@ -122,8 +122,8 @@ void bsp_do_low(int num)
     case BSP_DO_HART_SEL:
     case BSP_DO_HART_RTS:
     case BSP_DO_HART_RESET:
-    case BSP_DO_DIR_RS485_C:
-    case BSP_DO_DIR_RS485_D:
+    case BSP_DO_DIR_RS485_RS232_C:
+    case BSP_DO_DIR_RS485_RS232_D:
       HAL_GPIO_WritePin(do_inst[num].port, do_inst[num].init.Pin, GPIO_PIN_RESET);
       break;
     case BSP_DO_EXT_0:  
@@ -169,8 +169,8 @@ void bsp_do_high(int num)
     case BSP_DO_HART_SEL:
     case BSP_DO_HART_RTS:
     case BSP_DO_HART_RESET:
-    case BSP_DO_DIR_RS485_C:
-    case BSP_DO_DIR_RS485_D:
+    case BSP_DO_DIR_RS485_RS232_C:
+    case BSP_DO_DIR_RS485_RS232_D:
       HAL_GPIO_WritePin(do_inst[num].port, do_inst[num].init.Pin, GPIO_PIN_SET);
       break;
     case BSP_DO_EXT_0:

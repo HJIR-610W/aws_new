@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#include "driver_uart.h"
+#include "drv_rs232.h"
 
 #include "modem_if.h"
 #include "at_cmd.h"

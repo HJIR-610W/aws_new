@@ -64,22 +64,6 @@ typedef enum
 {
   UART_GET_CONFIG  // 설정값 읽기
 } uart_get_option_t;
-typedef struct
-{
-  void (*close)(driver_t *handle);
-  int32_t (*send)(driver_t *handle, const uint8_t *data, uint16_t length);
-  int32_t (*recv)(driver_t *handle, uint8_t *buffer, uint16_t length, uint32_t timeout);
-  int32_t (*recv_ll)(driver_t *handle, uint8_t *buffer, uint16_t length, uint32_t timeout);
-  void (*flush_rx)(driver_t *handle);
-  int32_t (*available)(driver_t *handle);
 
-  int32_t (*recv_opt)(driver_t *drv, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms,
-                      uint32_t timeout2_ms);
-
-  // **하나의 set() 함수로 모든 설정 관리**
-  void (*set)(driver_t *handle, uart_set_option_t option, void *value);
-  void (*get)(driver_t *handle, uart_get_option_t option, void *value);
-  int (*inject)(driver_t *handle, const uint8_t *data, uint16_t length);
-} uart_api_t;
 
 #endif

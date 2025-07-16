@@ -1,18 +1,12 @@
 
 
-
-
 #include <string.h>
 
-#include "cmsis_os2.h"
-
-#include "pcb_define.h"
 #include "hjsmartCharger.h"
-#include "driver_uart.h"
 #include "util_time.h"
 #include "util_memory.h"
 #include "os_user_def.h"
-
+#include "drv_rs485.h"
 
 typedef struct
 {
@@ -84,7 +78,7 @@ charger_api_t hjcharger_api ={.read = hjsmartCharger_read};
 
 typedef struct hjsmartCharger_cfg_s
 {
-  driver_t *rs232_io;
+  int32_t rs232_io;
 }hjsmartCharger_cfg_t;
 
 driver_t hjsmartCharger_driver;
@@ -100,16 +94,16 @@ driver_t *hjsmartCharger_open(int32_t num,void *opt)
   }
 
 
-    uart_config.baud = 57600;
-    uart_config.dataLen   = 8;
-    uart_config.parityIdx = 0;
-    uart_config.stop_bit  = 1;
+  uart_config.baud = 57600;
+  uart_config.dataLen   = 8;
+  uart_config.parityIdx = 0;
+  uart_config.stop_bit  = 1;
 
-    hjsmartCharger_driver.opened = true;
-    hjsmartCharger_driver.api = &hjcharger_api;
-    hjsmartCharger_cfg.rs232_io = driver_uart_open(UART_2_EXT_A,&uart_config);
+  hjsmartCharger_driver.opened = true;
+  hjsmartCharger_driver.api = &hjcharger_api;
+  hjsmartCharger_cfg.rs232_io = drv_rs485_init(RS485_B, &uart_config);
 
-    hjsmartCharger_driver.cfg = &hjsmartCharger_cfg;
+  hjsmartCharger_driver.cfg = &hjsmartCharger_cfg;
 
   OS_CREATE_BINARY_SEM(hjsmartCharger_driver.sem);
 
@@ -165,7 +159,7 @@ uint32_t Make_SmartChgFrame(uint8_t *pBuff, uint32_t buffSize, uint8_t cmd, uint
 }
 
 
-int32_t recv_smartCharger(void *rs232_driver,uint8_t *pbuff,int32_t buffSize)
+int32_t recv_smartCharger(int32_t rs232_num,uint8_t *pbuff,int32_t buffSize)
 {
 	uint8_t rxData;
 	uint8_t sum=0;
@@ -174,11 +168,11 @@ int32_t recv_smartCharger(void *rs232_driver,uint8_t *pbuff,int32_t buffSize)
 	uint32_t startTime;
 
 
-	startTime = HAL_GetTick();
+	startTime = OS_GET_TICK();
 
 	while(1)
   {
-		while(driver_uart_recv(rs232_driver, &rxData,1,20)==1)
+		while(drv_rs485_recv(rs232_num, &rxData,1,20)==1)
 		{
 			pbuff[frameCnt++] = rxData;
 
@@ -211,7 +205,7 @@ int32_t recv_smartCharger(void *rs232_driver,uint8_t *pbuff,int32_t buffSize)
 			}
 		}
 
-    if((HAL_GetTick() -startTime) > 50)
+    if((OS_GET_TICK() -startTime) > 50)
     {
       break;
     }
@@ -244,8 +238,8 @@ void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err
     OS_PEND_SEM(chg->sem,osWaitForever);
 
   
-  driver_uart_flush_rx(cfg->rs232_io);
-  driver_uart_send(cfg->rs232_io,buff,len);
+  drv_rs485_flush_rx(cfg->rs232_io);
+  drv_rs485_send(cfg->rs232_io,buff,len);
 
   len = recv_smartCharger(cfg->rs232_io,buff,sizeof(buff));
 
@@ -271,4 +265,37 @@ void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err
 
   OS_POST_SEM(chg->sem);
 
+}
+
+
+
+typedef struct hj_smartcharger_instance_s
+{
+  int32_t rs485_num;
+  bool opened;
+} hj_smartcharger_instance_t;
+
+hj_smartcharger_instance_t hj_chg_inst;
+
+int32_t hj_smartcharger_init(void)
+{
+  uart_config_t uart_config;
+  if (hj_chg_inst.opened)
+  {
+    return 1;
+  }
+
+  uart_config.baud = 57600;
+  uart_config.dataLen = 8;
+  uart_config.parityIdx = 0;
+  uart_config.stop_bit = 1;
+
+  hj_chg_inst.rs485_num = RS485_B;
+
+  drv_rs485_init(RS485_B, &uart_config);
+  hj_chg_inst.opened = true;
+
+      OS_CREATE_BINARY_SEM(hjsmartCharger_driver.sem);
+
+  return 0;
 }

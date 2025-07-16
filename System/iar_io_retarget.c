@@ -11,7 +11,7 @@
 
 
 #include "dev_io.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "stm32f4xx_hal.h"
 
 // off_t 타입을 정의 (일반적으로 파일 오프셋에 사용되며, 여기서는 int로 사용)
@@ -54,10 +54,10 @@ int __isatty(int file) {
 
  void low_level_put_char(unsigned char c)
 {
-   driver_t *uart_handle = get_debug_uart_handle();  //
-   if (uart_handle)
+   int32_t uart_handle = get_debug_uart_handle();  //
+   if (uart_handle != -1)
    {
-     driver_uart_send(uart_handle, &c, 1);  //
+     drv_uart_send(uart_handle, &c, 1);  //
    }
 }
 
@@ -65,10 +65,10 @@ int __isatty(int file) {
   unsigned char low_level_get_char(void)
  {
    unsigned char c = 0;
-   driver_t *uart_handle = get_debug_uart_handle();  //
-   if (uart_handle)
+   int32_t uart_handle = get_debug_uart_handle();  //
+   if (uart_handle !=-1)
    {
-     driver_uart_recv(uart_handle, &c, 1, 0xFFFFFFFF);  
+     drv_uart_recv(uart_handle, &c, 1, 0xFFFFFFFF);  
    }
    return c;
  }
@@ -106,9 +106,9 @@ int __isatty(int file) {
   */
  __ATTRIBUTES size_t __write(int handle, const unsigned char *buffer, size_t size)
  {
-   driver_t *uart_handle = get_debug_uart_handle();  //
+   int32_t uart_handle = get_debug_uart_handle();  //
 
-   if (buffer == NULL || uart_handle == NULL)
+   if (buffer == NULL )
    {
      return _LLIO_ERROR;
    }
@@ -120,7 +120,7 @@ int __isatty(int file) {
    }
 
 
-   int32_t bytes_sent = driver_uart_send(uart_handle, (uint8_t *)buffer, size);  //
+   int32_t bytes_sent = drv_uart_send(uart_handle, (uint8_t *)buffer, size);  //
 
    // driver_uart_send가 전송된 바이트 수를 반환하거나 에러 시 음수 값을 반환한다고 가정합니다.
    if (bytes_sent < 0)
@@ -142,9 +142,9 @@ int __isatty(int file) {
   */
  __ATTRIBUTES size_t __read(int handle, unsigned char *buffer, size_t size)
  {
-   driver_t *uart_handle = get_debug_uart_handle();  //
+   int32_t uart_handle = get_debug_uart_handle();  //
 
-   if (buffer == NULL || uart_handle == NULL)
+   if (buffer == NULL )
    {
      return _LLIO_ERROR;
    }
@@ -163,7 +163,7 @@ int __isatty(int file) {
    {
      // driver_uart_get_char가 하나의 문자를 가져오는 블로킹 호출이라고 가정합니다.
      // 성공 시 1, 에러/타임아웃 시 0 또는 음수를 반환한다고 가정합니다.
-     int32_t result = driver_uart_recv(uart_handle, &buffer[i],1,0xFFFFFFFF);  
+     int32_t result = drv_uart_recv(uart_handle, &buffer[i],1,0xFFFFFFFF);  
 
      if (result > 0)  // 문자 읽기 성공
      {

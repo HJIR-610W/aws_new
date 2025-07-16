@@ -7,7 +7,7 @@
 #include "dev_io.h"
 #include "drv_di.h"
 #include "bsp_do.h"
-#include "driver_uart.h"
+#include "bsp_uart.h"
 #include "pcb_define.h"
 #include "drv_power.h"
 
@@ -19,8 +19,8 @@ extern UART_HandleTypeDef huart6;
 #define SDI_DIR_TX_OFF() bsp_do_low(BSP_DO_DIR_SDI)
 #define SDI_DIR_TX_ON() bsp_do_high(BSP_DO_DIR_SDI)
 
-#define SDI_SEND(data, len) driver_uart_send(g_sdi_uart, data, len)
-#define SDI_RECV(buff, buffSize, timeout) driver_uart_recv(g_sdi_uart, buff, buffSize, timeout)
+#define SDI_SEND(data, len) drv_uart_send(g_sdi_uart, data, len)
+#define SDI_RECV(buff, buffSize, timeout) drv_uart_recv(g_sdi_uart, buff, buffSize, timeout)
 
 #define HART_POWER_ON() drv_power_on(DRV_POWER_HART_24V)
 #define HART_POWER_OFF() drv_power_off(DRV_POWER_HART_24V)
@@ -31,7 +31,7 @@ extern UART_HandleTypeDef huart6;
 #define SDI_UART_DISABLE() __HAL_UART_DISABLE(&huart6)
 #define SDI_UART_ENABLE() __HAL_UART_ENABLE(&huart6)
 
-driver_t *g_sdi_uart;
+int32_t g_sdi_uart;
 
 
 const osThreadAttr_t sdiTask_attributes = {
@@ -173,9 +173,9 @@ void test_sdi12(void)
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 
-  g_sdi_uart = driver_uart_open(UART_9_SDI, &uart_config);
+  g_sdi_uart = BSP_UART_9_SDI;
 
-
+      bsp_uart_init(BSP_UART_9_SDI, &uart_config);
 
   sdiTask(0);
 }

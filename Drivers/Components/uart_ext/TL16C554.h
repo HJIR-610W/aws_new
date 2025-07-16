@@ -21,7 +21,12 @@
 #define TL16C554_UART_MAX 8
 
 
-driver_t *tls16c554_open(uint32_t num,void *opt);
-
-
+int32_t tls16c554_init(int32_t num, void *opt);
+void tls16c554_close(int num);
+int32_t tls16c554_send(int num, const uint8_t *pData, uint16_t dataLen);
+int32_t tls16c554_recv(int num, uint8_t *buffer, uint16_t length, uint32_t timeOutMs);
+int32_t tls16c554_recv_ll(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs);
+void tls16c554_flush_rx(int num);
+void tls16c554_set(int num, uart_set_option_t option, void *value);
+void tls16c554_uart_get(int num, uart_get_option_t cmd, void *option);
 #endif

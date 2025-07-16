@@ -16,6 +16,9 @@
 #include "stm32_usb.h"
 #include "pcb_define.h"
 
+extern uint32_t calculate_txWaitTimeMs(uint32_t baud, uint16_t dataLen);
+extern uint8_t g_usb_cdc_connected;
+
 typedef struct stm32_cdc_cfg_s
 {
   UART_HandleTypeDef *handle;
@@ -24,145 +27,101 @@ typedef struct stm32_cdc_cfg_s
   uint32_t baud;  // 설정된 통신속도
   int8_t errCode;// 드라이버 에러  상태 정보
   bool connected;
-}stm32_cdc_cfg_t;
-
-
-StreamBufferHandle_t g_stm32_cdc_buff;
-
-extern uint32_t calculate_txWaitTimeMs(uint32_t baud,uint16_t dataLen);
+  StreamBufferHandle_t xStreamBuffer;
+  bool opened;
+  void *sem;
+}stm32_cdc_instance_t;
 
 
 
-driver_t *stm32_cdc_open(int num,void *opt);
-void stm32_cdc_close(driver_t *handle);
-
-int32_t stm32_cdc_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
-                           uint32_t timeout1_ms, uint32_t timeout2_ms);
-void stm32_cdc_flush_rx(driver_t *handle);
-int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen);
-int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs);
-int32_t stm32_cdc_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen);
-
-uart_api_t stm32_cdc_api={.close = stm32_cdc_close,
-                           .send =stm32_cdc_send,
-                           .recv =stm32_cdc_recv,
-                           .flush_rx = stm32_cdc_flush_rx,
-                           .recv_opt = stm32_cdc_recv_opt,
-                            .inject =stm32_cdc_inject};
-
-
-driver_t g_stm32_cdc;
-stm32_cdc_cfg_t g_stm32_cdc_cfg;
-
-
-extern uint8_t  g_usb_cdc_connected ;
-
+stm32_cdc_instance_t cdc_inst;
 
 
 void set_usb_cdc_connection(bool set)
 {
-  g_stm32_cdc_cfg.connected = set;
+  cdc_inst.connected = set;
 }
-driver_t *stm32_cdc_open(int num,void *opt)
+int32_t stm32_cdc_init(int num,void *opt)
 {
   osSemaphoreId_t tempSem=NULL;
 
-
-  if(g_stm32_cdc.opened == true)
+  if (cdc_inst.opened == true)
   {
-    return &g_stm32_cdc;
+    return 1;
   }
 
-
-  
   usbTask_init();
 
   for(int i = 0 ;i< 5; i++)
   {
-    if (g_stm32_cdc_cfg.connected)
+    if (cdc_inst.connected)
     {
       break;
     }
     osDelay(100);
   }
-  
 
-
-
-  g_stm32_cdc.api = &stm32_cdc_api;
-  g_stm32_cdc.cfg = &g_stm32_cdc_cfg;
-    
-    if(g_stm32_cdc.sem == NULL)
+  if (cdc_inst.connected==0)
+  {
+    return -1;
+  }
+    if (cdc_inst.sem == NULL)
     {
       tempSem = osSemaphoreNew(1, 1, NULL);
-      if(tempSem)
+      if (tempSem)
       {
-        g_stm32_cdc.sem = tempSem;
+        cdc_inst.sem = tempSem;
       }
     }
 
-    if(g_stm32_cdc_cfg.txcSem ==NULL)
+    if(cdc_inst.txcSem ==NULL)
     {
       tempSem = osSemaphoreNew(1, 0, NULL);
       if(tempSem)
-      g_stm32_cdc_cfg.txcSem = tempSem;
+        cdc_inst.txcSem = tempSem;
     }
 
-  switch (num)
-  {
-    case STM32_CDC:
-    g_stm32_cdc.name = TOSTRING(STM32_CDC);
-    g_stm32_cdc_buff =   xStreamBufferCreate(100, 1 ); 
+    cdc_inst.xStreamBuffer = xStreamBufferCreate(100, 1);
+    cdc_inst.opened = true;
 
-    break;
 
-  }
-  
-  g_stm32_cdc.opened = true;
-  
-  return &g_stm32_cdc;
+    
+    return 1;
 }
 
-int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
+int32_t stm32_cdc_send(int num,const uint8_t *pData,uint16_t dataLen)
 {
-  stm32_cdc_cfg_t *cfg = (stm32_cdc_cfg_t *)drv->cfg;
   osStatus_t osStatus;
   int32_t retVal=dataLen;
   uint32_t waitTime;
 
-  if(drv==NULL || drv->opened==false)
-  {
-    return 0;
-  }
-
-  if(cfg->connected==false)
+  if(cdc_inst.connected==false)
   {
     return -1;
   }
-  if(drv->sem)
+  if (cdc_inst.sem)
   {
-    osSemaphoreAcquire(drv->sem, osWaitForever);
+    osSemaphoreAcquire(cdc_inst.sem, osWaitForever);
   }
 
-  osSemaphoreAcquire(cfg->txcSem, 0);// 이전에 처리 못한건 제거 
-  waitTime = calculate_txWaitTimeMs(cfg->baud,dataLen);
+  osSemaphoreAcquire(cdc_inst.txcSem, 0); // 이전에 처리 못한건 제거
+  waitTime = calculate_txWaitTimeMs(cdc_inst.baud, dataLen);
   retVal = cdc_send(pData,dataLen);
 
-  if(cfg->txcSem)
+  if (cdc_inst.txcSem)
   {
-    osStatus = osSemaphoreAcquire(cfg->txcSem, waitTime);
-     if(osStatus != osOK)
-     {
-      cfg->errCode = (int8_t)osStatus;
-      
+    osStatus = osSemaphoreAcquire(cdc_inst.txcSem, waitTime);
+    if (osStatus != osOK)
+    {
+      cdc_inst.errCode = (int8_t)osStatus;
+
       retVal = -1;
      }
   }
 
-
-  if(drv->sem)
+  if (cdc_inst.sem)
   {
-    osSemaphoreRelease(drv->sem);
+    osSemaphoreRelease(cdc_inst.sem);
   }
 
   return retVal;
@@ -171,7 +130,7 @@ int32_t stm32_cdc_send(driver_t *drv,const uint8_t *pData,uint16_t dataLen)
 }
 
 
-int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
+int32_t stm32_cdc_recv(int num,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOutMs)
 {
 
     uint32_t starTick;
@@ -193,7 +152,7 @@ int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t t
     while(1)
     {
         /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
-        xBytesAvailable = xStreamBufferBytesAvailable( g_stm32_cdc_buff );
+        xBytesAvailable = xStreamBufferBytesAvailable(cdc_inst.xStreamBuffer);
 
         if(remainBuffSize < xBytesAvailable)
         {
@@ -204,8 +163,8 @@ int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t t
         if( xBytesAvailable > 0 )
         {
             /* 데이터를 읽을 수 있다면, 데이터를 수신 */
-            xBytesRead = xStreamBufferReceive( g_stm32_cdc_buff, ( void * ) &pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS( timeout ) );
-            
+            xBytesRead = xStreamBufferReceive(cdc_inst.xStreamBuffer, (void *)&pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS(timeout));
+
             if(xBytesRead >0)
             {
               cnt += xBytesRead;
@@ -215,7 +174,7 @@ int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t t
         else
         {
             /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
-            xBytesRead = xStreamBufferReceive( g_stm32_cdc_buff, ( void * ) &pBuff[cnt], 1, pdMS_TO_TICKS( timeout ) );
+            xBytesRead = xStreamBufferReceive(cdc_inst.xStreamBuffer, (void *)&pBuff[cnt], 1, pdMS_TO_TICKS(timeout));
             if(xBytesRead ==1)
             {
               cnt += 1;
@@ -237,14 +196,11 @@ int32_t stm32_cdc_recv(driver_t *drv,uint8_t *pBuff,uint16_t buffSize,uint32_t t
 }
 
 
-void stm32_cdc_flush_rx(driver_t *handle)
-{
-  
-}
 
 
 
-int32_t stm32_cdc_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *opt)
+
+int32_t stm32_cdc_recv_1(int num, uint8_t *pBuff, uint16_t buffSize,void *opt)
 {
   uart_optTimeOut_t *optTimeOut=opt;
   uint32_t starTick;
@@ -267,7 +223,7 @@ int32_t stm32_cdc_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *
   while(1)
   {
         /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
-        xBytesAvailable = xStreamBufferBytesAvailable( g_stm32_cdc_buff );
+        xBytesAvailable = xStreamBufferBytesAvailable(cdc_inst.xStreamBuffer);
 
         if(remainBuffSize < xBytesAvailable)
         {
@@ -278,8 +234,8 @@ int32_t stm32_cdc_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *
         if( xBytesAvailable > 0 )
         {
             /* 데이터를 읽을 수 있다면, 데이터를 수신 */
-            xBytesRead = xStreamBufferReceive( g_stm32_cdc_buff, ( void * ) &pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS( timeout ) );
-            
+            xBytesRead = xStreamBufferReceive(cdc_inst.xStreamBuffer, (void *)&pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS(timeout));
+
             if(xBytesRead >0)
             {
               cnt += xBytesRead;
@@ -289,7 +245,7 @@ int32_t stm32_cdc_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *
         else
         {
             /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
-            xBytesRead = xStreamBufferReceive( g_stm32_cdc_buff, ( void * ) &pBuff[cnt], 1, pdMS_TO_TICKS( timeout ) );
+            xBytesRead = xStreamBufferReceive(cdc_inst.xStreamBuffer, (void *)&pBuff[cnt], 1, pdMS_TO_TICKS(timeout));
             if(xBytesRead ==1)
             {
               cnt += 1;
@@ -321,7 +277,7 @@ int32_t stm32_cdc_recv_1(driver_t *drv, uint8_t *pBuff, uint16_t buffSize,void *
     }
 }
 
-int32_t stm32_cdc_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
+int32_t stm32_cdc_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size,
                            uint32_t timeout1_ms, uint32_t timeout2_ms)
 {
   int32_t cnt=0;
@@ -330,16 +286,12 @@ int32_t stm32_cdc_recv_opt(driver_t *drv, uint8_t *buffer, uint16_t buffer_size,
 }
 
 
-void stm32_cdc_close(driver_t *handle)
-{
-
-}
 
 
 
 void cdc_tx_complete(void)
 {
-  osSemaphoreRelease(g_stm32_cdc_cfg.txcSem);
+  osSemaphoreRelease(cdc_inst.txcSem);
 }
 
 void put_cdc_rx(uint8_t *p_data,uint16_t dataLen)
@@ -347,27 +299,33 @@ void put_cdc_rx(uint8_t *p_data,uint16_t dataLen)
   size_t xBytesSent;
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-  if(g_stm32_cdc_buff)
+  if(cdc_inst.xStreamBuffer)
   {
-  xBytesSent = xStreamBufferSendFromISR(g_stm32_cdc_buff,p_data, dataLen, &xHigherPriorityTaskWoken);
-/* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
-portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    xBytesSent = xStreamBufferSendFromISR(cdc_inst.xStreamBuffer, p_data, dataLen, &xHigherPriorityTaskWoken);
+    /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
   (void)xBytesSent;
 }
 
 
 
-int32_t stm32_cdc_inject(driver_t *drv, const uint8_t *pData, uint16_t dataLen)
+int32_t stm32_cdc_inject(int num, const uint8_t *pData, uint16_t dataLen)
 {
 
   size_t xBytesSent;
 
-
-
-  xBytesSent = xStreamBufferSend(g_stm32_cdc_buff, pData, dataLen,
-                                 pdMS_TO_TICKS( 100 ));
+  xBytesSent = xStreamBufferSend(cdc_inst.xStreamBuffer, pData, dataLen,
+                                 pdMS_TO_TICKS(100));
 
   return xBytesSent;
 
 }
+
+
+void stm32_cdc_flush_rx(void)
+{
+  
+}
+
+

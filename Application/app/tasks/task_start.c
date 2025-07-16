@@ -3,6 +3,7 @@
 #include "Tasks\task_start.h"
 
 #include "cmsis_os2.h"
+#include "FreeRTOS.h"
 #include "app_file.h"
 
 #include "App_drivers\app_flash.h"

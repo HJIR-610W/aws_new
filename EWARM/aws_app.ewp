@@ -1698,10 +1698,10 @@
             <group>
                 <name>CDMA</name>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\CDMA\at_cmd.h</name>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\at_cmd.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\CDMA\modem_if.h</name>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_if.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.c</name>
@@ -1731,7 +1731,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\CDMA\task_cellular.h</name>
+                    <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.h</name>
                 </file>
             </group>
             <group>
@@ -1740,7 +1740,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\Direct\task_direct.h</name>
+                    <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.h</name>
                 </file>
             </group>
             <group>
@@ -1879,7 +1879,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\terminal_bridge.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
@@ -2050,6 +2050,9 @@
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_power.c</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_rtc.c</name>
             </file>
             <file>
@@ -2063,6 +2066,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_swo.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_uart.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_uart.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\pcb_define.c</name>
@@ -2079,7 +2088,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -2109,7 +2118,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -2194,6 +2203,9 @@
                 </file>
             </group>
             <file>
+                <name>$PROJ_DIR$\..\drivers\devices\dev_charger.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\drivers\devices\driver_charger.c</name>
             </file>
             <file>
@@ -2233,18 +2245,6 @@
                 <name>$PROJ_DIR$\..\drivers\driver\driver.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_485.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_485.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_485_def.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_di_def.h</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\drivers\driver\driver_freqInput.c</name>
             </file>
             <file>
@@ -2281,15 +2281,6 @@
                 <name>$PROJ_DIR$\..\drivers\driver\driver_sdi.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_uart.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_uart.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_uart_def.h</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\drivers\driver\drv_adc.c</name>
             </file>
             <file>
@@ -2312,6 +2303,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver\drv_power.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\driver\drv_rs232.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\driver\drv_rs485.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver\drv_rtc.c</name>

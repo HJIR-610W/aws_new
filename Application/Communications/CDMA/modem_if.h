@@ -44,7 +44,7 @@ typedef struct
 typedef struct iCellular
 {
  
-    driver_t *io_uart;
+    int32_t io_uart;
 
     uint32_t resetDelay;  // 모뎀 리셋 후 지연시간
 
@@ -117,11 +117,11 @@ typedef struct iCellular
     M_RET_t (*at_direct)(char *at,char *outBuffer,uint16_t outSize);
 
     M_RET_t (*check_network_service)(char *msgOut,uint16_t msgSize);
-    void (*recv_bin)(driver_t *uart, uint8_t *data, uint16_t dataLen);
+    void (*recv_bin)(int32_t uart, uint8_t *data, uint16_t dataLen);
     uint32_t (*get_count)(void);
 
-    int32_t (*recv_handler)(driver_t *uart,uint8_t *buffer, uint16_t buffer_size);
-    void (*sms_handler)(driver_t *uart, char *data, uint16_t data_len);
+    int32_t (*recv_handler)(int32_t uart,uint8_t *buffer, uint16_t buffer_size);
+    void (*sms_handler)(int32_t uart, char *data, uint16_t data_len);
 } iCellular_t;
 
     typedef struct mqtt_if_s

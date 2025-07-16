@@ -6,8 +6,8 @@ os함수가 길어서 쉬운 용어로 사용
 
 #define FREE_RTOS_USE 1
 
-
 #include "cmsis_os2.h"
+#include "FreeRTOS.h"
 
 #if FREE_RTOS_USE
 #define OS_CREATE_BINARY_SEM(sem)                 \
@@ -21,6 +21,8 @@ os함수가 길어서 쉬운 용어로 사용
 #else
 #define OS_CREATE_BINARY_SEM(sem) ((void)0)
 #endif
+
+
 
 #if FREE_RTOS_USE
 #define OS_PEND_SEM(sem, timeout)          \

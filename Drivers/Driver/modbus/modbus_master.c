@@ -4,9 +4,9 @@
 
 #include <string.h>
 
-#include "driver_485.h"
+#include "drv_rs485.h"
 #include "driver_485_def.h"
-#include "driver_uart.h"
+#include "drv_rs232.h"
 #include "driver_uart_def.h"
 #include "modbus.h"
 #include "modbus_master_def.h"
@@ -18,22 +18,22 @@
 #define RET_TIMEOUT -2
 #define FRAME_485_Q_CNT 1
 
-#define MODBUS_RECV_FLUSH(driver) driver_rs485_flush_rx(driver)
-#define MODBUS_SEND(driver, data, cnt) driver_rs485_send(driver, data, cnt);
-#define MODBUS_RECV(driver, buff, buffSize, tout) driver_rs485_recv(driver, buff, buffSize, tout)
+#define MODBUS_RECV_FLUSH(driver) drv_rs485_flush_rx(driver)
+#define MODBUS_SEND(driver, data, cnt) drv_rs485_send(driver, data, cnt);
+#define MODBUS_RECV(driver, buff, buffSize, tout) drv_rs485_recv(driver, buff, buffSize, tout)
 #define MODBUS_RECV_TIMEOUT(driver, buff, buffSize, tout1, tout2) \
-  driver_rs485_recv_opt(driver, buff, buffSize, tout1, tout2)
+  drv_rs485_recv_opt(driver, buff, buffSize, tout1, tout2)
 
-#define MODBUS_232_RECV_FLUSH(driver) driver_uart_flush_rx(driver)
-#define MODBUS_232_SEND(driver, data, cnt) driver_uart_send(driver, data, cnt);
-#define MODBUS_232_RECV(driver, buff, buffSize, tout) driver_uart_recv(driver, buff, buffSize, tout)
+#define MODBUS_232_RECV_FLUSH(driver) drv_uart_flush_rx(driver)
+#define MODBUS_232_SEND(driver, data, cnt) drv_uart_send(driver, data, cnt);
+#define MODBUS_232_RECV(driver, buff, buffSize, tout) drv_uart_recv(driver, buff, buffSize, tout)
 #define MODBUS_232_RECV_TIMEOUT(driver, buff, buffSize, tout1, tout2) \
-  driver_uart_recv_opt(driver, buff, buffSize, tout1, tout2)
+  drv_uart_recv_opt(driver, buff, buffSize, tout1, tout2)
 
 typedef struct modbus_cfg_s
 {
   eMODBUS_TYPE_t modbusType;
-  driver_t *bus_io;
+  int32_t bus_io;
   void *sem;
 } modbus_cfg_t;
 int32_t g_modbusLastErr;
@@ -257,7 +257,7 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
     case eMODBUS_RS485:
     {
       uart_config_t ucfg;
-      driver_rs485_get(cfg->bus_io, UART_GET_CONFIG, &ucfg);
+      drv_rs485_get(cfg->bus_io, UART_GET_CONFIG, &ucfg);
       delay = (uint32_t)(((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000);  // ms
       delay = delay * 2;
       if (delay == 0)
@@ -269,7 +269,7 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
     case eMODBUS_RS232:
     {
       uart_config_t ucfg;
-      driver_uart_get(cfg->bus_io, UART_GET_CONFIG, &ucfg);
+      drv_uart_get(cfg->bus_io, UART_GET_CONFIG, &ucfg);
       delay = (uint32_t)(((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000);  // ms
       delay = delay * 2;
       if (delay == 0)
@@ -606,7 +606,8 @@ driver_t *modbus_master_open(int32_t num, void *opt)
   {
     case MODBUS_RTU_OVER_485:
       modbus_m_cfg[num].modbusType = eMODBUS_RS485;
-      modbus_m_cfg[num].bus_io = driver_rs485_open(modbus_init->port_num, &uart_config);
+      modbus_m_cfg[num].bus_io = modbus_init->port_num;
+      drv_rs485_init(modbus_init->port_num, &uart_config);
 
       modbus_m_drv[num].cfg = &modbus_m_cfg[num];
       modbus_m_drv[num].api = &modbus_master_api;
@@ -614,7 +615,8 @@ driver_t *modbus_master_open(int32_t num, void *opt)
       break;
     case MODBUS_RTU_OVER_232:
       modbus_m_cfg[num].modbusType = eMODBUS_RS232;
-      modbus_m_cfg[num].bus_io = driver_uart_open(modbus_init->port_num, &uart_config);
+      modbus_m_cfg[num].bus_io = modbus_init->port_num;
+      drv_uart_init(modbus_init->port_num, &uart_config);
 
       modbus_m_drv[num].cfg = &modbus_m_cfg[num];
       modbus_m_drv[num].api = &modbus_master_api;
