@@ -9,6 +9,7 @@
 #include "drv_adc.h"
 #include "drv_rs485.h"
 #include "drv_rs232.h"
+#include "drv_frequency.h"
 
 void drv_init(void)
 {
@@ -21,5 +22,6 @@ void drv_init(void)
   drv_flash_init(); 
   drv_fram_init();
   drv_adc_init();
+  drv_frequency_init();
 
 }

@@ -5,7 +5,7 @@
 
 #include "driver_charger_define.h"
 
-#define LS1024_CHARGER 0 
-driver_t *ls1024_open(int32_t num,void *opt);
 
+void ls1024_read(charger_data_t *charger_data, uint8_t *err);
+int32_t ls1024_init(void);
 #endif

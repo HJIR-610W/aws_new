@@ -24,4 +24,8 @@ int32_t stm32_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32_t 
 void stm32_uart_get(int num, uart_get_option_t cmd, void *option);
 int32_t stm32_uart_inject(int num, const uint8_t *pData, uint16_t dataLen);
 
+
+int32_t stm32_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_ms);
+
+
 #endif

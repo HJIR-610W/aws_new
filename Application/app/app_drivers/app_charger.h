@@ -9,8 +9,9 @@
 #define APP_CHARGER_HJ 0
 #define APP_CHARGER_LS 1
 
-void charger_init(uint32_t type);
-void update_charger(void);
+
+void update_charger(int32_t charger);
+
 bool is_chargerValid(void);
 void read_chargerStatus(char *pBuff,uint16_t buffSize);
 

@@ -23,4 +23,5 @@ int32_t stm32_cdc_send(int num, const uint8_t *pData, uint16_t dataLen);
 int32_t stm32_cdc_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs);
 int32_t stm32_cdc_inject(int num, const uint8_t *pData, uint16_t dataLen);
 void stm32_cdc_flush_rx(void);
+int32_t stm32_cdc_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_ms);
 #endif

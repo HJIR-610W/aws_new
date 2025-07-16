@@ -9,7 +9,7 @@
 
 #define BUTTON_QUEUE_SIZE 5
 
-static int32_t serial_key = DRV_UART_0_D_SUB_0;
+static int32_t serial_key = -1;
 
     osMessageQueueId_t button_queue_handle = NULL;
 
@@ -22,7 +22,8 @@ void app_key_init(void)
     uart_config.parityIdx = PARITY_NONE;
     uart_config.stop_bit = UART_STOP_BIT_1;
 
-    drv_uart_init(serial_key, &uart_config);
+    serial_key = DRV_UART_0_D_SUB_0;
+        drv_uart_init(serial_key, &uart_config);
 
     button_queue_handle = osMessageQueueNew(BUTTON_QUEUE_SIZE, sizeof(int32_t), NULL);
 

@@ -1,14 +1,14 @@
 
 #include <stdio.h>
 
-#include "driver_interface.h"
-#include "driver_charger.h"
+
+#include "dev_charger.h"
 #include "app_charger.h"
 
-driver_t *g_charger = NULL;
+
+
 charger_data_t charger_data;
 uint8_t charger_err = 99;//음수 아직 값이 업데이트 안됨, 0정상, 1 에러
-
 
 void read_chargerStatus(char *pBuff,uint16_t buffSize)
 {
@@ -39,23 +39,11 @@ bool is_chargerValid(void)
   return false;
 }
 
-void charger_init(uint32_t type)
-{
-  switch (type)
-  {
-  case APP_CHARGER_HJ:
-  g_charger =   driver_charger_open(CHARGER_HJ_SMART,0);
-    break;
-  case APP_CHARGER_LS:
-  g_charger =   driver_charger_open(CHARGER_LS1024,0);
-    break;
-  }
-}
 
-void update_charger(void)
+
+void update_charger(int32_t charger)
 {
-  driver_charger_read(g_charger,&charger_data,&charger_err);
-  
+  dev_charger_read(charger, &charger_data, &charger_err);
 }
 
 float read_solarVoltage1(uint8_t *err)

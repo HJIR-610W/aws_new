@@ -7,7 +7,11 @@
 #include "util_memory.h"
 #include "os_user_def.h"
 #include "drv_rs485.h"
+#include "drv_rs232.h"
+#include "driver_uart_def.h"
 
+#define CHARGER_RS485
+//#define CHARGER_RS232
 typedef struct
 {
     uint16_t SolraVolt1;        // nAIN_SV1
@@ -71,45 +75,6 @@ typedef struct
 
 
 
-void  hjsmartCharger_read(driver_t *chg,charger_data_t *data,uint8_t *err);
-
-
-charger_api_t hjcharger_api ={.read = hjsmartCharger_read};
-
-typedef struct hjsmartCharger_cfg_s
-{
-  int32_t rs232_io;
-}hjsmartCharger_cfg_t;
-
-driver_t hjsmartCharger_driver;
-hjsmartCharger_cfg_t hjsmartCharger_cfg;
-
-driver_t *hjsmartCharger_open(int32_t num,void *opt)
-{
-  uart_config_t uart_config;
-
-  if(hjsmartCharger_driver.opened)
-  {
-    return &hjsmartCharger_driver;
-  }
-
-
-  uart_config.baud = 57600;
-  uart_config.dataLen   = 8;
-  uart_config.parityIdx = 0;
-  uart_config.stop_bit  = 1;
-
-  hjsmartCharger_driver.opened = true;
-  hjsmartCharger_driver.api = &hjcharger_api;
-  hjsmartCharger_cfg.rs232_io = drv_rs485_init(RS485_B, &uart_config);
-
-  hjsmartCharger_driver.cfg = &hjsmartCharger_cfg;
-
-  OS_CREATE_BINARY_SEM(hjsmartCharger_driver.sem);
-
-
-  return &hjsmartCharger_driver;
-}
 
 
 uint32_t Make_SmartChgFrame(uint8_t *pBuff, uint32_t buffSize, uint8_t cmd, uint8_t *pData, uint32_t dataLen)
@@ -172,8 +137,8 @@ int32_t recv_smartCharger(int32_t rs232_num,uint8_t *pbuff,int32_t buffSize)
 
 	while(1)
   {
-		while(drv_rs485_recv(rs232_num, &rxData,1,20)==1)
-		{
+    while (drv_rs485_recv(rs232_num, &rxData, 1, 20) == 1)
+    {
 			pbuff[frameCnt++] = rxData;
 
 			if (frameCnt == 1)
@@ -214,11 +179,23 @@ int32_t recv_smartCharger(int32_t rs232_num,uint8_t *pbuff,int32_t buffSize)
 	return -1;
 }
 
+typedef struct hj_smartcharger_instance_s
+{
+  int32_t uart_num;
+  bool opened;
+  void *sem;
+} hj_smartcharger_instance_t;
+
+hj_smartcharger_instance_t charger_inst;
+
+
+
+
 SYSTEM_TypeDef chg_system;//TODO:heap으로 변경
 static uint8_t buff[sizeof(SYSTEM_TypeDef)+20]; //TODO:heap으로 변경
-void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err)
+void hjsmartCharger_read(charger_data_t *charger_data,uint8_t *err)
 {
-  hjsmartCharger_cfg_t *cfg = chg->cfg;
+
   int32_t len;
   uint8_t data[6];
   uint16_t val;
@@ -234,68 +211,66 @@ void hjsmartCharger_read(driver_t *chg,charger_data_t *charger_data,uint8_t *err
   
   len = Make_SmartChgFrame(buff,sizeof(buff),0x50,data,6);
 
+  OS_PEND_SEM(charger_inst.sem, osWaitForever);
 
-    OS_PEND_SEM(chg->sem,osWaitForever);
+  drv_rs485_flush_rx(charger_inst.uart_num);
+  drv_rs485_send(charger_inst.uart_num, buff, len);
 
-  
-  drv_rs485_flush_rx(cfg->rs232_io);
-  drv_rs485_send(cfg->rs232_io,buff,len);
+  len = recv_smartCharger(charger_inst.uart_num, buff, sizeof(buff));
 
-  len = recv_smartCharger(cfg->rs232_io,buff,sizeof(buff));
-
-  if(len > 0)
+  if (len > 0)
   {
-    memcpy(&chg_system,&buff[13],sizeof(SYSTEM_TypeDef));
-    charger_data->battery1     = (float)chg_system.BattVolt1/1000.0f;
-    charger_data->battery2     = (float)chg_system.BattVolt2/1000.0f;
-    charger_data->load1Current = (float)chg_system.LoadCurr1/1000.0f;
-    charger_data->load2Current = (float)chg_system.LoadCurr2/1000.0f;
-    charger_data->load3Current = (float)chg_system.LoadCurr3/1000.0f;
+    memcpy(&chg_system, &buff[13], sizeof(SYSTEM_TypeDef));
+    charger_data->battery1 = (float)chg_system.BattVolt1 / 1000.0f;
+    charger_data->battery2 = (float)chg_system.BattVolt2 / 1000.0f;
+    charger_data->load1Current = (float)chg_system.LoadCurr1 / 1000.0f;
+    charger_data->load2Current = (float)chg_system.LoadCurr2 / 1000.0f;
+    charger_data->load3Current = (float)chg_system.LoadCurr3 / 1000.0f;
 
-    charger_data->solar1Volt    = (float)chg_system.SolraVolt1/1000.0f;
-    charger_data->solar2Volt    = (float)chg_system.SolraVolt2/1000.0f;
-    charger_data->solar1Current = (float)chg_system.SolraCurr1/1000.0f;
-    charger_data->solar2Current = (float)chg_system.SolraCurr2/1000.0f;
+    charger_data->solar1Volt = (float)chg_system.SolraVolt1 / 1000.0f;
+    charger_data->solar2Volt = (float)chg_system.SolraVolt2 / 1000.0f;
+    charger_data->solar1Current = (float)chg_system.SolraCurr1 / 1000.0f;
+    charger_data->solar2Current = (float)chg_system.SolraCurr2 / 1000.0f;
     *err = DRV_ERR_NONE;
   }
   else
   {
     *err = DRV_ERR_TIMEOUT;
-  } 
+  }
 
-  OS_POST_SEM(chg->sem);
-
+  OS_POST_SEM(charger_inst.sem);
 }
 
 
 
-typedef struct hj_smartcharger_instance_s
-{
-  int32_t rs485_num;
-  bool opened;
-} hj_smartcharger_instance_t;
-
-hj_smartcharger_instance_t hj_chg_inst;
-
 int32_t hj_smartcharger_init(void)
 {
   uart_config_t uart_config;
-  if (hj_chg_inst.opened)
+  if (charger_inst.opened)
   {
     return 1;
   }
 
   uart_config.baud = 57600;
-  uart_config.dataLen = 8;
-  uart_config.parityIdx = 0;
-  uart_config.stop_bit = 1;
+  uart_config.dataLen = UART_DATA_LEN_8;
+  uart_config.parityIdx = PARITY_NONE;
+  uart_config.stop_bit = UART_STOP_BIT_1;
 
-  hj_chg_inst.rs485_num = RS485_B;
+  if(0)//232
+  {
+    charger_inst.uart_num = DRV_UART_2_EXT_A;
+    drv_rs485_init(charger_inst.uart_num, &uart_config);
+  }
+  else
+  {
+    charger_inst.uart_num = RS485_B;
+    drv_rs485_init(charger_inst.uart_num, &uart_config);
+  }
 
-  drv_rs485_init(RS485_B, &uart_config);
-  hj_chg_inst.opened = true;
 
-      OS_CREATE_BINARY_SEM(hjsmartCharger_driver.sem);
+  charger_inst.opened = true;
+
+  OS_CREATE_BINARY_SEM(charger_inst.sem);
 
   return 0;
 }

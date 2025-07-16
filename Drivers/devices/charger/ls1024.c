@@ -3,65 +3,50 @@
 
 #include <string.h>
 #include <math.h>
+
 #include "cmsis_os2.h"
-#include "drv_rs485.h"
-#include "drv_rs232.h"
-#include "pcb_define.h"
 #include "util_memory.h"
 #include "util_time.h"
 #include "os_user_def.h"
 #include "driver_modbus.h"
 
-
-
-void ls1024_read(driver_t *driver, charger_data_t *charger_data,
-                 uint8_t *err) ;
-charger_api_t ls1024_api = {.read = ls1024_read};
-
 typedef struct ls1024_cfg_s
 {
+  modbus_init_t modbus;
+  void *sem;
+  bool opened;
   driver_t *bus_io;
-}ls1024_cfg_t;
+} ls1024_instance_t;
 
-driver_t ls1024_driver;
-ls1024_cfg_t ls1024_cfg;
+ls1024_instance_t ls1024_inst;
 
-
-
-driver_t *ls1024_open(int32_t num,void *opt)
+int32_t ls1024_init(void)
 {
-  modbus_init_t modbus_init;
-
-  if(ls1024_driver.opened)
+  if (ls1024_inst.opened)
   {
-    return &ls1024_driver;
+    return 1;
   }
 
-  modbus_init.baud = 115200;
-  modbus_init.parityIdx = 0;
-  modbus_init.stop = 1;
+  ls1024_inst.modbus.baud = 115200;
+  ls1024_inst.modbus.parityIdx = 0;
+  ls1024_inst.modbus.stop = 1;
+  ls1024_inst.modbus.port_num = RS485_B;
+  ls1024_inst.bus_io = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &ls1024_inst.modbus);
 
-  modbus_init.port_num = RS485_B;
-  ls1024_cfg.bus_io = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &modbus_init);
+  OS_CREATE_BINARY_SEM(ls1024_inst.sem);
 
-  ls1024_driver.cfg = &ls1024_cfg;
-  ls1024_driver.api = &ls1024_api;
+  ls1024_inst.opened = true;
 
-  OS_CREATE_BINARY_SEM(ls1024_driver.sem);
-
-  ls1024_driver.opened =true;
-  
-  return &ls1024_driver;
+  return 1;
 }
 
-void ls1024_read(driver_t *driver, charger_data_t *charger_data, uint8_t *err)
+void ls1024_read( charger_data_t *charger_data, uint8_t *err)
 {
-
   uint16_t reg[15];
-  ls1024_cfg_t *cfg = driver->cfg;
+
   int32_t ret;
 
-  ret = driver_modbus_m_read_input_reg(cfg->bus_io, 1, 0x3100, reg, 15);
+  ret = driver_modbus_m_read_input_reg(ls1024_inst.bus_io, 1, 0x3100, reg, 15);
 
   if (ret)
   {
@@ -71,22 +56,20 @@ void ls1024_read(driver_t *driver, charger_data_t *charger_data, uint8_t *err)
   {
     *err = DRV_ERR_NONE;
     // Solar (PV1)
-    charger_data->solar1Volt    = (float)reg[0] / 100.0f;  // 0x3100
-    charger_data->solar1Current = (float)reg[1] / 100.0f;  // 0x3101
+    charger_data->solar1Volt = (float)reg[0] / 100.0f;    // 0x3100
+    charger_data->solar1Current = (float)reg[1] / 100.0f; // 0x3101
 
     // Battery1
-    charger_data->battery1      = (float)reg[4] / 100.0f;  // 0x3104
+    charger_data->battery1 = (float)reg[4] / 100.0f; // 0x3104
 
     // Load1
-    charger_data->load1Current  = (float)reg[13] / 100.0f; // 0x310D
+    charger_data->load1Current = (float)reg[13] / 100.0f; // 0x310D
 
     // Unused (추가 솔라 및 배터리는 현재 미사용)
-    charger_data->solar2Volt    = 0.0f;
+    charger_data->solar2Volt = 0.0f;
     charger_data->solar2Current = 0.0f;
-    charger_data->battery2      = 0.0f;
-    charger_data->load2Current  = 0.0f;
-    charger_data->load3Current  = 0.0f;
-
+    charger_data->battery2 = 0.0f;
+    charger_data->load2Current = 0.0f;
+    charger_data->load3Current = 0.0f;
   }
-
 }

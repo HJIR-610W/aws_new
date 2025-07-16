@@ -105,7 +105,9 @@
 			"driver_stm32_cdc.h": "c",
 			"tl16c554.h": "c",
 			"semphr.h": "c",
-			"drv_rs232.h": "c"
+			"drv_rs232.h": "c",
+			"ls1024.h": "c",
+			"app_charger.h": "c"
 		}
 	}
 }

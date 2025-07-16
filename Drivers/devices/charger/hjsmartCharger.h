@@ -5,7 +5,7 @@
 
 #include "driver_charger_define.h"
 
-#define HJ_SMART_CHARGER 0 
-driver_t *hjsmartCharger_open(int32_t num,void *opt);
 
+int32_t hj_smartcharger_init(void);
+void hjsmartCharger_read(charger_data_t *charger_data, uint8_t *err);
 #endif

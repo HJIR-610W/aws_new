@@ -4,7 +4,7 @@
 
 #include "util_memory.h"
 #include "bsp_interrupt.h"
-
+#include "driver_stm32_uart.h"
 
 typedef struct int_sub_s
 {
@@ -111,8 +111,6 @@ extern UART_HandleTypeDef huart1 ;
 extern UART_HandleTypeDef huart3 ;
 extern UART_HandleTypeDef huart6 ;
 
-extern DMA_HandleTypeDef hdma_usart3_tx;
-extern DMA_HandleTypeDef hdma_usart6_tx;
 
 
 
@@ -120,14 +118,17 @@ extern DMA_HandleTypeDef hdma_sdio_rx;
 extern DMA_HandleTypeDef hdma_sdio_tx;
 extern SD_HandleTypeDef hsd;
 
+extern DMA_HandleTypeDef *get_uart_txdma(int num) ;
 void DMA2_Stream7_IRQHandler(void) 
 {
-  HAL_DMA_IRQHandler(&hdma_usart6_tx);
+  HAL_DMA_IRQHandler(get_uart_txdma(STM32_UART_1_SDI));
 }
+
+
 
 void DMA1_Stream3_IRQHandler(void)
 {
-  HAL_DMA_IRQHandler(&hdma_usart3_tx);
+  HAL_DMA_IRQHandler(get_uart_txdma(STM32_UART_0_CDMA));
 }
 
 

@@ -33,13 +33,18 @@ typedef struct stm32_uart_cfg_s
 } uart_instance_t;
 
 static uart_instance_t uart_inst[STM32_UART_MAX] = {[STM32_UART_0_CDMA] = {.handle.Instance = USART3,.buffser_size = 512},
-                                                         [STM32_UART_0_CDMA] = {.handle.Instance = USART6,.buffser_size = 50}};
+                                                    [STM32_UART_1_SDI] = {.handle.Instance = USART6,.buffser_size = 50}};
 
-
+DMA_HandleTypeDef *get_uart_txdma(int num)
+{
+   return &uart_inst[num].dma_tx;
+ 
+}
 
 DMA_HandleTypeDef hdma_usart3_tx;
-DMA_HandleTypeDef hdma_usart6_tx;
 DMA_HandleTypeDef hdma_usart3_rx;
+
+DMA_HandleTypeDef hdma_usart6_tx;
 DMA_HandleTypeDef hdma_usart6_rx;
 
 static void MX_DMA_UART_Init(UART_HandleTypeDef *p_uart, DMA_HandleTypeDef *p_dma)
@@ -159,29 +164,24 @@ int32_t stm32_uart_init(int num, void *opt)
     return 1;
   }
 
-  for(int num = 0 ; num <sizeof(uart_inst)/sizeof(uart_instance_t);num++)
+
+  if (uart_inst[num].txcSem == NULL)
   {
-    if(uart_inst[num].opened)
-    {
-      return 1;
-    }
-    if (uart_inst[num].txcSem == NULL)
-    {
-      tempSem = osSemaphoreNew(1, 0, NULL);
-      if (tempSem)
-        uart_inst[num].txcSem = tempSem;
-    }
-
-    uart_inst[num].baud = cfg->baud;
-    uart_inst[num].parityIdx = cfg->parityIdx;
-    uart_inst[num].dma_use = 1;
-    uart_inst[num].xStreamBuffer = xStreamBufferCreate(uart_inst[num].buffser_size, 1);
-    OS_CREATE_BINARY_SEM(uart_inst[num].sem);
-
-    MX_USART_UART_Init(&uart_inst[num].handle, cfg->baud,cfg->parityIdx,cfg->dataLen,cfg->stop_bit);
-    MX_DMA_UART_Init(&uart_inst[num].handle, &uart_inst[num].dma_tx);
-    HAL_UART_Receive_IT(&uart_inst[num].handle, (uint8_t *)&uart_inst[num], 1);
+    tempSem = osSemaphoreNew(1, 0, NULL);
+    if (tempSem)
+      uart_inst[num].txcSem = tempSem;
   }
+
+  uart_inst[num].baud = cfg->baud;
+  uart_inst[num].parityIdx = cfg->parityIdx;
+  uart_inst[num].dma_use = 1;
+  uart_inst[num].xStreamBuffer = xStreamBufferCreate(uart_inst[num].buffser_size, 1);
+  OS_CREATE_BINARY_SEM(uart_inst[num].sem);
+
+  MX_USART_UART_Init(&uart_inst[num].handle, cfg->baud,cfg->parityIdx,cfg->dataLen,cfg->stop_bit);
+  MX_DMA_UART_Init(&uart_inst[num].handle, &uart_inst[num].dma_tx);
+  HAL_UART_Receive_IT(&uart_inst[num].handle, (uint8_t *)&uart_inst[num], 1);
+
 
   uart_inst[num].opened = true;
 
@@ -427,6 +427,10 @@ int32_t stm32_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t tim
 
   (void)lastTick;
 
+  if(num==-1)
+  {
+    return 0;
+  }
   while (1)
   {
     /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
@@ -573,4 +577,63 @@ int32_t stm32_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
 
   return xBytesSent;
 
+}
+
+
+
+
+
+int32_t stm32_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_ms)
+{
+  uint8_t data;
+  uint16_t cnt = 0;
+  uint32_t startTime, startTick, stopTick, elapseTick;
+  uint32_t timeout;
+  uint32_t len;
+
+  startTime = osKernelGetTickCount();
+  timeout = tout_ms;
+
+  do
+  {
+    startTick = osKernelGetTickCount();
+    len = stm32_uart_recv(num, &data, 1, tout_ms);
+
+    if (len)
+    {
+      pBuff[cnt++] = data;
+      
+      if((cnt==1)&&((data == '\r') || (data == '\n')))
+      {
+        cnt = 0;
+        continue;
+      }
+         
+         
+      if ((data == '\r') || (data == '\n'))
+      {
+        pBuff[cnt - 1] = 0;
+        return (cnt - 1); /* \r 또는 \n 를 제외한 문자열 길이 리턴*/
+      }
+
+      if (cnt == bSize)
+      {
+        return 0;
+      }
+    }
+
+    stopTick = xTaskGetTickCount();
+    elapseTick = stopTick - startTick;
+
+    if ((tout_ms == 0) || ((stopTick - startTime) >= tout_ms))
+    {
+      break;
+    }
+    if (tout_ms != osWaitForever)
+    {
+      timeout = timeout - elapseTick;
+    }
+  } while (1);
+
+  return 0;
 }

@@ -2,10 +2,10 @@
 #ifndef BSP_RS485_H
 #define BSP_RS485_H
 
-#define BSP_RS485_0 0
-#define BSP_RS485_1 1
-#define BSP_RS485_2 2
-#define BSP_RS485_3 3
+#define BSP_RS485_A 0
+#define BSP_RS485_B 1
+#define BSP_RS485_RS232_C 2
+#define BSP_RS485_RS232_D 3
 
 #define BSP_RS485_MAX 4
 #include <stdint.h>

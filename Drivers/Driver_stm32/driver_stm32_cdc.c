@@ -329,3 +329,57 @@ void stm32_cdc_flush_rx(void)
 }
 
 
+int32_t stm32_cdc_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_ms)
+{
+  uint8_t data;
+  uint16_t cnt = 0;
+  uint32_t startTime, startTick, stopTick, elapseTick;
+  uint32_t timeout;
+  uint32_t len;
+
+  startTime = osKernelGetTickCount();
+  timeout = tout_ms;
+
+  do
+  {
+    startTick = osKernelGetTickCount();
+    len = stm32_cdc_recv(num, &data, 1, tout_ms);
+
+    if (len)
+    {
+      pBuff[cnt++] = data;
+      
+      if((cnt==1)&&((data == '\r') || (data == '\n')))
+      {
+        cnt = 0;
+        continue;
+      }
+         
+         
+      if ((data == '\r') || (data == '\n'))
+      {
+        pBuff[cnt - 1] = 0;
+        return (cnt - 1); /* \r 또는 \n 를 제외한 문자열 길이 리턴*/
+      }
+
+      if (cnt == bSize)
+      {
+        return 0;
+      }
+    }
+
+    stopTick = xTaskGetTickCount();
+    elapseTick = stopTick - startTick;
+
+    if ((tout_ms == 0) || ((stopTick - startTime) >= tout_ms))
+    {
+      break;
+    }
+    if (tout_ms != osWaitForever)
+    {
+      timeout = timeout - elapseTick;
+    }
+  } while (1);
+
+  return 0;
+}
