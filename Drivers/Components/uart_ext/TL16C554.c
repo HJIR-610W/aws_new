@@ -175,6 +175,9 @@ void set_parity(uint8_t uart_num, uint8_t parity_mode)
 {
   volatile uint8_t lcr;
 
+  OS_PEND_SEM(tl16c554_inst[uart_num].sem,osWaitForever);
+
+
   lcr = read_register(LCR(exUartBaseAddress[uart_num]));
   uint8_t lcr_val = lcr & 0xC7;  // LCR에서 parity 관련 비트(3~5)만 초기화
 
@@ -202,6 +205,8 @@ void set_parity(uint8_t uart_num, uint8_t parity_mode)
   }
 
   write_register(LCR(exUartBaseAddress[uart_num]), lcr_val);
+
+  OS_POST_SEM(tl16c554_inst[uart_num].sem);
 }
 
 void set_stop_bit(uint8_t uart_num, uint8_t stop_bits)
@@ -244,6 +249,7 @@ void quad_init(int uart_num, void *opt)
       TOSTRING(irq_INTA_5), TOSTRING(irq_INTB_6), TOSTRING(irq_INTC_7), TOSTRING(irq_INTD_8)};
   int baud_rate = config->baud;
 
+  OS_PEND_SEM(tl16c554_inst[uart_num].sem,osWaitForever);
 
   // 보오드레이트 설정을 위한 Divisor 계산
   uint16_t divisor = UART_CLOCK_FREQ / (16 * baud_rate);
@@ -270,8 +276,12 @@ void quad_init(int uart_num, void *opt)
   {
     parity_mode = 2;
   }
+
+  OS_POST_SEM(tl16c554_inst[uart_num].sem);
+
   set_parity(uart_num, parity_mode);
 
+  OS_PEND_SEM(tl16c554_inst[uart_num].sem, osWaitForever);
   /*
   FIFO 설정 (FCR) 트리거 레벨 1바이트
   */
@@ -300,6 +310,7 @@ void quad_init(int uart_num, void *opt)
   isr_cfg.prio = 6;
   isr_cfg.handle = uart_num;
 
+  OS_POST_SEM(tl16c554_inst[uart_num].sem);
   bsp_di_set_interrupt(tl16c554_inst[uart_num].irq_di_num, &isr_cfg);
 }
 
@@ -762,13 +773,12 @@ int32_t tls16c554_init(int32_t num, void *opt)
   // RX 데이터 수신 버퍼를 할당, 트리거 레벨 1로 설정정
   tl16c554_inst[num].xStreamBuffer = xStreamBufferCreate(g_streamBuffSizeList[num], 1);
 
- 
-
+   OS_CREATE_BINARY_SEM(tl16c554_inst[num].sem);
   // 초기화
   quad_init(num, opt);
 
 
-  OS_CREATE_BINARY_SEM(tl16c554_inst[num].sem);
+
 
 
   return 0;

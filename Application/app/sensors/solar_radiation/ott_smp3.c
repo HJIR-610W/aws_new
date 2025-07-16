@@ -6,15 +6,14 @@
 #include <string.h>
 #include "app_sensor.h"
 #include "config_sensor.h"
-#include "driver_modbus.h"
+#include "modbus_master.h"
 #include "ott_smp3_define.h"
-
 #include "dev_io.h"
-
+#include "drv_rs485.h"
 
 typedef struct ott_smp3_cfg_s
 {
-  driver_t *bus_io;
+  modbus_h_t modbus;
   uint8_t modbus_id;
 
 } ott_smp3_cfg_t;
@@ -37,21 +36,23 @@ solarRadiation_api_t g_ott_smp3_api = {.read = smp3_solar_read,.set=ott_smp3_set
 
 driver_t *ott_smp3_open(int32_t num, void *opt)
 {
-  modbus_init_t modbus_init;
+  uart_config_t uart_config;
   ott_smp3_config_t *ott = (ott_smp3_config_t *)opt;
 
-  modbus_init.baud = 9600;
-  modbus_init.parityIdx = 0;
-  modbus_init.stop = 1;
-  modbus_init.port_num = ott->port;
-  ;
-  g_ott_smp3_cfg.modbus_id = ott->modbus_id;
-  g_ott_smp3_cfg.bus_io = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &modbus_init);
-  
-  g_ott_smp3_driver.cfg = &g_ott_smp3_cfg;
-  g_ott_smp3_driver.api = &g_ott_smp3_api;
+  uart_config.baud = 9600;
+  uart_config.parityIdx = PARITY_NONE;
+  uart_config.stop_bit = UART_STOP_BIT_1;
+  uart_config.dataLen = UART_DATA_LEN_8;
 
-      return &g_ott_smp3_driver;
+  g_ott_smp3_cfg.modbus.modebus_type = eMODBUS_RS485;
+  g_ott_smp3_cfg.modbus.port_num = ott->port;
+
+  drv_rs485_init(g_ott_smp3_cfg.modbus.port_num,&uart_config);
+
+  g_ott_smp3_driver.cfg = &g_ott_smp3_cfg;
+  g_ott_smp3_driver.opened = true;
+  
+  return &g_ott_smp3_driver;
 }
 
 float modbus_regs_to_float(uint16_t msb, uint16_t lsb)
@@ -94,7 +95,7 @@ float smp3_solar_read(driver_t *driver, uint8_t *err)
   int32_t ret;
 
   
-  ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, REG_U_STATUS_FLAGS, reg, _countof(reg));
+  ret = modbus_read_hold_reg(&cfg->modbus, cfg->modbus_id, REG_U_STATUS_FLAGS, reg, _countof(reg));
 
   if(ret)
   {

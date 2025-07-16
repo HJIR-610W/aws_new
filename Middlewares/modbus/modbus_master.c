@@ -5,23 +5,25 @@
 #include <string.h>
 
 #include "drv_rs485.h"
-#include "driver_485_def.h"
 #include "drv_rs232.h"
+
+
 #include "driver_uart_def.h"
 #include "modbus.h"
-#include "modbus_master_def.h"
 #include "os_user_def.h"
 #include "pcb_define.h"
 #include "system_err.h"
 #include "dev_io.h"
+
+
 #define RET_SIZE_OVER -1
 #define RET_TIMEOUT -2
 #define FRAME_485_Q_CNT 1
 
-#define MODBUS_RECV_FLUSH(driver) drv_rs485_flush_rx(driver)
-#define MODBUS_SEND(driver, data, cnt) drv_rs485_send(driver, data, cnt);
-#define MODBUS_RECV(driver, buff, buffSize, tout) drv_rs485_recv(driver, buff, buffSize, tout)
-#define MODBUS_RECV_TIMEOUT(driver, buff, buffSize, tout1, tout2) \
+#define MODBUS_485_RECV_FLUSH(driver) drv_rs485_flush_rx(driver)
+#define MODBUS_485_SEND(driver, data, cnt) drv_rs485_send(driver, data, cnt);
+#define MODBUS_485_RECV(driver, buff, buffSize, tout) drv_rs485_recv(driver, buff, buffSize, tout)
+#define MODBUS_485_RECV_TIMEOUT(driver, buff, buffSize, tout1, tout2) \
   drv_rs485_recv_opt(driver, buff, buffSize, tout1, tout2)
 
 #define MODBUS_232_RECV_FLUSH(driver) drv_uart_flush_rx(driver)
@@ -30,25 +32,9 @@
 #define MODBUS_232_RECV_TIMEOUT(driver, buff, buffSize, tout1, tout2) \
   drv_uart_recv_opt(driver, buff, buffSize, tout1, tout2)
 
-typedef struct modbus_cfg_s
-{
-  eMODBUS_TYPE_t modbusType;
-  int32_t bus_io;
-  void *sem;
-} modbus_cfg_t;
+
 int32_t g_modbusLastErr;
-
-driver_t modbus_m_drv[MODBUS_RTU_MAX];
-modbus_cfg_t modbus_m_cfg[MODBUS_RTU_MAX];
-
-typedef struct modbus_regs_s
-{
-  uint16_t id;
-  regs_t read_coils;
-  regs_t discrete_input;
-  regs_t input_register;
-  regs_t read_register;
-} modbus_regs_t;
+void *modbus_sem;
 
 typedef struct _send_data
 {
@@ -57,9 +43,9 @@ typedef struct _send_data
 } modbus_data_t;
 modbus_data_t g_buff;
 
-void send_query(driver_t *drv, modbus_t *pmodbus);
+void send_query(modbus_h_t *drv, modbus_t *pmodbus);
 
-uint16_t word(uint8_t H, uint8_t L)
+    uint16_t word(uint8_t H, uint8_t L)
 {
   bytesFields W;
   W.u8[0] = L;
@@ -186,7 +172,7 @@ int32_t parse_recv(uint8_t *pInData, uint16_t dataLen, uint16_t *pOutRegs, uint1
 #define MODBUS_START_TIMEOUT_MS 50  // 슬레이브가 늦게 줄수 도 있는걸 고려
 #define MODBUS_DATA_TIMEOUT_MS 20   // 선점에 의한 지연 고려
 
-int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
+int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_size)
 {
   uint8_t func_code;
   uint8_t data_len;
@@ -194,17 +180,17 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
   uint16_t total_len;
   uint16_t crc_calc;
   uint16_t crc_recv;
-  modbus_cfg_t *cfg = drv->cfg;
+
   uint32_t delay;
 
   //  우선 주소 + 기능 + 최소 1바이트 데이터 수신
-  if (cfg->modbusType == eMODBUS_RS232)
+  if (drv->modebus_type == eMODBUS_RS232)
   {
-    ret = MODBUS_232_RECV(cfg->bus_io, rx_buf, 3, MODBUS_START_TIMEOUT_MS);
+    ret = MODBUS_232_RECV(drv->port_num, rx_buf, 3, MODBUS_START_TIMEOUT_MS);
   }
   else
   {
-    ret = MODBUS_RECV(cfg->bus_io, rx_buf, 3, MODBUS_START_TIMEOUT_MS);
+    ret = MODBUS_485_RECV(drv->port_num, rx_buf, 3, MODBUS_START_TIMEOUT_MS);
   }
 
   if (ret != 3)
@@ -252,12 +238,12 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
     return -3;
 
   // baud에 맞춰 1바이트 시간안에 데이터 안오는지 판단
-  switch (cfg->modbusType)
+  switch (drv->modebus_type)
   {
     case eMODBUS_RS485:
     {
       uart_config_t ucfg;
-      drv_rs485_get(cfg->bus_io, UART_GET_CONFIG, &ucfg);
+      drv_rs485_get(drv->port_num, UART_GET_CONFIG, &ucfg);
       delay = (uint32_t)(((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000);  // ms
       delay = delay * 2;
       if (delay == 0)
@@ -269,7 +255,7 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
     case eMODBUS_RS232:
     {
       uart_config_t ucfg;
-      drv_uart_get(cfg->bus_io, UART_GET_CONFIG, &ucfg);
+      drv_uart_get(drv->port_num, UART_GET_CONFIG, &ucfg);
       delay = (uint32_t)(((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000);  // ms
       delay = delay * 2;
       if (delay == 0)
@@ -281,13 +267,13 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
       break;
   }
   //  나머지 데이터 수신
-  if (cfg->modbusType == eMODBUS_RS232)
+  if (drv->modebus_type == eMODBUS_RS232)
   {
-    ret = MODBUS_232_RECV_TIMEOUT(cfg->bus_io, &rx_buf[3], data_len + 2, delay, delay);
+    ret = MODBUS_232_RECV_TIMEOUT(drv->port_num, &rx_buf[3], data_len + 2, delay, delay);
   }
   else
   {
-    ret = MODBUS_RECV_TIMEOUT(cfg->bus_io, &rx_buf[3], data_len + 2, delay, delay);
+    ret = MODBUS_485_RECV_TIMEOUT(drv->port_num, &rx_buf[3], data_len + 2, delay, delay);
   }
 
 
@@ -307,27 +293,27 @@ int32_t modbus_receive_packet(driver_t *drv, uint8_t *rx_buf, uint16_t buf_size)
     return total_len;  // 유효한 패킷 길이 리턴
   }
 
-int32_t modbus_master_req(driver_t *drv, modbus_t *modbus)
-{
-  uint8_t buff[300];
-  int32_t len;
-
-
-  memset(buff,0,sizeof(buff));
-  send_query(drv, modbus);
-
-  len = modbus_receive_packet(drv, buff, sizeof(buff));
-
-  if (len > 0)
+  int32_t modbus_master_req(modbus_h_t *drv, modbus_t *modbus)
   {
-    if (parse_recv(buff, len, modbus->regs, modbus->regsCnt) == 0)
-    {
-      return 0;
-    }
-  }
+    uint8_t buff[300];
+    int32_t len;
 
-  return 1;
-}
+    memset(buff, 0, sizeof(buff));
+    send_query(drv, modbus);
+
+
+    len = modbus_receive_packet(drv, buff, sizeof(buff));
+
+    if (len > 0)
+    {
+      if (parse_recv(buff, len, modbus->regs, modbus->regsCnt) == 0)
+      {
+        return 0;
+      }
+    }
+
+    return 1;
+  }
 
 /**
  * @brief 특정 주소에 값 쓰기
@@ -336,14 +322,13 @@ int32_t modbus_master_req(driver_t *drv, modbus_t *modbus)
  * @param val
  * @retval
  */
-int32_t modbus_write_single_reg(driver_t *drv, uint8_t slave_id, uint16_t address, uint16_t val)
+int32_t modbus_write_single_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t val)
 {
   modbus_t modbus;
   uint16_t reg[10];
   int32_t err = RET_FAIL;
-  modbus_cfg_t *cfg = drv->cfg;
 
-  OS_PEND_SEM(cfg->sem,osWaitForever);
+
   modbus.id = slave_id;
   modbus.fc = MB_FC_WRITE_REGISTER;
   modbus.regAdd = address;
@@ -359,23 +344,22 @@ int32_t modbus_write_single_reg(driver_t *drv, uint8_t slave_id, uint16_t addres
     err = RET_OK;
   }
 
-  OS_POST_SEM(cfg->sem);
+
   return err;
 }
 
-int32_t modbus_write_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address, uint16_t *regs,
+int32_t modbus_write_multi_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *regs,
                                uint16_t regCnt)
 {
   modbus_t modbus;
   uint16_t reg[160];
   int32_t err = RET_FAIL;
-  modbus_cfg_t *cfg= drv->cfg;
 
-  OS_PEND_SEM(cfg->sem, osWaitForever);
+
 
   if ((sizeof(reg) / sizeof(reg[0])) < regCnt)
   {
-    OS_POST_SEM(cfg->sem);
+
 
     return err;
   }
@@ -398,19 +382,17 @@ int32_t modbus_write_multi_reg(driver_t *drv, uint8_t slave_id, uint16_t address
     err = RET_OK;
   }
 
-  OS_POST_SEM(cfg->sem);
+
 
   return err;
 }
 
-int32_t modbus_read_hold_reg(driver_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutRegs,
+int32_t modbus_read_hold_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutRegs,
                               uint16_t regCnt)
 {
   modbus_t modbus;
   uint16_t reg[160];
   int32_t ret = RET_FAIL;
-  modbus_cfg_t *cfg = drv->cfg;
-
 
 
   if ((sizeof(reg) / sizeof(reg[0])) < regCnt)
@@ -418,7 +400,7 @@ int32_t modbus_read_hold_reg(driver_t *drv, uint8_t slave_id, uint16_t address, 
     return ret;
   }
 
-  OS_PEND_SEM(cfg->sem, osWaitForever);
+
 
   modbus.id = slave_id;
   modbus.fc = MB_FC_READ_REGISTERS;
@@ -442,17 +424,16 @@ int32_t modbus_read_hold_reg(driver_t *drv, uint8_t slave_id, uint16_t address, 
     ret = RET_FAIL;
   }
 
-  OS_POST_SEM(cfg->sem);
+
   return ret;
 }
 
-int32_t modbus_read_input_reg(driver_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutRegs,
+int32_t modbus_read_input_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutRegs,
                              uint16_t regCnt)
 {
   modbus_t modbus;
   uint16_t reg[160];
   int32_t ret = RET_FAIL;
-  modbus_cfg_t *cfg = drv->cfg;
 
   
   memset(reg,0,sizeof(reg));
@@ -461,9 +442,6 @@ int32_t modbus_read_input_reg(driver_t *drv, uint8_t slave_id, uint16_t address,
     return ret;
   }
   
-  OS_PEND_SEM(cfg->sem, osWaitForever);
-
-
   modbus.id = slave_id;
   modbus.fc = MB_FC_READ_INPUT_REGISTER;
   modbus.regAdd = address;
@@ -486,10 +464,10 @@ int32_t modbus_read_input_reg(driver_t *drv, uint8_t slave_id, uint16_t address,
     ret = RET_FAIL;
   }
 
-  OS_POST_SEM(cfg->sem);
+
   return ret;
 }
-void send_query(driver_t *drv, modbus_t *pmodbus)
+void send_query(modbus_h_t *drv, modbus_t *pmodbus)
 {
   uint8_t regsno;
   uint8_t bytesno;
@@ -562,71 +540,26 @@ void send_query(driver_t *drv, modbus_t *pmodbus)
   g_buff.data[cnt++] = crc >> 8;
   g_buff.data[cnt++] = (crc & 0x00FF);
   {
-    modbus_cfg_t *cfg = drv->cfg;
-    if (cfg->modbusType == eMODBUS_RS232)
+
+    if (drv->modebus_type == eMODBUS_RS232)
     {
-      MODBUS_232_RECV_FLUSH(cfg->bus_io);
-      MODBUS_232_SEND(cfg->bus_io, g_buff.data, cnt);
+      MODBUS_232_RECV_FLUSH(drv->port_num);
+      MODBUS_232_SEND(drv->port_num, g_buff.data, cnt);
     }
     else
     {
-      MODBUS_RECV_FLUSH(cfg->bus_io);
-      MODBUS_SEND(cfg->bus_io, g_buff.data, cnt);
+      MODBUS_485_RECV_FLUSH(drv->port_num);
+      MODBUS_485_SEND(drv->port_num, g_buff.data, cnt);
     }
 
   }
   g_buff.cnt = cnt;
 }
 
-modbus_master_api_t modbus_master_api = {.read_hold_reg = modbus_read_hold_reg,
-                                         .write_multi_reg = modbus_write_multi_reg,
-                                         .write_single_reg = modbus_write_single_reg,
-                                        .read_input_reg = modbus_read_input_reg};
 
-driver_t *modbus_master_open(int32_t num, void *opt)
+
+void modbus_init(void)
 {
-
-  modbus_init_t *modbus_init = opt;
-  uart_config_t uart_config;
-
- 
-  if (modbus_m_drv[num].opened)
-  {
-    return &modbus_m_drv[num];
-  }
-
-  uart_config.baud = modbus_init->baud;
-  uart_config.parityIdx = modbus_init->parityIdx;
-  uart_config.dataLen = 8;
-  uart_config.stop_bit = modbus_init->stop;
-
-  modbus_m_drv[num].opened = true;
-
-  switch(num)
-  {
-    case MODBUS_RTU_OVER_485:
-      modbus_m_cfg[num].modbusType = eMODBUS_RS485;
-      modbus_m_cfg[num].bus_io = modbus_init->port_num;
-      drv_rs485_init(modbus_init->port_num, &uart_config);
-
-      modbus_m_drv[num].cfg = &modbus_m_cfg[num];
-      modbus_m_drv[num].api = &modbus_master_api;
-      modbus_m_drv[num].name = "MODBUS_RS485";
-      break;
-    case MODBUS_RTU_OVER_232:
-      modbus_m_cfg[num].modbusType = eMODBUS_RS232;
-      modbus_m_cfg[num].bus_io = modbus_init->port_num;
-      drv_uart_init(modbus_init->port_num, &uart_config);
-
-      modbus_m_drv[num].cfg = &modbus_m_cfg[num];
-      modbus_m_drv[num].api = &modbus_master_api;
-      modbus_m_drv[num].name = "MODBUS_RS232";
-      break;
-
-  }
-
-  OS_CREATE_BINARY_SEM(modbus_m_cfg[num].sem);
-
-
-  return &modbus_m_drv[num];
+  if (modbus_sem ==NULL)
+    OS_CREATE_BINARY_SEM(modbus_sem);
 }

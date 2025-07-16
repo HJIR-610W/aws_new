@@ -136,7 +136,7 @@ void consoleTask_init(void *arg)
 
   console_uart_num = DRV_UART_10_CDC;
 
-  result = drv_uart_init(console_uart_num, &uart_config);
+  result = drv_rs232_init(console_uart_num, &uart_config);
 
   if(console_uart_num)
   {

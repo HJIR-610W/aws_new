@@ -5,10 +5,12 @@
 
 #include "driver_uart_def.h"
 
+
 #define RS485_A 0
 #define RS485_B 1
 #define RS485_RS232_C 2 // 이 포트는 하드웨어 점퍼를 RS485로 해야 한다. 
 #define RS485_RS232_D 3 // 이 포트는 하드웨어 점퍼를 RS485로 해야 한다.
+
 
 
 int32_t drv_rs485_init(int32_t num,void *opt);

@@ -23,7 +23,7 @@ void app_key_init(void)
     uart_config.stop_bit = UART_STOP_BIT_1;
 
     serial_key = DRV_UART_0_D_SUB_0;
-        drv_uart_init(serial_key, &uart_config);
+        drv_rs232_init(serial_key, &uart_config);
 
     button_queue_handle = osMessageQueueNew(BUTTON_QUEUE_SIZE, sizeof(int32_t), NULL);
 

@@ -116,23 +116,27 @@ void systemTask(void *arg)
   pre_sd_inserted = BSP_PlatformIsDetected();
 
   charger_model = get_config_app()->charger_model;
-  dev_charger_init(charger_model);
+
   while (1)
   {
-      scan_key();
+    scan_key();
     drv_rtc_read(&Date_Time);
 
     if ((osKernelGetTickCount() - start_time) > 1000)
     {
 
-      start_time = osKernelGetTickCount();
+      if( arg==PARA_RUN_MODE)
+      {
+        
+        start_time = osKernelGetTickCount();
       System.door_opened = drv_di_read(DRV_DI_0) > 0;
       update_charger(charger_model);
       System.battery_error = read_batteryVoltage1(&err) < 10.0f ? 1 : 0;
       System.ac_status = 1; // 220v
       System.dc_error = drv_system_read(DRV_SYS_BATTERY) < 11.0f ? 1 : 0;
-
+      
       check_sd_card();
+      }
     }
 
     osDelay(100);
@@ -150,7 +154,8 @@ void systemTask_init(uint32_t para)
     
     app_key_init();
     userBtn_init();
+    dev_charger_init(get_config_app()->charger_model);
   }
 
-  osThreadNew(systemTask, NULL, &kSystemTask_attributes);
+  osThreadNew(systemTask, (void *)para, &kSystemTask_attributes);
 }

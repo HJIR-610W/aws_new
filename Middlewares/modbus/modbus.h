@@ -77,8 +77,8 @@ uint16_t ModRTU_CRC(uint8_t *buf, int len);
 
 #ifndef MODBUS_INIT_T
 #define MODBUS_INIT_T
-#include "driver_485_def.h"
-typedef rs485_init_t modbus_init_t;
+
+
 #endif
 
 typedef enum modbus_type_e

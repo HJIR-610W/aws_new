@@ -4,16 +4,16 @@
 #include <math.h>
 
 #include "app_sensor.h"
-#include "driver_modbus.h"
+#include "modbus_master.h"
 #include "temperature_define.h"
 #include "config_sensor.h"
 #include "hj_temperature_define.h"
-#include "app_rs232.h"
+#include "drv_rs232.h"
+#include "drv_rs485.h"
 
 typedef struct hj_temperature_cfg_s
 {
-  driver_t *bus_io;
-  uint8_t modbus_id;
+  modbus_h_t modbus;
 } hj_temperature_cfg_t;
 
 driver_t hjTemp_drv;
@@ -27,32 +27,33 @@ temperature_api_t hjTempApi = {
 
 driver_t *hjTemperature_open(int32_t num, void *opt)
 {
-  modbus_init_t modbus_init;
+  uart_config_t uart_config;
   hjtemp_config_t *hjtemp = opt;
-  int32_t port ;
+
 
   if (hjTemp_drv.opened)
   { 
     return &hjTemp_drv;
   }
 
-  hj_temperature_cfg.modbus_id = hjtemp->modbus_id;
-  modbus_init.baud = 9600;
-  modbus_init.parityIdx = 0;
-  modbus_init.stop = 1;
+  hj_temperature_cfg.modbus.id = hjtemp->modbus_id;
 
+  uart_config.baud = 9600;
+  uart_config.parityIdx = PARITY_NONE;
+  uart_config.stop_bit = UART_STOP_BIT_1;
+  uart_config.dataLen = UART_DATA_LEN_8;
 
   switch (hjtemp->physical_layer)
   {
     case ePHYSICAL_RS232:
-      modbus_init.port_num = uart_num_to_driver_num(hjtemp->rs232_port);
-      hj_temperature_cfg.bus_io =
-          driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_232, &modbus_init);
+      hj_temperature_cfg.modbus.port_num = uart_num_to_driver_num(hjtemp->rs232_port);
+      hj_temperature_cfg.modbus.modebus_type = eMODBUS_RS232;
+      drv_rs232_init(hj_temperature_cfg.modbus.port_num,&uart_config);
       break;
     case ePHYSICAL_RS485:
-      modbus_init.port_num = hjtemp->rs485_port;
-      hj_temperature_cfg.bus_io =
-          driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &modbus_init);
+      hj_temperature_cfg.modbus.port_num = hjtemp->rs485_port;
+      hj_temperature_cfg.modbus.modebus_type = eMODBUS_RS485;
+      drv_rs485_init(hj_temperature_cfg.modbus.port_num, &uart_config);
       break;
   }
 
@@ -81,7 +82,7 @@ float hjTemperature_read(driver_t *driver, uint8_t *err)
   hj_temperature_cfg_t *cfg = driver->cfg;
   int32_t ret;
 
-  ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_TEMP, reg, 1);
+  ret = modbus_read_hold_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_TEMP, reg, 1);
 
   if(ret)
   {
@@ -112,14 +113,14 @@ uint16_t data;
   {
     case eTEMP_SET_OFFSET:
       data = *(int32_t *)w_opt;
-      driver_modbus_m_write_single_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_TEMP_OFFSET, data);
+      modbus_write_single_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_TEMP_OFFSET, data);
       break;
     case eHUMI_SET_OFFSET:
       data = *(int32_t *)w_opt;
-      driver_modbus_m_write_single_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_HUMI_OFFSET, data);
+      modbus_write_single_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_HUMI_OFFSET, data);
       break;
     case eTEMP_GET_OFFSET:
-      ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_TEMP_OFFSET,
+      ret = modbus_read_hold_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_TEMP_OFFSET,
                                           &data, 1);
       *err = ret;
       if (ret == 0)
@@ -129,9 +130,9 @@ uint16_t data;
       }
       break;
     case eHUMI_GET_OFFSET:
-      ret = driver_modbus_m_read_hold_reg(cfg->bus_io, cfg->modbus_id, HJ_REG_NUM_HUMI_OFFSET,
+      ret = modbus_read_hold_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_HUMI_OFFSET,
                                           &data, 1);
-            *err = ret;
+      *err = ret;
       if (ret == 0)
       {
         *((int32_t *)r_opt) = (int16_t)data;
@@ -151,7 +152,7 @@ driver_t *hjtemp_opened(void)
 }
 
 
-driver_t *get_hjtemperature_bus_io(void)
+modbus_h_t* get_hjtemperature_bus_io(void)
 {
   hj_temperature_cfg_t *cfg;
   driver_t *driver;
@@ -160,7 +161,7 @@ driver_t *get_hjtemperature_bus_io(void)
   if(driver)
   {
     cfg = driver->cfg;
-    return cfg->bus_io;
+    return &cfg->modbus;
   }
 
     return NULL;

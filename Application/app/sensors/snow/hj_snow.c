@@ -244,7 +244,7 @@ driver_t *hjsnow_open(void *opt)
 
       port_num = uart_num_to_driver_num(rs232_config->port);
       hjsnow_inst.rs232_num = port_num;
-      drv_uart_init(port_num, &uart_config);
+      drv_rs232_init(port_num, &uart_config);
 
       hjsnow_driver.cfg = &hjsnow_inst;
       hjsnow_driver.api = &snow_api;

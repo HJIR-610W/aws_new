@@ -1,7 +1,7 @@
 #include "bsp_uart.h"
 #include "drv_rs232.h"
 
-int32_t drv_uart_init(int32_t num, void *opt){
+int32_t drv_rs232_init(int32_t num, void *opt){
   return bsp_uart_init(num, opt);
 }
 void drv_uart_close(int num){

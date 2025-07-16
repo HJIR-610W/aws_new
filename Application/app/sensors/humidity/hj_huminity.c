@@ -4,14 +4,17 @@
 #include <math.h>
 
 #include "app_sensor.h"
-#include "driver_modbus.h"
+#include "modbus_master.h"
 #include "temperature\temperature_define.h"
 #include "config_sensor.h"
 #include "temperature\hj_temperature_define.h"
 #include "os_user_def.h"
+#include "drv_rs485.h"
+#include "drv_rs232.h"
+
 typedef struct hj_huminity_cfg_s
 {
-  driver_t *bus_io;
+  modbus_h_t modbus;
   void *sem;
 } hj_huminity_cfg_t;
 
@@ -26,10 +29,10 @@ temperature_api_t hjHumiApi = {
 
 driver_t *hjHuminity_open(int32_t num, void *opt)
 {
-  modbus_init_t modbus_init;
-  hjtemp_config_t *hjtemp = opt;
 
-  int32_t port;
+  hjtemp_config_t *hjtemp = opt;
+  uart_config_t uart_config;
+
 
   if (hjHumi_drv.opened)
   {
@@ -37,23 +40,24 @@ driver_t *hjHuminity_open(int32_t num, void *opt)
   }
 
   hjHumi_drv.opened = true;
-  modbus_init.baud = 9600;
-  modbus_init.parityIdx = 0;
-  modbus_init.stop = 1;
-
+  uart_config.baud = 9600;
+  uart_config.dataLen = UART_DATA_LEN_8;
+  uart_config.parityIdx = PARITY_NONE;
+  uart_config.stop_bit = UART_STOP_BIT_1;
 
   switch (hjtemp->physical_layer)
   {
     case ePHYSICAL_RS232:
-      modbus_init.port_num =  uart_num_to_driver_num(hjtemp->rs232_port);
-      hj_huminity_cfg.bus_io =
-          driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_232, &modbus_init);
+      hj_huminity_cfg.modbus.modebus_type = eMODBUS_RS232;
+      hj_huminity_cfg.modbus.port_num = uart_num_to_driver_num(hjtemp->rs232_port);
+      drv_rs232_init(hj_huminity_cfg.modbus.port_num,&uart_config);
       break;
+
     case ePHYSICAL_RS485:
-       modbus_init.port_num  = hjtemp->rs485_port;
-      hj_huminity_cfg.bus_io =
-          driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &modbus_init);
-      break; 
+      hj_huminity_cfg.modbus.modebus_type = eMODBUS_RS485;
+      hj_huminity_cfg.modbus.port_num = hjtemp->rs485_port;
+      drv_rs485_init(hj_huminity_cfg.modbus.port_num,&uart_config);
+      break;
   }
 
 
@@ -74,7 +78,7 @@ float hjHuminity_read(driver_t *driver, uint8_t *err)
   hj_huminity_cfg_t *cfg = driver->cfg;
   int32_t ret;
 
-  ret = driver_modbus_m_read_hold_reg(cfg->bus_io, 1, HJ_REG_NUM_HUMI, reg, 1);
+  ret = modbus_read_hold_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_HUMI, reg, 1);
 
   if(ret)
   {

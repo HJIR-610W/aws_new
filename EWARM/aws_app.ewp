@@ -440,6 +440,7 @@
                     <state>$PROJ_DIR$\..\utils</state>
                     <state>$PROJ_DIR$\..\drivers\devices</state>
                     <state>$PROJ_DIR$\..\drivers\devices\charger</state>
+                    <state>$PROJ_DIR$\..\Middlewares\modbus</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1268,7 +1269,7 @@
                         <name>$PROJ_DIR$\..\Application\app\sensors\general\general_frequency.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\general\general_frequency.h</name>
+                        <name>$PROJ_DIR$\..\application\app\sensors\general\general_frequency.h</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\Application\app\sensors\general\sensor_general.c</name>
@@ -1698,10 +1699,10 @@
             <group>
                 <name>CDMA</name>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\CDMA\at_cmd.h</name>
+                    <name>$PROJ_DIR$\..\application\Communications\CDMA\at_cmd.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\CDMA\modem_if.h</name>
+                    <name>$PROJ_DIR$\..\application\Communications\CDMA\modem_if.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.c</name>
@@ -1731,7 +1732,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\CDMA\task_cellular.h</name>
+                    <name>$PROJ_DIR$\..\application\Communications\CDMA\task_cellular.h</name>
                 </file>
             </group>
             <group>
@@ -1740,7 +1741,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\Direct\task_direct.h</name>
+                    <name>$PROJ_DIR$\..\application\Communications\Direct\task_direct.h</name>
                 </file>
             </group>
             <group>
@@ -1769,7 +1770,7 @@
                         <name>$PROJ_DIR$\..\Application\Communications\LWIP\App\lwip.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\Communications\LWIP\App\lwip.h</name>
+                        <name>$PROJ_DIR$\..\application\communications\LWIP\App\lwip.h</name>
                     </file>
                 </group>
                 <group>
@@ -1867,19 +1868,19 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_http_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_http_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_http_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\terminal_bridge.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
@@ -1914,13 +1915,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -1936,7 +1937,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -2112,7 +2113,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -2166,7 +2167,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</name>
                 </file>
             </group>
             <group>
@@ -2184,7 +2185,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.h</name>
                 </file>
             </group>
         </group>
@@ -2223,21 +2224,6 @@
                     <name>$PROJ_DIR$\..\drivers\driver\adc\adc_calibration.h</name>
                 </file>
             </group>
-            <group>
-                <name>modbus</name>
-                <file>
-                    <name>$PROJ_DIR$\..\drivers\driver\modbus\modbus.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\drivers\driver\modbus\modbus_master.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\drivers\driver\modbus\modbus_master.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\drivers\driver\modbus\modbus_master_def.h</name>
-                </file>
-            </group>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver\driver.c</name>
             </file>
@@ -2261,12 +2247,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver\driver_lcd_define.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_modbus.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\driver\driver_modbus.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver\driver_rtc_define.h</name>
@@ -2793,6 +2773,21 @@
         </group>
         <group>
             <name>menu</name>
+        </group>
+        <group>
+            <name>modbus</name>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\modbus\modbus.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\modbus\modbus_master.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\modbus\modbus_master.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\modbus\modbus_master_def.h</name>
+            </file>
         </group>
         <group>
             <name>modem</name>

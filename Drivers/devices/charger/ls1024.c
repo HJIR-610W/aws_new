@@ -8,30 +8,36 @@
 #include "util_memory.h"
 #include "util_time.h"
 #include "os_user_def.h"
-#include "driver_modbus.h"
 
+#include "modbus_master.h"
+#include "drv_rs485.h"
 typedef struct ls1024_cfg_s
 {
-  modbus_init_t modbus;
+  modbus_h_t modbus;
   void *sem;
   bool opened;
-  driver_t *bus_io;
+
 } ls1024_instance_t;
 
 ls1024_instance_t ls1024_inst;
 
 int32_t ls1024_init(void)
 {
+  uart_config_t uart_config;
+
   if (ls1024_inst.opened)
   {
     return 1;
   }
 
-  ls1024_inst.modbus.baud = 115200;
-  ls1024_inst.modbus.parityIdx = 0;
-  ls1024_inst.modbus.stop = 1;
+  uart_config.baud = 115200;
+  uart_config.dataLen = UART_DATA_LEN_8;
+  uart_config.parityIdx = PARITY_NONE;
+  uart_config.stop_bit = 0;
+
+  ls1024_inst.modbus.modebus_type = eMODBUS_RS485;
   ls1024_inst.modbus.port_num = RS485_B;
-  ls1024_inst.bus_io = driver_modbus_master_open(DRIVER_MODBUS_MSTER_RTU_OVER_485, &ls1024_inst.modbus);
+  drv_rs485_init(ls1024_inst.modbus.port_num, &uart_config);
 
   OS_CREATE_BINARY_SEM(ls1024_inst.sem);
 
@@ -46,7 +52,7 @@ void ls1024_read( charger_data_t *charger_data, uint8_t *err)
 
   int32_t ret;
 
-  ret = driver_modbus_m_read_input_reg(ls1024_inst.bus_io, 1, 0x3100, reg, 15);
+  ret = modbus_read_input_reg(&ls1024_inst.modbus, 1, 0x3100, reg, 15);
 
   if (ret)
   {

@@ -20,7 +20,7 @@
 #include "Sensors\humidity\hj_huminity.h"
 #include "config_app.h"
 #include "config_sensor.h"
-#include "driver_modbus.h"
+#include "modbus_master.h"
 
 #define AWS_MENU_WIDTH 30
 
@@ -57,16 +57,15 @@ int hjtemperature_menu(void)
     {
       case 1:
       {
-        driver_t *modbus_io;
+         modbus_h_t *modbus_h;;
         hjtemp_register_map_t map;
 
-        modbus_io = get_hjtemperature_bus_io();
-        if(modbus_io)
-        {
-          driver_modbus_m_read_hold_reg(modbus_io,1,0,(uint16_t*)&map,16);
-          io_printf("SW Version:%d\r\n",map.sw_version);
-          io_printf("HW Version:%d\r\n", map.hw_version);
-        }
+        modbus_h = get_hjtemperature_bus_io();
+
+        modbus_read_hold_reg(modbus_h, modbus_h->id, 0, (uint16_t *)&map, 16);
+        io_printf("SW Version:%d\r\n", map.sw_version);
+        io_printf("HW Version:%d\r\n", map.hw_version);
+
       }
       break;
       case 2:
