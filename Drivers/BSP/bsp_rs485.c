@@ -6,7 +6,7 @@
 #include "bsp_do.h"
 #include "os_user_def.h"
 #include "pcb_define.h"
-
+#include "dev_io.h"
 
 typedef struct rs
 {
@@ -52,6 +52,9 @@ int32_t bsp_rs485_send(int num,uint8_t *pData, uint16_t dataLen)
 
   int32_t cnt = 0;
 
+ 
+      
+      
   OS_PEND_SEM(rs485_instance[num].sem, osWaitForever);
 
   // TODO:이 드라이버를 호출하는 task보다 우선높은곳이 있으면 osDelay 1이상 지연됨됨
@@ -60,6 +63,7 @@ int32_t bsp_rs485_send(int num,uint8_t *pData, uint16_t dataLen)
   cnt = bsp_uart_send(rs485_instance[num].uart_number, pData, dataLen);
   osDelay(1);
   bsp_do_low(rs485_instance[num].dir_do_num); // 입력으로 설정
+
 
   OS_POST_SEM(rs485_instance[num].sem);
 

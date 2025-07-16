@@ -7,6 +7,7 @@
 int32_t dev_charger_init(int32_t num)
 {
   int32_t status=-1;
+
   switch (num)
   {
   case DEV_CHARGER_HJ_SMART:

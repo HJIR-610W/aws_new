@@ -27,7 +27,7 @@ typedef struct stm32_cdc_cfg_s
   uint32_t baud;  // 설정된 통신속도
   int8_t errCode;// 드라이버 에러  상태 정보
   bool connected;
-  StreamBufferHandle_t xStreamBuffer;
+  StreamBufferHandle_t cdc_stream;
   bool opened;
   void *sem;
 }stm32_cdc_instance_t;
@@ -81,7 +81,7 @@ int32_t stm32_cdc_init(int num,void *opt)
         cdc_inst.txcSem = tempSem;
     }
 
-    cdc_inst.xStreamBuffer = xStreamBufferCreate(100, 1);
+    cdc_inst.cdc_stream = xStreamBufferCreate(100, 1);
     cdc_inst.opened = true;
 
 
@@ -149,10 +149,15 @@ int32_t stm32_cdc_recv(int num,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOut
     
     (void)lastTick;
 
+    if (cdc_inst.connected == false)
+    {
+      return -1;
+    }
+
     while(1)
     {
         /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
-        xBytesAvailable = xStreamBufferBytesAvailable(cdc_inst.xStreamBuffer);
+        xBytesAvailable = xStreamBufferBytesAvailable(cdc_inst.cdc_stream);
 
         if(remainBuffSize < xBytesAvailable)
         {
@@ -163,7 +168,7 @@ int32_t stm32_cdc_recv(int num,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOut
         if( xBytesAvailable > 0 )
         {
             /* 데이터를 읽을 수 있다면, 데이터를 수신 */
-            xBytesRead = xStreamBufferReceive(cdc_inst.xStreamBuffer, (void *)&pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS(timeout));
+            xBytesRead = xStreamBufferReceive(cdc_inst.cdc_stream, (void *)&pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS(timeout));
 
             if(xBytesRead >0)
             {
@@ -174,7 +179,7 @@ int32_t stm32_cdc_recv(int num,uint8_t *pBuff,uint16_t buffSize,uint32_t timeOut
         else
         {
             /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
-            xBytesRead = xStreamBufferReceive(cdc_inst.xStreamBuffer, (void *)&pBuff[cnt], 1, pdMS_TO_TICKS(timeout));
+            xBytesRead = xStreamBufferReceive(cdc_inst.cdc_stream, (void *)&pBuff[cnt], 1, pdMS_TO_TICKS(timeout));
             if(xBytesRead ==1)
             {
               cnt += 1;
@@ -213,8 +218,10 @@ int32_t stm32_cdc_recv_1(int num, uint8_t *pBuff, uint16_t buffSize,void *opt)
   size_t remainBuffSize = buffSize;
   size_t cnt = 0;
 
-
-
+  if (cdc_inst.connected == false)
+  {
+    return -1;
+  }
 
   timeout = optTimeOut->frameTimeOutMs;
     
@@ -223,7 +230,7 @@ int32_t stm32_cdc_recv_1(int num, uint8_t *pBuff, uint16_t buffSize,void *opt)
   while(1)
   {
         /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
-        xBytesAvailable = xStreamBufferBytesAvailable(cdc_inst.xStreamBuffer);
+        xBytesAvailable = xStreamBufferBytesAvailable(cdc_inst.cdc_stream);
 
         if(remainBuffSize < xBytesAvailable)
         {
@@ -234,7 +241,7 @@ int32_t stm32_cdc_recv_1(int num, uint8_t *pBuff, uint16_t buffSize,void *opt)
         if( xBytesAvailable > 0 )
         {
             /* 데이터를 읽을 수 있다면, 데이터를 수신 */
-            xBytesRead = xStreamBufferReceive(cdc_inst.xStreamBuffer, (void *)&pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS(timeout));
+            xBytesRead = xStreamBufferReceive(cdc_inst.cdc_stream, (void *)&pBuff[cnt], xBytesAvailable, pdMS_TO_TICKS(timeout));
 
             if(xBytesRead >0)
             {
@@ -245,7 +252,7 @@ int32_t stm32_cdc_recv_1(int num, uint8_t *pBuff, uint16_t buffSize,void *opt)
         else
         {
             /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
-            xBytesRead = xStreamBufferReceive(cdc_inst.xStreamBuffer, (void *)&pBuff[cnt], 1, pdMS_TO_TICKS(timeout));
+            xBytesRead = xStreamBufferReceive(cdc_inst.cdc_stream, (void *)&pBuff[cnt], 1, pdMS_TO_TICKS(timeout));
             if(xBytesRead ==1)
             {
               cnt += 1;
@@ -291,6 +298,10 @@ int32_t stm32_cdc_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size,
 
 void cdc_tx_complete(void)
 {
+  if (cdc_inst.connected == false)
+  {
+    return ;
+  }
   osSemaphoreRelease(cdc_inst.txcSem);
 }
 
@@ -299,9 +310,10 @@ void put_cdc_rx(uint8_t *p_data,uint16_t dataLen)
   size_t xBytesSent;
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-  if(cdc_inst.xStreamBuffer)
+  
+  if(cdc_inst.cdc_stream)
   {
-    xBytesSent = xStreamBufferSendFromISR(cdc_inst.xStreamBuffer, p_data, dataLen, &xHigherPriorityTaskWoken);
+    xBytesSent = xStreamBufferSendFromISR(cdc_inst.cdc_stream, p_data, dataLen, &xHigherPriorityTaskWoken);
     /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
@@ -313,11 +325,17 @@ void put_cdc_rx(uint8_t *p_data,uint16_t dataLen)
 int32_t stm32_cdc_inject(int num, const uint8_t *pData, uint16_t dataLen)
 {
 
-  size_t xBytesSent;
-
-  xBytesSent = xStreamBufferSend(cdc_inst.xStreamBuffer, pData, dataLen,
+  size_t xBytesSent=0;
+  if (cdc_inst.connected == false)
+  {
+    return -1;
+  }
+  
+  if(cdc_inst.cdc_stream)
+  {
+  xBytesSent = xStreamBufferSend(cdc_inst.cdc_stream, pData, dataLen,
                                  pdMS_TO_TICKS(100));
-
+  }
   return xBytesSent;
 
 }
@@ -337,6 +355,11 @@ int32_t stm32_cdc_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_
   uint32_t timeout;
   uint32_t len;
 
+  if (cdc_inst.connected == false)
+  {
+    return -1;
+  }
+  
   startTime = osKernelGetTickCount();
   timeout = tout_ms;
 

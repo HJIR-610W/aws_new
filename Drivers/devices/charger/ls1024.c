@@ -52,9 +52,10 @@ void ls1024_read( charger_data_t *charger_data, uint8_t *err)
 
   int32_t ret;
 
-  ret = modbus_read_input_reg(&ls1024_inst.modbus, 1, 0x3100, reg, 15);
 
-  if (ret)
+       ret = modbus_read_input_reg(&ls1024_inst.modbus, 1, 0x3100, reg, 15);
+
+      if (ret)
   {
     *err = DRV_ERR_TIMEOUT;
   }

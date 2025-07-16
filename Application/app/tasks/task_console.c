@@ -134,7 +134,7 @@ void consoleTask_init(void *arg)
   uart_config.parityIdx = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
-  console_uart_num = DRV_UART_10_CDC;
+  console_uart_num = DRV_UART_8_CDMA;
 
   result = drv_rs232_init(console_uart_num, &uart_config);
 

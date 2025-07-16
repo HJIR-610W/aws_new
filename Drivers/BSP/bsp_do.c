@@ -3,6 +3,7 @@
 #include "pcf8575.h"
 #include "util_memory.h"
 #include "pcb_define.h"
+#include "dev_io.h"
 
 typedef struct bsp_do_inst_s
 {
@@ -105,6 +106,7 @@ void bsp_do_init(void)
 
 void bsp_do_low(int num)
 {
+
   switch (num)
   {
     case BSP_DO_POWER_CDMA:
@@ -152,6 +154,7 @@ void bsp_do_low(int num)
 
 void bsp_do_high(int num)
 {
+
   switch (num)
   {
     case BSP_DO_POWER_CDMA:

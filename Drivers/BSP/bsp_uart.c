@@ -5,6 +5,8 @@
 #include "bsp_uart.h"
 #include "TL16C554.h"
 #include "cmsis_os2.h"
+#include "dev_io.h"
+
 // 드라이버 타입 정의
 typedef enum {
   UART_DRIVER_STM32,
@@ -149,40 +151,55 @@ int32_t bsp_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
 
 int32_t bsp_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {
+  int32_t len;
+  
   const uart_pinmap_t* pinmap = get_uart_pinmap(num);
   if (!pinmap) return -1;
   if(num==-1)
   return -1;
 
+
   switch (pinmap->driver_type) {
     case UART_DRIVER_STM32:
-      return stm32_uart_recv(pinmap->driver_num, pBuff, buffSize, timeOutMs);
+      len =  stm32_uart_recv(pinmap->driver_num, pBuff, buffSize, timeOutMs);
+      break;
     case UART_DRIVER_TL16C554:
-      return tls16c554_recv(pinmap->driver_num, pBuff, buffSize, timeOutMs);
+      len = tls16c554_recv(pinmap->driver_num, pBuff, buffSize, timeOutMs);
+      break;
     case UART_DRIVER_CDC:
-      return stm32_cdc_recv(pinmap->driver_num, pBuff, buffSize, timeOutMs);
+      len =  stm32_cdc_recv(pinmap->driver_num, pBuff, buffSize, timeOutMs);
+      break;
     default:
-      return -1;
+      len = -1;
   }
+  
+
+  return len;
 }
 
 int32_t bsp_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms, uint32_t timeout2_ms)
 {
   const uart_pinmap_t* pinmap = get_uart_pinmap(num);
+  int32_t len;
+
   if (!pinmap) return -1;
   if (num == -1)
     return -1;
   switch (pinmap->driver_type) {
     case UART_DRIVER_STM32:
-      return stm32_recv_opt(pinmap->driver_num, buffer, buffer_size, timeout1_ms, timeout2_ms);
+      len =  stm32_recv_opt(pinmap->driver_num, buffer, buffer_size, timeout1_ms, timeout2_ms);
+      break;
     case UART_DRIVER_TL16C554:
-      // TL16C554 does not have recv_opt function
-      return -1;
+      len = tls16c554_recv_opt(pinmap->driver_num, buffer, buffer_size, timeout1_ms, timeout2_ms);
+      break;
     case UART_DRIVER_CDC:
-      return stm32_cdc_recv_opt(pinmap->driver_num, buffer, buffer_size, timeout1_ms, timeout2_ms);
+      len =  stm32_cdc_recv_opt(pinmap->driver_num, buffer, buffer_size, timeout1_ms, timeout2_ms);
+      break;
     default:
       return -1;
   }
+
+  return len;
 }
 
 void bsp_uart_get(int num, uart_get_option_t cmd, void *option)
@@ -216,8 +233,7 @@ int32_t bsp_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
     case UART_DRIVER_STM32:
       return stm32_uart_inject(pinmap->driver_num, pData, dataLen);
     case UART_DRIVER_TL16C554:
-      // TL16C554 does not have inject function
-      return -1;
+      return tls16c554_uart_inject(pinmap->driver_num, pData, dataLen);
     case UART_DRIVER_CDC:
       return stm32_cdc_inject(pinmap->driver_num, pData, dataLen);
     default:
@@ -236,8 +252,7 @@ int32_t bsp_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_m
     case UART_DRIVER_STM32:
       return stm32_uart_recv_crlf(pinmap->driver_num, pBuff, bSize, tout_ms);
     case UART_DRIVER_TL16C554:
-
-      return -1;
+      return tls16c554_uart_recv_crlf(pinmap->driver_num, pBuff, bSize, tout_ms);
     case UART_DRIVER_CDC:
       return stm32_cdc_recv_crlf(pinmap->driver_num, pBuff, bSize, tout_ms);
     default:

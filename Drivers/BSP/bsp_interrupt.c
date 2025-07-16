@@ -309,7 +309,7 @@ void EXTI9_5_IRQHandler(void)
                   call(handle);
                 }
             } 
-             else if (pin == GPIO_PIN_9)
+             else if (pin == GPIO_PIN_9)//RS485 B
             {
                 handle = g_mcu_isr_list[EXTI9_5_IRQn].isrList[4].handle;
                 call   =  g_mcu_isr_list[EXTI9_5_IRQn].isrList[4].call;

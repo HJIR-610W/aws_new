@@ -109,7 +109,7 @@ void startTask(void *arg)
   loggingTask_init();
 
   measureTask_init();
-  dualportTask_init();
+dualportTask_init();
 
 
   if (get_config_app()->cdma_active)
@@ -119,7 +119,7 @@ void startTask(void *arg)
   
   if (get_config_app()->direct_active)
   {
-    directTask_init();
+   directTask_init();
   }
 
   if (get_config_app()->eth_active)
