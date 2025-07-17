@@ -186,8 +186,9 @@ int32_t setup_eth_config(void)
           status = input_combobox("Eth Mode",eth_mode_list_eng, _countof(eth_mode_list_eng), &choice);
           if (status == MENU_OK)
           {
-            get_config_app()->eth_mode = choice;
+            get_config_app()->eth_mode = (eETH_MODE_t)choice;
             WRITE_CFG(eth_mode);
+            show_popup("Information", "Applied after reset");
           }
           break;
         case ETH_MENU_LOCAL_IP:
@@ -195,6 +196,7 @@ int32_t setup_eth_config(void)
           if (status == MENU_OK)
           {
             WRITE_CFG(eth_ip);
+            show_popup("Information", "Applied after reset");
           }
           break;
         case ETH_MENU_SUBNET:
@@ -202,6 +204,7 @@ int32_t setup_eth_config(void)
           if (status == MENU_OK)
           {
             WRITE_CFG(eth_subnet);
+            show_popup("Information", "Applied after reset");
           }
           break;
         case ETH_MENU_GATEWAY:
@@ -209,6 +212,7 @@ int32_t setup_eth_config(void)
           if (status == MENU_OK)
           {
             WRITE_CFG(eth_gateway);
+            show_popup("Information", "Applied after reset");
           }
           break;
         case ETH_MENU_LOCAL_PORT:
@@ -218,6 +222,7 @@ int32_t setup_eth_config(void)
           {
             get_config_app()->eth_local_port = dec;
             WRITE_CFG(eth_local_port);
+            show_popup("Information", "Applied after reset");
           }
           break;
         case ETH_MENU_REMOTE_IP:
@@ -340,8 +345,9 @@ int32_t setup_cdma_config(void)
           status = input_combobox("Cdma Model",cdma_model_list_eng, _countof(cdma_model_list_eng), &choice);
           if (status == MENU_OK)
           {
-            get_config_app()->cdma_model = choice;
+            get_config_app()->cdma_model =(eCDMA_MODEL_t)choice;
             WRITE_CFG(cdma_model);
+            show_popup("Information", "Applied after reset");
           }
           break;
         case CDMA_MENU_VPN:
@@ -484,6 +490,7 @@ int32_t setup_menu_network(void)
           {
             get_config_app()->eth_active = choice;
             WRITE_CFG(eth_active);
+            show_popup("Information", "Applied after reset");
           }
           break;
         case NETWORK_MENU_CDMA_USE:
@@ -498,6 +505,7 @@ int32_t setup_menu_network(void)
               WRITE_CFG(direct_active);
             }
             WRITE_CFG(cdma_active);
+            show_popup("Information", "Applied after reset");
           }
           break;
         case NETWORK_MENU_DIRECT_USE:
@@ -512,6 +520,7 @@ int32_t setup_menu_network(void)
               WRITE_CFG(cdma_active);
             }
             WRITE_CFG(direct_active);
+            show_popup("Information", "Applied after reset");
           }
           break;
         case NETWORK_MENU_ETH_CONFIG:
@@ -528,7 +537,7 @@ int32_t setup_menu_network(void)
           status = input_combobox("AWS Protocols",protocol_list_eng, _countof(protocol_list_eng), &choice);
           if (status == MENU_OK)
           {
-            get_config_app()->aws_protocol_type = choice;
+            get_config_app()->aws_protocol_type = (eAWS_PROTOCOL_t)choice;
             WRITE_CFG(aws_protocol_type);
           }
           break;

@@ -75,11 +75,11 @@ typedef struct config_s
   config_header_t header;
   uint8_t start;  //  bool restart_required;
   uint16_t id;
-  sensor_t sensor[SENSOR_LIST_MAX];//여기서는 
+  sensor_t sensor[SENSOR_LIST_MAX];
   uint16_t password;
   eCHARGER_MODEL_t charger_model;  // 설정 후 리셋 요구됨
   eAWS_PROTOCOL_t aws_protocol_type;
-  eETH_MODE_t eth_mode;
+  eETH_MODE_t eth_mode;     // 설정 후 리셋 요구됨
   uint8_t eth_subnet[4];    // 설정 후 리셋 요구됨
   uint8_t eth_gateway[4];   // 설정 후 리셋 요구됨
   uint8_t eth_ip[4];        // 설정 후 리셋 요구됨
@@ -89,9 +89,9 @@ typedef struct config_s
   uint8_t cdma_server_ip[4];
   uint16_t cdma_port;
   eCDMA_MODEL_t cdma_model;  // 설정 후 리셋 요구됨
-  uint8_t eth_active;              // 설정 후 리셋 요구됨
-  uint8_t cdma_active;             // 설정 후 리셋 요구됨
-  uint8_t direct_active;           // 설정 후 리셋 요구됨
+  uint8_t eth_active;        // 설정 후 리셋 요구됨
+  uint8_t cdma_active;       // 설정 후 리셋 요구됨
+  uint8_t direct_active;     // 설정 후 리셋 요구됨
   uint32_t direct_baud;      // 설정 후 리셋 요구됨
   ePANEL_MODEL_t panel_model;
   uint8_t panel_snow_active;

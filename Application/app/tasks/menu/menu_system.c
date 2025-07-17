@@ -166,6 +166,7 @@ int32_t setup_menu_system(void)
           break;
       config.charger_model = (eCHARGER_MODEL_t)choice;
       WRITE_CFG(charger_model);
+      show_popup("Information", "Applied after reset");
       }
       default:
         break;

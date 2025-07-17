@@ -18,7 +18,7 @@ system_t System;
 
 const config_t config_app_default = {.id = 0,
                                      .password = 7777,
-                                     .charger_model = eCHARGER_SMART,
+                                     .charger_model = eCHARGER_LS,
                                      .aws_protocol_type = eAWS_PROTOCOL_KMA3,
                                      .eth_mode = eETH_MODE_SERVER,
                                      .eth_subnet = {255, 255, 255, 0},
@@ -30,13 +30,13 @@ const config_t config_app_default = {.id = 0,
                                      .cdma_server_ip = {192, 168, 1, 1},
                                      .cdma_port = 0,
                                      .cdma_model = eCDMA_NTLE9607,
-                                     .eth_active = false,
-                                     .cdma_active = false,
+                                     .eth_active = true,
+                                     .cdma_active = true,
                                      .direct_active = false,
                                      .direct_baud = 19200,
                                      .panel_model = ePANEL_AWS_STD,
-                                     .panel_snow_active = true,
-                                     .panel_barometer_active = true,
+                                     .panel_snow_active = false,
+                                     .panel_barometer_active = false,
                                      .vhf_id = 0,
                                      .vhf_group = 0,
                                      .vhf_host_id = 0,
@@ -49,7 +49,7 @@ const config_t config_app_default = {.id = 0,
                                      .dev_telnet_port = 23001,
                                      .dev_telnet_mode = eTELNET_SERVER};
 
-bool g_config_app_dirty_flag = false;
+int32_t g_config_app_change_count = 0;
 
 bool is_value_in_array(uint8_t target, const uint8_t *arr, size_t len)
 {
@@ -64,33 +64,32 @@ bool is_value_in_array(uint8_t target, const uint8_t *arr, size_t len)
 
 void check_config_app(void)
 {
-
   void *p_config;
-  g_config_app_dirty_flag = false;
+  g_config_app_change_count++;
   
   if (config.charger_model > eCHARGER_LS)
   {
     config.charger_model = config_app_default.charger_model;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if (config.eth_mode > eETH_MODE_SERVER)
   {
     config.eth_mode = config_app_default.eth_mode;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
 
   if (config.cdma_model > eCDMA_TX700)
   {
     config.cdma_model = config_app_default.cdma_model;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if (config.aws_protocol_type > eAWS_PROTOCOL_KMA3)
   {
     config.aws_protocol_type = config_app_default.aws_protocol_type;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
 
@@ -98,44 +97,44 @@ void check_config_app(void)
   if (config.panel_model > ePANEL_HANSUNG)
   {
     config.panel_model = config_app_default.panel_model;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if (config.panel_snow_active > 1)
   {
     config.panel_snow_active = config_app_default.panel_snow_active;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if ((int)config.panel_barometer_active > 1)
   {
     config.panel_barometer_active = config_app_default.panel_barometer_active;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if (config.eth_active > 1)
   {
     config.eth_active = config_app_default.eth_active;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if(config.direct_active >1)
   {
     config.direct_active = config_app_default.direct_active;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if (config.cdma_active > 1)
   {
     config.cdma_active = config_app_default.cdma_active;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if (config.direct_active && config.cdma_active)
   {
     config.direct_active = 0;
     config.cdma_active = 1;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
 
@@ -144,27 +143,27 @@ void check_config_app(void)
     if (config.sensor[i].type > SENSOR_TYPE_MAX)
     {
       config.sensor[i].type = S_T_UNSUED;
-      g_config_app_dirty_flag = true;
+    g_config_app_change_count++;
     }
   }
 
   if(!is_value_in_array(config.sensor[A3_WIND_SPEED].type,windSpeedList,_countof(windSpeedList)))
   {
     config.sensor[A3_WIND_SPEED].type = S_T_UNSUED;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if (!is_value_in_array(config.sensor[A2_WIND_DIRECTION].type, windDirectionList,
                           _countof(windDirectionList)))
   {
     config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if (!is_value_in_array(config.sensor[A9_SNOW_DEPTH].type, snowList, _countof(snowList)))
   {
     config.sensor[A9_SNOW_DEPTH].type = S_T_UNSUED;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if (config.sensor[A1_TEMPERATURE].type == S_T_TEMPERATURE_HJ)
@@ -174,7 +173,7 @@ void check_config_app(void)
     if (p_config == NULL)
     {
       config.sensor[A1_TEMPERATURE].type = S_T_UNSUED;
-      g_config_app_dirty_flag = true;
+    g_config_app_change_count++;
     }
     else
     {
@@ -183,7 +182,7 @@ void check_config_app(void)
       if(p_hj_temp->physical_layer > ePHYSICAL_RS485)
       {
         p_hj_temp->physical_layer = ePHYSICAL_RS232;
-        g_config_app_dirty_flag = true;
+      g_config_app_change_count++;
       }
 
       switch (p_hj_temp->physical_layer)
@@ -192,14 +191,14 @@ void check_config_app(void)
           if (p_hj_temp->rs485_port > eAPP_RS485_MAX)
           {
             p_hj_temp->rs485_port = eAPP_RS485_A;
-            g_config_app_dirty_flag = true;
+          g_config_app_change_count++;
           }
             break;
         case ePHYSICAL_RS232:
           if (p_hj_temp->rs232_port > eRS232_MAX)
           {
             p_hj_temp->rs232_port = eRS232_RS485_A;
-            g_config_app_dirty_flag = true;
+          g_config_app_change_count++;
           }
           break;
          default:
@@ -216,7 +215,7 @@ void check_config_app(void)
     if (p_config == NULL)
     {
       config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_UNSUED;
-      g_config_app_dirty_flag = true;
+    g_config_app_change_count++;
     }
     else
     {
@@ -225,7 +224,7 @@ void check_config_app(void)
       if (p_hj_temp->physical_layer > ePHYSICAL_RS485)
       {
         p_hj_temp->physical_layer = ePHYSICAL_RS232;
-        g_config_app_dirty_flag = true;
+      g_config_app_change_count++;
       }
 
       switch (p_hj_temp->physical_layer)
@@ -234,14 +233,14 @@ void check_config_app(void)
           if (p_hj_temp->rs485_port > eAPP_RS485_MAX)
           {
             p_hj_temp->rs485_port = eAPP_RS485_A;
-            g_config_app_dirty_flag = true;
+          g_config_app_change_count++;
           }
           break;
         case ePHYSICAL_RS232:
           if (p_hj_temp->rs232_port > eRS232_MAX)
           {
             p_hj_temp->rs232_port = eRS232_RS485_A;
-            g_config_app_dirty_flag = true;
+          g_config_app_change_count++;
           }
           break;
         default:
@@ -257,20 +256,20 @@ void check_config_app(void)
     if (p_config ==NULL)
     {
       config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
-      g_config_app_dirty_flag = true;
+    g_config_app_change_count++;
     }
   }
 
   if (config.panel_snow_active > 1)
   {
     config.panel_snow_active = config_app_default.panel_snow_active;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 
   if (config.panel_barometer_active > 1)
   {
     config.panel_barometer_active = config_app_default.panel_barometer_active;
-    g_config_app_dirty_flag = true;
+  g_config_app_change_count++;
   }
 }
 
@@ -295,7 +294,7 @@ void save_config_app(void)
 void load_config_app(void)
 {
 
-#if 0
+#if 0 // CRC 미사용(test 필요)
   crc_result = false;
 
   config_t *p_config = user_malloc(sizeof(config_t));
@@ -321,7 +320,7 @@ void load_config_app(void)
 
   check_config_app();
 
-  if (g_config_app_dirty_flag)
+  if (g_config_app_change_count)
   {
     save_config_app();
   }

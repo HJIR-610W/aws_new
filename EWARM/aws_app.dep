@@ -218,7 +218,7 @@
             <file>$PROJ_DIR$\..\application\file_system\user_heap.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\FATFS\file_io.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</file>
-            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\application\file_system\FATFS\Target\fatfs_platform.h</file>
             <file>$PROJ_DIR$\..\application\file_system\FATFS\App\fatfs.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\FATFS\Target\bsp_driver_sd.c</file>
@@ -1732,7 +1732,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\ff.h</file>
             <file>$PROJ_DIR$\..\BSP\pcb_define.h</file>
             <file>$PROJ_DIR$\..\Application\Tasks\setup\menu_calibration.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_interrupt.o</file>
@@ -1861,7 +1861,7 @@
             <file>$PROJ_DIR$\release\Obj\menu_calibration.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\panel.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\freertos_mpool.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\Ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\Ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\system\arch\cc.h</file>
             <file>$PROJ_DIR$\..\Application\Sensors\wind_direction\wind_direction.h</file>
             <file>$PROJ_DIR$\..\Application\test\test_dinOut.h</file>
@@ -2002,7 +2002,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_manager.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_cali.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\release\Obj\hjtemp_menu.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\timers.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_adc.h</file>
@@ -2074,7 +2074,7 @@
             <file>$PROJ_DIR$\..\Application\app\panel\panel_mooju.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_setup.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_define.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tls.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_rs485.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip4_frag.h</file>
@@ -2088,7 +2088,7 @@
             <file>$PROJ_DIR$\..\Application\Communications\Ethernet\app_socket.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_power.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\fsdata.c</file>
-            <file>$PROJ_DIR$\..\application\app\config\config_adc.h</file>
+            <file>$PROJ_DIR$\..\Application\app\config\config_adc.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_sensor.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_manager.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_flash.xcl</file>
@@ -2135,7 +2135,7 @@
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif_opts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\sha1.h</file>
-            <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
+            <file>$PROJ_DIR$\..\application\app\App_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.h</file>
             <file>$PROJ_DIR$\release\Obj\dev_charger.o</file>
@@ -2182,7 +2182,7 @@
             <file>$PROJ_DIR$\release\Obj\test_filesystem.o</file>
             <file>$PROJ_DIR$\release\Obj\sensor_general.o</file>
             <file>$PROJ_DIR$\release\Obj\menu_data.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\built_.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver_adc_define.h</file>
             <file>$PROJ_DIR$\..\application\app\test\mcu_debug.h</file>

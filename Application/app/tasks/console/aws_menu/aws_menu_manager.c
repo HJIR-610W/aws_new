@@ -88,7 +88,6 @@ void config_hj_reset(void)
   hjhumi_config_t *hjhumi_cfg;
   hjwindspeed_config_t *hjwind_cfg;
   hjwindDirection_config_t *hjwindDir_cfg;
-
   hjsnow_config_t *hjsnow_cfg;
   uint8_t single_channel = 0;
 
