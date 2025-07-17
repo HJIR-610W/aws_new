@@ -720,7 +720,8 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
 
         break;
         case HJTEMP_PAGE_MODBUS_ID:
-          status = input_decimal("ID", 0, 247, &dec);
+          dec = hjtemp->modbus_id;
+                    status = input_decimal("ID", 0, 247, &dec);
           if (status != MENU_OK)
             break;
 
@@ -786,6 +787,7 @@ int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
       }
       break;
     case HJTEMP_PAGE_MODBUS_ID:
+      dec = hjhumi->modbus_id;
       status = input_decimal("ID", 0, 247, &dec);
       if (status != MENU_OK)
         break;
@@ -933,12 +935,14 @@ int32_t setup_sensor(eSENSOR_TYPE_t list)
 void draw_menu_sensor_page(screen_menu_t* p_win)
 {
   int row_count = 0;
+  sensor_t *p_sensor = get_config_app()->sensor;
 
   p_win->current_row = 0;
 
   for(int i = 0;i< SENSOR_LIST_MAX;i++)
   {
-    M_PRINTF(p_win, row_count++, "%s", sensor_name_eng_list[i]);
+  sensor_t *p_sensor = get_config_app()->sensor;
+  M_PRINTF(p_win, row_count++, "%-15s%s", sensor_name_eng_list[i],p_sensor[i].type>0?"[E]":"[D]");
   }
 
   p_win->total_items = row_count;

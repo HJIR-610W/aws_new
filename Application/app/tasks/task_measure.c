@@ -433,24 +433,22 @@ void measure_250ms(void)
   float speed = 0.0f;
   float direction = 0.0f;
   sensor_t *p_sensor_cfg = g_sensor_config_bk;
- 
   sensor_data_t *p_reading_250ms = g_reading_250.data;
-
+  sensor_t *p_a_sensor = get_config_app()->sensor;
 
   if (p_sensor_cfg[A3_WIND_SPEED].type)
   {
     speed = wind_read(g_sensor_driver[A3_WIND_SPEED], WIND_CHANNEL_SPEED, &err_wind_spd);
-    p_reading_250ms[eA3_WIND_SPEED].data.f = speed;
     p_reading_250ms[eA3_WIND_SPEED].err = err_wind_spd;
+    p_reading_250ms[eA3_WIND_SPEED].data.f = speed + p_a_sensor[A3_WIND_SPEED].offset;
   }
 
   if (p_sensor_cfg[A2_WIND_DIRECTION].type)
   {
     direction =
     wind_read(g_sensor_driver[A2_WIND_DIRECTION], WIND_CHANNEL_DIRECTION, &err_wind_dir);
-    p_reading_250ms[eA2_WIND_DIRECTION].data.f = direction;
     p_reading_250ms[eA2_WIND_DIRECTION].err = err_wind_dir;
-
+    p_reading_250ms[eA2_WIND_DIRECTION].data.f = direction + p_a_sensor[eA2_WIND_DIRECTION].offset;
   }
 }
 

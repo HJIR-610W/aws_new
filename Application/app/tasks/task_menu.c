@@ -436,6 +436,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   float data, data_min, data_max;
   kma_data_ex_t *p_kma = NULL;
 
+
+
+
   p_win->current_row = 0;
 
   screen_printf_row(p_win, row_count++, "AWS %s %.2fs/%.2fs", aws_title_list[(int)min],
@@ -454,7 +457,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     }
     else
     {
-      if (page == eAWS_DATA_RAW)
+      if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->temperature.raw.f;
         screen_printf_row(p_win, row_count++, "%-*s:%6.1f", AWS_WD, "TEMP", f_data);
@@ -573,8 +576,8 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
         {
           time_cvt_secTotime(last_time, &nt);
           //RAIN(t):250101000000
-          screen_printf_row(p_win, row_count++, "%-*s:%02d%02d%02d%02d%02d%02d", AWS_WD, "RAIN(t)",
-                         nt.Year%100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
+          screen_printf_row(p_win, row_count++, " RAIN(t):%02d%02d%02d%02d%02d%02d", 
+                            nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
       }
       else

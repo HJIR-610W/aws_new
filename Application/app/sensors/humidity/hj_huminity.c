@@ -49,13 +49,15 @@ driver_t *hjHuminity_open(int32_t num, void *opt)
   {
     case ePHYSICAL_RS232:
       hj_huminity_cfg.modbus.modebus_type = eMODBUS_RS232;
+      hj_huminity_cfg.modbus.id = hjtemp->modbus_id;
       hj_huminity_cfg.modbus.port_num = uart_num_to_driver_num(hjtemp->rs232_port);
       drv_rs232_init(hj_huminity_cfg.modbus.port_num,&uart_config);
       break;
 
     case ePHYSICAL_RS485:
       hj_huminity_cfg.modbus.modebus_type = eMODBUS_RS485;
-      hj_huminity_cfg.modbus.port_num = hjtemp->rs485_port;
+      hj_huminity_cfg.modbus.id = hjtemp->modbus_id;
+      hj_huminity_cfg.modbus.port_num = rs485_num_to_driver_num(hjtemp->rs485_port);
       drv_rs485_init(hj_huminity_cfg.modbus.port_num,&uart_config);
       break;
   }

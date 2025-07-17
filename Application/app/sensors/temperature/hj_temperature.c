@@ -51,7 +51,7 @@ driver_t *hjTemperature_open(int32_t num, void *opt)
       drv_rs232_init(hj_temperature_cfg.modbus.port_num,&uart_config);
       break;
     case ePHYSICAL_RS485:
-      hj_temperature_cfg.modbus.port_num = hjtemp->rs485_port;
+      hj_temperature_cfg.modbus.port_num = rs485_num_to_driver_num(hjtemp->rs485_port);
       hj_temperature_cfg.modbus.modebus_type = eMODBUS_RS485;
       drv_rs485_init(hj_temperature_cfg.modbus.port_num, &uart_config);
       break;

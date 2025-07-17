@@ -8,7 +8,6 @@
 typedef enum RS485_PORT_e
 {
   eAPP_RS485_A,
-  eAPP_RS485_B,
   eAPP_RS485_RS232_C,
   eAPP_RS485_RS232_D,
   eAPP_RS485_MAX
@@ -16,6 +15,6 @@ typedef enum RS485_PORT_e
 
 
 uint16_t drv_rs485_get_portList(const char **list,uint16_t listMax);
-
+int32_t rs485_num_to_driver_num(int32_t app_rs485_num);
 
 #endif

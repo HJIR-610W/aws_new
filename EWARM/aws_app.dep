@@ -115,13 +115,13 @@
             <file>$PROJ_DIR$\..\application\app\version\app_version.h</file>
             <file>$PROJ_DIR$\..\application\app\version\hj_product_list.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_uart.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\CDMA\at_cmd.h</file>
+            <file>$PROJ_DIR$\..\application\communications\CDMA\at_cmd.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_sram.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\modem_tx700.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\modem_tx700.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\old_aws_sms.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\old_aws_sms.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\Direct\task_direct.h</file>
+            <file>$PROJ_DIR$\..\application\communications\Direct\task_direct.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\Ethernet\task_client.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\LWIP\App\lwip.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\Ethernet\eth_icmp.c</file>
@@ -140,9 +140,9 @@
             <file>$PROJ_DIR$\..\application\communications\LWIP\Target\ethernetif.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_rtc.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\CDMA\modem_if.h</file>
+            <file>$PROJ_DIR$\..\application\communications\CDMA\modem_if.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\CDMA\modem_sms.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\CDMA\task_cellular.h</file>
+            <file>$PROJ_DIR$\..\application\communications\CDMA\task_cellular.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_meomoy.c</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_system.c</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_setup.c</file>
@@ -1539,13 +1539,13 @@
             <file>$PROJ_DIR$\release\Obj\system_stm32f4xx.xcl</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\release\Obj\driver.o</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\stats.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_menu_view.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\menu_handler.o</file>
             <file>$PROJ_DIR$\release\Obj\app_lcd.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_ll_fsmc.o</file>
-            <file>$PROJ_DIR$\..\application\Communications\Ethernet\task_client.h</file>
+            <file>$PROJ_DIR$\..\application\communications\Ethernet\task_client.h</file>
             <file>$PROJ_DIR$\..\Application\test\test_lcd.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_rtc.xcl</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
@@ -1734,7 +1734,7 @@
             <file>$PROJ_DIR$\..\Application\Tasks\setup\menu_calibration.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_interrupt.o</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\portable.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_i2c.xcl</file>
@@ -1795,7 +1795,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\arch.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dhcp6.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h</file>
             <file>$PROJ_DIR$\..\application\app\sensors\app_sensor.h</file>
             <file>$PROJ_DIR$\release\List\aws_app.map</file>
@@ -1811,7 +1811,7 @@
             <file>$PROJ_DIR$\release\Obj\aws_app.pbd</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_opts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\if_api.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\app_console_test.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\app_console_test.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\iana.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_rs485.o</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
@@ -1861,7 +1861,7 @@
             <file>$PROJ_DIR$\release\Obj\menu_calibration.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\panel.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\freertos_mpool.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\Ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\Ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\system\arch\cc.h</file>
             <file>$PROJ_DIR$\..\Application\Sensors\wind_direction\wind_direction.h</file>
             <file>$PROJ_DIR$\..\Application\test\test_dinOut.h</file>
@@ -2048,7 +2048,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcpbase.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netbuf.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_frequency.__cstat.et</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_ble.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\httpd_opts.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_aws_std.h</file>
@@ -2125,7 +2125,7 @@
             <file>$PROJ_DIR$\..\application\app\config\config_memory_map.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_fram.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
             <file>$PROJ_DIR$\release\Obj\chap_ms.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\dualport.o</file>
@@ -2135,7 +2135,7 @@
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif_opts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\sha1.h</file>
-            <file>$PROJ_DIR$\..\application\app\App_drivers\app_flash.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.h</file>
             <file>$PROJ_DIR$\release\Obj\dev_charger.o</file>
@@ -2442,7 +2442,7 @@
             <file>$PROJ_DIR$\release\Obj\bsp_driver_sd.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\pppapi.xcl</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_uart.h</file>
-            <file>$PROJ_DIR$\..\Application\app\app_drivers\app_screen.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
             <file>$PROJ_DIR$\..\Application\test\test_flash.h</file>
             <file>$PROJ_DIR$\release\Obj\igmp.__cstat.et</file>
         </outputs>

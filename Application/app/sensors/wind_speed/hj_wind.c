@@ -187,8 +187,8 @@ driver_t *hjwind_open(uint8_t num, void *opt)
   uart_config.dataLen = 8;
   uart_config.stop_bit = 1;
 
-  g_hjwind_cfg.rs485_num = hjwind_config->rs485_port;
-  drv_rs485_init((int)hjwind_config->rs485_port, &uart_config);
+  g_hjwind_cfg.rs485_num = rs485_num_to_driver_num(hjwind_config->rs485_port);
+  drv_rs485_init((int)g_hjwind_cfg.rs485_num, &uart_config);
 
   g_hjwind_driver.name = "hj_wind";
   g_hjwind_driver.cfg = &g_hjwind_cfg;

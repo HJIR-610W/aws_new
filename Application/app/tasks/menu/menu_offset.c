@@ -14,28 +14,28 @@
 #include "view_driver.h"
 
 #define SCREEN_COLS 16
-#define OFFSET_WD 12
+#define OFFSET_WD 15
 
 #define M_PRINTF screen_menu_printf_row
 
 static const eSENSOR_TYPE_t g_offset_sensor_list[] = {
-  A1_TEMPERATURE,
-  A10_RELATIVE_HUMIDITY,
-  A7_PRESSURE,
-  B1_SOLAR_RADIATION,
-  B2_SUNSHINE_DURATION,
-  B3_GROUND_TEMPERATURE,
-  B4_SURFACE_TEMPERATURE,
-  B5_SOIL_TEMPERATURE_5CM,
-  B6_SOIL_TEMPERATURE_10CM,
-  B7_SOIL_TEMPERATURE_20CM,
-  B8_SOIL_TEMPERATURE_30CM,
-  B9_SOIL_TEMPERATURE_50CM,
-  B10_SOIL_TEMPERATURE_100CM,
-  B11_SOIL_TEMPERATURE_150CM,
-  B12_SOIL_TEMPERATURE_300CM,
-  B13_SOIL_TEMPERATURE_500CM
-};
+    A1_TEMPERATURE,
+    A2_WIND_DIRECTION,
+    A10_RELATIVE_HUMIDITY,
+    A7_PRESSURE,
+    B1_SOLAR_RADIATION,
+    B2_SUNSHINE_DURATION,
+    B3_GROUND_TEMPERATURE,
+    B4_SURFACE_TEMPERATURE,
+    B5_SOIL_TEMPERATURE_5CM,
+    B6_SOIL_TEMPERATURE_10CM,
+    B7_SOIL_TEMPERATURE_20CM,
+    B8_SOIL_TEMPERATURE_30CM,
+    B9_SOIL_TEMPERATURE_50CM,
+    B10_SOIL_TEMPERATURE_100CM,
+    B11_SOIL_TEMPERATURE_150CM,
+    B12_SOIL_TEMPERATURE_300CM,
+    B13_SOIL_TEMPERATURE_500CM};
 
 #define OFFSET_SENSOR_COUNT (sizeof(g_offset_sensor_list) / sizeof(g_offset_sensor_list[0]))
 
@@ -51,8 +51,8 @@ void draw_offset_page(screen_menu_t* p_win)
     p_sensor = &get_config_app()->sensor[g_offset_sensor_list[i]];
 
     screen_update_list(p_win, row_count, i);
-    M_PRINTF(p_win, row_count++, "%-*s:%7.3f", OFFSET_WD,
-             sensor_name_list[g_offset_sensor_list[i]], p_sensor->offset);
+    M_PRINTF(p_win, row_count++, "%-*s:%4.2f", OFFSET_WD,
+             sensor_name_eng_list[g_offset_sensor_list[i]], p_sensor->offset);
   }
 
   p_win->total_items = row_count;
@@ -182,6 +182,8 @@ int32_t setup_menu_offset(void)
       {
         selected_sensor = g_offset_sensor_list[index];
         status = setup_sensor_offset(selected_sensor);
+        if(status !=MENU_OK)
+          break;
       }
     }
     else if (key != KEY_CODE_NONE)
