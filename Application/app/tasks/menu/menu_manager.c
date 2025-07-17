@@ -226,7 +226,7 @@ int32_t setup_menu_hj_reset(void)
   if (status == MENU_OK && choice == 1)
   {
     config_hj_reset();
-    show_popup("Info","Reset Complete");
+    show_popup("Information", "Reset Complete");
   }
 
   return status;
@@ -246,7 +246,7 @@ int32_t setup_menu_init(void)
     config_sensor_reset();
     save_config_sensor();
 
-    show_popup("Info", "Init Complete");
+    show_popup("Information", "Init Complete");
   }
 
   return status;
@@ -286,7 +286,7 @@ int32_t setup_menu_backup(void)
         case BACKUP_MENU_SAVE:
         {
           backup_config();
-          show_popup("Info", "Backup Complete");
+          show_popup("Information", "Backup Complete");
         }
         break;
 
@@ -298,7 +298,7 @@ int32_t setup_menu_backup(void)
           if (status == MENU_OK && choice == 1)
           {
             restore_config();
-            show_popup("Info", "Restore Complete");
+            show_popup("Information", "Restore Complete");
           }
         }
         break;
@@ -354,9 +354,9 @@ int32_t setup_menu_rain_reset(void)
         if (status == MENU_OK && choice == 1)
         {
            if(rain_file_zero(Date_Time.Year)==0)
-             show_popup("Info", "Completed");
+             show_popup("Information", "Completed");
            else{
-             show_popup("Info", "Failed to complete");
+             show_popup("Information", "Failed to complete");
            }
         }
       }
@@ -370,9 +370,9 @@ int32_t setup_menu_rain_reset(void)
         if (status == MENU_OK && choice == 1)
         {
           if(sunshine_file_zero(Date_Time.Year)==0)
-          show_popup("Info", "Completed");
+            show_popup("Information", "Completed");
           else
-          show_popup("Info", "Failed to complete");
+            show_popup("Information", "Failed to complete");
         }
       }
       break;
@@ -404,7 +404,7 @@ int32_t setup_menu_log_reset(void)
   {
     nvm_set_log_cnt(log_cnt);
 
-    show_popup("Log Reset", "log count:0");
+    show_popup("Information", "log count:0");
   }
 
   return status;

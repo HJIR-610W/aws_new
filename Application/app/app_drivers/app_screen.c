@@ -173,7 +173,7 @@ void screen_printf(int row, int col, const char* format, ...)
   }
 
   // 나머지 공간을 공백으로 채움
-  for (i = len; i < MAX_COLS; i++)
+  for (i = col +len; i < MAX_COLS; i++)
   {
     screen_put_ch(row, i, ' ');
   }

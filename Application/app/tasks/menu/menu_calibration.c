@@ -244,13 +244,13 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   if (adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, cal_temp))
   {
     save_adc_cali();
-   
-    show_popup("Calibration", "Success");
+
+    show_popup("Information", "Success");
   }
   else
   {
 
-    show_popup("Calibration", "Failed");
+    show_popup("Information", "Failed");
   }
 
   return status;
@@ -576,8 +576,7 @@ int32_t cali_setup_menu_init(void)
     save_adc_cali();
 
     screen_clear();
-    show_popup("Calibraion","Init Complete");
-
+    show_popup("Information", "Init Complete");
 
     osDelay(2000);
   }

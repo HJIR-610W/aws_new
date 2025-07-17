@@ -816,18 +816,9 @@ int32_t input_combobox(const char* title, const char* item_list[], int32_t item_
 
 int32_t show_popup(const char *title, const char *message)
 {
-  const int32_t popup_width = 100;
-  const int32_t popup_height = 48;
-  const int32_t screen_width = 128;
-  const int32_t screen_height = 64;
+  const int32_t lcd_cols = screen_get_instance()->font_cols;
+  const int32_t lcd_rows = screen_get_instance()->font_rows; 
   int32_t key;
-  int32_t message_len;
-  int32_t popup_x;
-  int32_t popup_y;
-  int32_t title_len;
-  int32_t title_row;
-  int32_t title_start_col;
-
 
   if (title == NULL)
   {
@@ -836,64 +827,46 @@ int32_t show_popup(const char *title, const char *message)
 
   screen_clear();
 
-  
-  popup_x = (screen_width - popup_width) / 2;
-  popup_y = (screen_height - popup_height) / 2;
+  // 타이틀 표시 가운데 정렬
+  int32_t title_len = strlen(title);
+  int32_t title_start_col = (lcd_cols - title_len) / 2;
+  screen_printf(0, title_start_col,title);
 
-
-  for (int32_t y = popup_y; y < popup_y + popup_height; y++)
+  screen_set_cursor(1, 0);
+  for (int32_t i = 0; i < lcd_cols; i++)
   {
-    for (int32_t x = popup_x; x < popup_x + popup_width; x++)
-    {
-      if (y == popup_y || y == popup_y + popup_height - 1 ||
-          x == popup_x || x == popup_x + popup_width - 1)
-      {
-        screen_set_pixel(x, y, true);
-      }
-      else
-      {
-        screen_set_pixel(x, y, false);
-      }
-    }
+    screen_put_ch(1,i,'-');
   }
 
-  for (int32_t y = popup_y + 12; y < popup_y + 14; y++)
-  {
-    for (int32_t x = popup_x + 1; x < popup_x + popup_width - 1; x++)
-    {
-      screen_set_pixel(x, y, true);
-    }
-  }
-
-
-  
-  title_len = strlen(title);
-  title_row = (popup_y + 6) / 8;
-  title_start_col = (popup_x + (popup_width - title_len * 6) / 2) / 6;
-  
-  for (int32_t i = 0; i < title_len && title_start_col + i < 20; i++)
-  {
-    screen_put_ch(title_row, title_start_col + i, title[i]);
-  }
-
+  // 메시지 표시 (세 번째 줄부터)
   if (message != NULL)
   {
-    message_len = strlen(message);
-    int32_t message_row = (popup_y + 20) / 8;
-    int32_t message_start_col = (popup_x + (popup_width - message_len * 6) / 2) / 6;
-    
-    for (int32_t i = 0; i < message_len && message_start_col + i < 20; i++)
+    int32_t message_len = strlen(message);
+    int32_t current_row = 2; // 메시지 시작 row
+    int32_t current_col = 0;
+
+    for (int32_t i = 0; i < message_len; i++)
     {
-      screen_put_ch(message_row, message_start_col + i, message[i]);
+      if (current_col >= lcd_cols)
+      {
+        current_row++;
+        current_col = 0;
+        if (current_row >= lcd_rows)
+        {
+          break; // LCD 영역 초과 시 출력 종료
+        }
+        screen_set_cursor(current_row, current_col);
+      }
+
+      screen_put_ch(current_row, current_col, message[i]);
+      current_col++;
     }
   }
-
   screen_refresh();
-
   while (1)
   {
     key = get_button_key(100);
-    
+
     if (key == KEY_CODE_ENTER || key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
     {
       break;
@@ -901,13 +874,8 @@ int32_t show_popup(const char *title, const char *message)
   }
 
 
-  screen_clear();
-  screen_refresh();
-
   return convert_key_to_status(key);
 }
-
-
 
 int32_t input_active(const char *title, int32_t *choice)
 {

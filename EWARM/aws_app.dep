@@ -2088,7 +2088,7 @@
             <file>$PROJ_DIR$\..\Application\Communications\Ethernet\app_socket.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_power.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\fsdata.c</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_adc.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_adc.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_sensor.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_manager.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_flash.xcl</file>
@@ -2442,7 +2442,7 @@
             <file>$PROJ_DIR$\release\Obj\bsp_driver_sd.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\pppapi.xcl</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_uart.h</file>
-            <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
+            <file>$PROJ_DIR$\..\Application\app\app_drivers\app_screen.h</file>
             <file>$PROJ_DIR$\..\Application\test\test_flash.h</file>
             <file>$PROJ_DIR$\release\Obj\igmp.__cstat.et</file>
         </outputs>

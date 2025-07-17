@@ -111,7 +111,7 @@ int32_t menu_data_aws(void)
     {
       if(read_data_month(&nt, &aws, sizeof(aws), LOGGING_AWS, 1)>0)
       {
-        show_popup("Error","File Open Err");
+        show_popup("Information", "File Open Err");
         break;
       }
       startTime = SetTime(nt.Year, nt.Month,nt.Day, nt.Hour,nt.Min, 0);
