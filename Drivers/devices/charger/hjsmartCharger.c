@@ -10,8 +10,8 @@
 #include "drv_rs232.h"
 #include "driver_uart_def.h"
 
-#define CHARGER_RS485
-//#define CHARGER_RS232
+
+
 typedef struct
 {
     uint16_t SolraVolt1;        // nAIN_SV1
@@ -187,18 +187,17 @@ typedef struct hj_smartcharger_instance_s
 } hj_smartcharger_instance_t;
 
 hj_smartcharger_instance_t charger_inst;
-
-
-
-
 SYSTEM_TypeDef chg_system;//TODO:heap으로 변경
 static uint8_t buff[sizeof(SYSTEM_TypeDef)+20]; //TODO:heap으로 변경
+
+
 void hjsmartCharger_read(charger_data_t *charger_data,uint8_t *err)
 {
-
   int32_t len;
   uint8_t data[6];
   uint16_t val;
+
+  OS_PEND_SEM(charger_inst.sem, osWaitForever);
 
 
   data[0] = 1;  // 의미없음
@@ -210,8 +209,6 @@ void hjsmartCharger_read(charger_data_t *charger_data,uint8_t *err)
   memcpy(&data[4],&val,2);
   
   len = Make_SmartChgFrame(buff,sizeof(buff),0x50,data,6);
-
-  OS_PEND_SEM(charger_inst.sem, osWaitForever);
 
   drv_rs485_flush_rx(charger_inst.uart_num);
   drv_rs485_send(charger_inst.uart_num, buff, len);
@@ -246,6 +243,7 @@ void hjsmartCharger_read(charger_data_t *charger_data,uint8_t *err)
 int32_t hj_smartcharger_init(void)
 {
   uart_config_t uart_config;
+
   if (charger_inst.opened)
   {
     return 1;
@@ -256,20 +254,12 @@ int32_t hj_smartcharger_init(void)
   uart_config.parityIdx = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
-  if(0)//232
-  {
-    charger_inst.uart_num = DRV_UART_2_EXT_A;
-    drv_rs485_init(charger_inst.uart_num, &uart_config);
-  }
-  else
-  {
-    charger_inst.uart_num = RS485_B;
-    drv_rs485_init(charger_inst.uart_num, &uart_config);
-  }
+  charger_inst.uart_num = RS485_B;
+  drv_rs485_init(charger_inst.uart_num, &uart_config);
+
 
 
   charger_inst.opened = true;
-
   OS_CREATE_BINARY_SEM(charger_inst.sem);
 
   return 0;
