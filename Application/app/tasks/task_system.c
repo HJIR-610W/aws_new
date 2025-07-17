@@ -122,7 +122,7 @@ void systemTask(void *arg)
     scan_key();
     drv_rtc_read(&Date_Time);
 
-    if ((osKernelGetTickCount() - start_time) > 10000)
+    if ((osKernelGetTickCount() - start_time) > 1000)
     {
 
       if( arg==PARA_RUN_MODE)
@@ -136,7 +136,6 @@ void systemTask(void *arg)
           check_sd_card();
        }
     }
-
     osDelay(100);
   }
 }

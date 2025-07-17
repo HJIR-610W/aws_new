@@ -26,7 +26,8 @@ typedef struct stm32_uart_cfg_s
   int buffser_size;
   DMA_HandleTypeDef dma_tx;
   DMA_HandleTypeDef dma_rx;
-  void *sem;
+  void *tx_sem;
+  void *rx_sem;
   void *txcSem; // 전송 완료 알림 세마포어
 } uart_instance_t;
 
@@ -177,7 +178,8 @@ int32_t stm32_uart_init(int num, void *opt)
       uart_inst[num].txcSem = tempSem;
   }
   uart_inst[num].xStreamBuffer = xStreamBufferCreate(uart_inst[num].buffser_size, 1);
-  OS_CREATE_BINARY_SEM(uart_inst[num].sem);
+  OS_CREATE_BINARY_SEM(uart_inst[num].tx_sem);
+  OS_CREATE_BINARY_SEM(uart_inst[num].rx_sem);
 
   stm32_uart_hal_init(num, cfg->baud, cfg->parityIdx, cfg->dataLen, cfg->stop_bit);
   stm32_uart_dma_init(num);
@@ -369,70 +371,131 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
   }
 }
 
-int32_t stm32_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
+int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {
-  uint32_t starTick;
-  uint32_t stopTick;
-  uint32_t elapseTick;
-  uint32_t timeout;
-  uint32_t lastTick = 0;
-  size_t xBytesAvailable;
-  size_t xBytesRead;
-  size_t remainBuffSize = buffSize;
+  uint32_t start_tick;
+  uint32_t elapsed_tick;
+  uint32_t remaining_timeout;
+  size_t bytes_available;
+  size_t bytes_read;
   size_t cnt = 0;
 
-  timeout = timeOutMs;
+  OS_PEND_SEM(uart_inst[uart_num].tx_sem, osWaitForever);
 
-  (void)lastTick;
-
-  if(num < 0)
+  // timeOutMs가 0인 경우: 논블로킹 모드
+  if (timeOutMs == 0)
   {
-    return 0;
-  }
-  while (1)
-  {
-    /* 스트림 버퍼에서 읽을 수 있는 데이터 크기 확인 */
-    xBytesAvailable = xStreamBufferBytesAvailable(uart_inst[num].xStreamBuffer);
+    bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].xStreamBuffer);
 
-    if (remainBuffSize < xBytesAvailable)
+    if (bytes_available > 0)
     {
-      xBytesAvailable = remainBuffSize;  // 버퍼 수만큼만 읽기
+      size_t bytes_to_read = (bytes_available > buffSize) ? buffSize : bytes_available;
+      bytes_read = xStreamBufferReceive(uart_inst[uart_num].xStreamBuffer,
+                                        pBuff,
+                                        bytes_to_read,
+                                        0); // 대기시간 0
+      cnt = bytes_read;
     }
+    // 데이터가 없으면 cnt는 0으로 리턴
 
-    starTick = OS_GET_TICK();
-    if (xBytesAvailable > 0)
+    OS_POST_SEM(uart_inst[uart_num].tx_sem);
+    return cnt;
+  }
+
+  start_tick = osKernelGetTickCount();
+
+  // timeOutMs가 0xFFFFFFFF인 경우: 무한 대기 모드
+  if (timeOutMs == 0xFFFFFFFF)
+  {
+    while (cnt < buffSize)
     {
-      /* 데이터를 읽을 수 있다면, 데이터를 수신 */
-      xBytesRead = xStreamBufferReceive(uart_inst[num].xStreamBuffer, (void *)&pBuff[cnt],
-                                        xBytesAvailable, pdMS_TO_TICKS(timeout));
+      bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].xStreamBuffer);
 
-      if (xBytesRead > 0)
+      size_t bytes_to_read = buffSize - cnt;
+      if (bytes_available > bytes_to_read)
       {
-        cnt += xBytesRead;
-        lastTick = OS_GET_TICK();
+        bytes_available = bytes_to_read;
+      }
+
+      if (bytes_available == 0)
+      {
+        // 데이터가 없으면 최소 1바이트 수신까지 무한 대기
+        bytes_read = xStreamBufferReceive(uart_inst[uart_num].xStreamBuffer,
+                                          &pBuff[cnt],
+                                          1,
+                                          osWaitForever);
+      }
+      else
+      {
+        // 사용 가능한 데이터를 읽음
+        bytes_read = xStreamBufferReceive(uart_inst[uart_num].xStreamBuffer,
+                                          &pBuff[cnt],
+                                          bytes_available,
+                                          osWaitForever);
+      }
+
+      if (bytes_read > 0)
+      {
+        cnt += bytes_read;
       }
     }
-    else
+  }
+  // timeOutMs가 양수인 경우: 지정된 타임아웃 적용
+  else
+  {
+    uint32_t timeout_tick = pdMS_TO_TICKS(timeOutMs);
+
+    while (cnt < buffSize)
     {
-      /*데이터를 기다려야 한다면 최소 1개가 수신될때까지 대기*/
-      xBytesRead = xStreamBufferReceive(uart_inst[num].xStreamBuffer, (void *)&pBuff[cnt], 1,
-                                        pdMS_TO_TICKS(timeout));
-      if (xBytesRead == 1)
+      elapsed_tick = osKernelGetTickCount() - start_tick;
+
+      if (elapsed_tick >= timeout_tick)
       {
-        cnt += 1;
-        lastTick = OS_GET_TICK();
+        break; // Timeout 발생
+      }
+
+      remaining_timeout = timeout_tick - elapsed_tick;
+
+      bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].xStreamBuffer);
+
+      size_t bytes_to_read = buffSize - cnt;
+      if (bytes_available > bytes_to_read)
+      {
+        bytes_available = bytes_to_read;
+      }
+
+      if (bytes_available == 0)
+      {
+        // 데이터가 없으면 최소 1바이트 수신 대기
+        bytes_read = xStreamBufferReceive(uart_inst[uart_num].xStreamBuffer,
+                                          &pBuff[cnt],
+                                          1,
+                                          remaining_timeout);
+      }
+      else
+      {
+        // 데이터를 읽음
+        bytes_read = xStreamBufferReceive(uart_inst[uart_num].xStreamBuffer,
+                                          &pBuff[cnt],
+                                          bytes_available,
+                                          remaining_timeout);
+      }
+
+      if (bytes_read > 0)
+      {
+        cnt += bytes_read;
+      }
+      else
+      {
+        // xStreamBufferReceive가 0을 리턴하면 타임아웃 발생
+        break;
       }
     }
-    stopTick = OS_GET_TICK();
-    elapseTick = stopTick - starTick;
-
-    if (elapseTick >= timeout || cnt >= buffSize)
-    {
-      return cnt;
-    }
-    remainBuffSize -= xBytesAvailable;
-    timeout = timeout - elapseTick;
   }
+
+  OS_POST_SEM(uart_inst[uart_num].tx_sem);
+
+  return cnt;
 }
 
 void stm32_uart_set(int num, uart_set_option_t cmd, void *option)
@@ -608,7 +671,7 @@ int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
   HAL_StatusTypeDef status;
   osStatus_t osStatus;
 
-  OS_PEND_SEM(uart_inst[num].sem, osWaitForever);
+  OS_PEND_SEM(uart_inst[num].tx_sem, osWaitForever);
   osSemaphoreAcquire(uart_inst[num].txcSem, 0); // 이전에 처리 못한건 제거
   waitTime = calculate_txWaitTimeMs(uart_inst[num].baud, dataLen);
   status = HAL_UART_Transmit_DMA(&uart_inst[num].handle, pData, dataLen);
@@ -630,7 +693,7 @@ int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
   {
     ERROR_PRINTF("uart");
   }
-  OS_POST_SEM(uart_inst[num].sem);
+  OS_POST_SEM(uart_inst[num].tx_sem);
   return retVal;
 }
 

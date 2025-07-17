@@ -9,6 +9,7 @@
 
 typedef struct modbus_config_s
 {
+  const char *name;
   int32_t port_num;
   eMODBUS_TYPE_t modebus_type;
   void *sem;

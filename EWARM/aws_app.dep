@@ -335,12 +335,12 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc_ex.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sd.c</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_cdc.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd_ex.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_spi.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sram.c</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_uart.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_iwdg.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_adc_ex.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_flash_ex.c</file>
@@ -1843,7 +1843,7 @@
             <file>$PROJ_DIR$\..\Application\test\test_adc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_logging.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\aws_data_handler.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_isrEvent.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_crc.h</file>
             <file>$PROJ_DIR$\release\Obj\st7920.__cstat.et</file>
             <file>$TOOLKIT_DIR$\inc\c\stdio.h</file>
@@ -6622,7 +6622,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1595 2132 1935 1468 2217 1543 1384 1653 496 241 275 266 181 1409 1529 2428 2385 198 1769 1731 1775 1735 2416 2352 2384 2342 270 1798 1603 1860 2264 1822 2238 2251 2284 1847 1696 2227 2312 2245 2309 2395 2370 2262 2332 2406 2419 2353 2335 2265 2345 2339 2364 2393 2405 2376 1736 2399 2361 2387 2323 2299 2354 1780 2355 2325 2408 2359 2372 2436 2383 2396 1928 174 2279</file>
+                    <file> 1595 2132 1935 1468 2217 1543 1384 1653 496 241 275 266 181 1409 1529 2428 2385 198 1769 1731 1775 1735 2416 2352 2384 2342 270 1798 1603 1860 2264 1822 2238 2251 2284 1847 1696 2227 2312 2245 2309 2395 2370 2262 2332 2406 2419 2353 2335 2265 2345 2339 2364 2393 2405 2376 1736 2399 2361 2387 2323 2299 2354 1780 2355 2325 2408 2359 2372 2436 2383 2396 1928 174 2279 178</file>
                 </tool>
             </inputs>
         </file>

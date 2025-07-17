@@ -37,8 +37,8 @@ driver_t *hjTemperature_open(int32_t num, void *opt)
   }
 
   hj_temperature_cfg.modbus.id = hjtemp->modbus_id;
-
-  uart_config.baud = 9600;
+  hj_temperature_cfg.modbus.name = "hjtemp";
+      uart_config.baud = 9600;
   uart_config.parityIdx = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
   uart_config.dataLen = UART_DATA_LEN_8;

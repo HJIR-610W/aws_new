@@ -75,15 +75,14 @@ typedef struct regs_s
 
 uint16_t ModRTU_CRC(uint8_t *buf, int len);
 
-#ifndef MODBUS_INIT_T
-#define MODBUS_INIT_T
 
-
-#endif
 
 typedef enum modbus_type_e
 {
   eMODBUS_RS485,
   eMODBUS_RS232
 } eMODBUS_TYPE_t;
+
+
+#define MODBUS_REG_SIZE 50 //한번에 읽기 가능한 레지스터 갯수 제한 
 #endif

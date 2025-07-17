@@ -7,7 +7,7 @@
 #include "os_user_def.h"
 #include "pcb_define.h"
 #include "dev_io.h"
-
+#include "bsp_delay.h"
 typedef struct rs
 {
   int32_t uart_number;
@@ -40,6 +40,20 @@ int32_t bsp_rs485_init(int32_t num,void *opt)
     return (rs485_instance[num].opened?1:0);
 }
 
+
+void safe_us_delay(uint32_t us_delay)
+{
+  uint32_t start;
+  uint32_t delay;
+  start = mcu_get_clk();
+  osDelay(1);
+  delay = cal_elapsed_us(start);
+
+  if (delay < us_delay)
+  {
+    osDelay(1);
+  }
+}
 /**
  * @brief RS485 데이터 전송
  * @param drv
@@ -59,9 +73,11 @@ int32_t bsp_rs485_send(int num,uint8_t *pData, uint16_t dataLen)
 
   // TODO:이 드라이버를 호출하는 task보다 우선높은곳이 있으면 osDelay 1이상 지연됨됨
   bsp_do_high(rs485_instance [num].dir_do_num); // 출력으로 설정
-  osDelay(1);
+  safe_us_delay(100);
+  //osDelay(1);//osDelay는 1틱 기준이기때문에 
   cnt = bsp_uart_send(rs485_instance[num].uart_number, pData, dataLen);
-  osDelay(1);
+ // osDelay(1);
+  safe_us_delay(100);
   bsp_do_low(rs485_instance[num].dir_do_num); // 입력으로 설정
 
 

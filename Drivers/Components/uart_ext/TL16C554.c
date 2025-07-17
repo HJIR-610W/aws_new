@@ -70,7 +70,8 @@ typedef struct tl16c554_cfg_s
   uint8_t parityIdx;
   StreamBufferHandle_t quad_stream;
   bool opened;
-  void *sem;
+  void *tx_sem;
+  void *rx_sem;
 
 } tl16c554_instance_t;
 
@@ -175,7 +176,7 @@ void set_parity(uint8_t uart_num, uint8_t parity_mode)
 {
   volatile uint8_t lcr;
 
-  OS_PEND_SEM(tl16c554_inst[uart_num].sem,osWaitForever);
+  OS_PEND_SEM(tl16c554_inst[uart_num].tx_sem,osWaitForever);
 
 
   lcr = read_register(LCR(exUartBaseAddress[uart_num]));
@@ -206,7 +207,7 @@ void set_parity(uint8_t uart_num, uint8_t parity_mode)
 
   write_register(LCR(exUartBaseAddress[uart_num]), lcr_val);
 
-  OS_POST_SEM(tl16c554_inst[uart_num].sem);
+  OS_POST_SEM(tl16c554_inst[uart_num].tx_sem);
 }
 
 void set_stop_bit(uint8_t uart_num, uint8_t stop_bits)
@@ -249,7 +250,7 @@ void quad_init(int uart_num, void *opt)
       TOSTRING(irq_INTA_5), TOSTRING(irq_INTB_6), TOSTRING(irq_INTC_7), TOSTRING(irq_INTD_8)};
   int baud_rate = config->baud;
 
-  OS_PEND_SEM(tl16c554_inst[uart_num].sem,osWaitForever);
+  OS_PEND_SEM(tl16c554_inst[uart_num].tx_sem,osWaitForever);
 
   // 보오드레이트 설정을 위한 Divisor 계산
   uint16_t divisor = UART_CLOCK_FREQ / (16 * baud_rate);
@@ -277,11 +278,11 @@ void quad_init(int uart_num, void *opt)
     parity_mode = 2;
   }
 
-  OS_POST_SEM(tl16c554_inst[uart_num].sem);
+  OS_POST_SEM(tl16c554_inst[uart_num].tx_sem);
 
   set_parity(uart_num, parity_mode);
 
-  OS_PEND_SEM(tl16c554_inst[uart_num].sem, osWaitForever);
+  OS_PEND_SEM(tl16c554_inst[uart_num].tx_sem, osWaitForever);
   /*
   FIFO 설정 (FCR) 트리거 레벨 1바이트
   */
@@ -310,7 +311,7 @@ void quad_init(int uart_num, void *opt)
   isr_cfg.prio = 6;
   isr_cfg.handle = uart_num;
 
-  OS_POST_SEM(tl16c554_inst[uart_num].sem);
+  OS_POST_SEM(tl16c554_inst[uart_num].tx_sem);
   bsp_di_set_interrupt(tl16c554_inst[uart_num].irq_di_num, &isr_cfg);
 }
 
@@ -773,15 +774,12 @@ int32_t tls16c554_init(int32_t num, void *opt)
   // RX 데이터 수신 버퍼를 할당, 트리거 레벨 1로 설정정
   tl16c554_inst[num].quad_stream = xStreamBufferCreate(g_streamBuffSizeList[num], 1);
 
-   OS_CREATE_BINARY_SEM(tl16c554_inst[num].sem);
-  // 초기화
-  quad_init(num, opt);
+   OS_CREATE_BINARY_SEM(tl16c554_inst[num].tx_sem);
+   OS_CREATE_BINARY_SEM(tl16c554_inst[num].rx_sem);
+   // 초기화
+   quad_init(num, opt);
 
-
-
-
-
-  return 0;
+   return 0;
 }
 
 void tls16c554_close(int num) {}
@@ -792,7 +790,7 @@ int32_t tls16c554_send(int num, const uint8_t *pData, uint16_t dataLen)
   uint32_t startTime;
 
 
-  OS_PEND_SEM(tl16c554_inst[num].sem, osWaitForever);
+  OS_PEND_SEM(tl16c554_inst[num].tx_sem, osWaitForever);
 
 
   while (dataLen)
@@ -821,14 +819,14 @@ int32_t tls16c554_send(int num, const uint8_t *pData, uint16_t dataLen)
   THR에 문자가 로드되면 LSR6은 클리어되며 문자가 완전히 송신될 때 까지 유지됨
   */
 
-  OS_POST_SEM(tl16c554_inst[num].sem);
+  OS_POST_SEM(tl16c554_inst[num].tx_sem);
 
   return cnt;
 }
 
-int32_t tls16c554_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
+int32_t tls16c554_recv2(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {
-#if STREAMBUFFER_USE  // 레지스터 직접 접근
+
   uint32_t starTick;
   uint32_t stopTick;
   uint32_t elapseTick;
@@ -844,7 +842,7 @@ int32_t tls16c554_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t
 
   (void)lastTick;
 
-  OS_PEND_SEM(tl16c554_inst[uart_num].sem, osWaitForever);
+  OS_PEND_SEM(tl16c554_inst[uart_num].tx_sem, osWaitForever);
 
   while (1)
   {
@@ -866,6 +864,7 @@ int32_t tls16c554_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t
       if (xBytesRead > 0)
       {
         cnt += xBytesRead;
+        io_printf("cnt:%d\r\n",cnt);
         lastTick = osKernelGetTickCount();
       }
     }
@@ -886,7 +885,7 @@ int32_t tls16c554_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t
     if (elapseTick >= timeout || cnt >= buffSize)
     {
 
-      OS_POST_SEM(tl16c554_inst[uart_num].sem);
+      OS_POST_SEM(tl16c554_inst[uart_num].tx_sem);
 
       return cnt;
     }
@@ -894,30 +893,126 @@ int32_t tls16c554_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t
     timeout = timeout - elapseTick;
   }
 
-#else
-  uint32_t startTick;
-  uint16_t cnt = 0;
 
-  startTick = xTaskGetTickCount();
-  while (1)
+}
+
+int32_t tls16c554_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
+{
+  uint32_t startTick = osKernelGetTickCount();
+  size_t cnt = 0;
+  size_t xBytesAvailable;
+  size_t xBytesRead;
+
+  OS_PEND_SEM(tl16c554_inst[uart_num].tx_sem, osWaitForever);
+
+  // timeOutMs가 0인 경우: 논블로킹 모드 (데이터가 있으면 읽고 없으면 즉시 리턴)
+  if (timeOutMs == 0)
   {
-    if (read_register(LSR(exUartBaseAddress[channel])) & LSR_DR)
+    xBytesAvailable = xStreamBufferBytesAvailable(tl16c554_inst[uart_num].quad_stream);
+
+    if (xBytesAvailable > 0)
     {
-      pBuff[cnt++] = read_register(RBR(exUartBaseAddress[channel]));
+      size_t bytesToRead = (xBytesAvailable > buffSize) ? buffSize : xBytesAvailable;
+      xBytesRead = xStreamBufferReceive(tl16c554_inst[uart_num].quad_stream,
+                                        pBuff,
+                                        bytesToRead,
+                                        0); // 대기시간 0
+      cnt = xBytesRead;
     }
-    if (cnt == buffSize)
+    // 데이터가 없으면 cnt는 0으로 리턴
+  }
+  // timeOutMs가 0xFFFFFFFF인 경우: 무한 대기 모드
+  else if (timeOutMs == 0xFFFFFFFF)
+  {
+    while (cnt < buffSize)
     {
-      break;
+      xBytesAvailable = xStreamBufferBytesAvailable(tl16c554_inst[uart_num].quad_stream);
+
+      size_t bytesToRead = buffSize - cnt;
+      if (xBytesAvailable > bytesToRead)
+      {
+        xBytesAvailable = bytesToRead;
+      }
+
+      if (xBytesAvailable == 0)
+      {
+        // 데이터가 없으면 최소 1바이트 수신까지 무한 대기
+        xBytesRead = xStreamBufferReceive(tl16c554_inst[uart_num].quad_stream,
+                                          &pBuff[cnt],
+                                          1,
+                                          osWaitForever);
+      }
+      else
+      {
+        // 사용 가능한 데이터를 읽음
+        xBytesRead = xStreamBufferReceive(tl16c554_inst[uart_num].quad_stream,
+                                          &pBuff[cnt],
+                                          xBytesAvailable,
+                                          osWaitForever);
+      }
+
+      if (xBytesRead > 0)
+      {
+        cnt += xBytesRead;
+      }
     }
-    if ((xTaskGetTickCount() - startTick) > timeOutMs)
+  }
+  // timeOutMs가 양수인 경우: 지정된 타임아웃 적용
+  else
+  {
+    uint32_t timeoutTick = timeOutMs;
+
+    while (cnt < buffSize)
     {
-      break;
+      uint32_t elapsedTick = osKernelGetTickCount() - startTick;
+
+      if (elapsedTick >= timeoutTick)
+      {
+        break; // Timeout 발생
+      }
+
+      uint32_t remainingTime = timeoutTick - elapsedTick;
+
+      xBytesAvailable = xStreamBufferBytesAvailable(tl16c554_inst[uart_num].quad_stream);
+
+      size_t bytesToRead = buffSize - cnt;
+      if (xBytesAvailable > bytesToRead)
+      {
+        xBytesAvailable = bytesToRead;
+      }
+
+      if (xBytesAvailable == 0)
+      {
+        // 데이터가 없으면 최소 1바이트 수신 대기
+        xBytesRead = xStreamBufferReceive(tl16c554_inst[uart_num].quad_stream,
+                                          &pBuff[cnt],
+                                          1,
+                                          remainingTime);
+      }
+      else
+      {
+        // 데이터를 읽음
+        xBytesRead = xStreamBufferReceive(tl16c554_inst[uart_num].quad_stream,
+                                          &pBuff[cnt],
+                                          xBytesAvailable,
+                                          remainingTime);
+      }
+
+      if (xBytesRead > 0)
+      {
+        cnt += xBytesRead;
+      }
+      else
+      {
+        // xStreamBufferReceive가 0을 리턴하면 타임아웃 발생
+        break;
+      }
     }
   }
 
-  return cnt;  // 데이터가 준비되지 않음
+  OS_POST_SEM(tl16c554_inst[uart_num].tx_sem);
 
-#endif
+  return cnt;
 }
 
 void tls16c554_flush_rx(int num)
@@ -949,7 +1044,6 @@ void tls16c554_uart_get(int num, uart_get_option_t cmd, void *option)
   uart_config_t *opt_cfg = option;
 
 
-
   switch (cmd)
   {
     case UART_GET_CONFIG:
@@ -958,6 +1052,7 @@ void tls16c554_uart_get(int num, uart_get_option_t cmd, void *option)
       break;
   }
 }
+
 int32_t tls16c554_recv_opt(int uart_num, uint8_t *buffer, uint16_t buffer_size,
                            uint32_t timeout1_ms, uint32_t timeout2_ms)
 {

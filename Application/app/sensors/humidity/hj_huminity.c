@@ -45,6 +45,8 @@ driver_t *hjHuminity_open(int32_t num, void *opt)
   uart_config.parityIdx = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
+  hj_huminity_cfg.modbus.name = "hjhumi";
+  
   switch (hjtemp->physical_layer)
   {
     case ePHYSICAL_RS232:

@@ -37,3 +37,4 @@ uint32_t cal_elapsed_us(uint32_t start)
 
     return time_us;
 }
+

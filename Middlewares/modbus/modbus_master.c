@@ -33,15 +33,15 @@
   drv_uart_recv_opt(driver, buff, buffSize, tout1, tout2)
 
 
-int32_t g_modbusLastErr;
+
 void *modbus_sem;
 
 typedef struct _send_data
 {
-  uint8_t data[256];
+  uint8_t data[MODBUS_REG_SIZE*2];
   uint16_t cnt;
 } modbus_data_t;
-modbus_data_t g_buff;
+
 
 void send_query(modbus_h_t *drv, modbus_t *pmodbus);
 
@@ -195,6 +195,7 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
 
   if (ret != 3)
   {
+    io_printf("ret:%d",ret);
     return -1;
   }
 
@@ -286,17 +287,19 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
     if (crc_calc != crc_recv)
     {
       LOG_MEM(rx_buf, total_len,(uint32_t)rx_buf,16);
-      ERROR_PRINTF("recv:%X,cal:%X\r\n",crc_recv,crc_calc);
       return -5;  // CRC 에러
     }
 
     return total_len;  // 유효한 패킷 길이 리턴
   }
 
+#define io_printf(...)
   int32_t modbus_master_req(modbus_h_t *drv, modbus_t *modbus)
   {
-    uint8_t buff[300];
+    uint8_t buff[MODBUS_REG_SIZE*2+20];
     int32_t len;
+
+    io_printf("modbus start %s\r\n",drv->name);
 
     memset(buff, 0, sizeof(buff));
     send_query(drv, modbus);
@@ -306,12 +309,15 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
 
     if (len > 0)
     {
+      io_printf("modbus parse %s\r\n", drv->name);
       if (parse_recv(buff, len, modbus->regs, modbus->regsCnt) == 0)
       {
+        io_printf("modbus ok %s\r\n", drv->name);
         return 0;
       }
     }
 
+    io_printf("modbus err %s %d\r\n",drv->name,len);
     return 1;
   }
 
@@ -352,7 +358,7 @@ int32_t modbus_write_multi_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t addre
                                uint16_t regCnt)
 {
   modbus_t modbus;
-  uint16_t reg[160];
+  uint16_t reg[MODBUS_REG_SIZE];
   int32_t err = RET_FAIL;
 
 
@@ -391,7 +397,7 @@ int32_t modbus_read_hold_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address
                               uint16_t regCnt)
 {
   modbus_t modbus;
-  uint16_t reg[160];
+  uint16_t reg[MODBUS_REG_SIZE];
   int32_t ret = RET_FAIL;
 
 
@@ -411,7 +417,7 @@ int32_t modbus_read_hold_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address
   modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
 
   ret = modbus_master_req(drv, &modbus);
-  g_modbusLastErr = ret;  // 디버깅을 위해 모드버스 마지막 결과값을 저장
+
   if (ret == RET_OK)
   {
     for (int i = 0; i < regCnt; i++)
@@ -432,7 +438,7 @@ int32_t modbus_read_input_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t addres
                              uint16_t regCnt)
 {
   modbus_t modbus;
-  uint16_t reg[160];
+  uint16_t reg[MODBUS_REG_SIZE];
   int32_t ret = RET_FAIL;
 
   
@@ -451,7 +457,7 @@ int32_t modbus_read_input_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t addres
   modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
 
   ret = modbus_master_req(drv, &modbus);
-  g_modbusLastErr = ret;  // 디버깅을 위해 모드버스 마지막 결과값을 저장
+
   if (ret == RET_OK)
   {
     for (int i = 0; i < regCnt; i++)
@@ -473,8 +479,10 @@ void send_query(modbus_h_t *drv, modbus_t *pmodbus)
   uint8_t bytesno;
   uint16_t cnt = 0;
   uint16_t crc;
+  modbus_data_t g_buff;
 
-  g_buff.data[cnt++] = pmodbus->id;  // 전역변수 선언하고 이문장 실행하면
+
+  g_buff.data[cnt++] = pmodbus->id;  //TODO: 전역변수 선언하고 이문장 실행하면
                                      // 이더넷이 이상함 이해불가..흠.
   g_buff.data[cnt++] = pmodbus->fc;
   g_buff.data[cnt++] = highByte(pmodbus->regAdd);
