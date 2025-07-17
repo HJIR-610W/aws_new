@@ -17,7 +17,7 @@ typedef struct bsp_di_inst_s
 
 const bsp_di_inst_t di_inst[BSP_DI_QUAD_UARTD_8 + 1] = {
 
-    [BSP_DI_0_ADC_RDY] = {.init = {.Pin = IN_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
+    [BSP_DI_0_ADC_RDY_ONLY] = {.init = {.Pin = IN_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
                           .port = IN_SPI2_DRDY_GPIO_Port},
     [BSP_DI_USER_BTN] = {.init = {.Pin = DI_SW_SYS_Pin, .Pull = GPIO_PULLUP},
                          .port = DI_SW_SYS_GPIO_Port},
@@ -67,7 +67,7 @@ void bsp_di_init(void)
     
       switch (di_num)
       {
-        case BSP_DI_0_ADC_RDY:
+        case BSP_DI_0_ADC_RDY_ONLY:
         case BSP_DI_USER_BTN:
         case BSP_DI_RAIN_REED:
         case BSP_DI_RAIN_HALL:
@@ -104,7 +104,7 @@ int32_t bsp_di_read(int32_t di_number)
 {
   switch (di_number)
   {
-    case BSP_DI_0_ADC_RDY:
+    case BSP_DI_0_ADC_RDY_ONLY:
     case BSP_DI_USER_BTN:
     case BSP_DI_RAIN_REED:
     case BSP_DI_RAIN_HALL:
@@ -269,7 +269,7 @@ void bsp_di_set_interrupt(int di_number, di_isr_set_cfg_t *isr_cfg)
   uint16_t pin;
   switch (di_number)
   {
-    case BSP_DI_0_ADC_RDY:
+    case BSP_DI_0_ADC_RDY_ONLY:
     case BSP_DI_USER_BTN:
     case BSP_DI_RAIN_REED:
     case BSP_DI_RAIN_HALL:

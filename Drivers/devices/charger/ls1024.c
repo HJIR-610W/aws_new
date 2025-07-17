@@ -36,7 +36,7 @@ int32_t ls1024_init(void)
   uart_config.stop_bit = 0;
 
   ls1024_inst.modbus.modebus_type = eMODBUS_RS485;
-  ls1024_inst.modbus.port_num = RS485_B;
+  ls1024_inst.modbus.port_num = RS485_B  ;
   drv_rs485_init(ls1024_inst.modbus.port_num, &uart_config);
 
   OS_CREATE_BINARY_SEM(ls1024_inst.sem);
@@ -45,6 +45,11 @@ int32_t ls1024_init(void)
 
   return 1;
 }
+
+
+// 요청 01 04 31 00 00 0F BE F2  
+// 응답    01 04 1E 00 67 00 00 00 00 00 00 04 FE 00 00 00 00 00 00 04 FE 00 00 00 00 00 00 04 FE 00 00 00 00 AF BA 
+
 
 void ls1024_read( charger_data_t *charger_data, uint8_t *err)
 {

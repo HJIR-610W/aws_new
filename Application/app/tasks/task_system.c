@@ -20,7 +20,7 @@
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
     .stack_size = TASK_SYSTEM_STACK_SIZE,
-    .priority = (osPriority_t)osPriorityBelowNormal,
+    .priority = (osPriority_t)osPriorityBelowNormal ,
 };
 
 void userBtnCallBack(int32_t arg)
@@ -122,21 +122,19 @@ void systemTask(void *arg)
     scan_key();
     drv_rtc_read(&Date_Time);
 
-    if ((osKernelGetTickCount() - start_time) > 1000)
+    if ((osKernelGetTickCount() - start_time) > 10000)
     {
 
       if( arg==PARA_RUN_MODE)
       {
-        
-        start_time = osKernelGetTickCount();
-      System.door_opened = drv_di_read(DRV_DI_0) > 0;
-      update_charger(charger_model);
-      System.battery_error = read_batteryVoltage1(&err) < 10.0f ? 1 : 0;
-      System.ac_status = 1; // 220v
-      System.dc_error = drv_system_read(DRV_SYS_BATTERY) < 11.0f ? 1 : 0;
-      
-      check_sd_card();
-      }
+          start_time = osKernelGetTickCount();
+          System.door_opened = drv_di_read(DRV_DI_0) > 0;
+          update_charger(charger_model);
+          System.battery_error = read_batteryVoltage1(&err) < 10.0f ? 1 : 0;
+          System.ac_status = 1; // 220v
+          System.dc_error = drv_system_read(DRV_SYS_BATTERY) < 11.0f ? 1 : 0;
+          check_sd_card();
+       }
     }
 
     osDelay(100);
@@ -145,7 +143,7 @@ void systemTask(void *arg)
 
 
 
-
+ 
 void systemTask_init(uint32_t para)
 {
 

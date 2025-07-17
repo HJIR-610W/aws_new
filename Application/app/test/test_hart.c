@@ -13,7 +13,7 @@
 #include "bsp_di.h"
 #define HART_TX_ON() bsp_do_low(BSP_DO_HART_RTS)
 #define HART_TX_OFF() bsp_do_high(BSP_DO_HART_RTS)
-#define IS_HART_CD() bsp_di_read(BSP_DI_HART_CD)
+#define IS_HART_CD() bsp_di_read(BSP_DI_HART_CD_ONLY)
 #define HART_SEND(data, len) drv_uart_send(g_hart_uart_num, data, len)
 #define HART_RECV(buff, buffSize, timeout) drv_uart_recv(g_hart_uart_num, buff, buffSize, timeout)
 

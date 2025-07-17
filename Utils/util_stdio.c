@@ -54,3 +54,24 @@ void make_centered(char *buffer, size_t buf_size, const char *text, int width)
   int end_pos = (width < buf_size) ? width : (int)buf_size - 1;
   buffer[end_pos] = '\0';
 }
+
+// utf8용 자간 일정하게 만드는 make_label
+char *m_l(char *label, int width)
+{
+  int len;
+  int remain;
+  static char buff[20];
+
+  strcpy_safe(buff, sizeof(buff), label);
+  len = strlen(buff);
+
+  remain = width - utf8_strlen(label);
+
+  for (int i = 0; i < remain; i++)
+  {
+    buff[len++] = ' ';
+  }
+  buff[len] = 0;
+
+  return buff;
+}

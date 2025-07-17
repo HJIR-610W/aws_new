@@ -28,7 +28,7 @@ driver_t *driver_sdi_open(uint32_t num,void *opt)
   switch (num)
   {
   case SDI_0:
-    g_sdi_cfg[num].uart_num = BSP_UART_9_SDI;
+    g_sdi_cfg[num].uart_num = BSP_UART_9_SDI_ONLY;
     g_sdi_cfg[num].dir_do_num = BSP_DO_DIR_RS485_A;
     bsp_do_low(g_sdi_cfg[num].dir_do_num); // 수신 모드
 

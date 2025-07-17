@@ -164,7 +164,7 @@ void test_uart(void)
    char *rs232_port_name[UART_PORT_MAX] = {"VHF", "TTL", "A", "B", "C", "D","CDMA"};
    const int32_t rs232_drv_num[UART_PORT_MAX] =
    { BSP_UART_0_D_SUB_0,
-     BSP_UART_1_TTL,
+     BSP_UART_1_TTL_ONLY,
      BSP_UART_2_EXT_A,
      BSP_UART_3_EXT_B,
      BSP_UART_4_EXT_C,

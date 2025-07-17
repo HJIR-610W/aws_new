@@ -381,6 +381,7 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
       break;
   }
 
+#if 0 
   p_kma_data->temperature.enable = 1;
   p_kma_data->wind_direction_avg.enable = 1;
   p_kma_data->wind_speed_avg.enable = 1;
@@ -405,6 +406,6 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->soil_temperature_1m.enable = 1;
   p_kma_data->soil_temperature_1_5m.enable = 1;
   p_kma_data->soil_temperature_3m.enable = 1;
-
+#endif
   return p_kma_data;
 }

@@ -11,7 +11,7 @@
 #define DRV_UART_3_EXT_B 3   // 사용자1
 #define DRV_UART_4_EXT_C 4   // 사용자2
 #define DRV_UART_5_EXT_D 5   // 사용자3
-#define DRV_UART_8_CDMA 8    // CDMA
+#define  DRV_UART_8_CDMA 8    // CDMA
 #define DRV_UART_10_CDC 10   // USB 디버깅
 
 

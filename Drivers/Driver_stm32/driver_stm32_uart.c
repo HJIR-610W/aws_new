@@ -6,30 +6,28 @@
 
 #include "FreeRTOS.h"
 #include "cmsis_os2.h"
-#include "bsp_swo.h"
-#include "semphr.h"
+//#include "semphr.h"
+#include "os_user_def.h"
 #include "stm32f4xx_hal.h"
 #include "stream_buffer.h"
 #include "system_err.h"
-#include "bsp_delay.h"
 #include "util_memory.h"
-#include "os_user_def.h"
+
 
 typedef struct stm32_uart_cfg_s
 {
-  uint8_t parityIdx;
+  bool opened;
   int8_t errCode; // 드라이버 에러  상태 정보
-  uint8_t dma_use;
-  uint8_t rxData;
+  uint8_t parityIdx;
   uint32_t baud; // 설정된 통신속도
-  int buffser_size;
-  void *txcSem; // 전송 완료 알림 세마포어
+  uint8_t rxData;
   UART_HandleTypeDef handle;
   StreamBufferHandle_t xStreamBuffer;
+  int buffser_size;
   DMA_HandleTypeDef dma_tx;
   DMA_HandleTypeDef dma_rx;
-  bool opened;
   void *sem;
+  void *txcSem; // 전송 완료 알림 세마포어
 } uart_instance_t;
 
 static uart_instance_t uart_inst[STM32_UART_MAX] = {[STM32_UART_0_CDMA] = {.handle.Instance = USART3,.buffser_size = 512},
@@ -41,15 +39,16 @@ DMA_HandleTypeDef *get_uart_txdma(int num)
  
 }
 
-DMA_HandleTypeDef hdma_usart3_tx;
-DMA_HandleTypeDef hdma_usart3_rx;
 
-DMA_HandleTypeDef hdma_usart6_tx;
-DMA_HandleTypeDef hdma_usart6_rx;
-
-static void MX_DMA_UART_Init(UART_HandleTypeDef *p_uart, DMA_HandleTypeDef *p_dma)
+static void stm32_uart_dma_init(int num)
 {
 
+  UART_HandleTypeDef *p_uart;
+  DMA_HandleTypeDef *p_dma;
+
+  p_uart = &uart_inst[num].handle;
+  p_dma = &uart_inst[num].dma_tx;
+  
   if (p_uart->Instance == USART3)
   {
     __HAL_RCC_DMA1_CLK_ENABLE();
@@ -106,8 +105,11 @@ static void MX_DMA_UART_Init(UART_HandleTypeDef *p_uart, DMA_HandleTypeDef *p_dm
   }
 }
 
-static void MX_USART_UART_Init(UART_HandleTypeDef *p_uart, uint32_t baud, uint8_t parity, uint8_t dataLen, uint8_t stop)
+static void stm32_uart_hal_init(int num,uint32_t baud, uint8_t parity, uint8_t dataLen, uint8_t stop)
 {
+  UART_HandleTypeDef *p_uart;
+
+  p_uart = &uart_inst[num].handle;
 
   p_uart->Instance = USART3;
   p_uart->Init.BaudRate = baud;
@@ -159,10 +161,13 @@ int32_t stm32_uart_init(int num, void *opt)
   osSemaphoreId_t tempSem = NULL;
   uart_config_t *cfg = opt;
 
-  if (uart_inst[num].opened == true)
+  if(uart_inst[num].opened == true)
   {
     return 1;
   }
+
+  uart_inst[num].baud = cfg->baud;
+  uart_inst[num].parityIdx = cfg->parityIdx;
 
 
   if (uart_inst[num].txcSem == NULL)
@@ -171,29 +176,25 @@ int32_t stm32_uart_init(int num, void *opt)
     if (tempSem)
       uart_inst[num].txcSem = tempSem;
   }
-
-  uart_inst[num].baud = cfg->baud;
-  uart_inst[num].parityIdx = cfg->parityIdx;
-  uart_inst[num].dma_use = 1;
   uart_inst[num].xStreamBuffer = xStreamBufferCreate(uart_inst[num].buffser_size, 1);
   OS_CREATE_BINARY_SEM(uart_inst[num].sem);
 
-  MX_USART_UART_Init(&uart_inst[num].handle, cfg->baud,cfg->parityIdx,cfg->dataLen,cfg->stop_bit);
-  MX_DMA_UART_Init(&uart_inst[num].handle, &uart_inst[num].dma_tx);
+  stm32_uart_hal_init(num, cfg->baud, cfg->parityIdx, cfg->dataLen, cfg->stop_bit);
+  stm32_uart_dma_init(num);
   HAL_UART_Receive_IT(&uart_inst[num].handle, (uint8_t *)&uart_inst[num], 1);
 
 
   uart_inst[num].opened = true;
 
-  return 0;
+  return 1;
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
+
   if (uartHandle->Instance == USART1)
   {
-
     __HAL_RCC_USART1_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
@@ -272,9 +273,6 @@ HAL_StatusTypeDef UART_SetBaudAndParity(UART_HandleTypeDef *huart, uint32_t baud
 }
 
 
-
-
-
 /*
 최초이의 한번바이트가 수신된 상태에서 특정 시간동안 UART RX 라인이
 High 있으면 idle 인터럽트 발생
@@ -282,7 +280,10 @@ uart 일반적으로 한번에 들어온다면 적용가능한 방법
 그러나,바이트의 재수신 시간이 너무 짧다면 문제가될 요소는 있음
 */
 
-void HAL_UART_IDLECallback(UART_HandleTypeDef *huart) { __asm("BKPT #0"); }
+void HAL_UART_IDLECallback(UART_HandleTypeDef *huart)
+{ 
+  __asm("BKPT #0");
+}
 
 void USART3_IRQHandler(void)
 {
@@ -326,7 +327,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
                                             &xHigherPriorityTaskWoken);
       if (!(xBytesSent > 0))
       {
-        __asm("BKPT #0");
+        __asm("BKPT #0");//TODO:실행중 발생하면 usage fault 발생됨
       }
       /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
@@ -368,49 +369,6 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
   }
 }
 
-#define STM32_UART_TX_TIMEOUTMS 60000
-
-uint32_t calculate_txWaitTimeMs(uint32_t baud, uint16_t dataLen)
-{
-  uint32_t waitTime;
-
-  waitTime = (uint32_t)(((dataLen * 10) / (float)baud) * 1000) + 100;  // 100정도 기본 delay 해줌
-
-  return waitTime;
-}
-int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
-{
-  HAL_StatusTypeDef status;
-  osStatus_t osStatus;
-  int32_t retVal = dataLen;
-  uint32_t waitTime;
-
-  OS_PEND_SEM(uart_inst[num].sem,osWaitForever);
-  osSemaphoreAcquire(uart_inst[num].txcSem, 0);  // 이전에 처리 못한건 제거
-  waitTime = calculate_txWaitTimeMs(uart_inst[num].baud, dataLen);
-  status = HAL_UART_Transmit_DMA(&uart_inst[num].handle, pData, dataLen);
-
-  if (status == HAL_OK)
-  {
-    if (uart_inst[num].txcSem)
-    {
-      osStatus = osSemaphoreAcquire(uart_inst[num].txcSem, waitTime);
-      if (osStatus != osOK)
-      {
-        ERROR_PRINTF("uart %d", osStatus);
-
-        retVal = -1;
-      }
-    }
-  }
-  else
-  {
-    ERROR_PRINTF("uart");
-  }
-  OS_POST_SEM(uart_inst[num].sem);
-  return retVal;
-}
-
 int32_t stm32_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {
   uint32_t starTick;
@@ -427,7 +385,7 @@ int32_t stm32_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t tim
 
   (void)lastTick;
 
-  if(num==-1)
+  if(num < 0)
   {
     return 0;
   }
@@ -441,7 +399,7 @@ int32_t stm32_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t tim
       xBytesAvailable = remainBuffSize;  // 버퍼 수만큼만 읽기
     }
 
-    starTick = xTaskGetTickCount();
+    starTick = OS_GET_TICK();
     if (xBytesAvailable > 0)
     {
       /* 데이터를 읽을 수 있다면, 데이터를 수신 */
@@ -451,7 +409,7 @@ int32_t stm32_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t tim
       if (xBytesRead > 0)
       {
         cnt += xBytesRead;
-        lastTick = xTaskGetTickCount();
+        lastTick = OS_GET_TICK();
       }
     }
     else
@@ -462,10 +420,10 @@ int32_t stm32_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t tim
       if (xBytesRead == 1)
       {
         cnt += 1;
-        lastTick = xTaskGetTickCount();
+        lastTick = OS_GET_TICK();
       }
     }
-    stopTick = xTaskGetTickCount();
+    stopTick = OS_GET_TICK();
     elapseTick = stopTick - starTick;
 
     if (elapseTick >= timeout || cnt >= buffSize)
@@ -493,15 +451,25 @@ void stm32_uart_set(int num, uart_set_option_t cmd, void *option)
 void stm32_uart_flush_rx(int num)
 {
   uint8_t data;
+
+  if(num <0)
+  {
+    return;
+  }
+  
   while (stm32_uart_recv(num, &data, 1, 0));
 }
 
-int32_t stm32_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms,
+int32_t stm32_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms,
                        uint32_t timeout2_ms)
 {
   int32_t received = 0;
   uint8_t *p = buffer;
 
+  if(num <0 )
+  {
+    return 0;
+  }
   // Step 1: 첫 바이트 수신 (timeout1 사용)
   int32_t ret = stm32_uart_recv(num, p, 1, timeout1_ms);
   if (ret <= 0)
@@ -525,34 +493,15 @@ int32_t stm32_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32_t 
 }
 
 
-/**
- * @brief os자원 없이 직접 읽기 
- */
-int32_t stm32_uart_recv_ll(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
-{
-  uint32_t start_time  = HAL_GetTick();
-  uint8_t data=0;
-  int32_t len=0;
 
-  while(1)
-  {
-    if(HAL_UART_Receive(&uart_inst[num].handle, &data, 1, 0)==HAL_OK)
-    {
-      pBuff[len++] = data;
-    }
-    if((HAL_GetTick()-start_time)>timeOutMs)
-    {
-      break;
-    }
-  }
-
-
-  return len;
-}
 void stm32_uart_get(int num, uart_get_option_t cmd, void *option)
 {
   uart_config_t *opt_cfg = option;
 
+  if(num <0)
+  {
+    return ;
+  }
   switch (cmd)
   {
     case UART_GET_CONFIG:
@@ -572,6 +521,10 @@ int32_t stm32_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
 {
   size_t xBytesSent;
 
+  if(num <0)
+  {
+    return 0;
+  }
   xBytesSent = xStreamBufferSend(uart_inst[num].xStreamBuffer, pData, dataLen,
                                  pdMS_TO_TICKS( 100 ));
 
@@ -591,12 +544,12 @@ int32_t stm32_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout
   uint32_t timeout;
   uint32_t len;
 
-  startTime = osKernelGetTickCount();
+  startTime = OS_GET_TICK();
   timeout = tout_ms;
 
   do
   {
-    startTick = osKernelGetTickCount();
+    startTick = OS_GET_TICK();
     len = stm32_uart_recv(num, &data, 1, tout_ms);
 
     if (len)
@@ -622,7 +575,7 @@ int32_t stm32_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout
       }
     }
 
-    stopTick = xTaskGetTickCount();
+    stopTick = OS_GET_TICK();
     elapseTick = stopTick - startTick;
 
     if ((tout_ms == 0) || ((stopTick - startTime) >= tout_ms))
@@ -636,4 +589,78 @@ int32_t stm32_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout
   } while (1);
 
   return 0;
+}
+
+#define STM32_UART_TX_TIMEOUTMS 60000
+
+uint32_t calculate_txWaitTimeMs(uint32_t baud, uint16_t dataLen)
+{
+  uint32_t waitTime;
+
+  waitTime = (uint32_t)(((dataLen * 10) / (float)baud) * 1000) + 100; // 100정도 기본 delay 해줌
+
+  return waitTime;
+}
+int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
+{
+  int32_t retVal = dataLen;
+  uint32_t waitTime;
+  HAL_StatusTypeDef status;
+  osStatus_t osStatus;
+
+  OS_PEND_SEM(uart_inst[num].sem, osWaitForever);
+  osSemaphoreAcquire(uart_inst[num].txcSem, 0); // 이전에 처리 못한건 제거
+  waitTime = calculate_txWaitTimeMs(uart_inst[num].baud, dataLen);
+  status = HAL_UART_Transmit_DMA(&uart_inst[num].handle, pData, dataLen);
+
+  if (status == HAL_OK)
+  {
+    if (uart_inst[num].txcSem)
+    {
+      osStatus = osSemaphoreAcquire(uart_inst[num].txcSem, waitTime);
+      if (osStatus != osOK)
+      {
+        ERROR_PRINTF("uart %d", osStatus);
+
+        retVal = -1;
+      }
+    }
+  }
+  else
+  {
+    ERROR_PRINTF("uart");
+  }
+  OS_POST_SEM(uart_inst[num].sem);
+  return retVal;
+}
+
+
+//ll함수
+/**
+ * @brief os자원 없이 직접 읽기
+ */
+int32_t stm32_uart_recv_ll(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
+{
+  uint32_t start_time = HAL_GetTick();
+  uint8_t data = 0;
+  int32_t len = 0;
+
+  if (num < 0)
+  {
+    return 0;
+  }
+
+  while (1)
+  {
+    if (HAL_UART_Receive(&uart_inst[num].handle, &data, 1, 0) == HAL_OK)
+    {
+      pBuff[len++] = data;
+    }
+    if ((HAL_GetTick() - start_time) > timeOutMs)
+    {
+      break;
+    }
+  }
+
+  return len;
 }

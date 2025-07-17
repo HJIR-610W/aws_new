@@ -173,9 +173,9 @@ void test_sdi12(void)
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 
-  g_sdi_uart = BSP_UART_9_SDI;
+  g_sdi_uart = BSP_UART_9_SDI_ONLY;
 
-      bsp_uart_init(BSP_UART_9_SDI, &uart_config);
+      bsp_uart_init(BSP_UART_9_SDI_ONLY, &uart_config);
 
   sdiTask(0);
 }

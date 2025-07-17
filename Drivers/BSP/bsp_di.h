@@ -9,9 +9,9 @@
 
 #include "driver_di_def.h"
 
-#define BSP_DI_0_ADC_RDY 0
-#define BSP_DI_HART_CD 1
-#define BSP_DI_1_RTC_IRQ 2
+#define BSP_DI_0_ADC_RDY_ONLY 0
+#define BSP_DI_HART_CD_ONLY 1
+#define BSP_DI_1_RTC_IRQ_ONLY 2
 #define BSP_DI_USER_BTN 3
 #define BSP_DI_RAIN_REED 4
 #define BSP_DI_RAIN_HALL 5

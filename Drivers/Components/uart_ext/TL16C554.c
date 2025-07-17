@@ -105,7 +105,7 @@ uint8_t read_register(void *addr)
 
   data = *((volatile uint8_t *)addr);
 
-  return data;
+  return data;                                        
 }
 
 // 레지스터 쓰기 함수

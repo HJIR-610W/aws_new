@@ -15,6 +15,7 @@
 #include "terminal.h"
 #include "util_memory.h"
 #include "vt100_command.h"
+#include "util_stdio.h"
 
 #define ENTRY_PF(cnt, width, label, format, ...) \
   io_printf("%2d.%-*s:" format "\r\n", cnt, width, label, ##__VA_ARGS__)
@@ -991,6 +992,7 @@ int32_t menu_sensor( eSENSOR_TYPE_t list)
 여기서 수정하고 싶은 센서번호를 입력
 센서번호는 정해진 순서대로 입력되어야함
  */
+#define LABEL_W 14
 int32_t print_menu_sensor(void)
 {
   char opt[25];
@@ -1005,10 +1007,10 @@ int32_t print_menu_sensor(void)
   for (i = 0; i < cnt; i++)
   {
     make_option(&get_config_app()->sensor[i], opt, sizeof(opt));
-    io_printf("%2d.%-14s:%-20s %-22s,  ", i, sensor_name_list[i],
+    io_printf("%2d.%-14s:%-20s %-22s,  ", i, m_l((char *)sensor_name_list[i], LABEL_W),
               ITEM_LIST(get_config_app()->sensor[i].type, g_sensor_model_table), opt);
     make_option(&get_config_app()->sensor[i + cnt], opt, sizeof(opt));
-    io_printf("%2d.%-14s:%-20s %-22s\r\n", i + cnt, sensor_name_list[i + cnt],
+    io_printf("%2d.%-14s:%-20s %-22s\r\n", i + cnt, m_l((char *)sensor_name_list[i + cnt],LABEL_W),
               ITEM_LIST(get_config_app()->sensor[i + cnt].type, g_sensor_model_table), opt);
   }
 

@@ -12,7 +12,7 @@ int is_debug_mode(void)
 
 
 
-int main(void)
+  int main(void)
 {
   if (is_debug_mode())
   {

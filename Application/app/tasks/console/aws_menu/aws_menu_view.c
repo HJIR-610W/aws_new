@@ -30,27 +30,8 @@ const char *linkStatusList[3] = {"-", "UP", "DOWN"};
 const char *doorStatusList[2] = {"닫힘", "열림"};
 const char *generalStatusList[2] = {"정상", "비정상"};
 
-//utf8용 자간 일정하게 만드는 make_label
-char *m_l(char *label,int width)
-{
-  int len;
-  int remain;
-  static char buff[20];
 
-  strcpy_safe(buff,sizeof(buff),label);
-  len = strlen(buff);
 
-  remain = width - utf8_strlen(label);
-
-  for (int i = 0; i < remain; i++)
-  {
-    buff[len++] = ' ';
-  }
-  buff[len]=0;
-  
-  return buff;
-
-}
 void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size)
 {
   if (!buffer || buffer_size == 0)

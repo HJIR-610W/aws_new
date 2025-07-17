@@ -24,15 +24,15 @@ typedef struct {
 // BSP UART 번호를 드라이버 번호로 매핑하는 테이블
 static const uart_pinmap_t uart_pinmap[11] = {
   [BSP_UART_0_D_SUB_0]  = {UART_DRIVER_TL16C554,    TL16C554_UART_1_D_SUB},        // VHF
-  [BSP_UART_1_TTL]      = {UART_DRIVER_TL16C554, TL16C554_UART_2_TTL_TTL},   // 블루투스 모듈
+  [BSP_UART_1_TTL_ONLY]      = {UART_DRIVER_TL16C554, TL16C554_UART_2_TTL_TTL},   // 블루투스 모듈
   [BSP_UART_2_EXT_A]    = {UART_DRIVER_TL16C554, TL16C554_UART_3_RS232_A},   // 사용자0
   [BSP_UART_3_EXT_B]    = {UART_DRIVER_TL16C554, TL16C554_UART_4_RS232_B},   // 사용자1
   [BSP_UART_4_EXT_C]    = {UART_DRIVER_TL16C554, TL16C554_UART_7_RS232_C},   // 사용자2
   [BSP_UART_5_EXT_D]    = {UART_DRIVER_TL16C554, TL16C554_UART_8_RS232_D},   // 사용자3
-  [BSP_UART_6_RS485_A]  = {UART_DRIVER_TL16C554, TL16C554_UART_5_RS485_A},   // RS485 A
-  [BSP_UART_7_RS485_B]  = {UART_DRIVER_TL16C554, TL16C554_UART_6_RS485_B},   // RS485 B
+  [BSP_UART_6_RS485_A_ONLY]  = {UART_DRIVER_TL16C554, TL16C554_UART_5_RS485_A},   // RS485 A
+  [BSP_UART_7_RS485_B_ONLY]  = {UART_DRIVER_TL16C554, TL16C554_UART_6_RS485_B},   // RS485 B
   [BSP_UART_8_CDMA]     = {UART_DRIVER_STM32,    STM32_UART_0_CDMA},        // CDMA
-  [BSP_UART_9_SDI]      = {UART_DRIVER_STM32,    STM32_UART_1_SDI},         // SDI통신
+  [BSP_UART_9_SDI_ONLY]      = {UART_DRIVER_STM32,    STM32_UART_1_SDI},         // SDI통신
   [BSP_UART_10_CDC]     = {UART_DRIVER_CDC,      STM32_CDC}                 // USB 디버깅
 };
 
@@ -187,7 +187,7 @@ int32_t bsp_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32
     return -1;
   switch (pinmap->driver_type) {
     case UART_DRIVER_STM32:
-      len =  stm32_recv_opt(pinmap->driver_num, buffer, buffer_size, timeout1_ms, timeout2_ms);
+      len =  stm32_uart_recv_opt(pinmap->driver_num, buffer, buffer_size, timeout1_ms, timeout2_ms);
       break;
     case UART_DRIVER_TL16C554:
       len = tls16c554_recv_opt(pinmap->driver_num, buffer, buffer_size, timeout1_ms, timeout2_ms);

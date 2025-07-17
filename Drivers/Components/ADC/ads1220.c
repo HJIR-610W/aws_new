@@ -544,7 +544,7 @@ void ads1210_initialize(void)
     isr_cfg.trigger = eDI_FALLING;
     isr_cfg.prio    = 5;
 
-    bsp_di_set_interrupt(BSP_DI_0_ADC_RDY,&isr_cfg);
+    bsp_di_set_interrupt(BSP_DI_0_ADC_RDY_ONLY,&isr_cfg);
 
     ads1220_reset_sw();
 
@@ -689,7 +689,7 @@ void ads1220_init(void)
 
   ads1220_inst.spi_num = BSP_SPI_2;
   ads1220_inst.cs_do_num = BSP_DO_ADC_NCS;
-  ads1220_inst.irq_di_num = BSP_DI_0_ADC_RDY;
+  ads1220_inst.irq_di_num = BSP_DI_0_ADC_RDY_ONLY;
 
   OS_CREATE_BINARY_SEM(ads1220_inst.sem);
 
