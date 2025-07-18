@@ -26,7 +26,7 @@ int32_t uart_num_to_driver_num(int32_t app_uart_num)
       num = DRV_UART_3_EXT_B;
       break;
       break;
-    case eRS232_HART_D:
+    case eRS232_RS232_C:
       num = DRV_UART_5_EXT_D;
       break;
   }

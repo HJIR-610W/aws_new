@@ -22,7 +22,7 @@ int32_t rs485_num_to_driver_num(int32_t app_rs485_num)
   int32_t num = 0;
 
   switch (app_rs485_num)
-  {
+  {     
   case eAPP_RS485_A:
     num = RS485_A;
     break;

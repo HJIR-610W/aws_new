@@ -12,61 +12,74 @@ void test_rs485(void)
 {
   uart_config_t uart_config;
   int len;
-  int32_t port[RS485_PORT_MAX];
-  char buff[30];
+  int32_t selected_port;
+  int port_index;
+  char buff[100];
   char rx_buff[50];
-  int baud=57600;
-  const char *rs485_port_name[RS485_PORT_MAX]={"A","B","C","D"};
+  int baud = 57600;
+  const char *rs485_port_name[RS485_PORT_MAX] = {"A", "B", "C", "D"};
+  int32_t port_list[RS485_PORT_MAX] = {RS485_A, RS485_B, RS485_RS232_C, RS485_RS232_D};
 
+  io_printf("RS485 포트별 테스트\r\n");
+  io_printf("주의: RS485 C,D는 하드웨어점퍼 설정 필요\r\n");
+  io_printf("기능: 포트이름 전송 후 1초간 수신 데이터 에코 및 HEX 출력\r\n\r\n");
 
-  io_printf("RS485 A,B,C,D 테스트\r\n");
-  io_printf("주의:RS485 C,D는 하드웨어점퍼 설정 필요\r\n");
-  io_printf("기능:1초마다 각 포트이름 전송되며 1초 대기,입력 에코처리함\r\n");
-
-  io_printf("통신 속도를 입력해주세요\r\n");
-
-  if(input_decimal_prompt("통신 속도를 입력해주세요", &baud, 1200, 115200)!= MENU_OK)
+  if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
   {
-    baud=57600;
-    io_printf("기본 속도로 설정합니다.%d\r\n", baud);
+    port_index = 0;
+    io_printf("기본 포트 A로 설정합니다.\r\n");
   }
-  io_printf("이제 테스트 진행하세요 CTRL+Q 종료\r\n");
 
+  if(input_decimal_prompt("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
+  {
+    baud = 57600;
+    io_printf("기본 속도 %d로 설정합니다.\r\n", baud);
+  }
+
+  selected_port = port_list[port_index];
+  
   uart_config.baud = baud;
   uart_config.parityIdx = PARITY_NONE;
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 
-  port[0] =RS485_A;
-  drv_rs485_init(RS485_A, &uart_config);
-  port[1] = RS485_B;
-  drv_rs485_init(RS485_B, &uart_config);
-  port[2] = RS485_RS232_C;
-  drv_rs485_init(RS485_RS232_C, &uart_config);
-  port[3] = RS485_RS232_D;
-  drv_rs485_init(RS485_RS232_D, &uart_config);
+  drv_rs485_init(selected_port, &uart_config);
   
+  io_printf("RS485 포트 %s, 속도 %d로 테스트 시작 (CTRL+Q 종료)\r\n", 
+            rs485_port_name[port_index], baud);
+
   while(1)
   {
-    for (int i = 0; i < RS485_PORT_MAX; i++)
+    snprintf(buff, sizeof(buff), "RS485 %s\r\n", rs485_port_name[port_index]);
+    len = drv_rs485_send(selected_port, (uint8_t*)buff, strlen(buff));
+    
+    if(len < 0)
     {
-      snprintf(buff,sizeof(buff),"RS485 %s\r\n",rs485_port_name[i]);
-      len = drv_rs485_send(port[i], (uint8_t*)buff, strlen(buff));
-      if(len<0)
-      {
-        snprintf(buff, sizeof(buff), "RS485 %s failed\r\n", rs485_port_name[i]);
-        io_printf(buff);
-      }
-      len = drv_rs485_recv(port[i], (uint8_t*)rx_buff, sizeof(rx_buff), 2000);
-      if(len)
-      {
-        drv_rs485_send(port[i], (uint8_t*)rx_buff, len);
-      }
-      if (get_key(100) == KEY_CODE_CTRL_Q)
-      {
-        return;
-      }
+      io_printf("RS485 %s 전송 실패\r\n", rs485_port_name[port_index]);
+    }
+    else
+    {
+      io_printf("전송: %s", buff);
     }
 
+    len = drv_rs485_recv(selected_port, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
+    
+    if(len > 0)
+    {
+      drv_rs485_send(selected_port, (uint8_t*)rx_buff, len);
+      
+      io_printf("수신 및 에코 (%d bytes): ", len);
+      for(int i = 0; i < len; i++)
+      {
+        io_printf("%02X ", rx_buff[i]);
+      }
+      io_printf("\r\n");
+    }
+
+    if (get_key(10) == KEY_CODE_CTRL_Q)
+    {
+      io_printf("테스트 종료\r\n");
+      return;
+    }
   }
 }

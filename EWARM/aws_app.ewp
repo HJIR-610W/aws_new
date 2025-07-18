@@ -1654,6 +1654,9 @@
                     <name>$PROJ_DIR$\..\Application\app\test\test_meomoy.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\application\app\test\test_modbus.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\app\test\test_power.c</name>
                 </file>
                 <file>
@@ -1702,10 +1705,10 @@
             <group>
                 <name>CDMA</name>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\CDMA\at_cmd.h</name>
+                    <name>$PROJ_DIR$\..\application\Communications\CDMA\at_cmd.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\CDMA\modem_if.h</name>
+                    <name>$PROJ_DIR$\..\application\Communications\CDMA\modem_if.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.c</name>
@@ -1735,7 +1738,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\CDMA\task_cellular.h</name>
+                    <name>$PROJ_DIR$\..\application\Communications\CDMA\task_cellular.h</name>
                 </file>
             </group>
             <group>
@@ -1744,7 +1747,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\Direct\task_direct.h</name>
+                    <name>$PROJ_DIR$\..\application\Communications\Direct\task_direct.h</name>
                 </file>
             </group>
             <group>
@@ -1877,7 +1880,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -2179,7 +2182,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</name>
                 </file>
             </group>
             <group>
@@ -2188,7 +2191,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554.h</name>
                 </file>
             </group>
         </group>
@@ -2342,7 +2345,7 @@
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.h</name>
+                <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_cdc.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.c</name>
@@ -2351,7 +2354,7 @@
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.h</name>
+                <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_uart.h</name>
             </file>
         </group>
         <group>

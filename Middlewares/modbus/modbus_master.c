@@ -15,6 +15,8 @@
 #include "system_err.h"
 #include "dev_io.h"
 
+#define io_printf(...)
+
 
 #define RET_SIZE_OVER -1
 #define RET_TIMEOUT -2
@@ -294,7 +296,7 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
     return total_len;  // 유효한 패킷 길이 리턴
   }
 
-#define io_printf(...)
+
   int32_t modbus_master_req(modbus_h_t *drv, modbus_t *modbus)
   {
     uint8_t buff[MODBUS_REG_SIZE*2+20];
@@ -306,7 +308,7 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
     send_query(drv, modbus);
 
 
-    len = modbus_receive_packet(drv, buff, sizeof(buff));
+     len = modbus_receive_packet(drv, buff, sizeof(buff));
 
     if (len > 0)
     {

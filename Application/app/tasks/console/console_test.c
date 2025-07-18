@@ -20,7 +20,7 @@
 #include "test_adc.h"
 #include "test_flash.h"
 #include "test_lcd.h"
-
+#include "test_modbus.h"
 int run_test_root()
 {
   int choice, status;
@@ -47,10 +47,11 @@ int run_test_root()
     io_printf("| 16. ADC선형성                         |\r\n");
     io_printf("| 17. FLASH 메모리                      |\r\n");
     io_printf("| 18. CLCD                              |\r\n");
+    io_printf("| 19. MODBUS                            |\r\n");
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
-    status = input_decimal_prompt("선택", &choice, 1, 18);
+    status = input_decimal_prompt("선택", &choice, 1, 19);
     if (status == MENU_ABORT || status == MENU_BACK)
       return status;
     if (status != MENU_OK)
@@ -109,7 +110,10 @@ int run_test_root()
       case 18:
       test_lcd();
       break;
-           default : break;
+      case 19:
+        test_modbus();
+        break;
+         default : break;
     }
   }
 }

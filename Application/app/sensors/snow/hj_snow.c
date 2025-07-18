@@ -1,4 +1,4 @@
-
+ 
 #include "Sensors\snow\hj_snow.h"
 
 #include <string.h>
@@ -173,13 +173,13 @@ int32_t read_hjSnowFall(dev_io_t *dev, uint8_t *err)
   para[paraCnt++] = 0x00;
   para[paraCnt++] = sizeof(SYSTEM_TypeDef);
 
-#endif
+ #endif
   len = make_hjSnowFrame(frame, sizeof(frame), CMD_SNOW_READ_STAT, para, paraCnt);
 
   dev_io_write(dev, frame, len, 0);
 
   opt.waitTimeOutMs = 50;
-  len = dev_io_read(dev, frame, sizeof(frame), DEV_IO_CMD_DATA_TIMEOUT, (void *)&opt);
+   len = dev_io_read(dev, frame, sizeof(frame), DEV_IO_CMD_DATA_TIMEOUT, (void *)&opt);
 
 
   if(len == 0)
@@ -238,7 +238,7 @@ driver_t *hjsnow_open(void *opt)
       uart_config.baud = 19200;
       uart_config.dataLen = UART_DATA_LEN_8;
       uart_config.parityIdx = PARITY_NONE;
-      uart_config.stop_bit = UART_STOP_BIT_1;
+       uart_config.stop_bit = UART_STOP_BIT_1;
 
       hjsnow_inst.com_type = COM_TYPE_RS232;
 
