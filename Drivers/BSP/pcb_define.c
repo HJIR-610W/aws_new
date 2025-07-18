@@ -334,3 +334,5 @@ const char* pcbPinNameList[9][16] = {
      "10:EX_UART_INT7", "11:EX_UART_INT8", "12:-", "13:-", "14:-", "15:-"}};
 
 #endif
+
+

@@ -29,6 +29,7 @@
 #define BSP_DO_EXT_5 22
 
 #define BSP_DO_MAX 23
+
 void bsp_do_init(void);
 void bsp_do_low(int num);
 void bsp_do_high(int num);

@@ -1570,6 +1570,9 @@
                 <group>
                     <name>menu</name>
                     <group>
+                        <name>devices</name>
+                    </group>
+                    <group>
                         <name>menu_handler</name>
                         <file>
                             <name>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.c</name>
@@ -1733,10 +1736,10 @@
             <group>
                 <name>CDMA</name>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\at_cmd.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\at_cmd.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\modem_if.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\modem_if.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\modem_ntle9607.c</name>
@@ -1766,7 +1769,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\CDMA\task_cellular.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\CDMA\task_cellular.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\CDMA\task_cellular.h</name>
                 </file>
             </group>
             <group>
@@ -1775,7 +1778,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\Direct\task_direct.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\Communications\Direct\task_direct.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\Direct\task_direct.h</name>
                 </file>
             </group>
             <group>
@@ -1949,13 +1952,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -1971,7 +1974,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -2126,7 +2129,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -2147,7 +2150,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>

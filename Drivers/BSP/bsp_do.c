@@ -5,59 +5,98 @@
 #include "pcb_define.h"
 #include "dev_io.h"
 
+
+
+
 typedef struct bsp_do_inst_s
 {
   bool opened;
   GPIO_InitTypeDef init;
   GPIO_TypeDef *port;
+  GPIO_PinState init_state;
 } bsp_do_inst_t;
 
- bsp_do_inst_t do_inst[BSP_DO_MAX] = {
-    [BSP_DO_POWER_CDMA] = {.init = {.Pin = OUT_PWR_CDMA_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = OUT_PWR_CDMA_GPIO_Port},
-    [BSP_DO_POWER_HART_24V] = {.init = {.Pin = DO_CON_PWR_S24_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                               .port = DO_CON_PWR_S24_GPIO_Port},
-    [BSP_DO_LCD_RESET] = {.init = {.Pin = DO_RESET_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                          .port = DO_RESET_H_GPIO_Port},
-    [BSP_DO_POWER_RAIN_DECT_DIGITAL] = {.init = {.Pin = DO_POWER_RAIN_DECT_DIGITAL_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                                        .port = DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port},
-    [BSP_DO_POWER_RAIN_DECT_ANALOG] = {.init = {.Pin = DO_CON_PWR_RAIN_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                                       .port = DO_CON_PWR_RAIN_GPIO_Port},
+bsp_do_inst_t do_inst[BSP_DO_MAX] = {
+    [BSP_DO_POWER_CDMA] = {.init = {.Pin = OUT_PWR_CDMA_PIN,
+                                    .Mode = GPIO_MODE_OUTPUT_PP,
+                                    .Pull = GPIO_NOPULL,
+                                    .Speed = GPIO_SPEED_FREQ_LOW},
+                           .port = OUT_PWR_CDMA_GPIO_Port,
+                           .init_state = GPIO_PIN_RESET}, /*전원 차단*/
+    [BSP_DO_POWER_HART_24V] = {.init = {.Pin = DO_CON_PWR_S24_Pin,
+                                        .Mode = GPIO_MODE_OUTPUT_PP,
+                                        .Pull = GPIO_NOPULL,
+                                        .Speed = GPIO_SPEED_FREQ_LOW},
+                               .port = DO_CON_PWR_S24_GPIO_Port,
+                               .init_state = GPIO_PIN_RESET}, /*전원 차단*/
+    [BSP_DO_LCD_RESET] = {.init = {.Pin = DO_RESET_H_Pin,
+                                   .Mode = GPIO_MODE_OUTPUT_PP,
+                                   .Pull = GPIO_NOPULL,
+                                   .Speed = GPIO_SPEED_FREQ_LOW},
+                          .port = DO_RESET_H_GPIO_Port,
+                          .init_state = GPIO_PIN_RESET},
+    [BSP_DO_POWER_RAIN_DECT_DIGITAL] = {.init = {.Pin = DO_POWER_RAIN_DECT_DIGITAL_PIN,
+                                                 .Mode = GPIO_MODE_OUTPUT_PP,
+                                                 .Pull = GPIO_NOPULL,
+                                                 .Speed = GPIO_SPEED_FREQ_LOW},
+                                        .port = DO_POWER_RAIN_DECT_DIGITAL_GPIO_Port,
+                                        .init_state = GPIO_PIN_RESET}, /*전원 차단*/
+    [BSP_DO_POWER_RAIN_DECT_ANALOG] = {.init = {.Pin = DO_CON_PWR_RAIN_PIN,
+                                                .Mode = GPIO_MODE_OUTPUT_PP,
+                                                .Pull = GPIO_NOPULL,
+                                                .Speed = GPIO_SPEED_FREQ_LOW},
+                                       .port = DO_CON_PWR_RAIN_GPIO_Port,
+                                       .init_state = GPIO_PIN_RESET}, /*전원 차단*/
     [BSP_DO_ADC_NCS] = {.init = {.Pin = OUT_SPI2_NSS_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_PULLUP, .Speed = GPIO_SPEED_FREQ_HIGH},
-                        .port = OUT_SPI2_NSS_GPIO_Port},
+                        .port = OUT_SPI2_NSS_GPIO_Port,
+                        .init_state = GPIO_PIN_SET}, /*비활성*/
     [BSP_DO_FRAM_CS] = {.init = {.Pin = OUT_SPI1_NSS_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
-                        .port = OUT_SPI1_NSS_GPIO_Port},
+                        .port = OUT_SPI1_NSS_GPIO_Port,
+                        .init_state = GPIO_PIN_SET}, /*비활성*/
     [BSP_DO_RTC_CS] = {.init = {.Pin = OUT_RV8803_EVI_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
-                       .port = OUT_SPI1_CS_RTC_GPIO_Port},
+                       .port = OUT_SPI1_CS_RTC_GPIO_Port,
+                       .init_state = GPIO_PIN_SET}, /*비활성*/
     [BSP_DO_FLASH_CS] = {.init = {.Pin = NOR_RESET_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
-                         .port = NOR_RESET_GPIO_Port},
+                         .port = NOR_RESET_GPIO_Port,
+                         .init_state = GPIO_PIN_SET}, /*비활성*/
     [BSP_DO_DIR_SDI] = {.init = {.Pin = OUT_DIR_SDI_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                        .port = OUT_DIR_SDI_GPIO_Port},
+                        .port = OUT_DIR_SDI_GPIO_Port,
+                        .init_state = GPIO_PIN_RESET}, /*수신모드*/
     [BSP_DO_DIR_RS485_A] = {.init = {.Pin = OUT_DIR_RS485_A_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = OUT_DIR_RS485_A_GPIO_Port},
+                            .port = OUT_DIR_RS485_A_GPIO_Port,
+                            .init_state = GPIO_PIN_RESET}, /*수신모드*/
     [BSP_DO_DIR_RS485_B] = {.init = {.Pin = OUT_DIR_RS485_B_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = OUT_DIR_RS485_B_GPIO_Port},
+                            .port = OUT_DIR_RS485_B_GPIO_Port,
+                            .init_state = GPIO_PIN_RESET}, /*수신모드*/
     [BSP_DO_HART_SEL] = {.init = {.Pin = SEL_IF_UART_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                         .port = DO_SEL_IF_UART_GPIO_Port},
+                         .port = DO_SEL_IF_UART_GPIO_Port,
+                         .init_state = GPIO_PIN_RESET}, /*RS232모드로 설정*/
     [BSP_DO_HART_RTS] = {.init = {.Pin = DO_RTS_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                         .port = DO_RTS_H_GPIO_Port},
+                         .port = DO_RTS_H_GPIO_Port,
+                         .init_state = GPIO_PIN_SET},//수신모드
     [BSP_DO_HART_RESET] = {.init = {.Pin = DO_RESET_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_RESET_H_GPIO_Port},
+                           .port = DO_RESET_H_GPIO_Port,
+                           .init_state = GPIO_PIN_SET},//활성
     [BSP_DO_DIR_RS485_RS232_C] = {.init = {.Pin = OUT_RS485_RS232_DIR_C_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = OUT_RS485_RS232_DIR_C_GPIO_Port},
+                                  .port = OUT_RS485_RS232_DIR_C_GPIO_Port,
+                                  .init_state = GPIO_PIN_RESET}, /*수신모드*/
     [BSP_DO_DIR_RS485_RS232_D] = {.init = {.Pin = OUT_RS485_RS232_DIR_D_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = OUT_RS485_RS232_DIR_D_GPIO_Port}};
+                                  .port = OUT_RS485_RS232_DIR_D_GPIO_Port,
+                                  .init_state = GPIO_PIN_RESET}}; /*수신모드*/
 
 void bsp_do_gpio_init(int do_number)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-  board_clk_gpio(do_inst[do_number].port);
+
+   board_clk_gpio(do_inst[do_number].port);
 
   GPIO_InitStruct.Pin = do_inst[do_number].init.Pin;
   GPIO_InitStruct.Mode = do_inst[do_number].init.Mode;
   GPIO_InitStruct.Pull = do_inst[do_number].init.Pull;
   HAL_GPIO_Init(do_inst[do_number].port, &GPIO_InitStruct);
+
+  HAL_GPIO_WritePin(do_inst[do_number].port, do_inst[do_number].init.Pin, do_inst[do_number].init_state);
 }
 
 void bsp_do_init(void)
