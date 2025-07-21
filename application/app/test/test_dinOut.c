@@ -15,7 +15,7 @@
 void test_di(void)
 {
 
-  const uint32_t di_nums[DI_COUNT] = {DRV_DI_0, DRV_DI_1, DRV_DI_2, DRV_DI_3, DRV_DI_4, DRV_DI_5};
+  const uint32_t di_nums[DI_COUNT] = {DRV_DI_0, DRV_DI_1, DRV_DI_2, DRV_DI_3, DRV_DI_4, DRV_DI_RAIN_DETECT_DIGITAL};
   const char *di_names[DI_COUNT] = {"DRV_DI_0", "DRV_DI_1", "DRV_DI_20",
                                     "DRV_DI_3", "DRV_DI_4", "DRV_DI_5"};
 

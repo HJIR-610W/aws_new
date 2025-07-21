@@ -266,11 +266,10 @@ int32_t print_di(p_shell_context_t ctx, int32_t argc, char **argv)
   di_list[2] = DRV_DI_2;
   di_list[3] = DRV_DI_3;
   di_list[4] = DRV_DI_4;
-  di_list[5] = DRV_DI_5;
-  di_list[6] = DRV_DI_6;
-  di_list[7] = DRV_DI_7;
+  di_list[5] = DRV_DI_RAIN_DETECT_DIGITAL;
 
-  for (int i = 0; i < 8; i++)
+
+  for (int i = 0; i < 6; i++)
   {
     input = drv_di_read(di_list[i]);
     io_printf("EXT_%d:%d\r\n", i, input);

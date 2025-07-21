@@ -113,7 +113,8 @@
 			"driver_485_def.h": "c",
 			"modbus.h": "c",
 			"stm32_usb.h": "c",
-			"app_rs485.h": "c"
+			"app_rs485.h": "c",
+			"cli_input.h": "c"
 		}
 	}
 }

@@ -33,11 +33,11 @@
 #define BSP_DI_3 19
 #define BSP_DI_4 20
 #define BSP_DI_5 21
-#define BSP_DI_6 22
-#define BSP_DI_7 23
-#define BSP_DI_8 24
 
-#define BSP_DI_MCU_MAX 25
+
+
+
+#define BSP_DI_MCU_MAX 26
 
 void bsp_di_init(void);
 int32_t bsp_di_read(int32_t num);

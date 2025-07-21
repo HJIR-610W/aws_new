@@ -29,7 +29,7 @@
 #include "util_filter.h"
 #include "util_time.h"
 #include "vt100_command.h"
-#include "cli_input.h"
+#include "cli_key_code.h"
 extern float g_current_temp;
 
 extern bool wait_break(uint32_t timeoutms);
@@ -740,7 +740,10 @@ int handle_view_status(int adc_num)
                         params->factory_slope, params->factory_offset, raw, voltage);
             }
           }
-        } while (wait_break(100));
+          
+          if(get_key(100)==KEY_CODE_CTRL_C)
+          break;
+        } while( 1);
       }
         io_printf(ES_CURSOR_ON);
 
@@ -776,7 +779,9 @@ int handle_view_status(int adc_num)
                         params->factory_slope, params->factory_offset, raw, voltage);
             }
           }
-        } while (wait_break(500));
+          if (get_key(100) == KEY_CODE_CTRL_C)
+            break;
+        } while (1);
       }
         io_printf(ES_CURSOR_ON);
         break;

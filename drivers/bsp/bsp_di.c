@@ -89,8 +89,7 @@ void bsp_di_init(void)
         case BSP_DI_3:
         case BSP_DI_4:
         case BSP_DI_5:
-        case BSP_DI_6:
-        case BSP_DI_7:
+
           pcf8575_init();
           break;
 
@@ -138,11 +137,6 @@ int32_t bsp_di_read(int32_t di_number)
     case BSP_DI_5:
       return pcf8575_read_pin(DI_PCF8575_5);
       break;
-    case BSP_DI_6:
-      return pcf8575_read_pin(DI_PCF8575_6);
-      break;
-    case BSP_DI_7:
-      return pcf8575_read_pin(DI_PCF8575_7);
       break;
     default:
       break;

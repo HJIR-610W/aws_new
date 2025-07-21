@@ -5,26 +5,21 @@
 
 #include <stdint.h>
 #include "driver_di_def.h"
+#include "bsp_di.h"
 
 
-
-#define DRV_DI_USER_BTN 3
-#define DRV_DI_RAIN_REED 4
-#define DRV_DI_RAIN_HALL 5
-#define DRV_DI_RAIN_HALL_ERR 6
-#define DRV_DI_RAIN_DETECT 7
-
+#define DRV_DI_USER_BTN      BSP_DI_USER_BTN
+#define DRV_DI_RAIN_REED     BSP_DI_RAIN_REED
+#define DRV_DI_RAIN_HALL     BSP_DI_RAIN_HALL
+#define DRV_DI_RAIN_HALL_ERR BSP_DI_RAIN_HALL_ERR
+#define DRV_DI_RAIN_DETECT_ANALOG   BSP_DI_RAIN_DETECT
 
 #define DRV_DI_0 16
 #define DRV_DI_1 17
 #define DRV_DI_2 18
 #define DRV_DI_3 19
 #define DRV_DI_4 20
-#define DRV_DI_5 21
-#define DRV_DI_6 22
-#define DRV_DI_7 23
-#define DRV_DI_8 24
-
+#define DRV_DI_RAIN_DETECT_DIGITAL BSP_DI_5
 
 void drv_di_init(void);
 int32_t drv_di_read(int di_number);
