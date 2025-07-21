@@ -85,23 +85,31 @@ void get_FC1(uint8_t *pInData, uint16_t dataLen, uint16_t *regs, uint16_t regCnt
   {
     return;
   }
-#if 0 
-    uint8_t u8byte, i;
-    u8byte = 3;
-    for (i = 0; i < pInData[2]; i++) {
-
-        if (i % 2)
-        {
-            regs[i / 2] = word(pInData[i + u8byte], lowByte(modH->u16regs[i / 2]));
-        }
-        else
-        {
-
-            regs[i / 2] = word(highByte(modH->u16regs[i / 2]), modH->u8Buffer[i + u8byte]);
-        }
-
+  
+  uint8_t byte_count = pInData[2];  // 바이트 수
+  uint8_t u8byte = 3;  // 데이터 시작 위치
+  
+  if (byte_count > regCnt * 2)  // 안전성 검사
+  {
+    return;
+  }
+  
+  // 코일 데이터는 비트 단위로 패킹되어 있음
+  // 각 바이트는 8개의 코일 상태를 포함
+  for (uint8_t i = 0; i < byte_count; i++)
+  {
+    uint8_t coil_byte = pInData[u8byte + i];
+    
+    // 각 바이트의 8개 비트를 개별 레지스터에 저장
+    for (uint8_t bit = 0; bit < 8; bit++)
+    {
+      uint16_t coil_index = i * 8 + bit;
+      if (coil_index < regCnt)
+      {
+        regs[coil_index] = (coil_byte & (1 << bit)) ? 1 : 0;
+      }
     }
-#endif
+  }
 }
 
 void get_FC3(uint8_t *pInData, uint16_t dataLen, uint16_t *regs, uint16_t regCnt)
@@ -331,7 +339,7 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
  * @param val
  * @retval
  */
-int32_t modbus_write_single_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t val)
+int32_t modbus_write_holding_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t val)
 {
   modbus_t modbus;
   uint16_t reg[10];
@@ -387,6 +395,101 @@ int32_t modbus_write_single_coil(modbus_h_t *drv, uint8_t slave_id, uint16_t add
   }
 
   return err;
+}
+
+/**
+ * @brief 특정 주소의 단일 코일 읽기
+ * @param drv 모드버스 드라이버
+ * @param slave_id 슬레이브 ID
+ * @param address 코일 주소
+ * @param pOutCoil 읽은 코일 값 포인터 (0: OFF, 1: ON)
+ * @retval RET_OK: 성공, RET_FAIL: 실패
+ */
+int32_t modbus_read_single_coil(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutCoil)
+{
+  modbus_t modbus;
+  uint16_t reg[10];
+  int32_t ret = RET_FAIL;
+
+  if (pOutCoil == NULL)
+  {
+    return ret;
+  }
+
+  memset(reg, 0, sizeof(reg));
+
+  modbus.id = slave_id;
+  modbus.fc = MB_FC_READ_COILS;
+  modbus.regAdd = address;
+  modbus.coilsNo = 1;  // 단일 코일
+  modbus.regs = &reg[0];
+  modbus.regsCnt = sizeof(reg) / sizeof(reg[0]);
+  modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
+
+  ret = modbus_master_req(drv, &modbus);
+
+  if (ret == RET_OK)
+  {
+    *pOutCoil = modbus.regs[0];  // 첫 번째 코일 값
+  }
+  else
+  {
+    ret = RET_FAIL;
+  }
+
+  return ret;
+}
+
+/**
+ * @brief 이산 입력(Discrete Inputs) 읽기
+ * @param drv 모드버스 드라이버
+ * @param slave_id 슬레이브 ID
+ * @param address 시작 주소
+ * @param pOutInputs 읽은 이산 입력 값들을 저장할 배열 포인터
+ * @param inputCnt 읽을 이산 입력 개수
+ * @retval RET_OK: 성공, RET_FAIL: 실패
+ */
+int32_t modbus_read_discrete_inputs(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutInputs, uint16_t inputCnt)
+{
+  modbus_t modbus;
+  uint16_t reg[MODBUS_REG_SIZE];
+  int32_t ret = RET_FAIL;
+
+  if (pOutInputs == NULL)
+  {
+    return ret;
+  }
+
+  memset(reg, 0, sizeof(reg));
+  
+  if ((sizeof(reg) / sizeof(reg[0])) < inputCnt)
+  {
+    return ret;
+  }
+
+  modbus.id = slave_id;
+  modbus.fc = MB_FC_READ_DISCRETE_INPUT;
+  modbus.regAdd = address;
+  modbus.coilsNo = inputCnt;
+  modbus.regs = &reg[0];
+  modbus.regsCnt = sizeof(reg) / sizeof(reg[0]);
+  modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
+
+  ret = modbus_master_req(drv, &modbus);
+
+  if (ret == RET_OK)
+  {
+    for (int i = 0; i < inputCnt; i++)
+    {
+      pOutInputs[i] = modbus.regs[i];
+    }
+  }
+  else
+  {
+    ret = RET_FAIL;
+  }
+
+  return ret;
 }
 
 int32_t modbus_write_multi_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *regs,

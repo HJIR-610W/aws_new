@@ -113,11 +113,11 @@ uint16_t data;
   {
     case eTEMP_SET_OFFSET:
       data = *(int32_t *)w_opt;
-      modbus_write_single_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_TEMP_OFFSET, data);
+      modbus_write_holding_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_TEMP_OFFSET, data);
       break;
     case eHUMI_SET_OFFSET:
       data = *(int32_t *)w_opt;
-      modbus_write_single_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_HUMI_OFFSET, data);
+      modbus_write_holding_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_HUMI_OFFSET, data);
       break;
     case eTEMP_GET_OFFSET:
       ret = modbus_read_hold_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_TEMP_OFFSET,
