@@ -1110,7 +1110,7 @@
                     <item>start</item>
                     <item>channel</item>
                     <item>modbus</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

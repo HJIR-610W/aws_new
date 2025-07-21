@@ -23,6 +23,7 @@
 #include "cli_input.h"
 #include "cli_key_code.h"
 #include "util_stdio.h"
+#include "fsl_debug_console.h"
 
 const char *g_unknown = "unknown";
 

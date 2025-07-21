@@ -50,6 +50,9 @@ void fm25lc_init(void)
   bsp_spi_init(fm25lc_inst.spi_num);
 
   data = fm25cl_read_status();
+  
+  DEBUG_PRINTF("fm24ls statsus:0x%02X\r\n",data);
+  (void)data;
 }
 
 
@@ -146,6 +149,8 @@ void fm25_status_parse(uint8_t status)
   }
   DEBUG_PRINTF("  BP1:BP0 = %d:%d → %s\r\n", (bp >> 1) & 1, bp & 1, bp_desc);
 
+  (void)bp_desc;
+  
   // WEL: Write Enable Latch (Bit 1)
   if (status & (1 << 1))
     DEBUG_PRINTF("  WEL = 1 → 쓰기 가능 상태\r\n");

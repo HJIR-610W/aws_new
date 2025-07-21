@@ -159,7 +159,7 @@ void vt100_print_frame_selected(uint8_t line, uint8_t colum, const char *text, c
   {
     if(selected==1)
     {
-      title_col = 0;
+      title_col = (color_t)0;
     }
     else
     {

@@ -253,7 +253,10 @@ int32_t bsp_i2c_send(int num, uint32_t address,uint8_t reg,const uint8_t *pData,
     sr2 = handle->Instance->SR2;
 
     ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status, sr1, sr2);
-
+    
+    (void)sr1;
+    (void)sr2;
+    
     if (handle->Instance == I2C1)
     {
       i2c1_bus_recovery();
@@ -289,7 +292,8 @@ int32_t bsp_i2c_read(int num ,uint32_t address,uint8_t reg,uint8_t *pData,uint16
     sr2 = handle->Instance->SR2;
 
     ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status, sr1, sr2);
-
+    (void)sr1;
+    (void)sr2;
     if (handle->Instance == I2C1)
     {
       i2c1_bus_recovery();
@@ -323,7 +327,8 @@ int32_t bsp_i2c_recv_byte(int num,uint8_t address,uint8_t *pBuff,uint32_t readCn
     sr2 = handle->Instance->SR2;
 
     ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status, sr1, sr2);
-
+    (void)sr1;
+    (void)sr2;
     if (handle->Instance == I2C1)
     {
       i2c1_bus_recovery();
@@ -356,7 +361,8 @@ int32_t bsp_i2c_send_byte(int num,uint8_t address,uint8_t *pData,uint32_t dataLe
     sr2 = handle->Instance->SR2;
     
     ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status,sr1,sr2);
-
+    (void)sr1;
+    (void)sr2;
     if (handle->Instance == I2C1)
     {
       i2c1_bus_recovery();

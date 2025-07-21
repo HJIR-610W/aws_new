@@ -89,9 +89,9 @@ int32_t save_data(DATE_TIME_BUF *ct,
   }
 
   // 파일 경로 계산
-  int folder_idx = nt.Year % 10;
-  char folder_name[10];
-  char file_name[128];
+ // int folder_idx = nt.Year % 10;
+ // char folder_name[10];
+ // char file_name[128];
 
 
  // save_data_to_file("d:\\data.dat", (uint8_t*)data_ptr, data_size, offset);

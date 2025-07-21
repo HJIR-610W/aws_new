@@ -11,7 +11,7 @@
 void test_rtc(void)
 {
   DATE_TIME_BUF Date_Time;
-  driver_t *rtc;
+
   io_printf("RTC 테스트 시작 (1초마다 현재 시간 출력)\r\n");
   io_printf("CTRL+Q 입력 시 종료\r\n");
 

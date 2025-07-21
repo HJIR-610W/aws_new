@@ -2,6 +2,7 @@
 #include "util_stdio.h"
 
 #include <string.h>
+#include "util_memory.h"
 
 int32_t get_formatted_length_v(const char *format, va_list args)
 {

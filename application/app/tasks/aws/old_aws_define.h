@@ -13,7 +13,6 @@ typedef struct
   uint16_t sMonthRain;
   uint16_t sHourRain;
   uint16_t sYearRain;
-  uint16_t min_rain;
 } SENSOR_RIXS_BUF;
 
 typedef struct
