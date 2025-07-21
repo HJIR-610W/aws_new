@@ -993,28 +993,34 @@ int32_t menu_sensor( eSENSOR_TYPE_t list)
 센서번호는 정해진 순서대로 입력되어야함
  */
 #define LABEL_W 14
+#define S_LABEL_W 20
 int32_t print_menu_sensor(void)
 {
   char opt[25];
+  char label[50];
+  char sensor_label[50];
   int32_t cnt = 0;
   int i = 0;
 
   io_printf("\r\n");
 
-#if 1
+
   cnt = _countof(sensor_name_list) / 2;
 
   for (i = 0; i < cnt; i++)
   {
+    make_utf8_string(label, sizeof(label), LABEL_W,sensor_name_list[i]);
+    make_utf8_string(sensor_label, sizeof(sensor_label), S_LABEL_W,(ITEM_LIST(get_config_app()->sensor[i].type, g_sensor_model_table)));
     make_option(&get_config_app()->sensor[i], opt, sizeof(opt));
-    io_printf("%2d.%-14s:%-20s %-22s,  ", i, m_l((char *)sensor_name_list[i], LABEL_W),
-              ITEM_LIST(get_config_app()->sensor[i].type, g_sensor_model_table), opt);
+    io_printf("%2d.%-14s:%-20s %-22s, ", i, label, sensor_label, opt);
+
+    make_utf8_string(label, sizeof(label), LABEL_W,sensor_name_list[i + cnt]);
+    make_utf8_string(sensor_label, sizeof(sensor_label), S_LABEL_W,(ITEM_LIST(get_config_app()->sensor[i + cnt].type, g_sensor_model_table)));
     make_option(&get_config_app()->sensor[i + cnt], opt, sizeof(opt));
-    io_printf("%2d.%-14s:%-20s %-22s\r\n", i + cnt, m_l((char *)sensor_name_list[i + cnt],LABEL_W),
-              ITEM_LIST(get_config_app()->sensor[i + cnt].type, g_sensor_model_table), opt);
+    io_printf("%2d.%-14s:%-20s %-22s\r\n", i + cnt, label, sensor_label, opt);
   }
 
-#endif
+
   cnt = _countof(sensor_name_list);
   return cnt;
 }

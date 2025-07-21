@@ -76,3 +76,43 @@ char *m_l(char *label, int width)
 
   return buff;
 }
+
+#define printf debug_printf
+
+// 한글 한글자는 3바이트로 처리되는데 실제 화면 출력시 자간 2칸 사용됨
+// utf8_strlen은 화면에 출력되는 기준으로 자간임
+// wd가 20이라면 화면 출력 기준 20글자가 되어야 함
+// 따라서 buff에 string을 복사하고 화면 출력시 총 자간 20자가 되도록 나머지 영역은 ' '으로 채워햐함
+void make_utf8_string(char *buff, int buff_size, int wd,const char *string)
+{
+  int len;
+  int remain;
+  int current_len;
+  
+  if (buff == NULL || string == NULL || buff_size <= 0)
+  {
+    return;
+  }
+
+  // 문자열을 안전하게 복사
+  strcpy_safe(buff, buff_size, string);
+  
+  // 현재 문자열의 화면 출력 길이 계산
+  current_len = utf8_strlen(string);
+  
+  // 버퍼에서 문자열 끝 위치 찾기
+  len = strlen(buff);
+  
+  // wd까지 남은 공백 수 계산
+  remain = wd - current_len;
+  
+  // 남은 공간이 있고 버퍼 크기를 초과하지 않으면 공백으로 채우기
+  if (remain > 0 && len + remain < buff_size)
+  {
+    for (int i = 0; i < remain; i++)
+    {
+      buff[len++] = ' ';
+    }
+  }
+  buff[len] = 0;
+}
