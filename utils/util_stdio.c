@@ -61,16 +61,28 @@ char *m_l(char *label, int width)
 {
   int len;
   int remain;
-  static char buff[20];
+  int current_len;
+  static char buff[64];  // 버퍼 크기 증가
+
+  if (label == NULL || width < 0)
+  {
+    buff[0] = 0;
+    return buff;
+  }
 
   strcpy_safe(buff, sizeof(buff), label);
   len = strlen(buff);
+  current_len = utf8_strlen(label);
+  
+  remain = width - current_len;
 
-  remain = width - utf8_strlen(label);
-
-  for (int i = 0; i < remain; i++)
+  // remain이 양수이고 버퍼 오버플로우 방지
+  if (remain > 0 && len + remain < sizeof(buff) - 1)
   {
-    buff[len++] = ' ';
+    for (int i = 0; i < remain; i++)
+    {
+      buff[len++] = ' ';
+    }
   }
   buff[len] = 0;
 
