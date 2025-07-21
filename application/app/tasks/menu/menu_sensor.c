@@ -829,6 +829,7 @@ int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case OTT_SMP3_PAGE_MODBUS_ID:
+    dec = ott_smp3->modbus_id;
       status = input_decimal("MODBUS ID", 0, 247, &dec);
       if (status != MENU_OK)
         break;

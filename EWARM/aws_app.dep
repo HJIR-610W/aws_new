@@ -114,16 +114,16 @@
             <file>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_rs485.c</file>
             <file>$PROJ_DIR$\..\application\app\version\app_version.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\cdma\at_cmd.h</file>
+            <file>$PROJ_DIR$\..\application\communications\cdma\at_cmd.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_uart.c</file>
             <file>$PROJ_DIR$\..\application\app\version\project_def.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\cdma\modem_if.h</file>
+            <file>$PROJ_DIR$\..\application\communications\cdma\modem_if.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_sms.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\cdma\task_cellular.h</file>
+            <file>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\direct\task_direct.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\direct\task_direct.h</file>
+            <file>$PROJ_DIR$\..\application\communications\direct\task_direct.h</file>
             <file>$PROJ_DIR$\..\Application\app\version\app_version.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_lcd.c</file>
@@ -1460,7 +1460,7 @@
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_cortex.o</file>
             <file>$PROJ_DIR$\release\Obj\aws_menu.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_rtc_ex.o</file>
-            <file>$PROJ_DIR$\..\application\Communications\ethernet\tcp_define.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\tcp_define.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\config_app.xcl</file>
             <file>$PROJ_DIR$\release\Obj\platform_util.o</file>
@@ -1478,7 +1478,7 @@
             <file>$TOOLKIT_DIR$\inc\c\stddef.h</file>
             <file>$PROJ_DIR$\release\Obj\chap-md5.xcl</file>
             <file>$PROJ_DIR$\..\Application\Tasks\string\const_string.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\ethernet\task_client.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_client.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_dma.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\cli_input.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\dev_io.xcl</file>
@@ -1912,7 +1912,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\integer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\icmp.h</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Include\mpu_armv7.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\release\Obj\menu_offset.xcl</file>
             <file>$PROJ_DIR$\release\Obj\aws_data_process.__cstat.et</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_adc_ex.h</file>
@@ -1944,7 +1944,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip4_addr.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\sockets_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_manager.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\igmp.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_panel.h</file>
             <file>$PROJ_DIR$\..\Middlewares\modem\ymodem.h</file>
@@ -2026,7 +2026,7 @@
             <file>$PROJ_DIR$\release\List\aws_app.map</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_aws.h</file>
             <file>$PROJ_DIR$\stm32f407xx_flash.icf</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\task_wdt.h</file>
             <file>$TOOLKIT_DIR$\lib\rt7M_tl.a</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif.h</file>
@@ -2057,13 +2057,13 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_frequency.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_hart.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_panel.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
             <file>$PROJ_DIR$\..\application\app\test\parser\hart_parser.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\app_console.h</file>
             <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_dinOut.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif_opts.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_count.h</file>
