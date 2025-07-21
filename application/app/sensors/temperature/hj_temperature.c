@@ -82,7 +82,7 @@ float hjTemperature_read(driver_t *driver, uint8_t *err)
   hj_temperature_cfg_t *cfg = driver->cfg;
   int32_t ret;
 
-  ret = modbus_read_hold_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_TEMP, reg, 1);
+  ret = modbus_read_hold_reg(&cfg->modbus,  HJ_REG_NUM_TEMP, reg, 1);
 
   if(ret)
   {
@@ -113,14 +113,14 @@ uint16_t data;
   {
     case eTEMP_SET_OFFSET:
       data = *(int32_t *)w_opt;
-      modbus_write_holding_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_TEMP_OFFSET, data);
+      modbus_write_holding_reg(&cfg->modbus,  HJ_REG_NUM_TEMP_OFFSET, data);
       break;
     case eHUMI_SET_OFFSET:
       data = *(int32_t *)w_opt;
-      modbus_write_holding_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_HUMI_OFFSET, data);
+      modbus_write_holding_reg(&cfg->modbus,  HJ_REG_NUM_HUMI_OFFSET, data);
       break;
     case eTEMP_GET_OFFSET:
-      ret = modbus_read_hold_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_TEMP_OFFSET,
+      ret = modbus_read_hold_reg(&cfg->modbus,  HJ_REG_NUM_TEMP_OFFSET,
                                           &data, 1);
       *err = ret;
       if (ret == 0)
@@ -130,7 +130,7 @@ uint16_t data;
       }
       break;
     case eHUMI_GET_OFFSET:
-      ret = modbus_read_hold_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_HUMI_OFFSET,
+      ret = modbus_read_hold_reg(&cfg->modbus,  HJ_REG_NUM_HUMI_OFFSET,
                                           &data, 1);
       *err = ret;
       if (ret == 0)

@@ -82,7 +82,7 @@ float hjHuminity_read(driver_t *driver, uint8_t *err)
   hj_huminity_cfg_t *cfg = driver->cfg;
   int32_t ret;
 
-  ret = modbus_read_hold_reg(&cfg->modbus, cfg->modbus.id, HJ_REG_NUM_HUMI, reg, 1);
+  ret = modbus_read_hold_reg(&cfg->modbus, HJ_REG_NUM_HUMI, reg, 1);
 
   if(ret)
   {

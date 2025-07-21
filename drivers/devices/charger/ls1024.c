@@ -38,7 +38,8 @@ int32_t ls1024_init(void)
   ls1024_inst.modbus.name="ls1024";
   ls1024_inst.modbus.modebus_type = eMODBUS_RS485;
   ls1024_inst.modbus.port_num = RS485_B  ;
-  drv_rs485_init(ls1024_inst.modbus.port_num, &uart_config);
+  ls1024_inst.modbus.id = 1;
+      drv_rs485_init(ls1024_inst.modbus.port_num, &uart_config);
 
   OS_CREATE_BINARY_SEM(ls1024_inst.sem);
 
@@ -58,7 +59,7 @@ void ls1024_read( charger_data_t *charger_data, uint8_t *err)
 
   int32_t ret;
 
-  ret = modbus_read_input_reg(&ls1024_inst.modbus, 1, 0x3100, reg, READ_REG_CNT);
+  ret = modbus_read_input_reg(&ls1024_inst.modbus,  0x3100, reg, READ_REG_CNT);
 
   if (ret)
   {

@@ -170,11 +170,11 @@ void test_modbus_task(void *arg)
     {
       io_printf("charger\r\n");
 
-      ret = modbus_read_input_reg(&modbus, 1, reg_number, reg, read_cnt);
+      ret = modbus_read_input_reg(&modbus, reg_number, reg, read_cnt);
     }
     else{
       io_printf("temperature\r\n");
-      ret = modbus_read_hold_reg(&modbus, 1, reg_number, reg, read_cnt);
+      ret = modbus_read_hold_reg(&modbus,  reg_number, reg, read_cnt);
     }
 
 

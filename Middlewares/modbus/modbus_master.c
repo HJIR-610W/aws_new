@@ -334,19 +334,19 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
 
 /**
  * @brief 특정 주소에 값 쓰기
- * @param slave_id
+ * @param drv 모드버스 드라이버
  * @param address
  * @param val
  * @retval
  */
-int32_t modbus_write_holding_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t val)
+int32_t modbus_write_holding_reg(modbus_h_t *drv, uint16_t address, uint16_t val)
 {
   modbus_t modbus;
   uint16_t reg[10];
   int32_t err = RET_FAIL;
 
 
-  modbus.id = slave_id;
+  modbus.id = drv->id;
   modbus.fc = MB_FC_WRITE_REGISTER;
   modbus.regAdd = address;
   modbus.coilsNo = 1;
@@ -368,18 +368,17 @@ int32_t modbus_write_holding_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t add
 /**
  * @brief 특정 주소에 단일 코일 쓰기
  * @param drv 모드버스 드라이버
- * @param slave_id 슬레이브 ID
  * @param address 코일 주소
- * @param val 코일 값 (0: OFF, non-zero: ON)
+ * @param val 코일 값 (false: OFF, true: ON)
  * @retval RET_OK: 성공, RET_FAIL: 실패
  */
-int32_t modbus_write_single_coil(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t val)
+int32_t modbus_write_single_coil(modbus_h_t *drv, uint16_t address, bool val)
 {
   modbus_t modbus;
   uint16_t reg[10];
   int32_t err = RET_FAIL;
 
-  modbus.id = slave_id;
+  modbus.id = drv->id;
   modbus.fc = MB_FC_WRITE_COIL;
   modbus.regAdd = address;
   modbus.coilsNo = 1;
@@ -387,7 +386,7 @@ int32_t modbus_write_single_coil(modbus_h_t *drv, uint8_t slave_id, uint16_t add
   modbus.regsCnt = sizeof(reg) / sizeof(reg[0]);
   modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
 
-  modbus.reg[0] = val;  // 코일 값
+  modbus.reg[0] = val ? 1 : 0; // 코일 값 수정
 
   if (modbus_master_req(drv, &modbus) == RET_OK)
   {
@@ -400,12 +399,11 @@ int32_t modbus_write_single_coil(modbus_h_t *drv, uint8_t slave_id, uint16_t add
 /**
  * @brief 특정 주소의 단일 코일 읽기
  * @param drv 모드버스 드라이버
- * @param slave_id 슬레이브 ID
  * @param address 코일 주소
  * @param pOutCoil 읽은 코일 값 포인터 (0: OFF, 1: ON)
  * @retval RET_OK: 성공, RET_FAIL: 실패
  */
-int32_t modbus_read_single_coil(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutCoil)
+int32_t modbus_read_single_coil(modbus_h_t *drv, uint16_t address, uint16_t *pOutCoil)
 {
   modbus_t modbus;
   uint16_t reg[10];
@@ -418,7 +416,7 @@ int32_t modbus_read_single_coil(modbus_h_t *drv, uint8_t slave_id, uint16_t addr
 
   memset(reg, 0, sizeof(reg));
 
-  modbus.id = slave_id;
+  modbus.id = drv->id;
   modbus.fc = MB_FC_READ_COILS;
   modbus.regAdd = address;
   modbus.coilsNo = 1;  // 단일 코일
@@ -443,13 +441,12 @@ int32_t modbus_read_single_coil(modbus_h_t *drv, uint8_t slave_id, uint16_t addr
 /**
  * @brief 이산 입력(Discrete Inputs) 읽기
  * @param drv 모드버스 드라이버
- * @param slave_id 슬레이브 ID
  * @param address 시작 주소
  * @param pOutInputs 읽은 이산 입력 값들을 저장할 배열 포인터
  * @param inputCnt 읽을 이산 입력 개수
  * @retval RET_OK: 성공, RET_FAIL: 실패
  */
-int32_t modbus_read_discrete_inputs(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutInputs, uint16_t inputCnt)
+int32_t modbus_read_discrete_inputs(modbus_h_t *drv, uint16_t address, uint16_t *pOutInputs, uint16_t inputCnt)
 {
   modbus_t modbus;
   uint16_t reg[MODBUS_REG_SIZE];
@@ -467,7 +464,7 @@ int32_t modbus_read_discrete_inputs(modbus_h_t *drv, uint8_t slave_id, uint16_t 
     return ret;
   }
 
-  modbus.id = slave_id;
+  modbus.id = drv->id;
   modbus.fc = MB_FC_READ_DISCRETE_INPUT;
   modbus.regAdd = address;
   modbus.coilsNo = inputCnt;
@@ -492,7 +489,7 @@ int32_t modbus_read_discrete_inputs(modbus_h_t *drv, uint8_t slave_id, uint16_t 
   return ret;
 }
 
-int32_t modbus_write_multi_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *regs,
+int32_t modbus_write_multi_reg(modbus_h_t *drv, uint16_t address, uint16_t *regs,
                                uint16_t regCnt)
 {
   modbus_t modbus;
@@ -508,7 +505,7 @@ int32_t modbus_write_multi_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t addre
     return err;
   }
 
-  modbus.id = slave_id;
+  modbus.id = drv->id;
   modbus.fc = MB_FC_WRITE_MULTIPLE_REGISTERS;
   modbus.regAdd = address;
   modbus.coilsNo = regCnt;
@@ -531,7 +528,7 @@ int32_t modbus_write_multi_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t addre
   return err;
 }
 
-int32_t modbus_read_hold_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutRegs,
+int32_t modbus_read_hold_reg(modbus_h_t *drv, uint16_t address, uint16_t *pOutRegs,
                               uint16_t regCnt)
 {
   modbus_t modbus;
@@ -546,7 +543,7 @@ int32_t modbus_read_hold_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address
 
 
 
-  modbus.id = slave_id;
+  modbus.id = drv->id;
   modbus.fc = MB_FC_READ_REGISTERS;
   modbus.regAdd = address;
   modbus.coilsNo = regCnt;
@@ -572,7 +569,7 @@ int32_t modbus_read_hold_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address
   return ret;
 }
 
-int32_t modbus_read_input_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutRegs,
+int32_t modbus_read_input_reg(modbus_h_t *drv, uint16_t address, uint16_t *pOutRegs,
                              uint16_t regCnt)
 {
   modbus_t modbus;
@@ -586,7 +583,7 @@ int32_t modbus_read_input_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t addres
     return ret;
   }
   
-  modbus.id = slave_id;
+  modbus.id = drv->id;
   modbus.fc = MB_FC_READ_INPUT_REGISTER;
   modbus.regAdd = address;
   modbus.coilsNo = regCnt;

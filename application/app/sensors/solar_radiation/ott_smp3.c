@@ -14,8 +14,6 @@
 typedef struct ott_smp3_cfg_s
 {
   modbus_h_t modbus;
-
-
 } ott_smp3_cfg_t;
 
 
@@ -30,9 +28,16 @@ ott_smp3_cfg_t g_ott_smp3_cfg;
 void ott_smp3_set(driver_t *handle, solarRadiation_set_option_t option, void *value);
 void ott_smp3_get(driver_t *handle, solarRadiation_get_option_t option, void *value);
 
-    float smp3_solar_read(driver_t *driver, uint8_t *err);
+float smp3_solar_read(driver_t *driver, uint8_t *err);
 
-solarRadiation_api_t g_ott_smp3_api = {.read = smp3_solar_read,.set=ott_smp3_set,.get =ott_smp3_get};
+solarRadiation_api_t g_ott_smp3_api = {.read = smp3_solar_read,.set=NULL,.get =NULL};
+
+
+void ott_smp3_initialize(void)
+{
+  
+  modbus_write_single_coil(&g_ott_smp3_cfg.modbus, COIL_IO_CLEAR_ERROR, true);
+}
 
 driver_t *ott_smp3_open(int32_t num, void *opt)
 {
@@ -53,8 +58,11 @@ driver_t *ott_smp3_open(int32_t num, void *opt)
   g_ott_smp3_driver.api = &g_ott_smp3_api;
   g_ott_smp3_driver.opened = true;
   
+  ott_smp3_initialize();
+
   return &g_ott_smp3_driver;
 }
+
 
 float modbus_regs_to_float(uint16_t msb, uint16_t lsb)
 {
@@ -97,7 +105,6 @@ void print_ott(void)
 응답 01 02 01 08 A0 4E
 
 
-
 파싱
 Input Registers 20개 읽기 주소 0
 | 주소 (Offset) | 값 (Hex) | 값 (10진수) |
@@ -105,23 +112,27 @@ Input Registers 20개 읽기 주소 0
 | `0x0000`    | `02 59` | `601`    | IO_DEIVCE_TYPE
 | `0x0001`    | `00 64` | `100`    |
 | `0x0002`    | `00 01` | `1`      |IO_OPERATIONAL_MODE,Normal Mode
-| `0x0003`    | `00 08` | `8`      |IO_STATUS_FLAGS,Error flag
+| `0x0003`    | `00 08` | `8`      |IO_STATUS_FLAGS,Error flag 0x08 갑작스러 전원 리셋
 | `0x0004`    | `00 01` | `1`      |IO_SCALE_FACTOR,1 floating point result = integer register X / 10
 | `0x0005`    | `00 F4` | `244`    |IO_SENSOR1_DATA
 | `0x0006`    | `00 F2` | `242`    |IO_RAW_SENSOR1_DATA
 | `0x0007`    | `00 00` | `0`      |IO_STDEV_SENSOR1
-| `0x0008`    | `01 20` | `288`    |
-| `0x0009`    | `00 7A` | `122`    |
+| `0x0008`    | `01 20` | `288`    |IO_BODY_TEMPERATURE
+| `0x0009`    | `00 7A` | `122`    |IO_EXT_POWER_SENSOR
 | `0x000A`    | `00 00` | `0`      |
 | `0x000B`    | `00 00` | `0`      |
 | `0x000C`    | `00 00` | `0`      |
 | `0x000D`    | `00 00` | `0`      |
 | `0x000E`    | `00 00` | `0`      |
-| `0x000F`    | `00 00` | `0`      |
-| `0x0010`    | `03 EF` | `1007`   |
+| `0x000F`    | `00 00` | `0`      |IO_TILT
+| `0x0010`    | `03 EF` | `1007`   |IO_RH  /10
 | `0x0011`    | `00 03` | `3`      |
 | `0x0012`    | `00 00` | `0`      |
 
+
+Write Single Coil(COIL_IO_CLEAR_ERROR 지우기)
+01 05 00 0A FF 00 AC 38
+01 05 00 0A FF 00 AC 38
 */
 
 float ott_cvt_scale_factor(int32_t scale_factor)
@@ -150,7 +161,7 @@ float smp3_solar_read(driver_t *driver, uint8_t *err)
   ott_smp3_cfg_t *cfg = driver->cfg; 
 
 
-  ret = modbus_read_input_reg(&cfg->modbus, cfg->modbus.id, REG_IO_DEVICE_TYPE, reg, _countof(reg));
+  ret = modbus_read_input_reg(&cfg->modbus,  REG_IO_DEVICE_TYPE, reg, _countof(reg));
 
   if(ret)
   {
@@ -171,12 +182,3 @@ float smp3_solar_read(driver_t *driver, uint8_t *err)
   return solar_radiation;
 }
 
-void ott_smp3_set(driver_t *handle, solarRadiation_set_option_t option, void *value)
-{
-
-}
-
-void ott_smp3_get(driver_t *handle, solarRadiation_get_option_t option, void *value)
-{
-
-}

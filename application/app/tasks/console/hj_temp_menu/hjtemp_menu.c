@@ -62,7 +62,7 @@ int hjtemperature_menu(void)
 
         modbus_h = get_hjtemperature_bus_io();
 
-        modbus_read_hold_reg(modbus_h, modbus_h->id, 0, (uint16_t *)&map, 16);
+        modbus_read_hold_reg(modbus_h,  0, (uint16_t *)&map, 16);
         io_printf("SW Version:%d\r\n", map.sw_version);
         io_printf("HW Version:%d\r\n", map.hw_version);
 
