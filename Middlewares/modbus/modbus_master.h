@@ -19,6 +19,7 @@ typedef struct modbus_config_s
 void modbus_init(void);
 
 int32_t modbus_write_single_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t val);
+int32_t modbus_write_single_coil(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t val);
 int32_t modbus_write_multi_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *regs,
                                uint16_t regCnt);
 int32_t modbus_read_hold_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *pOutRegs,

@@ -357,6 +357,38 @@ int32_t modbus_write_single_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t addr
   return err;
 }
 
+/**
+ * @brief 특정 주소에 단일 코일 쓰기
+ * @param drv 모드버스 드라이버
+ * @param slave_id 슬레이브 ID
+ * @param address 코일 주소
+ * @param val 코일 값 (0: OFF, non-zero: ON)
+ * @retval RET_OK: 성공, RET_FAIL: 실패
+ */
+int32_t modbus_write_single_coil(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t val)
+{
+  modbus_t modbus;
+  uint16_t reg[10];
+  int32_t err = RET_FAIL;
+
+  modbus.id = slave_id;
+  modbus.fc = MB_FC_WRITE_COIL;
+  modbus.regAdd = address;
+  modbus.coilsNo = 1;
+  modbus.regs = &reg[0];
+  modbus.regsCnt = sizeof(reg) / sizeof(reg[0]);
+  modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
+
+  modbus.reg[0] = val;  // 코일 값
+
+  if (modbus_master_req(drv, &modbus) == RET_OK)
+  {
+    err = RET_OK;
+  }
+
+  return err;
+}
+
 int32_t modbus_write_multi_reg(modbus_h_t *drv, uint8_t slave_id, uint16_t address, uint16_t *regs,
                                uint16_t regCnt)
 {
