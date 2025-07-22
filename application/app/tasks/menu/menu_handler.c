@@ -1,9 +1,12 @@
+#define __STDC_WANT_LIB_EXT1__ 1
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#include <stdarg.h>
+
 
 #include "menu_handler.h"
 #include "app_key.h"
@@ -68,9 +71,9 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
   
   // 현재 값으로 버퍼 초기화 (부호 포함, 고정 폭)
   if(sign_use)
-  snprintf(buff, sizeof(buff), "%+0*d", number_width, *val);
+  snprintf_s(buff, sizeof(buff), "%+0*d", number_width, *val);
   else
-    snprintf(buff, sizeof(buff), "%0*d", number_width, *val);
+    snprintf_s(buff, sizeof(buff), "%0*d", number_width, *val);
   buff[sizeof(buff) - 1] = '\0';
 
   cursor_pos = 0; // 부호 위치(맨 왼쪽)부터 시작
@@ -225,7 +228,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
   
   fmt_len = strlen(strfmt->fmt);
   fmt = strfmt->fmt;
-  memset(display, 0, sizeof(display));
+  memset_s (display,sizeof(display), 0, sizeof(display));
   
   screen_clear();
   
@@ -269,7 +272,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
   // 기존 데이터가 있으면 복사
   if (strfmt->data[0] != '\0')
   {
-    strncpy(display, strfmt->data, sizeof(display) - 1);
+    strncpy_s(display, sizeof(display),strfmt->data, sizeof(display) - 1);
     display[sizeof(display) - 1] = '\0';
   }
   
@@ -350,7 +353,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
         // 데이터 저장 및 콜백 호출
         if (strfmt->data != NULL)
         {
-          strncpy(strfmt->data, display, sizeof(strfmt->data) - 1);
+          strncpy_s(strfmt->data,sizeof(strfmt->data), display, sizeof(strfmt->data) - 1);
           strfmt->data[sizeof(strfmt->data) - 1] = '\0';
         }
         return MENU_OK;
@@ -479,22 +482,22 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
   {
     if (decimal_places > 0)
     {
-      snprintf(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, *val);
+      snprintf_s(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, *val);
     }
     else
     {
-      snprintf(buff, sizeof(buff), "%+0*d", total_width, (int)*val);
+      snprintf_s(buff, sizeof(buff), "%+0*d", total_width, (int)*val);
     }
   }
   else
   {
     if (decimal_places > 0)
     {
-      snprintf(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, *val);
+      snprintf_s(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, *val);
     }
     else
     {
-      snprintf(buff, sizeof(buff), "%0*d", total_width, (int)*val);
+      snprintf_s(buff, sizeof(buff), "%0*d", total_width, (int)*val);
     }
   }
   buff[sizeof(buff) - 1] = '\0';
@@ -621,22 +624,22 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
       {
         if (sign_use)
         {
-          snprintf(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, min);
+          snprintf_s(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, min);
         }
         else
         {
-          snprintf(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, min);
+          snprintf_s(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, min);
         }
       }
       else if (temp_val > max)
       {
         if (sign_use)
         {
-          snprintf(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, max);
+          snprintf_s(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, max);
         }
         else
         {
-          snprintf(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, max);
+          snprintf_s(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, max);
         }
       }
     }
@@ -661,22 +664,22 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
         {
           if (sign_use)
           {
-            snprintf(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, min);
+            snprintf_s(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, min);
           }
           else
           {
-            snprintf(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, min);
+            snprintf_s(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, min);
           }
         }
         else if (temp_val > max)
         {
           if (sign_use)
           {
-            snprintf(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, max);
+            snprintf_s(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, max);
           }
           else
           {
-            snprintf(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, max);
+            snprintf_s(buff, sizeof(buff), "%0*.*f", total_width, decimal_places, max);
           }
         }
       }
@@ -737,7 +740,7 @@ int32_t input_combobox(const char* title, const char* item_list[], int32_t item_
   
   for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
 
-  snprintf(&buff[len], sizeof(buff) - len, "%s", title);
+  snprintf_s(&buff[len], sizeof(buff) - len, "%s", title);
   screen_printf(0, 0, "%s", buff);
 
   while (1)
@@ -895,7 +898,7 @@ int32_t input_active(const char *title, int32_t *choice)
   for (int i = 0; i < title_padding; i++)
   buff[len++]=' ';
 
-  snprintf(&buff[len],sizeof(buff)-len,"%s",title);
+  snprintf_s(&buff[len],sizeof(buff)-len,"%s",title);
 
   screen_clear();
 
@@ -913,7 +916,7 @@ int32_t input_active(const char *title, int32_t *choice)
 
       for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
 
-      snprintf(&buff[len], sizeof(buff) - len, "%s", yes);
+      snprintf_s(&buff[len], sizeof(buff) - len, "%s", yes);
 
     }
     else
@@ -924,7 +927,7 @@ int32_t input_active(const char *title, int32_t *choice)
 
       for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
 
-      snprintf(&buff[len], sizeof(buff) - len, "%s", no);
+      snprintf_s(&buff[len], sizeof(buff) - len, "%s", no);
     }
     screen_printf(1, 0, "%s", buff);
     screen_refresh();
@@ -971,7 +974,7 @@ int32_t show_ok(const char *title,const char *msg)
 
   for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
 
-  snprintf(&buff[len], sizeof(buff) - len, "%s", title);
+  snprintf_s(&buff[len], sizeof(buff) - len, "%s", title);
 
   screen_clear();
 
@@ -987,7 +990,7 @@ int32_t show_ok(const char *title,const char *msg)
 
     for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
 
-    snprintf(&buff[len], sizeof(buff) - len, "%s", yes);
+    snprintf_s(&buff[len], sizeof(buff) - len, "%s", yes);
 
     screen_printf(2, 0, "%s", buff);
     screen_refresh();
@@ -1003,3 +1006,33 @@ int32_t show_ok(const char *title,const char *msg)
 
   return convert_key_to_status(key);
 }
+
+
+int32_t make_sreen_row(char *buff,const char *pFmt, ...)
+{
+  va_list ap;
+  int32_t len;
+
+  int32_t remain_len;
+  
+  va_start(ap, pFmt);
+  len = vsnprintf_s(buff, MAX_COLS+1, (char *)pFmt, ap);
+  va_end(ap);
+
+  if(len<0)
+  {
+    return 0;
+  }
+
+  if(len<MAX_COLS)
+  {
+    remain_len = MAX_COLS - len;
+    for(int i = 0 ; i< remain_len; i++)
+    {
+      buff[len++]  = ' ';
+    }
+    buff[len]=0;
+  }
+  return len;
+}
+

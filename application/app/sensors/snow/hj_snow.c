@@ -489,3 +489,49 @@ driver_t * hjsnow_opened(void)
   return NULL;
   
 }
+
+
+void hjsnow_write_height(int32_t height,uint8_t *err)
+{
+  uint8_t frame[60];
+  static uint16_t len;
+
+  uint8_t para[10];
+  uint8_t paraCnt = 0;
+
+  devIoTimeOutopt_t opt;
+  dev_io_t dev_io;
+  *err = 1;
+
+  para[paraCnt++] = (uint8_t)(int)(&((CONFIG_TypeDef *)0)->snow_stddistance);
+  para[paraCnt++] = 4;
+
+  memcpy(&para[paraCnt],&height,4);
+  paraCnt+=4;
+
+  len = make_hjSnowFrame(frame, sizeof(frame), CMD_SNOW_CFG_WRITE, para, paraCnt);
+
+
+
+  if (hjsnow_inst.com_type == COM_TYPE_RS485) // 485
+  {
+    dev_io.io = eRS485_IO;
+    dev_io.num = hjsnow_inst.rs485_num;
+  }
+  else
+  {
+    dev_io.io = eRS232_IO;
+    dev_io.num = hjsnow_inst.rs232_num;
+  }
+
+  dev_io_write(&dev_io, frame, len, 0);
+
+  opt.waitTimeOutMs = 50;
+  len = dev_io_read(&dev_io, frame, sizeof(frame), DEV_IO_CMD_DATA_TIMEOUT, (void *)&opt);
+
+  if(len>0)
+  {
+    *err = 0;
+  }
+
+}

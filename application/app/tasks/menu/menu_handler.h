@@ -23,4 +23,6 @@ int32_t input_active(const char* title, int32_t* choice);
 int32_t show_popup(const char *title, const char *message);
 int32_t show_ok(const char* title, const char* msg);
 int32_t convert_key_to_status(int key);
+int32_t make_sreen_row(char *buff, const char *pFmt, ...);
+
 #endif

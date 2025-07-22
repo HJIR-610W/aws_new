@@ -149,7 +149,7 @@ typedef enum sensor_list_e
   X(S_T_SNOW_HJ, "HJ Snow")                   \
   X(S_T_WIND_SPEED_HJ_485, "HJ Wind Spd")     \
   X(S_T_WIND_DIRECTION_HJ_485, "HJ Wind Dir") \
-  X(S_T_HUMINITY_HJ, "HJ Humidity")           \
+  X(S_T_HUMINITY_HJ, "HJ Humi")           \
   X(S_T_TEMPERATURE_HJ, "HJ Temp")            \
   X(S_T_RAIN_PRESENT_DI, "HJ Rain Det")       \
   X(S_T_PT100_A, "PT100_A")                   \

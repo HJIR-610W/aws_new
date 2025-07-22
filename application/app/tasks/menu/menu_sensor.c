@@ -18,7 +18,7 @@
 #include "app_sensor.h"
 #include "const_string.h"
 #include "menu/devices/hj_temperature_menu.h"
-
+#include "menu/devices/hj_snowfall_menu.h"
 #define SCREEN_COLS 20
 #define SYSTEM_WD 8
 
@@ -133,7 +133,7 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
   M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
 
   screen_update_list(p_win, row_count, HJSNOW_PAGE_SNOW_MENU);
-  M_PRINTF(p_win, row_count++, "SnowMenu");
+  M_PRINTF(p_win, row_count++, "Settings");
 
   p_win->total_items = row_count;
 
@@ -285,7 +285,7 @@ void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
   M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "M bus ID", hjtemp_config->modbus_id);
   
   screen_update_list(p_win, row_count, HJTEMP_PAGE_TEMP_MENU);
-  M_PRINTF(p_win, row_count++, "TempMenu");
+  M_PRINTF(p_win, row_count++, "Settings");
 
   p_win->total_items = row_count;
 
@@ -663,8 +663,7 @@ int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
       }
       break;
     case HJSNOW_PAGE_SNOW_MENU:
-      // TODO: Implement snow menu call
-      // status = hj_snow_menu();
+       status = ctrl_hj_snow();
       break;
   }
 

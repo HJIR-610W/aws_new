@@ -144,9 +144,9 @@ int32_t setup_menu_version(void)
   uint8_t major;
   uint8_t minor;
   uint8_t rel;
-
-
-  char buff[30];
+  char buff[20];
+  char ver_buff[100];
+  int len=0;
   DATE_TIME_BUF ct;
 
   screen_clear();
@@ -155,19 +155,16 @@ int32_t setup_menu_version(void)
   get_app_build(&ct);
   make_timeToStr(&ct, buff, sizeof(buff));
 
-  screen_printf(0, 0, "App:%d.%d.%d.%d", major, minor, fix, rel);
-  screen_printf(1, 0, "Build:%s", buff);
-
+  len += make_sreen_row(&ver_buff[len], "App:%d.%d.%d.%d", major, minor, fix, rel);
+  len += make_sreen_row(&ver_buff[len], "%s", buff);
   get_boot_version(&major, &minor, &fix, &rel);
   get_boot_build(&ct);
   make_timeToStr(&ct, buff, sizeof(buff));
 
-  screen_printf(2, 0, "Boot:%d.%d.%d.%d", major, minor, fix, rel);
-  screen_printf(3, 0, "Build:%s", buff);
+  len += make_sreen_row(&ver_buff[len], "Boot:%d.%d.%d.%d", major, minor, fix, rel);
+  len += make_sreen_row(&ver_buff[len], "%s", buff);
 
-  screen_refresh();
-
-  get_button_key(0xFFFFFFFF);
+  show_popup("Version", ver_buff);
 
   return MENU_OK;
 }

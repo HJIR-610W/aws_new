@@ -1,0 +1,240 @@
+#include "menu_panel.h"
+
+#include "app_key.h"
+#include "app_screen.h"
+#include "cli_key_code.h"
+#include "config_app.h"
+#include "console_utile.h"
+#include "common\const_string.h"
+#include "menu_handler.h"
+#include "Sensors\snow\hj_snow.h"
+#include "util_memory.h"
+#include "view_driver.h"
+
+
+#define SCREEN_COLS 20
+#define PANEL_WD 8
+
+#define MENU_PRINTF screen_menu_printf_row
+
+
+#define HJ_SNOW_CONFIG_VIEW    0
+#define HJ_SNOW_ZERO_CALIB     1
+#define HJ_SNOW_SET_DISTANCE   2
+#define HJ_SNOW_VIEW_DATA      3
+
+
+driver_t *hjsnow;
+
+void draw_ctrl_hj_snow_page(screen_menu_t *p_win)
+{
+  int32_t row_count = 0;
+
+  p_win->current_row = 0;
+
+  screen_update_list(p_win, row_count, HJ_SNOW_CONFIG_VIEW);
+  MENU_PRINTF(p_win, row_count++, "View config");
+  screen_update_list(p_win, row_count, HJ_SNOW_ZERO_CALIB);
+  MENU_PRINTF(p_win, row_count++, "Zero calibration");
+  screen_update_list(p_win, row_count, HJ_SNOW_SET_DISTANCE);
+  MENU_PRINTF(p_win, row_count++, "Setting height");
+  screen_update_list(p_win, row_count, HJ_SNOW_VIEW_DATA);
+  MENU_PRINTF(p_win, row_count++, "View data");
+
+  p_win->total_items = row_count;
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_menu_clear_row(p_win, row_count++);
+  }
+}
+
+void draw_snow_config(screen_page_t *p_win, hjsnow_read_config_t *cfg)
+{
+  int32_t row_count = 0;
+
+
+
+  p_win->current_row = 0;
+
+  screen_printf_row(p_win, row_count++, "model[0] :%s", cfg->config.xModel[0]);
+  screen_printf_row(p_win, row_count++, "model[1] :%s", cfg->config.xModel[1]);
+  screen_printf_row(p_win, row_count++, "model[2] :%s", cfg->config.xModel[2]);
+  screen_printf_row(p_win, row_count++, "scantime :%d", cfg->config.snow_scantime);
+  screen_printf_row(p_win, row_count++, "ref d[0] :%d", cfg->config.snow_refdistance[0]);
+  screen_printf_row(p_win, row_count++, "ref d[1] :%d", cfg->config.snow_refdistance[1]);
+  screen_printf_row(p_win, row_count++, "ref d[2] :%d", cfg->config.snow_refdistance[2]);
+  screen_printf_row(p_win, row_count++, "flevel   :%d", cfg->config.snow_filterlevel);
+  screen_printf_row(p_win, row_count++, "height   :%d", cfg->config.snow_stddistance);
+  screen_printf_row(p_win, row_count++, "filter   :%d", cfg->config.snow_nofiltermode);
+  screen_printf_row(p_win, row_count++, "scan auto:%d", cfg->config.snow_scantempauto);
+
+  p_win->total_items[0] = ALIGN_UP(row_count, p_win->view_row);
+
+  while (p_win->current_row < p_win->view_row)
+  {
+    screen_clear_row(p_win, row_count++);
+  }
+}
+int32_t read_snow_config(void)
+{
+  int32_t status;
+  int32_t key;
+  screen_page_t lcd_win;
+  hjsnow_read_config_t cfg;
+  uint8_t err;
+
+  hjsnow_ctrl(hjsnow, eHJSNOW_GET_CONFIG, NULL, &cfg, &err);
+
+  screen_page_create(&lcd_win, 8, 20);
+  lcd_win.total_pages = 1;
+  lcd_win.chunk_scroll_use = 1;
+
+  do
+  {
+    draw_snow_config(&lcd_win,&cfg);
+    screen_refresh();
+    key = get_button_key(1000);
+
+    if (key == KEY_CODE_CTRL_Q)
+    {
+      status = MENU_ABORT;
+      break;
+    }
+    else if (key == KEY_CODE_CTRL_C)
+    {
+      status = MENU_BACK;
+      break;
+    }
+    else if (key != KEY_CODE_NONE)
+    {
+      screen_handle_scroll(&lcd_win, key);
+    }
+  } while (1);
+
+  return status;
+}
+
+int32_t ctrl_hj_snow(void)
+{
+
+  int32_t index;
+  int32_t key;
+
+  screen_menu_t menu;
+
+  uint8_t err;
+
+  hjsnow = hjsnow_opened();
+  if (hjsnow == NULL)
+  {
+    show_popup("Error", "HJ Snow sensor not configured");
+    return MENU_BACK;
+  }
+
+  screen_menu_create(&menu, "HJ SNOW");
+
+  while (1)
+  {
+    draw_ctrl_hj_snow_page(&menu);
+    screen_refresh();
+
+    key = get_button_key(1000);
+
+    if (key == KEY_CODE_CTRL_Q)
+    {
+      break;
+    }
+    else if (key == KEY_CODE_CTRL_C)
+    {
+      break;
+    }
+
+    if (key == KEY_CODE_ENTER)
+    {
+      index = menu.selected_index;
+
+      switch (menu.index_list[index])
+      {
+      case HJ_SNOW_CONFIG_VIEW:
+        {
+          read_snow_config();
+        }
+      break;
+
+      case HJ_SNOW_ZERO_CALIB:
+      {
+        int ok = 0;
+        input_active("Run zero calibration?", &ok);
+        if (ok)
+        {
+          hjsnow_ctrl(hjsnow, eHJSNOW_RUN_ZERO, NULL, NULL, &err);
+          if (err)
+          {
+            show_popup("Error", "Command transmission failed");
+          }
+          else
+          {
+            show_popup("Success", "Command sent\r\nCheck laser pointer");
+          }
+        }
+      }
+      break;
+      case HJ_SNOW_SET_DISTANCE:
+      {
+        int status;
+        int height;
+        uint8_t err;
+
+        status = input_decimal("Height(mm)",0,3000,&height);
+        if(status == MENU_OK)
+        {
+          hjsnow_write_height(height,&err);
+          if(err == 0)
+          {
+            show_popup("Setting height", "Success");
+          }
+        }
+
+      }
+      
+      break; 
+      case HJ_SNOW_VIEW_DATA:
+      {
+        hjsnow_read_system_t system;
+        hjsnow_ctrl(hjsnow, eHJSNOW_GET_SYSTEM, NULL, &system, &err);
+
+        if (err)
+        {
+          char buff[50];
+          snprintf(buff, sizeof(buff), "Sensor error: %s", get_drv_err_name(err));
+          show_popup("Error", buff);
+        }
+        else
+        {
+          char buff[150];
+          int len = 0;
+
+          len = make_sreen_row(&buff[len], "S1 dist:%d mm", system.system.CurDistance[0]);
+          len += make_sreen_row(&buff[len],"S2 dist:%d mm", system.system.CurDistance[1]);
+          len += make_sreen_row(&buff[len],"S3 dist:%d mm", system.system.CurDistance[2]);
+          len += make_sreen_row(&buff[len],"Temperature:%d", system.system.innerTemp);
+          len += make_sreen_row(&buff[len],"Snow Level:%d mm", system.system.CurSnowLevel);
+
+          show_popup("HJ Snow Data", buff);
+        }
+      }
+      break;
+
+      default:
+        break;
+      }
+    }
+    else if (key != KEY_CODE_NONE)
+    {
+      screen_menu_handle(&menu, key);
+    }
+  }
+
+  return convert_key_to_status(key);
+}

@@ -36,4 +36,7 @@ typedef struct hjsnow_read_system_s
 
 void hjsnow_ctrl(driver_t *driver, eHJSNOW_CTRL_t ctrl, void *w_opt,void *r_opt,uint8_t *err);
 driver_t *hjsnow_opened(void);
+
+void hjsnow_write_height(int32_t height, uint8_t *err);
+
 #endif

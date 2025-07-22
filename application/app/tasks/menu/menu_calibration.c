@@ -144,7 +144,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   screen_clear();
 
   choice = 0;
-  status = input_active("Start calibration P1?", &choice);
+  status = input_active("Start cali P1?", &choice);
   if (status != MENU_OK || choice == 0)
     return status;
 
@@ -186,13 +186,13 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     return status;
 
     p1.reference_value = 0.5;
-  status = input_float("Low Value", -1000.0f, 1000.0f, &p1.reference_value, "%8.3f");
+  status = input_float("Low Value(V)", -1000.0f, 1000.0f, &p1.reference_value, "%8.3f");
   if (status != MENU_OK)
     return status;
 
   screen_clear();
   choice = 0;
-  status = input_active("Start calibration P2?",  &choice);
+  status = input_active("Start cali P2?",  &choice);
   if (status != MENU_OK || choice == 0)
     return status;
 
@@ -235,7 +235,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     return status;
 
     p2.reference_value = 4.5;
-  status = input_float("High Value", -1000.0f, 1000.0f, &p2.reference_value, "%8.3f");
+  status = input_float("High Value(V)", -1000.0f, 1000.0f, &p2.reference_value, "%8.3f");
   if (status != MENU_OK)
     return status;
 
