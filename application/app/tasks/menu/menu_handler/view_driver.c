@@ -8,7 +8,8 @@
 #include "dev_io.h"
 #include "console_utile.h"
 #include "util_stdio.h"
-static layout_t g_layout = {1, 1, 125, 0};
+
+static layout_t g_layout = {1, 1, 125, 0};//화면 전체 정보
 
 
 
@@ -37,6 +38,7 @@ void create_win(win_t* win, int start_x, int start_y, int view_row, int view_col
 	}
 }
 
+//실시간 값 표시
 void win_printf_title(win_t* win, const char* pFmt, ...)
 {
 	char buff[150];
@@ -44,19 +46,19 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 	int len=0;
   int remain_len;
 
-
 	io_printf("\x1B[%d;%dH", win->start_y, win->start_x);
 
-
 	//상단 +----+ 출력
-	io_printf("+");
-	for (int i = 0; i < win->view_col - 2; i++) {
-		io_printf("-");
+	for (int i = 0; i < win->view_col - 2; i++)
+	{
+		buff[len++] = '-';
 	}
-	io_printf("+\n");
+	buff[len] = '\0';
+	io_printf("+%s+", buff);
 
-	//타이틀 출력
-	io_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
+	len=0;
+			// 타이틀 출력
+			io_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
 
 	va_start(ap, pFmt);
 
@@ -90,11 +92,14 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
   }
 
 	io_printf("\x1B[%d;%dH", win->start_y + 2, win->start_x);
-	io_printf("+");
-	for (int i = 0; i < win->view_col - 2; i++) {
-		io_printf("-");
+	len = 0;
+	
+	for (int i = 0; i < win->view_col - 2; i++)
+	{
+		buff[len++] = '-';
 	}
-	io_printf("+\n");
+	buff[len] = '\0';
+	io_printf("+%s+", buff);
 }
 
 void win_print_close(win_t* win)
@@ -107,19 +112,24 @@ void win_print_close(win_t* win)
 	io_printf("+\n");
 }
 
-
+/**
+ * @brief 창에 행에 문자열 출력
+ * @param win 창정보
+ * @param row_index 창의 행 정보
+ */
 void win_printf_row(win_t* win, int row_index, const char* pFmt, ...)
 {
 	char buff[150];
-	va_list ap;
 	int i;
 	int len;
 	int page;
+	va_list ap;
+	int total_len = 0;
+	int remain_len=0;
 
-	if (win->current_row >= win->view_row)
-		return;
-	
-	page = win->current_page;
+			if (win->current_row >= win->view_row) return;
+
+	page = win->current_page;// 
 	if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + win->view_row)
 	{
 		io_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
@@ -130,11 +140,17 @@ void win_printf_row(win_t* win, int row_index, const char* pFmt, ...)
 		len += vsnprintf((char*)&buff[1], sizeof(buff) - 2, (char*)pFmt, ap);
 		va_end(ap);
 
-		io_printf(buff);
-		len = win->view_col - utf8_strlen(buff) - 1;
-		for (i = 0; i < len; i++) io_printf(" ");
-		io_printf("|\r\n");
+		total_len = len;
 
+		remain_len = win->view_col - utf8_strlen(buff) - 1;
+		for (i = 0; i < remain_len; i++)
+		{
+			buff[total_len++] = ' ';
+		}
+		buff[total_len++] = '|';
+		buff[total_len] = '\0';
+
+		io_printf("%s", buff);
 		win->current_row++;
 	}
 }
@@ -206,9 +222,12 @@ int view_get_key_input(uint32_t timeout_ms)
 }
 
 
-void calculate_window_position(win_t* win, int win_width, int win_height)
+void calculate_window_position(win_t* win)
 {
-	if (g_layout.next_x + win_width > g_layout.max_width) {
+	int win_height = win->view_row+3;//타이틀 3행 
+
+	if (g_layout.next_x + win->view_col > g_layout.max_width)
+	{
 		g_layout.next_x = 1;
 		g_layout.next_y += g_layout.row_height + 1;
 		g_layout.row_height = 0;
@@ -216,9 +235,10 @@ void calculate_window_position(win_t* win, int win_width, int win_height)
 	
 	win->start_x = g_layout.next_x;
 	win->start_y = g_layout.next_y;
-	
-	g_layout.next_x += win_width + 2;
-	if (win_height > g_layout.row_height) {
+
+	g_layout.next_x += win->view_col + 2;
+	if (win_height > g_layout.row_height)
+	{
 		g_layout.row_height = win_height;
 	}
 }

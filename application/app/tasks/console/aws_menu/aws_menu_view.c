@@ -74,10 +74,12 @@ void draw_system(win_t* p_win)
   const char *message;
   int page = 0;
   int row_count = 0;
-  int win_height = p_win->view_row + 3;
-   p_win->total_pages = 1;
+
+  
+  p_win->total_pages = 1;
   p_win->current_row = 0;
-  calculate_window_position(p_win, p_win->view_col, win_height);
+
+  calculate_window_position(p_win);
 
 
   switch (page)
@@ -138,11 +140,11 @@ void draw_rain(win_t *p_win)
 {
   int page = 0;
   int row_count = 0;
-  int win_height = p_win->view_row + 3;
+
 
   p_win->total_pages = 1;
   p_win->current_row = 0;
-  calculate_window_position(p_win, p_win->view_col, win_height);
+  calculate_window_position(p_win);
 
   switch (page)
   {
@@ -191,11 +193,11 @@ void draw_charger(win_t *p_win)
   uint8_t err;
   int page = 0;
   int row_count = 0;
-  int win_height = p_win->view_row + 3;
+
 
   p_win->total_pages = 1;
   p_win->current_row = 0;
-  calculate_window_position(p_win, p_win->view_col, win_height);
+  calculate_window_position(p_win);
 
   switch (page)
   {
@@ -259,11 +261,11 @@ void draw_direct(win_t *p_win)
   uint32_t remain_sec;
   int page = 0;
   int row_count = 0;
-  int win_height = p_win->view_row + 3;
+
 
   p_win->total_pages = 1;
   p_win->current_row = 0;
-  calculate_window_position(p_win, p_win->view_col, win_height);
+  calculate_window_position(p_win);
 
   switch (page)
   {
@@ -338,11 +340,11 @@ void draw_cdma(win_t *p_win)
   uint32_t last_time;
   int page = 0;
   int row_count = 0;
-  int win_height = p_win->view_row + 3;
+
 
   p_win->total_pages = 1;
   p_win->current_row = 0;
-  calculate_window_position(p_win, p_win->view_col, win_height);
+  calculate_window_position(p_win);
 
   switch (page)
   {
@@ -437,11 +439,11 @@ void draw_eth(win_t *p_win)
   uint32_t last_time;
   int page = 0;
   int row_count = 0;
-  int win_height = p_win->view_row + 3;
+
 
   p_win->total_pages = 1;
   p_win->current_row = 0;
-  calculate_window_position(p_win, p_win->view_col, win_height);
+  calculate_window_position(p_win);
 
 
       win_printf_title(p_win, "이더넷");
@@ -560,10 +562,10 @@ void draw_aws(win_t *p_win)
   uint8_t err;
   int page = 0;
   int row_count = 0;
-  int win_height = p_win->view_row + 3;
+
   p_win->current_row = 0;
   p_win->total_pages = 5;  // 0~4: 순간, 1분, 10분, 한시간, RAW
-  calculate_window_position(p_win, p_win->view_col, win_height);
+  calculate_window_position(p_win);
 
   page = p_win->current_page;
   p_kma = get_kma_data((eAWS_DATA_MIN_t)page);
@@ -1877,11 +1879,11 @@ void draw_config(win_t *p_win)
 {
   int row_count=0;
 
-  int win_height = p_win->view_row + 3;
+
 
   p_win->total_pages = 1;
   p_win->current_row = 0;
-  calculate_window_position(p_win, p_win->view_col, win_height);
+  calculate_window_position(p_win);
 
 
   win_printf_title(p_win, "설정");
@@ -1907,7 +1909,7 @@ int32_t aws_menu_veiw(void)
   win_t config_win;
   win_t *windows[7];
   int window_count = 0;
-  int current_win = 5;//aws
+  int current_win;
   app_mode_t mode = MODE_SELECT;
 
   io_printf(ES_CLEAR_SCREEN);
@@ -1922,103 +1924,106 @@ int32_t aws_menu_veiw(void)
   create_win(&charger_win, 0, 0, 6, 26);
   create_win(&config_win, 0, 0, 8, 22);
 
-
-
-  while (1)
-  {
-    io_printf(ES_CURSOR_HOME);
-    reset_layout();
-    window_count = 0;
-
-    reset_win(&system_win);
-    reset_win(&rain_win);
-    reset_win(&cdma_win);
-    reset_win(&direct_win);
-    reset_win(&eth_win);
-    reset_win(&aws_win);
-    reset_win(&charger_win);
-    reset_win(&config_win);
-
-    windows[window_count++] = &system_win;
-    windows[window_count++] = &rain_win;
-    windows[window_count++] = &charger_win;
-    if (get_config_app()->cdma_active)
-      windows[window_count++] = &cdma_win;
-    if (get_config_app()->direct_active)
-      windows[window_count++] = &direct_win;
-    windows[window_count++] = &aws_win;
-    if (get_config_app()->eth_active)
-      windows[window_count++] = &eth_win;
- //   windows[window_count++] = &config_win;
-
-
-
-    if (current_win < window_count)
+  if (get_config_app()->cdma_active
+    || get_config_app()->direct_active)
     {
-      if (mode == MODE_NAVIGATE)
+      current_win = 4;//초기에 AWS창이 선태되게 한다.
+    }
+    else{
+      current_win = 3; // 초기에 AWS창이 선태되게 한다.
+    }
+
+        while (1)
+    {
+      io_printf(ES_CURSOR_HOME);
+      reset_layout();
+      window_count = 0;
+
+      reset_win(&system_win);
+      reset_win(&rain_win);
+      reset_win(&cdma_win);
+      reset_win(&direct_win);
+      reset_win(&eth_win);
+      reset_win(&aws_win);
+      reset_win(&charger_win);
+      reset_win(&config_win);
+
+      windows[window_count++] = &system_win;
+      windows[window_count++] = &rain_win;
+      windows[window_count++] = &charger_win;
+      if (get_config_app()->cdma_active)
+        windows[window_count++] = &cdma_win;
+      if (get_config_app()->direct_active)
+        windows[window_count++] = &direct_win;
+      windows[window_count++] = &aws_win;
+      if (get_config_app()->eth_active)
+        windows[window_count++] = &eth_win;
+
+      if (current_win < window_count)
       {
-        windows[current_win]->is_focused = 1;
+        if (mode == MODE_NAVIGATE)
+        {
+          windows[current_win]->is_focused = 1;
+        }
+        else
+        {
+          windows[current_win]->is_selected = 1;
+        }
       }
-      else
+
+      draw_system(&system_win);
+      draw_rain(&rain_win);
+      draw_charger(&charger_win);
+      if (get_config_app()->cdma_active)
+        draw_cdma(&cdma_win);
+      if (get_config_app()->direct_active)
+        draw_direct(&direct_win);
+      draw_aws(&aws_win);
+      if (get_config_app()->eth_active)
+        draw_eth(&eth_win);
+      //  draw_config(&config_win);
+
+      if (window_count == 0)
       {
-        windows[current_win]->is_selected = 1;
+        io_printf("No windows to display\n");
+        break;
       }
-    }
 
-    draw_system(&system_win);
-    draw_rain(&rain_win);
-    draw_charger(&charger_win);
-    if (get_config_app()->cdma_active)
-      draw_cdma(&cdma_win);
-    if (get_config_app()->direct_active)
-      draw_direct(&direct_win);
-    draw_aws(&aws_win);
-    if (get_config_app()->eth_active)
-      draw_eth(&eth_win);
-  //  draw_config(&config_win);
-
-    if (window_count == 0)
-    {
-      io_printf("No windows to display\n");
-      break;
-    }
-
-    if (current_win >= window_count)
-    {
-      current_win = 0;
-    }
-
-    layout_t *layout = get_layout();
-    io_printf("\x1B[%d;1H", layout->next_y + layout->row_height + 2);
-    io_printf("");
-
-    int key = view_get_key_input(1000);
-
-    if (key == KEY_ENTER)
-    {  // Enter
-      if (mode == MODE_NAVIGATE)
+      if (current_win >= window_count)
       {
-        mode = MODE_SELECT;
+        current_win = 0;
+      }
+
+      layout_t *layout = get_layout();
+      io_printf("\x1B[%d;1H", layout->next_y + layout->row_height + 2);
+      io_printf("");
+
+      int key = view_get_key_input(1000);
+
+      if (key == KEY_ENTER)
+      { // Enter
+        if (mode == MODE_NAVIGATE)
+        {
+          mode = MODE_SELECT;
+        }
+        else if (mode == MODE_SELECT)
+        {
+          mode = MODE_NAVIGATE;
+        }
+      }
+      else if (key == KEY_BREAK)
+      {
+        break;
+      }
+      else if (mode == MODE_NAVIGATE)
+      {
+        handle_navigation_ptr(windows, window_count, &current_win, key);
       }
       else if (mode == MODE_SELECT)
       {
-        mode = MODE_NAVIGATE;
+        handle_scroll(windows[current_win], key);
       }
     }
-    else if (key == KEY_BREAK)
-    {
-      break;
-    }
-    else if (mode == MODE_NAVIGATE)
-    {
-      handle_navigation_ptr(windows, window_count, &current_win, key);
-    }
-    else if (mode == MODE_SELECT)
-    {
-      handle_scroll(windows[current_win], key);
-    }
-    
-  }
 
   io_printf("\r\n");
 

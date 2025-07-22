@@ -17,21 +17,22 @@ extern "C" {
 #define ALIGN_UP(val, align)  (((val) + ((align) - 1)) / (align) * (align))
 
 
+//win은 하나의 창으로 구성되며 창은 스크롤 기능과 여러개의 페이지로 구성된다.
 #define WIN_PAGE_MAX 5
 typedef struct
 {
 	int start_x;
 	int start_y;
 	int current_row;
-	int view_row;
-	int view_col;
-	int scroll_offset[WIN_PAGE_MAX];
-	int total_items[WIN_PAGE_MAX];
-	int selected_item[WIN_PAGE_MAX];
+	int view_row;//창에서 타이틀 제외한 행의 수
+	int view_col; // 창의 열에 출력되는 모든 문자수  | | 포함
+	int scroll_offset[WIN_PAGE_MAX];//개별 페이지의 스크롤 오프셋
+	int total_items[WIN_PAGE_MAX];//개별 페이지 행의 갯수
+	int selected_item[WIN_PAGE_MAX];//개별 페이지 선택된 행
 	int is_focused;
 	int is_selected;
 	int current_page;
-	int total_pages;
+	int total_pages;//창이 갖는 페이지 수
 } win_t;
 
 
@@ -60,7 +61,7 @@ void handle_scroll(win_t* win, int key);
 void handle_navigation_ptr(win_t** windows, int win_count, int* current_win, int key);
 
 
-void calculate_window_position(win_t* win, int win_width, int win_height);
+void calculate_window_position(win_t* win);
 void reset_layout(void);
 
 
