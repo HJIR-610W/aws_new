@@ -96,7 +96,8 @@ typedef struct hjwindDirection_s
 typedef struct hjsnow_config_s
 {
   ePHYSOCAL_LAYER_t physical_layer;
-  uint8_t port;
+  uint8_t rs232_port;
+  uint8_t rs485_port;
 } hjsnow_config_t;
 
 typedef struct ottSMP3_config_s
@@ -116,6 +117,10 @@ typedef struct frequency_config_s
   int channel;
 } frequency_config_t;
 
+typedef struct jinsung_sjgp215_config_s
+{
+  uint8_t rs232_port;
+} jinsung_sjgp215_config_t;
 typedef struct config_manage_s
 {
   config_header_t header;
@@ -130,6 +135,7 @@ typedef struct config_manage_s
   ott_smp3_config_t ott_smp3;
   rain_present_config_t rain_present;
   frequency_config_t frequency;
+  jinsung_sjgp215_config_t jinsung_sjgp215;
 } config_sensor_t;
 
 #define WRITE_CFG_SENSOR(x)                                                                    \

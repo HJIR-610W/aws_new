@@ -12,12 +12,9 @@
 #define GENERAL_ADC   0
 #endif
 
-#ifndef GENERAL_RS485
-#define GENERAL_RS485 1
-#endif
-
 
 #define BAROMETER_RM0 100
+#define BARO_JINSUNG_SJGP215 101
 
 driver_t *barometer_open(int32_t num,void *opt);
 

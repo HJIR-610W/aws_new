@@ -114,7 +114,9 @@
 			"modbus.h": "c",
 			"stm32_usb.h": "c",
 			"app_rs485.h": "c",
-			"cli_input.h": "c"
+			"cli_input.h": "c",
+			"jinsung_sjgp215.h": "c",
+			"barometer.h": "c"
 		}
 	}
 }

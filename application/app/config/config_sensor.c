@@ -108,6 +108,15 @@ void limit_hjhumi(void)
     }
   }
 
+void limit_jsgp215(void)
+{
+  if (g_config_sensor.jinsung_sjgp215.rs232_port > eRS232_MAX)
+  {
+    g_config_sensor.jinsung_sjgp215.rs232_port = eRS232_RS485_B;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
 void save_config_sensor(void)
 {
   uint32_t crc;
@@ -159,8 +168,9 @@ void load_config_sensor(void)
   limit_hjwind();
   limit_hjhumi();
   limit_hjtemp();
+  limit_jsgp215();
 
-  if (g_config_sensor_dirty_flag)
+      if (g_config_sensor_dirty_flag)
   {
     save_config_sensor();
   }

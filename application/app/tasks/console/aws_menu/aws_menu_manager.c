@@ -136,7 +136,7 @@ void config_hj_reset(void)
   sensor_add(&config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg = get_sensor_config(&config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg->physical_layer = ePHYSICAL_RS232;
-  hjsnow_cfg->port = eRS232_RS232_C;
+  hjsnow_cfg->rs232_port = eRS232_RS232_C;
 
   // 기압[RM YOUNG]
   config.sensor[A7_PRESSURE].type = S_T_ADC;

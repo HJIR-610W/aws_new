@@ -215,6 +215,11 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
     case S_T_FREQ:
       num = GENERAL_FREQ;
     break;
+    case S_T_BARO_JINSUNG_SJGP215:
+      num = BARO_JINSUNG_SJGP215;
+      break;
+    
+    break;
   }
   return num;
 }

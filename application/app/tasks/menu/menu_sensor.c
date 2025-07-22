@@ -121,12 +121,12 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
   if (hjsnow_config->physical_layer == ePHYSICAL_RS232)
   {
     list_cnt = rs232_get_portList(name_table, _countof(name_table));
-    port_number = hjsnow_config->port;
+    port_number = hjsnow_config->rs232_port;
   }
   else
   {
     list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
-    port_number = hjsnow_config->port;
+    port_number = hjsnow_config->rs485_port;
   }
 
   screen_update_list(p_win, row_count, HJSNOW_PAGE_PORT);
@@ -644,21 +644,21 @@ int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
       if (hjsnow->physical_layer == ePHYSICAL_RS232)
       {
         portListCnt = rs232_get_portList(portList, _countof(portList));
-        choice = hjsnow->port;
+        choice = hjsnow->rs232_port;
         status = input_combobox("RS232 Port",portList, portListCnt, &choice);
         if (status != MENU_OK)
           break;
-        hjsnow->port = choice;
+        hjsnow->rs232_port = choice;
         save_config_sensor();
       }
       else
       {
         portListCnt = drv_rs485_get_portList(portList, _countof(portList));
-        choice = hjsnow->port;
+        choice = hjsnow->rs485_port;
         status = input_combobox("RS485 Port",portList, portListCnt, &choice);
         if (status != MENU_OK)
           break;
-        hjsnow->port = choice;
+        hjsnow->rs485_port = choice;
         save_config_sensor();
       }
       break;

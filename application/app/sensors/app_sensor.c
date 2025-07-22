@@ -56,7 +56,7 @@ const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_
 const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_FREQ, S_T_ADC};
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
                             S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM};
-const uint8_t pressureList[] = {S_T_UNSUED, S_T_ADC};
+const uint8_t pressureList[] = {S_T_UNSUED, S_T_ADC, S_T_BARO_JINSUNG_SJGP215};
 const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI};
 const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ};
 const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMINITY_HJ, S_T_ADC};
@@ -187,8 +187,11 @@ void *sensor_add(sensor_t *sensor)
     case S_T_FREQ:
       sensor_add_common(sensor, 0);
       return &g_config_sensor.frequency;
+    case S_T_BARO_JINSUNG_SJGP215:
+      sensor_add_common(sensor, 0);
+      return &g_config_sensor.jinsung_sjgp215;
       break;
-    default:
+        default:
       break;
   }
 
@@ -234,6 +237,8 @@ void *get_sensor_config(sensor_t *sensor)
           return &g_config_sensor.rain_present;
         case S_T_FREQ:
           return &g_config_sensor.frequency;
+        case S_T_BARO_JINSUNG_SJGP215:
+          return &g_config_sensor.jinsung_sjgp215;
       }
     }
   }

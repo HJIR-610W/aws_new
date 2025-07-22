@@ -1256,6 +1256,9 @@
                     <file>
                         <name>$PROJ_DIR$\..\Application\app\sensors\barometer\barometer.c</name>
                     </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\sensors\barometer\jinsung_sjgp215.c</name>
+                    </file>
                 </group>
                 <group>
                     <name>general</name>
@@ -1383,7 +1386,7 @@
                         <name>$PROJ_DIR$\..\application\app\sensors\temperature\hj_temperature.h</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\temperature\hj_temperature_define.h</name>
+                        <name>$PROJ_DIR$\..\Application\app\sensors\temperature\hj_temperature_define.h</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\Application\app\sensors\temperature\pt100.c</name>
@@ -1398,7 +1401,7 @@
                         <name>$PROJ_DIR$\..\application\app\sensors\temperature\temperature.h</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\temperature\temperature_define.h</name>
+                        <name>$PROJ_DIR$\..\Application\app\sensors\temperature\temperature_define.h</name>
                     </file>
                 </group>
                 <group>
@@ -1927,13 +1930,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -1949,7 +1952,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <file>

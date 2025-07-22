@@ -57,12 +57,12 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
       if (hjsnow->physical_layer == ePHYSICAL_RS232)
       {
         rs232_get_portList(list, sizeof(list));
-        snprintf(out, outSize, "[%s]", list[hjsnow->port]);
+        snprintf(out, outSize, "[%s]", list[hjsnow->rs232_port]);
       }
       else
       {
         drv_rs485_get_portList(list, sizeof(list));
-        snprintf(out, outSize, "[%s]", list[hjsnow->port]);
+        snprintf(out, outSize, "[%s]", list[hjsnow->rs485_port]);
       }
     }
     break;
@@ -255,15 +255,28 @@ uint8_t print_hjsnow_cfg(hjsnow_config_t *hjsnow, uint8_t cnt)
   if (hjsnow->physical_layer == ePHYSICAL_RS232)
   {
     rs232_get_portList(portNameList, _countof(portNameList));
+      ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "통신포트", "%s", portNameList[hjsnow->rs232_port]);
   }
   else
   {
     drv_rs485_get_portList(portNameList, _countof(portNameList));
+      ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "통신포트", "%s", portNameList[hjsnow->rs485_port]);
   }
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "통신포트", "%s", portNameList[hjsnow->port]);
+
   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "화진 적설 메뉴", "(제어)");
 
+  return cnt;
+}
+
+#define SJGP215_CFG_PORT 0
+uint8_t print_barometer_jsgp215_cfg(jinsung_sjgp215_config_t *ott, uint8_t cnt)
+{
+  const char *portNameList[10];
+
+  rs232_get_portList(portNameList, _countof(portNameList));
+  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "포트", "%s", portNameList[ott->rs232_port]);
+ 
   return cnt;
 }
 
@@ -315,6 +328,9 @@ int32_t print_common_cfg( sensor_t *sensor, uint8_t c)
       break;
     case S_T_FREQ:
       cnt = print_freq_cfg(get_sensor_config(sensor), cnt);
+      break;
+    case S_T_BARO_JINSUNG_SJGP215:
+      cnt = print_barometer_jsgp215_cfg(get_sensor_config(sensor), cnt);
       break;
   }
   return cnt;
@@ -783,17 +799,18 @@ int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
         if (status !=MENU_OK)
         break;
    
-         hjsnow->port = choice;
+         hjsnow->rs232_port = choice;
          save_config_sensor();
         }
       else
       {
         portCnt = drv_rs485_get_portList(portList, _countof(portList));
+        choice = hjsnow->rs485_port;
         status = select_index_from_table( portList, NULL, portCnt, true,&choice);
         if (status != MENU_OK)
         break;
     
-          hjsnow->port = choice;
+          hjsnow->rs485_port = choice;
           save_config_sensor();
  
       }
@@ -906,10 +923,43 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
+int32_t sjgp215_config_set(sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t status;
+  int32_t choice;
 
+  jinsung_sjgp215_config_t *sjgp215;
+  const char *portList[10];
+  uint16_t portListCnt;
 
+  sjgp215 = get_sensor_config(sensor);
+  if (sjgp215 == NULL)
+  {
+    ERROR_PRINTF("진성 일사 설정값 NULL");
+    return 0;
+  }
 
+  switch (menu_index)
+  {
+  case OTT_SMP3_CFG_PORT:
+    portListCnt = rs232_get_portList(portList, _countof(portList));
+    choice  =   sjgp215->rs232_port;
+    status = select_index_from_table(portList, NULL, portListCnt, true, &choice);
 
+    if (status != MENU_OK)
+      break;
+
+    sjgp215->rs232_port = choice;
+    save_config_sensor();
+
+    break;
+
+  default:
+    break;
+  }
+
+  return status;
+}
 /*
 센서 모델과 모델 설정 함수 연결
 센서가 추가되거나 센서고유의 설정값을 변경하려면 처리 함수를 작성해야한다.
@@ -923,8 +973,8 @@ const sensor_config_entry_t g_sensor_config_table[] = {
     {.sensor_type = S_T_TEMPERATURE_HJ, .config_set = hjtemp_config_set},
     {.sensor_type = S_T_HUMINITY_HJ, .config_set = hjhumi_config_set},
     {.sensor_type = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_config_set},
-    {.sensor_type = S_T_RAIN_PRESENT_DI, .config_set = rain_present_config_set}
-};
+    {.sensor_type = S_T_RAIN_PRESENT_DI, .config_set = rain_present_config_set},
+    {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = sjgp215_config_set}};
 
 int32_t sensor_set( sensor_t *p_sensor, uint8_t choice)
 {

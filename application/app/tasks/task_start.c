@@ -109,7 +109,7 @@ void startTask(void *arg)
   loggingTask_init();
 
   measureTask_init();
-dualportTask_init();
+  dualportTask_init();
 
 
   if (get_config_app()->cdma_active)
@@ -136,7 +136,7 @@ dualportTask_init();
     ethernetTask_init();
   }
 
-  panelTask_init();
+ // panelTask_init();
 
   //http_server_task_init();
   telnet_server_task_init();
