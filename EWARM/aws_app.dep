@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>4</fileVersion>
-    <fileChecksum>4249832876</fileChecksum>
+    <fileChecksum>1500076844</fileChecksum>
     <configuration>
         <name>release</name>
         <outputs>
@@ -104,9 +104,9 @@
             <file>$PROJ_DIR$\..\application\app\version\hj_product_list.h</file>
             <file>$PROJ_DIR$\..\application\app\version\boot_version.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_rs485.c</file>
-            <file>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</file>
+            <file>$PROJ_DIR$\..\application\Communications\cdma\task_cellular.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.h</file>
-            <file>$PROJ_DIR$\..\application\communications\direct\task_direct.h</file>
+            <file>$PROJ_DIR$\..\application\Communications\direct\task_direct.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_client.c</file>
@@ -118,7 +118,7 @@
             <file>$PROJ_DIR$\..\Application\app\test\test_uart.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_sms.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.c</file>
-            <file>$PROJ_DIR$\..\application\communications\cdma\modem_if.h</file>
+            <file>$PROJ_DIR$\..\application\Communications\cdma\modem_if.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_sms.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.c</file>
@@ -127,7 +127,7 @@
             <file>$PROJ_DIR$\..\Application\app\test\test_rtc.c</file>
             <file>$PROJ_DIR$\..\application\app\version\project_def.h</file>
             <file>$PROJ_DIR$\..\Application\app\version\app_version.c</file>
-            <file>$PROJ_DIR$\..\application\communications\cdma\at_cmd.h</file>
+            <file>$PROJ_DIR$\..\application\Communications\cdma\at_cmd.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\direct\task_direct.c</file>
@@ -136,8 +136,8 @@
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\ewarm\system_stm32f4xx.c</file>
             <file>$PROJ_DIR$\..\application\os_user_def.h</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\io\dev_io.c</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.c</file>
@@ -154,7 +154,7 @@
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100.c</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
-            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\sdio.c</file>
             <file>$PROJ_DIR$\startup_stm32f407xx.s</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.c</file>
@@ -1613,7 +1613,7 @@
             <file>$PROJ_DIR$\release\Obj\task_measure.xcl</file>
             <file>$PROJ_DIR$\release\Obj\console_rtos.xcl</file>
             <file>$PROJ_DIR$\release\Obj\temperature.o</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_client.h</file>
+            <file>$PROJ_DIR$\..\application\Communications\ethernet\task_client.h</file>
             <file>$PROJ_DIR$\..\Application\Tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\release\Obj\test_meomoy.xcl</file>
             <file>$PROJ_DIR$\release\Obj\old_aws_define.xcl</file>
@@ -2026,7 +2026,7 @@
             <file>$PROJ_DIR$\release\Obj\bsp_uart.xcl</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_tim_ex.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\FreeRTOS.h</file>
             <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\snmp.h</file>
@@ -2117,7 +2117,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\mld6.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif_opts.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\zepif.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\raw_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_modbus.h</file>
@@ -2135,7 +2135,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcpbase.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_hart.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcp.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_dinOut.h</file>
             <file>$PROJ_DIR$\release\Obj\fsm.xcl</file>
             <file>$PROJ_DIR$\..\Application\Tasks\console\console_test.h</file>
@@ -2286,7 +2286,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\timeouts.h</file>
             <file>$PROJ_DIR$\..\Application\Protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_data.xcl</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\memp_priv.h</file>
             <file>$PROJ_DIR$\..\Application\Tasks\app_measure.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_system.xcl</file>
@@ -2449,6 +2449,10 @@
             <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.c</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\barometer\barometer.c</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\rain_present\rain_present.c</file>
+            <file>$PROJ_DIR$\release\Obj\hj_temperature_menu.xcl</file>
+            <file>$PROJ_DIR$\release\Obj\hj_temperature_menu.o</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.c</file>
         </outputs>
         <file>
             <name>[ROOT_NODE]</name>
@@ -3524,7 +3528,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2121 1652 1297 1517 1597 2156 1648 1797 858 2023 1202 2222 1905 1729 234 272 267 1412 541 153 429 1927 2365 2074 1807 1753 1997 1845 2034 590 1860 2298 1777 428 1199 1937 2103 2122 2198 1902 2253 2130 2246</file>
+                    <file> 2121 1652 1297 1517 1597 2156 1648 1797 858 2023 1202 2222 1905 1729 234 272 267 1412 541 153 429 1927 2365 2074 1807 1753 1997 1845 2034 590 1860 2298 1777 428 1199 1937 2103 2122 2198 1902 2253 2130 2246 2446</file>
                 </tool>
             </inputs>
         </file>
@@ -11020,7 +11024,7 @@
             <inputs>
                 <tool>
                     <name>ILINK</name>
-                    <file> 2169 2155 1898 564 1554 1812 1120 1501 1056 929 2207 1195 1083 1157 2389 610 870 976 1530 1332 839 1621 1639 1963 2338 1706 1855 1060 582 910 1722 967 1655 1290 1088 1700 1484 673 2002 879 2139 1563 1178 1947 918 1414 1862 1308 1299 1990 826 1302 1781 1626 1848 1200 1526 1016 1112 898 1719 1970 1365 1631 1851 1830 2320 559 980 1600 937 897 1478 1181 1111 1891 1673 1510 1406 798 2258 456 616 841 1381 2138 1358 1924 1317 1114 1197 693 2015 1257 1683 772 1663 1269 555 1206 524 1716 1374 1342 888 1895 834 705 2359 1687 2356 887 1253 1493 2354 1786 1987 2344 1452 1065 1939 527 742 1906 2168 1842 1846 528 1465 1897 1099 1172 1549 1150 1373 1272 903 1417 1802 636 686 846 1959 1121 1576 1034 848 1650 442 628 768 710 1196 814 655 1908 1232 1124 984 1580 2296 1574 596 1547 1356 1834 1692 1077 1004 1237 1371 894 901 819 1182 1335 1394 1054 1350 662 1447 1399 1158 981 1956 1735 926 531 614 948 1278 1337 1879 2340 1910 1401 2333 995 1951 1031 1930 2303 663 540 1751 1694 1108 1916 781 1628 526 935 722 1685 1936 1281 1020 1471 1244 1670 1343 899 1957 465 578 1785 1433 1427 1681 520 446 1038 577 1437 2313 799 1340 960 2317 1896 791 2285 1280 1836 1246 1839 1634 2400 821 1089 1241 2309 1926 1460 1540 1352 1307 863 1045 1595 1311 1152 1653 871 1869 746 795 1260 709 1090 1094 1021 1636 1063 1560 1058 1164 688 854 1453 1737 1081 1279 640 951 2358 2398 1097 1756 1516 626 882 1139 1703 1566 1024 758 1509 1854 1695 1863 1328 1075 759 1458 1884 699 1873 1740 756 1977 1755 1684 1219 1482 1441 1295 1749 1180 1366 1129 1520 1607 1118 1359 1623 1888 1306 1393 1865 1298 953 1935 1622 2361 1689 952 538 1575 1804 1508 827 1707 2265 1286 1330 818 1138 838 1434 1236 1678 1531 1459 1370 831 1764 1455 1512 1775 1522 1098 2149 864 2010 1015 715 1933 1110 593 1333 1078 916 1806 2166 2188 2210</file>
+                    <file> 2169 2155 1898 564 1554 1812 1120 1501 1056 929 2207 1195 1083 1157 2389 610 870 976 1530 1332 839 1621 1639 1963 2338 1706 1855 1060 582 910 1722 967 1655 1290 1088 1700 1484 673 2002 879 2139 1563 1178 1947 918 1414 1862 1308 1299 1990 826 1302 1781 1626 1848 1200 1526 1016 1112 898 1719 1970 1365 1631 1851 1830 2320 559 980 1600 937 897 1478 1181 1111 1891 1673 1510 1406 798 2258 456 616 841 1381 2138 1358 1924 1317 1114 1197 693 2015 1257 1683 772 1663 1269 555 1206 524 1716 1374 1342 888 1895 834 705 2359 1687 2356 887 1253 1493 2354 1786 1987 2344 1452 1065 1939 527 742 1906 2168 1842 1846 528 1465 1897 1099 1172 1549 1150 1373 1272 903 1417 1802 636 686 846 1959 1121 1576 1034 848 1650 442 628 768 710 1196 2445 814 655 1908 1232 1124 984 1580 2296 1574 596 1547 1356 1834 1692 1077 1004 1237 1371 894 901 819 1182 1335 1394 1054 1350 662 1447 1399 1158 981 1956 1735 926 531 614 948 1278 1337 1879 2340 1910 1401 2333 995 1951 1031 1930 2303 663 540 1751 1694 1108 1916 781 1628 526 935 722 1685 1936 1281 1020 1471 1244 1670 1343 899 1957 465 578 1785 1433 1427 1681 520 446 1038 577 1437 2313 799 1340 960 2317 1896 791 2285 1280 1836 1246 1839 1634 2400 821 1089 1241 2309 1926 1460 1540 1352 1307 863 1045 1595 1311 1152 1653 871 1869 746 795 1260 709 1090 1094 1021 1636 1063 1560 1058 1164 688 854 1453 1737 1081 1279 640 951 2358 2398 1097 1756 1516 626 882 1139 1703 1566 1024 758 1509 1854 1695 1863 1328 1075 759 1458 1884 699 1873 1740 756 1977 1755 1684 1219 1482 1441 1295 1749 1180 1366 1129 1520 1607 1118 1359 1623 1888 1306 1393 1865 1298 953 1935 1622 2361 1689 952 538 1575 1804 1508 827 1707 2265 1286 1330 818 1138 838 1434 1236 1678 1531 1459 1370 831 1764 1455 1512 1775 1522 1098 2149 864 2010 1015 715 1933 1110 593 1333 1078 916 1806 2166 2188 2210</file>
                 </tool>
             </inputs>
         </file>
@@ -15014,6 +15018,25 @@
                 <tool>
                     <name>ICCARM</name>
                     <file> 2083 1652 1297 1517 1597 2156 1648 541 153 267 1729 229 2432 1199 2023 1523 1979 1753 1997 1807 1845 2034 590 1860 2298 1777 428 2239</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 2445</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 2444</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 2187 1652 1297 1517 1597 2156 1648 2121 1797 858 2023 1202 2222 1905 1729 2074 1807 1753 1997 1845 2034 590 267 1860 2298 1777 428 1199 1937 2103 2122 2246 2198 1902 34 47 38 397 382 2435 2130</file>
                 </tool>
             </inputs>
         </file>

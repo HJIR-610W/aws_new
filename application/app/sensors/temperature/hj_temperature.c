@@ -13,6 +13,7 @@
 
 typedef struct hj_temperature_cfg_s
 {
+  bool opened;
   modbus_h_t modbus;
 } hj_temperature_cfg_t;
 
@@ -57,7 +58,8 @@ driver_t *hjTemperature_open(int32_t num, void *opt)
       break;
   }
 
-  hjTemp_drv.opened = true;
+  hj_temperature_cfg.opened = true;
+   hjTemp_drv.opened = true;
   hjTemp_drv.api = &hjTempApi;
   hjTemp_drv.cfg = &hj_temperature_cfg;
 
@@ -166,3 +168,69 @@ modbus_h_t* get_hjtemperature_bus_io(void)
 
     return NULL;
 }
+
+
+void hjtemp_write_temp_offset(uint16_t offset)
+{
+  if (hj_temperature_cfg.opened == false)
+  {
+    return;
+  }
+
+  modbus_write_holding_reg(&hj_temperature_cfg.modbus, HJ_REG_NUM_TEMP_OFFSET, offset);
+}
+
+void hjtemp_write_humi_offset(uint16_t offset)
+{
+  if (hj_temperature_cfg.opened == false)
+  {
+    return;
+  }
+
+  modbus_write_holding_reg(&hj_temperature_cfg.modbus, HJ_REG_NUM_HUMI_OFFSET, offset);
+}
+
+int32_t hjtemp_read_temp_offset(uint16_t *offset)
+{
+  uint16_t data;
+  int32_t ret;
+  if (hj_temperature_cfg.opened == false)
+  {
+    return 1;
+  }
+
+  ret = modbus_read_hold_reg(&hj_temperature_cfg.modbus, HJ_REG_NUM_TEMP_OFFSET,
+                             &data, 1);
+
+  if (ret == 0)
+  {
+    *offset = data;
+    return 0;
+  }
+
+  return 1;
+
+}
+
+
+int32_t hjtemp_read_humi_offset(uint16_t *offset)
+{
+  uint16_t data;
+  int32_t ret;
+  if (hj_temperature_cfg.opened == false)
+  {
+    return 1;
+  }
+
+  ret = modbus_read_hold_reg(&hj_temperature_cfg.modbus, HJ_REG_NUM_HUMI_OFFSET,
+                             &data, 1);
+
+  if (ret == 0)
+  {
+    *offset = data;
+    return 0;
+  }
+
+  return 1;
+}
+

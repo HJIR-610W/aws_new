@@ -18,4 +18,11 @@ void hjtemperature_ctrl(driver_t *driver, eHJTEMPERATURE_OPT_t ctrl, void *w_opt
   uint8_t *err);
 modbus_h_t* get_hjtemperature_bus_io(void);
 
+
+
+void hjtemp_write_temp_offset(uint16_t offset);
+void hjtemp_write_humi_offset(uint16_t offset);
+int32_t hjtemp_read_temp_offset(uint16_t *offset);
+int32_t hjtemp_read_humi_offset(uint16_t *offset);
+
 #endif

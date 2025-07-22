@@ -187,7 +187,7 @@ void draw_charger_page(screen_page_t *p_win)
 
 }
 
-#define CDMA_WD 15
+#define CDMA_WD 10
 void draw_cdma_page(screen_page_t *p_win)
 {
   int row_count = 0;
@@ -355,6 +355,7 @@ void draw_ethernet_page(screen_page_t *p_win)
     else
     {
       time_cvt_secTotime(last_time, &nt);
+      //"RT:25-07-22 10:10:2 "
       screen_printf_row(p_win, row_count++, "%-*s:%02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "RT",
                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
     }

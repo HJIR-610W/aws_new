@@ -181,7 +181,7 @@ void screen_printf(int row, int col, const char* format, ...)
 
 void screen_printf_row(screen_page_t* win, int row_index, const char* format, ...)
 {
-  char s_format_buffer[MAX_COLS];  // 정적 버퍼 크기는 필요에 따라 조정
+  char s_format_buffer[MAX_COLS+1];  // 정적 버퍼 크기는 필요에 따라 조정
   va_list args;
   int display_row;
   int cols;

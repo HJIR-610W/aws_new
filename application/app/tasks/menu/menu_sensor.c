@@ -17,6 +17,8 @@
 
 #include "app_sensor.h"
 #include "const_string.h"
+#include "menu/devices/hj_temperature_menu.h"
+
 #define SCREEN_COLS 20
 #define SYSTEM_WD 8
 
@@ -730,7 +732,7 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
           break;
         case HJTEMP_PAGE_TEMP_MENU:
 
-       //   status = hjtemperature_menu();
+            status = ctrl_hj_temp();
 
           break;
       }
@@ -795,8 +797,7 @@ int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case HJTEMP_PAGE_TEMP_MENU:
-      // TODO: Implement humidity menu call
-      // status = hjhumidity_menu();
+       status = ctrl_hj_temp();
       break;
   }
 
