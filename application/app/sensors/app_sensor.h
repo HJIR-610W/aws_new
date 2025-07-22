@@ -206,8 +206,8 @@ extern const uint8_t rainPresentList[2];
 extern const uint8_t humiList[3];
 extern const uint8_t sunShineList[3];
 extern const uint8_t solarRadiationList[3];
-extern const uint8_t defaultList[2];
-
+extern const uint8_t defaultList[1];
+extern const uint8_t soil_temp_list[2];
 extern const char *g_sensor_model_table[SENSOR_TYPE_MAX];
 extern const char *g_sensor_model_eng_table[SENSOR_TYPE_MAX];
 extern const char *sensor_name_list[SENSOR_LIST_MAX];

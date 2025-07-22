@@ -55,13 +55,13 @@
             <file>$PROJ_DIR$\..\application\app\sensors\temperature\temperature_define.h</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\sunshine\sunshine.c</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\wind_speed\hj_wind.c</file>
-            <file>$PROJ_DIR$\..\application\app\sensors\wind_speed\hj_wind.h</file>
+            <file>$PROJ_DIR$\..\Application\app\sensors\wind_speed\hj_wind.h</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\solar_radiation\ott_smp3.c</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\soil_temperature\soil_temperature.c</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\wind_speed\wind_speed.c</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\snow\snow_define.h</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\wind_direction\wind_direction.c</file>
-            <file>$PROJ_DIR$\..\application\app\sensors\wind_speed\wind_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\sensors\wind_speed\wind_define.h</file>
             <file>$PROJ_DIR$\..\application\app\sensors\wind_speed\wind_speed.h</file>
             <file>$PROJ_DIR$\..\application\app\sensors\soil_temperature\soil_temperature.h</file>
             <file>$PROJ_DIR$\..\application\app\sensors\snow\hjsnow_define.h</file>
@@ -2458,6 +2458,8 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_snowfall_menu.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_snow_menu.c</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_snow_menu.h</file>
+            <file>$PROJ_DIR$\release\Obj\hj_temperature_menu.__cstat.et</file>
+            <file>$PROJ_DIR$\release\Obj\hj_snowfall_menu.__cstat.et</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.c</file>
         </outputs>
         <file>
@@ -15038,6 +15040,10 @@
                     <name>BICOMP</name>
                     <file> 2444</file>
                 </tool>
+                <tool>
+                    <name>__cstat</name>
+                    <file> 2454</file>
+                </tool>
             </outputs>
             <inputs>
                 <tool>
@@ -15069,6 +15075,10 @@
                 <tool>
                     <name>BICOMP</name>
                     <file> 2447</file>
+                </tool>
+                <tool>
+                    <name>__cstat</name>
+                    <file> 2453</file>
                 </tool>
             </outputs>
             <inputs>

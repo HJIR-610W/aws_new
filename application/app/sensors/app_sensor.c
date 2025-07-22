@@ -61,59 +61,61 @@ const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI};
 const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ};
 const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMINITY_HJ, S_T_ADC};
 const uint8_t solarRadiationList[] = {S_T_UNSUED, S_T_SOLAR_RADIATION_OTT_SMP3, S_T_ADC};
-const uint8_t defaultList[] = {S_T_UNSUED, S_T_ADC};
+const uint8_t defaultList[] = {S_T_UNSUED};
+const uint8_t soil_temp_list[] = {S_T_UNSUED, S_T_ADC};
+
 //ADDMODEL:센서모델이 추가되거나 타입이 추가되면 여기 수정해야함
 
 //ADDMODEL:센서 모델 이 추가되면 여기추가 시켜야함
 const sensor_model_entry_t sensor_table[SENSOR_LIST_MAX] = {
-    {.list = temperatureList, .cnt = sizeof(temperatureList)},        // A1_TEMPERATURE
-    {.list = windDirectionList, .cnt = sizeof(windDirectionList)},    // A2_WIND_DIRECTION
-    {.list = windSpeedList, .cnt = sizeof(windSpeedList)},            // A3_WIND_SPEED
-    {.list = rainList, .cnt = sizeof(rainList)},                      // A6_RAINFALL_DOT5_1MM
-    {.list = pressureList, .cnt = sizeof(pressureList)},              // A7_PRESSURE
-    {.list = rainPresentList, .cnt = sizeof(rainPresentList)},        // A8_RAIN_PRESENT
-    {.list = snowList, .cnt = sizeof(snowList)},                      // A9_SNOW_DEPTH
-    {.list = humiList, .cnt = sizeof(humiList)},                      // A10_RELATIVE_HUMIDITY
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // A11_RAINFALL_DOT1MM
-    {.list = solarRadiationList, .cnt = sizeof(solarRadiationList)},  // B1_SOLAR_RADIATION
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B2_SUNSHINE_DURATION
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B3_GROUND_TEMPERATURE
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B4_SURFACE_TEMPERATURE
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B5_SOIL_TEMPERATURE_5CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B6_SOIL_TEMPERATURE_10CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B7_SOIL_TEMPERATURE_20CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B8_SOIL_TEMPERATURE_30CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B9_SOIL_TEMPERATURE_50CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B10_SOIL_TEMPERATURE_100CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B11_SOIL_TEMPERATURE_150CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B12_SOIL_TEMPERATURE_300CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // B13_SOIL_TEMPERATURE_500CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C1_CLOUD_BASE1
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C2_CLOUD_BASE2
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C3_CLOUD_BASE3
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C4_CLOUD_COVER
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C5_VISIBILITY
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C6_PM10
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C7_PM2DOT5
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C8_NET_RADIATION
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C9_TOTAL_RADIATION
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C10_REFLECTED_RADIATION
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C11_DIRECT_SOLAR
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // C12_CURRENT_WEATHER
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N1_SOIL_MOISTURE_10CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N2_SOIL_MOISTURE_20CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N3_SOIL_MOISTURE_30CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N4_SOIL_MOISTURE_50CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N5_ILLUMINANCE
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N6_WIND_VELOCITY_150CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N7_WIND_VELOCITY_400CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N8_INSTANT_VELOCITY_150CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N9_INSTANT_VELOCITY_400CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N10_AIR_TEMPERATURE_50CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N11_AIR_TEMPERATURE_400CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N12_HUMIDITY_50CM
-    {.list = defaultList, .cnt = sizeof(defaultList)},                // N13_HUMIDITY_400CM
-    {.list = defaultList, .cnt = sizeof(defaultList)}};               // I1_TACHOMETER
+    {.list = temperatureList, .cnt = sizeof(temperatureList)},       // A1_TEMPERATURE
+    {.list = windDirectionList, .cnt = sizeof(windDirectionList)},   // A2_WIND_DIRECTION
+    {.list = windSpeedList, .cnt = sizeof(windSpeedList)},           // A3_WIND_SPEED
+    {.list = rainList, .cnt = sizeof(rainList)},                     // A6_RAINFALL_DOT5_1MM
+    {.list = pressureList, .cnt = sizeof(pressureList)},             // A7_PRESSURE
+    {.list = rainPresentList, .cnt = sizeof(rainPresentList)},       // A8_RAIN_PRESENT
+    {.list = snowList, .cnt = sizeof(snowList)},                     // A9_SNOW_DEPTH
+    {.list = humiList, .cnt = sizeof(humiList)},                     // A10_RELATIVE_HUMIDITY
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // A11_RAINFALL_DOT1MM
+    {.list = solarRadiationList, .cnt = sizeof(solarRadiationList)}, // B1_SOLAR_RADIATION
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // B2_SUNSHINE_DURATION
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // B3_GROUND_TEMPERATURE
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // B4_SURFACE_TEMPERATURE
+    {.list = soil_temp_list, .cnt = sizeof(soil_temp_list)},         // B5_SOIL_TEMPERATURE_5CM
+    {.list = soil_temp_list, .cnt = sizeof(soil_temp_list)},         // B6_SOIL_TEMPERATURE_10CM
+    {.list = soil_temp_list, .cnt = sizeof(soil_temp_list)},         // B7_SOIL_TEMPERATURE_20CM
+    {.list = soil_temp_list, .cnt = sizeof(soil_temp_list)},         // B8_SOIL_TEMPERATURE_30CM
+    {.list = soil_temp_list, .cnt = sizeof(soil_temp_list)},         // B9_SOIL_TEMPERATURE_50CM
+    {.list = soil_temp_list, .cnt = sizeof(soil_temp_list)},         // B10_SOIL_TEMPERATURE_100CM
+    {.list = soil_temp_list, .cnt = sizeof(soil_temp_list)},         // B11_SOIL_TEMPERATURE_150CM
+    {.list = soil_temp_list, .cnt = sizeof(soil_temp_list)},         // B12_SOIL_TEMPERATURE_300CM
+    {.list = soil_temp_list, .cnt = sizeof(soil_temp_list)},         // B13_SOIL_TEMPERATURE_500CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C1_CLOUD_BASE1
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C2_CLOUD_BASE2
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C3_CLOUD_BASE3
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C4_CLOUD_COVER
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C5_VISIBILITY
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C6_PM10
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C7_PM2DOT5
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C8_NET_RADIATION
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C9_TOTAL_RADIATION
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C10_REFLECTED_RADIATION
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C11_DIRECT_SOLAR
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // C12_CURRENT_WEATHER
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N1_SOIL_MOISTURE_10CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N2_SOIL_MOISTURE_20CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N3_SOIL_MOISTURE_30CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N4_SOIL_MOISTURE_50CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N5_ILLUMINANCE
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N6_WIND_VELOCITY_150CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N7_WIND_VELOCITY_400CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N8_INSTANT_VELOCITY_150CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N9_INSTANT_VELOCITY_400CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N10_AIR_TEMPERATURE_50CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N11_AIR_TEMPERATURE_400CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N12_HUMIDITY_50CM
+    {.list = defaultList, .cnt = sizeof(defaultList)},               // N13_HUMIDITY_400CM
+    {.list = defaultList, .cnt = sizeof(defaultList)}};              // I1_TACHOMETER
 
 void sensor_add_common(sensor_t *sensor, uint8_t index)
 {

@@ -855,7 +855,9 @@ int32_t rain_present_setup(sensor_t* sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case RAIN_PRESENT_PAGE_DELAY:
-      status = input_decimal("Delay Time", 1, 10, &dec);
+      dec = rain_present->delay;
+      
+                status = input_decimal("Delay Time", 1, 10, &dec);
       if (status != MENU_OK)
         break;
       rain_present->delay = dec;
