@@ -315,14 +315,15 @@ void hjsnow_read_config(driver_t *driver,uint8_t *p_out,uint16_t out_size,uint8_
 
   OS_PEND_SEM(pcfg->sem,osWaitForever);
 
-
-  if (pcfg->com_type == COM_TYPE_RS485)  // 485
+  if (pcfg->com_type == COM_TYPE_RS485) // 485
   {
     dev_io.io = eRS485_IO;
+    dev_io.num = pcfg->rs485_num;
   }
   else
   {
     dev_io.io = eRS232_IO;
+    dev_io.num = pcfg->rs232_num;
   }
 
   *err = 1;
@@ -368,15 +369,16 @@ void hjsnow_read_system(driver_t *driver, uint8_t *p_out, uint16_t out_size, uin
   dev_io_t dev_io;
 
   OS_PEND_SEM(pcfg->sem, osWaitForever);
-  
 
-  if (pcfg->com_type == COM_TYPE_RS485)  // 485
+  if (pcfg->com_type == COM_TYPE_RS485) // 485
   {
     dev_io.io = eRS485_IO;
+    dev_io.num = pcfg->rs485_num;
   }
   else
   {
     dev_io.io = eRS232_IO;
+    dev_io.num = pcfg->rs232_num;
   }
 
   *err = 1;
@@ -421,15 +423,19 @@ void hjsnow_run_zero(driver_t *driver,uint8_t *err)
   devIoTimeOutopt_t opt;
 
 
-
-    if (pcfg->com_type == COM_TYPE_RS485)  // 485
-    {
-      dev_io.io = eRS485_IO;
-    }
+  if (pcfg->com_type == COM_TYPE_RS485)  // 485
+  {
+    dev_io.io = eRS485_IO;
+    dev_io.num = pcfg->rs485_num;
+  }
   else
   {
     dev_io.io = eRS232_IO;
+    dev_io.num = pcfg->rs232_num;
   }
+
+  dev_io_flush(&dev_io);
+  
   opt.waitTimeOutMs = 50;
   dev_io_write(&dev_io, (uint8_t*)request, sizeof(request), 0);
   len = dev_io_read(&dev_io, frame, sizeof(frame), DEV_IO_CMD_DATA_TIMEOUT, (void *)&opt);
