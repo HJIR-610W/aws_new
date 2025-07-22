@@ -225,6 +225,11 @@ uint16_t TempCalc(uint8_t *sensor_err)
    return (uint16_t)((truncate_to_1_decimal(temperature) + 100) * 10);  // AWS 데이터 형으로 변환 ((측정값+100) *10)
 }
 
+/*
+AWS(구)
+진양     :RS232
+RM YOUNG :
+*/
 #define PRESSURE_ACCURACY 0.5f //0.5hPa
 uint16_t  BarometricCalc(uint8_t *sensor_err)
 {

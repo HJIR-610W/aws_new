@@ -1,5 +1,7 @@
 #include "util_filter.h"
 #include <math.h>
+#include "util_memory.h"
+
 // float ±16,777,216
 float recursiveAvg(double pre_avg, float adc, int cnt)
 {
@@ -27,7 +29,7 @@ float validate_sensor_value_min(float value, float min, float abs_tol, uint8_t* 
 
   if (value < min)
   {
-    if (fabsf(value - min) <= abs_tol)
+    if (less_equal_float(fabsf(value - min), abs_tol))
     {
       return min;  // 보정하여 반환
     }
@@ -49,7 +51,7 @@ float validate_sensor_value_max(float value, float max, float abs_tol, uint8_t* 
 
   if (value > max)
   {
-    if (fabsf(value - max) <= abs_tol)
+    if (less_equal_float(fabsf(value - max),abs_tol))
     {
       return max;  // 보정하여 반환
     }
