@@ -441,7 +441,7 @@ int32_t aws_network_use(void)
 {
   int choice, status;
 
-  char buff[MENU_CNT][20];
+  char buff[MENU_CNT][50];
   char buffer[20];
 
   char *menu[MENU_CNT];

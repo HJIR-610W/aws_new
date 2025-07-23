@@ -68,11 +68,9 @@ static void vt100_set_position(driver_t *drv, uint8_t row, uint8_t col)
     {
         term->cursor_x = col;
         term->cursor_y = row;
-        
+       
         // VT100 커서 위치 설정 명령 전송
         vt100_io_pirntf(drv, "\x1B[%d;%dH", row + 1, col + 1);
-
-    
     }
 }
 
@@ -160,9 +158,9 @@ driver_t* vt100_terminal_open(void)
   vt100_instance.cursor_y = 0;
   vt100_instance.max_rows = VT100_DEFAULT_ROWS;  // 표준 터미널 크기
   vt100_instance.max_cols = VT100_DEFAULT_COLS;
-  vt100_instance.uart_io = DRV_UART_0_D_SUB_0;
+  vt100_instance.uart_io = BSP_UART_0_D_SUB_0;
 
-  drv_rs232_init(vt100_instance.uart_io, &uart_config);
+  drv_uart_init(vt100_instance.uart_io, &uart_config);
   vt100_driver.cfg = &vt100_instance;
   vt100_driver.api = &vt100_lcd_api;
   vt100_driver.opened = true;

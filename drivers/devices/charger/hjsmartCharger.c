@@ -6,8 +6,9 @@
 #include "util_time.h"
 #include "util_memory.h"
 #include "os_user_def.h"
-#include "drv_rs485.h"
-#include "drv_rs232.h"
+#include "bsp_rs485.h"
+#include "bsp_uart.h"
+#include "bsp_rs485.h"
 #include "driver_uart_def.h"
 
 
@@ -36,7 +37,6 @@ typedef struct
     uint16_t AdcDummy2;
     uint16_t BatAvgVolt1;       // 배터리1 평균 전압
     uint16_t BatAvgVolt2;       // 배터리2 평균 전압
-
                                 // eTempSens_t 순서로 배치
     int16_t RoomTemp;       // 25   -> 25`C
     int16_t Humidity;       // 30       -> 30%
@@ -44,49 +44,51 @@ typedef struct
     int16_t ChgTemp2;
     int16_t BattTemp1;
     int16_t BattTemp2;
-
     // Charger Status
     uint8_t ChgStage1;  // eChgStat_t
     uint8_t ChgStage2;  // eChgStat_t
     uint8_t AcPwStat1;  // 0:AcOk, 1:AcAlarm, 2:AcFault(not used)
     uint8_t AcPwStat2;  // 0:AcOk, 1:AcAlarm, 2:AcFault(not used)
-
                         // Load Status
     uint8_t LoadStat1;  // 현재 Load 상태  0:off, 1:on
     uint8_t LoadStat2;
     uint8_t LoadStat3;
     uint8_t LoadStat4;
-
     uint8_t ComPingCnt[4];      // 핑신호가 들어온 횟수
     uint8_t LoadTogCnt[4];      // 로드 토글 횟수
     uint32_t LoadTogTime[4];    // 로드를 토글한 시간
     uint32_t SysResetTime;      // 시스템 파워 온 시간
-
     uint8_t ExtPortInp;             // B1:ACPW2Mode, B0:ACPW1Mode
     uint8_t ExtPortOut;             // B1:AcAlarm2, B0:AcAlarm1
     uint8_t ErrLedStat;             // V1006 // B4:ERRLED_BIT_ACPW, B3:ERRLED_BIT_FCSHDN, B2:ERRLED_BIT_BTEMP, B1:ERRLED_BIT_CTEMP, B0:ERRLED_BIT_OVCHG
     uint8_t ExtPortDummy2;
-
     int8_t MstMcuInit;              // TFTMCU 가 초기화한 상태
     uint8_t MstMcuConnect;      // TFTMCU 연결상태
     uint8_t MstPwOffStat;           // SLVMCU LCD ON,OFF상태
     uint8_t MstDummy1;
 }SYSTEM_TypeDef;
 
-
-
-
-
-uint32_t Make_SmartChgFrame(uint8_t *pBuff, uint32_t buffSize, uint8_t cmd, uint8_t *pData, uint32_t dataLen)
+typedef struct hj_smartcharger_instance_s
 {
-	uint32_t cnt = 0;
-	uint16_t frameLen;
-	static uint8_t seq = 0;
-	frameLen = 12 + 2 + dataLen;
-	DATE_TIME_BUF curTime;
-	uint8_t sum = 0;
-	uint32_t i;
+  int32_t uart_num;
+  bool opened;
+  void *sem;
+} hj_smartcharger_instance_t;
 
+hj_smartcharger_instance_t charger_inst;
+SYSTEM_TypeDef chg_system;                        // TODO:heap으로 변경
+static uint8_t buff[sizeof(SYSTEM_TypeDef) + 20]; // TODO:heap으로 변경
+
+uint32_t make_charger_frame(uint8_t *pBuff, uint32_t buff_size, uint8_t cmd, uint8_t *pData, uint32_t dataLen)
+{
+  static uint8_t seq = 0;
+  uint8_t sum = 0;
+  uint16_t frameLen;
+  uint32_t cnt = 0;
+  uint32_t i;
+  DATE_TIME_BUF curTime;
+
+  frameLen = 12 + 2 + dataLen;
 
 	time_get(&curTime);
 
@@ -106,15 +108,15 @@ uint32_t Make_SmartChgFrame(uint8_t *pBuff, uint32_t buffSize, uint8_t cmd, uint
 
   if(pData)
   {
-	memcpy(&pBuff[cnt], pData, dataLen);
+	  memcpy(&pBuff[cnt], pData, dataLen);
   }
-	cnt += dataLen;
+
+  cnt += dataLen;
 
 	for (i = 0; i < (dataLen + 11); i++)
 	{
 		sum += pBuff[1 + i];
 	}
-
 
 	pBuff[cnt++] = 0x03;
 	pBuff[cnt++] = sum;
@@ -123,72 +125,58 @@ uint32_t Make_SmartChgFrame(uint8_t *pBuff, uint32_t buffSize, uint8_t cmd, uint
 
 }
 
-
-int32_t recv_smartCharger(int32_t rs232_num,uint8_t *pbuff,int32_t buffSize)
+/**
+ * @brief 충전기 프레임 수집
+ * 
+ */
+int32_t recv_charger_frame(int32_t rs232_num,uint8_t *pbuff,int32_t buff_size)
 {
-	uint8_t rxData;
+	uint8_t rx_data;
 	uint8_t sum=0;
-	uint16_t frameCnt=0;
-	uint16_t packetLen=0;
-	uint32_t startTime;
+	uint16_t frame_cnt=0;
+	uint16_t frame_len=0;
+	uint32_t start_time;
 
+	start_time = OS_GET_TICK();
 
-	startTime = OS_GET_TICK();
-
-	while(1)
-  {
-    while (drv_rs485_recv(rs232_num, &rxData, 1, 20) == 1)
+    while (bsp_rs485_recv(rs232_num, &rx_data, 1, 50) == 1)
     {
-			pbuff[frameCnt++] = rxData;
+			pbuff[frame_cnt++] = rx_data;
 
-			if (frameCnt == 1)
+			if (frame_cnt == 1)
 			{
-				if (rxData != 2)
+				if (rx_data != 2)
 				{
-					frameCnt=0;
+					frame_cnt=0;
 				}
 			}
-			else if(frameCnt==3)
+			else if(frame_cnt==3)
 			{
-                memcpy(&packetLen,&pbuff[1],sizeof(packetLen));
+        memcpy(&frame_len,&pbuff[1],sizeof(frame_len));
 			}
-			else if(frameCnt == packetLen)
+			else if(frame_cnt == frame_len)
 			{
-				sum = make_sum(&pbuff[1],packetLen-3);
+				sum = make_sum(&pbuff[1],frame_len-3);
 
-				if(sum ==pbuff[packetLen-1])
+				if(sum ==pbuff[frame_len-1])
 				{
-					return frameCnt;
+					return frame_cnt;
 				}
 				else
-					frameCnt=0;
+					frame_cnt=0;
 			}
 
-			if(frameCnt >= buffSize)
+			if(frame_cnt >= buff_size)
 			{
 				return 0;
 			}
 		}
 
-    if((OS_GET_TICK() -startTime) > 50)
-    {
-      break;
-    }
-	}
+
 
 	return -1;
 }
 
-typedef struct hj_smartcharger_instance_s
-{
-  int32_t uart_num;
-  bool opened;
-  void *sem;
-} hj_smartcharger_instance_t;
-
-hj_smartcharger_instance_t charger_inst;
-SYSTEM_TypeDef chg_system;//TODO:heap으로 변경
-static uint8_t buff[sizeof(SYSTEM_TypeDef)+20]; //TODO:heap으로 변경
 
 
 void hjsmartCharger_read(charger_data_t *charger_data,uint8_t *err)
@@ -208,12 +196,12 @@ void hjsmartCharger_read(charger_data_t *charger_data,uint8_t *err)
   val = 22;  //22바이트만 읽어옴
   memcpy(&data[4],&val,2);
   
-  len = Make_SmartChgFrame(buff,sizeof(buff),0x50,data,6);
+  len = make_charger_frame(buff,sizeof(buff),0x50,data,6);
 
-  drv_rs485_flush_rx(charger_inst.uart_num);
-  drv_rs485_send(charger_inst.uart_num, buff, len);
+  bsp_rs485_flush_rx(charger_inst.uart_num);
+  bsp_rs485_send(charger_inst.uart_num, buff, len);
 
-  len = recv_smartCharger(charger_inst.uart_num, buff, sizeof(buff));
+  len = recv_charger_frame(charger_inst.uart_num, buff, sizeof(buff));
 
   if (len > 0)
   {
@@ -254,10 +242,8 @@ int32_t hj_smartcharger_init(void)
   uart_config.parityIdx = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
-  charger_inst.uart_num = RS485_B;
-  drv_rs485_init(charger_inst.uart_num, &uart_config);
-
-
+  charger_inst.uart_num = BSP_RS485_B;
+  bsp_rs485_init(charger_inst.uart_num, &uart_config);
 
   charger_inst.opened = true;
   OS_CREATE_BINARY_SEM(charger_inst.sem);

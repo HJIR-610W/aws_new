@@ -24,6 +24,7 @@
 #include "task_wdt.h"
 #include "FreeRTOS.h"
 #include "bsp.h"
+#include "bsp_uart.h"
 
 typedef enum{
 	ePOWER_RESET,
@@ -169,12 +170,12 @@ void flush_reqCall(void);
 
 void modem_send(uint8_t *pData,uint16_t dataLen)
 {
-  drv_uart_send(_iCellular->io_uart, pData, dataLen);
+  bsp_uart_send(_iCellular->io_uart, pData, dataLen);
 }
 
 void modem_sends(const char *pData)
 {
-  drv_uart_send(_iCellular->io_uart,  (uint8_t *)pData, strlen(pData));
+  bsp_uart_send(_iCellular->io_uart,  (uint8_t *)pData, strlen(pData));
 }
 
 

@@ -14,9 +14,9 @@
 #define BSP_UART_5_EXT_D 5   // 사용자3
 #define BSP_UART_6_RS485_A_ONLY 6 // RS485 A
 #define BSP_UART_7_RS485_B_ONLY 7 // RS485 B
-#define BSP_UART_8_CDMA 8    // CDMA
-#define BSP_UART_9_SDI_ONLY 9     // SDI통신
-#define BSP_UART_10_CDC 10   // USB 디버깅
+#define BSP_UART_8_CDMA         8 // CDMA
+#define BSP_UART_9_SDI_ONLY     9 // SDI통신
+#define BSP_UART_10_CDC        10 // USB 디버깅
 
 
 int32_t bsp_uart_init(int32_t num, void *opt);

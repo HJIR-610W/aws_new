@@ -331,7 +331,7 @@ void draw_direct(win_t *p_win)
   win_print_close(p_win);
 }
 
-#define CDMA_WD 15
+#define CDMA_WD 8
 
 void draw_cdma(win_t *p_win)
 {

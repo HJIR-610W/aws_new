@@ -4,21 +4,17 @@
 #define DRV_RS232_H
 
 #include "driver_uart_def.h"
+#include "bsp_uart.h"
 
-#define DRV_UART_0_D_SUB_0 0 // VHF
-#define DRV_UART_1_TTL 1     // 블루투스 모듈
-#define DRV_UART_2_EXT_A 2   // 사용자0
-#define DRV_UART_3_EXT_B 3   // 사용자1
-#define DRV_UART_4_EXT_C 4   // 사용자2
-#define DRV_UART_5_EXT_D 5   // 사용자3
-#define  DRV_UART_8_CDMA 8    // CDMA
-#define DRV_UART_10_CDC 10   // USB 디버깅
-
+#define DRV_UART_2_EXT_A BSP_UART_2_EXT_A // 사용자0
+#define DRV_UART_3_EXT_B BSP_UART_3_EXT_B // 사용자1
+#define DRV_UART_4_EXT_C BSP_UART_4_EXT_C // 사용자2
+#define DRV_UART_5_EXT_D BSP_UART_5_EXT_D // 사용자3
+#define DRV_UART_8_CDMA  BSP_UART_8_CDMA  // CDMA
+#define DRV_UART_10_CDC  BSP_UART_10_CDC  // USB 디버깅
 
 
-
-
-int32_t drv_rs232_init(int32_t num, void *opt);
+int32_t drv_uart_init(int32_t num, void *opt);
 void drv_uart_close(int num);
 int32_t drv_uart_send(int num, const uint8_t *pData, uint16_t dataLen);
 int32_t drv_uart_recv(int num, uint8_t *pBuff, uint16_t rLen,

@@ -95,7 +95,7 @@ void directTask_init(void)
 
   g_direct_uart_num = DRV_UART_8_CDMA;
 
-  if(drv_rs232_init(g_direct_uart_num, &uart_config) !=1)
+  if(drv_uart_init(g_direct_uart_num, &uart_config) !=1)
   {
     io_printf("direct_task err\r\n");
   }

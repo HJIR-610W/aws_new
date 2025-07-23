@@ -380,7 +380,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
   size_t bytes_read;
   size_t cnt = 0;
 
-  OS_PEND_SEM(uart_inst[uart_num].tx_sem, osWaitForever);
+  OS_PEND_SEM(uart_inst[uart_num].rx_sem, osWaitForever);
 
   // timeOutMs가 0인 경우: 논블로킹 모드
   if (timeOutMs == 0)
@@ -398,7 +398,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
     }
     // 데이터가 없으면 cnt는 0으로 리턴
 
-    OS_POST_SEM(uart_inst[uart_num].tx_sem);
+    OS_POST_SEM(uart_inst[uart_num].rx_sem);
     return cnt;
   }
 
@@ -493,7 +493,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
     }
   }
 
-  OS_POST_SEM(uart_inst[uart_num].tx_sem);
+  OS_POST_SEM(uart_inst[uart_num].rx_sem);
 
   return cnt;
 }

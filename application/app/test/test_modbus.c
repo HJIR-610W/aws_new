@@ -6,7 +6,7 @@
 #include "drv_rs485.h"
 #include "console_utile.h"
 #include "modbus_master.h"
-#include "drv_rs485.h"
+#include "bsp_rs485.h"
 #include "drv_rs232.h"
 #define RS485_PORT_MAX 4
 
@@ -123,7 +123,7 @@ void test_modbus_task(void *arg)
   char rx_buff[50];
   int baud = 57600;
   const char *rs485_port_name[RS485_PORT_MAX] = {"A", "B", "C", "D"};
-  int32_t port_list[RS485_PORT_MAX] = {RS485_A, RS485_B, RS485_RS232_C, RS485_RS232_D};
+  int32_t port_list[RS485_PORT_MAX] = {BSP_RS485_A, BSP_RS485_B, BSP_RS485_RS232_C, BSP_RS485_RS232_D};
   modbus_h_t modbus;
   int32_t ret;
   int32_t reg_number = 0x3100;
@@ -133,13 +133,13 @@ void test_modbus_task(void *arg)
   switch (channel)
   {
   case MODBUS_CHARGER:
-    selected_port = RS485_B;
+    selected_port = BSP_RS485_B;
     baud =115200;
     reg_number = 0x3100;
     read_cnt = 15;
     break;
   case MODBUS_TEMP:
-    selected_port = RS485_RS232_D ;
+    selected_port = BSP_RS485_RS232_D ;
     baud = 9600;
     reg_number = 0x0;
     read_cnt =1;

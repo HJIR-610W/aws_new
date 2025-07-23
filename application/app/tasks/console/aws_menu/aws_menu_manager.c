@@ -115,13 +115,13 @@ void config_hj_reset(void)
   config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;
   sensor_add(&config.sensor[A2_WIND_DIRECTION]);
   hjwindDir_cfg = get_sensor_config(&config.sensor[A2_WIND_DIRECTION]);
-  hjwindDir_cfg->rs485_port = RS485_A;
+  hjwindDir_cfg->rs485_port = DRV_RS485_A;
 
   // 풍속[화진 RS485 풍속 19200]
   config.sensor[A3_WIND_SPEED].type = S_T_WIND_SPEED_HJ_485;
   sensor_add(&config.sensor[A3_WIND_SPEED]);
   hjwind_cfg = get_sensor_config(&config.sensor[A3_WIND_SPEED]);
-  hjwind_cfg->rs485_port = RS485_A;
+  hjwind_cfg->rs485_port = DRV_RS485_A;
   hjwind_cfg->full = 3200;
   hjwind_cfg->offset = 0;
 

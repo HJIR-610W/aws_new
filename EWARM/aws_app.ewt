@@ -1284,192 +1284,6 @@
                 </group>
             </group>
             <group>
-                <name>sensors</name>
-                <group>
-                    <name>barometer</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\barometer\barometer.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\barometer\jinsung_sjgp215.c</name>
-                    </file>
-                </group>
-                <group>
-                    <name>general</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\general\general_adc.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\general\general_adc.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\general\general_frequency.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\general\general_frequency.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\general\sensor_general.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\general\sensor_general.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>humidity</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\humidity\hj_huminity.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\humidity\hj_huminity.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\humidity\humidity.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\humidity\humidity.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>rain</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\rain\rain.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\rain\rain.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>rain_present</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\rain_present\rain_present.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\rain_present\rain_present.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>snow</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\snow\hj_snow.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\snow\hj_snow.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\snow\hjsnow_define.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\snow\snow.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\snow\snow.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\snow\snow_define.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>soil_temp</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\soil_temperature\soil_temperature.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\soil_temperature\soil_temperature.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>solar_radiation</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\solar_radiation\ott_smp3.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\solar_radiation\ott_smp3.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\solar_radiation\ott_smp3_define.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\solar_radiation\solar_radiation.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\solar_radiation\solar_radiation.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\solar_radiation\solarRadiation_define.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>sunshine</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\sunshine\sunshine.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\sunshine\sunshine.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\sunshine\sunshine_define.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>temperature</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\temperature\hj_temperature.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\temperature\hj_temperature.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\temperature\hj_temperature_define.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\temperature\pt100.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\temperature\pt100.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\temperature\temperature.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\temperature\temperature.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\temperature\temperature_define.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>wind_direction</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\wind_direction\wind_direction.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\wind_direction\wind_direction.h</name>
-                    </file>
-                </group>
-                <group>
-                    <name>wind_speed</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\wind_speed\hj_wind.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\wind_speed\hj_wind.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\wind_speed\wind_define.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\Application\app\sensors\wind_speed\wind_speed.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\application\app\sensors\wind_speed\wind_speed.h</name>
-                    </file>
-                </group>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\app\sensors\app_sensor.c</name>
-                </file>
-            </group>
-            <group>
                 <name>tasks</name>
                 <group>
                     <name>aws</name>
@@ -1923,7 +1737,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -2162,7 +1976,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -2171,7 +1985,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -2216,7 +2030,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</name>
                 </file>
             </group>
             <group>
@@ -2253,6 +2067,180 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\devices\charger\ls1024.h</name>
+                </file>
+            </group>
+            <group>
+                <name>sensors</name>
+                <group>
+                    <name>barometer</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\barometer\barometer.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\barometer\jinsung_sjgp215.c</name>
+                    </file>
+                </group>
+                <group>
+                    <name>general</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\general\general_adc.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\general\general_frequency.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\general\sensor_general.c</name>
+                    </file>
+                </group>
+                <group>
+                    <name>humidity</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\humidity\hj_huminity.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\humidity\humidity.c</name>
+                    </file>
+                </group>
+                <group>
+                    <name>rain</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\rain\rain.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\rain\rain.h</name>
+                    </file>
+                </group>
+                <group>
+                    <name>rain_present</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\rain_present\rain_present.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\rain_present\rain_present.h</name>
+                    </file>
+                </group>
+                <group>
+                    <name>snow</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\snow\hj_snow.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\snow\hj_snow.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\snow\hjsnow_define.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\snow\snow.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\snow\snow.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\snow\snow_define.h</name>
+                    </file>
+                </group>
+                <group>
+                    <name>soil_temp</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\soil_temperature\soil_temperature.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\soil_temperature\soil_temperature.h</name>
+                    </file>
+                </group>
+                <group>
+                    <name>solar_radiation</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\solar_radiation\ott_smp3.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\solar_radiation\ott_smp3.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\solar_radiation\ott_smp3_define.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\solar_radiation\solar_radiation.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\solar_radiation\solar_radiation.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\solar_radiation\solarRadiation_define.h</name>
+                    </file>
+                </group>
+                <group>
+                    <name>sunshine</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\sunshine\sunshine.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\sunshine\sunshine.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\sunshine\sunshine_define.h</name>
+                    </file>
+                </group>
+                <group>
+                    <name>temperature</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\temperature\hj_temperature.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\temperature\hj_temperature.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\temperature\hj_temperature_define.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\temperature\pt100.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\temperature\pt100.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\temperature\temperature.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\temperature\temperature.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\temperature\temperature_define.h</name>
+                    </file>
+                </group>
+                <group>
+                    <name>wind_direction</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_direction\wind_direction.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_direction\wind_direction.h</name>
+                    </file>
+                </group>
+                <group>
+                    <name>wind_speed</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_speed\hj_wind.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_speed\hj_wind.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_speed\wind_define.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_speed\wind_speed.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_speed\wind_speed.h</name>
+                    </file>
+                </group>
+                <file>
+                    <name>$PROJ_DIR$\..\drivers\devices\sensors\app_sensor.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\drivers\devices\sensors\app_sensor.h</name>
                 </file>
             </group>
             <file>

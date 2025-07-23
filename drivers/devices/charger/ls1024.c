@@ -8,9 +8,9 @@
 #include "util_memory.h"
 #include "util_time.h"
 #include "os_user_def.h"
-
 #include "modbus_master.h"
-#include "drv_rs485.h"
+#include "bsp_rs485.h"
+
 typedef struct ls1024_cfg_s
 {
   modbus_h_t modbus;
@@ -37,9 +37,9 @@ int32_t ls1024_init(void)
 
   ls1024_inst.modbus.name="ls1024";
   ls1024_inst.modbus.modebus_type = eMODBUS_RS485;
-  ls1024_inst.modbus.port_num = RS485_B  ;
+  ls1024_inst.modbus.port_num = BSP_RS485_B;
   ls1024_inst.modbus.id = 1;
-      drv_rs485_init(ls1024_inst.modbus.port_num, &uart_config);
+  bsp_rs485_init(ls1024_inst.modbus.port_num, &uart_config);
 
   OS_CREATE_BINARY_SEM(ls1024_inst.sem);
 

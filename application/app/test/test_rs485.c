@@ -3,7 +3,7 @@
 
 #include "cli_key_code.h"
 #include "dev_io.h"
-#include "drv_rs485.h"
+#include "bsp_rs485.h"
 #include "console_utile.h"
 
 #define RS485_PORT_MAX 4
@@ -18,7 +18,7 @@ void test_rs485(void)
   char rx_buff[50];
   int baud = 57600;
   const char *rs485_port_name[RS485_PORT_MAX] = {"A", "B", "C", "D"};
-  int32_t port_list[RS485_PORT_MAX] = {RS485_A, RS485_B, RS485_RS232_C, RS485_RS232_D};
+  int32_t port_list[RS485_PORT_MAX] = {BSP_RS485_A, BSP_RS485_B, BSP_RS485_RS232_C, BSP_RS485_RS232_D};
 
   io_printf("RS485 포트별 테스트\r\n");
   io_printf("주의: RS485 C,D는 하드웨어점퍼 설정 필요\r\n");
@@ -43,7 +43,7 @@ void test_rs485(void)
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 
-  drv_rs485_init(selected_port, &uart_config);
+  bsp_rs485_init(selected_port, &uart_config);
   
   io_printf("RS485 포트 %s, 속도 %d로 테스트 시작 (CTRL+Q 종료)\r\n", 
             rs485_port_name[port_index], baud);
@@ -51,7 +51,7 @@ void test_rs485(void)
   while(1)
   {
     snprintf(buff, sizeof(buff), "RS485 %s\r\n", rs485_port_name[port_index]);
-    len = drv_rs485_send(selected_port, (uint8_t*)buff, strlen(buff));
+    len = bsp_rs485_send(selected_port, (uint8_t*)buff, strlen(buff));
     
     if(len < 0)
     {
@@ -62,11 +62,11 @@ void test_rs485(void)
       io_printf("전송: %s", buff);
     }
 
-    len = drv_rs485_recv(selected_port, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
+    len = bsp_rs485_recv(selected_port, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
     
     if(len > 0)
     {
-      drv_rs485_send(selected_port, (uint8_t*)rx_buff, len);
+      bsp_rs485_send(selected_port, (uint8_t*)rx_buff, len);
       
       io_printf("수신 및 에코 (%d bytes): ", len);
       for(int i = 0; i < len; i++)

@@ -8,7 +8,7 @@
 
 #include "modem_ntle9607.h"
 #include "at_cmd.h"
-#include "drv_rs232.h"
+#include "bsp_uart.h"
 
 #include "bsp.h"
 #include "drv_power.h"
@@ -1023,8 +1023,8 @@ void ntle9607_recv_bin(int32_t uart, uint8_t *p_data, uint16_t data_len)
     memcpy(temp, &p_data[7], cnt);
     readCnt = atoi((char *)temp);  // 수신 처리해야할 tcp data 길이를 계산
 
-    len = drv_uart_recv(uart, (uint8_t *)temp, 1, 1000);  // 최종 tcp data 버퍼에서 가져옴
-    len = drv_uart_recv(uart, (uint8_t *)temp, readCnt,
+    len = bsp_uart_recv(uart, (uint8_t *)temp, 1, 1000);  // 최종 tcp data 버퍼에서 가져옴
+    len = bsp_uart_recv(uart, (uint8_t *)temp, readCnt,
                            1000);  // 최종 tcp data 버퍼에서 가져옴
 
     if (len)
@@ -1039,7 +1039,7 @@ int32_t ntle9607_recv_handler(int32_t uart, uint8_t *buffer, uint16_t buffer_siz
 
   int32_t len = 0;
 
-  len = drv_uart_recv_crlf(uart,(char *)buffer, buffer_size, osWaitForever);
+  len = bsp_uart_recv_crlf(uart,(char *)buffer, buffer_size, osWaitForever);
 
 
   return len;

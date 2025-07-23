@@ -2,7 +2,7 @@
 #include "cmsis_os2.h"
 
 #include "util_memory.h"
-#include "drv_rs232.h"
+#include "bsp_uart.h"
 #include "dev_io.h"
 #include "cli_key_code.h"
 #include "pcb_define.h"
@@ -22,8 +22,8 @@ void app_key_init(void)
     uart_config.parityIdx = PARITY_NONE;
     uart_config.stop_bit = UART_STOP_BIT_1;
 
-    serial_key = DRV_UART_0_D_SUB_0;
-        drv_rs232_init(serial_key, &uart_config);
+    serial_key = BSP_UART_0_D_SUB_0;
+    bsp_uart_init(serial_key, &uart_config);
 
     button_queue_handle = osMessageQueueNew(BUTTON_QUEUE_SIZE, sizeof(int32_t), NULL);
 
@@ -142,7 +142,7 @@ void scan_key(void)
     int key;
 
 
-    len = drv_uart_recv(serial_key, data, _countof(data), 0);
+    len = bsp_uart_recv(serial_key, data, _countof(data), 0);
 
     if (len > 0)
     {

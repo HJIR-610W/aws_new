@@ -116,7 +116,8 @@
 			"app_rs485.h": "c",
 			"cli_input.h": "c",
 			"jinsung_sjgp215.h": "c",
-			"barometer.h": "c"
+			"barometer.h": "c",
+			"bsp_rs485.h": "c"
 		}
 	}
 }
