@@ -132,16 +132,16 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
 #define ADC_LB_W 15
 uint8_t print_adc_cfg( adc_config_t *adc_config, uint8_t cnt)
 {
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Adc Mode", "%s", ITEM_LIST(adc_config->mode, adcChModeList));
+  io_printf("%2d.%s:%s\r\n",cnt++, m_l("Adc Mode",ENTRY_LABEL_WIDTH), ITEM_LIST(adc_config->mode, adcChModeList));
   if(adc_config->mode ==0)
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Channel", "%d", adc_config->single_channel);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Channel",ENTRY_LABEL_WIDTH), adc_config->single_channel);
   else
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Channel", "%d", adc_config->diff_channel);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "High Value", "%d", adc_config->highScale);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Low Value", "%d", adc_config->lowScale);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Scale", "%d", adc_config->scale);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Max Voltage(mV)", "%d", adc_config->outMaxV);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Min Voltage(mV)", "%d", adc_config->outMinV);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Channel",ENTRY_LABEL_WIDTH), adc_config->diff_channel);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("High Value",ENTRY_LABEL_WIDTH), adc_config->highScale);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Low Value",ENTRY_LABEL_WIDTH), adc_config->lowScale);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Scale",ENTRY_LABEL_WIDTH), adc_config->scale);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Max Voltage(mV)",ENTRY_LABEL_WIDTH), adc_config->outMaxV);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Min Voltage(mV)",ENTRY_LABEL_WIDTH), adc_config->outMinV);
 
   return cnt;
 }
@@ -160,9 +160,9 @@ uint8_t print_hjwind_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
   const char *name_table[10];
 
   drv_rs485_get_portList(name_table, _countof(name_table));
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Fullset", "%d", hjwindCfg->full);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Offset", "%d", hjwindCfg->offset);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Port", "%s", name_table[hjwindCfg->rs485_port]);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Fullset",ENTRY_LABEL_WIDTH), hjwindCfg->full);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Offset",ENTRY_LABEL_WIDTH), hjwindCfg->offset);
+  io_printf("%2d.%s:%s\r\n",cnt++, m_l("Port",ENTRY_LABEL_WIDTH), name_table[hjwindCfg->rs485_port]);
 
   return cnt;
 }
@@ -174,7 +174,7 @@ uint8_t print_hjwindDir_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
 
   drv_rs485_get_portList(name_table, _countof(name_table));
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "Port", "%s", name_table[hjwindCfg->rs485_port]);
+  io_printf("%2d.%s:%s\r\n",cnt++, m_l("Port",ENTRY_LABEL_WIDTH), name_table[hjwindCfg->rs485_port]);
 
   return cnt;
 }
@@ -193,7 +193,7 @@ uint8_t print_hjtemp_cfg(hjtemp_config_t *hjtempCfg, uint8_t cnt)
   const char *name_table[10];
   int port;
   
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "통신방식", "%s", physical_list[hjtempCfg->physical_layer]);
+  io_printf("%2d.%s:%s\r\n",cnt++, m_l("통신방식",ENTRY_LABEL_WIDTH), physical_list[hjtempCfg->physical_layer]);
 
   if (hjtempCfg->physical_layer == ePHYSICAL_RS232)
   {
@@ -206,9 +206,9 @@ uint8_t print_hjtemp_cfg(hjtemp_config_t *hjtempCfg, uint8_t cnt)
         port = hjtempCfg->rs485_port;
   }
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "포트", "%s", name_table[port]);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "모드버스 ID", "%d", hjtempCfg->modbus_id);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "온습도 메뉴", "[제어]");
+  io_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), name_table[port]);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("모드버스 ID",ENTRY_LABEL_WIDTH), hjtempCfg->modbus_id);
+  io_printf("%2d.%s:%s\r\n",cnt++, m_l("온습도 메뉴",ENTRY_LABEL_WIDTH), "[제어]");
 
   return cnt;
 }
@@ -220,8 +220,8 @@ uint8_t print_ott_smp3_cfg(ott_smp3_config_t *ott, uint8_t cnt)
    const char *portNameList[10];
 
    drv_rs485_get_portList(portNameList, _countof(portNameList));
-   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "포트", "%s", portNameList[ott->port]);
-   ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "MODBUS ID", "%d", ott->modbus_id);
+   io_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), portNameList[ott->port]);
+   io_printf("%2d.%s:%d\r\n",cnt++, m_l("MODBUS ID",ENTRY_LABEL_WIDTH), ott->modbus_id);
    return cnt;
 }
 
@@ -229,7 +229,7 @@ uint8_t print_ott_smp3_cfg(ott_smp3_config_t *ott, uint8_t cnt)
 uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt)
 {
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "지연시간", "%d", rain_present->delay);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("지연시간",ENTRY_LABEL_WIDTH), rain_present->delay);
 
   return cnt;
 }
@@ -237,8 +237,8 @@ uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt
 
 uint8_t print_freq_cfg(frequency_config_t *freq, uint8_t cnt)
 {
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "채널", "%d", freq->channel);
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "보정계수", "%f", freq->scale_factor);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("채널",ENTRY_LABEL_WIDTH), freq->channel);
+  io_printf("%2d.%s:%f\r\n",cnt++, m_l("보정계수",ENTRY_LABEL_WIDTH), freq->scale_factor);
 
   return cnt;
 }
@@ -250,21 +250,20 @@ uint8_t print_hjsnow_cfg(hjsnow_config_t *hjsnow, uint8_t cnt)
 {
   const char *portNameList[10];
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "통신방식", "%s", physical_list[hjsnow->physical_layer]);
+  io_printf("%2d.%s:%s\r\n",cnt++,  m_l("통신방식",ENTRY_LABEL_WIDTH), physical_list[hjsnow->physical_layer]);
 
   if (hjsnow->physical_layer == ePHYSICAL_RS232)
   {
     rs232_get_portList(portNameList, _countof(portNameList));
-      ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "통신포트", "%s", portNameList[hjsnow->rs232_port]);
+    io_printf("%2d.%s:%s\r\n",cnt++,  m_l("통신포트",ENTRY_LABEL_WIDTH), portNameList[hjsnow->rs232_port]);
   }
   else
   {
     drv_rs485_get_portList(portNameList, _countof(portNameList));
-      ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "통신포트", "%s", portNameList[hjsnow->rs485_port]);
+    io_printf("%2d.%s:%s\r\n",cnt++,  m_l("통신포트",ENTRY_LABEL_WIDTH), portNameList[hjsnow->rs485_port]);
   }
 
-
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "화진 적설 메뉴", "(제어)");
+  io_printf("%2d.%s:%s\r\n",cnt++,  m_l("화진 적설 메뉴",ENTRY_LABEL_WIDTH), "[제어]");
 
   return cnt;
 }
@@ -275,7 +274,7 @@ uint8_t print_barometer_jsgp215_cfg(jinsung_sjgp215_config_t *ott, uint8_t cnt)
   const char *portNameList[10];
 
   rs232_get_portList(portNameList, _countof(portNameList));
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "포트", "%s", portNameList[ott->rs232_port]);
+  io_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), portNameList[ott->rs232_port]);
  
   return cnt;
 }
@@ -297,7 +296,7 @@ int32_t print_common_cfg( sensor_t *sensor, uint8_t c)
 {
   int32_t cnt = 0;
 
-  ENTRY_PF(cnt++, ENTRY_LABEL_WIDTH, "종류", "%s", g_sensor_model_table[sensor->type]);
+  io_printf("%2d.%s:%s\r\n",cnt++, m_l("종류",ENTRY_LABEL_WIDTH), g_sensor_model_table[sensor->type]);
 
   switch (sensor->type)
   {

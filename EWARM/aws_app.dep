@@ -1128,7 +1128,7 @@
             <file>$PROJ_DIR$\release\Obj\websocket.xcl</file>
             <file>$PROJ_DIR$\release\Obj\stream_buffer.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\udp.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\cli_key_code.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\cli_key_code.h</file>
             <file>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_offset.h</file>
             <file>$PROJ_DIR$\..\Application\Protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\release\Obj\cli_input.xcl</file>
@@ -1870,7 +1870,7 @@
             <file>$PROJ_DIR$\release\Obj\chap_ms.__cstat.et</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_fram.h</file>
             <file>$PROJ_DIR$\release\Obj\data_accu.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_define.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_define.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_dma_ex.h</file>
             <file>$PROJ_DIR$\release\Obj\tasks.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\test_dinOut.__cstat.et</file>
@@ -1969,7 +1969,7 @@
             <file>$PROJ_DIR$\release\Obj\driver_stm32_do.xcl</file>
             <file>$PROJ_DIR$\release\Obj\solar_radiation.o</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\timeouts.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\console_scanf.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_di.o</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\def.h</file>
             <file>$PROJ_DIR$\release\Obj\menu_network.xcl</file>
@@ -2014,7 +2014,7 @@
             <file>$PROJ_DIR$\release\Obj\httpd.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_eth.__cstat.et</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver_adc_define.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\fsl_debug_console.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\fsl_debug_console.h</file>
             <file>$PROJ_DIR$\..\BSP\bsp_di.h</file>
             <file>$PROJ_DIR$\release\Obj\panel.xcl</file>
             <file>$PROJ_DIR$\release\Obj\terminal.__cstat.et</file>
@@ -2044,7 +2044,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rcc.h</file>
             <file>$PROJ_DIR$\release\Obj\pt100.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\raw.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_memory_map.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_memory_map.h</file>
             <file>$PROJ_DIR$\release\Obj\kma3.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\TL16C554.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\app_sensor.__cstat.et</file>
@@ -2158,7 +2158,7 @@
             <file>$PROJ_DIR$\..\application\app\panel\panel.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_common.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.h</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_nvm.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_nvm.h</file>
             <file>$PROJ_DIR$\release\Obj\app_console.o</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt_opts.h</file>
@@ -2171,7 +2171,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\driver.h</file>
             <file>$PROJ_DIR$\release\Obj\config_sensor.o</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>
-            <file>$PROJ_DIR$\..\Application\app\app_drivers\app_screen.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_hansung.h</file>
             <file>$PROJ_DIR$\release\Obj\terminal_bridge.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_opts.h</file>
@@ -2255,7 +2255,7 @@
             <file>$PROJ_DIR$\release\Obj\hj_temperature_menu.o</file>
             <file>$PROJ_DIR$\..\Application\Panel\panel_common.h</file>
             <file>$PROJ_DIR$\release\Obj\panel_aws_std.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\fsl_common.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\fsl_common.h</file>
             <file>$PROJ_DIR$\release\Obj\boot_version.o</file>
             <file>$PROJ_DIR$\release\Obj\driver_485.o</file>
             <file>$PROJ_DIR$\release\Obj\crc.xcl</file>
@@ -2328,7 +2328,7 @@
             <file>$PROJ_DIR$\release\Obj\drv_frequency.__cstat.et</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\BSP\bsp_rtc.c</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\fsl_shell.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_network.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ethernet.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\aws\aws_data_process.c</file>
@@ -2354,7 +2354,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_cortex.h</file>
             <file>$PROJ_DIR$\release\Obj\task_monitor.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\old_aws_define.o</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\divas\aws_monitor.h</file>
             <file>$PROJ_DIR$\release\Obj\wind_speed.__cstat.et</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_crc.h</file>
@@ -2377,7 +2377,7 @@
             <file>$PROJ_DIR$\release\Obj\aws_menu_manager.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\FreeRTOS.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_fram.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_sensor.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_sensor.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_time.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_network.o</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_frequency.c</file>
@@ -2393,7 +2393,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\queue.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_di.h</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_app.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_app.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_flash_ex.h</file>
@@ -2420,7 +2420,7 @@
             <file>$PROJ_DIR$\..\Application\app\protocols\aws\parse_aws.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_dataLogging.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_define.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\console_define.h</file>
             <file>$PROJ_DIR$\release\Obj\const_string.o</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_flash.h</file>
@@ -2440,7 +2440,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcpbase.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
-            <file>$PROJ_DIR$\..\Application\app\app_drivers\app_key.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\slipif.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\config.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dns.h</file>
@@ -2463,7 +2463,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif_opts.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_system.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_utile.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\console_utile.h</file>
             <file>$PROJ_DIR$\release\Obj\vt100.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\aws_data_handler.h</file>
