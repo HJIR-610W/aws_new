@@ -11,12 +11,49 @@
 #include "util_memory.h"
 #include "common\const_string.h"
 #include "app_screen.h"
+
+
 #define SCREEN_COLS 20
 #define NETWORK_WD 10
 
 #define M_PRINTF screen_menu_printf_row
 
+/*
+Network
+*Interface Type
+ Settings Type
+ Protocol:KMA3
 
+Interface Type
+*Ethernet:ENB
+ CDMA    :DSB
+ Direct  :ENB
+
+ Settings Type
+ *Ethernet
+  CDMA
+  Direct
+
+Ethernet
+*Mode :Server
+ Local IP
+ Subnet
+ Gateway
+ Local Port:9000
+ Remote IP
+ Remote Port:6000
+
+CDMA
+*Server IP
+ Port :0
+ Model:NTLE9607
+ VPN  :Disabled
+
+Direct
+*Baud Rate:19200
+
+
+ */
 
 #define NETWORK_MENU_ETH_USE 0
 #define NETWORK_MENU_CDMA_USE 1
