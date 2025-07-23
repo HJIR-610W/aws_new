@@ -36,4 +36,5 @@ int32_t tls16c554_recv_opt(int uart_num, uint8_t *buffer, uint16_t buffer_size,
 int32_t tls16c554_uart_inject(int num, const uint8_t *pData, uint16_t dataLen);
 
 int32_t tls16c554_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_ms);
+void tls16c554_uart_set_config(int num, uart_config_t *config);
 #endif

@@ -1174,3 +1174,56 @@ int32_t tls16c554_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t 
 
   return 0;
 }
+
+
+//테스트 필요
+void tls16c554_uart_set_config(int num, uart_config_t *config)
+{
+  uint8_t parity_mode;
+
+  if (num < 0 || num >= TL16C554_UART_MAX || config == NULL)
+  {
+    return;
+  }
+
+  if (!tl16c554_inst[num].opened)
+  {
+    return;
+  }
+
+  OS_PEND_SEM(tl16c554_inst[num].tx_sem, osWaitForever);
+  OS_PEND_SEM(tl16c554_inst[num].rx_sem, osWaitForever);//다른곳에서 rx_sem 무한 대기 상태이면 설정변경 안되는데.. 개선 필요
+
+  tl16c554_inst[num].baud = config->baud;
+  tl16c554_inst[num].parityIdx = config->parityIdx;
+
+  set_baud_rate(num, config->baud);
+
+  if (config->parityIdx == PARITY_NONE)
+  {
+    parity_mode = 0;
+  }
+  else if (config->parityIdx == PARITY_ODD)
+  {
+    parity_mode = 1;
+  }
+  else if (config->parityIdx == PARITY_EVEN)
+  {
+    parity_mode = 2;
+  }
+  else
+  {
+    parity_mode = 0;
+  }
+
+  OS_POST_SEM(tl16c554_inst[num].rx_sem);
+  OS_POST_SEM(tl16c554_inst[num].tx_sem);
+
+  set_parity(num, parity_mode);
+
+  OS_PEND_SEM(tl16c554_inst[num].tx_sem, osWaitForever);
+
+  set_stop_bit(num, config->stop_bit);
+
+  OS_POST_SEM(tl16c554_inst[num].tx_sem);
+}

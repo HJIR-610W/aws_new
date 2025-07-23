@@ -727,3 +727,94 @@ int32_t stm32_uart_recv_ll(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t 
 
   return len;
 }
+
+//테스트 필요
+void stm32_uart_set_config(int num, uart_config_t *config)
+{
+  UART_HandleTypeDef *p_uart;
+  HAL_StatusTypeDef status;
+
+  if (num < 0 || num >= STM32_UART_MAX || config == NULL)
+  {
+    return;
+  }
+
+  if (!uart_inst[num].opened)
+  {
+    return;
+  }
+
+  OS_PEND_SEM(uart_inst[num].tx_sem, osWaitForever);
+  OS_PEND_SEM(uart_inst[num].rx_sem, osWaitForever);
+
+  p_uart = &uart_inst[num].handle;
+
+  HAL_UART_Abort(p_uart);
+
+  status = HAL_UART_DeInit(p_uart);
+  if (status != HAL_OK)
+  {
+    ERROR_PRINTF("UART DeInit failed");
+    OS_POST_SEM(uart_inst[num].rx_sem);
+    OS_POST_SEM(uart_inst[num].tx_sem);
+    return;
+  }
+
+  uart_inst[num].baud = config->baud;
+  uart_inst[num].parityIdx = config->parityIdx;
+
+  p_uart->Init.BaudRate = config->baud;
+
+  if (config->dataLen == UART_DATA_LEN_8)
+  {
+    p_uart->Init.WordLength = UART_WORDLENGTH_8B;
+  }
+  else
+  {
+    p_uart->Init.WordLength = UART_WORDLENGTH_9B;
+  }
+
+  switch (config->stop_bit)
+  {
+  case 2:
+    p_uart->Init.StopBits = UART_STOPBITS_2;
+    break;
+  case 0:
+  case 1:
+  default:
+    p_uart->Init.StopBits = UART_STOPBITS_1;
+    break;
+  }
+
+  switch (config->parityIdx)
+  {
+  case PARITY_EVEN:
+    p_uart->Init.Parity = UART_PARITY_EVEN;
+    break;
+  case PARITY_ODD:
+    p_uart->Init.Parity = UART_PARITY_ODD;
+    break;
+  case PARITY_NONE:
+  default:
+    p_uart->Init.Parity = UART_PARITY_NONE;
+    break;
+  }
+
+  p_uart->Init.Mode = UART_MODE_TX_RX;
+  p_uart->Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  p_uart->Init.OverSampling = UART_OVERSAMPLING_16;
+
+  status = HAL_UART_Init(p_uart);
+  if (status != HAL_OK)
+  {
+    ERROR_PRINTF("UART Init failed");
+    OS_POST_SEM(uart_inst[num].rx_sem);
+    OS_POST_SEM(uart_inst[num].tx_sem);
+    return;
+  }
+
+  HAL_UART_Receive_IT(p_uart, (uint8_t *)&uart_inst[num].rxData, 1);
+
+  OS_POST_SEM(uart_inst[num].rx_sem);
+  OS_POST_SEM(uart_inst[num].tx_sem);
+}

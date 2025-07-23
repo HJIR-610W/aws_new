@@ -1703,7 +1703,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -1942,7 +1942,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -1951,7 +1951,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -1996,7 +1996,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</name>
                 </file>
             </group>
             <group>
@@ -2342,7 +2342,7 @@
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.h</name>
+                <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_cdc.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.c</name>
@@ -2454,6 +2454,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_sdmmc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usart.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usb.c</name>

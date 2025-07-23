@@ -24,4 +24,5 @@ int32_t stm32_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint
 
 int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen);
 int32_t stm32_uart_recv_ll(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs);
+void stm32_uart_set_config(int num, uart_config_t *config);
 #endif

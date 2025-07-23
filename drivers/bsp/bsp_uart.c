@@ -296,3 +296,26 @@ int32_t bsp_uart_recv_ll(int num, uint8_t *pBuff, uint16_t rLen, uint32_t timeOu
       return -1;
   }
 }
+
+
+void bsp_uart_set_config(int num,uart_config_t *config)
+{
+  const uart_pinmap_t *pinmap = get_uart_pinmap(num);
+  if (!pinmap)
+    return ;
+  if (num == -1)
+    return ;
+  switch (pinmap->driver_type)
+  {
+  case UART_DRIVER_STM32:
+    stm32_uart_set_config(pinmap->driver_num, config);
+    break;
+  case UART_DRIVER_TL16C554:
+    tls16c554_uart_set_config(pinmap->driver_num, config);
+    break;
+  case UART_DRIVER_CDC:
+    break;
+  default:
+    break;
+  }
+}

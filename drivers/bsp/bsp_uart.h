@@ -40,4 +40,6 @@ void bsp_uart_get(int num, uart_get_option_t cmd, void *para);
 int32_t bsp_uart_recv_ll(int num, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutMs);
 
 int32_t bsp_uart_inject(int num, const uint8_t *pData, uint16_t dataLen);
+void bsp_uart_set_config(int num, uart_config_t *config);
+
 #endif
