@@ -227,11 +227,11 @@
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\application\os_user_def.h</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.h</file>
@@ -250,7 +250,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\ewarm\system_stm32f4xx.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\cli_input.c</file>
-            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\st7920.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</file>
@@ -2213,7 +2213,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip_addr.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_tim.h</file>
             <file>$TOOLKIT_DIR$\inc\c\time32.h</file>
-            <file>$PROJ_DIR$\..\application\app\App_drivers\app_flash.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\release\Obj\mcu_debug.xcl</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h</file>
             <file>$PROJ_DIR$\release\Obj\config_manager.__cstat.et</file>
@@ -2456,7 +2456,7 @@
             <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Full.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_console.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip4_frag.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\fsdata.c</file>
             <file>$PROJ_DIR$\..\application\app\test\test_hart.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netbuf.h</file>
@@ -2468,7 +2468,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\aws_data_handler.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_isrEvent.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\release\Obj\test_meomoy.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ip4.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\raw_priv.h</file>
