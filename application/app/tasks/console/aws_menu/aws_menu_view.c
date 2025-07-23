@@ -26,6 +26,7 @@
 #include "util_stdio.h"
 #include "task_system.h"
 #include "drv_system.h"
+#include "schedule.h"
 const char *linkStatusList[3] = {"-", "UP", "DOWN"};
 const char *doorStatusList[2] = {"닫힘", "열림"};
 const char *generalStatusList[2] = {"정상", "비정상"};
@@ -762,8 +763,8 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->precipitation_presence.raw.f;
-        win_printf_row(p_win, row_count++, "%s: %5d", m_l("강수유무", AWS_WD), (int)f_data);
+        bool rain_p =  p_kma->precipitation_presence.raw.b;
+        win_printf_row(p_win, row_count++, "%s: %s", m_l("강수유무", AWS_WD), rain_p?"ON":"OFF");
       }
       else
       {
@@ -882,7 +883,10 @@ void draw_aws(win_t *p_win)
   // 일조
   if (p_kma->sunshine_duration.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
+    uint32_t solar_d_1min = Sysinfo.mSun[MIN1_PROC].nSunshineTot;
     err = p_kma->sunshine_duration.err;
+    err = p_kma->sunshine_duration.err;
+
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
@@ -901,12 +905,11 @@ void draw_aws(win_t *p_win)
         }
         case eAWS_DATA_AVG:
         {
-          bool sunshine_duration = (p_kma->sunshine_duration.data == 1);
-          win_printf_row(p_win, row_count++, "%s: %s", m_l("일조", AWS_WD), sunshine_duration ? "ON" : "OFF");
+          win_printf_row(p_win, row_count++, "%s: %6d sec", m_l("일조", AWS_WD), solar_d_1min);
           break;
         }
         default:
-          win_printf_row(p_win, row_count++, "%s: %5d s", m_l("일조", AWS_WD), p_kma->sunshine_duration.data);
+          win_printf_row(p_win, row_count++, "%s: %6d sec", m_l("일조", AWS_WD), p_kma->sunshine_duration.data);
           break;
       }
     }

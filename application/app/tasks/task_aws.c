@@ -1052,7 +1052,7 @@ void update_raw(void)
   p_kma_data->pressure.raw.f = g_p_raw->data[A7_PRESSURE].data.f;
   p_kma_data->pressure.err = g_p_raw->data[A7_PRESSURE].err;
 
-  p_kma_data->precipitation_presence.raw.f = g_p_raw->data[A8_RAIN_PRESENT].data.i;
+  p_kma_data->precipitation_presence.raw.b = g_p_raw->data[A8_RAIN_PRESENT].data.b;
   p_kma_data->precipitation_presence.err = g_p_raw->data[A8_RAIN_PRESENT].err;
 
   p_kma_data->snowfall.raw.f = g_p_raw->data[A9_SNOW_DEPTH].data.i;
@@ -1430,12 +1430,11 @@ void DUALPORT_TASK(void *arg)
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
   AWS_DATA_STRUCT *pAws;
-
   int32_t nWindCnt12 = 0;
   int32_t nWindCnt40 = 0;
   uint16_t data;
   uint8_t f_err=0;
-
+  uint32_t rain_p_delay=0;
   pAws = &mRealAws;
   pSystem = &Sysinfo;
 
@@ -1507,12 +1506,21 @@ void DUALPORT_TASK(void *arg)
     //강우 감지
     if (is_raining(&sensor_err))  // Off Delay 적용 함
     {
-      update_sensor_err(A8_RAIN_PRESENT, sensor_err);
+      rain_p_delay++;
+      if (rain_p_delay>=get_rain_present_config()->delay)
+      {
+        update_sensor_err(A8_RAIN_PRESENT, sensor_err);
 
-      pAws->mRainDetect.sReal = 0x000a;
-      pSystem->m_shOffDelayRemain = get_rain_present_config()->delay;
-      pSystem->m_cOffDelayFlag = 1;
+        pAws->mRainDetect.sReal = 0x000a;
+        pSystem->m_shOffDelayRemain = get_rain_present_config()->delay;
+        pSystem->m_cOffDelayFlag = 1;
+      }
     }
+    else
+    {
+      rain_p_delay = 0;
+    }
+
     // 적설
     data = SnowCalc(&sensor_err);
     pAws->mSnowFall.sReal = filter_data(A9_SNOW_DEPTH, data, sensor_err, &f_err);

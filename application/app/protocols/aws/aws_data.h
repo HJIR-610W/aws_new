@@ -38,6 +38,7 @@ typedef struct aws_data_s
   {
     int32_t i;
     float f;
+    bool b;
   }raw;
   
 

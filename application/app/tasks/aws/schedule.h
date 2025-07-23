@@ -5,7 +5,9 @@
 #include "util_time.h"
 #include "old_aws_define.h"
 
-
+#define MIN1_PROC 0
+#define MIN10_PROC 1
+#define HOUR_PROC 2
 
 extern AWS_DATA_STRUCT mRealAws;   // 실시간 자료
 extern AWS_DATA_STRUCT mMinAws;    // 1분 자료

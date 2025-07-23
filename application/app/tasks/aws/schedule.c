@@ -19,9 +19,6 @@
 
 #define MAXWDSPEED 100.0
 
-#define MIN1_PROC 0
-#define MIN10_PROC 1
-#define HOUR_PROC 2
 
 #pragma location = "SRAM_section"
 AWS_DATA_STRUCT mRealAws;   // 실시간 자료
