@@ -71,7 +71,7 @@ void test_rs485(void)
       io_printf("수신 및 에코 (%d bytes): ", len);
       for(int i = 0; i < len; i++)
       {
-        io_printf("%02X ", rx_buff[i]);
+        io_printf("%c", rx_buff[i]);
       }
       io_printf("\r\n");
     }

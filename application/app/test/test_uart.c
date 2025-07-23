@@ -158,93 +158,89 @@ uint8_t g_uart_ll=0;
 void test_uart(void)
 {
   uart_config_t uart_config;
-  int32_t uart_driver=NULL;
-  char buff[30];
+  int len;
+  int32_t selected_port;
+  int port_index;
+  char buff[100];
   char rx_buff[50];
-   char *rs232_port_name[UART_PORT_MAX] = {"VHF", "TTL", "A", "B", "C", "D","CDMA"};
-   const int32_t rs232_drv_num[UART_PORT_MAX] =
-   { BSP_UART_0_D_SUB_0,
-     BSP_UART_1_TTL_ONLY,
-     BSP_UART_2_EXT_A,
-     BSP_UART_3_EXT_B,
-     BSP_UART_4_EXT_C,
-     BSP_UART_5_EXT_D,
-     BSP_UART_8_CDMA };
+  int baud = 57600;
+  const char *rs232_port_name[UART_PORT_MAX] = {"VHF", "TTL", "A", "B", "C", "D", "CDMA"};
+  const int32_t rs232_drv_num[UART_PORT_MAX] = {
+    BSP_UART_0_D_SUB_0,
+    BSP_UART_1_TTL_ONLY,
+    BSP_UART_2_EXT_A,
+    BSP_UART_3_EXT_B,
+    BSP_UART_4_EXT_C,
+    BSP_UART_5_EXT_D,
+    BSP_UART_8_CDMA
+  };
 
-   int baud;
-   int len;
-   int rs232_number = -1;
+  io_printf("RS232 포트별 테스트\r\n");
+  io_printf("주의: RS232 A,B는 하드웨어 점퍼 설정 필요\r\n");
+  io_printf("기능: 포트이름 전송 후 1초간 수신 데이터 에코 및 HEX 출력\r\n\r\n");
 
+  if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:VHF, 1:TTL, 2:A, 3:B, 4:C, 5:D, 6:CDMA)", &port_index, 0, 6) != MENU_OK)
+  {
+    port_index = 0;
+    io_printf("기본 포트 VHF로 설정합니다.\r\n");
+  }
 
-   io_printf("RS232 VHF,TTL,A,B,C,D,CDMA 테스트\r\n");
-   io_printf("주의:RS232 A,B는 하드웨어점퍼 설정 필요\r\n");
-
-   io_printf("포트 이름을 입력해주세요\r\n");
-   if (cli_scanf_s("%s", buff,sizeof(buff)) == CLI_KEYCODE_CTRL_C)
-   {
-     return;
-   }
-
-  io_printf("기능:1초마다 각 포트이름 전송되며 1초 대기,입력 에코처리함\r\n");
-  io_printf("통신 속도를 입력해주세요\r\n");
-
-  if (input_decimal_prompt("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
+  if(input_decimal_prompt("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
   {
     baud = 57600;
-    io_printf("기본 속도로 설정합니다.%d\r\n", baud);
+    io_printf("기본 속도 %d로 설정합니다.\r\n", baud);
   }
-  io_printf("이제 테스트 진행하세요 CTRL+Q 종료\r\n");
 
-
+  selected_port = rs232_drv_num[port_index];
+  
   uart_config.baud = baud;
   uart_config.parityIdx = PARITY_NONE;
-  uart_config.stop_bit = UART_STOPBITS_1;
+  uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 
-  for (int n = 0; n < _countof(rs232_port_name);n++)
-  {
-    if(strcmp(buff, rs232_port_name[n])==0)
-    {
-      uart_driver =rs232_drv_num[n];
-      bsp_uart_init(uart_driver, &uart_config);
-      rs232_number = n;
-      break;
-    }
-  }
+  bsp_uart_init(selected_port, &uart_config);
   
-  if (rs232_number ==-1)
-  {
-    io_printf("포트 이름을 확인해주세요\r\n");
-    return ;
-  }
+  io_printf("RS232 포트 %s, 속도 %d로 테스트 시작 (CTRL+Q 종료)\r\n", 
+            rs232_port_name[port_index], baud);
 
-
-  
-  
   while (1)
   {
-    snprintf(buff, sizeof(buff), "RS232 %s\r\n", rs232_port_name[rs232_number]);
-    len = bsp_uart_send(uart_driver, (uint8_t*)buff, strlen(buff));
-    if (len < 0)
+    snprintf(buff, sizeof(buff), "RS232 %s\r\n", rs232_port_name[port_index]);
+    len = bsp_uart_send(selected_port, (uint8_t*)buff, strlen(buff));
+    
+    if(len < 0)
     {
-      snprintf(buff, sizeof(buff), "RS232 %s error\r\n", rs232_port_name[rs232_number]);
-      io_printf(buff);
+      io_printf("RS232 %s 전송 실패\r\n", rs232_port_name[port_index]);
+    }
+    else
+    {
+      io_printf("전송: %s", buff);
     }
 
-    len = bsp_uart_recv(uart_driver, (uint8_t*)rx_buff, sizeof(rx_buff), 2000);
-    if (len)
+    len = bsp_uart_recv(selected_port, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
+    
+    if(len > 0)
     {
-      bsp_uart_send(uart_driver, (uint8_t*)rx_buff, len);
+      bsp_uart_send(selected_port, (uint8_t*)rx_buff, len);
+      
+      io_printf("수신 및 에코 (%d bytes): ", len);
+      for(int i = 0; i < len; i++)
+      {
+        io_printf("%c", rx_buff[i]);
+      }
+      io_printf("\r\n");
     }
-    if (get_key(1000) == KEY_CODE_CTRL_Q)
+
+    if (get_key(10) == KEY_CODE_CTRL_Q)
     {
+      io_printf("테스트 종료\r\n");
       return;
     }
 
     if (g_uart_ll)
     {
       g_uart_ll = 0;
-      len = bsp_uart_recv_ll(uart_driver, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
+      len = bsp_uart_recv_ll(selected_port, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
     }
   }
 }
