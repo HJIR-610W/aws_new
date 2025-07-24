@@ -630,17 +630,17 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       {
 
         bool rain_p = p_kma->precipitation_presence.raw.b ;
-        screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "RAIN_P", rain_p?"ON":"OFF");
+        screen_printf_row(p_win, row_count++, "%-*s: %s", AWS_WD, "RAIN_P", rain_p?"ON":"OFF");
       }
       else if ( min == eAWS_DATA_AVG)
       {
         uint16_t data = p_kma->precipitation_presence.data;
         bool rain_p = (data == 10) ? true : false;
-        screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "RAIN_P", rain_p ? "ON" : "OFF");
+        screen_printf_row(p_win, row_count++, "%-*s: %s", AWS_WD, "RAIN_P", rain_p ? "ON" : "OFF");
       }
       else
       {
-        screen_printf_row(p_win, row_count++, "%-*s:%4d", AWS_WD, "RAIN_P",
+        screen_printf_row(p_win, row_count++, "%-*s: %4d", AWS_WD, "RAIN_P",
                  p_kma->precipitation_presence.data);
       }
     }
@@ -713,7 +713,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
           screen_printf_row(p_win, row_count++, "%-*s:%6.1f kW/m2", SOLAR_R_WD, "SOLAR R", f_data);
           break;
         }
-        case eAWS_DATA_AVG:
+        default:
         {
           float solar_radiation = p_kma->solar_radiation.data;
           screen_printf_row(p_win, row_count++, "%-*s:%6.1f kW/m2", SOLAR_R_WD, "SOLAR R", solar_radiation);
