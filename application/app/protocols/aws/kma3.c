@@ -471,13 +471,15 @@ cnt += 2;
 return cnt;
 }
 
+
+#define STATUS_BIT_SIZE 8
 void kma3_set_sensor_status(eSENSOR_TYPE_t sensor_num, uint8_t sensor[8])
 {
   int quot;
   int rem;
 
-  quot = sensor_num / sizeof(sensor);
-  rem = sensor_num % sizeof(sensor);
+  quot = sensor_num / (STATUS_BIT_SIZE);
+  rem = sensor_num % (STATUS_BIT_SIZE);
 
   sensor[quot] |= 1 << rem;
 }
@@ -487,8 +489,8 @@ void kma3_clear_sensor_status(eSENSOR_TYPE_t sensor_num, uint8_t sensor[8])
   int quot;
   int rem;
 
-  quot = sensor_num / sizeof(sensor);
-  rem = sensor_num % sizeof(sensor);
+  quot = sensor_num / (STATUS_BIT_SIZE);
+  rem = sensor_num % (STATUS_BIT_SIZE);
 
   sensor[quot] &= ~(1 << rem);
 }
@@ -498,8 +500,8 @@ bool kma3_is_sensor_error(eSENSOR_TYPE_t sensor_num, uint8_t sensor[8])
   int quot;
   int rem;
 
-  quot = sensor_num / sizeof(sensor);
-  rem = sensor_num % sizeof(sensor);
+  quot = sensor_num / (STATUS_BIT_SIZE);
+  rem = sensor_num % (STATUS_BIT_SIZE);
 
   if (sensor[quot] & (1 << rem))
   {

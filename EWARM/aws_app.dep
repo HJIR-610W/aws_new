@@ -2407,13 +2407,13 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_offset.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_dataLogging.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\ppp\ppp_impl.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_console.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_5.c</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_system.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
-            <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
+            <file>$PROJ_DIR$\..\application\app\App_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_charger.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\schedule.h</file>
@@ -2443,7 +2443,7 @@
             <file>$TOOLKIT_DIR$\inc\c\LowLevelIOInterface.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\data_logging.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_fram.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_manager.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_crc.h</file>
@@ -2507,7 +2507,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.h</file>
             <file>$TOOLKIT_DIR$\lib\rt7M_tl.a</file>
             <file>$TOOLKIT_DIR$\lib\m7M_tls.a</file>

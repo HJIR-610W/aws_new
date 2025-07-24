@@ -1021,9 +1021,33 @@ void parse_kma3_response(const uint8_t* frame, uint32_t bytes_read)
 
   task_printf("Tachometer: %d\r\n", big_endian_to_little_endian(kma_data->tacometer));
 
+  // 센서 이름 배열 (64개 센서)
+  const char* sensor_names[64] = {
+    "A1_기온", "A2_풍향", "A3_풍속", "A6_강수량", "A7_기압", "A8_강수유무", "A9_적설", "A10_상대습도",
+    "A11_강수량0.1", "B1_일사", "B2_일조", "B3_지면온도", "B4_초상온도", "B5_지중온도5cm", "B6_지중온도10cm", "B7_지중온도20cm",
+    "B8_지중온도30cm", "B9_지중온도50cm", "B10_지중온도1m", "B11_지중온도1.5m", "B12_지중온도3m", "B13_지중온도5m", "C1_운고1", "C2_운고2",
+    "C3_운고3", "C4_운량", "C5_시정", "C6_PM10", "C7_PM2.5", "C8_순복사", "C9_전천복사", "C10_반사복사",
+    "C11_직달일사", "C12_현재일기", "N1_토양수분10cm", "N2_토양수분20cm", "N3_토양수분30cm", "N4_토양수분50cm", "N5_조도량", "N6_풍속1.5m",
+    "N7_풍속4.0m", "N8_순간풍속1.5m", "N9_순간풍속4.0m", "N10_기온50cm", "N11_기온4m", "N12_습도50cm", "N13_습도4m", "I1_타코미터",
+    "예비48", "예비49", "예비50", "예비51", "예비52", "예비53", "예비54", "예비55",
+    "예비56", "예비57", "예비58", "예비59", "예비60", "예비61", "예비62", "예비63"
+  };
+
+  task_printf("============== 센서 상태 (Sensor Status) ==============\r\n");
   for (int i = 0; i < 8; i++)
   {
     task_printf("SensorStatus[%d]: 0x%02X\r\n", i, kma_data->sensorStatus[i]);
+    
+    // 각 바이트의 8개 비트 확인
+    for (int bit = 0; bit < 8; bit++)
+    {
+      int sensor_index = i * 8 + bit;
+      int bit_value = (kma_data->sensorStatus[i] >> bit) & 0x01;
+      task_printf("  Bit%d (센서%02d %s): %d %s\r\n", 
+                  bit, sensor_index, sensor_names[sensor_index], 
+                  bit_value, bit_value ? "[ERROR]" : "[OK]");
+    }
+    task_printf("\r\n");
   }
 
   task_printf("Voltage Status: 0x%02X\r\n", kma_data->volateStatus);
