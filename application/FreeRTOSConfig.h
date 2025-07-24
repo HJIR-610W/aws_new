@@ -59,7 +59,7 @@
 #define TASK_HTTP_SERVER_STACK_SIZE 4096
 #define TASK_TELNET_SERVER_STACK_SIZE 2048
 #define TASK_TCP_SERVER_STACK_SIZE 1024
-#define TASK_CLIENT_HANDLER_STACK_SIZE 3072
+#define TASK_CLIENT_HANDLER_STACK_SIZE 4096
 #define TASK_TCP_CLIENT_STACK_SIZE 3072
 #define TASK_TEST_STACK_SIZE 2048
 #define TASK_WDT_STACK_SIZE 1024
@@ -83,6 +83,7 @@
 #define TASK_SDI_STACK_SIZE 1024
 #define TASK_HART_STACK_SIZE 1024
 
+#define USER_MEMORY 4096
 
 //약 58KB ucHeap[]
 #define SUM_TASK_STACK (TASK_HTTP_SERVER_STACK_SIZE +    \
@@ -108,7 +109,8 @@
                           TASK_DUALPORT_STACK_SIZE +       \
                           TASK_CONSOLE_STACK_SIZE +        \
                           TASK_SDI_STACK_SIZE +            \
-                          TASK_HART_STACK_SIZE)
+                          TASK_HART_STACK_SIZE+            \
+                          USER_MEMORY)
 
 
 

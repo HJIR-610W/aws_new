@@ -864,6 +864,7 @@ int16_t big_endian_to_little_endian(int16_t value)
 
 void parse_kma3_response(const uint8_t* frame, uint32_t bytes_read)
 {
+  int16_t data;
   const char* dataNumName;
   const kma_data_t* kma_data = (kma_data_t*)frame;
 
@@ -896,64 +897,84 @@ void parse_kma3_response(const uint8_t* frame, uint32_t bytes_read)
   task_printf("지점 번호    : %d\r\n", big_endian_to_little_endian(kma_data->id));
 
   // 관측 데이터 출력
-  task_printf("A-1  기온      Temperature            : %5.2f도C\r\n",
-         (big_endian_to_little_endian(kma_data->temperature) - 1000) / 10.0);
-  task_printf("A-2  풍향 Wind Direction Avg          : %5.2f도\r\n",
-         big_endian_to_little_endian(kma_data->wind_direction_avg) / 10.0);
-  task_printf("A-3  풍속 Wind Speed Avg              : %5.2fm/s\r\n",
-         big_endian_to_little_endian(kma_data->wind_speed_avg) / 10.0);
-  task_printf("A-4  순간 풍향 Wind Direction Instant : %5.2f도\r\n",
-         big_endian_to_little_endian(kma_data->wind_direction_instant) / 10.0);
-  task_printf("A-5  순간 풍속 Wind Speed Instant     : %5.2fm/s\r\n",
-         big_endian_to_little_endian(kma_data->wind_speed_instant) / 10.0);
-  task_printf("A-6  강수량    Precipitation          : %dmm\r\n",
-         big_endian_to_little_endian(kma_data->precipitation));
-  task_printf("A-7  기압      Pressure               : %5.2fhPa\r\n",
-         big_endian_to_little_endian(kma_data->pressure) / 10.0);
-  task_printf("A-8  강수 유무 Precipitation Presence : %d\r\n",
-         big_endian_to_little_endian(kma_data->precipitation_presence));
-  task_printf("A-9  적설      Snowfall               : %5.2fcm\r\n",
-         big_endian_to_little_endian(kma_data->snowfall) / 10.0);
-  task_printf("A-10 상대습도  Relative Humidity      : %5.2f%%\r\n",
-         big_endian_to_little_endian(kma_data->relative_humidity) / 10.0);
-  task_printf("A-12 강수량    Precipitation Fine     : %d\r\n",
-         big_endian_to_little_endian(kma_data->precipitation_fine));
+  data = big_endian_to_little_endian(kma_data->temperature);
 
-  task_printf("B-1  일사      Solar Radiation        : %d\r\n",
-         big_endian_to_little_endian(kma_data->solar_radiation));
-  task_printf("B-2  일조      Sunshine Duration      : %d\r\n",
-         big_endian_to_little_endian(kma_data->sunshine_duration));
-  task_printf("B-3  지면온도  Surface Temperature    : %d\r\n",
-         big_endian_to_little_endian(kma_data->surface_temperature));
-  task_printf("B-4  초상온도  Grass Temperature      : %d\r\n",
-         big_endian_to_little_endian(kma_data->grass_temperature));
-  task_printf("B-5  지중온도  Soil Temperature 5cm   : %d\r\n",
-         big_endian_to_little_endian(kma_data->soil_temperature_5cm));
-  task_printf("B-6  지중온도  Soil Temperature 10cm  : %d\r\n",
-         big_endian_to_little_endian(kma_data->soil_temperature_10cm));
-  task_printf("B-7  지중온도  Soil Temperature 20cm  : %d\r\n",
-         big_endian_to_little_endian(kma_data->soil_temperature_20cm));
-  task_printf("B-8  지중온도  Soil Temperature 30cm  : %d\r\n",
-         big_endian_to_little_endian(kma_data->soil_temperature_30cm));
-  task_printf("B-9  지중온도  Soil Temperature 50cm  : %d\r\n",
-         big_endian_to_little_endian(kma_data->soil_temperature_50cm));
-  task_printf("B-10 지중온도  Soil Temperature 1m    : %d\r\n",
-         big_endian_to_little_endian(kma_data->soil_temperature_1m));
-  task_printf("B-11 지중온도  Soil Temperature 1.5m  : %d\r\n",
-         big_endian_to_little_endian(kma_data->soil_temperature_1_5m));
-  task_printf("B-12 지중온도  Soil Temperature 3m    : %d\r\n",
-         big_endian_to_little_endian(kma_data->soil_temperature_3m));
-  task_printf("B-13 지중온도  Soil Temperature 5m    : %d\r\n",
-         big_endian_to_little_endian(kma_data->soil_temperature_5m));
+  task_printf("A-1  기온      Temperature            :[%04d] %5.2f도C\r\n", data,
+    (big_endian_to_little_endian(data) - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->wind_direction_avg);
+  task_printf("A-2  풍향 Wind Direction Avg          :[%04d] %5.2f도\r\n", data,
+         data / 10.0);
+  data = big_endian_to_little_endian(kma_data->wind_speed_avg);
+  task_printf("A-3  풍속 Wind Speed Avg              :[%04d] %5.2fm/s\r\n", data,
+         data / 10.0);
+  data = big_endian_to_little_endian(kma_data->wind_direction_instant);
+  task_printf("A-4  순간 풍향 Wind Direction Instant :[%04d] %5.2f도\r\n", data,
+         data / 10.0);
+  data = big_endian_to_little_endian(kma_data->wind_speed_instant);
+  task_printf("A-5  순간 풍속 Wind Speed Instant     :[%04d] %5.2fm/s\r\n", data,
+         data / 10.0);
+  data = big_endian_to_little_endian(kma_data->precipitation);
+  task_printf("A-6  강수량    Precipitation          :[%04d] %dmm\r\n", data, data);
+  data = big_endian_to_little_endian(kma_data->pressure);
+  task_printf("A-7  기압      Pressure               :[%04d] %5.2fhPa\r\n", data,
+         data / 10.0);
+  data = big_endian_to_little_endian(kma_data->precipitation_presence);
+  task_printf("A-8  강수 유무 Precipitation Presence :[%04d] %d\r\n", data, data);
+  data = big_endian_to_little_endian(kma_data->snowfall);
+  task_printf("A-9  적설      Snowfall               :[%04d] %5.2fcm\r\n", data,
+         data / 10.0);
+  data = big_endian_to_little_endian(kma_data->relative_humidity);
+  task_printf("A-10 상대습도  Relative Humidity      :[%04d] %5.2f%%\r\n", data,
+         data / 10.0);
+  data = big_endian_to_little_endian(kma_data->precipitation_fine);
+  task_printf("A-12 강수량    Precipitation Fine     :[%04d] %d\r\n", data, data);
 
-  task_printf("C-1  1층 운고 Cloud Height 1st        : %d\r\n",
-         big_endian_to_little_endian(kma_data->cloud_height_1st));
-  task_printf("C-2  2층 운고 Cloud Height 2nd        : %d\r\n",
-         big_endian_to_little_endian(kma_data->cloud_height_2nd));
-  task_printf("C-3  3층 운고 Cloud Height 3rd        : %d\r\n",
-         big_endian_to_little_endian(kma_data->cloud_height_3rd));
-  task_printf("C-4  운량     Cloud Amount            : %d\r\n",
-         big_endian_to_little_endian(kma_data->cloud_amount));
+  data = big_endian_to_little_endian(kma_data->solar_radiation);
+  task_printf("B-1  일사      Solar Radiation        :[%04d] %d\r\n", data, data);
+  data = big_endian_to_little_endian(kma_data->sunshine_duration);
+  task_printf("B-2  일조      Sunshine Duration      :[%04d] %d\r\n", data, data);
+  data = big_endian_to_little_endian(kma_data->surface_temperature);
+  task_printf("B-3  지면온도  Surface Temperature    :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->grass_temperature);
+  task_printf("B-4  초상온도  Grass Temperature      :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->soil_temperature_5cm);
+  task_printf("B-5  지중온도  Soil Temperature 5cm   :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->soil_temperature_10cm);
+  task_printf("B-6  지중온도  Soil Temperature 10cm  :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->soil_temperature_20cm);
+  task_printf("B-7  지중온도  Soil Temperature 20cm  :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->soil_temperature_30cm);
+  task_printf("B-8  지중온도  Soil Temperature 30cm  :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->soil_temperature_50cm);
+  task_printf("B-9  지중온도  Soil Temperature 50cm  :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->soil_temperature_1m);
+  task_printf("B-10 지중온도  Soil Temperature 1m    :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->soil_temperature_1_5m);
+  task_printf("B-11 지중온도  Soil Temperature 1.5m  :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->soil_temperature_3m);
+  task_printf("B-12 지중온도  Soil Temperature 3m    :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+  data = big_endian_to_little_endian(kma_data->soil_temperature_5m);
+  task_printf("B-13 지중온도  Soil Temperature 5m    :[%04d] %5.2f도C\r\n", data,
+         (data - 1000) / 10.0);
+
+  data = big_endian_to_little_endian(kma_data->cloud_height_1st);
+  task_printf("C-1  1층 운고 Cloud Height 1st        :[%04d] %d\r\n", data, data);
+  data = big_endian_to_little_endian(kma_data->cloud_height_2nd);
+  task_printf("C-2  2층 운고 Cloud Height 2nd        :[%04d] %d\r\n", data, data);
+  data = big_endian_to_little_endian(kma_data->cloud_height_3rd);
+  task_printf("C-3  3층 운고 Cloud Height 3rd        :[%04d] %d\r\n", data, data);
+  data = big_endian_to_little_endian(kma_data->cloud_amount);
+  task_printf("C-4  운량     Cloud Amount            :[%04d] %d\r\n", data, data);
   task_printf("C-5  시정     Visibility              : %d\r\n",
          big_endian_to_little_endian(kma_data->visibility));
   task_printf("C-6  PM10     PM10 Concentration      : %d\r\n",

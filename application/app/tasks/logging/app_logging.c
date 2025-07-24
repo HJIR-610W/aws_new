@@ -68,7 +68,7 @@ int32_t save_log(const char *log)
 
     totalBytes = index * LOG_LEN_MAX;  // 저장된 로그 바이트
 
-    err = write_file((char *)kSystem_log_path,(uint8_t*)buff,sizeof(buff),totalBytes);
+    err = write_file((char *)kSystem_log_path,(uint8_t*)buff,strlen(buff),totalBytes);
 
     logCnt++;
     logging_set_logCnt(logCnt);

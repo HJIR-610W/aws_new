@@ -1778,13 +1778,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -1800,7 +1800,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -2376,7 +2376,7 @@
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_cdc.h</name>
+                <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.c</name>

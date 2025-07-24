@@ -19,8 +19,13 @@ int is_debug_mode(void)
     __HAL_DBGMCU_FREEZE_IWDG();  // 디버깅 시 와치독 카운트 멈춤
     __HAL_DBGMCU_FREEZE_RTC();   // 디버깅 시 rtc 타이머 멈춤
   }
+
+
+  
   bsp_init();
  
+
+     
   osKernelInitialize();
 
   startTask_init();
