@@ -55,13 +55,13 @@
 
 
 const osThreadAttr_t kMeasure250msTask_attributes = {
-    .name = "measure250msTask",
+    .name = "measure250ms",
     .stack_size = TASK_MEASURE_250MS_STACK_SIZE,
     .priority = (osPriority_t)osPriorityRealtime,
 };
 
 const osThreadAttr_t kMeasure1sTask_attributes = {
-    .name = "measure1sTask",
+    .name = "measure1s",
     .stack_size = TASK_MEASURE_1S_STACK_SIZE,
     .priority = (osPriority_t)osPriorityRealtime,
 };

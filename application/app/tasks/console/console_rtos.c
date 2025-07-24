@@ -135,8 +135,8 @@ void print_task_info(void)
 #endif
 
   // 헤더 출력
-  io_printf("%-18s %-10s %-9s %-7s %-10s %-16s %-5s", "Name", "Handle", "State", "PrioC/B",
-               "StackBase", "StackHWM_Free(B)", "Task#");
+  io_printf("%-18s %-8s %-9s %-5s %-8s %-10s %-5s", "Name", "Handle", "State", "PrioC/B",
+               "StackBase", "Stack_Free", "Task#");
 #if (configGENERATE_RUN_TIME_STATS == 1)
   io_printf(" %-7s", "CPU(%)");
 #endif
@@ -150,7 +150,7 @@ void print_task_info(void)
   int current_len = 0;
   current_len += snprintf(
       separator_line + current_len, sizeof(separator_line) - current_len,
-      "------------------ ---------- --------- ------- ---------- ----------------- -----");
+      "------------------ -------- --------- -----   -------- ---------- -----");
 #if (configGENERATE_RUN_TIME_STATS == 1)
   current_len +=
       snprintf(separator_line + current_len, sizeof(separator_line) - current_len, " -------");
@@ -169,7 +169,7 @@ void print_task_info(void)
              (unsigned int)pxTaskStatusArray[x].uxCurrentPriority,
              (unsigned int)pxTaskStatusArray[x].uxBasePriority);
 
-    io_printf("%-18s %p %-9s %-7s %p %-16lu ",
+    io_printf("%-18s %p %-9s %-7s %p %-10lu ",
                  pxTaskStatusArray[x].pcTaskName ? pxTaskStatusArray[x].pcTaskName : "N/A",
                  pxTaskStatusArray[x].xHandle,
                  prvTaskStateToString(pxTaskStatusArray[x].eCurrentState), prio_str,

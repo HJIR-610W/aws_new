@@ -44,7 +44,6 @@ SYSTEM_INFO_AWS Sysinfo;
  float UVToSpeed(float u_tmp, float v_tmp);
 
  /*
-
  lowlevel init 호출전에 SystemInit_ExtMemCtl 여기에서 FSMC 초기화를 해서
  초기화된 섹션,초기화되지 않은 섹션을 처리해줘야하는데
  FSMC 초기화에 문제가 있어. 일단

@@ -109,14 +109,14 @@
             <file>$PROJ_DIR$\..\Application\app\tasks\task_panel.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_adc.c</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\bsp_driver_sd.h</file>
-            <file>$PROJ_DIR$\..\application\communications\cdma\at_cmd.h</file>
+            <file>$PROJ_DIR$\..\application\Communications\cdma\at_cmd.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_client.c</file>
             <file>$PROJ_DIR$\..\application\communications\lwip\app\lwip.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\fatfs_platform.c</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\fatfs_platform.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.c</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\app\fatfs.h</file>
-            <file>$PROJ_DIR$\..\application\communications\cdma\modem_if.h</file>
+            <file>$PROJ_DIR$\..\application\Communications\cdma\modem_if.h</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\ffconf.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.c</file>
             <file>$PROJ_DIR$\..\application\app\version\project_def.h</file>
@@ -125,7 +125,7 @@
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\lwip\app\lwip.c</file>
             <file>$PROJ_DIR$\..\application\communications\lwip\target\lwipopts.h</file>
-            <file>$PROJ_DIR$\..\application\communications\direct\task_direct.h</file>
+            <file>$PROJ_DIR$\..\application\Communications\direct\task_direct.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.c</file>
             <file>$PROJ_DIR$\..\application\communications\lwip\target\ethernetif.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\app\fatfs.c</file>
@@ -134,7 +134,7 @@
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.h</file>
-            <file>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</file>
+            <file>$PROJ_DIR$\..\application\Communications\cdma\task_cellular.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\direct\task_direct.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.h</file>
@@ -182,9 +182,9 @@
             <file>$PROJ_DIR$\..\Application\http_server\core_json.h</file>
             <file>$PROJ_DIR$\..\application\http_server\task_http_server.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\http_api.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\user_diskio.c</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100.c</file>
@@ -203,12 +203,12 @@
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</file>
-            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\st7920.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_power.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_swo.h</file>
@@ -379,7 +379,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_crc.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_exti.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_flash_ex.c</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma.c</file>
@@ -1493,7 +1493,7 @@
             <file>$PROJ_DIR$\release\Obj\test_filesystem.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\aws_develop.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\aws_menu_panel.xcl</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_client.h</file>
+            <file>$PROJ_DIR$\..\application\Communications\ethernet\task_client.h</file>
             <file>$PROJ_DIR$\release\Obj\sys.xcl</file>
             <file>$PROJ_DIR$\release\Obj\bridgeif_fdb.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\ff_gen_drv.h</file>
@@ -2156,7 +2156,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sys.h</file>
             <file>$PROJ_DIR$\release\Obj\pcb_define.o</file>
             <file>$PROJ_DIR$\..\application\io\cli\fsl_debug_console.h</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\release\Obj\fatfs.xcl</file>
             <file>$PROJ_DIR$\release\Obj\test_modbus.o</file>
             <file>$PROJ_DIR$\..\Application\project_def.h</file>
@@ -2356,16 +2356,16 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stream_buffer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\httpd_opts.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\snmp.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\console_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_define.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ethip6.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_frequency.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\app_console_test.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\console_utile.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_utile.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\divas\aws_monitor.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif_opts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\api_msg.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dns.h</file>
@@ -2409,10 +2409,10 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\ppp\ppp_impl.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_console.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_system.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
-            <file>$PROJ_DIR$\..\application\app\App_drivers\app_flash.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_charger.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\schedule.h</file>
@@ -2428,7 +2428,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_mooju.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bits_.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_aws_std.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_hansung.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\fsdata.c</file>
@@ -2441,7 +2441,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\aws\aws_processor.h</file>
             <file>$TOOLKIT_DIR$\inc\c\LowLevelIOInterface.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\data_logging.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_fram.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_manager.h</file>
@@ -2503,7 +2503,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\task_ethernet.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\barometer\barometer.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>

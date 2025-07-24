@@ -58,15 +58,15 @@
 
 #define TASK_HTTP_SERVER_STACK_SIZE 4096
 #define TASK_TELNET_SERVER_STACK_SIZE 2048
-#define TASK_TCP_SERVER_STACK_SIZE 2048
+#define TASK_TCP_SERVER_STACK_SIZE 1024
 #define TASK_CLIENT_HANDLER_STACK_SIZE 3072
-#define TASK_TCP_CLIENT_STACK_SIZE 4096
+#define TASK_TCP_CLIENT_STACK_SIZE 3072
 #define TASK_TEST_STACK_SIZE 2048
 #define TASK_WDT_STACK_SIZE 1024
 #define TASK_SYSTEM_STACK_SIZE 2048
 #define TASK_ISR_EVENT_STACK_SIZE 1024
 #define TASK_MENU_STACK_SIZE 2560
-#define TASK_MEASURE_250MS_STACK_SIZE 2048
+#define TASK_MEASURE_250MS_STACK_SIZE 1024
 #define TASK_MEASURE_1S_STACK_SIZE 2048
 #define TASK_AT_STACK_SIZE 2048
 #define TASK_TCP_CDMA_STACK_SIZE 3072
@@ -79,6 +79,12 @@
 #define TASK_DUALPORT_STACK_SIZE 2048
 #define TASK_CONSOLE_STACK_SIZE 3072 // 2048+1024
 
+  // Additional non-task related stack sizes found:
+#define TASK_SDI_STACK_SIZE 1024
+#define TASK_HART_STACK_SIZE 1024
+
+
+//약 58KB ucHeap[]
 #define SUM_TASK_STACK (TASK_HTTP_SERVER_STACK_SIZE +    \
                           TASK_TELNET_SERVER_STACK_SIZE +  \
                           TASK_TCP_SERVER_STACK_SIZE +     \
@@ -103,9 +109,7 @@
                           TASK_CONSOLE_STACK_SIZE +        \
                           TASK_SDI_STACK_SIZE +            \
                           TASK_HART_STACK_SIZE)
-  // Additional non-task related stack sizes found:
-#define TASK_SDI_STACK_SIZE 1024
-#define TASK_HART_STACK_SIZE 1024
+
 
 
 
