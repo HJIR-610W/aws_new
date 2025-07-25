@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>4</fileVersion>
-    <fileChecksum>3060188988</fileChecksum>
+    <fileChecksum>715937507</fileChecksum>
     <configuration>
         <name>release</name>
         <outputs>
@@ -129,9 +129,9 @@
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\cli_input.c</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100.c</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\http_api.h</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\Application\io\dev_io.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\sd_diskio.c</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\sd_diskio.h</file>
@@ -171,7 +171,7 @@
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_spi.c</file>
@@ -181,7 +181,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\pcb_define.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\font\font_6x8.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\st7920.c</file>
@@ -191,7 +191,7 @@
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rtc.h</file>
@@ -206,7 +206,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\sdio.c</file>
-            <file>$PROJ_DIR$\..\Application\os_user_def.h</file>
+            <file>$PROJ_DIR$\..\application\os_user_def.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_di.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_do.h</file>
@@ -225,7 +225,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_frequency.c</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_delay.h</file>
-            <file>$PROJ_DIR$\..\Application\FreeRTOSConfig.h</file>
+            <file>$PROJ_DIR$\..\application\FreeRTOSConfig.h</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_di.c</file>
@@ -303,14 +303,14 @@
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.c</file>
-            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.h</file>
+            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_uart.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_exti.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd_ex.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_iwdg.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pwr.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pwr_ex.c</file>
-            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.h</file>
+            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_cdc.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_flash.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_flash_ex.c</file>
@@ -320,7 +320,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_adc_ex.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.c</file>
-            <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</file>
+            <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_i2c_ex.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_cortex.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.c</file>
@@ -726,7 +726,7 @@
             <file>$PROJ_DIR$\release\Obj\aws_jinyang.o</file>
             <file>$PROJ_DIR$\..\application\app\sensors\rain_present\rain_present.h</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\app_sensor.c</file>
-            <file>$PROJ_DIR$\..\Application\system_err.h</file>
+            <file>$PROJ_DIR$\..\application\system_err.h</file>
             <file>$PROJ_DIR$\release\Obj\eui64.__cstat.et</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver_flash.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\utile_data.h</file>
@@ -2048,7 +2048,7 @@
             <file>$PROJ_DIR$\..\application\app\test\test_eth.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tls.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\snmp.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_filesystem.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
@@ -2132,7 +2132,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_led.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_charger.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rtc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\raw_priv.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sio.h</file>
@@ -2141,11 +2141,11 @@
             <file>$TOOLKIT_DIR$\inc\c\LowLevelIOInterface.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\fsdata.c</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_aws.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\semphr.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_crc.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\queue.h</file>
             <file>$PROJ_DIR$\release\List\aws_app.map</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\app_measure.h</file>
@@ -2525,6 +2525,7 @@
             <file>$PROJ_DIR$\release\Obj\heap_5.o</file>
             <file>$PROJ_DIR$\release\Obj\heap_5.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554_def.h</file>
         </outputs>
         <file>
             <name>[ROOT_NODE]</name>
@@ -7055,10 +7056,6 @@
             <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</name>
             <outputs>
                 <tool>
-                    <name>ICCARM</name>
-                    <file> 1739</file>
-                </tool>
-                <tool>
                     <name>BICOMP</name>
                     <file> 1346</file>
                 </tool>
@@ -7070,7 +7067,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 268 1498 1178 1622 1238 1905 1507 346 1618 572 1303 2298 2307 795 220 1509 1287 1052 1064 2332 1926 1756 2220 1915 221 1688 203 587 206 201 177 1541 1411 2433 1676 2403 2407 2410 2238 1221 1565 1886 2229 1394 1494 1537 1550 1593 2198 1754 1730 1957 2388 2359 1954 2423 1994 2348 1913 1766 1232 2312 1881 2311 2194 1807 1578 1204 1586 2294 1645 1989 2344 1366 2270 1685 1786 2037 721 448 2293 2020 1727 457</file>
+                    <file> 268 1498 1178 1622 1238 1905 1507 346 1618 572 2520 1303 2298 2307 795 220 1509 1287 1052 1064 2332 1926 1756 2220 1915 221 1688 203 587 206 201 177 1541 1411 2433 1676 2403 2407 2410 2238 1221 1565 1886 2229 1394 1494 1537 1550 1593 2198 1754 1730 1957 2388 2359 1954 2423 1994 2348 1913 1766 1232 2312 1881 2311 2194 1807 1578 1204 1586 2294 1645 1989 2344 1366 2270 1685 1786 2037 721 448 2293 2020 1727 457</file>
                 </tool>
             </inputs>
         </file>
@@ -15713,6 +15710,10 @@
                 </tool>
             </inputs>
         </file>
+        <forcedrebuild>
+            <name>[MULTI_TOOL]</name>
+            <tool>ILINK</tool>
+        </forcedrebuild>
         <forcedrebuild>
             <name>$PROJ_DIR$\..\Application\app\sensors\humidity\hj_huminity.c</name>
             <tool>ICCARM</tool>

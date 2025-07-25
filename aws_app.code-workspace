@@ -126,7 +126,9 @@
 			"fatfs.h": "c",
 			"lwip.h": "c",
 			"task_menu.h": "c",
-			"tcp_define.h": "c"
+			"tcp_define.h": "c",
+			"stream_buffer.h": "c",
+			"tl16c554_def.h": "c"
 		}
 	}
 }

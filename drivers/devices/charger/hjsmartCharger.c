@@ -135,11 +135,9 @@ int32_t recv_charger_frame(int32_t rs232_num,uint8_t *pbuff,int32_t buff_size)
 	uint8_t sum=0;
 	uint16_t frame_cnt=0;
 	uint16_t frame_len=0;
-	uint32_t start_time;
 
-	start_time = OS_GET_TICK();
 
-    while (bsp_rs485_recv(rs232_num, &rx_data, 1, 50) == 1)
+    while (bsp_rs485_recv(rs232_num, &rx_data, 1, 100) == 1)
     {
 			pbuff[frame_cnt++] = rx_data;
 
@@ -248,5 +246,5 @@ int32_t hj_smartcharger_init(void)
   charger_inst.opened = true;
   OS_CREATE_BINARY_SEM(charger_inst.sem);
 
-  return 0;
+  return 1;
 }

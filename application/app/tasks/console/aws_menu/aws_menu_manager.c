@@ -115,13 +115,13 @@ void config_hj_reset(void)
   config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;
   sensor_add(&config.sensor[A2_WIND_DIRECTION]);
   hjwindDir_cfg = get_sensor_config(&config.sensor[A2_WIND_DIRECTION]);
-  hjwindDir_cfg->rs485_port = DRV_RS485_A;
+  hjwindDir_cfg->rs485_port = eAPP_RS485_A;
 
   // 풍속[화진 RS485 풍속 19200]
   config.sensor[A3_WIND_SPEED].type = S_T_WIND_SPEED_HJ_485;
   sensor_add(&config.sensor[A3_WIND_SPEED]);
   hjwind_cfg = get_sensor_config(&config.sensor[A3_WIND_SPEED]);
-  hjwind_cfg->rs485_port = DRV_RS485_A;
+  hjwind_cfg->rs485_port = eAPP_RS485_A;
   hjwind_cfg->full = 3200;
   hjwind_cfg->offset = 0;
 
@@ -136,7 +136,7 @@ void config_hj_reset(void)
   sensor_add(&config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg = get_sensor_config(&config.sensor[A9_SNOW_DEPTH]);
   hjsnow_cfg->physical_layer = ePHYSICAL_RS232;
-  hjsnow_cfg->rs232_port = eRS232_RS232_C;
+  hjsnow_cfg->rs232_port = eRS232_C;
 
   // 기압[RM YOUNG]
   config.sensor[A7_PRESSURE].type = S_T_ADC;

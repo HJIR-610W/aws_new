@@ -578,7 +578,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
         {
           time_cvt_secTotime(last_time, &nt);
           //RAIN(t):250101000000
-          screen_printf_row(p_win, row_count++, " RAIN(t):%02d%02d%02d%02d%02d%02d", 
+          screen_printf_row(p_win, row_count++, "RAIN(t):%02d%02d%02d%02d%02d%02d", 
                             nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
       }
