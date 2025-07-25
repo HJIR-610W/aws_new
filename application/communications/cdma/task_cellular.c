@@ -96,20 +96,20 @@ typedef struct
 
 const osThreadAttr_t kAtTask_attributes = {
   .name = "cdma AT",
-  .stack_size = TASK_AT_STACK_SIZE,
+  .stack_size = TASK_CDMA_AT_STACK_SIZE,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 const osThreadAttr_t kTcpTask_attributes = {
   .name = "cdma TCP",
-  .stack_size = TASK_TCP_CDMA_STACK_SIZE,
+  .stack_size = TASK_CDMA_TCP_STACK_SIZE,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 
 const osThreadAttr_t kAsyncTask_attributes = {
   .name = "cdma ASYNC",
-  .stack_size = TASK_ASYNC_STACK_SIZE,
+  .stack_size = TASK_CDMA_ASYNC_STACK_SIZE,
   .priority = (osPriority_t) osPriorityNormal,
 };
 

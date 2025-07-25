@@ -26,7 +26,7 @@ static osThreadId_t g_telnetServerTaskId = NULL;
 static telnet_client_t g_telnet_clients[TELNET_MAX_CLIENTS];
 static tcp_relay_client_t g_tcp_relay_client = {0};
 
-const osThreadAttr_t telnet_server_task_attributes = {
+const osThreadAttr_t kTelnet_server_task_attributes = {
     .name = "telnet_server",
     .stack_size = TASK_TELNET_SERVER_STACK_SIZE,
     .priority = (osPriority_t)osPriorityBelowNormal,
@@ -833,6 +833,6 @@ static void telnet_server_task(void* argument)
 void telnet_server_task_init(void)
 {
 
-  g_telnetServerTaskId = osThreadNew(telnet_server_task, NULL, &telnet_server_task_attributes);
+  g_telnetServerTaskId = osThreadNew(telnet_server_task, NULL, &kTelnet_server_task_attributes);
 
 }

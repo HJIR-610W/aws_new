@@ -56,62 +56,50 @@
 #define CMSIS_device_header "stm32f4xx.h"
 #endif /* CMSIS_device_header */
 
-#define TASK_HTTP_SERVER_STACK_SIZE 4096
-#define TASK_TELNET_SERVER_STACK_SIZE 2048
-#define TASK_TCP_SERVER_STACK_SIZE 1024
-#define TASK_CLIENT_HANDLER_STACK_SIZE 3072
-#define TASK_TCP_CLIENT_STACK_SIZE 3072
-#define TASK_TEST_STACK_SIZE 2048
+  // (스택, 우선순위)를 튜플처럼 정의
+#define TASK_START_DEF (2048, osPriorityRealtime7)
+
+
+
 #define TASK_WDT_STACK_SIZE 1024
-#define TASK_SYSTEM_STACK_SIZE 2048
 #define TASK_ISR_EVENT_STACK_SIZE 1024
-#define TASK_MENU_STACK_SIZE 2560
+#define TASK_DUALPORT_STACK_SIZE 2048
 #define TASK_MEASURE_250MS_STACK_SIZE 1024
 #define TASK_MEASURE_1S_STACK_SIZE 2048
-#define TASK_AT_STACK_SIZE 2048
-#define TASK_TCP_CDMA_STACK_SIZE 3072
-#define TASK_ASYNC_STACK_SIZE 2048
-#define TASK_START_STACK_SIZE 2048
-#define TASK_LOGGING_STACK_SIZE 2560
+  // tcpip_thread
+  // EthIf
+  // Tmr Svc
+#define TASK_TCP_SERVER_STACK_SIZE 1024
+#define TASK_TCP_CLIENT_STACK_SIZE 2048
 #define TASK_DIRECT_STACK_SIZE 2048
+#define TASK_CDMA_AT_STACK_SIZE 2048
+#define TASK_CDMA_TCP_STACK_SIZE 3072
+#define TASK_CDMA_ASYNC_STACK_SIZE 2048
+#define TASK_HTTP_SERVER_STACK_SIZE 4096
+
+#define TASK_CONSOLE_STACK_SIZE 3072 // 2048+1024
+#define TASK_MENU_STACK_SIZE 2560
+#define TASK_SYSTEM_STACK_SIZE 2048
+#define TASK_LOGGING_STACK_SIZE 2560
+#define TASK_TELNET_SERVER_STACK_SIZE 2048
+
+  // EthLink
+#define TASK_CLIENT_HANDLER_STACK_SIZE 2048
+
 #define TASK_PANEL_STACK_SIZE 768
 #define TASK_ETHERNET_STACK_SIZE 3072 // 1024*3
-#define TASK_DUALPORT_STACK_SIZE 2048
-#define TASK_CONSOLE_STACK_SIZE 3072 // 2048+1024
 
-  // Additional non-task related stack sizes found:
 #define TASK_SDI_STACK_SIZE 1024
 #define TASK_HART_STACK_SIZE 1024
+#define TASK_TEST_STACK_SIZE 2048
 
 #define USER_MEMORY 6144
 
-//약 58KB ucHeap[]
-#define SUM_TASK_STACK (TASK_HTTP_SERVER_STACK_SIZE +    \
-                          TASK_TELNET_SERVER_STACK_SIZE +  \
-                          TASK_TCP_SERVER_STACK_SIZE +     \
-                          TASK_CLIENT_HANDLER_STACK_SIZE + \
-                          TASK_TCP_CLIENT_STACK_SIZE +     \
-                          TASK_TEST_STACK_SIZE +           \
-                          TASK_WDT_STACK_SIZE +            \
-                          TASK_SYSTEM_STACK_SIZE +         \
-                          TASK_ISR_EVENT_STACK_SIZE +      \
-                          TASK_MENU_STACK_SIZE +           \
-                          TASK_MEASURE_250MS_STACK_SIZE +  \
-                          TASK_MEASURE_1S_STACK_SIZE +     \
-                          TASK_AT_STACK_SIZE +             \
-                          TASK_TCP_CDMA_STACK_SIZE +       \
-                          TASK_ASYNC_STACK_SIZE +          \
-                          TASK_START_STACK_SIZE +          \
-                          TASK_LOGGING_STACK_SIZE +        \
-                          TASK_DIRECT_STACK_SIZE +         \
-                          TASK_PANEL_STACK_SIZE +          \
-                          TASK_ETHERNET_STACK_SIZE +       \
-                          TASK_DUALPORT_STACK_SIZE +       \
-                          TASK_CONSOLE_STACK_SIZE +        \
-                          TASK_SDI_STACK_SIZE +            \
-                          TASK_HART_STACK_SIZE+            \
-                          USER_MEMORY)
+#define GET_1ST(a, b) a
+#define GET_2ND(a, b) b
 
+#define TASK_STACK(def) GET_1ST def
+#define TASK_PRIO(def) GET_2ND def
 
 
 
@@ -129,7 +117,7 @@
 #define configTICK_RATE_HZ ((TickType_t)1000)
 #define configMAX_PRIORITIES (56)
 #define configMINIMAL_STACK_SIZE ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE ((size_t)(SUM_TASK_STACK+4096))
+#define configTOTAL_HEAP_SIZE ((size_t)1024*60)
 #define configMAX_TASK_NAME_LEN (16)
 #define configUSE_TRACE_FACILITY 1
 #define configUSE_16_BIT_TICKS 0

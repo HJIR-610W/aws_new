@@ -47,8 +47,8 @@
 #include "drv_rtc.h"
 const osThreadAttr_t kStartTask_attributes = {
     .name = "startTask",
-    .stack_size = TASK_START_STACK_SIZE,
-    .priority = (osPriority_t)osPriorityRealtime7,
+    .stack_size = TASK_STACK(TASK_START_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_START_DEF),
 };
 
 void log_boot_reason(void)
@@ -136,7 +136,7 @@ void startTask(void *arg)
     ethernetTask_init();
   }
 
- // panelTask_init();
+  panelTask_init();
 
   //http_server_task_init();
   telnet_server_task_init();
