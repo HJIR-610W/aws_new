@@ -13,8 +13,8 @@
 
 const osThreadAttr_t directTask_attributes = {
     .name = "directTask",
-    .stack_size = TASK_DIRECT_STACK_SIZE,
-    .priority = (osPriority_t)osPriorityNormal,
+    .stack_size = TASK_STACK(TASK_DIRECT_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_DIRECT_DEF),
 };
 
 static direct_system_t g_direct_system;

@@ -117,7 +117,16 @@
 			"cli_input.h": "c",
 			"jinsung_sjgp215.h": "c",
 			"barometer.h": "c",
-			"bsp_rs485.h": "c"
+			"bsp_rs485.h": "c",
+			"task_telnet_server.h": "c",
+			"sdio.h": "c",
+			"project_def.h": "c",
+			"task_aws.h": "c",
+			"app_datalogging.h": "c",
+			"fatfs.h": "c",
+			"lwip.h": "c",
+			"task_menu.h": "c",
+			"tcp_define.h": "c"
 		}
 	}
 }

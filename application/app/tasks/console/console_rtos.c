@@ -89,7 +89,12 @@ void print_task_info(void)
   uint32_t ulTotalRunTime = 0;
   unsigned long ulStatsAsPercentage;
 
-  uxArraySize = uxTaskGetNumberOfTasks();
+  size_t free_heap = xPortGetFreeHeapSize();                // 현재 사용 가능한 힙 크기
+  size_t min_free_heap = xPortGetMinimumEverFreeHeapSize(); // 프로그램 실행 중 가장 작았던 힙 크기
+
+  io_printf("free heap:%u,min heap:%u\r\n", free_heap, min_free_heap);
+  
+      uxArraySize = uxTaskGetNumberOfTasks();
   if (uxArraySize == 0)
   {
     io_printf("No tasks are currently running.\r\n");

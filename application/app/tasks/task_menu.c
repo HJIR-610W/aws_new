@@ -50,8 +50,8 @@ const char *linkStatusList_lcd[3] = {"-", "UP", "DOWN"};
 const char *ethlinkStatusList_lcd[3] = {"-", "U", "D"};
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
-    .stack_size = TASK_MENU_STACK_SIZE,
-    .priority = (osPriority_t)osPriorityBelowNormal,
+    .stack_size = TASK_STACK(TASK_MENU_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_MENU_DEF),
 };
 
 eSCREEN_STATE_t g_screen_state = SCREEN_STATE_ON;

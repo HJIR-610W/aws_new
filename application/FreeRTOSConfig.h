@@ -56,54 +56,41 @@
 #define CMSIS_device_header "stm32f4xx.h"
 #endif /* CMSIS_device_header */
 
-  // (스택, 우선순위)를 튜플처럼 정의
-#define TASK_START_DEF (2048, osPriorityRealtime7)
-
-
-
-#define TASK_WDT_STACK_SIZE 1024
-#define TASK_ISR_EVENT_STACK_SIZE 1024
-#define TASK_DUALPORT_STACK_SIZE 2048
-#define TASK_MEASURE_250MS_STACK_SIZE 1024
-#define TASK_MEASURE_1S_STACK_SIZE 2048
-  // tcpip_thread
-  // EthIf
-  // Tmr Svc
-#define TASK_TCP_SERVER_STACK_SIZE 1024
-#define TASK_TCP_CLIENT_STACK_SIZE 2048
-#define TASK_DIRECT_STACK_SIZE 2048
-#define TASK_CDMA_AT_STACK_SIZE 2048
-#define TASK_CDMA_TCP_STACK_SIZE 3072
-#define TASK_CDMA_ASYNC_STACK_SIZE 2048
-#define TASK_HTTP_SERVER_STACK_SIZE 4096
-
-#define TASK_CONSOLE_STACK_SIZE 3072 // 2048+1024
-#define TASK_MENU_STACK_SIZE 2560
-#define TASK_SYSTEM_STACK_SIZE 2048
-#define TASK_LOGGING_STACK_SIZE 2560
-#define TASK_TELNET_SERVER_STACK_SIZE 2048
-
-  // EthLink
-#define TASK_CLIENT_HANDLER_STACK_SIZE 2048
-
-#define TASK_PANEL_STACK_SIZE 768
-#define TASK_ETHERNET_STACK_SIZE 3072 // 1024*3
-
-#define TASK_SDI_STACK_SIZE 1024
-#define TASK_HART_STACK_SIZE 1024
-#define TASK_TEST_STACK_SIZE 2048
-
-#define USER_MEMORY 6144
+//                             (스택, 우선순위)
+#define TASK_START_DEF          (2048, osPriorityRealtime7)
+#define TASK_TEST_DEF           (2048, osPriorityRealtime7)
+#define TASK_WDT_DEF            (1024, osPriorityRealtime2)
+#define TASK_ISR_EVENT_DEF      (1024, osPriorityRealtime2)
+#define TASK_HTTP_SERVER_DEF    (4096, osPriorityRealtime2)
+#define TASK_DUALPORT_DEF       (2048, osPriorityRealtime1)
+#define TASK_ETHERNET_DEF       (2048, osPriorityRealtime)  //초기화만 해주고 종료 됨
+#define TASK_MEASURE_250MS_DEF  (1024, osPriorityRealtime)
+#define TASK_MEASURE_1S_DEF     (2048, osPriorityRealtime)
+#define TASK_TCP_SERVER_DEF     (1024, osPriorityNormal)
+#define TASK_TCP_CLIENT_DEF     (2048, osPriorityNormal)
+#define TASK_DIRECT_DEF         (2048, osPriorityNormal)
+#define TASK_CDMA_AT_DEF        (2048, osPriorityNormal)
+#define TASK_CDMA_TCP_DEF       (3072, osPriorityNormal)
+#define TASK_CDMA_ASYNC_DEF     (2048, osPriorityNormal)
+#define TASK_CLIENT_HANDLER_DEF (2048, osPriorityNormal)
+#define TASK_CONSOLE_DEF        (3072, osPriorityBelowNormal)
+#define TASK_MENU_DEF           (2560, osPriorityBelowNormal)
+#define TASK_SYSTEM_DEF         (2048, osPriorityBelowNormal)
+#define TASK_LOGGING_DEF        (2560, osPriorityBelowNormal)
+#define TASK_TELNET_SERVER_DEF  (2048, osPriorityBelowNormal)
+#define TASK_PANEL_DEF          (768, osPriorityBelowNormal)
+#define TASK_SDI_DEF            (1024, osPriorityNormal1)
+#define TASK_HART_DEF           (1024, osPriorityNormal1)
+// tcpip_thread (1024,osPriorityRealtime)
+// EthIf(512,osPriorityRealtime)
+// Tmr Svc(1024,osPriorityNormal)
+// EthLink (1024,osPriorityBelowNormal)
 
 #define GET_1ST(a, b) a
 #define GET_2ND(a, b) b
 
 #define TASK_STACK(def) GET_1ST def
 #define TASK_PRIO(def) GET_2ND def
-
-
-
-
 
 #define configENABLE_FPU 1
 #define configENABLE_MPU 0
@@ -117,7 +104,7 @@
 #define configTICK_RATE_HZ ((TickType_t)1000)
 #define configMAX_PRIORITIES (56)
 #define configMINIMAL_STACK_SIZE ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE ((size_t)1024*60)
+#define configTOTAL_HEAP_SIZE ((size_t)1024 * 60)
 #define configMAX_TASK_NAME_LEN (16)
 #define configUSE_TRACE_FACILITY 1
 #define configUSE_16_BIT_TICKS 0

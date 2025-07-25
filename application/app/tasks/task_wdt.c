@@ -9,8 +9,8 @@
 
 const osThreadAttr_t kWdtTask_attributes = {
     .name = "wdt",
-    .stack_size = TASK_WDT_STACK_SIZE,
-    .priority = (osPriority_t)osPriorityRealtime2};
+    .stack_size = TASK_STACK(TASK_WDT_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_WDT_DEF)};
 
 typedef struct
 {

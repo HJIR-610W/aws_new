@@ -28,8 +28,8 @@ static tcp_relay_client_t g_tcp_relay_client = {0};
 
 const osThreadAttr_t kTelnet_server_task_attributes = {
     .name = "telnet_server",
-    .stack_size = TASK_TELNET_SERVER_STACK_SIZE,
-    .priority = (osPriority_t)osPriorityBelowNormal,
+    .stack_size = TASK_STACK(TASK_TELNET_SERVER_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_TELNET_SERVER_DEF),
 };
 
 static void telnet_server_task(void *argument);

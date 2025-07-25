@@ -130,7 +130,7 @@ space. */
 static size_t xBlockAllocatedBit = 0;
 
 /*-----------------------------------------------------------*/
-
+uint32_t g_heap_usage =0;
 void *pvPortMalloc( size_t xWantedSize )
 {
 BlockLink_t *pxBlock, *pxPreviousBlock, *pxNewBlockLink;
@@ -140,6 +140,7 @@ void *pvReturn = NULL;
 	prvPortMalloc(). */
 	configASSERT( pxEnd );
 
+	
 	vTaskSuspendAll();
 	{
 		/* Check the requested block size is not so large that the top bit is

@@ -19,8 +19,8 @@
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
-    .stack_size = TASK_SYSTEM_STACK_SIZE,
-    .priority = (osPriority_t)osPriorityBelowNormal ,
+    .stack_size = TASK_STACK(TASK_SYSTEM_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_SYSTEM_DEF),
 };
 
 void userBtnCallBack(int32_t arg)

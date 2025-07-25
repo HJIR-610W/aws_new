@@ -146,7 +146,7 @@
             <file>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\fatfs_platform.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\direct\task_direct.h</file>
+            <file>$PROJ_DIR$\..\application\communications\direct\task_direct.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.c</file>
             <file>$PROJ_DIR$\..\application\communications\lwip\target\ethernetif.h</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\app\fatfs.h</file>
@@ -161,13 +161,13 @@
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.c</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\ffconf.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.c</file>
-            <file>$PROJ_DIR$\..\application\Communications\cdma\modem_if.h</file>
+            <file>$PROJ_DIR$\..\application\communications\cdma\modem_if.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\lwip\app\lwip.c</file>
             <file>$PROJ_DIR$\..\application\communications\lwip\app\lwip.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\cdma\at_cmd.h</file>
-            <file>$PROJ_DIR$\..\application\Communications\cdma\task_cellular.h</file>
+            <file>$PROJ_DIR$\..\application\communications\cdma\at_cmd.h</file>
+            <file>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.c</file>
@@ -206,7 +206,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\sdio.c</file>
-            <file>$PROJ_DIR$\..\application\os_user_def.h</file>
+            <file>$PROJ_DIR$\..\Application\os_user_def.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_di.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_do.h</file>
@@ -225,7 +225,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_frequency.c</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_delay.h</file>
-            <file>$PROJ_DIR$\..\application\FreeRTOSConfig.h</file>
+            <file>$PROJ_DIR$\..\Application\FreeRTOSConfig.h</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_di.c</file>
@@ -726,7 +726,7 @@
             <file>$PROJ_DIR$\release\Obj\aws_jinyang.o</file>
             <file>$PROJ_DIR$\..\application\app\sensors\rain_present\rain_present.h</file>
             <file>$PROJ_DIR$\..\Application\app\sensors\app_sensor.c</file>
-            <file>$PROJ_DIR$\..\application\system_err.h</file>
+            <file>$PROJ_DIR$\..\Application\system_err.h</file>
             <file>$PROJ_DIR$\release\Obj\eui64.__cstat.et</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver_flash.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\utile_data.h</file>
@@ -1440,7 +1440,7 @@
             <file>$PROJ_DIR$\..\Application\Sensors\temperature\temperature_define.h</file>
             <file>$PROJ_DIR$\release\Obj\mem.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\aws_menu_panel.xcl</file>
-            <file>$PROJ_DIR$\..\application\Communications\ethernet\task_client.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_client.h</file>
             <file>$PROJ_DIR$\release\Obj\sys.xcl</file>
             <file>$PROJ_DIR$\release\Obj\ethernet.xcl</file>
             <file>$TOOLKIT_DIR$\inc\c\string.h</file>
@@ -2110,7 +2110,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_offset.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_virtual.h</file>
-            <file>$PROJ_DIR$\..\application\app\App_drivers\app_flash.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_sdi12.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_system.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_mux.h</file>
@@ -2145,7 +2145,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\task_aws.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\semphr.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_crc.h</file>
-            <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\queue.h</file>
             <file>$PROJ_DIR$\release\List\aws_app.map</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\app_measure.h</file>
@@ -3617,7 +3617,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1915 1498 1178 1622 1238 1905 1507 795 2298 1936 1618 2187 231 2349 1925 2379 572 346 180 1642 2171 1996 457 1303 2218 221 1688 2355 587 206 203 1295 1427 2470 2308 204</file>
+                    <file> 1915 1498 1178 1622 1238 1905 1507 795 2298 1936 1618 2187 231 2349 1925 2379 572 346 180 1642 2171 1996 457 1303 2218 204 203 587 206 221 1688 177 1541 1411 2433 1676 2403 2407 2410 2238 1221 1565 1926 1886 2229 1394 1494 1537 1550 1593 2198 1754 1730 1957 2388 2359 1954 2423 1994 2348 1913 1766 1232 2312 1881 2311 2194 1807 1578 1204 1586 2294 1645 1989 2344 1366 2270 1685 1786 201 2307 220 1509 1287 1052 1064 2332 1756 2220 1427 2470 2308</file>
                 </tool>
             </inputs>
         </file>
@@ -3663,7 +3663,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2512 1915 1498 1178 1622 1238 1905 1507 795 2298 2307 220 1509 1287 1052 1064 2332 1926 1756 2220 103 144 1615 2288 154 1541 1411 2433 1676 2403 2407 2410 2238 1221 1565 1886 2229 1394 1494 1537 1550 1593 2198 1754 1730 1957 2388 2359 1954 2423 1994 2348 1913 1766 1232 2312 1881 2311 2194 1807 1578 1204 1586 2294 1645 1989 2344 1366 2270 1685 1786 137 152 177 201 1165 1107 2408 1441 1764 129 107 2105 162 2379 572 346 1618 180 156 1727 161 141 1435 2218 2365 1936 2187 231 2349 1925 1642 2171 1996 457 1303 2151 221 1688 206 198 204 203 587 189 329 448 2293 2020 219 2137 2489 2464 2122 2510 2305 2125 2501 2497 2092 2145 2111 2116 2121 721 160 2244 150 2446 1300 1220 1480 1815 2236 1631 1740 2231 2031 1762 1981 1903 1871 1883 2221 1456 2258 1777 1259 2385 991 2006 2225 1737 2324 1787 1770 1690 2213 918 1773 2327 2340 1703 1000 1709 2415 2378 2373 2164 143 1791 145 1662 443 131 2463 111 2343 2168 1969 1438 1921 114 456 2128</file>
+                    <file> 2512 1915 1498 1178 1622 1238 1905 1507 795 2298 2307 220 1509 1287 1052 1064 2332 1926 1756 2220 103 144 1615 2288 154 1541 1411 2433 1676 2403 2407 2410 2238 1221 1565 1886 2229 1394 1494 1537 1550 1593 2198 1754 1730 1957 2388 2359 1954 2423 1994 2348 1913 1766 1232 2312 1881 2311 2194 1807 1578 1204 1586 2294 1645 1989 2344 1366 2270 1685 1786 137 152 177 201 1165 1107 2408 1441 1764 129 107 221 1688 346 1618 2145 2111 448 2293 2020 1727 2116 2105 162 2379 572 180 156 161 141 1435 2218 2365 1936 2187 231 2349 1925 1642 2171 1996 457 1303 2151 456 2128 329 587 206 1662 721 2121 198 204 203 189 219 2137 2489 2464 2122 2510 2305 2125 2501 2497 2092 160 2244 150 2446 1300 1220 1480 1815 2236 1631 1740 2231 2031 1762 1981 1903 1871 1883 2221 1456 2258 1777 1259 2385 991 2006 2225 1737 2324 1787 1770 1690 2213 918 1773 2327 2340 1703 1000 1709 2415 2378 2373 2164 143 1791 145 443 131 2463 111 2343 2168 1969 1438 1921 114</file>
                 </tool>
             </inputs>
         </file>
@@ -8497,6 +8497,10 @@
         <file>
             <name>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_4.c</name>
             <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 600</file>
+                </tool>
                 <tool>
                     <name>BICOMP</name>
                     <file> 1545</file>

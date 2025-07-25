@@ -33,8 +33,8 @@ typedef struct logging_s
 
 const osThreadAttr_t kLoggingTask_attributes = {
   .name = "loggingTask",
-  .stack_size = TASK_LOGGING_STACK_SIZE,
-  .priority = (osPriority_t) osPriorityBelowNormal,
+  .stack_size = TASK_STACK(TASK_LOGGING_DEF),
+  .priority = (osPriority_t)TASK_PRIO(TASK_LOGGING_DEF),
 };
 
 const uint32_t kLoggingTimeOutMs = 50;

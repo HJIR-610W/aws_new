@@ -9,8 +9,8 @@
 
 const osThreadAttr_t kIsrEventTask_attributes = {
   .name = "isr_event",
-  .stack_size = TASK_ISR_EVENT_STACK_SIZE,
-  .priority = (osPriority_t) osPriorityRealtime2,
+  .stack_size = TASK_STACK(TASK_ISR_EVENT_DEF),
+  .priority = (osPriority_t)TASK_PRIO(TASK_ISR_EVENT_DEF),
 };
 
 osMessageQueueId_t g_isrEventMessageQueue;

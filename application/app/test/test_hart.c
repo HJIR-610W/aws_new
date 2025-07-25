@@ -1,16 +1,15 @@
 
 #include "cmsis_os2.h"
 #include "config_app.h"
+#include "bsp_do.h"
+#include "bsp_di.h"
 #include "dev_io.h"
-#include "drv_di.h"
-#include "drv_do.h"
-#include "drv_rs232.h"
-
+#include "pcb_define.h"
 #include "cli_key_code.h"
 #include "hart_parser.h"
 #include "drv_power.h"
-#include "bsp_do.h"
-#include "bsp_di.h"
+
+
 #define HART_TX_ON() bsp_do_low(BSP_DO_HART_RTS)
 #define HART_TX_OFF() bsp_do_high(BSP_DO_HART_RTS)
 #define IS_HART_CD() bsp_di_read(BSP_DI_HART_CD_ONLY)
@@ -25,11 +24,14 @@
 
 int32_t g_hart_uart_num;
 
-const osThreadAttr_t hardTask_attributes = {
+const osThreadAttr_t kHartTask_attributes = {
     .name = "hartTask",
-    .stack_size = 1024,
-    .priority = (osPriority_t)osPriorityNormal1,
+    .stack_size = TASK_STACK(TASK_HART_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_HART_DEF),
 };
+
+
+
 
 int32_t hart_send(uint8_t *cmd, uint16_t dataLen)
 {

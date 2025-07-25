@@ -14,8 +14,8 @@
 
 const osThreadAttr_t ethernetTxTask_attributes = {
   .name = "ethernetTask",
-  .stack_size = TASK_ETHERNET_STACK_SIZE,//2048바이트가 할당됨 하지만 4바이트 단위로 스택은 구성됨
-  .priority = (osPriority_t) osPriorityRealtime,
+  .stack_size = TASK_STACK(TASK_ETHERNET_DEF),
+  .priority = (osPriority_t)TASK_PRIO(TASK_ETHERNET_DEF),
 };
 
 

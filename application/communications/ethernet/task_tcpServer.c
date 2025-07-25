@@ -46,14 +46,14 @@ osThreadId_t g_tcpSeverTaskId;
 
 const osThreadAttr_t tcpServerTask_attributes = {
   .name = "tcp_server",
-  .stack_size = TASK_TCP_SERVER_STACK_SIZE,
-  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = TASK_STACK(TASK_TCP_SERVER_DEF),
+  .priority = (osPriority_t)TASK_PRIO(TASK_TCP_SERVER_DEF),
 };
 
 const osThreadAttr_t clientHandlerTask_attributes = {
   .name = "tcp_client", 
-  .stack_size = TASK_CLIENT_HANDLER_STACK_SIZE, 
-  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = TASK_STACK(TASK_CLIENT_HANDLER_DEF), 
+  .priority = (osPriority_t)TASK_PRIO(TASK_CLIENT_HANDLER_DEF),
 };
 
 

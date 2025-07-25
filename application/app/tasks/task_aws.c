@@ -1619,8 +1619,8 @@ void DUALPORT_TASK(void *arg)
 
 const osThreadAttr_t KdualportTask_attributes = {
     .name = "DUALPORT_TASK",
-    .stack_size = TASK_DUALPORT_STACK_SIZE,
-    .priority = (osPriority_t)osPriorityRealtime1,
+    .stack_size = TASK_STACK(TASK_DUALPORT_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_DUALPORT_DEF),
 };
 void dualportTask_init(void)
 {

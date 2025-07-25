@@ -16,8 +16,8 @@
 
 const osThreadAttr_t kTestTask_attributes = {
     .name = "test_task",
-    .stack_size = TASK_TEST_STACK_SIZE,
-    .priority = (osPriority_t)osPriorityRealtime7,
+    .stack_size = TASK_STACK(TASK_TEST_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_TEST_DEF),
 };
 
 void testTask(void *arg)

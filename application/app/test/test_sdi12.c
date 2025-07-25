@@ -36,8 +36,8 @@ int32_t g_sdi_uart;
 
 const osThreadAttr_t sdiTask_attributes = {
     .name = "sdiTask",
-    .stack_size = 1024,
-    .priority = (osPriority_t)osPriorityNormal1,
+    .stack_size = TASK_STACK(TASK_SDI_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_SDI_DEF),
 };
 
 uint8_t set_even_parity(uint8_t data)

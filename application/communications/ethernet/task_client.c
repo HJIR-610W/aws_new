@@ -19,8 +19,8 @@ osThreadId_t g_tcpClientTaskId;
 
 const osThreadAttr_t tcpClientTask_attributes = {
   .name = "tcp_client",
-  .stack_size = TASK_TCP_CLIENT_STACK_SIZE,
-  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = TASK_STACK(TASK_TCP_CLIENT_DEF),
+  .priority = (osPriority_t)TASK_PRIO(TASK_TCP_CLIENT_DEF),
 };
 
 tcp_system_t *get_tcp_client_system(void) 
