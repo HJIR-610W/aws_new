@@ -1100,7 +1100,7 @@
                     <item>g_kma_err</item>
                     <item>aws-&gt;X_sensorStatus</item>
                     <item>A10_RELATIVE_HUMIDITY</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

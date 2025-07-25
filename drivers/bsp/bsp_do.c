@@ -50,8 +50,8 @@ bsp_do_inst_t do_inst[BSP_DO_MAX] = {
     [BSP_DO_ADC_NCS] = {.init = {.Pin = OUT_SPI2_NSS_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_PULLUP, .Speed = GPIO_SPEED_FREQ_HIGH},
                         .port = OUT_SPI2_NSS_GPIO_Port,
                         .init_state = GPIO_PIN_SET}, /*비활성*/
-    [BSP_DO_FRAM_CS] = {.init = {.Pin = OUT_SPI1_NSS_PIN, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
-                        .port = OUT_SPI1_NSS_GPIO_Port,
+    [BSP_DO_FRAM_CS] = {.init = {.Pin = DO_SPI1_NSS_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
+                        .port = DO_SPI1_NSS_GPIO_Port,
                         .init_state = GPIO_PIN_SET}, /*비활성*/
     [BSP_DO_RTC_CS] = {.init = {.Pin = OUT_RV8803_EVI_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
                        .port = OUT_SPI1_CS_RTC_GPIO_Port,

@@ -1862,6 +1862,9 @@
             <group>
                 <name>pin</name>
                 <file>
+                    <name>$PROJ_DIR$\..\drivers\bsp\pin\pcb_5_pin.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\drivers\bsp\pin\pcb_5_pin.txt</name>
                 </file>
                 <file>

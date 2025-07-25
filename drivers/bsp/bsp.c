@@ -444,8 +444,8 @@ void board_gpio_init(void)
                     GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
   //[SPI CS] HIGH로 한다.
-  board_set_gpio(OUT_SPI1_NSS_GPIO_Port, OUT_SPI1_NSS_PIN, GPIO_PIN_SET);
-  board_config_gpio(OUT_SPI1_NSS_GPIO_Port, OUT_SPI1_NSS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+  board_set_gpio(DO_SPI1_NSS_GPIO_Port, DO_SPI1_NSS_Pin, GPIO_PIN_SET);
+  board_config_gpio(DO_SPI1_NSS_GPIO_Port, DO_SPI1_NSS_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
                     GPIO_SPEED_FREQ_LOW, 0);
 
   board_set_gpio(OUT_SPI1_CS_RTC_GPIO_Port, OUT_RV8803_EVI_Pin, GPIO_PIN_SET);
