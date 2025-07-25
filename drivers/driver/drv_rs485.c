@@ -19,11 +19,11 @@ int32_t drv_rs485_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint3
 {
   return bsp_rs485_recv_opt(num, buffer, buffer_size, timeout1_ms, timeout2_ms);
 }
-void drv_rs485_set(int num, uart_set_option_t cmd, void *option)
+void drv_rs485_set(int num, eUART_SET_OPTION_t cmd, void *option)
 {
   bsp_rs485_set(num, cmd, option);
 }
-void drv_rs485_get(int num, uart_get_option_t cmd, void *value)
+void drv_rs485_get(int num, eUART_GET_OPTION_t cmd, void *value)
 {
   bsp_rs485_get(num, cmd, value);
 }

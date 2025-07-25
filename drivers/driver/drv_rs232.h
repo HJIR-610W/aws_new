@@ -21,7 +21,7 @@ int32_t drv_uart_recv(int num, uint8_t *pBuff, uint16_t rLen,
                       uint32_t timeOutMs);
 int32_t drv_uart_recv_crlf(int num, char *pBuff, uint16_t bSize,
                            uint32_t tout_ms);
-void drv_uart_set(int num, uart_set_option_t cmd, void *para);
+void drv_uart_set(int num, eUART_SET_OPTION_t cmd, void *para);
 
 // 밑에 두함수는 대체 필요
 int32_t drv_uart_get_char(int num, uint8_t *pBuff, uint16_t rLen);
@@ -31,7 +31,7 @@ void drv_uart_flush_rx(int num);
 
 int32_t drv_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size,
                           uint32_t timeout1_ms, uint32_t timeout2_ms);
-void drv_uart_get(int num, uart_get_option_t cmd, void *para);
+void drv_uart_get(int num, eUART_GET_OPTION_t cmd, void *para);
 int32_t drv_uart_recv_ll(int num, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutMs);
 
 int32_t drv_uart_inject(int num, const uint8_t *pData, uint16_t dataLen);

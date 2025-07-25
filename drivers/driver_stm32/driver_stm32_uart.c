@@ -498,7 +498,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
   return cnt;
 }
 
-void stm32_uart_set(int num, uart_set_option_t cmd, void *option)
+void stm32_uart_set(int num, eUART_SET_OPTION_t cmd, void *option)
 {
   uart_config_t *cfg_baud;
 
@@ -557,7 +557,7 @@ int32_t stm32_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint
 
 
 
-void stm32_uart_get(int num, uart_get_option_t cmd, void *option)
+void stm32_uart_get(int num, eUART_GET_OPTION_t cmd, void *option)
 {
   uart_config_t *opt_cfg = option;
 
@@ -567,7 +567,7 @@ void stm32_uart_get(int num, uart_get_option_t cmd, void *option)
   }
   switch (cmd)
   {
-    case UART_GET_CONFIG:
+    case eUART_GET_CONFIG:
       opt_cfg->baud = uart_inst[num].baud;
       opt_cfg->parityIdx = uart_inst[num].parityIdx;
       break;

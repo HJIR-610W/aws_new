@@ -110,7 +110,7 @@ void bsp_uart_flush_rx(int num)
   }
 }
 
-void bsp_uart_set(int num, uart_set_option_t cmd, void *option)
+void bsp_uart_set(int num, eUART_SET_OPTION_t cmd, void *option)
 {
   const uart_pinmap_t* pinmap = get_uart_pinmap(num);
   if (!pinmap) return;
@@ -202,7 +202,7 @@ int32_t bsp_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32
   return len;
 }
 
-void bsp_uart_get(int num, uart_get_option_t cmd, void *option)
+void bsp_uart_get(int num, eUART_GET_OPTION_t cmd, void *option)
 {
   const uart_pinmap_t* pinmap = get_uart_pinmap(num);
   if (!pinmap) return;

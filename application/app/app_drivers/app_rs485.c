@@ -15,7 +15,7 @@ const app_rs485_t rs485_define[] = {{.num = DRV_RS485_A, .name = "485 A"},
 
 bool app_rs485Open[eAPP_RS485_MAX];
 
-driver_t *rs485_drivers[eAPP_RS485_MAX];
+
 
 int32_t rs485_num_to_driver_num(int32_t app_rs485_num)
 {

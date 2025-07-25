@@ -768,7 +768,6 @@ PCB 0.3 20250120
 
 
 extern const char* pcbPortNameList[9];
-extern const char* pcbPinNameList[9][16]; 
-
+extern const char* pcbPinNameList[9][16];
 
 #endif

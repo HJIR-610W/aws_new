@@ -20,20 +20,16 @@
 #define TL16C554_UART_MAX       8
 
 
-int32_t tl16c554_init(int32_t num, void *opt);
-void tl16c554_close(int num);
-int32_t tl16c554_send(int num, const uint8_t *pData, uint16_t dataLen);
-int32_t tl16c554_recv(int num, uint8_t *buffer, uint16_t length, uint32_t timeOutMs);
-int32_t tl16c554_recv_ll(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs);
-void tl16c554_flush_rx(int num);
-void tl16c554_set(int num, uart_set_option_t option, void *value);
-void tl16c554_uart_get(int num, uart_get_option_t cmd, void *option);
-
-int32_t tl16c554_recv_opt(int uart_num, uint8_t *buffer, uint16_t buffer_size,
-                           uint32_t timeout1_ms, uint32_t timeout2_ms);
-
-int32_t tl16c554_uart_inject(int num, const uint8_t *pData, uint16_t dataLen);
-
-int32_t tl16c554_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_ms);
-void tl16c554_uart_set_config(int num, uart_config_t *config);
+int32_t tl16c554_send(int uart_num, const uint8_t *pData, uint16_t data_len);
+void tl16c554_flush_rx(int uart_num);
+void tl16c554_set(int uart_num, eUART_SET_OPTION_t option, void *value);
+void tl16c554_uart_get(int uart_num, eUART_GET_OPTION_t cmd, void *option);
+void tl16c554_uart_set_config(int uart_num, uart_config_t *config);
+int32_t tl16c554_uart_inject(int uart_num, const uint8_t *pData, uint16_t dataLen);
+int32_t tl16c554_recv(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_t timeout_ms);
+int32_t tl16c554_recv_opt(int uart_num, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms, uint32_t timeout2_ms);
+int32_t tl16c554_recv_ll(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_t timeout_ms);
+int32_t tl16c554_uart_recv_crlf(int uart_num, char *p_buff, uint16_t bSize, uint32_t tout_ms);
+void tl16c554_close(int uart_num);
+int32_t tl16c554_init(int32_t uart_num, void *opt);
 #endif

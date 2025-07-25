@@ -254,7 +254,7 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
     case eMODBUS_RS485:
     {
       uart_config_t ucfg;
-      drv_rs485_get(drv->port_num, UART_GET_CONFIG, &ucfg);
+      drv_rs485_get(drv->port_num, eUART_GET_CONFIG, &ucfg);
       delay = (uint32_t)(((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000);  // ms
       delay = delay * 2;
       if (delay == 0)
@@ -266,7 +266,7 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
     case eMODBUS_RS232:
     {
       uart_config_t ucfg;
-      drv_uart_get(drv->port_num, UART_GET_CONFIG, &ucfg);
+      drv_uart_get(drv->port_num, eUART_GET_CONFIG, &ucfg);
       delay = (uint32_t)(((float)1 / (float)ucfg.baud) * 10 * 3.5 * 1000);  // ms
       delay = delay * 2;
       if (delay == 0)

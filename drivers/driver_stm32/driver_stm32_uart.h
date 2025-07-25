@@ -14,8 +14,8 @@
 int32_t stm32_uart_init(int num, void *opt);
 void stm32_uart_flush_rx(int num);
 void stm32_uart_close(int num);
-void stm32_uart_set(int num, uart_set_option_t cmd, void *option);
-void stm32_uart_get(int num, uart_get_option_t cmd, void *option);
+void stm32_uart_set(int num, eUART_SET_OPTION_t cmd, void *option);
+void stm32_uart_get(int num, eUART_GET_OPTION_t cmd, void *option);
 int32_t stm32_uart_inject(int num, const uint8_t *pData, uint16_t dataLen);
 int32_t stm32_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_ms);
 int32_t stm32_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs);

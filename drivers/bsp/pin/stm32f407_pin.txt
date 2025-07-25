@@ -1,0 +1,42 @@
+AF번호   매크로 이름                  설명
+-------------------------------------------------------------
+AF0     GPIO_AF0_RTC_50Hz           RTC 50Hz, MCO, TAMPER, SWJ, TRACE
+        GPIO_AF0_MCO
+        GPIO_AF0_TAMPER
+        GPIO_AF0_SWJ
+        GPIO_AF0_TRACE
+AF1     GPIO_AF1_TIM1              TIM1
+        GPIO_AF1_TIM2              TIM2
+AF2     GPIO_AF2_TIM3              TIM3
+        GPIO_AF2_TIM4              TIM4
+        GPIO_AF2_TIM5              TIM5
+AF3     GPIO_AF3_TIM8              TIM8
+        GPIO_AF3_TIM9              TIM9
+        GPIO_AF3_TIM10             TIM10
+        GPIO_AF3_TIM11             TIM11
+AF4     GPIO_AF4_I2C1              I2C1
+        GPIO_AF4_I2C2              I2C2
+        GPIO_AF4_I2C3              I2C3
+AF5     GPIO_AF5_SPI1              SPI1
+        GPIO_AF5_SPI2              SPI2
+        GPIO_AF5_SPI3              SPI3
+AF6     GPIO_AF6_SPI3              SPI3 (대체 핀용)
+AF7     GPIO_AF7_USART1            USART1
+        GPIO_AF7_USART2            USART2
+        GPIO_AF7_USART3            USART3
+AF8     GPIO_AF8_UART4             UART4
+        GPIO_AF8_UART5             UART5
+        GPIO_AF8_USART6            USART6
+AF9     GPIO_AF9_CAN1              CAN1
+        GPIO_AF9_CAN2              CAN2
+        GPIO_AF9_TIM12             TIM12
+        GPIO_AF9_TIM13             TIM13
+        GPIO_AF9_TIM14             TIM14
+AF10    GPIO_AF10_OTG_FS           USB OTG FS (Full Speed)
+        GPIO_AF10_OTG_HS           USB OTG HS (High Speed)
+AF11    GPIO_AF11_ETH              이더넷 (Ethernet)
+AF12    GPIO_AF12_FSMC             FSMC (외부 메모리)
+        GPIO_AF12_SDIO             SDIO (SD카드)
+        GPIO_AF12_OTG_HS_FS        OTG HS in Full Speed
+AF13    GPIO_AF13_DCMI             DCMI (디지털 카메라 인터페이스)
+AF15    GPIO_AF15_EVENTOUT         EVENTOUT

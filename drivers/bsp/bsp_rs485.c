@@ -123,13 +123,13 @@ int32_t bsp_rs485_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint3
   return len;
 }
 
-void bsp_rs485_set(int num, uart_set_option_t cmd, void *option)
+void bsp_rs485_set(int num, eUART_SET_OPTION_t cmd, void *option)
 {
    bsp_uart_set(rs485_instance[num].uart_number, cmd, option);
 
 }
 
-void bsp_rs485_get(int num, uart_get_option_t cmd, void *value)
+void bsp_rs485_get(int num, eUART_GET_OPTION_t cmd, void *value)
 {
   bsp_uart_get(rs485_instance[num].uart_number, cmd, value);
 }
