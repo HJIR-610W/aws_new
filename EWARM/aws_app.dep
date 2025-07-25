@@ -2525,7 +2525,7 @@
             <file>$PROJ_DIR$\release\Obj\heap_5.o</file>
             <file>$PROJ_DIR$\release\Obj\heap_5.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554_def.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554_def.h</file>
         </outputs>
         <file>
             <name>[ROOT_NODE]</name>
@@ -7056,6 +7056,10 @@
             <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</name>
             <outputs>
                 <tool>
+                    <name>ICCARM</name>
+                    <file> 1739</file>
+                </tool>
+                <tool>
                     <name>BICOMP</name>
                     <file> 1346</file>
                 </tool>
@@ -7067,7 +7071,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 268 1498 1178 1622 1238 1905 1507 346 1618 572 2520 1303 2298 2307 795 220 1509 1287 1052 1064 2332 1926 1756 2220 1915 221 1688 203 587 206 201 177 1541 1411 2433 1676 2403 2407 2410 2238 1221 1565 1886 2229 1394 1494 1537 1550 1593 2198 1754 1730 1957 2388 2359 1954 2423 1994 2348 1913 1766 1232 2312 1881 2311 2194 1807 1578 1204 1586 2294 1645 1989 2344 1366 2270 1685 1786 2037 721 448 2293 2020 1727 457</file>
+                    <file> 268 1498 1178 1622 1238 1905 1507 572 346 1618 2520 1303 2298 2307 795 220 1509 1287 1052 1064 2332 1926 1756 2220 1915 221 1688 203 587 206 201 177 1541 1411 2433 1676 2403 2407 2410 2238 1221 1565 1886 2229 1394 1494 1537 1550 1593 2198 1754 1730 1957 2388 2359 1954 2423 1994 2348 1913 1766 1232 2312 1881 2311 2194 1807 1578 1204 1586 2294 1645 1989 2344 1366 2270 1685 1786 2037 721 448 2293 2020 1727 457</file>
                 </tool>
             </inputs>
         </file>
@@ -15710,10 +15714,6 @@
                 </tool>
             </inputs>
         </file>
-        <forcedrebuild>
-            <name>[MULTI_TOOL]</name>
-            <tool>ILINK</tool>
-        </forcedrebuild>
         <forcedrebuild>
             <name>$PROJ_DIR$\..\Application\app\sensors\humidity\hj_huminity.c</name>
             <tool>ICCARM</tool>

@@ -10,9 +10,7 @@
 #define LSR_THRE 0x20 // Transmitter Holding Register Empty 비트
 #define LSR_TEMT 0x40
 
-const volatile uint8_t *exUartBaseAddress[8] = {
-    (uint8_t *)0x68000000, (uint8_t *)0x68000010, (uint8_t *)0x68000020, (uint8_t *)0x68000030,
-    (uint8_t *)0x68000040, (uint8_t *)0x68000050, (uint8_t *)0x68000060, (uint8_t *)0x68000070};
+
 
 #define RBR(BASE) (void *)(BASE + 0x00) // Transmitter Holding Register
 #define THR(BASE) (void *)(BASE + 0x00) // Transmitter Holding Register
