@@ -1269,4 +1269,5 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   }
   p_kma_data->Y_volateStatus = p_kma_avg->Y_volateStatus;
 
+  p_kma_data->updated = true;
 }

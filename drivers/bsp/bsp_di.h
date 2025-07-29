@@ -9,7 +9,6 @@
 
 #include "driver_di_def.h"
 
-
 #define BSP_DI_USER_BTN        0
 #define BSP_DI_RAIN_REED       1
 #define BSP_DI_RAIN_HALL       2
@@ -25,24 +24,23 @@
 #define BSP_DI_QUAD_UARTD_8   12
 #define BSP_DI_WAKE_UP        13 // 미사용
 #define BSP_DI_BOOT1          14 // 미사용
-#define BSP_DI_HART_CD   15
+#define BSP_DI_HART_CD        15
 #define BSP_DI_RTC_INT        16
-#define BSP_DI_0_ADC_RDY 17
+#define BSP_DI_0_ADC_RDY      17
 #define BSP_DI_IO_INT         18
 #define BSP_DI_SD_IN          19
 #define BSP_DI_USB_POWER_FAIL 20
-#define BSP_DI_0 21
-#define BSP_DI_1 22
-#define BSP_DI_2 23
-#define BSP_DI_3 24
-#define BSP_DI_4 25
-#define BSP_DI_5 26
-#define BSP_DI_MCU_MAX 27
+#define BSP_DI_0              21
+#define BSP_DI_1              22
+#define BSP_DI_2              23
+#define BSP_DI_3              24
+#define BSP_DI_4              25
+#define BSP_DI_5              26
+#define BSP_DI_MCU_MAX        27
 
 
 
 void bsp_di_init(void);
 int32_t bsp_di_read(int32_t num);
-
 void bsp_di_set_interrupt(int di_number, di_isr_set_cfg_t *isr_cfg);
 #endif

@@ -6,316 +6,103 @@
 #include "pcf8575.h"
 #include "util_memory.h"
 #include "pcb_define.h"
+#include "driver_stm32_di.h"
 
-typedef struct bsp_di_inst_s
+// 드라이버 타입 정의
+typedef enum
 {
-  GPIO_InitTypeDef init;
-  GPIO_TypeDef *port;
-  bool opened;
-} bsp_di_inst_t;
+  DI_DRIVER_STM32,
+  DI_DRIVER_PCF8575,
+  UART_DRIVER_INVALID
+} di_driver_type_t;
 
-bsp_di_inst_t di_inst[BSP_DI_MCU_MAX] = {
 
-    [BSP_DI_0_ADC_RDY] = {.init = {.Pin = DI_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
-                               .port = DI_SPI2_DRDY_GPIO_Port},
-    [BSP_DI_USER_BTN] = {.init = {.Pin = DI_SW_SYS_Pin, .Pull = GPIO_PULLUP},
-                         .port = DI_SW_SYS_GPIO_Port},
-    [BSP_DI_RAIN_REED] = {.init = {.Pin = DI_RAIN_REED_Pin, .Pull = GPIO_PULLUP},
-                          .port = DI_RAIN_REED_GPIO_Port},
-    [BSP_DI_RAIN_HALL] = {.init = {.Pin = DI_RAIN_HALL_Pin, .Pull = GPIO_PULLUP},
-                          .port = DI_RAIN_HALL_GPIO_Port},
-    [BSP_DI_RAIN_HALL_ERR] = {.init = {.Pin = DI_RAIN_HALL_ERR_Pin, .Pull = GPIO_PULLUP},
-                              .port = DI_RAIN_HALL_ERR_GPIO_Port},
-    [BSP_DI_RAIN_DETECT_A] = {.init = {.Pin = DI_RAIN_DETECT_Pin, .Pull = GPIO_PULLUP},
-                              .port = DI_RAIN_DETECT_GPIO_Port},
-    [BSP_DI_QUAD_UARTA_1] = {.init = {.Pin = DI_EX_UART_INT1_Pin, .Pull = GPIO_PULLUP},
-                             .port = DI_EX_UART_INT1_GPIO_Port},
-    [BSP_DI_QUAD_UARTB_2] = {.init = {.Pin = DI_EX_UART_INT2_Pin, .Pull = GPIO_PULLUP},
-                             .port = DI_EX_UART_INT2_GPIO_Port},
-    [BSP_DI_QUAD_UARTC_3] = {.init = {.Pin = DI_EX_UART_INT3_Pin, .Pull = GPIO_PULLUP},
-                             .port = DI_EX_UART_INT3_GPIO_Port},
-    [BSP_DI_QUAD_UARTD_4] = {.init = {.Pin = DI_EX_UART_INT4_Pin, .Pull = GPIO_PULLUP},
-                             .port = DI_EX_UART_INT4_GPIO_Port},
-    [BSP_DI_QUAD_UARTA_5] = {.init = {.Pin = DI_EX_UART_INT5_Pin, .Pull = GPIO_PULLUP},
-                             .port = DI_EX_UART_INT5_GPIO_Port},
-    [BSP_DI_QUAD_UARTB_6] = {.init = {.Pin = DI_EX_UART_INT6_Pin, .Pull = GPIO_PULLUP},
-                             .port = DI_EX_UART_INT6_GPIO_Port},
-    [BSP_DI_QUAD_UARTC_7] = {.init = {.Pin = DI_EX_UART_INT7_Pin, .Pull = GPIO_PULLUP},
-                             .port = DI_EX_UART_INT7_GPIO_Port},
-    [BSP_DI_QUAD_UARTD_8] = {.init = {.Pin = DI_EX_UART_INT8_Pin, .Pull = GPIO_PULLUP},
-                             .port = DI_EX_UART_INT8_GPIO_Port},
-
-    [BSP_DI_WAKE_UP] = {.init = {.Pin = DI_WAKE_UP_Pin, .Pull = GPIO_PULLUP},
-                        .port = DI_WAKE_UP_GPIO_Port},
-
-    [BSP_DI_BOOT1] = {.init = {.Pin = DI_BOOT1_Pin, .Pull = GPIO_PULLUP},
-                      .port = DI_BOOT1_GPIO_Port},
-    [BSP_DI_USB_POWER_FAIL] = {.init = {.Pin = DI_USB_OTG_PWR_FAIL_Pin, .Pull = GPIO_PULLUP},
-                               .port = DI_USB_OTG_PWR_FAIL_GPIO_Port},
-
-    [BSP_DI_SD_IN] = {.init = {.Pin = DI_SDIO_DETECT_Pin, .Pull = GPIO_PULLUP},
-                      .port = DI_SDIO_DETECT_GPIO_Port},
-
-    [BSP_DI_IO_INT] = {.init = {.Pin = DI_INT_D_IO_Pin, .Pull = GPIO_PULLUP},
-                       .port = DI_INT_D_IO_GPIO_Port},
-
-    [BSP_DI_RTC_INT] = {.init = {.Pin = DI_INT_RTC_Pin, .Pull = GPIO_PULLUP},
-                        .port = DI_INT_RTC_GPIO_Port},
-
-    [BSP_DI_HART_CD] = {.init = {.Pin = DI_CD_H_Pin, .Pull = GPIO_PULLUP},
-                             .port = DI_CD_H_GPIO_Port},
-};
-
-void bsp_di_gpio_init(int di_number)
+typedef struct
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  di_driver_type_t driver_type;
+  int driver_num;
+} di_pinmap_t;
 
-  board_clk_gpio(di_inst[di_number].port);
+static const di_pinmap_t di_pinmap[BSP_DI_MCU_MAX] = {
+    [BSP_DI_USER_BTN] = {DI_DRIVER_STM32, STM32_DI_USER_BTN},
+    [BSP_DI_RAIN_REED] = {DI_DRIVER_STM32, STM32_DI_RAIN_REED},
+    [BSP_DI_RAIN_HALL] = {DI_DRIVER_STM32, STM32_DI_RAIN_HALL},
+    [BSP_DI_RAIN_HALL_ERR] = {DI_DRIVER_STM32, STM32_DI_RAIN_HALL_ERR},
+    [BSP_DI_RAIN_DETECT_A] = {DI_DRIVER_STM32, STM32_DI_RAIN_DETECT_A},
+    [BSP_DI_QUAD_UARTA_1] = {DI_DRIVER_STM32, STM32_DI_QUAD_UARTA_1},
+    [BSP_DI_QUAD_UARTB_2] = {DI_DRIVER_STM32, STM32_DI_QUAD_UARTB_2},
+    [BSP_DI_QUAD_UARTC_3] = {DI_DRIVER_STM32, STM32_DI_QUAD_UARTC_3},
+    [BSP_DI_QUAD_UARTD_4] = {DI_DRIVER_STM32, STM32_DI_QUAD_UARTD_4},
+    [BSP_DI_QUAD_UARTA_5] = {DI_DRIVER_STM32, STM32_DI_QUAD_UARTA_5},
+    [BSP_DI_QUAD_UARTB_6] = {DI_DRIVER_STM32, STM32_DI_QUAD_UARTB_6},
+    [BSP_DI_QUAD_UARTC_7] = {DI_DRIVER_STM32, STM32_DI_QUAD_UARTC_7},
+    [BSP_DI_QUAD_UARTD_8] = {DI_DRIVER_STM32, STM32_DI_QUAD_UARTD_8},
+    [BSP_DI_WAKE_UP] = {DI_DRIVER_STM32, STM32_DI_WAKE_UP},
+    [BSP_DI_BOOT1] = {DI_DRIVER_STM32, STM32_DI_BOOT1},
+    [BSP_DI_HART_CD] = {DI_DRIVER_STM32, STM32_DI_HART_CD},
+    [BSP_DI_RTC_INT] = {DI_DRIVER_STM32, STM32_DI_RTC_INT},
+    [BSP_DI_0_ADC_RDY] = {DI_DRIVER_STM32, STM32_DI_0_ADC_RDY},
+    [BSP_DI_IO_INT] = {DI_DRIVER_STM32, STM32_DI_IO_INT},
+    [BSP_DI_SD_IN] = {DI_DRIVER_STM32, STM32_DI_SD_IN},
+    [BSP_DI_USB_POWER_FAIL] = {DI_DRIVER_STM32, STM32_DI_USB_POWER_FAIL},
+    [BSP_DI_0] = {DI_DRIVER_PCF8575, DI_PCF8575_0},
+    [BSP_DI_1] = {DI_DRIVER_PCF8575, DI_PCF8575_1},
+    [BSP_DI_2] = {DI_DRIVER_PCF8575, DI_PCF8575_2},
+    [BSP_DI_3] = {DI_DRIVER_PCF8575, DI_PCF8575_3},
+    [BSP_DI_4] = {DI_DRIVER_PCF8575, DI_PCF8575_4},
+    [BSP_DI_5] = {DI_DRIVER_PCF8575, DI_PCF8575_5}};
 
-  GPIO_InitStruct.Pin = di_inst[di_number].init.Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = di_inst[di_number].init.Pull;
-  HAL_GPIO_Init(di_inst[di_number].port, &GPIO_InitStruct);
+static inline bool is_valid_di_num(int num)
+{
+  return (num >= 0 && num < BSP_DI_MCU_MAX);
+}
+
+static inline const di_pinmap_t *get_di_pinmap(int num)
+{
+  if (!is_valid_di_num(num))
+  {
+    return 0;
+  }
+  return &di_pinmap[num];
 }
 
 void bsp_di_init(void)
 {
-  for (int di_num = 0; di_num < BSP_DI_MCU_MAX; di_num++)
-  {
-    if (di_inst[di_num].opened)
-    continue;
-    
-    di_inst[di_num].opened= true;
-      switch (di_num)
-      {
-        case BSP_DI_0_ADC_RDY:
-        case BSP_DI_USER_BTN:
-        case BSP_DI_RAIN_REED:
-        case BSP_DI_RAIN_HALL:
-        case BSP_DI_RAIN_HALL_ERR:
-        case BSP_DI_RAIN_DETECT_A:
-        case BSP_DI_QUAD_UARTA_1:
-        case BSP_DI_QUAD_UARTB_2:
-        case BSP_DI_QUAD_UARTC_3:
-        case BSP_DI_QUAD_UARTD_4:
-        case BSP_DI_QUAD_UARTA_5:
-        case BSP_DI_QUAD_UARTB_6:
-        case BSP_DI_QUAD_UARTC_7:
-        case BSP_DI_QUAD_UARTD_8:
-          bsp_di_gpio_init(di_num);
-          break;
-        case BSP_DI_0:
-        case BSP_DI_1:
-        case BSP_DI_2:
-        case BSP_DI_3:
-        case BSP_DI_4:
-        case BSP_DI_5:
-
-          pcf8575_init();
-          break;
-
-        default:
-          break;
-      }
-  }
+  stm32_di_init();
+  pcf8575_init();
 }
 
 int32_t bsp_di_read(int32_t di_number)
 {
-  switch (di_number)
+  const di_pinmap_t* pinmap = get_di_pinmap(di_number);
+  if (!pinmap) return -99;
+
+  switch (pinmap->driver_type)
   {
-    case BSP_DI_0_ADC_RDY:
-    case BSP_DI_USER_BTN:
-    case BSP_DI_RAIN_REED:
-    case BSP_DI_RAIN_HALL:
-    case BSP_DI_RAIN_HALL_ERR:
-    case BSP_DI_RAIN_DETECT_A:
-    case BSP_DI_QUAD_UARTA_1:
-    case BSP_DI_QUAD_UARTB_2:
-    case BSP_DI_QUAD_UARTC_3:
-    case BSP_DI_QUAD_UARTD_4:
-    case BSP_DI_QUAD_UARTA_5:
-    case BSP_DI_QUAD_UARTB_6:
-    case BSP_DI_QUAD_UARTC_7:
-    case BSP_DI_QUAD_UARTD_8:
-      return HAL_GPIO_ReadPin(di_inst[di_number].port, di_inst[di_number].init.Pin);
-      break;
-    case BSP_DI_0:
-      return pcf8575_read_pin(DI_PCF8575_0);
-      break; 
-    case BSP_DI_1:
-      return pcf8575_read_pin(DI_PCF8575_1);
-      break;
-    case BSP_DI_2:
-      return pcf8575_read_pin(DI_PCF8575_2);
-      break;
-    case BSP_DI_3:
-      return pcf8575_read_pin(DI_PCF8575_3);
-      break;
-    case BSP_DI_4:
-      return pcf8575_read_pin(DI_PCF8575_4);
-      break;
-    case BSP_DI_5:
-      return pcf8575_read_pin(DI_PCF8575_5);
-      break;
-      break;
+    case DI_DRIVER_STM32:
+      return stm32_di_read(pinmap->driver_num);
+    case DI_DRIVER_PCF8575:
+      return pcf8575_read_pin(pinmap->driver_num);
     default:
       break;
   }
   return -99;
 }
 
-
-IRQn_Type get_irqFromPin(uint16_t GPIO_Pin)
-{
-  IRQn_Type irq;
-  if (GPIO_Pin == GPIO_PIN_0)
-  {
-    irq = EXTI0_IRQn;
-  }
-  else if (GPIO_Pin == GPIO_PIN_1)
-  {
-    irq = EXTI1_IRQn;
-  }
-  else if (GPIO_Pin == GPIO_PIN_2)
-  {
-    irq = EXTI2_IRQn;
-  }
-  else if (GPIO_Pin == GPIO_PIN_3)
-  {
-    irq = EXTI3_IRQn;
-  }
-  else if (GPIO_Pin == GPIO_PIN_4)
-  {
-    irq = EXTI4_IRQn;
-  }
-  else if (GPIO_Pin >= GPIO_PIN_5 && GPIO_Pin <= GPIO_PIN_9)
-  {
-    irq = EXTI9_5_IRQn;
-  }
-  else if (GPIO_Pin >= GPIO_PIN_10 && GPIO_Pin <= GPIO_PIN_15)
-  {
-    irq = EXTI15_10_IRQn;
-  }
-
-  return irq;
-}
-
-
-void Read_GPIO_Config(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_InitTypeDef *out)
-{
-  uint32_t pin_pos = 0;
-
-  // 핀 위치 계산 (0~15)
-  for (pin_pos = 0; pin_pos < 16; pin_pos++)
-  {
-    if ((GPIO_Pin >> pin_pos) & 0x1)
-      break;
-  }
-
-  // MODER (2비트 당 1핀)
-  out->Mode = (GPIOx->MODER >> (pin_pos * 2)) & 0x3;
-
-  // OTYPER (1비트 당 1핀)
-  out->Mode |= ((GPIOx->OTYPER >> pin_pos) & 0x1) << 4;  // OpenDrain이면 OR로 표시 가능
-
-  // OSPEEDR (2비트 당 1핀)
-  out->Speed = (GPIOx->OSPEEDR >> (pin_pos * 2)) & 0x3;
-
-  // PUPDR (2비트 당 1핀)
-  out->Pull = (GPIOx->PUPDR >> (pin_pos * 2)) & 0x3;
-
-  // AFR[0] for pin 0~7, AFR[1] for pin 8~15
-  if (pin_pos < 8)
-  {
-    out->Alternate = (GPIOx->AFR[0] >> (pin_pos * 4)) & 0xF;
-  }
-  else
-  {
-    out->Alternate = (GPIOx->AFR[1] >> ((pin_pos - 8) * 4)) & 0xF;
-  }
-
-  // Pin 정보 그대로 저장
-  out->Pin = GPIO_Pin;
-}
-
-
-// GPIO 핀을 인터럽트 모드로 초기화하는 함수
-void GPIO_InputInterrupt_Init(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin,
-                              eDI_TRIGGER_t trigger, uint16_t prio)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  
-  Read_GPIO_Config(GPIOx,GPIO_Pin,&GPIO_InitStruct);
-  // 2. GPIO 핀 설정 (입력 모드, 풀업/풀다운)
-  GPIO_InitStruct.Pin = GPIO_Pin;
-  GPIO_InitStruct.Mode = eDI_RISING_FALLING;  // 기본적으로 양 엣지로 설정
-  //GPIO_InitStruct.Pull = GPIO_NOPULL;
-
-  // 트리거 모드 설정 (Rising, Falling 또는 Both)
-  if (trigger == eDI_RISING)
-  {
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  }
-  else if (trigger == eDI_FALLING)
-  {
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  }
-  else
-  {
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
-  }
-
-  HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
-
-  // 3. EXTI 인터럽트 우선순위 및 활성화 설정 (핀 번호에 따른 IRQ 설정)
-
-  IRQn_Type irq;
-
-  irq = get_irqFromPin(GPIO_Pin);
-
-  // 인터럽트 우선순위 설정 (우선순위 2, 하위 우선순위 0으로 설정)
-  HAL_NVIC_SetPriority(irq, prio, 0);
-  HAL_NVIC_EnableIRQ(irq);
-}
 void bsp_di_set_interrupt(int di_number, di_isr_set_cfg_t *isr_cfg)
 {
-  uint16_t pin;
-  switch (di_number)
+  const di_pinmap_t *pinmap = get_di_pinmap(di_number);
+  if (!pinmap)
+    return ;
+
+  switch (pinmap->driver_type)
   {
-    case BSP_DI_0_ADC_RDY:
-    case BSP_DI_USER_BTN:
-    case BSP_DI_RAIN_REED:
-    case BSP_DI_RAIN_HALL:
-    case BSP_DI_RAIN_HALL_ERR:
-    case BSP_DI_RAIN_DETECT_A:
-    case BSP_DI_QUAD_UARTA_1:
-    case BSP_DI_QUAD_UARTB_2:
-    case BSP_DI_QUAD_UARTC_3:
-    case BSP_DI_QUAD_UARTD_4:
-    case BSP_DI_QUAD_UARTA_5:
-    case BSP_DI_QUAD_UARTB_6:
-    case BSP_DI_QUAD_UARTC_7:
-    case BSP_DI_QUAD_UARTD_8:
-    {
-      exti_isr_cfg_t exti_isr_cfg;
-      di_isr_set_cfg_t *isr;
-      isr = (di_isr_set_cfg_t *)isr_cfg;
-      pin = di_inst[di_number].init.Pin;
-
-      __HAL_GPIO_EXTI_CLEAR_IT(pin);
-      exti_isr_cfg.irq = get_irqFromPin(pin);
-      exti_isr_cfg.call = isr->call;
-      exti_isr_cfg.name = isr->name;
-      exti_isr_cfg.gpio_pin = pin;
-      exti_isr_cfg.handle = isr->handle;
-      exti_register(&exti_isr_cfg);
-
-      GPIO_InputInterrupt_Init(di_inst[di_number].port,pin, isr->trigger, isr->prio);
-      }
-    }
- 
-
+  case DI_DRIVER_STM32:
+    stm32_di_set_interrupt(pinmap->driver_num,isr_cfg);
+    break;
+  case DI_DRIVER_PCF8575:
+  default:
+    break;
+  }
 
 }

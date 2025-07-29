@@ -297,6 +297,7 @@ typedef struct
 
   uint8_t X_sensorStatus[8];
   uint8_t Y_volateStatus;
+  bool updated;
 } kma_data_ex_t;
 
 typedef struct rainfall_s
