@@ -2,9 +2,6 @@
 #ifndef BSP_DO_H
 #define BSP_DO_H
 
-
-
-
 #define BSP_DO_POWER_CDMA              0
 #define BSP_DO_POWER_HART_24V          1
 #define BSP_DO_POWER_RAIN_DECT_DIGITAL 2

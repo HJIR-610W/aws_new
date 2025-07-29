@@ -1,217 +1,93 @@
+#include "bsp_do.h"
+
 #include "bsp.h"
-#include "bsp_di.h"
 #include "pcf8575.h"
 #include "util_memory.h"
 #include "pcb_define.h"
 #include "dev_io.h"
+#include "driver_stm32_do.h"
 
-
-typedef struct bsp_do_inst_s
+typedef enum
 {
-  bool opened;
-  GPIO_InitTypeDef init;
-  GPIO_TypeDef *port;
-  GPIO_PinState init_state;
-} bsp_do_inst_t;
+  DO_DRIVER_STM32,
+  DO_DRIVER_PCF8575,
+  DO_DRIVER_INVALID
+} do_driver_type_t;
 
-bsp_do_inst_t do_inst[BSP_DO_MAX] = {
-    [BSP_DO_POWER_CDMA] = {.init = {.Pin = DO_CON_PWR_CDMA_Pin,
-                                    .Mode = GPIO_MODE_OUTPUT_PP,
-                                    .Pull = GPIO_NOPULL,
-                                    .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_CON_PWR_CDMA_GPIO_Port,
-                           .init_state = GPIO_PIN_RESET}, /*전원 차단*/
-    [BSP_DO_POWER_HART_24V] = {.init = {.Pin = DO_CON_PWR_S24_Pin,
-                                        .Mode = GPIO_MODE_OUTPUT_PP,
-                                        .Pull = GPIO_NOPULL,
-                                        .Speed = GPIO_SPEED_FREQ_LOW},
-                               .port = DO_CON_PWR_S24_GPIO_Port,
-                               .init_state = GPIO_PIN_RESET}, /*전원 차단*/
-    [BSP_DO_POWER_RAIN_DECT_DIGITAL] = {.init = {.Pin = DO_CON_PWR_RAIN_DIGITAL_Pin,
-                                                 .Mode = GPIO_MODE_OUTPUT_PP,
-                                                 .Pull = GPIO_NOPULL,
-                                                 .Speed = GPIO_SPEED_FREQ_LOW},
-                                        .port = DO_CON_PWR_RAIN_DIGITAL_GPIO_Port,
-                                        .init_state = GPIO_PIN_RESET}, /*전원 차단*/
-
-    [BSP_DO_POWER_RAIN_DECT_ANALOG] = {.init = {.Pin = DO_CON_PWR_RAIN_Pin,
-                                                .Mode = GPIO_MODE_OUTPUT_PP,
-                                                .Pull = GPIO_NOPULL,
-                                                .Speed = GPIO_SPEED_FREQ_LOW},
-                                       .port = DO_CON_PWR_RAIN_GPIO_Port,
-                                       .init_state = GPIO_PIN_RESET}, /*전원 차단*/
-    [BSP_DO_LCD_RESET] = {.init = {.Pin = DO_RESET_H_Pin,
-                                   .Mode = GPIO_MODE_OUTPUT_PP,
-                                   .Pull = GPIO_NOPULL,
-                                   .Speed = GPIO_SPEED_FREQ_LOW},
-                          .port = DO_RESET_H_GPIO_Port,
-                          .init_state = GPIO_PIN_RESET},
-    [BSP_DO_ADC_CS] = {.init = {.Pin = DO_SPI2_NSS_Pin,
-                                .Mode = GPIO_MODE_OUTPUT_PP,
-                                .Pull = GPIO_PULLUP,
-                                .Speed = GPIO_SPEED_FREQ_HIGH},
-                       .port = DO_SPI2_NSS_GPIO_Port,
-                       .init_state = GPIO_PIN_SET}, /*비활성*/
-    [BSP_DO_FRAM_CS] = {.init = {.Pin = DO_SPI1_NSS_Pin,
-                                 .Mode = GPIO_MODE_OUTPUT_PP,
-                                 .Pull = GPIO_NOPULL,
-                                 .Speed = GPIO_SPEED_FREQ_HIGH},
-                        .port = DO_SPI1_NSS_GPIO_Port,
-                        .init_state = GPIO_PIN_SET}, /*비활성*/
-    [BSP_DO_RTC_CS] = {.init = {.Pin = DO_RV8803_EVI_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
-                       .port = DO_RV8803_EVI_GPIO_Port,
-                       .init_state = GPIO_PIN_SET}, /*비활성*/
-    [BSP_DO_DIR_SDI] = {.init = {.Pin = DO_DIR_SDI_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                        .port = DO_DIR_SDI_GPIO_Port,
-                        .init_state = GPIO_PIN_RESET}, /*수신모드*/
-    [BSP_DO_HART_SEL] = {.init = {.Pin = DO_SEL_IF_UART_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                         .port = DO_SEL_IF_UART_GPIO_Port,
-                         .init_state = GPIO_PIN_RESET}, /*RS232모드로 설정*/
-    [BSP_DO_HART_RTS] = {.init = {.Pin = DO_RTS_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                         .port = DO_RTS_H_GPIO_Port,
-                         .init_state = GPIO_PIN_SET}, // 수신모드
-    [BSP_DO_HART_RESET] = {.init = {.Pin = DO_RESET_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_RESET_H_GPIO_Port,
-                           .init_state = GPIO_PIN_SET}, // 활성
-    [BSP_DO_DIR_RS485_A] = {.init = {.Pin = DO_DIR_RS485_A_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = DO_DIR_RS485_A_GPIO_Port,
-                            .init_state = GPIO_PIN_RESET}, /*수신모드*/
-    [BSP_DO_DIR_RS485_B] = {.init = {.Pin = DO_DIR_RS485_B_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = DO_DIR_RS485_B_GPIO_Port,
-                            .init_state = GPIO_PIN_RESET}, /*수신모드*/
-    [BSP_DO_DIR_RS485_C] = {.init = {.Pin = DO_RS485_DIR_C_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = DO_RS485_DIR_C_GPIO_Port,
-                            .init_state = GPIO_PIN_RESET}, /*수신모드*/
-    [BSP_DO_DIR_RS485_D] = {.init = {.Pin = DO_RS485_DIR_D_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = DO_RS485_DIR_D_GPIO_Port,
-                            .init_state = GPIO_PIN_RESET}, /*수신모드*/
-    [BSP_DO_STATUS_BTM] = {.init = {.Pin = DO_STATUS_BTM_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_STATUS_BTM_GPIO_Port,
-                           .init_state = GPIO_PIN_SET},
-    [BSP_DO_POWER_BTM] = {.init = {.Pin = DO_BTM_PWRC_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                          .port = DO_BTM_PWRC_GPIO_Port,
-                          .init_state = GPIO_PIN_SET},
-
-    [BSP_DO_QUAD_A_RST] = {.init = {.Pin = DO_EX_UART_RST_A_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_EX_UART_RST_A_GPIO_Port,
-                           .init_state = GPIO_PIN_RESET},
-
-    [BSP_DO_QUAD_B_RST] = {.init = {.Pin = DO_EX_UART_RST_B_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_EX_UART_RST_B_GPIO_Port,
-                           .init_state = GPIO_PIN_RESET},
-};
-
-void bsp_do_gpio_init(int do_number)
+typedef struct
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  do_driver_type_t driver_type;
+  int driver_num;
+} do_pinmap_t;
 
+static const do_pinmap_t do_pinmap[BSP_DO_MAX] = {
+    [BSP_DO_POWER_CDMA] = {DO_DRIVER_STM32, STM32_DO_POWER_CDMA},
+    [BSP_DO_POWER_HART_24V] = {DO_DRIVER_STM32, STM32_DO_POWER_HART_24V},
+    [BSP_DO_POWER_RAIN_DECT_DIGITAL] = {DO_DRIVER_STM32, STM32_DO_POWER_RAIN_DECT_DIGITAL},
+    [BSP_DO_POWER_RAIN_DECT_ANALOG] = {DO_DRIVER_STM32, STM32_DO_POWER_RAIN_DECT_ANALOG},
+    [BSP_DO_ADC_CS] = {DO_DRIVER_STM32, STM32_DO_ADC_CS},
+    [BSP_DO_FRAM_CS] = {DO_DRIVER_STM32, STM32_DO_FRAM_CS},
+    [BSP_DO_RTC_CS] = {DO_DRIVER_STM32, STM32_DO_RTC_CS},
+    [BSP_DO_FLASH_CS] = {DO_DRIVER_STM32, STM32_DO_FLASH_CS},
+    [BSP_DO_DIR_SDI] = {DO_DRIVER_STM32, STM32_DO_DIR_SDI},
+    [BSP_DO_DIR_RS485_A] = {DO_DRIVER_STM32, STM32_DO_DIR_RS485_A},
+    [BSP_DO_DIR_RS485_B] = {DO_DRIVER_STM32, STM32_DO_DIR_RS485_B},
+    [BSP_DO_DIR_RS485_C] = {DO_DRIVER_STM32, STM32_DO_DIR_RS485_C},
+    [BSP_DO_DIR_RS485_D] = {DO_DRIVER_STM32, STM32_DO_DIR_RS485_D},
+    [BSP_DO_HART_SEL] = {DO_DRIVER_STM32, STM32_DO_HART_SEL},
+    [BSP_DO_HART_RTS] = {DO_DRIVER_STM32, STM32_DO_HART_RTS},
+    [BSP_DO_HART_RESET] = {DO_DRIVER_STM32, STM32_DO_HART_RESET},
+    [BSP_DO_LCD_RESET] = {DO_DRIVER_STM32, STM32_DO_LCD_RESET},
+    [BSP_DO_STATUS_BTM] = {DO_DRIVER_STM32, STM32_DO_STATUS_BTM},
+    [BSP_DO_POWER_BTM] = {DO_DRIVER_STM32, STM32_DO_POWER_BTM},
+    [BSP_DO_QUAD_A_RST] = {DO_DRIVER_STM32, STM32_DO_QUAD_A_RST},
+    [BSP_DO_QUAD_B_RST] = {DO_DRIVER_STM32, STM32_DO_QUAD_B_RST},
+    [BSP_DO_EXT_0] = {DO_DRIVER_PCF8575, DO_PCF8575_0},
+    [BSP_DO_EXT_1] = {DO_DRIVER_PCF8575, DO_PCF8575_1},
+    [BSP_DO_EXT_2] = {DO_DRIVER_PCF8575, DO_PCF8575_2},
+    [BSP_DO_EXT_3] = {DO_DRIVER_PCF8575, DO_PCF8575_3},
+    [BSP_DO_EXT_4] = {DO_DRIVER_PCF8575, DO_PCF8575_5},
+    [BSP_DO_EXT_5] = {DO_DRIVER_PCF8575, DO_PCF8575_6}};
 
-   board_clk_gpio(do_inst[do_number].port);
-
-   HAL_GPIO_WritePin(do_inst[do_number].port, do_inst[do_number].init.Pin, do_inst[do_number].init_state);
-
-   GPIO_InitStruct.Pin = do_inst[do_number].init.Pin;
-   GPIO_InitStruct.Mode = do_inst[do_number].init.Mode;
-   GPIO_InitStruct.Pull = do_inst[do_number].init.Pull;
-   HAL_GPIO_Init(do_inst[do_number].port, &GPIO_InitStruct);
-
-
+static inline bool is_valid_do_num(int num)
+{
+  return (num >= 0 && num < BSP_DO_MAX);
 }
+
+static inline const do_pinmap_t *get_do_pinmap(int num)
+{
+  if (!is_valid_do_num(num))
+  {
+    return 0;
+  }
+  return &do_pinmap[num];
+}
+
+
+
 
 void bsp_do_init(void)
 {
-  for (int do_num = 0; do_num < BSP_DO_MAX; do_num++)
-  {
-    if (do_inst[do_num].opened)
-      continue;
-      switch (do_num)
-      {
-        case BSP_DO_POWER_CDMA:
-        case BSP_DO_POWER_HART_24V:
-        case BSP_DO_LCD_RESET:
-        case BSP_DO_POWER_RAIN_DECT_DIGITAL:
-        case BSP_DO_POWER_RAIN_DECT_ANALOG:
-        case BSP_DO_ADC_CS:
-        case BSP_DO_FRAM_CS:
-        case BSP_DO_RTC_CS:
-        case BSP_DO_DIR_SDI:
-        case BSP_DO_DIR_RS485_A:
-        case BSP_DO_DIR_RS485_B:
-        case BSP_DO_HART_SEL:
-        case BSP_DO_HART_RTS:
-        case BSP_DO_HART_RESET:
-        case BSP_DO_DIR_RS485_C:
-        case BSP_DO_DIR_RS485_D:
-        case BSP_DO_STATUS_BTM:
-        case BSP_DO_POWER_BTM:
-        case BSP_DO_QUAD_A_RST:
-        case BSP_DO_QUAD_B_RST:
-        bsp_do_gpio_init(do_num);
-            do_inst[do_num].opened = true;
-            break;
-            case BSP_DO_EXT_0: // App 정의되지 않음
-        case BSP_DO_EXT_1:  // App 정의되지 않음
-        case BSP_DO_EXT_2:  // App 정의되지 않음
-        case BSP_DO_EXT_3:  // App 정의되지 않음
-        case BSP_DO_EXT_4:  // App 정의되지 않음
-        case BSP_DO_EXT_5:  // App 정의되지 않음
-          pcf8575_init();
-          do_inst[do_num].opened = true;
-          break;
 
-    case BSP_DO_FLASH_CS:
-        default:
-          break;
-      }
-  }
+        stm32_do_init();
+
+        pcf8575_init();
+
 }
 
 void bsp_do_low(int num)
 {
+  const do_pinmap_t* pinmap = get_do_pinmap(num);
+  if (!pinmap) return;
 
-  switch (num)
+  switch (pinmap->driver_type)
   {
-    case BSP_DO_POWER_CDMA:
-    case BSP_DO_POWER_HART_24V:
-    case BSP_DO_LCD_RESET:
-    case BSP_DO_POWER_RAIN_DECT_DIGITAL:
-    case BSP_DO_POWER_RAIN_DECT_ANALOG:
-    case BSP_DO_ADC_CS:
-    case BSP_DO_FRAM_CS:
-    case BSP_DO_RTC_CS:
-    case BSP_DO_DIR_SDI:
-    case BSP_DO_DIR_RS485_A:
-    case BSP_DO_DIR_RS485_B:
-    case BSP_DO_HART_SEL:
-    case BSP_DO_HART_RTS:
-    case BSP_DO_HART_RESET:
-    case BSP_DO_DIR_RS485_C:
-    case BSP_DO_DIR_RS485_D:
-    case BSP_DO_STATUS_BTM:
-    case BSP_DO_POWER_BTM:
-    case BSP_DO_QUAD_A_RST:
-    case BSP_DO_QUAD_B_RST:
-      HAL_GPIO_WritePin(do_inst[num].port, do_inst[num].init.Pin, GPIO_PIN_RESET);
+    case DO_DRIVER_STM32:
+      stm32_do_low(pinmap->driver_num);
       break;
-    case BSP_DO_EXT_0:  
-     pcf8575_write_pin(DO_PCF8575_0, 0);
-     break;
-    case BSP_DO_EXT_1: 
-      pcf8575_write_pin(DO_PCF8575_1, 0);
+    case DO_DRIVER_PCF8575:
+      pcf8575_write_pin(pinmap->driver_num, 0);
       break;
-    case BSP_DO_EXT_2: 
-      pcf8575_write_pin(DO_PCF8575_2, 0);
-      break;
-    case BSP_DO_EXT_3:  
-      pcf8575_write_pin(DO_PCF8575_3, 0);
-      break;
-    case BSP_DO_EXT_4:  
-      pcf8575_write_pin(DO_PCF8575_5, 0);
-      break;
-    case BSP_DO_EXT_5: 
-      pcf8575_write_pin(DO_PCF8575_6, 0);
-      break;
-    case BSP_DO_FLASH_CS:
     default:
       break;
   }
@@ -219,50 +95,17 @@ void bsp_do_low(int num)
 
 void bsp_do_high(int num)
 {
+  const do_pinmap_t* pinmap = get_do_pinmap(num);
+  if (!pinmap) return;
 
-  switch (num)
+  switch (pinmap->driver_type)
   {
-    case BSP_DO_POWER_CDMA:
-    case BSP_DO_POWER_HART_24V:
-    case BSP_DO_LCD_RESET:
-    case BSP_DO_POWER_RAIN_DECT_DIGITAL:
-    case BSP_DO_POWER_RAIN_DECT_ANALOG:
-    case BSP_DO_ADC_CS:
-    case BSP_DO_FRAM_CS:
-    case BSP_DO_RTC_CS:
-    case BSP_DO_DIR_SDI:
-    case BSP_DO_DIR_RS485_A:
-    case BSP_DO_DIR_RS485_B:
-    case BSP_DO_HART_SEL:
-    case BSP_DO_HART_RTS:
-    case BSP_DO_HART_RESET:
-    case BSP_DO_DIR_RS485_C:
-    case BSP_DO_DIR_RS485_D:
-    case BSP_DO_STATUS_BTM:
-    case BSP_DO_POWER_BTM:
-    case BSP_DO_QUAD_A_RST:
-    case BSP_DO_QUAD_B_RST:
-      HAL_GPIO_WritePin(do_inst[num].port, do_inst[num].init.Pin, GPIO_PIN_SET);
+    case DO_DRIVER_STM32:
+      stm32_do_high(pinmap->driver_num);
       break;
-    case BSP_DO_EXT_0:
-      pcf8575_write_pin(DO_PCF8575_0, 1);
+    case DO_DRIVER_PCF8575:
+      pcf8575_write_pin(pinmap->driver_num, 1);
       break;
-    case BSP_DO_EXT_1:
-      pcf8575_write_pin(DO_PCF8575_1, 1);
-      break;
-    case BSP_DO_EXT_2:
-      pcf8575_write_pin(DO_PCF8575_2, 1);
-      break;
-    case BSP_DO_EXT_3:
-      pcf8575_write_pin(DO_PCF8575_3, 1);
-      break;
-    case BSP_DO_EXT_4:
-      pcf8575_write_pin(DO_PCF8575_5, 1);
-      break;
-    case BSP_DO_EXT_5:
-      pcf8575_write_pin(DO_PCF8575_6, 1);
-      break;
-    case BSP_DO_FLASH_CS:
     default:
       break;
   }
