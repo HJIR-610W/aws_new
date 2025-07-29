@@ -46,7 +46,6 @@ bsp_do_inst_t do_inst[BSP_DO_MAX] = {
                                    .Speed = GPIO_SPEED_FREQ_LOW},
                           .port = DO_RESET_H_GPIO_Port,
                           .init_state = GPIO_PIN_RESET},
-
     [BSP_DO_ADC_CS] = {.init = {.Pin = DO_SPI2_NSS_Pin,
                                 .Mode = GPIO_MODE_OUTPUT_PP,
                                 .Pull = GPIO_PULLUP,

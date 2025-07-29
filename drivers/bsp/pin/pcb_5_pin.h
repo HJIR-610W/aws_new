@@ -250,8 +250,8 @@
 #define DO_CON_PWR_CDMA_GPIO_Port        GPIOH
 #define I2C3_SCL_Pin                     GPIO_PIN_7
 #define I2C3_SCL_GPIO_Port               GPIOH
-#define DO_I2C3_SDA_Pin                  GPIO_PIN_8
-#define DO_I2C3_SDA_GPIO_Port            GPIOH
+#define I2C3_SDA_Pin                     GPIO_PIN_8
+#define I2C3_SDA_GPIO_Port                GPIOH
 #define DO_SYS_RUN_Pin                   GPIO_PIN_9
 #define DO_SYS_RUN_GPIO_Port             GPIOH
 #define DO_ADC_EN_RTD_Pin                GPIO_PIN_10

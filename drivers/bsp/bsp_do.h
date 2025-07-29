@@ -3,11 +3,13 @@
 #define BSP_DO_H
 
 
-#define BSP_DO_POWER_CDMA     0             
-#define BSP_DO_POWER_HART_24V 1
+#include "driver_stm32_do.h"
+
+#define BSP_DO_POWER_CDMA              0
+#define BSP_DO_POWER_HART_24V          1
 #define BSP_DO_POWER_RAIN_DECT_DIGITAL 2
 #define BSP_DO_POWER_RAIN_DECT_ANALOG  3
-#define BSP_DO_ADC_CS 4       
+#define BSP_DO_ADC_CS                  4
 #define BSP_DO_FRAM_CS 5       
 #define BSP_DO_RTC_CS 6        
 #define BSP_DO_FLASH_CS 7      
