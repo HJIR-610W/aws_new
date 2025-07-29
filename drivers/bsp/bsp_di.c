@@ -7,7 +7,6 @@
 #include "util_memory.h"
 #include "pcb_define.h"
 
-
 typedef struct bsp_di_inst_s
 {
   GPIO_InitTypeDef init;
@@ -15,9 +14,9 @@ typedef struct bsp_di_inst_s
   bool opened;
 } bsp_di_inst_t;
 
- bsp_di_inst_t di_inst[BSP_DI_MCU_MAX] = {
+bsp_di_inst_t di_inst[BSP_DI_MCU_MAX] = {
 
-    [BSP_DI_0_ADC_RDY_ONLY] = {.init = {.Pin = DI_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
+    [BSP_DI_0_ADC_RDY] = {.init = {.Pin = DI_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
                                .port = DI_SPI2_DRDY_GPIO_Port},
     [BSP_DI_USER_BTN] = {.init = {.Pin = DI_SW_SYS_Pin, .Pull = GPIO_PULLUP},
                          .port = DI_SW_SYS_GPIO_Port},
@@ -28,7 +27,7 @@ typedef struct bsp_di_inst_s
     [BSP_DI_RAIN_HALL_ERR] = {.init = {.Pin = DI_RAIN_HALL_ERR_Pin, .Pull = GPIO_PULLUP},
                               .port = DI_RAIN_HALL_ERR_GPIO_Port},
     [BSP_DI_RAIN_DETECT_A] = {.init = {.Pin = DI_RAIN_DETECT_Pin, .Pull = GPIO_PULLUP},
-                               .port = DI_RAIN_DETECT_GPIO_Port},
+                              .port = DI_RAIN_DETECT_GPIO_Port},
     [BSP_DI_QUAD_UARTA_1] = {.init = {.Pin = DI_EX_UART_INT1_Pin, .Pull = GPIO_PULLUP},
                              .port = DI_EX_UART_INT1_GPIO_Port},
     [BSP_DI_QUAD_UARTB_2] = {.init = {.Pin = DI_EX_UART_INT2_Pin, .Pull = GPIO_PULLUP},
@@ -47,21 +46,24 @@ typedef struct bsp_di_inst_s
                              .port = DI_EX_UART_INT8_GPIO_Port},
 
     [BSP_DI_WAKE_UP] = {.init = {.Pin = DI_WAKE_UP_Pin, .Pull = GPIO_PULLUP},
-                     .port = DI_WAKE_UP_GPIO_Port},
+                        .port = DI_WAKE_UP_GPIO_Port},
 
     [BSP_DI_BOOT1] = {.init = {.Pin = DI_BOOT1_Pin, .Pull = GPIO_PULLUP},
-                   .port = DI_BOOT1_GPIO_Port},
+                      .port = DI_BOOT1_GPIO_Port},
     [BSP_DI_USB_POWER_FAIL] = {.init = {.Pin = DI_USB_OTG_PWR_FAIL_Pin, .Pull = GPIO_PULLUP},
-                            .port = DI_USB_OTG_PWR_FAIL_GPIO_Port},
+                               .port = DI_USB_OTG_PWR_FAIL_GPIO_Port},
 
     [BSP_DI_SD_IN] = {.init = {.Pin = DI_SDIO_DETECT_Pin, .Pull = GPIO_PULLUP},
-                   .port = DI_SDIO_DETECT_GPIO_Port},
+                      .port = DI_SDIO_DETECT_GPIO_Port},
 
     [BSP_DI_IO_INT] = {.init = {.Pin = DI_INT_D_IO_Pin, .Pull = GPIO_PULLUP},
-                    .port = DI_INT_D_IO_GPIO_Port},
+                       .port = DI_INT_D_IO_GPIO_Port},
 
     [BSP_DI_RTC_INT] = {.init = {.Pin = DI_INT_RTC_Pin, .Pull = GPIO_PULLUP},
-                     .port = DI_INT_RTC_GPIO_Port},
+                        .port = DI_INT_RTC_GPIO_Port},
+
+    [BSP_DI_HART_CD] = {.init = {.Pin = DI_CD_H_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_CD_H_GPIO_Port},
 };
 
 void bsp_di_gpio_init(int di_number)
@@ -86,7 +88,7 @@ void bsp_di_init(void)
     di_inst[di_num].opened= true;
       switch (di_num)
       {
-        case BSP_DI_0_ADC_RDY_ONLY:
+        case BSP_DI_0_ADC_RDY:
         case BSP_DI_USER_BTN:
         case BSP_DI_RAIN_REED:
         case BSP_DI_RAIN_HALL:
@@ -122,7 +124,7 @@ int32_t bsp_di_read(int32_t di_number)
 {
   switch (di_number)
   {
-    case BSP_DI_0_ADC_RDY_ONLY:
+    case BSP_DI_0_ADC_RDY:
     case BSP_DI_USER_BTN:
     case BSP_DI_RAIN_REED:
     case BSP_DI_RAIN_HALL:
@@ -282,7 +284,7 @@ void bsp_di_set_interrupt(int di_number, di_isr_set_cfg_t *isr_cfg)
   uint16_t pin;
   switch (di_number)
   {
-    case BSP_DI_0_ADC_RDY_ONLY:
+    case BSP_DI_0_ADC_RDY:
     case BSP_DI_USER_BTN:
     case BSP_DI_RAIN_REED:
     case BSP_DI_RAIN_HALL:
