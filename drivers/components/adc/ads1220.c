@@ -688,7 +688,7 @@ void ads1220_init(void)
   }
 
   ads1220_inst.spi_num = BSP_SPI_2;
-  ads1220_inst.cs_do_num = BSP_DO_ADC_NCS;
+  ads1220_inst.cs_do_num = BSP_DO_ADC_CS;
   ads1220_inst.irq_di_num = BSP_DI_0_ADC_RDY_ONLY;
 
   OS_CREATE_BINARY_SEM(ads1220_inst.sem);

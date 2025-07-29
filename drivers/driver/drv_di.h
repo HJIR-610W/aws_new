@@ -12,13 +12,12 @@
 #define DRV_DI_RAIN_REED     BSP_DI_RAIN_REED
 #define DRV_DI_RAIN_HALL     BSP_DI_RAIN_HALL
 #define DRV_DI_RAIN_HALL_ERR BSP_DI_RAIN_HALL_ERR
-#define DRV_DI_RAIN_DETECT_ANALOG   BSP_DI_RAIN_DETECT
-
-#define DRV_DI_0 16
-#define DRV_DI_1 17
-#define DRV_DI_2 18
-#define DRV_DI_3 19
-#define DRV_DI_4 20
+#define DRV_DI_DI_RAIN_DETECT_ANALOG   BSP_DI_RAIN_DETECT_A
+#define DRV_DI_0 BSP_DI_0
+#define DRV_DI_1 BSP_DI_1
+#define DRV_DI_2 BSP_DI_2
+#define DRV_DI_3 BSP_DI_3
+#define DRV_DI_4 BSP_DI_4
 #define DRV_DI_RAIN_DETECT_DIGITAL BSP_DI_5
 
 void drv_di_init(void);

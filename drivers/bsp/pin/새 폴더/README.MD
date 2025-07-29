@@ -1,1 +1,0 @@
-python3 pcb_pin_generator.py <입력파일> [출력파일]

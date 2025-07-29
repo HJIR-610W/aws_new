@@ -766,6 +766,12 @@ void draw_aws(win_t *p_win)
         bool rain_p =  p_kma->precipitation_presence.raw.b;
         win_printf_row(p_win, row_count++, "%s: %s", m_l("강수유무", AWS_WD), rain_p?"ON":"OFF");
       }
+      else if (page == eAWS_DATA_AVG)
+      {
+        uint16_t data = p_kma->precipitation_presence.data;
+        bool rain_p = (data == 10) ? true : false;
+        win_printf_row(p_win, row_count++, "%-*s: %s", AWS_WD, "강수유무", rain_p ? "ON" : "OFF");
+      }
       else
       {
         win_printf_row(p_win, row_count++, "%s: %5d", m_l("강수유무", AWS_WD),

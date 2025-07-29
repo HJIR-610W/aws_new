@@ -168,7 +168,7 @@ driver_t *ds1306_open(void)
   ds1306_driver.opened = true;
   ds1306_cfg.spi_num = BSP_SPI_1;
   ds1306_cfg.cs_do_num  = BSP_DO_RTC_CS;
-  ds1306_cfg.irq_di_num = BSP_DI_1_RTC_IRQ_ONLY;
+  ds1306_cfg.irq_di_num = BSP_DI_RTC_INT;
 
   ds1306_driver.cfg = &ds1306_cfg;
   ds1306_driver.api = &rtc_api;

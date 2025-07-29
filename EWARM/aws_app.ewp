@@ -1766,7 +1766,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -1827,6 +1827,9 @@
             </group>
             <group>
                 <name>pin</name>
+                <file>
+                    <name>$PROJ_DIR$\..\drivers\bsp\pin\pcb_5_pin.c</name>
+                </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\bsp\pin\pcb_5_pin.h</name>
                 </file>
@@ -1919,9 +1922,6 @@
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_uart.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\bsp\pcb_define.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\pcb_define.h</name>
             </file>
         </group>
@@ -1963,7 +1963,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -2341,7 +2341,7 @@
                     <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.c</name>
@@ -2357,7 +2357,7 @@
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_cdc.h</name>
+                <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.c</name>
@@ -2366,7 +2366,7 @@
                 <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_uart.h</name>
+                <name>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.h</name>
             </file>
         </group>
         <group>

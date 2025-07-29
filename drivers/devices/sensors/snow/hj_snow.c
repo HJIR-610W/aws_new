@@ -349,7 +349,7 @@ void hjsnow_read_config(driver_t *driver,uint8_t *p_out,uint16_t out_size,uint8_
     else
     {
       *err = DRV_ERR_RECV_DATA;
-      LOG_MEM(frame,len,0,16);
+
     }
   }
 
@@ -405,7 +405,6 @@ void hjsnow_read_system(driver_t *driver, uint8_t *p_out, uint16_t out_size, uin
     else
     {
       *err = DRV_ERR_RECV_DATA;
-      LOG_MEM(frame, len, 0, 16);
     }
   }
 

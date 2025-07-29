@@ -9,7 +9,7 @@ typedef struct  led_inst_s
 } led_inst_t;
 
 led_inst_t led_inst[BSP_LED_MAX] = {
-    [BSP_LED_RUN].port = OUT_SYS_RUN_GPIO_Port, [BSP_LED_RUN].pin = OUT_SYS_RUN_Pin};
+    [BSP_LED_RUN].port = DO_SYS_RUN_GPIO_Port, [BSP_LED_RUN].pin = DO_SYS_RUN_Pin};
 
 TIM_HandleTypeDef htim12;
 
@@ -97,12 +97,12 @@ void led_run_init(void)
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     // PH9 핀 설정: TIM12 채널 2 대체 기능 (AF) 모드
-    GPIO_InitStruct.Pin = OUT_SYS_RUN_Pin;
+    GPIO_InitStruct.Pin = DO_SYS_RUN_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;      // 대체 기능, 푸시 풀 출력
     GPIO_InitStruct.Pull = GPIO_NOPULL;          // 풀업/풀다운 비활성화
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW; // 속도 설정
     GPIO_InitStruct.Alternate = GPIO_AF9_TIM12;  // TIM12의 대체 기능 9번 설정
-    HAL_GPIO_Init(OUT_SYS_RUN_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(DO_SYS_RUN_GPIO_Port, &GPIO_InitStruct);
 
     TIM12_PWM_Init();
 }

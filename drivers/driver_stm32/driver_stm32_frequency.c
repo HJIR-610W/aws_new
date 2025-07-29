@@ -88,7 +88,7 @@ void freqMeasureB_init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Pin = IN_TIM10_CH1_PIN;
+  GPIO_InitStruct.Pin = IN_TIM10_CH1_Pin;
   GPIO_InitStruct.Alternate = GPIO_AF3_TIM10;
   HAL_GPIO_Init(IN_TIM10_CH1_GPIO_Port, &GPIO_InitStruct);
 
@@ -118,7 +118,7 @@ void freqMeasureC_init(void)
   __HAL_RCC_TIM11_CLK_ENABLE();
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  GPIO_InitStruct.Pin = IN_TIM11_CH1_PIN;
+  GPIO_InitStruct.Pin = IN_TIM11_CH1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

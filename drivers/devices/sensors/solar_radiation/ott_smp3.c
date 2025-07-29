@@ -135,20 +135,20 @@ Write Single Coil(COIL_IO_CLEAR_ERROR 지우기)
 01 05 00 0A FF 00 AC 38
 */
 
-float ott_cvt_scale_factor(int32_t scale_factor)
+    float ott_cvt_scale_factor(int32_t scale_factor)
 {
   switch (scale_factor)
   {
-    case 2:
-      return 100;
-    case 1:
-      return 10;
-    case 0:
+  case 2:
+    return 100;
+  case 1:
+    return 10;
+  case 0:
     return 1;
-    case -1:
+  case -1:
     return 0.1;
-    default:
-      return 1;
+  default:               
+    return 1;
   }
 }
 

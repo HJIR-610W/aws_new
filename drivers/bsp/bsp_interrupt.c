@@ -396,8 +396,8 @@ void EXTI15_10_IRQHandler(void)
     }
     
       /* USER CODE END EXTI15_10_IRQn 0 */
- // HAL_GPIO_EXTI_IRQHandler(IN_EX_UART_INT_7_Pin);
-  //HAL_GPIO_EXTI_IRQHandler(IN_EX_UART_INT_8_Pin);
+ // HAL_GPIO_EXTI_IRQHandler(DI_EX_UART_INT_7_Pin);
+  //HAL_GPIO_EXTI_IRQHandler(DI_EX_UART_INT_8_Pin);
   //HAL_GPIO_EXTI_IRQHandler(INT_RTC_Pin);
 }
 

@@ -93,9 +93,9 @@ void freqMeasureB_init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Pin = IN_TIM10_CH1_PIN;
+  GPIO_InitStruct.Pin = TIM10_CH1_Pin;
   GPIO_InitStruct.Alternate = GPIO_AF3_TIM10;
-  HAL_GPIO_Init(IN_TIM10_CH1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(TIM10_CH1_GPIO_Port, &GPIO_InitStruct);
 
   htim10.Instance = TIM10;
   htim10.Init.Prescaler = calculate_timer_prescaler(TIM10, TIM_FREQ);  // 10kHz timer frequency (100us period)
@@ -122,12 +122,12 @@ void freqMeasureC_init(void)
   __HAL_RCC_TIM11_CLK_ENABLE();
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  GPIO_InitStruct.Pin = IN_TIM11_CH1_PIN;
+  GPIO_InitStruct.Pin = TIM11_CH1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Alternate = GPIO_AF3_TIM11;
-  HAL_GPIO_Init(IN_TIM11_CH1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(TIM11_CH1_GPIO_Port, &GPIO_InitStruct);
 
   htim11.Instance = TIM11;
   htim11.Init.Prescaler = calculate_timer_prescaler(TIM11, TIM_FREQ);  // 10kHz timer frequency (100us period)
@@ -292,9 +292,9 @@ float driver_freq_read_duty(driver_t *drv,uint8_t *err)
 #include "pcb_define.h"
 #include "stm32f4xx_hal.h"
 
-#define IN_TIM5_CH1_PIN GPIO_PIN_0
+#define IN_TIM5_CH1_Pin GPIO_PIN_0
 #define IN_TIM5_CH1_GPIO_Port GPIOA
-#define IN_TIM2_CH1_PIN GPIO_PIN_5
+#define IN_TIM2_CH1_Pin GPIO_PIN_5
 #define IN_TIM2_CH1_GPIO_Port GPIOA
 
 

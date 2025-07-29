@@ -1,24 +1,21 @@
 #!/usr/bin/env python3
 """
-PCB Pin Map Header Generator for Excel files
+PCB Pin Map Header Generator for CSV files
 
-This script parses pcb_x_pin.xlsx files and generates pcb_pin_map.h header files
+This script parses pcb_x_pin.csv files and generates pcb_5_pin.h header files
 with GPIO pin definitions. DI/DO functions get prefixes, others use original labels.
 
 Usage:
-    python pcb_excel_pin_generator.py <input_file.xlsx> [output_file.h]
+    python pcb_csv_pin_generator.py <input_file.csv> [output_file.h]
     
 Example:
-    python pcb_excel_pin_generator.py drivers/bsp/pin/pcb_5_pin.xlsx drivers/bsp/pin/pcb_pin_map.h
-
-Requirements:
-    pip install openpyxl pandas
+    python pcb_csv_pin_generator.py drivers/bsp/pin/pcb_5_pin.csv drivers/bsp/pin/pcb_5_pin.h
 """
 
 import sys
 import os
+import csv
 from typing import List, Tuple, Optional
-import pandas as pd
 
 class PinData:
     """Represents a single pin configuration"""
@@ -47,68 +44,86 @@ class PinData:
         """Convert port to GPIO port format"""
         return f"GPIO{self.port}"
 
-class PcbExcelPinGenerator:
-    """Main class for generating PCB pin map headers from Excel files"""
+class PcbCsvPinGenerator:
+    """Main class for generating PCB pin map headers from CSV files"""
     
     def __init__(self):
         self.pins: List[PinData] = []
         
-    def parse_excel_file(self, file_path: str) -> None:
-        """Parse the Excel pcb pin configuration file"""
+    def parse_csv_file(self, file_path: str) -> None:
+        """Parse the CSV pcb pin configuration file"""
         self.pins.clear()
         
         try:
-            # Read Excel file
-            df = pd.read_excel(file_path, engine='openpyxl')
-            print(f"Successfully read Excel file: {file_path}")
-            print(f"Excel shape: {df.shape}")
-            print(f"Columns: {list(df.columns)}")
+            # Try different encodings for Korean text
+            encodings = ['utf-8-sig', 'utf-8', 'cp949', 'euc-kr', 'latin-1']
             
+            for encoding in encodings:
+                try:
+                    with open(file_path, 'r', encoding=encoding) as f:
+                        # Read CSV file
+                        csv_reader = csv.reader(f)
+                        rows = list(csv_reader)
+                    print(f"Successfully read CSV file with {encoding} encoding")
+                    break
+                except UnicodeDecodeError:
+                    continue
+            else:
+                raise Exception("Could not read file with any supported encoding")
+                
         except FileNotFoundError:
             raise FileNotFoundError(f"Input file not found: {file_path}")
         except Exception as e:
-            raise Exception(f"Error reading Excel file {file_path}: {e}")
+            raise Exception(f"Error reading CSV file {file_path}: {e}")
             
-        # Print first few rows for debugging
-        print("First 5 rows:")
-        print(df.head())
+        print(f"CSV file has {len(rows)} rows")
         
-        for index, row in df.iterrows():
+        # Print header for debugging
+        if rows:
+            print(f"Header row: {rows[0]}")
+        
+        for row_num, row in enumerate(rows, 1):
             try:
-                # Skip empty rows or header-like rows
-                if pd.isna(row.iloc[0]) or str(row.iloc[0]).startswith('포트'):
+                # Skip empty rows or header row
+                if not row or not row[0] or row[0].startswith('포트'):
                     continue
                     
-                # Get values from each column
-                port_pin = str(row.iloc[0]).strip() if not pd.isna(row.iloc[0]) else ""
-                label = str(row.iloc[1]).strip() if not pd.isna(row.iloc[1]) else ""
-                function = str(row.iloc[2]).strip() if not pd.isna(row.iloc[2]) else ""
-                pullup = str(row.iloc[3]).strip() if not pd.isna(row.iloc[3]) else ""
-                af = str(row.iloc[4]).strip() if not pd.isna(row.iloc[4]) else ""
-                do_init = str(row.iloc[5]).strip() if not pd.isna(row.iloc[5]) else ""
-                description = str(row.iloc[6]).strip() if len(row) > 6 and not pd.isna(row.iloc[6]) else ""
+                # Skip rows that don't contain port.pin format
+                if not ('PORT' in row[0] and '.' in row[0]):
+                    continue
+                
+                # Ensure we have enough columns
+                if len(row) < 6:
+                    continue
+                    
+                port_pin = row[0].strip()
+                label = row[1].strip()
+                function = row[2].strip()
+                pullup = row[3].strip()
+                af = row[4].strip()
+                do_init = row[5].strip()
+                description = row[6].strip() if len(row) > 6 else ""
                 
                 # Debug print for first few entries
                 if len(self.pins) < 5:
-                    print(f"Debug row {index}: port_pin={port_pin}, label={label}, function={function}")
+                    print(f"Debug row {row_num}: port_pin={port_pin}, label={label}, function={function}")
                 
-                # Skip if port_pin doesn't contain '.'
-                if '.' not in port_pin or not port_pin.startswith('PORT'):
+                # Parse port.pin (e.g., "PORTA.0")
+                if '.' not in port_pin:
                     continue
                     
-                # Parse port.pin (e.g., "PORTA.0")
                 port, pin = port_pin.split('.', 1)
                 port = port.replace('PORT', '')  # Remove PORT prefix
                 
                 # Skip if essential fields are empty
-                if not label or label in ['NULL', 'nan'] or not port or not pin:
+                if not label or label in ['NULL', ''] or not port or not pin:
                     continue
                     
                 pin_data = PinData(port, pin, label, function, pullup, af, do_init, description)
                 self.pins.append(pin_data)
                 
             except Exception as e:
-                print(f"Warning: Error parsing row {index}: {e}")
+                print(f"Warning: Error parsing row {row_num}: {e}")
                 continue
                 
         print(f"Parsed {len(self.pins)} pins from {file_path}")
@@ -116,8 +131,8 @@ class PcbExcelPinGenerator:
     def generate_header_content(self) -> str:
         """Generate the complete header file content"""
         content = []
-        content.append("#ifndef PCB_PIN_MAP_H")
-        content.append("#define PCB_PIN_MAP_H")
+        content.append("#ifndef PCB_5_PIN_H")
+        content.append("#define PCB_5_PIN_H")
         content.append("")
         content.append("#include \"stm32f4xx_hal.h\"")
         content.append("")
@@ -154,7 +169,7 @@ class PcbExcelPinGenerator:
                 
             content.append("")
             
-        content.append("#endif /* PCB_PIN_MAP_H */")
+        content.append("#endif /* PCB_5_PIN_H */")
         
         return "\n".join(content)
         
@@ -195,33 +210,18 @@ class PcbExcelPinGenerator:
         for func, count in sorted(functions.items()):
             print(f"  {func}: {count}")
 
-def check_dependencies():
-    """Check if required packages are installed"""
-    try:
-        import pandas
-        import openpyxl
-        return True
-    except ImportError as e:
-        print(f"Missing required package: {e}")
-        print("Please install required packages:")
-        print("pip install pandas openpyxl")
-        return False
-
 def main():
     """Main function"""
-    if not check_dependencies():
-        sys.exit(1)
-        
     if len(sys.argv) < 2:
-        print("Usage: python pcb_excel_pin_generator.py <input_file.xlsx> [output_file.h]")
-        print("Example: python pcb_excel_pin_generator.py drivers/bsp/pin/pcb_5_pin.xlsx drivers/bsp/pin/pcb_pin_map.h")
+        print("Usage: python pcb_csv_pin_generator.py <input_file.csv> [output_file.h]")
+        print("Example: python pcb_csv_pin_generator.py drivers/bsp/pin/pcb_5_pin.csv drivers/bsp/pin/pcb_5_pin.h")
         sys.exit(1)
         
     input_file = sys.argv[1]
     
-    # Check if input file is Excel
-    if not input_file.lower().endswith(('.xlsx', '.xls')):
-        print("Error: Input file must be an Excel file (.xlsx or .xls)")
+    # Check if input file is CSV
+    if not input_file.lower().endswith('.csv'):
+        print("Error: Input file must be a CSV file (.csv)")
         sys.exit(1)
     
     # Generate output filename if not provided
@@ -230,13 +230,13 @@ def main():
     else:
         # Default: same directory as input, change extension to .h
         base_name = os.path.splitext(input_file)[0]
-        output_file = f"{base_name}_pin_map.h"
+        output_file = f"{base_name}.h"
         
-    generator = PcbExcelPinGenerator()
+    generator = PcbCsvPinGenerator()
     
     try:
-        print(f"Parsing Excel input file: {input_file}")
-        generator.parse_excel_file(input_file)
+        print(f"Parsing CSV input file: {input_file}")
+        generator.parse_csv_file(input_file)
         
         generator.print_summary()
         

@@ -119,12 +119,12 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
   HAL_GPIO_WritePin(USB_OTG_FS_SOF_GPIO_Port,USB_OTG_FS_SOF_Pin, GPIO_PIN_SET);
 
   //파워 감지신호는 입력으로 설정 그러나 host 사용 안할거라서 사용은 안함
-  GPIO_InitStruct.Pin = USB_OTG_PWR_FAIL_Pin;
+  GPIO_InitStruct.Pin = DI_USB_OTG_PWR_FAIL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Alternate = 0;
-  HAL_GPIO_Init(USB_OTG_PWR_FAIL_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(DI_USB_OTG_PWR_FAIL_GPIO_Port, &GPIO_InitStruct);
 
 
 }

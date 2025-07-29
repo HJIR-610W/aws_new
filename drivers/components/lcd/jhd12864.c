@@ -124,14 +124,14 @@ void jhd12864_gpio_init(void)
     HAL_GPIO_Init(FSMC_A0_GPIO_Port, &GPIO_InitStruct);
     
     // Configure RW (Read/Write) - FSMC_NWE pin as GPIO output
-    GPIO_InitStruct.Pin = FSMC_NWE_PIN;
+    GPIO_InitStruct.Pin = FSMC_NWE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(FSMC_NWE_GPIO_Port, &GPIO_InitStruct);
     
     // Configure E (Enable) - FSMC_NE1 pin as GPIO output
-    GPIO_InitStruct.Pin = FSMC_NE1_PIN;
+    GPIO_InitStruct.Pin = FSMC_NE1_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
@@ -139,24 +139,24 @@ void jhd12864_gpio_init(void)
     
     // Configure 8-bit Data Bus (D0-D7) as GPIO outputs
     // FSMC_D0-D1 on GPIOD (Pins 14-15)
-    GPIO_InitStruct.Pin = FSMC_D0_PIN | FSMC_D1_PIN;
+    GPIO_InitStruct.Pin = FSMC_D0_Pin | FSMC_D1_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(FSMC_D0_GPIO_Port, &GPIO_InitStruct);
     
     // FSMC_D2-D3 on GPIOD (Pins 0-1)
-    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_PIN;
+    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_Pin;
     HAL_GPIO_Init(FSMC_D2_GPIO_Port, &GPIO_InitStruct);
     
     // FSMC_D4-D7 on GPIOE (Pins 7-10)
-    GPIO_InitStruct.Pin = FSMC_D4_PIN | FSMC_D5_PIN | FSMC_D6_PIN | FSMC_D7_PIN;
+    GPIO_InitStruct.Pin = FSMC_D4_Pin | FSMC_D5_Pin | FSMC_D6_Pin | FSMC_D7_Pin;
     HAL_GPIO_Init(FSMC_D4_GPIO_Port, &GPIO_InitStruct);
     
     // Initialize control signals to idle state
     HAL_GPIO_WritePin(FSMC_A0_GPIO_Port, FSMC_A0, GPIO_PIN_RESET);        // RS = 0
-    HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_PIN, GPIO_PIN_SET);     // RW = 1 (Read mode)
-    HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_PIN, GPIO_PIN_RESET);   // E = 0 (Disabled)
+    HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_Pin, GPIO_PIN_SET);     // RW = 1 (Read mode)
+    HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_Pin, GPIO_PIN_RESET);   // E = 0 (Disabled)
 }
 
 #if JHD12864_GPIO_USE
@@ -164,28 +164,28 @@ void jhd12864_gpio_init(void)
 void jhd12864_gpio_set_data_bus(uint8_t data)
 {
     // Set D0 (GPIOD Pin 14)
-    HAL_GPIO_WritePin(FSMC_D0_GPIO_Port, FSMC_D0_PIN, (data & 0x01) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FSMC_D0_GPIO_Port, FSMC_D0_Pin, (data & 0x01) ? GPIO_PIN_SET : GPIO_PIN_RESET);
     
     // Set D1 (GPIOD Pin 15)
-    HAL_GPIO_WritePin(FSMC_D1_GPIO_Port, FSMC_D1_PIN, (data & 0x02) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FSMC_D1_GPIO_Port, FSMC_D1_Pin, (data & 0x02) ? GPIO_PIN_SET : GPIO_PIN_RESET);
     
     // Set D2 (GPIOD Pin 0)
     HAL_GPIO_WritePin(FSMC_D2_GPIO_Port, FSMC_D2, (data & 0x04) ? GPIO_PIN_SET : GPIO_PIN_RESET);
     
     // Set D3 (GPIOD Pin 1)
-    HAL_GPIO_WritePin(FSMC_D3_GPIO_Port, FSMC_D3_PIN, (data & 0x08) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FSMC_D3_GPIO_Port, FSMC_D3_Pin, (data & 0x08) ? GPIO_PIN_SET : GPIO_PIN_RESET);
     
     // Set D4 (GPIOE Pin 7)
-    HAL_GPIO_WritePin(FSMC_D4_GPIO_Port, FSMC_D4_PIN, (data & 0x10) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FSMC_D4_GPIO_Port, FSMC_D4_Pin, (data & 0x10) ? GPIO_PIN_SET : GPIO_PIN_RESET);
     
     // Set D5 (GPIOE Pin 8)
-    HAL_GPIO_WritePin(FSMC_D5_GPIO_Port, FSMC_D5_PIN, (data & 0x20) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FSMC_D5_GPIO_Port, FSMC_D5_Pin, (data & 0x20) ? GPIO_PIN_SET : GPIO_PIN_RESET);
     
     // Set D6 (GPIOE Pin 9)
-    HAL_GPIO_WritePin(FSMC_D6_GPIO_Port, FSMC_D6_PIN, (data & 0x40) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FSMC_D6_GPIO_Port, FSMC_D6_Pin, (data & 0x40) ? GPIO_PIN_SET : GPIO_PIN_RESET);
     
     // Set D7 (GPIOE Pin 10)
-    HAL_GPIO_WritePin(FSMC_D7_GPIO_Port, FSMC_D7_PIN, (data & 0x80) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FSMC_D7_GPIO_Port, FSMC_D7_Pin, (data & 0x80) ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
 void jhd12864_gpio_set_data_bus_input(void)
@@ -194,17 +194,17 @@ void jhd12864_gpio_set_data_bus_input(void)
     
     // Configure 8-bit Data Bus (D0-D7) as inputs for reading
     // FSMC_D0-D1 on GPIOD (Pins 14-15)
-    GPIO_InitStruct.Pin = FSMC_D0_PIN | FSMC_D1_PIN;
+    GPIO_InitStruct.Pin = FSMC_D0_Pin | FSMC_D1_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(FSMC_D0_GPIO_Port, &GPIO_InitStruct);
     
     // FSMC_D2-D3 on GPIOD (Pins 0-1)
-    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_PIN;
+    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_Pin;
     HAL_GPIO_Init(FSMC_D2_GPIO_Port, &GPIO_InitStruct);
     
     // FSMC_D4-D7 on GPIOE (Pins 7-10)
-    GPIO_InitStruct.Pin = FSMC_D4_PIN | FSMC_D5_PIN | FSMC_D6_PIN | FSMC_D7_PIN;
+    GPIO_InitStruct.Pin = FSMC_D4_Pin | FSMC_D5_Pin | FSMC_D6_Pin | FSMC_D7_Pin;
     HAL_GPIO_Init(FSMC_D4_GPIO_Port, &GPIO_InitStruct);
 }
 
@@ -214,18 +214,18 @@ void jhd12864_gpio_set_data_bus_output(void)
     
     // Configure 8-bit Data Bus (D0-D7) as outputs for writing
     // FSMC_D0-D1 on GPIOD (Pins 14-15)
-    GPIO_InitStruct.Pin = FSMC_D0_PIN | FSMC_D1_PIN;
+    GPIO_InitStruct.Pin = FSMC_D0_Pin | FSMC_D1_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(FSMC_D0_GPIO_Port, &GPIO_InitStruct);
     
     // FSMC_D2-D3 on GPIOD (Pins 0-1)
-    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_PIN;
+    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_Pin;
     HAL_GPIO_Init(FSMC_D2_GPIO_Port, &GPIO_InitStruct);
     
     // FSMC_D4-D7 on GPIOE (Pins 7-10)
-    GPIO_InitStruct.Pin = FSMC_D4_PIN | FSMC_D5_PIN | FSMC_D6_PIN | FSMC_D7_PIN;
+    GPIO_InitStruct.Pin = FSMC_D4_Pin | FSMC_D5_Pin | FSMC_D6_Pin | FSMC_D7_Pin;
     HAL_GPIO_Init(FSMC_D4_GPIO_Port, &GPIO_InitStruct);
 }
 
@@ -268,14 +268,14 @@ uint8_t jhd12864_gpio_read_data_bus(void)
     return data;
 }
 
-#define JHD12864_E_HIGH()     HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_PIN, GPIO_PIN_SET);
-#define JHD12864_E_LOW()      HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_PIN, GPIO_PIN_RESET);
+#define JHD12864_E_HIGH()     HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_Pin, GPIO_PIN_SET);
+#define JHD12864_E_LOW()      HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_Pin, GPIO_PIN_RESET);
 
 #define JHD12864_CMD_SET()    HAL_GPIO_WritePin(FSMC_A0_GPIO_Port, FSMC_A0, GPIO_PIN_RESET);  // RS = 0 for command
 #define JHD12864_DATA_SET()   HAL_GPIO_WritePin(FSMC_A0_GPIO_Port, FSMC_A0, GPIO_PIN_SET);    // RS = 1 for data
 
-#define JHD12864_W_SET()      HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_PIN, GPIO_PIN_RESET); // RW = 0 for write
-#define JHD12864_R_SET()      HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_PIN, GPIO_PIN_SET);   // RW = 1 for read
+#define JHD12864_W_SET()      HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_Pin, GPIO_PIN_RESET); // RW = 0 for write
+#define JHD12864_R_SET()      HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_Pin, GPIO_PIN_SET);   // RW = 1 for read
 
 void jhd12864_gpio_write_byte(uint8_t data, bool is_cmd)
 {

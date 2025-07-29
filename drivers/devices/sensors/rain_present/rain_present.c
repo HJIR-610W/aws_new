@@ -19,6 +19,7 @@ driver_t *rainPresent_open(int32_t num,void *opt)
 bool read_sensor_rainPresent(driver_t *driver,uint8_t *err)
 {
   bool data=true;
+   *err = 0;
 
   if (drv_di_read(DRV_DI_RAIN_DETECT_DIGITAL) > 0)
   {

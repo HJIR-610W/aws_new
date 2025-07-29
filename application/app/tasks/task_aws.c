@@ -2,7 +2,7 @@
 
 #include <stdbool.h>
 #include <math.h>
-
+#include <string.h>
 #include "app_sensor.h"
 #include "aws_data.h"
 #include "FreeRTOS.h"
@@ -1269,6 +1269,8 @@ void calculate_rain(void)
   ct = Date_Time;
   pre_date = Date_Time;
   
+  memset(p_rain_1min,0,RAIN_TOTAL);
+  memset(p_rain_days,0,RAIN_DAYS_SIZE);
   if (read_rain_1min(ct.Year, p_rain_1min, RAIN_TOTAL) == 0)
   {
     compute_daily_rain(p_rain_1min, p_rain_days, ct.Year);
@@ -1346,6 +1348,8 @@ void calculate_sunshine(void)
   (void)hourly_sunshine;
   ct = Date_Time;
 
+  memset(p_sunshine_1min,0,SUNSHINE_TOTAL);
+  memset(p_sunshine_days,0,SUNSHINE_DAYS_SIZE);
   if( read_sunshine_1min(ct.Year, p_sunshine_1min, SUNSHINE_TOTAL)==0)
   {
     compute_daily_data(DATA_SIZE_16,p_sunshine_1min, p_sunshine_days, ct.Year);

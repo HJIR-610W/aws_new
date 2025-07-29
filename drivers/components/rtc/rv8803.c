@@ -229,7 +229,7 @@ driver_t *rv8803_open(void)
 
   rv8803_driver.opened = true;
   rv8803_cfg.i2c_num = STM32_I2C_1;
-  rv8803_cfg.irq_di_num = BSP_DI_1_RTC_IRQ_ONLY;
+  rv8803_cfg.irq_di_num = BSP_DI_RTC_INT;
   rv8803_cfg.address = 0x32;
   rv8803_driver.cfg = &rv8803_cfg;
   rv8803_driver.api = &rv8803_api;

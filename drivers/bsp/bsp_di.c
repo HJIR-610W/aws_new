@@ -15,36 +15,54 @@ typedef struct bsp_di_inst_s
   bool opened;
 } bsp_di_inst_t;
 
-const bsp_di_inst_t di_inst[BSP_DI_QUAD_UARTD_8 + 1] = {
+ bsp_di_inst_t di_inst[BSP_DI_MCU_MAX] = {
 
-    [BSP_DI_0_ADC_RDY_ONLY] = {.init = {.Pin = IN_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
-                          .port = IN_SPI2_DRDY_GPIO_Port},
+    [BSP_DI_0_ADC_RDY_ONLY] = {.init = {.Pin = DI_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
+                               .port = DI_SPI2_DRDY_GPIO_Port},
     [BSP_DI_USER_BTN] = {.init = {.Pin = DI_SW_SYS_Pin, .Pull = GPIO_PULLUP},
                          .port = DI_SW_SYS_GPIO_Port},
-    [BSP_DI_RAIN_REED] = {.init = {.Pin = IN_RAIN_REED_Pin, .Pull = GPIO_PULLUP},
-                          .port = IN_RAIN_REED_GPIO_Port},
-    [BSP_DI_RAIN_HALL] = {.init = {.Pin = IN_RAIN_HALL_Pin, .Pull = GPIO_PULLUP},
-                          .port = IN_RAIN_HALL_GPIO_Port},
-    [BSP_DI_RAIN_HALL_ERR] = {.init = {.Pin = IN_RAIN_HALL_ERR_Pin, .Pull = GPIO_PULLUP},
-                              .port = IN_RAIN_HALL_ERR_GPIO_Port},
-    [BSP_DI_RAIN_DETECT] = {.init = {.Pin = RAIN_DETECT_PIN, .Pull = GPIO_PULLUP},
-                            .port = RAIN_DETECT_GPIO_Port},
-    [BSP_DI_QUAD_UARTA_1] = {.init = {.Pin = IN_EX_UART_INT_1_Pin, .Pull = GPIO_PULLUP},
-                             .port = IN_EX_UART_INT_1_GPIO_Port},
-    [BSP_DI_QUAD_UARTB_2] = {.init = {.Pin = IN_EX_UART_INT_2_Pin, .Pull = GPIO_PULLUP},
-                             .port = IN_EX_UART_INT_2_GPIO_Port},
-    [BSP_DI_QUAD_UARTC_3] = {.init = {.Pin = IN_EX_UART_INT_3_Pin, .Pull = GPIO_PULLUP},
-                             .port = IN_EX_UART_INT_3_GPIO_Port},
-    [BSP_DI_QUAD_UARTD_4] = {.init = {.Pin = IN_EX_UART_INT_4_Pin, .Pull = GPIO_PULLUP},
-                             .port = IN_EX_UART_INT_4_GPIO_Port},
-    [BSP_DI_QUAD_UARTA_5] = {.init = {.Pin = IN_EX_UART_INT_5_Pin, .Pull = GPIO_PULLUP},
-                             .port = IN_EX_UART_INT_5_GPIO_Port},
-    [BSP_DI_QUAD_UARTB_6] = {.init = {.Pin = IN_EX_UART_INT_6_Pin, .Pull = GPIO_PULLUP},
-                             .port = IN_EX_UART_INT_6_GPIO_Port},
-    [BSP_DI_QUAD_UARTC_7] = {.init = {.Pin = IN_EX_UART_INT_7_Pin, .Pull = GPIO_PULLUP},
-                             .port = IN_EX_UART_INT_7_GPIO_Port},
-    [BSP_DI_QUAD_UARTD_8] = {.init = {.Pin = IN_EX_UART_INT_8_Pin, .Pull = GPIO_PULLUP},
-                             .port = IN_EX_UART_INT_8_GPIO_Port}};
+    [BSP_DI_RAIN_REED] = {.init = {.Pin = DI_RAIN_REED_Pin, .Pull = GPIO_PULLUP},
+                          .port = DI_RAIN_REED_GPIO_Port},
+    [BSP_DI_RAIN_HALL] = {.init = {.Pin = DI_RAIN_HALL_Pin, .Pull = GPIO_PULLUP},
+                          .port = DI_RAIN_HALL_GPIO_Port},
+    [BSP_DI_RAIN_HALL_ERR] = {.init = {.Pin = DI_RAIN_HALL_ERR_Pin, .Pull = GPIO_PULLUP},
+                              .port = DI_RAIN_HALL_ERR_GPIO_Port},
+    [BSP_DI_RAIN_DETECT_A] = {.init = {.Pin = DI_RAIN_DETECT_Pin, .Pull = GPIO_PULLUP},
+                               .port = DI_RAIN_DETECT_GPIO_Port},
+    [BSP_DI_QUAD_UARTA_1] = {.init = {.Pin = DI_EX_UART_INT1_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT1_GPIO_Port},
+    [BSP_DI_QUAD_UARTB_2] = {.init = {.Pin = DI_EX_UART_INT2_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT2_GPIO_Port},
+    [BSP_DI_QUAD_UARTC_3] = {.init = {.Pin = DI_EX_UART_INT3_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT3_GPIO_Port},
+    [BSP_DI_QUAD_UARTD_4] = {.init = {.Pin = DI_EX_UART_INT4_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT4_GPIO_Port},
+    [BSP_DI_QUAD_UARTA_5] = {.init = {.Pin = DI_EX_UART_INT5_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT5_GPIO_Port},
+    [BSP_DI_QUAD_UARTB_6] = {.init = {.Pin = DI_EX_UART_INT6_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT6_GPIO_Port},
+    [BSP_DI_QUAD_UARTC_7] = {.init = {.Pin = DI_EX_UART_INT7_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT7_GPIO_Port},
+    [BSP_DI_QUAD_UARTD_8] = {.init = {.Pin = DI_EX_UART_INT8_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT8_GPIO_Port},
+
+    [BSP_DI_WAKE_UP] = {.init = {.Pin = DI_WAKE_UP_Pin, .Pull = GPIO_PULLUP},
+                     .port = DI_WAKE_UP_GPIO_Port},
+
+    [BSP_DI_BOOT1] = {.init = {.Pin = DI_BOOT1_Pin, .Pull = GPIO_PULLUP},
+                   .port = DI_BOOT1_GPIO_Port},
+    [BSP_DI_USB_POWER_FAIL] = {.init = {.Pin = DI_USB_OTG_PWR_FAIL_Pin, .Pull = GPIO_PULLUP},
+                            .port = DI_USB_OTG_PWR_FAIL_GPIO_Port},
+
+    [BSP_DI_SD_IN] = {.init = {.Pin = DI_SDIO_DETECT_Pin, .Pull = GPIO_PULLUP},
+                   .port = DI_SDIO_DETECT_GPIO_Port},
+
+    [BSP_DI_IO_INT] = {.init = {.Pin = DI_INT_D_IO_Pin, .Pull = GPIO_PULLUP},
+                    .port = DI_INT_D_IO_GPIO_Port},
+
+    [BSP_DI_RTC_INT] = {.init = {.Pin = DI_INT_RTC_Pin, .Pull = GPIO_PULLUP},
+                     .port = DI_INT_RTC_GPIO_Port},
+};
 
 void bsp_di_gpio_init(int di_number)
 {
@@ -65,6 +83,7 @@ void bsp_di_init(void)
     if (di_inst[di_num].opened)
     continue;
     
+    di_inst[di_num].opened= true;
       switch (di_num)
       {
         case BSP_DI_0_ADC_RDY_ONLY:
@@ -72,7 +91,7 @@ void bsp_di_init(void)
         case BSP_DI_RAIN_REED:
         case BSP_DI_RAIN_HALL:
         case BSP_DI_RAIN_HALL_ERR:
-        case BSP_DI_RAIN_DETECT:
+        case BSP_DI_RAIN_DETECT_A:
         case BSP_DI_QUAD_UARTA_1:
         case BSP_DI_QUAD_UARTB_2:
         case BSP_DI_QUAD_UARTC_3:
@@ -108,7 +127,7 @@ int32_t bsp_di_read(int32_t di_number)
     case BSP_DI_RAIN_REED:
     case BSP_DI_RAIN_HALL:
     case BSP_DI_RAIN_HALL_ERR:
-    case BSP_DI_RAIN_DETECT:
+    case BSP_DI_RAIN_DETECT_A:
     case BSP_DI_QUAD_UARTA_1:
     case BSP_DI_QUAD_UARTB_2:
     case BSP_DI_QUAD_UARTC_3:
@@ -268,7 +287,7 @@ void bsp_di_set_interrupt(int di_number, di_isr_set_cfg_t *isr_cfg)
     case BSP_DI_RAIN_REED:
     case BSP_DI_RAIN_HALL:
     case BSP_DI_RAIN_HALL_ERR:
-    case BSP_DI_RAIN_DETECT:
+    case BSP_DI_RAIN_DETECT_A:
     case BSP_DI_QUAD_UARTA_1:
     case BSP_DI_QUAD_UARTB_2:
     case BSP_DI_QUAD_UARTC_3:

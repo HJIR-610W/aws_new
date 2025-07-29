@@ -161,13 +161,13 @@ typedef void (*pNOR_CallbackTypeDef)(NOR_HandleTypeDef *hnor);
   * @retval None
   */
 #if (USE_HAL_NOR_REGISTER_CALLBACKS == 1)
-#define __HAL_NOR_RESET_HANDLE_STATE(__HANDLE__)          do {                                             \
+#define __HAL_DO_NOR_RESET_HANDLE_STATE(__HANDLE__)          do {                                             \
                                                                (__HANDLE__)->State = HAL_NOR_STATE_RESET;  \
                                                                (__HANDLE__)->MspInitCallback = NULL;       \
                                                                (__HANDLE__)->MspDeInitCallback = NULL;     \
                                                              } while(0)
 #else
-#define __HAL_NOR_RESET_HANDLE_STATE(__HANDLE__) ((__HANDLE__)->State = HAL_NOR_STATE_RESET)
+#define __HAL_DO_NOR_RESET_HANDLE_STATE(__HANDLE__) ((__HANDLE__)->State = HAL_NOR_STATE_RESET)
 #endif /* USE_HAL_NOR_REGISTER_CALLBACKS */
 /**
   * @}

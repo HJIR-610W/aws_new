@@ -40,14 +40,13 @@ int run_test_root()
     io_printf("|  9. 디지털 입력(I0~I5)                |\r\n");
     io_printf("| 10. 디지털 출력(D0~D5)                |\r\n");
     io_printf("| 11. 전원(24V,CDMA,모듈,히터,우량D)    |\r\n");
-    io_printf("| 12. 모드버스(구현 예정)               |\r\n");
+    io_printf("| 12. 모드버스                          |\r\n");
     io_printf("| 13. 이더넷                            |\r\n");
     io_printf("| 14. 시간                              |\r\n");
     io_printf("| 15. 파일시스템                        |\r\n");
     io_printf("| 16. ADC선형성                         |\r\n");
     io_printf("| 17. FLASH 메모리                      |\r\n");
     io_printf("| 18. CLCD                              |\r\n");
-    io_printf("| 19. MODBUS                            |\r\n");
     io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     io_printf("+---------------------------------------+\r\n");
 
@@ -92,6 +91,9 @@ int run_test_root()
       case 11:
       test_power_signal();
       break;
+    case 12:
+              test_modbus();
+              break;
       case 13:
       test_eth();
       break;
@@ -110,9 +112,7 @@ int run_test_root()
       case 18:
       test_lcd();
       break;
-      case 19:
-        test_modbus();
-        break;
+
          default : break;
     }
   }
