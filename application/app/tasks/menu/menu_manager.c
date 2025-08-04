@@ -125,10 +125,10 @@ void draw_rain_reset_page(screen_menu_t *p_win)
   p_win->current_row = 0;
 
   screen_update_list(p_win, row_count, DATA_RESET_MENU_RAIN);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Reset Rain Data to 0");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Reset Rain Data 0");
 
   screen_update_list(p_win, row_count, DATA_RESET_MENU_SUN);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Reset Sun Data to 0");
+  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Reset Sun Data 0");
 
   p_win->total_items = row_count;
 
@@ -414,7 +414,7 @@ int32_t setup_menu_config(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, "Manager");
+  screen_menu_create(&menu, "Settings");
 
   while (1)
   {
@@ -480,7 +480,7 @@ int32_t setup_menu_manager(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu,  "MANAGER");
+  screen_menu_create(&menu,  "Manager");
 
   while (1)
   {

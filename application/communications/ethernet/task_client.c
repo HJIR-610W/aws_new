@@ -171,7 +171,7 @@ void tcpClientTask(void *arg)
         task_printf("연결 성공\r\n");
         g_tcp_client_status.link_status = eLINK_UP;
         tcp_client_service(sock);
-        g_tcp_client_status.link_status = eLINK_IDLE;
+        g_tcp_client_status.link_status = eLINK_DOWN;
 
         closesocket(sock);
         osDelay(SERVER_RETRY_INTERVAL_MS);

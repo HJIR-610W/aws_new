@@ -220,26 +220,25 @@ void draw_cdma_page(screen_page_t *p_win)
 
   if (get_cdma_system()->rssi == -1)
   {
-    screen_printf_row(p_win, row_count++, "%-*s: -", CDMA_WD, "RSSI");
+    screen_printf_row(p_win, row_count++, "%-*s:-", CDMA_WD, "RSSI");
   }
   else
   {
     screen_printf_row(p_win, row_count++, "%-*s:%d", CDMA_WD, "RSSI", get_cdma_system()->rssi);
   }
 
-  screen_printf_row(p_win, row_count++, "%-*s:%d", CDMA_WD, "TX", get_cdma_system()->tx_cnt);
-
   screen_printf_row(p_win, row_count++, "%-*s:%d", CDMA_WD, "RX", get_cdma_system()->rx_cnt);
+  screen_printf_row(p_win, row_count++, "%-*s:%d", CDMA_WD, "TX", get_cdma_system()->tx_cnt);
 
   last_time = get_cdma_system()->last_recv_time;
   if (last_time == 0)
   {
-    screen_printf_row(p_win, row_count++, "%-*s: -", CDMA_WD, "R TIME");
+    screen_printf_row(p_win, row_count++, "RT:-");
   }
   else
   {
     time_cvt_secTotime(last_time, &nt);
-    screen_printf_row(p_win, row_count++, "%-*s:%02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "R TIME",
+    screen_printf_row(p_win, row_count++, "RT:%02d-%02d-%02d %02d:%02d:%02d", 
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 
@@ -247,12 +246,12 @@ void draw_cdma_page(screen_page_t *p_win)
   last_time = get_cdma_system()->last_send_time;
   if (last_time == 0)
   {
-    screen_printf_row(p_win, row_count++, "%-*s: -", CDMA_WD, "T TIME");
+    screen_printf_row(p_win, row_count++, "TT:-");
   }
   else
   {
     time_cvt_secTotime(last_time, &nt);
-    screen_printf_row(p_win, row_count++, "%-*s:%02d-%02d-%02d %02d:%02d:%02d", CDMA_WD, "T TIME",
+    screen_printf_row(p_win, row_count++, "TT:%02d-%02d-%02d %02d:%02d:%02d",
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 
@@ -285,31 +284,32 @@ void draw_direct_page(screen_page_t *p_win)
   remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms / 1000.0);
   screen_printf_row(p_win, row_count++, "%-*s:%d", DIRECT_WD, "TIMEOUT", remain_sec);
 
+  screen_printf_row(p_win, row_count++, "%-*s:%d", DIRECT_WD, "RX", get_direct_system()->rx_cnt);
   screen_printf_row(p_win, row_count++, "%-*s:%d", DIRECT_WD, "TX", get_direct_system()->tx_cnt);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%d", DIRECT_WD, "RX", get_direct_system()->rx_cnt);
+
 
   last_time = get_direct_system()->last_recv_time;
   if (last_time == 0)
   {
-    screen_printf_row(p_win, row_count++, "%-*s: -", DIRECT_WD, "R TIME");
+    screen_printf_row(p_win, row_count++, "RT:-");
   }
   else
   {
     time_cvt_secTotime(last_time, &nt);
-    screen_printf_row(p_win, row_count++, "%-*s:%02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "R TIME",
+    screen_printf_row(p_win, row_count++, "RT:%02d-%02d-%02d %02d:%02d:%02d",
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 
   last_time = get_direct_system()->last_send_time;
   if (last_time == 0)
   {
-    screen_printf_row(p_win, row_count++, "%-*s: -", DIRECT_WD, "T TIME");
+    screen_printf_row(p_win, row_count++, "TT:-");
   }
   else
   {
     time_cvt_secTotime(last_time, &nt);
-    screen_printf_row(p_win, row_count++, "%-*s:%02d-%02d-%02d %02d:%02d:%02d", DIRECT_WD, "T TIME",
+    screen_printf_row(p_win, row_count++, "TT:%02d-%02d-%02d %02d:%02d:%02d",
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 
@@ -344,32 +344,33 @@ void draw_ethernet_page(screen_page_t *p_win)
     screen_printf_row(p_win, row_count++, "%-*s:%s", ETH_WD, "LINK",
                    ITEM_LIST(get_tcp_client_system()->link_status, linkStatusList_lcd));
 
+    screen_printf_row(p_win, row_count++, "%-*s:%d", ETH_WD, "RX", get_tcp_client_system()->rx_cnt);
     screen_printf_row(p_win, row_count++, "%-*s:%d", ETH_WD, "TX", get_tcp_client_system()->tx_cnt);
 
-    screen_printf_row(p_win, row_count++, "%-*s:%d", ETH_WD, "RX", get_tcp_client_system()->rx_cnt);
+
 
     last_time = get_tcp_client_system()->last_recv_time;
     if (last_time == 0)
     {
-      screen_printf_row(p_win, row_count++, "%-*s: -", ETH_WD, "RT");
+      screen_printf_row(p_win, row_count++, "RT:-");
     }
     else
     {
       time_cvt_secTotime(last_time, &nt);
       //"RT:25-07-22 10:10:2 "
-      screen_printf_row(p_win, row_count++, "%-*s:%02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "RT",
+      screen_printf_row(p_win, row_count++, "RT:%02d-%02d-%02d %02d:%02d:%02d",
                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
     }
 
     last_time = get_tcp_client_system()->last_send_time;
     if (last_time == 0)
     {
-      screen_printf_row(p_win, row_count++, "%-*s: -", ETH_WD, "TT");
+      screen_printf_row(p_win, row_count++, "TT:-");
     }
     else
     {
       time_cvt_secTotime(last_time, &nt);
-      screen_printf_row(p_win, row_count++, "%-*s:%02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "TT",
+      screen_printf_row(p_win, row_count++, "TT:%02d-%02d-%02d %02d:%02d:%02d", 
                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
     }
   }
@@ -389,31 +390,32 @@ void draw_ethernet_page(screen_page_t *p_win)
                      ITEM_LIST(link_status[i], ethlinkStatusList_lcd),
                      get_tcp_system(i)->client_ip_str);
 
+      screen_printf_row(p_win, row_count++, "%-*s:%d", ETH_WD, "RX", rx_cnt[i]);
       screen_printf_row(p_win, row_count++, "%-*s:%d", ETH_WD, "TX", tx_cnt[i]);
 
-      screen_printf_row(p_win, row_count++, "%-*s:%d", ETH_WD, "RX", rx_cnt[i]);
+
 
       last_time = get_tcp_system(i)->last_recv_time;
       if (last_time == 0)
       {
-        screen_printf_row(p_win, row_count++, "%-*s: -", ETH_WD, "RT");
+        screen_printf_row(p_win, row_count++, "RT:-");
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        screen_printf_row(p_win, row_count++, "%-*s:%02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "RT",
+        screen_printf_row(p_win, row_count++, "RT:%02d-%02d-%02d %02d:%02d:%02d",
                        nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
 
       last_time = get_tcp_system(i)->last_send_time;
       if (last_time == 0)
       {
-        screen_printf_row(p_win, row_count++, "%-*s: -", ETH_WD, "TT");
+        screen_printf_row(p_win, row_count++, "TT:-");
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        screen_printf_row(p_win, row_count++, "%-*s:%02d-%02d-%02d %02d:%02d:%02d", ETH_WD, "TT",
+        screen_printf_row(p_win, row_count++, "TT:%02d-%02d-%02d %02d:%02d:%02d",
                        nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
     }

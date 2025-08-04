@@ -113,8 +113,8 @@
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\cli_key_code.c</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\application\file_system\app_file.c</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\terminal.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.c</file>
@@ -163,7 +163,7 @@
             <file>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.c</file>
-            <file>$PROJ_DIR$\..\application\communications\direct\task_direct.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\direct\task_direct.h</file>
             <file>$PROJ_DIR$\..\application\communications\lwip\target\ethernetif.h</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\app\fatfs.h</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\bsp_driver_sd.h</file>
@@ -196,12 +196,12 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</file>
-            <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_spi.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_swo.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_swo.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\pcb_define.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rtc.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.h</file>
@@ -276,7 +276,7 @@
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\sensor_general.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\rain\rain.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\rain\rain.h</file>
@@ -2083,7 +2083,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netdb.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_mux.xcl</file>
             <file>$PROJ_DIR$\release\Obj\old_aws_define.o</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\tcp_define.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\ethernet\tcp_define.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_rcc.xcl</file>
             <file>$PROJ_DIR$\release\Obj\lcd_driver.o</file>
             <file>$PROJ_DIR$\release\Obj\driver_stm32_cdc.o</file>
@@ -2143,7 +2143,7 @@
             <file>$PROJ_DIR$\release\Obj\bsp_fram.o</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_ll_usart.xcl</file>
             <file>$PROJ_DIR$\release\Obj\ymodem.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\release\Obj\fatfs_platform.xcl</file>
             <file>$PROJ_DIR$\release\Obj\ads1220.o</file>
             <file>$PROJ_DIR$\..\drivers\driver\time_define.h</file>
@@ -2181,7 +2181,7 @@
             <file>$PROJ_DIR$\..\application\io\cli\cli_input.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\igmp.h</file>
             <file>$PROJ_DIR$\..\Application\App_drivers\app_flash.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\aws_processor.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_data_handler.o</file>
             <file>$PROJ_DIR$\..\application\app\test\parser\hart_parser.h</file>
@@ -2201,7 +2201,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\tcpip_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\app_measure.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_hj.h</file>
-            <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
+            <file>$PROJ_DIR$\..\Application\app\app_drivers\app_screen.h</file>
             <file>$PROJ_DIR$\release\Obj\usbd_conf.xcl</file>
             <file>$PROJ_DIR$\release\Obj\hj_temperature_menu.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\barometer.o</file>
@@ -2237,7 +2237,7 @@
             <file>$PROJ_DIR$\release\Obj\task_isrEvent.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\task_aws.xcl</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_network.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_define.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\release\Obj\stats.o</file>
             <file>$PROJ_DIR$\..\Application\Sensors\temperature\hj_temperature_define.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\freertos_os2.h</file>
@@ -2271,7 +2271,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\iana.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_adc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\app_console.h</file>
             <file>$TOOLKIT_DIR$\inc\c\LowLevelIOInterface.h</file>
@@ -2346,7 +2346,7 @@
             <file>$PROJ_DIR$\release\Obj\if_api.xcl</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bits_.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_uart.o</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\release\Obj\altcp_tcp.o</file>
             <file>$PROJ_DIR$\release\Obj\solar_radiation.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dhcp6.h</file>
@@ -2524,7 +2524,7 @@
             <file>$PROJ_DIR$\..\application\app\config\config_manager.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_network.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_snowfall_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\humidity\humidity.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.h</file>

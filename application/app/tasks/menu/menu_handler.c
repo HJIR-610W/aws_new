@@ -929,7 +929,7 @@ int32_t input_active(const char *title, int32_t *choice)
 
       snprintf_s(&buff[len], sizeof(buff) - len, "%s", no);
     }
-    screen_printf(1, 0, "%s", buff);
+    screen_printf(2, 0, "%s", buff);
     screen_refresh();
 
     key = get_button_key(100);

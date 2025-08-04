@@ -1427,18 +1427,19 @@ void filter_init(void)
 
 void DUALPORT_TASK(void *arg)
 {
+  uint8_t f_err = 0;
   uint8_t sensor_err = 0;
   uint16_t sSpeed;
   uint16_t sDirec;
+  uint16_t data;
+  int32_t nWindCnt12 = 0;
+  int32_t nWindCnt40 = 0;
+  uint32_t rain_p_delay = 0;
   SYSTEM_INFO_AWS *pSystem;
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
   AWS_DATA_STRUCT *pAws;
-  int32_t nWindCnt12 = 0;
-  int32_t nWindCnt40 = 0;
-  uint16_t data;
-  uint8_t f_err=0;
-  uint32_t rain_p_delay=0;
+
   pAws = &mRealAws;
   pSystem = &Sysinfo;
 
