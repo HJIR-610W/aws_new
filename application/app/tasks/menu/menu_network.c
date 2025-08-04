@@ -102,49 +102,181 @@ void draw_network_main_page(screen_menu_t* p_win)
   }
 }
 
-int32_t input_ip_address(const char* title, uint8_t* ip)
+char user_fmt[2][21] = {{"    000.000.000     "}, {"    000.000.000     "}};
+typedef struct pos_s
 {
-  int a, b, c, d;
-  string_fmt_t strfmt;
-  int32_t status;
+  char row;
+  char col;
+}lcd_pos_t;
 
-  strfmt.fmt = "%3d.%3d.%3d.%3d";
-  snprintf(strfmt.data, sizeof(strfmt.data), "%03d.%03d.%03d.%03d", ip[0], ip[1], ip[2], ip[3]);
+lcd_pos_t user_fmt_pos[20];
+int user_fmt_pos_cnt=0;
 
-  status = input_fmt(&strfmt, title);
-  if (status == MENU_OK)
+/*
+"    MAC Address     "
+"    000.000.000     "
+"    000.000.000     "
+*/
+
+extern size_t utf8_strlen(const char* s);
+int32_t input_mac_address(const char *title, uint8_t *mac)
+{
+  int row_offset = 1;
+
+  int total_width = 20; // 좌우 여백 및 메뉴 번호 고려
+  int key;
+  int cur_row_pos;
+  int cur_col_pos;
+  int pos_cnt=0;
+  // 타이틀 가운데 정렬
+  int title_len = utf8_strlen(title);
+  int title_padding = (total_width - 2 - title_len) / 2;
+
+  int blink_state = 1;
+  char display_char;
+
+  screen_clear();
+  screen_printf(0, title_padding, "%s", title);
+
+  for (int row = 0; row < 2; row++)
   {
-    if (sscanf(strfmt.data, "%d.%d.%d.%d", &a, &b, &c, &d) == 4)
+    for (int col = 0; col < 20; col++)
     {
-      if (a >= 0 && a <= 255 && b >= 0 && b <= 255 && c >= 0 && c <= 255 && d >= 0 && d <= 255)
+      if (user_fmt[row][col] == '0')
       {
-        ip[0] = a;
-        ip[1] = b;
-        ip[2] = c;
-        ip[3] = d;
+        user_fmt_pos[user_fmt_pos_cnt].row = row;
+        user_fmt_pos[user_fmt_pos_cnt].col = col;
+        user_fmt_pos_cnt++;
       }
-      else
+    }
+  }
+
+  snprintf(user_fmt[0], sizeof(user_fmt[0]),"    %03d.%03d.%03d     ", mac[0], mac[1], mac[2]);
+  snprintf(user_fmt[1],sizeof(user_fmt[0]), "    %03d.%03d.%03d     ", mac[3], mac[4], mac[5]);
+
+  screen_printf(row_offset, 0, "%s", user_fmt[0]);
+  screen_printf(1 + row_offset, 0, "%s", user_fmt[1]);
+
+  cur_col_pos = user_fmt_pos[0].col;
+  cur_row_pos = user_fmt_pos[0].row+row_offset;
+
+  screen_refresh();
+
+  while(1)
+  {
+    screen_refresh();
+    key = get_button_key(500);
+    blink_state = !blink_state;
+
+    screen_printf(row_offset, 0, "%s", user_fmt[0]);
+    screen_printf(1 + row_offset, 0, "%s", user_fmt[1]);
+    display_char = blink_state ? user_fmt[cur_row_pos-row_offset][cur_col_pos] : ' ';
+    screen_put_ch(cur_row_pos, cur_col_pos, display_char);
+
+    switch (key)
+    {
+    case KEY_CODE_CTRL_C:
+      return MENU_BACK;
+
+    case KEY_CODE_CTRL_Q:
+      return MENU_ABORT;
+
+    case KEY_CODE_ENTER:
+    {
+      int a, b, c;
+      sscanf(user_fmt[0], "    %03d.%03d.%03d     ", &a, &b, &c);
+      mac[0] = a;
+      mac[1] = b;
+      mac[2] = c;
+      sscanf(user_fmt[1], "    %03d.%03d.%03d     ", &a, &b, &c);
+      mac[3] = a;
+      mac[4] = b;
+      mac[5] = c;
+      return MENU_OK;
+    }
+      break;
+    case KEY_CODE_RIGHT:
+      if (pos_cnt < user_fmt_pos_cnt-1)
       {
-        status = MENU_ERROR;
+        pos_cnt++;
+        cur_col_pos = user_fmt_pos[pos_cnt].col;
+        cur_row_pos = user_fmt_pos[pos_cnt].row + row_offset;
+        blink_state=1;
       }
+            break;
+      case KEY_CODE_LEFT:
+        if (pos_cnt>0)
+        {
+          pos_cnt--;
+          cur_col_pos = user_fmt_pos[pos_cnt].col;
+          cur_row_pos = user_fmt_pos[pos_cnt].row + row_offset;
+          blink_state = 1;
+        }
+
+      default :
+       if (key >= '0' && key <= '9')
+      {
+         user_fmt[cur_row_pos-row_offset][cur_col_pos] = key;
+         if (pos_cnt < user_fmt_pos_cnt - 1)
+         {
+           pos_cnt++;
+           cur_col_pos = user_fmt_pos[pos_cnt].col;
+           cur_row_pos = user_fmt_pos[pos_cnt].row + row_offset;
+           blink_state = 1;
+         }
+     }
+        break;
+    }
+
+  }
+
+}
+
+
+int32_t input_ip_address(const char *title, uint8_t *ip)
+{
+int a, b, c, d;
+string_fmt_t strfmt;
+int32_t status;
+
+strfmt.fmt = "%3d.%3d.%3d.%3d";
+snprintf(strfmt.data, sizeof(strfmt.data), "%03d.%03d.%03d.%03d", ip[0], ip[1], ip[2], ip[3]);
+
+status = input_fmt(&strfmt, title);
+if (status == MENU_OK)
+{
+  if (sscanf(strfmt.data, "%d.%d.%d.%d", &a, &b, &c, &d) == 4)
+  {
+    if (a >= 0 && a <= 255 && b >= 0 && b <= 255 && c >= 0 && c <= 255 && d >= 0 && d <= 255)
+    {
+      ip[0] = a;
+      ip[1] = b;
+      ip[2] = c;
+      ip[3] = d;
     }
     else
     {
       status = MENU_ERROR;
     }
   }
+  else
+  {
+    status = MENU_ERROR;
+  }
+  }
 
   return status;
 }
 
 // 이더넷 메뉴 정의
-#define ETH_MENU_MODE 0
-#define ETH_MENU_LOCAL_IP 1
-#define ETH_MENU_SUBNET 2
-#define ETH_MENU_GATEWAY 3
-#define ETH_MENU_LOCAL_PORT 4
-#define ETH_MENU_REMOTE_IP 5
-#define ETH_MENU_REMOTE_PORT 6
+#define ETH_MENU_MODE        0
+#define ETH_MENU_LOCAL_IP    1
+#define ETH_MENU_SUBNET      2
+#define ETH_MENU_GATEWAY     3
+#define ETH_MENU_MAC         4
+#define ETH_MENU_LOCAL_PORT  5
+#define ETH_MENU_REMOTE_IP   6
+#define ETH_MENU_REMOTE_PORT 7
 
 void draw_eth_config_page(screen_menu_t* p_win)
 {
@@ -164,6 +296,9 @@ void draw_eth_config_page(screen_menu_t* p_win)
 
   screen_update_list(p_win, row_count, ETH_MENU_GATEWAY);
   M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Gateway");
+
+  screen_update_list(p_win, row_count, ETH_MENU_MAC);
+  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "MAC");
 
   screen_update_list(p_win, row_count, ETH_MENU_LOCAL_PORT);
   M_PRINTF(p_win, row_count++, "%-*s:%d", NETWORK_WD, "Local Port", 
@@ -252,6 +387,17 @@ int32_t setup_eth_config(void)
             show_popup("Information", "Applied after reset");
           }
           break;
+        case ETH_MENU_MAC:
+          status = input_mac_address("MAC", get_config_app()->eth_mac);
+          if (status == MENU_OK)
+          {
+            WRITE_CFG(eth_mac);
+            show_popup("Information", "Applied after reset");
+          }
+          break;
+
+          break;
+        
         case ETH_MENU_LOCAL_PORT:
           dec = get_config_app()->eth_local_port;
           status = input_decimal("Local Port", 0, 65535, &dec);
@@ -281,7 +427,7 @@ int32_t setup_eth_config(void)
       }
 
       if (status == MENU_ABORT)
-        break;
+        return status;
     }
     else if (key != KEY_CODE_NONE)
     {
@@ -399,7 +545,7 @@ int32_t setup_cdma_config(void)
       }
 
       if (status == MENU_ABORT)
-        break;
+        return status;
     }
     else if (key != KEY_CODE_NONE)
     {
@@ -476,7 +622,7 @@ int32_t setup_direct_config(void)
       }
 
       if (status == MENU_ABORT)
-        break;
+        return status;
     }
     else if (key != KEY_CODE_NONE)
     {
@@ -579,6 +725,9 @@ int32_t setup_menu_network(void)
           }
           break;
       }
+
+      if (status==MENU_ABORT)
+      return status;
     }
     else if (key != KEY_CODE_NONE)
     {

@@ -141,7 +141,7 @@ void startTask(void *arg)
   }
   else
   {
-   // ethernet_powerdown();383->334mA
+    ethernet_powerdown();//383->334mA
   }
 
   panelTask_init();

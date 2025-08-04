@@ -388,8 +388,8 @@ void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* forma
 }
 void screen_menu_handle(screen_menu_t* win, int key)
 {
-  int title_offset = (strlen(win->title) > 0) ? 1 : 0;
-  int effective_view_row = win->view_row - title_offset;
+  int title_offset = (strlen(win->title) > 0) ? 1 : 0;// 타이틀이 존재 하면 
+  int effective_view_row = win->view_row - title_offset;// 타이틀을 제외한 행만 유효한 표시행 
   
   switch (key)
   {

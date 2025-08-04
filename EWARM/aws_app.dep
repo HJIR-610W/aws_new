@@ -2196,7 +2196,7 @@
             <file>$PROJ_DIR$\..\application\app\test\parser\hart_parser.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_hj.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\ppp\ppp_impl.h</file>
-            <file>$PROJ_DIR$\..\Application\app\app_drivers\app_screen.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcpbase.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_aws_std.h</file>
             <file>$PROJ_DIR$\release\Obj\usbd_conf.xcl</file>
@@ -2248,7 +2248,7 @@
             <file>$PROJ_DIR$\..\application\app\panel\panel.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_virtual.h</file>
             <file>$PROJ_DIR$\..\Application\Sensors\temperature\hj_temperature_define.h</file>
-            <file>$PROJ_DIR$\..\Application\app\app_drivers\app_key.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h</file>
             <file>$PROJ_DIR$\release\Obj\driver_fram.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\app_flash.xcl</file>
