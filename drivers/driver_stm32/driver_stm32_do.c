@@ -40,11 +40,11 @@ stm32_do_inst_t do_inst[STM32_DO_MAX] = {
                                                 .Speed = GPIO_SPEED_FREQ_LOW},
                                        .port = DO_CON_PWR_RAIN_GPIO_Port,
                                        .init_state = GPIO_PIN_RESET}, /*전원 차단*/
-    [STM32_DO_LCD_RESET] = {.init = {.Pin = DO_RESET_H_Pin,
+    [STM32_DO_LCD_RESET] = {.init = {.Pin = DO_BTM_PWRC_Pin,
                                    .Mode = GPIO_MODE_OUTPUT_PP,
                                    .Pull = GPIO_NOPULL,
                                    .Speed = GPIO_SPEED_FREQ_LOW},
-                          .port = DO_RESET_H_GPIO_Port,
+                          .port = DO_BTM_PWRC_GPIO_Port,
                           .init_state = GPIO_PIN_RESET},
     [STM32_DO_ADC_CS] = {.init = {.Pin = DO_SPI2_NSS_Pin,
                                 .Mode = GPIO_MODE_OUTPUT_PP,
@@ -85,8 +85,8 @@ stm32_do_inst_t do_inst[STM32_DO_MAX] = {
     [STM32_DO_DIR_RS485_D] = {.init = {.Pin = DO_RS485_DIR_D_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
                             .port = DO_RS485_DIR_D_GPIO_Port,
                             .init_state = GPIO_PIN_RESET}, /*수신모드*/
-    [STM32_DO_STATUS_BTM] = {.init = {.Pin = DO_STATUS_BTM_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_STATUS_BTM_GPIO_Port,
+    [STM32_DO_POWER_LCD] = {.init = {.Pin = DO_POWER_LCD_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                           .port = DO_POWER_LCD_GPIO_Port,
                            .init_state = GPIO_PIN_SET},
     [STM32_DO_POWER_BTM] = {.init = {.Pin = DO_BTM_PWRC_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
                           .port = DO_BTM_PWRC_GPIO_Port,
@@ -142,7 +142,7 @@ void stm32_do_init(void)
         case STM32_DO_HART_RESET:
         case STM32_DO_DIR_RS485_C:
         case STM32_DO_DIR_RS485_D:
-        case STM32_DO_STATUS_BTM:
+        case STM32_DO_POWER_LCD:
         case STM32_DO_POWER_BTM:
         case STM32_DO_QUAD_A_RST:
         case STM32_DO_QUAD_B_RST:
@@ -177,7 +177,7 @@ void stm32_do_low(int num)
     case STM32_DO_HART_RESET:
     case STM32_DO_DIR_RS485_C:
     case STM32_DO_DIR_RS485_D:
-    case STM32_DO_STATUS_BTM:
+    case STM32_DO_POWER_LCD:
     case STM32_DO_POWER_BTM:
     case STM32_DO_QUAD_A_RST:
     case STM32_DO_QUAD_B_RST:
@@ -210,7 +210,7 @@ void stm32_do_high(int num)
     case STM32_DO_HART_RESET:
     case STM32_DO_DIR_RS485_C:
     case STM32_DO_DIR_RS485_D:
-    case STM32_DO_STATUS_BTM:
+    case STM32_DO_POWER_LCD:
     case STM32_DO_POWER_BTM:
     case STM32_DO_QUAD_A_RST:
     case STM32_DO_QUAD_B_RST:

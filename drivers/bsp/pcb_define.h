@@ -7,6 +7,7 @@
 #include "os_user_def.h"
 
 #define AWS_PCB_0_5 5
+#define AWS_PCB_0_6 6
 
 /*
 외부 SRAM:IS61WV204816BLL-xxTLI 4MB

@@ -66,8 +66,8 @@
 #define ETH_TXD0_GPIO_Port               GPIOB
 #define ETH_TXD1_Pin                     GPIO_PIN_13
 #define ETH_TXD1_GPIO_Port               GPIOB
-#define DO_STATUS_BTM_Pin                GPIO_PIN_14
-#define DO_STATUS_BTM_GPIO_Port          GPIOB
+#define DO_POWER_LCD_Pin                GPIO_PIN_14
+#define DO_POWER_LCD_GPIO_Port          GPIOB
 #define DO_BTM_PWRC_Pin                  GPIO_PIN_15
 #define DO_BTM_PWRC_GPIO_Port            GPIOB
 
