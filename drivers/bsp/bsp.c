@@ -20,7 +20,7 @@
 #include "bsp_adc.h"
 #include "bsp_uart.h"
 #include "bsp_rs485.h"
-
+#include "bsp_eth.h"
 
 uint32_t g_pcb_version = AWS_PCB_VER;
 
@@ -509,6 +509,5 @@ void bsp_init(void)
   bsp_interrupt_init();  // 최우선 실행
   bsp_delay_init();
   bsp_adc_init();
-
 
 }

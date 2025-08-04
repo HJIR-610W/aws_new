@@ -47,11 +47,33 @@ void ethernetTask(void *arg)
 
 
 
-
-
-void ethernetTask_init(void)
+    void ethernetTask_init(void)
 {
  
   osThreadNew(ethernetTask, NULL, &ethernetTxTask_attributes);
 
+}
+
+void ethernetPowerDownTask(void *arg)
+{
+  extern void ethernet_power_down(void);
+
+  uint8_t *ip;
+  uint8_t *mask;
+  uint8_t *gw;
+
+  ip = config.eth_ip;
+  mask = config.eth_subnet;
+  gw = config.eth_gateway;
+
+  MX_LWIP_Init(ip, mask, gw);
+
+  ethernet_power_down();
+
+  osThreadExit(); // 종료 시킴
+}
+
+void ethernet_powerdown(void)
+{
+  osThreadNew(ethernetPowerDownTask, NULL, &ethernetTxTask_attributes);
 }

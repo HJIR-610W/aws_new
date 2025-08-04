@@ -49,8 +49,36 @@ int32_t input_ip(int *a, int *b, int *c, int *d)
   return status;
 }
 
+int32_t input_mac(int *a, int *b, int *c, int *d,int *e,int *f)
+{
+  int32_t status;
 
+  while (1)
+  {
+    io_printf("MAC(xxx.xxx.xxx.xxx.xxx.xxx)");
+    io_printf("입력:");
+    status = cli_scanf_s("%d.%d.%d.%d.%d.%d", a, b, c, d,e,f);
 
+    if (status == CLI_KEYCODE_CTRL_C)
+    {
+      status = MENU_BACK;
+      break;
+    }
+    else if (status == CLI_KEYCODE_CTRL_Q)
+    {
+      status = MENU_ABORT;
+      break;
+    }
+    else if (status == 4)
+    {
+      status = MENU_OK;
+      break;
+    }
+    io_printf("값이 입력되지 않았습니다.");
+  }
+
+  return status;
+}
 
 /*
 IP:192.168.1.1
@@ -116,16 +144,15 @@ int dec;
   return status;
 }
 
-#define ETH_DEFAUNT_CNT 4
+#define ETH_DEFAUNT_CNT 5
 int32_t aws_eth_default(void)
 {
   int choice, status;
   char buff[ETH_DEFAUNT_CNT][30];
   char *menu[ETH_DEFAUNT_CNT];
   int menu_cnt = 0;
-
-  int a, b, c, d;
-
+  int a, b, c, d,e,f;
+  uint8_t *p_mac;
 
   for (int i = 0; i < ETH_DEFAUNT_CNT; i++)
   {
@@ -145,6 +172,11 @@ int32_t aws_eth_default(void)
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "GATEWAY:%d.%d.%d.%d", ip[0], ip[1], ip[2],
              ip[3]);
     menu_cnt++;
+    p_mac = get_config_app()->eth_mac;
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "MAC:%d.%d.%d.%d.%d.%d", p_mac[0], p_mac[1], p_mac[2],
+             p_mac[3], p_mac[4], p_mac[5]);
+    menu_cnt++;
+
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "PORT   :%d",
              get_config_app()->eth_local_port);
     menu_cnt++;
@@ -189,7 +221,20 @@ int32_t aws_eth_default(void)
           WRITE_CFG(eth_gateway);
           io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
           break;
-        case 4:  // port
+        case 4: // mac
+          status = input_mac(&a, &b, &c, &d,&e,&f);
+          if (status != MENU_OK)
+            break;
+          config.eth_mac[0] = a;
+          config.eth_mac[1] = b;
+          config.eth_mac[2] = c;
+          config.eth_mac[3] = d;
+          config.eth_mac[4] = e;
+          config.eth_mac[5] = f;
+          WRITE_CFG(eth_mac);
+          io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+          break;
+        case 5:  // port
           status = input_decimal_prompt("포트",&a,0,100000);
           if(status != MENU_OK)
           break;

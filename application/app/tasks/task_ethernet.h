@@ -4,5 +4,6 @@
 
 
 void ethernetTask_init(void);
+void ethernet_powerdown(void);
 
 #endif

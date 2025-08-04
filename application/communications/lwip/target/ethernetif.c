@@ -31,6 +31,7 @@
 #include <string.h>
 #include "cmsis_os.h"
 #include "lwip/tcpip.h"
+#include "config_app.h"
 
 /* Within 'USER CODE' section, code will be kept by default at each generation */
 /* USER CODE BEGIN 0 */
@@ -189,15 +190,15 @@ static void low_level_init(struct netif *netif)
   int32_t PHYLinkState = 0;
   ETH_MACConfigTypeDef MACConf = {0};
   /* Start ETH HAL Init */
-
+  uint8_t *p_mac = get_config_app()->eth_mac;
    uint8_t MACAddr[6] ;
   heth.Instance = ETH;
-  MACAddr[0] = 0x00;
-  MACAddr[1] = 0x80;
-  MACAddr[2] = 0xE1;
-  MACAddr[3] = 0x00;
-  MACAddr[4] = 0x00;
-  MACAddr[5] = 0x00;
+  MACAddr[0] = p_mac[0];  //0x00;
+  MACAddr[1] = p_mac[1]; // 0x80;
+  MACAddr[2] = p_mac[2]; // 0xE1;
+  MACAddr[3] = p_mac[3]; // 0x00;
+  MACAddr[4] = p_mac[4]; // 0x00;
+  MACAddr[5] = p_mac[5]; // 0x00;
   heth.Init.MACAddr = &MACAddr[0];
   heth.Init.MediaInterface = HAL_ETH_RMII_MODE;
   heth.Init.TxDesc = DMATxDscrTab;
@@ -899,3 +900,9 @@ void HAL_ETH_TxFreeCallback(uint32_t * buff)
 
 /* USER CODE END 8 */
 
+
+
+void ethernet_power_down(void)
+{
+  LAN8742_EnablePowerDownMode(&LAN8742);
+}

@@ -83,6 +83,7 @@ typedef struct config_s
   uint8_t eth_subnet[4];    // 설정 후 리셋 요구됨
   uint8_t eth_gateway[4];   // 설정 후 리셋 요구됨
   uint8_t eth_ip[4];        // 설정 후 리셋 요구됨
+  uint8_t eth_mac[6];       // 설정 후 리셋 요구됨
   uint8_t eth_remote_server_ip[4];
   uint16_t eth_remote_server_port;
   uint16_t eth_local_port;   // 설정 후 리셋 요구됨
