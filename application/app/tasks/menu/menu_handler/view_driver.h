@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include "util_memory.h"
 #include "cli_key_code.h"
 #define KEY_BREAK KEY_CODE_CTRL_Q
 #define KEY_ENTER KEY_CODE_ENTER
@@ -14,7 +15,7 @@ extern "C" {
 #define KEY_LEFT KEY_CODE_LEFT
 #define KEY_RIGHT KEY_CODE_RIGHT
 
-#define ALIGN_UP(val, align)  (((val) + ((align) - 1)) / (align) * (align))
+
 
 
 //win은 하나의 창으로 구성되며 창은 스크롤 기능과 여러개의 페이지로 구성된다.

@@ -8,6 +8,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#define ALIGN_UP(val, align) (((val) + ((align) - 1)) / (align) * (align))
+
 #define BIT_UPDATE(val, cond, bitmask) \
   do                                   \
   {                                    \

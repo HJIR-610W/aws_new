@@ -28,39 +28,36 @@ void draw_setup_data_menu(screen_menu_t *p_win)
   screen_menu_clear(p_win);
 }
 
-void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t startTime)
+void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t start_time)
 {
-  int32_t row_count = 0;
   DATE_TIME_BUF ct;
 
   screen_page_start(p_win);
 
-  time_cvt_secTotime(startTime, &ct);
+  time_cvt_secTotime(start_time, &ct);
 
-  MENU_PAGE_PRINTF(p_win, row_count++, "%04d-%02d-%02d %02d:%02d:00",ct.Year,ct.Month,ct.Day,ct.Hour,ct.Min);
-  MENU_PAGE_PRINTF(p_win, row_count++, "TEMP       :%6.1f", READ_TEMP(p_aws->mTemperature.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "WIND DIR   :%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "WIND SPEED :%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "GUST WIND D:%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "GUST WIND S:%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "RAIN       :%6.1f", READ_X10(p_aws->mRainFall.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "BAROMETER  :%6.1f", READ_X10(p_aws->mBarometric.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "RAIN P     :%6d", p_aws->mRainDetect.sReal);
-  MENU_PAGE_PRINTF(p_win, row_count++, "SNOW       :%6d", p_aws->mSnowFall.sReal);
-  MENU_PAGE_PRINTF(p_win, row_count++, "HUMI       :%6.1f", READ_X10(p_aws->mHumidity.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOLAR R    :%7.2f", READ_X100(p_aws->mSolarRad.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOLAR D    :%6d", p_aws->mSunshine.sReal);
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 5cm :%6.1f", READ_TEMP(p_aws->mSoilTemp5cm.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 10cm:%6.1f", READ_TEMP(p_aws->mSoilTemp10cm.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 20cm:%6.1f", READ_TEMP(p_aws->mSoilTemp20cm.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 30cm:%6.1f", READ_TEMP(p_aws->mSoilTemp30cm.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 50cm:%6.1f", READ_TEMP(p_aws->mSoilTemp50cm.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T   1m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_0m.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 1.5m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_5m.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 3.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp3_0m.sReal));
-  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 5.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp5_0m.sReal));
-
-  p_win->total_items[0] = ALIGN_UP(row_count, p_win->view_row);
+  screen_page_printf(p_win, "%04d-%02d-%02d %02d:%02d:00", ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+  screen_page_printf(p_win, "TEMP       :%6.1f", READ_TEMP(p_aws->mTemperature.sReal));
+  screen_page_printf(p_win, "WIND DIR   :%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
+  screen_page_printf(p_win, "WIND SPEED :%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
+  screen_page_printf(p_win, "GUST WIND D:%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
+  screen_page_printf(p_win, "GUST WIND S:%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
+  screen_page_printf(p_win, "RAIN       :%6.1f", READ_X10(p_aws->mRainFall.sReal));
+  screen_page_printf(p_win, "BAROMETER  :%6.1f", READ_X10(p_aws->mBarometric.sReal));
+  screen_page_printf(p_win, "RAIN P     :%6d", p_aws->mRainDetect.sReal);
+  screen_page_printf(p_win, "SNOW       :%6d", p_aws->mSnowFall.sReal);
+  screen_page_printf(p_win, "HUMI       :%6.1f", READ_X10(p_aws->mHumidity.sReal));
+  screen_page_printf(p_win, "SOLAR R    :%7.2f", READ_X100(p_aws->mSolarRad.sReal));
+  screen_page_printf(p_win, "SOLAR D    :%6d", p_aws->mSunshine.sReal);
+  screen_page_printf(p_win, "SOIL T 5cm :%6.1f", READ_TEMP(p_aws->mSoilTemp5cm.sReal));
+  screen_page_printf(p_win, "SOIL T 10cm:%6.1f", READ_TEMP(p_aws->mSoilTemp10cm.sReal));
+  screen_page_printf(p_win, "SOIL T 20cm:%6.1f", READ_TEMP(p_aws->mSoilTemp20cm.sReal));
+  screen_page_printf(p_win, "SOIL T 30cm:%6.1f", READ_TEMP(p_aws->mSoilTemp30cm.sReal));
+  screen_page_printf(p_win, "SOIL T 50cm:%6.1f", READ_TEMP(p_aws->mSoilTemp50cm.sReal));
+  screen_page_printf(p_win, "SOIL T   1m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_0m.sReal));
+  screen_page_printf(p_win, "SOIL T 1.5m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_5m.sReal));
+  screen_page_printf(p_win, "SOIL T 3.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp3_0m.sReal));
+  screen_page_printf(p_win, "SOIL T 5.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp5_0m.sReal));
 
   screen_page_clear(p_win);
 }

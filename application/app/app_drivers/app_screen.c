@@ -8,7 +8,7 @@
 #include "driver_lcd.h"
 #include "cmsis_os2.h"
 #include "cli_key_code.h"
-
+#include "util_memory.h"
 #define MAX_COLS 21
 
 
@@ -111,7 +111,9 @@ void screen_page_create(screen_page_t* win, int rows, int cols)
     win->total_items[i] = 0;
   }
 }
-
+/**
+ * @brief 타이틀이 메뉴용
+ */
 void screen_menu_create(screen_menu_t* win,const char *titile)
 {
   win->current_row = 0;
@@ -242,6 +244,9 @@ void screen_page_handle(screen_page_t* win, int key)
 {
   int page = win->current_page;
   int new_offset = 0;
+  int total_items = 0;
+
+  total_items = ALIGN_UP(win->total_items[page], win->view_row);
 
   switch (key)
   {
@@ -271,8 +276,7 @@ void screen_page_handle(screen_page_t* win, int key)
         new_offset = win->scroll_offset[page] + 1;
       }
 
-
-      if (new_offset < win->total_items[page])
+      if (new_offset < total_items)
       {
         win->scroll_offset[page] = new_offset;
       }
@@ -443,12 +447,8 @@ void screen_menu_clear(screen_menu_t *win)
   int i;
   int display_row;
 
-
-  display_row = win->current_row - win->scroll_offset ;
-
-  for (; display_row < win->view_row; display_row++)
+  for (display_row = win->current_row; display_row < win->view_row; display_row++)
   {
-    // 나머지 공간을 공백으로 채움
     for (i = 0; i < win->view_col; i++)
     {
       screen_put_ch(display_row, i, ' ');
@@ -487,31 +487,75 @@ void screen_clear_unsued_line(screen_menu_t* p_win)
 }
 
 /**
- * @brief win->currrent_row기준으로 view_row 남은 행을 전부 공백표시,clear
+ * @brief win->current_row기준으로 view_row 남은 행을 전부 공백표시,clear
  */
 void screen_page_clear(screen_page_t *win)
 {
   int i;
   int display_row;
-  int page = win->current_page;
 
-
-  display_row = win->current_row - win->scroll_offset[page];
-
-  for (; display_row <  win->view_row; display_row++)
+  for (display_row = win->current_row; display_row < win->view_row; display_row++)
   {
-    // 나머지 공간을 공백으로 채움
     for (i = 0; i < win->view_col; i++)
     {
       screen_put_ch(display_row, i, ' ');
     }
   }
-
 }
 
 void screen_page_start(screen_page_t *win)
 {
   int page = win->current_page;
   win->current_row  = 0;
-  win->total_items[page] = page;
+  win->total_items[page] = 0;
+}
+
+void screen_page_printf(screen_page_t *win,const char *format, ...)
+{
+  char s_format_buffer[MAX_COLS + 1]; // 정적 버퍼 크기는 필요에 따라 조정
+  int display_row;
+  int cols;
+  int i;
+  int text_len;
+  int page;
+  int row_index;
+  va_list args;
+
+  row_index = win->total_items[win->current_page];
+  
+  win->total_items[win->current_page]++;
+
+  if (win->current_row >= win->view_row)
+  {
+    return;
+  }
+
+  // 가변 인자를 문자열로 포맷팅
+  va_start(args, format);
+  vsnprintf(s_format_buffer, sizeof(s_format_buffer), format, args);
+  va_end(args);
+
+  cols = win->view_col;
+  page = win->current_page;
+
+  if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + win->view_row)
+  {
+    display_row = row_index - win->scroll_offset[page];
+
+    screen_set_cursor(display_row, 0);
+
+    text_len = strlen(s_format_buffer);
+
+    for (i = 0; i < text_len && i < cols; i++)
+    {
+      screen_put_ch(display_row, i, s_format_buffer[i]);
+    }
+
+    for (i = text_len; i < cols; i++)
+    {
+      screen_put_ch(display_row, i, ' ');
+    }
+
+    win->current_row++;
+  }
 }
