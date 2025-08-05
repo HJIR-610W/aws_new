@@ -108,7 +108,7 @@ int32_t read_snow_config(void)
     }
     else if (key != KEY_CODE_NONE)
     {
-      screen_handle_scroll(&lcd_win, key);
+      screen_page_handle(&lcd_win, key);
     }
   } while (1);
 

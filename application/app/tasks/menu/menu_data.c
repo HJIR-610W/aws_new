@@ -14,64 +14,55 @@
 #define DATA_WD 10
 
 
-#define MENU_PRINTF screen_printf_row
+#define MENU_PAGE_PRINTF screen_printf_row
 
-void draw_setup_data_page(screen_menu_t *p_win)
+void draw_setup_data_menu(screen_menu_t *p_win)
 {
   int32_t row_count = 0;
 
-  p_win->current_row = 0;
+  screen_menu_start(p_win);
 
   screen_update_list(p_win, row_count, DATA_MENU_AWS);
   screen_menu_printf_row(p_win, row_count++, "%-*s", DATA_WD, "AWS");
 
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_clear(p_win);
 }
 
-void draw_aws_log_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t startTime)
+void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t startTime)
 {
   int32_t row_count = 0;
   DATE_TIME_BUF ct;
 
-  p_win->current_row = 0;
+  screen_page_start(p_win);
 
   time_cvt_secTotime(startTime, &ct);
 
-  MENU_PRINTF(p_win, row_count++, "%04d-%02d-%02d %02d:%02d:00",ct.Year,ct.Month,ct.Day,ct.Hour,ct.Min);
-  MENU_PRINTF(p_win, row_count++, "TEMP       :%6.1f", READ_TEMP(p_aws->mTemperature.sReal));
-  MENU_PRINTF(p_win, row_count++, "WIND DIR   :%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
-  MENU_PRINTF(p_win, row_count++, "WIND SPEED :%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
-  MENU_PRINTF(p_win, row_count++, "GUST WIND D:%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
-  MENU_PRINTF(p_win, row_count++, "GUST WIND S:%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
-  MENU_PRINTF(p_win, row_count++, "RAIN       :%6.1f", READ_X10(p_aws->mRainFall.sReal));
-  MENU_PRINTF(p_win, row_count++, "BAROMETER  :%6.1f", READ_X10(p_aws->mBarometric.sReal));
-  MENU_PRINTF(p_win, row_count++, "RAIN P     :%6d", p_aws->mRainDetect.sReal);
-  MENU_PRINTF(p_win, row_count++, "SNOW       :%6d", p_aws->mSnowFall.sReal);
-  MENU_PRINTF(p_win, row_count++, "HUMI       :%6.1f", READ_X10(p_aws->mHumidity.sReal));
-  MENU_PRINTF(p_win, row_count++, "SOLAR R    :%7.2f", READ_X100(p_aws->mSolarRad.sReal));
-  MENU_PRINTF(p_win, row_count++, "SOLAR D    :%6d", p_aws->mSunshine.sReal);
-  MENU_PRINTF(p_win, row_count++, "SOIL T 5cm :%6.1f", READ_TEMP(p_aws->mSoilTemp5cm.sReal));
-  MENU_PRINTF(p_win, row_count++, "SOIL T 10cm:%6.1f", READ_TEMP(p_aws->mSoilTemp10cm.sReal));
-  MENU_PRINTF(p_win, row_count++, "SOIL T 20cm:%6.1f", READ_TEMP(p_aws->mSoilTemp20cm.sReal));
-  MENU_PRINTF(p_win, row_count++, "SOIL T 30cm:%6.1f", READ_TEMP(p_aws->mSoilTemp30cm.sReal));
-  MENU_PRINTF(p_win, row_count++, "SOIL T 50cm:%6.1f", READ_TEMP(p_aws->mSoilTemp50cm.sReal));
-  MENU_PRINTF(p_win, row_count++, "SOIL T   1m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_0m.sReal));
-  MENU_PRINTF(p_win, row_count++, "SOIL T 1.5m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_5m.sReal));
-  MENU_PRINTF(p_win, row_count++, "SOIL T 3.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp3_0m.sReal));
-  MENU_PRINTF(p_win, row_count++, "SOIL T 5.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp5_0m.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "%04d-%02d-%02d %02d:%02d:00",ct.Year,ct.Month,ct.Day,ct.Hour,ct.Min);
+  MENU_PAGE_PRINTF(p_win, row_count++, "TEMP       :%6.1f", READ_TEMP(p_aws->mTemperature.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "WIND DIR   :%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "WIND SPEED :%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "GUST WIND D:%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "GUST WIND S:%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "RAIN       :%6.1f", READ_X10(p_aws->mRainFall.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "BAROMETER  :%6.1f", READ_X10(p_aws->mBarometric.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "RAIN P     :%6d", p_aws->mRainDetect.sReal);
+  MENU_PAGE_PRINTF(p_win, row_count++, "SNOW       :%6d", p_aws->mSnowFall.sReal);
+  MENU_PAGE_PRINTF(p_win, row_count++, "HUMI       :%6.1f", READ_X10(p_aws->mHumidity.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOLAR R    :%7.2f", READ_X100(p_aws->mSolarRad.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOLAR D    :%6d", p_aws->mSunshine.sReal);
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 5cm :%6.1f", READ_TEMP(p_aws->mSoilTemp5cm.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 10cm:%6.1f", READ_TEMP(p_aws->mSoilTemp10cm.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 20cm:%6.1f", READ_TEMP(p_aws->mSoilTemp20cm.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 30cm:%6.1f", READ_TEMP(p_aws->mSoilTemp30cm.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 50cm:%6.1f", READ_TEMP(p_aws->mSoilTemp50cm.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T   1m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_0m.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 1.5m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_5m.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 3.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp3_0m.sReal));
+  MENU_PAGE_PRINTF(p_win, row_count++, "SOIL T 5.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp5_0m.sReal));
 
   p_win->total_items[0] = ALIGN_UP(row_count, p_win->view_row);
 
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_clear_row(p_win, row_count++);
-  }
+  screen_page_clear(p_win);
 }
 
 int32_t menu_data_aws(void)
@@ -115,7 +106,7 @@ int32_t menu_data_aws(void)
         break;
       }
       startTime = SetTime(nt.Year, nt.Month,nt.Day, nt.Hour,nt.Min, 0);
-      draw_aws_log_page(&lcd_win, &aws, startTime);
+      draw_aws_data_page(&lcd_win, &aws, startTime);
       screen_refresh();
       key = get_button_key(1000);
 
@@ -141,7 +132,7 @@ int32_t menu_data_aws(void)
       }
       else if (key != KEY_CODE_NONE)
       {
-        screen_handle_scroll(&lcd_win, key);
+        screen_page_handle(&lcd_win, key);
       }
     }while(1);
 
@@ -151,16 +142,14 @@ int32_t menu_data_aws(void)
 
 int32_t setup_menu_data(void)
 {
-
   int32_t key;
-
   screen_menu_t menu;
 
   screen_menu_create(&menu, "Data");
 
   while (1)
   {
-    draw_setup_data_page(&menu);
+    draw_setup_data_menu(&menu);
     screen_refresh();
 
     key = get_button_key(1000);

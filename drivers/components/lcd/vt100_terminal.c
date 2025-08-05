@@ -15,7 +15,7 @@
 
 
 #define VT100_DEFAULT_ROWS    8
-#define VT100_DEFAULT_COLS    20
+#define VT100_DEFAULT_COLS    21
 
 typedef struct {
     int32_t uart_io;

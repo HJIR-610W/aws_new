@@ -1224,7 +1224,7 @@ void menuTask(void *arg)
     }
     else if (key != -1)
     {
-      screen_handle_scroll(&lcd_win, key);
+      screen_page_handle(&lcd_win, key);
       start_time = OS_GET_TICK();
 
     }

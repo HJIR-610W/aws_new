@@ -60,15 +60,24 @@ void screen_refresh(void);
 void screen_put_ch(int row, int col, uint8_t ch);
 void screen_printf(int row, int col, const char* format, ...);
 void screen_clear(void);
-void screen_page_create(screen_page_t* win, int rows, int cols);
+
 void screen_printf_row(screen_page_t* win, int row_index, const char* format, ...);
 void screen_clear_row(screen_page_t* win, int row_index);
-void screen_handle_scroll(screen_page_t* win, int key);
+
+void screen_page_create(screen_page_t *win, int rows, int cols);
+void screen_page_clear(screen_page_t *win);
+void screen_page_handle(screen_page_t* win, int key);
+void screen_page_start(screen_page_t *win);
+
+    void screen_menu_create(screen_menu_t *win, const char *titile);
 void screen_menu_handle(screen_menu_t* win, int key);
-void screen_off(void);
+void screen_menu_clear(screen_menu_t *win);
+void screen_menu_start(screen_menu_t *win);
+
+    void screen_off(void);
 void screen_on(void);
-void screen_menu_create(screen_menu_t* win, const char *titile);
-void screen_menu_clear(screen_menu_t* win);
+
+
 void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* format, ...);
 void screen_menu_clear_row(screen_menu_t* win, int row_index);
 void screen_update_list(screen_menu_t* p_screen, int index, int id);

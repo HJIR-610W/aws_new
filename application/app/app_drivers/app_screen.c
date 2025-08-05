@@ -9,7 +9,7 @@
 #include "cmsis_os2.h"
 #include "cli_key_code.h"
 
-#define MAX_COLS 20
+#define MAX_COLS 21
 
 
 
@@ -26,7 +26,7 @@ void screen_init(void)
     s_screen.height_pixcel = 64;
     s_screen.width_pixel = 128;
     s_screen.font_rows = 8;
-    s_screen.font_cols = 20;
+    s_screen.font_cols = 21;
   }
 }
 screen_instance_t* screen_get_instance(void)
@@ -138,19 +138,7 @@ void screen_menu_create(screen_menu_t* win,const char *titile)
 
 }
 
-void screen_menu_clear(screen_menu_t* win)
-{
-  for (int row = 0; row < win->view_row; row++)
-  {
-    for (int i = 0; i < win->view_col; i++)
-    {
-      screen_put_ch(row, i, ' ');
-    }
-  }
-  
-  win->current_row = 0;
-  win->total_items = 0;
-}
+
 
 void screen_printf(int row, int col, const char* format, ...)
 {
@@ -188,6 +176,9 @@ void screen_printf_row(screen_page_t* win, int row_index, const char* format, ..
   int i;
   int text_len;
   int page;
+
+  win->total_items[win->current_page]++;
+
 
   if (win->current_row >= win->view_row)
   {
@@ -247,7 +238,7 @@ void screen_clear_row(screen_page_t* win, int row_index)
   win->current_row++;
 }
 
-void screen_handle_scroll(screen_page_t* win, int key)
+void screen_page_handle(screen_page_t* win, int key)
 {
   int page = win->current_page;
   int new_offset = 0;
@@ -304,7 +295,8 @@ void screen_handle_scroll(screen_page_t* win, int key)
   }
 }
 
-void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* format, ...)
+
+    void screen_menu_printf_row(screen_menu_t *win, int row_index, const char *format, ...)
 {
   char s_format_buffer[MAX_COLS];  // 정적 버퍼 크기는 필요에 따라 조정
   va_list args;
@@ -315,7 +307,9 @@ void screen_menu_printf_row(screen_menu_t* win, int row_index, const char* forma
   char selection_indicator;
   int title_offset = 0;
 
-  // 타이틀이 있으면 항상 첫 번째 행에 타이틀 표시 (스크롤과 무관하게)
+  win->total_items++;
+
+  // 타이틀이 있으면 항상 첫 번째 행에 타이틀 표시 
   if (strlen(win->title) > 0)
   {
     if (win->current_row == 0)
@@ -396,10 +390,8 @@ void screen_menu_handle(screen_menu_t* win, int key)
     case KEY_CODE_UP:  // 위로 이동
       if (win->selected_index > 0)
       {
-
-               win->selected_index--;
+        win->selected_index--;
     
-        
         // 선택된 항목이 화면 위쪽을 벗어나면 스크롤
         if (win->selected_index < win->scroll_offset)
         {
@@ -441,7 +433,28 @@ void screen_menu_clear_row(screen_menu_t* win, int row_index)
   win->current_row++;
 }
 
+void screen_menu_start(screen_menu_t *win)
+{
+  win->current_row = 0;
+  win->total_items = 0;
+}
+void screen_menu_clear(screen_menu_t *win)
+{
+  int i;
+  int display_row;
 
+
+  display_row = win->current_row - win->scroll_offset ;
+
+  for (; display_row < win->view_row; display_row++)
+  {
+    // 나머지 공간을 공백으로 채움
+    for (i = 0; i < win->view_col; i++)
+    {
+      screen_put_ch(display_row, i, ' ');
+    }
+  }
+}
 
 void screen_off(void)
 {
@@ -473,5 +486,32 @@ void screen_clear_unsued_line(screen_menu_t* p_win)
   }
 }
 
+/**
+ * @brief win->currrent_row기준으로 view_row 남은 행을 전부 공백표시,clear
+ */
+void screen_page_clear(screen_page_t *win)
+{
+  int i;
+  int display_row;
+  int page = win->current_page;
 
 
+  display_row = win->current_row - win->scroll_offset[page];
+
+  for (; display_row <  win->view_row; display_row++)
+  {
+    // 나머지 공간을 공백으로 채움
+    for (i = 0; i < win->view_col; i++)
+    {
+      screen_put_ch(display_row, i, ' ');
+    }
+  }
+
+}
+
+void screen_page_start(screen_page_t *win)
+{
+  int page = win->current_page;
+  win->current_row  = 0;
+  win->total_items[page] = page;
+}

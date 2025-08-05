@@ -174,7 +174,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     screen_printf(2, 0, "Press any key");
     screen_refresh();
 
-    if (get_button_key(100) != -1)
+    if (get_button_key(500) == KEY_CODE_CTRL_C)
       break;
   }
 
@@ -221,7 +221,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     screen_printf(2, 0, "Press any key");
     screen_refresh();
 
-    if (get_button_key(100) != -1)
+    if (get_button_key(500) == KEY_CODE_CTRL_C)
       break;
   }
 
@@ -323,23 +323,25 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
 
   p_adc = &g_adc_config_ads1220;
 
-  if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+  while(1)
   {
-    status = input_combobox("SE Channel", adc_se_list, _countof(adc_se_list), &channel);
-  }
-  else
-  {
-    status = input_combobox("DIFF Channel", adc_diff_list, _countof(adc_diff_list), &channel);
-  }
+    if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+    {
+      status = input_combobox("SE Channel", adc_se_list, _countof(adc_se_list), &channel);
+    }
+    else
+    {
+      status = input_combobox("DIFF Channel", adc_diff_list, _countof(adc_diff_list), &channel);
+    }
 
-  if (status != MENU_OK)
-    return status;
+    if (status != MENU_OK)
+      return status;
 
-  params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
-               ? &p_adc->single_ended_cal[channel]
-               : &p_adc->differential_cal[channel];
+    params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+                ? &p_adc->single_ended_cal[channel]
+                : &p_adc->differential_cal[channel];
 
-  screen_clear();
+    screen_clear();
 
 
   while (1)
@@ -368,24 +370,24 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
 
     screen_refresh();
 
-    if (get_button_key(500) != -1)
+    if (get_button_key(500) == KEY_CODE_CTRL_C)
       break;
   }
-
+  }
   return MENU_OK;
 }
 
 
 void draw_cali_menu_view_summary(screen_page_t* p_win)
 {
-  int row_count = 0;
-  //int page = p_win->current_page;
+  const adc_cal_params_t *params;
   char buff[SCREEN_COLS + 1];
-
-  const adc_cal_params_t* params;
+  uint8_t err;
+  int row_count = 0;
+  int start_channel;
+  int last_channel;
   int32_t raw;
   float voltage;
-  uint8_t err;
   config_adc_adv_t* p_adc;
 
 
@@ -396,10 +398,9 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
   make_centered(buff, sizeof(buff), "SE Channels(V)", SCREEN_COLS);
   screen_printf_row(p_win, row_count++, "%s", buff);
 
-
   g_current_temp = read_current_temperature();
 
-  for (int32_t channel = 0; channel < 18; channel++)
+  for (int32_t channel = 0; channel < 15; channel++)
   {
     params = &p_adc->single_ended_cal[channel];
     raw = (int32_t)drv_adc_single_raw_read(channel,1, &err);
@@ -407,12 +408,13 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
 
     if (isnan(voltage))
     {
-      screen_printf_row(p_win, row_count++, "%d:NC", channel);
+      screen_printf_row(p_win, row_count, "%d:NC", channel);
     }
     else
     {
-      screen_printf_row(p_win, row_count++, "%d:%.4f", channel, voltage);
+      screen_printf_row(p_win, row_count, "%d:%.4f", channel, voltage);
     }
+    row_count++;
   }
 
   p_win->total_items[0] = ALIGN_UP(row_count, p_win->view_row);
@@ -451,7 +453,7 @@ int32_t cali_setup_menu_view_summary(void)
     }
     else if (key != -1)
     {
-      screen_handle_scroll(&lcd_win, key);
+      screen_page_handle(&lcd_win, key);
     }
   }
 
