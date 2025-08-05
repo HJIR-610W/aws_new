@@ -300,7 +300,7 @@ void screen_page_handle(screen_page_t* win, int key)
 }
 
 
-    void screen_menu_printf_row(screen_menu_t *win, int row_index, const char *format, ...)
+void screen_menu_printf_row(screen_menu_t *win, int row_index, const char *format, ...)
 {
   char s_format_buffer[MAX_COLS];  // 정적 버퍼 크기는 필요에 따라 조정
   va_list args;
@@ -378,6 +378,96 @@ void screen_page_handle(screen_page_t* win, int key)
     win->current_row++;
   }
   
+  // total_items 자동 업데이트
+  if (row_index >= win->total_items)
+  {
+    win->total_items = row_index + 1;
+  }
+}
+
+void screen_menu_printf(screen_menu_t *win,int index,const char *format, ...)
+{
+  char s_format_buffer[MAX_COLS]; // 정적 버퍼 크기는 필요에 따라 조정
+  va_list args;
+  int display_row;
+  int cols;
+  int i;
+  int text_len;
+  char selection_indicator;
+  int title_offset = 0;
+  int row_index;
+
+
+  row_index = win->total_items;
+
+  win->index_list[row_index] = index;
+   win->total_items++;
+
+  // 타이틀이 있으면 항상 첫 번째 행에 타이틀 표시
+  if (strlen(win->title) > 0)
+  {
+    if (win->current_row == 0)
+    {
+      screen_set_cursor(0, 0);
+      text_len = strlen(win->title);
+
+      // 타이틀은 선택 표시 없이 출력
+      for (i = 0; i < text_len && i < win->view_col; i++)
+      {
+        screen_put_ch(0, i, win->title[i]);
+      }
+
+      // 나머지 공간을 공백으로 채움
+      for (i = text_len; i < win->view_col; i++)
+      {
+        screen_put_ch(0, i, ' ');
+      }
+
+      win->current_row++;
+    }
+    title_offset = 1;
+  }
+
+  if (win->current_row >= win->view_row)
+  {
+    return;
+  }
+
+  // 가변 인자를 문자열로 포맷팅
+  va_start(args, format);
+  vsnprintf(s_format_buffer, sizeof(s_format_buffer), format, args);
+  va_end(args);
+
+  cols = win->view_col;
+
+  // 타이틀 오프셋을 고려하여 스크롤 범위 조정
+  if (row_index >= win->scroll_offset && row_index < win->scroll_offset + win->view_row - title_offset)
+  {
+    display_row = row_index - win->scroll_offset + title_offset;
+
+    screen_set_cursor(display_row, 0);
+
+    text_len = strlen(s_format_buffer);
+
+    // 선택된 항목이면 '*', 아니면 ' ' 표시
+    selection_indicator = (win->selected_index == row_index) ? '*' : ' ';
+    screen_put_ch(display_row, 0, selection_indicator);
+
+    // 텍스트 출력 (첫 번째 문자부터 시작)
+    for (i = 0; i < text_len && (i + 1) < cols; i++)
+    {
+      screen_put_ch(display_row, i + 1, s_format_buffer[i]);
+    }
+
+    // 나머지 공간을 공백으로 채움
+    for (i = text_len + 1; i < cols; i++)
+    {
+      screen_put_ch(display_row, i, ' ');
+    }
+
+    win->current_row++;
+  }
+
   // total_items 자동 업데이트
   if (row_index >= win->total_items)
   {

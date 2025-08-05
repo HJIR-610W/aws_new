@@ -35,75 +35,33 @@ extern float g_current_temp;
 #define VIEW_MENU_DIFF          1
 #define VIEW_MENU_SUMMARY       2
 
-#define MENU_PRINTF screen_menu_printf_row
+
 
 void draw_setup_menu_calibration_page(screen_menu_t* p_win)
 {
-  int32_t row_count = 0;
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, CALI_MENU_FACTORY, "Factory Cali");
+  screen_menu_printf(p_win, CALI_MENU_VIEW, "View");
+  screen_menu_printf(p_win, CALI_MENU_INIT, "Init");
+  screen_menu_clear(p_win);
 
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, CALI_MENU_FACTORY);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Factory Cali");
-
-  screen_update_list(p_win, row_count, CALI_MENU_VIEW);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "View");
-
-  screen_update_list(p_win, row_count, CALI_MENU_INIT);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Init");
-
-
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
 }
 
 void draw_cali_setup_menu_factory_page(screen_menu_t* p_win)
 {
-  int32_t row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, FACTORY_MENU_SINGLE);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Single");
-
-  screen_update_list(p_win, row_count, FACTORY_MENU_DIFF);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Diff");
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, FACTORY_MENU_SINGLE ,"Single");
+  screen_menu_printf(p_win, FACTORY_MENU_DIFF, "Diff");
+  screen_menu_clear(p_win);
 }
 
 void draw_cali_setup_menu_view_page(screen_menu_t* p_win)
 {
-  int32_t row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, VIEW_MENU_SINGLE);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Single");
-
-  screen_update_list(p_win, row_count, VIEW_MENU_DIFF);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Diff");
-
-  screen_update_list(p_win, row_count, VIEW_MENU_SUMMARY);
-  MENU_PRINTF(p_win, row_count++, "%-*s", CALI_WD, "Summary");
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win,VIEW_MENU_SINGLE,"Single");
+  screen_menu_printf(p_win, VIEW_MENU_DIFF, "Diff");
+  screen_menu_printf(p_win, VIEW_MENU_SUMMARY, "Summary");
+  screen_menu_clear(p_win);
 }
 
 int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)

@@ -10,6 +10,8 @@
 #include "aws_data.h"
 #include "app_key.h"
 #include "view_driver.h"
+
+
 #define DATA_MENU_AWS 0
 #define DATA_WD 10
 
@@ -18,13 +20,8 @@
 
 void draw_setup_data_menu(screen_menu_t *p_win)
 {
-  int32_t row_count = 0;
-
   screen_menu_start(p_win);
-
-  screen_update_list(p_win, row_count, DATA_MENU_AWS);
-  screen_menu_printf_row(p_win, row_count++, "%-*s", DATA_WD, "AWS");
-
+  screen_menu_printf(p_win, DATA_MENU_AWS, "AWS");
   screen_menu_clear(p_win);
 }
 
@@ -162,7 +159,7 @@ int32_t setup_menu_data(void)
     if (key == KEY_CODE_ENTER)
     {
       screen_clear();
-      switch(menu.selected_index)
+      switch (menu.index_list[menu.selected_index])
       {
         case DATA_MENU_AWS:
           menu_data_aws();
