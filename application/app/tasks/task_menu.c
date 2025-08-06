@@ -44,7 +44,7 @@ extern const char *generalStatusList[2];
 
 #define SCREEN_COLS 21
 #define SCREEN_ROWS 8
-#define SCREEN_OFF_TIMEOUT_MS 10000
+#define SCREEN_OFF_TIMEOUT_MS 600000
 
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",

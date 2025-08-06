@@ -1334,6 +1334,7 @@ void calculate_rain(void)
 #define SUNSHINE_TOTAL (sizeof(uint16_t) * 60 * 24 * 366 + sizeof(uint16_t))
 #define SUNSHINE_DAYS_SIZE (366*sizeof(uint16_t))
 
+//일조
 void calculate_sunshine(void)
 {
   DATE_TIME_BUF ct = Date_Time;

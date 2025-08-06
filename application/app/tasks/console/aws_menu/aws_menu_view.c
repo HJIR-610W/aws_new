@@ -7,6 +7,7 @@
 
 #include "util_time.h"
 
+#include "const_string.h"
 #include "config_app.h"
 #include "console_utile.h"
 #include "task_logging.h"
@@ -27,9 +28,7 @@
 #include "task_system.h"
 #include "drv_system.h"
 #include "schedule.h"
-const char *linkStatusList[3] = {"-", "UP", "DOWN"};
-const char *doorStatusList[2] = {"닫힘", "열림"};
-const char *generalStatusList[2] = {"정상", "비정상"};
+
 
 
 

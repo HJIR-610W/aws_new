@@ -341,9 +341,8 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
   const adc_cal_params_t *params;
   char buff[SCREEN_COLS + 1];
   uint8_t err;
-  int row_count = 0;
-  int start_channel;
-  int last_channel;
+
+
   int32_t raw;
   float voltage;
   config_adc_adv_t* p_adc;
