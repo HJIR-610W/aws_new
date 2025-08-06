@@ -16,7 +16,7 @@
 #define SCREEN_COLS 20
 #define PANEL_WD 8
 
-#define MENU_PRINTF screen_menu_printf_row
+
 
 #define HJ_TEMP_INFO           0
 #define HJ_TEMP_SETTING_OFFSET 1
@@ -25,25 +25,12 @@
 
 void draw_ctrl_hj_temp_page(screen_menu_t *p_win)
 {
-  int32_t row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, HJ_TEMP_INFO);
-  MENU_PRINTF(p_win, row_count++, "Information");
-  screen_update_list(p_win, row_count, HJ_TEMP_SETTING_OFFSET);
-  MENU_PRINTF(p_win, row_count++, "Setting temp offset");
-  screen_update_list(p_win, row_count, HJ_HUMI_SETTING_OFFSET);
-  MENU_PRINTF(p_win, row_count++, "Setting humi offset");
-  screen_update_list(p_win, row_count, HJ_TEMP_VEIW_DATA);
-  MENU_PRINTF(p_win, row_count++, "View data");
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, HJ_TEMP_INFO, "Information");
+  screen_menu_printf(p_win, HJ_TEMP_SETTING_OFFSET, "Setting temp offset");
+  screen_menu_printf(p_win, HJ_HUMI_SETTING_OFFSET, "Setting humi offset");
+  screen_menu_printf(p_win, HJ_TEMP_VEIW_DATA, "View data");
+  screen_menu_clear(p_win);
 }
 
 int32_t ctrl_hj_temp(void)
@@ -54,7 +41,7 @@ int32_t ctrl_hj_temp(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, "HJ TEMPERATURE");
+  screen_menu_create(&menu, "HJ temperature");
 
   while (1)
   {

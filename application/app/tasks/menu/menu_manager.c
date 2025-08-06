@@ -40,7 +40,7 @@ extern void config_hj_reset(void);
 #define BACKUP_MENU_SAVE        0
 #define BACKUP_MENU_RESTORE     1
 
-void draw_setup_menu_manager_page(screen_menu_t* p_win)
+void draw_setup_menu_manager_menu(screen_menu_t* p_win)
 {
   int32_t row_count = 0;
 
@@ -484,7 +484,7 @@ int32_t setup_menu_manager(void)
 
   while (1)
   {
-    draw_setup_menu_manager_page(&menu);
+    draw_setup_menu_manager_menu(&menu);
     screen_refresh();
 
     key = get_button_key(1000);

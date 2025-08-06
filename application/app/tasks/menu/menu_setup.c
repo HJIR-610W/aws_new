@@ -24,7 +24,7 @@
 
 #define SETUP_WD 15
 
-#define MENU_PRINTF screen_menu_printf_row
+
 
 void draw_aws_setup_page(screen_menu_t* p_win)
 {

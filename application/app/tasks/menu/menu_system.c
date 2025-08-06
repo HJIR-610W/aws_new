@@ -12,10 +12,8 @@
 #include "util_time.h"
 #include "view_driver.h"
 
-#define SCREEN_COLS 20
-#define SYSTEM_WD 8
 
-#define MENU_PRINTF screen_menu_printf_row
+#define SYSTEM_WD 8
 
 const char* g_chargerList_lcd[] = {"SMART", "LS1024"};
 
@@ -26,56 +24,34 @@ const char* g_chargerList_lcd[] = {"SMART", "LS1024"};
 #define SYSTEM_MENU_CHARGER  4
 
 
-
-
-//DATE:2025-11-11
-//TIME:00:00:00
-void draw_setup_menu_system_page(screen_menu_t* p_win)
+void draw_setup_menu_system_menu(screen_menu_t* p_win)
 {
-  int row_count = 0;
+  screen_menu_start(p_win);
 
-  p_win->current_row = 0;
-
-  screen_update_list(p_win,row_count,SYSTEM_MENU_DATE);
-  MENU_PRINTF(p_win, row_count++, "%-*s:%04d-%02d-%02d", SYSTEM_WD, "DATE", Date_Time.Year,
-              Date_Time.Month, Date_Time.Day);
-
-  screen_update_list(p_win,row_count,SYSTEM_MENU_TIME);
-  MENU_PRINTF(p_win, row_count++, "%-*s:%02d:%02d:%02d", SYSTEM_WD, "TIME", Date_Time.Hour,
-              Date_Time.Min, Date_Time.Sec);
-
-  screen_update_list(p_win,row_count,SYSTEM_MENU_ID);
-  MENU_PRINTF(p_win, row_count++, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
-  screen_update_list(p_win,row_count,SYSTEM_MENU_PASSWORD);
-  MENU_PRINTF(p_win, row_count++, "%-*s:%d", SYSTEM_WD, "PASS", get_config_app()->password);
-  screen_update_list(p_win,row_count,SYSTEM_MENU_CHARGER);
-  MENU_PRINTF(p_win, row_count++, "%-*s:%s", SYSTEM_WD, "CHARGER",
-              ITEM_LIST(get_config_app()->charger_model, g_chargerList_lcd));
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_printf(p_win, SYSTEM_MENU_DATE, "%-*s:%04d-%02d-%02d", SYSTEM_WD, "DATE", Date_Time.Year,
+                     Date_Time.Month, Date_Time.Day);
+  screen_menu_printf(p_win, SYSTEM_MENU_TIME, "%-*s:%02d:%02d:%02d", SYSTEM_WD, "TIME", Date_Time.Hour,
+                     Date_Time.Min, Date_Time.Sec);
+  screen_menu_printf(p_win, SYSTEM_MENU_ID, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
+  screen_menu_printf(p_win, SYSTEM_MENU_PASSWORD, "%-*s:%d", SYSTEM_WD, "PASS", get_config_app()->password);
+  screen_menu_printf(p_win, SYSTEM_MENU_CHARGER, "%-*s:%s", SYSTEM_WD, "CHARGER",
+                     ITEM_LIST(get_config_app()->charger_model, g_chargerList_lcd));
+  screen_menu_clear(p_win);
 }
-
-
-
 
 int32_t setup_menu_system(void)
 {
   int32_t choice=0;
   int32_t status;
   int32_t key;
-  screen_menu_t menu;
   int32_t index;
+  screen_menu_t menu;
 
   screen_menu_create(&menu, "System");
-;
+
   while(1)
   {
-    draw_setup_menu_system_page(&menu);
+    draw_setup_menu_system_menu(&menu);
     screen_refresh();
 
     key = get_button_key(1000);
