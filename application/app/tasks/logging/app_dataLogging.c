@@ -5,12 +5,14 @@
 #include "app_file.h"
 #include "util_time.h"
 #include "app_dataLogging.h"
-
+#include "sensor_data\rain_data.h"
+#include "sensor_data\sunshine_data.h"
+#include "app_dataLogging.h"
 #include "dev_io.h"
+#include "app_file.h"
 
 #define AWS_FILE_PATH       "0:Y%02d/M%02d.aws"
-#define RAIN_1MIN_FILE_PATH "0:Y%02d/RAIN_01.rcd"
-#define SUNSHINE_1MIN_FILE_PATH "0:Y%02d/SUNSHINE_01.rcd"
+
 
 static osSemaphoreId_t dataLoggingSem;
 
@@ -26,10 +28,10 @@ void get_filePath(uint8_t type, uint16_t year, uint8_t month, char *pOutBuff, ui
       snprintf(pOutBuff, buffSize, AWS_FILE_PATH, year, month);
       break;
     case LOGGING_RAIN_1MIN:
-      snprintf(pOutBuff, buffSize, RAIN_1MIN_FILE_PATH, year);
+      snprintf(pOutBuff, buffSize, "0:Y%02d/%s", year, RAIN_1MIN_FILE_NAME);
       break;
     case LOGGING_SUNSHINE_1MIN:
-      snprintf(pOutBuff, buffSize, SUNSHINE_1MIN_FILE_PATH, year);
+      snprintf(pOutBuff, buffSize, "0:Y%02d/%s", year, SUNSHINE_1MIN_FILE_NAME);
       break;
   }
 }

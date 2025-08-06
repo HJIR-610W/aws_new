@@ -12,11 +12,8 @@ extern ETH_DMADescTypeDef DMATxDscrTab[ETH_TX_DESC_CNT]; /* Ethernet Tx DMA Desc
 
 void bsp_eth_init(void)
 {
-  HAL_StatusTypeDef hal_eth_init_status = HAL_OK;
-  /* USER CODE BEGIN OS_THREAD_ATTR_CMSIS_RTOS_V2 */
-  osThreadAttr_t attributes;
-  /* USER CODE END OS_THREAD_ATTR_CMSIS_RTOS_V2 */
-  uint32_t duplex, speed = 0;
+
+#if 0 
   int32_t PHYLinkState = 0;
   ETH_MACConfigTypeDef MACConf = {0};
   /* Start ETH HAL Init */
@@ -39,7 +36,8 @@ void bsp_eth_init(void)
 
   /* USER CODE END MACADDRESS */
 
-  hal_eth_init_status = HAL_ETH_Init(&heth);
+   HAL_ETH_Init(&heth);
+#endif
 }
 
 

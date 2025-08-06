@@ -17,13 +17,13 @@
 #define LOG_VIEW_ROW 7
 int32_t menu_view_log(void)
 {
-  int32_t status;
+
   int32_t key;
-  int32_t month, day, hour, min;
-  uint32_t startTime;
+  int32_t status;
+
   screen_page_t lcd_win;
-  string_fmt_t strfmt;
-  DATE_TIME_BUF nt;
+
+
   sysLog_t log;
   int update = 1;
   int dec;
@@ -33,14 +33,12 @@ int32_t menu_view_log(void)
   lcd_win.total_pages = 1;
   lcd_win.chunk_scroll_use = 1;
 
-  month = Date_Time.Month;
-  day = Date_Time.Day;
-  hour = Date_Time.Hour;
-  min = Date_Time.Min;
 
 
   dec = logging_get_logCnt();
   status = input_decimal("Log count", 0, LOG_COUNT_MAX, &dec);
+  if(status !=MENU_OK)
+    return status;
   screen_clear();
   do
   {

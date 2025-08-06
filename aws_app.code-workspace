@@ -130,7 +130,9 @@
 			"stream_buffer.h": "c",
 			"tl16c554_def.h": "c",
 			"pcb_5_pin.h": "c",
-			"utile_data.h": "c"
+			"utile_data.h": "c",
+			"rain_data.h": "c",
+			"string.h": "c"
 		}
 	}
 }

@@ -17,7 +17,9 @@
 #include "util_time.h"
 #include "view_driver.h"
 #include "app_logging.h"
-#include "aws_data_handler.h"
+
+#include "sensor_data\rain_data.h"
+#include "sensor_data\sunshine_data.h"
 
 extern void config_hj_reset(void);
 
@@ -293,7 +295,10 @@ int32_t setup_menu_rain_reset(void)
         if (status == MENU_OK && choice == 1)
         {
            if(rain_file_zero(Date_Time.Year)==0)
+           {
              show_popup("Information", "Completed");
+             calculate_rain();
+           }
            else{
              show_popup("Information", "Failed to complete");
            }

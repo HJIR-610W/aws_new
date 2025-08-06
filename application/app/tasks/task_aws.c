@@ -16,10 +16,11 @@
 #include "util_filter.h"
 #include "util_time.h"
 #include "kma3.h"
-#include "logging\data_accu.h"
 #include "dev_io.h"
 #include "logging\utile_data.h"
 #include "util_memory.h"
+#include "sensor_data\rain_data.h"
+#include "sensor_data\sunshine_data.h"
 
 typedef struct filter_data_s
 {
@@ -1247,128 +1248,7 @@ void update_unused_data(kma_data_ex_t *p_dest, kma_data_ex_t *p_source)
 }
 
 
-#define RAIN_TOTAL (sizeof(uint16_t) * 60 * 24 * 366 + sizeof(uint16_t))
-#define RAIN_DAYS_SIZE (366 * sizeof(uint16_t))
 
-/*
-SD카드에 기록된 RAIN_01.rcd 1분 우량 파일을 전부 읽어서 연산산
-*/
-void calculate_rain(void)
-{
-  DATE_TIME_BUF ct = Date_Time;
-  uint16_t daily_rain = 0;
-  uint16_t hourly_rain = 0;
-  uint16_t monthly_rain = 0;
-  uint16_t yearly_rain = 0;
-  uint16_t min10_rain = 0;
-  uint16_t yesterday_rain=0;
-  uint16_t *p_rain_1min = user_malloc(RAIN_TOTAL);
-  uint16_t *p_rain_days = user_malloc(RAIN_DAYS_SIZE);
-  DATE_TIME_BUF pre_date;
-
-  ct = Date_Time;
-  pre_date = Date_Time;
-  
-  memset(p_rain_1min,0,RAIN_TOTAL);
-  memset(p_rain_days,0,RAIN_DAYS_SIZE);
-  if (read_rain_1min(ct.Year, p_rain_1min, RAIN_TOTAL) == 0)
-  {
-    compute_daily_rain(p_rain_1min, p_rain_days, ct.Year);
-
-    daily_rain = get_daily_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month, ct.Day);
-    hourly_rain =
-        get_hourly_accu(DATA_SIZE_16, p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
-    monthly_rain = get_monthly_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month);
-    yearly_rain = get_yearly_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month, ct.Day);
-    min10_rain =
-        get_10min_accu(DATA_SIZE_16, p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
-
-    //전일 우량 1일전 시간계산
-    subtract_seconds(&pre_date, 86400);
-
-    if(pre_date.Year != ct.Year)
-    {
-      if (read_rain_1min(pre_date.Year, p_rain_1min, RAIN_TOTAL) == 0)
-      {
-        compute_daily_rain(p_rain_1min, p_rain_days, pre_date.Year);
-        yesterday_rain =
-            get_daily_accu(DATA_SIZE_16, p_rain_days, pre_date.Year, pre_date.Month, pre_date.Day);
-      }
-    }
-    else
-    {
-      yesterday_rain =
-          get_daily_accu(DATA_SIZE_16, p_rain_days, pre_date.Year, pre_date.Month, pre_date.Day);
-    }
-
-    set_rainfall_today(daily_rain / 10.0f);
-    set_rainfall_hourly(hourly_rain / 10.0f);
-    set_rainfall_monthly(monthly_rain / 10.0f);
-    set_rainfall_yearly(yearly_rain / 10.0f);
-    set_rainfall_10min(min10_rain / 10.0f);
-    set_rainfall_yesterday(yesterday_rain/10.0f);
-
-
-    user_free(p_rain_1min);
-    user_free(p_rain_days);
-  }
-
-
-
-  Sysinfo.mRain.sMinRain   = 0;      // 1분 강수량
-  Sysinfo.mRain.s10MinRain = min10_rain;  // 10분 강수량
-  Sysinfo.mRain.sHourRain = hourly_rain;  // 1시간강수량
-  Sysinfo.mRain.sDayRain = daily_rain;    // 일간강수량
-  Sysinfo.mRain.sBefDayRain = yesterday_rain;//전일 우량
-  Sysinfo.mRain.sMonthRain = monthly_rain;  // 월간 강수량
-  Sysinfo.mRain.sYearRain = yearly_rain;    // 년간 강수량
-
-
-}
-
-#define SUNSHINE_TOTAL (sizeof(uint16_t) * 60 * 24 * 366 + sizeof(uint16_t))
-#define SUNSHINE_DAYS_SIZE (366*sizeof(uint16_t))
-
-//일조
-void calculate_sunshine(void)
-{
-  DATE_TIME_BUF ct = Date_Time;
-  uint16_t daily_sunshine = 0;
-  uint16_t hourly_sunshine = 0;
-  uint16_t monthly_sunshine = 0;
-  uint16_t yearly_sunshine = 0;
-  uint16_t *p_sunshine_1min = user_malloc(SUNSHINE_TOTAL);
-  uint16_t *p_sunshine_days = user_malloc(SUNSHINE_DAYS_SIZE);
-
-  (void)daily_sunshine;
-  (void)hourly_sunshine;
-  ct = Date_Time;
-
-  memset(p_sunshine_1min,0,SUNSHINE_TOTAL);
-  memset(p_sunshine_days,0,SUNSHINE_DAYS_SIZE);
-  if( read_sunshine_1min(ct.Year, p_sunshine_1min, SUNSHINE_TOTAL)==0)
-  {
-    compute_daily_data(DATA_SIZE_16,p_sunshine_1min, p_sunshine_days, ct.Year);
-    daily_sunshine = get_daily_accu(DATA_SIZE_16,p_sunshine_days, ct.Year, ct.Month, ct.Day);
-    hourly_sunshine =get_hourly_accu(DATA_SIZE_16, p_sunshine_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
-    monthly_sunshine = get_monthly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month);
-    yearly_sunshine = get_yearly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
-
-#if 0 
-    io_printf("일간 일조:%d\r\n", daily_sunshine);
-    io_printf("시간 일조:%d\r\n", hourly_sunshine);
-    io_printf("월간 일조:%d\r\n", monthly_sunshine);
-    io_printf("년간 일조:%d\r\n", yearly_sunshine);
-#endif
-    set_sunshine_monthly(monthly_sunshine);
-    set_sunshine_yearly(yearly_sunshine);
-
-    user_free(p_sunshine_1min);
-    user_free(p_sunshine_days);
-  }
-  Sysinfo.mSunshine.nYearSunshine = yearly_sunshine;
-  Sysinfo.mSunshine.nMonthSunshine = monthly_sunshine;
-}
 
 #define MS_TO_SCAN_CNT(ms) ((uint16_t)((float)ms/0.25))
 /**
@@ -1440,7 +1320,20 @@ void DUALPORT_TASK(void *arg)
   pSystem = &Sysinfo;
 
   calculate_rain();
+  
+  Sysinfo.mRain.sMinRain = 0;                                    
+  Sysinfo.mRain.s10MinRain = (uint16_t)(get_rainfall()->rainfall_10min*10);      
+  Sysinfo.mRain.sHourRain = (uint16_t)(get_rainfall()->rainfall_hourly * 10);    
+  Sysinfo.mRain.sDayRain = (uint16_t)(get_rainfall()->rainfall_today * 10);      
+  Sysinfo.mRain.sBefDayRain = (uint16_t)(get_rainfall()->rainfall_yesterday * 10); 
+  Sysinfo.mRain.sMonthRain = (uint16_t)(get_rainfall()->rainfall_monthly * 10); 
+  Sysinfo.mRain.sYearRain = (uint16_t)(get_rainfall()->rainfall_yearly * 10);
+
   calculate_sunshine();
+  
+  Sysinfo.mSunshine.nYearSunshine = get_sunshine()->sunshine_yearly;
+  Sysinfo.mSunshine.nMonthSunshine = get_sunshine()->sunshine_monthly;
+
   filter_init();
 
   //제품 부팅시에는 처음 측정하는 값을 즉시 반영
