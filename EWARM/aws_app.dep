@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>4</fileVersion>
-    <fileChecksum>1592638061</fileChecksum>
+    <fileChecksum>2003909541</fileChecksum>
     <configuration>
         <name>release</name>
         <outputs>
@@ -125,14 +125,14 @@
             <file>$PROJ_DIR$\..\Application\http_server\task_http_server.c</file>
             <file>$PROJ_DIR$\..\application\file_system\app_file.h</file>
             <file>$PROJ_DIR$\..\application\file_system\user_heap.h</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\cli_input.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\core_json.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\user_heap.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\core_json.c</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.c</file>
             <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
@@ -199,7 +199,7 @@
             <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.c</file>
@@ -1619,7 +1619,7 @@
             <file>$PROJ_DIR$\release\Obj\modbus_master.xcl</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_gpio_ex.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_led.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\release\Obj\crc.o</file>
             <file>$PROJ_DIR$\release\Obj\bridgeif_fdb.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\task_isrEvent.xcl</file>
@@ -2025,7 +2025,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_network.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_logging.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_frequency.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_power.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
@@ -2204,7 +2204,7 @@
             <file>$PROJ_DIR$\stm32f407xx_flash.icf</file>
             <file>$PROJ_DIR$\..\drivers\driver\time_define.h</file>
             <file>$PROJ_DIR$\..\Application\App_drivers\app_flash.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\api_msg.h</file>
             <file>$PROJ_DIR$\release\Obj\font_6x8.xcl</file>
             <file>$PROJ_DIR$\..\application\io\cli\fsl_debug_console.h</file>
@@ -2326,8 +2326,8 @@
             <file>$PROJ_DIR$\release\Obj\user_heap.o</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>
             <file>$TOOLKIT_DIR$\inc\c\LowLevelIOInterface.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_test.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
             <file>$PROJ_DIR$\..\system\iar_io_retarget.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\sockets_priv.h</file>
@@ -2505,7 +2505,7 @@
             <file>$PROJ_DIR$\release\Obj\driver_uart.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\raw.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\tcp_priv.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>
@@ -2537,6 +2537,10 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_opts.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_eth.o</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_snowfall_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_admin.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_admin.c</file>
+            <file>$PROJ_DIR$\release\Obj\menu_admin.xcl</file>
+            <file>$PROJ_DIR$\release\Obj\menu_admin.o</file>
         </outputs>
         <file>
             <name>[ROOT_NODE]</name>
@@ -4043,7 +4047,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2511 1057 1039 1593 820 1940 1633 1028 2134 2336 2230 2299 2342 540 1131 1928 2305 2030 2032 2311 2206 1079 1354 2279 1882 647 2518</file>
+                    <file> 2511 1057 1039 1593 820 1940 1633 1028 2134 2336 2230 2299 2342 540 1131 1928 2305 2030 2032 2311 2206 1079 1354 2279 1882 647 2518 2532</file>
                 </tool>
             </inputs>
         </file>
@@ -12659,7 +12663,7 @@
             <inputs>
                 <tool>
                     <name>ILINK</name>
-                    <file> 2196 1904 2168 564 732 2359 1237 1199 1194 1095 1587 1533 989 1703 1799 679 1761 1386 711 1536 1011 1873 1229 1789 1595 954 2219 1264 857 1183 1367 1126 2145 438 966 886 1944 666 2188 960 2255 1618 769 2103 1297 1489 1572 1294 1685 2064 738 1479 1798 2530 979 2137 763 1947 1733 660 861 1471 1900 1379 2184 1742 1187 2402 436 1082 1747 982 772 1138 1173 675 1943 2091 2040 1426 1482 1810 987 596 544 1458 2461 1732 2058 1166 1300 559 710 1749 1447 1155 1186 1912 1078 432 822 429 2482 1160 2410 1455 2117 2350 2522 1201 1721 2281 1459 2391 1552 2382 1559 1584 2039 1896 1735 1161 417 2179 585 1135 1741 2042 1645 2045 904 1464 2367 1349 1146 2420 1684 945 1222 1320 1982 1234 847 1589 664 1858 1779 1190 1159 547 1053 431 712 896 796 1568 923 2115 1232 806 1434 1114 1257 1537 2165 2373 1093 421 1980 1284 2167 1401 1306 918 1372 1366 868 1308 1015 1416 1285 2435 2239 964 1214 1335 2283 1775 1679 1029 2141 1820 972 446 681 1670 777 1387 1849 2427 1926 1635 2439 1546 1875 1272 1893 1787 706 598 1838 953 1143 1505 560 1650 554 1394 563 1109 2107 2257 929 1935 1485 2068 2077 1745 2182 691 591 2517 2235 1463 1608 519 845 956 693 969 2413 1377 1737 1403 2396 1878 1657 1701 1865 1551 1473 1725 2249 2088 1092 1301 1210 1823 859 1069 2290 1805 1376 733 1192 1700 2274 1683 2364 1484 1760 914 562 2001 761 962 549 1710 1520 1216 1860 978 790 586 887 869 2260 787 1365 643 1063 2372 1836 1130 1249 2399 1848 444 762 1212 1987 1673 1413 723 1590 1162 1408 951 1147 1315 815 1668 1680 793 1756 2466 1218 1910 2253 2138 1952 1966 1417 1864 2426 1431 976 876 1945 1577 1726 2144 2234 1483 1467 1750 1774 1770 1152 2101 754 2447 1313 1530 674 1204 2256 1969 1169 1145 1569 1996 1554 1035 1156 428 1172 1566 1597 1583 1782 1702 1070 1793 2318 1392 2048 1634 986 1840 1000 2126 1266 545 2053 867 604 1581 1215 1047 2483 2193 2516 2492</file>
+                    <file> 2196 1904 2168 564 732 2359 1237 1199 1194 1095 1587 1533 989 1703 1799 679 1761 1386 711 1536 1011 1873 1229 1789 1595 954 2219 1264 857 1183 1367 1126 2145 438 966 886 1944 666 2188 960 2255 1618 769 2103 1297 1489 1572 1294 1685 2064 738 1479 1798 2530 979 2137 763 1947 1733 660 861 1471 1900 1379 2184 1742 1187 2402 436 1082 1747 982 772 1138 1173 675 1943 2091 2040 1426 1482 1810 987 596 544 1458 2461 1732 2058 1166 1300 559 710 1749 1447 1155 1186 1912 1078 432 822 429 2482 1160 2410 1455 2117 2350 2522 1201 1721 2281 1459 2391 1552 2382 1559 1584 2039 1896 1735 1161 417 2179 585 1135 1741 2042 1645 2045 904 1464 2367 1349 1146 2420 1684 945 1222 1320 1982 1234 847 1589 664 1858 1779 1190 1159 547 1053 431 712 896 796 1568 923 2115 1232 806 1434 1114 1257 1537 2165 2373 1093 421 1980 1284 2167 1401 1306 918 1372 1366 868 1308 1015 1416 1285 2435 2239 964 1214 1335 2283 1775 1679 1029 2141 1820 972 446 681 1670 777 1387 2535 1849 2427 1926 1635 2439 1546 1875 1272 1893 1787 706 598 1838 953 1143 1505 560 1650 554 1394 563 1109 2107 2257 929 1935 1485 2068 2077 1745 2182 691 591 2517 2235 1463 1608 519 845 956 693 969 2413 1377 1737 1403 2396 1878 1657 1701 1865 1551 1473 1725 2249 2088 1092 1301 1210 1823 859 1069 2290 1805 1376 733 1192 1700 2274 1683 2364 1484 1760 914 562 2001 761 962 549 1710 1520 1216 1860 978 790 586 887 869 2260 787 1365 643 1063 2372 1836 1130 1249 2399 1848 444 762 1212 1987 1673 1413 723 1590 1162 1408 951 1147 1315 815 1668 1680 793 1756 2466 1218 1910 2253 2138 1952 1966 1417 1864 2426 1431 976 876 1945 1577 1726 2144 2234 1483 1467 1750 1774 1770 1152 2101 754 2447 1313 1530 674 1204 2256 1969 1169 1145 1569 1996 1554 1035 1156 428 1172 1566 1597 1583 1782 1702 1070 1793 2318 1392 2048 1634 986 1840 1000 2126 1266 545 2053 867 604 1581 1215 1047 2483 2193 2516 2492</file>
                 </tool>
             </inputs>
         </file>
@@ -15778,6 +15782,25 @@
                 <tool>
                     <name>ICCARM</name>
                     <file> 2438 1057 1039 1593 820 1940 1633</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\application\app\tasks\menu\menu_admin.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 2535</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 2534</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 2305 1057 1039 1593 820 1940 1633 2019 518 2112 1928 1792 2197 1028 2279 1882 647 1354 2206 1079 256 2154 1816 1932 1809 570 168 877 2038 1806 540 1131 1738 2109 2369 2336 2405 2452 321 2511 2134 2502</file>
                 </tool>
             </inputs>
         </file>

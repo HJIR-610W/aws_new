@@ -12,6 +12,7 @@
 #include "cli_key_code.h"
 #include  "app_key.h"
 #include "menu_data.h"
+#include "menu_admin.h"
 
 #define AWS_SETUP_SYSTEM 0
 #define AWS_SETUP_SENSOR 1
@@ -21,10 +22,11 @@
 #define AWS_SETUP_OFFSET 5
 #define AWS_SETUP_CALI 6
 #define AWS_SETUP_MANAGER 7
+#define AWS_SETUP_DEVELOPER 8
 
 #define SETUP_WD 15
 
-
+static bool s_admin_menu_active=false;
 
 void draw_aws_setup_page(screen_menu_t* p_win)
 {
@@ -37,6 +39,10 @@ void draw_aws_setup_page(screen_menu_t* p_win)
   screen_menu_printf(p_win, AWS_SETUP_OFFSET, "Offset");
   screen_menu_printf(p_win, AWS_SETUP_CALI,   "Calibraion");
   screen_menu_printf(p_win, AWS_SETUP_MANAGER,"Manager");
+  if(s_admin_menu_active)
+  {
+    screen_menu_printf(p_win, AWS_SETUP_DEVELOPER, "Developer");
+  }
   screen_menu_clear(p_win);
 }
 
@@ -46,7 +52,7 @@ void setup_root(void)
   int32_t key;
   int32_t status;
   screen_menu_t menu;
-
+  int32_t admin_menu_count=0;
   screen_menu_create(&menu, "AWS Setup");
 
   while(1)
@@ -56,11 +62,7 @@ void setup_root(void)
 
     key = get_button_key(1000);
 
-    if (key == KEY_CODE_CTRL_Q)
-    {
-      break;
-    }
-    else if (key == KEY_CODE_CTRL_C)
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
       break;
     }
@@ -95,17 +97,37 @@ void setup_root(void)
         case AWS_SETUP_MANAGER:
           status = setup_menu_manager();
           break;
+        case AWS_SETUP_DEVELOPER:
+          status = setup_menu_developer();
+          break;
         default:
           break;
 
       }
 
+
       if (status == MENU_ABORT)
         return ;
     }
-    else if (key != -1)
+    else if (key != KEY_CODE_UNKNOWN)
     {
       screen_menu_handle(&menu, key);
+
+      if (menu.index_list[menu.selected_index] == AWS_SETUP_MANAGER)
+      {
+        if(key==KEY_CODE_RIGHT)
+        {
+          admin_menu_count++;
+          if (admin_menu_count==10)
+          {
+            s_admin_menu_active = true;;
+          }
+        }
+      }
+      else
+      {
+        admin_menu_count = 0;
+      }
     }
   }
 

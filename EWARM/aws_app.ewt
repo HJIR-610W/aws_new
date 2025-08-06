@@ -1402,6 +1402,9 @@
                         </file>
                     </group>
                     <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\menu\menu_admin.c</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\application\app\tasks\menu\menu_calibration.c</name>
                     </file>
                     <file>
@@ -1604,7 +1607,7 @@
                     <name>$PROJ_DIR$\..\Application\Communications\direct\task_direct.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\direct\task_direct.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\direct\task_direct.h</name>
                 </file>
             </group>
             <group>
@@ -1737,7 +1740,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -1778,13 +1781,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -1997,7 +2000,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>

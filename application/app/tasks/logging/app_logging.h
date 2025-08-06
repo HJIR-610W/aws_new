@@ -8,7 +8,7 @@
 
 #define LOG_COUNT_MAX 10000
 
-#define LOG_LEN_MAX 45
+#define LOG_LEN_MAX 64
 
 #pragma pack(push, 1)
 typedef struct 
