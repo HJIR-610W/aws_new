@@ -425,23 +425,7 @@ void screen_menu_handle(screen_menu_t* win, int key)
   }
 }
 
-void screen_menu_clear_row(screen_menu_t* win, int row_index)
-{
-  int i;
-  int display_row;
-  int title_offset = (strlen(win->title) > 0) ? 1 : 0;
 
-
-  display_row = row_index - win->scroll_offset + title_offset;
-
-  // 나머지 공간을 공백으로 채움
-  for (i = 0; i < win->view_col; i++)
-  {
-    screen_put_ch(display_row, i, ' ');
-  }
-  
-  win->current_row++;
-}
 
 void screen_menu_start(screen_menu_t *win)
 {
@@ -478,19 +462,8 @@ void screen_on(void)
 }
 
 
-void screen_update_list(screen_menu_t * p_screen,int index,int id)
-{
-  if(index<sizeof(p_screen->index_list))
-  p_screen->index_list[index] = id;
-}
 
-void screen_clear_unsued_line(screen_menu_t* p_win)
-{
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, p_win->current_row );
-  }
-}
+
 
 /**
  * @brief win->current_row기준으로 view_row 남은 행을 전부 공백표시,clear

@@ -2204,7 +2204,7 @@
             <file>$PROJ_DIR$\stm32f407xx_flash.icf</file>
             <file>$PROJ_DIR$\..\drivers\driver\time_define.h</file>
             <file>$PROJ_DIR$\..\Application\App_drivers\app_flash.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\api_msg.h</file>
             <file>$PROJ_DIR$\release\Obj\font_6x8.xcl</file>
             <file>$PROJ_DIR$\..\application\io\cli\fsl_debug_console.h</file>
@@ -2326,7 +2326,7 @@
             <file>$PROJ_DIR$\release\Obj\user_heap.o</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>
             <file>$TOOLKIT_DIR$\inc\c\LowLevelIOInterface.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
             <file>$PROJ_DIR$\..\system\iar_io_retarget.h</file>
@@ -2458,7 +2458,7 @@
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_ll_sdmmc.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\rv8803.xcl</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver_adc_define.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\console_scanf.h</file>
             <file>$PROJ_DIR$\release\Obj\driver_stm32_do.xcl</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\schedule.h</file>
