@@ -54,7 +54,7 @@ typedef enum
   KEY_CODE_CTRL_Y = 0x19,
   KEY_CODE_CTRL_Z = 0x1A,
 
-  KEY_CODE_UNKNOWN = 0xFFFF
+  KEY_CODE_UNKNOWN = -1
 
 } keycode_t;
 

@@ -1187,7 +1187,7 @@ void menuTask(void *arg)
       setup_root();
       start_time = OS_GET_TICK();
     }
-    else if (key != -1)
+    else if (key != KEY_CODE_UNKNOWN)
     {
       screen_page_handle(&lcd_win, key);
       start_time = OS_GET_TICK();
