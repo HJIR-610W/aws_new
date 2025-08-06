@@ -124,13 +124,8 @@ typedef struct system_s
   bool dc_error;
   bool battery_error;
   bool door_opened;
+  bool sdcard_inserted;
   uint8_t ac_status;//00 110v,01 220v,11 ADC OFF
-  eLINK_STATUS_t cdma_link_status;
-  int8_t cdma_rssi;
-  char cdma_num[20];
-  int8_t vhf_tx_cnt;
-  int8_t vhf_rx_cnt;
-  int8_t charger_status;
   float chg_solarV1;
   float chg_solarV2;
   float chg_solarC1;

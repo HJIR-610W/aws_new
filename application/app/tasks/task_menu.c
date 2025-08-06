@@ -138,7 +138,7 @@ void draw_charger_page(screen_page_t *p_win)
     screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "SOLAR V",
                    read_solarVoltage1(&err));
     screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "SOLAR A",
-                   read_solarCurrrent1(&err));
+                   read_solarCurrent1(&err));
     screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "BATTERY V",
                    read_batteryVoltage1(&err));
     screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "LOAD A", read_loadCurrent1(&err));

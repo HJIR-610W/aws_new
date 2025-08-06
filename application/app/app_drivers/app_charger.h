@@ -17,7 +17,7 @@ void read_chargerStatus(char *pBuff,uint16_t buffSize);
 
 float read_solarVoltage1(uint8_t *err);
 float read_solarVoltage2(uint8_t *err);
-float read_solarCurrrent1(uint8_t *err);
+float read_solarCurrent1(uint8_t *err);
 float read_solarCurrent2(uint8_t *err);
 float read_batteryVoltage1(uint8_t *err);
 float read_batteryVoltage2(uint8_t *err);

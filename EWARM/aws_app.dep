@@ -138,7 +138,7 @@
             <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\io\dev_io.c</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.c</file>
-            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
             <file>$PROJ_DIR$\..\Application\freertos_callback.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\http_api.c</file>
@@ -199,7 +199,7 @@
             <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.c</file>
@@ -1619,7 +1619,7 @@
             <file>$PROJ_DIR$\release\Obj\modbus_master.xcl</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_gpio_ex.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_led.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\release\Obj\crc.o</file>
             <file>$PROJ_DIR$\release\Obj\bridgeif_fdb.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\task_isrEvent.xcl</file>
@@ -2028,7 +2028,7 @@
             <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_frequency.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_power.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_hansung.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif_opts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\raw_priv.h</file>
@@ -2204,7 +2204,7 @@
             <file>$PROJ_DIR$\stm32f407xx_flash.icf</file>
             <file>$PROJ_DIR$\..\drivers\driver\time_define.h</file>
             <file>$PROJ_DIR$\..\Application\App_drivers\app_flash.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\api_msg.h</file>
             <file>$PROJ_DIR$\release\Obj\font_6x8.xcl</file>
             <file>$PROJ_DIR$\..\application\io\cli\fsl_debug_console.h</file>
@@ -2505,7 +2505,7 @@
             <file>$PROJ_DIR$\release\Obj\driver_uart.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\raw.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\tcp_priv.h</file>
-            <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>

@@ -33,15 +33,17 @@ typedef struct
 #define DIVAS_FRAME_OFFSET(field) ((size_t)&(((divas_frame_t *)0)->field))
 
 //디바스 명령어 정의
-#define DIVAS_CMD_RD_INDEX 0x01
-#define DIVAS_CMD_RD_VERSION 0x15
-#define DIVAS_CMD_RD_CFG_OFS 0x29
-#define DIVAS_CMD_WR_CFG_OFS 0x2A
+#define DIVAS_CMD_RD_INDEX    0x01
+#define DIVAS_CMD_RD_VERSION  0x15
+#define DIVAS_CMD_RD_CFG_OFS  0x29
+#define DIVAS_CMD_WR_CFG_OFS  0x2A
 #define DIVAS_CMD_FW_DOWNLOAD 0x63
-#define DIVAS_CMD_FW_UPDATE 0x64
-#define DIVAS_CMD_RD_SYSTEM 0x06
-#define DIVAS_CMD_RESET     0x74
-#define DIVAS_CMD_RD_SYSLOG 0x07
+#define DIVAS_CMD_FW_UPDATE   0x64
+#define DIVAS_CMD_RD_SYSTEM   0x06
+#define DIVAS_CMD_RESET       0x74
+#define DIVAS_CMD_RD_SYSLOG   0x07
+
+
 
 //응답 프레임 에러 여부
 #define ASCII_ACK 0x06
@@ -421,7 +423,7 @@ uint16_t divas_read_system(uint8_t *rx_frame, uint8_t *tx_frame)
     uint16_t length;
   } request;
 #pragma pack(pop)
-  aws_monitor_t aws_monitor;
+  aws_monitor_t aws_monitor;//TODO:heap 사용 
 
   memcpy(&request, &rx_data[0], sizeof(request));
 
@@ -592,6 +594,7 @@ uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len, uint8_t *tx_frame
     case DIVAS_CMD_RD_INDEX:
       len = divas_read_index(rx_frame,tx_frame);
       break;
+
   }
 
   return len;

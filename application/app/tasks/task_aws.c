@@ -1451,111 +1451,110 @@ void DUALPORT_TASK(void *arg)
     // 메모리를 아끼기위해 g_p_raw 하나만 사용
     g_p_raw = user_malloc(sizeof(measure_data_1s_t));
 
+    memset(g_p_raw,0,sizeof(measure_data_1s_t));
 
-  time_old = Date_Time;
-  while (1)
-  {
-    is_measurement_1s(g_p_raw, 0);                      // 업데이트된 값 없으면 이전값 유지
-    if (is_measurement_250(&g_raw_250, osWaitForever))  // 250ms마다 최신값 사용
+        time_old = Date_Time;
+    while (1)
     {
-      g_p_raw->data[A2_WIND_DIRECTION] = g_raw_250.data[eA2_WIND_DIRECTION];
-      g_p_raw->data[A3_WIND_SPEED] = g_raw_250.data[eA3_WIND_SPEED];
-    }
-
-    ct = Date_Time;
-
-    check_sensor_use();
-    update_raw();
-
-
-    // 온도
-    data = TempCalc(&sensor_err);
-    pAws->mTemperature.sReal = filter_data(A1_TEMPERATURE, data, sensor_err, &f_err);
-    update_sensor_err(A1_TEMPERATURE, f_err);
-
-    // 풍향
-    data =  WindDirecCalc(&sensor_err);
-    sDirec = filter_data(A2_WIND_DIRECTION, data, sensor_err,&f_err);
-    update_sensor_err(A2_WIND_DIRECTION, f_err);
-
-
-    // 풍속
-    data = WindSpeedCalc(&sensor_err);
-    sSpeed = filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
-    update_sensor_err(A3_WIND_SPEED, f_err);
-
-    pSystem->mRealWind.sAvg3Speed[nWindCnt12] = sSpeed;   // 풍속  3 초 평균
-    pSystem->mRealWind.sAvg10Speed[nWindCnt40] = sSpeed;  // 풍속 10 초 평균
-
-    pSystem->mRealWind.sAvg3Direction[nWindCnt12] = sDirec;   // 풍향  3 초 평균
-    pSystem->mRealWind.sAvg10Direction[nWindCnt40] = sDirec;  // 풍향 10 초 평균
-    pSystem->mRealWind.sWrFlag[nWindCnt40] = 1;
-
-    if (++nWindCnt12 >= 12)
-      nWindCnt12 = 0;
-    if (++nWindCnt40 >= 40)
-      nWindCnt40 = 0;
-
-    pSystem->mRain.rain += get_rain_mm(&sensor_err);
-    update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
-
-    // 기압
-    data = BarometricCalc(&sensor_err);
-    pAws->mBarometric.sReal = filter_data(A7_PRESSURE, data, sensor_err, &f_err);
-    update_sensor_err(A7_PRESSURE, f_err);
-
-    //강우 감지
-    if (is_raining(&sensor_err))  // Off Delay 적용 함
-    {
-      rain_p_delay++;
-      if (rain_p_delay>=get_rain_present_config()->delay)
+      is_measurement_1s(g_p_raw, 0);                     // 업데이트된 값 없으면 이전값 유지
+      if (is_measurement_250(&g_raw_250, osWaitForever)) // 250ms마다 최신값 사용
       {
-        update_sensor_err(A8_RAIN_PRESENT, sensor_err);
-
-        pAws->mRainDetect.sReal = 0x000a;
-        pSystem->m_shOffDelayRemain = get_rain_present_config()->delay;
-        pSystem->m_cOffDelayFlag = 1;
+        g_p_raw->data[A2_WIND_DIRECTION] = g_raw_250.data[eA2_WIND_DIRECTION];
+        g_p_raw->data[A3_WIND_SPEED] = g_raw_250.data[eA3_WIND_SPEED];
       }
-    }
-    else
-    {
-      rain_p_delay = 0;
-    }
 
-    // 적설
-    data = SnowCalc(&sensor_err);
-    pAws->mSnowFall.sReal = filter_data(A9_SNOW_DEPTH, data, sensor_err, &f_err);
-    update_sensor_err(A9_SNOW_DEPTH, f_err);
+      ct = Date_Time;
 
-    // 상대습도
-    data = HumidityCalc(&sensor_err);
-    pAws->mHumidity.sReal = filter_data(A10_RELATIVE_HUMIDITY, data, sensor_err, &f_err);
-    update_sensor_err(A10_RELATIVE_HUMIDITY, f_err);
+      check_sensor_use();
+      update_raw();
 
-    // 일사
-    data = SolarRadCalc(&sensor_err);
-    pAws->mSolarRad.sReal = filter_data(B1_SOLAR_RADIATION, data, sensor_err, &f_err);
-    update_sensor_err(B1_SOLAR_RADIATION, f_err);
+      // 온도
+      data = TempCalc(&sensor_err);
+      pAws->mTemperature.sReal = filter_data(A1_TEMPERATURE, data, sensor_err, &f_err);
+      update_sensor_err(A1_TEMPERATURE, f_err);
 
-    // 일조
-    data = SunshineCalc(&sensor_err);
-    pAws->mSunshine.sReal = filter_data(B2_SUNSHINE_DURATION, data, sensor_err, &f_err);
-    update_sensor_err(B2_SUNSHINE_DURATION, f_err);
+      // 풍향
+      data = WindDirecCalc(&sensor_err);
+      sDirec = filter_data(A2_WIND_DIRECTION, data, sensor_err, &f_err);
+      update_sensor_err(A2_WIND_DIRECTION, f_err);
 
-    // 지중온도 5cm
-    data = TempCalcExt(SOLITEMP5CM_CHN, &sensor_err);
-    pAws->mSoilTemp5cm.sReal = filter_data(B5_SOIL_TEMPERATURE_5CM, data, sensor_err, &f_err);
-    update_sensor_err(B5_SOIL_TEMPERATURE_5CM, f_err);
+      // 풍속
+      data = WindSpeedCalc(&sensor_err);
+      sSpeed = filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
+      update_sensor_err(A3_WIND_SPEED, f_err);
 
-    // 지중온도 10cm
-    data = TempCalcExt(SOLITEMP10CM_CHN, &sensor_err);
-    pAws->mSoilTemp10cm.sReal = filter_data(B6_SOIL_TEMPERATURE_10CM, data, sensor_err, &f_err);
-    update_sensor_err(B6_SOIL_TEMPERATURE_10CM, f_err);
+      pSystem->mRealWind.sAvg3Speed[nWindCnt12] = sSpeed;  // 풍속  3 초 평균
+      pSystem->mRealWind.sAvg10Speed[nWindCnt40] = sSpeed; // 풍속 10 초 평균
 
-    // 지중온도 20cm
-    data = TempCalcExt(SOLITEMP20CM_CHN, &sensor_err);
-    pAws->mSoilTemp20cm.sReal = filter_data(B7_SOIL_TEMPERATURE_20CM, data, sensor_err, &f_err);
-    update_sensor_err(B7_SOIL_TEMPERATURE_20CM, f_err);
+      pSystem->mRealWind.sAvg3Direction[nWindCnt12] = sDirec;  // 풍향  3 초 평균
+      pSystem->mRealWind.sAvg10Direction[nWindCnt40] = sDirec; // 풍향 10 초 평균
+      pSystem->mRealWind.sWrFlag[nWindCnt40] = 1;
+
+      if (++nWindCnt12 >= 12)
+        nWindCnt12 = 0;
+      if (++nWindCnt40 >= 40)
+        nWindCnt40 = 0;
+
+      pSystem->mRain.rain += get_rain_mm(&sensor_err);
+      update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
+
+      // 기압
+      data = BarometricCalc(&sensor_err);
+      pAws->mBarometric.sReal = filter_data(A7_PRESSURE, data, sensor_err, &f_err);
+      update_sensor_err(A7_PRESSURE, f_err);
+
+      // 강우 감지
+      if (is_raining(&sensor_err)) // Off Delay 적용 함
+      {
+        rain_p_delay++;
+        if (rain_p_delay >= get_rain_present_config()->delay)
+        {
+          update_sensor_err(A8_RAIN_PRESENT, sensor_err);
+
+          pAws->mRainDetect.sReal = 0x000a;
+          pSystem->m_shOffDelayRemain = get_rain_present_config()->delay;
+          pSystem->m_cOffDelayFlag = 1;
+        }
+      }
+      else
+      {
+        rain_p_delay = 0;
+      }
+
+      // 적설
+      data = SnowCalc(&sensor_err);
+      pAws->mSnowFall.sReal = filter_data(A9_SNOW_DEPTH, data, sensor_err, &f_err);
+      update_sensor_err(A9_SNOW_DEPTH, f_err);
+
+      // 상대습도
+      data = HumidityCalc(&sensor_err);
+      pAws->mHumidity.sReal = filter_data(A10_RELATIVE_HUMIDITY, data, sensor_err, &f_err);
+      update_sensor_err(A10_RELATIVE_HUMIDITY, f_err);
+
+      // 일사
+      data = SolarRadCalc(&sensor_err);
+      pAws->mSolarRad.sReal = filter_data(B1_SOLAR_RADIATION, data, sensor_err, &f_err);
+      update_sensor_err(B1_SOLAR_RADIATION, f_err);
+
+      // 일조
+      data = SunshineCalc(&sensor_err);
+      pAws->mSunshine.sReal = filter_data(B2_SUNSHINE_DURATION, data, sensor_err, &f_err);
+      update_sensor_err(B2_SUNSHINE_DURATION, f_err);
+
+      // 지중온도 5cm
+      data = TempCalcExt(SOLITEMP5CM_CHN, &sensor_err);
+      pAws->mSoilTemp5cm.sReal = filter_data(B5_SOIL_TEMPERATURE_5CM, data, sensor_err, &f_err);
+      update_sensor_err(B5_SOIL_TEMPERATURE_5CM, f_err);
+
+      // 지중온도 10cm
+      data = TempCalcExt(SOLITEMP10CM_CHN, &sensor_err);
+      pAws->mSoilTemp10cm.sReal = filter_data(B6_SOIL_TEMPERATURE_10CM, data, sensor_err, &f_err);
+      update_sensor_err(B6_SOIL_TEMPERATURE_10CM, f_err);
+
+      // 지중온도 20cm
+      data = TempCalcExt(SOLITEMP20CM_CHN, &sensor_err);
+      pAws->mSoilTemp20cm.sReal = filter_data(B7_SOIL_TEMPERATURE_20CM, data, sensor_err, &f_err);
+      update_sensor_err(B7_SOIL_TEMPERATURE_20CM, f_err);
 
       // 지중온도 30cm
     data = TempCalcExt(SOLITEMP30CM_CHN, &sensor_err);

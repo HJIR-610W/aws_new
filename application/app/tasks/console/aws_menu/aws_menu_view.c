@@ -214,7 +214,7 @@ void draw_charger(win_t *p_win)
                        read_solarVoltage1(&err));
 
         win_printf_row(p_win, row_count++, "%s: %.2f", m_l("충전전류(A)", CHARGER_WD),
-                       read_solarCurrrent1(&err));
+                       read_solarCurrent1(&err));
 
         win_printf_row(p_win, row_count++, "%s: %.2f", m_l("배터리 전압(V)", CHARGER_WD),
                        read_batteryVoltage1(&err));

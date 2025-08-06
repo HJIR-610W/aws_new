@@ -134,6 +134,15 @@ void systemTask(void *arg)
           System.ac_status = 1; // 220v
           System.dc_error = drv_system_read(DRV_SYS_BATTERY) < 11.0f ? 1 : 0;
           check_sd_card();
+          System.sdcard_inserted = BSP_PlatformIsDetected();
+          System.chg_batV1 = read_batteryVoltage1(&err);
+          System.chg_batV2 = read_batteryVoltage2(&err);
+          System.chg_solarC1 = read_solarCurrent1(&err);
+          System.chg_solarC2 = read_solarCurrent2(&err);
+          System.chg_loadC1 = read_loadCurrent1(&err);
+          System.chg_loadC2 = read_loadCurrent2(&err);
+          System.chg_solarV1 = read_solarVoltage1(&err);
+          System.chg_solarV2 = read_solarVoltage2(&err);
        }
     }
     osDelay(100);

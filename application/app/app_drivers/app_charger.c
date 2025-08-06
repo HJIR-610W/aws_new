@@ -57,7 +57,7 @@ float read_solarVoltage2(uint8_t *err)
   *err = charger_err;
   return charger_data.solar2Volt;
 }
-float read_solarCurrrent1(uint8_t *err)
+float read_solarCurrent1(uint8_t *err)
 {
   *err = charger_err;
   return charger_data.solar1Current;
