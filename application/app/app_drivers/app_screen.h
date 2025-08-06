@@ -65,12 +65,10 @@ void screen_printf_row(screen_page_t* win, int row_index, const char* format, ..
 void screen_clear_row(screen_page_t* win, int row_index);
 
 void screen_page_create(screen_page_t *win, int rows, int cols);
+void screen_page_handle(screen_page_t *win, int key);
 void screen_page_clear(screen_page_t *win);
-void screen_page_handle(screen_page_t* win, int key);
 void screen_page_start(screen_page_t *win);
 void screen_page_printf(screen_page_t *win, const char *format, ...);
-
-
 
 void screen_menu_create(screen_menu_t *win, const char *titile);
 void screen_menu_handle(screen_menu_t* win, int key);

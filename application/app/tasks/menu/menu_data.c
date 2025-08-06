@@ -16,7 +16,7 @@
 #define DATA_WD 10
 
 
-#define MENU_PAGE_PRINTF screen_printf_row
+
 
 void draw_setup_data_menu(screen_menu_t *p_win)
 {

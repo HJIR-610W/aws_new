@@ -351,10 +351,10 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
 
   p_adc = &g_adc_config_ads1220;
 
-  p_win->current_row = 0;
+  screen_page_start(p_win);
 
   make_centered(buff, sizeof(buff), "SE Channels(V)", SCREEN_COLS);
-  screen_printf_row(p_win, row_count++, "%s", buff);
+  screen_page_printf(p_win, "%s", buff);
 
   g_current_temp = read_current_temperature();
 
@@ -366,21 +366,16 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
 
     if (isnan(voltage))
     {
-      screen_printf_row(p_win, row_count, "%d:NC", channel);
+      screen_page_printf(p_win,  "%d:NC", channel);
     }
     else
     {
-      screen_printf_row(p_win, row_count, "%d:%.4f", channel, voltage);
+      screen_page_printf(p_win,  "%d:%.4f", channel, voltage);
     }
-    row_count++;
+
   }
 
-  p_win->total_items[0] = ALIGN_UP(row_count, p_win->view_row);
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_clear_row(p_win, row_count++);
-  }
+  screen_page_clear(p_win);
 }
 
 int32_t cali_setup_menu_view_summary(void)

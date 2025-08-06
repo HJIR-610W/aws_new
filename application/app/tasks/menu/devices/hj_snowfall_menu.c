@@ -38,28 +38,20 @@ void draw_ctrl_hj_snow_menu(screen_menu_t *p_win)
 
 void draw_snow_config_page(screen_page_t *p_win, hjsnow_read_config_t *cfg)
 {
-  int32_t row_count = 0;
+  screen_page_start(p_win);
+  screen_page_printf(p_win, "model[0] :%s", cfg->config.xModel[0]);
+  screen_page_printf(p_win, "model[1] :%s", cfg->config.xModel[1]);
+  screen_page_printf(p_win, "model[2] :%s", cfg->config.xModel[2]);
+  screen_page_printf(p_win, "distance :%dmm", cfg->config.snow_stddistance);
+  screen_page_printf(p_win, "scantime :%d", cfg->config.snow_scantime);
+  screen_page_printf(p_win, "ref d[0] :%d", cfg->config.snow_refdistance[0]);
+  screen_page_printf(p_win, "ref d[1] :%d", cfg->config.snow_refdistance[1]);
+  screen_page_printf(p_win, "ref d[2] :%d", cfg->config.snow_refdistance[2]);
+  screen_page_printf(p_win, "flevel   :%d", cfg->config.snow_filterlevel);
+  screen_page_printf(p_win, "filter   :%d", cfg->config.snow_nofiltermode);
+  screen_page_printf(p_win, "scan auto:%d", cfg->config.snow_scantempauto);
+  screen_page_clear(p_win);
 
-  p_win->current_row = 0;
-
-  screen_printf_row(p_win, row_count++, "model[0] :%s", cfg->config.xModel[0]);
-  screen_printf_row(p_win, row_count++, "model[1] :%s", cfg->config.xModel[1]);
-  screen_printf_row(p_win, row_count++, "model[2] :%s", cfg->config.xModel[2]);
-  screen_printf_row(p_win, row_count++, "distance :%dmm", cfg->config.snow_stddistance);
-  screen_printf_row(p_win, row_count++, "scantime :%d", cfg->config.snow_scantime);
-  screen_printf_row(p_win, row_count++, "ref d[0] :%d", cfg->config.snow_refdistance[0]);
-  screen_printf_row(p_win, row_count++, "ref d[1] :%d", cfg->config.snow_refdistance[1]);
-  screen_printf_row(p_win, row_count++, "ref d[2] :%d", cfg->config.snow_refdistance[2]);
-  screen_printf_row(p_win, row_count++, "flevel   :%d", cfg->config.snow_filterlevel);
-  screen_printf_row(p_win, row_count++, "filter   :%d", cfg->config.snow_nofiltermode);
-  screen_printf_row(p_win, row_count++, "scan auto:%d", cfg->config.snow_scantempauto);
-
-  p_win->total_items[0] = ALIGN_UP(row_count, p_win->view_row);
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_clear_row(p_win, row_count++);
-  }
 }
 int32_t read_snow_config(void)
 {
