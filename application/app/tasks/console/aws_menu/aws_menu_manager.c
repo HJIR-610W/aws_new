@@ -89,7 +89,8 @@ void config_hj_reset(void)
   hjwindspeed_config_t *hjwind_cfg;
   hjwindDirection_config_t *hjwindDir_cfg;
   hjsnow_config_t *hjsnow_cfg;
-  uint8_t single_channel = 0;
+  rain_present_config_t *hjrain_det_cfg;
+      uint8_t single_channel = 0;
 
   config_app_reset();
 
@@ -127,8 +128,11 @@ void config_hj_reset(void)
 
   // 강우감지[화진 접점]
   config.sensor[A8_RAIN_PRESENT].type = S_T_RAIN_PRESENT_DI;
+  sensor_add(&config.sensor[A8_RAIN_PRESENT]);
+  hjrain_det_cfg = get_sensor_config(&config.sensor[A8_RAIN_PRESENT]);
+  hjrain_det_cfg->delay = 10;
 
-  // 강수량[리드형]
+      // 강수량[리드형]
   config.sensor[A6_RAINFALL_DOT5_1MM].type = S_T_RAIN_REED_1MM;
 
   // 적설[화진 RS485 19200]

@@ -45,12 +45,12 @@ void draw_snow_config_page(screen_page_t *p_win, hjsnow_read_config_t *cfg)
   screen_printf_row(p_win, row_count++, "model[0] :%s", cfg->config.xModel[0]);
   screen_printf_row(p_win, row_count++, "model[1] :%s", cfg->config.xModel[1]);
   screen_printf_row(p_win, row_count++, "model[2] :%s", cfg->config.xModel[2]);
+  screen_printf_row(p_win, row_count++, "distance :%dmm", cfg->config.snow_stddistance);
   screen_printf_row(p_win, row_count++, "scantime :%d", cfg->config.snow_scantime);
   screen_printf_row(p_win, row_count++, "ref d[0] :%d", cfg->config.snow_refdistance[0]);
   screen_printf_row(p_win, row_count++, "ref d[1] :%d", cfg->config.snow_refdistance[1]);
   screen_printf_row(p_win, row_count++, "ref d[2] :%d", cfg->config.snow_refdistance[2]);
   screen_printf_row(p_win, row_count++, "flevel   :%d", cfg->config.snow_filterlevel);
-  screen_printf_row(p_win, row_count++, "height   :%d", cfg->config.snow_stddistance);
   screen_printf_row(p_win, row_count++, "filter   :%d", cfg->config.snow_nofiltermode);
   screen_printf_row(p_win, row_count++, "scan auto:%d", cfg->config.snow_scantempauto);
 
@@ -71,6 +71,11 @@ int32_t read_snow_config(void)
 
   hjsnow_ctrl(hjsnow, eHJSNOW_GET_CONFIG, NULL, &cfg, &err);
 
+  if(err)
+  {
+    show_popup("Error", "Command failed");
+    return MENU_BACK;
+  }
   screen_page_create(&lcd_win, 8, 20);
   lcd_win.total_pages = 1;
   lcd_win.chunk_scroll_use = 1;

@@ -24,7 +24,7 @@ extern void config_hj_reset(void);
 #define SCREEN_COLS 20
 #define MANAGER_WD 8
 
-#define MENU_PRINTF screen_menu_printf_row
+
 
 #define MANAGER_MENU_VERSION    0
 #define MANAGER_MENU_RESET      1
@@ -42,77 +42,31 @@ extern void config_hj_reset(void);
 
 void draw_setup_menu_manager_menu(screen_menu_t* p_win)
 {
-  int32_t row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, MANAGER_MENU_VERSION);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Version");
-
-  screen_update_list(p_win, row_count, MANAGER_MENU_RESET);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Device Reset");
-
-  screen_update_list(p_win, row_count, MANAGER_MENU_CONFIG);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Settings Change");
-
-  screen_update_list(p_win, row_count, MANAGER_MENU_UPDATE);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Firmware update");
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, MANAGER_MENU_VERSION, "Version");
+  screen_menu_printf(p_win, MANAGER_MENU_RESET, "Device Reset");
+  screen_menu_printf(p_win, MANAGER_MENU_CONFIG, "Settings Change");
+  screen_menu_printf(p_win, MANAGER_MENU_UPDATE, "Firmware update");
+  screen_menu_clear(p_win);
 }
 
 void draw_setup_menu_config_page(screen_menu_t* p_win)
 {
-  int32_t row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, CONFIG_MENU_HJ_RESET);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "HJ Reset");
-
-  screen_update_list(p_win, row_count, CONFIG_MENU_INIT);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Factory Reset");
-
-  screen_update_list(p_win, row_count, CONFIG_MENU_BACKUP);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Backup Config");
-
-  screen_update_list(p_win, row_count, CONFIG_RAIN_INIT);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Rain,Sun Reset");
-
-  screen_update_list(p_win, row_count, CONFIG_MENU_LOG_RESET);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Log Count Reset");
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, CONFIG_MENU_HJ_RESET, "HJ Reset");
+  screen_menu_printf(p_win, CONFIG_MENU_INIT, "Factory Reset");
+  screen_menu_printf(p_win, CONFIG_MENU_BACKUP, "Backup Config");
+  screen_menu_printf(p_win, CONFIG_RAIN_INIT, "Rain,Sun Reset");
+  screen_menu_printf(p_win, CONFIG_MENU_LOG_RESET, "Log Count Reset");
+  screen_menu_clear(p_win);
 }
 
 void draw_setup_menu_backup_page(screen_menu_t* p_win)
 {
-  int32_t row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, BACKUP_MENU_SAVE);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Save");
-
-  screen_update_list(p_win, row_count, BACKUP_MENU_RESTORE);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Restore");
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, BACKUP_MENU_SAVE, "Save");
+  screen_menu_printf(p_win, BACKUP_MENU_RESTORE, "Restore");
+  screen_menu_clear(p_win);
 }
 
 #define DATA_RESET_MENU_RAIN 0
@@ -120,22 +74,10 @@ void draw_setup_menu_backup_page(screen_menu_t* p_win)
 
 void draw_rain_reset_page(screen_menu_t *p_win)
 {
-  int32_t row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, DATA_RESET_MENU_RAIN);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Reset Rain Data 0");
-
-  screen_update_list(p_win, row_count, DATA_RESET_MENU_SUN);
-  MENU_PRINTF(p_win, row_count++, "%-*s", MANAGER_WD, "Reset Sun Data 0");
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, DATA_RESET_MENU_RAIN, "Reset Rain Data 0");
+  screen_menu_printf(p_win, DATA_RESET_MENU_SUN, "Reset Sun Data 0");
+  screen_menu_clear(p_win);
 }
 int32_t setup_menu_version(void)
 {

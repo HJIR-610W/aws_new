@@ -16,8 +16,6 @@
 #define SCREEN_COLS 20
 #define NETWORK_WD 10
 
-#define M_PRINTF screen_menu_printf_row
-
 /*
 Network
 *Interface Type
@@ -65,41 +63,19 @@ Direct
 
 void draw_network_main_page(screen_menu_t* p_win)
 {
-  int row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, NETWORK_MENU_ETH_USE);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Ethernet", 
-           ITEM_LIST(get_config_app()->eth_active, enable_list_eng));
-
-  screen_update_list(p_win, row_count, NETWORK_MENU_CDMA_USE);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "CDMA", 
-           ITEM_LIST(get_config_app()->cdma_active, enable_list_eng));
-
-  screen_update_list(p_win, row_count, NETWORK_MENU_DIRECT_USE);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Direct", 
-           ITEM_LIST(get_config_app()->direct_active, enable_list_eng));
-
-  screen_update_list(p_win, row_count, NETWORK_MENU_ETH_CONFIG);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Ethernet");
-
-  screen_update_list(p_win, row_count, NETWORK_MENU_CDMA_CONFIG);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "CDMA");
-
-  screen_update_list(p_win, row_count, NETWORK_MENU_DIRECT_CONFIG);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Direct");
-
-  screen_update_list(p_win, row_count, NETWORK_MENU_AWS_PROTOCOL);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Protocol", 
-           ITEM_LIST(get_config_app()->aws_protocol_type, protocol_list_eng));
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, NETWORK_MENU_ETH_USE, "%-*s:%s", NETWORK_WD, "Ethernet", 
+                     ITEM_LIST(get_config_app()->eth_active, enable_list_eng));
+  screen_menu_printf(p_win, NETWORK_MENU_CDMA_USE, "%-*s:%s", NETWORK_WD, "CDMA", 
+                     ITEM_LIST(get_config_app()->cdma_active, enable_list_eng));
+  screen_menu_printf(p_win, NETWORK_MENU_DIRECT_USE, "%-*s:%s", NETWORK_WD, "Direct", 
+                     ITEM_LIST(get_config_app()->direct_active, enable_list_eng));
+  screen_menu_printf(p_win, NETWORK_MENU_ETH_CONFIG, "%-*s", NETWORK_WD, "Ethernet");
+  screen_menu_printf(p_win, NETWORK_MENU_CDMA_CONFIG, "%-*s", NETWORK_WD, "CDMA");
+  screen_menu_printf(p_win, NETWORK_MENU_DIRECT_CONFIG, "%-*s", NETWORK_WD, "Direct");
+  screen_menu_printf(p_win, NETWORK_MENU_AWS_PROTOCOL, "%-*s:%s", NETWORK_WD, "Protocol", 
+                     ITEM_LIST(get_config_app()->aws_protocol_type, protocol_list_eng));
+  screen_menu_clear(p_win);
 }
 
 char user_fmt[2][21] = {{"    000.000.000     "}, {"    000.000.000     "}};
@@ -280,43 +256,19 @@ if (status == MENU_OK)
 
 void draw_eth_config_page(screen_menu_t* p_win)
 {
-  int row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, ETH_MENU_MODE);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Mode", 
-           ITEM_LIST(get_config_app()->eth_mode, eth_mode_list_eng));
-
-  screen_update_list(p_win, row_count, ETH_MENU_LOCAL_IP);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Local IP");
-
-  screen_update_list(p_win, row_count, ETH_MENU_SUBNET);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Subnet");
-
-  screen_update_list(p_win, row_count, ETH_MENU_GATEWAY);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Gateway");
-
-  screen_update_list(p_win, row_count, ETH_MENU_MAC);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "MAC");
-
-  screen_update_list(p_win, row_count, ETH_MENU_LOCAL_PORT);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", NETWORK_WD, "Local Port", 
-           get_config_app()->eth_local_port);
-
-  screen_update_list(p_win, row_count, ETH_MENU_REMOTE_IP);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Remote IP");
-
-  screen_update_list(p_win, row_count, ETH_MENU_REMOTE_PORT);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", NETWORK_WD, "Remote Port", 
-           get_config_app()->eth_remote_server_port);
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, ETH_MENU_MODE, "%-*s:%s", NETWORK_WD, "Mode", 
+                     ITEM_LIST(get_config_app()->eth_mode, eth_mode_list_eng));
+  screen_menu_printf(p_win, ETH_MENU_LOCAL_IP, "%-*s", NETWORK_WD, "Local IP");
+  screen_menu_printf(p_win, ETH_MENU_SUBNET, "%-*s", NETWORK_WD, "Subnet");
+  screen_menu_printf(p_win, ETH_MENU_GATEWAY, "%-*s", NETWORK_WD, "Gateway");
+  screen_menu_printf(p_win, ETH_MENU_MAC, "%-*s", NETWORK_WD, "MAC");
+  screen_menu_printf(p_win, ETH_MENU_LOCAL_PORT, "%-*s:%d", NETWORK_WD, "Local Port", 
+                     get_config_app()->eth_local_port);
+  screen_menu_printf(p_win, ETH_MENU_REMOTE_IP, "%-*s", NETWORK_WD, "Remote IP");
+  screen_menu_printf(p_win, ETH_MENU_REMOTE_PORT, "%-*s:%d", NETWORK_WD, "Remote Port", 
+                     get_config_app()->eth_remote_server_port);
+  screen_menu_clear(p_win);
 }
 
 int32_t setup_eth_config(void)
@@ -446,31 +398,15 @@ int32_t setup_eth_config(void)
 
 void draw_cdma_config_page(screen_menu_t* p_win)
 {
-  int row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, CDMA_MENU_SERVER_IP);
-  M_PRINTF(p_win, row_count++, "%-*s", NETWORK_WD, "Server IP");
-
-  screen_update_list(p_win, row_count, CDMA_MENU_PORT);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", NETWORK_WD, "Port", 
-           get_config_app()->cdma_port);
-
-  screen_update_list(p_win, row_count, CDMA_MENU_MODEL);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "Model", 
-           ITEM_LIST(get_config_app()->cdma_model, cdma_model_list_eng));
-
-  screen_update_list(p_win, row_count, CDMA_MENU_VPN);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", NETWORK_WD, "VPN", 
-           ITEM_LIST(get_config_app()->vpn_active, enable_list_eng));
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, CDMA_MENU_SERVER_IP, "%-*s", NETWORK_WD, "Server IP");
+  screen_menu_printf(p_win, CDMA_MENU_PORT, "%-*s:%d", NETWORK_WD, "Port", 
+                     get_config_app()->cdma_port);
+  screen_menu_printf(p_win, CDMA_MENU_MODEL, "%-*s:%s", NETWORK_WD, "Model", 
+                     ITEM_LIST(get_config_app()->cdma_model, cdma_model_list_eng));
+  screen_menu_printf(p_win, CDMA_MENU_VPN, "%-*s:%s", NETWORK_WD, "VPN", 
+                     ITEM_LIST(get_config_app()->vpn_active, enable_list_eng));
+  screen_menu_clear(p_win);
 }
 
 int32_t setup_cdma_config(void)
@@ -561,20 +497,10 @@ int32_t setup_cdma_config(void)
 
 void draw_direct_config_page(screen_menu_t* p_win)
 {
-  int row_count = 0;
-
-  p_win->current_row = 0;
-
-  screen_update_list(p_win, row_count, DIRECT_MENU_BAUD_RATE);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", NETWORK_WD, "Baud Rate", 
-           get_config_app()->direct_baud);
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, DIRECT_MENU_BAUD_RATE, "%-*s:%d", NETWORK_WD, "Baud Rate", 
+                     get_config_app()->direct_baud);
+  screen_menu_clear(p_win);
 }
 
 int32_t setup_direct_config(void)

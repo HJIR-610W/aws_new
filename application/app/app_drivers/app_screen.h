@@ -44,7 +44,7 @@ typedef struct
   int scroll_offset;
   int total_items;
   int selected_index;
-  uint8_t index_list[10];
+  uint8_t index_list[50];
 } screen_menu_t;
 
 

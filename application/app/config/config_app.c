@@ -272,6 +272,12 @@ void check_config_app(void)
     config.panel_barometer_active = config_app_default.panel_barometer_active;
   g_config_app_change_count++;
   }
+
+  if(config.vpn_active>1)
+  {
+    config.vpn_active = config_app_default.vpn_active;
+  g_config_app_change_count++;
+  }
 }
 
 

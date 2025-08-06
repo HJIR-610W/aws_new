@@ -75,7 +75,7 @@ int32_t ctrl_hj_temp(void)
           modbus_h = get_hjtemperature_bus_io();
 
           modbus_read_hold_reg(modbus_h, 0, (uint16_t *)&map, 16);
-           snprintf(buff, sizeof(buff), "SW Version:%3d      HW Version:%3d", map.sw_version, map.hw_version);
+           snprintf(buff, sizeof(buff), "SW Version:%3d       HW Version:%3d", map.sw_version, map.hw_version);
             show_popup("HJ temperature",buff);
 
         }
@@ -147,7 +147,7 @@ int32_t ctrl_hj_temp(void)
         hjhumi = hjHumi_opened();
         float humi;
         humi = hjHuminity_read(hjhumi, &err);
-        snprintf(buff,sizeof(buff),"temp:%5.2f          humi:%.2f",temp,humi);
+        snprintf(buff,sizeof(buff),"temp:%5.2f           humi:%.2f",temp,humi);
         show_popup("HJ temperature", buff);
 
 

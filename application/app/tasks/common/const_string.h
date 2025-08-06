@@ -11,4 +11,6 @@ extern const char* protocol_list_eng[2];  // = {"KMA2", "KMA3"};
 
 extern const char* adc_se_list[16] ;
 extern const char* adc_diff_list[8] ;
-#endif
+extern const char *freq_ch_list[2];
+
+#endif // CONST_STRING_H

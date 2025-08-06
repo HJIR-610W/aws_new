@@ -22,7 +22,6 @@
 #define SCREEN_COLS 20
 #define SYSTEM_WD 8
 
-#define M_PRINTF screen_menu_printf_row
 
 
 
@@ -52,38 +51,20 @@ extern const char* physical_list[2];
 
 void draw_adc_page(screen_menu_t* p_win,adc_config_t *adc_config)
 {
-  int row_count = 1;
 
-  screen_update_list(p_win, row_count, ADC_PAGE_MODE);
-  M_PRINTF(p_win, row_count++, "%-*s:%s",E_L_W, "Adc Mode",ITEM_LIST(adc_config->mode, (char*)adcChModeList));
+  screen_menu_printf(p_win, ADC_PAGE_MODE, "%-*s:%s",E_L_W, "Adc Mode",ITEM_LIST(adc_config->mode, (char*)adcChModeList));
 
-  screen_update_list(p_win, row_count, ADC_PAGE_CHANNEL);
   if(adc_config->mode == ADC_CFG_MODE_SE)
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Channel", adc_config->single_channel);
+    screen_menu_printf(p_win, ADC_PAGE_CHANNEL, "%-*s:%d", E_L_W, "Channel", adc_config->single_channel);
   else
-    M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Channel", adc_config->diff_channel);
+    screen_menu_printf(p_win, ADC_PAGE_CHANNEL, "%-*s:%d", E_L_W, "Channel", adc_config->diff_channel);
 
-  screen_update_list(p_win, row_count, ADC_PAGE_HIGH_VALUE);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "High Value", adc_config->highScale);
+  screen_menu_printf(p_win, ADC_PAGE_HIGH_VALUE, "%-*s:%d", E_L_W, "High Value", adc_config->highScale);
+  screen_menu_printf(p_win, ADC_PAGE_LOW_VALUE, "%-*s:%d", E_L_W, "Low Value", adc_config->lowScale);
+  screen_menu_printf(p_win, ADC_PAGE_SCALE, "%-*s:%d", E_L_W, "Scale", adc_config->scale);
+  screen_menu_printf(p_win, ADC_PAGE_MAX_MV, "%-*s:%d", E_L_W, "Max mV", adc_config->outMaxV);
+  screen_menu_printf(p_win, ADC_PAGE_MIN_MV, "%-*s:%d", E_L_W, "Min mV", adc_config->outMinV);
 
-  screen_update_list(p_win, row_count, ADC_PAGE_LOW_VALUE);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Low Value", adc_config->lowScale);
-
-  screen_update_list(p_win, row_count, ADC_PAGE_SCALE);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Scale", adc_config->scale);
-
-  screen_update_list(p_win, row_count, ADC_PAGE_MAX_MV);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Max mV", adc_config->outMaxV);
-
-  screen_update_list(p_win, row_count, ADC_PAGE_MIN_MV);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Min mV", adc_config->outMinV);
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
 }
 
 const char *safe_name(const char **names,int name_count,int index)
@@ -105,17 +86,16 @@ const char *safe_name(const char **names,int name_count,int index)
 }
 
 #define HJSNOW_PAGE_PHYSICAL 0
-#define HJSNOW_PAGE_PORT 1
+#define HJSNOW_PAGE_PORT     1
 #define HJSNOW_PAGE_SNOW_MENU 2
 void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
 {
-  int row_count = 1;
   const char *name_table[10];
   int list_cnt;
   uint8_t port_number;
 
-  screen_update_list(p_win, row_count, HJSNOW_PAGE_PHYSICAL);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Com Type", 
+
+  screen_menu_printf(p_win, HJSNOW_PAGE_PHYSICAL, "%-*s:%s", E_L_W, "Com Type", 
            ITEM_LIST(hjsnow_config->physical_layer, physical_list));
 
   if (hjsnow_config->physical_layer == ePHYSICAL_RS232)
@@ -129,18 +109,9 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
     port_number = hjsnow_config->rs485_port;
   }
 
-  screen_update_list(p_win, row_count, HJSNOW_PAGE_PORT);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
-
-  screen_update_list(p_win, row_count, HJSNOW_PAGE_SNOW_MENU);
-  M_PRINTF(p_win, row_count++, "Settings");
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_printf(p_win, HJSNOW_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
+  screen_menu_printf(p_win, HJSNOW_PAGE_SNOW_MENU, "Settings");
+  screen_menu_clear(p_win);
 }
 
 #define HJWIND_PAGE_FULLSET 0
@@ -148,124 +119,76 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
 #define HJWIND_PAGE_PORT 2
 void draw_hjwind_page(screen_menu_t* p_win, hjwindspeed_config_t* hjwind_config)
 {
-  int row_count = 1;
   const char *name_table[10];
   int list_cnt;
 
   list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
 
-  screen_update_list(p_win, row_count, HJWIND_PAGE_FULLSET);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Fullset", hjwind_config->full);
 
-  screen_update_list(p_win, row_count, HJWIND_PAGE_OFFSET);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Offset", hjwind_config->offset);
+  screen_menu_printf(p_win, HJWIND_PAGE_FULLSET, "%-*s:%d", E_L_W, "Fullset", hjwind_config->full);
+  screen_menu_printf(p_win, HJWIND_PAGE_OFFSET, "%-*s:%d", E_L_W, "Offset", hjwind_config->offset);
+  screen_menu_printf(p_win, HJWIND_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, hjwind_config->rs485_port));
 
-  screen_update_list(p_win, row_count, HJWIND_PAGE_PORT);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, hjwind_config->rs485_port));
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
 }
 
 #define HJWINDDIR_PAGE_PORT 0
 void draw_hjwindDir_page(screen_menu_t* p_win, hjwindDirection_config_t* hjwindDir_config)
 {
-  int row_count = 1;
   const char *name_table[10];
   int list_cnt;
 
   list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
 
-  screen_update_list(p_win, row_count, HJWINDDIR_PAGE_PORT);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, hjwindDir_config->rs485_port));
+  screen_menu_printf(p_win, HJWINDDIR_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, hjwindDir_config->rs485_port));
 
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
 }
 
 #define OTT_SMP3_PAGE_PORT 0
 #define OTT_SMP3_PAGE_MODBUS_ID 1
 void draw_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t* ott_smp3_config)
 {
-  int row_count = 1;
   const char *name_table[10];
   int list_cnt;
 
   list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
 
-  screen_update_list(p_win, row_count, OTT_SMP3_PAGE_PORT);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, ott_smp3_config->port));
 
-  screen_update_list(p_win, row_count, OTT_SMP3_PAGE_MODBUS_ID);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "MODBUS ID", ott_smp3_config->modbus_id);
+  screen_menu_printf(p_win, OTT_SMP3_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, ott_smp3_config->port));
+  screen_menu_printf(p_win, OTT_SMP3_PAGE_MODBUS_ID, "%-*s:%d", E_L_W, "MODBUS ID", ott_smp3_config->modbus_id);
 
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
 }
 
 #define RAIN_PRESENT_PAGE_DELAY 0
 void draw_rain_present_page(screen_menu_t* p_win, rain_present_config_t* rain_present_config)
 {
-  int row_count = 1;
 
-  screen_update_list(p_win, row_count, RAIN_PRESENT_PAGE_DELAY);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Delay Time", rain_present_config->delay);
+  screen_menu_printf(p_win, RAIN_PRESENT_PAGE_DELAY, "%-*s:%d", E_L_W, "Delay Time", rain_present_config->delay);
 
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
 }
 
 #define FREQ_PAGE_CHANNEL 0
 #define FREQ_PAGE_SCALE_FACTOR 1
 void draw_freq_page(screen_menu_t* p_win, frequency_config_t* freq_config)
 {
-  int row_count = 1;
 
-  screen_update_list(p_win, row_count, FREQ_PAGE_CHANNEL);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "Channel", freq_config->channel);
+  screen_menu_printf(p_win, FREQ_PAGE_CHANNEL, "%-*s:%s", E_L_W, "Channel", ITEM_LIST(freq_config->channel, freq_ch_list));
+  screen_menu_printf(p_win, FREQ_PAGE_SCALE_FACTOR, "%-*s:%.4f", E_L_W, "Scale Factor", freq_config->scale_factor);
 
-  screen_update_list(p_win, row_count, FREQ_PAGE_SCALE_FACTOR);
-  M_PRINTF(p_win, row_count++, "%-*s:%.4f", E_L_W, "Scale Factor", freq_config->scale_factor);
-
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
 }
 
-#define HJTEMP_PAGE_PHYSICAL 0
-#define HJTEMP_PAGE_PORT 1
+#define HJTEMP_PAGE_PHYSICAL  0
+#define HJTEMP_PAGE_PORT      1
 #define HJTEMP_PAGE_MODBUS_ID 2
 #define HJTEMP_PAGE_TEMP_MENU 3
+
 void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
 {
-  int row_count = 1;
   const char *name_table[10];
   int list_cnt;
   uint8_t port_number;
 
-
-  screen_update_list(p_win, row_count, HJTEMP_PAGE_PHYSICAL);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Com Type", 
-           ITEM_LIST(hjtemp_config->physical_layer, physical_list));
+  screen_menu_printf(p_win, HJTEMP_PAGE_PHYSICAL, "%-*s:%s", E_L_W, "Com Type",
+                         ITEM_LIST(hjtemp_config->physical_layer, physical_list));
 
   if (hjtemp_config->physical_layer == ePHYSICAL_RS232)
   {
@@ -278,28 +201,28 @@ void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
     port_number = hjtemp_config->rs485_port;
   }
 
-  screen_update_list(p_win, row_count, HJTEMP_PAGE_PORT);
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
+  screen_menu_printf(p_win, HJTEMP_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
+  screen_menu_printf(p_win, HJTEMP_PAGE_MODBUS_ID, "%-*s:%d", E_L_W, "M bus ID", hjtemp_config->modbus_id);
+  screen_menu_printf(p_win, HJTEMP_PAGE_TEMP_MENU, "Settings");
 
-  screen_update_list(p_win, row_count, HJTEMP_PAGE_MODBUS_ID);
-  M_PRINTF(p_win, row_count++, "%-*s:%d", E_L_W, "M bus ID", hjtemp_config->modbus_id);
-  
-  screen_update_list(p_win, row_count, HJTEMP_PAGE_TEMP_MENU);
-  M_PRINTF(p_win, row_count++, "Settings");
+}
 
-  p_win->total_items = row_count;
+#define JINSUNG_BARO_PAGE_PORT 0
+void draw_jinsung_barometer_page(screen_menu_t *p_win, jinsung_sjgp215_config_t *jinsung_config)
+{
+  const char *name_table[10];
+  int list_cnt;
+  uint8_t port_number;
 
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  list_cnt = rs232_get_portList(name_table, _countof(name_table));
+  port_number = jinsung_config->rs232_port;
+  screen_menu_printf(p_win, HJTEMP_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
 }
 
 void draw_sensor_page(screen_menu_t* p_win, sensor_t *p_sensor)
 {
-  int row_count=0;
-  p_win->current_row = 0;
-  M_PRINTF(p_win, row_count++, "%-*s:%s", E_L_W, "TYPE", g_sensor_model_eng_table[p_sensor->type]);
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, 0, "%-*s:%s", E_L_W, "TYPE", g_sensor_model_eng_table[p_sensor->type]);
   switch (p_sensor->type)
   {
     case S_T_ADC:
@@ -329,16 +252,14 @@ void draw_sensor_page(screen_menu_t* p_win, sensor_t *p_sensor)
     case S_T_FREQ:
       draw_freq_page(p_win, get_sensor_config(p_sensor));
       break;
-    default :
-      p_win->total_items = row_count;
+    case S_T_BARO_JINSUNG_SJGP215:
+      draw_jinsung_barometer_page(p_win, get_sensor_config(p_sensor));
+      break;
 
-
+    default:
       break;
   }
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
+  screen_menu_clear(p_win);
 }
 
 int32_t setup_select_menu_index(sensor_t *p_sensor, int *choice, eSENSOR_TYPE_t type)
@@ -519,7 +440,7 @@ int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case FREQ_PAGE_CHANNEL:
-      status = input_decimal("Channel", 0, 1, &dec);
+       status = input_combobox("Channel", freq_ch_list, _countof(freq_ch_list), &dec);
       if (status != MENU_OK)
         break;
       freq->channel = dec;
@@ -868,6 +789,37 @@ int32_t rain_present_setup(sensor_t* sensor, uint8_t menu_index)
   return status;
 }
 
+int32_t jinsung_barometer_setup(sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t status = 0;
+  int32_t dec;
+  float factor;
+  jinsung_sjgp215_config_t *jinsung_baro;
+  const char *portList[10];
+  uint16_t portListCnt;
+  int choice;
+
+  jinsung_baro = get_sensor_config(sensor);
+  if (jinsung_baro == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+  case JINSUNG_BARO_PAGE_PORT:
+    portListCnt = rs232_get_portList(portList, _countof(portList));
+    choice = jinsung_baro->rs232_port;
+    status = input_combobox("RS232 Port", portList, portListCnt, &choice);
+    if (status != MENU_OK)
+      break;
+    jinsung_baro->rs232_port = choice;
+    save_config_sensor();
+    break;
+  }
+
+  return status;
+}
 const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_ADC, .config_set = general_adc_setup},
     {.sensor_type = S_T_FREQ, .config_set = general_freq_setup},
@@ -877,9 +829,8 @@ const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_TEMPERATURE_HJ, .config_set = hjtemp_setup},
     {.sensor_type = S_T_HUMINITY_HJ, .config_set = hjhumi_setup},
     {.sensor_type = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_setup},
-    {.sensor_type = S_T_RAIN_PRESENT_DI, .config_set = rain_present_setup}};
-
-
+    {.sensor_type = S_T_RAIN_PRESENT_DI, .config_set = rain_present_setup},
+    {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = jinsung_barometer_setup}};
 
 int32_t setup_sensor_set(sensor_t* p_sensor, uint8_t choice)
 {
@@ -937,20 +888,16 @@ int32_t setup_sensor(eSENSOR_TYPE_t list)
 
 void draw_menu_sensor_page(screen_menu_t* p_win)
 {
-  int row_count = 0;
   sensor_t *p_sensor = get_config_app()->sensor;
 
-  p_win->current_row = 0;
+  screen_menu_start(p_win);
 
   for(int i = 0;i< SENSOR_LIST_MAX;i++)
   {
-  sensor_t *p_sensor = get_config_app()->sensor;
-  M_PRINTF(p_win, row_count++, "%-15s%s", sensor_name_eng_list[i],p_sensor[i].type>0?"[E]":"[D]");
+    screen_menu_printf(p_win, i, "%-15s%s", sensor_name_eng_list[i],p_sensor[i].type>0?"[E]":"[D]");
   }
 
-  p_win->total_items = row_count;
-
-  screen_clear_unsued_line(p_win);
+  screen_menu_clear(p_win);
 }
 
 int32_t setup_menu_sensor(void)

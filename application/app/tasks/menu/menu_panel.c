@@ -13,8 +13,6 @@
 #define SCREEN_COLS 20
 #define PANEL_WD 8
 
-#define MENU_PRINTF screen_menu_printf_row
-
 
 
 #define PANEL_MENU_MODEL    0

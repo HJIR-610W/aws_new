@@ -132,13 +132,13 @@
             <file>$PROJ_DIR$\..\Application\file_system\user_heap.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\core_json.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\io\dev_io.c</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.c</file>
-            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
             <file>$PROJ_DIR$\..\Application\freertos_callback.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\http_api.c</file>
@@ -199,7 +199,7 @@
             <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.c</file>
@@ -2025,10 +2025,10 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_network.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_logging.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_frequency.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_power.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_hansung.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif_opts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\raw_priv.h</file>
@@ -2327,7 +2327,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>
             <file>$TOOLKIT_DIR$\inc\c\LowLevelIOInterface.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
             <file>$PROJ_DIR$\..\system\iar_io_retarget.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\sockets_priv.h</file>
@@ -2360,7 +2360,7 @@
             <file>$PROJ_DIR$\..\application\app\test\test_power.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\app_console_test.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\app_console_test.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\utile_data.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt_opts.h</file>
             <file>$PROJ_DIR$\release\Obj\test_flach.__cstat.et</file>
@@ -2507,7 +2507,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\tcp_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>
             <file>$PROJ_DIR$\release\Obj\pcb_5_pin.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stream_buffer.h</file>

@@ -16,8 +16,6 @@
 #define SCREEN_COLS 16
 #define OFFSET_WD 15
 
-#define M_PRINTF screen_menu_printf_row
-
 static const eSENSOR_TYPE_t g_offset_sensor_list[] = {
     A1_TEMPERATURE,
     A2_WIND_DIRECTION,
@@ -41,28 +39,19 @@ static const eSENSOR_TYPE_t g_offset_sensor_list[] = {
 
 void draw_offset_page(screen_menu_t* p_win)
 {
-  int32_t row_count = 0;
   sensor_t* p_sensor;
 
-  p_win->current_row = 0;
+  screen_menu_start(p_win);
 
-  for (int32_t i = 0; i < OFFSET_SENSOR_COUNT && row_count < p_win->view_row; i++)
+  for (int32_t i = 0; i < OFFSET_SENSOR_COUNT; i++)
   {
     p_sensor = &get_config_app()->sensor[g_offset_sensor_list[i]];
 
-    screen_update_list(p_win, row_count, i);
-    M_PRINTF(p_win, row_count++, "%-*s:%4.2f", OFFSET_WD,
-             sensor_name_eng_list[g_offset_sensor_list[i]], p_sensor->offset);
+    screen_menu_printf(p_win, i, "%-*s:%4.2f", OFFSET_WD,
+                       sensor_name_eng_list[g_offset_sensor_list[i]], p_sensor->offset);
   }
 
-  p_win->total_items = row_count;
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_menu_clear_row(p_win, row_count++);
-  }
-
-  screen_refresh();
+  screen_menu_clear(p_win);
 }
 
 //ADC 자체의 오프셋을 수정하려면 이함수 추후 사용
@@ -162,7 +151,7 @@ int32_t setup_menu_offset(void)
   while (1)
   {
     draw_offset_page(&menu);
-
+    screen_refresh();
     key = get_button_key(1000);
 
     if (key == KEY_CODE_CTRL_Q)

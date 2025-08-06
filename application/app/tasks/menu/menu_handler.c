@@ -18,7 +18,7 @@
 #include "util_stdio.h"
 
 #define MAX_ROWS 8
-#define MAX_COLS 20
+#define MAX_COLS 21
 #define MAX_FIELDS 6
 
 typedef struct
