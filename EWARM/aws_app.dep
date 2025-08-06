@@ -2507,7 +2507,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\tcp_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>
             <file>$PROJ_DIR$\release\Obj\pcb_5_pin.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stream_buffer.h</file>
@@ -3750,7 +3750,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2321 1028 1131 1039 1593 820 1940 1633 1928 1435 2378 2279 1057 1882 647 1354 2338 2206 1079 2519 227 186 225 1072 1325 2400 936 2449 2431 2425 1887 1753 1429 1535 1906 2082 996 2003 1529 1612 2258 1822 2293 1561 1609 2421 2412 1619 1378 2060 1855 2403 2240 1451 2387 1631 1603 2111 2233 1978 737 1993 1863 899 1818 1503 1174 2401 865 1624 221 2418 208 1676 1407 997 1247 1905 2242 2129 220 216 832 222 321 199 301 2197 518 2112 1792 1738 1816 256 2154 1932 1809 570 168 877 2038 1806 540 2109 2369 2336 141 88 87 1391 163 2020 2023 2453 2199 2502 2313 517 2036 2456 2489</file>
+                    <file> 2321 1028 1131 1039 1593 820 1940 1633 1928 1435 2378 2279 1057 1882 647 1354 2338 2206 1079 2519 227 186 225 1072 1325 2400 936 2449 2431 2425 1887 1753 1429 1535 1906 2082 996 2003 1529 1612 2258 1822 2293 1561 1609 2421 2412 1619 1378 2060 1855 2403 2240 1451 2387 1631 1603 2111 2233 1978 737 1993 1863 899 1818 1503 1174 2401 865 1624 221 2418 208 1676 1407 997 1247 1905 2242 2129 220 216 832 222 321 199 301 2197 518 2112 1792 1738 1816 256 2154 1932 1809 570 168 877 2038 1806 540 2109 2008 2369 2336 141 88 87 1391 163 2020 2023 2453 2199 2502 2313 517 2036 2456 2489</file>
                 </tool>
             </inputs>
         </file>

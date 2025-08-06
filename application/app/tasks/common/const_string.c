@@ -15,3 +15,7 @@ const char* adc_diff_list[8] = {"DIFF 0", "DIFF 1", "DIFF 2", "DIFF 3",
                                 "DIFF 4", "DIFF 5", "DIFF 6", "DIFF 7"};
 
 const char *freq_ch_list[2] = {"A", "B"};
+
+ const char *doorStatusList_lcd[2] = {"CLOSED", "OPENED"};
+ const char *linkStatusList_lcd[3] = {"-", "UP", "DOWN"};
+ const char *ethlinkStatusList_lcd[3] = {"-", "U", "D"};

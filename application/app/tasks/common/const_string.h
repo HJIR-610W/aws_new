@@ -13,4 +13,8 @@ extern const char* adc_se_list[16] ;
 extern const char* adc_diff_list[8] ;
 extern const char *freq_ch_list[2];
 
+extern const char *doorStatusList_lcd[2];
+extern  const char *linkStatusList_lcd[3] ;
+extern  const char *ethlinkStatusList_lcd[3];
+
 #endif // CONST_STRING_H

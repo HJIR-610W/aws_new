@@ -11,7 +11,7 @@
 
 static int32_t serial_key = -1;
 
-    osMessageQueueId_t button_queue_handle = NULL;
+osMessageQueueId_t button_queue_handle = NULL;
 
 void app_key_init(void)
 {
@@ -40,17 +40,16 @@ int32_t get_button_key(uint32_t timeout_ms)
     osStatus_t status;
 
     if (button_queue_handle == NULL) {
-        return -1;
+        return KEY_CODE_UNKNOWN;
     }
-
 
     status = osMessageQueueGet(button_queue_handle, &key, NULL, timeout_ms);
     
     if (status == osOK) {
         return key;
     }
-    
-    return -1;
+
+    return KEY_CODE_UNKNOWN;
 }
 
 void button_put_key(int32_t key)
@@ -69,37 +68,40 @@ static int32_t process_serial_data(uint8_t *data, int len)
     static uint8_t escape_sequence[3] = {0};
     static int escape_index = 0;
     static uint32_t last_escape_time = 0;
-    
-    if (len <= 0) {
+    uint8_t ch;
+    uint32_t current_time;
+
+    if (len <= 0)
+    {
         return KEY_CODE_NONE;
     }
 
-    uint8_t ch = data[0];
-    uint32_t current_time = HAL_GetTick();
+    ch = data[0];
+     current_time = HAL_GetTick();
 
-    // Reset escape sequence if timeout occurred
-    if (escape_index > 0 && (current_time - last_escape_time) > 100) {
+    // 이스케이프 시퀀스가 특정시간초과하면새롭게 시퀀스 시작 
+    if (escape_index > 0 && (current_time - last_escape_time) > 100)
+    {
         escape_index = 0;
     }
 
-    // Handle escape sequences
-    if (ch == 0x1B) { // ESC character
+    // 이스케이프 시퀀스
+    if (ch == 0x1B){ // ESC 
         escape_sequence[0] = ch;
         escape_index = 1;
         last_escape_time = current_time;
-        return KEY_CODE_NONE; // Wait for more characters
+        return KEY_CODE_NONE; 
     }
     else if (escape_index == 1) {
         escape_sequence[1] = ch;
         escape_index = 2;
         last_escape_time = current_time;
-        return KEY_CODE_NONE; // Wait for more characters
+        return KEY_CODE_NONE; 
     }
     else if (escape_index == 2) {
         escape_sequence[2] = ch;
         escape_index = 0;
         
-        // Process complete escape sequence
         if (escape_sequence[1] == '[') {
             switch (ch) {
                 case 'A': return KEY_CODE_UP;
@@ -125,36 +127,32 @@ static int32_t process_serial_data(uint8_t *data, int len)
 
     escape_index = 0;
 
-    // Handle Ctrl key combinations
-    if (ch >= 0x01 && ch <= 0x1A) {
+    //  Ctrl key 조합
+    if (ch >= 0x01 && ch <= 0x1A)
+    {
         return (int32_t)ch;
     }
 
-    // Handle regular characters
+    //일반 키
     return (int32_t)ch;
 }
 
 
 void scan_key(void)
 {
+    uint8_t data[5];
     int len;
-    uint8_t data[10];
     int key;
-
 
     len = bsp_uart_recv(serial_key, data, _countof(data), 0);
 
-    if (len > 0)
+    for (int i = 0; i < len; i++)
     {
-    // Process each received byte
-    for (int i = 0; i < len; i++) {
         key = process_serial_data(&data[i], 1);
-        
-        if (key != KEY_CODE_NONE) {
-            // Put processed key into message queue
+    
+        if (key != KEY_CODE_NONE) 
+        {
             button_put_key(key);
         }
     }
-    }
-
 }

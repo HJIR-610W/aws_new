@@ -14,6 +14,7 @@
 #include "bsp_di.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
+#include "const_string.h"
 #include "console_utile.h"
 #include "task_cellular.h"
 #include "task_client.h"
@@ -33,6 +34,8 @@
 #include "drv_system.h"
 #include "FreeRTOS.h"
 #include "schedule.h"
+
+
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
 extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용
 extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
@@ -43,41 +46,25 @@ extern const char *generalStatusList[2];
 #define SCREEN_ROWS 8
 #define SCREEN_OFF_TIMEOUT_MS 10000
 
-
-
-    const char *doorStatusList_lcd[2] = {"CLOSED", "OPENED"};
-const char *linkStatusList_lcd[3] = {"-", "UP", "DOWN"};
-const char *ethlinkStatusList_lcd[3] = {"-", "U", "D"};
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
     .stack_size = TASK_STACK(TASK_MENU_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_MENU_DEF),
 };
 
- 
-
-
-
-
 
 #define SYSTEM_WD 10
 void draw_system_page(screen_page_t* p_win)
 {
-
-
   char buff[SCREEN_COLS + 1];
   const char *message;
 
   screen_page_start(p_win);
-
-
-
   make_centered(buff, sizeof(buff), "SYSTEM", SCREEN_COLS);
   screen_page_printf(p_win,"%s",buff);
 
   screen_page_printf(p_win, "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,
                  Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-
   screen_page_printf(p_win, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
   screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "DOOR",
                     ITEM_LIST(is_door_opened(), doorStatusList_lcd));
@@ -93,16 +80,11 @@ void draw_system_page(screen_page_t* p_win)
   }
 
   screen_page_clear(p_win);
- 
-
-  
 }
 
 #define RAIN_WD 8
 void draw_rain_page(screen_page_t *p_win)
 {
-
-
   char buff[SCREEN_COLS + 1];
 
   screen_page_start(p_win);
@@ -138,19 +120,15 @@ void draw_rain_page(screen_page_t *p_win)
 #define CHARGER_WD 10
 void draw_charger_page(screen_page_t *p_win)
 {
-  uint8_t err;
-
   char buff[SCREEN_COLS + 1];
   char temp[20];
+  uint8_t err;
 
   screen_page_start(p_win);
-
   make_centered(buff, sizeof(buff), "CHARGER", SCREEN_COLS);
   screen_page_printf(p_win, "%s",buff);
-
   read_chargerStatus(temp, sizeof(temp));
   screen_page_printf(p_win, "%-*s:%s", CHARGER_WD, "STATUS", temp);
-
 
   if (is_chargerValid())
   {
@@ -181,17 +159,14 @@ void draw_cdma_page(screen_page_t *p_win)
 
   char buff[SCREEN_COLS + 1];
   char num[20];
-  DATE_TIME_BUF nt;
   uint32_t last_time;
+  DATE_TIME_BUF nt;
 
   screen_page_start(p_win);
-
   make_centered(buff, sizeof(buff), "CDMA", SCREEN_COLS);
   screen_page_printf(p_win, buff);
-
   screen_page_printf(p_win, "%-*s:%s", CDMA_WD, "LINK",
                  ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
-
 
   if (get_cdma_system()->num[0] != '0')
   {
@@ -253,21 +228,17 @@ void draw_direct_page(screen_page_t *p_win)
   uint32_t last_time;
   uint32_t remain_sec;
 
-  screen_page_start(p_win);
-
   make_centered(buff, sizeof(buff), "DIRECT", SCREEN_COLS);
-  screen_page_printf(p_win, "%s",buff);
 
+  screen_page_start(p_win);
+  screen_page_printf(p_win, "%s",buff);
   screen_page_printf(p_win, "%-*s:%s", DIRECT_WD, "LINK",
                  ITEM_LIST(get_direct_system()->link_status, linkStatusList));
 
   remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms / 1000.0);
   screen_page_printf(p_win, "%-*s:%d", DIRECT_WD, "TIMEOUT", remain_sec);
-
   screen_page_printf(p_win, "%-*s:%d", DIRECT_WD, "RX", get_direct_system()->rx_cnt);
   screen_page_printf(p_win, "%-*s:%d", DIRECT_WD, "TX", get_direct_system()->tx_cnt);
-
-
 
   last_time = get_direct_system()->last_recv_time;
   if (last_time == 0)
@@ -300,18 +271,16 @@ void draw_direct_page(screen_page_t *p_win)
 #define ETH_WD 2
 void draw_ethernet_page(screen_page_t *p_win)
 {
-
-
   char buff[SCREEN_COLS + 1];
-  DATE_TIME_BUF nt;
-  eLINK_STATUS_t link_status[ETH_CLIENT_MAX];
   uint8_t tx_cnt[ETH_CLIENT_MAX];
   uint8_t rx_cnt[ETH_CLIENT_MAX];
   uint32_t last_time;
-
-  screen_page_start(p_win);
+  DATE_TIME_BUF nt;
+  eLINK_STATUS_t link_status[ETH_CLIENT_MAX];
 
   make_centered(buff, sizeof(buff), "ETHERNET", SCREEN_COLS);
+
+  screen_page_start(p_win);
   screen_page_printf(p_win, "%s",buff);
 
   if (get_config_app()->eth_mode == eETH_MODE_CLINET)
@@ -405,16 +374,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   const char *aws_title_list[] = {"AVG", "1MIN", "10MIN", "HOUR", "RAW"};
   char err_buf[32];
   uint8_t err;
-
-
   float data, data_min, data_max;
   kma_data_ex_t *p_kma = NULL;
 
-
-
-
   screen_page_start(p_win);
-
   screen_page_printf(p_win, "AWS %s %.2fs/%.2fs", aws_title_list[(int)min],
                  (float)g_exec_250ms_time.elapsed_time / 1000.0f,
                  (float)g_exec_1s_time.elapsed_time / 1000.0f);
@@ -438,8 +401,8 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       }
       else
       {
-         data = KMA_TO_TEMPERATURE(p_kma->temperature.data);
-         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "TEMP", data);
+        data = KMA_TO_TEMPERATURE(p_kma->temperature.data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "TEMP", data);
       }
     }
   }
@@ -1094,17 +1057,13 @@ void print_logo(void)
   screen_refresh();
   osDelay(1000);
 }
-/*
-화면이 페이지이다
-LEFT,RIGHT로 페이지 전환
-UP,DOWN으로 페이지 스크롤
-*/
+
 void menuTask(void *arg)
 {
   int32_t key;
   int32_t page_count = 0;
   int32_t page_list[PAGE_MAX];
-  uint32_t start_time;
+  uint32_t screen_off_time;
   screen_page_t lcd_win;
   
   screen_init();
@@ -1115,8 +1074,8 @@ void menuTask(void *arg)
 
   lcd_win.chunk_scroll_use = 1;// view_row 단위로 스크롤
   lcd_win.multi_page_use = 1;  //하나의 창에 여러개의 페이지 구성 LEFT,RIGHT 키 사용
-  start_time = OS_GET_TICK();
 
+  screen_off_time = OS_GET_TICK();
   while (1)
   {
     page_count = 0;
@@ -1185,19 +1144,19 @@ void menuTask(void *arg)
     if (key == KEY_CODE_CTRL_A)
     {
       setup_root();
-      start_time = OS_GET_TICK();
+      screen_off_time = OS_GET_TICK();
     }
     else if (key != KEY_CODE_UNKNOWN)
     {
       screen_page_handle(&lcd_win, key);
-      start_time = OS_GET_TICK();
+      screen_off_time = OS_GET_TICK();
     }
 
-    if ((OS_GET_TICK() - start_time) > SCREEN_OFF_TIMEOUT_MS)
+    if ((OS_GET_TICK() - screen_off_time) > SCREEN_OFF_TIMEOUT_MS)
     {
       screen_off();
-      key = get_button_key(0xFFFFFFFF);
-      start_time = OS_GET_TICK();
+      key = get_button_key(0xFFFFFFFF);//무한 대기 
+      screen_off_time = OS_GET_TICK();
     }
 
     }
