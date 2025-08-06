@@ -80,6 +80,8 @@ int32_t menu_view_log(void)
 }
 
 #define DEV_LOG 0
+
+
 void draw_menu_developer_page(screen_menu_t *p_win)
 {
   screen_menu_start(p_win);
@@ -121,7 +123,8 @@ int32_t setup_menu_developer(void)
       case DEV_LOG:
       menu_view_log();
       break;
-      
+
+
       default:
         break;
       }

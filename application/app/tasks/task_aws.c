@@ -23,7 +23,7 @@
 
 typedef struct filter_data_s
 {
-  uint8_t delay;
+  uint8_t delay_count;
   uint16_t data;
   uint8_t err;
 }filter_data_t;
@@ -1308,12 +1308,7 @@ void calculate_rain(void)
     set_rainfall_10min(min10_rain / 10.0f);
     set_rainfall_yesterday(yesterday_rain/10.0f);
 
-#if 0 //필요시 출력
-    io_printf("일간 우량:%.1f\r\n", daily_rain / 10.0f);
-    io_printf("시간 우량:%.1f\r\n", hourly_rain / 10.0f);
-    io_printf("월간 우량:%.1f\r\n", monthly_rain / 10.0f);
-    io_printf("년간 우량:%.1f\r\n", yearly_rain / 10.0f);
-#endif
+
     user_free(p_rain_1min);
     user_free(p_rain_days);
   }
@@ -1375,7 +1370,7 @@ void calculate_sunshine(void)
   Sysinfo.mSunshine.nMonthSunshine = monthly_sunshine;
 }
 
-#define MS_TO_SCAN(ms) ((uint16_t)((float)ms/0.25))
+#define MS_TO_SCAN_CNT(ms) ((uint16_t)((float)ms/0.25))
 /**
  * 에러가 존재하면 타임아웃 전까지는 이전값 유지
  */
@@ -1384,11 +1379,11 @@ uint16_t filter_data(eSENSOR_TYPE_t sensor_index,uint16_t data, uint8_t error,ui
   uint8_t delay=0;
   uint16_t ret_data;
 
-  delay = g_pre_data[sensor_index].delay;
+  delay = g_pre_data[sensor_index].delay_count;
   if(error)
   {
     delay++;
-    if (delay >= MS_TO_SCAN(10))
+    if (delay >= MS_TO_SCAN_CNT(10))
     {
       delay = 0;
       *f_err = 1;
@@ -1400,12 +1395,12 @@ uint16_t filter_data(eSENSOR_TYPE_t sensor_index,uint16_t data, uint8_t error,ui
     {
       ret_data = g_pre_data[sensor_index].data;
     }
-    g_pre_data[sensor_index].delay = delay;
+    g_pre_data[sensor_index].delay_count = delay;
   }
   else
   {
     g_pre_data[sensor_index].err = 0;
-    g_pre_data[sensor_index].delay = 0;
+    g_pre_data[sensor_index].delay_count = 0;
     g_pre_data[sensor_index].data = data;
     ret_data = data;
     *f_err = 0;
@@ -1451,7 +1446,7 @@ void DUALPORT_TASK(void *arg)
   //제품 부팅시에는 처음 측정하는 값을 즉시 반영
   for (int i = 0; i < SENSOR_LIST_MAX; i++)
   {
-    g_pre_data[i].delay = MS_TO_SCAN(10);
+    g_pre_data[i].delay_count = MS_TO_SCAN_CNT(10);
   }
     // 메모리를 아끼기위해 g_p_raw 하나만 사용
     g_p_raw = user_malloc(sizeof(measure_data_1s_t));
