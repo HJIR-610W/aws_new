@@ -6,11 +6,7 @@
 #include <stdbool.h>
 
 #define SCREEN_PAGE_MAX 10
-typedef enum
-{
-  SCREEN_STATE_OFF,
-  SCREEN_STATE_ON
-} eSCREEN_STATE_t;
+
 
 typedef struct screen_instance
 {
@@ -61,9 +57,6 @@ void screen_put_ch(int row, int col, uint8_t ch);
 void screen_printf(int row, int col, const char* format, ...);
 void screen_clear(void);
 
-void screen_printf_row(screen_page_t* win, int row_index, const char* format, ...);
-void screen_clear_row(screen_page_t* win, int row_index);
-
 void screen_page_create(screen_page_t *win, int rows, int cols);
 void screen_page_handle(screen_page_t *win, int key);
 void screen_page_clear(screen_page_t *win);
@@ -76,14 +69,8 @@ void screen_menu_clear(screen_menu_t *win);
 void screen_menu_start(screen_menu_t *win);
 void screen_menu_printf(screen_menu_t *win, int index, const char *format, ...);
 
-
-
 void screen_off(void);
 void screen_on(void);
-
-
-
-
 
 
 #endif

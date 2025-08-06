@@ -792,8 +792,8 @@ int32_t rain_present_setup(sensor_t* sensor, uint8_t menu_index)
 int32_t jinsung_barometer_setup(sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
-  int32_t dec;
-  float factor;
+
+
   jinsung_sjgp215_config_t *jinsung_baro;
   const char *portList[10];
   uint16_t portListCnt;

@@ -39,9 +39,9 @@ extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size)
 extern const char *linkStatusList[3];
 extern const char *generalStatusList[2];
 
-#define SCREEN_COLS 20
+#define SCREEN_COLS 21
 #define SCREEN_ROWS 8
-#define SCREEN_OFF_TIMEOUT_MS 3600000
+#define SCREEN_OFF_TIMEOUT_MS 10000
 
 
 
@@ -54,7 +54,7 @@ const osThreadAttr_t kMenuTask_attributes = {
     .priority = (osPriority_t)TASK_PRIO(TASK_MENU_DEF),
 };
 
-eSCREEN_STATE_t g_screen_state = SCREEN_STATE_ON;
+ 
 
 
 
@@ -63,82 +63,75 @@ eSCREEN_STATE_t g_screen_state = SCREEN_STATE_ON;
 #define SYSTEM_WD 10
 void draw_system_page(screen_page_t* p_win)
 {
-  int row_count = 0;
-  int page = p_win->current_page;
+
+
   char buff[SCREEN_COLS + 1];
   const char *message;
 
-  p_win->current_row = 0;
+  screen_page_start(p_win);
+
+
 
   make_centered(buff, sizeof(buff), "SYSTEM", SCREEN_COLS);
-  screen_printf_row(p_win, row_count++, "%s",buff);
+  screen_page_printf(p_win,"%s",buff);
 
-  screen_printf_row(p_win,row_count++, "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,
+  screen_page_printf(p_win, "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,
                  Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
-  screen_printf_row(p_win, row_count++, "%-*s:%s", SYSTEM_WD, "DOOR",
+  screen_page_printf(p_win, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
+  screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "DOOR",
                     ITEM_LIST(is_door_opened(), doorStatusList_lcd));
 
   message = get_logging_system()->status_group?"ERROR":"NORMAL";
-  screen_printf_row(p_win, row_count++, "%-*s:%s", SYSTEM_WD,   "LOGGING", message);
-  screen_printf_row(p_win, row_count++, "%-*s:%.1f", SYSTEM_WD, "SYS VOLT", drv_system_read(DRV_SYS_BATTERY));
-  screen_printf_row(p_win, row_count++, "%-*s:%.1f", SYSTEM_WD, "SYS TEMP", drv_system_read(DRV_SYS_TEMPERATURE));
+  screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD,   "LOGGING", message);
+  screen_page_printf(p_win, "%-*s:%.1f", SYSTEM_WD, "SYS VOLT", drv_system_read(DRV_SYS_BATTERY));
+  screen_page_printf(p_win, "%-*s:%.1f", SYSTEM_WD, "SYS TEMP", drv_system_read(DRV_SYS_TEMPERATURE));
   
   if (get_config_app()->ac_active)
   {
-    screen_printf_row(p_win, row_count++, "%-*s:%s", SYSTEM_WD, "AC", "ON");
+    screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "AC", "ON");
   }
 
-  p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_clear_row(p_win, row_count++);
-  }
+  screen_page_clear(p_win);
  
+
   
 }
 
 #define RAIN_WD 8
 void draw_rain_page(screen_page_t *p_win)
 {
-  int row_count = 0;
-  int page = p_win->current_page;
+
+
   char buff[SCREEN_COLS + 1];
 
-  p_win->current_row = 0;
+  screen_page_start(p_win);
 
   make_centered(buff, sizeof(buff), "RAIN", SCREEN_COLS);
-  screen_printf_row(p_win, row_count++, "%s",buff);
+  screen_page_printf(p_win, "%s",buff);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%6.1f", SYSTEM_WD, "YESTERDAY",
+  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "YESTERDAY",
                  get_rainfall()->rainfall_yesterday);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%6.1f", SYSTEM_WD, "TODAY",
+  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "TODAY",
                  get_rainfall()->rainfall_today);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%6.1f", SYSTEM_WD, "1MIN",
+  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "1MIN",
                  get_rainfall()->rainfall_1min);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%6.1f", SYSTEM_WD, "10MIN",
+  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "10MIN",
                  get_rainfall()->rainfall_10min);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%6.1f", SYSTEM_WD, "HOUR",
+  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "HOUR",
                  get_rainfall()->rainfall_hourly);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%6.1f", SYSTEM_WD, "YEAR",
+  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "YEAR",
                  get_rainfall()->rainfall_yearly);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%6.1f", SYSTEM_WD, "MONTH",
+  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "MONTH",
                     get_rainfall()->rainfall_monthly);
 
-  p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_clear_row(p_win, row_count++);
-  }
+  screen_page_clear(p_win);
 
 }
 
@@ -146,64 +139,57 @@ void draw_rain_page(screen_page_t *p_win)
 void draw_charger_page(screen_page_t *p_win)
 {
   uint8_t err;
-  int row_count = 0;
-  int page = p_win->current_page;
+
   char buff[SCREEN_COLS + 1];
   char temp[20];
 
-  p_win->current_row = 0;
+  screen_page_start(p_win);
 
   make_centered(buff, sizeof(buff), "CHARGER", SCREEN_COLS);
-  screen_printf_row(p_win, row_count++, "%s",buff);
+  screen_page_printf(p_win, "%s",buff);
 
   read_chargerStatus(temp, sizeof(temp));
-  screen_printf_row(p_win, row_count++, "%-*s:%s", CHARGER_WD, "STATUS", temp);
+  screen_page_printf(p_win, "%-*s:%s", CHARGER_WD, "STATUS", temp);
 
 
   if (is_chargerValid())
   {
-    screen_printf_row(p_win, row_count++, "%-*s:%.2f", CHARGER_WD, "SOLAR V",
+    screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "SOLAR V",
                    read_solarVoltage1(&err));
-    screen_printf_row(p_win, row_count++, "%-*s:%.2f", CHARGER_WD, "SOLAR A",
+    screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "SOLAR A",
                    read_solarCurrrent1(&err));
-    screen_printf_row(p_win, row_count++, "%-*s:%.2f", CHARGER_WD, "BATTERY V",
+    screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "BATTERY V",
                    read_batteryVoltage1(&err));
-    screen_printf_row(p_win, row_count++, "%-*s:%.2f", CHARGER_WD, "LOAD A", read_loadCurrent1(&err));
+    screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "LOAD A", read_loadCurrent1(&err));
   }
   else
   {
-    screen_printf_row(p_win, row_count++, "%-*s:%s", CHARGER_WD, "SOLAR V", "-");
-    screen_printf_row(p_win, row_count++, "%-*s:%s", CHARGER_WD, "SOLAR A", "-");
-    screen_printf_row(p_win, row_count++, "%-*s:%s", CHARGER_WD, "BATTERY V", "-");
-    screen_printf_row(p_win, row_count++, "%-*s:%s", CHARGER_WD, "LOAD A", "-");
+    screen_page_printf(p_win, "%-*s:%s", CHARGER_WD, "SOLAR V", "-");
+    screen_page_printf(p_win, "%-*s:%s", CHARGER_WD, "SOLAR A", "-");
+    screen_page_printf(p_win, "%-*s:%s", CHARGER_WD, "BATTERY V", "-");
+    screen_page_printf(p_win, "%-*s:%s", CHARGER_WD, "LOAD A", "-");
 
   }
 
-  p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_clear_row(p_win, row_count++);
-  }
+  screen_page_clear(p_win);
 
 }
 
 #define CDMA_WD 10
 void draw_cdma_page(screen_page_t *p_win)
 {
-  int row_count = 0;
-  int page = p_win->current_page;
+
   char buff[SCREEN_COLS + 1];
   char num[20];
   DATE_TIME_BUF nt;
   uint32_t last_time;
 
-  p_win->current_row = 0;
+  screen_page_start(p_win);
 
   make_centered(buff, sizeof(buff), "CDMA", SCREEN_COLS);
-  screen_printf_row(p_win, row_count++, buff);
+  screen_page_printf(p_win, buff);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%s", CDMA_WD, "LINK",
+  screen_page_printf(p_win, "%-*s:%s", CDMA_WD, "LINK",
                  ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
 
 
@@ -216,29 +202,29 @@ void draw_cdma_page(screen_page_t *p_win)
   {
     snprintf(num, sizeof(num), "%s", get_cdma_system()->num);
   }
-  screen_printf_row(p_win, row_count++, "%-*s:%s", CDMA_WD, "PHONE", num);
+  screen_page_printf(p_win, "%-*s:%s", CDMA_WD, "PHONE", num);
 
   if (get_cdma_system()->rssi == -1)
   {
-    screen_printf_row(p_win, row_count++, "%-*s:-", CDMA_WD, "RSSI");
+    screen_page_printf(p_win, "%-*s:-", CDMA_WD, "RSSI");
   }
   else
   {
-    screen_printf_row(p_win, row_count++, "%-*s:%d", CDMA_WD, "RSSI", get_cdma_system()->rssi);
+    screen_page_printf(p_win, "%-*s:%d", CDMA_WD, "RSSI", get_cdma_system()->rssi);
   }
 
-  screen_printf_row(p_win, row_count++, "%-*s:%d", CDMA_WD, "RX", get_cdma_system()->rx_cnt);
-  screen_printf_row(p_win, row_count++, "%-*s:%d", CDMA_WD, "TX", get_cdma_system()->tx_cnt);
+  screen_page_printf(p_win, "%-*s:%d", CDMA_WD, "RX", get_cdma_system()->rx_cnt);
+  screen_page_printf(p_win, "%-*s:%d", CDMA_WD, "TX", get_cdma_system()->tx_cnt);
 
   last_time = get_cdma_system()->last_recv_time;
   if (last_time == 0)
   {
-    screen_printf_row(p_win, row_count++, "RT:-");
+    screen_page_printf(p_win, "RT:-");
   }
   else
   {
     time_cvt_secTotime(last_time, &nt);
-    screen_printf_row(p_win, row_count++, "RT:%02d-%02d-%02d %02d:%02d:%02d", 
+    screen_page_printf(p_win, "RT:%02d-%02d-%02d %02d:%02d:%02d", 
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 
@@ -246,87 +232,76 @@ void draw_cdma_page(screen_page_t *p_win)
   last_time = get_cdma_system()->last_send_time;
   if (last_time == 0)
   {
-    screen_printf_row(p_win, row_count++, "TT:-");
+    screen_page_printf(p_win, "TT:-");
   }
   else
   {
     time_cvt_secTotime(last_time, &nt);
-    screen_printf_row(p_win, row_count++, "TT:%02d-%02d-%02d %02d:%02d:%02d",
+    screen_page_printf(p_win, "TT:%02d-%02d-%02d %02d:%02d:%02d",
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 
-  p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_clear_row(p_win, row_count++);
-  }
+  screen_page_clear(p_win);
 }
 
 #define DIRECT_WD 8
 void draw_direct_page(screen_page_t *p_win)
 {
-  int row_count = 0;
-  int page = p_win->current_page;
+
   char buff[SCREEN_COLS + 1];
   DATE_TIME_BUF nt;
   uint32_t last_time;
   uint32_t remain_sec;
 
-  p_win->current_row = 0;
+  screen_page_start(p_win);
 
   make_centered(buff, sizeof(buff), "DIRECT", SCREEN_COLS);
-  screen_printf_row(p_win, row_count++, "%s",buff);
+  screen_page_printf(p_win, "%s",buff);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%s", DIRECT_WD, "LINK",
+  screen_page_printf(p_win, "%-*s:%s", DIRECT_WD, "LINK",
                  ITEM_LIST(get_direct_system()->link_status, linkStatusList));
 
   remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms / 1000.0);
-  screen_printf_row(p_win, row_count++, "%-*s:%d", DIRECT_WD, "TIMEOUT", remain_sec);
+  screen_page_printf(p_win, "%-*s:%d", DIRECT_WD, "TIMEOUT", remain_sec);
 
-  screen_printf_row(p_win, row_count++, "%-*s:%d", DIRECT_WD, "RX", get_direct_system()->rx_cnt);
-  screen_printf_row(p_win, row_count++, "%-*s:%d", DIRECT_WD, "TX", get_direct_system()->tx_cnt);
+  screen_page_printf(p_win, "%-*s:%d", DIRECT_WD, "RX", get_direct_system()->rx_cnt);
+  screen_page_printf(p_win, "%-*s:%d", DIRECT_WD, "TX", get_direct_system()->tx_cnt);
 
 
 
   last_time = get_direct_system()->last_recv_time;
   if (last_time == 0)
   {
-    screen_printf_row(p_win, row_count++, "RT:-");
+    screen_page_printf(p_win, "RT:-");
   }
   else
   {
     time_cvt_secTotime(last_time, &nt);
-    screen_printf_row(p_win, row_count++, "RT:%02d-%02d-%02d %02d:%02d:%02d",
+    screen_page_printf(p_win, "RT:%02d-%02d-%02d %02d:%02d:%02d",
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 
   last_time = get_direct_system()->last_send_time;
   if (last_time == 0)
   {
-    screen_printf_row(p_win, row_count++, "TT:-");
+    screen_page_printf(p_win, "TT:-");
   }
   else
   {
     time_cvt_secTotime(last_time, &nt);
-    screen_printf_row(p_win, row_count++, "TT:%02d-%02d-%02d %02d:%02d:%02d",
+    screen_page_printf(p_win, "TT:%02d-%02d-%02d %02d:%02d:%02d",
                    nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
   }
 
-  p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_clear_row(p_win, row_count++);
-  }
+  screen_page_clear(p_win);
 }
 
 //:192.168.123.123
 #define ETH_WD 2
 void draw_ethernet_page(screen_page_t *p_win)
 {
-  int row_count = 0;
-  int page = p_win->current_page;
+
+
   char buff[SCREEN_COLS + 1];
   DATE_TIME_BUF nt;
   eLINK_STATUS_t link_status[ETH_CLIENT_MAX];
@@ -334,43 +309,43 @@ void draw_ethernet_page(screen_page_t *p_win)
   uint8_t rx_cnt[ETH_CLIENT_MAX];
   uint32_t last_time;
 
-  p_win->current_row = 0;
+  screen_page_start(p_win);
 
   make_centered(buff, sizeof(buff), "ETHERNET", SCREEN_COLS);
-  screen_printf_row(p_win, row_count++, "%s",buff);
+  screen_page_printf(p_win, "%s",buff);
 
   if (get_config_app()->eth_mode == eETH_MODE_CLINET)
   {
-    screen_printf_row(p_win, row_count++, "%-*s:%s", ETH_WD, "LINK",
+    screen_page_printf(p_win, "%-*s:%s", ETH_WD, "LINK",
                    ITEM_LIST(get_tcp_client_system()->link_status, linkStatusList_lcd));
 
-    screen_printf_row(p_win, row_count++, "%-*s:%d", ETH_WD, "RX", get_tcp_client_system()->rx_cnt);
-    screen_printf_row(p_win, row_count++, "%-*s:%d", ETH_WD, "TX", get_tcp_client_system()->tx_cnt);
+    screen_page_printf(p_win, "%-*s:%d", ETH_WD, "RX", get_tcp_client_system()->rx_cnt);
+    screen_page_printf(p_win, "%-*s:%d", ETH_WD, "TX", get_tcp_client_system()->tx_cnt);
 
 
 
     last_time = get_tcp_client_system()->last_recv_time;
     if (last_time == 0)
     {
-      screen_printf_row(p_win, row_count++, "RT:-");
+      screen_page_printf(p_win, "RT:-");
     }
     else
     {
       time_cvt_secTotime(last_time, &nt);
       //"RT:25-07-22 10:10:2 "
-      screen_printf_row(p_win, row_count++, "RT:%02d-%02d-%02d %02d:%02d:%02d",
+      screen_page_printf(p_win, "RT:%02d-%02d-%02d %02d:%02d:%02d",
                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
     }
 
     last_time = get_tcp_client_system()->last_send_time;
     if (last_time == 0)
     {
-      screen_printf_row(p_win, row_count++, "TT:-");
+      screen_page_printf(p_win, "TT:-");
     }
     else
     {
       time_cvt_secTotime(last_time, &nt);
-      screen_printf_row(p_win, row_count++, "TT:%02d-%02d-%02d %02d:%02d:%02d", 
+      screen_page_printf(p_win, "TT:%02d-%02d-%02d %02d:%02d:%02d", 
                      nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
     }
   }
@@ -386,47 +361,42 @@ void draw_ethernet_page(screen_page_t *p_win)
     for (int i = 0; i < ETH_CLIENT_MAX; i++)
     {
       //L0:D/192.168.123.123 
-      screen_printf_row(p_win, row_count++, "L%d:%s(%s)", i,
+      screen_page_printf(p_win, "L%d:%s(%s)", i,
                      ITEM_LIST(link_status[i], ethlinkStatusList_lcd),
                      get_tcp_system(i)->client_ip_str);
 
-      screen_printf_row(p_win, row_count++, "%-*s:%d", ETH_WD, "RX", rx_cnt[i]);
-      screen_printf_row(p_win, row_count++, "%-*s:%d", ETH_WD, "TX", tx_cnt[i]);
+      screen_page_printf(p_win, "%-*s:%d", ETH_WD, "RX", rx_cnt[i]);
+      screen_page_printf(p_win, "%-*s:%d", ETH_WD, "TX", tx_cnt[i]);
 
 
 
       last_time = get_tcp_system(i)->last_recv_time;
       if (last_time == 0)
       {
-        screen_printf_row(p_win, row_count++, "RT:-");
+        screen_page_printf(p_win, "RT:-");
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        screen_printf_row(p_win, row_count++, "RT:%02d-%02d-%02d %02d:%02d:%02d",
+        screen_page_printf(p_win, "RT:%02d-%02d-%02d %02d:%02d:%02d",
                        nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
 
       last_time = get_tcp_system(i)->last_send_time;
       if (last_time == 0)
       {
-        screen_printf_row(p_win, row_count++, "TT:-");
+        screen_page_printf(p_win, "TT:-");
       }
       else
       {
         time_cvt_secTotime(last_time, &nt);
-        screen_printf_row(p_win, row_count++, "TT:%02d-%02d-%02d %02d:%02d:%02d",
+        screen_page_printf(p_win, "TT:%02d-%02d-%02d %02d:%02d:%02d",
                        nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
       }
     }
   }
 
-  p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
-
-  while (p_win->current_row < p_win->view_row)
-  {
-    screen_clear_row(p_win, row_count++);
-  } 
+  screen_page_clear(p_win); 
 }
 
 #define AWS_WD 7
@@ -435,17 +405,17 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   const char *aws_title_list[] = {"AVG", "1MIN", "10MIN", "HOUR", "RAW"};
   char err_buf[32];
   uint8_t err;
-  int row_count = 0;
-  int page = p_win->current_page;
+
+
   float data, data_min, data_max;
   kma_data_ex_t *p_kma = NULL;
 
 
 
 
-  p_win->current_row = 0;
+  screen_page_start(p_win);
 
-  screen_printf_row(p_win, row_count++, "AWS %s %.2fs/%.2fs", aws_title_list[(int)min],
+  screen_page_printf(p_win, "AWS %s %.2fs/%.2fs", aws_title_list[(int)min],
                  (float)g_exec_250ms_time.elapsed_time / 1000.0f,
                  (float)g_exec_1s_time.elapsed_time / 1000.0f);
 
@@ -457,19 +427,19 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "TEMP", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "TEMP", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->temperature.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "TEMP", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "TEMP", f_data);
       }
       else
       {
          data = KMA_TO_TEMPERATURE(p_kma->temperature.data);
-         screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "TEMP", data);
+         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "TEMP", data);
       }
     }
   }
@@ -481,20 +451,20 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "WIND D", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "WIND D", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->wind_direction_avg.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f deg", AWS_WD, "WIND D", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f deg", AWS_WD, "WIND D", f_data);
       }
       else
       {
         data = KMA_TO_GENERAL(p_kma->wind_direction_avg.data);
         data_max = KMA_TO_GENERAL(p_kma->wind_direction_avg.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f deg", AWS_WD, "WIND D", data);
+        screen_page_printf(p_win, "%-*s:%6.1f deg", AWS_WD, "WIND D", data);
       }
     }
   }
@@ -506,20 +476,20 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "WIND S", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "WIND S", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->wind_speed_avg.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f m/s", AWS_WD, "WIND S", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f m/s", AWS_WD, "WIND S", f_data);
       }
       else
       {
         data = KMA_TO_GENERAL(p_kma->wind_speed_avg.data);
         data_max = KMA_TO_GENERAL(p_kma->wind_speed_avg.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f m/s", AWS_WD, "WIND S", data);
+        screen_page_printf(p_win, "%-*s:%6.1f m/s", AWS_WD, "WIND S", data);
       }
     }
   }
@@ -531,11 +501,11 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->wind_direction_avg.err;
     if (err)
     {
-      screen_printf_row(p_win, row_count++, "%-*s:--", AWS_WD, "WIND DG");
+      screen_page_printf(p_win, "%-*s:--", AWS_WD, "WIND DG");
     }
     else
     {
-      screen_printf_row(p_win, row_count++, "%-*s:%6.1f deg", AWS_WD, "WIND DG",
+      screen_page_printf(p_win, "%-*s:%6.1f deg", AWS_WD, "WIND DG",
                         KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
     }
   }
@@ -547,11 +517,11 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->wind_speed_avg.err;
     if (err)
     {
-      screen_printf_row(p_win, row_count++, "%-*s:--", AWS_WD, "WIND SG");
+      screen_page_printf(p_win, "%-*s:--", AWS_WD, "WIND SG");
     }
     else
     {
-      screen_printf_row(p_win, row_count++, "%-*s:%6.1f m/s", AWS_WD, "WIND SG",
+      screen_page_printf(p_win, "%-*s:%6.1f m/s", AWS_WD, "WIND SG",
                      KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
     }
   }
@@ -563,7 +533,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "RAIN", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "RAIN", err_buf);
     }
     else
     {
@@ -574,19 +544,19 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
 
         if (last_time == 0)
         {
-          screen_printf_row(p_win, row_count++, "%-*s:--", AWS_WD, "RAIN(t)");
+          screen_page_printf(p_win, "%-*s:--", AWS_WD, "RAIN(t)");
         }
         else
         {
           time_cvt_secTotime(last_time, &nt);
           //RAIN(t):250101000000
-          screen_printf_row(p_win, row_count++, "RAIN(t):%02d%02d%02d%02d%02d%02d", 
+          screen_page_printf(p_win, "RAIN(t):%02d%02d%02d%02d%02d%02d", 
                             nt.Year % 100, nt.Month, nt.Day, nt.Hour, nt.Min, nt.Sec);
         }
       }
       else
       {
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f mm", AWS_WD, "RAIN",
+        screen_page_printf(p_win, "%-*s:%6.1f mm", AWS_WD, "RAIN",
                        KMA_TO_GENERAL(p_kma->precipitation.data));
       }
     }
@@ -598,21 +568,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "BARO", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "BARO", err_buf);
     }
     else 
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->pressure.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f hpa", AWS_WD, "BARO", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f hpa", AWS_WD, "BARO", f_data);
       }
       else
       {
         data = KMA_TO_GENERAL(p_kma->pressure.data);
         data_min = KMA_TO_GENERAL(p_kma->pressure.min);
         data_max = KMA_TO_GENERAL(p_kma->pressure.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f hpa", AWS_WD, "BARO", data);
+        screen_page_printf(p_win, "%-*s:%6.1f hpa", AWS_WD, "BARO", data);
       }
     }
   }
@@ -624,7 +594,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "RAIN_P", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "RAIN_P", err_buf);
     }
     else
     {
@@ -632,17 +602,17 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       {
 
         bool rain_p = p_kma->precipitation_presence.raw.b ;
-        screen_printf_row(p_win, row_count++, "%-*s: %s", AWS_WD, "RAIN_P", rain_p?"ON":"OFF");
+        screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN_P", rain_p?"ON":"OFF");
       }
       else if ( min == eAWS_DATA_AVG)
       {
         uint16_t data = p_kma->precipitation_presence.data;
         bool rain_p = (data == 10) ? true : false;
-        screen_printf_row(p_win, row_count++, "%-*s: %s", AWS_WD, "RAIN_P", rain_p ? "ON" : "OFF");
+        screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN_P", rain_p ? "ON" : "OFF");
       }
       else
       {
-        screen_printf_row(p_win, row_count++, "%-*s: %4d", AWS_WD, "RAIN_P",
+        screen_page_printf(p_win, "%-*s: %4d", AWS_WD, "RAIN_P",
                  p_kma->precipitation_presence.data);
       }
     }
@@ -654,18 +624,18 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "SNOW", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "SNOW", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         int data = (int)p_kma->snowfall.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%5.1f cm", AWS_WD, "SNOW", (float)data/10.0f);
+        screen_page_printf(p_win, "%-*s:%5.1f cm", AWS_WD, "SNOW", (float)data/10.0f);
       }
       else
       {
-        screen_printf_row(p_win, row_count++, "%-*s:%5.1f cm", AWS_WD, "SNOW", (float)p_kma->snowfall.data/10.0);
+        screen_page_printf(p_win, "%-*s:%5.1f cm", AWS_WD, "SNOW", (float)p_kma->snowfall.data/10.0);
       }
     }
   }
@@ -677,21 +647,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "HUMI", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "HUMI", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->relative_humidity.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f %%", AWS_WD, "HUMI", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f %%", AWS_WD, "HUMI", f_data);
       }
       else
       {
         data = KMA_TO_GENERAL(p_kma->relative_humidity.data);
         data_min = KMA_TO_GENERAL(p_kma->relative_humidity.min);
         data_max = KMA_TO_GENERAL(p_kma->relative_humidity.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f %%", AWS_WD,"HUMI", data);
+        screen_page_printf(p_win, "%-*s:%6.1f %%", AWS_WD,"HUMI", data);
       }
     }
   }
@@ -703,7 +673,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "SOLAR R", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "SOLAR R", err_buf);
     }
     else
     {
@@ -712,13 +682,13 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
         case eAWS_DATA_RAW:
         {
           float f_data = p_kma->solar_radiation.raw.f;
-          screen_printf_row(p_win, row_count++, "%-*s:%6.1f kW/m2", SOLAR_R_WD, "SOLAR R", f_data);
+          screen_page_printf(p_win, "%-*s:%6.1f kW/m2", SOLAR_R_WD, "SOLAR R", f_data);
           break;
         }
         default:
         {
           float solar_radiation = p_kma->solar_radiation.data;
-          screen_printf_row(p_win, row_count++, "%-*s:%6.1f kW/m2", SOLAR_R_WD, "SOLAR R", solar_radiation);
+          screen_page_printf(p_win, "%-*s:%6.1f kW/m2", SOLAR_R_WD, "SOLAR R", solar_radiation);
           break;
         }
 
@@ -734,7 +704,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "SOLAR D", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "SOLAR D", err_buf);
     }
     else
     {
@@ -744,20 +714,20 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
         {
           float f_data = p_kma->sunshine_duration.raw.f;
           bool sunshine_duration = (f_data == 1.0f);
-          screen_printf_row(p_win, row_count++, "%-*s:   %s", AWS_WD, "SOLAR D",
+          screen_page_printf(p_win, "%-*s:   %s", AWS_WD, "SOLAR D",
                    sunshine_duration ? "ON" : "OFF");
           break;
         }
         case eAWS_DATA_AVG:
         {
 
-          screen_printf_row(p_win, row_count++, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d_1min);
+          screen_page_printf(p_win, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d_1min);
           break;
         }
         case eAWS_DATA_1MIN:
         {
           uint16_t solar_d = p_kma->sunshine_duration.data ;
-          screen_printf_row(p_win, row_count++, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d);
+          screen_page_printf(p_win, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d);
           break;
         }
         break;
@@ -772,21 +742,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "ST 5cm", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 5cm", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_5cm.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 5cm", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 5cm", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5cm.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD,
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD,
                           "ST 5cm", data);
       }
     }
@@ -799,21 +769,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "ST 10cm", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 10cm", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_10cm.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 10cm", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 10cm", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_10cm.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 10cm", data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 10cm", data);
       }
     }
   }
@@ -825,21 +795,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "ST 20cm", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 20cm", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_20cm.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 20cm", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 20cm", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_20cm.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 20cm", data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 20cm", data);
       }
     }
   }
@@ -851,21 +821,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "ST 30cm", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 30cm", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_30cm.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 30cm", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 30cm", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_30cm.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 30cm", data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 30cm", data);
       }
     }
   }
@@ -876,21 +846,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "ST 50cm", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 50cm", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_50cm.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 50cm", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 50cm", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_50cm.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD,
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD,
                           "ST 50cm", data);
       }
     }
@@ -903,21 +873,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "ST 1m", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 1m", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_1m.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 1m", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 1m", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1m.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 1m", data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 1m", data);
       }
     }
   }
@@ -929,21 +899,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "ST 1.5m", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 1.5m", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_1_5m.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 1.5m", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 1.5m", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_1_5m.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 1.5m", data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 1.5m", data);
       }
     }
   }
@@ -955,21 +925,21 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "ST 3m", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 3m", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_3m.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 3m", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 3m", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_3m.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 3m", data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 3m", data);
       }
     }
   }
@@ -981,32 +951,25 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_printf_row(p_win, row_count++, "%-*s:%s", AWS_WD, "ST 5m", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 5m", err_buf);
     }
     else
     {
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_5m.raw.f;
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 5m", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 5m", f_data);
       }
       else
       {
         data = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->soil_temperature_5m.max);
-        screen_printf_row(p_win, row_count++, "%-*s:%6.1f C", AWS_WD, "ST 5m", data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 5m", data);
       }
     }
   }
-
-  p_win->total_items[page] =  ALIGN_UP(row_count, p_win->view_row ); 
-  
-  while (p_win->current_row < p_win->view_row)
-  {
-     screen_clear_row(p_win, row_count++);
-  }
-
+screen_page_clear(p_win);
 
 
 
@@ -1150,9 +1113,10 @@ void menuTask(void *arg)
 
   screen_page_create(&lcd_win,SCREEN_ROWS,SCREEN_COLS);
 
-  lcd_win.chunk_scroll_use = 1;
-  lcd_win.multi_page_use = 1;
+  lcd_win.chunk_scroll_use = 1;// view_row 단위로 스크롤
+  lcd_win.multi_page_use = 1;  //하나의 창에 여러개의 페이지 구성 LEFT,RIGHT 키 사용
   start_time = OS_GET_TICK();
+
   while (1)
   {
     page_count = 0;
@@ -1221,30 +1185,21 @@ void menuTask(void *arg)
     if (key == KEY_CODE_CTRL_A)
     {
       setup_root();
+      start_time = OS_GET_TICK();
     }
     else if (key != -1)
     {
       screen_page_handle(&lcd_win, key);
       start_time = OS_GET_TICK();
-
     }
 
     if ((OS_GET_TICK() - start_time) > SCREEN_OFF_TIMEOUT_MS)
     {
-      g_screen_state = SCREEN_STATE_OFF;
       screen_off();
+      key = get_button_key(0xFFFFFFFF);
+      start_time = OS_GET_TICK();
     }
 
-    while (g_screen_state == SCREEN_STATE_OFF)
-    {
-      key = get_button_key(100);
-      if (key == KEY_CODE_ENTER)
-      {
-        screen_on();
-        g_screen_state = SCREEN_STATE_ON;
-        start_time = OS_GET_TICK();
-      }
-    }
     }
 }
 
