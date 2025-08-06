@@ -16,7 +16,7 @@ extern const char *freq_ch_list[2];
 extern const char *doorStatusList_lcd[2];
 extern  const char *linkStatusList_lcd[3] ;
 extern  const char *ethlinkStatusList_lcd[3];
-
+extern const char *sdcard_status_list_lcd[2];
 extern const char *linkStatusList[3];//
 extern const char *doorStatusList[2];//
 extern const char *generalStatusList[2];// 

@@ -53,7 +53,9 @@ const osThreadAttr_t kMenuTask_attributes = {
 };
 
 
-#define SYSTEM_WD 10
+#define SYSTEM_WD 8
+extern uint8_t BSP_PlatformIsDetected(void);;
+
 void draw_system_page(screen_page_t* p_win)
 {
   char buff[SCREEN_COLS + 1];
@@ -71,9 +73,10 @@ void draw_system_page(screen_page_t* p_win)
 
   message = get_logging_system()->status_group?"ERROR":"NORMAL";
   screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD,   "LOGGING", message);
-  screen_page_printf(p_win, "%-*s:%.1f", SYSTEM_WD, "SYS VOLT", drv_system_read(DRV_SYS_BATTERY));
-  screen_page_printf(p_win, "%-*s:%.1f", SYSTEM_WD, "SYS TEMP", drv_system_read(DRV_SYS_TEMPERATURE));
-  
+  screen_page_printf(p_win, "%-*s:%.1f V", SYSTEM_WD, "SYS VOLT", drv_system_read(DRV_SYS_BATTERY));
+  screen_page_printf(p_win, "%-*s:%.1f C", SYSTEM_WD, "SYS TEMP", drv_system_read(DRV_SYS_TEMPERATURE));
+  screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "SD CARD", ITEM_LIST(BSP_PlatformIsDetected(), sdcard_status_list_lcd));
+
   if (get_config_app()->ac_active)
   {
     screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "AC", "ON");
@@ -82,7 +85,7 @@ void draw_system_page(screen_page_t* p_win)
   screen_page_clear(p_win);
 }
 
-#define RAIN_WD 8
+#define RAIN_WD 10
 void draw_rain_page(screen_page_t *p_win)
 {
   char buff[SCREEN_COLS + 1];
@@ -92,26 +95,26 @@ void draw_rain_page(screen_page_t *p_win)
   make_centered(buff, sizeof(buff), "RAIN", SCREEN_COLS);
   screen_page_printf(p_win, "%s",buff);
 
-  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "YESTERDAY",
-                 get_rainfall()->rainfall_yesterday);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YESTERDAY",
+                     get_rainfall()->rainfall_yesterday);
 
-  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "TODAY",
-                 get_rainfall()->rainfall_today);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "TODAY",
+                     get_rainfall()->rainfall_today);
 
-  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "1MIN",
-                 get_rainfall()->rainfall_1min);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "1MIN",
+                     get_rainfall()->rainfall_1min);
 
-  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "10MIN",
-                 get_rainfall()->rainfall_10min);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "10MIN",
+                     get_rainfall()->rainfall_10min);
 
-  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "HOUR",
-                 get_rainfall()->rainfall_hourly);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "HOUR",
+                     get_rainfall()->rainfall_hourly);
 
-  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "YEAR",
-                 get_rainfall()->rainfall_yearly);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YEAR",
+                     get_rainfall()->rainfall_yearly);
 
-  screen_page_printf(p_win, "%-*s:%6.1f", SYSTEM_WD, "MONTH",
-                    get_rainfall()->rainfall_monthly);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "MONTH",
+                     get_rainfall()->rainfall_monthly);
 
   screen_page_clear(p_win);
 

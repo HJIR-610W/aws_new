@@ -26,7 +26,7 @@ uint8_t	BSP_PlatformIsDetected(void)
     if (HAL_GPIO_ReadPin(DI_SDIO_DETECT_GPIO_Port, DI_SDIO_DETECT_Pin) != GPIO_PIN_RESET)
     {
       g_sd_inserted = 0;
-        status = SD_NOT_PRESENT;
+      status = SD_NOT_PRESENT;
     }
     else
     {

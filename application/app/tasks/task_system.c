@@ -45,7 +45,7 @@ extern uint8_t BSP_PlatformIsDetected(void);
 extern void hal_sd_init(void);
 extern void hal_sd_deinit(void);
 
-static uint8_t pre_sd_inserted;
+static uint8_t pre_sd_inserted = SD_NOT_PRESENT;
 
 void check_sd_card(void)
 {
