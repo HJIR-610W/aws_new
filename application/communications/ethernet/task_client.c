@@ -51,6 +51,11 @@ static void tcp_client_service(int sock)
   uint8_t rbuffer[RECV_BUFF_SIZE];
   uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
   int32_t ret, len, err_code;
+  uint16_t rtu_id;
+
+  rtu_id = swap_uint16(get_config_app()->id);
+
+  send(sock, &rtu_id,2, 0);
 
   if (set_recv_timeout(sock, CLIENT_CONNECT_TIMEOUT_MS) < 0)
   {

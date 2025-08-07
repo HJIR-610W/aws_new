@@ -258,7 +258,7 @@ int32_t aws_network_config_eth(void)
 {
   int choice, status;
 
-  char buff[ETH_CFG_CNT][20];
+  char buff[ETH_CFG_CNT][40];
 
 
   char *menu[ETH_CFG_CNT];
