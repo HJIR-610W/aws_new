@@ -417,7 +417,10 @@ float round_to(float value, int digits)
   return round_value/scale;  
 }
 
-
+//소수점 2째 자리 숫자는 전부 0처리 , 즉 소수점 1째 자리 까지만 사용
+//예 123.456 은 123.4가 됨 
+//소수점 유효자리를 어떻게 처리할지에 따라 사용
+//예) 반올림 하지 않고 유효자리수 이외 값은 그냥 버리겠다는 의미 
 float truncate_to_1_decimal(float value)
 {
   return (float)((int)(value * 10.0f)) / 10.0f;

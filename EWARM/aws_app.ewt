@@ -1437,6 +1437,9 @@
                     <file>
                         <name>$PROJ_DIR$\..\application\app\tasks\sensor_data\sunshine_data.c</name>
                     </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\sensor_data\wind_data.c</name>
+                    </file>
                 </group>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\tasks\task_aws.c</name>
@@ -1648,7 +1651,7 @@
                         <name>$PROJ_DIR$\..\Application\Communications\lwip\target\ethernetif.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\Communications\lwip\target\ethernetif.h</name>
+                        <name>$PROJ_DIR$\..\application\communications\lwip\target\ethernetif.h</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\communications\lwip\target\lwipopts.h</name>
@@ -1666,7 +1669,7 @@
                         <name>$PROJ_DIR$\..\Application\file_system\fatfs\app\fatfs.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\file_system\fatfs\app\fatfs.h</name>
+                        <name>$PROJ_DIR$\..\application\file_system\fatfs\app\fatfs.h</name>
                     </file>
                 </group>
                 <group>
@@ -1806,7 +1809,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -1994,7 +1997,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -2048,7 +2051,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</name>
                 </file>
             </group>
             <group>
@@ -2066,7 +2069,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554_def.h</name>

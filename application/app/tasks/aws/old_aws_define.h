@@ -9,7 +9,7 @@
 
 typedef struct
 {
-  uint16_t sReal;
+  uint16_t sReal; //금일 우량
   uint16_t sMonthRain;
   uint16_t sHourRain;
   uint16_t sYearRain;
@@ -150,16 +150,8 @@ typedef struct
 
 typedef struct
 {
-  // 일간 강수량을 매 0시에 Clear하고 그후에는 일간 강수량을 계속 증가 시킨다
-  uint16_t sMinRain;     // 1분 강수량
-  uint16_t s10MinRain;   // 10분 강수량
-  uint16_t sHourRain;    // 1시간 강수량
-  uint16_t sDayRain;     // 일간 강수량
-  uint16_t sBefDayRain;  // 전일 강수량
 
-  uint16_t sMonthRain;
-  uint16_t sYearRain;
-  uint16_t rain;
+  uint16_t rain;//x10한값 
 
 } SENSORRAIN_BUF;
 

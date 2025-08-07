@@ -180,7 +180,7 @@ uint16_t  WindDirecCalc(uint8_t *sensor_err)
     return AWS_DATA_ERR_VAL;
   }
 
-  return (uint16_t)(truncate_to_1_decimal(wind_direction) * 10);
+  return (uint16_t)(truncate_to_1_decimal(wind_direction) * 10);//이미 10배 된 값으로 처리 
 }
 
 #define TEMPERATURE_ACCURACY 0.3 //0.3도
@@ -590,8 +590,9 @@ AWS_DATA_STRUCT *get_aws_data(int min)
 
 
 /*
-250ms마다 업데이트되는 실시간값을 업데이트 한다.
-기존 AWS(구)자료형을 AWS(신)자료형으로 변환한다.
+250ms마다 업데이트되는 실시간값을 업데이트
+기존 AWS(구)자료형을 AWS(신)자료형으로 변환
+자료값은 AWS 자료형으로 저장 
 */
 void update_kma_real(void)
 {
@@ -604,8 +605,8 @@ void update_kma_real(void)
   //[사용]
   p_kma3->temperature.data = mRealAws.mTemperature.sReal;
   p_kma3->temperature.err = get_sensor_err(A1_TEMPERATURE);
-  p_kma3->temperature.max = mRealAws.mTemperature.sMax;
-  p_kma3->temperature.min = mRealAws.mTemperature.sMin;
+  p_kma3->temperature.max = mRealAws.mTemperature.sMax;//일간 Max
+  p_kma3->temperature.min = mRealAws.mTemperature.sMin;//일갈 Min
 
   //[사용]
   p_kma3->wind_direction_avg.data = mRealAws.mWind.mDirection.sReal;
@@ -789,13 +790,7 @@ void update_kma_real(void)
   p_kma3->tacometer.data = p_raw->tacometer.data;
   p_kma3->tacometer.err = get_sensor_err(I1_TACHOMETER);
 
-  set_rainfall_1min(Sysinfo.mRain.sMinRain/10.0f);
-  set_rainfall_10min(Sysinfo.mRain.s10MinRain/10.0f);
-  set_rainfall_hourly(Sysinfo.mRain.sHourRain / 10.0f);
-  set_rainfall_today(Sysinfo.mRain.sDayRain / 10.0f);
-  set_rainfall_monthly(Sysinfo.mRain.sMonthRain / 10.0f);
-  set_rainfall_yesterday(Sysinfo.mRain.sBefDayRain / 10.0f);
-  set_rainfall_yearly(Sysinfo.mRain.sYearRain/10.0f);
+
 
   set_sunshine_monthly(Sysinfo.mSunshine.nMonthSunshine);
   set_sunshine_monthly(Sysinfo.mSunshine.nYearSunshine);
@@ -1321,13 +1316,8 @@ void DUALPORT_TASK(void *arg)
 
   calculate_rain();
   
-  Sysinfo.mRain.sMinRain = 0;                                    
-  Sysinfo.mRain.s10MinRain = (uint16_t)(get_rainfall()->rainfall_10min*10);      
-  Sysinfo.mRain.sHourRain = (uint16_t)(get_rainfall()->rainfall_hourly * 10);    
-  Sysinfo.mRain.sDayRain = (uint16_t)(get_rainfall()->rainfall_today * 10);      
-  Sysinfo.mRain.sBefDayRain = (uint16_t)(get_rainfall()->rainfall_yesterday * 10); 
-  Sysinfo.mRain.sMonthRain = (uint16_t)(get_rainfall()->rainfall_monthly * 10); 
-  Sysinfo.mRain.sYearRain = (uint16_t)(get_rainfall()->rainfall_yearly * 10);
+                               
+ 
 
   calculate_sunshine();
   

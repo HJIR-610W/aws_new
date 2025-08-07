@@ -132,7 +132,8 @@
 			"pcb_5_pin.h": "c",
 			"utile_data.h": "c",
 			"rain_data.h": "c",
-			"string.h": "c"
+			"string.h": "c",
+			"wind_data.h": "c"
 		}
 	}
 }

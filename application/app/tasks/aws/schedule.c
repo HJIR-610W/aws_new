@@ -188,19 +188,20 @@ void SecProcess(void)
   uint16_t sAvgSpeed;
   uint16_t sAvgDirection;
   uint32_t  i;
-  SYSTEM_INFO_AWS *pSystem;
-  uint64_t windSum=0;
   float wind_sum_u = 0;
   float wind_sum_v = 0;
-
+  SYSTEM_INFO_AWS *pSystem;
 
   pSystem = &Sysinfo;
 
-  // 1분 누적을 구하기 위한 합
+  //온도: 1분 누적을 구하기 위한 합
   pSystem->mTempBuf[MIN1_PROC].lTot += mRealAws.mTemperature.sReal;
   pSystem->mTempBuf[MIN1_PROC].sAddCnt++;
+
+  //기압
   pSystem->mBaroBuf[MIN1_PROC].lTot += mRealAws.mBarometric.sReal;
   pSystem->mBaroBuf[MIN1_PROC].sAddCnt++;
+  //습도
   pSystem->mHumidBuf[MIN1_PROC].lTot += mRealAws.mHumidity.sReal;
   pSystem->mHumidBuf[MIN1_PROC].sAddCnt++;
 
@@ -318,14 +319,12 @@ void SecProcess(void)
                 &pSystem->mSoil150Buf[HOUR_PROC].sMax);
 
   // 2017 . 04 . 03 추가 끝
-
   // 온도 최소 최대 구하기
   AwsMinMaxProc(mRealAws.mTemperature.sReal, &mRealAws.mTemperature.sMin,
                 &mRealAws.mTemperature.sMax);  // 일간 최고 최소 온도
   AwsMinMaxProc(mRealAws.mTemperature.sReal, &pSystem->mTempBuf[MIN1_PROC].sMin,
                 &pSystem->mTempBuf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mTemperature.sReal,
-                &pSystem->mTempBuf[MIN10_PROC].sMin,
+  AwsMinMaxProc(mRealAws.mTemperature.sReal,&pSystem->mTempBuf[MIN10_PROC].sMin,
                 &pSystem->mTempBuf[MIN10_PROC].sMax);
   AwsMinMaxProc(mRealAws.mTemperature.sReal, &pSystem->mTempBuf[HOUR_PROC].sMin,
                 &pSystem->mTempBuf[HOUR_PROC].sMax);
@@ -351,69 +350,46 @@ void SecProcess(void)
                 &pSystem->mHumidBuf[HOUR_PROC].sMax);
 
 
-  
+  //우량
   if(pSystem->mRain.rain)
   {
-    uint16_t rain =pSystem->mRain.rain;
-
-    pSystem->mRain.sMinRain += rain;   // 1분 강수량
-    pSystem->mRain.s10MinRain += rain;  // 10분 강수량
-    pSystem->mRain.sHourRain += rain;   // 1시간강수량
-    pSystem->mRain.sDayRain += rain;    // 일간강수량
-    pSystem->mRain.sMonthRain += rain;   // 월간 강수량
-    pSystem->mRain.sYearRain += rain;    // 년간 강수량
-
-    set_rainfall_1min(pSystem->mRain.sMinRain/10.0f);
-    set_rainfall_today(pSystem->mRain.sDayRain / 10.0f);
-    set_rainfall_hourly(pSystem->mRain.sHourRain / 10.0f);
-    set_rainfall_monthly(pSystem->mRain.sMonthRain / 10.0f);
-    set_rainfall_yearly(pSystem->mRain.sYearRain / 10.0f);
-
+    float rain = (float)pSystem->mRain.rain/10.0f;
     pSystem->mRain.rain = 0;
+    set_rainfall_today(get_rainfall()->rainfall_today + rain);
+    set_rainfall_1min(get_rainfall()->rainfall_1min + rain);
+    set_rainfall_10min(get_rainfall()->rainfall_10min + rain);
+    set_rainfall_hourly(get_rainfall()->rainfall_hourly + rain);
+    set_rainfall_monthly(get_rainfall()->rainfall_monthly + rain);
+    set_rainfall_yearly(get_rainfall()->rainfall_yearly + rain);
   }
   
+  mRealAws.mRainFall.sReal      = (uint16_t)(get_rainfall()->rainfall_today*10.0f);  
+  mRealAws.mRainFall.sHourRain  = (uint16_t)(get_rainfall()->rainfall_hourly*10.0f); 
+  mRealAws.mRainFall.sMonthRain = (uint16_t)(get_rainfall()->rainfall_monthly*10.0f);  
+  mRealAws.mRainFall.sYearRain  = (uint16_t)(get_rainfall()->rainfall_yearly*10.0f);
 
-  mRealAws.mRainFall.sReal = pSystem->mRain.sDayRain;  // 일간강수량(초단위로 바뀌는 값)
-  mRealAws.mRainFall.sHourRain = pSystem->mRain.sHourRain;  // 1시간 강수량
-  mRealAws.mRainFall.sMonthRain = pSystem->mRain.sMonthRain;  // 월간강수량
-  mRealAws.mRainFall.sYearRain = pSystem->mRain.sYearRain;  // 연간강수량
-  
-
-  m10MinAws.mRainFall.sReal = pSystem->mRain.sDayRain;
-  mHourAws.mRainFall.sReal  = pSystem->mRain.sDayRain;
-
-
+  m10MinAws.mRainFall.sReal = (uint16_t)(get_rainfall()->rainfall_today*10.0f);
+  mHourAws.mRainFall.sReal = (uint16_t)(get_rainfall()->rainfall_today*10.0f);
 
   // 강우 감지 처리 (초 단위로 처리)
   mMinAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
   m10MinAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
   mHourAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
 
-  // 1분 자료를 10분 자료에 복사
-  //    memcpy((char *)&(m10MinAws.mRainFall), (char *)&(mMinAws.mRainFall),
-  //    sizeof(SENSOR_RIXS_BUF));
-  // 1분 자료를 1시간 자료에 복사
-  //    memcpy((char *)&(mHourAws.mRainFall), (char *)&(mMinAws.mRainFall),
-  //    sizeof(SENSOR_RIXS_BUF));
-
   // 풍향 풍속 처리 & 3초 이동 평균 처리
 #define WIND_INSTANCT_CNT 12
-  windSum = 0;
+
   
   for (i = 0; i < WIND_INSTANCT_CNT; i++)
   {
     sAvgSpeed = pSystem->mRealWind.sAvg3Speed[i];
     sAvgDirection = pSystem->mRealWind.sAvg3Direction[i];
 
-    windSum += sAvgSpeed;
-
-    if (sAvgSpeed)
+    if (sAvgSpeed)//풍속이 존재하는 경우에만 연산
     {
       DircTouvConv(sAvgDirection, sAvgSpeed, &wind_sum_u, &wind_sum_v);
     }
   }
-
-
 
   {
     // 12샘플링한 자료를 평균해서 순간 풍향,풍속 산출출
@@ -500,11 +476,11 @@ void SecProcess(void)
 
 void Sec10Process(void)
 {
-  SYSTEM_INFO_AWS *pSystem;
-  float u, v;
   int i;
   uint32_t nSpeedTot;
   uint32_t sAcnt = 0;
+  float u, v;
+  SYSTEM_INFO_AWS *pSystem;
 
   pSystem = &Sysinfo;
 
@@ -524,10 +500,8 @@ void Sec10Process(void)
   }
   if (sAcnt)
   {
-    pSystem->mWind[MIN1_PROC].uTot +=
-        (u / (float)sAcnt);  // 10초 평균을 구한후 합산한다
+    pSystem->mWind[MIN1_PROC].uTot += (u / (float)sAcnt);  // 10초 평균을 구한후 합산한다
     pSystem->mWind[MIN1_PROC].vTot += (v / (float)sAcnt);  //       "
-
     pSystem->mWind[MIN1_PROC].lSpeedTot += (nSpeedTot / sAcnt);  //       "
     pSystem->mWind[MIN1_PROC].sAddCnt++;
   }
@@ -623,9 +597,8 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->mDate.cHour = pDate->Hour;
   pAws->mDate.cMin = pDate->Min;
 
-  // 온도
-  AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[MIN1_PROC],
-                   mRealAws.mTemperature.sReal);
+  // 온도:10초마다 샘플해서 처리해야하는데 1초마다 하고 있음.
+  AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[MIN1_PROC],mRealAws.mTemperature.sReal);
   // 1분 평균을 구한 값을 10분 누적에 더한다
   pSystem->mTempBuf[MIN10_PROC].lTot += pAws->mTemperature.sReal;  
   pSystem->mTempBuf[MIN10_PROC].sAddCnt++;
@@ -715,12 +688,10 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   // 강수량 처리
   // 2010. 08. 28. 수정
-  pAws->mRainFall.sReal = pSystem->mRain.sDayRain;
-  pAws->mRainFall.sHourRain = pSystem->mRain.sHourRain;
-  pAws->mRainFall.sMonthRain = pSystem->mRain.sMonthRain;
-  pAws->mRainFall.sYearRain = pSystem->mRain.sYearRain;
-  pAws->rain_1min = pSystem->mRain.sMinRain;
-  pSystem->mRain.sMinRain = 0;                             
+  pAws->mRainFall.sReal      = (uint16_t )(get_rainfall()->rainfall_today*10.0f);
+  pAws->mRainFall.sHourRain  = (uint16_t )(get_rainfall()->rainfall_hourly*10.0f);
+  pAws->mRainFall.sMonthRain = (uint16_t )(get_rainfall()->rainfall_monthly*10.0f);
+  pAws->mRainFall.sYearRain  = (uint16_t )(get_rainfall()->rainfall_yearly*10.0f);
 
   set_rainfall_1min(0);
 
@@ -827,10 +798,10 @@ void Min10Process(void)
   // 지중 온도 처리 끝
 
   // 강수량 처리
-  pAws->mRainFall.sReal = pSystem->mRain.s10MinRain;  // 10분 강수량
-  pAws->mRainFall.sHourRain = pSystem->mRain.sHourRain;
-  pSystem->mRain.s10MinRain = 0;  // 10분 강수량
-  set_rainfall_10min(pSystem->mRain.s10MinRain/10.0f);
+  pAws->mRainFall.sReal = (uint16_t)(get_rainfall()->rainfall_10min*10.0f);
+  pAws->mRainFall.sHourRain = (uint16_t)(get_rainfall()->rainfall_hourly*10.0f);
+
+  set_rainfall_10min(0);
 
 #if 0 
 // 2010. 11. 30. 수정 적설량 처리
@@ -904,10 +875,6 @@ void HourProcess(DATE_TIME_BUF *pDate)
                    mRealAws.mSoilTemp1_5m.sReal);
   // 지중 온도 처리 끝
 
-  // 강수량 처리
-  // 2010. 08. 28. 수정
-  //    pAws->mRainFall.sReal    = pSystem->mRain.sHourRain; // 1시간 강수량
-  pSystem->mRain.sHourRain = 0;  // 1시간 강수량
 
   set_rainfall_hourly(0.0f);
   set_sunshine_hourly(0);
@@ -915,10 +882,6 @@ void HourProcess(DATE_TIME_BUF *pDate)
 
 void DayProcess(void)
 {
-  SYSTEM_INFO_AWS *pSystem;
-
-  pSystem = &Sysinfo;
-
   mRealAws.mWind.mDirection.sMax = 0; //일 최대 풍향 초기화
   mRealAws.mWind.mSpeed.sMax = 0;    //일 최대 풍속 초기화
 
@@ -956,12 +919,13 @@ void DayProcess(void)
   mMinAws.mSunshine.sMax = 0;   // 하루 총 일조
   mMinAws.mSolarRad.sMax = 0;   // 하루 총 일사
 
-  // 강수량 처리
-  pSystem->mRain.sBefDayRain = pSystem->mRain.sDayRain;  // 전일강수량
-  pSystem->mRain.sDayRain = 0;
-
+  set_rainfall_yesterday(get_rainfall()->rainfall_today);
+  set_rainfall_1min(0.0f);
+  set_rainfall_10min(0.0f);
+  set_rainfall_hourly(0.0f);
   set_rainfall_today(0.0f);
-  set_rainfall_yesterday(pSystem->mRain.sBefDayRain/10.0f);
+  set_rainfall_monthly(0.0f);
+  set_rainfall_yearly(0.0f);
 
   set_sunshine_today(0);
 }
@@ -972,51 +936,21 @@ void MonthProcess(void)
 
   pSystem = &Sysinfo;
 
-  pSystem->mRain.sMonthRain = 0;
+
   pSystem->mSunshine.nMonthSunshine = 0;
 
   set_rainfall_monthly(0.0f);
   set_sunshine_monthly(0.0f);
 }
 
+// 풍향,풍속으로 바람벡터 성분 분해
+// TODO 풍향 45도이면 u,v값이 같아야 하는데 다르게 계산됨, UVToDirc 이거 쌍으로 사용해야함
 void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v)
 {
   float fAngle;
 
   fAngle = (float)sDirc / 10;  // 3599를 359
 
-#if 0
-/* Memory Table에의한 연산속도는 250us정도 소요됨 */
-    if(nAngle <= 90)
-    {
-        nTt = (90 - nAngle);
-        *dir_u += (float)sSpeed * sin_tbl[90 - nTt];
-        *dir_v += (float)sSpeed * sin_tbl[nTt];
-    }
-    else
-    if(nAngle <= 180)
-    {
-        nTt = (nAngle - 90); 
-        *dir_u += (float)sSpeed * sin_tbl[90 - nTt];
-        *dir_v += (float)sSpeed * sin_tbl[nTt] * -1.0;
-    }
-    else
-    if(nAngle <= 270)
-    {
-
-        nTt = (270 - nAngle); 
-        *dir_u += (float)sSpeed * sin_tbl[90 - nTt] * -1.0;
-        *dir_v += (float)sSpeed * sin_tbl[nTt] * -1.0;
-    }        
-    else
-    {
-        nTt = (nAngle - 270); 
-        *dir_u += (float)sSpeed * sin_tbl[90 - nTt] * -1.0;
-        *dir_v += (float)sSpeed * sin_tbl[nTt];
-    }
-#endif
-
-#if 1
   /* maker 측 제공 함수 사용 */
   /* Maker측 제공 함수는 2.2ms 정도 시간이 소요됨 */
   if (fAngle <= 90)
@@ -1040,9 +974,9 @@ void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v)
     *dir_v += (float)sSpeed * (float)sin(((double)fAngle - 270.0) * D2R);
   }
 /* maker 측 제공 함수 사용 끝 */
-#endif
+
 }
-// AWS담위 측정값 *10
+// AWS단위 측정값 *10
 uint16_t UVToDirc(float u_tmp, float v_tmp)
 {
   uint16_t sDirc;
@@ -1151,7 +1085,7 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
 
     if (pDate->Year != pOldDate->Year)
     {
-      Sysinfo.mRain.sYearRain = 0;
+
       Sysinfo.mSunshine.nYearSunshine =0;
       pOldDate->Year = pDate->Year;
       set_rainfall_yearly(0.0f);
