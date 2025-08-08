@@ -1073,7 +1073,7 @@ void menuTask(void *arg)
   
   print_logo();
 
-  screen_page_create(&lcd_win,SCREEN_ROWS,SCREEN_COLS);
+  screen_page_create(&lcd_win);
 
   lcd_win.chunk_scroll_use = 1;// view_row 단위로 스크롤
   lcd_win.multi_page_use = 1;  //하나의 창에 여러개의 페이지 구성 LEFT,RIGHT 키 사용

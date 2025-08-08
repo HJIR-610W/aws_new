@@ -68,7 +68,7 @@ int32_t read_snow_config(void)
     show_popup("Error", "Command failed");
     return MENU_BACK;
   }
-  screen_page_create(&lcd_win, 8, 20);
+  screen_page_create(&lcd_win);
   lcd_win.total_pages = 1;
   lcd_win.chunk_scroll_use = 1;
 

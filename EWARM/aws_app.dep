@@ -2079,7 +2079,7 @@
             <file>$PROJ_DIR$\release\Obj\wind_data.xcl</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sio.h</file>
-            <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
+            <file>$PROJ_DIR$\..\Application\app\app_drivers\app_screen.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_manager.h</file>
             <file>$PROJ_DIR$\release\Obj\adc_calibration.o</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stack_macros.h</file>

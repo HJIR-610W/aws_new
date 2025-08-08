@@ -74,7 +74,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     DATE_TIME_BUF nt;
     int32_t update=1;
     screen_clear();
-    screen_page_create(&lcd_win, 8, 20);
+    screen_page_create(&lcd_win);
     lcd_win.total_pages = 1;
     lcd_win.chunk_scroll_use = 1;
 
@@ -202,7 +202,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     int update=1;
     uint16_t rain[MIN_VIEW_ROW];
     screen_clear();
-    screen_page_create(&lcd_win, 8, 20);
+    screen_page_create(&lcd_win);
     lcd_win.total_pages = 1;
     lcd_win.chunk_scroll_use = 1;
 

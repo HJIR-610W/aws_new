@@ -57,7 +57,7 @@ void screen_put_ch(int row, int col, uint8_t ch);
 void screen_printf(int row, int col, const char* format, ...);
 void screen_clear(void);
 
-void screen_page_create(screen_page_t *win, int rows, int cols);
+void screen_page_create(screen_page_t *win);
 void screen_page_handle(screen_page_t *win, int key);
 void screen_page_clear(screen_page_t *win);
 void screen_page_start(screen_page_t *win);
