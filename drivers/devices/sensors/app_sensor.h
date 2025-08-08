@@ -189,7 +189,10 @@ typedef struct sensor_s
   uint8_t config[SENSOR_CONFIG_TABLE_MAX][2];  //[0][0] 센서타입 정보 저장, [0][1] 타입이 할당받은
                                                // 설정 위치값 저장
 } sensor_t;
-
+typedef struct supported_sensors_s
+{
+  bool supported;
+}supported_sensors_t;
 
 void *get_sensor_config(sensor_t *sensor);
 void *sensor_add(sensor_t *sensor);
@@ -216,9 +219,6 @@ extern const char *sensor_name_list[SENSOR_LIST_MAX];
 extern const char *sensor_name_eng_list[SENSOR_LIST_MAX];
 extern const char *sensor_format_list[SENSOR_LIST_MAX];
 extern const sensor_model_entry_t sensor_table[SENSOR_LIST_MAX];
-
-
-
-
+extern const supported_sensors_t supported_sensors[SENSOR_LIST_MAX];
 
 #endif

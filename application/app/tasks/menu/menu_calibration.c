@@ -15,6 +15,7 @@
 #include "app_adc.h"
 #include "util_stdio.h"
 #include "const_string.h"
+#include "bsp_delay.h"
 
 extern config_adc_adv_t g_adc_config_ads1220;
 extern config_adc_adv_t g_adc_config_stm32;
@@ -278,6 +279,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
   int32_t status;
   float voltage;
   config_adc_adv_t* p_adc;
+  uint32_t start_time,end_time,elapsed_time;
 
   p_adc = &g_adc_config_ads1220;
 
@@ -304,6 +306,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
 
   while (1)
   {
+    start_time = mcu_get_clk();
     if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
     {
       raw = (int32_t)drv_adc_single_raw_read(channel,1, &err);
@@ -312,23 +315,25 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
     {
       raw = drv_adc_diff_raw_read(channel,1, &err);
     }
+    elapsed_time = cal_elapsed_us(start_time);
 
     g_current_temp = read_current_temperature();
     voltage = adc_get_compensated_value(raw, params, g_current_temp);
 
     screen_printf(0, 0, "Ch%d RAW:%d", channel, raw);
+    screen_printf(1, 0, "elapsed:%fms",(float)elapsed_time/1000.0f);
     if (isnan(voltage))
     {
-      screen_printf(1, 0, "Need Cal");
+      screen_printf(2, 0, "Need Cal");
     }
     else
     {
-      screen_printf(1, 0, "V:%.6f", voltage);
+      screen_printf(2, 0, "V:%.6f", voltage);
     }
 
     screen_refresh();
 
-    if (get_button_key(500) == KEY_CODE_CTRL_C)
+    if (get_button_key(100) == KEY_CODE_CTRL_C)
       break;
   }
   }
@@ -387,6 +392,7 @@ int32_t cali_setup_menu_view_summary(void)
   screen_page_create(&lcd_win,8,20);
     
   lcd_win.total_pages =1;
+  lcd_win.chunk_scroll_use = 1;
    while (1)
   {
     draw_cali_menu_view_summary(&lcd_win);
@@ -432,13 +438,9 @@ int32_t cali_setup_menu_view(void)
     draw_cali_setup_menu_view_page(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_button_key(WAIT_FOREVER);
 
-    if (key == KEY_CODE_CTRL_Q)
-    {
-      break;
-    }
-    else if (key == KEY_CODE_CTRL_C)
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
       break;
     }
@@ -468,7 +470,7 @@ int32_t cali_setup_menu_view(void)
       if(status == MENU_ABORT)
         return status;
     }
-    else if (key != -1)
+    else if (key != KEY_CODE_UNKNOWN)
     {
       screen_menu_handle(&menu, key);
     }
@@ -542,26 +544,19 @@ int32_t setup_menu_calibration(void)
 {
   int32_t index;
   int32_t key;
-  int32_t status;
+  int32_t status = MENU_BACK;
   screen_menu_t menu;
 
   screen_menu_create(&menu, "Calibraion");
 
-
-
   while (1)
   {
-
     draw_setup_menu_calibration_page(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_button_key(WAIT_FOREVER);
 
-    if (key == KEY_CODE_CTRL_Q)
-    {
-      break;
-    }
-    else if (key == KEY_CODE_CTRL_C)
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
       break;
     }
@@ -575,22 +570,19 @@ int32_t setup_menu_calibration(void)
         case CALI_MENU_FACTORY:
           status = cali_setup_menu_factory();
           break;
-
         case CALI_MENU_VIEW:
           status = cali_setup_menu_view();
           break;
-
         case CALI_MENU_INIT:
           status = cali_setup_menu_init();
           break;
-
         default:
           break;
       }
       if(status == MENU_ABORT)
       return  status;
     }
-    else if (key != -1)
+    else if (key != KEY_CODE_UNKNOWN)
     {
       screen_menu_handle(&menu, key);
     }

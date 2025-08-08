@@ -5,7 +5,7 @@
 #include "cmsis_os2.h"
 #include "cli_key_code.h"
 
-
+#define WAIT_FOREVER 0xFFFFFFFFu
 
 void app_key_init(void);
 int32_t get_button_key(uint32_t timeout_ms);

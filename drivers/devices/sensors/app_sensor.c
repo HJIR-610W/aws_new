@@ -50,6 +50,31 @@ const char *sensor_format_list[] = {
 #undef X
 };
 
+
+
+const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] =
+    {
+        [A1_TEMPERATURE] = true,
+        [A2_WIND_DIRECTION] = true,
+        [A3_WIND_SPEED] = true,
+        [A6_RAINFALL_DOT5_1MM] = true,
+        [A7_PRESSURE] = true,
+        [A8_RAIN_PRESENT] = true,
+        [A9_SNOW_DEPTH] = true,
+        [A10_RELATIVE_HUMIDITY] = true,
+        [B1_SOLAR_RADIATION] = true,
+        [B2_SUNSHINE_DURATION] = true,
+        [B5_SOIL_TEMPERATURE_5CM] = true,
+        [B6_SOIL_TEMPERATURE_10CM] = true,
+        [B7_SOIL_TEMPERATURE_20CM] = true,
+        [B8_SOIL_TEMPERATURE_30CM] = true,
+        [B9_SOIL_TEMPERATURE_50CM] = true,
+        [B10_SOIL_TEMPERATURE_100CM] = true,
+        [B11_SOIL_TEMPERATURE_150CM] = true,
+        [B12_SOIL_TEMPERATURE_300CM] = true,
+        [B13_SOIL_TEMPERATURE_500CM] = true,
+        };
+
 // 지원하는 센서 목록 정의
 const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
 const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};

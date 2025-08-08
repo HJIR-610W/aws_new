@@ -34,13 +34,13 @@ typedef struct
 {
   screen_instance_t *p_screen;
   char title[16 + 1];
-  int current_row;
-  int view_row;
-  int view_col;
-  int scroll_offset;
-  int total_items;
-  int selected_index;
-  uint8_t index_list[50];
+  int current_row;//현재의 로우수
+  int view_row;//표현 가능한 행수
+  int view_col;// 표현 가능한 열수
+  int scroll_offset;//현재 row의 오프셋
+  int total_items; //행의 총 갯수
+  int selected_index;//별표가 위치한 곳의 행 번호 
+  uint8_t index_list[50];//메뉴 번호 
 } screen_menu_t;
 
 

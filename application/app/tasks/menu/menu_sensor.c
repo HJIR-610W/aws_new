@@ -891,15 +891,21 @@ int32_t setup_sensor(eSENSOR_TYPE_t list)
   return status;
 }
 
+eSENSOR_TYPE_t supported_sensor_menu_num[SENSOR_LIST_MAX];
+
 void draw_menu_sensor_page(screen_menu_t* p_win)
 {
   sensor_t *p_sensor = get_config_app()->sensor;
-
+  int menu_num=0;
   screen_menu_start(p_win);
 
   for(int i = 0;i< SENSOR_LIST_MAX;i++)
   {
-    screen_menu_printf(p_win, i, "%-15s%s", sensor_name_eng_list[i],p_sensor[i].type>0?"[E]":"[D]");
+    if(supported_sensors[i].supported==true)
+    {
+      screen_menu_printf(p_win, i, "%-15s%s", sensor_name_eng_list[i],p_sensor[i].type>0?"[E]":"[D]");
+      supported_sensor_menu_num[menu_num++] =(eSENSOR_TYPE_t)i;
+    }
   }
 
   screen_menu_clear(p_win);
@@ -907,9 +913,8 @@ void draw_menu_sensor_page(screen_menu_t* p_win)
 
 int32_t setup_menu_sensor(void)
 {
-
-
   int32_t key;
+  eSENSOR_TYPE_t sensor_type;
 
   screen_menu_t menu;
 
@@ -933,7 +938,8 @@ int32_t setup_menu_sensor(void)
     if (key == KEY_CODE_ENTER)
     {
       screen_clear();
-      setup_sensor((eSENSOR_TYPE_t)menu.selected_index);
+      sensor_type = supported_sensor_menu_num[menu.selected_index];
+      setup_sensor(sensor_type);
     }
     else if (key != KEY_CODE_NONE)
     {
