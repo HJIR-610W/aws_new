@@ -225,7 +225,7 @@ typedef struct
 {
   bool init;
   uint32_t crc;
-
+  uint32_t time_stamp;
   aws_data_t temperature;             // 1. 기온 (1분 평균)
   aws_data_t wind_direction_avg;      // 2. 풍향 (1분 평균)
   aws_data_t wind_speed_avg;          // 3. 풍속 (1분 평균)
@@ -337,9 +337,14 @@ void set_sunshine_yesterday(uint32_t sunshine);
 void set_sunshine_yearly(uint32_t sunshine);
 
 
+#define KMA_DATA_Q_AVG 0
+#define KMA_DATA_Q_1MIN 1
+
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min) ;
 
-
+void kma_data_q_init(void);
+int32_t read_kma_data(int kma_data_num,kma_data_ex_t *p_kma_data);
+void send_kma_data(int kma_data_num, kma_data_ex_t *p_kma_data);
 
 extern kma_data_t g_kma_inst;
 extern kma_data_t g_kma_1min;

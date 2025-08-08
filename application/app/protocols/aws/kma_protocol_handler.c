@@ -258,7 +258,9 @@ void cvt_kma3_to_kma2(kma_data_ex_t *p_kma3, kma2_response_t *p_kma2)
   p_kma2->Z_logger_status = calculate_old_Z_status(p_kma3->X_sensorStatus); 
 }
 
-    // 순간 자료
+// 순간 자료
+kma_data_ex_t g_kma_data_ai;
+bool g_kma_data_ai_updated=false;
 uint16_t kma_cmd_handler_AI(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t data_format_no;
@@ -268,19 +270,39 @@ uint16_t kma_cmd_handler_AI(uint8_t *rx_frame, uint8_t *tx_frame)
   kma_data_ex_t *p_kma3_data;
   kma2_response_t kma2_response;
 
+  p_kma3_data = pvPortMalloc(sizeof(kma_data_ex_t));
+  if (read_kma_data(KMA_DATA_Q_AVG, p_kma3_data))
+  {//최근에 업데이트 된 자료가 없으면 이전 자료로 응답
+    if (g_kma_data_ai_updated)//가장최근에 업데이트 된 자료 없으면 응답 안함
+    {
+      *p_kma3_data = g_kma_data_ai;
+    }
+    else
+    {
+      vPortFree(p_kma3_data);
+      return 0;
+    }
+  }
+  else
+  {
+    g_kma_data_ai = *p_kma3_data;
+    g_kma_data_ai_updated = true;
+  }
+
   if (Date_Time.Sec < REQ_BLOCK_BEFORE_SEC)
   {
     return 0;
   }
-    station_id = GetWord((uint8_t *)&rx_frame[13]);
-  p_kma3_data = get_kma_data(eAWS_DATA_AVG);
+  
+  station_id = GetWord((uint8_t *)&rx_frame[13]);
+
 
   switch (get_config_app()->aws_protocol_type)
   {
     case eAWS_PROTOCOL_KMA2:
       //센서 사용 여부를 조사해서 자로형식을 결정한다.
       data_format_no = calculate_kma2_data_format_no(p_kma3_data);
-      
+
       cvt_kma3_to_kma2(p_kma3_data, &kma2_response);
 
       switch (data_format_no)
@@ -305,28 +327,60 @@ uint16_t kma_cmd_handler_AI(uint8_t *rx_frame, uint8_t *tx_frame)
       len = make_kma3_resp(tx_frame, 'I', DATA_TYPE_GENERAL, station_id, data, len);
       break;
   }
-
+  vPortFree(p_kma3_data);
 
   return len;
 }
 
-// 1분 자료
+/*
+1분 자료,동기화 되었다는 가정하에 처리
+서버에서 0초에 요청이 오면 동기화가 되었다는 가정에
+장비가 0초에 값을 업데이트 하면서 충돌이 될수 있다.
+서버는 최소 1초 이후에 요청을 해야한다.
+그렇지 않으면 장비에서 AB 명령어가 오면 1초 지연 후 값이 업데이트 되었다는걸 가정하고
+응답한다.
+더 정확히는 최근 값의 타임스템프와 요청시간의 타임스템프를 비교 하는것이 정확하나
+여기서는 서버시간과 완전한 동기화가 되었다고 가정하고 처리한다.
+1분자료가 갱신되면 큐에 저장하고 AB요청이 오면 먼저 Q에 값을 확인한다.
+갱신된 값이 있으면 최근 갱신된 값으로 처리한다.
+Q사이즈를 1로 했기때문에 1분마다 업데이트되는 값을 연속 호출시 값이 없으므로 복사본을 두고
+연속된 요청시에는 복사본으로 응답한다.
+장비 리셋후 한번도 업데이트된적이 없으면 응답자체를 하지 않는다.
+*/
+kma_data_ex_t g_kma_data_ab;//ab 자료의 이전 복사본
+bool g_kma_data_ab_updated = false;
 uint16_t kma_cmd_handler_AB(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t data[200];
+  uint8_t data_format_no;
   uint16_t len = 0;
   uint16_t station_id;
   kma_data_ex_t *p_kma_data;
   kma2_response_t kma2_response;
-  uint8_t data_format_no;
 
-  //아직 1분 자료가 업데이트 되지 않았으면 응답 안한다. 
-  if (!check_1min_data_updated())
+  osDelay(1000);
+
+  p_kma_data = pvPortMalloc(sizeof(kma_data_ex_t));
+
+  if (read_kma_data(KMA_DATA_Q_1MIN, p_kma_data))
   {
-    return 0;
+    if (g_kma_data_ab_updated)
+    {
+      *p_kma_data = g_kma_data_ab;
+    }
+    else
+    {
+      vPortFree(p_kma_data);
+      return 0;
+    }
   }
-    station_id = GetWord((uint8_t *)&rx_frame[13]);
-  p_kma_data = get_kma_data(eAWS_DATA_1MIN);
+  else
+  {
+    g_kma_data_ab = *p_kma_data;
+    g_kma_data_ab_updated = true;
+  }
+  
+  station_id = GetWord((uint8_t *)&rx_frame[13]);
 
   switch (get_config_app()->aws_protocol_type)
   {
@@ -353,7 +407,7 @@ uint16_t kma_cmd_handler_AB(uint8_t *rx_frame, uint8_t *tx_frame)
       len = make_kma3_resp(tx_frame, 'B', DATA_TYPE_GENERAL, station_id, data, len);
       break;
   }
-
+  vPortFree(p_kma_data);
   return len;
 }
 

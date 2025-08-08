@@ -295,6 +295,7 @@ int32_t aws_network_config_eth(void)
         }
         config.eth_mode = (eETH_MODE_t)(choice-1);
         WRITE_CFG(eth_mode);
+        io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
       case 2:
         status = aws_eth_remote_server_info();

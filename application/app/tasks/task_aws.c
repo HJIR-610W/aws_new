@@ -930,6 +930,9 @@ void update_kma_real(void)
   p_kma3->Y_volateStatus &= 0xF3;
   p_kma3->Y_volateStatus |=System.ac_status<<2;
   BIT_UPDATE(p_kma3->Y_volateStatus, System.door_opened, KMA2_PWRSTAT_DOOR_OPEN);
+
+  p_kma3->time_stamp = time_timestamp();
+  send_kma_data(KMA_DATA_Q_AVG,p_kma3);//실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
 }
 
 /**
@@ -1419,7 +1422,7 @@ void DUALPORT_TASK(void *arg)
       pAws->mSolarRad.sReal = filter_data(B1_SOLAR_RADIATION, data, sensor_err, &f_err);
       update_sensor_err(B1_SOLAR_RADIATION, f_err);
 
-      // 일조
+      // 일조 
       data = SunshineCalc(&sensor_err);
       pAws->mSunshine.sReal = filter_data(B2_SUNSHINE_DURATION, data, sensor_err, &f_err);
       update_sensor_err(B2_SUNSHINE_DURATION, f_err);
@@ -1507,7 +1510,7 @@ const osThreadAttr_t KdualportTask_attributes = {
 };
 void dualportTask_init(void)
 {
-  
+  kma_data_q_init();
   AwsMinMaxInit();
 
   osThreadNew(DUALPORT_TASK, NULL, &KdualportTask_attributes);

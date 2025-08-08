@@ -51,7 +51,7 @@ uint16_t swap_uint16(uint16_t value)
   return ret;
 }
 
-
+//빅엔디안 읽기
 uint16_t  GetWord(uint8_t* lpBuff)
 {
     uint16_t shVal;

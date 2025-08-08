@@ -8,7 +8,7 @@
 #include "barometer\barometer.h"
 
 #include "task_measure.h"
-
+#include "cmsis_os2.h"
 kma_data_t g_kma_inst;//실시간, 순간자료, 평균낸 자료
 kma_data_t g_kma_1min;
 kma_data_t g_kma_10min;
@@ -22,6 +22,9 @@ kma_data_ex_t g_kma_1Hour_ex;
 
 rainfall_t g_rainfall;
 sunshine_t g_sunshine;
+
+
+osMessageQueueId_t g_kma_data_queue[2];
 
 // 실제 수집된 데이터를 AWS에서 요구하는 형태로 저장해야한다.
 
@@ -408,4 +411,27 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->soil_temperature_3m.enable = 1;
 #endif
   return p_kma_data;
+}
+
+//실시간 값 저장용
+void kma_data_q_init(void)
+{
+  g_kma_data_queue[KMA_DATA_Q_AVG] = osMessageQueueNew(1, sizeof(kma_data_ex_t), NULL);
+  g_kma_data_queue[KMA_DATA_Q_1MIN] = osMessageQueueNew(1, sizeof(kma_data_ex_t), NULL);
+}
+
+int32_t read_kma_data(int kma_data_num, kma_data_ex_t *p_kma_data)
+{
+  if(osMessageQueueGet(g_kma_data_queue[kma_data_num], p_kma_data, NULL, 0) == osOK)
+  {
+    return 0;
+  }
+
+  return 1;
+}
+
+void send_kma_data(int kma_data_num, kma_data_ex_t *p_kma_data)
+{
+  osMessageQueuePut(g_kma_data_queue[kma_data_num], p_kma_data, 0, 0);
+  
 }

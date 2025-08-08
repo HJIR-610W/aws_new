@@ -597,7 +597,7 @@ void draw_aws(win_t *p_win)
         data = KMA_TO_TEMPERATURE(p_kma->temperature.data);
         data_min = KMA_TO_TEMPERATURE(p_kma->temperature.min);
         data_max = KMA_TO_TEMPERATURE(p_kma->temperature.max);
-        win_printf_row(p_win, row_count++, "%s: %7.1f C,최소:%7.1f C,최대:%7.1f C", m_l("기온", AWS_WD),
+        win_printf_row(p_win, row_count++, "%s: %7.1f C, 최소:%7.1f C,최대:%7.1f C", m_l("기온", AWS_WD),
                        data, data_min, data_max);
       }
     }
@@ -769,7 +769,7 @@ void draw_aws(win_t *p_win)
       {
         uint16_t data = p_kma->precipitation_presence.data;
         bool rain_p = (data == 10) ? true : false;
-        win_printf_row(p_win, row_count++, "%-*s: %s", AWS_WD, "강수유무", rain_p ? "ON" : "OFF");
+        win_printf_row(p_win, row_count++, "%s: %s", m_l("강수유무", AWS_WD), rain_p ? "ON" : "OFF");
       }
       else
       {

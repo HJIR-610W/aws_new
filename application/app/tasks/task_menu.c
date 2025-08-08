@@ -1095,8 +1095,8 @@ void menuTask(void *arg)
     
     page_list[page_count++] = PAGE_AWS_AVG;
     page_list[page_count++] = PAGE_AWS_1MIN;
-    page_list[page_count++] = PAGE_AWS_10MIN;
-    page_list[page_count++] = PAGE_AWS_HOUR;
+    // page_list[page_count++] = PAGE_AWS_10MIN; 구형에서는 표시 했지만 현재 불필요
+    // page_list[page_count++] = PAGE_AWS_HOUR; 구형에서는 표시 했지만 현재 불필요
     page_list[page_count++] = PAGE_AWS_RAW;
     
     lcd_win.total_pages = page_count;

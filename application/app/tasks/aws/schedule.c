@@ -1204,4 +1204,11 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->Y_volateStatus = p_kma_avg->Y_volateStatus;
 
   p_kma_data->updated = true;
+
+
+  if(min == eAWS_DATA_1MIN)
+  {
+    p_kma_data->time_stamp = time_timestamp();
+    send_kma_data(KMA_DATA_Q_1MIN, p_kma_data); // 실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
+  }
 }

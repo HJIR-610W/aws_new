@@ -13,7 +13,6 @@
 #include "stm32f4xx_hal.h"
 
 
-
 #define TIM_FREQ 10000
 
 typedef struct freq_cfg_s
@@ -28,15 +27,14 @@ freq_cfg_t g_freq_cfg[FREQ_MAX];
 TIM_HandleTypeDef htim10;
 TIM_HandleTypeDef htim11;
 
+static float g_freq_TIM10 = 0.0f;
+static float g_freq_TIM11 = 0.0f;
 
-float g_freq_TIM10 = 0.0f;
-float g_freq_TIM11 = 0.0f;
 
-// Frequency measurement variables - TIM10
+
 static uint32_t last_rising_TIM10 = 0;
 static uint32_t current_rising_TIM10 = 0;
 
-// Frequency measurement variables - TIM11
 static uint32_t last_rising_TIM11 = 0;
 static uint32_t current_rising_TIM11 = 0;
 
@@ -45,11 +43,12 @@ uint32_t last_capture_tick_TIM11 = 0;
 
 uint32_t calculate_timer_prescaler(TIM_TypeDef *tim_instance, uint32_t desired_freq_hz);
 
-// Capture callback function - frequency measurement only
+
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM10 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
   {
+
     current_rising_TIM10 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
     last_capture_tick_TIM10 = HAL_GetTick();
 
@@ -67,6 +66,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
   }
   else if (htim->Instance == TIM11 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
   {
+
     current_rising_TIM11 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
     last_capture_tick_TIM11 = HAL_GetTick();
 
@@ -227,22 +227,22 @@ driver_t *driver_freq_open(uint32_t num)
       freqMeasureB_init();
       g_freq_cfg[FREQ_MEAURE_B].channel = 0;
       g_freqMeasure[num].cfg = &g_freq_cfg[FREQ_MEAURE_B];
-      OS_CREATE_BINARY_SEM(g_freqMeasure[num].sem);
+
 
       break;
     case FREQ_MEAURE_C:
       freqMeasureC_init();
       g_freq_cfg[FREQ_MEAURE_C].channel = 1;
       g_freqMeasure[num].cfg = &g_freq_cfg[FREQ_MEAURE_C];
-      OS_CREATE_BINARY_SEM(g_freqMeasure[num].sem);
+
       break;
   }
 
   return &g_freqMeasure[num];
 }
 
-#define FREQ_TIMEOUT_MS 1000
 
+#define FREQ_MEASURE_TIMEOUT 3000
 float driver_freq_read(driver_t *drv,uint8_t *err)
 {
   freq_cfg_t *cfg = drv->cfg;
@@ -250,26 +250,24 @@ float driver_freq_read(driver_t *drv,uint8_t *err)
 
   if (cfg->channel == 0)
   {
-    if(1)// (osSemaphoreAcquire(drv->sem, FREQ_TIMEOUT_MS) == osOK)
+    if ((HAL_GetTick() -  last_capture_tick_TIM10)>FREQ_MEASURE_TIMEOUT)
     {
-      return g_freq_TIM10;
+      return 0.0f;
     }
     else
     {
-      g_freq_TIM10 = 0.0f;
-      return 0.0f;
+      return g_freq_TIM10;
     }
   }
   else if (cfg->channel == 1)
   {
-    if(1)// (osSemaphoreAcquire(drv->sem, FREQ_TIMEOUT_MS) == osOK)
+    if ((HAL_GetTick() - last_capture_tick_TIM11) > FREQ_MEASURE_TIMEOUT)
     {
-      return g_freq_TIM11;
+      return 0.0f;
     }
     else
     {
-      g_freq_TIM11 = 0.0f;
-      return 0.0f;
+      return g_freq_TIM11;
     }
   }
 

@@ -385,6 +385,7 @@ int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case ADC_PAGE_HIGH_VALUE:
+      dec = adc->highScale;
       status = input_decimal("High Value", -1000000, 1000000, &dec);
       if (status != MENU_OK)
         break;
@@ -392,6 +393,7 @@ int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case ADC_PAGE_LOW_VALUE:
+    dec = adc->lowScale;
       status = input_decimal("Low Value", -1000000, 1000000, &dec);
       if (status != MENU_OK)
         break;
@@ -399,21 +401,24 @@ int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case ADC_PAGE_SCALE:
-      status = input_decimal("Scale", -1000000, 1000000, &dec);
+    dec = adc->scale;
+      status = input_decimal("Scale", 0, 100, &dec);
       if (status != MENU_OK)
         break;
       adc->scale = dec;
       save_config_sensor();
       break;
     case ADC_PAGE_MAX_MV:
-      status = input_decimal("Max mV", -1000000, 1000000, &dec);
+    dec = adc->outMaxV;
+      status = input_decimal("Max mV", 0, 5000, &dec);
       if (status != MENU_OK)
         break;
       adc->outMaxV = dec;
       save_config_sensor();
       break;
     case ADC_PAGE_MIN_MV:
-      status = input_decimal("Min mV", -1000000, 1000000, &dec);
+    dec = adc->outMinV;
+      status = input_decimal("Min mV", 0, 5000, &dec);
       if (status != MENU_OK)
         break;
       adc->outMinV = dec;

@@ -285,7 +285,7 @@ int32_t rv8803_read(driver_t *rv8803, DATE_TIME_BUF *ct)
       date = date2;
   }
 
-  // BCD → binary 변환
+  // BCD binary 변환
   ct->SubSec = bcd2bin(date[0] & 0x7F);  // 100th sec
   ct->Sec = bcd2bin(date[1] & 0x7F);
   ct->Min = bcd2bin(date[2] & 0x7F);
