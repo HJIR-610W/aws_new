@@ -52,7 +52,7 @@ void draw_setup_menu_manager_menu(screen_menu_t* p_win)
   screen_menu_clear(p_win);
 }
 
-void draw_setup_menu_config_page(screen_menu_t* p_win)
+void draw_menu_config_menu(screen_menu_t* p_win)
 {
   screen_menu_start(p_win);
   screen_menu_printf(p_win, CONFIG_MENU_HJ_RESET, "HJ Reset");
@@ -207,7 +207,7 @@ int32_t setup_menu_backup(void)
     draw_setup_menu_backup_page(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_button_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q)
     {
@@ -271,7 +271,7 @@ int32_t setup_menu_rain_reset(void)
     draw_rain_reset_page(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_button_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q)
     {
@@ -365,16 +365,12 @@ int32_t setup_menu_config(void)
 
   while (1)
   {
-    draw_setup_menu_config_page(&menu);
+    draw_menu_config_menu(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_button_key(WAIT_FOREVER);
 
-    if (key == KEY_CODE_CTRL_Q)
-    {
-      break;
-    }
-    else if (key == KEY_CODE_CTRL_C)
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
       break;
     }
@@ -388,19 +384,15 @@ int32_t setup_menu_config(void)
         case CONFIG_MENU_HJ_RESET:
           status = setup_menu_hj_reset();//1.AWS 화진 기본 설정
           break;
-
         case CONFIG_MENU_INIT:
           status = setup_menu_init();//2.공장 초기화
           break;
-
         case CONFIG_MENU_BACKUP:
           status = setup_menu_backup();//설정 백업
           break;
-
         case CONFIG_RAIN_INIT:
           status = setup_menu_rain_reset();
           break;
-
         case CONFIG_MENU_LOG_RESET:
           status = setup_menu_log_reset();
           break;
@@ -411,7 +403,7 @@ int32_t setup_menu_config(void)
       if(status == MENU_ABORT)
         return status;
     }
-    else if (key != KEY_CODE_NONE)
+    else if (key != KEY_CODE_UNKNOWN)
     {
       screen_menu_handle(&menu, key);
     }
@@ -434,7 +426,7 @@ int32_t setup_menu_manager(void)
     draw_setup_menu_manager_menu(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_button_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q)
     {

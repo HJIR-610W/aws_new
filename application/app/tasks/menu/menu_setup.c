@@ -1,32 +1,32 @@
 
+#include "app_key.h"
+#include "app_screen.h"
+#include "cli_key_code.h"
 #include "menu_handler.h"
 #include "menu_network.h"
 #include "menu_sensor.h"
 #include "menu_system.h"
-#include "util_memory.h"
 #include "menu_offset.h"
 #include "menu_panel.h"
 #include "menu_calibration.h"
 #include "menu_manager.h"
-#include "app_screen.h"
-#include "cli_key_code.h"
-#include  "app_key.h"
 #include "menu_data.h"
 #include "menu_admin.h"
+#include "util_memory.h"
 
-#define AWS_SETUP_SYSTEM 0
-#define AWS_SETUP_SENSOR 1
-#define AWS_SETUP_NETWORK 2
-#define AWS_SETUP_DATA 3
-#define AWS_SETUP_PANEL  4
-#define AWS_SETUP_OFFSET 5
-#define AWS_SETUP_CALI 6
-#define AWS_SETUP_MANAGER 7
+
+#define AWS_SETUP_SYSTEM    0
+#define AWS_SETUP_SENSOR    1
+#define AWS_SETUP_NETWORK   2
+#define AWS_SETUP_DATA      3
+#define AWS_SETUP_PANEL     4
+#define AWS_SETUP_OFFSET    5
+#define AWS_SETUP_CALI      6
+#define AWS_SETUP_MANAGER   7
 #define AWS_SETUP_DEVELOPER 8
 
-#define SETUP_WD 15
 
-static bool s_admin_menu_active=false;
+static bool s_admin_menu_active=false; //필요에 의해서만 developer 메뉴 활성화 목적
 
 void draw_aws_setup_page(screen_menu_t* p_win)
 {
@@ -51,8 +51,9 @@ void setup_root(void)
   int32_t index;
   int32_t key;
   int32_t status;
-  screen_menu_t menu;
   int32_t admin_menu_count=0;
+  screen_menu_t menu;
+
   screen_menu_create(&menu, "AWS Setup");
 
   while(1)
@@ -60,7 +61,7 @@ void setup_root(void)
     draw_aws_setup_page(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_button_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -73,7 +74,7 @@ void setup_root(void)
 
       switch (menu.index_list[index])
       {
-        case AWS_SETUP_SYSTEM:  // SYSTEM
+        case AWS_SETUP_SYSTEM:
           status = setup_menu_system();
           break;
         case AWS_SETUP_SENSOR:
@@ -82,7 +83,7 @@ void setup_root(void)
         case AWS_SETUP_NETWORK:
           status = setup_menu_network();
           break;
-        case AWS_SETUP_DATA:  // SYSTEM
+        case AWS_SETUP_DATA:
           status  = setup_menu_data();
           break;
         case AWS_SETUP_PANEL:
@@ -104,8 +105,6 @@ void setup_root(void)
           break;
 
       }
-
-
       if (status == MENU_ABORT)
         return ;
     }
@@ -120,7 +119,7 @@ void setup_root(void)
           admin_menu_count++;
           if (admin_menu_count==10)
           {
-            s_admin_menu_active = true;;
+            s_admin_menu_active = true;
           }
         }
       }
@@ -130,6 +129,4 @@ void setup_root(void)
       }
     }
   }
-
-
 }

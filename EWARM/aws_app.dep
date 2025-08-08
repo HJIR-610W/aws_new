@@ -2079,7 +2079,7 @@
             <file>$PROJ_DIR$\release\Obj\wind_data.xcl</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sio.h</file>
-            <file>$PROJ_DIR$\..\Application\app\app_drivers\app_screen.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_manager.h</file>
             <file>$PROJ_DIR$\release\Obj\adc_calibration.o</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stack_macros.h</file>
@@ -4023,7 +4023,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2508 1175 948 1469 942 2454 1915 927 2280 2138 2489 2010 2179 472 1120 2003 2228 2484 2085 2134 2074 1141 1321 2167 1764 537 2094 2061</file>
+                    <file> 2167 1175 948 1469 942 2454 1915 1764 537 2003 1321 2074 1141 927 2508 2280 2138 2489 2010 2179 2228 2484 2085 2134 2094 2061 472 1120</file>
                 </tool>
             </inputs>
         </file>

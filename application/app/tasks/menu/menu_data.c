@@ -86,7 +86,9 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     strfmt.fmt = "%02d-%02d %02d:%02d";
     snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, month, day, hour, min);
     status = input_fmt(&strfmt, "MM/DD HH:MM");
-    if (status == MENU_OK)
+    if (status != MENU_OK)
+    return status;
+  
     {
       sscanf(strfmt.data, strfmt.fmt, &month, &day, &hour, &min);
       nt.Year = Date_Time.Year;
@@ -110,19 +112,14 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
         draw_aws_data_page(&lcd_win, &aws, startTime);
         screen_refresh();
 
-        key = get_button_key(0xFFFFFFFF);
+        key = get_button_key(WAIT_FOREVER);
 
-        if (key == KEY_CODE_CTRL_Q)
+        if (key == KEY_CODE_CTRL_Q||key == KEY_CODE_CTRL_C)
         {
-          status = MENU_ABORT;
           break;
         }
-        else if (key == KEY_CODE_CTRL_C)
-        {
-          status = MENU_BACK;
-          break;
-        }
-        else if (key == KEY_CODE_RIGHT)
+
+        if (key == KEY_CODE_RIGHT)
         {
           startTime += 60;
           time_cvt_secTotime(startTime, &nt);
@@ -136,12 +133,12 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
         }
         else if (key != KEY_CODE_UNKNOWN)
         {
-
           screen_page_handle(&lcd_win, key);
         }
       } while (1);
     }
-    return status;
+
+    return convert_key_to_status(key);
   }
 
   #define MIN_VIEW_ROW 7
@@ -201,8 +198,11 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     DATE_TIME_BUF nt;
     int update=1;
     uint16_t rain[MIN_VIEW_ROW];
+
     screen_clear();
     screen_page_create(&lcd_win);
+
+
     lcd_win.total_pages = 1;
     lcd_win.chunk_scroll_use = 1;
 
@@ -215,6 +215,8 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, month, day, hour, min);
     status = input_fmt(&strfmt, "MM/DD HH:MM");
     if (status == MENU_OK)
+    return status;
+
     {
       sscanf(strfmt.data, strfmt.fmt, &month, &day, &hour, &min);
       nt.Year = Date_Time.Year;
@@ -240,19 +242,14 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
           draw_1min_page(&lcd_win,rain, startTime,system);
           screen_refresh();
         }
-        key = get_button_key(0xFFFFFFFF);
+        key = get_button_key(WAIT_FOREVER);
 
-        if (key == KEY_CODE_CTRL_Q)
+        if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
         {
-          status = MENU_ABORT;
           break;
         }
-        else if (key == KEY_CODE_CTRL_C)
-        {
-          status = MENU_BACK;
-          break;
-        }
-        else if (key == KEY_CODE_UP)
+
+        if (key == KEY_CODE_UP)
         {
           startTime -= 60 * MIN_VIEW_ROW * 2;
           time_cvt_secTotime(startTime, &nt);
@@ -264,12 +261,13 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
         }
       } while (1);
     }
-    return status;
+    return convert_key_to_status(key);
   }
 
   int32_t setup_menu_data(void)
   {
     int32_t key;
+    int32_t status;
     screen_menu_t menu;
 
     screen_menu_create(&menu, "Data");
@@ -279,7 +277,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
       draw_data_menu(&menu);
       screen_refresh();
 
-      key = get_button_key(1000);
+      key = get_button_key(WAIT_FOREVER);
 
       if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
       {
@@ -290,17 +288,19 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
         switch (menu.index_list[menu.selected_index])
         {
           case DATA_MENU_AWS:
-            menu_data_aws();
+            status = menu_data_aws();
            break;
           case DATA_MENU_1MIN_RAIN:
-            menu_view_1min(LOGGING_RAIN_1MIN);
-             break;
+            status = menu_view_1min(LOGGING_RAIN_1MIN);
+            break;
           case DATA_MENU_1MIN_SOLAR_R:
-            menu_view_1min(LOGGING_SUNSHINE_1MIN);
+            status = menu_view_1min(LOGGING_SUNSHINE_1MIN);
             break;
         default:
           break;
         }
+        if(status != MENU_ABORT)
+        return status;
       }
       else if (key != KEY_CODE_UNKNOWN)
       {

@@ -187,7 +187,7 @@ void config_sensor_reset(void)
 {
   memset(&g_config_sensor,0,sizeof(g_config_sensor));
 
-
+  
 }
 
 

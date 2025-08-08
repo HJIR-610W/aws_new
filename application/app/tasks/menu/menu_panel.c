@@ -54,13 +54,9 @@ int32_t setup_menu_panel(void)
     draw_setup_menu_panel_page(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_button_key(WAIT_FOREVER);
 
-    if (key == KEY_CODE_CTRL_Q)
-    {
-      break;
-    }
-    else if (key == KEY_CODE_CTRL_C)
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
       break;
     }
@@ -108,8 +104,10 @@ int32_t setup_menu_panel(void)
         default:
           break;
       }
+      if(status == MENU_ABORT)
+        return status;
     }
-    else if (key != KEY_CODE_NONE)
+    else if (key != KEY_CODE_UNKNOWN)
     {
       screen_menu_handle(&menu, key);
     }

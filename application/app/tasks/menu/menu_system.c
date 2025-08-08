@@ -56,14 +56,11 @@ int32_t setup_menu_system(void)
 
     key = get_button_key(1000);
 
-    if(key==KEY_CODE_CTRL_Q)
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
       break;
     }
-    else if(key == KEY_CODE_CTRL_C)
-    {
-      break;
-    }
+
     if(key == KEY_CODE_ENTER)
     {
       index = menu.selected_index;
@@ -116,7 +113,7 @@ int32_t setup_menu_system(void)
       case SYSTEM_MENU_ID:
       {
         int val = get_config_app()->id;
-        status = input_decimal("ID", 0, 255, &val);
+        status = input_decimal("ID", 0, 65535, &val);
         if(status !=MENU_OK)
           break;
         config.id = val;
@@ -126,7 +123,6 @@ int32_t setup_menu_system(void)
         case SYSTEM_MENU_PASSWORD:
         {
           int val = get_config_app()->password;
-
           status = input_decimal("Password", 0, 65535, &val);
           if (status != MENU_OK)
             break;
@@ -140,15 +136,18 @@ int32_t setup_menu_system(void)
         status = input_combobox("Charger",g_chargerList_lcd,_countof(g_chargerList_lcd),&choice);
         if (status != MENU_OK)
           break;
-      config.charger_model = (eCHARGER_MODEL_t)choice;
-      WRITE_CFG(charger_model);
-      show_popup("Information", "Applied after reset");
+        config.charger_model = (eCHARGER_MODEL_t)choice;
+        WRITE_CFG(charger_model);
+        show_popup("Information", "Applied after reset");
       }
       default:
         break;
       }
+
+      if (status == MENU_ABORT)
+      return status;
     }
-    else if (key != KEY_CODE_NONE)
+    else if (key != KEY_CODE_UNKNOWN)
     {
       screen_menu_handle(&menu, key);
     }
