@@ -866,19 +866,19 @@ void draw_aws(win_t *p_win)
         case eAWS_DATA_RAW:
         {
           float f_data = p_kma->solar_radiation.raw.f;
-          win_printf_row(p_win, row_count++, "%s: %7.2f WJ/m2", m_l("일사", AWS_WD), f_data);
+          win_printf_row(p_win, row_count++, "%s: %7.2f W/m2", m_l("일사(1min)", AWS_WD), f_data);
           break;
         }
         case eAWS_DATA_AVG:
         {
-          float solar_radiation = p_kma->solar_radiation.data;
-          win_printf_row(p_win, row_count++, "%s: %7.1f WJ/m2", m_l("일사", AWS_WD), solar_radiation);
+          float solar_radiation = (float)get_sunshine_r()->sunshine_r_1min_acc;
+          win_printf_row(p_win, row_count++, "%s: %7.1f W/m2", m_l("일사(1min)", AWS_WD), solar_radiation);
           break;
         }
         default:
         {
-          float solar_radiation = p_kma->solar_radiation.data;
-          win_printf_row(p_win, row_count++, "%s: %7.1f KJ/m2", m_l("일사", AWS_WD), solar_radiation);
+          float solar_radiation = p_kma->solar_radiation.data*10;
+          win_printf_row(p_win, row_count++, "%s: %7.1f KJ/m2", m_l("일사(1min)", AWS_WD), solar_radiation);
           break;
         }
       }
@@ -888,14 +888,13 @@ void draw_aws(win_t *p_win)
   // 일조
   if (p_kma->sunshine_duration.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
-    uint32_t solar_d_1min = Sysinfo.mSun[MIN1_PROC].nSunshineTot;
-    err = p_kma->sunshine_duration.err;
-    err = p_kma->sunshine_duration.err;
+    uint32_t solar_d_dotay =  get_sunshine()->sunshine_today;
 
+    err = p_kma->sunshine_duration.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      win_printf_row(p_win, row_count++, "%s: %s", m_l("일조", AWS_WD), err_buf);
+      win_printf_row(p_win, row_count++, "%s: %s", m_l("일조(일간)", AWS_WD), err_buf);
     }
     else
     {
@@ -904,17 +903,12 @@ void draw_aws(win_t *p_win)
         case eAWS_DATA_RAW:
         {
           float f_data = p_kma->sunshine_duration.raw.f;
-          bool sunshine_duration = (f_data == 1.0f);
-          win_printf_row(p_win, row_count++, "%s: %s", m_l("일조", AWS_WD), sunshine_duration ? "ON" : "OFF");
+          win_printf_row(p_win, row_count++, "%s: %s", m_l("일조(현재)", AWS_WD), (f_data == 1.0f) ? "ON" : "OFF");
           break;
         }
         case eAWS_DATA_AVG:
-        {
-          win_printf_row(p_win, row_count++, "%s: %6d sec", m_l("일조", AWS_WD), solar_d_1min);
-          break;
-        }
-        default:
-          win_printf_row(p_win, row_count++, "%s: %6d sec", m_l("일조", AWS_WD), p_kma->sunshine_duration.data);
+        case eAWS_DATA_1MIN:
+          win_printf_row(p_win, row_count++, "%s: %6d sec", m_l("일조(일간)", AWS_WD), solar_d_dotay);
           break;
       }
     }

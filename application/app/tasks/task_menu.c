@@ -648,13 +648,20 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
         case eAWS_DATA_RAW:
         {
           float f_data = p_kma->solar_radiation.raw.f;
-          screen_page_printf(p_win, "%-*s:%6.1f kW/m2", SOLAR_R_WD, "SOLAR R", f_data);
+          screen_page_printf(p_win, "%-*s:%6.1f W/m2", SOLAR_R_WD, "SOLAR R", f_data);
           break;
         }
+        case eAWS_DATA_AVG:
+        {
+          float solar_radiation = (float)get_sunshine_r()->sunshine_r_1min_acc/1000.0f;
+          screen_page_printf(p_win, "%-*s:%6.1f kJ/m2", SOLAR_R_WD, "SOLAR R", solar_radiation);
+          break;
+        }
+        break;
         default:
         {
-          float solar_radiation = p_kma->solar_radiation.data;
-          screen_page_printf(p_win, "%-*s:%6.1f kW/m2", SOLAR_R_WD, "SOLAR R", solar_radiation);
+          float solar_radiation = p_kma->solar_radiation.data*10;
+          screen_page_printf(p_win, "%-*s:%6.1f kJ/m2", SOLAR_R_WD, "SOLAR R", solar_radiation);
           break;
         }
 
@@ -665,8 +672,8 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
 
   if (p_kma->sunshine_duration.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
   {
-     uint32_t solar_d_1min = Sysinfo.mSun[MIN1_PROC].nSunshineTot;
-        err = p_kma->sunshine_duration.err;
+     uint32_t solar_d_today = get_sunshine()->sunshine_today;
+       err = p_kma->sunshine_duration.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
@@ -679,21 +686,13 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
         case eAWS_DATA_RAW:
         {
           float f_data = p_kma->sunshine_duration.raw.f;
-          bool sunshine_duration = (f_data == 1.0f);
-          screen_page_printf(p_win, "%-*s:   %s", AWS_WD, "SOLAR D",
-                   sunshine_duration ? "ON" : "OFF");
+          screen_page_printf(p_win, "%-*s:   %s", AWS_WD, "SOLAR D", (f_data == 1.0f) ? "ON" : "OFF");
           break;
         }
         case eAWS_DATA_AVG:
-        {
-
-          screen_page_printf(p_win, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d_1min);
-          break;
-        }
         case eAWS_DATA_1MIN:
         {
-          uint16_t solar_d = p_kma->sunshine_duration.data ;
-          screen_page_printf(p_win, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d);
+          screen_page_printf(p_win, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d_today);
           break;
         }
         break;

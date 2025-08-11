@@ -159,7 +159,7 @@ typedef struct
 typedef struct
 {
   uint32_t nSolarTot;  // 평균을 구하기 위한 변수
-  uint32_t nSunshineTot;
+  uint32_t nSunshineTot;//1분 일조 
   uint16_t sAddCnt;
 } SENSORSUN_BUF;
 
@@ -182,7 +182,7 @@ typedef struct
 typedef struct
 {
   uint32_t nYearSunshine;   // 연간 일조량
-  uint32_t nMonthSunshine;  // 월간 일조량
+
 }SUNSHINE_BUF;
 
 typedef struct

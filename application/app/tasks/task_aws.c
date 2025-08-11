@@ -649,13 +649,14 @@ void update_kma_real(void)
   p_kma3->precipitation_fine.err = get_sensor_err(A11_RAINFALL_DOT1MM);
 
   //[사용]
-  p_kma3->solar_radiation.data = mRealAws.mSolarRad.sReal;
+  p_kma3->solar_radiation.data    = get_sunshine_r()->sunshine_r_1min_acc/1000.0;
+
+  p_kma3->solar_radiation.max = mRealAws.mSolarRad.sMax;//일간
   p_kma3->solar_radiation.err = get_sensor_err(B1_SOLAR_RADIATION);
-  p_kma3->solar_radiation.max = mRealAws.mSolarRad.sMax;
   //[사용]
-  p_kma3->sunshine_duration.data = mRealAws.mSunshine.sReal;
+  p_kma3->sunshine_duration.data = get_sunshine()->sunshine_today;
   p_kma3->sunshine_duration.err = get_sensor_err(B2_SUNSHINE_DURATION);
-  p_kma3->sunshine_duration.max = mRealAws.mSunshine.sMax;
+
 
   //[미사용] 3. 지면온도 (1분 평균)
   p_kma3->surface_temperature.data = p_raw->surface_temperature.data;
@@ -792,8 +793,6 @@ void update_kma_real(void)
 
 
 
-  set_sunshine_monthly(Sysinfo.mSunshine.nMonthSunshine);
-  set_sunshine_monthly(Sysinfo.mSunshine.nYearSunshine);
 
   //에러 변수 업데이트 
   //[사용]
@@ -1258,31 +1257,29 @@ uint16_t filter_data(eSENSOR_TYPE_t sensor_index,uint16_t data, uint8_t error,ui
   uint8_t delay=0;
   uint16_t ret_data;
 
-  delay = g_pre_data[sensor_index].delay_count;
-  if(error)
+  delay = g_pre_data[sensor_index].delay_count; // 처음호출시에는 dealy를 MS_TO_SCAN_CNT 같은값 설정
+  if(error)//에러가 존재하면 최초의 에러는 무조건 에러로 처리 
   {
     delay++;
-    if (delay >= MS_TO_SCAN_CNT(SENSOR_FAIL_TIMEOUT_SEC))
+    if (delay >= MS_TO_SCAN_CNT(SENSOR_FAIL_TIMEOUT_SEC))//에러가 계속 발생하면
     {
       delay = 0;
-      *f_err = 1;
-      ret_data = data;
+      ret_data = data;//현재값을 실제 값으로 처리
       g_pre_data[sensor_index].data = ret_data;
-      g_pre_data[sensor_index].err = error;
+      g_pre_data[sensor_index].err = 1;
     }
     else
     {
-      ret_data = g_pre_data[sensor_index].data;
+      ret_data = g_pre_data[sensor_index].data;//에러는 있지만 타임아웃 전이면 이전값으로 처리
     }
     g_pre_data[sensor_index].delay_count = delay;
   }
   else
   {
+    g_pre_data[sensor_index].data = data; //에러가 없으면 즉시 현재값 사용
     g_pre_data[sensor_index].err = 0;
     g_pre_data[sensor_index].delay_count = 0;
-    g_pre_data[sensor_index].data = data;
     ret_data = data;
-    *f_err = 0;
   }
 
   *f_err = g_pre_data[sensor_index].err;
@@ -1330,16 +1327,8 @@ void DUALPORT_TASK(void *arg)
   pAws = &mRealAws;
   pSystem = &Sysinfo;
 
-  calculate_rain();
-  
-                               
- 
-
+  calculate_rain(); 
   calculate_sunshine();
-  
-  Sysinfo.mSunshine.nYearSunshine = get_sunshine()->sunshine_yearly;
-  Sysinfo.mSunshine.nMonthSunshine = get_sunshine()->sunshine_monthly;
-
   filter_init();
 
   //제품 부팅시에는 처음 측정하는 값을 즉시 반영

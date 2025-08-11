@@ -22,9 +22,10 @@ kma_data_ex_t g_kma_1Hour_ex;
 
 rainfall_t g_rainfall;
 sunshine_t g_sunshine;
+sunshine_r_t g_sunshine_r;
 
 
-osMessageQueueId_t g_kma_data_queue[2];
+    osMessageQueueId_t g_kma_data_queue[2];
 
 // 실제 수집된 데이터를 AWS에서 요구하는 형태로 저장해야한다.
 
@@ -342,22 +343,26 @@ void set_rainfall_yesterday(float rainfall) { g_rainfall.rainfall_yesterday = ra
 void set_rainfall_yearly(float rainfall) { g_rainfall.rainfall_yearly = rainfall; }
 
 
-
-
 sunshine_t *get_sunshine(void)
 {
   return &g_sunshine;
 }
 
 void set_sunshine_yesterday(uint32_t sunshine) { g_sunshine.sunshine_yesterday = sunshine; }
-
+void set_sunshine_1min(uint32_t sunshine) { g_sunshine.sunshine_1min = sunshine; }
 void set_sunshine_today(uint32_t sunshine) { g_sunshine.sunshine_today = sunshine; }
-
 void set_sunshine_hourly(uint32_t sunshine) { g_sunshine.sunshine_hourly = sunshine; }
-
 void set_sunshine_monthly(uint32_t sunshine) { g_sunshine.sunshine_monthly = sunshine; }
-
 void set_sunshine_yearly(uint32_t sunshine) { g_sunshine.sunshine_yearly = sunshine; }
+
+sunshine_r_t *get_sunshine_r(void)
+{
+  return &g_sunshine_r;
+}
+
+void set_sunshine_r_1min(uint32_t sunshine_r) { g_sunshine_r.sunshine_r_1min = sunshine_r; }
+
+void set_sunshine_r_1min_acc(uint32_t sunshine_r) { g_sunshine_r.sunshine_r_1min_acc = sunshine_r; }
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
 {
@@ -413,7 +418,12 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
   return p_kma_data;
 }
 
-//실시간 값 저장용
+/**
+ * @brief AI,AB 요청시 업데이트되는 값을 응답하여 생기는 공유자원 충돌 방지 목적
+ * dual_port task에서 값이 갱신되는데 갱신중에 aws_hander에서 그 값을 사용하지 않고 
+ * 완전히 갱신된 값을 상용하기 위함
+ * 갱신된 값을 q에 넣고 AI,AB호출시 q에서 데이터 꺼내서 응답
+ */
 void kma_data_q_init(void)
 {
   g_kma_data_queue[KMA_DATA_Q_AVG] = osMessageQueueNew(1, sizeof(kma_data_ex_t), NULL);

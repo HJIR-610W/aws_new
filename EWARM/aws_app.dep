@@ -98,7 +98,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_calibration.c</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_data.c</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\data_logging.c</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.h</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\bsp_driver_sd.h</file>
@@ -207,13 +207,13 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</file>
             <file>$PROJ_DIR$\..\Application\io\dev_io.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
             <file>$PROJ_DIR$\..\application\FreeRTOSConfig.h</file>
             <file>$PROJ_DIR$\..\application\os_user_def.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.h</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
@@ -245,7 +245,7 @@
             <file>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554_def.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\charger\hjsmartCharger.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\st7920.c</file>
@@ -343,7 +343,7 @@
             <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\stm32_usb.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rtc.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_cdc_interface.c</file>
-            <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</file>
+            <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.c</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_do.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.c</file>
@@ -2107,7 +2107,7 @@
             <file>$PROJ_DIR$\release\Obj\test_count.xcl</file>
             <file>$PROJ_DIR$\release\Obj\jinsung_sjgp215.o</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_ll_sdmmc.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_uart.o</file>
             <file>$PROJ_DIR$\..\application\app\test\test_power.h</file>
             <file>$PROJ_DIR$\release\Obj\driver_charger.__cstat.et</file>
@@ -2146,14 +2146,14 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_frequency.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_do.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_iwdg.o</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\aws\old_aws_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\aws\old_aws_define.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\console_scanf.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sys.h</file>
             <file>$PROJ_DIR$\release\Obj\app_fram.o</file>
             <file>$PROJ_DIR$\..\Application\App_drivers\lcd\font_6x8.h</file>
             <file>$PROJ_DIR$\release\Obj\hjtemp_menu.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\release\Obj\sys.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\base64.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_eth.o</file>
@@ -2228,7 +2228,7 @@
             <file>$PROJ_DIR$\release\Obj\app_file.o</file>
             <file>$PROJ_DIR$\release\Obj\list.__cstat.et</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_data.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
             <file>$PROJ_DIR$\release\Obj\dualport.o</file>
             <file>$PROJ_DIR$\release\Obj\ip6.xcl</file>
@@ -2248,14 +2248,14 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_system.h</file>
             <file>$PROJ_DIR$\release\Obj\driver_stm32_rtc.__cstat.et</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dhcp6.h</file>
             <file>$PROJ_DIR$\release\Obj\test_flach.xcl</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\humidity\hj_huminity.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_flash.xcl</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\app_console.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\aws\schedule.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\aws\schedule.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_data_handler.__cstat.et</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_manager.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netbuf.h</file>
@@ -2551,7 +2551,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_rtc.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_mux.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\dhcp.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_rain.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_eth.h</file>

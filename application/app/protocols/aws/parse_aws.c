@@ -240,7 +240,7 @@ bool parse_kma2_data_content(const uint8_t* content_buffer, uint8_t data_format_
   {
     if (offset + 26 + 20 > content_len)
       return false;
-    fields->solar_radiation_mj = kma2_get_u16_big_endian(content_buffer + offset) / 100.0f;
+    fields->solar_radiation_mj = kma2_get_u16_big_endian(content_buffer + offset) * 10.0f;
     offset += 2;
     fields->valid_a = true;
     fields->sunshine_duration_sec = kma2_get_u16_big_endian(content_buffer + offset);
@@ -331,10 +331,8 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
     format_str = "Essential (1)";
   else if (header->data_format_no == KMA2_DATA_FORMAT_PRECIPITATION)
     format_str = "Precipitation (2)";
-  task_printf("%-*s : %u (%s)\r\n", KMA2_PRINT_LABEL_WIDTH, "Data Format No",
-              header->data_format_no, format_str);
-  task_printf("%-*s : %u\r\n", KMA2_PRINT_LABEL_WIDTH, "Station ID",
-              swap_bytes_uint16(header->station_id));
+  task_printf("%-*s : %u (%s)\r\n", KMA2_PRINT_LABEL_WIDTH, "Data Format No",header->data_format_no, format_str);
+  task_printf("%-*s : %u\r\n", KMA2_PRINT_LABEL_WIDTH, "Station ID", swap_bytes_uint16(header->station_id));
   task_printf("--- Data Content (VII) ---\r\n");
 
   if (fields->valid_A)
@@ -342,33 +340,24 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
   if (fields->valid_B)
     task_printf("  %-*s : %.1f deg\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "B. Wind Dir Avg", fields->wind_direction_avg);
   if (fields->valid_C)
-    task_printf("  %-*s : %.1f m/s\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "C. Wind Spd Avg",
-                fields->wind_speed_avg);
+    task_printf("  %-*s : %.1f m/s\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "C. Wind Spd Avg",fields->wind_speed_avg);
   if (fields->valid_D)
-    task_printf("  %-*s : %.1f deg\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "D. Gust Wind Dir",
-                fields->gust_wind_direction);
+    task_printf("  %-*s : %.1f deg\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "D. Gust Wind Dir",fields->gust_wind_direction);
   if (fields->valid_E)
-    task_printf("  %-*s : %.1f m/s\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "E. Gust Wind Spd",
-                fields->gust_wind_speed);
+    task_printf("  %-*s : %.1f m/s\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "E. Gust Wind Spd",fields->gust_wind_speed);
   if (fields->valid_F)
-    task_printf("  %-*s : %.0f (0.5/1mm unit)\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "F. Precip (Raw)",
-                fields->precipitation_0_5mm);
+    task_printf("  %-*s : %.0f (0.5/1mm unit)\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "F. Precip (Raw)",fields->precipitation_0_5mm);
   if (fields->valid_G)
-    task_printf("  %-*s : %.1f hPa\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "G. Pressure",
-                fields->pressure);
+    task_printf("  %-*s : %.1f hPa\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "G. Pressure",fields->pressure);
   if (fields->valid_H)
-    task_printf("  %-*s : 0x%04X (%s)\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "H. Precip Presence",
-                fields->precipitation_presence,
+    task_printf("  %-*s : %d(%s)\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "H. Precip Presence",fields->precipitation_presence,
                 fields->precipitation_presence == 10 ? "Yes" : "No");
   if (fields->valid_I)
-    task_printf("  %-*s : %.1f cm\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "I. Snowfall Accum",
-                fields->snowfall_accum);
+    task_printf("  %-*s : %.1f cm\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "I. Snowfall Accum", fields->snowfall_accum);
   if (fields->valid_J)
-    task_printf("  %-*s : %.1f %%\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "J. Rel. Humidity",
-                fields->relative_humidity);
+    task_printf("  %-*s : %.1f %%\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "J. Rel. Humidity",fields->relative_humidity);
   if (fields->valid_K)
-    task_printf("  %-*s : %.0f (0.1mm unit)\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "K. Precip (Raw)",
-                fields->precipitation_0_1mm);
+    task_printf("  %-*s : %.0f (0.1mm unit)\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "K. Precip (Raw)", fields->precipitation_0_1mm);
 
   char label_buf[128];
   if (header->data_format_no == KMA2_DATA_FORMAT_ESSENTIAL_SELECTIVE ||
@@ -394,26 +383,24 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
   if (header->data_format_no == KMA2_DATA_FORMAT_ESSENTIAL_SELECTIVE)
   {
     if (fields->valid_a)
-      task_printf("  %-*s : %.2f MJ/m^2\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "a. Solar Rad.",
-                  fields->solar_radiation_mj);
+      task_printf("  %-*s : %.2f KJ/m^2\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "a. Solar Rad.", fields->solar_radiation_mj);
     if (fields->valid_b)
-      task_printf("  %-*s : %u sec\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "b. Sunshine Dur",
-                  fields->sunshine_duration_sec);
+      task_printf("  %-*s : %u sec\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "b. Sunshine Dur",fields->sunshine_duration_sec);
     if (fields->valid_c)
-      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "c. Surface Temp",
-                  fields->surface_temperature);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "c. Surface Temp",fields->surface_temperature);
     if (fields->valid_d)
-      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "d. Grass Temp",
-                  fields->grass_temperature);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "d. Grass Temp", fields->grass_temperature);
     if (fields->valid_e_m)
     {
-      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "e. Soil Temp 5cm",
-                  fields->soil_temp_5cm);
-      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "f. Soil Temp 10cm",
-                  fields->soil_temp_10cm);
-      // ... (기타 지중온도 출력) ...
-      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "m. Soil Temp 5m",
-                  fields->soil_temp_5m);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "e. Soil Temp 5cm", fields->soil_temp_5cm);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "f. Soil Temp 10cm",fields->soil_temp_10cm);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "f. Soil Temp 20cm", fields->soil_temp_20cm);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "f. Soil Temp 30cm", fields->soil_temp_30cm);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "f. Soil Temp 50cm", fields->soil_temp_50cm);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "f. Soil Temp 1m", fields->soil_temp_1m);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "f. Soil Temp 1.5m", fields->soil_temp_1_5m);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "f. Soil Temp 3m", fields->soil_temp_3m);
+      task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "m. Soil Temp 5m", fields->soil_temp_5m);
     }
     for (int i = 0; i < 10; ++i)
       if (fields->valid_S[i])

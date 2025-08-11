@@ -443,17 +443,27 @@ void SecProcess(void)
   // 일사 일조 처리
   if (mRealAws.mSunshine.sReal)
   {
-    mRealAws.mSunshine.sMax += 1;  // 리얼값 누적  2017.03.22
+    uint32_t sunshine;
+
 
     pSystem->mSun[MIN1_PROC].nSunshineTot += 1;  // 1분 누적 일조
-    
-    pSystem->mSunshine.nMonthSunshine +=1;
-    pSystem->mSunshine.nYearSunshine +=1;
 
+    sunshine = get_sunshine()->sunshine_1min +1;
+    set_sunshine_1min(sunshine);
+    sunshine =  get_sunshine()->sunshine_today +1;
+    set_sunshine_today(sunshine);
+    sunshine = get_sunshine()->sunshine_monthly +1;
+    set_sunshine_monthly(sunshine);
+    sunshine = get_sunshine()->sunshine_yearly + 1;
+    set_sunshine_yearly(sunshine);
   }
 
-  if (mRealAws.mSolarRad.sReal != 9999)  // 에러값이 아니면 누적일사를 구한다.
-    pSystem->mSun[MIN1_PROC].nSolarTot += mRealAws.mSolarRad.sReal;  // 1분 누적 일사
+  if (mRealAws.mSolarRad.sReal != 9999)
+  {  
+    uint32_t sunshine_r = 0;
+    sunshine_r = get_sunshine_r()->sunshine_r_1min_acc+mRealAws.mSolarRad.sReal;
+    set_sunshine_r_1min_acc(sunshine_r);
+  }
 
   if (pSystem->m_cOffDelayFlag)  // 강우 감지 루틴
   {
@@ -617,7 +627,7 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   pSystem->mSun[MIN10_PROC].nSunshineTot += pSystem->mSun[MIN1_PROC].nSunshineTot;
   // 단위변환 W/M2 -> MJ/M2
-  pSystem->mSun[MIN10_PROC].nSolarTot += pSystem->mSun[MIN1_PROC].nSolarTot / 1000000;  
+  pSystem->mSun[MIN10_PROC].nSolarTot += get_sunshine_r()->sunshine_r_1min/ 1000000;  
 
   // 풍향 풍속
   WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN1_PROC], &mRealAws.mWind);
@@ -629,12 +639,12 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   // 일사 일조
   // 일조 1분 누적값
-  pAws->mSunshine.sReal = pSystem->mSun[MIN1_PROC].nSunshineTot;     
-  pAws->mSunshine.sMax += pAws->mSunshine.sReal;  // 하루 총 일조
+  pAws->mSunshine.sReal = get_sunshine()->sunshine_1min;
+
   pSystem->mSun[MIN1_PROC].nSunshineTot = 0;
 
-  pAws->mSolarRad.sReal =  pSystem->mSun[MIN1_PROC].nSolarTot / 1000;  // 일사 1분   누적값  KJ/m2
-  pSystem->mSun[MIN1_PROC].nSolarTot = 0;
+  pAws->mSolarRad.sReal =  get_sunshine_r()->sunshine_r_1min_acc / 1000;  // 일사 1분   누적값  KJ/m2
+
   pSystem->mSun[MIN10_PROC].nSolarTot += pAws->mSolarRad.sReal;
   pAws->mSolarRad.sMax += pAws->mSolarRad.sReal;  // 하루 총 일사
   mRealAws.mSolarRad.sMax = pAws->mSolarRad.sMax;
@@ -694,10 +704,10 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->mRainFall.sYearRain  = (uint16_t )(get_rainfall()->rainfall_yearly*10.0f);
 
   set_rainfall_1min(0);
+  set_sunshine_r_1min(get_sunshine_r()->sunshine_r_1min_acc);
+  set_sunshine_r_1min_acc(0);
 
   pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
-
-
 
   kma_data_ex_t *p_kma_avg = get_kma_data(eAWS_DATA_AVG);
   
@@ -932,19 +942,12 @@ void DayProcess(void)
 
 void MonthProcess(void)
 {
-  SYSTEM_INFO_AWS *pSystem;
-
-  pSystem = &Sysinfo;
-
-
-  pSystem->mSunshine.nMonthSunshine = 0;
-
   set_rainfall_monthly(0.0f);
   set_sunshine_monthly(0.0f);
 }
 
 // 풍향,풍속으로 바람벡터 성분 분해
-// TODO 풍향 45도이면 u,v값이 같아야 하는데 다르게 계산됨, UVToDirc 이거 쌍으로 사용해야함
+// :TODO 풍향 45도이면 u,v값이 같아야 하는데 다르게 계산됨, UVToDirc 이거 쌍으로 사용해야함
 void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v)
 {
   float fAngle;
@@ -1147,11 +1150,12 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->wind_speed_avg.max = pAws->mWind.mSpeed.sMax;
 
   // 일조
-  p_kma_data->sunshine_duration.data = pAws->mSunshine.sReal;
-  p_kma_data->sunshine_duration.max = pAws->mSunshine.sMax;  // 하루 총 일조
+  p_kma_data->sunshine_duration.data = get_sunshine()->sunshine_today;
 
-  // 일사
-  p_kma_data->solar_radiation.data = pAws->mSolarRad.sReal;
+  // 일사 // mSolarRad.sReal kw/m2 단위인데 전송시에는 mj/m2 *100 한값이 전송되어야함
+  // 따라서 여기서 10으로 한번더 나누어 준다 .즉 data는 최종 전송되는 데이터 포맷이다.
+  //에너지(J) = 전력(W)*시간(s)
+  p_kma_data->solar_radiation.data = get_sunshine_r()->sunshine_r_1min/ 10000; 
   p_kma_data->solar_radiation.max = pAws->mSolarRad.sMax;  // 일간
 
   // 지중 온도

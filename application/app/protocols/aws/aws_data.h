@@ -44,6 +44,39 @@ typedef struct aws_data_s
 
 }aws_data_t;
 
+typedef struct aws_data_i_s
+{
+  bool enable;
+  uint8_t err;
+  uint16_t max;
+  uint16_t min;
+  int32_t data;
+  union
+  {
+    int32_t i;
+    float f;
+    bool b;
+  } raw;
+
+} aws_data_i_t;
+
+typedef struct aws_data_sunshine_s
+{
+  bool enable;
+  uint8_t err;
+  uint16_t max;
+  uint16_t min;
+  uint16_t data;
+  union
+  {
+    int32_t i;
+    float f;
+    bool b;
+  } raw;
+
+} aws_data_sunshine_t;
+
+
 typedef struct aws_data_s2
 {
   bool enable;
@@ -314,11 +347,18 @@ typedef struct rainfall_s
 typedef struct sunshine_s
 {
   uint32_t sunshine_yesterday;
+  uint32_t sunshine_1min;
   uint32_t sunshine_today;
   uint32_t sunshine_hourly;
   uint32_t sunshine_monthly;
   uint32_t sunshine_yearly;
 } sunshine_t;
+
+typedef struct sunshine_r_s
+{
+  uint32_t sunshine_r_1min;//w/m2  1분 누적값
+  uint32_t sunshine_r_1min_acc;//1분동안 실시간 누적되는 값
+} sunshine_r_t;
 
 rainfall_t *get_rainfall(void);
 void set_rainfall_1min(float rainfall);
@@ -335,16 +375,21 @@ void set_sunshine_today(uint32_t sunshine);
 void set_sunshine_monthly(uint32_t sunshine);
 void set_sunshine_yesterday(uint32_t sunshine);
 void set_sunshine_yearly(uint32_t sunshine);
-
+void set_sunshine_1min(uint32_t sunshine);
+sunshine_r_t *get_sunshine_r(void);
+void set_sunshine_r_1min(uint32_t sunshine_r);
+void set_sunshine_r_1min_acc(uint32_t sunshine_r);
 
 #define KMA_DATA_Q_AVG 0
 #define KMA_DATA_Q_1MIN 1
 
-kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min) ;
+    kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min);
 
 void kma_data_q_init(void);
 int32_t read_kma_data(int kma_data_num,kma_data_ex_t *p_kma_data);
 void send_kma_data(int kma_data_num, kma_data_ex_t *p_kma_data);
+
+
 
 extern kma_data_t g_kma_inst;
 extern kma_data_t g_kma_1min;

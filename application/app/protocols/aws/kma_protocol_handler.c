@@ -553,8 +553,6 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
 
   void update_old_to_kma3(AWS_DATA_STRUCT * p_aws_old, kma_data_ex_t * p_kma_ex)
   {
-
-
     p_kma_ex->temperature.data = p_aws_old->mTemperature.sReal;
     p_kma_ex->wind_direction_avg.data = p_aws_old->mWind.mDirection.sReal;
     p_kma_ex->wind_speed_avg.data = p_aws_old->mWind.mSpeed.sReal;
@@ -567,8 +565,8 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     p_kma_ex->relative_humidity.data = p_aws_old->mHumidity.sReal;
     p_kma_ex->precipitation_fine.data = 0;  // 미사용
 
-    p_kma_ex->solar_radiation.data = p_aws_old->mSolarRad.sReal;
-    p_kma_ex->sunshine_duration.data = p_aws_old->mSunshine.sReal;
+    p_kma_ex->solar_radiation.data = p_aws_old->mSolarRad.sReal/10;
+    p_kma_ex->sunshine_duration.data = p_aws_old->mSunshine.sMax;
     p_kma_ex->grass_temperature.data = 0;
     p_kma_ex->soil_temperature_5cm.data = p_aws_old->mSoilTemp5cm.sReal;
     p_kma_ex->soil_temperature_10cm.data = p_aws_old->mSoilTemp10cm.sReal;
