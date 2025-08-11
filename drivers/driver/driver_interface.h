@@ -28,11 +28,11 @@ typedef struct driver_s
 }driver_t;
 
 
-#define DRV_ERR_NONE 0
-#define DRV_ERR_HANDLE  1
-#define DRV_ERR_TIMEOUT 2
-#define DRV_ERR_RECV_DATA    3
-
-#define DRV_ERR_DATA_NAN 4
+#define DRV_ERR_NONE      0
+#define DRV_ERR_HANDLE    1
+#define DRV_ERR_TIMEOUT   2
+#define DRV_ERR_RECV_DATA 3
+#define DRV_ERR_DATA_NAN  4
+#define DRV_ERR_NOT_READY  15
 const char* get_drv_err_name(int num);
 #endif

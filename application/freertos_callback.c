@@ -58,6 +58,7 @@ void vApplicationMallocFailedHook(void)
   size_t free_heap = xPortGetFreeHeapSize();            // 현재 사용 가능한 힙 크기
   size_t min_free_heap = xPortGetMinimumEverFreeHeapSize(); // 프로그램 실행 중 가장 작았던 힙 크기
 
+  io_printf("Error : Memory allocation failed.\r\n");
   io_printf("Free Heap Size          : %u bytes\r\n", (unsigned int)free_heap);
   io_printf("Minimum Ever Free Heap : %u bytes\r\n", (unsigned int)min_free_heap);
 

@@ -315,20 +315,9 @@ bool parse_kma2_data_content(const uint8_t* content_buffer, uint8_t data_format_
 void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
                                  const kma2_observation_fields_t* fields)
 {
-#ifdef _WIN32
-  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-  CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
-  WORD saved_attributes;
-
-  // 현재 콘솔 속성 저장
-  GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
-  saved_attributes = consoleInfo.wAttributes;
-#endif
 
   task_printf("--- KMA2 Observation Data ---\r\n");
-  // %-*s : 너비만큼 문자열 출력, 왼쪽 정렬, 부족하면 공백 채움
-  task_printf("%-*s : 0x%04X\r\n", KMA2_PRINT_LABEL_WIDTH, "Header Mark",
-              swap_bytes_uint16(header->start_mark));
+  task_printf("%-*s : 0x%04X\r\n", KMA2_PRINT_LABEL_WIDTH, "Header Mark", swap_bytes_uint16(header->start_mark));
   task_printf("%-*s : 20%02d-%02d-%02d\r\n", KMA2_PRINT_LABEL_WIDTH, "Protocol Ver",
               header->protocol_ver_yy, header->protocol_ver_mm, header->protocol_ver_dd);
   task_printf("%-*s : 20%02d-%02d-%02d %02d:%02d\r\n", KMA2_PRINT_LABEL_WIDTH, "Timestamp",
@@ -349,11 +338,9 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
   task_printf("--- Data Content (VII) ---\r\n");
 
   if (fields->valid_A)
-    task_printf("  %-*s : %.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "A. Temperature",
-                fields->temperature);
+    task_printf("  %-*s :%.1f C\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "A. Temperature", fields->temperature);
   if (fields->valid_B)
-    task_printf("  %-*s : %.1f deg\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "B. Wind Dir Avg",
-                fields->wind_direction_avg);
+    task_printf("  %-*s : %.1f deg\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "B. Wind Dir Avg", fields->wind_direction_avg);
   if (fields->valid_C)
     task_printf("  %-*s : %.1f m/s\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "C. Wind Spd Avg",
                 fields->wind_speed_avg);
@@ -372,7 +359,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
   if (fields->valid_H)
     task_printf("  %-*s : 0x%04X (%s)\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "H. Precip Presence",
                 fields->precipitation_presence,
-                fields->precipitation_presence == 0x0010 ? "Yes" : "No");
+                fields->precipitation_presence == 10 ? "Yes" : "No");
   if (fields->valid_I)
     task_printf("  %-*s : %.1f cm\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "I. Snowfall Accum",
                 fields->snowfall_accum);
@@ -436,55 +423,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
       }
   }
 
-#if 0
 
-  if (fields->valid_X) {
-    printf("  %-*s : 0x%02X\n", KMA2_PRINT_LABEL_WIDTH - 2, "X. Datalogger Voltage Status", fields->status_X);
-    // BIT 0: DC입력전압
-    printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 0 (DC Input Volt)", IS_BIT_SET(fields->status_X, 0) ? "Abnormal" : "Normal");
-    // BIT 1: 배터리 전압
-    printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 1 (Battery Volt)", IS_BIT_SET(fields->status_X, 1) ? "Abnormal" : "Normal");
-    // BIT 2, 3: AC 전압
-    uint8_t ac_status = (fields->status_X >> 2) & 0x03; // 비트 2와 3 추출
-    const char* ac_str = "Unknown";
-    if (ac_status == 0x00) ac_str = "110V";
-    else if (ac_status == 0x01) ac_str = "220V";
-    else if (ac_status == 0x03) ac_str = "AC OFF"; // 문서상 11 (이진수 3)
-    else ac_str = "Reserved/Unknown"; // 0x02 (이진수 2)는 정의되지 않음
-    printf("    %-*s : %s (0x%02X)\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 2-3 (AC Volt)", ac_str, ac_status);
-    // BIT 4: 데이터로거함 잠금상태
-    printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 4 (Logger Door)", IS_BIT_SET(fields->status_X, 4) ? "Open" : "Closed");
-    // BIT 5: 예비 1
-    printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 5 (Reserve 1)", IS_BIT_SET(fields->status_X, 5) ? "Abnormal" : "Normal");
-    // BIT 6: 예비 2
-    printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 6 (Reserve 2)", IS_BIT_SET(fields->status_X, 6) ? "Abnormal" : "Normal");
-    // BIT 7: 예비 3
-    printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 7 (Reserve 3)", IS_BIT_SET(fields->status_X, 7) ? "Abnormal" : "Normal");
-  }
-
-  if (fields->valid_Y) {
-    printf("  %-*s : 0x%04X\n", KMA2_PRINT_LABEL_WIDTH - 2, "Y. Logger Sensor Status", fields->status_Y);
-    const char* sensor_names_Y[] = {
-        "Wind Dir Sensor", "Wind Spd Sensor", "Temp Sensor", "Precip Pres. Sensor",
-        "Rainfall Sensor", "Humidity Sensor", "Pressure Sensor", "Reserve Y1",
-        "Reserve Y2",      "Reserve Y3",      "Reserve Y4",      "Reserve Y5",
-        "Reserve Y6",      "Reserve Y7",      "Reserve Y8",      "FAN Operation"
-    };
-    for (int i = 0; i < 16; ++i) {
-      sprintf(label_buf, "BIT %d (%s)", i, sensor_names_Y[i]);
-      printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, label_buf, IS_BIT_SET(fields->status_Y, i) ? "Abnormal" : "Normal");
-    }
-  }
-
-  if (fields->valid_Z && header->data_format_no == KMA2_DATA_FORMAT_PRECIPITATION) { // Z는 강수량관측(2) 형식일 때 의미 있음
-    printf("  %-*s : 0x%02X\n", KMA2_PRINT_LABEL_WIDTH - 2, "Z. Logger Sensor Status (Precip)", fields->status_Z);
-    printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 0 (Rainfall Sensor)", IS_BIT_SET(fields->status_Z, 0) ? "Abnormal" : "Normal");
-    printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 1 (Reserve Z1)", IS_BIT_SET(fields->status_Z, 1) ? "Abnormal" : "Normal");
-    printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 2 (Reserve Z2)", IS_BIT_SET(fields->status_Z, 2) ? "Abnormal" : "Normal");
-    printf("    %-*s : %s\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 3 (Reserve Z3)", IS_BIT_SET(fields->status_Z, 3) ? "Abnormal" : "Normal");
-  }
-
-#else
   if (fields->valid_X)
   {
     task_printf("  %-*s : 0x%02X\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "X. Datalogger Voltage Status",
@@ -493,29 +432,10 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
     bool is_abnormal;
     // BIT 0: DC입력전압
     is_abnormal = IS_BIT_SET(fields->status_X, 0);
-#ifdef _WIN32
-    if (is_abnormal)
-      SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
-#endif
-    task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 0 (DC Input Volt)",
-                is_abnormal ? "Abnormal" : "Normal");
-#ifdef _WIN32
-    if (is_abnormal)
-      SetConsoleTextAttribute(hConsole, saved_attributes);
-#endif
-
+    task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 0 (DC Input Volt)",is_abnormal ? "Abnormal" : "Normal");
     // BIT 1: 배터리 전압
     is_abnormal = IS_BIT_SET(fields->status_X, 1);
-#ifdef _WIN32
-    if (is_abnormal)
-      SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
-#endif
-    task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 1 (Battery Volt)",
-                is_abnormal ? "Abnormal" : "Normal");
-#ifdef _WIN32
-    if (is_abnormal)
-      SetConsoleTextAttribute(hConsole, saved_attributes);
-#endif
+    task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, "BIT 1 (Battery Volt)", is_abnormal ? "Abnormal" : "Normal");
 
     // BIT 2, 3: AC 전압
     uint8_t ac_status_val = (fields->status_X >> 2) & 0x03;
@@ -550,8 +470,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
       is_abnormal = IS_BIT_SET(fields->status_X, i);
       sprintf(label_buf, "BIT %d (Reserve %d)", i, i - 4);
 
-      task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, label_buf,
-                  is_abnormal ? "Abnormal" : "Normal");
+      task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, label_buf, is_abnormal ? "Abnormal" : "Normal");
 
     }
   }
@@ -562,24 +481,20 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
                 fields->status_Y);
     const char* sensor_names_Y[] = {
         "Wind Dir Sensor", "Wind Spd Sensor", "Temp Sensor",     "Precip Pres. Sensor",
-        "Rainfall Sensor", "Humidity Sensor", "Pressure Sensor", "Reserve Y1",
+        "Rainfall Sensor", "Humidity Sensor", "Pressure Sensor", "Snow Depth",
         "Reserve Y2",      "Reserve Y3",      "Reserve Y4",      "Reserve Y5",
         "Reserve Y6",      "Reserve Y7",      "Reserve Y8",      "FAN Operation"};
     for (int i = 0; i < 16; ++i)
     {
       bool is_abnormal = IS_BIT_SET(fields->status_Y, i);
       sprintf(label_buf, "BIT %d (%s)", i, sensor_names_Y[i]);
-
-      task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, label_buf,
-                  is_abnormal ? "Abnormal" : "Normal");
-
+      task_printf("    %-*s : %s\r\n", KMA2_PRINT_LABEL_WIDTH - 4, label_buf, is_abnormal ? "Abnormal" : "Normal");
     }
   }
 
   if (fields->valid_Z && header->data_format_no == KMA2_DATA_FORMAT_PRECIPITATION)
   {
-    task_printf("  %-*s : 0x%02X\r\n", KMA2_PRINT_LABEL_WIDTH - 2,
-                "Z. Logger Sensor Status (Precip)", fields->status_Z);
+    task_printf("  %-*s : 0x%02X\r\n", KMA2_PRINT_LABEL_WIDTH - 2, "Z. Logger Sensor Status (Precip)", fields->status_Z);
     const char* sensor_names_Z[] = {"Rainfall Sensor", "Reserve Z1", "Reserve Z2", "Reserve Z3"};
     for (int i = 0; i < 4; ++i)
     {  // Z는 4비트만 유효 (문서상)
@@ -591,7 +506,7 @@ void print_kma2_observation_data(const kma2_observation_packet_header_t* header,
 
     }
   }
-#endif
+
 }
 
 void parse_kma2_response(const uint8_t* frame, uint32_t bytes_read)
@@ -621,12 +536,9 @@ void parse_kma2_response(const uint8_t* frame, uint32_t bytes_read)
             (const kma2_observation_packet_footer_t*)(frame + KMA2_OBS_PACKET_BASE_LEN +
                                                       parsed_data_content_len);
         task_printf("--- Footer ---\r\n");
-        task_printf("%-*s : 0x%02X\r\n", KMA2_PRINT_LABEL_WIDTH, "Checksum XOR",
-                    obs_footer->checksum_xor);
-        task_printf("%-*s : 0x%02X\r\n", KMA2_PRINT_LABEL_WIDTH, "Checksum SUM",
-                    obs_footer->checksum_sum);
-        task_printf("%-*s : 0x%04X\r\n", KMA2_PRINT_LABEL_WIDTH, "End Mark",
-                    swap_bytes_uint16(obs_footer->end_mark));
+        task_printf("%-*s : 0x%02X\r\n", KMA2_PRINT_LABEL_WIDTH, "Checksum XOR", obs_footer->checksum_xor);
+        task_printf("%-*s : 0x%02X\r\n", KMA2_PRINT_LABEL_WIDTH, "Checksum SUM", obs_footer->checksum_sum);
+        task_printf("%-*s : 0x%04X\r\n", KMA2_PRINT_LABEL_WIDTH, "End Mark",swap_bytes_uint16(obs_footer->end_mark));
       }
     }
   }

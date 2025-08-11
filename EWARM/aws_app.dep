@@ -214,7 +214,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.h</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
-            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.c</file>
@@ -245,7 +245,7 @@
             <file>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554_def.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\charger\hjsmartCharger.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\st7920.c</file>
@@ -343,7 +343,7 @@
             <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\stm32_usb.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rtc.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_cdc_interface.c</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.c</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_do.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.c</file>
@@ -2487,7 +2487,7 @@
             <file>$PROJ_DIR$\release\Obj\menu_admin.o</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\system\arch\sys_arch.h</file>
             <file>$PROJ_DIR$\release\Obj\ip6_addr.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\tcp_define.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\tcp_define.h</file>
             <file>$PROJ_DIR$\release\Obj\mld6.xcl</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_sram.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_fram.o</file>
@@ -2551,7 +2551,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_rtc.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_mux.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\dhcp.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_rain.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_eth.h</file>

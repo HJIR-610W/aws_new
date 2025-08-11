@@ -14,6 +14,8 @@ const char *get_drv_err_name(int num)
       return "DRV_ERR_TIMEOUT";
     case DRV_ERR_RECV_DATA:
       return "DRV_ERR_RECV_DATA";
+    case DRV_ERR_NOT_READY:
+      return "DRV_ERR_NOT_READY";
     default:
       return "UNKNOWN";
   }

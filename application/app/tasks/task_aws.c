@@ -1247,6 +1247,7 @@ void update_unused_data(kma_data_ex_t *p_dest, kma_data_ex_t *p_source)
 
 
 
+#define SENSOR_FAIL_TIMEOUT_SEC 10
 
 #define MS_TO_SCAN_CNT(ms) ((uint16_t)((float)ms/0.25))
 /**
@@ -1261,7 +1262,7 @@ uint16_t filter_data(eSENSOR_TYPE_t sensor_index,uint16_t data, uint8_t error,ui
   if(error)
   {
     delay++;
-    if (delay >= MS_TO_SCAN_CNT(10))
+    if (delay >= MS_TO_SCAN_CNT(SENSOR_FAIL_TIMEOUT_SEC))
     {
       delay = 0;
       *f_err = 1;
@@ -1298,7 +1299,19 @@ void filter_init(void)
   }
 }
 
+void raw_data_init(void)
+{
+  for (int i = 0; i < _countof(g_p_raw->data);i++)
+  {
+   // g_p_raw->data[i].err = 0x0F;//not ready
+  }
 
+  for (int i = 0; i < _countof(g_pre_data);i++)
+  {
+    g_pre_data[i].delay_count = MS_TO_SCAN_CNT(SENSOR_FAIL_TIMEOUT_SEC);//처음부터 에러가 발생한걸로 처리 
+  }
+  
+}
 void DUALPORT_TASK(void *arg)
 {
   uint8_t f_err = 0;
@@ -1339,7 +1352,10 @@ void DUALPORT_TASK(void *arg)
 
     memset(g_p_raw,0,sizeof(measure_data_1s_t));
 
-        time_old = Date_Time;
+    time_old = Date_Time;
+    
+    raw_data_init();
+    osDelay(2000);//1측정이 최소 1회 수행후 동작하도록 지연 
     while (1)
     {
       is_measurement_1s(g_p_raw, 0);                     // 업데이트된 값 없으면 이전값 유지

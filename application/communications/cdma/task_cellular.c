@@ -1223,6 +1223,7 @@ void modemTcpTask(void  *argument)
     uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
     uint8_t err=0;
     uint16_t len;
+    uint16_t rtu_id;
     uint32_t start_time=0;
     M_RET_t ret;
     eConnect_Type_t type = ePOWER_RESET;//초기에는 전원리셋이 발생하였다고넘겨줌
@@ -1236,6 +1237,9 @@ void modemTcpTask(void  *argument)
 
       if (connect_tcp(type) == STATUS_OK)
       {
+        rtu_id = swap_uint16(get_config_app()->id);
+        _iCellular->send_tcp((uint8_t *)&rtu_id, 2);
+
         start_time = osKernelGetTickCount();
         g_cdma_system.link_status = eCDMA_LINK_UP;
 

@@ -289,11 +289,7 @@ uint16_t kma_cmd_handler_AI(uint8_t *rx_frame, uint8_t *tx_frame)
     g_kma_data_ai_updated = true;
   }
 
-  if (Date_Time.Sec < REQ_BLOCK_BEFORE_SEC)
-  {
-    return 0;
-  }
-  
+
   station_id = GetWord((uint8_t *)&rx_frame[13]);
 
 
@@ -452,6 +448,10 @@ uint16_t calculate_old_Y_status(uint8_t kma3_status[8])
     status |= BAROMETRICFAIL_BIT;
   }
 
+  if (kma3_is_sensor_error(A9_SNOW_DEPTH, kma3_status))
+  {
+    status |= SNOW_FALL_FAIL_BIT;
+  }
   if (kma3_is_sensor_error(I1_TACHOMETER, kma3_status))
   {
     status |= FANFAIL_BIT;

@@ -132,12 +132,11 @@ if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
   }
 #endif
 
-  /** Perform the SRAM2 memory initialization sequence
-  */
+
   //QUAD UART
   hsram2.Instance = FSMC_NORSRAM_DEVICE;
   hsram2.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
-  /* hsram2.Init */
+
   hsram2.Init.NSBank = FSMC_NORSRAM_BANK3;
   hsram2.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
   hsram2.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
@@ -154,28 +153,23 @@ if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
   hsram2.Init.PageSize = FSMC_PAGE_SIZE_NONE;
   /* Timing */
   Timing.AddressSetupTime = 4;
-  Timing.AddressHoldTime = 1;
-  Timing.DataSetupTime = 15;
+  Timing.AddressHoldTime  = 1;
+  Timing.DataSetupTime    = 15;
   Timing.BusTurnAroundDuration = 10;
 
-
- 
- 
   Timing.AccessMode = FSMC_ACCESS_MODE_A;
   /* ExtTiming */
   ExtTiming.AddressSetupTime      = 4;
-  ExtTiming.AddressHoldTime       =  1;//0으로 하면 assert 발생, 재검토
+  ExtTiming.AddressHoldTime       =  1;//0으로 하면 assert 발생, 재검토,HAL드라이버 문제
   ExtTiming.DataSetupTime         = 10;
   ExtTiming.BusTurnAroundDuration = 10;
- Timing.CLKDivision            = 2;  //  비동기 모드에서는 무시,0설정시 assert 발생
- Timing.DataLatency            = 2;  //  비동기 모드에서는 무시
+  Timing.CLKDivision              = 2;  //  비동기 모드에서는 무시,0설정시 assert 발생
+  Timing.DataLatency              = 2;  //  비동기 모드에서는 무시
  
- 
-  ExtTiming.AccessMode = FSMC_ACCESS_MODE_A;
 
   if (HAL_SRAM_Init(&hsram2, &Timing, &ExtTiming) != HAL_OK)
   {
-    ERROR_PRINTF("fsmc");
+    ERROR_PRINTF("fsmc quad uart");
   }
 
 

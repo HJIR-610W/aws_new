@@ -55,9 +55,9 @@ int hj_snow_menu(void)
       ;
     }
 
-        io_printf("블르투스 1     :%s\r\n", hjsnow_config.config.xModel[0]);
-        io_printf("블르투스 2     :%s\r\n", hjsnow_config.config.xModel[1]);
-        io_printf("블르투스 3     :%s\r\n", hjsnow_config.config.xModel[2]);
+        io_printf("블루투스 1     :%s\r\n", hjsnow_config.config.xModel[0]);
+        io_printf("블루투스 2     :%s\r\n", hjsnow_config.config.xModel[1]);
+        io_printf("블루투스 3     :%s\r\n", hjsnow_config.config.xModel[2]);
         io_printf("스캔 주기      :%d\r\n", hjsnow_config.config.snow_scantime);
         io_printf("레퍼런스 길이 1:%d\r\n", hjsnow_config.config.snow_refdistance[0]);
         io_printf("레퍼런스 길이 2:%d\r\n", hjsnow_config.config.snow_refdistance[1]);

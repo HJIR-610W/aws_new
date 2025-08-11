@@ -101,6 +101,7 @@ typedef struct
 #define RAINFALLFAIL_BIT    0x0010
 #define HUMIDITYFAIL_BIT    0x0020
 #define BAROMETRICFAIL_BIT  0x0040
+#define SNOW_FALL_FAIL_BIT  0x0080 //프로토콜 문서에는 없지만 추가함 
 #define FANFAIL_BIT         0x0080
 // sMax
 #define RAINFAIL_BIT 0x0001

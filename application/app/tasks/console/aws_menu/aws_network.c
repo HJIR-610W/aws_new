@@ -253,14 +253,16 @@ int32_t aws_eth_default(void)
   return status;
 }
 
-#define ETH_CFG_CNT 3
+#define ETH_DEFAULT    0
+#define ETH_COM_TYPE   1
+#define ETH_SERVER_CFG 2
+
+#define ETH_CFG_CNT     3
+
 int32_t aws_network_config_eth(void)
 {
   int choice, status;
-
   char buff[ETH_CFG_CNT][40];
-
-
   char *menu[ETH_CFG_CNT];
   int menu_cnt = 0;
 
@@ -273,36 +275,38 @@ int32_t aws_network_config_eth(void)
   while (1)
   {
     menu_cnt = 0;
+    snprintf(buff[menu_cnt++], sizeof(buff[menu_cnt]), "기본 구성");
 
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "방식:%s", ITEM_LIST(get_config_app()->eth_mode, eth_mode_list));
-    menu_cnt++;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "수집 서버 정보");
-    menu_cnt++;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "기본 구성");
-    menu_cnt++;
+    snprintf(buff[menu_cnt++], sizeof(buff[menu_cnt]), "방식:%s", ITEM_LIST(get_config_app()->eth_mode, eth_mode_list));
+ 
+    if (get_config_app()->eth_mode == eETH_MODE_SERVER)
+    {
+      snprintf(buff[menu_cnt++], sizeof(buff[menu_cnt]), "수집 서버 정보");
+
+    }
 
     status = choice_menu(24, "네트워크", menu, menu_cnt, &choice);
     if (status != MENU_OK)
-      return status;
-
+      break;
     switch (choice)
     {
-      case 1:
-        status = choice_menu(30,"이더넷 방식",(char**)eth_mode_list,_countof(eth_mode_list),&choice);
-        if(status != MENU_OK)
-        {
-          break;
-        }
-        config.eth_mode = (eETH_MODE_t)(choice-1);
-        WRITE_CFG(eth_mode);
-        io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+    case ETH_DEFAULT:
+      status = aws_eth_default();
+      break;
+    case ETH_COM_TYPE:
+      status = choice_menu(30, "이더넷 방식", (char **)eth_mode_list, _countof(eth_mode_list), &choice);
+      if (status != MENU_OK)
+      {
         break;
-      case 2:
-        status = aws_eth_remote_server_info();
-        break;
-      case 3:
-        status = aws_eth_default();
-        break;
+      }
+      config.eth_mode = (eETH_MODE_t)(choice - 1);
+      WRITE_CFG(eth_mode);
+      io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+      break;
+    case ETH_SERVER_CFG:
+      status = aws_eth_remote_server_info();
+      break;
+
     }
 
     if (status == MENU_ABORT)

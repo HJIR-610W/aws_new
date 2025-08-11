@@ -592,7 +592,7 @@ uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len, uint8_t *tx_frame
       len = divas_read_version(rx_frame, tx_frame);
     break;
     case DIVAS_CMD_RD_INDEX:
-      len = divas_read_index(rx_frame,tx_frame);
+    //  len = divas_read_index(rx_frame,tx_frame);
       break;
 
   }

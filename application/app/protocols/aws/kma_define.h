@@ -76,14 +76,14 @@ typedef struct
 
 typedef struct
 {
-  uint8_t checksum_xor;  // ... (이하 필드 동일)
+  uint8_t checksum_xor; 
   uint8_t checksum_sum;
   uint16_t end_mark;
 } kma2_observation_packet_footer_t;
 
 typedef struct
 {
-  float temperature;  // ... (이하 필드 및 valid 플래그 동일)
+  float temperature;  
   float wind_direction_avg;
   float wind_speed_avg;
   float gust_wind_direction;
