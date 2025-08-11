@@ -21,6 +21,8 @@ const osThreadAttr_t ethernetTxTask_attributes = {
 
 /**
  * @brief 이더넷 초기화 해주고 종료
+ * 이더넷을 사용하길 원하는 task는 이더넷 초기화 완료 알림을 받아야 
+ * 동작하도록 한다.
  */
 void ethernetTask(void *arg)
 {
@@ -47,13 +49,17 @@ void ethernetTask(void *arg)
 
 
 
-    void ethernetTask_init(void)
+void ethernetTask_init(void)
 {
  
   osThreadNew(ethernetTask, NULL, &ethernetTxTask_attributes);
 
 }
 
+/**
+ * @brief 이더넷을 사용하지 않으면 phy칩을 파워다운 시켜 전력소비 감소시킨다
+ * TODO:bsp 기반으로 구현 필요 
+ */
 void ethernetPowerDownTask(void *arg)
 {
   extern void ethernet_power_down(void);

@@ -277,9 +277,10 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
   int32_t channel=0;
   int32_t raw;
   int32_t status;
+  int32_t key;
   float voltage;
-  config_adc_adv_t* p_adc;
-  uint32_t start_time,end_time,elapsed_time;
+  uint32_t start_time,elapsed_time;
+  config_adc_adv_t *p_adc;
 
   p_adc = &g_adc_config_ads1220;
 
@@ -293,16 +294,14 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
     {
       status = input_combobox("DIFF Channel", adc_diff_list, _countof(adc_diff_list), &channel);
     }
-
     if (status != MENU_OK)
       return status;
 
     params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
-                ? &p_adc->single_ended_cal[channel]
-                : &p_adc->differential_cal[channel];
+              ? &p_adc->single_ended_cal[channel]
+              : &p_adc->differential_cal[channel];
 
     screen_clear();
-
 
   while (1)
   {
@@ -333,11 +332,16 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
 
     screen_refresh();
 
-    if (get_button_key(100) == KEY_CODE_CTRL_C)
-      break;
+    key = get_button_key(100);
+    
+    if(key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
+      goto END_LOOP;
   }
   }
-  return MENU_OK;
+
+  END_LOOP:
+  return convert_key_to_status(key);
+
 }
 
 
@@ -374,13 +378,15 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
     }
     else
     {
-      screen_page_printf(p_win,  "%d:%.4f", channel, voltage);
+      screen_page_printf(p_win, "%d:%.4f %f", channel, voltage);
     }
-
   }
 
   screen_page_clear(p_win);
 }
+
+
+
 
 int32_t cali_setup_menu_view_summary(void)
 {
@@ -391,23 +397,20 @@ int32_t cali_setup_menu_view_summary(void)
     
   lcd_win.total_pages =1;
   lcd_win.chunk_scroll_use = 1;
-   while (1)
+  
+  while (1)
   {
     draw_cali_menu_view_summary(&lcd_win);
-
     screen_refresh();
 
     key = get_button_key(100);
-    
-    if (key == KEY_CODE_CTRL_Q)
+
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
       break;
     }
-    else if(key == KEY_CODE_CTRL_C)
-    {
-      break;
-    }
-    else if (key != -1)
+
+    if (key != KEY_CODE_UNKNOWN)
     {
       screen_page_handle(&lcd_win, key);
     }
@@ -477,17 +480,24 @@ int32_t cali_setup_menu_view(void)
   return convert_key_to_status(key);
 }
 
+/**
+ * @brief ADC 켈리브레이션 값의 평균값으로 초기화 한다.
+ */
 int32_t cali_setup_menu_init(void)
 {
   int32_t choice = 0;
   int32_t status;
 
-  screen_clear();
   
   status = input_active("Init Calibration?", &choice);
 
-  if (status == MENU_OK && choice == 1)
-  {
+  if(status != MENU_OK)
+  return status;
+
+  if(choice == 0)
+  return MENU_OK;
+
+
     adc_config_init(&g_adc_config_ads1220, 24, 5.0f);
 
     for (int32_t channel = 0; channel < g_adc_config_ads1220.params_se_cnt; channel++)
@@ -528,14 +538,10 @@ int32_t cali_setup_menu_init(void)
     }
 
     save_adc_cali();
-
     screen_clear();
     show_popup("Information", "Init Complete");
 
-    osDelay(2000);
-  }
-
-  return status;
+  return MENU_OK;
 }
 
 int32_t setup_menu_calibration(void)

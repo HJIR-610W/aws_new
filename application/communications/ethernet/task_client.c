@@ -9,10 +9,14 @@
 #include "tcp_define.h"
 #include "update_fw.h"
 #include "util_time.h"
+#include "os_user_def.h"
 
 #define RECV_BUFF_SIZE 512
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define CLIENT_CONNECT_TIMEOUT_MS 10000
+#ifndef SERVER_REQ_TIMEOUT
+#define SERVER_REQ_TIMEOUT 80000
+#endif
 
 tcp_system_t g_tcp_client_status;
 osThreadId_t g_tcpClientTaskId;
@@ -52,7 +56,7 @@ static void tcp_client_service(int sock)
   uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
   int32_t ret, len, err_code;
   uint16_t rtu_id;
-
+  uint32_t start_tkme;
   rtu_id = swap_uint16(get_config_app()->id);
 
   send(sock, &rtu_id,2, 0);
@@ -63,12 +67,18 @@ static void tcp_client_service(int sock)
     return;
   }
 
+  start_tkme = OS_GET_TICK();
   while (1)
   {
     ret = recv(sock, rbuffer, sizeof(rbuffer), 0);
     
     if(ret < 0)
     {
+
+      if ((OS_GET_TICK() - start_tkme) > SERVER_REQ_TIMEOUT)
+      {
+        break;
+      }
       err_code = errno;
       if (err_code == EAGAIN )//|| err_code == EWOULDBLOCK)
       {
@@ -89,6 +99,7 @@ static void tcp_client_service(int sock)
     }
     else
     {
+      start_tkme = OS_GET_TICK();
      
       UPDATE_CNT(g_tcp_client_status.rx_cnt, 99);
       g_tcp_client_status.last_recv_time = time_timestamp();
@@ -112,7 +123,7 @@ static void tcp_client_service(int sock)
             total += ret;
             g_tcp_client_status.last_send_time = time_timestamp();
             UPDATE_CNT(g_tcp_client_status.tx_cnt, 99);
-            if (get_firmware_update())
+            if(get_firmware_update())
             {
               closesocket(sock);
               reset_system( "TCP client update");

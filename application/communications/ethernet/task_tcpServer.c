@@ -20,11 +20,15 @@
 #include "user_heap.h"
 #include "util_memory.h"
 #include "util_time.h"
+#include "os_user_def.h"
 
 #define RECV_BUFF_SIZE 512
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define CLIENT_CONNECT_TIMEOUT_MS 10000 
 #define MAX_CONCURRENT_CLIENTS 3        // 최대 동시 접속 클라이언트 수
+#ifndef SERVER_REQ_TIMEOUT
+#define SERVER_REQ_TIMEOUT 80000
+#endif
 
 typedef struct
 {
@@ -97,7 +101,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
   uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
   int32_t ret, len, err_code;
   uint8_t *p_rx_buffer;
-
+  uint32_t start_time;
 
   p_rx_buffer = pvPortMalloc(RECV_BUFF_SIZE);
 
@@ -117,12 +121,17 @@ static void server_service_for_client(int sock, client_slot_t* slot)
     return;
   }
 
+  start_time = OS_GET_TICK();
   while (1)
   {
     ret = recv(sock, p_rx_buffer, RECV_BUFF_SIZE, 0);
 
     if (ret < 0) // recv 오류
     {
+      if((OS_GET_TICK() - start_time) > SERVER_REQ_TIMEOUT)
+      {
+        break;
+      }
       err_code = errno;
       if (err_code == EAGAIN )//|| err_code == EWOULDBLOCK)
       {
@@ -146,6 +155,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
     }
     else // 데이터 수신 성공 (ret > 0)
     {
+      start_time = OS_GET_TICK();
       slot->status->last_recv_time = time_timestamp();
       UPDATE_CNT(slot->status->rx_cnt, 99);  // 스레드 안전한 카운터 업데이트
       len = kma_cmd_handler(p_rx_buffer, ret, tx_buffer, eREQ_SOURCE_ETH);
