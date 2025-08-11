@@ -130,7 +130,7 @@ void config_hj_reset(void)
   config.sensor[A8_RAIN_PRESENT].type = S_T_RAIN_PRESENT_DI;
   sensor_add(&config.sensor[A8_RAIN_PRESENT]);
   hjrain_det_cfg = get_sensor_config(&config.sensor[A8_RAIN_PRESENT]);
-  hjrain_det_cfg->delay = 10;
+  hjrain_det_cfg->delay_sec = 10;
 
       // 강수량[리드형]
   config.sensor[A6_RAINFALL_DOT5_1MM].type = S_T_RAIN_REED_1MM;

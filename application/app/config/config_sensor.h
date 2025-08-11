@@ -108,7 +108,7 @@ typedef struct ottSMP3_config_s
 
 typedef struct rain_present_config_s
 {
-  uint8_t delay;
+  uint8_t delay_sec;
 }rain_present_config_t;
 
 typedef struct frequency_config_s

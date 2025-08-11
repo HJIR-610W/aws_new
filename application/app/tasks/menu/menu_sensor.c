@@ -162,7 +162,7 @@ void draw_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t* ott_smp3_config
 void draw_rain_present_page(screen_menu_t* p_win, rain_present_config_t* rain_present_config)
 {
 
-  screen_menu_printf(p_win, RAIN_PRESENT_PAGE_DELAY, "%-*s:%d", E_L_W, "Delay Time", rain_present_config->delay);
+  screen_menu_printf(p_win, RAIN_PRESENT_PAGE_DELAY, "%-*s:%d", E_L_W, "Delay Time", rain_present_config->delay_sec);
 
 }
 
@@ -781,12 +781,12 @@ int32_t rain_present_setup(sensor_t* sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case RAIN_PRESENT_PAGE_DELAY:
-      dec = rain_present->delay;
+      dec = rain_present->delay_sec;
       
                 status = input_decimal("Delay Time", 1, 10, &dec);
       if (status != MENU_OK)
         break;
-      rain_present->delay = dec;
+      rain_present->delay_sec = dec;
       save_config_sensor();
       break;
   }

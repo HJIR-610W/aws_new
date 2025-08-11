@@ -171,7 +171,7 @@ void AwsMinMaxInit(void)
     pSystem->mSoil150Buf[i].sMax = 0;
   }
 
-  pSystem->m_cOffDelayFlag = 0;  // Rain Detecter 의 현재를  Off상태로 만든다
+
   mRealAws.mRainDetect.sReal = 0;
 }
 
@@ -445,7 +445,6 @@ void SecProcess(void)
   {
     uint32_t sunshine;
 
-
     pSystem->mSun[MIN1_PROC].nSunshineTot += 1;  // 1분 누적 일조
 
     sunshine = get_sunshine()->sunshine_1min +1;
@@ -465,23 +464,6 @@ void SecProcess(void)
     set_sunshine_r_1min_acc(sunshine_r);
   }
 
-  if (pSystem->m_cOffDelayFlag)  // 강우 감지 루틴
-  {
-    if (get_rain_present_config()->delay >= 1)
-    {
-      if (--pSystem->m_shOffDelayRemain <= 0)
-      {
-        pSystem->m_cOffDelayFlag = 0;
-        mRealAws.mRainDetect.sReal = 0;
-      }
-    }
-    else
-    {
-      pSystem->m_cOffDelayFlag = 0;
-      mRealAws.mRainDetect.sReal = 0;
-      pSystem->m_shOffDelayRemain = 0;
-    }
-  }
 }
 
 void Sec10Process(void)

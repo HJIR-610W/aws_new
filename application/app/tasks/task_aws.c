@@ -649,7 +649,7 @@ void update_kma_real(void)
   p_kma3->precipitation_fine.err = get_sensor_err(A11_RAINFALL_DOT1MM);
 
   //[사용]
-  p_kma3->solar_radiation.data    = get_sunshine_r()->sunshine_r_1min_acc/1000.0;
+  p_kma3->solar_radiation.data    = (uint16_t)(get_sunshine_r()->sunshine_r_1min_acc/1000.0);
 
   p_kma3->solar_radiation.max = mRealAws.mSolarRad.sMax;//일간
   p_kma3->solar_radiation.err = get_sensor_err(B1_SOLAR_RADIATION);
@@ -1248,7 +1248,7 @@ void update_unused_data(kma_data_ex_t *p_dest, kma_data_ex_t *p_source)
 
 #define SENSOR_FAIL_TIMEOUT_SEC 10
 
-#define MS_TO_SCAN_CNT(ms) ((uint16_t)((float)ms/0.25))
+#define MS_TO_SCAN_CNT(sec) ((uint16_t)((float)sec/0.25))
 /**
  * 에러가 존재하면 타임아웃 전까지는 이전값 유지
  */
@@ -1318,7 +1318,8 @@ void DUALPORT_TASK(void *arg)
   uint16_t data;
   int32_t nWindCnt12 = 0;
   int32_t nWindCnt40 = 0;
-  uint32_t rain_p_delay = 0;
+  uint16_t rain_p_on_delay = 0;
+  uint16_t rain_p_off_delay=0;
   SYSTEM_INFO_AWS *pSystem;
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
@@ -1397,19 +1398,24 @@ void DUALPORT_TASK(void *arg)
       // 강우 감지
       if (is_raining(&sensor_err)) // Off Delay 적용 함
       {
-        rain_p_delay++;
-        if (rain_p_delay >= get_rain_present_config()->delay)
+        rain_p_on_delay++;
+        rain_p_off_delay = 0;
+        if (rain_p_on_delay >= MS_TO_SCAN_CNT(get_rain_present_config()->delay_sec))
         {
+          rain_p_on_delay =0;
           update_sensor_err(A8_RAIN_PRESENT, sensor_err);
-
           pAws->mRainDetect.sReal = 0x000a;
-          pSystem->m_shOffDelayRemain = get_rain_present_config()->delay;
-          pSystem->m_cOffDelayFlag = 1;
+
         }
       }
       else
       {
-        rain_p_delay = 0;
+        rain_p_on_delay = 0;
+        if (rain_p_off_delay++ > MS_TO_SCAN_CNT(get_rain_present_config()->delay_sec ))
+        {
+          rain_p_off_delay=0;
+          pAws->mRainDetect.sReal = 0x0000;
+        }
       }
 
       // 적설

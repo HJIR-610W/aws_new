@@ -210,7 +210,7 @@ typedef struct
                             // 설정한다(Mega640의 리셋시 대응 하기위함)
 
   short m_shOffDelayRemain;  // OffDelay Remain Time(sec)
-  uint8_t m_cOffDelayFlag;   // Off Delay Flag 1:일때 처리
+
   short m_usRainDtOffDelay;
 } SYSTEM_INFO_AWS; //1352바이트 
 
