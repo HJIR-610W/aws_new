@@ -8,19 +8,8 @@
 DATE_TIME_BUF Date_Time;
 
 
-void time_get(DATE_TIME_BUF *ct)
-{
-  portDISABLE_INTERRUPTS();
-  *ct = Date_Time;
-  portENABLE_INTERRUPTS();
-}
 
-void time_set(DATE_TIME_BUF *nt)
-{
-  portDISABLE_INTERRUPTS();
-  Date_Time = *nt; //
-  portENABLE_INTERRUPTS();
-}
+
 
 void time_cvt_secTotime(time_t sec,DATE_TIME_BUF *timeNow)
 {
@@ -115,7 +104,7 @@ long GetTotalSeconds(time_t ts)
 	return ts;
 }
 
-bool isLeapYear(int year) { return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0); }
+
 // year: 연도 (예: 2025)
 // month: 월 (1 ~ 12)
 // day: 일 (1 ~ 31)
@@ -130,7 +119,7 @@ int dayOfYear(int year, int month, int day)
   if (month < 1 || month > 12 || day < 1 || day > 31)
     return -1;  // 잘못된 날짜 입력
 
-  const uint16_t *table = isLeapYear(year) ? days_until_month_leap : days_until_month;
+  const uint16_t *table = is_leap_year(year) ? days_until_month_leap : days_until_month;
   return table[month - 1] + day;
 }
 
@@ -173,4 +162,127 @@ int32_t count_min(DATE_TIME_BUF *st,DATE_TIME_BUF *et)
   int offset = (int)((t_et - t_st) / 60)+1;
 
   return offset;
+}
+
+int is_leap_year(int year)
+{ 
+  return (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)); 
+}
+
+// 각 월의 일수 (평년 기준)
+static const int days_in_month[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+uint64_t cvt_timestamp_64(DATE_TIME_BUF* ct)
+{
+  uint64_t total_days = 0;
+
+  // 1970년부터 해당 년도 전년까지의 일수 계산
+  for (int y = 1970; y < ct->Year; y++)
+  {
+    total_days += is_leap_year(y) ? 366 : 365;
+  }
+
+  // 해당 년도에서 해당 월 전월까지의 일수 계산
+  for (int m = 1; m < ct->Month; m++)
+  {
+    total_days += days_in_month[m - 1];
+    // 2월이고 윤년인 경우 하루 추가
+    if (m == 2 && is_leap_year(ct->Year))
+    {
+      total_days++;
+    }
+  }
+
+  // 해당 월에서의 일수 추가 (day - 1: 1일은 0일째)
+  total_days += (ct->Day - 1);
+
+  // 총 초 계산
+  uint64_t total_seconds = total_days * 24 * 60 * 60;
+  total_seconds += ct->Hour * 60 * 60;
+  total_seconds += ct->Min * 60;
+  total_seconds += ct->Sec;
+
+  return total_seconds;
+}
+
+// 64비트 timestamp를 다시 날짜로 변환하는 함수
+void cvt_timestamp64_to_date(uint64_t timestamp, int *year, int *month, int *day,
+                       int *hour, int *min, int *sec)
+{
+  uint64_t total_seconds = timestamp;
+
+  // 시, 분, 초 계산
+  *sec = total_seconds % 60;
+  total_seconds /= 60;
+  *min = total_seconds % 60;
+  total_seconds /= 60;
+  *hour = total_seconds % 24;
+  total_seconds /= 24;
+
+  // 총 일수
+  uint64_t total_days = total_seconds;
+
+  // 년도 계산
+  *year = 1970;
+  while (total_days >= (is_leap_year(*year) ? 366 : 365))
+  {
+    total_days -= is_leap_year(*year) ? 366 : 365;
+    (*year)++;
+  }
+
+  // 월 계산
+  *month = 1;
+  while (total_days >= days_in_month[*month - 1] +
+                           (*month == 2 && is_leap_year(*year) ? 1 : 0))
+  {
+    total_days -= days_in_month[*month - 1];
+    if (*month == 2 && is_leap_year(*year))
+    {
+      total_days--;
+    }
+    (*month)++;
+  }
+
+  // 일 계산 (1일부터 시작)
+  *day = total_days + 1;
+}
+
+bool is_valid_datetime(const DATE_TIME_BUF *nt)
+{
+  static const int8_t days_in_month[12] = {
+      31, 28, 31, 30, 31, 30,
+      31, 31, 30, 31, 30, 31};
+
+  if (nt == NULL)
+    return false;
+
+  if (nt->Year < 1970 || nt->Year > 2099)
+    return false;
+
+  if (nt->Month < 1 || nt->Month > 12)
+    return false;
+
+  int8_t dim = days_in_month[nt->Month - 1];
+  if (nt->Month == 2 && is_leap_year(nt->Year))
+    dim = 29;
+
+  if (nt->Day < 1 || nt->Day > dim)
+    return false;
+
+  if (nt->Hour < 0 || nt->Hour > 23)
+    return false;
+
+  if (nt->Min < 0 || nt->Min > 59)
+    return false;
+
+  if (nt->Sec < 0 || nt->Sec > 59)
+    return false;
+
+  if (nt->Week < 0 || nt->Week > 6)
+    return false;
+
+  if (nt->SubSec > 99)
+    return false;
+
+  return true;
 }

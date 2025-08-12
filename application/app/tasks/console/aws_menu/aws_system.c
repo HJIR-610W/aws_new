@@ -104,8 +104,8 @@ int aws_setup_menu_system(void)
             break;
 
           drv_rtc_set(&nt);
+          drv_rtc_read(&Date_Time);//즉시 표시 
 
-          drv_rtc_read(&Date_Time);
           log_printf(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
         break;
       case 2:  // id

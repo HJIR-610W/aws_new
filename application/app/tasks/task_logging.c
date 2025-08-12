@@ -93,7 +93,7 @@ void log_printf(log_level_t level, const char *pFmt, ...)
   if (level < g_log_level || g_log_output == NULL)
   return;
 
-  time_get(&ct);
+  ct = Date_Time;
 
   // 1. 날짜/시간
   len = snprintf(logging.data, sizeof(logging.data),

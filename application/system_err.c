@@ -40,6 +40,7 @@ void reset_system(const char * pFmt, ...)
   char buff[RST_LOG_MAX];
   uint32_t len=0;
   va_list ap;
+  
 
     __disable_irq();;//TODO 인터럽트 비활성 코드 삽입
 

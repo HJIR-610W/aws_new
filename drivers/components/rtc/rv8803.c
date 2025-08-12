@@ -7,6 +7,7 @@
 #include "os_user_def.h"
 #include "pcb_define.h"
 #include "bsp_i2c.h"
+#include "util_time.h"
 
 #define RET_OK     0
 #define RET_EINVAL 1
@@ -65,7 +66,6 @@
 
 
 
-
 typedef struct rv8803_cfg_s
 {
   uint8_t address;
@@ -76,6 +76,7 @@ typedef struct rv8803_cfg_s
 
 rv8803_cfg_t rv8803_cfg;
 driver_t rv8803_driver;
+
 
 
 
@@ -259,42 +260,56 @@ int32_t rv8803_read(driver_t *rv8803, DATE_TIME_BUF *ct)
   uint8_t reg;
   uint8_t *date = date1;
   int32_t err;
+  DATE_TIME_BUF nt;
 
+  OS_PEND_SEM(rv8803->sem,osWaitForever);
   // FLAG 레지스터 읽기
   err = bsp_i2c_read(cfg->i2c_num, cfg->address, RV8803_FLAG, &reg, 1);
   if (err)
+  {
+    OS_POST_SEM(rv8803->sem);
     return RET_IO_ERR;
+  }
 
   // 전원 복구 여부 확인
   if (reg & RV8803_FLAG_V2F)
+  {
+    OS_POST_SEM(rv8803->sem);
     return RET_EINVAL;
-
+  }
   // 0x10 (100th sec)부터 8바이트 읽기: 100th, sec, min, hour, week, day, month, year
   err = bsp_i2c_read(cfg->i2c_num, cfg->address, RV8803_SEC_100th, date, 8);
   if (err)
+  {
+    OS_POST_SEM(rv8803->sem);
     return RET_IO_ERR;
-
+  }
   // 초가 59이면 한번 더 읽어서 바뀌었는지 확인
   if ((date1[1] & 0x7F) == bin2bcd(59))
   {
     err = bsp_i2c_read(cfg->i2c_num, cfg->address, RV8803_SEC_100th, date2, 8);
     if (err)
+    {
+      OS_POST_SEM(rv8803->sem);
       return RET_IO_ERR;
-
+    }
     if ((date2[1] & 0x7F) != bin2bcd(59))
       date = date2;
   }
 
   // BCD binary 변환
-  ct->SubSec = bcd2bin(date[0] & 0x7F);  // 100th sec
-  ct->Sec = bcd2bin(date[1] & 0x7F);
-  ct->Min = bcd2bin(date[2] & 0x7F);
-  ct->Hour = bcd2bin(date[3] & 0x3F);
-  ct->Week = (uint8_t)(31 - clz(date[4] & 0x7F));  // bitmask to 0~6
-  ct->Day = bcd2bin(date[5] & 0x3F);
-  ct->Month = bcd2bin(date[6] & 0x1F);
-  ct->Year = bcd2bin(date[7]) + 2000;
+  nt.SubSec = bcd2bin(date[0] & 0x7F);  // 100th sec
+  nt.Sec = bcd2bin(date[1] & 0x7F);
+  nt.Min = bcd2bin(date[2] & 0x7F);
+  nt.Hour = bcd2bin(date[3] & 0x3F);
+  nt.Week = (uint8_t)(31 - clz(date[4] & 0x7F));  // bitmask to 0~6
+  nt.Day = bcd2bin(date[5] & 0x3F);
+  nt.Month = bcd2bin(date[6] & 0x1F);
+  nt.Year = bcd2bin(date[7]) + 2000;
 
+  *ct = nt;
+
+  OS_POST_SEM(rv8803->sem);
   return 0;
 }
 

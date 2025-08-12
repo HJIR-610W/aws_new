@@ -65,7 +65,12 @@ int32_t bsp_rtc_set(DATE_TIME_BUF *nt)
     return 1;
   }
 
-  api = ((driver_t *)rtc_driver)->api;
+  if (is_valid_datetime(nt)==false)
+  {
+    return 1;
+  }
+
+    api = ((driver_t *)rtc_driver)->api;
 
   if (api == NULL)
   {

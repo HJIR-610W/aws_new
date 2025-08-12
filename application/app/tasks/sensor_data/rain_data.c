@@ -70,7 +70,7 @@ void compute_daily_rain(uint16_t *rain_minutes, uint16_t *rain_days, int year)
 
   uint16_t days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-  if (isLeapYear(year))
+  if (is_leap_year(year))
     days_in_month[1] = 29;
 
   for (int month = 0; month < 12; month++)
@@ -92,7 +92,7 @@ void compute_monthly_rain(const uint16_t *rain_days, int year, uint16_t *rain_mo
 {
   uint16_t days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-  if (isLeapYear(year))
+  if (is_leap_year(year))
     days_in_month[1] = 29;
 
   uint32_t index = 0;

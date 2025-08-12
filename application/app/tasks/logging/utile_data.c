@@ -25,7 +25,7 @@ void compute_daily_data(uint8_t type, void *data_minutes, void *data_days, int y
 
   uint32_t days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-  if (isLeapYear(year))
+  if (is_leap_year(year))
     days_in_month[1] = 29;
 
   for (int month = 0; month < 12; month++)
@@ -66,7 +66,7 @@ void compute_monthly_data(uint8_t type, const void *data_days, int year, uint32_
 {
   uint16_t days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-  if (isLeapYear(year))
+  if (is_leap_year(year))
     days_in_month[1] = 29;
 
   uint32_t index = 0;
@@ -284,6 +284,8 @@ uint32_t get_10min_accu(uint8_t type, const void *rain_minutes, int year, int mo
 #include <string.h>
 #include <time.h>
 
+#include "util_time.h"
+
 #include "ff.h"  // FatFs header
 
 #define RECORD_SIZE 2
@@ -293,7 +295,7 @@ uint32_t get_10min_accu(uint8_t type, const void *rain_minutes, int year, int mo
 // FatFs file object
 static FIL file;
 
-int is_leap_year(int year) { return (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)); }
+
 
 int get_valid_minutes(int year) { return (is_leap_year(year) ? 366 : 365) * 24 * 60; }
 

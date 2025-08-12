@@ -86,11 +86,10 @@ uint32_t make_charger_frame(uint8_t *pBuff, uint32_t buff_size, uint8_t cmd, uin
   uint16_t frameLen;
   uint32_t cnt = 0;
   uint32_t i;
-  DATE_TIME_BUF curTime;
+  DATE_TIME_BUF curTime=Date_Time;
 
   frameLen = 12 + 2 + dataLen;
 
-	time_get(&curTime);
 
 	pBuff[cnt++] = 0x02;
 	memcpy(&pBuff[cnt], &frameLen, sizeof(frameLen));

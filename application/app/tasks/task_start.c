@@ -91,7 +91,9 @@ void startTask(void *arg)
 {
   drv_init();// 에플리케이션에서 사용하는 드라이버 초기화
   drv_rtc_read(&Date_Time);
-  if(testTask_init()==true)
+
+
+  if (testTask_init() == true)
   {
     osThreadExit();  // 종료 시킴
   }

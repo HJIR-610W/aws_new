@@ -133,7 +133,8 @@
 			"utile_data.h": "c",
 			"rain_data.h": "c",
 			"string.h": "c",
-			"wind_data.h": "c"
+			"wind_data.h": "c",
+			"time_define.h": "c"
 		}
 	}
 }

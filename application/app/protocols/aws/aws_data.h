@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "util_time.h"
+
 
 #define READ_TEMP(x) ((float)(x) / 10.0f - 100.0f)  // 기온, 지면온도, 지중온도, 초상온도
 #define READ_RADI(x) ((float)(x) / 10.0f - 100.0f)  // 순복사, 전천복사, 반사복사 등
@@ -82,7 +84,7 @@ typedef struct
 {
   bool init;
   uint32_t crc;
-  uint32_t time_stamp;
+  DATE_TIME_BUF time;
   aws_data_t temperature;             // 1. 기온 (1분 평균)
   aws_data_t wind_direction_avg;      // 2. 풍향 (1분 평균)
   aws_data_t wind_speed_avg;          // 3. 풍속 (1분 평균)

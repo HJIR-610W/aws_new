@@ -98,7 +98,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_calibration.c</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_data.c</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\data_logging.c</file>
-            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.h</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\bsp_driver_sd.h</file>
@@ -170,7 +170,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_board_mem.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</file>
@@ -214,7 +214,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.h</file>
             <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
-            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.c</file>
@@ -224,7 +224,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.c</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\charger\hjsmartCharger.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.c</file>
@@ -242,7 +242,7 @@
             <file>$PROJ_DIR$\..\drivers\devices\sensors\humidity\hj_huminity.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\font\font_6x8.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_adc.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554_def.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</file>
             <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
@@ -343,7 +343,7 @@
             <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\stm32_usb.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rtc.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_cdc_interface.c</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.c</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_do.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.c</file>
@@ -1624,7 +1624,7 @@
             <file>$PROJ_DIR$\release\Obj\inet6.xcl</file>
             <file>$PROJ_DIR$\release\Obj\app_screen.xcl</file>
             <file>$PROJ_DIR$\..\Application\Tasks\console\console_test.h</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_rtc.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_spi.__cstat.et</file>
             <file>$PROJ_DIR$\..\Application\test\test_rtc.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_ll_adc.xcl</file>
@@ -2107,7 +2107,7 @@
             <file>$PROJ_DIR$\release\Obj\test_count.xcl</file>
             <file>$PROJ_DIR$\release\Obj\jinsung_sjgp215.o</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_ll_sdmmc.__cstat.et</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_uart.o</file>
             <file>$PROJ_DIR$\..\application\app\test\test_power.h</file>
             <file>$PROJ_DIR$\release\Obj\driver_charger.__cstat.et</file>
@@ -2153,7 +2153,7 @@
             <file>$PROJ_DIR$\..\Application\App_drivers\lcd\font_6x8.h</file>
             <file>$PROJ_DIR$\release\Obj\hjtemp_menu.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_define.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\release\Obj\sys.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\base64.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_eth.o</file>
@@ -2169,7 +2169,7 @@
             <file>$PROJ_DIR$\release\Obj\raw.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\bridgeif_fdb.xcl</file>
             <file>$TOOLKIT_DIR$\inc\c\LowLevelIOInterface.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\icmp6.h</file>
             <file>$PROJ_DIR$\release\Obj\ppp.__cstat.et</file>
@@ -2248,7 +2248,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_system.h</file>
             <file>$PROJ_DIR$\release\Obj\driver_stm32_rtc.__cstat.et</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dhcp6.h</file>
             <file>$PROJ_DIR$\release\Obj\test_flach.xcl</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\humidity\hj_huminity.h</file>
@@ -2334,11 +2334,11 @@
             <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\list.h</file>
             <file>$PROJ_DIR$\release\Obj\wind_data.o</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\aws_data.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_calibration.h</file>
             <file>$PROJ_DIR$\release\Obj\etharp.o</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rtc.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\raw_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\sunshine_data.h</file>
@@ -2412,7 +2412,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\sockets_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_system.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_frequency.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\app_console_test.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\app_console_test.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_adc.xcl</file>
             <file>$PROJ_DIR$\release\Obj\bsp_interrupt.xcl</file>
             <file>$PROJ_DIR$\release\Obj\lowpan6_ble.xcl</file>
@@ -2468,7 +2468,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\udp.h</file>
             <file>$PROJ_DIR$\release\Obj\inet_chksum.o</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_tim.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_test.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_delay.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\const_string.o</file>
             <file>$PROJ_DIR$\release\Obj\netbuf.__cstat.et</file>
@@ -2550,7 +2550,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_rtc.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_mux.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\dhcp.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_rain.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_eth.h</file>
@@ -2654,7 +2654,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1398 967 1368 956 2127 1495 1033 2224 2329 962 282 1828 512 162 2141 583 1966 1860 2031</file>
+                    <file> 1398 967 1368 956 2127 1495 1033 2224 2329 962 583 1966 1860 2031 282 1828 512 162 2141</file>
                 </tool>
             </inputs>
         </file>
@@ -2786,7 +2786,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2329 1398 967 1368 956 2127 1495 962 288 2468 1796 2172 1828 512 162 1006 2321 2068 563 1033 2224 302 282 2393 276 278 255 287 2351 2339 2326 1916 672</file>
+                    <file> 2329 1398 967 1368 956 2127 1495 962 583 1966 2224 1860 2031 288 2468 1796 2172 1828 512 162 1006 2321 2068 563 1033 302 282 2393 276 278 255 287 2351 2339 2326 1916 672</file>
                 </tool>
             </inputs>
         </file>
@@ -2809,7 +2809,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1398 967 1368 956 2127 1495 1386 2224 2016 2329 962 1556 1796 288 2468 2172 1828 512 162 1006 2321 2068 563 1033 2482 568 2545 2148 583 1966 1860 2031</file>
+                    <file> 1398 967 1368 956 2127 1495 1386 2224 2016 2329 962 583 1966 1860 2031 1556 1796 288 2468 2172 1828 512 162 1006 2321 2068 563 1033 2482 568 2545 2148</file>
                 </tool>
             </inputs>
         </file>
@@ -2964,7 +2964,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2333 1398 967 1368 956 2127 1495 2329 962 288 2468 1796 2172 1828 512 162 1006 2321 2068 563 1033 2224 2148 1386 2016 1556 2482 568 583 1966 1860 2031</file>
+                    <file> 2333 1398 967 1368 956 2127 1495 2329 962 583 1966 2224 1860 2031 288 2468 1796 2172 1828 512 162 1006 2321 2068 563 1033 2148 1386 2016 1556 2482 568</file>
                 </tool>
             </inputs>
         </file>
@@ -3711,7 +3711,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2317 2329 1398 967 1368 956 2127 1495 962 2141 1678 2452 1386 2224 2016 288 2468 1796 2172 1828 512 162 1006 2321 2068 563 1033 1775 672 204 1435 1320 1463 1412 1959 1384 2471 2436 1916 1556 2482 2202 2250 583 1966 1860 2031 2326 99 564 2333 2148 203 1063 282 2056 2288 2336</file>
+                    <file> 2317 2329 1398 967 1368 956 2127 1495 962 583 1966 2224 1860 2031 2141 1678 2452 1386 2016 288 2468 1796 2172 1828 512 162 1006 2321 2068 563 1033 1775 672 204 1435 1320 1463 1412 1959 1384 2471 2436 1916 1556 2482 2202 2250 2326 99 564 2333 2148 203 1063 282 2056 2288 2336</file>
                 </tool>
             </inputs>
         </file>
@@ -3734,7 +3734,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2345 962 1033 967 1368 956 2127 1495 2224 1386 2016 2382 1398 1916 672 1248 2305 2287 1063 2329 199 173 196 1008 1575 2090 864 2109 2049 2134 1865 1811 1636 1384 1919 2411 1466 1982 1709 1656 2076 1784 2397 1548 1568 2093 2106 1861 1329 2386 1872 2125 2484 1451 2124 1580 1551 2453 2010 2332 647 1812 2212 649 2191 1438 1020 2117 628 1898 205 1775 204 1435 1320 1463 1412 1959 2471 2436 184 177 1058 218 282 158 299 2031 583 1966 1860 1556 1796 288 2468 2172 1828 512 162 1006 2321 2068 563 2482 2299 2385 2370 143 128 127 1287 145 1911 2326 2102 2363 2223 2341 577 2228 2250 2141</file>
+                    <file> 2345 962 1033 967 1368 956 2127 1495 2224 1386 2016 2382 1398 1916 672 1248 2305 2287 1063 2329 583 1966 1860 2031 199 173 196 1008 1575 2090 864 2109 2049 2134 1865 1811 1636 1384 1919 2411 1466 1982 1709 1656 2076 1784 2397 1548 1568 2093 2106 1861 1329 2386 1872 2125 2484 1451 2124 1580 1551 2453 2010 2332 647 1812 2212 649 2191 1438 1020 2117 628 1898 205 1775 204 1435 1320 1463 1412 1959 2471 2436 184 177 1058 218 282 158 299 1556 1796 288 2468 2172 1828 512 162 1006 2321 2068 563 2482 2299 2385 2370 143 128 127 1287 145 1911 2326 2102 2363 2223 2341 577 2228 2250 2141</file>
                 </tool>
             </inputs>
         </file>
@@ -6658,7 +6658,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 219 282 962 1398 967 1368 956 2127 1495 299 2031 1058 218 2334 2289 177 2278 205 1916 672 2224 1775 204 1435 1320 1463 1412 1959 1384 2471 2436 173 196 1008 1575 2090 864 2109 2049 2134 1865 1811 1636 1919 2411 1466 1982 1709 1656 2076 1784 2397 1548 1568 2093 2106 1861 1329 2386 1872 2125 2484 1451 2124 1580 1551 2453 2010 2332 647 1812 2212 649 2191 1438 1020 2117 628 1898 167</file>
+                    <file> 219 282 962 1398 967 1368 956 2127 1495 299 2031 1058 218 2334 2289 177 2278 205 1916 672 2224 1775 204 1435 1320 1463 1412 1959 1384 2471 2436 173 196 1008 1575 2090 864 2109 2049 2134 1865 1811 1636 1919 2411 1466 1982 1709 1656 2076 1784 2397 1548 1568 2093 2106 1861 1329 2386 1872 2125 2484 1451 2124 1580 1551 2453 2010 2332 647 1812 2212 649 2191 1438 1020 2117 628 1898 167 583 1966 1860</file>
                 </tool>
             </inputs>
         </file>
