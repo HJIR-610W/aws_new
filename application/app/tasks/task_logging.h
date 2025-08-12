@@ -19,6 +19,14 @@ typedef struct logging_task_info_s
   uint8_t status_group;
 } logging_system_t;
 
+typedef struct task_logging
+{
+  uint32_t data_len;
+  uint32_t type;
+  uint32_t period_min;
+  uint8_t data[1];
+} data_logging_cmd_t;
+
 typedef enum
 {
   L_DEBUG = 0,//디버깅용 상세 정보 (출력 많음)
@@ -31,7 +39,7 @@ typedef enum
 
 void loggingTask_init(void);
 void log_printf(log_level_t level, const char *pFmt, ...);
-void os_write_data_year(DATE_TIME_BUF *pDate, void *pInData,uint32_t dataSize,
+void os_save_aws_data(DATE_TIME_BUF *pDate, void *pInData,uint32_t dataSize,
                          uint8_t Type,uint32_t periodMin);
 logging_system_t *get_logging_system(void);
 

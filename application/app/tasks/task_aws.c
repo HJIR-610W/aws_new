@@ -645,8 +645,7 @@ void update_kma_real(void)
   p_kma3->relative_humidity.min = mRealAws.mHumidity.sMin;
 
   //[미사용] 강수량 0.1 (원본값으로 표현)
-  p_kma3->precipitation_fine.data = p_raw->precipitation_fine.data;
-  p_kma3->precipitation_fine.err = get_sensor_err(A11_RAINFALL_DOT1MM);
+
 
   //[사용]
   p_kma3->solar_radiation.data    = (uint16_t)(get_sunshine_r()->sunshine_r_1min_acc/1000.0);
@@ -663,8 +662,7 @@ void update_kma_real(void)
   p_kma3->surface_temperature.err = get_sensor_err(B3_GROUND_TEMPERATURE);
 
   //[미사용] 4. 초상온도 (1분 평균)
-  p_kma3->grass_temperature.data = p_raw->grass_temperature.data;
-  p_kma3->grass_temperature.err = get_sensor_err(B4_SURFACE_TEMPERATURE);
+
 
   //[사용]  5. 지중온도 (5cm, 1분 평균)
   p_kma3->soil_temperature_5cm.data = mRealAws.mSoilTemp5cm.sReal;
@@ -702,96 +700,11 @@ void update_kma_real(void)
   p_kma3->soil_temperature_1_5m.max = mRealAws.mSoilTemp1_5m.sMax;
   p_kma3->soil_temperature_1_5m.err = get_sensor_err(B11_SOIL_TEMPERATURE_150CM);
 
-  // [미사용] 12. 지중온도(3.0m, 1분 평균) 
+  // [사용] 12. 지중온도(3.0m, 1분 평균) 
   p_kma3 -> soil_temperature_3m.data =  p_raw->soil_temperature_3m.data;
   p_kma3->soil_temperature_3m.err = get_sensor_err(B12_SOIL_TEMPERATURE_300CM);
-
-  //[미사용] 13. 지중온도 (5.0m, 1분 평균)
   p_kma3->soil_temperature_5m.data = p_raw->soil_temperature_5m.data;
   p_kma3->soil_temperature_5m.err = get_sensor_err(B13_SOIL_TEMPERATURE_500CM);
-
-  //[미사용]
-  p_kma3->cloud_height_1st.data = p_raw->cloud_height_1st.data;
-  p_kma3->cloud_height_1st.err = get_sensor_err(C1_CLOUD_BASE1);
-  //[미사용]
-  p_kma3->cloud_height_2nd.data = p_raw->cloud_height_2nd.data;
-  p_kma3->cloud_height_2nd.err = get_sensor_err(C2_CLOUD_BASE2);
-  //[미사용]
-  p_kma3->cloud_height_3rd.data = p_raw->cloud_height_3rd.data;
-  p_kma3->cloud_height_3rd.err = get_sensor_err(C3_CLOUD_BASE3);
-  //[미사용]
-  p_kma3->cloud_amount.data = p_raw->cloud_amount.data;
-  p_kma3->cloud_amount.err = get_sensor_err(C4_CLOUD_COVER);
-  //[미사용]
-  p_kma3->visibility.data = p_raw->visibility.data;
-  p_kma3->visibility.err = get_sensor_err(C5_VISIBILITY);
-  //[미사용]
-  p_kma3->pm10_concentration.data = p_raw->pm10_concentration.data;
-  p_kma3->pm10_concentration.err = get_sensor_err(C6_PM10);
-  //[미사용]
-  p_kma3->pm25_concentration.data = p_raw->pm25_concentration.data;
-  p_kma3->pm25_concentration.err = get_sensor_err(C7_PM2DOT5);
-  //[미사용]
-  p_kma3->net_radiation.data = p_raw->net_radiation.data;
-  p_kma3->net_radiation.err = get_sensor_err(C8_NET_RADIATION);
-  //[미사용]
-  p_kma3->total_radiation.data = p_raw->total_radiation.data;
-  p_kma3->total_radiation.err = get_sensor_err(C9_TOTAL_RADIATION);
-  //[미사용]
-  p_kma3->reflected_radiation.data = p_raw->reflected_radiation.data;
-  p_kma3->reflected_radiation.err = get_sensor_err(C10_REFLECTED_RADIATION);
-  //[미사용]
-  p_kma3->direct_radiation.data = p_raw->direct_radiation.data;
-  p_kma3->direct_radiation.err = get_sensor_err(C11_DIRECT_SOLAR);
-  //[미사용]
-  p_kma3->current_weather.data = p_raw->current_weather.data;
-  p_kma3->current_weather.err = get_sensor_err(C12_CURRENT_WEATHER);
-
-  //[미사용]
-  p_kma3->soil_moisture_10cm.data = p_raw->soil_moisture_10cm.data;
-  p_kma3->soil_moisture_10cm.err = get_sensor_err(N1_SOIL_MOISTURE_10CM);
-  //[미사용]
-  p_kma3->soil_moisture_20cm.data = p_raw->soil_moisture_20cm.data;
-  p_kma3->soil_moisture_20cm.err = get_sensor_err(N2_SOIL_MOISTURE_20CM);
-  //[미사용]
-  p_kma3->soil_moisture_30cm.data = p_raw->soil_moisture_30cm.data;
-  p_kma3->soil_moisture_30cm.err = get_sensor_err(N3_SOIL_MOISTURE_30CM);
-  //[미사용]
-  p_kma3->soil_moisture_50cm.data = p_raw->soil_moisture_50cm.data;
-  p_kma3->soil_moisture_50cm.err = get_sensor_err(N4_SOIL_MOISTURE_50CM);
-  //[미사용]
-  p_kma3->illuminance.data = p_raw->illuminance.data;
-  p_kma3->illuminance.err = get_sensor_err(N5_ILLUMINANCE);
-  //[미사용]
-  p_kma3->wind_speed_1_5m.data = p_raw->wind_speed_1_5m.data;
-  p_kma3->wind_speed_1_5m.err = get_sensor_err(N6_WIND_VELOCITY_150CM);
-  //[미사용]
-  p_kma3->wind_speed_4m.data = p_raw->wind_speed_4m.data;
-  p_kma3->wind_speed_4m.err = get_sensor_err(N7_WIND_VELOCITY_400CM);
-  //[미사용]
-  p_kma3->instant_wind_speed_1_5m.data = p_raw->instant_wind_speed_1_5m.data;
-  p_kma3->instant_wind_speed_1_5m.err = get_sensor_err(N8_INSTANT_VELOCITY_150CM);
-  //[미사용]
-  p_kma3->instant_wind_speed_4m.data = p_raw->instant_wind_speed_4m.data;
-  p_kma3->instant_wind_speed_4m.err = get_sensor_err(N9_INSTANT_VELOCITY_400CM);
-  //[미사용]
-  p_kma3->temperature_0_5m.data = p_raw->temperature_0_5m.data;
-  p_kma3->temperature_0_5m.err = get_sensor_err(N10_AIR_TEMPERATURE_50CM);
-  //[미사용]
-  p_kma3->temperature_4m.data = p_raw->temperature_4m.data;
-  p_kma3->temperature_4m.err = get_sensor_err(N11_AIR_TEMPERATURE_400CM);
-  //[미사용]
-  p_kma3->humidity_0_5m.data = p_raw->humidity_0_5m.data;
-  p_kma3->humidity_0_5m.err = get_sensor_err(N12_HUMIDITY_50CM);
-  //[미사용]
-  p_kma3->humidity_4m.data = p_raw->humidity_4m.data;
-  p_kma3->humidity_4m.err = get_sensor_err(N13_HUMIDITY_400CM);
-
-  //[미사용]
-  p_kma3->tacometer.data = p_raw->tacometer.data;
-  p_kma3->tacometer.err = get_sensor_err(I1_TACHOMETER);
-
-
 
 
   //에러 변수 업데이트 
@@ -814,114 +727,29 @@ void update_kma_real(void)
   //[사용]
   kma3_update_sensor_status(A10_RELATIVE_HUMIDITY, p_kma3->X_sensorStatus,
                             get_sensor_err(A10_RELATIVE_HUMIDITY));
-  //[미사용]
-  kma3_update_sensor_status(A11_RAINFALL_DOT1MM, p_kma3->X_sensorStatus, get_sensor_err(A11_RAINFALL_DOT1MM));
   //[사용]
-  kma3_update_sensor_status(B1_SOLAR_RADIATION, p_kma3->X_sensorStatus,
-                            get_sensor_err(B1_SOLAR_RADIATION));
+  kma3_update_sensor_status(B1_SOLAR_RADIATION, p_kma3->X_sensorStatus,   get_sensor_err(B1_SOLAR_RADIATION));
   //[사용]
-  kma3_update_sensor_status(B2_SUNSHINE_DURATION, p_kma3->X_sensorStatus,
-                            get_sensor_err(B2_SUNSHINE_DURATION));
+  kma3_update_sensor_status(B2_SUNSHINE_DURATION, p_kma3->X_sensorStatus,  get_sensor_err(B2_SUNSHINE_DURATION));
   //[사용]
-  kma3_update_sensor_status(B5_SOIL_TEMPERATURE_5CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(B5_SOIL_TEMPERATURE_5CM));
+  kma3_update_sensor_status(B5_SOIL_TEMPERATURE_5CM, p_kma3->X_sensorStatus,  get_sensor_err(B5_SOIL_TEMPERATURE_5CM));
   //[사용]
-  kma3_update_sensor_status(B6_SOIL_TEMPERATURE_10CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(B6_SOIL_TEMPERATURE_10CM));
+  kma3_update_sensor_status(B6_SOIL_TEMPERATURE_10CM, p_kma3->X_sensorStatus,   get_sensor_err(B6_SOIL_TEMPERATURE_10CM));
   //[사용]
-  kma3_update_sensor_status(B7_SOIL_TEMPERATURE_20CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(B7_SOIL_TEMPERATURE_20CM));
+  kma3_update_sensor_status(B7_SOIL_TEMPERATURE_20CM, p_kma3->X_sensorStatus, get_sensor_err(B7_SOIL_TEMPERATURE_20CM));
   //[사용]
-  kma3_update_sensor_status(B8_SOIL_TEMPERATURE_30CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(B8_SOIL_TEMPERATURE_30CM));
+  kma3_update_sensor_status(B8_SOIL_TEMPERATURE_30CM, p_kma3->X_sensorStatus,  get_sensor_err(B8_SOIL_TEMPERATURE_30CM));
   //[사용]
-  kma3_update_sensor_status(B9_SOIL_TEMPERATURE_50CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(B9_SOIL_TEMPERATURE_50CM));
+  kma3_update_sensor_status(B9_SOIL_TEMPERATURE_50CM, p_kma3->X_sensorStatus, get_sensor_err(B9_SOIL_TEMPERATURE_50CM));
   //[사용]
-  kma3_update_sensor_status(B10_SOIL_TEMPERATURE_100CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(B10_SOIL_TEMPERATURE_100CM));
+  kma3_update_sensor_status(B10_SOIL_TEMPERATURE_100CM, p_kma3->X_sensorStatus,  get_sensor_err(B10_SOIL_TEMPERATURE_100CM));
   //[사용]
-  kma3_update_sensor_status(B11_SOIL_TEMPERATURE_150CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(B11_SOIL_TEMPERATURE_150CM));
+  kma3_update_sensor_status(B11_SOIL_TEMPERATURE_150CM, p_kma3->X_sensorStatus, get_sensor_err(B11_SOIL_TEMPERATURE_150CM));
 
-  //[미사용]
-  kma3_update_sensor_status(B12_SOIL_TEMPERATURE_300CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(B12_SOIL_TEMPERATURE_300CM));
-  //[미사용]
-  kma3_update_sensor_status(B13_SOIL_TEMPERATURE_500CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(B13_SOIL_TEMPERATURE_500CM));
-
-  //[미사용]
-  kma3_update_sensor_status(C1_CLOUD_BASE1, p_kma3->X_sensorStatus, get_sensor_err(C1_CLOUD_BASE1));
-  //[미사용]
-  kma3_update_sensor_status(C2_CLOUD_BASE2, p_kma3->X_sensorStatus, get_sensor_err(C2_CLOUD_BASE2));
-  //[미사용]
-  kma3_update_sensor_status(C3_CLOUD_BASE3, p_kma3->X_sensorStatus, get_sensor_err(C3_CLOUD_BASE3));
-  //[미사용]
-  kma3_update_sensor_status(C4_CLOUD_COVER, p_kma3->X_sensorStatus, get_sensor_err(C4_CLOUD_COVER));
-  //[미사용]
-  kma3_update_sensor_status(C5_VISIBILITY, p_kma3->X_sensorStatus, get_sensor_err(C5_VISIBILITY));
-  //[미사용]
-  kma3_update_sensor_status(C6_PM10, p_kma3->X_sensorStatus, get_sensor_err(C6_PM10));
-  //[미사용]
-  kma3_update_sensor_status(C7_PM2DOT5, p_kma3->X_sensorStatus, get_sensor_err(C7_PM2DOT5));
-  //[미사용]
-  kma3_update_sensor_status(C8_NET_RADIATION, p_kma3->X_sensorStatus,
-                            get_sensor_err(C8_NET_RADIATION));
-  //[미사용]
-  kma3_update_sensor_status(C9_TOTAL_RADIATION, p_kma3->X_sensorStatus,
-                            get_sensor_err(C9_TOTAL_RADIATION));
-  //[미사용]
-  kma3_update_sensor_status(C10_REFLECTED_RADIATION, p_kma3->X_sensorStatus,
-                            get_sensor_err(C10_REFLECTED_RADIATION));
-  //[미사용]
-  kma3_update_sensor_status(C11_DIRECT_SOLAR, p_kma3->X_sensorStatus,
-                            get_sensor_err(C11_DIRECT_SOLAR));
-  //[미사용]
-  kma3_update_sensor_status(C12_CURRENT_WEATHER, p_kma3->X_sensorStatus,
-                            get_sensor_err(C12_CURRENT_WEATHER));
-
-  //[미사용]
-  kma3_update_sensor_status(N1_SOIL_MOISTURE_10CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N1_SOIL_MOISTURE_10CM));
-  //[미사용]
-  kma3_update_sensor_status(N2_SOIL_MOISTURE_20CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N2_SOIL_MOISTURE_20CM));
-  //[미사용]
-  kma3_update_sensor_status(N3_SOIL_MOISTURE_30CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N3_SOIL_MOISTURE_30CM));
-  //[미사용]
-  kma3_update_sensor_status(N4_SOIL_MOISTURE_50CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N4_SOIL_MOISTURE_50CM));
-  //[미사용]
-  kma3_update_sensor_status(N5_ILLUMINANCE, p_kma3->X_sensorStatus, get_sensor_err(N5_ILLUMINANCE));
-  //[미사용]
-  kma3_update_sensor_status(N6_WIND_VELOCITY_150CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N6_WIND_VELOCITY_150CM));
-  //[미사용]
-  kma3_update_sensor_status(N7_WIND_VELOCITY_400CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N7_WIND_VELOCITY_400CM));
-  //[미사용]
-  kma3_update_sensor_status(N8_INSTANT_VELOCITY_150CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N8_INSTANT_VELOCITY_150CM));
-  //[미사용]
-  kma3_update_sensor_status(N9_INSTANT_VELOCITY_400CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N9_INSTANT_VELOCITY_400CM));
-  //[미사용]
-  kma3_update_sensor_status(N10_AIR_TEMPERATURE_50CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N10_AIR_TEMPERATURE_50CM));
-  //[미사용]
-  kma3_update_sensor_status(N11_AIR_TEMPERATURE_400CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N11_AIR_TEMPERATURE_400CM));
-  //[미사용]
-  kma3_update_sensor_status(N12_HUMIDITY_50CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N12_HUMIDITY_50CM));
-  //[미사용]
-  kma3_update_sensor_status(N13_HUMIDITY_400CM, p_kma3->X_sensorStatus,
-                            get_sensor_err(N13_HUMIDITY_400CM));
-
-  //[미사용]
-  kma3_update_sensor_status(I1_TACHOMETER, p_kma3->X_sensorStatus, get_sensor_err(I1_TACHOMETER));
+  //[사용]
+  kma3_update_sensor_status(B12_SOIL_TEMPERATURE_300CM, p_kma3->X_sensorStatus, get_sensor_err(B12_SOIL_TEMPERATURE_300CM));
+  //[사용]
+  kma3_update_sensor_status(B13_SOIL_TEMPERATURE_500CM, p_kma3->X_sensorStatus,     get_sensor_err(B13_SOIL_TEMPERATURE_500CM));
 
 
   BIT_UPDATE(p_kma3->Y_volateStatus, System.dc_error, KMA2_PWRSTAT_DC_INPUT_ERR);

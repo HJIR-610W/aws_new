@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "app_dataLogging.h"
 #include "app_file.h"
@@ -25,10 +26,10 @@ typedef enum logging_cmd_e
 
 typedef struct logging_s
 {
+  char data[300];
+  uint16_t len;
   eLOGGING_CMD_t cmd;
   DATE_TIME_BUF ct;
-  uint16_t len;
-  char data[300];
 }logging_t;
 
 const osThreadAttr_t kLoggingTask_attributes = {
@@ -133,23 +134,26 @@ void log_printf(log_level_t level, const char *pFmt, ...)
 }
 
 
-void os_write_data_year(DATE_TIME_BUF *pDate, void *pInData,uint32_t data_size,
-                         uint8_t Type,uint32_t period_min)
+
+
+
+void os_save_aws_data(DATE_TIME_BUF *pDate, void *pInData,uint32_t data_size, uint8_t type,uint32_t period_min)
 {
   logging_t logging;
+  data_logging_cmd_t *p_frame;
 
   logging.ct = *pDate;
-  
-  memcpy(&logging.data[0],&data_size,4);
-  memcpy(&logging.data[4],&Type,1);
-  memcpy(&logging.data[5],&period_min,4);
-
-  memcpy(&logging.data[9],pInData,data_size);
-
   logging.cmd = eLOGGING_DATA;
+
+  p_frame = (data_logging_cmd_t *)logging.data;
+  p_frame->data_len = data_size;
+  p_frame->type = type;
+  p_frame->period_min = period_min;
+  memcpy(&p_frame->data[0],pInData,data_size);
+
   if(osMessageQueuePut(g_loggingQueue, &logging, 0, kLoggingTimeOutMs) != osOK)
   {
-    io_printf("os_write_data_year timeout.\r\n");
+    io_printf("os_save_aws_data timeout.\r\n");
   }
 }
 
@@ -198,6 +202,7 @@ void loggingTask(void *arg)
   uint32_t period_min;
   logging_t logging;
   uint16_t rain;
+  data_logging_cmd_t *p_frame;
 
 
   uint32_t offset;
@@ -209,9 +214,7 @@ void loggingTask(void *arg)
     // 메시지 큐에서 데이터 수신
     if (osMessageQueueGet(g_loggingQueue, &logging, NULL, osWaitForever) == osOK)
     {
-
-
-      
+ 
         switch(logging.cmd)
         {
           case eLOGGING_LOG:
@@ -222,18 +225,16 @@ void loggingTask(void *arg)
             }
             break;
           case eLOGGING_DATA:
-            memcpy(&data_size,&logging.data[0],sizeof(data_size));
-            memcpy(&data_type,&logging.data[4],sizeof(data_type));
-            memcpy(&period_min,&logging.data[5],sizeof(period_min));
+            p_frame = (data_logging_cmd_t *)logging.data;
 
-            err = write_data_month(&logging.ct,&logging.data[9],data_size,data_type,period_min);
+            err = write_data_month(&logging.ct, &p_frame->data[0], p_frame->data_len, p_frame->type, p_frame->period_min);
             update_loggingErr(&g_logging_system.status_group, err, LOGGING_DATA_ERR);
             offset = OFFSET_OF_RAIN();
-            memcpy(&rain, &logging.data[9 + offset], sizeof(uint16_t));  
+            memcpy(&rain, &p_frame->data[offset], sizeof(uint16_t));
             err = write_rain_1min(&logging.ct, rain);
             update_loggingErr(&g_logging_system.status_group, err, LOGGING_RAIN_ERR);
             offset = OFFSET_OF_SUN();
-            memcpy(&sunshine, &logging.data[9 + offset], sizeof(uint16_t));
+            memcpy(&sunshine, &p_frame->data[offset], sizeof(uint16_t));
             err = write_sunshine_1min(&logging.ct, sunshine);
             update_loggingErr(&g_logging_system.status_group, err, LOGGING_RAIN_ERR);
             break;

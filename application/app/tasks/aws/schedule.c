@@ -689,7 +689,7 @@ void MinProcess(DATE_TIME_BUF *pDate)
     pAws->kma3_sensor_status[i] = p_kma_avg->X_sensorStatus[i];
   }
   
-  os_write_data_year(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
+  os_save_aws_data(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
 }
 
 void Min10Process(void)
@@ -1185,7 +1185,7 @@ void update_kma_data(eAWS_DATA_MIN_t min)
 
   if(min == eAWS_DATA_1MIN)
   {
-    uint32_t time_stamp;
+
     
     p_kma_data->time = Date_Time;
     send_kma_data(eKMA_DATA_Q_1MIN, p_kma_data); // 실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
