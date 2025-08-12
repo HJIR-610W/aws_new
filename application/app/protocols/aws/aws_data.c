@@ -22,6 +22,7 @@ rainfall_t g_rainfall;
 sunshine_t g_sunshine;
 sunshine_r_t g_sunshine_r;
 
+min_buffer_t g_min_buffer;
 
 osMessageQueueId_t g_kma_data_queue[2];
 

@@ -690,10 +690,12 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
           break;
         }
         case eAWS_DATA_AVG:
+          screen_page_printf(p_win, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d_today);
+        break;
         case eAWS_DATA_1MIN:
         {
+          solar_d_today = p_kma->sunshine_duration.data;
           screen_page_printf(p_win, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d_today);
-          break;
         }
         break;
       }

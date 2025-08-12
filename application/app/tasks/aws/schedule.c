@@ -442,6 +442,7 @@ void SecProcess(void)
   if (mRealAws.mSunshine.sReal)
   {
     uint32_t sunshine;
+
     sunshine = get_sunshine()->sunshine_1min + 1;
     set_sunshine_1min(sunshine);
     sunshine =  get_sunshine()->sunshine_today +1;
@@ -615,7 +616,10 @@ void MinProcess(DATE_TIME_BUF *pDate)
   // 일사 일조
   // 일조 1분 누적값
   pAws->mSunshine.sReal = get_sunshine()->sunshine_1min;
-  pAws->mSolarRad.sReal =  get_sunshine_r()->sunshine_r_1min_acc / 1000;  // 일사 1분   누적값  KJ/m2
+  set_sunshine_1min(0);
+  pAws->mSunshine.sMax = get_sunshine()->sunshine_today;
+
+  pAws->mSolarRad.sReal = get_sunshine_r()->sunshine_r_1min_acc / 1000; // 일사 1분   누적값  KJ/m2
 
   pSystem->mSun[MIN10_PROC].nSolarTot += pAws->mSolarRad.sReal;
   pAws->mSolarRad.sMax += pAws->mSolarRad.sReal;  // 하루 총 일사

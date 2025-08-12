@@ -127,7 +127,7 @@
             <file>$PROJ_DIR$\..\Application\http_server\task_http_server.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.h</file>
             <file>$PROJ_DIR$\..\application\http_server\task_http_server.h</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</file>
@@ -2229,7 +2229,7 @@
             <file>$PROJ_DIR$\release\Obj\rv8803.xcl</file>
             <file>$PROJ_DIR$\release\Obj\config_nvm.xcl</file>
             <file>$PROJ_DIR$\release\Obj\hjtemp_menu.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\aws\old_aws_define.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\aws\old_aws_define.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_eth.o</file>
             <file>$PROJ_DIR$\..\Application\test\test_hart.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler.h</file>
@@ -2252,7 +2252,7 @@
             <file>$PROJ_DIR$\..\utils\util_escape_sequence.h</file>
             <file>$PROJ_DIR$\release\Obj\test_sdi12.o</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Full.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_adc_ex.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_uart.o</file>
             <file>$PROJ_DIR$\release\Obj\solar_radiation.__cstat.et</file>
@@ -2347,7 +2347,7 @@
             <file>$PROJ_DIR$\..\Application\Panel\panel_hansung.c</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
             <file>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_panel.c</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\release\Obj\driver_stm32_frequency.o</file>
             <file>$PROJ_DIR$\release\Obj\drv_flash.xcl</file>
             <file>$PROJ_DIR$\release\Obj\view_driver.xcl</file>
@@ -2371,7 +2371,7 @@
             <file>$PROJ_DIR$\..\application\app\sensors\barometer\jinsung_sjgp215.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_system.h</file>
             <file>$PROJ_DIR$\release\Obj\old_aws_sms.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\aws\schedule.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\aws\schedule.h</file>
             <file>$PROJ_DIR$\..\application\app\panel\panel.h</file>
             <file>$TOOLKIT_DIR$\lib\rt7M_tl.a</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_common.h</file>

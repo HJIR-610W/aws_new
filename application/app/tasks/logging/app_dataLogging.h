@@ -8,6 +8,8 @@
 #define LOGGING_AWS  0
 #define LOGGING_RAIN_1MIN 1
 #define LOGGING_SUNSHINE_1MIN 2
+#define LOGGING_AWS_NEW 3
+
 void dataLogging_init(void);
 
 int32_t write_data_year(DATE_TIME_BUF *pDate, void *pInData, uint32_t dataSize, uint8_t Type,

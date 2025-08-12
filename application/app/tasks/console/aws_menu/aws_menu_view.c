@@ -907,7 +907,10 @@ void draw_aws(win_t *p_win)
           break;
         }
         case eAWS_DATA_AVG:
+          win_printf_row(p_win, row_count++, "%s: %6d sec", m_l("일조(일간)", AWS_WD), solar_d_dotay);
+          break;
         case eAWS_DATA_1MIN:
+          solar_d_dotay = p_kma->sunshine_duration.data;
           win_printf_row(p_win, row_count++, "%s: %6d sec", m_l("일조(일간)", AWS_WD), solar_d_dotay);
           break;
       }

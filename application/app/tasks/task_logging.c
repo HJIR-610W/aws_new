@@ -226,13 +226,14 @@ void loggingTask(void *arg)
             break;
           case eLOGGING_DATA:
             p_frame = (data_logging_cmd_t *)logging.data;
-
             err = write_data_month(&logging.ct, &p_frame->data[0], p_frame->data_len, p_frame->type, p_frame->period_min);
             update_loggingErr(&g_logging_system.status_group, err, LOGGING_DATA_ERR);
+            //1분 우량만 별도의 파일에 저장
             offset = OFFSET_OF_RAIN();
             memcpy(&rain, &p_frame->data[offset], sizeof(uint16_t));
             err = write_rain_1min(&logging.ct, rain);
             update_loggingErr(&g_logging_system.status_group, err, LOGGING_RAIN_ERR);
+            //1분 일조만 별도의 파일 저장 
             offset = OFFSET_OF_SUN();
             memcpy(&sunshine, &p_frame->data[offset], sizeof(uint16_t));
             err = write_sunshine_1min(&logging.ct, sunshine);

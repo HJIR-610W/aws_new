@@ -12,7 +12,7 @@
 #include "app_file.h"
 
 #define AWS_FILE_PATH       "0:Y%02d/M%02d.aws"
-
+#define AWS_NEW_FILE_PATH   "0:Y%02d/M%02d_new.aws"
 
 static osSemaphoreId_t dataLoggingSem;
 
@@ -33,7 +33,10 @@ void get_filePath(uint8_t type, uint16_t year, uint8_t month, char *pOutBuff, ui
     case LOGGING_SUNSHINE_1MIN:
       snprintf(pOutBuff, buffSize, "0:Y%02d/%s", year, SUNSHINE_1MIN_FILE_NAME);
       break;
-  }
+    case LOGGING_AWS_NEW:
+      snprintf(pOutBuff, buffSize, AWS_NEW_FILE_PATH, year, month);
+      break;
+    }
 }
 
 

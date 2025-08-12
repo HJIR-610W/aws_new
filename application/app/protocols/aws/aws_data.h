@@ -257,6 +257,16 @@ typedef struct sunshine_r_s
   uint32_t sunshine_r_1min_acc;//1분동안 실시간 누적되는 값
 } sunshine_r_t;
 
+
+
+typedef struct min_buffer_s
+{
+  uint8_t sunshine_duration;//1분 일조
+  uint32_t solar_radiation;//1분 누적 일사
+  uint16_t rainfall;//1분 누적 우량
+} min_buffer_t;
+
+
 rainfall_t *get_rainfall(void);
 void set_rainfall_1min(float rainfall);
 void set_rainfall_10min(float rainfall);
@@ -283,5 +293,7 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min);
 void kma_data_q_init(void);
 int32_t read_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
 void send_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
+
+extern min_buffer_t g_min_buffer;
 
 #endif
