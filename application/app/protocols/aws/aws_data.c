@@ -6,10 +6,8 @@
 #include "wind_direction\wind_direction.h"
 #include "humidity\humidity.h"
 #include "barometer\barometer.h"
-
 #include "task_measure.h"
 #include "cmsis_os2.h"
-
 
 
 kma_data_ex_t g_kma_raw_ex;
@@ -17,42 +15,12 @@ kma_data_ex_t g_kma_inst_ex;
 kma_data_ex_t g_kma_1min_ex;
 kma_data_ex_t g_kma_10min_ex;
 kma_data_ex_t g_kma_1Hour_ex;
-
 rainfall_t g_rainfall;
 sunshine_t g_sunshine;
 sunshine_r_t g_sunshine_r;
 min_buffer_t g_min_buffer;
 
 osMessageQueueId_t g_kma_data_queue[2];
-
-// 실제 수집된 데이터를 AWS에서 요구하는 형태로 저장해야한다.
-
-#define AWS_CVT_TEMP(x) (x == TEMP_ERR_VAL ? -9999 : (x + 100) * 10)
-#define AWS_CVT_HUMI(x) (x == HUMI_ERR_VAL ? -9999 : (x * 10))
-#define AWS_CVT_BAROMETER(x) (x == BAROMETER_ERR_VAL ? -9999 : (x * 10))
-#define AWS_CVT_WIND_DIRECTION(x) (x == WIND_DIRECTION_ERR_VAL ? -9999 : (x * 10))
-
-#define AWS_CVT_WIND_SPEED(x) (x == WIND_SPEED_ERR_VAL ? -9999 : (x * 10))
-
-#define AWS_CVT_DEFAULT(x) (x * 10)
-#define AWS_CVT_G(x) ((x + 100) * 10)
-
-#define UNUSED_SENSOR_VAL -999
-
-
-
-
-void set_rainfall_1min(float rainfall) { g_rainfall.min = rainfall; }
-void set_rainfall_10min(float rainfall) { g_rainfall.ten_min = rainfall; }
-void set_rainfall_hourly(float rainfall) { g_rainfall.hourly = rainfall; }
-void set_rainfall_today(float rainfall) { g_rainfall.today = rainfall; }
-void set_rainfall_monthly(float rainfall) { g_rainfall.monthly = rainfall; }
-void set_rainfall_yesterday(float rainfall) { g_rainfall.yesterday = rainfall; }
-void set_rainfall_yearly(float rainfall) { g_rainfall.yearly = rainfall; }
-
-
-
-
 
 
 
@@ -81,32 +49,6 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
       break;
   }
 
-#if 0 
-  p_kma_data->temperature.enable = 1;
-  p_kma_data->wind_direction_avg.enable = 1;
-  p_kma_data->wind_speed_avg.enable = 1;
-  p_kma_data->wind_direction_instant.enable = 1;
-  p_kma_data->wind_speed_instant.enable = 1;
-  p_kma_data->precipitation.enable = 1;
-  p_kma_data->pressure.enable = 1;
-
-  p_kma_data->precipitation_presence.enable = 1;
-
-  p_kma_data->snowfall.enable = 1;
-  p_kma_data->relative_humidity.enable = 1;
-
-  p_kma_data->solar_radiation.enable = 1;
-  p_kma_data->sunshine_duration.enable = 1;
-  p_kma_data->soil_temperature_5cm.enable = 1;
-  p_kma_data->soil_temperature_10cm.enable = 1;
-
-  p_kma_data->soil_temperature_20cm.enable = 1;
-  p_kma_data->soil_temperature_30cm.enable = 1;
-  p_kma_data->soil_temperature_50cm.enable = 1;
-  p_kma_data->soil_temperature_1m.enable = 1;
-  p_kma_data->soil_temperature_1_5m.enable = 1;
-  p_kma_data->soil_temperature_3m.enable = 1;
-#endif
   return p_kma_data;
 }
 

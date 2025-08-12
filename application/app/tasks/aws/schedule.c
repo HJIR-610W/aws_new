@@ -355,12 +355,14 @@ void SecProcess(void)
   {
     float rain = (float)pSystem->mRain.rain/10.0f;
     pSystem->mRain.rain = 0;
-    set_rainfall_today(g_rainfall.today + rain);
-    set_rainfall_1min(g_rainfall.min + rain);
-    set_rainfall_10min(g_rainfall.ten_min + rain);
-    set_rainfall_hourly(g_rainfall.hourly + rain);
-    set_rainfall_monthly(g_rainfall.monthly + rain);
-    set_rainfall_yearly(g_rainfall.yearly + rain);
+
+    g_rainfall.today   += rain;
+    g_rainfall.min     += rain;
+    g_rainfall.ten_min += rain;
+    g_rainfall.hourly  += rain;
+    g_rainfall.monthly += rain;
+    g_rainfall.yearly  += rain;
+
   }
   
   mRealAws.mRainFall.sReal      = (uint16_t)(g_rainfall.today*10.0f);  
@@ -674,7 +676,8 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->mRainFall.sMonthRain = (uint16_t )(g_rainfall.monthly*10.0f);
   pAws->mRainFall.sYearRain  = (uint16_t )(g_rainfall.yearly*10.0f);
 
-  set_rainfall_1min(0);
+
+  g_rainfall.min = 0;
 
   g_sunshine_r.sunshine_r_1min = g_sunshine_r.sunshine_r_1min_acc;
   g_sunshine_r.sunshine_r_1min_acc = 0;
@@ -783,7 +786,8 @@ void Min10Process(void)
   pAws->mRainFall.sReal = (uint16_t)(g_rainfall.ten_min*10.0f);
   pAws->mRainFall.sHourRain = (uint16_t)(g_rainfall.hourly*10.0f);
 
-  set_rainfall_10min(0);
+
+  g_rainfall.ten_min = 0;
 
 #if 0 
 // 2010. 11. 30. 수정 적설량 처리
@@ -857,9 +861,7 @@ void HourProcess(DATE_TIME_BUF *pDate)
                    mRealAws.mSoilTemp1_5m.sReal);
   // 지중 온도 처리 끝
 
-
-  set_rainfall_hourly(0.0f);
-
+  g_rainfall.hourly = 0;
   g_sunshine.hourly = 0;
 }
 
@@ -902,13 +904,16 @@ void DayProcess(void)
   mMinAws.mSunshine.sMax = 0;   // 하루 총 일조
   mMinAws.mSolarRad.sMax = 0;   // 하루 총 일사
 
-  set_rainfall_yesterday(g_rainfall.today);
-  set_rainfall_1min(0.0f);
-  set_rainfall_10min(0.0f);
-  set_rainfall_hourly(0.0f);
-  set_rainfall_today(0.0f);
-  set_rainfall_monthly(0.0f);
-  set_rainfall_yearly(0.0f);
+
+  g_rainfall.yesterday = g_rainfall.today;
+
+  g_rainfall.min = 0;
+  g_rainfall.ten_min = 0;
+  g_rainfall.hourly = 0;
+  g_rainfall.today = 0;
+  g_rainfall.monthly = 0;
+  g_rainfall.yearly = 0;
+
 
 
   g_sunshine.today = 0;
@@ -916,9 +921,7 @@ void DayProcess(void)
 
 void MonthProcess(void)
 {
-  set_rainfall_monthly(0.0f);
-
-
+  g_rainfall.monthly = 0;
   g_sunshine.monthly = 0;
 }
 
@@ -1067,8 +1070,8 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
 
       Sysinfo.mSunshine.nYearSunshine =0;
       pOldDate->Year = pDate->Year;
-      set_rainfall_yearly(0.0f);
 
+      g_rainfall.yearly = 0;
       g_sunshine.yearly = 0;
     }
 }

@@ -247,12 +247,12 @@ void calculate_rain(void)
           get_daily_accu(DATA_SIZE_16, p_rain_days, pre_date.Year, pre_date.Month, pre_date.Day);
     }
 
-    set_rainfall_today(daily_rain / 10.0f);
-    set_rainfall_hourly(hourly_rain / 10.0f);
-    set_rainfall_monthly(monthly_rain / 10.0f);
-    set_rainfall_yearly(yearly_rain / 10.0f);
-    set_rainfall_10min(min10_rain / 10.0f);
-    set_rainfall_yesterday(yesterday_rain / 10.0f);
+    g_rainfall.today = daily_rain / 10.0f;
+    g_rainfall.hourly = hourly_rain / 10.0f;
+    g_rainfall.monthly = monthly_rain / 10.0f;
+    g_rainfall.yearly =  yearly_rain / 10.0f;
+    g_rainfall.ten_min = min10_rain / 10.0f;
+    g_rainfall.yesterday = yesterday_rain / 10.0f;
 
     user_free(p_rain_1min);
     user_free(p_rain_days);

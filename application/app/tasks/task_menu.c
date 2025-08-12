@@ -94,28 +94,13 @@ void draw_rain_page(screen_page_t *p_win)
 
   make_centered(buff, sizeof(buff), "RAIN", SCREEN_COLS);
   screen_page_printf(p_win, "%s",buff);
-
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YESTERDAY",
-                     g_rainfall.yesterday);
-
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "TODAY",
-                     g_rainfall.today);
-
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "1MIN",
-                     g_rainfall.min);
-
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "10MIN",
-                     g_rainfall.ten_min);
-
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "HOUR",
-                     g_rainfall.hourly);
-
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YEAR",
-                     g_rainfall.yearly);
-
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "MONTH",
-                     g_rainfall.monthly);
-
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YESTERDAY",g_rainfall.yesterday);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "TODAY", g_rainfall.today);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "1MIN", g_rainfall.min);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "10MIN",g_rainfall.ten_min);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "HOUR", g_rainfall.hourly);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YEAR", g_rainfall.yearly);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "MONTH", g_rainfall.monthly);
   screen_page_clear(p_win);
 
 }

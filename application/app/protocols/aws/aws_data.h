@@ -268,13 +268,10 @@ typedef struct min_buffer_s
 
 
 
-void set_rainfall_1min(float rainfall);
-void set_rainfall_10min(float rainfall);
-void set_rainfall_hourly(float rainfall);
-void set_rainfall_today(float rainfall);
-void set_rainfall_monthly(float rainfall);
-void set_rainfall_yesterday(float rainfall);
-void set_rainfall_yearly(float rainfall);
+
+
+
+
 
 
 
