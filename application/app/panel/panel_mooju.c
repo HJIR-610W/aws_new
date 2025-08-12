@@ -119,11 +119,11 @@ framemk[cnt++] 		= 17;																	// Length
 
 sprintf(&framemk[cnt],"%5.1f", (float)p_kma->wind_speed_avg.data / 10.0);						// 풍속
 cnt					+= 5;
-sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_yearly*10) );					// 연간 누계 강우량
+sprintf(&framemk[cnt],"%4d", (uint16_t)(g_rainfall.yearly*10) );					// 연간 누계 강우량
 cnt					+= 4;
-sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_today*10) );						// 금일  강우량
+sprintf(&framemk[cnt],"%4d", (uint16_t)(g_rainfall.today*10) );						// 금일  강우량
 cnt					+= 4;
-sprintf(&framemk[cnt],"%4d", (uint16_t)(get_rainfall()->rainfall_yesterday*10) );					// 전일  강우량
+sprintf(&framemk[cnt],"%4d", (uint16_t)(g_rainfall.yesterday*10) );					// 전일  강우량
 cnt					+= 4;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);

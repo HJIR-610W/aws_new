@@ -1950,7 +1950,7 @@
             <file>$PROJ_DIR$\release\Obj\data_accu.__cstat.et</file>
             <file>$PROJ_DIR$\stm32f407xx_flash.icf</file>
             <file>$PROJ_DIR$\release\Obj\etharp.o</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\release\Obj\test_uart.xcl</file>
             <file>$PROJ_DIR$\release\Obj\core_json.__cstat.et</file>

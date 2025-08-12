@@ -21,7 +21,6 @@ kma_data_ex_t g_kma_1Hour_ex;
 rainfall_t g_rainfall;
 sunshine_t g_sunshine;
 sunshine_r_t g_sunshine_r;
-
 min_buffer_t g_min_buffer;
 
 osMessageQueueId_t g_kma_data_queue[2];
@@ -41,40 +40,21 @@ osMessageQueueId_t g_kma_data_queue[2];
 #define UNUSED_SENSOR_VAL -999
 
 
-rainfall_t *get_rainfall(void)
-{
-  return &g_rainfall;
-}
-
-void set_rainfall_1min(float rainfall) { g_rainfall.rainfall_1min = rainfall; }
-void set_rainfall_10min(float rainfall) { g_rainfall.rainfall_10min = rainfall; }
-void set_rainfall_hourly(float rainfall) { g_rainfall.rainfall_hourly = rainfall; }
-void set_rainfall_today(float rainfall) { g_rainfall.rainfall_today = rainfall; }
-void set_rainfall_monthly(float rainfall) { g_rainfall.rainfall_monthly = rainfall; }
-void set_rainfall_yesterday(float rainfall) { g_rainfall.rainfall_yesterday = rainfall; }
-void set_rainfall_yearly(float rainfall) { g_rainfall.rainfall_yearly = rainfall; }
 
 
-sunshine_t *get_sunshine(void)
-{
-  return &g_sunshine;
-}
+void set_rainfall_1min(float rainfall) { g_rainfall.min = rainfall; }
+void set_rainfall_10min(float rainfall) { g_rainfall.ten_min = rainfall; }
+void set_rainfall_hourly(float rainfall) { g_rainfall.hourly = rainfall; }
+void set_rainfall_today(float rainfall) { g_rainfall.today = rainfall; }
+void set_rainfall_monthly(float rainfall) { g_rainfall.monthly = rainfall; }
+void set_rainfall_yesterday(float rainfall) { g_rainfall.yesterday = rainfall; }
+void set_rainfall_yearly(float rainfall) { g_rainfall.yearly = rainfall; }
 
-void set_sunshine_yesterday(uint32_t sunshine) { g_sunshine.sunshine_yesterday = sunshine; }
-void set_sunshine_1min(uint32_t sunshine) { g_sunshine.sunshine_1min = sunshine; }
-void set_sunshine_today(uint32_t sunshine) { g_sunshine.sunshine_today = sunshine; }
-void set_sunshine_hourly(uint32_t sunshine) { g_sunshine.sunshine_hourly = sunshine; }
-void set_sunshine_monthly(uint32_t sunshine) { g_sunshine.sunshine_monthly = sunshine; }
-void set_sunshine_yearly(uint32_t sunshine) { g_sunshine.sunshine_yearly = sunshine; }
 
-sunshine_r_t *get_sunshine_r(void)
-{
-  return &g_sunshine_r;
-}
 
-void set_sunshine_r_1min(uint32_t sunshine_r) { g_sunshine_r.sunshine_r_1min = sunshine_r; }
 
-void set_sunshine_r_1min_acc(uint32_t sunshine_r) { g_sunshine_r.sunshine_r_1min_acc = sunshine_r; }
+
+
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
 {

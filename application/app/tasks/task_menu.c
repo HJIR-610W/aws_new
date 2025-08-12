@@ -96,25 +96,25 @@ void draw_rain_page(screen_page_t *p_win)
   screen_page_printf(p_win, "%s",buff);
 
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YESTERDAY",
-                     get_rainfall()->rainfall_yesterday);
+                     g_rainfall.yesterday);
 
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "TODAY",
-                     get_rainfall()->rainfall_today);
+                     g_rainfall.today);
 
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "1MIN",
-                     get_rainfall()->rainfall_1min);
+                     g_rainfall.min);
 
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "10MIN",
-                     get_rainfall()->rainfall_10min);
+                     g_rainfall.ten_min);
 
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "HOUR",
-                     get_rainfall()->rainfall_hourly);
+                     g_rainfall.hourly);
 
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YEAR",
-                     get_rainfall()->rainfall_yearly);
+                     g_rainfall.yearly);
 
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "MONTH",
-                     get_rainfall()->rainfall_monthly);
+                     g_rainfall.monthly);
 
   screen_page_clear(p_win);
 
@@ -653,7 +653,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
         }
         case eAWS_DATA_AVG:
         {
-          float solar_radiation = (float)get_sunshine_r()->sunshine_r_1min_acc/1000.0f;
+          float solar_radiation = (float)g_sunshine_r.sunshine_r_1min_acc/1000.0f;
           screen_page_printf(p_win, "%-*s:%6.1f kJ/m2", SOLAR_R_WD, "SOLAR R", solar_radiation);
           break;
         }
@@ -672,8 +672,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
 
   if (p_kma->sunshine_duration.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
   {
-     uint32_t solar_d_today = get_sunshine()->sunshine_today;
-       err = p_kma->sunshine_duration.err;
+     uint32_t solar_d_today = g_sunshine.today;
+
+      err = p_kma->sunshine_duration.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));

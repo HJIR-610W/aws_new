@@ -43,11 +43,11 @@ void send_panel_aws_std(int32_t panel_port_num)
   cnt += 5;
 
   // F: 오늘 강수량
-  sprintf((char *)&packet[cnt], "F%04d", (uint16_t)(get_rainfall()->rainfall_today * 10));
+  sprintf((char *)&packet[cnt], "F%04d", (uint16_t)(g_rainfall.today * 10));
   cnt += 5;
 
   // G: 어제 강수량
-  sprintf((char *)&packet[cnt], "G%04d", (uint16_t)(get_rainfall()->rainfall_yesterday * 10));
+  sprintf((char *)&packet[cnt], "G%04d", (uint16_t)(g_rainfall.yesterday * 10));
   cnt += 5;
 
   // H: 강수유무

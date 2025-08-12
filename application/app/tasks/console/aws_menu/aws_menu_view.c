@@ -152,20 +152,20 @@ void draw_rain(win_t *p_win)
   {
     win_printf_title(p_win, "강수량");
 
-    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("전일",RAIN_WD), get_rainfall()->rainfall_yesterday);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("전일",RAIN_WD), g_rainfall.yesterday);
 
-    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("금일",RAIN_WD), get_rainfall()->rainfall_today);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("금일",RAIN_WD), g_rainfall.today);
 
-    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("1분",RAIN_WD), get_rainfall()->rainfall_1min);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("1분",RAIN_WD), g_rainfall.min);
 
-    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("10분",RAIN_WD), get_rainfall()->rainfall_10min);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("10분",RAIN_WD), g_rainfall.ten_min);
 
-    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("시간",RAIN_WD), get_rainfall()->rainfall_hourly);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("시간",RAIN_WD), g_rainfall.hourly);
 
-    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("연간",RAIN_WD), get_rainfall()->rainfall_yearly);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("연간",RAIN_WD), g_rainfall.yearly);
 
 
-    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("월간",RAIN_WD), get_rainfall()->rainfall_monthly);
+    win_printf_row(p_win, row_count++, "%s: %6.1f", m_l("월간",RAIN_WD), g_rainfall.monthly);
 
 
     p_win->total_items[page] = ALIGN_UP(row_count, p_win->view_row);
@@ -871,7 +871,7 @@ void draw_aws(win_t *p_win)
         }
         case eAWS_DATA_AVG:
         {
-          float solar_radiation = (float)get_sunshine_r()->sunshine_r_1min_acc;
+          float solar_radiation = (float)g_sunshine_r.sunshine_r_1min_acc;
           win_printf_row(p_win, row_count++, "%s: %7.1f W/m2", m_l("일사(1min)", AWS_WD), solar_radiation);
           break;
         }
@@ -888,7 +888,7 @@ void draw_aws(win_t *p_win)
   // 일조
   if (p_kma->sunshine_duration.enable && (page != eAWS_DATA_10MIN && page != eAWS_DATA_HOUR))
   {
-    uint32_t solar_d_dotay =  get_sunshine()->sunshine_today;
+    uint32_t solar_d_dotay = g_sunshine.today;
 
     err = p_kma->sunshine_duration.err;
     if (err)

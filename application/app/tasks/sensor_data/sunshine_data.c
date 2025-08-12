@@ -80,9 +80,12 @@ void calculate_sunshine(void)
     yearly_sunshine = get_yearly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
 
 
-    set_sunshine_today(daily_sunshine);
-    set_sunshine_monthly(monthly_sunshine);
-    set_sunshine_yearly(yearly_sunshine);
+
+
+    g_sunshine.monthly = monthly_sunshine;
+    g_sunshine.today = daily_sunshine;
+    g_sunshine.yearly = yearly_sunshine;
+
 
     user_free(p_sunshine_1min);
     user_free(p_sunshine_days);

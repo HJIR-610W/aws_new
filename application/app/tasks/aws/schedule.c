@@ -355,21 +355,21 @@ void SecProcess(void)
   {
     float rain = (float)pSystem->mRain.rain/10.0f;
     pSystem->mRain.rain = 0;
-    set_rainfall_today(get_rainfall()->rainfall_today + rain);
-    set_rainfall_1min(get_rainfall()->rainfall_1min + rain);
-    set_rainfall_10min(get_rainfall()->rainfall_10min + rain);
-    set_rainfall_hourly(get_rainfall()->rainfall_hourly + rain);
-    set_rainfall_monthly(get_rainfall()->rainfall_monthly + rain);
-    set_rainfall_yearly(get_rainfall()->rainfall_yearly + rain);
+    set_rainfall_today(g_rainfall.today + rain);
+    set_rainfall_1min(g_rainfall.min + rain);
+    set_rainfall_10min(g_rainfall.ten_min + rain);
+    set_rainfall_hourly(g_rainfall.hourly + rain);
+    set_rainfall_monthly(g_rainfall.monthly + rain);
+    set_rainfall_yearly(g_rainfall.yearly + rain);
   }
   
-  mRealAws.mRainFall.sReal      = (uint16_t)(get_rainfall()->rainfall_today*10.0f);  
-  mRealAws.mRainFall.sHourRain  = (uint16_t)(get_rainfall()->rainfall_hourly*10.0f); 
-  mRealAws.mRainFall.sMonthRain = (uint16_t)(get_rainfall()->rainfall_monthly*10.0f);  
-  mRealAws.mRainFall.sYearRain  = (uint16_t)(get_rainfall()->rainfall_yearly*10.0f);
+  mRealAws.mRainFall.sReal      = (uint16_t)(g_rainfall.today*10.0f);  
+  mRealAws.mRainFall.sHourRain  = (uint16_t)(g_rainfall.hourly*10.0f); 
+  mRealAws.mRainFall.sMonthRain = (uint16_t)(g_rainfall.monthly*10.0f);  
+  mRealAws.mRainFall.sYearRain  = (uint16_t)(g_rainfall.yearly*10.0f);
 
-  m10MinAws.mRainFall.sReal = (uint16_t)(get_rainfall()->rainfall_today*10.0f);
-  mHourAws.mRainFall.sReal = (uint16_t)(get_rainfall()->rainfall_today*10.0f);
+  m10MinAws.mRainFall.sReal = (uint16_t)(g_rainfall.today*10.0f);
+  mHourAws.mRainFall.sReal = (uint16_t)(g_rainfall.today*10.0f);
 
   // 강우 감지 처리 (초 단위로 처리)
   mMinAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
@@ -441,23 +441,17 @@ void SecProcess(void)
   // 일조 
   if (mRealAws.mSunshine.sReal)
   {
-    uint32_t sunshine;
-
-    sunshine = get_sunshine()->sunshine_1min + 1;
-    set_sunshine_1min(sunshine);
-    sunshine =  get_sunshine()->sunshine_today +1;
-    set_sunshine_today(sunshine);
-    sunshine = get_sunshine()->sunshine_monthly +1;
-    set_sunshine_monthly(sunshine);
-    sunshine = get_sunshine()->sunshine_yearly + 1;
-    set_sunshine_yearly(sunshine);
+    g_sunshine.min++;
+    g_sunshine.today++;
+    g_sunshine.monthly++;
+    g_sunshine.yearly++;
   }
 
   if (mRealAws.mSolarRad.sReal != 9999)
   {  
     uint32_t sunshine_r = 0;
-    sunshine_r = get_sunshine_r()->sunshine_r_1min_acc+mRealAws.mSolarRad.sReal;
-    set_sunshine_r_1min_acc(sunshine_r);
+    sunshine_r = g_sunshine_r.sunshine_r_1min_acc+mRealAws.mSolarRad.sReal;
+    g_sunshine_r.sunshine_r_1min_acc = sunshine_r;
   }
 
 }
@@ -603,9 +597,9 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pSystem->mHumidBuf[MIN10_PROC].lTot += pAws->mHumidity.sReal;
   pSystem->mHumidBuf[MIN10_PROC].sAddCnt++;
 
-  pSystem->mSun[MIN10_PROC].nSunshineTot += get_sunshine()->sunshine_1min;
+  pSystem->mSun[MIN10_PROC].nSunshineTot +=  g_sunshine.min;
   // 단위변환 W/M2 -> MJ/M2
-  pSystem->mSun[MIN10_PROC].nSolarTot += get_sunshine_r()->sunshine_r_1min/ 1000000;  
+  pSystem->mSun[MIN10_PROC].nSolarTot += g_sunshine_r.sunshine_r_1min/ 1000000;  
 
   // 풍향 풍속
   WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN1_PROC], &mRealAws.mWind);
@@ -615,11 +609,11 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   // 일사 일조
   // 일조 1분 누적값
-  pAws->mSunshine.sReal = get_sunshine()->sunshine_1min;
-  set_sunshine_1min(0);
-  pAws->mSunshine.sMax = get_sunshine()->sunshine_today;
+  pAws->mSunshine.sReal = g_sunshine.min;
+  g_sunshine.min = 0;
+  pAws->mSunshine.sMax = g_sunshine.today;
 
-  pAws->mSolarRad.sReal = get_sunshine_r()->sunshine_r_1min_acc / 1000; // 일사 1분   누적값  KJ/m2
+  pAws->mSolarRad.sReal = g_sunshine_r.sunshine_r_1min_acc / 1000; // 일사 1분   누적값  KJ/m2
 
   pSystem->mSun[MIN10_PROC].nSolarTot += pAws->mSolarRad.sReal;
   pAws->mSolarRad.sMax += pAws->mSolarRad.sReal;  // 하루 총 일사
@@ -674,15 +668,16 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   // 강수량 처리
   // 2010. 08. 28. 수정
-  pAws->rain_1min = (uint16_t)(get_rainfall()->rainfall_1min*10.0f);
-  pAws->mRainFall.sReal = (uint16_t)(get_rainfall()->rainfall_today * 10.0f);
-  pAws->mRainFall.sHourRain  = (uint16_t )(get_rainfall()->rainfall_hourly*10.0f);
-  pAws->mRainFall.sMonthRain = (uint16_t )(get_rainfall()->rainfall_monthly*10.0f);
-  pAws->mRainFall.sYearRain  = (uint16_t )(get_rainfall()->rainfall_yearly*10.0f);
+  pAws->rain_1min = (uint16_t)(g_rainfall.min*10.0f);
+  pAws->mRainFall.sReal = (uint16_t)(g_rainfall.today * 10.0f);
+  pAws->mRainFall.sHourRain  = (uint16_t )(g_rainfall.hourly*10.0f);
+  pAws->mRainFall.sMonthRain = (uint16_t )(g_rainfall.monthly*10.0f);
+  pAws->mRainFall.sYearRain  = (uint16_t )(g_rainfall.yearly*10.0f);
 
   set_rainfall_1min(0);
-  set_sunshine_r_1min(get_sunshine_r()->sunshine_r_1min_acc);
-  set_sunshine_r_1min_acc(0);
+
+  g_sunshine_r.sunshine_r_1min = g_sunshine_r.sunshine_r_1min_acc;
+  g_sunshine_r.sunshine_r_1min_acc = 0;
 
   pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
 
@@ -785,8 +780,8 @@ void Min10Process(void)
   // 지중 온도 처리 끝
 
   // 강수량 처리
-  pAws->mRainFall.sReal = (uint16_t)(get_rainfall()->rainfall_10min*10.0f);
-  pAws->mRainFall.sHourRain = (uint16_t)(get_rainfall()->rainfall_hourly*10.0f);
+  pAws->mRainFall.sReal = (uint16_t)(g_rainfall.ten_min*10.0f);
+  pAws->mRainFall.sHourRain = (uint16_t)(g_rainfall.hourly*10.0f);
 
   set_rainfall_10min(0);
 
@@ -864,7 +859,8 @@ void HourProcess(DATE_TIME_BUF *pDate)
 
 
   set_rainfall_hourly(0.0f);
-  set_sunshine_hourly(0);
+
+  g_sunshine.hourly = 0;
 }
 
 void DayProcess(void)
@@ -906,7 +902,7 @@ void DayProcess(void)
   mMinAws.mSunshine.sMax = 0;   // 하루 총 일조
   mMinAws.mSolarRad.sMax = 0;   // 하루 총 일사
 
-  set_rainfall_yesterday(get_rainfall()->rainfall_today);
+  set_rainfall_yesterday(g_rainfall.today);
   set_rainfall_1min(0.0f);
   set_rainfall_10min(0.0f);
   set_rainfall_hourly(0.0f);
@@ -914,13 +910,16 @@ void DayProcess(void)
   set_rainfall_monthly(0.0f);
   set_rainfall_yearly(0.0f);
 
-  set_sunshine_today(0);
+
+  g_sunshine.today = 0;
 }
 
 void MonthProcess(void)
 {
   set_rainfall_monthly(0.0f);
-  set_sunshine_monthly(0.0f);
+
+
+  g_sunshine.monthly = 0;
 }
 
 // 풍향,풍속으로 바람벡터 성분 분해
@@ -1069,7 +1068,8 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
       Sysinfo.mSunshine.nYearSunshine =0;
       pOldDate->Year = pDate->Year;
       set_rainfall_yearly(0.0f);
-      set_sunshine_yearly(0.0f);
+
+      g_sunshine.yearly = 0;
     }
 }
 
@@ -1127,12 +1127,12 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->wind_speed_avg.max = pAws->mWind.mSpeed.sMax;
 
   // 일조
-  p_kma_data->sunshine_duration.data = get_sunshine()->sunshine_today;
+  p_kma_data->sunshine_duration.data = g_sunshine.today;
 
   // 일사 // mSolarRad.sReal kw/m2 단위인데 전송시에는 mj/m2 *100 한값이 전송되어야함
   // 따라서 여기서 10으로 한번더 나누어 준다 .즉 data는 최종 전송되는 데이터 포맷이다.
   //에너지(J) = 전력(W)*시간(s)
-  p_kma_data->solar_radiation.data = get_sunshine_r()->sunshine_r_1min/ 10000; 
+  p_kma_data->solar_radiation.data = g_sunshine_r.sunshine_r_1min/ 10000; 
   p_kma_data->solar_radiation.max = pAws->mSolarRad.sMax;  // 일간
 
   // 지중 온도

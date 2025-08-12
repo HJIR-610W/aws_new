@@ -232,23 +232,23 @@ typedef struct
 
 typedef struct rainfall_s
 {
-  float rainfall_1min;
-  float rainfall_10min;
-  float rainfall_hourly;
-  float rainfall_today;
-  float rainfall_yesterday; 
-  float rainfall_monthly;  
-  float rainfall_yearly;   
+  float min;
+  float ten_min;
+  float hourly;
+  float today;
+  float yesterday; 
+  float monthly;  
+  float yearly;   
 }rainfall_t;
 
 typedef struct sunshine_s
 {
-  uint32_t sunshine_yesterday;
-  uint32_t sunshine_1min;
-  uint32_t sunshine_today;
-  uint32_t sunshine_hourly;
-  uint32_t sunshine_monthly;
-  uint32_t sunshine_yearly;
+  uint32_t yesterday;
+  uint32_t min;
+  uint32_t today;
+  uint32_t hourly;
+  uint32_t monthly;
+  uint32_t yearly;
 } sunshine_t;
 
 typedef struct sunshine_r_s
@@ -267,7 +267,7 @@ typedef struct min_buffer_s
 } min_buffer_t;
 
 
-rainfall_t *get_rainfall(void);
+
 void set_rainfall_1min(float rainfall);
 void set_rainfall_10min(float rainfall);
 void set_rainfall_hourly(float rainfall);
@@ -276,16 +276,9 @@ void set_rainfall_monthly(float rainfall);
 void set_rainfall_yesterday(float rainfall);
 void set_rainfall_yearly(float rainfall);
 
-sunshine_t *get_sunshine(void);
-void set_sunshine_hourly(uint32_t sunshine);
-void set_sunshine_today(uint32_t sunshine);
-void set_sunshine_monthly(uint32_t sunshine);
-void set_sunshine_yesterday(uint32_t sunshine);
-void set_sunshine_yearly(uint32_t sunshine);
-void set_sunshine_1min(uint32_t sunshine);
-sunshine_r_t *get_sunshine_r(void);
-void set_sunshine_r_1min(uint32_t sunshine_r);
-void set_sunshine_r_1min_acc(uint32_t sunshine_r);
+
+
+
 
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min);
@@ -295,5 +288,9 @@ int32_t read_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
 void send_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
 
 extern min_buffer_t g_min_buffer;
+
+extern sunshine_t g_sunshine;;
+extern rainfall_t g_rainfall;
+extern sunshine_r_t g_sunshine_r;
 
 #endif

@@ -56,7 +56,7 @@ void send_panel_hansung(int32_t panel_port_num)
 	cnt					+= 5;
 	sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.data - 1000.0))/10.0); //실측값 전송
 	cnt					+= 5;
-	sprintf(&framemk[cnt],"%5.1f%5.1f", (float)get_rainfall()->rainfall_today, (float)get_rainfall()->rainfall_yesterday);
+	sprintf(&framemk[cnt],"%5.1f%5.1f", (float)g_rainfall.today, (float)g_rainfall.yesterday);
 	cnt					+= 10;
 	framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
 

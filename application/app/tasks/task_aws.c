@@ -648,12 +648,12 @@ void update_kma_real(void)
 
 
   //[사용]
-  p_kma3->solar_radiation.data    = (uint16_t)(get_sunshine_r()->sunshine_r_1min_acc/1000.0);
+  p_kma3->solar_radiation.data    = (uint16_t)(g_sunshine_r.sunshine_r_1min_acc/1000.0);
 
   p_kma3->solar_radiation.max = mRealAws.mSolarRad.sMax;//일간
   p_kma3->solar_radiation.err = get_sensor_err(B1_SOLAR_RADIATION);
   //[사용]
-  p_kma3->sunshine_duration.data = get_sunshine()->sunshine_today;
+  p_kma3->sunshine_duration.data = g_sunshine.today;
   p_kma3->sunshine_duration.err = get_sensor_err(B2_SUNSHINE_DURATION);
 
 
