@@ -1399,6 +1399,9 @@
                 <group>
                     <name>sensor_data</name>
                     <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\sensor_data\aws_default_data.c</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\application\app\tasks\sensor_data\rain_data.c</name>
                     </file>
                     <file>
@@ -1713,13 +1716,13 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\terminal_bridge.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
@@ -1943,7 +1946,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -2012,7 +2015,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\rtc\ds1306.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
@@ -2027,7 +2030,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</name>
                 </file>
             </group>
             <group>
@@ -2351,7 +2354,7 @@
                     <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.c</name>
