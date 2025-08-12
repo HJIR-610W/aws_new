@@ -11,7 +11,7 @@
 #include "menu_handler.h"
 #include "util_time.h"
 #include "view_driver.h"
-
+#include "task_logging.h"
 
 #define SYSTEM_WD 8
 
@@ -86,6 +86,7 @@ int32_t setup_menu_system(void)
           nt.Day = day;
           drv_rtc_set(&nt);
           drv_rtc_read(&Date_Time);
+                    log_printf(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
         }
         break;
         case SYSTEM_MENU_TIME:
@@ -108,6 +109,7 @@ int32_t setup_menu_system(void)
           nt.Sec = sec;
           drv_rtc_set(&nt);
           drv_rtc_read(&Date_Time);
+                    log_printf(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
         }
       break;
       case SYSTEM_MENU_ID:

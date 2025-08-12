@@ -22,6 +22,7 @@
 #include "util_memory.h"
 #include "util_time.h"
 #include "schedule.h"
+#include "task_logging.h"
 
 #define REQ_BLOCK_BEFORE_SEC 5 //너무 이른 요청은 무시 
 
@@ -792,7 +793,9 @@ uint16_t kma_cmd_handler_AT(uint8_t *frame, uint8_t *send)
   nt.Min = req->time_mm;
   nt.Sec = req->time_ss;
 
-  bsp_rtc_set(&nt);
+  drv_rtc_set(&nt);
+  drv_rtc_read(&Date_Time);
+  log_printf(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
 
   len = make_kma3_resp_RODTWC(packet, sizeof(packet), station_id, req->command_str[1], "OKAY");
 

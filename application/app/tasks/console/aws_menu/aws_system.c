@@ -8,6 +8,7 @@
 #include "drv_rtc.h"
 #include "console_scanf.h"
 #include "cli_input.h"
+#include "task_logging.h"
 
 const char* g_chargerList[] = {"화진 스마트", "LS1024"};
 
@@ -103,8 +104,9 @@ int aws_setup_menu_system(void)
             break;
 
           drv_rtc_set(&nt);
-          drv_rtc_read(&Date_Time);
 
+          drv_rtc_read(&Date_Time);
+          log_printf(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
         break;
       case 2:  // id
         status = input_decimal_prompt("ID",&dec,0, 9999);

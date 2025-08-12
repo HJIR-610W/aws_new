@@ -224,13 +224,13 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.c</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.h</file>
-            <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\charger\hjsmartCharger.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\charger\ls1024.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\barometer\jinsung_sjgp215.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\rtc\ds1306.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\font\font_6x8.c</file>
@@ -1624,7 +1624,7 @@
             <file>$PROJ_DIR$\release\Obj\inet6.xcl</file>
             <file>$PROJ_DIR$\release\Obj\app_screen.xcl</file>
             <file>$PROJ_DIR$\..\Application\Tasks\console\console_test.h</file>
-            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.h</file>
+            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_rtc.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_spi.__cstat.et</file>
             <file>$PROJ_DIR$\..\Application\test\test_rtc.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_ll_adc.xcl</file>
@@ -2146,14 +2146,14 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_frequency.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_do.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_iwdg.o</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\aws\old_aws_define.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\aws\old_aws_define.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\console_scanf.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sys.h</file>
             <file>$PROJ_DIR$\release\Obj\app_fram.o</file>
             <file>$PROJ_DIR$\..\Application\App_drivers\lcd\font_6x8.h</file>
             <file>$PROJ_DIR$\release\Obj\hjtemp_menu.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\release\Obj\sys.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\base64.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_eth.o</file>
@@ -2255,7 +2255,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_flash.xcl</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\app_console.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\aws\schedule.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\aws\schedule.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_data_handler.__cstat.et</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_manager.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netbuf.h</file>
@@ -2334,11 +2334,11 @@
             <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\list.h</file>
             <file>$PROJ_DIR$\release\Obj\wind_data.o</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_calibration.h</file>
             <file>$PROJ_DIR$\release\Obj\etharp.o</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rtc.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\raw_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\sunshine_data.h</file>
@@ -2550,7 +2550,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_rtc.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_mux.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\dhcp.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_rain.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_eth.h</file>
@@ -3171,7 +3171,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2243 1398 967 1368 956 2127 1495 288 962 2468 1796 2172 1828 512 162 1006 2321 2068 563 1033 2224 1386 2016 1775 672 204 1435 1320 1463 1412 1959 1384 2471 2436 2398 2497 583 1966 1860 2031 136 2542 299 282 1058 218 154 2329 199 173 196 1008 1575 2090 864 2109 2049 2134 1865 1811 1636 1919 2411 1466 1982 1709 1656 2076 1784 2397 1548 1568 2093 2106 1861 1329 2386 1872 2125 2484 1451 2124 1580 1551 2453 2010 2332 647 1812 2212 649 2191 1438 1020 2117 628 1898 205 1916 184 177 158 1556 2482 203 1063 2545 2148 2333 2141 2014 99 568 2250</file>
+                    <file> 2243 1398 967 1368 956 2127 1495 288 962 2468 1796 2172 1828 512 162 1006 2321 2068 563 1033 2224 1386 2016 1775 672 204 1435 1320 1463 1412 1959 1384 2471 2436 2398 2497 583 1966 1860 2031 136 2542 299 282 1058 218 154 2329 199 173 196 1008 1575 2090 864 2109 2049 2134 1865 1811 1636 1919 2411 1466 1982 1709 1656 2076 1784 2397 1548 1568 2093 2106 1861 1329 2386 1872 2125 2484 1451 2124 1580 1551 2453 2010 2332 647 1812 2212 649 2191 1438 1020 2117 628 1898 205 1916 184 177 158 1556 2482 203 1063 2545 2148 2333 2141 2014 99 568 2250 1911</file>
                 </tool>
             </inputs>
         </file>
@@ -3688,7 +3688,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2405 1398 967 1368 956 2127 1495 2382 1916 672 2224 1248 2287 1063 962 2542 583 1966 1860 2031 299 282 1058 218 1556 1796 288 2468 2172 1828 512 162 1006 2321 2068 563 1033 2482 2385 2370 2126 2006 2223</file>
+                    <file> 2405 1398 967 1368 956 2127 1495 2382 1916 672 2224 1248 2287 1063 962 2542 583 1966 1860 2031 299 282 1058 218 1556 1796 288 2468 2172 1828 512 162 1006 2321 2068 563 1033 2482 2385 2370 2126 2006 2223 1911</file>
                 </tool>
             </inputs>
         </file>
@@ -4332,7 +4332,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2370 2385 1398 967 1368 956 2127 1495 962 203 1063 282 563 1033 2224 583 1966 1860 2031 1556 1796 288 2468 2172 1828 512 162 1006 2321 2068 2482 2542 299 1058 218 2142 2420 1953 1756 1386 2016 672 2110 2501</file>
+                    <file> 2370 2385 1398 967 1368 956 2127 1495 962 203 1063 282 563 1033 2224 583 1966 1860 2031 1556 1796 288 2468 2172 1828 512 162 1006 2321 2068 2482 2542 299 1058 218 2142 2420 1953 1756 1386 2016 672 2110 2501 1911</file>
                 </tool>
             </inputs>
         </file>
