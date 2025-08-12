@@ -47,7 +47,7 @@
 #include "bsp_delay.h"
 #include "util_memory.h"
 #include "util_time.h"
-#include "aws_processor.h"
+
 #include "os_user_def.h"
 
 #define MEASURE_PERIOD_250MS 250

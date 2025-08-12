@@ -271,7 +271,7 @@ uint16_t kma_cmd_handler_AI(uint8_t *rx_frame, uint8_t *tx_frame)
   kma2_response_t kma2_response;
 
   p_kma3_data = pvPortMalloc(sizeof(kma_data_ex_t));
-  if (read_kma_data(KMA_DATA_Q_AVG, p_kma3_data))
+  if (read_kma_data(eKMA_DATA_Q_AVG, p_kma3_data))
   {//최근에 업데이트 된 자료가 없으면 이전 자료로 응답
     if (g_kma_data_ai_updated)//가장최근에 업데이트 된 자료 없으면 응답 안함
     {
@@ -358,7 +358,7 @@ uint16_t kma_cmd_handler_AB(uint8_t *rx_frame, uint8_t *tx_frame)
 
   p_kma_data = pvPortMalloc(sizeof(kma_data_ex_t));
 
-  if (read_kma_data(KMA_DATA_Q_1MIN, p_kma_data))
+  if (read_kma_data(eKMA_DATA_Q_1MIN, p_kma_data))
   {
     if (g_kma_data_ab_updated)
     {

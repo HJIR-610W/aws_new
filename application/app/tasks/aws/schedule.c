@@ -437,17 +437,12 @@ void SecProcess(void)
       pSystem->mWind[2].sGustDircMax = wind_deg;
     }
   }
-  // 3초 이동 평균(1초 Sample)
-  //    mRealAws.mWind.mDirection.sReal   = sAvgDirection; // 1초 풍향
-  //    Dualport.c에서 처리함(0.25초 간격으로)
-  // 일사 일조 처리
+
+  // 일조 
   if (mRealAws.mSunshine.sReal)
   {
     uint32_t sunshine;
-
-    pSystem->mSun[MIN1_PROC].nSunshineTot += 1;  // 1분 누적 일조
-
-    sunshine = get_sunshine()->sunshine_1min +1;
+    sunshine = get_sunshine()->sunshine_1min + 1;
     set_sunshine_1min(sunshine);
     sunshine =  get_sunshine()->sunshine_today +1;
     set_sunshine_today(sunshine);
@@ -607,24 +602,19 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pSystem->mHumidBuf[MIN10_PROC].lTot += pAws->mHumidity.sReal;
   pSystem->mHumidBuf[MIN10_PROC].sAddCnt++;
 
-  pSystem->mSun[MIN10_PROC].nSunshineTot += pSystem->mSun[MIN1_PROC].nSunshineTot;
+  pSystem->mSun[MIN10_PROC].nSunshineTot += get_sunshine()->sunshine_1min;
   // 단위변환 W/M2 -> MJ/M2
   pSystem->mSun[MIN10_PROC].nSolarTot += get_sunshine_r()->sunshine_r_1min/ 1000000;  
 
   // 풍향 풍속
   WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN1_PROC], &mRealAws.mWind);
-  DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,
-               &pSystem->mWind[MIN10_PROC].uTot,
-               &pSystem->mWind[MIN10_PROC].vTot);
+  DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,&pSystem->mWind[MIN10_PROC].uTot,&pSystem->mWind[MIN10_PROC].vTot);
   pSystem->mWind[MIN10_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal;  // 1분 "
   pSystem->mWind[MIN10_PROC].sAddCnt++;
 
   // 일사 일조
   // 일조 1분 누적값
   pAws->mSunshine.sReal = get_sunshine()->sunshine_1min;
-
-  pSystem->mSun[MIN1_PROC].nSunshineTot = 0;
-
   pAws->mSolarRad.sReal =  get_sunshine_r()->sunshine_r_1min_acc / 1000;  // 일사 1분   누적값  KJ/m2
 
   pSystem->mSun[MIN10_PROC].nSolarTot += pAws->mSolarRad.sReal;
@@ -680,7 +670,8 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   // 강수량 처리
   // 2010. 08. 28. 수정
-  pAws->mRainFall.sReal      = (uint16_t )(get_rainfall()->rainfall_today*10.0f);
+  pAws->rain_1min = (uint16_t)(get_rainfall()->rainfall_1min*10.0f);
+  pAws->mRainFall.sReal = (uint16_t)(get_rainfall()->rainfall_today * 10.0f);
   pAws->mRainFall.sHourRain  = (uint16_t )(get_rainfall()->rainfall_hourly*10.0f);
   pAws->mRainFall.sMonthRain = (uint16_t )(get_rainfall()->rainfall_monthly*10.0f);
   pAws->mRainFall.sYearRain  = (uint16_t )(get_rainfall()->rainfall_yearly*10.0f);
@@ -1195,6 +1186,6 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   if(min == eAWS_DATA_1MIN)
   {
     p_kma_data->time_stamp = time_timestamp();
-    send_kma_data(KMA_DATA_Q_1MIN, p_kma_data); // 실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
+    send_kma_data(eKMA_DATA_Q_1MIN, p_kma_data); // 실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
   }
 }

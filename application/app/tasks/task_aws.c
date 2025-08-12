@@ -931,7 +931,7 @@ void update_kma_real(void)
   BIT_UPDATE(p_kma3->Y_volateStatus, System.door_opened, KMA2_PWRSTAT_DOOR_OPEN);
 
   p_kma3->time_stamp = time_timestamp();
-  send_kma_data(KMA_DATA_Q_AVG,p_kma3);//실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
+  send_kma_data(eKMA_DATA_Q_AVG,p_kma3);//실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
 }
 
 /**

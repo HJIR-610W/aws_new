@@ -180,7 +180,7 @@ void make_sensorStatus_kma3(uint8_t sensorState[8], uint8_t status)
 uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend, uint16_t lpSendSize, kma_data_ex_t *aws)
 {
   uint32_t cnt = 0;
-  const int16_t unusedSensor = -999;
+  uint16_t unsued_sensor_value = (uint16_t)-999;
 
   memset(lpSend, 0, lpSendSize);
 
@@ -189,190 +189,132 @@ uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend, uint16_t lpSendSize, kma_da
     return 0;
   }
 
-  SetWord(&lpSend[cnt],
-          aws->temperature.enable ? aws->temperature.data : unusedSensor);  // A-1 기온
+  SetWord(&lpSend[cnt], aws->temperature.enable ? aws->temperature.data : unsued_sensor_value);  // A-1 기온
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->wind_direction_avg.enable ? aws->wind_direction_avg.data
-                                                       : unusedSensor);  // A-2 풍향
+  SetWord(&lpSend[cnt], aws->wind_direction_avg.enable ? aws->wind_direction_avg.data: unsued_sensor_value);  // A-2 풍향
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->wind_speed_avg.enable ? aws->wind_speed_avg.data : unusedSensor);  // A-3 풍속
+  SetWord(&lpSend[cnt], aws->wind_speed_avg.enable ? aws->wind_speed_avg.data : unsued_sensor_value);  // A-3 풍속
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->wind_direction_instant.enable ? aws->wind_direction_instant.data
-                                                           : unusedSensor);  // A-4 순간 풍향
+  SetWord(&lpSend[cnt], aws->wind_direction_instant.enable ? aws->wind_direction_instant.data  : unsued_sensor_value);  // A-4 순간 풍향
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->wind_speed_instant.enable ? aws->wind_speed_instant.data
-                                                       : unusedSensor);  // A-5 순간 풍속
+  SetWord(&lpSend[cnt], aws->wind_speed_instant.enable ? aws->wind_speed_instant.data : unsued_sensor_value);  // A-5 순간 풍속
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->precipitation.enable ? aws->precipitation.data : unusedSensor);  // A-6 강수량
+  SetWord(&lpSend[cnt], aws->precipitation.enable ? aws->precipitation.data : unsued_sensor_value);  // A-6 강수량
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->pressure.enable ? aws->pressure.data : unusedSensor);  // A-7 기압
+  SetWord(&lpSend[cnt], aws->pressure.enable ? aws->pressure.data : unsued_sensor_value);  // A-7 기압
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->precipitation_presence.enable ? aws->precipitation_presence.data
-                                                           : unusedSensor);  // A-8 강수유무
+  SetWord(&lpSend[cnt], aws->precipitation_presence.enable ? aws->precipitation_presence.data: unsued_sensor_value);  // A-8 강수유무
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->snowfall.enable ? aws->snowfall.data : unusedSensor);  // A-9 적설
+  SetWord(&lpSend[cnt], aws->snowfall.enable ? aws->snowfall.data : unsued_sensor_value);  // A-9 적설
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->relative_humidity.enable ? aws->relative_humidity.data
-                                                      : unusedSensor);  // A-10 상대습도
+  SetWord(&lpSend[cnt], aws->relative_humidity.enable ? aws->relative_humidity.data: unsued_sensor_value);  // A-10 상대습도
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->solar_radiation.enable ? aws->solar_radiation.data : unusedSensor);  // A-11 강수량
+  SetWord(&lpSend[cnt], aws->solar_radiation.enable ? aws->solar_radiation.data : unsued_sensor_value);  // A-11 강수량
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->solar_radiation.enable ? aws->solar_radiation.data : unusedSensor);  // B-1 일사
+  SetWord(&lpSend[cnt], aws->solar_radiation.enable ? aws->solar_radiation.data : unsued_sensor_value);  // B-1 일사
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->sunshine_duration.enable ? aws->sunshine_duration.data : unusedSensor);  // B-2 일조
+  SetWord(&lpSend[cnt], aws->sunshine_duration.enable ? aws->sunshine_duration.data : unsued_sensor_value);  // B-2 일조
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->surface_temperature.enable ? aws->surface_temperature.data
-                                                        : unusedSensor);  // B-3 지면온도
+  SetWord(&lpSend[cnt], aws->surface_temperature.enable ? aws->surface_temperature.data : unsued_sensor_value);  // B-3 지면온도
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->grass_temperature.enable ? aws->grass_temperature.data
-                                                      : unusedSensor);  // B-4 초상온도
+  SetWord(&lpSend[cnt], aws->grass_temperature.enable ? aws->grass_temperature.data: unsued_sensor_value);  // B-4 초상온도
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->soil_temperature_5cm.enable ? aws->soil_temperature_5cm.data
-                                                         : unusedSensor);  // B-5 지중온도 5cm
+  SetWord(&lpSend[cnt], aws->soil_temperature_5cm.enable ? aws->soil_temperature_5cm.data: unsued_sensor_value);  // B-5 지중온도 5cm
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->soil_temperature_10cm.enable ? aws->soil_temperature_10cm.data
-                                                          : unusedSensor);  // B-6 지중온도 10cm
+  SetWord(&lpSend[cnt], aws->soil_temperature_10cm.enable ? aws->soil_temperature_10cm.data : unsued_sensor_value);  // B-6 지중온도 10cm
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->soil_temperature_20cm.enable ? aws->soil_temperature_20cm.data
-                                                          : unusedSensor);  // B-7 지중온도 20cm
+  SetWord(&lpSend[cnt], aws->soil_temperature_20cm.enable ? aws->soil_temperature_20cm.data: unsued_sensor_value);  // B-7 지중온도 20cm
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->soil_temperature_30cm.enable ? aws->soil_temperature_30cm.data
-                                                          : unusedSensor);  // B-8 지중온도 30cm
+  SetWord(&lpSend[cnt], aws->soil_temperature_30cm.enable ? aws->soil_temperature_30cm.data : unsued_sensor_value);  // B-8 지중온도 30cm
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->soil_temperature_50cm.enable ? aws->soil_temperature_50cm.data
-                                                          : unusedSensor);  // B-9 지중온도 50cm
+  SetWord(&lpSend[cnt], aws->soil_temperature_50cm.enable ? aws->soil_temperature_50cm.data : unsued_sensor_value);  // B-9 지중온도 50cm
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->soil_temperature_1m.enable ? aws->soil_temperature_1m.data
-                                                        : unusedSensor);  // B-10 지중온도 1.0m
+  SetWord(&lpSend[cnt], aws->soil_temperature_1m.enable ? aws->soil_temperature_1m.data : unsued_sensor_value);  // B-10 지중온도 1.0m
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->soil_temperature_1_5m.enable ? aws->soil_temperature_1_5m.data
-                                                          : unusedSensor);  // B-11 지중온도 1.5m
+  SetWord(&lpSend[cnt], aws->soil_temperature_1_5m.enable ? aws->soil_temperature_1_5m.data : unsued_sensor_value);  // B-11 지중온도 1.5m
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->soil_temperature_3m.enable ? aws->soil_temperature_3m.data
-                                                        : unusedSensor);  // B-12 지중온도 3.0m
+  SetWord(&lpSend[cnt], aws->soil_temperature_3m.enable ? aws->soil_temperature_3m.data : unsued_sensor_value);  // B-12 지중온도 3.0m
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->soil_temperature_5m.enable ? aws->soil_temperature_5m.data
-                                                        : unusedSensor);  // B-13 지중온도 5.0m
+  SetWord(&lpSend[cnt], aws->soil_temperature_5m.enable ? aws->soil_temperature_5m.data : unsued_sensor_value);  // B-13 지중온도 5.0m
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->cloud_height_1st.enable ? aws->cloud_height_1st.data
-                                                     : unusedSensor);  // C-1 1층 운고
+  SetWord(&lpSend[cnt], aws->cloud_height_1st.enable ? aws->cloud_height_1st.data : unsued_sensor_value);  // C-1 1층 운고
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->cloud_height_2nd.enable ? aws->cloud_height_2nd.data
-                                                     : unusedSensor);  // C-2 2층 운고
+  SetWord(&lpSend[cnt], aws->cloud_height_2nd.enable ? aws->cloud_height_2nd.data : unsued_sensor_value);  // C-2 2층 운고
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->cloud_height_3rd.enable ? aws->cloud_height_3rd.data
-                                                     : unusedSensor);  // C-3 3층 운고
+  SetWord(&lpSend[cnt], aws->cloud_height_3rd.enable ? aws->cloud_height_3rd.data: unsued_sensor_value);  // C-3 3층 운고
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->cloud_amount.enable ? aws->cloud_amount.data : unusedSensor);  // C-4 운량
+  SetWord(&lpSend[cnt], aws->cloud_amount.enable ? aws->cloud_amount.data : unsued_sensor_value);  // C-4 운량
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->visibility.enable ? aws->visibility.data : unusedSensor);  // C-5 시정
+  SetWord(&lpSend[cnt], aws->visibility.enable ? aws->visibility.data : unsued_sensor_value);  // C-5 시정
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->pm10_concentration.enable ? aws->pm10_concentration.data
-                                                       : unusedSensor);  // C-6 PM10
+  SetWord(&lpSend[cnt], aws->pm10_concentration.enable ? aws->pm10_concentration.data : unsued_sensor_value);  // C-6 PM10
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->pm25_concentration.enable ? aws->pm25_concentration.data
-                                                       : unusedSensor);  // C-7 PM2.5
+  SetWord(&lpSend[cnt], aws->pm25_concentration.enable ? aws->pm25_concentration.data: unsued_sensor_value);  // C-7 PM2.5
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->net_radiation.enable ? aws->net_radiation.data : unusedSensor);  // C-8 순복사
+  SetWord(&lpSend[cnt], aws->net_radiation.enable ? aws->net_radiation.data : unsued_sensor_value);  // C-8 순복사
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->total_radiation.enable ? aws->total_radiation.data : unusedSensor);  // C-9 전천복사
+  SetWord(&lpSend[cnt], aws->total_radiation.enable ? aws->total_radiation.data : unsued_sensor_value);  // C-9 전천복사
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->reflected_radiation.enable ? aws->reflected_radiation.data
-                                                        : unusedSensor);  // C-10 반사복사
+  SetWord(&lpSend[cnt], aws->reflected_radiation.enable ? aws->reflected_radiation.data : unsued_sensor_value);  // C-10 반사복사
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->direct_radiation.enable ? aws->direct_radiation.data
-                                                     : unusedSensor);  // C-11 직달일사
+  SetWord(&lpSend[cnt], aws->direct_radiation.enable ? aws->direct_radiation.data : unsued_sensor_value);  // C-11 직달일사
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->current_weather.enable ? aws->current_weather.data : unusedSensor);  // C-12 현재일기
+  SetWord(&lpSend[cnt], aws->current_weather.enable ? aws->current_weather.data : unsued_sensor_value);  // C-12 현재일기
   cnt += 2;
-
-
-  SetWord(&lpSend[cnt], aws->temp0_0.enable ? aws->temp0_0.data : unusedSensor);
+  SetWord(&lpSend[cnt], aws->temp0_0.enable ? aws->temp0_0.data : unsued_sensor_value);
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->temp0_1.enable ? aws->temp0_1.data : unusedSensor);
+  SetWord(&lpSend[cnt], aws->temp0_1.enable ? aws->temp0_1.data : unsued_sensor_value);
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->temp0_2.enable ? aws->temp0_2.data : unusedSensor);
+  SetWord(&lpSend[cnt], aws->temp0_2.enable ? aws->temp0_2.data : unsued_sensor_value);
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->temp0_3.enable ? aws->temp0_3.data : unusedSensor);
+  SetWord(&lpSend[cnt], aws->temp0_3.enable ? aws->temp0_3.data : unsued_sensor_value);
   cnt += 2;
-
-  SetWord(&lpSend[cnt],
-          aws->soil_moisture_10cm.enable ? aws->soil_moisture_10cm.data : unusedSensor);  // N-1
+  SetWord(&lpSend[cnt], aws->soil_moisture_10cm.enable ? aws->soil_moisture_10cm.data : unsued_sensor_value);  // N-1
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->soil_moisture_20cm.enable ? aws->soil_moisture_20cm.data : unusedSensor);  // N-2
+  SetWord(&lpSend[cnt], aws->soil_moisture_20cm.enable ? aws->soil_moisture_20cm.data : unsued_sensor_value);  // N-2
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->soil_moisture_30cm.enable ? aws->soil_moisture_30cm.data : unusedSensor);  // N-3
+  SetWord(&lpSend[cnt], aws->soil_moisture_30cm.enable ? aws->soil_moisture_30cm.data : unsued_sensor_value);  // N-3
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->soil_moisture_50cm.enable ? aws->soil_moisture_50cm.data : unusedSensor);  // N-4
+  SetWord(&lpSend[cnt], aws->soil_moisture_50cm.enable ? aws->soil_moisture_50cm.data : unsued_sensor_value);  // N-4
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->illuminance.enable ? aws->illuminance.data : unusedSensor);  // N-5
+  SetWord(&lpSend[cnt], aws->illuminance.enable ? aws->illuminance.data : unsued_sensor_value);  // N-5
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->wind_speed_1_5m.enable ? aws->wind_speed_1_5m.data : unusedSensor);  // N-6
+  SetWord(&lpSend[cnt], aws->wind_speed_1_5m.enable ? aws->wind_speed_1_5m.data : unsued_sensor_value);  // N-6
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->wind_speed_4m.enable ? aws->wind_speed_4m.data : unusedSensor);  // N-7
+  SetWord(&lpSend[cnt], aws->wind_speed_4m.enable ? aws->wind_speed_4m.data : unsued_sensor_value);  // N-7
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->instant_wind_speed_1_5m.enable ? aws->instant_wind_speed_1_5m.data
-                                                            : unusedSensor);  // N-8
+  SetWord(&lpSend[cnt], aws->instant_wind_speed_1_5m.enable ? aws->instant_wind_speed_1_5m.data : unsued_sensor_value);  // N-8
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->instant_wind_speed_4m.enable ? aws->instant_wind_speed_4m.data
-                                                          : unusedSensor);  // N-9
+  SetWord(&lpSend[cnt], aws->instant_wind_speed_4m.enable ? aws->instant_wind_speed_4m.data : unsued_sensor_value);  // N-9
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->temperature_0_5m.enable ? aws->temperature_0_5m.data : unusedSensor);  // N-10
+  SetWord(&lpSend[cnt], aws->temperature_0_5m.enable ? aws->temperature_0_5m.data : unsued_sensor_value);  // N-10
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->temperature_4m.enable ? aws->temperature_4m.data : unusedSensor);  // N-11
+  SetWord(&lpSend[cnt], aws->temperature_4m.enable ? aws->temperature_4m.data : unsued_sensor_value);  // N-11
   cnt += 2;
-  SetWord(&lpSend[cnt],
-          aws->humidity_0_5m.enable ? aws->humidity_0_5m.data : unusedSensor);  // N-12
+  SetWord(&lpSend[cnt], aws->humidity_0_5m.enable ? aws->humidity_0_5m.data : unsued_sensor_value);  // N-12
   cnt += 2;
-  SetWord(&lpSend[cnt], aws->humidity_4m.enable ? aws->humidity_4m.data : unusedSensor);  // N-13
+  SetWord(&lpSend[cnt], aws->humidity_4m.enable ? aws->humidity_4m.data : unsued_sensor_value);  // N-13
   cnt += 2;
-
   // temp1 예비
-
-    SetWord(&lpSend[cnt], aws->temp1_0.enable ? aws->temp1_0.data : unusedSensor);
-    cnt += 2;
-
-    SetWord(&lpSend[cnt], aws->temp1_1.enable ? aws->temp1_1.data : unusedSensor);
-    cnt += 2;
-    
-    SetWord(&lpSend[cnt], aws->temp1_2.enable ? aws->temp1_2.data : unusedSensor);
-    cnt += 2;
-    
-    SetWord(&lpSend[cnt], aws->temp1_3.enable ? aws->temp1_3.data : unusedSensor);
-    cnt += 2;
-    
-    SetWord(&lpSend[cnt], aws->temp1_4.enable ? aws->temp1_4.data : unusedSensor);
-    cnt += 2;
-    
-    SetWord(&lpSend[cnt], aws->temp1_5.enable ? aws->temp1_5.data : unusedSensor);
-    cnt += 2;
-    
-    SetWord(&lpSend[cnt], aws->temp1_6.enable ? aws->temp1_6.data : unusedSensor);
-    cnt += 2;
-    
-    SetWord(&lpSend[cnt], aws->temp1_7.enable ? aws->temp1_7.data : unusedSensor);
-    cnt += 2;
-    
-    SetWord(&lpSend[cnt], aws->temp1_8.enable ? aws->temp1_8.data : unusedSensor);
-    cnt += 2;
-
-  SetWord(&lpSend[cnt],
-          aws->tacometer.enable ? aws->tacometer.data : unusedSensor);  // I-1 타코미터
+  SetWord(&lpSend[cnt], aws->temp1_0.enable ? aws->temp1_0.data : unsued_sensor_value);
+  cnt += 2;
+  SetWord(&lpSend[cnt], aws->temp1_1.enable ? aws->temp1_1.data : unsued_sensor_value);
+  cnt += 2;
+  SetWord(&lpSend[cnt], aws->temp1_2.enable ? aws->temp1_2.data : unsued_sensor_value);
+  cnt += 2;
+  SetWord(&lpSend[cnt], aws->temp1_3.enable ? aws->temp1_3.data : unsued_sensor_value);
+  cnt += 2;
+  SetWord(&lpSend[cnt], aws->temp1_4.enable ? aws->temp1_4.data : unsued_sensor_value);
+  cnt += 2;
+  SetWord(&lpSend[cnt], aws->temp1_5.enable ? aws->temp1_5.data : unsued_sensor_value);
+  cnt += 2;
+  SetWord(&lpSend[cnt], aws->temp1_6.enable ? aws->temp1_6.data : unsued_sensor_value);
+  cnt += 2;
+  SetWord(&lpSend[cnt], aws->temp1_7.enable ? aws->temp1_7.data : unsued_sensor_value);
+  cnt += 2;
+  SetWord(&lpSend[cnt], aws->temp1_8.enable ? aws->temp1_8.data : unsued_sensor_value);
+  cnt += 2;
+  SetWord(&lpSend[cnt], aws->tacometer.enable ? aws->tacometer.data : unsued_sensor_value);  // I-1 타코미터
   cnt += 2;
 
   for(int i = 0 ; i< 8; i++)
@@ -382,7 +324,7 @@ uint32_t make_kma3_data_unusedSesor(uint8_t *lpSend, uint16_t lpSendSize, kma_da
 
   lpSend[cnt++] = (uint8_t)aws->Y_volateStatus;  // 상태 (DC 전압, 밧데리, 전압, 로거 잠금)
 
-  return (cnt);
+  return cnt;
 }
 
 uint16_t make_kma3_resp(uint8_t *out, char dataType,  uint8_t dataNum, uint16_t id,
