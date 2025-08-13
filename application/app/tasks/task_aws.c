@@ -73,23 +73,6 @@ bool is_raining(uint8_t  *sensor_err)
 }
 
 
-void MegaErrorCheck(SYSTEM_INFO_AWS *pSystem, uint16_t  *sRetVal, uint16_t  sCompVal, uint16_t  sMax,
-                    uint8_t cErrChan)
-{
-  if (sCompVal >= sMax)
-  {
-    if (++pSystem->cMegaErrCnt[cErrChan] > 60)
-    {
-      pSystem->cMegaErrCnt[cErrChan] = 60;
-      *sRetVal = sCompVal;
-    }
-  }
-  else
-  {
-    pSystem->cMegaErrCnt[cErrChan] = 0;
-    *sRetVal = sCompVal;
-  }
-}
 
 //자기 유도식 기준
 #define WIND_SPEED_ACCURACY_BELOW_10MPS 0.5f  // 0.5m/s  10m/s 미만
@@ -1213,12 +1196,12 @@ void DUALPORT_TASK(void *arg)
       calculate_wind_moving_avg(&wind_speed_mavg,&wind_direction_mavg);
       update_wind_vector_avg_1min(wind_speed_mavg, wind_direction_mavg);
       
-      calculate_wind_avg_1min(&wind_speed_avg, &wind_direction_avg);
+      //calculate_wind_avg_1min(&wind_speed_avg, &wind_direction_avg);
 
       g_aws_inst.wind_speed     = (uint16_t)(wind_speed_mavg*10);
       g_aws_inst.wind_direction = (uint16_t)(wind_direction_mavg*10);
-      pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_avg * 10);
-      pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_avg * 10);
+      pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_mavg * 10);
+      pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_mavg * 10);
 
       calculate_wind_max(eWIND_MAX_1MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
       calculate_wind_max(eWIND_MAX_10MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);

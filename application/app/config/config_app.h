@@ -105,7 +105,6 @@ typedef struct config_s
   uint8_t encrypt_active;
   uint8_t vpn_active;
   uint8_t ac_active;
-  uint16_t m_usRainDtOffDelay;//구 AWS
   eTELNET_MODE_t dev_telnet_mode;
   uint8_t dev_telnet_ip[4];
   uint16_t dev_telnet_port;

@@ -102,9 +102,6 @@ void AwsMinMaxInit(void)
   }
 
 
-
-  pSystem->shSnowFallOld = mRealAws.mSnowFall.sReal;  // 현재 적설을 옮긴다.
-
   //지중온도 5cm
   mRealAws.mSoilTemp5cm.sMin = 9999; //일 최대 최소 값 초기화 
   mRealAws.mSoilTemp5cm.sMax = 0;
@@ -463,16 +460,12 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->mWind.mSpeed.sMax = wind_speed_max;
   pAws->mWind.mDirection.sMax = wind_direction_max;
 
-  //  WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN1_PROC], &mRealAws.mWind);
-  // DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,&pSystem->mWind[MIN10_PROC].uTot,&pSystem->mWind[MIN10_PROC].vTot);
-
   calculate_wind_avg_1min(&wind_speed_avg, &wind_direction_avg);
   wind_avg_1min_init();
   pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_avg*10);
   pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_avg * 10);
 
-  pSystem->mWind[MIN10_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal; // 1분 "
-  pSystem->mWind[MIN10_PROC].sAddCnt++;
+
 
   // 일사 일조
   // 일조 1분 누적값
@@ -581,10 +574,7 @@ void Min10Process(void)
   pAws->mWind.mSpeed.sMax = wind_speed_max;
   pAws->mWind.mDirection.sMax = wind_direction_max;
   wind_max_init(eWIND_MAX_10MIN);
-      // WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN10_PROC], &mRealAws.mWind);  // 10분
-  DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal, &pSystem->mWind[HOUR_PROC].uTot, &pSystem->mWind[HOUR_PROC].vTot);
-  pSystem->mWind[HOUR_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal;  // 1시간 "
-  pSystem->mWind[HOUR_PROC].sAddCnt++;
+
 
   // 일사 일조
   pSystem->mSun[HOUR_PROC].nSolarTot += pSystem->mSun[MIN10_PROC].nSolarTot;
@@ -642,21 +632,8 @@ void Min10Process(void)
 
   g_rainfall.ten_min = 0;
 
-#if 0 
-// 2010. 11. 30. 수정 적설량 처리
-	shSnow = mRealAws.mSnowFall.sReal - pSystem->shSnowFallOld;											// 실 적설에서 예전적설(10분전)을 뺀다
-	if(shSnow >= 0)																							// +인 경우는 눈이 온것임
-	{
-		m10MinAws.mSnowFall.sReal = shSnow;	
-	}
-	else
-	{
-		m10MinAws.mSnowFall.sReal = 0;	
-	}	
-	pSystem->shSnowFallOld 	= mRealAws.mSnowFall.sReal;														// 현재 적설위치를 옮겨 놓는다.
-#else
-      m10MinAws.mSnowFall.sReal = mRealAws.mSnowFall.sReal;
-#endif
+ m10MinAws.mSnowFall.sReal = mRealAws.mSnowFall.sReal;
+
 }
 
 
@@ -923,7 +900,6 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
     if (pDate->Year != pOldDate->Year)
     {
 
-      Sysinfo.mSunshine.nYearSunshine =0;
       pOldDate->Year = pDate->Year;
 
       g_rainfall.yearly = 0;

@@ -151,9 +151,7 @@ typedef struct
 
 typedef struct
 {
-
   uint16_t rain;//x10한값 
-
 } SENSORRAIN_BUF;
 
 typedef struct
@@ -163,32 +161,11 @@ typedef struct
   uint16_t sAddCnt;
 } SENSORSUN_BUF;
 
-typedef struct
-{
-  uint16_t sSolarVoltage;    // 태양전지 또는 충전 전압
-  uint16_t sSolarCurrent;    // 충전 전류
-  uint16_t sBatteryVoltage;  // 밧데리 전압
-  uint16_t sLoad1Current;    // 부하전류 1(시스템)
-  uint16_t sLoad2Current;    // 부하전류 2 기타
 
-} POWERMAN_BUF;
+
 
 typedef struct
 {
-  uint16_t sVert;
-  uint16_t sHoriz;
-} DISPLAYPAGE_BUF;
-
-typedef struct
-{
-  uint32_t nYearSunshine;   // 연간 일조량
-
-}SUNSHINE_BUF;
-
-typedef struct
-{
-  SENSORWIND_REAL mRealWind;  // Dual Port Ram에서 들어온 Data
-  SENSORWIND_BUF mWind[3];  // 0: 분 , 1: 10분 , 2: 1시간
   SENSORPROC_BUF mTempBuf[3];   // 0: 분 , 1: 10분 , 2: 1시간
   SENSORPROC_BUF mBaroBuf[3];   // 0: 분 , 1: 10분 , 2: 1시간
   SENSORPROC_BUF mHumidBuf[3];  // 0: 분 , 1: 10분 , 2: 1시간
@@ -203,15 +180,6 @@ typedef struct
   SENSORPROC_BUF mSoil50Buf[3];
   SENSORPROC_BUF mSoil100Buf[3];
   SENSORPROC_BUF mSoil150Buf[3];
-  SUNSHINE_BUF mSunshine;
-  uint16_t shSnowFallOld;  // 10분 누적 적설량을 구하기위한 10분전 적설(실적설)
-   // Count를 10초 이상일 경우 9999로 설정한다(Mega640의 리셋시 대응 하기위함)
-  uint8_t cMegaErrCnt[15];  // Error Count를 10초 이상일 경우 9999로
-                            // 설정한다(Mega640의 리셋시 대응 하기위함)
-
-  short m_shOffDelayRemain;  // OffDelay Remain Time(sec)
-
-  short m_usRainDtOffDelay;
 } SYSTEM_INFO_AWS; //1352바이트 
 
 
@@ -223,14 +191,6 @@ typedef struct
   uint8_t m_cTransTrsID;   // 변환 중계 주소
 } VIRTUAL_IDGROUP_TABLE;
 
-typedef struct
-{
-  uint16_t sOffset;      // AD Convertion 최소값
-  uint16_t sFull;        // AD Convertion 최고값
-  uint16_t sUse;         // 0: Use 1: NotUse
-  uint16_t sChanDefine;  // 첨자:chan -> 0:Temp, 1:WindDirc, 2:Humid, 3:Barometric
-                         // 4:Solar Rad, 5:SnowFall
-} CALIB_BUF;
 
 typedef enum eChargerType_
 {
@@ -239,26 +199,6 @@ typedef enum eChargerType_
 } eCHARGER_TYPE_t;
 
 
-
-typedef struct
-{
-  uint8_t m_cAlmId;  // 경보국 ID
-  uint8_t m_cRev[2];
-  uint8_t m_cSystemGrp;   // System Group Number
-  uint8_t m_cHstId;       // Loop Back Destination   Id
-  uint8_t m_cTrsId;       // Loop Back Destination Transfer Id
-  uint8_t m_cAudioLevel;  // Alarm RTU Audio Level Control
-  uint16_t m_usTxPttGap;  // PTT Gap Time Configration Memory
-  uint8_t m_cRstCnt;      // Host RTU Reset Count
-  uint8_t m_cMsgQueIn;    // Message Que Input Count
-  uint8_t m_cMessageNum[20][8];  // 경보국 Configration과 같이 하기위함(6개 사용 2개 예비)
-  VIRTUAL_IDGROUP_TABLE m_ViGRP[64];  // 가상ID 포워딩 중계 설정
-  uint32_t m_usVhfTmout;                 // Loop Back시 Time Out시간 설정
-  uint8_t m_cToneSec;                 // Tone 지연 시간
-  uint8_t m_cNoiseSec;                // Noise 지연 시간
-  uint8_t m_cEvSendCount;
-
-} SYSTEM_CONFIG_AWS;
 
 #define WINDSPEED_CHN 36   // Pulse Input 정의
 #define TEMPERATURE_CHN 0  // AD Converter Input 정의
