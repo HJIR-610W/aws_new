@@ -1,3 +1,6 @@
+
+#include <string.h>
+
 #include "aws_data.h"
 #include "app_sensor.h"
 
@@ -5,18 +8,26 @@
 #include "task_measure.h"
 #include "cmsis_os2.h"
 
-
+#pragma location = "SRAM_section"
 kma_data_ex_t g_kma_raw_ex;
+#pragma location = "SRAM_section"
 kma_data_ex_t g_kma_inst_ex;
+#pragma location = "SRAM_section"
 kma_data_ex_t g_kma_1min_ex;
+#pragma location = "SRAM_section"
 kma_data_ex_t g_kma_10min_ex;
+#pragma location = "SRAM_section"
 kma_data_ex_t g_kma_1Hour_ex;
+#pragma location = "SRAM_section"
+kma_data_ex_t g_kma_day_ex;
 rainfall_t g_rainfall;
 sunshine_t g_sunshine;
-sunshine_r_t g_sunshine_r;
+sunshine_r_t g_solar_radiation;
 
 aws_inst_t g_aws_inst;
 aws_1min_t g_aws_1min_temp;
+aws_day_t g_aws_day;
+aws_10min_t g_aws_10min;
 
 
 osMessageQueueId_t g_kma_data_queue[2];
@@ -39,7 +50,10 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
     case eAWS_DATA_HOUR:
       p_kma_data = &g_kma_1Hour_ex;
       break;
-      case eAWS_DATA_RAW:
+    case eAWS_DATA_DAY:
+      p_kma_data = &g_kma_day_ex;
+      break;
+    case eAWS_DATA_RAW:
       p_kma_data = &g_kma_raw_ex;
       break;
       default:
@@ -57,6 +71,14 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
  */
 void kma_data_q_init(void)
 {
+
+  memset(&g_kma_raw_ex, 0,sizeof(kma_data_ex_t));
+  memset(&g_kma_inst_ex, 0, sizeof(kma_data_ex_t));
+  memset(&g_kma_1min_ex, 0, sizeof(kma_data_ex_t));
+  memset(&g_kma_10min_ex, 0, sizeof(kma_data_ex_t));
+  memset(&g_kma_1Hour_ex, 0, sizeof(kma_data_ex_t));
+  memset(&g_kma_day_ex, 0, sizeof(kma_data_ex_t));
+
   g_kma_data_queue[eKMA_DATA_Q_AVG] = osMessageQueueNew(1, sizeof(kma_data_ex_t), NULL);
   g_kma_data_queue[eKMA_DATA_Q_1MIN] = osMessageQueueNew(1, sizeof(kma_data_ex_t), NULL);
 }

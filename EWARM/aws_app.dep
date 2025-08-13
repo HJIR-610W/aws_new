@@ -1965,7 +1965,7 @@
             <file>$PROJ_DIR$\release\Obj\solar_radiation.__cstat.et</file>
             <file>$PROJ_DIR$\..\application\app\config\config_define.h</file>
             <file>$PROJ_DIR$\release\Obj\raw.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_define.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\release\Obj\ip6_addr.xcl</file>
             <file>$PROJ_DIR$\release\Obj\driver_charger.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\pppol2tp.o</file>
@@ -2147,14 +2147,14 @@
             <file>$PROJ_DIR$\release\Obj\panel_hansung.o</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rtc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\sunshine_data.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\humidity\humidity.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
             <file>$PROJ_DIR$\release\Obj\util_crc16_ccitt.xcl</file>
             <file>$PROJ_DIR$\release\Obj\fs.xcl</file>
             <file>$PROJ_DIR$\stm32f407xx_flash.icf</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\task_wdt.h</file>
             <file>$PROJ_DIR$\release\Obj\mcu_utile.o</file>
             <file>$PROJ_DIR$\release\Obj\etharp.o</file>
@@ -2494,7 +2494,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\dhcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcp.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\config.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_virtual.h</file>
@@ -15668,7 +15668,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2130 1175 945 1162 959 1902 1417 981 483 2253 2035 1862 2299 304 2435 1785 1958 1821 544 154 1001 2098 1922 491 980 2127 1670 641</file>
+                    <file> 1009 945 1162 959 1902 1417 2035 2367 2130 1175 981 483 2253 1862 2299 304 2435 1785 1958 1821 544 154 1001 2098 1922 491 980 2127 1670 641</file>
                 </tool>
             </inputs>
         </file>

@@ -27,6 +27,7 @@ typedef enum aws_data_min_s
   eAWS_DATA_1MIN,
   eAWS_DATA_10MIN,
   eAWS_DATA_HOUR,
+  eAWS_DATA_DAY,
   eAWS_DATA_RAW
 } eAWS_DATA_MIN_t;
 
@@ -318,6 +319,7 @@ typedef struct sunshine_r_s
 {
   uint32_t sunshine_r_1min;//w/m2  1분 누적값
   uint32_t sunshine_r_1min_acc;//1분동안 실시간 누적되는 값
+  uint32_t hourly;
 } sunshine_r_t;
 
 
@@ -344,7 +346,12 @@ void send_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
 
 extern sunshine_t g_sunshine;;
 extern rainfall_t g_rainfall;
-extern sunshine_r_t g_sunshine_r;
-extern aws_inst_t g_aws_inst;;
+extern sunshine_r_t g_solar_radiation;
+
+extern aws_inst_t g_aws_inst;
+extern aws_1min_t g_aws_1min_temp;
+extern aws_10min_t g_aws_10min;
+extern aws_day_t g_aws_day;
+
 
 #endif

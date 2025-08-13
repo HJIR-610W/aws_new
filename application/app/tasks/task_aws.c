@@ -649,7 +649,7 @@ void update_kma_real(void)
 
 
   //[사용]
-  p_kma3->solar_radiation.data    = (uint16_t)(g_sunshine_r.sunshine_r_1min_acc/1000.0);
+  p_kma3->solar_radiation.data    = (uint16_t)(g_solar_radiation.sunshine_r_1min_acc/1000.0);
 
   p_kma3->solar_radiation.max = mRealAws.mSolarRad.sMax;//일간
   p_kma3->solar_radiation.err = get_sensor_err(B1_SOLAR_RADIATION);
@@ -1146,9 +1146,10 @@ void DUALPORT_TASK(void *arg)
   int32_t wind_direction;
   float wind_speed_mavg;
   float wind_direction_mavg;
-  uint16_t data;
-  int32_t nWindCnt12 = 0;
-  int32_t nWindCnt40 = 0;
+  float wind_speed_avg;
+  float wind_direction_avg;
+      uint16_t data;
+
   uint16_t rain_p_on_delay = 0;
   uint16_t rain_p_off_delay=0;
   SYSTEM_INFO_AWS *pSystem;
@@ -1206,31 +1207,28 @@ void DUALPORT_TASK(void *arg)
       wind_speed = filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
       update_sensor_err(A3_WIND_SPEED, f_err);
 
+      if(wind_speed !=9999&& wind_direction !=9999)
+      {
       add_wind_sample((float)wind_speed / 10.0f, (float)wind_direction / 10.0f);
       calculate_wind_moving_avg(&wind_speed_mavg,&wind_direction_mavg);
       update_wind_vector_avg_1min(wind_speed_mavg, wind_direction_mavg);
+      
+      calculate_wind_avg_1min(&wind_speed_avg, &wind_direction_avg);
 
       g_aws_inst.wind_speed     = (uint16_t)(wind_speed_mavg*10);
       g_aws_inst.wind_direction = (uint16_t)(wind_direction_mavg*10);
-      pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_mavg * 10);
-      pAws->mWind.mDirection.sMax = (uint16_t)(wind_direction_mavg * 10);
+      pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_avg * 10);
+      pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_avg * 10);
 
       calculate_wind_max(eWIND_MAX_1MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
+      calculate_wind_max(eWIND_MAX_10MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
+      calculate_wind_max(eWIND_MAX_HOUR, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
+      calculate_wind_max(eWIND_MAX_DAY, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
+
       read_wind_max(eWIND_MAX_1MIN,&wind_speed,&wind_direction);
+      }
       pAws->mWind.mSpeed.sMax = wind_speed;
       pAws->mWind.mDirection.sMax = wind_direction;
-
-       pSystem->mRealWind.sAvg3Speed[nWindCnt12] = wind_speed; // 풍속  3 초 평균
-      pSystem->mRealWind.sAvg10Speed[nWindCnt40] = wind_speed; // 풍속 10 초 평균
-
-      pSystem->mRealWind.sAvg3Direction[nWindCnt12] = wind_direction;  // 풍향  3 초 평균
-      pSystem->mRealWind.sAvg10Direction[nWindCnt40] = wind_direction; // 풍향 10 초 평균
-      pSystem->mRealWind.sWrFlag[nWindCnt40] = 1;
-
-      if (++nWindCnt12 >= 12)
-        nWindCnt12 = 0;
-      if (++nWindCnt40 >= 40)
-        nWindCnt40 = 0;
 
       pSystem->mRain.rain += get_rain_mm(&sensor_err);
       update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);

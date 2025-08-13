@@ -638,7 +638,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
         }
         case eAWS_DATA_AVG:
         {
-          float solar_radiation = (float)g_sunshine_r.sunshine_r_1min_acc/1000.0f;
+          float solar_radiation = (float)g_solar_radiation.sunshine_r_1min_acc/1000.0f;
           screen_page_printf(p_win, "%-*s:%6.1f kJ/m2", SOLAR_R_WD, "SOLAR R", solar_radiation);
           break;
         }

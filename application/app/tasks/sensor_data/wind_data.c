@@ -62,7 +62,7 @@ typedef struct wind_vector_s
   float v;
 } wind_vector_t;
 
-#pragma location = "SRAM_section"
+
 static wind_t s_wind_mavg_sample[WIND_SPEED_AVG_CNT] ;
 
 wind_t wind_max[eWIND_MAX];
@@ -162,7 +162,7 @@ void calculate_wind_moving_avg(float *wind_speed,float *wind_direction)
 //speed,direction x10한값 
 void calculate_wind_max(eWIND_MAX_t wind,int32_t speed,int32_t direction)
 {
-  if (speed > wind_max[wind].speed)
+  if (speed > (int32_t)wind_max[wind].speed)
   {
     wind_max[wind].speed = speed;
     wind_max[wind].direction = direction;
@@ -177,12 +177,12 @@ void read_wind_max(eWIND_MAX_t wind, int32_t *speed, int32_t *direction)
 
 void wind_max_init(eWIND_MAX_t wind)
 {
- wind_max[wind].speed = 0;
-wind_max[wind].direction = 0;;
+  wind_max[wind].speed = 0;
+  wind_max[wind].direction = 0;;
 }
 
-    // 1분 바람벡터 평균 값 용
-    double wind_avg_1min_u = 0;
+// 1분 바람벡터 평균 값 용
+double wind_avg_1min_u = 0;
 double wind_avg_1min_v=0;
 uint8_t wind_avg_1min_count=0;
 
@@ -202,12 +202,13 @@ void calculate_wind_avg_1min(float *p_speed,float *p_direction)
   double speed;
   double direction;
   calculate_wind(wind_avg_1min_u, wind_avg_1min_v,&speed,&direction);
-
   *p_speed = speed;
   *p_direction = direction;
+}
+
+void wind_avg_1min_init(void)
+{
   wind_avg_1min_u = 0;
   wind_avg_1min_v = 0;
   wind_avg_1min_count = 0;
 }
-
-

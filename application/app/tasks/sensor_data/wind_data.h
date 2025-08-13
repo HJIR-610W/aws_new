@@ -9,6 +9,7 @@ typedef enum
 {
   eWIND_MAX_1MIN,
   eWIND_MAX_10MIN,
+  eWIND_MAX_HOUR,
   eWIND_MAX_DAY,
   eWIND_MAX
 } eWIND_MAX_t;
@@ -21,6 +22,8 @@ void calculate_wind_moving_avg(float *wind_speed, float *wind_direction);
 
 void update_wind_vector_avg_1min(float speed, float direction);
 void calculate_wind_avg_1min(float *speed, float *direction);
+void wind_avg_1min_init(void);
+
 
 void calculate_wind_max(eWIND_MAX_t wind, int32_t speed, int32_t direction);
 void read_wind_max(eWIND_MAX_t wind, int32_t *speed, int32_t *direction);

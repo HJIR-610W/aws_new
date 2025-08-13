@@ -38,7 +38,7 @@ SYSTEM_INFO_AWS Sysinfo;
  void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v);
  uint16_t UVToDirc(float u_tmp, float v_tmp);
  void SecProcess(void);
- void Sec10Process(void);
+
  void MinProcess(DATE_TIME_BUF *pDate);
  void Min10Process(void);
  void HourProcess(DATE_TIME_BUF *pDate);
@@ -188,11 +188,9 @@ void AwsMinMaxProc(uint16_t sSour, uint16_t *psDestMin, uint16_t *psDestMax)
 
 void SecProcess(void)
 {
-  uint16_t sAvgSpeed;
-  uint16_t sAvgDirection;
-  uint32_t  i;
-  float wind_sum_u = 0;
-  float wind_sum_v = 0;
+
+
+
   SYSTEM_INFO_AWS *pSystem;
 
   pSystem = &Sysinfo;
@@ -320,68 +318,7 @@ void SecProcess(void)
   m10MinAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
   mHourAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
 
-  // 풍향 풍속 처리 & 3초 이동 평균 처리
-#define WIND_INSTANCT_CNT 12
 
-  
-  for (i = 0; i < WIND_INSTANCT_CNT; i++)
-  {
-    sAvgSpeed = pSystem->mRealWind.sAvg3Speed[i];
-    sAvgDirection = pSystem->mRealWind.sAvg3Direction[i];
-
-    if (sAvgSpeed)//풍속이 존재하는 경우에만 연산
-    {
-      DircTouvConv(sAvgDirection, sAvgSpeed, &wind_sum_u, &wind_sum_v);
-    }
-  }
-
-  {
-    // 12샘플링한 자료를 평균해서 순간 풍향,풍속 산출출
-    float wind_avg_u = wind_sum_u / WIND_INSTANCT_CNT;
-    float wind_avg_v = wind_sum_v / WIND_INSTANCT_CNT;
-    uint16_t wind_speed = 0;
-    uint16_t wind_deg = 0;
-    int aws_speed;
-    // 주의:wind_avg 값 자체가 aws 단위이다.
-    aws_speed = (int)(UVToSpeed(wind_avg_u, wind_avg_v));
-
-    wind_speed = (uint16_t)aws_speed;
-    if (wind_speed == 0)
-    {
-      wind_deg = 0;
-    }
-    else
-    {
-      wind_deg = UVToDirc(wind_avg_u, wind_avg_v);
-    }
-    
-    mRealAws.mWind.mSpeed.sReal = wind_speed;
-    mRealAws.mWind.mDirection.sReal = wind_deg;
-
-    if (wind_speed >= mRealAws.mWind.mSpeed.sMax)  // 일간 최대 풍속
-    {
-      mRealAws.mWind.mSpeed.sMax = wind_speed;
-      mRealAws.mWind.mDirection.sMax = wind_deg;  // 풍속이 최대일때의 풍향향
-    }
-
-    if (wind_speed >= pSystem->mWind[0].sGustSpeedMax)  // 1분 최대 풍속
-    {
-      pSystem->mWind[0].sGustSpeedMax = wind_speed;
-      pSystem->mWind[0].sGustDircMax = wind_deg;
-    }
-
-    if (wind_speed >= pSystem->mWind[1].sGustSpeedMax)  // 10분 최대 풍속
-    {
-      pSystem->mWind[1].sGustSpeedMax = wind_speed;
-      pSystem->mWind[1].sGustDircMax = wind_deg;
-    }
-
-    if (wind_speed >= pSystem->mWind[2].sGustSpeedMax)  // 1시간 최대 풍속
-    {
-      pSystem->mWind[2].sGustSpeedMax = wind_speed;
-      pSystem->mWind[2].sGustDircMax = wind_deg;
-    }
-  }
 
   // 일조 
   if (mRealAws.mSunshine.sReal)
@@ -390,49 +327,20 @@ void SecProcess(void)
     g_sunshine.today++;
     g_sunshine.monthly++;
     g_sunshine.yearly++;
+    g_sunshine.hourly++;
   }
 
   if (mRealAws.mSolarRad.sReal != 9999)
   {  
     uint32_t sunshine_r = 0;
-    sunshine_r = g_sunshine_r.sunshine_r_1min_acc+mRealAws.mSolarRad.sReal;
-    g_sunshine_r.sunshine_r_1min_acc = sunshine_r;
+    sunshine_r = g_solar_radiation.sunshine_r_1min_acc+mRealAws.mSolarRad.sReal;
+    g_solar_radiation.sunshine_r_1min_acc = sunshine_r;
+    g_solar_radiation.hourly = g_solar_radiation.hourly + mRealAws.mSolarRad.sReal;
   }
 
 }
 
-void Sec10Process(void)
-{
-  int i;
-  uint32_t nSpeedTot;
-  uint32_t sAcnt = 0;
-  float u, v;
-  SYSTEM_INFO_AWS *pSystem;
 
-  pSystem = &Sysinfo;
-
-  // 풍향 풍속 처리
-  u = v = 0.0;
-  nSpeedTot = 0;
-
-  for (i = 0; i < 40; i++)
-  {
-    if (pSystem->mRealWind.sWrFlag[i])
-    {
-      DircTouvConv(pSystem->mRealWind.sAvg10Direction[i],
-                   pSystem->mRealWind.sAvg10Speed[i], &u, &v);
-      nSpeedTot += pSystem->mRealWind.sAvg10Speed[i];
-      sAcnt++;
-    }
-  }
-  if (sAcnt)
-  {
-    pSystem->mWind[MIN1_PROC].uTot += (u / (float)sAcnt);  // 10초 평균을 구한후 합산한다
-    pSystem->mWind[MIN1_PROC].vTot += (v / (float)sAcnt);  //       "
-    pSystem->mWind[MIN1_PROC].lSpeedTot += (nSpeedTot / sAcnt);  //       "
-    pSystem->mWind[MIN1_PROC].sAddCnt++;
-  }
-}
 
 void AwsMinMaxTotSave(SENSOR_RIX_BUF *pSensor, SENSORPROC_BUF *pSensorTmp,
                       uint16_t sInitValue)
@@ -511,11 +419,12 @@ int WindMinMaxAvgSave(SENSOR_WIND_BUF *pSensor, SENSORWIND_BUF *pWindTmp,
 */
 void MinProcess(DATE_TIME_BUF *pDate)
 {
-
   SYSTEM_INFO_AWS *pSystem;
   AWS_DATA_STRUCT *pAws;
-   float wind_speed_avg;
+  float wind_speed_avg;
   float wind_direction_avg;
+  int32_t wind_speed_max;
+  int32_t wind_direction_max;
 
 
 
@@ -545,13 +454,20 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   pSystem->mSun[MIN10_PROC].nSunshineTot +=  g_sunshine.min;
   // 단위변환 W/M2 -> MJ/M2
-  pSystem->mSun[MIN10_PROC].nSolarTot += g_sunshine_r.sunshine_r_1min/ 1000000;  
+  pSystem->mSun[MIN10_PROC].nSolarTot += g_solar_radiation.sunshine_r_1min/ 1000000;  
 
   // 풍향 풍속
-  WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN1_PROC], &mRealAws.mWind);
-  //DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,&pSystem->mWind[MIN10_PROC].uTot,&pSystem->mWind[MIN10_PROC].vTot);
+
+  read_wind_max(eWIND_MAX_1MIN,&wind_speed_max,&wind_direction_max);
+  wind_max_init(eWIND_MAX_1MIN);
+  pAws->mWind.mSpeed.sMax = wind_speed_max;
+  pAws->mWind.mDirection.sMax = wind_direction_max;
+
+  //  WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN1_PROC], &mRealAws.mWind);
+  // DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,&pSystem->mWind[MIN10_PROC].uTot,&pSystem->mWind[MIN10_PROC].vTot);
 
   calculate_wind_avg_1min(&wind_speed_avg, &wind_direction_avg);
+  wind_avg_1min_init();
   pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_avg*10);
   pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_avg * 10);
 
@@ -564,7 +480,7 @@ void MinProcess(DATE_TIME_BUF *pDate)
   g_sunshine.min = 0;
   pAws->mSunshine.sMax = g_sunshine.today;
 
-  pAws->mSolarRad.sReal = g_sunshine_r.sunshine_r_1min_acc / 1000; // 일사 1분   누적값  KJ/m2
+  pAws->mSolarRad.sReal = g_solar_radiation.sunshine_r_1min_acc / 1000; // 일사 1분   누적값  KJ/m2
 
   pSystem->mSun[MIN10_PROC].nSolarTot += pAws->mSolarRad.sReal;
   pAws->mSolarRad.sMax += pAws->mSolarRad.sReal;  // 하루 총 일사
@@ -573,44 +489,33 @@ void MinProcess(DATE_TIME_BUF *pDate)
   mHourAws.mSolarRad.sMax = pAws->mSolarRad.sMax;
 
   // 지중  온도 2017.04.03
-  AwsMinMaxTotSave(&pAws->mSoilTemp5cm, &pSystem->mSoil5Buf[MIN1_PROC],
-                   mRealAws.mSoilTemp5cm.sReal);
-  pSystem->mSoil5Buf[MIN10_PROC].lTot +=
-      pAws->mSoilTemp5cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
+  AwsMinMaxTotSave(&pAws->mSoilTemp5cm, &pSystem->mSoil5Buf[MIN1_PROC], mRealAws.mSoilTemp5cm.sReal);
+  pSystem->mSoil5Buf[MIN10_PROC].lTot += pAws->mSoilTemp5cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
   pSystem->mSoil5Buf[MIN10_PROC].sAddCnt++;
 
-  AwsMinMaxTotSave(&pAws->mSoilTemp10cm, &pSystem->mSoil10Buf[MIN1_PROC],
-                   mRealAws.mSoilTemp10cm.sReal);
-  pSystem->mSoil10Buf[MIN10_PROC].lTot +=
-      pAws->mSoilTemp10cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
+  AwsMinMaxTotSave(&pAws->mSoilTemp10cm, &pSystem->mSoil10Buf[MIN1_PROC], mRealAws.mSoilTemp10cm.sReal);
+  pSystem->mSoil10Buf[MIN10_PROC].lTot += pAws->mSoilTemp10cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
   pSystem->mSoil10Buf[MIN10_PROC].sAddCnt++;
 
-  AwsMinMaxTotSave(&pAws->mSoilTemp20cm, &pSystem->mSoil20Buf[MIN1_PROC],
-                   mRealAws.mSoilTemp20cm.sReal);
-  pSystem->mSoil20Buf[MIN10_PROC].lTot +=
-      pAws->mSoilTemp20cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
+  AwsMinMaxTotSave(&pAws->mSoilTemp20cm, &pSystem->mSoil20Buf[MIN1_PROC],mRealAws.mSoilTemp20cm.sReal);
+  pSystem->mSoil20Buf[MIN10_PROC].lTot += pAws->mSoilTemp20cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
   pSystem->mSoil20Buf[MIN10_PROC].sAddCnt++;
 
-  AwsMinMaxTotSave(&pAws->mSoilTemp30cm, &pSystem->mSoil30Buf[MIN1_PROC],
-                   mRealAws.mSoilTemp30cm.sReal);
-  pSystem->mSoil30Buf[MIN10_PROC].lTot +=
-      pAws->mSoilTemp30cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
+  AwsMinMaxTotSave(&pAws->mSoilTemp30cm, &pSystem->mSoil30Buf[MIN1_PROC], mRealAws.mSoilTemp30cm.sReal);
+  pSystem->mSoil30Buf[MIN10_PROC].lTot += pAws->mSoilTemp30cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
   pSystem->mSoil30Buf[MIN10_PROC].sAddCnt++;
 
-  AwsMinMaxTotSave(&pAws->mSoilTemp50cm, &pSystem->mSoil50Buf[MIN1_PROC],
-                   mRealAws.mSoilTemp50cm.sReal);
+  AwsMinMaxTotSave(&pAws->mSoilTemp50cm, &pSystem->mSoil50Buf[MIN1_PROC],  mRealAws.mSoilTemp50cm.sReal);
   // 1분 평균을 구한 값을 10분 누적에 더한다
   pSystem->mSoil50Buf[MIN10_PROC].lTot += pAws->mSoilTemp50cm.sReal;  
   pSystem->mSoil50Buf[MIN10_PROC].sAddCnt++;
 
-  AwsMinMaxTotSave(&pAws->mSoilTemp1_0m, &pSystem->mSoil100Buf[MIN1_PROC],
-                   mRealAws.mSoilTemp1_0m.sReal);
+  AwsMinMaxTotSave(&pAws->mSoilTemp1_0m, &pSystem->mSoil100Buf[MIN1_PROC], mRealAws.mSoilTemp1_0m.sReal);
   // 1분 평균을 구한 값을 10분 누적에 더한다
   pSystem->mSoil100Buf[MIN10_PROC].lTot += pAws->mSoilTemp1_0m.sReal; 
   pSystem->mSoil100Buf[MIN10_PROC].sAddCnt++;
 
-  AwsMinMaxTotSave(&pAws->mSoilTemp1_5m, &pSystem->mSoil150Buf[MIN1_PROC],
-                   mRealAws.mSoilTemp1_5m.sReal);
+  AwsMinMaxTotSave(&pAws->mSoilTemp1_5m, &pSystem->mSoil150Buf[MIN1_PROC], mRealAws.mSoilTemp1_5m.sReal);
 
   // 1분 평균을 구한 값을 10분 누적에 더한다
   pSystem->mSoil150Buf[MIN10_PROC].lTot  +=  pAws->mSoilTemp1_5m.sReal; 
@@ -628,8 +533,8 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   g_rainfall.min = 0;
 
-  g_sunshine_r.sunshine_r_1min = g_sunshine_r.sunshine_r_1min_acc;
-  g_sunshine_r.sunshine_r_1min_acc = 0;
+  g_solar_radiation.sunshine_r_1min = g_solar_radiation.sunshine_r_1min_acc;
+  g_solar_radiation.sunshine_r_1min_acc = 0;
 
   pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
 
@@ -649,41 +554,41 @@ void Min10Process(void)
 {
   SYSTEM_INFO_AWS *pSystem;
   AWS_DATA_STRUCT *pAws;
-
+  int32_t wind_speed_max;
+  int32_t wind_direction_max;
 
   pSystem = &Sysinfo;
   pAws = &m10MinAws;
 
   // 온도
-  AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[MIN10_PROC],
-                   mRealAws.mTemperature.sReal);
+  AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[MIN10_PROC],mRealAws.mTemperature.sReal);
   pSystem->mTempBuf[HOUR_PROC].lTot += pAws->mTemperature.sReal;
   pSystem->mTempBuf[HOUR_PROC].sAddCnt++;
 
   // 기압
-  AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[MIN10_PROC],
-                   mRealAws.mBarometric.sReal);
+  AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[MIN10_PROC],mRealAws.mBarometric.sReal);
   pSystem->mBaroBuf[HOUR_PROC].lTot += pAws->mBarometric.sReal;
   pSystem->mBaroBuf[HOUR_PROC].sAddCnt++;
 
   // 습도
-  AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[MIN10_PROC],
-                   mRealAws.mHumidity.sReal);
+  AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[MIN10_PROC], mRealAws.mHumidity.sReal);
   pSystem->mHumidBuf[HOUR_PROC].lTot += pAws->mHumidity.sReal;
   pSystem->mHumidBuf[HOUR_PROC].sAddCnt++;
 
   // 풍향 풍속
-  WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN10_PROC],
-                    &mRealAws.mWind);  // 10분
-  DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,&pSystem->mWind[HOUR_PROC].uTot,
-               &pSystem->mWind[HOUR_PROC].vTot);
+
+  read_wind_max(eWIND_MAX_10MIN,&wind_speed_max,&wind_direction_max);
+  pAws->mWind.mSpeed.sMax = wind_speed_max;
+  pAws->mWind.mDirection.sMax = wind_direction_max;
+  wind_max_init(eWIND_MAX_10MIN);
+      // WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN10_PROC], &mRealAws.mWind);  // 10분
+  DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal, &pSystem->mWind[HOUR_PROC].uTot, &pSystem->mWind[HOUR_PROC].vTot);
   pSystem->mWind[HOUR_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal;  // 1시간 "
   pSystem->mWind[HOUR_PROC].sAddCnt++;
 
   // 일사 일조
   pSystem->mSun[HOUR_PROC].nSolarTot += pSystem->mSun[MIN10_PROC].nSolarTot;
-  pSystem->mSun[HOUR_PROC].nSunshineTot +=
-      pSystem->mSun[MIN10_PROC].nSunshineTot;
+  pSystem->mSun[HOUR_PROC].nSunshineTot += pSystem->mSun[MIN10_PROC].nSunshineTot;
 
   pAws->mSunshine.sReal = pSystem->mSun[MIN10_PROC].nSunshineTot;
   pSystem->mSun[MIN10_PROC].nSunshineTot = 0;
@@ -770,51 +675,56 @@ void HourProcess(DATE_TIME_BUF *pDate)
 {
   SYSTEM_INFO_AWS *pSystem;
   AWS_DATA_STRUCT *pAws;
+  int32_t wind_speed_max;
+  int32_t wind_direction_max;
 
   pSystem = &Sysinfo;
   pAws = &mHourAws;
 
   // 온도
-  AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[HOUR_PROC],
-                   mRealAws.mTemperature.sReal);
+  AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[HOUR_PROC],mRealAws.mTemperature.sReal);
   // 기압
-  AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[HOUR_PROC],
-                   mRealAws.mBarometric.sReal);
+  AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[HOUR_PROC],mRealAws.mBarometric.sReal);
   // 습도
-  AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[HOUR_PROC],
-                   mRealAws.mHumidity.sReal);
+  AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[HOUR_PROC],mRealAws.mHumidity.sReal);
   // 풍향 풍속
-  WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[HOUR_PROC], &mRealAws.mWind);
+  read_wind_max(eWIND_MAX_HOUR,&wind_speed_max,&wind_direction_max);
+  pAws->mWind.mSpeed.sMax = wind_speed_max;
+  pAws->mWind.mDirection.sMax = wind_direction_max;
+  wind_max_init(eWIND_MAX_HOUR);
+
   // 일사 일조
-  pAws->mSunshine.sReal = pSystem->mSun[HOUR_PROC].nSunshineTot;
-  pSystem->mSun[HOUR_PROC].nSunshineTot = 0;
-  pAws->mSolarRad.sReal = pSystem->mSun[HOUR_PROC].nSolarTot;
-  pSystem->mSun[HOUR_PROC].nSolarTot = 0;
+  pAws->mSunshine.sReal = g_sunshine.hourly;
+  pAws->mSolarRad.sReal = g_solar_radiation.hourly;
 
   // 지중온도 처리 2017.04.03
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp5cm, &pSystem->mSoil5Buf[HOUR_PROC],
-                   mRealAws.mSoilTemp5cm.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp10cm, &pSystem->mSoil10Buf[HOUR_PROC],
-                   mRealAws.mSoilTemp10cm.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp20cm, &pSystem->mSoil20Buf[HOUR_PROC],
-                   mRealAws.mSoilTemp20cm.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp30cm, &pSystem->mSoil30Buf[HOUR_PROC],
-                   mRealAws.mSoilTemp30cm.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp50cm, &pSystem->mSoil50Buf[HOUR_PROC],
-                   mRealAws.mSoilTemp50cm.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp1_0m, &pSystem->mSoil100Buf[HOUR_PROC],
-                   mRealAws.mSoilTemp1_0m.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp1_5m, &pSystem->mSoil150Buf[HOUR_PROC],
-                   mRealAws.mSoilTemp1_5m.sReal);
+  AwsMinMaxTotSave(&pAws->mSoilTemp5cm, &pSystem->mSoil5Buf[HOUR_PROC],mRealAws.mSoilTemp5cm.sReal);
+  AwsMinMaxTotSave(&pAws->mSoilTemp10cm, &pSystem->mSoil10Buf[HOUR_PROC],mRealAws.mSoilTemp10cm.sReal);
+  AwsMinMaxTotSave(&pAws->mSoilTemp20cm, &pSystem->mSoil20Buf[HOUR_PROC],mRealAws.mSoilTemp20cm.sReal);
+  AwsMinMaxTotSave(&pAws->mSoilTemp30cm, &pSystem->mSoil30Buf[HOUR_PROC],mRealAws.mSoilTemp30cm.sReal);
+  AwsMinMaxTotSave(&pAws->mSoilTemp50cm, &pSystem->mSoil50Buf[HOUR_PROC],mRealAws.mSoilTemp50cm.sReal);
+  AwsMinMaxTotSave(&pAws->mSoilTemp1_0m, &pSystem->mSoil100Buf[HOUR_PROC],mRealAws.mSoilTemp1_0m.sReal);
+  AwsMinMaxTotSave(&pAws->mSoilTemp1_5m, &pSystem->mSoil150Buf[HOUR_PROC],mRealAws.mSoilTemp1_5m.sReal);
   // 지중 온도 처리 끝
 
   g_rainfall.hourly = 0;
   g_sunshine.hourly = 0;
+  g_solar_radiation.hourly = 0;
 }
 
 void DayProcess(void)
 {
+  int32_t wind_speed_max;
+  int32_t wind_direction_max;
+  kma_data_ex_t *p_kma;
+
+  p_kma = get_kma_data(eAWS_DATA_HOUR);
+
+  read_wind_max(eWIND_MAX_DAY, &wind_speed_max, &wind_direction_max);
+  p_kma->wind_direction_instant.data= wind_direction_max;
+  p_kma->wind_speed_instant.data = wind_speed_max;
+  wind_max_init(eWIND_MAX_DAY);
+
   mRealAws.mWind.mDirection.sMax = 0; //일 최대 풍향 초기화
   mRealAws.mWind.mSpeed.sMax = 0;    //일 최대 풍속 초기화
 
@@ -973,10 +883,7 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
   if (pDate->Sec != pOldDate->Sec)
   {  
     SecProcess();
-    if (pDate->Sec % 10 == 0)
-    { 
-      Sec10Process(); // 매 10초 마다 처리
-    }
+
     pOldDate->Sec = pDate->Sec;
   }
     if (pDate->Min != pOldDate->Min)
@@ -1083,7 +990,7 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   // 일사 // mSolarRad.sReal kw/m2 단위인데 전송시에는 mj/m2 *100 한값이 전송되어야함
   // 따라서 여기서 10으로 한번더 나누어 준다 .즉 data는 최종 전송되는 데이터 포맷이다.
   //에너지(J) = 전력(W)*시간(s)
-  p_kma_data->solar_radiation.data = g_sunshine_r.sunshine_r_1min/ 10000; 
+  p_kma_data->solar_radiation.data = g_solar_radiation.sunshine_r_1min/ 10000; 
   p_kma_data->solar_radiation.max = pAws->mSolarRad.sMax;  // 일간
 
   // 지중 온도
