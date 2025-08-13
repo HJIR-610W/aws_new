@@ -134,7 +134,11 @@
 			"rain_data.h": "c",
 			"string.h": "c",
 			"wind_data.h": "c",
-			"time_define.h": "c"
+			"time_define.h": "c",
+			"algorithm": "c",
+			"limits": "c",
+			"utility": "c",
+			"xutility": "c"
 		}
 	}
 }

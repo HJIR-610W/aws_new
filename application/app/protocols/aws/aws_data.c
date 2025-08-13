@@ -1,11 +1,7 @@
 #include "aws_data.h"
 #include "app_sensor.h"
 
-#include "wind_speed\wind_speed.h"
-#include "temperature\temperature.h"
-#include "wind_direction\wind_direction.h"
-#include "humidity\humidity.h"
-#include "barometer\barometer.h"
+
 #include "task_measure.h"
 #include "cmsis_os2.h"
 
@@ -18,11 +14,12 @@ kma_data_ex_t g_kma_1Hour_ex;
 rainfall_t g_rainfall;
 sunshine_t g_sunshine;
 sunshine_r_t g_sunshine_r;
-min_buffer_t g_min_buffer;
+
+aws_inst_t g_aws_inst;
+aws_1min_t g_aws_1min_temp;
+
 
 osMessageQueueId_t g_kma_data_queue[2];
-
-
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
 {

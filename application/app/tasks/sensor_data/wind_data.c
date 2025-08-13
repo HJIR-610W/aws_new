@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdint.h>
-
+#include "util_memory.h"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -21,6 +21,11 @@ void calculate_wind(double u, double v, double *speed, double *direction_deg)
   // 1. 풍속 계산 (이 부분은 올바릅니다)
   *speed = sqrt(u * u + v * v);
 
+  if (*speed == 0)
+  {
+    *direction_deg = 0;
+    return;
+  }
   // 2. 수학적 각도 계산 (atan2의 인자 순서는 y, x 입니다)
   // u가 x축(동서), v가 y축(남북)에 해당합니다.
   double angle_rad = atan2(v, u);
@@ -43,8 +48,7 @@ void calculate_wind(double u, double v, double *speed, double *direction_deg)
 
 
 #define WIND_SPEED_AVG_CNT 12 //0.25초 간격 3초
-#define WIND_AVG_10S_CNT 40
-#define WIND_AVG_1MIN_CNT 6
+
 
 typedef struct 
 {
@@ -60,123 +64,54 @@ typedef struct wind_vector_s
 
 #pragma location = "SRAM_section"
 static wind_t s_wind_mavg_sample[WIND_SPEED_AVG_CNT] ;
-#pragma location = "SRAM_section"
-static wind_vector_t s_wind_10s[WIND_AVG_10S_CNT];
-#pragma location = "SRAM_section"
-static wind_vector_t s_wind_1min[WIND_AVG_1MIN_CNT];
-
-
-
 
 wind_t wind_max[eWIND_MAX];
 
-static uint8_t s_wind_sample_count = 0;
-static uint8_t s_wind_1min_count = 0;
-static uint8_t s_wind_10s_count = 0;
-static uint8_t s_wind_10s_index = 0;
-static uint8_t s_wind_1min_index = 0;
 
 
-// 1분 평균 풍향,풍속 0.25초 간격의 바람벡터를 10초동안 평균구한 후
-// 1분동안 총 6개의 자료를 다시 평균하여 분자료 산출
-void calculate_wind_1min(double *wind_speed, double *wind_direction)
-{
-  double u=0;
-  double v=0;
-  double avg_u;
-  double avg_v;
-  uint8_t actual_count = (s_wind_1min_count < WIND_AVG_1MIN_CNT) ? s_wind_1min_count : WIND_AVG_1MIN_CNT;
 
-  uint8_t idx = (s_wind_1min_index + WIND_AVG_1MIN_CNT - 1) % WIND_AVG_1MIN_CNT;
 
-  for (int i = 0; i < actual_count; i++)
-  {
-    u += s_wind_1min[idx].u;
-    v += s_wind_1min[idx].v;
-    idx = (idx + WIND_AVG_1MIN_CNT - 1) % WIND_AVG_1MIN_CNT;
-  }
-
-  avg_u = u / actual_count;
-  avg_v = v / actual_count;
-
-  calculate_wind(avg_u, avg_v, wind_speed, wind_direction);
-}
 
 /*
-10초마다 평균낸 바람벡터를 샘플저장한다.
-10초마다 이함수 호출
-*/
-void add_wind_vector_1min_samle(double u,double v)
-{
-  s_wind_1min[s_wind_1min_index].u = u;
-  s_wind_1min[s_wind_1min_index].v = v;
-  s_wind_1min_index = (s_wind_1min_index + 1) % WIND_AVG_1MIN_CNT;
+[별표 4]<개정 2023.3.6.>
+ 신호 및 자료처리의 표준규격(제 9조 관련)
+풍향,풍속
 
-  if (s_wind_1min_count < WIND_AVG_1MIN_CNT)
-  {
-    s_wind_1min_count++;
-  }
-}
-/*
-10초 마다 호출하여 업데이트
-10초간 샘플링한 바람벡터 40개의 벡터평균을 구한다.
-그런데 장비가 껐다 켜지면 샘플링 갯수가 40개 아닐수 있기에
-실제 저장된 샘플링 갯수만큼 평균을 구해야한다.
-10초마다 이샘플 호출
-*/
-void calculate_wind_vector_10s(double *p_u,double *p_v)
-{
-  double u=0;
-  double v=0;
+순간 풍향,순간 풍속(gust)
+- 250ms 마다 이동평균 3초
+- 1분 동안 이동평균하여 산출된 지난 240개의 자료 중 최댓값을 1분 최대 순간풍향ㆍ풍속으로 산출한다
+   (원태희 해석)순간 풍향 순간 풍속은 벡터 계산 하지 않는다.측정된 풍속이 최대일때 그때의 풍향을 최대
+  풍향으로 사용한다.
+- 매 1분마다 지난 10개의 1분값 중에서 최댓값을 10분 최대순간풍향ㆍ풍속으로 산출한다.
+- 하루 동안 수집된 1분 최대순간풍향ㆍ풍속 1440개 중에서 최댓값을 일 최대순간풍향ㆍ풍속으로 산출한다.
 
-
-  uint8_t actual_count = (s_wind_10s_count < WIND_AVG_10S_CNT) ? s_wind_10s_count : WIND_AVG_10S_CNT;
-
-  uint8_t idx = (s_wind_10s_index + WIND_AVG_10S_CNT - 1) % WIND_AVG_10S_CNT;
-  for (int i = 0; i < actual_count; i++)
-  {
-    u += s_wind_10s[idx].u;
-    v += s_wind_10s[idx].v;
-
-    idx = (idx + WIND_AVG_10S_CNT - 1) % WIND_AVG_10S_CNT;
-  }
-
-  *p_u = u / actual_count;
-  *p_v = v / actual_count;
-}
-
-
-//0.25마다 바람 벡터를 저장한다. 
-void add_wind_vector_250ms(float wind_speed,float wind_direction)
-{
-  double u;
-  double v;
+◦ 1분 평균 풍향ㆍ풍속
+- 0.25초 간격의 바람벡터 자료를 10초 동안 평균을 구한 후 1분 동안 6개의 자료를 다시 평균하여 매분자료를 산출한다.
+  (원태희 해석)0.25초마다 이동평균한 값을 바람벡터로 환산후 10초동안 평균을 구하여(40개 샘플)
+  그렇게 1분동안 총 6개를 다시 평균하여 1분 평균 풍향,풍속을 산출한다.
   
-  calculate_uv(wind_direction,wind_speed,&u,&v);
+  *쉽게 하는법
+   재귀적 평균사용하여 10초가 되면 평균값을 저장, 그 값을 다시 1분 재귀적 평균함수에 전달 1분이 되면 평균값 사용
 
-  s_wind_10s[s_wind_10s_index].u = u;
-  s_wind_10s[s_wind_10s_index].v = v;
 
-  s_wind_10s_index = (s_wind_10s_index + 1) % WIND_AVG_10S_CNT;
 
-  if (s_wind_10s_count < WIND_AVG_10S_CNT)
-  {
-    s_wind_10s_count++;
-  }
-}
 
-static uint8_t s_sample_index = 0;
+*/
+
+static uint8_t s_mavg_sample_count = 0;
 
 void add_wind_sample(float speed,float direction)
 {
-  s_wind_mavg_sample[s_sample_index].speed = (double)speed;
-  s_wind_mavg_sample[s_sample_index].direction = direction;
-  s_sample_index = (s_sample_index + 1) % WIND_SPEED_AVG_CNT;
+  uint16_t index = s_mavg_sample_count%WIND_SPEED_AVG_CNT;
+  s_wind_mavg_sample[index].speed = (double)speed;
+  s_wind_mavg_sample[index].direction = direction;
 
-  if (s_wind_sample_count < WIND_SPEED_AVG_CNT)
+  s_mavg_sample_count++;
+  if (s_mavg_sample_count >= (WIND_SPEED_AVG_CNT<<1))
   {
-    s_wind_sample_count++;
+    s_mavg_sample_count = WIND_SPEED_AVG_CNT;
   }
+
 }
 
 /*
@@ -206,15 +141,17 @@ void calculate_wind_moving_avg(float *wind_speed,float *wind_direction)
 {
   double speed_sum=0;
   double direction_sum=0;
-  uint8_t actual_count = (s_wind_sample_count < WIND_SPEED_AVG_CNT) ? s_wind_sample_count : WIND_SPEED_AVG_CNT;
+  uint8_t actual_count;
 
+  if (s_mavg_sample_count < WIND_SPEED_AVG_CNT)
+    actual_count = s_mavg_sample_count;
+  else
+    actual_count = WIND_SPEED_AVG_CNT;
 
-  uint8_t idx = (s_sample_index + WIND_SPEED_AVG_CNT - 1) % WIND_SPEED_AVG_CNT;
   for (uint8_t i = 0; i < actual_count; i++)
   {
-    speed_sum += s_wind_mavg_sample[idx].speed;
-    direction_sum += s_wind_mavg_sample[idx].speed;
-    idx = (idx + WIND_SPEED_AVG_CNT - 1) % WIND_SPEED_AVG_CNT;
+    speed_sum += s_wind_mavg_sample[i].speed;
+    direction_sum += s_wind_mavg_sample[i].direction;
   }
 
   *wind_speed = speed_sum / actual_count;
@@ -222,8 +159,8 @@ void calculate_wind_moving_avg(float *wind_speed,float *wind_direction)
 }
 
 
-
-void calculate_wind_max(eWIND_MAX_t wind,float speed,float direction)
+//speed,direction x10한값 
+void calculate_wind_max(eWIND_MAX_t wind,int32_t speed,int32_t direction)
 {
   if (speed > wind_max[wind].speed)
   {
@@ -231,11 +168,46 @@ void calculate_wind_max(eWIND_MAX_t wind,float speed,float direction)
     wind_max[wind].direction = direction;
   }
 }
-
-
-
-void read_wind_max(eWIND_MAX_t wind,float *speed,float *direction)
+// speed,direction x10한값 direction 123 ->12.3도
+void read_wind_max(eWIND_MAX_t wind, int32_t *speed, int32_t *direction)
 {
-  *speed     = wind_max[wind].speed ;
-  *direction = wind_max[wind].direction;
+  *speed     = (int32_t)wind_max[wind].speed ;
+  *direction = (int32_t)wind_max[wind].direction;
 }
+
+void wind_max_init(eWIND_MAX_t wind)
+{
+ wind_max[wind].speed = 0;
+wind_max[wind].direction = 0;;
+}
+
+    // 1분 바람벡터 평균 값 용
+    double wind_avg_1min_u = 0;
+double wind_avg_1min_v=0;
+uint8_t wind_avg_1min_count=0;
+
+void update_wind_vector_avg_1min(float speed,float direction)
+{
+  double u,v;
+
+  calculate_uv(direction,speed,&u,&v);
+
+  wind_avg_1min_count++;
+  wind_avg_1min_u = recursive_avg(wind_avg_1min_u, u, wind_avg_1min_count);
+  wind_avg_1min_v = recursive_avg(wind_avg_1min_v, v, wind_avg_1min_count);
+}
+
+void calculate_wind_avg_1min(float *p_speed,float *p_direction)
+{
+  double speed;
+  double direction;
+  calculate_wind(wind_avg_1min_u, wind_avg_1min_v,&speed,&direction);
+
+  *p_speed = speed;
+  *p_direction = direction;
+  wind_avg_1min_u = 0;
+  wind_avg_1min_v = 0;
+  wind_avg_1min_count = 0;
+}
+
+

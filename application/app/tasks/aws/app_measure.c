@@ -54,7 +54,7 @@ float get_avg_temperature(void)
       if (g_temp_avg_buff[i] != TEMP_ERR_VAL)
       {
         cnt++;
-        avg = recursiveAvg(avg, g_temp_avg_buff[i], cnt);
+        avg = recursive_avg(avg, g_temp_avg_buff[i], cnt);
       }
       else
       {
@@ -75,7 +75,7 @@ float get_avg_temperature(void)
       if (g_temp_avg_buff[i] != TEMP_ERR_VAL)
       {
         cnt++;
-        avg = recursiveAvg(avg, g_temp_avg_buff[i], cnt);
+        avg = recursive_avg(avg, g_temp_avg_buff[i], cnt);
       }
       else
       {
@@ -126,14 +126,14 @@ float get_avg_humi(void)
   {
     for (int i = 0; i < g_humi_avg_idx; i++)
     {
-      avg = recursiveAvg(avg, g_humi_avg_buff[i], i + 1);
+      avg = recursive_avg(avg, g_humi_avg_buff[i], i + 1);
     }
   }
   else
   {
     for (int i = 0; i < SAMPLE_CNT_TEMP; i++)
     {
-      avg = recursiveAvg(avg, g_humi_avg_buff[i], i + 1);
+      avg = recursive_avg(avg, g_humi_avg_buff[i], i + 1);
     }
   }
 
@@ -174,14 +174,14 @@ float get_avg_barometer(void)
   {
     for (int i = 0; i < g_barometer_avg_idx; i++)
     {
-      avg = recursiveAvg(avg, g_barometer_avg_buff[i], i + 1);
+      avg = recursive_avg(avg, g_barometer_avg_buff[i], i + 1);
     }
   }
   else
   {
     for (int i = 0; i < SAMPLE_CNT_TEMP; i++)
     {
-      avg = recursiveAvg(avg, g_barometer_avg_buff[i], i + 1);
+      avg = recursive_avg(avg, g_barometer_avg_buff[i], i + 1);
     }
   }
 

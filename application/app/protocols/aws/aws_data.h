@@ -51,7 +51,6 @@ typedef struct aws_data_s
   }raw;
 }aws_data_t;
 
-
 typedef struct aws_data_inst_s
 {
   uint8_t err;
@@ -230,6 +229,70 @@ typedef struct
   uint8_t Y_volateStatus;
 } aws_logging_data_t;
 
+typedef struct
+{
+  uint16_t temperature;          
+  uint16_t wind_direction;      
+  uint16_t wind_speed;            
+  uint16_t pressure;            
+  uint16_t precipitation_presence; 
+  uint16_t snowfall;             
+  uint16_t relative_humidity;   
+  uint16_t precipitation_fine;    
+  uint16_t solar_radiation;      
+  uint16_t sunshine_duration;    
+  uint16_t surface_temperature; 
+  uint16_t grass_temperature;   
+  uint16_t soil_temperature_5cm; 
+  uint16_t soil_temperature_10cm; 
+  uint16_t soil_temperature_20cm; 
+  uint16_t soil_temperature_30cm; 
+  uint16_t soil_temperature_50cm; 
+  uint16_t soil_temperature_1m;   
+  uint16_t soil_temperature_1_5m; 
+  uint16_t soil_temperature_3m;   
+  uint16_t soil_temperature_5m;   
+} aws_inst_t;
+
+typedef struct
+{
+  uint16_t temperature;
+  uint16_t wind_direction_avg;
+  uint16_t wind_speed_avg;
+  uint16_t wind_direction_gust;
+  uint16_t wind_speed_gust;
+  uint16_t pressure;
+  uint16_t precipitation_presence;
+  uint16_t snowfall;
+  uint16_t relative_humidity;
+  uint16_t precipitation_fine;
+  uint16_t solar_radiation;
+  uint16_t sunshine_duration;
+  uint16_t surface_temperature;
+  uint16_t grass_temperature;
+  uint16_t soil_temperature_5cm;
+  uint16_t soil_temperature_10cm;
+  uint16_t soil_temperature_20cm;
+  uint16_t soil_temperature_30cm;
+  uint16_t soil_temperature_50cm;
+  uint16_t soil_temperature_1m;
+  uint16_t soil_temperature_1_5m;
+  uint16_t soil_temperature_3m;
+  uint16_t soil_temperature_5m;
+} aws_1min_t;
+
+typedef struct
+{
+  uint16_t wind_direction_gust;
+  uint16_t wind_speed_gust;
+} aws_10min_t;
+
+typedef struct
+{
+  uint16_t wind_direction_gust;
+  uint16_t wind_speed_gust;
+} aws_day_t;
+
 typedef struct rainfall_s
 {
   float min;
@@ -249,7 +312,7 @@ typedef struct sunshine_s
   uint32_t hourly;
   uint32_t monthly;
   uint32_t yearly;
-} sunshine_t;
+} sunshine_t;//일조 
 
 typedef struct sunshine_r_s
 {
@@ -258,13 +321,6 @@ typedef struct sunshine_r_s
 } sunshine_r_t;
 
 
-
-typedef struct min_buffer_s
-{
-  uint8_t sunshine_duration;//1분 일조
-  uint32_t solar_radiation;//1분 누적 일사
-  uint16_t rainfall;//1분 누적 우량
-} min_buffer_t;
 
 
 
@@ -284,10 +340,11 @@ void kma_data_q_init(void);
 int32_t read_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
 void send_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
 
-extern min_buffer_t g_min_buffer;
+
 
 extern sunshine_t g_sunshine;;
 extern rainfall_t g_rainfall;
 extern sunshine_r_t g_sunshine_r;
+extern aws_inst_t g_aws_inst;;
 
 #endif

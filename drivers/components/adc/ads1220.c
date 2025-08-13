@@ -668,7 +668,7 @@ int32_t ads1220_diff_read(int channel,uint16_t avg,uint8_t *err)
     if(*err ==0)
     {
       valid_cnt++;
-      average = recursiveAvg(average,adc,valid_cnt);
+      average = recursive_avg(average,adc,valid_cnt);
     }
   }
  

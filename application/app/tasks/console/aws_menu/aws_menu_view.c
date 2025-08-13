@@ -694,7 +694,7 @@ void draw_aws(win_t *p_win)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      win_printf_row(p_win, row_count++, "%s: %s", m_l("강수량", AWS_WD), err_buf);
+      win_printf_row(p_win, row_count++, "%s: %s", m_l("강수량(일간)", AWS_WD), err_buf);
     }
     else
     {
@@ -716,7 +716,7 @@ void draw_aws(win_t *p_win)
       }
       else
       {
-        win_printf_row(p_win, row_count++, "%s: %7.1f mm", m_l("강수량", AWS_WD),
+        win_printf_row(p_win, row_count++, "%s: %7.1f mm", m_l("강수량(일간)", AWS_WD),
                        KMA_TO_GENERAL(p_kma->precipitation.data));
       }
     }
@@ -866,13 +866,13 @@ void draw_aws(win_t *p_win)
         case eAWS_DATA_RAW:
         {
           float f_data = p_kma->solar_radiation.raw.f;
-          win_printf_row(p_win, row_count++, "%s: %7.2f W/m2", m_l("일사(1min)", AWS_WD), f_data);
+          win_printf_row(p_win, row_count++, "%s: %7.2f W/m2", m_l("일사", AWS_WD), f_data);
           break;
         }
         case eAWS_DATA_AVG:
         {
           float solar_radiation = (float)g_sunshine_r.sunshine_r_1min_acc;
-          win_printf_row(p_win, row_count++, "%s: %7.1f W/m2", m_l("일사(1min)", AWS_WD), solar_radiation);
+          win_printf_row(p_win, row_count++, "%s: %7.1f W/m2", m_l("일사", AWS_WD), solar_radiation);
           break;
         }
         default:

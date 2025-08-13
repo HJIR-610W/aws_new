@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 // float ±16,777,216
-float recursiveAvg(double pre_avg, float adc, int cnt);
+float recursive_avg(double pre_avg, float adc, int cnt);
 
 float recursive_avg_i(float pre_avg, int32_t adc, int cnt);
 float validate_sensor_value_max(float value, float min, float abs_tol, uint8_t* err);

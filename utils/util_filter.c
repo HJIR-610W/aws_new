@@ -3,7 +3,7 @@
 #include "util_memory.h"
 
 // float ±16,777,216
-float recursiveAvg(double pre_avg, float adc, int cnt)
+float recursive_avg(double pre_avg, float adc, int cnt)
 {
   float avg;
 
@@ -19,6 +19,11 @@ float recursive_avg_i(float pre_avg, int32_t adc, int cnt)
   avg = ((cnt - 1) * pre_avg) / cnt + (float)adc / (float)cnt;
 
   return avg;
+}
+
+float recursive_moving_avg(float prev_avg, int new_sample, int old_sample, int N)
+{
+  return prev_avg + ((float)new_sample - (float)old_sample) / (float)N;
 }
 
 //값이 최소값이하이며 절대오차 벗어나면 에러, 그외 최저값 사용

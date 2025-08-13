@@ -9,6 +9,7 @@
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "config_nvm.h"
+
 #include "old_aws_define.h"
 #include "schedule.h"
 #include "task_measure.h"
@@ -21,7 +22,7 @@
 #include "util_memory.h"
 #include "sensor_data\rain_data.h"
 #include "sensor_data\sunshine_data.h"
-
+#include "wind_data.h"
 typedef struct filter_data_s
 {
   uint8_t delay_count;
@@ -1141,8 +1142,10 @@ void DUALPORT_TASK(void *arg)
 {
   uint8_t f_err = 0;
   uint8_t sensor_err = 0;
-  uint16_t sSpeed;
-  uint16_t sDirec;
+  int32_t wind_speed;
+  int32_t wind_direction;
+  float wind_speed_mavg;
+  float wind_direction_mavg;
   uint16_t data;
   int32_t nWindCnt12 = 0;
   int32_t nWindCnt40 = 0;
@@ -1195,19 +1198,33 @@ void DUALPORT_TASK(void *arg)
 
       // 풍향
       data = WindDirecCalc(&sensor_err);
-      sDirec = filter_data(A2_WIND_DIRECTION, data, sensor_err, &f_err);
+      wind_direction = filter_data(A2_WIND_DIRECTION, data, sensor_err, &f_err);
       update_sensor_err(A2_WIND_DIRECTION, f_err);
 
       // 풍속
       data = WindSpeedCalc(&sensor_err);
-      sSpeed = filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
+      wind_speed = filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
       update_sensor_err(A3_WIND_SPEED, f_err);
 
-      pSystem->mRealWind.sAvg3Speed[nWindCnt12] = sSpeed;  // 풍속  3 초 평균
-      pSystem->mRealWind.sAvg10Speed[nWindCnt40] = sSpeed; // 풍속 10 초 평균
+      add_wind_sample((float)wind_speed / 10.0f, (float)wind_direction / 10.0f);
+      calculate_wind_moving_avg(&wind_speed_mavg,&wind_direction_mavg);
+      update_wind_vector_avg_1min(wind_speed_mavg, wind_direction_mavg);
 
-      pSystem->mRealWind.sAvg3Direction[nWindCnt12] = sDirec;  // 풍향  3 초 평균
-      pSystem->mRealWind.sAvg10Direction[nWindCnt40] = sDirec; // 풍향 10 초 평균
+      g_aws_inst.wind_speed     = (uint16_t)(wind_speed_mavg*10);
+      g_aws_inst.wind_direction = (uint16_t)(wind_direction_mavg*10);
+      pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_mavg * 10);
+      pAws->mWind.mDirection.sMax = (uint16_t)(wind_direction_mavg * 10);
+
+      calculate_wind_max(eWIND_MAX_1MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
+      read_wind_max(eWIND_MAX_1MIN,&wind_speed,&wind_direction);
+      pAws->mWind.mSpeed.sMax = wind_speed;
+      pAws->mWind.mDirection.sMax = wind_direction;
+
+       pSystem->mRealWind.sAvg3Speed[nWindCnt12] = wind_speed; // 풍속  3 초 평균
+      pSystem->mRealWind.sAvg10Speed[nWindCnt40] = wind_speed; // 풍속 10 초 평균
+
+      pSystem->mRealWind.sAvg3Direction[nWindCnt12] = wind_direction;  // 풍향  3 초 평균
+      pSystem->mRealWind.sAvg10Direction[nWindCnt40] = wind_direction; // 풍향 10 초 평균
       pSystem->mRealWind.sWrFlag[nWindCnt40] = 1;
 
       if (++nWindCnt12 >= 12)
@@ -1308,12 +1325,12 @@ void DUALPORT_TASK(void *arg)
     else
       pAws->mStatus.sMin &= ~(RAINFALLFAIL_BIT);
 
-    if (sSpeed >= 1050)
+    if (wind_speed >= 1050)
       pAws->mStatus.sMin |= WINDSPEEDFAIL_BIT;
     else
       pAws->mStatus.sMin &= ~(WINDSPEEDFAIL_BIT);
 
-    if (sDirec >= 3600)
+    if (wind_direction >= 3600)
       pAws->mStatus.sMin |= WINDDIRECFAIL_BIT;
     else
       pAws->mStatus.sMin &= ~(WINDDIRECFAIL_BIT);

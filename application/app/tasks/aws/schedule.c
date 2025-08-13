@@ -14,6 +14,9 @@
 #include "app_dataLogging.h"
 #include "util_memory.h"
 #include "kma2.h"
+#include "wind_data.h"
+#include "system_err.h"
+#include "dev_io.h"
 #define D2R 3.14159265 / 180.0
 #define R2D 180.0 / 3.14159265
 
@@ -228,126 +231,65 @@ void SecProcess(void)
   pSystem->mSoil150Buf[MIN1_PROC].sAddCnt++;
 
   // 지중 온도 5  최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal, &mRealAws.mSoilTemp5cm.sMin,
-                &mRealAws.mSoilTemp5cm.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal,
-                &pSystem->mSoil5Buf[MIN1_PROC].sMin,
-                &pSystem->mSoil5Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal,
-                &pSystem->mSoil5Buf[MIN10_PROC].sMin,
-                &pSystem->mSoil5Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal,
-                &pSystem->mSoil5Buf[HOUR_PROC].sMin,
-                &pSystem->mSoil5Buf[HOUR_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal, &mRealAws.mSoilTemp5cm.sMin,&mRealAws.mSoilTemp5cm.sMax);  // 일간 최고 최소 온도
+  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal,&pSystem->mSoil5Buf[MIN1_PROC].sMin,&pSystem->mSoil5Buf[MIN1_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal,&pSystem->mSoil5Buf[MIN10_PROC].sMin,&pSystem->mSoil5Buf[MIN10_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal,&pSystem->mSoil5Buf[HOUR_PROC].sMin,&pSystem->mSoil5Buf[HOUR_PROC].sMax);
 
   // 지중온도 10 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal, &mRealAws.mSoilTemp10cm.sMin,
-                &mRealAws.mSoilTemp10cm.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal,
-                &pSystem->mSoil10Buf[MIN1_PROC].sMin,
-                &pSystem->mSoil10Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal,
-                &pSystem->mSoil10Buf[MIN10_PROC].sMin,
-                &pSystem->mSoil10Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal,
-                &pSystem->mSoil10Buf[HOUR_PROC].sMin,
-                &pSystem->mSoil10Buf[HOUR_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal, &mRealAws.mSoilTemp10cm.sMin, &mRealAws.mSoilTemp10cm.sMax);  // 일간 최고 최소 온도
+  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal, &pSystem->mSoil10Buf[MIN1_PROC].sMin,&pSystem->mSoil10Buf[MIN1_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal, &pSystem->mSoil10Buf[MIN10_PROC].sMin, &pSystem->mSoil10Buf[MIN10_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal, &pSystem->mSoil10Buf[HOUR_PROC].sMin, &pSystem->mSoil10Buf[HOUR_PROC].sMax);
 
   // 지중온도 20  최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal, &mRealAws.mSoilTemp20cm.sMin,
-                &mRealAws.mSoilTemp20cm.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal,
-                &pSystem->mSoil20Buf[MIN1_PROC].sMin,
-                &pSystem->mSoil20Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal,
-                &pSystem->mSoil20Buf[MIN10_PROC].sMin,
-                &pSystem->mSoil20Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal,
-                &pSystem->mSoil20Buf[HOUR_PROC].sMin,
-                &pSystem->mSoil20Buf[HOUR_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal, &mRealAws.mSoilTemp20cm.sMin,&mRealAws.mSoilTemp20cm.sMax);  // 일간 최고 최소 온도
+  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal,&pSystem->mSoil20Buf[MIN1_PROC].sMin,&pSystem->mSoil20Buf[MIN1_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal,&pSystem->mSoil20Buf[MIN10_PROC].sMin,&pSystem->mSoil20Buf[MIN10_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal,&pSystem->mSoil20Buf[HOUR_PROC].sMin,&pSystem->mSoil20Buf[HOUR_PROC].sMax);
 
   // 지중온도 30 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal, &mRealAws.mSoilTemp30cm.sMin,
-                &mRealAws.mSoilTemp30cm.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal,
-                &pSystem->mSoil30Buf[MIN1_PROC].sMin,
-                &pSystem->mSoil30Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal,
-                &pSystem->mSoil30Buf[MIN10_PROC].sMin,
-                &pSystem->mSoil30Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal,
-                &pSystem->mSoil30Buf[HOUR_PROC].sMin,
-                &pSystem->mSoil30Buf[HOUR_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal, &mRealAws.mSoilTemp30cm.sMin,&mRealAws.mSoilTemp30cm.sMax);  // 일간 최고 최소 온도
+  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal,&pSystem->mSoil30Buf[MIN1_PROC].sMin,&pSystem->mSoil30Buf[MIN1_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal,&pSystem->mSoil30Buf[MIN10_PROC].sMin,&pSystem->mSoil30Buf[MIN10_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal,&pSystem->mSoil30Buf[HOUR_PROC].sMin,&pSystem->mSoil30Buf[HOUR_PROC].sMax);
 
   // 지중온도 50 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal, &mRealAws.mSoilTemp50cm.sMin,
-                &mRealAws.mSoilTemp50cm.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal,
-                &pSystem->mSoil50Buf[MIN1_PROC].sMin,
-                &pSystem->mSoil50Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal,
-                &pSystem->mSoil50Buf[MIN10_PROC].sMin,
-                &pSystem->mSoil50Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal,
-                &pSystem->mSoil50Buf[HOUR_PROC].sMin,
-                &pSystem->mSoil50Buf[HOUR_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal, &mRealAws.mSoilTemp50cm.sMin,&mRealAws.mSoilTemp50cm.sMax);  // 일간 최고 최소 온도
+  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal, &pSystem->mSoil50Buf[MIN1_PROC].sMin,&pSystem->mSoil50Buf[MIN1_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal, &pSystem->mSoil50Buf[MIN10_PROC].sMin,&pSystem->mSoil50Buf[MIN10_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal, &pSystem->mSoil50Buf[HOUR_PROC].sMin, &pSystem->mSoil50Buf[HOUR_PROC].sMax);
 
   // 지중온도 1_0 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal, &mRealAws.mSoilTemp1_0m.sMin,
-                &mRealAws.mSoilTemp1_0m.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal,
-                &pSystem->mSoil100Buf[MIN1_PROC].sMin,
-                &pSystem->mSoil100Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal,
-                &pSystem->mSoil100Buf[MIN10_PROC].sMin,
-                &pSystem->mSoil100Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal,
-                &pSystem->mSoil100Buf[HOUR_PROC].sMin,
-                &pSystem->mSoil100Buf[HOUR_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal, &mRealAws.mSoilTemp1_0m.sMin,&mRealAws.mSoilTemp1_0m.sMax);  // 일간 최고 최소 온도
+  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal,&pSystem->mSoil100Buf[MIN1_PROC].sMin,&pSystem->mSoil100Buf[MIN1_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal,&pSystem->mSoil100Buf[MIN10_PROC].sMin,&pSystem->mSoil100Buf[MIN10_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal,&pSystem->mSoil100Buf[HOUR_PROC].sMin,&pSystem->mSoil100Buf[HOUR_PROC].sMax);
 
   // 지중온도 1_5 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal, &mRealAws.mSoilTemp1_5m.sMin,
-                &mRealAws.mSoilTemp1_5m.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal,
-                &pSystem->mSoil150Buf[MIN1_PROC].sMin,
-                &pSystem->mSoil150Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal,
-                &pSystem->mSoil150Buf[MIN10_PROC].sMin,
-                &pSystem->mSoil150Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal,
-                &pSystem->mSoil150Buf[HOUR_PROC].sMin,
-                &pSystem->mSoil150Buf[HOUR_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal, &mRealAws.mSoilTemp1_5m.sMin,&mRealAws.mSoilTemp1_5m.sMax);  // 일간 최고 최소 온도
+  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal,&pSystem->mSoil150Buf[MIN1_PROC].sMin,&pSystem->mSoil150Buf[MIN1_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal,&pSystem->mSoil150Buf[MIN10_PROC].sMin,&pSystem->mSoil150Buf[MIN10_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal,&pSystem->mSoil150Buf[HOUR_PROC].sMin,&pSystem->mSoil150Buf[HOUR_PROC].sMax);
 
   // 2017 . 04 . 03 추가 끝
   // 온도 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mTemperature.sReal, &mRealAws.mTemperature.sMin,
-                &mRealAws.mTemperature.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mTemperature.sReal, &pSystem->mTempBuf[MIN1_PROC].sMin,
-                &pSystem->mTempBuf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mTemperature.sReal,&pSystem->mTempBuf[MIN10_PROC].sMin,
-                &pSystem->mTempBuf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mTemperature.sReal, &pSystem->mTempBuf[HOUR_PROC].sMin,
-                &pSystem->mTempBuf[HOUR_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mTemperature.sReal, &mRealAws.mTemperature.sMin,&mRealAws.mTemperature.sMax);  // 일간 최고 최소 온도
+  AwsMinMaxProc(mRealAws.mTemperature.sReal, &pSystem->mTempBuf[MIN1_PROC].sMin,&pSystem->mTempBuf[MIN1_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mTemperature.sReal,&pSystem->mTempBuf[MIN10_PROC].sMin,&pSystem->mTempBuf[MIN10_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mTemperature.sReal, &pSystem->mTempBuf[HOUR_PROC].sMin,&pSystem->mTempBuf[HOUR_PROC].sMax);
 
   // 기압 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mBarometric.sReal, &mRealAws.mBarometric.sMin,
-                &mRealAws.mBarometric.sMax);  // 일간 최고 최소 기압
-  AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[MIN1_PROC].sMin,
-                &pSystem->mBaroBuf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[MIN10_PROC].sMin,
-                &pSystem->mBaroBuf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[HOUR_PROC].sMin,
-                &pSystem->mBaroBuf[HOUR_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mBarometric.sReal, &mRealAws.mBarometric.sMin,&mRealAws.mBarometric.sMax);  // 일간 최고 최소 기압
+  AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[MIN1_PROC].sMin,&pSystem->mBaroBuf[MIN1_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[MIN10_PROC].sMin,&pSystem->mBaroBuf[MIN10_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[HOUR_PROC].sMin,&pSystem->mBaroBuf[HOUR_PROC].sMax);
 
   // 습도 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mHumidity.sReal, &mRealAws.mHumidity.sMin,
-                &mRealAws.mHumidity.sMax);  // 일간 최고 최소 습도
-  AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[MIN1_PROC].sMin,
-                &pSystem->mHumidBuf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[MIN10_PROC].sMin,
-                &pSystem->mHumidBuf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[HOUR_PROC].sMin,
-                &pSystem->mHumidBuf[HOUR_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mHumidity.sReal, &mRealAws.mHumidity.sMin,&mRealAws.mHumidity.sMax);  // 일간 최고 최소 습도
+  AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[MIN1_PROC].sMin,&pSystem->mHumidBuf[MIN1_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[MIN10_PROC].sMin,&pSystem->mHumidBuf[MIN10_PROC].sMax);
+  AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[HOUR_PROC].sMin,&pSystem->mHumidBuf[HOUR_PROC].sMax);
 
 
   //우량
@@ -412,6 +354,7 @@ void SecProcess(void)
     {
       wind_deg = UVToDirc(wind_avg_u, wind_avg_v);
     }
+    
     mRealAws.mWind.mSpeed.sReal = wind_speed;
     mRealAws.mWind.mDirection.sReal = wind_deg;
 
@@ -571,7 +514,10 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   SYSTEM_INFO_AWS *pSystem;
   AWS_DATA_STRUCT *pAws;
- 
+   float wind_speed_avg;
+  float wind_direction_avg;
+
+
 
   pSystem = &Sysinfo;
   pAws = &mMinAws;
@@ -588,14 +534,12 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pSystem->mTempBuf[MIN10_PROC].sAddCnt++;
 
   // 기압
-  AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[MIN1_PROC],
-                   mRealAws.mBarometric.sReal);
+  AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[MIN1_PROC],mRealAws.mBarometric.sReal);
   pSystem->mBaroBuf[MIN10_PROC].lTot += pAws->mBarometric.sReal;
   pSystem->mBaroBuf[MIN10_PROC].sAddCnt++;
 
   // 습도
-  AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[MIN1_PROC],
-                   mRealAws.mHumidity.sReal);
+  AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[MIN1_PROC], mRealAws.mHumidity.sReal);
   pSystem->mHumidBuf[MIN10_PROC].lTot += pAws->mHumidity.sReal;
   pSystem->mHumidBuf[MIN10_PROC].sAddCnt++;
 
@@ -605,8 +549,13 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   // 풍향 풍속
   WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN1_PROC], &mRealAws.mWind);
-  DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,&pSystem->mWind[MIN10_PROC].uTot,&pSystem->mWind[MIN10_PROC].vTot);
-  pSystem->mWind[MIN10_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal;  // 1분 "
+  //DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,&pSystem->mWind[MIN10_PROC].uTot,&pSystem->mWind[MIN10_PROC].vTot);
+
+  calculate_wind_avg_1min(&wind_speed_avg, &wind_direction_avg);
+  pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_avg*10);
+  pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_avg * 10);
+
+  pSystem->mWind[MIN10_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal; // 1분 "
   pSystem->mWind[MIN10_PROC].sAddCnt++;
 
   // 일사 일조
@@ -726,8 +675,7 @@ void Min10Process(void)
   // 풍향 풍속
   WindMinMaxAvgSave(&pAws->mWind, &pSystem->mWind[MIN10_PROC],
                     &mRealAws.mWind);  // 10분
-  DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,
-               &pSystem->mWind[HOUR_PROC].uTot,
+  DircTouvConv(pAws->mWind.mDirection.sReal, pAws->mWind.mSpeed.sReal,&pSystem->mWind[HOUR_PROC].uTot,
                &pSystem->mWind[HOUR_PROC].vTot);
   pSystem->mWind[HOUR_PROC].lSpeedTot += pAws->mWind.mSpeed.sReal;  // 1시간 "
   pSystem->mWind[HOUR_PROC].sAddCnt++;
