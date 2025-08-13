@@ -24,6 +24,30 @@ typedef enum avg_1min_e
   eAVG_MAX
 } eAVG_1MIN_TYPE_t;
 
-void add_sample_1min(eAVG_1MIN_TYPE_t number, int32_t data);
-void calculate_1min_avg(eAVG_1MIN_TYPE_t number, int32_t *p_avg);
+
+typedef struct
+{
+  uint16_t count;
+  float average;
+} sensor_avg_t;
+
+typedef struct
+{
+  int32_t max;
+  int32_t min;
+} sensor_min_max_t;
+
+void update_sensor_avg(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg, int32_t sample);
+int32_t read_sensor_avg(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg);
+void sensor_avg_init(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg);
+
+void calculate_sensor_min_max(eAVG_1MIN_TYPE_t sensor, sensor_min_max_t *p_min_max, int32_t sample);
+void read_sensor_min_max(eAVG_1MIN_TYPE_t sensor, sensor_min_max_t *p_min_max, int32_t *p_min, int32_t *p_max);
+void sensor_min_max_init(eAVG_1MIN_TYPE_t sensor, sensor_min_max_t *p_min_max, int32_t min, int32_t max); 
+
+extern sensor_avg_t g_sensor_avg_1min[eAVG_MAX];
+extern sensor_avg_t g_sensor_avg_10min[eAVG_MAX];
+extern sensor_avg_t g_sensor_avg_hour[eAVG_MAX];
+
+extern sensor_min_max_t g_1min_min_max[eAVG_MAX];
 #endif

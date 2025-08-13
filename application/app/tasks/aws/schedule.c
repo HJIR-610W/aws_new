@@ -17,6 +17,7 @@
 #include "wind_data.h"
 #include "system_err.h"
 #include "dev_io.h"
+#include "aws_default_data.h"
 #define D2R 3.14159265 / 180.0
 #define R2D 180.0 / 3.14159265
 
@@ -186,13 +187,14 @@ void AwsMinMaxProc(uint16_t sSour, uint16_t *psDestMin, uint16_t *psDestMax)
 void SecProcess(void)
 {
 
-
-
   SYSTEM_INFO_AWS *pSystem;
 
   pSystem = &Sysinfo;
 
-  //온도: 1분 누적을 구하기 위한 합
+  update_sensor_avg(eAVG_TEMPERATURE, g_sensor_avg_1min, mRealAws.mTemperature.sReal);
+  calculate_sensor_min_max(eAVG_TEMPERATURE, g_1min_min_max, mRealAws.mTemperature.sReal);
+
+      // 온도: 1분 누적을 구하기 위한 합
   pSystem->mTempBuf[MIN1_PROC].lTot += mRealAws.mTemperature.sReal;
   pSystem->mTempBuf[MIN1_PROC].sAddCnt++;
 
@@ -422,8 +424,8 @@ void MinProcess(DATE_TIME_BUF *pDate)
   float wind_direction_avg;
   int32_t wind_speed_max;
   int32_t wind_direction_max;
-
-
+  int32_t average;
+  int32_t min,max;
 
   pSystem = &Sysinfo;
   pAws = &mMinAws;
@@ -433,10 +435,14 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->mDate.cHour = pDate->Hour;
   pAws->mDate.cMin = pDate->Min;
 
-  // 온도:10초마다 샘플해서 처리해야하는데 1초마다 하고 있음.
+  // 온도
   AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[MIN1_PROC],mRealAws.mTemperature.sReal);
+
+  average = read_sensor_avg(eAVG_TEMPERATURE,g_sensor_avg_1min);
+  sensor_avg_init(eAVG_TEMPERATURE,g_sensor_avg_1min);
+
   // 1분 평균을 구한 값을 10분 누적에 더한다
-  pSystem->mTempBuf[MIN10_PROC].lTot += pAws->mTemperature.sReal;  
+  pSystem->mTempBuf[MIN10_PROC].lTot += pAws->mTemperature.sReal;
   pSystem->mTempBuf[MIN10_PROC].sAddCnt++;
 
   // 기압
@@ -760,6 +766,12 @@ void MonthProcess(void)
   g_sunshine.monthly = 0;
 }
 
+void YearProcess(void)
+{
+  g_rainfall.yearly = 0;
+  g_sunshine.yearly = 0;
+}
+
 // 풍향,풍속으로 바람벡터 성분 분해
 // :TODO 풍향 45도이면 u,v값이 같아야 하는데 다르게 계산됨, UVToDirc 이거 쌍으로 사용해야함
 void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v)
@@ -848,63 +860,53 @@ float UVToSpeed(float u_tmp, float v_tmp)
 }
 
 
-uint8_t g_1min_data_updated=0;
 
-uint8_t check_1min_data_updated(void)
-{
-  return g_1min_data_updated;
-}
 
 void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
 {
   if (pDate->Sec != pOldDate->Sec)
   {  
     SecProcess();
-
     pOldDate->Sec = pDate->Sec;
   }
-    if (pDate->Min != pOldDate->Min)
-    { /* 분이 바귈때 처리						*/
-      MinProcess(pDate);
-      update_kma_data(eAWS_DATA_1MIN);
-      g_1min_data_updated = 1;
-      pOldDate->Min = pDate->Min;
-      if (pDate->Min % 10 == 0)
-      {  // 매 10분 마다 처리
-        Min10Process();
-        update_kma_data(eAWS_DATA_10MIN);
-      }
+
+  if (pDate->Min != pOldDate->Min)
+  { 
+    MinProcess(pDate);
+    update_kma_data(eAWS_DATA_1MIN);
+
+    if (pDate->Min % 10 == 0)
+    { 
+      Min10Process();
+      update_kma_data(eAWS_DATA_10MIN);
     }
+    pOldDate->Min = pDate->Min;
+  }
 
-    if (pDate->Hour != pOldDate->Hour)
-    { /* 시간이 바뀔때 처리					*/
-      HourProcess(pDate);
-      update_kma_data(eAWS_DATA_HOUR);
-      pOldDate->Hour = pDate->Hour;
-    }
+  if (pDate->Hour != pOldDate->Hour)
+  { 
+    HourProcess(pDate);
+    update_kma_data(eAWS_DATA_HOUR);
+    pOldDate->Hour = pDate->Hour;
+  }
 
-    if (pDate->Day != pOldDate->Day)
-    {
-      DayProcess();
-      pOldDate->Day = pDate->Day;
-    }
+  if (pDate->Day != pOldDate->Day)
+  {
+    DayProcess();
+    pOldDate->Day = pDate->Day;
+  }
 
-    if (pDate->Month != pOldDate->Month)
-    { /* 달이 바뀔때 처리						*/
-      // 월간 강수량 기록
-      // 금월 월간 강수량 삭제
-      MonthProcess();
-      pOldDate->Month = pDate->Month;
-    }
+  if (pDate->Month != pOldDate->Month)
+  {
+    MonthProcess();
+    pOldDate->Month = pDate->Month;
+  }
 
-    if (pDate->Year != pOldDate->Year)
-    {
-
-      pOldDate->Year = pDate->Year;
-
-      g_rainfall.yearly = 0;
-      g_sunshine.yearly = 0;
-    }
+  if (pDate->Year != pOldDate->Year)
+  {
+    YearProcess();
+    pOldDate->Year = pDate->Year;
+  }
 }
 
 

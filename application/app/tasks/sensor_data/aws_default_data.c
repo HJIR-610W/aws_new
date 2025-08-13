@@ -5,10 +5,10 @@
 #include "app_sensor.h"
 
 #include "util_memory.h"
-
+#include "util_filter.h"
 #define AVG_CNT 6
 
-
+#if 0 
 typedef struct 
 {
   uint8_t index;
@@ -57,7 +57,7 @@ void reset_avg(eAVG_1MIN_TYPE_t number)
 {
   avg_1min[number].index = 0;
 }
-
+#endif
 /*
 10초마다 add_sample_1min호출하여 샘플 저장
 이동평균 함수로 사용하자고 할때 예)
@@ -94,3 +94,63 @@ sample[5] = 0;
 처음 샘플값이 정상 값인데도 불구하고 잘못된 이동평균방식으로 값이 낮게 측정되는 문제가 발생한다.
 
 */
+
+
+sensor_avg_t g_sensor_avg_1min[eAVG_MAX];
+sensor_avg_t g_sensor_avg_10min[eAVG_MAX];
+sensor_avg_t g_sensor_avg_hour[eAVG_MAX];
+
+void update_sensor_avg(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg,int32_t sample)
+{
+  uint16_t count = p_sensor_avg[sensor].count;
+  float average = p_sensor_avg[sensor].average;
+
+  count++;
+
+  average = recursive_avg_i(average, sample, count);
+
+  p_sensor_avg[sensor].average = average;
+  p_sensor_avg[sensor].count = count;
+}
+
+int32_t read_sensor_avg(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg)
+{
+  return (int32_t)p_sensor_avg[sensor].average;
+}
+
+void sensor_avg_init(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg)
+{
+  p_sensor_avg[sensor].average = 0;
+  p_sensor_avg[sensor].count = 0;
+}
+
+
+
+
+
+sensor_min_max_t g_1min_min_max[eAVG_MAX];
+
+void calculate_sensor_min_max(eAVG_1MIN_TYPE_t sensor, sensor_min_max_t *p_min_max, int32_t sample)
+{
+  if (sample > p_min_max[sensor].max)
+  {
+    p_min_max[sensor].max = sample;
+  }
+
+  if (sample < p_min_max[sensor].min)
+  {
+    p_min_max[sensor].min = sample;
+  }
+}
+
+void read_sensor_min_max(eAVG_1MIN_TYPE_t sensor, sensor_min_max_t *p_min_max, int32_t *p_min,int32_t *p_max)
+{
+  *p_min = p_min_max[sensor].min;
+  *p_max = p_min_max[sensor].max;
+}
+
+void sensor_min_max_init(eAVG_1MIN_TYPE_t sensor,sensor_min_max_t *p_min_max,int32_t min,int32_t max)
+{
+  p_min_max[sensor].min = min;
+  p_min_max[sensor].max = max;
+}

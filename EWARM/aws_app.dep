@@ -1908,7 +1908,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\icmp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\timers.h</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Full.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\aws\old_aws_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\aws\old_aws_define.h</file>
             <file>$PROJ_DIR$\release\Obj\task_isrEvent.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\cli_input.__cstat.et</file>
             <file>$PROJ_DIR$\..\Application\test\test_hart.h</file>
@@ -2056,7 +2056,7 @@
             <file>$PROJ_DIR$\release\Obj\hart_parser.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
             <file>$PROJ_DIR$\release\Obj\old_aws_sms.__cstat.et</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\aws\schedule.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\aws\schedule.h</file>
             <file>$PROJ_DIR$\release\Obj\adc_calibration.__cstat.et</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_ethernet.h</file>
             <file>$PROJ_DIR$\release\Obj\util_time.__cstat.et</file>
@@ -2147,14 +2147,14 @@
             <file>$PROJ_DIR$\release\Obj\panel_hansung.o</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rtc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\sunshine_data.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\humidity\humidity.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
             <file>$PROJ_DIR$\release\Obj\util_crc16_ccitt.xcl</file>
             <file>$PROJ_DIR$\release\Obj\fs.xcl</file>
             <file>$PROJ_DIR$\stm32f407xx_flash.icf</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\task_wdt.h</file>
             <file>$PROJ_DIR$\release\Obj\mcu_utile.o</file>
             <file>$PROJ_DIR$\release\Obj\etharp.o</file>
@@ -2494,7 +2494,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\dhcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcp.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\config.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_virtual.h</file>
@@ -3539,7 +3539,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2514 1175 945 1162 959 1902 1417 304 981 2435 1785 1958 1821 544 154 1001 2098 1922 491 980 2035</file>
+                    <file> 2514 1175 945 1162 959 1902 1417 304 981 2435 1785 1958 1821 544 154 1001 2098 1922 491 980 2035 471</file>
                 </tool>
             </inputs>
         </file>
@@ -15777,7 +15777,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1589 945 1162 959 1902 1417 2464 1009 2035 2367 2051 483 2253 1862 2299 1175 981 1903 2027 1958 1922 491 980 1670 641 1472 1785 304 2435 1821 544 154 1001 2098 2478 2130 1654 2449 2489 1960 2516 851 184 1046 309</file>
+                    <file> 1589 945 1162 959 1902 1417 2464 1009 2035 2367 2051 483 2253 1862 2299 1175 981 1903 2027 1958 1922 491 980 1670 641 1472 1785 304 2435 1821 544 154 1001 2098 2478 2130 1654 2449 2489 1960 2516 851 184 1046 309 2514</file>
                 </tool>
             </inputs>
         </file>
