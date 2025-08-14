@@ -787,7 +787,7 @@ void draw_aws(win_t *p_win)
         case eAWS_DATA_10MIN:
         case eAWS_DATA_HOUR:
         case eAWS_DATA_DAY:
-          win_printf_row(p_win, row_count++, "%s: %7.1f hPa 최소: %7.1f hPa 최대: %7.1f hPa", m_l("기압", AWS_WD), data, data_min, data_max);
+          win_printf_row(p_win, row_count++, "%s: %5.1f hPa  최소: %5.1f hPa 최대: %5.1f hPa", m_l("기압", AWS_WD), data, data_min, data_max);
           break;
         }
       }
@@ -932,9 +932,9 @@ void draw_aws(win_t *p_win)
         case eAWS_DATA_DAY:
         {
           float solar_radiation = p_kma->solar_radiation.data*10;
-          win_printf_row(p_win, row_count++, "%s: %7.1f KJ/m2", m_l("일사(1min)", AWS_WD), solar_radiation);
-          break;
+          win_printf_row(p_win, row_count++, "%s: %7.1f KJ/m2", m_l("일사", AWS_WD), solar_radiation);
         }
+          break;
         case eAWS_DATA_RAW:
           f_data = p_kma->solar_radiation.raw.f;
           win_printf_row(p_win, row_count++, "%s: %7.2f W/m2", m_l("일사", AWS_WD), f_data);
@@ -1073,7 +1073,7 @@ void draw_aws(win_t *p_win)
   }
 
   // 지중온도 10cm
-  if (p_kma->soil_temperature_10cm.enable && page != eAWS_DATA_DAY)
+  if (p_kma->soil_temperature_10cm.enable)
   {
     err = p_kma->soil_temperature_10cm.err;
     if (err)
@@ -1105,7 +1105,7 @@ void draw_aws(win_t *p_win)
   }
 
   // 지중온도 20cm
-  if (p_kma->soil_temperature_20cm.enable && page != eAWS_DATA_DAY)
+  if (p_kma->soil_temperature_20cm.enable )
   {
     err = p_kma->soil_temperature_20cm.err;
     if (err)
@@ -1137,7 +1137,7 @@ void draw_aws(win_t *p_win)
   }
 
   // 지중온도 30cm
-  if (p_kma->soil_temperature_30cm.enable && page != eAWS_DATA_DAY)
+  if (p_kma->soil_temperature_30cm.enable )
   {
     err = p_kma->soil_temperature_30cm.err;
     if (err)

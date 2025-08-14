@@ -29,10 +29,10 @@
 
 typedef struct tl16c554_instance_s
 {
-  int irq_di_num; //uart 수신 입터럽트 번호 
-  uint32_t baud;//tx 시간계산시 필요
-  uint8_t parityIdx;
   bool opened;
+  uint8_t parityIdx;
+  int32_t irq_di_num; //uart 수신 입터럽트 번호 
+  uint32_t baud;//tx 시간계산시 필요
   volatile uint8_t *base_address;
   StreamBufferHandle_t quad_stream;
   void *tx_sem;//송신용 sem 일반적인 app에서는 tx_sem만 있어도됨
@@ -53,16 +53,40 @@ static const uint8_t buff_size_list[TL16C554_UART_MAX] = {
     QUAD_1_BUFF_SIZE, QUAD_2_BUFF_SIZE, QUAD_3_BUFF_SIZE, QUAD_4_BUFF_SIZE,
     QUAD_5_BUFF_SIZE, QUAD_6_BUFF_SIZE, QUAD_7_BUFF_SIZE, QUAD_8_BUFF_SIZE};
 
+void irq_tl16c554(int uart_num);
 
-void irq_INTA_1(int32_t arg);
-void irq_INTB_2(int32_t  arg);
-void irq_INTC_3(int32_t  arg);
-void irq_INTD_4(int32_t  arg);
-void irq_INTA_5(int32_t  arg);
-void irq_INTB_6(int32_t  arg);
-void irq_INTC_7(int32_t  arg);
-void irq_INTD_8(int32_t  arg);
-
+void irq_INTA_1(int32_t arg)
+{ 
+  irq_tl16c554((int)arg); 
+}
+void irq_INTB_2(int32_t arg)
+{ 
+  irq_tl16c554((int)arg);
+}
+void irq_INTC_3(int32_t arg)
+{ 
+  irq_tl16c554((int)arg);
+}
+void irq_INTD_4(int32_t arg)
+{ 
+  irq_tl16c554((int)arg);
+}
+void irq_INTA_5(int32_t arg)
+{ 
+  irq_tl16c554((int)arg);
+}
+void irq_INTB_6(int32_t arg)
+{ 
+  irq_tl16c554((int)arg); 
+}
+void irq_INTC_7(int32_t arg)
+{ 
+  irq_tl16c554((int)arg); 
+}
+void irq_INTD_8(int32_t arg)
+{ 
+  irq_tl16c554((int)arg); 
+}
 
 static inline uint8_t read_register(void *addr)
 {
@@ -247,11 +271,10 @@ void quad_init(int uart_num, void *opt)
 #define IER_THRE 0x02          // 송신버퍼 빈상태
 #define IER_LINE_STATUS 0x04   // 라인상태 변경됨됨
 #define IER_MODEM_STATUS 0x08  // 모뎀 상태 변경됨
+
 #if STREAMBUFFER_USE
   flag = IER_RDA | IER_LINE_STATUS | IER_MODEM_STATUS;
-
   g_reg = read_register(IER(uart->base_address)) | (flag);
-  
   write_register(IER(uart->base_address), g_reg);
 #endif
 
@@ -329,57 +352,58 @@ int32_t quad_recv_byte(int uart_num, uint8_t *data)
 
 
 #define UART_IIR_INTTERUPT_PENDING 0x01
-#define UART_IIR_RX_LINE_STAT 0x06   // 수신 라인 상태 (OE, PE, FE, BI)
-#define UART_IIR_RX_DATA_AVAIL 0x04  // 수신 데이터 사용 가능 (FIFO 모드에서 트리거 레벨 도달)
-#define UART_IIR_CHAR_TIMEOUT 0x0c   // 문자 타임아웃 발생
-#define UART_IIR_THRE 0x02           // 송신기 홀딩 레지스터 비어 있음 (THRE)
-#define UART_IIR_MODEM_STATUS 0x00   // 모뎀 상태 변화 (CTS, DSR, RI, DCD)
+#define UART_IIR_RX_LINE_STAT      0x06 // 수신 라인 상태 (OE, PE, FE, BI)
+#define UART_IIR_RX_DATA_AVAIL     0x04 // 수신 데이터 사용 가능 (FIFO 모드에서 트리거 레벨 도달)
+#define UART_IIR_CHAR_TIMEOUT      0x0c // 문자 타임아웃 발생
+#define UART_IIR_THRE              0x02 // 송신기 홀딩 레지스터 비어 있음 (THRE)
+#define UART_IIR_MODEM_STATUS      0x00 // 모뎀 상태 변화 (CTS, DSR, RI, DCD)
 
-int g_channel;
+
 void irq_tl16c554(int uart_num)
 {
   uint8_t iir;
-  uint8_t interruptType;
+  uint8_t interrupt_type;
   uint8_t data;
   uint8_t reg;
-  uint8_t lineStatus;
-  uint8_t modemStatus;
-  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+  uint8_t line_status;
+  uint8_t modem_status;
   size_t xBytesSent;
+  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
   while (((iir = read_register(IIR(uart->base_address))) &
           UART_IIR_INTTERUPT_PENDING) == 0)
   {
-    interruptType = iir & 0x0F;
+    interrupt_type = iir & 0x0F;
 
-    switch (interruptType)
+    switch (interrupt_type)
     {
       case UART_IIR_RX_DATA_AVAIL:                             
         data = read_register(RBR(uart->base_address));               // RBR에서 데이터 읽기
 
         /* 데이터를 스트림 버퍼에 전송 */
-        xBytesSent = xStreamBufferSendFromISR(uart->quad_stream, &data, 1,
-                                              &xHigherPriorityTaskWoken);
+        xBytesSent = xStreamBufferSendFromISR(uart->quad_stream, &data, 1, &xHigherPriorityTaskWoken);
         /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
+#ifdef USE_DEBUG_MODE
         if (!(xBytesSent > 0))
         {
           __asm("BKPT #0");
         }
+#endif
+
         break;
-      case UART_IIR_THRE:  // Transmitter Holding Register Empty
-        //write_register(THR(uart->base_address), '1');
+      case UART_IIR_THRE:  // Transmitter Holding 레지스터가 비였다
         break;
       case UART_IIR_RX_LINE_STAT:  
-        lineStatus = read_register(LSR(uart->base_address)); // RBR에서 데이터 읽기
-        (void)lineStatus;
+        line_status = read_register(LSR(uart->base_address)); // RBR에서 데이터 읽기
+        (void)line_status;
         break;
 
       case UART_IIR_MODEM_STATUS:  
-        modemStatus = read_register(MSR(uart->base_address)); // RBR에서 데이터 읽기
-        (void)modemStatus;
+        modem_status = read_register(MSR(uart->base_address)); // RBR에서 데이터 읽기
+        (void)modem_status;
         break;
       case UART_IIR_CHAR_TIMEOUT:
         reg = read_register(RBR(uart->base_address)); // RBR에서 데이터 읽기
@@ -394,21 +418,7 @@ void irq_tl16c554(int uart_num)
   }
 }
 
-void irq_INTA_1(int32_t arg) { irq_tl16c554((int)arg); }
 
-void irq_INTB_2(int32_t arg) { irq_tl16c554((int)arg); }
-
-void irq_INTC_3(int32_t arg) { irq_tl16c554((int)arg); }
-
-void irq_INTD_4(int32_t arg) { irq_tl16c554((int)arg); }
-
-void irq_INTA_5(int32_t arg) { irq_tl16c554((int)arg); }
-
-void irq_INTB_6(int32_t arg) { irq_tl16c554((int)arg); }
-
-void irq_INTC_7(int32_t arg) { irq_tl16c554((int)arg); }
-
-void irq_INTD_8(int32_t arg) { irq_tl16c554((int)arg); }
 
 // DMA 핸들러 선언
 DMA_HandleTypeDef hdma_memtomem;
