@@ -25,3 +25,5 @@ const char *freq_ch_list[2] = {"A", "B"};
  const char *linkStatusList[3] = {"-", "UP", "DOWN"};
  const char *doorStatusList[2] = {"닫힘", "열림"};
  const char *generalStatusList[2] = {"정상", "비정상"};
+
+

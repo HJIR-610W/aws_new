@@ -359,7 +359,7 @@ void draw_ethernet_page(screen_page_t *p_win)
 #define AWS_WD 7
 void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
 {
-  const char *aws_title_list[] = {"AVG", "1MIN", "10MIN", "HOUR", "RAW"};
+  const char *aws_title_list[] = {"CURR", "1MIN", "10MIN", "HOUR", "DAY","RAW"};
   char err_buf[32];
   uint8_t err;
   float data, data_min, data_max;
@@ -507,7 +507,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       }
       else
       {
-        screen_page_printf(p_win, "%-*s:%6.1f mm", AWS_WD, "RAIN",
+        screen_page_printf(p_win, "%-*s:%6.1f mm", AWS_WD, "RAIN(D)",
                        KMA_TO_GENERAL(p_kma->precipitation.data));
       }
     }
@@ -922,7 +922,68 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       }
     }
   }
-screen_page_clear(p_win);
+
+//1분 자료인경우 상태표시 
+  if (min == eAWS_DATA_1MIN)
+  {
+#define AWS_STATUS_WD 15
+    extern sensor_t g_sensor_config_bk[SENSOR_LIST_MAX];
+
+    sensor_t *p_sensor = g_sensor_config_bk;
+        screen_page_printf(p_win, "SENSOR STATUS");
+
+    for(int i = 0; i < 8; i++)
+    {
+    for (int bit = 0; bit < 8; bit++)
+    {
+      int sensor_index = i * 8 + bit;
+      int bit_value = (p_kma->X_sensorStatus[i] >> bit) & 0x01;
+      if (p_sensor[sensor_index].type==0)//미사용 센서는 표시 안함
+      continue;
+
+        if (sensor_index < _countof(sensor_name_eng_list))
+        {
+          if (bit_value)
+          {
+            screen_page_printf(p_win, "%-*s:FAIL", AWS_STATUS_WD, sensor_name_eng_list[sensor_index]);
+          }
+          else
+          {
+            screen_page_printf(p_win, "%-*s:NORM", AWS_STATUS_WD, sensor_name_eng_list[sensor_index]);
+          }
+        }
+    }
+    }
+
+    uint8_t status_Y = p_kma->Y_volateStatus;
+    const char *p_status;
+    p_status = IS_BIT_SET(status_Y, 0)?"FAIL":"NORM";
+    screen_page_printf(p_win, "%-*s:%s", AWS_STATUS_WD, "DC POWER", p_status);
+    p_status = IS_BIT_SET(status_Y, 1) ? "FAIL" : "NORM";
+    screen_page_printf(p_win, "%-*s:%s", AWS_STATUS_WD, "BATTERY", p_status);
+
+    p_status = "????";
+    if(IS_BIT_SET(status_Y, 2) && IS_BIT_SET(status_Y, 3))
+    {
+      p_status = "OFF";
+    }
+    else if (!IS_BIT_SET(status_Y, 2) && !IS_BIT_SET(status_Y, 3))
+    {
+      p_status = "110V";
+    }
+    else if (IS_BIT_SET(status_Y, 2) && !IS_BIT_SET(status_Y, 3))
+    {
+      p_status = "220V";
+    }
+
+    screen_page_printf(p_win, "%-*s:%s", AWS_STATUS_WD, "AC", p_status);
+    p_status = IS_BIT_SET(status_Y, 4) ? "OPEN" : "CLOS";
+    screen_page_printf(p_win, "%-*s:%s", AWS_STATUS_WD, "DOOR", p_status);
+  }
+    screen_page_clear(p_win);
+ 
+
+
 
 
 

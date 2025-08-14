@@ -151,8 +151,8 @@
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_debug_console.c</file>
             <file>$PROJ_DIR$\..\application\file_system\app_file.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\io\dev_io.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.c</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
@@ -189,7 +189,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp.c</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.c</file>
-            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\pin\pcb_5_pin.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_adc.c</file>
@@ -210,7 +210,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_power.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rtc.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_fram.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\font\font_6x8.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_swo.h</file>
@@ -228,12 +228,12 @@
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_frequency.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rtc.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_spi.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\temperature\temperature.h</file>
@@ -1521,7 +1521,7 @@
             <file>$PROJ_DIR$\..\Application\CubeMX\fsmc.c</file>
             <file>$PROJ_DIR$\release\Obj\parse_aws.xcl</file>
             <file>$PROJ_DIR$\release\Obj\util_memory.xcl</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_gpio.h</file>
             <file>$PROJ_DIR$\..\application\app\sensors\app_sensor.h</file>
             <file>$PROJ_DIR$\release\Obj\task_test.xcl</file>
@@ -1628,7 +1628,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_flash_ramfunc.h</file>
             <file>$PROJ_DIR$\release\Obj\app_adc.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\pppapi.xcl</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\release\Obj\usbd_desc.o</file>
             <file>$PROJ_DIR$\release\Obj\ff_gen_drv.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\heap_4.xcl</file>
@@ -2187,7 +2187,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ip4.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\mpu_wrappers.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_app.pbd</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\app_console_test.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\app_console_test.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_adc.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_gpio.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\drv_rs232.o</file>
@@ -2294,7 +2294,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\threading.h</file>
             <file>$PROJ_DIR$\release\Obj\list.__cstat.et</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\app_console.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\release\Obj\hart_parser.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\driver_stm32_bsp.xcl</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
@@ -2340,7 +2340,7 @@
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_charger.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_rs485.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\release\Obj\etharp.o</file>
             <file>$PROJ_DIR$\release\Obj\util_filter.o</file>
             <file>$PROJ_DIR$\release\Obj\core_json.__cstat.et</file>
@@ -2387,7 +2387,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netifapi.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\common\const_string.h</file>
             <file>$PROJ_DIR$\release\Obj\fs.xcl</file>
             <file>$PROJ_DIR$\release\Obj\api_msg.__cstat.et</file>
@@ -2397,7 +2397,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sockets.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\app_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\if_api.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_flash.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\task_wdt.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\mld6.h</file>
@@ -2450,7 +2450,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_menu_cali.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\sockets_priv.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\release\Obj\menu_panel.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\api_msg.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_manager.h</file>

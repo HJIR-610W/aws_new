@@ -68,7 +68,7 @@ const osThreadAttr_t kMeasure1sTask_attributes = {
 
 
 const uint32_t kMesaureTimeOutMs = 50;
-static sensor_t g_sensor_config_bk[SENSOR_LIST_MAX];  // config 센서의 복사본
+sensor_t g_sensor_config_bk[SENSOR_LIST_MAX];  // config 센서의 복사본
 static driver_t *g_sensor_driver[SENSOR_LIST_MAX];
 
 

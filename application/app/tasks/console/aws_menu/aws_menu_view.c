@@ -553,7 +553,7 @@ void draw_eth(win_t *p_win)
 
 void draw_aws(win_t *p_win)
 {
-  const char *aws_title_list[] = {"순간(평균)", "1분", "10분", "한시간", "DAY","RAW"};
+  const char *aws_title_list[] = {"현재", "1분", "10분", "한시간", "DAY","RAW"};
   char err_buf[32];
   uint8_t err;
   int page = 0;

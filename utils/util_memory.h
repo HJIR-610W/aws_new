@@ -8,6 +8,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#define IS_BIT_SET(value, bit_pos) (((value) >> (bit_pos)) & 0x01)
+
+
 #define ALIGN_UP(val, align) (((val) + ((align) - 1)) / (align) * (align))
 
 #define BIT_UPDATE(val, cond, bitmask) \

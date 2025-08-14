@@ -10,7 +10,7 @@
 #define KMA2_PRINT_LABEL_WIDTH 38  // 콜론 앞까지의 레이블이 차지할 최대 너비 (조정 가능)
 
 // 비트 체크를 위한 매크로
-#define IS_BIT_SET(value, bit_pos) (((value) >> (bit_pos)) & 0x01)
+
 
 // KMA2 프로토콜 상수 정의 (이전과 동일)
 #define KMA2_HEADER_START 0xFAFB
