@@ -152,5 +152,7 @@ void set_config_app_cdma_ip(uint8_t ip[4]);
 
 extern config_t config;
 extern system_t System;
+extern sensor_t g_sensor_config_bk[SENSOR_LIST_MAX]; // config 센서의 복사본
 system_t *get_system(void);
+sensor_t *get_sensor_config_copy(void);
 #endif

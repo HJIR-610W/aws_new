@@ -16,6 +16,10 @@
 config_t config;
 system_t System;
 
+sensor_t g_sensor_config_bk[SENSOR_LIST_MAX]; // config 센서의 복사본
+
+
+
 const config_t config_app_default = {.id = 0,
                                      .password = 7777,
                                      .charger_model = eCHARGER_LS,
@@ -331,6 +335,9 @@ void load_config_app(void)
   {
     save_config_app();
   }
+
+  // 프로그램 실행 중 설정값 변경되어도 영향 없도록 측정 Task는 설정값 복사본으로 동작
+  memcpy(g_sensor_config_bk, config.sensor, sizeof(g_sensor_config_bk));
 }
 
 
@@ -342,6 +349,10 @@ config_t *get_config_app(void)
   return &config; 
 }
 
+sensor_t *get_sensor_config_copy(void)
+{
+  return g_sensor_config_bk;
+}
 
 void set_config_app_password(uint16_t password)
 {

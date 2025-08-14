@@ -927,10 +927,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   if (min == eAWS_DATA_1MIN)
   {
 #define AWS_STATUS_WD 15
-    extern sensor_t g_sensor_config_bk[SENSOR_LIST_MAX];
 
-    sensor_t *p_sensor = g_sensor_config_bk;
-        screen_page_printf(p_win, "SENSOR STATUS");
+    sensor_t *p_sensor = get_sensor_config_copy();
+    screen_page_printf(p_win, "SENSOR STATUS");
 
     for(int i = 0; i < 8; i++)
     {

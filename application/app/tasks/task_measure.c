@@ -68,7 +68,7 @@ const osThreadAttr_t kMeasure1sTask_attributes = {
 
 
 const uint32_t kMesaureTimeOutMs = 50;
-sensor_t g_sensor_config_bk[SENSOR_LIST_MAX];  // config 센서의 복사본
+
 static driver_t *g_sensor_driver[SENSOR_LIST_MAX];
 
 
@@ -233,8 +233,7 @@ void sensor_init(void)
   void *para = NULL;
   sensor_t *p_sensor;
 
-  //프로그램 실행 중 설정값 변경되어도 영향 없도록 측정 Task는 설정값 복사본으로 동작
-  memcpy(g_sensor_config_bk, config.sensor, sizeof(g_sensor_config_bk));
+
 
   p_sensor = g_sensor_config_bk;
 

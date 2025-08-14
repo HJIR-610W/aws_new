@@ -1521,7 +1521,7 @@
             <file>$PROJ_DIR$\..\Application\CubeMX\fsmc.c</file>
             <file>$PROJ_DIR$\release\Obj\parse_aws.xcl</file>
             <file>$PROJ_DIR$\release\Obj\util_memory.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_gpio.h</file>
             <file>$PROJ_DIR$\..\application\app\sensors\app_sensor.h</file>
             <file>$PROJ_DIR$\release\Obj\task_test.xcl</file>
@@ -1628,7 +1628,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_flash_ramfunc.h</file>
             <file>$PROJ_DIR$\release\Obj\app_adc.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\pppapi.xcl</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\release\Obj\usbd_desc.o</file>
             <file>$PROJ_DIR$\release\Obj\ff_gen_drv.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\heap_4.xcl</file>
@@ -2187,7 +2187,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ip4.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\mpu_wrappers.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_app.pbd</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\app_console_test.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\app_console_test.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_adc.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_gpio.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\drv_rs232.o</file>
@@ -2340,7 +2340,7 @@
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_charger.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_rs485.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\release\Obj\etharp.o</file>
             <file>$PROJ_DIR$\release\Obj\util_filter.o</file>
             <file>$PROJ_DIR$\release\Obj\core_json.__cstat.et</file>
@@ -2387,7 +2387,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netifapi.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\common\const_string.h</file>
             <file>$PROJ_DIR$\release\Obj\fs.xcl</file>
             <file>$PROJ_DIR$\release\Obj\api_msg.__cstat.et</file>
@@ -2397,7 +2397,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sockets.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\app_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\if_api.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_flash.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\task_wdt.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\mld6.h</file>
@@ -2538,7 +2538,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\hj_snow_menu\hj_snow_menu.h</file>
             <file>$PROJ_DIR$\release\Obj\bridgeif_fdb.o</file>
             <file>$PROJ_DIR$\release\Obj\aws_default_data.o</file>
-            <file>$PROJ_DIR$\..\application\app\config\config_adc.h</file>
+            <file>$PROJ_DIR$\..\Application\app\config\config_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\check_config.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_adc.h</file>
             <file>$PROJ_DIR$\..\Application\Tasks\console\aws_menu\aws_menu_manager.h</file>
