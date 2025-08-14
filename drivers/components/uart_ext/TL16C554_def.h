@@ -31,4 +31,13 @@
 #define LCR_OFFSET 0x03 // Line Control Register
 #define FCR_OFFSET 0x02 // FIFO Control Register
 #define MCR_OFFSET 0x04 // Modem Control Register
+
+#define UART_IIR_INTTERUPT_PENDING 0x01
+#define UART_IIR_RX_LINE_STAT 0x06  // 수신 라인 상태 (OE, PE, FE, BI)
+#define UART_IIR_RX_DATA_AVAIL 0x04 // 수신 데이터 사용 가능 (FIFO 모드에서 트리거 레벨 도달)
+#define UART_IIR_CHAR_TIMEOUT 0x0c  // 문자 타임아웃 발생
+#define UART_IIR_THRE 0x02          // 송신기 홀딩 레지스터 비어 있음 (THRE)
+#define UART_IIR_MODEM_STATUS 0x00  // 모뎀 상태 변화 (CTS, DSR, RI, DCD)
+
+
 #endif

@@ -7156,6 +7156,10 @@
             <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</name>
             <outputs>
                 <tool>
+                    <name>ICCARM</name>
+                    <file> 1962</file>
+                </tool>
+                <tool>
                     <name>__cstat</name>
                     <file> 1772</file>
                 </tool>
@@ -15922,10 +15926,6 @@
                 </tool>
             </inputs>
         </file>
-        <forcedrebuild>
-            <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</name>
-            <tool>ICCARM</tool>
-        </forcedrebuild>
         <forcedrebuild>
             <name>$PROJ_DIR$\..\Application\app\sensors\solar_radiation\solar_radiation.c</name>
             <tool>ICCARM</tool>
