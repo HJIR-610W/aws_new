@@ -13,14 +13,12 @@ extern AWS_DATA_STRUCT mRealAws;   // 실시간 자료
 extern AWS_DATA_STRUCT mMinAws;    // 1분 자료
 extern AWS_DATA_STRUCT m10MinAws;  // 10분 자료
 extern AWS_DATA_STRUCT mHourAws;   // 1 시간 자료
+extern AWS_DATA_STRUCT mDayAws; // 일간 자료 
 
-extern SYSTEM_INFO_AWS Sysinfo;
 
-
-void AwsMinMaxInit(void);
 void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate);
 
 
-SYSTEM_INFO_AWS *get_system_info_aws(void);
+
 
 #endif

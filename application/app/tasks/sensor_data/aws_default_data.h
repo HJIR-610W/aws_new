@@ -22,32 +22,46 @@ typedef enum avg_1min_e
   eAVG_SOIL_TEMPERATURE_300CM,
   eAVG_SOIL_TEMPERATURE_500CM,
   eAVG_MAX
-} eAVG_1MIN_TYPE_t;
+} eAVG_DATA_TYPE_t;
 
 
 typedef struct
 {
   uint16_t count;
   float average;
-} sensor_avg_t;
+} data_avg_t;
 
 typedef struct
 {
   int32_t max;
   int32_t min;
-} sensor_min_max_t;
+} data_min_max_t;
 
-void update_sensor_avg(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg, int32_t sample);
-int32_t read_sensor_avg(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg);
-void sensor_avg_init(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg);
+int32_t read_data_average(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer);
+int32_t calculate_data_avg(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer, int32_t sample);
+int32_t read_current_data_average(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer);
+void data_avg_init(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer);
 
-void calculate_sensor_min_max(eAVG_1MIN_TYPE_t sensor, sensor_min_max_t *p_min_max, int32_t sample);
-void read_sensor_min_max(eAVG_1MIN_TYPE_t sensor, sensor_min_max_t *p_min_max, int32_t *p_min, int32_t *p_max);
-void sensor_min_max_init(eAVG_1MIN_TYPE_t sensor, sensor_min_max_t *p_min_max, int32_t min, int32_t max); 
 
-extern sensor_avg_t g_sensor_avg_1min[eAVG_MAX];
-extern sensor_avg_t g_sensor_avg_10min[eAVG_MAX];
-extern sensor_avg_t g_sensor_avg_hour[eAVG_MAX];
+void calculate_data_min_max(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max, int32_t sample);
 
-extern sensor_min_max_t g_1min_min_max[eAVG_MAX];
+void data_min_max_init(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max, int32_t min, int32_t max); 
+
+
+int32_t read_data_min(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max_buffer,int32_t set_min);
+int32_t read_data_max(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max_buffer,int32_t set_max);
+
+void aws_min_max_init(void);
+
+int32_t read_current_data_min(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max);
+int32_t read_current_data_max(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max) ;
+
+extern data_avg_t g_avg_1min[eAVG_MAX];
+extern data_avg_t g_avg_10min[eAVG_MAX];
+extern data_avg_t g_avg_hour[eAVG_MAX];
+
+extern data_min_max_t g_1min_min_max[eAVG_MAX];
+extern data_min_max_t g_10min_min_max[eAVG_MAX];
+extern data_min_max_t g_hour_min_max[eAVG_MAX];
+extern data_min_max_t g_day_min_max[eAVG_MAX];
 #endif

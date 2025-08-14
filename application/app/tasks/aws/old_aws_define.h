@@ -164,23 +164,6 @@ typedef struct
 
 
 
-typedef struct
-{
-  SENSORPROC_BUF mTempBuf[3];   // 0: 분 , 1: 10분 , 2: 1시간
-  SENSORPROC_BUF mBaroBuf[3];   // 0: 분 , 1: 10분 , 2: 1시간
-  SENSORPROC_BUF mHumidBuf[3];  // 0: 분 , 1: 10분 , 2: 1시간
-  SENSORRAIN_BUF mRain;
-  SENSORSUN_BUF mSun[3];  // 0: 분 , 1: 10분 , 2: 1시간
-  SENSORPROC_BUF mGndBuf[3];
-  SENSORPROC_BUF mGrassBuf[3];
-  SENSORPROC_BUF mSoil5Buf[3];
-  SENSORPROC_BUF mSoil10Buf[3];
-  SENSORPROC_BUF mSoil20Buf[3];
-  SENSORPROC_BUF mSoil30Buf[3];
-  SENSORPROC_BUF mSoil50Buf[3];
-  SENSORPROC_BUF mSoil100Buf[3];
-  SENSORPROC_BUF mSoil150Buf[3];
-} SYSTEM_INFO_AWS; //1352바이트 
 
 
 typedef struct

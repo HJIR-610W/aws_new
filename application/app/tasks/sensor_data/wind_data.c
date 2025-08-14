@@ -175,7 +175,26 @@ void read_wind_max(eWIND_MAX_t wind, int32_t *speed, int32_t *direction)
   *direction = (int32_t)wind_max[wind].direction;
 }
 
-void wind_max_init(eWIND_MAX_t wind)
+int32_t read_wind_speed_max(eWIND_MAX_t wind)
+{
+  int32_t max;
+
+  max  = (int32_t)wind_max[wind].speed;
+  wind_max[wind].speed = 0;
+
+  return max;
+}
+
+int32_t read_wind_direction_max(eWIND_MAX_t wind)
+{
+  int32_t max;
+
+  max =  (int32_t)wind_max[wind].direction;
+  wind_max[wind].direction = 0;
+  return max;
+}
+
+    void wind_max_init(eWIND_MAX_t wind)
 {
   wind_max[wind].speed = 0;
   wind_max[wind].direction = 0;;

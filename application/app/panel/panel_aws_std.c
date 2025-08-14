@@ -14,7 +14,7 @@ void send_panel_aws_std(int32_t panel_port_num)
   uint8_t packet[64];
   uint8_t cnt = 0;
 
-  kma_data_ex_t *p_kma = get_kma_data(eAWS_DATA_AVG);
+  kma_data_ex_t *p_kma = get_kma_data(eAWS_DATA_REAL);
   DATE_TIME_BUF *pDate = &Date_Time;
 
   packet[cnt++] = 0x02;  // STX
@@ -43,11 +43,11 @@ void send_panel_aws_std(int32_t panel_port_num)
   cnt += 5;
 
   // F: 오늘 강수량
-  sprintf((char *)&packet[cnt], "F%04d", (uint16_t)(g_rainfall.today * 10));
+  sprintf((char *)&packet[cnt], "F%04d", g_rainfall.today );
   cnt += 5;
 
   // G: 어제 강수량
-  sprintf((char *)&packet[cnt], "G%04d", (uint16_t)(g_rainfall.yesterday * 10));
+  sprintf((char *)&packet[cnt], "G%04d", g_rainfall.yesterday );
   cnt += 5;
 
   // H: 강수유무

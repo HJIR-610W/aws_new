@@ -54,41 +54,48 @@ int32_t sunshine_file_zero(int year)
 #define SUNSHINE_TOTAL (sizeof(uint16_t) * 60 * 24 * 366 + sizeof(uint16_t))
 #define SUNSHINE_DAYS_SIZE (366 * sizeof(uint16_t))
 
-// 일조
+/**
+ * @brief 일조 계산
+ */
 void calculate_sunshine(void)
 {
   DATE_TIME_BUF ct = Date_Time;
-  uint16_t daily_sunshine = 0;
-  uint16_t hourly_sunshine = 0;
-  uint16_t monthly_sunshine = 0;
-  uint16_t yearly_sunshine = 0;
-  uint16_t *p_sunshine_1min = user_malloc(SUNSHINE_TOTAL);
-  uint16_t *p_sunshine_days = user_malloc(SUNSHINE_DAYS_SIZE);
+  uint16_t *p_sunshine_1min=NULL;
+  uint16_t *p_sunshine_days=NULL ;
 
-  (void)daily_sunshine;
-  (void)hourly_sunshine;
   ct = Date_Time;
+
+  p_sunshine_1min = user_malloc(SUNSHINE_TOTAL);
+  if(p_sunshine_1min == NULL)
+  {
+    return;
+  }
+
+  p_sunshine_days = user_malloc(SUNSHINE_DAYS_SIZE);
+
+  if(p_sunshine_days == NULL)
+  {
+    user_free(p_sunshine_1min);
+    return;
+  }
 
   memset(p_sunshine_1min, 0, SUNSHINE_TOTAL);
   memset(p_sunshine_days, 0, SUNSHINE_DAYS_SIZE);
+
+
   if (read_sunshine_1min(ct.Year, p_sunshine_1min, SUNSHINE_TOTAL) == 0)
   {
     compute_daily_data(DATA_SIZE_16, p_sunshine_1min, p_sunshine_days, ct.Year);
-    daily_sunshine = get_daily_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
-    hourly_sunshine = get_hourly_accu(DATA_SIZE_16, p_sunshine_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
-    monthly_sunshine = get_monthly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month);
-    yearly_sunshine = get_yearly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
 
+    g_sunshine.ten_min = get_10min_accu(DATA_SIZE_16, p_sunshine_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+    g_sunshine.today   = get_daily_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
+    g_sunshine.hourly  = get_hourly_accu(DATA_SIZE_16, p_sunshine_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+    g_sunshine.monthly = get_monthly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month);
+    g_sunshine.yearly  = get_yearly_accu(DATA_SIZE_16, p_sunshine_days, ct.Year, ct.Month, ct.Day);
 
-
-
-    g_sunshine.monthly = monthly_sunshine;
-    g_sunshine.today = daily_sunshine;
-    g_sunshine.yearly = yearly_sunshine;
-
-
-    user_free(p_sunshine_1min);
-    user_free(p_sunshine_days);
   }
+
+  user_free(p_sunshine_1min);
+  user_free(p_sunshine_days);
 
 }

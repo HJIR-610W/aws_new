@@ -23,7 +23,7 @@
 // 새롭게 추가
 typedef enum aws_data_min_s
 {
-  eAWS_DATA_AVG=0,//AWS(구) real과 동일
+  eAWS_DATA_REAL=0,//AWS(구) real과 동일
   eAWS_DATA_1MIN,
   eAWS_DATA_10MIN,
   eAWS_DATA_HOUR,
@@ -52,6 +52,33 @@ typedef struct aws_data_s
   }raw;
 }aws_data_t;
 
+typedef struct 
+{
+  bool enable;
+  uint8_t err;
+  uint32_t day_accu;
+  uint16_t data;
+  union
+  {
+    int32_t i;
+    float f;
+    bool b;
+  } raw;
+} solar_radiation_data_t;
+
+typedef struct 
+{
+  bool enable;
+  uint8_t err;
+  uint16_t data;//일간 누적
+  union
+  {
+    int32_t i;
+    float f;
+    bool b;
+  } raw;
+} sunshine_data_t;
+
 typedef struct aws_data_inst_s
 {
   uint8_t err;
@@ -67,6 +94,8 @@ typedef struct aws_data_s2
 {
   bool enable;
   uint8_t err;
+  uint16_t min;
+  uint16_t ten_min;
   uint16_t hour;
   uint16_t month;
   uint16_t data;
@@ -96,8 +125,8 @@ typedef struct
   aws_data_t snowfall;                // 9. 적설
   aws_data_t relative_humidity;       // 10. 상대습도 (1분 평균)
   aws_data_t precipitation_fine;      // 11. 강수량 (0.1 mm)
-  aws_data_t solar_radiation;        // 1. 일사 (누적값)  [누적 값(MJ/m2) × 100]
-  aws_data_t sunshine_duration;      // 2. 일조 (누적 시간)
+  solar_radiation_data_t solar_radiation; // 1. 일사 (누적값)  [누적 값(MJ/m2) × 100] 1분
+  sunshine_data_t sunshine_duration;      // 2. 일조 (누적 시간)
   aws_data_t surface_temperature;    // 3. 지면온도 (1분 평균)
   aws_data_t grass_temperature;      // 4. 초상온도 (1분 평균)
   aws_data_t soil_temperature_5cm;   // 5. 지중온도 (5cm, 1분 평균)
@@ -294,21 +323,24 @@ typedef struct
   uint16_t wind_speed_gust;
 } aws_day_t;
 
+//10스케일 10->1mm
 typedef struct rainfall_s
 {
-  float min;
-  float ten_min;
-  float hourly;
-  float today;
-  float yesterday; 
-  float monthly;  
-  float yearly;   
+  uint8_t current;
+  uint16_t min;
+  uint16_t ten_min;
+  uint16_t hourly;
+  uint16_t today;
+  uint16_t yesterday;
+  uint16_t monthly;
+  uint16_t yearly;
 }rainfall_t;
 
 typedef struct sunshine_s
 {
   uint32_t yesterday;
   uint32_t min;
+  uint32_t ten_min;
   uint32_t today;
   uint32_t hourly;
   uint32_t monthly;
@@ -318,23 +350,20 @@ typedef struct sunshine_s
 typedef struct sunshine_r_s
 {
   uint32_t sunshine_r_1min;//w/m2  1분 누적값
-  uint32_t sunshine_r_1min_acc;//1분동안 실시간 누적되는 값
+  uint32_t min_acc;//1분동안 실시간 누적되는 값
+  uint32_t ten_min;
   uint32_t hourly;
+  uint32_t today;
 } sunshine_r_t;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+typedef struct snowfall_s
+{
+  uint32_t yesterday; // 전일 적설량 
+  uint32_t current;   // 현재 적설량 
+  uint32_t hourly;    // 최근 1시간 동안의 적설량
+  uint32_t daily;     // 오늘  적설량
+  uint32_t monthly;   // 월간  적설량
+} snowfall_t;
 
 kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min);
 
@@ -343,15 +372,15 @@ int32_t read_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
 void send_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
 
 
+  extern sunshine_t g_sunshine;
+  extern rainfall_t g_rainfall;
+  extern sunshine_r_t g_solar_radiation;
+  extern snowfall_t g_snowfall;
 
-extern sunshine_t g_sunshine;;
-extern rainfall_t g_rainfall;
-extern sunshine_r_t g_solar_radiation;
-
-extern aws_inst_t g_aws_inst;
-extern aws_1min_t g_aws_1min_temp;
-extern aws_10min_t g_aws_10min;
-extern aws_day_t g_aws_day;
+  extern aws_inst_t g_aws_inst;
+  extern aws_1min_t g_aws_1min_temp;
+  extern aws_10min_t g_aws_10min;
+  extern aws_day_t g_aws_day;
 
 
 #endif

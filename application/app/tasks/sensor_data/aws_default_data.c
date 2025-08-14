@@ -6,9 +6,10 @@
 
 #include "util_memory.h"
 #include "util_filter.h"
-#define AVG_CNT 6
 
-#if 0 
+
+#if 0
+#define AVG_CNT 6
 typedef struct 
 {
   uint8_t index;
@@ -18,7 +19,7 @@ typedef struct
 avg_1min_t avg_1min[eAVG_MAX];
 
 
-void add_sample_1min(eAVG_1MIN_TYPE_t number, int32_t data)
+void add_sample_1min(eAVG_DATA_TYPE_t number, int32_t data)
 {
   int index = avg_1min[number].index % AVG_CNT;
   avg_1min[number].sample[index] = data;
@@ -31,7 +32,7 @@ void add_sample_1min(eAVG_1MIN_TYPE_t number, int32_t data)
 
 }
 
-void calculate_1min_avg(eAVG_1MIN_TYPE_t number,int32_t *p_avg)
+void calculate_1min_avg(eAVG_DATA_TYPE_t number,int32_t *p_avg)
 {
   int32_t sum = 0;
   int32_t count;
@@ -53,7 +54,7 @@ void calculate_1min_avg(eAVG_1MIN_TYPE_t number,int32_t *p_avg)
 }
 
 //이것을 호출하면 이동평균으로 사용하지 않는다.
-void reset_avg(eAVG_1MIN_TYPE_t number)
+void reset_avg(eAVG_DATA_TYPE_t number)
 {
   avg_1min[number].index = 0;
 }
@@ -96,61 +97,119 @@ sample[5] = 0;
 */
 
 
-sensor_avg_t g_sensor_avg_1min[eAVG_MAX];
-sensor_avg_t g_sensor_avg_10min[eAVG_MAX];
-sensor_avg_t g_sensor_avg_hour[eAVG_MAX];
+data_avg_t g_avg_1min[eAVG_MAX];
+data_avg_t g_avg_10min[eAVG_MAX];
+data_avg_t g_avg_hour[eAVG_MAX];
 
-void update_sensor_avg(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg,int32_t sample)
+data_min_max_t g_1min_min_max[eAVG_MAX];
+data_min_max_t g_10min_min_max[eAVG_MAX];
+data_min_max_t g_hour_min_max[eAVG_MAX];
+data_min_max_t g_day_min_max[eAVG_MAX];
+
+int32_t calculate_data_avg(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer, int32_t sample)
 {
-  uint16_t count = p_sensor_avg[sensor].count;
-  float average = p_sensor_avg[sensor].average;
+  uint16_t count = p_avg_buffer[type].count;
+  float average = p_avg_buffer[type].average;
 
+  if(sample==9999)//에러값은 평균에 포함하지 않는다.
+  {
+    return (int32_t)average;
+  }
   count++;
-
   average = recursive_avg_i(average, sample, count);
+  p_avg_buffer[type].average = average;
+  p_avg_buffer[type].count = count;
 
-  p_sensor_avg[sensor].average = average;
-  p_sensor_avg[sensor].count = count;
+  return (int32_t)average;
 }
 
-int32_t read_sensor_avg(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg)
+int32_t read_current_data_average(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer)
 {
-  return (int32_t)p_sensor_avg[sensor].average;
+  return (int32_t)p_avg_buffer[type].average;
 }
 
-void sensor_avg_init(eAVG_1MIN_TYPE_t sensor, sensor_avg_t *p_sensor_avg)
+void data_avg_init(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer)
 {
-  p_sensor_avg[sensor].average = 0;
-  p_sensor_avg[sensor].count = 0;
+  p_avg_buffer[type].average = 0;
+  p_avg_buffer[type].count = 0;
 }
 
-
-
-
-
-sensor_min_max_t g_1min_min_max[eAVG_MAX];
-
-void calculate_sensor_min_max(eAVG_1MIN_TYPE_t sensor, sensor_min_max_t *p_min_max, int32_t sample)
+int32_t read_data_average(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer)
 {
-  if (sample > p_min_max[sensor].max)
+  int32_t average;
+
+  average = read_current_data_average(type,p_avg_buffer);
+  data_avg_init(type,p_avg_buffer);
+
+  return average;
+}
+
+void calculate_data_min_max(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max, int32_t sample)
+{
+  if (sample > p_min_max[type].max)
   {
-    p_min_max[sensor].max = sample;
+    p_min_max[type].max = sample;
   }
 
-  if (sample < p_min_max[sensor].min)
+  if (sample < p_min_max[type].min)
   {
-    p_min_max[sensor].min = sample;
+    p_min_max[type].min = sample;
   }
 }
 
-void read_sensor_min_max(eAVG_1MIN_TYPE_t sensor, sensor_min_max_t *p_min_max, int32_t *p_min,int32_t *p_max)
+int32_t read_current_data_min(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max)
 {
-  *p_min = p_min_max[sensor].min;
-  *p_max = p_min_max[sensor].max;
+  return p_min_max[type].min;
+
 }
 
-void sensor_min_max_init(eAVG_1MIN_TYPE_t sensor,sensor_min_max_t *p_min_max,int32_t min,int32_t max)
+int32_t read_current_data_max(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max)
 {
-  p_min_max[sensor].min = min;
-  p_min_max[sensor].max = max;
+
+  return  p_min_max[type].max;
+}
+
+
+
+void data_min_max_init(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max, int32_t min, int32_t max)
+{
+  p_min_max[type].min = min;
+  p_min_max[type].max = max;
+}
+
+
+int32_t read_data_min(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max_buffer,int32_t set_min)
+{
+  int32_t min;
+  min = p_min_max_buffer[type].min;
+  p_min_max_buffer[type].min = set_min;
+
+  return min;
+}
+
+int32_t read_data_max(eAVG_DATA_TYPE_t type, data_min_max_t *p_min_max_buffer,int32_t set_max)
+{
+  int32_t max;
+
+  max = p_min_max_buffer[type].max;
+  p_min_max_buffer[type].max = set_max;
+
+  return max;
+}
+
+void aws_min_max_init(void)
+{
+
+  for (int i = 0; i < eAVG_MAX; i++)
+  {
+    g_1min_min_max[i].max = 0;
+    g_10min_min_max[i].max = 0;
+    g_hour_min_max[i].max = 0;
+    g_day_min_max[i].max = 0;
+
+    g_1min_min_max[i].min = 10000;
+    g_10min_min_max[i].min = 10000;
+    g_hour_min_max[i].min = 10000;
+    g_day_min_max[i].min = 10000;
+  }
 }

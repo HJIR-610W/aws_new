@@ -605,7 +605,7 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
   {
     kma_data_ex_t *p_kma_avg;
 
-    p_kma_avg = get_kma_data(eAWS_DATA_AVG);
+    p_kma_avg = get_kma_data(eAWS_DATA_REAL);
 
     p_kma->temperature.enable =p_kma_avg->temperature.enable;
     p_kma->wind_direction_avg.enable = p_kma_avg->wind_direction_avg.enable;

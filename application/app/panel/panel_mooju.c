@@ -40,7 +40,7 @@ void send_panel_muju(int32_t panel_port_num)
 
   pDate			= &Date_Time;
 
-  p_kma =get_kma_data(eAWS_DATA_AVG);
+  p_kma =get_kma_data(eAWS_DATA_REAL);
 
 
 // 무주 기상 상황판용 
@@ -119,11 +119,11 @@ framemk[cnt++] 		= 17;																	// Length
 
 sprintf(&framemk[cnt],"%5.1f", (float)p_kma->wind_speed_avg.data / 10.0);						// 풍속
 cnt					+= 5;
-sprintf(&framemk[cnt],"%4d", (uint16_t)(g_rainfall.yearly*10) );					// 연간 누계 강우량
+sprintf(&framemk[cnt],"%4d", g_rainfall.yearly);					// 연간 누계 강우량
 cnt					+= 4;
-sprintf(&framemk[cnt],"%4d", (uint16_t)(g_rainfall.today*10) );						// 금일  강우량
+sprintf(&framemk[cnt],"%4d",g_rainfall.today );						// 금일  강우량
 cnt					+= 4;
-sprintf(&framemk[cnt],"%4d", (uint16_t)(g_rainfall.yesterday*10) );					// 전일  강우량
+sprintf(&framemk[cnt],"%4d",g_rainfall.yesterday );					// 전일  강우량
 cnt					+= 4;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);

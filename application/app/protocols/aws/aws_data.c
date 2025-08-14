@@ -7,6 +7,7 @@
 
 #include "task_measure.h"
 #include "cmsis_os2.h"
+#include "aws_default_data.h"
 
 #pragma location = "SRAM_section"
 kma_data_ex_t g_kma_raw_ex;
@@ -23,8 +24,9 @@ kma_data_ex_t g_kma_day_ex;
 rainfall_t g_rainfall;
 sunshine_t g_sunshine;
 sunshine_r_t g_solar_radiation;
+snowfall_t g_snowfall;
 
-aws_inst_t g_aws_inst;
+    aws_inst_t g_aws_inst;
 aws_1min_t g_aws_1min_temp;
 aws_day_t g_aws_day;
 aws_10min_t g_aws_10min;
@@ -38,7 +40,7 @@ kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
 
   switch (min)
   {
-    case eAWS_DATA_AVG:
+    case eAWS_DATA_REAL:
       p_kma_data = &g_kma_inst_ex;
       break;
     case eAWS_DATA_1MIN:
@@ -98,3 +100,6 @@ void send_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data)
   osMessageQueuePut(g_kma_data_queue[kma_data_num], p_kma_data, 0, 0);
   
 }
+
+
+

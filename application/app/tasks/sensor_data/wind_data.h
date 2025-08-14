@@ -7,6 +7,7 @@
 
 typedef enum
 {
+  eWIND_MAX_REAL,
   eWIND_MAX_1MIN,
   eWIND_MAX_10MIN,
   eWIND_MAX_HOUR,
@@ -29,4 +30,6 @@ void calculate_wind_max(eWIND_MAX_t wind, int32_t speed, int32_t direction);
 void read_wind_max(eWIND_MAX_t wind, int32_t *speed, int32_t *direction);
 void wind_max_init(eWIND_MAX_t wind);
 
+int32_t read_wind_speed_max(eWIND_MAX_t wind);
+int32_t read_wind_direction_max(eWIND_MAX_t wind);
 #endif

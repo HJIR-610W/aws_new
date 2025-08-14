@@ -23,6 +23,7 @@
 #include "sensor_data\rain_data.h"
 #include "sensor_data\sunshine_data.h"
 #include "wind_data.h"
+#include "aws_default_data.h"
 typedef struct filter_data_s
 {
   uint8_t delay_count;
@@ -550,7 +551,7 @@ AWS_DATA_STRUCT *get_aws_data(int min)
   AWS_DATA_STRUCT *p_aws_data=NULL;
   switch(min)
   {
-    case eAWS_DATA_AVG:
+    case eAWS_DATA_REAL:
       p_aws_data = &mRealAws;
       break;
     case eAWS_DATA_1MIN:
@@ -583,7 +584,7 @@ void update_kma_real(void)
   kma_data_ex_t *p_kma3;
   kma_data_ex_t *p_raw;
 
-  p_kma3 = get_kma_data(eAWS_DATA_AVG);
+  p_kma3 = get_kma_data(eAWS_DATA_REAL);
   p_raw = get_kma_data(eAWS_DATA_RAW);
 
   //[사용]
@@ -632,9 +633,9 @@ void update_kma_real(void)
 
 
   //[사용]
-  p_kma3->solar_radiation.data    = (uint16_t)(g_solar_radiation.sunshine_r_1min_acc/1000.0);
+  p_kma3->solar_radiation.data    = (uint16_t)(g_solar_radiation.min_acc/1000.0);
 
-  p_kma3->solar_radiation.max = mRealAws.mSolarRad.sMax;//일간
+  p_kma3->solar_radiation.day_accu = mRealAws.mSolarRad.sMax;//일간
   p_kma3->solar_radiation.err = get_sensor_err(B1_SOLAR_RADIATION);
   //[사용]
   p_kma3->sunshine_duration.data = g_sunshine.today;
@@ -757,7 +758,7 @@ void check_sensor_use(void)
 {
   kma_data_ex_t *p_kma_data;
 
-  for (int min = eAWS_DATA_AVG; min <= eAWS_DATA_RAW; min++)
+  for (int min = eAWS_DATA_REAL; min <= eAWS_DATA_RAW; min++)
   {
     p_kma_data = get_kma_data((eAWS_DATA_MIN_t)min);
 
@@ -1121,27 +1122,98 @@ void raw_data_init(void)
   }
   
 }
+
+
+
+void upate_wind(void)
+{
+  int32_t wind_speed_max;
+  int32_t wind_direction_max;
+
+  AWS_DATA_STRUCT *pAws[] = {&mRealAws, & m10MinAws, &mHourAws, &mDayAws};
+  eWIND_MAX_t wind[] = {eWIND_MAX_REAL, eWIND_MAX_10MIN,
+                        eWIND_MAX_HOUR,
+                        eWIND_MAX_DAY};
+
+  for (int i = 0; i < _countof(pAws); i++)
+  {
+    read_wind_max(wind[i], &wind_speed_max, &wind_direction_max);
+    pAws[i]->mWind.mDirection.sMax = wind_direction_max;
+    pAws[i]->mWind.mSpeed.sMax = wind_speed_max;
+  }
+
+
+}
+
+//실시간 최대 최소값은 1분 최대 최소 값을 사용한다.
+void update_sensor_real(void)
+{
+  AWS_DATA_STRUCT *pAws = &mRealAws;
+
+
+  // 온도
+  pAws->mTemperature.sMin = read_current_data_min(eAVG_TEMPERATURE, g_1min_min_max);
+  pAws->mTemperature.sMax = read_current_data_max(eAVG_TEMPERATURE, g_1min_min_max);
+
+  // 기압
+  pAws->mBarometric.sMin = read_current_data_min(eAVG_PRESSURE, g_1min_min_max);
+  pAws->mBarometric.sMax = read_current_data_max(eAVG_PRESSURE, g_1min_min_max);
+
+  // 습도
+  pAws->mHumidity.sMin = read_current_data_min(eAVG_RELATIVE_HUMIDITY, g_1min_min_max);
+  pAws->mHumidity.sMax = read_current_data_max(eAVG_RELATIVE_HUMIDITY, g_1min_min_max);
+
+  // 지면온도
+  pAws->mGndTemp.sReal = mRealAws.mGndTemp.sReal;
+  pAws->mGndTemp.sMin = read_current_data_min(eAVG_GROUND_TEMPERATURE, g_1min_min_max);
+  pAws->mGndTemp.sMax = read_current_data_max(eAVG_GROUND_TEMPERATURE, g_1min_min_max);
+  // 초상 온도
+  pAws->mGrassTemp.sReal = mRealAws.mGrassTemp.sReal;
+  pAws->mGrassTemp.sMin = read_current_data_min(eAVG_SURFACE_TEMPERATURE, g_1min_min_max);
+  pAws->mGrassTemp.sMax = read_current_data_max(eAVG_SURFACE_TEMPERATURE, g_1min_min_max);
+
+  // 지중온도 처리 2017.04.03
+  pAws->mSoilTemp5cm.sMin = read_current_data_min(eAVG_SOIL_TEMPERATURE_5CM, g_1min_min_max);
+  pAws->mSoilTemp5cm.sMax = read_current_data_max(eAVG_SOIL_TEMPERATURE_5CM, g_1min_min_max);
+
+  pAws->mSoilTemp10cm.sMin = read_current_data_min(eAVG_SOIL_TEMPERATURE_10CM, g_1min_min_max);
+  pAws->mSoilTemp10cm.sMax = read_current_data_max(eAVG_SOIL_TEMPERATURE_10CM, g_1min_min_max);
+
+  pAws->mSoilTemp20cm.sMin = read_current_data_min(eAVG_SOIL_TEMPERATURE_20CM, g_1min_min_max);
+  pAws->mSoilTemp20cm.sMax = read_current_data_max(eAVG_SOIL_TEMPERATURE_20CM, g_1min_min_max);
+
+  pAws->mSoilTemp30cm.sMin = read_current_data_min(eAVG_SOIL_TEMPERATURE_30CM, g_1min_min_max);
+  pAws->mSoilTemp30cm.sMax = read_current_data_max(eAVG_SOIL_TEMPERATURE_30CM, g_1min_min_max);
+
+  pAws->mSoilTemp50cm.sMin = read_current_data_min(eAVG_SOIL_TEMPERATURE_50CM, g_1min_min_max);
+  pAws->mSoilTemp50cm.sMax = read_current_data_max(eAVG_SOIL_TEMPERATURE_50CM, g_1min_min_max);
+
+  pAws->mSoilTemp1_0m.sMin = read_current_data_min(eAVG_SOIL_TEMPERATURE_100CM, g_1min_min_max);
+  pAws->mSoilTemp1_0m.sMax = read_current_data_max(eAVG_SOIL_TEMPERATURE_100CM, g_1min_min_max);
+
+  pAws->mSoilTemp1_5m.sMin = read_current_data_min(eAVG_SOIL_TEMPERATURE_150CM, g_1min_min_max);
+  pAws->mSoilTemp1_5m.sMax = read_current_data_max(eAVG_SOIL_TEMPERATURE_150CM, g_1min_min_max);
+}
+
 void DUALPORT_TASK(void *arg)
 {
   uint8_t f_err = 0;
   uint8_t sensor_err = 0;
-  int32_t wind_speed;
-  int32_t wind_direction;
-  float wind_speed_mavg;
-  float wind_direction_mavg;
-  float wind_speed_avg;
-  float wind_direction_avg;
-      uint16_t data;
-
+  int32_t wind_speed=0;
+  int32_t wind_direction=0;
+  uint16_t data;
   uint16_t rain_p_on_delay = 0;
   uint16_t rain_p_off_delay=0;
-  SYSTEM_INFO_AWS *pSystem;
+  float wind_speed_mavg = 0;
+  float wind_direction_mavg = 0;
+  float adj_wind_speed;
+  float adj_wind_direction;
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
   AWS_DATA_STRUCT *pAws;
 
   pAws = &mRealAws;
-  pSystem = &Sysinfo;
+
 
   calculate_rain(); 
   calculate_sunshine();
@@ -1190,30 +1262,32 @@ void DUALPORT_TASK(void *arg)
       wind_speed = filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
       update_sensor_err(A3_WIND_SPEED, f_err);
 
-      if(wind_speed !=9999&& wind_direction !=9999)
-      {
-      add_wind_sample((float)wind_speed / 10.0f, (float)wind_direction / 10.0f);
-      calculate_wind_moving_avg(&wind_speed_mavg,&wind_direction_mavg);
-      update_wind_vector_avg_1min(wind_speed_mavg, wind_direction_mavg);
-      
-      //calculate_wind_avg_1min(&wind_speed_avg, &wind_direction_avg);
+     /*
+     평균 풍향 풍속은 함께 처리되는데 한개의 값이 잘못되어도 다른 값이 정상처리 되도록 
+     풍속이 고장나면 오직 각도 산출만을 위해 0.1보다 작은값으로 설정
+     풍향이 고장나면 풍속만 표시되도록 각도를 0으로 고정
+     */
+      adj_wind_speed = (wind_speed == AWS_DATA_ERR_VAL)?0.01:wind_speed/10.0f;
+      adj_wind_direction = (wind_direction == AWS_DATA_ERR_VAL) ? 0 : wind_direction / 10.0f;
 
-      g_aws_inst.wind_speed     = (uint16_t)(wind_speed_mavg*10);
-      g_aws_inst.wind_direction = (uint16_t)(wind_direction_mavg*10);
+      add_wind_sample(adj_wind_speed, adj_wind_direction);
+      calculate_wind_moving_avg(&wind_speed_mavg, &wind_direction_mavg);
+      update_wind_vector_avg_1min(wind_speed_mavg, wind_direction_mavg);
+
+      g_aws_inst.wind_speed = (uint16_t)(wind_speed_mavg * 10);
+      g_aws_inst.wind_direction = (uint16_t)(wind_direction_mavg * 10);
       pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_mavg * 10);
       pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_mavg * 10);
 
+      calculate_wind_max(eWIND_MAX_REAL, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
       calculate_wind_max(eWIND_MAX_1MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
       calculate_wind_max(eWIND_MAX_10MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
       calculate_wind_max(eWIND_MAX_HOUR, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
       calculate_wind_max(eWIND_MAX_DAY, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
 
-      read_wind_max(eWIND_MAX_1MIN,&wind_speed,&wind_direction);
-      }
-      pAws->mWind.mSpeed.sMax = wind_speed;
-      pAws->mWind.mDirection.sMax = wind_direction;
+      upate_wind();
 
-      pSystem->mRain.rain += get_rain_mm(&sensor_err);
+      g_rainfall.current += get_rain_mm(&sensor_err);
       update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
 
       // 기압
@@ -1298,6 +1372,8 @@ void DUALPORT_TASK(void *arg)
     pAws->mSoilTemp1_5m.sReal = filter_data(B11_SOIL_TEMPERATURE_150CM, data, sensor_err, &f_err);
     update_sensor_err(B11_SOIL_TEMPERATURE_150CM, f_err);
 
+
+
     // 센서 불량 처리
     pAws->mStatus.sReal = 0;
 
@@ -1332,10 +1408,10 @@ void DUALPORT_TASK(void *arg)
       pAws->mStatus.sMin &= ~(HUMIDITYFAIL_BIT);
 
     schedule_process(&ct, &time_old);
-
+    update_sensor_real();
     update_kma_real();
     // 현재 값연산 없는 항목은 원본값으로 처리
-    //update_unused_data(get_kma_data(eAWS_DATA_AVG), get_kma_data(eAWS_DATA_RAW));
+    //update_unused_data(get_kma_data(eAWS_DATA_REAL), get_kma_data(eAWS_DATA_RAW));
     update_unused_data(get_kma_data(eAWS_DATA_1MIN), get_kma_data(eAWS_DATA_RAW));
   }
 }
@@ -1347,8 +1423,8 @@ const osThreadAttr_t KdualportTask_attributes = {
 };
 void dualportTask_init(void)
 {
+  aws_min_max_init();
   kma_data_q_init();
-  AwsMinMaxInit();
 
   osThreadNew(DUALPORT_TASK, NULL, &KdualportTask_attributes);
 

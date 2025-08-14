@@ -94,13 +94,13 @@ void draw_rain_page(screen_page_t *p_win)
 
   make_centered(buff, sizeof(buff), "RAIN", SCREEN_COLS);
   screen_page_printf(p_win, "%s",buff);
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YESTERDAY",g_rainfall.yesterday);
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "TODAY", g_rainfall.today);
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "1MIN", g_rainfall.min);
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "10MIN",g_rainfall.ten_min);
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "HOUR", g_rainfall.hourly);
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YEAR", g_rainfall.yearly);
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "MONTH", g_rainfall.monthly);
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YESTERDAY",(float)(g_rainfall.yesterday/10.f));
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "TODAY", (float)(g_rainfall.today / 10.f));
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "1MIN", (float)(g_rainfall.min / 10.f));
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "10MIN", (float)(g_rainfall.ten_min / 10.f));
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "HOUR", (float)(g_rainfall.hourly / 10.f));
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YEAR", (float)(g_rainfall.yearly / 10.f));
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "MONTH", (float)(g_rainfall.monthly / 10.f));
   screen_page_clear(p_win);
 
 }
@@ -555,7 +555,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
         bool rain_p = p_kma->precipitation_presence.raw.b ;
         screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN_P", rain_p?"ON":"OFF");
       }
-      else if ( min == eAWS_DATA_AVG)
+      else if ( min == eAWS_DATA_REAL)
       {
         uint16_t data = p_kma->precipitation_presence.data;
         bool rain_p = (data == 10) ? true : false;
@@ -636,9 +636,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
           screen_page_printf(p_win, "%-*s:%6.1f W/m2", SOLAR_R_WD, "SOLAR R", f_data);
           break;
         }
-        case eAWS_DATA_AVG:
+        case eAWS_DATA_REAL:
         {
-          float solar_radiation = (float)g_solar_radiation.sunshine_r_1min_acc/1000.0f;
+          float solar_radiation = (float)g_solar_radiation.min_acc/1000.0f;
           screen_page_printf(p_win, "%-*s:%6.1f kJ/m2", SOLAR_R_WD, "SOLAR R", solar_radiation);
           break;
         }
@@ -675,7 +675,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
           screen_page_printf(p_win, "%-*s:   %s", AWS_WD, "SOLAR D", (f_data == 1.0f) ? "ON" : "OFF");
           break;
         }
-        case eAWS_DATA_AVG:
+        case eAWS_DATA_REAL:
           screen_page_printf(p_win, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d_today);
         break;
         case eAWS_DATA_1MIN:
@@ -1109,7 +1109,7 @@ void menuTask(void *arg)
     draw_ethernet_page(&lcd_win);
     break;
     case PAGE_AWS_AVG:
-    draw_aws_page(&lcd_win, eAWS_DATA_AVG);
+    draw_aws_page(&lcd_win, eAWS_DATA_REAL);
     break;
     case PAGE_AWS_1MIN:
     draw_aws_page(&lcd_win, eAWS_DATA_1MIN);

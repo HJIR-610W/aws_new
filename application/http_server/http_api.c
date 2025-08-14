@@ -12,7 +12,7 @@
 
 void http_api_handle_sensor_get(int client_socket)
 {
-  kma_data_ex_t* p_kma = get_kma_data(eAWS_DATA_AVG);
+  kma_data_ex_t* p_kma = get_kma_data(eAWS_DATA_REAL);
   if (p_kma == NULL)
   {
     http_send_response(client_socket, 500, "application/json",

@@ -202,18 +202,24 @@ SD카드에 기록된 RAIN_01.rcd 1분 우량 파일을 전부 읽어서 연산
 void calculate_rain(void)
 {
   DATE_TIME_BUF ct = Date_Time;
-  uint16_t daily_rain = 0;
-  uint16_t hourly_rain = 0;
-  uint16_t monthly_rain = 0;
-  uint16_t yearly_rain = 0;
-  uint16_t min10_rain = 0;
-  uint16_t yesterday_rain = 0;
-  uint16_t *p_rain_1min = user_malloc(RAIN_TOTAL);
-  uint16_t *p_rain_days = user_malloc(RAIN_DAYS_SIZE);
+  uint16_t *p_rain_1min=NULL;
+  uint16_t *p_rain_days =NULL;
   DATE_TIME_BUF pre_date;
 
   ct = Date_Time;
   pre_date = Date_Time;
+
+  p_rain_1min = user_malloc(RAIN_TOTAL);
+  if(p_rain_1min == NULL)
+  return;
+
+  p_rain_days = user_malloc(RAIN_DAYS_SIZE);
+  if (p_rain_days == NULL)
+  {
+    user_free(p_rain_1min);
+    return;
+  }
+
 
   memset(p_rain_1min, 0, RAIN_TOTAL);
   memset(p_rain_days, 0, RAIN_DAYS_SIZE);
@@ -221,13 +227,11 @@ void calculate_rain(void)
   {
     compute_daily_rain(p_rain_1min, p_rain_days, ct.Year);
 
-    daily_rain = get_daily_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month, ct.Day);
-    hourly_rain =
-        get_hourly_accu(DATA_SIZE_16, p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
-    monthly_rain = get_monthly_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month);
-    yearly_rain = get_yearly_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month, ct.Day);
-    min10_rain =
-        get_10min_accu(DATA_SIZE_16, p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+    g_rainfall.today = get_daily_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month, ct.Day);
+    g_rainfall.hourly = get_hourly_accu(DATA_SIZE_16, p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+    g_rainfall.monthly = get_monthly_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month);
+    g_rainfall.yearly = get_yearly_accu(DATA_SIZE_16, p_rain_days, ct.Year, ct.Month, ct.Day);
+    g_rainfall.ten_min = get_10min_accu(DATA_SIZE_16, p_rain_1min, ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
 
     // 전일 우량 1일전 시간계산
     subtract_seconds(&pre_date, 86400);
@@ -237,26 +241,18 @@ void calculate_rain(void)
       if (read_rain_1min(pre_date.Year, p_rain_1min, RAIN_TOTAL) == 0)
       {
         compute_daily_rain(p_rain_1min, p_rain_days, pre_date.Year);
-        yesterday_rain =
-            get_daily_accu(DATA_SIZE_16, p_rain_days, pre_date.Year, pre_date.Month, pre_date.Day);
+        g_rainfall.yesterday = get_daily_accu(DATA_SIZE_16, p_rain_days, pre_date.Year, pre_date.Month, pre_date.Day);
       }
     }
     else
     {
-      yesterday_rain =
-          get_daily_accu(DATA_SIZE_16, p_rain_days, pre_date.Year, pre_date.Month, pre_date.Day);
+      g_rainfall.yesterday = get_daily_accu(DATA_SIZE_16, p_rain_days, pre_date.Year, pre_date.Month, pre_date.Day);
     }
 
-    g_rainfall.today = daily_rain / 10.0f;
-    g_rainfall.hourly = hourly_rain / 10.0f;
-    g_rainfall.monthly = monthly_rain / 10.0f;
-    g_rainfall.yearly =  yearly_rain / 10.0f;
-    g_rainfall.ten_min = min10_rain / 10.0f;
-    g_rainfall.yesterday = yesterday_rain / 10.0f;
 
-    user_free(p_rain_1min);
-    user_free(p_rain_days);
+
   }
 
-
+  user_free(p_rain_1min);
+  user_free(p_rain_days);
 }

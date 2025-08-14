@@ -21,7 +21,7 @@ uint16_t send_panel_hj(int32_t panel_port_num)
     DATE_TIME_BUF			*pDate;
     kma_data_ex_t *p_kma;
 
-    p_kma = get_kma_data(eAWS_DATA_AVG);
+    p_kma = get_kma_data(eAWS_DATA_REAL);
 
 	pDate			= &Date_Time;
 
@@ -42,9 +42,9 @@ uint16_t send_panel_hj(int32_t panel_port_num)
 
     cnt     += 5;
 
-    sprintf(&framemk[cnt],"F%04d", (uint16_t)(g_rainfall.today*10));                                    // F 오늘 강수량 0000 - 9999 mm (관측값 * 10)
+    sprintf(&framemk[cnt],"F%04d", g_rainfall.today);                                    // F 오늘 강수량 0000 - 9999 mm (관측값 * 10)
     cnt     += 5;
-    sprintf(&framemk[cnt],"G%04d", (uint16_t)(g_rainfall.yesterday*10));                                 // G 어제 강수량 0000 - 9999 mm (관측값 * 10)
+    sprintf(&framemk[cnt],"G%04d", g_rainfall.yesterday);                                 // G 어제 강수량 0000 - 9999 mm (관측값 * 10)
     cnt     += 5;
 
     sprintf(&framemk[cnt],"H%01d", p_kma->precipitation_presence.data); //AWS(구)동일처리 유:10 무:0                    // H 강수 유무 1: 유 0: 무

@@ -27,274 +27,84 @@
 #pragma location = "SRAM_section"
 AWS_DATA_STRUCT mRealAws;   // 실시간 자료
 #pragma location = "SRAM_section"
-AWS_DATA_STRUCT mMinAws;    // 1분 자료
+AWS_DATA_STRUCT mMinAws;    // 1분 자료 이값은 실시간 변경하면 안된다. 분이 바뀔때만 갱신되어야함
 #pragma location = "SRAM_section"
 AWS_DATA_STRUCT m10MinAws;  // 10분 자료
 #pragma location = "SRAM_section"
 AWS_DATA_STRUCT mHourAws;   // 1시간 자료
 #pragma location = "SRAM_section"
-SYSTEM_INFO_AWS Sysinfo;
- 
+AWS_DATA_STRUCT mDayAws; // 일간 자료 
 
- void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v);
- uint16_t UVToDirc(float u_tmp, float v_tmp);
- void SecProcess(void);
+void SecProcess(void);
 
- void MinProcess(DATE_TIME_BUF *pDate);
- void Min10Process(void);
- void HourProcess(DATE_TIME_BUF *pDate);
- void DayProcess(void);
- void MonthProcess(void);
- float UVToSpeed(float u_tmp, float v_tmp);
+void MinProcess(DATE_TIME_BUF *pDate);
+void Min10Process(void);
+void HourProcess(DATE_TIME_BUF *pDate);
+void DayProcess(void);
+void MonthProcess(void);
+float UVToSpeed(float u_tmp, float v_tmp);
 
- /*
- lowlevel init 호출전에 SystemInit_ExtMemCtl 여기에서 FSMC 초기화를 해서
- 초기화된 섹션,초기화되지 않은 섹션을 처리해줘야하는데
- FSMC 초기화에 문제가 있어. 일단
- main에서 FSMC 초기화한 다음 수동으로 FSMC영역에 배치된 변수를 0으로 초기화
- */
- void manual_bss_init(void)
- {
-   memset(&mRealAws, 0, sizeof(mRealAws));
-   memset(&mMinAws, 0, sizeof(mMinAws));
-   memset(&m10MinAws, 0, sizeof(m10MinAws));
-   memset(&mHourAws, 0, sizeof(mHourAws));
-   memset(&Sysinfo, 0, sizeof(Sysinfo));
- }
+/*
+lowlevel init 호출전에 SystemInit_ExtMemCtl 여기에서 FSMC 초기화를 해서
+초기화된 섹션,초기화되지 않은 섹션을 처리해줘야하는데
+FSMC 초기화에 문제가 있어. 일단
+main에서 FSMC 초기화한 다음 수동으로 FSMC영역에 배치된 변수를 0으로 초기화
+*/
+void manual_bss_init(void)
+{
+  memset(&mRealAws, 0, sizeof(mRealAws));
+  memset(&mMinAws, 0, sizeof(mMinAws));
+  memset(&m10MinAws, 0, sizeof(m10MinAws));
+  memset(&mHourAws, 0, sizeof(mHourAws));
+}
 
 void update_kma_data(eAWS_DATA_MIN_t min);
 
 
-void AwsMinMaxInit(void)
-{
-  SYSTEM_INFO_AWS *pSystem;
-
-  pSystem = &Sysinfo;
-
-  mRealAws.mWind.mDirection.sMax = 0; //일 최대 풍향
-  mRealAws.mWind.mSpeed.sMax = 0;    // 일 최대 풍속
-
-  mRealAws.mTemperature.sMin = 9999;  // 일일 최대 최소 값 초기화
-  mRealAws.mTemperature.sMax = 0;
-
-  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
-  {
-    pSystem->mTempBuf[i].sMin = 9999;
-    pSystem->mTempBuf[i].sMax = 0;
-  }
-
-
-  mRealAws.mBarometric.sMin = 9999;
-  mRealAws.mBarometric.sMax = 0;
-
-  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
-  {
-    pSystem->mBaroBuf[i].sMin = 9999;
-    pSystem->mBaroBuf[i].sMax = 0;
-  }
-
-  mRealAws.mHumidity.sMin = 9999;
-  mRealAws.mHumidity.sMax = 0;
-
-  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
-  {
-    pSystem->mHumidBuf[i].sMin = 9999;
-    pSystem->mHumidBuf[i].sMax = 0;
-  }
-
-
-  //지중온도 5cm
-  mRealAws.mSoilTemp5cm.sMin = 9999; //일 최대 최소 값 초기화 
-  mRealAws.mSoilTemp5cm.sMax = 0;
-
-  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
-  {
-    pSystem->mSoil5Buf[i].sMin = 9999;
-    pSystem->mSoil5Buf[i].sMax = 0;
-  }
-
-  // 지중온도 10cm
-  mRealAws.mSoilTemp10cm.sMin = 9999;  // 일 최대 최소 값 초기화
-  mRealAws.mSoilTemp10cm.sMax = 0;
-
-  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
-  {
-    pSystem->mSoil10Buf[i].sMin = 9999;
-    pSystem->mSoil10Buf[i].sMax = 0;
-  }
-  // 지중온도 20cm
-  mRealAws.mSoilTemp20cm.sMin = 9999;  // 일 최대 최소 값 초기화
-  mRealAws.mSoilTemp20cm.sMax = 0;
-
-  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
-  {
-    pSystem->mSoil20Buf[i].sMin = 9999;
-    pSystem->mSoil20Buf[i].sMax = 0;
-  }
-
-  // 지중온도 30cm
-  mRealAws.mSoilTemp30cm.sMin = 9999;  // 일 최대 최소 값 초기화
-  mRealAws.mSoilTemp30cm.sMax = 0;
-
-  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
-  {
-    pSystem->mSoil30Buf[i].sMin = 9999;
-    pSystem->mSoil30Buf[i].sMax = 0;
-  }
-
-  // 지중온도 50cm
-  mRealAws.mSoilTemp50cm.sMin = 9999;  // 일 최대 최소 값 초기화
-  mRealAws.mSoilTemp50cm.sMax = 0;
-
-  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
-  {
-    pSystem->mSoil50Buf[i].sMin = 9999;
-    pSystem->mSoil50Buf[i].sMax = 0;
-  }
-
-  // 지중온도 100cm
-  mRealAws.mSoilTemp1_0m.sMin = 9999;  // 일 최대 최소 값 초기화
-  mRealAws.mSoilTemp1_0m.sMax = 0;
-
-  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
-  {
-    pSystem->mSoil100Buf[i].sMin = 9999;
-    pSystem->mSoil100Buf[i].sMax = 0;
-  }
-
-    // 지중온도 1.5m
-  mRealAws.mSoilTemp1_5m.sMin = 9999;  // 일 최대 최소 값 초기화
-  mRealAws.mSoilTemp1_5m.sMax = 0;
-
-  for (int i = MIN1_PROC; i <= HOUR_PROC; i++)
-  {
-    pSystem->mSoil150Buf[i].sMin = 9999;
-    pSystem->mSoil150Buf[i].sMax = 0;
-  }
-
-
-  mRealAws.mRainDetect.sReal = 0;
-}
-
-void AwsMinMaxProc(uint16_t sSour, uint16_t *psDestMin, uint16_t *psDestMax)
-{
-  if (sSour > *psDestMax)
-    *psDestMax = sSour;
-  if (sSour < *psDestMin)
-    *psDestMin = sSour;
-}
 
 void SecProcess(void)
 {
 
-  SYSTEM_INFO_AWS *pSystem;
+  AWS_DATA_STRUCT *pAws;
 
-  pSystem = &Sysinfo;
+  pAws = &mRealAws;
 
-  update_sensor_avg(eAVG_TEMPERATURE, g_sensor_avg_1min, mRealAws.mTemperature.sReal);
-  calculate_sensor_min_max(eAVG_TEMPERATURE, g_1min_min_max, mRealAws.mTemperature.sReal);
-
-      // 온도: 1분 누적을 구하기 위한 합
-  pSystem->mTempBuf[MIN1_PROC].lTot += mRealAws.mTemperature.sReal;
-  pSystem->mTempBuf[MIN1_PROC].sAddCnt++;
-
+    //온도 1분 평균 최대 최소
+  calculate_data_avg(eAVG_TEMPERATURE, g_avg_1min, pAws->mTemperature.sReal);
+  calculate_data_min_max(eAVG_TEMPERATURE, g_1min_min_max, pAws->mTemperature.sReal);
   //기압
-  pSystem->mBaroBuf[MIN1_PROC].lTot += mRealAws.mBarometric.sReal;
-  pSystem->mBaroBuf[MIN1_PROC].sAddCnt++;
+  calculate_data_avg(eAVG_PRESSURE, g_avg_1min, pAws->mBarometric.sReal);
+  calculate_data_min_max(eAVG_PRESSURE, g_1min_min_max, pAws->mBarometric.sReal);
   //습도
-  pSystem->mHumidBuf[MIN1_PROC].lTot += mRealAws.mHumidity.sReal;
-  pSystem->mHumidBuf[MIN1_PROC].sAddCnt++;
-
-  // 2017.04.03 추가
-  pSystem->mSoil5Buf[MIN1_PROC].lTot += mRealAws.mSoilTemp5cm.sReal;
-  pSystem->mSoil5Buf[MIN1_PROC].sAddCnt++;
-
-  pSystem->mSoil10Buf[MIN1_PROC].lTot += mRealAws.mSoilTemp10cm.sReal;
-  pSystem->mSoil10Buf[MIN1_PROC].sAddCnt++;
-
-  pSystem->mSoil20Buf[MIN1_PROC].lTot += mRealAws.mSoilTemp20cm.sReal;
-  pSystem->mSoil20Buf[MIN1_PROC].sAddCnt++;
-
-  pSystem->mSoil30Buf[MIN1_PROC].lTot += mRealAws.mSoilTemp30cm.sReal;
-  pSystem->mSoil30Buf[MIN1_PROC].sAddCnt++;
-
-  pSystem->mSoil50Buf[MIN1_PROC].lTot += mRealAws.mSoilTemp50cm.sReal;
-  pSystem->mSoil50Buf[MIN1_PROC].sAddCnt++;
-
-  pSystem->mSoil100Buf[MIN1_PROC].lTot += mRealAws.mSoilTemp1_0m.sReal;
-  pSystem->mSoil100Buf[MIN1_PROC].sAddCnt++;
-
-  pSystem->mSoil150Buf[MIN1_PROC].lTot += mRealAws.mSoilTemp1_5m.sReal;
-  pSystem->mSoil150Buf[MIN1_PROC].sAddCnt++;
-
-  // 지중 온도 5  최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal, &mRealAws.mSoilTemp5cm.sMin,&mRealAws.mSoilTemp5cm.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal,&pSystem->mSoil5Buf[MIN1_PROC].sMin,&pSystem->mSoil5Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal,&pSystem->mSoil5Buf[MIN10_PROC].sMin,&pSystem->mSoil5Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp5cm.sReal,&pSystem->mSoil5Buf[HOUR_PROC].sMin,&pSystem->mSoil5Buf[HOUR_PROC].sMax);
-
-  // 지중온도 10 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal, &mRealAws.mSoilTemp10cm.sMin, &mRealAws.mSoilTemp10cm.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal, &pSystem->mSoil10Buf[MIN1_PROC].sMin,&pSystem->mSoil10Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal, &pSystem->mSoil10Buf[MIN10_PROC].sMin, &pSystem->mSoil10Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp10cm.sReal, &pSystem->mSoil10Buf[HOUR_PROC].sMin, &pSystem->mSoil10Buf[HOUR_PROC].sMax);
-
-  // 지중온도 20  최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal, &mRealAws.mSoilTemp20cm.sMin,&mRealAws.mSoilTemp20cm.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal,&pSystem->mSoil20Buf[MIN1_PROC].sMin,&pSystem->mSoil20Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal,&pSystem->mSoil20Buf[MIN10_PROC].sMin,&pSystem->mSoil20Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp20cm.sReal,&pSystem->mSoil20Buf[HOUR_PROC].sMin,&pSystem->mSoil20Buf[HOUR_PROC].sMax);
-
-  // 지중온도 30 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal, &mRealAws.mSoilTemp30cm.sMin,&mRealAws.mSoilTemp30cm.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal,&pSystem->mSoil30Buf[MIN1_PROC].sMin,&pSystem->mSoil30Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal,&pSystem->mSoil30Buf[MIN10_PROC].sMin,&pSystem->mSoil30Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp30cm.sReal,&pSystem->mSoil30Buf[HOUR_PROC].sMin,&pSystem->mSoil30Buf[HOUR_PROC].sMax);
-
-  // 지중온도 50 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal, &mRealAws.mSoilTemp50cm.sMin,&mRealAws.mSoilTemp50cm.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal, &pSystem->mSoil50Buf[MIN1_PROC].sMin,&pSystem->mSoil50Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal, &pSystem->mSoil50Buf[MIN10_PROC].sMin,&pSystem->mSoil50Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp50cm.sReal, &pSystem->mSoil50Buf[HOUR_PROC].sMin, &pSystem->mSoil50Buf[HOUR_PROC].sMax);
-
-  // 지중온도 1_0 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal, &mRealAws.mSoilTemp1_0m.sMin,&mRealAws.mSoilTemp1_0m.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal,&pSystem->mSoil100Buf[MIN1_PROC].sMin,&pSystem->mSoil100Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal,&pSystem->mSoil100Buf[MIN10_PROC].sMin,&pSystem->mSoil100Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp1_0m.sReal,&pSystem->mSoil100Buf[HOUR_PROC].sMin,&pSystem->mSoil100Buf[HOUR_PROC].sMax);
-
-  // 지중온도 1_5 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal, &mRealAws.mSoilTemp1_5m.sMin,&mRealAws.mSoilTemp1_5m.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal,&pSystem->mSoil150Buf[MIN1_PROC].sMin,&pSystem->mSoil150Buf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal,&pSystem->mSoil150Buf[MIN10_PROC].sMin,&pSystem->mSoil150Buf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mSoilTemp1_5m.sReal,&pSystem->mSoil150Buf[HOUR_PROC].sMin,&pSystem->mSoil150Buf[HOUR_PROC].sMax);
-
-  // 2017 . 04 . 03 추가 끝
-  // 온도 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mTemperature.sReal, &mRealAws.mTemperature.sMin,&mRealAws.mTemperature.sMax);  // 일간 최고 최소 온도
-  AwsMinMaxProc(mRealAws.mTemperature.sReal, &pSystem->mTempBuf[MIN1_PROC].sMin,&pSystem->mTempBuf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mTemperature.sReal,&pSystem->mTempBuf[MIN10_PROC].sMin,&pSystem->mTempBuf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mTemperature.sReal, &pSystem->mTempBuf[HOUR_PROC].sMin,&pSystem->mTempBuf[HOUR_PROC].sMax);
-
-  // 기압 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mBarometric.sReal, &mRealAws.mBarometric.sMin,&mRealAws.mBarometric.sMax);  // 일간 최고 최소 기압
-  AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[MIN1_PROC].sMin,&pSystem->mBaroBuf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[MIN10_PROC].sMin,&pSystem->mBaroBuf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mBarometric.sReal, &pSystem->mBaroBuf[HOUR_PROC].sMin,&pSystem->mBaroBuf[HOUR_PROC].sMax);
-
-  // 습도 최소 최대 구하기
-  AwsMinMaxProc(mRealAws.mHumidity.sReal, &mRealAws.mHumidity.sMin,&mRealAws.mHumidity.sMax);  // 일간 최고 최소 습도
-  AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[MIN1_PROC].sMin,&pSystem->mHumidBuf[MIN1_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[MIN10_PROC].sMin,&pSystem->mHumidBuf[MIN10_PROC].sMax);
-  AwsMinMaxProc(mRealAws.mHumidity.sReal, &pSystem->mHumidBuf[HOUR_PROC].sMin,&pSystem->mHumidBuf[HOUR_PROC].sMax);
-
+  calculate_data_avg(eAVG_RELATIVE_HUMIDITY, g_avg_1min, pAws->mHumidity.sReal);
+  calculate_data_min_max(eAVG_RELATIVE_HUMIDITY, g_1min_min_max, pAws->mHumidity.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_5CM, g_avg_1min, pAws->mSoilTemp5cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_5CM, g_1min_min_max, pAws->mSoilTemp5cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_10CM, g_avg_1min, pAws->mSoilTemp10cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_10CM, g_1min_min_max, pAws->mSoilTemp10cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_20CM, g_avg_1min, pAws->mSoilTemp20cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_20CM, g_1min_min_max, pAws->mSoilTemp20cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_30CM, g_avg_1min, pAws->mSoilTemp30cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_30CM, g_1min_min_max, pAws->mSoilTemp30cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_50CM, g_avg_1min, pAws->mSoilTemp50cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_50CM, g_1min_min_max, pAws->mSoilTemp50cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_100CM, g_avg_1min, pAws->mSoilTemp1_0m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_100CM, g_1min_min_max, pAws->mSoilTemp1_0m.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_150CM, g_avg_1min, pAws->mSoilTemp1_5m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_150CM, g_1min_min_max, pAws->mSoilTemp1_5m.sReal);
 
   //우량
-  if(pSystem->mRain.rain)
+  if(g_rainfall.current)
   {
-    float rain = (float)pSystem->mRain.rain/10.0f;
-    pSystem->mRain.rain = 0;
-
+    uint16_t rain = g_rainfall.current ;
+    g_rainfall.current = 0;
     g_rainfall.today   += rain;
     g_rainfall.min     += rain;
     g_rainfall.ten_min += rain;
@@ -304,20 +114,18 @@ void SecProcess(void)
 
   }
   
-  mRealAws.mRainFall.sReal      = (uint16_t)(g_rainfall.today*10.0f);  
-  mRealAws.mRainFall.sHourRain  = (uint16_t)(g_rainfall.hourly*10.0f); 
-  mRealAws.mRainFall.sMonthRain = (uint16_t)(g_rainfall.monthly*10.0f);  
-  mRealAws.mRainFall.sYearRain  = (uint16_t)(g_rainfall.yearly*10.0f);
+  mRealAws.mRainFall.sReal      = g_rainfall.today;  
+  mRealAws.mRainFall.sHourRain  = g_rainfall.hourly; 
+  mRealAws.mRainFall.sMonthRain = g_rainfall.monthly;  
+  mRealAws.mRainFall.sYearRain  = g_rainfall.yearly;
 
-  m10MinAws.mRainFall.sReal = (uint16_t)(g_rainfall.today*10.0f);
-  mHourAws.mRainFall.sReal = (uint16_t)(g_rainfall.today*10.0f);
+  m10MinAws.mRainFall.sReal = g_rainfall.today;
+  mHourAws.mRainFall.sReal = g_rainfall.today;
 
   // 강우 감지 처리 (초 단위로 처리)
   mMinAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
   m10MinAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
   mHourAws.mRainDetect.sReal = mRealAws.mRainDetect.sReal;
-
-
 
   // 일조 
   if (mRealAws.mSunshine.sReal)
@@ -331,85 +139,15 @@ void SecProcess(void)
 
   if (mRealAws.mSolarRad.sReal != 9999)
   {  
-    uint32_t sunshine_r = 0;
-    sunshine_r = g_solar_radiation.sunshine_r_1min_acc+mRealAws.mSolarRad.sReal;
-    g_solar_radiation.sunshine_r_1min_acc = sunshine_r;
-    g_solar_radiation.hourly = g_solar_radiation.hourly + mRealAws.mSolarRad.sReal;
+    g_solar_radiation.min_acc += mRealAws.mSolarRad.sReal;
+    g_solar_radiation.hourly  += mRealAws.mSolarRad.sReal;
+    g_solar_radiation.today   += mRealAws.mSolarRad.sReal;
   }
 
 }
 
-
-
-void AwsMinMaxTotSave(SENSOR_RIX_BUF *pSensor, SENSORPROC_BUF *pSensorTmp,
-                      uint16_t sInitValue)
-// pSensor    : 평균 최소 최대 값 들어갈 위치
-// pSensorTmp : 임시로 연산을 위한 필드
-// sInitValue : 최고 최소 값 초기화
-// sAddCnt    : 평균 값을 구하기 위한 누적 횟수
-{
-  if (pSensorTmp->sAddCnt)
-    pSensor->sReal = (uint16_t)(pSensorTmp->lTot / pSensorTmp->sAddCnt);
-  else
-    pSensor->sReal = 0;
-
-  pSensorTmp->lTot = 0;
-  pSensorTmp->sAddCnt = 0;
-  pSensor->sMin = pSensorTmp->sMin;
-  pSensor->sMax = pSensorTmp->sMax;
-  pSensorTmp->sMax = sInitValue;
-  pSensorTmp->sMin = sInitValue;
-}
-
-int WindMinMaxAvgSave(SENSOR_WIND_BUF *pSensor, SENSORWIND_BUF *pWindTmp,
-                      SENSOR_WIND_BUF *pInit)
-// *pSensor     : 평균 최소 최대 값 들어갈 위치
-// *pWindTmp    : 임시로 연산을 위한 필드
-// sInitValue   : 돌풍 초기화값
-// sAddCnt      : 평균 값을 구하기 위한 누적 횟수
-{
-  float avg_u;
-  float avg_v;
-  int awv_wind_speed;
-
-  avg_u = pWindTmp->uTot / (float)pWindTmp->sAddCnt;
-  avg_v = pWindTmp->vTot / (float)pWindTmp->sAddCnt;
-
-  // 샘플링된게 있으면 평균
-  if (pWindTmp->sAddCnt)
-  {
-    // avg 자체가 awv단위
-    awv_wind_speed = (int)UVToSpeed(avg_u, avg_v);
-
-    pSensor->mSpeed.sReal = (uint16_t)awv_wind_speed;
-  }
-  else
-  {
-    pSensor->mSpeed.sReal = 0;
-  }
-
-  // 풍속이 0이면 풍향도 0으로 처리
-  if (pSensor->mSpeed.sReal == 0)
-  {
-    pSensor->mDirection.sReal = 0;
-  }
-  else
-  {
-    pSensor->mDirection.sReal =
-        (uint16_t)UVToDirc(pWindTmp->uTot / (float)pWindTmp->sAddCnt,
-                         pWindTmp->vTot / (float)pWindTmp->sAddCnt);
-  }
-  pWindTmp->uTot = pWindTmp->vTot = 0.0;
-  pWindTmp->lSpeedTot = 0;
-  pWindTmp->sAddCnt = 0;
-  pSensor->mDirection.sMax = pWindTmp->sGustDircMax;
-  pSensor->mSpeed.sMax = pWindTmp->sGustSpeedMax;
-  pWindTmp->sGustDircMax = 0;   // pInit->mDirection.sReal;
-  pWindTmp->sGustSpeedMax = 0;  // pInit->mSpeed.sReal;
-
-  return 0;
-}
-
+#define MIN_LIMIT 10000
+#define MAX_LIMIT 0
 /*
 1분이 됬을때 처리 내용
 온도, 습도, 기압 일조, 일사 10분 누적, 및 1분 최소 최고 처리
@@ -418,16 +156,12 @@ int WindMinMaxAvgSave(SENSOR_WIND_BUF *pSensor, SENSORWIND_BUF *pWindTmp,
 */
 void MinProcess(DATE_TIME_BUF *pDate)
 {
-  SYSTEM_INFO_AWS *pSystem;
-  AWS_DATA_STRUCT *pAws;
   float wind_speed_avg;
   float wind_direction_avg;
-  int32_t wind_speed_max;
-  int32_t wind_direction_max;
-  int32_t average;
-  int32_t min,max;
 
-  pSystem = &Sysinfo;
+  AWS_DATA_STRUCT *pAws;
+
+
   pAws = &mMinAws;
 
   pAws->mDate.cMonth = pDate->Month;  // 월일 시분만 기록
@@ -435,211 +169,295 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->mDate.cHour = pDate->Hour;
   pAws->mDate.cMin = pDate->Min;
 
-  // 온도
-  AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[MIN1_PROC],mRealAws.mTemperature.sReal);
+  //온도 1분자료 업데이트 
+  pAws->mTemperature.sReal = read_data_average(eAVG_TEMPERATURE, g_avg_1min);
+  pAws->mTemperature.sMin = read_data_min(eAVG_TEMPERATURE, g_1min_min_max, MIN_LIMIT);
+  pAws->mTemperature.sMax = read_data_max(eAVG_TEMPERATURE, g_1min_min_max, 0);
 
-  average = read_sensor_avg(eAVG_TEMPERATURE,g_sensor_avg_1min);
-  sensor_avg_init(eAVG_TEMPERATURE,g_sensor_avg_1min);
+  //습도
+  pAws->mHumidity.sReal = read_data_average(eAVG_RELATIVE_HUMIDITY, g_avg_1min);
+  pAws->mHumidity.sMin = read_data_min(eAVG_RELATIVE_HUMIDITY, g_1min_min_max, MIN_LIMIT);
+  pAws->mHumidity.sMax = read_data_max(eAVG_RELATIVE_HUMIDITY, g_1min_min_max, MAX_LIMIT);
 
-  // 1분 평균을 구한 값을 10분 누적에 더한다
-  pSystem->mTempBuf[MIN10_PROC].lTot += pAws->mTemperature.sReal;
-  pSystem->mTempBuf[MIN10_PROC].sAddCnt++;
+  //기압
+  pAws->mBarometric.sReal = read_data_average(eAVG_PRESSURE, g_avg_1min);
+  pAws->mBarometric.sMin = read_data_min(eAVG_PRESSURE, g_1min_min_max, MIN_LIMIT);
+  pAws->mBarometric.sMax = read_data_max(eAVG_PRESSURE, g_1min_min_max, MAX_LIMIT);
 
-  // 기압
-  AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[MIN1_PROC],mRealAws.mBarometric.sReal);
-  pSystem->mBaroBuf[MIN10_PROC].lTot += pAws->mBarometric.sReal;
-  pSystem->mBaroBuf[MIN10_PROC].sAddCnt++;
+  // 지면온도
+  pAws->mGndTemp.sReal = read_data_average(eAVG_GROUND_TEMPERATURE, g_avg_1min);
+  pAws->mGndTemp.sMin = read_data_min(eAVG_GROUND_TEMPERATURE, g_1min_min_max, MIN_LIMIT);
+  pAws->mGndTemp.sMax = read_data_max(eAVG_GROUND_TEMPERATURE, g_1min_min_max, MAX_LIMIT);
 
-  // 습도
-  AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[MIN1_PROC], mRealAws.mHumidity.sReal);
-  pSystem->mHumidBuf[MIN10_PROC].lTot += pAws->mHumidity.sReal;
-  pSystem->mHumidBuf[MIN10_PROC].sAddCnt++;
+  // 초상온도
+  pAws->mGrassTemp.sReal = read_data_average(eAVG_SURFACE_TEMPERATURE, g_avg_1min);
+  pAws->mGrassTemp.sMin = read_data_min(eAVG_SURFACE_TEMPERATURE, g_1min_min_max, MIN_LIMIT);
+  pAws->mGrassTemp.sMax = read_data_max(eAVG_SURFACE_TEMPERATURE, g_1min_min_max, MAX_LIMIT);
 
-  pSystem->mSun[MIN10_PROC].nSunshineTot +=  g_sunshine.min;
-  // 단위변환 W/M2 -> MJ/M2
-  pSystem->mSun[MIN10_PROC].nSolarTot += g_solar_radiation.sunshine_r_1min/ 1000000;  
+  // 지중온도
+  pAws->mSoilTemp5cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_5CM, g_avg_1min);
+  pAws->mSoilTemp5cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_5CM, g_1min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp5cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_5CM, g_1min_min_max, MAX_LIMIT);
+
+  // 지중온도
+  pAws->mSoilTemp10cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_10CM, g_avg_1min);
+  pAws->mSoilTemp10cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_10CM, g_1min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp10cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_10CM, g_1min_min_max, MAX_LIMIT);
+
+  // 지중온도
+  pAws->mSoilTemp20cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_20CM, g_avg_1min);
+  pAws->mSoilTemp20cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_20CM, g_1min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp20cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_20CM, g_1min_min_max, MAX_LIMIT);
+  // 지중온도
+  pAws->mSoilTemp30cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_30CM, g_avg_1min);
+  pAws->mSoilTemp30cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_30CM, g_1min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp30cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_30CM, g_1min_min_max, MAX_LIMIT);
+  // 지중온도
+  pAws->mSoilTemp50cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_50CM, g_avg_1min);
+  pAws->mSoilTemp50cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_50CM, g_1min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp50cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_50CM, g_1min_min_max, MAX_LIMIT);
+
+  // 지중온도
+  pAws->mSoilTemp1_0m.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_100CM, g_avg_1min);
+  pAws->mSoilTemp1_0m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_100CM, g_1min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp1_0m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_100CM, g_1min_min_max, MAX_LIMIT);
+
+  // 지중온도
+  pAws->mSoilTemp1_5m.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_150CM, g_avg_1min);
+  pAws->mSoilTemp1_5m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_150CM, g_1min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp1_5m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_150CM, g_1min_min_max, MAX_LIMIT);
 
   // 풍향 풍속
-
-  read_wind_max(eWIND_MAX_1MIN,&wind_speed_max,&wind_direction_max);
-  wind_max_init(eWIND_MAX_1MIN);
-  pAws->mWind.mSpeed.sMax = wind_speed_max;
-  pAws->mWind.mDirection.sMax = wind_direction_max;
-
   calculate_wind_avg_1min(&wind_speed_avg, &wind_direction_avg);
-  wind_avg_1min_init();
-  pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_avg*10);
+  pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_avg * 10);
   pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_avg * 10);
-
-
-
-  // 일사 일조
-  // 일조 1분 누적값
+  wind_avg_1min_init();
+  pAws->mWind.mSpeed.sMax = read_wind_speed_max(eWIND_MAX_1MIN);
+  pAws->mWind.mDirection.sMax = read_wind_direction_max(eWIND_MAX_1MIN);
+  //적설
+  pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
+  //일조 1분 누적
   pAws->mSunshine.sReal = g_sunshine.min;
-  g_sunshine.min = 0;
+  //일조
   pAws->mSunshine.sMax = g_sunshine.today;
 
-  pAws->mSolarRad.sReal = g_solar_radiation.sunshine_r_1min_acc / 1000; // 일사 1분   누적값  KJ/m2
-
-  pSystem->mSun[MIN10_PROC].nSolarTot += pAws->mSolarRad.sReal;
-  pAws->mSolarRad.sMax += pAws->mSolarRad.sReal;  // 하루 총 일사
-  mRealAws.mSolarRad.sMax = pAws->mSolarRad.sMax;
-  m10MinAws.mSolarRad.sMax = pAws->mSolarRad.sMax;
-  mHourAws.mSolarRad.sMax = pAws->mSolarRad.sMax;
-
-  // 지중  온도 2017.04.03
-  AwsMinMaxTotSave(&pAws->mSoilTemp5cm, &pSystem->mSoil5Buf[MIN1_PROC], mRealAws.mSoilTemp5cm.sReal);
-  pSystem->mSoil5Buf[MIN10_PROC].lTot += pAws->mSoilTemp5cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
-  pSystem->mSoil5Buf[MIN10_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp10cm, &pSystem->mSoil10Buf[MIN1_PROC], mRealAws.mSoilTemp10cm.sReal);
-  pSystem->mSoil10Buf[MIN10_PROC].lTot += pAws->mSoilTemp10cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
-  pSystem->mSoil10Buf[MIN10_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp20cm, &pSystem->mSoil20Buf[MIN1_PROC],mRealAws.mSoilTemp20cm.sReal);
-  pSystem->mSoil20Buf[MIN10_PROC].lTot += pAws->mSoilTemp20cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
-  pSystem->mSoil20Buf[MIN10_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp30cm, &pSystem->mSoil30Buf[MIN1_PROC], mRealAws.mSoilTemp30cm.sReal);
-  pSystem->mSoil30Buf[MIN10_PROC].lTot += pAws->mSoilTemp30cm.sReal;  // 1분 평균을 구한 값을 10분 누적에 더한다
-  pSystem->mSoil30Buf[MIN10_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp50cm, &pSystem->mSoil50Buf[MIN1_PROC],  mRealAws.mSoilTemp50cm.sReal);
-  // 1분 평균을 구한 값을 10분 누적에 더한다
-  pSystem->mSoil50Buf[MIN10_PROC].lTot += pAws->mSoilTemp50cm.sReal;  
-  pSystem->mSoil50Buf[MIN10_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp1_0m, &pSystem->mSoil100Buf[MIN1_PROC], mRealAws.mSoilTemp1_0m.sReal);
-  // 1분 평균을 구한 값을 10분 누적에 더한다
-  pSystem->mSoil100Buf[MIN10_PROC].lTot += pAws->mSoilTemp1_0m.sReal; 
-  pSystem->mSoil100Buf[MIN10_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp1_5m, &pSystem->mSoil150Buf[MIN1_PROC], mRealAws.mSoilTemp1_5m.sReal);
-
-  // 1분 평균을 구한 값을 10분 누적에 더한다
-  pSystem->mSoil150Buf[MIN10_PROC].lTot  +=  pAws->mSoilTemp1_5m.sReal; 
-  pSystem->mSoil150Buf[MIN10_PROC].sAddCnt++;
-  // 지중온도 처리 끝
-
-  // 강수량 처리
-  // 2010. 08. 28. 수정
-  pAws->rain_1min = (uint16_t)(g_rainfall.min*10.0f);
-  pAws->mRainFall.sReal = (uint16_t)(g_rainfall.today * 10.0f);
-  pAws->mRainFall.sHourRain  = (uint16_t )(g_rainfall.hourly*10.0f);
-  pAws->mRainFall.sMonthRain = (uint16_t )(g_rainfall.monthly*10.0f);
-  pAws->mRainFall.sYearRain  = (uint16_t )(g_rainfall.yearly*10.0f);
+  // 일사 1분   누적값  KJ/m2
+  pAws->mSolarRad.sReal = g_solar_radiation.min_acc / 1000; 
+  mRealAws.mSolarRad.sMax = g_solar_radiation.today;
 
 
-  g_rainfall.min = 0;
+  // 강수량
+  pAws->rain_1min = g_rainfall.min ;
+  pAws->mRainFall.sReal = g_rainfall.today;
+  pAws->mRainFall.sHourRain = g_rainfall.hourly;
+  pAws->mRainFall.sMonthRain = g_rainfall.monthly;
+  pAws->mRainFall.sYearRain = g_rainfall.yearly;
 
-  g_solar_radiation.sunshine_r_1min = g_solar_radiation.sunshine_r_1min_acc;
-  g_solar_radiation.sunshine_r_1min_acc = 0;
+  g_solar_radiation.sunshine_r_1min = g_solar_radiation.min_acc;
 
-  pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
+  kma_data_ex_t *p_kma_avg = get_kma_data(eAWS_DATA_REAL);
 
-  kma_data_ex_t *p_kma_avg = get_kma_data(eAWS_DATA_AVG);
-  
-  for(int i = 0 ; i< 8;i++)
+  for (int i = 0; i < 8; i++)
   {
     pAws->kma3_sensor_status[i] = p_kma_avg->X_sensorStatus[i];
   }
   
   os_save_aws_data(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
+
+  // 온도
+  calculate_data_avg(eAVG_TEMPERATURE, g_avg_10min, pAws->mTemperature.sReal);
+  calculate_data_min_max(eAVG_TEMPERATURE, g_10min_min_max, pAws->mTemperature.sReal);
+  //습도
+  calculate_data_avg(eAVG_RELATIVE_HUMIDITY, g_avg_10min, pAws->mHumidity.sReal);
+  calculate_data_min_max(eAVG_RELATIVE_HUMIDITY, g_10min_min_max, pAws->mHumidity.sReal);
+  // 기압
+  calculate_data_avg(eAVG_PRESSURE, g_avg_10min, pAws->mBarometric.sReal);
+  calculate_data_min_max(eAVG_PRESSURE, g_10min_min_max, pAws->mBarometric.sReal);
+
+  // 지면온도
+  calculate_data_avg(eAVG_GROUND_TEMPERATURE, g_avg_10min, pAws->mGndTemp.sReal);
+  calculate_data_min_max(eAVG_GROUND_TEMPERATURE, g_10min_min_max, pAws->mGndTemp.sReal);
+
+  // 초상온도
+  calculate_data_avg(eAVG_SURFACE_TEMPERATURE, g_avg_10min, pAws->mGrassTemp.sReal);
+  calculate_data_min_max(eAVG_SURFACE_TEMPERATURE, g_10min_min_max, pAws->mGrassTemp.sReal);
+
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_5CM, g_avg_10min, pAws->mSoilTemp5cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_5CM, g_10min_min_max, pAws->mSoilTemp5cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_10CM, g_avg_10min, pAws->mSoilTemp10cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_10CM, g_10min_min_max, pAws->mSoilTemp10cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_20CM, g_avg_10min, pAws->mSoilTemp20cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_20CM, g_10min_min_max, pAws->mSoilTemp20cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_30CM, g_avg_10min, pAws->mSoilTemp30cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_30CM, g_10min_min_max, pAws->mSoilTemp30cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_50CM, g_avg_10min, pAws->mSoilTemp50cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_50CM, g_10min_min_max, pAws->mSoilTemp50cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_100CM, g_avg_10min, pAws->mSoilTemp1_0m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_100CM, g_10min_min_max, pAws->mSoilTemp1_0m.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_150CM, g_avg_10min, pAws->mSoilTemp1_5m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_150CM, g_10min_min_max, pAws->mSoilTemp1_5m.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_300CM, g_avg_10min, pAws->mSoilTemp3_0m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_300CM, g_10min_min_max, pAws->mSoilTemp3_0m.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_500CM, g_avg_10min, pAws->mSoilTemp5_0m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_500CM, g_10min_min_max, pAws->mSoilTemp5_0m.sReal);
+
+  g_sunshine.ten_min += g_sunshine.min;
+  // 단위변환 W/M2 -> MJ/M2
+  g_solar_radiation.ten_min += g_solar_radiation.sunshine_r_1min / 1000000;
+  g_solar_radiation.min_acc = 0;
+  g_sunshine.min = 0;
+  g_rainfall.min = 0;
 }
 
 void Min10Process(void)
 // 10분이 됬을때 처리 내용
 // 온도, 습도, 기압 일조, 일사 1시간 누적, 및 10분 최소 최고 처리
 {
-  SYSTEM_INFO_AWS *pSystem;
-  AWS_DATA_STRUCT *pAws;
-  int32_t wind_speed_max;
-  int32_t wind_direction_max;
 
-  pSystem = &Sysinfo;
+  AWS_DATA_STRUCT *pAws;
+
+
   pAws = &m10MinAws;
 
-  // 온도
-  AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[MIN10_PROC],mRealAws.mTemperature.sReal);
-  pSystem->mTempBuf[HOUR_PROC].lTot += pAws->mTemperature.sReal;
-  pSystem->mTempBuf[HOUR_PROC].sAddCnt++;
-
-  // 기압
-  AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[MIN10_PROC],mRealAws.mBarometric.sReal);
-  pSystem->mBaroBuf[HOUR_PROC].lTot += pAws->mBarometric.sReal;
-  pSystem->mBaroBuf[HOUR_PROC].sAddCnt++;
+  // 온도 1분자료 업데이트
+  pAws->mTemperature.sReal = read_data_average(eAVG_TEMPERATURE, g_avg_10min);
+  pAws->mTemperature.sMin = read_data_min(eAVG_TEMPERATURE, g_10min_min_max, MIN_LIMIT);
+  pAws->mTemperature.sMax = read_data_max(eAVG_TEMPERATURE, g_10min_min_max, MAX_LIMIT);
 
   // 습도
-  AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[MIN10_PROC], mRealAws.mHumidity.sReal);
-  pSystem->mHumidBuf[HOUR_PROC].lTot += pAws->mHumidity.sReal;
-  pSystem->mHumidBuf[HOUR_PROC].sAddCnt++;
+  pAws->mHumidity.sReal = read_data_average(eAVG_RELATIVE_HUMIDITY, g_avg_10min);
+  pAws->mHumidity.sMin = read_data_min(eAVG_RELATIVE_HUMIDITY, g_10min_min_max, MIN_LIMIT);
+  pAws->mHumidity.sMax = read_data_max(eAVG_RELATIVE_HUMIDITY, g_10min_min_max, MAX_LIMIT);
 
-  // 풍향 풍속
+  // 기압
+  pAws->mBarometric.sReal = read_data_average(eAVG_PRESSURE, g_avg_10min);
+  pAws->mBarometric.sMin = read_data_min(eAVG_PRESSURE, g_10min_min_max, MIN_LIMIT);
+  pAws->mBarometric.sMax = read_data_max(eAVG_PRESSURE, g_10min_min_max, MAX_LIMIT);
 
-  read_wind_max(eWIND_MAX_10MIN,&wind_speed_max,&wind_direction_max);
-  pAws->mWind.mSpeed.sMax = wind_speed_max;
-  pAws->mWind.mDirection.sMax = wind_direction_max;
-  wind_max_init(eWIND_MAX_10MIN);
+  // 지면온도
+  pAws->mGndTemp.sReal = read_data_average(eAVG_GROUND_TEMPERATURE, g_avg_10min);
+  pAws->mGndTemp.sMin = read_data_min(eAVG_GROUND_TEMPERATURE, g_10min_min_max, MIN_LIMIT);
+  pAws->mGndTemp.sMax = read_data_max(eAVG_GROUND_TEMPERATURE, g_10min_min_max, MAX_LIMIT);
+
+  // 초상온도
+  pAws->mGrassTemp.sReal = read_data_average(eAVG_SURFACE_TEMPERATURE, g_avg_10min);
+  pAws->mGrassTemp.sMin = read_data_min(eAVG_SURFACE_TEMPERATURE, g_10min_min_max, MIN_LIMIT);
+  pAws->mGrassTemp.sMax = read_data_max(eAVG_SURFACE_TEMPERATURE, g_10min_min_max, MAX_LIMIT);
+
+  // 지중온도
+  pAws->mSoilTemp5cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_5CM, g_avg_10min);
+  pAws->mSoilTemp5cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_5CM, g_10min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp5cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_5CM, g_10min_min_max, MAX_LIMIT);
+
+  // 지중온도
+  pAws->mSoilTemp10cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_10CM, g_avg_10min);
+  pAws->mSoilTemp10cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_10CM, g_10min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp10cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_10CM, g_10min_min_max, MAX_LIMIT);
+
+  // 지중온도
+  pAws->mSoilTemp20cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_20CM, g_avg_10min);
+  pAws->mSoilTemp20cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_20CM, g_10min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp20cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_20CM, g_10min_min_max, MAX_LIMIT);
+  // 지중온도
+  pAws->mSoilTemp30cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_30CM, g_avg_10min);
+  pAws->mSoilTemp30cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_30CM, g_10min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp30cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_30CM, g_10min_min_max, MAX_LIMIT);
+  // 지중온도
+  pAws->mSoilTemp50cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_50CM, g_avg_10min);
+  pAws->mSoilTemp50cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_50CM, g_10min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp50cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_50CM, g_10min_min_max, MAX_LIMIT);
+
+  // 지중온도
+  pAws->mSoilTemp1_0m.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_100CM, g_avg_10min);
+  pAws->mSoilTemp1_0m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_100CM, g_10min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp1_0m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_100CM, g_10min_min_max, MAX_LIMIT);
+
+  // 지중온도
+  pAws->mSoilTemp1_5m.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_150CM, g_avg_10min);
+  pAws->mSoilTemp1_5m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_150CM, g_10min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp1_5m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_150CM, g_10min_min_max, MAX_LIMIT);
+
+  // 풍향
+  pAws->mWind.mDirection.sMax = read_wind_direction_max(eWIND_MAX_10MIN);
+  // 풍속
+  pAws->mWind.mSpeed.sMax = read_wind_speed_max(eWIND_MAX_10MIN);
+  //적설
+  pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
+  //일조
+  pAws->mSunshine.sReal = g_sunshine.ten_min;
+  //일사
+  pAws->mSolarRad.sReal = g_solar_radiation.ten_min;
+  pAws->mSolarRad.sMax = g_solar_radiation.today;
 
 
-  // 일사 일조
-  pSystem->mSun[HOUR_PROC].nSolarTot += pSystem->mSun[MIN10_PROC].nSolarTot;
-  pSystem->mSun[HOUR_PROC].nSunshineTot += pSystem->mSun[MIN10_PROC].nSunshineTot;
+  g_sunshine.hourly += g_sunshine.ten_min;
+  g_solar_radiation.hourly += g_solar_radiation.ten_min;
 
-  pAws->mSunshine.sReal = pSystem->mSun[MIN10_PROC].nSunshineTot;
-  pSystem->mSun[MIN10_PROC].nSunshineTot = 0;
-
-  pAws->mSolarRad.sReal = pSystem->mSun[MIN10_PROC].nSolarTot;
-  pSystem->mSun[MIN10_PROC].nSolarTot = 0;
-  pSystem->mSun[HOUR_PROC].nSolarTot += pAws->mSolarRad.sReal;
-
-  // 지중 온도 처리 추가 17.04.03
-  AwsMinMaxTotSave(&pAws->mSoilTemp5cm, &pSystem->mSoil5Buf[MIN10_PROC],
-                   mRealAws.mSoilTemp5cm.sReal);
-  pSystem->mSoil5Buf[HOUR_PROC].lTot += pAws->mSoilTemp5cm.sReal;
-  pSystem->mSoil5Buf[HOUR_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp10cm, &pSystem->mSoil10Buf[MIN10_PROC],
-                   mRealAws.mSoilTemp10cm.sReal);
-  pSystem->mSoil10Buf[HOUR_PROC].lTot += pAws->mSoilTemp10cm.sReal;
-  pSystem->mSoil10Buf[HOUR_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp20cm, &pSystem->mSoil20Buf[MIN10_PROC],
-                   mRealAws.mSoilTemp20cm.sReal);
-  pSystem->mSoil20Buf[HOUR_PROC].lTot += pAws->mSoilTemp20cm.sReal;
-  pSystem->mSoil20Buf[HOUR_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp30cm, &pSystem->mSoil30Buf[MIN10_PROC],
-                   mRealAws.mSoilTemp30cm.sReal);
-  pSystem->mSoil30Buf[HOUR_PROC].lTot += pAws->mSoilTemp30cm.sReal;
-  pSystem->mSoil30Buf[HOUR_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp50cm, &pSystem->mSoil50Buf[MIN10_PROC],
-                   mRealAws.mSoilTemp50cm.sReal);
-  pSystem->mSoil50Buf[HOUR_PROC].lTot += pAws->mSoilTemp50cm.sReal;
-  pSystem->mSoil50Buf[HOUR_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp1_0m, &pSystem->mSoil100Buf[MIN10_PROC],
-                   mRealAws.mSoilTemp1_0m.sReal);
-  pSystem->mSoil100Buf[HOUR_PROC].lTot += pAws->mSoilTemp1_0m.sReal;
-  pSystem->mSoil100Buf[HOUR_PROC].sAddCnt++;
-
-  AwsMinMaxTotSave(&pAws->mSoilTemp1_5m, &pSystem->mSoil150Buf[MIN10_PROC],
-                   mRealAws.mSoilTemp1_5m.sReal);
-  pSystem->mSoil150Buf[HOUR_PROC].lTot += pAws->mSoilTemp1_5m.sReal;
-  pSystem->mSoil150Buf[HOUR_PROC].sAddCnt++;
-
-  // 지중 온도 처리 끝
 
   // 강수량 처리
-  pAws->mRainFall.sReal = (uint16_t)(g_rainfall.ten_min*10.0f);
-  pAws->mRainFall.sHourRain = (uint16_t)(g_rainfall.hourly*10.0f);
+  pAws->mRainFall.sReal = g_rainfall.ten_min;
+  pAws->mRainFall.sHourRain = g_rainfall.hourly;
+
+  //한시간 자료을 위한 연산
+  // 온도
+  calculate_data_avg(eAVG_TEMPERATURE, g_avg_hour, pAws->mTemperature.sReal);
+  calculate_data_min_max(eAVG_TEMPERATURE, g_hour_min_max, pAws->mTemperature.sReal);
+  // 습도
+  calculate_data_avg(eAVG_RELATIVE_HUMIDITY, g_avg_hour, pAws->mHumidity.sReal);
+  calculate_data_min_max(eAVG_RELATIVE_HUMIDITY, g_hour_min_max, pAws->mHumidity.sReal);
+  // 기압
+  calculate_data_avg(eAVG_PRESSURE, g_avg_hour, pAws->mBarometric.sReal);
+  calculate_data_min_max(eAVG_PRESSURE, g_hour_min_max, pAws->mBarometric.sReal);
+
+  // 지면온도
+  calculate_data_avg(eAVG_GROUND_TEMPERATURE, g_avg_hour, pAws->mGndTemp.sReal);
+  calculate_data_min_max(eAVG_GROUND_TEMPERATURE, g_hour_min_max, pAws->mGndTemp.sReal);
+
+  // 초상온도
+  calculate_data_avg(eAVG_SURFACE_TEMPERATURE, g_avg_hour, pAws->mGrassTemp.sReal);
+  calculate_data_min_max(eAVG_SURFACE_TEMPERATURE, g_hour_min_max, pAws->mGrassTemp.sReal);
+
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_5CM, g_avg_hour, pAws->mSoilTemp5cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_5CM, g_hour_min_max, pAws->mSoilTemp5cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_10CM, g_avg_hour, pAws->mSoilTemp10cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_10CM, g_hour_min_max, pAws->mSoilTemp10cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_20CM, g_avg_hour, pAws->mSoilTemp20cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_20CM, g_hour_min_max, pAws->mSoilTemp20cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_30CM, g_avg_hour, pAws->mSoilTemp30cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_30CM, g_hour_min_max, pAws->mSoilTemp30cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_50CM, g_avg_hour, pAws->mSoilTemp50cm.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_50CM, g_hour_min_max, pAws->mSoilTemp50cm.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_100CM, g_avg_hour, pAws->mSoilTemp1_0m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_100CM, g_hour_min_max, pAws->mSoilTemp1_0m.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_150CM, g_avg_hour, pAws->mSoilTemp1_5m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_150CM, g_hour_min_max, pAws->mSoilTemp1_5m.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_300CM, g_avg_hour, pAws->mSoilTemp3_0m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_300CM, g_hour_min_max, pAws->mSoilTemp3_0m.sReal);
+  // 지중온도
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_500CM, g_avg_hour, pAws->mSoilTemp5_0m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_500CM, g_hour_min_max, pAws->mSoilTemp5_0m.sReal);
 
 
+  g_solar_radiation.ten_min = 0;
+  g_sunshine.ten_min = 0;
   g_rainfall.ten_min = 0;
-
- m10MinAws.mSnowFall.sReal = mRealAws.mSnowFall.sReal;
-
 }
 
 
@@ -656,39 +474,76 @@ void Min10Process(void)
 */
 void HourProcess(DATE_TIME_BUF *pDate)
 {
-  SYSTEM_INFO_AWS *pSystem;
   AWS_DATA_STRUCT *pAws;
-  int32_t wind_speed_max;
-  int32_t wind_direction_max;
 
-  pSystem = &Sysinfo;
+
   pAws = &mHourAws;
 
   // 온도
-  AwsMinMaxTotSave(&pAws->mTemperature, &pSystem->mTempBuf[HOUR_PROC],mRealAws.mTemperature.sReal);
-  // 기압
-  AwsMinMaxTotSave(&pAws->mBarometric, &pSystem->mBaroBuf[HOUR_PROC],mRealAws.mBarometric.sReal);
-  // 습도
-  AwsMinMaxTotSave(&pAws->mHumidity, &pSystem->mHumidBuf[HOUR_PROC],mRealAws.mHumidity.sReal);
-  // 풍향 풍속
-  read_wind_max(eWIND_MAX_HOUR,&wind_speed_max,&wind_direction_max);
-  pAws->mWind.mSpeed.sMax = wind_speed_max;
-  pAws->mWind.mDirection.sMax = wind_direction_max;
-  wind_max_init(eWIND_MAX_HOUR);
+  pAws->mTemperature.sReal = read_data_average(eAVG_TEMPERATURE, g_avg_hour);
+  pAws->mTemperature.sMin = read_data_min(eAVG_TEMPERATURE, g_hour_min_max, MIN_LIMIT);
+  pAws->mTemperature.sMax = read_data_max(eAVG_TEMPERATURE, g_hour_min_max, MAX_LIMIT);
 
-  // 일사 일조
-  pAws->mSunshine.sReal = g_sunshine.hourly;
+  // 기압
+  pAws->mBarometric.sReal = read_data_average(eAVG_PRESSURE, g_avg_hour);
+  pAws->mBarometric.sMin = read_data_min(eAVG_PRESSURE, g_hour_min_max, MIN_LIMIT);
+  pAws->mBarometric.sMax = read_data_max(eAVG_PRESSURE, g_hour_min_max, MAX_LIMIT);
+
+  // 습도
+  pAws->mHumidity.sReal = read_data_average(eAVG_RELATIVE_HUMIDITY, g_avg_hour);
+  pAws->mHumidity.sMin = read_data_min(eAVG_RELATIVE_HUMIDITY, g_hour_min_max, MIN_LIMIT);
+  pAws->mHumidity.sMax = read_data_max(eAVG_RELATIVE_HUMIDITY, g_hour_min_max, MAX_LIMIT);
+
+  // 풍속
+  pAws->mWind.mSpeed.sMax = read_wind_speed_max(eWIND_MAX_HOUR);
+  // 풍향
+  pAws->mWind.mDirection.sMax = read_wind_direction_max(eWIND_MAX_HOUR);
+
+
+  // 일사
   pAws->mSolarRad.sReal = g_solar_radiation.hourly;
+  pAws->mSolarRad.sMax = g_solar_radiation.today;
+  // 일조
+  pAws->mSunshine.sReal = g_sunshine.hourly;
+ //지면온도
+  pAws->mGndTemp.sReal = read_data_average(eAVG_GROUND_TEMPERATURE, g_avg_hour);
+  pAws->mGndTemp.sMin = read_data_min(eAVG_GROUND_TEMPERATURE, g_hour_min_max, MIN_LIMIT);
+  pAws->mGndTemp.sMax = read_data_max(eAVG_GROUND_TEMPERATURE, g_hour_min_max, MAX_LIMIT);
+ //초상 온도
+  pAws->mGrassTemp.sReal = read_data_average(eAVG_SURFACE_TEMPERATURE, g_avg_hour);
+  pAws->mGrassTemp.sMin = read_data_min(eAVG_SURFACE_TEMPERATURE, g_hour_min_max, MIN_LIMIT);
+  pAws->mGrassTemp.sMax = read_data_max(eAVG_SURFACE_TEMPERATURE, g_hour_min_max, MAX_LIMIT);
 
   // 지중온도 처리 2017.04.03
-  AwsMinMaxTotSave(&pAws->mSoilTemp5cm, &pSystem->mSoil5Buf[HOUR_PROC],mRealAws.mSoilTemp5cm.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp10cm, &pSystem->mSoil10Buf[HOUR_PROC],mRealAws.mSoilTemp10cm.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp20cm, &pSystem->mSoil20Buf[HOUR_PROC],mRealAws.mSoilTemp20cm.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp30cm, &pSystem->mSoil30Buf[HOUR_PROC],mRealAws.mSoilTemp30cm.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp50cm, &pSystem->mSoil50Buf[HOUR_PROC],mRealAws.mSoilTemp50cm.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp1_0m, &pSystem->mSoil100Buf[HOUR_PROC],mRealAws.mSoilTemp1_0m.sReal);
-  AwsMinMaxTotSave(&pAws->mSoilTemp1_5m, &pSystem->mSoil150Buf[HOUR_PROC],mRealAws.mSoilTemp1_5m.sReal);
-  // 지중 온도 처리 끝
+  pAws->mSoilTemp5cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_5CM, g_avg_hour);
+  pAws->mSoilTemp5cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_5CM, g_hour_min_max, MIN_LIMIT);
+  pAws->mSoilTemp5cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_5CM, g_hour_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp10cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_10CM, g_avg_hour);
+  pAws->mSoilTemp10cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_10CM, g_hour_min_max, MIN_LIMIT);
+  pAws->mSoilTemp10cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_10CM, g_hour_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp20cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_20CM, g_avg_hour);
+  pAws->mSoilTemp20cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_20CM, g_hour_min_max, MIN_LIMIT);
+  pAws->mSoilTemp20cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_20CM, g_hour_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp30cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_30CM, g_avg_hour);
+  pAws->mSoilTemp30cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_30CM, g_hour_min_max, MIN_LIMIT);
+  pAws->mSoilTemp30cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_30CM, g_hour_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp50cm.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_50CM, g_avg_hour);
+  pAws->mSoilTemp50cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_50CM, g_hour_min_max, MIN_LIMIT);
+  pAws->mSoilTemp50cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_50CM, g_hour_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp1_0m.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_100CM, g_avg_hour);
+  pAws->mSoilTemp1_0m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_100CM, g_hour_min_max, MIN_LIMIT);
+  pAws->mSoilTemp1_0m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_100CM, g_hour_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp1_5m.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_150CM, g_avg_hour);
+  pAws->mSoilTemp1_5m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_150CM, g_hour_min_max, MIN_LIMIT);
+  pAws->mSoilTemp1_5m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_150CM, g_hour_min_max, MAX_LIMIT);
+
+  pAws->mRainFall.sHourRain = g_rainfall.hourly;
 
   g_rainfall.hourly = 0;
   g_sunshine.hourly = 0;
@@ -697,67 +552,84 @@ void HourProcess(DATE_TIME_BUF *pDate)
 
 void DayProcess(void)
 {
-  int32_t wind_speed_max;
-  int32_t wind_direction_max;
-  kma_data_ex_t *p_kma;
+  AWS_DATA_STRUCT *pAws;
 
-  p_kma = get_kma_data(eAWS_DATA_HOUR);
+  pAws = &mDayAws;
 
-  read_wind_max(eWIND_MAX_DAY, &wind_speed_max, &wind_direction_max);
-  p_kma->wind_direction_instant.data= wind_direction_max;
-  p_kma->wind_speed_instant.data = wind_speed_max;
-  wind_max_init(eWIND_MAX_DAY);
+  // 온도
+  pAws->mTemperature.sReal = mRealAws.mTemperature.sReal;
+  pAws->mTemperature.sMin = read_data_min(eAVG_TEMPERATURE, g_day_min_max, MIN_LIMIT);
+  pAws->mTemperature.sMax = read_data_max(eAVG_TEMPERATURE, g_day_min_max, 10000);
 
-  mRealAws.mWind.mDirection.sMax = 0; //일 최대 풍향 초기화
-  mRealAws.mWind.mSpeed.sMax = 0;    //일 최대 풍속 초기화
+  // 기압
+  pAws->mBarometric.sReal = mRealAws.mBarometric.sReal;
+  pAws->mBarometric.sMin = read_data_min(eAVG_PRESSURE, g_day_min_max, MIN_LIMIT);
+  pAws->mBarometric.sMax = read_data_max(eAVG_PRESSURE, g_day_min_max, 10000);
 
-  mRealAws.mTemperature.sMin = mRealAws.mTemperature.sReal;//일 최저 기온 초기화
-  mRealAws.mTemperature.sMax = 0;
+  // 습도
+  pAws->mHumidity.sReal = mRealAws.mHumidity.sReal;
+  pAws->mHumidity.sMin = read_data_min(eAVG_RELATIVE_HUMIDITY, g_day_min_max, MIN_LIMIT);
+  pAws->mHumidity.sMax = read_data_max(eAVG_RELATIVE_HUMIDITY, g_day_min_max, 10000);
 
-  mRealAws.mBarometric.sMin = 9999; //일 최저 기압 초기화
-  mRealAws.mBarometric.sMax = 0;
+  pAws->mWind.mSpeed.sReal = mRealAws.mWind.mSpeed.sReal;
+  pAws->mWind.mDirection.sReal = mRealAws.mWind.mDirection.sReal;
 
-  mRealAws.mHumidity.sMin = 9999;  // 일 최저 습도 초기화
-  mRealAws.mHumidity.sMax = 0;
+  pAws->mWind.mDirection.sMax = read_wind_direction_max(eWIND_MAX_DAY);
+  pAws->mWind.mSpeed.sMax = read_wind_speed_max(eWIND_MAX_DAY);
 
-  mRealAws.mSoilTemp5cm.sMin  = 9999;  // 일 최저 지중 온도 5cm
-  mRealAws.mSoilTemp5cm.sMax = 0;
-
-  mRealAws.mSoilTemp10cm.sMin = 9999;  // 일 최저 지중 온도 10cm
-  mRealAws.mSoilTemp10cm.sMax = 0;
-
-  mRealAws.mSoilTemp20cm.sMin = 9999;  // 일 최저 지중 온도 20cm
-  mRealAws.mSoilTemp20cm.sMax = 0;
-
-  mRealAws.mSoilTemp30cm.sMin = 9999;  // 일 최저 지중 온도 30cm
-  mRealAws.mSoilTemp30cm.sMax = 0;
-
-  mRealAws.mSoilTemp50cm.sMin = 9999;  // 일 최저 지중 온도 50cm
-  mRealAws.mSoilTemp50cm.sMax = 0;
-
-  mRealAws.mSoilTemp1_0m.sMin = 9999;  // 일 최저 지중 온도 1m
-  mRealAws.mSoilTemp1_0m.sMax = 0;
-
-  mRealAws.mSoilTemp1_5m.sMin = 9999;  // 일 최저 지중 온도 1.5cm
-  mRealAws.mSoilTemp1_5m.sMax = 0;
+  // 일사
+  pAws->mSolarRad.sReal = g_solar_radiation.today;
+  pAws->mSolarRad.sMax = g_solar_radiation.today;
+  // 일조
+  pAws->mSunshine.sReal = g_sunshine.today;
+ //적설
+  pAws->mSnowFall.sReal = mRealAws.mSnowFall.sReal;
   
-  mRealAws.mSunshine.sMax = 0;  // 하루 총 일조
-  mMinAws.mSunshine.sMax = 0;   // 하루 총 일조
-  mMinAws.mSolarRad.sMax = 0;   // 하루 총 일사
+  //우량
+  pAws->mRainFall.sReal = g_rainfall.today;
 
+  // 지면온도
+  pAws->mGndTemp.sReal = mRealAws.mGndTemp.sReal;
+  pAws->mGndTemp.sMin = read_data_min(eAVG_GROUND_TEMPERATURE, g_day_min_max, MIN_LIMIT);
+  pAws->mGndTemp.sMax = read_data_max(eAVG_GROUND_TEMPERATURE, g_day_min_max, MAX_LIMIT);
+  // 초상 온도
+  pAws->mGrassTemp.sReal = mRealAws.mGrassTemp.sReal;
+  pAws->mGrassTemp.sMin = read_data_min(eAVG_SURFACE_TEMPERATURE, g_day_min_max, MIN_LIMIT);
+  pAws->mGrassTemp.sMax = read_data_max(eAVG_SURFACE_TEMPERATURE, g_day_min_max, MAX_LIMIT);
+
+  // 지중온도 처리 2017.04.03
+  pAws->mSoilTemp5cm.sReal = mRealAws.mSoilTemp5cm.sReal;
+  pAws->mSoilTemp5cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_5CM, g_day_min_max, MIN_LIMIT);
+  pAws->mSoilTemp5cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_5CM, g_day_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp10cm.sReal = mRealAws.mSoilTemp10cm.sReal;
+  pAws->mSoilTemp10cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_10CM, g_day_min_max, MIN_LIMIT);
+  pAws->mSoilTemp10cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_10CM, g_day_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp20cm.sReal = mRealAws.mSoilTemp20cm.sReal;
+  pAws->mSoilTemp20cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_20CM, g_day_min_max, MIN_LIMIT);
+  pAws->mSoilTemp20cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_20CM, g_day_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp30cm.sReal = mRealAws.mSoilTemp30cm.sReal;
+  pAws->mSoilTemp30cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_30CM, g_day_min_max, MIN_LIMIT);
+  pAws->mSoilTemp30cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_30CM, g_day_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp50cm.sReal = mRealAws.mSoilTemp50cm.sReal;
+  pAws->mSoilTemp50cm.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_50CM, g_day_min_max, MIN_LIMIT);
+  pAws->mSoilTemp50cm.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_50CM, g_day_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp1_0m.sReal = mRealAws.mSoilTemp1_0m.sReal;
+  pAws->mSoilTemp1_0m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_100CM, g_day_min_max, MIN_LIMIT);
+  pAws->mSoilTemp1_0m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_100CM, g_day_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp1_5m.sReal = mRealAws.mSoilTemp1_5m.sReal;
+  pAws->mSoilTemp1_5m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_150CM, g_day_min_max, MIN_LIMIT);
+  pAws->mSoilTemp1_5m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_150CM, g_day_min_max, MAX_LIMIT);
 
   g_rainfall.yesterday = g_rainfall.today;
-
-  g_rainfall.min = 0;
-  g_rainfall.ten_min = 0;
-  g_rainfall.hourly = 0;
   g_rainfall.today = 0;
-  g_rainfall.monthly = 0;
-  g_rainfall.yearly = 0;
-
-
-
   g_sunshine.today = 0;
+
 }
 
 void MonthProcess(void)
@@ -772,92 +644,7 @@ void YearProcess(void)
   g_sunshine.yearly = 0;
 }
 
-// 풍향,풍속으로 바람벡터 성분 분해
-// :TODO 풍향 45도이면 u,v값이 같아야 하는데 다르게 계산됨, UVToDirc 이거 쌍으로 사용해야함
-void DircTouvConv(uint16_t sDirc, uint16_t sSpeed, float *dir_u, float *dir_v)
-{
-  float fAngle;
 
-  fAngle = (float)sDirc / 10;  // 3599를 359
-
-  /* maker 측 제공 함수 사용 */
-  /* Maker측 제공 함수는 2.2ms 정도 시간이 소요됨 */
-  if (fAngle <= 90)
-  {  // 1 상한 처리
-    *dir_u += (float)sSpeed * (float)sin((double)fAngle * D2R);
-    *dir_v += (float)sSpeed * (float)cos((double)fAngle * D2R);
-  }
-  else if (fAngle <= 180)
-  {  // 2 상한 처리
-    *dir_u += (float)sSpeed * (float)cos(((double)fAngle - 90.0) * D2R);
-    *dir_v += (float)sSpeed * (float)sin(((double)fAngle - 90.0) * D2R) * -1.0;
-  }
-  else if (fAngle <= 270)
-  {  // 3 상한 처리
-    *dir_u += (float)sSpeed * (float)sin(((double)fAngle - 180.0) * D2R) * -1.0;
-    *dir_v += (float)sSpeed * (float)cos(((double)fAngle - 180.0) * D2R) * -1.0;
-  }
-  else
-  {  // 4 상한 처리
-    *dir_u += (float)sSpeed * (float)cos(((double)fAngle - 270.0) * D2R) * -1.0;
-    *dir_v += (float)sSpeed * (float)sin(((double)fAngle - 270.0) * D2R);
-  }
-/* maker 측 제공 함수 사용 끝 */
-
-}
-// AWS단위 측정값 *10
-uint16_t UVToDirc(float u_tmp, float v_tmp)
-{
-  uint16_t sDirc;
-  float f_arg;
-
-  f_arg = fabs((v_tmp / MAXWDSPEED) / (u_tmp / MAXWDSPEED));
-  if (v_tmp == 0 && u_tmp == 0)
-  {
-    sDirc = 0;
-  }
-  else if (v_tmp == 0 && u_tmp != 0)
-  {
-    if (u_tmp > 0)
-      sDirc = 90 * 10;
-    else
-      sDirc = 270 * 10;
-  }
-  else if (v_tmp != 0 && u_tmp == 0)
-  {
-    if (v_tmp > 0)
-      sDirc = 0;
-    else
-      sDirc = 180 * 10;
-  }
-  else if (v_tmp >= 0 && u_tmp >= 0)
-  {
-    sDirc = (uint16_t)((90.0 - (atan(f_arg) * R2D)) * 10.0);
-  }
-  else if (v_tmp < 0 && u_tmp >= 0)
-  {
-    sDirc = (uint16_t)(((atan(f_arg) * R2D) + 90.0) * 10.0);
-  }
-  else if (v_tmp < 0 && u_tmp < 0)
-  {
-    sDirc = (uint16_t)((270.0 - (atan(f_arg) * R2D)) * 10.0);
-  }
-  else if (v_tmp >= 0 && u_tmp < 0)
-  {
-    sDirc = (uint16_t)(((atan(f_arg) * R2D) + 270.0) * 10.0);
-  }
-  return (sDirc);
-}
-
-// 단위 m/s
-float UVToSpeed(float u_tmp, float v_tmp)
-{
-  float wind_speed;
-
-  // wind_speed = sqrtf(u_tmp * u_tmp + v_tmp * v_tmp);
-  wind_speed = sqrt(u_tmp * u_tmp + v_tmp * v_tmp);
-  return wind_speed;
-}
 
 
 
@@ -911,10 +698,7 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
 
 
 
-SYSTEM_INFO_AWS *get_system_info_aws(void)
-{
-  return &Sysinfo;
-}
+
 
 void update_kma_data(eAWS_DATA_MIN_t min)
 {
@@ -935,7 +719,10 @@ void update_kma_data(eAWS_DATA_MIN_t min)
     case eAWS_DATA_HOUR:
       pAws = &mHourAws;
       break;
-  }
+    case eAWS_DATA_DAY:
+      pAws = &mDayAws;
+      break;
+    }
 
   p_kma_data = get_kma_data((eAWS_DATA_MIN_t)min);
 
@@ -957,10 +744,13 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   // 풍향
   p_kma_data->wind_direction_avg.data = pAws->mWind.mDirection.sReal;
   p_kma_data->wind_direction_avg.max = pAws->mWind.mDirection.sMax;
+  p_kma_data->wind_direction_instant.data = pAws->mWind.mDirection.sMax;
 
   // 풍속
   p_kma_data->wind_speed_avg.data = pAws->mWind.mSpeed.sReal;
   p_kma_data->wind_speed_avg.max = pAws->mWind.mSpeed.sMax;
+  p_kma_data->wind_speed_instant.data = pAws->mWind.mSpeed.sMax;
+
 
   // 일조
   p_kma_data->sunshine_duration.data = g_sunshine.today;
@@ -968,8 +758,8 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   // 일사 // mSolarRad.sReal kw/m2 단위인데 전송시에는 mj/m2 *100 한값이 전송되어야함
   // 따라서 여기서 10으로 한번더 나누어 준다 .즉 data는 최종 전송되는 데이터 포맷이다.
   //에너지(J) = 전력(W)*시간(s)
-  p_kma_data->solar_radiation.data = g_solar_radiation.sunshine_r_1min/ 10000; 
-  p_kma_data->solar_radiation.max = pAws->mSolarRad.sMax;  // 일간
+  p_kma_data->solar_radiation.data = g_solar_radiation.sunshine_r_1min/ 10000;
+  p_kma_data->solar_radiation.day_accu = pAws->mSolarRad.sMax; // 일간
 
   // 지중 온도
   p_kma_data->soil_temperature_5cm.data = pAws->mSoilTemp5cm.sReal;
@@ -1000,8 +790,6 @@ void update_kma_data(eAWS_DATA_MIN_t min)
   p_kma_data->soil_temperature_1_5m.max = pAws->mSoilTemp1_5m.sMax;
   p_kma_data->soil_temperature_1_5m.min = pAws->mSoilTemp1_5m.sMin;
 
-  p_kma_data->wind_speed_instant.data = pAws->mWind.mSpeed.sMax;
-  p_kma_data->wind_direction_instant.data = pAws->mWind.mDirection.sMax;
 
   p_kma_data->precipitation.data  = pAws->mRainFall.sReal;
   p_kma_data->precipitation.hour  = pAws->mRainFall.sHourRain;    // 시간당 강수량량
@@ -1012,7 +800,7 @@ void update_kma_data(eAWS_DATA_MIN_t min)
 
   p_kma_data->snowfall.data = pAws->mSnowFall.sReal;
 
-  kma_data_ex_t *p_kma_avg = get_kma_data(eAWS_DATA_AVG);
+  kma_data_ex_t *p_kma_avg = get_kma_data(eAWS_DATA_REAL);
 
   for(int i = 0 ; i < 8 ;i++)
   {
@@ -1025,8 +813,6 @@ void update_kma_data(eAWS_DATA_MIN_t min)
 
   if(min == eAWS_DATA_1MIN)
   {
-
-    
     p_kma_data->time = Date_Time;
     send_kma_data(eKMA_DATA_Q_1MIN, p_kma_data); // 실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
   }

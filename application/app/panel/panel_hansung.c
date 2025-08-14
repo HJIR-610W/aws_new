@@ -31,7 +31,7 @@ void send_panel_hansung(int32_t panel_port_num)
   kma_data_ex_t *p_kma;
 
 
-  p_kma =get_kma_data(eAWS_DATA_AVG);
+  p_kma =get_kma_data(eAWS_DATA_REAL);
 
 	framemk[cnt++] 		= 'Q';																	//Start Code 'Q'
 	framemk[cnt++] 		= 0x01;																	// ID
@@ -56,7 +56,7 @@ void send_panel_hansung(int32_t panel_port_num)
 	cnt					+= 5;
 	sprintf(&framemk[cnt],"%5.1f", ((float)(p_kma->temperature.data - 1000.0))/10.0); //실측값 전송
 	cnt					+= 5;
-	sprintf(&framemk[cnt],"%5.1f%5.1f", (float)g_rainfall.today, (float)g_rainfall.yesterday);
+	sprintf(&framemk[cnt],"%5.1f%5.1f", (float)(g_rainfall.today/10.0f), (float)(g_rainfall.yesterday/10.0f));
 	cnt					+= 10;
 	framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);
 

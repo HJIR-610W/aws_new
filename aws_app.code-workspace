@@ -138,7 +138,8 @@
 			"algorithm": "c",
 			"limits": "c",
 			"utility": "c",
-			"xutility": "c"
+			"xutility": "c",
+			"aws_default_data.h": "c"
 		}
 	}
 }
