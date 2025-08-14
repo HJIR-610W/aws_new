@@ -310,7 +310,10 @@ int32_t quad_recv_byte(int uart_num, uint8_t *data)
   }
 }
 
-
+/*
+인터럽트가 발생하면 IIR 레지스터 bit 0가 펜딩된다. 이값이 0이면 인터럽트가 발생된것
+인터럽트 타입 필드 3bit를 확인하여 인터럽트 종류를 확인한다
+*/
 void isr_tl16c554(int uart_num)
 {
   uint8_t iir;
@@ -322,21 +325,18 @@ void isr_tl16c554(int uart_num)
   size_t xBytesSent;
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
-
+  
+  
   while (((iir = read_register(IIR(uart->base_address))) & UART_IIR_INTTERUPT_PENDING) == 0)
   {
     interrupt_type = iir & 0x0F;
 
     switch (interrupt_type)
     {
-      case UART_IIR_RX_DATA_AVAIL:                             
-        data = read_register(RBR(uart->base_address));               // RBR에서 데이터 읽기
-
-        /* 데이터를 스트림 버퍼에 전송 */
+      case UART_IIR_RX_DATA_AVAILABLE:                             
+        data = read_register(RBR(uart->base_address)); 
         xBytesSent = xStreamBufferSendFromISR(uart->quad_stream, &data, 1, &xHigherPriorityTaskWoken);
-        /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken); // 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청
 #ifdef USE_DEBUG_MODE
         if (!(xBytesSent > 0))
         {
@@ -345,19 +345,19 @@ void isr_tl16c554(int uart_num)
 #endif
 
         break;
-      case UART_IIR_THRE:  // Transmitter Holding 레지스터가 비였다
+      case UART_IIR_THRE:  // Transmitter Holding 레지스터가 비였다, 인터럽트 enable 되었을때만 발생
+      //THR wirte 
         break;
       case UART_IIR_RX_LINE_STAT:  
-        line_status = read_register(LSR(uart->base_address)); // RBR에서 데이터 읽기
+        line_status = read_register(LSR(uart->base_address)); //읽어야 iir에서 지워짐
         (void)line_status;
         break;
-
       case UART_IIR_MODEM_STATUS:  
-        modem_status = read_register(MSR(uart->base_address)); // RBR에서 데이터 읽기
+        modem_status = read_register(MSR(uart->base_address)); 
         (void)modem_status;
         break;
-      case UART_IIR_CHAR_TIMEOUT:
-        reg = read_register(RBR(uart->base_address)); // RBR에서 데이터 읽기
+      case UART_IIR_CHAR_TIMEOUT://인터럽트가 발생되면 RBR로 읽어야 하는데 특정시간동안 못읽어서 발생?
+        reg = read_register(RBR(uart->base_address)); 
         (void)reg;
         break;
         break;
