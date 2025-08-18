@@ -214,8 +214,7 @@ void loggingTask(void *arg)
     // 메시지 큐에서 데이터 수신
     if (osMessageQueueGet(g_loggingQueue, &logging, NULL, osWaitForever) == osOK)
     {
- 
-        switch(logging.cmd)
+         switch(logging.cmd)
         {
           case eLOGGING_LOG:
             err = save_log((char *)logging.data);

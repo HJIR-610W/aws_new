@@ -26,7 +26,7 @@ sunshine_t g_sunshine;
 sunshine_r_t g_solar_radiation;
 snowfall_t g_snowfall;
 
-    aws_inst_t g_aws_inst;
+aws_inst_t g_aws_inst;
 aws_1min_t g_aws_1min_temp;
 aws_day_t g_aws_day;
 aws_10min_t g_aws_10min;

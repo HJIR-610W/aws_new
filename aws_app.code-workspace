@@ -139,7 +139,9 @@
 			"limits": "c",
 			"utility": "c",
 			"xutility": "c",
-			"aws_default_data.h": "c"
+			"aws_default_data.h": "c",
+			"old_aws_define.h": "c",
+			"util_crc16_ccitt.h": "c"
 		}
 	}
 }

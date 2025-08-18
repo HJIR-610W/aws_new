@@ -7,7 +7,7 @@
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "old_aws_define.h"
-
+#include "FreeRTOS.h" // pvPortMalloc, vPortFree 사용 시 필요
 #include "app_sensor.h"
 #include "aws_data.h"
 #include "task_logging.h"
@@ -18,6 +18,7 @@
 #include "system_err.h"
 #include "dev_io.h"
 #include "aws_default_data.h"
+#include "util_crc16_ccitt.h"
 #define D2R 3.14159265 / 180.0
 #define R2D 180.0 / 3.14159265
 
@@ -43,24 +44,22 @@ void HourProcess(DATE_TIME_BUF *pDate);
 void DayProcess(void);
 void MonthProcess(void);
 float UVToSpeed(float u_tmp, float v_tmp);
+void save_min_data(DATE_TIME_BUF *p_time);
+void update_kma_data(eAWS_DATA_MIN_t min, DATE_TIME_BUF *p_time);
 
-/*
-lowlevel init 호출전에 SystemInit_ExtMemCtl 여기에서 FSMC 초기화를 해서
-초기화된 섹션,초기화되지 않은 섹션을 처리해줘야하는데
-FSMC 초기화에 문제가 있어. 일단
-main에서 FSMC 초기화한 다음 수동으로 FSMC영역에 배치된 변수를 0으로 초기화
-*/
-void manual_bss_init(void)
+    /*
+    lowlevel init 호출전에 SystemInit_ExtMemCtl 여기에서 FSMC 초기화를 해서
+    초기화된 섹션,초기화되지 않은 섹션을 처리해줘야하는데
+    FSMC 초기화에 문제가 있어. 일단
+    main에서 FSMC 초기화한 다음 수동으로 FSMC영역에 배치된 변수를 0으로 초기화
+    */
+    void manual_bss_init(void)
 {
   memset(&mRealAws, 0, sizeof(mRealAws));
   memset(&mMinAws, 0, sizeof(mMinAws));
   memset(&m10MinAws, 0, sizeof(m10MinAws));
   memset(&mHourAws, 0, sizeof(mHourAws));
 }
-
-void update_kma_data(eAWS_DATA_MIN_t min);
-
-
 
 void SecProcess(void)
 {
@@ -145,6 +144,9 @@ void SecProcess(void)
   }
 
 }
+
+
+
 
 #define MIN_LIMIT 10000
 #define MAX_LIMIT 0
@@ -660,12 +662,13 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
   if (pDate->Min != pOldDate->Min)
   { 
     MinProcess(pDate);
-    update_kma_data(eAWS_DATA_1MIN);
+    update_kma_data(eAWS_DATA_1MIN,pDate);
+    save_min_data(pDate);
 
     if (pDate->Min % 10 == 0)
     { 
       Min10Process();
-      update_kma_data(eAWS_DATA_10MIN);
+      update_kma_data(eAWS_DATA_10MIN, pDate);
     }
     pOldDate->Min = pDate->Min;
   }
@@ -673,7 +676,7 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
   if (pDate->Hour != pOldDate->Hour)
   { 
     HourProcess(pDate);
-    update_kma_data(eAWS_DATA_HOUR);
+    update_kma_data(eAWS_DATA_HOUR, pDate);
     pOldDate->Hour = pDate->Hour;
   }
 
@@ -696,11 +699,204 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
   }
 }
 
+void set_active_sensor(uint8_t *p_status,eSENSOR_TYPE_t sensor_number,bool active)
+{
+  int quot;
+  int rem;
+
+  quot = sensor_number / 8;
+  rem = sensor_number % 8;
+
+  if(active)
+  {
+    p_status[quot] |= 1 << rem;
+  }
+}
+
+void save_min_data(DATE_TIME_BUF *p_time)
+{
+  kma_data_ex_t *p_kma_data;
+  aws_logging_data_t *p_logging;
+
+  p_kma_data = get_kma_data(eAWS_DATA_1MIN);
+
+  p_logging = pvPortMalloc(sizeof(aws_logging_data_t));
+
+  if(p_logging)
+  {
+    memset(p_logging,0,sizeof(aws_logging_data_t));
+    p_logging->time = p_kma_data->time;
+    
+
+    p_logging->temperature = p_kma_data->temperature.data;
+    set_active_sensor(p_logging->active, A1_TEMPERATURE,p_kma_data->temperature.enable);
+    
+    p_logging->wind_direction_avg = p_kma_data->wind_direction_avg.data;
+    set_active_sensor(p_logging->active, A2_WIND_DIRECTION,p_kma_data->wind_direction_avg.enable);
+    
+    p_logging->wind_speed_avg = p_kma_data->wind_speed_avg.data;
+    set_active_sensor(p_logging->active, A3_WIND_SPEED,p_kma_data->wind_speed_avg.enable);
+    
+    p_logging->wind_direction_instant = p_kma_data->wind_direction_instant.data;
+    set_active_sensor(p_logging->active, A2_WIND_DIRECTION,p_kma_data->wind_direction_instant.enable);
+    
+    p_logging->wind_speed_instant = p_kma_data->wind_speed_instant.data;
+    set_active_sensor(p_logging->active, A3_WIND_SPEED,p_kma_data->wind_speed_instant.enable);
+    
+    p_logging->precipitation = p_kma_data->precipitation.data;
+    set_active_sensor(p_logging->active, A6_RAINFALL_DOT5_1MM,p_kma_data->precipitation.enable);
+    
+    p_logging->pressure = p_kma_data->pressure.data;
+    set_active_sensor(p_logging->active, A7_PRESSURE,p_kma_data->pressure.enable);
+    
+    p_logging->precipitation_presence = p_kma_data->precipitation_presence.data;
+    set_active_sensor(p_logging->active, A8_RAIN_PRESENT,p_kma_data->precipitation_presence.enable);
+    
+    p_logging->snowfall = p_kma_data->snowfall.data;
+    set_active_sensor(p_logging->active, A9_SNOW_DEPTH,p_kma_data->snowfall.enable);
+    
+    p_logging->relative_humidity = p_kma_data->relative_humidity.data;
+    set_active_sensor(p_logging->active, A10_RELATIVE_HUMIDITY,p_kma_data->relative_humidity.enable);
+    
+    p_logging->precipitation_fine = p_kma_data->precipitation_fine.data;
+    set_active_sensor(p_logging->active, A11_RAINFALL_DOT1MM,p_kma_data->precipitation_fine.enable);
+    
+    p_logging->solar_radiation = p_kma_data->solar_radiation.data;
+    set_active_sensor(p_logging->active, B1_SOLAR_RADIATION,p_kma_data->solar_radiation.enable);
+    
+    p_logging->sunshine_duration = p_kma_data->sunshine_duration.data;
+    set_active_sensor(p_logging->active, B2_SUNSHINE_DURATION,p_kma_data->sunshine_duration.enable);
+    
+    p_logging->surface_temperature = p_kma_data->surface_temperature.data;
+    set_active_sensor(p_logging->active, B3_GROUND_TEMPERATURE,p_kma_data->surface_temperature.enable);
+    
+    p_logging->grass_temperature = p_kma_data->grass_temperature.data;
+    set_active_sensor(p_logging->active, B4_SURFACE_TEMPERATURE,p_kma_data->grass_temperature.enable);
+    
+    p_logging->soil_temperature_5cm = p_kma_data->soil_temperature_5cm.data;
+    set_active_sensor(p_logging->active, B5_SOIL_TEMPERATURE_5CM,p_kma_data->soil_temperature_5cm.enable);
+    
+    p_logging->soil_temperature_10cm = p_kma_data->soil_temperature_10cm.data;
+    set_active_sensor(p_logging->active, B6_SOIL_TEMPERATURE_10CM,p_kma_data->soil_temperature_10cm.enable);
+    
+    p_logging->soil_temperature_20cm = p_kma_data->soil_temperature_20cm.data;
+    set_active_sensor(p_logging->active, B7_SOIL_TEMPERATURE_20CM,p_kma_data->soil_temperature_20cm.enable);
+    
+    p_logging->soil_temperature_30cm = p_kma_data->soil_temperature_30cm.data;
+    set_active_sensor(p_logging->active, B8_SOIL_TEMPERATURE_30CM,p_kma_data->soil_temperature_30cm.enable);
+    
+    p_logging->soil_temperature_50cm = p_kma_data->soil_temperature_50cm.data;
+    set_active_sensor(p_logging->active, B9_SOIL_TEMPERATURE_50CM,p_kma_data->soil_temperature_50cm.enable);
+    
+    p_logging->soil_temperature_1m = p_kma_data->soil_temperature_1m.data;
+    set_active_sensor(p_logging->active, B10_SOIL_TEMPERATURE_100CM,p_kma_data->soil_temperature_1m.enable);
+    
+    p_logging->soil_temperature_1_5m = p_kma_data->soil_temperature_1_5m.data;
+    set_active_sensor(p_logging->active, B11_SOIL_TEMPERATURE_150CM,p_kma_data->soil_temperature_1_5m.enable);
+    
+    p_logging->soil_temperature_3m = p_kma_data->soil_temperature_3m.data;
+    set_active_sensor(p_logging->active, B12_SOIL_TEMPERATURE_300CM,p_kma_data->soil_temperature_3m.enable);
+    
+    p_logging->soil_temperature_5m = p_kma_data->soil_temperature_5m.data;
+    set_active_sensor(p_logging->active, B13_SOIL_TEMPERATURE_500CM,p_kma_data->soil_temperature_5m.enable);
+    
+    p_logging->cloud_height_1st = p_kma_data->cloud_height_1st.data;
+    set_active_sensor(p_logging->active, C1_CLOUD_BASE1,p_kma_data->cloud_height_1st.enable);
+    
+    p_logging->cloud_height_2nd = p_kma_data->cloud_height_2nd.data;
+    set_active_sensor(p_logging->active, C2_CLOUD_BASE2,p_kma_data->cloud_height_2nd.enable);
+    
+    p_logging->cloud_height_3rd = p_kma_data->cloud_height_3rd.data;
+    set_active_sensor(p_logging->active, C3_CLOUD_BASE3,p_kma_data->cloud_height_3rd.enable);
+    
+    p_logging->cloud_amount = p_kma_data->cloud_amount.data;
+    set_active_sensor(p_logging->active, C4_CLOUD_COVER,p_kma_data->cloud_amount.enable);
+    
+    p_logging->visibility = p_kma_data->visibility.data;
+    set_active_sensor(p_logging->active, C5_VISIBILITY,p_kma_data->visibility.enable);
+    
+    p_logging->pm10_concentration = p_kma_data->pm10_concentration.data;
+    set_active_sensor(p_logging->active, C6_PM10,p_kma_data->pm10_concentration.enable);
+    
+    p_logging->pm25_concentration = p_kma_data->pm25_concentration.data;
+    set_active_sensor(p_logging->active, C7_PM2DOT5,p_kma_data->pm25_concentration.enable);
+    
+    p_logging->net_radiation = p_kma_data->net_radiation.data;
+    set_active_sensor(p_logging->active, C8_NET_RADIATION,p_kma_data->net_radiation.enable);
+    
+    p_logging->total_radiation = p_kma_data->total_radiation.data;
+    set_active_sensor(p_logging->active, C9_TOTAL_RADIATION,p_kma_data->total_radiation.enable);
+    
+    p_logging->reflected_radiation = p_kma_data->reflected_radiation.data;
+    set_active_sensor(p_logging->active, C10_REFLECTED_RADIATION,p_kma_data->reflected_radiation.enable);
+    
+    p_logging->direct_radiation = p_kma_data->direct_radiation.data;
+    set_active_sensor(p_logging->active, C11_DIRECT_SOLAR,p_kma_data->direct_radiation.enable);
+    
+    p_logging->current_weather = p_kma_data->current_weather.data;
+    set_active_sensor(p_logging->active, C12_CURRENT_WEATHER,p_kma_data->current_weather.enable);
+    
+    p_logging->soil_moisture_10cm = p_kma_data->soil_moisture_10cm.data;
+    set_active_sensor(p_logging->active, N1_SOIL_MOISTURE_10CM,p_kma_data->soil_moisture_10cm.enable);
+    
+    p_logging->soil_moisture_20cm = p_kma_data->soil_moisture_20cm.data;
+    set_active_sensor(p_logging->active, N2_SOIL_MOISTURE_20CM,p_kma_data->soil_moisture_20cm.enable);
+    
+    p_logging->soil_moisture_30cm = p_kma_data->soil_moisture_30cm.data;
+    set_active_sensor(p_logging->active, N3_SOIL_MOISTURE_30CM,p_kma_data->soil_moisture_30cm.enable);
+    
+    p_logging->soil_moisture_50cm = p_kma_data->soil_moisture_50cm.data;
+    set_active_sensor(p_logging->active, N4_SOIL_MOISTURE_50CM,p_kma_data->soil_moisture_50cm.enable);
+    
+    p_logging->illuminance = p_kma_data->illuminance.data;
+    set_active_sensor(p_logging->active, N5_ILLUMINANCE,p_kma_data->illuminance.enable);
+    
+    p_logging->wind_speed_1_5m = p_kma_data->wind_speed_1_5m.data;
+    set_active_sensor(p_logging->active, N6_WIND_VELOCITY_150CM,p_kma_data->wind_speed_1_5m.enable);
+    
+    p_logging->wind_speed_4m = p_kma_data->wind_speed_4m.data;
+    set_active_sensor(p_logging->active, N7_WIND_VELOCITY_400CM,p_kma_data->wind_speed_4m.enable);
+    
+    p_logging->instant_wind_speed_1_5m = p_kma_data->instant_wind_speed_1_5m.data;
+    set_active_sensor(p_logging->active, N8_INSTANT_VELOCITY_150CM,p_kma_data->instant_wind_speed_1_5m.enable);
+    
+    p_logging->instant_wind_speed_4m = p_kma_data->instant_wind_speed_4m.data;
+    set_active_sensor(p_logging->active, N9_INSTANT_VELOCITY_400CM,p_kma_data->instant_wind_speed_4m.enable);
+    
+    p_logging->temperature_0_5m = p_kma_data->temperature_0_5m.data;
+    set_active_sensor(p_logging->active, N10_AIR_TEMPERATURE_50CM,p_kma_data->temperature_0_5m.enable);
+    
+    p_logging->temperature_4m = p_kma_data->temperature_4m.data;
+    set_active_sensor(p_logging->active, N11_AIR_TEMPERATURE_400CM,p_kma_data->temperature_4m.enable);
+    
+    p_logging->humidity_0_5m = p_kma_data->humidity_0_5m.data;
+    set_active_sensor(p_logging->active, N12_HUMIDITY_50CM,p_kma_data->humidity_0_5m.enable);
+    
+    p_logging->humidity_4m = p_kma_data->humidity_4m.data;
+    set_active_sensor(p_logging->active, N13_HUMIDITY_400CM,p_kma_data->humidity_4m.enable);
+    
+    p_logging->tacometer = p_kma_data->tacometer.data;
+    set_active_sensor(p_logging->active, I1_TACHOMETER,p_kma_data->tacometer.enable);
+
+    for(int i = 0 ; i< 8; i++)
+    {
+      p_logging->X_sensorStatus[i] = p_kma_data->X_sensorStatus[i];
+    }
+    p_logging->Y_volateStatus = p_kma_data->Y_volateStatus;
+
+    int count = sizeof(aws_logging_data_t) - (uint32_t)(&((aws_logging_data_t *)0)->time);
+
+    p_logging->crc = crc16_ccitt_table((uint8_t *)&p_logging->time,count);
+
+    os_save_aws_data(p_time, p_logging, sizeof(aws_logging_data_t), LOGGING_AWS_NEW, 1);
+
+    vPortFree(p_logging);
+  }
 
 
+}
 
-
-void update_kma_data(eAWS_DATA_MIN_t min)
+void update_kma_data(eAWS_DATA_MIN_t min,DATE_TIME_BUF *p_time)
 {
   kma_data_ex_t *p_kma_data;
   AWS_DATA_STRUCT *pAws;

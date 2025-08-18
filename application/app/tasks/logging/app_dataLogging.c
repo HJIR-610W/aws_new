@@ -169,41 +169,40 @@ int get_last_day(int year, int month)
  * 
  * 월단위로 저장
  * 2025-01-01 00:00:00 데이터는 2024-12-31 마지막 자료로 저장
- * 2025-02-01 00:00:00 dms 2025-01-31 마지막 자료로 저장장
+ * 2025-02-01 00:00:00 dms 2025-01-31 마지막 자료로 저장
  */
 int32_t write_data_month(DATE_TIME_BUF *p_date, void *p_data,uint16_t dataLen, uint8_t type,uint8_t period_min)
 {
   char path[70];
-  time_t tmCurrent;
-
-
-  uint16_t year; 
   uint8_t month;
   uint8_t last_day;
+  uint16_t year; 
   uint32_t year_offset;
   uint32_t month_offset;
+  time_t time_stamp;
 
-
-  uint8_t monthList[]={0,12,1,2,3,4,5,6,7,8,9,10,11};
+  uint8_t last_month[]={0,12,1,2,3,4,5,6,7,8,9,10,11};//index 0은 사용 안함
   uint8_t ret;
 
   year  = p_date->Year;
-  month = p_date->Month; 
+  month = p_date->Month;
 
-  tmCurrent  = SetTime(p_date->Year, p_date->Month, p_date->Day, p_date->Hour, p_date->Min, 0);
+  time_stamp = SetTime(p_date->Year, p_date->Month, p_date->Day, p_date->Hour, p_date->Min, 0);
 
-  year_offset  = timeToOffsetYear(tmCurrent,period_min, dataLen);
-  month_offset = timeToOffsetMonth(tmCurrent,period_min, dataLen);
+  year_offset = timeToOffsetYear(time_stamp, period_min, dataLen);
+  month_offset = timeToOffsetMonth(time_stamp, period_min, dataLen);
 
-  if(year_offset == 0)
+  if(year_offset == 0)// 1월 1일 0시 1분
   {
-    year  = year-1; // 전년도에 저장해야함
-
+    year  = year-1; // 전년도에 저장해야함, 전년도 자료임
   }
+
   if(month_offset == 0)// 1일 0시0분 이면 이건 전달 자료임
   {
-    last_day = get_last_day(p_date->Year,monthList[month]);
-    month_offset = timeToOffsetMonth(SetTime(year, monthList[month], last_day, 23, 60-period_min, 0), period_min, dataLen) + dataLen;
+    last_day = get_last_day(year, last_month[month]); // 지난달의 일수 계산
+    month_offset = timeToOffsetMonth(SetTime(year, last_month[month], last_day, 23, 60 - period_min, 0), period_min, dataLen) + dataLen;
+
+    month = last_month[month];
   }
 
   get_filePath(type,year%10,month,path,sizeof(path));
