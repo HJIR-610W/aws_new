@@ -583,10 +583,10 @@ AWS_DATA_STRUCT *get_aws_data(int min)
 void update_kma_real(void)
 {
   kma_data_ex_t *p_kma3;
-  kma_data_ex_t *p_raw;
+
 
   p_kma3 = get_kma_data(eAWS_DATA_REAL);
-  p_raw = get_kma_data(eAWS_DATA_RAW);
+
 
   //[사용]
   p_kma3->temperature.data = mRealAws.mTemperature.sReal;
@@ -643,12 +643,16 @@ void update_kma_real(void)
   p_kma3->sunshine_duration.err = get_sensor_err(B2_SUNSHINE_DURATION);
 
 
-  //[미사용] 3. 지면온도 (1분 평균)
-  p_kma3->surface_temperature.data = p_raw->surface_temperature.data;
+  p_kma3->surface_temperature.data = mRealAws.mGndTemp.sReal;
+  p_kma3->surface_temperature.min = mRealAws.mGndTemp.sMin;
+  p_kma3->surface_temperature.max = mRealAws.mGndTemp.sMax;
   p_kma3->surface_temperature.err = get_sensor_err(B3_GROUND_TEMPERATURE);
 
-  //[미사용] 4. 초상온도 (1분 평균)
 
+  p_kma3->grass_temperature.data = mRealAws.mGrassTemp.sReal;
+  p_kma3->grass_temperature.min = mRealAws.mGrassTemp.sMin;
+  p_kma3->grass_temperature.max = mRealAws.mGrassTemp.sMax;
+  p_kma3->grass_temperature.err = get_sensor_err(B4_SURFACE_TEMPERATURE);
 
   //[사용]  5. 지중온도 (5cm, 1분 평균)
   p_kma3->soil_temperature_5cm.data = mRealAws.mSoilTemp5cm.sReal;
@@ -686,63 +690,31 @@ void update_kma_real(void)
   p_kma3->soil_temperature_1_5m.max = mRealAws.mSoilTemp1_5m.sMax;
   p_kma3->soil_temperature_1_5m.err = get_sensor_err(B11_SOIL_TEMPERATURE_150CM);
 
-  // [사용] 12. 지중온도(3.0m, 1분 평균) 
-  p_kma3 -> soil_temperature_3m.data =  p_raw->soil_temperature_3m.data;
+  // [사용] 12. 지중온도(3.0m, 1분 평균)
+  p_kma3->soil_temperature_3m.data = mRealAws.mSoilTemp3_0m.sReal;
+  p_kma3->soil_temperature_3m.min = mRealAws.mSoilTemp3_0m.sMin;
+  p_kma3->soil_temperature_3m.max = mRealAws.mSoilTemp3_0m.sMax;
   p_kma3->soil_temperature_3m.err = get_sensor_err(B12_SOIL_TEMPERATURE_300CM);
-  p_kma3->soil_temperature_5m.data = p_raw->soil_temperature_5m.data;
+
+  p_kma3->soil_temperature_5m.data = mRealAws.mSoilTemp5_0m.sReal;
+  p_kma3->soil_temperature_5m.min = mRealAws.mSoilTemp5_0m.sMin;
+  p_kma3->soil_temperature_5m.max = mRealAws.mSoilTemp5_0m.sMax;
   p_kma3->soil_temperature_5m.err = get_sensor_err(B13_SOIL_TEMPERATURE_500CM);
 
 
-  //에러 변수 업데이트 
-  //[사용]
-  kma3_update_sensor_status(A1_TEMPERATURE, p_kma3->X_sensorStatus, get_sensor_err(A1_TEMPERATURE));
-  kma3_update_sensor_status(A2_WIND_DIRECTION, p_kma3->X_sensorStatus,
-                            get_sensor_err(A2_WIND_DIRECTION));
-  //[사용]
-  kma3_update_sensor_status(A3_WIND_SPEED, p_kma3->X_sensorStatus, get_sensor_err(A3_WIND_SPEED));
-  //[사용]
-  kma3_update_sensor_status(A6_RAINFALL_DOT5_1MM, p_kma3->X_sensorStatus,
-                            get_sensor_err(A6_RAINFALL_DOT5_1MM));
-  //[사용]
-  kma3_update_sensor_status(A7_PRESSURE, p_kma3->X_sensorStatus, get_sensor_err(A7_PRESSURE));
-  //[사용]
-  kma3_update_sensor_status(A8_RAIN_PRESENT, p_kma3->X_sensorStatus,
-                            get_sensor_err(A8_RAIN_PRESENT));
-  //[사용]
-  kma3_update_sensor_status(A9_SNOW_DEPTH, p_kma3->X_sensorStatus, get_sensor_err(A9_SNOW_DEPTH));
-  //[사용]
-  kma3_update_sensor_status(A10_RELATIVE_HUMIDITY, p_kma3->X_sensorStatus,
-                            get_sensor_err(A10_RELATIVE_HUMIDITY));
-  //[사용]
-  kma3_update_sensor_status(B1_SOLAR_RADIATION, p_kma3->X_sensorStatus,   get_sensor_err(B1_SOLAR_RADIATION));
-  //[사용]
-  kma3_update_sensor_status(B2_SUNSHINE_DURATION, p_kma3->X_sensorStatus,  get_sensor_err(B2_SUNSHINE_DURATION));
-  //[사용]
-  kma3_update_sensor_status(B5_SOIL_TEMPERATURE_5CM, p_kma3->X_sensorStatus,  get_sensor_err(B5_SOIL_TEMPERATURE_5CM));
-  //[사용]
-  kma3_update_sensor_status(B6_SOIL_TEMPERATURE_10CM, p_kma3->X_sensorStatus,   get_sensor_err(B6_SOIL_TEMPERATURE_10CM));
-  //[사용]
-  kma3_update_sensor_status(B7_SOIL_TEMPERATURE_20CM, p_kma3->X_sensorStatus, get_sensor_err(B7_SOIL_TEMPERATURE_20CM));
-  //[사용]
-  kma3_update_sensor_status(B8_SOIL_TEMPERATURE_30CM, p_kma3->X_sensorStatus,  get_sensor_err(B8_SOIL_TEMPERATURE_30CM));
-  //[사용]
-  kma3_update_sensor_status(B9_SOIL_TEMPERATURE_50CM, p_kma3->X_sensorStatus, get_sensor_err(B9_SOIL_TEMPERATURE_50CM));
-  //[사용]
-  kma3_update_sensor_status(B10_SOIL_TEMPERATURE_100CM, p_kma3->X_sensorStatus,  get_sensor_err(B10_SOIL_TEMPERATURE_100CM));
-  //[사용]
-  kma3_update_sensor_status(B11_SOIL_TEMPERATURE_150CM, p_kma3->X_sensorStatus, get_sensor_err(B11_SOIL_TEMPERATURE_150CM));
+  for(int i = 0 ; i< 8; i++)
+  {
+    p_kma3->X_sensorStatus[i] = mRealAws.kma3_sensor_status[i];
+  }
 
-  //[사용]
-  kma3_update_sensor_status(B12_SOIL_TEMPERATURE_300CM, p_kma3->X_sensorStatus, get_sensor_err(B12_SOIL_TEMPERATURE_300CM));
-  //[사용]
-  kma3_update_sensor_status(B13_SOIL_TEMPERATURE_500CM, p_kma3->X_sensorStatus,     get_sensor_err(B13_SOIL_TEMPERATURE_500CM));
-
-
+  p_kma3->Y_volateStatus = mRealAws.mStatus.sReal;
+#if 0 
   BIT_UPDATE(p_kma3->Y_volateStatus, System.dc_error, KMA2_PWRSTAT_DC_INPUT_ERR);
   BIT_UPDATE(p_kma3->Y_volateStatus, System.battery_error, KMA2_PWRSTAT_BATTERY_ERR);
   p_kma3->Y_volateStatus &= 0xF3;
   p_kma3->Y_volateStatus |=System.ac_status<<2;
   BIT_UPDATE(p_kma3->Y_volateStatus, System.door_opened, KMA2_PWRSTAT_DOOR_OPEN);
+#endif
 
   p_kma3->time = Date_Time;
   send_kma_data(eKMA_DATA_Q_AVG,p_kma3);//실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
@@ -1138,6 +1110,10 @@ void upate_wind(void)
 }
 
 //실시간 최대 최소값은 1분 최대 최소 값을 사용한다.
+/*
+mMinAws 이변수는 1분이 바뀌는 순간에만 업데이트되고 1분간 유지되어야 하는 변수이다.
+따라서 1분동안 실시간으로 계산되는 최대 ,최소값은 mRealAws이 변수에 업데이트해야한다.
+*/
 void update_sensor_real(void)
 {
   AWS_DATA_STRUCT *pAws = &mRealAws;
@@ -1186,6 +1162,70 @@ void update_sensor_real(void)
   pAws->mSoilTemp1_5m.sMin = read_current_data_min(eAVG_SOIL_TEMPERATURE_150CM, g_1min_min_max);
   pAws->mSoilTemp1_5m.sMax = read_current_data_max(eAVG_SOIL_TEMPERATURE_150CM, g_1min_min_max);
 }
+
+void update_old_aws_status(AWS_DATA_STRUCT *pAws)
+{
+  if (get_sensor_err(A6_RAINFALL_DOT5_1MM))
+    pAws->mStatus.sMin |= RAINFALLFAIL_BIT;
+  else
+    pAws->mStatus.sMin &= ~(RAINFALLFAIL_BIT);
+
+  if (get_sensor_err(A3_WIND_SPEED))
+    pAws->mStatus.sMin |= WINDSPEEDFAIL_BIT;
+  else
+    pAws->mStatus.sMin &= ~(WINDSPEEDFAIL_BIT);
+
+  if (get_sensor_err(A2_WIND_DIRECTION))
+    pAws->mStatus.sMin |= WINDDIRECFAIL_BIT;
+  else
+    pAws->mStatus.sMin &= ~(WINDDIRECFAIL_BIT);
+
+  if (get_sensor_err(A1_TEMPERATURE))
+    pAws->mStatus.sMin |= TEMPERATUREFAIL_BIT;
+  else
+    pAws->mStatus.sMin &= ~(TEMPERATUREFAIL_BIT);
+
+  if (get_sensor_err(A7_PRESSURE))
+    pAws->mStatus.sMin |= BAROMETRICFAIL_BIT;
+  else
+    pAws->mStatus.sMin &= ~(BAROMETRICFAIL_BIT);
+
+  if (get_sensor_err(A10_RELATIVE_HUMIDITY))
+    pAws->mStatus.sMin |= HUMIDITYFAIL_BIT;
+  else
+    pAws->mStatus.sMin &= ~(HUMIDITYFAIL_BIT);
+
+  pAws->mStatus.sMin &= ~(RAINDETECTFAIL_BIT);
+  pAws->mStatus.sMin &= ~(FANFAIL_BIT);
+
+  // 에러 변수 업데이트
+  // 에러 변수 업데이트
+  kma3_update_sensor_status(A1_TEMPERATURE, (uint8_t*)pAws->kma3_sensor_status, get_sensor_err(A1_TEMPERATURE));
+  kma3_update_sensor_status(A2_WIND_DIRECTION, pAws->kma3_sensor_status, get_sensor_err(A2_WIND_DIRECTION));
+  kma3_update_sensor_status(A3_WIND_SPEED, pAws->kma3_sensor_status, get_sensor_err(A3_WIND_SPEED));
+  kma3_update_sensor_status(A6_RAINFALL_DOT5_1MM, pAws->kma3_sensor_status, get_sensor_err(A6_RAINFALL_DOT5_1MM));
+  kma3_update_sensor_status(A7_PRESSURE, pAws->kma3_sensor_status, get_sensor_err(A7_PRESSURE));
+  kma3_update_sensor_status(A8_RAIN_PRESENT, pAws->kma3_sensor_status, get_sensor_err(A8_RAIN_PRESENT));
+  kma3_update_sensor_status(A9_SNOW_DEPTH, pAws->kma3_sensor_status, get_sensor_err(A9_SNOW_DEPTH));
+  kma3_update_sensor_status(A10_RELATIVE_HUMIDITY, pAws->kma3_sensor_status, get_sensor_err(A10_RELATIVE_HUMIDITY));
+  kma3_update_sensor_status(B1_SOLAR_RADIATION, pAws->kma3_sensor_status, get_sensor_err(B1_SOLAR_RADIATION));
+  kma3_update_sensor_status(B2_SUNSHINE_DURATION, pAws->kma3_sensor_status, get_sensor_err(B2_SUNSHINE_DURATION));
+  kma3_update_sensor_status(B5_SOIL_TEMPERATURE_5CM, pAws->kma3_sensor_status, get_sensor_err(B5_SOIL_TEMPERATURE_5CM));
+  kma3_update_sensor_status(B6_SOIL_TEMPERATURE_10CM, pAws->kma3_sensor_status, get_sensor_err(B6_SOIL_TEMPERATURE_10CM));
+  kma3_update_sensor_status(B7_SOIL_TEMPERATURE_20CM, pAws->kma3_sensor_status, get_sensor_err(B7_SOIL_TEMPERATURE_20CM));
+  kma3_update_sensor_status(B8_SOIL_TEMPERATURE_30CM, pAws->kma3_sensor_status, get_sensor_err(B8_SOIL_TEMPERATURE_30CM));
+  kma3_update_sensor_status(B9_SOIL_TEMPERATURE_50CM, pAws->kma3_sensor_status, get_sensor_err(B9_SOIL_TEMPERATURE_50CM));
+  kma3_update_sensor_status(B10_SOIL_TEMPERATURE_100CM, pAws->kma3_sensor_status, get_sensor_err(B10_SOIL_TEMPERATURE_100CM));
+  kma3_update_sensor_status(B11_SOIL_TEMPERATURE_150CM, pAws->kma3_sensor_status, get_sensor_err(B11_SOIL_TEMPERATURE_150CM));
+  kma3_update_sensor_status(B12_SOIL_TEMPERATURE_300CM, pAws->kma3_sensor_status, get_sensor_err(B12_SOIL_TEMPERATURE_300CM));
+  kma3_update_sensor_status(B13_SOIL_TEMPERATURE_500CM, pAws->kma3_sensor_status, get_sensor_err(B13_SOIL_TEMPERATURE_500CM));
+
+  BIT_UPDATE(pAws->mStatus.sReal, System.dc_error, KMA2_PWRSTAT_DC_INPUT_ERR);
+  BIT_UPDATE(pAws->mStatus.sReal, System.battery_error, KMA2_PWRSTAT_BATTERY_ERR);
+  pAws->mStatus.sReal &= 0xF3;
+  pAws->mStatus.sReal |= System.ac_status << 2;
+  BIT_UPDATE(pAws->mStatus.sReal, System.door_opened, KMA2_PWRSTAT_DOOR_OPEN);
+  }
 
 void DUALPORT_TASK(void *arg)
 {
@@ -1361,40 +1401,10 @@ void DUALPORT_TASK(void *arg)
     pAws->mSoilTemp1_5m.sReal = filter_data(B11_SOIL_TEMPERATURE_150CM, data, sensor_err, &f_err);
     update_sensor_err(B11_SOIL_TEMPERATURE_150CM, f_err);
 
-
-
     // 센서 불량 처리
     pAws->mStatus.sReal = 0;
 
-    if (kma_is_sensor_error(A6_RAINFALL_DOT5_1MM))
-      pAws->mStatus.sMin |= RAINFALLFAIL_BIT;
-    else
-      pAws->mStatus.sMin &= ~(RAINFALLFAIL_BIT);
-
-    if (wind_speed >= 1050)
-      pAws->mStatus.sMin |= WINDSPEEDFAIL_BIT;
-    else
-      pAws->mStatus.sMin &= ~(WINDSPEEDFAIL_BIT);
-
-    if (wind_direction >= 3600)
-      pAws->mStatus.sMin |= WINDDIRECFAIL_BIT;
-    else
-      pAws->mStatus.sMin &= ~(WINDDIRECFAIL_BIT);
-
-    if (pAws->mTemperature.sReal >= 9999)
-      pAws->mStatus.sMin |= TEMPERATUREFAIL_BIT;
-    else
-      pAws->mStatus.sMin &= ~(TEMPERATUREFAIL_BIT);
-
-    if (pAws->mBarometric.sReal >= 19999)
-      pAws->mStatus.sMin |= BAROMETRICFAIL_BIT;
-    else
-      pAws->mStatus.sMin &= ~(BAROMETRICFAIL_BIT);
-
-    if (pAws->mHumidity.sReal >= 19999)
-      pAws->mStatus.sMin |= HUMIDITYFAIL_BIT;
-    else
-      pAws->mStatus.sMin &= ~(HUMIDITYFAIL_BIT);
+    update_old_aws_status(pAws);
 
     schedule_process(&ct, &time_old);
     update_sensor_real();

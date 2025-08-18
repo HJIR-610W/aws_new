@@ -156,6 +156,7 @@ void SecProcess(void)
 일조 아루 총 누적에 처리
 강수량 1분
 */
+
 void MinProcess(DATE_TIME_BUF *pDate)
 {
   float wind_speed_avg;
@@ -257,12 +258,14 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   g_solar_radiation.sunshine_r_1min = g_solar_radiation.min_acc;
 
-  kma_data_ex_t *p_kma_avg = get_kma_data(eAWS_DATA_REAL);
 
   for (int i = 0; i < 8; i++)
   {
-    pAws->kma3_sensor_status[i] = p_kma_avg->X_sensorStatus[i];
+    pAws->kma3_sensor_status[i] = mRealAws.kma3_sensor_status[i];
   }
+
+  pAws->mStatus = mRealAws.mStatus;
+
   
   os_save_aws_data(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
 

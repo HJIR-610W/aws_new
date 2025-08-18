@@ -106,7 +106,7 @@ typedef struct
 // sMax
 #define RAINFAIL_BIT 0x0001
 
-  char kma3_sensor_status[8];
+  uint8_t kma3_sensor_status[8];
   char cDataSpare[30];
   uint16_t rain_1min;
   uint32_t crc;
