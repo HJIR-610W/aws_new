@@ -24,6 +24,7 @@
 #include "sensor_data\sunshine_data.h"
 #include "wind_data.h"
 #include "aws_default_data.h"
+#include "app_key.h"
 typedef struct filter_data_s
 {
   uint8_t delay_count;
@@ -1106,22 +1107,13 @@ void filter_init(void)
   for(int i = 0 ; i< _countof(g_pre_data);i++)
   {
     g_pre_data[i].err = 0xFF;
-  }
-}
-
-void raw_data_init(void)
-{
-  for (int i = 0; i < _countof(g_p_raw->data);i++)
-  {
-   // g_p_raw->data[i].err = 0x0F;//not ready
+    g_pre_data[i].delay_count = MS_TO_SCAN_CNT(SENSOR_FAIL_TIMEOUT_SEC); // 제품 부팅시에는 처음 측정하는 값을 즉시 반영
   }
 
-  for (int i = 0; i < _countof(g_pre_data);i++)
-  {
-    g_pre_data[i].delay_count = MS_TO_SCAN_CNT(SENSOR_FAIL_TIMEOUT_SEC);//처음부터 에러가 발생한걸로 처리 
-  }
-  
+
 }
+
+
 
 
 
@@ -1211,41 +1203,37 @@ void DUALPORT_TASK(void *arg)
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
   AWS_DATA_STRUCT *pAws;
+  sensor_t *p_sensor_config = get_sensor_config_copy();
 
   pAws = &mRealAws;
-
 
   calculate_rain(); 
   calculate_sunshine();
   filter_init();
 
-  //제품 부팅시에는 처음 측정하는 값을 즉시 반영
-  for (int i = 0; i < SENSOR_LIST_MAX; i++)
+  /*
+  메모리를 아끼기위해 g_p_raw 하나만 사용
+  */
+  g_p_raw = user_malloc(sizeof(measure_data_1s_t));
+  memset(g_p_raw,0,sizeof(measure_data_1s_t));
+
+  osDelay(2000);// task measure 측정이 최소 1회 수행 후 동작하도록 지연 
+
+  time_old = Date_Time;
+  while (1)
   {
-    g_pre_data[i].delay_count = MS_TO_SCAN_CNT(10);
-  }
-    // 메모리를 아끼기위해 g_p_raw 하나만 사용
-    g_p_raw = user_malloc(sizeof(measure_data_1s_t));
+    is_measurement_1s(g_p_raw, 0);                     // 업데이트된 값 없으면 이전값 유지
 
-    memset(g_p_raw,0,sizeof(measure_data_1s_t));
-
-    time_old = Date_Time;
-    
-    raw_data_init();
-    osDelay(2000);//1측정이 최소 1회 수행후 동작하도록 지연 
-    while (1)
+    if (is_measurement_250(&g_raw_250, osWaitForever)) // 250ms마다 최신값 사용
     {
-      is_measurement_1s(g_p_raw, 0);                     // 업데이트된 값 없으면 이전값 유지
-      if (is_measurement_250(&g_raw_250, osWaitForever)) // 250ms마다 최신값 사용
-      {
-        g_p_raw->data[A2_WIND_DIRECTION] = g_raw_250.data[eA2_WIND_DIRECTION];
-        g_p_raw->data[A3_WIND_SPEED] = g_raw_250.data[eA3_WIND_SPEED];
-      }
+      g_p_raw->data[A2_WIND_DIRECTION] = g_raw_250.data[eA2_WIND_DIRECTION];
+      g_p_raw->data[A3_WIND_SPEED] = g_raw_250.data[eA3_WIND_SPEED];
+    }
 
-      ct = Date_Time;
+    ct = Date_Time;
 
-      check_sensor_use();
-      update_raw();
+    check_sensor_use();
+    update_raw();
 
       // 온도
       data = TempCalc(&sensor_err);

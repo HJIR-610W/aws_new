@@ -12,7 +12,7 @@ typedef struct
 	int8_t Min;
 	int8_t Sec;
 	int8_t Week;		// 0~6, Sunday = 0
-  uint16_t SubSec;//100th
+  uint16_t SubSec;//100th 10ms
 } DATE_TIME_BUF;
 
 

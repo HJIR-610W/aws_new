@@ -5,5 +5,5 @@
 #define MENU_SETUP_H
 
 #include <stdint.h>
-void setup_root(void);
+void setup_menu(void);
 #endif

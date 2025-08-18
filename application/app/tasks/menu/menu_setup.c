@@ -46,7 +46,7 @@ void draw_aws_setup_page(screen_menu_t* p_win)
   screen_menu_clear(p_win);
 }
 
-void setup_root(void)
+void setup_menu(void)
 {
   int32_t index;
   int32_t key;

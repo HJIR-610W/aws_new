@@ -38,9 +38,11 @@
 
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
 extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용
-extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
 extern const char *linkStatusList[3];
 extern const char *generalStatusList[2];
+extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
+extern uint8_t BSP_PlatformIsDetected(void);
+
 
 #define SCREEN_COLS 21
 #define SCREEN_ROWS 8
@@ -54,7 +56,8 @@ const osThreadAttr_t kMenuTask_attributes = {
 
 
 #define SYSTEM_WD 8
-extern uint8_t BSP_PlatformIsDetected(void);;
+
+
 
 void draw_system_page(screen_page_t* p_win)
 {
@@ -1111,8 +1114,8 @@ void print_logo(void)
 void menuTask(void *arg)
 {
   int32_t key;
-  int32_t page_count = 0;
-  int32_t page_list[PAGE_MAX];
+  int32_t page_count;//화면페이지 개수,config설정에 따라 자동 계산
+  int32_t page_list[PAGE_MAX];//어떠한 페이지인지 저장
   uint32_t screen_off_time;
   screen_page_t lcd_win;
   
@@ -1189,17 +1192,17 @@ void menuTask(void *arg)
            
     screen_refresh();
 
-    key =  get_button_key(1000);
+    key =  get_button_key(100);//이 기다리는 시간이 화면 갱신되는 시간 
 
     if (key == KEY_CODE_CTRL_A)
     {
-      setup_root();
-      screen_off_time = OS_GET_TICK();
+      setup_menu();
+      screen_off_time = OS_GET_TICK();//LCD off안되도록 갱신
     }
-    else if (key != KEY_CODE_UNKNOWN)
+    else if (key != KEY_CODE_NONE)
     {
       screen_page_handle(&lcd_win, key);
-      screen_off_time = OS_GET_TICK();
+      screen_off_time = OS_GET_TICK(); // LCD off안되도록 갱신
     }
 
     if ((OS_GET_TICK() - screen_off_time) > SCREEN_OFF_TIMEOUT_MS)

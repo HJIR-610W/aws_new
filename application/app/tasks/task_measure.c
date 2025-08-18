@@ -72,21 +72,21 @@ const uint32_t kMesaureTimeOutMs = 50;
 static driver_t *g_sensor_driver[SENSOR_LIST_MAX];
 
 
-osMessageQueueId_t g_reading_250ms_queue;
-osMessageQueueId_t g_reading_1s_queue;
+osMessageQueueId_t g_250ms_queue_id;
+osMessageQueueId_t g_1s_queue_id;
 
-measure_data_250ms_t g_reading_250;//Task 실행 시간 측정용
-measure_data_1s_t g_reading_1;//Task 실행 시간 측정용
-exec_time_t g_exec_250ms_time; //Task 실행 시간 측정용
-exec_time_t g_exec_1s_time;//Task 실행 시간 측정용
+measure_data_250ms_t g_reading_250;//Task 실행 시간 측정용[메뉴 표시용]
+measure_data_1s_t g_reading_1;     // Task 실행 시간 측정용[메뉴 표시용]
+exec_time_t g_exec_250ms_time;     // Task 실행 시간 측정용[메뉴 표시용]
+exec_time_t g_exec_1s_time;        // Task 실행 시간 측정용[메뉴 표시용]
 
 driver_t *get_sensor_driver(eSENSOR_TYPE_t sensor)
 {
   return g_sensor_driver[sensor];
 }
 
-    // Task 실행 시간 측정용
-    void elapse_start(exec_time_t *p_time)
+ // Task 실행 시간 측정용
+void elapse_start(exec_time_t *p_time)
 { 
   p_time->start_time = HAL_GetTick(); 
 }
@@ -124,17 +124,17 @@ bool is_measurement_250(void *data,uint32_t timeout)
 {
   osStatus_t status;
 
-  if (g_reading_250ms_queue == NULL)
+  if (g_250ms_queue_id == NULL)
   {
     osDelay(100);
     return false;
   }
 
-  status = osMessageQueueGet(g_reading_250ms_queue, data, NULL, timeout);
+  status = osMessageQueueGet(g_250ms_queue_id, data, NULL, timeout);
 
   if (status != osOK)
   {
-    io_printf("is_measurement fail %d\r\n", status);
+    task_printf("is_measurement fail %d\r\n", status);
     return false;
   }
 
@@ -144,17 +144,20 @@ bool is_measurement_250(void *data,uint32_t timeout)
 bool is_measurement_1s( void *data,uint32_t timeout)
 {
   osStatus_t status;
-  if (g_reading_1s_queue == NULL)
+  if (g_1s_queue_id == NULL)
   {
     osDelay(100);
     return false;
   }
 
-  status = osMessageQueueGet(g_reading_1s_queue, data, NULL, timeout);
+  status = osMessageQueueGet(g_1s_queue_id, data, NULL, timeout);
 
-  (void)status;
-  
-  return true;
+  if(status == osOK)
+  {
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -234,10 +237,7 @@ void sensor_init(void)
   sensor_t *p_sensor;
 
 
-
-  p_sensor = g_sensor_config_bk;
-
-  
+  p_sensor = get_sensor_config_copy();
 
   //사용하는 센서의 드라이버를 초기화 한다.
   for (int i = 0; i < SENSOR_LIST_MAX; i++)
@@ -357,7 +357,7 @@ void sensor_init(void)
   { 
     if (get_config_app()->sensor[i].type)  // 사용으로 설정되었는지 확인
     {
-      g_reading_1.data[i].enable = 1;  // 풍향,풍속은 사용하지 않는다.
+      g_reading_1.data[i].enable = true; // 풍향,풍속은 사용하지 않는다.
 
       switch (i)
       {
@@ -592,7 +592,7 @@ void measure250ms_task(void *arg)
     elapse_start(&g_exec_250ms_time);
     measure_250ms();
     elapse_stop(&g_exec_250ms_time);
-    send_measurement(g_reading_250ms_queue, &g_reading_250);
+    send_measurement(g_250ms_queue_id, &g_reading_250);
     
     tick_count += MEASURE_PERIOD_250MS;
     osDelayUntil(tick_count);  
@@ -610,7 +610,7 @@ void measure1s_task(void *arg)
     elapse_start(&g_exec_1s_time);
     measure_1s();
     elapse_stop(&g_exec_1s_time);
-    send_measurement(g_reading_1s_queue, &g_reading_1);
+    send_measurement(g_1s_queue_id, &g_reading_1);
     tick_count += MEASURE_PERIOD_1000MS;
     osDelayUntil(tick_count);
   }
@@ -623,16 +623,13 @@ void measure1s_task(void *arg)
  */
 void measureTask_init(void)
 {
-  osThreadId_t thread_id;
 
   sensor_init();
 
-  g_reading_250ms_queue = osMessageQueueNew(1, sizeof(measure_data_250ms_t), NULL);
-  g_reading_1s_queue = osMessageQueueNew(1, sizeof(measure_data_1s_t), NULL);
+  g_250ms_queue_id = osMessageQueueNew(1, sizeof(measure_data_250ms_t), NULL);
+  g_1s_queue_id = osMessageQueueNew(1, sizeof(measure_data_1s_t), NULL);
 
-  thread_id = osThreadNew(measure250ms_task, NULL, &kMeasure250msTask_attributes);
-  assert_param(thread_id);
+  osThreadNew(measure250ms_task, NULL, &kMeasure250msTask_attributes);
+  osThreadNew(measure1s_task, NULL, &kMeasure1sTask_attributes);
 
-  thread_id = osThreadNew(measure1s_task, NULL, &kMeasure1sTask_attributes);
-  assert_param(thread_id);
   }
