@@ -231,7 +231,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\pcb_define.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\font\font_6x8.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.c</file>
@@ -245,7 +245,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_do.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_do.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_eth.h</file>
-            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\ewarm\system_stm32f4xx.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\pin\pcb_5_pin.h</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
@@ -285,7 +285,7 @@
             <file>$PROJ_DIR$\..\drivers\devices\sensors\humidity\hj_huminity.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\snow\snow_define.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554_def.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\barometer\barometer.c</file>
@@ -358,7 +358,7 @@
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.c</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sram.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usb.c</file>
@@ -1654,7 +1654,7 @@
             <file>$TOOLKIT_DIR$\inc\c\LowLevelIOInterface.h</file>
             <file>$PROJ_DIR$\release\Obj\ppp.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\at45db.__cstat.et</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\queue.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\sha1.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_do.__cstat.et</file>
@@ -2074,7 +2074,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\system\arch\bpstruct.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\opt.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_test.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\release\Obj\driver_do.xcl</file>
             <file>$PROJ_DIR$\release\Obj\app_sensor.xcl</file>
             <file>$PROJ_DIR$\release\Obj\general_adc.xcl</file>
@@ -2424,7 +2424,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_admin.h</file>
             <file>$PROJ_DIR$\release\Obj\driver_stm32_adc.__cstat.et</file>
             <file>$PROJ_DIR$\..\Application\Panel\panel_hansung.c</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\release\Obj\rv8803.o</file>
             <file>$PROJ_DIR$\..\application\app\sensors\barometer\jinsung_sjgp215.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_sensor.h</file>

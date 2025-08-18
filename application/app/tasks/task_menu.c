@@ -1192,7 +1192,7 @@ void menuTask(void *arg)
            
     screen_refresh();
 
-    key =  get_button_key(100);//이 기다리는 시간이 화면 갱신되는 시간 
+    key =  get_button_key(250);//이 기다리는 시간이 화면 갱신되는 시간 
 
     if (key == KEY_CODE_CTRL_A)
     {

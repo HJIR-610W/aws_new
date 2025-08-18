@@ -1228,6 +1228,7 @@ void DUALPORT_TASK(void *arg)
     {
       g_p_raw->data[A2_WIND_DIRECTION] = g_raw_250.data[eA2_WIND_DIRECTION];
       g_p_raw->data[A3_WIND_SPEED] = g_raw_250.data[eA3_WIND_SPEED];
+      g_p_raw->data[A6_RAINFALL_DOT5_1MM] = g_raw_250.data[eA6_RAINFALL_DOT5_1MM];
     }
 
     ct = Date_Time;

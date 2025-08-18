@@ -369,6 +369,10 @@ void sensor_init(void)
           g_reading_250.data[eA3_WIND_SPEED].enable = true;
           g_reading_250.data[eA3_WIND_SPEED].data_type = eDATA_TYPE_F;
           break;
+        case A6_RAINFALL_DOT5_1MM:
+          g_reading_250.data[eA6_RAINFALL_DOT5_1MM].enable = true;
+          g_reading_250.data[eA6_RAINFALL_DOT5_1MM].data_type = eDATA_TYPE_F;
+          break;
         }
     }
 
@@ -436,6 +440,8 @@ void measure_250ms(void)
   uint8_t err_wind_dir=0;
   float speed = 0.0f;
   float direction = 0.0f;
+  float rain;
+  uint8_t read_err=0;
   sensor_t *p_sensor_cfg = g_sensor_config_bk;
   sensor_data_t *p_reading_250ms = g_reading_250.data;
   sensor_t *p_a_sensor = get_config_app()->sensor;
@@ -454,6 +460,14 @@ void measure_250ms(void)
     p_reading_250ms[eA2_WIND_DIRECTION].err = err_wind_dir;
     p_reading_250ms[eA2_WIND_DIRECTION].data.f = direction + p_a_sensor[eA2_WIND_DIRECTION].offset;
   }
+
+  if (p_sensor_cfg[A6_RAINFALL_DOT5_1MM].type)
+  {
+    rain = read_sensor_rain(g_sensor_driver[A6_RAINFALL_DOT5_1MM], &read_err);
+    p_reading_250ms[eA6_RAINFALL_DOT5_1MM].data.f = rain;
+    p_reading_250ms[eA6_RAINFALL_DOT5_1MM].err = read_err;
+  }
+
 }
 
 void measure_1s(void)
@@ -484,11 +498,6 @@ void measure_1s(void)
               adc = temperature_read(g_sensor_driver[A1_TEMPERATURE], &read_err);
               pa_reading_1s[A1_TEMPERATURE].data.f = adc + p_a_sensor[sensor_type].offset;
               pa_reading_1s[A1_TEMPERATURE].err = read_err;
-              break;
-            case A6_RAINFALL_DOT5_1MM:
-              fData = read_sensor_rain(g_sensor_driver[A6_RAINFALL_DOT5_1MM], &read_err);
-              pa_reading_1s[A6_RAINFALL_DOT5_1MM].data.f = fData;
-              pa_reading_1s[A6_RAINFALL_DOT5_1MM].err = read_err;
               break;
             case A7_PRESSURE:
               adc = read_sensor_barometer(g_sensor_driver[A7_PRESSURE], &read_err);

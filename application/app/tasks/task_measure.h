@@ -45,12 +45,14 @@ typedef struct sensor_data_s
 typedef enum reading_250
 {
   eA2_WIND_DIRECTION,
-  eA3_WIND_SPEED
-}eREADING_250MS_t;
+  eA3_WIND_SPEED,
+  eA6_RAINFALL_DOT5_1MM,
+  eMEASURE_250MS_MAX
+} eREADING_250MS_t;
 
 typedef struct measure_data_250ms
 {
-  sensor_data_t data[2];//풍향 풍속
+  sensor_data_t data[eMEASURE_250MS_MAX]; // 풍향 풍속
 } measure_data_250ms_t;
 
 typedef struct measure_data_1s
