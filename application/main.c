@@ -7,13 +7,14 @@
 
 int is_debug_mode(void)
 { 
-  return (CoreDebug->DHCSR & (1 << 0)) != 0; 
+  return (CoreDebug->DHCSR & CoreDebug_DHCSR_C_DEBUGEN_Msk) != 0; 
 }
 
 
-
-  int main(void)
+int main(void)
 {
+
+
   if (is_debug_mode())
   {
     __HAL_DBGMCU_FREEZE_IWDG();  // 디버깅 시 와치독 카운트 멈춤
@@ -31,6 +32,8 @@ int is_debug_mode(void)
   while(1);
   
 }
+
+
 
 
 

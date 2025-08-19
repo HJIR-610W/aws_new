@@ -1110,7 +1110,7 @@
                     <item>path</item>
                     <item>logging.ct</item>
                     <item>path</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>
