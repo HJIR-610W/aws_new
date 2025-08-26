@@ -13,6 +13,7 @@ typedef struct stm32_di_inst_s
   bool opened;
 } stm32_di_inst_t;
 
+#ifdef AWS_PCB_0_5 
 stm32_di_inst_t di_inst[STM32_DI_MCU_MAX] = {
 
     [STM32_DI_0_ADC_RDY] = {.init = {.Pin = DI_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
@@ -44,8 +45,59 @@ stm32_di_inst_t di_inst[STM32_DI_MCU_MAX] = {
     [STM32_DI_QUAD_UARTD_8] = {.init = {.Pin = DI_EX_UART_INT8_Pin, .Pull = GPIO_PULLUP},
                              .port = DI_EX_UART_INT8_GPIO_Port},
 
-    [STM32_DI_WAKE_UP] = {.init = {.Pin = DI_WAKE_UP_Pin, .Pull = GPIO_PULLUP},
-                        .port = DI_WAKE_UP_GPIO_Port},
+    [STM32_DI_BOOT1] = {.init = {.Pin = DI_BOOT1_Pin, .Pull = GPIO_PULLUP},
+                      .port = DI_BOOT1_GPIO_Port},
+    [STM32_DI_USB_POWER_FAIL] = {.init = {.Pin = DI_USB_OTG_PWR_FAIL_Pin, .Pull = GPIO_PULLUP},
+                               .port = DI_USB_OTG_PWR_FAIL_GPIO_Port},
+
+    [STM32_DI_SD_IN] = {.init = {.Pin = DI_SDIO_DETECT_Pin, .Pull = GPIO_PULLUP},
+                      .port = DI_SDIO_DETECT_GPIO_Port},
+
+    [STM32_DI_IO_INT] = {.init = {.Pin = DI_INT_D_IO_Pin, .Pull = GPIO_PULLUP},
+                       .port = DI_INT_D_IO_GPIO_Port},
+
+    [STM32_DI_RTC_INT] = {.init = {.Pin = DI_INT_RTC_Pin, .Pull = GPIO_PULLUP},
+                        .port = DI_INT_RTC_GPIO_Port},
+
+    [STM32_DI_HART_CD] = {.init = {.Pin = DI_CD_H_Pin, .Pull = GPIO_PULLUP},
+                        .port = DI_CD_H_GPIO_Port},
+};
+#endif
+
+
+#ifdef AWS_PCB_0_6 
+stm32_di_inst_t di_inst[STM32_DI_MCU_MAX] = {
+
+    [STM32_DI_0_ADC_RDY] = {.init = {.Pin = DI_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
+                          .port = DI_SPI2_DRDY_GPIO_Port},
+    [STM32_DI_USER_BTN] = {.init = {.Pin = DI_SW_SYS_Pin, .Pull = GPIO_PULLUP},
+                         .port = DI_SW_SYS_GPIO_Port},
+    [STM32_DI_RAIN_REED] = {.init = {.Pin = DI_RAIN_REED_Pin, .Pull = GPIO_PULLUP},
+                          .port = DI_RAIN_REED_GPIO_Port},
+    [STM32_DI_RAIN_HALL] = {.init = {.Pin = DI_RAIN_HALL_Pin, .Pull = GPIO_PULLUP},
+                          .port = DI_RAIN_HALL_GPIO_Port},
+    [STM32_DI_RAIN_HALL_ERR] = {.init = {.Pin = DI_RAIN_HALL_ERR_Pin, .Pull = GPIO_PULLUP},
+                              .port = DI_RAIN_HALL_ERR_GPIO_Port},
+    [STM32_DI_RAIN_DETECT_A] = {.init = {.Pin = DI_RAIN_DETECT_Pin, .Pull = GPIO_PULLUP},
+                              .port = DI_RAIN_DETECT_GPIO_Port},
+    [STM32_DI_QUAD_UARTA_1] = {.init = {.Pin = DI_EX_UART_INT1_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT1_GPIO_Port},
+    [STM32_DI_QUAD_UARTB_2] = {.init = {.Pin = DI_EX_UART_INT2_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT2_GPIO_Port},
+    [STM32_DI_QUAD_UARTC_3] = {.init = {.Pin = DI_EX_UART_INT3_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT3_GPIO_Port},
+    [STM32_DI_QUAD_UARTD_4] = {.init = {.Pin = DI_EX_UART_INT4_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT4_GPIO_Port},
+    [STM32_DI_QUAD_UARTA_5] = {.init = {.Pin = DI_EX_UART_INT5_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT5_GPIO_Port},
+    [STM32_DI_QUAD_UARTB_6] = {.init = {.Pin = DI_EX_UART_INT6_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT6_GPIO_Port},
+    [STM32_DI_QUAD_UARTC_7] = {.init = {.Pin = DI_EX_UART_INT7_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT7_GPIO_Port},
+    [STM32_DI_QUAD_UARTD_8] = {.init = {.Pin = DI_EX_UART_INT8_Pin, .Pull = GPIO_PULLUP},
+                             .port = DI_EX_UART_INT8_GPIO_Port},
+
+
 
     [STM32_DI_BOOT1] = {.init = {.Pin = DI_BOOT1_Pin, .Pull = GPIO_PULLUP},
                       .port = DI_BOOT1_GPIO_Port},
@@ -64,6 +116,8 @@ stm32_di_inst_t di_inst[STM32_DI_MCU_MAX] = {
     [STM32_DI_HART_CD] = {.init = {.Pin = DI_CD_H_Pin, .Pull = GPIO_PULLUP},
                         .port = DI_CD_H_GPIO_Port},
 };
+#endif
+
 
 void stm32_di_gpio_init(int di_number)
 {

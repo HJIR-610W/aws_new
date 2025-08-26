@@ -1517,6 +1517,9 @@
                     <name>$PROJ_DIR$\..\Application\app\test\test_hart.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\application\app\test\test_key.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\app\test\test_lcd.c</name>
                 </file>
                 <file>
@@ -2000,7 +2003,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -2048,7 +2051,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\rtc\ds1306.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
@@ -2407,6 +2410,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_di.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_di.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_do.c</name>

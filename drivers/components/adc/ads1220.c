@@ -596,7 +596,7 @@ void ads1210_initialize(void)
     reg = 0x00;
     write_reg(ADS1220_REG_3, 1, &reg);
 
-#if DEBUG_PRINTF_USE
+#ifdef DEBUG_PRINTF_USE
     parse_ads1220_register(drv);
 #endif
 }

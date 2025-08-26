@@ -17,12 +17,12 @@ void app_key_init(void)
 {
     uart_config_t uart_config;
 
-    uart_config.baud = 19200;
+    uart_config.baud = 38400;
     uart_config.dataLen = UART_DATA_LEN_8;
     uart_config.parityIdx = PARITY_NONE;
     uart_config.stop_bit = UART_STOP_BIT_1;
 
-    serial_key = BSP_UART_0_D_SUB_0;
+    serial_key = BSP_UART_1_TTL_ONLY;
     bsp_uart_init(serial_key, &uart_config);
 
     g_button_queue_id = osMessageQueueNew(BUTTON_QUEUE_SIZE, sizeof(int32_t), NULL);
@@ -41,7 +41,7 @@ int32_t get_button_key(uint32_t timeout_ms)
 
     if (g_button_queue_id == NULL)
     {
-        return KEY_CODE_UNKNOWN;
+        return KEY_CODE_NONE;
     }
 
     status = osMessageQueueGet(g_button_queue_id, &key, NULL, timeout_ms);
@@ -51,7 +51,7 @@ int32_t get_button_key(uint32_t timeout_ms)
         return key;
     }
 
-    return KEY_CODE_UNKNOWN;
+    return KEY_CODE_NONE;
 }
 
 void button_put_key(int32_t key)

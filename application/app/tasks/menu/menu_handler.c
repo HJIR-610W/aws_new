@@ -911,8 +911,8 @@ int32_t input_active(const char *title, int32_t *choice)
     {
 
           // 타이틀 가운데 정렬
-          int title_len = utf8_strlen(yes);
-      int title_padding = (total_width - 2 - title_len) / 2;
+           title_len = utf8_strlen(yes);
+       title_padding = (total_width - 2 - title_len) / 2;
 
       for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
 
@@ -922,8 +922,8 @@ int32_t input_active(const char *title, int32_t *choice)
     else
     {
       // 타이틀 가운데 정렬
-      int title_len = utf8_strlen(no);
-      int title_padding = (total_width - 2 - title_len) / 2;
+       title_len = utf8_strlen(no);
+       title_padding = (total_width - 2 - title_len) / 2;
 
       for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
 
@@ -985,8 +985,8 @@ int32_t show_ok(const char *title,const char *msg)
   {
     len = 0;
 
-    int title_len = utf8_strlen(yes);
-    int title_padding = (total_width - 2 - title_len) / 2;
+     title_len = utf8_strlen(yes);
+     title_padding = (total_width - 2 - title_len) / 2;
 
     for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
 

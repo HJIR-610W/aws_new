@@ -147,7 +147,7 @@ int print_menu(int width, const char* title, char** menu_list, int cnt)
     len = snprintf(buff, sizeof(buff), "|  %2d. %-s", i+1, menu_list[i]);
     io_printf(buff);
     len = total_width - utf8_strlen(buff) - 1;
-    for (int i = 0; i < len; i++) io_printf(" ");
+    for (int j = 0; j < len; j++) io_printf(" ");
     io_printf("|\r\n");
   }
 

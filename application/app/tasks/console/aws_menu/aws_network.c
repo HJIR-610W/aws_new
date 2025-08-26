@@ -423,7 +423,7 @@ int32_t aws_network_config_direct(void)
   {
     menu_cnt = 0;
     uint8_t *ip = get_config_app()->cdma_server_ip;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "통신 속도   :%d", config.direct_baud);
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "통신 속도   :%u", config.direct_baud);
     menu_cnt++;
 
     status = choice_menu(24, "직접통신(RS232)", menu, menu_cnt, &choice);

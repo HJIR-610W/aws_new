@@ -33,10 +33,7 @@ long get_minute_offset(DATE_TIME_BUF *ct, int logging_min)
 
   t_now = mktime(&now_tm);
 
-  if (t_base == -1 || t_now == -1)
-  {
-    return -1;
-  }
+ 
 
   long seconds_diff = (long)difftime(t_now, t_base);
   return seconds_diff / (logging_min * 60);
@@ -60,7 +57,7 @@ int32_t save_data(DATE_TIME_BUF *ct,
   time_input.tm_sec = 0;
 
   t_now = mktime(&time_input);
-  if (t_now == -1)
+  if (t_now == (time_t)-1)
   {
     return 1;
   }
@@ -120,7 +117,7 @@ int32_t load_data(DATE_TIME_BUF *ct, uint8_t *pDataBuff,
   time_input.tm_sec = 0;
 
   t_now = mktime(&time_input);
-  if (t_now == -1)
+  if (t_now == (time_t)-1)
   {
 
     return 1;
@@ -170,7 +167,7 @@ int32_t load_data(DATE_TIME_BUF *ct, uint8_t *pDataBuff,
     base_tm.tm_sec = 0;
 
     time_t t_base = mktime(&base_tm);
-    if (t_base == -1)
+    if (t_base == (time_t)-1)
     {
       return 1;
     }

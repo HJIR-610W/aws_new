@@ -246,7 +246,7 @@ __weak void BSP_SD_GetCardInfo(HAL_SD_CardInfoTypeDef *CardInfo)
   * @param hsd: SD handle
   * @retval None
   */
-void HAL_SD_AbortCallback(SD_HandleTypeDef *hsd)
+void HAL_SD_AbortCallback(SD_HandleTypeDef *p_hsd)
 {
   BSP_SD_AbortCallback();
 }
@@ -256,7 +256,7 @@ void HAL_SD_AbortCallback(SD_HandleTypeDef *hsd)
   * @param hsd: SD handle
   * @retval None
   */
-void HAL_SD_TxCpltCallback(SD_HandleTypeDef *hsd)
+void HAL_SD_TxCpltCallback(SD_HandleTypeDef *p_hsd)
 {
   BSP_SD_WriteCpltCallback();
 }
@@ -266,7 +266,7 @@ void HAL_SD_TxCpltCallback(SD_HandleTypeDef *hsd)
   * @param hsd: SD handle
   * @retval None
   */
-void HAL_SD_RxCpltCallback(SD_HandleTypeDef *hsd)
+void HAL_SD_RxCpltCallback(SD_HandleTypeDef *p_hsd)
 {
   BSP_SD_ReadCpltCallback();
 }

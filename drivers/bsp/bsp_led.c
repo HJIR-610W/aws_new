@@ -117,7 +117,7 @@ void bsp_led_init(void)
     {
       case BSP_LED_RUN:
         led_run_init();
-        bsp_led_set_blink_freq(BSP_LED_RUN,1,10);
+        bsp_led_set_blink_freq(BSP_LED_RUN,3,10);
         break;
     }
   }

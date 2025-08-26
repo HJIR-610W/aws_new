@@ -54,7 +54,7 @@ void MX_FSMC_Init(void)
   FSMC_NORSRAM_TimingTypeDef Timing = {0};
   FSMC_NORSRAM_TimingTypeDef ExtTiming = {0};
 
-
+#if 1 
   // ST7920 LCD Controller (NE1 Bank)
   /** Perform the ST7920 LCD Controller initialization sequence
   */
@@ -91,6 +91,8 @@ if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
 {
     ERROR_PRINTF("fsmc lcd");
   }
+#endif
+
 
 #if 1 
   //SRAM

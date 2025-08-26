@@ -20,6 +20,7 @@
 #include "config\config_sensor.h"
 #include "drivers\driver\driver.h"
 #include "drivers\driver\drv_rtc.h"
+#include "drivers\driver\drv_led.h"
 #include "drivers\bsp\cubemx\sdio.h"
 #include "drivers\bsp\cubemx\fsmc.h"
 #include "drivers\bsp\bsp_interrupt.h"
@@ -90,6 +91,7 @@ void log_boot_reason(void)
 void startTask(void *arg)
 {
   drv_init();// 에플리케이션에서 사용하는 드라이버 초기화
+  drv_led_on(DRV_LED_RUN);
   drv_rtc_read(&Date_Time);
 
 

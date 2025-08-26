@@ -284,7 +284,7 @@ uart 일반적으로 한번에 들어온다면 적용가능한 방법
 
 void HAL_UART_IDLECallback(UART_HandleTypeDef *huart)
 { 
-  __asm("BKPT #0");
+  //__asm("BKPT #0");
 }
 
 void USART3_IRQHandler(void)
@@ -352,19 +352,19 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 
     if (error & HAL_UART_ERROR_PE)
     {
-      __asm("BKPT #0");
+      //__asm("BKPT #0");
     }
     if (error & HAL_UART_ERROR_NE)
     {
-      __asm("BKPT #0");
+      //__asm("BKPT #0");
     }
     if (error & HAL_UART_ERROR_FE)
     {
-      __asm("BKPT #0");
+      //__asm("BKPT #0");
     }
     if (error & HAL_UART_ERROR_ORE)
     {
-      __asm("BKPT #0");
+     // __asm("BKPT #0");
     }
 
     // 필요한 추가 오류 처리 작업 수행

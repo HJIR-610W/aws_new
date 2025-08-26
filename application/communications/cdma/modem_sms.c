@@ -58,8 +58,7 @@ void SMS_Read_Info(sms_t *sms)
 
   mfgName = get_mfg_name();
 
-  len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "PCB:%d,MFG:%s,AREA:%d,BUILD:%d,",
-                  get_bootPCB(), mfgName, get_appAREA(), bufild_time);
+  len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "PCB:%u,MFG:%s,AREA:%u,BUILD:%u,", get_bootPCB(), mfgName, get_appAREA(), bufild_time);
   len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "ID:%d ", get_config_app()->id);
 
   _iCellular->send_sms(sms->num, sms->msg);

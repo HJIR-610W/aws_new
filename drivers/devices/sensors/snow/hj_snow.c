@@ -105,9 +105,9 @@ uint16_t make_hjSnowFrame(uint8_t *out, uint16_t outSize, uint8_t Cmd, uint8_t *
   }
   cnt += dataLen;
 
-  for (int i = 1; i < cnt; i++)
+  for (int j = 1; j < cnt; j++)
   {
-    sum += out[i];
+    sum += out[j];
   }
 
   // tail

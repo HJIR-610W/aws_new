@@ -608,7 +608,7 @@ void draw_aws(win_t *p_win)
           break;
         case eAWS_DATA_RAW:
         {
-          float f_data = p_kma->temperature.raw.f;
+           f_data = p_kma->temperature.raw.f;
           win_printf_row(p_win, row_count++, "%s: %7.2f C", m_l("기온", AWS_WD), f_data);
         }
         break;
@@ -814,7 +814,7 @@ void draw_aws(win_t *p_win)
           break;
           case eAWS_DATA_REAL:
           {
-            uint16_t data = p_kma->precipitation_presence.data;
+             data = p_kma->precipitation_presence.data;
             bool rain_p = (data == 10) ? true : false;
             win_printf_row(p_win, row_count++, "%s: %s", m_l("강수유무", AWS_WD), rain_p ? "ON" : "OFF");
           }
@@ -960,7 +960,7 @@ void draw_aws(win_t *p_win)
       {
         case eAWS_DATA_RAW:
         {
-          float f_data = p_kma->sunshine_duration.raw.f;
+           f_data = p_kma->sunshine_duration.raw.f;
           win_printf_row(p_win, row_count++, "%s: %s", m_l("일조(현재)", AWS_WD), (f_data == 1.0f) ? "ON" : "OFF");
           break;
         }
@@ -1340,7 +1340,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->cloud_height_1st.raw.f;
+         f_data = p_kma->cloud_height_1st.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f m", m_l("운고 1층", AWS_WD), f_data);
       }
       else
@@ -1363,7 +1363,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->cloud_height_2nd.raw.f;
+         f_data = p_kma->cloud_height_2nd.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f m", m_l("운고 2층", AWS_WD), f_data);
       }
       else
@@ -1386,7 +1386,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->cloud_height_3rd.raw.f;
+         f_data = p_kma->cloud_height_3rd.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f m", m_l("운고 3층", AWS_WD), f_data);
       }
       else
@@ -1409,7 +1409,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->cloud_amount.raw.f;
+         f_data = p_kma->cloud_amount.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.1f", m_l("운량", AWS_WD), f_data);
       }
       else
@@ -1432,7 +1432,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->visibility.raw.f;
+         f_data = p_kma->visibility.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f m", m_l("시정", AWS_WD), f_data);
       }
       else
@@ -1455,7 +1455,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->pm10_concentration.raw.f;
+         f_data = p_kma->pm10_concentration.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f ug/m3", m_l("미세먼지 PM10", AWS_WD), f_data);
       }
       else
@@ -1478,7 +1478,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->pm25_concentration.raw.f;
+         f_data = p_kma->pm25_concentration.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f ug/m3", m_l("미세먼지 PM2.5", AWS_WD), f_data);
       }
       else
@@ -1500,7 +1500,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->net_radiation.raw.f;
+         f_data = p_kma->net_radiation.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f W/m2", m_l("순복사", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL || page == eAWS_DATA_1MIN)
@@ -1527,7 +1527,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->total_radiation.raw.f;
+         f_data = p_kma->total_radiation.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f W/m2", m_l("전천복사", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1554,7 +1554,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->reflected_radiation.raw.f;
+         f_data = p_kma->reflected_radiation.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f W/m2", m_l("반사복사", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1581,7 +1581,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->direct_radiation.raw.f;
+         f_data = p_kma->direct_radiation.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f W/m2", m_l("직달일사", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1608,7 +1608,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->current_weather.raw.f;
+         f_data = p_kma->current_weather.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f", m_l("현재일기", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1634,7 +1634,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->soil_moisture_10cm.raw.f;
+         f_data = p_kma->soil_moisture_10cm.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f %%", m_l("토양수분 10cm", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1661,7 +1661,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->soil_moisture_20cm.raw.f;
+         f_data = p_kma->soil_moisture_20cm.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f %%", m_l("토양수분 20cm", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1688,7 +1688,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->soil_moisture_30cm.raw.f;
+         f_data = p_kma->soil_moisture_30cm.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f %%", m_l("토양수분 30cm", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1715,7 +1715,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->soil_moisture_50cm.raw.f;
+         f_data = p_kma->soil_moisture_50cm.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f %%", m_l("토양수분 50cm", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1742,7 +1742,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->illuminance.raw.f;
+         f_data = p_kma->illuminance.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f klux", m_l("조도", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1768,7 +1768,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->wind_speed_1_5m.raw.f;
+         f_data = p_kma->wind_speed_1_5m.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f m/s", m_l("풍속 1.5m", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1795,7 +1795,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->wind_speed_4m.raw.f;
+         f_data = p_kma->wind_speed_4m.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f m/s", m_l("풍속 4.0m", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1822,7 +1822,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->instant_wind_speed_1_5m.raw.f;
+         f_data = p_kma->instant_wind_speed_1_5m.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f m/s", m_l("순간풍속 1.5m", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1849,7 +1849,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->instant_wind_speed_4m.raw.f;
+         f_data = p_kma->instant_wind_speed_4m.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f m/s", m_l("순간풍속 4.0m", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1875,7 +1875,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->temperature_0_5m.raw.f;
+         f_data = p_kma->temperature_0_5m.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f C", m_l("기온 0.5m", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1902,7 +1902,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->temperature_4m.raw.f;
+         f_data = p_kma->temperature_4m.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f C", m_l("기온 4.0m", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1929,7 +1929,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->humidity_0_5m.raw.f;
+         f_data = p_kma->humidity_0_5m.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f %%", m_l("습도 0.5m", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1956,7 +1956,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->humidity_4m.raw.f;
+         f_data = p_kma->humidity_4m.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f %%", m_l("습도 4.0m", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)
@@ -1983,7 +1983,7 @@ void draw_aws(win_t *p_win)
     {
       if (page == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->tacometer.raw.f;
+         f_data = p_kma->tacometer.raw.f;
         win_printf_row(p_win, row_count++, "%s: %7.2f rpm", m_l("타코미터", AWS_WD), f_data);
       }
       else if (page == eAWS_DATA_REAL)

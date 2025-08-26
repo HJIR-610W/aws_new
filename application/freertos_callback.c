@@ -37,7 +37,7 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 
    snprintf(g_task_name,sizeof(g_task_name),"SOF,%s",pcTaskName);
    io_printf("SOF,%s",g_task_name);
-   __asm("BKPT #0");
+   //__asm("BKPT #0");
    reset_system("%s", g_task_name);
 }
 

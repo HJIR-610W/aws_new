@@ -7,7 +7,7 @@
 #include "util_time.h"
 #include "dev_io.h"
 
-#define ERROR_PRINTF_USE 0 // 시스템 에러 출력
+#define ERROR_PRINTF_USE // 시스템 에러 출력
 //#define DEBUG_PRINTF_USE 1 // 디버깅 필요시
 
 #define PRINTF_BASE(fmt, ...)                                                               \
@@ -16,13 +16,13 @@
               Date_Time.Hour, Date_Time.Min, Date_Time.Sec, Date_Time.SubSec,              \
               __FILE__, __LINE__, ##__VA_ARGS__)
 
-#if ERROR_PRINTF_USE
+#ifdef ERROR_PRINTF_USE
   #define ERROR_PRINTF(fmt, ...) PRINTF_BASE(fmt, ##__VA_ARGS__)
 #else
   #define ERROR_PRINTF(fmt, ...) ((void)0)
 #endif
 
-#if DEBUG_PRINTF_USE
+#ifdef DEBUG_PRINTF_USE
   #define DEBUG_PRINTF(fmt, ...)   io_printf(fmt, ##__VA_ARGS__)
 #else
   #define DEBUG_PRINTF(fmt, ...) ((void)0)

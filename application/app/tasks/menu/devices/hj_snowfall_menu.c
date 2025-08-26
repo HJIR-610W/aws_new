@@ -166,7 +166,7 @@ int32_t ctrl_hj_snow(void)
       {
         int status;
         int height;
-        uint8_t err;
+  
 
         status = input_decimal("Height(mm)",0,3000,&height);
         if(status == MENU_OK)

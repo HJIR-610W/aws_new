@@ -169,7 +169,7 @@ void st7920_gpio_set_data_bus(uint8_t data)
     HAL_GPIO_WritePin(FSMC_D1_GPIO_Port, FSMC_D1_Pin, (data & 0x02) ? GPIO_PIN_SET : GPIO_PIN_RESET);
     
     // Set D2 (GPIOD Pin 0)
-    HAL_GPIO_WritePin(FSMC_D2_GPIO_Port, FSMC_D2, (data & 0x04) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FSMC_D2_GPIO_Port, FSMC_D2_Pin, (data & 0x04) ? GPIO_PIN_SET : GPIO_PIN_RESET);
     
     // Set D3 (GPIOD Pin 1)
     HAL_GPIO_WritePin(FSMC_D3_GPIO_Port, FSMC_D3_Pin, (data & 0x08) ? GPIO_PIN_SET : GPIO_PIN_RESET);
@@ -199,7 +199,7 @@ void st7920_gpio_set_data_bus_input(void)
     HAL_GPIO_Init(FSMC_D0_GPIO_Port, &GPIO_InitStruct);
     
     // FSMC_D2-D3 on GPIOD (Pins 0-1)
-    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_Pin;
+    GPIO_InitStruct.Pin = FSMC_D2_Pin | FSMC_D3_Pin;
     HAL_GPIO_Init(FSMC_D2_GPIO_Port, &GPIO_InitStruct);
     
     // FSMC_D4-D7 on GPIOE (Pins 7-10)
@@ -220,7 +220,7 @@ void st7920_gpio_set_data_bus_output(void)
     HAL_GPIO_Init(FSMC_D0_GPIO_Port, &GPIO_InitStruct);
     
     // FSMC_D2-D3 on GPIOD (Pins 0-1)
-    GPIO_InitStruct.Pin = FSMC_D2 | FSMC_D3_Pin;
+    GPIO_InitStruct.Pin = FSMC_D2_Pin | FSMC_D3_Pin;
     HAL_GPIO_Init(FSMC_D2_GPIO_Port, &GPIO_InitStruct);
     
     // FSMC_D4-D7 on GPIOE (Pins 7-10)
@@ -233,35 +233,35 @@ uint8_t st7920_gpio_read_data_bus(void)
     uint8_t data = 0;
     
     // Read D0 (GPIOD Pin 14)
-    if (HAL_GPIO_ReadPin(FSMC_D0_GPIO_Port, FSMC_D0_PIN) == GPIO_PIN_SET)
+    if (HAL_GPIO_ReadPin(FSMC_D0_GPIO_Port, FSMC_D0_Pin) == GPIO_PIN_SET)
         data |= 0x01;
     
     // Read D1 (GPIOD Pin 15)
-    if (HAL_GPIO_ReadPin(FSMC_D1_GPIO_Port, FSMC_D1_PIN) == GPIO_PIN_SET)
+    if (HAL_GPIO_ReadPin(FSMC_D1_GPIO_Port, FSMC_D1_Pin) == GPIO_PIN_SET)
         data |= 0x02;
     
     // Read D2 (GPIOD Pin 0)
-    if (HAL_GPIO_ReadPin(FSMC_D2_GPIO_Port, FSMC_D2) == GPIO_PIN_SET)
+    if (HAL_GPIO_ReadPin(FSMC_D2_GPIO_Port, FSMC_D2_Pin) == GPIO_PIN_SET)
         data |= 0x04;
     
     // Read D3 (GPIOD Pin 1)
-    if (HAL_GPIO_ReadPin(FSMC_D3_GPIO_Port, FSMC_D3_PIN) == GPIO_PIN_SET)
+    if (HAL_GPIO_ReadPin(FSMC_D3_GPIO_Port, FSMC_D3_Pin) == GPIO_PIN_SET)
         data |= 0x08;
     
     // Read D4 (GPIOE Pin 7)
-    if (HAL_GPIO_ReadPin(FSMC_D4_GPIO_Port, FSMC_D4_PIN) == GPIO_PIN_SET)
+    if (HAL_GPIO_ReadPin(FSMC_D4_GPIO_Port, FSMC_D4_Pin) == GPIO_PIN_SET)
         data |= 0x10;
     
     // Read D5 (GPIOE Pin 8)
-    if (HAL_GPIO_ReadPin(FSMC_D5_GPIO_Port, FSMC_D5_PIN) == GPIO_PIN_SET)
+    if (HAL_GPIO_ReadPin(FSMC_D5_GPIO_Port, FSMC_D5_Pin) == GPIO_PIN_SET)
         data |= 0x20;
     
     // Read D6 (GPIOE Pin 9)
-    if (HAL_GPIO_ReadPin(FSMC_D6_GPIO_Port, FSMC_D6_PIN) == GPIO_PIN_SET)
+    if (HAL_GPIO_ReadPin(FSMC_D6_GPIO_Port, FSMC_D6_Pin) == GPIO_PIN_SET)
         data |= 0x40;
     
     // Read D7 (GPIOE Pin 10)
-    if (HAL_GPIO_ReadPin(FSMC_D7_GPIO_Port, FSMC_D7_PIN) == GPIO_PIN_SET)
+    if (HAL_GPIO_ReadPin(FSMC_D7_GPIO_Port, FSMC_D7_Pin) == GPIO_PIN_SET)
         data |= 0x80;
     
     return data;
@@ -271,8 +271,8 @@ uint8_t st7920_gpio_read_data_bus(void)
 
 #define ST7920_E_LOW()     HAL_GPIO_WritePin(FSMC_NE1_GPIO_Port, FSMC_NE1_Pin, GPIO_PIN_SET); 
 
-#define ST7920_CMD_SET()  HAL_GPIO_WritePin(FSMC_A0_GPIO_Port, FSMC_A0, GPIO_PIN_RESET);  // RS = 0 for command
-#define ST7920_DATA_SET()   HAL_GPIO_WritePin(FSMC_A0_GPIO_Port, FSMC_A0, GPIO_PIN_SET);    // RS = 1 for data
+#define ST7920_CMD_SET()  HAL_GPIO_WritePin(FSMC_A0_GPIO_Port, FSMC_A0_Pin, GPIO_PIN_RESET);  // RS = 0 for command
+#define ST7920_DATA_SET()   HAL_GPIO_WritePin(FSMC_A0_GPIO_Port, FSMC_A0_Pin, GPIO_PIN_SET);    // RS = 1 for data
 
 #define ST7920_W_SET()     HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_Pin, GPIO_PIN_RESET); // Set RW = 0 for write operation
 #define ST7920_R_SET()      HAL_GPIO_WritePin(FSMC_NWE_GPIO_Port, FSMC_NWE_Pin, GPIO_PIN_SET); // Set RW = 0 for write operation

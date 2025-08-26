@@ -268,7 +268,7 @@
                 </option>
                 <option>
                     <name>CCDiagSuppress</name>
-                    <state></state>
+                    <state>Pe826,Pe001,Pe177,Pe1873</state>
                 </option>
                 <option>
                     <name>CCDiagRemark</name>
@@ -1485,6 +1485,9 @@
                     <name>$PROJ_DIR$\..\Application\app\test\test_hart.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\application\app\test\test_key.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\app\test\test_lcd.c</name>
                 </file>
                 <file>
@@ -1717,7 +1720,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -1947,7 +1950,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -1968,7 +1971,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -1977,7 +1980,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -2031,7 +2034,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</name>
                 </file>
             </group>
             <group>
@@ -2355,7 +2358,7 @@
                     <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.c</name>
@@ -2375,6 +2378,9 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_di.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_di.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_do.c</name>

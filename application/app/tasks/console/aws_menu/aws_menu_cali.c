@@ -492,12 +492,12 @@ int handle_offset_adjustment(int adc_num)
 
         if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)  // 싱글
         {
-          uint8_t err;
+           err;
           raw_now = (int32_t)drv_adc_single_raw_read(channel_index,1, &err);
         }
         else if (type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
         {
-          uint8_t err;
+           err;
           raw_now = drv_adc_diff_raw_read(channel_index,1, &err);
         }
 

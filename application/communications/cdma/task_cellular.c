@@ -717,7 +717,7 @@ bool is_ringReceived(char *prNum,uint16_t numSize,uint16_t *prCnt)
  */
 bool is_rejectCallNum(char *callNum)
 {
-#if (REJECT_CALL_USE)
+#ifdef REJECT_CALL_USE
     bool isRejectNum = false;
 
     uint32_t i;

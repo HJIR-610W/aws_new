@@ -495,7 +495,7 @@ void at45db_read( uint32_t offset, uint8_t *p_buff, uint32_t buff_size,
 {
 
   uint32_t page_size = at45db_inst.chip_info.current_page_size;
-  uint8_t buff[2112]; // Maximum possible page size for AT45DB256
+  uint8_t buff[512]; // Maximum possible page size for AT45DB256
   uint32_t page_quot = offset / page_size;
   uint32_t page_rem = offset % page_size;
   uint32_t remain = page_size - page_rem;
@@ -543,7 +543,7 @@ int32_t at45db_write( uint32_t offset, uint8_t *p_data, uint32_t data_len)
 {
 
   uint32_t page_size = at45db_inst.chip_info.current_page_size;
-  uint8_t buff[2112]; // Maximum possible page size for AT45DB256
+  uint8_t buff[512]; // Maximum possible page size for AT45DB256
   uint32_t page_quot = offset / page_size;
   uint32_t page_rem = offset % page_size;
   uint32_t remain = page_size - page_rem;

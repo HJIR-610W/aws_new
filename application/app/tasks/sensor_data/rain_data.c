@@ -113,7 +113,7 @@ uint16_t get_daily_rain(const uint16_t *rain_days, int year, int month, int day)
 
   int index = dayOfYear(year, month, day);
   if (index <= 0 || index > 366)
-    return -1;
+    return 0;
 
   return rain_days[index - 1]; // 배열 index는 0-based
 }

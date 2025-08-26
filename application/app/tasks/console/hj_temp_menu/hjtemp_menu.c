@@ -75,7 +75,7 @@ int hjtemperature_menu(void)
 
         int ok;
         int data;
-        uint8_t err;
+  
 
         hjtemperature_ctrl(hjtemp, eTEMP_GET_OFFSET, NULL, (void*)&data, &err);
         if (err == 0)
@@ -111,7 +111,7 @@ int hjtemperature_menu(void)
 
           int ok;
           int data;
-          uint8_t err;
+      
 
           hjtemperature_ctrl(hjtemp, eHUMI_GET_OFFSET, NULL, (void*)&data, &err);
 

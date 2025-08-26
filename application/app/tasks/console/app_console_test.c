@@ -173,15 +173,15 @@ int32_t pcb_pin(void)
                            GPIOF, GPIOG, GPIOH, GPIOI};
 
   io_printf("GREEN[OUT],WHITE[IN],YELLOW[AF]\r\n");
-  for (int i = 0; i < _countof(pcbPortNameList) / 2; i++)
+  for (uint32_t i = 0; i < _countof(pcbPortNameList) / 2; i++)
   {
     io_printf("%-23s ", pcbPortNameList[i]);
   }
   io_printf("\r\n");
 
-  for (int pin = 0; pin < 16; pin++)
+  for (uint32_t pin = 0; pin < 16; pin++)
   {
-    for (int j = 0; j < _countof(pcbPortNameList) / 2; j++)
+    for (uint32_t j = 0; j < _countof(pcbPortNameList) / 2; j++)
     {
       GPIO_TypeDef *port = ports[j];
       if ((port->MODER & (0x3 << (pin * 2))) ==
@@ -211,16 +211,16 @@ int32_t pcb_pin(void)
     io_printf("\r\n");
   }
   io_printf("\r\n");
-  for (int i = _countof(pcbPortNameList) / 2; i < _countof(pcbPortNameList);
+  for (uint32_t i = _countof(pcbPortNameList) / 2; i < _countof(pcbPortNameList);
        i++)
   {
     io_printf("%-23s ", pcbPortNameList[i]);
   }
   io_printf("\r\n");
 
-  for (int pin = 0; pin < 16; pin++)
+  for (uint32_t pin = 0; pin < 16; pin++)
   {
-    for (int j = _countof(pcbPortNameList) / 2; j < _countof(pcbPortNameList);
+    for (uint32_t j = _countof(pcbPortNameList) / 2; j < _countof(pcbPortNameList);
          j++)
     {
       GPIO_TypeDef *port = ports[j];

@@ -293,7 +293,7 @@
 #define DI_EX_UART_INT8_Pin              GPIO_PIN_11
 #define DI_EX_UART_INT8_GPIO_Port        GPIOI
 
-extern const char* pcbPortNameList[9];;
+extern const char* pcbPortNameList[9];
 extern const char* pcbPinNameList[9][16];
 
 #endif /* PCB_5_PIN_H */

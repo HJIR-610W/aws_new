@@ -23,7 +23,7 @@
 #include "terminal_bridge.h"
 
 static int32_t debug_uart_num = -1;
-;
+
 USART_TypeDef *debug_uart_base = USART1;
 
 void debug_uart_init(uint32_t baud_rate)
@@ -110,7 +110,7 @@ void io_puts(const char *str)
 }
 
 
-#define PRINTF_HEAP_USE 1
+#define PRINTF_HEAP_USE 0
 
 
 int32_t io_printf(const char *pFmt, ...)

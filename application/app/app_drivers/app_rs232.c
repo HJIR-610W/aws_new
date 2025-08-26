@@ -37,7 +37,7 @@ int32_t uart_num_to_driver_num(int32_t app_uart_num)
 
 uint16_t rs232_get_portList(const char **list,uint16_t listMax)
 {
-  int i=0;
+  uint32_t i=0;
 
 
   for( i = 0; i <_countof(rs232_define);i++)

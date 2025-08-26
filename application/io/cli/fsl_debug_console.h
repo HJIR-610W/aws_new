@@ -203,7 +203,7 @@ int DbgConsole_Scanf(char *fmt_ptr, ...);
  */
 int DbgConsole_Getchar(void);
 int DbgConsole_GetcharNonBlocking(void);
- int DbgConsole_ScanfFormattedData(const char* line_ptr, const char* format, va_list args_ptr);;
+ int DbgConsole_ScanfFormattedData(const char* line_ptr, const char* format, va_list args_ptr);
 #endif /* SDK_DEBUGCONSOLE */
 
 /*! @} */

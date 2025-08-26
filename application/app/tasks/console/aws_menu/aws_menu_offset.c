@@ -58,7 +58,7 @@ int32_t menu_offset_pressure(void)
   uint8_t error;
   float local_temperature;
   int driver_num;
-  adc_config_t *config;
+  adc_config_t *p_config;
   float voltage;
   float calibrated_voltage;
   int status;
@@ -72,7 +72,7 @@ int32_t menu_offset_pressure(void)
     return 0;
   }
 
-  config = get_sensor_config(&get_config_app()->sensor[A7_PRESSURE]);
+  p_config = get_sensor_config(&get_config_app()->sensor[A7_PRESSURE]);
   driver = get_sensor_driver(A7_PRESSURE);
   temperature = read_sensor_barometer(driver, &error);
 
@@ -81,16 +81,16 @@ int32_t menu_offset_pressure(void)
   io_printf("입력:");
   if(cli_scanf_s("%f",&local_temperature)>0)
   {
-    voltage = drv_adc_single_read_voltage(config->single_channel, 10,&error);
-    io_printf("현재 ADC 싱글 %d 전압:%fv\r\n",config->single_channel,voltage);
-    calibrated_voltage = cvt_data_to_voltage(config,local_temperature);
+    voltage = drv_adc_single_read_voltage(p_config->single_channel, 10,&error);
+    io_printf("현재 ADC 싱글 %d 전압:%fv\r\n",p_config->single_channel,voltage);
+    calibrated_voltage = cvt_data_to_voltage(p_config,local_temperature);
     io_printf("요구되는 전압:%f\r\n", calibrated_voltage);
     status  = confirm_continue("오프셋을 조정합니다",&ok);
     if(status != MENU_OK)
     if(ok)
     {
       float new_offset = calibrated_voltage - voltage;
-      drv_adc_set_offset( config->single_channel, new_offset);
+      drv_adc_set_offset( p_config->single_channel, new_offset);
       io_printf("현장센서에맞게 오프셋 %f 적용됩니다\n",new_offset);
     }
 
