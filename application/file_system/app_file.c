@@ -201,7 +201,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   res = f_read(p_file, data, dataLen, &bytesRead);
   if (res != FR_OK || bytesRead != dataLen)
   {
-    ERROR_PRINTF("bytesRead != dataLen %d", res);
+    ERROR_PRINTF("bytesRead(%d) != dataLen(%d) FRESULT:%d", bytesRead, dataLen, res);
     f_close(p_file);
     vPortFree(p_file);
     OS_POST_SEM(g_fileSem);

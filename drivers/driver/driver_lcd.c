@@ -141,3 +141,19 @@ void driver_write_string_at(driver_t *drv, int row, int col, const char *str)
   if (api->write_string_at)
     api->write_string_at(drv, row, col, str);
 }
+
+
+
+void drv_lcd_close(int num)
+{
+  
+    switch (num)
+  {
+    case DRIVER_CLCD:
+      st7920_close();
+      break;
+
+    default:
+      break;
+  }
+}

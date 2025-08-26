@@ -119,7 +119,7 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
     screen_refresh();
 
     int32_t key = get_button_key(10);  // 10ms 대기
-    if (key == -1) continue;
+    if (key == KEY_CODE_NONE) continue;
 
     // 키 입력 시 커서 즉시 표시
     blink_state = 1;
@@ -306,7 +306,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
     screen_refresh();
     
     key = get_button_key(10);
-    if (key == -1) continue;
+    if (key == KEY_CODE_NONE) continue;
     
     // 키 입력 시 커서 즉시 표시
     blink_state = 1;
@@ -551,7 +551,8 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
     screen_refresh();
 
     int32_t key = get_button_key(10);  // 10ms 대기
-    if (key == -1) continue;
+    if (key == KEY_CODE_NONE)
+      continue;
 
     // 키 입력 시 커서 즉시 표시
     blink_state = 1;

@@ -1,7 +1,3 @@
-/**
- * @file st7920.c
- * @brief ST7920 128x64 그래픽 LCD 드라이버 (시리얼 인터페이스)
- */
 
 #define ST7920_SPI_USE 0
 #define ST7920_GPIO_USE 0
@@ -17,7 +13,7 @@
 #include "bsp_delay.h"
 #include <math.h>
 #include <stdlib.h>
-
+#include "drv_power.h"
 #include "font\font_6x8.h"
 
 
@@ -414,6 +410,8 @@ driver_t *st7920_open(void)
         return &st7920_driver;
     }
 
+    drv_power_on(DRV_POWER_LCD);
+    
 #if ST7920_SPI_USE
     st7920_instance.spi_num = BSP_SPI_1;
     if(!st7920_instance.spi_num)
@@ -452,6 +450,11 @@ driver_t *st7920_open(void)
     return &st7920_driver;
 }
 
+void st7920_close(void)
+{
+  st7920_driver.opened = NULL;
+  drv_power_off(DRV_POWER_LCD);
+}
 void st7920_reset(driver_t *drv)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
@@ -615,7 +618,7 @@ void st7920_flush_buffer(driver_t *drv)
     st7920_t *cfg = (st7920_t *)drv->cfg;
     if(!cfg->graphic_mode) return;
 
-    rotate_screen(180, ST7920_WIDTH , ST7920_HEIGHT, (uint8_t *)framebuffer);
+   // rotate_screen(180, ST7920_WIDTH , ST7920_HEIGHT, (uint8_t *)framebuffer);
     // 상단 영역 (Y: 0~31)
     for (uint8_t y = 0; y < 32; y++)
     {
@@ -641,7 +644,7 @@ void st7920_flush_buffer(driver_t *drv)
             st7920_send_data(drv, framebuffer[y][x_byte]);
         }
     }
-    rotate_screen(180, ST7920_WIDTH, ST7920_HEIGHT, (uint8_t *)framebuffer);
+   // rotate_screen(180, ST7920_WIDTH, ST7920_HEIGHT, (uint8_t *)framebuffer);
 }
 void st7920_clear_screen(driver_t *drv)
 {

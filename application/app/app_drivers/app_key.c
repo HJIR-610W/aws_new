@@ -160,6 +160,7 @@ void scan_key(void)
     
         if (key != KEY_CODE_NONE) 
         {
+
             button_put_key(key);
         }
     }

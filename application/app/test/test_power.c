@@ -74,12 +74,12 @@ void test_power_signal(void)
       {
         if (strcmp(cmd, "on") == 0)
         {
-          drv_power_on(DRV_POWER_LCD_RESET);  
+          drv_power_on(DRV_POWER_LCD);  
           io_printf("BTM: ON (Low)\r\n");
         }
         else if (strcmp(cmd, "off") == 0)
         {
-          drv_power_off(DRV_POWER_LCD_RESET);  
+          drv_power_off(DRV_POWER_LCD);  
           io_printf("BTM: OFF (High)\r\n");
         }
         else

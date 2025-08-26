@@ -17,8 +17,8 @@ void bsp_power_on(int num)
     case BSP_POWER_HART_24V:
       bsp_do_high(BSP_DO_POWER_HART_24V);
       break;
-    case BSP_POWER_LCD_RESET:
-      bsp_do_high(BSP_DO_LCD_RESET);
+    case BSP_POWER_LCD:
+      bsp_do_high(BSP_DO_POWER_LCD);
       break;
     case BSP_POWER_RAIN_DECT_ANALOG:
       bsp_do_high(BSP_DO_POWER_RAIN_DECT_ANALOG);
@@ -40,8 +40,8 @@ void bsp_power_off(int num)
     case BSP_POWER_HART_24V:
       bsp_do_low(BSP_DO_POWER_HART_24V);
       break;
-    case BSP_POWER_LCD_RESET:
-      bsp_do_low(BSP_DO_LCD_RESET);
+    case BSP_POWER_LCD:
+      bsp_do_low(BSP_DO_POWER_LCD);
       break;
     case BSP_POWER_RAIN_DECT_ANALOG:
       bsp_do_low(BSP_DO_POWER_RAIN_DECT_ANALOG);

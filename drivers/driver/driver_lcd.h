@@ -14,6 +14,7 @@
 
 
 driver_t *driver_lcd_open(int num);
+void drv_lcd_close(int num);
 
 void driver_lcd_set_position(driver_t *drv, uint8_t row, uint8_t col);
 void driver_lcd_write_string(driver_t *drv, const char *str);

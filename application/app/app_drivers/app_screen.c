@@ -9,6 +9,7 @@
 #include "cmsis_os2.h"
 #include "cli_key_code.h"
 #include "util_memory.h"
+#include "drv_power.h"
 
 #define MAX_COLS 21
 
@@ -375,13 +376,18 @@ void screen_menu_clear(screen_menu_t *win)
 
 void screen_off(void)
 {
-  screen_clear();
-  screen_printf(3, 0, "      Screen Off");
-  screen_refresh();
+  //screen_clear();
+  //screen_printf(3, 0, "      Screen Off");
+  //screen_refresh();
+  
+  drv_lcd_close(DRIVER_CLCD);
+
 }
 
 void screen_on(void)
 {
+  screen_init();
+  
   screen_clear();
   screen_printf(3, 0, "      Screen On");
   screen_refresh();

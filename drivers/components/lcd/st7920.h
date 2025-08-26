@@ -10,6 +10,8 @@
 
 
 driver_t* st7920_open(void);
+void st7920_close(void);
+
 void st7920_reset(driver_t *drv);
 void st7920_send_cmd(driver_t *drv, uint8_t cmd);
 void st7920_send_data(driver_t *drv, uint8_t data);

@@ -1194,7 +1194,7 @@ void menuTask(void *arg)
 
     key =  get_button_key(250);//이 기다리는 시간이 화면 갱신되는 시간 
 
-    if (key == KEY_CODE_CTRL_A)
+    if (key == KEY_CODE_CTRL_C)
     {
       setup_menu();
       screen_off_time = OS_GET_TICK();//LCD off안되도록 갱신
@@ -1208,8 +1208,10 @@ void menuTask(void *arg)
     if ((OS_GET_TICK() - screen_off_time) > SCREEN_OFF_TIMEOUT_MS)
     {
       screen_off();
+      
       key = get_button_key(0xFFFFFFFF);//무한 대기 
       screen_off_time = OS_GET_TICK();
+      screen_on();
     }
 
     }
