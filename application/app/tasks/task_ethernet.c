@@ -10,10 +10,11 @@
 #include "task_client.h"
 #include "task_http_server.h"
 #include "task_telnet_server.h"
+#include "system_err.h"
 
 
 const osThreadAttr_t ethernetTxTask_attributes = {
-  .name = "ethernetTask",
+  .name = "eth start",
   .stack_size = TASK_STACK(TASK_ETHERNET_DEF),
   .priority = (osPriority_t)TASK_PRIO(TASK_ETHERNET_DEF),
 };
@@ -34,9 +35,8 @@ void ethernetTask(void *arg)
   mask = config.eth_subnet;
   gw   = config.eth_gateway;
 
-
+  DEBUG_PRINTF("ethernet task start\r\n");
   MX_LWIP_Init(ip,mask,gw);
-
   
   noti_tcpServerTask(0x00000001);
   noti_tcpClientTask(0x00000001);

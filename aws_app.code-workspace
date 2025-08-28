@@ -141,7 +141,8 @@
 			"xutility": "c",
 			"aws_default_data.h": "c",
 			"old_aws_define.h": "c",
-			"util_crc16_ccitt.h": "c"
+			"util_crc16_ccitt.h": "c",
+			"kma3.h": "c"
 		}
 	}
 }

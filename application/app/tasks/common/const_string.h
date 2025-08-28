@@ -19,7 +19,7 @@ extern  const char *ethlinkStatusList_lcd[3];
 extern const char *sdcard_status_list_lcd[2];
 extern const char *linkStatusList[3];//
 extern const char *doorStatusList[2];//
-extern const char *generalStatusList[2];// 
-
+extern const char *generalStatusList[2];//
+extern const char *lcd_off_time_list_eng[4];
 
 #endif // CONST_STRING_H

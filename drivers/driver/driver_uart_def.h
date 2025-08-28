@@ -18,7 +18,7 @@
 typedef struct uart_config_s
 {
   int baud;
-  uint8_t parityIdx;
+  uint8_t parity_index;
   uint8_t stop_bit;
   uint8_t dataLen;
 } uart_config_t;

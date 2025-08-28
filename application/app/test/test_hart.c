@@ -78,7 +78,7 @@ void test_hart(void)
 
 
   uart_config.baud = 1200;
-  uart_config.parityIdx = PARITY_ODD;
+  uart_config.parity_index = PARITY_ODD;
   uart_config.stop_bit = UART_STOP_BIT_1;
   uart_config.dataLen = UART_DATA_LEN_8;
 

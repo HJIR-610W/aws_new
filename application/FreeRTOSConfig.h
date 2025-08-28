@@ -63,7 +63,7 @@
 #define TASK_ISR_EVENT_DEF      (1024, osPriorityRealtime2)
 #define TASK_HTTP_SERVER_DEF    (4096, osPriorityRealtime2)
 #define TASK_DUALPORT_DEF       (2048, osPriorityRealtime1)
-#define TASK_ETHERNET_DEF       (2048, osPriorityRealtime)  //초기화만 해주고 종료 됨
+#define TASK_ETHERNET_DEF       (2048, osPriorityBelowNormal)  //초기화만 해주고 종료 됨
 #define TASK_MEASURE_250MS_DEF  (1024, osPriorityRealtime)
 #define TASK_MEASURE_1S_DEF     (2048, osPriorityRealtime)
 #define TASK_TCP_SERVER_DEF     (1024, osPriorityNormal)

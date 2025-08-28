@@ -34,6 +34,7 @@
 #include "drv_system.h"
 #include "FreeRTOS.h"
 #include "schedule.h"
+#include "system_err.h"
 
 
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
@@ -46,7 +47,7 @@ extern uint8_t BSP_PlatformIsDetected(void);
 
 #define SCREEN_COLS 21
 #define SCREEN_ROWS 8
-#define SCREEN_OFF_TIMEOUT_MS 600000
+#define SCREEN_OFF_TIMEOUT_MS 10000
 
 const osThreadAttr_t kMenuTask_attributes = {
     .name = "menu",
@@ -1118,9 +1119,11 @@ void menuTask(void *arg)
   int32_t page_list[PAGE_MAX];//어떠한 페이지인지 저장
   uint32_t screen_off_time;
   screen_page_t lcd_win;
-  
+
+  DEBUG_PRINTF("menu task start\r\n");
   screen_init();
   
+  osDelay(1000);
   print_logo();
 
   screen_page_create(&lcd_win);
@@ -1205,13 +1208,16 @@ void menuTask(void *arg)
       screen_off_time = OS_GET_TICK(); // LCD off안되도록 갱신
     }
 
-    if ((OS_GET_TICK() - screen_off_time) > SCREEN_OFF_TIMEOUT_MS)
+    if (get_config_app()->lcd_off_time_index != eLCD_OFF_ALWAYS_ON)
     {
-      screen_off();
-      
-      key = get_button_key(0xFFFFFFFF);//무한 대기 
-      screen_off_time = OS_GET_TICK();
-      screen_on();
+      if ((OS_GET_TICK() - screen_off_time) > get_lcd_off_time() * OS_TICK_COUNT)
+      {
+        screen_off();
+
+        key = get_button_key(0xFFFFFFFF); // 무한 대기
+        screen_off_time = OS_GET_TICK();
+        screen_on();
+      }
     }
 
     }

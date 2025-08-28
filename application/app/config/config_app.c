@@ -7,6 +7,7 @@
 #include "app_rs485.h"
 #include "app_sensor.h"
 #include "app_version.h"
+#include "const_string.h"
 #include "config_app.h"
 #include "config_sensor.h"
 #include "dev_io.h"
@@ -17,8 +18,6 @@ config_t config;
 system_t System;
 
 sensor_t g_sensor_config_bk[SENSOR_LIST_MAX]; // config 센서의 복사본
-
-
 
 const config_t config_app_default = {.id = 0,
                                      .password = 7777,
@@ -31,7 +30,7 @@ const config_t config_app_default = {.id = 0,
                                      .eth_remote_server_ip = {112, 221, 177, 172},
                                      .eth_remote_server_port = 6442,
                                      .eth_local_port = 9000,
-                                     .eth_mac={0x00,0x80,0xE1,0x00,0x00,0x00},
+                                     .eth_mac = {0x00, 0x80, 0xE1, 0x00, 0x00, 0x00},
                                      .cdma_server_ip = {112, 221, 177, 172},
                                      .cdma_port = 0,
                                      .cdma_model = eCDMA_NTLE9607,
@@ -52,7 +51,8 @@ const config_t config_app_default = {.id = 0,
                                      .ac_active = false,
                                      .dev_telnet_ip = {112, 221, 177, 172},
                                      .dev_telnet_port = 23001,
-                                     .dev_telnet_mode = eTELNET_SERVER};
+                                     .dev_telnet_mode = eTELNET_SERVER,
+                                     .lcd_off_time_index = eLCD_OFF_10SEC};
 
 int32_t g_config_app_change_count = 0;
 
@@ -282,6 +282,13 @@ void check_config_app(void)
     config.vpn_active = config_app_default.vpn_active;
   g_config_app_change_count++;
   }
+
+
+  if(config.lcd_off_time_index > _countof(lcd_off_time_list_eng) )
+  {
+    config.lcd_off_time_index = eLCD_OFF_10SEC;
+    g_config_app_change_count++;
+  }
 }
 
 
@@ -308,7 +315,7 @@ void load_config_app(void)
 #if 0 // CRC 미사용(test 필요)
   crc_result = false;
 
-  config_t *p_config = user_malloc(sizeof(config_t));
+  config_t *p_config = user_malloc(sizeof(config_t));//미사용
 
   drv_fram_read(CONFIG_START_ADDRESS, (uint8_t *)p_config, sizeof(config_t));
 
@@ -489,4 +496,28 @@ void restore_config_app(void)
 system_t *get_system(void)
 {
   return &System;
+}
+
+
+uint16_t get_lcd_off_time(void)
+{
+  uint16_t lcd_off_time;
+
+  switch (config.lcd_off_time_index)
+  {
+  case eLCD_OFF_10SEC:
+    lcd_off_time = 10;
+    break;
+  case eLCD_OFF_60SEC:
+    lcd_off_time = 60;
+    break;
+  case eLCD_OFF_600SEC:
+    lcd_off_time = 600;
+    break;
+  default:
+  lcd_off_time = 10;
+  break;
+  }
+
+  return lcd_off_time;
 }

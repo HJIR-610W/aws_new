@@ -9,6 +9,7 @@
 #include "config_app.h"
 #include "config_manager.h"
 #include "config_nvm.h"
+#include "const_string.h"
 #include "console_utile.h"
 #include "menu_handler.h"
 #include "system_err.h"
@@ -32,6 +33,7 @@ extern void config_hj_reset(void);
 #define MANAGER_MENU_RESET      1
 #define MANAGER_MENU_CONFIG     2
 #define MANAGER_MENU_UPDATE     3
+#define MANAGER_MENU_LCD        4
 
 #define CONFIG_MENU_HJ_RESET    0
 #define CONFIG_MENU_INIT        1
@@ -49,6 +51,7 @@ void draw_setup_menu_manager_menu(screen_menu_t* p_win)
   screen_menu_printf(p_win, MANAGER_MENU_RESET, "Device Reset");
   screen_menu_printf(p_win, MANAGER_MENU_CONFIG, "Settings Change");
   screen_menu_printf(p_win, MANAGER_MENU_UPDATE, "Firmware update");
+  screen_menu_printf(p_win, MANAGER_MENU_LCD, "LCD off time");
   screen_menu_clear(p_win);
 }
 
@@ -418,6 +421,7 @@ int32_t setup_menu_manager(void)
   int32_t key;
   int32_t status;
   screen_menu_t menu;
+  int32_t dec;
 
   screen_menu_create(&menu,  "Manager");
 
@@ -458,8 +462,17 @@ int32_t setup_menu_manager(void)
         case MANAGER_MENU_UPDATE:
           status = setup_menu_update();
           break;
+        case MANAGER_MENU_LCD:
+          dec = config.lcd_off_time_index;
+         // status = input_decimal("LCD off time(sec)", 10, 600, &dec);
+          status = input_combobox("LCD off time",lcd_off_time_list_eng,_countof(lcd_off_time_list_eng),&dec);
+          if (status != MENU_OK)
+            break;
+          config.lcd_off_time_index = dec;
+          WRITE_CFG(lcd_off_time_index);
+          break;
 
-        default:
+            default:
           break;
       }
             if(status == MENU_ABORT)

@@ -46,7 +46,7 @@ int32_t sjgp215_init(void *opt)
     sjgp215_inst.opened = true;
     uart_config.baud = 9600;
     uart_config.dataLen = UART_DATA_LEN_8;
-    uart_config.parityIdx = PARITY_NONE;
+    uart_config.parity_index = PARITY_NONE;
     uart_config.stop_bit = UART_STOP_BIT_1;
 
     sjgp215_inst.rs232_port = uart_num_to_driver_num(cfg->rs232_port);

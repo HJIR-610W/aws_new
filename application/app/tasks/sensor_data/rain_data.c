@@ -20,21 +20,54 @@
 #define MINUTES_PER_DAY 1440
 #define DAYS_IN_YEAR 366
 
+#define TEMP_BUFF_SIZE 16384
 // 1분마다 저장된 1년치 우량량 데이터 읽기
-int32_t read_rain_1min(uint16_t year, uint16_t *rain_data, uint32_t read_size)
+int32_t read_rain_1min(uint16_t year, uint16_t *p_buffer, uint32_t read_size)
 {
+  #if 0 
   char path[50];
   FRESULT fret;
-  //  FSIZE_t file_size = 0;
+  uint8_t *p_target = (uint8_t *)p_buffer;
+  
+  uint8_t *p_temp = user_malloc(TEMP_BUFF_SIZE);
 
   make_rain_1min_path(year, path, sizeof(path));
 
-  fret = read_file(path, (uint8_t *)rain_data, read_size, 0);
+  int quot = read_size / TEMP_BUFF_SIZE;
+  int rem = read_size % TEMP_BUFF_SIZE;
 
+  for(int i = 0;i< quot; i++)
+  {
+    fret = read_file(path, (uint8_t *)p_temp, TEMP_BUFF_SIZE, i * TEMP_BUFF_SIZE);
+    memcpy((uint8_t *)&p_target[i * TEMP_BUFF_SIZE], p_temp, TEMP_BUFF_SIZE);
+  }
+  
+  if(rem)
+  {
+    fret = read_file(path, (uint8_t *)p_temp, rem, quot * TEMP_BUFF_SIZE);
+    memcpy(&p_target[quot * TEMP_BUFF_SIZE], p_temp, rem);
+  }
+
+  user_free(p_temp);
   if(fret == FR_OK)
   {
     return 0;
   }
+#else
+  char path[50];
+  FRESULT fret;
+
+
+  make_rain_1min_path(year, path, sizeof(path));
+
+  fret = read_file(path, (uint8_t *)p_buffer, read_size, 0);
+
+  if (fret == FR_OK)
+  {
+    return 0;
+  }
+
+#endif
 
   return 1;
 }

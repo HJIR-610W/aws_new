@@ -196,18 +196,14 @@ int32_t write_sunshine_1min(DATE_TIME_BUF *nt, uint16_t sunshine_1min)
  */
 void loggingTask(void *arg)
 {
-
   int32_t err=0;
-
-
   logging_t logging;
   uint16_t rain;
   data_logging_cmd_t *p_frame;
-
-
   uint32_t offset;
   uint16_t sunshine;
 
+  DEBUG_PRINTF("logging task start\r\n");
 
   while (1)
   {

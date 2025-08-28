@@ -24,21 +24,39 @@ uint32_t getSDIOClockFrequency(void)
     return ahbClock; // SDIO의 메인 클럭 속도 반환
 }
 
-uint32_t calculateSDIOClockDiv(uint32_t ahbClock, uint32_t desiredSDIOClock) {
-    // SDIO의 최대 허용 속도는 25 MHz이므로, 이를 초과하지 않도록 제한합니다.
-    if (desiredSDIOClock > 25000000) {
-        desiredSDIOClock = 25000000;
-    }
+uint32_t calculateSDIOClockDiv(uint32_t hclk, uint32_t pclk2, uint32_t desired_sdio_clk)
+{
+  uint32_t clkdiv;
+  uint32_t actual_clk;
 
-    // SDIO 클럭 분주기를 계산합니다.
-    uint32_t clockDiv = ((ahbClock / (2 * desiredSDIOClock)) - 2);
+  // SDIO 클럭 최대치 보정
+  if (desired_sdio_clk > 48000000) {
+    desired_sdio_clk = 48000000; // USB 사용 고려 시 안전한 값
+  }
 
-    // SDIO의 ClockDiv 레지스터는 0부터 255까지 지원하므로, 범위를 벗어나면 최대값으로 제한합니다.
-    if (clockDiv > 255) {
-        clockDiv = 255;
-    }
+  // CLKDIV 계산: SDIO_CK = HCLK / (CLKDIV + 2)
+  clkdiv = (hclk / desired_sdio_clk) - 2;
 
-    return clockDiv;
+  if ((int32_t)clkdiv < 0) {
+    clkdiv = 0;
+  } else if (clkdiv > 0xFF) {
+    clkdiv = 0xFF;
+  }
+
+  // 실제 SDIO 클럭
+  actual_clk = hclk / (clkdiv + 2);
+
+#if 0
+  // PCLK2 제약 조건 확인
+  if (pclk2 < (3 * actual_clk) / 8) {
+    printf("Warning: PCLK2(%lu Hz) too low for SDIO clock %lu Hz\n",
+           pclk2, actual_clk);
+  }
+
+  printf("HCLK=%lu Hz, Desired=%lu Hz, Actual SDIO=%lu Hz, CLKDIV=%lu, PCLK2=%lu Hz\n",
+         hclk, desired_sdio_clk, actual_clk, clkdiv, pclk2);
+#endif
+  return clkdiv;
 }
 
 #define SDIO_CLOCK_FREQ 21000000
@@ -55,7 +73,7 @@ void MX_SDIO_SD_Init(void)
   hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
   hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
   hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
-  hsd.Init.ClockDiv = calculateSDIOClockDiv(g_sdioMainClk, SDIO_CLOCK_FREQ);
+  hsd.Init.ClockDiv = 1;//14MHz calculateSDIOClockDiv(168000000,84000000, SDIO_CLOCK_FREQ);
 }
 
 

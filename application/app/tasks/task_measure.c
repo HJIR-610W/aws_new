@@ -47,7 +47,7 @@
 #include "bsp_delay.h"
 #include "util_memory.h"
 #include "util_time.h"
-
+#include "system_err.h"
 #include "os_user_def.h"
 
 #define MEASURE_PERIOD_250MS 250
@@ -595,6 +595,8 @@ void measure250ms_task(void *arg)
 {
   uint32_t tick_count;
 
+  DEBUG_PRINTF("measure 250ms task start\r\n");
+
   tick_count = osKernelGetTickCount();
   while(1)
   {
@@ -612,6 +614,8 @@ void measure250ms_task(void *arg)
 void measure1s_task(void *arg)
 {
   uint32_t tick_count;
+
+  DEBUG_PRINTF("measure 1s task start\r\n");
 
   tick_count = osKernelGetTickCount();
   while(1)

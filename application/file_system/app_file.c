@@ -137,6 +137,7 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   res = f_write(&file, data, dataLen, &bytesWritten);
   if (res != FR_OK || bytesWritten != dataLen)
   {
+    ERROR_PRINTF("bytesWritten(%d) != dataLen(%d) FRESULT:%d", bytesWritten, dataLen, res);
     f_close(&file);
     OS_POST_SEM(g_fileSem);
     return res != FR_OK ? res : FR_DISK_ERR;
@@ -169,6 +170,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   FRESULT res;
   UINT bytesRead;
 
+  ERROR_PRINTF("read_file %s,%p %p %p\r\n",path,data,&data[dataLen]);
   p_file = pvPortMalloc(sizeof(FIL));
 
   if(p_file==NULL)

@@ -194,7 +194,7 @@ void test_uart(void)
   selected_port = rs232_drv_num[port_index];
   
   uart_config.baud = baud;
-  uart_config.parityIdx = PARITY_NONE;
+  uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 

@@ -237,7 +237,7 @@ driver_t *hjsnow_open(void *opt)
 
       uart_config.baud = 19200;
       uart_config.dataLen = UART_DATA_LEN_8;
-      uart_config.parityIdx = PARITY_NONE;
+      uart_config.parity_index = PARITY_NONE;
        uart_config.stop_bit = UART_STOP_BIT_1;
 
       hjsnow_inst.com_type = COM_TYPE_RS232;
@@ -256,7 +256,7 @@ driver_t *hjsnow_open(void *opt)
 
       uart_config.baud = 19200;
       uart_config.dataLen = 8;
-      uart_config.parityIdx = 0;
+      uart_config.parity_index = 0;
       uart_config.stop_bit = 1;
       hjsnow_inst.rs485_num = rs485_num_to_driver_num(hjsnow->rs485_port);
       drv_rs485_init(hjsnow_inst.rs485_num, &uart_config);

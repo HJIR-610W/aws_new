@@ -1783,7 +1783,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -1971,7 +1971,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -2936,4 +2936,7 @@
             <name>$PROJ_DIR$\..\utils\util_time.h</name>
         </file>
     </group>
+    <file>
+        <name>$PROJ_DIR$\..\aws.md</name>
+    </file>
 </project>

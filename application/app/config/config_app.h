@@ -12,6 +12,9 @@
 #include "util_memory.h"
 #include "tcp_define.h"
 
+
+
+
 #define WRITE_CFG(x)                                                             \
   drv_fram_write(CONFIG_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_t, x), \
                  (uint8_t *)&config.x, sizeof(config.x));
@@ -70,6 +73,14 @@ typedef enum telnet_mode_e
   eTELNET_CLIENT
 } eTELNET_MODE_t;
 
+typedef enum 
+{
+  eLCD_OFF_10SEC,
+  eLCD_OFF_60SEC,
+  eLCD_OFF_600SEC,
+  eLCD_OFF_ALWAYS_ON
+} eLCD_OFF_TIME_t;
+
 typedef struct config_s
 {
   config_header_t header;
@@ -108,6 +119,7 @@ typedef struct config_s
   eTELNET_MODE_t dev_telnet_mode;
   uint8_t dev_telnet_ip[4];
   uint16_t dev_telnet_port;
+  eLCD_OFF_TIME_t lcd_off_time_index; 
 }config_t;
 
 
@@ -149,6 +161,9 @@ void make_comList(char *out, uint16_t outsize) ;
 void set_config_app_password(uint16_t password);
 void set_config_app_cdma_port(uint16_t port);
 void set_config_app_cdma_ip(uint8_t ip[4]);
+
+uint16_t get_lcd_off_time(void);
+
 
 extern config_t config;
 extern system_t System;

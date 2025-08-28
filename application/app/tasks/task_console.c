@@ -131,10 +131,10 @@ void consoleTask_init(void *arg)
   uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
 
   uart_config.baud = 115200;
-  uart_config.parityIdx = PARITY_NONE;
+  uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
-  console_uart_num = DRV_UART_10_CDC  ;
+  console_uart_num = DRV_UART_0_VHF  ;
   
   result = drv_uart_init(console_uart_num, &uart_config);
                                

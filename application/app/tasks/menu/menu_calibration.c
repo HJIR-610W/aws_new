@@ -296,47 +296,44 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
     }
     if (status != MENU_OK)
       return status;
-
     params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
               ? &p_adc->single_ended_cal[channel]
               : &p_adc->differential_cal[channel];
+      screen_clear();
+      while (1)
+      {
+        start_time = mcu_get_clk();
+        if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+        {
+          raw = (int32_t)drv_adc_single_raw_read(channel,1, &err);
+        }
+        else
+        {
+          raw = drv_adc_diff_raw_read(channel,1, &err);
+        }
+        elapsed_time = cal_elapsed_us(start_time);
 
-    screen_clear();
+        g_current_temp = read_current_temperature();
+        voltage = adc_get_compensated_value(raw, params, g_current_temp);
 
-  while (1)
-  {
-    start_time = mcu_get_clk();
-    if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
-    {
-      raw = (int32_t)drv_adc_single_raw_read(channel,1, &err);
-    }
-    else
-    {
-      raw = drv_adc_diff_raw_read(channel,1, &err);
-    }
-    elapsed_time = cal_elapsed_us(start_time);
-
-    g_current_temp = read_current_temperature();
-    voltage = adc_get_compensated_value(raw, params, g_current_temp);
-
-    screen_printf(0, 0, "Ch%d RAW:%d", channel, raw);
-    screen_printf(1, 0, "elapsed:%fms",(float)elapsed_time/1000.0f);
-    if (isnan(voltage))
-    {
-      screen_printf(2, 0, "Need Cal");
-    }
-    else
-    {
-      screen_printf(2, 0, "V:%.6f", voltage);
-    }
-
-    screen_refresh();
-
-    key = get_button_key(100);
-    
-    if(key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
-      goto END_LOOP;
-  }
+        screen_printf(0, 0, "Ch%d RAW:%d", channel, raw);
+        screen_printf(1, 0, "elapsed:%fms",(float)elapsed_time/1000.0f);
+        if (isnan(voltage))
+        {
+          screen_printf(2, 0, "Need Cal");
+        }
+        else
+        {
+          screen_printf(2, 0, "V:%.6f", voltage);
+        }
+        screen_refresh();
+        key = get_button_key(100);
+        
+        if( key == KEY_CODE_CTRL_Q)
+          goto END_LOOP;
+        if(key == KEY_CODE_CTRL_C)
+        break;
+      }
   }
 
   END_LOOP:
@@ -378,7 +375,7 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
     }
     else
     {
-      screen_page_printf(p_win, "%d:%.4f %f", channel, voltage);
+      screen_page_printf(p_win, "%2d:%.4f %d", channel, voltage,raw);
     }
   }
 

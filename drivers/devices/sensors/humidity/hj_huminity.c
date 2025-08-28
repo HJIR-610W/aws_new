@@ -42,7 +42,7 @@ driver_t *hjHuminity_open(int32_t num, void *opt)
   hjHumi_drv.opened = true;
   uart_config.baud = 9600;
   uart_config.dataLen = UART_DATA_LEN_8;
-  uart_config.parityIdx = PARITY_NONE;
+  uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
   hj_huminity_cfg.modbus.name = "hjhumi";

@@ -113,6 +113,8 @@ void systemTask(void *arg)
   uint32_t start_time = osKernelGetTickCount();
   eCHARGER_MODEL_t charger_model;
 
+  DEBUG_PRINTF("system task start\r\n");
+
   pre_sd_inserted = BSP_PlatformIsDetected();
 
   charger_model = get_config_app()->charger_model;

@@ -18,7 +18,7 @@
 #define STREAMBUFFER_USE 1  // 데이터 수신을 freertos 스트림 버퍼 사용시
 
 #define QUAD_1_BUFF_SIZE 200  // D_SUB
-#define QUAD_2_BUFF_SIZE 100  // TTL
+#define QUAD_2_BUFF_SIZE 20   // TTL
 #define QUAD_3_BUFF_SIZE 100  // EXT3
 #define QUAD_4_BUFF_SIZE 100  // EXT4
 #define QUAD_5_BUFF_SIZE 100  // RS485_A
@@ -30,13 +30,13 @@
 typedef struct tl16c554_instance_s
 {
   bool opened;
-  uint8_t parityIdx;
-  int32_t irq_di_num; //uart 수신 입터럽트 번호 
-  uint32_t baud;//tx 시간계산시 필요
-  volatile uint8_t *base_address;
+  uint8_t parity_index;
+  uint32_t baud;      //tx 시간계산시 필요
+  int32_t irq_di_num; // uart 수신 입터럽트 번호
+  volatile uint8_t *base_address; // tl16c554 uart 개별 주소
   StreamBufferHandle_t quad_stream;
-  void *tx_sem;//송신용 sem 일반적인 app에서는 tx_sem만 있어도됨
-  void *rx_sem;//수신용 sem
+  void *tx_sem; //송신용 세마포어, 동일task만 사용한다면 불필요
+  void *rx_sem; //수신용 세마포어, 동일task만 사용한다면 불필요
 } tl16c554_instance_t;
 
 static tl16c554_instance_t tl16c554_inst[TL16C554_UART_MAX] = {
@@ -117,10 +117,8 @@ void set_baud_rate(int uart_num, uint32_t baud_rate)
   write_register(LCR(uart->base_address), lcr_value | DLAB_BIT);
 
   // Divisor 값 설정
-  write_register(DLL(uart->base_address),
-                 divisor & 0xFF); // 하위 바이트 설정
-  write_register(DLM(uart->base_address),
-                 (divisor >> 8) & 0xFF); // 상위 바이트 설정
+  write_register(DLL(uart->base_address),divisor & 0xFF); // 하위 바이트 설정
+  write_register(DLM(uart->base_address),(divisor >> 8) & 0xFF); // 상위 바이트 설정
 
   // DLAB 비트를 0으로 다시 설정하여 DLL과 DLM 접근 비허용
   write_register(LCR(uart->base_address), lcr_value & ~DLAB_BIT);
@@ -135,7 +133,6 @@ void set_parity(uint8_t uart_num, uint8_t parity_mode)
 {
   volatile uint8_t lcr;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
-
 
   lcr = read_register(LCR(uart->base_address));
   uint8_t lcr_val = lcr & 0xC7;  // LCR에서 parity 관련 비트(3~5)만 초기화
@@ -164,7 +161,6 @@ void set_parity(uint8_t uart_num, uint8_t parity_mode)
   }
 
   write_register(LCR(uart->base_address), lcr_val);
-
 
 }
 
@@ -197,24 +193,23 @@ void quad_init(int uart_num, uart_config_t *p_config)
   uint8_t parity_mode;
   uint8_t flag = 0;
   uint8_t reg;
+  int baud_rate = p_config->baud;
   di_isr_set_cfg_t isr_cfg;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
-  int baud_rate = p_config->baud;
 
   uint16_t divisor = UART_CLOCK_FREQ / (16 * baud_rate); // 보오드레이트 설정을 위한 Divisor 계산
   // DLAB 비트 설정 (LCR의 MSB 비트) 1로 해야 분주비 레지스터 접근 가능
   write_register(LCR(uart->base_address), 0x80);
-  // DLL과 DLM에 divisor 값 설정
   write_register(DLL(uart->base_address), divisor & 0xFF);
   write_register(DLM(uart->base_address), (divisor >> 8) & 0xFF);
   // DLAB 비트를 0으로 설정하여 LCR 설정, 상태레지스터 접근 가능
   write_register(LCR(uart->base_address), 0x03);
 
-  if (p_config->parityIdx == PARITY_NONE)
+  if (p_config->parity_index == PARITY_NONE)
   {
     parity_mode = 0;
   }
-  else if (p_config->parityIdx == PARITY_ODD)
+  else if (p_config->parity_index == PARITY_ODD)
   {
     parity_mode = 1;
   }
@@ -226,7 +221,6 @@ void quad_init(int uart_num, uart_config_t *p_config)
   set_parity(uart_num, parity_mode);
   //FIFO 설정 (FCR) 트리거 레벨 1바이트
   write_register(FCR(uart->base_address), 0x07);  // FIFO enable, RX/TX FIFO reset
-  // MCR 설정 (필요에 따라 추가 설정)
   write_register(MCR(uart->base_address), 0x08);
 
 // 인터럽트 설정 Bit 3,2,1
@@ -427,7 +421,7 @@ int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
     }
   }
 
-  
+  //TODO:개선 필요
   start_time = OS_GET_TICK();
   timeout = (uint32_t)(((float)1 / uart->baud * 10) * data_len + 100);
   do
@@ -455,7 +449,7 @@ int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
 /**
  * @brief 버퍼 비움
  */
-void tl16c554_flush_rx(int uart_num)
+void tl16c554_recv_flush(int uart_num)
 {
   uint8_t data;
 
@@ -478,7 +472,7 @@ void tl16c554_set(int uart_num, eUART_SET_OPTION_t option, void *value)
   }
 }
 
-void tl16c554_uart_get(int uart_num, eUART_GET_OPTION_t cmd, void *option)
+void tl16c554_get(int uart_num, eUART_GET_OPTION_t cmd, void *option)
 {
   uart_config_t *opt_cfg = option;
 
@@ -486,13 +480,14 @@ void tl16c554_uart_get(int uart_num, eUART_GET_OPTION_t cmd, void *option)
   {
     case eUART_GET_CONFIG:
       opt_cfg->baud = tl16c554_inst[uart_num].baud;
-      opt_cfg->parityIdx = tl16c554_inst[uart_num].parityIdx;
+      opt_cfg->parity_index = tl16c554_inst[uart_num].parity_index;
       break;
   }
 }
 
 /**
- * @brief 조건 1 함수 호출순간부터 timeout_ms 동안 수신된 바이트만 리턴
+ * @brief 다음의 3가지 조건이 필요한 경우 사용
+ *        조건 1 함수 호출순간부터 timeout_ms 동안 수신된 바이트만 리턴
  *        조건 2 timeout_ms osWaitforware이면 무조건 buff_size만큼 수신할때까지 처리
  *        조건 3 timeout_ms 0이면 현재 수신된 바이트만 즉시 가져옴
  */
@@ -538,18 +533,12 @@ int32_t tl16c554_recv(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_
       if (xBytesAvailable == 0)
       {
         // 데이터가 없으면 최소 1바이트 수신까지 무한 대기
-        xBytesRead = xStreamBufferReceive(uart->quad_stream,
-                                          &p_buff[cnt],
-                                          1,
-                                          osWaitForever);
+        xBytesRead = xStreamBufferReceive(uart->quad_stream,&p_buff[cnt],1,osWaitForever);
       }
       else
       {
         // 사용 가능한 데이터를 읽음
-        xBytesRead = xStreamBufferReceive(uart->quad_stream,
-                                          &p_buff[cnt],
-                                          xBytesAvailable,
-                                          osWaitForever);
+        xBytesRead = xStreamBufferReceive(uart->quad_stream,&p_buff[cnt],xBytesAvailable,osWaitForever);
       }
 
       if (xBytesRead > 0)
@@ -585,18 +574,12 @@ int32_t tl16c554_recv(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_
       if (xBytesAvailable == 0)
       {
         // 데이터가 없으면 최소 1바이트 수신 대기
-        xBytesRead = xStreamBufferReceive(uart->quad_stream,
-                                          &p_buff[cnt],
-                                          1,
-                                          remainingTime);
+        xBytesRead = xStreamBufferReceive(uart->quad_stream,&p_buff[cnt],1,remainingTime);
       }
       else
       {
         // 데이터를 읽음
-        xBytesRead = xStreamBufferReceive(uart->quad_stream,
-                                          &p_buff[cnt],
-                                          xBytesAvailable,
-                                          remainingTime);
+        xBytesRead = xStreamBufferReceive(uart->quad_stream,&p_buff[cnt],xBytesAvailable,remainingTime);
       }
 
       if (xBytesRead > 0)
@@ -617,7 +600,7 @@ int32_t tl16c554_recv(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_
  * 사용 예) 토큰 구분이 없는 프레임 수신
  * 일반적으로 데이터 수신은 연속된 바이트 수신이라고 가정 
  * 프레임이 길이를 판단할수 없는 프레임인 경우 응용하여 사용
- * 
+ * 이함수 말고 실제 드라이버 자체에서 recv함수로 구현하는것이. 나을수도
  */
 int32_t tl16c554_recv_opt(int uart_num, uint8_t *buffer, uint16_t buffer_size,
                            uint32_t timeout1_ms, uint32_t timeout2_ms)
@@ -647,7 +630,8 @@ int32_t tl16c554_recv_opt(int uart_num, uint8_t *buffer, uint16_t buffer_size,
 }
 
 /**
- * @brief os자원 없이 직접 하드웨어에서 읽기
+ * @brief low level 함수 os자원 없이 직접 하드웨어에서 읽기
+ *        timeout_ms 동안만 처리됨 
  */
 int32_t tl16c554_recv_ll(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_t timeout_ms)
 {
@@ -655,6 +639,7 @@ int32_t tl16c554_recv_ll(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint
   int32_t recved_cnt = 0;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
   start_tick = OS_GET_TICK();
+
   while (1)
   {
     if (read_register(LSR(uart->base_address)) & LSR_DR)
@@ -677,12 +662,12 @@ int32_t tl16c554_recv_ll(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint
 /**
  * @brief 가상 입력 처리 
  */
-int32_t tl16c554_uart_inject(int uart_num, const uint8_t *p_data, uint16_t dataLen)
+int32_t tl16c554_recv_inject(int uart_num, const uint8_t *p_data, uint16_t data_len)
 {
   size_t xBytesSent;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
-  xBytesSent = xStreamBufferSend(uart->quad_stream, p_data, dataLen,pdMS_TO_TICKS(10));
+  xBytesSent = xStreamBufferSend(uart->quad_stream, p_data, data_len, pdMS_TO_TICKS(10));
 
   return xBytesSent;
 }
@@ -691,7 +676,7 @@ int32_t tl16c554_uart_inject(int uart_num, const uint8_t *p_data, uint16_t dataL
 /**
  * @brief crlf로 끝나는 문자열만 수신처리
  */
-int32_t tl16c554_uart_recv_crlf(int uart_num, char *p_buff, uint16_t bSize, uint32_t tout_ms)
+int32_t tl16c554_recv_crlf(int uart_num, char *p_buff, uint16_t buffer_size, uint32_t tout_ms)
 {
   uint8_t data;
   uint16_t cnt = 0;
@@ -723,7 +708,7 @@ int32_t tl16c554_uart_recv_crlf(int uart_num, char *p_buff, uint16_t bSize, uint
         return (cnt - 1); /* \r 또는 \n 를 제외한 문자열 길이 리턴*/
       }
 
-      if (cnt == bSize)
+      if (cnt == buffer_size)
       {
         return 0;
       }
@@ -748,7 +733,7 @@ int32_t tl16c554_uart_recv_crlf(int uart_num, char *p_buff, uint16_t bSize, uint
 
 //테스트 필요
 //세마포어 적용 필요
-void tl16c554_uart_set_config(int uart_num, uart_config_t *config)
+void tl16c554_set_config(int uart_num, uart_config_t *config)
 {
   uint8_t parity_mode;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
@@ -759,19 +744,19 @@ void tl16c554_uart_set_config(int uart_num, uart_config_t *config)
   }
 
   uart->baud = config->baud;
-  uart->parityIdx = config->parityIdx;
+  uart->parity_index = config->parity_index;
 
   set_baud_rate(uart_num, config->baud);
 
-  if (config->parityIdx == PARITY_NONE)
+  if (config->parity_index == PARITY_NONE)
   {
     parity_mode = 0;
   }
-  else if (config->parityIdx == PARITY_ODD)
+  else if (config->parity_index == PARITY_ODD)
   {
     parity_mode = 1;
   }
-  else if (config->parityIdx == PARITY_EVEN)
+  else if (config->parity_index == PARITY_EVEN)
   {
     parity_mode = 2;
   }
@@ -807,14 +792,14 @@ int32_t tl16c554_init(int32_t uart_num, void *opt)
   }
 
   uart->baud = config->baud;
-  uart->parityIdx = config->parityIdx;
+  uart->parity_index = config->parity_index;
   uart->quad_stream = xStreamBufferCreate(buff_size_list[uart_num], 1);
 
-  OS_CREATE_BINARY_SEM(uart->tx_sem);
-  OS_CREATE_BINARY_SEM(uart->rx_sem);
+  OS_CREATE_BINARY_SEM(uart->tx_sem);// 반드시 사용할필요 없음
+  OS_CREATE_BINARY_SEM(uart->rx_sem);// 반드시 사용할필요 없음
 
   quad_init(uart_num, (uart_config_t *)opt);
-
+  //TODO:quad 초기화 결과로 opend 변수 처리 필요
   uart->opened = true;
 
   return 1;

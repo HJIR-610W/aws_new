@@ -169,7 +169,7 @@ void test_sdi12(void)
 
 
   uart_config.baud = 1200;
-  uart_config.parityIdx = PARITY_NONE;
+  uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 

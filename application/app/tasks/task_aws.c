@@ -11,6 +11,8 @@
 #include "config_nvm.h"
 
 #include "old_aws_define.h"
+#include "sensor_data\rain_data.h"
+#include "sensor_data\sunshine_data.h"
 #include "schedule.h"
 #include "task_measure.h"
 #include "user_heap.h"
@@ -20,11 +22,11 @@
 #include "dev_io.h"
 #include "logging\utile_data.h"
 #include "util_memory.h"
-#include "sensor_data\rain_data.h"
-#include "sensor_data\sunshine_data.h"
+#include "system_err.h"
 #include "wind_data.h"
 #include "aws_default_data.h"
 #include "app_key.h"
+
 typedef struct filter_data_s
 {
   uint8_t delay_count;
@@ -1243,9 +1245,12 @@ void DUALPORT_TASK(void *arg)
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
   AWS_DATA_STRUCT *pAws;
-  sensor_t *p_sensor_config = get_sensor_config_copy();
+  sensor_t *p_sensor_config ;
 
+  DEBUG_PRINTF("dual port task start\r\n");
+  p_sensor_config = get_sensor_config_copy();
   pAws = &mRealAws;
+
 
   calculate_rain(); 
   calculate_sunshine();

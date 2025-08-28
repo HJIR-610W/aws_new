@@ -26,4 +26,4 @@ const char *freq_ch_list[2] = {"A", "B"};
  const char *doorStatusList[2] = {"닫힘", "열림"};
  const char *generalStatusList[2] = {"정상", "비정상"};
 
-
+ const char *lcd_off_time_list_eng[] = {"10", "60", "600", "ALWAYS ON"};

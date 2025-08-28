@@ -32,7 +32,7 @@ int32_t ls1024_init(void)
 
   uart_config.baud = 115200;
   uart_config.dataLen = UART_DATA_LEN_8;
-  uart_config.parityIdx = PARITY_NONE;
+  uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = 0;
 
   ls1024_inst.modbus.name="ls1024";

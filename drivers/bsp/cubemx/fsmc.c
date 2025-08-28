@@ -1,9 +1,4 @@
 /**
- * @file           fsmc.c
- * @brief          fsmc 초기화
- * @author         t
- * @date           2025-01-01
- * @version        v1.0.0
  *
  * @note
  * FSMC Bank Address Ranges:
@@ -16,23 +11,17 @@
  * NE2 (FSMC_NORSRAM_BANK2): 0x64000000 - 0x67FFFFFF (64MB)  
  *   - External SRAM (16-bit interface)
  *   - Base Address: 0x64000000
- *   - Current Usage: SRAM memory expansion
+ *   - Current Usage: SRAM memory 
  * 
  * NE3 (FSMC_NORSRAM_BANK3): 0x68000000 - 0x6BFFFFFF (64MB)
  *   - QUAD UART Controller (8-bit interface)  
  *   - Base Address: 0x68000000
- *   - Current Usage: Serial communication expansion
+ *   - Current Usage: Serial communication 
  * 
  * NE4 (FSMC_NORSRAM_BANK4): 0x6C000000 - 0x6FFFFFFF (64MB)
  *   - Reserved/Unused
  *   - Available for future expansion
  *
- * GPIO Pin Assignments:
- * - PD7: FSMC_NE1 (LCD Controller Chip Select)
- * - PG9: FSMC_NE2 (SRAM Chip Select) 
- * - PG10: FSMC_NE3 (UART Chip Select)
- * - PD4: FSMC_NOE (Output Enable)
- * - PD5: FSMC_NWE (Write Enable)
  */
 
 #include <string.h>

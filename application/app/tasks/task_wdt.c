@@ -70,6 +70,7 @@ int wdt_task_register(const char *name, uint32_t timeout_ms)
 
 void wdtTask(void *argument)
 {
+  DEBUG_PRINTF("wdt task start\r\n");
   for (;;)
   {
     osDelay(60000);  

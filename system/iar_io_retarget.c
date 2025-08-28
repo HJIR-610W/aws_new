@@ -9,7 +9,7 @@
 #include "cmsis_os.h"
 #include "stm32f4xx_hal.h"
 
-
+#include "system_err.h"
 #include "dev_io.h"
 #include "drv_rs232.h"
 #include "stm32f4xx_hal.h"
@@ -285,7 +285,7 @@ void __exit (int status)
   
   vTaskSuspendAll();
   __disable_irq();
-  HAL_NVIC_SystemReset();
+  reset_system("__exit");
   while (1)
   {
     

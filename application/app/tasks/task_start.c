@@ -85,21 +85,21 @@ void log_boot_reason(void)
 /**
  * @brief 한번 수행하고 종료될 Task
  * 초기화 작업 수행
- * 우선순위는 가장높게 설정하여 startTask가 종료되기까지 다른 Task가
- * 실행 되지 않도록 함
+ * 우선순위는 가장높게 설정
  */
 void startTask(void *arg)
 {
-  drv_init();// 에플리케이션에서 사용하는 드라이버 초기화
-  drv_led_on(DRV_LED_RUN);
-  drv_rtc_read(&Date_Time);
 
+  drv_init(); // 에플리케이션에서 사용하는 드라이버 초기화
+  drv_led_on(DRV_LED_RUN);
+
+
+  drv_rtc_read(&Date_Time);
 
   if (testTask_init() == true)
   {
     osThreadExit();  // 종료 시킴
   }
-
 
   consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화
   wdtTask_init();
@@ -107,7 +107,7 @@ void startTask(void *arg)
   menuTask_init();
 
   config_manager_init();  // 우선 실행
-  filesystem_init();//SD카드 초기화 및 파일시스템 초기화 
+  filesystem_init();//SD카드 초기화 및 파일시스템 초 기화 
   logging_init();//운영 로그 기록 기능 초기화
 
   systemTask_init(PARA_RUN_MODE);
@@ -132,6 +132,8 @@ void startTask(void *arg)
 
   if (get_config_app()->eth_active)
   {
+    ethernetTask_init();
+
     if(get_config_app()->eth_mode==eETH_MODE_CLINET)
     {
       tcpClientTask_init();      
@@ -141,7 +143,6 @@ void startTask(void *arg)
       tcpServerTask_init(0);
     }
 
-    ethernetTask_init();
   }
   else
   {
@@ -153,6 +154,8 @@ void startTask(void *arg)
   //http_server_task_init();
   telnet_server_task_init();
   log_boot_reason();
+  DEBUG_PRINTF("start end\r\n");
+
   osThreadExit();  // 종료 시킴
 }
 

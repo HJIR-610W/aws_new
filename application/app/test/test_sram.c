@@ -6,7 +6,7 @@
 #include "dev_io.h"
 
 
-#define MEM_SIZE (1 * 1024 * 1024)
+#define MEM_SIZE (3 * 1024 * 1024)
 // 테스트할 메모리 시작 주소
 #define MEM_ADDRESS 0x64000000 // 예시 주소 (STM32 FSMC 등)
 

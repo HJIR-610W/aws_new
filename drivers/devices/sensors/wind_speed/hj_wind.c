@@ -183,7 +183,7 @@ driver_t *hjwind_open(uint8_t num, void *opt)
   }
 
   uart_config.baud = 9600;
-  uart_config.parityIdx = 0;
+  uart_config.parity_index = 0;
   uart_config.dataLen = 8;
   uart_config.stop_bit = 1;
 

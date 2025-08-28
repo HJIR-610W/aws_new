@@ -60,7 +60,7 @@ void test_modbus_task(void *arg)
   selected_port = port_list[port_index];
   
   uart_config.baud = baud;
-  uart_config.parityIdx = PARITY_NONE;
+  uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 
@@ -185,7 +185,7 @@ void test_modbus_task(void)
 
 
   uart_config.baud = baud;
-  uart_config.parityIdx = parity;
+  uart_config.parity_index = parity;
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 

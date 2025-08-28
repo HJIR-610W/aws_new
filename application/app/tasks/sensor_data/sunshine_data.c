@@ -14,16 +14,50 @@
 
 #include "app_file.h"
 
+#define TEMP_BUFF_SIZE 16384
 // 1분마다 저장된 1년치 일조 데이터 읽기
-int32_t read_sunshine_1min(uint16_t year, uint16_t *sunshine_data, uint32_t read_size)
+int32_t read_sunshine_1min(uint16_t year, uint16_t *p_buffer, uint32_t read_size)
 {
+  
+    #if 0 
+  char path[50];
+  FRESULT fret;
+  uint8_t *p_target = (uint8_t *)p_buffer;
+  
+  uint8_t *p_temp = user_malloc(TEMP_BUFF_SIZE);
+
+  make_sunshine_1min_path(year, path, sizeof(path));
+
+  int quot = read_size / TEMP_BUFF_SIZE;
+  int rem = read_size % TEMP_BUFF_SIZE;
+
+  for(int i = 0;i< quot; i++)
+  {
+    fret = read_file(path, (uint8_t *)p_temp, TEMP_BUFF_SIZE, i * TEMP_BUFF_SIZE);
+    memcpy((uint8_t *)&p_target[i * TEMP_BUFF_SIZE], p_temp, TEMP_BUFF_SIZE);
+  }
+  
+  if(rem)
+  {
+    fret = read_file(path, (uint8_t *)p_temp, rem, quot * TEMP_BUFF_SIZE);
+    memcpy(&p_target[quot * TEMP_BUFF_SIZE], p_temp, rem);
+  }
+
+  user_free(p_temp);
+  if(fret == FR_OK)
+  {
+    return 0;
+  }
+  
+  return 1;
+#else
   char path[50];
   FRESULT fret;
   // FSIZE_t file_size = 0;
 
   make_sunshine_1min_path(year, path, sizeof(path));
 
-  fret = read_file(path, (uint8_t *)sunshine_data, read_size, 0);
+  fret = read_file(path, (uint8_t *)p_buffer, read_size, 0);
 
   if (fret == FR_OK)
   {
@@ -31,6 +65,7 @@ int32_t read_sunshine_1min(uint16_t year, uint16_t *sunshine_data, uint32_t read
   }
 
   return 1;
+#endif
 }
 
 int32_t sunshine_file_zero(int year)

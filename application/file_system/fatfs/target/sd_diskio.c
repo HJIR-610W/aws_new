@@ -19,8 +19,11 @@
 #include "ff_gen_drv.h"
 #include "sd_diskio.h"
 #include "system_err.h"
+
 #include <string.h>
 #include <stdio.h>
+
+#include "bsp_delay.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -46,7 +49,7 @@ See BSP_SD_ErrorCallback() and BSP_SD_AbortCallback() below
  * 기본적으로 이 값은 BSP 플랫폼 드라이버에 정의된 값이며, 정의되지 않은 경우 30초로 설정됩니다.
  */
 
-#define SD_TIMEOUT 5 * 1000
+#define SD_TIMEOUT 2 * 1000
 
 #define SD_DEFAULT_BLOCK_SIZE 512
 
@@ -250,9 +253,11 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
 
     return res;
   }
-        ERROR_PRINTF("SD read (sector:%d read count:%d)\r\n",sector,count);
+
     /* Fast path cause destination buffer is correctly aligned */
-    ret = BSP_SD_ReadBlocks_DMA((uint32_t*)buff, (uint32_t)(sector), count);
+
+
+  ret = BSP_SD_ReadBlocks_DMA((uint32_t *)buff, (uint32_t)(sector), count);
 
   if (ret == MSD_OK)
   {
@@ -260,6 +265,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
       if ((status == osOK) && (event == READ_CPLT_MSG))
       {
         timer = osKernelGetTickCount();
+
         /* block until SDIO IP is ready or a timeout occur */
         while(osKernelGetTickCount() - timer <SD_TIMEOUT)
         {
@@ -272,7 +278,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
       }
       else
       {
-        ERROR_PRINTF("SD read fail(sector:%d read count:%d)\r\n",sector,count);
+        ERROR_PRINTF("SD read fail %p(sector:%d read count:%d)\r\n", buff,sector, count);
         g_sd_diskio_error = 5;
       }
   }

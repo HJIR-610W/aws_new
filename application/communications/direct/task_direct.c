@@ -90,7 +90,7 @@ void directTask_init(void)
   g_direct_system.rx_cnt = 0;
 
   uart_config.baud = get_config_app()->direct_baud;
-  uart_config.parityIdx = PARITY_NONE;
+  uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
   g_direct_uart_num = DRV_UART_8_CDMA;

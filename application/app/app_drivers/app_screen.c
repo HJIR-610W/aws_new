@@ -27,6 +27,9 @@ void screen_init(void)
     s_screen.width_pixel = 128;
     s_screen.font_rows = 8;
     s_screen.font_cols = 21;
+    
+    screen_clear();
+    screen_refresh();
   }
 }
 screen_instance_t* screen_get_instance(void)
@@ -376,9 +379,9 @@ void screen_menu_clear(screen_menu_t *win)
 
 void screen_off(void)
 {
-  //screen_clear();
+  screen_clear();
   //screen_printf(3, 0, "      Screen Off");
-  //screen_refresh();
+  screen_refresh();
   
   drv_lcd_close(DRIVER_CLCD);
 

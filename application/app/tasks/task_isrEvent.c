@@ -6,6 +6,7 @@
 #include "task_isrEvent.h"
 #include "FreeRTOS.h"
 #include "Sensors\rain\rain.h"
+#include "system_err.h"
 
 const osThreadAttr_t kIsrEventTask_attributes = {
   .name = "isr_event",
@@ -27,6 +28,8 @@ int32_t os_send_isrEvent(eISR_EVENT_CMD_t cmd,uint32_t timeOutms)
 void isrEventTask(void *arg)
 {
   eISR_EVENT_CMD_t cmd;
+
+  DEBUG_PRINTF("isr task start\r\n");
 
   while(1)
   {

@@ -4,7 +4,12 @@
 #define ST7920_MEM_USE 1
 
 #include "st7920.h"
+
 #include <string.h>
+
+
+#include "FreeRTOS.h"
+#include "task.h"
 #include "bsp_spi.h"
 #include "bsp_do.h"
 #include "pcb_define.h"
@@ -403,6 +408,8 @@ void st7920_wait_ready(driver_t *drv)
     }
 }
 
+
+
 driver_t *st7920_open(void)
 {
     if(st7920_driver.opened)
@@ -445,7 +452,7 @@ driver_t *st7920_open(void)
 
     st7920_reset(&st7920_driver);
 
-    st7920_set_mode(&st7920_driver,eLCD_MODE_GRAPHIC);
+   // st7920_set_mode(&st7920_driver,eLCD_MODE_GRAPHIC);
     
     return &st7920_driver;
 }
@@ -455,6 +462,9 @@ void st7920_close(void)
   st7920_driver.opened = NULL;
   drv_power_off(DRV_POWER_LCD);
 }
+
+
+
 void st7920_reset(driver_t *drv)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
@@ -464,10 +474,12 @@ void st7920_reset(driver_t *drv)
     bsp_do_low(cfg->cs_do_num);
 #endif
     // 하드웨어 리셋 시퀀스 - DO_LCD_RESET 핀 사용
+
     bsp_do_low(cfg->rst_do_num);
     st7920_delay_ms(100);
     bsp_do_high(cfg->rst_do_num);
     st7920_delay_ms(50);
+
     
     // ST7920 초기화 시퀀스 - 참고 라이브러리 기반
     // 1단계: 기본 8비트 기능 설정을 3번 반복 (안정화)
@@ -498,15 +510,17 @@ void st7920_reset(driver_t *drv)
     st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL | ST7920_DISPLAY_ON);
     st7920_delay_ms(1);
     
-    // 7단계: 화면 지우기
-    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR); 
-    st7920_delay_ms(20);
     
     // 8단계: 홈 위치로 이동
     st7920_send_cmd(drv, ST7920_CMD_RETURN_HOME);
     st7920_delay_ms(2);
+
+    st7920_set_graphic_mode(drv, true);
+    st7920_delay_ms(1);   
     
-    
+       // 7단계: 화면 지우기
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR); 
+    st7920_delay_ms(20);
 
     cfg->initialized = true;
 }

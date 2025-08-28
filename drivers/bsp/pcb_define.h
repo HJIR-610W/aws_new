@@ -13,8 +13,8 @@ PCB 5: LCD 점퍼 날림 보드
 PCB 6: 키패트 LCD 적용된 보드 
 */
 
-//#define AWS_PCB_0_5 5
-#define AWS_PCB_0_6 6
+#define AWS_PCB_0_5 5
+//#define AWS_PCB_0_6 6
 
 
 #ifdef AWS_PCB_0_5

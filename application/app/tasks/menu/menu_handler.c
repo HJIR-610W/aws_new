@@ -190,7 +190,10 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
       else if (key == KEY_CODE_ENTER)
       {
         *val = atoi(buff);
-        return MENU_OK;
+        if(*val >=min && *val <=max)
+        {
+          return MENU_OK;
+        }
       }
       else if (key == KEY_CODE_CTRL_C)
       {
@@ -830,17 +833,14 @@ int32_t show_popup(const char *title, const char *message)
   }
 
   screen_clear();
+  screen_refresh();
 
   // 타이틀 표시 가운데 정렬
   int32_t title_len = strlen(title);
   int32_t title_start_col = (lcd_cols - title_len) / 2;
   screen_printf(0, title_start_col,title);
 
-  screen_set_cursor(1, 0);
-  for (int32_t i = 0; i < lcd_cols; i++)
-  {
-    screen_put_ch(1,i,'-');
-  }
+  screen_printf(1, 0, "--------------------");
 
   // 메시지 표시 (세 번째 줄부터)
   if (message != NULL)

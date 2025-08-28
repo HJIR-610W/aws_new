@@ -148,7 +148,7 @@ driver_t* vt100_terminal_open(void)
   }
 
   uart_config.baud = 115200;
-  uart_config.parityIdx = PARITY_NONE;
+  uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
   uart_config.dataLen = UART_DATA_LEN_8;
 

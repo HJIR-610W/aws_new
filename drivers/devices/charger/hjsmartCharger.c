@@ -236,7 +236,7 @@ int32_t hj_smartcharger_init(void)
 
   uart_config.baud = 57600;
   uart_config.dataLen = UART_DATA_LEN_8;
-  uart_config.parityIdx = PARITY_NONE;
+  uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
   charger_inst.uart_num = BSP_RS485_B;

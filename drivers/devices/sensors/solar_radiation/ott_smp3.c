@@ -45,7 +45,7 @@ driver_t *ott_smp3_open(int32_t num, void *opt)
   ott_smp3_config_t *ott = (ott_smp3_config_t *)opt;
 
   uart_config.baud = 19200;
-  uart_config.parityIdx = PARITY_EVEN;
+  uart_config.parity_index = PARITY_EVEN;
   uart_config.stop_bit = UART_STOP_BIT_1;
   uart_config.dataLen = UART_DATA_LEN_8;
 

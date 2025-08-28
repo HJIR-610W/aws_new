@@ -39,7 +39,7 @@ void test_rs485(void)
   selected_port = port_list[port_index];
   
   uart_config.baud = baud;
-  uart_config.parityIdx = PARITY_NONE;
+  uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = 0;
   uart_config.dataLen = UART_DATA_LEN_8;
 

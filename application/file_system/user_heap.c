@@ -1,5 +1,6 @@
 
 #include "user_heap.h"
+#include <string.h>
 
 #include "os_user_def.h"
 #include "tlsf.h"
@@ -17,6 +18,8 @@ void user_tlsf_init(size_t size)
 {
   OS_CREATE_BINARY_SEM(g_heap_sem);
 
+  memset(g_ext_sram, 0, size);
+  
   tlsf_handle = tlsf_create_with_pool(g_ext_sram, size);
 
   if (tlsf_handle == NULL)

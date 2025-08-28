@@ -18,7 +18,7 @@ typedef struct stm32_uart_cfg_s
 {
   bool opened;
   int8_t errCode; // 드라이버 에러  상태 정보
-  uint8_t parityIdx;
+  uint8_t parity_index;
   uint32_t baud; // 설정된 통신속도
   uint8_t rxData;
   UART_HandleTypeDef handle;
@@ -168,7 +168,7 @@ int32_t stm32_uart_init(int num, void *opt)
   }
 
   uart_inst[num].baud = cfg->baud;
-  uart_inst[num].parityIdx = cfg->parityIdx;
+  uart_inst[num].parity_index = cfg->parity_index;
 
 
   if (uart_inst[num].txcSem == NULL)
@@ -181,7 +181,7 @@ int32_t stm32_uart_init(int num, void *opt)
   OS_CREATE_BINARY_SEM(uart_inst[num].tx_sem);
   OS_CREATE_BINARY_SEM(uart_inst[num].rx_sem);
 
-  stm32_uart_hal_init(num, cfg->baud, cfg->parityIdx, cfg->dataLen, cfg->stop_bit);
+  stm32_uart_hal_init(num, cfg->baud, cfg->parity_index, cfg->dataLen, cfg->stop_bit);
   stm32_uart_dma_init(num);
   HAL_UART_Receive_IT(&uart_inst[num].handle, (uint8_t *)&uart_inst[num], 1);
 
@@ -569,7 +569,7 @@ void stm32_uart_get(int num, eUART_GET_OPTION_t cmd, void *option)
   {
     case eUART_GET_CONFIG:
       opt_cfg->baud = uart_inst[num].baud;
-      opt_cfg->parityIdx = uart_inst[num].parityIdx;
+      opt_cfg->parity_index = uart_inst[num].parity_index;
       break;
   }
 }
@@ -761,7 +761,7 @@ void stm32_uart_set_config(int num, uart_config_t *config)
   }
 
   uart_inst[num].baud = config->baud;
-  uart_inst[num].parityIdx = config->parityIdx;
+  uart_inst[num].parity_index = config->parity_index;
 
   p_uart->Init.BaudRate = config->baud;
 
@@ -786,7 +786,7 @@ void stm32_uart_set_config(int num, uart_config_t *config)
     break;
   }
 
-  switch (config->parityIdx)
+  switch (config->parity_index)
   {
   case PARITY_EVEN:
     p_uart->Init.Parity = UART_PARITY_EVEN;

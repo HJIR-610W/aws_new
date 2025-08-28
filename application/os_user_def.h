@@ -52,6 +52,7 @@ os함수가 길어서 쉬운 용어로 사용
 
 
 #define OS_GET_TICK() osKernelGetTickCount()
-    
-    
+
+#define OS_TICK_COUNT 1000
+
 #endif
