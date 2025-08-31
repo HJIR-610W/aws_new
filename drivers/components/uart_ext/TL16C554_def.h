@@ -47,6 +47,8 @@
 */
 #define UART_IIR_THRE 0x02          // 송신기 홀딩 레지스터 비어 있음 (THRE)
 #define UART_IIR_MODEM_STATUS 0x00  // 모뎀 상태 변화 (CTS, DSR, RI, DCD)
+// IER
+#define TL16C554_IER_THRE (1 << 1)
 
-
+#define UART_FIFO_SIZE 16
 #endif

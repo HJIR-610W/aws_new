@@ -26,6 +26,41 @@
 #define QUAD_7_BUFF_SIZE 100  // RS232_C
 #define QUAD_8_BUFF_SIZE 100  // EXT2
 
+typedef struct cicular_buffer_s
+{
+  uint8_t *p_tx_buffer;
+  uint16_t buffer_size;
+  uint16_t head;
+  uint16_t tail;
+  uint16_t count;
+} tx_cicular_buffer_t;
+
+#define QUAD_1_TX_BUFF_SIZE 100
+#define QUAD_2_TX_BUFF_SIZE 100
+#define QUAD_3_TX_BUFF_SIZE 100
+#define QUAD_4_TX_BUFF_SIZE 100
+#define QUAD_5_TX_BUFF_SIZE 100
+#define QUAD_6_TX_BUFF_SIZE 100
+#define QUAD_7_TX_BUFF_SIZE 100
+#define QUAD_8_TX_BUFF_SIZE 100
+#define QUAD_9_TX_BUFF_SIZE 100
+
+static uint8_t g_tx_buffer1[QUAD_1_TX_BUFF_SIZE];
+static uint8_t g_tx_buffer2[QUAD_2_TX_BUFF_SIZE];
+static uint8_t g_tx_buffer3[QUAD_3_TX_BUFF_SIZE];
+static uint8_t g_tx_buffer4[QUAD_4_TX_BUFF_SIZE];
+static uint8_t g_tx_buffer5[QUAD_5_TX_BUFF_SIZE];
+static uint8_t g_tx_buffer6[QUAD_6_TX_BUFF_SIZE];
+static uint8_t g_tx_buffer7[QUAD_7_TX_BUFF_SIZE];
+static uint8_t g_tx_buffer8[QUAD_8_TX_BUFF_SIZE];
+
+static const uint8_t tx_buff_size_list[TL16C554_UART_MAX] = {
+    QUAD_1_TX_BUFF_SIZE, QUAD_2_TX_BUFF_SIZE, QUAD_3_TX_BUFF_SIZE, QUAD_4_TX_BUFF_SIZE,
+    QUAD_5_TX_BUFF_SIZE, QUAD_6_TX_BUFF_SIZE, QUAD_7_TX_BUFF_SIZE, QUAD_8_TX_BUFF_SIZE};
+
+static  uint8_t *tx_buffer_list[TL16C554_UART_MAX] = {
+    g_tx_buffer1, g_tx_buffer2, g_tx_buffer3, g_tx_buffer4,
+    g_tx_buffer5, g_tx_buffer6, g_tx_buffer7, g_tx_buffer8};
 
 typedef struct tl16c554_instance_s
 {
@@ -37,6 +72,8 @@ typedef struct tl16c554_instance_s
   StreamBufferHandle_t quad_stream;
   void *tx_sem; //송신용 세마포어, 동일task만 사용한다면 불필요
   void *rx_sem; //수신용 세마포어, 동일task만 사용한다면 불필요
+  tx_cicular_buffer_t tx_cicular_buffer;
+  void *tx_c_sem;
 } tl16c554_instance_t;
 
 static tl16c554_instance_t tl16c554_inst[TL16C554_UART_MAX] = {
@@ -188,40 +225,61 @@ void set_stop_bit(uint8_t uart_num, uint8_t stop_bits)
 
   write_register(LCR(uart->base_address), lcr);
 }
-void quad_init(int uart_num, uart_config_t *p_config)
+
+static void quad_enable_tx_interrupt(int uart_num)
 {
-  uint8_t parity_mode;
-  uint8_t flag = 0;
-  uint8_t reg;
-  int baud_rate = p_config->baud;
-  di_isr_set_cfg_t isr_cfg;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+  uint8_t reg = 0;
 
-  uint16_t divisor = UART_CLOCK_FREQ / (16 * baud_rate); // 보오드레이트 설정을 위한 Divisor 계산
-  // DLAB 비트 설정 (LCR의 MSB 비트) 1로 해야 분주비 레지스터 접근 가능
-  write_register(LCR(uart->base_address), 0x80);
-  write_register(DLL(uart->base_address), divisor & 0xFF);
-  write_register(DLM(uart->base_address), (divisor >> 8) & 0xFF);
-  // DLAB 비트를 0으로 설정하여 LCR 설정, 상태레지스터 접근 가능
-  write_register(LCR(uart->base_address), 0x03);
+  reg = read_register(IER(uart->base_address));
+  reg = reg |TL16C554_IER_THRE;
+  write_register(IER(uart->base_address), reg);
+}
 
-  if (p_config->parity_index == PARITY_NONE)
-  {
-    parity_mode = 0;
-  }
-  else if (p_config->parity_index == PARITY_ODD)
-  {
-    parity_mode = 1;
-  }
-  else  // even
-  {
-    parity_mode = 2;
-  }
+static void quad_disable_tx_interrupt(int uart_num)
+{
+  tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+  uint8_t reg = 0;
 
-  set_parity(uart_num, parity_mode);
-  //FIFO 설정 (FCR) 트리거 레벨 1바이트
-  write_register(FCR(uart->base_address), 0x07);  // FIFO enable, RX/TX FIFO reset
-  write_register(MCR(uart->base_address), 0x08);
+  reg = read_register(IER(uart->base_address));
+  reg = reg & (~TL16C554_IER_THRE);
+  write_register(IER(uart->base_address), reg);
+}
+
+  void quad_init(int uart_num, uart_config_t *p_config)
+  {
+    uint8_t parity_mode;
+    uint8_t flag = 0;
+    uint8_t reg;
+    int baud_rate = p_config->baud;
+    di_isr_set_cfg_t isr_cfg;
+    tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+
+    uint16_t divisor = UART_CLOCK_FREQ / (16 * baud_rate); // 보오드레이트 설정을 위한 Divisor 계산
+    // DLAB 비트 설정 (LCR의 MSB 비트) 1로 해야 분주비 레지스터 접근 가능
+    write_register(LCR(uart->base_address), 0x80);
+    write_register(DLL(uart->base_address), divisor & 0xFF);
+    write_register(DLM(uart->base_address), (divisor >> 8) & 0xFF);
+    // DLAB 비트를 0으로 설정하여 LCR 설정, 상태레지스터 접근 가능
+    write_register(LCR(uart->base_address), 0x03);
+
+    if (p_config->parity_index == PARITY_NONE)
+    {
+      parity_mode = 0;
+    }
+    else if (p_config->parity_index == PARITY_ODD)
+    {
+      parity_mode = 1;
+    }
+    else // even
+    {
+      parity_mode = 2;
+    }
+
+    set_parity(uart_num, parity_mode);
+    // FIFO 설정 (FCR) 트리거 레벨 1바이트
+    write_register(FCR(uart->base_address), 0x07); // FIFO enable, RX/TX FIFO reset
+    write_register(MCR(uart->base_address), 0x08);
 
 // 인터럽트 설정 Bit 3,2,1
 #define IER_RDA 0x01           // 데이터가 수신됨
@@ -304,6 +362,38 @@ int32_t quad_recv_byte(int uart_num, uint8_t *data)
   }
 }
 
+
+void quad_write_tx_data(int32_t uart_num)
+{
+  tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+  uint16_t tail;
+  uint16_t head;
+  uint16_t buffer_size;
+  volatile uint8_t *thr;
+
+  thr = THR(uart->base_address);
+
+  tail = uart->tx_cicular_buffer.tail;
+  head = uart->tx_cicular_buffer.head;
+  buffer_size = uart->tx_cicular_buffer.buffer_size;
+
+  for (int i = 0;  i <UART_FIFO_SIZE &&uart->tx_cicular_buffer.count > 0; i++)
+  {
+    *thr = uart->tx_cicular_buffer.p_tx_buffer[tail];
+    tail = (tail + 1) % buffer_size;
+    uart->tx_cicular_buffer.count--;
+  }
+   uart->tx_cicular_buffer.tail = tail;
+   uart->tx_cicular_buffer.head = head;
+
+   if(uart->tx_cicular_buffer.count ==0)
+   {
+    quad_disable_tx_interrupt(uart_num);
+    uart->tx_cicular_buffer.tail = 0;
+    uart->tx_cicular_buffer.head = 0;
+    OS_POST_SEM(uart->tx_c_sem);
+   }
+}
 /*
 인터럽트가 발생하면 IIR 레지스터 bit 0가 펜딩된다. 이값이 0이면 인터럽트가 발생된것
 인터럽트 타입 필드 3bit를 확인하여 인터럽트 종류를 확인한다
@@ -340,7 +430,8 @@ void isr_tl16c554(int uart_num)
 
         break;
       case UART_IIR_THRE:  // Transmitter Holding 레지스터가 비였다, 인터럽트 enable 되었을때만 발생
-      //THR wirte 
+      //THR wirte
+      quad_write_tx_data(uart_num); 
         break;
       case UART_IIR_RX_LINE_STAT:  
         line_status = read_register(LSR(uart->base_address)); //읽어야 iir에서 지워짐
@@ -394,16 +485,47 @@ void tl16c554_send_DMA(int uart_num, const uint8_t *p_data, uint16_t dataLen)
     while (1);
   }
 }
-
-
-
-
-
-/**
- * @brief  송신
- * @retval 송신된 바이트 수, -1 송신에러 
- */
+extern uint32_t calculate_txWaitTimeMs(uint32_t baud, uint16_t dataLen);
 int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
+{
+  int32_t count = 0;
+  tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+  uint32_t waitTime;
+  osStatus_t osStatus;
+
+  OS_PEND_SEM(uart->tx_sem, osWaitForever);
+
+  if(uart->tx_cicular_buffer.buffer_size>=data_len)
+  {
+    for(int i = 0 ; i < data_len;i++)
+    {
+      uart->tx_cicular_buffer.p_tx_buffer[i] = p_data[i];
+    }
+    uart->tx_cicular_buffer.count = data_len;
+
+
+  osSemaphoreAcquire(uart->tx_c_sem, 0); // 이전에 처리 못한건 제거
+  waitTime = calculate_txWaitTimeMs(uart->baud, data_len);
+  quad_enable_tx_interrupt(uart_num);
+  if (uart->tx_c_sem)
+  {
+    osStatus = osSemaphoreAcquire(uart->tx_c_sem, waitTime);
+    if (osStatus != osOK)
+    {
+      count = -1;
+    }
+  }
+  }
+
+  OS_POST_SEM(uart->tx_sem);
+  return count;
+}
+
+    /**
+     * @brief  송신
+     * @retval 송신된 바이트 수, -1 송신에러
+     */
+int32_t tl16c554_send_(int uart_num, const uint8_t *p_data, uint16_t data_len)
 {
   int32_t cnt = 0;
   uint32_t start_time;
@@ -800,6 +922,13 @@ int32_t tl16c554_init(int32_t uart_num, void *opt)
 
   quad_init(uart_num, (uart_config_t *)opt);
   //TODO:quad 초기화 결과로 opend 변수 처리 필요
+
+  uart->tx_cicular_buffer.buffer_size = tx_buff_size_list[uart_num];
+  uart->tx_cicular_buffer.p_tx_buffer = tx_buffer_list[uart_num];
+  uart->tx_cicular_buffer.count = 0;
+  uart->tx_cicular_buffer.head = 0;
+  uart->tx_cicular_buffer.tail = 0;
+  OS_CREATE_BINARY_SEM(uart->tx_c_sem); // 반드시 사용할필요 없음
   uart->opened = true;
 
   return 1;
