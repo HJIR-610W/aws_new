@@ -299,7 +299,7 @@ float driver_freq_read_duty(driver_t *drv,uint8_t *err)
 #define TIM2_CH1_ETR_GPIO_Port GPIOA
 
 
-#define TIMER_FREQUENCY 10000
+#define TIMER_FREQUENCY 4000000
 typedef struct freq_cfg_s
 {
   uint8_t channel;
@@ -412,8 +412,9 @@ void freqMeasureC_init(void)
   GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
   HAL_GPIO_Init(TIM2_CH1_ETR_GPIO_Port, &GPIO_InitStruct);
 
+  //4294초 뒤에 오버플로우 발생
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = calculate_timer_prescaler(TIM2, TIMER_FREQUENCY); 
+  htim2.Init.Prescaler = calculate_timer_prescaler(TIM2, TIMER_FREQUENCY);
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 0xFFFFFFFF; 
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
