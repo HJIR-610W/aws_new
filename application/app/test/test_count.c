@@ -32,7 +32,7 @@ void test_freq(void)
 
     io_printf("freq b:%f,freq c:%f\r\n", freq_b, freq_c);
 
-    if (get_key(1000) == KEY_CODE_CTRL_Q)
+    if (get_key(1000) == KEY_CODE_CTRL_C)
     {
       io_printf("테스트 종료 (CTRL+Q 감지)\r\n");
       break;

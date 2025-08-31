@@ -78,8 +78,8 @@ static const do_pinmap_t do_pinmap[BSP_DO_MAX] = {
     [BSP_DO_EXT_1] = {DO_DRIVER_PCF8575, DO_PCF8575_1},
     [BSP_DO_EXT_2] = {DO_DRIVER_PCF8575, DO_PCF8575_2},
     [BSP_DO_EXT_3] = {DO_DRIVER_PCF8575, DO_PCF8575_3},
-    [BSP_DO_EXT_4] = {DO_DRIVER_PCF8575, DO_PCF8575_5},
-    [BSP_DO_EXT_5] = {DO_DRIVER_PCF8575, DO_PCF8575_6}};
+    [BSP_DO_EXT_4] = {DO_DRIVER_PCF8575, DO_PCF8575_4},
+    [BSP_DO_EXT_5] = {DO_DRIVER_PCF8575, DO_PCF8575_5}};
 #endif
 
 static inline bool is_valid_do_num(int num)

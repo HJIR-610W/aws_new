@@ -2,14 +2,16 @@
 
 #ifndef DRV_DO_H
 #define DRV_DO_H
+#include "bsp_do.h"
 
 
-#define DRV_DO_EXT_0 17
-#define DRV_DO_EXT_1 18
-#define DRV_DO_EXT_2 19
-#define DRV_DO_EXT_3 20
-#define DRV_DO_EXT_4 21
-#define DRV_DO_EXT_5 22
+
+#define DRV_DO_EXT_0 BSP_DO_EXT_0
+#define DRV_DO_EXT_1 BSP_DO_EXT_1
+#define DRV_DO_EXT_2 BSP_DO_EXT_2
+#define DRV_DO_EXT_3 BSP_DO_EXT_3
+#define DRV_DO_EXT_4 BSP_DO_EXT_4
+#define DRV_DO_EXT_5 BSP_DO_EXT_5
 
 void drv_do_init(void);
 void drv_do_low(int num);

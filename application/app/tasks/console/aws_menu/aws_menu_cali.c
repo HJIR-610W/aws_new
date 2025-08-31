@@ -58,6 +58,7 @@ int handle_factory_calibration(int adc_num)
 {
   char ch;
   int choice, channel_index, status;
+  int key;
   float cal_temp;
   adc_channel_type_t type;
   adc_cal_params_t* cal_params_ptr;
@@ -130,7 +131,8 @@ int handle_factory_calibration(int adc_num)
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
         io_printf("RAW:%10d AVG:%10.0f\r\n", adc_raw, avg);
-        if (!wait_break(10))
+        key = get_key(10);
+        if(key == KEY_CODE_CTRL_C)
           break;
       }
 
@@ -179,7 +181,8 @@ int handle_factory_calibration(int adc_num)
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
         io_printf("RAW:%10d AVG:%10.0f\r\n", adc_raw, avg);
-        if (!wait_break(10))
+        key = get_key(10);
+        if (key == KEY_CODE_CTRL_C)
           break;
       }
       status = input_decimal_prompt("측정된 RAW 값 입력", (int*)&p2.raw_value,
@@ -546,6 +549,7 @@ int handle_view_status(int adc_num)
   uint8_t file_save_use = 0;
   int32_t scan_ms;
   int choice, channel_index, status;
+  int32_t key;
   adc_channel_type_t type;
 
   config_adc_adv_t* p_adc = get_adc_config(adc_num);
@@ -703,7 +707,9 @@ int handle_view_status(int adc_num)
             }
           }
 
-        } while (wait_break(scan_ms));
+          key = get_key(10);
+
+        } while (key != KEY_CODE_CTRL_C);
 
         break;
       case MENU_VIEW_SINGLE_SUMMARY:
@@ -800,7 +806,7 @@ int handle_view_status(int adc_num)
   return status;
 }
 
-/** @brief 설정 저장/로드 메뉴 처리 */
+
 int handle_save_load(int adc_num)
 {
   int choice, status;
@@ -838,8 +844,7 @@ int handle_save_load(int adc_num)
         for (int channel = 0; channel < g_adc_config_ads1220.params_se_cnt; channel++)
         {
           g_adc_config_ads1220.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
-          g_adc_config_ads1220.single_ended_cal[channel].factory_cal_temp =
-              DEFAULT_FACTORY_CAL_TEMP;
+          g_adc_config_ads1220.single_ended_cal[channel].factory_cal_temp =  DEFAULT_FACTORY_CAL_TEMP;
           g_adc_config_ads1220.single_ended_cal[channel].is_calibrated = true;
           g_adc_config_ads1220.single_ended_cal[channel].factory_offset = 4.928633e-03;
           g_adc_config_ads1220.single_ended_cal[channel].factory_slope = 5.958932e-07;

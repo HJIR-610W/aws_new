@@ -32,7 +32,7 @@ void test_rtc(void)
     }
 
     // 1초 대기 및 키 체크
-    if (get_key(1000) == KEY_CODE_CTRL_Q)
+    if (get_key(1000) == KEY_CODE_CTRL_C)
     {
       io_printf("테스트 종료 (CTRL+Q 감지)\r\n");
       break;

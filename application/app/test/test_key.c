@@ -43,8 +43,7 @@ void test_key(void)
         }
     }
 
-    
-    if (get_key(100) == KEY_CODE_CTRL_Q)
+        if (get_key(100) == KEY_CODE_CTRL_C)
     {
       break;
     }

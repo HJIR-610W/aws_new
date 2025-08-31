@@ -95,7 +95,7 @@ void test_modbus_task(void *arg)
         io_printf("\r\n");
 
     }
-    if (get_key(1000) == KEY_CODE_CTRL_Q)
+    if (get_key(1000) == KEY_CODE_CTRL_C)
     {
       io_printf("테스트 종료\r\n");
       return;

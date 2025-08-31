@@ -7,6 +7,7 @@
 #include "dev_io.h"
 #include "drv_di.h"
 #include "drv_do.h"
+#include "drv_power.h"
 #include "cli_input.h"
 
 #define DI_COUNT 6
@@ -42,7 +43,7 @@ void test_di(void)
 
     }
 
-    if (get_key(100) == KEY_CODE_CTRL_Q) 
+    if (get_key(100) == KEY_CODE_CTRL_C)
     {
       io_printf("테스트 종료\r\n");
       break;
@@ -65,7 +66,7 @@ void test_do(void)
   io_printf("입력 예: 0,low  또는  3,high (번호,상태)\r\n");
   io_printf("CTRL+C 입력 시 종료\r\n");
 
-
+  drv_power_on(DRV_POWER_RAIN_DECT_DIGITAL);
   while (1)
   {
     int num;

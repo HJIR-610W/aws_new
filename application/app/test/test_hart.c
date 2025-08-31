@@ -65,7 +65,7 @@ void hart_task(void *arg)
     {
       hart_parse(buff,len);
     }
-    if (get_key(1000) == KEY_CODE_CTRL_Q)
+    if (get_key(1000) == KEY_CODE_CTRL_C)
     {
       break;
     }
@@ -75,6 +75,7 @@ void hart_task(void *arg)
 void test_hart(void)
 {
   uart_config_t uart_config = {.dataLen = UART_DATA_LEN_8, .stop_bit = 0};
+  uint16_t timeout=50;
 
 
   uart_config.baud = 1200;
@@ -92,6 +93,17 @@ void test_hart(void)
   bsp_do_low(BSP_DO_HART_RESET);  
   osDelay(10);
   bsp_do_high(BSP_DO_HART_RESET);
+
+  io_printf("하트센서가 연결되면 센서 정보가 출력됩니다.\r\n");
+  io_printf("하트센서 주소를 0으로 설정하여 연결하세요\r\n");
+  io_printf("지금 전원 24V를 ON 했습니다. 부팅시간 고려하여 50초 대기합니다. 잠시 기다려주세요\r\n");
+  while(timeout)
+  {
+    io_printf("%02d\r",timeout--);
+    osDelay(1000);
+  }
+
+
 
   hart_task(0);
 }

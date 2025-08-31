@@ -132,6 +132,13 @@ void sdi_send(uint8_t *cmd, uint16_t dataLen)
 
 #endif
 }
+/*
+함수비 센서 연결
+
+.0XR3!0.1822.9 2
+00 30 58 52 33 21 30 09 31 38 32 32 2E 39 20 32 
+36 2E 33 0D 68 3B 3D 0D 0A
+*/
 
 void sdiTask(void *arg)
 {
@@ -142,7 +149,7 @@ void sdiTask(void *arg)
 
   SDI_DIR_TX_OFF();
 
-  io_printf("0XR3 이런 문자열이 출력되면 정상\r\n");
+  io_printf("0XR3 A 문자열이 출력되면 정상\r\n");
   io_printf("CTRL+Q 종료료\r\n");
 
   while (1)
@@ -157,7 +164,7 @@ void sdiTask(void *arg)
       }
       LOG_MEM(buff,len,0,16);
     }
-    if (get_key(1000) == KEY_CODE_CTRL_Q)
+    if (get_key(1000) == KEY_CODE_CTRL_C)
     {
       break;
     }
@@ -176,7 +183,7 @@ void test_sdi12(void)
 
   g_sdi_uart = BSP_UART_9_SDI_ONLY;
 
-      bsp_uart_init(BSP_UART_9_SDI_ONLY, &uart_config);
+  bsp_uart_init(BSP_UART_9_SDI_ONLY, &uart_config);
 
   sdiTask(0);
 }

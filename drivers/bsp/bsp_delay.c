@@ -22,7 +22,7 @@ void bsp_us_delay(uint32_t us) {
     
     
     
-    while ((DWT->CYCCNT - start) < delayTicks); // 사이클이 충분히 지날 때까지 대기
+while ((DWT->CYCCNT - start) < delayTicks); // 사이클이 충분히 지날 때까지 대기
 }
 
 uint32_t mcu_get_clk(void)

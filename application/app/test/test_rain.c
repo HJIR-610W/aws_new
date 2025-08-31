@@ -109,8 +109,7 @@ void test_rain(void)
       }
     }
 
-
-    if (get_key(1000) == KEY_CODE_CTRL_Q)
+    if (get_key(1000) == KEY_CODE_CTRL_C)
     {
       return;
     }

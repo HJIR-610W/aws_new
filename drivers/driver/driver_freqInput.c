@@ -495,7 +495,37 @@ uint32_t calculate_timer_prescaler(TIM_TypeDef *tim_instance, uint32_t desired_f
   return prescaler;
 }
 
+void freqMeasureB_count_init(void)
+{
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_TIM5_CLK_ENABLE();
 
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Pin = TIM5_CH1_Pin;
+  GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
+  HAL_GPIO_Init(TIM5_CH1_GPIO_Port, &GPIO_InitStruct);
+
+  htim5.Instance = TIM5;
+  htim5.Init.Prescaler = calculate_timer_prescaler(TIM5, TIMER_FREQUENCY);
+  htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim5.Init.Period = 0xFFFFFFFF; // TIM2 is 32-bit
+  HAL_TIM_IC_Init(&htim5);
+
+  TIM_IC_InitTypeDef sConfigIC = {0};
+  sConfigIC.ICPolarity = TIM_ICPOLARITY_RISING; // Detect rising edge only
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  HAL_TIM_IC_ConfigChannel(&htim5, &sConfigIC, TIM_CHANNEL_1);
+
+  HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_1);
+
+  HAL_NVIC_SetPriority(TIM5_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(TIM5_IRQn);
+}
 
 driver_t *driver_freq_open(uint32_t num)
 {

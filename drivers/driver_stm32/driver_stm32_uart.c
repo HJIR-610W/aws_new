@@ -62,7 +62,7 @@ static void stm32_uart_dma_init(int num)
     p_dma->Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     p_dma->Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     p_dma->Init.Mode = DMA_NORMAL;
-    p_dma->Init.Priority = DMA_PRIORITY_LOW;
+    p_dma->Init.Priority = DMA_PRIORITY_VERY_HIGH;
     p_dma->Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
     if (HAL_DMA_Init(p_dma) != HAL_OK)
@@ -101,7 +101,7 @@ static void stm32_uart_dma_init(int num)
     HAL_NVIC_SetPriority(DMA2_Stream7_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(DMA2_Stream7_IRQn);
 
-    HAL_NVIC_SetPriority(USART6_IRQn, 5, 1);
+    HAL_NVIC_SetPriority(USART6_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(USART6_IRQn);
   }
 }
@@ -112,7 +112,7 @@ static void stm32_uart_hal_init(int num,uint32_t baud, uint8_t parity, uint8_t d
 
   p_uart = &uart_inst[num].handle;
 
-  p_uart->Instance = USART3;
+ 
   p_uart->Init.BaudRate = baud;
   if (dataLen == 0)
   {
