@@ -3,7 +3,7 @@
 #include "bsp_i2c.h"
 #include "pcb_define.h"
 #include "system_err.h"
-
+#include "os_user_def.h"
 
 #define I2C_TIMEOUT 1000
 

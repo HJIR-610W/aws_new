@@ -20,7 +20,7 @@ typedef struct
   int driver_num;
 } do_pinmap_t;
 
-#ifdef AWS_PCB_0_5
+#ifdef PCB_0_5
 static const do_pinmap_t do_pinmap[BSP_DO_MAX] = {
     [BSP_DO_POWER_CDMA] = {DO_DRIVER_STM32, STM32_DO_POWER_CDMA},
     [BSP_DO_POWER_HART_24V] = {DO_DRIVER_STM32, STM32_DO_POWER_HART_24V},
@@ -52,7 +52,7 @@ static const do_pinmap_t do_pinmap[BSP_DO_MAX] = {
 #endif
 
 
-#ifdef AWS_PCB_0_6
+#ifdef PCB_0_6
 static const do_pinmap_t do_pinmap[BSP_DO_MAX] = {
     [BSP_DO_POWER_CDMA] = {DO_DRIVER_STM32, STM32_DO_POWER_CDMA},
     [BSP_DO_POWER_HART_24V] = {DO_DRIVER_STM32, STM32_DO_POWER_HART_24V},

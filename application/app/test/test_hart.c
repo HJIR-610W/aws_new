@@ -8,7 +8,7 @@
 #include "cli_key_code.h"
 #include "hart_parser.h"
 #include "drv_power.h"
-
+#include "os_user_def.h"
 
 #define HART_TX_ON() bsp_do_low(BSP_DO_HART_RTS)
 #define HART_TX_OFF() bsp_do_high(BSP_DO_HART_RTS)

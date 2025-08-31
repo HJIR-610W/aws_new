@@ -24,7 +24,7 @@ typedef struct
 } di_pinmap_t;
 
 
-#ifdef AWS_PCB_0_5
+#ifdef PCB_0_5
 static const di_pinmap_t di_pinmap[BSP_DI_MCU_MAX] = {
     [BSP_DI_USER_BTN] = {DI_DRIVER_STM32, STM32_DI_USER_BTN},
     [BSP_DI_RAIN_REED] = {DI_DRIVER_STM32, STM32_DI_RAIN_REED},
@@ -56,7 +56,7 @@ static const di_pinmap_t di_pinmap[BSP_DI_MCU_MAX] = {
 
 #endif
 
-#ifdef AWS_PCB_0_6
+#ifdef PCB_0_6
 static const di_pinmap_t di_pinmap[BSP_DI_MCU_MAX] = {
     [BSP_DI_USER_BTN] = {DI_DRIVER_STM32, STM32_DI_USER_BTN},
     [BSP_DI_RAIN_REED] = {DI_DRIVER_STM32, STM32_DI_RAIN_REED},

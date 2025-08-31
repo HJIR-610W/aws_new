@@ -24,6 +24,7 @@
 #include "cli_key_code.h"
 #include "util_stdio.h"
 #include "fsl_debug_console.h"
+#include "os_user_def.h"
 
 const char *g_unknown = "unknown";
 

@@ -14,7 +14,7 @@ typedef struct stm32_do_inst_s
   GPIO_PinState init_state;
 } stm32_do_inst_t;
 
-#ifdef AWS_PCB_0_5
+#ifdef PCB_0_5
 stm32_do_inst_t do_inst[STM32_DO_MAX] = {
     [STM32_DO_POWER_CDMA] = {.init = {.Pin = DO_CON_PWR_CDMA_Pin,
                                     .Mode = GPIO_MODE_OUTPUT_PP,
@@ -104,7 +104,7 @@ stm32_do_inst_t do_inst[STM32_DO_MAX] = {
 #endif
 
 
-#ifdef AWS_PCB_0_6
+#ifdef PCB_0_6
 stm32_do_inst_t do_inst[STM32_DO_MAX] = {
     [STM32_DO_POWER_CDMA] = {.init = {.Pin = DO_CON_PWR_CDMA_Pin,
                                     .Mode = GPIO_MODE_OUTPUT_PP,
@@ -237,7 +237,7 @@ void stm32_do_init(void)
         case STM32_DO_POWER_LCD:
         case STM32_DO_QUAD_A_RST:
         case STM32_DO_QUAD_B_RST:
-#ifdef AWS_PCB_0_6
+#ifdef PCB_0_6
     case STM32_DO_FLASH_CS:
 #endif
           stm32_do_gpio_init(do_num);
@@ -273,7 +273,7 @@ void stm32_do_low(int num)
     case STM32_DO_POWER_LCD:
     case STM32_DO_QUAD_A_RST:
     case STM32_DO_QUAD_B_RST:
-#ifdef AWS_PCB_0_6
+#ifdef PCB_0_6
     case STM32_DO_FLASH_CS:
 #endif
       HAL_GPIO_WritePin(do_inst[num].port, do_inst[num].init.Pin, GPIO_PIN_RESET);
@@ -307,7 +307,7 @@ void stm32_do_high(int num)
     case STM32_DO_POWER_LCD:
     case STM32_DO_QUAD_A_RST:
     case STM32_DO_QUAD_B_RST:
-#ifdef AWS_PCB_0_6
+#ifdef PCB_0_6
     case STM32_DO_FLASH_CS:
 #endif
       HAL_GPIO_WritePin(do_inst[num].port, do_inst[num].init.Pin, GPIO_PIN_SET);

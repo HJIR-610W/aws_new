@@ -13,28 +13,22 @@ PCB 5: LCD 점퍼 날림 보드
 PCB 6: 키패트 LCD 적용된 보드 
 */
 
-#define AWS_PCB_0_5 5
-//#define AWS_PCB_0_6 6
+//#define PCB_0_5 5
+#define PCB_0_6 6
 
 
-#ifdef AWS_PCB_0_5
+#ifdef PCB_0_5
 #include "pin\pcb_5_pin.h"
-#define AWS_PCB_VER AWS_PCB_0_5 
-
+#define AWS_PCB_VERSION PCB_0_5 
 #endif
 
-#ifdef AWS_PCB_0_6
+#ifdef PCB_0_6
 #include "pin\pcb_6_pin.h"
-#define AWS_PCB_VER AWS_PCB_0_6 
+#define AWS_PCB_VERSION PCB_0_6 
 #endif
 
 
-#include "os_user_def.h"
-
-
-
-
-
+#include "stm32f4xx_hal.h"
 
 
 extern const char* pcbPortNameList[9];

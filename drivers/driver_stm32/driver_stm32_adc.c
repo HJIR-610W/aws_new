@@ -3,6 +3,7 @@
 #include "pcb_define.h"
 #include "driver_stm32_adc.h"
 #include "system_err.h"
+#include "os_user_def.h"
 
 typedef struct
 {

@@ -10,7 +10,7 @@
 #include "driver_di_def.h"
 #include "pcb_define.h"
 
-#ifdef AWS_PCB_0_5
+#ifdef PCB_0_5
 #define BSP_DI_USER_BTN        0
 #define BSP_DI_RAIN_REED       1
 #define BSP_DI_RAIN_HALL       2
@@ -43,7 +43,7 @@
 #endif
 
 
-#ifdef AWS_PCB_0_6
+#ifdef PCB_0_6
 #define BSP_DI_USER_BTN        0
 #define BSP_DI_RAIN_REED       1
 #define BSP_DI_RAIN_HALL       2

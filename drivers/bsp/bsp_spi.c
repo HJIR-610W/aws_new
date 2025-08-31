@@ -3,7 +3,7 @@
 #include "bsp_spi.h"
 #include "pcb_define.h"
 #include "system_err.h"
-
+#include "os_user_def.h"
 
 #define SPI_TIME_OUT 0x1000
 

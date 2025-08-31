@@ -2,7 +2,7 @@
 #include "pcb_define.h"
 #include "driver_stm32_rtc.h"
 #include "system_err.h"
-
+#include "os_user_def.h"
 #include "util_time.h"
 
 typedef struct  stm32_do_cfg_s

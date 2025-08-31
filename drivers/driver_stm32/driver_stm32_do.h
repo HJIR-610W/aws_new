@@ -4,7 +4,7 @@
 
 #include "pcb_define.h"
 
-#ifdef AWS_PCB_0_5
+#ifdef PCB_0_5
 #define STM32_DO_POWER_CDMA              0
 #define STM32_DO_POWER_HART_24V          1
 #define STM32_DO_POWER_RAIN_DECT_DIGITAL 2
@@ -30,7 +30,7 @@
 #define STM32_DO_MAX 21
 #endif
 
-#ifdef AWS_PCB_0_6
+#ifdef PCB_0_6
 #define STM32_DO_POWER_CDMA              0
 #define STM32_DO_POWER_HART_24V          1
 #define STM32_DO_POWER_RAIN_DECT_DIGITAL 2

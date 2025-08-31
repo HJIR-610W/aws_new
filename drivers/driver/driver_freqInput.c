@@ -1,8 +1,6 @@
 
 
-#define PCB_0_6
 
-#ifndef PCB_0_6
 
 #include "driver_freqInput.h"
 
@@ -10,7 +8,10 @@
 
 #include "os_user_def.h"
 #include "pcb_define.h"
-#include "stm32f4xx_hal.h"
+
+
+
+#ifdef PCB_0_5
 
 
 #define TIM_FREQ 10000
@@ -280,23 +281,25 @@ float driver_freq_read_duty(driver_t *drv,uint8_t *err)
   return NAN;  // Duty cycle measurement disabled
 }
 
-#else
+#endif
 
+
+#ifdef PCB_0_6
 #include "driver_freqInput.h"
 
 #include <math.h>
 
 #include "os_user_def.h"
 #include "pcb_define.h"
-#include "stm32f4xx_hal.h"
-
-#define IN_TIM5_CH1_Pin GPIO_PIN_0
-#define IN_TIM5_CH1_GPIO_Port GPIOA
-#define IN_TIM2_CH1_Pin GPIO_PIN_5
-#define IN_TIM2_CH1_GPIO_Port GPIOA
 
 
-#define TIMER_FREQUENCY 100000
+#define TIM5_CH1_Pin GPIO_PIN_0
+#define TIM5_CH1_GPIO_Port GPIOA
+#define TIM2_CH1_ETR_Pin GPIO_PIN_5
+#define TIM2_CH1_ETR_GPIO_Port GPIOA
+
+
+#define TIMER_FREQUENCY 10000
 typedef struct freq_cfg_s
 {
   uint8_t channel;
@@ -367,53 +370,20 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 void freqMeasureB_init(void)
 {
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_TIM2_CLK_ENABLE();
-
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Pin = IN_TIM2_CH1_Pin;
-  GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
-  HAL_GPIO_Init(IN_TIM2_CH1_GPIO_Port, &GPIO_InitStruct);
-
-  htim2.Instance = TIM2;
-  htim2.Init.Prescaler = calculate_timer_prescaler(TIM2, TIMER_FREQUENCY);  // 100kHz timer frequency (10us period)
-  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 0xFFFFFFFF;  // TIM2 is 32-bit
-  HAL_TIM_IC_Init(&htim2);
-
-  TIM_IC_InitTypeDef sConfigIC = {0};
-  sConfigIC.ICPolarity = TIM_ICPOLARITY_RISING;  // Detect rising edge only
-  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
-  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-  sConfigIC.ICFilter = 0;
-  HAL_TIM_IC_ConfigChannel(&htim2, &sConfigIC, TIM_CHANNEL_1);
-
-  HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
-
-  HAL_NVIC_SetPriority(TIM2_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(TIM2_IRQn);
-}
-// Initialization function - TIM5
-void freqMeasureC_init(void)
-{
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_TIM5_CLK_ENABLE();
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  GPIO_InitStruct.Pin = IN_TIM5_CH1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Pin = TIM5_CH1_Pin;
   GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
-  HAL_GPIO_Init(IN_TIM5_CH1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(TIM5_CH1_GPIO_Port, &GPIO_InitStruct);
 
   htim5.Instance = TIM5;
-  htim5.Init.Prescaler = calculate_timer_prescaler(TIM5, TIMER_FREQUENCY);  // 100kHz timer frequency (10us period)
+  htim5.Init.Prescaler = calculate_timer_prescaler(TIM5, TIMER_FREQUENCY); 
   htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim5.Init.Period = 0xFFFFFFFF;  // TIM5 is 32-bit
-  htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim5.Init.Period = 0xFFFFFFFF; // TIM2 is 32-bit
   HAL_TIM_IC_Init(&htim5);
 
   TIM_IC_InitTypeDef sConfigIC = {0};
@@ -427,6 +397,39 @@ void freqMeasureC_init(void)
 
   HAL_NVIC_SetPriority(TIM5_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(TIM5_IRQn);
+}
+
+void freqMeasureC_init(void)
+{
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_TIM2_CLK_ENABLE();
+
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  GPIO_InitStruct.Pin = TIM2_CH1_ETR_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
+  HAL_GPIO_Init(TIM2_CH1_ETR_GPIO_Port, &GPIO_InitStruct);
+
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = calculate_timer_prescaler(TIM2, TIMER_FREQUENCY); 
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 0xFFFFFFFF; 
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  HAL_TIM_IC_Init(&htim2);
+
+  TIM_IC_InitTypeDef sConfigIC = {0};
+  sConfigIC.ICPolarity = TIM_ICPOLARITY_RISING;  
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  HAL_TIM_IC_ConfigChannel(&htim2, &sConfigIC, TIM_CHANNEL_1);
+
+  HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
+
+  HAL_NVIC_SetPriority(TIM2_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(TIM2_IRQn);
 }
 
 void TIM2_IRQHandler(void) 
@@ -521,35 +524,32 @@ driver_t *driver_freq_open(uint32_t num)
   return &g_freqMeasure[num];
 }
 
-#define FREQ_TIMEOUT_MS 1000
-
-float driver_freq_read(driver_t *drv,uint8_t *err)
+#define FREQ_MEASURE_TIMEOUT 3000
+float driver_freq_read(driver_t *drv, uint8_t *err)
 {
   freq_cfg_t *cfg = drv->cfg;
   *err = 0;
 
   if (cfg->channel == 0)
   {
-    if(1)// (osSemaphoreAcquire(drv->sem, FREQ_TIMEOUT_MS) == osOK)
+    if ((HAL_GetTick() - last_capture_tick_TIM5) > FREQ_MEASURE_TIMEOUT)
     {
-      return g_freq_TIM2;
+      return 0.0f;
     }
     else
     {
-      g_freq_TIM2 = 0.0f;
-      return 0.0f;
+      return g_freq_TIM5;
     }
   }
   else if (cfg->channel == 1)
   {
-    if(1)// (osSemaphoreAcquire(drv->sem, FREQ_TIMEOUT_MS) == osOK)
+    if ((HAL_GetTick() - last_capture_tick_TIM2) > FREQ_MEASURE_TIMEOUT)
     {
-      return g_freq_TIM5;
+      return 0.0f;
     }
     else
     {
-      g_freq_TIM5 = 0.0f;
-      return 0.0f;
+      return g_freq_TIM2;
     }
   }
 

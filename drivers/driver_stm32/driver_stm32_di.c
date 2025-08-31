@@ -13,7 +13,7 @@ typedef struct stm32_di_inst_s
   bool opened;
 } stm32_di_inst_t;
 
-#ifdef AWS_PCB_0_5 
+#ifdef PCB_0_5 
 stm32_di_inst_t di_inst[STM32_DI_MCU_MAX] = {
 
     [STM32_DI_0_ADC_RDY] = {.init = {.Pin = DI_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},
@@ -65,7 +65,7 @@ stm32_di_inst_t di_inst[STM32_DI_MCU_MAX] = {
 #endif
 
 
-#ifdef AWS_PCB_0_6 
+#ifdef PCB_0_6 
 stm32_di_inst_t di_inst[STM32_DI_MCU_MAX] = {
 
     [STM32_DI_0_ADC_RDY] = {.init = {.Pin = DI_SPI2_DRDY_Pin, .Pull = GPIO_PULLUP},

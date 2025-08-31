@@ -22,7 +22,7 @@
 #include "bsp_rs485.h"
 #include "bsp_eth.h"
 
-uint32_t g_pcb_version = AWS_PCB_VER;
+uint32_t g_pcb_version = AWS_PCB_VERSION;
 
 TIM_HandleTypeDef        htim4;
 

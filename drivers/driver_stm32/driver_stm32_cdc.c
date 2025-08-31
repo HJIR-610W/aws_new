@@ -13,6 +13,7 @@
 #include "system_err.h"
 #include "stm32_usb.h"
 #include "pcb_define.h"
+#include "os_user_def.h"
 
 extern uint32_t calculate_txWaitTimeMs(uint32_t baud, uint16_t dataLen);
 

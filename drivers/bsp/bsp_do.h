@@ -7,7 +7,7 @@
 
 #include "pcb_define.h"
 
-#ifdef AWS_PCB_0_5
+#ifdef PCB_0_5
 #define BSP_DO_POWER_CDMA              0
 #define BSP_DO_POWER_HART_24V          1
 #define BSP_DO_POWER_RAIN_DECT_DIGITAL 2
@@ -38,7 +38,7 @@
 #define BSP_DO_MAX                    27
 #endif
 
-#ifdef AWS_PCB_0_6
+#ifdef PCB_0_6
 #define BSP_DO_POWER_CDMA              0
 #define BSP_DO_POWER_HART_24V          1
 #define BSP_DO_POWER_RAIN_DECT_DIGITAL 2

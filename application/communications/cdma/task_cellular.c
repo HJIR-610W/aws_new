@@ -25,6 +25,7 @@
 #include "FreeRTOS.h"
 #include "bsp.h"
 #include "bsp_uart.h"
+#include "os_user_def.h"
 
 typedef enum{
 	ePOWER_RESET,

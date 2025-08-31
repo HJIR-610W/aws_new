@@ -10,6 +10,7 @@
 #include "bsp_uart.h"
 #include "pcb_define.h"
 #include "drv_power.h"
+#include "os_user_def.h"
 
 extern UART_HandleTypeDef huart6;
 
