@@ -17,7 +17,7 @@
 
 #define STREAMBUFFER_USE 1  // 데이터 수신을 freertos 스트림 버퍼 사용시
 
-#define QUAD_1_BUFF_SIZE 200  // D_SUB
+#define QUAD_1_BUFF_SIZE 100  // D_SUB
 #define QUAD_2_BUFF_SIZE 20   // TTL
 #define QUAD_3_BUFF_SIZE 100  // EXT3
 #define QUAD_4_BUFF_SIZE 100  // EXT4
@@ -35,7 +35,7 @@ typedef struct cicular_buffer_s
   uint16_t count;
 } tx_cicular_buffer_t;
 
-#define QUAD_1_TX_BUFF_SIZE 100
+#define QUAD_1_TX_BUFF_SIZE 300
 #define QUAD_2_TX_BUFF_SIZE 100
 #define QUAD_3_TX_BUFF_SIZE 100
 #define QUAD_4_TX_BUFF_SIZE 100
@@ -54,7 +54,7 @@ static uint8_t g_tx_buffer6[QUAD_6_TX_BUFF_SIZE];
 static uint8_t g_tx_buffer7[QUAD_7_TX_BUFF_SIZE];
 static uint8_t g_tx_buffer8[QUAD_8_TX_BUFF_SIZE];
 
-static const uint8_t tx_buff_size_list[TL16C554_UART_MAX] = {
+static const uint16_t tx_buff_size_list[TL16C554_UART_MAX] = {
     QUAD_1_TX_BUFF_SIZE, QUAD_2_TX_BUFF_SIZE, QUAD_3_TX_BUFF_SIZE, QUAD_4_TX_BUFF_SIZE,
     QUAD_5_TX_BUFF_SIZE, QUAD_6_TX_BUFF_SIZE, QUAD_7_TX_BUFF_SIZE, QUAD_8_TX_BUFF_SIZE};
 
@@ -486,7 +486,7 @@ void tl16c554_send_DMA(int uart_num, const uint8_t *p_data, uint16_t dataLen)
   }
 }
 extern uint32_t calculate_txWaitTimeMs(uint32_t baud, uint16_t dataLen);
-int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
+int32_t tl16c554_send_(int uart_num, const uint8_t *p_data, uint16_t data_len)
 {
   int32_t count = 0;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
@@ -525,7 +525,7 @@ int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
      * @brief  송신
      * @retval 송신된 바이트 수, -1 송신에러
      */
-int32_t tl16c554_send_(int uart_num, const uint8_t *p_data, uint16_t data_len)
+int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
 {
   int32_t cnt = 0;
   uint32_t start_time;

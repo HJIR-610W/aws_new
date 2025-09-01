@@ -76,18 +76,17 @@ void SHELL_ReceiveDataCallback(uint8_t* buf, uint32_t len)
 }
 
 
-uint8_t g_buffer[93];
+uint8_t g_buffer[]={"321테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.\r\n"};
 void test_console(void)
 {
   for(int i = 0;i< sizeof(g_buffer);i++)
   {
-    g_buffer[i] = i+'!';
+   // g_buffer[i] = i+'!';
   }
   while(1)
   {
-    g_buffer[91]=0x0D;
-    g_buffer[92]=0x0A;
-    drv_uart_send(console_uart_num,g_buffer,sizeof(g_buffer));
+
+    drv_uart_send(console_uart_num,g_buffer,strlen(g_buffer));
     osDelay(10);
     
   }
@@ -105,7 +104,7 @@ void consoleTask(void *arg)
   const char *cli_aws = "\x1B[32mAWS>> \x1B[37m";
   const char *cli_test = "\x1B[32mAWS_TEST>> \x1B[37m";
 
-  test_console();
+ //test_console();
   osDelay(1000);
   io_printf("\r\n\r\n");
 

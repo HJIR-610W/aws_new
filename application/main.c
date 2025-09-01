@@ -12,23 +12,6 @@ int is_debug_mode(void)
 
 
 
-#include <string.h>
-#include "user_heap.h"
-void tlsf_test(void)
-{
-  uint8_t *p_a = user_malloc(1054082);
-  uint8_t *p_b = user_malloc(732);
-  uint8_t *p_c = user_malloc(527040);
-    
-  memset(p_a,0xff,1054082);
-  memset(p_b,0x00,732);
-  memset(p_c,0xff,527040);
-  
-  user_free(p_c);
-  user_free(p_b);
-  user_free(p_a);
-  
-}
 
 int main(void)
 {
@@ -40,7 +23,7 @@ int main(void)
   }
   
   bsp_init();
- // tlsf_test();
+
   osKernelInitialize();
 
   startTask_init();
