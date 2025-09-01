@@ -40,15 +40,15 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
   // 입력 검증
   if (val == NULL || title == NULL || min > max)
   {
-    return MENU_ERROR;
+    return MENU_BACK;
   }
 
-    screen_clear();
-    make_centered(buff, sizeof(buff), title, MAX_COLS);
-    screen_printf(0, 0, "%s", buff);
+  screen_clear();
+  make_centered(buff, sizeof(buff), title, MAX_COLS);
+  screen_printf(0, 0, "%s", buff);
 
-    if (min < 0)
-      sign_use = 1;
+  if (min < 0)
+    sign_use = 1;
 
     // 최대 자릿수 계산 (음수 고려)
     int temp_max = (abs(max) > abs(min)) ? abs(max) : abs(min);
@@ -206,6 +206,81 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
 
   }
 }
+/*
+012345678901234567890
+      PASS WORD
+       [****]
+*/
+int input_password(const char *title,int32_t *password)
+{
+  char temp[MAX_COLS + 1] = {0};
+  char buff[6];
+  int start_pos;
+  int blink_state = 1;
+  int cursor_pos = 0;
+  int number_width = 4;
+  uint32_t last_blink;
+  
+  
+  screen_clear();
+  make_centered(temp, sizeof(temp), title, MAX_COLS);
+  screen_printf(1, 0, "%s", temp);
+
+  make_centered(temp, sizeof(temp), "[****]", MAX_COLS);
+  start_pos = (int)(strchr(temp, '[') - temp) + 1;
+  screen_printf(3, 0, "%s", temp);
+  while(1)
+  {
+    if (OS_GET_TICK() - last_blink >= 500)
+    {
+      last_blink = OS_GET_TICK();
+      blink_state = !blink_state;
+    }
+
+    if (cursor_pos < 4)
+    {
+      char display_char = blink_state ? '*': ' ';
+      screen_put_ch(3, start_pos + cursor_pos, display_char);
+    }
+
+    screen_refresh();
+
+    int32_t key = get_button_key(100); // 10ms 대기
+    if (key == KEY_CODE_NONE)
+      continue;
+
+    blink_state = 1;
+    last_blink = OS_GET_TICK();
+
+
+  if (key >= '0' && key <= '9')
+  {
+    buff[cursor_pos] = key;
+    if (cursor_pos < number_width - 1) // 부호 포함 전체 길이 내에서 이동
+    {
+      screen_put_ch(3, start_pos + cursor_pos, '*');
+      cursor_pos++;
+    }
+    
+  }
+  else if (key == KEY_CODE_ENTER)
+  {
+      *password = atoi(buff);
+       return MENU_OK;
+
+  }
+  else if (key == KEY_CODE_CTRL_C)
+  {
+    return MENU_BACK;
+  }
+  else if (key == KEY_CODE_CTRL_Q)
+  {
+      return MENU_ABORT;
+  }
+  }
+
+}
+
 
 int input_fmt(string_fmt_t* strfmt, const char* title)
 {
@@ -823,26 +898,21 @@ int32_t input_combobox(const char* title, const char* item_list[], int32_t item_
 
 int32_t show_popup(const char *title, const char *message)
 {
+  char buff[MAX_COLS + 1];
   const int32_t lcd_cols = screen_get_instance()->font_cols;
   const int32_t lcd_rows = screen_get_instance()->font_rows; 
   int32_t key;
 
-  if (title == NULL)
+  
+  screen_clear();
+  make_centered(buff, sizeof(buff), title, MAX_COLS);
+  screen_printf(0, 0, "%s", buff);
+  
+  for (int col = 0; col < lcd_cols; col++)
   {
-    return MENU_ERROR;
+    screen_put_ch(1, col, '-');
   }
 
-  screen_clear();
-  screen_refresh();
-
-  // 타이틀 표시 가운데 정렬
-  int32_t title_len = strlen(title);
-  int32_t title_start_col = (lcd_cols - title_len) / 2;
-  screen_printf(0, title_start_col,title);
-
-  screen_printf(1, 0, "--------------------");
-
-  // 메시지 표시 (세 번째 줄부터)
   if (message != NULL)
   {
     int32_t message_len = strlen(message);
@@ -866,17 +936,10 @@ int32_t show_popup(const char *title, const char *message)
       current_col++;
     }
   }
+
   screen_refresh();
-  while (1)
-  {
-    key = get_button_key(100);
 
-    if (key == KEY_CODE_ENTER || key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
-    {
-      break;
-    }
-  }
-
+  key = get_button_key(0xFFFFFFFF);
 
   return convert_key_to_status(key);
 }

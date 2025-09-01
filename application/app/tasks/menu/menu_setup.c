@@ -2,6 +2,7 @@
 #include "app_key.h"
 #include "app_screen.h"
 #include "cli_key_code.h"
+#include "config_app.h"
 #include "menu_handler.h"
 #include "menu_network.h"
 #include "menu_sensor.h"
@@ -46,6 +47,7 @@ void draw_aws_setup_page(screen_menu_t* p_win)
   screen_menu_clear(p_win);
 }
 
+#define MENU_PASSWORD 7777
 void setup_menu(void)
 {
   int32_t index;
@@ -53,6 +55,25 @@ void setup_menu(void)
   int32_t status;
   int32_t admin_menu_count=0;
   screen_menu_t menu;
+  int32_t password=0;
+
+  while(1)
+  {
+    status = input_password("PASS WORD",&password);
+
+    if(status != MENU_OK)
+    return;
+
+    if (password == MENU_PASSWORD)
+    {
+      break;
+    }
+    else
+    {
+      show_popup("ERROR", "Incorrect password");
+    }
+  
+  }
 
   screen_menu_create(&menu, "AWS Setup");
 
