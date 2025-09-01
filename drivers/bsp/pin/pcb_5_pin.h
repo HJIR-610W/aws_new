@@ -68,8 +68,8 @@
 #define ETH_TXD1_GPIO_Port               GPIOB
 #define DO_POWER_LCD_Pin                GPIO_PIN_14
 #define DO_POWER_LCD_GPIO_Port          GPIOB
-#define DO_BTM_PWRC_Pin                  GPIO_PIN_15
-#define DO_BTM_PWRC_GPIO_Port            GPIOB
+#define DO_LCD_RESET_Pin                  GPIO_PIN_15
+#define DO_LCD_RESET_GPIO_Port            GPIOB
 
 // PORTC pins
 #define DO_CON_PWR_S24_Pin               GPIO_PIN_0
