@@ -12,7 +12,6 @@ int is_debug_mode(void)
 
 
 
-
 int main(void)
 {
 

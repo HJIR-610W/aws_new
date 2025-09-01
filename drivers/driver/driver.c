@@ -10,9 +10,11 @@
 #include "drv_rs485.h"
 #include "drv_rs232.h"
 #include "drv_frequency.h"
+#include "drv_crc.h"
 
 void drv_init(void)
 {
+  drv_crc_init();
   drv_rtc_init();
   drv_led_init();
   drv_do_init();
