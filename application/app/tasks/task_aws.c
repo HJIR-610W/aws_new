@@ -1229,6 +1229,9 @@ void update_old_aws_status(AWS_DATA_STRUCT *pAws)
   BIT_UPDATE(pAws->mStatus.sReal, System.door_opened, KMA2_PWRSTAT_DOOR_OPEN);
   }
 
+
+extern void set_boot_complete(void);
+
 void DUALPORT_TASK(void *arg)
 {
   uint8_t f_err = 0;
@@ -1265,6 +1268,8 @@ void DUALPORT_TASK(void *arg)
   osDelay(2000);// task measure 측정이 최소 1회 수행 후 동작하도록 지연 
 
   time_old = Date_Time;
+
+  set_boot_complete();
   while (1)
   {
     is_measurement_1s(g_p_raw, 0);                     // 업데이트된 값 없으면 이전값 유지

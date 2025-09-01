@@ -848,7 +848,7 @@
             <file>$PROJ_DIR$\release\Obj\app_console.o</file>
             <file>$PROJ_DIR$\release\Obj\ethip6.xcl</file>
             <file>$PROJ_DIR$\release\Obj\app_console_test.o</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\release\Obj\test_power.o</file>
             <file>$PROJ_DIR$\release\Obj\app_adc.o</file>
             <file>$PROJ_DIR$\release\Obj\wind_direction.xcl</file>
@@ -974,7 +974,7 @@
             <file>$PROJ_DIR$\release\Obj\driver_stm32_di.o</file>
             <file>$PROJ_DIR$\release\Obj\eui64.xcl</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_iwdg.xcl</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_swo.o</file>
             <file>$PROJ_DIR$\release\Obj\bsp_adc.o</file>
             <file>$PROJ_DIR$\release\Obj\menu_sensor.xcl</file>
@@ -1242,7 +1242,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\pin\pcb_6_pin.h</file>
             <file>$TOOLKIT_DIR$\lib\m7M_tls.a</file>
             <file>$PROJ_DIR$\..\application\app\test\test_modbus.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\timers.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_power.xcl</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
@@ -1391,7 +1391,7 @@
             <file>$PROJ_DIR$\release\Obj\user_heap.o</file>
             <file>$PROJ_DIR$\release\Obj\eap.xcl</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_snowfall_menu.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\hj_snow_menu\hj_snow_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\ethernet.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\console_scanf.h</file>
@@ -1414,7 +1414,7 @@
             <file>$PROJ_DIR$\release\Obj\menu_calibration.o</file>
             <file>$PROJ_DIR$\..\application\app\test\test_eth.h</file>
             <file>$PROJ_DIR$\release\Obj\hj_snow.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_lcd.h</file>
             <file>$PROJ_DIR$\release\Obj\console_rtos.xcl</file>
             <file>$PROJ_DIR$\release\Obj\console_utile.o</file>
@@ -1424,7 +1424,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_system.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\base64.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_led.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_cali.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>

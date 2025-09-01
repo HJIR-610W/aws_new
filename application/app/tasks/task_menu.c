@@ -55,6 +55,11 @@ const osThreadAttr_t kMenuTask_attributes = {
     .priority = (osPriority_t)TASK_PRIO(TASK_MENU_DEF),
 };
 
+const osThreadAttr_t kBootProgressTask_attributes = {
+    .name = "boot",
+    .stack_size = TASK_STACK(TASK_BOOT_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_BOOT_DEF),
+};
 
 #define SYSTEM_WD 8
 
@@ -1109,6 +1114,9 @@ void print_logo(void)
     }
   }
   screen_refresh();
+
+
+  
   osDelay(1000);
 }
 
@@ -1121,15 +1129,14 @@ void menuTask(void *arg)
   screen_page_t lcd_win;
 
   DEBUG_PRINTF("menu task start\r\n");
-  screen_init();
+
   
-  osDelay(1000);
-  print_logo();
+
 
   screen_page_create(&lcd_win);
 
   lcd_win.chunk_scroll_use = 1;// view_row 단위로 스크롤
-  lcd_win.multi_page_use = 1;  //하나의 창에 여러개의 페이지 구성 LEFT,RIGHT 키 사용
+  lcd_win.multi_page_use = 1;  // 하나의 창에 여러개의 페이지 구성 LEFT,RIGHT 키 사용
 
   screen_off_time = OS_GET_TICK();
   while (1)
@@ -1223,9 +1230,69 @@ void menuTask(void *arg)
     }
 }
 
+
+bool g_boot_complete;
+
+void set_boot_complete(void)
+{
+  g_boot_complete = true;
+}
+
+bool is_boot_complete(void)
+{
+  return g_boot_complete;
+}
+
+/*
+화진 로고 밑에 
+*표시하여 진행 상태 표시 
+dual task에서 초기화 끝나면 부팅 완료 처리 
+*/
+void bootProgressTask(void *arg)
+{
+  char buffer[22];
+  uint8_t count=0;
+
+  screen_init();
+
+  osDelay(1000);
+
+  print_logo();
+
+  while(1)
+  {
+    buffer[count++] = '*';
+    buffer[count] = 0;
+
+    screen_printf(6,0,buffer);
+    if(count==screen_get_instance()->font_cols)
+    {
+      memset(buffer,' ',sizeof(buffer));
+      buffer[sizeof(buffer)-1] = 0;
+      screen_printf(6, 0, buffer);
+      count = 0;
+    }
+    screen_refresh();
+    osDelay(10);
+    if(is_boot_complete()&&count ==0 )
+    {
+      break;
+    }
+
+  }
+
+  osThreadNew(menuTask, NULL, &kMenuTask_attributes);
+  osThreadExit(); // 종료 시킴
+}
+
+
 void menuTask_init(void)
 {
-  osThreadNew(menuTask, NULL, &kMenuTask_attributes);
+
+//우선순가 높은 부팅이미지 출력 task먼저 실행하고  dual port task 초기화 되면 menu task 실행
+  osThreadNew(bootProgressTask, NULL, &kBootProgressTask_attributes);
+
+
 }
 
 

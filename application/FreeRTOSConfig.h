@@ -59,6 +59,7 @@
 //                             (스택, 우선순위)
 #define TASK_START_DEF          (2048, osPriorityRealtime7)
 #define TASK_TEST_DEF           (2048, osPriorityRealtime7)
+#define TASK_BOOT_DEF           (2048, osPriorityRealtime7)
 #define TASK_WDT_DEF            (1024, osPriorityRealtime2)
 #define TASK_ISR_EVENT_DEF      (1024, osPriorityRealtime2)
 #define TASK_HTTP_SERVER_DEF    (4096, osPriorityRealtime2)
@@ -81,6 +82,9 @@
 #define TASK_PANEL_DEF          (768, osPriorityBelowNormal)
 #define TASK_SDI_DEF            (1024, osPriorityNormal1)
 #define TASK_HART_DEF           (1024, osPriorityNormal1)
+
+
+
 // tcpip_thread (1024,osPriorityRealtime)
 // EthIf(512,osPriorityRealtime)
 // Tmr Svc(1024,osPriorityNormal)
