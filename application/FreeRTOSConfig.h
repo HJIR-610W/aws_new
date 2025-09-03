@@ -80,15 +80,14 @@
 #define TASK_LOGGING_DEF        (2560, osPriorityBelowNormal)
 #define TASK_TELNET_SERVER_DEF  (2048, osPriorityBelowNormal)
 #define TASK_PANEL_DEF          (768, osPriorityBelowNormal)
+#define TASK_VHF_DEF            (768, osPriorityBelowNormal)
 #define TASK_SDI_DEF            (1024, osPriorityNormal1)
 #define TASK_HART_DEF           (1024, osPriorityNormal1)
 
-
-
-// tcpip_thread (1024,osPriorityRealtime)
-// EthIf(512,osPriorityRealtime)
-// Tmr Svc(1024,osPriorityNormal)
-// EthLink (1024,osPriorityBelowNormal)
+  // tcpip_thread (1024,osPriorityRealtime)
+  // EthIf(512,osPriorityRealtime)
+  // Tmr Svc(1024,osPriorityNormal)
+  // EthLink (1024,osPriorityBelowNormal)
 
 #define GET_1ST(a, b) a
 #define GET_2ND(a, b) b

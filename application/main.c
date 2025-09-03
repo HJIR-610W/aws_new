@@ -52,7 +52,7 @@ int main(void)
   
   bsp_init();
 
-  fsmc_test();
+
   
   osKernelInitialize();
 

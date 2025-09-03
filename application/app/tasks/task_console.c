@@ -154,10 +154,14 @@ void consoleTask_init(void *arg)
   uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
-  console_uart_num = DRV_UART_0_VHF  ;
+  console_uart_num = DRV_UART_10_CDC  ;
   
+  drv_uart_init(DRV_UART_0_VHF, &uart_config);
+    
   result = drv_uart_init(console_uart_num, &uart_config);
-                               
+
+
+    
   if(result > 0)                                                                                
   {
     set_debug_uart_handle(console_uart_num);
@@ -168,9 +172,10 @@ void consoleTask_init(void *arg)
 
 void consoleTask_start(void)
 {
-  if(s_console_task_id==NULL)
+  if(s_console_task_id == NULL)
   s_console_task_id = osThreadNew(consoleTask, NULL, &consoleTask_attributes);
 
+  
 }
 
 void consoleTask_stop(void)
