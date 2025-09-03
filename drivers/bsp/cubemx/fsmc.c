@@ -65,7 +65,10 @@ void MX_FSMC_Init(void)
   hsram_lcd.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
   hsram_lcd.Init.PageSize = FSMC_PAGE_SIZE_NONE;
 
-// Write Timing 설정 (더 보수적으로)
+// Write Timing 설정 (더 보수적으로) 5.95ns
+  //NE address setup time + data setup time 160ns  실측
+  //WE data setup time 119ns
+  
   Timing.AddressSetupTime = 5;
   Timing.AddressHoldTime = 15;//의미 없음 사용 안함 ,//0으로 하면 assert 발생, 재검토,HAL드라이버 문제 
   Timing.DataSetupTime = 20;//15;
@@ -104,12 +107,12 @@ if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
   hsram1.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
   hsram1.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
 
-  /* Timing */
-  /* FSMC SRAM 타이밍 설정 (읽기/쓰기 속도 조절) */
- /* FSMC SRAM 타이밍 설정 */
+  //NE address setup time + data setup time 22ns  실측 +1 *5.95
+  //WE data setup time 11.9ns
+  //OE 18ns 실측 (1+2)×5.95ns = 18ns
  Timing.AddressSetupTime       = 1;  
  Timing.AddressHoldTime        = 1;  
- Timing.DataSetupTime          = 2;  
+ Timing.DataSetupTime          = 3;  
  Timing.BusTurnAroundDuration  = 1;  
  Timing.CLKDivision            = 2;  //  비동기 모드에서는 무시,0설정시 assert 발생
  Timing.DataLatency            = 2;  //  비동기 모드에서는 무시
