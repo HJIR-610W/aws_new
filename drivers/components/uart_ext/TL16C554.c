@@ -14,6 +14,7 @@
 #include "stream_buffer.h"
 #include "system_err.h"
 #include "util_memory.h"
+#include "task_isrEvent.h"
 
 #define STREAMBUFFER_USE 1  // 데이터 수신을 freertos 스트림 버퍼 사용시
 
@@ -424,15 +425,44 @@ void isr_tl16c554(int uart_num)
 #ifdef USE_DEBUG_MODE
         if (!(xBytesSent > 0))
         {
-          __asm("BKPT #0");
+        
+         // __asm("BKPT #0");
+         switch(uart_num)
+         {
+          case TL16C554_UART_1_D_SUB:
+            os_send_event(eUSER_UART_QUAD_1_RX_FULL, 0);
+            break;
+          case TL16C554_UART_2_TTL_TTL:
+            os_send_event(eUSER_UART_QUAD_2_RX_FULL, 0);
+            break;
+          case TL16C554_UART_3_RS232_A:
+            os_send_event(eUSER_UART_QUAD_3_RX_FULL, 0);
+            break;
+          case TL16C554_UART_4_RS232_B:
+            os_send_event(eUSER_UART_QUAD_4_RX_FULL, 0);
+            break;
+          case TL16C554_UART_5_RS485_A:
+            os_send_event(eUSER_UART_QUAD_5_RX_FULL, 0);
+            break;
+          case TL16C554_UART_6_RS485_B:
+            os_send_event(eUSER_UART_QUAD_6_RX_FULL, 0);
+            break;
+          case TL16C554_UART_7_RS232_C:
+            os_send_event(eUSER_UART_QUAD_7_RX_FULL, 0);
+            break;
+          case TL16C554_UART_8_RS232_D:
+            os_send_event(eUSER_UART_QUAD_8_RX_FULL, 0);
+            break;
+          }
+
         }
 #endif
 
         break;
       case UART_IIR_THRE:  // Transmitter Holding 레지스터가 비였다, 인터럽트 enable 되었을때만 발생
-      //THR wirte
-      quad_write_tx_data(uart_num); 
-        break;
+            // THR wirte
+            quad_write_tx_data(uart_num);
+            break;
       case UART_IIR_RX_LINE_STAT:  
         line_status = read_register(LSR(uart->base_address)); //읽어야 iir에서 지워짐
         (void)line_status;

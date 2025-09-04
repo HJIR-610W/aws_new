@@ -63,7 +63,7 @@ void rain_reed_callback(int32_t arg)
 
   if((current_time - g_last_pulse_time)>= 1000)
   {
-    os_send_isrEvent(eRAIN_REED_INT,0);
+    os_send_event(eRAIN_REED_INT,0);
     g_last_pulse_time = OS_GET_TICK();
   }
 }
@@ -74,7 +74,7 @@ void rain_hall_callback(int32_t arg)
 
   if((current_time - g_last_pulse_time)>= 1000)
   {
-  os_send_isrEvent(eRAIN_HALL_INT,0);
+  os_send_event(eRAIN_HALL_INT,0);
   g_last_pulse_time = OS_GET_TICK();
 }
 }
