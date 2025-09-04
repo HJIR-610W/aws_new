@@ -58,7 +58,7 @@ void screen_display_off(void)
 void screen_set_cursor(int row, int col)
 {
     if(p_s_lcd == NULL) return;
-    driver_lcd_set_position(p_s_lcd, row, col);
+   // driver_lcd_set_position(p_s_lcd, row, col);
 }
 
 

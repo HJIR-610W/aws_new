@@ -489,9 +489,10 @@ void board_gpio_init(void)
   board_config_gpio(DI_USB_OTG_PWR_FAIL_GPIO_Port, DI_USB_OTG_PWR_FAIL_Pin, GPIO_MODE_INPUT, GPIO_NOPULL,
                     GPIO_SPEED_FREQ_LOW, 0);
   
-  //LCD 리셋 (
-  board_set_gpio(DO_LCD_RESET_GPIO_Port, DO_LCD_RESET_Pin, GPIO_PIN_SET); 
+  //LCD 리셋 
+  board_set_gpio(DO_LCD_RESET_GPIO_Port, DO_LCD_RESET_Pin, GPIO_PIN_RESET); 
   board_config_gpio(DO_LCD_RESET_GPIO_Port, DO_LCD_RESET_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
+
 }
 
 

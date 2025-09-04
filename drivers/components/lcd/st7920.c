@@ -9,6 +9,7 @@
 
 
 #include "FreeRTOS.h"
+#include "cmsis_os2.h"
 #include "task.h"
 #include "bsp_spi.h"
 #include "bsp_do.h"
@@ -26,26 +27,33 @@
 #define ST7920_HEIGHT 64
 
 /* ST7920 기본 명령어 */
-#define ST7920_CMD_DISPLAY_CLEAR 0x01
-#define ST7920_CMD_RETURN_HOME 0x02
-#define ST7920_CMD_ENTRY_MODE_SET 0x04
+#define ST7920_CMD_DISPLAY_CLEAR   0x01
+#define ST7920_CMD_RETURN_HOME     0x02
+#define ST7920_CMD_ENTRY_MODE_SET  0x04
 #define ST7920_CMD_DISPLAY_CONTROL 0x08
-#define ST7920_CMD_CURSOR_SHIFT 0x10
-#define ST7920_CMD_FUNCTION_SET 0x20
-#define ST7920_CMD_SET_CGRAM_ADDR 0x40
-#define ST7920_CMD_SET_DDRAM_ADDR 0x80
+#define ST7920_CMD_CURSOR_SHIFT    0x10
+#define ST7920_CMD_FUNCTION_SET    0x20
+#define ST7920_CMD_SET_CGRAM_ADDR  0x40
+#define ST7920_CMD_SET_DDRAM_ADDR  0x80
+
+
+#define ST7920_DISPLAY_BLINK_ON   0x01
+#define ST7920_DISPLAY_CURSOR_ON  0x02
+#define ST7920_DISPLAY_DISPLAY_ON 0x04
+
+#define ST7920_FUNCTION_SET_8BIT    0x10
+#define ST7920_FUNCTION_SET_EXTEND  0x04   // 확장 명령 세트 활성화 RE 1 확장 명렁어 0 basic
+
+
+#define ST7920_FUNCTION_SET_GRAPHIC 0x02  // 그래픽 모드 활성화
+
 
 //확장 명령어
 #define ST7920_CMD_SET_SR 0x02
 
-/* 기능 설정 비트 */
-#define ST7920_FUNCTION_SET_8BIT 0x10
-#define ST7920_FUNCTION_SET_EXTEND 0x04   // 확장 명령 세트 활성화
-#define ST7920_FUNCTION_SET_GRAPHIC 0x02  // 그래픽 모드 활성화
 
-#define ST7920_DISPLAY_ON 0x04
-#define ST7920_CURSOR_ON 0x02
-#define ST7920_BLINK_ON 0x01
+
+
 
 
 #define ST7920_SYNC_CMD  0xF8   // 명령 전송시 첫 바이트
@@ -88,7 +96,6 @@ lcd_api_t lcd_api = {.set_position = st7920_set_position,
                      .display_off = st7920_display_off,
                      .set_mode = st7920_set_mode,
                      .set_pixel = st7920_set_pixel,
-                     .draw_line = st7920_draw_line,
                      .flush = st7920_flush_buffer,
                      .put_ch = st7920_put_ch};
 
@@ -464,6 +471,24 @@ void st7920_close(void)
 }
 
 
+void st7920_send_cmd(driver_t *drv, uint8_t cmd)
+{
+#if ST7920_SPI_USE 
+    st7920_send_byte(drv, ST7920_SYNC_CMD, cmd);
+#endif
+    
+#if ST7920_GPIO_USE
+    st7920_gpio_write_byte(cmd, true);  // true = command mode
+    st7920_delay_us(72);  // ST7920 command execution time
+#endif
+
+#if ST7920_MEM_USE
+
+    *p_lcd_cmd = cmd;
+
+    st7920_delay_us(72);  // ST7920 command execution time (typical)
+#endif
+}
 
 void st7920_reset(driver_t *drv)
 {
@@ -475,52 +500,51 @@ void st7920_reset(driver_t *drv)
 #endif
     // 하드웨어 리셋 시퀀스 - DO_LCD_RESET 핀 사용
 
+    st7920_delay_ms(40);    
     bsp_do_low(cfg->rst_do_num);
-    st7920_delay_ms(100);
+    st7920_delay_ms(1);
     bsp_do_high(cfg->rst_do_num);
-    st7920_delay_ms(50);
+ 
 
-    
-    // ST7920 초기화 시퀀스 - 참고 라이브러리 기반
-    // 1단계: 기본 8비트 기능 설정을 3번 반복 (안정화)
-    st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
-    st7920_delay_ms(5);
+    // 3번 반복 안정화
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
     st7920_delay_ms(1);
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
     st7920_delay_ms(1);
-    
-    // 2단계: 기본 명령 세트 확정
     st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT);
     st7920_delay_ms(1);
-    
-    // 3단계: 엔트리 모드 설정 - 커서 자동 증가, 시프트 없음
-    st7920_send_cmd(drv, ST7920_CMD_ENTRY_MODE_SET | 0x02);
+
+   
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL );
     st7920_delay_ms(1);
     
-    // 4단계: CGRAM 주소 초기화
-    st7920_send_cmd(drv, ST7920_CMD_SET_CGRAM_ADDR);
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
+    st7920_delay_ms(1);
+
+          
+    st7920_send_cmd(drv, ST7920_CMD_ENTRY_MODE_SET | 0x02); // 엔트리 모드 설정 - 커서 자동 증가, 시프트 없음
     st7920_delay_ms(1);
     
-    // 5단계: DDRAM 주소 초기화
-    st7920_send_cmd(drv, ST7920_CMD_SET_DDRAM_ADDR);
+    st7920_send_cmd(drv, ST7920_CMD_SET_CGRAM_ADDR);//CGRAM 주소 초기화
     st7920_delay_ms(1);
     
-    // 6단계: 디스플레이 제어 - 디스플레이 ON, 커서 OFF, 깜박임 OFF
-    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL | ST7920_DISPLAY_ON);
+    st7920_send_cmd(drv, ST7920_CMD_SET_DDRAM_ADDR);//DDRAM 주소 초기화
     st7920_delay_ms(1);
-    
+
     
     // 8단계: 홈 위치로 이동
-    st7920_send_cmd(drv, ST7920_CMD_RETURN_HOME);
-    st7920_delay_ms(2);
+    // st7920_send_cmd(drv, ST7920_CMD_RETURN_HOME);
+    // st7920_delay_ms(2);
+
+    st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | ST7920_FUNCTION_SET_EXTEND | ST7920_FUNCTION_SET_GRAPHIC);
+
 
     st7920_set_graphic_mode(drv, true);
-    st7920_delay_ms(1);   
-    
-       // 7단계: 화면 지우기
-    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR); 
-    st7920_delay_ms(20);
+
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
+    st7920_delay_ms(50);
+
+       
 
     cfg->initialized = true;
 }
@@ -544,24 +568,6 @@ void st7920_send_byte(driver_t *drv, uint8_t sync, uint8_t data)
 
 }
 
-void st7920_send_cmd(driver_t *drv, uint8_t cmd)
-{
-#if ST7920_SPI_USE 
-    st7920_send_byte(drv, ST7920_SYNC_CMD, cmd);
-#endif
-    
-#if ST7920_GPIO_USE
-    st7920_gpio_write_byte(cmd, true);  // true = command mode
-    st7920_delay_us(72);  // ST7920 command execution time
-#endif
-
-#if ST7920_MEM_USE
-
-    *p_lcd_cmd = cmd;
-
-    st7920_delay_us(72);  // ST7920 command execution time (typical)
-#endif
-}
 
 void st7920_send_data(driver_t *drv, uint8_t data)
 {
@@ -597,91 +603,17 @@ uint8_t reverse_bits(uint8_t b)
   return reversed_b;
 }
 
-void rotate_screen(int degree, int width, int height, uint8_t *screen)
-{
-  // 180도 회전만 처리합니다.
-  if (degree != 180)
-  {
-    return;
-  }
 
-  int buffer_size = (width * height) / 8;
 
-  // --- 단계 1: 버퍼의 바이트 순서 뒤집기 ---
-  // 메모리 시작부터 절반까지만 순회하며 양 끝의 바이트를 교환합니다.
-  for (int i = 0; i < buffer_size / 2; i++)
-  {
-    uint8_t temp = screen[i];
-    screen[i] = screen[buffer_size - 1 - i];
-    screen[buffer_size - 1 - i] = temp;
-  }
-
-  // --- 단계 2: 각 바이트의 비트 순서 뒤집기 ---
-  // 모든 바이트를 순회하며 비트 순서를 뒤집습니다.
-  for (int i = 0; i < buffer_size; i++)
-  {
-    screen[i] = reverse_bits(screen[i]);
-  }
-}
-
-/**
- * @brief 프레임버퍼의 내용을 LCD 화면 전체에 올바르게 전송합니다.
- */
-void st7920_flush_buffer(driver_t *drv)
-{
-    st7920_t *cfg = (st7920_t *)drv->cfg;
-    if(!cfg->graphic_mode) return;
-
-   // rotate_screen(180, ST7920_WIDTH , ST7920_HEIGHT, (uint8_t *)framebuffer);
-    // 상단 영역 (Y: 0~31)
-    for (uint8_t y = 0; y < 32; y++)
-    {
-        st7920_send_cmd(drv, 0x80 | y);      // Y 주소 설정
-        st7920_send_cmd(drv, 0x80);          // X 주소 0으로 설정
-        
-        // 한 행의 8바이트를 연속 전송 (X 주소 자동 증가)
-        for (uint8_t x_byte = 0; x_byte < 16; x_byte++)
-        {
-            st7920_send_data(drv, framebuffer[y][x_byte]);
-        }
-    }
-    
-    // 하단 영역 (Y: 32~63)
-    for (uint8_t y = 32; y < 64; y++)
-    {
-        st7920_send_cmd(drv, 0x80 | (y-32));  // Y 주소 설정
-        st7920_send_cmd(drv, 0x88);           // X 주소 8로 설정
-        
-        // 한 행의 8바이트를 연속 전송
-        for (uint8_t x_byte = 0; x_byte < 16; x_byte++)
-        {
-            st7920_send_data(drv, framebuffer[y][x_byte]);
-        }
-    }
-   // rotate_screen(180, ST7920_WIDTH, ST7920_HEIGHT, (uint8_t *)framebuffer);
-}
 void st7920_clear_screen(driver_t *drv)
 {
     st7920_t *cfg = (st7920_t *)drv->cfg;
-    
-    
-    if(cfg->graphic_mode)
-    {
-      
-      memset(framebuffer,0,sizeof(framebuffer));
-     
-      st7920_flush_buffer(drv);
-      
-    }
-    else
-    {
-    
 
-        // 문자 모드: DISPLAY_CLEAR 명령으로 한번에 지우기
-        st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
-        st7920_delay_ms(2);  // 클리어 명령은 1.6ms 필요
-    }
-  
+    
+  memset(framebuffer,0,sizeof(framebuffer));
+  st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
+  st7920_delay_ms(2);  // 클리어 명령은 1.6ms 필요
+
 }
 
 void st7920_home(driver_t *drv)
@@ -692,14 +624,16 @@ void st7920_home(driver_t *drv)
 
 void st7920_display_on(driver_t *drv)
 {
-    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL | ST7920_DISPLAY_ON);
-    st7920_delay_us(100);
+   // st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL | ST7920_DISPLAY_DISPLAY_ON);
+   st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | ST7920_FUNCTION_SET_EXTEND | ST7920_FUNCTION_SET_GRAPHIC);
+   st7920_delay_us(100);
 }
 
 void st7920_display_off(driver_t *drv)
 {
-    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL);
-    st7920_delay_us(100);
+   // st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL);
+   st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | ST7920_FUNCTION_SET_EXTEND );
+   st7920_delay_us(100);
 }
 
 void st7920_set_graphic_mode(driver_t *drv, bool enable)
@@ -714,8 +648,7 @@ void st7920_set_graphic_mode(driver_t *drv, bool enable)
         st7920_delay_ms(1);
         
         // 2단계: 그래픽 모드 활성화 (확장 + 그래픽)
-        st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | 
-                           ST7920_FUNCTION_SET_EXTEND | ST7920_FUNCTION_SET_GRAPHIC);
+        st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT |ST7920_FUNCTION_SET_EXTEND | ST7920_FUNCTION_SET_GRAPHIC);
         st7920_delay_ms(1);
         
         cfg->graphic_mode = true;
@@ -754,7 +687,6 @@ void st7920_set_position(driver_t *drv, uint8_t row, uint8_t col)
   }
   else if (row == 3)
   {
-
     addr = 0x98 + col;
   }
   else
@@ -766,7 +698,10 @@ void st7920_set_position(driver_t *drv, uint8_t row, uint8_t col)
 }
 
 
-
+//주소체계가 특이하다. 다시 구현해야함
+//0,0에 1234567890ABCDEF 출력하면
+// 0 에 12345678
+// 2에 90ABCDEF 가 출력된다.
 
 void st7920_write_string(driver_t *drv, int row, int col, const char *str)
 {
@@ -803,15 +738,120 @@ void st7920_write_string(driver_t *drv, int row, int col, const char *str)
     }
 }
 
-// 기존 함수와의 호환성을 위한 래퍼 함수
-void st7920_write_string_simple(driver_t *drv, const char *str)
+
+
+
+
+static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode)
 {
-    while(*str)
+    switch(lcd_mode)
     {
-        st7920_send_data(drv, *str++);
+        case eLCD_MODE_CHARACTER:
+            st7920_set_graphic_mode(drv, false);
+            break;
+        case eLCD_MODE_GRAPHIC:
+            st7920_set_graphic_mode(drv, true);
+            break;
+        default:
+            break;
     }
 }
 
+
+
+void rotate_screen(int degree, int width, int height, uint8_t *screen)
+{
+  // 180도 회전만 처리합니다.
+  if (degree != 180)
+  {
+    return;
+  }
+
+  int buffer_size = (width * height) / 8;
+
+  // 버퍼의 바이트 순서 뒤집기 ---
+  // 메모리 시작부터 절반까지만 순회하며 양 끝의 바이트를 교환합니다.
+  for (int i = 0; i < buffer_size / 2; i++)
+  {
+    uint8_t temp = screen[i];
+    screen[i] = screen[buffer_size - 1 - i];
+    screen[buffer_size - 1 - i] = temp;
+  }
+
+  // 각 바이트의 비트 순서 뒤집기 ---
+  // 모든 바이트를 순회하며 비트 순서를 뒤집습니다.
+  for (int i = 0; i < buffer_size; i++)
+  {
+    screen[i] = reverse_bits(screen[i]);
+  }
+}
+
+
+uint8_t g_y=0;
+uint8_t g_x=0;
+uint8_t g_break=0;
+void test_pixel(driver_t *drv)
+{
+  
+  while(g_break)
+  {
+    st7920_send_cmd(drv, 0x80 | g_y);  // Y 주소 설정
+    st7920_send_cmd(drv, 0x80|g_x);    // X 주소 8로 설정
+    st7920_send_data(drv, 0xFF);
+    st7920_send_data(drv, 0x55);
+
+  }
+}
+
+
+//#define SCREEN_ROTATION 
+/**
+ * @brief 프레임버퍼의 내용을 LCD 화면 전체에 올바르게 전송
+ */
+void st7920_flush_buffer(driver_t *drv)
+{
+    st7920_t *cfg = (st7920_t *)drv->cfg;
+    if(!cfg->graphic_mode) return;
+
+#ifdef SCREEN_ROTATION
+   rotate_screen(180, ST7920_WIDTH , ST7920_HEIGHT, (uint8_t *)framebuffer);
+#endif
+test_pixel(drv);
+    //이상 증상 0번줄에 출력시 16번줄에 나타남
+    // 하단 영역 (Y: 32~63)
+
+        // 상단 영역 (Y: 0~31)
+    for (uint8_t y = 0; y < 32; y++)
+    {
+        st7920_send_cmd(drv, 0x80 | y);      // Y 주소 설정
+        st7920_send_cmd(drv, 0x80);          // X 주소 0으로 설정
+
+        
+        // 한 행의 8바이트를 연속 전송 (X 주소 자동 증가)
+        for (uint8_t x_byte = 0; x_byte < 16; x_byte++)
+        {
+            st7920_send_data(drv, framebuffer[y][x_byte]);
+        }
+    }
+    
+        
+    for (uint8_t y = 32; y < 64; y++)
+    {
+        st7920_send_cmd(drv, 0x80 | (y-32));  // Y 주소 설정
+        st7920_send_cmd(drv, 0x88);           // X 주소 8로 설정
+        
+        // 한 행의 8바이트를 연속 전송
+        for (uint8_t x_byte = 0; x_byte < 16; x_byte++)
+        {
+            st7920_send_data(drv, framebuffer[y][x_byte]);
+        }
+    }
+    
+
+#ifdef SCREEN_ROTATION
+   rotate_screen(180, ST7920_WIDTH, ST7920_HEIGHT, (uint8_t *)framebuffer);
+#endif
+}
 // 오직 프레임버퍼의 픽셀 값만 변경하는 함수
 void st7920_set_pixel(driver_t *drv, uint8_t x, uint8_t y, bool on)
 {
@@ -834,166 +874,25 @@ void st7920_set_pixel(driver_t *drv, uint8_t x, uint8_t y, bool on)
     }
 }
 
-void st7920_draw_line(driver_t *drv, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, bool on)
-{
-    int dx = abs(x2 - x1);
-    int dy = abs(y2 - y1);
-    int sx = (x1 < x2) ? 1 : -1;
-    int sy = (y1 < y2) ? 1 : -1;
-    int err = dx - dy;
-    int x = x1, y = y1;
-    
-    while(1)
-    {
-        st7920_set_pixel(drv, x, y, on);
-        
-        if(x == x2 && y == y2)
-            break;
-            
-        int e2 = 2 * err;
-        if(e2 > -dy)
-        {
-            err -= dy;
-            x += sx;
-        }
-        if(e2 < dx)
-        {
-            err += dx;
-            y += sy;
-        }
-    }
-}
-
-void st7920_draw_rect(driver_t *drv, uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool fill, bool on)
-{
-    if(fill)
-    {
-        for(uint8_t i = 0; i < height; i++)
-        {
-            for(uint8_t j = 0; j < width; j++)
-            {
-                st7920_set_pixel(drv, x + j, y + i, on);
-            }
-        }
-    }
-    else
-    {
-        st7920_draw_line(drv, x, y, x + width - 1, y, on);
-        st7920_draw_line(drv, x + width - 1, y, x + width - 1, y + height - 1, on);
-        st7920_draw_line(drv, x + width - 1, y + height - 1, x, y + height - 1, on);
-        st7920_draw_line(drv, x, y + height - 1, x, y, on);
-    }
-}
-
-void st7920_draw_bitmap(driver_t *drv, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const uint8_t *bitmap)
-{
-    st7920_t *cfg = (st7920_t *)drv->cfg;
-    
-    if(!cfg->graphic_mode)
-        return;
-    
-    for(uint8_t row = 0; row < height; row++)
-    {
-        for(uint8_t col = 0; col < width; col += 8)
-        {
-            uint8_t byte_data = bitmap[(row * ((width + 7) / 8)) + (col / 8)];
-            
-            for(uint8_t bit = 0; bit < 8 && (col + bit) < width; bit++)
-            {
-                if(byte_data & (0x80 >> bit))
-                {
-                    st7920_set_pixel(drv, x + col + bit, y + row, true);
-                }
-            }
-        }
-    }
-}
-
-/*
-// ST7920 LCD 사용 예제
-
- 텍스트 모드 사양:
-  - 행 수: 4행 (0~3)
-  - 열 수: 16열 (0~15)
-  - 총 문자: 64문자
-  - 문자 크기: 8×16 픽셀
-
-  주소 매핑:
-  - 1행 (y=0): 0x80~0x8F
-  - 2행 (y=1): 0x90~0x9F
-  - 3행 (y=2): 0x88~0x97
-  - 4행 (y=3): 0x98~0xA7
-
-void st7920_example(void)
-{
-    driver_t *lcd = st7920_init();
-    if(!lcd) return;
-
-    // 디스플레이 켜기
-    st7920_display_on(lcd);
-
-    // 텍스트 모드에서 문자열 출력
-    st7920_clear_screen(lcd);
-
-    // 0행 0열에 "hello" 출력
-    st7920_set_position(lcd, 0, 0);
-    st7920_write_string(lcd, "hello");
-
-    // 1행 0열에 "test" 출력
-    st7920_set_position(lcd, 0, 1);
-    st7920_write_string(lcd, "test");
-
-    // 그래픽 모드 예제
-    st7920_set_graphic_mode(lcd, true);
-    st7920_clear_screen(lcd);
-
-    // 사각형 그리기
-    st7920_draw_rect(lcd, 10, 10, 50, 30, false, true);
-
-    // 대각선 그리기
-    st7920_draw_line(lcd, 0, 0, 127, 63, true);
-
-    // 픽셀 찍기
-    st7920_set_pixel(lcd, 64, 32, true);
-}
-*/
-
-static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode)
-{
-    switch(lcd_mode)
-    {
-        case eLCD_MODE_CHARACTER:
-            st7920_set_graphic_mode(drv, false);
-            break;
-        case eLCD_MODE_GRAPHIC:
-            st7920_set_graphic_mode(drv, true);
-            break;
-        default:
-            break;
-    }
-}
-
-
-
 void st7920_put_ch(driver_t *drv, int row, int col, uint8_t ch)
 {
 
-  // Check if character is in printable range
-  if (ch < 0x20 || ch > 0x7E)
+
+  if (ch < ' ' || ch > '~')
     return;
 
-  // Calculate position in pixels (6x8 font)
+
   int start_x = 1 + col * FONT_6X8_WIDTH;
   int start_y = row * FONT_6X8_HEIGHT;
 
-  // Check bounds for 128x64 display
-  if (start_x + FONT_6X8_WIDTH > 128 || start_y + FONT_6X8_HEIGHT > 64)
+
+  if (start_x + FONT_6X8_WIDTH > ST7920_WIDTH || start_y + FONT_6X8_HEIGHT > ST7920_HEIGHT)
     return;
 
-  // Get character data from font table (ch - 0x20 gives index)
+
   const uint8_t *char_data = font_6x8[ch - 0x20];
 
-  // Draw character pixel by pixel
+
   for (int y = 0; y < FONT_6X8_HEIGHT; y++)
   {
     uint8_t row_data = char_data[y];

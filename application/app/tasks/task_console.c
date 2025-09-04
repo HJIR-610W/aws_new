@@ -156,7 +156,6 @@ void consoleTask_init(void *arg)
 
   console_uart_num = DRV_UART_10_CDC  ;
   
-  drv_uart_init(DRV_UART_0_VHF, &uart_config);
     
   result = drv_uart_init(console_uart_num, &uart_config);
 

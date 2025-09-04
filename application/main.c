@@ -52,7 +52,6 @@ int main(void)
   
   bsp_init();
 
-
   
   osKernelInitialize();
 

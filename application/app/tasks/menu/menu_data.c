@@ -66,15 +66,17 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
   {
     int32_t status;
     int32_t key;
-    int  month, day, hour, min;
+    int32_t month, day, hour, min;
+    int32_t update = 1;
     uint32_t startTime;
     screen_page_t lcd_win;
     string_fmt_t strfmt;
     AWS_DATA_STRUCT aws;
     DATE_TIME_BUF nt;
-    int32_t update=1;
+
     screen_clear();
     screen_page_create(&lcd_win);
+    
     lcd_win.total_pages = 1;
     lcd_win.chunk_scroll_use = 1;
 
@@ -105,7 +107,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
            if (read_data_month(&nt, &aws, sizeof(aws), LOGGING_AWS, 1) > 0)
           {
             show_popup("Information", "File Open Err");
-            break;
+            return MENU_OK;
           }
           startTime = SetTime(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
         }
@@ -299,7 +301,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
         default:
           break;
         }
-        if(status != MENU_ABORT)
+        if(status == MENU_ABORT)
         return status;
       }
       else if (key != KEY_CODE_UNKNOWN)
