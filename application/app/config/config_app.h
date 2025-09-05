@@ -44,6 +44,7 @@ typedef enum cdma_model_e
 
 typedef enum panel_model_e
 {
+  ePANEL_NONE,
   ePANEL_AWS_STD,
   ePANEL_HJ_STD,
   ePANEL_MUJU,

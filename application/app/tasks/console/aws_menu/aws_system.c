@@ -1,5 +1,6 @@
 #include "console_define.h"
 #include "console_utile.h"
+#include "const_string.h"
 #include "dev_io.h"
 #include "util_memory.h"
 
@@ -10,7 +11,7 @@
 #include "cli_input.h"
 #include "task_logging.h"
 
-const char* g_chargerList[] = {"화진 스마트", "LS1024"};
+
 
 
 int32_t input_date( DATE_TIME_BUF* nt)
@@ -88,8 +89,7 @@ int aws_setup_menu_system(void)
 
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "비밀번호:%d",get_config_app()->password);
     menu_cnt++;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "충전기  :%s",
-             ITEM_LIST(get_config_app()->charger_model, g_chargerList));
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "충전기  :%s",ITEM_LIST(get_config_app()->charger_model, g_charger_list_kor));
     menu_cnt++;
 
     status = choice_menu(SYSTEM_MENU_WITDH, "시스템", menu, menu_cnt, &choice);
@@ -124,7 +124,7 @@ int aws_setup_menu_system(void)
           WRITE_CFG(password);
         break;
       case 4:  // charger type
-        status = choice_menu(24,"충전기 종류",(char **)g_chargerList,_countof(g_chargerList),&choice);
+        status = choice_menu(24, "충전기 종류", (char **)g_charger_list_kor, _countof(g_charger_list_kor), &choice);
         if(status != MENU_OK)
           break;
           config.charger_model = (eCHARGER_MODEL_t)(choice-1);

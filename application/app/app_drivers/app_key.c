@@ -152,7 +152,7 @@ void scan_key(void)
     int len;
     int key;
 
-    len = bsp_uart_recv(serial_key, data, _countof(data), 0);
+    len = bsp_uart_recv(serial_key, data, 1, 0xFFFFFFFF);
 
     for (int i = 0; i < len; i++)
     {

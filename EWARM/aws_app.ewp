@@ -1425,6 +1425,9 @@
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_key.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_logging.c</name>
                 </file>
                 <file>
@@ -1764,13 +1767,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -1786,7 +1789,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -1983,7 +1986,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>

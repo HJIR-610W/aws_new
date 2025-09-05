@@ -130,10 +130,10 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     screen_clear();
     screen_printf(0, 0, "RAW:%d", adc_raw);
     screen_printf(1, 0, "AVG:%.0f", avg);
-    screen_printf(2, 0, "Press any key");
+    screen_printf(2, 0, "Press enter");
     screen_refresh();
 
-    if (get_button_key(500) == KEY_CODE_CTRL_C)
+    if (get_button_key(500) == KEY_CODE_ENTER)
       break;
   }
 
@@ -177,10 +177,10 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     screen_clear();
     screen_printf(0, 0, "RAW:%d", adc_raw);
     screen_printf(1, 0, "AVG:%.0f", avg);
-    screen_printf(2, 0, "Press any key");
+    screen_printf(2, 0, "Press enter");
     screen_refresh();
 
-    if (get_button_key(500) == KEY_CODE_CTRL_C)
+    if (get_button_key(500) == KEY_CODE_ENTER)
       break;
   }
 
@@ -296,9 +296,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
     }
     if (status != MENU_OK)
       return status;
-    params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
-              ? &p_adc->single_ended_cal[channel]
-              : &p_adc->differential_cal[channel];
+    params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)? &p_adc->single_ended_cal[channel]: &p_adc->differential_cal[channel];
       screen_clear();
       while (1)
       {

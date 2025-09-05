@@ -245,7 +245,7 @@ int input_password(const char *title,int32_t *password)
 
     screen_refresh();
 
-    int32_t key = get_button_key(100); // 10ms 대기
+    int32_t key = get_button_key(10); 
     if (key == KEY_CODE_NONE)
       continue;
 

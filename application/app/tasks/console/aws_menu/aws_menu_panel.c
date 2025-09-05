@@ -2,12 +2,13 @@
 #include "aws_menu_panel.h"
 
 #include "config_app.h"
+#include "const_string.h"
 #include "console_define.h"
 #include "console_utile.h"
 #include "dev_io.h"
 #include "util_memory.h"
 
-const char* panelList[] = {"AWS STD", "HJ STD", "MOOJU", "HANSUNG"};
+
 
 #define AWS_MENU_PANEL_CNT 3
 int32_t aws_menu_panel(void)
@@ -26,7 +27,7 @@ int32_t aws_menu_panel(void)
   while (1)
   {
     menu_cnt = 0;
-    snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"패널 종류:%s",ITEM_LIST(config.panel_model, panelList));
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "패널 종류:%s", ITEM_LIST(config.panel_model, panel_list_eng));
     menu_cnt++;
 
     if (get_config_app()->panel_model == ePANEL_MUJU)
@@ -47,7 +48,7 @@ int32_t aws_menu_panel(void)
     switch (choice)
     {
       case 1:
-        status = choice_menu(24, "패널 종류",(char **)panelList, _countof(panelList), &choice);
+        status = choice_menu(24, "패널 종류", (char **)panel_list_eng, _countof(panel_list_eng), &choice);
         if(status != MENU_OK)
           break;
 

@@ -452,6 +452,7 @@ int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case FREQ_PAGE_SCALE_FACTOR:
+      factor = freq->scale_factor;
       status= input_float("Scale Factor",-1000,1000,&factor,"%6.4f");
       #if 0 
       dec = (int32_t)(freq->scale_factor * 1000);
@@ -914,6 +915,8 @@ void draw_menu_sensor_page(screen_menu_t* p_win)
 int32_t setup_menu_sensor(void)
 {
   int32_t key;
+  int32_t status;
+  
   eSENSOR_TYPE_t sensor_type;
 
   screen_menu_t menu;
@@ -939,7 +942,9 @@ int32_t setup_menu_sensor(void)
     {
       screen_clear();
       sensor_type = supported_sensor_menu_num[menu.selected_index];
-      setup_sensor(sensor_type);
+     status =  setup_sensor(sensor_type);
+     if(status == MENU_ABORT)
+       return MENU_ABORT;
     }
     else if (key != KEY_CODE_NONE)
     {

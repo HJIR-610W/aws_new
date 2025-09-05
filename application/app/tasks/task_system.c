@@ -120,7 +120,6 @@ void systemTask(void *arg)
 
   while (1)
   {
-    scan_key();
     drv_rtc_read(&Date_Time);
 
     if ((osKernelGetTickCount() - start_time) > 1000)
@@ -164,7 +163,7 @@ void systemTask_init(uint32_t para)
 
   if(para==PARA_RUN_MODE)
   {
-    app_key_init();
+
     user_button_init();
 
     switch (get_config_app()->charger_model)

@@ -24,8 +24,7 @@ void draw_setup_menu_panel_page(screen_menu_t* p_win)
 
   screen_menu_start(p_win);
 
-  screen_menu_printf(p_win, PANEL_MENU_MODEL, "%-*s:%s", PANEL_WD, "Moel",
-                     ITEM_LIST(get_config_app()->panel_model, panel_list_eng));
+  screen_menu_printf(p_win, PANEL_MENU_MODEL, "%-*s:%s", PANEL_WD, "Moel",ITEM_LIST(get_config_app()->panel_model, panel_list_eng));
 
   if (get_config_app()->panel_model == ePANEL_MUJU)
   {
@@ -67,14 +66,27 @@ int32_t setup_menu_panel(void)
 
       switch (menu.index_list[index])
       {
+        
         case PANEL_MENU_MODEL:
         {
+          int pre_panel_model;
           choice = config.panel_model;
+          pre_panel_model = choice;
           status = input_combobox("Panel Model",panel_list_eng, _countof(panel_list_eng), &choice);
           if (status != MENU_OK)
             break;
-          config.panel_model = (ePANEL_MODEL_t)choice;
-          WRITE_CFG(panel_model);
+          if(config.panel_model != choice)
+          {
+            config.panel_model = (ePANEL_MODEL_t)choice;
+            WRITE_CFG(panel_model);
+            if (pre_panel_model == ePANEL_NONE || choice == ePANEL_NONE) //미사용에서 사용으로, 사용에서 미사용은 리셋후 적용됨
+            {
+              show_popup("Information", "Applied after reset");
+            }
+          }
+          
+          
+          
         }
         break;
 

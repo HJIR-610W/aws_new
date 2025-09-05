@@ -64,6 +64,7 @@
 #define TASK_ISR_EVENT_DEF      (1024, osPriorityRealtime2)
 #define TASK_HTTP_SERVER_DEF    (4096, osPriorityRealtime2)
 #define TASK_DUALPORT_DEF       (2048, osPriorityRealtime1)
+#define TASK_KEY_DEF            (256, osPriorityRealtime1)
 #define TASK_ETHERNET_DEF       (2048, osPriorityBelowNormal)  //초기화만 해주고 종료 됨
 #define TASK_MEASURE_250MS_DEF  (1024, osPriorityRealtime)
 #define TASK_MEASURE_1S_DEF     (2048, osPriorityRealtime)
@@ -79,10 +80,11 @@
 #define TASK_SYSTEM_DEF         (2048, osPriorityBelowNormal)
 #define TASK_LOGGING_DEF        (2560, osPriorityBelowNormal)
 #define TASK_TELNET_SERVER_DEF  (2048, osPriorityBelowNormal)
-#define TASK_PANEL_DEF          (768, osPriorityBelowNormal)
-#define TASK_VHF_DEF            (768, osPriorityBelowNormal)
-#define TASK_SDI_DEF            (1024, osPriorityNormal1)
-#define TASK_HART_DEF           (1024, osPriorityNormal1)
+
+#define TASK_PANEL_DEF (768, osPriorityBelowNormal)
+#define TASK_VHF_DEF (768, osPriorityBelowNormal)
+#define TASK_SDI_DEF (1024, osPriorityNormal1)
+#define TASK_HART_DEF (1024, osPriorityNormal1)
 
   // tcpip_thread (1024,osPriorityRealtime)
   // EthIf(512,osPriorityRealtime)

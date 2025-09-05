@@ -33,6 +33,7 @@
 #include "tasks\task_logging.h"
 #include "tasks\task_measure.h"
 #include "tasks\task_panel.h"
+#include "tasks\task_key.h"
 #include "tasks\task_system.h"
 #include "utils\util_time.h"
 
@@ -104,6 +105,7 @@ void startTask(void *arg)
   consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화
   wdtTask_init();
 
+  keyTask_init();
   menuTask_init();
 
   config_manager_init();  // 우선 실행
@@ -149,7 +151,10 @@ void startTask(void *arg)
     ethernet_powerdown();//383->334mA
   }
 
-  panelTask_init();
+  if(get_config_app()->panel_model != ePANEL_NONE)
+  {
+    panelTask_init();
+  }
 
   //http_server_task_init();
   telnet_server_task_init();
