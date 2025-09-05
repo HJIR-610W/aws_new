@@ -136,7 +136,7 @@ uint16_t make_divas_frame(uint8_t cmd, uint8_t *rx_frame, const uint8_t *p_in_da
   return cnt;
 }
 
-#define FW_DOWNLOAD_BUFFER_SIZE (1024*512)
+#define FW_DOWNLOAD_BUFFER_SIZE (1024*1024)
 
 uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
 {
@@ -196,6 +196,7 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
       {
         fret = write_file(UPDATE_FW__REMOTE_PATH, p_fw_buffer, totsize, 0);
         user_free(p_fw_buffer);
+        p_fw_buffer = 0;
 
         if (fret != FR_OK)
         {

@@ -13,6 +13,7 @@
 #include "dev_io.h"
 #include "drv_crc.h"
 #include "user_heap.h"
+#include "FreeRTOS.h"
 
 config_t config;
 system_t System;
@@ -297,8 +298,6 @@ void save_config_app(void)
 { 
   uint32_t crc;
 
-
-
   config.start = 0;
   crc = drv_crc32_with_padding( &config.start,sizeof(config_t)-sizeof(config.header));
   
@@ -391,11 +390,19 @@ void set_config_app_cdma_ip(uint8_t ip[4])
  
 void config_app_reset(void)
 {
+  uint8_t *p_buffer;
   config = config_app_default;
 
   memset(config.sensor, 0, sizeof(config.sensor));
+  p_buffer = pvPortMalloc(CONFIG_MEMORY_SIZE);
 
-
+  if(p_buffer)
+  {
+    memset(p_buffer, 0, CONFIG_MEMORY_SIZE);
+    drv_fram_write(CONFIG_START_ADDRESS, p_buffer, CONFIG_MEMORY_SIZE);
+    vPortFree(p_buffer);
+  }
+ 
 }
 
 
@@ -410,8 +417,7 @@ void save_config_app_field(eCONFIG_APP_FIELD_t field)
     case eCONFIG_APP_SENSOR:
       member_size = MEMBER_SIZE(config_t,sensor);
       offset = OFFSET_OF_STRUCT(config_t,sensor);
-      drv_fram_write(CONFIG_START_ADDRESS + (uint32_t)offset, (uint8_t *)config.sensor,
-                     member_size);
+      drv_fram_write(CONFIG_START_ADDRESS + (uint32_t)offset, (uint8_t *)config.sensor,member_size);
       break;
 
     default:

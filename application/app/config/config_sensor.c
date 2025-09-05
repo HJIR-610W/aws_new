@@ -121,7 +121,6 @@ void save_config_sensor(void)
 {
   uint32_t crc;
 
-
   g_config_sensor.start = 0;
   crc = drv_crc32_with_padding(&g_config_sensor.start,
                               sizeof(config_sensor_t) - sizeof(g_config_sensor.header));
