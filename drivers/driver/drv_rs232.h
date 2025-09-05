@@ -6,7 +6,7 @@
 #include "driver_uart_def.h"
 #include "bsp_uart.h"
 
-#define DRV_UART_0_VHF BSP_UART_0_D_SUB_0  // VHF
+#define DRV_UART_0_VHF   BSP_UART_0_D_SUB_0  // VHF
 #define DRV_UART_2_EXT_A BSP_UART_2_EXT_A // 사용자0
 #define DRV_UART_3_EXT_B BSP_UART_3_EXT_B // 사용자1
 #define DRV_UART_4_EXT_C BSP_UART_4_EXT_C // 사용자2

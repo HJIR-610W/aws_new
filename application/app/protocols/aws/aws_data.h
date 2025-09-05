@@ -259,7 +259,10 @@ typedef struct
   uint8_t X_sensorStatus[8];
   uint8_t Y_volateStatus;
   uint8_t active[8];
-  uint8_t temp[98];//
+  float solar_voltage;
+  float battery_voltage;
+  float system_voltage;
+  uint8_t temp[82];//
 } aws_logging_data_t;//256바이트
 
 typedef struct

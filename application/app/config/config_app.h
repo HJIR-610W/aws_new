@@ -31,6 +31,7 @@ typedef enum eth_mode_e
 
 typedef enum charger_model_e
 {
+  eCHARGER_NONE,
   eCHARGER_SMART,
   eCHARGER_LS
 } eCHARGER_MODEL_t;
@@ -137,15 +138,16 @@ typedef struct system_s
   bool door_opened;
   bool sdcard_inserted;
   uint8_t ac_status;//00 110v,01 220v,11 ADC OFF
-  float chg_solarV1;
-  float chg_solarV2;
-  float chg_solarC1;
-  float chg_solarC2;
-  float chg_batV1;
-  float chg_batV2;
-  float chg_loadC1;
-  float chg_loadC2;
-  float chg_loadC3;
+  float charger_solar1_voltage;
+  float charger_solar2_voltage;
+  float charger_solar1_currnet;
+  float charger_solar2_currnet;
+  float charger_battery1_voltage;
+  float charger_battery2_voltage;
+  float charger_load1_currnet;
+  float charger_load2_currnet;
+  float charger_load3_currnet;
+  float battery_voltage;
 }system_t;
 
 void config_app_reset(void) ;

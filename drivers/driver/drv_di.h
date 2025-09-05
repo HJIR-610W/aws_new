@@ -4,7 +4,7 @@
 #define DRV_DI_H
 
 #include <stdint.h>
-#include "driver_di_def.h"
+#include "drv_di_def.h"
 #include "bsp_di.h"
 
 

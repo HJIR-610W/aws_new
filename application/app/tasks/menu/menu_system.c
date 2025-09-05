@@ -7,6 +7,7 @@
 #include "drv_rtc.h"
 #include "cli_key_code.h"
 #include "config_app.h"
+#include "const_string.h"
 #include "console_utile.h"
 #include "menu_handler.h"
 #include "util_time.h"
@@ -15,7 +16,7 @@
 
 #define SYSTEM_WD 8
 
-const char* g_chargerList_lcd[] = {"SMART", "LS1024"};
+
 
 #define SYSTEM_MENU_DATE     0
 #define SYSTEM_MENU_TIME     1
@@ -35,7 +36,7 @@ void draw_setup_menu_system_menu(screen_menu_t* p_win)
   screen_menu_printf(p_win, SYSTEM_MENU_ID, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
   screen_menu_printf(p_win, SYSTEM_MENU_PASSWORD, "%-*s:%d", SYSTEM_WD, "PASS", get_config_app()->password);
   screen_menu_printf(p_win, SYSTEM_MENU_CHARGER, "%-*s:%s", SYSTEM_WD, "CHARGER",
-                     ITEM_LIST(get_config_app()->charger_model, g_chargerList_lcd));
+                     ITEM_LIST(get_config_app()->charger_model, g_charger_list_eng));
   screen_menu_clear(p_win);
 }
 
@@ -134,7 +135,7 @@ int32_t setup_menu_system(void)
       case SYSTEM_MENU_CHARGER:
       {
         choice = get_config_app()->charger_model;
-        status = input_combobox("Charger",g_chargerList_lcd,_countof(g_chargerList_lcd),&choice);
+        status = input_combobox("Charger",g_charger_list_eng,_countof(g_charger_list_eng),&choice);
         if (status != MENU_OK)
           break;
         config.charger_model = (eCHARGER_MODEL_t)choice;

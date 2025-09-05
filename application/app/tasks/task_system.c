@@ -28,7 +28,7 @@ void userBtnCallBack(int32_t arg)
   os_send_event(eUSER_BTN_INT, 0); 
 }
 
-void userBtn_init(void)
+void user_button_init(void)
 {
   di_isr_set_cfg_t isr_cfg;
   isr_cfg.call = userBtnCallBack;
@@ -106,18 +106,17 @@ int is_door_opened(void)
 
   return 0;
 }
+eCHARGER_MODEL_t charger_model = eCHARGER_NONE;
 
 void systemTask(void *arg)
 {
   uint8_t err=0;
   uint32_t start_time = osKernelGetTickCount();
-  eCHARGER_MODEL_t charger_model;
 
   DEBUG_PRINTF("system task start\r\n");
 
   pre_sd_inserted = BSP_PlatformIsDetected();
 
-  charger_model = get_config_app()->charger_model;
 
   while (1)
   {
@@ -130,22 +129,28 @@ void systemTask(void *arg)
       if( arg==PARA_RUN_MODE)
       {
           start_time = osKernelGetTickCount();
+
+          if (charger_model != eCHARGER_NONE)
+          {
+            update_charger(charger_model);
+            System.battery_error = read_batteryVoltage1(&err) < 10.0f ? 1 : 0;
+            System.charger_battery1_voltage = read_batteryVoltage1(&err);
+            System.charger_battery2_voltage = read_batteryVoltage2(&err);
+            System.charger_solar1_currnet = read_solarCurrent1(&err);
+            System.charger_solar2_currnet = read_solarCurrent2(&err);
+            System.charger_load1_currnet = read_loadCurrent1(&err);
+            System.charger_load2_currnet = read_loadCurrent2(&err);
+            System.charger_solar1_voltage = read_solarVoltage1(&err);
+            System.charger_solar2_voltage = read_solarVoltage2(&err);
+          }
+
           System.door_opened = drv_di_read(DRV_DI_0) > 0;
-          update_charger(charger_model);
-          System.battery_error = read_batteryVoltage1(&err) < 10.0f ? 1 : 0;
+          System.battery_voltage = drv_system_read(DRV_SYS_BATTERY);
+          System.dc_error = System.battery_voltage < 11.0f ? 1 : 0;
           System.ac_status = 1; // 220v
-          System.dc_error = drv_system_read(DRV_SYS_BATTERY) < 11.0f ? 1 : 0;
-          check_sd_card();
           System.sdcard_inserted = BSP_PlatformIsDetected();
-          System.chg_batV1 = read_batteryVoltage1(&err);
-          System.chg_batV2 = read_batteryVoltage2(&err);
-          System.chg_solarC1 = read_solarCurrent1(&err);
-          System.chg_solarC2 = read_solarCurrent2(&err);
-          System.chg_loadC1 = read_loadCurrent1(&err);
-          System.chg_loadC2 = read_loadCurrent2(&err);
-          System.chg_solarV1 = read_solarVoltage1(&err);
-          System.chg_solarV2 = read_solarVoltage2(&err);
-       }
+          check_sd_card();
+        }
     }
     osDelay(100);
   }
@@ -159,10 +164,23 @@ void systemTask_init(uint32_t para)
 
   if(para==PARA_RUN_MODE)
   {
-    
     app_key_init();
-    userBtn_init();
-    dev_charger_init(get_config_app()->charger_model);
+    user_button_init();
+
+    switch (get_config_app()->charger_model)
+    {
+    case eCHARGER_SMART:
+      charger_model = DEV_CHARGER_HJ_SMART;
+        dev_charger_init(DEV_CHARGER_HJ_SMART);
+      break;
+    case eCHARGER_LS:
+      charger_model = DEV_CHARGER_LS1024;
+      dev_charger_init(DEV_CHARGER_LS1024);
+      break;
+
+        default:
+      break;
+    }
   }
 
   osThreadNew(systemTask, (void *)para, &kSystemTask_attributes);

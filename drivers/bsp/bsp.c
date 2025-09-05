@@ -5,6 +5,11 @@
 #include "bsp_di.h"
 #include "bsp_do.h"
 #include "bsp_i2c.h"
+#include "bsp_delay.h"
+#include "bsp_adc.h"
+#include "bsp_uart.h"
+#include "bsp_rs485.h"
+#include "bsp_eth.h"
 #include "config_app.h"
 #include "drv_di.h"
 #include "drv_do.h"
@@ -16,11 +21,7 @@
 #include "test_sram.h"
 #include "tlsf.h"
 #include "user_heap.h"
-#include "bsp_delay.h"
-#include "bsp_adc.h"
-#include "bsp_uart.h"
-#include "bsp_rs485.h"
-#include "bsp_eth.h"
+
 
 uint32_t g_pcb_version = AWS_PCB_VERSION;
 
@@ -400,7 +401,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   }
 }
 
-
+/*
+보드가사용하는 핀을 초기화 한다.
+*/
 void board_gpio_init(void)
 {
   __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -415,90 +418,80 @@ void board_gpio_init(void)
 
   // QUAD UART 칩을 리셋해준다. H->L
   board_set_gpio(DO_EX_UART_RST_A_GPIO_Port, DO_EX_UART_RST_A_Pin, GPIO_PIN_SET);
-  board_config_gpio(DO_EX_UART_RST_A_GPIO_Port, DO_EX_UART_RST_A_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_EX_UART_RST_A_GPIO_Port, DO_EX_UART_RST_A_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
 
   board_set_gpio(DO_EX_UART_RST_B_GPIO_Port, DO_EX_UART_RST_B_Pin, GPIO_PIN_SET);
-  board_config_gpio(DO_EX_UART_RST_B_GPIO_Port, DO_EX_UART_RST_B_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_EX_UART_RST_B_GPIO_Port, DO_EX_UART_RST_B_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
   HAL_Delay(10);
 
   board_set_gpio(DO_EX_UART_RST_A_GPIO_Port, DO_EX_UART_RST_A_Pin, GPIO_PIN_RESET);
   board_set_gpio(DO_EX_UART_RST_B_GPIO_Port, DO_EX_UART_RST_B_Pin, GPIO_PIN_RESET);
 
-  //[RS485] 방향을 입력으로 설정한다.
+  //[RS485] RS485 A 방향 입력 설정
   board_set_gpio(DO_DIR_RS485_A_GPIO_Port, DO_DIR_RS485_A_Pin, GPIO_PIN_RESET);
-  board_config_gpio(DO_DIR_RS485_A_GPIO_Port, DO_DIR_RS485_A_Pin, GPIO_MODE_OUTPUT_PP,
-                    GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_DIR_RS485_A_GPIO_Port, DO_DIR_RS485_A_Pin, GPIO_MODE_OUTPUT_PP,GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
+  //[RS485] RS485 B 방향 입력 설정
   board_set_gpio(DO_DIR_RS485_B_GPIO_Port, DO_DIR_RS485_B_Pin, GPIO_PIN_RESET);
-  board_config_gpio(DO_DIR_RS485_B_GPIO_Port, DO_DIR_RS485_B_Pin, GPIO_MODE_OUTPUT_PP,
-                    GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_DIR_RS485_B_GPIO_Port, DO_DIR_RS485_B_Pin, GPIO_MODE_OUTPUT_PP,GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
+  //[RS485] RS485 C 방향 입력 설정
   board_set_gpio(DO_RS485_DIR_C_GPIO_Port, DO_RS485_DIR_C_Pin, GPIO_PIN_RESET);
-  board_config_gpio(DO_RS485_DIR_C_GPIO_Port, DO_RS485_DIR_C_Pin, GPIO_MODE_OUTPUT_PP,
-                    GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_RS485_DIR_C_GPIO_Port, DO_RS485_DIR_C_Pin, GPIO_MODE_OUTPUT_PP,GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
+  //[RS485] RS485 D 방향 입력 설정
   board_set_gpio(DO_RS485_DIR_D_GPIO_Port, DO_RS485_DIR_D_Pin, GPIO_PIN_RESET);
-  board_config_gpio(DO_RS485_DIR_D_GPIO_Port, DO_RS485_DIR_D_Pin, GPIO_MODE_OUTPUT_PP,
-                    GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_RS485_DIR_D_GPIO_Port, DO_RS485_DIR_D_Pin, GPIO_MODE_OUTPUT_PP,GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
-  //[SPI CS] HIGH로 한다.
+  //[SPI CS] FRAM 
   board_set_gpio(DO_SPI1_NSS_GPIO_Port, DO_SPI1_NSS_Pin, GPIO_PIN_SET);
-  board_config_gpio(DO_SPI1_NSS_GPIO_Port, DO_SPI1_NSS_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_SPI1_NSS_GPIO_Port, DO_SPI1_NSS_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
+ 
+  //[SPI CS] ADC
+  board_set_gpio(DO_SPI2_NSS_GPIO_Port, DO_SPI2_NSS_Pin, GPIO_PIN_SET);
+  board_config_gpio(DO_SPI2_NSS_GPIO_Port, DO_SPI2_NSS_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
 
-  board_set_gpio(DO_SPI1_NSS_GPIO_Port, DO_SPI1_NSS_Pin, GPIO_PIN_SET);
-  board_config_gpio(DO_SPI1_NSS_GPIO_Port, DO_SPI1_NSS_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
-
-  board_set_gpio(DO_SPI2_NSS_GPIO_Port, DO_SPI2_NSS_Pin, GPIO_PIN_RESET);
-  board_config_gpio(DO_SPI2_NSS_GPIO_Port, DO_SPI2_NSS_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
-
+  //[SPI CS] FLASH
+  board_set_gpio(DO_CS_S_FLASH_GPIO_Port, DO_CS_S_FLASH_Pin, GPIO_PIN_SET);
+  board_config_gpio(DO_CS_S_FLASH_GPIO_Port, DO_CS_S_FLASH_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
+  
   // UART_5_EXT_D 는 HART와 RS232 선택사용 포트이다. RS232를 기본설정한다.
   board_set_gpio(DO_SEL_IF_UART_GPIO_Port, DO_SEL_IF_UART_Pin, GPIO_PIN_RESET);
-  board_config_gpio(DO_SEL_IF_UART_GPIO_Port, DO_SEL_IF_UART_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_SEL_IF_UART_GPIO_Port, DO_SEL_IF_UART_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
 
   //[전원]CDMA 12V 전원은 차단한다.
   board_set_gpio(DO_CON_PWR_CDMA_GPIO_Port, DO_CON_PWR_CDMA_Pin, GPIO_PIN_RESET);
-  board_config_gpio(DO_CON_PWR_CDMA_GPIO_Port, DO_CON_PWR_CDMA_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_CON_PWR_CDMA_GPIO_Port, DO_CON_PWR_CDMA_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
 
   //[전원]HART 24V는 차단한다.
   board_set_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_PIN_RESET);
-  board_config_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
+ 
   //[전원]강우감지 전원은 항상 출력
-  board_set_gpio(DO_CON_PWR_RAIN_DIGITAL_GPIO_Port, DO_CON_PWR_RAIN_DIGITAL_Pin,
-                 GPIO_PIN_SET);
-  board_config_gpio(DO_CON_PWR_RAIN_DIGITAL_GPIO_Port, DO_CON_PWR_RAIN_DIGITAL_Pin,
-                    GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  board_set_gpio(DO_CON_PWR_RAIN_DIGITAL_GPIO_Port, DO_CON_PWR_RAIN_DIGITAL_Pin,GPIO_PIN_SET);
+  board_config_gpio(DO_CON_PWR_RAIN_DIGITAL_GPIO_Port, DO_CON_PWR_RAIN_DIGITAL_Pin,GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
   // HART IC를 RESET 상태로 만든다.
   board_set_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_PIN_RESET);
-  board_config_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
+  board_config_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
 
-  board_set_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_PIN_SET);  // VBUS 비활성
-  board_config_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
 
-  // 미사용
-  board_config_gpio(DI_USB_OTG_PWR_FAIL_GPIO_Port, DI_USB_OTG_PWR_FAIL_Pin, GPIO_MODE_INPUT, GPIO_NOPULL,
-                    GPIO_SPEED_FREQ_LOW, 0);
+  //[전원]LCD OFF 하드웨어 기본 ON
+  board_set_gpio(DO_POWER_LCD_GPIO_Port, DO_POWER_LCD_Pin, GPIO_PIN_RESET); 
+  board_config_gpio(DO_POWER_LCD_GPIO_Port, DO_POWER_LCD_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
   
-  //LCD 리셋 
-  board_set_gpio(DO_LCD_RESET_GPIO_Port, DO_LCD_RESET_Pin, GPIO_PIN_RESET); 
+  //LCD 리셋은 활성화
+  board_set_gpio(DO_LCD_RESET_GPIO_Port, DO_LCD_RESET_Pin, GPIO_PIN_SET); 
   board_config_gpio(DO_LCD_RESET_GPIO_Port, DO_LCD_RESET_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
 
+  //[전원]USB 5v 전원
+  board_set_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_PIN_SET); 
+  board_config_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
 }
 
 
 void bsp_init(void)
 {
-
   HAL_Init();  // 타이머 4를 초기화 HAL 타이머 틱 인터럽트로 사용
 
   SystemClock_Config();
@@ -512,7 +505,9 @@ void bsp_init(void)
   user_tlsf_init(POOL_SIZE);
 
   bsp_interrupt_init();  // 최우선 실행
+
   bsp_delay_init();
+
   bsp_adc_init();
 
 }

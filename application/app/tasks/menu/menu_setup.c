@@ -70,7 +70,7 @@ void setup_menu(void)
     }
     else
     {
-      show_popup("ERROR", "Incorrect password");
+      show_popup("Error", "Incorrect password");
     }
   
   }

@@ -143,7 +143,10 @@
 			"old_aws_define.h": "c",
 			"util_crc16_ccitt.h": "c",
 			"kma3.h": "c",
-			"pcb_6_pin.h": "c"
+			"pcb_6_pin.h": "c",
+			"app_console_test.h": "c",
+			"divas_protocol_handler.h": "c",
+			"cmsis_os.h": "c"
 		}
 	}
 }

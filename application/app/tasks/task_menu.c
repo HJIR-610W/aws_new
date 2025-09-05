@@ -1144,8 +1144,10 @@ void menuTask(void *arg)
     page_count = 0;
     page_list[page_count++] = PAGE_SYSTEM;
     page_list[page_count++] = PAGE_RAIN;
+    if(get_config_app()->charger_model != eCHARGER_NONE)
+    {
     page_list[page_count++] = PAGE_CHARGER;
-    
+    }
     if (get_config_app()->cdma_active)
       page_list[page_count++] = PAGE_CDMA;
     if (get_config_app()->direct_active)

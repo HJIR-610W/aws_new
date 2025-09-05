@@ -8,7 +8,7 @@
 
 #include "app_flash.h"
 #include "mcu_debug.h"
-
+#include "const_string.h"
 #include "config_app.h"
 #include "config_nvm.h"
 #include "cli_key_code.h"
@@ -21,7 +21,7 @@
 #include "app_console_test.h"
 #include "cmsis_os.h"
 #include "drv_flash.h"
-extern const char* g_chgList[2];
+
 extern const char *protocolList[2];
 extern const char *cdmaModellList[2];
 extern const char* panelList[4] ;
@@ -31,7 +31,7 @@ int32_t menu_manage_print_config_all(void)
 {
   io_printf("ID               :%d\r\n", config.id);
   io_printf("비밀번호         :%d\r\n", config.password);
-  io_printf("충전기 종류      :%s\r\n", ITEM_LIST(config.charger_model, g_chgList));
+  io_printf("충전기 종류      :%s\r\n", ITEM_LIST(config.charger_model, g_charger_list_eng));
   io_printf("로그 카운트      :%d\r\n", nvm_get_log_cnt());
   io_printf("프로토콜          :%s\r\n", ITEM_LIST(config.aws_protocol_type, protocolList));
   io_printf("이더넷 서브넷    :%d.%d.%d.%d\r\n", config.eth_subnet[0], config.eth_subnet[1],

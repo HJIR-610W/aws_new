@@ -3,7 +3,7 @@
 #define DS1360_H
 
 #include "driver_interface.h"
-#include "driver_rtc_define.h"
+#include "drv_rtc_define.h"
 
 
 

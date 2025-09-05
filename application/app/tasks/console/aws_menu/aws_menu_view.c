@@ -94,7 +94,7 @@ void draw_system(win_t* p_win)
       win_printf_row(p_win, row_count++, "%s: %d", m_l("ID",SYSTEM_WD), get_config_app()->id);
 
       win_printf_row(p_win, row_count++, "%s: %s", m_l("문 상태", SYSTEM_WD),
-                     ITEM_LIST(is_door_opened(), doorStatusList));
+                     ITEM_LIST(is_door_opened(), doorStatusList_kor));
 
       if (get_logging_system()->status_group)
       {

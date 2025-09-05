@@ -3,7 +3,7 @@
 #define DRV_RTC_H
 
 #include "util_time.h"
-#include "driver_rtc_define.h"
+#include "drv_rtc_define.h"
 
 
 void drv_rtc_init(void);

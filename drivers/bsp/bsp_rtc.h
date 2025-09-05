@@ -2,7 +2,7 @@
 
 #ifndef BSP_RTC_H
 #define BSP_RTC_H
-#include "driver_rtc_define.h"
+#include "drv_rtc_define.h"
 #include "util_time.h"
 
 void bsp_rtc_init(void);

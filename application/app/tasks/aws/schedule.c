@@ -887,6 +887,10 @@ void save_min_data(DATE_TIME_BUF *p_time)
     }
     p_logging->Y_volateStatus = p_kma_data->Y_volateStatus;
 
+    p_logging->solar_voltage = System.charger_solar1_voltage;
+    p_logging->battery_voltage = System.charger_battery1_voltage;
+    p_logging->system_voltage = System.battery_voltage;
+
     int count = sizeof(aws_logging_data_t) - (uint32_t)(&((aws_logging_data_t *)0)->time);
 
     p_logging->crc = crc16_ccitt_table((uint8_t *)&p_logging->time,count);
@@ -1009,10 +1013,9 @@ void update_kma_data(eAWS_DATA_MIN_t min,DATE_TIME_BUF *p_time)
 
   p_kma_data->updated = true;
 
-
+  p_kma_data->time = Date_Time;
   if(min == eAWS_DATA_1MIN)
   {
-    p_kma_data->time = Date_Time;
     send_kma_data(eKMA_DATA_Q_1MIN, p_kma_data); // 실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
   }
 }

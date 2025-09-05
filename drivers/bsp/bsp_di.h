@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "driver_di_def.h"
+#include "drv_di_def.h"
 #include "pcb_define.h"
 
 #ifdef PCB_0_5

@@ -19,6 +19,7 @@
 #include "console_test.h"
 #include "system_err.h"
 #include "dev_io.h"
+
 int32_t console_uart_num = -1;
 
 static osThreadId_t s_console_task_id;
@@ -154,7 +155,7 @@ void consoleTask_init(void *arg)
   uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
-  console_uart_num = DRV_UART_10_CDC  ;
+  console_uart_num = BSP_UART_0_D_SUB_0  ;
   
     
   result = drv_uart_init(console_uart_num, &uart_config);
