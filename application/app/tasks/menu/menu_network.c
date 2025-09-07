@@ -285,18 +285,24 @@ if (status == MENU_OK)
 
 void draw_eth_config_page(screen_menu_t* p_win)
 {
+  eETH_MODE_t eth_mode;
+
+  eth_mode  = get_config_app()->eth_mode;
   screen_menu_start(p_win);
-  screen_menu_printf(p_win, ETH_MENU_MODE, "%-*s:%s", NETWORK_WD, "Mode", 
-                     ITEM_LIST(get_config_app()->eth_mode, eth_mode_list_eng));
   screen_menu_printf(p_win, ETH_MENU_LOCAL_IP, "%-*s", NETWORK_WD, "Local IP");
   screen_menu_printf(p_win, ETH_MENU_SUBNET, "%-*s", NETWORK_WD, "Subnet");
   screen_menu_printf(p_win, ETH_MENU_GATEWAY, "%-*s", NETWORK_WD, "Gateway");
   screen_menu_printf(p_win, ETH_MENU_MAC, "%-*s", NETWORK_WD, "MAC");
-  screen_menu_printf(p_win, ETH_MENU_LOCAL_PORT, "%-*s:%d", NETWORK_WD, "Local Port", 
-                     get_config_app()->eth_local_port);
-  screen_menu_printf(p_win, ETH_MENU_REMOTE_IP, "%-*s", NETWORK_WD, "Remote IP");
-  screen_menu_printf(p_win, ETH_MENU_REMOTE_PORT, "%-*s:%d", NETWORK_WD, "Remote Port", 
-                     get_config_app()->eth_remote_server_port);
+  screen_menu_printf(p_win, ETH_MENU_MODE, "%-*s:%s", NETWORK_WD, "Mode", ITEM_LIST(get_config_app()->eth_mode, eth_mode_list_eng));
+  if(eth_mode == eETH_MODE_SERVER)
+  {
+  screen_menu_printf(p_win, ETH_MENU_LOCAL_PORT, "%-*s:%d", NETWORK_WD, "Listen Port", get_config_app()->eth_local_port);
+  }
+  else
+  {
+  screen_menu_printf(p_win, ETH_MENU_REMOTE_IP, "%-*s", NETWORK_WD, "Remote Server IP");
+  screen_menu_printf(p_win, ETH_MENU_REMOTE_PORT, "%-*s:%d", NETWORK_WD, "Remote Port",get_config_app()->eth_remote_server_port);
+  }
   screen_menu_clear(p_win);
 }
 
@@ -424,13 +430,10 @@ int32_t setup_eth_config(void)
 void draw_cdma_config_page(screen_menu_t* p_win)
 {
   screen_menu_start(p_win);
-  screen_menu_printf(p_win, CDMA_MENU_SERVER_IP, "%-*s", NETWORK_WD, "Server IP");
-  screen_menu_printf(p_win, CDMA_MENU_PORT, "%-*s:%d", NETWORK_WD, "Port", 
-                     get_config_app()->cdma_port);
-  screen_menu_printf(p_win, CDMA_MENU_MODEL, "%-*s:%s", NETWORK_WD, "Model", 
-                     ITEM_LIST(get_config_app()->cdma_model, cdma_model_list_eng));
-  screen_menu_printf(p_win, CDMA_MENU_VPN, "%-*s:%s", NETWORK_WD, "VPN", 
-                     ITEM_LIST(get_config_app()->cdma_vpn_active, enable_list_eng));
+  screen_menu_printf(p_win, CDMA_MENU_SERVER_IP, "%-*s", NETWORK_WD, "Remote Server IP");
+  screen_menu_printf(p_win, CDMA_MENU_PORT, "%-*s:%d", NETWORK_WD, "Remote Port",get_config_app()->cdma_port);
+  screen_menu_printf(p_win, CDMA_MENU_MODEL, "%-*s:%s", NETWORK_WD, "Model",ITEM_LIST(get_config_app()->cdma_model, cdma_model_list_eng));
+  screen_menu_printf(p_win, CDMA_MENU_VPN, "%-*s:%s", NETWORK_WD, "VPN",ITEM_LIST(get_config_app()->cdma_vpn_active, enable_list_eng));
   screen_menu_clear(p_win);
 }
 

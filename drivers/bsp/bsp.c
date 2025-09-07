@@ -1,6 +1,7 @@
 
 #include "bsp.h"
 
+#include <math.h>  // isnan() 사용을 위해 필요
 #include "bsp_crc.h"
 #include "bsp_di.h"
 #include "bsp_do.h"
@@ -201,7 +202,10 @@ void SystemClock_Config(void)
 |
 GND
 */
+
+
 #define BATTERY_AVERAGE_SAMPLES 50
+
 float bsp_read_battery(void)
 {
   const float slope = 6;  // (float)(15.0f-0.0f)/(float)(2.5-0);
@@ -212,11 +216,18 @@ float bsp_read_battery(void)
 
   voltage = bsp_adc_single_read_voltage(BSP_ADC_SYS_BATTERY, BATTERY_AVERAGE_SAMPLES, &err);
 
+  // voltage가 NaN인 경우, NaN 반환
+  if (isnan(voltage))
+  {
+    return NAN;
+  }
+
+  // voltage가 NaN이 아닌 경우 배터리 계산
   battery = voltage * slope + offset;
 
-  return (float)battery;
-
+  return battery;
 }
+
 
 
 /*
@@ -287,7 +298,10 @@ float ntc_resistance_to_temperature(float resistance)
   return 0.0f; // 이론적으로 도달하지 않음
 }
 
+
+
 #define TEMP_AVERAGE_SAMPLES 50
+
 float bsp_read_temperature(void)
 {
   uint8_t err;
@@ -296,10 +310,18 @@ float bsp_read_temperature(void)
 
   voltage = bsp_adc_single_read_voltage(BSP_ADC_SYS_TEMP, TEMP_AVERAGE_SAMPLES, &err);
 
-  resistance = (voltage * R1) /(VREF - voltage);
+  // voltage가 NaN인 경우, NaN 반환
+  if (isnan(voltage))
+  {
+    return NAN;
+  }
+
+  // voltage가 NaN이 아닌 경우에만 저항 계산
+  resistance = (voltage * R1) / (VREF - voltage);
 
   return ntc_resistance_to_temperature(resistance);
 }
+
 
 
 /*
