@@ -23,6 +23,16 @@
   drv_fram_write(CONFIG_START_ADDRESS + (uint32_t)OFFSET_S(&config, dataAdd), (uint8_t *)dataAdd, \
                  len);
 
+typedef enum uart_baud_e
+{
+  eBAUD_1200,
+  eBAUD_9600,
+  eBAUD_19200,
+  eBAUD_38400,
+  eBAUD_57600,
+  eBAUD_115200
+} eUART_BAUD_t;
+
 typedef enum eth_mode_e
 {
   eETH_MODE_CLINET,
@@ -106,8 +116,8 @@ typedef struct config_s
   uint8_t eth_active;        // 설정 후 리셋 요구됨
   uint8_t cdma_active;       // 설정 후 리셋 요구됨
   uint8_t direct_active;     // 설정 후 리셋 요구됨
-  uint32_t direct_baud;      // 설정 후 리셋 요구됨
-  ePANEL_MODEL_t panel_model;
+  eUART_BAUD_t direct_baud_index;  // 설정 후 리셋 요구됨
+  ePANEL_MODEL_t panel_model; // 경우에 따라 리셋 요구됨 ㄴ
   uint8_t panel_snow_active;
   uint8_t panel_barometer_active;
   uint8_t vhf_id;
@@ -115,8 +125,8 @@ typedef struct config_s
   uint8_t vhf_host_id;
   uint8_t vhf_repeater_id;
   uint16_t vhf_ptt_delay;
-  uint8_t encrypt_active;
-  uint8_t vpn_active;
+  uint8_t com_encrypt_active;
+  uint8_t cdma_vpn_active;
   uint8_t ac_active;
   eTELNET_MODE_t dev_telnet_mode;
   uint8_t dev_telnet_ip[4];
@@ -166,6 +176,9 @@ void set_config_app_cdma_port(uint16_t port);
 void set_config_app_cdma_ip(uint8_t ip[4]);
 
 uint16_t get_lcd_off_time(void);
+
+eUART_BAUD_t uart_baud_to_config_index(uint32_t baud);
+uint32_t config_index_to_uart_baud(eUART_BAUD_t index) ;
 
 
 extern config_t config;

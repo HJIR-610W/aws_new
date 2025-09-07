@@ -468,7 +468,7 @@ int32_t setup_menu_manager(void)
           status = input_combobox("LCD off time",lcd_off_time_list_eng,_countof(lcd_off_time_list_eng),&dec);
           if (status != MENU_OK)
             break;
-          config.lcd_off_time_index = dec;
+          config.lcd_off_time_index = (eLCD_OFF_TIME_t)dec;
           WRITE_CFG(lcd_off_time_index);
           break;
 

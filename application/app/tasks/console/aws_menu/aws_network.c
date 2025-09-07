@@ -7,6 +7,7 @@ This file must be encoded in EUC-KR
 #include "console_define.h"
 #include "console_scanf.h"
 #include "console_utile.h"
+#include "const_string.h"
 #include "dev_io.h"
 #include "util_memory.h"
 
@@ -350,7 +351,7 @@ int32_t aws_network_config_cdma(void)
     if (config.cdma_model == eCDMA_NTLE9607)
     {
       snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "VPN   :%s",
-               ITEM_LIST(config.vpn_active, enableList));
+               ITEM_LIST(config.cdma_vpn_active, enableList));
     menu_cnt++;
     }
 
@@ -388,10 +389,10 @@ int32_t aws_network_config_cdma(void)
           io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
           break;
       case 4:
-        status = choice_enable(&get_config_app()->vpn_active);
+        status = choice_enable(&get_config_app()->cdma_vpn_active);
         if (status != MENU_OK)
           break;
-        WRITE_CFG(vpn_active);
+        WRITE_CFG(cdma_vpn_active);
       
         break;
     }
@@ -404,6 +405,7 @@ int32_t aws_network_config_cdma(void)
   return status;
 }
 
+#define LABEL_W 24
 int32_t aws_network_config_direct(void)
 {
   int choice, status;
@@ -422,25 +424,26 @@ int32_t aws_network_config_direct(void)
   while (1)
   {
     menu_cnt = 0;
-    uint8_t *ip = get_config_app()->cdma_server_ip;
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "통신 속도   :%u", config.direct_baud);
+
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "통신 속도   :%s",ITEM_LIST(config.direct_baud_index,g_baud_list_eng));
     menu_cnt++;
 
-    status = choice_menu(24, "직접통신(RS232)", menu, menu_cnt, &choice);
+    status = choice_menu(LABEL_W, "직접통신(RS232)", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       break;
 
     switch (choice)
     {
       case 1:
-        status = input_decimal_prompt("BAUDRATE",&dec,1200,115200);
+        choice = get_config_app()->direct_baud_index;
+        status = choice_menu(30, "통신 속도", (char **)g_baud_list_eng, _countof(g_baud_list_eng), &choice);
         if(status != MENU_OK)
         break;
-        
-          config.direct_baud = dec;
-          WRITE_CFG(direct_baud);
-          io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
-          break;
+
+        config.direct_baud_index = (eUART_BAUD_t)choice;
+        WRITE_CFG(direct_baud_index);
+        io_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+        break;
     }
 
     if (status == MENU_ABORT)

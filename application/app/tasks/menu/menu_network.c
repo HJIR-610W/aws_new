@@ -5,6 +5,7 @@
 #include "app_screen.h"
 #include "cli_key_code.h"
 #include "config_app.h"
+#include "const_string.h"
 #include "console_utile.h"
 #include "menu_handler.h"
 #include "view_driver.h"
@@ -401,7 +402,7 @@ void draw_cdma_config_page(screen_menu_t* p_win)
   screen_menu_printf(p_win, CDMA_MENU_MODEL, "%-*s:%s", NETWORK_WD, "Model", 
                      ITEM_LIST(get_config_app()->cdma_model, cdma_model_list_eng));
   screen_menu_printf(p_win, CDMA_MENU_VPN, "%-*s:%s", NETWORK_WD, "VPN", 
-                     ITEM_LIST(get_config_app()->vpn_active, enable_list_eng));
+                     ITEM_LIST(get_config_app()->cdma_vpn_active, enable_list_eng));
   screen_menu_clear(p_win);
 }
 
@@ -466,12 +467,12 @@ int32_t setup_cdma_config(void)
           }
           break;
         case CDMA_MENU_VPN:
-          choice = get_config_app()->vpn_active;
+          choice = get_config_app()->cdma_vpn_active;
           status = input_active("VPN", &choice);
           if (status == MENU_OK)
           {
-            get_config_app()->vpn_active = choice;
-            WRITE_CFG(vpn_active);
+            get_config_app()->cdma_vpn_active = choice;
+            WRITE_CFG(cdma_vpn_active);
           }
           break;
       }
@@ -494,10 +495,13 @@ int32_t setup_cdma_config(void)
 void draw_direct_config_page(screen_menu_t* p_win)
 {
   screen_menu_start(p_win);
-  screen_menu_printf(p_win, DIRECT_MENU_BAUD_RATE, "%-*s:%d", NETWORK_WD, "Baud Rate", 
-                     get_config_app()->direct_baud);
+  screen_menu_printf(p_win, DIRECT_MENU_BAUD_RATE, "%-*s:%s", NETWORK_WD, "Baud Rate",ITEM_LIST(get_config_app()->direct_baud_index,g_baud_list_eng));
   screen_menu_clear(p_win);
 }
+
+
+
+
 
 int32_t setup_direct_config(void)
 {
@@ -506,6 +510,7 @@ int32_t setup_direct_config(void)
   screen_menu_t menu;
   int32_t dec;
   int32_t index;
+  
 
   screen_menu_create(&menu, "Direct");
 
@@ -517,14 +522,11 @@ int32_t setup_direct_config(void)
 
     key = get_button_key(WAIT_FOREVER);
 
-    if (key == KEY_CODE_CTRL_Q)
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
       break;
     }
-    else if (key == KEY_CODE_CTRL_C)
-    {
-      break;
-    }
+
 
     if (key == KEY_CODE_ENTER)
     {
@@ -533,12 +535,14 @@ int32_t setup_direct_config(void)
       switch (menu.index_list[index])
       {
         case DIRECT_MENU_BAUD_RATE:
-          dec = get_config_app()->direct_baud;
-          status = input_decimal("Baud Rate", 1200, 115200, &dec);
+          index = get_config_app()->direct_baud_index;
+          status = input_combobox("Baud Rate",g_baud_list_eng,_countof(g_baud_list_eng),&index);
+
           if (status == MENU_OK)
           {
-            get_config_app()->direct_baud = dec;
-            WRITE_CFG(direct_baud);
+            get_config_app()->direct_baud_index = (eUART_BAUD_t)index;
+            WRITE_CFG(direct_baud_index);
+            show_popup("Information", "Applied after reset");
           }
           break;
       }

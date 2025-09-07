@@ -89,7 +89,7 @@ void directTask_init(void)
   g_direct_system.tx_cnt = 0;
   g_direct_system.rx_cnt = 0;
 
-  uart_config.baud = get_config_app()->direct_baud;
+  uart_config.baud = config_index_to_uart_baud(get_config_app()->direct_baud_index);
   uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 

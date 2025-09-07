@@ -13,9 +13,10 @@
 #include "app_screen.h"
 #include "cli_key_code.h"
 #include "os_user_def.h"
-
+#include "dev_io.h"
 #include "util_memory.h"
 #include "util_stdio.h"
+#include "system_err.h"
 
 #define MAX_ROWS 8
 #define MAX_COLS 21
@@ -118,7 +119,9 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
 
     screen_refresh();
 
-    int32_t key = get_button_key(10);  // 10ms 대기
+    int32_t key = get_button_key(100);  // 10ms 대기
+    
+    
     if (key == KEY_CODE_NONE) continue;
 
     // 키 입력 시 커서 즉시 표시
@@ -245,9 +248,10 @@ int input_password(const char *title,int32_t *password)
 
     screen_refresh();
 
-    int32_t key = get_button_key(10); 
+    int32_t key = get_button_key(100); 
     if (key == KEY_CODE_NONE)
       continue;
+
 
     blink_state = 1;
     last_blink = OS_GET_TICK();

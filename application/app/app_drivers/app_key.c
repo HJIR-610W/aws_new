@@ -65,7 +65,7 @@ void button_put_key(int32_t key)
 }
 
 
-static int32_t process_serial_data(uint8_t *data, int len)
+static int32_t process_serial_data(uint8_t data)
 {
     static uint8_t escape_sequence[3] = {0};
     static int escape_index = 0;
@@ -73,23 +73,18 @@ static int32_t process_serial_data(uint8_t *data, int len)
     uint8_t ch;
     uint32_t current_time;
 
-    if (len <= 0)
-    {
-        return KEY_CODE_NONE;
-    }
-
-    ch = data[0];
-     current_time = HAL_GetTick();
+    ch = data;
+    current_time = HAL_GetTick();
 
     // 이스케이프 시퀀스가 특정시간초과하면새롭게 시퀀스 시작 
-    if (escape_index > 0 && (current_time - last_escape_time) > 100)
+    if (escape_index > 0 && (current_time - last_escape_time) > 10)
     {
         escape_index = 0;
     }
 
     // 이스케이프 시퀀스
-    if (ch == 0x1B)
-    { // ESC 
+    if (ch == 0x1B) // ESC
+    { 
         escape_sequence[0] = ch;
         escape_index = 1;
         last_escape_time = current_time;
@@ -148,20 +143,20 @@ static int32_t process_serial_data(uint8_t *data, int len)
 
 void scan_key(void)
 {
-    uint8_t data[5];
-    int len;
+    uint8_t data;
+
     int key;
 
-    len = bsp_uart_recv(serial_key, data, 1, 0xFFFFFFFF);
+     bsp_uart_recv(serial_key, &data, 1, 0xFFFFFFFF);
 
-    for (int i = 0; i < len; i++)
-    {
-        key = process_serial_data(&data[i], 1);
-    
-        if (key != KEY_CODE_NONE) 
-        {
 
-            button_put_key(key);
-        }
-    }
+     key = process_serial_data(data);
+  
+      if (key != KEY_CODE_NONE) 
+      {
+
+          button_put_key(key);
+      }
+
+   
 }

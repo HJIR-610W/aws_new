@@ -30,3 +30,5 @@ const char *freq_ch_list[2] = {"A", "B"};
 
  const char *g_charger_list_eng[3] = {"Not Used", "SMART", "LS1024"};
  const char *g_charger_list_kor[3] = {"미사용","화진 스마트", "LS1024"};
+
+ const char *g_baud_list_eng[] = {"1200", "9600", "19200", "38400", "57600", "115200"};

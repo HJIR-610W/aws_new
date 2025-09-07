@@ -55,7 +55,7 @@ int32_t menu_manage_print_config_all(void)
   io_printf("CDMA 사용        :%s\r\n", ITEM_LIST((int32_t)config.cdma_active, enableList));
   io_printf("직접통신         :%s\r\n", ITEM_LIST((int32_t)config.direct_active, enableList));
 
-  io_printf("직접통신 속도    :%d\r\n", config.direct_baud);
+  io_printf("직접통신 속도    :%d\r\n", ITEM_LIST((int32_t)config.direct_baud_index, g_baud_list_eng)); 
   io_printf("패널 종류        :%s\r\n", ITEM_LIST(config.panel_model, panelList));
   io_printf("VHF ID           :%d\r\n", config.vhf_id);
   io_printf("VHF 그룹         :%d\r\n", config.vhf_group);

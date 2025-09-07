@@ -38,7 +38,7 @@ const config_t config_app_default = {.id = 0,
                                      .eth_active = true,
                                      .cdma_active = true,
                                      .direct_active = false,
-                                     .direct_baud = 19200,
+                                     .direct_baud_index = eBAUD_19200,
                                      .panel_model = ePANEL_AWS_STD,
                                      .panel_snow_active = false,
                                      .panel_barometer_active = false,
@@ -47,8 +47,8 @@ const config_t config_app_default = {.id = 0,
                                      .vhf_host_id = 0,
                                      .vhf_repeater_id = 0,
                                      .vhf_ptt_delay = 10,
-                                     .encrypt_active = false,
-                                     .vpn_active = false,
+                                     .com_encrypt_active = false,
+                                     .cdma_vpn_active = false,
                                      .ac_active = false,
                                      .dev_telnet_ip = {112, 221, 177, 172},
                                      .dev_telnet_port = 23001,
@@ -71,12 +71,17 @@ bool is_value_in_array(uint8_t target, const uint8_t *arr, size_t len)
 void check_config_app(void)
 {
   void *p_config;
-  g_config_app_change_count++;
-  
+
+  if (config.direct_baud_index > eBAUD_115200)
+  {
+    config.direct_baud_index = config_app_default.direct_baud_index;
+    g_config_app_change_count++;
+  }
+
   if (config.charger_model > eCHARGER_LS)
   {
-    config.charger_model = config_app_default.charger_model;
-  g_config_app_change_count++;
+      config.charger_model = config_app_default.charger_model;
+      g_config_app_change_count++;
   }
 
   if (config.eth_mode > eETH_MODE_SERVER)
@@ -84,7 +89,6 @@ void check_config_app(void)
     config.eth_mode = config_app_default.eth_mode;
   g_config_app_change_count++;
   }
-
 
   if (config.cdma_model > eCDMA_TX700)
   {
@@ -138,18 +142,19 @@ void check_config_app(void)
 
   if (config.direct_active && config.cdma_active)
   {
-    config.direct_active = 0;
-    config.cdma_active = 1;
-  g_config_app_change_count++;
+    config.direct_active = config_app_default.direct_active;
+    config.cdma_active = config_app_default.cdma_active;
+    g_config_app_change_count++;
   }
 
 
+  //특별 처리 
   for (int i = 0; i < _countof(config.sensor); i++)
   {
     if (config.sensor[i].type > SENSOR_TYPE_MAX)
     {
       config.sensor[i].type = S_T_UNSUED;
-    g_config_app_change_count++;
+      g_config_app_change_count++;
     }
   }
 
@@ -278,9 +283,9 @@ void check_config_app(void)
   g_config_app_change_count++;
   }
 
-  if(config.vpn_active>1)
+  if(config.cdma_vpn_active>1)
   {
-    config.vpn_active = config_app_default.vpn_active;
+    config.cdma_vpn_active = config_app_default.cdma_vpn_active;
   g_config_app_change_count++;
   }
 
@@ -526,4 +531,69 @@ uint16_t get_lcd_off_time(void)
   }
 
   return lcd_off_time;
+}
+
+
+
+
+eUART_BAUD_t uart_baud_to_config_index(uint32_t baud)
+{
+  eUART_BAUD_t baud_index;
+   switch (baud)
+  {
+    case 1200:
+      baud_index = eBAUD_1200;
+      break;
+    case 9600:
+      baud_index = eBAUD_9600;
+      break;
+    case 19200:
+      baud_index = eBAUD_19200;
+      break;
+    case 38400:
+      baud_index = eBAUD_38400;
+      break;
+    case 57600:
+      baud_index = eBAUD_57600;
+      break;
+    case 115200:
+      baud_index = eBAUD_115200;
+      break;
+      default:
+        baud_index = eBAUD_19200;
+        break;
+    }
+
+    return baud_index;
+}
+
+uint32_t config_index_to_uart_baud(eUART_BAUD_t index)
+{
+  uint32_t baud;
+  switch (index)
+  {
+  case eBAUD_1200:
+    baud = 1200;
+    break;
+  case eBAUD_9600:
+    baud =9600 ;
+    break;
+  case eBAUD_19200:
+    baud = 19200;
+    break;
+  case eBAUD_38400:
+    baud = 38400;
+    break;
+  case eBAUD_57600:
+    baud = 57600;
+    break;
+  case eBAUD_115200:
+    baud = 115200;
+    break;
+  default:
+  baud = 19200;
+  break;
+  }
+
+  return baud;
 }

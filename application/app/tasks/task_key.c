@@ -2,7 +2,7 @@
 #include "cmsis_os2.h"
 #include "FreeRTOS.h"
 
-#include "Panel\panel.h"
+
 #include "app_key.h"
 
 const osThreadAttr_t kKeyTask_attributes = {
@@ -13,8 +13,7 @@ const osThreadAttr_t kKeyTask_attributes = {
 
 void keyTask(void *arg)
 {
-
-        
+       
   while (1)
   {
     scan_key();
@@ -23,6 +22,6 @@ void keyTask(void *arg)
 
 void keyTask_init(void)
 {
-        app_key_init();
+  app_key_init();
   osThreadNew(keyTask, NULL, &kKeyTask_attributes);
 }
