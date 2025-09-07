@@ -10,23 +10,99 @@
 #include "aws_data.h"
 #include "app_key.h"
 #include "view_driver.h"
+#include "rain_data.h"
+#include "sunshine_data.h"
 
 
-#define DATA_MENU_AWS 0
-#define DATA_MENU_1MIN_RAIN 1
-#define DATA_MENU_1MIN_SOLAR_R 2
+#define DATA_RAIN_1MIN 0
+#define DATA_RAIN_INIT 1
+
+void draw_data_rain(screen_menu_t *p_win)
+{
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, DATA_RAIN_1MIN, "1min data");
+  screen_menu_printf(p_win, DATA_RAIN_INIT, "Reset To Zero");
+  screen_menu_clear(p_win);
+}
+
+int32_t setup_menu_rain_reset(void)
+{
+  int32_t status;
+  int32_t choice = 0;
+
+  status = input_active("Initialize all to 0?", &choice);
+  if (status == MENU_OK && choice == 1)
+  {
+    if (rain_file_zero(Date_Time.Year) == 0)
+    {
+      show_popup("Information", "Completed");
+      calculate_rain();
+    }
+    else
+    {
+      show_popup("Information", "Failed to complete");
+    }
+   
+  }
+
+  return status;
+  
+  
+
+
+}
+
+int32_t reset_to_zero_sunshine(void)
+{
+  int32_t key;
+  int32_t status;
+
+  int32_t choice = 0;
+    status = input_active("Initialize all to 0?", &choice);
+    if (status == MENU_OK && choice == 1)
+    {
+      if (sunshine_file_zero(Date_Time.Year) == 0)
+      {
+        show_popup("Information", "Completed");
+        calculate_sunshine();
+      }
+      else
+      {
+        show_popup("Information", "Failed to complete");
+      }
+    }
+
+
+    return status;
+ 
+
+}
+
+#define DATA_SUNSHINE_1MIN 0
+#define DATA_SUNSHINE_INIT 1
+
+void draw_data_sunshine(screen_menu_t *p_win)
+{
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, DATA_RAIN_1MIN, "1min data");
+  screen_menu_printf(p_win, DATA_RAIN_INIT, "Reset To Zero");
+  screen_menu_clear(p_win);
+}
+
+
+#define DATA_MENU_AWS     0
+#define DATA_MENU_RAIN    1
+#define DATA_MENU_SOLAR_R 2
 
 #define DATA_WD 10
-
-
 
 
 void draw_data_menu(screen_menu_t *p_win)
 {
   screen_menu_start(p_win);
   screen_menu_printf(p_win, DATA_MENU_AWS, "AWS");
-  screen_menu_printf(p_win, DATA_MENU_1MIN_RAIN, "rain 1min");
-  screen_menu_printf(p_win, DATA_MENU_1MIN_SOLAR_R, "sunshine 1min");
+  screen_menu_printf(p_win, DATA_MENU_RAIN, "Rain");
+  screen_menu_printf(p_win, DATA_MENU_SOLAR_R, "Sunshine");
   screen_menu_clear(p_win);
 }
 
@@ -266,6 +342,93 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     return convert_key_to_status(key);
   }
 
+  int32_t setup_menu_data_rain(void)
+  {
+    int32_t key;
+    int32_t status;
+    screen_menu_t menu;
+
+    screen_menu_create(&menu, "Rain Data");
+
+    while (1)
+    {
+      draw_data_rain(&menu);
+      screen_refresh();
+
+      key = get_button_key(WAIT_FOREVER);
+
+      if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
+      {
+        break;
+      }
+      if (key == KEY_CODE_ENTER)
+      {
+        switch (menu.index_list[menu.selected_index])
+        {
+        case DATA_RAIN_1MIN:
+          status = menu_view_1min(LOGGING_RAIN_1MIN);
+          break;
+        case DATA_RAIN_INIT:
+          status = setup_menu_rain_reset();
+          break;
+        default:
+          break;
+        }
+        if (status == MENU_ABORT)
+          return status;
+      }
+      else if (key != KEY_CODE_UNKNOWN)
+      {
+        screen_menu_handle(&menu, key);
+      }
+    }
+
+    return convert_key_to_status(key);
+  }
+
+    int32_t setup_menu_sunshine(void)
+  {
+    int32_t key;
+    int32_t status;
+    screen_menu_t menu;
+
+    screen_menu_create(&menu, "Sunshine Data");
+
+    while (1)
+    {
+      draw_data_sunshine(&menu);
+      screen_refresh();
+
+      key = get_button_key(WAIT_FOREVER);
+
+      if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
+      {
+        break;
+      }
+      if (key == KEY_CODE_ENTER)
+      {
+        switch (menu.index_list[menu.selected_index])
+        {
+        case DATA_SUNSHINE_1MIN:
+          status = menu_view_1min(LOGGING_SUNSHINE_1MIN);
+          break;
+        case DATA_SUNSHINE_INIT:
+          status = reset_to_zero_sunshine();
+           break;
+        default:
+          break;
+        }
+        if (status == MENU_ABORT)
+          return status;
+      }
+      else if (key != KEY_CODE_UNKNOWN)
+      {
+        screen_menu_handle(&menu, key);
+      }
+    }
+
+    return convert_key_to_status(key);
+  }
   int32_t setup_menu_data(void)
   {
     int32_t key;
@@ -292,11 +455,11 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
           case DATA_MENU_AWS:
             status = menu_data_aws();
            break;
-          case DATA_MENU_1MIN_RAIN:
-            status = menu_view_1min(LOGGING_RAIN_1MIN);
+          case DATA_MENU_RAIN:
+            status = setup_menu_data_rain();
             break;
-          case DATA_MENU_1MIN_SOLAR_R:
-            status = menu_view_1min(LOGGING_SUNSHINE_1MIN);
+          case DATA_MENU_SOLAR_R:
+            status = setup_menu_sunshine();
             break;
         default:
           break;

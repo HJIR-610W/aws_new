@@ -167,7 +167,7 @@
             <file>$PROJ_DIR$\..\Application\http_server\http_api.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\fatfs_platform.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\core_json.c</file>
-            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_adc.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_board_mem.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\pin\pcb_5_pin.c</file>
@@ -3089,7 +3089,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1201 1996 1874 1701 1592 2027 1884 1987 990 1792 1733 1878 1451 1433 1518 1871 451 1497 1644 1673 1836 1692 1839 1877 1646 1995 1560 450</file>
+                    <file> 1201 1996 1874 1701 1592 2027 1884 1987 990 1792 1733 1878 1451 1433 1518 1871 451 1497 1644 1673 1836 1692 1839 1877 1646 1995 1560 450 1955 1781</file>
                 </tool>
             </inputs>
         </file>

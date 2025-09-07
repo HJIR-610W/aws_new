@@ -38,8 +38,7 @@ extern void config_hj_reset(void);
 #define CONFIG_MENU_HJ_RESET    0
 #define CONFIG_MENU_INIT        1
 #define CONFIG_MENU_BACKUP      2
-#define CONFIG_RAIN_INIT        3
-#define CONFIG_MENU_LOG_RESET   4
+#define CONFIG_MENU_LOG_RESET   3
 
 #define BACKUP_MENU_SAVE        0
 #define BACKUP_MENU_RESTORE     1
@@ -61,7 +60,6 @@ void draw_menu_config_menu(screen_menu_t* p_win)
   screen_menu_printf(p_win, CONFIG_MENU_HJ_RESET, "HJ Reset");
   screen_menu_printf(p_win, CONFIG_MENU_INIT, "Factory Reset");
   screen_menu_printf(p_win, CONFIG_MENU_BACKUP, "Backup Config");
-  screen_menu_printf(p_win, CONFIG_RAIN_INIT, "Rain,Sun Reset");
   screen_menu_printf(p_win, CONFIG_MENU_LOG_RESET, "Log Count Reset");
   screen_menu_clear(p_win);
 }
@@ -260,83 +258,6 @@ int32_t setup_menu_backup(void)
   return convert_key_to_status(key);
 }
 
-int32_t setup_menu_rain_reset(void)
-{
-  int32_t index;
-  int32_t key;
-  int32_t status;
-  screen_menu_t menu;
-
-  screen_menu_create(&menu, "Rain Sun Reset");
-
-  while (1)
-  {
-    draw_rain_reset_page(&menu);
-    screen_refresh();
-
-    key = get_button_key(WAIT_FOREVER);
-
-    if (key == KEY_CODE_CTRL_Q)
-    {
-      break;
-    }
-    else if (key == KEY_CODE_CTRL_C)
-    {
-      break;
-    }
-
-    if (key == KEY_CODE_ENTER)
-    {
-      index = menu.selected_index;
-
-      switch (menu.index_list[index])
-      {
-      case DATA_RESET_MENU_RAIN:
-      {
-        int32_t choice = 0;
-        status = input_active("Initialize all to 0?", &choice);
-        if (status == MENU_OK && choice == 1)
-        {
-           if(rain_file_zero(Date_Time.Year)==0)
-           {
-             show_popup("Information", "Completed");
-             calculate_rain();
-           }
-           else{
-             show_popup("Information", "Failed to complete");
-           }
-        }
-      }
-      break;
-
-      case DATA_RESET_MENU_SUN:
-      {
-        int32_t choice = 0;
-        status = input_active("Initialize all to 0?", &choice);
-
-        if (status == MENU_OK && choice == 1)
-        {
-          if(sunshine_file_zero(Date_Time.Year)==0)
-            show_popup("Information", "Completed");
-          else
-            show_popup("Information", "Failed to complete");
-        }
-      }
-      break;
-
-      default:
-        break;
-      }
-    }
-    else if (key != KEY_CODE_NONE)
-    {
-      screen_menu_handle(&menu, key);
-    }
-  }
-
-  return convert_key_to_status(key);
-}
-
 int32_t setup_menu_log_reset(void)
 {
   int32_t log_cnt;
@@ -392,9 +313,6 @@ int32_t setup_menu_config(void)
           break;
         case CONFIG_MENU_BACKUP:
           status = setup_menu_backup();//설정 백업
-          break;
-        case CONFIG_RAIN_INIT:
-          status = setup_menu_rain_reset();
           break;
         case CONFIG_MENU_LOG_RESET:
           status = setup_menu_log_reset();
