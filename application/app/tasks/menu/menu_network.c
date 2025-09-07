@@ -14,8 +14,8 @@
 #include "app_screen.h"
 
 
-#define SCREEN_COLS 20
-#define NETWORK_WD 10
+#define SCREEN_COLS 21
+#define NETWORK_WD 8
 
 /*
 Network
@@ -54,28 +54,56 @@ Direct
 
  */
 
-#define NETWORK_MENU_ETH_USE 0
-#define NETWORK_MENU_CDMA_USE 1
-#define NETWORK_MENU_DIRECT_USE 2
-#define NETWORK_MENU_ETH_CONFIG 3
-#define NETWORK_MENU_CDMA_CONFIG 4
-#define NETWORK_MENU_DIRECT_CONFIG 5
-#define NETWORK_MENU_AWS_PROTOCOL 6
 
+ #define NETWORK_ETH_EN 0
+#define NETWORK_CDMA_EN 1
+#define NETWORK_DIRECT_EN 2
+void draw_network_mode_main_page(screen_menu_t *p_win)
+{
+  uint8_t eth_active = get_config_app()->eth_active;
+  uint8_t cdma_active = get_config_app()->cdma_active;
+  uint8_t direct_active = get_config_app()->direct_active;
+
+  screen_menu_start(p_win);
+  screen_menu_printf(p_win, NETWORK_ETH_EN, "%-*s:%s", NETWORK_WD, "Ethernet", ITEM_LIST(eth_active, enable_list_eng));
+  screen_menu_printf(p_win, NETWORK_CDMA_EN, "%-*s:%s", NETWORK_WD, "CDMA", ITEM_LIST(cdma_active, enable_list_eng));
+  screen_menu_printf(p_win, NETWORK_DIRECT_EN, "%-*s:%s", NETWORK_WD, "Direct", ITEM_LIST(direct_active, enable_list_eng));
+  screen_menu_clear(p_win);
+}
+
+
+#define NETWORK_MENU_NET_EN 0
+#define NETWORK_MENU_ETH_CONFIG 1
+#define NETWORK_MENU_CDMA_CONFIG 2
+#define NETWORK_MENU_DIRECT_CONFIG 3
+#define NETWORK_MENU_AWS_PROTOCOL 4
+
+//Net mode:[DIRE][ETH]
 void draw_network_main_page(screen_menu_t* p_win)
 {
+  char buff[13]={"Not Used"};
+  int32_t len=0;
+
   screen_menu_start(p_win);
-  screen_menu_printf(p_win, NETWORK_MENU_ETH_USE, "%-*s:%s", NETWORK_WD, "Ethernet", 
-                     ITEM_LIST(get_config_app()->eth_active, enable_list_eng));
-  screen_menu_printf(p_win, NETWORK_MENU_CDMA_USE, "%-*s:%s", NETWORK_WD, "CDMA", 
-                     ITEM_LIST(get_config_app()->cdma_active, enable_list_eng));
-  screen_menu_printf(p_win, NETWORK_MENU_DIRECT_USE, "%-*s:%s", NETWORK_WD, "Direct", 
-                     ITEM_LIST(get_config_app()->direct_active, enable_list_eng));
+  
+  if(get_config_app()->eth_active)
+  {
+    len += snprintf(&buff[len],sizeof(buff),"%s","[ETH]");
+  }
+   if (get_config_app()->cdma_active)
+  {
+    len += snprintf(&buff[len], sizeof(buff)-len, "%s", "[CDMA]");
+  }
+   if (get_config_app()->direct_active)
+  {
+    len += snprintf(&buff[len], sizeof(buff)-len, "%s", "[DRCT]");
+  }
+
+  screen_menu_printf(p_win, NETWORK_MENU_NET_EN, "%-*s:%s", NETWORK_WD, "Net mode", buff);
   screen_menu_printf(p_win, NETWORK_MENU_ETH_CONFIG, "%-*s", NETWORK_WD, "Ethernet");
   screen_menu_printf(p_win, NETWORK_MENU_CDMA_CONFIG, "%-*s", NETWORK_WD, "CDMA");
   screen_menu_printf(p_win, NETWORK_MENU_DIRECT_CONFIG, "%-*s", NETWORK_WD, "Direct");
-  screen_menu_printf(p_win, NETWORK_MENU_AWS_PROTOCOL, "%-*s:%s", NETWORK_WD, "Protocol", 
-                     ITEM_LIST(get_config_app()->aws_protocol_type, protocol_list_eng));
+  screen_menu_printf(p_win, NETWORK_MENU_AWS_PROTOCOL, "%-*s:%s", NETWORK_WD, "Protocol",ITEM_LIST(get_config_app()->aws_protocol_type, protocol_list_eng));
   screen_menu_clear(p_win);
 }
 
@@ -559,6 +587,88 @@ int32_t setup_direct_config(void)
   return convert_key_to_status(key);
 }
 
+int32_t setup_menu_network_mode(void)
+{
+  int32_t choice = 0;
+  int32_t status;
+  int32_t key;
+  screen_menu_t menu;
+  int32_t index;
+
+  screen_menu_create(&menu, "Network Mode");
+
+  while (1)
+  {
+    draw_network_mode_main_page(&menu);
+    screen_refresh();
+
+    key = get_button_key(WAIT_FOREVER);
+
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
+    {
+      break;
+    }
+
+    if (key == KEY_CODE_ENTER)
+    {
+      index = menu.selected_index;
+
+      switch (menu.index_list[index])
+      {
+      case NETWORK_ETH_EN:
+        choice = get_config_app()->eth_active;
+        status = input_active("Use Ethernet?", &choice);
+        if (status == MENU_OK)
+        {
+          get_config_app()->eth_active = choice;
+          WRITE_CFG(eth_active);
+          show_popup("Information", "Applied after reset");
+        }
+        break;
+      case NETWORK_CDMA_EN:
+        choice = get_config_app()->cdma_active;
+        status = input_active("Use Cdma?", &choice);
+        if (status == MENU_OK)
+        {
+          get_config_app()->cdma_active = choice;
+          if (choice && get_config_app()->direct_active)
+          {
+            get_config_app()->direct_active = 0;
+            WRITE_CFG(direct_active);
+          }
+          WRITE_CFG(cdma_active);
+          show_popup("Information", "Applied after reset");
+        }
+        break;
+      case NETWORK_DIRECT_EN:
+        choice = get_config_app()->direct_active;
+        status = input_active("Use Direct?", &choice);
+        if (status == MENU_OK)
+        {
+          get_config_app()->direct_active = choice;
+          if (choice && get_config_app()->cdma_active)
+          {
+            get_config_app()->cdma_active = 0;
+            WRITE_CFG(cdma_active);
+          }
+          WRITE_CFG(direct_active);
+          show_popup("Information", "Applied after reset");
+        }
+        break;
+       }
+
+      if (status == MENU_ABORT)
+        return status;
+    }
+    else if (key != KEY_CODE_UNKNOWN)
+    {
+      screen_menu_handle(&menu, key);
+    }
+  }
+
+  return convert_key_to_status(key);
+}
+
 int32_t setup_menu_network(void)
 {
   int32_t choice = 0;
@@ -588,47 +698,10 @@ int32_t setup_menu_network(void)
 
       switch (menu.index_list[index])
       {
-        case NETWORK_MENU_ETH_USE:
-          choice = get_config_app()->eth_active;
-          status = input_active("Use Ethernet?", &choice);
-          if (status == MENU_OK)
-          {
-            get_config_app()->eth_active = choice;
-            WRITE_CFG(eth_active);
-            show_popup("Information", "Applied after reset");
-          }
-          break;
-        case NETWORK_MENU_CDMA_USE:
-          choice = get_config_app()->cdma_active;
-          status = input_active("Use Cdma?",  &choice);
-          if (status == MENU_OK)
-          {
-            get_config_app()->cdma_active = choice;
-            if (choice && get_config_app()->direct_active)
-            {
-              get_config_app()->direct_active = 0;
-              WRITE_CFG(direct_active);
-            }
-            WRITE_CFG(cdma_active);
-            show_popup("Information", "Applied after reset");
-          }
-          break;
-        case NETWORK_MENU_DIRECT_USE:
-          choice = get_config_app()->direct_active;
-          status = input_active("Use Direct?",  &choice);
-          if (status == MENU_OK)
-          {
-            get_config_app()->direct_active = choice;
-            if (choice && get_config_app()->cdma_active)
-            {
-              get_config_app()->cdma_active = 0;
-              WRITE_CFG(cdma_active);
-            }
-            WRITE_CFG(direct_active);
-            show_popup("Information", "Applied after reset");
-          }
-          break;
-        case NETWORK_MENU_ETH_CONFIG:
+        case NETWORK_MENU_NET_EN:
+        status = setup_menu_network_mode();
+        break;
+         case NETWORK_MENU_ETH_CONFIG:
           status = setup_eth_config();
           break;
         case NETWORK_MENU_CDMA_CONFIG:
@@ -640,11 +713,12 @@ int32_t setup_menu_network(void)
         case NETWORK_MENU_AWS_PROTOCOL:
           choice = get_config_app()->aws_protocol_type;
           status = input_combobox("AWS Protocols",protocol_list_eng, _countof(protocol_list_eng), &choice);
-          if (status == MENU_OK)
-          {
+          if (status != MENU_OK)
+          break;
+
             get_config_app()->aws_protocol_type = (eAWS_PROTOCOL_t)choice;
             WRITE_CFG(aws_protocol_type);
-          }
+
           break;
       }
 

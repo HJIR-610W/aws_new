@@ -167,7 +167,7 @@
             <file>$PROJ_DIR$\..\Application\http_server\http_api.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\fatfs_platform.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\core_json.c</file>
-            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_adc.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_board_mem.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\pin\pcb_5_pin.c</file>
@@ -189,11 +189,11 @@
             <file>$PROJ_DIR$\..\Application\update\update_fw.c</file>
             <file>$PROJ_DIR$\..\application\FreeRTOSConfig.h</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\sdio.c</file>
             <file>$PROJ_DIR$\..\Application\freertos_callback.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.h</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp.h</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp.c</file>
@@ -309,7 +309,7 @@
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.h</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_di.h</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_do.c</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_di.c</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_do.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.c</file>
@@ -1571,7 +1571,7 @@
             <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\release\Obj\main.o</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_sensor.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_monitor.o</file>
             <file>$PROJ_DIR$\..\application\app\test\test_power.h</file>
             <file>$PROJ_DIR$\release\Obj\terminal.xcl</file>
@@ -1720,7 +1720,7 @@
             <file>$PROJ_DIR$\release\Obj\app_file.xcl</file>
             <file>$PROJ_DIR$\release\Obj\usbd_cdc.xcl</file>
             <file>$PROJ_DIR$\release\Obj\autoip.xcl</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\release\Obj\panel_mooju.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip4.h</file>
             <file>$PROJ_DIR$\release\Obj\usbd_conf.o</file>
@@ -1814,7 +1814,7 @@
             <file>$PROJ_DIR$\release\Obj\menu_network.xcl</file>
             <file>$TOOLKIT_DIR$\inc\c\inttypes.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\fsl_shell.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h</file>
             <file>$PROJ_DIR$\release\Obj\eap.o</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\tcpip_priv.h</file>
@@ -1880,9 +1880,9 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\autoip.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\aws\parse_aws.h</file>
             <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\release\Obj\kma_protocol_handler.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\app_drivers\app_key.h</file>
+            <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
             <file>$PROJ_DIR$\release\Obj\base64.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dhcp.h</file>
@@ -1899,7 +1899,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\wind_data.h</file>
             <file>$PROJ_DIR$\release\Obj\tasks.o</file>
             <file>$PROJ_DIR$\release\Obj\driver_stm32_uart.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\release\Obj\console_rtos.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\modem\ymodem.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_spi.h</file>
@@ -1937,7 +1937,7 @@
             <file>$PROJ_DIR$\release\Obj\divas_protocol_handler.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\app_logging.xcl</file>
             <file>$PROJ_DIR$\release\Obj\aws_network.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_app.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_app.h</file>
             <file>$PROJ_DIR$\release\Obj\system_stm32f4xx.o</file>
             <file>$PROJ_DIR$\release\Obj\driver_stm32_rtc.o</file>
             <file>$PROJ_DIR$\release\Obj\aws_menu_cali.o</file>
@@ -1961,7 +1961,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\api_msg.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\integer.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\rain_data.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_gpio.h</file>
             <file>$PROJ_DIR$\release\Obj\if_api.o</file>
             <file>$PROJ_DIR$\release\Obj\bridgeif_fdb.xcl</file>
@@ -1988,7 +1988,7 @@
             <file>$PROJ_DIR$\release\Obj\task_start.xcl</file>
             <file>$PROJ_DIR$\release\Obj\st7920.xcl</file>
             <file>$PROJ_DIR$\release\Obj\dhcp6.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_rs485.xcl</file>
             <file>$PROJ_DIR$\release\Exe\aws_app.bin</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\inet_chksum.h</file>
@@ -2031,7 +2031,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\driver_adc_define.h</file>
             <file>$PROJ_DIR$\release\Obj\old_aws_sms.o</file>
             <file>$PROJ_DIR$\release\Obj\old_aws_sms.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_filesystem.h</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Include\core_cm4.h</file>
