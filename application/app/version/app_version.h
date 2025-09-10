@@ -9,7 +9,7 @@
 
 #define MAKE_FW_VERSION(major, minor, bugfix,rel) (((major) << 24) | ((minor) << 16) | (bugfix<<9) |(rel))
 
-#define APP_VERSION (MAKE_FW_VERSION(0, 3, 0, 0))
+#define APP_VERSION (MAKE_FW_VERSION(0, 4, 0, 0))
 #define PCB_VERSION (MAKE_FW_VERSION(1, 0, 0, 0))
 
 #define MODEM_BG96_USE 1

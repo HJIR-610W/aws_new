@@ -266,7 +266,9 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   pAws->mStatus = mRealAws.mStatus;
 
-  
+  pAws->mStatus = mRealAws.mStatus;
+  uint16_t crc = crc16_ccitt_table((uint8_t *)pAws,254);//crc 변수 제외한 
+  pAws->crc = crc;
   os_save_aws_data(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
 
   // 온도

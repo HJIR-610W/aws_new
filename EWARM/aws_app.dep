@@ -156,7 +156,7 @@
             <file>$PROJ_DIR$\..\application\communications\cdma\modem_if.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_sdi12.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_power.c</file>
-            <file>$PROJ_DIR$\..\application\app\version\app_version.h</file>
+            <file>$PROJ_DIR$\..\Application\app\version\app_version.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_modbus.c</file>
             <file>$PROJ_DIR$\..\application\app\version\boot_version.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_di.c</file>
@@ -197,7 +197,7 @@
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100.c</file>
             <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
             <file>$PROJ_DIR$\..\application\os_user_def.h</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
@@ -1734,7 +1734,7 @@
             <file>$PROJ_DIR$\release\Obj\bsp_rs485.xcl</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\divas\aws_monitor.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\cli_key_code.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\dev_charger.h</file>
@@ -1772,7 +1772,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_panel.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_fram.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_power.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rs485.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_start.h</file>
@@ -1790,7 +1790,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_calibration.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip4_frag.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dhcp.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_adc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\aws_default_data.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_ble.h</file>
@@ -1934,12 +1934,12 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_snowfall_menu.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_logging.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\sha1.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_setup.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_manager.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\utile_data.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_nvm.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netif.h</file>
@@ -3586,7 +3586,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1858 1685 1616 1310 1530 1705 1613 1749 1013 1804 1957 1634 1731 1777 1850 1962 513 1845 1852 1853 1865 1763 1795 1727 1562 1715 2010 486 1862 1870</file>
+                    <file> 1858 1685 1616 1310 1530 1705 1613 1749 1013 1804 1957 1634 1731 1777 1850 1962 513 1845 1852 1853 1865 1763 1795 1727 1562 1715 2010 486 1862 1870 465</file>
                 </tool>
             </inputs>
         </file>

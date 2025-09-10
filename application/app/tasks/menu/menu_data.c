@@ -12,6 +12,7 @@
 #include "view_driver.h"
 #include "rain_data.h"
 #include "sunshine_data.h"
+#include "util_crc16_ccitt.h"
 
 
 #define DATA_RAIN_1MIN 0
@@ -109,9 +110,13 @@ void draw_data_menu(screen_menu_t *p_win)
 void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t start_time)
 {
   DATE_TIME_BUF ct;
-
+  uint16_t crc;
   screen_page_start(p_win);
   time_cvt_secTotime(start_time, &ct);
+
+  crc = crc16_ccitt_table((uint8_t*)p_aws,sizeof(AWS_DATA_STRUCT)-sizeof(uint16_t));
+  if(crc == p_aws->crc)
+  {
   screen_page_printf(p_win, "%04d-%02d-%02d %02d:%02d:00", ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
   screen_page_printf(p_win, "TEMP       :%6.1f", READ_TEMP(p_aws->mTemperature.sReal));
   screen_page_printf(p_win, "WIND DIR   :%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
@@ -134,6 +139,12 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
   screen_page_printf(p_win, "SOIL T 1.5m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_5m.sReal));
   screen_page_printf(p_win, "SOIL T 3.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp3_0m.sReal));
   screen_page_printf(p_win, "SOIL T 5.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp5_0m.sReal));
+  }
+  else
+  {
+    screen_page_printf(p_win, "%04d-%02d-%02d %02d:%02d:00", ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+    screen_page_printf(p_win, "No data saved");
+  }
   screen_page_clear(p_win);
 }
 

@@ -1232,6 +1232,7 @@ void update_old_aws_status(AWS_DATA_STRUCT *pAws)
 
 extern void set_boot_complete(void);
 
+
 void DUALPORT_TASK(void *arg)
 {
   uint8_t f_err = 0;
@@ -1255,7 +1256,7 @@ void DUALPORT_TASK(void *arg)
   pAws = &mRealAws;
 
 
-  calculate_rain(); 
+      calculate_rain();
   calculate_sunshine();
   filter_init();
 
