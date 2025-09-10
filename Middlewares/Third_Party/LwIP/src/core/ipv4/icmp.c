@@ -67,6 +67,8 @@
 
 static void icmp_send_response(struct pbuf *p, u8_t type, u8_t code);
 
+
+extern void ping_callback(uint8_t *p_data,uint16_t data_len);
 /**
  * Processes ICMP input packets, called from ip_input().
  *
@@ -186,18 +188,8 @@ icmp_input(struct pbuf *p, struct netif *inp)
         //사용자 추가
         {
           uint8_t *p_payload = p->payload;
-          uint8_t *p_data = &p_payload[8];
-          
-          switch(p_data[0])
-          {
-          case 2555:
-            if(p_data[1]==0xAA)
-            HAL_NVIC_SystemReset();
-            break;
-          case 1:
-            
-            break;
-          }
+          ping_callback(p_payload,hlen);
+
         }
           
         /* copy the rest of the packet without ip header */

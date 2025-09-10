@@ -136,7 +136,8 @@
 
 #define DEFAULT_RAW_RECVMBOX_SIZE 10  //raw 패킷용 메일박스 크기 (void *)*10
 
+#define LWIP_NETIF_HOSTNAME 1
 #ifdef __cplusplus
-}
+ }
 #endif
 #endif /*__LWIPOPTS__H__ */

@@ -666,7 +666,7 @@ void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate)
   { 
     MinProcess(pDate);
     update_kma_data(eAWS_DATA_1MIN,pDate);
-    save_min_data(pDate);
+  //  save_min_data(pDate);
 
     if (pDate->Min % 10 == 0)
     { 

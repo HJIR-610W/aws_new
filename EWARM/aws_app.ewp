@@ -1608,6 +1608,9 @@
                     <name>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\application\communications\ethernet\ping_callback.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\Communications\ethernet\task_client.c</name>
                 </file>
                 <file>

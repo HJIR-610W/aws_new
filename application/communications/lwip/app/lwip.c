@@ -108,6 +108,8 @@ void MX_LWIP_Init(uint8_t ip[4],uint8_t mask[4],uint8_t gateway[4])
   attributes.stack_size = INTERFACE_THREAD_STACK_SIZE;
   attributes.priority = osPriorityBelowNormal;
   osThreadNew(ethernet_link_thread, &gnetif, &attributes);
+
+  netif_set_hostname(&gnetif,"new aws");
 /* USER CODE END H7_OS_THREAD_NEW_CMSIS_RTOS_V2 */
 
   /* Start DHCP negotiation for a network interface (IPv4) */

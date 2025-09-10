@@ -150,7 +150,7 @@ void draw_charger_page(screen_page_t *p_win)
 
 }
 
-#define CDMA_WD 10
+#define CDMA_WD 6
 void draw_cdma_page(screen_page_t *p_win)
 {
 

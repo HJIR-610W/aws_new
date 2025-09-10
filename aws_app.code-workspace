@@ -146,7 +146,8 @@
 			"pcb_6_pin.h": "c",
 			"app_console_test.h": "c",
 			"divas_protocol_handler.h": "c",
-			"cmsis_os.h": "c"
+			"cmsis_os.h": "c",
+			"lwipopts.h": "c"
 		}
 	}
 }
