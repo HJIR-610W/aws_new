@@ -1,5 +1,8 @@
 
-
+/*
+ 장비 관리 목적으로 ping 패킷을 조작하여 사용
+  
+ */
 #include <string.h>
 
 #include "pcb_define.h"

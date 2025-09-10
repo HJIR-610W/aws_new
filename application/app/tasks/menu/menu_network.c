@@ -127,7 +127,6 @@ extern size_t utf8_strlen(const char* s);
 int32_t input_mac_address(const char *title, uint8_t *mac)
 {
   int row_offset = 1;
-
   int total_width = 20; // 좌우 여백 및 메뉴 번호 고려
   int key;
   int cur_row_pos;
@@ -170,11 +169,12 @@ int32_t input_mac_address(const char *title, uint8_t *mac)
   while(1)
   {
     screen_refresh();
-    key = get_button_key(WAIT_FOREVER);
+
+    key = get_button_key(500);
     blink_state = !blink_state;
 
     screen_printf(row_offset, 0, "%s", user_fmt[0]);
-    screen_printf(1 + row_offset, 0, "%s", user_fmt[1]);
+    screen_printf(row_offset+1, 0, "%s", user_fmt[1]);
     display_char = blink_state ? user_fmt[cur_row_pos-row_offset][cur_col_pos] : ' ';
     screen_put_ch(cur_row_pos, cur_col_pos, display_char);
 
