@@ -19,6 +19,7 @@
 #include "app_file.h"
 #include "cli_input.h"
 #include "config_adc.h"
+#include "const_string.h"
 #include "console_define.h"
 #include "console_scanf.h"
 #include "console_utile.h"
@@ -47,7 +48,7 @@ int select_channel(adc_channel_type_t type, int* channel_index)
                                                        : (ADS1220_NUM_DIFFERENTIAL_CHANNELS - 1);
   const char* type_str = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? "싱글 엔드" : "차동";
   char prompt[100];
-  snprintf(prompt, sizeof(prompt), "채널 번호 입력 (%s: 0 ~ %d)", type_str, max_ch);
+  snprintf(prompt, sizeof(prompt), "채널 번호 입력 (%s: 0 ~ %d)16(PT100 A),17(PT100 B)", type_str, max_ch);
   return input_decimal_prompt(prompt, channel_index, 0, max_ch);
 }
 
@@ -729,6 +730,7 @@ int handle_view_status(int adc_num)
           io_printf(ES_CURSOR_HOME_ALT);
           for (int channel = 0; channel < 18; channel++)
           {
+            
             params = &p_adc->single_ended_cal[channel];
 
             raw = (int32_t)drv_adc_single_raw_read(channel, 1,&err);
@@ -737,12 +739,13 @@ int handle_view_status(int adc_num)
 
             if (isnan(voltage))
             {
-              io_printf("SE %2d slope:%e offset:%e raw:%10d %s\r\n", channel, params->factory_slope,
+
+              io_printf("%7s slope:%e offset:%e raw:%10d %s\r\n", adc_se_list[channel], params->factory_slope,
                         params->factory_offset, raw, "켈리브레이션 필요");
             }
             else
             {
-              io_printf("SE %2d slope:%e offset:%e raw:%10d voltage:%8.4f\r\n", channel,
+              io_printf("%7s slope:%e offset:%e raw:%10d voltage:%8.4f\r\n", adc_se_list[channel],
                         params->factory_slope, params->factory_offset, raw, voltage);
             }
           }

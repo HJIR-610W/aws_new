@@ -11,18 +11,10 @@ int is_debug_mode(void)
 }
 
 
-#include "config_adc.h"
-#include"config_app.h"
-#include "adc_calibration.h"
-int g_adc_size;
-int g_cfg_size;
-int g_cali_size;
+
 int main(void)
 {
 
-  g_adc_size = sizeof(config_t);
-  g_cfg_size = sizeof(config_adc_t);
-  g_cali_size = sizeof(config_adc_nvm_t);
 
       if (is_debug_mode())
   {

@@ -350,6 +350,8 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
 
 void draw_cali_menu_view_summary(screen_page_t* p_win)
 {
+  const char *adc_se_short_list[18] = {"S 0", "S 1", "S 2", "S 3", "S 4", "S 5", "S 6", "S 7",
+                                       "S 8", "S 9", "S 10", "S 11", "S 12", "S 13", "S 14", "S 15", "PT A", "PT B"};
   const adc_cal_params_t *params;
   char buff[SCREEN_COLS + 1];
   uint8_t err;
@@ -364,12 +366,12 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
 
   screen_page_start(p_win);
 
-  make_centered(buff, sizeof(buff), "SE Channels(V)", SCREEN_COLS);
+  make_centered(buff, sizeof(buff), "SE Ch Voltage ADC", SCREEN_COLS);
   screen_page_printf(p_win, "%s", buff);
 
   g_current_temp = read_current_temperature();
 
-  for (int32_t channel = 0; channel < 15; channel++)
+  for (int32_t channel = 0; channel < 18; channel++)
   {
     params = &p_adc->single_ended_cal[channel];
     raw = (int32_t)drv_adc_single_raw_read(channel,1, &err);
@@ -377,11 +379,11 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
 
     if (isnan(voltage))
     {
-      screen_page_printf(p_win,  "%d:NC", channel);
+      screen_page_printf(p_win, "%-4s:NC", adc_se_short_list[channel]);
     }
     else
-    {
-      screen_page_printf(p_win, "%2d:%.4f %d", channel, voltage,raw);
+    { //1234:11.1111 12345678
+      screen_page_printf(p_win, "%-4s:%7.4f %7d", adc_se_short_list[channel], voltage, raw);
     }
   }
 

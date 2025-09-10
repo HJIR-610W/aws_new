@@ -105,6 +105,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   if (cfg->channel == PT100_A)
   {
     voltage = drv_adc_single_read_voltage(adc_ch, PT100_ADC_AVG_CNT,err);
+        voltage = round(voltage*100)/100;
     resistance = voltage;  
     temperature = pt100_resistance_to_temperature(resistance);
     return temperature;
@@ -113,6 +114,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   if (cfg->channel == PT100_B)
   {
     voltage = drv_adc_single_read_voltage(adc_ch,  PT100_ADC_AVG_CNT,err);
+        voltage = round(voltage*100)/100;
     resistance = voltage; 
     temperature = pt100_resistance_to_temperature(resistance);
     return temperature;
@@ -152,7 +154,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   {
     float voltage;
     voltage = drv_adc_single_read_voltage(adc_ch,5, err);
-
+    voltage = round(voltage*100)/100;
     //resistance = voltage / kConstanctA;
     resistance = voltage;//
     temperature = pt100_resistance_to_temperature(resistance);
@@ -165,7 +167,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   {
     float voltage;
     voltage = adc_read_volate_single(adc_ch,err);
-
+    voltage = round(voltage*100)/100;
     resistance = voltage/kConstanctA;
     temperature = pt100_resistance_to_temperature(resistance);
 
