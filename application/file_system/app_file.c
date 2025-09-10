@@ -170,7 +170,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   FRESULT res;
   UINT bytesRead;
 
-  ERROR_PRINTF("read_file %s,%p %p %p\r\n",path,data,&data[dataLen]);
+  //ERROR_PRINTF("read_file %s,%p %p %p\r\n",path,data,&data[dataLen]);
   p_file = pvPortMalloc(sizeof(FIL));
 
   if(p_file==NULL)

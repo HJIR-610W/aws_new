@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>1695524541</Checksum>
+        <Checksum>40971842</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -178,10 +178,7 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\application\system_err.c}.45.5" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\application\communications\ethernet\ping_callback.c}.9.13" 0 0 1 "" 0 "" 0</Bp1>
-        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\application\communications\ethernet\ping_callback.c}.0.1" 0 0 1 "" 0 "" 0</Bp2>
-        <Count>3</Count>
+        <Count>0</Count>
     </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
