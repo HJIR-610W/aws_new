@@ -531,6 +531,23 @@ void irq_dataReady(int32_t arg)
     osSemaphoreRelease(g_dataReadySem);
 }
 
+
+typedef enum{
+  eADS1220_GAIN_1 =0,
+  eADS1220_GAIN_2 =1
+}eADS1220_GAIN_t;
+
+void ads1210_set_gain(eADS1220_GAIN_t gain)
+{
+  uint8_t reg=0;
+  
+  read_reg(ADS1220_REG_0, 1, &reg);
+  reg = reg & 0xF1;
+  reg |= ((uint8_t)gain<<1);
+
+  write_reg(ADS1220_REG_0, 1, &reg);
+}
+
 void ads1210_initialize(void)
 {
     uint8_t reg;
@@ -560,22 +577,21 @@ void ads1210_initialize(void)
 // GAIN[3:1] = 000 - Gain 1
 // PGA_BYPASS[0] = 0 - PGA Enabled (default)
     reg = 0x00;
+
  
 
     write_reg(ADS1220_REG_0, 1, &reg);  
 
     /*
 
-
-
-    7:5 DR   :001b 45sps      데이터 속도
+    7:5 DR   :010b 90sps      데이터 속도
     4:3 MODE :00b             동작 모드
       2 CM   :0b                단일 변환
       1 TS   :0b                온도센서 비활성
       0 BCS  :0b                10uA 전류 소스 비활성
     */
     reg = 0x00;
-    reg |= (0x01)<<5;
+    reg |= (0x02)<<5;
 
 
     write_reg(ADS1220_REG_1, 1, &reg);
@@ -625,6 +641,15 @@ int32_t ads1220_single_read(int channel,uint16_t avg,uint8_t *err)
 
   OS_PEND_SEM(ads1220_inst.sem,osWaitForever);
 
+  if (channel == 16 | channel == 17)
+  {
+    ads1210_set_gain(eADS1220_GAIN_2);
+  }
+  else
+  {
+    ads1210_set_gain(eADS1220_GAIN_1);
+  }
+
   channel = user_adc_single_channel[channel];
 
   adc_single_mux_set(channel);
@@ -660,6 +685,7 @@ int32_t ads1220_diff_read(int channel,uint16_t avg,uint8_t *err)
   osSemaphoreAcquire(ads1220_inst.sem, osWaitForever);
 
   //차동 채널 0,1,2,3,4,5,6,7 은 ADS1220에서는 0채널로만 측정하며  MUX가 채널이 됨
+
 
   ads1220_set_diffChannel( channel / 8);
 

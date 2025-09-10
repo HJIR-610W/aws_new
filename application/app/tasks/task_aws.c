@@ -1338,15 +1338,12 @@ void DUALPORT_TASK(void *arg)
       // 강우 감지
       if (is_raining(&sensor_err)) // Off Delay 적용 함
       {
-        rain_p_on_delay++;
         rain_p_off_delay = 0;
-        if (rain_p_on_delay >= MS_TO_SCAN_CNT(get_rain_present_config()->delay_sec))
-        {
           rain_p_on_delay =0;
           update_sensor_err(A8_RAIN_PRESENT, sensor_err);
           pAws->mRainDetect.sReal = 0x000a;
 
-        }
+    
       }
       else
       {
