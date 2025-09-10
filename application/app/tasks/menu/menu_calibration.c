@@ -27,7 +27,8 @@ extern float g_current_temp;
 
 #define CALI_MENU_FACTORY       0
 #define CALI_MENU_VIEW          1
-#define CALI_MENU_INIT          2
+#define CALI_MENU_ADC_INIT 2
+#define CALI_MENU_SYSTEM_ADC_INIT 3
 
 #define FACTORY_MENU_SINGLE     0
 #define FACTORY_MENU_DIFF       1
@@ -43,7 +44,8 @@ void draw_setup_menu_calibration_page(screen_menu_t* p_win)
   screen_menu_start(p_win);
   screen_menu_printf(p_win, CALI_MENU_FACTORY, "Factory Cali");
   screen_menu_printf(p_win, CALI_MENU_VIEW, "View");
-  screen_menu_printf(p_win, CALI_MENU_INIT, "Init");
+  screen_menu_printf(p_win, CALI_MENU_ADC_INIT, "ADC init");
+  screen_menu_printf(p_win, CALI_MENU_SYSTEM_ADC_INIT, "System adc init");
   screen_menu_clear(p_win);
 
 }
@@ -144,7 +146,10 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   if (status != MENU_OK)
     return status;
 
+  if (channel < DRV_ADS1220_S_CH_16)
     p1.reference_value = 0.5;
+  else
+   p1.reference_value = 84.27;
   status = input_float("Low Value(V)", -1000.0f, 1000.0f, &p1.reference_value, "%8.3f");
   if (status != MENU_OK)
     return status;
@@ -193,7 +198,10 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   if (status != MENU_OK)
     return status;
 
+    if (channel < DRV_ADS1220_S_CH_16)
     p2.reference_value = 4.5;
+    else
+    p2.reference_value = 123.24;
   status = input_float("High Value(V)", -1000.0f, 1000.0f, &p2.reference_value, "%8.3f");
   if (status != MENU_OK)
     return status;
@@ -478,7 +486,7 @@ int32_t cali_setup_menu_view(void)
 /**
  * @brief ADC 켈리브레이션 값의 평균값으로 초기화 한다.
  */
-int32_t cali_setup_menu_init(void)
+int32_t cali_setup_menu_system_adc_init(void)
 {
   int32_t choice = 0;
   int32_t status;
@@ -493,30 +501,6 @@ int32_t cali_setup_menu_init(void)
   return MENU_OK;
 
 
-    adc_config_init(&g_adc_config_ads1220, 24, 5.0f);
-
-    for (int32_t channel = 0; channel < g_adc_config_ads1220.params_se_cnt; channel++)
-    {
-      g_adc_config_ads1220.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
-      g_adc_config_ads1220.single_ended_cal[channel].factory_cal_temp = 25.0f;
-      g_adc_config_ads1220.single_ended_cal[channel].is_calibrated = true;
-      g_adc_config_ads1220.single_ended_cal[channel].factory_offset = 4.928633e-03f;
-      g_adc_config_ads1220.single_ended_cal[channel].factory_slope = 5.958932e-07f;
-      g_adc_config_ads1220.single_ended_cal[channel].offset_temp_coeff = 1.0f;
-      g_adc_config_ads1220.single_ended_cal[channel].slope_temp_coeff = 1.0f;
-    }
-
-    for (int32_t channel = 0; channel < g_adc_config_ads1220.params_di_cnt; channel++)
-    {
-      g_adc_config_ads1220.differential_cal[channel].comp_method = TEMP_COMP_NONE;
-      g_adc_config_ads1220.differential_cal[channel].factory_cal_temp = 25.0f;
-      g_adc_config_ads1220.differential_cal[channel].is_calibrated = true;
-      g_adc_config_ads1220.differential_cal[channel].factory_offset = 4.928633e-03f;
-      g_adc_config_ads1220.differential_cal[channel].factory_slope = 5.958932e-07f;
-      g_adc_config_ads1220.differential_cal[channel].factory_offset_trim = 0.0f;
-      g_adc_config_ads1220.differential_cal[channel].offset_temp_coeff = 1.0f;
-      g_adc_config_ads1220.differential_cal[channel].slope_temp_coeff = 1.0f;
-    }
 
     adc_config_init(&g_adc_config_stm32, 12, 3.3f);
 
@@ -535,6 +519,52 @@ int32_t cali_setup_menu_init(void)
     save_adc_cali();
     screen_clear();
     show_popup("Information", "Init Complete");
+
+  return MENU_OK;
+}
+
+//ADC 
+int32_t cali_setup_menu_adc_init(void)
+{
+  int32_t choice = 0;
+  int32_t status;
+
+  status = input_active("Init Calibration?", &choice);
+
+  if (status != MENU_OK)
+    return status;
+
+  if (choice == 0)
+    return MENU_OK;
+
+  adc_config_init(&g_adc_config_ads1220, 24, 5.0f);
+
+  for (int32_t channel = 0; channel < g_adc_config_ads1220.params_se_cnt; channel++)
+  {
+    g_adc_config_ads1220.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
+    g_adc_config_ads1220.single_ended_cal[channel].factory_cal_temp = 25.0f;
+    g_adc_config_ads1220.single_ended_cal[channel].is_calibrated = true;
+    g_adc_config_ads1220.single_ended_cal[channel].factory_offset = 4.928633e-03f;
+    g_adc_config_ads1220.single_ended_cal[channel].factory_slope = 5.958932e-07f;
+    g_adc_config_ads1220.single_ended_cal[channel].offset_temp_coeff = 1.0f;
+    g_adc_config_ads1220.single_ended_cal[channel].slope_temp_coeff = 1.0f;
+  }
+
+  for (int32_t channel = 0; channel < g_adc_config_ads1220.params_di_cnt; channel++)
+  {
+    g_adc_config_ads1220.differential_cal[channel].comp_method = TEMP_COMP_NONE;
+    g_adc_config_ads1220.differential_cal[channel].factory_cal_temp = 25.0f;
+    g_adc_config_ads1220.differential_cal[channel].is_calibrated = true;
+    g_adc_config_ads1220.differential_cal[channel].factory_offset = 4.928633e-03f;
+    g_adc_config_ads1220.differential_cal[channel].factory_slope = 5.958932e-07f;
+    g_adc_config_ads1220.differential_cal[channel].factory_offset_trim = 0.0f;
+    g_adc_config_ads1220.differential_cal[channel].offset_temp_coeff = 1.0f;
+    g_adc_config_ads1220.differential_cal[channel].slope_temp_coeff = 1.0f;
+  }
+
+  save_adc_cali();
+  screen_clear();
+  show_popup("Information", "Init Complete");
 
   return MENU_OK;
 }
@@ -572,10 +602,13 @@ int32_t setup_menu_calibration(void)
         case CALI_MENU_VIEW:
           status = cali_setup_menu_view();
           break;
-        case CALI_MENU_INIT:
-          status = cali_setup_menu_init();
+        case CALI_MENU_ADC_INIT:
+          status = cali_setup_menu_adc_init();
           break;
-        default:
+        case CALI_MENU_SYSTEM_ADC_INIT:
+          status = cali_setup_menu_system_adc_init();
+          break;
+         default:
           break;
       }
       if(status == MENU_ABORT)

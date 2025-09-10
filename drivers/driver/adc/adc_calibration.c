@@ -128,7 +128,7 @@ bool adc_config_init(config_adc_adv_t* cfg, uint32_t resolution_bits, float refe
     return false;
   }
 
-//  load_adc_cali();
+
 
   cfg->bits->resolution_bits = resolution_bits;
   cfg->bits->reference_voltage = reference_voltage;

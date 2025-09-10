@@ -8,7 +8,6 @@
 #include "app_sensor.h"
 #include "app_version.h"
 #include "const_string.h"
-#include "config_app.h"
 #include "config_sensor.h"
 #include "dev_io.h"
 #include "drv_crc.h"
@@ -53,7 +52,7 @@ const config_t config_app_default = {.id = 0,
                                      .dev_telnet_ip = {112, 221, 177, 172},
                                      .dev_telnet_port = 23001,
                                      .dev_telnet_mode = eTELNET_SERVER,
-                                     .lcd_off_time_index = eLCD_OFF_10SEC};
+                                     .lcd_off_time_index = eLCD_OFF_ALWAYS_ON};
 
 int32_t g_config_app_change_count = 0;
 

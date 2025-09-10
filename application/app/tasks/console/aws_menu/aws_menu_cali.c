@@ -495,12 +495,12 @@ int handle_offset_adjustment(int adc_num)
 
         if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)  // 싱글
         {
-           err;
+
           raw_now = (int32_t)drv_adc_single_raw_read(channel_index,1, &err);
         }
         else if (type == ADC_CHANNEL_TYPE_DIFFERENTIAL)
         {
-           err;
+
           raw_now = drv_adc_diff_raw_read(channel_index,1, &err);
         }
 
@@ -742,7 +742,7 @@ int handle_view_status(int adc_num)
             }
             else
             {
-              io_printf("SE %2d slope:%e offset:%e raw:%10d voltage:%8.7f\r\n", channel,
+              io_printf("SE %2d slope:%e offset:%e raw:%10d voltage:%8.4f\r\n", channel,
                         params->factory_slope, params->factory_offset, raw, voltage);
             }
           }
@@ -781,7 +781,7 @@ int handle_view_status(int adc_num)
             }
             else
             {
-              io_printf("DIFF %2d slope:%e offset:%e raw:%10d voltage:%8.7f\r\n", channel,
+              io_printf("DIFF %2d slope:%e offset:%e raw:%10d voltage:%8.4f\r\n", channel,
                         params->factory_slope, params->factory_offset, raw, voltage);
             }
           }
@@ -792,11 +792,12 @@ int handle_view_status(int adc_num)
         io_printf(ES_CURSOR_ON);
         break;
       case MENU_VIEW_SYSINFO:
-        io_printf("\r\n    시스템 정보\r\n");
-        io_printf("  ADC 해상도: %u 비트\r\n", p_adc->bits->resolution_bits);
-        io_printf("  기준 전압 (Vref): %.3f V\r\n", p_adc->bits->reference_voltage);
-        io_printf("  최소 Raw 값: %d\r\n", p_adc->bits->min_raw_value);
-        io_printf("  최대 Raw 값: %d\r\n", p_adc->bits->max_raw_value);
+        io_printf("\r\n");
+        io_printf("ADC 정보\r\n");
+        io_printf("ADC 해상도: %u 비트\r\n", p_adc->bits->resolution_bits);
+        io_printf("기준 전압 (Vref): %.3f V\r\n", p_adc->bits->reference_voltage);
+        io_printf("최소 Raw 값: %d\r\n", p_adc->bits->min_raw_value);
+        io_printf("최대 Raw 값: %d\r\n", p_adc->bits->max_raw_value);
         break;
       default:
         io_printf("잘못된 선택입니다.\r\n");
@@ -807,195 +808,95 @@ int handle_view_status(int adc_num)
 }
 
 
-int handle_save_load(int adc_num)
+int adc_set_cali_default(void)
 {
   int choice, status;
   int ok;
-  while (1)
+
+  status = confirm_continue("계속 진행하시겠습니까?",&ok);
+  if(status != MENU_OK)
   {
-    io_printf("+---------------------------------------+\r\n");
-    io_printf("|           설정 저장(NVM)              |\r\n");
-    io_printf("+---------------------------------------+\r\n");
-    io_printf("|  1. 켈리브레이션 기본값 적용          |\r\n");
-    io_printf("|  2. 켈리브레이션 초기화               |\r\n");
-    io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
-    io_printf("+---------------------------------------+\r\n");
-
-    status = input_decimal_prompt("선택", &choice, 1, 2);
-    if (status != MENU_OK)
-      break;
-
-    switch (choice)
-    {
-      case 1:
-        status = confirm_continue("계속 진행하시겠습니까?",&ok);
-        if(status != MENU_OK)
-        {
-          return status;
-        }
-        if(ok==0)
-        {
-          continue;
-        }
-
-        adc_config_init(&g_adc_config_ads1220, 24, 5.0f);
-
-        // ADS1220 18개
-        for (int channel = 0; channel < g_adc_config_ads1220.params_se_cnt; channel++)
-        {
-          g_adc_config_ads1220.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
-          g_adc_config_ads1220.single_ended_cal[channel].factory_cal_temp =  DEFAULT_FACTORY_CAL_TEMP;
-          g_adc_config_ads1220.single_ended_cal[channel].is_calibrated = true;
-          g_adc_config_ads1220.single_ended_cal[channel].factory_offset = 4.928633e-03;
-          g_adc_config_ads1220.single_ended_cal[channel].factory_slope = 5.958932e-07;
-          g_adc_config_ads1220.single_ended_cal[channel].offset_temp_coeff = 1;
-          g_adc_config_ads1220.single_ended_cal[channel].slope_temp_coeff = 1;
-        }
-        save_adc_cali();
-        // stm32 2개
-        for (int channel = 0; channel < g_adc_config_ads1220.params_di_cnt; channel++)
-        {
-          g_adc_config_ads1220.differential_cal[channel].comp_method = TEMP_COMP_NONE;
-          g_adc_config_ads1220.differential_cal[channel].factory_cal_temp =
-              DEFAULT_FACTORY_CAL_TEMP;
-          g_adc_config_ads1220.differential_cal[channel].is_calibrated = true;
-          g_adc_config_ads1220.differential_cal[channel].factory_offset = 4.928633e-03;
-          g_adc_config_ads1220.differential_cal[channel].factory_slope = 5.958932e-07;
-          g_adc_config_ads1220.differential_cal[channel].factory_offset_trim = 0.0f;
-          g_adc_config_ads1220.differential_cal[channel].offset_temp_coeff = 1;
-          g_adc_config_ads1220.differential_cal[channel].slope_temp_coeff = 1;
-        }
-
-        adc_config_init(&g_adc_config_stm32, 12, 3.3f);
-
-        for (int channel = 0; channel < STM32_NUM_SINGLE_ENDED_CHANNELS; channel++)
-        {
-          g_adc_config_stm32.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
-          g_adc_config_stm32.single_ended_cal[channel].factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP;
-          g_adc_config_stm32.single_ended_cal[channel].is_calibrated = true;
-          g_adc_config_stm32.single_ended_cal[channel].factory_offset = 0.0f;
-          g_adc_config_stm32.single_ended_cal[channel].factory_slope = 8.05e-04;
-          g_adc_config_stm32.single_ended_cal[channel].factory_offset_trim = 0.0f;
-          g_adc_config_stm32.single_ended_cal[channel].offset_temp_coeff = 1;
-          g_adc_config_stm32.single_ended_cal[channel].slope_temp_coeff = 1;
-        }
-        save_adc_cali();
-
-        io_printf("NVM 저장 성공\r\n");
-
-        break;
-      case 2:
-        status = confirm_continue("계속 진행하시겠습니까?",&ok);
-        if (status != MENU_OK)
-        {
-          return status;
-        }
-        if (ok == 0)
-        {
-          continue;
-        }
-
-        adc_config_init(&g_adc_config_ads1220, 24, 5.0f);  // 예시 기본값으로 RAM 리셋
-
-        adc_config_init(&g_adc_config_stm32, 12, 3.3f);  // 예시 기본값으로 RAM 리셋
-        for (int channel = 0; channel < STM32_NUM_SINGLE_ENDED_CHANNELS; channel++)
-        {
-          g_adc_config_stm32.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
-          g_adc_config_stm32.single_ended_cal[channel].factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP;
-          g_adc_config_stm32.single_ended_cal[channel].is_calibrated = true;
-          g_adc_config_stm32.single_ended_cal[channel].factory_offset = 0.0f;
-          g_adc_config_stm32.single_ended_cal[channel].factory_slope = 8.05e-04;
-          g_adc_config_stm32.single_ended_cal[channel].offset_temp_coeff = 1;
-          g_adc_config_stm32.single_ended_cal[channel].slope_temp_coeff = 1;
-        }
-        io_printf("켈리브레이션 값 초기화 완료\r\n");
-        io_printf("켈리브레이션을 다시 진행해주세요\r\n");
-        save_adc_cali();
-        break;
-        // io_printf("잘못된 선택입니다.\r\n");
-        break;
-    }
+    return status;
   }
+
+  adc_config_init(&g_adc_config_ads1220, 24, 5.0f);
+
+  // ADS1220 18개
+  for (int channel = 0; channel < g_adc_config_ads1220.params_se_cnt; channel++)
+  {
+    g_adc_config_ads1220.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
+    g_adc_config_ads1220.single_ended_cal[channel].factory_cal_temp =  DEFAULT_FACTORY_CAL_TEMP;
+    g_adc_config_ads1220.single_ended_cal[channel].is_calibrated = true;
+    g_adc_config_ads1220.single_ended_cal[channel].factory_offset = 4.928633e-03;
+    g_adc_config_ads1220.single_ended_cal[channel].factory_slope = 5.958932e-07;
+    g_adc_config_ads1220.single_ended_cal[channel].offset_temp_coeff = 1;
+    g_adc_config_ads1220.single_ended_cal[channel].slope_temp_coeff = 1;
+  }
+
+  for (int channel = 0; channel < g_adc_config_ads1220.params_di_cnt; channel++)
+  {
+    g_adc_config_ads1220.differential_cal[channel].comp_method = TEMP_COMP_NONE;
+    g_adc_config_ads1220.differential_cal[channel].factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP;
+    g_adc_config_ads1220.differential_cal[channel].is_calibrated = true;
+    g_adc_config_ads1220.differential_cal[channel].factory_offset = 4.928633e-03;
+    g_adc_config_ads1220.differential_cal[channel].factory_slope = 5.958932e-07;
+    g_adc_config_ads1220.differential_cal[channel].factory_offset_trim = 0.0f;
+    g_adc_config_ads1220.differential_cal[channel].offset_temp_coeff = 1;
+    g_adc_config_ads1220.differential_cal[channel].slope_temp_coeff = 1;
+  }
+
+  save_adc_cali();
+  io_printf("NVM 저장 성공\r\n");
+
   return status;
 }
 
-typedef enum
+int system_adc_set_cali_default(void)
 {
-  MENU_FACTORY_CALIBRATION = 1,  // 1. 공장 캘리브레이션 수행
-  MENU_TEMP_COMPENSATION,        // 2. 온도 보상 설정
-  MENU_OFFSET_ADJUST,            // 3. 오프셋 조정 (영점/단일지점)
-  MENU_CHANNEL_STATUS,           // 4. 채널 상태 보기
-  MENU_NVM_SAVE_LOAD             // 5. 설정 저장/로드 (NVM)
-} menu_item_t;
+  int choice, status;
+  int ok;
 
-typedef struct
-{
-  int menu_id;                      // 실제 내부 처리용 ID (enum)
-  const char* label;                // 메뉴 문자열
-  int (*handler)(int32_t adc_num);  // 처리 함수
-  bool enabled;                     // 사용 여부
-  int display_idx;                  // 사용자에게 보여줄 번호
-} menu_entry_t;
 
-menu_entry_t menu_table[] = {
-    {MENU_FACTORY_CALIBRATION, "공장 캘리브레이션 수행", handle_factory_calibration, true},
-    {MENU_TEMP_COMPENSATION, "온도 보상 설정", handle_temp_comp_setup, false},  // 이장비 미사용
-    {MENU_OFFSET_ADJUST, "오프셋 조정", handle_offset_adjustment, true},
-    {MENU_CHANNEL_STATUS, "채널 상태 보기", handle_view_status, true},
-    {MENU_NVM_SAVE_LOAD, "초기화", handle_save_load, true}};
-
-void run_calibration_menu(int adc_num)
-{
-  int choice = 0, status = 0;
-  bool exit_menu = false;
-  int display_idx = 1;
-
-  while (!exit_menu)
+  status = confirm_continue("계속 진행하시겠습니까?", &ok);
+  if (status != MENU_OK)
   {
-    io_printf("+---------------------------------------+\r\n");
-    io_printf("|       *** ADC 켈리브레이션  ***       |\r\n");
-    io_printf("+---------------------------------------+\r\n");
-
-    // 메뉴 출력
-    display_idx = 1;
-    for (int i = 0; i < sizeof(menu_table) / sizeof(menu_table[0]); i++)
-    {
-      if (menu_table[i].enabled)
-      {
-        menu_table[i].display_idx = display_idx;  // 동적으로 표시 인덱스 지정
-        io_printf("|  %d. %-33s |\r\n", display_idx, menu_table[i].label);
-
-        display_idx++;
-      }
-    }
-
-    io_printf("|     CTRL+C 이전, CTRL+Q 종료          |\r\n");
-    io_printf("+---------------------------------------+\r\n");
-
-    status = input_decimal_prompt("선택", &choice, 1, display_idx - 1);
-    if (status == MENU_ABORT || status == MENU_BACK)
-      return;
-
-    for (int i = 0; i < sizeof(menu_table) / sizeof(menu_table[0]); i++)
-    {
-      if (menu_table[i].enabled && menu_table[i].display_idx == choice)
-      {
-        status = menu_table[i].handler(adc_num);
-
-        break;
-      }
-    }
+    return status;
   }
+
+  adc_config_init(&g_adc_config_stm32, 12, 3.3f);
+
+  for (int channel = 0; channel < STM32_NUM_SINGLE_ENDED_CHANNELS; channel++)
+  {
+    g_adc_config_stm32.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
+    g_adc_config_stm32.single_ended_cal[channel].factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP;
+    g_adc_config_stm32.single_ended_cal[channel].is_calibrated = true;
+    g_adc_config_stm32.single_ended_cal[channel].factory_offset = 0.0f;
+    g_adc_config_stm32.single_ended_cal[channel].factory_slope = 8.05e-04;
+    g_adc_config_stm32.single_ended_cal[channel].factory_offset_trim = 0.0f;
+    g_adc_config_stm32.single_ended_cal[channel].offset_temp_coeff = 1;
+    g_adc_config_stm32.single_ended_cal[channel].slope_temp_coeff = 1;
+  }
+  save_adc_cali();
+
+  io_printf("시스템 ADC 켈리브레이션값이 임의의 값으로 설정되었습니다.\r\n");
+  io_printf("NVM 저장 성공\r\n");
+
+
+
+  return status;
 }
+
+
+
 
 int aws_menu_calibration()
 {
   int choice, status;
-  char* menu[] = {"공장 캘리브레이션",
+  char *menu[] = {"공장 캘리브레이션",
                   "채널 상태 보기",
-                  "초기화"};
+                  "ADC 초기화",
+                  "시스템 ADC 초기화"};
 
-  
   do
   {
     status = choice_menu(24, "ADC 켈리브레이션", menu, _countof(menu), &choice);
@@ -1011,8 +912,12 @@ int aws_menu_calibration()
      status = handle_view_status(0);
        break;
     case 3:
-     status = handle_save_load(0);
-       break;
+      status = adc_set_cali_default();
+      break;
+    case 4:
+      status = system_adc_set_cali_default();
+      break;
+
     }
 
     if(status==MENU_ABORT)

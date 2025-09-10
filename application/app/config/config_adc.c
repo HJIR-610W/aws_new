@@ -86,63 +86,9 @@ config_adc_t g_config_adc_default = {
     .diff[7] = {.offset = 10, .fullset = 1000, .offset_input = 0, .fullset_input = 5000, .gain = 1}
 };
 
-void save_config_adc(void)
-{
-  uint32_t crc;
-
-  uint8_t major,minor,fix,rel;
-
-  g_config_adc.start = 0;
-  crc = drv_crc32_with_padding(&g_config_adc.start,
-                              sizeof(config_adc_t) - sizeof(g_config_adc.header));
-
-  g_config_adc.header.magicNum = CONFIG_MAGIC;
-  g_config_adc.header.crc = crc;
-  g_config_adc.header.version = get_app_version(&major,&minor,&fix,&rel);
-
-  drv_fram_write(CONFIG_ADC_START_ADDRESS, (uint8_t *)&g_config_adc, sizeof(g_config_adc));
-}
 
 
 
-void load_config_adc(void)
-{
-
-
-#if 0
-    config_adc_t *p_config = user_malloc(sizeof(config_adc_t));
-
-  drv_fram_read(CONFIG_ADC_START_ADDRESS, (uint8_t *)p_config, sizeof(config_adc_t));
-
-  if (p_config->header.magicNum == CONFIG_MAGIC)
-  {
-    crc = crc32_hw_with_padding(&p_config->single,
-                                sizeof(config_adc_t) - sizeof(p_config->header));
-    if( crc == p_config->header.crc)
-    {
-      memcpy(g_config_adc, p_config, sizeof(config_adc_t));
-      crc_result = true;
-    }
-  }
-  if(crc_result == false)
-  {
-   //config_adc_reset();
-  }
-  user_free(p_config);
-  #endif
-}
-
-config_adc_t *get_config_adc(void)
-{
-  // 필요시 적절한 조치 처리
-  return &g_config_adc;
-}
-
-
-void config_adc_reset(void)
-{
-  g_config_adc = g_config_adc_default;
-}
 
 extern config_adc_nvm_t g_adc_config_nvm;
 

@@ -11,16 +11,25 @@ int is_debug_mode(void)
 }
 
 
-
+#include "config_adc.h"
+#include"config_app.h"
+#include "adc_calibration.h"
+int g_adc_size;
+int g_cfg_size;
+int g_cali_size;
 int main(void)
 {
 
+  g_adc_size = sizeof(config_t);
+  g_cfg_size = sizeof(config_adc_t);
+  g_cali_size = sizeof(config_adc_nvm_t);
 
-  if (is_debug_mode())
+      if (is_debug_mode())
   {
     __HAL_DBGMCU_FREEZE_IWDG();  // 디버깅 시 와치독 카운트 멈춤
     __HAL_DBGMCU_FREEZE_RTC();   // 디버깅 시 rtc 타이머 멈춤
   }
+  
   
   bsp_init();
 
