@@ -36,8 +36,8 @@ extern const char* adcChModeList[2];
 extern const char* physical_list[2];
 
 
+#define ADC_L_W 10
 #define E_L_W 9
-
 
 #define ADC_PAGE_MODE 0
 #define ADC_PAGE_CHANNEL 1
@@ -52,18 +52,18 @@ extern const char* physical_list[2];
 void draw_adc_page(screen_menu_t* p_win,adc_config_t *adc_config)
 {
 
-  screen_menu_printf(p_win, ADC_PAGE_MODE, "%-*s:%s",E_L_W, "Adc Mode",ITEM_LIST(adc_config->mode, (char*)adcChModeList));
+  screen_menu_printf(p_win, ADC_PAGE_MODE, "%-*s:%s",ADC_L_W, "Adc Mode",ITEM_LIST(adc_config->mode, adcChModeList));
 
   if(adc_config->mode == ADC_CFG_MODE_SE)
-    screen_menu_printf(p_win, ADC_PAGE_CHANNEL, "%-*s:%d", E_L_W, "Channel", adc_config->single_channel);
+    screen_menu_printf(p_win, ADC_PAGE_CHANNEL, "%-*s:%d", ADC_L_W, "Channel", adc_config->single_channel);
   else
-    screen_menu_printf(p_win, ADC_PAGE_CHANNEL, "%-*s:%d", E_L_W, "Channel", adc_config->diff_channel);
+    screen_menu_printf(p_win, ADC_PAGE_CHANNEL, "%-*s:%d", ADC_L_W, "Channel", adc_config->diff_channel);
 
-  screen_menu_printf(p_win, ADC_PAGE_HIGH_VALUE, "%-*s:%d", E_L_W, "High Value", adc_config->highScale);
-  screen_menu_printf(p_win, ADC_PAGE_LOW_VALUE, "%-*s:%d", E_L_W, "Low Value", adc_config->lowScale);
-  screen_menu_printf(p_win, ADC_PAGE_SCALE, "%-*s:%d", E_L_W, "Scale", adc_config->scale);
-  screen_menu_printf(p_win, ADC_PAGE_MAX_MV, "%-*s:%d", E_L_W, "Max mV", adc_config->outMaxV);
-  screen_menu_printf(p_win, ADC_PAGE_MIN_MV, "%-*s:%d", E_L_W, "Min mV", adc_config->outMinV);
+  screen_menu_printf(p_win, ADC_PAGE_HIGH_VALUE, "%-*s:%d", ADC_L_W, "High Value", adc_config->highScale);
+  screen_menu_printf(p_win, ADC_PAGE_LOW_VALUE, "%-*s:%d", ADC_L_W, "Low Value", adc_config->lowScale);
+  screen_menu_printf(p_win, ADC_PAGE_SCALE, "%-*s:%d", ADC_L_W, "Scale", adc_config->scale);
+  screen_menu_printf(p_win, ADC_PAGE_MAX_MV, "%-*s:%d", ADC_L_W, "Max mV", adc_config->outMaxV);
+  screen_menu_printf(p_win, ADC_PAGE_MIN_MV, "%-*s:%d", ADC_L_W, "Min mV", adc_config->outMinV);
 
 }
 
@@ -368,7 +368,7 @@ int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
      if (adc->mode == ADC_CFG_MODE_SE)
       {
           choice = adc->single_channel;
-          status = input_combobox("SE Channel", adc_se_list, _countof(adc_se_list), &choice);
+          status = input_combobox("SE Channel", adc_single_list, _countof(adc_single_list), &choice);
           if (status != MENU_OK)
             break;
           adc->single_channel = choice;
@@ -445,6 +445,7 @@ int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case FREQ_PAGE_CHANNEL:
+      dec = freq->channel;
        status = input_combobox("Channel", freq_ch_list, _countof(freq_ch_list), &dec);
       if (status != MENU_OK)
         break;
@@ -517,6 +518,7 @@ int32_t hjwind_setup( sensor_t *sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case HJWIND_PAGE_FULLSET:
+      dec = hjwind->full;
       status = input_decimal("FULLSET", 0, 999999, &dec);
       if (status != MENU_OK)
         break;
@@ -524,6 +526,7 @@ int32_t hjwind_setup( sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case HJWIND_PAGE_OFFSET:
+    dec = hjwind->offset;
       status = input_decimal("OFFSET", 0, 999999, &dec);
       if (status != MENU_OK)
         break;

@@ -1,5 +1,7 @@
 
 #include <stdio.h>
+#include <string.h>
+
 #include "menu_data.h"
 #include "app_screen.h"
 #include "cli_key_code.h"
@@ -13,6 +15,7 @@
 #include "rain_data.h"
 #include "sunshine_data.h"
 #include "util_crc16_ccitt.h"
+#include "FreeRTOS.h"
 
 
 #define DATA_RAIN_1MIN 0
@@ -26,58 +29,126 @@ void draw_data_rain(screen_menu_t *p_win)
   screen_menu_clear(p_win);
 }
 
-int32_t setup_menu_rain_reset(void)
-{
-  int32_t status;
-  int32_t choice = 0;
+const osThreadAttr_t kEraseTask_attributes = {
+    .name = "erase",
+    .stack_size = TASK_STACK(TASK_FILE_ERASE_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_FILE_ERASE_DEF),
+};
 
-  status = input_active("Initialize all to 0?", &choice);
-  if (status == MENU_OK && choice == 1)
+
+typedef struct file_erase_s
+{
+  void *task_handle;
+  uint8_t file_type;
+}file_erase_t;
+
+#define FILE_RAIN 0
+#define FILE_SUNSHINE 1
+
+
+#define FILE_RET_OK 0x01
+#define FILE_RET_FAIL 0x02
+
+void fileEraseTask( void *arg)
+{
+  file_erase_t *p_erase = (file_erase_t *)arg;
+  int32_t result;
+  uint32_t flags = FILE_RET_FAIL; // 에러
+
+  if(p_erase->file_type == FILE_RAIN)
   {
-    if (rain_file_zero(Date_Time.Year) == 0)
-    {
-      show_popup("Information", "Completed");
-      calculate_rain();
-    }
-    else
-    {
-      show_popup("Information", "Failed to complete");
-    }
-   
+  result = rain_file_zero(Date_Time.Year);
+  }
+  else if(p_erase ->file_type ==FILE_SUNSHINE)
+  {
+  result = sunshine_file_zero(Date_Time.Year) ;
   }
 
-  return status;
-  
-  
-
-
+  if(result ==0)
+  {
+    flags = FILE_RET_OK; // 정상
+  }
+  osThreadFlagsSet(p_erase->task_handle, flags);
+  osThreadExit();
 }
 
-int32_t reset_to_zero_sunshine(void)
+
+int32_t setup_data_erase(uint8_t file_type)
 {
-  int32_t key;
   int32_t status;
-
   int32_t choice = 0;
-    status = input_active("Initialize all to 0?", &choice);
-    if (status == MENU_OK && choice == 1)
-    {
-      if (sunshine_file_zero(Date_Time.Year) == 0)
-      {
-        show_popup("Information", "Completed");
-        calculate_sunshine();
-      }
-      else
-      {
-        show_popup("Information", "Failed to complete");
-      }
-    }
-
-
+  static file_erase_t erase;
+  uint32_t flags;
+  int32_t count=0;
+  
+  status = input_active("Initialize all to 0?", &choice);
+    
+  if(status != MENU_OK)
+  {
     return status;
+  }
+  
+  if( choice == 1)
+  {
+  erase.task_handle = osThreadGetId();
+  erase.file_type = file_type;
+  osThreadFlagsClear(FILE_RET_OK | FILE_RET_FAIL);
+  osThreadNew(fileEraseTask, &erase, &kEraseTask_attributes);
+}
+
+screen_clear();
+screen_printf(6, 0, " ");
+
+while (1)
+{
+  char buffer[20];
+  buffer[count++] = '*';
+  buffer[count] = 0;
+
+  screen_printf(6, 0, buffer);
+
+  if (count == 10)
+  {
+    memset(buffer, ' ', sizeof(buffer));
+    buffer[sizeof(buffer) - 1] = 0;
+    screen_printf(6, 0, buffer);
+    count = 0;
+  }
+  screen_refresh();
+  screen_refresh();
+  flags = osThreadFlagsWait(FILE_RET_OK | FILE_RET_FAIL, osFlagsWaitAny, 50);
+
+  if((flags &0x80000000)==0)//음수가 아니어야 한다
+  {
+  if (flags & FILE_RET_OK || flags & FILE_RET_FAIL)
+  {
+    break;
+  }
+  }
+}
+
+if (flags == FILE_RET_OK)
+{
+  show_popup("Information", "Completed");
+  if(erase.file_type ==FILE_RAIN)
+  calculate_rain();
+  else if(erase.file_type == FILE_SUNSHINE)
+    calculate_sunshine();
+}
+else
+{
+  show_popup("Information", "Failed to complete");
+}
+
+
+  
  
 
+
+  return status;
 }
+
+
 
 #define DATA_SUNSHINE_1MIN 0
 #define DATA_SUNSHINE_INIT 1
@@ -380,7 +451,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
           status = menu_view_1min(LOGGING_RAIN_1MIN);
           break;
         case DATA_RAIN_INIT:
-          status = setup_menu_rain_reset();
+          status = setup_data_erase(FILE_RAIN);
           break;
         default:
           break;
@@ -424,8 +495,8 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
           status = menu_view_1min(LOGGING_SUNSHINE_1MIN);
           break;
         case DATA_SUNSHINE_INIT:
-          status = reset_to_zero_sunshine();
-           break;
+           status = setup_data_erase(FILE_SUNSHINE);
+               break;
         default:
           break;
         }

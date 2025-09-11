@@ -24,4 +24,5 @@ extern const char *lcd_off_time_list_eng[4];
 extern const char *g_charger_list_eng[3];
 extern const char *g_charger_list_kor[3];
 extern const char *g_baud_list_eng[6];
+extern const char *adc_single_list[16];
 #endif // CONST_STRING_H
