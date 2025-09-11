@@ -90,9 +90,9 @@ void config_hj_reset(void)
   hjwindDirection_config_t *hjwindDir_cfg;
   hjsnow_config_t *hjsnow_cfg;
   rain_present_config_t *hjrain_det_cfg;
-      uint8_t single_channel = 0;
+  uint8_t single_channel = 0;
 
-  config_app_reset();
+  config_app_sensor_reset();
 
   // config 중 센서 설정정보만 화진에 맞게 설정한다
   config_sensor_reset();

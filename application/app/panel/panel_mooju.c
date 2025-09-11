@@ -23,6 +23,7 @@ AWS(신)
 (4) 51 04 00 00 11 39 39 39 2E 38 20 20 20 30 20 20 20 30 20 20 20 30 D6
 
 
+
 AWS(구)
 (1) 51 01 05 02 01 00 09
 (2) 51 02 00 00 11 20 20 20 30 2E 30 20 20 20 31 39 39 39 2E 39 20 20 20 30 31 32 39 30 30 34 39 E4
@@ -119,11 +120,11 @@ framemk[cnt++] 		= 17;																	// Length
 
 sprintf(&framemk[cnt],"%5.1f", (float)p_kma->wind_speed_avg.data / 10.0);						// 풍속
 cnt					+= 5;
-sprintf(&framemk[cnt],"%4d", g_rainfall.yearly);					// 연간 누계 강우량
+sprintf(&framemk[cnt],"%4d", g_rainfall.yearly/10.0);					// 연간 누계 강우량
 cnt					+= 4;
-sprintf(&framemk[cnt],"%4d",g_rainfall.today );						// 금일  강우량
+sprintf(&framemk[cnt], "%4d", g_rainfall.today / 10.0); // 금일  강우량
 cnt					+= 4;
-sprintf(&framemk[cnt],"%4d",g_rainfall.yesterday );					// 전일  강우량
+sprintf(&framemk[cnt], "%4d", g_rainfall.yesterday / 10.0); // 전일  강우량
 cnt					+= 4;
 
 framemk[cnt++]		= (char)make_sum((uint8_t*)&framemk[1], framemk[4]+4);

@@ -79,7 +79,7 @@ int32_t setup_menu_panel(void)
           {
             config.panel_model = (ePANEL_MODEL_t)choice;
             WRITE_CFG(panel_model);
-            if (pre_panel_model == ePANEL_NONE || choice == ePANEL_NONE) //미사용에서 사용으로, 사용에서 미사용은 리셋후 적용됨
+            if (pre_panel_model == ePANEL_NOT_USED || choice == ePANEL_NOT_USED) //미사용에서 사용으로, 사용에서 미사용은 리셋후 적용됨
             {
               show_popup("Information", "Applied after reset");
             }

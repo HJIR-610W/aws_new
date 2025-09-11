@@ -151,7 +151,7 @@ void startTask(void *arg)
     ethernet_powerdown();//383->334mA
   }
 
-  if(get_config_app()->panel_model != ePANEL_NONE)
+  if(get_config_app()->panel_model != ePANEL_NOT_USED)
   {
     panelTask_init();
   }

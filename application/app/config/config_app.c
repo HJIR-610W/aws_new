@@ -409,6 +409,13 @@ void config_app_reset(void)
  
 }
 
+//센서 설정 부분만 초기화 한다.
+void config_app_sensor_reset(void)
+{
+  uint8_t *p_sensor = (uint8_t *)config.sensor;
+
+  memset(p_sensor,0,sizeof(config.sensor));
+}
 
 
 void save_config_app_field(eCONFIG_APP_FIELD_t field)

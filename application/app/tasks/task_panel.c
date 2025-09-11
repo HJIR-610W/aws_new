@@ -4,6 +4,7 @@
 
 #include "Panel\panel.h"
 
+#include "config_app.h"
 const osThreadAttr_t kPanelTask_attributes = {
     .name = "panelTask",
     .stack_size = TASK_STACK(TASK_PANEL_DEF),
@@ -23,6 +24,8 @@ void panelTask(void *arg)
 
 void panelTask_init(void)
 {
+
+
   panel_init();
 
   osThreadNew(panelTask, NULL, &kPanelTask_attributes);

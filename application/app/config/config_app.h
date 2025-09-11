@@ -54,7 +54,7 @@ typedef enum cdma_model_e
 
 typedef enum panel_model_e
 {
-  ePANEL_NONE,
+  ePANEL_NOT_USED,
   ePANEL_AWS_STD,
   ePANEL_HJ_STD,
   ePANEL_MUJU,
@@ -161,7 +161,8 @@ typedef struct system_s
   float battery_voltage;
 }system_t;
 
-void config_app_reset(void) ;
+void config_app_sensor_reset(void);
+void config_app_reset(void);
 void save_config_app(void);
 void load_config_app(void);
 void save_config_app_field(eCONFIG_APP_FIELD_t field);
