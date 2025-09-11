@@ -14,7 +14,7 @@
 #include "user_heap.h"
 
 
-static osSemaphoreId_t g_fileSem;//ÆÄÀÏ °ü·Ã ÇÔ¼ö º¸È£
+static osSemaphoreId_t g_fileSem;//íŒŒì¼ ê´€ë ¨ í•¨ìˆ˜ ë³´í˜¸
 
 typedef enum
 {
@@ -26,7 +26,7 @@ typedef enum
     eFAT_ERR_MAX
 }eFAT_ERR_t;
 
-uint8_t g_fat_error[eFAT_ERR_MAX];// SD »óÅÂ È®ÀÎ¿ë,¼¼¸¶Æ÷¾î ÇÊ¿ä
+uint8_t g_fat_error[eFAT_ERR_MAX];// SD ìƒíƒœ í™•ì¸ìš©,ì„¸ë§ˆí¬ì–´ í•„ìš”
 
 #if 0 
 int32_t read_file(char *pPath,uint8_t *pBuff, uint32_t len,uint32_t offset)
@@ -115,16 +115,16 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
 
   OS_PEND_SEM(g_fileSem, osWaitForever);
 
-  // ÆÄÀÏ ¿­±â (¾øÀ¸¸é »ı¼º, ÀÖÀ¸¸é ¿­±â + ¾²±â)
+  // íŒŒì¼ ì—´ê¸° (ì—†ìœ¼ë©´ ìƒì„±, ìˆìœ¼ë©´ ì—´ê¸° + ì“°ê¸°)
   res = f_open(&file, path, FA_WRITE | FA_OPEN_ALWAYS);
   if (res != FR_OK)
   {
     ERROR_PRINTF("wrtie f_open fail %s", get_fresult((int)res));
     OS_POST_SEM(g_fileSem);
-    return res;  // ½ÇÆĞ ½Ã ¿À·ù ÄÚµå ¹İÈ¯
+    return res;  // ì‹¤íŒ¨ ì‹œ ì˜¤ë¥˜ ì½”ë“œ ë°˜í™˜
   }
 
-  // ÆÄÀÏ Æ÷ÀÎÅÍ¸¦ offset À§Ä¡·Î ÀÌµ¿
+  // íŒŒì¼ í¬ì¸í„°ë¥¼ offset ìœ„ì¹˜ë¡œ ì´ë™
   res = f_lseek(&file, offset);
   if (res != FR_OK)
   {
@@ -133,7 +133,7 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
     return res;
   }
 
-  // µ¥ÀÌÅÍ ¾²±â
+  // ë°ì´í„° ì“°ê¸°
   res = f_write(&file, data, dataLen, &bytesWritten);
   if (res != FR_OK || bytesWritten != dataLen)
   {
@@ -143,17 +143,17 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
     return res != FR_OK ? res : FR_DISK_ERR;
   }
 
-  // Ä³½ÃµÈ µ¥ÀÌÅÍ ÇÃ·¯½Ã (¾ÈÁ¤¼º º¸Àå)
+  // ìºì‹œëœ ë°ì´í„° í”ŒëŸ¬ì‹œ (ì•ˆì •ì„± ë³´ì¥)
   res = f_sync(&file);
 
-  // ÆÄÀÏ ´İ±â
+  // íŒŒì¼ ë‹«ê¸°
   f_close(&file);
 
   OS_POST_SEM(g_fileSem);
   return res;
 }
 /*
-| ÇÔ¼ö          | `FF_USE_LFN = 0` | `FF_USE_LFN = 1` (LFNÀº stack¿¡) |
+| í•¨ìˆ˜          | `FF_USE_LFN = 0` | `FF_USE_LFN = 1` (LFNì€ stackì—) |
 | ----------- | ---------------- | ------------------------------ |
 | `f_open()`  | \~320 bytes      | \~820 bytes                    |
 | `f_read()`  | \~350 bytes      | \~900 bytes                    |
@@ -170,7 +170,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   FRESULT res;
   UINT bytesRead;
 
-  //ERROR_PRINTF("read_file %s,%p %p %p\r\n",path,data,&data[dataLen]);
+  ERROR_PRINTF("read_file %s,%p %p %p\r\n",path,data,&data[dataLen]);
   p_file = pvPortMalloc(sizeof(FIL));
 
   if(p_file==NULL)
@@ -179,17 +179,17 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
     return (FRESULT)-1;
   }
   OS_PEND_SEM(g_fileSem, osWaitForever);
-  // ÆÄÀÏ ¿­±â (ÀĞ±â Àü¿ë, ¾øÀ¸¸é ¿À·ù)
+  // íŒŒì¼ ì—´ê¸° (ì½ê¸° ì „ìš©, ì—†ìœ¼ë©´ ì˜¤ë¥˜)
   res = f_open(p_file, path, FA_READ);
   if (res != FR_OK)
   {
     ERROR_PRINTF("read f_open fail %d", res);
     vPortFree(p_file);
     OS_POST_SEM(g_fileSem);
-    return res;  // ½ÇÆĞ ½Ã ¿À·ù ÄÚµå ¹İÈ¯
+    return res;  // ì‹¤íŒ¨ ì‹œ ì˜¤ë¥˜ ì½”ë“œ ë°˜í™˜
   }
 
-  // ÆÄÀÏ Æ÷ÀÎÅÍ¸¦ offset À§Ä¡·Î ÀÌµ¿
+  // íŒŒì¼ í¬ì¸í„°ë¥¼ offset ìœ„ì¹˜ë¡œ ì´ë™
   res = f_lseek(p_file, offset);
   if (res != FR_OK)
   {
@@ -199,7 +199,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
     return res;
   }
 
-  // µ¥ÀÌÅÍ ÀĞ±â
+  // ë°ì´í„° ì½ê¸°
   res = f_read(p_file, data, dataLen, &bytesRead);
   if (res != FR_OK || bytesRead != dataLen)
   {
@@ -210,7 +210,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
     return res != FR_OK ? res : FR_DISK_ERR;
   }
 
-  // ÆÄÀÏ ´İ±â
+  // íŒŒì¼ ë‹«ê¸°
   f_close(p_file);
   vPortFree(p_file);
 
@@ -221,7 +221,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   FRESULT res;
   UINT bytesRead;
   OS_PEND_SEM(g_fileSem, osWaitForever);
-  // ÆÄÀÏ ¿­±â (ÀĞ±â Àü¿ë, ¾øÀ¸¸é ¿À·ù)
+  // íŒŒì¼ ì—´ê¸° (ì½ê¸° ì „ìš©, ì—†ìœ¼ë©´ ì˜¤ë¥˜)
   
 
   res = f_open(&file, path, FA_READ);
@@ -231,10 +231,10 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   {
 
     OS_POST_SEM(g_fileSem);
-    return res;  // ½ÇÆĞ ½Ã ¿À·ù ÄÚµå ¹İÈ¯
+    return res;  // ì‹¤íŒ¨ ì‹œ ì˜¤ë¥˜ ì½”ë“œ ë°˜í™˜
   }
 
-  // ÆÄÀÏ Æ÷ÀÎÅÍ¸¦ offset À§Ä¡·Î ÀÌµ¿
+  // íŒŒì¼ í¬ì¸í„°ë¥¼ offset ìœ„ì¹˜ë¡œ ì´ë™
   res = f_lseek(&file, offset);
   if (res != FR_OK)
   {
@@ -243,14 +243,14 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
     return res;
   }
 
-  // µ¥ÀÌÅÍ ÀĞ±â
+  // ë°ì´í„° ì½ê¸°
   res = f_read(&file, data, dataLen, &bytesRead);
   if (res != FR_OK || bytesRead != dataLen)
   {
-    // ÀĞÀ» µ¥ÀÌÅÍ°¡ ÆÄÀÏ ³¡(EOF)¿¡ µµ´ŞÇßÀ» ¼ö ÀÖÀ½ (Á¤»ó)
+    // ì½ì„ ë°ì´í„°ê°€ íŒŒì¼ ë(EOF)ì— ë„ë‹¬í–ˆì„ ìˆ˜ ìˆìŒ (ì •ìƒ)
     if (res == FR_OK && bytesRead < dataLen)
     {
-      // ³²Àº ºÎºĞÀº 0À¸·Î ÆĞµù (¿É¼Ç, ÇÊ¿ä½Ã)
+      // ë‚¨ì€ ë¶€ë¶„ì€ 0ìœ¼ë¡œ íŒ¨ë”© (ì˜µì…˜, í•„ìš”ì‹œ)
       for (uint32_t i = bytesRead; i < dataLen; i++)
       {
         data[i] = 0;
@@ -264,7 +264,7 @@ FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
     }
   }
 
-  // ÆÄÀÏ ´İ±â
+  // íŒŒì¼ ë‹«ê¸°
   f_close(&file);
 
   OS_POST_SEM(g_fileSem);
@@ -280,15 +280,15 @@ FRESULT append_file(char *path, uint8_t *data, uint32_t dataLen)
   UINT bytesWritten;
 
   OS_PEND_SEM(g_fileSem, osWaitForever);
-  // ÆÄÀÏ ¿­±â (¾²±â, ¾øÀ¸¸é »ı¼º, ÀÖÀ¸¸é ÆÄÀÏ ³¡À¸·Î Æ÷ÀÎÅÍ ÀÌµ¿ ÈÄ ¾²±â)
+  // íŒŒì¼ ì—´ê¸° (ì“°ê¸°, ì—†ìœ¼ë©´ ìƒì„±, ìˆìœ¼ë©´ íŒŒì¼ ëìœ¼ë¡œ í¬ì¸í„° ì´ë™ í›„ ì“°ê¸°)
   res = f_open(&file, path, FA_WRITE | FA_OPEN_APPEND);
   if (res != FR_OK)
   {
     OS_POST_SEM(g_fileSem);
-    return res;  // ½ÇÆĞ ½Ã ¿À·ù ÄÚµå ¹İÈ¯
+    return res;  // ì‹¤íŒ¨ ì‹œ ì˜¤ë¥˜ ì½”ë“œ ë°˜í™˜
   }
 
-  // µ¥ÀÌÅÍ ¾²±â (ÆÄÀÏ ³¡¿¡ Ãß°¡)
+  // ë°ì´í„° ì“°ê¸° (íŒŒì¼ ëì— ì¶”ê°€)
   res = f_write(&file, data, dataLen, &bytesWritten);
   if (res != FR_OK || bytesWritten != dataLen)
   {
@@ -297,10 +297,10 @@ FRESULT append_file(char *path, uint8_t *data, uint32_t dataLen)
     return res != FR_OK ? res : FR_DISK_ERR;
   }
 
-  // Ä³½ÃµÈ µ¥ÀÌÅÍ ÇÃ·¯½Ã (¾ÈÁ¤¼º º¸Àå)
+  // ìºì‹œëœ ë°ì´í„° í”ŒëŸ¬ì‹œ (ì•ˆì •ì„± ë³´ì¥)
   res = f_sync(&file);
 
-  // ÆÄÀÏ ´İ±â
+  // íŒŒì¼ ë‹«ê¸°
   f_close(&file);
   OS_POST_SEM(g_fileSem);
   return res;
@@ -308,37 +308,37 @@ FRESULT append_file(char *path, uint8_t *data, uint32_t dataLen)
 
 
 
-// ÆÄÀÏÀÌ Á¸ÀçÇÏ¸é »èÁ¦ÇÏ´Â ÇÔ¼ö
+// íŒŒì¼ì´ ì¡´ì¬í•˜ë©´ ì‚­ì œí•˜ëŠ” í•¨ìˆ˜
 FRESULT delete_file(const char *fileName)
 {
   FILINFO fno;
   FRESULT res;
 
-  // ÆÄÀÏ Á¸Àç ¿©ºÎ È®ÀÎ
+  // íŒŒì¼ ì¡´ì¬ ì—¬ë¶€ í™•ì¸
   res = f_stat(fileName, &fno);
   if (res == FR_NO_FILE)
   {
-    // ÆÄÀÏÀÌ ¾ø´Â °æ¿ì´Â ¿¡·¯ ¾Æ´Ô
+    // íŒŒì¼ì´ ì—†ëŠ” ê²½ìš°ëŠ” ì—ëŸ¬ ì•„ë‹˜
     return FR_OK;
   }
   else if (res != FR_OK)
   {
-    // ´Ù¸¥ ¿¡·¯ (°æ·Î ¿À·ù µî)
+    // ë‹¤ë¥¸ ì—ëŸ¬ (ê²½ë¡œ ì˜¤ë¥˜ ë“±)
     return res;
   }
 
-  // µğ·ºÅä¸®ÀÎ °æ¿ì´Â »èÁ¦ÇÏÁö ¾ÊÀ½
+  // ë””ë ‰í† ë¦¬ì¸ ê²½ìš°ëŠ” ì‚­ì œí•˜ì§€ ì•ŠìŒ
   if (fno.fattrib & AM_DIR)
   {
-    return FR_DENIED;  // µğ·ºÅä¸® »èÁ¦ ±İÁö
+    return FR_DENIED;  // ë””ë ‰í† ë¦¬ ì‚­ì œ ê¸ˆì§€
   }
 
-  // ÆÄÀÏ »èÁ¦
+  // íŒŒì¼ ì‚­ì œ
   res = f_unlink(fileName);
   return res;
 }
 
-// FAT ³¯Â¥ ¹× ½Ã°£ Æ÷¸Ë ÇØ¼® ÇÔ¼ö
+// FAT ë‚ ì§œ ë° ì‹œê°„ í¬ë§· í•´ì„ í•¨ìˆ˜
 void print_fat_time(WORD fdate, WORD ftime)
 {
   uint16_t year = ((fdate >> 9) & 0x7F) + 1980;
@@ -359,7 +359,7 @@ FRESULT list_directory(const char *path)
 
   OS_PEND_SEM(g_fileSem, osWaitForever);
 
-  // µğ·ºÅä¸® ¿­±â
+  // ë””ë ‰í† ë¦¬ ì—´ê¸°
   res = f_opendir(&dir, path);
   if (res != FR_OK)
   {
@@ -368,7 +368,7 @@ FRESULT list_directory(const char *path)
     return res;
   }
 
-  // µğ·ºÅä¸® Ç×¸ñ ÀĞ±â ·çÇÁ
+  // ë””ë ‰í† ë¦¬ í•­ëª© ì½ê¸° ë£¨í”„
   while (1)
   {
     res = f_readdir(&dir, &fno);
@@ -377,7 +377,7 @@ FRESULT list_directory(const char *path)
       break;
     }
 
-    // ÆÄÀÏ/µğ·ºÅä¸® Á¤º¸ Ãâ·Â
+    // íŒŒì¼/ë””ë ‰í† ë¦¬ ì •ë³´ ì¶œë ¥
     if (fno.fattrib & AM_DIR)
     {
       io_printf("[DIR ] %-20s  ", fno.fname);
@@ -387,11 +387,11 @@ FRESULT list_directory(const char *path)
       io_printf("[FILE] %-20s  %10llu bytes  ", fno.fname, (unsigned long long)fno.fsize);
     }
 
-    // ³¯Â¥/½Ã°£ Ãâ·Â
+    // ë‚ ì§œ/ì‹œê°„ ì¶œë ¥
     print_fat_time(fno.fdate, fno.ftime);
 
     
-    // ¼Ó¼º Ãâ·Â
+    // ì†ì„± ì¶œë ¥
     io_printf("  [");
     if (fno.fattrib & AM_RDO)
       io_printf("R");
@@ -404,7 +404,7 @@ FRESULT list_directory(const char *path)
     io_printf("]\r\n");
   }
 
-  // µğ·ºÅä¸® ´İ±â
+  // ë””ë ‰í† ë¦¬ ë‹«ê¸°
   f_closedir(&dir);
 
   OS_POST_SEM(g_fileSem);
@@ -416,15 +416,15 @@ FRESULT get_file_size(const char *path, FSIZE_t *size)
   FILINFO fno;
   FRESULT res;
   OS_PEND_SEM(g_fileSem, osWaitForever);
-  res = f_stat(path, &fno);  // ÆÄÀÏ Á¤º¸ °¡Á®¿À±â
+  res = f_stat(path, &fno);  // íŒŒì¼ ì •ë³´ ê°€ì ¸ì˜¤ê¸°
   if (res != FR_OK)
   {
     *size = 0;
     OS_POST_SEM(g_fileSem);
-    return res;  // ¿À·ù ¹İÈ¯
+    return res;  // ì˜¤ë¥˜ ë°˜í™˜
   }
 
-  *size = fno.fsize;  // ÆÄÀÏ Å©±â ¼³Á¤
+  *size = fno.fsize;  // íŒŒì¼ í¬ê¸° ì„¤ì •
   OS_POST_SEM(g_fileSem);
   return FR_OK;
 }
@@ -438,7 +438,7 @@ FRESULT find_files_by_extension(const TCHAR *folder_path, const TCHAR *extension
   DIR dir;
   FILINFO fno;
   int count = 0;
-  TCHAR pattern[32];  // "*.ext" ÇüÅÂÀÇ ÆĞÅÏÀ» ÀúÀåÇÒ ¹öÆÛ 
+  TCHAR pattern[32];  // "*.ext" í˜•íƒœì˜ íŒ¨í„´ì„ ì €ì¥í•  ë²„í¼ 
 
   if (p_files_found_count == NULL || found_filenames == NULL || folder_path == NULL ||
       extension == NULL)
@@ -452,7 +452,7 @@ FRESULT find_files_by_extension(const TCHAR *folder_path, const TCHAR *extension
 
   if ((strlen("*.") + strlen(extension) + 1) > sizeof(pattern) / sizeof(TCHAR))
   {
-    return FR_INVALID_PARAMETER;  // È®ÀåÀÚ°¡ ³Ê¹« ±è
+    return FR_INVALID_PARAMETER;  // í™•ì¥ìê°€ ë„ˆë¬´ ê¹€
   }
   snprintf(pattern,sizeof(pattern), "*.%s", extension); 
 
@@ -462,7 +462,7 @@ FRESULT find_files_by_extension(const TCHAR *folder_path, const TCHAR *extension
   {
     while (fno.fname[0] != 0 && count < max_filenames_to_store)
     {
-      // fno.fname[0] == 0 Àº ´õ ÀÌ»ó ÀÏÄ¡ÇÏ´Â Ç×¸ñÀÌ ¾øÀ½À» ÀÇ¹Ì
+      // fno.fname[0] == 0 ì€ ë” ì´ìƒ ì¼ì¹˜í•˜ëŠ” í•­ëª©ì´ ì—†ìŒì„ ì˜ë¯¸
       if (!(fno.fattrib & AM_DIR))
       {  
         size_t fname_len = 0;
@@ -487,7 +487,7 @@ FRESULT find_files_by_extension(const TCHAR *folder_path, const TCHAR *extension
       if (res != FR_OK)
         break; 
     }
-    f_closedir(&dir);  // °Ë»ö ¿Ï·á ÈÄ DIR °´Ã¼ ´İ±â
+    f_closedir(&dir);  // ê²€ìƒ‰ ì™„ë£Œ í›„ DIR ê°ì²´ ë‹«ê¸°
   }
 
   *p_files_found_count = count;
@@ -496,13 +496,13 @@ FRESULT find_files_by_extension(const TCHAR *folder_path, const TCHAR *extension
   { 
     return FR_OK;
   }
-  return res;  // ±× ¿ÜÀÇ FatFs ¿¡·¯ ÄÚµå ¹İÈ¯
+  return res;  // ê·¸ ì™¸ì˜ FatFs ì—ëŸ¬ ì½”ë“œ ë°˜í™˜
 }
 
 
 
-//========== ÆÄÀÏ½Ã½ºÅÛ Å×½ºÆ® ÄÚµå ½ÃÀÛ==========
-#define STATIC_RAM_USE 0 //head»ç¿ëÀÌ ºÒ°¡´É ÇÏ¸é MCU RAM »ç¿ë
+//========== íŒŒì¼ì‹œìŠ¤í…œ í…ŒìŠ¤íŠ¸ ì½”ë“œ ì‹œì‘==========
+#define STATIC_RAM_USE 0 //headì‚¬ìš©ì´ ë¶ˆê°€ëŠ¥ í•˜ë©´ MCU RAM ì‚¬ìš©
 
 #define TEST_BUFFER_SIZE 4096
 #if STATIC_RAM_USE
@@ -520,7 +520,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
   uint8_t *buffer = (uint8_t *)user_malloc(TEST_BUFFER_SIZE);
   if (buffer == NULL)
   {
-      io_printf("¸Ş¸ğ¸® ÇÒ´ç ½ÇÆĞ\r\n");
+      io_printf("ë©”ëª¨ë¦¬ í• ë‹¹ ì‹¤íŒ¨\r\n");
     return FR_OK;
   }
 #endif
@@ -529,7 +529,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
 
   io_printf("Writing %lu bytes to %s...\r\n", (unsigned long)fileSize, path);
 
-  // ÆÄÀÏ ¿­±â (¾øÀ¸¸é »ı¼º, Ç×»ó »õ·Î¾²±â)
+  // íŒŒì¼ ì—´ê¸° (ì—†ìœ¼ë©´ ìƒì„±, í•­ìƒ ìƒˆë¡œì“°ê¸°)
   res = f_open(&file, path, FA_WRITE | FA_CREATE_ALWAYS);
   if (res != FR_OK)
   {
@@ -540,10 +540,10 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
     return res;
   }
 
-  // ¾²±â ½Ã°£ ÃøÁ¤ ½ÃÀÛ
+  // ì“°ê¸° ì‹œê°„ ì¸¡ì • ì‹œì‘
   startClk = HAL_GetTick();
 
-  // ÆÄÀÏ ¾²±â ·çÇÁ
+  // íŒŒì¼ ì“°ê¸° ë£¨í”„
   totalBytes = 0;
   while (totalBytes < fileSize)
   {
@@ -564,10 +564,10 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
     totalBytes += bytesRW;
   }
 
-  // µ¥ÀÌÅÍ ÇÃ·¯½Ã
+  // ë°ì´í„° í”ŒëŸ¬ì‹œ
   f_sync(&file);
 
-  // ¾²±â ½Ã°£ ÃøÁ¤ Á¾·á
+  // ì“°ê¸° ì‹œê°„ ì¸¡ì • ì¢…ë£Œ
   endClk = HAL_GetTick();
   elapsed = endClk - startClk;
 
@@ -577,7 +577,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
 
   f_close(&file);
 
-  // ============================ ÀĞ±â ÃøÁ¤ ==============================
+  // ============================ ì½ê¸° ì¸¡ì • ==============================
 
   io_printf("Reading %lu bytes from %s...\r\n", (unsigned long)fileSize, path);
 
@@ -591,7 +591,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
     return res;
   }
 
-  // ÀĞ±â ½Ã°£ ÃøÁ¤ ½ÃÀÛ
+  // ì½ê¸° ì‹œê°„ ì¸¡ì • ì‹œì‘
   startClk = HAL_GetTick();
 
   totalBytes = 0;
@@ -614,7 +614,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
     totalBytes += bytesRW;
   }
 
-  // ÀĞ±â ½Ã°£ ÃøÁ¤ Á¾·á
+  // ì½ê¸° ì‹œê°„ ì¸¡ì • ì¢…ë£Œ
   endClk = HAL_GetTick();
   elapsed = endClk - startClk;
 
@@ -628,12 +628,92 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
 #endif
   return FR_OK;
 }
-//========== ÆÄÀÏ½Ã½ºÅÛ Å×½ºÆ® ÄÚµå Á¾·á==========
+//========== íŒŒì¼ì‹œìŠ¤í…œ í…ŒìŠ¤íŠ¸ ì½”ë“œ ì¢…ë£Œ==========
 
 
 void *get_file_sem(void)
 {
   return g_fileSem;
+}
+
+void make_path(const char *path)
+{
+  char temp_path[256];
+  char *pos;
+  char *last_slash;
+  FRESULT res;
+  
+  if (path == NULL || strlen(path) == 0)
+  {
+    return;
+  }
+  
+  strncpy(temp_path, path, sizeof(temp_path) - 1);
+  temp_path[sizeof(temp_path) - 1] = '\0';
+  
+  // ë§ˆì§€ë§‰ '/' ìœ„ì¹˜ ì°¾ê¸° (íŒŒì¼ëª… ì œì™¸í•˜ê³  ë””ë ‰í† ë¦¬ ë¶€ë¶„ë§Œ ì²˜ë¦¬)
+  last_slash = strrchr(temp_path, '/');
+  if (last_slash == NULL)
+  {
+    // '/'ê°€ ì—†ìœ¼ë©´ ë””ë ‰í† ë¦¬ ê²½ë¡œê°€ ì—†ìŒ
+    return;
+  }
+  
+  // ë§ˆì§€ë§‰ '/' ì´í›„ëŠ” íŒŒì¼ëª…ì´ë¯€ë¡œ ì œê±°
+  *last_slash = '\0';
+  
+  OS_PEND_SEM(g_fileSem, osWaitForever);
+  
+  pos = temp_path;
+  
+  if (*pos == '/')
+  {
+    pos++;
+  }
+  
+  while ((pos = strchr(pos, '/')) != NULL)
+  {
+    *pos = '\0';
+    
+    FILINFO fno;
+    res = f_stat(temp_path, &fno);
+    if (res == FR_NO_FILE)
+    {
+      res = f_mkdir(temp_path);
+      if (res != FR_OK)
+      {
+        ERROR_PRINTF("Failed to create directory: %s (Error: %d)", temp_path, res);
+      }
+    }
+    else if (res == FR_OK && !(fno.fattrib & AM_DIR))
+    {
+      ERROR_PRINTF("Path exists but is not a directory: %s", temp_path);
+    }
+    
+    *pos = '/';
+    pos++;
+  }
+  
+  // ë§ˆì§€ë§‰ ë””ë ‰í† ë¦¬ ìƒì„±
+  if (strlen(temp_path) > 0)
+  {
+    FILINFO fno;
+    res = f_stat(temp_path, &fno);
+    if (res == FR_NO_FILE)
+    {
+      res = f_mkdir(temp_path);
+      if (res != FR_OK)
+      {
+        ERROR_PRINTF("Failed to create directory: %s (Error: %d)", temp_path, res);
+      }
+    }
+    else if (res == FR_OK && !(fno.fattrib & AM_DIR))
+    {
+      ERROR_PRINTF("Path exists but is not a directory: %s", temp_path);
+    }
+  }
+  
+  OS_POST_SEM(g_fileSem);
 }
 
 void filesystem_init(void)

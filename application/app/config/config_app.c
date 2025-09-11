@@ -312,9 +312,12 @@ void check_config_app(void)
 void save_config_app(void)
 { 
   uint32_t crc;
+  uint8_t *p_start;
 
-  config.start = 0;
-  crc = drv_crc32_with_padding( &config.start,sizeof(config_t)-sizeof(config.header));
+
+  p_start = (uint8_t *)&config + sizeof(config.header);
+
+  crc = drv_crc32_with_padding( p_start,sizeof(config_t)-sizeof(config.header));
   
   config.header.magicNum = CONFIG_MAGIC;
   config.header.crc = crc;
@@ -327,29 +330,26 @@ void load_config_app(void)
 {
 
 #if 0 // CRC 미사용(test 필요)
-  crc_result = false;
 
-  config_t *p_config = user_malloc(sizeof(config_t));//미사용
+  uint8_t *p_start;
+  uint32_t crc;
 
-  drv_fram_read(CONFIG_START_ADDRESS, (uint8_t *)p_config, sizeof(config_t));
+  drv_fram_read(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config_t));
 
-  if (p_config->header.magicNum == CONFIG_MAGIC)
+  p_start = (uint8_t *)&config + sizeof(config.header);
+
+  if (config.header.magicNum == CONFIG_MAGIC)
   {
-    crc = crc32_hw_with_padding(&p_config->single, sizeof(config_t) - sizeof(p_config->header));
-    if (crc == p_config->header.crc)
+    crc = drv_crc32_with_padding(p_start, sizeof(config_t) - sizeof(config.header));
+    if (crc != config.header.crc)
     {
-      memcpy(config, p_config, sizeof(config_t));
-      crc_result = true;
+      config = config_app_default;
     }
   }
 
-  if (crc_result == false)
-  {
-  }
-  user_free(p_config);
-#endif
+#else
   drv_fram_read(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
-
+#endif
   check_config_app();
 
   if (g_config_app_change_count)
@@ -469,20 +469,22 @@ void make_comList(char *out, uint16_t outsize)
   }
 }
 
-#define PATH_CONFIG_APP_BIN "0:config_app.bin"
+#define PATH_CONFIG_APP_BIN "0:back_up/config_app.bin"
 void backup_config_app(void)
 {
   FRESULT f_ret;
-
+    make_path(PATH_CONFIG_APP_BIN);
   f_ret = write_file(PATH_CONFIG_APP_BIN,(uint8_t *)&config,sizeof(config),0);
   if(f_ret == FR_OK)
   {
-    io_printf("0:config_app.bin has been saved.\r\n");
+    io_printf("%s에 저장되었습니다\r\n",PATH_CONFIG_APP_BIN);
   }
 }
 
 void restore_config_app(void)
 {
+  uint8_t *p_start;
+
   config_t *p_config;
   bool crc_result= false;
   uint32_t crc;
@@ -499,9 +501,12 @@ void restore_config_app(void)
       user_free(p_config);
       return ;
     }
-      if (p_config->header.magicNum == CONFIG_MAGIC)
+  
+    p_start = (uint8_t*)p_config + sizeof(p_config->header);
+
+    if (p_config->header.magicNum == CONFIG_MAGIC)
       {
-        crc = drv_crc32_with_padding(&p_config->start, sizeof(config_t) - sizeof(p_config->header));
+        crc = drv_crc32_with_padding(p_start, sizeof(config_t) - sizeof(p_config->header));
         if (crc == p_config->header.crc)
         {
           memcpy(&config, p_config, sizeof(config_t));

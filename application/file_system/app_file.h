@@ -7,8 +7,8 @@
 
 #include "fatfs.h"
 
-#define MAX_FILENAME_LEN 100  // ¹ÝÈ¯ÇÒ ÆÄÀÏ ÀÌ¸§ÀÇ ÃÖ´ë ±æÀÌ
-#define MAX_FILES_TO_FIND 1   // Ã£À» ÆÄÀÏÀÇ ÃÖ´ë °³¼ö (°á°ú¸¦ ÀúÀåÇÒ ¹è¿­ÀÇ Å©±â)
+#define MAX_FILENAME_LEN 100  // ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½
+#define MAX_FILES_TO_FIND 1   // Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ï¿½ï¿½ Å©ï¿½ï¿½)
 
 void filesystem_init(void);
 
@@ -22,6 +22,9 @@ FRESULT delete_file(const char *fileName);
 FRESULT find_files_by_extension(const TCHAR *folder_path, const TCHAR *extension,
                                 char found_filenames[][MAX_FILENAME_LEN],
                                 int max_filenames_to_store, int *p_files_found_count);
+void make_path(const char *path);
+
+
 
 void *get_file_sem(void);
 

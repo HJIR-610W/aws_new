@@ -8,6 +8,7 @@
 #include "drv_crc.h"
 #include "dev_io.h"
 #include "user_heap.h"
+
 config_sensor_t g_config_sensor;
 
 const config_sensor_t g_sensor_att_default =
@@ -120,10 +121,11 @@ void limit_jsgp215(void)
 void save_config_sensor(void)
 {
   uint32_t crc;
+  uint8_t *p_start;
 
-  g_config_sensor.start = 0;
-  crc = drv_crc32_with_padding(&g_config_sensor.start,
-                              sizeof(config_sensor_t) - sizeof(g_config_sensor.header));
+  p_start = (uint8_t *)&g_config_sensor + sizeof(g_config_sensor.header);
+
+  crc = drv_crc32_with_padding(p_start,sizeof(config_sensor_t) - sizeof(g_config_sensor.header));
 
   g_config_sensor.header.magicNum = CONFIG_MAGIC;
   g_config_sensor.header.crc = crc;
@@ -135,32 +137,29 @@ void load_config_sensor(void)
 {
 
 
-#if 0 
-  //체크 
-  crc_result = false;
-  
-  config_sensor_t *p_config = user_malloc(sizeof(config_sensor_t));
+#if 0
+  uint32_t crc;
+  uint8_t *p_start;
 
-  drv_fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)p_config, sizeof(config_sensor_t));
 
-  if (p_config->header.magicNum == CONFIG_MAGIC)
+  drv_fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(config_sensor_t));
+
+  p_start = (uint8_t *)&g_config_sensor + sizeof(g_config_sensor.header);
+
+  if (g_config_sensor.header.magicNum == CONFIG_MAGIC)
   {
-    crc = crc32_hw_with_padding(&p_config->single,
-                                sizeof(config_sensor_t) - sizeof(p_config->header));
-    if (crc == p_config->header.crc)
+    crc = drv_crc32_with_padding(p_start, sizeof(config_sensor_t) - sizeof(g_config_sensor.header));
+    if (crc != g_config_sensor.header.crc)
     {
-      memcpy(g_config_sensor, p_config, sizeof(config_sensor_t));
-      crc_result = true;
+      memset(&g_config_sensor, 0xff, sizeof(g_config_sensor));
     }
   }
 
-  if (crc_result == false)
-  {
 
-  }
-  user_free(p_config);
-#endif
+
+#else
   drv_fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
+#endif
 
   limit_adc();
 
@@ -192,55 +191,59 @@ void config_sensor_reset(void)
 
 
 
-#define PATH_CONFIG_SENSOR_BIN "0:config_sensor.bin"
+#define PATH_CONFIG_SENSOR_BIN "0:back_up/config_sensor.bin"
 void backup_config_sensor(void)
 {
   FRESULT f_ret;
 
+      make_path(PATH_CONFIG_SENSOR_BIN);
+      
   f_ret = write_file(PATH_CONFIG_SENSOR_BIN, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor), 0);
   if (f_ret == FR_OK)
   {
-    io_printf("0:config_sensor.bin 저장되었습니다.\r\n");
+    io_printf("%s에 저장되었습니다\r\n",PATH_CONFIG_SENSOR_BIN);
   }
 }
 
 void restore_config_sensor(void)
 {
+  uint8_t *p_start;
+
   config_sensor_t *p_config;
-  bool crc_result= false;
+  bool crc_result = false;
   uint32_t crc;
   FRESULT f_ret;
-  
-  
-  p_config = (config_sensor_t*)user_malloc(sizeof(config_sensor_t));
 
-  if(p_config)
+  
+  p_config = (config_sensor_t *)user_malloc(sizeof(config_sensor_t));
+
+  p_start = (uint8_t *)p_config + sizeof(p_config->header);
+
+  if (p_config)
   {
-    f_ret = read_file(PATH_CONFIG_SENSOR_BIN,(uint8_t*)p_config,sizeof(config_sensor_t),0);
-    
-    if(f_ret != FR_OK)
+    f_ret = read_file(PATH_CONFIG_SENSOR_BIN, (uint8_t *)p_config, sizeof(config_sensor_t), 0);
+
+    if (f_ret != FR_OK)
     {
-      io_printf("파일 읽기 오류  %d\r\n",f_ret);
+      io_printf("파일 읽기 오류  %d\r\n", f_ret);
       user_free(p_config);
-      return ;
+      return;
     }
-      if (p_config->header.magicNum == CONFIG_MAGIC)
+    if (p_config->header.magicNum == CONFIG_MAGIC)
+    {
+      crc = drv_crc32_with_padding(p_start, sizeof(config_sensor_t) - sizeof(p_config->header));
+      if (crc == p_config->header.crc)
       {
-        crc = drv_crc32_with_padding(&p_config->start, sizeof(config_sensor_t) - sizeof(p_config->header));
-        if (crc == p_config->header.crc)
-        {
-          memcpy(&g_config_sensor, p_config, sizeof(config_sensor_t));
-          crc_result = true;
-          io_printf("0:config_sensor.bin 복구되었습니다.\r\n");
-        }
+        memcpy(&g_config_sensor, p_config, sizeof(config_sensor_t));
+        crc_result = true;
+        io_printf("0:config_sensor.bin 복구되었습니다.\r\n");
       }
-    
-      if (crc_result == false)
-      {
-        io_printf("체크섬 오류\r\n");
-      }
- 
- 
+    }
+
+    if (crc_result == false)
+    {
+      io_printf("체크섬 오류\r\n");
+    }
 
     user_free(p_config);
   }

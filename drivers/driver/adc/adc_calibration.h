@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config_define.h"
+
 #define ADS1220_NUM_SINGLE_ENDED_CHANNELS 18// ads1210
 #define ADS1220_NUM_DIFFERENTIAL_CHANNELS 8
 #define DEFAULT_FACTORY_CAL_TEMP 25.0f
@@ -69,6 +71,7 @@ typedef struct resolution_s
 
 typedef struct
 {
+  config_header_t header;
   config_adc_bits_t ads1220_bits;
   adc_cal_params_t ads1220_se_cal[ADS1220_NUM_SINGLE_ENDED_CHANNELS];
   adc_cal_params_t ads1220_di_cal[ADS1220_NUM_DIFFERENTIAL_CHANNELS];

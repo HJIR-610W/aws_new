@@ -21,6 +21,7 @@ void backup_config(void)
 {
   backup_config_app();
   backup_config_sensor();
+  backup_adc_calibration();
 }
 
 void restore_config(void)

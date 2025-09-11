@@ -147,7 +147,8 @@
 			"app_console_test.h": "c",
 			"divas_protocol_handler.h": "c",
 			"cmsis_os.h": "c",
-			"lwipopts.h": "c"
+			"lwipopts.h": "c",
+			"config_define.h": "c"
 		}
 	}
 }

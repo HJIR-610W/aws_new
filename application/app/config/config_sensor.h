@@ -124,7 +124,6 @@ typedef struct jinsung_sjgp215_config_s
 typedef struct config_manage_s
 {
   config_header_t header;
-  uint8_t start;
   uint8_t adc_cnt;
   adc_config_t adc[50];
   hjtemp_config_t hjtemp;

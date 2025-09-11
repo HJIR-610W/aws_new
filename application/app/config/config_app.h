@@ -96,7 +96,6 @@ typedef enum
 typedef struct config_s
 {
   config_header_t header;
-  uint8_t start;  //  bool restart_required;
   uint16_t id;
   sensor_t sensor[SENSOR_LIST_MAX];
   uint16_t password;

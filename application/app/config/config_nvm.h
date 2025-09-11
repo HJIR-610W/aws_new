@@ -7,7 +7,6 @@
 typedef struct sensor_nvm_S
 {
   config_header_t header;
-  uint8_t start;
   uint32_t log_q_cnt;
 } config_nvm_t;
 
