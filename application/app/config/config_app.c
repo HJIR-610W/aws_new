@@ -288,12 +288,23 @@ void check_config_app(void)
   g_config_app_change_count++;
   }
 
-
-  if(config.lcd_off_time_index > _countof(lcd_off_time_list_eng) )
+  if(config.com_encrypt_active > 1)
   {
-    config.lcd_off_time_index = eLCD_OFF_10SEC;
+    config.com_encrypt_active = config_app_default.com_encrypt_active;
     g_config_app_change_count++;
   }
+
+  if (config.dev_telnet_mode > eTELNET_CLIENT)
+  {
+    config.dev_telnet_mode = config_app_default.dev_telnet_mode;
+    g_config_app_change_count++;
+  }
+
+    if (config.lcd_off_time_index > _countof(lcd_off_time_list_eng))
+    {
+      config.lcd_off_time_index = config_app_default.lcd_off_time_index;;
+      g_config_app_change_count++;
+    }
 }
 
 
