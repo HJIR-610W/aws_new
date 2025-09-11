@@ -62,7 +62,8 @@ void isrEventTask(void *arg)
         case eUSER_UART_QUAD_8_RX_FULL:
           task_printf("eUSER_UART_RX_FULL %d\r\n",cmd);
           break;
-        
+        case eSYSTEM_RESET:
+          reset_system("user reset");
         default:
           break;
         }

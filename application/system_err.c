@@ -9,7 +9,8 @@
 #include "util_time.h"
 #include "vt100_command.h"
 #include "os_user_def.h"
-
+#include "app_file.h"
+#include "task_isrEvent.h"
 void Error_Handler(const char *file,const int32_t line)
 {
   io_printf("%s,%d\r\n",file,line);
@@ -41,6 +42,11 @@ void reset_system(const char * pFmt, ...)
   uint32_t len=0;
   va_list ap;
   
+  if(get_file_sem())
+  {
+    osSemaphoreAcquire(get_file_sem(),2000);//누구도 파일 접근 안항 상태에서만 리셋 
+  }
+
 
     __disable_irq();;//TODO 인터럽트 비활성 코드 삽입
 
@@ -85,7 +91,7 @@ static osTimerId_t s_reset_timer_id;
 // 타이머 콜백 함수
 void rtu_reset_callback(void *argument)
 {
-  HAL_NVIC_SystemReset();
+  os_send_event(eSYSTEM_RESET, 0);
 }
 
 void reset_system_delay(uint32_t delay_seconds)

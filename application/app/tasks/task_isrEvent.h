@@ -15,6 +15,7 @@ typedef enum isrEvent_cmd_e
   eUSER_UART_QUAD_6_RX_FULL,
   eUSER_UART_QUAD_7_RX_FULL,
   eUSER_UART_QUAD_8_RX_FULL,
+  eSYSTEM_RESET,
   eUNSUED_CMD = 255
 } eISR_EVENT_CMD_t;
 

@@ -148,7 +148,8 @@
 			"divas_protocol_handler.h": "c",
 			"cmsis_os.h": "c",
 			"lwipopts.h": "c",
-			"config_define.h": "c"
+			"config_define.h": "c",
+			"app_file.h": "c"
 		}
 	}
 }

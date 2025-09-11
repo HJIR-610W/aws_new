@@ -12,7 +12,7 @@
 #include "drv_crc.h"
 #include "ff.h"
 
-
+#include "drv_fram.h"
 
 extern config_adc_nvm_t g_adc_config_nvm;
 
