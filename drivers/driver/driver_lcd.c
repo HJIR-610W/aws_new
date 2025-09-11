@@ -148,3 +148,31 @@ void drv_lcd_close(int num)
       break;
   }
 }
+
+void driver_lcd_backup_framebuffer(int num)
+{
+  switch (num)
+  {
+  case DRIVER_CLCD:
+    st7920_backup_framebuffer();
+    break;
+
+  default:
+    break;
+  }
+
+}
+
+void driver_lcd_restore_framebuffer(int num)
+{
+  switch (num)
+  {
+  case DRIVER_CLCD:
+    st7920_restore_framebuffer();
+    break;
+
+  default:
+    break;
+  }
+
+}

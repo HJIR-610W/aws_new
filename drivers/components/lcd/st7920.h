@@ -54,4 +54,6 @@ uint8_t st7920_read_data(driver_t *drv);
 bool st7920_is_busy(driver_t *drv);
 void st7920_wait_ready(driver_t *drv);
 
+void st7920_backup_framebuffer(void);
+void st7920_restore_framebuffer(void);
 #endif

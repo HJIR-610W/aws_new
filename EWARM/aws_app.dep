@@ -197,12 +197,12 @@
             <file>$PROJ_DIR$\..\Application\io\cli\cli_input.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_debug_console.c</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\terminal.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\user_diskio.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.c</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\application\http_server\task_http_server.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\core_json.h</file>
             <file>$PROJ_DIR$\..\application\file_system\app_file.c</file>
@@ -1665,17 +1665,17 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_led.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\semphr.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_system.h</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_app.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_app.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\hj_snow_menu\hj_snow_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\etharp.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_network.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_cali.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver_uart_def.h</file>
             <file>$PROJ_DIR$\..\application\communications\ethernet\tcp_define.h</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_memory_map.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_memory_map.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\bridgeif.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rs232.h</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_adc.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\queue.h</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Product_string.h</file>
@@ -1685,7 +1685,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_sensor.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\threading.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\fsl_common.h</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_sensor.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_sensor.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\inet_chksum.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt.h</file>
@@ -1848,8 +1848,8 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip6_addr.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sockets.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rs485.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\memp_std.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\ethernet.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_hart.h</file>
@@ -1872,7 +1872,7 @@
             <file>$PROJ_DIR$\..\Application\app\protocols\divas\aws_monitor.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_uart.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\list.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sys.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\deprecated_definitions.h</file>
@@ -1883,7 +1883,7 @@
             <file>$PROJ_DIR$\..\application\app\test\test_power.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\system\arch\sys_arch.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\tcp.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\common\const_string.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_logging.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\cmsis_os.h</file>
@@ -1901,7 +1901,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\portable\IAR\ARM_CM4F\portmacro.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\portable.h</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_define.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_define.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\def.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_manager.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_data.h</file>
@@ -1964,7 +1964,7 @@
             <file>$PROJ_DIR$\..\application\system_err.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_gpio_ex.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\sunshine_data.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\diskio.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\integer.h</file>
@@ -2016,7 +2016,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_dma_ex.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_ll_sdmmc.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_ll_fsmc.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\nd6_priv.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rtc.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_adc.h</file>
@@ -3634,7 +3634,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1843 1693 1738 1698 1727 1676 1708 1696 1686 1695 1673 1758 1697 1882 1725 1950 1936 1688 1796 1918 427 1783 1945 1965 143 238 1749 1690 1732 1748 1718 1736 1707 1700 1726 1733 1735 1745 1701 1734 1986 1992 1938 1957 1941 1946 2008 1976 2014 2022 1977 2004 1993 1988 2005 1994 1995 2010 1985 2000 1989 2030 1972 2013 1991 2028 2009 1970 1971 1984 1975 1949 1951 1775 156 146 1903 153 304 245 1990 1660 1883 287 1680 1896 1669 1665 253 1890 1908 1667 441 1666 1879 1807 1829 122 131 127 1944 137 1878 2011 1867 1844 1959 149 1887 166 1853 1895 1870 1894 1909 1854 1902 1826 429 1982 1973 1931 1956 139</file>
+                    <file> 1843 1693 1738 1698 1727 1676 1708 1696 1686 1695 1673 1758 1697 1882 1725 1950 1936 1688 1796 1918 427 1783 1945 1965 143 238 1749 1690 1732 1748 1718 1736 1707 1700 1726 1733 1735 1745 1701 1734 1986 1992 1938 1957 1941 1946 2008 1976 2014 2022 1977 2004 1993 1988 2005 1994 1995 2010 1985 2000 1989 2030 1972 2013 1991 2028 2009 1970 1971 1984 1975 1949 1951 1775 156 146 1903 153 304 245 1990 1660 1883 287 1680 1896 1669 1665 253 1890 1908 1667 441 1666 1879 1807 1829 122 131 127 1944 137 1878 2011 1867 1844 1959 149 1887 166 1853 1895 1870 1894 1909 1854 1902 1826 429 1982 1973 1931 1956 139 2019 1760</file>
                 </tool>
             </inputs>
         </file>
@@ -6477,7 +6477,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 262 1697 1698 1727 1676 1708 1696 1693 304 1695 1686 1673 1887 1725 166 1853 1895 1870 1894 1909 1745 1854 1902 1882 1855 1868 1888 156 238 1749 1690 1732 1748 1718 1736 1707 1700 1726 1733 1735 1701 1734 1986 1992 1938 1957 1941 1946 2008 1976 2014 2022 1977 2004 1993 1988 2005 1994 1995 2010 1985 2000 1989 2030 1972 2013 1991 2028 2009 1970 1971 1984 1975 1949 1951 1775 295 143 146 1903 153 245 1990 1965 427 1783 1945 144 1900 1905 1958 1773 1705 258</file>
+                    <file> 262 1697 1698 1727 1676 1708 1696 1693 304 1695 1686 1673 1900 1905 1958 1773 1882 1725 1888 156 238 1749 1690 1732 1748 1718 1736 1707 1700 1726 1733 1735 1745 1701 1734 1986 1992 1938 1957 1941 1946 2008 1976 2014 2022 1977 2004 1993 1988 2005 1994 1995 2010 1985 2000 1989 2030 1972 2013 1991 2028 2009 1970 1971 1984 1975 1949 1951 1775 295 143 146 1903 153 245 1990 1965 427 1783 1945 144 1705 258 1887 166 1853 1895 1870 1894 1909 1854 1902 1855 1868 185 1738</file>
                 </tool>
             </inputs>
         </file>

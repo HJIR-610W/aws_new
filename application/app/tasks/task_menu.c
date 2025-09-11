@@ -35,6 +35,7 @@
 #include "FreeRTOS.h"
 #include "schedule.h"
 #include "system_err.h"
+#include "menu_handler.h"
 
 
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
@@ -1211,10 +1212,21 @@ void menuTask(void *arg)
       setup_menu();
       screen_off_time = OS_GET_TICK();//LCD off안되도록 갱신
     }
+    else if (key == KEY_CODE_CTRL_P)
+    {
+      int32_t choice = 0;
+      if(input_active("Reset Device?",&choice)==MENU_OK)
+      {
+        if (choice)
+        {
+          reset_system("key reset");
+        }
+      }
+    }
     else if (key != KEY_CODE_NONE)
     {
-      screen_page_handle(&lcd_win, key);
-      screen_off_time = OS_GET_TICK(); // LCD off안되도록 갱신
+       screen_page_handle(&lcd_win, key);
+        screen_off_time = OS_GET_TICK(); // LCD off안되도록 갱신
     }
 
     if (get_config_app()->lcd_off_time_index != eLCD_OFF_ALWAYS_ON)

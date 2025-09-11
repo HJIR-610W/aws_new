@@ -6,22 +6,21 @@
 #include "st7920.h"
 
 #include <string.h>
+#include <math.h>
+#include <stdlib.h>
 
-
-#include "FreeRTOS.h"
 #include "cmsis_os2.h"
-#include "task.h"
 #include "bsp_spi.h"
 #include "bsp_do.h"
-#include "pcb_define.h"
 #include "driver_lcd_define.h"
 #include "bsp.h"
 #include "bsp_delay.h"
-#include <math.h>
-#include <stdlib.h>
 #include "drv_power.h"
 #include "font\font_6x8.h"
-
+#include "FreeRTOS.h"
+#include "task.h"
+#include "pcb_define.h"
+#include "user_heap.h"
 
 #define ST7920_WIDTH 128
 #define ST7920_HEIGHT 64
@@ -909,3 +908,32 @@ void st7920_put_ch(driver_t *drv, int row, int col, uint8_t ch)
     }
   }
 }
+
+
+uint8_t *p_back_framebuffer=NULL;
+
+void st7920_backup_framebuffer(void)
+{
+    if(p_back_framebuffer == NULL)
+    {
+        p_back_framebuffer = user_malloc(sizeof(framebuffer));
+
+    
+    }
+
+    if(p_back_framebuffer)
+    {
+        memcpy(p_back_framebuffer,framebuffer,sizeof(framebuffer));
+    }
+}
+
+void st7920_restore_framebuffer(void)
+{
+    if (p_back_framebuffer)
+    {
+        memcpy(framebuffer, p_back_framebuffer, sizeof(framebuffer));
+
+    }
+}
+
+

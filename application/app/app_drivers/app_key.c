@@ -149,13 +149,11 @@ void scan_key(void)
 
      bsp_uart_recv(serial_key, &data, 1, 0xFFFFFFFF);
 
-
      key = process_serial_data(data);
   
       if (key != KEY_CODE_NONE) 
       {
-
-          button_put_key(key);
+        button_put_key(key);
       }
 
    

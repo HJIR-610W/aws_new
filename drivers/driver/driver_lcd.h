@@ -29,4 +29,7 @@ void driver_lcd_draw_line(driver_t *drv, uint8_t x1, uint8_t y1, uint8_t x2, uin
 void driver_lcd_flush(driver_t *drv);
 void driver_lcd_put_ch(driver_t *drv, int row, int col, uint8_t ch);
 void driver_write_string_at(driver_t *drv, int row, int col, const char *str);
+
+void driver_lcd_backup_framebuffer(int num);
+void driver_lcd_restore_framebuffer(int num);
 #endif

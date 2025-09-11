@@ -76,7 +76,7 @@ void screen_refresh(void)
 
 void screen_put_ch(int row, int col, uint8_t ch)
 {
-    driver_lcd_put_ch(p_s_lcd,row,col,ch);
+  driver_lcd_put_ch(p_s_lcd,row,col,ch);
 }
 
 
@@ -89,8 +89,6 @@ void screen_clear(void)
       screen_put_ch(row, i, ' ');
     }
   }
-
-
 }
 
 void screen_page_create(screen_page_t* win)
