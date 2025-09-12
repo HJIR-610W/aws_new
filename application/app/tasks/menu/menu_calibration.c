@@ -32,6 +32,7 @@ extern float g_current_temp;
 
 #define FACTORY_MENU_SINGLE     0
 #define FACTORY_MENU_DIFF       1
+#define FACTORY_MENU_SINGLE_ALL 2
 
 #define VIEW_MENU_SINGLE        0
 #define VIEW_MENU_DIFF          1
@@ -55,6 +56,7 @@ void draw_cali_setup_menu_factory_page(screen_menu_t* p_win)
   screen_menu_start(p_win);
   screen_menu_printf(p_win, FACTORY_MENU_SINGLE ,"Single");
   screen_menu_printf(p_win, FACTORY_MENU_DIFF, "Diff");
+  screen_menu_printf(p_win, FACTORY_MENU_SINGLE_ALL, "Single All");
   screen_menu_clear(p_win);
 }
 
@@ -223,6 +225,206 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   return status;
 }
 
+void draw_adc_all(screen_page_t *p_win, adc_channel_type_t type,float average[16],uint32_t avg_cnt[16])
+{
+  char buff[SCREEN_COLS + 1];
+  uint8_t err;
+  int32_t raw;
+
+  
+
+  screen_page_start(p_win);
+
+  make_centered(buff, sizeof(buff), "Ch   ADC     AVG", SCREEN_COLS);
+  screen_page_printf(p_win, "%s", buff);
+
+
+  for (int32_t channel = 0; channel < 15; channel++)
+  {//SE 00:1234567 1234567
+    raw = (int32_t)drv_adc_single_raw_read(channel, 1, &err);
+    avg_cnt[channel]++;
+    average[channel] = recursive_avg_i(average[channel], raw, avg_cnt[channel]);
+    screen_page_printf(p_win, "%-4s:%7d %7d", adc_single_list[channel], raw, average[channel]);
+  }
+
+  screen_page_clear(p_win);
+}
+
+
+#define ADC_SE_CHANNEL_COUNT 16
+int32_t cali_single_all(adc_channel_type_t type)
+{
+  adc_cal_params_t *cal_params_ptr;
+  adc_cal_point_t p1;
+  adc_cal_point_t p2;
+  config_adc_adv_t *p_adc;
+
+  screen_page_t lcd_win;
+  int32_t choice;
+  int32_t status;
+  float p1_average[ADC_SE_CHANNEL_COUNT];
+  float p2_average[ADC_SE_CHANNEL_COUNT];
+  uint32_t average_count[ADC_SE_CHANNEL_COUNT];
+  int32_t key;
+  float input_votage;
+  bool cali_p1_done = false;
+  bool cali_p2_done = false;
+  const char *point_list[2] = {"Point 1(low)", "Point 2(high)"};
+  p_adc = &g_adc_config_ads1220;
+  choice = 0;
+  status = input_combobox("Select cal point",point_list,_countof(point_list),&choice);
+  if(status != MENU_OK)
+  return status;
+
+  if(choice == 1)//point 2만 하고 싶다면
+  {
+    goto CALI_POINT2;
+  }
+
+
+  choice = 0;
+  status = input_active("Start cali P1?", &choice);
+  if (status != MENU_OK || choice == 0)
+    return status;
+
+  show_popup("Information", "Connet P1");
+
+  for (int i = 0; i < ADC_SE_CHANNEL_COUNT; i++)
+  {
+    p1_average[i] = 0;
+    average_count[i] = 0;
+  }
+
+  screen_page_create(&lcd_win);
+
+  lcd_win.total_pages = 1;
+  lcd_win.chunk_scroll_use = 1;
+
+  while (1)
+  {
+    draw_adc_all(&lcd_win, ADC_CHANNEL_TYPE_SINGLE_ENDED, p1_average, average_count);
+    screen_refresh();
+
+    key = get_button_key(10);
+
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
+    {
+      break;
+    }
+    else if (key == KEY_CODE_ENTER)
+    {
+      cali_p1_done = true;
+      break;
+    }
+    if (key != KEY_CODE_UNKNOWN)
+    {
+      screen_page_handle(&lcd_win, key);
+    }
+  }
+
+  if (cali_p1_done == false)
+  {
+    return convert_key_to_status(key);
+  }
+  p1.reference_value = 0.5;
+  status = input_float("Low Value(V)", -1000.0f, 1000.0f, &p1.reference_value, "%8.3f");
+  if (status != MENU_OK)
+    return status;
+
+CALI_POINT2:
+
+  choice = 0;
+  status = input_active("Start cali P2?", &choice);
+  if (status != MENU_OK || choice == 0)
+  {
+
+    for (int channel = 0; channel < ADC_SE_CHANNEL_COUNT; channel++)
+    {
+      cal_params_ptr = &p_adc->single_ended_cal[channel];
+      if (cali_p2_done == false) // p1을 안하고 p2만 새롭게 한 경우
+      {
+        p2 = cal_params_ptr->p2_cal_point;
+      }
+      p1.raw_value = (int32_t)p1_average[channel];
+      adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25.0f);
+    }
+
+    return status;
+
+  }
+
+
+
+  show_popup("Information", "Connet P2");
+
+  for (int i = 0; i < ADC_SE_CHANNEL_COUNT; i++)
+  {
+    p2_average[i] = 0;
+    average_count[i] = 0;
+  }
+
+  screen_page_create(&lcd_win);
+
+  lcd_win.total_pages = 1;
+  lcd_win.chunk_scroll_use = 1;
+
+  while (1)
+  {
+    draw_adc_all(&lcd_win, ADC_CHANNEL_TYPE_SINGLE_ENDED, p2_average, average_count);
+    screen_refresh();
+
+    key = get_button_key(100);
+
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
+    {
+      break;
+    }
+    else if (key == KEY_CODE_ENTER)
+    {
+      cali_p2_done = true;
+      break;
+    }
+    if (key != KEY_CODE_UNKNOWN)
+    {
+      screen_page_handle(&lcd_win, key);
+    }
+  }
+
+  if (cali_p2_done == false)
+  {
+    return convert_key_to_status(key);
+  }
+
+
+
+
+  p2.reference_value = 4.5;
+  status = input_float("High Value(V)", -1000.0f, 1000.0f, &p2.reference_value, "%8.3f");
+  if (status != MENU_OK)
+    return status;
+
+  for (int channel = 0; channel < ADC_SE_CHANNEL_COUNT; channel++)
+  {
+    cal_params_ptr =  &p_adc->single_ended_cal[channel];
+    if(cali_p1_done==false)//p1을 안하고 p2만 새롭게 한 경우
+    {
+      p1 = cal_params_ptr->p1_cal_point;
+    }
+    else
+    {
+      p1.raw_value = (int32_t)p1_average[channel];
+    }
+    p2.raw_value = (int32_t)p2_average[channel];
+    adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25.0f);
+  }
+
+  save_adc_cali();
+
+  return MENU_OK;
+}
+
+
+
 int32_t cali_setup_menu_factory(void)
 {
   int32_t index;
@@ -261,8 +463,11 @@ int32_t cali_setup_menu_factory(void)
         case FACTORY_MENU_DIFF:
           status = cali_setup_menu_factory_calibration(ADC_CHANNEL_TYPE_DIFFERENTIAL);
           break;
+        case FACTORY_MENU_SINGLE_ALL:
+          status = cali_single_all(ADC_CHANNEL_TYPE_SINGLE_ENDED);
+        break;
 
-        default:
+            default:
           break;
       }
       
@@ -330,7 +535,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
         }
         else
         {
-          screen_printf(2, 0, "V:%.6f", voltage);
+          screen_printf(2, 0, "V:%.4f", voltage);
         }
         screen_refresh();
         key = get_button_key(100);

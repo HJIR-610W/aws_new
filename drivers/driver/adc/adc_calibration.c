@@ -2,7 +2,7 @@
 
 #include "adc_calibration.h"
 #include "config_adc.h"
-
+#include "system_err.h"
 config_adc_nvm_t g_adc_config_nvm;
 config_adc_adv_t g_adc_config_stm32;
 config_adc_adv_t g_adc_config_ads1220;
@@ -166,40 +166,31 @@ bool adc_config_init(config_adc_adv_t* cfg, uint32_t resolution_bits, float refe
   return true;
 }
 
-// --- 공장 캘리브레이션 함수 ---
+
 bool adc_perform_factory_calibration(config_adc_adv_t* cfg, adc_cal_params_t* cal_params,
                                      adc_cal_point_t p1, adc_cal_point_t p2, float cal_temp)
 {
   if (!cal_params || !cfg)
     return false;
-  if (p1.raw_value == p2.raw_value)
-  {
-    cal_params->is_calibrated = false;
-    return false;
-  }
-  if (fabsf(p1.reference_value - p2.reference_value) < 1e-9f)
-  {
-    cal_params->is_calibrated = false;
-    return false;
-  }
-  if (p1.raw_value > cfg->bits->max_raw_value || p2.raw_value > cfg->bits->max_raw_value)
-  {
-     /* 경고 */
-  }
 
-  cal_params->factory_slope =
-      (p2.reference_value - p1.reference_value) / (float)(p2.raw_value - p1.raw_value);
+  // 전압 = ADC*기울기 + 오프셋
+  // 오프셋 = 전압 - ADC*기울기
+
+  cal_params->factory_slope = (p2.reference_value - p1.reference_value) / (float)(p2.raw_value - p1.raw_value);
   cal_params->factory_offset = p1.reference_value - cal_params->factory_slope * (float)p1.raw_value;
   cal_params->factory_cal_temp = cal_temp;
-  cal_params->is_calibrated = true;
-  // comp_method, 계수, LUT는 이 함수에서 변경하지 않음 (별도 설정)
+  cal_params->p1_cal_point = p1;
+  cal_params->p2_cal_point = p2;
 
-  if (adc_printf)
-    adc_printf("공장 캘리브레이션 성공 (%.1f°C): Slope=%.6f, Offset=%.6f\n", cal_temp,
-               cal_params->factory_slope, cal_params->factory_offset);
-  save_adc_cali();  
+  cal_params->is_calibrated = true;
+  DEBUG_PRINTF("캘리브레이션 성공 (%.1fC): Slope=%.6f, Offset=%.6f\n", cal_temp, cal_params->factory_slope, cal_params->factory_offset);
+
   return true;
 }
+
+
+
+
 
 // --- 최종 보상 값 계산 함수 (보상 방법 선택 로직 포함) ---
 float adc_get_compensated_value(int32_t raw_value, const adc_cal_params_t* cal_params,

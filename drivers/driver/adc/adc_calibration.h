@@ -37,7 +37,11 @@ typedef struct
   float offset_correction;  // factory_offset에 더할 값 (기준온도에서 0.0)
 } temp_lut_point_t;
 
-
+typedef struct
+{
+  int32_t raw_value;
+  float reference_value;
+} adc_cal_point_t;
 typedef struct
 {
   // 공장 캘리브레이션 정보
@@ -46,14 +50,15 @@ typedef struct
   float factory_offset_trim;
   float factory_cal_temp;
   bool is_calibrated;
+  adc_cal_point_t p1_cal_point;
+  adc_cal_point_t p2_cal_point;
 
-  // 보상 방법 선택
-  temp_comp_method_t comp_method;
+  temp_comp_method_t comp_method; // 보상 방법 선택
 
   // 방법 1: 계수 사용 시
   float slope_temp_coeff;
   float offset_temp_coeff;
-#ifdef ADC_LUT
+#ifdef ADC_LUT //룩업테이블 
   // 방법 2: LUT 사용 시 (NVM 로드/저장 필요)
   temp_lut_point_t temp_comp_lut[MAX_LUT_SIZE];
 #endif
@@ -90,11 +95,7 @@ typedef struct
 
 
 
-typedef struct
-{
-  int32_t raw_value;
-  float reference_value;
-} adc_cal_point_t;
+
 
 bool adc_config_init(config_adc_adv_t* adc_config, uint32_t resolution_bits,
                      float reference_voltage);

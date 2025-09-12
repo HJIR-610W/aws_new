@@ -215,6 +215,7 @@ int handle_factory_calibration(int adc_num)
       cal_temp = 25;
       if (adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, cal_temp))
       {
+
         save_adc_cali();
         io_printf("Slope:%e Offset:%e\r\n", cal_params_ptr->factory_offset,
                   cal_params_ptr->factory_offset);
