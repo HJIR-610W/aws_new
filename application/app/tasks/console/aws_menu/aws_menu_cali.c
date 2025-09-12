@@ -676,9 +676,9 @@ int handle_view_status(int adc_num)
             }
             else
             {
-              snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d.%02d,%d", Date_Time.Year,
+              snprintf(buff, sizeof(buff), "%04d-%02d-%02d %02d:%02d:%02d.%02d ", Date_Time.Year,
                          Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min,
-                         Date_Time.Sec,Date_Time.SubSec,HAL_GetTick());
+                         Date_Time.Sec,Date_Time.SubSec);
               snprintf(buffer, sizeof(buffer), "%s SE CH:%d ADC:%8d VOLTAGE:%8.6f %.3fms\r\n", buff,
                        channel_index, raw_adc, current_val, elased_time / 1000.0f);
               io_printf("%s", buffer);
@@ -709,7 +709,7 @@ int handle_view_status(int adc_num)
             }
           }
 
-          key = get_key(10);
+          key = get_key(scan_ms);
 
         } while (key != KEY_CODE_CTRL_C);
 

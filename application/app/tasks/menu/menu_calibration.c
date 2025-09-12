@@ -37,8 +37,7 @@ extern float g_current_temp;
 #define VIEW_MENU_SINGLE        0
 #define VIEW_MENU_DIFF          1
 #define VIEW_MENU_SUMMARY       2
-
-
+#define VIEW_MENU_SUMMARY_DEFAULT  3
 
 void draw_setup_menu_calibration_page(screen_menu_t* p_win)
 {
@@ -60,24 +59,251 @@ void draw_cali_setup_menu_factory_page(screen_menu_t* p_win)
   screen_menu_clear(p_win);
 }
 
+bool g_summary_default_en = false;
+
 void draw_cali_setup_menu_view_page(screen_menu_t* p_win)
 {
   screen_menu_start(p_win);
   screen_menu_printf(p_win,VIEW_MENU_SINGLE,"Single");
   screen_menu_printf(p_win, VIEW_MENU_DIFF, "Diff");
   screen_menu_printf(p_win, VIEW_MENU_SUMMARY, "Summary");
+  if (g_summary_default_en)
+    screen_menu_printf(p_win, VIEW_MENU_SUMMARY_DEFAULT, "Summary(Default)");
   screen_menu_clear(p_win);
 }
 
+#define CALI_POINT_1 0
+#define CALI_POINT_2 1
+int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_cal_point_t *cali_p)
+{
+  int32_t adc_raw;
+  int32_t avg_cnt=0;
+  uint8_t err=0;
+  config_adc_adv_t *p_adc;
+  adc_cal_params_t *cal_params_ptr;
+  int32_t key;
+  float avg=0;
+  int32_t status;
+  p_adc = &g_adc_config_ads1220;
+  char buffer[21];
+
+  snprintf(buffer, sizeof(buffer), "CH:%d Input ref volt", channel);
+  show_popup("Information", buffer);
+
+  while (1)
+  {
+    if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+    {
+      adc_raw = (int32_t)drv_adc_single_raw_read(channel, 1, &err);
+    }
+    else
+    {
+      adc_raw = (int32_t)drv_adc_diff_raw_read(channel, 1, &err);
+    }
+
+    avg_cnt++;
+    avg = recursive_avg_i(avg, adc_raw, avg_cnt);
+
+    screen_clear();
+    screen_printf(0, 0, "RAW:%d", adc_raw);
+    screen_printf(1, 0, "AVG:%.0f", avg);
+    screen_printf(2, 0, "Press enter");
+    screen_refresh();
+
+    key = get_button_key(500);
+    if (key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
+      return convert_key_to_status(key);
+    else if (key == KEY_CODE_ENTER)
+      break;
+  }
+
+  screen_clear();
+  cali_p->raw_value = (int32_t)avg;
+  status = input_decimal("RAW", p_adc->bits->min_raw_value, p_adc->bits->max_raw_value, (int32_t *)&cali_p->raw_value);
+  if (status != MENU_OK)
+    return status;
+
+  if (point == CALI_POINT_1)
+  {
+    if (channel < DRV_ADS1220_S_CH_16)
+      cali_p->reference_value = 0.01;
+    else
+      cali_p->reference_value = 84.27;
+  }
+  else
+  {
+    if (channel < DRV_ADS1220_S_CH_16)
+      cali_p->reference_value = 4.99;
+    else
+      cali_p->reference_value = 123.24;
+  }
+
+  status = input_float("Value(V)", -200.0f, 200.0f, &cali_p->reference_value, "%6.2f");
+  if (status != MENU_OK)
+    return status;
+
+
+    return status;
+
+}
+
+int32_t setup_factory_calibration(adc_channel_type_t type)
+{
+  int32_t status;
+  int32_t key;
+  int32_t channel;
+  int32_t choice;
+  const char *point_list[] = {"Point 1(low)", "Point 2(high)","Manual P1.ADC","Manual P2.ADC"};
+  config_adc_adv_t *p_adc;
+  adc_cal_params_t *cal_params_ptr;
+  int32_t dec;
+  adc_cal_point_t p1;
+  adc_cal_point_t p2;
+  bool p1_calib_done =false;
+   char buffer[22*3];
+   int32_t len=0;
+
+  p_adc = &g_adc_config_ads1220;
+
+
+  while(1)
+  {
+  if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+  {
+    status = input_combobox("Select Single Ch", adc_se_list, _countof(adc_se_list), &channel);
+  }
+  else
+  {
+    status = input_combobox("Select DIFF Ch", adc_diff_list, _countof(adc_diff_list), &channel);
+  }
+
+  if(status != MENU_OK)
+  return status;
+
+  cal_params_ptr = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+                       ? &g_adc_config_ads1220.single_ended_cal[channel]
+                       : &g_adc_config_ads1220.differential_cal[channel];
+
+  choice = 0;
+  p1 = cal_params_ptr->p1_cal_point;
+  p2 = cal_params_ptr->p2_cal_point;
+  while(1)
+  {
+
+  status = input_combobox("Calibration", point_list,_countof(point_list),&choice);
+
+  if(status == MENU_ABORT)
+  return status;
+  if(status != MENU_OK)
+  break;
+if(cal_params_ptr->is_calibrated)
+{
+  p1_calib_done = true;
+}
+  switch(choice)
+  {
+    case 0://Point 1
+     status =  cali_point(type, channel, CALI_POINT_1,&p1);
+     if (status == MENU_ABORT)
+       return status;
+     if (status == MENU_BACK)
+       break;
+
+     p1_calib_done = true;
+     if(cal_params_ptr->is_calibrated== false)
+     {
+       show_popup("Information", "P2 Calib Required");
+       break;
+     }
+     adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25);
+     save_adc_cali();
+     len = 0;
+     len = make_sreen_row(&buffer[len], "Slope:%e", cal_params_ptr->factory_slope);
+     len += make_sreen_row(&buffer[len],"Offset:%e",cal_params_ptr->factory_offset);
+     len = make_sreen_row(&buffer[len], "Success");
+     show_popup("Information", buffer);
+     break;
+    case 1: // Point 2
+      if (p1_calib_done == false)
+      {
+        show_popup("Information", "P1 Calib Required");
+        break;
+      }
+     status =  cali_point(type, channel, CALI_POINT_2,&p2);
+     if(status == MENU_ABORT)
+      return status;
+      if(status == MENU_BACK)
+      break;
+
+
+     adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25);
+     save_adc_cali();
+     len = 0;
+     len = make_sreen_row(&buffer[len], "Slope:%e", cal_params_ptr->factory_slope);
+     len += make_sreen_row(&buffer[len], "Offset:%e", cal_params_ptr->factory_offset);
+     len = make_sreen_row(&buffer[len], "Success");
+     show_popup("Information", buffer);
+     break;
+    case 2: // P1.ADC
+      snprintf(buffer, sizeof(buffer), "ADC(P1.ref %f)", p1.reference_value);
+      dec = p1.raw_value;
+      status = input_decimal(buffer, g_adc_config_ads1220.bits->min_raw_value, g_adc_config_ads1220.bits->max_raw_value,
+                             &dec);
+      if (status == MENU_ABORT)
+        return status;
+      if(status != MENU_OK)
+      break;
+      p1.raw_value = dec;
+
+      adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25);
+      save_adc_cali();
+      len = 0;
+      len = make_sreen_row(&buffer[len], "Slope:%e", cal_params_ptr->factory_slope);
+      len += make_sreen_row(&buffer[len], "Offset:%e", cal_params_ptr->factory_offset);
+      len = make_sreen_row(&buffer[len], "Success");
+      show_popup("Information", buffer);
+      break;
+    case 3: // P2.ADC
+    //기존 P1,P2에서 P2 값만 변경한다.
+     p1 = cal_params_ptr->p1_cal_point;
+     p2 = cal_params_ptr->p2_cal_point;
+
+      snprintf(buffer, sizeof(buffer), "ADC(P2.ref %f)", p2.reference_value);
+      dec = p2.raw_value;
+      status = input_decimal(buffer, g_adc_config_ads1220.bits->min_raw_value, g_adc_config_ads1220.bits->max_raw_value,
+                             &dec);
+      if (status == MENU_ABORT)
+        return status;
+      if (status != MENU_OK)
+        break;
+      p2.raw_value = dec;
+
+      adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25);
+      save_adc_cali();
+      len = 0;
+      len = make_sreen_row(&buffer[len], "Slope:%e", cal_params_ptr->factory_slope);
+      len += make_sreen_row(&buffer[len], "Offset:%e", cal_params_ptr->factory_offset);
+      len = make_sreen_row(&buffer[len], "Success");
+      show_popup("Information", buffer);
+      break;
+    }
+  }
+}
+  return MENU_OK;
+}
+
+
+
+
 int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
 {
-
   uint8_t err;
   int32_t adc_raw;
   int32_t avg_cnt;
   int32_t channel;
   int32_t choice = 0;
   int32_t status;
+  int32_t key;
   float avg;
   float cal_temp;
   adc_cal_params_t* cal_params_ptr;
@@ -93,8 +319,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   }
   else
   {
-    status =
-        input_combobox("Select DIFF Ch", adc_diff_list, _countof(adc_diff_list), &channel);
+    status = input_combobox("Select DIFF Ch", adc_diff_list, _countof(adc_diff_list), &channel);
   }
 
   if (status != MENU_OK)
@@ -104,7 +329,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
                        ? &p_adc->single_ended_cal[channel]
                        : &p_adc->differential_cal[channel];
 
-  screen_clear();
+
 
   choice = 0;
   status = input_active("Start cali P1?", &choice);
@@ -113,8 +338,6 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
 
   avg = 0;
   avg_cnt = 0;
-
-  screen_clear();
 
 
   while (1)
@@ -127,6 +350,8 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     {
       adc_raw = (int32_t)drv_adc_diff_raw_read(channel,1, &err);
     }
+    
+    adc_raw = adc_raw;
 
     avg_cnt++;
     avg = recursive_avg_i(avg, adc_raw, avg_cnt);
@@ -137,7 +362,10 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     screen_printf(2, 0, "Press enter");
     screen_refresh();
 
-    if (get_button_key(500) == KEY_CODE_ENTER)
+    key = get_button_key(500);
+    if (key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
+    return convert_key_to_status(key);
+    else if(key == KEY_CODE_ENTER)
       break;
   }
 
@@ -149,7 +377,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     return status;
 
   if (channel < DRV_ADS1220_S_CH_16)
-    p1.reference_value = 0.5;
+    p1.reference_value = 0.01;
   else
    p1.reference_value = 84.27;
   status = input_float("Low Value(V)", -1000.0f, 1000.0f, &p1.reference_value, "%8.3f");
@@ -187,23 +415,24 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     screen_printf(2, 0, "Press enter");
     screen_refresh();
 
-    if (get_button_key(500) == KEY_CODE_ENTER)
+    key = get_button_key(500);
+    if (key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
+      return convert_key_to_status(key);
+    else if (key == KEY_CODE_ENTER)
       break;
   }
 
-  screen_clear();
-
 
   p2.raw_value = (int32_t)avg;
-  status = input_decimal("High RAW", p_adc->bits->min_raw_value, 
-                        p_adc->bits->max_raw_value, (int32_t*)&p2.raw_value);
+  status = input_decimal("High RAW", p_adc->bits->min_raw_value,p_adc->bits->max_raw_value, (int32_t*)&p2.raw_value);
   if (status != MENU_OK)
     return status;
 
     if (channel < DRV_ADS1220_S_CH_16)
-    p2.reference_value = 4.5;
+    p2.reference_value = 4.99;
     else
     p2.reference_value = 123.24;
+
   status = input_float("High Value(V)", -1000.0f, 1000.0f, &p2.reference_value, "%8.3f");
   if (status != MENU_OK)
     return status;
@@ -213,17 +442,17 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   if (adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, cal_temp))
   {
     save_adc_cali();
-
     show_popup("Information", "Success");
   }
   else
   {
-
     show_popup("Information", "Failed");
   }
 
   return status;
 }
+
+#define ADC_SE_CHANNEL_COUNT 16
 
 void draw_adc_all(screen_page_t *p_win, adc_channel_type_t type,float average[16],uint32_t avg_cnt[16])
 {
@@ -231,27 +460,23 @@ void draw_adc_all(screen_page_t *p_win, adc_channel_type_t type,float average[16
   uint8_t err;
   int32_t raw;
 
-  
-
   screen_page_start(p_win);
 
   make_centered(buff, sizeof(buff), "Ch   ADC     AVG", SCREEN_COLS);
   screen_page_printf(p_win, "%s", buff);
 
-
-  for (int32_t channel = 0; channel < 15; channel++)
-  {//SE 00:1234567 1234567
+  for (int32_t channel = 0; channel < ADC_SE_CHANNEL_COUNT; channel++)
+  { //SE 00:1234567 1234567
     raw = (int32_t)drv_adc_single_raw_read(channel, 1, &err);
     avg_cnt[channel]++;
     average[channel] = recursive_avg_i(average[channel], raw, avg_cnt[channel]);
-    screen_page_printf(p_win, "%-4s:%7d %7d", adc_single_list[channel], raw, average[channel]);
+    screen_page_printf(p_win, "%-4s:%7d %7d", adc_single_list[channel], raw, (int32_t)average[channel]);
   }
 
   screen_page_clear(p_win);
 }
 
 
-#define ADC_SE_CHANNEL_COUNT 16
 int32_t cali_single_all(adc_channel_type_t type)
 {
   adc_cal_params_t *cal_params_ptr;
@@ -396,8 +621,6 @@ CALI_POINT2:
   }
 
 
-
-
   p2.reference_value = 4.5;
   status = input_float("High Value(V)", -1000.0f, 1000.0f, &p2.reference_value, "%8.3f");
   if (status != MENU_OK)
@@ -439,13 +662,9 @@ int32_t cali_setup_menu_factory(void)
     draw_cali_setup_menu_factory_page(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_button_key(WAIT_FOREVER);
 
-    if (key == KEY_CODE_CTRL_Q)
-    {
-      break;
-    }
-    else if (key == KEY_CODE_CTRL_C)
+    if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
       break;
     }
@@ -457,24 +676,23 @@ int32_t cali_setup_menu_factory(void)
       switch (menu.index_list[index])
       {
         case FACTORY_MENU_SINGLE:
-          status = cali_setup_menu_factory_calibration(ADC_CHANNEL_TYPE_SINGLE_ENDED);
-          break;
-
+        //  status = cali_setup_menu_factory_calibration(ADC_CHANNEL_TYPE_SINGLE_ENDED);
+        status = setup_factory_calibration(ADC_CHANNEL_TYPE_SINGLE_ENDED);
+         break;
         case FACTORY_MENU_DIFF:
           status = cali_setup_menu_factory_calibration(ADC_CHANNEL_TYPE_DIFFERENTIAL);
           break;
         case FACTORY_MENU_SINGLE_ALL:
           status = cali_single_all(ADC_CHANNEL_TYPE_SINGLE_ENDED);
         break;
-
-            default:
+          default:
           break;
       }
       
       if(status == MENU_ABORT)
         return status;
     }
-    else if (key != -1)
+    else if (key != KEY_CODE_NONE)
     {
       screen_menu_handle(&menu, key);
     }
@@ -513,6 +731,7 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
       screen_clear();
       while (1)
       {
+
         start_time = mcu_get_clk();
         if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
         {
@@ -522,6 +741,18 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
         {
           raw = drv_adc_diff_raw_read(channel,1, &err);
         }
+
+        if (params->is_calibrated == false)
+        {
+          screen_printf(0, 0, "Ch%d RAW:%d", channel, raw);
+          screen_printf(1, 0, "Calib Required");
+          screen_refresh();
+      
+        }
+        else
+        {
+
+
         elapsed_time = cal_elapsed_us(start_time);
 
         g_current_temp = read_current_temperature();
@@ -537,7 +768,12 @@ int32_t cali_setup_menu_view_channel(adc_channel_type_t type)
         {
           screen_printf(2, 0, "V:%.4f", voltage);
         }
+        screen_printf(3, 0, "slope :%e", params->factory_slope);
+        screen_printf(4, 0, "offset:%e", params->factory_offset);
+        screen_printf(5, 0, "P1:%7d,%f", params->p1_cal_point.raw_value,params->p1_cal_point.reference_value);
+        screen_printf(6, 0, "P2:%7d,%f", params->p2_cal_point.raw_value,params->p2_cal_point.reference_value);
         screen_refresh();
+      }
         key = get_button_key(100);
         
         if( key == KEY_CODE_CTRL_Q)
@@ -579,12 +815,17 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
   for (int32_t channel = 0; channel < 18; channel++)
   {
     params = &p_adc->single_ended_cal[channel];
+    if(params->is_calibrated==false)
+    {
+      screen_page_printf(p_win, "%-4s:Calib Required", adc_se_short_list[channel]);
+      continue;
+    }
     raw = (int32_t)drv_adc_single_raw_read(channel,1, &err);
     voltage = adc_get_compensated_value(raw, params, g_current_temp);
 
     if (isnan(voltage))
     {
-      screen_page_printf(p_win, "%-4s:NC", adc_se_short_list[channel]);
+      screen_page_printf(p_win, "%-4s:NaN", adc_se_short_list[channel]);
     }
     else
     { //1234:11.1111 12345678
@@ -595,8 +836,45 @@ void draw_cali_menu_view_summary(screen_page_t* p_win)
   screen_page_clear(p_win);
 }
 
+void draw_cali_menu_view_summary_default(screen_page_t *p_win)
+{
+  const char *adc_se_short_list[18] = {"S 0", "S 1", "S 2", "S 3", "S 4", "S 5", "S 6", "S 7",
+                                       "S 8", "S 9", "S 10", "S 11", "S 12", "S 13", "S 14", "S 15", "PT A", "PT B"};
+  const adc_cal_params_t *params;
+  char buff[SCREEN_COLS + 1];
+  uint8_t err;
+  int32_t raw;
+  config_adc_adv_t *p_adc;
+  float offset = 4.928633e-03f;
+  float slope = 5.958932e-07f;
+  float voltage;
 
+  p_adc = &g_adc_config_ads1220;
 
+  screen_page_start(p_win);
+
+  make_centered(buff, sizeof(buff), "SE Ch Voltage ADC", SCREEN_COLS);
+  screen_page_printf(p_win, "%s", buff);
+
+  g_current_temp = read_current_temperature();
+
+  for (int32_t channel = 0; channel < 18; channel++)
+  {
+    raw = (int32_t)drv_adc_single_raw_read(channel, 1, &err);
+    voltage = raw * slope + offset;;
+
+    if (isnan(voltage))
+    {
+      screen_page_printf(p_win, "%-4s:NaN", adc_se_short_list[channel]);
+    }
+    else
+    { // 1234:11.1111 12345678
+      screen_page_printf(p_win, "%-4s:%7.4f %7d", adc_se_short_list[channel], voltage, raw);
+    }
+  }
+
+  screen_page_clear(p_win);
+}
 
 int32_t cali_setup_menu_view_summary(void)
 {
@@ -610,7 +888,15 @@ int32_t cali_setup_menu_view_summary(void)
   
   while (1)
   {
-    draw_cali_menu_view_summary(&lcd_win);
+    if(g_summary_default_en)
+    {
+      draw_cali_menu_view_summary_default(&lcd_win);
+    }
+    else
+    {
+      draw_cali_menu_view_summary(&lcd_win);
+    }
+
     screen_refresh();
 
     key = get_button_key(100);
@@ -641,6 +927,7 @@ int32_t cali_setup_menu_view(void)
   int32_t key;
   int32_t status;
   screen_menu_t menu;
+  uint8_t cali_summary_default_count=0;
 
   screen_menu_create(&menu, "View");
 
@@ -654,6 +941,12 @@ int32_t cali_setup_menu_view(void)
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
       break;
+    }
+    else if(key == KEY_CODE_RIGHT)
+    {
+      cali_summary_default_count++;
+      if (cali_summary_default_count>5)
+      g_summary_default_en = true;
     }
 
     if (key == KEY_CODE_ENTER)
@@ -673,7 +966,9 @@ int32_t cali_setup_menu_view(void)
         case VIEW_MENU_SUMMARY:
           status = cali_setup_menu_view_summary();
           break;
-
+        case VIEW_MENU_SUMMARY_DEFAULT:
+          status = cali_setup_menu_view_summary();
+          break;
         default:
           break;
       }
@@ -750,7 +1045,7 @@ int32_t cali_setup_menu_adc_init(void)
   {
     g_adc_config_ads1220.single_ended_cal[channel].comp_method = TEMP_COMP_NONE;
     g_adc_config_ads1220.single_ended_cal[channel].factory_cal_temp = 25.0f;
-    g_adc_config_ads1220.single_ended_cal[channel].is_calibrated = true;
+    g_adc_config_ads1220.single_ended_cal[channel].is_calibrated = false;
     g_adc_config_ads1220.single_ended_cal[channel].factory_offset = 4.928633e-03f;
     g_adc_config_ads1220.single_ended_cal[channel].factory_slope = 5.958932e-07f;
     g_adc_config_ads1220.single_ended_cal[channel].offset_temp_coeff = 1.0f;
@@ -761,7 +1056,7 @@ int32_t cali_setup_menu_adc_init(void)
   {
     g_adc_config_ads1220.differential_cal[channel].comp_method = TEMP_COMP_NONE;
     g_adc_config_ads1220.differential_cal[channel].factory_cal_temp = 25.0f;
-    g_adc_config_ads1220.differential_cal[channel].is_calibrated = true;
+    g_adc_config_ads1220.differential_cal[channel].is_calibrated = false;
     g_adc_config_ads1220.differential_cal[channel].factory_offset = 4.928633e-03f;
     g_adc_config_ads1220.differential_cal[channel].factory_slope = 5.958932e-07f;
     g_adc_config_ads1220.differential_cal[channel].factory_offset_trim = 0.0f;
