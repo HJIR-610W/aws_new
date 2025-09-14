@@ -213,7 +213,7 @@ int handle_factory_calibration(int adc_num)
 #endif
 
       cal_temp = 25;
-      if (adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, cal_temp))
+      if (adc_perform_factory_calibration( cal_params_ptr, p1, p2, cal_temp))
       {
 
         save_adc_cali();

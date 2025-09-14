@@ -50,12 +50,16 @@ void draw_setup_menu_calibration_page(screen_menu_t* p_win)
 
 }
 
+bool g_cali_single_all_active = false;
 void draw_cali_setup_menu_factory_page(screen_menu_t* p_win)
 {
   screen_menu_start(p_win);
   screen_menu_printf(p_win, FACTORY_MENU_SINGLE ,"Single");
   screen_menu_printf(p_win, FACTORY_MENU_DIFF, "Diff");
-  screen_menu_printf(p_win, FACTORY_MENU_SINGLE_ALL, "Single All");
+  if(g_cali_single_all_active)
+  {
+    screen_menu_printf(p_win, FACTORY_MENU_SINGLE_ALL, "Single All");
+  }
   screen_menu_clear(p_win);
 }
 
@@ -80,7 +84,7 @@ int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_
   int32_t avg_cnt=0;
   uint8_t err=0;
   config_adc_adv_t *p_adc;
-  adc_cal_params_t *cal_params_ptr;
+  adc_cal_params_t *p_cal_params;
   int32_t key;
   float avg=0;
   int32_t status;
@@ -147,81 +151,132 @@ int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_
 
 }
 
+int32_t setup_cali_point(void)
+{
+
+}
+
+
+#define CALI_CHANNEL_START 0
+void draw_calibraion_select_single_channel(screen_menu_t *p_win)
+{
+  const char *cali_status;
+  adc_cal_params_t *p_cal_params;
+
+
+  screen_menu_start(p_win);
+
+  for (int channel; channel < 16; channel++)
+  {
+    p_cal_params =  &g_adc_config_ads1220.single_ended_cal[channel];
+    cali_status =  (p_cal_params->is_calibrated)?"Calibreated":"Not calibrated";
+    
+    screen_menu_printf(p_win, CALI_CHANNEL_START, "SE %2d %s",channel, cali_status);
+  }
+  screen_menu_clear(p_win);
+}
+
+void draw_calibraion_select_diff_channel(screen_menu_t *p_win)
+{
+  const char *cali_status;
+  adc_cal_params_t *p_cal_params;
+
+  screen_menu_start(p_win);
+
+  for (int channel; channel < 8; channel++)
+  {
+    p_cal_params = &g_adc_config_ads1220.differential_cal[channel];
+    cali_status = (p_cal_params->is_calibrated) ? "Calibreated" : "Not calibrated";
+
+    screen_menu_printf(p_win, CALI_CHANNEL_START, "DIFF %2d %s", channel, cali_status);
+  }
+  screen_menu_clear(p_win);
+}
+
+
 int32_t setup_factory_calibration(adc_channel_type_t type)
 {
+  const char *point_list[] = {"Point 1(low)", "Point 2(high)","Manual P1.ADC","Manual P2.ADC"};
+  char buffer[100];
   int32_t status;
   int32_t key;
   int32_t channel;
   int32_t choice;
-  const char *point_list[] = {"Point 1(low)", "Point 2(high)","Manual P1.ADC","Manual P2.ADC"};
-  config_adc_adv_t *p_adc;
-  adc_cal_params_t *cal_params_ptr;
   int32_t dec;
+  int32_t len = 0;
+  bool p1_calib_done = false;
+  bool calib_updated = false;
+  adc_cal_params_t *p_cal_params;
   adc_cal_point_t p1;
   adc_cal_point_t p2;
-  bool p1_calib_done =false;
-   char buffer[22*3];
-   int32_t len=0;
-
-  p_adc = &g_adc_config_ads1220;
-
 
   while(1)
   {
-  if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
-  {
-    status = input_combobox("Select Single Ch", adc_se_list, _countof(adc_se_list), &channel);
-  }
-  else
-  {
-    status = input_combobox("Select DIFF Ch", adc_diff_list, _countof(adc_diff_list), &channel);
-  }
+    if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+    {
+      status = input_combobox("Select Single Ch", adc_se_list, _countof(adc_se_list), &channel);
+    }
+    else
+    {
+      status = input_combobox("Select Diff Ch", adc_diff_list, _countof(adc_diff_list), &channel);
+    }
 
-  if(status != MENU_OK)
-  return status;
+    if(status != MENU_OK)
+      break;
 
-  cal_params_ptr = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
-                       ? &g_adc_config_ads1220.single_ended_cal[channel]
-                       : &g_adc_config_ads1220.differential_cal[channel];
+    p_cal_params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+                      ? &g_adc_config_ads1220.single_ended_cal[channel]
+                      : &g_adc_config_ads1220.differential_cal[channel];
+
+    //기존 켈리브레이션 데이터를 복사
+    //갱신되지 않는 값은 이전값으로 사용함이 목적
+    p1 = p_cal_params->p1_cal_point; 
+    p2 = p_cal_params->p2_cal_point;
 
   choice = 0;
-  p1 = cal_params_ptr->p1_cal_point;
-  p2 = cal_params_ptr->p2_cal_point;
+
+
   while(1)
   {
+    /*
+    켈리브레이션은 2포인트 P1(low),P2(high)한다
+    레퍼런스 전압이 5v라면 적당한 선형구한 low:0.01v ,high:4.99v 
+    한번도 켈리브레이션 한적이 없으면 반드시 P1,P2 순으로 하고
+    한번이상 켈리브레이션 한 상태에서 특정 포인트만 다시하고 싶으면 해당 포인트를 선택해서 진행한다
+    한번이상 켈리브레시션 된 상태에서 특정 포인트를 켈리브레이션 하면 할때마다 slope과 offset이 재계산된다
+    */
+    status = input_combobox("Calibration", point_list,_countof(point_list),&choice);
+    if(status == MENU_ABORT)
+    return status;
+  
+    if(status != MENU_OK)
+    break;
 
-  status = input_combobox("Calibration", point_list,_countof(point_list),&choice);
 
-  if(status == MENU_ABORT)
-  return status;
-  if(status != MENU_OK)
-  break;
-if(cal_params_ptr->is_calibrated)
-{
-  p1_calib_done = true;
-}
-  switch(choice)
-  {
-    case 0://Point 1
-     status =  cali_point(type, channel, CALI_POINT_1,&p1);
-     if (status == MENU_ABORT)
-       return status;
-     if (status == MENU_BACK)
+    if(p_cal_params->is_calibrated)
+    {
+      // P1을 안하고 P2를 할경우 P1을 안해도 되는지 판단해야함 켈리브레이션 된 상태라는건
+      // P1은 이미 켈리브레이션 된 상태라는걸 알아야함
+      p1_calib_done = true;
+
+    }
+
+    switch(choice)
+    {
+      case 0://Point 1
+       status =  cali_point(type, channel, CALI_POINT_1,&p1);
+       if (status != MENU_OK)
        break;
-
-     p1_calib_done = true;
-     if(cal_params_ptr->is_calibrated== false)
-     {
-       show_popup("Information", "P2 Calib Required");
-       break;
-     }
-     adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25);
-     save_adc_cali();
-     len = 0;
-     len = make_sreen_row(&buffer[len], "Slope:%e", cal_params_ptr->factory_slope);
-     len += make_sreen_row(&buffer[len],"Offset:%e",cal_params_ptr->factory_offset);
-     len = make_sreen_row(&buffer[len], "Success");
-     show_popup("Information", buffer);
+      
+        p1_calib_done = true;
+        //P1을 했는데 P2가 안한상태라면 무조건 P2를 하게 한다.
+        //P1값은 현재 유지중이다.
+        if(p_cal_params->is_calibrated== false)
+        {
+          show_popup("Information", "P2 Calib Required");
+          break;
+        }
+        calib_updated = true;
      break;
     case 1: // Point 2
       if (p1_calib_done == false)
@@ -230,66 +285,57 @@ if(cal_params_ptr->is_calibrated)
         break;
       }
      status =  cali_point(type, channel, CALI_POINT_2,&p2);
-     if(status == MENU_ABORT)
-      return status;
-      if(status == MENU_BACK)
+     if(status != MENU_OK)
       break;
-
-
-     adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25);
-     save_adc_cali();
-     len = 0;
-     len = make_sreen_row(&buffer[len], "Slope:%e", cal_params_ptr->factory_slope);
-     len += make_sreen_row(&buffer[len], "Offset:%e", cal_params_ptr->factory_offset);
-     len = make_sreen_row(&buffer[len], "Success");
-     show_popup("Information", buffer);
-     break;
+      calib_updated = true;
+      break;
     case 2: // P1.ADC
       snprintf(buffer, sizeof(buffer), "ADC(P1.ref %f)", p1.reference_value);
       dec = p1.raw_value;
       status = input_decimal(buffer, g_adc_config_ads1220.bits->min_raw_value, g_adc_config_ads1220.bits->max_raw_value,
                              &dec);
-      if (status == MENU_ABORT)
-        return status;
       if(status != MENU_OK)
       break;
       p1.raw_value = dec;
 
-      adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25);
-      save_adc_cali();
-      len = 0;
-      len = make_sreen_row(&buffer[len], "Slope:%e", cal_params_ptr->factory_slope);
-      len += make_sreen_row(&buffer[len], "Offset:%e", cal_params_ptr->factory_offset);
-      len = make_sreen_row(&buffer[len], "Success");
-      show_popup("Information", buffer);
+      calib_updated = true;
+
       break;
     case 3: // P2.ADC
     //기존 P1,P2에서 P2 값만 변경한다.
-     p1 = cal_params_ptr->p1_cal_point;
-     p2 = cal_params_ptr->p2_cal_point;
-
       snprintf(buffer, sizeof(buffer), "ADC(P2.ref %f)", p2.reference_value);
       dec = p2.raw_value;
       status = input_decimal(buffer, g_adc_config_ads1220.bits->min_raw_value, g_adc_config_ads1220.bits->max_raw_value,
                              &dec);
-      if (status == MENU_ABORT)
-        return status;
       if (status != MENU_OK)
         break;
       p2.raw_value = dec;
 
-      adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25);
+      calib_updated = true;
+      break;
+    }
+
+    if(status == MENU_ABORT)
+    {
+      return status;
+    }
+    if(status == MENU_BACK)
+    break;
+
+
+    if(calib_updated)
+    {
+      adc_perform_factory_calibration( p_cal_params, p1, p2, 25);
       save_adc_cali();
       len = 0;
-      len = make_sreen_row(&buffer[len], "Slope:%e", cal_params_ptr->factory_slope);
-      len += make_sreen_row(&buffer[len], "Offset:%e", cal_params_ptr->factory_offset);
+      len = make_sreen_row(&buffer[len], "Slope:%e", p_cal_params->factory_slope);
+      len += make_sreen_row(&buffer[len], "Offset:%e", p_cal_params->factory_offset);
       len = make_sreen_row(&buffer[len], "Success");
       show_popup("Information", buffer);
-      break;
     }
   }
 }
-  return MENU_OK;
+  return status;
 }
 
 
@@ -306,7 +352,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   int32_t key;
   float avg;
   float cal_temp;
-  adc_cal_params_t* cal_params_ptr;
+  adc_cal_params_t* p_cal_params;
   adc_cal_point_t p1;
   adc_cal_point_t p2;
   config_adc_adv_t* p_adc;
@@ -325,7 +371,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
   if (status != MENU_OK)
     return status;
 
-  cal_params_ptr = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+  p_cal_params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
                        ? &p_adc->single_ended_cal[channel]
                        : &p_adc->differential_cal[channel];
 
@@ -439,7 +485,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
 
   cal_temp = 25.0f;
 
-  if (adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, cal_temp))
+  if (adc_perform_factory_calibration( p_cal_params, p1, p2, cal_temp))
   {
     save_adc_cali();
     show_popup("Information", "Success");
@@ -479,7 +525,7 @@ void draw_adc_all(screen_page_t *p_win, adc_channel_type_t type,float average[16
 
 int32_t cali_single_all(adc_channel_type_t type)
 {
-  adc_cal_params_t *cal_params_ptr;
+  adc_cal_params_t *p_cal_params;
   adc_cal_point_t p1;
   adc_cal_point_t p2;
   config_adc_adv_t *p_adc;
@@ -565,13 +611,13 @@ CALI_POINT2:
 
     for (int channel = 0; channel < ADC_SE_CHANNEL_COUNT; channel++)
     {
-      cal_params_ptr = &p_adc->single_ended_cal[channel];
+      p_cal_params = &p_adc->single_ended_cal[channel];
       if (cali_p2_done == false) // p1을 안하고 p2만 새롭게 한 경우
       {
-        p2 = cal_params_ptr->p2_cal_point;
+        p2 = p_cal_params->p2_cal_point;
       }
       p1.raw_value = (int32_t)p1_average[channel];
-      adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25.0f);
+      adc_perform_factory_calibration( p_cal_params, p1, p2, 25.0f);
     }
 
     return status;
@@ -628,17 +674,17 @@ CALI_POINT2:
 
   for (int channel = 0; channel < ADC_SE_CHANNEL_COUNT; channel++)
   {
-    cal_params_ptr =  &p_adc->single_ended_cal[channel];
+    p_cal_params =  &p_adc->single_ended_cal[channel];
     if(cali_p1_done==false)//p1을 안하고 p2만 새롭게 한 경우
     {
-      p1 = cal_params_ptr->p1_cal_point;
+      p1 = p_cal_params->p1_cal_point;
     }
     else
     {
       p1.raw_value = (int32_t)p1_average[channel];
     }
     p2.raw_value = (int32_t)p2_average[channel];
-    adc_perform_factory_calibration(p_adc, cal_params_ptr, p1, p2, 25.0f);
+    adc_perform_factory_calibration( p_cal_params, p1, p2, 25.0f);
   }
 
   save_adc_cali();
@@ -653,9 +699,10 @@ int32_t cali_setup_menu_factory(void)
   int32_t index;
   int32_t key;
   int32_t status;
+  uint8_t cali_single_all_active_count=0;
   screen_menu_t menu;
 
-  screen_menu_create(&menu,  "Factory Cali");
+  screen_menu_create(&menu,  "Factory Calibration");
 
   while (1)
   {
@@ -668,6 +715,17 @@ int32_t cali_setup_menu_factory(void)
     {
       break;
     }
+    else if(key == KEY_CODE_RIGHT)
+    {
+      if (menu.selected_index == FACTORY_MENU_DIFF)
+      {
+        cali_single_all_active_count++;
+      }
+      if(cali_single_all_active_count == 5)
+      {
+        g_cali_single_all_active = true;
+      }
+    }
 
     if (key == KEY_CODE_ENTER)
     {
@@ -676,7 +734,6 @@ int32_t cali_setup_menu_factory(void)
       switch (menu.index_list[index])
       {
         case FACTORY_MENU_SINGLE:
-        //  status = cali_setup_menu_factory_calibration(ADC_CHANNEL_TYPE_SINGLE_ENDED);
         status = setup_factory_calibration(ADC_CHANNEL_TYPE_SINGLE_ENDED);
          break;
         case FACTORY_MENU_DIFF:
@@ -844,12 +901,12 @@ void draw_cali_menu_view_summary_default(screen_page_t *p_win)
   char buff[SCREEN_COLS + 1];
   uint8_t err;
   int32_t raw;
-  config_adc_adv_t *p_adc;
+
   float offset = 4.928633e-03f;
   float slope = 5.958932e-07f;
   float voltage;
 
-  p_adc = &g_adc_config_ads1220;
+
 
   screen_page_start(p_win);
 
@@ -944,7 +1001,10 @@ int32_t cali_setup_menu_view(void)
     }
     else if(key == KEY_CODE_RIGHT)
     {
-      cali_summary_default_count++;
+      if (menu.selected_index == VIEW_MENU_SUMMARY)
+      {
+        cali_summary_default_count++;
+      }
       if (cali_summary_default_count>5)
       g_summary_default_en = true;
     }

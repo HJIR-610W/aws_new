@@ -103,7 +103,7 @@ bool adc_config_init(config_adc_adv_t* adc_config, uint32_t resolution_bits,
 float adc_driver_get_value(config_adc_adv_t* cfg, adc_channel_type_t channel_type,
                            int channel_index, int32_t raw_value);
 
-    bool adc_perform_factory_calibration(config_adc_adv_t* adc_config, adc_cal_params_t* cal_params,
+    bool adc_perform_factory_calibration( adc_cal_params_t* cal_params,
                                          adc_cal_point_t p1, adc_cal_point_t p2, float cal_temp);
 
 void set_adc_printf(void* func);

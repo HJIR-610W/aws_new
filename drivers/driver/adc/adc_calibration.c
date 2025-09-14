@@ -167,10 +167,10 @@ bool adc_config_init(config_adc_adv_t* cfg, uint32_t resolution_bits, float refe
 }
 
 
-bool adc_perform_factory_calibration(config_adc_adv_t* cfg, adc_cal_params_t* cal_params,
+bool adc_perform_factory_calibration( adc_cal_params_t* cal_params,
                                      adc_cal_point_t p1, adc_cal_point_t p2, float cal_temp)
 {
-  if (!cal_params || !cfg)
+  if (!cal_params )
     return false;
 
   // 전압 = ADC*기울기 + 오프셋

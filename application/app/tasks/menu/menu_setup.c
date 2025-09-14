@@ -27,7 +27,7 @@
 #define AWS_SETUP_DEVELOPER 8
 
 
-static bool s_admin_menu_active=false; //필요에 의해서만 developer 메뉴 활성화 목적
+static bool g_admin_menu_active=false; //필요에 의해서만 developer 메뉴 활성화 목적
 
 void draw_aws_setup_page(screen_menu_t* p_win)
 {
@@ -40,7 +40,7 @@ void draw_aws_setup_page(screen_menu_t* p_win)
   screen_menu_printf(p_win, AWS_SETUP_OFFSET, "Offset");
   screen_menu_printf(p_win, AWS_SETUP_CALI,   "Calibraion");
   screen_menu_printf(p_win, AWS_SETUP_MANAGER,"Manager");
-  if(s_admin_menu_active)
+  if(g_admin_menu_active)
   {
     screen_menu_printf(p_win, AWS_SETUP_DEVELOPER, "Developer");
   }
@@ -53,7 +53,7 @@ void setup_menu(void)
   int32_t index;
   int32_t key;
   int32_t status;
-  int32_t admin_menu_count=0;
+  int32_t admin_menu_active_count=0;
   screen_menu_t menu;
   int32_t password=0;
 
@@ -88,6 +88,20 @@ void setup_menu(void)
     {
       break;
     }
+    else if(key== KEY_CODE_ENTER)
+    {
+      if (menu.index_list[menu.selected_index] == AWS_SETUP_MANAGER)
+      {
+         admin_menu_active_count++;
+        if (admin_menu_active_count == 5)
+        {
+          g_admin_menu_active = true;
+        }
+
+      }
+    }
+
+
 
     if (key == KEY_CODE_ENTER)
     {
@@ -133,21 +147,6 @@ void setup_menu(void)
     {
       screen_menu_handle(&menu, key);
 
-      if (menu.index_list[menu.selected_index] == AWS_SETUP_MANAGER)
-      {
-        if(key==KEY_CODE_RIGHT)
-        {
-          admin_menu_count++;
-          if (admin_menu_count==10)
-          {
-            s_admin_menu_active = true;
-          }
-        }
-      }
-      else
-      {
-        admin_menu_count = 0;
-      }
     }
   }
 }
