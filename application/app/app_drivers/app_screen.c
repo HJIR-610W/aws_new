@@ -27,6 +27,7 @@ void screen_init(void)
     s_screen.width_pixel = 128;
     s_screen.font_rows = 8;
     s_screen.font_cols = 21;
+    s_screen.screen_on  = true;
     
     screen_clear();
     screen_refresh();
@@ -387,21 +388,20 @@ void screen_menu_clear(screen_menu_t *win)
 void screen_off(void)
 {
   screen_clear();
-  //screen_printf(3, 0, "      Screen Off");
   screen_refresh();
-  
   drv_lcd_close(DRIVER_CLCD);
-
+  screen_get_instance()->screen_on = false;
 }
 
 void screen_on(void)
 {
+  screen_get_instance()->screen_on = true;
   screen_init();
-  
   screen_clear();
   screen_printf(3, 0, "      Screen On");
   screen_refresh();
   osDelay(1000);
+
 }
 
 

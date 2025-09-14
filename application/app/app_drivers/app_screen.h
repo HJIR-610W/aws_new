@@ -14,6 +14,7 @@ typedef struct screen_instance
   int32_t height_pixcel;
   int8_t font_rows;
   int8_t font_cols;
+  bool screen_on;
 } screen_instance_t;
 
 typedef struct
