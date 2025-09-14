@@ -88,7 +88,6 @@ typedef enum telnet_mode_e
 typedef enum 
 {
   eLCD_OFF_10SEC,
-  eLCD_OFF_60SEC,
   eLCD_OFF_600SEC,
   eLCD_OFF_ALWAYS_ON
 } eLCD_OFF_TIME_t;

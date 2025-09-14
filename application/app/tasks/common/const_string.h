@@ -20,7 +20,7 @@ extern const char *sdcard_status_list_lcd[2];
 extern const char *doorStatusList_kor[2]; //
 extern const char *linkStatusList[3];//
 extern const char *generalStatusList[2];//
-extern const char *lcd_off_time_list_eng[4];
+extern const char *lcd_off_time_list_eng[3];
 extern const char *g_charger_list_eng[3];
 extern const char *g_charger_list_kor[3];
 extern const char *g_baud_list_eng[6];

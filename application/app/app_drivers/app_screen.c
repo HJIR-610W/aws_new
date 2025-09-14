@@ -126,6 +126,7 @@ void screen_menu_create(screen_menu_t* win,const char *titile)
   win->scroll_offset = 0;
   win->total_items = 0;
   win->selected_index = 0;  // 첫 번째 메뉴 항목이 기본 선택
+  win->enter_long_key_active = false;
   
   if(titile)
   {
@@ -294,7 +295,15 @@ void screen_menu_printf(screen_menu_t *win,int index,const char *format, ...)
     text_len = strlen(s_format_buffer);
 
     // 선택된 항목이면 '*', 아니면 ' ' 표시
-    selection_indicator = (win->selected_index == row_index) ? '*' : ' ';
+    if(win->enter_long_key_active==true)
+    {
+      selection_indicator = (win->selected_index == row_index) ? '>' : ' ';
+    }
+    else
+    {
+      selection_indicator = (win->selected_index == row_index) ? '*' : ' ';
+    }
+
     screen_put_ch(display_row, 0, selection_indicator);
 
     // 텍스트 출력 (첫 번째 문자부터 시작)

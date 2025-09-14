@@ -99,7 +99,7 @@ void draw_network_main_page(screen_menu_t* p_win)
     len += snprintf(&buff[len], sizeof(buff)-len, "%s", "[DRCT]");
   }
 
-  screen_menu_printf(p_win, NETWORK_MENU_NET_EN, "%-*s:%s", NETWORK_WD, "Net mode", buff);
+  screen_menu_printf(p_win, NETWORK_MENU_NET_EN, "%-*s:%s", NETWORK_WD, "Net Mode", buff);
   screen_menu_printf(p_win, NETWORK_MENU_ETH_CONFIG, "%-*s", NETWORK_WD, "Ethernet");
   screen_menu_printf(p_win, NETWORK_MENU_CDMA_CONFIG, "%-*s", NETWORK_WD, "CDMA");
   screen_menu_printf(p_win, NETWORK_MENU_DIRECT_CONFIG, "%-*s", NETWORK_WD, "Direct");

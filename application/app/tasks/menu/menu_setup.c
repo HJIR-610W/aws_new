@@ -88,7 +88,7 @@ void setup_menu(void)
     {
       break;
     }
-    else if(key== KEY_CODE_ENTER)
+    else if(key== KEY_CODE_RIGHT)
     {
       if (menu.index_list[menu.selected_index] == AWS_SETUP_MANAGER)
       {

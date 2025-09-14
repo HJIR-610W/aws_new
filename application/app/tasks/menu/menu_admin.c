@@ -55,7 +55,7 @@ int32_t menu_view_log(void)
         screen_printf(2, 0, &log.msg[25]);
         screen_refresh();
     }
-      key = get_button_key(0xFFFFFFFF);
+      key = get_button_key(WAIT_FOREVER);
 
       if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
       {

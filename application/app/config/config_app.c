@@ -541,9 +541,6 @@ uint16_t get_lcd_off_time(void)
   case eLCD_OFF_10SEC:
     lcd_off_time = 10;
     break;
-  case eLCD_OFF_60SEC:
-    lcd_off_time = 60;
-    break;
   case eLCD_OFF_600SEC:
     lcd_off_time = 600;
     break;

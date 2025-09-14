@@ -27,7 +27,7 @@ const char *freq_ch_list[2] = {"A", "B"};
  const char *doorStatusList_kor[2] = {"닫힘", "열림"};
  const char *generalStatusList[2] = {"정상", "비정상"};
 
- const char *lcd_off_time_list_eng[] = {"10", "60", "600", "ALWAYS ON"};
+ const char *lcd_off_time_list_eng[] = {"10", "60", "Always On"};
 
  const char *g_charger_list_eng[3] = {"Not Used", "SMART", "LS1024"};
  const char *g_charger_list_kor[3] = {"미사용","화진 스마트", "LS1024"};

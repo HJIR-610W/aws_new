@@ -33,7 +33,7 @@ typedef struct
 typedef struct
 {
   screen_instance_t *p_screen;
-  char title[16 + 1];
+  char title[21 + 1];
   int current_row;//현재의 로우수
   int view_row;//표현 가능한 행수
   int view_col;// 표현 가능한 열수
@@ -41,6 +41,7 @@ typedef struct
   int total_items; //행의 총 갯수
   int selected_index;//별표가 위치한 곳의 행 번호 
   uint8_t index_list[50];//메뉴 번호 
+  bool enter_long_key_active;
 } screen_menu_t;
 
 

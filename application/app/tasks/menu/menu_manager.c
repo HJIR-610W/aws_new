@@ -30,10 +30,9 @@ extern void config_hj_reset(void);
 
 
 #define MANAGER_MENU_VERSION    0
-#define MANAGER_MENU_RESET      1
-#define MANAGER_MENU_CONFIG     2
-#define MANAGER_MENU_UPDATE     3
-#define MANAGER_MENU_LCD        4
+#define MANAGER_MENU_CONFIG     1
+#define MANAGER_MENU_UPDATE     2
+#define MANAGER_MENU_LCD        3
 
 #define CONFIG_MENU_HJ_RESET    0
 #define CONFIG_MENU_INIT        1
@@ -47,10 +46,9 @@ void draw_setup_menu_manager_menu(screen_menu_t* p_win)
 {
   screen_menu_start(p_win);
   screen_menu_printf(p_win, MANAGER_MENU_VERSION, "Version");
-  screen_menu_printf(p_win, MANAGER_MENU_RESET, "Device Reset");
   screen_menu_printf(p_win, MANAGER_MENU_CONFIG, "Settings Change");
-  screen_menu_printf(p_win, MANAGER_MENU_UPDATE, "Firmware update");
-  screen_menu_printf(p_win, MANAGER_MENU_LCD, "LCD off time");
+  screen_menu_printf(p_win, MANAGER_MENU_UPDATE, "Firmware Update");
+  screen_menu_printf(p_win, MANAGER_MENU_LCD, "Screen Off Time");
   screen_menu_clear(p_win);
 }
 
@@ -369,21 +367,15 @@ int32_t setup_menu_manager(void)
           status = setup_menu_version();
           break;
 
-        case MANAGER_MENU_RESET:
-          status = setup_menu_reset();
-          break;
-
         case MANAGER_MENU_CONFIG:
           status = setup_menu_config();
           break;
-
         case MANAGER_MENU_UPDATE:
           status = setup_menu_update();
           break;
         case MANAGER_MENU_LCD:
           dec = config.lcd_off_time_index;
-         // status = input_decimal("LCD off time(sec)", 10, 600, &dec);
-          status = input_combobox("LCD off time",lcd_off_time_list_eng,_countof(lcd_off_time_list_eng),&dec);
+          status = input_combobox("Screen Off Time(Sec)",lcd_off_time_list_eng,_countof(lcd_off_time_list_eng),&dec);
           if (status != MENU_OK)
             break;
           config.lcd_off_time_index = (eLCD_OFF_TIME_t)dec;
