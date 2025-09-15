@@ -391,7 +391,7 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
         screen_menu_handle(&menu, key);
       }
 }
-  return status;
+  return convert_key_to_status(key);
 }
 
 
