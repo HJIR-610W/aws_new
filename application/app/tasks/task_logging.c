@@ -204,6 +204,7 @@ void loggingTask(void *arg)
   uint32_t offset;
   uint16_t sunshine;
 
+
   DEBUG_PRINTF("logging task start\r\n");
 
   while (1)
@@ -211,10 +212,6 @@ void loggingTask(void *arg)
     // 메시지 큐에서 데이터 수신
     if (osMessageQueueGet(g_loggingQueue, &logging, NULL, osWaitForever) == osOK)
     {
-      alert_t alert;
-      alert.title = "Warnning";
-      snprintf(alert.framebuffer[0],sizeof(alert.framebuffer[0]), "test");
-      show_alert(alert);
          switch(logging.cmd)
         {
           case eLOGGING_LOG:

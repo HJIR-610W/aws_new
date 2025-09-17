@@ -1742,7 +1742,7 @@
             <file>$TOOLKIT_DIR$\inc\c\intrinsics.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_common.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_def.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\tlsf\tlsfbits.h</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_float_setup.h</file>
@@ -1874,7 +1874,7 @@
             <file>$PROJ_DIR$\..\Application\app\tasks\task_wdt.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\api.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_sram.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_adc.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
@@ -1928,7 +1928,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_dma.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_adc.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_cortex.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_flash_ramfunc.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_pwr.h</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Product_stdlib.h</file>
@@ -1962,7 +1962,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\mpu_wrappers.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_pwr_ex.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\sockets_priv.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_panel.h</file>
@@ -3756,7 +3756,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1751 1950 1872 1882 1931 1874 1890 1478 1875 498 1524 1762 1597 1913 1863 1749 1740 2024 2020 270 1865 1873 1822 1901 1838 226 1859 1858 1746 495 1776 1722 1745 143 1715 1725 1726 1716 1734 1966 1728 1954 1761 1834 1837 2017 1854 1864 1768 1737 180 490 1714 1684 145 2006 273 2005 1578 1785 1815 1526 1559</file>
+                    <file> 1751 1950 1872 1882 1931 1874 1890 1478 1875 498 1524 1762 1597 1913 1863 1749 1740 2024 2020 270 1865 1873 1822 1901 1838 226 1859 1858 1746 495 1776 1722 1745 143 1715 1725 1726 1716 1734 1966 1728 1954 1761 1834 1837 2017 1854 1864 1768 1737 180 490 1714 1684 145 2006 273 2005 1578 1785 1815 1526 1559 1957</file>
                 </tool>
             </inputs>
         </file>

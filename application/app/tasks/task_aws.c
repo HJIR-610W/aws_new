@@ -26,6 +26,7 @@
 #include "wind_data.h"
 #include "aws_default_data.h"
 #include "app_key.h"
+#include "task_menu.h"
 
 typedef struct filter_data_s
 {
@@ -1240,7 +1241,7 @@ void DUALPORT_TASK(void *arg)
   int32_t wind_speed=0;
   int32_t wind_direction=0;
   uint16_t data;
-  uint16_t rain_p_on_delay = 0;
+ // uint16_t rain_p_on_delay = 0;
   uint16_t rain_p_off_delay=0;
   float wind_speed_mavg = 0;
   float wind_direction_mavg = 0;
@@ -1282,6 +1283,7 @@ void DUALPORT_TASK(void *arg)
       g_p_raw->data[A6_RAINFALL_DOT5_1MM] = g_raw_250.data[eA6_RAINFALL_DOT5_1MM];
     }
 
+    menu_refresh();
     ct = Date_Time;
 
     check_sensor_use();
@@ -1339,7 +1341,7 @@ void DUALPORT_TASK(void *arg)
       if (is_raining(&sensor_err)) // Off Delay 적용 함
       {
         rain_p_off_delay = 0;
-          rain_p_on_delay =0;
+          //rain_p_on_delay =0;
           update_sensor_err(A8_RAIN_PRESENT, sensor_err);
           pAws->mRainDetect.sReal = 0x000a;
 
@@ -1347,7 +1349,7 @@ void DUALPORT_TASK(void *arg)
       }
       else
       {
-        rain_p_on_delay = 0;
+        //rain_p_on_delay = 0;
         if (rain_p_off_delay++ > MS_TO_SCAN_CNT(get_rain_present_config()->delay_sec ))
         {
           rain_p_off_delay=0;

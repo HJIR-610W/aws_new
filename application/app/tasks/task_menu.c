@@ -1128,11 +1128,21 @@ void print_logo(void)
 }
 
 
-#define SCREEN_ALERT 1
+#define SCREEN_ALERT 0x01
+#define SCREEN_UPDATE 0x02
 
+void menu_refresh(void)
+{
+  if (g_menu_task_id)
+    osThreadFlagsSet(g_menu_task_id, SCREEN_UPDATE);
+}
+
+void wait_refrech_trigger(void)
+{
+  osThreadFlagsWait(SCREEN_UPDATE, osFlagsWaitAny, 250);
+}
 
 alert_t g_alert;
-
 void show_alert(alert_t alert)
 {
   g_alert  = alert;
@@ -1146,11 +1156,10 @@ void popup_handler(uint32_t timeout_ms)
 
   flags = osThreadFlagsWait(SCREEN_ALERT , osFlagsWaitAny, 250);
 
-  while (flags > 0  & flags&SCREEN_ALERT)
+  if (flags > 0  & flags&SCREEN_ALERT)
   {
     show_popup(g_alert.title, (char*)g_alert.framebuffer);
-    flags = 0;
-    osThreadFlagsClear(SCREEN_ALERT);
+    osThreadFlagsClear(SCREEN_ALERT );
   }
 }
 
@@ -1238,8 +1247,9 @@ void menuTask(void *arg)
            
     screen_refresh();
 
-    popup_handler(250);
-
+   // popup_handler(250);
+    wait_refrech_trigger();
+    
     key = get_button_key(0); 
     if (key == KEY_CODE_CTRL_C)
     {

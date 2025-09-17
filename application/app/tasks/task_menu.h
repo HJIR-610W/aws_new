@@ -11,4 +11,5 @@ typedef struct alert_s
 void menuTask_init(void);
 void test_menu_info(void);
 void show_alert(alert_t alert);
+void menu_refresh(void);
 #endif

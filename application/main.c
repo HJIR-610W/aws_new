@@ -22,10 +22,8 @@ int main(void)
     __HAL_DBGMCU_FREEZE_RTC();   // 디버깅 시 rtc 타이머 멈춤
   }
   
-  
   bsp_init();
 
-  
   osKernelInitialize();
 
   startTask_init();
