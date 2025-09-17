@@ -170,7 +170,7 @@ int32_t input_mac_address(const char *title, uint8_t *mac)
   {
     screen_refresh();
 
-    key = get_button_key(500);
+    key = get_menu_key(500);
     blink_state = !blink_state;
 
     screen_printf(row_offset, 0, "%s", user_fmt[0]);
@@ -323,7 +323,7 @@ int32_t setup_eth_config(void)
     draw_eth_config_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -454,7 +454,7 @@ int32_t setup_cdma_config(void)
     draw_cdma_config_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q)
     {
@@ -551,7 +551,7 @@ int32_t setup_direct_config(void)
     draw_direct_config_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -605,7 +605,7 @@ int32_t setup_menu_network_mode(void)
     draw_network_mode_main_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -688,7 +688,7 @@ int32_t setup_menu_network(void)
     draw_network_main_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {

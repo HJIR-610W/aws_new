@@ -47,6 +47,52 @@ void draw_aws_setup_page(screen_menu_t* p_win)
   screen_menu_clear(p_win);
 }
 
+void setting_menu_auto_close_callback(void *argument)
+{
+  button_put_key(KEY_CODE_ESC_LONG); // 설정화면 종료 버튼을 대신 눌러준다
+  button_put_key(KEY_CODE_ESC_LONG); // 설정화면 종료 버튼을 대신 눌러준다
+}
+
+
+#define SCREEN_EXIT_TIMEOUT_SEC 10
+static osTimerId_t g_screen_timer_id;
+void auto_close_screen_timer_init(uint32_t delay_seconds)
+{
+
+  osTimerAttr_t timer_attr = {.name = "close screen", .attr_bits = 0, .cb_mem = NULL, .cb_size = 0};
+
+  // 원샷 타이머 생성 (한 번만 실행)
+  g_screen_timer_id = osTimerNew(setting_menu_auto_close_callback, osTimerOnce, NULL, &timer_attr);
+
+  if (g_screen_timer_id != NULL)
+  {
+    osStatus_t status = osTimerStart(g_screen_timer_id, delay_seconds * osKernelGetTickFreq());
+  }
+}
+
+void auto_close_screen_timer_reset(void)
+{
+  if (g_screen_timer_id != NULL )
+  {
+    // 기존 타이머 정지
+    osTimerStop(g_screen_timer_id);
+
+    // 타이머 재시작
+    osTimerStart(g_screen_timer_id, SCREEN_EXIT_TIMEOUT_SEC * osKernelGetTickFreq());
+  }
+}
+
+void auto_close_timer_delete(void)
+{
+    if (g_screen_timer_id != NULL)
+    {
+        osStatus_t status = osTimerDelete(g_screen_timer_id);
+        g_screen_timer_id = NULL;  // 안전하게 포인터 초기화
+
+    }
+}
+
+
 #define MENU_PASSWORD 7777
 void setup_menu(void)
 {
@@ -57,12 +103,20 @@ void setup_menu(void)
   screen_menu_t menu;
   int32_t password=0;
 
+  auto_close_screen_timer_init(SCREEN_EXIT_TIMEOUT_SEC);
+
+  register_key_callback(auto_close_screen_timer_reset);
+
   while(1)
   {
     status = input_password("PASS WORD",&password);
 
     if(status != MENU_OK)
+    {
+        unregister_key_callback();
+  auto_close_timer_delete();
     return;
+    }
 
     if (password == MENU_PASSWORD)
     {
@@ -82,7 +136,7 @@ void setup_menu(void)
     draw_aws_setup_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -149,4 +203,7 @@ void setup_menu(void)
 
     }
   }
+
+  unregister_key_callback();
+  auto_close_timer_delete();
 }

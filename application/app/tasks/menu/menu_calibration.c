@@ -122,7 +122,7 @@ int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_
     screen_printf(2, 0, "Press enter");
     screen_refresh();
 
-    key = get_button_key(500);
+    key = get_menu_key(500);
     if (key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
       return convert_key_to_status(key);
     else if (key == KEY_CODE_ENTER)
@@ -234,7 +234,7 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
 
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -464,7 +464,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     screen_printf(2, 0, "Press enter");
     screen_refresh();
 
-    key = get_button_key(500);
+    key = get_menu_key(500);
     if (key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
     return convert_key_to_status(key);
     else if(key == KEY_CODE_ENTER)
@@ -517,7 +517,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     screen_printf(2, 0, "Press enter");
     screen_refresh();
 
-    key = get_button_key(500);
+    key = get_menu_key(500);
     if (key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
       return convert_key_to_status(key);
     else if (key == KEY_CODE_ENTER)
@@ -632,7 +632,7 @@ int32_t cali_single_all(adc_channel_type_t type)
     draw_adc_all(&lcd_win, ADC_CHANNEL_TYPE_SINGLE_ENDED, p1_average, average_count);
     screen_refresh();
 
-    key = get_button_key(10);
+    key = get_menu_key(10);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -700,7 +700,7 @@ CALI_POINT2:
     draw_adc_all(&lcd_win, ADC_CHANNEL_TYPE_SINGLE_ENDED, p2_average, average_count);
     screen_refresh();
 
-    key = get_button_key(100);
+    key = get_menu_key(100);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -765,7 +765,7 @@ int32_t cali_setup_menu_factory(void)
     draw_cali_setup_menu_factory_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -869,7 +869,7 @@ int32_t view_single_channel_details(adc_channel_type_t type,int32_t channel)
       screen_printf(6, 0, "P2:%7d,%f", params->p2_cal_point.raw_value, params->p2_cal_point.reference_value);
       screen_refresh();
     }
-    key = get_button_key(100);
+    key = get_menu_key(100);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
       break;
@@ -1066,7 +1066,7 @@ int32_t handle_cali_view_summary(adc_channel_type_t type)
 
     screen_refresh();
 
-    key = get_button_key(500);
+    key = get_menu_key(500);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -1099,7 +1099,7 @@ int32_t cali_setup_menu_view(void)
     draw_cali_setup_menu_view_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -1245,7 +1245,7 @@ int32_t setup_menu_calibration(void)
     draw_setup_menu_calibration_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {

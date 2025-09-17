@@ -152,7 +152,7 @@ int32_t setup_menu_offset(void)
   {
     draw_offset_page(&menu);
     screen_refresh();
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q)
     {

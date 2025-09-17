@@ -55,7 +55,7 @@ int32_t setup_menu_system(void)
     draw_setup_menu_system_menu(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_menu_key(1000);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {

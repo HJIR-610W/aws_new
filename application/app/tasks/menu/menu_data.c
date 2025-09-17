@@ -272,7 +272,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
         draw_aws_data_page(&lcd_win, &aws, startTime);
         screen_refresh();
 
-        key = get_button_key(WAIT_FOREVER);
+        key = get_menu_key(WAIT_FOREVER);
 
         if (key == KEY_CODE_CTRL_Q||key == KEY_CODE_CTRL_C)
         {
@@ -402,7 +402,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
           draw_1min_page(&lcd_win,rain, startTime,system);
           screen_refresh();
         }
-        key = get_button_key(WAIT_FOREVER);
+        key = get_menu_key(WAIT_FOREVER);
 
         if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
         {
@@ -437,7 +437,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
       draw_data_rain(&menu);
       screen_refresh();
 
-      key = get_button_key(WAIT_FOREVER);
+      key = get_menu_key(WAIT_FOREVER);
 
       if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
       {
@@ -481,7 +481,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
       draw_data_sunshine(&menu);
       screen_refresh();
 
-      key = get_button_key(WAIT_FOREVER);
+      key = get_menu_key(WAIT_FOREVER);
 
       if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
       {
@@ -524,7 +524,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
       draw_data_menu(&menu);
       screen_refresh();
 
-      key = get_button_key(WAIT_FOREVER);
+      key = get_menu_key(WAIT_FOREVER);
 
       if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
       {

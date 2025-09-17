@@ -62,11 +62,17 @@ const osThreadAttr_t kBootProgressTask_attributes = {
     .priority = (osPriority_t)TASK_PRIO(TASK_BOOT_DEF),
 };
 
+const osThreadAttr_t kMenuTestTask_attributes = {
+    .name = "test",
+    .stack_size = TASK_STACK(TASK_MENU_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_MENU_DEF),
+};
+
+osThreadId_t g_menu_task_id;
 #define SYSTEM_WD 8
 
-
-
-void draw_system_page(screen_page_t* p_win)
+    void
+    draw_system_page(screen_page_t *p_win)
 {
   char buff[SCREEN_COLS + 1];
   const char *message;
@@ -1121,6 +1127,33 @@ void print_logo(void)
   osDelay(1000);
 }
 
+
+#define SCREEN_ALERT 1
+
+
+alert_t g_alert;
+
+void show_alert(alert_t alert)
+{
+  g_alert  = alert;
+  if (g_menu_task_id)
+    osThreadFlagsSet(g_menu_task_id, SCREEN_ALERT);
+}
+
+void popup_handler(uint32_t timeout_ms)
+{
+  uint32_t flags;
+
+  flags = osThreadFlagsWait(SCREEN_ALERT , osFlagsWaitAny, 250);
+
+  while (flags > 0  & flags&SCREEN_ALERT)
+  {
+    show_popup(g_alert.title, (char*)g_alert.framebuffer);
+    flags = 0;
+    osThreadFlagsClear(SCREEN_ALERT);
+  }
+}
+
 void menuTask(void *arg)
 {
   int32_t key;
@@ -1205,8 +1238,9 @@ void menuTask(void *arg)
            
     screen_refresh();
 
-    key =  get_button_key(250);//이 기다리는 시간이 화면 갱신되는 시간 
+    popup_handler(250);
 
+    key = get_button_key(0); 
     if (key == KEY_CODE_CTRL_C)
     {
       setup_menu();
@@ -1220,8 +1254,8 @@ void menuTask(void *arg)
         if (choice)
         {
          // screen_off();
-            screen_clear();
-  screen_refresh();
+          screen_clear();
+          screen_refresh();
           reset_system("key reset");
         }
       }
@@ -1298,7 +1332,7 @@ void bootProgressTask(void *arg)
 
   }
 
-  osThreadNew(menuTask, NULL, &kMenuTask_attributes);
+  g_menu_task_id =  osThreadNew(menuTask, NULL, &kMenuTask_attributes);
   osThreadExit(); // 종료 시킴
 }
 
@@ -1312,5 +1346,26 @@ void menuTask_init(void)
 
 }
 
+//
+void menuPopUpTask(void *arg)
+{
+  while(1)
+  {
 
+  }
+}
 
+void menuPopUpTask_init(void)
+{
+  osThreadNew(menuPopUpTask, NULL, &kBootProgressTask_attributes);
+}
+
+void test_menu_info(void)
+{
+  screen_init();
+  print_logo();
+
+  screen_clear();
+  screen_printf(0,0,"TEST MODE");
+  screen_refresh();
+}

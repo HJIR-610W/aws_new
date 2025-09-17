@@ -15,6 +15,7 @@ typedef struct screen_instance
   int8_t font_rows;
   int8_t font_cols;
   bool screen_on;
+  bool graphic_mode;
 } screen_instance_t;
 
 typedef struct
@@ -74,5 +75,6 @@ void screen_menu_printf(screen_menu_t *win, int index, const char *format, ...);
 void screen_off(void);
 void screen_on(void);
 
+void screen_widget_progress(int row, int col, float percentage);
 
 #endif

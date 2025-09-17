@@ -481,3 +481,4 @@ void screen_page_printf(screen_page_t *win,const char *format, ...)
     win->current_row++;
   }
 }
+

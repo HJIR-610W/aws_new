@@ -206,7 +206,7 @@ int32_t setup_menu_backup(void)
     draw_setup_menu_backup_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q)
     {
@@ -290,7 +290,7 @@ int32_t setup_menu_config(void)
     draw_menu_config_menu(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q || key == KEY_CODE_CTRL_C)
     {
@@ -346,7 +346,7 @@ int32_t setup_menu_manager(void)
     draw_setup_menu_manager_menu(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q)
     {

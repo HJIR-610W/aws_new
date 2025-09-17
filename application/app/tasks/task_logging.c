@@ -16,6 +16,7 @@
 #include "os_user_def.h"
 #include "system_err.h"
 #include "util_time.h"
+#include "task_menu.h"
 
 typedef enum logging_cmd_e
 {
@@ -210,6 +211,10 @@ void loggingTask(void *arg)
     // 메시지 큐에서 데이터 수신
     if (osMessageQueueGet(g_loggingQueue, &logging, NULL, osWaitForever) == osOK)
     {
+      alert_t alert;
+      alert.title = "Warnning";
+      snprintf(alert.framebuffer[0],sizeof(alert.framebuffer[0]), "test");
+      show_alert(alert);
          switch(logging.cmd)
         {
           case eLOGGING_LOG:

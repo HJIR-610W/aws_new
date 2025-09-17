@@ -275,7 +275,7 @@ int32_t setup_select_menu_index(sensor_t *p_sensor, int *choice, eSENSOR_TYPE_t 
     draw_sensor_page(&menu,p_sensor);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q)
     {
@@ -931,7 +931,7 @@ int32_t setup_menu_sensor(void)
     draw_menu_sensor_page(&menu);
     screen_refresh();
 
-    key = get_button_key(WAIT_FOREVER);
+    key = get_menu_key(WAIT_FOREVER);
 
     if (key == KEY_CODE_CTRL_Q)
     {

@@ -28,17 +28,42 @@ typedef struct
   int len;
 } fmt_field_t;
 
+void (*key_callback)(void);
+
+void register_key_callback(void (*callback)(void))
+{
+key_callback = callback;
+}
+
+void unregister_key_callback(void)
+{
+  key_callback = NULL;
+}
+
+
+int32_t get_menu_key(uint32_t timeout_ms)
+{
+  int32_t key;
+
+    key =  get_button_key(timeout_ms);
+
+    if (key_callback && key !=KEY_CODE_NONE )
+    {
+      key_callback();
+    }
+    return key;
+}
+
 int32_t input_decimal(const char *title, int min, int max, int *val)
 {
   char buff[MAX_COLS + 1] = {0};
   
   int cursor_pos = 0;
   int number_width = 0;
-  uint32_t last_blink;
   int blink_state = 1;
+  int sign_enable=0;
+  uint32_t last_blink;
 
-  int sign_use=0;
-  // 입력 검증
   if (val == NULL || title == NULL || min > max)
   {
     return MENU_BACK;
@@ -49,20 +74,20 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
   screen_printf(0, 0, "%s", buff);
 
   if (min < 0)
-    sign_use = 1;
+    sign_enable = 1;
 
     // 최대 자릿수 계산 (음수 고려)
     int temp_max = (abs(max) > abs(min)) ? abs(max) : abs(min);
     if (temp_max == 0)
       temp_max = 1;
 
-    if (sign_use)
+    if (sign_enable)
       number_width = (int)log10(temp_max) + 2;
     else
       number_width = (int)log10(temp_max) + 1;
     if (min < 0)
     {
-      if (sign_use)
+      if (sign_enable)
         number_width += 2;  // 음수 부호 고려
       else
         number_width += 1;
@@ -71,7 +96,7 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
   if (number_width >= MAX_COLS) number_width = MAX_COLS - 1;
   
   // 현재 값으로 버퍼 초기화 (부호 포함, 고정 폭)
-  if(sign_use)
+  if(sign_enable)
   snprintf_s(buff, sizeof(buff), "%+0*d", number_width, *val);
   else
     snprintf_s(buff, sizeof(buff), "%0*d", number_width, *val);
@@ -80,14 +105,11 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
   cursor_pos = 0; // 부호 위치(맨 왼쪽)부터 시작
   last_blink = OS_GET_TICK();
   
-
-
-
   while (1)
   {
     // 화면 출력
 
-    if(sign_use)
+    if(sign_enable)
     {
       screen_printf(1, 0, "Min: %+0*d", number_width, min);
       screen_printf(2, 0, "Max: %+0*d", number_width, max);
@@ -111,25 +133,23 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
     if (cursor_pos < number_width)
     {
       char display_char = blink_state ? buff[cursor_pos] : ' ';
-      if(sign_use)
-      screen_put_ch(3, 4+cursor_pos, display_char);
+      if(sign_enable)
+       screen_put_ch(3, 4+cursor_pos, display_char);
       else
         screen_put_ch(3, 4 + cursor_pos, display_char);
     }
 
     screen_refresh();
 
-    int32_t key = get_button_key(100);  // 10ms 대기
+    int32_t key = get_menu_key(100);  
     
-    
-    if (key == KEY_CODE_NONE) continue;
+    if (key == KEY_CODE_NONE)
+    continue;
 
     // 키 입력 시 커서 즉시 표시
     blink_state = 1;
     last_blink = OS_GET_TICK();
     screen_printf(3, 0, "Val:%s", buff);
-
-
 
     if (key == KEY_CODE_LEFT)
     {
@@ -147,7 +167,7 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
     }
     if (key == KEY_CODE_UP || key == KEY_CODE_DOWN)
     {
-      if (cursor_pos == 0&&sign_use)  // 부호 위치
+      if (cursor_pos == 0&&sign_enable)  // 부호 위치
       {
         if (buff[0] == '-')
         {
@@ -181,7 +201,7 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
       }
       else if(key>='0'&& key<='9')
       {
-        if (cursor_pos > 0 ||sign_use==0)  // 부호 위치
+        if (cursor_pos > 0 ||sign_enable==0)  // 부호 위치
         {
           buff[cursor_pos] = key;
           if (cursor_pos < number_width - 1)  // 부호 포함 전체 길이 내에서 이동
@@ -248,7 +268,7 @@ int input_password(const char *title,int32_t *password)
 
     screen_refresh();
 
-    int32_t key = get_button_key(100); 
+    int32_t key = get_menu_key(100); 
     if (key == KEY_CODE_NONE)
       continue;
 
@@ -387,7 +407,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
     
     screen_refresh();
     
-    key = get_button_key(10);
+    key = get_menu_key(10);
     if (key == KEY_CODE_NONE) continue;
     
     // 키 입력 시 커서 즉시 표시
@@ -476,21 +496,6 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
   }
 }
 
-int32_t convert_key_to_status(int key)
-{
-  int32_t status =MENU_OK;
-
-  if (key == KEY_CODE_CTRL_Q)
-  {
-    status = MENU_ABORT;
-  }
-  else if (key == KEY_CODE_CTRL_C)
-  {
-    status = MENU_BACK;
-  }
-
-  return status;
-}
 
 int32_t input_float(const char *title, float min, float max, float *val, const char *fmt)
 {
@@ -501,7 +506,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
   int integer_places = 0;
   uint32_t last_blink;
   int blink_state = 1;
-  int sign_use = 0;
+  int sign_enable = 0;
   int dot_pos = -1;
   float temp_val;
   int i;
@@ -548,19 +553,19 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
   // 부호 사용 여부 결정
   if (min < 0.0f)
   {
-    sign_use = 1;
+    sign_enable = 1;
   }
   
   // integer_places 계산 (부호 + 정수부 + 소수점)
   integer_places = total_width - decimal_places;
   if (decimal_places > 0) integer_places--; // 소수점 자리
-  if (sign_use) integer_places--; // 부호 자리
+  if (sign_enable) integer_places--; // 부호 자리
   
   // 버퍼 크기 제한
   if (total_width >= MAX_COLS) total_width = MAX_COLS - 1;
   
   // 현재 값으로 버퍼 초기화
-  if (sign_use)
+  if (sign_enable)
   {
     if (decimal_places > 0)
     {
@@ -603,7 +608,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
   {
     // 화면 출력
 
-    if (sign_use)
+    if (sign_enable)
     {
       screen_printf(1, 0, "Min: %+*.*f", total_width, decimal_places, min);
       screen_printf(2, 0, "Max: %+*.*f", total_width, decimal_places, max);
@@ -632,7 +637,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
 
     screen_refresh();
 
-    int32_t key = get_button_key(10);  // 10ms 대기
+    int32_t key = get_menu_key(10);  // 10ms 대기
     if (key == KEY_CODE_NONE)
       continue;
 
@@ -667,7 +672,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
     }
     else if (key == KEY_CODE_UP || key == KEY_CODE_DOWN)
     {
-      if (cursor_pos == 0 && sign_use)  // 부호 위치
+      if (cursor_pos == 0 && sign_enable)  // 부호 위치
       {
         if (buff[0] == '-')
         {
@@ -705,7 +710,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
       temp_val = atof(buff);
       if (temp_val < min)
       {
-        if (sign_use)
+        if (sign_enable)
         {
           snprintf_s(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, min);
         }
@@ -716,7 +721,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
       }
       else if (temp_val > max)
       {
-        if (sign_use)
+        if (sign_enable)
         {
           snprintf_s(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, max);
         }
@@ -728,7 +733,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
     }
     else if (key >= '0' && key <= '9')
     {
-      if ((cursor_pos > 0 || sign_use == 0) && (dot_pos < 0 || cursor_pos != dot_pos))
+      if ((cursor_pos > 0 || sign_enable == 0) && (dot_pos < 0 || cursor_pos != dot_pos))
       {
         buff[cursor_pos] = key;
         if (cursor_pos < total_width - 1)
@@ -745,7 +750,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
         temp_val = atof(buff);
         if (temp_val < min)
         {
-          if (sign_use)
+          if (sign_enable)
           {
             snprintf_s(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, min);
           }
@@ -756,7 +761,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
         }
         else if (temp_val > max)
         {
-          if (sign_use)
+          if (sign_enable)
           {
             snprintf_s(buff, sizeof(buff), "%+0*.*f", total_width, decimal_places, max);
           }
@@ -849,7 +854,7 @@ int32_t input_combobox(const char* title, const char* item_list[], int32_t item_
 
     screen_refresh();
 
-    int32_t key = get_button_key(100);
+    int32_t key = get_menu_key(100);
 
     switch (key)
     {
@@ -943,7 +948,7 @@ int32_t show_popup(const char *title, const char *message)
 
   screen_refresh();
 
-  key = get_button_key(0xFFFFFFFF);
+  key = get_menu_key(0xFFFFFFFF);
 
   return convert_key_to_status(key);
 }
@@ -1000,7 +1005,7 @@ int32_t input_active(const char *title, int32_t *choice)
     screen_printf(2, 0, "%s", buff);
     screen_refresh();
 
-    key = get_button_key(100);
+    key = get_menu_key(100);
 
     if (key == KEY_CODE_ENTER || key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
     {
@@ -1063,7 +1068,7 @@ int32_t show_ok(const char *title,const char *msg)
     screen_printf(2, 0, "%s", buff);
     screen_refresh();
 
-    key = get_button_key(100);
+    key = get_menu_key(100);
 
     if (key == KEY_CODE_ENTER || key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
     {
@@ -1104,3 +1109,18 @@ int32_t make_sreen_row(char *buff,const char *pFmt, ...)
   return len;
 }
 
+int32_t convert_key_to_status(int key)
+{
+  int32_t status = MENU_OK;
+
+  if (key == KEY_CODE_CTRL_Q)
+  {
+    status = MENU_ABORT;
+  }
+  else if (key == KEY_CODE_CTRL_C)
+  {
+    status = MENU_BACK;
+  }
+
+  return status;
+}

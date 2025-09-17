@@ -99,7 +99,8 @@ void startTask(void *arg)
 
   if (testTask_init() == true)
   {
-    osThreadExit();  // 종료 시킴
+    test_menu_info();
+    osThreadExit(); // 종료 시킴
   }
 
   consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화

@@ -25,5 +25,7 @@ int32_t show_popup(const char *title, const char *message);
 int32_t show_ok(const char* title, const char* msg);
 int32_t convert_key_to_status(int key);
 int32_t make_sreen_row(char *buff, const char *pFmt, ...);
-
+int32_t get_menu_key(uint32_t timeout_ms);
+void register_key_callback(void (*callback)(void));
+void unregister_key_callback(void);
 #endif
