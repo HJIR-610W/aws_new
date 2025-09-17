@@ -1219,6 +1219,9 @@ void menuTask(void *arg)
       {
         if (choice)
         {
+         // screen_off();
+            screen_clear();
+  screen_refresh();
           reset_system("key reset");
         }
       }
@@ -1269,7 +1272,7 @@ void bootProgressTask(void *arg)
 
   screen_init();
 
-  osDelay(1000);
+
 
   print_logo();
 
@@ -1287,7 +1290,7 @@ void bootProgressTask(void *arg)
       count = 0;
     }
     screen_refresh();
-    osDelay(10);
+    osDelay(6);
     if(is_boot_complete()&&count ==0 )
     {
       break;

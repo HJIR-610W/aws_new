@@ -499,16 +499,20 @@ void board_gpio_init(void)
 
 
   //[전원]LCD OFF 하드웨어 기본 ON
-  board_set_gpio(DO_POWER_LCD_GPIO_Port, DO_POWER_LCD_Pin, GPIO_PIN_RESET); 
+  board_set_gpio(DO_POWER_LCD_GPIO_Port, DO_POWER_LCD_Pin, GPIO_PIN_SET); 
   board_config_gpio(DO_POWER_LCD_GPIO_Port, DO_POWER_LCD_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
   
   //LCD 리셋은 활성화
-  board_set_gpio(DO_LCD_RESET_GPIO_Port, DO_LCD_RESET_Pin, GPIO_PIN_SET); 
+  board_set_gpio(DO_LCD_RESET_GPIO_Port, DO_LCD_RESET_Pin, GPIO_PIN_RESET); 
   board_config_gpio(DO_LCD_RESET_GPIO_Port, DO_LCD_RESET_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
 
   //[전원]USB 5v 전원
   board_set_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_PIN_SET); 
   board_config_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
+  
+  
+
+    
 }
 
 
