@@ -1250,6 +1250,12 @@
                         <name>$PROJ_DIR$\..\Application\app\protocols\divas\divas_protocol_handler.c</name>
                     </file>
                 </group>
+                <group>
+                    <name>recorder</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\protocols\recorder\recorder_protocol_handler.c</name>
+                    </file>
+                </group>
             </group>
             <group>
                 <name>tasks</name>
@@ -1729,7 +1735,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -1792,7 +1798,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -2573,6 +2579,12 @@
             </file>
         </group>
         <group>
+            <name>HART</name>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\HART\thread_hart.c</name>
+            </file>
+        </group>
+        <group>
             <name>LwIP</name>
             <file>
                 <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\core\altcp.c</name>
@@ -2823,9 +2835,6 @@
             <file>
                 <name>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\netif\zepif.c</name>
             </file>
-        </group>
-        <group>
-            <name>menu</name>
         </group>
         <group>
             <name>modbus</name>

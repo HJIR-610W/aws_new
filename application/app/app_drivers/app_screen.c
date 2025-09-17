@@ -183,7 +183,7 @@ void screen_page_handle(screen_page_t* win, int key)
     case KEY_CODE_UP:  // 위로 스크롤
       if (win->scroll_offset[page] > 0)
       {
-        if(win->chunk_scroll_use)
+        if(win->chunk_scroll_enable)
         {
         win->scroll_offset[page] -= win->view_row;
         }
@@ -197,7 +197,7 @@ void screen_page_handle(screen_page_t* win, int key)
       }
       break;
     case KEY_CODE_DOWN:  // 아래로 스크롤
-      if(win->chunk_scroll_use)
+      if(win->chunk_scroll_enable)
       {
         new_offset = win->scroll_offset[page] + win->view_row;
       }
@@ -212,13 +212,13 @@ void screen_page_handle(screen_page_t* win, int key)
       }
       break;
     case KEY_CODE_LEFT:  // 이전 페이지
-      if (win->multi_page_use && (win->current_page > 0))
+      if (win->multi_page_enable && (win->current_page > 0))
       {
         win->current_page--;
       }
       break;
     case KEY_CODE_RIGHT:  // 다음 페이지
-      if (win->multi_page_use)
+      if (win->multi_page_enable)
       {
         if (win->current_page < win->total_pages - 1)
         {

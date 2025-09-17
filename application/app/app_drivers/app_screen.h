@@ -21,16 +21,16 @@ typedef struct screen_instance
 typedef struct
 {
   screen_instance_t *p_screen;
-  int current_row;
-  int view_row;
-  int view_col;
-  int scroll_offset[SCREEN_PAGE_MAX];
-  int total_items[SCREEN_PAGE_MAX];
-  int current_page;
-  int total_pages;
-  int multi_page_use;
-  int chunk_scroll_use;
-} screen_page_t;
+  int current_row;//현재의 행번호 (0부터 시작)
+  int view_row;//화면의 행수
+  int view_col;// 화면의 열수
+  int scroll_offset[SCREEN_PAGE_MAX];//개별 페이지 up,down 버튼으로 이동된 오프셋
+  int total_items[SCREEN_PAGE_MAX];//페이지에 몇개의 행이 있는지
+  int current_page;//현재 페이지 번호
+  int total_pages;//총 몇개의 페이지로 구성된건지
+  int multi_page_enable;// 화면은 left,right 버튼으로 이동가능한 멀티 페이지로 구성됨
+  int chunk_scroll_enable;// 화면은 up,down 버튼으로 스크롤할때 화면 전체 스크롤할지, 행스크롤할지
+} screen_page_t;//정보 표현 페이지 구현시 사용
 
 typedef struct
 {
@@ -43,8 +43,8 @@ typedef struct
   int total_items; //행의 총 갯수
   int selected_index;//별표가 위치한 곳의 행 번호 
   uint8_t index_list[50];//메뉴 번호 
-  bool enter_long_key_active;
-} screen_menu_t;
+  bool enter_long_key_active;//해당 행이 엔터롱키기능이 있는지 
+} screen_menu_t;//메뉴 페이지 구현시 사용, 항상 앞에 *,>표시됨
 
 
 screen_instance_t* screen_get_instance(void);

@@ -31,7 +31,7 @@ int32_t menu_view_log(void)
   screen_clear();
   screen_page_create(&lcd_win);
   lcd_win.total_pages = 1;
-  lcd_win.chunk_scroll_use = 1;
+  lcd_win.chunk_scroll_enable = 1;
 
 
 

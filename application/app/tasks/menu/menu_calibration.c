@@ -625,7 +625,7 @@ int32_t cali_single_all(adc_channel_type_t type)
   screen_page_create(&lcd_win);
 
   lcd_win.total_pages = 1;
-  lcd_win.chunk_scroll_use = 1;
+  lcd_win.chunk_scroll_enable = 1;
 
   while (1)
   {
@@ -693,7 +693,7 @@ CALI_POINT2:
   screen_page_create(&lcd_win);
 
   lcd_win.total_pages = 1;
-  lcd_win.chunk_scroll_use = 1;
+  lcd_win.chunk_scroll_enable = 1;
 
   while (1)
   {
@@ -1044,7 +1044,7 @@ int32_t handle_cali_view_summary(adc_channel_type_t type)
   screen_page_create(&lcd_win);
     
   lcd_win.total_pages =1;
-  lcd_win.chunk_scroll_use = 1;
+  lcd_win.chunk_scroll_enable = 1;
   
   while (1)
   {

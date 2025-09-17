@@ -1137,12 +1137,26 @@ void menu_refresh(void)
     osThreadFlagsSet(g_menu_task_id, SCREEN_UPDATE);
 }
 
+/**
+ * @brief task_aws 에서 동기화 신호 발생시킴
+ * 측정 task, 연산 task,표시 task가 제각각 주기로 동작중이라 실제 측정된 결과값이 표시되기까지
+ * 지연이 발생됨
+ * 따라서 표시 task는 측정 task에서 동기화 신호를 주어 즉각 표시 되도록 구현
+ * 예)우량 신호를 발생 시켰는데 표시장치에는 1~2초 늦게 업데이트되는 현상방지 목적
+ * 우량신호는 250ms마다 체크하여 최대 250ms~1000ms  
+ */
 void wait_refrech_trigger(void)
 {
   osThreadFlagsWait(SCREEN_UPDATE, osFlagsWaitAny, 250);
 }
 
+
 alert_t g_alert;
+
+/**
+ * @brief 다른 task에서 긴급 alert 화면을 뛰을때 사용
+ * alert를 띄우고자하는 task는 미리 alert에 값을 쓴 상태에서 신호 발생해주면됨
+ */
 void show_alert(alert_t alert)
 {
   g_alert  = alert;
@@ -1150,6 +1164,10 @@ void show_alert(alert_t alert)
     osThreadFlagsSet(g_menu_task_id, SCREEN_ALERT);
 }
 
+/**
+ * @brief alert 신호가 있으면 alert변수에 저장된 값을 출력함
+ * 오직 1개만 처리가능함
+ */
 void popup_handler(uint32_t timeout_ms)
 {
   uint32_t flags;
@@ -1178,8 +1196,8 @@ void menuTask(void *arg)
 
   screen_page_create(&lcd_win);
 
-  lcd_win.chunk_scroll_use = 1;// view_row 단위로 스크롤
-  lcd_win.multi_page_use = 1;  // 하나의 창에 여러개의 페이지 구성 LEFT,RIGHT 키 사용
+  lcd_win.chunk_scroll_enable = 1;// view_row 단위로 스크롤
+  lcd_win.multi_page_enable = 1;  // 하나의 창에 여러개의 페이지 구성 LEFT,RIGHT 키 사용
 
   screen_off_time = OS_GET_TICK();
   while (1)
@@ -1248,8 +1266,9 @@ void menuTask(void *arg)
     screen_refresh();
 
    // popup_handler(250);
-    wait_refrech_trigger();
-    
+    wait_refrech_trigger();//task_aws에서 값이 동기화신호 줌
+    //
+
     key = get_button_key(0); 
     if (key == KEY_CODE_CTRL_C)
     {
