@@ -308,21 +308,21 @@ int input_password(const char *title,int32_t *password)
 
 int input_fmt(string_fmt_t* strfmt, const char* title)
 {
-  fmt_field_t fields[MAX_FIELDS];
-  int field_count = 0;
-  int fmt_len;
-  const char* fmt;
-  int data_index = 0;
+  const char *fmt;
   char display[21];
   char buff[MAX_COLS];
+  int field_count = 0;
+  int fmt_len;
+  int data_index = 0;
   int i, j, width;
   int current_field = 0;
   int cursor_pos = 0;
-  uint32_t last_blink;
   int blink_state = 1;
-  int32_t key;
   int f;
-  
+  int key;
+  uint32_t last_blink;
+  fmt_field_t fields[MAX_FIELDS];
+
   if (strfmt == NULL || title == NULL || strfmt->fmt == NULL)
   {
     return MENU_ERROR;

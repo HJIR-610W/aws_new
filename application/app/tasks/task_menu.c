@@ -1192,8 +1192,6 @@ void menuTask(void *arg)
   DEBUG_PRINTF("menu task start\r\n");
 
   
-
-
   screen_page_create(&lcd_win);
 
   lcd_win.chunk_scroll_enable = 1;// view_row 단위로 스크롤
@@ -1353,7 +1351,7 @@ void bootProgressTask(void *arg)
       count = 0;
     }
     screen_refresh();
-    osDelay(6);
+    osDelay(50);
     if(is_boot_complete()&&count ==0 )
     {
       break;

@@ -27,7 +27,7 @@ uint32_t getSDIOClockFrequency(void)
 uint32_t calculateSDIOClockDiv(uint32_t hclk, uint32_t pclk2, uint32_t desired_sdio_clk)
 {
   uint32_t clkdiv;
-  uint32_t actual_clk;
+ // uint32_t actual_clk;
 
   // SDIO 클럭 최대치 보정
   if (desired_sdio_clk > 48000000) {
@@ -44,7 +44,7 @@ uint32_t calculateSDIOClockDiv(uint32_t hclk, uint32_t pclk2, uint32_t desired_s
   }
 
   // 실제 SDIO 클럭
-  actual_clk = hclk / (clkdiv + 2);
+//  actual_clk = hclk / (clkdiv + 2);
 
 #if 0
   // PCLK2 제약 조건 확인
@@ -63,9 +63,9 @@ uint32_t calculateSDIOClockDiv(uint32_t hclk, uint32_t pclk2, uint32_t desired_s
 
 void MX_SDIO_SD_Init(void)
 {
-  uint32_t g_sdioMainClk;
+  //uint32_t g_sdioMainClk;
 
-  g_sdioMainClk = getSDIOClockFrequency();//168MHz
+  // = getSDIOClockFrequency();//168MHz
 
   hsd.Instance = SDIO;
   hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;

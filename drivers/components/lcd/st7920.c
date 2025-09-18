@@ -468,7 +468,7 @@ void st7920_close(void)
     st7920_t *cfg = (st7920_t *)st7920_driver.cfg;
       
   st7920_driver.opened = NULL;
-  bsp_do_low(cfg->rst_do_num);
+  bsp_do_low(cfg->rst_do_num); //RST 리셋으로 
   drv_power_off(DRV_POWER_LCD);
 }
 
@@ -633,15 +633,15 @@ void st7920_home(driver_t *drv)
 
 void st7920_display_on(driver_t *drv)
 {
-   // st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL | ST7920_DISPLAY_DISPLAY_ON);
-   st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | ST7920_FUNCTION_SET_EXTEND | ST7920_FUNCTION_SET_GRAPHIC);
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL | ST7920_DISPLAY_DISPLAY_ON);
+ //  st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | ST7920_FUNCTION_SET_EXTEND | ST7920_FUNCTION_SET_GRAPHIC);
    st7920_delay_us(100);
 }
 
 void st7920_display_off(driver_t *drv)
 {
-   // st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL);
-   st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | ST7920_FUNCTION_SET_EXTEND );
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CONTROL);
+  // st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | ST7920_FUNCTION_SET_EXTEND );
    st7920_delay_us(100);
 }
 
@@ -746,9 +746,6 @@ void st7920_write_string(driver_t *drv, int row, int col, const char *str)
         }
     }
 }
-
-
-
 
 
 static void st7920_set_mode(driver_t *drv, eLCD_MODE_t lcd_mode)

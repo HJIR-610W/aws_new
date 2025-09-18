@@ -12,6 +12,7 @@
 #include "drv_power.h"
 
 #define MAX_COLS 21
+#define MAX_ROWS 8
 
 
 static driver_t *p_s_lcd = NULL;
@@ -23,14 +24,14 @@ void screen_init(void)
   if (p_s_lcd)
   {
     driver_lcd_display_on(p_s_lcd);
+
     s_screen.height_pixcel = 64;
     s_screen.width_pixel = 128;
-    s_screen.font_rows = 8;
-    s_screen.font_cols = 21;
+    s_screen.font_rows = MAX_ROWS;
+    s_screen.font_cols = MAX_COLS;
     s_screen.screen_on  = true;
+    s_screen.graphic_mode = true;
     
-    screen_clear();
-    screen_refresh();
   }
 }
 screen_instance_t* screen_get_instance(void)
@@ -40,25 +41,30 @@ screen_instance_t* screen_get_instance(void)
 
 void screen_home(void)
 {
-    if(p_s_lcd == NULL) return;
+    if(p_s_lcd == NULL)
+    return;
     driver_lcd_home(p_s_lcd);
 }
 
+
 void screen_display_on(void)
 {
-    if(p_s_lcd == NULL) return;
+    if(p_s_lcd == NULL)
+     return;
     driver_lcd_display_on(p_s_lcd);
 }
 
 void screen_display_off(void)
 {
-    if(p_s_lcd == NULL) return;
+    if(p_s_lcd == NULL)
+    return;
     driver_lcd_display_off(p_s_lcd);
 }
 
 void screen_set_cursor(int row, int col)
 {
-    if(p_s_lcd == NULL) return;
+    if(p_s_lcd == NULL)
+     return;
    // driver_lcd_set_position(p_s_lcd, row, col);
 }
 
@@ -80,27 +86,15 @@ void screen_put_ch(int row, int col, uint8_t ch)
   driver_lcd_put_ch(p_s_lcd,row,col,ch);
 }
 
-
 void screen_clear(void)
 {
-  for (int row = 0; row <s_screen.font_rows; row++)
-  {
-    for (int i = 0; i < s_screen.font_cols; i++)
-    {
-      screen_put_ch(row, i, ' ');
-    }
-  }
+  driver_lcd_clear_screen(p_s_lcd);
 }
 
 void screen_page_create(screen_page_t* win)
 {
+  win->p_screen = &s_screen;
   win->current_row = 0;
-  win->view_row = s_screen.font_rows;
-
-  win->view_col = s_screen.font_cols;
-
-
-
   win->current_page = 0;
   win->total_pages = 1;
 
@@ -110,20 +104,14 @@ void screen_page_create(screen_page_t* win)
     win->total_items[i] = 0;
   }
 }
+
 /**
  * @brief 타이틀이 메뉴용
  */
 void screen_menu_create(screen_menu_t* win,const char *titile)
 {
+  win->p_screen = &s_screen;
   win->current_row = 0;
-  win->view_row = s_screen.font_rows;
-  win->view_col = s_screen.font_cols;
-
-  if (win->view_col > MAX_COLS)
-  {
-    win->view_col = MAX_COLS;
-  }
-
   win->scroll_offset = 0;
   win->total_items = 0;
   win->selected_index = 0;  // 첫 번째 메뉴 항목이 기본 선택
@@ -131,32 +119,33 @@ void screen_menu_create(screen_menu_t* win,const char *titile)
   
   if(titile)
   {
-    snprintf(win->title,sizeof(win->title),"%s",titile);
+    snprintf(win->title,sizeof(win->title),"%s",titile);//왼쪽 정렬
   }
   else
   {
     memset(win->title, 0, sizeof(win->title));  // 타이틀 초기화
   }
-
 }
 
 
-
+/**
+ * @brief 프레임 버퍼기만 오직 1행 출력
+ */
 void screen_printf(int row, int col, const char* format, ...)
 {
   char s_format_buffer[MAX_COLS];  // 정적 버퍼 크기는 필요에 따라 조정
-  va_list args;
   int i;
   int len;
+  va_list args;
+
   va_start(args, format);
   vsnprintf(s_format_buffer, sizeof(s_format_buffer), format, args);
   va_end(args);
 
-  screen_set_cursor(row, col);
+  //screen_set_cursor(row, col);
 
   len = strlen(s_format_buffer);
 
-  // 텍스트 출력
   for (i = 0; i < len && i < MAX_COLS; i++)
   {
     screen_put_ch(row, col+i, s_format_buffer[i]);
@@ -175,21 +164,26 @@ void screen_page_handle(screen_page_t* win, int key)
   int page = win->current_page;
   int new_offset = 0;
   int total_items = 0;
-
-  total_items = ALIGN_UP(win->total_items[page], win->view_row);
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;  
+  
+  //행의 개수를 화면 행의 배수로 만든다.
+  total_items = ALIGN_UP(win->total_items[page], view_rows);
 
   switch (key)
   {
-    case KEY_CODE_UP:  // 위로 스크롤
+    case KEY_CODE_UP:  // 위로 스크롤 
       if (win->scroll_offset[page] > 0)
       {
-        if(win->chunk_scroll_enable)
+        if(win->chunk_scroll_enable)//화면 전체행단위로 스크롤이라면
         {
-        win->scroll_offset[page] -= win->view_row;
+          win->scroll_offset[page] -= view_rows; //화면 
         }
-        else{
-          win->scroll_offset[page] -= 1;
+        else
+        {
+          win->scroll_offset[page] -= 1;// 1개행씩 스크롤
         }
+
         if (win->scroll_offset[page] < 0)
         {
           win->scroll_offset[page] = 0;
@@ -199,7 +193,7 @@ void screen_page_handle(screen_page_t* win, int key)
     case KEY_CODE_DOWN:  // 아래로 스크롤
       if(win->chunk_scroll_enable)
       {
-        new_offset = win->scroll_offset[page] + win->view_row;
+        new_offset = win->scroll_offset[page] + view_rows;
       }
       else
       {
@@ -234,47 +228,32 @@ void screen_page_handle(screen_page_t* win, int key)
 void screen_menu_printf(screen_menu_t *win,int index,const char *format, ...)
 {
   char s_format_buffer[MAX_COLS]; // 정적 버퍼 크기는 필요에 따라 조정
-  va_list args;
-  int display_row;
-  int cols;
-  int i;
-  int text_len;
   char selection_indicator;
+  int display_row;
+  int i;
   int title_offset = 0;
   int row_index;
-
+  va_list args;
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;
+  
 
   row_index = win->total_items;
 
   win->index_list[row_index] = index;
    win->total_items++;
 
-  // 타이틀이 있으면 항상 첫 번째 행에 타이틀 표시
-  if (strlen(win->title) > 0)
-  {
-    if (win->current_row == 0)
-    {
-      screen_set_cursor(0, 0);
-      text_len = strlen(win->title);
+   if (win->title != NULL)
+   {
+     if (win->current_row == 0)
+     {
+        screen_printf(0,0,win->title);
+        win->current_row++;
+     }
+     title_offset = 1;
+   }
 
-      // 타이틀은 선택 표시 없이 출력
-      for (i = 0; i < text_len && i < win->view_col; i++)
-      {
-        screen_put_ch(0, i, win->title[i]);
-      }
-
-      // 나머지 공간을 공백으로 채움
-      for (i = text_len; i < win->view_col; i++)
-      {
-        screen_put_ch(0, i, ' ');
-      }
-
-      win->current_row++;
-    }
-    title_offset = 1;
-  }
-
-  if (win->current_row >= win->view_row)
+  if (win->current_row >= view_rows)
   {
     return;
   }
@@ -284,16 +263,13 @@ void screen_menu_printf(screen_menu_t *win,int index,const char *format, ...)
   vsnprintf(s_format_buffer, sizeof(s_format_buffer), format, args);
   va_end(args);
 
-  cols = win->view_col;
 
   // 타이틀 오프셋을 고려하여 스크롤 범위 조정
-  if (row_index >= win->scroll_offset && row_index < win->scroll_offset + win->view_row - title_offset)
+  if (row_index >= win->scroll_offset && row_index < win->scroll_offset + view_rows - title_offset)
   {
     display_row = row_index - win->scroll_offset + title_offset;
 
-    screen_set_cursor(display_row, 0);
-
-    text_len = strlen(s_format_buffer);
+//    screen_set_cursor(display_row, 0);
 
     // 선택된 항목이면 '*', 아니면 ' ' 표시
     if(win->enter_long_key_active==true)
@@ -304,35 +280,29 @@ void screen_menu_printf(screen_menu_t *win,int index,const char *format, ...)
     {
       selection_indicator = (win->selected_index == row_index) ? '*' : ' ';
     }
-
     screen_put_ch(display_row, 0, selection_indicator);
-
-    // 텍스트 출력 (첫 번째 문자부터 시작)
-    for (i = 0; i < text_len && (i + 1) < cols; i++)
-    {
-      screen_put_ch(display_row, i + 1, s_format_buffer[i]);
-    }
-
-    // 나머지 공간을 공백으로 채움
-    for (i = text_len + 1; i < cols; i++)
-    {
-      screen_put_ch(display_row, i, ' ');
-    }
+    screen_printf(display_row, 1, "%s", s_format_buffer);
 
     win->current_row++;
   }
 
-  // total_items 자동 업데이트
   if (row_index >= win->total_items)
   {
     win->total_items = row_index + 1;
   }
 }
+
+
 void screen_menu_handle(screen_menu_t* win, int key)
 {
   int title_offset = (strlen(win->title) > 0) ? 1 : 0;// 타이틀이 존재 하면 
-  int effective_view_row = win->view_row - title_offset;// 타이틀을 제외한 행만 유효한 표시행 
+  int effective_view_row ;
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;
   
+  
+     effective_view_row = view_rows - title_offset;// 타이틀을 제외한 행만 유효한 표시행 
+    
   switch (key)
   {
     case KEY_CODE_UP:  // 위로 이동
@@ -375,10 +345,13 @@ void screen_menu_clear(screen_menu_t *win)
 {
   int i;
   int display_row;
-
-  for (display_row = win->current_row; display_row < win->view_row; display_row++)
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;
+  
+  
+  for (display_row = win->current_row; display_row < view_rows; display_row++)
   {
-    for (i = 0; i < win->view_col; i++)
+    for (i = 0; i < view_cols; i++)
     {
       screen_put_ch(display_row, i, ' ');
     }
@@ -387,17 +360,18 @@ void screen_menu_clear(screen_menu_t *win)
 
 void screen_off(void)
 {
+  screen_printf(3, 0, "      Screen Off");
+  osDelay(1000);
   screen_clear();
   screen_refresh();
   drv_lcd_close(DRIVER_CLCD);
-  screen_get_instance()->screen_on = false;
+  s_screen.screen_on = false;
 }
 
 void screen_on(void)
 {
-  screen_get_instance()->screen_on = true;
   screen_init();
-  screen_clear();
+  //screen_clear();
   screen_printf(3, 0, "      Screen On");
   screen_refresh();
   osDelay(1000);
@@ -415,10 +389,13 @@ void screen_page_clear(screen_page_t *win)
 {
   int i;
   int display_row;
-
-  for (display_row = win->current_row; display_row < win->view_row; display_row++)
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;  
+  
+  
+  for (display_row = win->current_row; display_row < view_rows; display_row++)
   {
-    for (i = 0; i < win->view_col; i++)
+    for (i = 0; i < view_cols; i++)
     {
       screen_put_ch(display_row, i, ' ');
     }
@@ -436,18 +413,21 @@ void screen_page_printf(screen_page_t *win,const char *format, ...)
 {
   char s_format_buffer[MAX_COLS + 1]; // 정적 버퍼 크기는 필요에 따라 조정
   int display_row;
-  int cols;
+
   int i;
   int text_len;
   int page;
   int row_index;
   va_list args;
-
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;  
+  
+  
   row_index = win->total_items[win->current_page];
   
   win->total_items[win->current_page]++;
 
-  if (win->current_row >= win->view_row)
+  if (win->current_row >= view_rows)
   {
     return;
   }
@@ -457,26 +437,16 @@ void screen_page_printf(screen_page_t *win,const char *format, ...)
   vsnprintf(s_format_buffer, sizeof(s_format_buffer), format, args);
   va_end(args);
 
-  cols = win->view_col;
+
   page = win->current_page;
 
-  if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + win->view_row)
+  if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + view_rows)
   {
     display_row = row_index - win->scroll_offset[page];
 
-    screen_set_cursor(display_row, 0);
+    //screen_set_cursor(display_row, 0);
 
-    text_len = strlen(s_format_buffer);
-
-    for (i = 0; i < text_len && i < cols; i++)
-    {
-      screen_put_ch(display_row, i, s_format_buffer[i]);
-    }
-
-    for (i = text_len; i < cols; i++)
-    {
-      screen_put_ch(display_row, i, ' ');
-    }
+    screen_printf(display_row,0,s_format_buffer);
 
     win->current_row++;
   }

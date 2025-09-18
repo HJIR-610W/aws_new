@@ -22,5 +22,6 @@ typedef struct lcd_api_s
 
   void (*flush)(driver_t *drv);
   void  (*put_ch)(driver_t *drv, int row, int col, uint8_t ch);
+  
 } lcd_api_t;
 #endif

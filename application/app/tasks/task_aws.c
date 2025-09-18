@@ -1250,10 +1250,10 @@ void DUALPORT_TASK(void *arg)
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
   AWS_DATA_STRUCT *pAws;
-  sensor_t *p_sensor_config ;
+ // sensor_t *p_sensor_config ;
 
   DEBUG_PRINTF("dual port task start\r\n");
-  p_sensor_config = get_sensor_config_copy();
+  //p_sensor_config = get_sensor_config_copy();
   pAws = &mRealAws;
 
 

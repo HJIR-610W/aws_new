@@ -77,7 +77,7 @@ void SHELL_ReceiveDataCallback(uint8_t* buf, uint32_t len)
 }
 
 
-uint8_t g_buffer[]={"321테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.\r\n"};
+char g_buffer[]={"321테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.\r\n"};
 void test_console(void)
 {
   for(int i = 0;i< sizeof(g_buffer);i++)
