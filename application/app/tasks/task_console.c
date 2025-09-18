@@ -87,7 +87,7 @@ void test_console(void)
   while(1)
   {
 
-    drv_uart_send(console_uart_num,g_buffer,strlen(g_buffer));
+    drv_uart_send(console_uart_num,(uint8_t *)g_buffer,strlen(g_buffer));
     osDelay(10);
     
   }
@@ -139,7 +139,7 @@ void consoleTask(void *arg)
 
   while(1)
   {
-    drv_uart_send(console_uart_num,g_buffer,sizeof(g_buffer));
+    drv_uart_send(console_uart_num,(uint8_t *)g_buffer,sizeof(g_buffer));
     osDelay(1000);
   }
 }

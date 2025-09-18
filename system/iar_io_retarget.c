@@ -281,8 +281,6 @@ int __isatty(int file) {
 
 void __exit (int status)
 {
-
-  
   vTaskSuspendAll();
   __disable_irq();
   reset_system("__exit");

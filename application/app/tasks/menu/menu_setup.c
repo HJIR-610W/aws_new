@@ -54,7 +54,7 @@ void setting_menu_auto_close_callback(void *argument)
 }
 
 
-#define SCREEN_EXIT_TIMEOUT_SEC 10
+#define SCREEN_EXIT_TIMEOUT_SEC 3600
 static osTimerId_t g_screen_timer_id;
 void auto_close_screen_timer_init(uint32_t delay_seconds)
 {

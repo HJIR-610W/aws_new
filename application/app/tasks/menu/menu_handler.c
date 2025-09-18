@@ -18,8 +18,7 @@
 #include "util_stdio.h"
 #include "system_err.h"
 
-#define MAX_ROWS 8
-#define MAX_COLS 21
+
 #define MAX_FIELDS 6
 
 typedef struct
@@ -54,9 +53,9 @@ int32_t get_menu_key(uint32_t timeout_ms)
     return key;
 }
 
-int32_t input_decimal(const char *title, int min, int max, int *val)
+menu_status_t input_decimal(const char *title, int min, int max, int *val)
 {
-  char buff[MAX_COLS + 1] = {0};
+  char buff[LCD_COLS + 1] = {0};
   
   int cursor_pos = 0;
   int number_width = 0;
@@ -70,7 +69,7 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
   }
 
   screen_clear();
-  make_centered(buff, sizeof(buff), title, MAX_COLS);
+  make_centered(buff, sizeof(buff), title, LCD_COLS);
   screen_printf(0, 0, "%s", buff);
 
   if (min < 0)
@@ -93,7 +92,7 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
         number_width += 1;
     }
   // 버퍼 크기 제한
-  if (number_width >= MAX_COLS) number_width = MAX_COLS - 1;
+  if (number_width >= LCD_COLS) number_width = LCD_COLS - 1;
   
   // 현재 값으로 버퍼 초기화 (부호 포함, 고정 폭)
   if(sign_enable)
@@ -234,9 +233,9 @@ int32_t input_decimal(const char *title, int min, int max, int *val)
       PASS WORD
        [****]
 */
-int input_password(const char *title,int32_t *password)
+menu_status_t input_password(const char *title, int32_t *password)
 {
-  char temp[MAX_COLS + 1] = {0};
+  char temp[LCD_COLS + 1] = {0};
   char buff[6];
   int start_pos;
   int blink_state = 1;
@@ -246,10 +245,10 @@ int input_password(const char *title,int32_t *password)
   
   
   screen_clear();
-  make_centered(temp, sizeof(temp), title, MAX_COLS);
+  make_centered(temp, sizeof(temp), title, LCD_COLS);
   screen_printf(1, 0, "%s", temp);
 
-  make_centered(temp, sizeof(temp), "[****]", MAX_COLS);
+  make_centered(temp, sizeof(temp), "[****]", LCD_COLS);
   start_pos = (int)(strchr(temp, '[') - temp) + 1;
   screen_printf(3, 0, "%s", temp);
   while(1)
@@ -305,12 +304,11 @@ int input_password(const char *title,int32_t *password)
 
 }
 
-
-int input_fmt(string_fmt_t* strfmt, const char* title)
+menu_status_t input_fmt(string_fmt_t *strfmt, const char *title)
 {
   const char *fmt;
   char display[21];
-  char buff[MAX_COLS];
+  char buff[LCD_COLS];
   int field_count = 0;
   int fmt_len;
   int data_index = 0;
@@ -385,7 +383,7 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
   while (1)
   {
     // 화면 출력
-    make_centered(buff,sizeof(buff),title,MAX_COLS);
+    make_centered(buff,sizeof(buff),title,LCD_COLS);
     screen_printf(0, 0, "%s", buff);
     screen_printf(1, 0, "%s", display);
    // screen_printf(2, 0, "Field: %d/%d", current_field + 1, field_count);
@@ -496,10 +494,9 @@ int input_fmt(string_fmt_t* strfmt, const char* title)
   }
 }
 
-
-int32_t input_float(const char *title, float min, float max, float *val, const char *fmt)
+menu_status_t input_float(const char *title, float min, float max, float *val, const char *fmt)
 {
-  char buff[MAX_COLS + 1] = {0};
+  char buff[LCD_COLS + 1] = {0};
   int cursor_pos = 0;
   int total_width = 0;
   int decimal_places = 0;
@@ -547,7 +544,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
   
     screen_clear();
 
-  make_centered(buff,sizeof(buff),title,MAX_COLS);
+  make_centered(buff,sizeof(buff),title,LCD_COLS);
   screen_printf(0, 0, "%s", buff);
   
   // 부호 사용 여부 결정
@@ -562,7 +559,7 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
   if (sign_enable) integer_places--; // 부호 자리
   
   // 버퍼 크기 제한
-  if (total_width >= MAX_COLS) total_width = MAX_COLS - 1;
+  if (total_width >= LCD_COLS) total_width = LCD_COLS - 1;
   
   // 현재 값으로 버퍼 초기화
   if (sign_enable)
@@ -788,15 +785,15 @@ int32_t input_float(const char *title, float min, float max, float *val, const c
   }
 }
 
-int32_t input_combobox(const char* title, const char* item_list[], int32_t item_count, int* choice)
+menu_status_t input_combobox(const char *title, const char *item_list[], int32_t item_count, int *choice)
 {
   const char** combo_list;
   int32_t current_selection;
   int32_t max_display_rows;
   int32_t scroll_offset;
   int32_t status = MENU_OK;
-  int total_width = MAX_COLS;  // 좌우 여백 및 메뉴 번호 고려
-  char buff[MAX_COLS+1];
+  int total_width = LCD_COLS;  // 좌우 여백 및 메뉴 번호 고려
+  char buff[LCD_COLS+1];
   int len=0;
 
       if (item_count <= 0 || choice == NULL || title == NULL || item_list == NULL)
@@ -811,7 +808,7 @@ int32_t input_combobox(const char* title, const char* item_list[], int32_t item_
   }
 
   combo_list = item_list;
-  max_display_rows = (item_count < MAX_ROWS - 1) ? item_count : (MAX_ROWS - 1);
+  max_display_rows = (item_count < LCD_ROWS - 1) ? item_count : (LCD_ROWS - 1);
   
   scroll_offset = 0;
   if (current_selection >= max_display_rows) 
@@ -903,32 +900,37 @@ int32_t input_combobox(const char* title, const char* item_list[], int32_t item_
   return status;
 }
 
-
-
-int32_t show_popup(const char *title, const char *message)
+/**
+ * @brief 정보 화면
+ * 아무키나 눌러야지만 종료
+ */
+menu_status_t show_popup(const char *title, const char *message)
 {
-  char buff[MAX_COLS + 1];
+  char buff[LCD_COLS + 1];
   const int32_t lcd_cols = screen_get_instance()->font_cols;
   const int32_t lcd_rows = screen_get_instance()->font_rows; 
   int32_t key;
+  int32_t message_len ;
+  int32_t current_row ; // 메시지 시작 row
+  int32_t current_col ;
+  int32_t i;
 
-  
   screen_clear();
-  make_centered(buff, sizeof(buff), title, MAX_COLS);
+  make_centered(buff, sizeof(buff), title, LCD_COLS);
   screen_printf(0, 0, "%s", buff);
   
-  for (int col = 0; col < lcd_cols; col++)
+  for (int col = 1; col < lcd_cols-1; col++)
   {
     screen_put_ch(1, col, '-');
   }
 
   if (message != NULL)
   {
-    int32_t message_len = strlen(message);
-    int32_t current_row = 2; // 메시지 시작 row
-    int32_t current_col = 0;
+     message_len = strlen(message);
+     current_row = 2; // 메시지 시작 row
+     current_col = 0;
 
-    for (int32_t i = 0; i < message_len; i++)
+    for ( i = 0; i < message_len; i++)
     {
       if (current_col >= lcd_cols)
       {
@@ -948,12 +950,12 @@ int32_t show_popup(const char *title, const char *message)
 
   screen_refresh();
 
-  key = get_menu_key(0xFFFFFFFF);
+  key = get_menu_key(WAIT_FOREVER);
 
   return convert_key_to_status(key);
 }
 
-int32_t input_active(const char *title, int32_t *choice)
+menu_status_t input_active(const char *title, int32_t *choice)
 {
   const char *yes = "[Yes] No ";
   const char *no =  " Yes [No]";
@@ -962,7 +964,7 @@ int32_t input_active(const char *title, int32_t *choice)
 
   char buff[50];
   int len=0;
-  int total_width = MAX_COLS;  // 좌우 여백 및 메뉴 번호 고려
+  int total_width = LCD_COLS;  // 좌우 여백 및 메뉴 번호 고려
 
   // 타이틀 가운데 정렬
   int title_len = utf8_strlen(title);
@@ -1031,54 +1033,6 @@ int32_t input_active(const char *title, int32_t *choice)
    return convert_key_to_status(key);
 }
 
-int32_t show_ok(const char *title,const char *msg)
-{
-  const char *yes = "[OK]";
-  int key;
-
-
-  char buff[50];
-  int len = 0;
-  int total_width = MAX_COLS;  // 좌우 여백 및 메뉴 번호 고려
-
-  // 타이틀 가운데 정렬
-  int title_len = utf8_strlen(title);
-  int title_padding = (total_width - 2 - title_len) / 2;
-
-  for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
-
-  snprintf_s(&buff[len], sizeof(buff) - len, "%s", title);
-
-  screen_clear();
-
-  screen_printf(0, 0, "%s", buff);
-  screen_printf(1, 0, "%s", msg);
-
-  while (1)
-  {
-    len = 0;
-
-     title_len = utf8_strlen(yes);
-     title_padding = (total_width - 2 - title_len) / 2;
-
-    for (int i = 0; i < title_padding; i++) buff[len++] = ' ';
-
-    snprintf_s(&buff[len], sizeof(buff) - len, "%s", yes);
-
-    screen_printf(2, 0, "%s", buff);
-    screen_refresh();
-
-    key = get_menu_key(100);
-
-    if (key == KEY_CODE_ENTER || key == KEY_CODE_CTRL_C || key == KEY_CODE_CTRL_Q)
-    {
-      break;
-    }
-  }
-
-
-  return convert_key_to_status(key);
-}
 
 
 int32_t make_sreen_row(char *buff,const char *pFmt, ...)
@@ -1089,7 +1043,7 @@ int32_t make_sreen_row(char *buff,const char *pFmt, ...)
   int32_t remain_len;
   
   va_start(ap, pFmt);
-  len = vsnprintf_s(buff, MAX_COLS+1, (char *)pFmt, ap);
+  len = vsnprintf_s(buff, LCD_COLS+1, (char *)pFmt, ap);
   va_end(ap);
 
   if(len<0)
@@ -1097,9 +1051,9 @@ int32_t make_sreen_row(char *buff,const char *pFmt, ...)
     return 0;
   }
 
-  if(len<MAX_COLS)
+  if(len<LCD_COLS)
   {
-    remain_len = MAX_COLS - len;
+    remain_len = LCD_COLS - len;
     for(int i = 0 ; i< remain_len; i++)
     {
       buff[len++]  = ' ';
@@ -1123,4 +1077,297 @@ int32_t convert_key_to_status(int key)
   }
 
   return status;
+}
+
+void screen_page_create(screen_page_t *win)
+{
+  win->p_screen = screen_get_instance();
+  win->current_row = 0;
+  win->current_page = 0;
+  win->total_pages = 1;
+
+  for (int i = 0; i < SCREEN_PAGE_MAX; i++)
+  {
+    win->scroll_offset[i] = 0;
+    win->total_items[i] = 0;
+  }
+}
+
+/**
+ * @brief 타이틀이 메뉴용
+ */
+void screen_menu_create(screen_menu_t *win, const char *titile)
+{
+  win->p_screen = screen_get_instance();
+  win->current_row = 0;
+  win->scroll_offset = 0;
+  win->total_items = 0;
+  win->selected_index = 0; // 첫 번째 메뉴 항목이 기본 선택
+  win->enter_long_key_active = false;
+
+  if (titile)
+  {
+    snprintf_s(win->title, sizeof(win->title), "%s", titile); // 왼쪽 정렬
+  }
+  else
+  {
+    memset_s(win->title, sizeof(win->title),0, sizeof(win->title)); // 타이틀 초기화
+  }
+}
+
+void screen_page_handle(screen_page_t *win, int key)
+{
+  int page = win->current_page;
+  int new_offset = 0;
+  int total_items = 0;
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;
+
+  // 행의 개수를 화면 행의 배수로 만든다.
+  total_items = ALIGN_UP(win->total_items[page], view_rows);
+
+  switch (key)
+  {
+  case KEY_CODE_UP: // 위로 스크롤
+    if (win->scroll_offset[page] > 0)
+    {
+      if (win->chunk_scroll_enable) // 화면 전체행단위로 스크롤이라면
+      {
+        win->scroll_offset[page] -= view_rows; // 화면
+      }
+      else
+      {
+        win->scroll_offset[page] -= 1; // 1개행씩 스크롤
+      }
+
+      if (win->scroll_offset[page] < 0)
+      {
+        win->scroll_offset[page] = 0;
+      }
+    }
+    break;
+  case KEY_CODE_DOWN: // 아래로 스크롤
+    if (win->chunk_scroll_enable)
+    {
+      new_offset = win->scroll_offset[page] + view_rows;
+    }
+    else
+    {
+      new_offset = win->scroll_offset[page] + 1;
+    }
+
+    if (new_offset < total_items)
+    {
+      win->scroll_offset[page] = new_offset;
+    }
+    break;
+  case KEY_CODE_LEFT: // 이전 페이지
+    if (win->multi_page_enable && (win->current_page > 0))
+    {
+      win->current_page--;
+    }
+    break;
+  case KEY_CODE_RIGHT: // 다음 페이지
+    if (win->multi_page_enable)
+    {
+      if (win->current_page < win->total_pages - 1)
+      {
+        win->current_page++;
+      }
+    }
+    break;
+  }
+}
+
+void screen_menu_printf(screen_menu_t *win, int index, const char *format, ...)
+{
+  char s_format_buffer[LCD_COLS]; // 정적 버퍼 크기는 필요에 따라 조정
+  char selection_indicator;
+  int display_row;
+  int i;
+  int title_offset = 0;
+  int row_index;
+  va_list args;
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;
+
+  row_index = win->total_items;
+
+  win->index_list[row_index] = index;
+  win->total_items++;
+
+  if (win->title != NULL)
+  {
+    if (win->current_row == 0)
+    {
+      screen_printf(0, 0, win->title);
+      win->current_row++;
+    }
+    title_offset = 1;
+  }
+
+  if (win->current_row >= view_rows)
+  {
+    return;
+  }
+
+  // 가변 인자를 문자열로 포맷팅
+  va_start(args, format);
+  vsnprintf_s(s_format_buffer, sizeof(s_format_buffer), format, args);
+  va_end(args);
+
+  // 타이틀 오프셋을 고려하여 스크롤 범위 조정
+  if (row_index >= win->scroll_offset && row_index < win->scroll_offset + view_rows - title_offset)
+  {
+    display_row = row_index - win->scroll_offset + title_offset;
+
+    //    screen_set_cursor(display_row, 0);
+
+    // 선택된 항목이면 '*', 아니면 ' ' 표시
+    if (win->enter_long_key_active == true)
+    {
+      selection_indicator = (win->selected_index == row_index) ? '>' : ' ';
+    }
+    else
+    {
+      selection_indicator = (win->selected_index == row_index) ? '*' : ' ';
+    }
+    screen_put_ch(display_row, 0, selection_indicator);
+    screen_printf(display_row, 1, "%s", s_format_buffer);
+
+    win->current_row++;
+  }
+
+  if (row_index >= win->total_items)
+  {
+    win->total_items = row_index + 1;
+  }
+}
+
+void screen_menu_handle(screen_menu_t *win, int key)
+{
+  int title_offset = (strlen(win->title) > 0) ? 1 : 0; // 타이틀이 존재 하면
+  int effective_view_row;
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;
+
+  effective_view_row = view_rows - title_offset; // 타이틀을 제외한 행만 유효한 표시행
+
+  switch (key)
+  {
+  case KEY_CODE_UP: // 위로 이동
+    if (win->selected_index > 0)
+    {
+      win->selected_index--;
+
+      // 선택된 항목이 화면 위쪽을 벗어나면 스크롤
+      if (win->selected_index < win->scroll_offset)
+      {
+        win->scroll_offset = win->selected_index;
+      }
+    }
+    break;
+
+  case KEY_CODE_DOWN: // 아래로 이동
+    if (win->selected_index < win->total_items - 1)
+    {
+      win->selected_index++;
+
+      // 선택된 항목이 화면 아래쪽을 벗어나면 스크롤
+      if (win->selected_index >= win->scroll_offset + effective_view_row)
+      {
+        win->scroll_offset = win->selected_index - effective_view_row + 1;
+      }
+    }
+    break;
+  }
+}
+
+void screen_menu_start(screen_menu_t *win)
+{
+  win->current_row = 0;
+  win->total_items = 0;
+}
+
+void screen_menu_clear(screen_menu_t *win)
+{
+  int i;
+  int display_row;
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;
+
+  for (display_row = win->current_row; display_row < view_rows; display_row++)
+  {
+    for (i = 0; i < view_cols; i++)
+    {
+      screen_put_ch(display_row, i, ' ');
+    }
+  }
+}
+
+/**
+ * @brief win->current_row기준으로 view_row 남은 행을 전부 공백표시,clear
+ */
+void screen_page_clear(screen_page_t *win)
+{
+  int i;
+  int display_row;
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;
+
+  for (display_row = win->current_row; display_row < view_rows; display_row++)
+  {
+    for (i = 0; i < view_cols; i++)
+    {
+      screen_put_ch(display_row, i, ' ');
+    }
+  }
+}
+
+void screen_page_start(screen_page_t *win)
+{
+  int page = win->current_page;
+  win->current_row = 0;
+  win->total_items[page] = 0;
+}
+
+void screen_page_printf(screen_page_t *win, const char *format, ...)
+{
+  char s_format_buffer[LCD_COLS + 1]; // 정적 버퍼 크기는 필요에 따라 조정
+  int display_row;
+
+  int i;
+  int text_len;
+  int page;
+  int row_index;
+  va_list args;
+  int view_rows = win->p_screen->font_rows;
+  int view_cols = win->p_screen->font_cols;
+
+  row_index = win->total_items[win->current_page];
+
+  win->total_items[win->current_page]++;
+
+  if (win->current_row >= view_rows)
+  {
+    return;
+  }
+
+  // 가변 인자를 문자열로 포맷팅
+  va_start(args, format);
+  vsnprintf_s(s_format_buffer, sizeof(s_format_buffer), format, args);
+  va_end(args);
+
+  page = win->current_page;
+
+  if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + view_rows)
+  {
+    display_row = row_index - win->scroll_offset[page];
+
+    // screen_set_cursor(display_row, 0);
+
+    screen_printf(display_row, 0, s_format_buffer);
+
+    win->current_row++;
+  }
 }

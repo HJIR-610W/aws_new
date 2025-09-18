@@ -1721,7 +1721,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\common\const_string.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.h</file>
-            <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_start.h</file>
             <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
@@ -1793,7 +1793,7 @@
             <file>$PROJ_DIR$\..\Application\app\test\test_dinOut.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sockets.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_uart.h</file>
-            <file>$PROJ_DIR$\..\Application\app\test\test_filesystem.h</file>
+            <file>$PROJ_DIR$\..\application\app\test\test_filesystem.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_adc.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_flash.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_eth.h</file>
@@ -1804,7 +1804,7 @@
             <file>$PROJ_DIR$\..\Application\app\panel\panel_common.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\threading.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_rain.h</file>
-            <file>$PROJ_DIR$\..\Application\app\test\test_sdi12.h</file>
+            <file>$PROJ_DIR$\..\application\app\test\test_sdi12.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stack_macros.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_rs485.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\udp.h</file>
@@ -1837,7 +1837,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\cmsis_os2.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver_adc_define.h</file>
-            <file>$PROJ_DIR$\..\application\app\config\config_adc.h</file>
+            <file>$PROJ_DIR$\..\Application\app\config\config_adc.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver_uart_def.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_sensor.h</file>
             <file>$TOOLKIT_DIR$\inc\c\math.h</file>
@@ -1872,7 +1872,7 @@
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\slipif.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\init.h</file>
-            <file>$PROJ_DIR$\..\application\app\config\config_nvm.h</file>
+            <file>$PROJ_DIR$\..\Application\app\config\config_nvm.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sio.h</file>
@@ -3275,7 +3275,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1772 1727 1745 1731 1719 1732 1724 1723 1726 1725 1728 1765 1720 1830 1721 1767 1739 1841 1839 1736 644 1966 1986 1959 432 401 1904 1899 1898 1897 1900 1894 1903 1895 1905 1906 1896 1901 1902 1892 1881 1891 1879 1878 1877 1880 1882 1883 1886 1887 1884 1885 1889 1888 1890 1981 1961 1979 1970 1963 1968 1972 1971 1962 1977 1982 1978 1980 1983 1987 1988 1985 1973 1958 405 426 1921 428 541 399 2011 1744 1836 477 1834 1825 1827 1833 386 1837 1824 1823 637 1742 1714 1840 1848 323 317 321 1993 319 1766 1738 1931 1925 1989 420 1918 411 1917 1919 1908 1915 1913 1920 1914 1929 623 1996 2013 1948 1984 410 2037 1770</file>
+                    <file> 1772 1727 1745 1731 1719 1732 1724 1723 1726 1725 1728 1765 1720 1830 1721 1767 1739 1841 1839 1736 644 1966 1986 1959 432 401 1904 1899 1898 1897 1900 1894 1903 1895 1905 1906 1896 1901 1902 1892 1881 1891 1879 1878 1877 1880 1882 1883 1886 1887 1884 1885 1889 1888 1890 1981 1961 1979 1970 1963 1968 1972 1971 1962 1977 1982 1978 1980 1983 1987 1988 1985 1973 1958 405 426 1921 428 541 399 2011 1744 1836 477 1834 1825 1827 1833 386 1837 1824 1823 637 1742 1714 1840 1848 323 317 321 1993 319 1766 1738 1931 1925 1989 420 1918 411 1917 1919 1908 1915 1913 1920 1914 1929 623 1996 2013 1948 1984 410 2037 1770 307 2017 283</file>
                 </tool>
             </inputs>
         </file>
@@ -3338,7 +3338,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1720 1731 1719 1732 1724 1723 1745 1726 1974 1967 1725 1728 1835 1826 1770 1839 2037 1727 1848 1765 1830 1721 1767 1841 420 1918 411 1917 1919 1908 1915 1913 1901 1920 1914 410 541 637 623 1984 644 1966 1986 1959</file>
+                    <file> 1720 1731 1719 1732 1724 1723 1745 1726 1974 1967 1725 1728 1835 1826 1770 1839 2037 1727 1848 1841 1765 1830 1721 1767 420 1918 411 1917 1919 1908 1915 1913 1901 1920 1914 410 541 637 623 1984 644 1966 1986 1959</file>
                 </tool>
             </inputs>
         </file>

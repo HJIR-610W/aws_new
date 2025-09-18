@@ -36,6 +36,7 @@
 #include "schedule.h"
 #include "system_err.h"
 #include "menu_handler.h"
+#include "app_version.h"
 
 
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
@@ -71,8 +72,7 @@ const osThreadAttr_t kMenuTestTask_attributes = {
 osThreadId_t g_menu_task_id;
 #define SYSTEM_WD 8
 
-    void
-    draw_system_page(screen_page_t *p_win)
+void draw_system_page(screen_page_t *p_win)
 {
   char buff[SCREEN_COLS + 1];
   const char *message;
@@ -96,6 +96,15 @@ osThreadId_t g_menu_task_id;
   if (get_config_app()->ac_active)
   {
     screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "AC", "ON");
+  }
+
+  {
+    uint8_t major;
+    uint8_t minor;
+    uint8_t fix;
+    uint8_t rel;
+    get_app_version(&major, &minor, &fix, &rel);
+    screen_page_printf(p_win, "%-*s:%d.%d.%d.%d", SYSTEM_WD, "VER", major,minor,fix,rel);
   }
 
   screen_page_clear(p_win);
