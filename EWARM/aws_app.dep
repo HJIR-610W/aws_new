@@ -348,7 +348,7 @@
             <file>$PROJ_DIR$\..\Application\Communications\direct\task_direct.c</file>
             <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_debug_console.c</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\task_http_server.c</file>
             <file>$PROJ_DIR$\..\application\http_server\task_http_server.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.h</file>
@@ -1743,7 +1743,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\rain_data.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\sunshine_data.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_charger.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\dev_charger.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\aws_default_data.h</file>
@@ -1771,13 +1771,13 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netifapi.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\cli_key_code.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\if_api.h</file>
             <file>$TOOLKIT_DIR$\inc\c\ctype.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\croutine.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_calibration.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\humidity\hj_huminity.h</file>
@@ -1872,7 +1872,7 @@
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\slipif.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\init.h</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_nvm.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_nvm.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sio.h</file>
@@ -1881,7 +1881,7 @@
             <file>$PROJ_DIR$\..\application\app\panel\panel.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\httpd_structs.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\httpd.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_exti.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_gpio_ex.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_gpio.h</file>
@@ -1930,7 +1930,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\task_wdt.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\etharp.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\divas\aws_monitor.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_common.h</file>
@@ -3315,7 +3315,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1694 1720 1731 1719 1732 1724 1723 1872 644 1966 1726 1986 1959 1727 1765 1830 1721 1767 1841 1839 477 1834 1836 1825 1827 1833 386 1837 1824 1823 637 1745 1744 1742 1840 1848 1829 1831 541 2037 1770 1989</file>
+                    <file> 1694 1720 1731 1719 1732 1724 1723 1725 1726 1728 1872 644 1966 1986 1959 1727 1765 1830 1721 1767 1841 1839 477 1834 1836 1825 1827 1833 386 1837 1824 1823 637 1745 1744 1742 1840 1848 1829 1831 541 2037 1770 1989</file>
                 </tool>
             </inputs>
         </file>
