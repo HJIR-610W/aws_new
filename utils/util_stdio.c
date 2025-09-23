@@ -2,6 +2,8 @@
 #include "util_stdio.h"
 
 #include <string.h>
+#include <math.h>
+
 #include "util_memory.h"
 
 int32_t get_formatted_length_v(const char *format, va_list args)
@@ -127,4 +129,12 @@ void make_utf8_string(char *buff, int buff_size, int wd,const char *string)
     }
   }
   buff[len] = 0;
+}
+
+// 소수점 n자리에서 반올림하는 함수
+float round_to_n_digits(double value, int n)
+{
+  float factor = pow(10.0, n);
+  // round 가까운 정수로 반올림
+  return round(value * factor) / factor;
 }

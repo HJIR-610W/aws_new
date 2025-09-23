@@ -18,6 +18,7 @@
 #include "user_heap.h"
 #include "util_filter.h"
 #include "util_time.h"
+#include "util_stdio.h"
 #include "kma3.h"
 #include "dev_io.h"
 #include "logging\utile_data.h"
@@ -212,7 +213,11 @@ uint16_t TempCalc(uint8_t *sensor_err)
     * 만약 -0.002도라면 (99.998*10  = 999 가 전송됨)
     * 999를 복구하면 -0.1도가 되버림 따라서 처음부터 소수점 1째리까지만 처리해야함
     */
-   return (uint16_t)((truncate_to_1_decimal(temperature) + 100) * 10);  // AWS 데이터 형으로 변환 ((측정값+100) *10)
+  // return (uint16_t)((truncate_to_1_decimal(temperature) + 100) * 10); // AWS 데이터 형으로 변환 ((측정값+100) *10)
+
+  //19.97인 경우 소수점 2자리에서 반올림하여 소수점 1까지 표시
+   temperature = round_to_n_digits(temperature,1);
+   return (uint16_t)((temperature+ 100) * 10); // AWS 데이터 형으로 변환 ((측정값+100) *10)
 }
 
 /*
