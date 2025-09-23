@@ -151,7 +151,7 @@ int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_
     }
     else //PT100 A,PT100 B
     {
-      cali_p->reference_value = 88.22;
+      cali_p->reference_value = 84.27;
       input_min = 0.0f;
       input_max = 200.0f;
     }
@@ -166,7 +166,7 @@ int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_
     }
     else//PT100 A,PT100 B
     {
-      cali_p->reference_value = 119.40;
+      cali_p->reference_value = 123.24;
       input_min = 0.0f;
       input_max = 200.0f;
     }

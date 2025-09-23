@@ -641,6 +641,7 @@ int32_t ads1220_single_read(int channel,uint16_t avg,uint8_t *err)
 
   OS_PEND_SEM(ads1220_inst.sem,osWaitForever);
 
+#if 0 
   if (channel == 16 | channel == 17)
   {
     ads1210_set_gain(eADS1220_GAIN_2);
@@ -649,7 +650,7 @@ int32_t ads1220_single_read(int channel,uint16_t avg,uint8_t *err)
   {
     ads1210_set_gain(eADS1220_GAIN_1);
   }
-
+#endif
   channel = user_adc_single_channel[channel];
 
   adc_single_mux_set(channel);

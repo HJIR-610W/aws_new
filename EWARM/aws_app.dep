@@ -199,7 +199,7 @@
             <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\application\FreeRTOSConfig.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_di.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_eth.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_board_mem.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.c</file>
