@@ -27,7 +27,7 @@ int offset_min(DATE_TIME_BUF *t);
 int32_t count_min(DATE_TIME_BUF *st, DATE_TIME_BUF *et);
 int dayOfYear(int year, int month, int day);
 
-int32_t make_timeToStr(DATE_TIME_BUF *ct, char *out, uint16_t outSize);
+int32_t make_time_to_string(DATE_TIME_BUF *ct, char *out, uint16_t outSize);
 extern DATE_TIME_BUF Date_Time;
 
 #endif

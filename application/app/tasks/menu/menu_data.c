@@ -245,7 +245,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
 
     strfmt.fmt = "%02d-%02d %02d:%02d";
     snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, month, day, hour, min);
-    status = input_fmt(&strfmt, "MM/DD HH:MM");
+    status = input_fmt(&strfmt, "Month-Dday Hour:Min");
     if (status != MENU_OK)
     return status;
   
@@ -373,7 +373,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
 
     strfmt.fmt = "%02d-%02d %02d:%02d";
     snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, month, day, hour, min);
-    status = input_fmt(&strfmt, "MM/DD HH:MM");
+    status = input_fmt(&strfmt, "Month-Dday Hour:Min");
     if (status != MENU_OK)
     return status;
 

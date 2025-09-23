@@ -89,22 +89,24 @@ void draw_system_page(screen_page_t *p_win)
 
   message = get_logging_system()->status_group?"ERROR":"NORMAL";
   screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD,   "LOGGING", message);
-  screen_page_printf(p_win, "%-*s:%.1f V", SYSTEM_WD, "SYS VOLT", drv_system_read(DRV_SYS_BATTERY));
-  screen_page_printf(p_win, "%-*s:%.1f C", SYSTEM_WD, "SYS TEMP", drv_system_read(DRV_SYS_TEMPERATURE));
+  screen_page_printf(p_win, "%-*s:%.1fV", SYSTEM_WD, "SYS VOLT", drv_system_read(DRV_SYS_BATTERY));
+  screen_page_printf(p_win, "%-*s:%.1fC", SYSTEM_WD, "SYS TEMP", drv_system_read(DRV_SYS_TEMPERATURE));
   screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "SD CARD", ITEM_LIST(BSP_PlatformIsDetected(), sdcard_status_list_lcd));
 
-  if (get_config_app()->ac_active)
-  {
-    screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "AC", "ON");
-  }
 
   {
     uint8_t major;
     uint8_t minor;
     uint8_t fix;
     uint8_t rel;
+    DATE_TIME_BUF build_time;
+
     get_app_version(&major, &minor, &fix, &rel);
     screen_page_printf(p_win, "%-*s:%d.%d.%d.%d", SYSTEM_WD, "VER", major,minor,fix,rel);
+    get_app_build(&build_time);
+    screen_page_printf(p_win, "BUILD:%04d%02d%02d%02d%02d%02d", build_time.Year,build_time.Month,
+    build_time.Day,build_time.Hour,build_time.Min,build_time.Sec);
+    //BUILD:00000011223300
   }
 
   screen_page_clear(p_win);
@@ -120,12 +122,12 @@ void draw_rain_page(screen_page_t *p_win)
   make_centered(buff, sizeof(buff), "RAIN", SCREEN_COLS);
   screen_page_printf(p_win, "%s",buff);
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YESTERDAY",(float)(g_rainfall.yesterday/10.f));
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "TODAY", (float)(g_rainfall.today / 10.f));
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "1MIN", (float)(g_rainfall.min / 10.f));
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "10MIN", (float)(g_rainfall.ten_min / 10.f));
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "HOUR", (float)(g_rainfall.hourly / 10.f));
-  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YEAR", (float)(g_rainfall.yearly / 10.f));
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "TODAY", (float)(g_rainfall.today / 10.f));
   screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "MONTH", (float)(g_rainfall.monthly / 10.f));
+  screen_page_printf(p_win, "%-*s:%6.1f", RAIN_WD, "YEAR", (float)(g_rainfall.yearly / 10.f));
   screen_page_clear(p_win);
 
 }
@@ -145,13 +147,13 @@ void draw_charger_page(screen_page_t *p_win)
 
   if (is_chargerValid())
   {
-    screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "SOLAR V",
+    screen_page_printf(p_win, "%-*s:%4.2f", CHARGER_WD, "SOLAR V",
                    read_solarVoltage1(&err));
-    screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "SOLAR A",
+    screen_page_printf(p_win, "%-*s:%4.2f", CHARGER_WD, "SOLAR A",
                    read_solarCurrent1(&err));
-    screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "BATTERY V",
+    screen_page_printf(p_win, "%-*s:%4.2f", CHARGER_WD, "BATTERY V",
                    read_batteryVoltage1(&err));
-    screen_page_printf(p_win, "%-*s:%.2f", CHARGER_WD, "LOAD A", read_loadCurrent1(&err));
+    screen_page_printf(p_win, "%-*s:%4.2f", CHARGER_WD, "LOAD A", read_loadCurrent1(&err));
   }
   else
   {
@@ -384,16 +386,27 @@ void draw_ethernet_page(screen_page_t *p_win)
 #define AWS_WD 7
 void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
 {
-  const char *aws_title_list[] = {"CURR", "1MIN", "10MIN", "HOUR", "DAY","RAW"};
+  const char *aws_title_list[] = {"CURR(AI)", "1MIN(AB)", "10MIN", "HOUR", "DAY","RAW"};
   char err_buf[32];
+  char buffer[21];
   uint8_t err;
   float data, data_min, data_max;
   kma_data_ex_t *p_kma = NULL;
 
   screen_page_start(p_win);
-  screen_page_printf(p_win, "AWS %s %.2fs/%.2fs", aws_title_list[(int)min],
-                 (float)g_exec_250ms_time.elapsed_time / 1000.0f,
-                 (float)g_exec_1s_time.elapsed_time / 1000.0f);
+
+  if (min == eAWS_DATA_RAW)
+  {
+        screen_page_printf(p_win, "AWS %s %.2fs/%.2fs", aws_title_list[(int)min],
+                           (float)g_exec_250ms_time.elapsed_time / 1000.0f,
+                           (float)g_exec_1s_time.elapsed_time / 1000.0f);
+  }
+  else
+  {
+    snprintf(err_buf, sizeof(err_buf), "AWS %s", aws_title_list[(int)min]);
+    make_centered(buffer,sizeof(buffer),err_buf,21);
+    screen_page_printf(p_win, buffer);
+  }
 
   p_kma = get_kma_data((eAWS_DATA_MIN_t)min);
 
@@ -570,7 +583,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "RAIN_P", err_buf);
+      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "RAIN P", err_buf);
     }
     else
     {
@@ -578,17 +591,17 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       {
 
         bool rain_p = p_kma->precipitation_presence.raw.b ;
-        screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN_P", rain_p?"ON":"OFF");
+        screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN P", rain_p?"ON":"OFF");
       }
       else if ( min == eAWS_DATA_REAL)
       {
         uint16_t data = p_kma->precipitation_presence.data;
         bool rain_p = (data == 10) ? true : false;
-        screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN_P", rain_p ? "ON" : "OFF");
+        screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN P", rain_p ? "ON" : "OFF");
       }
       else
       {
-        screen_page_printf(p_win, "%-*s: %4d", AWS_WD, "RAIN_P",
+        screen_page_printf(p_win, "%-*s: %4d", AWS_WD, "RAIN P",
                  p_kma->precipitation_presence.data);
       }
     }
@@ -954,7 +967,11 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
 #define AWS_STATUS_WD 15
 
     sensor_t *p_sensor = get_sensor_config_copy();
-    screen_page_printf(p_win, "SENSOR STATUS");
+    screen_page_printf(p_win, " ");
+
+    make_centered(buffer, sizeof(buffer), "SENSOR STATUS", 21);
+    screen_page_printf(p_win, buffer);
+
 
     for(int i = 0; i < 8; i++)
     {
@@ -1282,7 +1299,7 @@ void menuTask(void *arg)
       setup_menu();
       screen_off_time = OS_GET_TICK();//LCD off안되도록 갱신
     }
-    else if (key == KEY_CODE_CTRL_P)
+    else if (key == KEY_CODE_ESC_LONG)
     {
       int32_t choice = 0;
       if(input_active("Reset Device?",&choice)==MENU_OK)

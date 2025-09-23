@@ -433,7 +433,10 @@ void draw_cdma_config_page(screen_menu_t* p_win)
   screen_menu_printf(p_win, CDMA_MENU_SERVER_IP, "%-*s", NETWORK_WD, "Remote Server IP");
   screen_menu_printf(p_win, CDMA_MENU_PORT, "%-*s:%d", NETWORK_WD, "Remote Port",get_config_app()->cdma_port);
   screen_menu_printf(p_win, CDMA_MENU_MODEL, "%-*s:%s", NETWORK_WD, "Model",ITEM_LIST(get_config_app()->cdma_model, cdma_model_list_eng));
-  screen_menu_printf(p_win, CDMA_MENU_VPN, "%-*s:%s", NETWORK_WD, "VPN",ITEM_LIST(get_config_app()->cdma_vpn_active, enable_list_eng));
+  if(get_config_app()->cdma_model == eCDMA_NTLE9607)
+  {
+    screen_menu_printf(p_win, CDMA_MENU_VPN, "%-*s:%s", NETWORK_WD, "VPN",ITEM_LIST(get_config_app()->cdma_vpn_active, enable_list_eng));
+  }
   screen_menu_clear(p_win);
 }
 

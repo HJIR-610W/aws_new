@@ -113,8 +113,8 @@ void setup_menu(void)
 
     if(status != MENU_OK)
     {
-        unregister_key_callback();
-  auto_close_timer_delete();
+      unregister_key_callback();
+      auto_close_timer_delete();
     return;
     }
 

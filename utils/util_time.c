@@ -47,10 +47,10 @@ time_t time_timestamp(void)
 	return time_cvt_timestamp(&Date_Time);
 }
 
-int32_t make_timeToStr(DATE_TIME_BUF *ct, char *out, uint16_t outSize)
+int32_t make_time_to_string(DATE_TIME_BUF *ct, char *out, uint16_t outSize)
 {
-  return snprintf_s(out,outSize,"%04d-%02d-%02d %02d:%02d:%02d",Date_Time.Year,
-  Date_Time.Month,Date_Time.Day,Date_Time.Hour,Date_Time.Min,Date_Time.Sec);
+  return snprintf_s(out,outSize,"%04d-%02d-%02d %02d:%02d:%02d",ct->Year,
+  ct->Month,ct->Day,ct->Hour,ct->Min,ct->Sec);
 }
 
 

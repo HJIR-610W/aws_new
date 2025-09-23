@@ -176,11 +176,17 @@ bool adc_perform_factory_calibration( adc_cal_params_t* cal_params,
   // 전압 = ADC*기울기 + 오프셋
   // 오프셋 = 전압 - ADC*기울기
 
+
   cal_params->factory_slope = (p2.reference_value - p1.reference_value) / (float)(p2.raw_value - p1.raw_value);
   cal_params->factory_offset = p1.reference_value - cal_params->factory_slope * (float)p1.raw_value;
+  cal_params->factory_offset_trim = 0;
   cal_params->factory_cal_temp = cal_temp;
   cal_params->p1_cal_point = p1;
   cal_params->p2_cal_point = p2;
+
+  cal_params->slope_temp_coeff =0;
+  cal_params->offset_temp_coeff = 0;
+  cal_params->lut_size = 0;
 
   cal_params->is_calibrated = true;
   DEBUG_PRINTF("캘리브레이션 성공 (%.1fC): Slope=%.6f, Offset=%.6f\n", cal_temp, cal_params->factory_slope, cal_params->factory_offset);

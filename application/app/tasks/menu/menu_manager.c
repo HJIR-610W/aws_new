@@ -96,13 +96,15 @@ int32_t setup_menu_version(void)
 
   get_app_version(&major, &minor, &fix, &rel);
   get_app_build(&ct);
-  make_timeToStr(&ct, buff, sizeof(buff));
+  make_time_to_string(&ct, buff, sizeof(buff));
 
   len += make_sreen_row(&ver_buff[len], "App:%d.%d.%d.%d", major, minor, fix, rel);
   len += make_sreen_row(&ver_buff[len], "%s", buff);
+  
+  
   get_boot_version(&major, &minor, &fix, &rel);
   get_boot_build(&ct);
-  make_timeToStr(&ct, buff, sizeof(buff));
+  make_time_to_string(&ct, buff, sizeof(buff));
 
   len += make_sreen_row(&ver_buff[len], "Boot:%d.%d.%d.%d", major, minor, fix, rel);
   len += make_sreen_row(&ver_buff[len], "%s", buff);
@@ -283,7 +285,7 @@ int32_t setup_menu_config(void)
   int32_t status;
   screen_menu_t menu;
 
-  screen_menu_create(&menu, "Settings");
+  screen_menu_create(&menu, "Settings Change");
 
   while (1)
   {

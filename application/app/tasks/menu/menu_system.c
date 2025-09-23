@@ -23,7 +23,7 @@
 #define SYSTEM_MENU_ID       2
 #define SYSTEM_MENU_PASSWORD 3
 #define SYSTEM_MENU_CHARGER  4
-
+#define SYSTEM_MENU_AC_MODE  5
 
 void draw_setup_menu_system_menu(screen_menu_t* p_win)
 {
@@ -37,6 +37,9 @@ void draw_setup_menu_system_menu(screen_menu_t* p_win)
   screen_menu_printf(p_win, SYSTEM_MENU_PASSWORD, "%-*s:%d", SYSTEM_WD, "PASS", get_config_app()->password);
   screen_menu_printf(p_win, SYSTEM_MENU_CHARGER, "%-*s:%s", SYSTEM_WD, "CHARGER",
                      ITEM_LIST(get_config_app()->charger_model, g_charger_list_eng));
+
+  screen_menu_printf(p_win, SYSTEM_MENU_AC_MODE, "%-*s:%s", SYSTEM_WD, "AC MODE",
+                     ITEM_LIST(get_config_app()->ac_active, enable_list_eng));
   screen_menu_clear(p_win);
 }
 
@@ -141,6 +144,16 @@ int32_t setup_menu_system(void)
         config.charger_model = (eCHARGER_MODEL_t)choice;
         WRITE_CFG(charger_model);
         show_popup("Information", "Applied after reset");
+      }
+      case SYSTEM_MENU_AC_MODE:
+      {
+        choice = get_config_app()->ac_active;
+        status = input_active("AC MODE", &choice);
+        if (status != MENU_OK)
+          break;
+        config.ac_active = choice;
+        WRITE_CFG(ac_active);
+
       }
       default:
         break;

@@ -617,7 +617,7 @@ menu_status_t input_float(const char *title, float min, float max, float *val, c
     }
 
     screen_printf(3, 0, "Val:%s", buff);
-    
+    screen_printf(4, 0, "Press ESC to Cancel", buff);
     // 커서 깜빡임 처리 (500ms 간격)
     if (OS_GET_TICK() - last_blink >= 500)
     {

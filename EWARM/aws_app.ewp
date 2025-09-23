@@ -742,11 +742,11 @@
                 </option>
                 <option>
                     <name>OCOutputOverride</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>OOCOutputFile</name>
-                    <state>aws_app.bin</state>
+                    <state>HJIR-610W_App.bin</state>
                 </option>
                 <option>
                     <name>OOCCommandLineProducer</name>
@@ -1735,7 +1735,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>

@@ -33,14 +33,14 @@ int32_t menu_manage_version()
   get_app_build(&ct);
 
   io_printf("App:%d.%d.%d.%d\r\n", major, minor, fix, rel);
-  make_timeToStr(&ct, buff, sizeof(buff));
+  make_time_to_string(&ct, buff, sizeof(buff));
   io_printf("App build:%s\r\n", buff);
 
   get_boot_version(&major, &minor, &fix, &rel);
   get_boot_build(&ct);
 
   io_printf("Boot:%d.%d.%d.%d\r\n", major, minor, fix, rel);
-  make_timeToStr(&ct, buff, sizeof(buff));
+  make_time_to_string(&ct, buff, sizeof(buff));
   io_printf("Boot build:%s\r\n", buff);
   return MENU_OK;
 }

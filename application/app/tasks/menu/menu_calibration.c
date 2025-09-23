@@ -81,6 +81,7 @@ void draw_cali_setup_menu_view_page(screen_menu_t* p_win)
 #define CALI_POINT_2 1
 int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_cal_point_t *cali_p)
 {
+  const char *point_list[2]={"Low","High"};
   int32_t adc_raw;
   int32_t avg_cnt=0;
   uint8_t err=0;
@@ -88,17 +89,22 @@ int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_
   adc_cal_params_t *p_cal_params;
   int32_t key;
   float avg=0;
+  float input_min;
+  float input_max;
   int32_t status;
   p_adc = &g_adc_config_ads1220;
   char buffer[21];
 
   if(type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
   {
-    snprintf(buffer, sizeof(buffer), "%s Input ref volt", adc_se_list[channel]);
+    if (channel<DRV_ADS1220_S_CH_16)
+      snprintf(buffer, sizeof(buffer), "%s Input %s Votage", adc_se_list[channel], point_list[point]);
+      else
+        snprintf(buffer, sizeof(buffer), "%s Input %s R", adc_se_list[channel], point_list[point]);
   }
   else
   {
-    snprintf(buffer, sizeof(buffer), "%s Input ref volt", adc_diff_list[channel]);
+    snprintf(buffer, sizeof(buffer), "%s Input %s V", adc_diff_list[channel], point_list[point]);
   }
   show_popup("Information", buffer);
 
@@ -138,24 +144,40 @@ int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_
   if (point == CALI_POINT_1)
   {
     if (channel < DRV_ADS1220_S_CH_16)
+    {
       cali_p->reference_value = 0.01;
-    else
+      input_min = -5.0f;
+      input_max = 5.0f;
+    }
+    else //PT100 A,PT100 B
+    {
       cali_p->reference_value = 88.22;
+      input_min = 0.0f;
+      input_max = 200.0f;
+    }
   }
   else
   {
     if (channel < DRV_ADS1220_S_CH_16)
+    {
       cali_p->reference_value = 4.99;
-    else
+      input_min = -5.0f;
+      input_max = 5.0f;
+    }
+    else//PT100 A,PT100 B
+    {
       cali_p->reference_value = 119.40;
+      input_min = 0.0f;
+      input_max = 200.0f;
+    }
   }
 
-  status = input_float("Value(V)", -200.0f, 200.0f, &cali_p->reference_value, "%6.2f");
+  status = input_float("Reference Voltage", input_min, input_max, &cali_p->reference_value, "%6.4f");
   if (status != MENU_OK)
     return status;
 
 
-    return status;
+return status;
 
 }
 
@@ -174,7 +196,7 @@ void draw_calibraion_select_single_channel(screen_menu_t *p_win)
   for (int channel=0; channel < _countof(adc_se_list); channel++)
   {
     p_cal_params =  &g_adc_config_ads1220.single_ended_cal[channel];
-    cali_status = (p_cal_params->is_calibrated) ? "Calibreated" : "Uncalibrated";
+    cali_status = (p_cal_params->is_calibrated) ? "Calibrated" : "Uncalibrated";
 
     screen_menu_printf(p_win, CALI_CHANNEL_START+channel, "%s %s",adc_se_list[channel], cali_status);
   }
@@ -191,7 +213,7 @@ void draw_calibraion_select_diff_channel(screen_menu_t *p_win)
   for (int channel = 0; channel < _countof(adc_diff_list); channel++)
   {
     p_cal_params = &g_adc_config_ads1220.differential_cal[channel];
-    cali_status = (p_cal_params->is_calibrated) ? "Calibreated" : "Uncalibrated";
+    cali_status = (p_cal_params->is_calibrated) ? "Calibrated" : "Uncalibrated";
 
     screen_menu_printf(p_win, CALI_CHANNEL_START + channel, "%s %s", adc_diff_list[channel], cali_status);
   }
@@ -202,7 +224,10 @@ void draw_calibraion_select_diff_channel(screen_menu_t *p_win)
 
 int32_t setup_factory_calibration(adc_channel_type_t type)
 {
+
   const char *point_list[] = {"Point 1(Low)", "Point 2(High)","Manual P1.ADC","Manual P2.ADC","Init"};
+  bool p1_calib_done = false;
+  bool calib_updated = false;
   char buffer[100];
   int32_t status;
   int32_t key;
@@ -210,8 +235,6 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
   int32_t choice;
   int32_t dec;
   int32_t len = 0;
-  bool p1_calib_done = false;
-  bool calib_updated = false;
   adc_cal_params_t *p_cal_params;
   adc_cal_point_t p1;
   adc_cal_point_t p2;
@@ -273,11 +296,11 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
           */
          if(type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
          {
-           snprintf(buffer, sizeof(buffer), "SE %2d Calibration",channel);
+           snprintf(buffer, sizeof(buffer), "%s Calibration", adc_se_list[channel]);
          }
          else
          {
-           snprintf(buffer, sizeof(buffer), "DIFF %d Calibration",channel);
+           snprintf(buffer, sizeof(buffer), "%s Calibration", adc_se_list[channel]);
          }
 
           status = input_combobox(buffer, point_list, _countof(point_list), &choice);
@@ -301,15 +324,19 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
             if (status != MENU_OK)
               break;
 
-            p1_calib_done = true;
             // P1을 했는데 P2가 안한상태라면 무조건 P2를 하게 한다.
             // P1값은 현재 유지중이다.
             if (p_cal_params->is_calibrated == false)
             {
+              p1_calib_done = true;
               show_popup("Information", "P2 Calib Required");
               break;
             }
-            calib_updated = true;
+            else
+            {
+              calib_updated = true;
+            }
+
             break;
           case 1: // Point 2
             if (p1_calib_done == false)
@@ -349,6 +376,7 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
           case 4://특정 채널만 0으로 초기화
           {
             int32_t   active = 0;
+            calib_updated = false;
             status = input_active("Cail Init?", &active);
             if(status != MENU_OK)
             break;
@@ -817,15 +845,17 @@ int32_t cali_setup_menu_factory(void)
 int32_t view_single_channel_details(adc_channel_type_t type,int32_t channel)
 {
   const adc_cal_params_t *params;
+  uint8_t err;
   int32_t raw;
   int32_t key;
-  float voltage;
   uint32_t start_time, elapsed_time;
+  float voltage;
   config_adc_adv_t *p_adc;
-  uint8_t err;
+
   p_adc = &g_adc_config_ads1220;
 
   params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? &p_adc->single_ended_cal[channel] : &p_adc->differential_cal[channel];
+
   screen_clear();
   while (1)
   {
@@ -840,8 +870,12 @@ int32_t view_single_channel_details(adc_channel_type_t type,int32_t channel)
     }
 
     if (params->is_calibrated == false)
-    {
-      screen_printf(0, 0, "Ch%d RAW:%d", channel, raw);
+    { //SE 01 RAW:1234567
+      //DIFF 01 RAW:1234567  
+      if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+        screen_printf(0, 0, "%s RAW:%d", adc_se_list[channel], raw);
+        else
+          screen_printf(0, 0, "DIFF %2d RAW:%d", channel, raw);
       screen_printf(1, 0, "Calib Required");
       screen_refresh();
     }
@@ -853,20 +887,39 @@ int32_t view_single_channel_details(adc_channel_type_t type,int32_t channel)
       g_current_temp = read_current_temperature();
       voltage = adc_get_compensated_value(raw, params, g_current_temp);
 
-      screen_printf(0, 0, "Ch%d RAW:%d", channel, raw);
-      screen_printf(1, 0, "elapsed:%fms", (float)elapsed_time / 1000.0f);
+      if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+        screen_printf(0, 0, "%s RAW:%d", adc_se_list[channel], raw);
+      else
+        screen_printf(0, 0, "DIFF %2d RAW:%d", channel, raw);
+        
+      screen_printf(1, 0, "elapsed:%5.2fms", (float)elapsed_time / 1000.0f);
       if (isnan(voltage))
       {
         screen_printf(2, 0, "Need Cal");
       }
       else
       {
-        screen_printf(2, 0, "V:%.4f", voltage);
+        if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+        {
+          if (channel < DRV_ADS1220_S_CH_16)
+          {
+            screen_printf(2, 0, "Voltage:%.4fV", voltage);
+          }
+          else
+          {
+            screen_printf(2, 0, "OHM:%.3fR", voltage);
+          }
+        }
+        else
+        {
+          screen_printf(2, 0, "Voltage:%.4fV", voltage);
+        }
+
       }
       screen_printf(3, 0, "slope :%e", params->factory_slope);
       screen_printf(4, 0, "offset:%e", params->factory_offset);
-      screen_printf(5, 0, "P1:%7d,%f", params->p1_cal_point.raw_value, params->p1_cal_point.reference_value);
-      screen_printf(6, 0, "P2:%7d,%f", params->p2_cal_point.raw_value, params->p2_cal_point.reference_value);
+      screen_printf(5, 0, "P1:%7d,%6.4f", params->p1_cal_point.raw_value, params->p1_cal_point.reference_value);
+      screen_printf(6, 0, "P2:%7d,%6.4f", params->p2_cal_point.raw_value, params->p2_cal_point.reference_value);
       screen_refresh();
     }
     key = get_menu_key(100);

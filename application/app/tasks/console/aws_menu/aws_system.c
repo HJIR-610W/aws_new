@@ -80,7 +80,7 @@ int aws_setup_menu_system(void)
   while (1)
   {
     menu_cnt = 0;
-    make_timeToStr(&Date_Time, buffer, sizeof(buffer));
+    make_time_to_string(&Date_Time, buffer, sizeof(buffer));
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "시간    :%s",buffer);
     menu_cnt++;
 
