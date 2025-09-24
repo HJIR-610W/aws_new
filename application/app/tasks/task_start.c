@@ -102,7 +102,7 @@ void startTask(void *arg)
 
 
   drv_rtc_read(&Date_Time);
-
+  keyTask_init();
   if (testTask_init() == true)
   {
     test_menu_info();
@@ -112,7 +112,7 @@ void startTask(void *arg)
   consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화
   wdtTask_init();
 
-  keyTask_init();
+
   menuTask_init();
 
   config_manager_init();  // 우선 실행

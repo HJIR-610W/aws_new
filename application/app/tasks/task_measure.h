@@ -71,7 +71,10 @@ typedef struct
 void measureTask_init(void);
 bool is_measurement_1s(void *data,uint32_t timeout);
 bool is_measurement_250(void *data, uint32_t timeout);
-
+void task_250ms_lock(void);
+void task_250ms_unlock(void);
+void task_1s_lock(void);
+void task_1s_unlock(void); 
 extern exec_time_t g_exec_250ms_time;
 extern exec_time_t g_exec_1s_time;
 

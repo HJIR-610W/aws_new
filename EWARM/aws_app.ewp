@@ -1402,6 +1402,9 @@
                     <file>
                         <name>$PROJ_DIR$\..\application\app\tasks\menu\menu_system.c</name>
                     </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\menu\test_menu_setup.c</name>
+                    </file>
                 </group>
                 <group>
                     <name>sensor_data</name>
@@ -1738,7 +1741,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -1779,13 +1782,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -1801,7 +1804,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -1998,7 +2001,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -2037,7 +2040,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\rtc\ds1306.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
@@ -2052,7 +2055,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</name>
                 </file>
             </group>
             <group>
@@ -2370,7 +2373,7 @@
                     <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</name>
+                    <name>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.c</name>

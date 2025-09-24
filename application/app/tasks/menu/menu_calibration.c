@@ -2,20 +2,22 @@
 
 #include "adc_calibration.h"
 #include "app_adc.h"
+
+#include "app_adc.h"
 #include "app_key.h"
 #include "app_screen.h"
+#include "bsp_delay.h"
 #include "cli_key_code.h"
+#include "const_string.h"
 #include "config_adc.h"
 #include "console_utile.h"
 #include "drv_adc.h"
 #include "menu_handler.h"
 #include "util_filter.h"
 #include "util_memory.h"
-#include "view_driver.h"
-#include "app_adc.h"
+#include "task_measure.h"
 #include "util_stdio.h"
-#include "const_string.h"
-#include "bsp_delay.h"
+#include "view_driver.h"
 
 extern config_adc_adv_t g_adc_config_ads1220;
 extern config_adc_adv_t g_adc_config_stm32;
@@ -1291,6 +1293,8 @@ int32_t setup_menu_calibration(void)
   int32_t status = MENU_BACK;
   screen_menu_t menu;
 
+
+
   screen_menu_create(&menu, "Calibraion");
 
   while (1)
@@ -1334,6 +1338,7 @@ int32_t setup_menu_calibration(void)
       screen_menu_handle(&menu, key);
     }
   }
+
 
   return convert_key_to_status(key);
 }

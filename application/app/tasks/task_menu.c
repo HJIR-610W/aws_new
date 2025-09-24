@@ -38,6 +38,7 @@
 #include "menu_handler.h"
 #include "app_version.h"
 #include "task_menu_define.h"
+#include "test_menu_setup.h"
 
 
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
@@ -1358,9 +1359,6 @@ void bootProgressTask(void *arg)
   uint8_t count=0;
 
   screen_init();
-
-
-
   print_logo();
 
   while(1)
@@ -1418,7 +1416,6 @@ void test_menu_info(void)
   screen_init();
   print_logo();
 
-  screen_clear();
-  screen_printf(0,0,"TEST MODE");
-  screen_refresh();
+  test_setup_menu();
+  while(1);
 }

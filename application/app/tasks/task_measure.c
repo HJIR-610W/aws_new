@@ -74,7 +74,8 @@ static driver_t *g_sensor_driver[SENSOR_LIST_MAX];
 
 osMessageQueueId_t g_250ms_queue_id;
 osMessageQueueId_t g_1s_queue_id;
-
+osSemaphoreId_t g_250ms_task_sem_id;
+osSemaphoreId_t g_1s_task_sem_id;
 measure_data_250ms_t g_reading_250;//Task 실행 시간 측정용[메뉴 표시용]
 measure_data_1s_t g_reading_1;     // Task 실행 시간 측정용[메뉴 표시용]
 exec_time_t g_exec_250ms_time;     // Task 실행 시간 측정용[메뉴 표시용]
@@ -589,6 +590,28 @@ void measure_1s(void)
 
 
 
+void task_250ms_lock(void)
+{
+  if (g_250ms_task_sem_id)
+    osSemaphoreAcquire(g_250ms_task_sem_id, osWaitForever);
+}
+void task_250ms_unlock(void)
+{
+  if (g_250ms_task_sem_id)
+    osSemaphoreRelease(g_250ms_task_sem_id);
+}
+
+void task_1s_lock(void)
+{
+  if (g_1s_task_sem_id)
+    osSemaphoreAcquire(g_1s_task_sem_id, osWaitForever);
+}
+void task_1s_unlock(void)
+{
+  if (g_1s_task_sem_id)
+    osSemaphoreRelease(g_1s_task_sem_id);
+}
+
 
 
 void measure250ms_task(void *arg)
@@ -600,13 +623,15 @@ void measure250ms_task(void *arg)
   tick_count = osKernelGetTickCount();
   while(1)
   {
+
     elapse_start(&g_exec_250ms_time);
     measure_250ms();
     elapse_stop(&g_exec_250ms_time);
     send_measurement(g_250ms_queue_id, &g_reading_250);
     
     tick_count += MEASURE_PERIOD_250MS;
-    osDelayUntil(tick_count);  
+    osDelayUntil(tick_count);
+
   }
 }
 
@@ -620,12 +645,14 @@ void measure1s_task(void *arg)
   tick_count = osKernelGetTickCount();
   while(1)
   {
+
     elapse_start(&g_exec_1s_time);
     measure_1s();
     elapse_stop(&g_exec_1s_time);
     send_measurement(g_1s_queue_id, &g_reading_1);
     tick_count += MEASURE_PERIOD_1000MS;
     osDelayUntil(tick_count);
+
   }
 }
 
@@ -641,6 +668,9 @@ void measureTask_init(void)
 
   g_250ms_queue_id = osMessageQueueNew(1, sizeof(measure_data_250ms_t), NULL);
   g_1s_queue_id = osMessageQueueNew(1, sizeof(measure_data_1s_t), NULL);
+
+  g_1s_task_sem_id = osSemaphoreNew(1,1,NULL);
+  g_250ms_task_sem_id = osSemaphoreNew(1, 1, NULL);
 
   osThreadNew(measure250ms_task, NULL, &kMeasure250msTask_attributes);
   osThreadNew(measure1s_task, NULL, &kMeasure1sTask_attributes);
