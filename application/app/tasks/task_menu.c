@@ -37,6 +37,7 @@
 #include "system_err.h"
 #include "menu_handler.h"
 #include "app_version.h"
+#include "task_menu_define.h"
 
 
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
@@ -1154,13 +1155,12 @@ void print_logo(void)
 }
 
 
-#define SCREEN_ALERT 0x01
-#define SCREEN_UPDATE 0x02
+
 
 void menu_refresh(void)
 {
   if (g_menu_task_id)
-    osThreadFlagsSet(g_menu_task_id, SCREEN_UPDATE);
+    osThreadFlagsSet(g_menu_task_id, TASK_MENU_ALARM_UPDATE );
 }
 
 /**
@@ -1173,7 +1173,7 @@ void menu_refresh(void)
  */
 void wait_refrech_trigger(void)
 {
-  osThreadFlagsWait(SCREEN_UPDATE, osFlagsWaitAny, 250);
+  osThreadFlagsWait(TASK_MENU_ALARM_UPDATE , osFlagsWaitAny, 250);
 }
 
 
@@ -1187,7 +1187,7 @@ void show_alert(alert_t alert)
 {
   g_alert  = alert;
   if (g_menu_task_id)
-    osThreadFlagsSet(g_menu_task_id, SCREEN_ALERT);
+    osThreadFlagsSet(g_menu_task_id, TASK_MENU_ALARM_ALERT);
 }
 
 /**
@@ -1198,12 +1198,12 @@ void popup_handler(uint32_t timeout_ms)
 {
   uint32_t flags;
 
-  flags = osThreadFlagsWait(SCREEN_ALERT , osFlagsWaitAny, 250);
+  flags = osThreadFlagsWait(TASK_MENU_ALARM_ALERT , osFlagsWaitAny, 250);
 
-  if (flags > 0  & flags&SCREEN_ALERT)
+  if (flags > 0  & flags&TASK_MENU_ALARM_ALERT)
   {
     show_popup(g_alert.title, (char*)g_alert.framebuffer);
-    osThreadFlagsClear(SCREEN_ALERT );
+    osThreadFlagsClear(TASK_MENU_ALARM_ALERT );
   }
 }
 

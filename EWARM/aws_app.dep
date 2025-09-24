@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>4</fileVersion>
-    <fileChecksum>1733285805</fileChecksum>
+    <fileChecksum>1486398084</fileChecksum>
     <configuration>
         <name>release</name>
         <outputs>
@@ -196,7 +196,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.c</file>
-            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</file>
@@ -209,7 +209,7 @@
             <file>$PROJ_DIR$\..\Application\io\dev_io.c</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\Application\freertos_callback.c</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100.c</file>
             <file>$PROJ_DIR$\..\application\FreeRTOSConfig.h</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
@@ -219,7 +219,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\sdio.c</file>
-            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
             <file>$PROJ_DIR$\startup_stm32f407xx.s</file>
             <file>$PROJ_DIR$\..\Application\io\cli\cli_key_code.c</file>
@@ -240,15 +240,15 @@
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\st7920.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_swo.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\built_.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\rtc\ds1306.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</file>
@@ -300,7 +300,7 @@
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_frequency.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.c</file>
-            <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</file>
+            <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rs232.c</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rs485.c</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_system.c</file>
@@ -1719,7 +1719,7 @@
             <file>$TOOLKIT_DIR$\inc\c\DLib_Product_stdlib.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_adc_ex.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\ff_gen_drv.h</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_adc.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_adc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_adc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\sunshine_data.h</file>
@@ -1744,7 +1744,7 @@
             <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_system.h</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\ff.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdarg.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu.h</file>
@@ -1858,7 +1858,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\tlsf\tlsfbits.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\common\const_string.h</file>
@@ -1988,7 +1988,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\ppp\ppp_impl.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_modbus.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\freertos_os2.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$TOOLKIT_DIR$\lib\m7M_tls.a</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_filesystem.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
@@ -2049,6 +2049,7 @@
             <file>$PROJ_DIR$\..\application\app\test\test_rtc.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_setup.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\autoip.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu_define.h</file>
         </outputs>
         <file>
             <name>[ROOT_NODE]</name>
@@ -2515,7 +2516,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1934 1927 1920 1954 1922 1880 1729 1965 1971 1718 1938 1737 1741 1901 1932 472 1730 1968 450 1784 1770 1626 1750 1728 1749 1614 1936 1721 1885 459 1709 1717 429 1908 206 1848 1874 1861 1890 1893 1521 1882 1919 1962</file>
+                    <file> 1934 1927 1920 1954 1922 1880 1729 1965 1971 1718 1938 1737 1741 1901 1932 472 1730 1968 450 1784 1770 1626 1750 1728 1749 1614 1936 1721 1885 459 1709 1717 429 1908 206 1848 1874 1861 1890 1893 1521 1882 1919 1962 2044</file>
                 </tool>
             </inputs>
         </file>
@@ -3521,7 +3522,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1715 1901 1934 1927 1920 1954 1922 1880 1729 1965 1971 1614 1938 1936 1721 1932 1824 1737 1741 1749 450 1784 1770 1626 164 250 1817 1533 1830 1823 1835 1836 1834 1526 1806 1858 1866 1521 1857 1819 1903 1914 1708 1960 1909 1923 1732 1942 1716 1904 1712 1921 1911 1894 1935 1900 1916 1917 1945 1952 1918 1961 1949 1902 1930 1956 1910 1889 1907 1929 1950 1756 1778 1641 165 187 1837 174 27 183 1639 2035 1928 4 1898 1884 1872 1931 240 1860 1871 1933 459 2016 1856 1992 1968 131 140 139 1913 103 1868 1944 1739 1745 1885 209 1908 206 1848 1874 1861 1890 1893 1882 1919 2042 451 1881 1896 1728 1727 215 472 1730 145 1751 153</file>
+                    <file> 1715 1901 1934 1927 1920 1954 1922 1880 1729 1965 1971 1614 1938 1936 1721 1932 1824 1737 1741 1749 450 1784 1770 1626 164 250 1817 1533 1830 1823 1835 1836 1834 1526 1806 1858 1866 1521 1857 1819 1903 1914 1708 1960 1909 1923 1732 1942 1716 1904 1712 1921 1911 1894 1935 1900 1916 1917 1945 1952 1918 1961 1949 1902 1930 1956 1910 1889 1907 1929 1950 1756 1778 1641 165 187 1837 174 27 183 1639 2035 1928 4 1898 1884 1872 1931 240 1860 1871 1933 459 2016 1856 1992 1968 131 140 139 1913 103 1868 1944 1739 1745 1885 209 1908 206 1848 1874 1861 1890 1893 1882 1919 2042 451 1881 1896 1728 1727 215 472 1730 145 1751 153 2044</file>
                 </tool>
             </inputs>
         </file>

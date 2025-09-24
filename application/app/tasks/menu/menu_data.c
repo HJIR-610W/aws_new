@@ -17,6 +17,7 @@
 #include "util_crc16_ccitt.h"
 #include "FreeRTOS.h"
 #include "utile_data.h"
+#include "task_menu_define.h"
 
 #define DATA_RAIN_1MIN 0
 #define DATA_RAIN_INIT 1
@@ -48,14 +49,13 @@ typedef struct file_erase_s
 #define FILE_SUNSHINE 1
 
 
-#define FILE_RET_OK 0x01
-#define FILE_RET_FAIL 0x02
+
 
 void fileEraseTask( void *arg)
 {
   file_erase_t *p_erase = (file_erase_t *)arg;
   int32_t result;
-  uint32_t flags = FILE_RET_FAIL; // 에러
+  uint32_t flags = TASK_MENU_ALARM_FILE_RET_FAIL; // 에러
 
   if(p_erase->file_type == FILE_RAIN)
   {
@@ -68,7 +68,7 @@ void fileEraseTask( void *arg)
 
   if(result ==0)
   {
-    flags = FILE_RET_OK; // 정상
+    flags = TASK_MENU_ALARM_FILE_RET_OK; // 정상
   }
   osThreadFlagsSet(p_erase->task_handle, flags);
   osThreadExit();
@@ -94,7 +94,7 @@ int32_t setup_data_erase(uint8_t file_type)
   {
     erase.task_handle = osThreadGetId();
     erase.file_type = file_type;
-    osThreadFlagsClear(FILE_RET_OK | FILE_RET_FAIL);
+    osThreadFlagsClear(TASK_MENU_ALARM_FILE_RET_OK | TASK_MENU_ALARM_FILE_RET_FAIL);
     osThreadNew(fileEraseTask, &erase, &kEraseTask_attributes);
   }
 
@@ -118,18 +118,18 @@ while (1)
   }
   screen_refresh();
   screen_refresh();
-  flags = osThreadFlagsWait(FILE_RET_OK | FILE_RET_FAIL, osFlagsWaitAny, 50);
+  flags = osThreadFlagsWait(TASK_MENU_ALARM_FILE_RET_OK | TASK_MENU_ALARM_FILE_RET_FAIL, osFlagsWaitAny, 50);
 
   if((flags &0x80000000)==0)//음수가 아니어야 한다
   {
-  if (flags & FILE_RET_OK || flags & FILE_RET_FAIL)
+  if (flags & TASK_MENU_ALARM_FILE_RET_OK || flags & TASK_MENU_ALARM_FILE_RET_FAIL)
   {
     break;
   }
   }
 }
 
-if (flags == FILE_RET_OK)
+if (flags &TASK_MENU_ALARM_FILE_RET_OK)
 {
   show_popup("Information", "Completed");
   if(erase.file_type ==FILE_RAIN)

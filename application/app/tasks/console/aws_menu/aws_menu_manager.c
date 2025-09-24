@@ -102,14 +102,14 @@ void config_hj_reset(void)
   sensor_add(&config.sensor[A1_TEMPERATURE]);
   hjtemp_cfg = get_sensor_config(&config.sensor[A1_TEMPERATURE]);
   hjtemp_cfg->physical_layer = ePHYSICAL_RS485;
-  hjtemp_cfg->rs485_port = eAPP_RS485_RS232_D;
+  hjtemp_cfg->rs485_port = eAPP_RS485_RS232_B;
   hjtemp_cfg->modbus_id = 1;
   // 습도 센서[화진 습도 9600]
   config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_HUMINITY_HJ;
   sensor_add(&config.sensor[A10_RELATIVE_HUMIDITY]);
   hjhumi_cfg = get_sensor_config(&config.sensor[A10_RELATIVE_HUMIDITY]);
   hjhumi_cfg->physical_layer = ePHYSICAL_RS485;
-  hjhumi_cfg->rs485_port = eAPP_RS485_RS232_D;
+  hjhumi_cfg->rs485_port = eAPP_RS485_RS232_B;
   hjhumi_cfg->modbus_id = 1;
 
   // 풍향[화진 RS485 풍향 19200]
@@ -132,7 +132,7 @@ void config_hj_reset(void)
   hjrain_det_cfg = get_sensor_config(&config.sensor[A8_RAIN_PRESENT]);
   hjrain_det_cfg->delay_sec = 10;
 
-      // 강수량[리드형]
+  // 강수량[리드형]
   config.sensor[A6_RAINFALL_DOT5_1MM].type = S_T_RAIN_REED_1MM;
 
   // 적설[화진 RS485 19200]
@@ -188,7 +188,7 @@ void config_hj_reset(void)
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
   adc_config->scale = 100;
-  adc_config->outMaxV = 1000;
+  adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
   // 지중온도 10cm
@@ -200,7 +200,7 @@ void config_hj_reset(void)
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
   adc_config->scale = 100;
-  adc_config->outMaxV = 1000;
+  adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
   // 지중온도 20cm
@@ -212,7 +212,7 @@ void config_hj_reset(void)
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
   adc_config->scale = 100;
-  adc_config->outMaxV = 1000;
+  adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
   // 지중온도 30cm
@@ -224,7 +224,7 @@ void config_hj_reset(void)
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
   adc_config->scale = 100;
-  adc_config->outMaxV = 1000;
+  adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
   // 지중온도 50cm
@@ -236,7 +236,7 @@ void config_hj_reset(void)
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
   adc_config->scale = 100;
-  adc_config->outMaxV = 1000;
+  adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
   // 지중온도 1m
@@ -248,7 +248,7 @@ void config_hj_reset(void)
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
   adc_config->scale = 100;
-  adc_config->outMaxV = 1000;
+  adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
   // 지중온도 1.5m
@@ -260,9 +260,32 @@ void config_hj_reset(void)
   adc_config->highScale = 6000;
   adc_config->lowScale = -4000;
   adc_config->scale = 100;
-  adc_config->outMaxV = 1000;
+  adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
+  // 지중온도 3m
+  config.sensor[B12_SOIL_TEMPERATURE_300CM].type = S_T_ADC;
+  sensor_add(&config.sensor[B12_SOIL_TEMPERATURE_300CM]);
+  adc_config = get_sensor_config(&config.sensor[B12_SOIL_TEMPERATURE_300CM]);
+  adc_config->single_channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 6000;
+  adc_config->lowScale = -4000;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 5000;
+  adc_config->outMinV = 0;
+
+  // 지중온도 5m
+  config.sensor[B13_SOIL_TEMPERATURE_500CM].type = S_T_ADC;
+  sensor_add(&config.sensor[B13_SOIL_TEMPERATURE_500CM]);
+  adc_config = get_sensor_config(&config.sensor[B13_SOIL_TEMPERATURE_500CM]);
+  adc_config->single_channel = single_channel++;
+  adc_config->mode = eSINGLE_ADC;
+  adc_config->highScale = 6000;
+  adc_config->lowScale = -4000;
+  adc_config->scale = 100;
+  adc_config->outMaxV = 5000;
+  adc_config->outMinV = 0;
   save_config_app();
   save_config_sensor();
 }

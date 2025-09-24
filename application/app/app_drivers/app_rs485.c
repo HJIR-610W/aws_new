@@ -26,11 +26,11 @@ int32_t rs485_num_to_driver_num(int32_t app_rs485_num)
   case eAPP_RS485_A:
     num = DRV_RS485_A;
     break;
-  case eAPP_RS485_RS232_C:
+  case eAPP_RS485_RS232_A:
     num = DRV_RS485_RS232_C;
     break;
     break;
-  case eAPP_RS485_RS232_D:
+  case eAPP_RS485_RS232_B:
     num = DRV_RS485_RS232_D;
     break;
   }

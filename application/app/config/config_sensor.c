@@ -16,11 +16,11 @@ const config_sensor_t g_sensor_att_default =
         .hjhumi = {.modbus_id = 1,
                    .ofset = 0,
                    .physical_layer = ePHYSICAL_RS485,
-                   .rs485_port = eAPP_RS485_RS232_D},
+                   .rs485_port = eAPP_RS485_RS232_B},
         .hjtemp = {.modbus_id = 1,
                    .ofset = 0,
                    .physical_layer = ePHYSICAL_RS485,
-                   .rs485_port = eAPP_RS485_RS232_D}
+                   .rs485_port = eAPP_RS485_RS232_B}
         };
 
 
@@ -71,7 +71,7 @@ void limit_hjtemp(void)
   {
     if (g_config_sensor.hjtemp.rs485_port > eAPP_RS485_MAX)
     {
-      g_config_sensor.hjtemp.rs485_port = eAPP_RS485_RS232_D;
+      g_config_sensor.hjtemp.rs485_port = eAPP_RS485_RS232_B;
       g_config_sensor_dirty_flag = true;
     }
   }
@@ -95,7 +95,7 @@ void limit_hjhumi(void)
     {
       if (g_config_sensor.hjhumi.rs485_port > eAPP_RS485_MAX)
       {
-        g_config_sensor.hjhumi.rs485_port = eAPP_RS485_RS232_D;
+        g_config_sensor.hjhumi.rs485_port = eAPP_RS485_RS232_B;
         g_config_sensor_dirty_flag = true;
       }
     }
