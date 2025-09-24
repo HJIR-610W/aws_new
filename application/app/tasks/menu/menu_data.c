@@ -268,8 +268,8 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
   screen_page_printf(p_win, "TEMP       :%6.1f", READ_TEMP(p_aws->mTemperature.sReal));
   screen_page_printf(p_win, "WIND DIR   :%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
   screen_page_printf(p_win, "WIND SPEED :%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
-  screen_page_printf(p_win, "GUST WIND D:%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
-  screen_page_printf(p_win, "GUST WIND S:%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
+  screen_page_printf(p_win, "WIND GUST D:%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
+  screen_page_printf(p_win, "WIND BUST S:%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
   screen_page_printf(p_win, "RAIN       :%6.1f", READ_X10(p_aws->mRainFall.sReal));
   screen_page_printf(p_win, "BAROMETER  :%6.1f", READ_X10(p_aws->mBarometric.sReal));
   screen_page_printf(p_win, "RAIN P     :%6d", p_aws->mRainDetect.sReal);
@@ -286,6 +286,8 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
   screen_page_printf(p_win, "SOIL T 1.5m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_5m.sReal));
   screen_page_printf(p_win, "SOIL T 3.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp3_0m.sReal));
   screen_page_printf(p_win, "SOIL T 5.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp5_0m.sReal));
+  screen_page_printf(p_win, "SOLAR Volt :%6.2f", (float)p_aws->solar_m_voltage/1000.0);
+  screen_page_printf(p_win, "BATT Volt  :%6.2f", (float)p_aws->battery_m_voltage / 1000.0);
   }
   else
   {

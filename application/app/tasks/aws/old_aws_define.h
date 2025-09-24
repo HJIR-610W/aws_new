@@ -106,7 +106,9 @@ typedef struct
   SENSOR_RIX_BUF mSpare14;
   SENSOR_RIX_BUF mSpare15;
   SENSOR_RIX_BUF mStatus;
-  uint8_t spare[23];
+  uint16_t solar_m_voltage;
+  uint16_t battery_m_voltage;
+  uint8_t spare[19];
   uint8_t kma3_sensor_status[8];
   uint8_t enabled[7];
   uint16_t rain_1min;
@@ -269,15 +271,18 @@ typedef enum eChargerType_
 #define BAROMETRIC_CHN 5   // 기압
 #define SNOWFALL_CHN 6     // 적설량
 #define SOLARRAD_CHN 7     // 일사량
-// 추가 2017. 03.22 //
-#define SOLITEMP5CM_CHN 8    // 지중온도 5Cm [A08] mSoilTemp5cm
-#define SOLITEMP50CM_CHN 9   // 지중온도 50Cm [A09] mSoilTemp50cm
-#define SOLITEMP1_0M_CHN 10  // 지중온도 1.0m [A10] mSoilTemp1_0m
-#define SOLITEMP1_5M_CHN 11  // 지중온도 1.5m [A11] mSoilTemp1_5m
 
-#define SOLITEMP10CM_CHN 12  // 지중온도 10Cm [ ] mSoilTemp10cm	임시
-#define SOLITEMP20CM_CHN 13  // 지중온도 20Cm [ ] mSoilTemp20cm 	임시
-#define SOLITEMP30CM_CHN 14  // 지중온도 30Cm [ ] mSoilTemp30cm	임시
+
+#define SOLI_TEMP_5CM_CH  0
+#define SOLI_TEMP_10CM_CH 1
+#define SOLI_TEMP_20CM_CH 2
+#define SOLI_TEMP_30CM_CH 3
+#define SOLI_TEMP_50CM_CH 4 
+#define SOLI_TEMP_1_0M_CH 5 
+#define SOLI_TEMP_1_5M_CH 6
+#define SOLI_TEMP_3_0M_CH 7
+#define SOLI_TEMP_5_0M_CH 8
+
 
 #define MEGASPEED_ERR_CHAN 0
 #define MEGADIREC_ERR_CHAN 1

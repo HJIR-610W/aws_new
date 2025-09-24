@@ -99,6 +99,12 @@ void SecProcess(void)
   calculate_data_avg(eAVG_SOIL_TEMPERATURE_150CM, g_avg_1min, pAws->mSoilTemp1_5m.sReal);
   calculate_data_min_max(eAVG_SOIL_TEMPERATURE_150CM, g_1min_min_max, pAws->mSoilTemp1_5m.sReal);
 
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_300CM, g_avg_1min, pAws->mSoilTemp3_0m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_300CM, g_1min_min_max, pAws->mSoilTemp3_0m.sReal);
+
+  calculate_data_avg(eAVG_SOIL_TEMPERATURE_500CM, g_avg_1min, pAws->mSoilTemp5_0m.sReal);
+  calculate_data_min_max(eAVG_SOIL_TEMPERATURE_500CM, g_1min_min_max, pAws->mSoilTemp5_0m.sReal);
+
   //우량
   if(g_rainfall.current)
   {
@@ -230,6 +236,14 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->mSoilTemp1_5m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_150CM, g_1min_min_max, MIN_LIMIT);
   pAws->mSoilTemp1_5m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_150CM, g_1min_min_max, MAX_LIMIT);
 
+  pAws->mSoilTemp3_0m.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_300CM, g_avg_1min);
+  pAws->mSoilTemp3_0m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_300CM, g_1min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp3_0m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_300CM, g_1min_min_max, MAX_LIMIT);
+
+  pAws->mSoilTemp5_0m.sReal = read_data_average(eAVG_SOIL_TEMPERATURE_500CM, g_avg_1min);
+  pAws->mSoilTemp5_0m.sMin = read_data_min(eAVG_SOIL_TEMPERATURE_500CM, g_1min_min_max, MIN_LIMIT);
+  pAws->mSoilTemp5_0m.sMax = read_data_max(eAVG_SOIL_TEMPERATURE_500CM, g_1min_min_max, MAX_LIMIT);
+
   // 풍향 풍속
   calculate_wind_avg_1min(&wind_speed_avg, &wind_direction_avg);
   pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_avg * 10);
@@ -265,6 +279,10 @@ void MinProcess(DATE_TIME_BUF *pDate)
   }
 
   pAws->mStatus = mRealAws.mStatus;
+
+  pAws->year = pDate->Year;
+  pAws->solar_m_voltage = (uint16_t)(System.charger_solar1_voltage*1000);
+  pAws->battery_m_voltage = (uint16_t)(System.charger_battery1_voltage*1000);
 
   uint16_t crc = crc16_ccitt_table((uint8_t *)pAws,254);//crc 변수 제외한 
   pAws->crc = crc;

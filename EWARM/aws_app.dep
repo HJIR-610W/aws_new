@@ -196,7 +196,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_led.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.c</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</file>
@@ -1719,7 +1719,7 @@
             <file>$TOOLKIT_DIR$\inc\c\DLib_Product_stdlib.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_adc_ex.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\ff_gen_drv.h</file>
-            <file>$PROJ_DIR$\..\application\app\config\config_adc.h</file>
+            <file>$PROJ_DIR$\..\Application\app\config\config_adc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_adc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\sunshine_data.h</file>
@@ -1744,7 +1744,7 @@
             <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_screen.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_system.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\ff.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdarg.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu.h</file>
@@ -1858,7 +1858,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\tlsf\tlsfbits.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\common\const_string.h</file>
@@ -5412,7 +5412,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 164 1901 250 1817 1533 1830 1823 1835 1836 1834 1526 1938 1927 1920 1954 1922 1880 1806 1858 1866 1521 1857 1819 1903 1721 1729 1914 1708 1960 1909 1923 1732 1942 1716 1904 1712 1921 1911 1894 1935 1900 1916 1917 1945 1952 1918 1961 1949 1902 1930 1956 1910 1889 1907 1929 1950 1756 1778 1641 165 187 1837 174 27 183 1639 1626 450 1784 1770 1936 1632</file>
+                    <file> 164 1901 250 1817 1533 1830 1823 1835 1836 1834 1526 1938 1927 1920 1954 1922 1880 1806 1858 1866 1521 1857 1819 1903 1721 1729 1914 1708 1960 1909 1923 1732 1942 1716 1904 1712 1921 1911 1894 1935 1900 1916 1917 1945 1952 1918 1961 1949 1902 1930 1956 1910 1889 1907 1929 1950 1756 1778 1641 165 187 1837 174 27 183 1639 1626 450 1784 1770 1936 1632 1728</file>
                 </tool>
             </inputs>
         </file>

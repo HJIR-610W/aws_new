@@ -396,7 +396,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
 
   switch (ch)
   {
-    case SOLITEMP5CM_CHN:
+    case SOLI_TEMP_5CM_CH:
       err = p_sensor[B5_SOIL_TEMPERATURE_5CM].err; 
       if (err)
       {
@@ -406,7 +406,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       temperature = p_sensor[B5_SOIL_TEMPERATURE_5CM].data.f;
 
       break;
-    case SOLITEMP10CM_CHN:
+    case SOLI_TEMP_10CM_CH:
       err = p_sensor[B6_SOIL_TEMPERATURE_10CM].err;
       if(err)
       {
@@ -415,7 +415,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       }
       temperature = p_sensor[B6_SOIL_TEMPERATURE_10CM].data.f;
       break;
-    case SOLITEMP20CM_CHN:
+    case SOLI_TEMP_20CM_CH:
       err = p_sensor[B7_SOIL_TEMPERATURE_20CM].err;
 
       if(err)
@@ -425,7 +425,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       }
       temperature = p_sensor[B7_SOIL_TEMPERATURE_20CM].data.f;
       break;
-    case SOLITEMP30CM_CHN:
+    case SOLI_TEMP_30CM_CH:
       err = p_sensor[B8_SOIL_TEMPERATURE_30CM].err;
       if(err)
       {
@@ -434,7 +434,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       }
       temperature = p_sensor[B8_SOIL_TEMPERATURE_30CM].data.f;
       break;
-    case SOLITEMP50CM_CHN:
+    case SOLI_TEMP_50CM_CH:
       err = p_sensor[B9_SOIL_TEMPERATURE_50CM].err;
 
       if(err)
@@ -444,7 +444,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       }
       temperature = p_sensor[B9_SOIL_TEMPERATURE_50CM].data.f;
       break;
-    case SOLITEMP1_0M_CHN:
+    case SOLI_TEMP_1_0M_CH:
       err = p_sensor[B10_SOIL_TEMPERATURE_100CM].err;
 
       if(err)
@@ -454,7 +454,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       }
       temperature = p_sensor[B10_SOIL_TEMPERATURE_100CM].data.f;
       break;
-    case SOLITEMP1_5M_CHN:
+    case SOLI_TEMP_1_5M_CH:
 
       err = p_sensor[B11_SOIL_TEMPERATURE_150CM].err;
       if(err)
@@ -464,7 +464,28 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       }
       temperature = p_sensor[B11_SOIL_TEMPERATURE_150CM].data.f;
       break;
-  }
+    case SOLI_TEMP_3_0M_CH:
+
+      err = p_sensor[B12_SOIL_TEMPERATURE_300CM].err;
+      if (err)
+      {
+        *sensor_err = err;
+        return AWS_DATA_ERR_VAL;
+      }
+      temperature = p_sensor[B12_SOIL_TEMPERATURE_300CM].data.f;
+      break;
+
+    case SOLI_TEMP_5_0M_CH:
+
+      err = p_sensor[B13_SOIL_TEMPERATURE_500CM].err;
+      if (err)
+      {
+        *sensor_err = err;
+        return AWS_DATA_ERR_VAL;
+      }
+      temperature = p_sensor[B13_SOIL_TEMPERATURE_500CM].data.f;
+      break;
+    }
 
 
 
@@ -485,8 +506,8 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
     return AWS_DATA_ERR_VAL;
   }
 
-  return (uint16_t)((truncate_to_1_decimal(temperature) + 100) *
-                    10);  // AWS 데이터 형으로 변환 ((측정값+100) *10)
+  temperature = round_to_n_digits(temperature, 1);
+  return (uint16_t)((temperature + 100) * 10); // AWS 데이터 형으로 변환 ((측정값+100) *10)
 }
 
 
@@ -1383,38 +1404,46 @@ void DUALPORT_TASK(void *arg)
       update_sensor_err(B2_SUNSHINE_DURATION, f_err);
 
       // 지중온도 5cm
-      data = TempCalcExt(SOLITEMP5CM_CHN, &sensor_err);
+      data = TempCalcExt(SOLI_TEMP_5CM_CH, &sensor_err);
       pAws->mSoilTemp5cm.sReal = filter_data(B5_SOIL_TEMPERATURE_5CM, data, sensor_err, &f_err);
       update_sensor_err(B5_SOIL_TEMPERATURE_5CM, f_err);
 
       // 지중온도 10cm
-      data = TempCalcExt(SOLITEMP10CM_CHN, &sensor_err);
+      data = TempCalcExt(SOLI_TEMP_10CM_CH, &sensor_err);
       pAws->mSoilTemp10cm.sReal = filter_data(B6_SOIL_TEMPERATURE_10CM, data, sensor_err, &f_err);
       update_sensor_err(B6_SOIL_TEMPERATURE_10CM, f_err);
 
       // 지중온도 20cm
-      data = TempCalcExt(SOLITEMP20CM_CHN, &sensor_err);
+      data = TempCalcExt(SOLI_TEMP_20CM_CH, &sensor_err);
       pAws->mSoilTemp20cm.sReal = filter_data(B7_SOIL_TEMPERATURE_20CM, data, sensor_err, &f_err);
       update_sensor_err(B7_SOIL_TEMPERATURE_20CM, f_err);
 
       // 지중온도 30cm
-    data = TempCalcExt(SOLITEMP30CM_CHN, &sensor_err);
+    data = TempCalcExt(SOLI_TEMP_30CM_CH, &sensor_err);
     pAws->mSoilTemp30cm.sReal = filter_data(B8_SOIL_TEMPERATURE_30CM, data, sensor_err, &f_err);
     update_sensor_err(B8_SOIL_TEMPERATURE_30CM, f_err);
 
     // 지중온도 50cm
-    data = TempCalcExt(SOLITEMP50CM_CHN, &sensor_err);
+    data = TempCalcExt(SOLI_TEMP_50CM_CH, &sensor_err);
     pAws->mSoilTemp50cm.sReal = filter_data(B9_SOIL_TEMPERATURE_50CM, data, sensor_err, &f_err);
     update_sensor_err(B9_SOIL_TEMPERATURE_50CM, f_err);
     // 지중온도 1m
-    data = TempCalcExt(SOLITEMP1_0M_CHN, &sensor_err);
+    data = TempCalcExt(SOLI_TEMP_1_0M_CH, &sensor_err);
     pAws->mSoilTemp1_0m.sReal = filter_data(B10_SOIL_TEMPERATURE_100CM, data, sensor_err, &f_err);
     update_sensor_err(B10_SOIL_TEMPERATURE_100CM, f_err);
 
     // 지중온도 1.5m
-    data = TempCalcExt(SOLITEMP1_5M_CHN, &sensor_err);
+    data = TempCalcExt(SOLI_TEMP_1_5M_CH, &sensor_err);
     pAws->mSoilTemp1_5m.sReal = filter_data(B11_SOIL_TEMPERATURE_150CM, data, sensor_err, &f_err);
     update_sensor_err(B11_SOIL_TEMPERATURE_150CM, f_err);
+    // 지중온도 3m
+    data = TempCalcExt(SOLI_TEMP_3_0M_CH, &sensor_err);
+    pAws->mSoilTemp1_5m.sReal = filter_data(B12_SOIL_TEMPERATURE_300CM, data, sensor_err, &f_err);
+    update_sensor_err(B12_SOIL_TEMPERATURE_300CM, f_err);
+    // 지중온도 5m
+    data = TempCalcExt(SOLI_TEMP_5_0M_CH, &sensor_err);
+    pAws->mSoilTemp1_5m.sReal = filter_data(B13_SOIL_TEMPERATURE_500CM, data, sensor_err, &f_err);
+    update_sensor_err(B13_SOIL_TEMPERATURE_500CM, f_err);
 
     // 센서 불량 처리
     pAws->mStatus.sReal = 0;
