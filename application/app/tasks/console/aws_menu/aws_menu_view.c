@@ -569,7 +569,7 @@ void draw_aws(win_t *p_win)
   calculate_window_position(p_win);
 
   page = p_win->current_page;
-  p_kma = get_kma_data((eAWS_DATA_MIN_t)page);
+  p_kma = acquire_kma_data((eAWS_DATA_MIN_t)page);
 
   // 타이틀 설정
   if(page == eAWS_DATA_REAL|| page == eAWS_DATA_RAW)//수집 시간 표시 

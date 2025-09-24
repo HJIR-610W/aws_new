@@ -33,8 +33,9 @@ aws_10min_t g_aws_10min;
 
 
 osMessageQueueId_t g_kma_data_queue[2];
+osSemaphoreId_t g_kma_access_sem_id;
 
-kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min)
+kma_data_ex_t *acquire_kma_data(eAWS_DATA_MIN_t min)
 {
   kma_data_ex_t *p_kma_data = NULL;
 
@@ -83,6 +84,8 @@ void kma_data_q_init(void)
 
   g_kma_data_queue[eKMA_DATA_Q_AVG] = osMessageQueueNew(1, sizeof(kma_data_ex_t), NULL);
   g_kma_data_queue[eKMA_DATA_Q_1MIN] = osMessageQueueNew(1, sizeof(kma_data_ex_t), NULL);
+
+  g_kma_access_sem_id = osSemaphoreNew(1,1,NULL);
 }
 
 int32_t read_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data)

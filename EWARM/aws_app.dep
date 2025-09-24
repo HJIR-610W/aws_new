@@ -133,7 +133,7 @@
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.c</file>
             <file>$PROJ_DIR$\..\Application\app\version\app_version.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_sdi12.c</file>
-            <file>$PROJ_DIR$\..\Application\app\version\boot_version.h</file>
+            <file>$PROJ_DIR$\..\application\app\version\boot_version.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.c</file>
             <file>$PROJ_DIR$\..\application\app\test\test_key.c</file>
             <file>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</file>
@@ -207,7 +207,7 @@
             <file>$PROJ_DIR$\..\Application\update\update_fw.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\cli_input.c</file>
             <file>$PROJ_DIR$\..\Application\io\dev_io.c</file>
-            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\Application\freertos_callback.c</file>
             <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\Application\io\terminal\vt100.c</file>
@@ -233,7 +233,7 @@
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554_def.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\fram\fm25cl.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\font\font_6x8.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\charger\hjsmartCharger.h</file>
@@ -246,15 +246,15 @@
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\built_.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\rtc\ds1306.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</file>
-            <file>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\st7920.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\pcb_define.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\sunshine\sunshine.h</file>
@@ -305,7 +305,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_rs485.c</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_system.c</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\stm32_usb.h</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_cdc.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.h</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_di.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_cdc_interface.h</file>
@@ -344,7 +344,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_flash_ex.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_flash_ramfunc.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_i2c.c</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_uart.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd_ex.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc.c</file>
@@ -449,11 +449,11 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_cali.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_view.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_offset.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_offset.h</file>
             <file>$PROJ_DIR$\release\Obj\user_diskio.xcl</file>
             <file>$PROJ_DIR$\release\Obj\tasks.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_network.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_network.h</file>
             <file>$PROJ_DIR$\release\Obj\task_monitor.__cstat.et</file>
             <file>$PROJ_DIR$\..\utils\util_time.h</file>
             <file>$PROJ_DIR$\..\utils\util_stdio.h</file>
@@ -465,7 +465,7 @@
             <file>$PROJ_DIR$\release\Obj\app_screen.__cstat.et</file>
             <file>$PROJ_DIR$\..\utils\util_stdio.c</file>
             <file>$PROJ_DIR$\..\utils\util_memory.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_system.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_panel.h</file>
             <file>$PROJ_DIR$\release\Obj\font_6x8.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\ccp.__cstat.et</file>
@@ -487,7 +487,7 @@
             <file>$PROJ_DIR$\release\Obj\tcpip.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\netdb.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\system_err.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_manager.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_manager.h</file>
             <file>$PROJ_DIR$\release\Obj\drv_do.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\wind_speed.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\task_tcpServer.__cstat.et</file>
@@ -548,7 +548,7 @@
             <file>$PROJ_DIR$\release\Obj\solar_radiation.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\adc_calibration.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\usbd_desc.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_data.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_data.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_menu_manager.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\httpd.xcl</file>
             <file>$PROJ_DIR$\release\Obj\ff_gen_drv.__cstat.et</file>
@@ -560,7 +560,7 @@
             <file>$PROJ_DIR$\release\Obj\tcp_out.xcl</file>
             <file>$PROJ_DIR$\release\Obj\bsp_swo.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_crc.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_sensor.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_sensor.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_spi.xcl</file>
             <file>$PROJ_DIR$\release\Obj\bsp_mux.xcl</file>
             <file>$PROJ_DIR$\release\Obj\bsp_delay.__cstat.et</file>
@@ -1712,7 +1712,7 @@
             <file>$PROJ_DIR$\release\Obj\parse_aws.o</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_ll_usb.o</file>
             <file>$PROJ_DIR$\release\Obj\modbus_master.o</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_test.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_gpio.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\rain_data.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_aws.h</file>
@@ -1747,19 +1747,19 @@
             <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\ff.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdarg.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\semphr.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\hj_temp_menu\hjtemp_menu.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_core.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\fsl_common.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\fsl_common.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\freertos_mpool.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_dataLogging.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rtc.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\divas\aws_monitor.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\console_scanf.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\tcp_priv.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_pcd.h</file>
             <file>$PROJ_DIR$\..\utils\util_escape_sequence.h</file>
@@ -1772,7 +1772,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\etharp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\snmp.h</file>
             <file>$PROJ_DIR$\..\application\app\test\parser\hart_parser.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\fsl_debug_console.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\fsl_debug_console.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_ble.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_key.h</file>
             <file>$TOOLKIT_DIR$\inc\c\time32.h</file>
@@ -1816,8 +1816,8 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_offset.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip4.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_network.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.h</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_rtc.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\fsl_shell.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\udp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.h</file>
@@ -1845,7 +1845,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_di_def.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_frequency.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_fram.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\list.h</file>
             <file>$PROJ_DIR$\release\Obj\ecp.o</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_adc.h</file>
@@ -1856,9 +1856,9 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\projdefs.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt_opts.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_adc.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\tlsf\tlsfbits.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\common\const_string.h</file>
@@ -1873,7 +1873,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netifapi.h</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Include\cmsis_iccarm.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tls.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_console.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_rs485.h</file>
@@ -1988,9 +1988,9 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\ppp\ppp_impl.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_modbus.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\freertos_os2.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$TOOLKIT_DIR$\lib\m7M_tls.a</file>
-            <file>$PROJ_DIR$\..\application\app\test\test_filesystem.h</file>
+            <file>$PROJ_DIR$\..\Application\app\test\test_filesystem.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\queue.h</file>
@@ -2005,7 +2005,7 @@
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_virtual.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rs485.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\err.h</file>
-            <file>$PROJ_DIR$\..\application\app\test\test_sdi12.h</file>
+            <file>$PROJ_DIR$\..\Application\app\test\test_sdi12.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\api_msg.h</file>
             <file>$TOOLKIT_DIR$\lib\dl7M_tlf.a</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_opts.h</file>
@@ -2017,7 +2017,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\task_panel.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip_addr.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\dhcp.h</file>
-            <file>$PROJ_DIR$\..\application\app\test\test_dinOut.h</file>
+            <file>$PROJ_DIR$\..\Application\app\test\test_dinOut.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_nvm.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_power.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\wind_data.h</file>
@@ -10782,7 +10782,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1719 1927 1920 1954 1922 1880 1735 1965 1729 1971 1896 450 1784 1770 1626 1938 1901 1728 2013 1884 1933 459 1934 1936 1721 2035 1928 4 1898 1872 1931 240 1860 1871 2016 1908 206 1848 1874 1861 1890 1893 1521 1882 1919 1749 1868 1750 1723 1640 2015 1727 215 1741 27 1951 429</file>
+                    <file> 1719 1927 1920 1954 1922 1880 1735 1965 1729 1971 1896 450 1784 1770 1626 1938 1901 1728 2013 1884 1933 459 1934 1936 1721 2035 1928 4 1898 1872 1931 240 1860 1871 2016 1908 206 1848 1874 1861 1890 1893 1521 1882 1919 1749 1868 1750 1723 1640 2015 1727 215 1741 27 1951 429 443</file>
                 </tool>
             </inputs>
         </file>

@@ -17,8 +17,6 @@ extern AWS_DATA_STRUCT mDayAws; // 일간 자료
 
 
 void schedule_process(DATE_TIME_BUF *pDate, DATE_TIME_BUF *pOldDate);
-
-
-
+void check_sensor_error(AWS_DATA_STRUCT *pAws);
 
 #endif

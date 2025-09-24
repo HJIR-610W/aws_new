@@ -371,9 +371,9 @@ typedef struct snowfall_s
   uint32_t monthly;   // 월간  적설량
 } snowfall_t;
 
-kma_data_ex_t *get_kma_data(eAWS_DATA_MIN_t min);
+kma_data_ex_t *acquire_kma_data(eAWS_DATA_MIN_t min);
 
-void kma_data_q_init(void);
+    void kma_data_q_init(void);
 int32_t read_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
 void send_kma_data(eKMA_DATA_Q_t kma_data_num, kma_data_ex_t *p_kma_data);
 

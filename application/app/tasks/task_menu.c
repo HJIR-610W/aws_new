@@ -410,7 +410,14 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     screen_page_printf(p_win, buffer);
   }
 
-  p_kma = get_kma_data((eAWS_DATA_MIN_t)min);
+  p_kma = acquire_kma_data((eAWS_DATA_MIN_t)min);
+
+  if(p_kma->updated==false)
+  {
+    screen_page_printf(p_win, "Data not updated yet");
+    screen_page_clear(p_win);
+    return;
+  }
 
   if (p_kma->temperature.enable)
   {
@@ -492,11 +499,11 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->wind_direction_avg.err;
     if (err)
     {
-      screen_page_printf(p_win, "%-*s:--", AWS_WD, "WIND DG");
+      screen_page_printf(p_win, "%-*s:--", AWS_WD, "WIND GD");
     }
     else
     {
-      screen_page_printf(p_win, "%-*s:%6.1f deg", AWS_WD, "WIND DG",
+      screen_page_printf(p_win, "%-*s:%6.1f deg", AWS_WD, "WIND GD",
                         KMA_TO_GENERAL(p_kma->wind_direction_instant.data));
     }
   }
@@ -508,11 +515,11 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->wind_speed_avg.err;
     if (err)
     {
-      screen_page_printf(p_win, "%-*s:--", AWS_WD, "WIND SG");
+      screen_page_printf(p_win, "%-*s:--", AWS_WD, "WIND GS");
     }
     else
     {
-      screen_page_printf(p_win, "%-*s:%6.1f m/s", AWS_WD, "WIND SG",
+      screen_page_printf(p_win, "%-*s:%6.1f m/s", AWS_WD, "WIND GS",
                      KMA_TO_GENERAL(p_kma->wind_speed_instant.data));
     }
   }

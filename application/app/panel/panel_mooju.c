@@ -41,7 +41,7 @@ void send_panel_muju(int32_t panel_port_num)
 
   pDate			= &Date_Time;
 
-  p_kma =get_kma_data(eAWS_DATA_REAL);
+  p_kma =acquire_kma_data(eAWS_DATA_REAL);
 
 
 // 무주 기상 상황판용 

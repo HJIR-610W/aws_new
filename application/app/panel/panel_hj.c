@@ -21,7 +21,7 @@ uint16_t send_panel_hj(int32_t panel_port_num)
     DATE_TIME_BUF			*pDate;
     kma_data_ex_t *p_kma;
 
-    p_kma = get_kma_data(eAWS_DATA_REAL);
+    p_kma = acquire_kma_data(eAWS_DATA_REAL);
 
 	pDate			= &Date_Time;
 

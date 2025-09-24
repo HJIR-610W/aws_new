@@ -19,6 +19,7 @@
 #include "dev_io.h"
 #include "aws_default_data.h"
 #include "util_crc16_ccitt.h"
+#include "kma3.h"
 #define D2R 3.14159265 / 180.0
 #define R2D 180.0 / 3.14159265
 
@@ -152,6 +153,132 @@ void SecProcess(void)
 }
 
 
+/*
+센서 상태에 에러이면 값들은 -9999로 처리하여 전송한다.
+*/
+void check_sensor_error(AWS_DATA_STRUCT *pAws)
+{
+
+  if (kma3_is_sensor_error(A1_TEMPERATURE,pAws->kma3_sensor_status))
+  {
+    pAws->mTemperature.sReal = AWS_SEN_ERR;
+    pAws->mTemperature.sMax = AWS_SEN_ERR;
+    pAws->mTemperature.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(A2_WIND_DIRECTION, pAws->kma3_sensor_status))
+  {
+    pAws->mWind.mDirection.sReal = AWS_SEN_ERR;
+    pAws->mWind.mDirection.sMax = AWS_SEN_ERR;
+  }
+  if (kma3_is_sensor_error(A3_WIND_SPEED, pAws->kma3_sensor_status))
+  {
+    pAws->mWind.mSpeed.sReal = AWS_SEN_ERR;
+    pAws->mWind.mSpeed.sMax = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(A7_PRESSURE, pAws->kma3_sensor_status))
+  {
+    pAws->mBarometric.sReal = AWS_SEN_ERR;
+    pAws->mBarometric.sMax = AWS_SEN_ERR;
+    pAws->mBarometric.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(A9_SNOW_DEPTH, pAws->kma3_sensor_status))
+  {
+    pAws->mSnowFall.sReal = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(A10_RELATIVE_HUMIDITY, pAws->kma3_sensor_status))
+  {
+    pAws->mHumidity.sReal = AWS_SEN_ERR;
+    pAws->mHumidity.sMax = AWS_SEN_ERR;
+    pAws->mHumidity.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B1_SOLAR_RADIATION, pAws->kma3_sensor_status))
+  {
+    pAws->mSolarRad.sReal = AWS_SEN_ERR;
+    pAws->mSolarRad.sMax = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B3_GROUND_TEMPERATURE, pAws->kma3_sensor_status))
+  {
+    pAws->mGndTemp.sReal = AWS_SEN_ERR;
+    pAws->mGndTemp.sMax = AWS_SEN_ERR;
+    pAws->mGndTemp.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B4_SURFACE_TEMPERATURE, pAws->kma3_sensor_status))
+  {
+    pAws->mGrassTemp.sReal = AWS_SEN_ERR;
+    pAws->mGrassTemp.sMax = AWS_SEN_ERR;
+    pAws->mGrassTemp.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B5_SOIL_TEMPERATURE_5CM, pAws->kma3_sensor_status))
+  {
+    pAws->mSoilTemp5cm.sReal = AWS_SEN_ERR;
+    pAws->mSoilTemp5cm.sMax = AWS_SEN_ERR;
+    pAws->mSoilTemp5cm.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B6_SOIL_TEMPERATURE_10CM, pAws->kma3_sensor_status))
+  {
+    pAws->mSoilTemp10cm.sReal = AWS_SEN_ERR;
+    pAws->mSoilTemp10cm.sMax = AWS_SEN_ERR;
+    pAws->mSoilTemp10cm.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B7_SOIL_TEMPERATURE_20CM, pAws->kma3_sensor_status))
+  {
+    pAws->mSoilTemp20cm.sReal = AWS_SEN_ERR;
+    pAws->mSoilTemp20cm.sMax = AWS_SEN_ERR;
+    pAws->mSoilTemp20cm.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B8_SOIL_TEMPERATURE_30CM, pAws->kma3_sensor_status))
+  {
+    pAws->mSoilTemp30cm.sReal = AWS_SEN_ERR;
+    pAws->mSoilTemp30cm.sMax = AWS_SEN_ERR;
+    pAws->mSoilTemp30cm.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B9_SOIL_TEMPERATURE_50CM, pAws->kma3_sensor_status))
+  {
+    pAws->mSoilTemp50cm.sReal = AWS_SEN_ERR;
+    pAws->mSoilTemp50cm.sMax = AWS_SEN_ERR;
+    pAws->mSoilTemp50cm.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B10_SOIL_TEMPERATURE_100CM, pAws->kma3_sensor_status))
+  {
+    pAws->mSoilTemp1_0m.sReal = AWS_SEN_ERR;
+    pAws->mSoilTemp1_0m.sMax = AWS_SEN_ERR;
+    pAws->mSoilTemp1_0m.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B11_SOIL_TEMPERATURE_150CM, pAws->kma3_sensor_status))
+  {
+    pAws->mSoilTemp1_5m.sReal = AWS_SEN_ERR;
+    pAws->mSoilTemp1_5m.sMax = AWS_SEN_ERR;
+    pAws->mSoilTemp1_5m.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B12_SOIL_TEMPERATURE_300CM, pAws->kma3_sensor_status))
+  {
+    pAws->mSoilTemp3_0m.sReal = AWS_SEN_ERR;
+    pAws->mSoilTemp3_0m.sMax = AWS_SEN_ERR;
+    pAws->mSoilTemp3_0m.sMin = AWS_SEN_ERR;
+  }
+
+  if (kma3_is_sensor_error(B13_SOIL_TEMPERATURE_500CM, pAws->kma3_sensor_status))
+  {
+    pAws->mSoilTemp5_0m.sReal = AWS_SEN_ERR;
+    pAws->mSoilTemp5_0m.sMax = AWS_SEN_ERR;
+    pAws->mSoilTemp5_0m.sMin = AWS_SEN_ERR;
+  }
+}
 
 
 #define MIN_LIMIT 10000
@@ -284,7 +411,8 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->solar_m_voltage = (uint16_t)(System.charger_solar1_voltage*1000);
   pAws->battery_m_voltage = (uint16_t)(System.charger_battery1_voltage*1000);
 
-  uint16_t crc = crc16_ccitt_table((uint8_t *)pAws,254);//crc 변수 제외한 
+//  check_sensor_error(pAws);
+  uint16_t crc = crc16_ccitt_table((uint8_t *)pAws, 254); // crc 변수 제외한
   pAws->crc = crc;
   os_save_aws_data(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
 
@@ -740,7 +868,7 @@ void save_min_data(DATE_TIME_BUF *p_time)
   kma_data_ex_t *p_kma_data;
   aws_logging_data_t *p_logging;
 
-  p_kma_data = get_kma_data(eAWS_DATA_1MIN);
+  p_kma_data = acquire_kma_data(eAWS_DATA_1MIN);
 
   p_logging = pvPortMalloc(sizeof(aws_logging_data_t));
 
@@ -946,7 +1074,7 @@ void update_kma_data(eAWS_DATA_MIN_t min,DATE_TIME_BUF *p_time)
       break;
     }
 
-  p_kma_data = get_kma_data((eAWS_DATA_MIN_t)min);
+  p_kma_data = acquire_kma_data((eAWS_DATA_MIN_t)min);
 
   // 온도
   p_kma_data->temperature.data = pAws->mTemperature.sReal;
@@ -1022,7 +1150,7 @@ void update_kma_data(eAWS_DATA_MIN_t min,DATE_TIME_BUF *p_time)
 
   p_kma_data->snowfall.data = pAws->mSnowFall.sReal;
 
-  kma_data_ex_t *p_kma_avg = get_kma_data(eAWS_DATA_REAL);
+  kma_data_ex_t *p_kma_avg = acquire_kma_data(eAWS_DATA_REAL);
 
   for(int i = 0 ; i < 8 ;i++)
   {

@@ -254,40 +254,211 @@ void draw_data_menu(screen_menu_t *p_win)
   screen_menu_clear(p_win);
 }
 
+char *generate_data_fmt(char *buff,int buff_size,uint16_t data,const char *format, ...)
+{
+  va_list args;
+
+  if(data==AWS_SEN_ERR)
+  {
+    snprintf(buff,buff_size,"ERROR");
+  }
+  else
+  {
+  va_start(args, format);
+  vsnprintf(buff, buff_size, format, args);
+  va_end(args);
+  }
+
+  return buff;
+}
 void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t start_time)
 {
   DATE_TIME_BUF ct;
   uint16_t crc;
+  uint16_t data;
+  char buff[30];
+
+  const char *sensor_error = "ERROR";
+
   screen_page_start(p_win);
   time_cvt_secTotime(start_time, &ct);
 
-  crc = crc16_ccitt_table((uint8_t*)p_aws,sizeof(AWS_DATA_STRUCT)-sizeof(uint16_t));
-  if(crc == p_aws->crc)
+  crc = crc16_ccitt_table((uint8_t *)p_aws, sizeof(AWS_DATA_STRUCT) - sizeof(uint16_t));
+  if (crc == p_aws->crc)
   {
-  screen_page_printf(p_win, "%04d-%02d-%02d %02d:%02d:00", ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
-  screen_page_printf(p_win, "TEMP       :%6.1f", READ_TEMP(p_aws->mTemperature.sReal));
-  screen_page_printf(p_win, "WIND DIR   :%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
-  screen_page_printf(p_win, "WIND SPEED :%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
-  screen_page_printf(p_win, "WIND GUST D:%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
-  screen_page_printf(p_win, "WIND BUST S:%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
-  screen_page_printf(p_win, "RAIN       :%6.1f", READ_X10(p_aws->mRainFall.sReal));
-  screen_page_printf(p_win, "BAROMETER  :%6.1f", READ_X10(p_aws->mBarometric.sReal));
-  screen_page_printf(p_win, "RAIN P     :%6d", p_aws->mRainDetect.sReal);
-  screen_page_printf(p_win, "SNOW       :%6d", p_aws->mSnowFall.sReal);
-  screen_page_printf(p_win, "HUMI       :%6.1f", READ_X10(p_aws->mHumidity.sReal));
-  screen_page_printf(p_win, "SOLAR R    :%7.2f", READ_X100(p_aws->mSolarRad.sReal));
-  screen_page_printf(p_win, "SOLAR D    :%6d", p_aws->mSunshine.sReal);
-  screen_page_printf(p_win, "SOIL T 5cm :%6.1f", READ_TEMP(p_aws->mSoilTemp5cm.sReal));
-  screen_page_printf(p_win, "SOIL T 10cm:%6.1f", READ_TEMP(p_aws->mSoilTemp10cm.sReal));
-  screen_page_printf(p_win, "SOIL T 20cm:%6.1f", READ_TEMP(p_aws->mSoilTemp20cm.sReal));
-  screen_page_printf(p_win, "SOIL T 30cm:%6.1f", READ_TEMP(p_aws->mSoilTemp30cm.sReal));
-  screen_page_printf(p_win, "SOIL T 50cm:%6.1f", READ_TEMP(p_aws->mSoilTemp50cm.sReal));
-  screen_page_printf(p_win, "SOIL T   1m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_0m.sReal));
-  screen_page_printf(p_win, "SOIL T 1.5m:%6.1f", READ_TEMP(p_aws->mSoilTemp1_5m.sReal));
-  screen_page_printf(p_win, "SOIL T 3.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp3_0m.sReal));
-  screen_page_printf(p_win, "SOIL T 5.0m:%6.1f", READ_TEMP(p_aws->mSoilTemp5_0m.sReal));
-  screen_page_printf(p_win, "SOLAR Volt :%6.2f", (float)p_aws->solar_m_voltage/1000.0);
-  screen_page_printf(p_win, "BATT Volt  :%6.2f", (float)p_aws->battery_m_voltage / 1000.0);
+    screen_page_printf(p_win, "%04d-%02d-%02d %02d:%02d:00", ct.Year, ct.Month, ct.Day, ct.Hour, ct.Min);
+
+    // TEMPERATURE
+    strcpy(buff, "ERROR");
+    if (p_aws->mTemperature.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_TEMP(p_aws->mTemperature.sReal));
+    }
+    screen_page_printf(p_win, "TEMP       :%s", buff);
+
+    // WIND DIRECTION
+    strcpy(buff, "ERROR");
+    if (p_aws->mWind.mDirection.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
+    }
+    screen_page_printf(p_win, "WIND DIR   :%s", buff);
+
+    // WIND SPEED
+    strcpy(buff, "ERROR");
+    if (p_aws->mWind.mSpeed.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
+    }
+    screen_page_printf(p_win, "WIND SPEED :%s", buff);
+
+    // WIND GUST DIRECTION
+    strcpy(buff, "ERROR");
+    if (p_aws->mWind.mDirection.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_X10(p_aws->mWind.mDirection.sReal));
+    }
+    screen_page_printf(p_win, "WIND GUST D:%s", buff);
+
+    // WIND GUST SPEED
+    strcpy(buff, "ERROR");
+    if (p_aws->mWind.mSpeed.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_X10(p_aws->mWind.mSpeed.sReal));
+    }
+    screen_page_printf(p_win, "WIND BUST S:%s", buff);
+
+    // RAINFALL
+    strcpy(buff, "ERROR");
+    if (p_aws->mRainFall.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_X10(p_aws->mRainFall.sReal));
+    }
+    screen_page_printf(p_win, "RAIN       :%s", buff);
+
+    // BAROMETER
+    strcpy(buff, "ERROR");
+    if (p_aws->mBarometric.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_X10(p_aws->mBarometric.sReal));
+    }
+    screen_page_printf(p_win, "BAROMETER  :%s", buff);
+
+    // RAIN DETECT
+    strcpy(buff, "ERROR");
+    if (p_aws->mRainDetect.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6d", p_aws->mRainDetect.sReal);
+    }
+    screen_page_printf(p_win, "RAIN P     :%s", buff);
+
+    // SNOWFALL
+    strcpy(buff, "ERROR");
+    if (p_aws->mSnowFall.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6d", p_aws->mSnowFall.sReal);
+    }
+    screen_page_printf(p_win, "SNOW       :%s", buff);
+
+    // HUMIDITY
+    strcpy(buff, "ERROR");
+    if (p_aws->mHumidity.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_X10(p_aws->mHumidity.sReal));
+    }
+    screen_page_printf(p_win, "HUMI       :%s", buff);
+
+    // SOLAR RADIATION
+    strcpy(buff, "ERROR");
+    if (p_aws->mSolarRad.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%7.2f", READ_X100(p_aws->mSolarRad.sReal));
+    }
+    screen_page_printf(p_win, "SOLAR R    :%s", buff);
+
+    // SUNSHINE DURATION
+    strcpy(buff, "ERROR");
+    if (p_aws->mSunshine.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6d", p_aws->mSunshine.sReal);
+    }
+    screen_page_printf(p_win, "SOLAR D    :%s", buff);
+
+    // SOIL TEMPERATURE 5cm
+    strcpy(buff, "ERROR");
+    if (p_aws->mSoilTemp5cm.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_TEMP(p_aws->mSoilTemp5cm.sReal));
+    }
+    screen_page_printf(p_win, "SOIL T 5cm :%s", buff);
+
+    // SOIL TEMPERATURE 10cm
+    strcpy(buff, "ERROR");
+    if (p_aws->mSoilTemp10cm.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_TEMP(p_aws->mSoilTemp10cm.sReal));
+    }
+    screen_page_printf(p_win, "SOIL T 10cm:%s", buff);
+
+    // SOIL TEMPERATURE 20cm
+    strcpy(buff, "ERROR");
+    if (p_aws->mSoilTemp20cm.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_TEMP(p_aws->mSoilTemp20cm.sReal));
+    }
+    screen_page_printf(p_win, "SOIL T 20cm:%s", buff);
+
+    // SOIL TEMPERATURE 30cm
+    strcpy(buff, "ERROR");
+    if (p_aws->mSoilTemp30cm.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_TEMP(p_aws->mSoilTemp30cm.sReal));
+    }
+    screen_page_printf(p_win, "SOIL T 30cm:%s", buff);
+
+    // SOIL TEMPERATURE 50cm
+    strcpy(buff, "ERROR");
+    if (p_aws->mSoilTemp50cm.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_TEMP(p_aws->mSoilTemp50cm.sReal));
+    }
+    screen_page_printf(p_win, "SOIL T 50cm:%s", buff);
+
+    // SOIL TEMPERATURE 1m
+    strcpy(buff, "ERROR");
+    if (p_aws->mSoilTemp1_0m.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_TEMP(p_aws->mSoilTemp1_0m.sReal));
+    }
+    screen_page_printf(p_win, "SOIL T   1m:%s", buff);
+
+    // SOIL TEMPERATURE 1.5m
+    strcpy(buff, "ERROR");
+    if (p_aws->mSoilTemp1_5m.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_TEMP(p_aws->mSoilTemp1_5m.sReal));
+    }
+    screen_page_printf(p_win, "SOIL T 1.5m:%s", buff);
+
+    // SOIL TEMPERATURE 3.0m
+    strcpy(buff, "ERROR");
+    if (p_aws->mSoilTemp3_0m.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_TEMP(p_aws->mSoilTemp3_0m.sReal));
+    }
+    screen_page_printf(p_win, "SOIL T 3.0m:%s", buff);
+
+    // SOIL TEMPERATURE 5.0m
+    strcpy(buff, "ERROR");
+    if (p_aws->mSoilTemp5_0m.sReal != AWS_SEN_ERR)
+    {
+      snprintf(buff, sizeof(buff), "%6.1f", READ_TEMP(p_aws->mSoilTemp5_0m.sReal));
+    }
+    screen_page_printf(p_win, "SOIL T 5.0m:%s", buff);
+
+    // SOLAR VOLTAGE - 이 값들은 에러 체크 대상이 아닐 수 있음
+    screen_page_printf(p_win, "SOLAR Volt :%6.2f", (float)p_aws->solar_m_voltage / 1000.0);
+    screen_page_printf(p_win, "BATT Volt  :%6.2f", (float)p_aws->battery_m_voltage / 1000.0);
   }
   else
   {
@@ -296,7 +467,6 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
   }
   screen_page_clear(p_win);
 }
-
 
   int32_t menu_data_aws(void)
   {

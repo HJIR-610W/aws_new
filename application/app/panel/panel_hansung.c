@@ -31,7 +31,7 @@ void send_panel_hansung(int32_t panel_port_num)
   kma_data_ex_t *p_kma;
 
 
-  p_kma =get_kma_data(eAWS_DATA_REAL);
+  p_kma =acquire_kma_data(eAWS_DATA_REAL);
 
 	framemk[cnt++] 		= 'Q';																	//Start Code 'Q'
 	framemk[cnt++] 		= 0x01;																	// ID
