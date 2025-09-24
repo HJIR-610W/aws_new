@@ -239,7 +239,7 @@ int32_t hj_smartcharger_init(void)
   uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
-  charger_inst.uart_num = BSP_RS485_B;
+  charger_inst.uart_num = BSP_RS485_D;
   bsp_rs485_init(charger_inst.uart_num, &uart_config);
 
   charger_inst.opened = true;

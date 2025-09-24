@@ -8,7 +8,7 @@
 #include "drv_rs232.h"
 #include "config_app.h"
 
-int32_t g_panel_uart = DRV_UART_4_EXT_C;
+int32_t g_panel_uart = DRV_UART_5_EXT_D;
 
 void panel_init(void)
 {

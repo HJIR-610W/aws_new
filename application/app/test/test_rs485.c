@@ -18,7 +18,7 @@ void test_rs485(void)
   char rx_buff[50];
   int baud = 57600;
   const char *rs485_port_name[RS485_PORT_MAX] = {"A", "B", "C", "D"};
-  int32_t port_list[RS485_PORT_MAX] = {BSP_RS485_A, BSP_RS485_B, BSP_RS485_RS232_C, BSP_RS485_RS232_D};
+  int32_t port_list[RS485_PORT_MAX] = {BSP_RS485_C, BSP_RS485_D, BSP_RS485_RS232_A, BSP_RS485_RS232_B};
 
   io_printf("RS485 포트별 테스트\r\n");
   io_printf("주의: RS485 C,D는 하드웨어점퍼 설정 필요\r\n");

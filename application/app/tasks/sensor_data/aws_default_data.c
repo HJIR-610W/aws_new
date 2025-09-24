@@ -106,12 +106,12 @@ data_min_max_t g_10min_min_max[eAVG_MAX];
 data_min_max_t g_hour_min_max[eAVG_MAX];
 data_min_max_t g_day_min_max[eAVG_MAX];
 
-int32_t calculate_data_avg(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer, int32_t sample)
+int32_t calculate_data_avg(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer, int16_t sample)
 {
   uint16_t count = p_avg_buffer[type].count;
   float average = p_avg_buffer[type].average;
 
-  if(sample==9999)//에러값은 평균에 포함하지 않는다.
+  if(sample==-9999)//에러값은 평균에 포함하지 않는다.
   {
     return (int32_t)average;
   }

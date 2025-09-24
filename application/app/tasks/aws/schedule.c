@@ -411,7 +411,7 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->solar_m_voltage = (uint16_t)(System.charger_solar1_voltage*1000);
   pAws->battery_m_voltage = (uint16_t)(System.charger_battery1_voltage*1000);
 
-//  check_sensor_error(pAws);
+  check_sensor_error(pAws);
   uint16_t crc = crc16_ccitt_table((uint8_t *)pAws, 254); // crc 변수 제외한
   pAws->crc = crc;
   os_save_aws_data(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);
@@ -1050,10 +1050,13 @@ void save_min_data(DATE_TIME_BUF *p_time)
 
 }
 
+extern uint8_t get_sensor_err(eSENSOR_TYPE_t sensor);
+
 void update_kma_data(eAWS_DATA_MIN_t min,DATE_TIME_BUF *p_time)
 {
   kma_data_ex_t *p_kma_data;
   AWS_DATA_STRUCT *pAws;
+  uint8_t error;
 
   switch(min)
   {
@@ -1077,92 +1080,292 @@ void update_kma_data(eAWS_DATA_MIN_t min,DATE_TIME_BUF *p_time)
   p_kma_data = acquire_kma_data((eAWS_DATA_MIN_t)min);
 
   // 온도
-  p_kma_data->temperature.data = pAws->mTemperature.sReal;
-  p_kma_data->temperature.max = pAws->mTemperature.sMax;
-  p_kma_data->temperature.min = pAws->mTemperature.sMin;
+  error = get_sensor_err(A1_TEMPERATURE);
+  if(error)
+  {
+    p_kma_data->temperature.err = error;
+    p_kma_data->temperature.data = AWS_SEN_ERR;
+    p_kma_data->temperature.max = AWS_SEN_ERR;
+    p_kma_data->temperature.min = AWS_SEN_ERR;
+  }
+  else
+  {
+    p_kma_data->temperature.err = 0;
+    p_kma_data->temperature.data = pAws->mTemperature.sReal;
+    p_kma_data->temperature.max = pAws->mTemperature.sMax;
+    p_kma_data->temperature.min = pAws->mTemperature.sMin;
+  }
+
 
   // 기압
-  p_kma_data->pressure.max = pAws->mBarometric.sMax;
-  p_kma_data->pressure.min = pAws->mBarometric.sMin;
-  p_kma_data->pressure.data = pAws->mBarometric.sReal;
+  error = get_sensor_err(A7_PRESSURE);
+  if(error)
+  {
+    p_kma_data->pressure.err = error;
+    p_kma_data->pressure.max = AWS_SEN_ERR;
+    p_kma_data->pressure.min = AWS_SEN_ERR;
+    p_kma_data->pressure.data = AWS_SEN_ERR;
+  }
+  else
+  {
+    p_kma_data->pressure.err = 0;
+    p_kma_data->pressure.max = pAws->mBarometric.sMax;
+    p_kma_data->pressure.min = pAws->mBarometric.sMin;
+    p_kma_data->pressure.data = pAws->mBarometric.sReal;
+  }
+
 
   // 습도
-  p_kma_data->relative_humidity.data = pAws->mHumidity.sReal;
-  p_kma_data->relative_humidity.max = pAws->mHumidity.sMin;
-  p_kma_data->relative_humidity.min = pAws->mHumidity.sMin;
-
-  // 풍향
-  p_kma_data->wind_direction_avg.data = pAws->mWind.mDirection.sReal;
-  p_kma_data->wind_direction_avg.max = pAws->mWind.mDirection.sMax;
-  p_kma_data->wind_direction_instant.data = pAws->mWind.mDirection.sMax;
-
-  // 풍속
-  p_kma_data->wind_speed_avg.data = pAws->mWind.mSpeed.sReal;
-  p_kma_data->wind_speed_avg.max = pAws->mWind.mSpeed.sMax;
-  p_kma_data->wind_speed_instant.data = pAws->mWind.mSpeed.sMax;
-
-
-  // 일조
-  p_kma_data->sunshine_duration.data = g_sunshine.today;
-
-  // 일사 // mSolarRad.sReal kw/m2 단위인데 전송시에는 mj/m2 *100 한값이 전송되어야함
-  // 따라서 여기서 10으로 한번더 나누어 준다 .즉 data는 최종 전송되는 데이터 포맷이다.
-  //에너지(J) = 전력(W)*시간(s)
-  p_kma_data->solar_radiation.data = g_solar_radiation.sunshine_r_1min/ 10000;
-  p_kma_data->solar_radiation.day_accu = pAws->mSolarRad.sMax; // 일간
-
-  // 지중 온도
-  p_kma_data->soil_temperature_5cm.data = pAws->mSoilTemp5cm.sReal;
-  p_kma_data->soil_temperature_5cm.max = pAws->mSoilTemp5cm.sMax;
-  p_kma_data->soil_temperature_5cm.min = pAws->mSoilTemp5cm.sMin;
-
-  p_kma_data->soil_temperature_10cm.data = pAws->mSoilTemp10cm.sReal;
-  p_kma_data->soil_temperature_10cm.max = pAws->mSoilTemp10cm.sMax;
-  p_kma_data->soil_temperature_10cm.min = pAws->mSoilTemp10cm.sMin;
-
-  p_kma_data->soil_temperature_20cm.data = pAws->mSoilTemp20cm.sReal;
-  p_kma_data->soil_temperature_20cm.max = pAws->mSoilTemp20cm.sMax;
-  p_kma_data->soil_temperature_20cm.min = pAws->mSoilTemp20cm.sMin;
-
-  p_kma_data->soil_temperature_30cm.data = pAws->mSoilTemp30cm.sReal;
-  p_kma_data->soil_temperature_30cm.max = pAws->mSoilTemp30cm.sMax;
-  p_kma_data->soil_temperature_30cm.min = pAws->mSoilTemp30cm.sMin;
-
-  p_kma_data->soil_temperature_50cm.data = pAws->mSoilTemp50cm.sReal;
-  p_kma_data->soil_temperature_50cm.max = pAws->mSoilTemp50cm.sMax;
-  p_kma_data->soil_temperature_50cm.min = pAws->mSoilTemp50cm.sMin;
-
-  p_kma_data->soil_temperature_1m.data = pAws->mSoilTemp1_0m.sReal;
-  p_kma_data->soil_temperature_1m.max = pAws->mSoilTemp1_0m.sMax;
-  p_kma_data->soil_temperature_1m.min = pAws->mSoilTemp1_0m.sMin;
-
-  p_kma_data->soil_temperature_1_5m.data = pAws->mSoilTemp1_5m.sReal;
-  p_kma_data->soil_temperature_1_5m.max = pAws->mSoilTemp1_5m.sMax;
-  p_kma_data->soil_temperature_1_5m.min = pAws->mSoilTemp1_5m.sMin;
-
-
-  p_kma_data->precipitation.data  = pAws->mRainFall.sReal;
-  p_kma_data->precipitation.hour  = pAws->mRainFall.sHourRain;    // 시간당 강수량량
-  p_kma_data->precipitation.month = pAws->mRainFall.sMonthRain;  // 월간 강수량
-  p_kma_data->precipitation.year  = pAws->mRainFall.sYearRain;  // 연간 강수량
-
-  p_kma_data->precipitation_presence.data = pAws->mRainDetect.sReal;  // 우량 감지
-
-  p_kma_data->snowfall.data = pAws->mSnowFall.sReal;
-
-  kma_data_ex_t *p_kma_avg = acquire_kma_data(eAWS_DATA_REAL);
-
-  for(int i = 0 ; i < 8 ;i++)
+  error = get_sensor_err(A10_RELATIVE_HUMIDITY);
+  if (error)
   {
-    p_kma_data->X_sensorStatus[i] = p_kma_avg->X_sensorStatus[i];
+    p_kma_data->relative_humidity.err = error;
+    p_kma_data->relative_humidity.data = AWS_SEN_ERR;
+    p_kma_data->relative_humidity.max = AWS_SEN_ERR;
+    p_kma_data->relative_humidity.min = AWS_SEN_ERR;
   }
-  p_kma_data->Y_volateStatus = p_kma_avg->Y_volateStatus;
-
-  p_kma_data->updated = true;
-
-  p_kma_data->time = Date_Time;
-  if(min == eAWS_DATA_1MIN)
+  else
   {
-    send_kma_data(eKMA_DATA_Q_1MIN, p_kma_data); // 실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
+    p_kma_data->relative_humidity.err = 0;
+    p_kma_data->relative_humidity.data = pAws->mHumidity.sReal;
+    p_kma_data->relative_humidity.max = pAws->mHumidity.sMin;
+    p_kma_data->relative_humidity.min = pAws->mHumidity.sMin;
   }
-}
+
+
+    // 풍향
+  error = get_sensor_err(A2_WIND_DIRECTION);
+  if (error)
+  {
+    p_kma_data->wind_direction_avg.err = error;
+    p_kma_data->wind_direction_avg.data = AWS_SEN_ERR;
+    p_kma_data->wind_direction_avg.max = AWS_SEN_ERR;
+    p_kma_data->wind_direction_instant.data = AWS_SEN_ERR;
+  }
+  else
+  {
+    p_kma_data->wind_direction_avg.err = 0;
+    p_kma_data->wind_direction_avg.data = pAws->mWind.mDirection.sReal;
+    p_kma_data->wind_direction_avg.max = pAws->mWind.mDirection.sMax;
+    p_kma_data->wind_direction_instant.data = pAws->mWind.mDirection.sMax;
+  }
+
+
+    // 풍속
+  error = get_sensor_err(A3_WIND_SPEED);
+  if (error)
+  {
+    p_kma_data->wind_speed_avg.err = error;
+    p_kma_data->wind_speed_avg.data = AWS_SEN_ERR;
+    p_kma_data->wind_speed_avg.max = AWS_SEN_ERR;
+    p_kma_data->wind_speed_instant.data = AWS_SEN_ERR;
+  }
+  else
+  {
+    p_kma_data->wind_speed_avg.err = 0;
+    p_kma_data->wind_speed_avg.data = pAws->mWind.mSpeed.sReal;
+    p_kma_data->wind_speed_avg.max = pAws->mWind.mSpeed.sMax;
+    p_kma_data->wind_speed_instant.data = pAws->mWind.mSpeed.sMax;
+  }
+
+
+    // 일조
+    p_kma_data->sunshine_duration.err = 0;
+    p_kma_data->sunshine_duration.data = g_sunshine.today;
+
+
+
+    // 일사 // mSolarRad.sReal kw/m2 단위인데 전송시에는 mj/m2 *100 한값이 전송되어야함
+    // 따라서 여기서 10으로 한번더 나누어 준다 .즉 data는 최종 전송되는 데이터 포맷이다.
+    // 에너지(J) = 전력(W)*시간(s)
+    p_kma_data->solar_radiation.data = g_solar_radiation.sunshine_r_1min / 10000;
+    p_kma_data->solar_radiation.day_accu = pAws->mSolarRad.sMax; // 일간
+
+    // 지중 온도 5cm
+    error = get_sensor_err(B5_SOIL_TEMPERATURE_5CM);
+    if (error)
+    {
+      p_kma_data->soil_temperature_5cm.err = error;
+      p_kma_data->soil_temperature_5cm.data = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_5cm.max = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_5cm.min = AWS_SEN_ERR;
+    }
+    else
+    {
+      p_kma_data->soil_temperature_5cm.err = 0;
+      p_kma_data->soil_temperature_5cm.data = pAws->mSoilTemp5cm.sReal;
+      p_kma_data->soil_temperature_5cm.max = pAws->mSoilTemp5cm.sMax;
+      p_kma_data->soil_temperature_5cm.min = pAws->mSoilTemp5cm.sMin;
+    }
+
+    // 지중 온도 10cm
+    error = get_sensor_err(B6_SOIL_TEMPERATURE_10CM);
+    if (error)
+    {
+      p_kma_data->soil_temperature_10cm.err = error;
+      p_kma_data->soil_temperature_10cm.data = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_10cm.max = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_10cm.min = AWS_SEN_ERR;
+    }
+    else
+    {
+      p_kma_data->soil_temperature_10cm.err = 0;
+      p_kma_data->soil_temperature_10cm.data = pAws->mSoilTemp10cm.sReal;
+      p_kma_data->soil_temperature_10cm.max = pAws->mSoilTemp10cm.sMax;
+      p_kma_data->soil_temperature_10cm.min = pAws->mSoilTemp10cm.sMin;
+    }
+
+    // 지중 온도 20cm
+    error = get_sensor_err(B7_SOIL_TEMPERATURE_20CM);
+    if (error)
+    {
+      p_kma_data->soil_temperature_20cm.err = error;
+      p_kma_data->soil_temperature_20cm.data = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_20cm.max = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_20cm.min = AWS_SEN_ERR;
+    }
+    else
+    {
+      p_kma_data->soil_temperature_20cm.err = 0;
+      p_kma_data->soil_temperature_20cm.data = pAws->mSoilTemp20cm.sReal;
+      p_kma_data->soil_temperature_20cm.max = pAws->mSoilTemp20cm.sMax;
+      p_kma_data->soil_temperature_20cm.min = pAws->mSoilTemp20cm.sMin;
+    }
+
+    // 지중 온도 30cm
+    error = get_sensor_err(B8_SOIL_TEMPERATURE_30CM);
+    if (error)
+    {
+      p_kma_data->soil_temperature_30cm.err = error;
+      p_kma_data->soil_temperature_30cm.data = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_30cm.max = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_30cm.min = AWS_SEN_ERR;
+    }
+    else
+    {
+      p_kma_data->soil_temperature_30cm.err = 0;
+      p_kma_data->soil_temperature_30cm.data = pAws->mSoilTemp30cm.sReal;
+      p_kma_data->soil_temperature_30cm.max = pAws->mSoilTemp30cm.sMax;
+      p_kma_data->soil_temperature_30cm.min = pAws->mSoilTemp30cm.sMin;
+    }
+
+    // 지중 온도 50cm
+    error = get_sensor_err(B9_SOIL_TEMPERATURE_50CM);
+    if (error)
+    {
+      p_kma_data->soil_temperature_50cm.err = error;
+      p_kma_data->soil_temperature_50cm.data = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_50cm.max = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_50cm.min = AWS_SEN_ERR;
+    }
+    else
+    {
+      p_kma_data->soil_temperature_50cm.err = 0;
+      p_kma_data->soil_temperature_50cm.data = pAws->mSoilTemp50cm.sReal;
+      p_kma_data->soil_temperature_50cm.max = pAws->mSoilTemp50cm.sMax;
+      p_kma_data->soil_temperature_50cm.min = pAws->mSoilTemp50cm.sMin;
+    }
+
+    // 지중 온도 1m
+    error = get_sensor_err(B10_SOIL_TEMPERATURE_100CM);
+    if (error)
+    {
+      p_kma_data->soil_temperature_1m.err = error;
+      p_kma_data->soil_temperature_1m.data = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_1m.max = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_1m.min = AWS_SEN_ERR;
+    }
+    else
+    {
+      p_kma_data->soil_temperature_1m.err = 0;
+      p_kma_data->soil_temperature_1m.data = pAws->mSoilTemp1_0m.sReal;
+      p_kma_data->soil_temperature_1m.max = pAws->mSoilTemp1_0m.sMax;
+      p_kma_data->soil_temperature_1m.min = pAws->mSoilTemp1_0m.sMin;
+    }
+
+    // 지중 온도 1.5m
+    error = get_sensor_err(B11_SOIL_TEMPERATURE_150CM);
+    if (error)
+    {
+      p_kma_data->soil_temperature_1_5m.err = error;
+      p_kma_data->soil_temperature_1_5m.data = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_1_5m.max = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_1_5m.min = AWS_SEN_ERR;
+    }
+    else
+    {
+      p_kma_data->soil_temperature_1_5m.err = 0;
+      p_kma_data->soil_temperature_1_5m.data = pAws->mSoilTemp1_5m.sReal;
+      p_kma_data->soil_temperature_1_5m.max = pAws->mSoilTemp1_5m.sMax;
+      p_kma_data->soil_temperature_1_5m.min = pAws->mSoilTemp1_5m.sMin;
+    }
+
+    // 지중 온도 3m
+    error = get_sensor_err(B12_SOIL_TEMPERATURE_300CM);
+    if (error)
+    {
+      p_kma_data->soil_temperature_3m.err = error;
+      p_kma_data->soil_temperature_3m.data = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_3m.max = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_3m.min = AWS_SEN_ERR;
+    }
+    else
+    {
+      p_kma_data->soil_temperature_3m.err = 0;
+      p_kma_data->soil_temperature_3m.data = pAws->mSoilTemp1_5m.sReal;
+      p_kma_data->soil_temperature_3m.max = pAws->mSoilTemp1_5m.sMax;
+      p_kma_data->soil_temperature_3m.min = pAws->mSoilTemp1_5m.sMin;
+    }
+
+    // 지중 온도 5m
+    error = get_sensor_err(B13_SOIL_TEMPERATURE_500CM);
+    if (error)
+    {
+      p_kma_data->soil_temperature_5m.err = error;
+      p_kma_data->soil_temperature_5m.data = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_5m.max = AWS_SEN_ERR;
+      p_kma_data->soil_temperature_5m.min = AWS_SEN_ERR;
+    }
+    else
+    {
+      p_kma_data->soil_temperature_5m.err = 0;
+      p_kma_data->soil_temperature_5m.data = pAws->mSoilTemp1_5m.sReal;
+      p_kma_data->soil_temperature_5m.max = pAws->mSoilTemp1_5m.sMax;
+      p_kma_data->soil_temperature_5m.min = pAws->mSoilTemp1_5m.sMin;
+    }
+
+    p_kma_data->precipitation.data = pAws->mRainFall.sReal;
+    p_kma_data->precipitation.hour = pAws->mRainFall.sHourRain;   // 시간당 강수량량
+    p_kma_data->precipitation.month = pAws->mRainFall.sMonthRain; // 월간 강수량
+    p_kma_data->precipitation.year = pAws->mRainFall.sYearRain;   // 연간 강수량
+
+    p_kma_data->precipitation_presence.data = pAws->mRainDetect.sReal; // 우량 감지
+
+    error = get_sensor_err(A9_SNOW_DEPTH);
+    if (error)
+    {
+      p_kma_data->snowfall.err =error;
+      p_kma_data->snowfall.data = AWS_SEN_ERR;
+    }
+    else
+    {
+      p_kma_data->snowfall.data = pAws->mSnowFall.sReal;
+    }
+ 
+
+      kma_data_ex_t *p_kma_avg = acquire_kma_data(eAWS_DATA_REAL);
+
+      for (int i = 0; i < 8; i++)
+      {
+        p_kma_data->X_sensorStatus[i] = p_kma_avg->X_sensorStatus[i];
+      }
+      p_kma_data->Y_volateStatus = p_kma_avg->Y_volateStatus;
+
+      p_kma_data->updated = true;
+
+      p_kma_data->time = Date_Time;
+      if (min == eAWS_DATA_1MIN)
+      {
+        send_kma_data(eKMA_DATA_Q_1MIN, p_kma_data); // 실시간값을 공유자원 충돌없이 AI요청시 처리하기위한 목적
+      }
+    }

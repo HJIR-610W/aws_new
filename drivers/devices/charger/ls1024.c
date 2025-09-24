@@ -37,7 +37,7 @@ int32_t ls1024_init(void)
 
   ls1024_inst.modbus.name="ls1024";
   ls1024_inst.modbus.modebus_type = eMODBUS_RS485;
-  ls1024_inst.modbus.port_num = BSP_RS485_B;
+  ls1024_inst.modbus.port_num = BSP_RS485_D;
   ls1024_inst.modbus.id = 1;
   bsp_rs485_init(ls1024_inst.modbus.port_num, &uart_config);
 

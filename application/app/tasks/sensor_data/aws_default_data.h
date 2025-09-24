@@ -38,7 +38,7 @@ typedef struct
 } data_min_max_t;
 
 int32_t read_data_average(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer);
-int32_t calculate_data_avg(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer, int32_t sample);
+int32_t calculate_data_avg(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer, int16_t sample);
 int32_t read_current_data_average(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer);
 void data_avg_init(eAVG_DATA_TYPE_t type, data_avg_t *p_avg_buffer);
 

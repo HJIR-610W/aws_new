@@ -48,13 +48,13 @@ void limit_hjwind(void)
 {
   if (g_config_sensor.hjwind_speed.rs485_port > eAPP_RS485_MAX)
   {
-    g_config_sensor.hjwind_speed.rs485_port = eAPP_RS485_A;
+    g_config_sensor.hjwind_speed.rs485_port = eAPP_RS485_C;
     g_config_sensor_dirty_flag = true;
   }
 
   if (g_config_sensor.hjwindDir.rs485_port > eAPP_RS485_MAX)
   {
-    g_config_sensor.hjwindDir.rs485_port = eAPP_RS485_A;
+    g_config_sensor.hjwindDir.rs485_port = eAPP_RS485_C;
     g_config_sensor_dirty_flag = true;
   }
 }

@@ -200,7 +200,7 @@ void check_config_app(void)
         case ePHYSICAL_RS485:
           if (p_hj_temp->rs485_port > eAPP_RS485_MAX)
           {
-            p_hj_temp->rs485_port = eAPP_RS485_A;
+            p_hj_temp->rs485_port = eAPP_RS485_C;
           g_config_app_change_count++;
           }
             break;
@@ -242,7 +242,7 @@ void check_config_app(void)
         case ePHYSICAL_RS485:
           if (p_hj_temp->rs485_port > eAPP_RS485_MAX)
           {
-            p_hj_temp->rs485_port = eAPP_RS485_A;
+            p_hj_temp->rs485_port = eAPP_RS485_C;
           g_config_app_change_count++;
           }
           break;

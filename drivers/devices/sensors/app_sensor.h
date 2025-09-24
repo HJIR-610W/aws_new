@@ -124,8 +124,8 @@ typedef enum sensor_list_e
   X(S_T_UNSUED, "미사용")                          \
   X(S_T_ADC, "ADC")                                \
   X(S_T_FREQ, "GENERAL_FREQ")                      \
-  X(S_T_RAIN_REED_05MM, "REED 0.5mm")              \
-  X(S_T_RAIN_REED_1MM, "REED 1mm")                 \
+  X(S_T_RAIN_REED_05MM, "PULSE 0.5mm")             \
+  X(S_T_RAIN_REED_1MM, "PULSE 1mm")                \
   X(S_T_RAIN_HALL_05MM, "화진 HALL 0.5mm")         \
   X(S_T_RAIN_HALL_1MM, "화진 HALL 1mm")            \
   X(S_T_SNOW_HJ, "화진 적설")                      \
@@ -143,8 +143,8 @@ typedef enum sensor_list_e
   X(S_T_UNSUED, "Not Used")                     \
   X(S_T_ADC, "ADC")                             \
   X(S_T_FREQ, "Freq")                           \
-  X(S_T_RAIN_REED_05MM, "Reed 0.5mm")           \
-  X(S_T_RAIN_REED_1MM, "Reed 1mm")              \
+  X(S_T_RAIN_REED_05MM, "PULSE 0.5mm")           \
+  X(S_T_RAIN_REED_1MM, "PULSE 1mm")              \
   X(S_T_RAIN_HALL_05MM, "HJ Hall 0.5mm")          \
   X(S_T_RAIN_HALL_1MM, "HJ Hall 1mm")           \
   X(S_T_SNOW_HJ, "HJ Snow")                     \

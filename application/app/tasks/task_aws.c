@@ -50,7 +50,7 @@ filter_data_t g_pre_data[SENSOR_LIST_MAX];
 
 
 
-#define AWS_DATA_ERR_VAL 9999
+#define AWS_DATA_ERR_VAL (int32_t)-9999
 
 measure_data_1s_t *g_p_raw = NULL;
 uint8_t g_kma_err[SENSOR_LIST_MAX];
@@ -101,7 +101,7 @@ uint16_t WindSpeedCalc(uint8_t *sensor_err)
   if(err)
   {
     *sensor_err = err;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   wind_speed = p_sensor[A3_WIND_SPEED].data.f;
@@ -114,7 +114,7 @@ uint16_t WindSpeedCalc(uint8_t *sensor_err)
     if (err)
     {
       *sensor_err = 1<<4;//값에러는 상위 니블로 표현
-      return AWS_DATA_ERR_VAL;
+      return (uint16_t)AWS_DATA_ERR_VAL;
     }
 
   }
@@ -127,7 +127,7 @@ uint16_t WindSpeedCalc(uint8_t *sensor_err)
     if (err)
     {
       *sensor_err = 2 << 4;  // 값에러는 상위 니블로 표현
-      return AWS_DATA_ERR_VAL;
+      return (uint16_t)AWS_DATA_ERR_VAL;
     }
   }
 
@@ -148,7 +148,7 @@ uint16_t  WindDirecCalc(uint8_t *sensor_err)
   if(err)
   { 
     *sensor_err = err;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   
@@ -159,7 +159,7 @@ uint16_t  WindDirecCalc(uint8_t *sensor_err)
   if(err)
   {
     *sensor_err = err<<4;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   wind_direction = validate_sensor_value_max(wind_direction, 359.99, WIND_DIRECTION_ACCURACY, &err);
@@ -167,7 +167,7 @@ uint16_t  WindDirecCalc(uint8_t *sensor_err)
   if (err)
   {
     *sensor_err = err<<4;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   return (uint16_t)(truncate_to_1_decimal(wind_direction) * 10);//이미 10배 된 값으로 처리 
@@ -186,7 +186,7 @@ uint16_t TempCalc(uint8_t *sensor_err)
    if (err)
    {
     *sensor_err = err;
-     return AWS_DATA_ERR_VAL;
+     return (uint16_t)AWS_DATA_ERR_VAL;
    }
 
    temperature = p_sensor[A1_TEMPERATURE].data.f;
@@ -196,7 +196,7 @@ uint16_t TempCalc(uint8_t *sensor_err)
    if (err)
    {
      *sensor_err = err<<4;
-     return AWS_DATA_ERR_VAL;
+     return (uint16_t)AWS_DATA_ERR_VAL;
    }
 
    temperature = validate_sensor_value_max(temperature, 60.0f, TEMPERATURE_ACCURACY, &err);
@@ -204,7 +204,7 @@ uint16_t TempCalc(uint8_t *sensor_err)
    if (err)
    {
      *sensor_err = err<<4;
-     return AWS_DATA_ERR_VAL;
+     return (uint16_t)AWS_DATA_ERR_VAL;
    }
 
 
@@ -238,7 +238,7 @@ uint16_t  BarometricCalc(uint8_t *sensor_err)
   if (err)
   {
     *sensor_err = err;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   pressure = p_sensor[A7_PRESSURE].data.f;
@@ -248,7 +248,7 @@ uint16_t  BarometricCalc(uint8_t *sensor_err)
   if (err)
   {
     *sensor_err = err<<4;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   pressure = validate_sensor_value_max(pressure, 1080.0f, PRESSURE_ACCURACY, &err);
@@ -256,7 +256,7 @@ uint16_t  BarometricCalc(uint8_t *sensor_err)
   if (err)
   {
     *sensor_err = err<<4;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   return (uint16_t)(truncate_to_1_decimal(pressure) * 10);  // AWS 데이터 형으로 변환 측정값 *10
@@ -279,7 +279,7 @@ uint16_t HumidityCalc(uint8_t *sensor_err)
    if (err)
   {
     *sensor_err = err;
-     return AWS_DATA_ERR_VAL;
+     return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   huminity = p_sensor[A10_RELATIVE_HUMIDITY].data.f;
@@ -289,7 +289,7 @@ uint16_t HumidityCalc(uint8_t *sensor_err)
   if(err)
   {
     *sensor_err = 1<<4;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   huminity = validate_sensor_value_max(huminity, 100.0f, HUMINITY_0_90_ACCURACY, &err);
@@ -297,7 +297,7 @@ uint16_t HumidityCalc(uint8_t *sensor_err)
   if(err)
   {
     *sensor_err = 2<<4;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   return (uint16_t)(truncate_to_1_decimal(huminity) * 10);  // AWS 데이터 형으로 변환 측정값 *10
@@ -353,7 +353,7 @@ uint16_t  SolarRadCalc(uint8_t *sensor_err)
   *sensor_err = p_sensor[B1_SOLAR_RADIATION].err;
   if (*sensor_err )
   {
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   return (uint16_t)(p_sensor[B1_SOLAR_RADIATION].data.f);
@@ -372,7 +372,7 @@ uint16_t SnowCalc(uint8_t *sensor_err)
   if(err)
   {
     *sensor_err = err;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   snow = p_sensor[A9_SNOW_DEPTH].data.i;
@@ -401,7 +401,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       if (err)
       {
         *sensor_err = err;
-        return AWS_DATA_ERR_VAL;
+        return (uint16_t)AWS_DATA_ERR_VAL;
       }
       temperature = p_sensor[B5_SOIL_TEMPERATURE_5CM].data.f;
 
@@ -411,7 +411,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       if(err)
       {
         *sensor_err = err;
-        return AWS_DATA_ERR_VAL;
+        return (uint16_t)AWS_DATA_ERR_VAL;
       }
       temperature = p_sensor[B6_SOIL_TEMPERATURE_10CM].data.f;
       break;
@@ -421,7 +421,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       if(err)
       {
         *sensor_err = err;
-        return AWS_DATA_ERR_VAL;
+        return (uint16_t)AWS_DATA_ERR_VAL;
       }
       temperature = p_sensor[B7_SOIL_TEMPERATURE_20CM].data.f;
       break;
@@ -430,7 +430,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       if(err)
       {
         *sensor_err = err;
-        return AWS_DATA_ERR_VAL;
+        return (uint16_t)AWS_DATA_ERR_VAL;
       }
       temperature = p_sensor[B8_SOIL_TEMPERATURE_30CM].data.f;
       break;
@@ -440,7 +440,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       if(err)
       {
         *sensor_err = err;
-        return AWS_DATA_ERR_VAL;
+        return (uint16_t)AWS_DATA_ERR_VAL;
       }
       temperature = p_sensor[B9_SOIL_TEMPERATURE_50CM].data.f;
       break;
@@ -450,7 +450,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       if(err)
       {
         *sensor_err = err;
-        return AWS_DATA_ERR_VAL;
+        return (uint16_t)AWS_DATA_ERR_VAL;
       }
       temperature = p_sensor[B10_SOIL_TEMPERATURE_100CM].data.f;
       break;
@@ -460,7 +460,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       if(err)
       {
         *sensor_err = err;
-        return AWS_DATA_ERR_VAL;
+        return (uint16_t)AWS_DATA_ERR_VAL;
       }
       temperature = p_sensor[B11_SOIL_TEMPERATURE_150CM].data.f;
       break;
@@ -470,7 +470,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       if (err)
       {
         *sensor_err = err;
-        return AWS_DATA_ERR_VAL;
+        return (uint16_t)AWS_DATA_ERR_VAL;
       }
       temperature = p_sensor[B12_SOIL_TEMPERATURE_300CM].data.f;
       break;
@@ -481,7 +481,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       if (err)
       {
         *sensor_err = err;
-        return AWS_DATA_ERR_VAL;
+        return (uint16_t)AWS_DATA_ERR_VAL;
       }
       temperature = p_sensor[B13_SOIL_TEMPERATURE_500CM].data.f;
       break;
@@ -495,7 +495,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
   if (err)
   {
     *sensor_err = err << 4;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   temperature = validate_sensor_value_max(temperature, 60.0f, TEMPERATURE_ACCURACY, &err);
@@ -503,7 +503,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
   if (err)
   {
     *sensor_err = err << 4;
-    return AWS_DATA_ERR_VAL;
+    return (uint16_t)AWS_DATA_ERR_VAL;
   }
 
   temperature = round_to_n_digits(temperature, 1);
@@ -607,92 +607,113 @@ void check_kma_sensor(kma_data_ex_t*p_kma)
 
   if (kma3_is_sensor_error(A1_TEMPERATURE, p_kma->X_sensorStatus))
   {
-   p_kma->temperature.data = AWS_SEN_ERR;
+    p_kma->temperature.err = get_sensor_err(A1_TEMPERATURE);
+    p_kma->temperature.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(A2_WIND_DIRECTION, p_kma->X_sensorStatus))
   {
+    p_kma->wind_direction_avg.err = get_sensor_err(A2_WIND_DIRECTION);
     p_kma->wind_direction_avg.data = AWS_SEN_ERR;
+
+    p_kma->wind_direction_instant.err = get_sensor_err(A2_WIND_DIRECTION);
     p_kma->wind_direction_instant.data = AWS_SEN_ERR;
   }
   if (kma3_is_sensor_error(A3_WIND_SPEED, p_kma->X_sensorStatus))
   {
+    p_kma->wind_speed_avg.err = get_sensor_err(A3_WIND_SPEED);
     p_kma->wind_speed_avg.data = AWS_SEN_ERR;
+    p_kma->wind_speed_instant.err = get_sensor_err(A3_WIND_SPEED);
     p_kma->wind_speed_instant.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(A7_PRESSURE, p_kma->X_sensorStatus))
   {
+    p_kma->pressure.err = get_sensor_err(A7_PRESSURE);
     p_kma->pressure.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(A9_SNOW_DEPTH, p_kma->X_sensorStatus))
   {
+    p_kma->snowfall.err = get_sensor_err(A9_SNOW_DEPTH);
     p_kma->snowfall.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(A10_RELATIVE_HUMIDITY, p_kma->X_sensorStatus))
   {
+    p_kma->relative_humidity.err = get_sensor_err(A10_RELATIVE_HUMIDITY);
     p_kma->relative_humidity.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B1_SOLAR_RADIATION, p_kma->X_sensorStatus))
   {
+    p_kma->solar_radiation.err = get_sensor_err(B1_SOLAR_RADIATION);
     p_kma->solar_radiation.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B3_GROUND_TEMPERATURE, p_kma->X_sensorStatus))
   {
+    p_kma->grass_temperature.err = get_sensor_err(B3_GROUND_TEMPERATURE);
     p_kma->grass_temperature.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B4_SURFACE_TEMPERATURE, p_kma->X_sensorStatus))
   {
+    p_kma->surface_temperature.err = get_sensor_err(B4_SURFACE_TEMPERATURE);
     p_kma->surface_temperature.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B5_SOIL_TEMPERATURE_5CM, p_kma->X_sensorStatus))
   {
+    p_kma->soil_temperature_5cm.err = get_sensor_err(B5_SOIL_TEMPERATURE_5CM);
     p_kma->soil_temperature_5cm.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B6_SOIL_TEMPERATURE_10CM, p_kma->X_sensorStatus))
   {
+    p_kma->soil_moisture_10cm.err = get_sensor_err(B6_SOIL_TEMPERATURE_10CM);
     p_kma->soil_moisture_10cm.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B7_SOIL_TEMPERATURE_20CM, p_kma->X_sensorStatus))
   {
+    p_kma->soil_moisture_20cm.err = get_sensor_err(B7_SOIL_TEMPERATURE_20CM);
     p_kma->soil_moisture_20cm.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B8_SOIL_TEMPERATURE_30CM, p_kma->X_sensorStatus))
   {
+    p_kma->soil_moisture_30cm.err = get_sensor_err(B8_SOIL_TEMPERATURE_30CM);
     p_kma->soil_moisture_30cm.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B9_SOIL_TEMPERATURE_50CM, p_kma->X_sensorStatus))
   {
+    p_kma->soil_moisture_50cm.err = get_sensor_err(B9_SOIL_TEMPERATURE_50CM);
     p_kma->soil_moisture_50cm.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B10_SOIL_TEMPERATURE_100CM, p_kma->X_sensorStatus))
   {
+    p_kma->soil_temperature_1m.err = get_sensor_err(B10_SOIL_TEMPERATURE_100CM);
     p_kma->soil_temperature_1m.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B11_SOIL_TEMPERATURE_150CM, p_kma->X_sensorStatus))
   {
+    p_kma->soil_temperature_1_5m.err = get_sensor_err(B11_SOIL_TEMPERATURE_150CM);
     p_kma->soil_temperature_1_5m.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B12_SOIL_TEMPERATURE_300CM, p_kma->X_sensorStatus))
   {
+    p_kma->soil_temperature_3m.err = get_sensor_err(B12_SOIL_TEMPERATURE_300CM);
     p_kma->soil_temperature_3m.data = AWS_SEN_ERR;
   }
 
   if (kma3_is_sensor_error(B13_SOIL_TEMPERATURE_500CM, p_kma->X_sensorStatus))
   {
+    p_kma->soil_temperature_5m.err = get_sensor_err(B13_SOIL_TEMPERATURE_500CM);
     p_kma->soil_temperature_5m.data = AWS_SEN_ERR;
   }
 }
@@ -714,18 +735,41 @@ void update_kma_real(void)
   p_kma3->temperature.min = mRealAws.mTemperature.sMin;//일갈 Min
 
   p_kma3->wind_direction_avg.err = get_sensor_err(A2_WIND_DIRECTION);
-  p_kma3->wind_direction_avg.data = mRealAws.mWind.mDirection.sReal;
-  p_kma3->wind_direction_avg.max = mRealAws.mWind.mDirection.sMax;
+  if (p_kma3->wind_direction_avg.err)
+  {
+    p_kma3->wind_direction_avg.data = (uint16_t)-9999;
+    p_kma3->wind_direction_avg.max = (uint16_t)-9999;
+    p_kma3->wind_direction_instant.data = (uint16_t)-9999;
+    p_kma3->wind_direction_instant.err = 0;
+  }
+  else
+  {
+    p_kma3->wind_direction_avg.data = mRealAws.mWind.mDirection.sReal;
+    p_kma3->wind_direction_avg.max = mRealAws.mWind.mDirection.sMax;
+    p_kma3->wind_direction_instant.data = mRealAws.mWind.mDirection.sMax;
+    p_kma3->wind_direction_instant.err = 0;
+  }
+
 
   p_kma3->wind_speed_avg.err = get_sensor_err(A3_WIND_SPEED);
-  p_kma3->wind_speed_avg.data = mRealAws.mWind.mSpeed.sReal;
-  p_kma3->wind_speed_avg.max = mRealAws.mWind.mSpeed.sMax;
+  if (p_kma3->wind_speed_avg.err)
+  {
+    p_kma3->wind_speed_avg.data =(uint16_t)-9999;
+    p_kma3->wind_speed_avg.max =(uint16_t)-9999;
+    p_kma3->wind_speed_instant.data = (uint16_t)-9999;
+    p_kma3->wind_speed_instant.err = 0;
+  }
+  else
+  {
+    p_kma3->wind_speed_avg.data = mRealAws.mWind.mSpeed.sReal;
+    p_kma3->wind_speed_avg.max = mRealAws.mWind.mSpeed.sMax;
+    p_kma3->wind_speed_instant.data = mRealAws.mWind.mSpeed.sMax;
+    p_kma3->wind_speed_instant.err = 0;
+  }
 
-  p_kma3->wind_speed_instant.data = mRealAws.mWind.mSpeed.sMax;
-  p_kma3->wind_speed_instant.err = 0;
 
-  p_kma3->wind_direction_instant.data = mRealAws.mWind.mDirection.sMax;
-  p_kma3->wind_direction_instant.err = 0;
+
+
 
 
   p_kma3->precipitation.err = get_sensor_err(A6_RAINFALL_DOT5_1MM);
@@ -1409,12 +1453,12 @@ void DUALPORT_TASK(void *arg)
 
       // 풍향
       data = WindDirecCalc(&sensor_err);
-      wind_direction = filter_data(A2_WIND_DIRECTION, data, sensor_err, &f_err);
+      wind_direction = (int16_t)filter_data(A2_WIND_DIRECTION, data, sensor_err, &f_err);
       update_sensor_err(A2_WIND_DIRECTION, f_err);
 
       // 풍속
       data = WindSpeedCalc(&sensor_err);
-      wind_speed = filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
+      wind_speed = (int16_t)filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
       update_sensor_err(A3_WIND_SPEED, f_err);
 
      /*

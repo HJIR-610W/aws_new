@@ -18,10 +18,10 @@ typedef struct rs
 
 rs485_instance_t rs485_instance[BSP_RS485_MAX] = {
 
-    [BSP_RS485_A] = {.uart_number = BSP_UART_6_RS485_A_ONLY, .dir_do_num = BSP_DO_DIR_RS485_A},
-    [BSP_RS485_B] = {.uart_number = BSP_UART_7_RS485_B_ONLY, .dir_do_num = BSP_DO_DIR_RS485_B},
-    [BSP_RS485_RS232_C] = {.uart_number = BSP_UART_2_EXT_A, .dir_do_num = BSP_DO_DIR_RS485_C},
-    [BSP_RS485_RS232_D] = {.uart_number = BSP_UART_3_EXT_B, .dir_do_num = BSP_DO_DIR_RS485_D},
+    [BSP_RS485_C] = {.uart_number = BSP_UART_6_RS485_A_ONLY, .dir_do_num = BSP_DO_DIR_RS485_A},
+    [BSP_RS485_D] = {.uart_number = BSP_UART_7_RS485_B_ONLY, .dir_do_num = BSP_DO_DIR_RS485_B},
+    [BSP_RS485_RS232_A] = {.uart_number = BSP_UART_2_EXT_A, .dir_do_num = BSP_DO_DIR_RS485_C},
+    [BSP_RS485_RS232_B] = {.uart_number = BSP_UART_3_EXT_B, .dir_do_num = BSP_DO_DIR_RS485_D},
 };
 
 int32_t bsp_rs485_init(int32_t num,void *opt)

@@ -6,9 +6,11 @@
 #include "driver_uart_def.h"
 #include "bsp_rs485.h"
 
-#define DRV_RS485_A       BSP_RS485_A
-#define DRV_RS485_RS232_C BSP_RS485_RS232_C // 이 포트는 하드웨어 점퍼를 RS485로 해야 한다.
-#define DRV_RS485_RS232_D BSP_RS485_RS232_D // 이 포트는 하드웨어 점퍼를 RS485로 해야 한다.
+
+#define DRV_RS485_RS232_A BSP_RS485_RS232_A // 이 포트는 하드웨어 점퍼를 RS485로 해야 한다.
+#define DRV_RS485_RS232_B BSP_RS485_RS232_B // 이 포트는 하드웨어 점퍼를 RS485로 해야 한다.
+#define DRV_RS485_C BSP_RS485_C
+
 
 int32_t drv_rs485_init(int32_t num,void *opt);
 int32_t drv_rs485_send(int num, uint8_t *pData, uint16_t dataLen);

@@ -424,8 +424,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->temperature.err;
     if (err)
     {
+      data = p_kma->temperature.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "TEMP", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "TEMP", (int16_t)data, err_buf);
     }
     else
     {
@@ -448,8 +449,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->wind_direction_avg.err;
     if (err)
     {
+      data = p_kma->wind_direction_avg.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "WIND D", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "WIND D", (int16_t)data, err_buf);
     }
     else
     {
@@ -473,8 +475,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->wind_speed_avg.err;
     if (err)
     {
+      data = p_kma->wind_speed_avg.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "WIND S", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "WIND S", (int16_t)data, err_buf);
     }
     else
     {
@@ -499,7 +502,8 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->wind_direction_avg.err;
     if (err)
     {
-      screen_page_printf(p_win, "%-*s:--", AWS_WD, "WIND GD");
+      data = p_kma->wind_direction_instant.data;
+      screen_page_printf(p_win, "%-*s:%04d E", AWS_WD, "WIND GD",(int16_t)data);
     }
     else
     {
@@ -515,7 +519,8 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->wind_speed_avg.err;
     if (err)
     {
-      screen_page_printf(p_win, "%-*s:--", AWS_WD, "WIND GS");
+      data = p_kma->wind_speed_instant.data;
+      screen_page_printf(p_win, "%-*s:%04d E", AWS_WD, "WIND GS",(int16_t)data);
     }
     else
     {
@@ -565,8 +570,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->pressure.err;
     if (err)
     {
+      data = p_kma->pressure.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "BARO", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "BARO", (int16_t)data, err_buf);
     }
     else 
     {
@@ -621,8 +627,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->snowfall.err;
     if (err)
     {
+      data = p_kma->snowfall.data;
+
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "SNOW", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "SNOW", (int16_t)data, err_buf);
     }
     else
     {
@@ -644,8 +652,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->relative_humidity.err;
     if (err)
     {
+      data = p_kma->relative_humidity.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "HUMI", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "HUMI", (int16_t)data, err_buf);
     }
     else
     {
@@ -670,8 +679,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->solar_radiation.err;
     if (err)
     {
+     data = p_kma->solar_radiation.data ;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "SOLAR R", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "SOLAR R", (int16_t)data, err_buf);
     }
     else
     {
@@ -741,8 +751,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->soil_temperature_5cm.err;
     if (err)
     {
+      data = p_kma->soil_temperature_5cm.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 5cm", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "ST 5cm",(int16_t)data, err_buf);
     }
     else
     {
@@ -768,8 +779,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->soil_temperature_10cm.err;
     if (err)
     {
+      data = p_kma->soil_temperature_10cm.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 10cm", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "ST 10cm", (int16_t)data, err_buf);
     }
     else
     {
@@ -794,8 +806,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->soil_temperature_20cm.err;
     if (err)
     {
+      data = p_kma->soil_temperature_20cm.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 20cm", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "ST 20cm", (int16_t)data, err_buf);
     }
     else
     {
@@ -820,8 +833,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->soil_temperature_30cm.err;
     if (err)
     {
+      data = p_kma->soil_temperature_30cm.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 30cm", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "ST 30cm", (int16_t)data, err_buf);
     }
     else
     {
@@ -845,8 +859,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->soil_temperature_50cm.err;
     if (err)
     {
+      data = p_kma->soil_temperature_50cm.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 50cm", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "ST 50cm", (int16_t)data, err_buf);
     }
     else
     {
@@ -872,8 +887,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->soil_temperature_1m.err;
     if (err)
     {
+      data = p_kma->soil_temperature_1m.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 1m", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "ST 1m", (int16_t)data, err_buf);
     }
     else
     {
@@ -898,8 +914,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->soil_temperature_1_5m.err;
     if (err)
     {
+      data = p_kma->soil_temperature_1_5m.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 1.5m", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "ST 1.5m", (int16_t)data, err_buf);
     }
     else
     {
@@ -924,8 +941,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->soil_temperature_3m.err;
     if (err)
     {
+      data = p_kma->soil_temperature_3m.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 3m", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "ST 3m", (int16_t)data, err_buf);
     }
     else
     {
@@ -950,8 +968,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->soil_temperature_5m.err;
     if (err)
     {
+      data = p_kma->soil_temperature_5m.data;
       make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%s", AWS_WD, "ST 5m", err_buf);
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "ST 5m", (int16_t)data, err_buf);
     }
     else
     {

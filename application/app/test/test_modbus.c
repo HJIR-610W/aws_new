@@ -122,7 +122,7 @@ void test_modbus_task(void)
   int baud = 57600;
   int parity = PARITY_NONE;
   const char *rs485_port_name[RS485_PORT_MAX] = {"A", "B", "C", "D"};
-  int32_t rs485_port_list[RS485_PORT_MAX] = {BSP_RS485_A, BSP_RS485_B, BSP_RS485_RS232_C, BSP_RS485_RS232_D};
+  int32_t rs485_port_list[RS485_PORT_MAX] = {BSP_RS485_C, BSP_RS485_D, BSP_RS485_RS232_A, BSP_RS485_RS232_B};
   const char *rs232_port_name[4] = {"A", "B", "C", "D"};
   int32_t rs232_port_list[4] = {DRV_UART_2_EXT_A, DRV_UART_3_EXT_B, DRV_UART_4_EXT_C, DRV_UART_5_EXT_D};
   const char *parity_name[] = {"NONE", "ODD", "EVEN"};
