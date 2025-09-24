@@ -1169,7 +1169,7 @@ uint16_t filter_data(eSENSOR_TYPE_t sensor_index,uint16_t data, uint8_t error,ui
       delay = 0;
       ret_data = data;//현재값을 실제 값으로 처리
       g_pre_data[sensor_index].data = ret_data;
-      g_pre_data[sensor_index].err = 1;
+      g_pre_data[sensor_index].err = error;
     }
     else
     {
