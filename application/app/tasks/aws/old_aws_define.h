@@ -39,6 +39,26 @@ typedef struct
   SENSOR_RX_BUF mSpeed;      // 풍속
 } SENSOR_WIND_BUF;
 
+// sReal(전압)
+#define DCFAIL_BIT 0x0001      // X0
+#define BATTERYFAIL_BIT 0x0002 // X1
+#define AC110V_BIT 0x0000      // X2 X3:AC 전압  --> 00(110V), 01(220V), 11(AC Off)
+#define AC220V_BIT 0x0004
+#define ACOFF_BIT 0x000C
+#define LOGGERDOOR_BIT 0x0010 // X4 로거잠금상태: 0(닫힘), 1(열림)
+// sMin
+#define WINDSPEEDFAIL_BIT 0x0001
+#define WINDDIRECFAIL_BIT 0x0002
+#define TEMPERATUREFAIL_BIT 0x0004
+#define RAINDETECTFAIL_BIT 0x0008
+#define RAINFALLFAIL_BIT 0x0010
+#define HUMIDITYFAIL_BIT 0x0020
+#define BAROMETRICFAIL_BIT 0x0040
+#define SNOW_FALL_FAIL_BIT 0x0080 // 프로토콜 문서에는 없지만 추가함
+#define FANFAIL_BIT 0x0080
+// sMax
+#define RAINFAIL_BIT 0x0001
+
 typedef struct
 {
   uint8_t cMonth;
@@ -48,7 +68,7 @@ typedef struct
 } LOG_DATE_BUF;
 
 typedef struct
-{  //
+{ 
   LOG_DATE_BUF mDate;
   SENSOR_WIND_BUF mWind;
   SENSOR_RIX_BUF mTemperature;   // 온도
@@ -70,7 +90,7 @@ typedef struct
   SENSOR_RIX_BUF mSoilTemp1_5m;  // 지중온도 1.5m
   SENSOR_RIX_BUF mSoilTemp3_0m;  // 지중온도 3.0m
   SENSOR_RIX_BUF mSoilTemp5_0m;  // 지중온도 5.0m
-  SENSOR_RIX_BUF mSpare01;       //
+  SENSOR_RIX_BUF mSpare01;      
   SENSOR_RIX_BUF mSpare02;
   SENSOR_RIX_BUF mSpare03;
   SENSOR_RIX_BUF mSpare04;
@@ -86,32 +106,89 @@ typedef struct
   SENSOR_RIX_BUF mSpare14;
   SENSOR_RIX_BUF mSpare15;
   SENSOR_RIX_BUF mStatus;
-// sReal(전압)
-#define DCFAIL_BIT 0x0001         //X0
-#define BATTERYFAIL_BIT 0x0002    //X1
-#define AC110V_BIT 0x0000         //X2 X3:AC 전압  --> 00(110V), 01(220V), 11(AC Off)
-#define AC220V_BIT 0x0004         
-#define ACOFF_BIT 0x000C
-#define LOGGERDOOR_BIT 0x0010     //X4 로거잠금상태: 0(닫힘), 1(열림)
-// sMin
-#define WINDSPEEDFAIL_BIT   0x0001
-#define WINDDIRECFAIL_BIT   0x0002
-#define TEMPERATUREFAIL_BIT 0x0004
-#define RAINDETECTFAIL_BIT  0x0008
-#define RAINFALLFAIL_BIT    0x0010
-#define HUMIDITYFAIL_BIT    0x0020
-#define BAROMETRICFAIL_BIT  0x0040
-#define SNOW_FALL_FAIL_BIT  0x0080 //프로토콜 문서에는 없지만 추가함 
-#define FANFAIL_BIT         0x0080
-// sMax
-#define RAINFAIL_BIT 0x0001
-
+  uint8_t spare[23];
   uint8_t kma3_sensor_status[8];
-  char cDataSpare[30];
+  uint8_t enabled[7];
   uint16_t rain_1min;
-  uint16_t reserved_0;
+  uint16_t year;
   uint16_t crc;
 } AWS_DATA_STRUCT;
+
+
+
+typedef struct asw_file_s
+{
+uint8_t  month;
+uint8_t day;
+uint8_t hour;
+uint8_t min;
+uint16_t wind_direction;
+uint16_t wind_direction_1min_max;
+uint16_t wind_speed;
+uint16_t wind_speed_1min_max;
+uint16_t temperature;
+uint16_t temperature_1min_min;
+uint16_t temperature_1min_max;
+uint16_t rainfall_today;
+uint16_t rainfall_monthly;
+uint16_t rainfall_hourly;
+uint16_t rainfall_yearly;
+uint16_t rain_detect;
+uint16_t baromater;
+uint16_t barometer_1min_min;
+uint16_t barometer_1min_max;
+uint16_t humidity_current;
+uint16_t humi_1min_min;
+uint16_t humi_1min_max;
+uint16_t solar_radiation_1min_accu;
+uint16_t solar_radiation_day_accu;
+uint16_t solar_duration_1min_accu;
+uint16_t solar_duration_day_accu;
+uint16_t snowfall;
+uint16_t surface_temp;
+uint16_t surface_temp_1min_min;
+uint16_t surface_temp_1min_max;
+uint16_t grass_temp_current;
+uint16_t grass_temp_1min_min;
+uint16_t grass_temp_1min_max;
+uint16_t soil_temp_5cm;
+uint16_t soil_temp_5cm_1min_min;
+uint16_t soil_temp_5cm_1min_max;
+uint16_t soil_temp_10cm;
+uint16_t soil_temp_10cm_1min_min;
+uint16_t soil_temp_10cm_1min_max;
+uint16_t soil_temp_20cm;
+uint16_t soil_temp_20cm_1min_min;
+uint16_t soil_temp_20cm_1min_max;
+uint16_t soil_temp_30cm;
+uint16_t soil_temp_30cm_1min_min;
+uint16_t soil_temp_30cm_1min_max;
+uint16_t soil_temp_50cm;
+uint16_t soil_temp_50cm_1min_min;
+uint16_t soil_temp_50cm_1min_max;
+uint16_t soil_temp_1m;
+uint16_t soil_temp_1m_1min_min;
+uint16_t soil_temp_1m_1min_max;
+uint16_t soil_temp_1_5m;
+uint16_t soil_temp_1_5m_1min_min;
+uint16_t soil_temp_1_5m_1min_max;
+uint16_t soil_temp_3m;
+uint16_t soil_temp_3m_1min_min;
+uint16_t soil_temp_3m_1min_max;
+uint16_t soil_temp_5m;
+uint16_t soil_temp_5m_1min_min;
+uint16_t soil_temp_5m_1min_max;
+uint16_t  reserved_data[45];
+uint16_t status[3];
+uint8_t spare[23];
+uint8_t sensor_status[8];
+uint8_t enabled[7];
+uint16_t rainfall_1min;
+uint16_t year;
+uint16_t crc16;
+}aws_file_t;
+
+
 
 typedef struct
 {

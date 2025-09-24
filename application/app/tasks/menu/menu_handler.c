@@ -1333,16 +1333,16 @@ void screen_page_start(screen_page_t *win)
 
 void screen_page_printf(screen_page_t *win, const char *format, ...)
 {
-  char s_format_buffer[LCD_COLS + 1]; // 정적 버퍼 크기는 필요에 따라 조정
+  char s_format_buffer[LCD_COLS + 1];
   int display_row;
-
   int i;
   int text_len;
   int page;
   int row_index;
-  va_list args;
   int view_rows = win->p_screen->font_rows;
-  int view_cols = win->p_screen->font_cols;
+  int view_cols = win->p_screen->font_cols;  
+  va_list args;
+
 
   row_index = win->total_items[win->current_page];
 
@@ -1353,7 +1353,7 @@ void screen_page_printf(screen_page_t *win, const char *format, ...)
     return;
   }
 
-  // 가변 인자를 문자열로 포맷팅
+
   va_start(args, format);
   vsnprintf_s(s_format_buffer, sizeof(s_format_buffer), format, args);
   va_end(args);
@@ -1364,9 +1364,7 @@ void screen_page_printf(screen_page_t *win, const char *format, ...)
   {
     display_row = row_index - win->scroll_offset[page];
 
-    // screen_set_cursor(display_row, 0);
-
-    screen_printf(display_row, 0, s_format_buffer);
+    screen_puts(display_row, 0, s_format_buffer);
 
     win->current_row++;
   }

@@ -423,7 +423,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->temperature.raw.f;
-        screen_page_printf(p_win, "%-*s:%6.2f C", AWS_WD, "TEMP", f_data);
+        screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "TEMP", f_data);
       }
       else
       {

@@ -16,16 +16,18 @@
 #include "sunshine_data.h"
 #include "util_crc16_ccitt.h"
 #include "FreeRTOS.h"
-
+#include "utile_data.h"
 
 #define DATA_RAIN_1MIN 0
 #define DATA_RAIN_INIT 1
+#define DATA_RAIN_EDIT 2
 
 void draw_data_rain(screen_menu_t *p_win)
 {
   screen_menu_start(p_win);
   screen_menu_printf(p_win, DATA_RAIN_1MIN, "1min data");
   screen_menu_printf(p_win, DATA_RAIN_INIT, "Reset To Zero");
+  screen_menu_printf(p_win, DATA_RAIN_EDIT, "Edit");
   screen_menu_clear(p_win);
 }
 
@@ -75,12 +77,12 @@ void fileEraseTask( void *arg)
 
 int32_t setup_data_erase(uint8_t file_type)
 {
+  static file_erase_t erase;
   int32_t status;
   int32_t choice = 0;
-  static file_erase_t erase;
-  uint32_t flags;
   int32_t count=0;
-  
+  uint32_t flags;
+
   status = input_active("Initialize all to 0?", &choice);
     
   if(status != MENU_OK)
@@ -90,11 +92,11 @@ int32_t setup_data_erase(uint8_t file_type)
   
   if( choice == 1)
   {
-  erase.task_handle = osThreadGetId();
-  erase.file_type = file_type;
-  osThreadFlagsClear(FILE_RET_OK | FILE_RET_FAIL);
-  osThreadNew(fileEraseTask, &erase, &kEraseTask_attributes);
-}
+    erase.task_handle = osThreadGetId();
+    erase.file_type = file_type;
+    osThreadFlagsClear(FILE_RET_OK | FILE_RET_FAIL);
+    osThreadNew(fileEraseTask, &erase, &kEraseTask_attributes);
+  }
 
 screen_clear();
 screen_printf(6, 0, " ");
@@ -140,24 +142,98 @@ else
   show_popup("Information", "Failed to complete");
 }
 
-
-  
- 
-
-
   return status;
 }
 
+int32_t edit_file(uint8_t file_type)
+{
+  int32_t year, month, day, hour, min;
+  int32_t end_year, end_month, end_day, end_hour, end_min;
+  int32_t status;
+  int32_t value=0;
+  int32_t ret;
+  string_fmt_t strfmt;
+  DATE_TIME_BUF start_time;
+  DATE_TIME_BUF end_time;
+  uint32_t start_stamp;
+  uint32_t end_stamp;
 
+  year = Date_Time.Year;
+  month = Date_Time.Month;
+  day = Date_Time.Day;
+  hour = Date_Time.Hour;
+  min = Date_Time.Min;
+
+  strfmt.fmt = "%04d-%02d-%02d %02d:%02d";
+  snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt,year, month, day, hour, min);
+  status = input_fmt(&strfmt, "Start Year-Month-Dday Hour:Min");
+  if (status != MENU_OK)
+    return status;
+
+  sscanf(strfmt.data, strfmt.fmt, &year,&month, &day, &hour, &min);
+
+  start_time.Year = year;
+  start_time.Month = month;
+  start_time.Day = day;
+  start_time.Hour = hour;
+  start_time.Min = min;
+  start_time.Sec = 0;
+
+  start_stamp = time_cvt_timestamp(&start_time);
+
+  end_year = Date_Time.Year;
+  end_month = Date_Time.Month;
+  end_day = Date_Time.Day;
+  end_hour = Date_Time.Hour;
+  end_min = Date_Time.Min;
+
+  strfmt.fmt = "%04d-%02d-%02d %02d:%02d";
+  snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, end_year, end_month, end_day, end_hour, end_min);
+  status = input_fmt(&strfmt, "End Year-Month-Dday Hour:Min");
+  if (status != MENU_OK)
+    return status;
+
+  sscanf(strfmt.data, strfmt.fmt, &end_year, &end_month, &end_day, &end_hour, &end_min);
+
+  end_time.Year = end_year;
+  end_time.Month = end_month;
+  end_time.Day = end_day;
+  end_time.Hour = end_hour;
+  end_time.Min = end_min;
+  end_time.Sec = 0;
+
+  end_stamp = time_cvt_timestamp(&end_time);
+
+  if(start_stamp>end_stamp)
+  {
+    show_popup("Warnning","Verify input data");
+    return MENU_OK;
+  }
+
+  status = input_decimal("Value",0,9999,&value);
+  if (status != MENU_OK)
+    return status;
+
+  if (file_type == FILE_RAIN)
+    ret = write_bulk_data_range(RAIN_1MIN_FILE_NAME, &start_time, &end_time, value);
+    else if(file_type == FILE_SUNSHINE)
+      ret = write_bulk_data_range(SUNSHINE_1MIN_FILE_NAME, &start_time, &end_time, value);
+
+  show_popup("Information", "Completed");
+  
+  return MENU_OK;
+}
 
 #define DATA_SUNSHINE_1MIN 0
 #define DATA_SUNSHINE_INIT 1
+#define DATA_SUNSHINE_EDIT 2
 
 void draw_data_sunshine(screen_menu_t *p_win)
 {
   screen_menu_start(p_win);
   screen_menu_printf(p_win, DATA_RAIN_1MIN, "1min data");
   screen_menu_printf(p_win, DATA_RAIN_INIT, "Reset To Zero");
+  screen_menu_printf(p_win, DATA_SUNSHINE_EDIT, "Edit");
   screen_menu_clear(p_win);
 }
 
@@ -453,6 +529,10 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
         case DATA_RAIN_INIT:
           status = setup_data_erase(FILE_RAIN);
           break;
+        case DATA_RAIN_EDIT:
+          status = edit_file(FILE_RAIN);
+           break;
+
         default:
           break;
         }
@@ -497,6 +577,9 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
         case DATA_SUNSHINE_INIT:
            status = setup_data_erase(FILE_SUNSHINE);
                break;
+        case DATA_SUNSHINE_EDIT:
+          status = edit_file(FILE_SUNSHINE);
+           break;
         default:
           break;
         }

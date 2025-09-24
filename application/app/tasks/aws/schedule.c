@@ -151,7 +151,7 @@ void SecProcess(void)
 #define MIN_LIMIT 10000
 #define MAX_LIMIT 0
 /*
-1분이 됬을때 처리 내용
+1분이 됐을 때 처리 내용
 온도, 습도, 기압 일조, 일사 10분 누적, 및 1분 최소 최고 처리
 일조 아루 총 누적에 처리
 강수량 1분
@@ -266,7 +266,6 @@ void MinProcess(DATE_TIME_BUF *pDate)
 
   pAws->mStatus = mRealAws.mStatus;
 
-  pAws->mStatus = mRealAws.mStatus;
   uint16_t crc = crc16_ccitt_table((uint8_t *)pAws,254);//crc 변수 제외한 
   pAws->crc = crc;
   os_save_aws_data(pDate, pAws, sizeof(AWS_DATA_STRUCT), LOGGING_AWS, 1);

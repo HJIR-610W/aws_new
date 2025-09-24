@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>2744119003</Checksum>
+        <Checksum>1745767039</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -79,26 +79,27 @@
         <Fmt0>DATE_TIME_BUF-Day	3	0</Fmt0>
         <Fmt1>DATE_TIME_BUF-Hour	3	0</Fmt1>
         <Fmt2>DATE_TIME_BUF-Min	3	0</Fmt2>
-        <Fmt3>DATE_TIME_BUF-Sec	3	0</Fmt3>
-        <Fmt4>RTC_TimeTypeDef-Hours	3	0</Fmt4>
-        <Fmt5>SDIO_TypeDef-ARG	4	0</Fmt5>
-        <Fmt6>SDIO_TypeDef-CLKCR	4	0</Fmt6>
-        <Fmt7>SDIO_TypeDef-CMD	4	0</Fmt7>
-        <Fmt8>SDIO_TypeDef-DCOUNT	4	0</Fmt8>
-        <Fmt9>SDIO_TypeDef-DCTRL	4	0</Fmt9>
-        <Fmt10>SDIO_TypeDef-DLEN	4	0</Fmt10>
-        <Fmt11>SDIO_TypeDef-DTIMER	4	0</Fmt11>
-        <Fmt12>SDIO_TypeDef-FIFO	4	0</Fmt12>
-        <Fmt13>SDIO_TypeDef-POWER	4	0</Fmt13>
-        <Fmt14>SDIO_TypeDef-RESP1	4	0</Fmt14>
-        <Fmt15>SDIO_TypeDef-RESP2	4	0</Fmt15>
-        <Fmt16>SDIO_TypeDef-RESP3	4	0</Fmt16>
-        <Fmt17>SDIO_TypeDef-RESP4	4	0</Fmt17>
-        <Fmt18>SDIO_TypeDef-RESPCMD	4	0</Fmt18>
-        <Fmt19>SDIO_TypeDef-STA	4	0</Fmt19>
-        <Fmt20>SD_HandleTypeDef-Instance	4	0</Fmt20>
-        <Fmt21>config_header_t-magicNum	4	0</Fmt21>
-        <Fmt22>int_sub_t-gpio_pin	4	0</Fmt22>
+        <Fmt3>DATE_TIME_BUF-Month	3	0</Fmt3>
+        <Fmt4>DATE_TIME_BUF-Sec	3	0</Fmt4>
+        <Fmt5>RTC_TimeTypeDef-Hours	3	0</Fmt5>
+        <Fmt6>SDIO_TypeDef-ARG	4	0</Fmt6>
+        <Fmt7>SDIO_TypeDef-CLKCR	4	0</Fmt7>
+        <Fmt8>SDIO_TypeDef-CMD	4	0</Fmt8>
+        <Fmt9>SDIO_TypeDef-DCOUNT	4	0</Fmt9>
+        <Fmt10>SDIO_TypeDef-DCTRL	4	0</Fmt10>
+        <Fmt11>SDIO_TypeDef-DLEN	4	0</Fmt11>
+        <Fmt12>SDIO_TypeDef-DTIMER	4	0</Fmt12>
+        <Fmt13>SDIO_TypeDef-FIFO	4	0</Fmt13>
+        <Fmt14>SDIO_TypeDef-POWER	4	0</Fmt14>
+        <Fmt15>SDIO_TypeDef-RESP1	4	0</Fmt15>
+        <Fmt16>SDIO_TypeDef-RESP2	4	0</Fmt16>
+        <Fmt17>SDIO_TypeDef-RESP3	4	0</Fmt17>
+        <Fmt18>SDIO_TypeDef-RESP4	4	0</Fmt18>
+        <Fmt19>SDIO_TypeDef-RESPCMD	4	0</Fmt19>
+        <Fmt20>SDIO_TypeDef-STA	4	0</Fmt20>
+        <Fmt21>SD_HandleTypeDef-Instance	4	0</Fmt21>
+        <Fmt22>config_header_t-magicNum	4	0</Fmt22>
+        <Fmt23>int_sub_t-gpio_pin	4	0</Fmt23>
     </struct_types>
     <array_types>
         <Fmt0>uint16_t[10]	4	0</Fmt0>
@@ -181,7 +182,8 @@
     <Breakpoints2>
         <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\cmsis_os2.c}.1026.5" 0 0 1 "" 0 "" 0</Bp0>
         <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\cmsis_os2.c}.1057.9" 0 0 1 "" 0 "" 0</Bp1>
-        <Count>2</Count>
+        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\main.c}.0.1" 0 0 1 "" 0 "" 0</Bp2>
+        <Count>3</Count>
     </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>

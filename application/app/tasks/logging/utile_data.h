@@ -25,9 +25,9 @@ int get_minute_index(int year, int month, int day, int hour, int min);
 uint32_t get_10min_accu(uint8_t type, const void *rain_minutes, int year, int month, int day,
   int hour, int min);
 
-int write_bulk_data_range(const char *name, const char *start_datetime, const char *end_datetime,
+int write_bulk_data_range(const char *name, DATE_TIME_BUF *start_time, DATE_TIME_BUF *end_datetime,
                           uint16_t value);
 
-    int read_bulk_data(const char *name, const DATE_TIME_BUF *start_time, uint32_t read_cnt,
-                       uint16_t *buffer);
+int read_bulk_data(const char *name, const DATE_TIME_BUF *start_time, uint32_t read_cnt,
+                   uint16_t *buffer);
 #endif

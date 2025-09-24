@@ -305,16 +305,17 @@ int32_t menu_manage_config_backup()
 
 int32_t menu_manage_sentor_edit()
 {
-
+  int year,month,day,hour,min,sec;
   int choice;
   int status;
    char *menu[] = {"우량 자료 편집",
                    "일조 자료 편집",
                    "우량 자료 확인",
                    "일조 자료 확인"};
+    DATE_TIME_BUF start_time;
+    DATE_TIME_BUF end_time;
 
-  char start_time[30];
-  char end_time[30];  // 2025-01-01 00:00:00
+
   int32_t value;
   const char *filename;
   int32_t ret;
@@ -331,14 +332,25 @@ int32_t menu_manage_sentor_edit()
       case 2:
         if(confirm_continue("해당년도 자료 모두 0으로 초기화 할까요?",&ok)==MENU_OK && ok ==1)
         {
+          start_time.Year = Date_Time.Year;
+          start_time.Month =1;
+          start_time.Day = 1;
+          start_time.Hour = 0;
+          start_time.Min  = 1;
+          start_time.Sec = 0;
 
-            
-          snprintf(start_time, sizeof(start_time), "%04d-01-01 00:01:00", Date_Time.Year);
-          snprintf(end_time, sizeof(end_time), "%04d-01-01 00:00:00", Date_Time.Year + 1);
+          end_time.Year = Date_Time.Year+1;
+          end_time.Month = 1;
+          end_time.Day = 1;
+          end_time.Hour = 0;
+          end_time.Min = 1;
+          end_time.Sec = 0;
+
+
           if (choice == 1)
           {
             filename = "RAIN_01.rcd";
-            ret = write_bulk_data_range(filename, start_time, end_time, value);
+            ret = write_bulk_data_range(filename, &start_time, &end_time, value);
             if (ret < 0)
             {
               io_printf("에러 발생 코드:%d\r\n", ret);
@@ -347,7 +359,7 @@ int32_t menu_manage_sentor_edit()
           else
           {
             filename = "SUNSHINE_01.rcd";
-            ret = write_bulk_data_range(filename, start_time, end_time, value);
+            ret = write_bulk_data_range(filename, &start_time, &end_time, value);
             if (ret < 0)
             {
               io_printf("에러 발생 코드:%d\r\n", ret);
@@ -360,10 +372,25 @@ int32_t menu_manage_sentor_edit()
 
         io_printf("시작시간입력(예:2025-01-01 00:01:00)\r\n");
         io_printf(">>");
-        cli_scanf_s("%[^\n]", start_time, (unsigned)_countof(start_time));
+        cli_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year,&month,&day,&hour,&min,&sec);
+
+        start_time.Year = year;
+        start_time.Month = month;
+        start_time.Day = day;
+        start_time.Hour = hour;
+        start_time.Min = min;
+        start_time.Sec = sec;
+
         io_printf("종료시간입력(예:2025-01-01 00:01:00)\r\n");
         io_printf(">>");
-        cli_scanf_s("%[^\n]", end_time, (unsigned)_countof(end_time));
+        cli_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year, &month, &day, &hour, &min, &sec);
+        end_time.Year = year;
+        end_time.Month = month;
+        end_time.Day = day;
+        end_time.Hour = hour;
+        end_time.Min = min;
+        end_time.Sec = sec;
+
         io_printf("갑 입력\r\n");
         io_printf(">>");
         cli_scanf_s("%d", &value);
@@ -383,7 +410,7 @@ int32_t menu_manage_sentor_edit()
         if(ok)
         {
           io_printf("범위를 넓게 하면 편집에 수십초가 소요될 수 있습니다\r\n");
-          ret = write_bulk_data_range(filename, start_time, end_time, value);
+          ret = write_bulk_data_range(filename, &start_time, &end_time, value);
           if (ret < 0)
           {
             io_printf("에러 발생 코드:%d\r\n", ret);

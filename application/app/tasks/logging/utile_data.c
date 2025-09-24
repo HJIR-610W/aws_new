@@ -630,27 +630,33 @@ static int write_data_block(const char *name, uint16_t year, uint32_t offset, ui
   return (res == FR_OK) ? 0 : -1;
 }
 
-int write_bulk_data_range(const char *name, const char *start_datetime, const char *end_datetime,
+/**
+ * 절대 1월1일 0시 0분은 오직 1개만 쓰여진다.
+ * 해가 바뀌지 않아야 한다.
+ */
+int write_bulk_data_range(const char *name, DATE_TIME_BUF *start_time, DATE_TIME_BUF *end_datetime,
                           uint16_t value)
 {
-  DATE_TIME_BUF start, end;
-  if (!parse_datetime_buf(start_datetime, &start) || !parse_datetime_buf(end_datetime, &end))
-    return -1;
+  DATE_TIME_BUF start = *start_time;
+  DATE_TIME_BUF  end = *end_datetime;
+  uint32_t start_offset;
 
-  uint32_t total_count = count_min(&start, &end);
+  
+  uint32_t total_count = count_min(&start, &end); // 범위 시간동안 1분이 몇개인지 계산
   if (total_count == 0)
     return 0;
 
-  uint32_t start_offset = offset_min(&start);
+    //1월1일 0시1분은 오프셋 1임
+    //12월 31일 23:59분 오프셋 525599
+  start_offset = offset_min(&start);
 
-
-  if (start_offset == 0)
+  if(start_offset == 0)//즉 전년도 파일 
   {
     DATE_TIME_BUF prev_min;
     time_cvt_secTotime(time_cvt_timestamp(&start) - 60, &prev_min);
     uint32_t last_offset = last_minute_offsets_in_year(prev_min.Year);
     if (write_data_block(name, prev_min.Year, last_offset, 1, value) != 0)
-      return -1;
+      return 1;
 
 
     start_offset = 1;
@@ -665,12 +671,18 @@ int write_bulk_data_range(const char *name, const char *start_datetime, const ch
   }
   else
   {
-    uint32_t end_of_year_offset = last_minute_offsets_in_year(start.Year);
-    uint32_t first_year_count = end_of_year_offset - start_offset + 1;
+    
+    //년도가 다르면 첫번째 년도 데이터 먼저 쓰고, 그다음 데이터 쓴다.
+    uint32_t end_of_year_offset = last_minute_offsets_in_year(start.Year);//해당 년도의 마지막 오프셋
+    uint32_t first_year_count = end_of_year_offset - start_offset +1;
+    
     if (write_data_block(name, start.Year, start_offset, first_year_count, value) != 0)
       return -1;
 
-    uint32_t remaining = total_count - first_year_count;
+    int32_t remaining = total_count - first_year_count;
+    if(remaining<=0)
+      return 0;
+    
     return write_data_block(name, end.Year, 1, remaining, value);
   }
 }

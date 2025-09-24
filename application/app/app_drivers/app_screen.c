@@ -92,12 +92,10 @@ void screen_clear(void)
 }
 
 
-/**
- * @brief 프레임 버퍼기만 오직 1행 출력
- */
+
 void screen_printf(int row, int col, const char* format, ...)
 {
-  char s_format_buffer[MAX_COLS];  // 정적 버퍼 크기는 필요에 따라 조정
+  char s_format_buffer[MAX_COLS+1];  // 정적 버퍼 크기는 필요에 따라 조정
   int i;
   int len;
   va_list args;
@@ -106,7 +104,6 @@ void screen_printf(int row, int col, const char* format, ...)
   vsnprintf(s_format_buffer, sizeof(s_format_buffer), format, args);
   va_end(args);
 
-  //screen_set_cursor(row, col);
 
   len = strlen(s_format_buffer);
 
@@ -116,6 +113,24 @@ void screen_printf(int row, int col, const char* format, ...)
   }
 
   // 나머지 공간을 공백으로 채움
+  for (i = col +len; i < MAX_COLS; i++)
+  {
+    screen_put_ch(row, i, ' ');
+  }
+}
+
+void screen_puts(int row,int col,const char *string)
+{
+  int i;
+  int len;
+  
+   len = strlen(string);
+
+  for (i = 0; i < len && i < MAX_COLS; i++)
+  {
+    screen_put_ch(row, col+i, string[i]);
+  }
+
   for (i = col +len; i < MAX_COLS; i++)
   {
     screen_put_ch(row, i, ' ');

@@ -23,7 +23,7 @@ bool is_valid_datetime(const DATE_TIME_BUF *nt);
 
 uint64_t cvt_timestamp_64(DATE_TIME_BUF *ct);
 void subtract_seconds(DATE_TIME_BUF *dt, uint32_t seconds);
-int offset_min(DATE_TIME_BUF *t);
+uint32_t offset_min(DATE_TIME_BUF *t);
 int32_t count_min(DATE_TIME_BUF *st, DATE_TIME_BUF *et);
 int dayOfYear(int year, int month, int day);
 

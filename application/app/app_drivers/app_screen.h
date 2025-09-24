@@ -33,6 +33,6 @@ void screen_printf(int row, int col, const char* format, ...);
 void screen_clear(void);
 void screen_off(void);
 void screen_on(void);
-
+void screen_puts(int row,int col,const char *string);
 
 #endif

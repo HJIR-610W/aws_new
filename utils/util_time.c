@@ -134,10 +134,14 @@ void subtract_seconds(DATE_TIME_BUF *dt, uint32_t seconds)
 }
 
 
-//현재 분이 해의 시작부터 몇번째 분인지 확인
-int offset_min(DATE_TIME_BUF *t)
+/*
+현재 분이 해의 시작부터 몇번째 분인지 확인
+
+*/
+uint32_t offset_min(DATE_TIME_BUF *t)
 {
   DATE_TIME_BUF base;
+  uint32_t offset;
 
   base.Year = t->Year;
   base.Month = 1;
@@ -146,22 +150,39 @@ int offset_min(DATE_TIME_BUF *t)
   base.Min = 0;
   base.Sec = 0;
 
+  t->Sec = 0;
+
   time_t t_base = time_cvt_timestamp(&base);
   time_t t_now = time_cvt_timestamp(t);
 
-  int offset = (int)((t_now - t_base) / 60);
+  if(t_base == t_now)
+  return 0;
+
+  offset = (uint32_t)((t_now - t_base) / 60);
 
   return offset;
 }
 
+/*
+예)
+st 2025-01-01 00:01:00
+et 2025-01-01 00:02:00
+min 카운트는 총 2개이다. 
+ */
 int32_t count_min(DATE_TIME_BUF *st,DATE_TIME_BUF *et)
 {
+  st->Sec = 0;
+  et->Sec = 0;
+
   time_t t_et = time_cvt_timestamp(et);
   time_t t_st = time_cvt_timestamp(st);
 
-  int offset = (int)((t_et - t_st) / 60)+1;
+  if(t_et == t_st)
+  return 1;
 
-  return offset;
+  int count = (int)((t_et - t_st) / 60)+1;
+
+  return count;
 }
 
 int is_leap_year(int year)

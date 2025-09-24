@@ -213,15 +213,25 @@ uint32_t get_10min_rain(const uint16_t *rain_minutes, int year, int month, int d
 }
 int32_t rain_file_zero(int year)
 {
-  char start_time[30];
-  char end_time[30]; // 2025-01-01 00:00:00
+  DATE_TIME_BUF start_time;
+  DATE_TIME_BUF end_time;
   int32_t value = 0;
   int32_t ret;
 
-  snprintf(start_time, sizeof(start_time), "%04d-01-01 00:01:00", year);
-  snprintf(end_time, sizeof(end_time), "%04d-01-01 00:00:00", year + 1);
+  start_time.Year = year;
+  start_time.Month = 1;
+  start_time.Day = 1;
+  start_time.Hour = 0;
+  start_time.Min = 1;
+  start_time.Sec = 0;
 
-  ret = write_bulk_data_range(RAIN_1MIN_FILE_NAME, start_time, end_time, value);
+  end_time.Year = year + 1;
+  end_time.Month = 1;
+  end_time.Day = 1;
+  end_time.Hour = 0;
+  end_time.Min = 1;
+
+  ret = write_bulk_data_range(RAIN_1MIN_FILE_NAME, &start_time, &end_time, value);
 
   return ret;
 }
