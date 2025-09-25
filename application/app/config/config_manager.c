@@ -9,6 +9,8 @@
 
 void config_manager_init(void)
 {
+
+  
   load_config_app();
 
   load_config_nvm();

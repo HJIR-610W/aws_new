@@ -138,3 +138,8 @@ float round_to_n_digits(double value, int n)
   // round 가까운 정수로 반올림
   return round(value * factor) / factor;
 }
+
+bool normalize_bool(uint8_t raw)
+{
+  return raw == 1 ? true : false;
+}

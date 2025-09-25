@@ -479,7 +479,7 @@
             <file>$PROJ_DIR$\..\utils\util_stdio.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
             <file>$PROJ_DIR$\release\Obj\ccp.__cstat.et</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\..\utils\util_crc16_ccitt.c</file>
             <file>$PROJ_DIR$\release\Obj\task_menu.__cstat.et</file>
             <file>$PROJ_DIR$\..\utils\util_crc16_ccitt.h</file>
@@ -1667,7 +1667,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_pcd_ex.h</file>
             <file>$PROJ_DIR$\release\Obj\dhcp.xcl</file>
             <file>$PROJ_DIR$\release\Obj\sys_arch.o</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\release\Obj\sunshine.o</file>
             <file>$PROJ_DIR$\release\Obj\aws_menu_manager.o</file>
             <file>$PROJ_DIR$\release\Obj\usbd_ioreq.xcl</file>
@@ -1736,7 +1736,7 @@
             <file>$PROJ_DIR$\release\Obj\aws_menu.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\usbd_conf.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ethernet.h</file>
-            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.h</file>
+            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_mux.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\raw_priv.h</file>
@@ -1750,7 +1750,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_spi.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ieee.h</file>
-            <file>$PROJ_DIR$\..\application\app\config\config_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\config\config_define.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\app_console.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip4_frag.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
@@ -1769,7 +1769,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tls.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_di_def.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.h</file>
-            <file>$PROJ_DIR$\..\application\app\config\config_sensor.h</file>
+            <file>$PROJ_DIR$\..\Application\app\config\config_sensor.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rtc.h</file>
             <file>$PROJ_DIR$\..\application\communications\ethernet\task_client.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\Legacy\stm32_hal_legacy.h</file>
@@ -1850,7 +1850,7 @@
             <file>$PROJ_DIR$\..\application\system_err.h</file>
             <file>$TOOLKIT_DIR$\inc\c\math.h</file>
             <file>$PROJ_DIR$\release\Obj\util_crc16_ccitt.__cstat.et</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_power.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_aws.h</file>
             <file>$PROJ_DIR$\release\Obj\hj_snow.o</file>
@@ -1936,7 +1936,7 @@
             <file>$PROJ_DIR$\..\Application\app\panel\panel_common.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_network.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\icmp.h</file>
-            <file>$PROJ_DIR$\..\application\app\config\config_memory_map.h</file>
+            <file>$PROJ_DIR$\..\Application\app\config\config_memory_map.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\aws_default_data.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\cli_key_code.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\cmsis_os2.h</file>
@@ -1953,7 +1953,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_gpio_ex.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\system\arch\sys_arch.h</file>
             <file>$PROJ_DIR$\..\system\iar_io_retarget.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_offset.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rcc.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
@@ -1983,7 +1983,7 @@
             <file>$PROJ_DIR$\..\Application\app\test\test_filesystem.h</file>
             <file>$TOOLKIT_DIR$\inc\c\string.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_flash_ex.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dhcp.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\utile_data.h</file>
@@ -2047,7 +2047,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\nd6_priv.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\def.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\etharp.h</file>
-            <file>$PROJ_DIR$\..\application\app\config\config_app.h</file>
+            <file>$PROJ_DIR$\..\Application\app\config\config_app.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\icmp6.h</file>
             <file>$PROJ_DIR$\release\Obj\test_menu_setup.xcl</file>
         </outputs>
@@ -2447,7 +2447,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 2042 1772 1951 1824 1779 1938 1820 1760 1777 320 1764 1745 1736 1784 266 1708 1791 1931 478 1939 1834 2003 1976 2000 90 94 1849 1865 95 1536 1671 1950 1676 1705 1700 1516 1677 1722 1735 1513 1710 1691 1767 1837 1783 1836 1945 1768 1780 1860 1924 1889 1773 1839 1787 1771 1749 1977 1782 1778 1789 1927 1941 1774 1940 1935 1765 1776 1952 1795 1743 1786 1810 1943 1861 1900 1659 99 112 268 1678 1825 1828 187 1726 1739 1717 1753 1757 1751 1781 1756 1755 1934 1833 1897 97 119 137 1876 468 1901 1868 1637 1624 303 1762 168 142 1715 196 1913 1720 193</file>
+                    <file> 2042 1772 1951 1824 1779 1938 1820 1760 1777 320 1764 1745 1736 1784 266 1708 1791 1931 478 1939 1834 2003 1976 2000 90 94 1849 1865 95 1536 1671 1950 1676 1705 1700 1516 1677 1722 1735 1513 1710 1691 1767 1837 1783 1836 1945 1768 1780 1860 1924 1889 1773 1839 1787 1771 1749 1977 1782 1778 1789 1927 1941 1774 1940 1935 1765 1776 1952 1795 1743 1786 1810 1943 1861 1900 1659 99 112 268 1678 1825 1828 187 1726 1739 1717 1753 1757 1751 1781 1756 1755 1934 1833 1897 97 119 137 1876 468 1901 1868 1637 1624 303 1762 168 142 1715 196 1913 1720 193 471</file>
                 </tool>
             </inputs>
         </file>
@@ -2625,7 +2625,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1857 1745 1951 1824 1779 1938 1820 1760 1843 1851 90 94 1849 1865 95 1536 1671 1950 1676 1705 1700 1516 1677 1722 1735 1513 1710 1691 1767 1837 1834 1783 1836 1945 1768 1780 1860 1924 1889 1773 1839 1787 1771 1749 1977 1782 1778 1789 1927 1941 1774 1940 1935 1765 1776 1952 1795 1743 1786 1810 1943 1861 1900 1659 99 112 268 1678 1825 1828 187 1726 1739 1717 1753 1757 1751 1781 1756 1755 1934 1833 1897 97 119 137 1876 468 1901 1868 1637 1772 1624 303 1762 168 142 1931 321 1939 1976 2000 196 1913 1720 1777</file>
+                    <file> 1857 1745 1951 1824 1779 1938 1820 1760 1843 1851 90 94 1849 1865 95 1536 1671 1950 1676 1705 1700 1516 1677 1722 1735 1513 1710 1691 1767 1837 1834 1783 1836 1945 1768 1780 1860 1924 1889 1773 1839 1787 1771 1749 1977 1782 1778 1789 1927 1941 1774 1940 1935 1765 1776 1952 1795 1743 1786 1810 1943 1861 1900 1659 99 112 268 1678 1825 1828 187 1726 1739 1717 1753 1757 1751 1781 1756 1755 1934 1833 1897 97 119 137 1876 468 1901 1868 1637 1772 1624 303 1762 168 142 1931 321 1939 1976 2000 196 1913 1720 1777 471</file>
                 </tool>
             </inputs>
         </file>
@@ -2918,7 +2918,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1978 1951 1824 1779 1938 1820 1760 2006 1963 1772 196 1913 303 478 1939 1834 1713 1724 1715 2042 1777 320 1764 1745 1736 1784 266 1708 1791 1931 2003 1997 1933 1991 468 1901 1868 1637 1885 1693 1919 1670 1976 2000 1837 1881 1982 1716 1709 2008 1825 1828 187 1726 1739 1717 1753 1757 1513 1751 1781 1756 1755 1934 1706</file>
+                    <file> 1978 1951 1824 1779 1938 1820 1760 2006 1963 1772 196 1913 303 478 1939 1834 1777 1713 1724 1715 2042 320 1764 1745 1736 1784 266 1708 1791 1931 2003 1997 1933 1991 468 1901 1868 1637 1885 1693 1919 1670 1976 2000 1837 1881 1982 1716 1709 2008 1825 1828 187 1726 1739 1717 1753 1757 1513 1751 1781 1756 1755 1934 1706</file>
                 </tool>
             </inputs>
         </file>
@@ -10187,7 +10187,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 471 1951 1824 1779 1938 1820 1760 1913 1939 1834 1976 2000 1843 1851 478 1772</file>
+                    <file> 471 1951 1824 1779 1938 1820 1760 1913 1939 1834 1772 1976 2000 1843 1851 478</file>
                 </tool>
             </inputs>
         </file>

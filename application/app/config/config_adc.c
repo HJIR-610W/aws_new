@@ -14,6 +14,8 @@
 
 #include "drv_fram.h"
 
+#include "utils\util_stdio.h"
+
 extern config_adc_nvm_t g_adc_config_nvm;
 
 void save_adc_cali(void)
@@ -33,9 +35,44 @@ void save_adc_cali(void)
   drv_fram_write(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config_nvm, sizeof(g_adc_config_nvm));
 }
 
+
+
 void load_adc_cali(void)
 {
   drv_fram_read(CONFIG_CALI_START_ADDRESS, (uint8_t *)&g_adc_config_nvm, sizeof(g_adc_config_nvm));
+
+  //fram이 0xFF상태에서는 is_calibrated가 참으로 평가되는 문제처리 
+  for (int i = 0; i < ADS1220_NUM_SINGLE_ENDED_CHANNELS;i++)
+  {
+    g_adc_config_nvm.ads1220_se_cal[i].is_calibrated = normalize_bool((uint8_t)g_adc_config_nvm.ads1220_se_cal[i].is_calibrated);
+  }
+  for (int i = 0; i < ADS1220_NUM_DIFFERENTIAL_CHANNELS; i++)
+  {
+    g_adc_config_nvm.ads1220_di_cal[i].is_calibrated = normalize_bool((uint8_t)g_adc_config_nvm.ads1220_di_cal[i].is_calibrated);
+  }
+  g_adc_config_nvm.stm32_bits.resolution_bits = 12;
+  g_adc_config_nvm.stm32_bits.reference_voltage=3.3;
+  g_adc_config_nvm.stm32_bits.min_raw_value=0; ///< ADC 최소 원시 값 (예: -2^23)
+  g_adc_config_nvm.stm32_bits.max_raw_value=4095; ///< ADC 최대 원시 값 (예: 2^23 - 1)
+
+  //STM32는 하드웨어적으로 켈리브레이션을 못하게 되어 있어서 이상적인 조건으로 
+  for (int i = 0; i < STM32_NUM_SINGLE_ENDED_CHANNELS; i++)
+  {
+    g_adc_config_nvm.stm32_se_cal[i].comp_method = TEMP_COMP_NONE;
+    g_adc_config_nvm.stm32_se_cal[i].factory_slope = 8.05e-04f;//(3.3-0)/4095
+    g_adc_config_nvm.stm32_se_cal[i].factory_offset=0;
+    g_adc_config_nvm.stm32_se_cal[i].factory_offset_trim=0;
+    g_adc_config_nvm.stm32_se_cal[i].factory_cal_temp = 25;
+    g_adc_config_nvm.stm32_se_cal[i].is_calibrated = true;
+
+    g_adc_config_nvm.stm32_se_cal[i].offset_temp_coeff = 1;
+    g_adc_config_nvm.stm32_se_cal[i].slope_temp_coeff = 1;
+    g_adc_config_nvm.stm32_se_cal[i].p1_cal_point.raw_value = 0;
+    g_adc_config_nvm.stm32_se_cal[i].p1_cal_point.reference_value = 0;
+    g_adc_config_nvm.stm32_se_cal[i].p2_cal_point.raw_value = 4095;
+    g_adc_config_nvm.stm32_se_cal[i].p2_cal_point.reference_value = 3.3;
+  }
+
   adc_config_map();
 }
 

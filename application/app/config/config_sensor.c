@@ -162,13 +162,12 @@ void load_config_sensor(void)
 #endif
 
   limit_adc();
-
   limit_hjwind();
   limit_hjhumi();
   limit_hjtemp();
   limit_jsgp215();
 
-      if (g_config_sensor_dirty_flag)
+  if(g_config_sensor_dirty_flag)
   {
     save_config_sensor();
   }

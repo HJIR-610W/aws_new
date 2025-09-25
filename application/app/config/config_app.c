@@ -13,6 +13,7 @@
 #include "drv_crc.h"
 #include "user_heap.h"
 #include "FreeRTOS.h"
+#include "util_stdio.h"
 
 config_t config;
 system_t System;
@@ -34,8 +35,8 @@ const config_t config_app_default = {.id = 0,
                                      .cdma_server_ip = {112, 221, 177, 172},
                                      .cdma_port = 0,
                                      .cdma_model = eCDMA_NTLE9607,
-                                     .eth_active = true,
-                                     .cdma_active = true,
+                                     .eth_active = false,
+                                     .cdma_active = false,
                                      .direct_active = false,
                                      .direct_baud_index = eBAUD_19200,
                                      .panel_model = ePANEL_AWS_STD,
@@ -124,8 +125,9 @@ void check_config_app(void)
   if (config.eth_active > 1)
   {
     config.eth_active = config_app_default.eth_active;
-  g_config_app_change_count++;
+    g_config_app_change_count++;
   }
+
 
   if(config.direct_active >1)
   {
@@ -326,9 +328,79 @@ void save_config_app(void)
   drv_fram_write(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config)); 
 }
 
+//FRAM을 0xff로 지우고 펌웨어가 정상 동작하는지 테스트해본다.
+void erase_fram(void)
+{
+  uint8_t buff[512];
+  int quot;
+  int rem;
+  int i=0;
+
+  quot = 8192/512;
+  rem = 8192%512;
+
+  memset(buff,0xff,sizeof(buff));
+  for(int i = 0 ;i< quot; i++)
+  {
+    drv_fram_write(i * sizeof(buff), buff, sizeof(buff));
+  }
+  
+  if(rem)
+  {
+    drv_fram_write(i * sizeof(buff), buff, rem);
+  }
+}
+
+
+void check_unused_field(uint32_t start_address,uint32_t end_address)
+{
+  uint8_t buff[512];
+
+  uint32_t unused_memory_size;
+  int quot;
+  int rem;
+  int i=0;
+
+  unused_memory_size = end_address - start_address + 1;
+
+  quot = unused_memory_size / sizeof(buff);
+  rem = unused_memory_size  % sizeof(buff);
+
+  for( i = 0 ; i < quot; i++)
+  {
+    drv_fram_read(start_address +i*sizeof(buff), buff, sizeof(buff));
+    for(int j = 0 ; j < sizeof(buff);j++)
+    {
+      if(buff[j])
+      {
+        memset(buff,0,sizeof(buff));
+        drv_fram_write(start_address + i * sizeof(buff), buff, sizeof(buff));
+        io_printf("start_address:%X 512\r\n", start_address + i * sizeof(buff));
+        break;
+      }
+    }
+  }
+
+  if(rem)
+  {
+    drv_fram_read(start_address + i * sizeof(buff), buff,rem);
+    for (int j = 0; j < rem; j++)
+    {
+      if (buff[j])
+      {
+        memset(buff, 0, sizeof(buff));
+        drv_fram_write(start_address + i * sizeof(buff), buff, rem);
+        io_printf("start_address:%X %d\r\n", start_address + i * sizeof(buff),rem);
+        break;
+      }
+    }
+  }
+}
+
 void load_config_app(void)
 {
 
+ 
 #if 0 // CRC 미사용(test 필요)
 
   uint8_t *p_start;
@@ -348,7 +420,7 @@ void load_config_app(void)
   }
 
 #else
-  drv_fram_read(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
+      drv_fram_read(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config));
 #endif
   check_config_app();
 
@@ -359,6 +431,8 @@ void load_config_app(void)
 
   // 프로그램 실행 중 설정값 변경되어도 영향 없도록 측정 Task는 설정값 복사본으로 동작
   memcpy(g_sensor_config_bk, config.sensor, sizeof(g_sensor_config_bk));
+
+  check_unused_field(CONFIG_START_ADDRESS + sizeof(config_t), CONFIG_NVM_START_ADDRESS);
 }
 
 

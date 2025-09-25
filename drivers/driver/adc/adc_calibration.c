@@ -20,9 +20,6 @@ config_adc_adv_t *get_adc_config(int type)
   }
 
     return &g_adc_config_stm32;
-
-
-
 }
 
     void
@@ -100,7 +97,10 @@ config_adc_adv_t *get_adc_config(int type)
   return false;
 }
 
+/*
+STM이랑 ADS1220이랑 채널구성이 달라서별도 관ㄹ
 
+*/
 void adc_config_map(void)
 {
   g_adc_config_ads1220.bits = &g_adc_config_nvm.ads1220_bits;
@@ -144,8 +144,8 @@ bool adc_config_init(config_adc_adv_t* cfg, uint32_t resolution_bits, float refe
                                                   .factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP,
                                                   .is_calibrated = false,
                                                   .comp_method = TEMP_COMP_NONE,  // 기본: 보상 없음
-                                                  .slope_temp_coeff = 0.0f,
-                                                  .offset_temp_coeff = 0.0f,
+                                                  .slope_temp_coeff = 1.0f,
+                                                  .offset_temp_coeff = 1.0f,
                                                   .lut_size = 0};
   }
   for (int i = 0; i < cfg->params_di_cnt; ++i)
@@ -156,8 +156,8 @@ bool adc_config_init(config_adc_adv_t* cfg, uint32_t resolution_bits, float refe
                            .factory_cal_temp = DEFAULT_FACTORY_CAL_TEMP,
                            .is_calibrated = false,
                            .comp_method = TEMP_COMP_NONE,
-                           .slope_temp_coeff = 0.0f,
-                           .offset_temp_coeff = 0.0f,
+                           .slope_temp_coeff = 1.0f,
+                           .offset_temp_coeff = 1.0f,
                            .lut_size = 0};
   }
   if (adc_printf)
@@ -184,8 +184,8 @@ bool adc_perform_factory_calibration( adc_cal_params_t* cal_params,
   cal_params->p1_cal_point = p1;
   cal_params->p2_cal_point = p2;
 
-  cal_params->slope_temp_coeff =0;
-  cal_params->offset_temp_coeff = 0;
+  cal_params->slope_temp_coeff =1;
+  cal_params->offset_temp_coeff = 1;
   cal_params->lut_size = 0;
 
   cal_params->is_calibrated = true;

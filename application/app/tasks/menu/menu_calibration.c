@@ -30,7 +30,7 @@ extern float g_current_temp;
 #define CALI_MENU_FACTORY       0
 #define CALI_MENU_VIEW          1
 #define CALI_MENU_ADC_INIT 2
-#define CALI_MENU_SYSTEM_ADC_INIT 3
+
 
 #define FACTORY_MENU_SINGLE     0
 #define FACTORY_MENU_DIFF       1
@@ -49,7 +49,6 @@ void draw_setup_menu_calibration_page(screen_menu_t* p_win)
   screen_menu_printf(p_win, CALI_MENU_FACTORY, "Factory Calibration"); // Factory Calibration
   screen_menu_printf(p_win, CALI_MENU_VIEW, "View Summary");
   screen_menu_printf(p_win, CALI_MENU_ADC_INIT, "Calibration Init");
-  screen_menu_printf(p_win, CALI_MENU_SYSTEM_ADC_INIT, "System Cail. Init");
   screen_menu_clear(p_win);
 
 }
@@ -1323,9 +1322,6 @@ int32_t setup_menu_calibration(void)
           break;
         case CALI_MENU_ADC_INIT:
           status = cali_setup_menu_adc_init();
-          break;
-        case CALI_MENU_SYSTEM_ADC_INIT:
-          status = cali_setup_menu_system_adc_init();
           break;
          default:
           break;

@@ -6,6 +6,7 @@
 #include "dev_io.h"
 #include "util_memory.h"
 
+#include "drv_fram.h"
 #include "app_flash.h"
 #include "mcu_debug.h"
 #include "const_string.h"
@@ -90,6 +91,29 @@ void print_flash(uint32_t start, uint32_t size, uint32_t width)
   }
 }
 
+void print_fram(uint32_t start, uint32_t size, uint32_t width)
+{
+  uint8_t buff[512];
+  uint32_t quot;
+  uint32_t rem;
+  uint32_t i;
+
+  quot = size / 512;
+  rem = size % 512;
+
+  for (i = 0; i < quot; i++)
+  {
+    drv_fram_read(start + i * 512, buff, 512);
+    LOG_MEM(buff, sizeof(buff), start + i * 512, width);
+  }
+
+  if (rem)
+  {
+    drv_fram_read(start + i * 512, buff, rem);
+    LOG_MEM(buff, rem, start + i * 512, width);
+  }
+}
+
 int32_t menu_developer_memory(void)
 {
   int32_t status;
@@ -106,12 +130,17 @@ int32_t menu_developer_memory(void)
     return status;
   }
 
-  io_printf("start,size,len>>");
+  io_printf("start(HEX),size,len>>");
 
-  inCnt = console_scanf("%d,%d,%d", &start, &size, &len);
+  inCnt = console_scanf("%x,%d,%d", &start, &size, &len);
   if (inCnt == EXIT_BACK || inCnt == EXIT_PROGRAM && choice < 0)
   {
     return inCnt;
+  }
+  
+  if(size>512 || len >16)
+  {
+    return 0;
   }
 
   switch (choice)
@@ -120,7 +149,8 @@ int32_t menu_developer_memory(void)
       print_flash(start, size, len);
       break;
     case 1:  // fram
-      break;
+      print_fram(start, size, len);
+       break;
   }
   return 0;
 }

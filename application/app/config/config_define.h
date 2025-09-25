@@ -10,6 +10,7 @@
 // 4바이트 정렬 필수
 typedef struct config_header_s
 {
+  uint32_t time_stamp;
   uint32_t magicNum;
   uint32_t version;
   uint32_t crc;
