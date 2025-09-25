@@ -349,14 +349,22 @@ AWS 자료전송 규격
 uint16_t  SolarRadCalc(uint8_t *sensor_err)
 {
   sensor_data_t *p_sensor = g_p_raw->data;
+  int16_t s_data;
 
   *sensor_err = p_sensor[B1_SOLAR_RADIATION].err;
   if (*sensor_err )
   {
     return (uint16_t)AWS_DATA_ERR_VAL;
   }
+  
+  s_data = (int16_t)p_sensor[B1_SOLAR_RADIATION].data.f;//소수점은 버린다.1W기준으로만 처리 
+  
+  if(s_data<0)
+  {
+    s_data = 0;
+  }
 
-  return (uint16_t)(p_sensor[B1_SOLAR_RADIATION].data.f);
+  return (uint16_t)s_data;
 }
 
 

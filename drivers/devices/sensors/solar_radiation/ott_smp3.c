@@ -155,6 +155,7 @@ Write Single Coil(COIL_IO_CLEAR_ERROR 지우기)
 float smp3_solar_read(driver_t *driver, uint8_t *err)
 {
   uint16_t reg[10];
+  int16_t s_reg;
   int32_t ret;
   float scale_factor;
   float solar_radiation;
@@ -176,7 +177,8 @@ float smp3_solar_read(driver_t *driver, uint8_t *err)
     scale_factor = ott_cvt_scale_factor(reg[REG_IO_SCALE_FACTOR]);
 
     //temp = modbus_regs_to_float(reg[3], reg[4]);
-    solar_radiation = (float)reg[REG_IO_SENSOR1_DATA] / scale_factor;
+    s_reg = (int16_t)reg[REG_IO_SENSOR1_DATA] ;
+    solar_radiation = (float)s_reg / scale_factor;
   }
 
   return solar_radiation;
