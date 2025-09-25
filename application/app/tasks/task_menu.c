@@ -989,8 +989,8 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     }
   }
 
-//1분 자료인경우 상태표시 
-  if (min == eAWS_DATA_1MIN)
+//1분 자료인경우 상태표시
+  if (min == eAWS_DATA_1MIN || min == eAWS_DATA_REAL)
   {
 #define AWS_STATUS_WD 15
 
@@ -1023,6 +1023,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
         }
     }
     }
+ 
+
+
 
     uint8_t status_Y = p_kma->Y_volateStatus;
     const char *p_status;
@@ -1070,12 +1073,14 @@ void config_set_menu(void)
 
 }
 
-#define PAGE_SYSTEM  0
-#define PAGE_RAIN    1
-#define PAGE_CHARGER 2
-#define PAGE_CDMA    3
-#define PAGE_DIRECT  4
-#define PAGE_ETH       5
+
+
+#define PAGE_CHARGER   0
+#define PAGE_CDMA      1
+#define PAGE_DIRECT    2
+#define PAGE_ETH       3
+#define PAGE_RAIN      4
+#define PAGE_SYSTEM    5
 #define PAGE_AWS_AVG   6
 #define PAGE_AWS_1MIN  7
 #define PAGE_AWS_10MIN 8
@@ -1236,6 +1241,7 @@ void popup_handler(uint32_t timeout_ms)
 
 void menuTask(void *arg)
 {
+  uint8_t first_page_done=1;
   int32_t key;
   int32_t page_count;//화면페이지 개수,config설정에 따라 자동 계산
   int32_t page_list[PAGE_MAX];//어떠한 페이지인지 저장
@@ -1244,21 +1250,20 @@ void menuTask(void *arg)
 
   DEBUG_PRINTF("menu task start\r\n");
 
-  
   screen_page_create(&lcd_win);
 
-  lcd_win.chunk_scroll_enable = 1;// view_row 단위로 스크롤
-  lcd_win.multi_page_enable = 1;  // 하나의 창에 여러개의 페이지 구성 LEFT,RIGHT 키 사용
-
+  lcd_win.chunk_scroll_enable = 1;
+  lcd_win.multi_page_enable = 1; 
+  lcd_win.current_page = PAGE_SYSTEM;
+  
   screen_off_time = OS_GET_TICK();
   while (1)
   {
     page_count = 0;
-    page_list[page_count++] = PAGE_SYSTEM;
-    page_list[page_count++] = PAGE_RAIN;
+
     if(get_config_app()->charger_model != eCHARGER_NONE)
     {
-    page_list[page_count++] = PAGE_CHARGER;
+      page_list[page_count++] = PAGE_CHARGER;
     }
     if (get_config_app()->cdma_active)
       page_list[page_count++] = PAGE_CDMA;
@@ -1266,7 +1271,8 @@ void menuTask(void *arg)
       page_list[page_count++] = PAGE_DIRECT;
     if (get_config_app()->eth_active)
       page_list[page_count++] = PAGE_ETH;
-    
+    page_list[page_count++] = PAGE_RAIN;
+    page_list[page_count++] = PAGE_SYSTEM;
     page_list[page_count++] = PAGE_AWS_AVG;
     page_list[page_count++] = PAGE_AWS_1MIN;
     // page_list[page_count++] = PAGE_AWS_10MIN; 구형에서는 표시 했지만 현재 불필요
@@ -1274,45 +1280,57 @@ void menuTask(void *arg)
     page_list[page_count++] = PAGE_AWS_RAW;
     
     lcd_win.total_pages = page_count;
-                   
-  switch (page_list[lcd_win.current_page])
-  {
-    case PAGE_SYSTEM:
-    draw_system_page(&lcd_win);
-    break;
-    case PAGE_RAIN:
-    draw_rain_page(&lcd_win);
-    break;
-    case PAGE_CHARGER:
-    draw_charger_page(&lcd_win);
-    break;
-    case PAGE_CDMA:
-    draw_cdma_page(&lcd_win);
-    break;
-    case PAGE_DIRECT:
-    draw_direct_page(&lcd_win);
-    break;
-    case PAGE_ETH:
-    draw_ethernet_page(&lcd_win);
-    break;
-    case PAGE_AWS_AVG:
-    draw_aws_page(&lcd_win, eAWS_DATA_REAL);
-    break;
-    case PAGE_AWS_1MIN:
-    draw_aws_page(&lcd_win, eAWS_DATA_1MIN);
-    break;
-    case PAGE_AWS_10MIN:
-    draw_aws_page(&lcd_win, eAWS_DATA_10MIN);
-    break;
-    case PAGE_AWS_HOUR:
-    draw_aws_page(&lcd_win, eAWS_DATA_HOUR);
-    break;
-    case PAGE_AWS_RAW:
-    draw_aws_page(&lcd_win, eAWS_DATA_RAW);
-    break;
-    default:
-    break;
+
+    if (first_page_done)//TODO:처음 부팅시 페이지 위치(개선 필요)
+    {
+      first_page_done = 0;
+      for(int i =0; i < page_count;i++)
+      {
+        if (page_list[i] == PAGE_SYSTEM)//첫번째 페이지로 시스템 
+        {
+          lcd_win.current_page = i;
+          break;
+        }
+      }
     }
+      switch (page_list[lcd_win.current_page])
+      {
+      case PAGE_CHARGER:
+        draw_charger_page(&lcd_win);
+        break;
+      case PAGE_CDMA:
+        draw_cdma_page(&lcd_win);
+        break;
+      case PAGE_DIRECT:
+        draw_direct_page(&lcd_win);
+        break;
+      case PAGE_ETH:
+        draw_ethernet_page(&lcd_win);
+        break;
+      case PAGE_RAIN:
+        draw_rain_page(&lcd_win);
+        break;
+      case PAGE_SYSTEM:
+        draw_system_page(&lcd_win);
+        break;
+      case PAGE_AWS_AVG:
+        draw_aws_page(&lcd_win, eAWS_DATA_REAL);
+        break;
+      case PAGE_AWS_1MIN:
+        draw_aws_page(&lcd_win, eAWS_DATA_1MIN);
+        break;
+      case PAGE_AWS_10MIN:
+        draw_aws_page(&lcd_win, eAWS_DATA_10MIN);
+        break;
+      case PAGE_AWS_HOUR:
+        draw_aws_page(&lcd_win, eAWS_DATA_HOUR);
+        break;
+      case PAGE_AWS_RAW:
+        draw_aws_page(&lcd_win, eAWS_DATA_RAW);
+        break;
+      default:
+        break;
+      }
            
     screen_refresh();
 

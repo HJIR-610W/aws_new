@@ -61,7 +61,7 @@ typedef struct
 typedef struct
 {
   uint16_t start_mark;
-  uint8_t protocol_ver_yy;  // ... (이하 필드 동일)
+  uint8_t protocol_ver_yy;  
   uint8_t protocol_ver_mm;
   uint8_t protocol_ver_dd;
   uint8_t date_yy;
@@ -120,25 +120,33 @@ typedef struct
 } kma2_observation_fields_t;
 #pragma pack(pop)
 
+// X 데이터 로거 전압 상태
 // voltage status 8bit
 //  BIT 0: DC 입력 전압 (0: 정상, 1: 비정상)
-#define KMA2_PWRSTAT_DC_INPUT_ERR 0x01  // 0000 0001
-
+#define KMA2_X_PWRSTAT_DC_INPUT_ERR 0x01  // 0000 0001
 // BIT 1: 배터리 전압 (0: 정상, 1: 비정상)
-#define KMA2_PWRSTAT_BATTERY_ERR 0x02  // 0000 0010
-
+#define KMA2_X_PWRSTAT_BATTERY_ERR 0x02  // 0000 0010
 // BIT 2~3: AC 전압 상태 (00: 110V, 01: 220V, 11: AC OFF)
-#define KMA2_PWRSTAT_AC_MASK 0x0C  // 0000 1100
-#define KMA2_PWRSTAT_AC_110V 0x00  // 0000 0000
-#define KMA2_PWRSTAT_AC_220V 0x04  // 0000 0100
-#define KMA2_PWRSTAT_AC_OFF 0x0C   // 0000 1100
-
+#define KMA2_X_PWRSTAT_AC_110V 0x00  // 0000 0000
+#define KMA2_X_PWRSTAT_AC_220V 0x04  // 0000 0100
+#define KMA2_X_PWRSTAT_AC_OFF 0x0C   // 0000 1100
 // BIT 4: 데이터로거함 잠금 상태 (0: 닫힘, 1: 열림)
-#define KMA2_PWRSTAT_DOOR_OPEN 0x10  // 0001 0000
-
+#define KMA2_X_PWRSTAT_DOOR_OPEN 0x10  // 0001 0000
 // BIT 5~7: 예비 1~3 (0: 정상, 1: 비정상)
-#define KMA2_PWRSTAT_SPARE1_ERR 0x20  // 0010 0000
-#define KMA2_PWRSTAT_SPARE2_ERR 0x40  // 0100 0000
-#define KMA2_PWRSTAT_SPARE3_ERR 0x80  // 1000 0000
+#define KMA2_X_PWRSTAT_SPARE1_ERR 0x20  // 0010 0000
+#define KMA2_X_PWRSTAT_SPARE2_ERR 0x40  // 0100 0000
+#define KMA2_X_PWRSTAT_SPARE3_ERR 0x80  // 1000 0000
+
+// Y 데이터 로거 상태
+#define KMA2_Y_WIND_D_ERR 0x0001
+#define KMA2_Y_WIND_S_ERR 0x0002
+#define KMA2_Y_TEMP_ERR   0x0004
+#define KMA2_Y_RAIN_DET_ERR  0x0008
+#define KMA2_Y_RAIN_ERR 0x0010
+#define KMA2_Y_HUMI_ERR  0x0020
+#define KMA2_Y_BAROMETER_ERR 0x0040
+#define KMA2_Y_FAN_ERR 0x8000
+// Z 데이터 로거 상태
+#define KMA2_Z_RAIN_ERR 0x01
 
 #endif

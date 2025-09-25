@@ -143,7 +143,7 @@ void SecProcess(void)
     g_sunshine.hourly++;
   }
 
-  if (mRealAws.mSolarRad.sReal != 9999)
+  if (mRealAws.mSolarRad.sReal != AWS_SEN_ERR)
   {  
     g_solar_radiation.min_acc += mRealAws.mSolarRad.sReal;
     g_solar_radiation.hourly  += mRealAws.mSolarRad.sReal;

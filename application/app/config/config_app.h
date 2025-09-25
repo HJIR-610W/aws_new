@@ -138,7 +138,12 @@ typedef enum config_app_field_e
   eCONFIG_APP_SENSOR
 } eCONFIG_APP_FIELD_t;
 
-
+typedef enum AC_status_e
+{
+  eAC_100V,
+  eAC_220V,
+  eAC_OFF
+}eAC_STATUS_t;
 
 typedef struct system_s
 {
@@ -146,7 +151,8 @@ typedef struct system_s
   bool battery_error;
   bool door_opened;
   bool sdcard_inserted;
-  uint8_t ac_status;//00 110v,01 220v,11 ADC OFF
+  eAC_STATUS_t ac_status; 
+  bool fan_active;
   float charger_solar1_voltage;
   float charger_solar2_voltage;
   float charger_solar1_currnet;

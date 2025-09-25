@@ -106,7 +106,7 @@ int is_door_opened(void)
 
   return 0;
 }
-eCHARGER_MODEL_t charger_model = eCHARGER_NONE;
+int32_t charger_model = eCHARGER_NONE;
 
 void systemTask(void *arg)
 {
@@ -146,7 +146,7 @@ void systemTask(void *arg)
           System.door_opened = drv_di_read(DRV_DI_0) > 0;
           System.battery_voltage = drv_system_read(DRV_SYS_BATTERY);
           System.dc_error = System.battery_voltage < 11.0f ? 1 : 0;
-          System.ac_status = 1; // 220v
+          System.ac_status = drv_di_read(DRV_DI_1) > 0 ? eAC_OFF:eAC_220V;
           System.sdcard_inserted = BSP_PlatformIsDetected();
           check_sd_card();
         }

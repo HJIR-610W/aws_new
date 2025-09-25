@@ -13,11 +13,10 @@ int is_debug_mode(void)
 
 
 
-#include "old_aws_define.h"
-int g_size;
+
 int main(void)
 {
-  g_size = sizeof(AWS_DATA_STRUCT);
+
 
   if (is_debug_mode())
   {

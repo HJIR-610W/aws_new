@@ -17,9 +17,9 @@ typedef struct
 
 typedef struct
 {
-  uint16_t sReal;
-  uint16_t sMin;
-  uint16_t sMax;
+  uint16_t sReal;//kma X 8bit
+  uint16_t sMin;//kma Y 16bit
+  uint16_t sMax;//kmz Z 8bit
 } SENSOR_RIX_BUF;
 
 typedef struct
