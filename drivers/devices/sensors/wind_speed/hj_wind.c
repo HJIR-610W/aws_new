@@ -108,6 +108,7 @@ float read_hjwind(void *driver, uint8_t channel, uint8_t *err)
   uint16_t windData = 0;
   hjwind_cfg_t *cfg = ((driver_t *)driver)->cfg;
 
+  osDelay(30);
   len = make_hjwind(send, channel);
 
   drv_rs485_flush_rx(cfg->rs485_num);
