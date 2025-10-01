@@ -174,6 +174,8 @@ void read_wind_max(eWIND_MAX_t wind, int32_t *speed, int32_t *direction)
   *direction = (int32_t)wind_max[wind].direction;
 }
 
+//풍속 최대값을 읽고 초기화
+//1분 풍속최대값이라면 1분이 바뀌는 시점에 호출한다.
 int32_t read_wind_speed_max(eWIND_MAX_t wind)
 {
   int32_t max;

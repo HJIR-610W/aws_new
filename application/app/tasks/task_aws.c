@@ -768,10 +768,9 @@ void update_kma_real(void)
   {
     p_kma3->wind_direction_avg.err = 0;
     p_kma3->wind_direction_avg.data = mRealAws.mWind.mDirection.sReal;
-    p_kma3->wind_direction_avg.max = mRealAws.mWind.mDirection.sMax;
+    p_kma3->wind_direction_avg.max = mMinAws.mWind.mDirection.sMax;
     p_kma3->wind_direction_instant.err = 0;
-    p_kma3->wind_direction_instant.data = mRealAws.mWind.mDirection.sMax;
-
+    p_kma3->wind_direction_instant.data = mMinAws.mWind.mDirection.sMax;
   }
 
   error = get_sensor_err(A3_WIND_SPEED);
@@ -788,10 +787,9 @@ void update_kma_real(void)
   {
     p_kma3->wind_speed_avg.err = 0;
     p_kma3->wind_speed_avg.data = mRealAws.mWind.mSpeed.sReal;
-    p_kma3->wind_speed_avg.max = mRealAws.mWind.mSpeed.sMax;
+    p_kma3->wind_speed_avg.max = mMinAws.mWind.mSpeed.sMax;
     p_kma3->wind_speed_instant.err = 0;
-    p_kma3->wind_speed_instant.data = mRealAws.mWind.mSpeed.sMax;
-
+    p_kma3->wind_speed_instant.data = mMinAws.mWind.mSpeed.sMax;
   }
 
  //홀센서 인경우 에러처리 가능하지만 우량값이라는게 누적값이기에 값자체는 에러표시 하지 않는다.
@@ -1441,14 +1439,14 @@ void filter_init(void)
 
 
 
-
+//실시간으로 현재까지 각 주기 값의 최대값을 업데이트 한다.
 void upate_wind(void)
 {
   int32_t wind_speed_max;
   int32_t wind_direction_max;
 
-  AWS_DATA_STRUCT *pAws[] = {&mRealAws, & m10MinAws, &mHourAws, &mDayAws};
-  eWIND_MAX_t wind[] = {eWIND_MAX_REAL, eWIND_MAX_10MIN,
+  AWS_DATA_STRUCT *pAws[] = {&mRealAws, &mMinAws ,& m10MinAws, &mHourAws, &mDayAws};
+  eWIND_MAX_t wind[] = {eWIND_MAX_REAL, eWIND_MAX_1MIN,eWIND_MAX_10MIN,
                         eWIND_MAX_HOUR,
                         eWIND_MAX_DAY};
 
@@ -1652,14 +1650,17 @@ void DUALPORT_TASK(void *arg)
       adj_wind_direction = (wind_direction == AWS_DATA_ERR_VAL) ? 0 : wind_direction / 10.0f;
 
       add_wind_sample(adj_wind_speed, adj_wind_direction);
-      calculate_wind_moving_avg(&wind_speed_mavg, &wind_direction_mavg);
-      update_wind_vector_avg_1min(wind_speed_mavg, wind_direction_mavg);
+      calculate_wind_moving_avg(&wind_speed_mavg, &wind_direction_mavg);//250ms마다 이동평균
+      update_wind_vector_avg_1min(wind_speed_mavg, wind_direction_mavg);//이동평균된 풍향,풍속을 바람벡터로 변환하여 저장
 
+      //실시간 풍속,풍향은 이동평균한 값을 실시간값으로 처리한다.
       g_aws_inst.wind_speed = (uint16_t)(wind_speed_mavg * 10);
       g_aws_inst.wind_direction = (uint16_t)(wind_direction_mavg * 10);
       pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_mavg * 10);
       pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_mavg * 10);
 
+      //각각 주기동안 최대풍향 풍속을 계산한다.
+      //실시간으로 현재값이 최대값이면 이값을 최대값으로 사용
       calculate_wind_max(eWIND_MAX_REAL, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
       calculate_wind_max(eWIND_MAX_1MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
       calculate_wind_max(eWIND_MAX_10MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
