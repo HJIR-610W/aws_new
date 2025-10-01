@@ -164,7 +164,7 @@
             <file>$PROJ_DIR$\..\application\file_system\fatfs\app\fatfs.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\lwip\target\ethernetif.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\app\fatfs.c</file>
-            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
@@ -178,7 +178,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_interrupt.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\application\os_user_def.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.c</file>
@@ -186,7 +186,7 @@
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</file>
             <file>$PROJ_DIR$\..\Application\io\cli\cli_key_code.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.c</file>
@@ -225,7 +225,7 @@
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.c</file>
-            <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</file>
+            <file>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554_def.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_di.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_mux.c</file>
@@ -1525,7 +1525,7 @@
             <file>$PROJ_DIR$\release\Obj\hj_snow_menu.o</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\portable.h</file>
             <file>$PROJ_DIR$\release\Obj\upap.o</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\release\Obj\sha1.__cstat.et</file>
             <file>$PROJ_DIR$\release\Obj\task_measure.xcl</file>
             <file>$PROJ_DIR$\release\Obj\cmsis_os2.o</file>
@@ -1727,7 +1727,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\FreeRTOS.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_console.h</file>
             <file>$PROJ_DIR$\release\Obj\TL16C554.o</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_flash.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_sensor.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_system.h</file>
@@ -1739,7 +1739,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_eth.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\schedule.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rtc_ex.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_rs485.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\fsdata.c</file>
             <file>$PROJ_DIR$\release\Obj\fm25cl.o</file>
@@ -1840,7 +1840,7 @@
             <file>$PROJ_DIR$\..\application\app\test\parser\hart_parser.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
             <file>$TOOLKIT_DIR$\inc\c\inttypes.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stack_macros.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\httpd_structs.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ip.h</file>
@@ -1854,7 +1854,7 @@
             <file>$PROJ_DIR$\..\drivers\Components\rtc\built_.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\raw.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\udp.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_pwr.h</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Include\cmsis_version.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\memp_priv.h</file>
@@ -1914,7 +1914,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\driver.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sio.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_eth.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_offset.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>
@@ -1970,7 +1970,7 @@
             <file>$TOOLKIT_DIR$\inc\c\intrinsics.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\freertos_mpool.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_admin.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_do.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\ff.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcpip.h</file>

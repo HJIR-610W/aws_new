@@ -229,7 +229,7 @@ uint8_t print_ott_smp3_cfg(ott_smp3_config_t *ott, uint8_t cnt)
 uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt)
 {
 
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("지연시간",ENTRY_LABEL_WIDTH), rain_present->delay_sec);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("해제 지연시간",ENTRY_LABEL_WIDTH), rain_present->off_delay_sec);
 
   return cnt;
 }
@@ -714,10 +714,10 @@ int32_t rain_present_config_set(sensor_t *sensor, uint8_t menu_index)
   switch (menu_index)
   {
     case RAIN_PRESENT_DELAY:
-      status = input_decimal_prompt("지연시간(s)", &dec, 1, 10);
+      status = input_decimal_prompt("지연시간(s)", &dec, 1, 300);
       if (status != MENU_OK)
         break;
-      rain_present->delay_sec = dec;
+      rain_present->off_delay_sec = dec;
       save_config_sensor();
 
       break;

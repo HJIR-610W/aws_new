@@ -55,7 +55,8 @@ filter_data_t g_pre_data[SENSOR_LIST_MAX];
 measure_data_1s_t *g_p_raw = NULL;
 uint8_t g_kma_err[SENSOR_LIST_MAX];
 measure_data_250ms_t g_raw_250;
-
+int32_t g_rain_off_remain_time = 0;
+bool g_rain_timer_counting_down = false;
 
 void update_sensor_err(eSENSOR_TYPE_t sensor, uint8_t code)
 {
@@ -1577,7 +1578,7 @@ void DUALPORT_TASK(void *arg)
   uint8_t f_err = 0;
   uint8_t sensor_err = 0;
   uint16_t data;
-  uint16_t rain_p_off_delay=0;
+  uint32_t rain_p_off_delay=0;
   int32_t wind_speed = 0;
   int32_t wind_direction = 0;
   float wind_speed_mavg = 0;
@@ -1587,6 +1588,8 @@ void DUALPORT_TASK(void *arg)
   DATE_TIME_BUF ct;
   DATE_TIME_BUF time_old;
   AWS_DATA_STRUCT *pAws;
+
+  int32_t elapse_time;
  // sensor_t *p_sensor_config ;
 
   DEBUG_PRINTF("dual port task start\r\n");
@@ -1680,20 +1683,26 @@ void DUALPORT_TASK(void *arg)
       // 강우 감지
       if (is_raining(&sensor_err)) // Off Delay 적용 함
       {
-        rain_p_off_delay = 0;
-          //rain_p_on_delay =0;
-          update_sensor_err(A8_RAIN_PRESENT, sensor_err);
-          pAws->mRainDetect.sReal = 0x000a;
-
-    
+        g_rain_timer_counting_down = false;
+        rain_p_off_delay =osKernelGetTickCount();
+        update_sensor_err(A8_RAIN_PRESENT, sensor_err);
+        pAws->mRainDetect.sReal = 0x000a;
+   
       }
       else
       {
-        //rain_p_on_delay = 0;
-        if (rain_p_off_delay++ > MS_TO_SCAN_CNT(get_rain_present_config()->delay_sec ))
+        if (pAws->mRainDetect.sReal==0x000a)
         {
-          rain_p_off_delay=0;
-          pAws->mRainDetect.sReal = 0x0000;
+          g_rain_timer_counting_down = true;
+          elapse_time = osKernelGetTickCount() - rain_p_off_delay;
+          g_rain_off_remain_time = (get_rain_present_config()->off_delay_sec * 1000) - elapse_time;
+
+          if (g_rain_off_remain_time <= 0)
+          {
+            g_rain_timer_counting_down = false;
+            rain_p_off_delay =osKernelGetTickCount();
+            pAws->mRainDetect.sReal = 0x0000;
+          }
         }
       }
 

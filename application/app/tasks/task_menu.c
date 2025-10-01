@@ -47,6 +47,8 @@ extern const char *linkStatusList[3];
 extern const char *generalStatusList[2];
 extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
 extern uint8_t BSP_PlatformIsDetected(void);
+extern int32_t g_rain_off_remain_time;
+extern bool g_rain_timer_counting_down;
 
 
 #define SCREEN_COLS 21
@@ -604,20 +606,39 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     {
       if (min == eAWS_DATA_RAW )
       {
-
         bool rain_p = p_kma->precipitation_presence.raw.b ;
         screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN P", rain_p?"ON":"OFF");
       }
       else if ( min == eAWS_DATA_REAL)
       {
+
         uint16_t data = p_kma->precipitation_presence.data;
         bool rain_p = (data == 10) ? true : false;
-        screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN P", rain_p ? "ON" : "OFF");
+        int rain_off_remain_sec = (int)(g_rain_off_remain_time/1000.0);
+        if(rain_p)
+        {
+          if (g_rain_timer_counting_down)
+          {
+            screen_page_printf(p_win, "%-*s: %s %03dsec", AWS_WD, "RAIN P","ON" , rain_off_remain_sec);
+          }
+          else
+          {
+            screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN P", "ON");
+          }
+        }
+        else
+        {
+          screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN P",  "OFF");
+        }
+
       }
       else
       {
-        screen_page_printf(p_win, "%-*s: %4d", AWS_WD, "RAIN P",
-                 p_kma->precipitation_presence.data);
+
+        uint16_t data = p_kma->precipitation_presence.data;
+        bool rain_p = (data == 10) ? true : false;
+       // screen_page_printf(p_win, "%-*s: %4d", AWS_WD, "RAIN P",p_kma->precipitation_presence.data);
+        screen_page_printf(p_win, "%-*s: %s", AWS_WD, "RAIN P", rain_p ? "ON" : "OFF");
       }
     }
   }
