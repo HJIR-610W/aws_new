@@ -1840,7 +1840,7 @@
             <file>$PROJ_DIR$\..\application\app\test\parser\hart_parser.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
             <file>$TOOLKIT_DIR$\inc\c\inttypes.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stack_macros.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\httpd_structs.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ip.h</file>
@@ -1914,7 +1914,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\driver.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sio.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_eth.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_offset.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>

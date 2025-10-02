@@ -496,7 +496,11 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
       break;
     }
 
-
+    if(isnan(temperature))
+    {
+      *sensor_err = 1 << 4;
+      return (uint16_t)AWS_DATA_ERR_VAL;
+    }
 
 
   temperature = validate_sensor_value_min(temperature, -40.0f, TEMPERATURE_ACCURACY, &err);
