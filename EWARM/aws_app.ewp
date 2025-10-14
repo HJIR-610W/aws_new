@@ -228,7 +228,6 @@
                     <state>STM32F407xx</state>
                     <state>USE_USB_FS</state>
                     <state>USE_FULL_ASSERT</state>
-                    <state>USE_DEBUG_MODE</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -1446,7 +1445,7 @@
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_menu.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\app\tasks\task_menu_define.h</name>
+                    <name>$PROJ_DIR$\..\Application\app\tasks\task_menu_define.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_monitor.c</name>
@@ -1782,13 +1781,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -1804,7 +1803,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -1927,6 +1926,9 @@
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_i2c.h</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\..\drivers\bsp\bsp_iwdg.c</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_led.c</name>
             </file>
             <file>
@@ -1971,7 +1973,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -2001,7 +2003,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>

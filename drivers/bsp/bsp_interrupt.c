@@ -412,3 +412,26 @@ void OTG_HS_IRQHandler(void)
 {
   HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
 }
+
+
+extern TIM_HandleTypeDef  TimInputCaptureHandle;
+
+void TIM7_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&TimInputCaptureHandle);
+}
+
+extern void freq_callback(TIM_HandleTypeDef *htim) ;
+extern void iwdg_callback(TIM_HandleTypeDef *htim) ;
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim->Instance == TIM2 || htim->Instance == TIM5)
+  {
+    freq_callback(htim);
+  }
+  else if(htim->Instance == TIM7)
+  {
+     iwdg_callback(htim);
+  }
+}

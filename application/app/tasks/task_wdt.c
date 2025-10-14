@@ -5,12 +5,19 @@
 #include "dev_io.h"
 #include "system_err.h"
 #include "FreeRTOS.h"
+#include "bsp_iwdg.h"
+
 #define TASK_MAX 10
 
 const osThreadAttr_t kWdtTask_attributes = {
     .name = "wdt",
     .stack_size = TASK_STACK(TASK_WDT_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_WDT_DEF)};
+
+const osThreadAttr_t kIwdtTask_attributes = {
+    .name = "iwdt",
+    .stack_size = TASK_STACK(TASK_IWDT_DEF),
+    .priority = (osPriority_t)TASK_PRIO(TASK_IWDT_DEF)};
 
 typedef struct
 {
@@ -95,7 +102,22 @@ void wdtTask(void *argument)
   }
 }
 
+void iwdtTask(void *argument)
+{
+  bsp_iwdg_init(4000);
+  while(1)
+  {
+    bsp_iwdg_reload();
+    osDelay(1000);
+  }
+}
+
 void wdtTask_init(void)
 {
   osThreadNew(wdtTask, NULL, &kWdtTask_attributes);
+}
+
+void iwdtTask_init(void)
+{
+  osThreadNew(iwdtTask, NULL, &kIwdtTask_attributes);
 }

@@ -17,7 +17,6 @@ int is_debug_mode(void)
 int main(void)
 {
 
-
   if (is_debug_mode())
   {
     __HAL_DBGMCU_FREEZE_IWDG();  // 디버깅 시 와치독 카운트 멈춤
@@ -25,7 +24,7 @@ int main(void)
   }
   
   bsp_init();
-
+  bsp_iwdg_init(16000);
   osKernelInitialize();
 
   startTask_init();

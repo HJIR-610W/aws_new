@@ -65,6 +65,7 @@ int32_t menu_view_log(void)
       row = 3;
       len = strlen(&log.msg[25]);
 
+      start=0;
       while (start < len)
       {
         if (len - start <= 21)

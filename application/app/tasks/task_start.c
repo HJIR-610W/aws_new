@@ -110,7 +110,11 @@ void startTask(void *arg)
   }
 
   consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화
+  #ifdef USE_DEBUG
   wdtTask_init();
+  #else
+  iwdtTask_init();
+  #endif
 
 
   menuTask_init();

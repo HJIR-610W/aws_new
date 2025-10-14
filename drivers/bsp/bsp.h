@@ -8,6 +8,7 @@
 #include "bsp_do.h"
 #include "bsp_di.h"
 #include "bsp_rtc.h"
+#include "bsp_iwdg.h"
 
 #define LED_BLINK 0
 #define LED_ON 1

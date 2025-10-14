@@ -150,7 +150,8 @@
 			"lwipopts.h": "c",
 			"config_define.h": "c",
 			"app_file.h": "c",
-			"task_measure.h": "c"
+			"task_measure.h": "c",
+			"bsp_iwdg.h": "c"
 		}
 	}
 }

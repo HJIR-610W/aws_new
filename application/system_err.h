@@ -9,6 +9,7 @@
 
 #define ERROR_PRINTF_USE // 시스템 에러 출력
 #define DEBUG_PRINTF_USE 1 // 디버깅 필요시
+//#define USE_DEBUG
 
 #define PRINTF_BASE(fmt, ...)                                                               \
   error_print("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \

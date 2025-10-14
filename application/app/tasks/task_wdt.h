@@ -11,4 +11,6 @@ int wdt_task_register(const char *name, uint32_t timeout_ms);
 void wdtTask_init(void);
 void wdt_task_unregister(int index);
 
+void iwdtTask_init(void);
+
 #endif

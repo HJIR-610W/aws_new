@@ -88,6 +88,8 @@
 #define TASK_SDI_DEF (1024, osPriorityNormal1)
 #define TASK_HART_DEF (1024, osPriorityNormal1)
 
+#define TASK_IWDT_DEF (1024, osPriorityLow)
+
   // tcpip_thread (1024,osPriorityRealtime)
   // EthIf(512,osPriorityRealtime)
   // Tmr Svc(1024,osPriorityNormal)

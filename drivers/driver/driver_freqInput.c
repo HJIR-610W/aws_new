@@ -329,7 +329,7 @@ uint32_t last_capture_tick_TIM5 = 0;
 uint32_t calculate_timer_prescaler(TIM_TypeDef *tim_instance, uint32_t desired_freq_hz);
 
 // Capture callback function - frequency measurement only
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+void freq_callback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM2 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
   {

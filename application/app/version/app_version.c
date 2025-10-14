@@ -3,6 +3,7 @@
 
 #include "app_version.h"
 #include "util_time.h"
+#include "system_err.h"
 
 #define MCU_SRAM_START_ADDR 0x20000000   // MCU SRAM 시작 주소
 
@@ -14,12 +15,10 @@ __no_init volatile uint32_t _shareData;
 #define APP_INFO_START_ADDRESS (0x08000188 + 0x00010000) // 벡터가 끝나는 곳
 #pragma location = APP_INFO_START_ADDRESS
 __root const section_info_t g_kappInfo = {.signature ={'A','P','P',' '},\
-                                            .ver = INFO_VER,\
-  
+                                            .ver = INFO_VER,
 
-
-#if defined(DEBUG_MODE)
-                                       .section = SECTION_TEST,  
+#if defined(USE_DEBUG)
+                                       .section = SECTION_TEST,
 #else
                                        .section = SECTION_APP,
 #endif

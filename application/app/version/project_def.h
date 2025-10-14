@@ -3,6 +3,8 @@
 #ifndef PROJECT_DEF_H
 #define PROJECT_DEF_H
 
+#include <stdint.h>
+
 #define INFO_VER (0U)
 
 #define SECTION_BOOT (0U)
@@ -38,6 +40,6 @@ typedef struct section_info_s
 
 
 
-#define DEBUG_MODE_EN 0   // 디버깅시 1로하여 사용
+
 
 #endif
