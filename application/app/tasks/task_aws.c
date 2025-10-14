@@ -244,6 +244,13 @@ uint16_t  BarometricCalc(uint8_t *sensor_err)
 
   pressure = p_sensor[A7_PRESSURE].data.f;
 
+  if (isnan(pressure))
+  {
+    *sensor_err = 1 << 4;
+    return (uint16_t)AWS_DATA_ERR_VAL;
+  }
+
+
   pressure = validate_sensor_value_min(pressure, 500.0f, PRESSURE_ACCURACY, &err);
 
   if (err)
@@ -284,6 +291,13 @@ uint16_t HumidityCalc(uint8_t *sensor_err)
   }
 
   huminity = p_sensor[A10_RELATIVE_HUMIDITY].data.f;
+
+  if (isnan(huminity))
+  {
+    *sensor_err = 1 << 4;
+    return (uint16_t)AWS_DATA_ERR_VAL;
+  }
+
 
   huminity = validate_sensor_value_min(huminity, 0.0f, HUMINITY_0_90_ACCURACY, &err);
 
@@ -351,15 +365,24 @@ uint16_t  SolarRadCalc(uint8_t *sensor_err)
 {
   sensor_data_t *p_sensor = g_p_raw->data;
   int16_t s_data;
+  float f_data;
 
   *sensor_err = p_sensor[B1_SOLAR_RADIATION].err;
   if (*sensor_err )
   {
     return (uint16_t)AWS_DATA_ERR_VAL;
   }
-  
-  s_data = (int16_t)p_sensor[B1_SOLAR_RADIATION].data.f;//소수점은 버린다.1W기준으로만 처리 
-  
+
+  f_data = p_sensor[B1_SOLAR_RADIATION].data.f; // 소수점은 버린다.1W기준으로만 처리
+
+  if (isnan(f_data))
+  {
+    *sensor_err = 1 << 4;
+    return (uint16_t)AWS_DATA_ERR_VAL;
+  }
+
+  s_data = (int16_t)f_data; // 소수점은 버린다.1W기준으로만 처리
+
   if(s_data<0)
   {
     s_data = 0;

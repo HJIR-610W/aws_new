@@ -32,19 +32,21 @@ float validate_sensor_value_min(float value, float min, float abs_tol, uint8_t* 
   if (err)
     *err = 0;
 
-  if (value < min)
-  {
-    if (less_equal_float(fabsf(value - min), abs_tol))
+
+
+    if (value < min)
     {
-      return min;  // 보정하여 반환
+      if (less_equal_float(fabsf(value - min), abs_tol))
+      {
+        return min; // 보정하여 반환
+      }
+      else
+      {
+        if (err)
+          *err = 1;
+        return value;
+      }
     }
-    else
-    {
-      if (err)
-        *err = 1;
-      return value;
-    }
-  }
 
   return value;  // 정상값
 }
@@ -53,6 +55,12 @@ float validate_sensor_value_max(float value, float max, float abs_tol, uint8_t* 
 {
   if (err)
     *err = 0;
+
+  if (isnan(value))
+  {
+    *err = 1;
+    return NAN;
+  }
 
   if (value > max)
   {
