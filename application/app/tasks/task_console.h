@@ -5,5 +5,7 @@
 
 
 void consoleTask_init(void *arg);
-void consoleTask_start(void);
+void start_console(void *arg);
+void stop_console(void);
+
 #endif

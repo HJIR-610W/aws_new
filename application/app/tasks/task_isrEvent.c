@@ -3,8 +3,9 @@
 
 #include "bsp.h"
 #include "dev_io.h"
-#include "task_isrEvent.h"
 #include "FreeRTOS.h"
+#include "task_isrEvent.h"
+#include "task_console.h"
 #include "Sensors\rain\rain.h"
 #include "system_err.h"
 
@@ -64,8 +65,14 @@ void isrEventTask(void *arg)
           break;
         case eSYSTEM_RESET:
           reset_system("user reset");
-        default:
           break;
+          case eUSER_START_CONSOLE:
+            start_console((void *)0);
+            break;
+          case eUSER_STOP_CONSOLE:
+          stop_console();
+          break;
+            default : break;
         }
     }
   }

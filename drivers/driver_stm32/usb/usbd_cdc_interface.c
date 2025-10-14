@@ -86,6 +86,7 @@ static int8_t CDC_Itf_DeInit(void)
      */
     static int8_t CDC_Itf_Control(uint8_t cmd, uint8_t *pbuf, uint16_t length)
 { 
+  //0x21 usb가 처음 삽입되면 이값이 수신됨 CDC_GET_LINE_CODING
   switch (cmd)
   {
   case CDC_SEND_ENCAPSULATED_COMMAND:

@@ -32,7 +32,7 @@ void MX_FATFS_Init(void)
   }
   else
   {
-    ERROR_PRINTF("SD card mounted successfully\n");
+    DEBUG_PRINTF("SD card mounted successfully\n");
   }
 }
 

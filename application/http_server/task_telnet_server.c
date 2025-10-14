@@ -1,20 +1,23 @@
 #include "task_telnet_server.h"
 #include "terminal_bridge.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
+#include "app_logging.h"
+#include "config_app.h"
 #include "cmsis_os2.h"
 #include "lwip.h"
 #include "lwip/inet.h"
 #include "lwip/sockets.h"
-#include "app_logging.h"
 #include "task_logging.h"
+#include "task_console.h"
 #include "user_heap.h"
 #include "util_time.h"
-#include "config_app.h"
-#include "task_console.h"
+
+
 
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define TELNET_WELCOME_MSG "\r\n=== AWS Telnet Console ===\r\n\r\n"
@@ -376,7 +379,7 @@ static void telnet_server_mode_task(void)
             }
         }
 
-        consoleTask_start();
+        start_console((void *)0);
 
 
             char client_ip_str[INET_ADDRSTRLEN];

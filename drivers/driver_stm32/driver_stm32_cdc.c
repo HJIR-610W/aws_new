@@ -14,7 +14,7 @@
 #include "stm32_usb.h"
 #include "pcb_define.h"
 #include "os_user_def.h"
-
+#include "task_isrEvent.h"
 extern uint32_t calculate_txWaitTimeMs(uint32_t baud, uint16_t dataLen);
 
 
@@ -38,7 +38,17 @@ static stm32_cdc_instance_t cdc_inst;
 void set_usb_cdc_connection(bool set)
 {
   cdc_inst.connected = set;
+  if(set)
+  {
+    os_send_event(eUSER_START_CONSOLE, 0);
+  }
+  else
+  {
+    os_send_event(eUSER_STOP_CONSOLE, 0);
+  }
 }
+
+
 
 int32_t stm32_cdc_init(int num,void *opt)
 {
@@ -60,10 +70,7 @@ int32_t stm32_cdc_init(int num,void *opt)
     osDelay(100);
   }
 
-  if (cdc_inst.connected==0)
-  {
-    return 0;
-  }
+  cdc_inst.cdc_stream = xStreamBufferCreate(100, 1);
 
   if (cdc_inst.tx_sem == NULL)
   {
@@ -83,15 +90,20 @@ int32_t stm32_cdc_init(int num,void *opt)
     }
   }
 
-
-  if(cdc_inst.txcSem ==NULL)
+  if (cdc_inst.txcSem == NULL)
   {
     tempSem = osSemaphoreNew(1, 0, NULL);
-    if(tempSem)
+    if (tempSem)
       cdc_inst.txcSem = tempSem;
   }
 
-  cdc_inst.cdc_stream = xStreamBufferCreate(100, 1);
+  if (cdc_inst.connected==0)
+  {
+    return 0;
+  }
+
+
+
   cdc_inst.opened = true;
 
 

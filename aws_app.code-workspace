@@ -152,7 +152,9 @@
 			"app_file.h": "c",
 			"task_measure.h": "c",
 			"bsp_iwdg.h": "c",
-			"menu_setup.h": "c"
+			"menu_setup.h": "c",
+			"task_console.h": "c",
+			"task_isrevent.h": "c"
 		}
 	}
 }

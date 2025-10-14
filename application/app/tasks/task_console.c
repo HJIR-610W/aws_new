@@ -22,7 +22,7 @@
 
 int32_t console_uart_num = -1;
 
-static osThreadId_t s_console_task_id;
+ osThreadId_t s_console_task_id;
 const osThreadAttr_t consoleTask_attributes = {
   .name = "consoleTask",
   .stack_size = TASK_STACK(TASK_CONSOLE_DEF),
@@ -144,7 +144,18 @@ void consoleTask(void *arg)
   }
 }
 
+void start_console(void *arg)
+{
+  if (s_console_task_id == NULL)
+  {
+    s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
+  }
 
+  if(s_console_task_id)
+  {
+    set_debug_uart_handle(BSP_UART_10_CDC);
+  }
+}
 
 void consoleTask_init(void *arg)
 {
@@ -155,27 +166,22 @@ void consoleTask_init(void *arg)
   uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
-  console_uart_num = BSP_UART_0_D_SUB_0  ;
+  console_uart_num = BSP_UART_10_CDC  ;
   
     
   result = drv_uart_init(console_uart_num, &uart_config);
-
-
-    
+   
   if(result > 0)                                                                                
   {
     set_debug_uart_handle(console_uart_num);
-    if (s_console_task_id==NULL)
-      s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
+    start_console(arg);
   }
 }
 
-void consoleTask_start(void)
-{
-  if(s_console_task_id == NULL)
-  s_console_task_id = osThreadNew(consoleTask, NULL, &consoleTask_attributes);
 
-  
+void stop_console(void)
+{
+  set_debug_uart_handle(-1);
 }
 
 void consoleTask_stop(void)
