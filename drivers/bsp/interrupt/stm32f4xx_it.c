@@ -229,7 +229,7 @@ void HardFault_Handler(void)
      
   while (1)
   {
-#ifdef USE_DEBUG
+#if USE_DEBUG
     __asm("BKPT #0");
     #endif 
     reset_system("hard fault");

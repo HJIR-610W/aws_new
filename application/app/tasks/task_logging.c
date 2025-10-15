@@ -17,7 +17,7 @@
 #include "system_err.h"
 #include "util_time.h"
 #include "task_menu.h"
-
+#include "task_wdt.h"
 typedef enum logging_cmd_e
 {
   eLOGGING_LOG,      // 로깅 task로 로그를 전송 할 때 사용
@@ -203,9 +203,12 @@ void loggingTask(void *arg)
   data_logging_cmd_t *p_frame;
   uint32_t offset;
   uint16_t sunshine;
-
+  int32_t wdt_number;
 
   DEBUG_PRINTF("logging task start\r\n");
+
+  //이 task는 최소 1분에 한번씩 호출되어야한다.
+  wdt_number = wdt_task_register(kLoggingTask_attributes.name, 90000);
 
   while (1)
   {
@@ -243,6 +246,8 @@ void loggingTask(void *arg)
         }
 
     }
+
+    wdt_task_feed(wdt_number);
   }
 }
 

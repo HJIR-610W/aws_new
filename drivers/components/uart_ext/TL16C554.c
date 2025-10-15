@@ -422,7 +422,7 @@ void isr_tl16c554(int uart_num)
         data = read_register(RBR(uart->base_address)); 
         xBytesSent = xStreamBufferSendFromISR(uart->quad_stream, &data, 1, &xHigherPriorityTaskWoken);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken); // 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청
-#ifdef USE_DEBUG
+#if USE_DEBUG
         if (!(xBytesSent > 0))
         {
         

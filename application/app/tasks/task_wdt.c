@@ -31,10 +31,6 @@ typedef struct
 static task_watchdog_t task_watch_list[TASK_MAX];
 
 
-static inline uint32_t now_tick(void)
-{
-  return osKernelGetTickCount();
-}
 
 void wdt_task_feed(int index)
 {
@@ -45,7 +41,7 @@ void wdt_task_feed(int index)
     return;
 
   task_watch_list[index].last_count++;
-  task_watch_list[index].last_updated_tick = now_tick();
+  task_watch_list[index].last_updated_tick = osKernelGetTickCount();
 }
 
 void wdt_task_unregister(int index)
@@ -77,25 +73,26 @@ int wdt_task_register(const char *name, uint32_t timeout_ms)
 
 void wdtTask(void *argument)
 {
-  DEBUG_PRINTF("wdt task start\r\n");
-  for (;;)
-  {
-    osDelay(60000);  
+  uint32_t now;
+  uint32_t elapsed;
 
-    uint32_t now = osKernelGetTickCount();
+  DEBUG_PRINTF("wdt task start\r\n");
+  while(1)
+  {
+    osDelay(1000);  
+
+    now = osKernelGetTickCount();
 
     for (int i = 0; i < TASK_MAX; i++)
     {
       if (task_watch_list[i].active == 0)
         continue;
 
-      uint32_t elapsed = now - task_watch_list[i].last_updated_tick;
+      elapsed = now - task_watch_list[i].last_updated_tick;
 
       if (elapsed > task_watch_list[i].timeout_ms)
       {
-        ERROR_PRINTF("[WDT] Task '%s' not responding for %lu ms\r\n", task_watch_list[i].name,
-                     elapsed);
-
+        ERROR_PRINTF("[WDT] Task '%s' not responding for %lu ms\r\n", task_watch_list[i].name,elapsed);
         reset_system("[WDT]%s", task_watch_list[i].name);
       }
     }

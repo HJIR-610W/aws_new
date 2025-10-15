@@ -56,18 +56,22 @@
 #define CMSIS_device_header "stm32f4xx.h"
 #endif /* CMSIS_device_header */
 
-//                             (스택, 우선순위)
-#define TASK_START_DEF          (2048, osPriorityRealtime7)
-#define TASK_TEST_DEF           (2048, osPriorityRealtime7)
-#define TASK_BOOT_DEF           (2048, osPriorityRealtime7)
+//                              (스택, 우선순위)
+#define TASK_START_DEF          (2048, osPriorityRealtime3)
+#define TASK_TEST_DEF           (2048, osPriorityRealtime3)
+#define TASK_BOOT_DEF           (2048, osPriorityRealtime3)
 #define TASK_WDT_DEF            (1024, osPriorityRealtime2)
 #define TASK_ISR_EVENT_DEF      (1024, osPriorityRealtime2)
 #define TASK_HTTP_SERVER_DEF    (4096, osPriorityRealtime2)
+// Tmr Svc                      (1024, osPriorityRealtime2)
 #define TASK_DUALPORT_DEF       (2048, osPriorityRealtime1)
-#define TASK_KEY_DEF            (256, osPriorityRealtime1)
-#define TASK_ETHERNET_DEF       (2048, osPriorityBelowNormal)  //초기화만 해주고 종료 됨
+#define TASK_KEY_DEF            ( 256, osPriorityRealtime1)
 #define TASK_MEASURE_250MS_DEF  (1024, osPriorityRealtime)
 #define TASK_MEASURE_1S_DEF     (2048, osPriorityRealtime)
+// tcpip_thread                 (1024, osPriorityRealtime)
+// EthIf                        ( 512, osPriorityRealtime)
+#define TASK_SDI_DEF            (1024, osPriorityNormal) //현재 미사용
+#define TASK_HART_DEF           (1024, osPriorityNormal) //현재 미사용
 #define TASK_TCP_SERVER_DEF     (1024, osPriorityNormal)
 #define TASK_TCP_CLIENT_DEF     (2048, osPriorityNormal)
 #define TASK_DIRECT_DEF         (2048, osPriorityNormal)
@@ -75,25 +79,22 @@
 #define TASK_CDMA_TCP_DEF       (3072, osPriorityNormal)
 #define TASK_CDMA_ASYNC_DEF     (2048, osPriorityNormal)
 #define TASK_CLIENT_HANDLER_DEF (2048, osPriorityNormal)
+#define TASK_ETHERNET_DEF       (2048, osPriorityBelowNormal)  //초기화만 해주고 종료 됨
 #define TASK_CONSOLE_DEF        (3072, osPriorityBelowNormal)
 #define TASK_MENU_DEF           (2560, osPriorityBelowNormal)
 #define TASK_SYSTEM_DEF         (2048, osPriorityBelowNormal)
 #define TASK_LOGGING_DEF        (2560, osPriorityBelowNormal)
 #define TASK_TELNET_SERVER_DEF  (2048, osPriorityBelowNormal)
+#define TASK_FILE_ERASE_DEF     (2048, osPriorityBelowNormal)
+#define TASK_PANEL_DEF          ( 768, osPriorityBelowNormal)
+#define TASK_VHF_DEF            ( 768, osPriorityBelowNormal)
+// EthLink                      (1024, osPriorityBelowNormal)
+#define TASK_IWDT_DEF           ( 256, osPriorityLow)
 
-#define TASK_FILE_ERASE_DEF (2048, osPriorityBelowNormal)
 
-#define TASK_PANEL_DEF (768, osPriorityBelowNormal)
-#define TASK_VHF_DEF (768, osPriorityBelowNormal)
-#define TASK_SDI_DEF (1024, osPriorityNormal1)
-#define TASK_HART_DEF (1024, osPriorityNormal1)
 
-#define TASK_IWDT_DEF (1024, osPriorityLow)
 
-  // tcpip_thread (1024,osPriorityRealtime)
-  // EthIf(512,osPriorityRealtime)
-  // Tmr Svc(1024,osPriorityNormal)
-  // EthLink (1024,osPriorityBelowNormal)
+
 
 #define GET_1ST(a, b) a
 #define GET_2ND(a, b) b
@@ -108,7 +109,7 @@
 #define configSUPPORT_STATIC_ALLOCATION 1
 #define configSUPPORT_DYNAMIC_ALLOCATION 1
 #define configUSE_IDLE_HOOK 1
-#define configUSE_TICK_HOOK 0
+#define configUSE_TICK_HOOK 1
 #define configCPU_CLOCK_HZ (SystemCoreClock)
 #define configTICK_RATE_HZ ((TickType_t)1000)
 #define configMAX_PRIORITIES (56)
@@ -123,7 +124,7 @@
 #define configUSE_RECURSIVE_MUTEXES 1
 #define configUSE_MALLOC_FAILED_HOOK 1
 #define configUSE_COUNTING_SEMAPHORES 1
-#define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION 0 //특정 MCU 아키텍처에 특화된 어셈블리어 사용하여 다음에 실행하루 테스크 빠르게 선택기능
   /* USER CODE BEGIN MESSAGE_BUFFER_LENGTH_TYPE */
 
 #define configUSE_STATS_FORMATTING_FUNCTIONS 1 // task 상태 추적 vTaskList 사용하려면
@@ -143,7 +144,7 @@
 
   /* Software timer definitions. */
 #define configUSE_TIMERS 1
-#define configTIMER_TASK_PRIORITY (24) // 중간값
+#define configTIMER_TASK_PRIORITY 50 
 #define configTIMER_QUEUE_LENGTH 10
 #define configTIMER_TASK_STACK_DEPTH 256
 
@@ -160,7 +161,7 @@
 #define INCLUDE_vTaskPrioritySet 1
 #define INCLUDE_uxTaskPriorityGet 1
 #define INCLUDE_vTaskDelete 1
-#define INCLUDE_vTaskCleanUpResources 0
+#define INCLUDE_vTaskCleanUpResources 0 //0 Idle 태스크가 나중에 실행될때까지 태스크가 사용하던 TCB 와 스택의 할딩 해제 지연
 #define INCLUDE_vTaskSuspend 1
 #define INCLUDE_vTaskDelayUntil 1
 #define INCLUDE_vTaskDelay 1

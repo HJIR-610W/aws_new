@@ -60,7 +60,7 @@ const osThreadAttr_t kMenuTask_attributes = {
 };
 
 const osThreadAttr_t kBootProgressTask_attributes = {
-    .name = "boot",
+    .name = "progress",
     .stack_size = TASK_STACK(TASK_BOOT_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_BOOT_DEF),
 };

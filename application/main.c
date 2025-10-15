@@ -3,7 +3,7 @@
 #include "bsp.h"
 #include "cmsis_os2.h"
 #include "task_start.h"
-
+#include "system_err.h"
 
 int is_debug_mode(void)
 { 
@@ -24,11 +24,15 @@ int main(void)
   }
   
   bsp_init();
-  bsp_iwdg_init(16000);
+#if IWDG_USE
+  bsp_iwdg_init(16000);//iwdg task가 실행 전까지는 16초로 타임아웃
+#endif
   osKernelInitialize();
 
   startTask_init();
 
+  HAL_SuspendTick();
+  
   osKernelStart();
 
   while(1);

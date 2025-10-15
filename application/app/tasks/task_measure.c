@@ -49,6 +49,7 @@
 #include "util_time.h"
 #include "system_err.h"
 #include "os_user_def.h"
+#include "task_wdt.h"
 
 #define MEASURE_PERIOD_250MS 250
 #define MEASURE_PERIOD_1000MS 1000
@@ -492,7 +493,7 @@ void measure_1s(void)
 
         if (model)  // 모델이 존재하면 사용함을 의미
         {
-          adc = 0;
+           adc = 0;
           switch (sensor_type)
           {
             case A1_TEMPERATURE:
@@ -617,10 +618,12 @@ void task_1s_unlock(void)
 void measure250ms_task(void *arg)
 {
   uint32_t tick_count;
+  int32_t wdt_number;
 
   DEBUG_PRINTF("measure 250ms task start\r\n");
 
   tick_count = osKernelGetTickCount();
+  wdt_number = wdt_task_register(kMeasure250msTask_attributes.name, 60000);
   while(1)
   {
 
@@ -631,7 +634,7 @@ void measure250ms_task(void *arg)
     
     tick_count += MEASURE_PERIOD_250MS;
     osDelayUntil(tick_count);
-
+    wdt_task_feed(wdt_number);
   }
 }
 
@@ -639,19 +642,21 @@ void measure250ms_task(void *arg)
 void measure1s_task(void *arg)
 {
   uint32_t tick_count;
+  int32_t wdt_number;
 
   DEBUG_PRINTF("measure 1s task start\r\n");
 
   tick_count = osKernelGetTickCount();
+  wdt_number = wdt_task_register(kMeasure250msTask_attributes.name, 10000);
   while(1)
   {
-
     elapse_start(&g_exec_1s_time);
     measure_1s();
     elapse_stop(&g_exec_1s_time);
     send_measurement(g_1s_queue_id, &g_reading_1);
     tick_count += MEASURE_PERIOD_1000MS;
     osDelayUntil(tick_count);
+    wdt_task_feed(wdt_number);
 
   }
 }

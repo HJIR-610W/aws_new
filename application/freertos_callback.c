@@ -82,4 +82,8 @@ uint32_t YourTimerGetCounterValue(void)
   return DWT->CYCCNT;  // Cycle Counter 값 반환
 }
 
-
+extern void HAL_IncTick(void);
+void vApplicationTickHook(void)
+{
+  HAL_IncTick();
+}

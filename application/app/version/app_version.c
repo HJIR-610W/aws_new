@@ -17,7 +17,7 @@ __no_init volatile uint32_t _shareData;
 __root const section_info_t g_kappInfo = {.signature ={'A','P','P',' '},\
                                             .ver = INFO_VER,
 
-#if defined(USE_DEBUG)
+#if USE_DEBUG
                                        .section = SECTION_TEST,
 #else
                                        .section = SECTION_APP,

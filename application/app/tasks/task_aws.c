@@ -9,7 +9,7 @@
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "config_nvm.h"
-
+#include "bsp_delay.h"
 #include "old_aws_define.h"
 #include "sensor_data\rain_data.h"
 #include "sensor_data\sunshine_data.h"
@@ -1600,6 +1600,9 @@ void update_old_aws_status(AWS_DATA_STRUCT *pAws)
 extern void set_boot_complete(void);
 
 
+uint32_t elapse_st;
+uint32_t elapse_t;
+
 void DUALPORT_TASK(void *arg)
 {
   uint8_t f_err = 0;
@@ -1643,7 +1646,7 @@ void DUALPORT_TASK(void *arg)
   {
     is_measurement_1s(g_p_raw, 0);                     // 업데이트된 값 없으면 이전값 유지
 
-    if (is_measurement_250(&g_raw_250, osWaitForever)) // 250ms마다 최신값 사용
+    if(is_measurement_250(&g_raw_250, osWaitForever)) // 250ms마다 최신값 사용
     {
       g_p_raw->data[A2_WIND_DIRECTION] = g_raw_250.data[eA2_WIND_DIRECTION];
       g_p_raw->data[A3_WIND_SPEED] = g_raw_250.data[eA3_WIND_SPEED];
@@ -1656,66 +1659,65 @@ void DUALPORT_TASK(void *arg)
     check_sensor_use();
     update_raw();
 
-      // 온도
-      data = TempCalc(&sensor_err);
-      pAws->mTemperature.sReal = filter_data(A1_TEMPERATURE, data, sensor_err, &f_err);
-      update_sensor_err(A1_TEMPERATURE, f_err);
+    // 온도
+    data = TempCalc(&sensor_err);
+    pAws->mTemperature.sReal = filter_data(A1_TEMPERATURE, data, sensor_err, &f_err);
+    update_sensor_err(A1_TEMPERATURE, f_err);
 
-      // 풍향
-      data = WindDirecCalc(&sensor_err);
-      wind_direction = (int16_t)filter_data(A2_WIND_DIRECTION, data, sensor_err, &f_err);
-      update_sensor_err(A2_WIND_DIRECTION, f_err);
+    // 풍향
+    data = WindDirecCalc(&sensor_err);
+    wind_direction = (int16_t)filter_data(A2_WIND_DIRECTION, data, sensor_err, &f_err);
+    update_sensor_err(A2_WIND_DIRECTION, f_err);
 
-      // 풍속
-      data = WindSpeedCalc(&sensor_err);
-      wind_speed = (int16_t)filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
-      update_sensor_err(A3_WIND_SPEED, f_err);
+    // 풍속
+    data = WindSpeedCalc(&sensor_err);
+    wind_speed = (int16_t)filter_data(A3_WIND_SPEED, data, sensor_err, &f_err);
+    update_sensor_err(A3_WIND_SPEED, f_err);
 
-     /*
-     평균 풍향 풍속은 함께 처리되는데 한개의 값이 잘못되어도 다른 값이 정상처리 되도록 
-     풍속이 고장나면 오직 각도 산출만을 위해 0.1보다 작은값으로 설정
-     풍향이 고장나면 풍속만 표시되도록 각도를 0으로 고정
-     */
-      adj_wind_speed = (wind_speed == AWS_DATA_ERR_VAL)?0.01:wind_speed/10.0f;
-      adj_wind_direction = (wind_direction == AWS_DATA_ERR_VAL) ? 0 : wind_direction / 10.0f;
+    /*
+    평균 풍향 풍속은 함께 처리되는데 한개의 값이 잘못되어도 다른 값이 정상처리 되도록
+    풍속이 고장나면 오직 각도 산출만을 위해 0.1보다 작은값으로 설정
+    풍향이 고장나면 풍속만 표시되도록 각도를 0으로 고정
+    */
+    adj_wind_speed = (wind_speed == AWS_DATA_ERR_VAL) ? 0.01 : wind_speed / 10.0f;
+    adj_wind_direction = (wind_direction == AWS_DATA_ERR_VAL) ? 0 : wind_direction / 10.0f;
 
-      add_wind_sample(adj_wind_speed, adj_wind_direction);
-      calculate_wind_moving_avg(&wind_speed_mavg, &wind_direction_mavg);//250ms마다 이동평균
-      update_wind_vector_avg_1min(wind_speed_mavg, wind_direction_mavg);//이동평균된 풍향,풍속을 바람벡터로 변환하여 저장
+    add_wind_sample(adj_wind_speed, adj_wind_direction);
+    calculate_wind_moving_avg(&wind_speed_mavg, &wind_direction_mavg); // 250ms마다 이동평균
+    update_wind_vector_avg_1min(wind_speed_mavg, wind_direction_mavg); // 이동평균된 풍향,풍속을 바람벡터로 변환하여 저장
 
-      //실시간 풍속,풍향은 이동평균한 값을 실시간값으로 처리한다.
-      g_aws_inst.wind_speed = (uint16_t)(wind_speed_mavg * 10);
-      g_aws_inst.wind_direction = (uint16_t)(wind_direction_mavg * 10);
-      pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_mavg * 10);
-      pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_mavg * 10);
+    // 실시간 풍속,풍향은 이동평균한 값을 실시간값으로 처리한다.
+    g_aws_inst.wind_speed = (uint16_t)(wind_speed_mavg * 10);
+    g_aws_inst.wind_direction = (uint16_t)(wind_direction_mavg * 10);
+    pAws->mWind.mSpeed.sReal = (uint16_t)(wind_speed_mavg * 10);
+    pAws->mWind.mDirection.sReal = (uint16_t)(wind_direction_mavg * 10);
 
-      //각각 주기동안 최대풍향 풍속을 계산한다.
-      //실시간으로 현재값이 최대값이면 이값을 최대값으로 사용
-      calculate_wind_max(eWIND_MAX_REAL, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
-      calculate_wind_max(eWIND_MAX_1MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
-      calculate_wind_max(eWIND_MAX_10MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
-      calculate_wind_max(eWIND_MAX_HOUR, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
-      calculate_wind_max(eWIND_MAX_DAY, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
+    // 각각 주기동안 최대풍향 풍속을 계산한다.
+    // 실시간으로 현재값이 최대값이면 이값을 최대값으로 사용
+    calculate_wind_max(eWIND_MAX_REAL, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
+    calculate_wind_max(eWIND_MAX_1MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
+    calculate_wind_max(eWIND_MAX_10MIN, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
+    calculate_wind_max(eWIND_MAX_HOUR, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
+    calculate_wind_max(eWIND_MAX_DAY, g_aws_inst.wind_speed, g_aws_inst.wind_direction);
 
-      upate_wind();
+    upate_wind();
 
-      g_rainfall.current += get_rain_mm(&sensor_err);
-      update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
+    g_rainfall.current += get_rain_mm(&sensor_err);
+    update_sensor_err(A6_RAINFALL_DOT5_1MM, sensor_err);
 
-      // 기압
-      data = BarometricCalc(&sensor_err);
-      pAws->mBarometric.sReal = filter_data(A7_PRESSURE, data, sensor_err, &f_err);
-      update_sensor_err(A7_PRESSURE, f_err);
+    // 기압
+    data = BarometricCalc(&sensor_err);
+    pAws->mBarometric.sReal = filter_data(A7_PRESSURE, data, sensor_err, &f_err);
+    update_sensor_err(A7_PRESSURE, f_err);
 
-      // 강우 감지
-      if (is_raining(&sensor_err)) // Off Delay 적용 함
-      {
-        g_rain_timer_counting_down = false;
-        rain_p_off_delay =osKernelGetTickCount();
-        update_sensor_err(A8_RAIN_PRESENT, sensor_err);
-        pAws->mRainDetect.sReal = 0x000a;
-   
-      }
+    // 강우 감지
+    if (is_raining(&sensor_err)) // Off Delay 적용 함
+    {
+      g_rain_timer_counting_down = false;
+      rain_p_off_delay = osKernelGetTickCount();
+      update_sensor_err(A8_RAIN_PRESENT, sensor_err);
+      pAws->mRainDetect.sReal = 0x000a;
+    }
       else
       {
         if (pAws->mRainDetect.sReal==0x000a)
@@ -1798,12 +1800,15 @@ void DUALPORT_TASK(void *arg)
     // 센서 불량 처리
     pAws->mStatus.sReal = 0;
     update_old_aws_status(pAws);
+
     schedule_process(&ct, &time_old);
     update_old_sensor_real();
     update_kma_real();
     // 현재 값연산 없는 항목은 원본값으로 처리
     //update_unused_data(acquire_kma_data(eAWS_DATA_REAL), acquire_kma_data(eAWS_DATA_RAW));
     update_unused_data(acquire_kma_data(eAWS_DATA_1MIN), acquire_kma_data(eAWS_DATA_RAW));
+
+
   }
 }
 
