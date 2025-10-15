@@ -147,7 +147,7 @@
             <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\http_api.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.h</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.c</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\user_diskio.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.c</file>
@@ -1555,7 +1555,7 @@
             <file>$PROJ_DIR$\release\Obj\autoip.xcl</file>
             <file>$PROJ_DIR$\release\Obj\aws_develop.o</file>
             <file>$PROJ_DIR$\release\Obj\magic.o</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_menu_data.o</file>
             <file>$PROJ_DIR$\release\Obj\cmsis_os2.o</file>
             <file>$PROJ_DIR$\release\Obj\timeouts.__cstat.et</file>
@@ -1673,7 +1673,7 @@
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\if_api.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_common.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\snmp.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_app.h</file>
@@ -1945,7 +1945,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\event_groups.h</file>
             <file>$PROJ_DIR$\..\Application\app\panel\panel_hansung.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\sensor_data\rain_data.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\sockets_priv.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\dhcp.h</file>

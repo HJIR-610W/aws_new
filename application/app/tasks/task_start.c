@@ -107,9 +107,6 @@ void startTask(void *arg)
   consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화
 
   wdtTask_init();
-#if USE_DEBUG
-  iwdtTask_init();
-#endif
 
   menuTask_init();
 
@@ -163,6 +160,12 @@ void startTask(void *arg)
 
   //http_server_task_init();
   telnet_server_task_init();
+
+#if IWDG_USE
+//iwdt우선순위는 가장 낮게 하여 가장 마지막에 실행 되도록 한다.
+//이유는 초기화 과정중 이더넷이  3초이상 소요되기 때문
+iwdtTask_init();
+#endif
   log_boot_reason();
   DEBUG_PRINTF("start end\r\n");
 
