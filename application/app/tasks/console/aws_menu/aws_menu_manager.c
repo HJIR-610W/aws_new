@@ -148,10 +148,10 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[A7_PRESSURE]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 200000;
-  adc_config->lowScale = 0;
-  adc_config->scale = 100;
-  adc_config->outMaxV = 1000;
+  adc_config->highScale = 11000;
+  adc_config->lowScale = 5000;
+  adc_config->scale = 10;
+  adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
   // 일사 CMP3 0~1.0VDC

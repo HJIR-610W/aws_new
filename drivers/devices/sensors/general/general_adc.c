@@ -57,6 +57,8 @@ void *general_adc_open(uint8_t num,void *opt)
     general_adc_cfg_single[cfg->single_channel].outMinVolt      = cfg->outMinV;
     general_adc_single[cfg->single_channel].cfg = &general_adc_cfg_single[cfg->single_channel];
     general_adc_single[cfg->single_channel].name = "GENERAL_ADC";
+    
+    general_adc_single[cfg->single_channel].opened = true;
     return &general_adc_single[cfg->single_channel];
   }
   else
@@ -76,7 +78,7 @@ void *general_adc_open(uint8_t num,void *opt)
     general_adc_cfg_diff[cfg->diff_channel].outMinVolt = cfg->outMinV;
     general_adc_diff[cfg->diff_channel].name = "GENERAL_ADC";
     general_adc_diff[cfg->diff_channel].cfg = &general_adc_cfg_diff[cfg->diff_channel];
-  
+  general_adc_diff[cfg->diff_channel].opened = true;
   return &general_adc_diff[cfg->diff_channel];
 
   }

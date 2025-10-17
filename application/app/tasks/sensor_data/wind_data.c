@@ -113,6 +113,42 @@ void add_wind_sample(float speed,float direction)
   }
 }
 
+float calculate_wind_direction_mavg(const float *direction, int count)
+{
+  float sum_sin = 0.0f;
+  float sum_cos = 0.0f;
+
+  const float DEG_TO_RAD = M_PI / 180.0f;
+  for (int i = 0; i < count; i++)
+  {
+    float radians = direction[i] * DEG_TO_RAD;
+    // 2. 벡터 성분을 합산 (X=sin, Y=cos)
+    sum_sin += sinf(radians);
+    sum_cos += cosf(radians);
+  }
+
+  // 3. 평균 벡터의 각도를 atan2f 함수로 계산
+  // atan2f(y, x)를 사용하며, 풍향에서는 y=sin, x=cos 입니다.
+  // 결과는 라디안이며 -M_PI ~ +M_PI 범위입니다.
+  float avg_radians = atan2f(sum_sin, sum_cos);
+
+  // 4. 라디안을 다시 각도(Degree)로 변환
+  float avg_direction = avg_radians * (180.0f / M_PI);
+
+  // 5. 결과를 0.0 ~ 359.9 범위로 정규화 (풍향계 범위)
+  // avg_direction은 -180 ~ 180 일 수 있습니다.
+  if (avg_direction < 0.0f)
+  {
+    avg_direction += 360.0f;
+  }
+
+  if (avg_direction == 360.0f)
+  {
+    avg_direction = 0;
+  }
+
+  return avg_direction;
+}
 /*
 순서 샘플링 시간(s)
 0    0.25
@@ -127,12 +163,10 @@ void add_wind_sample(float speed,float direction)
 9    2.5
 10   2.7
 11   3.0
-
 0.25s마다 샘플링 하고 1초 간격으로 이동평균 해야 한다.
 즉 총 12개를 합산하여 평균하는데 1초 간격으로 해야한다.  
 샘플링 갯수가 4의 배수마다 샘플링하면 된다. 
 이동평균을 하는데 아직 완전히 버퍼가 채워지지 않은 상태라면 채워진 만큼만 평균한다.
-
 */
 
 //결과값이 순간 풍향 ,푼간 풍속
@@ -141,20 +175,21 @@ void calculate_wind_moving_avg(float *wind_speed,float *wind_direction)
   double speed_sum=0;
   double direction_sum=0;
   uint8_t actual_count;
+  float sample_direction[WIND_SPEED_AVG_CNT];
 
   if (s_mavg_sample_count < WIND_SPEED_AVG_CNT)
-    actual_count = s_mavg_sample_count;
+          actual_count = s_mavg_sample_count;
   else
     actual_count = WIND_SPEED_AVG_CNT;
 
   for (uint8_t i = 0; i < actual_count; i++)
   {
     speed_sum += s_wind_mavg_sample[i].speed;
-    direction_sum += s_wind_mavg_sample[i].direction;
+    sample_direction[i] = s_wind_mavg_sample[i].direction;
   }
 
   *wind_speed = speed_sum / actual_count;
-  *wind_direction = direction_sum / actual_count;
+  *wind_direction = calculate_wind_direction_mavg(sample_direction,actual_count);
 }
 
 
