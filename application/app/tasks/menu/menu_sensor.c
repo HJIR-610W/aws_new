@@ -37,7 +37,8 @@ extern const char* physical_list[2];
 
 
 #define ADC_L_W 10
-#define E_L_W 9
+#define E_L_W 8
+#define TYPE_LABEL_W 8
 
 #define ADC_PAGE_MODE 0
 #define ADC_PAGE_CHANNEL 1
@@ -219,10 +220,15 @@ void draw_jinsung_barometer_page(screen_menu_t *p_win, jinsung_sjgp215_config_t 
 
 void draw_sensor_page(screen_menu_t* p_win, sensor_t *p_sensor)
 {
-  screen_menu_start(p_win);
-  screen_menu_printf(p_win, 0, "%-*s:%s", E_L_W, "TYPE", g_sensor_model_eng_table[p_sensor->type]);
-  switch (p_sensor->type)
+  int32_t label_width = TYPE_LABEL_W;
+  if (p_sensor->type == S_T_ADC)
   {
+    label_width = ADC_L_W;
+  }
+    screen_menu_start(p_win);
+    screen_menu_printf(p_win, 0, "%-*s:%s", label_width, "TYPE", g_sensor_model_eng_table[p_sensor->type]);
+    switch (p_sensor->type)
+    {
     case S_T_ADC:
       draw_adc_page(p_win, get_sensor_config(p_sensor));
       break;

@@ -140,14 +140,27 @@ int32_t ctrl_hj_temp(void)
       {
         uint8_t err;
         float temp;
+        int len=0;
+        
         driver_t *hjtemp, *hjhumi;
         char buff[40];
         hjtemp = hjtemp_opened();
+        if(hjtemp)
+        {
         temp = hjTemperature_read(hjtemp, &err);
+          len = snprintf(buff,sizeof(buff),"temp:%5.2f           ",temp);
+        }
         hjhumi = hjHumi_opened();
         float humi;
+        if(hjhumi)
+        {
         humi = hjHuminity_read(hjhumi, &err);
-        snprintf(buff,sizeof(buff),"temp:%5.2f           humi:%.2f",temp,humi);
+          snprintf(&buff[len],sizeof(buff)-len,"humi:%.2f",humi);
+
+        }
+        
+ 
+        
         show_popup("HJ temperature", buff);
 
 

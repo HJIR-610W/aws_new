@@ -124,7 +124,7 @@
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_client.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.h</file>
-            <file>$PROJ_DIR$\..\Application\app\version\boot_version.h</file>
+            <file>$PROJ_DIR$\..\application\app\version\boot_version.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\direct\task_direct.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_sram.c</file>
@@ -134,7 +134,7 @@
             <file>$PROJ_DIR$\..\application\communications\lwip\app\lwip.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\lwip\target\ethernetif.c</file>
-            <file>$PROJ_DIR$\..\Application\Communications\lwip\target\ethernetif.h</file>
+            <file>$PROJ_DIR$\..\application\communications\lwip\target\ethernetif.h</file>
             <file>$PROJ_DIR$\..\application\communications\lwip\target\lwipopts.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_sms.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.c</file>
@@ -145,7 +145,7 @@
             <file>$PROJ_DIR$\..\Application\http_server\core_json.c</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\sd_diskio.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\user_heap.c</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_http_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_http_server.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\bsp_driver_sd.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\sd_diskio.c</file>
@@ -154,7 +154,7 @@
             <file>$PROJ_DIR$\..\application\file_system\fatfs\app\fatfs.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\core_json.h</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\fatfs_platform.c</file>
-            <file>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</file>
+            <file>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\cli_input.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\app\fatfs.c</file>
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\bsp_driver_sd.c</file>
@@ -165,7 +165,7 @@
             <file>$PROJ_DIR$\..\Application\http_server\websocket.c</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\user_diskio.h</file>
             <file>$PROJ_DIR$\..\application\file_system\app_file.c</file>
-            <file>$PROJ_DIR$\..\application\http_server\terminal_bridge.h</file>
+            <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</file>
             <file>$PROJ_DIR$\..\application\file_system\user_heap.h</file>
             <file>$PROJ_DIR$\..\Application\http_server\websocket.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\cli_key_code.c</file>
@@ -1861,12 +1861,12 @@
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_define.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\fsl_common.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\console_scanf.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\fsl_common.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\fsl_shell.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\console_scanf.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\cli_input.h</file>
             <file>$TOOLKIT_DIR$\inc\c\assert.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\fsl_debug_console.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\fsl_debug_console.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_utile.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
@@ -1884,7 +1884,7 @@
             <file>$PROJ_DIR$\..\application\app\test\test_rain.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_power.h</file>
             <file>$PROJ_DIR$\..\application\app\config\config_app.h</file>
-            <file>$PROJ_DIR$\..\application\app\test\test_sdi12.h</file>
+            <file>$PROJ_DIR$\..\Application\app\test\test_sdi12.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\hj_temp_menu\hjtemp_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_ll_sdmmc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\debug.h</file>
@@ -1953,7 +1953,7 @@
             <file>$PROJ_DIR$\..\drivers\devices\sensors\humidity\hj_huminity.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_opts.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_system.h</file>
-            <file>$PROJ_DIR$\..\Application\app\test\parser\hart_parser.h</file>
+            <file>$PROJ_DIR$\..\application\app\test\parser\hart_parser.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netifapi.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt_opts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6.h</file>
@@ -1990,7 +1990,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stack_macros.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_ble.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\utile_data.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_time.h</file>
@@ -2032,7 +2032,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\etharp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\divas\aws_monitor.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_core.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_console.h</file>
@@ -2045,9 +2045,9 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stream_buffer.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.h</file>
             <file>$PROJ_DIR$\..\application\app\test\mcu_debug.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_flash.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\common\const_string.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.h</file>
