@@ -171,12 +171,12 @@ hjwind_cfg_t g_hjwind_cfg;
 driver_t g_hjwind_driver;
 
 
-driver_t *hjwind_open(uint8_t num, void *opt)
+driver_t *hjwind_open( void *opt)
 {
   uart_config_t uart_config;
   hjwindspeed_config_t *hjwind_config = opt;
 
-  (void)num;
+
 
   if (g_hjwind_driver.opened == true)
   {

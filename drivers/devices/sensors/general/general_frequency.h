@@ -15,7 +15,7 @@ extern "C" {
 
 
 
-driver_t *general_freq_open(int channel,void *opt);
+driver_t *general_freq_open(void *opt);
   float general_freq_read(driver_t *drv, uint8_t *err);
 
 

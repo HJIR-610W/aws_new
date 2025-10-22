@@ -22,10 +22,10 @@ driver_t * windSpeed_open(uint8_t num,void *opt)
     driver = general_adc_open(num,opt);
     break;
     case WIND_HJ:
-    driver = hjwind_open(HJ_WIND,opt)  ;
+    driver = hjwind_open(opt)  ;
     break;
     case GENERAL_FREQ:
-      driver = general_freq_open(HJ_WIND, opt);
+      driver = general_freq_open(opt);
       break;
     default:
       break;

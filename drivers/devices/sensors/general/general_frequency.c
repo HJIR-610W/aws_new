@@ -20,7 +20,7 @@ driver_t g_general_freq[2];
 #define FREQ_A 0
 #define FREQ_B 1
 
-driver_t *general_freq_open(int channel,void *opt)
+driver_t *general_freq_open(void *opt)
 {
   frequency_config_t *config = (frequency_config_t *)opt;
 

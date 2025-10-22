@@ -6,20 +6,21 @@
 
 #include "app_sensor.h"
 #include "app_adc.h"
+#include "driver_interface.h"
 
-#define WIND_DIRECTION_ERR_VAL 1000
+#ifndef GENERAL_ADC
+#define GENERAL_ADC 0
+#endif
+#ifndef GENERAL_RS485
+#define GENERAL_RS485 1
+#endif
+#ifndef GENERAL_FREQ
+#define GENERAL_FREQ 2
+#endif
+
+#define WIND_HJ_DIRECTION 101
 
 
-
-
-void windDirection_init(sensor_t *sensor);
-
-bool is_windDirectionInit(void);
-
-
-
-extern float windDirectionSample1Min[240];
-extern float windDirectionSample10Min[10];
-extern uint16_t windDirectionSample1MinCnt;
-extern uint16_t windDirectionSample10MinCnt;
+driver_t *wind_direction_open(uint8_t num, void *opt);
+float wind_direction_read(driver_t *driver, int32_t channel, uint8_t *err);
 #endif

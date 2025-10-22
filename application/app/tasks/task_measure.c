@@ -33,6 +33,7 @@
 #include "Sensors\temperature\temperature.h"
 #include "Sensors\wind_direction\wind_direction.h"
 #include "Sensors\wind_speed\wind_speed.h"
+#include "Sensors\wind_direction\hj_wind_direction.h"
 #include "app_adc.h"
 
 #include "app_dataLogging.h"
@@ -190,9 +191,11 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
       num = TEMP_PT100_B;
       break;
     case S_T_WIND_SPEED_HJ_485:
-    case S_T_WIND_DIRECTION_HJ_485:
       num = WIND_HJ;
       break;
+    case S_T_WIND_DIRECTION_HJ_485:
+      num = HJ_WIND_DIRECTION;
+       break;
     case S_T_SNOW_HJ:
       num = SNOW_HJ;
       break;
@@ -266,7 +269,7 @@ void sensor_init(void)
         case A2_WIND_DIRECTION:
           num = get_driver_number(p_sensor[A2_WIND_DIRECTION].type);
           para = get_sensor_config(&p_sensor[A2_WIND_DIRECTION]);
-          g_sensor_driver[A2_WIND_DIRECTION] = windSpeed_open(num, para);
+          g_sensor_driver[A2_WIND_DIRECTION] = wind_direction_open(num, para);
           break;
         case A9_SNOW_DEPTH:
           num = get_driver_number(p_sensor[A9_SNOW_DEPTH].type);
@@ -457,8 +460,7 @@ void measure_250ms(void)
 
   if (p_sensor_cfg[A2_WIND_DIRECTION].type)
   {
-    direction =
-    wind_read(g_sensor_driver[A2_WIND_DIRECTION], WIND_CHANNEL_DIRECTION, &err_wind_dir);
+    direction = wind_direction_read(g_sensor_driver[A2_WIND_DIRECTION], WIND_CHANNEL_DIRECTION, &err_wind_dir);
     p_reading_250ms[eA2_WIND_DIRECTION].err = err_wind_dir;
     p_reading_250ms[eA2_WIND_DIRECTION].data.f = direction + p_a_sensor[eA2_WIND_DIRECTION].offset;
   }

@@ -154,7 +154,9 @@
 			"bsp_iwdg.h": "c",
 			"menu_setup.h": "c",
 			"task_console.h": "c",
-			"task_isrevent.h": "c"
+			"task_isrevent.h": "c",
+			"wind_define.h": "c",
+			"hj_wind_direction.h": "c"
 		}
 	}
 }

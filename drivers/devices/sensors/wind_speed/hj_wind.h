@@ -10,6 +10,6 @@
 #define HJ_WIND_CHANNEL_SPEED 1
 #define HJ_WIND_CHANNEL_DIRECTION 2
 
-driver_t *hjwind_open(uint8_t num, void *opt);
+driver_t *hjwind_open( void *opt);
 
 #endif
