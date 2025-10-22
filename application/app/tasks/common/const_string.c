@@ -13,7 +13,8 @@ const char *adc_se_list[18] = {"SE  0", "SE  1", "SE  2", "SE  3", "SE  4", "SE 
 
 
 
-const char* adc_diff_list[8] = {"DIFF 0", "DIFF 1", "DIFF 2", "DIFF 3","DIFF 4", "DIFF 5", "DIFF 6", "DIFF 7"};
+const char* adc_diff_list[8] = {"DIF 0", "DIF 1", "DIF 2", "DIF 3","DIF 4", "DIF 5", "DIF 6", "DIF 7"};
+
 
 const char *freq_ch_list[2] = {"FREQ 1", "FREQ 2"};
 

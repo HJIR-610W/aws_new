@@ -161,8 +161,7 @@ void draw_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t* ott_smp3_config
 #define RAIN_PRESENT_PAGE_DELAY 0
 void draw_rain_present_page(screen_menu_t* p_win, rain_present_config_t* rain_present_config)
 {
-
-  screen_menu_printf(p_win, RAIN_PRESENT_PAGE_DELAY, "%-*s:%d", E_L_W, "Off Delay Time(sec)", rain_present_config->off_delay_sec);
+  screen_menu_printf(p_win, RAIN_PRESENT_PAGE_DELAY, "%-*s:%d", E_L_W, "Off Delay sec", rain_present_config->off_delay_sec);
 }
 
 #define FREQ_PAGE_CHANNEL 0
@@ -786,7 +785,7 @@ int32_t rain_present_setup(sensor_t* sensor, uint8_t menu_index)
     case RAIN_PRESENT_PAGE_DELAY:
       dec = rain_present->off_delay_sec;
       
-       status = input_decimal("Delay Time", 1, 300, &dec);
+       status = input_decimal("Off Delay Time(sec)", 1, 300, &dec);
       if (status != MENU_OK)
         break;
       rain_present->off_delay_sec = dec;

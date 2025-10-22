@@ -99,7 +99,7 @@ int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_
   if(type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
   {
     if (channel<DRV_ADS1220_S_CH_16)
-      snprintf(buffer, sizeof(buffer), "%s Input %s Votage", adc_se_list[channel], point_list[point]);
+      snprintf(buffer, sizeof(buffer), "%s Input %s V", adc_se_list[channel], point_list[point]);
       else
         snprintf(buffer, sizeof(buffer), "%s Input %s R", adc_se_list[channel], point_list[point]);
   }
@@ -986,14 +986,14 @@ void draw_cali_single_summary(screen_page_t* p_win)
   for (int32_t channel = 0; channel < 18; channel++)
   {
     params = &p_adc->single_ended_cal[channel];
-    if(params->is_calibrated==false)
-    {
-      screen_page_printf(p_win, "%-4s:Calib Required", adc_se_short_list[channel]);
-      continue;
-    }
+
     raw = (int32_t)drv_adc_single_raw_read(channel,1, &err);
     voltage = adc_get_compensated_value(raw, params, g_current_temp);
-
+    if (params->is_calibrated == false)
+    {
+      screen_page_printf(p_win, "%-4s: No Cal %7d", adc_se_short_list[channel], raw);
+      continue;
+    }
     if (isnan(voltage))
     {
       screen_page_printf(p_win, "%-4s:NaN", adc_se_short_list[channel]);
@@ -1030,20 +1030,22 @@ void draw_cali_diff_summary(screen_page_t *p_win)
   for (int32_t channel = 0; channel < 8; channel++)
   {
     params = &p_adc->differential_cal[channel];
-    if (params->is_calibrated == false)
-    {
-      screen_page_printf(p_win, "%-4s:Calib Required", adc_diff_list[channel]);
-      continue;
-    }
+
     raw = (int32_t)drv_adc_diff_raw_read(channel, 1, &err);
     voltage = adc_get_compensated_value(raw, params, g_current_temp);
+
+    if (params->is_calibrated == false)
+    {
+      screen_page_printf(p_win, "%-4s: No Cal %7d", adc_diff_list[channel], raw);
+      continue;
+    }
 
     if (isnan(voltage))
     {
       screen_page_printf(p_win, "%-4s:NaN", adc_diff_list[channel]);
     }
     else
-    { // 1234:11.1111 12345678
+    { //DIFF 0:11.1111 1234567
       screen_page_printf(p_win, "%-4s:%7.4f %7d", adc_diff_list[channel], voltage, raw);
     }
   }

@@ -307,6 +307,12 @@ void check_config_app(void)
       config.lcd_off_time_index = config_app_default.lcd_off_time_index;;
       g_config_app_change_count++;
     }
+
+    if (config.ac_active > 1)
+    {
+      config.ac_active = config_app_default.ac_active;
+      g_config_app_change_count++;
+    }
 }
 
 
