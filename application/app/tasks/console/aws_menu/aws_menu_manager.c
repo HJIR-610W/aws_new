@@ -148,9 +148,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[A7_PRESSURE]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 11000;
-  adc_config->lowScale = 5000;
-  adc_config->scale = 10;
+  adc_config->highScale = 1100;
+  adc_config->lowScale = 500;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
@@ -160,9 +160,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[B1_SOLAR_RADIATION]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 5000;  // 5v
+  adc_config->highScale = 2000;  // 5v
   adc_config->lowScale = 0;      // 0v
-  adc_config->scale = 1000;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
@@ -185,9 +185,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[B5_SOIL_TEMPERATURE_5CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 6000;
-  adc_config->lowScale = -4000;
-  adc_config->scale = 100;
+  adc_config->highScale = 60;
+  adc_config->lowScale = -40;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
@@ -197,9 +197,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[B6_SOIL_TEMPERATURE_10CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 6000;
-  adc_config->lowScale = -4000;
-  adc_config->scale = 100;
+  adc_config->highScale = 60;
+  adc_config->lowScale = -40;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
@@ -209,9 +209,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[B7_SOIL_TEMPERATURE_20CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 6000;
-  adc_config->lowScale = -4000;
-  adc_config->scale = 100;
+  adc_config->highScale = 60;
+  adc_config->lowScale = -40;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
@@ -221,9 +221,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[B8_SOIL_TEMPERATURE_30CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 6000;
-  adc_config->lowScale = -4000;
-  adc_config->scale = 100;
+  adc_config->highScale = 60;
+  adc_config->lowScale = -40;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
@@ -233,9 +233,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[B9_SOIL_TEMPERATURE_50CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 6000;
-  adc_config->lowScale = -4000;
-  adc_config->scale = 100;
+  adc_config->highScale = 60;
+  adc_config->lowScale = -40;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
@@ -245,9 +245,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[B10_SOIL_TEMPERATURE_100CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 6000;
-  adc_config->lowScale = -4000;
-  adc_config->scale = 100;
+  adc_config->highScale = 60;
+  adc_config->lowScale = -40;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
@@ -257,9 +257,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[B11_SOIL_TEMPERATURE_150CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 6000;
-  adc_config->lowScale = -4000;
-  adc_config->scale = 100;
+  adc_config->highScale = 60;
+  adc_config->lowScale = -40;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
@@ -269,9 +269,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[B12_SOIL_TEMPERATURE_300CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 6000;
-  adc_config->lowScale = -4000;
-  adc_config->scale = 100;
+  adc_config->highScale = 60;
+  adc_config->lowScale = -40;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
 
@@ -281,9 +281,9 @@ void config_hj_reset(void)
   adc_config = get_sensor_config(&config.sensor[B13_SOIL_TEMPERATURE_500CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 6000;
-  adc_config->lowScale = -4000;
-  adc_config->scale = 100;
+  adc_config->highScale = 60;
+  adc_config->lowScale = -40;
+  adc_config->scale = 1;
   adc_config->outMaxV = 5000;
   adc_config->outMinV = 0;
   save_config_app();

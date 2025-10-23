@@ -682,8 +682,8 @@ int32_t cali_single_all(adc_channel_type_t type)
   {
     return convert_key_to_status(key);
   }
-  p1.reference_value = 0.5;
-  status = input_float("Low Value(V)", -1000.0f, 1000.0f, &p1.reference_value, "%8.3f");
+  p1.reference_value = 1;
+  status = input_float("Low Value(V)", 0.0f, 5.0f, &p1.reference_value, "%8.3f");
   if (status != MENU_OK)
     return status;
 
@@ -752,8 +752,8 @@ CALI_POINT2:
   }
 
 
-  p2.reference_value = 4.5;
-  status = input_float("High Value(V)", -1000.0f, 1000.0f, &p2.reference_value, "%8.3f");
+  p2.reference_value = 4.0;
+  status = input_float("High Value(V)", 0.0f, 5.0f, &p2.reference_value, "%8.3f");
   if (status != MENU_OK)
     return status;
 
