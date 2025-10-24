@@ -138,8 +138,8 @@ typedef enum sensor_list_e
   X(S_T_PT100_B, "PT100 B")                        \
   X(S_T_SOLAR_RADIATION_OTT_SMP3, "일사 OTT SMP3") \
   X(S_T_BARO_JINSUNG_SJGP215, "진성 SJGP215")\
-  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")
-
+  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")\
+  X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V")
 
 #define SENSOR_TYPE_ENG_LIST                     \
   X(S_T_UNSUED, "Not Used")                      \
@@ -159,7 +159,8 @@ typedef enum sensor_list_e
   X(S_T_PT100_B, "PT100_B")                      \
   X(S_T_SOLAR_RADIATION_OTT_SMP3, "Solar SMP3")  \
   X(S_T_BARO_JINSUNG_SJGP215, "JINSUNG SJGP215") \
-  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")
+  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")   \
+  X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V")
 
 typedef enum sensor_model_e
 {
@@ -205,7 +206,7 @@ rain_present_config_t *get_rain_present_config(void);
 
 // TODO:하드 코딩됨, 소스파일과 일치시켜야함 주의
 extern const uint8_t temperatureList[4];
-extern const uint8_t windDirectionList[3];
+extern const uint8_t windDirectionList[4];
 extern const uint8_t windSpeedList[3];
 extern const uint8_t pressureList[4];
 extern const uint8_t rainList[5];

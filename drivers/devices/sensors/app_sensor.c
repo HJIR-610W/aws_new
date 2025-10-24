@@ -77,7 +77,7 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] =
 
 // 지원하는 센서 목록 정의
 const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
-const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_ADC};
+const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_WIND_DIRECTION_RMYOUNG_05103V, S_T_ADC};
 const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_FREQ};
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
                             S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM};
@@ -174,18 +174,17 @@ void *sensor_add(sensor_t *sensor)
   {
     case S_T_ADC:
     case S_T_BARO_RMYOUNG_61402V:
-    {
+    case S_T_WIND_DIRECTION_RMYOUNG_05103V:
+     {
       int cnt = g_config_sensor.adc_cnt;
       if (cnt >= _countof(g_config_sensor.adc)) // 할당 가능한지 판단
       {
         cnt--;
-      }
-      sensor_add_common(sensor, cnt);
+      } sensor_add_common(sensor, cnt);
       cnt++;
       g_config_sensor.adc_cnt = cnt;
       return &g_config_sensor.adc[cnt];
-    }
-    case S_T_WIND_SPEED_HJ_485://
+    } case S_T_WIND_SPEED_HJ_485: //
       sensor_add_common(sensor, 0);
       return &g_config_sensor.hjwind_speed;
       break;
@@ -248,6 +247,7 @@ void *get_sensor_config(sensor_t *sensor)
       {
         case S_T_ADC:
         case S_T_BARO_RMYOUNG_61402V:
+        case S_T_WIND_DIRECTION_RMYOUNG_05103V:
           return &g_config_sensor.adc[sensor->config[i][1]];
         case S_T_WIND_SPEED_HJ_485:
           return &g_config_sensor.hjwind_speed;

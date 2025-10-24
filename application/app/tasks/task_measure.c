@@ -182,6 +182,8 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
   switch (type)
   {
     case S_T_ADC:
+          case S_T_BARO_RMYOUNG_61402V:
+            case  S_T_WIND_DIRECTION_RMYOUNG_05103V:
       num = GENERAL_ADC;
       break;
     case S_T_PT100_A:
@@ -226,10 +228,8 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
     case S_T_BARO_JINSUNG_SJGP215:
       num = BARO_JINSUNG_SJGP215;
       break;
-    case S_T_BARO_RMYOUNG_61402V:
-      num = GENERAL_ADC;
-      break;
-      break;
+
+
     }
   return num;
 }
