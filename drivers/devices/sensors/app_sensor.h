@@ -120,26 +120,27 @@ typedef enum sensor_list_e
 
 //ADDMODEL:센서 타입이 추가되면 여기에도 추가해야함
 //센서 모델,이름 정의
-#define SENSOR_TYPE_LIST                           \
-  X(S_T_UNSUED, "미사용")                          \
-  X(S_T_ADC, "ADC")                                \
-  X(S_T_FREQ, "GENERAL_FREQ")                      \
-  X(S_T_RAIN_REED_05MM, "PULSE 0.5mm")             \
-  X(S_T_RAIN_REED_1MM, "PULSE 1mm")                \
-  X(S_T_RAIN_HALL_05MM, "화진 HALL 0.5mm")         \
-  X(S_T_RAIN_HALL_1MM, "화진 HALL 1mm")            \
-  X(S_T_SNOW_HJ, "화진 적설")                      \
-  X(S_T_WIND_SPEED_HJ_485, "화진 풍속")            \
-  X(S_T_WIND_DIRECTION_HJ_485, "화진 풍향")        \
-  X(S_T_HUMINITY_HJ, "화진 습도")                  \
-  X(S_T_TEMPERATURE_HJ, "화진 온도")               \
-  X(S_T_RAIN_PRESENT_DI, "화진 강우감지")          \
-  X(S_T_PT100_A, "PT100 A")                        \
-  X(S_T_PT100_B, "PT100 B")                        \
-  X(S_T_SOLAR_RADIATION_OTT_SMP3, "일사 OTT SMP3") \
-  X(S_T_BARO_JINSUNG_SJGP215, "진성 SJGP215")\
-  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")\
-  X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V")
+#define SENSOR_TYPE_LIST                                 \
+  X(S_T_UNSUED, "미사용")                                \
+  X(S_T_ADC, "ADC")                                      \
+  X(S_T_FREQ, "GENERAL_FREQ")                            \
+  X(S_T_RAIN_REED_05MM, "PULSE 0.5mm")                   \
+  X(S_T_RAIN_REED_1MM, "PULSE 1mm")                      \
+  X(S_T_RAIN_HALL_05MM, "화진 HALL 0.5mm")               \
+  X(S_T_RAIN_HALL_1MM, "화진 HALL 1mm")                  \
+  X(S_T_SNOW_HJ, "화진 적설")                            \
+  X(S_T_WIND_SPEED_HJ_485, "화진 풍속")                  \
+  X(S_T_WIND_DIRECTION_HJ_485, "화진 풍향")              \
+  X(S_T_HUMINITY_HJ, "화진 습도")                        \
+  X(S_T_TEMPERATURE_HJ, "화진 온도")                     \
+  X(S_T_RAIN_PRESENT_DI, "화진 강우감지")                \
+  X(S_T_PT100_A, "PT100 A")                              \
+  X(S_T_PT100_B, "PT100 B")                              \
+  X(S_T_SOLAR_RADIATION_OTT_SMP3, "일사 OTT SMP3")       \
+  X(S_T_BARO_JINSUNG_SJGP215, "진성 SJGP215")            \
+  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")           \
+  X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V") \
+  X(S_T_WIND_SPEED_RMYOUNG_05103V, "RMYOUNG 05103V")
 
 #define SENSOR_TYPE_ENG_LIST                     \
   X(S_T_UNSUED, "Not Used")                      \
@@ -160,7 +161,8 @@ typedef enum sensor_list_e
   X(S_T_SOLAR_RADIATION_OTT_SMP3, "Solar SMP3")  \
   X(S_T_BARO_JINSUNG_SJGP215, "JINSUNG SJGP215") \
   X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")   \
-  X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V")
+  X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V")\
+X(S_T_WIND_SPEED_RMYOUNG_05103V, "RMYOUNG 05103V")
 
 typedef enum sensor_model_e
 {
@@ -207,7 +209,7 @@ rain_present_config_t *get_rain_present_config(void);
 // TODO:하드 코딩됨, 소스파일과 일치시켜야함 주의
 extern const uint8_t temperatureList[4];
 extern const uint8_t windDirectionList[4];
-extern const uint8_t windSpeedList[3];
+extern const uint8_t windSpeedList[4];
 extern const uint8_t pressureList[4];
 extern const uint8_t rainList[5];
 extern const uint8_t snowList[2];

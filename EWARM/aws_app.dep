@@ -1801,7 +1801,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\portable\IAR\ARM_CM4F\portmacro.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\httpd_opts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netdb.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\nd6_priv.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
@@ -1810,7 +1810,7 @@
             <file>$PROJ_DIR$\..\Application\app\protocols\aws\parse_aws.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\divas\aws_monitor.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\ppp\ppp_opts.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\fsdata.c</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rs485.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.h</file>
@@ -1945,7 +1945,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_power.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\base64.h</file>
             <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_setup.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_aws.h</file>

@@ -78,7 +78,7 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] =
 // 지원하는 센서 목록 정의
 const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
 const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_WIND_DIRECTION_RMYOUNG_05103V, S_T_ADC};
-const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_FREQ};
+const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_WIND_SPEED_RMYOUNG_05103V,S_T_FREQ};
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
                             S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM};
 const uint8_t pressureList[] = {S_T_UNSUED, S_T_BARO_RMYOUNG_61402V, S_T_BARO_JINSUNG_SJGP215, S_T_ADC};
@@ -211,6 +211,7 @@ void *sensor_add(sensor_t *sensor)
       sensor_add_common(sensor, 0);
       return &g_config_sensor.rain_present;
     case S_T_FREQ:
+    case S_T_WIND_SPEED_RMYOUNG_05103V:
       sensor_add_common(sensor, 0);
       return &g_config_sensor.frequency;
     case S_T_BARO_JINSUNG_SJGP215:
@@ -248,8 +249,8 @@ void *get_sensor_config(sensor_t *sensor)
         case S_T_ADC:
         case S_T_BARO_RMYOUNG_61402V:
         case S_T_WIND_DIRECTION_RMYOUNG_05103V:
-          return &g_config_sensor.adc[sensor->config[i][1]];
-        case S_T_WIND_SPEED_HJ_485:
+         return &g_config_sensor.adc[sensor->config[i][1]];
+            case S_T_WIND_SPEED_HJ_485:
           return &g_config_sensor.hjwind_speed;
         case S_T_WIND_DIRECTION_HJ_485:
           return &g_config_sensor.hjwindDir;
@@ -264,6 +265,7 @@ void *get_sensor_config(sensor_t *sensor)
         case S_T_RAIN_PRESENT_DI:
           return &g_config_sensor.rain_present;
         case S_T_FREQ:
+        case S_T_WIND_SPEED_RMYOUNG_05103V:
           return &g_config_sensor.frequency;
         case S_T_BARO_JINSUNG_SJGP215:
           return &g_config_sensor.jinsung_sjgp215;

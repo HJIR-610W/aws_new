@@ -483,8 +483,8 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     {
       if (min == eAWS_DATA_RAW)
       {
-        float f_data = p_kma->wind_speed_avg.raw.f;
-        screen_page_printf(p_win, "%-*s:%6.1f m/s", AWS_WD, "WIND S", f_data);
+        float f_data = ((int)(p_kma->wind_speed_avg.raw.f*100))/100.0;
+        screen_page_printf(p_win, "%-*s:%6.2f m/s", AWS_WD, "WIND S", f_data);
       }
       else
       {

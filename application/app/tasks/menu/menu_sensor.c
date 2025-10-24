@@ -175,6 +175,13 @@ void draw_freq_page(screen_menu_t* p_win, frequency_config_t* freq_config)
 
 }
 
+#define WIND_SPD_RMYOUNG_05103V_CHANNEL 0
+void draw_wind_speed_rmyoung_05103V_page(screen_menu_t *p_win, frequency_config_t *freq_config)
+{
+  screen_menu_printf(p_win, WIND_SPD_RMYOUNG_05103V_CHANNEL, "%-*s:%s", E_L_W, "Channel", ITEM_LIST(freq_config->channel, freq_ch_list));
+}
+
+
 #define HJTEMP_PAGE_PHYSICAL  0
 #define HJTEMP_PAGE_PORT      1
 #define HJTEMP_PAGE_MODBUS_ID 2
@@ -278,9 +285,11 @@ void draw_rmyoung_wind_direction_05103V_page(screen_menu_t *p_win, adc_config_t 
     case S_T_WIND_DIRECTION_RMYOUNG_05103V:
       draw_rmyoung_wind_direction_05103V_page(p_win,get_sensor_config(p_sensor));
        break;
-
-    default:
+    case S_T_WIND_SPEED_RMYOUNG_05103V:
+      draw_wind_speed_rmyoung_05103V_page(p_win, get_sensor_config(p_sensor));
       break;
+
+          default : break;
   }
   screen_menu_clear(p_win);
 }
@@ -494,6 +503,8 @@ int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
 
   return status;
 }
+
+
 int32_t hjwinddir_setup( sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
@@ -917,6 +928,37 @@ int32_t wind_direction_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index
   return status;
 }
 
+int32_t wind_speed_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t status = 0;
+  int32_t dec;
+
+  float factor;
+  frequency_config_t *freq;
+
+  freq = get_sensor_config(sensor);
+  if (freq == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+  case WIND_SPD_RMYOUNG_05103V_CHANNEL:
+    dec = freq->channel;
+    status = input_combobox("Channel", freq_ch_list, _countof(freq_ch_list), &dec);
+    if (status != MENU_OK)
+      break;
+    freq->channel = dec;
+    freq->scale_factor = 0.0978;
+    save_config_sensor();
+    break;
+
+  }
+
+  return status;
+}
+
 const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_ADC, .config_set = general_adc_setup},
     {.sensor_type = S_T_FREQ, .config_set = general_freq_setup},
@@ -929,7 +971,8 @@ const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_RAIN_PRESENT_DI, .config_set = rain_present_setup},
     {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = barometer_jinsung_setup},
     {.sensor_type = S_T_BARO_RMYOUNG_61402V, .config_set = barometer_rmyoun_61402V_setup},
-    {.sensor_type = S_T_WIND_DIRECTION_RMYOUNG_05103V, .config_set = wind_direction_rmyoung_05103V_setup}};
+    {.sensor_type = S_T_WIND_DIRECTION_RMYOUNG_05103V, .config_set = wind_direction_rmyoung_05103V_setup},
+    {.sensor_type = S_T_WIND_SPEED_RMYOUNG_05103V, .config_set = wind_speed_rmyoung_05103V_setup}};
 
 int32_t setup_sensor_set(sensor_t* p_sensor, uint8_t choice)
 {

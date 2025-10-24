@@ -223,6 +223,8 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
       num = OTT_SMP3_MODBUS;
      break;
     case S_T_FREQ:
+  case S_T_WIND_SPEED_RMYOUNG_05103V:
+    
       num = GENERAL_FREQ;
     break;
     case S_T_BARO_JINSUNG_SJGP215:
