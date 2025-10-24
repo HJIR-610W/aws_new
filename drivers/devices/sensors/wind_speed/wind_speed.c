@@ -7,7 +7,7 @@
 #include "Sensors\general\general_adc.h"
 #include "Sensors\general\general_frequency.h"
 #include "hj_wind.h"
-
+#include "wind_spd_rmyoung_05103v.h"
 
 
 
@@ -27,6 +27,10 @@ driver_t * windSpeed_open(uint8_t num,void *opt)
     case GENERAL_FREQ:
       driver = general_freq_open(opt);
       break;
+    case WIND_SPEED_RMYOUNG_05103V:
+    wind_spd_rmyoung_05103v_init(opt);
+    driver = (driver_t *)wind_spd_rmyoung_05103v_init;
+    break;
     default:
       break;
   }
@@ -44,14 +48,20 @@ float wind_read(driver_t *driver,int32_t channel,uint8_t *err)
     return NAN;
   }
 
-  if(strncmp(driver->name,"GENERAL_ADC",11)==0)
+  if (driver == (driver_t*)wind_spd_rmyoung_05103v_init)
   {
-    return general_adc_read(driver,err);
+    return read_wind_spd_rmyoung_05103v(err);
   }
-  else if (strncmp(driver->name, "GENERAL_FREQ", 11) == 0)
-  {
-    return general_freq_read(driver, err);
-  }
+
+    if (strncmp(driver->name, "GENERAL_ADC", 11) == 0)
+    {
+      return general_adc_read(driver, err);
+    }
+    else if (strncmp(driver->name, "GENERAL_FREQ", 11) == 0)
+    {
+      return general_freq_read(driver, err);
+    }
+
 
   return api->read(driver,channel,err);
 }

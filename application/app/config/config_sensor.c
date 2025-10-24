@@ -123,6 +123,30 @@ void limit_jsgp215(void)
   }
 }
 
+void limit_rmyoung_wind_direction(void)
+{
+  if (g_config_sensor.rmyoung_05103v_wind_direction.adc_channel > 15)
+  {
+    g_config_sensor.rmyoung_05103v_wind_direction.adc_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.rmyoung_05103v_wind_speed.frequency_channel > 1)
+  {
+    g_config_sensor.rmyoung_05103v_wind_speed.frequency_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
+void limit_rmyoung_barometer(void)
+{
+  if (g_config_sensor.rmyoung_61402v_barometer.adc_channel > 15)
+  {
+    g_config_sensor.rmyoung_61402v_barometer.adc_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
 void limit_barometer(void)
 {
 
@@ -180,6 +204,8 @@ void load_config_sensor(void)
   limit_hjtemp();
   limit_jsgp215();
   limit_barometer();
+  limit_rmyoung_wind_direction();
+  limit_rmyoung_barometer();
 
       if (g_config_sensor_dirty_flag)
   {

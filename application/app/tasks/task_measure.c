@@ -182,10 +182,15 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
   switch (type)
   {
     case S_T_ADC:
-          case S_T_BARO_RMYOUNG_61402V:
-            case  S_T_WIND_DIRECTION_RMYOUNG_05103V:
-      num = GENERAL_ADC;
-      break;
+    num = GENERAL_ADC;
+    break;
+    case S_T_BARO_RMYOUNG_61402V:
+    num = BAROMETER_RMYOUNG_61402V;
+    break;
+    case  S_T_WIND_DIRECTION_RMYOUNG_05103V:
+    num = WIND_DIRECTION_RMYOUNG_05103V;
+    break;
+
     case S_T_PT100_A:
       num = TEMP_PT100_A;
       break;
@@ -223,9 +228,7 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
       num = OTT_SMP3_MODBUS;
      break;
     case S_T_FREQ:
-  case S_T_WIND_SPEED_RMYOUNG_05103V:
-    
-      num = GENERAL_FREQ;
+       num = GENERAL_FREQ;
     break;
     case S_T_BARO_JINSUNG_SJGP215:
       num = BARO_JINSUNG_SJGP215;
@@ -235,6 +238,9 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
       break;
     case S_T_RAIN_PRESENT_ANALOG:
       num = RAIN_PRESENT_ANALOG;
+       break;
+    case S_T_WIND_SPEED_RMYOUNG_05103V:
+      num = WIND_SPEED_RMYOUNG_05103V;
        break;
     }
   return num;
@@ -507,7 +513,11 @@ void measure_1s(void)
            adc = 0;
           switch (sensor_type)
           {
-            case A1_TEMPERATURE:
+            case A2_WIND_DIRECTION:
+            case A3_WIND_SPEED:
+            break;
+
+                case A1_TEMPERATURE:
               adc = temperature_read(g_sensor_driver[A1_TEMPERATURE], &read_err);
               pa_reading_1s[A1_TEMPERATURE].data.f = adc + p_a_sensor[sensor_type].offset;
               pa_reading_1s[A1_TEMPERATURE].err = read_err;

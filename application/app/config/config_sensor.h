@@ -121,6 +121,23 @@ typedef struct jinsung_sjgp215_config_s
 {
   uint8_t rs232_port;
 } jinsung_sjgp215_config_t;
+
+typedef struct rmyoung_05103v_wind_direction_config_s
+{
+  uint8_t adc_channel;
+} rmyoung_05103v_wind_direction_config_t;
+
+typedef struct rmyoung_05103v_wind_speed_config_s
+{
+  uint8_t frequency_channel;
+} rmyoung_05103v_wind_speed_config_t;
+
+typedef struct rmyoung_61402v_barometer_config_s
+{
+  uint8_t adc_channel;
+} rmyoung_61402v_barometer_config_t;
+
+
 typedef struct config_manage_s
 {
   config_header_t header;
@@ -135,6 +152,9 @@ typedef struct config_manage_s
   rain_present_config_t rain_present;
   frequency_config_t frequency;
   jinsung_sjgp215_config_t jinsung_sjgp215;
+  rmyoung_05103v_wind_direction_config_t rmyoung_05103v_wind_direction;
+  rmyoung_05103v_wind_speed_config_t rmyoung_05103v_wind_speed;
+  rmyoung_61402v_barometer_config_t rmyoung_61402v_barometer;
 } config_sensor_t;
 
 #define WRITE_CFG_SENSOR(x)                                                                    \

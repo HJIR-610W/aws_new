@@ -8,7 +8,7 @@
 #include "Sensors\barometer\barometer.h"
 #include "Sensors\general\general_adc.h"
 #include "sensors\barometer\jinsung_sjgp215.h"
-
+#include "sensors\barometer\barometer_rmyoung_61402v.h"
 
 driver_t *barometer_open(int32_t num,void *opt)
 {
@@ -22,6 +22,10 @@ driver_t *barometer_open(int32_t num,void *opt)
   case BARO_JINSUNG_SJGP215:
     sjgp215_init(opt);
     driver = (driver_t *)sjgp215_init;
+    break;
+  case BAROMETER_RMYOUNG_61402V:
+    rmyoung_61402v_init(opt);
+    driver = (driver_t *)rmyoung_61402v_init;
     break;
   }
   
@@ -41,11 +45,14 @@ float read_sensor_barometer(driver_t *driver,uint8_t *err)
   {
     return read_sjgp215_baromater(err);
   }
-
-  
-  if(strncmp(driver->name,"GENERAL_ADC",11)==0)
+  else if (driver == (driver_t *)rmyoung_61402v_init)
   {
-    return general_adc_read(driver,err);
+    return read_baromater_rmyoung_61402v(err);
+  }
+
+  if (strncmp(driver->name, "GENERAL_ADC", 11) == 0)
+  {
+    return general_adc_read(driver, err);
   }
 
   *err = DRV_ERR_HANDLE;

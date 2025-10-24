@@ -19,7 +19,7 @@
 #endif
 
 #define WIND_HJ_DIRECTION 101
-
+#define WIND_DIRECTION_RMYOUNG_05103V 201
 
 driver_t *wind_direction_open(uint8_t num, void *opt);
 float wind_direction_read(driver_t *driver, int32_t channel, uint8_t *err);

@@ -156,7 +156,10 @@
 			"task_console.h": "c",
 			"task_isrevent.h": "c",
 			"wind_define.h": "c",
-			"hj_wind_direction.h": "c"
+			"hj_wind_direction.h": "c",
+			"app_adc.h": "c",
+			"wind_direction.h": "c",
+			"barometer_rmyoung_61402v.h": "c"
 		}
 	}
 }

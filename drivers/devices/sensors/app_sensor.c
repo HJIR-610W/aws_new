@@ -248,8 +248,6 @@ void *get_sensor_config(sensor_t *sensor)
       switch (sensor->type)
       {
         case S_T_ADC:
-        case S_T_BARO_RMYOUNG_61402V:
-        case S_T_WIND_DIRECTION_RMYOUNG_05103V:
          return &g_config_sensor.adc[sensor->config[i][1]];
             case S_T_WIND_SPEED_HJ_485:
           return &g_config_sensor.hjwind_speed;
@@ -267,8 +265,13 @@ void *get_sensor_config(sensor_t *sensor)
         case S_T_RAIN_PRESENT_ANALOG:
           return &g_config_sensor.rain_present;
         case S_T_FREQ:
+        return &g_config_sensor.frequency;
         case S_T_WIND_SPEED_RMYOUNG_05103V:
-          return &g_config_sensor.frequency;
+          return &g_config_sensor.rmyoung_05103v_wind_speed;
+        case S_T_WIND_DIRECTION_RMYOUNG_05103V:
+          return &g_config_sensor.rmyoung_05103v_wind_direction;
+        case S_T_BARO_RMYOUNG_61402V:
+          return &g_config_sensor.rmyoung_61402v_barometer;
         case S_T_BARO_JINSUNG_SJGP215:
           return &g_config_sensor.jinsung_sjgp215;
       }

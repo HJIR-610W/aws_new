@@ -24,7 +24,7 @@
 #endif
 
 #define WIND_HJ 100
-
+#define WIND_SPEED_RMYOUNG_05103V 200
 
 #define WIND_CHANNEL_SPEED     1
 #define WIND_CHANNEL_DIRECTION 2
