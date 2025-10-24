@@ -143,7 +143,7 @@ void config_hj_reset(void)
   hjsnow_cfg->rs232_port = eRS232_C;
 
   // 기압[RM YOUNG]
-  config.sensor[A7_PRESSURE].type = S_T_ADC;
+  config.sensor[A7_PRESSURE].type = S_T_BARO_RMYOUNG_61402V;
   sensor_add(&config.sensor[A7_PRESSURE]);
   adc_config = get_sensor_config(&config.sensor[A7_PRESSURE]);
   adc_config->single_channel = single_channel++;

@@ -81,7 +81,7 @@ const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_
 const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_FREQ};
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
                             S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM};
-const uint8_t pressureList[] = {S_T_UNSUED, S_T_ADC, S_T_BARO_JINSUNG_SJGP215};
+const uint8_t pressureList[] = {S_T_UNSUED, S_T_BARO_RMYOUNG_61402V, S_T_BARO_JINSUNG_SJGP215, S_T_ADC};
 const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI};
 const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ};
 const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMINITY_HJ, S_T_ADC};
@@ -173,17 +173,18 @@ void *sensor_add(sensor_t *sensor)
   switch (sensor->type)
   {
     case S_T_ADC:
+    case S_T_BARO_RMYOUNG_61402V:
+    {
+      int cnt = g_config_sensor.adc_cnt;
+      if (cnt >= _countof(g_config_sensor.adc)) // 할당 가능한지 판단
       {
-        int cnt = g_config_sensor.adc_cnt;
-        if (cnt >= _countof(g_config_sensor.adc))  // 할당 가능한지 판단
-        {
-          cnt--;
-        }
-        sensor_add_common(sensor, cnt);
-        cnt++;
-        g_config_sensor.adc_cnt = cnt;
-        return &g_config_sensor.adc[cnt];
-       }
+        cnt--;
+      }
+      sensor_add_common(sensor, cnt);
+      cnt++;
+      g_config_sensor.adc_cnt = cnt;
+      return &g_config_sensor.adc[cnt];
+    }
     case S_T_WIND_SPEED_HJ_485://
       sensor_add_common(sensor, 0);
       return &g_config_sensor.hjwind_speed;
@@ -246,6 +247,7 @@ void *get_sensor_config(sensor_t *sensor)
       switch (sensor->type)
       {
         case S_T_ADC:
+        case S_T_BARO_RMYOUNG_61402V:
           return &g_config_sensor.adc[sensor->config[i][1]];
         case S_T_WIND_SPEED_HJ_485:
           return &g_config_sensor.hjwind_speed;

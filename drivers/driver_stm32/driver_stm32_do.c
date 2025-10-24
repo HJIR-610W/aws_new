@@ -107,89 +107,89 @@ stm32_do_inst_t do_inst[STM32_DO_MAX] = {
 #ifdef PCB_0_6
 stm32_do_inst_t do_inst[STM32_DO_MAX] = {
     [STM32_DO_POWER_CDMA] = {.init = {.Pin = DO_CON_PWR_CDMA_Pin,
-                                    .Mode = GPIO_MODE_OUTPUT_PP,
-                                    .Pull = GPIO_NOPULL,
-                                    .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_CON_PWR_CDMA_GPIO_Port,
-                           .init_state = GPIO_PIN_RESET}, /*전원 차단*/
+                                      .Mode = GPIO_MODE_OUTPUT_PP,
+                                      .Pull = GPIO_NOPULL,
+                                      .Speed = GPIO_SPEED_FREQ_LOW},
+                             .port = DO_CON_PWR_CDMA_GPIO_Port,
+                             .init_state = GPIO_PIN_RESET}, /*전원 차단*/
     [STM32_DO_POWER_HART_24V] = {.init = {.Pin = DO_CON_PWR_S24_Pin,
-                                        .Mode = GPIO_MODE_OUTPUT_PP,
-                                        .Pull = GPIO_NOPULL,
-                                        .Speed = GPIO_SPEED_FREQ_LOW},
-                               .port = DO_CON_PWR_S24_GPIO_Port,
-                               .init_state = GPIO_PIN_RESET}, /*전원 차단*/
+                                          .Mode = GPIO_MODE_OUTPUT_PP,
+                                          .Pull = GPIO_NOPULL,
+                                          .Speed = GPIO_SPEED_FREQ_LOW},
+                                 .port = DO_CON_PWR_S24_GPIO_Port,
+                                 .init_state = GPIO_PIN_RESET}, /*전원 차단*/
     [STM32_DO_POWER_RAIN_DECT_DIGITAL] = {.init = {.Pin = DO_CON_PWR_RAIN_DIGITAL_Pin,
-                                                 .Mode = GPIO_MODE_OUTPUT_PP,
-                                                 .Pull = GPIO_NOPULL,
-                                                 .Speed = GPIO_SPEED_FREQ_LOW},
-                                        .port = DO_CON_PWR_RAIN_DIGITAL_GPIO_Port,
-                                        .init_state = GPIO_PIN_RESET}, /*전원 차단*/
+                                                   .Mode = GPIO_MODE_OUTPUT_PP,
+                                                   .Pull = GPIO_NOPULL,
+                                                   .Speed = GPIO_SPEED_FREQ_LOW},
+                                          .port = DO_CON_PWR_RAIN_DIGITAL_GPIO_Port,
+                                          .init_state = GPIO_PIN_RESET}, /*전원 차단*/
 
     [STM32_DO_POWER_RAIN_DECT_ANALOG] = {.init = {.Pin = DO_CON_PWR_RAIN_Pin,
-                                                .Mode = GPIO_MODE_OUTPUT_PP,
-                                                .Pull = GPIO_NOPULL,
-                                                .Speed = GPIO_SPEED_FREQ_LOW},
-                                       .port = DO_CON_PWR_RAIN_GPIO_Port,
-                                       .init_state = GPIO_PIN_RESET}, /*전원 차단*/
+                                                  .Mode = GPIO_MODE_OUTPUT_PP,
+                                                  .Pull = GPIO_NOPULL,
+                                                  .Speed = GPIO_SPEED_FREQ_LOW},
+                                         .port = DO_CON_PWR_RAIN_GPIO_Port,
+                                         .init_state = GPIO_PIN_SET}, /*전원 공급*/
     [STM32_DO_LCD_RESET] = {.init = {.Pin = DO_LCD_RESET_Pin,
+                                     .Mode = GPIO_MODE_OUTPUT_PP,
+                                     .Pull = GPIO_NOPULL,
+                                     .Speed = GPIO_SPEED_FREQ_LOW},
+                            .port = DO_LCD_RESET_GPIO_Port,
+                            .init_state = GPIO_PIN_RESET},
+    [STM32_DO_ADC_CS] = {.init = {.Pin = DO_SPI2_NSS_Pin,
+                                  .Mode = GPIO_MODE_OUTPUT_PP,
+                                  .Pull = GPIO_PULLUP,
+                                  .Speed = GPIO_SPEED_FREQ_HIGH},
+                         .port = DO_SPI2_NSS_GPIO_Port,
+                         .init_state = GPIO_PIN_SET}, /*비활성*/
+    [STM32_DO_FRAM_CS] = {.init = {.Pin = DO_SPI1_NSS_Pin,
                                    .Mode = GPIO_MODE_OUTPUT_PP,
                                    .Pull = GPIO_NOPULL,
-                                   .Speed = GPIO_SPEED_FREQ_LOW},
-                          .port = DO_LCD_RESET_GPIO_Port,
-                          .init_state = GPIO_PIN_RESET},
-    [STM32_DO_ADC_CS] = {.init = {.Pin = DO_SPI2_NSS_Pin,
-                                .Mode = GPIO_MODE_OUTPUT_PP,
-                                .Pull = GPIO_PULLUP,
-                                .Speed = GPIO_SPEED_FREQ_HIGH},
-                       .port = DO_SPI2_NSS_GPIO_Port,
-                       .init_state = GPIO_PIN_SET}, /*비활성*/
-    [STM32_DO_FRAM_CS] = {.init = {.Pin = DO_SPI1_NSS_Pin,
-                                 .Mode = GPIO_MODE_OUTPUT_PP,
-                                 .Pull = GPIO_NOPULL,
-                                 .Speed = GPIO_SPEED_FREQ_HIGH},
-                        .port = DO_SPI1_NSS_GPIO_Port,
-                        .init_state = GPIO_PIN_SET}, /*비활성*/
+                                   .Speed = GPIO_SPEED_FREQ_HIGH},
+                          .port = DO_SPI1_NSS_GPIO_Port,
+                          .init_state = GPIO_PIN_SET}, /*비활성*/
     [STM32_DO_RTC_CS] = {.init = {.Pin = DO_RV8803_EVI_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_HIGH},
-                       .port = DO_RV8803_EVI_GPIO_Port,
-                       .init_state = GPIO_PIN_SET}, /*비활성*/
+                         .port = DO_RV8803_EVI_GPIO_Port,
+                         .init_state = GPIO_PIN_SET}, /*비활성*/
     [STM32_DO_DIR_SDI] = {.init = {.Pin = DO_DIR_SDI_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                        .port = DO_DIR_SDI_GPIO_Port,
-                        .init_state = GPIO_PIN_RESET}, /*수신모드*/
+                          .port = DO_DIR_SDI_GPIO_Port,
+                          .init_state = GPIO_PIN_RESET}, /*수신모드*/
     [STM32_DO_HART_SEL] = {.init = {.Pin = DO_SEL_IF_UART_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                         .port = DO_SEL_IF_UART_GPIO_Port,
-                         .init_state = GPIO_PIN_RESET}, /*RS232모드로 설정*/
+                           .port = DO_SEL_IF_UART_GPIO_Port,
+                           .init_state = GPIO_PIN_RESET}, /*RS232모드로 설정*/
     [STM32_DO_HART_RTS] = {.init = {.Pin = DO_RTS_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                         .port = DO_RTS_H_GPIO_Port,
-                         .init_state = GPIO_PIN_SET}, // 수신모드
+                           .port = DO_RTS_H_GPIO_Port,
+                           .init_state = GPIO_PIN_SET}, // 수신모드
     [STM32_DO_HART_RESET] = {.init = {.Pin = DO_RESET_H_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_RESET_H_GPIO_Port,
-                           .init_state = GPIO_PIN_SET}, // 활성
+                             .port = DO_RESET_H_GPIO_Port,
+                             .init_state = GPIO_PIN_SET}, // 활성
     [STM32_DO_DIR_RS485_A] = {.init = {.Pin = DO_DIR_RS485_A_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = DO_DIR_RS485_A_GPIO_Port,
-                            .init_state = GPIO_PIN_RESET}, /*수신모드*/
+                              .port = DO_DIR_RS485_A_GPIO_Port,
+                              .init_state = GPIO_PIN_RESET}, /*수신모드*/
     [STM32_DO_DIR_RS485_B] = {.init = {.Pin = DO_DIR_RS485_B_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = DO_DIR_RS485_B_GPIO_Port,
-                            .init_state = GPIO_PIN_RESET}, /*수신모드*/
+                              .port = DO_DIR_RS485_B_GPIO_Port,
+                              .init_state = GPIO_PIN_RESET}, /*수신모드*/
     [STM32_DO_DIR_RS485_C] = {.init = {.Pin = DO_RS485_DIR_C_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = DO_RS485_DIR_C_GPIO_Port,
-                            .init_state = GPIO_PIN_RESET}, /*수신모드*/
+                              .port = DO_RS485_DIR_C_GPIO_Port,
+                              .init_state = GPIO_PIN_RESET}, /*수신모드*/
     [STM32_DO_DIR_RS485_D] = {.init = {.Pin = DO_RS485_DIR_D_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                            .port = DO_RS485_DIR_D_GPIO_Port,
-                            .init_state = GPIO_PIN_RESET}, /*수신모드*/
+                              .port = DO_RS485_DIR_D_GPIO_Port,
+                              .init_state = GPIO_PIN_RESET}, /*수신모드*/
     [STM32_DO_POWER_LCD] = {.init = {.Pin = DO_POWER_LCD_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_POWER_LCD_GPIO_Port,
-                           .init_state = GPIO_PIN_SET},
+                            .port = DO_POWER_LCD_GPIO_Port,
+                            .init_state = GPIO_PIN_SET},
 
     [STM32_DO_QUAD_A_RST] = {.init = {.Pin = DO_EX_UART_RST_A_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_EX_UART_RST_A_GPIO_Port,
-                           .init_state = GPIO_PIN_RESET},
+                             .port = DO_EX_UART_RST_A_GPIO_Port,
+                             .init_state = GPIO_PIN_RESET},
 
     [STM32_DO_QUAD_B_RST] = {.init = {.Pin = DO_EX_UART_RST_B_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-                           .port = DO_EX_UART_RST_B_GPIO_Port,
-                           .init_state = GPIO_PIN_RESET},
-         [STM32_DO_FLASH_CS] = {.init = {.Pin = DO_CS_S_FLASH_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
-     .port = DO_CS_S_FLASH_GPIO_Port,
-     .init_state = GPIO_PIN_SET},
+                             .port = DO_EX_UART_RST_B_GPIO_Port,
+                             .init_state = GPIO_PIN_RESET},
+    [STM32_DO_FLASH_CS] = {.init = {.Pin = DO_CS_S_FLASH_Pin, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW},
+                           .port = DO_CS_S_FLASH_GPIO_Port,
+                           .init_state = GPIO_PIN_SET},
 };
 #endif
 

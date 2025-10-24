@@ -489,9 +489,12 @@ void board_gpio_init(void)
   board_set_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_PIN_RESET);
   board_config_gpio(DO_CON_PWR_S24_GPIO_Port, DO_CON_PWR_S24_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
  
-  //[전원]강우감지 전원은 항상 출력
+  //[전원]디지털 강우감지 전원은 항상 출력
   board_set_gpio(DO_CON_PWR_RAIN_DIGITAL_GPIO_Port, DO_CON_PWR_RAIN_DIGITAL_Pin,GPIO_PIN_SET);
   board_config_gpio(DO_CON_PWR_RAIN_DIGITAL_GPIO_Port, DO_CON_PWR_RAIN_DIGITAL_Pin,GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
+  //[전원] 아날로그 강우감지 전원 항상 출력
+  board_set_gpio(DO_CON_PWR_RAIN_GPIO_Port, DO_CON_PWR_RAIN_Pin, GPIO_PIN_SET);
+  board_config_gpio(DO_CON_PWR_RAIN_GPIO_Port, DO_CON_PWR_RAIN_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, 0);
 
   // HART IC를 RESET 상태로 만든다.
   board_set_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_PIN_RESET);

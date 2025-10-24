@@ -218,13 +218,20 @@ void draw_jinsung_barometer_page(screen_menu_t *p_win, jinsung_sjgp215_config_t 
   screen_menu_printf(p_win, HJTEMP_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
 }
 
-void draw_sensor_page(screen_menu_t* p_win, sensor_t *p_sensor)
+
+#define BAROMETER_RMYOUNG_61402V_CH  0
+void draw_rmyoung_61402V_barometer_page(screen_menu_t *p_win, adc_config_t *adc_config)
 {
-  int32_t label_width = TYPE_LABEL_W;
-  if (p_sensor->type == S_T_ADC)
+  screen_menu_printf(p_win, BAROMETER_RMYOUNG_61402V_CH, "%-*s:%d", E_L_W, "ADC CH", adc_config->single_channel);
+}
+
+  void draw_sensor_page(screen_menu_t * p_win, sensor_t * p_sensor)
   {
-    label_width = ADC_L_W;
-  }
+    int32_t label_width = TYPE_LABEL_W;
+    if (p_sensor->type == S_T_ADC)
+    {
+      label_width = ADC_L_W;
+    }
     screen_menu_start(p_win);
     screen_menu_printf(p_win, 0, "%-*s:%s", label_width, "TYPE", g_sensor_model_eng_table[p_sensor->type]);
     switch (p_sensor->type)
@@ -258,6 +265,9 @@ void draw_sensor_page(screen_menu_t* p_win, sensor_t *p_sensor)
       break;
     case S_T_BARO_JINSUNG_SJGP215:
       draw_jinsung_barometer_page(p_win, get_sensor_config(p_sensor));
+      break;
+    case S_T_BARO_RMYOUNG_61402V:
+      draw_rmyoung_61402V_barometer_page(p_win, get_sensor_config(p_sensor));
       break;
 
     default:
@@ -833,6 +843,39 @@ int32_t jinsung_barometer_setup(sensor_t *sensor, uint8_t menu_index)
 
   return status;
 }
+
+int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t status = 0;
+  adc_config_t *adc_cfg;
+  int choice;
+
+  adc_cfg = get_sensor_config(sensor);
+  if (adc_cfg == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+  case BAROMETER_RMYOUNG_61402V_CH:
+    status = input_combobox("SE Channel", adc_single_list, _countof(adc_single_list), &choice);
+    if (status != MENU_OK)
+      break;
+      adc_cfg->single_channel = choice;
+      adc_cfg->mode = ADC_CFG_MODE_SE;
+      adc_cfg->highScale = 1100;
+      adc_cfg->lowScale = 500;
+      adc_cfg->scale = 1;
+      adc_cfg->outMaxV = 5000;
+      adc_cfg->outMinV = 0;
+      save_config_sensor();
+      break;
+  }
+
+  return status;
+}
+
 const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_ADC, .config_set = general_adc_setup},
     {.sensor_type = S_T_FREQ, .config_set = general_freq_setup},
@@ -843,7 +886,8 @@ const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_HUMINITY_HJ, .config_set = hjhumi_setup},
     {.sensor_type = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_setup},
     {.sensor_type = S_T_RAIN_PRESENT_DI, .config_set = rain_present_setup},
-    {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = jinsung_barometer_setup}};
+    {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = jinsung_barometer_setup},
+    {.sensor_type = S_T_BARO_RMYOUNG_61402V,.config_set = barometer_rmyoun_61402V_setup}};
 
 int32_t setup_sensor_set(sensor_t* p_sensor, uint8_t choice)
 {

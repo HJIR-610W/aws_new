@@ -36,6 +36,11 @@ void limit_adc(void)
 {
   for (int i = 0; i < _countof(g_config_sensor.adc); i++)
   {
+    if (g_config_sensor.adc[i].diff_channel > 7)
+    {
+      g_config_sensor.adc[i].diff_channel = 0;
+      g_config_sensor_dirty_flag = true;
+    }
     if (g_config_sensor.adc[i].single_channel > 17)
     {
       g_config_sensor.adc[i].single_channel = 0;
@@ -118,6 +123,14 @@ void limit_jsgp215(void)
   }
 }
 
+void limit_barometer(void)
+{
+
+
+}
+
+
+
 void save_config_sensor(void)
 {
   uint32_t crc;
@@ -166,8 +179,9 @@ void load_config_sensor(void)
   limit_hjhumi();
   limit_hjtemp();
   limit_jsgp215();
+  limit_barometer();
 
-  if(g_config_sensor_dirty_flag)
+      if (g_config_sensor_dirty_flag)
   {
     save_config_sensor();
   }
