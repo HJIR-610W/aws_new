@@ -870,6 +870,7 @@ int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
   int32_t status = 0;
   adc_config_t *adc_cfg;
   int choice;
+  int active;
 
   adc_cfg = get_sensor_config(sensor);
   if (adc_cfg == NULL)
@@ -880,9 +881,17 @@ int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
   switch (menu_index)
   {
   case BAROMETER_RMYOUNG_61402V_CH:
+  choice = adc_cfg->single_channel;
     status = input_combobox("SE Channel", adc_single_list, _countof(adc_single_list), &choice);
     if (status != MENU_OK)
       break;
+    active = 0;
+    status = input_active("Continue", &active);
+    if (status != MENU_OK)
+      break;
+
+      if(active)
+      {
       adc_cfg->single_channel = choice;
       adc_cfg->mode = ADC_CFG_MODE_SE;
       adc_cfg->highScale = 1100;
@@ -891,7 +900,8 @@ int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
       adc_cfg->outMaxV = 5000;
       adc_cfg->outMinV = 0;
       save_config_sensor();
-      break;
+      }
+    break;
   }
 
   return status;
@@ -901,6 +911,7 @@ int32_t wind_direction_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index
 {
   int32_t status = 0;
   adc_config_t *adc_cfg;
+  int active;
   int choice;
 
   adc_cfg = get_sensor_config(sensor);
@@ -912,17 +923,25 @@ int32_t wind_direction_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index
   switch (menu_index)
   {
   case WDIN_DIRECTION_RMYOUNG_05103V_CH:
+    choice = adc_cfg->single_channel;
     status = input_combobox("SE Channel", adc_single_list, _countof(adc_single_list), &choice);
     if (status != MENU_OK)
       break;
-    adc_cfg->single_channel = choice;
-    adc_cfg->mode = ADC_CFG_MODE_SE;
-    adc_cfg->highScale = 355;
-    adc_cfg->lowScale = 0;
-    adc_cfg->scale = 1;
-    adc_cfg->outMaxV = 5000;
-    adc_cfg->outMinV = 0;
-    save_config_sensor();
+    active = 0;
+    status = input_active("Continue", &active);
+    if (status != MENU_OK)
+      break;
+      if(active)
+      {
+        adc_cfg->single_channel = choice;
+        adc_cfg->mode = ADC_CFG_MODE_SE;
+        adc_cfg->highScale = 355;
+        adc_cfg->lowScale = 0;
+        adc_cfg->scale = 1;
+        adc_cfg->outMaxV = 5000;
+        adc_cfg->outMinV = 0;
+        save_config_sensor();
+      }
     break;
   }
 
