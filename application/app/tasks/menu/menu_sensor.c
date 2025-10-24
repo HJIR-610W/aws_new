@@ -873,7 +873,7 @@ int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
   int active;
 
   p_cfg = get_sensor_config(sensor);
-  if (p_cfg == NULL)
+  if(p_cfg == NULL)
   {
     return 0;
   }

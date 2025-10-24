@@ -261,7 +261,7 @@
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\lwip\app\lwip.c</file>
             <file>$PROJ_DIR$\..\application\app\version\app_version.h</file>
-            <file>$PROJ_DIR$\..\Application\app\version\boot_version.h</file>
+            <file>$PROJ_DIR$\..\application\app\version\boot_version.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_sms.c</file>
             <file>$PROJ_DIR$\..\application\app\version\hj_product_list.h</file>
             <file>$PROJ_DIR$\..\application\communications\cdma\modem_if.h</file>
@@ -348,7 +348,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_do.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\fram\fm25cl.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_flash.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_do.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rtc.h</file>
@@ -358,7 +358,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_uart.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_flash.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_frequency.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_fram.c</file>
@@ -384,12 +384,12 @@
             <file>$PROJ_DIR$\..\drivers\Components\rtc\built_.c</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.c</file>
             <file>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\st7920.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\charger\hjsmartCharger.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\lcd\st7920.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</file>
-            <file>$PROJ_DIR$\..\drivers\components\rtc\ds1306.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</file>
+            <file>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\bcd.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\charger\ls1024.c</file>
             <file>$PROJ_DIR$\..\drivers\devices\charger\ls1024.h</file>
@@ -471,14 +471,14 @@
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_do.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_crc.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\stm32_usb.c</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_cdc.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.h</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.c</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.c</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_cdc.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.h</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_uart.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_uart.h</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_do.c</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_di.c</file>
             <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.c</file>
@@ -1702,12 +1702,12 @@
             <file>$PROJ_DIR$\..\drivers\devices\sensors\wind_speed\wind_spd_rmyoung_05103v.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\barometer\barometer_rmyoung_61402v.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\barometer\barometer_rmyoung_61402v.c</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_system.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\lowpan6_common.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_network.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_manager.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_network.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_manager.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_sensor.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_sensor.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\raw_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.h</file>
             <file>$PROJ_DIR$\..\application\communications\ethernet\task_client.h</file>
@@ -1716,7 +1716,7 @@
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_def.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\platform_util.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_panel.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_core.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\schedule.h</file>
@@ -1730,19 +1730,19 @@
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_adc.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\barometer\jinsung_sjgp215.h</file>
             <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_frequency.h</file>
-            <file>$PROJ_DIR$\..\Application\app\config\config_nvm.h</file>
+            <file>$PROJ_DIR$\..\application\app\config\config_nvm.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\aws\old_aws_define.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_frequency.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\mpu_wrappers.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\stream_buffer.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_logging.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\list.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_isrEvent.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\sio.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_console.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\slipif.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Include\cmsis_version.h</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f407xx.h</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Include\cmsis_compiler.h</file>
@@ -1804,7 +1804,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\portable\IAR\ARM_CM4F\portmacro.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\httpd_opts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netdb.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\nd6_priv.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\fs.h</file>
@@ -1816,13 +1816,13 @@
             <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\fsdata.c</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_rs485.h</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_adc.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_adc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\init.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\..\application\app\test\mcu_debug.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\data_logging.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\httpd.h</file>
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_flash.h</file>
@@ -1896,22 +1896,22 @@
             <file>$TOOLKIT_DIR$\inc\c\DLib_Product_string.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\fsl_debug_console.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu.h</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
             <file>$PROJ_DIR$\..\utils\util_escape_sequence.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stddef.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\fsmc.h</file>
-            <file>$PROJ_DIR$\..\Application\io\cli\cli_input.h</file>
+            <file>$PROJ_DIR$\..\application\io\cli\cli_input.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_sram.h</file>
             <file>$TOOLKIT_DIR$\inc\c\string.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\built_.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\freertos_mpool.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\console_test.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\console_test.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\timers.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\croutine.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_fram.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\console_scanf.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_eth.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\inet_chksum.h</file>
@@ -1952,7 +1952,7 @@
             <file>$PROJ_DIR$\..\Application\app\tasks\menu\menu_setup.h</file>
             <file>$PROJ_DIR$\release\Obj\barometer_rmyoung_61402v.xcl</file>
             <file>$PROJ_DIR$\release\Obj\wind_spd_rmyoung_05103v.o</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt_priv.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_aws.h</file>
@@ -1986,9 +1986,9 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\opt.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
             <file>$PROJ_DIR$\..\application\communications\ethernet\tcp_define.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_cali.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_offset.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_data.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_cali.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_offset.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_data.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\system\arch\cc.h</file>
             <file>$TOOLKIT_DIR$\inc\c\inttypes.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\debug.h</file>
@@ -2051,7 +2051,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\priv\tcpip_priv.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\timeouts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\icmp.h</file>
-            <file>$PROJ_DIR$\..\drivers\driver_stm32\driver_stm32_rtc.h</file>
+            <file>$PROJ_DIR$\..\drivers\Driver_stm32\driver_stm32_rtc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ip.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcpbase.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\prot\ip4.h</file>
@@ -2072,7 +2072,7 @@
             <file>$PROJ_DIR$\..\drivers\driver\drv_crc.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip4.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\stats.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip6.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\wind_direction\wind_dir_rmyoung_05103v.h</file>
             <file>$PROJ_DIR$\release\Obj\rmyoung_05103v.xcl</file>

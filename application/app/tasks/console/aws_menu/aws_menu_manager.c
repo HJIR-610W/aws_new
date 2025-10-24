@@ -90,7 +90,9 @@ void config_hj_reset(void)
   hjwindDirection_config_t *hjwindDir_cfg;
   hjsnow_config_t *hjsnow_cfg;
   rain_present_config_t *hjrain_det_cfg;
-  uint8_t single_channel = 0;
+  rmyoung_61402v_barometer_config_t *p_barometer;
+
+      uint8_t single_channel = 0;
 
   config_app_sensor_reset();
 
@@ -145,14 +147,8 @@ void config_hj_reset(void)
   // 기압[RM YOUNG]
   config.sensor[A7_PRESSURE].type = S_T_BARO_RMYOUNG_61402V;
   sensor_add(&config.sensor[A7_PRESSURE]);
-  adc_config = get_sensor_config(&config.sensor[A7_PRESSURE]);
-  adc_config->single_channel = single_channel++;
-  adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 1100;
-  adc_config->lowScale = 500;
-  adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  p_barometer = get_sensor_config(&config.sensor[A7_PRESSURE]);
+  p_barometer->adc_channel = single_channel++;
 
   // 일사 CMP3 0~1.0VDC
   config.sensor[B1_SOLAR_RADIATION].type = S_T_ADC;

@@ -33,6 +33,7 @@ void test_draw_aws_setup_page(screen_menu_t* p_win)
 {
   screen_menu_start(p_win);
   screen_menu_printf(p_win, AWS_SETUP_CALI,   "Calibraion");
+  screen_menu_printf(p_win, AWS_SETUP_MANAGER, "Manager");
 
   screen_menu_clear(p_win);
 }
@@ -70,8 +71,11 @@ void test_setup_menu(void)
         case AWS_SETUP_CALI:
           status = setup_menu_calibration();
           break;
+        case AWS_SETUP_MANAGER:
+          status = setup_menu_manager();
+          break;
 
-        default:
+            default:
           break;
 
       }
