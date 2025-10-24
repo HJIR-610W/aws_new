@@ -133,36 +133,38 @@ typedef enum sensor_list_e
   X(S_T_WIND_DIRECTION_HJ_485, "화진 풍향")              \
   X(S_T_HUMINITY_HJ, "화진 습도")                        \
   X(S_T_TEMPERATURE_HJ, "화진 온도")                     \
-  X(S_T_RAIN_PRESENT_DI, "화진 강우감지")                \
+  X(S_T_RAIN_PRESENT_DI, "화진 강우감지 접점")                \
   X(S_T_PT100_A, "PT100 A")                              \
   X(S_T_PT100_B, "PT100 B")                              \
   X(S_T_SOLAR_RADIATION_OTT_SMP3, "일사 OTT SMP3")       \
   X(S_T_BARO_JINSUNG_SJGP215, "진성 SJGP215")            \
   X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")           \
   X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V") \
-  X(S_T_WIND_SPEED_RMYOUNG_05103V, "RMYOUNG 05103V")
+  X(S_T_WIND_SPEED_RMYOUNG_05103V, "RMYOUNG 05103V")     \
+  X(S_T_RAIN_PRESENT_ANALOG, "화진 우량감지 디지털")
 
-#define SENSOR_TYPE_ENG_LIST                     \
-  X(S_T_UNSUED, "Not Used")                      \
-  X(S_T_ADC, "ADC")                              \
-  X(S_T_FREQ, "Freq")                            \
-  X(S_T_RAIN_REED_05MM, "PULSE 0.5mm")           \
-  X(S_T_RAIN_REED_1MM, "PULSE 1mm")              \
-  X(S_T_RAIN_HALL_05MM, "HJ Hall 0.5mm")         \
-  X(S_T_RAIN_HALL_1MM, "HJ Hall 1mm")            \
-  X(S_T_SNOW_HJ, "HJ Snow")                      \
-  X(S_T_WIND_SPEED_HJ_485, "HJ Wind Spd")        \
-  X(S_T_WIND_DIRECTION_HJ_485, "HJ Wind Dir")    \
-  X(S_T_HUMINITY_HJ, "HJ Humi")                  \
-  X(S_T_TEMPERATURE_HJ, "HJ Temp")               \
-  X(S_T_RAIN_PRESENT_DI, "HJ Rain Det")          \
-  X(S_T_PT100_A, "PT100_A")                      \
-  X(S_T_PT100_B, "PT100_B")                      \
-  X(S_T_SOLAR_RADIATION_OTT_SMP3, "Solar SMP3")  \
-  X(S_T_BARO_JINSUNG_SJGP215, "JINSUNG SJGP215") \
-  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")   \
-  X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V")\
-X(S_T_WIND_SPEED_RMYOUNG_05103V, "RMYOUNG 05103V")
+#define SENSOR_TYPE_ENG_LIST                             \
+  X(S_T_UNSUED, "Not Used")                              \
+  X(S_T_ADC, "ADC")                                      \
+  X(S_T_FREQ, "Freq")                                    \
+  X(S_T_RAIN_REED_05MM, "PULSE 0.5mm")                   \
+  X(S_T_RAIN_REED_1MM, "PULSE 1mm")                      \
+  X(S_T_RAIN_HALL_05MM, "HJ Hall 0.5mm")                 \
+  X(S_T_RAIN_HALL_1MM, "HJ Hall 1mm")                    \
+  X(S_T_SNOW_HJ, "HJ Snow")                              \
+  X(S_T_WIND_SPEED_HJ_485, "HJ Wind Spd")                \
+  X(S_T_WIND_DIRECTION_HJ_485, "HJ Wind Dir")            \
+  X(S_T_HUMINITY_HJ, "HJ Humi")                          \
+  X(S_T_TEMPERATURE_HJ, "HJ Temp")                       \
+  X(S_T_RAIN_PRESENT_DI, "HJ Rain Det Digital")            \
+  X(S_T_PT100_A, "PT100_A")                              \
+  X(S_T_PT100_B, "PT100_B")                              \
+  X(S_T_SOLAR_RADIATION_OTT_SMP3, "Solar SMP3")          \
+  X(S_T_BARO_JINSUNG_SJGP215, "JINSUNG SJGP215")         \
+  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")           \
+  X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V") \
+  X(S_T_WIND_SPEED_RMYOUNG_05103V, "RMYOUNG 05103V")     \
+  X(S_T_RAIN_PRESENT_ANALOG, "HJ Rain Det Analog")
 
 typedef enum sensor_model_e
 {
@@ -213,7 +215,7 @@ extern const uint8_t windSpeedList[4];
 extern const uint8_t pressureList[4];
 extern const uint8_t rainList[5];
 extern const uint8_t snowList[2];
-extern const uint8_t rainPresentList[2];
+extern const uint8_t rainPresentList[3];
 extern const uint8_t humiList[3];
 extern const uint8_t sunShineList[3];
 extern const uint8_t solarRadiationList[3];

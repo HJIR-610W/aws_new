@@ -82,7 +82,7 @@ const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_WIND_SPE
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
                             S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM};
 const uint8_t pressureList[] = {S_T_UNSUED, S_T_BARO_RMYOUNG_61402V, S_T_BARO_JINSUNG_SJGP215, S_T_ADC};
-const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI};
+const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI,S_T_RAIN_PRESENT_ANALOG};
 const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ};
 const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMINITY_HJ, S_T_ADC};
 const uint8_t solarRadiationList[] = {S_T_UNSUED, S_T_SOLAR_RADIATION_OTT_SMP3, S_T_ADC};
@@ -208,6 +208,7 @@ void *sensor_add(sensor_t *sensor)
       sensor_add_common(sensor, 0);
       return &g_config_sensor.ott_smp3;
     case S_T_RAIN_PRESENT_DI:
+    case S_T_RAIN_PRESENT_ANALOG:
       sensor_add_common(sensor, 0);
       return &g_config_sensor.rain_present;
     case S_T_FREQ:
@@ -263,6 +264,7 @@ void *get_sensor_config(sensor_t *sensor)
         case S_T_SOLAR_RADIATION_OTT_SMP3:
           return &g_config_sensor.ott_smp3;
         case S_T_RAIN_PRESENT_DI:
+        case S_T_RAIN_PRESENT_ANALOG:
           return &g_config_sensor.rain_present;
         case S_T_FREQ:
         case S_T_WIND_SPEED_RMYOUNG_05103V:

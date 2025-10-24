@@ -230,8 +230,12 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
     case S_T_BARO_JINSUNG_SJGP215:
       num = BARO_JINSUNG_SJGP215;
       break;
-
-
+    case S_T_RAIN_PRESENT_DI:
+      num = RAIN_PRESENT_DI;
+      break;
+    case S_T_RAIN_PRESENT_ANALOG:
+      num = RAIN_PRESENT_ANALOG;
+       break;
     }
   return num;
 }
@@ -285,7 +289,8 @@ void sensor_init(void)
           g_sensor_driver[A6_RAINFALL_DOT5_1MM] = rain_open(num, 0);
           break;
         case A8_RAIN_PRESENT:
-          g_sensor_driver[A8_RAIN_PRESENT] = rainPresent_open(RAIN_PRESENT_DI, 0);
+          num = get_driver_number(p_sensor[A8_RAIN_PRESENT].type);
+          g_sensor_driver[A8_RAIN_PRESENT] = rainPresent_open(num, 0);
           break;
         case A7_PRESSURE:
           num = get_driver_number(p_sensor[A7_PRESSURE].type);
