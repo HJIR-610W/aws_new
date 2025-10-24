@@ -433,6 +433,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->temperature.raw.f;
+        if (less_float(f_data, 0) && bigger_float(f_data, -0.1))
+        {
+          f_data = 0;
+        }
         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "TEMP", f_data);
       }
       else
@@ -770,7 +774,9 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     err = p_kma->soil_temperature_5cm.err;
     if (err)
     {
+      //
       data = p_kma->soil_temperature_5cm.data;
+
       make_error_string(err, err_buf, sizeof(err_buf));
       screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "ST 5cm",(int16_t)data, err_buf);
     }
@@ -779,6 +785,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_5cm.raw.f;
+        if (less_float(f_data, 0) && bigger_float(f_data, -0.1))
+        {
+          f_data = 0;
+        }
         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 5cm", f_data);
       }
       else
@@ -807,6 +817,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_10cm.raw.f;
+        if (less_float(f_data, 0) && bigger_float(f_data, -0.1))
+        {
+          f_data = 0;
+        }
         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 10cm", f_data);
       }
       else
@@ -834,6 +848,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_20cm.raw.f;
+        if (less_float(f_data, 0) && bigger_float(f_data, -0.1))
+        {
+          f_data = 0;
+        }
         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 20cm", f_data);
       }
       else
@@ -861,6 +879,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_30cm.raw.f;
+        if (less_float(f_data, 0) && bigger_float(f_data, -0.1))
+        {
+          f_data = 0;
+        }
         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 30cm", f_data);
       }
       else
@@ -887,6 +909,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_50cm.raw.f;
+        if (less_float(f_data, 0) && bigger_float(f_data, -0.1))
+        {
+          f_data = 0;
+        }
         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 50cm", f_data);
       }
       else
@@ -915,6 +941,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_1m.raw.f;
+        if (less_float(f_data, 0) && bigger_float(f_data, -0.1))
+        {
+          f_data = 0;
+        }
         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 1m", f_data);
       }
       else
@@ -942,6 +972,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_1_5m.raw.f;
+        if (less_float(f_data, 0) && bigger_float(f_data, -0.1))
+        {
+          f_data = 0;
+        }
         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 1.5m", f_data);
       }
       else
@@ -969,6 +1003,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_3m.raw.f;
+        if (less_float(f_data, 0) && bigger_float(f_data, -0.1))
+        {
+          f_data = 0;
+        }
         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 3m", f_data);
       }
       else
@@ -996,6 +1034,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       if (min == eAWS_DATA_RAW)
       {
         float f_data = p_kma->soil_temperature_5m.raw.f;
+        if (less_float(f_data, 0) && bigger_float(f_data, -0.1))
+        {
+          f_data = 0;
+        }
         screen_page_printf(p_win, "%-*s:%6.1f C", AWS_WD, "ST 5m", f_data);
       }
       else
