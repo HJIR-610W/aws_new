@@ -446,7 +446,32 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
       }
     }
   }
-
+  // 상대습도
+  if (p_kma->relative_humidity.enable)
+  {
+    err = p_kma->relative_humidity.err;
+    if (err)
+    {
+      data = p_kma->relative_humidity.data;
+      make_error_string(err, err_buf, sizeof(err_buf));
+      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "HUMI", (int16_t)data, err_buf);
+    }
+    else
+    {
+      if (min == eAWS_DATA_RAW)
+      {
+        float f_data = p_kma->relative_humidity.raw.f;
+        screen_page_printf(p_win, "%-*s:%6.1f %%", AWS_WD, "HUMI", f_data);
+      }
+      else
+      {
+        data = KMA_TO_GENERAL(p_kma->relative_humidity.data);
+        data_min = KMA_TO_GENERAL(p_kma->relative_humidity.min);
+        data_max = KMA_TO_GENERAL(p_kma->relative_humidity.max);
+        screen_page_printf(p_win, "%-*s:%6.1f %%", AWS_WD,"HUMI", data);
+      }
+    }
+  }
   // 풍향
   if (p_kma->wind_direction_avg.enable)
   {
@@ -669,32 +694,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     }
   }
 
-  // 상대습도
-  if (p_kma->relative_humidity.enable)
-  {
-    err = p_kma->relative_humidity.err;
-    if (err)
-    {
-      data = p_kma->relative_humidity.data;
-      make_error_string(err, err_buf, sizeof(err_buf));
-      screen_page_printf(p_win, "%-*s:%04d %s", AWS_WD, "HUMI", (int16_t)data, err_buf);
-    }
-    else
-    {
-      if (min == eAWS_DATA_RAW)
-      {
-        float f_data = p_kma->relative_humidity.raw.f;
-        screen_page_printf(p_win, "%-*s:%6.1f %%", AWS_WD, "HUMI", f_data);
-      }
-      else
-      {
-        data = KMA_TO_GENERAL(p_kma->relative_humidity.data);
-        data_min = KMA_TO_GENERAL(p_kma->relative_humidity.min);
-        data_max = KMA_TO_GENERAL(p_kma->relative_humidity.max);
-        screen_page_printf(p_win, "%-*s:%6.1f %%", AWS_WD,"HUMI", data);
-      }
-    }
-  }
+
 #define SOLAR_R_WD 7
   // 일사 "SOLAR R: 123.1 kW/m2"
   if (p_kma->solar_radiation.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
