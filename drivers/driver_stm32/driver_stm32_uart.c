@@ -183,7 +183,7 @@ int32_t stm32_uart_init(int num, void *opt)
 
   stm32_uart_hal_init(num, cfg->baud, cfg->parity_index, cfg->dataLen, cfg->stop_bit);
   stm32_uart_dma_init(num);
-  HAL_UART_Receive_IT(&uart_inst[num].handle, (uint8_t *)&uart_inst[num], 1);
+  HAL_UART_Receive_IT(&uart_inst[num].handle, (uint8_t *)&uart_inst[num].rxData, 1);
 
 
   uart_inst[num].opened = true;
