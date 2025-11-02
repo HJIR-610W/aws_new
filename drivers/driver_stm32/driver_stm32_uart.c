@@ -13,26 +13,29 @@
 #include "system_err.h"
 #include "util_memory.h"
 
+#define BUFFER_TRIGGER_LEVEL_BYTES 1
+
+
 
 typedef struct stm32_uart_cfg_s
 {
   bool opened;
-  int8_t errCode; // 드라이버 에러  상태 정보
+  int8_t err_code; // 드라이버 에러  상태 정보
   uint8_t parity_index;
   uint32_t baud; // 설정된 통신속도
-  uint8_t rxData;
+  uint8_t rx_data;
   UART_HandleTypeDef handle;
-  StreamBufferHandle_t xStreamBuffer;
-  int buffser_size;
+  StreamBufferHandle_t stream_buffer;
+  int buffer_size;
   DMA_HandleTypeDef dma_tx;
   DMA_HandleTypeDef dma_rx;
-  void *tx_sem;
-  void *rx_sem;
-  void *txcSem; // 전송 완료 알림 세마포어
+  osSemaphoreId_t *tx_sem;
+  osSemaphoreId_t *rx_sem;
+  osSemaphoreId_t *txc_sem; // 전송 완료 알림 세마포어
 } uart_instance_t;
 
-static uart_instance_t uart_inst[STM32_UART_MAX] = {[STM32_UART_0_CDMA] = {.handle.Instance = USART3,.buffser_size = 512},
-                                                    [STM32_UART_1_SDI] = {.handle.Instance = USART6,.buffser_size = 50}};
+static uart_instance_t uart_inst[STM32_UART_MAX] = {[STM32_UART_0_CDMA] = {.handle.Instance = USART3,.buffer_size = 512},
+                                                    [STM32_UART_1_SDI] = {.handle.Instance = USART6,.buffer_size = 50}};
 
 DMA_HandleTypeDef *get_uart_txdma(int num)
 {
@@ -171,19 +174,19 @@ int32_t stm32_uart_init(int num, void *opt)
   uart_inst[num].parity_index = cfg->parity_index;
 
 
-  if (uart_inst[num].txcSem == NULL)
+  if (uart_inst[num].txc_sem == NULL)
   {
     tempSem = osSemaphoreNew(1, 0, NULL);
     if (tempSem)
-      uart_inst[num].txcSem = tempSem;
+      uart_inst[num].txc_sem = tempSem;
   }
-  uart_inst[num].xStreamBuffer = xStreamBufferCreate(uart_inst[num].buffser_size, 1);
+  uart_inst[num].stream_buffer = xStreamBufferCreate(uart_inst[num].buffer_size, BUFFER_TRIGGER_LEVEL_BYTES);
   OS_CREATE_BINARY_SEM(uart_inst[num].tx_sem);
   OS_CREATE_BINARY_SEM(uart_inst[num].rx_sem);
 
   stm32_uart_hal_init(num, cfg->baud, cfg->parity_index, cfg->dataLen, cfg->stop_bit);
   stm32_uart_dma_init(num);
-  HAL_UART_Receive_IT(&uart_inst[num].handle, (uint8_t *)&uart_inst[num].rxData, 1);
+  HAL_UART_Receive_IT(&uart_inst[num].handle, (uint8_t *)&uart_inst[num].rx_data, 1);
 
 
   uart_inst[num].opened = true;
@@ -307,11 +310,11 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 if (huart->Instance == USART3)
   {
-    osSemaphoreRelease(uart_inst[STM32_UART_0_CDMA].txcSem);
+    osSemaphoreRelease(uart_inst[STM32_UART_0_CDMA].txc_sem);
   }
   else if (huart->Instance == USART6)
   {
-    osSemaphoreRelease(uart_inst[STM32_UART_1_SDI].txcSem);
+    osSemaphoreRelease(uart_inst[STM32_UART_1_SDI].txc_sem);
   }
 }
 
@@ -325,15 +328,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   {
     if(uart_inst[i].handle.Instance == huart->Instance)
     {
-      xBytesSent = xStreamBufferSendFromISR(uart_inst[i].xStreamBuffer, &uart_inst[i].rxData, 1,
+      xBytesSent = xStreamBufferSendFromISR(uart_inst[i].stream_buffer, &uart_inst[i].rx_data, 1,
                                             &xHigherPriorityTaskWoken);
       if (!(xBytesSent > 0))
       {
-        __asm("BKPT #0");//TODO:실행중 발생하면 usage fault 발생됨
+      //  __asm("BKPT #0");//TODO:실행중 발생하면 usage fault 발생됨
       }
       /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-      HAL_UART_Receive_IT(&uart_inst[i].handle, (uint8_t *)&uart_inst[i].rxData, 1);
+      HAL_UART_Receive_IT(&uart_inst[i].handle, (uint8_t *)&uart_inst[i].rx_data, 1);
       break;
     }
   }
@@ -385,12 +388,12 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
   // timeOutMs가 0인 경우: 논블로킹 모드
   if (timeOutMs == 0)
   {
-    bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].xStreamBuffer);
+    bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].stream_buffer);
 
     if (bytes_available > 0)
     {
       size_t bytes_to_read = (bytes_available > buffSize) ? buffSize : bytes_available;
-      bytes_read = xStreamBufferReceive(uart_inst[uart_num].xStreamBuffer,
+      bytes_read = xStreamBufferReceive(uart_inst[uart_num].stream_buffer,
                                         pBuff,
                                         bytes_to_read,
                                         0); // 대기시간 0
@@ -409,7 +412,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
   {
     while (cnt < buffSize)
     {
-      bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].xStreamBuffer);
+      bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].stream_buffer);
 
       size_t bytes_to_read = buffSize - cnt;
       if (bytes_available > bytes_to_read)
@@ -420,7 +423,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
       if (bytes_available == 0)
       {
         // 데이터가 없으면 최소 1바이트 수신까지 무한 대기
-        bytes_read = xStreamBufferReceive(uart_inst[uart_num].xStreamBuffer,
+        bytes_read = xStreamBufferReceive(uart_inst[uart_num].stream_buffer,
                                           &pBuff[cnt],
                                           1,
                                           osWaitForever);
@@ -428,7 +431,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
       else
       {
         // 사용 가능한 데이터를 읽음
-        bytes_read = xStreamBufferReceive(uart_inst[uart_num].xStreamBuffer,
+        bytes_read = xStreamBufferReceive(uart_inst[uart_num].stream_buffer,
                                           &pBuff[cnt],
                                           bytes_available,
                                           osWaitForever);
@@ -456,7 +459,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
 
       remaining_timeout = timeout_tick - elapsed_tick;
 
-      bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].xStreamBuffer);
+      bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].stream_buffer);
 
       size_t bytes_to_read = buffSize - cnt;
       if (bytes_available > bytes_to_read)
@@ -467,7 +470,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
       if (bytes_available == 0)
       {
         // 데이터가 없으면 최소 1바이트 수신 대기
-        bytes_read = xStreamBufferReceive(uart_inst[uart_num].xStreamBuffer,
+        bytes_read = xStreamBufferReceive(uart_inst[uart_num].stream_buffer,
                                           &pBuff[cnt],
                                           1,
                                           remaining_timeout);
@@ -475,7 +478,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
       else
       {
         // 데이터를 읽음
-        bytes_read = xStreamBufferReceive(uart_inst[uart_num].xStreamBuffer,
+        bytes_read = xStreamBufferReceive(uart_inst[uart_num].stream_buffer,
                                           &pBuff[cnt],
                                           bytes_available,
                                           remaining_timeout);
@@ -588,7 +591,7 @@ int32_t stm32_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
   {
     return 0;
   }
-  xBytesSent = xStreamBufferSend(uart_inst[num].xStreamBuffer, pData, dataLen,
+  xBytesSent = xStreamBufferSend(uart_inst[num].stream_buffer, pData, dataLen,
                                  pdMS_TO_TICKS( 100 ));
 
   return xBytesSent;
@@ -672,15 +675,15 @@ int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
   osStatus_t osStatus;
 
   OS_PEND_SEM(uart_inst[num].tx_sem, osWaitForever);
-  osSemaphoreAcquire(uart_inst[num].txcSem, 0); // 이전에 처리 못한건 제거
+  osSemaphoreAcquire(uart_inst[num].txc_sem, 0); // 이전에 처리 못한건 제거
   waitTime = calculate_txWaitTimeMs(uart_inst[num].baud, dataLen);
   status = HAL_UART_Transmit_DMA(&uart_inst[num].handle, pData, dataLen);
 
   if (status == HAL_OK)
   {
-    if (uart_inst[num].txcSem)
+    if (uart_inst[num].txc_sem)
     {
-      osStatus = osSemaphoreAcquire(uart_inst[num].txcSem, waitTime);
+      osStatus = osSemaphoreAcquire(uart_inst[num].txc_sem, waitTime);
       if (osStatus != osOK)
       {
         ERROR_PRINTF("uart %d", osStatus);
@@ -813,7 +816,7 @@ void stm32_uart_set_config(int num, uart_config_t *config)
     return;
   }
 
-  HAL_UART_Receive_IT(p_uart, (uint8_t *)&uart_inst[num].rxData, 1);
+  HAL_UART_Receive_IT(p_uart, (uint8_t *)&uart_inst[num].rx_data, 1);
 
   OS_POST_SEM(uart_inst[num].rx_sem);
   OS_POST_SEM(uart_inst[num].tx_sem);
