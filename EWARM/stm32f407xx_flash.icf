@@ -12,8 +12,8 @@ define symbol __ICFEDIT_region_CCMRAM_start__ = 0x10000000;
 define symbol __ICFEDIT_region_CCMRAM_end__   = 0x1000FFFF;
 
 
-define symbol __SRAM_start__     = 0x64000000;
-define symbol __SRAM_end__       = 0x640FFFFF;
+define symbol __SRAM_start__ = 0x64000000;
+define symbol __SRAM_end__   = 0x640FFFFF;
 
 
 /*-Sizes-*/

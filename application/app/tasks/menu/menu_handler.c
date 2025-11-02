@@ -267,7 +267,7 @@ menu_status_t input_password(const char *title, int32_t *password)
 
     screen_refresh();
 
-    int32_t key = get_menu_key(100); 
+    int32_t key = get_menu_key(10); 
     if (key == KEY_CODE_NONE)
       continue;
 
