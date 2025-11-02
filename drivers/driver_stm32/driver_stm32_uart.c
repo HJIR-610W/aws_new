@@ -15,7 +15,10 @@
 
 #define BUFFER_TRIGGER_LEVEL_BYTES 1
 
-
+#define UART_0_CDMA_UART_ISR_PRIOROTY 5
+#define UART_1_SDI_UART_ISR_PRIOROTY 5
+#define UART_0_CDMA_DMA_ISR_PRIOROTY 5
+#define UART_1_SDI_DMA_ISR_PRIOROTY 5
 
 typedef struct stm32_uart_cfg_s
 {
@@ -74,10 +77,10 @@ static void stm32_uart_dma_init(int num)
     }
     __HAL_LINKDMA(p_uart, hdmatx, *p_dma);
 
-    HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, UART_0_CDMA_DMA_ISR_PRIOROTY, 0);
     HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
 
-    HAL_NVIC_SetPriority(USART3_IRQn, 5, 1);
+    HAL_NVIC_SetPriority(USART3_IRQn, UART_0_CDMA_UART_ISR_PRIOROTY, 1);
     HAL_NVIC_EnableIRQ(USART3_IRQn);
   }
   else if (p_uart->Instance == USART6)
@@ -101,10 +104,10 @@ static void stm32_uart_dma_init(int num)
     }
     __HAL_LINKDMA(p_uart, hdmatx, *p_dma);
 
-    HAL_NVIC_SetPriority(DMA2_Stream7_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(DMA2_Stream7_IRQn, UART_1_SDI_DMA_ISR_PRIOROTY, 0);
     HAL_NVIC_EnableIRQ(DMA2_Stream7_IRQn);
 
-    HAL_NVIC_SetPriority(USART6_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(USART6_IRQn, UART_1_SDI_UART_ISR_PRIOROTY, 0);
     HAL_NVIC_EnableIRQ(USART6_IRQn);
   }
 }
