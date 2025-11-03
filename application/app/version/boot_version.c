@@ -41,7 +41,7 @@ void get_boot_build(DATE_TIME_BUF *build)
     
 }
 
-uint32_t get_bootPCB(void)
+uint32_t get_boot_pcb_version(void)
 {
   section_info_t *info = (section_info_t *)BOOT_INFO_START_ADDRESS;
 

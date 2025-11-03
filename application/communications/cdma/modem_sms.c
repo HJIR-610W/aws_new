@@ -50,7 +50,7 @@ void SMS_Read_Info(sms_t *sms)
   get_app_version(&release, &add, &fix, &build);
 
 
-  len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "App/Boot(%d.%d.%d/", release, add, fix);
+  len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "A/B(%d.%d.%d/", release, add, fix);
 
 	get_boot_version(&release, &add, &fix, &build);
 
@@ -58,7 +58,7 @@ void SMS_Read_Info(sms_t *sms)
 
   mfgName = get_mfg_name();
 
-  len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "PCB:%u,MFG:%s,AREA:%u,BUILD:%u,", get_bootPCB(), mfgName, get_appAREA(), bufild_time);
+  len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "PCB:%u,MFG:%s,AREA:%u,BUILD:%u,", get_boot_pcb_version(), mfgName, get_app_area_code(), bufild_time);
   len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "ID:%d ", get_config_app()->id);
 
   _iCellular->send_sms(sms->num, sms->msg);

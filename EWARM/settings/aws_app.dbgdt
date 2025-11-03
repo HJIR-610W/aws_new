@@ -1102,7 +1102,7 @@
                     <item>uart_inst[i].stream_buffer</item>
                     <item>uart_inst[i].rx_data</item>
                     <item>ch</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

@@ -30,7 +30,7 @@ void get_hwCode(uint32_t *nickCode);
 void set_testKey(uint32_t key);
 const char *get_mfg_name(void);
 
-uint32_t get_appPCB(void);
-uint32_t get_appAREA(void);
+uint32_t get_hardware_code(void);
+uint32_t get_app_area_code(void);
 uint32_t get_app_build_timestamp(void);
 #endif

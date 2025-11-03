@@ -525,11 +525,11 @@ uint16_t divas_read_version(uint8_t *rx_frame, uint8_t *tx_frame)
 
   SetU32(&tx_data[cnt], get_app_version(NULL, NULL, NULL, NULL));
   cnt +=4;
-  SetU32(&tx_data[cnt], get_appPCB());
+  SetU32(&tx_data[cnt], get_hardware_code());
   cnt += 4;
   SetU32(&tx_data[cnt], get_appNick());
   cnt += 4;
-  SetU32(&tx_data[cnt], get_appAREA());
+  SetU32(&tx_data[cnt], get_app_area_code());
   cnt += 4;
    SetU32(&tx_data[cnt], get_app_build_timestamp());
   cnt += 4;

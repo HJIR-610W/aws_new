@@ -8,5 +8,5 @@
 
 uint32_t get_boot_version(uint8_t *a,uint8_t *b,uint8_t *c,uint8_t *d);
 void get_boot_build(DATE_TIME_BUF *build);
-uint32_t get_bootPCB(void);
+uint32_t get_boot_pcb_version(void);
 #endif

@@ -100,9 +100,9 @@ uint32_t get_app_build_timestamp(void)
  
 }
 
-uint32_t get_appPCB(void)
+uint32_t get_hardware_code(void)
 { 
-    return g_kappInfo.hw_code;
+  return g_kappInfo.hw_code;
 
 }
 
@@ -138,7 +138,7 @@ const char *get_mfg_name(void)
   }
 }
 
-uint32_t get_appAREA(void)
+uint32_t get_app_area_code(void)
 {
     return g_kappInfo.area;
 }
