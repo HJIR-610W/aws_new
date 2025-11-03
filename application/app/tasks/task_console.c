@@ -51,17 +51,25 @@ void print_signature(void)
   get_app_build(&ct);
 
   io_printf("\r\n");
-  io_printf("(0lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk(B\r\n");
-  io_printf("(0x(B HWAJIN T&I CO.,LTD.                      (0x(B\r\n");
-  io_printf("(0tqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqu(B\r\n");
-  io_printf("(0x(B AWS                                      (0x(B\r\n"); //1111-11-11 11:11:11
-  io_printf("(0x(B App  %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",major,minor,fix,rel,ct.Year,ct.Month,ct.Day,
-                                                  ct.Hour,ct.Min,ct.Sec);
-  get_boot_version(&major,&minor,&fix,&rel);
-  get_boot_build(&ct);
-  io_printf("(0x(B Boot %3d.%3d.%3d.%3d,%04d-%02d-%02d %02d:%02d:%02d (0x(B\r\n",major,minor,fix,rel,ct.Year,ct.Month,ct.Day,
-                                                  ct.Hour,ct.Min,ct.Sec);
-  io_printf("(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B\r\n");
+
+
+io_printf("┌──────────────────────────────────────────────┐\r\n");
+io_printf("│ HWAJIN T&I CO.,LTD.                          │\r\n");
+io_printf("├──────────────────────────────────────────────┤\r\n");
+io_printf("│ AWS                                          │\r\n"); 
+io_printf("│ App  %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
+          major, minor, fix, rel, ct.Year, ct.Month, ct.Day,
+          ct.Hour, ct.Min, ct.Sec);
+
+get_boot_version(&major, &minor, &fix, &rel);
+get_boot_build(&ct);
+
+io_printf("│ Boot %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
+          major, minor, fix, rel, ct.Year, ct.Month, ct.Day,
+          ct.Hour, ct.Min, ct.Sec);
+
+io_printf("└──────────────────────────────────────────────┘\r\n");
+
 
 }
 

@@ -149,7 +149,7 @@
             <file>$PROJ_DIR$\..\application\app\version\project_def.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\lwip\target\ethernetif.c</file>
-            <file>$PROJ_DIR$\..\Application\Communications\cdma\at_cmd.h</file>
+            <file>$PROJ_DIR$\..\application\communications\cdma\at_cmd.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.h</file>
             <file>$PROJ_DIR$\..\application\app\version\hj_product_list.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.c</file>
@@ -162,11 +162,11 @@
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.c</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\app\fatfs.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\direct\task_direct.c</file>
-            <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_if.h</file>
+            <file>$PROJ_DIR$\..\application\communications\cdma\modem_if.h</file>
             <file>$PROJ_DIR$\..\application\communications\direct\task_direct.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.c</file>
             <file>$PROJ_DIR$\..\application\app\version\boot_version.h</file>
-            <file>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.h</file>
+            <file>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_client.c</file>
@@ -210,7 +210,7 @@
             <file>$PROJ_DIR$\startup_stm32f407xx.s</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.c</file>
             <file>$PROJ_DIR$\..\Application\io\dev_io.c</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\terminal.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\terminal.h</file>
             <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\application\FreeRTOSConfig.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\cubemx\bsp_crc.h</file>
@@ -218,7 +218,7 @@
             <file>$PROJ_DIR$\..\application\system_err.c</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_board_mem.h</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
-            <file>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</file>
+            <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\freertos_callback.c</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
             <file>$PROJ_DIR$\..\application\os_user_def.h</file>
@@ -2028,7 +2028,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\croutine.h</file>
             <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
-            <file>$PROJ_DIR$\..\application\app\tasks\task_isrEvent.h</file>
+            <file>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip6_frag.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\threading.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\api.h</file>
