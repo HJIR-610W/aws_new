@@ -50,7 +50,7 @@ void SMS_Read_Info(sms_t *sms)
   get_app_version(&release, &add, &fix, &build);
 
 
-  len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "App/Boot Ver:(%d.%d.%d/", release, add, fix);
+  len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "App/Boot(%d.%d.%d/", release, add, fix);
 
 	get_boot_version(&release, &add, &fix, &build);
 

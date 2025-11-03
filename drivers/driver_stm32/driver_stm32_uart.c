@@ -34,7 +34,7 @@ typedef struct stm32_uart_cfg_s
   DMA_HandleTypeDef dma_rx;
   osSemaphoreId_t *tx_sem;
   osSemaphoreId_t *rx_sem;
-  osSemaphoreId_t *txc_sem; // 전송 완료 알림 세마포어
+  osSemaphoreId_t *tx_complete_sem; // 전송 완료 알림 세마포어
 } uart_instance_t;
 
 static uart_instance_t uart_inst[STM32_UART_MAX] = {[STM32_UART_0_CDMA] = {.handle.Instance = USART3,.buffer_size = 512},
@@ -177,11 +177,11 @@ int32_t stm32_uart_init(int num, void *opt)
   uart_inst[num].parity_index = cfg->parity_index;
 
 
-  if (uart_inst[num].txc_sem == NULL)
+  if (uart_inst[num].tx_complete_sem == NULL)
   {
     tempSem = osSemaphoreNew(1, 0, NULL);
     if (tempSem)
-      uart_inst[num].txc_sem = tempSem;
+      uart_inst[num].tx_complete_sem = tempSem;
   }
   uart_inst[num].stream_buffer = xStreamBufferCreate(uart_inst[num].buffer_size, BUFFER_TRIGGER_LEVEL_BYTES);
   OS_CREATE_BINARY_SEM(uart_inst[num].tx_sem);
@@ -313,11 +313,11 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 if (huart->Instance == USART3)
   {
-    osSemaphoreRelease(uart_inst[STM32_UART_0_CDMA].txc_sem);
+    osSemaphoreRelease(uart_inst[STM32_UART_0_CDMA].tx_complete_sem);
   }
   else if (huart->Instance == USART6)
   {
-    osSemaphoreRelease(uart_inst[STM32_UART_1_SDI].txc_sem);
+    osSemaphoreRelease(uart_inst[STM32_UART_1_SDI].tx_complete_sem);
   }
 }
 
@@ -351,7 +351,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
   uint32_t isrflags = READ_REG(huart->Instance->SR);  // 이 시퀀스를 수행하면 에러가지워짐
   uint32_t data = READ_REG(huart->Instance->DR);
-  if (huart->Instance == USART1)
+  if (huart->Instance == USART3 )
   {
     // 오류 종류 확인
     uint32_t error = HAL_UART_GetError(huart);
@@ -371,6 +371,30 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     if (error & HAL_UART_ERROR_ORE)
     {
      // __asm("BKPT #0");
+    }
+
+    // 필요한 추가 오류 처리 작업 수행
+  }
+  else if (huart->Instance == USART6)
+  {
+    // 오류 종류 확인
+    uint32_t error = HAL_UART_GetError(huart);
+
+    if (error & HAL_UART_ERROR_PE)
+    {
+      //__asm("BKPT #0");
+    }
+    if (error & HAL_UART_ERROR_NE)
+    {
+      //__asm("BKPT #0");
+    }
+    if (error & HAL_UART_ERROR_FE)
+    {
+      //__asm("BKPT #0");
+    }
+    if (error & HAL_UART_ERROR_ORE)
+    {
+      // __asm("BKPT #0");
     }
 
     // 필요한 추가 오류 처리 작업 수행
@@ -678,15 +702,15 @@ int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
   osStatus_t osStatus;
 
   OS_PEND_SEM(uart_inst[num].tx_sem, osWaitForever);
-  osSemaphoreAcquire(uart_inst[num].txc_sem, 0); // 이전에 처리 못한건 제거
+  osSemaphoreAcquire(uart_inst[num].tx_complete_sem, 0); // 이전에 처리 못한건 제거
   waitTime = calculate_txWaitTimeMs(uart_inst[num].baud, dataLen);
   status = HAL_UART_Transmit_DMA(&uart_inst[num].handle, pData, dataLen);
 
   if (status == HAL_OK)
   {
-    if (uart_inst[num].txc_sem)
+    if (uart_inst[num].tx_complete_sem)
     {
-      osStatus = osSemaphoreAcquire(uart_inst[num].txc_sem, waitTime);
+      osStatus = osSemaphoreAcquire(uart_inst[num].tx_complete_sem, waitTime);
       if (osStatus != osOK)
       {
         ERROR_PRINTF("uart %d", osStatus);

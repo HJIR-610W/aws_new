@@ -589,7 +589,7 @@ void put_asyncResp(uint32_t cmd,char *pData,uint16_t dataLen)
     #else
     resp_async_t resp;
 
-            resp.cmd = cmd;
+         resp.cmd = cmd;
         memcpy_safe((uint8_t *)resp.buff,sizeof(resp.buff),(uint8_t *)pData,dataLen);
         resp.buff[dataLen] = '\0';
 

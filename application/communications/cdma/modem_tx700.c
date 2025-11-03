@@ -77,8 +77,7 @@ driver_t g_tx700_drv;
         {AT_ASYNC_RECV_RING, "+CLIP"},           //+CLIP: "01053730725",128,"",0,,0
         {AT_ASYNC_RECV_REBOOT, "$$TELL:34"},              //$$TELL:34,Modem Boot Up
         {AT_ASYNC_RECV_TCP_DATA, "$$BinRecv"},            //$$BinRecv
-        {AT_ASYNC_RESP_VOICE_END,
-         "$$TELL: 754, VOICE : NETWORK RELEASE"},     //$$TELL: 754, VOICE : NETWORK RELEASE
+        {AT_ASYNC_RESP_VOICE_END,"$$TELL: 754, VOICE : NETWORK RELEASE"},     //$$TELL: 754, VOICE : NETWORK RELEASE
         {AT_ASYNC_RECV_DTMF, "$DTMF:"},               //$DTMF: 4
         {AT_TCP_WRITE_IP_RESP, "$$TCP_ADDR:"},        //$$TCP_ADDR: 0
         {AT_TCP_OPEN_PPP, "AT$$TCP_PPPOP\r\n"},       // AT$$TCP_PPPOP
@@ -86,19 +85,16 @@ driver_t g_tx700_drv;
         {AT_TCP_OPEN_SOCKET, "AT$$TCP_SCOP=0\r\n"},   // AT$$TCP_SCOP=0
         {AT_TCP_CLOSE_SOCKET, "AT$$TCP_SCCL=0\r\n"},  // AT$$TCP_SCCL=0
         {AT_ASYNC_OPEN_VOICE, "ATA\r\n"},             // ATA
-        {AT_ASYNC_OPEN_VOICE_RESP,
-         "$$TELL: 751, VOICE : CONNECT USER"},  //$$TELL: 751, VOICE : CONNECT USER
+        {AT_ASYNC_OPEN_VOICE_RESP, "$$TELL: 751, VOICE : CONNECT USER"},  //$$TELL: 751, VOICE : CONNECT USER
         {AT_ASYNC_GET_RSSI, "AT+CSQ\r\n"},      // AT+CSQ
         {AT_SYNC_GET_RSSI_RESP, "+CSQ"},       //+CSQ: 28,99<
-        {AT_SYNC_SMS_READ_RESP_OK,
-         "+CMGR:"},  //+CMGR: "REC UNREAD","01053730725",,"25/05/25,10:07:34+36"<CR><LF>
+        {AT_SYNC_SMS_READ_RESP_OK, "+CMGR:"},  //+CMGR: "REC UNREAD","01053730725",,"25/05/25,10:07:34+36"<CR><LF>
                      //+CMGS: 59
         {AT_ASYNC_SMS_READ_RESP_ERR, "+CMS ERROR"},
         {AT_SMS_SEND_RESP, "$$TELL:45"},              //$$TELL:45,?????? ???? ???? ????<CR><LF>
         {AT_TCP_SEND_DATA_RESP, "$$TCP_SENDDATA:"},   //$$TCP_SENDDATA:1
         {AT_TCP_OPEN_SOCKET_RESP_OK, "$$TELL: 603"},  //$$TELL: 603, TCP : TCP ???? ????<CR><LF>
-        {AT_TCP_OPEN_SOCKET_RESP_FAIL,
-         "$$TELL: 602"},                           //$$TELL: 602, TCP : TCP ???? ???? ??<CR><LF>
+        {AT_TCP_OPEN_SOCKET_RESP_FAIL,"$$TELL: 602"},                           //$$TELL: 602, TCP : TCP ???? ???? ??<CR><LF>
         {AT_TCP_OPEN_SOCKET_RESP, "$$TELL: 603"},  //
         {AT_TCP_READ_NUM_RESP, "+CNUM:"},          //+CNUM: ,"01220891572",129
         {AT_ASYNC_OFF_VOICE, "$$TELL: 756"},       //$$TELL: 756, VOICE : USER RELEASE<
@@ -238,8 +234,13 @@ static M_RET_t tx700_check_tcpResp(const char *const*pAckList,uint32_t ackListCn
 }
 /*
 
-+CMGR: "REC READ","01053730725",,"25/06/09,13:39:56+36",02050550AF
 
+
+실제는 이렇게 수신하는데
++CMGR: "REC UNREAD","01053730725",,"25/11/02,20:28:33+36"<CR><LF>
+02050550AF<CR><LF>
+AT task에서 수신 처리하여
++CMGR: "REC READ","01053730725",,"25/06/09,13:39:56+36",02050550AF 이값으로 보내줌
 */
 int extract_sms(char* sms, char* p_out_number, int number_size, char* p_out_msg, int msg_size)
 {
@@ -271,8 +272,11 @@ int extract_sms(char* sms, char* p_out_number, int number_size, char* p_out_msg,
     strncpy(p_out_number, num_start, num_to_copy);
     p_out_number[num_to_copy] = '\0'; // NULL 종료 문자 추가
 
-    // 3. 메시지 추출
-    const char* msg_start = strrchr(sms, ',');
+    // 3. 메시지 추출 - 마지막 따옴표 다음의 쉼표를 찾음
+    const char* last_quote = strrchr(sms, '"');
+    if (last_quote == NULL) return -1;
+
+    const char* msg_start = strchr(last_quote, ',');
     if (msg_start == NULL) return -1;
     msg_start++; // 쉼표(,) 다음으로 이동
 
@@ -294,7 +298,7 @@ M_RET_t tx700_read_sms(sms_t *p_sms)
   char buff[310];
   uint32_t idx = 0;
   M_RET_t ret = RET_FAIL;
-  int results=0;
+  int results = 0;
 
   tx700_modem_sends(cmd);
 
@@ -302,27 +306,19 @@ M_RET_t tx700_read_sms(sms_t *p_sms)
 
   if (ret == RET_OK)
   {
-    switch (idx)
-    {
-      case 0:
-        ret = RET_OK;
-        results = extract_sms(buff, p_sms->num, sizeof(p_sms->num), p_sms->msg, sizeof(p_sms->msg));
-        modem_sends(delCmd);  // 읽은 메시지는 지운다
-        break;
-      case 1:
-        ret = RET_FAIL_RESP;
-        break;
-      }
-    }
-    if (results !=0)
+    results = extract_sms(buff, p_sms->num, sizeof(p_sms->num), p_sms->msg, sizeof(p_sms->msg));
+
+    if (results != 0)
     {
       ret = RET_FAIL;
     }
+    else
+    {
+      modem_sends(delCmd);  // SMS 추출 성공시에만 삭제
+    }
+  }
 
-
-      return ret;
-
-
+  return ret;
 }
 
 /*
@@ -349,7 +345,7 @@ $$TELL:45,?????? ???? ???? ????<CR><LF>
 #define TX700_SEND_SMS_RESP_CNT 1
 M_RET_t tx700_send_sms(char *num,char *msg)
 {
-    char buff[200];
+    char buff[80];
     const char *ack_list[TX700_SEND_SMS_RESP_CNT];
     int32_t len=0;
     uint32_t idx;
@@ -361,20 +357,23 @@ M_RET_t tx700_send_sms(char *num,char *msg)
     tx700_modem_sends(buff);
     osDelay(500);
 
-    len = snprintf((char *)buff, sizeof(buff), "%s", msg);
+    len = snprintf((char *)buff, sizeof(buff) - 2, "%s", msg);  // 0x1A와 '\0' 공간 확보
 
-    buff[len++] = 0x1A;
-    buff[len] = 0;
+    // 버퍼 오버플로우 방지
+    if (len < (int32_t)(sizeof(buff) - 2))
+    {
+        buff[len++] = 0x1A;
+        buff[len] = 0;
+    }
+    else
+    {
+        buff[sizeof(buff) - 2] = 0x1A;
+        buff[sizeof(buff) - 1] = 0;
+    }
 
     tx700_modem_sends(buff);
 
-    ret = tx700_check_asyncResp(ack_list, TX700_SEND_SMS_RESP_CNT, &idx, buff, sizeof(buff), 200);
-
-    if (ret == RET_OK)
-    {
-      ret = RET_OK;
-    }
-
+    ret = tx700_check_asyncResp(ack_list, TX700_SEND_SMS_RESP_CNT, &idx, buff, sizeof(buff), 1000);
 
     return ret;
 }
@@ -869,17 +868,28 @@ void tx700_recv_bin(int32_t port, uint8_t *p_data, uint16_t data_len)
 
 int32_t tx700_recv_handler(int32_t uart,uint8_t *buffer, uint16_t buffer_size)
 {
-  uint32_t startTime = osKernelGetTickCount();
   uint16_t cnt = 0;
   uint8_t ch;
   uint8_t bin_mode = 0;
   uint8_t first = 1;
   uint16_t len = 0;
 
+  // 매개변수 검증
+  if (buffer == NULL || buffer_size == 0)
+  {
+    return 0;
+  }
+
   while (1)
   {
-    if (drv_uart_recv(uart, &ch, 1, osWaitForever) == 1)
+    if (drv_uart_recv(uart, &ch, 1, 10000) == 1)
     {
+      // 버퍼 오버플로우 방지
+      if (cnt >= buffer_size)
+      {
+        return 0;
+      }
+
       buffer[cnt++] = ch;
 
       if (cnt == 12 && first)
@@ -909,15 +919,8 @@ int32_t tx700_recv_handler(int32_t uart,uint8_t *buffer, uint16_t buffer_size)
           }
         }
       }
-
-      if (cnt >= buffer_size)
-      {
-        return 0;
-      }
     }
   }
-
-
 }
 
 extern void put_asyncResp(uint32_t cmd,char *pData,uint16_t dataLen);
