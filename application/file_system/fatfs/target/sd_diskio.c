@@ -142,6 +142,7 @@ static int SD_CheckStatusWithTimeout(uint32_t timeout)
     {
       return 0;
     }
+    osDelay(100);
   }
 
   return -1;
@@ -246,13 +247,18 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
   DRESULT res = RES_ERROR;
   osStatus_t status;
 
-
-  if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0)
+  if (BSP_PlatformIsDetected() == SD_NOT_PRESENT)
   {
     g_sd_diskio_error = 1;
-
-    return res;
+    return RES_ERROR;
   }
+
+    if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0)
+    {
+      g_sd_diskio_error = 1;
+
+      return res;
+    }
 
     /* Fast path cause destination buffer is correctly aligned */
 
@@ -318,8 +324,14 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
 
 #if defined(ENABLE_SCRATCH_BUFFER)
   int32_t ret;
+ 
 #endif
 
+  if (BSP_PlatformIsDetected() == SD_NOT_PRESENT)
+  {
+    g_sd_diskio_error = 1;
+    return RES_ERROR;
+  }
   /*
    * ensure the SDCard is ready for a new operation
    */

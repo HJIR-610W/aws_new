@@ -1,31 +1,29 @@
 
-#include "task_cellular.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "FreeRTOS.h"
 #include "app_logging.h"
 #include "at_cmd.h"
+#include "bsp.h"
+#include "bsp_uart.h"
 #include "config_app.h"
 #include "dev_io.h"
 #include "drv_do.h"
 #include "drv_rs232.h"
-#include "bsp_uart.h"
+#include "FreeRTOS.h"
 #include "kma_protocol_handler.h"
 #include "modem_if.h"
 #include "modem_ntle9607.h"
 #include "modem_sms.h"
 #include "modem_tx700.h"
+#include "os_user_def.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
 #include "system_err.h"
+#include "task_cellular.h"
 #include "task_logging.h"
+#include "task_wdt.h"
 #include "update_fw.h"
 #include "util_time.h"
-#include "task_wdt.h"
-#include "FreeRTOS.h"
-#include "bsp.h"
-#include "bsp_uart.h"
-#include "os_user_def.h"
 
 typedef enum{
 	ePOWER_RESET,
@@ -639,7 +637,7 @@ void put_tcpResp(uint32_t cmd,uint8_t *pData,uint16_t dataLen)
   memcpy((uint8_t *)resp.buff,(uint8_t *)pData,dataLen);
   resp.buff[dataLen] = '\0';
 
-  if (osMessageQueuePut(s_resp_tcp_mail_id, &resp, 0, osWaitForever) != osOK)
+  if (osMessageQueuePut(s_resp_tcp_mail_id, &resp, 0, 100) != osOK)
   {
     io_printf("put_tcpResp error\r\n");
   }
@@ -1035,15 +1033,16 @@ void modemAtTask(void  *argument)
   DEBUG_PRINTF("modemAt task start\r\n");
   while (1)
   {
-
-   len = _iCellular->recv_handler(_iCellular->io_uart,(uint8_t *)buff,sizeof(buff));
+    ERROR_PRINTF("modem recv start\r\n");
+    len = _iCellular->recv_handler(_iCellular->io_uart, (uint8_t *)buff, sizeof(buff));
 
     if(len<=0)
     {
       continue;
     }
 
-  //  wdt_task_feed(wdt_number);
+    ERROR_PRINTF("modem recved\r\n");
+    //  wdt_task_feed(wdt_number);
     
     for (uint32_t idx = 0; idx < cmd_count; idx++)
     {
@@ -1051,6 +1050,7 @@ void modemAtTask(void  *argument)
       {
         at_cmd = s_p_atCmd[idx].cmd;
 
+        ERROR_PRINTF("%d %s\r\n", at_cmd, s_p_atCmd[idx].cmdStr);
         switch (at_cmd)
         {
           case AT_ASYNC_RECV_REBOOT:

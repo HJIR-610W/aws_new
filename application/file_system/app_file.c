@@ -113,6 +113,8 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   FRESULT res;
   UINT bytesWritten;
 
+
+
   OS_PEND_SEM(g_fileSem, osWaitForever);
 
   // 파일 열기 (없으면 생성, 있으면 열기 + 쓰기)

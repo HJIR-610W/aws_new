@@ -8,7 +8,7 @@
 #include "dev_io.h"
 
 #define ERROR_PRINTF_USE // 시스템 에러 출력
-//#define DEBUG_PRINTF_USE// 디버깅 필요시
+#define DEBUG_PRINTF_USE// 디버깅 필요시
 #define USE_DEBUG 0
 #define IWDG_USE 1
 #define PRINTF_BASE(fmt, ...)                                                               \
