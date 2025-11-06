@@ -553,7 +553,8 @@ void st7920_reset(driver_t *drv)
    // st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
     //st7920_delay_ms(100);
 
-       
+    st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
+    st7920_delay_ms(1);
 
     cfg->initialized = true;
 }
