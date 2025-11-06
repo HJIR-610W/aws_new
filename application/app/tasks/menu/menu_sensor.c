@@ -86,9 +86,12 @@ const char *safe_name(const char **names,int name_count,int index)
 
 }
 
-#define HJSNOW_PAGE_PHYSICAL 0
-#define HJSNOW_PAGE_PORT     1
-#define HJSNOW_PAGE_SNOW_MENU 2
+#define HJSNOW_PAGE_PHYSICAL  0
+#define HJSNOW_PAGE_PORT      1
+#define HJSNOW_PAGE_DEFAULT_MENU 2
+#define HJSNOW_PAGE_SNOW_MENU 3
+
+
 void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
 {
   const char *name_table[10];
@@ -111,6 +114,7 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
   }
 
   screen_menu_printf(p_win, HJSNOW_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
+  screen_menu_printf(p_win, HJSNOW_PAGE_DEFAULT_MENU, "Default");
   screen_menu_printf(p_win, HJSNOW_PAGE_SNOW_MENU, "Settings");
   screen_menu_clear(p_win);
 }
@@ -118,6 +122,7 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
 #define HJWIND_PAGE_FULLSET 0
 #define HJWIND_PAGE_OFFSET 1
 #define HJWIND_PAGE_PORT 2
+#define HJWIND_PAGE_DEFAULT 3
 void draw_hjwind_page(screen_menu_t* p_win, hjwindspeed_config_t* hjwind_config)
 {
   const char *name_table[10];
@@ -129,10 +134,12 @@ void draw_hjwind_page(screen_menu_t* p_win, hjwindspeed_config_t* hjwind_config)
   screen_menu_printf(p_win, HJWIND_PAGE_FULLSET, "%-*s:%d", E_L_W, "Fullset", hjwind_config->full);
   screen_menu_printf(p_win, HJWIND_PAGE_OFFSET, "%-*s:%d", E_L_W, "Offset", hjwind_config->offset);
   screen_menu_printf(p_win, HJWIND_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, hjwind_config->rs485_port));
-
+  screen_menu_printf(p_win, HJWIND_PAGE_DEFAULT, "%-*s", E_L_W, "Default");
 }
 
 #define HJWINDDIR_PAGE_PORT 0
+#define HJWINDDIR_PAGE_DEFAULT 1
+
 void draw_hjwindDir_page(screen_menu_t* p_win, hjwindDirection_config_t* hjwindDir_config)
 {
   const char *name_table[10];
@@ -141,7 +148,7 @@ void draw_hjwindDir_page(screen_menu_t* p_win, hjwindDirection_config_t* hjwindD
   list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
 
   screen_menu_printf(p_win, HJWINDDIR_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, hjwindDir_config->rs485_port));
-
+  screen_menu_printf(p_win, HJWINDDIR_PAGE_DEFAULT, "%-*s", E_L_W, "Default");
 }
 
 #define OTT_SMP3_PAGE_PORT 0
@@ -185,7 +192,8 @@ void draw_wind_speed_rmyoung_05103V_page(screen_menu_t *p_win, rmyoung_05103v_wi
 #define HJTEMP_PAGE_PHYSICAL  0
 #define HJTEMP_PAGE_PORT      1
 #define HJTEMP_PAGE_MODBUS_ID 2
-#define HJTEMP_PAGE_TEMP_MENU 3
+#define HJTEMP_PAGE_DEFAULT   3
+#define HJTEMP_PAGE_TEMP_MENU 4
 
 void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
 {
@@ -209,6 +217,7 @@ void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
 
   screen_menu_printf(p_win, HJTEMP_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
   screen_menu_printf(p_win, HJTEMP_PAGE_MODBUS_ID, "%-*s:%d", E_L_W, "M bus ID", hjtemp_config->modbus_id);
+  screen_menu_printf(p_win, HJTEMP_PAGE_DEFAULT, "Default");
   screen_menu_printf(p_win, HJTEMP_PAGE_TEMP_MENU, "Settings");
 
 }
@@ -544,6 +553,16 @@ int32_t hjwinddir_setup( sensor_t *sensor, uint8_t menu_index)
       hjwindDir->rs485_port = choice;
       save_config_sensor();
       break;
+    case HJWINDDIR_PAGE_DEFAULT:
+    {
+      choice = 0;
+      status = input_active("Set as Default?", &choice);
+      if (status != MENU_OK || choice == 0)
+        break;
+
+      hjwindDir->rs485_port = eAPP_RS485_C;
+    }
+    break;
   }
 
   return status;
@@ -590,6 +609,18 @@ int32_t hjwind_setup( sensor_t *sensor, uint8_t menu_index)
       hjwind->rs485_port = choice;
       save_config_sensor();
       break;
+    case HJWIND_PAGE_DEFAULT:
+    {
+      choice = 0;
+      status = input_active("Set as Default?", &choice);
+      if (status != MENU_OK || choice == 0)
+        break;
+      hjwind->full = 3200;
+      hjwind->offset = 0;
+      hjwind->rs485_port = eAPP_RS485_C;
+    }
+
+    break;
   }
 
   return status;
@@ -640,8 +671,18 @@ int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
         save_config_sensor();
       }
       break;
-    case HJSNOW_PAGE_SNOW_MENU:
-       status = ctrl_hj_snow();
+    case HJSNOW_PAGE_DEFAULT_MENU:
+      {
+        choice = 0;
+        status = input_active("Set as Default?",&choice);
+        if (status != MENU_OK || choice == 0)
+          break;
+        hjsnow->physical_layer = ePHYSICAL_RS232;
+        hjsnow->rs232_port = eRS232_C;
+      }
+      break;
+     case HJSNOW_PAGE_SNOW_MENU:
+      status = ctrl_hj_snow();
       break;
   }
 
@@ -706,6 +747,17 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
 
           hjtemp->modbus_id = dec;
           save_config_sensor();
+          break;
+          case HJTEMP_PAGE_DEFAULT:
+          {
+            choice = 0;
+            status = input_active("Set as Default?", &choice);
+            if (status != MENU_OK || choice == 0)
+              break;
+            hjtemp->physical_layer = ePHYSICAL_RS485;
+            hjtemp->rs485_port = eAPP_RS485_RS232_B;
+            hjtemp->modbus_id = 1;
+          }
           break;
         case HJTEMP_PAGE_TEMP_MENU:
 
@@ -773,6 +825,18 @@ int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
       hjhumi->modbus_id = dec;
       save_config_sensor();
       break;
+    case HJTEMP_PAGE_DEFAULT:
+    {
+      choice = 0;
+      status = input_active("Set as Default?", &choice);
+      if (status != MENU_OK || choice == 0)
+        break;
+      hjhumi->physical_layer = ePHYSICAL_RS485;
+      hjhumi->rs485_port = eAPP_RS485_RS232_B;
+
+      hjhumi->modbus_id = 1;
+    }
+    break;
     case HJTEMP_PAGE_TEMP_MENU:
        status = ctrl_hj_temp();
       break;
