@@ -298,12 +298,23 @@ void draw_wind_direction_rmyoung_05103V_page(screen_menu_t *p_win, rmyoung_05103
 int32_t setup_select_menu_index(sensor_t *p_sensor, int *choice, eSENSOR_TYPE_t type)
 {
   int32_t key;
+  static  uint8_t selected_index=0; //이전 선택 행 유지
+  static eSENSOR_TYPE_t sensor_type = (eSENSOR_TYPE_t)-1;
   screen_menu_t menu;
 
   screen_menu_create(&menu, sensor_name_eng_list[type]);
 
+  if (type != sensor_type)
+  {
+    menu.selected_index = 0;
+  }
+  else
+  {
+    menu.selected_index = selected_index;
+  }
+  sensor_type = type;
 
-    while (1)
+  while (1)
   {
     draw_sensor_page(&menu,p_sensor);
     screen_refresh();
@@ -321,10 +332,12 @@ int32_t setup_select_menu_index(sensor_t *p_sensor, int *choice, eSENSOR_TYPE_t 
     if (key == KEY_CODE_ENTER)
     {
       *choice = menu.selected_index;
+      selected_index = menu.selected_index;
       return MENU_OK;
     }
     else if (key != KEY_CODE_NONE)
     {
+      selected_index=0;
       screen_menu_handle(&menu, key);
     }
   }
