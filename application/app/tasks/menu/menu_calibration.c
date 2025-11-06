@@ -161,7 +161,7 @@ int32_t cali_point(adc_channel_type_t type, int32_t channel, int32_t point, adc_
   {
     if (channel < DRV_ADS1220_S_CH_16)
     {
-      cali_p->reference_value = 4.99;
+      cali_p->reference_value = 4.01;
       input_min = -5.0f;
       input_max = 5.0f;
     }
@@ -290,7 +290,7 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
         {
           /*
           켈리브레이션은 2포인트 P1(low),P2(high)한다
-          레퍼런스 전압이 5v라면 적당한 선형구한 low:0.01v ,high:4.99v
+          레퍼런스 전압이 5v라면 적당한 선형구한 low:0.01v ,high:4.01v
           한번도 켈리브레이션 한적이 없으면 반드시 P1,P2 순으로 하고
           한번이상 켈리브레이션 한 상태에서 특정 포인트만 다시하고 싶으면 해당 포인트를 선택해서 진행한다
           한번이상 켈리브레시션 된 상태에서 특정 포인트를 켈리브레이션 하면 할때마다 slope과 offset이 재계산된다

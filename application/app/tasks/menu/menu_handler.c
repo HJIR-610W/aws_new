@@ -119,7 +119,7 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
       screen_printf(2, 0, "Max: %0*d", number_width, max);
     }
 
-    screen_printf(3, 0, "Val:%s", buff);
+    screen_printf(3, 0, "Val: %s", buff);
     screen_printf(4, 0, "Press ESC to Cancel", buff);
     // 커서 깜빡임 처리 (500ms 간격)
     if (OS_GET_TICK() - last_blink >= 500)
@@ -133,9 +133,9 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
     {
       char display_char = blink_state ? buff[cursor_pos] : ' ';
       if(sign_enable)
-       screen_put_ch(3, 4+cursor_pos, display_char);
+       screen_put_ch(3, 5+cursor_pos, display_char);
       else
-        screen_put_ch(3, 4 + cursor_pos, display_char);
+        screen_put_ch(3, 5 + cursor_pos, display_char);
     }
 
     screen_refresh();
@@ -148,7 +148,7 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
     // 키 입력 시 커서 즉시 표시
     blink_state = 1;
     last_blink = OS_GET_TICK();
-    screen_printf(3, 0, "Val:%s", buff);
+    screen_printf(3, 0, "Val: %s", buff);
 
     if (key == KEY_CODE_LEFT)
     {
