@@ -527,7 +527,7 @@ menu_status_t input_float(const char *title, float min, float max, float *val, c
     p++;
   }
   
-  total_width++;
+
   
   // 소수점 확인 및 decimal_places 파싱
   if (*p == '.')
@@ -551,6 +551,7 @@ menu_status_t input_float(const char *title, float min, float max, float *val, c
   if (min < 0.0f)
   {
     sign_enable = 1;
+      total_width++;
   }
   
   // integer_places 계산 (부호 + 정수부 + 소수점)

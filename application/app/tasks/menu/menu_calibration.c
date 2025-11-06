@@ -226,7 +226,7 @@ void draw_calibraion_select_diff_channel(screen_menu_t *p_win)
 int32_t setup_factory_calibration(adc_channel_type_t type)
 {
 
-  const char *point_list[] = {"Point 1(Low)", "Point 2(High)","Manual P1.ADC","Manual P2.ADC","Init"};
+  const char *point_list[] = {"Point 1(Low)", "Point 2(High)","Manual P1.ADC","Manual P2.ADC","Trim","Init"};
   bool p1_calib_done = false;
   bool calib_updated = false;
   char buffer[100];
@@ -374,7 +374,28 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
 
             calib_updated = true;
             break;
-          case 4://특정 채널만 0으로 초기화
+          case 4:
+          //현장에서 켈리브레이션 사용시, 참값을 알고 있을때 현재 값을 2점 켈리브레이션의 2점으로 적용하여 켈리브레이션
+          {
+            int32_t active = 0;
+            float wanted_voltage;
+            uint8_t err=0;
+            status = input_float("Reference Voltage", 0.0, 5.0, &wanted_voltage, "%6.4f");
+            if (status != MENU_OK)
+              break ;
+              p2.reference_value = wanted_voltage;
+            if (type == ADC_CHANNEL_TYPE_SINGLE_ENDED)
+              p2.raw_value = (int32_t)drv_adc_single_raw_read(channel, 1, &err);
+              else
+                p2.raw_value = (int32_t)drv_adc_diff_raw_read(channel, 1, &err);
+
+              status = input_active("Cail Continue?", &active);
+              if (status != MENU_OK || active==0)
+                break ;
+                calib_updated = true;
+                    }
+          break;
+          case 5://특정 채널만 0으로 초기화
           {
             int32_t   active = 0;
             calib_updated = false;
