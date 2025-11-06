@@ -560,7 +560,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
     return status;
 
     if (channel < DRV_ADS1220_S_CH_16)
-    p2.reference_value = 4.99;
+    p2.reference_value = 4.01;
     else
     p2.reference_value = 123.24;
 
