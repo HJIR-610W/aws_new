@@ -160,7 +160,8 @@
 			"app_adc.h": "c",
 			"wind_direction.h": "c",
 			"barometer_rmyoung_61402v.h": "c",
-			"modem_if.h": "c"
+			"modem_if.h": "c",
+			"fsmc.h": "c"
 		}
 	}
 }

@@ -24,17 +24,13 @@
  *
  */
 
-#include <string.h>
-#include "pcb_define.h"
-#include "system_err.h"
+
 #include "fsmc.h"
 
 
-
-
-SRAM_HandleTypeDef hsram1;
-SRAM_HandleTypeDef hsram2;
-SRAM_HandleTypeDef hsram_lcd;  // ST7920 LCD Controller
+SRAM_HandleTypeDef hsram;
+SRAM_HandleTypeDef hsram_uart;
+SRAM_HandleTypeDef hsram_lcd; 
 
 
 void MX_FSMC_Init(void)
@@ -81,7 +77,7 @@ void MX_FSMC_Init(void)
 
 if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
 {
-    ERROR_PRINTF("fsmc lcd");
+    ERROR_PRINTF("famcd lcd");
   }
 #endif
 
@@ -90,22 +86,22 @@ if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
   //SRAM
   /** Perform the SRAM1 memory initialization sequence
   */
-  hsram1.Instance = FSMC_NORSRAM_DEVICE;
-  hsram1.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
-  /* hsram1.Init */
-  hsram1.Init.NSBank = FSMC_NORSRAM_BANK2;
-  hsram1.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
-  hsram1.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
-  hsram1.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_16;
-  hsram1.Init.BurstAccessMode = FSMC_BURST_ACCESS_MODE_DISABLE;
-  hsram1.Init.WaitSignalPolarity = FSMC_WAIT_SIGNAL_POLARITY_LOW;
-  hsram1.Init.WrapMode = FSMC_WRAP_MODE_DISABLE;
-  hsram1.Init.WaitSignalActive = FSMC_WAIT_TIMING_BEFORE_WS;
-  hsram1.Init.WriteOperation = FSMC_WRITE_OPERATION_ENABLE;
-  hsram1.Init.WaitSignal = FSMC_WAIT_SIGNAL_DISABLE;
-  hsram1.Init.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
-  hsram1.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
-  hsram1.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
+  hsram.Instance = FSMC_NORSRAM_DEVICE;
+  hsram.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
+  /* hsram.Init */
+  hsram.Init.NSBank = FSMC_NORSRAM_BANK2;
+  hsram.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
+  hsram.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
+  hsram.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_16;
+  hsram.Init.BurstAccessMode = FSMC_BURST_ACCESS_MODE_DISABLE;
+  hsram.Init.WaitSignalPolarity = FSMC_WAIT_SIGNAL_POLARITY_LOW;
+  hsram.Init.WrapMode = FSMC_WRAP_MODE_DISABLE;
+  hsram.Init.WaitSignalActive = FSMC_WAIT_TIMING_BEFORE_WS;
+  hsram.Init.WriteOperation = FSMC_WRITE_OPERATION_ENABLE;
+  hsram.Init.WaitSignal = FSMC_WAIT_SIGNAL_DISABLE;
+  hsram.Init.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
+  hsram.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
+  hsram.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
 
   //NE address setup time + data setup time 22ns  실측 +1 *5.95
   //WE data setup time 11.9ns
@@ -120,31 +116,31 @@ if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
 
   /* ExtTiming */
 
-  if (HAL_SRAM_Init(&hsram1, &Timing, NULL) != HAL_OK)
+  if (HAL_SRAM_Init(&hsram, &Timing, NULL) != HAL_OK)
   {
-    ERROR_PRINTF("fsmc");
+    ERROR_PRINTF("fsmc sram");
   }
 #endif
 
 
   //QUAD UART
-  hsram2.Instance = FSMC_NORSRAM_DEVICE;
-  hsram2.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
+  hsram_uart.Instance = FSMC_NORSRAM_DEVICE;
+  hsram_uart.Extended = FSMC_NORSRAM_EXTENDED_DEVICE;
 
-  hsram2.Init.NSBank = FSMC_NORSRAM_BANK3;
-  hsram2.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
-  hsram2.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
-  hsram2.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_8;
-  hsram2.Init.BurstAccessMode = FSMC_BURST_ACCESS_MODE_DISABLE;
-  hsram2.Init.WaitSignalPolarity = FSMC_WAIT_SIGNAL_POLARITY_LOW;
-  hsram2.Init.WrapMode = FSMC_WRAP_MODE_DISABLE;
-  hsram2.Init.WaitSignalActive = FSMC_WAIT_TIMING_BEFORE_WS;
-  hsram2.Init.WriteOperation = FSMC_WRITE_OPERATION_ENABLE;
-  hsram2.Init.WaitSignal = FSMC_WAIT_SIGNAL_DISABLE;
-  hsram2.Init.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
-  hsram2.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
-  hsram2.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
-  hsram2.Init.PageSize = FSMC_PAGE_SIZE_NONE;
+  hsram_uart.Init.NSBank = FSMC_NORSRAM_BANK3;
+  hsram_uart.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
+  hsram_uart.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
+  hsram_uart.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_8;
+  hsram_uart.Init.BurstAccessMode = FSMC_BURST_ACCESS_MODE_DISABLE;
+  hsram_uart.Init.WaitSignalPolarity = FSMC_WAIT_SIGNAL_POLARITY_LOW;
+  hsram_uart.Init.WrapMode = FSMC_WRAP_MODE_DISABLE;
+  hsram_uart.Init.WaitSignalActive = FSMC_WAIT_TIMING_BEFORE_WS;
+  hsram_uart.Init.WriteOperation = FSMC_WRITE_OPERATION_ENABLE;
+  hsram_uart.Init.WaitSignal = FSMC_WAIT_SIGNAL_DISABLE;
+  hsram_uart.Init.ExtendedMode = FSMC_EXTENDED_MODE_DISABLE;
+  hsram_uart.Init.AsynchronousWait = FSMC_ASYNCHRONOUS_WAIT_DISABLE;
+  hsram_uart.Init.WriteBurst = FSMC_WRITE_BURST_DISABLE;
+  hsram_uart.Init.PageSize = FSMC_PAGE_SIZE_NONE;
   /* Timing */
   Timing.AddressSetupTime = 4;
   Timing.AddressHoldTime  = 1;
@@ -161,7 +157,7 @@ if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
   Timing.DataLatency              = 2;  //  비동기 모드에서는 무시
  
 
-  if (HAL_SRAM_Init(&hsram2, &Timing, &ExtTiming) != HAL_OK)
+  if (HAL_SRAM_Init(&hsram_uart, &Timing, &ExtTiming) != HAL_OK)
   {
     ERROR_PRINTF("fsmc quad uart");
   }
@@ -171,12 +167,12 @@ if (HAL_SRAM_Init(&hsram_lcd, &Timing, NULL) != HAL_OK)
 
 static uint32_t FSMC_Initialized = 0;
 
-static void HAL_FSMC_MspInit(void){
-  /* USER CODE BEGIN FSMC_MspInit 0 */
+static void HAL_FSMC_MspInit(void)
+{
 
-  /* USER CODE END FSMC_MspInit 0 */
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if (FSMC_Initialized) {
+  if (FSMC_Initialized)
+  {
     return;
   }
   FSMC_Initialized = 1;
@@ -272,27 +268,21 @@ static void HAL_FSMC_MspInit(void){
 
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /* USER CODE BEGIN FSMC_MspInit 1 */
 
-  /* USER CODE END FSMC_MspInit 1 */
 }
 
-void HAL_SRAM_MspInit(SRAM_HandleTypeDef* sramHandle){
-  /* USER CODE BEGIN SRAM_MspInit 0 */
+void HAL_SRAM_MspInit(SRAM_HandleTypeDef* sramHandle)
+{
 
-  /* USER CODE END SRAM_MspInit 0 */
   HAL_FSMC_MspInit();
-  /* USER CODE BEGIN SRAM_MspInit 1 */
 
-  /* USER CODE END SRAM_MspInit 1 */
 }
 
 static uint32_t FSMC_DeInitialized = 0;
 
-static void HAL_FSMC_MspDeInit(void){
-  /* USER CODE BEGIN FSMC_MspDeInit 0 */
+static void HAL_FSMC_MspDeInit(void)
+{
 
-  /* USER CODE END FSMC_MspDeInit 0 */
   if (FSMC_DeInitialized) {
     return;
   }
@@ -375,10 +365,3 @@ void HAL_SRAM_MspDeInit(SRAM_HandleTypeDef* sramHandle){
 
   /* USER CODE END SRAM_MspDeInit 1 */
 }
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
