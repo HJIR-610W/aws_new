@@ -380,7 +380,7 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
             int32_t active = 0;
             float wanted_voltage;
             uint8_t err=0;
-            status = input_float("Reference Voltage", 0.0, 5.0, &wanted_voltage, "%6.4f");
+            status = input_float("Reference Voltage", 0.0, 200.0, &wanted_voltage, "%8.4f");
             if (status != MENU_OK)
               break ;
               p2.reference_value = wanted_voltage;

@@ -165,7 +165,7 @@ int32_t ctrl_hj_snow(void)
       case HJ_SNOW_SET_DISTANCE:
       {
         int status;
-        int height;
+        int height=0;
   
 
         status = input_decimal("Height(mm)",0,3000,&height);
