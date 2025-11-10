@@ -544,17 +544,20 @@ void st7920_reset(driver_t *drv)
    // st7920_send_cmd(drv, ST7920_CMD_FUNCTION_SET | ST7920_FUNCTION_SET_8BIT | ST7920_FUNCTION_SET_EXTEND | ST7920_FUNCTION_SET_GRAPHIC);
 
     
+    st7920_display_on(drv);
+    
+    st7920_write_string(drv,0,0," ");
         
     st7920_set_graphic_mode(drv, true);
 
      st7920_delay_ms(2);
     st7920_flush_buffer_init(drv);
 
-   // st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
-    //st7920_delay_ms(100);
-
     st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
-    st7920_delay_ms(1);
+    st7920_delay_ms(100);
+
+   // st7920_send_cmd(drv, ST7920_CMD_DISPLAY_CLEAR);
+   //st7920_delay_ms(1);
 
     cfg->initialized = true;
 }
