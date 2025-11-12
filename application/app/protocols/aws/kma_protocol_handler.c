@@ -783,7 +783,7 @@ uint16_t kma_cmd_handler_AT(uint8_t *frame, uint8_t *send)
   uint8_t packet[50];
   uint16_t len;
   kma3_command_request_t *req = (kma3_command_request_t *)frame;
-  DATE_TIME_BUF nt;
+  DATE_TIME_BUF nt={0};
   uint16_t station_id ;
 
   station_id = GetWord((uint8_t *)&frame[13]);

@@ -299,11 +299,11 @@ bool is_valid_datetime(const DATE_TIME_BUF *nt)
   if (nt->Sec < 0 || nt->Sec > 59)
     return false;
 
-  if (nt->Week < 0 || nt->Week > 6)
-    return false;
+//  if (nt->Week < 0 || nt->Week > 6)
+ //   return false;
 
-  if (nt->SubSec > 99)
-    return false;
+//  if (nt->SubSec > 99)
+//    return false;
 
   return true;
 }
