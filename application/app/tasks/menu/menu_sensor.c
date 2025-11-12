@@ -153,6 +153,7 @@ void draw_hjwindDir_page(screen_menu_t* p_win, hjwindDirection_config_t* hjwindD
 
 #define OTT_SMP3_PAGE_PORT 0
 #define OTT_SMP3_PAGE_MODBUS_ID 1
+#define OTT_SMP3_PAGE_DEFAULT 2
 void draw_solar_radiation_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t* ott_smp3_config)
 {
   const char *name_table[10];
@@ -163,7 +164,7 @@ void draw_solar_radiation_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t*
 
   screen_menu_printf(p_win, OTT_SMP3_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, ott_smp3_config->port));
   screen_menu_printf(p_win, OTT_SMP3_PAGE_MODBUS_ID, "%-*s:%d", E_L_W, "MODBUS ID", ott_smp3_config->modbus_id);
-
+  screen_menu_printf(p_win, OTT_SMP3_PAGE_DEFAULT, "Default");
 }
 
 #define RAIN_PRESENT_PAGE_DELAY 0
@@ -183,9 +184,11 @@ void draw_freq_page(screen_menu_t* p_win, frequency_config_t* freq_config)
 }
 
 #define WIND_SPD_RMYOUNG_05103V_CHANNEL 0
+#define WIND_SPD_RMYOUNG_05103V_DEFAULT 1
 void draw_wind_speed_rmyoung_05103V_page(screen_menu_t *p_win, rmyoung_05103v_wind_speed_config_t *freq_config)
 {
   screen_menu_printf(p_win, WIND_SPD_RMYOUNG_05103V_CHANNEL, "%-*s:%s", E_L_W, "Channel", ITEM_LIST(freq_config->frequency_channel, freq_ch_list));
+  screen_menu_printf(p_win, WIND_SPD_RMYOUNG_05103V_DEFAULT, "Default");
 }
 
 
@@ -236,15 +239,19 @@ void draw_barometer_jinsung_page(screen_menu_t *p_win, jinsung_sjgp215_config_t 
 
 
 #define BAROMETER_RMYOUNG_61402V_CH  0
+#define BAROMETER_RMYOUNG_61402V_DEFAULT 1
 void draw_barometer_rmyoung_61402V_page(screen_menu_t *p_win, rmyoung_61402v_barometer_config_t *adc_config)
 {
   screen_menu_printf(p_win, BAROMETER_RMYOUNG_61402V_CH, "%-*s:%d", E_L_W, "ADC CH", adc_config->adc_channel);
+  screen_menu_printf(p_win, BAROMETER_RMYOUNG_61402V_DEFAULT, "Default");
 }
 
 #define WDIN_DIRECTION_RMYOUNG_05103V_CH 0
+#define WDIN_DIRECTION_RMYOUNG_05103V_DEFAULT 1
 void draw_wind_direction_rmyoung_05103V_page(screen_menu_t *p_win, rmyoung_05103v_wind_direction_config_t *adc_config)
 {
   screen_menu_printf(p_win, WDIN_DIRECTION_RMYOUNG_05103V_CH, "%-*s:%d", E_L_W, "ADC CH", adc_config->adc_channel);
+  screen_menu_printf(p_win, WDIN_DIRECTION_RMYOUNG_05103V_DEFAULT, "Default");
 }
 
   void draw_sensor_page(screen_menu_t * p_win, sensor_t * p_sensor)
@@ -878,7 +885,16 @@ int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
       ott_smp3->modbus_id = dec;
       save_config_sensor();
       break;
-  }
+    case OTT_SMP3_PAGE_DEFAULT:
+      choice = 0;
+      status = input_active("Set as Default?", &choice);
+      if (status != MENU_OK || choice == 0)
+        break;
+      ott_smp3->port = eAPP_RS485_RS232_A;
+      ott_smp3->modbus_id = 1;
+      save_config_sensor();
+      break;
+    }
 
   return status;
 }
@@ -965,6 +981,14 @@ int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
         p_cfg->adc_channel = choice;
         save_config_sensor();
     break;
+  case BAROMETER_RMYOUNG_61402V_DEFAULT:
+    choice = 0;
+    status = input_active("Set as Default?", &choice);
+    if (status != MENU_OK || choice == 0)
+      break;
+    p_cfg->adc_channel = 0;
+    save_config_sensor();
+    break;
   }
 
   return status;
@@ -994,7 +1018,16 @@ int32_t wind_direction_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index
         save_config_sensor();
 
     break;
+  case WDIN_DIRECTION_RMYOUNG_05103V_DEFAULT:
+    choice = 0;
+    status = input_active("Set as Default?", &choice);
+    if (status != MENU_OK || choice == 0)
+      break;
+    p_cfg->adc_channel = 15;
+    save_config_sensor();
+    break;
   }
+
 
   return status;
 }
@@ -1003,7 +1036,7 @@ int32_t wind_speed_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t dec;
-
+  int32_t choice;
   float factor;
   rmyoung_05103v_wind_speed_config_t *p_cfg;
 
@@ -1022,6 +1055,14 @@ int32_t wind_speed_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
       break;
     p_cfg->frequency_channel = dec;
 
+    save_config_sensor();
+    break;
+  case WIND_SPD_RMYOUNG_05103V_DEFAULT:
+    choice = 0;
+    status = input_active("Set as Default?", &choice);
+    if (status != MENU_OK || choice == 0)
+      break;
+    p_cfg->frequency_channel = 0;
     save_config_sensor();
     break;
 

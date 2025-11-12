@@ -394,6 +394,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   uint8_t err;
   float data, data_min, data_max;
   kma_data_ex_t *p_kma = NULL;
+  uint8_t sensor_count=0;
 
   screen_page_start(p_win);
 
@@ -421,7 +422,8 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
 
   if (p_kma->temperature.enable)
   {
-    err = p_kma->temperature.err;
+    sensor_count++;
+        err = p_kma->temperature.err;
     if (err)
     {
       data = p_kma->temperature.data;
@@ -449,6 +451,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 상대습도
   if (p_kma->relative_humidity.enable)
   {
+    sensor_count++;
     err = p_kma->relative_humidity.err;
     if (err)
     {
@@ -475,6 +478,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 풍향
   if (p_kma->wind_direction_avg.enable)
   {
+    sensor_count++;
     err = p_kma->wind_direction_avg.err;
     if (err)
     {
@@ -501,6 +505,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 풍속
   if (p_kma->wind_speed_avg.enable)
   {
+    sensor_count++;
     err = p_kma->wind_speed_avg.err;
     if (err)
     {
@@ -561,6 +566,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 강수량
   if (p_kma->precipitation.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
   {
+    sensor_count++;
     err = p_kma->precipitation.err;
     if (err)
     {
@@ -596,6 +602,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 기압 //BAROMETER:1000.0hpa
   if (p_kma->pressure.enable)
   {
+    sensor_count++;
     err = p_kma->pressure.err;
     if (err)
     {
@@ -623,6 +630,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 강수유무
   if (p_kma->precipitation_presence.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
   {
+    sensor_count++;
     err = p_kma->precipitation_presence.err;
     if (err)
     {
@@ -672,6 +680,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 적설
   if (p_kma->snowfall.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
   {
+    sensor_count++;
     err = p_kma->snowfall.err;
     if (err)
     {
@@ -699,6 +708,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 일사 "SOLAR R: 123.1 kW/m2"
   if (p_kma->solar_radiation.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
   {
+    sensor_count++;
     err = p_kma->solar_radiation.err;
     if (err)
     {
@@ -737,9 +747,10 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
 
   if (p_kma->sunshine_duration.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
   {
-     uint32_t solar_d_today = g_sunshine.today;
+    sensor_count++;
+    uint32_t solar_d_today = g_sunshine.today;
 
-      err = p_kma->sunshine_duration.err;
+    err = p_kma->sunshine_duration.err;
     if (err)
     {
       make_error_string(err, err_buf, sizeof(err_buf));
@@ -771,6 +782,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 지중온도 5cm
   if (p_kma->soil_temperature_5cm.enable)
   {
+    sensor_count++;
     err = p_kma->soil_temperature_5cm.err;
     if (err)
     {
@@ -805,6 +817,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 지중온도 10cm
   if (p_kma->soil_temperature_10cm.enable)
   {
+    sensor_count++;
     err = p_kma->soil_temperature_10cm.err;
     if (err)
     {
@@ -836,6 +849,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 지중온도 20cm
   if (p_kma->soil_temperature_20cm.enable)
   {
+    sensor_count++;
     err = p_kma->soil_temperature_20cm.err;
     if (err)
     {
@@ -867,6 +881,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 지중온도 30cm
   if (p_kma->soil_temperature_30cm.enable)
   {
+    sensor_count++;
     err = p_kma->soil_temperature_30cm.err;
     if (err)
     {
@@ -897,6 +912,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 지중온도 50cm
   if (p_kma->soil_temperature_50cm.enable)
   {
+    sensor_count++;
     err = p_kma->soil_temperature_50cm.err;
     if (err)
     {
@@ -929,6 +945,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 지중온도 1m
   if (p_kma->soil_temperature_1m.enable)
   {
+    sensor_count++;
     err = p_kma->soil_temperature_1m.err;
     if (err)
     {
@@ -960,6 +977,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 지중온도 1.5m
   if (p_kma->soil_temperature_1_5m.enable)
   {
+    sensor_count++;
     err = p_kma->soil_temperature_1_5m.err;
     if (err)
     {
@@ -991,6 +1009,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 지중온도 3m
   if (p_kma->soil_temperature_3m.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
   {
+    sensor_count++;
     err = p_kma->soil_temperature_3m.err;
     if (err)
     {
@@ -1022,6 +1041,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   // 지중온도 5m
   if (p_kma->soil_temperature_5m.enable && (min != eAWS_DATA_10MIN && min != eAWS_DATA_HOUR))
   {
+    sensor_count++;
     err = p_kma->soil_temperature_5m.err;
     if (err)
     {
@@ -1050,9 +1070,16 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     }
   }
 
-//1분 자료인경우 상태표시
-  if (min == eAWS_DATA_1MIN || min == eAWS_DATA_REAL)
+  if (sensor_count==0)
   {
+    screen_page_printf(p_win, "No sensor configured");
+    screen_page_printf(p_win, " ");
+  }
+
+    // 1분 자료인경우 상태표시
+    if (min == eAWS_DATA_1MIN || min == eAWS_DATA_REAL)
+    {
+
 #define AWS_STATUS_WD 15
 
     sensor_t *p_sensor = get_sensor_config_copy();

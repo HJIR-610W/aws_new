@@ -34,7 +34,7 @@ int main(void)
   HAL_SuspendTick();
   
   osKernelStart();
-
+  
   while(1);
   
 }

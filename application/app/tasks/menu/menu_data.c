@@ -472,7 +472,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
   {
     int32_t status;
     int32_t key;
-    int32_t month, day, hour, min;
+    int32_t year,month, day, hour, min;
     int32_t update = 1;
     uint32_t startTime;
     screen_page_t lcd_win;
@@ -486,20 +486,23 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     lcd_win.total_pages = 1;
     lcd_win.chunk_scroll_enable = 1;
 
+    year = Date_Time.Year;
     month = Date_Time.Month;
     day = Date_Time.Day;
     hour = Date_Time.Hour;
     min = Date_Time.Min;
 
-    strfmt.fmt = "%02d-%02d %02d:%02d";
-    snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, month, day, hour, min);
-    status = input_fmt(&strfmt, "Month-Dday Hour:Min");
+
+    strfmt.fmt = "%04d-%02d-%02d %02d:%02d";
+    while(1)
+    {
+    snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt,year, month, day, hour, min);
+    status = input_fmt(&strfmt, "Y-M-D H:M");
     if (status != MENU_OK)
     return status;
-  
-    {
-      sscanf(strfmt.data, strfmt.fmt, &month, &day, &hour, &min);
-      nt.Year = Date_Time.Year;
+
+      sscanf(strfmt.data, strfmt.fmt,&year, &month, &day, &hour, &min);
+      nt.Year = year;
       nt.Month = month;
       nt.Day = day;
       nt.Hour = hour;
@@ -544,7 +547,8 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
           screen_page_handle(&lcd_win, key);
         }
       } while (1);
-    }
+
+  }
 
     return convert_key_to_status(key);
   }
@@ -599,7 +603,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
   {
     int32_t status;
     int32_t key;
-    int32_t  month, day, hour, min;
+    int32_t  year,month, day, hour, min;
     uint32_t startTime;
     screen_page_t lcd_win;
     string_fmt_t strfmt;
@@ -614,20 +618,21 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     lcd_win.total_pages = 1;
     lcd_win.chunk_scroll_enable = 1;
 
+    year = Date_Time.Year;
     month = Date_Time.Month;
     day = Date_Time.Day;
     hour = Date_Time.Hour;
     min = Date_Time.Min;
 
-    strfmt.fmt = "%02d-%02d %02d:%02d";
-    snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, month, day, hour, min);
-    status = input_fmt(&strfmt, "Month-Dday Hour:Min");
+    strfmt.fmt = "%04d-%02d-%02d %02d:%02d";
+    snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt, year,month, day, hour, min);
+    status = input_fmt(&strfmt, "Y-M-D H:M");
     if (status != MENU_OK)
     return status;
 
     {
-      sscanf(strfmt.data, strfmt.fmt, &month, &day, &hour, &min);
-      nt.Year = Date_Time.Year;
+      sscanf(strfmt.data, strfmt.fmt,&year, &month, &day, &hour, &min);
+      nt.Year = year;
       nt.Month = month;
       nt.Day = day;
       nt.Hour = hour;
