@@ -22,7 +22,7 @@
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define TELNET_WELCOME_MSG "\r\n=== AWS Telnet Console ===\r\n\r\n"
 
-eTELNET_MODE_t g_telnet_server_mode_use = eTELNET_SERVER;
+eTELNET_MODE_t g_telnet_mode = eTELNET_SERVER;
 
 static osThreadId_t g_telnetServerTaskId = NULL;
 
@@ -820,9 +820,9 @@ static void telnet_server_task(void* argument)
 
   osThreadFlagsWait(0x00000001, osFlagsWaitAny, osWaitForever);
 
-  g_telnet_server_mode_use = get_config_app()->dev_telnet_mode;
+  g_telnet_mode = get_config_app()->dev_telnet_mode;
 
-  if (g_telnet_server_mode_use == eTELNET_CLIENT)
+  if (g_telnet_mode == eTELNET_CLIENT)
   {  
     telnet_client_mode_task();
   }

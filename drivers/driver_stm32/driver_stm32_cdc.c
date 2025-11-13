@@ -159,10 +159,7 @@ int32_t stm32_cdc_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t
   size_t bytes_read;
   size_t cnt = 0;
 
-  if (cdc_inst.connected == false || uart_num < 0)
-  {
-    return -1;
-  }
+
 
   OS_PEND_SEM(cdc_inst.rx_sem, osWaitForever);
 
@@ -327,10 +324,7 @@ int32_t stm32_cdc_inject(int num, const uint8_t *pData, uint16_t dataLen)
 {
 
   size_t xBytesSent=0;
-  if (cdc_inst.connected == false ||  num< 0)
-  {
-    return -1;  
-  }       
+ 
 
   if(cdc_inst.cdc_stream)
   {

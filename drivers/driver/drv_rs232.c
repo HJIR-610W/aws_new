@@ -7,7 +7,8 @@ int32_t drv_uart_init(int32_t num, void *opt){
 void drv_uart_close(int num){
   bsp_uart_close(num);
 }
-int32_t drv_uart_send(int num, const uint8_t *pData, uint16_t dataLen){
+int32_t drv_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
+{
   return bsp_uart_send(num, pData, dataLen);
 }
 int32_t drv_uart_recv(int num, uint8_t *pBuff, uint16_t rLen,

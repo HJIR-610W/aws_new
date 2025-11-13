@@ -194,7 +194,8 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
     {
       if (p_fw_buffer)
       {
-        fret = write_file(UPDATE_FW__REMOTE_PATH, p_fw_buffer, totsize, 0);
+       // delete_file(UPDATE_FW__REMOTE_PATH);
+            fret = write_file(UPDATE_FW__REMOTE_PATH, p_fw_buffer, totsize, 0);
         user_free(p_fw_buffer);
         p_fw_buffer = 0;
 

@@ -115,8 +115,8 @@ uint8_t check_firmware(uint8_t local)
       uint32_t crc;
       fw_header_t *p_header = (fw_header_t *) p_buffer;
 
-      crc = drv_crc32_with_padding(p_buffer + sizeof(fw_header_t), file_size - sizeof(fw_header_t));
-      
+      crc = drv_crc32_with_padding(p_buffer + sizeof(fw_header_t), 256+p_header->len - sizeof(fw_header_t));
+
       if (crc == p_header->fw_CRC)
       {
         if (p_header->hw_code != HW_NEW_ASW)
