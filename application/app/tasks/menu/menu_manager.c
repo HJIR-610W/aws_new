@@ -80,16 +80,20 @@ void draw_rain_reset_page(screen_menu_t *p_win)
   screen_menu_printf(p_win, DATA_RESET_MENU_SUN, "Reset Sun Data 0");
   screen_menu_clear(p_win);
 }
-int32_t setup_menu_version(void)
-{
 
+extern uint32_t get_key_version(uint8_t *major, uint8_t *minor, uint8_t *patch, uint8_t *release);
+extern void get_key_build(DATE_TIME_BUF *build);
+
+    int32_t setup_menu_version(void)
+{
   uint8_t fix;
   uint8_t major;
   uint8_t minor;
   uint8_t rel;
-  char buff[20];
-  char ver_buff[100];
+  char buff[30];
+  char ver_buff[200];
   int len=0;
+  uint32_t time_stamp;
   DATE_TIME_BUF ct;
 
   screen_clear();
@@ -109,6 +113,15 @@ int32_t setup_menu_version(void)
   len += make_sreen_row(&ver_buff[len], "Boot:%d.%d.%d.%d", major, minor, fix, rel);
   len += make_sreen_row(&ver_buff[len], "%s", buff);
 
+
+    if(get_key_version(&major, &minor, &fix, &rel))
+    {
+      get_key_build(&ct);
+      make_time_to_string(&ct, buff, sizeof(buff));
+      len += make_sreen_row(&ver_buff[len], "Key:%d.%d.%d.%d", major, minor, fix, rel);
+      len += make_sreen_row(&ver_buff[len], "%s", buff);
+    }
+  
   show_popup("Version", ver_buff);
 
   return MENU_OK;

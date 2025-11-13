@@ -1,4 +1,7 @@
 #include "app_key.h"
+
+#include <string.h>
+
 #include "cmsis_os2.h"
 
 #include "util_memory.h"
@@ -6,7 +9,7 @@
 #include "dev_io.h"
 #include "cli_key_code.h"
 #include "pcb_define.h"
-
+#include "util_time.h"
 #define BUTTON_QUEUE_SIZE 5
 
 static int32_t serial_key = -1;
@@ -141,6 +144,32 @@ static int32_t process_serial_data(uint8_t data)
 }
 
 
+uint8_t g_key_info[8];
+
+uint32_t get_key_version(uint8_t *major, uint8_t *minor, uint8_t *patch, uint8_t *release)
+{
+    uint32_t key_ver=0;
+
+    *major = g_key_info[0];
+    *minor = g_key_info[1];
+    *patch = g_key_info[2];
+    *release = g_key_info[3];
+
+    key_ver = g_key_info[0]<<24 |  g_key_info[1]<<16| g_key_info[2]<<8 | g_key_info[3];
+
+    
+    return key_ver;
+}
+
+void get_key_build(DATE_TIME_BUF *build)
+{
+    uint32_t time_stamp;
+
+    memcpy(&time_stamp,&g_key_info[4],4);
+    time_cvt_secTotime(time_stamp,build);
+}
+
+
 void scan_key(void)
 {
     uint8_t data;
@@ -148,7 +177,16 @@ void scan_key(void)
     int key;
 
      bsp_uart_recv(serial_key, &data, 1, 0xFFFFFFFF);
-
+  
+     /*
+     key MCU 버전 정보 수신 처리
+     ESC +ENTER를 동시에 1초 이상 누르면 버전 정보가 전송되어 온다.
+     */ 
+     if(data==0x02)
+     {
+       bsp_uart_recv(serial_key, g_key_info, 8, 0xFFFFFFFF);
+       return;
+     }
      key = process_serial_data(data);
   
       if (key != KEY_CODE_NONE) 
