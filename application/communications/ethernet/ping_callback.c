@@ -4,9 +4,13 @@
   
  */
 #include <string.h>
+#include <stdio.h>
+
 
 #include "pcb_define.h"
 #include "system_err.h"
+#include "config_app.h"
+
 
 #define PING_CMD_RESET 1
 #define PING_CMD_EXCUTE_TELNET 2
@@ -14,14 +18,27 @@ void ping_callback(uint8_t *p_payload,uint16_t data_len)
 {
   uint8_t *p_data = &p_payload[8];
   uint16_t id;
-
+  int cmd;
+  int station_id;
+  char buff[50];
+  
   memcpy(&id,&p_payload[4],2);
 
-  switch(p_data[0])
+  // CUSTOM:station_id,cmd,message
+  if(sscanf((char *)p_data, "CUSTOM:%d,%d,%49s", &station_id, &cmd, buff)!=3)
   {
-    case 255://시작코드 
-      if(p_data[1]==PING_CMD_RESET)
+    return;
+  }
+
+  if(station_id == 65535 || get_config_app()->id== station_id)
+  {
+    
+    switch(cmd)
+    {
+      case PING_CMD_RESET:
         reset_system_delay(2);
-      break;
+        break;
     }
+  }
+
 }
