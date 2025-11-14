@@ -16,9 +16,9 @@ const osThreadAttr_t kIsrEventTask_attributes = {
 };
 
 osMessageQueueId_t g_event_msg_q_id;
-eISR_EVENT_CMD_t g_isrEventCmd;
+isr_event_cmd_t g_isrEventCmd;
 
-int32_t os_send_event(eISR_EVENT_CMD_t cmd,uint32_t timeOutms)
+int32_t os_send_event(isr_event_cmd_t *cmd,uint32_t timeOutms)
 {
   int32_t status;
 
@@ -29,15 +29,15 @@ int32_t os_send_event(eISR_EVENT_CMD_t cmd,uint32_t timeOutms)
 
 void isrEventTask(void *arg)
 {
-  eISR_EVENT_CMD_t cmd;
+  isr_event_cmd_t event;
 
   DEBUG_PRINTF("isr task start\r\n");
 
   while(1)
   {
-    if (osMessageQueueGet(g_event_msg_q_id, &cmd, NULL, osWaitForever) == osOK)
+    if (osMessageQueueGet(g_event_msg_q_id, &event, NULL, osWaitForever) == osOK)
     {
-      switch(cmd)
+      switch(event.cmd)
       {
         case eRTC_INT:
 
@@ -61,7 +61,7 @@ void isrEventTask(void *arg)
         case eUSER_UART_QUAD_6_RX_FULL:
         case eUSER_UART_QUAD_7_RX_FULL:
         case eUSER_UART_QUAD_8_RX_FULL:
-          task_printf("eUSER_UART_RX_FULL %d\r\n",cmd);
+          task_printf("eUSER_UART_RX_FULL %d\r\n",event.cmd);
           break;
         case eSYSTEM_RESET:
           reset_system("user reset");

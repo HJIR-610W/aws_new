@@ -24,8 +24,13 @@ const osThreadAttr_t kSystemTask_attributes = {
 };
 
 void userBtnCallBack(int32_t arg)
-{ 
-  os_send_event(eUSER_BTN_INT, 0); 
+{
+  isr_event_cmd_t event;
+
+  event.cmd = eUSER_BTN_INT;
+  os_send_event(&event, 0);
+
+
 }
 
 void user_button_init(void)

@@ -132,15 +132,19 @@ void MX_LWIP_Init(uint8_t ip[4],uint8_t mask[4],uint8_t gateway[4])
   * @param  netif: the network interface
   * @retval None
   */
+
+  uint8_t g_ethernet_phy_link;
 static void ethernet_link_status_updated(struct netif *netif)
 {
   if (netif_is_up(netif))
   {
     io_printf("eth link up\r\n");
+    g_ethernet_phy_link = 1;
   }
   else /* netif is down */
   {
     io_printf("eth link down\r\n");
+    g_ethernet_phy_link = 0;
   }
 }
 

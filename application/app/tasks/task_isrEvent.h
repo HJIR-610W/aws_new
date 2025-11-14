@@ -21,7 +21,14 @@ typedef enum isrEvent_cmd_e
   eUNSUED_CMD = 255
 } eISR_EVENT_CMD_t;
 
-int32_t os_send_event(eISR_EVENT_CMD_t cmd,uint32_t timeOutms);
+
+typedef struct isr_event_cmd_s
+{
+  char message[10];
+  eISR_EVENT_CMD_t cmd;
+}isr_event_cmd_t;
+
+int32_t os_send_event(isr_event_cmd_t *cmd, uint32_t timeOutms);
 
 void isrEventTask_init(void);
 #endif

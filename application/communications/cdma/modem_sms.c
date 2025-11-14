@@ -11,6 +11,8 @@
 #include "util_memory.h"
 #include "old_aws_sms.h"
 #include "system_err.h"
+#include "app_logging.h"
+#include "task_logging.h"
 typedef enum
 {
   eSMS_CMD_RESET = 1,
@@ -66,7 +68,7 @@ void SMS_Read_Info(sms_t *sms)
 
 void SMS_Reset(sms_t *sms)
 {
-
+  log_printf(L_INFO, "sms reset");
   reset_system_delay(5);
   snprintf(&sms->msg[0], sizeof(sms->msg) ,"%s","장비가 리셋됩니다");
 

@@ -463,7 +463,7 @@ uint16_t divas_cmd_reset(uint8_t *rx_frame, uint8_t *tx_frame)
 
    tx_data[cnt++] = ASCII_ACK;
 
-   log_printf(L_INFO, "MODEM SW RESET");
+   log_printf(L_INFO, "divas cmd reset");
    reset_system_delay(5);
    return make_divas_frame(DIVAS_CMD_RESET, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
 }

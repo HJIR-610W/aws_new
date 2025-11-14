@@ -40,11 +40,18 @@ void set_usb_cdc_connection(bool set)
   cdc_inst.connected = set;
   if(set)
   {
-    os_send_event(eUSER_START_CONSOLE, 0);
+    isr_event_cmd_t event;
+    event.cmd = eUSER_START_CONSOLE;
+    os_send_event(&event, 0);
+
+
   }
   else
   {
-    os_send_event(eUSER_STOP_CONSOLE, 0);
+    isr_event_cmd_t event;
+    event.cmd = eUSER_STOP_CONSOLE;
+    os_send_event(&event, 0);
+
   }
 }
 

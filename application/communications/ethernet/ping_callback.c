@@ -10,7 +10,7 @@
 #include "pcb_define.h"
 #include "system_err.h"
 #include "config_app.h"
-
+#include "task_logging.h"
 
 #define PING_CMD_RESET 1
 #define PING_CMD_EXCUTE_TELNET 2
@@ -36,6 +36,7 @@ void ping_callback(uint8_t *p_payload,uint16_t data_len)
     switch(cmd)
     {
       case PING_CMD_RESET:
+        log_printf(L_INFO, "ping reset");
         reset_system_delay(2);
         break;
     }

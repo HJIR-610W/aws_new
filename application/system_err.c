@@ -91,7 +91,10 @@ static osTimerId_t s_reset_timer_id;
 // 타이머 콜백 함수
 void rtu_reset_callback(void *argument)
 {
-  os_send_event(eSYSTEM_RESET, 0);
+  isr_event_cmd_t event;
+
+  event.cmd = eSYSTEM_RESET;
+  os_send_event(&event, 0);
 }
 
 void reset_system_delay(uint32_t delay_seconds)
