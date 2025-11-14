@@ -365,7 +365,13 @@ uint16_t kma_cmd_handler_AB(uint8_t *rx_frame, uint8_t *tx_frame)
   //만약 1분 자료를 1회 이상 요청시 처리 1분자료는 1회만 업데이트 된다
   // 최초 1회 요청시 최신 값으로 응답하고 만약 추가적으로 계속 요청오면 이전에 백업되 자료를 응답한다
   //1분자료가 없데이트 되었는지 확인 없으면
-  if (read_kma_data(eKMA_DATA_Q_1MIN, p_kma_data)==0)
+  if (read_kma_data(eKMA_DATA_Q_1MIN, p_kma_data)==0)//최신 자료가 있으면
+  {
+     g_kma_data_ab = *p_kma_data;//현재 값을 백업
+     g_kma_data_ab_updated = true;
+  
+  }
+  else
   {
     //이전에 백업된 자료가 있으면 이전값으로 응답
     if (g_kma_data_ab_updated)
@@ -377,11 +383,7 @@ uint16_t kma_cmd_handler_AB(uint8_t *rx_frame, uint8_t *tx_frame)
       vPortFree(p_kma_data);
       return 0;
     }
-  }
-  else
-  {
-    g_kma_data_ab = *p_kma_data;//현재 값을 백업
-    g_kma_data_ab_updated = true;
+
   }
   
   station_id = GetWord((uint8_t *)&rx_frame[13]);

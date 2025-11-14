@@ -26,7 +26,7 @@ __root const section_info_t g_kappInfo = {.signature ={'A','P','P',' '},\
                                        .alias_code =ALIAS_NEW_ASW_HJ,\
                                        .offset = 0x08010000,\
                                        .section_ver = APP_VERSION,\
-                                       .build_timestamp = 1758775159,\
+                                       .build_timestamp = 1763116666,\
                                        .pcb_n =1,
                                        .pcb[0]=0x01000000};
 
