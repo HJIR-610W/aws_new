@@ -24,7 +24,7 @@
 
 #define RECV_BUFF_SIZE 512
 #define SERVER_RETRY_INTERVAL_MS 5000
-#define CLIENT_CONNECT_TIMEOUT_MS 10000 
+#define CLIENT_CONNECT_TIMEOUT_MS 1000 
 #define MAX_CONCURRENT_CLIENTS 3        // 최대 동시 접속 클라이언트 수
 #ifndef SERVER_REQ_TIMEOUT
 #define SERVER_REQ_TIMEOUT 80000
@@ -94,7 +94,7 @@ int set_recv_timeout(int sockfd, uint32_t timeout_ms)
 
 
 
-
+extern uint8_t g_ethernet_phy_link;
 static void server_service_for_client(int sock, client_slot_t* slot)
 {
 
@@ -126,6 +126,10 @@ static void server_service_for_client(int sock, client_slot_t* slot)
   {
     ret = recv(sock, p_rx_buffer, RECV_BUFF_SIZE, 0);
 
+    if(g_ethernet_phy_link  ==0)
+    {
+      break;
+    }
     if (ret < 0) // recv 오류
     {
       if((OS_GET_TICK() - start_time) > SERVER_REQ_TIMEOUT)
