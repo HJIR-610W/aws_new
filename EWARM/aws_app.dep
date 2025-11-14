@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>4</fileVersion>
-    <fileChecksum>234129089</fileChecksum>
+    <fileChecksum>1417509647</fileChecksum>
     <configuration>
         <name>release</name>
         <outputs>
@@ -130,7 +130,7 @@
             <file>$PROJ_DIR$\..\application\communications\cdma\at_cmd.h</file>
             <file>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_rs485.c</file>
-            <file>$PROJ_DIR$\..\application\app\version\boot_version.h</file>
+            <file>$PROJ_DIR$\..\Application\app\version\boot_version.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.c</file>
             <file>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.c</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_rtc.c</file>
@@ -593,7 +593,7 @@
             <file>$PROJ_DIR$\..\utils\util_stdio.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_rtc.o</file>
             <file>$PROJ_DIR$\..\utils\util_stdio.c</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\zepif.h</file>
             <file>$PROJ_DIR$\..\aws.md</file>
@@ -1588,7 +1588,7 @@
             <file>$PROJ_DIR$\release\Obj\snow.xcl</file>
             <file>$PROJ_DIR$\release\Obj\temperature.__cstat.et</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Include\cmsis_compiler.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma3.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\release\Obj\croutine.xcl</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h</file>
             <file>$PROJ_DIR$\release\Obj\pt100.xcl</file>
@@ -1697,7 +1697,7 @@
             <file>$PROJ_DIR$\..\application\app\app_drivers\app_key.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\ip_addr.h</file>
             <file>$PROJ_DIR$\release\Obj\bsp_mux.xcl</file>
-            <file>$PROJ_DIR$\..\Application\Communications\ethernet\tcp_define.h</file>
+            <file>$PROJ_DIR$\..\application\communications\ethernet\tcp_define.h</file>
             <file>$PROJ_DIR$\release\Obj\stm32f4xx_hal_rtc_ex.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netifapi.h</file>
             <file>$PROJ_DIR$\release\Obj\aws_menu_view.xcl</file>
@@ -1807,7 +1807,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\release\Obj\modem_ntle9607.xcl</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\altcp_tcp.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\mbedTLS\include\mbedtls\threading.h</file>
             <file>$PROJ_DIR$\release\Obj\util_time.o</file>
             <file>$PROJ_DIR$\release\Obj\drv_fram.xcl</file>
@@ -1948,7 +1948,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_snowfall_menu.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\integer.h</file>
             <file>$PROJ_DIR$\release\Obj\ls1024.xcl</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_define.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_define.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$PROJ_DIR$\release\Obj\eth_icmp.__cstat.et</file>
@@ -1980,7 +1980,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\cmsis_os2.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\FreeRTOS.h</file>
             <file>$TOOLKIT_DIR$\inc\c\inttypes.h</file>
-            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma2.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\interrupt\stm32f4xx_it.h</file>
@@ -2756,7 +2756,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1457 1968 2012 1966 2034 1971 1967 1992 1994 2019 136 149 1759 1941 132 1659 1624 1777 1668 1599 1646 1436 1779 1582 1638 1616 1602 1585 1790 2002 1617 1676 1656 1674 1654 1663 1637 1425 1664 1647 1648 1424 1672 1768 1726 1737 1701 1751 1700 1733 1742 1697 1738 1677 1720 1722 1710 1727 1723 1680 1755 1686 1764 152 154 181 1644 1947 1973 191 1932 1959 1998 1933 1983 1958 2023 1981 1989 1972 1987 1934 140 148 1982 123 1429 1449 179 104 312 1996 1919 122 1964 1914 1455 295 1655 1625 1480 1626 1483 578 1752 1692 1977 107 2017 588 200 142 577 1736 1762 1678 214 1461 1945 1984 121 1749 1741 1787 213 129</file>
+                    <file> 1457 1968 2012 1966 2034 1971 1967 1992 1994 2019 136 149 1759 1941 132 1659 1624 1777 1668 1599 1646 1436 1779 1582 1638 1616 1602 1585 1790 2002 1617 1676 1656 1674 1654 1663 1637 1425 1664 1647 1648 1424 1672 1768 1726 1737 1701 1751 1700 1733 1742 1697 1738 1677 1720 1722 1710 1727 1723 1680 1755 1686 1764 152 154 181 1644 1947 1973 191 1932 1959 1998 1933 1983 1958 2023 1981 1989 1972 1987 1934 140 148 1982 123 1429 1449 179 104 312 1996 1919 122 1964 1914 1455 295 1655 1625 1480 1626 1483 578 1752 1692 1977 107 2017 588 200 142 577 1736 1762 1678 214 1461 1945 1984 121 1749 1741 1787 213 129 125</file>
                 </tool>
             </inputs>
         </file>
@@ -3566,7 +3566,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 1622 1661 1968 2012 1966 2034 1971 1967 136 149 1759 1941 132 1659 1624 1777 1668 1599 1646 1436 1779 1582 1638 1616 1602 1585 1790 2002 1994 1617 1676 1656 1674 1654 1663 1637 1425 1664 1647 1648 1424 1672 1768 1726 1737 1701 1751 1700 1733 1742 1697 1738 1677 1720 1722 1710 1727 1723 1680 1755 1686 1764 152 154 181 1644 1947 1973 191 1932 1959 1998 1933 1983 1958 2023 1981 1989 1972 1987 1934 140 148 1729 577 1736 1762 1919 1996 1984 1684 214 1461 312 169 185 184 1787 213 168 1741 1778 123 1429 1449 179 104 122 107 1740 1692 1977 1914 1455 295 1655 1625 1480 1626 1483 578 1752 1938 165 1951 1992 2019 1678 1636 589 1953 1749 134 1639 157 1731 1709 1688 1702 1715 1703 1974 1732 1728 1916 1920 1908 1464 1428 1929 1917 2035 1705 1685 1923 1681 1708 1690 1734 1649 1452 1472 1447 2006 2005 2037 1997 1665 1427 1432 1675 1441 1481 1485 1899 1905 160 1440 115 155 2009 2008 2046 131 2041 1704 1802 1619 2007 478 1712 572 1945 1799 1718 1964 1924 142</file>
+                    <file> 1622 1661 1968 2012 1966 2034 1971 1967 136 149 1759 1941 132 1659 1624 1777 1668 1599 1646 1436 1779 1582 1638 1616 1602 1585 1790 2002 1994 1617 1676 1656 1674 1654 1663 1637 1425 1664 1647 1648 1424 1672 1768 1726 1737 1701 1751 1700 1733 1742 1697 1738 1677 1720 1722 1710 1727 1723 1680 1755 1686 1764 152 154 181 1644 1947 1973 191 1932 1959 1998 1933 1983 1958 2023 1981 1989 1972 1987 1934 140 148 1729 577 1736 1762 1919 1996 1984 1684 214 1461 312 169 185 184 1787 213 168 1741 1778 123 1429 1449 179 104 122 107 1740 1692 1977 1914 1455 295 1655 1625 1480 1626 1483 578 1752 1938 165 1951 1992 2019 1678 1636 589 1953 1749 134 1639 157 1731 1709 1688 1702 1715 1703 1974 1732 1728 1916 1920 1908 1464 1428 1929 1917 2035 1705 1685 1923 1681 1708 1690 1734 1649 1452 1472 1447 2006 2005 2037 1997 1665 1427 1432 1675 1441 1481 1485 1899 1905 160 1440 155 2009 2008 2046 131 2041 1704 1802 1619 2007 478 1712 572 1945 1799 1718 1964 1924 142</file>
                 </tool>
             </inputs>
         </file>

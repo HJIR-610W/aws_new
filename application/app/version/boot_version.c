@@ -37,11 +37,17 @@ void get_boot_build(DATE_TIME_BUF *build)
 {
   section_info_t *info = (section_info_t *)BOOT_INFO_START_ADDRESS;
 
-  time_cvt_secTotime(info->time+TIME_ZONE_SOULE,build);
-    
+  time_cvt_secTotime(info->build_timestamp + TIME_ZONE_SOULE, build);
 }
 
-uint32_t get_boot_pcb_version(void)
+uint32_t get_boot_build_timestamp(void)
+{
+  section_info_t *info = (section_info_t *)BOOT_INFO_START_ADDRESS;
+  return info->build_timestamp;
+}
+
+    uint32_t
+    get_boot_pcb_version(void)
 {
   section_info_t *info = (section_info_t *)BOOT_INFO_START_ADDRESS;
 

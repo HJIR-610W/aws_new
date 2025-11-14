@@ -357,7 +357,8 @@ uint16_t kma_cmd_handler_AB(uint8_t *rx_frame, uint8_t *tx_frame)
   kma_data_ex_t *p_kma_data;
   kma2_response_t kma2_response;
 
-  osDelay(1000);// 값이 업데이트 되길 기다린다. 분이 바뀌는 시점에 업데이트 되고 연산만 하기에 1초면 충분
+  
+  osDelay(2000);// 값이 업데이트 되길 기다린다. 
 
   p_kma_data = pvPortMalloc(sizeof(kma_data_ex_t));
 

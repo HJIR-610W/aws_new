@@ -29,7 +29,7 @@
 #include "FreeRTOS.h"
 #include "lwip.h"
 #include "pcb_define.h"
-#include "project_def.h"
+
 #include "task_http_server.h"
 #include "task_telnet_server.h"
 #include "task_wdt.h"

@@ -125,11 +125,12 @@ static void server_service_for_client(int sock, client_slot_t* slot)
   while (1)
   {
     ret = recv(sock, p_rx_buffer, RECV_BUFF_SIZE, 0);
-
-    if(g_ethernet_phy_link  ==0)
+#if 0 
+    if(g_ethernet_phy_link  == 0)
     {
       break;
     }
+#endif
     if (ret < 0) // recv 오류
     {
       if((OS_GET_TICK() - start_time) > SERVER_REQ_TIMEOUT)

@@ -129,7 +129,7 @@ uint8_t check_firmware(uint8_t local)
           return FW_ERR_MFG;
         }
 
-        if (p_header->nick != NICK_NEW_ASW_HJ)
+        if (p_header->nick != ALIAS_NEW_ASW_HJ)
         {
           if (p_buffer)
           {

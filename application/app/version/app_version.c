@@ -23,10 +23,10 @@ __root const section_info_t g_kappInfo = {.signature ={'A','P','P',' '},\
                                        .section = SECTION_APP,
 #endif
                                        .hw_code = HW_NEW_ASW,\
-                                       .nick_code =NICK_NEW_ASW_HJ,\
+                                       .alias_code =ALIAS_NEW_ASW_HJ,\
                                        .offset = 0x08010000,\
                                        .section_ver = APP_VERSION,\
-                                       .time = 1758775159,\
+                                       .build_timestamp = 1758775159,\
                                        .pcb_n =1,
                                        .pcb[0]=0x01000000};
 
@@ -35,7 +35,7 @@ __root const section_info_t g_kappInfo = {.signature ={'A','P','P',' '},\
 
 void get_nickCode(uint32_t *nickCode)
 {
-    *nickCode = g_kappInfo.nick_code;
+  *nickCode = g_kappInfo.alias_code;
 }
 
 void get_hwCode(uint32_t *hwCode)
@@ -86,7 +86,7 @@ void get_app_build(DATE_TIME_BUF *build)
 {
     uint32_t data;
 
-    data = g_kappInfo.time;
+    data = g_kappInfo.build_timestamp;
     time_cvt_secTotime(data,build);
 }
 
@@ -94,7 +94,7 @@ uint32_t get_app_build_timestamp(void)
 {
   uint32_t data;
 
-  data = g_kappInfo.time ;
+  data = g_kappInfo.build_timestamp ;
 
   return data;
  
@@ -106,7 +106,10 @@ uint32_t get_hardware_code(void)
 
 }
 
-uint32_t get_appNick(void) { return g_kappInfo.nick_code; }
+uint32_t get_app_alias(void) 
+{
+  return g_kappInfo.alias_code;
+}
 
 /**
  * 
@@ -126,7 +129,7 @@ const char *get_mfg_name(void)
 {
   uint32_t mfg_ver;
 
-  mfg_ver = get_appNick();
+  mfg_ver = get_app_alias();
 
   if(mfg_ver < (sizeof(mfgList)/sizeof(mfgList[0])))
   {

@@ -1552,9 +1552,6 @@
                 <file>
                     <name>$PROJ_DIR$\..\application\app\version\hj_product_list.h</name>
                 </file>
-                <file>
-                    <name>$PROJ_DIR$\..\application\app\version\project_def.h</name>
-                </file>
             </group>
         </group>
         <group>
@@ -1781,13 +1778,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>

@@ -14,6 +14,7 @@
 #include "task_logging.h"
 #include "app_logging.h"
 #include "app_version.h"
+#include "boot_version.h"
 typedef struct
 {
   uint8_t STX;
@@ -528,13 +529,18 @@ uint16_t divas_read_version(uint8_t *rx_frame, uint8_t *tx_frame)
   cnt +=4;
   SetU32(&tx_data[cnt], get_hardware_code());
   cnt += 4;
-  SetU32(&tx_data[cnt], get_appNick());
+  SetU32(&tx_data[cnt], get_app_alias());
   cnt += 4;
   SetU32(&tx_data[cnt], get_app_area_code());
   cnt += 4;
    SetU32(&tx_data[cnt], get_app_build_timestamp());
   cnt += 4;
-
+  SetU32(&tx_data[cnt], get_boot_version(NULL, NULL, NULL, NULL));
+  cnt += 4;
+  SetU32(&tx_data[cnt], get_boot_build_timestamp());
+  cnt += 4;
+  SetU32(&tx_data[cnt], get_boot_pcb_version());
+  cnt += 4;
   return make_divas_frame(DIVAS_CMD_RD_VERSION, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
 }
 

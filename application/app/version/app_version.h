@@ -24,7 +24,7 @@ x.x.x.1  개발 버전
 
 uint32_t get_app_version(uint8_t *major,uint8_t *minor,uint8_t *patch,uint8_t *release);
 void get_app_build(DATE_TIME_BUF *build);
-uint32_t get_appNick(void);
+uint32_t get_app_alias(void);
 void get_nickCode(uint32_t *nickCode);
 void get_hwCode(uint32_t *nickCode);
 void set_testKey(uint32_t key);
