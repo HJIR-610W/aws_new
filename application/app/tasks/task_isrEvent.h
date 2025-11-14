@@ -24,8 +24,8 @@ typedef enum isrEvent_cmd_e
 
 typedef struct isr_event_cmd_s
 {
-  char message[10];
   eISR_EVENT_CMD_t cmd;
+  char message[7];
 }isr_event_cmd_t;
 
 int32_t os_send_event(isr_event_cmd_t *cmd, uint32_t timeOutms);

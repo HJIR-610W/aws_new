@@ -16,13 +16,13 @@ const osThreadAttr_t kIsrEventTask_attributes = {
 };
 
 osMessageQueueId_t g_event_msg_q_id;
-isr_event_cmd_t g_isrEventCmd;
+
 
 int32_t os_send_event(isr_event_cmd_t *cmd,uint32_t timeOutms)
 {
   int32_t status;
 
-  status = osMessageQueuePut(g_event_msg_q_id, &cmd, 0, timeOutms);
+  status = osMessageQueuePut(g_event_msg_q_id, cmd, 0, timeOutms);
   
   return !(osOK==status);
 }
@@ -82,7 +82,7 @@ void isrEventTask(void *arg)
 
 void isrEventTask_init(void)
 {
-  g_event_msg_q_id = osMessageQueueNew(10, sizeof(eISR_EVENT_CMD_t), NULL);
+  g_event_msg_q_id = osMessageQueueNew(10, sizeof(isr_event_cmd_t), NULL);
 
 
   osThreadNew(isrEventTask, NULL, &kIsrEventTask_attributes);
