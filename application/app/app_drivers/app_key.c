@@ -20,12 +20,12 @@ void app_key_init(void)
 {
     uart_config_t uart_config;
 
-    uart_config.baud = 38400;
+    uart_config.baud = 115200;
     uart_config.dataLen = UART_DATA_LEN_8;
     uart_config.parity_index = PARITY_NONE;
     uart_config.stop_bit = UART_STOP_BIT_1;
 
-    serial_key = BSP_UART_1_TTL_ONLY;
+    serial_key = BSP_UART_0_D_SUB_0;
     bsp_uart_init(serial_key, &uart_config);
 
     g_button_queue_id = osMessageQueueNew(BUTTON_QUEUE_SIZE, sizeof(int32_t), NULL);
@@ -133,6 +133,11 @@ static int32_t process_serial_data(uint8_t data)
 
     escape_index = 0;
 
+    if(ch =='\r')
+    {
+      return KEY_CODE_ENTER;//0x0D가 전송되면 이것도 ENTER로 처리
+    }
+    
     //  Ctrl key 조합
     if (ch >= 0x01 && ch <= 0x1A)
     {
