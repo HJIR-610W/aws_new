@@ -407,11 +407,11 @@ void isr_tl16c554(int uart_num)
   uint8_t reg;
   uint8_t line_status;
   uint8_t modem_status;
-  size_t xBytesSent;
+  size_t xBytesSent=0;
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
   
-  
+  (void)xBytesSent;
   while (((iir = read_register(IIR(uart->base_address))) & UART_IIR_INTTERUPT_PENDING) == 0)
   {
     interrupt_type = iir & 0x0F;

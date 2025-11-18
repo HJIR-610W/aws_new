@@ -392,12 +392,18 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
   char err_buf[32];
   char buffer[21];
   uint8_t err;
-  float data, data_min, data_max;
+  float data, data_min=0, data_max=0;
   kma_data_ex_t *p_kma = NULL;
   uint8_t sensor_count=0;
 
+  
+  (void)data_min;
+  (void)data_max;
+  
   screen_page_start(p_win);
 
+  
+  
   if (min == eAWS_DATA_RAW)
   {
         screen_page_printf(p_win, "AWS %s %.2fs/%.2fs", aws_title_list[(int)min],

@@ -7,9 +7,9 @@
 #include "drv_rtc.h"
 #include "hj_product_list.h"
 
-#define MAKE_FW_VERSION(major, minor, bugfix,rel) (((major) << 24) | ((minor) << 16) | (bugfix<<9) |(rel))
+#define MAKE_FW_VERSION(major, minor, bugfix,rel) (((major) << 24) | ((minor) << 16) | (bugfix<<8) |(rel))
 
-#define APP_VERSION (MAKE_FW_VERSION(0, 28, 0, 0))
+#define APP_VERSION (MAKE_FW_VERSION(0, 29, 0, 0))
 #define PCB_VERSION (MAKE_FW_VERSION(1, 0, 0, 0))
 
 

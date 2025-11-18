@@ -151,13 +151,15 @@ int32_t edit_file(uint8_t file_type)
   int32_t end_year, end_month, end_day, end_hour, end_min;
   int32_t status;
   int32_t value=0;
-  int32_t ret;
+  int32_t ret=0;
   string_fmt_t strfmt;
   DATE_TIME_BUF start_time;
   DATE_TIME_BUF end_time;
   uint32_t start_stamp;
   uint32_t end_stamp;
 
+  
+  (void)ret;
   year = Date_Time.Year;
   month = Date_Time.Month;
   day = Date_Time.Day;
@@ -499,9 +501,9 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     snprintf(strfmt.data, sizeof(strfmt.data), strfmt.fmt,year, month, day, hour, min);
     status = input_fmt(&strfmt, "Y-M-D H:M");
     if (status != MENU_OK)
-    return status;
-
-      sscanf(strfmt.data, strfmt.fmt,&year, &month, &day, &hour, &min);
+    break; 
+     
+    sscanf(strfmt.data, strfmt.fmt,&year, &month, &day, &hour, &min);
       nt.Year = year;
       nt.Month = month;
       nt.Day = day;
@@ -546,11 +548,12 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
         {
           screen_page_handle(&lcd_win, key);
         }
+        
       } while (1);
 
   }
 
-    return convert_key_to_status(key);
+    return status;//convert_key_to_status(key);
   }
 
   #define MIN_VIEW_ROW 7

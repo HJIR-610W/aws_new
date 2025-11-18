@@ -47,12 +47,13 @@ void test_setup_menu(void)
 {
   int32_t index;
   int32_t key;
-  int32_t status;
+  int32_t status=0;
   int32_t admin_menu_active_count=0;
   screen_menu_t menu;
   int32_t password=0;
 
 
+  (void)status;
   screen_menu_create(&menu, "Test");
 
   while(1)

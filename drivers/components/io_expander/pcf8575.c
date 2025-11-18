@@ -158,7 +158,7 @@ pcf8575_result_t pcf8575_write_single_pin(int number, int pin, int high)
     port_data &= ~(1 << pin);
   }
 
-  return pcf8575_write_port(number, port_data);
+  return pcf8575_write_port(number, port_data|0x00FF);
 }
 
 pcf8575_result_t pcf8575_write_pin(int number, int high)
