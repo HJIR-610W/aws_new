@@ -20,12 +20,18 @@ void app_key_init(void)
 {
     uart_config_t uart_config;
 
-    uart_config.baud = 115200;
+
     uart_config.dataLen = UART_DATA_LEN_8;
     uart_config.parity_index = PARITY_NONE;
     uart_config.stop_bit = UART_STOP_BIT_1;
-
+#ifdef NOT_USE_LCD
+        uart_config.baud = 115200;    
     serial_key = BSP_UART_0_D_SUB_0;
+#else
+    uart_config.baud = 38400;
+        serial_key = BSP_UART_1_TTL_ONLY;    
+#endif
+
     bsp_uart_init(serial_key, &uart_config);
 
     g_button_queue_id = osMessageQueueNew(BUTTON_QUEUE_SIZE, sizeof(int32_t), NULL);

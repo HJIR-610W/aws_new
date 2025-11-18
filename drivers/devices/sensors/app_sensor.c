@@ -241,7 +241,7 @@ void *get_sensor_config(sensor_t *sensor)
     return 0;
   }
 
-  for (int i = 0; i < sensor->configCnt; i++)
+  for (int i = 0; i < sensor->configCnt &&i<SENSOR_CONFIG_TABLE_MAX; i++)
   {
     if (sensor->config[i][0] == sensor->type)
     {

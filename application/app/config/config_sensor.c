@@ -210,6 +210,7 @@ void load_config_sensor(void)
       if (g_config_sensor_dirty_flag)
   {
     save_config_sensor();
+    backup_config_sensor();
   }
 }
 
@@ -223,7 +224,6 @@ config_sensor_t *get_config_sensor(void)
 void config_sensor_reset(void)
 {
   memset(&g_config_sensor,0,sizeof(g_config_sensor));
-
   
 }
 
@@ -235,7 +235,7 @@ void backup_config_sensor(void)
 {
   FRESULT f_ret;
 
-      make_path(PATH_CONFIG_SENSOR_BIN);
+   make_path(PATH_CONFIG_SENSOR_BIN);
       
   f_ret = write_file(PATH_CONFIG_SENSOR_BIN, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor), 0);
   if (f_ret == FR_OK)

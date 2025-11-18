@@ -20,7 +20,12 @@ static screen_instance_t s_screen;
 
 void screen_init(void)
 {
-  p_s_lcd = driver_lcd_open(DRIVER_CLCD);
+#ifdef NOT_USE_LCD
+    p_s_lcd = driver_lcd_open(DRIVER_LCD_TERMNINAL);
+#else
+    p_s_lcd = driver_lcd_open(DRIVER_CLCD);
+#endif
+
   if (p_s_lcd)
   {
     driver_lcd_display_on(p_s_lcd);

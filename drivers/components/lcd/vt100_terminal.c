@@ -87,6 +87,10 @@ static void vt100_clear_screen(driver_t *drv)
 
     term->cursor_x = 0;
     term->cursor_y = 0;
+    
+    
+    memset(framebuffer, 0, sizeof(framebuffer));
+        
 }
 
 static void vt100_home(driver_t *drv)
