@@ -75,7 +75,7 @@ static void tcp_client_service(int sock)
 
     if (g_ethernet_phy_link == 0 )//link down
     {
-      break;
+     // break;
     }
       if (ret < 0)
       {
