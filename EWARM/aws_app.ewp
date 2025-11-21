@@ -737,15 +737,15 @@
                 <option>
                     <name>OOCOutputFormat</name>
                     <version>3</version>
-                    <state>3</state>
-                </option>
-                <option>
-                    <name>OCOutputOverride</name>
                     <state>1</state>
                 </option>
                 <option>
+                    <name>OCOutputOverride</name>
+                    <state>0</state>
+                </option>
+                <option>
                     <name>OOCOutputFile</name>
-                    <state>aws_app.bin</state>
+                    <state>aws_app.hex</state>
                 </option>
                 <option>
                     <name>OOCCommandLineProducer</name>
@@ -1445,7 +1445,7 @@
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_menu.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_menu_define.h</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_menu_define.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_monitor.c</name>

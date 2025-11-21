@@ -1101,7 +1101,7 @@
                 <expressions>
                     <item>sensor</item>
                     <item>p_sensor</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>
