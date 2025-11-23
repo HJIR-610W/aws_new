@@ -22,3 +22,4 @@
 # 빌드 폴더
 Debug/
 Release/
+/EWARM/not_use_lcd
