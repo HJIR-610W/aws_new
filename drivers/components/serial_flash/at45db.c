@@ -130,13 +130,13 @@ void at45db_init(void)
 
 static const at45db_device_info_t at45db_device_table[] = {
     /* density_code, capacity_bits, total_pages, page_std, page_bin, name */
-    {0x02, 1 * 1024 * 1024, 512, 264, 256, "AT45DB011"},     /* 1Mbit */
-    {0x03, 2 * 1024 * 1024, 1024, 264, 256, "AT45DB021"},    /* 2Mbit */
-    {0x04, 4 * 1024 * 1024, 2048, 264, 256, "AT45DB041"},    /* 4Mbit */
-    {0x05, 8 * 1024 * 1024, 4096, 264, 256, "AT45DB081"},    /* 8Mbit */
-    {0x06, 16 * 1024 * 1024, 4096, 528, 512, "AT45DB161"},   /* 16Mbit */
-    {0x07, 32 * 1024 * 1024, 8192, 528, 512, "AT45DB321"},   /* 32Mbit */
-    {0x08, 64 * 1024 * 1024, 32768, 264, 256, "AT45DB641E"}  /* 64Mbit */
+    {0x02, 1 * 1024 * 1024, 512, 264, 256, 2048,"AT45DB011"},     /* 1Mbit */
+    {0x03, 2 * 1024 * 1024, 1024, 264, 256,2048, "AT45DB021"},    /* 2Mbit */
+    {0x04, 4 * 1024 * 1024, 2048, 264, 256, 2048,"AT45DB041"},    /* 4Mbit */
+    {0x05, 8 * 1024 * 1024, 4096, 264, 256, 2048,"AT45DB081"},    /* 8Mbit */
+    {0x06, 16 * 1024 * 1024, 4096, 528, 512, 2048,"AT45DB161"},   /* 16Mbit */
+    {0x07, 32 * 1024 * 1024, 8192, 528, 512, 2048,"AT45DB321"},   /* 32Mbit */
+    {0x08, 64 * 1024 * 1024, 32768, 264, 256, 2048,"AT45DB641E"}  /* 64Mbit */
     /* AT45DB128(1024B), AT45DB256(2048B): 메모리 제약으로 미지원 */
 };
 
@@ -719,13 +719,12 @@ at45db_result_t at45db_parse_chip_info(uint8_t *chip_info, at45db_chip_info_t *i
   DEBUG_PRINTF("  Total Pages: %lu\r\n", info->device_info.total_pages);
   DEBUG_PRINTF("  Page Size: %u bytes (standard) / %u bytes (binary)\r\n", 
                info->device_info.page_size_standard, info->device_info.page_size_binary);
-
   DEBUG_PRINTF("  Device ID Byte 2: 0x%02X\r\n", id2);
   DEBUG_PRINTF("    - Sub Code     : 0x%02X (%s)\r\n", id2 >> 3, subcode);
   DEBUG_PRINTF("    - Variant Code : 0x%02X (%s)\r\n", id2 & 0x07, variant);
-
   DEBUG_PRINTF("  Extended Info Len: 0x%02X (EDI Byte Count)\r\n", edi_len);
   DEBUG_PRINTF("  EDI Byte[0]      : 0x%02X\r\n", edi_byte1);
+
 
   rev_code = edi_byte1 & 0x1F;
   if (rev_code == 0)
@@ -809,4 +808,132 @@ int32_t at45db_write_safe(uint32_t offset, uint8_t *p_data, uint32_t data_len)
 
   DEBUG_PRINTF("[at45db_write_safe] finish\r\n");
   return 0; // 성공
+}
+
+
+
+
+int at45db_lfs_prog( uint32_t block,uint32_t off,const uint8_t *buffer,uint32_t size)
+{
+  uint32_t chunk;
+  uint32_t flash_addr;
+  uint32_t page;
+  uint32_t page_offset;
+  uint32_t page_size;
+
+    page_size = at45db_inst.chip_info.current_page_size;
+    // block은 littlefs 블록 번호 (블록 크기 = 2048바이트)
+    flash_addr = block * 2048 + off;
+    while (size > 0) {
+
+        // 1) 현재 페이지 계산
+        page = flash_addr / page_size;
+        page_offset = flash_addr % page_size;
+
+        // 이번에 쓸 수 있는 최대 길이 (페이지 경계 안에서)
+        chunk = page_size - page_offset;
+        if (chunk > size) chunk = size;
+
+        //-----------------------
+        // 2) Page → Buffer 복사
+        //-----------------------
+        at45db_memory_to_buffer(AT45DB_BUFFER1, page);
+  at45db_wait_ready();
+        //-----------------------
+        // 3) Buffer 내부에 원하는 오프셋부터 chunk 만큼 덮어쓰기
+        //-----------------------
+        at45db_write_buffer(AT45DB_BUFFER1, page_offset, (const char *)buffer, chunk);
+          osDelay(1);
+        //-----------------------
+        // 4) Buffer → Page Program (Page 전체 Commit)
+        //-----------------------
+        at45db_buffer_to_memory(AT45DB_BUFFER1, page);
+        at45db_wait_ready();
+        // 다음 반복을 위한 포인터 이동
+        flash_addr += chunk;
+        buffer     += chunk;
+        size        -= chunk;
+    }
+
+    return 0;
+}
+
+int at45db_lfs_read(uint32_t block, uint32_t off, uint8_t *buffer, uint32_t size)
+{
+  uint32_t flash_addr;
+  uint32_t page_size;
+
+  page_size = at45db_inst.chip_info.current_page_size;
+
+  // block은 littlefs 블록 번호 (블록 크기 = 2048바이트)
+  flash_addr = block * 2048 + off;
+
+  while (size > 0)
+  {
+    // 현재 페이지 계산
+    uint32_t page = flash_addr / page_size;
+    uint32_t page_offset = flash_addr % page_size;
+
+    // 페이지 경계 내에서 읽을 수 있는 최대 길이
+    uint32_t chunk = page_size - page_offset;
+    if (chunk > size)
+      chunk = size;
+
+    //-----------------------------------
+    // 1) Buffer ← Page 복사
+    //-----------------------------------
+    // DataFlash: Page → Buffer Copy
+    at45db_memory_to_buffer(AT45DB_BUFFER1, page);
+  at45db_wait_ready();
+    //-----------------------------------
+    // 2) Buffer 내부에서 원하는 오프셋부터 chunk 만큼 읽기
+    //-----------------------------------
+    at45db_read_buffer(AT45DB_BUFFER1, page_offset, buffer, chunk);
+
+    // 다음을 위한 업데이트
+    flash_addr += chunk;
+    buffer += chunk;
+    size -= chunk;
+  }
+
+  return 0;
+}
+
+/**
+ * @brief LittleFS 블록 지우기 (0xFF로 채움)
+ * @param block: 블록 번호
+ * @return 0: 성공, 음수: 실패
+ * @note AT45DB는 하드웨어 블록 erase가 없으므로 0xFF로 채워서 erase 효과 구현
+ *       블록 크기 = 2048 바이트 = 8 페이지 (페이지 크기 256바이트 기준)
+ */
+int at45db_lfs_erase(uint32_t block)
+{
+#if 0 
+  uint8_t erase_buffer[256];
+  uint32_t i;
+  uint32_t page;
+  uint32_t page_size;
+  uint32_t pages_per_block;
+
+  page_size = at45db_inst.chip_info.current_page_size;
+  pages_per_block = 2048 / page_size;  // 블록 크기 2048바이트 / 페이지 크기
+
+  // 0xFF로 채워진 버퍼 생성
+  memset(erase_buffer, 0xFF, sizeof(erase_buffer));
+
+  // 블록 내의 모든 페이지를 0xFF로 채움
+  for (i = 0; i < pages_per_block; i++)
+  {
+    page = block * pages_per_block + i;
+
+    // Buffer에 0xFF 쓰기
+    at45db_write_buffer(AT45DB_BUFFER1, 0, (const char *)erase_buffer, page_size);
+    at45db_wait_ready();
+
+    // Buffer를 페이지에 프로그램
+    at45db_buffer_to_memory(AT45DB_BUFFER1, page);
+    at45db_wait_ready();
+  }
+#endif
+  return 0;
 }

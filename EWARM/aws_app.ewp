@@ -442,6 +442,7 @@
                     <state>$PROJ_DIR$\..\drivers\devices\charger</state>
                     <state>$PROJ_DIR$\..\Middlewares\modbus</state>
                     <state>$PROJ_DIR$\..\application\app\tasks\sensor_data</state>
+                    <state>$PROJ_DIR$\..\Middlewares\Third_Party\littlefs</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -4057,6 +4058,18 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\Third_Party\cobs\cobs.h</name>
+                </file>
+            </group>
+            <group>
+                <name>littlefs</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\Third_Party\littlefs\lfs.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\Third_Party\littlefs\lfs_port.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\Third_Party\littlefs\lfs_util.c</name>
                 </file>
             </group>
             <group>

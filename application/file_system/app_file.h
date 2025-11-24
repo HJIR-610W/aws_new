@@ -28,4 +28,15 @@ void make_path(const char *path);
 
 void *get_file_sem(void);
 
+
+
+int32_t lfs_write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset);
+int32_t lfs_read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset);
+int32_t lfs_append_file(char *path, uint8_t *data, uint32_t dataLen);
+int32_t get_lfs_file_size(const char *path, uint32_t *size);
+int32_t lfs_delete_file(const char *fileName);
+void printf_lfs_directory(const char *dir);
+void printf_lfs_info(void);
+
+
 #endif
