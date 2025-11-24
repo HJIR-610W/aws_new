@@ -192,12 +192,13 @@ void load_config_sensor(void)
     }
   }
 
-
+  
 
 #else
   drv_fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
 #endif
 
+  io_printf("sizeof(config_sensor_t):%d\r\n",sizeof(config_sensor_t));
   limit_adc();
   limit_hjwind();
   limit_hjhumi();
@@ -207,7 +208,7 @@ void load_config_sensor(void)
   limit_rmyoung_wind_direction();
   limit_rmyoung_barometer();
 
-      if (g_config_sensor_dirty_flag)
+  if (g_config_sensor_dirty_flag)
   {
     save_config_sensor();
     backup_config_sensor();

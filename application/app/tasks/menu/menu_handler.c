@@ -68,6 +68,10 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
     return MENU_BACK;
   }
 
+  if(*val > max)
+  {
+    *val = max;
+  }
   screen_clear();
   make_centered(buff, sizeof(buff), title, LCD_COLS);
   screen_printf(0, 0, "%s", buff);

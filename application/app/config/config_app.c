@@ -438,7 +438,10 @@ void load_config_app(void)
   // 프로그램 실행 중 설정값 변경되어도 영향 없도록 측정 Task는 설정값 복사본으로 동작
   memcpy(g_sensor_config_bk, config.sensor, sizeof(g_sensor_config_bk));
 
-  check_unused_field(CONFIG_START_ADDRESS + sizeof(config_t), CONFIG_NVM_START_ADDRESS);
+ check_unused_field(CONFIG_START_ADDRESS + sizeof(config_t), CONFIG_NVM_START_ADDRESS);
+  
+  io_printf("sizeof(config):%d\r\n",sizeof(config_t));
+            
 }
 
 

@@ -15,13 +15,13 @@
 #include "cli_key_code.h"
 #include "app_logging.h"
 #include "console_scanf.h"
-#include "console_scanf.h"
 #include "cli_input.h"
 #include "console_rtos.h"
 #include "divas_protocol_handler.h"
 #include "app_console_test.h"
 #include "cmsis_os.h"
 #include "drv_flash.h"
+#include "littlefs_manager\lfs_manager.h"
 
 extern const char *protocolList[2];
 extern const char *cdmaModellList[2];
@@ -379,7 +379,8 @@ int32_t aws_menu_develop(void)
                   "TASK 디버깅 출력",
                   "TASK 디버깅 출력 강제",
                   "PCB PIN",
-                  "TELNET"};
+                  "TELNET",
+                  "littlefs"};
 
     while(1)
     {
@@ -415,9 +416,12 @@ int32_t aws_menu_develop(void)
           case 9:
             pcb_pin();
             break;
-          case 10:
-            menu_task_telnet();
-            break;
+        case 10:
+         menu_task_telnet();
+         break;
+       case 11:
+         menu_littlefs_manager();
+        break;
       }
   }
 

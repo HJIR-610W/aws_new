@@ -279,13 +279,13 @@ int32_t setup_menu_log_reset(void)
 
   log_cnt = get_config_nvm()->log_q_cnt;
 
-  status = input_decimal("Log Count", 0, 2147483647, &log_cnt);
+  status = input_decimal("Log Count", 0, 10000, &log_cnt);
   
   if (status == MENU_OK)
   {
     nvm_set_log_cnt(log_cnt);
 
-    show_popup("Information", "log count:0");
+    show_popup("Information", "ok");
   }
 
   return status;

@@ -2428,6 +2428,12 @@
                     <name>console</name>
                     <group>
                         <name>aws_menu</name>
+                        <group>
+                            <name>littlefs_manager</name>
+                            <file>
+                                <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\littlefs_manager\lfs_manager.c</name>
+                            </file>
+                        </group>
                         <file>
                             <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.c</name>
                         </file>

@@ -1,4 +1,6 @@
 
+#include <string.h>
+
 #include "config_nvm.h"
 #include "drv_fram.h"
 #include "drv_crc.h"
@@ -6,8 +8,12 @@
 
 config_nvm_t g_config_nvm;
 
+
+
+
 void load_config_nvm(void)
 {
+
 #if 0
   uint8_t *p_start;
   uint32_t crc;
@@ -27,7 +33,7 @@ void load_config_nvm(void)
 
   #else
 
-  drv_fram_read(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(g_config_nvm));
+  drv_fram_read(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(config_nvm_t));
 #endif
 
 
@@ -43,11 +49,13 @@ void save_config_nvm(void)
 
   crc = drv_crc32_with_padding(p_start,sizeof(config_nvm_t) - sizeof(g_config_nvm.header));
 
+  g_config_nvm.header.time_stamp = 0;
   g_config_nvm.header.magicNum = CONFIG_MAGIC;
   g_config_nvm.header.crc = crc;
-  g_config_nvm.header.version = get_app_version(0,0,0,0);
+  g_config_nvm.header.version = get_app_version(NULL,NULL,NULL,NULL);
 
-  drv_fram_write(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(g_config_nvm));
+  drv_fram_write(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(config_nvm_t));
+  load_config_nvm();
 }
 
 config_nvm_t *get_config_nvm(void)
@@ -59,7 +67,8 @@ config_nvm_t *get_config_nvm(void)
 void nvm_set_log_cnt(uint32_t value)
 {
   g_config_nvm.log_q_cnt = value;
-  WRITE_NVM(log_q_cnt);
+ save_config_nvm();
+ 
 }
 
 uint32_t nvm_get_log_cnt(void)

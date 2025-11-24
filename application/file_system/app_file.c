@@ -21,7 +21,7 @@ static osSemaphoreId_t g_lfs_sem;//littlefs 파일 시스템 보호
 
 
 /* LittleFS object */
-static lfs_t lfs;
+ lfs_t lfs;
 
 typedef enum
 {

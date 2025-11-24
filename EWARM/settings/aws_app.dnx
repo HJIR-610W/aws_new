@@ -14,10 +14,10 @@
     <StLinkDriver>
         <stlinkserialNo>13004800040000393333574E</stlinkserialNo>
         <stlinkfoundProbes />
-        <CStepIntDis>_ 0</CStepIntDis>
-        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
         <stlinkResetStyle>0</stlinkResetStyle>
         <stlinkResetStrategy>0</stlinkResetStrategy>
+        <CStepIntDis>_ 0</CStepIntDis>
+        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
     </StLinkDriver>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -42,7 +42,7 @@
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
     <DebugChecksum>
-        <Checksum>4126137723</Checksum>
+        <Checksum>2474331783</Checksum>
     </DebugChecksum>
     <Disassembly>
         <MixedMode>1</MixedMode>
@@ -98,9 +98,13 @@
         <Fmt19>SDIO_TypeDef-RESPCMD	4	0</Fmt19>
         <Fmt20>SDIO_TypeDef-STA	4	0</Fmt20>
         <Fmt21>SD_HandleTypeDef-Instance	4	0</Fmt21>
-        <Fmt22>config_header_t-magicNum	4	0</Fmt22>
-        <Fmt23>int_sub_t-gpio_pin	4	0</Fmt23>
-        <Fmt24>rain_present_cfg_t-channel	3	0</Fmt24>
+        <Fmt22>config_header_t-crc	4	0</Fmt22>
+        <Fmt23>config_header_t-magicNum	4	0</Fmt23>
+        <Fmt24>config_header_t-time_stamp	4	0</Fmt24>
+        <Fmt25>config_header_t-version	4	0</Fmt25>
+        <Fmt26>config_nvm_t-log_q_cnt	3	0</Fmt26>
+        <Fmt27>int_sub_t-gpio_pin	4	0</Fmt27>
+        <Fmt28>rain_present_cfg_t-channel	3	0</Fmt28>
     </struct_types>
     <array_types>
         <Fmt0>uint16_t[10]	4	0</Fmt0>
@@ -177,12 +181,6 @@
         <ShowTimeSum>1</ShowTimeSum>
         <SumSortOrder>0</SumSortOrder>
     </EventLog>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Count>0</Count>
-    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -192,10 +190,6 @@
         <LogFile>_ ""</LogFile>
         <Category>_ 0</Category>
     </LogFile>
-    <Aliases>
-        <Count>0</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>3</Mode>
@@ -209,4 +203,16 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Application\app\config\config_nvm.c}.0.1" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\application\app\tasks\console\aws_menu\littlefs_manager\lfs_manager.c}.86.7" 0 0 1 "" 0 "" 0</Bp1>
+        <Count>2</Count>
+    </Breakpoints2>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
 </settings>

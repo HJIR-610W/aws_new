@@ -68,8 +68,8 @@ int32_t save_log(const char *log)
 
     totalBytes = index * LOG_LEN_MAX;  // 저장된 로그 바이트
 
-  //  err = write_file((char *)kSystem_log_path,(uint8_t*)buff,strlen(buff),totalBytes);
-    err = lfs_write_file((char *)kSystem_log_path,(uint8_t*)buff,strlen(buff),totalBytes);
+    err = write_file((char *)kSystem_log_path,(uint8_t*)buff,strlen(buff),totalBytes);
+  //  err = lfs_write_file((char *)kSystem_log_path,(uint8_t*)buff,strlen(buff),totalBytes);
     logCnt++;
     logging_set_logCnt(logCnt);
 
@@ -90,8 +90,8 @@ int logging_read_log(uint32_t log_q_cnt, sysLog_t *loggingMsg)
   memset(loggingMsg,0,sizeof(log_q_cnt));
   offset = (log_q_cnt - 1) * LOG_LEN_MAX;
 
-  //fret = read_file((char *)kSystem_log_path, (uint8_t *)loggingMsg->msg, sizeof(loggingMsg->msg),offset);
-  fret = lfs_read_file((char *)kSystem_log_path, (uint8_t *)loggingMsg->msg, sizeof(loggingMsg->msg),offset);
+ fret = read_file((char *)kSystem_log_path, (uint8_t *)loggingMsg->msg, sizeof(loggingMsg->msg),offset);
+ // fret = lfs_read_file((char *)kSystem_log_path, (uint8_t *)loggingMsg->msg, sizeof(loggingMsg->msg),offset);
 
   
   for(int i = 0 ; i < sizeof(loggingMsg->msg);i++)
