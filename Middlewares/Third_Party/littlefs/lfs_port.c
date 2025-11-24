@@ -107,11 +107,11 @@ int lfs_port_init(void)
 
     /* Block device configuration */
     lfs_cfg.read_size = 16;
-    lfs_cfg.prog_size = at45db_chip_info.current_page_size;
-    lfs_cfg.block_size = at45db_chip_info.block_size;
-    lfs_cfg.block_count = at45db_chip_info.total_capacity_bytes/at45db_chip_info.block_size;
+    lfs_cfg.prog_size = at45db_chip_info.device_info.page_size_binary;
+    lfs_cfg.block_size = at45db_chip_info.device_info.block_size;
+    lfs_cfg.block_count = at45db_chip_info.device_info.capacity_bits/at45db_chip_info.device_info.block_size/8;
     lfs_cfg.block_cycles = 500;
-    lfs_cfg.cache_size = at45db_chip_info.current_page_size;
+    lfs_cfg.cache_size = at45db_chip_info.device_info.page_size_binary;
     lfs_cfg.lookahead_size = 16;
 
     /* Buffers */

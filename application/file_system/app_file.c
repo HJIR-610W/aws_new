@@ -712,6 +712,9 @@ int32_t lfs_write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t off
   return err;
 }
 
+
+
+
 int32_t lfs_read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
 {
   int err;
@@ -1019,10 +1022,9 @@ void filesystem_init(void)
   {
     io_printf("[LFS] Mount successful\r\n");
 
-    // LittleFS 파일시스템 정보 출력
     printf_lfs_info();
 
-    // 루트 디렉토리 목록 출력
+
     printf_lfs_directory("/");
 
     // 테스트 (필요시 주석 처리)
@@ -1035,10 +1037,10 @@ void filesystem_init(void)
   
 
 
-
-
 }
 
+
+//littlefs 테스트 코드 
 int32_t test_lfs(const char *path, uint32_t fileSize)
 {
   int err;
