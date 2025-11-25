@@ -20,6 +20,7 @@
 *.dbgdt
 *.dnx
 *.crun
+post_build.log
 # 빌드 폴더
 Debug/
 Release/
