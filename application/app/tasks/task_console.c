@@ -4,6 +4,7 @@
 #include "pcb_define.h"
 #include "app_console.h"
 #include "app_console_test.h"
+#include "app_alarm_logging.h"
 #include "app_version.h"
 #include "boot_version.h"
 #include "cmsis_os.h"
@@ -121,6 +122,8 @@ void consoleTask(void *arg)
   {
     io_printf("%s\r\n",buffer);
   }
+  
+  io_printf("alarm log count:%d\r\n",alarm_get_log_count());
 
     // io_printf(VT100_CLEAR_SCREEN);
     // io_printf(VT100_CURSOR_HOME);

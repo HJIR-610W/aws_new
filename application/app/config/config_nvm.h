@@ -8,6 +8,7 @@ typedef struct sensor_nvm_S
 {
   config_header_t header;
   uint32_t log_q_cnt;
+  uint32_t log_alarm_count;
 } config_nvm_t;
 
 void load_config_nvm(void);
@@ -20,5 +21,6 @@ void save_config_nvm(void);
 config_nvm_t *get_config_nvm(void);
 void nvm_set_log_cnt(uint32_t value);
 uint32_t nvm_get_log_cnt(void);
-
+void nvm_set_alarm_count(uint32_t value);
+uint32_t nvm_get_alarm_count(void);
 #endif

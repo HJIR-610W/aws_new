@@ -16,6 +16,7 @@
 #include "drv_rtc.h"
 #include "drv_system.h"
 #include "dev_charger.h"
+#include "task_logging.h"
 
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "systemTask",
@@ -66,6 +67,7 @@ void check_sd_card(void)
     if (now_sd_inserted)
     {
       ERROR_PRINTF("SD card inserted\r\n");
+      log_printf(L_ERROR,"SD card inserted");
       OS_PEND_SEM(get_file_sem(), osWaitForever);
       MX_FATFS_DeInit();
       hal_sd_deinit();
@@ -78,6 +80,7 @@ void check_sd_card(void)
     else
     {
       ERROR_PRINTF("SD card removed\r\n");
+      log_printf(L_ERROR,"SD card removed");
       OS_PEND_SEM(get_file_sem(), osWaitForever);
       MX_FATFS_DeInit();
       hal_sd_deinit();

@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include "app_logging.h"
+#include "app_alarm_logging.h"
 #include "app_key.h"
 #include "app_screen.h"
 #include "app_sensor.h"
@@ -16,7 +17,12 @@
 #include "util_time.h"
 
 #define LOG_VIEW_ROW 7
-int32_t menu_view_log(void)
+
+#define SYSTEM_LOG 0
+#define ALARM_LOG 1
+
+
+int32_t menu_view_log(int log_type)
 {
   char buffer[22];
   int32_t key;
@@ -34,8 +40,18 @@ int32_t menu_view_log(void)
   lcd_win.chunk_scroll_enable = 1;
 
 
+  switch(log_type)
+  {
+    case SYSTEM_LOG:
+      dec = logging_get_log_count()%LOG_COUNT_MAX;
+      break;
+    break;
+    case ALARM_LOG:
+      dec = alarm_get_log_count()%ALARM_LOG_COUNT_MAX;
+    break;
+  }
 
-  dec = logging_get_log_count();
+
   status = input_decimal("Log count", 0, LOG_COUNT_MAX, &dec);
   if(status !=MENU_OK)
     return status;
@@ -48,7 +64,17 @@ int32_t menu_view_log(void)
       screen_clear();
       update = 0;
       // 2025-01-01 01:01:03,INFO,Boot: SW reset
+  switch(log_type)
+  {
+    case SYSTEM_LOG:
       logging_read_log(dec, &log);
+      break;
+    break;
+    case ALARM_LOG:
+      alarm_read_log(dec, &log);
+    break;
+  }
+
 
       if(strlen(log.msg)==0)
       {
@@ -97,6 +123,10 @@ END_LOOP:
     {
         dec--;
         update = 1;
+        if(dec<1)
+        {
+          dec = 1;
+        }
     }
     else if (key == KEY_CODE_DOWN)
     {
@@ -109,13 +139,13 @@ END_LOOP:
 
 }
 
-#define DEV_LOG 0
 
 
 void draw_menu_developer_page(screen_menu_t *p_win)
 {
   screen_menu_start(p_win);
-  screen_menu_printf(p_win, DEV_LOG, "System log");
+  screen_menu_printf(p_win, SYSTEM_LOG, "System log");
+  screen_menu_printf(p_win, ALARM_LOG, "Alarm log");
   screen_menu_clear(p_win);
 }
 
@@ -150,8 +180,11 @@ int32_t setup_menu_developer(void)
 
       switch (menu.index_list[index])
       {
-      case DEV_LOG:
-      status = menu_view_log();
+      case SYSTEM_LOG:
+      status = menu_view_log(SYSTEM_LOG);
+      break;
+      case ALARM_LOG:
+      status = menu_view_log(ALARM_LOG);
       break;
       default:
         break;

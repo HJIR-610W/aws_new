@@ -24,7 +24,7 @@ void test_flash(void)
 
 
   // 읽기
-  drv_flash_read( TEST_ADDR, read_data, sizeof(read_data), sizeof(read_data));
+  drv_flash_read( TEST_ADDR, read_data,  sizeof(read_data));
 
 
   // 비교

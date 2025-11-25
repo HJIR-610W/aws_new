@@ -14,5 +14,8 @@
   },
   "workbench": {
     "path": "C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 8.4"
+  },
+  "files.exclude": {
+    "**/release": true
   }
 }

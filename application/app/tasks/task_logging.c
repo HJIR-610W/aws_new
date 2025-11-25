@@ -10,6 +10,7 @@
 #include "app_dataLogging.h"
 #include "app_file.h"
 #include "app_logging.h"
+#include "app_alarm_logging.h"
 #include "dev_io.h"
 #include "fatfs.h"
 #include "old_aws_define.h"
@@ -18,6 +19,9 @@
 #include "util_time.h"
 #include "task_menu.h"
 #include "task_wdt.h"
+
+
+
 typedef enum logging_cmd_e
 {
   eLOGGING_LOG,      // 로깅 task로 로그를 전송 할 때 사용
@@ -218,7 +222,14 @@ void loggingTask(void *arg)
          switch(logging.cmd)
         {
           case eLOGGING_LOG:
-            err = save_log((char *)logging.data);
+            if(strncmp(&logging.data[20],"FATL",4)==0||strncmp(&logging.data[20],"ERRO",4)==0)
+            {
+              err = alarm_save_log((char *)logging.data);
+            }
+            else
+            {
+              err = save_log((char *)logging.data);
+            }
             if(err)
             {
               io_printf("log err:%d\r\n",err);

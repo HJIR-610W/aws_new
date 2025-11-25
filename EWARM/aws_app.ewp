@@ -2502,6 +2502,9 @@
                 <group>
                     <name>logging</name>
                     <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\logging\app_alarm_logging.c</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\application\app\tasks\logging\app_dataLogging.c</name>
                     </file>
                     <file>
@@ -2509,6 +2512,9 @@
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\app\tasks\logging\data_logging.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\logging\logging_define.h</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\app\tasks\logging\utile_data.c</name>

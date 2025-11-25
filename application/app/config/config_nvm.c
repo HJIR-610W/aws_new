@@ -75,3 +75,15 @@ uint32_t nvm_get_log_cnt(void)
 { 
   return g_config_nvm.log_q_cnt; 
 };
+
+void nvm_set_alarm_count(uint32_t value)
+{
+  g_config_nvm.log_alarm_count = value;
+ save_config_nvm();
+ 
+}
+
+uint32_t nvm_get_alarm_count(void)
+{ 
+  return g_config_nvm.log_alarm_count; 
+};

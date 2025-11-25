@@ -1,8 +1,15 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {}
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/release": true,
+			"**/settings":true,
+			"**/mbedTLS":true,
+            "**/EWARM":true
+        }
+    }
 }

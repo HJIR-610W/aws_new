@@ -80,13 +80,13 @@ void print_flash(uint32_t start, uint32_t size, uint32_t width)
 
   for (i = 0; i < quot; i++)
   {
-    drv_flash_read(start + i * 512, buff, 512, 512);
+    drv_flash_read(start + i * 512, buff,  512);
     LOG_MEM(buff, sizeof(buff), start + i * 512, width);
   }
 
   if (rem)
   {
-    drv_flash_read(start + i * 512, buff, 512, rem);
+    drv_flash_read(start + i * 512, buff,  rem);
     LOG_MEM(buff, rem, start + i * 512, width);
   }
 }

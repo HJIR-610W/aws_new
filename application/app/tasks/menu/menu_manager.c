@@ -18,6 +18,7 @@
 #include "util_time.h"
 #include "view_driver.h"
 #include "app_logging.h"
+#include "app_alarm_logging.h"
 
 #include "sensor_data\rain_data.h"
 #include "sensor_data\sunshine_data.h"
@@ -38,6 +39,7 @@ extern void config_hj_reset(void);
 #define CONFIG_MENU_INIT        1
 #define CONFIG_MENU_BACKUP      2
 #define CONFIG_MENU_LOG_RESET   3
+#define CONFIG_MENU_ALARM_LOG_RESET   4
 
 #define BACKUP_MENU_SAVE        0
 #define BACKUP_MENU_RESTORE     1
@@ -59,6 +61,7 @@ void draw_menu_config_menu(screen_menu_t* p_win)
   screen_menu_printf(p_win, CONFIG_MENU_INIT, "Factory Reset");
   screen_menu_printf(p_win, CONFIG_MENU_BACKUP, "Backup Config");
   screen_menu_printf(p_win, CONFIG_MENU_LOG_RESET, "Log Count Reset");
+  screen_menu_printf(p_win, CONFIG_MENU_ALARM_LOG_RESET, "Alarm Count Reset");
   screen_menu_clear(p_win);
 }
 
@@ -279,7 +282,7 @@ int32_t setup_menu_log_reset(void)
 
   log_cnt = get_config_nvm()->log_q_cnt;
 
-  status = input_decimal("Log Count", 0, 10000, &log_cnt);
+  status = input_decimal("Log Count", 0, LOG_COUNT_MAX, &log_cnt);
   
   if (status == MENU_OK)
   {
@@ -290,6 +293,26 @@ int32_t setup_menu_log_reset(void)
 
   return status;
 }
+int32_t setup_menu_alarm_log_reset(void)
+{
+  int32_t log_cnt;
+  int32_t status;
+
+
+  log_cnt = get_config_nvm()->log_alarm_count;
+
+  status = input_decimal("Alarm Log Count", 0, ALARM_LOG_COUNT_MAX, &log_cnt);
+  
+  if (status == MENU_OK)
+  {
+    nvm_set_alarm_count(log_cnt);
+
+    show_popup("Information", "ok");
+  }
+
+  return status;
+}
+
 //설정변경
 int32_t setup_menu_config(void)
 {
@@ -330,7 +353,10 @@ int32_t setup_menu_config(void)
         case CONFIG_MENU_LOG_RESET:
           status = setup_menu_log_reset();
           break;
-
+        case CONFIG_MENU_ALARM_LOG_RESET:
+          status = setup_menu_alarm_log_reset();
+          break;
+          
         default:
           break;
       }
