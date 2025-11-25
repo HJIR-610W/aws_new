@@ -52,7 +52,7 @@ int32_t menu_view_log(int log_type)
   }
 
 
-  status = input_decimal("Log count", 0, LOG_COUNT_MAX, &dec);
+  status = input_decimal("Log count", 1, LOG_COUNT_MAX, &dec);
   if(status !=MENU_OK)
     return status;
 
