@@ -22,7 +22,7 @@ FOR %%F IN ("%OUTPUT_BIN_FILE%") DO (
 )
 
 REM --- 4. 로그 및 명령 실행 ---
-(
+
 echo =======================================================
 echo [BIN Export] Creating final BIN file
 echo Input File : %TARGET_FILE%
@@ -55,6 +55,6 @@ popd
 echo =======================================================
 echo [Post-build completed]
 echo =======================================================
-) >> "%LOG_FILE%" 2>&1
+
 
 exit 0
