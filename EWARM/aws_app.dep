@@ -128,7 +128,7 @@
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\user_diskio.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\core_json.h</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\bsp_driver_sd.h</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_http_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_http_server.h</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\user_diskio.h</file>
             <file>$PROJ_DIR$\..\application\communications\lwip\app\lwip.h</file>
             <file>$PROJ_DIR$\..\application\communications\ethernet\ping_callback.c</file>
@@ -191,7 +191,7 @@
             <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
-            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</file>
             <file>$PROJ_DIR$\..\application\os_user_def.h</file>
@@ -739,7 +739,7 @@
             <file>$PROJ_DIR$\not_use_lcd\Obj\util_crc16_ccitt.xcl</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\stm32f4xx_hal_i2c.xcl</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\driver_lcd.xcl</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\bsp_spi.o</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\task_wdt.xcl</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\hj_temperature.xcl</file>
@@ -763,7 +763,7 @@
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\bsp_frequency.xcl</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\task_ethernet.xcl</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\test_eth.o</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\bsp_interrupt.xcl</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\bsp_iwdg.o</file>
@@ -1298,7 +1298,7 @@
             <file>$PROJ_DIR$\not_use_lcd\Obj\app_charger.xcl</file>
             <file>$PROJ_DIR$\..\Application\app\config\config_adc.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\list.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\timeouts.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\timers.__cstat.et</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\ecp.o</file>
@@ -1322,7 +1322,7 @@
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_adc.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\usbd_conf.o</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\terminal_bridge.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Product_stdlib.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rtc.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\menu_offset.o</file>
@@ -1375,7 +1375,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\pbuf.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\croutine.xcl</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\system_stm32f4xx.o</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\drv_frequency.o</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver_adc_define.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\hj_huminity.o</file>
@@ -1494,7 +1494,7 @@
             <file>$PROJ_DIR$\not_use_lcd\Obj\fsm.__cstat.et</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\udp.xcl</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\def.__cstat.et</file>
-            <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\humidity.__cstat.et</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\ff_gen_drv.h</file>
             <file>$PROJ_DIR$\..\application\app\test\parser\hart_parser.h</file>
@@ -1522,7 +1522,7 @@
             <file>$PROJ_DIR$\..\drivers\CMSIS\Include\core_cm4.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\tasks.o</file>
             <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\config_nvm.o</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_sd.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\stm32f4xx_hal_rtc.o</file>
@@ -1852,7 +1852,7 @@
             <file>$PROJ_DIR$\not_use_lcd\Obj\driver.o</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\menu_admin.__cstat.et</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\parse_aws.__cstat.et</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\stm32f4xx_hal_uart.o</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\hj_temperature.__cstat.et</file>
             <file>$PROJ_DIR$\not_use_lcd\Obj\stm32f4xx_hal_i2c.__cstat.et</file>
@@ -11220,7 +11220,7 @@
             <file>$PROJ_DIR$\..\Application\file_system\fatfs\target\user_diskio.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\core_json.h</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\bsp_driver_sd.h</file>
-            <file>$PROJ_DIR$\..\Application\http_server\task_http_server.h</file>
+            <file>$PROJ_DIR$\..\application\http_server\task_http_server.h</file>
             <file>$PROJ_DIR$\..\application\file_system\fatfs\target\user_diskio.h</file>
             <file>$PROJ_DIR$\..\application\communications\lwip\app\lwip.h</file>
             <file>$PROJ_DIR$\..\application\communications\ethernet\ping_callback.c</file>
@@ -11283,7 +11283,7 @@
             <file>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</file>
             <file>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</file>
             <file>$PROJ_DIR$\..\application\io\dev_io.h</file>
-            <file>$PROJ_DIR$\..\Application\update\update_fw.h</file>
+            <file>$PROJ_DIR$\..\application\update\update_fw.h</file>
             <file>$PROJ_DIR$\..\Application\main.c</file>
             <file>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</file>
             <file>$PROJ_DIR$\..\application\os_user_def.h</file>
@@ -11622,12 +11622,12 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\etharp.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_logging.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\memp.h</file>
-            <file>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.h</file>
+            <file>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\raw.h</file>
             <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
             <file>$PROJ_DIR$\..\application\io\cli\console_scanf.h</file>
             <file>$PROJ_DIR$\..\drivers\bsp\bsp_rs485.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_system.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_system.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt_priv.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\apps\http\httpd_structs.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\include\queue.h</file>
@@ -11788,7 +11788,7 @@
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_snowfall_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\Components\rtc\built_.h</file>
             <file>$PROJ_DIR$\..\Application\app\config\config_adc.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_measure.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_measure.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\timeouts.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\netif.h</file>
             <file>$PROJ_DIR$\..\Middlewares\STM32_USB_Device_Library\Core\Inc\usbd_def.h</file>
@@ -11797,7 +11797,7 @@
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\Legacy\stm32_hal_legacy.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\drv_power.h</file>
             <file>$PROJ_DIR$\..\drivers\devices\sensors\general\general_adc.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_logging.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_logging.h</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Product_stdlib.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_rtc.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal.h</file>
@@ -11819,7 +11819,7 @@
             <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_menu_data.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\pbuf.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_menu.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_menu.h</file>
             <file>$PROJ_DIR$\..\drivers\driver\driver_adc_define.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2\cmsis_os2.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\logging\app_dataLogging.h</file>
@@ -11852,7 +11852,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\lwip\tcpbase.h</file>
             <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
             <file>$PROJ_DIR$\..\application\app\test\test_power.h</file>
-            <file>$PROJ_DIR$\..\application\app\Protocols\divas\divas_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\Application\app\protocols\divas\divas_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\FatFs\src\ff_gen_drv.h</file>
             <file>$PROJ_DIR$\..\application\app\test\parser\hart_parser.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_pcd_ex.h</file>
@@ -11867,7 +11867,7 @@
             <file>$PROJ_DIR$\..\Middlewares\Third_Party\LwIP\src\include\netif\ppp\ppp_opts.h</file>
             <file>$PROJ_DIR$\..\drivers\CMSIS\Include\core_cm4.h</file>
             <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
-            <file>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.h</file>
+            <file>$PROJ_DIR$\..\application\app\tasks\task_isrEvent.h</file>
             <file>$PROJ_DIR$\..\drivers\STM32F4xx_HAL_driver\Inc\stm32f4xx_hal_sd.h</file>
             <file>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.h</file>
             <file>$PROJ_DIR$\..\Application\app\test\test_filesystem.h</file>
@@ -11952,7 +11952,7 @@
             <file>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.h</file>
             <file>$PROJ_DIR$\stm32f407xx_flash.icf</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.h</file>
-            <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.h</file>
+            <file>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler.h</file>
             <file>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.h</file>
             <file>$PROJ_DIR$\..\application\app\tasks\task_start.h</file>
@@ -13598,7 +13598,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 757 529 543 771 755 736 1008 602 795 582 107 102 819 872 116 705 573 837 840 799 597 770 816 677 662 778 803 621 699 848 588 650 673 1017 829 751 805 867 1035 647 578 697 1012 734 822 669 680 843 862 835 804 1019 704 640 773 791 766 732 689 589 667 823 760 124 103 232 600 706 654 164 793 717 569 811 832 633 765 610 572 726 758 707 117 126 570 150 762 551 249 144 304 721 684 147 532 838 750 316 744 792 645 831 11 507 852 748 527 155 615 857 188 108 510 568 641 716 187 672 702 525 2111 143 661 687 581 177 157 142</file>
+                    <file> 757 529 543 771 755 736 1008 602 795 582 107 102 819 872 116 705 573 837 840 799 597 770 816 677 662 778 803 621 699 848 588 650 673 1017 829 751 805 867 1035 647 578 697 1012 734 822 669 680 843 862 835 804 1019 704 640 773 791 766 732 689 589 667 823 760 124 103 232 600 706 654 164 793 717 569 811 832 633 765 610 572 726 758 707 117 126 2110 2111 570 150 762 551 249 144 304 721 684 147 532 838 750 316 744 792 645 831 11 507 852 748 527 155 615 857 188 108 510 568 641 716 187 672 702 525 143 661 687 581 177 157 142</file>
                 </tool>
             </inputs>
         </file>
@@ -14609,7 +14609,7 @@
             <inputs>
                 <tool>
                     <name>ICCARM</name>
-                    <file> 536 529 543 771 755 736 1008 852 795 602 582 108 510 568 641 684 721 801 629 854 819 872 116 705 573 837 840 799 597 770 816 677 662 778 803 621 699 848 588 650 673 1017 829 751 805 867 1035 647 578 697 1012 734 822 669 680 843 862 835 804 1019 704 640 773 791 766 732 689 589 667 823 760 124 103 232 600 706 654 164 793 717 569 811 832 633 765 610 572 726 727 107 102 758 707 117 126</file>
+                    <file> 536 529 543 771 755 736 1008 852 795 602 582 108 510 568 641 684 721 801 629 854 819 872 116 705 573 837 840 799 597 770 816 677 662 778 803 621 699 848 588 650 673 1017 829 751 805 867 1035 647 578 697 1012 734 822 669 680 843 862 835 804 1019 704 640 773 791 766 732 689 589 667 823 760 124 103 232 600 706 654 164 793 717 569 811 832 633 765 610 572 726 727 107 102 758 707 117 126 702</file>
                 </tool>
             </inputs>
         </file>

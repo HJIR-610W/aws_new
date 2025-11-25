@@ -13,7 +13,7 @@
 #include "app_dataLogging.h"
 
 #include "app_file.h"
-
+#include "task_logging.h"
 #define TEMP_BUFF_SIZE 16384
 // 1분마다 저장된 1년치 일조 데이터 읽기
 int32_t read_sunshine_1min(uint16_t year, uint16_t *p_buffer, uint32_t read_size)
@@ -59,12 +59,13 @@ int32_t read_sunshine_1min(uint16_t year, uint16_t *p_buffer, uint32_t read_size
 
   fret = read_file(path, (uint8_t *)p_buffer, read_size, 0);
 
-  if (fret == FR_OK)
+  if (fret != FR_OK)
   {
-    return 0;
+    log_printf(L_ERROR,"read sunshine file failed");
+    return 1;
   }
 
-  return 1;
+  return 0;
 #endif
 }
 

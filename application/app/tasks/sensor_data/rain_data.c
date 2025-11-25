@@ -55,21 +55,21 @@ int32_t read_rain_1min(uint16_t year, uint16_t *p_buffer, uint32_t read_size)
   }
 #else
   char path[50];
-  FRESULT fret;
-
+  FRESULT fret=FR_OK;
 
   make_rain_1min_path(year, path, sizeof(path));
 
   fret = read_file(path, (uint8_t *)p_buffer, read_size, 0);
 
-  if (fret == FR_OK)
+  if (fret != FR_OK)
   {
-    return 0;
+    log_printf(L_ERROR,"read rain file failed");
+    return 1;
   }
 
 #endif
 
-  return 1;
+  return 0;
 }
 
 

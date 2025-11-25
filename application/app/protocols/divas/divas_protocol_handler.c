@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include "app_file.h"
+#include "app_alarm_logging.h"
+
 #include "aws_monitor.h"
 #include "config_app.h"
 #include "config_nvm.h"
@@ -483,8 +485,11 @@ uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame)
   {
     uint16_t q_start;
     uint16_t cnt;
+    uint8_t log_type;
   } request;
 #pragma pack(pop)
+enum {SYSTEM_LOG=0,ALARM_LOG=1};
+
   int status;
   memcpy(&request, &rx_data[0], sizeof(request));
 
@@ -501,9 +506,19 @@ uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame)
       
       tx_data[cnt]= ASCII_ACK;
       cnt++;
+
     for (int i = 0; i < request.cnt; i++)
     {
+      switch(request.log_type)
+      {
+      case ALARM_LOG://에러
+      status = alarm_read_log(request.q_start + i, (system_log_t*)&tx_data[1+i * sizeof(system_log_t)]);
+        case SYSTEM_LOG://시스템
+        default:
       status = logging_read_log(request.q_start + i, (system_log_t*)&tx_data[1+i * sizeof(system_log_t)]);
+      break;
+    }
+
       if (status != 0)
       {
         cnt = 0;
