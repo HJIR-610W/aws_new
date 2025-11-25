@@ -22,7 +22,7 @@ int32_t menu_view_log(void)
   int32_t key;
   int32_t status;
   screen_page_t lcd_win;
-  sysLog_t log;
+  system_log_t log;
   int update = 1;
   int dec;
   int len;
@@ -35,7 +35,7 @@ int32_t menu_view_log(void)
 
 
 
-  dec = logging_get_logCnt();
+  dec = logging_get_log_count();
   status = input_decimal("Log count", 0, LOG_COUNT_MAX, &dec);
   if(status !=MENU_OK)
     return status;

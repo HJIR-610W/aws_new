@@ -491,7 +491,7 @@ uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame)
   do
   {
   
-      if (request.cnt * sizeof(sysLog_t) >= (KMA_TX_BUFFER_SIZE - DIVAS_FRAME_OVERHEAD - 1))
+      if (request.cnt * sizeof(system_log_t) >= (KMA_TX_BUFFER_SIZE - DIVAS_FRAME_OVERHEAD - 1))
       {
         cnt = 0;
         tx_data[cnt++] = ASCII_NAK;
@@ -503,7 +503,7 @@ uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame)
       cnt++;
     for (int i = 0; i < request.cnt; i++)
     {
-      status = logging_read_log(request.q_start + i, (sysLog_t*)&tx_data[1+i * sizeof(sysLog_t)]);
+      status = logging_read_log(request.q_start + i, (system_log_t*)&tx_data[1+i * sizeof(system_log_t)]);
       if (status != 0)
       {
         cnt = 0;
@@ -511,7 +511,7 @@ uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame)
         tx_data[cnt++] = status;
         break;
       }
-      cnt += sizeof(sysLog_t);
+      cnt += sizeof(system_log_t);
     }
   }while(0);
 

@@ -191,13 +191,13 @@ int32_t menu_developer_sensor_config(void)
 int32_t menu_developer_logging(void)
 {
   int32_t startCnt, endCnt;
-  sysLog_t log;
+  system_log_t log;
   int32_t cnt;
   //int32_t year, month, day, hour, min, sec;
 
   do
   {
-    io_printf("로그 시작 카운트:%d\r\n", logging_get_logCnt());
+    io_printf("로그 시작 카운트:%d\r\n", logging_get_log_count());
     io_printf("start,end>>");
 
     cnt = console_scanf("%d,%d,%d", &startCnt, &endCnt);
