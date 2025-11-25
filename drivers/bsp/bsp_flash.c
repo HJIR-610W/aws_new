@@ -7,9 +7,9 @@ void bsp_flash_init(void)
 }
 int32_t bsp_flash_write(uint32_t offset, uint8_t* pData, uint32_t dataLen)
 {
-  return at45db_write_adv( offset, pData,  dataLen);
+  return at45db_write( offset, pData,  dataLen);
 }
 void bsp_flash_read(uint32_t offset, uint8_t* pBuff,  uint32_t readLen)
 {
-  at45db_read_adv( offset,  pBuff,    readLen);
+  at45db_read( offset,  pBuff,    readLen);
 }

@@ -82,8 +82,8 @@ typedef struct ad45db_instance_s
 
 
 
-int32_t at45db_write(uint32_t offset, uint8_t *p_data, uint32_t data_len);
-void at45db_read(uint32_t offset, uint8_t *p_buff, uint32_t read_len);
+
+
 void at45db_read_page(uint32_t read_addr, uint8_t *read_buff);
 void at45db_write_page(uint32_t write_addr, uint8_t *write_buff);
 static void at45db_delay(uint32_t usec);
@@ -94,7 +94,7 @@ static void at45db_reg_read(uint8_t cmd, uint8_t *info, uint8_t len);
 static void at45db_reg_write(uint8_t *cmd);
 static void at45db_wait_ready(void);
 static void at45db_memory_to_buffer(uint8_t buffer_choice, uint32_t page);
-static void at45db_read_buffer(uint8_t buffer_choice, uint32_t address, char *string, uint16_t buf_len);
+static void at45db_read_buffer(uint8_t buffer_choice, uint32_t address, uint8_t *string, uint16_t buf_len);
 at45db_result_t at45db_find_device_info(uint8_t density_code, at45db_device_info_t *device_info);
 at45db_result_t at45db_parse_chip_info(uint8_t *chip_info, at45db_chip_info_t *info);
 
@@ -354,7 +354,7 @@ static void at45db_memory_to_buffer(uint8_t buffer_choice, uint32_t page)
  * @param string: 읽은 데이터를 저장할 버퍼
  * @param buf_len: 읽을 데이터 길이
  */
-static void at45db_read_buffer( uint8_t buffer_choice, uint32_t address, char *string, uint16_t buf_len)
+static void at45db_read_buffer( uint8_t buffer_choice, uint32_t address, uint8_t *string, uint16_t buf_len)
 {
   uint8_t cmd_buff[5];
 
@@ -394,7 +394,7 @@ void at45db_read_page(uint32_t read_addr, uint8_t *read_buff)
 
   at45db_memory_to_buffer(AT45DB_BUFFER1, read_addr);
   at45db_wait_ready();
-  at45db_read_buffer(AT45DB_BUFFER1, 0, (char *)read_buff, page_size);
+  at45db_read_buffer(AT45DB_BUFFER1, 0, read_buff, page_size);
 }
 
 /**
@@ -481,158 +481,6 @@ at45db_result_t at45db_get_chip_info(at45db_chip_info_t *info)
   return AT45DB_OK;
 }
 
-/**
- * @brief RAM 접근처럼 플래시 읽기
- * @param offset: 읽기 시작 오프셋
- * @param p_buff: 읽은 데이터를 저장할 버퍼
- * @param read_len: 읽을 데이터 길이
- */
-void at45db_read(uint32_t offset, uint8_t *p_buff, uint32_t read_len)
-{
-  const uint32_t page_size = at45db_inst.chip_info.current_page_size;
-  uint32_t page_quot;
-  uint32_t page_rem;
-  uint32_t remain;
-  uint32_t read_cnt = 0;
-  uint32_t first_read;
-  uint8_t buff[AT45DB_MAX_PAGE_SIZE];
-
-  /* 매개변수 유효성 검사 */
-  if (p_buff == NULL || read_len == 0)
-  {
-    return;
-  }
-
-  /* 초기화 상태 체크 */
-  if (!at45db_inst.chip_info.is_initialized)
-  {
-    DEBUG_PRINTF("Error: AT45DB not initialized\r\n");
-    return;
-  }
-
-  /* 경계 체크 */
-  if (offset >= at45db_inst.chip_info.total_capacity_bytes ||
-      (offset + read_len) > at45db_inst.chip_info.total_capacity_bytes)
-  {
-    DEBUG_PRINTF("Error: Read offset out of range (offset=0x%08lX, len=%lu)\r\n",
-                 offset, read_len);
-    return;
-  }
-
-  page_quot = offset / page_size;
-  page_rem = offset % page_size;
-  remain = page_size - page_rem;
-
-  OS_PEND_SEM(at45db_inst.sem, osWaitForever);
-
-  // 경우 1: 첫 페이지 부분 읽기 (페이지 정렬되지 않은 경우)
-  if (page_rem > 0)
-  {
-    at45db_read_page( page_quot, buff);
-    first_read = (read_len < remain) ? read_len : remain;
-    memcpy(&p_buff[0], &buff[page_rem], first_read);
-    page_quot++;
-    read_cnt += first_read;
-  }
-
-  // 경우 2: 전체 페이지 읽기
-  while ((read_len - read_cnt) >= page_size)
-  {
-    at45db_read_page( page_quot, buff);
-    memcpy(&p_buff[read_cnt], buff, page_size);
-    page_quot++;
-    read_cnt += page_size;
-  }
-
-  // 경우 3: 마지막 페이지 부분 읽기 (남은 데이터가 있는 경우)
-  if (read_len > read_cnt)
-  {
-    at45db_read_page( page_quot, buff);
-    memcpy(&p_buff[read_cnt], buff, read_len - read_cnt);
-  }
-
-  OS_POST_SEM(at45db_inst.sem);
-}
-
-
-
-/**
- * @brief RAM 접근처럼 플래시 쓰기
- * @param offset: 쓰기 시작 오프셋
- * @param p_data: 쓸 데이터
- * @param data_len: 쓸 데이터 길이
- * @return 0: 성공
- */
-int32_t at45db_write(uint32_t offset, uint8_t *p_data, uint32_t data_len)
-{
-  const uint32_t page_size = at45db_inst.chip_info.current_page_size;
-  uint32_t page_quot;
-  uint32_t page_rem;
-  uint32_t remain;
-  uint32_t written = 0;
-  uint32_t first_write;
-  uint8_t buff[AT45DB_MAX_PAGE_SIZE];
-
-  /* 매개변수 유효성 검사 */
-  if (p_data == NULL || data_len == 0)
-  {
-    return -1;
-  }
-
-  /* 초기화 상태 체크 */
-  if (!at45db_inst.chip_info.is_initialized)
-  {
-    DEBUG_PRINTF("Error: AT45DB not initialized\r\n");
-    return -1;
-  }
-
-  /* 경계 체크 */
-  if (offset >= at45db_inst.chip_info.total_capacity_bytes ||
-      (offset + data_len) > at45db_inst.chip_info.total_capacity_bytes)
-  {
-    DEBUG_PRINTF("Error: Write offset out of range (offset=0x%08lX, len=%lu)\r\n",
-                 offset, data_len);
-    return -1;
-  }
-
-  page_quot = offset / page_size;
-  page_rem = offset % page_size;
-  remain = page_size - page_rem;
-
-  OS_PEND_SEM(at45db_inst.sem, osWaitForever);
-
-  // 시작 위치가 페이지 정렬되지 않은 경우
-  if (page_rem > 0)
-  {
-    at45db_read_page( page_quot, buff);
-    first_write = (data_len < remain) ? data_len : remain;
-    memcpy(&buff[page_rem], &p_data[0], first_write);
-    at45db_write_page( page_quot, buff);
-    page_quot++;
-    written += first_write;
-  }
-
-  // 전체 페이지 쓰기
-  while ((data_len - written) >= page_size)
-  {
-    memcpy(buff, &p_data[written], page_size);
-    at45db_write_page( page_quot, buff);
-    page_quot++;
-    written += page_size;
-    osDelay(1);
-  }
-
-  // 마지막 페이지 부분 쓰기 (남은 데이터가 있는 경우)
-  if (data_len > written)
-  {
-    at45db_read_page( page_quot, buff);
-    memcpy(buff, &p_data[written], data_len - written);
-    at45db_write_page( page_quot, buff);
-  }
-
-  OS_POST_SEM(at45db_inst.sem);
-  return 0;
-}
 
 //=============================================================================
 // 유틸리티 함수 (정보 및 파싱)
@@ -890,7 +738,7 @@ int at45db_lfs_read(uint32_t block, uint32_t off, uint8_t *buffer, uint32_t size
     //-----------------------------------
     // 2) Buffer 내부에서 원하는 오프셋부터 chunk 만큼 읽기
     //-----------------------------------
-    at45db_read_buffer(AT45DB_BUFFER1, page_offset, buffer, chunk);
+    at45db_read_buffer(AT45DB_BUFFER1, page_offset, (uint8_t*)buffer, chunk);
 
     // 다음을 위한 업데이트
     flash_addr += chunk;
@@ -949,7 +797,7 @@ int at45db_lfs_erase(uint32_t block)
  * @note at45db_lfs_prog와 동일한 방식으로 페이지 경계를 넘어 연속 쓰기 가능
  *       내부 버퍼를 활용하여 Read-Modify-Write 방식으로 동작
  */
-int32_t at45db_write_adv(uint32_t offset, uint8_t *p_data, uint32_t data_len)
+int32_t at45db_write(uint32_t offset, uint8_t *p_data, uint32_t data_len)
 {
   uint32_t chunk;
   uint32_t flash_addr;
@@ -1034,7 +882,7 @@ int32_t at45db_write_adv(uint32_t offset, uint8_t *p_data, uint32_t data_len)
  * @note at45db_lfs_read와 동일한 방식으로 페이지 경계를 넘어 연속 읽기 가능
  *       내부 버퍼를 활용하여 페이지별로 읽기
  */
-int at45db_read_adv(uint32_t address, uint8_t *buffer, uint32_t size)
+int at45db_read(uint32_t address, uint8_t *buffer, uint32_t size)
 {
   uint32_t chunk;
   uint32_t flash_addr;
@@ -1090,7 +938,7 @@ int at45db_read_adv(uint32_t address, uint8_t *buffer, uint32_t size)
     //-----------------------------------
     // 2) Buffer 내부에서 원하는 오프셋부터 chunk 만큼 읽기
     //-----------------------------------
-    at45db_read_buffer(AT45DB_BUFFER1, page_offset, (char *)buffer, chunk);
+    at45db_read_buffer(AT45DB_BUFFER1, page_offset, buffer, chunk);
 
     // 다음을 위한 업데이트
     flash_addr += chunk;
