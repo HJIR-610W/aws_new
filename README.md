@@ -8,10 +8,27 @@
 SRAM 0x64000000 1MB:코드 변수용으로 사용 ,stm32f407xx_flash.icf파일에서 1MB 섹션 정의하여 사용
 TLSF 0x64100000 3MB:tlsf 사용 
 
-- FSMC  
-NE1 (FSMC_NORSRAM_BANK1): 0x60000000 - 0x63FFFFFF (64MB) ST7920     8bit
-NE2 (FSMC_NORSRAM_BANK2): 0x64000000 - 0x67FFFFFF (64MB) SRAM      16bit 
-NE3 (FSMC_NORSRAM_BANK3): 0x68000000 - 0x6BFFFFFF (64MB) QUAD UART 16bit
+네, 요청하신 내용을 마크다운 테이블로 정리했습니다.
+
+## FSMC 메모리 맵
+
+| FSMC 뱅크 | 시작 주소 | 끝 주소 | 크기 | 연결된 장치 | 데이터 폭 |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **NE1** (BANK1) | 0x60000000 | 0x63FFFFFF | 64MB | ST7920 LCD | 8bit |
+| **NE2** (BANK2) | 0x64000000 | 0x67FFFFFF | 64MB | SRAM | 16bit |
+| **NE3** (BANK3) | 0x68000000 | 0x6BFFFFFF | 64MB | QUAD UART | 16bit |
 
 
+### 인터럽트 우선순위
+- 현재는 모드 같은 우선순위 사용
+
+### 시스템 로그 기록
+- log_level_t 로그 레벨에 따라 L_ERROR,L_FATAL 은 시리얼 플래시에 저장
+- 그외에는 SD카드에 저장
+- SD 통신 이상으로 SD카드 접근 안되는 증상 발생시 로그 저장필요
+
+### SD카드 파일시스템 복구 
+- 섹터 1개만 보호하는 기능 적용
+- 섹터 쓰기하기전 항상 섹터 512바이트를 fram에 저장, 전원 리셋시 복구할 섹터 있으면 덮어쓰기
+ 
 

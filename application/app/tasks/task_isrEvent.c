@@ -48,7 +48,7 @@ void isrEventTask(void *arg)
         break;
         case eRAIN_HALL_INT:
         task_printf("eRAIN_HALL_INT\r\n");
-          increase_rain();
+        increase_rain();
          break;
         case eUSER_BTN_INT:
         task_printf("eUSER_BTN_INT\r\n");
@@ -64,26 +64,31 @@ void isrEventTask(void *arg)
           task_printf("eUSER_UART_RX_FULL %d\r\n",event.cmd);
           break;
         case eSYSTEM_RESET:
-          reset_system("user reset");
+          reset_system("eSYSTEM_RESET");
           break;
-          case eUSER_START_CONSOLE:
+         case eUSER_START_CONSOLE:
             start_console((void *)0);
-            break;
+        break;
           case eUSER_STOP_CONSOLE:
           stop_console();
-          break;
-            default : break;
+        break;
+            default : 
+            break;
         }
     }
   }
 }
 
 
-
+/**
+ * @note 시스템에서 우선순위 높게 실시간으로 처리해야하는 업무 담당
+ * 다른 task에서는 이벤트 발생시 메시지 형식으로 전달
+ * 우량 측정
+ * 에러 출력(에러 출력 자체를 해당 task에서는 하지 않는다.)
+  */
 void isrEventTask_init(void)
 {
   g_event_msg_q_id = osMessageQueueNew(10, sizeof(isr_event_cmd_t), NULL);
-
 
   osThreadNew(isrEventTask, NULL, &kIsrEventTask_attributes);
 }

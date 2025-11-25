@@ -99,4 +99,22 @@ int at45db_lfs_read(uint32_t block, uint32_t off, uint8_t *buffer, uint32_t size
 int at45db_lfs_prog(uint32_t block, uint32_t off, const uint8_t *buffer, uint32_t size);
 int at45db_lfs_erase(uint32_t block);
 
+/**
+ * @brief RAM처럼 연속 쓰기 가능한 고급 쓰기 함수
+ * @param offset: 쓰기 시작 오프셋 (절대 주소)
+ * @param p_data: 쓸 데이터
+ * @param data_len: 쓸 데이터 길이
+ * @return 0: 성공, -1: 실패
+ */
+int32_t at45db_write_adv(uint32_t offset, uint8_t *p_data, uint32_t data_len);
+
+/**
+ * @brief RAM처럼 연속 읽기 가능한 고급 읽기 함수
+ * @param address: 읽기 시작 주소 (절대 주소)
+ * @param buffer: 읽은 데이터를 저장할 버퍼
+ * @param size: 읽을 데이터 길이
+ * @return 0: 성공, -1: 실패
+ */
+int32_t at45db_read_adv(uint32_t address, uint8_t *buffer, uint32_t size);
+
 #endif

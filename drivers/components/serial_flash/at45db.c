@@ -554,6 +554,8 @@ void at45db_read(uint32_t offset, uint8_t *p_buff, uint32_t read_len)
   OS_POST_SEM(at45db_inst.sem);
 }
 
+
+
 /**
  * @brief RAM 접근처럼 플래시 쓰기
  * @param offset: 쓰기 시작 오프셋
@@ -935,5 +937,168 @@ int at45db_lfs_erase(uint32_t block)
     at45db_wait_ready();
   }
 #endif
+  return 0;
+}
+
+/**
+ * @brief RAM처럼 연속 쓰기 가능한 고급 쓰기 함수
+ * @param offset: 쓰기 시작 오프셋 (절대 주소)
+ * @param p_data: 쓸 데이터
+ * @param data_len: 쓸 데이터 길이
+ * @return 0: 성공, -1: 실패
+ * @note at45db_lfs_prog와 동일한 방식으로 페이지 경계를 넘어 연속 쓰기 가능
+ *       내부 버퍼를 활용하여 Read-Modify-Write 방식으로 동작
+ */
+int32_t at45db_write_adv(uint32_t offset, uint8_t *p_data, uint32_t data_len)
+{
+  uint32_t chunk;
+  uint32_t flash_addr;
+  uint32_t page;
+  uint32_t page_offset;
+  uint32_t page_size;
+
+  /* 매개변수 유효성 검사 */
+  if (p_data == NULL || data_len == 0)
+  {
+    return -1;
+  }
+
+  /* 초기화 상태 체크 */
+  if (!at45db_inst.chip_info.is_initialized)
+  {
+    DEBUG_PRINTF("Error: AT45DB not initialized\r\n");
+    return -1;
+  }
+
+  /* 경계 체크 */
+  if (offset >= at45db_inst.chip_info.total_capacity_bytes ||
+      (offset + data_len) > at45db_inst.chip_info.total_capacity_bytes)
+  {
+    DEBUG_PRINTF("Error: Write offset out of range (offset=0x%08lX, len=%lu)\r\n",
+                 offset, data_len);
+    return -1;
+  }
+
+  page_size = at45db_inst.chip_info.current_page_size;
+  flash_addr = offset;
+
+  OS_PEND_SEM(at45db_inst.sem, osWaitForever);
+
+  while (data_len > 0)
+  {
+    // 1) 현재 페이지 계산
+    page = flash_addr / page_size;
+    page_offset = flash_addr % page_size;
+
+    // 이번에 쓸 수 있는 최대 길이 (페이지 경계 안에서)
+    chunk = page_size - page_offset;
+    if (chunk > data_len)
+      chunk = data_len;
+
+    //-----------------------
+    // 2) Page → Buffer 복사
+    //-----------------------
+    at45db_memory_to_buffer(AT45DB_BUFFER1, page);
+    at45db_wait_ready();
+
+    //-----------------------
+    // 3) Buffer 내부에 원하는 오프셋부터 chunk 만큼 덮어쓰기
+    //-----------------------
+    at45db_write_buffer(AT45DB_BUFFER1, page_offset, (const char *)p_data, chunk);
+    //osDelay(1);
+
+    //-----------------------
+    // 4) Buffer → Page Program (Page 전체 Commit)
+    //-----------------------
+    at45db_buffer_to_memory(AT45DB_BUFFER1, page);
+    at45db_wait_ready();
+
+    // 다음 반복을 위한 포인터 이동
+    flash_addr += chunk;
+    p_data += chunk;
+    data_len -= chunk;
+  }
+
+  OS_POST_SEM(at45db_inst.sem);
+
+  return 0;
+}
+
+
+/**
+ * @brief RAM처럼 연속 읽기 가능한 고급 읽기 함수
+ * @param address: 읽기 시작 주소 (절대 주소)
+ * @param buffer: 읽은 데이터를 저장할 버퍼
+ * @param size: 읽을 데이터 길이
+ * @return 0: 성공, -1: 실패
+ * @note at45db_lfs_read와 동일한 방식으로 페이지 경계를 넘어 연속 읽기 가능
+ *       내부 버퍼를 활용하여 페이지별로 읽기
+ */
+int at45db_read_adv(uint32_t address, uint8_t *buffer, uint32_t size)
+{
+  uint32_t chunk;
+  uint32_t flash_addr;
+  uint32_t page;
+  uint32_t page_offset;
+  uint32_t page_size;
+
+  /* 매개변수 유효성 검사 */
+  if (buffer == NULL || size == 0)
+  {
+    return -1;
+  }
+
+  /* 초기화 상태 체크 */
+  if (!at45db_inst.chip_info.is_initialized)
+  {
+    DEBUG_PRINTF("Error: AT45DB not initialized\r\n");
+    return -1;
+  }
+
+  page_size = at45db_inst.chip_info.current_page_size;
+  flash_addr = address;
+
+  /* 경계 체크 */
+  if (flash_addr >= at45db_inst.chip_info.total_capacity_bytes ||
+      (flash_addr + size) > at45db_inst.chip_info.total_capacity_bytes)
+  {
+    DEBUG_PRINTF("Error: Read offset out of range (offset=0x%08lX, len=%lu)\r\n",
+                 flash_addr, size);
+    return -1;
+  }
+
+  OS_PEND_SEM(at45db_inst.sem, osWaitForever);
+
+  while (size > 0)
+  {
+    // 현재 페이지 계산
+    page = flash_addr / page_size;
+    page_offset = flash_addr % page_size;
+
+    // 페이지 경계 내에서 읽을 수 있는 최대 길이
+    chunk = page_size - page_offset;
+    if (chunk > size)
+      chunk = size;
+
+    //-----------------------------------
+    // 1) Buffer ← Page 복사
+    //-----------------------------------
+    // DataFlash: Page → Buffer Copy
+    at45db_memory_to_buffer(AT45DB_BUFFER1, page);
+    at45db_wait_ready();
+
+    //-----------------------------------
+    // 2) Buffer 내부에서 원하는 오프셋부터 chunk 만큼 읽기
+    //-----------------------------------
+    at45db_read_buffer(AT45DB_BUFFER1, page_offset, (char *)buffer, chunk);
+
+    // 다음을 위한 업데이트
+    flash_addr += chunk;
+    buffer += chunk;
+    size -= chunk;
+  }
+
+  OS_POST_SEM(at45db_inst.sem);
+
   return 0;
 }

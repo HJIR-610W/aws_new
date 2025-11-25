@@ -1,7 +1,7 @@
 #ifndef TASK_ISR_EVENT_H
 #define TASK_ISR_EVENT_H
 
-typedef enum isrEvent_cmd_e
+typedef enum isr_event_cmd_e
 {
   eRTC_INT,
   eRAIN_REED_INT,
@@ -24,9 +24,11 @@ typedef enum isrEvent_cmd_e
 
 typedef struct isr_event_cmd_s
 {
-  eISR_EVENT_CMD_t cmd;
-  char message[7];
+  eISR_EVENT_CMD_t cmd;// 이벤트 코드
+  char message[7];//추가로 전달할 메시지
 }isr_event_cmd_t;
+
+
 
 int32_t os_send_event(isr_event_cmd_t *cmd, uint32_t timeOutms);
 

@@ -24,7 +24,7 @@ const osThreadAttr_t kSystemTask_attributes = {
     .priority = (osPriority_t)TASK_PRIO(TASK_SYSTEM_DEF),
 };
 
-void userBtnCallBack(int32_t arg)
+void user_button_callback(int32_t arg)
 {
   isr_event_cmd_t event;
 
@@ -37,7 +37,7 @@ void userBtnCallBack(int32_t arg)
 void user_button_init(void)
 {
   di_isr_set_cfg_t isr_cfg;
-  isr_cfg.call = userBtnCallBack;
+  isr_cfg.call = user_button_callback;
   isr_cfg.name = "user_btn";
   isr_cfg.trigger = eDI_FALLING;
   isr_cfg.prio = 5;
@@ -171,7 +171,6 @@ void systemTask_init(uint32_t para)
 
   if(para==PARA_RUN_MODE)
   {
-
     user_button_init();
 
     switch (get_config_app()->charger_model)
