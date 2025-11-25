@@ -16,9 +16,10 @@
 *.o
 *.wsdt
 *.dbx
-*.dnx
 *.tmp
-
+*.dbgdt
+*.dnx
+*.crun
 # 빌드 폴더
 Debug/
 Release/
