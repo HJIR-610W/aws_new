@@ -198,7 +198,7 @@ void load_config_sensor(void)
   drv_fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
 #endif
 
-  io_printf("sizeof(config_sensor_t):%d\r\n",sizeof(config_sensor_t));
+
   limit_adc();
   limit_hjwind();
   limit_hjhumi();
@@ -213,6 +213,8 @@ void load_config_sensor(void)
     save_config_sensor();
     backup_config_sensor();
   }
+  
+    io_printf("sizeof(config_sensor_t):%d\r\n",sizeof(config_sensor_t));
 }
 
 config_sensor_t *get_config_sensor(void)

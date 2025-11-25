@@ -2344,6 +2344,9 @@
                     <name>$PROJ_DIR$\..\Application\app\config\config_manager.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\application\app\config\config_memory_map.h</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\app\config\config_nvm.c</name>
                 </file>
                 <file>
@@ -2841,6 +2844,9 @@
                         <name>$PROJ_DIR$\..\application\file_system\fatfs\target\ffconf.h</name>
                     </file>
                     <file>
+                        <name>$PROJ_DIR$\..\application\file_system\fatfs\target\journal_manager.c</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\Application\file_system\fatfs\target\sd_diskio.c</name>
                     </file>
                     <file>
@@ -2897,7 +2903,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -2938,13 +2944,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -3142,7 +3148,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\fram\fm25cl.h</name>
                 </file>
             </group>
             <group>

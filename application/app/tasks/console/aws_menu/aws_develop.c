@@ -420,7 +420,9 @@ int32_t aws_menu_develop(void)
          menu_task_telnet();
          break;
        case 11:
+#if LFS_ENABLE ==1
          menu_littlefs_manager();
+#endif
         break;
       }
   }

@@ -24,7 +24,7 @@
 #include <stdio.h>
 
 #include "bsp_delay.h"
-
+#include "journal_manager.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 
@@ -213,6 +213,11 @@ Stat = STA_NOINIT;
       }
     }
   }
+  
+  if(Stat == 0)
+  {
+    journal_init_and_recover();
+  }
 
   return Stat;
 }
@@ -309,170 +314,132 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
   * @retval DRESULT: Operation result
   */
 #if _USE_WRITE == 1
+#include "journal_manager.h" // 저널링 함수 선언 포함
+
+// journal_manager.h 에 extern 으로 선언되어 있습니다.
+// extern bool SD_write_sector(uint32_t lba, const uint8_t *sector_data); 
+
+/**
+ * @brief SD 카드에 순수하게 단일 섹터를 쓰는 함수 (저널링 로직 포함하지 않음)
+ * 이 함수는 journal_init_and_recover() 에서 복구 목적으로 호출됩니다.
+ * @param sector 쓰기 시작 섹터 (LBA)
+ * @param buff 쓰고자 하는 512바이트 섹터 데이터
+ * @return true: 쓰기 성공, false: 쓰기 실패
+ */
+bool SD_write_sector(uint32_t sector, const uint8_t *buff)
+{
+    // FATFS diskio.c의 SD_write 함수에서 가져온 핵심 쓰기 로직 재사용
+    uint16_t event;
+    osStatus_t status;
+    uint32_t timer;
+    const UINT count = 1; // 항상 단일 섹터 쓰기
+
+    // 1. SD 카드 감지 및 상태 확인 (FATFS diskio와 동일)
+    if (BSP_PlatformIsDetected() == SD_NOT_PRESENT) {
+        return false;
+    }
+    if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0) {
+        return false;
+    }
+
+    // 2. DMA 쓰기 요청 (저널링 로직 제외)
+    if (BSP_SD_WriteBlocks_DMA((uint32_t*)buff, (uint32_t)sector, count) == MSD_OK)
+    {
+        // 3. DMA 전송 완료 대기 (RTOS 메시지 큐 대기)
+        status = osMessageQueueGet(SDQueueID, (void *)&event, NULL, SD_TIMEOUT);
+        
+        if ((status == osOK) && (event == WRITE_CPLT_MSG))
+        {
+            // 4. SDIO IP 상태 확인 (실제 카드 쓰기 완료 확인)
+            timer = osKernelGetTickCount();
+            while(osKernelGetTickCount() - timer < SD_TIMEOUT)
+            {
+                if (BSP_SD_GetCardState() == SD_TRANSFER_OK)
+                {
+                    // 쓰기 성공
+                    return true;
+                }
+            }
+        }
+    }
+    
+    // 쓰기 실패
+    return false;
+}
+
+
 
 DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
 {
-  DRESULT res = RES_ERROR;
-  uint32_t timer;
+    DRESULT res = RES_ERROR;
+    uint32_t timer;
+    uint16_t event;
+    osStatus_t status;
 
-#if (osCMSIS < 0x20000U)
-  osEvent event;
-#else
-  uint16_t event;
-  osStatus_t status;
-#endif
 
-#if defined(ENABLE_SCRATCH_BUFFER)
-  int32_t ret;
- 
-#endif
-
-  if (BSP_PlatformIsDetected() == SD_NOT_PRESENT)
-  {
-    g_sd_diskio_error = 1;
-    return RES_ERROR;
-  }
-  /*
-   * ensure the SDCard is ready for a new operation
-   */
-
-  if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0)
-  {
-    g_sd_diskio_error = 3;
-    return res;
-  }
-
-#if defined(ENABLE_SCRATCH_BUFFER)
-  if (!((uint32_t)buff & 0x3))
-  {
-#endif
-#if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
-  uint32_t alignedAddr;
-  /*
-    the SCB_CleanDCache_by_Addr() requires a 32-Byte aligned address
-    adjust the address and the D-Cache size to clean accordingly.
-  */
-  alignedAddr = (uint32_t)buff & ~0x1F;
-  SCB_CleanDCache_by_Addr((uint32_t*)alignedAddr, count*BLOCKSIZE + ((uint32_t)buff - alignedAddr));
-#endif
-
-  if(BSP_SD_WriteBlocks_DMA((uint32_t*)buff,
-                           (uint32_t) (sector),
-                           count) == MSD_OK)
-  {
-#if (osCMSIS < 0x20000U)
-    /* Get the message from the queue */
-    event = osMessageGet(SDQueueID, SD_TIMEOUT);
-
-    if (event.status == osEventMessage)
+    // 1. SD 카드 감지 및 상태 확인 (기존 로직)
+    if (BSP_PlatformIsDetected() == SD_NOT_PRESENT)
     {
-      if (event.value.v == WRITE_CPLT_MSG)
-      {
-#else
-    status = osMessageQueueGet(SDQueueID, (void *)&event, NULL, SD_TIMEOUT);
-    if ((status == osOK) && (event == WRITE_CPLT_MSG))
+        g_sd_diskio_error = 1;
+        return RES_ERROR;
+    }
+
+    if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0)
     {
-#endif
- #if (osCMSIS < 0x20000U)
-        timer = osKernelSysTick();
-        /* block until SDIO IP is ready or a timeout occur */
-        while(osKernelSysTick() - timer  < SD_TIMEOUT)
-#else
-        timer = osKernelGetTickCount();
-        /* block until SDIO IP is ready or a timeout occur */
-        while(osKernelGetTickCount() - timer  < SD_TIMEOUT)
-#endif
+        g_sd_diskio_error = 3;
+        return res;
+    }
+    
+    // 단일 섹터 쓰기(count=1)에만 저널링을 적용
+    if (count == 1) 
+    {
+        // 2SD 카드 쓰기 전에 FRAM에 백업합니다.
+        if (!journal_backup_sector(sector, buff))
         {
-          if (BSP_SD_GetCardState() == SD_TRANSFER_OK)
-          {
-            res = RES_OK;
-            break;
-          }
+            g_sd_diskio_error = 5; // 저널 오류 코드
+            return RES_ERROR;
         }
-#if (osCMSIS < 0x20000U)
-      }
     }
-#else
-    }
-#endif
-  }
-#if defined(ENABLE_SCRATCH_BUFFER)
-  else {
-    /* Slow path, fetch each sector a part and memcpy to destination buffer */
-    int i;
 
-#if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
-    /*
-     * invalidate the scratch buffer before the next write to get the actual data instead of the cached one
-     */
-     SCB_InvalidateDCache_by_Addr((uint32_t*)scratch, BLOCKSIZE);
-#endif
-      for (i = 0; i < count; i++)
-      {
-        memcpy((void *)scratch, buff, BLOCKSIZE);
-        buff += BLOCKSIZE;
-
-        ret = BSP_SD_WriteBlocks_DMA((uint32_t*)scratch, (uint32_t)sector++, 1);
-        if (ret == MSD_OK )
+    if (BSP_SD_WriteBlocks_DMA((uint32_t*)buff, (uint32_t)(sector), count) == MSD_OK)
+    {
+        // 4. DMA 전송 완료 대기
+        status = osMessageQueueGet(SDQueueID, (void *)&event, NULL, SD_TIMEOUT);
+        
+        if ((status == osOK) && (event == WRITE_CPLT_MSG))
         {
-          /* wait until the read is successful or a timeout occurs */
-#if (osCMSIS < 0x20000U)
-          /* wait for a message from the queue or a timeout */
-          event = osMessageGet(SDQueueID, SD_TIMEOUT);
-
-          if (event.status == osEventMessage)
-          {
-            if (event.value.v == READ_CPLT_MSG)
+            timer = osKernelGetTickCount();
+            while(osKernelGetTickCount() - timer < SD_TIMEOUT)
             {
-              timer = osKernelSysTick();
-              /* block until SDIO IP is ready or a timeout occur */
-              while(osKernelSysTick() - timer <SD_TIMEOUT)
-#else
-                status = osMessageQueueGet(SDQueueID, (void *)&event, NULL, SD_TIMEOUT);
-              if ((status == osOK) && (event == READ_CPLT_MSG))
-              {
-                timer = osKernelGetTickCount();
-                /* block until SDIO IP is ready or a timeout occur */
-                ret = MSD_ERROR;
-                while(osKernelGetTickCount() - timer < SD_TIMEOUT)
-#endif
+                if (BSP_SD_GetCardState() == SD_TRANSFER_OK)
                 {
-                  ret = BSP_SD_GetCardState();
-
-                  if (ret == MSD_OK)
-                  {
+                    res = RES_OK;
                     break;
-                  }
                 }
-
-                if (ret != MSD_OK)
-                {
-                  break;
-                }
-#if (osCMSIS < 0x20000U)
-              }
             }
-#else
-          }
-#endif
         }
-        else
-        {
-          break;
-        }
-      }
-
-      if ((i == count) && (ret == MSD_OK ))
-        res = RES_OK;
     }
+    
 
-  }
-#endif
-  if(res != RES_OK)
-  {
-    g_sd_diskio_error = 4;
-  }
-  return res;
+
+
+    if (res == RES_OK) 
+    {
+        if (count == 1) {
+            // Commit: SD 카드 쓰기 및 상태 확인이 모두 성공했으므로 FRAM 백업본을 무효화합니다.
+            if (!journal_commit()) {
+                // Commit 실패 시, 데이터는 일관되나 다음 리셋 시 불필요한 Recovery 시도 발생 가능.
+                // 데이터 무결성 자체는 유지되므로 RES_OK 반환 (치명적인 오류로 처리하려면 RES_ERROR 반환 가능)
+                // g_sd_diskio_error = 6; // 저널 커밋 오류 코드 (필요하다면)
+            }
+        }
+    }
+    else 
+    {
+        g_sd_diskio_error = 4;
+    }
+    
+    return res;
 }
  #endif /* _USE_WRITE == 1 */
 

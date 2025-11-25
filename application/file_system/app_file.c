@@ -17,8 +17,9 @@
 
 
 static osSemaphoreId_t g_fileSem;//fatfs 파일 시스템 보호
+#if LFS_ENABLE==1
 static osSemaphoreId_t g_lfs_sem;//littlefs 파일 시스템 보호 
-
+#endif
 
 /* LittleFS object */
  lfs_t lfs;
@@ -653,6 +654,7 @@ void *get_file_sem(void)
   return g_fileSem;
 }
 
+#if LFS_ENABLE ==1 
 
 void *get_lfs_sem(void)
 {
@@ -994,51 +996,44 @@ void printf_lfs_info(void)
 int32_t test_lfs(const char *path, uint32_t fileSize);
 
 
-void filesystem_init(void)
+void lfs_init(void)
 {
   int err;
 
-  //fat32 라이브러리 초기화
-  MX_SDIO_SD_Init();
-  MX_FATFS_Init();
 
-  g_fileSem = osSemaphoreNew(1, 1, NULL);
   g_lfs_sem = osSemaphoreNew(1, 1, NULL);
+    
+      
   //littlefs 초기화
-    err = lfs_port_init();
-    if (err) {
-        io_printf("[ERROR] Failed to initialize porting layer\n");
-    }
+  err = lfs_port_init();
+  if (err)
+  {
+      io_printf("[ERROR] Failed to initialize porting layer\n");
+  }
 
-    /* Try to mount existing file system first */
+  err = lfs_mount(&lfs, &lfs_cfg);
+  if (err)
+  {
+    io_printf("[LFS] Mount failed, formatting...\r\n");
+    lfs_format(&lfs, &lfs_cfg);
     err = lfs_mount(&lfs, &lfs_cfg);
-  if (err) {
-        io_printf("[LFS] Mount failed, formatting...\r\n");
-        lfs_format(&lfs, &lfs_cfg);
-        err = lfs_mount(&lfs, &lfs_cfg);
-    }
+  }
 
   if(err == 0)
   {
     io_printf("[LFS] Mount successful\r\n");
 
     printf_lfs_info();
-
-
     printf_lfs_directory("/");
 
     // 테스트 (필요시 주석 처리)
-    //test_lfs("test.txt", 10*1024);
+   // test_lfs("test.txt", 7*1024);
   }
   else
   {
     io_printf("[ERROR] LittleFS mount failed (err=%d)\r\n", err);
   }
-  
-
-
 }
-
 
 //littlefs 테스트 코드 
 int32_t test_lfs(const char *path, uint32_t fileSize)
@@ -1232,3 +1227,19 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
 
   return LFS_ERR_OK;
 }
+
+#endif 
+
+
+
+
+void filesystem_init(void)
+{
+  //fat32 라이브러리 초기화
+  MX_SDIO_SD_Init();
+  MX_FATFS_Init();
+
+  g_fileSem = osSemaphoreNew(1, 1, NULL);
+
+}
+

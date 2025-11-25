@@ -13,8 +13,8 @@
 #include "os_user_def.h"
 
 
-//const char *kSystem_log_path = "0:System/log.txt";
-const char *kSystem_log_path = "system_log.txt";
+const char *kSystem_log_path = "0:System/log.txt";
+//const char *kSystem_log_path = "system_log.txt";
 
 static osSemaphoreId_t g_loggingSem;
 

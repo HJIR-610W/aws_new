@@ -7,6 +7,13 @@
 
 #include "fatfs.h"
 
+
+
+
+#define LFS_ENABLE 0 //little fs 테스트
+
+
+
 #define MAX_FILENAME_LEN 100  // ��ȯ�� ���� �̸��� �ִ� ����
 #define MAX_FILES_TO_FIND 1   // ã�� ������ �ִ� ���� (����� ������ �迭�� ũ��)
 

@@ -12,12 +12,24 @@
 
 #include "dev_io.h"
 #include "components\serial_flash\at45db.h"
+#include "components\fram\fm25cl.h"
 
+#define LITTLEFS_FRAM_EN 1
+#define FRAM_LFS_CACHE_SIZE 64
+#define FRAM_LOOKAHEAD_SIZE 32
+
+#define FLASH_LFS_CACHE_SIZE 256
+#define FLASH_LOOKAHEAD_SIZE 16
+
+
+
+#define LFS_LOOKAHEAD_SIZE FRAM_LOOKAHEAD_SIZE
+#define LFS_CACHE_SIZE FRAM_LFS_CACHE_SIZE
 
 /* Static buffer for littlefs */
-static uint8_t lfs_lookahead_buffer[16];
-static uint8_t lfs_prog_buffer[256];
-static uint8_t lfs_read_buffer[256];
+static uint8_t lfs_lookahead_buffer[LFS_LOOKAHEAD_SIZE];
+static uint8_t lfs_prog_buffer[LFS_CACHE_SIZE];
+static uint8_t lfs_read_buffer[LFS_CACHE_SIZE];
 
 /* LittleFS configuration */
 struct lfs_config lfs_cfg;
@@ -32,9 +44,12 @@ static int lfs_flash_read(const struct lfs_config *c, lfs_block_t block,
     int ret;
 
     (void)c;
-    
-    
+   
+#if (LITTLEFS_FRAM_EN==1)
+    ret = fm25cl_lfs_read(block,off,(uint8_t*)buffer,size);
+#else
     ret = at45db_lfs_read(block,off,buffer,size);
+#endif
 
     return (ret == 0) ? LFS_ERR_OK : LFS_ERR_IO;
 }
@@ -50,8 +65,12 @@ static int lfs_flash_prog(const struct lfs_config *c, lfs_block_t block,
 
     (void)c;
 
+       
+#if (LITTLEFS_FRAM_EN==1)
+    ret = fm25cl_lfs_prog(block, off,(uint8_t *) buffer, size);
+#else
     ret =  at45db_lfs_prog(block, off, buffer, size);
-
+#endif
 
     return (ret == 0) ? LFS_ERR_OK : LFS_ERR_IO;
 }
@@ -61,12 +80,15 @@ static int lfs_flash_prog(const struct lfs_config *c, lfs_block_t block,
  */
 static int lfs_flash_erase(const struct lfs_config *c, lfs_block_t block)
 {
-    int ret;
+    int ret=0;
 
     (void)c;
 
+    #if (LITTLEFS_FRAM_EN==1)
+    #else
     // AT45DB 블록 erase 함수 호출
     ret = at45db_lfs_erase(block);
+    #endif
 
     return (ret == 0) ? LFS_ERR_OK : LFS_ERR_IO;
 }
@@ -90,6 +112,22 @@ static int lfs_flash_sync(const struct lfs_config *c)
  */
 int lfs_port_init(void)
 {
+    #if (LITTLEFS_FRAM_EN==1)
+
+  fm25lc_init();
+    lfs_cfg.read = lfs_flash_read;
+    lfs_cfg.prog = lfs_flash_prog;
+    lfs_cfg.erase = lfs_flash_erase;
+    lfs_cfg.sync = lfs_flash_sync;
+    /* Block device configuration */
+    lfs_cfg.read_size = 16;
+    lfs_cfg.prog_size = 16;
+    lfs_cfg.block_size = 128;
+    lfs_cfg.block_count = 8192/128;
+    lfs_cfg.block_cycles = -1;
+    lfs_cfg.cache_size = FRAM_LFS_CACHE_SIZE;
+    lfs_cfg.lookahead_size = LFS_LOOKAHEAD_SIZE;
+#else
     at45db_chip_info_t at45db_chip_info;
 
     at45db_init();
@@ -98,13 +136,10 @@ int lfs_port_init(void)
 
 
     memset(&lfs_cfg, 0, sizeof(lfs_cfg));
-
-
     lfs_cfg.read = lfs_flash_read;
     lfs_cfg.prog = lfs_flash_prog;
     lfs_cfg.erase = lfs_flash_erase;
     lfs_cfg.sync = lfs_flash_sync;
-
     /* Block device configuration */
     lfs_cfg.read_size = 16;
     lfs_cfg.prog_size = at45db_chip_info.device_info.page_size_binary;
@@ -113,7 +148,7 @@ int lfs_port_init(void)
     lfs_cfg.block_cycles = 500;
     lfs_cfg.cache_size = at45db_chip_info.device_info.page_size_binary;
     lfs_cfg.lookahead_size = 16;
-
+#endif
     /* Buffers */
     lfs_cfg.read_buffer = lfs_read_buffer;
     lfs_cfg.prog_buffer = lfs_prog_buffer;

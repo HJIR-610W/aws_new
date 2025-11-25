@@ -27,7 +27,7 @@ typedef struct fm25lc_instance_s
 } fm25lc_instance_t;
 
 void fm25cl_read( uint32_t offset, uint8_t *pBuff,uint16_t rLen) ;
-void fm25cl_write( uint32_t offset, uint8_t *pData, uint16_t wLen);
+void fm25cl_write( uint32_t offset, const uint8_t *pData, uint16_t wLen);
 uint8_t fm25cl_read_status(void);
 
 
@@ -67,7 +67,7 @@ void fm25lc_init(void)
   bsp_spi_post_sem(fm25lc_inst.spi_num);
 }
 
-void fm25cl_write(uint32_t offset,uint8_t *pData,uint16_t wLen)
+void fm25cl_write(uint32_t offset,const  uint8_t *pData,uint16_t wLen)
 {
     OS_PEND_SEM(fm25lc_inst.sem, osWaitForever);
 #if !FRAM_1024
@@ -84,7 +84,7 @@ void fm25cl_write(uint32_t offset,uint8_t *pData,uint16_t wLen)
     bsp_spi_send_byte(fm25lc_inst.spi_num,offset&0xFF);
 
     osDelay(1);
-    bsp_spi_send_bytes(fm25lc_inst.spi_num,pData,wLen);
+    bsp_spi_send_bytes(fm25lc_inst.spi_num,( uint8_t *)pData,wLen);
     bsp_do_high(fm25lc_inst.cs_do_num);
     
    bsp_spi_post_sem(fm25lc_inst.spi_num);
@@ -195,4 +195,33 @@ uint8_t fm25cl_read_status(void)
 
   return data;
 
+}
+
+
+int fm25cl_lfs_read(uint32_t block, uint32_t off, uint8_t *buffer, uint32_t size)
+{
+  uint32_t flash_addr;
+
+
+  // block은 littlefs 블록 번호 (블록 크기 = 64바이트)lfs_cfg.block_size 
+  flash_addr = block * 64 + off;
+
+  fm25cl_read(flash_addr,buffer,size);
+ 
+  return 0;
+}
+
+int fm25cl_lfs_prog( uint32_t block,uint32_t off,const uint8_t *buffer,uint32_t size)
+{
+
+  uint32_t flash_addr;
+  uint32_t page_size;
+
+
+  // block은 littlefs 블록 번호 (블록 크기 = 64바이트)lfs_cfg.block_size 
+    flash_addr = block * 64 + off;
+
+    fm25cl_write(flash_addr,buffer,size);
+
+    return 0;
 }

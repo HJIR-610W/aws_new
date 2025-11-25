@@ -884,7 +884,7 @@ int at45db_lfs_read(uint32_t block, uint32_t off, uint8_t *buffer, uint32_t size
     //-----------------------------------
     // DataFlash: Page → Buffer Copy
     at45db_memory_to_buffer(AT45DB_BUFFER1, page);
-  at45db_wait_ready();
+    at45db_wait_ready();
     //-----------------------------------
     // 2) Buffer 내부에서 원하는 오프셋부터 chunk 만큼 읽기
     //-----------------------------------
