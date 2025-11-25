@@ -3220,7 +3220,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</name>
                 </file>
             </group>
             <group>
@@ -4143,7 +4143,4 @@
             <name>$PROJ_DIR$\..\utils\util_time.h</name>
         </file>
     </group>
-    <file>
-        <name>$PROJ_DIR$\..\aws.md</name>
-    </file>
 </project>
