@@ -3077,12 +3077,6 @@
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_eth.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\drivers\bsp\bsp_flash.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\drivers\bsp\bsp_flash.h</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\drivers\bsp\bsp_fram.c</name>
             </file>
             <file>
@@ -3226,7 +3220,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</name>
                 </file>
             </group>
             <group>

@@ -168,8 +168,9 @@ void stm32_spi_init(int num)
     hspi->Init.CLKPolarity = SPI_POLARITY_HIGH;
     hspi->Init.CLKPhase = SPI_PHASE_2EDGE;
     hspi->Init.NSS = SPI_NSS_SOFT;
-    hspi->Init.BaudRatePrescaler = get_spi_prescaler(hspi, 1312500);
-    ;  // 고정된 분주비라서 원하는데오 딱 안떨어짐1312500
+   // hspi->Init.BaudRatePrescaler = get_spi_prescaler(hspi, 1312500);
+    hspi->Init.BaudRatePrescaler = get_spi_prescaler(hspi, 25000000);
+    ;  // 고정된 분주비라서 원하는데로 안떨어짐1312500
     hspi->Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi->Init.TIMode = SPI_TIMODE_DISABLE;
     hspi->Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;

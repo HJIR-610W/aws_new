@@ -872,6 +872,137 @@ int32_t at45db_write(uint32_t offset, uint8_t *p_data, uint32_t data_len)
   return 0;
 }
 
+/**
+ * @brief 2개 버퍼를 사용한 고속 연속 쓰기 함수 (Ping-Pong 방식)
+ * @param offset: 쓰기 시작 오프셋 (절대 주소)
+ * @param p_data: 쓸 데이터
+ * @param data_len: 쓸 데이터 길이
+ * @return 0: 성공, -1: 실패
+ * @note 2개의 버퍼를 번갈아 사용하여 병렬 처리 효과 구현
+ *       - BUFFER1에 데이터 쓰는 동안 BUFFER2는 메모리에 전송
+ *       - BUFFER2에 데이터 쓰는 동안 BUFFER1은 메모리에 전송
+ *       성능 향상: 버퍼 전송 대기 시간 동안 다음 데이터 준비 가능
+ */
+int32_t at45db_write_fast(uint32_t offset, uint8_t *p_data, uint32_t data_len)
+{
+  uint8_t current_buffer;
+  uint32_t chunk;
+  uint32_t flash_addr;
+  uint32_t page;
+  uint32_t page_offset;
+  uint32_t page_size;
+
+  /* 매개변수 유효성 검사 */
+  if (p_data == NULL || data_len == 0)
+  {
+    return -1;
+  }
+
+  /* 초기화 상태 체크 */
+  if (!at45db_inst.chip_info.is_initialized)
+  {
+    DEBUG_PRINTF("Error: AT45DB not initialized\r\n");
+    return -1;
+  }
+
+  /* 경계 체크 */
+  if (offset >= at45db_inst.chip_info.total_capacity_bytes ||
+      (offset + data_len) > at45db_inst.chip_info.total_capacity_bytes)
+  {
+    DEBUG_PRINTF("Error: Write offset out of range (offset=0x%08lX, len=%lu)\r\n",
+                 offset, data_len);
+    return -1;
+  }
+
+  page_size = at45db_inst.chip_info.current_page_size;
+  flash_addr = offset;
+  current_buffer = AT45DB_BUFFER1;  // 첫 번째 버퍼부터 시작
+
+  OS_PEND_SEM(at45db_inst.sem, osWaitForever);
+
+  while (data_len > 0)
+  {
+    // 1) 현재 페이지 계산
+    page = flash_addr / page_size;
+    page_offset = flash_addr % page_size;
+
+    // 이번에 쓸 수 있는 최대 길이 (페이지 경계 안에서)
+    chunk = page_size - page_offset;
+    if (chunk > data_len)
+      chunk = data_len;
+
+    //-----------------------
+    // 2) Page → 현재 Buffer 복사
+    //-----------------------
+    at45db_memory_to_buffer(current_buffer, page);
+    at45db_wait_ready();
+
+    //-----------------------
+    // 3) 현재 Buffer에 데이터 쓰기
+    //-----------------------
+    at45db_write_buffer(current_buffer, page_offset, (const char *)p_data, chunk);
+
+    //-----------------------
+    // 4) 현재 Buffer → Page Program 시작 (논블로킹)
+    //-----------------------
+    at45db_buffer_to_memory(current_buffer, page);
+
+    // 다음 반복을 위한 포인터 이동
+    flash_addr += chunk;
+    p_data += chunk;
+    data_len -= chunk;
+
+    // 다음 청크가 있으면 버퍼 전환
+    if (data_len > 0)
+    {
+      // 버퍼 토글 (BUFFER1 <-> BUFFER2)
+      current_buffer = (current_buffer == AT45DB_BUFFER1) ? AT45DB_BUFFER2 : AT45DB_BUFFER1;
+
+      // 다음 페이지 정보 미리 계산
+      uint32_t next_page = flash_addr / page_size;
+      uint32_t next_page_offset = flash_addr % page_size;
+      uint32_t next_chunk = page_size - next_page_offset;
+      if (next_chunk > data_len)
+        next_chunk = data_len;
+
+      //-----------------------
+      // 5) 다음 Page → 다음 Buffer 복사 (이전 버퍼의 메모리 전송과 병렬 처리)
+      //-----------------------
+      at45db_memory_to_buffer(current_buffer, next_page);
+
+      // 이전 버퍼의 전송 완료 대기
+      at45db_wait_ready();
+
+      //-----------------------
+      // 6) 다음 Buffer에 데이터 쓰기
+      //-----------------------
+      at45db_write_buffer(current_buffer, next_page_offset, (const char *)p_data, next_chunk);
+
+      //-----------------------
+      // 7) 다음 Buffer → Page Program 시작
+      //-----------------------
+      at45db_buffer_to_memory(current_buffer, next_page);
+
+      // 포인터 이동
+      flash_addr += next_chunk;
+      p_data += next_chunk;
+      data_len -= next_chunk;
+
+      // 다음 청크를 위해 버퍼 토글
+      current_buffer = (current_buffer == AT45DB_BUFFER1) ? AT45DB_BUFFER2 : AT45DB_BUFFER1;
+    }
+    else
+    {
+      // 마지막 청크: 전송 완료 대기
+      at45db_wait_ready();
+    }
+  }
+
+  OS_POST_SEM(at45db_inst.sem);
+
+  return 0;
+}
+
 
 /**
  * @brief RAM처럼 연속 읽기 가능한 고급 읽기 함수
@@ -944,6 +1075,110 @@ int at45db_read(uint32_t address, uint8_t *buffer, uint32_t size)
     flash_addr += chunk;
     buffer += chunk;
     size -= chunk;
+  }
+
+  OS_POST_SEM(at45db_inst.sem);
+
+  return 0;
+}
+
+/**
+ * @brief 2개 버퍼를 사용한 고속 연속 읽기 함수 (Ping-Pong 방식)
+ * @param address: 읽기 시작 주소 (절대 주소)
+ * @param buffer: 읽은 데이터를 저장할 버퍼
+ * @param size: 읽을 데이터 길이
+ * @return 0: 성공, -1: 실패
+ * @note 2개의 버퍼를 번갈아 사용하여 병렬 처리 효과 구현
+ *       - BUFFER1에서 페이지 로드하는 동안 BUFFER2에서 데이터 읽기
+ *       - BUFFER2에서 페이지 로드하는 동안 BUFFER1에서 데이터 읽기
+ *       성능 향상: 페이지 로드 대기 시간 동안 이전 버퍼에서 데이터 읽기 가능
+ */
+int at45db_read_fast(uint32_t address, uint8_t *buffer, uint32_t size)
+{
+  uint8_t current_buffer;
+  uint32_t chunk;
+  uint32_t flash_addr;
+  uint32_t page;
+  uint32_t page_offset;
+  uint32_t page_size;
+
+  /* 매개변수 유효성 검사 */
+  if (buffer == NULL || size == 0)
+  {
+    return -1;
+  }
+
+  /* 초기화 상태 체크 */
+  if (!at45db_inst.chip_info.is_initialized)
+  {
+    DEBUG_PRINTF("Error: AT45DB not initialized\r\n");
+    return -1;
+  }
+
+  page_size = at45db_inst.chip_info.current_page_size;
+  flash_addr = address;
+
+  /* 경계 체크 */
+  if (flash_addr >= at45db_inst.chip_info.total_capacity_bytes ||
+      (flash_addr + size) > at45db_inst.chip_info.total_capacity_bytes)
+  {
+    DEBUG_PRINTF("Error: Read offset out of range (offset=0x%08lX, len=%lu)\r\n",
+                 flash_addr, size);
+    return -1;
+  }
+
+  current_buffer = AT45DB_BUFFER1;  // 첫 번째 버퍼부터 시작
+
+  OS_PEND_SEM(at45db_inst.sem, osWaitForever);
+
+  // 첫 번째 페이지를 현재 버퍼로 로드
+  page = flash_addr / page_size;
+  at45db_memory_to_buffer(current_buffer, page);
+
+  while (size > 0)
+  {
+    // 현재 페이지 계산
+    page = flash_addr / page_size;
+    page_offset = flash_addr % page_size;
+
+    // 페이지 경계 내에서 읽을 수 있는 최대 길이
+    chunk = page_size - page_offset;
+    if (chunk > size)
+      chunk = size;
+
+    // 다음 청크가 있으면 다음 버퍼로 미리 로드
+    if (size > chunk)
+    {
+      // 다음 페이지 정보 미리 계산
+      uint32_t next_flash_addr = flash_addr + chunk;
+      uint32_t next_page = next_flash_addr / page_size;
+
+      // 버퍼 토글 (BUFFER1 <-> BUFFER2)
+      uint8_t next_buffer = (current_buffer == AT45DB_BUFFER1) ? AT45DB_BUFFER2 : AT45DB_BUFFER1;
+
+      //-----------------------
+      // 1) 다음 Page → 다음 Buffer 로드 시작 (논블로킹)
+      //-----------------------
+      at45db_memory_to_buffer(next_buffer, next_page);
+    }
+
+    //-----------------------
+    // 2) 현재 Buffer 로드 완료 대기
+    //-----------------------
+    at45db_wait_ready();
+
+    //-----------------------
+    // 3) 현재 Buffer에서 데이터 읽기
+    //-----------------------
+    at45db_read_buffer(current_buffer, page_offset, buffer, chunk);
+
+    // 다음 반복을 위한 포인터 이동
+    flash_addr += chunk;
+    buffer += chunk;
+    size -= chunk;
+
+    // 다음 청크를 위해 버퍼 토글
+    current_buffer = (current_buffer == AT45DB_BUFFER1) ? AT45DB_BUFFER2 : AT45DB_BUFFER1;
   }
 
   OS_POST_SEM(at45db_inst.sem);

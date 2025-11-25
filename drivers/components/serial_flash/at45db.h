@@ -58,10 +58,14 @@ void at45db_init(void);
 at45db_result_t at45db_get_chip_info(at45db_chip_info_t *info);
 int32_t at45db_write_safe(uint32_t offset, uint8_t *p_data, uint32_t data_len);
 int32_t at45db_write(uint32_t offset, uint8_t *p_data, uint32_t data_len);
-int32_t at45db_read(uint32_t address, uint8_t *buffer, uint32_t size);
+int32_t at45db_write_fast(uint32_t offset, uint8_t *p_data, uint32_t data_len);
+int at45db_read(uint32_t address, uint8_t *buffer, uint32_t size);
+int at45db_read_fast(uint32_t address, uint8_t *buffer, uint32_t size);
 int at45db_lfs_read(uint32_t block, uint32_t off, uint8_t *buffer, uint32_t size);
 int at45db_lfs_prog(uint32_t block, uint32_t off, const uint8_t *buffer, uint32_t size);
 int at45db_lfs_erase(uint32_t block);
 
-
+/*
+fast비교 다시 필요 오히려 버퍼1개가 더빠른 24/30
+*/
 #endif

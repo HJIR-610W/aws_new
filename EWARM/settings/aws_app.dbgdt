@@ -1101,7 +1101,7 @@
                 <expressions>
                     <item>buff</item>
                     <item>logging.data</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>
