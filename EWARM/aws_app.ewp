@@ -777,7 +777,7 @@
             <archiveVersion>1</archiveVersion>
             <data>
                 <prebuild></prebuild>
-                <postbuild>cmd /C "cmd /C $PROJ_DIR$\create_bin.bat "$TARGET_PATH$""</postbuild>
+                <postbuild>cmd /C "cmd /C $PROJ_DIR$\post_build.bat "$TARGET_PATH$""</postbuild>
             </data>
         </settings>
         <settings>
@@ -2903,7 +2903,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -2944,13 +2944,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
