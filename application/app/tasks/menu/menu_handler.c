@@ -1777,14 +1777,18 @@ menu_status_t input_float_adv(const char *title, float min, float max, float *va
   // 입력 버퍼 초기화
   if(sign_enable)
   {
-    buff[0] = '+';
-    buff[1] = '0';
-    cursor_pos = -1;
+    //buff[0] = '+';
+    //buff[1] = '0';
+    //cursor_pos = -1;
+    snprintf_s(buff,sizeof(buff),"%+.*f",fractional,*val);
+    cursor_pos = strlen(buff)-1;
   }
   else
   {
-    buff[0] = '0';
-    cursor_pos = -1;
+    //buff[0] = '0';
+    //cursor_pos = -1;
+    snprintf_s(buff,sizeof(buff),"%.*f",fractional,*val);
+        cursor_pos = strlen(buff)-1;
   }
 
   last_blink = OS_GET_TICK();
