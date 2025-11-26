@@ -53,7 +53,7 @@ int32_t get_menu_key(uint32_t timeout_ms)
     return key;
 }
 
-menu_status_t input_decimal(const char *title, int min, int max, int *val)
+menu_status_t input_decimal_old(const char *title, int min, int max, int *val)
 {
   char buff[LCD_COLS + 1] = {0};
   
@@ -1405,7 +1405,7 @@ min,max 값중 음수가 있으면
 500ms마다 현재 커서 위치 글자 점멸
 아무 숫자도 입력받지 않은 상태에서 숫자 필트는 _이 문자로 시작
 */
-menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
+menu_status_t input_decimal(const char *title, int min, int max, int *val)
 {
   char buff[LCD_COLS + 1] = {0};
   char display_char;
@@ -1421,6 +1421,8 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
   uint8_t dec_count = 0;
   uint32_t last_blink;
   int32_t key;
+  uint8_t edit_mode=0;
+  
 
   if (val == NULL || title == NULL || min > max)
   {
@@ -1459,12 +1461,13 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
   if(sign_enable)
   {
     buff[0] = '+';
-    cursor_pos = 0;
+    buff[1] = '0';
+    cursor_pos = -1;
   }
   else
   {
     buff[0] = '0';
-    cursor_pos = 0;
+    cursor_pos = -1;
   }
 
   last_blink = OS_GET_TICK();
@@ -1488,8 +1491,17 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
     // 커서 위치의 문자만 깜빡이게 표시
     if (cursor_pos < number_width)
     {
-      display_char = blink_state ? buff[cursor_pos] : ' ';
-      screen_put_ch(4, 4 + cursor_pos, display_char);
+      if(cursor_pos == -1)
+      {
+        display_char = blink_state ? buff[0] : ' ';
+              screen_put_ch(4, 4 , display_char);
+      }
+      else
+      {
+        display_char = blink_state ? buff[cursor_pos] : ' ';
+         screen_put_ch(4, 4 + cursor_pos, display_char);
+      }
+
     }
 
     screen_refresh();
@@ -1506,32 +1518,27 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
 
     if (key == KEY_CODE_LEFT)
     {
-      if(cursor_pos > 0)
+      if(cursor_pos > 0){
+        edit_mode = 1;
         cursor_pos--;
+      }
     }
     else if (key == KEY_CODE_RIGHT)
     {
-      if (cursor_pos < number_width - 1)
+      if(cursor_pos != -1)
       {
-        if(cursor_pos==1 && dec_count==1)
-        {
-         dec = atoi(buff);
-         if(dec==0)
-         {
-           continue;;
-         }
-        }
-        
-        
-        cursor_pos++;
-        // 빈 자리면 '0'으로 채우기
-        if(buff[cursor_pos] == '\0')
-        {
-          buff[cursor_pos] = '0';
-          if(cursor_pos > dec_count)
-            dec_count = cursor_pos;
-        }
+          if (cursor_pos < number_width - 1)
+          {
+               cursor_pos++;
+            if(buff[cursor_pos] == '\0')
+            {
+              buff[cursor_pos] = '0';
+              if(cursor_pos > dec_count)
+                dec_count = cursor_pos;
+            }
+          }
       }
+
     }
     else if (key == KEY_CODE_UP || key == KEY_CODE_DOWN)
     {
@@ -1566,25 +1573,66 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
     }
     else if(key >= '0' && key <= '9')
     {
+      
       if(sign_enable)
       {
-        if(cursor_pos !=0 )
+
+         if(cursor_pos == -1 ||cursor_pos==0)
         {
-          buff[cursor_pos] = key;
-          if(cursor_pos < number_width-1)
+                   if(edit_mode)
           {
-            cursor_pos++;
-          }  
+            edit_mode = 0;
+          }
+          buff[1] = key;
+          cursor_pos = 1;
         }
+        
+        else
+        {
+          if(edit_mode)
+          {
+            edit_mode = 0;
+                buff[cursor_pos] = key;
+          }
+          else
+          {
+          if(cursor_pos < (number_width-1))
+          {
+            
+             cursor_pos++;
+          }
+           buff[cursor_pos] = key;
+          }
+        }
+
       }
       else
       {
-          buff[cursor_pos] = key;
-          if(cursor_pos < number_width-1)
+        if(cursor_pos ==-1)
+        {
+           buff[0] = key;
+           cursor_pos = 0;
+        }
+        else
+        {
+          if(edit_mode)
           {
-            cursor_pos++;
-          }  
+           edit_mode = 0;
+                buff[cursor_pos] = key;
+          }
+          else
+          {
+          if(cursor_pos < (number_width-1))
+          {
+                   cursor_pos++;
+          }
+           buff[cursor_pos] = key;
+          }
+        }
+
       }
+      
+
     }
     else if(key == KEY_CODE_BACKSPACE)
     {
@@ -1592,12 +1640,12 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
       if(sign_enable)
       {
         buff[0] = '+';
-        cursor_pos = 0;
+        cursor_pos = -1;
       }
       else
       {
         buff[0] = '0';
-        cursor_pos = 0;
+        cursor_pos = -1;
       }
       dec_count = 0;
     }
