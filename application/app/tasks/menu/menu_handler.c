@@ -1462,14 +1462,18 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
   // 입력 버퍼 초기화
   if(sign_enable)
   {
-    buff[0] = '+';
-    buff[1] = '0';
-    cursor_pos = -1;
+    //buff[0] = '+';
+    //buff[1] = '0';
+   // cursor_pos = -1;
+    snprintf_s(buff,sizeof(buff),"%+d",*val);
+        cursor_pos = strlen(buff)-1;
   }
   else
   {
-    buff[0] = '0';
-    cursor_pos = -1;
+   // buff[0] = '0';
+   // cursor_pos = -1;
+    snprintf_s(buff,sizeof(buff),"%d",*val);
+    cursor_pos = strlen(buff)-1;
   }
 
   last_blink = OS_GET_TICK();
@@ -1480,6 +1484,9 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
 
   screen_printf(5, 0, "Press ESC to Cancel");
   screen_printf(6, 0, "Hold left to erase");
+  
+
+  
   while (1)
   {
     screen_printf(4, 0, "In :%s", buff);

@@ -22,18 +22,7 @@
 #define ALARM_LOG 1
 
 
-//extern menu_status_t input_float_adv(const char *title, float min, float max, float *val);
-extern menu_status_t input_float_adv(const char *title, float min, float max, float *val, const char *fmt);
 
-
-void float_intput_test(void)
-{
-  float val=12.34;
-  
-  input_float_adv("float",1234,4567,&val,"%7.5f");
-  
-  
-}
 int32_t menu_view_log(int log_type)
 {
   char buffer[22];
@@ -64,9 +53,7 @@ int32_t menu_view_log(int log_type)
   }
 
 
-  float_intput_test();
-  //status = input_decimal("Log count", 1, LOG_COUNT_MAX, &dec);
-  status = input_decimal("Log count", -1, LOG_COUNT_MAX, &dec);
+  status = input_decimal("Log count", 1, LOG_COUNT_MAX, &dec);
   if(status !=MENU_OK)
     return status;
 
