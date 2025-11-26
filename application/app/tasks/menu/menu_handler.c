@@ -1392,18 +1392,21 @@ Log count
 Min:     0
 Max: 10000
 Val:-123
-In : 12
+In :12
 Press ESC to Cancel
 
 min,max 값을 입력 받아서 
 min,max 값중 음수가 있으면
 입력 받는 필드(In)는 "+숫자"
-전부 양수이면  부호 필드는 공백  " 숫자"
+전부 양수이면  부호 필드없이 "숫자"
 숫자를 입력하면 부호필드는 건너띄고 숫자 입력 처리 
 음수 부호가 있으면 up,down 키로 부호 바꿀수 있게 적용
 백스페이스 누르면 입력필드 초기화
 500ms마다 현재 커서 위치 글자 점멸
-아무 숫자도 입력받지 않은 상태에서 숫자 필트는 _이 문자로 시작
+
+부호상관없이 초기에 숫자키를 입력하면 숫자가 연속 입력된다. 백스페이스를 누르면
+편집 모드가 되고 커서 포지션의 위치에서 숫자키를 누르면 해당 커서 포지션 숫자가 변경되며
+한번 숫자가 입력되면 편집모드는 해제되며 연속키 입력처리된다.
 */
 menu_status_t input_decimal(const char *title, int min, int max, int *val)
 {
@@ -1415,7 +1418,6 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
   int blink_state = 1;
   int sign_enable = 0;
   int temp_max;
-  int min_cursor;
   int dec;
   uint8_t ch;
   uint8_t dec_count = 0;
@@ -1437,7 +1439,7 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
   if (min < 0)
     sign_enable = 1;
 
-  min_cursor = sign_enable ? 0 : 1;
+
 
   screen_clear();
   make_centered(buff, sizeof(buff), title, LCD_COLS);
@@ -1476,7 +1478,8 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
   screen_printf(2, 0, "Max:%*d", number_width, max);
   screen_printf(3, 0, "Val:%*d", number_width, *val);
 
-   screen_printf(5, 0, "Press ESC to Cancel");
+  screen_printf(5, 0, "Press ESC to Cancel");
+  screen_printf(6, 0, "Hold left to erase");
   while (1)
   {
     screen_printf(4, 0, "In :%s", buff);
@@ -1525,11 +1528,34 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
     }
     else if (key == KEY_CODE_RIGHT)
     {
-      if(cursor_pos != -1)
+      /*
+       커서 포지션을 이동한다
+       부호 있는 경우
+        "+1234"
+       부호 없는 경우
+         "1234"
+       매뉴 진입시 cursor_pos = -1
+      부호 있는 경우 cursor_pos==-1 인 상태에서 RIGHT 키 입력시
+       강제로 커서 포지션을 1로 하고 부호가 없는 경우는 0으로 만든다.
+      */
+      
+      
+      if(cursor_pos == -1)
       {
-          if (cursor_pos < number_width - 1)
+        if(sign_enable)
+        {
+          cursor_pos = 1;
+        }
+        else
+        {
+          cursor_pos = 0;
+        }
+      }
+      else
+      {
+        if (cursor_pos < number_width - 1)
           {
-               cursor_pos++;
+             cursor_pos++;
             if(buff[cursor_pos] == '\0')
             {
               buff[cursor_pos] = '0';
@@ -1539,10 +1565,12 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
           }
       }
 
+
     }
     else if (key == KEY_CODE_UP || key == KEY_CODE_DOWN)
     {
-      if (cursor_pos == 0 && sign_enable)
+
+      if (cursor_pos == -1 ||cursor_pos == 0 && sign_enable)
       {
         // 부호 필드에서 UP/DOWN 키로 부호 전환
         // 숫자가 입력되지 않은 상태(buff[1]이 '\0')면 부호만 변경
@@ -1640,6 +1668,7 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
       if(sign_enable)
       {
         buff[0] = '+';
+        buff[1] = '0';
         cursor_pos = -1;
       }
       else
