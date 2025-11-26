@@ -67,7 +67,7 @@ menu_status_t input_combobox(const char *title, const char *item_list[], int32_t
 menu_status_t input_active(const char *title, int32_t *choice);
 menu_status_t input_password(const char *title, int32_t *password);
 menu_status_t show_popup(const char *title, const char *message);
-
+menu_status_t input_decimal_adv(const char *title, int min, int max, int *val);
 
 int32_t make_sreen_row(char *buff, const char *pFmt, ...);
 int32_t get_menu_key(uint32_t timeout_ms);

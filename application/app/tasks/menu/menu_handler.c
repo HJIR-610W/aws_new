@@ -1374,3 +1374,217 @@ void screen_page_printf(screen_page_t *win, const char *format, ...)
     win->current_row++;
   }
 }
+
+
+
+
+menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
+{
+  char buff[LCD_COLS + 1] = {0};
+  int cursor_pos = 0;
+  int number_width = 0;
+  int blink_state = 1;
+  int sign_enable=0;
+  uint32_t last_blink;
+  uint8_t cnt=0;
+  uint8_t dec_count=0;
+  int dec;
+
+  if (val == NULL || title == NULL || min > max)
+  {
+    return MENU_BACK;
+  }
+
+  if(*val > max)
+  {
+    *val = max;
+  }
+
+  if (min < 0)
+    sign_enable = 1;
+
+    
+  screen_clear();
+  make_centered(buff, sizeof(buff), title, LCD_COLS);
+  screen_printf(0, 0, "%s", buff);
+
+
+
+    // 최대 자릿수 계산 (음수 고려)
+    int temp_max = (abs(max) > abs(min)) ? abs(max) : abs(min);
+    if (temp_max == 0)
+      temp_max = 1;
+
+    if (sign_enable)
+      number_width = (int)log10(temp_max) + 2;
+    else
+      number_width = (int)log10(temp_max) + 1;
+    if (min < 0)
+    {
+      if (sign_enable)
+        number_width += 2;  // 음수 부호 고려
+      else
+        number_width += 1;
+    }
+  // 버퍼 크기 제한
+  if (number_width >= LCD_COLS) number_width = LCD_COLS - 1;
+  
+  // 현재 값으로 버퍼 초기화 (부호 포함, 고정 폭)
+
+    for(int i = 0 ; i < sizeof(buff);i++)
+    {
+      buff[i] = 0;
+    }
+    buff[cnt++] = '+';
+
+    buff[cnt] = '\0';
+
+  cursor_pos = 0; // 부호 위치(맨 왼쪽)부터 시작
+  last_blink = OS_GET_TICK();
+  
+  while (1)
+  {
+    if(sign_enable)
+    {
+      screen_printf(1, 0, "Min: %+*d", number_width, min);
+      screen_printf(2, 0, "Max: %+*d", number_width, max);
+    }
+    else
+    {
+      screen_printf(1, 0, "Min: %*d", number_width, min);
+      screen_printf(2, 0, "Max: %*d", number_width, max);
+    }
+    screen_printf(3, 0, "Val: %*d", number_width,*val); //현재값 출력
+    screen_printf(4, 0, "In :%s", buff);
+    screen_printf(5, 0, "Press ESC to Cancel");
+    // 커서 깜빡임 처리 (500ms 간격)
+    if (OS_GET_TICK() - last_blink >= 500)
+    {
+      last_blink = OS_GET_TICK();
+      blink_state = !blink_state;
+    }
+    
+    // 커서 위치의 문자만 깜빡이게 표시
+    if (cursor_pos < number_width)
+    {
+      char display_char = blink_state ? buff[cursor_pos] : ' ';
+      screen_put_ch(4, 4 + cursor_pos, display_char);
+    }
+
+    screen_refresh();
+
+    int32_t key = get_menu_key(100);  
+    
+    if (key == KEY_CODE_NONE)
+    continue;
+
+    // 키 입력 시 커서 즉시 표시
+    blink_state = 1;
+    last_blink = OS_GET_TICK();
+    screen_printf(4, 0, "In : %s", buff);
+
+    if (key == KEY_CODE_LEFT)
+    {
+      if (cursor_pos > 0)
+      {
+        cursor_pos--;
+      }
+    }
+    else if (key == KEY_CODE_RIGHT)
+    {
+      if (cursor_pos < number_width )  // 부호 포함 전체 길이 내에서 이동
+      {
+        cursor_pos++;
+        if(dec_count<cursor_pos)
+        {
+          buff[cursor_pos]='0';
+          dec_count++;
+        }
+      }
+    }
+    if (key == KEY_CODE_UP || key == KEY_CODE_DOWN)
+    {
+      if (cursor_pos == 0)  // 부호 위치
+      {
+        if (buff[0] == '-')
+        {
+          buff[0] = '+';
+        }
+        else if (buff[0] == '+')
+        {
+          buff[0] = '-';
+        }
+      }
+      else
+      {
+        uint8_t ch = buff[cursor_pos];
+        if (key == KEY_CODE_UP)
+        {
+          ch += 1;
+          if (ch > '9')
+          {
+            ch = '0';
+           }
+           buff[cursor_pos] = ch;
+         }
+         else if (key == KEY_CODE_DOWN)
+         {
+           ch -= 1;
+           if(ch<'0')
+           ch = '9';
+           buff[cursor_pos] = ch;
+         }
+        }
+      }
+      else if(key>='0'&& key<='9')
+      {
+         if(cursor_pos == 0 )
+        {
+          cursor_pos++;
+            buff[cursor_pos] = key;
+          if (cursor_pos < number_width )  
+          {
+            cursor_pos++;
+            buff[cursor_pos]=0;
+          }
+        }
+        else
+        {
+            buff[cursor_pos] = key;
+          if (cursor_pos < number_width )  
+          {
+            cursor_pos++;
+            buff[cursor_pos]=0;
+          }
+        }
+
+      }
+      else if(key == KEY_CODE_BACKSPACE)
+      {
+        cursor_pos = 0;
+        dec_count = 0;
+        buff[0]='+';
+        buff[1] = 0;
+      }
+      else if (key == KEY_CODE_ENTER)
+      {
+        dec = atoi(buff);;
+  
+
+        if(dec >=min && dec <=max)
+        {
+          *val = dec;
+          return MENU_OK;
+        }
+      }
+      else if (key == KEY_CODE_CTRL_C)
+      {
+        return MENU_BACK;
+      }
+      else if (key == KEY_CODE_CTRL_Q)
+      {
+        return MENU_ABORT;
+      }
+
+  }
+}
