@@ -70,7 +70,7 @@ int32_t setup_pressure_offset(eSENSOR_TYPE_t sensor_type)
 
   if (p_sensor->type != S_T_ADC)
   {
-    status = input_float("Offset Value", -1000.0f, 1000.0f, &p_sensor->offset, "%8.3f");
+    status = input_float_adv("Offset Value", -.0f, 0.0f, &p_sensor->offset, "%8.3f");
     if (status == MENU_OK)
     {
       WRITE_CFG(sensor[sensor_type].offset);
@@ -93,7 +93,7 @@ int32_t setup_pressure_offset(eSENSOR_TYPE_t sensor_type)
   screen_printf(1, 0, "ADC Ch%d: %.3fV", cfg->single_channel, voltage);
   screen_refresh();
 
-  status = input_float("Reference Value", -1000.0f, 1000.0f, &reference_value, "%8.3f");
+  status = input_float_adv("Reference Value", 0.0f, 0.0f, &reference_value, "%8.3f");
   if (status != MENU_OK)
   {
     return status;
@@ -125,7 +125,7 @@ int32_t setup_sensor_offset(eSENSOR_TYPE_t sensor_type)
 
   p_sensor = &get_config_app()->sensor[sensor_type];
 
-  status = input_float("Offset Value", -1000.0f, 1000.0f, &p_sensor->offset, "%8.3f");
+  status = input_float_adv("Offset Value", -0.0f, 0.0f, &p_sensor->offset, "%8.3f");
   if (status == MENU_OK)
   {
     WRITE_CFG(sensor[sensor_type].offset);

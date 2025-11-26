@@ -753,7 +753,7 @@ int32_t general_freq_config_set(sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case GENERAL_FREQ_SCALE_FACTOR:
-      status = input_float_prompt("변환식 보정계수", -100000, 100000, &factor);
+      status = input_float_adv("변환식 보정계수", -100000, 100000,4, &factor);
       if (status != MENU_OK)
         break;
       freq->scale_factor = factor;
