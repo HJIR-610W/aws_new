@@ -16,6 +16,19 @@ static int32_t serial_key = -1;
 
 osMessageQueueId_t g_button_queue_id = NULL;
 
+
+
+
+
+void send_key_cmd(const char *cmd)
+{
+  if(serial_key !=-1)
+  bsp_uart_send(serial_key,(uint8_t *)cmd,strlen(cmd));
+}
+
+
+
+
 void app_key_init(void)
 {
     uart_config_t uart_config;
@@ -207,3 +220,17 @@ void scan_key(void)
 
    
 }
+
+
+
+void enable_left_long_key(void)
+{
+  send_key_cmd("en_left_long\n");
+}
+
+void disable_left_long_key(void)
+{
+ send_key_cmd("di_left_long\n");
+}
+
+

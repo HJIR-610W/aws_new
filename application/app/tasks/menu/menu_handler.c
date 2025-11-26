@@ -1440,6 +1440,7 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
     sign_enable = 1;
 
 
+enable_left_long_key();
 
   screen_clear();
   make_centered(buff, sizeof(buff), title, LCD_COLS);
@@ -1692,18 +1693,24 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
       if(dec >= min && dec <= max)
       {
         *val = dec;
+          disable_left_long_key();
         return MENU_OK;
       }
     }
     else if (key == KEY_CODE_CTRL_C)
     {
+        disable_left_long_key();
       return MENU_BACK;
     }
     else if (key == KEY_CODE_CTRL_Q)
     {
+        disable_left_long_key();
       return MENU_ABORT;
     }
   }
+  
+  
+
 }
 
 
@@ -1732,6 +1739,9 @@ menu_status_t input_float_adv(const char *title, float min, float max, float *va
   {
     return MENU_BACK;
   }
+  
+  
+enable_left_long_key();
   
     sscanf_s(fmt, "%%%d.%df", &integer, &fractional);
 
@@ -2022,15 +2032,18 @@ menu_status_t input_float_adv(const char *title, float min, float max, float *va
       if(dec >= min && dec <= max)
       {
         *val = dec;
+                disable_left_long_key();
         return MENU_OK;
       }
     }
     else if (key == KEY_CODE_CTRL_C)
     {
+              disable_left_long_key();
       return MENU_BACK;
     }
     else if (key == KEY_CODE_CTRL_Q)
     {
+              disable_left_long_key();
       return MENU_ABORT;
     }
   }

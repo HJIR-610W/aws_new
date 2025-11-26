@@ -11,5 +11,6 @@ void app_key_init(void);
 int32_t get_button_key(uint32_t timeout_ms);
 void scan_key(void);
 void button_put_key(int32_t key);
-
+void enable_left_long_key(void);
+void disable_left_long_key(void);
 #endif 

@@ -527,7 +527,12 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
 
         key = get_menu_key(WAIT_FOREVER);
 
-        if (key == KEY_CODE_CTRL_Q||key == KEY_CODE_CTRL_C)
+        if(key == KEY_CODE_CTRL_Q)
+        {
+           return convert_key_to_status(key);
+        }
+           
+        if (key == KEY_CODE_CTRL_C)
         {
           break;
         }
