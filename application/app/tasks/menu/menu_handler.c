@@ -1409,7 +1409,6 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
 {
   char buff[LCD_COLS + 1] = {0};
   char display_char;
-  char *p;
   int i;
   int cursor_pos = 0;
   int number_width = 0;
@@ -1417,7 +1416,6 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
   int sign_enable = 0;
   int temp_max;
   int min_cursor;
-  int start_cursor;
   int dec;
   uint8_t ch;
   uint8_t dec_count = 0;
@@ -1438,7 +1436,6 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
     sign_enable = 1;
 
   min_cursor = sign_enable ? 0 : 1;
-  start_cursor = sign_enable ? 0 : 1;
 
   screen_clear();
   make_centered(buff, sizeof(buff), title, LCD_COLS);
@@ -1462,34 +1459,24 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
   if(sign_enable)
   {
     buff[0] = '+';
-    buff[1] = '\0';
     cursor_pos = 0;
   }
   else
   {
-    buff[0] = ' ';
-    buff[1] = '_';
-    buff[2] = '\0';
-    cursor_pos = 1;
+    buff[0] = '0';
+    cursor_pos = 0;
   }
 
   last_blink = OS_GET_TICK();
 
+  screen_printf(1, 0, "Min:%*d", number_width, min);
+  screen_printf(2, 0, "Max:%*d", number_width, max);
+  screen_printf(3, 0, "Val:%*d", number_width, *val);
+
+   screen_printf(5, 0, "Press ESC to Cancel");
   while (1)
   {
-    if(sign_enable)
-    {
-      screen_printf(1, 0, "Min: %+*d", number_width, min);
-      screen_printf(2, 0, "Max: %+*d", number_width, max);
-    }
-    else
-    {
-      screen_printf(1, 0, "Min: %*d", number_width, min);
-      screen_printf(2, 0, "Max: %*d", number_width, max);
-    }
-    screen_printf(3, 0, "Val: %*d", number_width, *val);
     screen_printf(4, 0, "In :%s", buff);
-    screen_printf(5, 0, "Press ESC to Cancel");
 
     // 커서 깜빡임 처리 (500ms 간격)
     if (OS_GET_TICK() - last_blink >= 500)
@@ -1519,16 +1506,26 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
 
     if (key == KEY_CODE_LEFT)
     {
-      if(cursor_pos > min_cursor)
+      if(cursor_pos > 0)
         cursor_pos--;
     }
     else if (key == KEY_CODE_RIGHT)
     {
       if (cursor_pos < number_width - 1)
       {
+        if(cursor_pos==1 && dec_count==1)
+        {
+         dec = atoi(buff);
+         if(dec==0)
+         {
+           continue;;
+         }
+        }
+        
+        
         cursor_pos++;
         // 빈 자리면 '0'으로 채우기
-        if(buff[cursor_pos] == '\0' || buff[cursor_pos] == '_')
+        if(buff[cursor_pos] == '\0')
         {
           buff[cursor_pos] = '0';
           if(cursor_pos > dec_count)
@@ -1547,8 +1544,8 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
       }
       else
       {
-        // '_' 문자를 '0'으로 변경
-        if(buff[cursor_pos] == '_')
+        // 빈 자리면 '0'으로 시작
+        if(buff[cursor_pos] == '\0')
         {
           buff[cursor_pos] = '0';
           if(cursor_pos > dec_count)
@@ -1569,35 +1566,24 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
     }
     else if(key >= '0' && key <= '9')
     {
-      // 부호 필드 건너뛰고 숫자 입력 처리
-      if(cursor_pos == 0 && sign_enable)
+      if(sign_enable)
       {
-        cursor_pos = 1;
-        // 첫 숫자 입력 시 '_' 제거
-        if(buff[1] == '\0')
-        {
-          buff[1] = key;
-          buff[2] = '\0';
-        }
-        else
+        if(cursor_pos !=0 )
         {
           buff[cursor_pos] = key;
+          if(cursor_pos < number_width-1)
+          {
+            cursor_pos++;
+          }  
         }
       }
       else
       {
-        buff[cursor_pos] = key;
-      }
-
-      if(cursor_pos > dec_count)
-        dec_count = cursor_pos;
-
-      // 다음 커서 위치로 이동
-      if (cursor_pos < number_width - 1)
-      {
-        cursor_pos++;
-        if(buff[cursor_pos] == '\0')
-          buff[cursor_pos] = '_';
+          buff[cursor_pos] = key;
+          if(cursor_pos < number_width-1)
+          {
+            cursor_pos++;
+          }  
       }
     }
     else if(key == KEY_CODE_BACKSPACE)
@@ -1606,32 +1592,17 @@ menu_status_t input_decimal_adv(const char *title, int min, int max, int *val)
       if(sign_enable)
       {
         buff[0] = '+';
-        buff[1] = '\0';
         cursor_pos = 0;
       }
       else
       {
-        buff[0] = ' ';
-        buff[1] = '_';
-        buff[2] = '\0';
-        cursor_pos = 1;
+        buff[0] = '0';
+        cursor_pos = 0;
       }
       dec_count = 0;
     }
     else if (key == KEY_CODE_ENTER)
     {
-      // '_' 문자를 '\0'으로 변경
-      p = buff;
-      while(*p)
-      {
-        if(*p == '_')
-        {
-          *p = '\0';
-          break;
-        }
-        p++;
-      }
-
       dec = atoi(buff);
 
       if(dec >= min && dec <= max)
