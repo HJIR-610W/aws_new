@@ -86,7 +86,7 @@ const uint8_t rainPresentList[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI,S_T_RAIN_PRES
 const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ};
 const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMINITY_HJ, S_T_ADC};
 const uint8_t solarRadiationList[] = {S_T_UNSUED, S_T_SOLAR_RADIATION_OTT_SMP3, S_T_ADC};
-const uint8_t solar_duration_list[] ={S_T_UNSUED,S_T_ADC};
+const uint8_t solar_duration_list[] ={S_T_UNSUED,S_T_SOLAR_DURATION_CSD3,S_T_ADC};
 const uint8_t defaultList[] = {S_T_UNSUED};
 const uint8_t soil_temp_list[] = {S_T_UNSUED, S_T_ADC};
 
@@ -219,6 +219,11 @@ void *sensor_add(sensor_t *sensor)
       sensor_add_common(sensor, 0);
       return &g_config_sensor.jinsung_sjgp215;
       break;
+   case S_T_SOLAR_DURATION_CSD3:
+         sensor_add_common(sensor, 0);
+      return &g_config_sensor.solar_duration_csd3;
+      break;
+   break;
         default:
       break;
   }
@@ -274,6 +279,10 @@ void *get_sensor_config(sensor_t *sensor)
           return &g_config_sensor.rmyoung_61402v_barometer;
         case S_T_BARO_JINSUNG_SJGP215:
           return &g_config_sensor.jinsung_sjgp215;
+      case S_T_SOLAR_DURATION_CSD3:
+              return &g_config_sensor.solar_duration_csd3;
+
+        
       }
     }
   }

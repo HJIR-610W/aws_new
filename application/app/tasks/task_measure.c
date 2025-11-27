@@ -242,6 +242,9 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
     case S_T_WIND_SPEED_RMYOUNG_05103V:
       num = WIND_SPEED_RMYOUNG_05103V;
        break;
+  case S_T_SOLAR_DURATION_CSD3:
+    num = SUNSHINE_CSD3;
+    break;
     }
   return num;
 }

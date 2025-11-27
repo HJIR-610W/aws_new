@@ -8,6 +8,7 @@
 
 #define GENERAL_ADC 0
 
+#define GENERAL_AD 0
 
 void *general_adc_open(uint8_t num,void *opt);
 float general_adc_read(void *driver,uint8_t *err);

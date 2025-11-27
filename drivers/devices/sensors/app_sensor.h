@@ -141,7 +141,8 @@ typedef enum sensor_list_e
   X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")           \
   X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V") \
   X(S_T_WIND_SPEED_RMYOUNG_05103V, "RMYOUNG 05103V")     \
-  X(S_T_RAIN_PRESENT_ANALOG, "화진 우량감지 디지털")
+  X(S_T_RAIN_PRESENT_ANALOG, "화진 우량감지 디지털")\
+  X(S_T_SOLAR_DURATION_CSD3, "CSD3")
 
 #define SENSOR_TYPE_ENG_LIST                             \
   X(S_T_UNSUED, "Not Used")                              \
@@ -164,7 +165,8 @@ typedef enum sensor_list_e
   X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")           \
   X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V") \
   X(S_T_WIND_SPEED_RMYOUNG_05103V, "RMYOUNG 05103V")     \
-  X(S_T_RAIN_PRESENT_ANALOG, "HJ Rain Det Analog")
+  X(S_T_RAIN_PRESENT_ANALOG, "HJ Rain Det Analog")      \
+  X(S_T_SOLAR_DURATION_CSD3, "CSD3")
 
 typedef enum sensor_model_e
 {
@@ -217,10 +219,11 @@ extern const uint8_t rainList[5];
 extern const uint8_t snowList[2];
 extern const uint8_t rainPresentList[3];
 extern const uint8_t humiList[3];
-extern const uint8_t sunShineList[3];
 extern const uint8_t solarRadiationList[3];
 extern const uint8_t defaultList[1];
 extern const uint8_t soil_temp_list[2];
+extern const uint8_t solar_duration_list[3];
+
 extern const char *g_sensor_model_table[SENSOR_TYPE_MAX];
 extern const char *g_sensor_model_eng_table[SENSOR_TYPE_MAX];
 extern const char *sensor_name_list[SENSOR_LIST_MAX];

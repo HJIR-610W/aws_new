@@ -7,12 +7,14 @@
 #include <string.h>
 
 #include "Sensors\sunshine\sunshine.h"
+#include "Sensors\sunshine\sunshine_csd3.h"
 #include "sunshine_define.h"
 #include "drv_adc.h"
 #include "app_sensor.h"
 
 #include "dev_io.h"
 #include "Sensors\general\general_adc.h"
+
 
 
 bool sunShineInit=false;
@@ -35,6 +37,11 @@ driver_t *sunshine_open(int32_t num,void *opt)
   case GENERAL_ADC:
     driver = general_adc_open(GENERAL_ADC,opt);
     break;
+  case SUNSHINE_CSD3:
+      solar_duration_csd3_init(opt);  
+      driver = (driver_t *)solar_duration_csd3_init;
+     break;
+  break;
  }
 
  return driver;
@@ -49,6 +56,13 @@ float read_sensor_sunshine(driver_t *driver,uint8_t *err)
     *err = DRV_ERR_HANDLE;
     return NAN;
   }
+
+  if (driver == (driver_t*)solar_duration_csd3_init)
+  {
+    return read_solar_duration_csd3(err);
+  }
+
+
 
   if(strncmp(driver->name,"GENERAL_ADC",11)==0)
   {

@@ -152,6 +152,14 @@ void limit_barometer(void)
 
 
 }
+void limit_csd3_solar_duration(void)
+{
+  if (g_config_sensor.solar_duration_csd3.adc_channel >15)
+  {
+    g_config_sensor.solar_duration_csd3.adc_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+}
 
 
 
@@ -207,6 +215,7 @@ void load_config_sensor(void)
   limit_barometer();
   limit_rmyoung_wind_direction();
   limit_rmyoung_barometer();
+  limit_csd3_solar_duration();
 
   if (g_config_sensor_dirty_flag)
   {

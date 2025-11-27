@@ -18,7 +18,8 @@
 #define GENERAL_RS485 1
 #endif
 
-#define SUNSHINE_A  100
+#define SUNSHINE_CSD3  100
+
 
 driver_t *sunshine_open(int32_t num,void *opt);
 float read_sensor_sunshine(driver_t *driver,uint8_t *err);

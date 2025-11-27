@@ -254,6 +254,19 @@ void draw_wind_direction_rmyoung_05103V_page(screen_menu_t *p_win, rmyoung_05103
   screen_menu_printf(p_win, WDIN_DIRECTION_RMYOUNG_05103V_DEFAULT, "Default");
 }
 
+
+
+
+#define SOLAR_DURATION_CSD3_CH 0
+#define SOLAR_DURATION_CSD3_DEFAULT 1
+void draw_solar_duration_csd3_page(screen_menu_t *p_win, solar_duration_csd3_t *p_csd3)
+{
+  screen_menu_printf(p_win, SOLAR_DURATION_CSD3_CH, "%-*s:%d", E_L_W, "ADC CH", p_csd3->adc_channel);
+  screen_menu_printf(p_win, SOLAR_DURATION_CSD3_DEFAULT, "Default");
+}
+
+
+
   void draw_sensor_page(screen_menu_t * p_win, sensor_t * p_sensor)
   {
     int32_t label_width = TYPE_LABEL_W;
@@ -305,6 +318,9 @@ void draw_wind_direction_rmyoung_05103V_page(screen_menu_t *p_win, rmyoung_05103
     case S_T_WIND_SPEED_RMYOUNG_05103V:
       draw_wind_speed_rmyoung_05103V_page(p_win, get_sensor_config(p_sensor));
       break;
+    case S_T_SOLAR_DURATION_CSD3:
+    draw_solar_duration_csd3_page(p_win, get_sensor_config(p_sensor));
+    break;
 
           default : break;
   }
@@ -1026,6 +1042,8 @@ int32_t wind_direction_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index
   return status;
 }
 
+
+
 int32_t wind_speed_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
@@ -1065,6 +1083,48 @@ int32_t wind_speed_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
+
+
+int32_t solar_duration_csd3_setup(sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t status = 0;
+  solar_duration_csd3_t *p_cfg;
+  int active;
+  int choice;
+
+  p_cfg = get_sensor_config(sensor);
+  if (p_cfg == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+  case SOLAR_DURATION_CSD3_CH:
+    choice = p_cfg->adc_channel;
+    status = input_combobox("SE Channel", adc_single_list, _countof(adc_single_list), &choice);
+    if (status != MENU_OK)
+      break;
+        p_cfg->adc_channel = choice;
+        save_config_sensor();
+
+    break;
+  case SOLAR_DURATION_CSD3_DEFAULT:
+    choice = 0;
+    status = input_active("Set as Default?", &choice);
+    if (status != MENU_OK || choice == 0)
+      break;
+    p_cfg->adc_channel = 14;
+    save_config_sensor();
+    break;
+  }
+
+
+  return status;
+}
+
+
+
 const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_ADC, .config_set = general_adc_setup},
     {.sensor_type = S_T_FREQ, .config_set = general_freq_setup},
@@ -1079,7 +1139,8 @@ const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = barometer_jinsung_setup},
     {.sensor_type = S_T_BARO_RMYOUNG_61402V, .config_set = barometer_rmyoun_61402V_setup},
     {.sensor_type = S_T_WIND_DIRECTION_RMYOUNG_05103V, .config_set = wind_direction_rmyoung_05103V_setup},
-    {.sensor_type = S_T_WIND_SPEED_RMYOUNG_05103V, .config_set = wind_speed_rmyoung_05103V_setup}};
+    {.sensor_type = S_T_WIND_SPEED_RMYOUNG_05103V, .config_set = wind_speed_rmyoung_05103V_setup},
+    {.sensor_type = S_T_SOLAR_DURATION_CSD3, .config_set = solar_duration_csd3_setup}};
 
 int32_t setup_sensor_set(sensor_t* p_sensor, uint8_t choice)
 {

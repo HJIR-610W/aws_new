@@ -91,6 +91,7 @@ void config_hj_reset(void)
   hjsnow_config_t *hjsnow_cfg;
   rain_present_config_t *hjrain_det_cfg;
   rmyoung_61402v_barometer_config_t *p_barometer;
+solar_duration_csd3_t *p_solar_duration;
 
       uint8_t single_channel = 0;
 
@@ -164,16 +165,11 @@ void config_hj_reset(void)
 
   // 일조 CSD3 센서 출력 : 120 w/m2 이상일 때 1 VDC, 이하일 때 0 VDC
   // 센서값 자체를 전압으로 받는다
-  config.sensor[B2_SUNSHINE_DURATION].type = S_T_ADC;
+  config.sensor[B2_SUNSHINE_DURATION].type = S_T_SOLAR_DURATION_CSD3;
   sensor_add(&config.sensor[B2_SUNSHINE_DURATION]);
-  adc_config = get_sensor_config(&config.sensor[B2_SUNSHINE_DURATION]);
-  adc_config->single_channel = single_channel++;
-  adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 5000;
-  adc_config->lowScale = 0;
-  adc_config->scale = 1000;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  p_solar_duration = get_sensor_config(&config.sensor[B2_SUNSHINE_DURATION]);
+  p_solar_duration->adc_channel = single_channel++;
+
 
   // 지중온도 5cm
   config.sensor[B5_SOIL_TEMPERATURE_5CM].type = S_T_ADC;
