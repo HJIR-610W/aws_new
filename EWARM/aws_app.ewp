@@ -2518,6 +2518,9 @@
                         <name>$PROJ_DIR$\..\application\app\tasks\logging\logging_define.h</name>
                     </file>
                     <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\logging\save_csv.c</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\application\app\tasks\logging\utile_data.c</name>
                     </file>
                 </group>
@@ -2951,13 +2954,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -3551,7 +3554,7 @@
                     <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_conf.h</name>
+                    <name>$PROJ_DIR$\..\drivers\driver_stm32\usb\usbd_conf.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Driver_stm32\usb\usbd_desc.c</name>
