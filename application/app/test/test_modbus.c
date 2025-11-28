@@ -191,12 +191,12 @@ void test_modbus_task(void)
 
   if(interface_type == 0)
   {
-    drv_uart_init(selected_port, &uart_config);
+    drv_uart_init(selected_port, &uart_config,"Modbus");
     modbus.modebus_type = eMODBUS_RS232;
   }
   else
   {
-    drv_rs485_init(selected_port, &uart_config);
+    drv_rs485_init(selected_port, &uart_config,"Modbus");
     modbus.modebus_type = eMODBUS_RS485;
   }
 

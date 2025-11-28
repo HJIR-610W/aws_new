@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "app_rs232.h"
-#include "app_rs485.h"
+#include "drv_rs232.h"
+#include "drv_rs485.h"
 #include "drv_rs485.h"
 #include "drv_rs232.h"
 #include "pcb_define.h"

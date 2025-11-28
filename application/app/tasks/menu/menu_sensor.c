@@ -10,8 +10,8 @@
 #include "menu_system.h"
 #include "util_time.h"
 #include "view_driver.h"
-#include "app_rs232.h"
-#include "app_rs485.h"
+#include "drv_rs232.h"
+#include "drv_rs485.h"
 #include "config_sensor.h"
 #include "util_memory.h"
 

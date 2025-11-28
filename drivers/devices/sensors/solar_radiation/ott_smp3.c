@@ -52,7 +52,7 @@ driver_t *ott_smp3_open(int32_t num, void *opt)
   g_ott_smp3_cfg.modbus.modebus_type = eMODBUS_RS485;
   g_ott_smp3_cfg.modbus.port_num = rs485_num_to_driver_num(ott->port);
   g_ott_smp3_cfg.modbus.id = ott->modbus_id;
-  drv_rs485_init(g_ott_smp3_cfg.modbus.port_num,&uart_config);
+  drv_rs485_init(g_ott_smp3_cfg.modbus.port_num,&uart_config,"Solar Radiation");
 
   g_ott_smp3_driver.cfg = &g_ott_smp3_cfg;
   g_ott_smp3_driver.api = &g_ott_smp3_api;

@@ -85,7 +85,7 @@ void test_hart(void)
 
   g_hart_uart_num = DRV_UART_5_EXT_D;
 
-  drv_uart_init(g_hart_uart_num, &uart_config);
+  drv_uart_init(g_hart_uart_num, &uart_config,"Hart");
 
   drv_power_on(DRV_POWER_HART_24V); 
   

@@ -4,7 +4,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "app_rs485.h"
+#include "drv_rs485.h"
 #include "app_sensor.h"
 #include "cmsis_os2.h"
 #include "dev_io.h"
@@ -189,7 +189,7 @@ driver_t *hjwind_open( void *opt)
   uart_config.stop_bit = 1;
 
   g_hjwind_cfg.rs485_num = rs485_num_to_driver_num(hjwind_config->rs485_port);
-  drv_rs485_init((int)g_hjwind_cfg.rs485_num, &uart_config);
+  drv_rs485_init((int)g_hjwind_cfg.rs485_num, &uart_config,"Wind");
 
   g_hjwind_driver.name = "hj_wind";
   g_hjwind_driver.cfg = &g_hjwind_cfg;

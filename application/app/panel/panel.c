@@ -19,7 +19,7 @@ void panel_init(void)
   uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
 
-  drv_uart_init(g_panel_uart, &uart_config);
+  drv_uart_init(g_panel_uart, &uart_config,"Panel");
 }
 
 

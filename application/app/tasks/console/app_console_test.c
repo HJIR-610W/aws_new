@@ -3,9 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "app_rs232.h"
-#include "app_rs485.h"
+
+#include "drv_rs485.h"
 #include "app_sensor.h"
+#include "drv_rs232.h"
 #include "dev_io.h"
 #include "drv_di.h"
 #include "drv_do.h"

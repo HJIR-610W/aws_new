@@ -15,8 +15,18 @@
 #define DRV_UART_10_CDC  BSP_UART_10_CDC  // USB 디버깅
 
 
+typedef enum rs232_port_e
+{
+  eRS232_RS485_A,
+  eRS232_RS485_B,
+  eRS232_C,
+  eRS232_MAX
+} eRS232_PORT_t;
 
-int32_t drv_uart_init(int32_t num, void *opt);
+
+
+
+int32_t drv_uart_init(int32_t num, void *opt,const char *owner);
 void drv_uart_close(int num);
 int32_t drv_uart_send(int num, const uint8_t *pData, uint16_t dataLen);
 int32_t drv_uart_recv(int num, uint8_t *pBuff, uint16_t rLen,
@@ -38,5 +48,9 @@ int32_t drv_uart_recv_ll(int num, uint8_t *pBuff, uint16_t rLen, uint32_t timeOu
 
 int32_t drv_uart_inject(int num, const uint8_t *pData, uint16_t dataLen);
 int32_t drv_uart_get_charNonBlocking(int32_t drv, uint8_t *pBuff);
+
+uint16_t rs232_get_portList(const char **list,uint16_t listMax);
+int32_t uart_num_to_driver_num(int32_t app_uart_num);
+
 
 #endif

@@ -164,7 +164,7 @@ driver_t* vt100_terminal_open(void)
   vt100_instance.max_cols = VT100_DEFAULT_COLS;
   vt100_instance.uart_io = BSP_UART_0_D_SUB_0;
 
-  drv_uart_init(vt100_instance.uart_io, &uart_config);
+  drv_uart_init(vt100_instance.uart_io, &uart_config,"Terminal");
   vt100_driver.cfg = &vt100_instance;
   vt100_driver.api = &vt100_lcd_api;
   vt100_driver.opened = true;

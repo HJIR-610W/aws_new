@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "app_file.h"
-#include "app_rs232.h"
-#include "app_rs485.h"
+#include "drv_rs232.h"
+#include "drv_rs485.h"
 #include "app_sensor.h"
 #include "app_version.h"
 #include "const_string.h"

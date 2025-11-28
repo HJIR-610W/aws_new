@@ -3,8 +3,8 @@
 
 #include <string.h>
 
-#include "app_rs232.h"
-#include "app_rs485.h"
+#include "drv_rs232.h"
+#include "drv_rs485.h"
 #include "app_sensor.h"
 #include "dev_io.h"
 #include "drv_rs485.h"
@@ -244,7 +244,7 @@ driver_t *hjsnow_open(void *opt)
 
       port_num = uart_num_to_driver_num(rs232_config->rs232_port);
       hjsnow_inst.rs232_num = port_num;
-      drv_uart_init(port_num, &uart_config);
+      drv_uart_init(port_num, &uart_config,"Snow");
 
       hjsnow_driver.cfg = &hjsnow_inst;
       hjsnow_driver.api = &snow_api;
@@ -260,7 +260,7 @@ driver_t *hjsnow_open(void *opt)
       uart_config.stop_bit = 1;
           hjsnow_inst.com_type = COM_TYPE_RS485;
       hjsnow_inst.rs485_num = rs485_num_to_driver_num(hjsnow->rs485_port);
-      drv_rs485_init(hjsnow_inst.rs485_num, &uart_config);
+      drv_rs485_init(hjsnow_inst.rs485_num, &uart_config,"Snow");
       hjsnow_driver.cfg = &hjsnow_inst;
       hjsnow_driver.api = &snow_api;
     }

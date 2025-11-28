@@ -50,7 +50,7 @@ int32_t sjgp215_init(void *opt)
     uart_config.stop_bit = UART_STOP_BIT_1;
 
     sjgp215_inst.rs232_port = uart_num_to_driver_num(cfg->rs232_port);
-    drv_uart_init(sjgp215_inst.rs232_port, &uart_config);
+    drv_uart_init(sjgp215_inst.rs232_port, &uart_config,"Pressure");
 
     OS_CREATE_BINARY_SEM(sjgp215_inst.sem);
 
