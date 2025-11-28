@@ -36,6 +36,7 @@ typedef struct
   //float voltage_offset; // 센서값 = (전압 + 전압_오프셋)*gain + offset
   //float gain;
   //float offset;  사용자 직관성 위해 현재 미사용
+
 } adc_config_t;
 
 

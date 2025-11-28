@@ -11,14 +11,14 @@
 
 
 
-driver_t *soilTemp_open(int32_t num,void *opt)
+driver_t *soilTemp_open(int32_t num,void *opt,const char *owner)
 {
   void *driver;
 
   switch (num)
   {
     case GENERAL_ADC:
-    driver  = general_adc_open(num,opt);
+      driver  = general_adc_open(num,opt,owner);
     break;
   }
 

@@ -35,7 +35,7 @@ driver_t *sunshine_open(int32_t num,void *opt)
   switch (num)
   {
   case GENERAL_ADC:
-    driver = general_adc_open(GENERAL_ADC,opt);
+    driver = general_adc_open(GENERAL_ADC,opt,"Sunshine");
     break;
   case SUNSHINE_CSD3:
       solar_duration_csd3_init(opt);  

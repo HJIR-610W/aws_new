@@ -19,6 +19,8 @@
 #include "const_string.h"
 #include "menu/devices/hj_temperature_menu.h"
 #include "menu/devices/hj_snowfall_menu.h"
+#include "Sensors\general\general_adc.h"
+
 #define SCREEN_COLS 20
 #define SYSTEM_WD 8
 
@@ -419,6 +421,11 @@ typedef struct
   int32_t (*config_set)(sensor_t*, uint8_t);
 } sensor_setup_entry_t;
 
+
+
+
+
+
 int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
@@ -446,7 +453,7 @@ int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
      if (adc->mode == ADC_CFG_MODE_SE)
       {
           choice = adc->single_channel;
-          status = input_combobox("SE Channel", adc_single_list, _countof(adc_single_list), &choice);
+          status = input_combobox("SE Channel", g_adc_single_owner_list, _countof(g_adc_single_owner_list), &choice);
           if (status != MENU_OK)
             break;
           adc->single_channel = choice;
@@ -454,7 +461,7 @@ int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
       else
       {
         choice = adc->diff_channel;
-        status = input_combobox("Diff Channel", adc_diff_list, _countof(adc_diff_list), &choice);
+        status = input_combobox("Diff Channel", g_adc_diff_owner_list, _countof(g_adc_diff_owner_list), &choice);
         if (status != MENU_OK)
           break;
         adc->diff_channel = choice;
@@ -985,7 +992,7 @@ int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
   {
   case BAROMETER_RMYOUNG_61402V_CH:
     choice = p_cfg->adc_channel;
-    status = input_combobox("SE Channel", adc_single_list, _countof(adc_single_list), &choice);
+    status = input_combobox("SE Channel", g_adc_single_owner_list, _countof(g_adc_single_owner_list), &choice);
     if (status != MENU_OK)
       break;
         p_cfg->adc_channel = choice;
@@ -1021,7 +1028,7 @@ int32_t wind_direction_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index
   {
   case WDIN_DIRECTION_RMYOUNG_05103V_CH:
     choice = p_cfg->adc_channel;
-    status = input_combobox("SE Channel", adc_single_list, _countof(adc_single_list), &choice);
+    status = input_combobox("SE Channel", g_adc_single_owner_list, _countof(g_adc_single_owner_list), &choice);
     if (status != MENU_OK)
       break;
         p_cfg->adc_channel = choice;
@@ -1102,7 +1109,7 @@ int32_t solar_duration_csd3_setup(sensor_t *sensor, uint8_t menu_index)
   {
   case SOLAR_DURATION_CSD3_CH:
     choice = p_cfg->adc_channel;
-    status = input_combobox("SE Channel", adc_single_list, _countof(adc_single_list), &choice);
+    status = input_combobox("SE Channel", g_adc_single_owner_list, _countof(g_adc_single_owner_list), &choice);
     if (status != MENU_OK)
       break;
         p_cfg->adc_channel = choice;

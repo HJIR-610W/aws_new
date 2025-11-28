@@ -16,6 +16,7 @@
 #include "util_memory.h"
 #include "vt100_command.h"
 #include "util_stdio.h"
+#include "menu_handler.h"
 
 #define ENTRY_PF(cnt, width, label, format, ...) \
   io_printf("%2d.%-*s:" format "\r\n", cnt, width, label, ##__VA_ARGS__)
@@ -753,7 +754,7 @@ int32_t general_freq_config_set(sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case GENERAL_FREQ_SCALE_FACTOR:
-      status = input_float_adv("변환식 보정계수", -100000, 100000,4, &factor);
+      status = input_float_adv("변환식 보정계수", 0, 0, &factor,"%6.3f");
       if (status != MENU_OK)
         break;
       freq->scale_factor = factor;

@@ -20,7 +20,7 @@
 #endif
 
 
-driver_t *soilTemp_open(int32_t num,void *opt);
+driver_t *soilTemp_open(int32_t num,void *opt,const char *owner);
 float read_sensor_soilTemp(driver_t *sensor,uint8_t *err);
 
 

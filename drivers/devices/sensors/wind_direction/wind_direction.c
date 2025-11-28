@@ -18,7 +18,7 @@ driver_t *wind_direction_open(uint8_t num, void *opt)
   switch (num)
   {
   case GENERAL_ADC:
-    driver = general_adc_open(num, opt);
+    driver = general_adc_open(num, opt,"Wind Direction");
     break;
   case HJ_WIND_DIRECTION:
     driver = hjwind_direction_open(opt);

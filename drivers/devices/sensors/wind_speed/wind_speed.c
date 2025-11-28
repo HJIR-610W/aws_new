@@ -19,7 +19,7 @@ driver_t * windSpeed_open(uint8_t num,void *opt)
   switch (num)
   {
     case GENERAL_ADC:
-    driver = general_adc_open(num,opt);
+    driver = general_adc_open(num,opt,"Wind Speed");
     break;
     case WIND_HJ:
     driver = hjwind_open(opt)  ;

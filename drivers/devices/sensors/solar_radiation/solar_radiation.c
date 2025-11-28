@@ -21,7 +21,7 @@ driver_t *solar_radiation_open(int32_t num,void *opt)
   switch (num)
   {
     case GENERAL_ADC:
-      driver = general_adc_open(GENERAL_ADC,opt);
+      driver = general_adc_open(GENERAL_ADC,opt,"Solar Radiation");
     break;
     case OTT_SMP3_MODBUS:
       driver = ott_smp3_open(OTT_SMP3, opt);

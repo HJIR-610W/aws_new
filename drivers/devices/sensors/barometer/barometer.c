@@ -17,7 +17,7 @@ driver_t *barometer_open(int32_t num,void *opt)
   switch (num)
   {
   case GENERAL_ADC:
-    driver = general_adc_open(GENERAL_ADC,opt);
+    driver = general_adc_open(GENERAL_ADC,opt,"Barometer");
     break;
   case BARO_JINSUNG_SJGP215:
     sjgp215_init(opt);

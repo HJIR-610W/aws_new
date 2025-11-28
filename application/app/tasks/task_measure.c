@@ -310,47 +310,47 @@ void sensor_init(void)
         case B5_SOIL_TEMPERATURE_5CM:
           num = get_driver_number(p_sensor[B5_SOIL_TEMPERATURE_5CM].type);
           para = get_sensor_config(&p_sensor[B5_SOIL_TEMPERATURE_5CM]);
-          g_sensor_driver[B5_SOIL_TEMPERATURE_5CM] = barometer_open(num, para);
+          g_sensor_driver[B5_SOIL_TEMPERATURE_5CM] = soilTemp_open(num, para,"Soil T5cm");
           break;
         case B6_SOIL_TEMPERATURE_10CM:
           num = get_driver_number(p_sensor[B6_SOIL_TEMPERATURE_10CM].type);
           para = get_sensor_config(&p_sensor[B6_SOIL_TEMPERATURE_10CM]);
-          g_sensor_driver[B6_SOIL_TEMPERATURE_10CM] = barometer_open(num, para);
+          g_sensor_driver[B6_SOIL_TEMPERATURE_10CM] = soilTemp_open(num, para,"Soil T10cm");
           break;
         case B7_SOIL_TEMPERATURE_20CM:
           num = get_driver_number(p_sensor[B7_SOIL_TEMPERATURE_20CM].type);
           para = get_sensor_config(&p_sensor[B7_SOIL_TEMPERATURE_20CM]);
-          g_sensor_driver[B7_SOIL_TEMPERATURE_20CM] = barometer_open(num, para);
+          g_sensor_driver[B7_SOIL_TEMPERATURE_20CM] = soilTemp_open(num, para,"Soil T20cm");
           break;
         case B8_SOIL_TEMPERATURE_30CM:
           num = get_driver_number(p_sensor[B8_SOIL_TEMPERATURE_30CM].type);
           para = get_sensor_config(&p_sensor[B8_SOIL_TEMPERATURE_30CM]);
-          g_sensor_driver[B8_SOIL_TEMPERATURE_30CM] = barometer_open(num, para);
+          g_sensor_driver[B8_SOIL_TEMPERATURE_30CM] = soilTemp_open(num, para,"Soil T30cm");
           break;
         case B9_SOIL_TEMPERATURE_50CM:
           num = get_driver_number(p_sensor[B9_SOIL_TEMPERATURE_50CM].type);
           para = get_sensor_config(&p_sensor[B9_SOIL_TEMPERATURE_50CM]);
-          g_sensor_driver[B9_SOIL_TEMPERATURE_50CM] = barometer_open(num, para);
+          g_sensor_driver[B9_SOIL_TEMPERATURE_50CM] = soilTemp_open(num, para,"Soil T50cm");
           break;
         case B10_SOIL_TEMPERATURE_100CM:
           num = get_driver_number(p_sensor[B10_SOIL_TEMPERATURE_100CM].type);
           para = get_sensor_config(&p_sensor[B10_SOIL_TEMPERATURE_100CM]);
-          g_sensor_driver[B10_SOIL_TEMPERATURE_100CM] = barometer_open(num, para);
+          g_sensor_driver[B10_SOIL_TEMPERATURE_100CM] = soilTemp_open(num, para,"Soil T1m");
           break;
         case B11_SOIL_TEMPERATURE_150CM:
           num = get_driver_number(p_sensor[B11_SOIL_TEMPERATURE_150CM].type);
           para = get_sensor_config(&p_sensor[B11_SOIL_TEMPERATURE_150CM]);
-          g_sensor_driver[B11_SOIL_TEMPERATURE_150CM] = barometer_open(num, para);
+          g_sensor_driver[B11_SOIL_TEMPERATURE_150CM] = soilTemp_open(num, para,"Soil T1.5m");
           break;
         case B12_SOIL_TEMPERATURE_300CM:
           num = get_driver_number(p_sensor[B12_SOIL_TEMPERATURE_300CM].type);
           para = get_sensor_config(&p_sensor[B12_SOIL_TEMPERATURE_300CM]);
-          g_sensor_driver[B12_SOIL_TEMPERATURE_300CM] = barometer_open(num, para);
+          g_sensor_driver[B12_SOIL_TEMPERATURE_300CM] = soilTemp_open(num, para,"Soil T3m");
           break;
         case B13_SOIL_TEMPERATURE_500CM:
           num = get_driver_number(p_sensor[B13_SOIL_TEMPERATURE_500CM].type);
           para = get_sensor_config(&p_sensor[B13_SOIL_TEMPERATURE_500CM]);
-          g_sensor_driver[B13_SOIL_TEMPERATURE_500CM] = barometer_open(num, para);
+          g_sensor_driver[B13_SOIL_TEMPERATURE_500CM] = soilTemp_open(num, para,"Soil T5m");
           break;
         case B2_SUNSHINE_DURATION:
           num = get_driver_number(p_sensor[B2_SUNSHINE_DURATION].type);
@@ -362,14 +362,11 @@ void sensor_init(void)
           para = get_sensor_config(&p_sensor[B1_SOLAR_RADIATION]);
           g_sensor_driver[B1_SOLAR_RADIATION] = solar_radiation_open(num, para);
           break;
-        case N10_AIR_TEMPERATURE_50CM:
-          num = get_driver_number(p_sensor[N10_AIR_TEMPERATURE_50CM].type);
-          g_sensor_driver[N10_AIR_TEMPERATURE_50CM] = temperature_open(num, 0);
-          break;
+
         default://현재 구현되어 있지 않은 센서 드라이버는 ADC만 사용하도록함
         num = get_driver_number(p_sensor[i].type);
         para = get_sensor_config(&p_sensor[i]);
-        g_sensor_driver[i] = general_adc_open(num, para);
+        g_sensor_driver[i] = general_adc_open(num, para,"_");
         break;
       }
     }

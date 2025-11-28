@@ -16,7 +16,7 @@ driver_t *humidity_open(int32_t num,void *opt)
   switch (num)
   {
   case GENERAL_ADC:
-    driver = general_adc_open(GENERAL_ADC,opt);
+    driver = general_adc_open(GENERAL_ADC,opt,"humidity");
     break;
   case TEMP_HJ_HUMINITY:
     driver = hjHuminity_open(HJ_HUMINITY, opt);
