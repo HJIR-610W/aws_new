@@ -48,7 +48,7 @@ int32_t rmyoung_61402v_init(void *opt)
   adc_config.scale = 1;
   
   
-  rmyoung_61402v_inst.driver = general_adc_open(GENERAL_ADC,&adc_config,"Barometer");
+  rmyoung_61402v_inst.driver = general_adc_open(GENERAL_ADC,&adc_config,"Pressure");
   
   return   1;
 }
