@@ -29,6 +29,17 @@
 
 static bool g_admin_menu_active=false; //필요에 의해서만 developer 메뉴 활성화 목적
 
+
+
+
+
+
+
+
+
+
+
+
 void draw_aws_setup_page(screen_menu_t* p_win)
 {
   screen_menu_start(p_win);
@@ -94,6 +105,7 @@ void auto_close_timer_delete(void)
 
 
 #define MENU_PASSWORD 7777
+#define MENU_ADMIN_PASSWORD 4560
 void setup_menu(void)
 {
   int32_t index;
@@ -122,6 +134,12 @@ void setup_menu(void)
     {
       break;
     }
+    else if(password == MENU_ADMIN_PASSWORD)
+    {
+      status = setup_menu_developer();
+      if (status == MENU_ABORT)
+        return ;
+    }
     else
     {
       show_popup("Error", "Incorrect password");
@@ -142,20 +160,6 @@ void setup_menu(void)
     {
       break;
     }
-    else if(key== KEY_CODE_RIGHT)
-    {
-      if (menu.index_list[menu.selected_index] == AWS_SETUP_MANAGER)
-      {
-         admin_menu_active_count++;
-        if (admin_menu_active_count == 5)
-        {
-          g_admin_menu_active = true;
-        }
-
-      }
-    }
-
-
 
     if (key == KEY_CODE_ENTER)
     {
@@ -186,9 +190,6 @@ void setup_menu(void)
           break;
         case AWS_SETUP_MANAGER:
           status = setup_menu_manager();
-          break;
-        case AWS_SETUP_DEVELOPER:
-          status = setup_menu_developer();
           break;
         default:
           break;

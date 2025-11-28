@@ -2354,6 +2354,15 @@
                 </file>
             </group>
             <group>
+                <name>crypto</name>
+                <file>
+                    <name>$PROJ_DIR$\..\application\app\crypto\crypto_key.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\application\app\crypto\crypto_key.h</name>
+                </file>
+            </group>
+            <group>
                 <name>panel</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\panel\panel.c</name>
