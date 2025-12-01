@@ -3,7 +3,7 @@
 
 - drivers
   - bsp(각종 드라이버 라우팅 역활)
-    - bsp_uart.c,bsp_uart.h(tl16c554.h와 driver_stm32_uart.h를 포함)
+    - bsp_uart.c,bsp_uart.h(tl16c554.h와 bsp_stm32_uart.h를 포함)
       보드가 제공 할 수 있는 모든 uart포트 노출
     - bsp_접두어
   - components(내장형 장치 드라이버)
@@ -22,7 +22,7 @@
     - bsp_uart.h를 사용하여 애플리케이션에서 필요한 포트만 노출
     - drv_접두어
   - driver_stm32(mcu 기반 드라이버)
-    - driver_stm32_uart.h
+    - bsp_stm32_uart.h
     - stm32_접두어
      보드에 rs232,rs485,hart,sdi와 와 같은 외부 장치와 통신할 수 있는 포트가 있고
 

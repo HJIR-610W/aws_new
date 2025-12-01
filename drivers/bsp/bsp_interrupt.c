@@ -4,7 +4,7 @@
 
 #include "util_memory.h"
 #include "bsp_interrupt.h"
-#include "driver_stm32_uart.h"
+#include "bsp_stm32_uart.h"
 
 typedef struct int_sub_s
 {

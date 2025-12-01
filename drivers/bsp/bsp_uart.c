@@ -1,7 +1,7 @@
 #include "driver_uart_def.h"
 
-#include "driver_stm32_uart.h"
-#include "driver_stm32_cdc.h"
+#include "bsp_stm32_uart.h"
+#include "bsp_stm32_cdc.h"
 #include "bsp_uart.h"
 #include "TL16C554.h"
 #include "cmsis_os2.h"

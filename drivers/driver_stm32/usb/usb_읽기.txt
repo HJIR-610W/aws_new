@@ -1,4 +1,0 @@
-전처리기에서 USE_USB_FS를 선언해야한다.
-usbd_cdc_interface.c : USB CDC 인터페이스 코드
-usbd_conf.c : USB 장치 설정 파일
-usbd_desc.c : USB 장치 설명자(Descriptor)

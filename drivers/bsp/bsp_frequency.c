@@ -4,7 +4,7 @@
 #include <math.h>
 #include "cmsis_os2.h"
 
-#include "driver_stm32_frequency.h"
+#include "bsp_stm32_frequency.h"
 
 // 정의가 누락된 상수들을 임시로 정의
 #define STM32_FREQ_CH_0 0

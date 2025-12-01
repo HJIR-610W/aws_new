@@ -7,7 +7,7 @@
 #include "adc_calibration.h"
 #include "ads1220.h"
 #include "driver_adc_define.h"
-#include "driver_stm32_adc.h"
+#include "bsp_stm32_adc.h"
 
 typedef enum
 {

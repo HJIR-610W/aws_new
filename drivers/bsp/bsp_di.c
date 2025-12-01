@@ -6,7 +6,7 @@
 #include "pcf8575.h"
 #include "util_memory.h"
 #include "pcb_define.h"
-#include "driver_stm32_di.h"
+#include "bsp_stm32_di.h"
 
 // 드라이버 타입 정의
 typedef enum

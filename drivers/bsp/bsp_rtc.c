@@ -1,6 +1,6 @@
 
 #include "bsp_rtc.h"
-#include "driver_stm32_rtc.h"
+#include "bsp_stm32_rtc.h"
 #include "ds1306.h"
 #include "rv8803.h"
 

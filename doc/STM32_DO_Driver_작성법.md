@@ -6,7 +6,7 @@ STM32 마이크로컨트롤러를 위한 범용 DO (Digital Output) 드라이버
 ## 1. 기본 구조 설계
 
 ### 파일 구성
-- `driver_stm32_do.h` : 헤더 파일 (매크로 정의, 함수 선언)  
+- `bsp_stm32_do.h` : 헤더 파일 (매크로 정의, 함수 선언)  
 - `driver_stm32_do.c` : 구현 파일 (실제 동작 코드)
 
 ### 명명 규칙
@@ -14,7 +14,7 @@ STM32 마이크로컨트롤러를 위한 범용 DO (Digital Output) 드라이버
 - 함수: `stm32_do_[동작]` (예: `stm32_do_init`, `stm32_do_high`)
 - 구조체: `do_inst_t` (DO instance type)
 
-## 2. 헤더 파일 작성 (driver_stm32_do.h)
+## 2. 헤더 파일 작성 (bsp_stm32_do.h)
 
 ### 기본 템플릿
 ```c
@@ -51,7 +51,7 @@ void stm32_do_high(int num);
 
 ### 기본 구조체 정의
 ```c
-#include "driver_stm32_do.h"
+#include "bsp_stm32_do.h"
 #include "[pcb_헤더파일].h"  // PCB별 핀 정의 파일
 
 typedef struct do_inst_s
@@ -294,7 +294,7 @@ def generate_c_file(do_pins, output_file):
     """C 파일 생성"""
     with open(output_file, 'w') as f:
         # 헤더 포함
-        f.write('#include "driver_stm32_do.h"\n')
+        f.write('#include "bsp_stm32_do.h"\n')
         f.write('#include "pcb_5_pin.h"\n')
         f.write('#include "stm32f4xx_hal.h"\n')
         f.write('#include <stddef.h>\n')
@@ -331,7 +331,7 @@ def generate_c_file(do_pins, output_file):
 
 ### 기본 사용 패턴
 ```c
-#include "driver_stm32_do.h"
+#include "bsp_stm32_do.h"
 
 int main(void)
 {
