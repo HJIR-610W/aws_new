@@ -106,12 +106,12 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
 
   if (hjsnow_config->physical_layer == ePHYSICAL_RS232)
   {
-    list_cnt = rs232_get_portList(name_table, _countof(name_table));
+    list_cnt = rs232_get_port_name_list(name_table, _countof(name_table));
     port_number = hjsnow_config->rs232_port;
   }
   else
   {
-    list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
+    list_cnt = rs485_get_port_name_list(name_table, _countof(name_table));
     port_number = hjsnow_config->rs485_port;
   }
 
@@ -130,7 +130,7 @@ void draw_hjwind_page(screen_menu_t* p_win, hjwindspeed_config_t* hjwind_config)
   const char *name_table[10];
   int list_cnt;
 
-  list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
+  list_cnt = rs485_get_port_name_list(name_table, _countof(name_table));
 
 
   screen_menu_printf(p_win, HJWIND_PAGE_FULLSET, "%-*s:%d", E_L_W, "Fullset", hjwind_config->full);
@@ -147,7 +147,7 @@ void draw_hjwindDir_page(screen_menu_t* p_win, hjwindDirection_config_t* hjwindD
   const char *name_table[10];
   int list_cnt;
 
-  list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
+  list_cnt = rs485_get_port_name_list(name_table, _countof(name_table));
 
   screen_menu_printf(p_win, HJWINDDIR_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, hjwindDir_config->rs485_port));
   screen_menu_printf(p_win, HJWINDDIR_PAGE_DEFAULT, "%-*s", E_L_W, "Default");
@@ -161,7 +161,7 @@ void draw_solar_radiation_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t*
   const char *name_table[10];
   int list_cnt;
 
-  list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
+  list_cnt = rs485_get_port_name_list(name_table, _countof(name_table));
 
 
   screen_menu_printf(p_win, OTT_SMP3_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, ott_smp3_config->port));
@@ -211,12 +211,12 @@ void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
 
   if (hjtemp_config->physical_layer == ePHYSICAL_RS232)
   {
-    list_cnt = rs232_get_portList(name_table, _countof(name_table));
+    list_cnt = rs232_get_port_name_list(name_table, _countof(name_table));
     port_number = hjtemp_config->rs232_port;
   }
   else
   {
-    list_cnt = drv_rs485_get_portList(name_table, _countof(name_table));
+    list_cnt = rs485_get_port_name_list(name_table, _countof(name_table));
     port_number = hjtemp_config->rs485_port;
   }
 
@@ -234,7 +234,7 @@ void draw_barometer_jinsung_page(screen_menu_t *p_win, jinsung_sjgp215_config_t 
   int list_cnt;
   uint8_t port_number;
 
-  list_cnt = rs232_get_portList(name_table, _countof(name_table));
+  list_cnt = rs232_get_port_name_list(name_table, _countof(name_table));
   port_number = jinsung_config->rs232_port;
   screen_menu_printf(p_win, HJTEMP_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
 }

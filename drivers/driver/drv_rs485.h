@@ -35,4 +35,6 @@ void drv_rs485_flush_rx(int num);
 
 uint16_t drv_rs485_get_portList(const char **list,uint16_t listMax);
 int32_t rs485_num_to_driver_num(int32_t app_rs485_num);
+uint16_t rs485_get_port_name_list(const char **list,uint16_t listMax);
+
 #endif

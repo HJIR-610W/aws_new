@@ -10,9 +10,42 @@ typedef struct app_rs232_s
   const char *name;
 }app_rs232_t;
 
-const app_rs232_t rs232_define[] = {{.num = DRV_UART_2_EXT_A, .name = "232/485 A"},
-                                    {.num = DRV_UART_3_EXT_B, .name = "232/485 B"},
-                                    {.num = DRV_UART_4_EXT_C, .name = "232 C"}};
+const app_rs232_t rs232_define[] = {{.num = DRV_UART_2_EXT_A, .name = "A"},
+                                    {.num = DRV_UART_3_EXT_B, .name = "B"},
+                                    {.num = DRV_UART_4_EXT_C, .name = "C"}};
+
+
+const char *rs232_port_name_list[3] = {"A","B","C"};
+
+
+#define RS232_OWNER_SIZE 20
+char rs232_owner_table[16][RS232_OWNER_SIZE]={{"A"},
+{"B"},
+{"C"}};
+
+const char *g_rs232_owner_list[3] = {
+    rs232_owner_table[0],
+    rs232_owner_table[1],
+    rs232_owner_table[2]};
+
+void update_rs232_owner(eRS232_PORT_t port,const char *owner)
+{
+
+  switch(port)
+  {
+    case eRS232_RS485_A:
+        snprintf(rs232_owner_table[port],RS232_OWNER_SIZE,"A %s",owner);
+    break;
+    case eRS232_RS485_B:
+        snprintf(rs232_owner_table[port],RS232_OWNER_SIZE,"B %s",owner);
+    break;
+    case eRS232_C:
+        snprintf(rs232_owner_table[port],RS232_OWNER_SIZE,"C %s",owner);
+    break;
+  }
+
+}
+ 
 
 
 
@@ -39,7 +72,26 @@ uint16_t rs232_get_portList(const char **list,uint16_t listMax)
   {
     if(i<listMax)
     {
-      list[i] = rs232_define[i].name;
+      list[i] = rs232_owner_table[i];//rs232_define[i].name;
+    }
+    else
+    {
+      list[i] = 0;
+    }
+  }
+  return i;
+}
+
+uint16_t rs232_get_port_name_list(const char **list,uint16_t listMax)
+{
+  uint32_t i=0;
+
+
+  for( i = 0; i <_countof(rs232_define);i++)
+  {
+    if(i<listMax)
+    {
+      list[i] = rs232_port_name_list[i];//rs232_define[i].name;
     }
     else
     {
@@ -50,10 +102,34 @@ uint16_t rs232_get_portList(const char **list,uint16_t listMax)
 }
 
 
-
 int32_t drv_uart_init(int32_t num, void *opt,const char *owner)
 {
-  return bsp_uart_init(num, opt);
+  int32_t status=0;
+
+  switch(num)
+  {
+case DRV_UART_0_VHF:     // VHF
+break;
+case DRV_UART_2_EXT_A:  // 사용자0
+   update_rs232_owner(eRS232_RS485_A,owner);
+   break;
+case DRV_UART_3_EXT_B:  // 사용자1
+   update_rs232_owner(eRS232_RS485_B,owner);
+   break;
+case DRV_UART_4_EXT_C:  // 사용자2
+   update_rs232_owner(eRS232_C,owner);
+   break;
+
+case DRV_UART_5_EXT_D:  // 사용자3
+case DRV_UART_8_CDMA  :  // CDMA
+case DRV_UART_10_CDC :  // USB 디버깅
+
+    break;
+  }
+
+  status =  bsp_uart_init(num, opt);
+
+  return status;
 }
 
 
