@@ -161,6 +161,20 @@ void limit_csd3_solar_duration(void)
   }
 }
 
+void limit_hj_wind(void)
+{
+  if(g_config_sensor.wind_direction_hj_modbus.port>eAPP_RS485_MAX)
+  {
+   g_config_sensor.wind_direction_hj_modbus.port = eAPP_RS485_C;
+       g_config_sensor_dirty_flag = true;
+  }
+
+    if(g_config_sensor.wind_speed_hj_modbus.port>eAPP_RS485_MAX)
+  {
+   g_config_sensor.wind_speed_hj_modbus.port = eAPP_RS485_C;
+       g_config_sensor_dirty_flag = true;
+  }
+}
 
 
 void save_config_sensor(void)
@@ -216,6 +230,7 @@ void load_config_sensor(void)
   limit_rmyoung_wind_direction();
   limit_rmyoung_barometer();
   limit_csd3_solar_duration();
+  limit_hj_wind();
 
   if (g_config_sensor_dirty_flag)
   {

@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "Sensors\wind_speed\wind_speed.h"
+#include "sensors\wind_speed\hj_wind_speed_modbus.h"
 #include "Sensors\general\general_adc.h"
 #include "Sensors\general\general_frequency.h"
 #include "hj_wind.h"
@@ -12,7 +13,7 @@
 
 
 
-driver_t * windSpeed_open(uint8_t num,void *opt)
+driver_t * windSpeed_open(int32_t num,void *opt)
 {
   driver_t *driver=NULL;
 
@@ -31,6 +32,11 @@ driver_t * windSpeed_open(uint8_t num,void *opt)
     wind_spd_rmyoung_05103v_init(opt);
     driver = (driver_t *)wind_spd_rmyoung_05103v_init;
     break;
+    case WIND_SPEED_HJ_MODBUS:
+    hj_wind_speed_init(opt);
+        driver = (driver_t *)hj_wind_speed_init;
+    break;
+
     default:
       break;
   }
@@ -51,6 +57,10 @@ float wind_read(driver_t *driver,int32_t channel,uint8_t *err)
   if (driver == (driver_t*)wind_spd_rmyoung_05103v_init)
   {
     return read_wind_spd_rmyoung_05103v(err);
+  }
+  else if(driver == (driver_t *)hj_wind_speed_init)
+  {
+    return hj_wind_speed_read(err);
   }
 
     if (strncmp(driver->name, "GENERAL_ADC", 11) == 0)

@@ -2536,6 +2536,9 @@
                         <file>
                             <name>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_temperature_menu.c</name>
                         </file>
+                        <file>
+                            <name>$PROJ_DIR$\..\application\app\tasks\menu\devices\hj_wind_speed.c</name>
+                        </file>
                     </group>
                     <group>
                         <name>menu_handler</name>
@@ -2978,7 +2981,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
             </file>
         </group>
         <file>
@@ -3142,7 +3145,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -3154,7 +3157,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\fram\fm25cl.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.h</name>
                 </file>
             </group>
             <group>
@@ -3226,7 +3229,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</name>
                 </file>
             </group>
             <group>
@@ -3411,6 +3414,12 @@
                         <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_direction\hj_wind_direction.c</name>
                     </file>
                     <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_direction\hj_wind_direction_modbus.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_direction\hj_wind_direction_modbus.h</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_direction\wind_dir_rmyoung_05103v.c</name>
                     </file>
                     <file>
@@ -3427,6 +3436,12 @@
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_speed\hj_wind.h</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_speed\hj_wind_speed_modbus.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_speed\hj_wind_speed_modbus.h</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\drivers\devices\sensors\wind_speed\wind_define.h</name>

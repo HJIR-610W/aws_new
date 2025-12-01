@@ -159,14 +159,14 @@ void check_config_app(void)
     }
   }
 
-  if(!is_value_in_array(config.sensor[A3_WIND_SPEED].type,windSpeedList,_countof(windSpeedList)))
+  if(!is_value_in_array(config.sensor[A3_WIND_SPEED].type,wind_speed_list,_countof(wind_speed_list)))
   {
     config.sensor[A3_WIND_SPEED].type = S_T_UNSUED;
   g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[A2_WIND_DIRECTION].type, windDirectionList,
-                          _countof(windDirectionList)))
+  if (!is_value_in_array(config.sensor[A2_WIND_DIRECTION].type, wind_direction_list,
+                          _countof(wind_direction_list)))
   {
     config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
   g_config_app_change_count++;

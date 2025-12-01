@@ -143,6 +143,22 @@ typedef struct solar_duration_csd3_s
   uint8_t adc_channel;
 } solar_duration_csd3_t;
 
+
+
+
+typedef struct wind_speed_hj_config_s
+{
+  uint8_t port;
+  uint8_t modbus_id;
+} wind_speed_hj_config_t;
+
+typedef struct wind_direction_hj_config_s
+{
+  uint8_t port;
+  uint8_t modbus_id;
+} wind_direction_hj_config_t;
+
+
 typedef struct config_manage_s
 {
   config_header_t header;
@@ -161,6 +177,8 @@ typedef struct config_manage_s
   rmyoung_05103v_wind_speed_config_t rmyoung_05103v_wind_speed;
   rmyoung_61402v_barometer_config_t rmyoung_61402v_barometer;
   solar_duration_csd3_t solar_duration_csd3;
+  wind_speed_hj_config_t wind_speed_hj_modbus;
+  wind_direction_hj_config_t wind_direction_hj_modbus;
 } config_sensor_t;
 
 #define WRITE_CFG_SENSOR(x)                                                                    \

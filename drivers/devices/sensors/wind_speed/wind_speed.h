@@ -25,12 +25,13 @@
 
 #define WIND_HJ 100
 #define WIND_SPEED_RMYOUNG_05103V 200
+#define WIND_SPEED_HJ_MODBUS      300
 
 #define WIND_CHANNEL_SPEED     1
 #define WIND_CHANNEL_DIRECTION 2
 
 
-driver_t * windSpeed_open(uint8_t num,void *opt);
+driver_t * windSpeed_open(int32_t num,void *opt);
 float wind_read(driver_t *driver,int32_t channel,uint8_t *err);
 
 

@@ -204,7 +204,7 @@ void test_modbus_task(void)
   modbus.name = "test";
   modbus.port_num = selected_port;
   modbus.sem = 0;
-
+  modbus_init();
   io_printf("Modbus %s 설정:\r\n", interface_name[interface_type]);
   if(interface_type == 0)
     io_printf("  포트: %s (사용자%d)\r\n", rs232_port_name[port_index], port_index);

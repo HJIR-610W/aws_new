@@ -77,8 +77,8 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] =
 
 // 지원하는 센서 목록 정의
 const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
-const uint8_t windDirectionList[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_485, S_T_WIND_DIRECTION_RMYOUNG_05103V, S_T_ADC};
-const uint8_t windSpeedList[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_485, S_T_WIND_SPEED_RMYOUNG_05103V,S_T_FREQ};
+const uint8_t wind_direction_list[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_MODBUS,S_T_WIND_DIRECTION_HJ_485, S_T_WIND_DIRECTION_RMYOUNG_05103V, S_T_ADC};
+const uint8_t wind_speed_list[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_MODBUS,S_T_WIND_SPEED_HJ_485, S_T_WIND_SPEED_RMYOUNG_05103V,S_T_FREQ};
 const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
                             S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM};
 const uint8_t pressureList[] = {S_T_UNSUED, S_T_BARO_RMYOUNG_61402V, S_T_BARO_JINSUNG_SJGP215, S_T_ADC};
@@ -95,8 +95,8 @@ const uint8_t soil_temp_list[] = {S_T_UNSUED, S_T_ADC};
 //ADDMODEL:센서 모델 이 추가되면 여기추가 시켜야함
 const sensor_model_entry_t sensor_table[SENSOR_LIST_MAX] = {
     {.list = temperatureList, .cnt = sizeof(temperatureList)},         // A1_TEMPERATURE
-    {.list = windDirectionList, .cnt = sizeof(windDirectionList)},     // A2_WIND_DIRECTION
-    {.list = windSpeedList, .cnt = sizeof(windSpeedList)},             // A3_WIND_SPEED
+    {.list = wind_direction_list, .cnt = sizeof(wind_direction_list)},     // A2_WIND_DIRECTION
+    {.list = wind_speed_list, .cnt = sizeof(wind_speed_list)},             // A3_WIND_SPEED
     {.list = rainList, .cnt = sizeof(rainList)},                       // A6_RAINFALL_DOT5_1MM
     {.list = pressureList, .cnt = sizeof(pressureList)},               // A7_PRESSURE
     {.list = rainPresentList, .cnt = sizeof(rainPresentList)},         // A8_RAIN_PRESENT
@@ -223,7 +223,17 @@ void *sensor_add(sensor_t *sensor)
          sensor_add_common(sensor, 0);
       return &g_config_sensor.solar_duration_csd3;
       break;
+    case S_T_WIND_SPEED_HJ_MODBUS:
+             sensor_add_common(sensor, 0);
+      return &g_config_sensor.wind_speed_hj_modbus;
+    break;
    break;
+      case S_T_WIND_DIRECTION_HJ_MODBUS:
+             sensor_add_common(sensor, 0);
+      return &g_config_sensor.wind_direction_hj_modbus;
+    break;
+
+
         default:
       break;
   }
@@ -281,6 +291,11 @@ void *get_sensor_config(sensor_t *sensor)
           return &g_config_sensor.jinsung_sjgp215;
       case S_T_SOLAR_DURATION_CSD3:
               return &g_config_sensor.solar_duration_csd3;
+      case S_T_WIND_SPEED_HJ_MODBUS:
+        return &g_config_sensor.wind_speed_hj_modbus;
+        case S_T_WIND_DIRECTION_HJ_MODBUS:
+        return &g_config_sensor.wind_direction_hj_modbus;
+
 
         
       }

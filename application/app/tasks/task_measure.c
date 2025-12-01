@@ -245,6 +245,12 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
   case S_T_SOLAR_DURATION_CSD3:
     num = SUNSHINE_CSD3;
     break;
+  case S_T_WIND_SPEED_HJ_MODBUS:
+      num = WIND_SPEED_HJ_MODBUS;
+  break;
+  case S_T_WIND_DIRECTION_HJ_MODBUS:
+      num = WIND_DIRECTION_HJ_MODBUS;
+  break;
     }
   return num;
 }
@@ -254,7 +260,7 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
  */
 void sensor_init(void)
 {
-  uint8_t num;
+  int32_t num;
   void *para = NULL;
   sensor_t *p_sensor;
 

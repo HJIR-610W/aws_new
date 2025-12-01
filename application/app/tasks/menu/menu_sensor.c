@@ -19,6 +19,7 @@
 #include "const_string.h"
 #include "menu/devices/hj_temperature_menu.h"
 #include "menu/devices/hj_snowfall_menu.h"
+#include "menu/devices/hj_wind_speed.h"
 #include "Sensors\general\general_adc.h"
 
 #define SCREEN_COLS 20
@@ -169,6 +170,8 @@ void draw_solar_radiation_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t*
   screen_menu_printf(p_win, OTT_SMP3_PAGE_DEFAULT, "Default");
 }
 
+
+
 #define RAIN_PRESENT_PAGE_DELAY 0
 void draw_rain_present_page(screen_menu_t* p_win, rain_present_config_t* rain_present_config)
 {
@@ -269,6 +272,44 @@ void draw_solar_duration_csd3_page(screen_menu_t *p_win, solar_duration_csd3_t *
 
 
 
+
+#define HJ_WIND_SPD_MODBUS_PAGE_PORT 0
+#define HJ_WIND_SPD_MODBUS_PAGE_ID 1
+#define HJ_WIND_SPD_MODBUS_PAGE_DEFAULT 2
+#define HJ_WIND_SPD_MODBUS_PAGE_SETTINGS 3
+void draw_wind_speed_hj_modbus_page(screen_menu_t* p_win, wind_speed_hj_config_t* p_wind)
+{
+  const char *name_table[10];
+  int list_cnt;
+
+  list_cnt = rs485_get_port_name_list(name_table, _countof(name_table));
+
+  screen_menu_printf(p_win, HJ_WIND_SPD_MODBUS_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, p_wind->port));
+  screen_menu_printf(p_win, HJ_WIND_SPD_MODBUS_PAGE_ID, "%-*s:%d", E_L_W, "MODBUS ID", p_wind->modbus_id);
+  screen_menu_printf(p_win, HJ_WIND_SPD_MODBUS_PAGE_DEFAULT, "Default");
+  screen_menu_printf(p_win, HJ_WIND_SPD_MODBUS_PAGE_SETTINGS, "Settings");
+}
+
+
+#define HJ_WIND_DIR_MODBUS_PAGE_PORT 0
+#define HJ_WIND_DIR_MODBUS_PAGE_ID 1
+#define HJ_WIND_DIR_MODBUS_PAGE_DEFAULT 2
+void draw_wind_dir_hj_modbus_page(screen_menu_t* p_win, wind_direction_hj_config_t* p_wind)
+{
+  const char *name_table[10];
+  int list_cnt;
+
+  list_cnt = rs485_get_port_name_list(name_table, _countof(name_table));
+
+  screen_menu_printf(p_win, HJ_WIND_DIR_MODBUS_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, p_wind->port));
+  screen_menu_printf(p_win, HJ_WIND_DIR_MODBUS_PAGE_ID, "%-*s:%d", E_L_W, "MODBUS ID", p_wind->modbus_id);
+  screen_menu_printf(p_win, HJ_WIND_DIR_MODBUS_PAGE_DEFAULT, "Default");
+}
+
+
+
+
+
   void draw_sensor_page(screen_menu_t * p_win, sensor_t * p_sensor)
   {
     int32_t label_width = TYPE_LABEL_W;
@@ -323,6 +364,13 @@ void draw_solar_duration_csd3_page(screen_menu_t *p_win, solar_duration_csd3_t *
     case S_T_SOLAR_DURATION_CSD3:
     draw_solar_duration_csd3_page(p_win, get_sensor_config(p_sensor));
     break;
+      case S_T_WIND_SPEED_HJ_MODBUS:
+      draw_wind_speed_hj_modbus_page(p_win, get_sensor_config(p_sensor));
+      break;
+      case S_T_WIND_DIRECTION_HJ_MODBUS:
+            draw_wind_dir_hj_modbus_page(p_win, get_sensor_config(p_sensor));
+      break;
+    
 
           default : break;
   }
@@ -896,7 +944,7 @@ int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
       break;
     case OTT_SMP3_PAGE_MODBUS_ID:
     dec = ott_smp3->modbus_id;
-      status = input_decimal("MODBUS ID", 0, 247, &dec);
+      status = input_decimal("MODBUS ID", 0, 255, &dec);
       if (status != MENU_OK)
         break;
       ott_smp3->modbus_id = dec;
@@ -915,6 +963,7 @@ int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
 
   return status;
 }
+
 int32_t rain_present_setup(sensor_t* sensor, uint8_t menu_index)
 {
   int32_t status = 0;
@@ -1132,6 +1181,107 @@ int32_t solar_duration_csd3_setup(sensor_t *sensor, uint8_t menu_index)
 
 
 
+int32_t wind_speed_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
+{
+  int32_t status = 0;
+  int32_t choice;
+  int32_t dec;
+  wind_speed_hj_config_t* p_wind_speed;
+  const char* portList[10];
+  uint16_t portListCnt;
+
+  p_wind_speed = get_sensor_config(sensor);
+  if (p_wind_speed == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case HJ_WIND_SPD_MODBUS_PAGE_PORT:
+      portListCnt = drv_rs485_get_portList(portList, _countof(portList));
+      choice = p_wind_speed->port;
+      status = input_combobox("RS485 Port",portList, portListCnt, &choice);
+      if (status != MENU_OK)
+        break;
+      p_wind_speed->port = choice;
+      save_config_sensor();
+      break;
+    case HJ_WIND_SPD_MODBUS_PAGE_ID:
+    dec = p_wind_speed->modbus_id;
+      status = input_decimal("MODBUS ID", 0, 255, &dec);
+      if (status != MENU_OK)
+        break;
+      p_wind_speed->modbus_id = dec;
+      save_config_sensor();
+      break;
+    case HJ_WIND_SPD_MODBUS_PAGE_DEFAULT:
+      choice = 0;
+      status = input_active("Set as Default?", &choice);
+      if (status != MENU_OK || choice == 0)
+        break;
+      p_wind_speed->port = eAPP_RS485_C;
+      p_wind_speed->modbus_id = 1;
+      save_config_sensor();
+      break;
+    case HJ_WIND_SPD_MODBUS_PAGE_SETTINGS:
+    status = ctrl_hj_wind_speed();
+    break;
+    }
+
+  return status;
+}
+
+
+int32_t wind_direction_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
+{
+  int32_t status = 0;
+  int32_t choice;
+  int32_t dec;
+  wind_direction_hj_config_t* p_wind_speed;
+  const char* portList[10];
+  uint16_t portListCnt;
+
+  p_wind_speed = get_sensor_config(sensor);
+  if (p_wind_speed == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+    case HJ_WIND_DIR_MODBUS_PAGE_PORT:
+      portListCnt = drv_rs485_get_portList(portList, _countof(portList));
+      choice = p_wind_speed->port;
+      status = input_combobox("RS485 Port",portList, portListCnt, &choice);
+      if (status != MENU_OK)
+        break;
+      p_wind_speed->port = choice;
+      save_config_sensor();
+      break;
+    case HJ_WIND_DIR_MODBUS_PAGE_ID:
+    dec = p_wind_speed->modbus_id;
+      status = input_decimal("MODBUS ID", 0, 255, &dec);
+      if (status != MENU_OK)
+        break;
+      p_wind_speed->modbus_id = dec;
+      save_config_sensor();
+      break;
+    case HJ_WIND_DIR_MODBUS_PAGE_DEFAULT:
+      choice = 0;
+      status = input_active("Set as Default?", &choice);
+      if (status != MENU_OK || choice == 0)
+        break;
+      p_wind_speed->port = eAPP_RS485_C;
+      p_wind_speed->modbus_id = 1;
+      save_config_sensor();
+      break;
+    }
+
+  return status;
+}
+
+
 const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_ADC, .config_set = general_adc_setup},
     {.sensor_type = S_T_FREQ, .config_set = general_freq_setup},
@@ -1147,7 +1297,9 @@ const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_BARO_RMYOUNG_61402V, .config_set = barometer_rmyoun_61402V_setup},
     {.sensor_type = S_T_WIND_DIRECTION_RMYOUNG_05103V, .config_set = wind_direction_rmyoung_05103V_setup},
     {.sensor_type = S_T_WIND_SPEED_RMYOUNG_05103V, .config_set = wind_speed_rmyoung_05103V_setup},
-    {.sensor_type = S_T_SOLAR_DURATION_CSD3, .config_set = solar_duration_csd3_setup}};
+    {.sensor_type = S_T_SOLAR_DURATION_CSD3, .config_set = solar_duration_csd3_setup},
+    {.sensor_type = S_T_WIND_SPEED_HJ_MODBUS, .config_set = wind_speed_hj_modbus_setup},
+    {.sensor_type = S_T_WIND_DIRECTION_HJ_MODBUS, .config_set = wind_direction_hj_modbus_setup}};
 
 int32_t setup_sensor_set(sensor_t* p_sensor, uint8_t choice)
 {

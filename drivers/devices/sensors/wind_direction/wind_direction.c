@@ -5,13 +5,15 @@
 
 #include "Sensors\wind_speed\wind_speed.h"
 #include "sensors\wind_speed\hj_wind.h"
+#include "Sensors\wind_direction\hj_wind_direction_modbus.h"
+
 #include "Sensors\general\general_adc.h"
 #include "Sensors\general\general_frequency.h"
 #include "Sensors\wind_speed\hj_wind.h"
 #include "Sensors\wind_direction\hj_wind_direction.h"
 #include "Sensors\wind_direction\wind_dir_rmyoung_05103v.h"
 #include "sensors\wind_direction\wind_direction.h"
-driver_t *wind_direction_open(uint8_t num, void *opt)
+driver_t *wind_direction_open(int32_t num, void *opt)
 {
   driver_t *driver = NULL;
 
@@ -30,6 +32,10 @@ driver_t *wind_direction_open(uint8_t num, void *opt)
     wind_dir_rmyoung_05103v_init(opt);
     driver = (driver_t *)wind_dir_rmyoung_05103v_init;
      break;
+  case WIND_DIRECTION_HJ_MODBUS:
+    hj_wind_direction_init(opt);
+      driver = (driver_t *)hj_wind_direction_init;
+  break;
     default : break;
   }
 
@@ -50,6 +56,10 @@ float wind_direction_read(driver_t *driver, int32_t channel, uint8_t *err)
   {
     return read_wind_dir_rmyoung_05103v(err);
   }
+  else if(driver == (driver_t*)hj_wind_direction_init)
+  {
+    return hj_wind_direction_read(err);
+  }
 
     if (strncmp(driver->name, "GENERAL_ADC", 11) == 0)
     {
@@ -62,3 +72,5 @@ float wind_direction_read(driver_t *driver, int32_t channel, uint8_t *err)
 
   return api->read(driver, channel, err);
 }
+
+
