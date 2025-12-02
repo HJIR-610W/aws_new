@@ -6,88 +6,33 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "cli_input.h"
+#include "terminal.h"
 #include "drv_rs232.h"
 #include "drv_rs485.h"
-#include "drv_rs485.h"
-#include "drv_rs232.h"
 #include "pcb_define.h"
-#include "stm32f4xx_hal.h"
+
 #include "system_err.h"
 #include "FreeRTOS.h"  // pvPortMalloc, vPortFree 사용 시 필요
-#include "terminal.h"
-#include "tlsf.h"
 #include "user_heap.h"
 #include "util_time.h"
-#include "cli_input.h"
 #include "task_telnet_server.h"
 #include "terminal_bridge.h"
 
 static int32_t debug_uart_num = -1;
 
-USART_TypeDef *debug_uart_base = USART1;
 
-void debug_uart_init(uint32_t baud_rate)
-{
-  uint32_t pclk;
 
-  if (debug_uart_base == USART1)
-  {
-    pclk = HAL_RCC_GetPCLK2Freq();
-  }
-  else
-  {
-    pclk = HAL_RCC_GetPCLK1Freq();
-  }
-
-  // 1. UART3 및 GPIO 클럭 활성화
-  RCC->APB1ENR |= RCC_APB1ENR_USART3EN;  // UART3 클럭 활성화
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;   // GPIOB 클럭 활성화
-
-  RCC->APB1RSTR |= RCC_APB1RSTR_USART3RST;   // USART3 리셋 활성화
-  RCC->APB1RSTR &= ~RCC_APB1RSTR_USART3RST;  // USART3 리셋 비활성화
-
-  // 2. GPIO 핀 설정 (PB10: TX, PB11: RX)
-  GPIOB->MODER &= ~(GPIO_MODER_MODER10 | GPIO_MODER_MODER11);     // 초기화
-  GPIOB->MODER |= (GPIO_MODER_MODER10_1 | GPIO_MODER_MODER11_1);  // AF 모드 설정
-  GPIOB->AFR[1] &= ~((0xF << (2 * 4)) | (0xF << (3 * 4)));        // AFR[1] 클리어 (핀 10, 11)
-  GPIOB->AFR[1] |= (7 << (2 * 4)) | (7 << (3 * 4));               // AF7 (USART3)
-
-  // 3. UART 설정
-  debug_uart_base->CR1 &= ~USART_CR1_UE;  // UART 비활성화
-
-  // BRR 레지스터 설정
-  debug_uart_base->BRR = UART_BRR_SAMPLING16(pclk, baud_rate);
-
-  // (2) 데이터 비트, 패리티, 정지 비트 설정
-  debug_uart_base->CR1 &= ~USART_CR1_M;     // 8 데이터 비트
-  debug_uart_base->CR2 &= ~USART_CR2_STOP;  // 1 정지 비트
-  debug_uart_base->CR1 &= ~USART_CR1_PCE;   // 패리티 비활성화
-
-  // (3) 송신(TX) 및 수신(RX) 활성화
-  debug_uart_base->CR1 |= USART_CR1_TE;  // 송신 활성화
-
-  // (4) UART 활성화
-  debug_uart_base->CR1 |= USART_CR1_UE;  // UART 활성화
-
-  // (5) 송신 준비 확인
-  while (!(debug_uart_base->SR & USART_SR_TC));  // 송신 완료 플래그 확인
+void set_debug_uart_handle(int32_t drv) 
+{ 
+  debug_uart_num = drv; 
 }
 
-void set_debug_uart_handle(int32_t drv) { debug_uart_num = drv; }
-
-int32_t get_debug_uart_handle(void) { return debug_uart_num; }
-
-/**
- * @brief os구동 없을때 사용
- */
-void debug_puts_nonos(char *str)
-{
-  while (*str)
-  {
-    while (!(debug_uart_base->SR & USART_SR_TXE));  // 송신 버퍼가 비어있는지 확인
-    debug_uart_base->DR = (uint8_t)*str++;          // 데이터 레지스터에 문자 송신
-  }
+int32_t get_debug_uart_handle(void) 
+{ 
+  return debug_uart_num; 
 }
+
 
 void io_send(uint8_t *p_in_data, uint16_t data_len)
 {
@@ -250,11 +195,6 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
 
 
 
-
-
-
-
-
 int32_t io_recv(char *p_out_buffer, uint16_t out_size, uint32_t timeout)
 {
   int32_t cnt;
@@ -262,6 +202,35 @@ int32_t io_recv(char *p_out_buffer, uint16_t out_size, uint32_t timeout)
   cnt = drv_uart_recv(debug_uart_num, (uint8_t *)p_out_buffer, out_size, timeout);
 
   return cnt;
+}
+
+void io_printf_color(int color, const char *pFmt, ...)
+{
+  io_printf("%c[%dm", 27, color);
+
+  va_list args;
+  va_start(args, pFmt);
+  io_vprintf(pFmt, args);
+  va_end(args);
+
+  io_printf("%c[%dm", 27, 37);
+}
+
+int io_scanf_s(const char *fmt, ...)
+{
+  va_list args;
+  int ret;
+
+  va_start(args, fmt);
+  ret = cli_vscanf_s(fmt, args); 
+  va_end(args);
+
+  return ret;
+}
+
+int32_t io_inject(uint8_t *p_data,uint32_t data_len)
+{
+  return drv_uart_inject(debug_uart_num, p_data, data_len);
 }
 
 void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
@@ -463,35 +432,4 @@ void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)
     if ((i + 1) % 16 == 0 || i + 1 == length)
       task_printf("\r\n");
   }
-}
-
-void io_printf_color(int color, const char *pFmt, ...)
-{
-  io_printf("%c[%dm", 27, color);
-
-  va_list args;
-  va_start(args, pFmt);
-  io_vprintf(pFmt, args);
-  va_end(args);
-
-  io_printf("%c[%dm", 27, 37);
-}
-
-int io_scanf_s(const char *fmt, ...)
-{
-  va_list args;
-  int ret;
-
-  va_start(args, fmt);
-  ret = cli_vscanf_s(fmt, args); 
-  va_end(args);
-
-  return ret;
-}
-
-
-
-int32_t io_inject(uint8_t *p_data,uint32_t data_len)
-{
-  return drv_uart_inject(debug_uart_num, p_data, data_len);
 }

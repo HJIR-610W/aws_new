@@ -61,10 +61,9 @@ int32_t io_recv(char *out, uint16_t outSize, uint32_t timeout);
 void io_put_ch(char ch);
 void io_send(uint8_t *pData,uint16_t dataLen);
 void io_puts(const char *str);
-
+int32_t io_vprintf(const char *pFmt, va_list ap);
+int io_scanf_s(const char *fmt, ...);
 int32_t io_inject(uint8_t *p_data,uint32_t data_len);
-void debug_uart_init(uint32_t baud_rate);
-
 
 
 void debug_puts_nonos(char *str);
@@ -78,8 +77,7 @@ void set_task_id(void *task_id);
 void task_printf( const char *pFmt, ...);
 void task_hex_dump(const char *title, const uint8_t *data, uint32_t length);
 void set_forced_print(bool set);
-int32_t io_vprintf(const char *pFmt, va_list ap);
-int io_scanf_s(const char *fmt, ...);
+
 
 
 #endif

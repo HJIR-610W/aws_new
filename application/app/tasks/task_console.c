@@ -19,7 +19,7 @@
 #include "vt100_command.h"
 #include "console_test.h"
 #include "system_err.h"
-#include "dev_io.h"
+
 
 int32_t console_uart_num = -1;
 
@@ -48,28 +48,28 @@ void print_signature(void)
   uint8_t rel;
   DATE_TIME_BUF ct;
 
+  io_printf("\r\n");
+
+  io_printf("┌──────────────────────────────────────────────┐\r\n");
+  io_printf("│ HWAJIN T&I CO.,LTD.                          │\r\n");
+  io_printf("├──────────────────────────────────────────────┤\r\n");
+  io_printf("│ AWS                                          │\r\n"); 
+
   get_app_version(&major,&minor,&fix,&rel);
   get_app_build(&ct);
 
-  io_printf("\r\n");
-
-
-io_printf("┌──────────────────────────────────────────────┐\r\n");
-io_printf("│ HWAJIN T&I CO.,LTD.                          │\r\n");
-io_printf("├──────────────────────────────────────────────┤\r\n");
-io_printf("│ AWS                                          │\r\n"); 
-io_printf("│ App  %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
+  io_printf("│ App  %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
           major, minor, fix, rel, ct.Year, ct.Month, ct.Day,
           ct.Hour, ct.Min, ct.Sec);
 
-get_boot_version(&major, &minor, &fix, &rel);
-get_boot_build(&ct);
+  get_boot_version(&major, &minor, &fix, &rel);
+  get_boot_build(&ct);
 
-io_printf("│ Boot %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
+  io_printf("│ Boot %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
           major, minor, fix, rel, ct.Year, ct.Month, ct.Day,
           ct.Hour, ct.Min, ct.Sec);
 
-io_printf("└──────────────────────────────────────────────┘\r\n");
+  io_printf("└──────────────────────────────────────────────┘\r\n");
 
 
 }
@@ -80,26 +80,10 @@ void SHELL_SendDataCallback(uint8_t* buf, uint32_t len)
   io_send(buf,len);
 }
 
-void SHELL_ReceiveDataCallback(uint8_t* buf, uint32_t len)
+void SHELL_ReceiveDataCallback(uint8_t* buffer, uint32_t len)
 {
-    drv_uart_get_char(console_uart_num, buf, len);
-}
-
-
-char g_buffer[]={"321테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.테스트중입니다.\r\n"};
-void test_console(void)
-{
-  for(int i = 0;i< sizeof(g_buffer);i++)
-  {
-   // g_buffer[i] = i+'!';
-  }
-  while(1)
-  {
-
-    drv_uart_send(console_uart_num,(uint8_t *)g_buffer,strlen(g_buffer));
-    osDelay(10);
-    
-  }
+   // drv_uart_get_char(console_uart_num, buffer, len);
+  io_recv(buffer,len,osWaitForever);
 }
 
 
@@ -107,16 +91,17 @@ void consoleTask(void *arg)
 {
   shell_context_struct user_context;
   uint8_t instance = 0;
-
-
   int mode = (int)arg;
   char buffer[100];
   const char *cli_aws = "\x1B[32mAWS>> \x1B[37m";
   const char *cli_test = "\x1B[32mAWS_TEST>> \x1B[37m";
 
- //test_console();
   osDelay(1000);
+
   io_printf("\r\n\r\n");
+  // io_printf(VT100_CLEAR_SCREEN);
+  // io_printf(VT100_CURSOR_HOME);
+  print_signature();
 
   if (restore_error(buffer,sizeof(buffer)))
   {
@@ -124,11 +109,6 @@ void consoleTask(void *arg)
   }
   
   io_printf("alarm log count:%d\r\n",alarm_get_log_count());
-
-    // io_printf(VT100_CLEAR_SCREEN);
-    // io_printf(VT100_CURSOR_HOME);
-    print_signature();
-
   DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
 
   if(mode==0)
@@ -148,9 +128,10 @@ void consoleTask(void *arg)
   SHELL_RegisterCommand(&developCmd);
   SHELL_Main(&user_context);
 
+
   while(1)
   {
-    drv_uart_send(console_uart_num,(uint8_t *)g_buffer,sizeof(g_buffer));
+    io_puts("Debug menu exited\r\n");
     osDelay(1000);
   }
 }
@@ -179,7 +160,7 @@ void consoleTask_init(void *arg)
 
   console_uart_num = BSP_UART_10_CDC  ;
   
-    
+
   result = drv_uart_init(console_uart_num, &uart_config,"Console");
    
   if(result > 0)                                                                                
