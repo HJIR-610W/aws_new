@@ -342,7 +342,7 @@ void write_reg(uint8_t startAddress,uint8_t numRegs,uint8_t *pData)
   uint32_t i;
   uint8_t data;
 
-  bsp_spi_pend_sem(ads1220_inst.spi_num);
+  bsp_spi_lock(ads1220_inst.spi_num);
   bsp_do_low(ads1220_inst.cs_do_num);
   bsp_us_delay(50);
 
@@ -356,7 +356,7 @@ void write_reg(uint8_t startAddress,uint8_t numRegs,uint8_t *pData)
   }
 
   bsp_do_high(ads1220_inst.cs_do_num);
-  bsp_spi_post_sem(ads1220_inst.spi_num);
+  bsp_spi_unlock(ads1220_inst.spi_num);
 }
 
 void read_reg(uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff)
@@ -366,7 +366,7 @@ void read_reg(uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff)
     uint8_t data;
 
 
-    bsp_spi_pend_sem(ads1220_inst.spi_num);
+    bsp_spi_lock(ads1220_inst.spi_num);
 
     bsp_do_low(ads1220_inst.cs_do_num);
 
@@ -383,18 +383,18 @@ void read_reg(uint8_t startAddress,uint8_t numRegs, uint8_t *pBuff)
     }
 
     bsp_do_high(ads1220_inst.cs_do_num);
-    bsp_spi_post_sem(ads1220_inst.spi_num);
+    bsp_spi_unlock(ads1220_inst.spi_num);
 
 }
 
 void ads1220_start_conv(void)
 {
-  bsp_spi_pend_sem(ads1220_inst.spi_num);
+  bsp_spi_lock(ads1220_inst.spi_num);
   bsp_do_low(ads1220_inst.cs_do_num);
   bsp_us_delay(50);
   bsp_spi_send_byte(ads1220_inst.spi_num,ADS1220_CMD_SYNC);
   bsp_do_high(ads1220_inst.cs_do_num);
-  bsp_spi_post_sem(ads1220_inst.spi_num);
+  bsp_spi_unlock(ads1220_inst.spi_num);
    
 }
 
@@ -433,7 +433,7 @@ void ads1220_set_diffChannel(uint32_t ch)
 void ads1220_reset_sw(void)
 {
 
-  bsp_spi_pend_sem(ads1220_inst.spi_num);
+  bsp_spi_lock(ads1220_inst.spi_num);
 
   bsp_do_low(ads1220_inst.cs_do_num);
 
@@ -441,7 +441,7 @@ void ads1220_reset_sw(void)
 
   bsp_do_high(ads1220_inst.cs_do_num);
 
-  bsp_spi_post_sem(ads1220_inst.spi_num);
+  bsp_spi_unlock(ads1220_inst.spi_num);
 }
 
 /**
@@ -483,7 +483,7 @@ int32_t ads1220_read_adc(uint8_t *err)
         return 0;
     }
 
-    bsp_spi_pend_sem(ads1220_inst.spi_num);
+    bsp_spi_lock(ads1220_inst.spi_num);
     bsp_do_low(ads1220_inst.cs_do_num);
     //이 명령어 전송되면 drdy 핀 올라감
     bsp_spi_send_byte(ads1220_inst.spi_num,ADS1220_CMD_RDATA);
@@ -499,7 +499,7 @@ int32_t ads1220_read_adc(uint8_t *err)
 
     bsp_do_high(ads1220_inst.cs_do_num);
     *err = 0;
-    bsp_spi_post_sem(ads1220_inst.spi_num);
+    bsp_spi_unlock(ads1220_inst.spi_num);
     
     return data;
 }

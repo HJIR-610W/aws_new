@@ -281,13 +281,13 @@ uint8_t bsp_spi_read_bytes(int num, uint8_t *p_buff, uint16_t read_len)
   return 0;
 }
 
-void bsp_spi_pend_lock(int num)
+void bsp_spi_lock(int num)
 { 
   OS_MUTEX_LOCK(spi_inst[num].lock, osWaitForever); 
   
 }
 
-void bsp_spi_post_lock(int num)
+void bsp_spi_unlock(int num)
 { 
   OS_MUTEX_UNLOCK(spi_inst[num].lock);
   

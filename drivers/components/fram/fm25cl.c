@@ -58,13 +58,13 @@ void fm25lc_init(void)
 
  void fram_cmd(uint8_t cmd)
 {
-  bsp_spi_pend_sem(fm25lc_inst.spi_num);
+  bsp_spi_lock(fm25lc_inst.spi_num);
   
   bsp_do_low(fm25lc_inst.cs_do_num);
   bsp_spi_send_byte(fm25lc_inst.spi_num, cmd);
   bsp_do_high(fm25lc_inst.cs_do_num);
   
-  bsp_spi_post_sem(fm25lc_inst.spi_num);
+  bsp_spi_unlock(fm25lc_inst.spi_num);
 }
 
 void fm25cl_write(uint32_t offset,const  uint8_t *pData,uint16_t wLen)
@@ -73,7 +73,7 @@ void fm25cl_write(uint32_t offset,const  uint8_t *pData,uint16_t wLen)
 #if !FRAM_1024
    fram_cmd(WREN);
 #endif
-     bsp_spi_pend_sem(fm25lc_inst.spi_num);
+     bsp_spi_lock(fm25lc_inst.spi_num);
      
     bsp_do_low(fm25lc_inst.cs_do_num);
     bsp_spi_send_byte(fm25lc_inst.spi_num,WRITE);
@@ -87,7 +87,7 @@ void fm25cl_write(uint32_t offset,const  uint8_t *pData,uint16_t wLen)
     bsp_spi_send_bytes(fm25lc_inst.spi_num,( uint8_t *)pData,wLen);
     bsp_do_high(fm25lc_inst.cs_do_num);
     
-   bsp_spi_post_sem(fm25lc_inst.spi_num);
+   bsp_spi_unlock(fm25lc_inst.spi_num);
     OS_POST_SEM(fm25lc_inst.sem);
 }
 
@@ -97,7 +97,7 @@ void fm25cl_read(uint32_t offset,uint8_t *pBuff,uint16_t rLen)
 
   OS_PEND_SEM(fm25lc_inst.sem, osWaitForever);
   
-       bsp_spi_pend_sem(fm25lc_inst.spi_num);
+       bsp_spi_lock(fm25lc_inst.spi_num);
        
        
   bsp_do_low(fm25lc_inst.cs_do_num);
@@ -117,7 +117,7 @@ void fm25cl_read(uint32_t offset,uint8_t *pBuff,uint16_t rLen)
     
     bsp_do_high(fm25lc_inst.cs_do_num);
 
-       bsp_spi_post_sem(fm25lc_inst.spi_num);
+       bsp_spi_unlock(fm25lc_inst.spi_num);
        
        
     OS_POST_SEM(fm25lc_inst.sem);
@@ -181,14 +181,14 @@ uint8_t fm25cl_read_status(void)
 {
   uint8_t data=0;
   OS_PEND_SEM(fm25lc_inst.sem, osWaitForever);
-         bsp_spi_pend_sem(fm25lc_inst.spi_num);
+         bsp_spi_lock(fm25lc_inst.spi_num);
          
   bsp_do_low(fm25lc_inst.cs_do_num);
   bsp_spi_send_byte(fm25lc_inst.spi_num, RDSR);
   data = bsp_spi_read_byte(fm25lc_inst.spi_num);
   bsp_do_high(fm25lc_inst.cs_do_num);
 
-         bsp_spi_post_sem(fm25lc_inst.spi_num);
+         bsp_spi_unlock(fm25lc_inst.spi_num);
              OS_POST_SEM(fm25lc_inst.sem);
   fm25_status_parse(data);
 

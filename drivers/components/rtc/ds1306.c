@@ -47,7 +47,7 @@ int32_t ds1306_read_reg(driver_t *ds1306, uint8_t reg,uint8_t *rval)
   int32_t err=0;
   ds1306_cfg_t *cfg=(ds1306_cfg_t*)ds1306->cfg;
 
-  bsp_spi_pend_sem(cfg->spi_num);
+  bsp_spi_lock(cfg->spi_num);
 
   bsp_do_high(cfg->cs_do_num);
 
@@ -58,7 +58,7 @@ int32_t ds1306_read_reg(driver_t *ds1306, uint8_t reg,uint8_t *rval)
 
   bsp_do_low(cfg->cs_do_num);
 
-  bsp_spi_post_sem(cfg->spi_num);
+  bsp_spi_unlock(cfg->spi_num);
   
   return err;
 }
@@ -69,7 +69,7 @@ int32_t ds1306_write_reg(driver_t *ds1306,uint8_t reg,uint8_t val)
     int32_t err=0;
   ds1306_cfg_t *cfg=(ds1306_cfg_t*)ds1306->cfg;
 
-  bsp_spi_pend_sem(cfg->spi_num);
+  bsp_spi_lock(cfg->spi_num);
 
   bsp_do_high(cfg->cs_do_num);
     
@@ -79,7 +79,7 @@ int32_t ds1306_write_reg(driver_t *ds1306,uint8_t reg,uint8_t val)
 
   bsp_do_low(cfg->cs_do_num);
  
-   bsp_spi_post_sem(cfg->spi_num);
+   bsp_spi_unlock(cfg->spi_num);
   return err;
 
 }
@@ -108,7 +108,7 @@ void ds1306_read_time(driver_t *ds1306, DATE_TIME_BUF *t) {
     ds1306_cfg_t *cfg = (ds1306_cfg_t *)ds1306->cfg;
 
     // SPI 동기화
-    bsp_spi_pend_sem(cfg->spi_num);
+    bsp_spi_lock(cfg->spi_num);
     bsp_do_high(cfg->cs_do_num);
 
     // 시작 레지스터 주소 전송 (읽기 모드)
@@ -119,7 +119,7 @@ void ds1306_read_time(driver_t *ds1306, DATE_TIME_BUF *t) {
 
     // SPI 통신 종료
     bsp_do_low(cfg->cs_do_num);
-    bsp_spi_post_sem(cfg->spi_num);
+    bsp_spi_unlock(cfg->spi_num);
 
     // BCD 데이터를 이진수로 변환
     t->Sec  = BCD_to_Decimal(time_data[DS1306_SECONDS]); // 초

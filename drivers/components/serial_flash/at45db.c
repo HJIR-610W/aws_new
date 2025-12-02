@@ -160,7 +160,7 @@ static void at45db_write_buffer( uint8_t buffer_choice, uint32_t address, const 
 {
   uint8_t cmd_buff[4];
 
-  bsp_spi_pend_sem(at45db_inst.spi_num);
+  bsp_spi_lock(at45db_inst.spi_num);
 
   bsp_do_low(at45db_inst.cs_do_num);
   at45db_delay(1);
@@ -184,7 +184,7 @@ static void at45db_write_buffer( uint8_t buffer_choice, uint32_t address, const 
   at45db_delay(1);
   bsp_do_high(at45db_inst.cs_do_num);
 
-  bsp_spi_post_sem(at45db_inst.spi_num);
+  bsp_spi_unlock(at45db_inst.spi_num);
 }
 
 static void at45db_page_write_cmd(uint32_t page)
@@ -211,7 +211,7 @@ static void at45db_page_write_cmd(uint32_t page)
  */
 static void at45db_buffer_to_memory(uint8_t buffer_choice, uint32_t page)
 {
-  bsp_spi_pend_sem(at45db_inst.spi_num);
+  bsp_spi_lock(at45db_inst.spi_num);
 
   bsp_do_low(at45db_inst.cs_do_num);
   at45db_delay(1);
@@ -231,14 +231,14 @@ static void at45db_buffer_to_memory(uint8_t buffer_choice, uint32_t page)
   at45db_delay(1);
   bsp_do_high(at45db_inst.cs_do_num);
 
-  bsp_spi_post_sem(at45db_inst.spi_num);
+  bsp_spi_unlock(at45db_inst.spi_num);
 }
 
 
 static void at45db_reg_read(uint8_t cmd, uint8_t *info, uint8_t len)
 {
   memset(info, 0, len);
-  bsp_spi_pend_sem(at45db_inst.spi_num);
+  bsp_spi_lock(at45db_inst.spi_num);
 
   bsp_do_low(at45db_inst.cs_do_num);
   at45db_delay(1);
@@ -250,13 +250,13 @@ static void at45db_reg_read(uint8_t cmd, uint8_t *info, uint8_t len)
   at45db_delay(1);
   bsp_do_high(at45db_inst.cs_do_num);
 
-  bsp_spi_post_sem(at45db_inst.spi_num);
+  bsp_spi_unlock(at45db_inst.spi_num);
 }
 
 
 static void at45db_reg_write(uint8_t *cmd)
 {
-  bsp_spi_pend_sem(at45db_inst.spi_num);
+  bsp_spi_lock(at45db_inst.spi_num);
 
   bsp_do_low(at45db_inst.cs_do_num);
   at45db_delay(1);
@@ -266,7 +266,7 @@ static void at45db_reg_write(uint8_t *cmd)
   at45db_delay(1);
   bsp_do_high(at45db_inst.cs_do_num);
 
-  bsp_spi_post_sem(at45db_inst.spi_num);
+  bsp_spi_unlock(at45db_inst.spi_num);
 }
 
 
@@ -325,7 +325,7 @@ void at45db_write_page(uint32_t write_addr, uint8_t *write_buff)
  */
 static void at45db_memory_to_buffer(uint8_t buffer_choice, uint32_t page)
 {
-  bsp_spi_pend_sem(at45db_inst.spi_num);
+  bsp_spi_lock(at45db_inst.spi_num);
   bsp_do_low(at45db_inst.cs_do_num);
 
   at45db_delay(1);
@@ -345,7 +345,7 @@ static void at45db_memory_to_buffer(uint8_t buffer_choice, uint32_t page)
   at45db_delay(1);
   bsp_do_high(at45db_inst.cs_do_num);
 
-  bsp_spi_post_sem(at45db_inst.spi_num);
+  bsp_spi_unlock(at45db_inst.spi_num);
 }
 /**
  * @brief AT45DB 내부 버퍼에서 데이터 읽기
@@ -358,7 +358,7 @@ static void at45db_read_buffer( uint8_t buffer_choice, uint32_t address, uint8_t
 {
   uint8_t cmd_buff[5];
 
-  bsp_spi_pend_sem(at45db_inst.spi_num);
+  bsp_spi_lock(at45db_inst.spi_num);
 
   bsp_do_low(at45db_inst.cs_do_num);
   at45db_delay(1);
@@ -380,7 +380,7 @@ static void at45db_read_buffer( uint8_t buffer_choice, uint32_t address, uint8_t
   bsp_spi_read_bytes(at45db_inst.spi_num, (uint8_t *)string, buf_len);
   at45db_delay(1);
   bsp_do_high(at45db_inst.cs_do_num);
-  bsp_spi_post_sem(at45db_inst.spi_num);
+  bsp_spi_unlock(at45db_inst.spi_num);
 }
 void at45db_read_page(uint32_t read_addr, uint8_t *read_buff)
 {
