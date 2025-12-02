@@ -20,8 +20,8 @@
 #include "app_logging.h"
 #include "app_alarm_logging.h"
 
-#include "sensor_data\rain_data.h"
-#include "sensor_data\sunshine_data.h"
+#include "rain_data.h"
+#include "sunshine_data.h"
 
 extern void config_hj_reset(void);
 

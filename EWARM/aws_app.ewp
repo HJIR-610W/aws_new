@@ -443,6 +443,9 @@
                     <state>$PROJ_DIR$\..\Middlewares\modbus</state>
                     <state>$PROJ_DIR$\..\application\app\tasks\sensor_data</state>
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\littlefs</state>
+                    <state>$PROJ_DIR$\..\application\app\tasks\aws\core</state>
+                    <state>$PROJ_DIR$\..\application\app\tasks\panel</state>
+                    <state>$PROJ_DIR$\..\application\version</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2357,27 +2360,6 @@
                 </file>
             </group>
             <group>
-                <name>panel</name>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\app\panel\panel.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\app\panel\panel_aws_std.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\app\panel\panel_common.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\app\panel\panel_hansung.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\app\panel\panel_hj.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\app\panel\panel_mooju.c</name>
-                </file>
-            </group>
-            <group>
                 <name>protocols</name>
                 <group>
                     <name>aws</name>
@@ -2420,6 +2402,21 @@
                 <name>tasks</name>
                 <group>
                     <name>aws</name>
+                    <group>
+                        <name>core</name>
+                        <file>
+                            <name>$PROJ_DIR$\..\application\app\tasks\aws\core\aws_default_data.c</name>
+                        </file>
+                        <file>
+                            <name>$PROJ_DIR$\..\application\app\tasks\aws\core\rain_data.c</name>
+                        </file>
+                        <file>
+                            <name>$PROJ_DIR$\..\application\app\tasks\aws\core\sunshine_data.c</name>
+                        </file>
+                        <file>
+                            <name>$PROJ_DIR$\..\application\app\tasks\aws\core\wind_data.c</name>
+                        </file>
+                    </group>
                     <file>
                         <name>$PROJ_DIR$\..\Application\app\tasks\aws\schedule.c</name>
                     </file>
@@ -2584,18 +2581,24 @@
                     </file>
                 </group>
                 <group>
-                    <name>sensor_data</name>
+                    <name>panel</name>
                     <file>
-                        <name>$PROJ_DIR$\..\application\app\tasks\sensor_data\aws_default_data.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\panel\panel.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\application\app\tasks\sensor_data\rain_data.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\panel\panel_aws_std.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\application\app\tasks\sensor_data\sunshine_data.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\panel\panel_common.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\application\app\tasks\sensor_data\wind_data.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\panel\panel_hansung.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\panel\panel_hj.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\panel\panel_mooju.c</name>
                     </file>
                 </group>
                 <file>
@@ -2636,9 +2639,6 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_system.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\application\app\tasks\task_vhf.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_wdt.c</name>
@@ -2711,24 +2711,6 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\test\test_uart.c</name>
-                </file>
-            </group>
-            <group>
-                <name>version</name>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\app\version\app_version.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\application\app\version\app_version.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\app\version\boot_version.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\application\app\version\boot_version.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\application\app\version\hj_product_list.h</name>
                 </file>
             </group>
         </group>
@@ -2959,13 +2941,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -2982,6 +2964,15 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+            </file>
+        </group>
+        <group>
+            <name>version</name>
+            <file>
+                <name>$PROJ_DIR$\..\application\version\app_version.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\application\version\boot_version.c</name>
             </file>
         </group>
         <file>
@@ -3181,7 +3172,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -3193,7 +3184,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\fram\fm25cl.h</name>
                 </file>
             </group>
             <group>
@@ -3211,7 +3202,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -3265,7 +3256,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</name>
                 </file>
             </group>
             <group>
