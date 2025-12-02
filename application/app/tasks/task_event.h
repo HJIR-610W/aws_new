@@ -1,6 +1,8 @@
 #ifndef TASK_ISR_EVENT_H
 #define TASK_ISR_EVENT_H
 
+#include <stdint.h>
+
 typedef enum isr_event_cmd_e
 {
   eRTC_INT,

@@ -14,7 +14,7 @@
 #include "stream_buffer.h"
 #include "system_err.h"
 #include "util_memory.h"
-#include "task_isrEvent.h"
+#include "task_event.h"
 
 #define STREAMBUFFER_USE 1  // 데이터 수신을 freertos 스트림 버퍼 사용시
 

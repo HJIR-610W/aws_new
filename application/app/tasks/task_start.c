@@ -37,7 +37,7 @@
 #include "tasks\task_aws.h"
 #include "tasks\task_console.h"
 #include "tasks\task_ethernet.h"
-#include "tasks\task_isrEvent.h"
+#include "tasks\task_event.h"
 #include "tasks\task_key.h"
 #include "tasks\task_logging.h"
 #include "tasks\task_measure.h"

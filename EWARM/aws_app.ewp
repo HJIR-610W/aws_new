@@ -2608,7 +2608,7 @@
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_ethernet.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_isrEvent.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_event.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\tasks\task_key.c</name>
