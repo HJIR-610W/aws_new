@@ -189,7 +189,7 @@ bool adc_perform_factory_calibration( adc_cal_params_t* cal_params,
   cal_params->lut_size = 0;
 
   cal_params->is_calibrated = true;
-  DEBUG_PRINTF("캘리브레이션 성공 (%.1fC): Slope=%.6f, Offset=%.6f\n", cal_temp, cal_params->factory_slope, cal_params->factory_offset);
+  io_printf("캘리브레이션 성공 (%.1fC): Slope=%.6f, Offset=%.6f\n", cal_temp, cal_params->factory_slope, cal_params->factory_offset);
 
   return true;
 }
