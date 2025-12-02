@@ -71,10 +71,9 @@ typedef struct tl16c554_instance_s
   int32_t irq_di_num; // uart 수신 입터럽트 번호
   volatile uint8_t *base_address; // tl16c554 uart 개별 주소
   StreamBufferHandle_t quad_stream;
-  void *tx_sem; //송신용 세마포어, 동일task만 사용한다면 불필요
-  void *rx_sem; //수신용 세마포어, 동일task만 사용한다면 불필요
+  osMutexId_t *lock; //송신용 세마포어, 동일task만 사용한다면 불필요
   tx_cicular_buffer_t tx_cicular_buffer;
-  void *tx_c_sem;
+  osSemaphoreId_t *tx_doen_sem;
 } tl16c554_instance_t;
 
 static tl16c554_instance_t tl16c554_inst[TL16C554_UART_MAX] = {
@@ -392,7 +391,7 @@ void quad_write_tx_data(int32_t uart_num)
     quad_disable_tx_interrupt(uart_num);
     uart->tx_cicular_buffer.tail = 0;
     uart->tx_cicular_buffer.head = 0;
-    OS_POST_SEM(uart->tx_c_sem);
+    OS_MUTEX_UNLOCK(uart->tx_doen_sem);
    }
 }
 /*
@@ -523,7 +522,7 @@ int32_t tl16c554_send_(int uart_num, const uint8_t *p_data, uint16_t data_len)
   uint32_t waitTime;
   osStatus_t osStatus;
 
-  OS_PEND_SEM(uart->tx_sem, osWaitForever);
+  OS_MUTEX_LOCK(uart->lock, osWaitForever);
 
   if(uart->tx_cicular_buffer.buffer_size>=data_len)
   {
@@ -534,12 +533,12 @@ int32_t tl16c554_send_(int uart_num, const uint8_t *p_data, uint16_t data_len)
     uart->tx_cicular_buffer.count = data_len;
 
 
-  osSemaphoreAcquire(uart->tx_c_sem, 0); // 이전에 처리 못한건 제거
+  osSemaphoreAcquire(uart->tx_doen_sem, 0); // 이전에 처리 못한건 제거
   waitTime = calculate_txWaitTimeMs(uart->baud, data_len);
   quad_enable_tx_interrupt(uart_num);
-  if (uart->tx_c_sem)
+  if (uart->tx_doen_sem)
   {
-    osStatus = osSemaphoreAcquire(uart->tx_c_sem, waitTime);
+    osStatus = osSemaphoreAcquire(uart->tx_doen_sem, waitTime);
     if (osStatus != osOK)
     {
       count = -1;
@@ -547,7 +546,7 @@ int32_t tl16c554_send_(int uart_num, const uint8_t *p_data, uint16_t data_len)
   }
   }
 
-  OS_POST_SEM(uart->tx_sem);
+  OS_MUTEX_UNLOCK(uart->lock);
   return count;
 }
 
@@ -562,7 +561,7 @@ int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
   uint32_t timeout;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
-  OS_PEND_SEM(uart->tx_sem, osWaitForever);
+  OS_MUTEX_LOCK(uart->lock, osWaitForever);
 
   while (data_len)
   {
@@ -592,7 +591,7 @@ int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
   THR에 문자가 로드되면 LSR6은 클리어되며 문자가 완전히 송신될 때 까지 유지됨
   */
 
-  OS_POST_SEM(uart->tx_sem);
+  OS_MUTEX_UNLOCK(uart->lock);
 
   return cnt;
 }
@@ -651,7 +650,7 @@ int32_t tl16c554_recv(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_
   size_t xBytesRead;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
-  OS_PEND_SEM(uart->rx_sem, osWaitForever);
+ // OS_MUTEX_LOCK(uart->rx_sem, osWaitForever);
 
   // timeout_ms가 0인 경우: 논블로킹 모드 (데이터가 있으면 읽고 없으면 즉시 리턴)
   if (timeout_ms == 0)
@@ -741,7 +740,7 @@ int32_t tl16c554_recv(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_
     }
   }
 
-  OS_POST_SEM(uart->rx_sem);
+ // OS_MUTEX_UNLOCK(uart->rx_sem);
 
   return cnt;
 }
@@ -947,8 +946,8 @@ int32_t tl16c554_init(int32_t uart_num, void *opt)
   uart->parity_index = config->parity_index;
   uart->quad_stream = xStreamBufferCreate(buff_size_list[uart_num], 1);
 
-  OS_CREATE_BINARY_SEM(uart->tx_sem);// 반드시 사용할필요 없음
-  OS_CREATE_BINARY_SEM(uart->rx_sem);// 반드시 사용할필요 없음
+  OS_CREATE_MUTEX(uart->lock);// 반드시 사용할필요 없음
+  //OS_CREATE_BINARY_SEM(uart->rx_sem);// 반드시 사용할필요 없음
 
   quad_init(uart_num, (uart_config_t *)opt);
   //TODO:quad 초기화 결과로 opend 변수 처리 필요
@@ -958,7 +957,7 @@ int32_t tl16c554_init(int32_t uart_num, void *opt)
   uart->tx_cicular_buffer.count = 0;
   uart->tx_cicular_buffer.head = 0;
   uart->tx_cicular_buffer.tail = 0;
-  OS_CREATE_BINARY_SEM(uart->tx_c_sem); // 반드시 사용할필요 없음
+  OS_CREATE_BINARY_SEM(uart->tx_doen_sem); // 반드시 사용할필요 없음
   uart->opened = true;
 
   return 1;

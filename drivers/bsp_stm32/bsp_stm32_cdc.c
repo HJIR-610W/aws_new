@@ -1,6 +1,4 @@
 
-
-
 #include "bsp_stm32_cdc.h"
 
 #include <stdio.h>
@@ -27,9 +25,8 @@ typedef struct stm32_cdc_cfg_s
   bool connected;
   UART_HandleTypeDef *handle;
   StreamBufferHandle_t cdc_stream;
-  void *tx_sem;
-  void *rx_sem;
-  void *txcSem; // 전송 완료 알림 세마포어
+  osMutexId_t *lock;
+  osSemaphoreId_t *tx_done_sem; // 전송 완료 알림 세마포어
 }stm32_cdc_instance_t;
 
 
@@ -79,30 +76,9 @@ int32_t stm32_cdc_init(int num,void *opt)
 
   cdc_inst.cdc_stream = xStreamBufferCreate(100, 1);
 
-  if (cdc_inst.tx_sem == NULL)
-  {
-    tempSem = osSemaphoreNew(1, 1, NULL);
-    if (tempSem)
-    {
-      cdc_inst.tx_sem = tempSem;
-    }
-  }
 
-  if (cdc_inst.rx_sem == NULL)
-  {
-    tempSem = osSemaphoreNew(1, 1, NULL);
-    if (tempSem)
-    {
-      cdc_inst.rx_sem = tempSem;
-    }
-  }
-
-  if (cdc_inst.txcSem == NULL)
-  {
-    tempSem = osSemaphoreNew(1, 0, NULL);
-    if (tempSem)
-      cdc_inst.txcSem = tempSem;
-  }
+  OS_CREATE_MUTEX(cdc_inst.lock);
+  OS_CREATE_BINARY_SEM(cdc_inst.tx_done_sem);
 
   if (cdc_inst.connected==0)
   {
@@ -128,18 +104,15 @@ int32_t stm32_cdc_send(int num,const uint8_t *pData,uint16_t dataLen)
     return -1;
   }
   
-  if (cdc_inst.tx_sem)
-  {
-    osSemaphoreAcquire(cdc_inst.tx_sem, osWaitForever);
-  }
+  OS_MUTEX_LOCK(cdc_inst.lock, osWaitForever);
 
-  osSemaphoreAcquire(cdc_inst.txcSem, 0); // 이전에 처리 못한건 제거
+  osSemaphoreAcquire(cdc_inst.tx_done_sem, 0); // 이전에 처리 못한건 제거
   waitTime = calculate_txWaitTimeMs(cdc_inst.baud, dataLen);
   retVal = cdc_send(pData,dataLen);
 
-  if (cdc_inst.txcSem)
+  if (cdc_inst.tx_done_sem)
   {
-    osStatus = osSemaphoreAcquire(cdc_inst.txcSem, waitTime);
+    osStatus = osSemaphoreAcquire(cdc_inst.tx_done_sem, waitTime);
     if (osStatus != osOK)
     {
       cdc_inst.errCode = (int8_t)osStatus;
@@ -148,10 +121,7 @@ int32_t stm32_cdc_send(int num,const uint8_t *pData,uint16_t dataLen)
      }
   }
 
-  if (cdc_inst.tx_sem)
-  {
-    osSemaphoreRelease(cdc_inst.tx_sem);
-  }
+  OS_MUTEX_UNLOCK(cdc_inst.lock);
 
   return retVal;
 
@@ -168,7 +138,6 @@ int32_t stm32_cdc_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t
 
 
 
-  OS_PEND_SEM(cdc_inst.rx_sem, osWaitForever);
 
   // timeOutMs가 0인 경우: 논블로킹 모드
   if (timeOutMs == 0)
@@ -186,7 +155,7 @@ int32_t stm32_cdc_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t
     }
     // 데이터가 없으면 cnt는 0으로 리턴
 
-    OS_POST_SEM(cdc_inst.rx_sem);
+
     return cnt;
   }
 
@@ -281,7 +250,7 @@ int32_t stm32_cdc_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t
     }
   }
 
-  OS_POST_SEM(cdc_inst.rx_sem);
+
 
   return cnt;
 }
@@ -307,7 +276,7 @@ void cdc_tx_complete(void)
   {
     return ;
   }
-  osSemaphoreRelease(cdc_inst.txcSem);
+  osSemaphoreRelease(cdc_inst.tx_done_sem);
 }
 
 void put_cdc_rx(uint8_t *p_data,uint16_t dataLen)

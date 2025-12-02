@@ -27,13 +27,12 @@ typedef struct stm32_uart_cfg_s
   uint8_t parity_index;
   uint32_t baud; // 설정된 통신속도
   uint8_t rx_data;
+  int buffer_size;
   UART_HandleTypeDef handle;
   StreamBufferHandle_t stream_buffer;
-  int buffer_size;
   DMA_HandleTypeDef dma_tx;
   DMA_HandleTypeDef dma_rx;
-  osSemaphoreId_t *tx_sem;
-  osSemaphoreId_t *rx_sem;
+  osMutexId_t *lock;
   osSemaphoreId_t *tx_complete_sem; // 전송 완료 알림 세마포어
 } uart_instance_t;
 
@@ -184,8 +183,8 @@ int32_t stm32_uart_init(int num, void *opt)
       uart_inst[num].tx_complete_sem = tempSem;
   }
   uart_inst[num].stream_buffer = xStreamBufferCreate(uart_inst[num].buffer_size, BUFFER_TRIGGER_LEVEL_BYTES);
-  OS_CREATE_BINARY_SEM(uart_inst[num].tx_sem);
-  OS_CREATE_BINARY_SEM(uart_inst[num].rx_sem);
+  OS_CREATE_MUTEX(uart_inst[num].lock);
+  //OS_CREATE_BINARY_SEM(uart_inst[num].rx_sem);
 
   stm32_uart_hal_init(num, cfg->baud, cfg->parity_index, cfg->dataLen, cfg->stop_bit);
   stm32_uart_dma_init(num);
@@ -410,7 +409,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
   size_t bytes_read;
   size_t cnt = 0;
 
-  OS_PEND_SEM(uart_inst[uart_num].rx_sem, osWaitForever);
+ // OS_MUTEX_LOCK(uart_inst[uart_num].rx_sem, osWaitForever);
 
   // timeOutMs가 0인 경우: 논블로킹 모드
   if (timeOutMs == 0)
@@ -428,7 +427,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
     }
     // 데이터가 없으면 cnt는 0으로 리턴
 
-    OS_POST_SEM(uart_inst[uart_num].rx_sem);
+  //  OS_MUTEX_UNLOCK(uart_inst[uart_num].rx_sem);
     return cnt;
   }
 
@@ -523,7 +522,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
     }
   }
 
-  OS_POST_SEM(uart_inst[uart_num].rx_sem);
+ // OS_MUTEX_UNLOCK(uart_inst[uart_num].rx_sem);
 
   return cnt;
 }
@@ -701,7 +700,7 @@ int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
   HAL_StatusTypeDef status;
   osStatus_t osStatus;
 
-  OS_PEND_SEM(uart_inst[num].tx_sem, osWaitForever);
+  OS_MUTEX_LOCK(uart_inst[num].lock, osWaitForever);
   osSemaphoreAcquire(uart_inst[num].tx_complete_sem, 0); // 이전에 처리 못한건 제거
   waitTime = calculate_txWaitTimeMs(uart_inst[num].baud, dataLen);
   status = HAL_UART_Transmit_DMA(&uart_inst[num].handle, pData, dataLen);
@@ -723,7 +722,8 @@ int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
   {
     ERROR_PRINTF("uart");
   }
-  OS_POST_SEM(uart_inst[num].tx_sem);
+  OS_MUTEX_UNLOCK(uart_inst[num].lock);
+  
   return retVal;
 }
 
@@ -774,8 +774,8 @@ void stm32_uart_set_config(int num, uart_config_t *config)
     return;
   }
 
-  OS_PEND_SEM(uart_inst[num].tx_sem, osWaitForever);
-  OS_PEND_SEM(uart_inst[num].rx_sem, osWaitForever);
+  OS_MUTEX_LOCK(uart_inst[num].lock, osWaitForever);
+ 
 
   p_uart = &uart_inst[num].handle;
 
@@ -785,8 +785,7 @@ void stm32_uart_set_config(int num, uart_config_t *config)
   if (status != HAL_OK)
   {
     ERROR_PRINTF("UART DeInit failed");
-    OS_POST_SEM(uart_inst[num].rx_sem);
-    OS_POST_SEM(uart_inst[num].tx_sem);
+    OS_MUTEX_UNLOCK(uart_inst[num].lock);
     return;
   }
 
@@ -838,13 +837,11 @@ void stm32_uart_set_config(int num, uart_config_t *config)
   if (status != HAL_OK)
   {
     ERROR_PRINTF("UART Init failed");
-    OS_POST_SEM(uart_inst[num].rx_sem);
-    OS_POST_SEM(uart_inst[num].tx_sem);
+    OS_MUTEX_UNLOCK(uart_inst[num].lock);
     return;
   }
 
   HAL_UART_Receive_IT(p_uart, (uint8_t *)&uart_inst[num].rx_data, 1);
 
-  OS_POST_SEM(uart_inst[num].rx_sem);
-  OS_POST_SEM(uart_inst[num].tx_sem);
+  OS_MUTEX_UNLOCK(uart_inst[num].lock);
 }
