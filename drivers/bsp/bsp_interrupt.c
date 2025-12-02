@@ -31,6 +31,7 @@ int_sub_t g_exti_10_15_gpio[6];
 mcu_interrupt_list_t g_mcu_isr_list[82];//WWDG_IRQn 시작
 
 
+
 void bsp_interrupt_init(void)
 {
 

@@ -37,35 +37,16 @@ void testTask(void *arg)
 
 
 
-bool testTask_init(void)
+void testTask_init(void)
 {
-  uint32_t pressed_time = 0;
 
-  // 5초(5000ms) 동안 버튼 상태를 감시
-  while (1)
-  {
-    if (drv_di_read(DRV_DI_USER_BTN) == 0)  // 버튼 LOW 상태인가?
-    {
-      pressed_time += 10;  // 10ms 단위로 누적
-      if (pressed_time >= 1000)
-      {
-        osThreadNew(testTask, NULL, &kTestTask_attributes);
+  osThreadNew(testTask, NULL, &kTestTask_attributes);
 #if IWDG_USE
         // iwdt우선순위는 가장 낮게 하여 가장 마지막에 실행 되도록 한다.
         // 이유는 초기화 과정중 이더넷이  3초이상 소요되기 때문
         iwdtTask_init();
 #endif
-        return true;
-      }
-    }
-    else
-    {
-      // 버튼이 LOW가 아니면 시간 초기화
-      break;
-    }
 
-    osDelay(10);  // 10ms마다 체크
-  }
 
-  return false;  // 이 위치까지는 사실상 도달하지 않음
+
 }

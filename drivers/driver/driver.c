@@ -14,16 +14,17 @@
 
 void drv_init(void)
 {
-  drv_crc_init();
-  drv_rtc_init();
-  drv_led_init();
   drv_do_init();
-  drv_di_init();
   drv_power_init();
+  drv_di_init();
+  drv_crc_init();
   drv_system_init();
   drv_flash_init(); 
   drv_fram_init();
   drv_adc_init();
   drv_frequency_init();
-
+  drv_led_init();
+  drv_led_on(DRV_LED_RUN);
+  drv_rtc_init();
+  drv_rtc_read(&Date_Time);
 }

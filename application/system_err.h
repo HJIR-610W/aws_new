@@ -10,7 +10,7 @@
 #define ERROR_PRINTF_USE // 시스템 에러 출력
 #define DEBUG_PRINTF_USE// 디버깅 필요시
 #define USE_DEBUG 0
-#define IWDG_USE 0
+#define IWDG_USE 1
 #define PRINTF_BASE(fmt, ...)                                                               \
   io_printf("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \
               Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \

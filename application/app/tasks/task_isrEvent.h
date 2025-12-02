@@ -32,5 +32,5 @@ typedef struct isr_event_cmd_s
 
 int32_t os_send_event(isr_event_cmd_t *cmd, uint32_t timeOutms);
 
-void isrEventTask_init(void);
+void eventTask_init(void);
 #endif

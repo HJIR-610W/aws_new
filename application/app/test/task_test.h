@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-bool testTask_init(void);
+void testTask_init(void);
 
 #endif

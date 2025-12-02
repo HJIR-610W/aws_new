@@ -83,7 +83,7 @@ void SHELL_SendDataCallback(uint8_t* buf, uint32_t len)
 void SHELL_ReceiveDataCallback(uint8_t* buffer, uint32_t len)
 {
    // drv_uart_get_char(console_uart_num, buffer, len);
-  io_recv(buffer,len,osWaitForever);
+  io_recv((char *)buffer,len,osWaitForever);
 }
 
 

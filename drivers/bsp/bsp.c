@@ -137,54 +137,6 @@ void HAL_MspInit(void)
 
 
 
-/*
-시스템 동작 클럭:168MHz
-*/
-void SystemClock_Config(void)
-{
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-
-  /** Configure the main internal regulator output voltage
-   */
-  __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-  /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
-  RCC_OscInitStruct.OscillatorType =
-      RCC_OSCILLATORTYPE_LSE | RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
-  RCC_OscInitStruct.LSIState = RCC_LSI_OFF;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 25;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 7;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    ERROR_PRINTF("SystemClock_Config");
-  }
-
-  /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
-                                RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;  // 2로 하면 uart 1200bps
-
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
-  {
-    ERROR_PRINTF("SystemClock_Config");
-  }
-}
-
-
 
 
 
@@ -425,8 +377,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 /*
 보드가사용하는 핀을 초기화 한다.
+drv에서도 초기화가 되지만 drv가 config 설정에 의해 사용하지 않는 경우도 있기에 
+반드시 초기화 해줘야 하는 핀이 있다면 여기서 초기화 해준다.
 */
-void board_gpio_init(void)
+void bsp_gpio_init(void)
 {
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -500,7 +454,6 @@ void board_gpio_init(void)
   board_set_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_PIN_RESET);
   board_config_gpio(DO_RESET_H_GPIO_Port, DO_RESET_H_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
 
-
   //[전원]LCD OFF 하드웨어 기본 ON
   board_set_gpio(DO_POWER_LCD_GPIO_Port, DO_POWER_LCD_Pin, GPIO_PIN_SET); 
   board_config_gpio(DO_POWER_LCD_GPIO_Port, DO_POWER_LCD_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
@@ -512,8 +465,8 @@ void board_gpio_init(void)
   //[전원]USB 5v 전원
   board_set_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_PIN_SET); 
   board_config_gpio(USB_OTG_FS_SOF_GPIO_Port, USB_OTG_FS_SOF_Pin, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,GPIO_SPEED_FREQ_LOW, 0);
-  
-  
+ 
+
 
     
 }
@@ -521,22 +474,16 @@ void board_gpio_init(void)
 
 void bsp_init(void)
 {
-  HAL_Init();  // 타이머 4를 초기화 HAL 타이머 틱 인터럽트로 사용
-
-  SystemClock_Config();
-
-  board_gpio_init();
+  bsp_gpio_init();
 
   MX_FSMC_Init();  // TODO: SRAM초기화,SystemInit_ExtMemCtl 이함수에 적용해야함
 
-  manual_bss_init();
+  manual_bss_init(); // sram 초기화가 먼저 수행되어야한다.
 
-  user_tlsf_init(POOL_SIZE);
+  user_tlsf_init(POOL_SIZE);//srma 초기화가 먼저 수행되어야한다.에러 발생할수 있음
 
-  bsp_interrupt_init();  // 최우선 실행
+  bsp_interrupt_init();  // 최우선 실행,연산코드 
 
-  bsp_delay_init();
-
-  bsp_adc_init();
+  bsp_delay_init();//MCU가 제공하는 정밀 delay
 
 }

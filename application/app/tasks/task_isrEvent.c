@@ -86,7 +86,7 @@ void isrEventTask(void *arg)
  * 우량 측정
  * 에러 출력(에러 출력 자체를 해당 task에서는 하지 않는다.)
   */
-void isrEventTask_init(void)
+void eventTask_init(void)
 {
   g_event_msg_q_id = osMessageQueueNew(10, sizeof(isr_event_cmd_t), NULL);
 

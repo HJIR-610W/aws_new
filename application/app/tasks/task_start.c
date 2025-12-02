@@ -26,6 +26,7 @@
 #include "drivers\driver\driver.h"
 #include "drivers\driver\drv_led.h"
 #include "drivers\driver\drv_rtc.h"
+#include "drivers\driver\drv_di.h"
 #include "FreeRTOS.h"
 #include "lwip.h"
 #include "pcb_define.h"
@@ -84,6 +85,21 @@ void log_boot_reason(void)
 }
 
 
+uint8_t check_test_mode(void)
+{
+  uint8_t count=0;
+
+  if (drv_di_read(DRV_DI_USER_BTN) == 0)
+  {
+    osDelay(10);
+    if (drv_di_read(DRV_DI_USER_BTN) == 0)
+    {
+      return 1;
+    }
+  }
+  return 0;
+}
+
 /**
  * @brief 한번 수행하고 종료될 Task
  * 초기화 작업 수행
@@ -91,23 +107,30 @@ void log_boot_reason(void)
  */
 void startTask(void *arg)
 {
+  uint8_t test_mode = 0;
 
-  drv_init(); // 에플리케이션에서 사용하는 드라이버 초기화
-  drv_led_on(DRV_LED_RUN);
+  bsp_init();
 
-  drv_rtc_read(&Date_Time);
-  keyTask_init();
-  if (testTask_init() == true)
+  test_mode = check_test_mode();
+
+  consoleTask_init((void *)test_mode);//디버깅 printf 사용 해야해서 먼저 초기화
+
+  #if IWDG_USE
+  bsp_iwdg_init(16000);//iwdg task가 실행 전까지는 16초로 타임아웃
+#endif
+  
+  drv_init(); // 애플리케이션에서 사용하는 드라이버 초기화
+
+  keyTask_init();//키 task는 테스트 모드, 실행모드 공통 사용
+
+  if(test_mode)
   {
+    testTask_init();
     test_menu_info();
     osThreadExit(); // 종료 시킴
   }
-
-  consoleTask_init(0);//디버깅 printf 사용 해야해서 먼저 초기화
-
   wdtTask_init();
-
-  menuTask_init();
+  menuTask_init();//최소 test_mode 다음에 선언하여 이때 부팅화면 출력 
 
   config_manager_init();  // 우선 실행
   filesystem_init();//SD카드 초기화 및 파일시스템 초 기화 
@@ -115,7 +138,7 @@ void startTask(void *arg)
 
   systemTask_init(PARA_RUN_MODE);
 
-  isrEventTask_init();
+  eventTask_init();
   dataLogging_init();
   loggingTask_init();
 

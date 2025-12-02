@@ -34,7 +34,7 @@ uint32_t log_q_cnt
 #include "os_user_def.h"
 #include "drv_flash.h"
 
-#define LOG_SEM_ENABLE 0 //싱글 task에서만 사용되기때문에 불필요
+#define LOG_SEM_ENABLE 0 
 
 const char *kSystem_log_path = "0:System/log.txt";
 
