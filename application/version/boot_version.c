@@ -2,7 +2,7 @@
 
 
 #include "boot_version.h"
-#include "hj_product_list.h"
+#include "product.h"
 #include "util_time.h"
 
 
@@ -46,8 +46,7 @@ uint32_t get_boot_build_timestamp(void)
   return info->build_timestamp;
 }
 
-    uint32_t
-    get_boot_pcb_version(void)
+uint32_t get_boot_pcb_version(void)
 {
   section_info_t *info = (section_info_t *)BOOT_INFO_START_ADDRESS;
 

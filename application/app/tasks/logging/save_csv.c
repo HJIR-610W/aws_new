@@ -17,8 +17,8 @@ void save_aws_csv(uint8_t *p_data,uint16_t data_len)
 
     char *p_buffer = user_malloc(CSV_SIZE);
 
-    len = snprintf(&p_buffer[len],CSV_SIZE-len,"%04d-%02d-%02d %02d:%02d,");
+   // len = snprintf(&p_buffer[len],CSV_SIZE-len,"%04d-%02d-%02d %02d:%02d,");
 
-    len += snprintf(&p_buffer[len],CSV_SIZE-len,"%.1f,",p_aws->mTemperature.sMax);
+  //  len += snprintf(&p_buffer[len],CSV_SIZE-len,"%.1f,",p_aws->mTemperature.sMax);
     
 }

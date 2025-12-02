@@ -542,7 +542,7 @@ uint16_t divas_read_version(uint8_t *rx_frame, uint8_t *tx_frame)
 
   SetU32(&tx_data[cnt], get_app_version(NULL, NULL, NULL, NULL));
   cnt +=4;
-  SetU32(&tx_data[cnt], get_hardware_code());
+  SetU32(&tx_data[cnt], get_product_code());
   cnt += 4;
   SetU32(&tx_data[cnt], get_app_alias());
   cnt += 4;

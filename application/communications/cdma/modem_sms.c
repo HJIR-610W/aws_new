@@ -58,7 +58,7 @@ void SMS_Read_Info(sms_t *sms)
 
   len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "%d.%d.%d)", release, add, fix);
 
-  mfgName = get_mfg_name();
+  mfgName = get_alias_name();
 
   len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "PCB:%u,MFG:%s,AREA:%u,BUILD:%u,", get_boot_pcb_version(), mfgName, get_app_area_code(), bufild_time);
   len += snprintf(&sms->msg[len], sizeof(sms->msg) - len, "ID:%d ", get_config_app()->id);

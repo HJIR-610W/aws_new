@@ -10,9 +10,10 @@
 #include "app_version.h"
 #include "dev_io.h"
 #include "drv_crc.h"
-#include "hj_product_list.h"
+#include "product.h"
 #include "system_err.h"
 #include "user_heap.h"
+
 #pragma location = 0x20000000
 __no_init volatile uint32_t SystemMagicValue;
 
@@ -20,8 +21,8 @@ typedef struct fwHeader_s
 {
   uint32_t ver;          // 섹션 헤더 정보,1
   uint32_t section;      // 펌웨어,const,lib  (1펌웨어,2 const ,3 lib)
-  uint32_t hw_code;      // 하드웨어 (1 디바스, 2 M2M)
-  uint32_t nick;         // 화진, 비젼
+  uint32_t product_code; // 제품 (1 디바스, 2 M2M)
+  uint32_t alias_code;         // 화진, 비젼
   uint32_t offset;       // 시작주소,0x00008000
   uint32_t len;          // 길이
   uint32_t section_ver;  // section 버전
@@ -77,12 +78,13 @@ void print_fw_header(fw_header_t *p_header)
 
 uint8_t check_firmware(uint8_t local)
 {
+  char path[100];
+  uint8_t pcb_ok=0;
   FRESULT fret;
   uint8_t *p_buffer=0;
   FSIZE_t file_size = 0;
-  char path[100];
   uint32_t pcb_version;
-  uint8_t pcb_ok=0;
+
   SystemMagicValue = 0;
 
   if (local == UPDATE_REMOTE)
@@ -119,7 +121,7 @@ uint8_t check_firmware(uint8_t local)
 
       if (crc == p_header->fw_CRC)
       {
-        if (p_header->hw_code != HW_NEW_ASW)
+        if (p_header->product_code != PRODUCT_NEW_AWS)
         {
           if (p_buffer)
           {
@@ -129,7 +131,7 @@ uint8_t check_firmware(uint8_t local)
           return FW_ERR_MFG;
         }
 
-        if (p_header->nick != ALIAS_NEW_ASW_HJ)
+        if (p_header->alias_code != ALIAS_NEW_ASW_HJ)
         {
           if (p_buffer)
           {

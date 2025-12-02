@@ -12,6 +12,7 @@
 #include "app_version.h"
 #include "aws_data.h"
 #include "bsp.h"
+#include "drv_rtc.h"
 #include "config_app.h"
 #include "dev_io.h"
 #include "kma2.h"

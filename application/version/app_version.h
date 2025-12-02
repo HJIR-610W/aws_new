@@ -4,14 +4,13 @@
 
 
 #include <stdint.h>
-#include "drv_rtc.h"
-#include "hj_product_list.h"
+#include "util_time.h"
+#include "product.h"
 
 #define MAKE_FW_VERSION(major, minor, bugfix,rel) (((major) << 24) | ((minor) << 16) | (bugfix<<8) |(rel))
 
 #define APP_VERSION (MAKE_FW_VERSION(0, 33, 0, 0))
 #define PCB_VERSION (MAKE_FW_VERSION(1, 0, 0, 0))
-
 
 
 /*버전
@@ -21,16 +20,11 @@ x.x.1.x  버그 수정
 x.x.x.1  개발 버전
 */
 
-
 uint32_t get_app_version(uint8_t *major,uint8_t *minor,uint8_t *patch,uint8_t *release);
 void get_app_build(DATE_TIME_BUF *build);
 uint32_t get_app_alias(void);
-void get_nickCode(uint32_t *nickCode);
-void get_hwCode(uint32_t *nickCode);
-void set_testKey(uint32_t key);
-const char *get_mfg_name(void);
-
-uint32_t get_hardware_code(void);
+const char *get_alias_name(void);
+uint32_t get_product_code(void);
 uint32_t get_app_area_code(void);
 uint32_t get_app_build_timestamp(void);
 #endif
