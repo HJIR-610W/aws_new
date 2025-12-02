@@ -4,7 +4,7 @@
 #define DRIVER_STM32_UART_H
 
 #include "driver_interface.h"
-#include "driver_uart_def.h"
+#include "drv_uart_def.h"
 
 
 #define STM32_UART_0_CDMA 0

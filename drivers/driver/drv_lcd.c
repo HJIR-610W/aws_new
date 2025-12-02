@@ -2,9 +2,9 @@
 #include <stdio.h>
 
 
-#include "driver_lcd.h"
+#include "drv_lcd.h"
 #include "Components\lcd\st7920.h"
-#include "driver_lcd_define.h"
+#include "drv_lcd_define.h"
 #include "Components\lcd\vt100_terminal.h"
 
 

@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 
-#include "driver_uart_def.h"
+#include "drv_uart_def.h"
 
 
 #define TL16C554_UART_1_D_SUB   0

@@ -7,7 +7,7 @@
 #define DRIVER_LCD_H
 
 #include "driver_interface.h"
-#include "driver_lcd_define.h"
+#include "drv_lcd_define.h"
 
 #define DRIVER_CLCD 0
 #define DRIVER_LCD_TERMNINAL 1

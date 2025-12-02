@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "driver_lcd.h"
-#include "driver_lcd.h"
+#include "drv_lcd.h"
+#include "drv_lcd.h"
 #include "cmsis_os2.h"
 #include "cli_key_code.h"
 #include "util_memory.h"

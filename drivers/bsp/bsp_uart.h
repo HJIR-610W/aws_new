@@ -4,7 +4,7 @@
 #define BSP_UART_H
 
 #include <stdint.h>
-#include "driver_uart_def.h"
+#include "drv_uart_def.h"
 
 #define BSP_UART_0_D_SUB_0 0 // VHF
 #define BSP_UART_1_TTL_ONLY 1     // 블루투스 모듈

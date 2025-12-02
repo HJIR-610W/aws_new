@@ -3,7 +3,7 @@
 #ifndef DRV_RS232_H
 #define DRV_RS232_H
 
-#include "driver_uart_def.h"
+#include "drv_uart_def.h"
 #include "bsp_uart.h"
 
 #define DRV_UART_0_VHF   BSP_UART_0_D_SUB_0  // VHF

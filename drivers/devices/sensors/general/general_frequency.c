@@ -1,5 +1,5 @@
 
-#include "driver_freqInput.h"
+#include "drv_freqInput.h"
 
 #include "app_sensor.h"
 #include "config_sensor.h"

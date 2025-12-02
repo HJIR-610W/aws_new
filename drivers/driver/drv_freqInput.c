@@ -2,7 +2,7 @@
 
 
 
-#include "driver_freqInput.h"
+#include "drv_freqInput.h"
 
 #include <math.h>
 
@@ -285,7 +285,7 @@ float driver_freq_read_duty(driver_t *drv,uint8_t *err)
 
 
 #ifdef PCB_0_6
-#include "driver_freqInput.h"
+#include "drv_freqInput.h"
 
 #include <math.h>
 

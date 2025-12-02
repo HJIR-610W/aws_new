@@ -4,7 +4,7 @@
 #define DRV_ADC_H
 
 #include <stdint.h>
-#include "driver_adc_define.h"
+#include "drv_adc_define.h"
 
 #define DRV_ADS1220_S_CH_0 0
 #define DRV_ADS1220_S_CH_1 1

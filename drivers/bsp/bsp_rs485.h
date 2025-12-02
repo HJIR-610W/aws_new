@@ -10,7 +10,7 @@
 #define BSP_RS485_MAX 4
 #include <stdint.h>
 
-#include "driver_uart_def.h"
+#include "drv_uart_def.h"
 int32_t bsp_rs485_init(int32_t num,void *opt);
 int32_t bsp_rs485_send(int num, uint8_t *pData, uint16_t dataLen);
 int32_t bsp_rs485_recv(int num, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutms);

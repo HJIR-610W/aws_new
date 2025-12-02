@@ -1,7 +1,7 @@
 #include "cli_key_code.h"
 #include "cmsis_os2.h"
 #include "dev_io.h"
-#include "driver_lcd.h"
+#include "drv_lcd.h"
 #include "cli_input.h"
 #include <string.h>
 #include <math.h>

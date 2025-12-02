@@ -12,7 +12,7 @@
 #include "os_user_def.h"
 #include "drv_adc.h"
 #include "app_adc.h"
-#include "driver_freqInput.h"
+#include "drv_freqInput.h"
 typedef struct rmyoung_05103v_win_spd_instance_s
 {
   driver_t *freq_drv;

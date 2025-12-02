@@ -9,7 +9,7 @@ extern "C" {
 #include <stdint.h>
 
 #include "driver_interface.h"
-#include "time_define.h"
+#include "util_time.h"
 
 typedef uint16_t M_RET_t;
 

@@ -4,7 +4,7 @@
  */
 
 #include "dev_io.h"
-#include "driver_lcd_define.h"
+#include "drv_lcd_define.h"
 #include "driver_interface.h"
 #include <string.h>
 #include <stdarg.h>

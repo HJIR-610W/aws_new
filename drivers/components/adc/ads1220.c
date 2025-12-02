@@ -12,7 +12,7 @@
 #include "cmsis_os.h"
 #include "dev_io.h"
 #include "drv_adc.h"
-#include "driver_adc_define.h"
+#include "drv_adc_define.h"
 #include "os_user_def.h"
 #include "system_err.h"
 #include "util_memory.h"

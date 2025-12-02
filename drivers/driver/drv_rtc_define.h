@@ -4,9 +4,8 @@
 #define drv_rtc_define_H
 
 #include "driver_interface.h"
-#include "time_define.h"
 #include "drv_di_def.h"
-
+#include "util_time.h"
 
 
 typedef enum

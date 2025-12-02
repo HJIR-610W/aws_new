@@ -8,7 +8,7 @@
 #include "drv_di.h"
 #include "drv_do.h"
 #include "test_dinOut.h"
-#include  "driver_freqInput.h"
+#include  "drv_freqInput.h"
 
 
 void test_freq(void)

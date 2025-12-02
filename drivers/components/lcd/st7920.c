@@ -12,7 +12,7 @@
 #include "cmsis_os2.h"
 #include "bsp_spi.h"
 #include "bsp_do.h"
-#include "driver_lcd_define.h"
+#include "drv_lcd_define.h"
 #include "bsp.h"
 #include "bsp_delay.h"
 #include "drv_power.h"
