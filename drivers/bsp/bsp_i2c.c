@@ -9,14 +9,14 @@
 
 typedef struct i2c_instance_s
 {
-  void *sem;
+  osMutexId_t *lock;
   bool opened;
   I2C_HandleTypeDef i2c;
 } i2c_instance_t;
 
 i2c_instance_t i2c_instance[STM32_I2C_MAX] = {
-    [STM32_I2C_1] = {.i2c.Instance = I2C1, .opened = false, .sem = 0},
-    [STM32_I2C_2] = {.i2c.Instance = I2C2, .opened = false, .sem = 0}};
+    [STM32_I2C_1] = {.i2c.Instance = I2C1, .opened = false, .lock = 0},
+    [STM32_I2C_2] = {.i2c.Instance = I2C2, .opened = false, .lock = 0}};
 
 void MX_I2C_Init(int num)
 {
@@ -226,7 +226,7 @@ int32_t bsp_i2c_init(uint32_t num)
 
   if(i2c_instance[num].opened == false)
   {
-    OS_CREATE_BINARY_SEM(i2c_instance[num].sem);
+    OS_CREATE_MUTEX(i2c_instance[num].lock);
     MX_I2C_Init(num);
     i2c_instance[num].opened = true;
     return 0;
@@ -241,7 +241,7 @@ int32_t bsp_i2c_send(int num, uint32_t address,uint8_t reg,const uint8_t *pData,
   HAL_StatusTypeDef status;
   I2C_HandleTypeDef *handle;
 
-  OS_PEND_SEM(i2c_instance[num].sem, osWaitForever);
+  OS_MUTEX_LOCK(i2c_instance[num].lock, osWaitForever);
   handle = &i2c_instance[num].i2c;
 
   status = HAL_I2C_Mem_Write(handle, address<<1,reg, I2C_MEMADD_SIZE_8BIT,(uint8_t *)pData, dataLen, I2C_TIMEOUT);
@@ -268,7 +268,7 @@ int32_t bsp_i2c_send(int num, uint32_t address,uint8_t reg,const uint8_t *pData,
     HAL_I2C_MspInit(handle);
   }
 
-  OS_POST_SEM(i2c_instance[num].sem);
+  OS_MUTEX_UNLOCK(i2c_instance[num].lock);
 
   return status;
 }
@@ -277,7 +277,7 @@ int32_t bsp_i2c_read(int num ,uint32_t address,uint8_t reg,uint8_t *pData,uint16
   I2C_HandleTypeDef*handle;
   HAL_StatusTypeDef status;
 
-  OS_PEND_SEM(i2c_instance[num].sem, osWaitForever);
+  OS_MUTEX_LOCK(i2c_instance[num].lock, osWaitForever);
 
 
   handle = &i2c_instance[num].i2c;
@@ -305,7 +305,7 @@ int32_t bsp_i2c_read(int num ,uint32_t address,uint8_t reg,uint8_t *pData,uint16
     HAL_I2C_MspInit(handle);
   }
 
-  OS_POST_SEM(i2c_instance[num].sem);
+  OS_MUTEX_UNLOCK(i2c_instance[num].lock);
 
   return status;
 }
@@ -314,7 +314,7 @@ int32_t bsp_i2c_recv_byte(int num,uint8_t address,uint8_t *pBuff,uint32_t readCn
   HAL_StatusTypeDef status = HAL_OK;
   I2C_HandleTypeDef *handle;
 
-  OS_PEND_SEM(i2c_instance[num].sem, osWaitForever);
+  OS_MUTEX_LOCK(i2c_instance[num].lock, osWaitForever);
   
   handle = &i2c_instance[num].i2c;
 
@@ -340,7 +340,7 @@ int32_t bsp_i2c_recv_byte(int num,uint8_t address,uint8_t *pBuff,uint32_t readCn
     HAL_I2C_MspInit(handle);
   }
 
-  OS_POST_SEM(i2c_instance[num].sem);
+  OS_MUTEX_UNLOCK(i2c_instance[num].lock);
 
   return status;
 }
@@ -349,7 +349,7 @@ int32_t bsp_i2c_send_byte(int num,uint8_t address,uint8_t *pData,uint32_t dataLe
   HAL_StatusTypeDef status = HAL_OK;
   I2C_HandleTypeDef *handle;
 
-  OS_PEND_SEM(i2c_instance[num].sem, osWaitForever);
+  OS_MUTEX_LOCK(i2c_instance[num].lock, osWaitForever);
 
   handle = &i2c_instance[num].i2c;
   status = HAL_I2C_Master_Transmit(handle, address<<1, pData, dataLen, 1000);
@@ -374,7 +374,7 @@ int32_t bsp_i2c_send_byte(int num,uint8_t address,uint8_t *pData,uint32_t dataLe
     HAL_I2C_MspInit(handle);
   }
 
-  OS_POST_SEM(i2c_instance[num].sem);
+  OS_MUTEX_UNLOCK(i2c_instance[num].lock);
 
   return status;
 

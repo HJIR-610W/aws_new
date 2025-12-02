@@ -9,9 +9,9 @@
 
 typedef struct spi_instance_s
 {
-  SPI_HandleTypeDef spi;
-  void *sem;
   bool opened;
+  SPI_HandleTypeDef spi;
+  osMutexId_t *lock;
 } spi_instance_t;
 
 spi_instance_t spi_inst[BSP_SPI_MAX] = {[BSP_SPI_1] = {.spi.Instance = SPI1}, [BSP_SPI_2]={.spi.Instance = SPI2}};
@@ -210,7 +210,7 @@ void bsp_spi_init(int num)
 
   stm32_spi_init(num);
 
-  OS_CREATE_BINARY_SEM(spi_inst[num].sem);
+  OS_CREATE_MUTEX(spi_inst[num].lock);
 
   spi_inst[num].opened = true;
   
@@ -270,8 +270,7 @@ uint8_t bsp_spi_read_bytes(int num, uint8_t *p_buff, uint16_t read_len)
   SPI_HandleTypeDef *spiHandle;
   spiHandle = &spi_inst[num].spi;
 
-  status =
-      HAL_SPI_Receive(spiHandle, (uint8_t *)p_buff, read_len, SPI_TIME_OUT);
+  status =  HAL_SPI_Receive(spiHandle, (uint8_t *)p_buff, read_len, SPI_TIME_OUT);
 
   if (status != HAL_OK)
   {
@@ -282,14 +281,16 @@ uint8_t bsp_spi_read_bytes(int num, uint8_t *p_buff, uint16_t read_len)
   return 0;
 }
 
-void bsp_spi_pend_sem(int num)
+void bsp_spi_pend_lock(int num)
 { 
-  OS_PEND_SEM(spi_inst[num].sem, osWaitForever); 
+  OS_MUTEX_LOCK(spi_inst[num].lock, osWaitForever); 
+  
 }
 
-void bsp_spi_post_sem(int num)
+void bsp_spi_post_lock(int num)
 { 
-  OS_POST_SEM(spi_inst[num].sem);
+  OS_MUTEX_UNLOCK(spi_inst[num].lock);
+  
 }
 
 void SPI1_IRQHandler(void) { HAL_SPI_IRQHandler(&spi_inst[BSP_SPI_1].spi); }

@@ -12,7 +12,7 @@
 #define USE_DEBUG 0
 #define IWDG_USE 0
 #define PRINTF_BASE(fmt, ...)                                                               \
-  error_print("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \
+  io_printf("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \
               Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \
               Date_Time.Hour, Date_Time.Min, Date_Time.Sec, Date_Time.SubSec,              \
               __FILE__, __LINE__, ##__VA_ARGS__)
