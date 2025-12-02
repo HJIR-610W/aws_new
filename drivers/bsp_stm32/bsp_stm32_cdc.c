@@ -54,7 +54,7 @@ void set_usb_cdc_connection(bool set)
 
 
 
-int32_t stm32_cdc_init(int num,void *opt)
+int32_t stm32_cdc_init(void *opt)
 {
   osSemaphoreId_t tempSem=NULL;
 
@@ -93,32 +93,38 @@ int32_t stm32_cdc_init(int num,void *opt)
     return 1;
 }
 
-int32_t stm32_cdc_send(int num,const uint8_t *pData,uint16_t dataLen)
+int32_t stm32_cdc_send(const uint8_t *pData,uint16_t dataLen)
 {
   osStatus_t osStatus;
   int32_t retVal=dataLen;
   uint32_t waitTime;
 
-  if(cdc_inst.connected==false || num < 0)
+  if(cdc_inst.connected==false )
   {
     return -1;
   }
   
   OS_MUTEX_LOCK(cdc_inst.lock, osWaitForever);
 
-  osSemaphoreAcquire(cdc_inst.tx_done_sem, 0); // 이전에 처리 못한건 제거
+  if(cdc_inst.tx_done_sem)
+  {
+    osSemaphoreAcquire(cdc_inst.tx_done_sem, 0); // 이전에 처리 못한건 제거
+  }
   waitTime = calculate_txWaitTimeMs(cdc_inst.baud, dataLen);
   retVal = cdc_send(pData,dataLen);
 
   if (cdc_inst.tx_done_sem)
   {
-    osStatus = osSemaphoreAcquire(cdc_inst.tx_done_sem, waitTime);
-    if (osStatus != osOK)
+    if(cdc_inst.tx_done_sem)
     {
-      cdc_inst.errCode = (int8_t)osStatus;
+      osStatus = osSemaphoreAcquire(cdc_inst.tx_done_sem, waitTime);
+      if (osStatus != osOK)
+      {
+        cdc_inst.errCode = (int8_t)osStatus;
 
-      retVal = -1;
-     }
+        retVal = -1;
+      }
+    }
   }
 
   OS_MUTEX_UNLOCK(cdc_inst.lock);
@@ -127,7 +133,7 @@ int32_t stm32_cdc_send(int num,const uint8_t *pData,uint16_t dataLen)
 
   
 }
-int32_t stm32_cdc_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
+int32_t stm32_cdc_recv( uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {
   uint32_t start_tick;
   uint32_t elapsed_tick;
@@ -255,11 +261,11 @@ int32_t stm32_cdc_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t
   return cnt;
 }
 
-int32_t stm32_cdc_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size,
+int32_t stm32_cdc_recv_opt( uint8_t *buffer, uint16_t buffer_size,
                            uint32_t timeout1_ms, uint32_t timeout2_ms)
 {
   int32_t cnt=0;
-  if (cdc_inst.connected == false || num < 0)
+  if (cdc_inst.connected == false )
   {
     return -1;
   }
@@ -296,7 +302,7 @@ void put_cdc_rx(uint8_t *p_data,uint16_t dataLen)
 
 
 
-int32_t stm32_cdc_inject(int num, const uint8_t *pData, uint16_t dataLen)
+int32_t stm32_cdc_inject( const uint8_t *pData, uint16_t dataLen)
 {
 
   size_t xBytesSent=0;
@@ -318,7 +324,7 @@ void stm32_cdc_flush_rx(void)
 }
 
 
-int32_t stm32_cdc_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_ms)
+int32_t stm32_cdc_recv_crlf( char *pBuff, uint16_t bSize, uint32_t tout_ms)
 {
   uint8_t data;
   uint16_t cnt = 0;
@@ -326,7 +332,7 @@ int32_t stm32_cdc_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_
   uint32_t timeout;
   uint32_t len;
 
-  if (cdc_inst.connected == false <num <0)
+  if (cdc_inst.connected == false )
   {
     return -1;
   }             
@@ -337,7 +343,7 @@ int32_t stm32_cdc_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_
   do
   {
     startTick = osKernelGetTickCount();
-    len = stm32_cdc_recv(num, &data, 1, tout_ms);
+    len = stm32_cdc_recv( &data, 1, tout_ms);
 
     if (len)
     {

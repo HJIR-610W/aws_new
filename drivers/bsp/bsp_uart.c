@@ -61,7 +61,7 @@ int32_t bsp_uart_init(int32_t num, void *opt)
     case UART_DRIVER_TL16C554:
       return tl16c554_init(pinmap->driver_num, opt);
     case UART_DRIVER_CDC:
-      return stm32_cdc_init(pinmap->driver_num, opt);
+      return stm32_cdc_init( opt);
 
     default:
       return -1;
@@ -143,7 +143,7 @@ int32_t bsp_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
     case UART_DRIVER_TL16C554:
       return tl16c554_send(pinmap->driver_num, pData, dataLen);
     case UART_DRIVER_CDC:
-      return stm32_cdc_send(pinmap->driver_num, pData, dataLen);
+      return stm32_cdc_send( pData, dataLen);
     default:
       return -1;
   }
@@ -167,7 +167,7 @@ int32_t bsp_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeO
       len = tl16c554_recv(pinmap->driver_num, pBuff, buffSize, timeOutMs);
       break;
     case UART_DRIVER_CDC:
-      len =  stm32_cdc_recv(pinmap->driver_num, pBuff, buffSize, timeOutMs);
+      len =  stm32_cdc_recv( pBuff, buffSize, timeOutMs);
       break;
     default:
       len = -1;
@@ -193,7 +193,7 @@ int32_t bsp_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32
       len = tl16c554_recv_opt(pinmap->driver_num, buffer, buffer_size, timeout1_ms, timeout2_ms);
       break;
     case UART_DRIVER_CDC:
-      len =  stm32_cdc_recv_opt(pinmap->driver_num, buffer, buffer_size, timeout1_ms, timeout2_ms);
+      len =  stm32_cdc_recv_opt( buffer, buffer_size, timeout1_ms, timeout2_ms);
       break;
     default:
       return -1;
@@ -235,7 +235,7 @@ int32_t bsp_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
     case UART_DRIVER_TL16C554:
       return tl16c554_recv_inject(pinmap->driver_num, pData, dataLen);
     case UART_DRIVER_CDC:
-      return stm32_cdc_inject(pinmap->driver_num, pData, dataLen);
+      return stm32_cdc_inject( pData, dataLen);
     default:
       return -1;
   }
@@ -254,7 +254,7 @@ int32_t bsp_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_m
     case UART_DRIVER_TL16C554:
       return tl16c554_recv_crlf(pinmap->driver_num, pBuff, bSize, tout_ms);
     case UART_DRIVER_CDC:
-      return stm32_cdc_recv_crlf(pinmap->driver_num, pBuff, bSize, tout_ms);
+      return stm32_cdc_recv_crlf( pBuff, bSize, tout_ms);
     default:
       return -1;
   }
