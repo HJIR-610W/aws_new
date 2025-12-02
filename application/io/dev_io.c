@@ -112,33 +112,34 @@ void io_puts(const char *str)
 
 #define PRINTF_HEAP_USE 1
 
-
 int32_t io_printf(const char *pFmt, ...)
 {
-  #if PRINTF_HEAP_USE==0
-   char printf_buff[256];
-   #endif
   char buff[2];
   char *ptr = NULL;
   char *temp = NULL;
   va_list ap;
-  int32_t len;
+  int32_t len=0;
 
+  (void)len;
+  (void)temp;
+#if PRINTF_HEAP_USE == 0
+  char printf_buff[256];
+#endif
 
-
-  // 먼저 format 후 len의 길이를 확인 후 메모리를 할당후 최종 처리
+  // 먼저 필요한 길이 측정
   va_start(ap, pFmt);
   len = vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
   va_end(ap);
 
 #if PRINTF_HEAP_USE
-  if (len > (sizeof(buff) - 1))  //
+  // 동적 메모리 할당 모드
+  if (len > (sizeof(buff) - 1))
   {
-    temp = user_malloc(len + 1);  // null포함
+    temp = user_malloc(len + 1);  // null 포함
     if (temp)
     {
       va_start(ap, pFmt);
-      len = vsnprintf_s((char *)temp, len + 1, (char *)pFmt, ap);
+      vsnprintf_s((char *)temp, len + 1, (char *)pFmt, ap);
       va_end(ap);
       ptr = temp;
     }
@@ -149,56 +150,67 @@ int32_t io_printf(const char *pFmt, ...)
   }
   else
   {
-    ptr = buff;  // 1바이트만 전송하게 되면 버퍼로 처리
+    // 매우 짧은 메시지 (1바이트)는 buff에 다시 포맷팅
+    va_start(ap, pFmt);
+    vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
+    va_end(ap);
+    ptr = buff;
   }
 #else
+  // 고정 버퍼 모드
   va_start(ap, pFmt);
-  len = vsnprintf_s((char *)printf_buff, sizeof(printf_buff), (char *)pFmt, ap);
+  vsnprintf_s((char *)printf_buff, sizeof(printf_buff), (char *)pFmt, ap);
   va_end(ap);
-
   ptr = printf_buff;
 #endif
-  if (debug_uart_num!= -1 && ptr)  // os구동중인지 확인
+
+  if (debug_uart_num != -1 && ptr)
   {
     io_send((uint8_t *)ptr, strlen(ptr));
   }
 
-
-#ifdef PRINTF_HEAP_USE
+#if PRINTF_HEAP_USE
   if (temp)
   {
     user_free(temp);
   }
 #endif
+
   return 0;
 }
 
-
 int32_t io_vprintf(const char *pFmt, va_list ap)
 {
+  char buff[2];
+  char *ptr = NULL;
+  char *temp = NULL;
+  int32_t len=0;
+  int32_t total_len=0;
+  va_list ap_copy;
+
+  (void)len;
+  (void)temp;
+  (void)total_len;
 #if PRINTF_HEAP_USE == 0
   char printf_buff[256];
 #endif
 
-  char buff[2];
-  char *ptr = NULL;
-  char *temp = NULL;
-  va_list ap_copy;
-  int32_t len;
-  int32_t total_len;
-
+  // 먼저 필요한 길이 측정
   va_copy(ap_copy, ap);
   len = vsnprintf_s(buff, sizeof(buff), pFmt, ap_copy);
   va_end(ap_copy);
 
 #if PRINTF_HEAP_USE
-  if (len > (sizeof(buff) - 1))  // 1바이트 초과면 메모리 동적 할당
+  // 동적 메모리 할당 모드: 측정된 길이만큼 할당
+  if (len > (sizeof(buff) - 1))
   {
-    total_len = len + 1 ;  // null
+    total_len = len + 1;  // null 문자 포함
     temp = pvPortMalloc(total_len);
     if (temp)
     {
-      vsnprintf_s(temp, total_len, pFmt, ap);
+      va_copy(ap_copy, ap);
+      vsnprintf_s(temp, total_len, pFmt, ap_copy);
+      va_end(ap_copy);
       ptr = temp;
     }
     else
@@ -208,21 +220,21 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
   }
   else
   {
-    ptr = buff;  // 아주 짧은 메시지는 임시 버퍼 사용
+    // 매우 짧은 메시지 (1바이트)는 buff 사용
+    va_copy(ap_copy, ap);
+    vsnprintf_s(buff, sizeof(buff), pFmt, ap_copy);
+    va_end(ap_copy);
+    ptr = buff;
   }
 #else
+  // 고정 버퍼 모드: 256바이트 버퍼 사용
   vsnprintf_s(printf_buff, sizeof(printf_buff), pFmt, ap);
   ptr = printf_buff;
 #endif
 
-  // 전송: RTOS 여부에 따라
-  if (debug_uart_num!=-1 && ptr)
+  if (debug_uart_num != -1 && ptr)
   {
     drv_uart_send(debug_uart_num, (uint8_t *)ptr, strlen(ptr));
-  }
-  else if (ptr)
-  {
-   // debug_puts_nonos(ptr);
   }
 
 #if PRINTF_HEAP_USE
@@ -234,6 +246,7 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
 
   return 0;
 }
+
 
 
 
