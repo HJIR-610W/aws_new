@@ -52,15 +52,34 @@ typedef enum cdma_model_e
   eCDMA_TX700
 } eCDMA_MODEL_t;
 
-typedef enum panel_model_e
-{
-  ePANEL_NOT_USED,
-  ePANEL_AWS_STD,
-  ePANEL_HJ_STD,
-  ePANEL_MUJU,
-  ePANEL_HANSUNG,
-  ePANEL_ITEM6,
+#define PANEL_LIST               \
+  X(ePANEL_NOT_USED, "Not Used")\
+  X(ePANEL_AWS_STD, "AWS STD")\
+  X(ePANEL_HJ_STD, "HJ STD")\
+  X(ePANEL_MUJU, "MOOJU")\
+  X(ePANEL_HANSUNG, "HANSUNG")\
+  X(ePANEL_ITEM6, "ITEM6")
+
+  typedef enum panel_model_e{
+#define X(code, name) code,
+  PANEL_LIST
+#undef X
+  PANEL_COUNT
 } ePANEL_MODEL_t;
+
+#define PANEL_ITEM6_TYPE_LIST               \
+  X(ePANEL_ITEM6_TOTAL, "YEARLY")\
+  X(ePANEL_ITEM6_MONTH, "MONTHLY")
+
+
+  typedef enum panel_item6_type_e{
+#define X(code, name) code,
+  PANEL_ITEM6_TYPE_LIST
+#undef X
+  PANEL_ITEM6_TYPE_COUNT
+} ePANEL_ITEM6_TYPE_t;
+
+
 
 typedef enum net_mode_e
 {
@@ -93,11 +112,6 @@ typedef enum
   eLCD_OFF_ALWAYS_ON
 } eLCD_OFF_TIME_t;
 
-typedef enum panel_item6_type_s
-{
-  ePANEL_ITEM6_TOTAL,
-  ePANEL_ITEM6_MONTH,
-} ePANEL_ITEM6_TYPE_t;
 
 typedef struct config_s
 {

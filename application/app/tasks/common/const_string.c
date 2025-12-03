@@ -1,8 +1,27 @@
 
 
-const char* enable_list_eng[] = {"Disabled", "Enabled"};
+#include "const_string.h"
 
-const char* panel_list_eng[] = {"Not Used","AWS STD", "HJ STD", "MOOJU", "HANSUNG"};
+#include "config_app.h"
+
+
+
+const char* panel_list_eng[] = {
+#define X(code, name) name,
+    PANEL_LIST
+#undef X
+};
+
+
+const char* panel_item6_type_list_eng[] = {
+#define X(code, name) name,
+    PANEL_ITEM6_TYPE_LIST
+#undef X
+};
+
+
+
+const char* enable_list_eng[] = {"Disabled", "Enabled"};
 
 const char* eth_mode_list_eng[] = {"Client", "Server"};
 const char* cdma_model_list_eng[] = {"NTLE9607", "TX700"};
@@ -22,7 +41,7 @@ const char *freq_ch_list[2] = {"FREQ 1", "FREQ 2"};
  const char *linkStatusList_lcd[3] = {"-", "UP", "DOWN"};
  const char *ethlinkStatusList_lcd[3] = {"-", "U", "D"};
 
- const char *sdcard_status_list_lcd[3] = {"NOT INSERTED", "INSERTED"};
+ const char *sdcard_status_list_lcd[] = {"NOT INSERTED", "INSERTED"};
 
  const char *linkStatusList[3] = {"-", "UP", "DOWN"};
  const char *doorStatusList_kor[2] = {"닫힘", "열림"};

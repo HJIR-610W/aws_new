@@ -18,6 +18,7 @@
 #define PANEL_MENU_MODEL    0
 #define PANEL_MENU_SNOW     1
 #define PANEL_MENU_BAROMETER 2
+#define PANEL_MENU_ITEM6    3
 
 void draw_setup_menu_panel_page(screen_menu_t* p_win)
 {
@@ -32,6 +33,10 @@ void draw_setup_menu_panel_page(screen_menu_t* p_win)
                        ITEM_LIST((int32_t)get_config_app()->panel_snow_active, enable_list_eng));
     screen_menu_printf(p_win, PANEL_MENU_BAROMETER, "%-*s:%s", PANEL_WD, "Baro",
                        ITEM_LIST((int32_t)get_config_app()->panel_barometer_active, enable_list_eng));
+  }
+  else   if (get_config_app()->panel_model == ePANEL_ITEM6)
+  {
+        screen_menu_printf(p_win, PANEL_MENU_ITEM6, "%-*s:%s", PANEL_WD, "TYPE",        ITEM_LIST((int32_t)get_config_app()->panel_item6_type, panel_item6_type_list_eng));
   }
 
   screen_menu_clear(p_win);
@@ -84,9 +89,7 @@ int32_t setup_menu_panel(void)
               show_popup("Information", "Applied after reset");
             }
           }
-          
-          
-          
+         
         }
         break;
 
@@ -112,7 +115,19 @@ int32_t setup_menu_panel(void)
            WRITE_CFG(panel_barometer_active);
         }
         break;
+      case PANEL_MENU_ITEM6:
+        {
 
+          choice = config.panel_item6_type;
+          status = input_combobox("Type",panel_item6_type_list_eng, _countof(panel_item6_type_list_eng), &choice);
+          if (status != MENU_OK)
+            break;
+
+            config.panel_item6_type = (ePANEL_ITEM6_TYPE_t)choice;
+            WRITE_CFG(panel_item6_type);
+      
+        }
+        break;
         default:
           break;
       }

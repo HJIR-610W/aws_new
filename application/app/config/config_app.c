@@ -279,7 +279,7 @@ void check_config_app(void)
 
 
 
-  if (config.panel_model > ePANEL_HANSUNG)
+  if (config.panel_model > PANEL_COUNT)
   {
     config.panel_model = config_app_default.panel_model;
   g_config_app_change_count++;

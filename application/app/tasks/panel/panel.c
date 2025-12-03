@@ -5,6 +5,7 @@
 #include "panel_hansung.h"
 #include "panel_aws_std.h"
 #include "panel_hj.h"
+#include "panel_item6.h"
 #include "drv_rs232.h"
 #include "config_app.h"
 
