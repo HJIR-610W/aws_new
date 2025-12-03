@@ -176,12 +176,14 @@ void *sensor_add(sensor_t *sensor)
       int cnt = g_config_sensor.adc_cnt;
       if (cnt >= _countof(g_config_sensor.adc)) // 할당 가능한지 판단
       {
-        cnt--;
-      } sensor_add_common(sensor, cnt);
+        cnt=0;
+      } 
+      sensor_add_common(sensor, cnt);
       cnt++;
       g_config_sensor.adc_cnt = cnt;
       return &g_config_sensor.adc[cnt];
-    } case S_T_WIND_SPEED_HJ_485: //
+      }
+     case S_T_WIND_SPEED_HJ_485: //
       sensor_add_common(sensor, 0);
       return &g_config_sensor.hjwind_speed;
       break;
@@ -210,8 +212,17 @@ void *sensor_add(sensor_t *sensor)
       return &g_config_sensor.rain_present;
     case S_T_FREQ:
     case S_T_WIND_SPEED_RMYOUNG_05103V:
-      sensor_add_common(sensor, 0);
-      return &g_config_sensor.frequency;
+         {
+      int cnt = g_config_sensor.frequency_count;
+      if (cnt >= _countof(g_config_sensor.frequency)) // 할당 가능한지 판단
+      {
+        cnt=0;
+      } sensor_add_common(sensor, cnt);
+      cnt++;
+      g_config_sensor.frequency_count = cnt;
+      return &g_config_sensor.frequency[cnt];
+      }
+
     case S_T_BARO_JINSUNG_SJGP215:
       sensor_add_common(sensor, 0);
       return &g_config_sensor.jinsung_sjgp215;
@@ -261,7 +272,9 @@ void *get_sensor_config(sensor_t *sensor)
       {
         case S_T_ADC:
          return &g_config_sensor.adc[sensor->config[i][1]];
-            case S_T_WIND_SPEED_HJ_485:
+        case S_T_FREQ:
+        return &g_config_sensor.frequency[sensor->config[i][1]];
+         case S_T_WIND_SPEED_HJ_485:
           return &g_config_sensor.hjwind_speed;
         case S_T_WIND_DIRECTION_HJ_485:
           return &g_config_sensor.hjwindDir;
@@ -276,8 +289,6 @@ void *get_sensor_config(sensor_t *sensor)
         case S_T_RAIN_PRESENT_DI:
         case S_T_RAIN_PRESENT_ANALOG:
           return &g_config_sensor.rain_present;
-        case S_T_FREQ:
-        return &g_config_sensor.frequency;
         case S_T_WIND_SPEED_RMYOUNG_05103V:
           return &g_config_sensor.rmyoung_05103v_wind_speed;
         case S_T_WIND_DIRECTION_RMYOUNG_05103V:

@@ -163,10 +163,13 @@ void limit_jsgp215(void)
 
 void limit_fequency(void)
 {
-   if (g_config_sensor.frequency.channel >=2)
+  for(int i = 0 ; i < _countof(g_config_sensor.frequency);i++)
   {
-    g_config_sensor.frequency.channel = 0;
-    g_config_sensor_dirty_flag = true;
+    if (g_config_sensor.frequency[i].channel >=2)
+    {
+      g_config_sensor.frequency[i].channel = 0;
+      g_config_sensor_dirty_flag = true;
+    }
   } 
 }
 

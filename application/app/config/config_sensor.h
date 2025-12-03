@@ -160,7 +160,8 @@ typedef struct config_manage_s
   config_header_t header;
   uint8_t adc_cnt;
   adc_config_t adc[50];
-  frequency_config_t frequency;
+  uint8_t frequency_count;
+  frequency_config_t frequency[2];
   temp_hj_config_t hjtemp;
   humi_hj_config_t hjhumi;
   wind_speed_rmyoung_05103v_config_t rmyoung_05103v_wind_speed;

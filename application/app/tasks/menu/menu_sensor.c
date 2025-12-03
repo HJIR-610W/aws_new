@@ -1275,7 +1275,7 @@ int32_t wind_direction_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
       if (status != MENU_OK || choice == 0)
         break;
       p_wind_speed->rs485_port = eAPP_RS485_C;
-      p_wind_speed->modbus_id = 1;
+      p_wind_speed->modbus_id = 2;
       save_config_sensor();
       break;
     }
