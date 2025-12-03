@@ -38,10 +38,10 @@ int32_t wind_dir_rmyoung_05103v_init(void *opt)
   rmyoung_05103v_win_dir_inst.opened = true;
   adc_config.mode = 0;
   adc_config.single_channel = p_cfg->adc_channel;
-  adc_config.highScale = 355;
-  adc_config.lowScale = 0;
-  adc_config.outMaxV = 5000;
-  adc_config.outMinV = 0;
+  adc_config.high_scale = 355;
+  adc_config.low_scale = 0;
+  adc_config.out_max_mv = 5000;
+  adc_config.out_min_mv = 0;
   adc_config.scale = 1;
 
   rmyoung_05103v_win_dir_inst.driver = general_adc_open(GENERAL_ADC,&adc_config,"Wind Direction");

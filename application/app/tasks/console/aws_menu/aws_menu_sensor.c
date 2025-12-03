@@ -138,11 +138,11 @@ uint8_t print_adc_cfg( adc_config_t *adc_config, uint8_t cnt)
   io_printf("%2d.%s:%d\r\n",cnt++, m_l("Channel",ENTRY_LABEL_WIDTH), adc_config->single_channel);
   else
   io_printf("%2d.%s:%d\r\n",cnt++, m_l("Channel",ENTRY_LABEL_WIDTH), adc_config->diff_channel);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("High Value",ENTRY_LABEL_WIDTH), adc_config->highScale);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Low Value",ENTRY_LABEL_WIDTH), adc_config->lowScale);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("High Value",ENTRY_LABEL_WIDTH), adc_config->high_scale);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Low Value",ENTRY_LABEL_WIDTH), adc_config->low_scale);
   io_printf("%2d.%s:%d\r\n",cnt++, m_l("Scale",ENTRY_LABEL_WIDTH), adc_config->scale);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Max Voltage(mV)",ENTRY_LABEL_WIDTH), adc_config->outMaxV);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Min Voltage(mV)",ENTRY_LABEL_WIDTH), adc_config->outMinV);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Max Voltage(mV)",ENTRY_LABEL_WIDTH), adc_config->out_max_mv);
+  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Min Voltage(mV)",ENTRY_LABEL_WIDTH), adc_config->out_min_mv);
 
   return cnt;
 }
@@ -875,7 +875,7 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
       if (status != MENU_OK)
         break;
 
-        adc->highScale = dec;
+        adc->high_scale = dec;
         save_config_sensor();
 
       break;
@@ -884,7 +884,7 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
       if (status != MENU_OK)
         break;
 
-        adc->lowScale = dec;
+        adc->low_scale = dec;
         save_config_sensor();
 
       break;
@@ -903,7 +903,7 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
       if (status != MENU_OK)
         break;
 
-        adc->outMaxV = dec;
+        adc->out_max_mv = dec;
         save_config_sensor();
 
       break;
@@ -913,7 +913,7 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
       if (status != MENU_OK)
         break;
 
-        adc->outMinV = dec;
+        adc->out_min_mv = dec;
         save_config_sensor();
 
       break;

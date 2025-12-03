@@ -215,16 +215,16 @@ rain_present_config_t *get_rain_present_config(void);
 
 
 // TODO:하드 코딩됨, 소스파일과 일치시켜야함 주의
-extern const uint8_t temperatureList[4];
+extern const uint8_t temperature_list[4];
 extern const uint8_t wind_direction_list[5];
 extern const uint8_t wind_speed_list[5];
 extern const uint8_t pressureList[4];
 extern const uint8_t rainList[5];
 extern const uint8_t snowList[2];
-extern const uint8_t rainPresentList[3];
+extern const uint8_t rain_present_list[3];
 extern const uint8_t humiList[3];
-extern const uint8_t solarRadiationList[3];
-extern const uint8_t defaultList[1];
+extern const uint8_t solar_radiation_list[3];
+extern const uint8_t default_list[1];
 extern const uint8_t soil_temp_list[2];
 extern const uint8_t solar_duration_list[3];
 

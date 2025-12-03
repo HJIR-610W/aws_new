@@ -41,10 +41,10 @@ int32_t rmyoung_61402v_init(void *opt)
   
   adc_config.mode = 0;
   adc_config.single_channel = p_cfg->adc_channel;
-  adc_config.highScale = 1100;
-  adc_config.lowScale = 500;
-  adc_config.outMaxV = 5000;
-  adc_config.outMinV = 0;
+  adc_config.high_scale = 1100;
+  adc_config.low_scale = 500;
+  adc_config.out_max_mv = 5000;
+  adc_config.out_min_mv = 0;
   adc_config.scale = 1;
   
   

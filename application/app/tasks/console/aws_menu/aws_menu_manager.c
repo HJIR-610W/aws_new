@@ -158,11 +158,11 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config = get_sensor_config(&config.sensor[B1_SOLAR_RADIATION]);
   adc_config->single_channel = single_channel++;//1
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 2000;  // 5v
-  adc_config->lowScale = 0;      // 0v
+  adc_config->high_scale = 2000;  // 5v
+  adc_config->low_scale = 0;      // 0v
   adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  adc_config->out_max_mv = 5000;
+  adc_config->out_min_mv = 0;
 
 
   // 일조 CSD3 센서 출력 : 120 w/m2 이상일 때 1 VDC, 이하일 때 0 VDC
@@ -179,11 +179,11 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config = get_sensor_config(&config.sensor[B5_SOIL_TEMPERATURE_5CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 60;
-  adc_config->lowScale = -40;
+  adc_config->high_scale = 60;
+  adc_config->low_scale = -40;
   adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  adc_config->out_max_mv = 5000;
+  adc_config->out_min_mv = 0;
 
   // 지중온도 10cm
   config.sensor[B6_SOIL_TEMPERATURE_10CM].type = S_T_ADC;
@@ -191,11 +191,11 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config = get_sensor_config(&config.sensor[B6_SOIL_TEMPERATURE_10CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 60;
-  adc_config->lowScale = -40;
+  adc_config->high_scale = 60;
+  adc_config->low_scale = -40;
   adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  adc_config->out_max_mv = 5000;
+  adc_config->out_min_mv = 0;
 
 
   // 지중온도 20cm
@@ -204,11 +204,11 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config = get_sensor_config(&config.sensor[B7_SOIL_TEMPERATURE_20CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 60;
-  adc_config->lowScale = -40;
+  adc_config->high_scale = 60;
+  adc_config->low_scale = -40;
   adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  adc_config->out_max_mv = 5000;
+  adc_config->out_min_mv = 0;
 
 
   // 지중온도 30cm
@@ -217,11 +217,11 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config = get_sensor_config(&config.sensor[B8_SOIL_TEMPERATURE_30CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 60;
-  adc_config->lowScale = -40;
+  adc_config->high_scale = 60;
+  adc_config->low_scale = -40;
   adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  adc_config->out_max_mv = 5000;
+  adc_config->out_min_mv = 0;
 
 
   // 지중온도 50cm
@@ -230,11 +230,11 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config = get_sensor_config(&config.sensor[B9_SOIL_TEMPERATURE_50CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 60;
-  adc_config->lowScale = -40;
+  adc_config->high_scale = 60;
+  adc_config->low_scale = -40;
   adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  adc_config->out_max_mv = 5000;
+  adc_config->out_min_mv = 0;
 
 
   // 지중온도 1m
@@ -243,11 +243,11 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config = get_sensor_config(&config.sensor[B10_SOIL_TEMPERATURE_100CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 60;
-  adc_config->lowScale = -40;
+  adc_config->high_scale = 60;
+  adc_config->low_scale = -40;
   adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  adc_config->out_max_mv = 5000;
+  adc_config->out_min_mv = 0;
 
 
   // 지중온도 1.5m
@@ -256,11 +256,11 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config = get_sensor_config(&config.sensor[B11_SOIL_TEMPERATURE_150CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 60;
-  adc_config->lowScale = -40;
+  adc_config->high_scale = 60;
+  adc_config->low_scale = -40;
   adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  adc_config->out_max_mv = 5000;
+  adc_config->out_min_mv = 0;
 
 
   // 지중온도 3m
@@ -269,11 +269,11 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config = get_sensor_config(&config.sensor[B12_SOIL_TEMPERATURE_300CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 60;
-  adc_config->lowScale = -40;
+  adc_config->high_scale = 60;
+  adc_config->low_scale = -40;
   adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  adc_config->out_max_mv = 5000;
+  adc_config->out_min_mv = 0;
 
 
   // 지중온도 5m
@@ -282,11 +282,11 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config = get_sensor_config(&config.sensor[B13_SOIL_TEMPERATURE_500CM]);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
-  adc_config->highScale = 60;
-  adc_config->lowScale = -40;
+  adc_config->high_scale = 60;
+  adc_config->low_scale = -40;
   adc_config->scale = 1;
-  adc_config->outMaxV = 5000;
-  adc_config->outMinV = 0;
+  adc_config->out_max_mv = 5000;
+  adc_config->out_min_mv = 0;
 
   save_config_app();
   save_config_sensor();

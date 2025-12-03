@@ -8,9 +8,9 @@
 
 #include "drv_fram.h"
 #include "config_define.h"
-#include "drv_rs232.h"
-#include "drv_rs485.h"
 #include "config_memory_map.h"
+//#include "drv_rs232.h"
+//#include "drv_rs485.h"
 #include "util_memory.h"
 
 
@@ -25,13 +25,13 @@ typedef struct
   uint8_t mode;  // 0 single, 1 diff
   uint8_t single_channel;
   uint8_t diff_channel;
-  int32_t highScale;
-  int32_t lowScale;
-  int32_t scale;    // 원본값에 몇배 곱해졌다의 의미 highScale 100, lowScale 0이면
+  int32_t high_scale;
+  int32_t low_scale;
+  int32_t scale;    // 원본값에 몇배 곱해졌다의 의미 high_scale 100, low_scale 0이면
                     // 0~100으로 값이 나옴
                     //  scale 10이면 최종 값은 나누기 10해야함
-  int32_t outMaxV;  // 센서의 출력 전압 최고
-  int32_t outMinV;  // 센서의 출력 전압 최저
+  int32_t out_max_mv;  // 센서의 출력 전압 최고
+  int32_t out_min_mv;  // 센서의 출력 전압 최저
   //float voltage_offset; // 센서값 = (전압 + 전압_오프셋)*gain + offset
   //float gain;
   //float offset;  사용자 직관성 위해 현재 미사용
@@ -166,10 +166,10 @@ typedef struct config_manage_s
   adc_config_t adc[50];
   hjtemp_config_t hjtemp;
   hjhumi_config_t hjhumi;
-  hjwindspeed_config_t hjwind_speed;
-  hjwindDirection_config_t hjwindDir;
+  hjwindspeed_config_t hjwind_speed;//구형 타입 켈리브 필요한 타입
+  hjwindDirection_config_t hjwindDir;//구형 타입 켈리브 필요한 타입
   hjsnow_config_t hjsnow;
-  ott_smp3_config_t ott_smp3;
+  ott_smp3_config_t ott_smp3;//일사
   rain_present_config_t rain_present;
   frequency_config_t frequency;
   jinsung_sjgp215_config_t jinsung_sjgp215;

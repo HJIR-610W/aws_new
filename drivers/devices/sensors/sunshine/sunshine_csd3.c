@@ -34,10 +34,10 @@ int32_t solar_duration_csd3_init(void *opt)
   csd3_inst.opened = true;
   adc_config.mode = 0;
   adc_config.single_channel = p_cfg->adc_channel;
-  adc_config.highScale = 5;
-  adc_config.lowScale = 0;
-  adc_config.outMaxV = 5000;
-  adc_config.outMinV = 0;
+  adc_config.high_scale = 5;
+  adc_config.low_scale = 0;
+  adc_config.out_max_mv = 5000;
+  adc_config.out_min_mv = 0;
   adc_config.scale = 1;
   
   csd3_inst.driver = general_adc_open(GENERAL_ADC,&adc_config,"Sunshine");

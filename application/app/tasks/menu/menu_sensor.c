@@ -63,11 +63,11 @@ void draw_adc_page(screen_menu_t* p_win,adc_config_t *adc_config)
   else
     screen_menu_printf(p_win, ADC_PAGE_CHANNEL, "%-*s:%d", ADC_L_W, "Channel", adc_config->diff_channel);
 
-  screen_menu_printf(p_win, ADC_PAGE_HIGH_VALUE, "%-*s:%d", ADC_L_W, "High Value", adc_config->highScale);
-  screen_menu_printf(p_win, ADC_PAGE_LOW_VALUE, "%-*s:%d", ADC_L_W, "Low Value", adc_config->lowScale);
+  screen_menu_printf(p_win, ADC_PAGE_HIGH_VALUE, "%-*s:%d", ADC_L_W, "High Value", adc_config->high_scale);
+  screen_menu_printf(p_win, ADC_PAGE_LOW_VALUE, "%-*s:%d", ADC_L_W, "Low Value", adc_config->low_scale);
   screen_menu_printf(p_win, ADC_PAGE_SCALE, "%-*s:%d", ADC_L_W, "Scale", adc_config->scale);
-  screen_menu_printf(p_win, ADC_PAGE_MAX_MV, "%-*s:%d", ADC_L_W, "Max mV", adc_config->outMaxV);
-  screen_menu_printf(p_win, ADC_PAGE_MIN_MV, "%-*s:%d", ADC_L_W, "Min mV", adc_config->outMinV);
+  screen_menu_printf(p_win, ADC_PAGE_MAX_MV, "%-*s:%d", ADC_L_W, "Max mV", adc_config->out_max_mv);
+  screen_menu_printf(p_win, ADC_PAGE_MIN_MV, "%-*s:%d", ADC_L_W, "Min mV", adc_config->out_min_mv);
 
 }
 
@@ -518,19 +518,19 @@ int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case ADC_PAGE_HIGH_VALUE:
-      dec = adc->highScale;
+      dec = adc->high_scale;
       status = input_decimal("High Value", -1000000, 1000000, &dec);
       if (status != MENU_OK)
         break;
-      adc->highScale = dec;
+      adc->high_scale = dec;
       save_config_sensor();
       break;
     case ADC_PAGE_LOW_VALUE:
-    dec = adc->lowScale;
+    dec = adc->low_scale;
       status = input_decimal("Low Value", -1000000, 1000000, &dec);
       if (status != MENU_OK)
         break;
-      adc->lowScale = dec;
+      adc->low_scale = dec;
       save_config_sensor();
       break;
     case ADC_PAGE_SCALE:
@@ -542,19 +542,19 @@ int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
       save_config_sensor();
       break;
     case ADC_PAGE_MAX_MV:
-    dec = adc->outMaxV;
+    dec = adc->out_max_mv;
       status = input_decimal("Max mV", 0, 5000, &dec);
       if (status != MENU_OK)
         break;
-      adc->outMaxV = dec;
+      adc->out_max_mv = dec;
       save_config_sensor();
       break;
     case ADC_PAGE_MIN_MV:
-    dec = adc->outMinV;
+    dec = adc->out_min_mv;
       status = input_decimal("Min mV", 0, 5000, &dec);
       if (status != MENU_OK)
         break;
-      adc->outMinV = dec;
+      adc->out_min_mv = dec;
       save_config_sensor();
       break;
   }
