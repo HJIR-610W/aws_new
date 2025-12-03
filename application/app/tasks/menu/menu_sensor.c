@@ -22,6 +22,7 @@
 #include "menu/devices/hj_snowfall_menu.h"
 #include "menu/devices/hj_wind_speed.h"
 #include "Sensors\general\general_adc.h"
+#include "Sensors\temperature\pt100.h"
 
 #define SCREEN_COLS 20
 #define SYSTEM_WD 8
@@ -310,6 +311,15 @@ void draw_wind_dir_hj_modbus_page(screen_menu_t* p_win, wind_direction_hj_config
 
 
 
+#define TEMPERATURE_PT100_CH 0
+#define TEMPERATURE_PT100_DEFAULT 1
+void draw_temperature_pt100_page(screen_menu_t *p_win, temperature_pt100_t *p_pt100)
+{
+  screen_menu_printf(p_win, TEMPERATURE_PT100_CH, "%-*s:%d", E_L_W, "CH", p_pt100->channel);
+  screen_menu_printf(p_win, TEMPERATURE_PT100_DEFAULT, "Default");
+}
+
+
 
   void draw_sensor_page(screen_menu_t * p_win, sensor_t * p_sensor)
   {
@@ -370,6 +380,9 @@ void draw_wind_dir_hj_modbus_page(screen_menu_t* p_win, wind_direction_hj_config
       break;
       case S_T_WIND_DIRECTION_HJ_MODBUS:
             draw_wind_dir_hj_modbus_page(p_win, get_sensor_config(p_sensor));
+      break;
+      case S_T_PT100:
+      draw_temperature_pt100_page(p_win, get_sensor_config(p_sensor));
       break;
     
 
@@ -1285,6 +1298,45 @@ int32_t wind_direction_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
 }
 
 
+int32_t temperature_pt100_setup(sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t status = 0;
+  temperature_pt100_t *p_cfg;
+  int active;
+  int choice;
+
+  p_cfg = get_sensor_config(sensor);
+  if (p_cfg == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+  case TEMPERATURE_PT100_CH:
+    choice = p_cfg->channel;
+    status = input_combobox("Channel", g_pt100_owner_list, _countof(g_pt100_owner_list), &choice);
+    if (status != MENU_OK)
+      break;
+        p_cfg->channel = choice;
+        save_config_sensor();
+
+    break;
+  case TEMPERATURE_PT100_DEFAULT:
+    choice = 0;
+    status = input_active("Set as Default?", &choice);
+    if (status != MENU_OK || choice == 0)
+      break;
+    p_cfg->channel = 0;
+    save_config_sensor();
+    break;
+  }
+
+
+  return status;
+}
+
+
 const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_ADC, .config_set = general_adc_setup},
     {.sensor_type = S_T_FREQ, .config_set = general_freq_setup},
@@ -1302,7 +1354,8 @@ const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_WIND_SPEED_RMYOUNG_05103V, .config_set = wind_speed_rmyoung_05103V_setup},
     {.sensor_type = S_T_SOLAR_DURATION_CSD3, .config_set = solar_duration_csd3_setup},
     {.sensor_type = S_T_WIND_SPEED_HJ_MODBUS, .config_set = wind_speed_hj_modbus_setup},
-    {.sensor_type = S_T_WIND_DIRECTION_HJ_MODBUS, .config_set = wind_direction_hj_modbus_setup}};
+    {.sensor_type = S_T_WIND_DIRECTION_HJ_MODBUS, .config_set = wind_direction_hj_modbus_setup},
+    {.sensor_type = S_T_PT100,.config_set = temperature_pt100_setup}};
 
 int32_t setup_sensor_set(sensor_t* p_sensor, uint8_t choice)
 {

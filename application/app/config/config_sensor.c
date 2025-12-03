@@ -215,6 +215,15 @@ void limit_hj_wind_modbus(void)
 }
 
 
+void limit_pt100(void)
+{
+  if(g_config_sensor.temp_pt100.channel >=2)
+  {
+    g_config_sensor.temp_pt100.channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
 void save_config_sensor(void)
 {
   uint32_t crc;
@@ -270,6 +279,7 @@ void load_config_sensor(void)
   limit_rmyoung_barometer();
   limit_csd3_solar_duration();
   limit_hj_wind_modbus();
+  limit_pt100();
 
   if (g_config_sensor_dirty_flag)
   {

@@ -190,13 +190,6 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
     case  S_T_WIND_DIRECTION_RMYOUNG_05103V:
     num = WIND_DIRECTION_RMYOUNG_05103V;
     break;
-
-    case S_T_PT100_A:
-      num = TEMP_PT100_A;
-      break;
-    case S_T_PT100_B:
-      num = TEMP_PT100_B;
-      break;
     case S_T_WIND_SPEED_HJ_485:
       num = WIND_HJ;
       break;
@@ -250,6 +243,9 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
   break;
   case S_T_WIND_DIRECTION_HJ_MODBUS:
       num = WIND_DIRECTION_HJ_MODBUS;
+  break;
+  case S_T_PT100:
+    num = TEMP_PT100;
   break;
     }
   return num;

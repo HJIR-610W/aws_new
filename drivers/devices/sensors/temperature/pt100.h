@@ -7,9 +7,8 @@
 #include "temperature_define.h"
 
 
-#define PT100_A 0 //?깃?梨꾨꼸 16 怨좎젙??
-#define PT100_B 1 //?깃?梨꾨꼸 17 怨좎젙??
 
-void *pt100_open(uint8_t num,void *opt);
+driver_t *pt100_open(void *opt,const char *owner);
 
+extern const char *g_pt100_owner_list[2];
 #endif

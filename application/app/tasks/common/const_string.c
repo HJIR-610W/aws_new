@@ -37,3 +37,5 @@ const char *freq_ch_list[2] = {"FREQ 1", "FREQ 2"};
 
  const char *adc_single_list[16] = {"SE  0", "SE  1", "SE  2", "SE  3", "SE  4", "SE  5", "SE  6", "SE  7",
                                 "SE  8", "SE  9", "SE 10", "SE 11", "SE 12", "SE 13", "SE 14", "SE 15"};
+
+ const char *pt100_list_eng[2] = {"PT100 0", "PT100 1"};

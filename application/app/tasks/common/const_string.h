@@ -25,4 +25,6 @@ extern const char *g_charger_list_eng[3];
 extern const char *g_charger_list_kor[3];
 extern const char *g_baud_list_eng[6];
 extern const char *adc_single_list[16];
+extern const char *pt100_list_eng[2];
+
 #endif // CONST_STRING_H

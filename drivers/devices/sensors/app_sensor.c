@@ -76,7 +76,7 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] =
         };
 
 // 지원하는 센서 목록 정의
-const uint8_t temperature_list[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
+const uint8_t temperature_list[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100};
 const uint8_t wind_direction_list[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_MODBUS,S_T_WIND_DIRECTION_HJ_485, S_T_WIND_DIRECTION_RMYOUNG_05103V, S_T_ADC};
 const uint8_t wind_speed_list[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_MODBUS,S_T_WIND_SPEED_HJ_485, S_T_WIND_SPEED_RMYOUNG_05103V,S_T_FREQ};
 const uint8_t rainfall_list[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
@@ -240,7 +240,10 @@ void *sensor_add(sensor_t *sensor)
              sensor_add_common(sensor, 0);
       return &g_config_sensor.wind_direction_hj_modbus;
     break;
-
+      case S_T_PT100:
+       sensor_add_common(sensor, 0);
+      return &g_config_sensor.temp_pt100;
+      break;
 
         default:
       break;
@@ -303,6 +306,9 @@ void *get_sensor_config(sensor_t *sensor)
         return &g_config_sensor.wind_speed_hj_modbus;
         case S_T_WIND_DIRECTION_HJ_MODBUS:
         return &g_config_sensor.wind_direction_hj_modbus;
+        case S_T_PT100:
+                return &g_config_sensor.temp_pt100;
+        break;
       
       }
     }

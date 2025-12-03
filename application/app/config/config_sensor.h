@@ -154,6 +154,10 @@ typedef struct wind_direction_hj_config_s
   uint8_t modbus_id;
 } wind_direction_hj_config_t;
 
+typedef struct temperature_pt100_s
+{
+  int channel;
+}temperature_pt100_t;
 
 typedef struct config_manage_s
 {
@@ -163,6 +167,7 @@ typedef struct config_manage_s
   uint8_t frequency_count;
   frequency_config_t frequency[2];
   temp_hj_config_t hjtemp;
+  temperature_pt100_t temp_pt100;
   humi_hj_config_t hjhumi;
   wind_speed_rmyoung_05103v_config_t rmyoung_05103v_wind_speed;
   wind_speed_hj_pulse_config_t hjwind_speed;//구형 타입 켈리브 필요한 타입
@@ -176,6 +181,7 @@ typedef struct config_manage_s
   barometer_rmyoung_61402v_config_t rmyoung_61402v_barometer;
   solar_r_ott_smp3_config_t ott_smp3;//일사
   solar_duration_csd3_t solar_duration_csd3;//일조
+  
 } config_sensor_t;
 
 #define WRITE_CFG_SENSOR(x)                                                                    \

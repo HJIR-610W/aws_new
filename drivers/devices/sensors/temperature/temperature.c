@@ -19,11 +19,8 @@ driver_t *temperature_open(uint32_t num, void *opt)
     case GENERAL_ADC:
       driver = general_adc_open(num, opt,"Temperature");
       break;
-    case TEMP_PT100_A:
-      driver = pt100_open(PT100_A, opt);
-      break;
-    case TEMP_PT100_B:
-      driver = pt100_open(PT100_B, opt);
+    case TEMP_PT100:
+      driver = pt100_open(opt,"temperature");
       break;
     case TEMP_HJ_TEMPERATURE:
       driver = hjTemperature_open(HJ_TEMPERATURE, opt);

@@ -144,7 +144,8 @@ typedef enum sensor_list_e
   X(S_T_RAIN_PRESENT_ANALOG, "화진 우량감지 디지털")\
   X(S_T_SOLAR_DURATION_CSD3, "CSD3")\
   X(S_T_WIND_SPEED_HJ_MODBUS, "화진 풍속 MODBUS")\
-  X(S_T_WIND_DIRECTION_HJ_MODBUS, "화진 풍향 MODBUS")
+  X(S_T_WIND_DIRECTION_HJ_MODBUS, "화진 풍향 MODBUS")\
+  X(S_T_PT100, "PT100")     
 
 #define SENSOR_TYPE_ENG_LIST                             \
   X(S_T_UNSUED, "Not Used")                              \
@@ -170,7 +171,8 @@ typedef enum sensor_list_e
   X(S_T_RAIN_PRESENT_ANALOG, "HJ Rain Det Analog")      \
   X(S_T_SOLAR_DURATION_CSD3, "CSD3")\
   X(S_T_WIND_SPEED_HJ_MODBUS, "HJ Wind Spd MODBUS")\
-  X(S_T_WIND_DIRECTION_HJ_MODBUS, "HJ Wind Dir MODBUS")
+  X(S_T_WIND_DIRECTION_HJ_MODBUS, "HJ Wind Dir MODBUS")\
+  X(S_T_PT100, "PT100")                              
 
 typedef enum sensor_model_e
 {
@@ -215,7 +217,7 @@ rain_present_config_t *get_rain_present_config(void);
 
 
 // TODO:하드 코딩됨, 소스파일과 일치시켜야함 주의
-extern const uint8_t temperature_list[4];
+extern const uint8_t temperature_list[3];
 extern const uint8_t wind_direction_list[5];
 extern const uint8_t wind_speed_list[5];
 extern const uint8_t pressure_list[4];

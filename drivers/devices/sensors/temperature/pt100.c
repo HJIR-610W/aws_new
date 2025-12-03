@@ -14,6 +14,9 @@
 #define TABLE_SIZE (MAX_TEMP - MIN_TEMP + 1)
 
 
+#define PT100_A 0
+#define PT100_B 1
+
 const float pt100_table[TABLE_SIZE] = {83.48,  83.88, 
                                        84.27,  84.67,  85.06,  85.46,   85.85, 86.25,  86.64,  87.04,  87.43,  87.83,  
                                        88.22,  88.62,  89.01,  89.40,   89.80, 90.19,  90.59,  90.98,  91.37,  91.77,  
@@ -64,9 +67,7 @@ typedef struct pt100_cfg_s
 #define NEW_AWS_METHOD
 
 #define PT100_ADC_AVG_CNT 1
-/**
- * @brief ?�도 ?�위 ??12.56??
- */
+
 float read_pt100_temperature(driver_t *driver,uint8_t *err)
 {
 #ifdef NEW_AWS_METHOD
@@ -164,13 +165,13 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   fullset = get_adc_single_fullset(adc_ch);
   sAdval = drv_adc_single_read_voltage(adc_ch, 10,err);
 
-  //?�기??�???기존 AWS ?�도 코드?�데 ?�해�? ?�됨.?�단 ?�용
-  //?�분?? sSpan?? -40,60??ADC�?
-  sSpan    = fullset - offset;   //????1개당 ADC�?,79%,77%�?offset %출처 모름�?
+  //?�기??�???기존 AWS ?�도 코드?�데 ?�해�? ?�됨.?�단 ?�용
+  //?�분?? sSpan?? -40,60??ADC�?
+  sSpan    = fullset - offset;   //????1개당 ADC�?,79%,77%�?offset %출처 모름�?
   sMinus45 = (int32_t)(((float)sSpan / 38.97) * 0.79);//??분석:38.97= 123.24-84.27
   sPlus65  = (int32_t)(((float)sSpan / 38.97) * 0.77);
 
-  sSpan   = ((fullset + sMinus45) - (offset - sPlus65));//범위�????�게 �?
+  sSpan   = ((fullset + sMinus45) - (offset - sPlus65));//범위�????�게 �?
   errTmp = (int32_t)((float)sSpan * 0.05); 
 
 
@@ -179,9 +180,9 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   {
     if(sSpan > 0)
     {
-      x = 40.53 / (float)sSpan;     //40.53= 124.01(62??-83.48(-42??,  AD Convertion Value 값을 ?????�이블에 맞춤
-      resistance = (float)(sAdval - (offset- sMinus45)) * x + pt100_table[0]; //  ????�� �????�기?�해 ?�압??????���?�???
-      //f??????��
+      x = 40.53 / (float)sSpan;     //40.53= 124.01(62??-83.48(-42??,  AD Convertion Value 값을 ?????�이블에 맞춤
+      resistance = (float)(sAdval - (offset- sMinus45)) * x + pt100_table[0]; //  ????�� �????�기?�해 ?�압??????���?�???
+      //f??????��
       temperature = pt100_resistance_to_temperature(resistance);
     }
     else
@@ -197,18 +198,60 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
   #endif
 }
 
+
+
+
+#define PT100_OWNER_SIZE 20
+char pt100_owner_table[16][PT100_OWNER_SIZE]={{"0"},{"1"}};
+
+const char *g_pt100_owner_list[2] = {
+            pt100_owner_table[0],
+            pt100_owner_table[1]};
+
+void update_pt100_owner(int32_t port,const char *owner)
+{
+
+  switch(port)
+  {
+    case PT100_A:
+        snprintf(pt100_owner_table[port],PT100_OWNER_SIZE,"0 %s",owner);
+    break;
+    case PT100_B:
+        snprintf(pt100_owner_table[port],PT100_OWNER_SIZE,"1 %s",owner);
+    break;
+
+  }
+
+}
+
+
 driver_t pt100_driver[PT100_CNT];
 pt100_cfg_t pt100_cfg[PT100_CNT];
 
 temperature_api_t temperature_api ={.read= read_pt100_temperature};
 
-void *pt100_open(uint8_t num,void *opt)
+driver_t *pt100_open(void *opt,const char *owner)
 {
+  int num;
+  temperature_pt100_t *p_pt100;
+
+  p_pt100 = (temperature_pt100_t *)opt;
+
+  num = p_pt100->channel;
+
+  if(num>_countof(pt100_driver))
+  {
+    return NULL;
+  }
+
 
   if(pt100_driver[num].opened)
   {
-    return &pt100_driver;
+    return &pt100_driver[num];
   }
+  
+  update_pt100_owner(num,owner);
+
   pt100_driver[num].opened = true;
   pt100_cfg[num].channel = num;
 
