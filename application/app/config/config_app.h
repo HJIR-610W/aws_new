@@ -59,6 +59,7 @@ typedef enum panel_model_e
   ePANEL_HJ_STD,
   ePANEL_MUJU,
   ePANEL_HANSUNG,
+  ePANEL_ITEM6,
 } ePANEL_MODEL_t;
 
 typedef enum net_mode_e
@@ -92,6 +93,12 @@ typedef enum
   eLCD_OFF_ALWAYS_ON
 } eLCD_OFF_TIME_t;
 
+typedef enum panel_item6_type_s
+{
+  ePANEL_ITEM6_TOTAL,
+  ePANEL_ITEM6_MONTH,
+} ePANEL_ITEM6_TYPE_t;
+
 typedef struct config_s
 {
   config_header_t header;
@@ -115,7 +122,8 @@ typedef struct config_s
   uint8_t cdma_active;       // 설정 후 리셋 요구됨
   uint8_t direct_active;     // 설정 후 리셋 요구됨
   eUART_BAUD_t direct_baud_index;  // 설정 후 리셋 요구됨
-  ePANEL_MODEL_t panel_model; // 경우에 따라 리셋 요구됨 ㄴ
+  ePANEL_MODEL_t panel_model; // 경우에 따라 리셋 요구됨
+  ePANEL_ITEM6_TYPE_t panel_item6_type;
   uint8_t panel_snow_active;
   uint8_t panel_barometer_active;
   uint8_t vhf_id;

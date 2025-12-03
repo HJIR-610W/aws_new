@@ -41,7 +41,9 @@ void send_panel(void)
     case ePANEL_MUJU:
       send_panel_muju(g_panel_uart);
       break;
-
+    case ePANEL_ITEM6:
+      send_panel_item6(g_panel_uart);
+      break;
   }
 
 

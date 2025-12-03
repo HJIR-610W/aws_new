@@ -8,7 +8,7 @@
 #include "aws_data.h"
 #include "drv_rs232.h"
 #include "util_memory.h"
-#include "panel_common.h"
+#include "panel_core.h"
 
 /*
 (1) 풍향
