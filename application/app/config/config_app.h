@@ -55,11 +55,21 @@ typedef enum charger_model_e
   eCHARGER_LS
 } eCHARGER_MODEL_t;
 
-typedef enum cdma_model_e
-{
-  eCDMA_NTLE9607,
-  eCDMA_TX700
+
+
+#define CDMA_MODEL_LIST               \
+  X(eCDMA_NTLE9607, "NTLE9607")\
+  X(eCDMA_TX700, "TX700")
+
+  typedef enum cdma_model_e{
+#define X(code, name) code,
+  CDMA_MODEL_LIST
+#undef X
+  CDMA_MODEL_COUNT
 } eCDMA_MODEL_t;
+
+
+
 
 #define PANEL_LIST               \
   X(ePANEL_NOT_USED, "Not Used")\
@@ -79,7 +89,6 @@ typedef enum cdma_model_e
 #define PANEL_ITEM6_TYPE_LIST               \
   X(ePANEL_ITEM6_TOTAL, "YEARLY")\
   X(ePANEL_ITEM6_MONTH, "MONTHLY")
-
 
   typedef enum panel_item6_type_e{
 #define X(code, name) code,

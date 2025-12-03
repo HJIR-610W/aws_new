@@ -208,7 +208,7 @@ void check_config_app(void)
     g_config_app_change_count++;
   }
 
-  if (config.cdma_model > eCDMA_TX700)
+  if (config.cdma_model > CDMA_MODEL_COUNT)
   {
     config.cdma_model = config_app_default.cdma_model;
     g_config_app_change_count++;

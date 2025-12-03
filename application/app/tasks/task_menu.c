@@ -42,7 +42,7 @@
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
 extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용
 extern const char *link_status_list_eng[3];
-extern const char *generalStatusList[2];
+
 extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
 extern uint8_t BSP_PlatformIsDetected(void);
 extern int32_t g_rain_off_remain_time;
@@ -93,7 +93,7 @@ void draw_system_page(screen_page_t *p_win)
   screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD,   "LOGGING", message);
   screen_page_printf(p_win, "%-*s:%.1fV", SYSTEM_WD, "SYS VOLT", drv_system_read(DRV_SYS_BATTERY));
   screen_page_printf(p_win, "%-*s:%.1fC", SYSTEM_WD, "SYS TEMP", drv_system_read(DRV_SYS_TEMPERATURE));
-  screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "SD CARD", ITEM_LIST(BSP_PlatformIsDetected(), sdcard_status_list_lcd));
+  screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "SD CARD", ITEM_LIST(BSP_PlatformIsDetected(), sdcard_status_list_eng));
 
 
   {
