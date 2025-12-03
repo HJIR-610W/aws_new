@@ -771,7 +771,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
           float f_data = p_kma->sunshine_duration.raw.f;
           screen_page_printf(p_win, "%-*s:   %s", AWS_WD, "SOLAR D", (f_data == 1.0f) ? "ON" : "OFF");
           break;
-        }
+        }//SUNSHINE
         case eAWS_DATA_REAL:
           screen_page_printf(p_win, "%-*s:%6d sec", AWS_WD, "SOLAR D", solar_d_today);
         break;

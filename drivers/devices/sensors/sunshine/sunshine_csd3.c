@@ -49,7 +49,7 @@ float read_solar_duration_csd3(uint8_t *err)
 {
   float solar_duration = NAN;
 
-  solar_duration = general_adc_read(&csd3_inst.driver, err);
+  solar_duration = general_adc_read(csd3_inst.driver, err);
 
   return solar_duration;
 }

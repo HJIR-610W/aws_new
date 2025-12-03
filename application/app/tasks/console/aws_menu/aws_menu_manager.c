@@ -87,8 +87,8 @@ void config_hj_reset(void)
   adc_config_t *adc_config;
   hjtemp_config_t *hjtemp_cfg;
   hjhumi_config_t *hjhumi_cfg;
-  hjwindspeed_config_t *hjwind_cfg;
-  hjwindDirection_config_t *hjwindDir_cfg;
+  wind_speed_hj_config_t *hj_wind_speed;
+  wind_direction_hj_config_t *hj_wind_direction;
   hjsnow_config_t *hjsnow_cfg;
   rain_present_config_t *hjrain_det_cfg;
   rmyoung_61402v_barometer_config_t *p_barometer;
@@ -116,19 +116,19 @@ solar_duration_csd3_t *p_solar_duration;
   hjhumi_cfg->rs485_port = eAPP_RS485_RS232_B;
   hjhumi_cfg->modbus_id = 1;
 
-  // 풍향[화진 RS485 풍향 19200]
+  // 풍향[화진 RS485 풍향 19200 modbus]
   config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;
   sensor_add(&config.sensor[A2_WIND_DIRECTION]);
-  hjwindDir_cfg = get_sensor_config(&config.sensor[A2_WIND_DIRECTION]);
-  hjwindDir_cfg->rs485_port = eAPP_RS485_C;
+  hj_wind_direction = get_sensor_config(&config.sensor[A2_WIND_DIRECTION]);
+  hj_wind_direction->port = eAPP_RS485_C;
+  hj_wind_direction->modbus_id = 2;
 
-  // 풍속[화진 RS485 풍속 19200]
+  // 풍속[화진 RS485 풍속 19200 modbus]
   config.sensor[A3_WIND_SPEED].type = S_T_WIND_SPEED_HJ_485;
   sensor_add(&config.sensor[A3_WIND_SPEED]);
-  hjwind_cfg = get_sensor_config(&config.sensor[A3_WIND_SPEED]);
-  hjwind_cfg->rs485_port = eAPP_RS485_C;
-  hjwind_cfg->full = 3200;
-  hjwind_cfg->offset = 0;
+  hj_wind_speed = get_sensor_config(&config.sensor[A3_WIND_SPEED]);
+  hj_wind_speed->port = eAPP_RS485_C;
+  hj_wind_speed->modbus_id = 1;
 
   // 강우감지[화진 접점]
   config.sensor[A8_RAIN_PRESENT].type = S_T_RAIN_PRESENT_DI;
