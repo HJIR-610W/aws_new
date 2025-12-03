@@ -120,14 +120,14 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_485;
   sensor_add(&config.sensor[A2_WIND_DIRECTION]);
   hj_wind_direction = get_sensor_config(&config.sensor[A2_WIND_DIRECTION]);
-  hj_wind_direction->port = eAPP_RS485_C;
+  hj_wind_direction->rs485_port = eAPP_RS485_C;
   hj_wind_direction->modbus_id = 2;
 
   // 풍속[화진 RS485 풍속 19200 modbus]
   config.sensor[A3_WIND_SPEED].type = S_T_WIND_SPEED_HJ_485;
   sensor_add(&config.sensor[A3_WIND_SPEED]);
   hj_wind_speed = get_sensor_config(&config.sensor[A3_WIND_SPEED]);
-  hj_wind_speed->port = eAPP_RS485_C;
+  hj_wind_speed->rs485_port = eAPP_RS485_C;
   hj_wind_speed->modbus_id = 1;
 
   // 강우감지[화진 접점]

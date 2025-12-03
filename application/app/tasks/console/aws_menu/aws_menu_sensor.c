@@ -107,7 +107,7 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
     {
       ott_smp3_config_t *ott = (ott_smp3_config_t *)cfg;
       drv_rs485_get_portList(list, sizeof(list));
-      snprintf(out, outSize, "[%s][A.%d]", list[ott->port], ott->modbus_id);
+      snprintf(out, outSize, "[%s][A.%d]", list[ott->rs485_port], ott->modbus_id);
     }
     break;
     case S_T_FREQ:
@@ -221,7 +221,7 @@ uint8_t print_ott_smp3_cfg(ott_smp3_config_t *ott, uint8_t cnt)
    const char *portNameList[10];
 
    drv_rs485_get_portList(portNameList, _countof(portNameList));
-   io_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), portNameList[ott->port]);
+   io_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), portNameList[ott->rs485_port]);
    io_printf("%2d.%s:%d\r\n",cnt++, m_l("MODBUS ID",ENTRY_LABEL_WIDTH), ott->modbus_id);
    return cnt;
 }
@@ -679,7 +679,7 @@ int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
       if (status  != MENU_OK)
         break;
 
-        ott->port = choice;
+        ott->rs485_port = choice;
         save_config_sensor();
 
 

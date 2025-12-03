@@ -50,7 +50,7 @@ driver_t *ott_smp3_open(int32_t num, void *opt)
   uart_config.dataLen = UART_DATA_LEN_8;
 
   g_ott_smp3_cfg.modbus.modebus_type = eMODBUS_RS485;
-  g_ott_smp3_cfg.modbus.port_num = rs485_num_to_driver_num(ott->port);
+  g_ott_smp3_cfg.modbus.port_num = rs485_num_to_driver_num(ott->rs485_port);
   g_ott_smp3_cfg.modbus.id = ott->modbus_id;
     modbus_init();
     

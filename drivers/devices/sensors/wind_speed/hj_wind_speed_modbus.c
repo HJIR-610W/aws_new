@@ -42,7 +42,7 @@ int32_t hj_wind_speed_init(void *opt)
   uart_config.dataLen = UART_DATA_LEN_8;
 
   g_hj_wind_speed_inst.modbus.modebus_type = eMODBUS_RS485;
-  g_hj_wind_speed_inst.modbus.port_num = rs485_num_to_driver_num(ott->port);
+  g_hj_wind_speed_inst.modbus.port_num = rs485_num_to_driver_num(ott->rs485_port);
   g_hj_wind_speed_inst.modbus.id = ott->modbus_id;
   modbus_init();
   

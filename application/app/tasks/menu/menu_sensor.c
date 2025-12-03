@@ -165,7 +165,7 @@ void draw_solar_radiation_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t*
   list_cnt = rs485_get_port_name_list(name_table, _countof(name_table));
 
 
-  screen_menu_printf(p_win, OTT_SMP3_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, ott_smp3_config->port));
+  screen_menu_printf(p_win, OTT_SMP3_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, ott_smp3_config->rs485_port));
   screen_menu_printf(p_win, OTT_SMP3_PAGE_MODBUS_ID, "%-*s:%d", E_L_W, "MODBUS ID", ott_smp3_config->modbus_id);
   screen_menu_printf(p_win, OTT_SMP3_PAGE_DEFAULT, "Default");
 }
@@ -284,7 +284,7 @@ void draw_wind_speed_hj_modbus_page(screen_menu_t* p_win, wind_speed_hj_config_t
 
   list_cnt = rs485_get_port_name_list(name_table, _countof(name_table));
 
-  screen_menu_printf(p_win, HJ_WIND_SPD_MODBUS_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, p_wind->port));
+  screen_menu_printf(p_win, HJ_WIND_SPD_MODBUS_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, p_wind->rs485_port));
   screen_menu_printf(p_win, HJ_WIND_SPD_MODBUS_PAGE_ID, "%-*s:%d", E_L_W, "MODBUS ID", p_wind->modbus_id);
   screen_menu_printf(p_win, HJ_WIND_SPD_MODBUS_PAGE_DEFAULT, "Default");
   screen_menu_printf(p_win, HJ_WIND_SPD_MODBUS_PAGE_SETTINGS, "Settings");
@@ -301,7 +301,7 @@ void draw_wind_dir_hj_modbus_page(screen_menu_t* p_win, wind_direction_hj_config
 
   list_cnt = rs485_get_port_name_list(name_table, _countof(name_table));
 
-  screen_menu_printf(p_win, HJ_WIND_DIR_MODBUS_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, p_wind->port));
+  screen_menu_printf(p_win, HJ_WIND_DIR_MODBUS_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, p_wind->rs485_port));
   screen_menu_printf(p_win, HJ_WIND_DIR_MODBUS_PAGE_ID, "%-*s:%d", E_L_W, "MODBUS ID", p_wind->modbus_id);
   screen_menu_printf(p_win, HJ_WIND_DIR_MODBUS_PAGE_DEFAULT, "Default");
 }
@@ -935,11 +935,11 @@ int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
   {
     case OTT_SMP3_PAGE_PORT:
       portListCnt = drv_rs485_get_portList(portList, _countof(portList));
-      choice = ott_smp3->port;
+      choice = ott_smp3->rs485_port;
       status = input_combobox("RS485 Port",portList, portListCnt, &choice);
       if (status != MENU_OK)
         break;
-      ott_smp3->port = choice;
+      ott_smp3->rs485_port = choice;
       save_config_sensor();
       break;
     case OTT_SMP3_PAGE_MODBUS_ID:
@@ -955,7 +955,7 @@ int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
       status = input_active("Set as Default?", &choice);
       if (status != MENU_OK || choice == 0)
         break;
-      ott_smp3->port = eAPP_RS485_RS232_A;
+      ott_smp3->rs485_port = eAPP_RS485_RS232_A;
       ott_smp3->modbus_id = 1;
       save_config_sensor();
       break;
@@ -1200,11 +1200,11 @@ int32_t wind_speed_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
   {
     case HJ_WIND_SPD_MODBUS_PAGE_PORT:
       portListCnt = drv_rs485_get_portList(portList, _countof(portList));
-      choice = p_wind_speed->port;
+      choice = p_wind_speed->rs485_port;
       status = input_combobox("RS485 Port",portList, portListCnt, &choice);
       if (status != MENU_OK)
         break;
-      p_wind_speed->port = choice;
+      p_wind_speed->rs485_port = choice;
       save_config_sensor();
       break;
     case HJ_WIND_SPD_MODBUS_PAGE_ID:
@@ -1220,7 +1220,7 @@ int32_t wind_speed_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
       status = input_active("Set as Default?", &choice);
       if (status != MENU_OK || choice == 0)
         break;
-      p_wind_speed->port = eAPP_RS485_C;
+      p_wind_speed->rs485_port = eAPP_RS485_C;
       p_wind_speed->modbus_id = 1;
       save_config_sensor();
       break;
@@ -1252,11 +1252,11 @@ int32_t wind_direction_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
   {
     case HJ_WIND_DIR_MODBUS_PAGE_PORT:
       portListCnt = drv_rs485_get_portList(portList, _countof(portList));
-      choice = p_wind_speed->port;
+      choice = p_wind_speed->rs485_port;
       status = input_combobox("RS485 Port",portList, portListCnt, &choice);
       if (status != MENU_OK)
         break;
-      p_wind_speed->port = choice;
+      p_wind_speed->rs485_port = choice;
       save_config_sensor();
       break;
     case HJ_WIND_DIR_MODBUS_PAGE_ID:
@@ -1272,7 +1272,7 @@ int32_t wind_direction_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
       status = input_active("Set as Default?", &choice);
       if (status != MENU_OK || choice == 0)
         break;
-      p_wind_speed->port = eAPP_RS485_C;
+      p_wind_speed->rs485_port = eAPP_RS485_C;
       p_wind_speed->modbus_id = 1;
       save_config_sensor();
       break;

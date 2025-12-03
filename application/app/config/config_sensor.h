@@ -9,8 +9,8 @@
 #include "drv_fram.h"
 #include "config_define.h"
 #include "config_memory_map.h"
-//#include "drv_rs232.h"
-//#include "drv_rs485.h"
+#include "drv_rs232.h"
+#include "drv_rs485.h"
 #include "util_memory.h"
 
 
@@ -32,17 +32,13 @@ typedef struct
                     //  scale 10이면 최종 값은 나누기 10해야함
   int32_t out_max_mv;  // 센서의 출력 전압 최고
   int32_t out_min_mv;  // 센서의 출력 전압 최저
-  //float voltage_offset; // 센서값 = (전압 + 전압_오프셋)*gain + offset
-  //float gain;
-  //float offset;  사용자 직관성 위해 현재 미사용
-
 } adc_config_t;
 
 
 
 
 
-//화진 풍속
+//화진 풍속 구형 타입 
 typedef struct hj_wind_speed_s
 {
   uint8_t rs485_port;
@@ -102,7 +98,7 @@ typedef struct hjsnow_config_s
 
 typedef struct ottSMP3_config_s
 {
-  uint8_t port;
+  uint8_t rs485_port;
   uint8_t modbus_id;
 } ott_smp3_config_t;
 
@@ -148,13 +144,13 @@ typedef struct solar_duration_csd3_s
 
 typedef struct wind_speed_hj_config_s
 {
-  uint8_t port;
+  uint8_t rs485_port;
   uint8_t modbus_id;
 } wind_speed_hj_config_t;
 
 typedef struct wind_direction_hj_config_s
 {
-  uint8_t port;
+  uint8_t rs485_port;
   uint8_t modbus_id;
 } wind_direction_hj_config_t;
 
