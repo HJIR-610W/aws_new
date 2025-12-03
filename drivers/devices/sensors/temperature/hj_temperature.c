@@ -29,7 +29,7 @@ temperature_api_t hjTempApi = {
 driver_t *hjTemperature_open(int32_t num, void *opt)
 {
   uart_config_t uart_config;
-  hjtemp_config_t *hjtemp = opt;
+  temp_hj_config_t *hjtemp = opt;
 
 
   if (hjTemp_drv.opened)

@@ -72,33 +72,208 @@ void check_config_app(void)
 {
   void *p_config;
 
+
+  //특별 처리 
+  for (int i = 0; i < _countof(config.sensor); i++)
+  {
+    if (config.sensor[i].type > SENSOR_TYPE_MAX)
+    {
+      config.sensor[i].type = S_T_UNSUED;
+      memset(&config.sensor[i],0,sizeof(sensor_t));
+      g_config_app_change_count++;
+    }
+    else
+    {
+      if(config.sensor[i].configCnt >= SENSOR_CONFIG_TABLE_MAX)
+      {
+        memset(&config.sensor[i],0,sizeof(sensor_t));
+      }
+    }
+  }
+
+
+
+
+  if(!is_value_in_array(config.sensor[A1_TEMPERATURE].type,temperature_list,_countof(temperature_list)))
+  {
+    config.sensor[A1_TEMPERATURE].type = S_T_UNSUED;
+   g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[A2_WIND_DIRECTION].type, wind_direction_list,_countof(wind_direction_list)))
+  {
+    config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if(!is_value_in_array(config.sensor[A3_WIND_SPEED].type,wind_speed_list,_countof(wind_speed_list)))
+  {
+    config.sensor[A3_WIND_SPEED].type = S_T_UNSUED;
+   g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[A6_RAINFALL_DOT5_1MM].type, rainfall_list, _countof(rainfall_list)))
+  {
+    config.sensor[A6_RAINFALL_DOT5_1MM].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+    if (!is_value_in_array(config.sensor[A7_PRESSURE].type, pressure_list, _countof(pressure_list)))
+  {
+    config.sensor[A7_PRESSURE].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+    if (!is_value_in_array(config.sensor[A8_RAIN_PRESENT].type, rain_present_list, _countof(rain_present_list)))
+  {
+    config.sensor[A8_RAIN_PRESENT].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+    if (!is_value_in_array(config.sensor[A9_SNOW_DEPTH].type, snow_list, _countof(snow_list)))
+  {
+    config.sensor[A9_SNOW_DEPTH].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[A10_RELATIVE_HUMIDITY].type, humi_list, _countof(humi_list)))
+  {
+    config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B1_SOLAR_RADIATION].type, solar_radiation_list, _countof(solar_radiation_list)))
+  {
+    config.sensor[B1_SOLAR_RADIATION].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B2_SUNSHINE_DURATION].type, solar_duration_list, _countof(solar_duration_list)))
+  {
+    config.sensor[B2_SUNSHINE_DURATION].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B5_SOIL_TEMPERATURE_5CM].type, soil_temp_list, _countof(soil_temp_list)))
+  {
+    config.sensor[B5_SOIL_TEMPERATURE_5CM].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B6_SOIL_TEMPERATURE_10CM].type, soil_temp_list, _countof(soil_temp_list)))
+  {
+    config.sensor[B6_SOIL_TEMPERATURE_10CM].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+
+  if (!is_value_in_array(config.sensor[B7_SOIL_TEMPERATURE_20CM].type, soil_temp_list, _countof(soil_temp_list)))
+  {
+    config.sensor[B7_SOIL_TEMPERATURE_20CM].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B8_SOIL_TEMPERATURE_30CM].type, soil_temp_list, _countof(soil_temp_list)))
+  {
+    config.sensor[B8_SOIL_TEMPERATURE_30CM].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B9_SOIL_TEMPERATURE_50CM].type, soil_temp_list, _countof(soil_temp_list)))
+  {
+    config.sensor[B9_SOIL_TEMPERATURE_50CM].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B10_SOIL_TEMPERATURE_100CM].type, soil_temp_list, _countof(soil_temp_list)))
+  {
+    config.sensor[B10_SOIL_TEMPERATURE_100CM].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B11_SOIL_TEMPERATURE_150CM].type, soil_temp_list, _countof(soil_temp_list)))
+  {
+    config.sensor[B11_SOIL_TEMPERATURE_150CM].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B12_SOIL_TEMPERATURE_300CM].type, soil_temp_list, _countof(soil_temp_list)))
+  {
+    config.sensor[B12_SOIL_TEMPERATURE_300CM].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B13_SOIL_TEMPERATURE_500CM].type, soil_temp_list, _countof(soil_temp_list)))
+  {
+    config.sensor[B13_SOIL_TEMPERATURE_500CM].type = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (config.cdma_model > eCDMA_TX700)
+  {
+    config.cdma_model = config_app_default.cdma_model;
+    g_config_app_change_count++;
+  }
+
+
+  if (config.cdma_active > 1)
+  {
+    config.cdma_active = 0;
+    g_config_app_change_count++;
+  }
+   
+  if (config.eth_active > 1)
+  {
+    config.eth_active = 0;
+    g_config_app_change_count++;
+  }
+
+ if(config.direct_active >1)
+  {
+    config.direct_active = 0;
+    g_config_app_change_count++;
+  }
+
+
+  if (config.direct_active && config.cdma_active)
+  {
+    config.direct_active = config_app_default.direct_active;
+    config.cdma_active = config_app_default.cdma_active;
+    g_config_app_change_count++;
+  }
+
+  if (config.eth_mode > eETH_MODE_SERVER)
+  {
+    config.eth_mode = config_app_default.eth_mode;
+    g_config_app_change_count++;
+  }
+
   if (config.direct_baud_index > eBAUD_115200)
   {
     config.direct_baud_index = config_app_default.direct_baud_index;
     g_config_app_change_count++;
   }
 
-  if (config.charger_model > eCHARGER_LS)
+  if (config.panel_snow_active > 1)
   {
-      config.charger_model = config_app_default.charger_model;
-      g_config_app_change_count++;
+    config.panel_snow_active = 0;
+    g_config_app_change_count++;
   }
 
-  if (config.eth_mode > eETH_MODE_SERVER)
+  if (config.panel_barometer_active > 1)
   {
-    config.eth_mode = config_app_default.eth_mode;
-  g_config_app_change_count++;
+    config.panel_barometer_active = 0;
+    g_config_app_change_count++;
   }
 
-  if (config.cdma_model > eCDMA_TX700)
+  if(config.com_encrypt_active > 1)
   {
-    config.cdma_model = config_app_default.cdma_model;
-  g_config_app_change_count++;
+    config.com_encrypt_active = 0;
+    g_config_app_change_count++;
   }
 
-  if (config.aws_protocol_type > eAWS_PROTOCOL_KMA3)
+  if(config.cdma_vpn_active>1)
   {
-    config.aws_protocol_type = config_app_default.aws_protocol_type;
+    config.cdma_vpn_active = 0;
   g_config_app_change_count++;
   }
 
@@ -110,189 +285,30 @@ void check_config_app(void)
   g_config_app_change_count++;
   }
 
-  if (config.panel_snow_active > 1)
+
+  if (config.charger_model > eCHARGER_LS)
   {
-    config.panel_snow_active = config_app_default.panel_snow_active;
-  g_config_app_change_count++;
-  }
-
-  if ((int)config.panel_barometer_active > 1)
-  {
-    config.panel_barometer_active = config_app_default.panel_barometer_active;
-  g_config_app_change_count++;
-  }
-
-  if (config.eth_active > 1)
-  {
-    config.eth_active = config_app_default.eth_active;
-    g_config_app_change_count++;
-  }
-
-
-  if(config.direct_active >1)
-  {
-    config.direct_active = config_app_default.direct_active;
-  g_config_app_change_count++;
-  }
-
-  if (config.cdma_active > 1)
-  {
-    config.cdma_active = config_app_default.cdma_active;
-  g_config_app_change_count++;
-  }
-
-  if (config.direct_active && config.cdma_active)
-  {
-    config.direct_active = config_app_default.direct_active;
-    config.cdma_active = config_app_default.cdma_active;
-    g_config_app_change_count++;
-  }
-
-
-  //특별 처리 
-  for (int i = 0; i < _countof(config.sensor); i++)
-  {
-    if (config.sensor[i].type > SENSOR_TYPE_MAX)
-    {
-      config.sensor[i].type = S_T_UNSUED;
+      config.charger_model = config_app_default.charger_model;
       g_config_app_change_count++;
-    }
   }
 
-  if(!is_value_in_array(config.sensor[A3_WIND_SPEED].type,wind_speed_list,_countof(wind_speed_list)))
+
+
+  if (config.aws_protocol_type > eAWS_PROTOCOL_KMA3)
   {
-    config.sensor[A3_WIND_SPEED].type = S_T_UNSUED;
+    config.aws_protocol_type = config_app_default.aws_protocol_type;
   g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[A2_WIND_DIRECTION].type, wind_direction_list,
-                          _countof(wind_direction_list)))
+
+
+
+
+
+ 
+  if (config.ac_active > 1)
   {
-    config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
-  g_config_app_change_count++;
-  }
-
-  if (!is_value_in_array(config.sensor[A9_SNOW_DEPTH].type, snowList, _countof(snowList)))
-  {
-    config.sensor[A9_SNOW_DEPTH].type = S_T_UNSUED;
-  g_config_app_change_count++;
-  }
-
-  if (config.sensor[A1_TEMPERATURE].type == S_T_TEMPERATURE_HJ)
-  {
-    p_config = get_sensor_config(&config.sensor[A1_TEMPERATURE]);
-
-    if (p_config == NULL)
-    {
-      config.sensor[A1_TEMPERATURE].type = S_T_UNSUED;
-    g_config_app_change_count++;
-    }
-    else
-    {
-      hjtemp_config_t *p_hj_temp = p_config;
-
-      if(p_hj_temp->physical_layer > ePHYSICAL_RS485)
-      {
-        p_hj_temp->physical_layer = ePHYSICAL_RS232;
-      g_config_app_change_count++;
-      }
-
-      switch (p_hj_temp->physical_layer)
-      {
-        case ePHYSICAL_RS485:
-          if (p_hj_temp->rs485_port > eAPP_RS485_MAX)
-          {
-            p_hj_temp->rs485_port = eAPP_RS485_C;
-          g_config_app_change_count++;
-          }
-            break;
-        case ePHYSICAL_RS232:
-          if (p_hj_temp->rs232_port > eRS232_MAX)
-          {
-            p_hj_temp->rs232_port = eRS232_RS485_A;
-          g_config_app_change_count++;
-          }
-          break;
-         default:
-          break;
-      }
-
-    }
-  }
-  //화진 온습도 습도 범위 확인
-  if (config.sensor[A10_RELATIVE_HUMIDITY].type == S_T_HUMINITY_HJ)
-  {
-    p_config = get_sensor_config(&config.sensor[A10_RELATIVE_HUMIDITY]);
-
-    if (p_config == NULL)
-    {
-      config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_UNSUED;
-    g_config_app_change_count++;
-    }
-    else
-    {
-      hjtemp_config_t *p_hj_temp = p_config;
-
-      if (p_hj_temp->physical_layer > ePHYSICAL_RS485)
-      {
-        p_hj_temp->physical_layer = ePHYSICAL_RS232;
-      g_config_app_change_count++;
-      }
-
-      switch (p_hj_temp->physical_layer)
-      {
-        case ePHYSICAL_RS485:
-          if (p_hj_temp->rs485_port > eAPP_RS485_MAX)
-          {
-            p_hj_temp->rs485_port = eAPP_RS485_C;
-          g_config_app_change_count++;
-          }
-          break;
-        case ePHYSICAL_RS232:
-          if (p_hj_temp->rs232_port > eRS232_MAX)
-          {
-            p_hj_temp->rs232_port = eRS232_RS485_A;
-          g_config_app_change_count++;
-          }
-          break;
-        default:
-          break;
-      }
-    }
-  }
-
-  if (config.sensor[A2_WIND_DIRECTION].type == S_T_WIND_DIRECTION_HJ_485)
-  {
-    p_config = get_sensor_config(&config.sensor[A2_WIND_DIRECTION]);
-
-    if (p_config ==NULL)
-    {
-      config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
-    g_config_app_change_count++;
-    }
-  }
-
-  if (config.panel_snow_active > 1)
-  {
-    config.panel_snow_active = config_app_default.panel_snow_active;
-  g_config_app_change_count++;
-  }
-
-  if (config.panel_barometer_active > 1)
-  {
-    config.panel_barometer_active = config_app_default.panel_barometer_active;
-  g_config_app_change_count++;
-  }
-
-  if(config.cdma_vpn_active>1)
-  {
-    config.cdma_vpn_active = config_app_default.cdma_vpn_active;
-  g_config_app_change_count++;
-  }
-
-  if(config.com_encrypt_active > 1)
-  {
-    config.com_encrypt_active = config_app_default.com_encrypt_active;
+    config.ac_active = config_app_default.ac_active;
     g_config_app_change_count++;
   }
 
@@ -308,11 +324,11 @@ void check_config_app(void)
       g_config_app_change_count++;
     }
 
-    if (config.ac_active > 1)
-    {
-      config.ac_active = config_app_default.ac_active;
-      g_config_app_change_count++;
-    }
+
+
+
+
+
 }
 
 

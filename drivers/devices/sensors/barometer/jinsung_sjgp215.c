@@ -35,7 +35,7 @@ sjgp215_instance_t sjgp215_inst;
 
 int32_t sjgp215_init(void *opt)
 {
-    jinsung_sjgp215_config_t *cfg = (jinsung_sjgp215_config_t *)opt;
+    barometer_jinsung_sjgp215_config_t *cfg = (barometer_jinsung_sjgp215_config_t *)opt;
     uart_config_t uart_config;
 
     if (sjgp215_inst.opened)

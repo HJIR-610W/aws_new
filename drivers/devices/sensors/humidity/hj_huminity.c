@@ -30,7 +30,7 @@ temperature_api_t hjHumiApi = {
 driver_t *hjHuminity_open(int32_t num, void *opt)
 {
 
-  hjtemp_config_t *hjtemp = opt;
+  temp_hj_config_t *hjtemp = opt;
   uart_config_t uart_config;
 
 

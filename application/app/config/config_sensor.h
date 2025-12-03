@@ -44,7 +44,7 @@ typedef struct hj_wind_speed_s
   uint8_t rs485_port;
   int32_t offset;
   int32_t full;
-} hjwindspeed_config_t;
+} wind_speed_hj_pulse_config_t;
 
 typedef enum physical_layer_e
 {
@@ -65,7 +65,7 @@ typedef struct hjtemp_s
     float f_data;
   }ofset;
   uint8_t modbus_id;
-} hjtemp_config_t;
+} temp_hj_config_t;
 
 // 화진 습도 센서 232만 사용
 typedef struct hjhumi_s
@@ -79,14 +79,14 @@ typedef struct hjhumi_s
     float f_data;
   }ofset;
   uint8_t modbus_id;
-} hjhumi_config_t;
+} humi_hj_config_t;
 
 
 
 typedef struct hjwindDirection_s
 {
   uint8_t rs485_port;
-} hjwindDirection_config_t;
+} wind_direction_hj_pulse_config_t;
 
 // 화진 적설 232,485
 typedef struct hjsnow_config_s
@@ -94,13 +94,13 @@ typedef struct hjsnow_config_s
   ePHYSOCAL_LAYER_t physical_layer;
   uint8_t rs232_port;
   uint8_t rs485_port;
-} hjsnow_config_t;
+} snow_hj_config_t;
 
 typedef struct ottSMP3_config_s
 {
   uint8_t rs485_port;
   uint8_t modbus_id;
-} ott_smp3_config_t;
+} solar_r_ott_smp3_config_t;
 
 typedef struct rain_present_config_s
 {
@@ -116,22 +116,22 @@ typedef struct frequency_config_s
 typedef struct jinsung_sjgp215_config_s
 {
   uint8_t rs232_port;
-} jinsung_sjgp215_config_t;
+} barometer_jinsung_sjgp215_config_t;
 
 typedef struct rmyoung_05103v_wind_direction_config_s
 {
   uint8_t adc_channel;
-} rmyoung_05103v_wind_direction_config_t;
+} wind_direction_rmyoung_05103v_config_t;
 
 typedef struct rmyoung_05103v_wind_speed_config_s
 {
   uint8_t frequency_channel;
-} rmyoung_05103v_wind_speed_config_t;
+} wind_speed_rmyoung_05103v_config_t;
 
 typedef struct rmyoung_61402v_barometer_config_s
 {
   uint8_t adc_channel;
-} rmyoung_61402v_barometer_config_t;
+} barometer_rmyoung_61402v_config_t;
 
 
 typedef struct solar_duration_csd3_s
@@ -160,21 +160,21 @@ typedef struct config_manage_s
   config_header_t header;
   uint8_t adc_cnt;
   adc_config_t adc[50];
-  hjtemp_config_t hjtemp;
-  hjhumi_config_t hjhumi;
-  hjwindspeed_config_t hjwind_speed;//구형 타입 켈리브 필요한 타입
-  hjwindDirection_config_t hjwindDir;//구형 타입 켈리브 필요한 타입
-  hjsnow_config_t hjsnow;
-  ott_smp3_config_t ott_smp3;//일사
-  rain_present_config_t rain_present;
   frequency_config_t frequency;
-  jinsung_sjgp215_config_t jinsung_sjgp215;
-  rmyoung_05103v_wind_direction_config_t rmyoung_05103v_wind_direction;
-  rmyoung_05103v_wind_speed_config_t rmyoung_05103v_wind_speed;
-  rmyoung_61402v_barometer_config_t rmyoung_61402v_barometer;
-  solar_duration_csd3_t solar_duration_csd3;
+  temp_hj_config_t hjtemp;
+  humi_hj_config_t hjhumi;
+  wind_speed_rmyoung_05103v_config_t rmyoung_05103v_wind_speed;
+  wind_speed_hj_pulse_config_t hjwind_speed;//구형 타입 켈리브 필요한 타입
   wind_speed_hj_config_t wind_speed_hj_modbus;
+  wind_direction_hj_pulse_config_t hjwindDir;//구형 타입 켈리브 필요한 타입
   wind_direction_hj_config_t wind_direction_hj_modbus;
+  wind_direction_rmyoung_05103v_config_t rmyoung_05103v_wind_direction;
+  snow_hj_config_t hjsnow;
+  rain_present_config_t rain_present;
+  barometer_jinsung_sjgp215_config_t jinsung_sjgp215;
+  barometer_rmyoung_61402v_config_t rmyoung_61402v_barometer;
+  solar_r_ott_smp3_config_t ott_smp3;//일사
+  solar_duration_csd3_t solar_duration_csd3;//일조
 } config_sensor_t;
 
 #define WRITE_CFG_SENSOR(x)                                                                    \

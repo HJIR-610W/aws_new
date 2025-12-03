@@ -27,7 +27,7 @@ rmyoung_05103v_win_dir_instance_t rmyoung_05103v_win_dir_inst;
 
 int32_t wind_dir_rmyoung_05103v_init(void *opt)
 {
-  rmyoung_05103v_wind_direction_config_t *p_cfg = (rmyoung_05103v_wind_direction_config_t *)opt;
+  wind_direction_rmyoung_05103v_config_t *p_cfg = (wind_direction_rmyoung_05103v_config_t *)opt;
  adc_config_t adc_config;
 
   if (rmyoung_05103v_win_dir_inst.opened)

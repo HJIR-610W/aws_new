@@ -95,7 +95,7 @@ const char *safe_name(const char **names,int name_count,int index)
 #define HJSNOW_PAGE_SNOW_MENU 3
 
 
-void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
+void draw_hjsnow_page(screen_menu_t* p_win, snow_hj_config_t* hjsnow_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -126,7 +126,7 @@ void draw_hjsnow_page(screen_menu_t* p_win, hjsnow_config_t* hjsnow_config)
 #define HJWIND_PAGE_OFFSET 1
 #define HJWIND_PAGE_PORT 2
 #define HJWIND_PAGE_DEFAULT 3
-void draw_hjwind_page(screen_menu_t* p_win, hjwindspeed_config_t* hjwind_config)
+void draw_hjwind_page(screen_menu_t* p_win, wind_speed_hj_pulse_config_t* hjwind_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -143,7 +143,7 @@ void draw_hjwind_page(screen_menu_t* p_win, hjwindspeed_config_t* hjwind_config)
 #define HJWINDDIR_PAGE_PORT 0
 #define HJWINDDIR_PAGE_DEFAULT 1
 
-void draw_hjwindDir_page(screen_menu_t* p_win, hjwindDirection_config_t* hjwindDir_config)
+void draw_hjwindDir_page(screen_menu_t* p_win, wind_direction_hj_pulse_config_t* hjwindDir_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -157,7 +157,7 @@ void draw_hjwindDir_page(screen_menu_t* p_win, hjwindDirection_config_t* hjwindD
 #define OTT_SMP3_PAGE_PORT 0
 #define OTT_SMP3_PAGE_MODBUS_ID 1
 #define OTT_SMP3_PAGE_DEFAULT 2
-void draw_solar_radiation_ott_smp3_page(screen_menu_t* p_win, ott_smp3_config_t* ott_smp3_config)
+void draw_solar_radiation_ott_smp3_page(screen_menu_t* p_win, solar_r_ott_smp3_config_t* ott_smp3_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -190,7 +190,7 @@ void draw_freq_page(screen_menu_t* p_win, frequency_config_t* freq_config)
 
 #define WIND_SPD_RMYOUNG_05103V_CHANNEL 0
 #define WIND_SPD_RMYOUNG_05103V_DEFAULT 1
-void draw_wind_speed_rmyoung_05103V_page(screen_menu_t *p_win, rmyoung_05103v_wind_speed_config_t *freq_config)
+void draw_wind_speed_rmyoung_05103V_page(screen_menu_t *p_win, wind_speed_rmyoung_05103v_config_t *freq_config)
 {
   screen_menu_printf(p_win, WIND_SPD_RMYOUNG_05103V_CHANNEL, "%-*s:%s", E_L_W, "Channel", ITEM_LIST(freq_config->frequency_channel, freq_ch_list));
   screen_menu_printf(p_win, WIND_SPD_RMYOUNG_05103V_DEFAULT, "Default");
@@ -203,7 +203,7 @@ void draw_wind_speed_rmyoung_05103V_page(screen_menu_t *p_win, rmyoung_05103v_wi
 #define HJTEMP_PAGE_DEFAULT   3
 #define HJTEMP_PAGE_TEMP_MENU 4
 
-void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
+void draw_hjtemp_page(screen_menu_t* p_win, temp_hj_config_t* hjtemp_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -231,7 +231,7 @@ void draw_hjtemp_page(screen_menu_t* p_win, hjtemp_config_t* hjtemp_config)
 }
 
 #define JINSUNG_BARO_PAGE_PORT 0
-void draw_barometer_jinsung_page(screen_menu_t *p_win, jinsung_sjgp215_config_t *jinsung_config)
+void draw_barometer_jinsung_page(screen_menu_t *p_win, barometer_jinsung_sjgp215_config_t *jinsung_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -245,7 +245,7 @@ void draw_barometer_jinsung_page(screen_menu_t *p_win, jinsung_sjgp215_config_t 
 
 #define BAROMETER_RMYOUNG_61402V_CH  0
 #define BAROMETER_RMYOUNG_61402V_DEFAULT 1
-void draw_barometer_rmyoung_61402V_page(screen_menu_t *p_win, rmyoung_61402v_barometer_config_t *adc_config)
+void draw_barometer_rmyoung_61402V_page(screen_menu_t *p_win, barometer_rmyoung_61402v_config_t *adc_config)
 {
   screen_menu_printf(p_win, BAROMETER_RMYOUNG_61402V_CH, "%-*s:%d", E_L_W, "ADC CH", adc_config->adc_channel);
   screen_menu_printf(p_win, BAROMETER_RMYOUNG_61402V_DEFAULT, "Default");
@@ -253,7 +253,7 @@ void draw_barometer_rmyoung_61402V_page(screen_menu_t *p_win, rmyoung_61402v_bar
 
 #define WDIN_DIRECTION_RMYOUNG_05103V_CH 0
 #define WDIN_DIRECTION_RMYOUNG_05103V_DEFAULT 1
-void draw_wind_direction_rmyoung_05103V_page(screen_menu_t *p_win, rmyoung_05103v_wind_direction_config_t *adc_config)
+void draw_wind_direction_rmyoung_05103V_page(screen_menu_t *p_win, wind_direction_rmyoung_05103v_config_t *adc_config)
 {
   screen_menu_printf(p_win, WDIN_DIRECTION_RMYOUNG_05103V_CH, "%-*s:%d", E_L_W, "ADC CH", adc_config->adc_channel);
   screen_menu_printf(p_win, WDIN_DIRECTION_RMYOUNG_05103V_DEFAULT, "Default");
@@ -604,7 +604,7 @@ int32_t hjwinddir_setup( sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
-  hjwindDirection_config_t* hjwindDir;
+  wind_direction_hj_pulse_config_t* hjwindDir;
   const char* portList[10];
   uint16_t portListCnt;
 
@@ -644,7 +644,7 @@ int32_t hjwind_setup( sensor_t *sensor, uint8_t menu_index)
   int32_t status = 0;
   int32_t choice;
   int32_t dec;
-  hjwindspeed_config_t* hjwind;
+  wind_speed_hj_pulse_config_t* hjwind;
   const char* portList[10];
   uint16_t portListCnt;
 
@@ -701,7 +701,7 @@ int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
-  hjsnow_config_t* hjsnow;
+  snow_hj_config_t* hjsnow;
   const char* portList[10];
   uint16_t portListCnt;
 
@@ -767,7 +767,7 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
   int32_t status;
    int32_t choice;
   int32_t dec = 0;
-  hjtemp_config_t* hjtemp;
+  temp_hj_config_t* hjtemp;
   const char* portList[10];
   uint16_t portListCnt;
 
@@ -829,6 +829,7 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
             hjtemp->physical_layer = ePHYSICAL_RS485;
             hjtemp->rs485_port = eAPP_RS485_RS232_B;
             hjtemp->modbus_id = 1;
+                      save_config_sensor();
           }
           break;
         case HJTEMP_PAGE_TEMP_MENU:
@@ -847,7 +848,7 @@ int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
   int32_t status = 0;
   int32_t choice;
   int32_t dec = 0;
-  hjhumi_config_t* hjhumi;
+  humi_hj_config_t* hjhumi;
   const char* portList[10];
   uint16_t portListCnt;
 
@@ -907,6 +908,7 @@ int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
       hjhumi->rs485_port = eAPP_RS485_RS232_B;
 
       hjhumi->modbus_id = 1;
+                save_config_sensor();
     }
     break;
     case HJTEMP_PAGE_TEMP_MENU:
@@ -921,7 +923,7 @@ int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
   int32_t status = 0;
   int32_t choice;
   int32_t dec;
-  ott_smp3_config_t* ott_smp3;
+  solar_r_ott_smp3_config_t* ott_smp3;
   const char* portList[10];
   uint16_t portListCnt;
 
@@ -997,7 +999,7 @@ int32_t barometer_jinsung_setup(sensor_t *sensor, uint8_t menu_index)
   int32_t status = 0;
 
 
-  jinsung_sjgp215_config_t *jinsung_baro;
+  barometer_jinsung_sjgp215_config_t *jinsung_baro;
   const char *portList[10];
   uint16_t portListCnt;
   int choice;
@@ -1027,7 +1029,7 @@ int32_t barometer_jinsung_setup(sensor_t *sensor, uint8_t menu_index)
 int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
-  rmyoung_61402v_barometer_config_t *p_cfg;
+  barometer_rmyoung_61402v_config_t *p_cfg;
   int choice;
   int active;
 
@@ -1063,7 +1065,7 @@ int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
 int32_t wind_direction_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
-  rmyoung_05103v_wind_direction_config_t *p_cfg;
+  wind_direction_rmyoung_05103v_config_t *p_cfg;
   int active;
   int choice;
 
@@ -1106,7 +1108,7 @@ int32_t wind_speed_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
   int32_t dec;
   int32_t choice;
   float factor;
-  rmyoung_05103v_wind_speed_config_t *p_cfg;
+  wind_speed_rmyoung_05103v_config_t *p_cfg;
 
   p_cfg = get_sensor_config(sensor);
   if (p_cfg == NULL)

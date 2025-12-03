@@ -85,13 +85,13 @@ int32_t menu_manage_device_reset()
 void config_hj_reset(void)
 {
   adc_config_t *adc_config;
-  hjtemp_config_t *hjtemp_cfg;
-  hjhumi_config_t *hjhumi_cfg;
+  temp_hj_config_t *hjtemp_cfg;
+  humi_hj_config_t *hjhumi_cfg;
   wind_speed_hj_config_t *hj_wind_speed;
   wind_direction_hj_config_t *hj_wind_direction;
-  hjsnow_config_t *hjsnow_cfg;
+  snow_hj_config_t *hjsnow_cfg;
   rain_present_config_t *hjrain_det_cfg;
-  rmyoung_61402v_barometer_config_t *p_barometer;
+  barometer_rmyoung_61402v_config_t *p_barometer;
 solar_duration_csd3_t *p_solar_duration;
 
       uint8_t single_channel = 0;

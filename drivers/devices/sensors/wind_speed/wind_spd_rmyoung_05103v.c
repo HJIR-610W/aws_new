@@ -25,7 +25,7 @@ rmyoung_05103v_win_spd_instance_t rmyoung_05103v_win_spd_inst;
 
 int32_t wind_spd_rmyoung_05103v_init(void *opt)
 {
-  rmyoung_05103v_wind_speed_config_t *p_cfg = (rmyoung_05103v_wind_speed_config_t *)opt;
+  wind_speed_rmyoung_05103v_config_t *p_cfg = (wind_speed_rmyoung_05103v_config_t *)opt;
 
 
   if (rmyoung_05103v_win_spd_inst.opened)

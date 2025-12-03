@@ -216,7 +216,7 @@ snow_api_t snow_api = {.read = read_hjsnow};
 driver_t *hjsnow_open(void *opt)
 {
  int32_t port_num;
- hjsnow_config_t *hjsnow = opt;
+ snow_hj_config_t *hjsnow = opt;
 
 
  if (hjsnow_driver.opened)
@@ -232,7 +232,7 @@ driver_t *hjsnow_open(void *opt)
   {
     case ePHYSICAL_RS232:
     {
-      hjsnow_config_t *rs232_config = opt;
+      snow_hj_config_t *rs232_config = opt;
       uart_config_t uart_config;
 
       uart_config.baud = 19200;

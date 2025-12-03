@@ -54,7 +54,7 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
 
     case S_T_SNOW_HJ:
     {
-      hjsnow_config_t *hjsnow = (hjsnow_config_t *)cfg;
+      snow_hj_config_t *hjsnow = (snow_hj_config_t *)cfg;
       if (hjsnow->physical_layer == ePHYSICAL_RS232)
       {
         rs232_get_portList(list, sizeof(list));
@@ -76,7 +76,7 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
     case S_T_HUMINITY_HJ:
     case S_T_TEMPERATURE_HJ:
     {
-      hjtemp_config_t *hjtemp = (hjtemp_config_t *)cfg;
+      temp_hj_config_t *hjtemp = (temp_hj_config_t *)cfg;
       if (hjtemp->physical_layer == ePHYSICAL_RS232)
       {
         rs232_get_portList(list, sizeof(list));
@@ -91,21 +91,21 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
     break;
     case S_T_WIND_DIRECTION_HJ_485:
     {
-      hjwindDirection_config_t *hjwindDir = (hjwindDirection_config_t *)cfg;
+      wind_direction_hj_pulse_config_t *hjwindDir = (wind_direction_hj_pulse_config_t *)cfg;
       drv_rs485_get_portList(list, sizeof(list));
       snprintf(out, outSize, "[%s]", list[hjwindDir->rs485_port]);
     }
     break;
     case S_T_WIND_SPEED_HJ_485:
     {
-      hjwindspeed_config_t *hjwind = (hjwindspeed_config_t *)cfg;
+      wind_speed_hj_pulse_config_t *hjwind = (wind_speed_hj_pulse_config_t *)cfg;
       drv_rs485_get_portList(list, sizeof(list));
       snprintf(out, outSize, "[%s]", list[hjwind->rs485_port]);
     }
     break;
     case S_T_SOLAR_RADIATION_OTT_SMP3:
     {
-      ott_smp3_config_t *ott = (ott_smp3_config_t *)cfg;
+      solar_r_ott_smp3_config_t *ott = (solar_r_ott_smp3_config_t *)cfg;
       drv_rs485_get_portList(list, sizeof(list));
       snprintf(out, outSize, "[%s][A.%d]", list[ott->rs485_port], ott->modbus_id);
     }
@@ -156,7 +156,7 @@ uint8_t print_adc_cfg( adc_config_t *adc_config, uint8_t cnt)
 #define HJWIND_CFG_PORT 2
 
 #define HJ_WIND_L_W 10
-uint8_t print_hjwind_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
+uint8_t print_hjwind_cfg( wind_speed_hj_pulse_config_t *hjwindCfg, uint8_t cnt)
 {
   const char *name_table[10];
 
@@ -169,7 +169,7 @@ uint8_t print_hjwind_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
 }
 
 #define HJWIND_DIR_CFG_PORT 0
-uint8_t print_hjwindDir_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
+uint8_t print_hjwindDir_cfg( wind_speed_hj_pulse_config_t *hjwindCfg, uint8_t cnt)
 {
   const char *name_table[10];
 
@@ -189,7 +189,7 @@ uint8_t print_hjwindDir_cfg( hjwindspeed_config_t *hjwindCfg, uint8_t cnt)
 #define HJTEMP_CFG_PORT 1
 #define HJTEMP_CFG_MODBUS_ID 2
 #define HJTEMP_CTRL_OFFSET 3
-uint8_t print_hjtemp_cfg(hjtemp_config_t *hjtempCfg, uint8_t cnt)
+uint8_t print_hjtemp_cfg(temp_hj_config_t *hjtempCfg, uint8_t cnt)
 {
   const char *name_table[10];
   int port;
@@ -216,7 +216,7 @@ uint8_t print_hjtemp_cfg(hjtemp_config_t *hjtempCfg, uint8_t cnt)
 
 #define OTT_SMP3_CFG_PORT 0
 #define OTT_SMP3_CFG_ID 1
-uint8_t print_ott_smp3_cfg(ott_smp3_config_t *ott, uint8_t cnt)
+uint8_t print_ott_smp3_cfg(solar_r_ott_smp3_config_t *ott, uint8_t cnt)
 {
    const char *portNameList[10];
 
@@ -247,7 +247,7 @@ uint8_t print_freq_cfg(frequency_config_t *freq, uint8_t cnt)
 #define HJSNOW_CFG_MENU_PHY  0
 #define HJSNOW_CFG_MENU_PORT 1
 #define HJSNOW_CFG_MENU      2
-uint8_t print_hjsnow_cfg(hjsnow_config_t *hjsnow, uint8_t cnt)
+uint8_t print_hjsnow_cfg(snow_hj_config_t *hjsnow, uint8_t cnt)
 {
   const char *portNameList[10];
 
@@ -270,7 +270,7 @@ uint8_t print_hjsnow_cfg(hjsnow_config_t *hjsnow, uint8_t cnt)
 }
 
 #define SJGP215_CFG_PORT 0
-uint8_t print_barometer_jsgp215_cfg(jinsung_sjgp215_config_t *ott, uint8_t cnt)
+uint8_t print_barometer_jsgp215_cfg(barometer_jinsung_sjgp215_config_t *ott, uint8_t cnt)
 {
   const char *portNameList[10];
 
@@ -434,7 +434,7 @@ int32_t hjwind_config_set(  sensor_t *sensor, uint8_t munu_index)
   int32_t dec;
   uint16_t port_cnt;
 
-  hjwindspeed_config_t *hjwind;
+  wind_speed_hj_pulse_config_t *hjwind;
 
   hjwind = get_sensor_config(sensor);
   if (hjwind == NULL)
@@ -484,7 +484,7 @@ int32_t hjwinddir_config_set( sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
-  hjwindspeed_config_t *hjwind;
+  wind_speed_hj_pulse_config_t *hjwind;
   const char *portList[10];
 
   uint16_t port_cnt;
@@ -522,7 +522,7 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
   int32_t status;
   int32_t choice;
   int32_t dec = 0;
-  hjtemp_config_t *hjtemp;
+  temp_hj_config_t *hjtemp;
   const char *portList[10];
   uint16_t portListCnt;
 
@@ -590,7 +590,7 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
   int32_t status;
   int32_t choice;
   int32_t dec = 0;
-  hjtemp_config_t *hjtemp;
+  temp_hj_config_t *hjtemp;
 
 
   hjtemp = get_sensor_config(sensor);
@@ -659,7 +659,7 @@ int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
   int32_t status;
   int32_t choice;
   int32_t dec = 0;
-  ott_smp3_config_t *ott;
+  solar_r_ott_smp3_config_t *ott;
   const char *portList[10];
   uint16_t portListCnt;
 
@@ -771,7 +771,7 @@ int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
   uint16_t portCnt;
   int32_t status;
   int32_t choice;
-  hjsnow_config_t *hjsnow;
+  snow_hj_config_t *hjsnow;
 
 
   hjsnow = get_sensor_config(sensor);
@@ -928,7 +928,7 @@ int32_t sjgp215_config_set(sensor_t *sensor, uint8_t menu_index)
   int32_t status;
   int32_t choice;
 
-  jinsung_sjgp215_config_t *sjgp215;
+  barometer_jinsung_sjgp215_config_t *sjgp215;
   const char *portList[10];
   uint16_t portListCnt;
 

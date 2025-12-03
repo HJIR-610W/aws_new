@@ -30,7 +30,7 @@ int32_t rmyoung_61402v_init(void *opt)
 {
 
   adc_config_t adc_config;
-      rmyoung_61402v_barometer_config_t  *p_cfg = (rmyoung_61402v_barometer_config_t *)opt;
+      barometer_rmyoung_61402v_config_t  *p_cfg = (barometer_rmyoung_61402v_config_t *)opt;
     if (rmyoung_61402v_inst.opened)
   {
     return 1;

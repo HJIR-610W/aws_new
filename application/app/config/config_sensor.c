@@ -36,12 +36,12 @@ void limit_adc(void)
 {
   for (int i = 0; i < _countof(g_config_sensor.adc); i++)
   {
-    if (g_config_sensor.adc[i].diff_channel > 7)
+    if (g_config_sensor.adc[i].diff_channel >= 8)
     {
       g_config_sensor.adc[i].diff_channel = 0;
       g_config_sensor_dirty_flag = true;
     }
-    if (g_config_sensor.adc[i].single_channel > 17)
+    if (g_config_sensor.adc[i].single_channel >= 18)
     {
       g_config_sensor.adc[i].single_channel = 0;
       g_config_sensor_dirty_flag = true;
@@ -49,20 +49,6 @@ void limit_adc(void)
   }
 }
 
-void limit_hjwind(void)
-{
-  if (g_config_sensor.hjwind_speed.rs485_port > eAPP_RS485_MAX)
-  {
-    g_config_sensor.hjwind_speed.rs485_port = eAPP_RS485_C;
-    g_config_sensor_dirty_flag = true;
-  }
-
-  if (g_config_sensor.hjwindDir.rs485_port > eAPP_RS485_MAX)
-  {
-    g_config_sensor.hjwindDir.rs485_port = eAPP_RS485_C;
-    g_config_sensor_dirty_flag = true;
-  }
-}
 
 void limit_hjtemp(void)
 {
@@ -89,6 +75,8 @@ void limit_hjtemp(void)
     }
   }
 }
+
+
 void limit_hjhumi(void)
 {
   if (g_config_sensor.hjhumi.physical_layer > ePHYSICAL_RS485)
@@ -112,7 +100,57 @@ void limit_hjhumi(void)
         g_config_sensor_dirty_flag = true;
       }
     }
+}
+
+void limit_hjwind(void)
+{
+  if (g_config_sensor.hjwind_speed.rs485_port > eAPP_RS485_MAX)
+  {
+    g_config_sensor.hjwind_speed.rs485_port = eAPP_RS485_C;
+    g_config_sensor_dirty_flag = true;
   }
+
+  if (g_config_sensor.hjwindDir.rs485_port > eAPP_RS485_MAX)
+  {
+    g_config_sensor.hjwindDir.rs485_port = eAPP_RS485_C;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
+void limit_hjsnow(void)
+{
+  if (g_config_sensor.hjsnow.physical_layer > ePHYSICAL_RS485)
+  {
+    g_config_sensor.hjsnow.physical_layer = ePHYSICAL_RS485;
+    g_config_sensor_dirty_flag = true;
+  }
+    if (g_config_sensor.hjsnow.physical_layer == ePHYSICAL_RS485)
+    {
+      if (g_config_sensor.hjsnow.rs485_port > eAPP_RS485_MAX)
+      {
+        g_config_sensor.hjsnow.rs485_port = eAPP_RS485_RS232_B;
+        g_config_sensor_dirty_flag = true;
+      }
+    }
+    else if (g_config_sensor.hjsnow.physical_layer == ePHYSICAL_RS232)
+    {
+      if (g_config_sensor.hjsnow.rs232_port > eRS232_MAX)
+      {
+        g_config_sensor.hjsnow.rs232_port = eRS232_RS485_B;
+        g_config_sensor_dirty_flag = true;
+      }
+    }
+}
+
+void limit_csd3_solar_duration(void)
+{
+  if (g_config_sensor.solar_duration_csd3.adc_channel >15)
+  {
+    g_config_sensor.solar_duration_csd3.adc_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
 
 void limit_jsgp215(void)
 {
@@ -121,6 +159,15 @@ void limit_jsgp215(void)
     g_config_sensor.jinsung_sjgp215.rs232_port = eRS232_RS485_B;
     g_config_sensor_dirty_flag = true;
   }
+}
+
+void limit_fequency(void)
+{
+   if (g_config_sensor.frequency.channel >=2)
+  {
+    g_config_sensor.frequency.channel = 0;
+    g_config_sensor_dirty_flag = true;
+  } 
 }
 
 void limit_rmyoung_wind_direction(void)
@@ -147,21 +194,9 @@ void limit_rmyoung_barometer(void)
   }
 }
 
-void limit_barometer(void)
-{
 
 
-}
-void limit_csd3_solar_duration(void)
-{
-  if (g_config_sensor.solar_duration_csd3.adc_channel >15)
-  {
-    g_config_sensor.solar_duration_csd3.adc_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
-}
-
-void limit_hj_wind(void)
+void limit_hj_wind_modbus(void)
 {
   if(g_config_sensor.wind_direction_hj_modbus.rs485_port>eAPP_RS485_MAX)
   {
@@ -225,12 +260,13 @@ void load_config_sensor(void)
   limit_hjwind();
   limit_hjhumi();
   limit_hjtemp();
+  limit_hjsnow();
+  limit_fequency();
   limit_jsgp215();
-  limit_barometer();
   limit_rmyoung_wind_direction();
   limit_rmyoung_barometer();
   limit_csd3_solar_duration();
-  limit_hj_wind();
+  limit_hj_wind_modbus();
 
   if (g_config_sensor_dirty_flag)
   {
@@ -273,11 +309,10 @@ void backup_config_sensor(void)
 
 void restore_config_sensor(void)
 {
-  uint8_t *p_start;
-
-  config_sensor_t *p_config;
   bool crc_result = false;
+  uint8_t *p_start;
   uint32_t crc;
+  config_sensor_t *p_config;
   FRESULT f_ret;
 
   

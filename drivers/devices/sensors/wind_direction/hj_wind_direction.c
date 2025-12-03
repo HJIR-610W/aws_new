@@ -129,7 +129,7 @@ driver_t g_hjwind_direction_driver;
 driver_t *hjwind_direction_open(uint8_t num, void *opt)
 {
   uart_config_t uart_config;
-  hjwindspeed_config_t *hjwind_config = opt;
+  wind_speed_hj_pulse_config_t *hjwind_config = opt;
 
   (void)num;
 

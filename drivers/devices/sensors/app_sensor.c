@@ -76,15 +76,15 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] =
         };
 
 // 지원하는 센서 목록 정의
-const uint8_t temperatureList[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
+const uint8_t temperature_list[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100_A, S_T_PT100_B};
 const uint8_t wind_direction_list[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_MODBUS,S_T_WIND_DIRECTION_HJ_485, S_T_WIND_DIRECTION_RMYOUNG_05103V, S_T_ADC};
 const uint8_t wind_speed_list[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_MODBUS,S_T_WIND_SPEED_HJ_485, S_T_WIND_SPEED_RMYOUNG_05103V,S_T_FREQ};
-const uint8_t rainList[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
+const uint8_t rainfall_list[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
                             S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM};
-const uint8_t pressureList[] = {S_T_UNSUED, S_T_BARO_RMYOUNG_61402V, S_T_BARO_JINSUNG_SJGP215, S_T_ADC};
+const uint8_t pressure_list[] = {S_T_UNSUED, S_T_BARO_RMYOUNG_61402V, S_T_BARO_JINSUNG_SJGP215, S_T_ADC};
 const uint8_t rain_present_list[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI,S_T_RAIN_PRESENT_ANALOG};
-const uint8_t snowList[] = {S_T_UNSUED, S_T_SNOW_HJ};
-const uint8_t humiList[] = {S_T_UNSUED, S_T_HUMINITY_HJ, S_T_ADC};
+const uint8_t snow_list[] = {S_T_UNSUED, S_T_SNOW_HJ};
+const uint8_t humi_list[] = {S_T_UNSUED, S_T_HUMINITY_HJ, S_T_ADC};
 const uint8_t solar_radiation_list[] = {S_T_UNSUED, S_T_SOLAR_RADIATION_OTT_SMP3, S_T_ADC};
 const uint8_t solar_duration_list[] ={S_T_UNSUED,S_T_SOLAR_DURATION_CSD3,S_T_ADC};
 const uint8_t default_list[] = {S_T_UNSUED};
@@ -94,14 +94,14 @@ const uint8_t soil_temp_list[] = {S_T_UNSUED, S_T_ADC};
 
 //ADDMODEL:센서 모델 이 추가되면 여기추가 시켜야함
 const sensor_model_entry_t sensor_table[SENSOR_LIST_MAX] = {
-    {.list = temperatureList, .cnt = sizeof(temperatureList)},         // A1_TEMPERATURE
+    {.list = temperature_list, .cnt = sizeof(temperature_list)},         // A1_TEMPERATURE
     {.list = wind_direction_list, .cnt = sizeof(wind_direction_list)},     // A2_WIND_DIRECTION
     {.list = wind_speed_list, .cnt = sizeof(wind_speed_list)},             // A3_WIND_SPEED
-    {.list = rainList, .cnt = sizeof(rainList)},                       // A6_RAINFALL_DOT5_1MM
-    {.list = pressureList, .cnt = sizeof(pressureList)},               // A7_PRESSURE
+    {.list = rainfall_list, .cnt = sizeof(rainfall_list)},                       // A6_RAINFALL_DOT5_1MM
+    {.list = pressure_list, .cnt = sizeof(pressure_list)},               // A7_PRESSURE
     {.list = rain_present_list, .cnt = sizeof(rain_present_list)},         // A8_RAIN_PRESENT
-    {.list = snowList, .cnt = sizeof(snowList)},                       // A9_SNOW_DEPTH
-    {.list = humiList, .cnt = sizeof(humiList)},                       // A10_RELATIVE_HUMIDITY
+    {.list = snow_list, .cnt = sizeof(snow_list)},                       // A9_SNOW_DEPTH
+    {.list = humi_list, .cnt = sizeof(humi_list)},                       // A10_RELATIVE_HUMIDITY
     {.list = default_list, .cnt = sizeof(default_list)},                 // A11_RAINFALL_DOT1MM
     {.list = solar_radiation_list, .cnt = sizeof(solar_radiation_list)},   // B1_SOLAR_RADIATION
     {.list = solar_duration_list, .cnt = sizeof(solar_duration_list)}, // B2_SUNSHINE_DURATION
@@ -167,9 +167,6 @@ void sensor_add_common(sensor_t *sensor, uint8_t index)
  */
 void *sensor_add(sensor_t *sensor)
 {
-
-
-
   switch (sensor->type)
   {
     case S_T_ADC:
@@ -295,9 +292,7 @@ void *get_sensor_config(sensor_t *sensor)
         return &g_config_sensor.wind_speed_hj_modbus;
         case S_T_WIND_DIRECTION_HJ_MODBUS:
         return &g_config_sensor.wind_direction_hj_modbus;
-
-
-        
+      
       }
     }
   }

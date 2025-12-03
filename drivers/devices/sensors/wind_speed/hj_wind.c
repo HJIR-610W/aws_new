@@ -174,7 +174,7 @@ driver_t g_hjwind_driver;
 driver_t *hjwind_open( void *opt)
 {
   uart_config_t uart_config;
-  hjwindspeed_config_t *hjwind_config = opt;
+  wind_speed_hj_pulse_config_t *hjwind_config = opt;
 
 
 

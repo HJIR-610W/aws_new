@@ -42,7 +42,7 @@ void ott_smp3_initialize(void)
 driver_t *ott_smp3_open(int32_t num, void *opt)
 {
   uart_config_t uart_config;
-  ott_smp3_config_t *ott = (ott_smp3_config_t *)opt;
+  solar_r_ott_smp3_config_t *ott = (solar_r_ott_smp3_config_t *)opt;
 
   uart_config.baud = 19200;
   uart_config.parity_index = PARITY_EVEN;
