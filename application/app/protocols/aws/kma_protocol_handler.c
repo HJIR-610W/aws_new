@@ -564,6 +564,12 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
 
   void update_old_to_kma3(AWS_DATA_STRUCT * p_aws_old, kma_data_ex_t * p_kma_ex)
   {
+    p_kma_ex->time.Year = p_aws_old->year;
+    p_kma_ex->time.Month = p_aws_old->mDate.cMonth;
+    p_kma_ex->time.Day   = p_aws_old->mDate.cDay;
+    p_kma_ex->time.Hour  = p_aws_old->mDate.cHour;
+    p_kma_ex->time.Min   = p_aws_old->mDate.cMin;
+
     p_kma_ex->temperature.data = p_aws_old->mTemperature.sReal;
     p_kma_ex->wind_direction_avg.data = p_aws_old->mWind.mDirection.sReal;
     p_kma_ex->wind_speed_avg.data = p_aws_old->mWind.mSpeed.sReal;

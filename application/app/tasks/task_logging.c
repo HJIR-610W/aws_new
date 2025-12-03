@@ -7,10 +7,13 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "app_dataLogging.h"
+#include "logging\save_csv.h"
+#include "logging\app_dataLogging.h"
+#include "logging\app_logging.h"
+#include "logging\app_alarm_logging.h"
+#include "logging\save_csv.h"
+
 #include "app_file.h"
-#include "app_logging.h"
-#include "app_alarm_logging.h"
 #include "dev_io.h"
 #include "fatfs.h"
 #include "old_aws_define.h"
@@ -252,6 +255,7 @@ void loggingTask(void *arg)
               err = write_sunshine_1min(&logging.ct, sunshine);
               update_loggingErr(&g_logging_system.status_group, err, LOGGING_SUN_ERR);
             }
+            save_aws_csv(p_frame->data,p_frame->data_len);
             
             break;
         }
