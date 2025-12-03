@@ -12,6 +12,7 @@
 #include "view_driver.h"
 #include "drv_rs232.h"
 #include "drv_rs485.h"
+#include "drv_freqInput.h"
 #include "config_sensor.h"
 #include "util_memory.h"
 
@@ -579,7 +580,7 @@ int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
   {
     case FREQ_PAGE_CHANNEL:
       dec = freq->channel;
-       status = input_combobox("Channel", freq_ch_list, _countof(freq_ch_list), &dec);
+       status = input_combobox("Channel", g_freq_owner_list, _countof(g_freq_owner_list), &dec);
       if (status != MENU_OK)
         break;
       freq->channel = dec;

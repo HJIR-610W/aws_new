@@ -22,8 +22,8 @@ void test_freq(void)
    io_printf("아무키나 입력하면 측정 시작");
   get_key(0xFFFFFFFF);
 
-  count_b = driver_freq_open(FREQ_MEAURE_B);
-  count_c = driver_freq_open(FREQ_MEAURE_C);
+  count_b = driver_freq_open(GENERAL_FREQ_1,"test");
+  count_c = driver_freq_open(GENERAL_FREQ_2,"test");
 
   while(1)
   {

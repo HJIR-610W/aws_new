@@ -35,7 +35,7 @@ driver_t *general_freq_open(void *opt)
       g_general_freq[FREQ_A].driver_type = eDRIVER_GENERAL_FREQ;
       g_general_freq[FREQ_A].opened = true;
       freq_cfg[FREQ_A].scale_factor = config->scale_factor;
-      freq_cfg[FREQ_A].freq_io = driver_freq_open(FREQ_MEAURE_B);
+      freq_cfg[FREQ_A].freq_io = driver_freq_open(GENERAL_FREQ_1,"freq");
       g_general_freq[FREQ_A].cfg = &freq_cfg[FREQ_A];
 
       break;
@@ -48,7 +48,7 @@ driver_t *general_freq_open(void *opt)
       g_general_freq[FREQ_B].driver_type = eDRIVER_GENERAL_FREQ;
       g_general_freq[FREQ_B].opened = true;
       freq_cfg[FREQ_B].scale_factor = config->scale_factor;
-      freq_cfg[FREQ_B].freq_io = driver_freq_open(FREQ_MEAURE_C);
+      freq_cfg[FREQ_B].freq_io = driver_freq_open(GENERAL_FREQ_2,"freq");
       g_general_freq[FREQ_B].cfg = &freq_cfg[FREQ_B];
 
       break;

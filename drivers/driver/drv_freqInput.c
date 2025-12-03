@@ -5,11 +5,14 @@
 #include "drv_freqInput.h"
 
 #include <math.h>
+#include <stdio.h>
+
+#include "util_memory.h"
 
 #include "os_user_def.h"
 #include "pcb_define.h"
 
-
+void update_freq_owner(int32_t port,const char *owner);
 
 #ifdef PCB_0_5
 
@@ -214,7 +217,7 @@ uint32_t calculate_timer_prescaler(TIM_TypeDef *tim_instance, uint32_t desired_f
 
 
 
-driver_t *driver_freq_open(uint32_t num)
+driver_t *driver_freq_open(uint32_t num,const char *owner)
 {
   if (g_freqMeasure[num].opened == true)
   {
@@ -224,17 +227,17 @@ driver_t *driver_freq_open(uint32_t num)
   g_freqMeasure[num].opened = true;
   switch (num)
   {
-    case FREQ_MEAURE_B:
+    case GENERAL_FREQ_1:
       freqMeasureB_init();
-      g_freq_cfg[FREQ_MEAURE_B].channel = 0;
-      g_freqMeasure[num].cfg = &g_freq_cfg[FREQ_MEAURE_B];
+      g_freq_cfg[GENERAL_FREQ_1].channel = 0;
+      g_freqMeasure[num].cfg = &g_freq_cfg[GENERAL_FREQ_1];
 
 
       break;
-    case FREQ_MEAURE_C:
+    case GENERAL_FREQ_2:
       freqMeasureC_init();
-      g_freq_cfg[FREQ_MEAURE_C].channel = 1;
-      g_freqMeasure[num].cfg = &g_freq_cfg[FREQ_MEAURE_C];
+      g_freq_cfg[GENERAL_FREQ_2].channel = 1;
+      g_freqMeasure[num].cfg = &g_freq_cfg[GENERAL_FREQ_2];
 
       break;
   }
@@ -527,27 +530,30 @@ void freqMeasureB_count_init(void)
   HAL_NVIC_EnableIRQ(TIM5_IRQn);
 }
 
-driver_t *driver_freq_open(uint32_t num)
+driver_t *driver_freq_open(uint32_t num,const char *owner)
 {
   if (g_freqMeasure[num].opened == true)
   {
     return &g_freqMeasure[num];
   }
 
+  update_freq_owner(num,owner);
+
+
   g_freqMeasure[num].opened = true;
   switch (num)
   {
-    case FREQ_MEAURE_B:
+    case GENERAL_FREQ_1:
       freqMeasureB_init();
-      g_freq_cfg[FREQ_MEAURE_B].channel = 0;
-      g_freqMeasure[num].cfg = &g_freq_cfg[FREQ_MEAURE_B];
+      g_freq_cfg[GENERAL_FREQ_1].channel = 0;
+      g_freqMeasure[num].cfg = &g_freq_cfg[GENERAL_FREQ_1];
       OS_CREATE_BINARY_SEM(g_freqMeasure[num].sem);
 
       break;
-    case FREQ_MEAURE_C:
+    case GENERAL_FREQ_2:
       freqMeasureC_init();
-      g_freq_cfg[FREQ_MEAURE_C].channel = 1;
-      g_freqMeasure[num].cfg = &g_freq_cfg[FREQ_MEAURE_C];
+      g_freq_cfg[GENERAL_FREQ_2].channel = 1;
+      g_freqMeasure[num].cfg = &g_freq_cfg[GENERAL_FREQ_2];
       OS_CREATE_BINARY_SEM(g_freqMeasure[num].sem);
       break;
   }
@@ -595,3 +601,42 @@ float driver_freq_read_duty(driver_t *drv,uint8_t *err)
 
 
 #endif
+
+
+
+
+
+#define FREQ_OWNER_SIZE 20
+char freq_owner_table[16][FREQ_OWNER_SIZE]={{"1"},{"2"}};
+
+const char *g_freq_owner_list[2] = {
+            freq_owner_table[0],
+            freq_owner_table[1]};
+
+void update_freq_owner(int32_t port,const char *owner)
+{
+
+  switch(port)
+  {
+    case GENERAL_FREQ_1:
+        snprintf(freq_owner_table[port],FREQ_OWNER_SIZE,"1 %s",owner);
+    break;
+    case GENERAL_FREQ_2:
+        snprintf(freq_owner_table[port],FREQ_OWNER_SIZE,"2 %s",owner);
+    break;
+
+  }
+
+}
+uint16_t drv_freq_get_port_list(const char **list,uint16_t listMax)
+{
+  int i=0;
+  for( i = 0; i <_countof(freq_owner_table);i++)
+  {
+    if(i<listMax)
+    {
+      list[i] = freq_owner_table[i];
+    }
+  }
+  return i;
+}

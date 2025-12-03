@@ -45,9 +45,6 @@ void update_rs232_owner(eRS232_PORT_t port,const char *owner)
   }
 
 }
- 
-
-
 
 
 

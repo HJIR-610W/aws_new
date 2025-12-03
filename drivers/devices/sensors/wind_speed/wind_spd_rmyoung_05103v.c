@@ -36,7 +36,7 @@ int32_t wind_spd_rmyoung_05103v_init(void *opt)
   rmyoung_05103v_win_spd_inst.opened = true;
   rmyoung_05103v_win_spd_inst.frequency_channel = p_cfg->frequency_channel;
   rmyoung_05103v_win_spd_inst.factor = 0.0978;
-  rmyoung_05103v_win_spd_inst.freq_drv = driver_freq_open(p_cfg->frequency_channel);
+  rmyoung_05103v_win_spd_inst.freq_drv = driver_freq_open(p_cfg->frequency_channel,"wind speed");
 
   return 1;
 }
