@@ -1424,7 +1424,7 @@ menu_status_t input_decimal(const char *title, int min, int max, int *val)
   uint32_t last_blink;
   int32_t key;
   uint8_t edit_mode=0;
-  
+  uint8_t first=1;
 
   if (val == NULL || title == NULL || min > max)
   {
@@ -1609,6 +1609,23 @@ enable_left_long_key();
     }
     else if(key >= '0' && key <= '9')
     {
+      if(first)
+      {
+        first = 0;
+              memset_s(buff,sizeof(buff),0,sizeof(buff));
+              if(sign_enable)
+      {
+        buff[0] = '+';
+        buff[1] = '0';
+        cursor_pos = -1;
+      }
+      else
+      {
+        buff[0] = '0';
+        cursor_pos = -1;
+      }
+      dec_count = 0;
+      }
       
       if(sign_enable)
       {

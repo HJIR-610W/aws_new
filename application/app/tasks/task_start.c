@@ -113,7 +113,7 @@ void startTask(void *arg)
 
   test_mode = check_test_mode();
 
-  consoleTask_init((void *)test_mode);//디버깅 printf 사용 해야해서 먼저 초기화
+
 
   #if IWDG_USE
   bsp_iwdg_init(16000);//iwdg task가 실행 전까지는 16초로 타임아웃
@@ -131,7 +131,7 @@ void startTask(void *arg)
   }
   wdtTask_init();
   menuTask_init();//최소 test_mode 다음에 선언하여 이때 부팅화면 출력 
-
+  consoleTask_init((void *)test_mode);//디버깅 printf 사용 해야해서 먼저 초기화
   config_manager_init();  // 우선 실행
   filesystem_init();//SD카드 초기화 및 파일시스템 초 기화 
   logging_init();//운영 로그 기록 기능 초기화
