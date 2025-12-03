@@ -425,7 +425,7 @@ int32_t aws_network_config_direct(void)
   {
     menu_cnt = 0;
 
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "통신 속도   :%s",ITEM_LIST(config.direct_baud_index,g_baud_list_eng));
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "통신 속도   :%s",ITEM_LIST(config.direct_baud_index,baud_list_eng));
     menu_cnt++;
 
     status = choice_menu(LABEL_W, "직접통신(RS232)", menu, menu_cnt, &choice);
@@ -436,7 +436,7 @@ int32_t aws_network_config_direct(void)
     {
       case 1:
         choice = get_config_app()->direct_baud_index;
-        status = choice_menu(30, "통신 속도", (char **)g_baud_list_eng, _countof(g_baud_list_eng), &choice);
+        status = choice_menu(30, "통신 속도", (char **)baud_list_eng, _countof(baud_list_eng), &choice);
         if(status != MENU_OK)
         break;
 

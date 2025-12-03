@@ -273,7 +273,7 @@ void draw_direct(win_t *p_win)
 
       // 링크 상태
       win_printf_row(p_win, row_count++, "%s: %s", m_l("링크",DIRECT_WD),
-                     ITEM_LIST(get_direct_system()->link_status, linkStatusList));
+                     ITEM_LIST(get_direct_system()->link_status, link_status_list_eng));
 
       // 타임아웃 (남은 시간)
       remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms / 1000.0);
@@ -352,7 +352,7 @@ void draw_cdma(win_t *p_win)
 
       // 링크 상태
       win_printf_row(p_win, row_count++, "%s: %s", m_l("링크", CDMA_WD),
-                     ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
+                     ITEM_LIST(get_cdma_system()->link_status, link_status_list_eng));
 
       // 전화번호
       if (get_cdma_system()->num[0] != '0')
@@ -455,7 +455,7 @@ void draw_eth(win_t *p_win)
 
         // 링크 상태
         win_printf_row(p_win, row_count++, "%s: %s", m_l("링크", ETH_WD),
-                       ITEM_LIST(link_status[ETH_CLIENT_0], linkStatusList));
+                       ITEM_LIST(link_status[ETH_CLIENT_0], link_status_list_eng));
 
         // 송신 카운트
         win_printf_row(p_win, row_count++, "%s: %d", m_l("송신", ETH_WD), tx_cnt[ETH_CLIENT_0]);
@@ -500,7 +500,7 @@ void draw_eth(win_t *p_win)
 
           // 링크 상태 (클라이언트 번호와 IP 포함)
           win_printf_row(p_win, row_count++, "링크(%d): %s(%s)", i,
-                         ITEM_LIST(link_status[i], linkStatusList), get_tcp_system(i)->client_ip_str);
+                         ITEM_LIST(link_status[i], link_status_list_eng), get_tcp_system(i)->client_ip_str);
 
           // 송신 카운트
           win_printf_row(p_win, row_count++, "%s: %d", m_l("송신", ETH_WD), tx_cnt[i]);

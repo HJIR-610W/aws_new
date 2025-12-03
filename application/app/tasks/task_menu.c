@@ -41,7 +41,7 @@
 
 extern exec_time_t g_exec_250ms_time;  // Task 실행 시간 측정용
 extern exec_time_t g_exec_1s_time;            // Task 실행 시간 측정용
-extern const char *linkStatusList[3];
+extern const char *link_status_list_eng[3];
 extern const char *generalStatusList[2];
 extern void make_error_string(uint8_t error, char *buffer, uint32_t buffer_size);
 extern uint8_t BSP_PlatformIsDetected(void);
@@ -87,7 +87,7 @@ void draw_system_page(screen_page_t *p_win)
                  Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
   screen_page_printf(p_win, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
   screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "DOOR",
-                    ITEM_LIST(is_door_opened(), doorStatusList_lcd));
+                    ITEM_LIST(is_door_opened(), door_status_list_eng));
 
   message = get_logging_system()->status_group?"ERROR":"NORMAL";
   screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD,   "LOGGING", message);
@@ -183,7 +183,7 @@ void draw_cdma_page(screen_page_t *p_win)
   make_centered(buff, sizeof(buff), "CDMA", SCREEN_COLS);
   screen_page_printf(p_win, buff);
   screen_page_printf(p_win, "%-*s:%s", CDMA_WD, "LINK",
-                 ITEM_LIST(get_cdma_system()->link_status, linkStatusList));
+                 ITEM_LIST(get_cdma_system()->link_status, link_status_list_eng));
 
   if (get_cdma_system()->num[0] != '0')
   {
@@ -250,7 +250,7 @@ void draw_direct_page(screen_page_t *p_win)
   screen_page_start(p_win);
   screen_page_printf(p_win, "%s",buff);
   screen_page_printf(p_win, "%-*s:%s", DIRECT_WD, "LINK",
-                 ITEM_LIST(get_direct_system()->link_status, linkStatusList));
+                 ITEM_LIST(get_direct_system()->link_status, link_status_list_eng));
 
   remain_sec = (uint32_t)(get_direct_system()->linkdown_remain_ms / 1000.0);
   screen_page_printf(p_win, "%-*s:%d", DIRECT_WD, "TIMEOUT", remain_sec);
@@ -303,7 +303,7 @@ void draw_ethernet_page(screen_page_t *p_win)
   if (get_config_app()->eth_mode == eETH_MODE_CLINET)
   {
     screen_page_printf(p_win, "%-*s:%s", ETH_WD, "LINK",
-                   ITEM_LIST(get_tcp_client_system()->link_status, linkStatusList_lcd));
+                   ITEM_LIST(get_tcp_client_system()->link_status, link_status_list_eng));
 
     screen_page_printf(p_win, "%-*s:%d", ETH_WD, "RX", get_tcp_client_system()->rx_cnt);
     screen_page_printf(p_win, "%-*s:%d", ETH_WD, "TX", get_tcp_client_system()->tx_cnt);
@@ -348,7 +348,7 @@ void draw_ethernet_page(screen_page_t *p_win)
     {
       //L0:D/192.168.123.123 
       screen_page_printf(p_win, "L%d:%s(%s)", i,
-                     ITEM_LIST(link_status[i], ethlinkStatusList_lcd),
+                     ITEM_LIST(link_status[i], ethlink_status_list_eng),
                      get_tcp_system(i)->client_ip_str);
 
       screen_page_printf(p_win, "%-*s:%d", ETH_WD, "RX", rx_cnt[i]);

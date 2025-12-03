@@ -36,7 +36,7 @@ void draw_setup_menu_system_menu(screen_menu_t* p_win)
   screen_menu_printf(p_win, SYSTEM_MENU_ID, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
   screen_menu_printf(p_win, SYSTEM_MENU_PASSWORD, "%-*s:%d", SYSTEM_WD, "PASS", get_config_app()->password);
   screen_menu_printf(p_win, SYSTEM_MENU_CHARGER, "%-*s:%s", SYSTEM_WD, "CHARGER",
-                     ITEM_LIST(get_config_app()->charger_model, g_charger_list_eng));
+                     ITEM_LIST(get_config_app()->charger_model, charger_list_eng));
 
   screen_menu_printf(p_win, SYSTEM_MENU_AC_MODE, "%-*s:%s", SYSTEM_WD, "AC MODE",
                      ITEM_LIST(get_config_app()->ac_active, enable_list_eng));
@@ -138,7 +138,7 @@ int32_t setup_menu_system(void)
       case SYSTEM_MENU_CHARGER:
       {
         choice = get_config_app()->charger_model;
-        status = input_combobox("Charger",g_charger_list_eng,_countof(g_charger_list_eng),&choice);
+        status = input_combobox("Charger",charger_list_eng,_countof(charger_list_eng),&choice);
         if (status != MENU_OK)
           break;
         config.charger_model = (eCHARGER_MODEL_t)choice;

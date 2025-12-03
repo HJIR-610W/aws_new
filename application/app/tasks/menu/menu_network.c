@@ -529,7 +529,7 @@ int32_t setup_cdma_config(void)
 void draw_direct_config_page(screen_menu_t* p_win)
 {
   screen_menu_start(p_win);
-  screen_menu_printf(p_win, DIRECT_MENU_BAUD_RATE, "%-*s:%s", NETWORK_WD, "Baud Rate",ITEM_LIST(get_config_app()->direct_baud_index,g_baud_list_eng));
+  screen_menu_printf(p_win, DIRECT_MENU_BAUD_RATE, "%-*s:%s", NETWORK_WD, "Baud Rate",ITEM_LIST(get_config_app()->direct_baud_index,baud_list_eng));
   screen_menu_clear(p_win);
 }
 
@@ -570,7 +570,7 @@ int32_t setup_direct_config(void)
       {
         case DIRECT_MENU_BAUD_RATE:
           index = get_config_app()->direct_baud_index;
-          status = input_combobox("Baud Rate",g_baud_list_eng,_countof(g_baud_list_eng),&index);
+          status = input_combobox("Baud Rate",baud_list_eng,_countof(baud_list_eng),&index);
 
           if (status == MENU_OK)
           {

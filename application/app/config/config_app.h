@@ -23,15 +23,24 @@
   drv_fram_write(CONFIG_START_ADDRESS + (uint32_t)OFFSET_S(&config, dataAdd), (uint8_t *)dataAdd, \
                  len);
 
-typedef enum uart_baud_e
-{
-  eBAUD_1200,
-  eBAUD_9600,
-  eBAUD_19200,
-  eBAUD_38400,
-  eBAUD_57600,
-  eBAUD_115200
+
+
+#define BAUD_LIST               \
+  X(eBAUD_1200, "1200")\
+  X(eBAUD_9600, "9600")\
+  X(eBAUD_19200, "19200")\
+  X(eBAUD_38400, "38400")\
+  X(eBAUD_57600, "57600")\
+  X(eBAUD_115200, "115200")
+
+  typedef enum uart_baud_e{
+#define X(code, name) code,
+  BAUD_LIST
+#undef X
+  BAUD_COUNT
 } eUART_BAUD_t;
+
+
 
 typedef enum eth_mode_e
 {
