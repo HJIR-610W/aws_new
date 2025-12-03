@@ -30,6 +30,7 @@ int32_t menu_view_log(int log_type)
   int32_t status;
   screen_page_t lcd_win;
   system_log_t log;
+  char temp[LOG_LEN_MAX+1];
   int update = 1;
   int dec;
   int len;
@@ -75,34 +76,35 @@ int32_t menu_view_log(int log_type)
       alarm_read_log(dec, &log);
     break;
   }
+    memcpy(temp,log.msg,LOG_LEN_MAX);
+    temp[LOG_LEN_MAX] =0;
 
-
-      if(strlen(log.msg)==0)
+      if(strlen(temp)==0)
       {
         screen_printf(0, 0, "Log Count:%d",dec);
         screen_printf(1, 0, "No saved log data");
         screen_refresh();
         goto END_LOOP;
       }
-      log.msg[19] = 0;
-      log.msg[24] = 0;
+      temp[19] = 0;
+      temp[24] = 0;
       screen_printf(0, 0, "Log Count:%d", dec);
-      screen_printf(1, 0, &log.msg[0]);
-      screen_printf(2, 0, &log.msg[20]);
+      screen_printf(1, 0, &temp[0]);
+      screen_printf(2, 0, &temp[20]);
       row = 3;
-      len = strlen(&log.msg[25]);
+      len = strlen(&temp[25]);
 
       start=0;
       while (start < len)
       {
         if (len - start <= 21)
         {
-          screen_printf(row, 0, "%s", &log.msg[25 + start]);
+          screen_printf(row, 0, "%s", &temp[25 + start]);
           break;
         }
         else
         {
-          memcpy(buffer, &log.msg[25 + start], 21);
+          memcpy(buffer, &temp[25 + start], 21);
           buffer[21] = 0;
           screen_printf(row, 0, "%s", buffer);
           start += 21;

@@ -104,37 +104,36 @@ void log_printf(log_level_t level, const char *pFmt, ...)
 
   ct = Date_Time;
 
-  // 1. 날짜/시간
+
   len = snprintf(logging.data, sizeof(logging.data),
                  "%04d-%02d-%02d %02d:%02d:%02d,", 
                  ct.Year, ct.Month, ct.Day,
                  ct.Hour, ct.Min, ct.Sec);
 
-  if (len < 0 || len >= 64) return;
+  if (len < 0 || len >= LOG_LEN_MAX) return;
 
-  // 2. 로그 레벨 추가 
+
   const char *level_str = log_level_str(level);
   len += snprintf(&logging.data[len], sizeof(logging.data) - len,
                   "%s,", level_str);
 
-  // 3. 메시지
+
   va_start(ap, pFmt);
   int msg_len = vsnprintf(&logging.data[len],
                           sizeof(logging.data) - len, pFmt, ap);
   va_end(ap);
 
-  len += (msg_len > 0) ? msg_len : 0;
-  if (len > 60) len = 60;
 
-  // 4. 공백 패딩
-  for (int i = len; i < 61; i++) {
+
+  len +=msg_len;
+  
+  for (int i = len; i < LOG_LEN_MAX; i++) {
     logging.data[i] = ' ';
   }
 
-  // 5. 종료 처리
-  logging.data[61] = '\r';
-  logging.data[62] = '\n';
-  logging.data[63] = '\0';
+
+  logging.data[LOG_LEN_MAX-2] = '\r';
+  logging.data[LOG_LEN_MAX-1] = '\n';
 
   logging.cmd = eLOGGING_LOG;
 

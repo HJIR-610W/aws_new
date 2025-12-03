@@ -193,7 +193,7 @@ int32_t menu_developer_logging(void)
   int32_t startCnt, endCnt;
   system_log_t log;
   int32_t cnt;
-  //int32_t year, month, day, hour, min, sec;
+  char buff[LOG_LEN_MAX+1];
 
   do
   {
@@ -211,8 +211,11 @@ int32_t menu_developer_logging(void)
     {
       for (int32_t i = startCnt; i <= endCnt; i++)
       {
+
         logging_read_log(i, &log);
-        io_printf("%4d,%s\r\n", i,log.msg);
+        memcpy(buff,log.msg,LOG_LEN_MAX);
+        buff[LOG_LEN_MAX]=0;
+        io_printf("%4d,%s\r\n", i,buff);
       }
     }
   } while (1);

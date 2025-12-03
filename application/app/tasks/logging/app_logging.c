@@ -75,7 +75,7 @@ int32_t save_log(const char *log)
 
   memset(buff, 0x00, sizeof(buff));
 
-  for (i = 0; i < sizeof(buff) - 1; i++)
+  for (i = 0; i < sizeof(buff); i++)
   {
     if (*log)
     {
@@ -87,8 +87,7 @@ int32_t save_log(const char *log)
     }
   }
 
-    buff[sizeof(buff)-1]=0;//마지막 NULL 처리리
-
+ 
     total_bytes = index * LOG_LEN_MAX;  // 저장된 로그 바이트
 
     err = write_file((char *)kSystem_log_path,(uint8_t*)buff,strlen(buff),total_bytes);
