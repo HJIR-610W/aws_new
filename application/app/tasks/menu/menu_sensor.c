@@ -1090,7 +1090,7 @@ int32_t barometer_rmyoun_61402V_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_
     status = input_active("Set as Default?", &choice);
     if (status != MENU_OK || choice == 0)
       break;
-    p_cfg->adc_channel = 0;
+    p_cfg->adc_channel = ADC_PRESSURE_RMYOUNG_61402V;
     save_config_sensor();
     break;
   }
@@ -1208,7 +1208,7 @@ int32_t solar_duration_csd3_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t mo
     status = input_active("Set as Default?", &choice);
     if (status != MENU_OK || choice == 0)
       break;
-    p_cfg->adc_channel = 14;
+    p_cfg->adc_channel = ADC_SUNSHINE_CSD3;
     save_config_sensor();
     break;
   }

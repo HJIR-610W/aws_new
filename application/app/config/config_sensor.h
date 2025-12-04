@@ -24,6 +24,19 @@
                  (uint8_t *)&g_config_sensor.x, sizeof(g_config_sensor.x));
 
 
+//화진 기본 구성 
+#define ADC_PRESSURE_RMYOUNG_61402V 0
+#define ADC_SUNSHINE_CSD3            1
+#define ADC_SOIL5CM                 2
+#define ADC_SOIL10CM                3
+#define ADC_SOIL20CM                4
+#define ADC_SOIL30CM                5
+#define ADC_SOIL50CM                6
+#define ADC_SOIL1M                  7
+#define ADC_SOIL1_5M               8
+#define ADC_SOIL3M                  9
+#define ADC_SOIL5M                 10
+
 
 typedef struct
 {

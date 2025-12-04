@@ -82,6 +82,9 @@ int32_t menu_manage_device_reset()
   return MENU_OK;
 }
 
+
+
+
 void config_hj_reset(void)
 {
   adc_config_t *adc_config;
@@ -94,6 +97,7 @@ void config_hj_reset(void)
   barometer_rmyoung_61402v_config_t *p_barometer;
   rainfall_reed_t *p_rain_reed;
 solar_duration_csd3_t *p_solar_duration;
+solar_r_ott_smp3_config_t *p_smp3;
 
       uint8_t single_channel = 0;
 
@@ -154,19 +158,14 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[A7_PRESSURE].model = S_T_BARO_RMYOUNG_61402V;
 
   p_barometer =get_sensor_config(A7_PRESSURE,S_T_BARO_RMYOUNG_61402V);
-  p_barometer->adc_channel = single_channel++;//0
+  p_barometer->adc_channel = ADC_PRESSURE_RMYOUNG_61402V;
 
   // 일사 CMP3 0~1.0VDC
-  config.sensor[B1_SOLAR_RADIATION].model = S_T_ADC;
+  config.sensor[B1_SOLAR_RADIATION].model = S_T_SOLAR_RADIATION_OTT_SMP3;
 
-  adc_config = get_sensor_config(B1_SOLAR_RADIATION,S_T_ADC);
-  adc_config->single_channel = single_channel++;//1
-  adc_config->mode = eSINGLE_ADC;
-  adc_config->high_scale = 2000;  // 5v
-  adc_config->low_scale = 0;      // 0v
-  adc_config->scale = 1;
-  adc_config->out_max_mv = 5000;
-  adc_config->out_min_mv = 0;
+  p_smp3 = get_sensor_config(B1_SOLAR_RADIATION,S_T_SOLAR_RADIATION_OTT_SMP3);
+  p_smp3->rs485_port = eAPP_RS485_RS232_A;
+  p_smp3->modbus_id = 1;
 
 
   // 일조 CSD3 센서 출력 : 120 w/m2 이상일 때 1 VDC, 이하일 때 0 VDC
@@ -174,14 +173,14 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[B2_SUNSHINE_DURATION].model = S_T_SOLAR_DURATION_CSD3;
 
   p_solar_duration = get_sensor_config(B2_SUNSHINE_DURATION,S_T_ADC);
-  p_solar_duration->adc_channel = single_channel++;//2
+  p_solar_duration->adc_channel = ADC_SUNSHINE_CSD3;//2
 
 
   // 지중온도 5cm
   config.sensor[B5_SOIL_TEMPERATURE_5CM].model = S_T_ADC;
 
   adc_config =  get_sensor_config(B5_SOIL_TEMPERATURE_5CM,S_T_ADC);
-  adc_config->single_channel = single_channel++;
+  adc_config->single_channel = ADC_SOIL5CM;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
   adc_config->low_scale = -40;
@@ -193,7 +192,7 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[B6_SOIL_TEMPERATURE_10CM].model = S_T_ADC;
 
   adc_config =  get_sensor_config(B6_SOIL_TEMPERATURE_10CM,S_T_ADC);
-  adc_config->single_channel = single_channel++;
+  adc_config->single_channel = ADC_SOIL10CM;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
   adc_config->low_scale = -40;
@@ -206,7 +205,7 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[B7_SOIL_TEMPERATURE_20CM].model = S_T_ADC;
 
   adc_config =  get_sensor_config(B7_SOIL_TEMPERATURE_20CM,S_T_ADC);
-  adc_config->single_channel = single_channel++;
+  adc_config->single_channel = ADC_SOIL20CM;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
   adc_config->low_scale = -40;
@@ -219,7 +218,7 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[B8_SOIL_TEMPERATURE_30CM].model = S_T_ADC;
 
   adc_config = get_sensor_config(B8_SOIL_TEMPERATURE_30CM,S_T_ADC);
-  adc_config->single_channel = single_channel++;
+  adc_config->single_channel = ADC_SOIL30CM;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
   adc_config->low_scale = -40;
@@ -232,7 +231,7 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[B9_SOIL_TEMPERATURE_50CM].model = S_T_ADC;
 
   adc_config = get_sensor_config(B9_SOIL_TEMPERATURE_50CM,S_T_ADC);
-  adc_config->single_channel = single_channel++;
+  adc_config->single_channel = ADC_SOIL50CM;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
   adc_config->low_scale = -40;
@@ -245,7 +244,7 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[B10_SOIL_TEMPERATURE_100CM].model = S_T_ADC;
 
   adc_config = get_sensor_config(B10_SOIL_TEMPERATURE_100CM,S_T_ADC);
-  adc_config->single_channel = single_channel++;
+  adc_config->single_channel = ADC_SOIL1M;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
   adc_config->low_scale = -40;
@@ -258,7 +257,7 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[B11_SOIL_TEMPERATURE_150CM].model = S_T_ADC;
 
   adc_config =get_sensor_config(B11_SOIL_TEMPERATURE_150CM,S_T_ADC);
-  adc_config->single_channel = single_channel++;
+  adc_config->single_channel = ADC_SOIL1_5M;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
   adc_config->low_scale = -40;
@@ -271,7 +270,7 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[B12_SOIL_TEMPERATURE_300CM].model = S_T_ADC;
 
   adc_config = get_sensor_config(B12_SOIL_TEMPERATURE_300CM,S_T_ADC);
-  adc_config->single_channel = single_channel++;
+  adc_config->single_channel = ADC_SOIL3M;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
   adc_config->low_scale = -40;
@@ -284,7 +283,7 @@ solar_duration_csd3_t *p_solar_duration;
   config.sensor[B13_SOIL_TEMPERATURE_500CM].model = S_T_ADC;
 
   adc_config = get_sensor_config(B13_SOIL_TEMPERATURE_500CM,S_T_ADC);
-  adc_config->single_channel = single_channel++;
+  adc_config->single_channel = ADC_SOIL5M;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
   adc_config->low_scale = -40;

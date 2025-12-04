@@ -228,6 +228,7 @@
                     <state>STM32F407xx</state>
                     <state>USE_USB_FS</state>
                     <state>USE_FULL_ASSERT</state>
+                    <state>NOT_USE_LCD</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -2630,7 +2631,7 @@
                 <name>$PROJ_DIR$\..\Application\app\tasks\task_menu.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\app\tasks\task_menu_define.h</name>
+                <name>$PROJ_DIR$\..\application\app\tasks\task_menu_define.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\app\tasks\task_monitor.c</name>
