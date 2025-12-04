@@ -382,7 +382,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     strcpy(buff, "ERROR");
     if (p_aws->mSunshine.sReal != AWS_SEN_ERR)
     {
-      snprintf(buff, sizeof(buff), "%6d", p_aws->mSunshine.sReal);
+      snprintf(buff, sizeof(buff), "%6d", p_aws->mSunshine.sMax);
     }
     screen_page_printf(p_win, "SOLAR D    :%s", buff);
 
