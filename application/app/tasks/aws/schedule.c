@@ -397,7 +397,7 @@ void MinProcess(DATE_TIME_BUF *pDate)
   pAws->mRainFall.sMonthRain = g_rainfall.monthly;
   pAws->mRainFall.sYearRain = g_rainfall.yearly;
 
-  g_solar_radiation.sunshine_r_1min = g_solar_radiation.min_acc;
+  g_solar_radiation.sunshine_r_1min = g_solar_radiation.min_acc;//
 
 
   for (int i = 0; i < 8; i++)
@@ -1169,17 +1169,40 @@ void update_kma_data(eAWS_DATA_MIN_t min,DATE_TIME_BUF *p_time)
   }
 
 
-    // 일조
+    // 일조 
+    error = get_sensor_err(B2_SUNSHINE_DURATION);
+  if(error)
+  {
+        p_kma_data->sunshine_duration.err = error;
+    p_kma_data->sunshine_duration.data = AWS_SEN_ERR;
+  }
+  else
+  {
     p_kma_data->sunshine_duration.err = 0;
-    p_kma_data->sunshine_duration.data = g_sunshine.today;
-
+    p_kma_data->sunshine_duration.data = g_sunshine.today;    
+  }
 
 
     // 일사 // mSolarRad.sReal kw/m2 단위인데 전송시에는 mj/m2 *100 한값이 전송되어야함
     // 따라서 여기서 10으로 한번더 나누어 준다 .즉 data는 최종 전송되는 데이터 포맷이다.
     // 에너지(J) = 전력(W)*시간(s)
-    p_kma_data->solar_radiation.data = g_solar_radiation.sunshine_r_1min / 10000;
-    p_kma_data->solar_radiation.day_accu = pAws->mSolarRad.sMax; // 일간
+    
+    
+    error = get_sensor_err(B1_SOLAR_RADIATION);
+    if(error)
+    {
+        p_kma_data->solar_radiation.err = error;
+        p_kma_data->solar_radiation.data = AWS_SEN_ERR;
+        p_kma_data->solar_radiation.day_accu = AWS_SEN_ERR; // 일간
+    }
+    else
+    {
+      p_kma_data->solar_radiation.err = 0;
+      p_kma_data->solar_radiation.data = g_solar_radiation.sunshine_r_1min / 10000;
+      p_kma_data->solar_radiation.day_accu = pAws->mSolarRad.sMax; // 일간      
+    }
+    
+
 
     // 지중 온도 5cm
     error = get_sensor_err(B5_SOIL_TEMPERATURE_5CM);

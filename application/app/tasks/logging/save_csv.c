@@ -17,7 +17,7 @@ extern uint32_t timeToOffsetDay(time_t current_tick, uint8_t min, uint16_t byte)
 
 void save_aws_csv(uint8_t *p_data,uint16_t data_len)
 {
-    enum {CSV_LINE_SIZE=187};
+    enum {CSV_LINE_SIZE=203};
     char buff[30];
     char line[CSV_LINE_SIZE];
     int folder;
@@ -196,7 +196,7 @@ void save_aws_csv(uint8_t *p_data,uint16_t data_len)
     line[len] = ',';
     len++;
 
-    // 일조
+    // 일조 -999 64537,-9999 55537
     if((int16_t)p_kma->sunshine_duration.data == -9999 || (int16_t)p_kma->sunshine_duration.data == -999)
     {
         len += snprintf(&line[len], 8, "%7d", (int16_t)p_kma->sunshine_duration.data);
@@ -315,6 +315,11 @@ void save_aws_csv(uint8_t *p_data,uint16_t data_len)
     }
     line[len] = ',';
     len++;
+
+    len += snprintf(&line[len], 8, "%7.1f", (float)p_kma->solar_m_voltage/1000.0);
+    line[len] = ',';
+    len++;
+    len += snprintf(&line[len], 8, "%7.1f", (float)p_kma->battery_m_voltage/1000.0);
 
     // 줄바꿈
     line[CSV_LINE_SIZE-2] = '\r';

@@ -182,6 +182,8 @@ typedef struct
   aws_data_t tacometer;
   uint8_t X_sensorStatus[8];
   uint8_t Y_volateStatus;
+  uint16_t solar_m_voltage;
+  uint16_t battery_m_voltage;
   bool updated;
 } kma_data_ex_t;
 

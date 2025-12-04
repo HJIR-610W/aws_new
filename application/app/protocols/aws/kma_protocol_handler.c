@@ -582,7 +582,15 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     p_kma_ex->relative_humidity.data = p_aws_old->mHumidity.sReal;
     p_kma_ex->precipitation_fine.data = 0;  // 미사용
 
+    if(p_aws_old->mSolarRad.sReal==(uint16_t)-9999 || p_aws_old->mSolarRad.sReal==(uint16_t)-999)
+    {
+    p_kma_ex->solar_radiation.data = p_aws_old->mSolarRad.sReal;
+    }
+    else
+    {
     p_kma_ex->solar_radiation.data = p_aws_old->mSolarRad.sReal/10;
+    }
+
     p_kma_ex->sunshine_duration.data = p_aws_old->mSunshine.sMax;
     p_kma_ex->grass_temperature.data = 0;
     p_kma_ex->soil_temperature_5cm.data = p_aws_old->mSoilTemp5cm.sReal;
@@ -614,6 +622,10 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
         }
         break;
     }
+
+    p_kma_ex->solar_m_voltage = p_aws_old->solar_m_voltage;
+    p_kma_ex->battery_m_voltage = p_aws_old->battery_m_voltage;
+
   }
 
   //현재값 기준으로 enable적용
