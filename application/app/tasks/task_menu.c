@@ -1101,7 +1101,7 @@ void draw_aws_page(screen_page_t *p_win, eAWS_DATA_MIN_t min)
     {
       int sensor_index = i * 8 + bit;
       int bit_value = (p_kma->X_sensorStatus[i] >> bit) & 0x01;
-      if (p_sensor[sensor_index].type==0)//미사용 센서는 표시 안함
+      if (p_sensor[sensor_index].model==0)//미사용 센서는 표시 안함
       continue;
 
         if (sensor_index < _countof(sensor_name_eng_list))

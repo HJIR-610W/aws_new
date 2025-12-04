@@ -72,8 +72,8 @@ float calculate_wind_speed(uint16_t wind_pulse)
   uint16_t offset;
   uint16_t fullset;
 
-  offset = get_config_sensor()->hjwind_speed.offset;
-  fullset = get_config_sensor()->hjwind_speed.full;
+  offset = g_config_sensor.wind_speed.hj.offset;
+  fullset =g_config_sensor.wind_speed.hj.full;
 
   if (wind_pulse < WIND_DATA_MAX)
   {

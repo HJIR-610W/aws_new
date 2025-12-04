@@ -1315,8 +1315,6 @@ int32_t setup_menu_calibration(void)
   int32_t status = MENU_BACK;
   screen_menu_t menu;
 
-
-
   screen_menu_create(&menu, "Calibraion");
 
   while (1)
@@ -1357,7 +1355,6 @@ int32_t setup_menu_calibration(void)
       screen_menu_handle(&menu, key);
     }
   }
-
 
   return convert_key_to_status(key);
 }

@@ -87,13 +87,6 @@ void rain_hall_callback(int32_t arg)
 }
 }
 
-
-
-#define RAIN_REED_05MM 100
-#define RAIN_REED_1MM  101
-#define RAIN_HALL_05MM 102
-#define RAIN_HALL_1MM  103
-
 void rain_init(uint32_t num)
 {
 
@@ -103,8 +96,7 @@ void rain_init(uint32_t num)
 
   switch (num)
   {
-  case RAIN_REED_05MM:
-  case RAIN_REED_1MM:
+  case RAIN_REED:
     isr_cfg.call    = rain_reed_callback;
     isr_cfg.name    = "rain_pulse";
     isr_cfg.trigger = eDI_FALLING;
@@ -112,8 +104,7 @@ void rain_init(uint32_t num)
     drv_di_set_interrupt(DRV_DI_RAIN_REED, &isr_cfg);
   break;
   
-  case RAIN_HALL_05MM:
-  case RAIN_HALL_1MM:
+  case RAIN_HALL:
     isr_cfg.call    = rain_hall_callback;
     isr_cfg.name    = "rain_hall";
     isr_cfg.trigger = eDI_FALLING;
@@ -135,12 +126,16 @@ int32_t read_rainHallErr(void)
   return 1; 
 }
 
-
+typedef enum rain_type_e
+{
+  eRAIN_REED,
+  eRAIN_HALL
+}eRAIN_TYPE_t;
 
 typedef struct rain_cfg_s
 {
   float pulse;
-  uint8_t type;
+  eRAIN_TYPE_t type;
 }rain_cfg_t;
 
 driver_t rain_driver;
@@ -149,6 +144,7 @@ rain_cfg_t rain_cfg;
 
 driver_t *rain_open(int32_t num,void *opt)
 {
+ rain_config_t *p_rain = (rain_config_t*) opt;
 
   if(rain_driver.opened)
   {
@@ -158,21 +154,35 @@ driver_t *rain_open(int32_t num,void *opt)
   rain_init(num);
   switch (num)
   {
-    case RAIN_REED_05MM:
-    rain_cfg.pulse = 0.5;
-    rain_cfg.type = RAIN_REED_05MM;
+    case RAIN_REED:
+    {
+      rainfall_reed_t *p_reed = (rainfall_reed_t *)opt;
+      if(p_reed->mm == eRAIN_05MM)
+      {
+        rain_cfg.pulse = 0.5;
+
+      }
+      else
+      {
+        rain_cfg.pulse = 1;
+      }
+      rain_cfg.type = eRAIN_REED;
+    }
     break;
-    case RAIN_REED_1MM:
-    rain_cfg.pulse = 1;
-    rain_cfg.type = RAIN_REED_1MM;
-    break;
-    case RAIN_HALL_05MM:
-    rain_cfg.pulse = 0.5;
-    rain_cfg.type = RAIN_HALL_05MM;
-    break;
-    case RAIN_HALL_1MM:
-    rain_cfg.pulse = 1;
-    rain_cfg.type = RAIN_HALL_1MM;
+
+    case RAIN_HALL:
+    {
+      rainfall_hall_t *p_hall = (rainfall_hall_t *)opt;
+      if(p_hall->mm == eRAIN_05MM)
+      {
+       rain_cfg.pulse = 0.5;
+      }
+      else
+      {
+        rain_cfg.pulse = 1;
+      }
+            rain_cfg.type = eRAIN_HALL;
+    }
     break;
   }
 
@@ -188,7 +198,7 @@ float read_sensor_rain(driver_t *driver,uint8_t *err)
   rain_cfg_t *cfg = driver->cfg;
   uint16_t data = 0;
 
-  if (cfg->type == RAIN_HALL_05MM || cfg->type == RAIN_HALL_1MM)
+  if (cfg->type == eRAIN_HALL )
   {
     *err = read_rainHallErr();
   }

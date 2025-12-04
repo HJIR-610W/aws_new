@@ -165,22 +165,7 @@ int32_t menu_developer_sensor_config(void)
 
   io_printf("\r\n");
 
-#if 1
-  cnt = _countof(sensor_name_list);
 
-  for (i = 0; i < cnt; i++)
-  {
-    io_printf("%13s:%d",sensor_name_list[i], config.sensor[i].configCnt);
-    for (int j = 0; j < 4; j++)
-    {
-      io_printf("[%-15s.%d]", ITEM_LIST(config.sensor[i].config[j][0], g_sensor_model_table),
-                  config.sensor[i].config[j][1]);
-    }
-
-    io_printf("\r\n");
-  }
-
-#endif
   cnt = _countof(sensor_name_list);
   return cnt;
 }

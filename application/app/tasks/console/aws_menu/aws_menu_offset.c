@@ -64,7 +64,7 @@ int32_t menu_offset_pressure(void)
   int status;
   int ok;
 
-  driver_num = get_driver_number(get_config_app()->sensor[A7_PRESSURE].type);
+  driver_num = get_driver_number(config.sensor[A7_PRESSURE].model);
 
   if (driver_num != GENERAL_ADC)
   {
@@ -72,7 +72,7 @@ int32_t menu_offset_pressure(void)
     return 0;
   }
 
-  p_config = get_sensor_config(&get_config_app()->sensor[A7_PRESSURE]);
+  p_config = get_sensor_config(A7_PRESSURE,config.sensor[A7_PRESSURE].model);
   driver = get_sensor_driver(A7_PRESSURE);
   temperature = read_sensor_barometer(driver, &error);
 

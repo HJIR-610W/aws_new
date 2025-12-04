@@ -92,6 +92,7 @@ void config_hj_reset(void)
   snow_hj_config_t *hjsnow_cfg;
   rain_present_config_t *hjrain_det_cfg;
   barometer_rmyoung_61402v_config_t *p_barometer;
+  rainfall_reed_t *p_rain_reed;
 solar_duration_csd3_t *p_solar_duration;
 
       uint8_t single_channel = 0;
@@ -102,60 +103,63 @@ solar_duration_csd3_t *p_solar_duration;
   config_sensor_reset();
 
   // 온도 센서[화진 온도 9600]
-  config.sensor[A1_TEMPERATURE].type = S_T_TEMPERATURE_HJ;
-  sensor_add(&config.sensor[A1_TEMPERATURE]);
-  hjtemp_cfg = get_sensor_config(&config.sensor[A1_TEMPERATURE]);
+  config.sensor[A1_TEMPERATURE].model = S_T_TEMPERATURE_HJ;
+
+  hjtemp_cfg = get_sensor_config(A1_TEMPERATURE,S_T_TEMPERATURE_HJ);
   hjtemp_cfg->physical_layer = ePHYSICAL_RS485;
   hjtemp_cfg->rs485_port = eAPP_RS485_RS232_B;
   hjtemp_cfg->modbus_id = 1;
   // 습도 센서[화진 습도 9600]
-  config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_HUMINITY_HJ;
-  sensor_add(&config.sensor[A10_RELATIVE_HUMIDITY]);
-  hjhumi_cfg = get_sensor_config(&config.sensor[A10_RELATIVE_HUMIDITY]);
+  config.sensor[A10_RELATIVE_HUMIDITY].model = S_T_HUMINITY_HJ;
+
+  hjhumi_cfg = get_sensor_config(A10_RELATIVE_HUMIDITY,S_T_HUMINITY_HJ);
   hjhumi_cfg->physical_layer = ePHYSICAL_RS485;
   hjhumi_cfg->rs485_port = eAPP_RS485_RS232_B;
   hjhumi_cfg->modbus_id = 1;
 
   // 풍향[화진 RS485 풍향 19200 modbus]
-  config.sensor[A2_WIND_DIRECTION].type = S_T_WIND_DIRECTION_HJ_MODBUS;
-  sensor_add(&config.sensor[A2_WIND_DIRECTION]);
-  hj_wind_direction = get_sensor_config(&config.sensor[A2_WIND_DIRECTION]);
+  config.sensor[A2_WIND_DIRECTION].model = S_T_WIND_DIRECTION_HJ_MODBUS;
+
+  hj_wind_direction =get_sensor_config(A2_WIND_DIRECTION,S_T_WIND_DIRECTION_HJ_MODBUS);
   hj_wind_direction->rs485_port = eAPP_RS485_C;
   hj_wind_direction->modbus_id = 2;
 
   // 풍속[화진 RS485 풍속 19200 modbus]
-  config.sensor[A3_WIND_SPEED].type = S_T_WIND_SPEED_HJ_MODBUS;
-  sensor_add(&config.sensor[A3_WIND_SPEED]);
-  hj_wind_speed = get_sensor_config(&config.sensor[A3_WIND_SPEED]);
+  config.sensor[A3_WIND_SPEED].model = S_T_WIND_SPEED_HJ_MODBUS;
+
+  hj_wind_speed = get_sensor_config(A3_WIND_SPEED,S_T_WIND_SPEED_HJ_MODBUS);
   hj_wind_speed->rs485_port = eAPP_RS485_C;
   hj_wind_speed->modbus_id = 1;
 
   // 강우감지[화진 접점]
-  config.sensor[A8_RAIN_PRESENT].type = S_T_RAIN_PRESENT_DI;
-  sensor_add(&config.sensor[A8_RAIN_PRESENT]);
-  hjrain_det_cfg = get_sensor_config(&config.sensor[A8_RAIN_PRESENT]);
+  config.sensor[A8_RAIN_PRESENT].model = S_T_RAIN_PRESENT_DI;
+
+  hjrain_det_cfg = get_sensor_config(A8_RAIN_PRESENT,S_T_RAIN_PRESENT_DI);
   hjrain_det_cfg->off_delay_sec = 300;
 
   // 강수량[리드형]
-  config.sensor[A6_RAINFALL_DOT5_1MM].type = S_T_RAIN_REED_1MM;
+  config.sensor[A6_RAINFALL_DOT5_1MM].model = S_T_RAIN_REED;
+  p_rain_reed = get_sensor_config(A6_RAINFALL_DOT5_1MM,S_T_RAIN_REED);
+  p_rain_reed->mm = eRAIN_05MM;
+  
 
   // 적설[화진 RS485 19200]
-  config.sensor[A9_SNOW_DEPTH].type = S_T_SNOW_HJ;
-  sensor_add(&config.sensor[A9_SNOW_DEPTH]);
-  hjsnow_cfg = get_sensor_config(&config.sensor[A9_SNOW_DEPTH]);
+  config.sensor[A9_SNOW_DEPTH].model = S_T_SNOW_HJ;
+
+  hjsnow_cfg = get_sensor_config(A9_SNOW_DEPTH,S_T_SNOW_HJ);
   hjsnow_cfg->physical_layer = ePHYSICAL_RS232;
   hjsnow_cfg->rs232_port = eRS232_C;
 
   // 기압[RM YOUNG]
-  config.sensor[A7_PRESSURE].type = S_T_BARO_RMYOUNG_61402V;
-  sensor_add(&config.sensor[A7_PRESSURE]);
-  p_barometer = get_sensor_config(&config.sensor[A7_PRESSURE]);
+  config.sensor[A7_PRESSURE].model = S_T_BARO_RMYOUNG_61402V;
+
+  p_barometer =get_sensor_config(A7_PRESSURE,S_T_BARO_RMYOUNG_61402V);
   p_barometer->adc_channel = single_channel++;//0
 
   // 일사 CMP3 0~1.0VDC
-  config.sensor[B1_SOLAR_RADIATION].type = S_T_ADC;
-  sensor_add(&config.sensor[B1_SOLAR_RADIATION]);
-  adc_config = get_sensor_config(&config.sensor[B1_SOLAR_RADIATION]);
+  config.sensor[B1_SOLAR_RADIATION].model = S_T_ADC;
+
+  adc_config = get_sensor_config(B1_SOLAR_RADIATION,S_T_ADC);
   adc_config->single_channel = single_channel++;//1
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 2000;  // 5v
@@ -167,16 +171,16 @@ solar_duration_csd3_t *p_solar_duration;
 
   // 일조 CSD3 센서 출력 : 120 w/m2 이상일 때 1 VDC, 이하일 때 0 VDC
   // 센서값 자체를 전압으로 받는다
-  config.sensor[B2_SUNSHINE_DURATION].type = S_T_SOLAR_DURATION_CSD3;
-  sensor_add(&config.sensor[B2_SUNSHINE_DURATION]);
-  p_solar_duration = get_sensor_config(&config.sensor[B2_SUNSHINE_DURATION]);
+  config.sensor[B2_SUNSHINE_DURATION].model = S_T_SOLAR_DURATION_CSD3;
+
+  p_solar_duration = get_sensor_config(B2_SUNSHINE_DURATION,S_T_ADC);
   p_solar_duration->adc_channel = single_channel++;//2
 
 
   // 지중온도 5cm
-  config.sensor[B5_SOIL_TEMPERATURE_5CM].type = S_T_ADC;
-  sensor_add(&config.sensor[B5_SOIL_TEMPERATURE_5CM]);
-  adc_config = get_sensor_config(&config.sensor[B5_SOIL_TEMPERATURE_5CM]);
+  config.sensor[B5_SOIL_TEMPERATURE_5CM].model = S_T_ADC;
+
+  adc_config =  get_sensor_config(B5_SOIL_TEMPERATURE_5CM,S_T_ADC);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
@@ -186,9 +190,9 @@ solar_duration_csd3_t *p_solar_duration;
   adc_config->out_min_mv = 0;
 
   // 지중온도 10cm
-  config.sensor[B6_SOIL_TEMPERATURE_10CM].type = S_T_ADC;
-  sensor_add(&config.sensor[B6_SOIL_TEMPERATURE_10CM]);
-  adc_config = get_sensor_config(&config.sensor[B6_SOIL_TEMPERATURE_10CM]);
+  config.sensor[B6_SOIL_TEMPERATURE_10CM].model = S_T_ADC;
+
+  adc_config =  get_sensor_config(B6_SOIL_TEMPERATURE_10CM,S_T_ADC);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
@@ -199,9 +203,9 @@ solar_duration_csd3_t *p_solar_duration;
 
 
   // 지중온도 20cm
-  config.sensor[B7_SOIL_TEMPERATURE_20CM].type = S_T_ADC;
-  sensor_add(&config.sensor[B7_SOIL_TEMPERATURE_20CM]);
-  adc_config = get_sensor_config(&config.sensor[B7_SOIL_TEMPERATURE_20CM]);
+  config.sensor[B7_SOIL_TEMPERATURE_20CM].model = S_T_ADC;
+
+  adc_config =  get_sensor_config(B7_SOIL_TEMPERATURE_20CM,S_T_ADC);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
@@ -212,9 +216,9 @@ solar_duration_csd3_t *p_solar_duration;
 
 
   // 지중온도 30cm
-  config.sensor[B8_SOIL_TEMPERATURE_30CM].type = S_T_ADC;
-  sensor_add(&config.sensor[B8_SOIL_TEMPERATURE_30CM]);
-  adc_config = get_sensor_config(&config.sensor[B8_SOIL_TEMPERATURE_30CM]);
+  config.sensor[B8_SOIL_TEMPERATURE_30CM].model = S_T_ADC;
+
+  adc_config = get_sensor_config(B8_SOIL_TEMPERATURE_30CM,S_T_ADC);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
@@ -225,9 +229,9 @@ solar_duration_csd3_t *p_solar_duration;
 
 
   // 지중온도 50cm
-  config.sensor[B9_SOIL_TEMPERATURE_50CM].type = S_T_ADC;
-  sensor_add(&config.sensor[B9_SOIL_TEMPERATURE_50CM]);
-  adc_config = get_sensor_config(&config.sensor[B9_SOIL_TEMPERATURE_50CM]);
+  config.sensor[B9_SOIL_TEMPERATURE_50CM].model = S_T_ADC;
+
+  adc_config = get_sensor_config(B9_SOIL_TEMPERATURE_50CM,S_T_ADC);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
@@ -238,9 +242,9 @@ solar_duration_csd3_t *p_solar_duration;
 
 
   // 지중온도 1m
-  config.sensor[B10_SOIL_TEMPERATURE_100CM].type = S_T_ADC;
-  sensor_add(&config.sensor[B10_SOIL_TEMPERATURE_100CM]);
-  adc_config = get_sensor_config(&config.sensor[B10_SOIL_TEMPERATURE_100CM]);
+  config.sensor[B10_SOIL_TEMPERATURE_100CM].model = S_T_ADC;
+
+  adc_config = get_sensor_config(B10_SOIL_TEMPERATURE_100CM,S_T_ADC);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
@@ -251,9 +255,9 @@ solar_duration_csd3_t *p_solar_duration;
 
 
   // 지중온도 1.5m
-  config.sensor[B11_SOIL_TEMPERATURE_150CM].type = S_T_ADC;
-  sensor_add(&config.sensor[B11_SOIL_TEMPERATURE_150CM]);
-  adc_config = get_sensor_config(&config.sensor[B11_SOIL_TEMPERATURE_150CM]);
+  config.sensor[B11_SOIL_TEMPERATURE_150CM].model = S_T_ADC;
+
+  adc_config =get_sensor_config(B11_SOIL_TEMPERATURE_150CM,S_T_ADC);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
@@ -264,9 +268,9 @@ solar_duration_csd3_t *p_solar_duration;
 
 
   // 지중온도 3m
-  config.sensor[B12_SOIL_TEMPERATURE_300CM].type = S_T_ADC;
-  sensor_add(&config.sensor[B12_SOIL_TEMPERATURE_300CM]);
-  adc_config = get_sensor_config(&config.sensor[B12_SOIL_TEMPERATURE_300CM]);
+  config.sensor[B12_SOIL_TEMPERATURE_300CM].model = S_T_ADC;
+
+  adc_config = get_sensor_config(B12_SOIL_TEMPERATURE_300CM,S_T_ADC);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;
@@ -277,9 +281,9 @@ solar_duration_csd3_t *p_solar_duration;
 
 
   // 지중온도 5m
-  config.sensor[B13_SOIL_TEMPERATURE_500CM].type = S_T_ADC;
-  sensor_add(&config.sensor[B13_SOIL_TEMPERATURE_500CM]);
-  adc_config = get_sensor_config(&config.sensor[B13_SOIL_TEMPERATURE_500CM]);
+  config.sensor[B13_SOIL_TEMPERATURE_500CM].model = S_T_ADC;
+
+  adc_config = get_sensor_config(B13_SOIL_TEMPERATURE_500CM,S_T_ADC);
   adc_config->single_channel = single_channel++;
   adc_config->mode = eSINGLE_ADC;
   adc_config->high_scale = 60;

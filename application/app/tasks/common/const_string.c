@@ -33,6 +33,12 @@ const char* cdma_model_list_eng[] = {
 #undef X
 };
 
+const char* rain_mm_list_eng[] = {
+#define X(code, name) name,
+    RAIN_MM_LIST
+#undef X
+};
+
 
 const char* enable_list_eng[] = {"Disabled", "Enabled"};
 const char* eth_mode_list_eng[] = {"Client", "Server"};

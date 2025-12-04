@@ -76,135 +76,129 @@ void check_config_app(void)
   //특별 처리 
   for (int i = 0; i < _countof(config.sensor); i++)
   {
-    if (config.sensor[i].type > SENSOR_TYPE_MAX)
+    if (config.sensor[i].model > SENSOR_MODEL_MAX)
     {
-      config.sensor[i].type = S_T_UNSUED;
+      config.sensor[i].model = S_T_UNSUED;
       memset(&config.sensor[i],0,sizeof(sensor_t));
       g_config_app_change_count++;
     }
-    else
-    {
-      if(config.sensor[i].configCnt >= SENSOR_CONFIG_TABLE_MAX)
-      {
-        memset(&config.sensor[i],0,sizeof(sensor_t));
-      }
-    }
+
   }
 
 
 
 
-  if(!is_value_in_array(config.sensor[A1_TEMPERATURE].type,temperature_list,_countof(temperature_list)))
+  if(!is_value_in_array(config.sensor[A1_TEMPERATURE].model,temperature_list,_countof(temperature_list)))
   {
-    config.sensor[A1_TEMPERATURE].type = S_T_UNSUED;
+    config.sensor[A1_TEMPERATURE].model = S_T_UNSUED;
    g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[A2_WIND_DIRECTION].type, wind_direction_list,_countof(wind_direction_list)))
+  if (!is_value_in_array(config.sensor[A2_WIND_DIRECTION].model, wind_direction_list,_countof(wind_direction_list)))
   {
-    config.sensor[A2_WIND_DIRECTION].type = S_T_UNSUED;
+    config.sensor[A2_WIND_DIRECTION].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if(!is_value_in_array(config.sensor[A3_WIND_SPEED].type,wind_speed_list,_countof(wind_speed_list)))
+  if(!is_value_in_array(config.sensor[A3_WIND_SPEED].model,wind_speed_list,_countof(wind_speed_list)))
   {
-    config.sensor[A3_WIND_SPEED].type = S_T_UNSUED;
+    config.sensor[A3_WIND_SPEED].model = S_T_UNSUED;
    g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[A6_RAINFALL_DOT5_1MM].type, rainfall_list, _countof(rainfall_list)))
+  if (!is_value_in_array(config.sensor[A6_RAINFALL_DOT5_1MM].model, rainfall_list, _countof(rainfall_list)))
   {
-    config.sensor[A6_RAINFALL_DOT5_1MM].type = S_T_UNSUED;
+    config.sensor[A6_RAINFALL_DOT5_1MM].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-    if (!is_value_in_array(config.sensor[A7_PRESSURE].type, pressure_list, _countof(pressure_list)))
+    if (!is_value_in_array(config.sensor[A7_PRESSURE].model, pressure_list, _countof(pressure_list)))
   {
-    config.sensor[A7_PRESSURE].type = S_T_UNSUED;
+    config.sensor[A7_PRESSURE].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
-    if (!is_value_in_array(config.sensor[A8_RAIN_PRESENT].type, rain_present_list, _countof(rain_present_list)))
+    if (!is_value_in_array(config.sensor[A8_RAIN_PRESENT].model, rain_present_list, _countof(rain_present_list)))
   {
-    config.sensor[A8_RAIN_PRESENT].type = S_T_UNSUED;
-    g_config_app_change_count++;
-  }
-
-    if (!is_value_in_array(config.sensor[A9_SNOW_DEPTH].type, snow_list, _countof(snow_list)))
-  {
-    config.sensor[A9_SNOW_DEPTH].type = S_T_UNSUED;
+    config.sensor[A8_RAIN_PRESENT].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[A10_RELATIVE_HUMIDITY].type, humi_list, _countof(humi_list)))
+    if (!is_value_in_array(config.sensor[A9_SNOW_DEPTH].model, snow_list, _countof(snow_list)))
   {
-    config.sensor[A10_RELATIVE_HUMIDITY].type = S_T_UNSUED;
+    config.sensor[A9_SNOW_DEPTH].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[B1_SOLAR_RADIATION].type, solar_radiation_list, _countof(solar_radiation_list)))
+  if (!is_value_in_array(config.sensor[A10_RELATIVE_HUMIDITY].model, humi_list, _countof(humi_list)))
   {
-    config.sensor[B1_SOLAR_RADIATION].type = S_T_UNSUED;
+    config.sensor[A10_RELATIVE_HUMIDITY].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[B2_SUNSHINE_DURATION].type, solar_duration_list, _countof(solar_duration_list)))
+  if (!is_value_in_array(config.sensor[B1_SOLAR_RADIATION].model, solar_radiation_list, _countof(solar_radiation_list)))
   {
-    config.sensor[B2_SUNSHINE_DURATION].type = S_T_UNSUED;
+    config.sensor[B1_SOLAR_RADIATION].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[B5_SOIL_TEMPERATURE_5CM].type, soil_temp_list, _countof(soil_temp_list)))
+  if (!is_value_in_array(config.sensor[B2_SUNSHINE_DURATION].model, solar_duration_list, _countof(solar_duration_list)))
   {
-    config.sensor[B5_SOIL_TEMPERATURE_5CM].type = S_T_UNSUED;
+    config.sensor[B2_SUNSHINE_DURATION].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[B6_SOIL_TEMPERATURE_10CM].type, soil_temp_list, _countof(soil_temp_list)))
+  if (!is_value_in_array(config.sensor[B5_SOIL_TEMPERATURE_5CM].model, soil_temp_list, _countof(soil_temp_list)))
   {
-    config.sensor[B6_SOIL_TEMPERATURE_10CM].type = S_T_UNSUED;
+    config.sensor[B5_SOIL_TEMPERATURE_5CM].model = S_T_UNSUED;
+    g_config_app_change_count++;
+  }
+
+  if (!is_value_in_array(config.sensor[B6_SOIL_TEMPERATURE_10CM].model, soil_temp_list, _countof(soil_temp_list)))
+  {
+    config.sensor[B6_SOIL_TEMPERATURE_10CM].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
 
-  if (!is_value_in_array(config.sensor[B7_SOIL_TEMPERATURE_20CM].type, soil_temp_list, _countof(soil_temp_list)))
+  if (!is_value_in_array(config.sensor[B7_SOIL_TEMPERATURE_20CM].model, soil_temp_list, _countof(soil_temp_list)))
   {
-    config.sensor[B7_SOIL_TEMPERATURE_20CM].type = S_T_UNSUED;
+    config.sensor[B7_SOIL_TEMPERATURE_20CM].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[B8_SOIL_TEMPERATURE_30CM].type, soil_temp_list, _countof(soil_temp_list)))
+  if (!is_value_in_array(config.sensor[B8_SOIL_TEMPERATURE_30CM].model, soil_temp_list, _countof(soil_temp_list)))
   {
-    config.sensor[B8_SOIL_TEMPERATURE_30CM].type = S_T_UNSUED;
+    config.sensor[B8_SOIL_TEMPERATURE_30CM].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[B9_SOIL_TEMPERATURE_50CM].type, soil_temp_list, _countof(soil_temp_list)))
+  if (!is_value_in_array(config.sensor[B9_SOIL_TEMPERATURE_50CM].model, soil_temp_list, _countof(soil_temp_list)))
   {
-    config.sensor[B9_SOIL_TEMPERATURE_50CM].type = S_T_UNSUED;
+    config.sensor[B9_SOIL_TEMPERATURE_50CM].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[B10_SOIL_TEMPERATURE_100CM].type, soil_temp_list, _countof(soil_temp_list)))
+  if (!is_value_in_array(config.sensor[B10_SOIL_TEMPERATURE_100CM].model, soil_temp_list, _countof(soil_temp_list)))
   {
-    config.sensor[B10_SOIL_TEMPERATURE_100CM].type = S_T_UNSUED;
+    config.sensor[B10_SOIL_TEMPERATURE_100CM].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[B11_SOIL_TEMPERATURE_150CM].type, soil_temp_list, _countof(soil_temp_list)))
+  if (!is_value_in_array(config.sensor[B11_SOIL_TEMPERATURE_150CM].model, soil_temp_list, _countof(soil_temp_list)))
   {
-    config.sensor[B11_SOIL_TEMPERATURE_150CM].type = S_T_UNSUED;
+    config.sensor[B11_SOIL_TEMPERATURE_150CM].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[B12_SOIL_TEMPERATURE_300CM].type, soil_temp_list, _countof(soil_temp_list)))
+  if (!is_value_in_array(config.sensor[B12_SOIL_TEMPERATURE_300CM].model, soil_temp_list, _countof(soil_temp_list)))
   {
-    config.sensor[B12_SOIL_TEMPERATURE_300CM].type = S_T_UNSUED;
+    config.sensor[B12_SOIL_TEMPERATURE_300CM].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 
-  if (!is_value_in_array(config.sensor[B13_SOIL_TEMPERATURE_500CM].type, soil_temp_list, _countof(soil_temp_list)))
+  if (!is_value_in_array(config.sensor[B13_SOIL_TEMPERATURE_500CM].model, soil_temp_list, _countof(soil_temp_list)))
   {
-    config.sensor[B13_SOIL_TEMPERATURE_500CM].type = S_T_UNSUED;
+    config.sensor[B13_SOIL_TEMPERATURE_500CM].model = S_T_UNSUED;
     g_config_app_change_count++;
   }
 

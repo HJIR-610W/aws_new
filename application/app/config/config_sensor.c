@@ -9,218 +9,338 @@
 #include "dev_io.h"
 #include "user_heap.h"
 
-config_sensor_t g_config_sensor;
-
 const config_sensor_t g_sensor_att_default =
     {
-        .hjhumi = {.modbus_id = 1,
+        .temp.hj = {.modbus_id = 1,
                    .ofset = 0,
                    .physical_layer = ePHYSICAL_RS485,
                    .rs485_port = eAPP_RS485_RS232_B},
-        .hjtemp = {.modbus_id = 1,
+        .humi.hj= {.modbus_id = 1,
                    .ofset = 0,
                    .physical_layer = ePHYSICAL_RS485,
                    .rs485_port = eAPP_RS485_RS232_B}
         };
 
 
+config_sensor_t g_config_sensor;
 const config_sensor_t g_config_sensor_default;
 
 bool g_config_sensor_dirty_flag=false;
 
 
 
-
-
-void limit_adc(void)
+void limit_temp(void)
 {
-  for (int i = 0; i < _countof(g_config_sensor.adc); i++)
-  {
-    if (g_config_sensor.adc[i].diff_channel >= 8)
+    if (g_config_sensor.temp.adc.single_channel >= 18)
     {
-      g_config_sensor.adc[i].diff_channel = 0;
+      g_config_sensor.temp.adc.single_channel = 0;
       g_config_sensor_dirty_flag = true;
     }
-    if (g_config_sensor.adc[i].single_channel >= 18)
+
+    if (g_config_sensor.temp.adc.diff_channel >= 8)
     {
-      g_config_sensor.adc[i].single_channel = 0;
+      g_config_sensor.temp.adc.diff_channel = 0;
       g_config_sensor_dirty_flag = true;
     }
-  }
-}
 
+    if (g_config_sensor.temp.adc.mode > ADC_FG_MODE_DIFF)
+    {
+      g_config_sensor.temp.adc.mode = ADC_CFG_MODE_SE;
+      g_config_sensor_dirty_flag = true;
+    }
+  
 
-void limit_hjtemp(void)
-{
-  if (g_config_sensor.hjtemp.physical_layer > ePHYSICAL_RS485)
+  if (g_config_sensor.temp.hj.physical_layer > ePHYSICAL_RS485)
   {
-    g_config_sensor.hjtemp.physical_layer = ePHYSICAL_RS485;
+    g_config_sensor.temp.hj.physical_layer = ePHYSICAL_RS485;
     g_config_sensor_dirty_flag = true;
   }
 
-  if (g_config_sensor.hjtemp.physical_layer == ePHYSICAL_RS485)
+  if (g_config_sensor.temp.hj.physical_layer == ePHYSICAL_RS485)
   {
-    if (g_config_sensor.hjtemp.rs485_port > eAPP_RS485_MAX)
+    if (g_config_sensor.temp.hj.rs485_port > eAPP_RS485_MAX)
     {
-      g_config_sensor.hjtemp.rs485_port = eAPP_RS485_RS232_B;
-      g_config_sensor_dirty_flag = true;
-    }
-  }
-  if (g_config_sensor.hjtemp.physical_layer == ePHYSICAL_RS232)
-  {
-    if (g_config_sensor.hjtemp.rs232_port > eRS232_MAX)
-    {
-      g_config_sensor.hjtemp.rs232_port = eRS232_RS485_B;
+      g_config_sensor.temp.hj.rs485_port = eAPP_RS485_RS232_B;
       g_config_sensor_dirty_flag = true;
     }
   }
-}
 
-
-void limit_hjhumi(void)
-{
-  if (g_config_sensor.hjhumi.physical_layer > ePHYSICAL_RS485)
+  if (g_config_sensor.temp.hj.physical_layer == ePHYSICAL_RS232)
   {
-    g_config_sensor.hjhumi.physical_layer = ePHYSICAL_RS485;
-    g_config_sensor_dirty_flag = true;
-  }
-    if (g_config_sensor.hjhumi.physical_layer == ePHYSICAL_RS485)
+    if (g_config_sensor.temp.hj.rs232_port > eRS232_MAX)
     {
-      if (g_config_sensor.hjhumi.rs485_port > eAPP_RS485_MAX)
-      {
-        g_config_sensor.hjhumi.rs485_port = eAPP_RS485_RS232_B;
-        g_config_sensor_dirty_flag = true;
-      }
-    }
-    else if (g_config_sensor.hjhumi.physical_layer == ePHYSICAL_RS232)
-    {
-      if (g_config_sensor.hjhumi.rs232_port > eRS232_MAX)
-      {
-        g_config_sensor.hjhumi.rs232_port = eRS232_RS485_B;
-        g_config_sensor_dirty_flag = true;
-      }
-    }
-}
-
-void limit_hjwind(void)
-{
-  if (g_config_sensor.hjwind_speed.rs485_port > eAPP_RS485_MAX)
-  {
-    g_config_sensor.hjwind_speed.rs485_port = eAPP_RS485_C;
-    g_config_sensor_dirty_flag = true;
-  }
-
-  if (g_config_sensor.hjwindDir.rs485_port > eAPP_RS485_MAX)
-  {
-    g_config_sensor.hjwindDir.rs485_port = eAPP_RS485_C;
-    g_config_sensor_dirty_flag = true;
-  }
-}
-
-void limit_hjsnow(void)
-{
-  if (g_config_sensor.hjsnow.physical_layer > ePHYSICAL_RS485)
-  {
-    g_config_sensor.hjsnow.physical_layer = ePHYSICAL_RS485;
-    g_config_sensor_dirty_flag = true;
-  }
-    if (g_config_sensor.hjsnow.physical_layer == ePHYSICAL_RS485)
-    {
-      if (g_config_sensor.hjsnow.rs485_port > eAPP_RS485_MAX)
-      {
-        g_config_sensor.hjsnow.rs485_port = eAPP_RS485_RS232_B;
-        g_config_sensor_dirty_flag = true;
-      }
-    }
-    else if (g_config_sensor.hjsnow.physical_layer == ePHYSICAL_RS232)
-    {
-      if (g_config_sensor.hjsnow.rs232_port > eRS232_MAX)
-      {
-        g_config_sensor.hjsnow.rs232_port = eRS232_RS485_B;
-        g_config_sensor_dirty_flag = true;
-      }
-    }
-}
-
-void limit_csd3_solar_duration(void)
-{
-  if (g_config_sensor.solar_duration_csd3.adc_channel >15)
-  {
-    g_config_sensor.solar_duration_csd3.adc_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
-}
-
-
-void limit_jsgp215(void)
-{
-  if (g_config_sensor.jinsung_sjgp215.rs232_port > eRS232_MAX)
-  {
-    g_config_sensor.jinsung_sjgp215.rs232_port = eRS232_RS485_B;
-    g_config_sensor_dirty_flag = true;
-  }
-}
-
-void limit_fequency(void)
-{
-  for(int i = 0 ; i < _countof(g_config_sensor.frequency);i++)
-  {
-    if (g_config_sensor.frequency[i].channel >=2)
-    {
-      g_config_sensor.frequency[i].channel = 0;
+      g_config_sensor.temp.hj.rs232_port = eRS232_RS485_B;
       g_config_sensor_dirty_flag = true;
     }
-  } 
-}
-
-void limit_rmyoung_wind_direction(void)
-{
-  if (g_config_sensor.rmyoung_05103v_wind_direction.adc_channel > 15)
-  {
-    g_config_sensor.rmyoung_05103v_wind_direction.adc_channel = 0;
-    g_config_sensor_dirty_flag = true;
   }
 
-  if (g_config_sensor.rmyoung_05103v_wind_speed.frequency_channel > 1)
+  if(g_config_sensor.temp.pt100.channel >2)
   {
-    g_config_sensor.rmyoung_05103v_wind_speed.frequency_channel = 0;
+    g_config_sensor.temp.pt100.channel = 0;
     g_config_sensor_dirty_flag = true;
   }
 }
 
-void limit_rmyoung_barometer(void)
+void limit_wind_speed(void)
 {
-  if (g_config_sensor.rmyoung_61402v_barometer.adc_channel > 15)
+  if (g_config_sensor.wind_speed.hj.rs485_port > eAPP_RS485_MAX)
   {
-    g_config_sensor.rmyoung_61402v_barometer.adc_channel = 0;
+    g_config_sensor.wind_speed.hj.rs485_port = eAPP_RS485_C;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.wind_speed.hj_modbus.rs485_port > eAPP_RS485_MAX)
+  {
+    g_config_sensor.wind_speed.hj_modbus.rs485_port = eAPP_RS485_C;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.wind_speed.rmyoung_05103v.frequency_channel > 1)
+  {
+    g_config_sensor.wind_speed.rmyoung_05103v.frequency_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.wind_speed.frequency.channel >= 2)
+  {
+    g_config_sensor.wind_speed.frequency.channel = 0;
     g_config_sensor_dirty_flag = true;
   }
 }
 
-
-
-void limit_hj_wind_modbus(void)
+void limit_wind_direction(void)
 {
-  if(g_config_sensor.wind_direction_hj_modbus.rs485_port>eAPP_RS485_MAX)
+  if (g_config_sensor.wind_direction.hj.rs485_port > eAPP_RS485_MAX)
   {
-   g_config_sensor.wind_direction_hj_modbus.rs485_port = eAPP_RS485_C;
-       g_config_sensor_dirty_flag = true;
+    g_config_sensor.wind_direction.hj.rs485_port = eAPP_RS485_C;
+    g_config_sensor_dirty_flag = true;
   }
 
-    if(g_config_sensor.wind_speed_hj_modbus.rs485_port>eAPP_RS485_MAX)
+  if (g_config_sensor.wind_direction.hj_modbus.rs485_port > eAPP_RS485_MAX)
   {
-   g_config_sensor.wind_speed_hj_modbus.rs485_port = eAPP_RS485_C;
-       g_config_sensor_dirty_flag = true;
+    g_config_sensor.wind_direction.hj_modbus.rs485_port = eAPP_RS485_C;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.wind_direction.rmyoung_05103v.adc_channel > 15)
+  {
+    g_config_sensor.wind_direction.rmyoung_05103v.adc_channel = 0;
+    g_config_sensor_dirty_flag = true;
   }
 }
 
-
-void limit_pt100(void)
+void limit_rain(void)
 {
-  if(g_config_sensor.temp_pt100.channel >=2)
+  // rain.reed와 rain.hall은 eRAIN_MM_t enum 타입이므로 범위 체크
+  if (g_config_sensor.rain.reed.mm > eRAIN_1MM)
   {
-    g_config_sensor.temp_pt100.channel = 0;
+    g_config_sensor.rain.reed.mm = eRAIN_05MM;
     g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.rain.hall.mm > eRAIN_1MM)
+  {
+    g_config_sensor.rain.hall.mm = eRAIN_05MM;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
+void limit_barometer(void)
+{
+  if (g_config_sensor.baromater.jinsung_sjgp215.rs232_port > eRS232_MAX)
+  {
+    g_config_sensor.baromater.jinsung_sjgp215.rs232_port = eRS232_RS485_B;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.baromater.rmyoung_61402v_barometer.adc_channel > 15)
+  {
+    g_config_sensor.baromater.rmyoung_61402v_barometer.adc_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.baromater.adc.single_channel >= 18)
+  {
+    g_config_sensor.baromater.adc.single_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.baromater.adc.diff_channel >= 8)
+  {
+    g_config_sensor.baromater.adc.diff_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.baromater.adc.mode > ADC_FG_MODE_DIFF)
+  {
+    g_config_sensor.baromater.adc.mode = ADC_CFG_MODE_SE;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
+void limit_rain_present(void)
+{
+  if (g_config_sensor.rain_present.off_delay_sec > 3600)
+  {
+    g_config_sensor.rain_present.off_delay_sec = 60;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
+void limit_snow(void)
+{
+  if (g_config_sensor.snow.hj.physical_layer > ePHYSICAL_RS485)
+  {
+    g_config_sensor.snow.hj.physical_layer = ePHYSICAL_RS485;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.snow.hj.physical_layer == ePHYSICAL_RS485)
+  {
+    if (g_config_sensor.snow.hj.rs485_port > eAPP_RS485_MAX)
+    {
+      g_config_sensor.snow.hj.rs485_port = eAPP_RS485_RS232_B;
+      g_config_sensor_dirty_flag = true;
+    }
+  }
+
+  if (g_config_sensor.snow.hj.physical_layer == ePHYSICAL_RS232)
+  {
+    if (g_config_sensor.snow.hj.rs232_port > eRS232_MAX)
+    {
+      g_config_sensor.snow.hj.rs232_port = eRS232_RS485_B;
+      g_config_sensor_dirty_flag = true;
+    }
+  }
+}
+
+void limit_humi(void)
+{
+  if (g_config_sensor.humi.hj.physical_layer > ePHYSICAL_RS485)
+  {
+    g_config_sensor.humi.hj.physical_layer = ePHYSICAL_RS485;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.humi.hj.physical_layer == ePHYSICAL_RS485)
+  {
+    if (g_config_sensor.humi.hj.rs485_port > eAPP_RS485_MAX)
+    {
+      g_config_sensor.humi.hj.rs485_port = eAPP_RS485_RS232_B;
+      g_config_sensor_dirty_flag = true;
+    }
+  }
+
+  if (g_config_sensor.humi.hj.physical_layer == ePHYSICAL_RS232)
+  {
+    if (g_config_sensor.humi.hj.rs232_port > eRS232_MAX)
+    {
+      g_config_sensor.humi.hj.rs232_port = eRS232_RS485_B;
+      g_config_sensor_dirty_flag = true;
+    }
+  }
+
+  if (g_config_sensor.humi.adc.single_channel >= 18)
+  {
+    g_config_sensor.humi.adc.single_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.humi.adc.diff_channel >= 8)
+  {
+    g_config_sensor.humi.adc.diff_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.humi.adc.mode > ADC_FG_MODE_DIFF)
+  {
+    g_config_sensor.humi.adc.mode = ADC_CFG_MODE_SE;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
+void limit_solar_radiation(void)
+{
+  if (g_config_sensor.solar_radication.ott_smp3.rs485_port > eAPP_RS485_MAX)
+  {
+    g_config_sensor.solar_radication.ott_smp3.rs485_port = eAPP_RS485_C;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.solar_radication.ott_smp3.modbus_id == 0 ||
+      g_config_sensor.solar_radication.ott_smp3.modbus_id > 247)
+  {
+    g_config_sensor.solar_radication.ott_smp3.modbus_id = 1;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.solar_radication.adc.single_channel >= 18)
+  {
+    g_config_sensor.solar_radication.adc.single_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.solar_radication.adc.diff_channel >= 8)
+  {
+    g_config_sensor.solar_radication.adc.diff_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.solar_radication.adc.mode > ADC_FG_MODE_DIFF)
+  {
+    g_config_sensor.solar_radication.adc.mode = ADC_CFG_MODE_SE;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
+void limit_sunshine(void)
+{
+  if (g_config_sensor.sunshine.solar_duration_csd3.adc_channel > 15)
+  {
+    g_config_sensor.sunshine.solar_duration_csd3.adc_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.sunshine.adc.single_channel >= 18)
+  {
+    g_config_sensor.sunshine.adc.single_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.sunshine.adc.diff_channel >= 8)
+  {
+    g_config_sensor.sunshine.adc.diff_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (g_config_sensor.sunshine.adc.mode > ADC_FG_MODE_DIFF)
+  {
+    g_config_sensor.sunshine.adc.mode = ADC_CFG_MODE_SE;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
+void limit_soil_temp(void)
+{
+  for (int i = 0; i < _countof(g_config_sensor.soil_temp); i++)
+  {
+    if (g_config_sensor.soil_temp[i].adc.single_channel >= 18)
+    {
+      g_config_sensor.soil_temp[i].adc.single_channel = 0;
+      g_config_sensor_dirty_flag = true;
+    }
+
+    if (g_config_sensor.soil_temp[i].adc.diff_channel >= 8)
+    {
+      g_config_sensor.soil_temp[i].adc.diff_channel = 0;
+      g_config_sensor_dirty_flag = true;
+    }
+
+    if (g_config_sensor.soil_temp[i].adc.mode > ADC_FG_MODE_DIFF)
+    {
+      g_config_sensor.soil_temp[i].adc.mode = ADC_CFG_MODE_SE;
+      g_config_sensor_dirty_flag = true;
+    }
   }
 }
 
@@ -267,19 +387,17 @@ void load_config_sensor(void)
   drv_fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
 #endif
 
-
-  limit_adc();
-  limit_hjwind();
-  limit_hjhumi();
-  limit_hjtemp();
-  limit_hjsnow();
-  limit_fequency();
-  limit_jsgp215();
-  limit_rmyoung_wind_direction();
-  limit_rmyoung_barometer();
-  limit_csd3_solar_duration();
-  limit_hj_wind_modbus();
-  limit_pt100();
+  limit_temp();
+  limit_wind_speed();
+  limit_wind_direction();
+  limit_rain();
+  limit_barometer();
+  limit_rain_present();
+  limit_snow();
+  limit_humi();
+  limit_solar_radiation();
+  limit_sunshine();
+  limit_soil_temp();
 
   if (g_config_sensor_dirty_flag)
   {

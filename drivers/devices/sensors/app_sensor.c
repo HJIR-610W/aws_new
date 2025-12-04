@@ -79,8 +79,7 @@ const supported_sensors_t supported_sensors[SENSOR_LIST_MAX] =
 const uint8_t temperature_list[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100};
 const uint8_t wind_direction_list[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_MODBUS,S_T_WIND_DIRECTION_HJ_485, S_T_WIND_DIRECTION_RMYOUNG_05103V, S_T_ADC};
 const uint8_t wind_speed_list[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_MODBUS,S_T_WIND_SPEED_HJ_485, S_T_WIND_SPEED_RMYOUNG_05103V,S_T_FREQ};
-const uint8_t rainfall_list[] = {S_T_UNSUED,         S_T_RAIN_REED_05MM, S_T_RAIN_REED_1MM,
-                            S_T_RAIN_HALL_05MM, S_T_RAIN_HALL_1MM};
+const uint8_t rainfall_list[] = {S_T_UNSUED,         S_T_RAIN_REED,  S_T_RAIN_HALL};
 const uint8_t pressure_list[] = {S_T_UNSUED, S_T_BARO_RMYOUNG_61402V, S_T_BARO_JINSUNG_SJGP215, S_T_ADC};
 const uint8_t rain_present_list[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI,S_T_RAIN_PRESENT_ANALOG};
 const uint8_t snow_list[] = {S_T_UNSUED, S_T_SNOW_HJ};
@@ -143,115 +142,14 @@ const sensor_model_entry_t sensor_table[SENSOR_LIST_MAX] = {
     {.list = default_list, .cnt = sizeof(default_list)},                 // N13_HUMIDITY_400CM
     {.list = default_list, .cnt = sizeof(default_list)}};                // I1_TACHOMETER
 
-void sensor_add_common(sensor_t *sensor, uint8_t index)
+
+
+
+
+rain_present_config_t *get_rain_present_config(void)
 {
-  uint8_t config_cnt;
-
-  config_cnt = sensor->configCnt;
-
-  if (config_cnt >= SENSOR_CONFIG_TABLE_MAX)
-  {
-    config_cnt--;
-  }
-  sensor->config[config_cnt][0] = sensor->type;  // 해당 타입을 추가
-  sensor->config[config_cnt][1] = index;
-  WRITE_CFG_MEM(&sensor->config[config_cnt], sizeof(sensor->config[config_cnt]));
-  config_cnt++;
-  sensor->configCnt= config_cnt;
-  WRITE_CFG_MEM(&sensor->configCnt, sizeof(sensor->configCnt));
+  return &g_config_sensor.rain_present;
 }
-
-
-/**
- * @brief 설정값 할당
- */
-void *sensor_add(sensor_t *sensor)
-{
-  switch (sensor->type)
-  {
-    case S_T_ADC:
-    case S_T_BARO_RMYOUNG_61402V:
-    case S_T_WIND_DIRECTION_RMYOUNG_05103V:
-     {
-      int cnt = g_config_sensor.adc_cnt;
-      if (cnt >= _countof(g_config_sensor.adc)) // 할당 가능한지 판단
-      {
-        cnt=0;
-      } 
-      sensor_add_common(sensor, cnt);
-      cnt++;
-      g_config_sensor.adc_cnt = cnt;
-      return &g_config_sensor.adc[cnt];
-      }
-     case S_T_WIND_SPEED_HJ_485: //
-      sensor_add_common(sensor, 0);
-      return &g_config_sensor.hjwind_speed;
-      break;
-    case S_T_HUMINITY_HJ:
-      sensor_add_common(sensor, 0);
-      return &g_config_sensor.hjhumi;
-
-    case S_T_TEMPERATURE_HJ:
-      sensor_add_common(sensor, 0);
-      return &g_config_sensor.hjtemp;
-
-    case S_T_WIND_DIRECTION_HJ_485:
-      sensor_add_common(sensor, 0);
-      return &g_config_sensor.hjwindDir;
-
-    case S_T_SNOW_HJ:
-      sensor_add_common(sensor, 0);
-      return &g_config_sensor.hjsnow;
-
-    case S_T_SOLAR_RADIATION_OTT_SMP3:
-      sensor_add_common(sensor, 0);
-      return &g_config_sensor.ott_smp3;
-    case S_T_RAIN_PRESENT_DI:
-    case S_T_RAIN_PRESENT_ANALOG:
-      sensor_add_common(sensor, 0);
-      return &g_config_sensor.rain_present;
-    case S_T_FREQ:
-    case S_T_WIND_SPEED_RMYOUNG_05103V:
-         {
-      int cnt = g_config_sensor.frequency_count;
-      if (cnt >= _countof(g_config_sensor.frequency)) // 할당 가능한지 판단
-      {
-        cnt=0;
-      } sensor_add_common(sensor, cnt);
-      cnt++;
-      g_config_sensor.frequency_count = cnt;
-      return &g_config_sensor.frequency[cnt];
-      }
-
-    case S_T_BARO_JINSUNG_SJGP215:
-      sensor_add_common(sensor, 0);
-      return &g_config_sensor.jinsung_sjgp215;
-      break;
-   case S_T_SOLAR_DURATION_CSD3:
-         sensor_add_common(sensor, 0);
-      return &g_config_sensor.solar_duration_csd3;
-      break;
-    case S_T_WIND_SPEED_HJ_MODBUS:
-             sensor_add_common(sensor, 0);
-      return &g_config_sensor.wind_speed_hj_modbus;
-    break;
-   break;
-      case S_T_WIND_DIRECTION_HJ_MODBUS:
-             sensor_add_common(sensor, 0);
-      return &g_config_sensor.wind_direction_hj_modbus;
-    break;
-      case S_T_PT100:
-       sensor_add_common(sensor, 0);
-      return &g_config_sensor.temp_pt100;
-      break;
-
-        default:
-      break;
-  }
-
-  return 0;
-}
-
 
 
 
@@ -259,65 +157,173 @@ void *sensor_add(sensor_t *sensor)
  * @brief 센서타입에 맞는 설정값을 가져옴
  */
 //ADDMODEL:센서타입이 추가하면 설정값 구조체에 여기세 추가 해야함 
-void *get_sensor_config(sensor_t *sensor)
+void *get_sensor_config(  eSENSOR_TYPE_t type,eSENSOR_TYPE_MODEL_t model)
 {
-  // configCnt가 0이란건 아직 저장된 config가 없다는것
-  if (sensor->configCnt == 0)
+  switch(type)
   {
-    return 0;
-  }
-
-  for (int i = 0; i < sensor->configCnt &&i<SENSOR_CONFIG_TABLE_MAX; i++)
-  {
-    if (sensor->config[i][0] == sensor->type)
-    {
-      switch (sensor->type)
+    case A1_TEMPERATURE:
+      switch(model)
       {
         case S_T_ADC:
-         return &g_config_sensor.adc[sensor->config[i][1]];
-        case S_T_FREQ:
-        return &g_config_sensor.frequency[sensor->config[i][1]];
-         case S_T_WIND_SPEED_HJ_485:
-          return &g_config_sensor.hjwind_speed;
-        case S_T_WIND_DIRECTION_HJ_485:
-          return &g_config_sensor.hjwindDir;
+        return &g_config_sensor.temp.adc;
         case S_T_TEMPERATURE_HJ:
-          return &g_config_sensor.hjtemp;
-        case S_T_HUMINITY_HJ:
-          return &g_config_sensor.hjhumi;
-        case S_T_SNOW_HJ:
-          return &g_config_sensor.hjsnow;
-        case S_T_SOLAR_RADIATION_OTT_SMP3:
-          return &g_config_sensor.ott_smp3;
+        return &g_config_sensor.temp.hj;
+        case S_T_PT100:
+        return &g_config_sensor.temp.pt100;
+      }
+    break;
+    case A2_WIND_DIRECTION:
+      switch(model)
+      {
+        case S_T_WIND_DIRECTION_HJ_485:
+        return &g_config_sensor.wind_direction.hj;
+        case S_T_WIND_DIRECTION_HJ_MODBUS:
+        return &g_config_sensor.wind_direction.hj_modbus;
+        case S_T_WIND_DIRECTION_RMYOUNG_05103V:
+        return &g_config_sensor.wind_direction.rmyoung_05103v;
+      }
+    break;
+    case A3_WIND_SPEED:
+      switch(model)
+      {
+        case S_T_WIND_SPEED_HJ_485:
+        return &g_config_sensor.wind_speed.hj;
+        case S_T_WIND_SPEED_HJ_MODBUS:
+        return &g_config_sensor.wind_speed.hj_modbus;
+        case S_T_WIND_SPEED_RMYOUNG_05103V:
+        return &g_config_sensor.wind_speed.rmyoung_05103v;
+        case S_T_FREQ:
+        return &g_config_sensor.wind_speed.frequency;
+      }
+    break;
+    case A6_RAINFALL_DOT5_1MM:
+      switch(model)
+      {
+        case S_T_RAIN_REED:
+        return &g_config_sensor.rain.reed;
+        case S_T_RAIN_HALL:
+        return &g_config_sensor.rain.hall;
+      }
+    break;
+    case A7_PRESSURE:
+      switch(model)
+      {
+        case S_T_BARO_JINSUNG_SJGP215:
+        return &g_config_sensor.baromater.jinsung_sjgp215;
+        case S_T_BARO_RMYOUNG_61402V:
+        return &g_config_sensor.baromater.rmyoung_61402v_barometer;
+        case S_T_ADC:
+        return &g_config_sensor.baromater.adc;
+      }
+    break;
+    case A8_RAIN_PRESENT:
+      switch(model)
+      {
         case S_T_RAIN_PRESENT_DI:
         case S_T_RAIN_PRESENT_ANALOG:
-          return &g_config_sensor.rain_present;
-        case S_T_WIND_SPEED_RMYOUNG_05103V:
-          return &g_config_sensor.rmyoung_05103v_wind_speed;
-        case S_T_WIND_DIRECTION_RMYOUNG_05103V:
-          return &g_config_sensor.rmyoung_05103v_wind_direction;
-        case S_T_BARO_RMYOUNG_61402V:
-          return &g_config_sensor.rmyoung_61402v_barometer;
-        case S_T_BARO_JINSUNG_SJGP215:
-          return &g_config_sensor.jinsung_sjgp215;
-      case S_T_SOLAR_DURATION_CSD3:
-              return &g_config_sensor.solar_duration_csd3;
-      case S_T_WIND_SPEED_HJ_MODBUS:
-        return &g_config_sensor.wind_speed_hj_modbus;
-        case S_T_WIND_DIRECTION_HJ_MODBUS:
-        return &g_config_sensor.wind_direction_hj_modbus;
-        case S_T_PT100:
-                return &g_config_sensor.temp_pt100;
-        break;
-      
+        return &g_config_sensor.rain_present;
       }
-    }
+    break;
+    case A9_SNOW_DEPTH:
+      switch(model)
+      {
+        case S_T_SNOW_HJ:
+        return &g_config_sensor.snow.hj;
+      }
+    break;
+    case A10_RELATIVE_HUMIDITY:
+      switch(model)
+      {
+        case S_T_HUMINITY_HJ:
+        return &g_config_sensor.humi.hj;
+        case S_T_ADC:
+        return &g_config_sensor.humi.adc;
+      }
+    break;
+    case B1_SOLAR_RADIATION:
+      switch(model)
+      {
+        case S_T_SOLAR_RADIATION_OTT_SMP3:
+        return &g_config_sensor.solar_radication.ott_smp3;
+        case S_T_ADC:
+        return &g_config_sensor.solar_radication.adc;
+      }
+    break;
+    case B2_SUNSHINE_DURATION:
+      switch(model)
+      {
+        case S_T_SOLAR_DURATION_CSD3:
+        return &g_config_sensor.sunshine.solar_duration_csd3;
+        case S_T_ADC:
+        return &g_config_sensor.sunshine.adc;
+      }
+    break;
+    case B5_SOIL_TEMPERATURE_5CM:
+      switch(model)
+      {
+        case S_T_ADC:
+        return &g_config_sensor.soil_temp[0].adc;
+      }
+    break;
+    case B6_SOIL_TEMPERATURE_10CM:
+      switch(model)
+      {
+        case S_T_ADC:
+        return &g_config_sensor.soil_temp[1].adc;
+      }
+    break;
+    case B7_SOIL_TEMPERATURE_20CM:
+      switch(model)
+      {
+        case S_T_ADC:
+        return &g_config_sensor.soil_temp[2].adc;
+      }
+    break;
+    case B8_SOIL_TEMPERATURE_30CM:
+      switch(model)
+      {
+        case S_T_ADC:
+        return &g_config_sensor.soil_temp[3].adc;
+      }
+    break;
+    case B9_SOIL_TEMPERATURE_50CM:
+      switch(model)
+      {
+        case S_T_ADC:
+        return &g_config_sensor.soil_temp[4].adc;
+      }
+    break;
+    case B10_SOIL_TEMPERATURE_100CM:
+      switch(model)
+      {
+        case S_T_ADC:
+        return &g_config_sensor.soil_temp[5].adc;
+      }
+    break;
+    case B11_SOIL_TEMPERATURE_150CM:
+      switch(model)
+      {
+        case S_T_ADC:
+        return &g_config_sensor.soil_temp[6].adc;
+      }
+    break;
+    case B12_SOIL_TEMPERATURE_300CM:
+      switch(model)
+      {
+        case S_T_ADC:
+        return &g_config_sensor.soil_temp[7].adc;
+      }
+    break;
+    case B13_SOIL_TEMPERATURE_500CM:
+      switch(model)
+      {
+        case S_T_ADC:
+        return &g_config_sensor.soil_temp[8].adc;
+      }
+    break;
+    default:
+    break;
   }
-  // 해당 센서 타입 config가 설정되어 있지 않으면 추가
-  return 0;
-}
 
-rain_present_config_t *get_rain_present_config(void)
-{
-  return &g_config_sensor.rain_present;
+  return 0;
 }

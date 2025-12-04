@@ -11,7 +11,7 @@ extern const char* panel_list_eng[PANEL_COUNT];
 extern const char* panel_item6_type_list_eng[PANEL_ITEM6_TYPE_COUNT];
 extern const char* baud_list_eng[BAUD_COUNT];
 extern const char* cdma_model_list_eng[CDMA_MODEL_COUNT];
-
+extern const char* rain_mm_list_eng[RAIN_MM_COUNT];
 
 extern const char* enable_list_eng[2];
 extern const char* eth_mode_list_eng[2];// = {"Client", "Server"};

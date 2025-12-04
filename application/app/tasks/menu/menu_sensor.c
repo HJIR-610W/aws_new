@@ -1,6 +1,7 @@
 
 
 #include "app_key.h"
+#include "app_sensor.h"
 #include "app_screen.h"
 #include "bsp_rtc.h"
 #include "cli_key_code.h"
@@ -33,9 +34,9 @@
 #define SYSTEM_MENU_TEMP 0
 #define SYSTEM_MENU_WIND_SPEED 1
 
-extern int32_t setup_sensor_set(sensor_t* p_sensor, uint8_t choice);
+extern int32_t setup_sensor_set(eSENSOR_TYPE_t type,sensor_t* p_sensor, uint8_t choice);
 extern uint16_t get_sensor_model_list(const char **model_list, const uint8_t *idxList, uint8_t listCnt);
-extern void set_type(sensor_t* sensor);
+extern void set_type(eSENSOR_TYPE_t type,sensor_t *sensor);
 extern uint16_t get_sensor_model_eng_list(const char **model_list, const uint8_t *idxList, uint8_t listCnt);
 extern const char* adcChModeList[2];
 extern const char* physical_list[2];
@@ -97,7 +98,7 @@ const char *safe_name(const char **names,int name_count,int index)
 #define HJSNOW_PAGE_SNOW_MENU 3
 
 
-void draw_hjsnow_page(screen_menu_t* p_win, snow_hj_config_t* hjsnow_config)
+void draw_snow_hj_pge(screen_menu_t* p_win, snow_hj_config_t* hjsnow_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -128,7 +129,7 @@ void draw_hjsnow_page(screen_menu_t* p_win, snow_hj_config_t* hjsnow_config)
 #define HJWIND_PAGE_OFFSET 1
 #define HJWIND_PAGE_PORT 2
 #define HJWIND_PAGE_DEFAULT 3
-void draw_hjwind_page(screen_menu_t* p_win, wind_speed_hj_pulse_config_t* hjwind_config)
+void draw_wind_speed_hj_page(screen_menu_t* p_win, wind_speed_hj_pulse_config_t* hjwind_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -145,7 +146,7 @@ void draw_hjwind_page(screen_menu_t* p_win, wind_speed_hj_pulse_config_t* hjwind
 #define HJWINDDIR_PAGE_PORT 0
 #define HJWINDDIR_PAGE_DEFAULT 1
 
-void draw_hjwindDir_page(screen_menu_t* p_win, wind_direction_hj_pulse_config_t* hjwindDir_config)
+void draw_wind_direction_hj_page(screen_menu_t* p_win, wind_direction_hj_pulse_config_t* hjwindDir_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -205,7 +206,7 @@ void draw_wind_speed_rmyoung_05103V_page(screen_menu_t *p_win, wind_speed_rmyoun
 #define HJTEMP_PAGE_DEFAULT   3
 #define HJTEMP_PAGE_TEMP_MENU 4
 
-void draw_hjtemp_page(screen_menu_t* p_win, temp_hj_config_t* hjtemp_config)
+void draw_temp_hj_page(screen_menu_t* p_win, temp_hj_config_t* hjtemp_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -320,70 +321,87 @@ void draw_temperature_pt100_page(screen_menu_t *p_win, temperature_pt100_t *p_pt
 }
 
 
+#define RAIN_REED_MM 0
+void draw_rain_reed_page(screen_menu_t *p_win, rainfall_reed_t *p_reed)
+{
+  screen_menu_printf(p_win, RAIN_REED_MM, "%-*s:%s", E_L_W, "MM", safe_name(rain_mm_list_eng,_countof(rain_mm_list_eng),p_reed->mm));
+}
 
-  void draw_sensor_page(screen_menu_t * p_win, sensor_t * p_sensor)
+#define RAIN_HALL_MM 0
+void draw_rain_hall_page(screen_menu_t *p_win, rainfall_hall_t *p_hall)
+{
+  screen_menu_printf(p_win, RAIN_REED_MM, "%-*s:%s", E_L_W, "MM", safe_name(rain_mm_list_eng,_countof(rain_mm_list_eng),p_hall->mm));
+}
+
+  void draw_sensor_page(screen_menu_t * p_win, eSENSOR_TYPE_t type,eSENSOR_TYPE_MODEL_t model)
   {
     int32_t label_width = TYPE_LABEL_W;
-    if (p_sensor->type == S_T_ADC)
+    if (model == S_T_ADC)
     {
       label_width = ADC_L_W;
     }
     screen_menu_start(p_win);
-    screen_menu_printf(p_win, 0, "%-*s:%s", label_width, "TYPE", g_sensor_model_eng_table[p_sensor->type]);
-    switch (p_sensor->type)
+    screen_menu_printf(p_win, 0, "%-*s:%s", label_width, "TYPE", g_sensor_model_eng_table[model]);
+    switch (model)
     {
     case S_T_ADC:
-      draw_adc_page(p_win, get_sensor_config(p_sensor));
+      draw_adc_page(p_win, get_sensor_config(type,model));
       break;
     case S_T_SNOW_HJ:
-      draw_hjsnow_page(p_win, get_sensor_config(p_sensor));
+      draw_snow_hj_pge(p_win,  get_sensor_config(type,model));
       break;
     case S_T_WIND_DIRECTION_HJ_485:
-      draw_hjwindDir_page(p_win, get_sensor_config(p_sensor));
+      draw_wind_direction_hj_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_WIND_SPEED_HJ_485:
-      draw_hjwind_page(p_win, get_sensor_config(p_sensor));
+      draw_wind_speed_hj_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_TEMPERATURE_HJ:
-      draw_hjtemp_page(p_win, get_sensor_config(p_sensor));
+      draw_temp_hj_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_HUMINITY_HJ:
-      draw_hjtemp_page(p_win, get_sensor_config(p_sensor));
+      draw_temp_hj_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_SOLAR_RADIATION_OTT_SMP3:
-      draw_solar_radiation_ott_smp3_page(p_win, get_sensor_config(p_sensor));
+      draw_solar_radiation_ott_smp3_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_RAIN_PRESENT_DI:
     case S_T_RAIN_PRESENT_ANALOG:
-      draw_rain_present_page(p_win, get_sensor_config(p_sensor));
+      draw_rain_present_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_FREQ:
-      draw_freq_page(p_win, get_sensor_config(p_sensor));
+      draw_freq_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_BARO_JINSUNG_SJGP215:
-      draw_barometer_jinsung_page(p_win, get_sensor_config(p_sensor));
+      draw_barometer_jinsung_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_BARO_RMYOUNG_61402V:
-      draw_barometer_rmyoung_61402V_page(p_win, get_sensor_config(p_sensor));
+      draw_barometer_rmyoung_61402V_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_WIND_DIRECTION_RMYOUNG_05103V:
-      draw_wind_direction_rmyoung_05103V_page(p_win,get_sensor_config(p_sensor));
+      draw_wind_direction_rmyoung_05103V_page(p_win, get_sensor_config(type,model));
        break;
     case S_T_WIND_SPEED_RMYOUNG_05103V:
-      draw_wind_speed_rmyoung_05103V_page(p_win, get_sensor_config(p_sensor));
+      draw_wind_speed_rmyoung_05103V_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_SOLAR_DURATION_CSD3:
-    draw_solar_duration_csd3_page(p_win, get_sensor_config(p_sensor));
+    draw_solar_duration_csd3_page(p_win,  get_sensor_config(type,model));
     break;
       case S_T_WIND_SPEED_HJ_MODBUS:
-      draw_wind_speed_hj_modbus_page(p_win, get_sensor_config(p_sensor));
+      draw_wind_speed_hj_modbus_page(p_win,  get_sensor_config(type,model));
       break;
       case S_T_WIND_DIRECTION_HJ_MODBUS:
-            draw_wind_dir_hj_modbus_page(p_win, get_sensor_config(p_sensor));
+            draw_wind_dir_hj_modbus_page(p_win,  get_sensor_config(type,model));
       break;
       case S_T_PT100:
-      draw_temperature_pt100_page(p_win, get_sensor_config(p_sensor));
+      draw_temperature_pt100_page(p_win,  get_sensor_config(type,model));
       break;
+    case S_T_RAIN_REED:
+          draw_rain_reed_page(p_win,  get_sensor_config(type,model));
+    break;
+    case S_T_RAIN_HALL:
+          draw_rain_hall_page(p_win,  get_sensor_config(type,model));
+    break;
     
 
           default : break;
@@ -391,7 +409,7 @@ void draw_temperature_pt100_page(screen_menu_t *p_win, temperature_pt100_t *p_pt
   screen_menu_clear(p_win);
 }
 
-int32_t setup_select_menu_index(sensor_t *p_sensor, int *choice, eSENSOR_TYPE_t type)
+int32_t setup_select_menu_index( eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, int *choice)
 {
   int32_t key;
   static  uint8_t selected_index=0; //이전 선택 행 유지
@@ -412,7 +430,7 @@ int32_t setup_select_menu_index(sensor_t *p_sensor, int *choice, eSENSOR_TYPE_t 
 
   while (1)
   {
-    draw_sensor_page(&menu,p_sensor);
+    draw_sensor_page(&menu,type,model);
     screen_refresh();
 
     key = get_menu_key(WAIT_FOREVER);
@@ -441,11 +459,11 @@ int32_t setup_select_menu_index(sensor_t *p_sensor, int *choice, eSENSOR_TYPE_t 
   return convert_key_to_status(key);
 }
 
-int32_t find_index_sensor_type(const uint8_t* idxList, int8_t list_cnt, eSENSOR_TYPE_MODEL_t type)
+int32_t find_index_sensor_type(const uint8_t* idxList, int8_t list_cnt, eSENSOR_TYPE_MODEL_t model)
 {
   for(int i = 0 ; i < list_cnt;i++)
   {
-    if(idxList[i]==type)
+    if(idxList[i]==model)
     {
       return i;
     }
@@ -454,7 +472,10 @@ int32_t find_index_sensor_type(const uint8_t* idxList, int8_t list_cnt, eSENSOR_
   return 0;
 }
 
-int32_t setup_sensor_model_set(sensor_t* sensor, const uint8_t* model_list, uint8_t list_cnt)
+/**
+ * @brief 센서 타입이 지원하는 모델 번호 목록 을 넘겨주고 모델 문자열로 변환후 선택하게 한다.
+ */
+int32_t setup_sensor_model_set(eSENSOR_TYPE_t type, sensor_t* sensor, const uint8_t* model_list, uint8_t list_cnt)
 {
   uint8_t model_list_count;
   int32_t status = 0;
@@ -463,7 +484,8 @@ int32_t setup_sensor_model_set(sensor_t* sensor, const uint8_t* model_list, uint
 
   model_list_count = get_sensor_model_eng_list(model_list_string, model_list, list_cnt);
 
-  choice = find_index_sensor_type(model_list,list_cnt,sensor->type);
+  //현재 선택된 모델을 가져온다.
+  choice = find_index_sensor_type(model_list,list_cnt,sensor->model);
 
   status = input_combobox("Sensor Model",model_list_string,  model_list_count, &choice);
 
@@ -471,8 +493,8 @@ int32_t setup_sensor_model_set(sensor_t* sensor, const uint8_t* model_list, uint
   {
     return status;
   }
-  sensor->type = (eSENSOR_TYPE_MODEL_t)model_list[choice];
-  set_type(sensor);
+  sensor->model = (eSENSOR_TYPE_MODEL_t)model_list[choice];
+  set_type(type,sensor);
 
   return MENU_OK;
 }
@@ -480,7 +502,7 @@ int32_t setup_sensor_model_set(sensor_t* sensor, const uint8_t* model_list, uint
 typedef struct
 {
   uint8_t sensor_type;
-  int32_t (*config_set)(sensor_t*, uint8_t);
+  int32_t (*config_set)(eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t);
 } sensor_setup_entry_t;
 
 
@@ -488,14 +510,14 @@ typedef struct
 
 
 
-int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
+int32_t general_adc_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
   int32_t dec;
   adc_config_t* adc;
 
-  adc = get_sensor_config(sensor);
+  adc = get_sensor_config(type,model);
   if (adc == NULL)
   {
     return 0;
@@ -575,7 +597,7 @@ int32_t general_adc_setup( sensor_t *sensor, uint8_t menu_index)
 
   return status;
 }
-int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
+int32_t general_freq_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t dec;
@@ -583,7 +605,7 @@ int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
 
   frequency_config_t* freq;
 
-  freq = get_sensor_config(sensor);
+  freq = get_sensor_config(type,model);
   if (freq == NULL)
   {
     return 0;
@@ -614,7 +636,7 @@ int32_t general_freq_setup( sensor_t *sensor, uint8_t menu_index)
 }
 
 
-int32_t hjwinddir_setup( sensor_t *sensor, uint8_t menu_index)
+int32_t hjwinddir_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
@@ -622,7 +644,7 @@ int32_t hjwinddir_setup( sensor_t *sensor, uint8_t menu_index)
   const char* portList[10];
   uint16_t portListCnt;
 
-  hjwindDir = get_sensor_config(sensor);
+  hjwindDir = get_sensor_config(type,model);
   if (hjwindDir == NULL)
   {
     return 0;
@@ -653,7 +675,7 @@ int32_t hjwinddir_setup( sensor_t *sensor, uint8_t menu_index)
 
   return status;
 }
-int32_t hjwind_setup( sensor_t *sensor, uint8_t menu_index)
+int32_t hjwind_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
@@ -662,7 +684,7 @@ int32_t hjwind_setup( sensor_t *sensor, uint8_t menu_index)
   const char* portList[10];
   uint16_t portListCnt;
 
-  hjwind = get_sensor_config(sensor);
+  hjwind = get_sensor_config(type,model);
   if (hjwind == NULL)
   {
     return 0;
@@ -711,7 +733,7 @@ int32_t hjwind_setup( sensor_t *sensor, uint8_t menu_index)
 
   return status;
 }
-int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
+int32_t hjsnow_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
@@ -719,7 +741,7 @@ int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
   const char* portList[10];
   uint16_t portListCnt;
 
-  hjsnow = get_sensor_config(sensor);
+  hjsnow = get_sensor_config(type,model);
   if (hjsnow == NULL)
   {
     return 0;
@@ -775,7 +797,7 @@ int32_t hjsnow_setup( sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
+int32_t hjtemp_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 
 {
   int32_t status;
@@ -785,7 +807,7 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
   const char* portList[10];
   uint16_t portListCnt;
 
-  hjtemp = get_sensor_config(sensor);
+  hjtemp = get_sensor_config(type,model);
   if (hjtemp == NULL)
   {
     return 0;
@@ -857,7 +879,7 @@ int32_t hjtemp_setup(sensor_t* sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
+int32_t hjhumi_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
@@ -866,7 +888,7 @@ int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
   const char* portList[10];
   uint16_t portListCnt;
 
-  hjhumi = get_sensor_config(sensor);
+  hjhumi = get_sensor_config(type,model);
   if (hjhumi == NULL)
   {
     return 0;
@@ -932,7 +954,7 @@ int32_t hjhumi_setup(sensor_t* sensor, uint8_t menu_index)
 
   return status;
 }
-int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
+int32_t ott_smp3_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
@@ -941,7 +963,7 @@ int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
   const char* portList[10];
   uint16_t portListCnt;
 
-  ott_smp3 = get_sensor_config(sensor);
+  ott_smp3 = get_sensor_config(type,model);
   if (ott_smp3 == NULL)
   {
     return 0;
@@ -980,13 +1002,13 @@ int32_t ott_smp3_setup(sensor_t* sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t rain_present_setup(sensor_t* sensor, uint8_t menu_index)
+int32_t rain_present_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t dec;
   rain_present_config_t* rain_present;
 
-  rain_present = get_sensor_config(sensor);
+  rain_present = get_sensor_config(type,model);
   if (rain_present == NULL)
   {
     return 0;
@@ -1008,7 +1030,7 @@ int32_t rain_present_setup(sensor_t* sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t barometer_jinsung_setup(sensor_t *sensor, uint8_t menu_index)
+int32_t barometer_jinsung_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
 
@@ -1018,7 +1040,7 @@ int32_t barometer_jinsung_setup(sensor_t *sensor, uint8_t menu_index)
   uint16_t portListCnt;
   int choice;
 
-  jinsung_baro = get_sensor_config(sensor);
+  jinsung_baro = get_sensor_config(type,model);
   if (jinsung_baro == NULL)
   {
     return 0;
@@ -1040,14 +1062,14 @@ int32_t barometer_jinsung_setup(sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
+int32_t barometer_rmyoun_61402V_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   barometer_rmyoung_61402v_config_t *p_cfg;
   int choice;
   int active;
 
-  p_cfg = get_sensor_config(sensor);
+  p_cfg = get_sensor_config(type,model);
   if(p_cfg == NULL)
   {
     return 0;
@@ -1076,14 +1098,14 @@ int32_t barometer_rmyoun_61402V_setup(sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t wind_direction_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
+int32_t wind_direction_rmyoung_05103V_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   wind_direction_rmyoung_05103v_config_t *p_cfg;
   int active;
   int choice;
 
-  p_cfg = get_sensor_config(sensor);
+  p_cfg = get_sensor_config(type,model);
   if (p_cfg == NULL)
   {
     return 0;
@@ -1116,7 +1138,7 @@ int32_t wind_direction_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index
 
 
 
-int32_t wind_speed_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
+int32_t wind_speed_rmyoung_05103V_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t dec;
@@ -1124,7 +1146,7 @@ int32_t wind_speed_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
   float factor;
   wind_speed_rmyoung_05103v_config_t *p_cfg;
 
-  p_cfg = get_sensor_config(sensor);
+  p_cfg = get_sensor_config(type,model);
   if (p_cfg == NULL)
   {
     return 0;
@@ -1157,14 +1179,14 @@ int32_t wind_speed_rmyoung_05103V_setup(sensor_t *sensor, uint8_t menu_index)
 
 
 
-int32_t solar_duration_csd3_setup(sensor_t *sensor, uint8_t menu_index)
+int32_t solar_duration_csd3_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   solar_duration_csd3_t *p_cfg;
   int active;
   int choice;
 
-  p_cfg = get_sensor_config(sensor);
+  p_cfg = get_sensor_config(type,model);
   if (p_cfg == NULL)
   {
     return 0;
@@ -1197,7 +1219,7 @@ int32_t solar_duration_csd3_setup(sensor_t *sensor, uint8_t menu_index)
 
 
 
-int32_t wind_speed_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
+int32_t wind_speed_hj_modbus_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
@@ -1206,7 +1228,7 @@ int32_t wind_speed_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
   const char* portList[10];
   uint16_t portListCnt;
 
-  p_wind_speed = get_sensor_config(sensor);
+  p_wind_speed = get_sensor_config(type,model);
   if (p_wind_speed == NULL)
   {
     return 0;
@@ -1249,7 +1271,7 @@ int32_t wind_speed_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
 }
 
 
-int32_t wind_direction_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
+int32_t wind_direction_hj_modbus_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
@@ -1258,7 +1280,7 @@ int32_t wind_direction_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
   const char* portList[10];
   uint16_t portListCnt;
 
-  p_wind_speed = get_sensor_config(sensor);
+  p_wind_speed = get_sensor_config(type,model);
   if (p_wind_speed == NULL)
   {
     return 0;
@@ -1298,14 +1320,14 @@ int32_t wind_direction_hj_modbus_setup(sensor_t* sensor, uint8_t menu_index)
 }
 
 
-int32_t temperature_pt100_setup(sensor_t *sensor, uint8_t menu_index)
+int32_t temperature_pt100_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   temperature_pt100_t *p_cfg;
   int active;
   int choice;
 
-  p_cfg = get_sensor_config(sensor);
+  p_cfg = get_sensor_config(type,model);
   if (p_cfg == NULL)
   {
     return 0;
@@ -1337,6 +1359,69 @@ int32_t temperature_pt100_setup(sensor_t *sensor, uint8_t menu_index)
 }
 
 
+
+int32_t rain_reed_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
+{
+  int32_t status = 0;
+  rainfall_reed_t *p_reed;
+  int active;
+  int choice;
+
+  p_reed = get_sensor_config(A6_RAINFALL_DOT5_1MM,model);
+  if (p_reed == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+  case RAIN_REED_MM:
+    choice = p_reed->mm;
+    status = input_combobox("MM", rain_mm_list_eng, _countof(rain_mm_list_eng), &choice);
+    if (status != MENU_OK)
+      break;
+        p_reed->mm = (eRAIN_MM_t)choice;
+        save_config_sensor();
+
+    break;
+  }
+
+  return status;
+}
+
+
+
+int32_t rain_hall_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
+{
+  int32_t status = 0;
+  rainfall_reed_t *p_hall;
+  int active;
+  int choice;
+
+  p_hall = get_sensor_config(A6_RAINFALL_DOT5_1MM,model);
+  if (p_hall == NULL)
+  {
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+  case RAIN_REED_MM:
+    choice = p_hall->mm;
+    status = input_combobox("MM", rain_mm_list_eng, _countof(rain_mm_list_eng), &choice);
+    if (status != MENU_OK)
+      break;
+        p_hall->mm =(eRAIN_MM_t) choice;
+        save_config_sensor();
+
+    break;
+  }
+
+  return status;
+}
+
+
+
 const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_ADC, .config_set = general_adc_setup},
     {.sensor_type = S_T_FREQ, .config_set = general_freq_setup},
@@ -1355,31 +1440,32 @@ const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_SOLAR_DURATION_CSD3, .config_set = solar_duration_csd3_setup},
     {.sensor_type = S_T_WIND_SPEED_HJ_MODBUS, .config_set = wind_speed_hj_modbus_setup},
     {.sensor_type = S_T_WIND_DIRECTION_HJ_MODBUS, .config_set = wind_direction_hj_modbus_setup},
-    {.sensor_type = S_T_PT100,.config_set = temperature_pt100_setup}};
+    {.sensor_type = S_T_PT100,.config_set = temperature_pt100_setup},
+    {.sensor_type = S_T_RAIN_REED,.config_set = rain_reed_setup},
+    {.sensor_type = S_T_RAIN_HALL,.config_set = rain_hall_setup}};
 
-int32_t setup_sensor_set(sensor_t* p_sensor, uint8_t choice)
+int32_t setup_sensor_set(eSENSOR_TYPE_t type,sensor_t* p_sensor, uint8_t choice)
 {
   int32_t status = MENU_OK;
 
   for (int i = 0; i < _countof(g_sensor_setup_table); i++)
   {  // 센서마다 고유의 처리 함수를 사용한다.
-    if (g_sensor_setup_table[i].sensor_type == p_sensor->type)
+    if (g_sensor_setup_table[i].sensor_type == p_sensor->model)
     {
-      status = g_sensor_setup_table[i].config_set(p_sensor, choice - 1);
+      status = g_sensor_setup_table[i].config_set( (eSENSOR_TYPE_t)type,p_sensor->model, choice - 1);
       break;
     }
   }
 
   return status;
 }
-int32_t setup_sensor(eSENSOR_TYPE_t list)
+int32_t setup_sensor(eSENSOR_TYPE_t type)
 {
   int32_t status = 0;
   int32_t choice = 0;
 
-
   // 선택된 센서의 설정 정보를 가져온다.
-  sensor_t* sensor = &get_config_app()->sensor[(int)list];
+  sensor_t* sensor = &config.sensor[(int)type];
   do
   {
     /*
@@ -1388,7 +1474,7 @@ int32_t setup_sensor(eSENSOR_TYPE_t list)
     1.port        :EX1 RS485 A
     이런 화면이 나타남남
     */
-    status = setup_select_menu_index(sensor, &choice,list);
+    status = setup_select_menu_index(type,sensor->model, &choice);
     if (status != MENU_OK)
       break;
 
@@ -1396,11 +1482,11 @@ int32_t setup_sensor(eSENSOR_TYPE_t list)
     {
       case 0:  // 센서가 사용하고자하는 센서 타입을 설정한다.
                // 센서마다 지원가능한 목록을 넘겨지고 출력하여 선택하도록 한다.
-        status = setup_sensor_model_set(sensor, sensor_table[list].list, sensor_table[list].cnt);
+        status = setup_sensor_model_set(type, sensor, sensor_table[type].list, sensor_table[type].cnt);
         break;
       default:  // 센서 타입이 아닌 센서 고유 속성들은 이 함수 에서 처리한다.
         // 현재의 센서 정보와 사용자가 수정하고자한 항목 번호를 넘긴다.
-        status = setup_sensor_set(sensor, choice);  // 센서별 설정값 변경
+        status = setup_sensor_set(type,sensor, choice);  // 센서별 설정값 변경
         break;
     }
 
@@ -1423,7 +1509,7 @@ void draw_menu_sensor_page(screen_menu_t* p_win)
   {
     if(supported_sensors[i].supported==true)
     {
-      screen_menu_printf(p_win, i, "%-15s%s", sensor_name_eng_list[i],p_sensor[i].type>0?"[E]":"[D]");
+      screen_menu_printf(p_win, i, "%-15s%s", sensor_name_eng_list[i],p_sensor[i].model>0?"[E]":"[D]");
       supported_sensor_menu_num[menu_num++] =(eSENSOR_TYPE_t)i;
     }
   }
@@ -1461,7 +1547,7 @@ int32_t setup_menu_sensor(void)
     {
       screen_clear();
       sensor_type = supported_sensor_menu_num[menu.selected_index];
-     status =  setup_sensor(sensor_type);
+      status =  setup_sensor(sensor_type);
      if(status == MENU_ABORT)
        return MENU_ABORT;
     }

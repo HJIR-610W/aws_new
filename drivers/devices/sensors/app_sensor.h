@@ -124,18 +124,12 @@ typedef enum sensor_list_e
   X(S_T_UNSUED, "미사용")                                \
   X(S_T_ADC, "ADC")                                      \
   X(S_T_FREQ, "GENERAL_FREQ")                            \
-  X(S_T_RAIN_REED_05MM, "PULSE 0.5mm")                   \
-  X(S_T_RAIN_REED_1MM, "PULSE 1mm")                      \
-  X(S_T_RAIN_HALL_05MM, "화진 HALL 0.5mm")               \
-  X(S_T_RAIN_HALL_1MM, "화진 HALL 1mm")                  \
   X(S_T_SNOW_HJ, "화진 적설")                            \
   X(S_T_WIND_SPEED_HJ_485, "화진 풍속")                  \
   X(S_T_WIND_DIRECTION_HJ_485, "화진 풍향")              \
   X(S_T_HUMINITY_HJ, "화진 습도")                        \
   X(S_T_TEMPERATURE_HJ, "화진 온도")                     \
   X(S_T_RAIN_PRESENT_DI, "화진 강우감지 접점")                \
-  X(S_T_PT100_A, "PT100 A")                              \
-  X(S_T_PT100_B, "PT100 B")                              \
   X(S_T_SOLAR_RADIATION_OTT_SMP3, "일사 OTT SMP3")       \
   X(S_T_BARO_JINSUNG_SJGP215, "진성 SJGP215")            \
   X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")           \
@@ -145,24 +139,20 @@ typedef enum sensor_list_e
   X(S_T_SOLAR_DURATION_CSD3, "CSD3")\
   X(S_T_WIND_SPEED_HJ_MODBUS, "화진 풍속 MODBUS")\
   X(S_T_WIND_DIRECTION_HJ_MODBUS, "화진 풍향 MODBUS")\
-  X(S_T_PT100, "PT100")     
+  X(S_T_PT100, "PT100")\
+  X(S_T_RAIN_REED, "PULSE")\
+  X(S_T_RAIN_HALL, "HALL")     
 
 #define SENSOR_TYPE_ENG_LIST                             \
   X(S_T_UNSUED, "Not Used")                              \
   X(S_T_ADC, "ADC")                                      \
   X(S_T_FREQ, "Freq")                                    \
-  X(S_T_RAIN_REED_05MM, "PULSE 0.5mm")                   \
-  X(S_T_RAIN_REED_1MM, "PULSE 1mm")                      \
-  X(S_T_RAIN_HALL_05MM, "HJ Hall 0.5mm")                 \
-  X(S_T_RAIN_HALL_1MM, "HJ Hall 1mm")                    \
   X(S_T_SNOW_HJ, "HJ Snow")                              \
   X(S_T_WIND_SPEED_HJ_485, "HJ Wind Spd")                \
   X(S_T_WIND_DIRECTION_HJ_485, "HJ Wind Dir")            \
   X(S_T_HUMINITY_HJ, "HJ Humi")                          \
   X(S_T_TEMPERATURE_HJ, "HJ Temp")                       \
   X(S_T_RAIN_PRESENT_DI, "HJ Rain Det Digital")            \
-  X(S_T_PT100_A, "PT100_A")                              \
-  X(S_T_PT100_B, "PT100_B")                              \
   X(S_T_SOLAR_RADIATION_OTT_SMP3, "Solar SMP3")          \
   X(S_T_BARO_JINSUNG_SJGP215, "JINSUNG SJGP215")         \
   X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")           \
@@ -172,14 +162,18 @@ typedef enum sensor_list_e
   X(S_T_SOLAR_DURATION_CSD3, "CSD3")\
   X(S_T_WIND_SPEED_HJ_MODBUS, "HJ Wind Spd MODBUS")\
   X(S_T_WIND_DIRECTION_HJ_MODBUS, "HJ Wind Dir MODBUS")\
-  X(S_T_PT100, "PT100")                              
+  X(S_T_PT100,"PT100")\
+  X(S_T_RAIN_REED, "PULSE")\
+  X(S_T_RAIN_HALL, "HALL")                    
 
+
+  
 typedef enum sensor_model_e
 {
 #define X(name, format) name,
   SENSOR_TYPE_LIST
 #undef X
-      SENSOR_TYPE_MAX
+      SENSOR_MODEL_MAX
 } eSENSOR_TYPE_MODEL_t;
 
 //센서별 모델 리스트와, 갯수
@@ -196,32 +190,29 @@ typedef enum adcChType_e
   eDIFF_ADC
 } eADC_CH_TYPE_t;
 
+
+
 #define SENSOR_CONFIG_TABLE_MAX 2
 typedef struct sensor_s
 {
   float offset;
-  eSENSOR_TYPE_MODEL_t type;
-  uint8_t configCnt;     // 센서가 가지고 있는 설정값 수 예)
-  uint8_t config[SENSOR_CONFIG_TABLE_MAX][2];  //[0][0] 센서타입 정보 저장, [0][1] 타입이 할당받은
-                                               // 설정 위치값 저장
+ // eSENSOR_TYPE_t type;
+  eSENSOR_TYPE_MODEL_t model;
 } sensor_t;
 typedef struct supported_sensors_s
 {
   bool supported;
 }supported_sensors_t;
 
-void *get_sensor_config(sensor_t *sensor);
-void *sensor_add(sensor_t *sensor);
+void *get_sensor_config(eSENSOR_TYPE_t type,eSENSOR_TYPE_MODEL_t model);
 rain_present_config_t *get_rain_present_config(void);
-
-
 
 // TODO:하드 코딩됨, 소스파일과 일치시켜야함 주의
 extern const uint8_t temperature_list[3];
 extern const uint8_t wind_direction_list[5];
 extern const uint8_t wind_speed_list[5];
 extern const uint8_t pressure_list[4];
-extern const uint8_t rainfall_list[5];
+extern const uint8_t rainfall_list[3];
 extern const uint8_t snow_list[2];
 extern const uint8_t rain_present_list[3];
 extern const uint8_t humi_list[3];
@@ -230,8 +221,8 @@ extern const uint8_t default_list[1];
 extern const uint8_t soil_temp_list[2];
 extern const uint8_t solar_duration_list[3];
 
-extern const char *g_sensor_model_table[SENSOR_TYPE_MAX];
-extern const char *g_sensor_model_eng_table[SENSOR_TYPE_MAX];
+extern const char *g_sensor_model_table[SENSOR_MODEL_MAX];
+extern const char *g_sensor_model_eng_table[SENSOR_MODEL_MAX];
 extern const char *sensor_name_list[SENSOR_LIST_MAX];
 extern const char *sensor_name_eng_list[SENSOR_LIST_MAX];
 extern const char *sensor_format_list[SENSOR_LIST_MAX];

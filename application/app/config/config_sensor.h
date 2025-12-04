@@ -19,6 +19,11 @@
 #define ADC_CFG_MODE_SE 0
 #define ADC_FG_MODE_DIFF 1
 
+#define WRITE_CFG_SENSOR(x)                                                                    \
+  drv_fram_write(CONFIG_SENSOR_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_sensor_t, x), \
+                 (uint8_t *)&g_config_sensor.x, sizeof(g_config_sensor.x));
+
+
 
 typedef struct
 {
@@ -159,34 +164,126 @@ typedef struct temperature_pt100_s
   int channel;
 }temperature_pt100_t;
 
-typedef struct config_manage_s
+
+
+#define RAIN_MM_LIST               \
+  X(eRAIN_05MM, "0.5")\
+  X(eRAIN_1MM, "1.0")
+
+  typedef enum rain_mm_e{
+#define X(code, name) code,
+  RAIN_MM_LIST
+#undef X
+  RAIN_MM_COUNT
+} eRAIN_MM_t;
+
+
+typedef struct rainfall_reed_config_s
 {
-  config_header_t header;
-  uint8_t adc_cnt;
-  adc_config_t adc[50];
-  uint8_t frequency_count;
-  frequency_config_t frequency[2];
-  temp_hj_config_t hjtemp;
-  temperature_pt100_t temp_pt100;
-  humi_hj_config_t hjhumi;
-  wind_speed_rmyoung_05103v_config_t rmyoung_05103v_wind_speed;
-  wind_speed_hj_pulse_config_t hjwind_speed;//구형 타입 켈리브 필요한 타입
-  wind_speed_hj_config_t wind_speed_hj_modbus;
-  wind_direction_hj_pulse_config_t hjwindDir;//구형 타입 켈리브 필요한 타입
-  wind_direction_hj_config_t wind_direction_hj_modbus;
-  wind_direction_rmyoung_05103v_config_t rmyoung_05103v_wind_direction;
-  snow_hj_config_t hjsnow;
-  rain_present_config_t rain_present;
+  eRAIN_MM_t mm;
+}rainfall_reed_t;
+
+typedef struct rainfall_hall_config_s
+{
+  eRAIN_MM_t mm;
+}rainfall_hall_t;
+
+
+
+
+
+
+
+
+typedef struct temperature_config_s
+{
+  temp_hj_config_t hj;
+  temperature_pt100_t pt100;
+  adc_config_t   adc; 
+}temperature_config_t;
+
+typedef struct windspeed_config_s
+{
+  wind_speed_hj_config_t hj_modbus;
+  wind_speed_hj_pulse_config_t hj;//구형 타입 켈리브 필요한 타입
+  wind_speed_rmyoung_05103v_config_t rmyoung_05103v;
+  frequency_config_t frequency;
+}wind_speed_config_t;
+
+
+
+typedef struct windspeed_direction_s
+{
+  wind_direction_hj_pulse_config_t      hj;//구형 타입 켈리브 필요한 타입
+  wind_direction_hj_config_t            hj_modbus;
+  wind_direction_rmyoung_05103v_config_t rmyoung_05103v;
+}wind_direction_config_t;
+
+typedef struct rain_config_s
+{
+  rainfall_reed_t reed;
+  rainfall_hall_t hall;
+}rain_config_t;
+
+typedef struct barometer_config_s
+{
   barometer_jinsung_sjgp215_config_t jinsung_sjgp215;
   barometer_rmyoung_61402v_config_t rmyoung_61402v_barometer;
-  solar_r_ott_smp3_config_t ott_smp3;//일사
-  solar_duration_csd3_t solar_duration_csd3;//일조
-  
-} config_sensor_t;
+  adc_config_t adc;
+}barometer_config_t;
 
-#define WRITE_CFG_SENSOR(x)                                                                    \
-  drv_fram_write(CONFIG_SENSOR_START_ADDRESS + (uint32_t)OFFSET_OF_STRUCT(config_sensor_t, x), \
-                 (uint8_t *)&g_config_sensor.x, sizeof(g_config_sensor.x));
+
+typedef struct rain_present_s
+{
+  rain_present_config_t rain_present;
+}rain_present_t;
+
+
+typedef struct snow_config_s
+{
+  snow_hj_config_t hj;
+}snow_config_t;
+
+
+typedef struct huminity_config_s
+{
+  humi_hj_config_t hj;
+  adc_config_t   adc; 
+}huminity_config_t;
+
+typedef struct solar_radication_config_s
+{
+  solar_r_ott_smp3_config_t ott_smp3;//일사
+  adc_config_t   adc; 
+}solar_radication_config_t;
+
+typedef struct sunshine_config_s
+{
+  solar_duration_csd3_t solar_duration_csd3;//일조
+  adc_config_t   adc; 
+}sunshine_config_t;
+
+
+typedef struct soil_temp_s
+{
+  adc_config_t   adc; 
+}soil_temp_t;
+
+typedef struct sensor_configs_s
+{
+    config_header_t header;
+  temperature_config_t temp;
+  wind_speed_config_t wind_speed;
+  wind_direction_config_t wind_direction;
+  rain_config_t rain;
+  barometer_config_t baromater;
+  rain_present_config_t rain_present;
+  snow_config_t snow;
+  huminity_config_t humi;
+  solar_radication_config_t solar_radication;
+  sunshine_config_t sunshine;
+  soil_temp_t soil_temp[9];
+}config_sensor_t;
 
 void save_config_sensor(void);
 void load_config_sensor(void);
@@ -194,9 +291,7 @@ void config_sensor_reset(void);
 void backup_config_sensor(void);
 void restore_config_sensor(void);
 
-
-config_sensor_t *get_config_sensor(void);
-
 extern config_sensor_t g_config_sensor;
+config_sensor_t *get_config_sensor(void);
 
 #endif

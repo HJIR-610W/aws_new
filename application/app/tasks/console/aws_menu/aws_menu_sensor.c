@@ -30,17 +30,17 @@ const char *physical_list[] = {"RS232", "RS485"};
 typedef struct
 {
   uint8_t sensor_type;
-  int32_t (*config_set)(sensor_t *, uint8_t);
+  int32_t (*config_set)(eSENSOR_TYPE_t type,sensor_t *, uint8_t);
 } sensor_config_entry_t;
 
-void make_option(sensor_t *sensor, char *out, uint16_t outSize)
+void make_option(eSENSOR_TYPE_t type,sensor_t *sensor, char *out, uint16_t outSize)
 {
   void *cfg;
   const char *list[10] = {" "};
 
   out[0] = 0;
 
-  cfg = get_sensor_config(sensor);
+  cfg = get_sensor_config(type,sensor->model);;
 
   if (cfg == NULL)
   {
@@ -48,10 +48,8 @@ void make_option(sensor_t *sensor, char *out, uint16_t outSize)
     return;
   }
 
-  switch (sensor->type)
+  switch (sensor->model)
   {
-
-
     case S_T_SNOW_HJ:
     {
       snow_hj_config_t *hjsnow = (snow_hj_config_t *)cfg;
@@ -293,50 +291,50 @@ uint8_t print_barometer_jsgp215_cfg(barometer_jinsung_sjgp215_config_t *ott, uin
 
  이러한 설정메뉴가 나타나며 리턴값은 설정항목들 갯수
  */
-int32_t print_common_cfg( sensor_t *sensor, uint8_t c)
+int32_t print_common_cfg( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t c)
 {
   int32_t cnt = 0;
 
-  io_printf("%2d.%s:%s\r\n",cnt++, m_l("종류",ENTRY_LABEL_WIDTH), g_sensor_model_table[sensor->type]);
+  io_printf("%2d.%s:%s\r\n",cnt++, m_l("종류",ENTRY_LABEL_WIDTH), g_sensor_model_table[sensor->model]);
 
-  switch (sensor->type)
+  switch (sensor->model)
   {
     case S_T_ADC:  // ADC
-      cnt = print_adc_cfg( get_sensor_config(sensor), cnt);
+      cnt = print_adc_cfg( get_sensor_config(type,sensor->model), cnt);
       break;
 
     case S_T_SNOW_HJ:
-      cnt = print_hjsnow_cfg( get_sensor_config(sensor), cnt);
+      cnt = print_hjsnow_cfg( get_sensor_config(type,sensor->model), cnt);
       break;
     case S_T_WIND_DIRECTION_HJ_485:
-      cnt = print_hjwindDir_cfg( get_sensor_config(sensor), cnt);
+      cnt = print_hjwindDir_cfg( get_sensor_config(type,sensor->model), cnt);
       break;
     case S_T_WIND_SPEED_HJ_485:
-      cnt = print_hjwind_cfg( get_sensor_config(sensor), cnt);
+      cnt = print_hjwind_cfg( get_sensor_config(type,sensor->model), cnt);
       break;
     case S_T_TEMPERATURE_HJ:
-      cnt = print_hjtemp_cfg( get_sensor_config(sensor), cnt);
+      cnt = print_hjtemp_cfg( get_sensor_config(type,sensor->model), cnt);
       break;
     case S_T_HUMINITY_HJ:
-      cnt = print_hjtemp_cfg( get_sensor_config(sensor), cnt);
+      cnt = print_hjtemp_cfg( get_sensor_config(type,sensor->model), cnt);
       break;
     case S_T_SOLAR_RADIATION_OTT_SMP3:
-      cnt = print_ott_smp3_cfg( get_sensor_config(sensor), cnt);
+      cnt = print_ott_smp3_cfg( get_sensor_config(type,sensor->model), cnt);
       break;
     case S_T_RAIN_PRESENT_DI:
-      cnt = print_rain_present_cfg(get_sensor_config(sensor), cnt);
+      cnt = print_rain_present_cfg(get_sensor_config(type,sensor->model), cnt);
       break;
     case S_T_FREQ:
-      cnt = print_freq_cfg(get_sensor_config(sensor), cnt);
+      cnt = print_freq_cfg(get_sensor_config(type,sensor->model), cnt);
       break;
     case S_T_BARO_JINSUNG_SJGP215:
-      cnt = print_barometer_jsgp215_cfg(get_sensor_config(sensor), cnt);
+      cnt = print_barometer_jsgp215_cfg(get_sensor_config(type,sensor->model), cnt);
       break;
   }
   return cnt;
 }
 
-int32_t select_menu_index( sensor_t *sensor,int *choice)
+int32_t select_menu_index( eSENSOR_TYPE_t type,sensor_t *sensor,int *choice)
 {
   int index = 0;
   int entry_count;
@@ -345,7 +343,7 @@ int32_t select_menu_index( sensor_t *sensor,int *choice)
   io_printf("\r\n");
   do
   {
-    entry_count = print_common_cfg(sensor, 0);
+    entry_count = print_common_cfg(type,sensor, 0);
 
     status = input_decimal_prompt("번호를 선택해 주세요", &index, 0, entry_count - 1);
 
@@ -389,22 +387,15 @@ uint16_t get_sensor_model_eng_list(const char **model_list, const uint8_t *idxLi
 
 
 
-void set_type(sensor_t *sensor)
+void set_type(eSENSOR_TYPE_t type,sensor_t *sensor)
 {
-  WRITE_CFG_MEM(&sensor->type, sizeof(sensor->type));
-  if (sensor->type != S_T_UNSUED)
-  {
-    void *cfg = get_sensor_config(sensor);
-    if (cfg == NULL)
-    {
-      sensor_add(sensor);
-    }
-  }
+  WRITE_CFG_MEM(&sensor->model, sizeof(sensor->model));
+
 }
 /**
  * @brief 센서 모델 변경
  */
-int32_t sensor_model_set( sensor_t *sensor, const uint8_t *model_list, uint8_t list_cnt)
+int32_t sensor_model_set(eSENSOR_TYPE_t type, sensor_t *sensor, const uint8_t *model_list, uint8_t list_cnt)
 {
   uint8_t model_list_count;
   int32_t status=0;
@@ -418,15 +409,15 @@ int32_t sensor_model_set( sensor_t *sensor, const uint8_t *model_list, uint8_t l
   {
     return status;
   }
-  sensor->type = (eSENSOR_TYPE_MODEL_t)model_list[choice];
-  set_type(sensor);
+  sensor->model = (eSENSOR_TYPE_MODEL_t)model_list[choice];
+  set_type(type,sensor);
 
   return MENU_OK;
 }
 
 
 
-int32_t hjwind_config_set(  sensor_t *sensor, uint8_t munu_index)
+int32_t hjwind_config_set( eSENSOR_TYPE_t type, sensor_t *sensor, uint8_t munu_index)
 {
   int32_t status=0;
   int32_t choice;
@@ -436,7 +427,7 @@ int32_t hjwind_config_set(  sensor_t *sensor, uint8_t munu_index)
 
   wind_speed_hj_pulse_config_t *hjwind;
 
-  hjwind = get_sensor_config(sensor);
+  hjwind = get_sensor_config(type,sensor->model);;
   if (hjwind == NULL)
   {
     return status;
@@ -480,7 +471,7 @@ int32_t hjwind_config_set(  sensor_t *sensor, uint8_t munu_index)
   return status;
 }
 
-int32_t hjwinddir_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t hjwinddir_config_set(eSENSOR_TYPE_t type, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
@@ -489,7 +480,7 @@ int32_t hjwinddir_config_set( sensor_t *sensor, uint8_t menu_index)
 
   uint16_t port_cnt;
 
-  hjwind = get_sensor_config(sensor);
+  hjwind = get_sensor_config(type,sensor->model);;
   if (hjwind == NULL)
   {
     return 0;
@@ -517,7 +508,7 @@ int32_t hjwinddir_config_set( sensor_t *sensor, uint8_t menu_index)
 1.port:EX1 RS485 A
 */
 
-int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t hjtemp_config_set(eSENSOR_TYPE_t type, sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status;
   int32_t choice;
@@ -526,7 +517,7 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
   const char *portList[10];
   uint16_t portListCnt;
 
-  hjtemp = get_sensor_config(sensor);
+  hjtemp = get_sensor_config(type,sensor->model);;
   if (hjtemp == NULL)
   {
     return 0;
@@ -583,7 +574,7 @@ int32_t hjtemp_config_set( sensor_t *sensor, uint8_t menu_index)
   
 }
 
-int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t hjhumi_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
   const char *portList[10];
   uint16_t portListCnt;
@@ -593,7 +584,7 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
   temp_hj_config_t *hjtemp;
 
 
-  hjtemp = get_sensor_config(sensor);
+  hjtemp = get_sensor_config(type,sensor->model);;
   if (hjtemp == NULL)
   {
     ERROR_PRINTF("화진 온습도 설정값 NULL");    
@@ -654,7 +645,7 @@ int32_t hjhumi_config_set( sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t ott_smp3_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status;
   int32_t choice;
@@ -663,7 +654,7 @@ int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
   const char *portList[10];
   uint16_t portListCnt;
 
-  ott = get_sensor_config(sensor);
+  ott = get_sensor_config(type,sensor->model);;
   if (ott == NULL)
   {
     ERROR_PRINTF("OTT 일사 설정값 NULL");
@@ -699,13 +690,13 @@ int32_t ott_smp3_config_set( sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t rain_present_config_set(sensor_t *sensor, uint8_t menu_index)
+int32_t rain_present_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status;
   int32_t dec = 0;
   rain_present_config_t *rain_present;
 
-  rain_present = get_sensor_config(sensor);
+  rain_present = get_sensor_config(type,sensor->model);;
   if (rain_present == NULL)
   {
     ERROR_PRINTF("강우 감지 NULL");
@@ -730,14 +721,14 @@ int32_t rain_present_config_set(sensor_t *sensor, uint8_t menu_index)
 
 #define GENERAL_FREQ_CHANNEL 0
 #define GENERAL_FREQ_SCALE_FACTOR 1
-int32_t general_freq_config_set(sensor_t *sensor, uint8_t menu_index)
+int32_t general_freq_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status;
   float factor = 0;
   frequency_config_t *freq;
   int dec;
 
-  freq = get_sensor_config(sensor);
+  freq = get_sensor_config(type,sensor->model);;
   if (freq == NULL)
   {
     ERROR_PRINTF("GENERAL FREQ NULL");
@@ -765,7 +756,7 @@ int32_t general_freq_config_set(sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t hjsnow_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
   const char *portList[10];
   uint16_t portCnt;
@@ -774,7 +765,7 @@ int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
   snow_hj_config_t *hjsnow;
 
 
-  hjsnow = get_sensor_config(sensor);
+  hjsnow = get_sensor_config(type,sensor->model);;
   if (hjsnow == NULL)
   {
     ERROR_PRINTF("화진 적설설 설정값 NULL");
@@ -830,7 +821,7 @@ int32_t hjsnow_config_set( sensor_t *sensor, uint8_t menu_index)
 
 
 
-int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
+int32_t general_adc_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
   
   int32_t dec;
@@ -839,7 +830,7 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
   int status=0;
   int choice;
 
-  adc = get_sensor_config(sensor);
+  adc = get_sensor_config(type,sensor->model);
   switch (menu_index)
   {
     case ADC_SET_CH_MODE:  // 1.채널 모드
@@ -923,7 +914,7 @@ int32_t general_adc_config_set( sensor_t *sensor, uint8_t menu_index)
   return status;
 }
 
-int32_t sjgp215_config_set(sensor_t *sensor, uint8_t menu_index)
+int32_t sjgp215_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
   int32_t status;
   int32_t choice;
@@ -932,7 +923,7 @@ int32_t sjgp215_config_set(sensor_t *sensor, uint8_t menu_index)
   const char *portList[10];
   uint16_t portListCnt;
 
-  sjgp215 = get_sensor_config(sensor);
+  sjgp215 = get_sensor_config(type,sensor->model);;
   if (sjgp215 == NULL)
   {
     ERROR_PRINTF("진성 일사 설정값 NULL");
@@ -964,7 +955,7 @@ int32_t sjgp215_config_set(sensor_t *sensor, uint8_t menu_index)
 센서 모델과 모델 설정 함수 연결
 센서가 추가되거나 센서고유의 설정값을 변경하려면 처리 함수를 작성해야한다.
 */
-const sensor_config_entry_t g_sensor_config_table[] = {
+const sensor_config_entry_t g_config_sensor_table[] = {
     {.sensor_type = S_T_ADC, .config_set = general_adc_config_set},
     {.sensor_type = S_T_FREQ, .config_set = general_freq_config_set},
     {.sensor_type = S_T_WIND_DIRECTION_HJ_485, .config_set = hjwinddir_config_set},
@@ -976,15 +967,15 @@ const sensor_config_entry_t g_sensor_config_table[] = {
     {.sensor_type = S_T_RAIN_PRESENT_DI, .config_set = rain_present_config_set},
     {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = sjgp215_config_set}};
 
-int32_t sensor_set( sensor_t *p_sensor, uint8_t choice)
+int32_t sensor_set( eSENSOR_TYPE_t type,sensor_t *p_sensor, uint8_t choice)
 {
   int32_t status=MENU_OK;
 
-  for (int i = 0; i < _countof(g_sensor_config_table); i++)
+  for (int i = 0; i < _countof(g_config_sensor_table); i++)
   {  // 센서마다 고유의 처리 함수를 사용한다.
-    if (g_sensor_config_table[i].sensor_type == p_sensor->type)
+    if (g_config_sensor_table[i].sensor_type == p_sensor->model)
     {
-      status = g_sensor_config_table[i].config_set(p_sensor, choice - 1);
+      status = g_config_sensor_table[i].config_set(type,p_sensor, choice - 1);
       break;
     }
   }
@@ -1010,7 +1001,7 @@ int32_t menu_sensor( eSENSOR_TYPE_t list)
     1.port        :EX1 RS485 A
     이런 화면이 나타남남
     */
-    status = select_menu_index(sensor,&choice);
+    status = select_menu_index(list,sensor,&choice);
     if (status != MENU_OK)
         break; 
     
@@ -1018,11 +1009,11 @@ int32_t menu_sensor( eSENSOR_TYPE_t list)
     {
       case 0:  // 센서가 사용하고자하는 센서 타입을 설정한다.
                // 센서마다 지원가능한 목록을 넘겨지고 출력하여 선택하도록 한다.
-        status =sensor_model_set( sensor, sensor_table[list].list, sensor_table[list].cnt);
+        status =sensor_model_set( (eSENSOR_TYPE_t)choice,sensor, sensor_table[list].list, sensor_table[list].cnt);
         break;
       default:  // 센서 타입이 아닌 센서 고유 속성들은 이 함수 에서 처리한다.
         // 현재의 센서 정보와 사용자가 수정하고자한 항목 번호를 넘긴다.
-        status = sensor_set(sensor, choice);  // 센서별 설정값 변경
+        status = sensor_set(list,sensor, choice);  // 센서별 설정값 변경
         break;
     }
 
@@ -1060,13 +1051,13 @@ int32_t print_menu_sensor(void)
   for (i = 0; i < cnt; i++)
   {
     make_utf8_string(label, sizeof(label), LABEL_W,sensor_name_list[i]);
-    make_utf8_string(sensor_label, sizeof(sensor_label), S_LABEL_W,(ITEM_LIST(get_config_app()->sensor[i].type, g_sensor_model_table)));
-    make_option(&get_config_app()->sensor[i], opt, sizeof(opt));
+    make_utf8_string(sensor_label, sizeof(sensor_label), S_LABEL_W,(ITEM_LIST(get_config_app()->sensor[i].model, g_sensor_model_table)));
+    make_option((eSENSOR_TYPE_t)i,&get_config_app()->sensor[i], opt, sizeof(opt));
     io_printf("%2d.%-14s:%-20s %-22s, ", i, label, sensor_label, opt);
 
     make_utf8_string(label, sizeof(label), LABEL_W,sensor_name_list[i + cnt]);
-    make_utf8_string(sensor_label, sizeof(sensor_label), S_LABEL_W,(ITEM_LIST(get_config_app()->sensor[i + cnt].type, g_sensor_model_table)));
-    make_option(&get_config_app()->sensor[i + cnt], opt, sizeof(opt));
+    make_utf8_string(sensor_label, sizeof(sensor_label), S_LABEL_W,(ITEM_LIST(get_config_app()->sensor[i + cnt].model, g_sensor_model_table)));
+    make_option((eSENSOR_TYPE_t)i,&get_config_app()->sensor[i + cnt], opt, sizeof(opt));
     io_printf("%2d.%-14s:%-20s %-22s\r\n", i + cnt, label, sensor_label, opt);
   }
 
