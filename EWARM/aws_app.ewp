@@ -2538,6 +2538,9 @@
                 <group>
                     <name>menu_handler</name>
                     <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\menu_handler.c</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.c</name>
                     </file>
                 </group>
@@ -2549,9 +2552,6 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\tasks\menu\menu_data.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\tasks\menu\menu_manager.c</name>
@@ -2903,7 +2903,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
@@ -2944,13 +2944,13 @@
                     <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\terminal.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
+                    <name>$PROJ_DIR$\..\application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>
@@ -2966,7 +2966,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <group>
