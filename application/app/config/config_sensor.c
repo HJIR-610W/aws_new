@@ -29,27 +29,31 @@ bool g_config_sensor_dirty_flag=false;
 
 
 
+void limit_adc(adc_config_t *p_adc)
+{
+  if (p_adc->single_channel >= 18)
+  {
+    p_adc->single_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (p_adc->diff_channel >= 8)
+  {
+   p_adc->diff_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if (p_adc->mode > ADC_FG_MODE_DIFF)
+  {
+    p_adc->mode = ADC_CFG_MODE_SE;
+    g_config_sensor_dirty_flag = true;
+  }
+}
+
 void limit_temp(void)
 {
-    if (g_config_sensor.temp.adc.single_channel >= 18)
-    {
-      g_config_sensor.temp.adc.single_channel = 0;
-      g_config_sensor_dirty_flag = true;
-    }
-
-    if (g_config_sensor.temp.adc.diff_channel >= 8)
-    {
-      g_config_sensor.temp.adc.diff_channel = 0;
-      g_config_sensor_dirty_flag = true;
-    }
-
-    if (g_config_sensor.temp.adc.mode > ADC_FG_MODE_DIFF)
-    {
-      g_config_sensor.temp.adc.mode = ADC_CFG_MODE_SE;
-      g_config_sensor_dirty_flag = true;
-    }
+   limit_adc(&g_config_sensor.temp.adc);
   
-
   if (g_config_sensor.temp.hj.physical_layer > ePHYSICAL_RS485)
   {
     g_config_sensor.temp.hj.physical_layer = ePHYSICAL_RS485;
@@ -129,21 +133,22 @@ void limit_wind_direction(void)
   }
 }
 
+
 void limit_rain(void)
 {
-  // rain.reed와 rain.hall은 eRAIN_MM_t enum 타입이므로 범위 체크
-  if (g_config_sensor.rain.reed.mm > eRAIN_1MM)
-  {
-    g_config_sensor.rain.reed.mm = eRAIN_05MM;
-    g_config_sensor_dirty_flag = true;
-  }
-
-  if (g_config_sensor.rain.hall.mm > eRAIN_1MM)
+  if(g_config_sensor.rain.hall.mm  >= RAIN_MM_COUNT)
   {
     g_config_sensor.rain.hall.mm = eRAIN_05MM;
-    g_config_sensor_dirty_flag = true;
+        g_config_sensor_dirty_flag = true;
+  }
+
+    if(g_config_sensor.rain.reed.mm  >= RAIN_MM_COUNT)
+  {
+    g_config_sensor.rain.reed.mm = eRAIN_05MM;
+        g_config_sensor_dirty_flag = true;
   }
 }
+
 
 void limit_barometer(void)
 {
@@ -159,23 +164,8 @@ void limit_barometer(void)
     g_config_sensor_dirty_flag = true;
   }
 
-  if (g_config_sensor.baromater.adc.single_channel >= 18)
-  {
-    g_config_sensor.baromater.adc.single_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
+  limit_adc(&g_config_sensor.baromater.adc);
 
-  if (g_config_sensor.baromater.adc.diff_channel >= 8)
-  {
-    g_config_sensor.baromater.adc.diff_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
-
-  if (g_config_sensor.baromater.adc.mode > ADC_FG_MODE_DIFF)
-  {
-    g_config_sensor.baromater.adc.mode = ADC_CFG_MODE_SE;
-    g_config_sensor_dirty_flag = true;
-  }
 }
 
 void limit_rain_present(void)
@@ -240,23 +230,9 @@ void limit_humi(void)
     }
   }
 
-  if (g_config_sensor.humi.adc.single_channel >= 18)
-  {
-    g_config_sensor.humi.adc.single_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
+  
+  limit_adc(&g_config_sensor.humi.adc);
 
-  if (g_config_sensor.humi.adc.diff_channel >= 8)
-  {
-    g_config_sensor.humi.adc.diff_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
-
-  if (g_config_sensor.humi.adc.mode > ADC_FG_MODE_DIFF)
-  {
-    g_config_sensor.humi.adc.mode = ADC_CFG_MODE_SE;
-    g_config_sensor_dirty_flag = true;
-  }
 }
 
 void limit_solar_radiation(void)
@@ -274,75 +250,24 @@ void limit_solar_radiation(void)
     g_config_sensor_dirty_flag = true;
   }
 
-  if (g_config_sensor.solar_radication.adc.single_channel >= 18)
-  {
-    g_config_sensor.solar_radication.adc.single_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
-
-  if (g_config_sensor.solar_radication.adc.diff_channel >= 8)
-  {
-    g_config_sensor.solar_radication.adc.diff_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
-
-  if (g_config_sensor.solar_radication.adc.mode > ADC_FG_MODE_DIFF)
-  {
-    g_config_sensor.solar_radication.adc.mode = ADC_CFG_MODE_SE;
-    g_config_sensor_dirty_flag = true;
-  }
+    
+  limit_adc(&g_config_sensor.solar_radication.adc);
 }
 
 void limit_sunshine(void)
 {
-  if (g_config_sensor.sunshine.solar_duration_csd3.adc_channel > 15)
-  {
-    g_config_sensor.sunshine.solar_duration_csd3.adc_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
-
-  if (g_config_sensor.sunshine.adc.single_channel >= 18)
-  {
-    g_config_sensor.sunshine.adc.single_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
-
-  if (g_config_sensor.sunshine.adc.diff_channel >= 8)
-  {
-    g_config_sensor.sunshine.adc.diff_channel = 0;
-    g_config_sensor_dirty_flag = true;
-  }
-
-  if (g_config_sensor.sunshine.adc.mode > ADC_FG_MODE_DIFF)
-  {
-    g_config_sensor.sunshine.adc.mode = ADC_CFG_MODE_SE;
-    g_config_sensor_dirty_flag = true;
-  }
+  limit_adc(&g_config_sensor.sunshine.adc);
 }
 
 void limit_soil_temp(void)
 {
   for (int i = 0; i < _countof(g_config_sensor.soil_temp); i++)
   {
-    if (g_config_sensor.soil_temp[i].adc.single_channel >= 18)
-    {
-      g_config_sensor.soil_temp[i].adc.single_channel = 0;
-      g_config_sensor_dirty_flag = true;
-    }
-
-    if (g_config_sensor.soil_temp[i].adc.diff_channel >= 8)
-    {
-      g_config_sensor.soil_temp[i].adc.diff_channel = 0;
-      g_config_sensor_dirty_flag = true;
-    }
-
-    if (g_config_sensor.soil_temp[i].adc.mode > ADC_FG_MODE_DIFF)
-    {
-      g_config_sensor.soil_temp[i].adc.mode = ADC_CFG_MODE_SE;
-      g_config_sensor_dirty_flag = true;
-    }
+      limit_adc(&g_config_sensor.soil_temp[i].adc);
   }
 }
+
+
 
 void save_config_sensor(void)
 {
@@ -398,6 +323,7 @@ void load_config_sensor(void)
   limit_solar_radiation();
   limit_sunshine();
   limit_soil_temp();
+  
 
   if (g_config_sensor_dirty_flag)
   {
@@ -420,8 +346,6 @@ void config_sensor_reset(void)
   memset(&g_config_sensor,0,sizeof(g_config_sensor));
   
 }
-
-
 
 
 #define PATH_CONFIG_SENSOR_BIN "0:back_up/config_sensor.bin"
