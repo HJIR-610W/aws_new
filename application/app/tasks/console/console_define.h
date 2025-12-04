@@ -7,5 +7,7 @@
 #define MENU_BACK  -3   // Ctrl+C
 #define MENU_ABORT -17  // Ctrl+Q
 #define MENU_ERROR -4
+#define MENU_EXIT  -10
+
 
 #endif
