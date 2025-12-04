@@ -51,7 +51,7 @@ void save_aws_csv(uint8_t *p_data,uint16_t data_len)
     c_tick = time_cvt_timestamp(&p_kma->time);
 
 
-    file_offset = timeToOffsetDay(c_tick,1,CSV_LINE_SIZE) ;
+    file_offset = timeToOffsetDay(c_tick,1,CSV_LINE_SIZE)+CSV_LINE_SIZE ;
 
     // 한 줄 데이터 생성 (188바이트 고정)
     memset(line, ' ', sizeof(line));
