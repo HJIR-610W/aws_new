@@ -307,6 +307,7 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
   {
     uint8_t buff[MODBUS_REG_SIZE*2+20];
     int32_t len;
+    
     OS_PEND_SEM(modbus_sem,osWaitForever);
     io_printf("modbus start %s\r\n",drv->name);
 

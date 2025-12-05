@@ -30,30 +30,31 @@ const config_t config_app_default = {.id = 0,
                                      .eth_ip = {192, 168, 1, 180},
                                      .eth_remote_server_ip = {112, 221, 177, 172},
                                      .eth_remote_server_port = 6442,
-                                     .eth_local_port = 9000,
+                                     .eth_local_port = 20000,
                                      .eth_mac = {0x00, 0x80, 0xE1, 0x00, 0x00, 0x00},
                                      .cdma_server_ip = {112, 221, 177, 172},
                                      .cdma_port = 0,
                                      .cdma_model = eCDMA_NTLE9607,
-                                     .eth_active = false,
-                                     .cdma_active = false,
-                                     .direct_active = false,
+                                     .eth_active = 0,
+                                     .cdma_active = 0,
+                                     .direct_active = 0,
                                      .direct_baud_index = eBAUD_19200,
                                      .panel_model = ePANEL_AWS_STD,
-                                     .panel_snow_active = false,
-                                     .panel_barometer_active = false,
+                                     .panel_snow_active = 0,
+                                     .panel_barometer_active = 0,
                                      .vhf_id = 0,
                                      .vhf_group = 0,
                                      .vhf_host_id = 0,
                                      .vhf_repeater_id = 0,
                                      .vhf_ptt_delay = 10,
-                                     .com_encrypt_active = false,
-                                     .cdma_vpn_active = false,
-                                     .ac_active = false,
+                                     .com_encrypt_active = 0,
+                                     .cdma_vpn_active = 0,
+                                     .ac_active = 0,
                                      .dev_telnet_ip = {112, 221, 177, 172},
                                      .dev_telnet_port = 23001,
                                      .dev_telnet_mode = eTELNET_SERVER,
-                                     .lcd_off_time_index = eLCD_OFF_ALWAYS_ON};
+                                     .lcd_off_time_index = eLCD_OFF_ALWAYS_ON,
+                                     .aws_csv_save_active =0};
 
 int32_t g_config_app_change_count = 0;
 
@@ -67,6 +68,17 @@ bool is_value_in_array(uint8_t target, const uint8_t *arr, size_t len)
 
   return false;
 }
+
+void limit_active(uint8_t *p_active)
+{
+  if(*p_active >1)
+  {
+    *p_active = 0;
+    g_config_app_change_count++;
+  }
+}
+
+
 
 void check_config_app(void)
 {
@@ -84,9 +96,6 @@ void check_config_app(void)
     }
 
   }
-
-
-
 
   if(!is_value_in_array(config.sensor[A1_TEMPERATURE].model,temperature_list,_countof(temperature_list)))
   {
@@ -209,23 +218,10 @@ void check_config_app(void)
   }
 
 
-  if (config.cdma_active > 1)
-  {
-    config.cdma_active = 0;
-    g_config_app_change_count++;
-  }
-   
-  if (config.eth_active > 1)
-  {
-    config.eth_active = 0;
-    g_config_app_change_count++;
-  }
 
- if(config.direct_active >1)
-  {
-    config.direct_active = 0;
-    g_config_app_change_count++;
-  }
+  limit_active(&config.cdma_active);  
+  limit_active(&config.eth_active);  
+  limit_active(&config.direct_active);  
 
 
   if (config.direct_active && config.cdma_active)
@@ -247,29 +243,11 @@ void check_config_app(void)
     g_config_app_change_count++;
   }
 
-  if (config.panel_snow_active > 1)
-  {
-    config.panel_snow_active = 0;
-    g_config_app_change_count++;
-  }
 
-  if (config.panel_barometer_active > 1)
-  {
-    config.panel_barometer_active = 0;
-    g_config_app_change_count++;
-  }
-
-  if(config.com_encrypt_active > 1)
-  {
-    config.com_encrypt_active = 0;
-    g_config_app_change_count++;
-  }
-
-  if(config.cdma_vpn_active>1)
-  {
-    config.cdma_vpn_active = 0;
-  g_config_app_change_count++;
-  }
+  limit_active(&config.panel_snow_active);  
+  limit_active(&config.panel_barometer_active);  
+  limit_active(&config.com_encrypt_active);  
+  limit_active(&config.cdma_vpn_active);
 
 
 
@@ -287,24 +265,14 @@ void check_config_app(void)
   }
 
 
-
   if (config.aws_protocol_type > eAWS_PROTOCOL_KMA3)
   {
     config.aws_protocol_type = config_app_default.aws_protocol_type;
-  g_config_app_change_count++;
-  }
-
-
-
-
-
-
- 
-  if (config.ac_active > 1)
-  {
-    config.ac_active = config_app_default.ac_active;
     g_config_app_change_count++;
   }
+
+
+  limit_active(&config.ac_active);
 
   if (config.dev_telnet_mode > eTELNET_CLIENT)
   {
@@ -319,8 +287,7 @@ void check_config_app(void)
     }
 
 
-
-
+    limit_active(&config.aws_csv_save_active);
 
 
 }

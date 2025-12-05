@@ -4,6 +4,7 @@
 
 #include "menu_data.h"
 #include "app_screen.h"
+#include "config_app.h"
 #include "cli_key_code.h"
 #include "menu_handler.h"
 #include "util_time.h"
@@ -18,6 +19,7 @@
 #include "FreeRTOS.h"
 #include "utile_data.h"
 #include "task_menu_define.h"
+#include "const_string.h"
 
 #define DATA_RAIN_1MIN 0
 #define DATA_RAIN_INIT 1
@@ -243,6 +245,7 @@ void draw_data_sunshine(screen_menu_t *p_win)
 #define DATA_MENU_AWS     0
 #define DATA_MENU_RAIN    1
 #define DATA_MENU_SOLAR_R 2
+#define DATA_MENU_CSV_SAVE 3
 
 #define DATA_WD 10
 
@@ -253,6 +256,7 @@ void draw_data_menu(screen_menu_t *p_win)
   screen_menu_printf(p_win, DATA_MENU_AWS, "AWS");
   screen_menu_printf(p_win, DATA_MENU_RAIN, "Rain");
   screen_menu_printf(p_win, DATA_MENU_SOLAR_R, "Sunshine");
+  screen_menu_printf(p_win, DATA_MENU_CSV_SAVE, "Save CSV :%s",safe_name(enable_list_eng,_countof(enable_list_eng),config.aws_csv_save_active));
   screen_menu_clear(p_win);
 }
 
@@ -783,6 +787,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
   {
     int32_t key;
     int32_t status;
+    int32_t choice;
     screen_menu_t menu;
 
     screen_menu_create(&menu, "Data");
@@ -811,6 +816,19 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
           case DATA_MENU_SOLAR_R:
             status = setup_menu_sunshine();
             break;
+          case DATA_MENU_CSV_SAVE:
+          choice = config.aws_csv_save_active;
+          status = input_active("Save CSV?", &choice);
+            
+          if(status != MENU_OK)
+          {
+            return status;
+          }
+          
+            config.aws_csv_save_active = choice;
+            WRITE_CFG(aws_csv_save_active);
+   
+          break;
         default:
           break;
         }

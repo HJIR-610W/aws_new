@@ -7,6 +7,9 @@
 #include "config_app.h"
 
 
+const char *safe_name(const char **names,int name_count,int index);
+
+
 extern const char* panel_list_eng[PANEL_COUNT];
 extern const char* panel_item6_type_list_eng[PANEL_ITEM6_TYPE_COUNT];
 extern const char* baud_list_eng[BAUD_COUNT];

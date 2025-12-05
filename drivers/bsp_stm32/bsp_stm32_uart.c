@@ -420,7 +420,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
   if (timeOutMs == 0)
   {
     bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].stream_buffer);
-    //읽을 데이터가 있으면 읽고
+    //읽을 데이터가 있으면 읽고 버퍼보다 더 많으면 버퍼만큼만 읽는다
     if (bytes_available > 0)
     {
       size_t bytes_to_read = (bytes_available > buffSize) ? buffSize : bytes_available;
@@ -439,19 +439,20 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
   start_tick = osKernelGetTickCount();
 
   // timeOutMs가 0xFFFFFFFF인 경우: 무한 대기 모드
+  // 무한대기하면서 버퍼가 완전히 차면 리턴
   if (timeOutMs == 0xFFFFFFFF)
   {
     while (cnt < buffSize)
     {
       bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].stream_buffer);
 
-      size_t bytes_to_read = buffSize - cnt;
-      if (bytes_available > bytes_to_read)
+      size_t bytes_to_read = buffSize - cnt;//남은 버퍼 사이즈
+      if (bytes_available > bytes_to_read)//읽을것이 버퍼 사이즈 보다 크면 버퍼만큼만 읽는다
       {
         bytes_available = bytes_to_read;
       }
 
-      if (bytes_available == 0)
+      if (bytes_available == 0)//읽을 데이터가 없으면 한바이트 수신될때가지 무한대기
       {
         // 데이터가 없으면 최소 1바이트 수신까지 무한 대기
         bytes_read = xStreamBufferReceive(uart_inst[uart_num].stream_buffer,

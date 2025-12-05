@@ -170,6 +170,7 @@ typedef struct config_s
   uint8_t dev_telnet_ip[4];
   uint16_t dev_telnet_port;
   eLCD_OFF_TIME_t lcd_off_time_index; 
+  uint8_t aws_csv_save_active;
 }config_t;
 
 

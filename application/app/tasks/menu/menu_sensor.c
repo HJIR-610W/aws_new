@@ -74,23 +74,7 @@ void draw_adc_page(screen_menu_t* p_win,adc_config_t *adc_config)
 
 }
 
-const char *safe_name(const char **names,int name_count,int index)
-{
-  const char *str="unknown";
 
-  if(index>=name_count)
-  {
-    return str;
-  }
-
-  if(names[index]==0)
-  {
-    return str;
-  }
-
-  return names[index];
-
-}
 
 #define HJSNOW_PAGE_PHYSICAL  0
 #define HJSNOW_PAGE_PORT      1
