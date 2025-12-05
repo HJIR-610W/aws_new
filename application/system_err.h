@@ -23,6 +23,29 @@
   #define ERROR_PRINTF(fmt, ...) ((void)0)
 #endif
 
+// 로그 레벨 정의
+#define LOG_LEVEL_FATAL   1
+#define LOG_LEVEL_ERROR   2
+#define LOG_LEVEL_WARN    3
+#define LOG_LEVEL_INFO    4
+#define LOG_LEVEL_DEBUG   5
+#define LOG_LEVEL_VERBOSE 6
+#define LOG_LEVEL_NONE    99 
+
+#ifndef CURRENT_LOG_LEVEL
+#define CURRENT_LOG_LEVEL LOG_LEVEL_WARN
+#endif
+
+#define DEBUG_PRINTF_LEVEL(level, fmt, ...) \
+    do {\
+        if (level >= LOG_LEVEL_NONE) {}\
+        else if (level <= CURRENT_LOG_LEVEL) { \
+            PRINTF_BASE(fmt, ##__VA_ARGS__); \
+        } \
+    } while(0)
+
+
+
 #ifdef DEBUG_PRINTF_USE
   #define DEBUG_PRINTF(fmt, ...)   io_printf(fmt, ##__VA_ARGS__)
 #else

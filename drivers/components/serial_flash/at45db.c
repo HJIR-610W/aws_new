@@ -117,7 +117,7 @@ void at45db_init(void)
 
   if (at45db_initialize() != AT45DB_OK)
   {
-    DEBUG_PRINTF("Error: AT45DB initialization failed\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: AT45DB initialization failed\r\n");
     at45db_inst.opened = false;
     return;
   }
@@ -288,7 +288,7 @@ static void at45db_wait_ready(void)
 
 
     if(++timeout_count > AT45DB_BUSY_TIMEOUT_MS) {
-      DEBUG_PRINTF("Warning: AT45DB busy timeout\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Warning: AT45DB busy timeout\r\n");
       break;
     }
 
@@ -421,7 +421,7 @@ at45db_result_t at45db_initialize(void)
 
   result = at45db_parse_chip_info(chip_info, &at45db_inst.chip_info);
   if (result != AT45DB_OK) {
-    DEBUG_PRINTF("Error: Failed to parse chip info\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Failed to parse chip info\r\n");
     return result;
   }
 
@@ -431,7 +431,7 @@ at45db_result_t at45db_initialize(void)
 
   // 바이너리 페이지 크기 모드가 활성화되어 있는지 확인
   if ((reg & AT45DB_STATUS_PAGE_SIZE_BIT) == 0) {
-    DEBUG_PRINTF("Switching to binary page size mode...\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Switching to binary page size mode...\r\n");
     at45db_reg_write( (uint8_t *)protect_enable);
     at45db_wait_ready();
     at45db_reg_write( (uint8_t *)page_binary_mode);
@@ -440,7 +440,7 @@ at45db_result_t at45db_initialize(void)
     // 전환 확인
     at45db_reg_read( AT45DB_CMD_STATUS_REGISTER, &reg, 1);
     if ((reg & AT45DB_STATUS_PAGE_SIZE_BIT) == 0) {
-      DEBUG_PRINTF("Error: Failed to switch to binary page size mode\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Failed to switch to binary page size mode\r\n");
       return AT45DB_ERROR;
     }
   }
@@ -453,10 +453,10 @@ at45db_result_t at45db_initialize(void)
   at45db_inst.chip_info.total_capacity_bytes = (at45db_inst.chip_info.device_info.capacity_bits / 8);
   at45db_inst.chip_info.is_initialized = true;
 
-  DEBUG_PRINTF("AT45DB initialization completed successfully\r\n");
-  DEBUG_PRINTF("  Mode: %s\r\n", at45db_inst.chip_info.is_binary_mode ? "Binary" : "Standard");
-  DEBUG_PRINTF("  Current page size: %u bytes\r\n", at45db_inst.chip_info.current_page_size);
-  DEBUG_PRINTF("  Total capacity: %lu bytes\r\n", at45db_inst.chip_info.total_capacity_bytes);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"AT45DB initialization completed successfully\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Mode: %s\r\n", at45db_inst.chip_info.is_binary_mode ? "Binary" : "Standard");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Current page size: %u bytes\r\n", at45db_inst.chip_info.current_page_size);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Total capacity: %lu bytes\r\n", at45db_inst.chip_info.total_capacity_bytes);
 
   at45db_delay(10);
   
@@ -538,14 +538,14 @@ at45db_result_t at45db_parse_chip_info(uint8_t *chip_info, at45db_chip_info_t *i
 
   // 제조사 ID 확인
   if (id0 != 0x1F) {
-    DEBUG_PRINTF("Error: Invalid Manufacturer ID: 0x%02X\r\n", id0);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Invalid Manufacturer ID: 0x%02X\r\n", id0);
     return AT45DB_ERROR;
   }
   manufacturer = "Atmel / Renesas";
 
   // 패밀리 코드 확인
   if ((id1 >> 5) != 0x01) {
-    DEBUG_PRINTF("Error: Invalid Family Code: 0x%02X\r\n", id1 >> 5);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Invalid Family Code: 0x%02X\r\n", id1 >> 5);
     return AT45DB_ERROR;
   }
   family = "AT45DBxxx (DataFlash)";
@@ -555,25 +555,25 @@ at45db_result_t at45db_parse_chip_info(uint8_t *chip_info, at45db_chip_info_t *i
   // 디바이스 정보 조회
   result = at45db_find_device_info(density_code, &info->device_info);
   if (result != AT45DB_OK) {
-    DEBUG_PRINTF("Error: Unsupported density code: 0x%02X\r\n", density_code);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Unsupported density code: 0x%02X\r\n", density_code);
     return AT45DB_UNSUPPORTED;
   }
 
   // Display device information
-  DEBUG_PRINTF("Flash Memory\r\n");
-  DEBUG_PRINTF("  Manufacturer ID : 0x%02X (%s)\r\n", id0, manufacturer);
-  DEBUG_PRINTF("  Device ID Byte 1: 0x%02X\r\n", id1);
-  DEBUG_PRINTF("    - Family Code : 0x%02X (%s)\r\n", id1 >> 5, family);
-  DEBUG_PRINTF("    - Density Code: 0x%02X (%s)\r\n", density_code, info->device_info.device_name);
-  DEBUG_PRINTF("  Capacity: %lu bits (%lu KB)\r\n", info->device_info.capacity_bits, info->device_info.capacity_bits / 8192);
-  DEBUG_PRINTF("  Total Pages: %lu\r\n", info->device_info.total_pages);
-  DEBUG_PRINTF("  Page Size: %u bytes (standard) / %u bytes (binary)\r\n", 
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Flash Memory\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Manufacturer ID : 0x%02X (%s)\r\n", id0, manufacturer);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Device ID Byte 1: 0x%02X\r\n", id1);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"    - Family Code : 0x%02X (%s)\r\n", id1 >> 5, family);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"    - Density Code: 0x%02X (%s)\r\n", density_code, info->device_info.device_name);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Capacity: %lu bits (%lu KB)\r\n", info->device_info.capacity_bits, info->device_info.capacity_bits / 8192);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Total Pages: %lu\r\n", info->device_info.total_pages);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Page Size: %u bytes (standard) / %u bytes (binary)\r\n", 
                info->device_info.page_size_standard, info->device_info.page_size_binary);
-  DEBUG_PRINTF("  Device ID Byte 2: 0x%02X\r\n", id2);
-  DEBUG_PRINTF("    - Sub Code     : 0x%02X (%s)\r\n", id2 >> 3, subcode);
-  DEBUG_PRINTF("    - Variant Code : 0x%02X (%s)\r\n", id2 & 0x07, variant);
-  DEBUG_PRINTF("  Extended Info Len: 0x%02X (EDI Byte Count)\r\n", edi_len);
-  DEBUG_PRINTF("  EDI Byte[0]      : 0x%02X\r\n", edi_byte1);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Device ID Byte 2: 0x%02X\r\n", id2);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"    - Sub Code     : 0x%02X (%s)\r\n", id2 >> 3, subcode);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"    - Variant Code : 0x%02X (%s)\r\n", id2 & 0x07, variant);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Extended Info Len: 0x%02X (EDI Byte Count)\r\n", edi_len);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  EDI Byte[0]      : 0x%02X\r\n", edi_byte1);
 
 
   rev_code = edi_byte1 & 0x1F;
@@ -582,7 +582,7 @@ at45db_result_t at45db_parse_chip_info(uint8_t *chip_info, at45db_chip_info_t *i
   else
     revision_str = "Unknown Version";
 
-  DEBUG_PRINTF("    - Device Revision : %02X (%s)\r\n", rev_code, revision_str);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"    - Device Revision : %02X (%s)\r\n", rev_code, revision_str);
   
   return AT45DB_OK;
 }
@@ -604,12 +604,12 @@ int32_t at45db_write_safe(uint32_t offset, uint8_t *p_data, uint32_t data_len)
   uint8_t verify_buff[AT45DB_MAX_PAGE_SIZE];
   uint8_t retry_count;
 
-  DEBUG_PRINTF("[at45db_write_safe] start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[at45db_write_safe] start\r\n");
 
   // 매개변수 유효성 검사
   if (p_data == NULL || data_len == 0)
   {
-    DEBUG_PRINTF("[at45db_write_safe] ERROR: Invalid parameters\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[at45db_write_safe] ERROR: Invalid parameters\r\n");
     return -1;
   }
 
@@ -639,7 +639,7 @@ int32_t at45db_write_safe(uint32_t offset, uint8_t *p_data, uint32_t data_len)
       else
       {
         // 검증 실패, 재시도
-        DEBUG_PRINTF("[at45db_write_safe] Verify failed: offset=0x%08lX, size=%lu, retry=%d\r\n",
+        DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[at45db_write_safe] Verify failed: offset=0x%08lX, size=%lu, retry=%d\r\n",
                      offset + written, current_chunk_size, retry_count);
         retry_count++;
       }
@@ -648,7 +648,7 @@ int32_t at45db_write_safe(uint32_t offset, uint8_t *p_data, uint32_t data_len)
     // 모든 재시도 후 청크 쓰기 실패 확인
     if (retry_count >= max_retry)
     {
-      DEBUG_PRINTF("[at45db_write_safe] CRITICAL: Write failed after %d retries at offset=0x%08lX\r\n",
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[at45db_write_safe] CRITICAL: Write failed after %d retries at offset=0x%08lX\r\n",
                    max_retry, offset + written);
       return -2; // 오프셋에서 검증 실패: (offset + written)
     }
@@ -656,7 +656,7 @@ int32_t at45db_write_safe(uint32_t offset, uint8_t *p_data, uint32_t data_len)
     written += current_chunk_size;
   }
 
-  DEBUG_PRINTF("[at45db_write_safe] finish\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[at45db_write_safe] finish\r\n");
   return 0; // 성공
 }
 
@@ -814,7 +814,7 @@ int32_t at45db_write(uint32_t offset, uint8_t *p_data, uint32_t data_len)
   /* 초기화 상태 체크 */
   if (!at45db_inst.chip_info.is_initialized)
   {
-    DEBUG_PRINTF("Error: AT45DB not initialized\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: AT45DB not initialized\r\n");
     return -1;
   }
 
@@ -822,7 +822,7 @@ int32_t at45db_write(uint32_t offset, uint8_t *p_data, uint32_t data_len)
   if (offset >= at45db_inst.chip_info.total_capacity_bytes ||
       (offset + data_len) > at45db_inst.chip_info.total_capacity_bytes)
   {
-    DEBUG_PRINTF("Error: Write offset out of range (offset=0x%08lX, len=%lu)\r\n",
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Write offset out of range (offset=0x%08lX, len=%lu)\r\n",
                  offset, data_len);
     return -1;
   }
@@ -901,7 +901,7 @@ int32_t at45db_write_fast(uint32_t offset, uint8_t *p_data, uint32_t data_len)
   /* 초기화 상태 체크 */
   if (!at45db_inst.chip_info.is_initialized)
   {
-    DEBUG_PRINTF("Error: AT45DB not initialized\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: AT45DB not initialized\r\n");
     return -1;
   }
 
@@ -909,7 +909,7 @@ int32_t at45db_write_fast(uint32_t offset, uint8_t *p_data, uint32_t data_len)
   if (offset >= at45db_inst.chip_info.total_capacity_bytes ||
       (offset + data_len) > at45db_inst.chip_info.total_capacity_bytes)
   {
-    DEBUG_PRINTF("Error: Write offset out of range (offset=0x%08lX, len=%lu)\r\n",
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Write offset out of range (offset=0x%08lX, len=%lu)\r\n",
                  offset, data_len);
     return -1;
   }
@@ -1030,7 +1030,7 @@ int at45db_read(uint32_t address, uint8_t *buffer, uint32_t size)
   /* 초기화 상태 체크 */
   if (!at45db_inst.chip_info.is_initialized)
   {
-    DEBUG_PRINTF("Error: AT45DB not initialized\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: AT45DB not initialized\r\n");
     return -1;
   }
 
@@ -1041,7 +1041,7 @@ int at45db_read(uint32_t address, uint8_t *buffer, uint32_t size)
   if (flash_addr >= at45db_inst.chip_info.total_capacity_bytes ||
       (flash_addr + size) > at45db_inst.chip_info.total_capacity_bytes)
   {
-    DEBUG_PRINTF("Error: Read offset out of range (offset=0x%08lX, len=%lu)\r\n",
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Read offset out of range (offset=0x%08lX, len=%lu)\r\n",
                  flash_addr, size);
     return -1;
   }
@@ -1111,7 +1111,7 @@ int at45db_read_fast(uint32_t address, uint8_t *buffer, uint32_t size)
   /* 초기화 상태 체크 */
   if (!at45db_inst.chip_info.is_initialized)
   {
-    DEBUG_PRINTF("Error: AT45DB not initialized\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: AT45DB not initialized\r\n");
     return -1;
   }
 
@@ -1122,7 +1122,7 @@ int at45db_read_fast(uint32_t address, uint8_t *buffer, uint32_t size)
   if (flash_addr >= at45db_inst.chip_info.total_capacity_bytes ||
       (flash_addr + size) > at45db_inst.chip_info.total_capacity_bytes)
   {
-    DEBUG_PRINTF("Error: Read offset out of range (offset=0x%08lX, len=%lu)\r\n",
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Read offset out of range (offset=0x%08lX, len=%lu)\r\n",
                  flash_addr, size);
     return -1;
   }

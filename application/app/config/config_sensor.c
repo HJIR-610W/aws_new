@@ -8,6 +8,7 @@
 #include "drv_crc.h"
 #include "dev_io.h"
 #include "user_heap.h"
+#include "system_err.h"
 
 const config_sensor_t g_sensor_att_default =
     {
@@ -331,7 +332,7 @@ void load_config_sensor(void)
     backup_config_sensor();
   }
   
-    io_printf("sizeof(config_sensor_t):%d\r\n",sizeof(config_sensor_t));
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_sensor_t):%d\r\n",sizeof(config_sensor_t));
 }
 
 config_sensor_t *get_config_sensor(void)

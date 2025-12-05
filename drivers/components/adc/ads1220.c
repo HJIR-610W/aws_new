@@ -39,302 +39,302 @@ void parse_ads1220_register()
 {
   uint8_t reg;
 
-  DEBUG_PRINTF("\r\n==== ADS1220 레지스터 설정값==== \r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"\r\n==== ADS1220 레지스터 설정값==== \r\n");
   // Register 0: MUX[7:4], GAIN[3:1], PGA_BYPASS[0]
   read_reg( ADS1220_REG_0, 1, &reg);
-  DEBUG_PRINTF("REG0 (0x%02X): 0x%02X\r\n", ADS1220_REG_0, reg);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"REG0 (0x%02X): 0x%02X\r\n", ADS1220_REG_0, reg);
 
-  DEBUG_PRINTF("  MUX       [7:4]: ");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  MUX       [7:4]: ");
   switch ((reg >> 4) & 0x0F)
   {
     case 0x0:
-      DEBUG_PRINTF("0000 - AIN0 - AIN1 (기본값)");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"0000 - AIN0 - AIN1 (기본값)");
       break;
     case 0x1:
-      DEBUG_PRINTF("0001 - AIN0 - AIN2");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"0001 - AIN0 - AIN2");
       break;
     case 0x2:
-      DEBUG_PRINTF("0010 - AIN0 - AIN3");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"0010 - AIN0 - AIN3");
       break;
     case 0x3:
-      DEBUG_PRINTF("0011 - AIN1 - AIN2");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"0011 - AIN1 - AIN2");
       break;
     case 0x4:
-      DEBUG_PRINTF("0100 - AIN1 - AIN3");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"0100 - AIN1 - AIN3");
       break;
     case 0x5:
-      DEBUG_PRINTF("0101 - AIN2 - AIN3");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"0101 - AIN2 - AIN3");
       break;
     case 0x6:
-      DEBUG_PRINTF("0110 - AIN1 - AIN0");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"0110 - AIN1 - AIN0");
       break;
     case 0x7:
-      DEBUG_PRINTF("0111 - AIN3 - AIN2");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"0111 - AIN3 - AIN2");
       break;
     case 0x8:
-      DEBUG_PRINTF("1000 - AIN0 - AVSS");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"1000 - AIN0 - AVSS");
       break;
     case 0x9:
-      DEBUG_PRINTF("1001 - AIN1 - AVSS");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"1001 - AIN1 - AVSS");
       break;
     case 0xA:
-      DEBUG_PRINTF("1010 - AIN2 - AVSS");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"1010 - AIN2 - AVSS");
       break;
     case 0xB:
-      DEBUG_PRINTF("1011 - AIN3 - AVSS");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"1011 - AIN3 - AVSS");
       break;
     case 0xC:
-      DEBUG_PRINTF("1100 - REFP0 - REFN0");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"1100 - REFP0 - REFN0");
       break;
     case 0xD:
-      DEBUG_PRINTF("1101 - AVDD - AVSS (모니터)");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"1101 - AVDD - AVSS (모니터)");
       break;
     case 0xE:
-      DEBUG_PRINTF("1110 - AINP - AINN shorted");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"1110 - AINP - AINN shorted");
       break;
     case 0xF:
-      DEBUG_PRINTF("1111 - Reserved");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"1111 - Reserved");
       break;
   }
-  DEBUG_PRINTF("        // 입력 다중 선택\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"        // 입력 다중 선택\r\n");
 
-  DEBUG_PRINTF("  GAIN      [3:1]: ");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  GAIN      [3:1]: ");
   switch ((reg >> 1) & 0x07)
   {
     case 0:
-      DEBUG_PRINTF("000 - Gain = 1 (기본값)");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"000 - Gain = 1 (기본값)");
       break;
     case 1:
-      DEBUG_PRINTF("001 - Gain = 2");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"001 - Gain = 2");
       break;
     case 2:
-      DEBUG_PRINTF("010 - Gain = 4");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"010 - Gain = 4");
       break;
     case 3:
-      DEBUG_PRINTF("011 - Gain = 8");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"011 - Gain = 8");
       break;
     case 4:
-      DEBUG_PRINTF("100 - Gain = 16");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"100 - Gain = 16");
       break;
     case 5:
-      DEBUG_PRINTF("101 - Gain = 32");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"101 - Gain = 32");
       break;
     case 6:
-      DEBUG_PRINTF("110 - Gain = 64");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"110 - Gain = 64");
       break;
     case 7:
-      DEBUG_PRINTF("111 - Gain = 128");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"111 - Gain = 128");
       break;
   }
-  DEBUG_PRINTF("              // PGA 이득 설정\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"              // PGA 이득 설정\r\n");
 
-  DEBUG_PRINTF("  PGA Bypass[0]  : %s             // 내부 저잡음 PGA 우회 여부\r\n",
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  PGA Bypass[0]  : %s             // 내부 저잡음 PGA 우회 여부\r\n",
             (reg & 0x01) ? "1 - 우회함 (Bypassed)" : "0 - 사용함 (Enabled)");
 
   // Register 1: DR[7:5], MODE[4:3], CM[2], TS[1], BCS[0]
   read_reg( ADS1220_REG_1, 1, &reg);
-  DEBUG_PRINTF("REG1 (0x%02X): 0x%02X\r\n", ADS1220_REG_1, reg);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"REG1 (0x%02X): 0x%02X\r\n", ADS1220_REG_1, reg);
 
-  DEBUG_PRINTF("  Data rate [7:5]: ");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Data rate [7:5]: ");
   switch ((reg >> 5) & 0x07)
   {
     case 0:
-      DEBUG_PRINTF("000 - 20 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"000 - 20 SPS (Normal)\r\n");
       break;
     case 1:
-      DEBUG_PRINTF("001 - 45 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"001 - 45 SPS (Normal)\r\n");
       break;
     case 2:
-      DEBUG_PRINTF("010 - 90 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"010 - 90 SPS (Normal)\r\n");
       break;
     case 3:
-      DEBUG_PRINTF("011 - 175 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"011 - 175 SPS (Normal)\r\n");
       break;
     case 4:
-      DEBUG_PRINTF("100 - 330 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"100 - 330 SPS (Normal)\r\n");
       break;
     case 5:
-      DEBUG_PRINTF("101 - 600 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"101 - 600 SPS (Normal)\r\n");
       break;
     case 6:
-      DEBUG_PRINTF("110 - 1000 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"110 - 1000 SPS (Normal)\r\n");
       break;
     case 7:
-      DEBUG_PRINTF("111 - Reserved\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"111 - Reserved\r\n");
       break;
   }
-  DEBUG_PRINTF("                        // 출력 샘플링 속도 설정\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"                        // 출력 샘플링 속도 설정\r\n");
 
-  DEBUG_PRINTF("  Mode      [4:3]: ");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Mode      [4:3]: ");
   switch ((reg >> 3) & 0x03)
   {
     case 0:
-      DEBUG_PRINTF("00 - Normal mode\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"00 - Normal mode\r\n");
       break;
     case 1:
-      DEBUG_PRINTF("01 - Duty-cycle mode\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"01 - Duty-cycle mode\r\n");
       break;
     case 2:
-      DEBUG_PRINTF("10 - Turbo mode\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"10 - Turbo mode\r\n");
       break;
     case 3:
-      DEBUG_PRINTF("11 - Reserved\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"11 - Reserved\r\n");
       break;
   }
-  DEBUG_PRINTF("                        // 변환 클럭 동작 모드 설정\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"                        // 변환 클럭 동작 모드 설정\r\n");
 
-  DEBUG_PRINTF("  CM        [2]  : %s                // 공통 모드 제거 기능\r\n",
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  CM        [2]  : %s                // 공통 모드 제거 기능\r\n",
             (reg & 0x04) ? "1 - Enabled" : "0 - Disabled");
-  DEBUG_PRINTF("  Temp Sensor[1] : %s              // 내부 온도 센서 사용\r\n",
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Temp Sensor[1] : %s              // 내부 온도 센서 사용\r\n",
             (reg & 0x02) ? "1 - Enabled" : "0 - Disabled");
-  DEBUG_PRINTF("  Burn-out  [0]  : %s                // 10uA 번아웃 전류 소스\r\n",
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Burn-out  [0]  : %s                // 10uA 번아웃 전류 소스\r\n",
             (reg & 0x01) ? "1 - On" : "0 - Off (기본값)");
 
   // Register 2: VREF[7:6], 50/60[5:4], PSW[3], IDAC[2:0]
   read_reg( ADS1220_REG_2, 1, &reg);
-  DEBUG_PRINTF("REG2 (0x%02X): 0x%02X\r\n", ADS1220_REG_2, reg);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"REG2 (0x%02X): 0x%02X\r\n", ADS1220_REG_2, reg);
 
-  DEBUG_PRINTF("  VREF      [7:6]: ");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  VREF      [7:6]: ");
   switch ((reg >> 6) & 0x03)
   {
     case 0:
-      DEBUG_PRINTF("00 - Internal 2.048V (기본값)");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"00 - Internal 2.048V (기본값)");
       break;
     case 1:
-      DEBUG_PRINTF("01 - External REF0 사용");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"01 - External REF0 사용");
       break;
     case 2:
-      DEBUG_PRINTF("10 - AIN0/REFP1, AIN3/REFN1");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"10 - AIN0/REFP1, AIN3/REFN1");
       break;
     case 3:
-      DEBUG_PRINTF("11 - AVDD - AVSS 사용");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"11 - AVDD - AVSS 사용");
       break;
   }
-  DEBUG_PRINTF("        // 기준 전압 선택\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"        // 기준 전압 선택\r\n");
 
-  DEBUG_PRINTF("  50/60Hz Rej[5:4]: ");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  50/60Hz Rej[5:4]: ");
   switch ((reg >> 4) & 0x03)
   {
     case 0:
-      DEBUG_PRINTF("00 - 필터 비활성화(기본값)");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"00 - 필터 비활성화(기본값)");
       break;
     case 1:
-      DEBUG_PRINTF("01 - 50Hz & 60Hz 동시 제거");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"01 - 50Hz & 60Hz 동시 제거");
       break;
     case 2:
-      DEBUG_PRINTF("10 - 50Hz 제거만");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"10 - 50Hz 제거만");
       break;
     case 3:
-      DEBUG_PRINTF("11 - 60Hz 제거만");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"11 - 60Hz 제거만");
       break;
   }
-  DEBUG_PRINTF("    // FIR 필터 구성\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"    // FIR 필터 구성\r\n");
 
-  DEBUG_PRINTF("  PSW       [3]  : %s           // Low-side 스위치 동작 설정\r\n",
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  PSW       [3]  : %s           // Low-side 스위치 동작 설정\r\n",
             (reg & 0x08) ? "1 - 자동 동작" : "0 - 항상 열림(기본값)");
 
-  DEBUG_PRINTF("  IDAC Curr[2:0]: ");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  IDAC Curr[2:0]: ");
   switch (reg & 0x07)
   {
     case 0:
-      DEBUG_PRINTF("000 - Off (기본값)");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"000 - Off (기본값)");
       break;
     case 1:
-      DEBUG_PRINTF("001 - 10 uA");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"001 - 10 uA");
       break;
     case 2:
-      DEBUG_PRINTF("010 - 50 uA");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"010 - 50 uA");
       break;
     case 3:
-      DEBUG_PRINTF("011 - 100 uA");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"011 - 100 uA");
       break;
     case 4:
-      DEBUG_PRINTF("100 - 250 uA");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"100 - 250 uA");
       break;
     case 5:
-      DEBUG_PRINTF("101 - 500 uA");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"101 - 500 uA");
       break;
     case 6:
-      DEBUG_PRINTF("110 - 1000 uA");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"110 - 1000 uA");
       break;
     case 7:
-      DEBUG_PRINTF("111 - 1500 uA");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"111 - 1500 uA");
       break;
   }
-  DEBUG_PRINTF("           // IDAC1 및 IDAC2 전류 설정\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"           // IDAC1 및 IDAC2 전류 설정\r\n");
 
   // Register 3: IDAC1[7:5], IDAC2[4:2], GPIO_DIR[1], GPIO_DAT[0]
   read_reg( ADS1220_REG_3, 1, &reg);
   // Register 3: I1MUX[7:5], I2MUX[4:2], DRDYM[1], Reserved[0]
   read_reg( ADS1220_REG_3, 1, &reg);
-  DEBUG_PRINTF("REG3 (0x%02X): 0x%02X\r\n", ADS1220_REG_3, reg);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"REG3 (0x%02X): 0x%02X\r\n", ADS1220_REG_3, reg);
 
-  DEBUG_PRINTF("  IDAC1 MUX [7:5]: ");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  IDAC1 MUX [7:5]: ");
   switch ((reg >> 5) & 0x07)
   {
     case 0:
-      DEBUG_PRINTF("000 - Disabled (기본값)");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"000 - Disabled (기본값)");
       break;
     case 1:
-      DEBUG_PRINTF("001 - AIN0/REFP1");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"001 - AIN0/REFP1");
       break;
     case 2:
-      DEBUG_PRINTF("010 - AIN1");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"010 - AIN1");
       break;
     case 3:
-      DEBUG_PRINTF("011 - AIN2");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"011 - AIN2");
       break;
     case 4:
-      DEBUG_PRINTF("100 - AIN3/REFN1");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"100 - AIN3/REFN1");
       break;
     case 5:
-      DEBUG_PRINTF("101 - REFP0");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"101 - REFP0");
       break;
     case 6:
-      DEBUG_PRINTF("110 - REFN0");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"110 - REFN0");
       break;
     case 7:
-      DEBUG_PRINTF("111 - Reserved");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"111 - Reserved");
       break;
   }
-  DEBUG_PRINTF("        // IDAC1 라우팅 채널 설정\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"        // IDAC1 라우팅 채널 설정\r\n");
 
-  DEBUG_PRINTF("  IDAC2 MUX [4:2]: ");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  IDAC2 MUX [4:2]: ");
   switch ((reg >> 2) & 0x07)
   {
     case 0:
-      DEBUG_PRINTF("000 - Disabled (기본값)");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"000 - Disabled (기본값)");
       break;
     case 1:
-      DEBUG_PRINTF("001 - AIN0/REFP1");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"001 - AIN0/REFP1");
       break;
     case 2:
-      DEBUG_PRINTF("010 - AIN1");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"010 - AIN1");
       break;
     case 3:
-      DEBUG_PRINTF("011 - AIN2");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"011 - AIN2");
       break;
     case 4:
-      DEBUG_PRINTF("100 - AIN3/REFN1");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"100 - AIN3/REFN1");
       break;
     case 5:
-      DEBUG_PRINTF("101 - REFP0");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"101 - REFP0");
       break;
     case 6:
-      DEBUG_PRINTF("110 - REFN0");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"110 - REFN0");
       break;
     case 7:
-      DEBUG_PRINTF("111 - Reserved");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"111 - Reserved");
       break;
   }
-  DEBUG_PRINTF("        // IDAC2 라우팅 채널 설정\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"        // IDAC2 라우팅 채널 설정\r\n");
 
-  DEBUG_PRINTF("  DRDY Mode  [1] : %s              // DRDY 핀 동작 방식\r\n",
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  DRDY Mode  [1] : %s              // DRDY 핀 동작 방식\r\n",
             (reg & 0x02) ? "1 - DOUT/DRDY와 DRDY 동시에 출력" : "0 - DRDY 전용 핀 사용 (기본값)");
 
-  DEBUG_PRINTF("  Reserved   [0] : %d                    // 예약비트 (항상 0)\r\n", reg & 0x01);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Reserved   [0] : %d                    // 예약비트 (항상 0)\r\n", reg & 0x01);
 
-  DEBUG_PRINTF("\r\n==========\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"\r\n==========\r\n");
 }
 
 void write_reg(uint8_t startAddress,uint8_t numRegs,uint8_t *pData)

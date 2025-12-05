@@ -1622,7 +1622,7 @@ void DUALPORT_TASK(void *arg)
   int32_t elapse_time;
  // sensor_t *p_sensor_config ;
 
-  DEBUG_PRINTF("dual port task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"dual port task start\r\n");
   //p_sensor_config = get_sensor_config_copy();
   pAws = &mRealAws;
 

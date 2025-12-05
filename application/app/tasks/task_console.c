@@ -11,6 +11,7 @@
 #include "cli\fsl_shell.h"
 #include "cli\fsl_debug_console.h"
 #include "cli\console_scanf.h"
+#include "console_login.h"
 #include "drv_rs232.h"
 #include "dev_io.h"
 #include "task_event.h"
@@ -102,6 +103,9 @@ void consoleTask(void *arg)
   // io_printf(VT100_CLEAR_SCREEN);
   // io_printf(VT100_CURSOR_HOME);
   print_signature();
+
+  check_login();
+  
 
   if (restore_error(buffer,sizeof(buffer)))
   {

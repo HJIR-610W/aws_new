@@ -189,7 +189,7 @@ void startTask(void *arg)
 iwdtTask_init();
 #endif
   log_boot_reason();
-  DEBUG_PRINTF("start end\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"start end\r\n");
 
   osThreadExit();  // 종료 시킴
 }

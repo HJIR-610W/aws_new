@@ -261,7 +261,7 @@ void tcpServerTask(void *arg)
 
   char client_ip_str_buffer[INET_ADDRSTRLEN];
 
-  DEBUG_PRINTF("tcpServer task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"tcpServer task start\r\n");
 
   // client_slots 초기화
   if (osMutexAcquire(client_slots_mutex, osWaitForever) == osOK) {

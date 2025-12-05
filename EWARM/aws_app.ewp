@@ -446,6 +446,7 @@
                     <state>$PROJ_DIR$\..\application\app\tasks\aws\core</state>
                     <state>$PROJ_DIR$\..\application\app\tasks\panel</state>
                     <state>$PROJ_DIR$\..\application\version</state>
+                    <state>$PROJ_DIR$\..\application\app\crypto</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2341,7 +2342,7 @@
                     <name>$PROJ_DIR$\..\Application\app\config\config_manager.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\app\config\config_memory_map.h</name>
+                    <name>$PROJ_DIR$\..\Application\app\config\config_memory_map.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\config\config_nvm.c</name>
@@ -2488,6 +2489,9 @@
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\Application\app\tasks\console\app_console_test.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\console\console_login.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\Application\app\tasks\console\console_rtos.c</name>
@@ -2969,7 +2973,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
             </file>
         </group>
         <group>
@@ -3211,7 +3215,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>

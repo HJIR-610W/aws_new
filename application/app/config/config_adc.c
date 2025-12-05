@@ -11,6 +11,7 @@
 #include "dev_io.h"
 #include "drv_crc.h"
 #include "ff.h"
+#include "system_err.h"
 
 #include "drv_fram.h"
 
@@ -75,7 +76,7 @@ void load_adc_cali(void)
 
   adc_config_map();
   
-  io_printf("sizeof(config_adc_nvm_t):%d\r\n",sizeof(config_adc_nvm_t));
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_adc_nvm_t):%d\r\n",sizeof(config_adc_nvm_t));
 }
 
 #define PATH_ADC_CALIBRATION_BIN "0:back_up/adc_calibraion.bin"

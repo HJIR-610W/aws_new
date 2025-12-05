@@ -35,7 +35,7 @@ void ethernetTask(void *arg)
   mask = config.eth_subnet;
   gw   = config.eth_gateway;
 
-  DEBUG_PRINTF("ethernet task start\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"ethernet task start\r\n");
   MX_LWIP_Init(ip,mask,gw);
   
   noti_tcpServerTask(0x00000001);

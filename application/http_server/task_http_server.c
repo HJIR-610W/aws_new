@@ -488,7 +488,7 @@ static void http_server_task(void *argument)
     socklen_t client_len = sizeof(client_addr);
     int opt = 1;
 
-    DEBUG_PRINTF("http_server task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"http_server task start\r\n");
     task_printf("HTTP Server: Starting on port %d\r\n", HTTP_SERVER_PORT);
 
     osThreadFlagsWait(0x00000001, osFlagsWaitAny, osWaitForever);

@@ -1342,7 +1342,7 @@ void menuTask(void *arg)
   uint32_t screen_off_time;
   screen_page_t lcd_win;
 
-  DEBUG_PRINTF("menu task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"menu task start\r\n");
 
   screen_page_create(&lcd_win);
 

@@ -829,7 +829,7 @@ void modemAsyncTask(void  *argument)
     uint8_t rssiRead =0;
     start_time = osKernelGetTickCount();
 
-    DEBUG_PRINTF("modemAsync task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"modemAsync task start\r\n");
     while(1)
     {
         osDelay(1000);
@@ -1030,7 +1030,7 @@ void modemAtTask(void  *argument)
   uint32_t cmd_count = _iCellular->get_count();
 
   //wdt_number =  wdt_task_register(kAtTask_attributes.name,600000);
-  DEBUG_PRINTF("modemAt task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"modemAt task start\r\n");
   while (1)
   {
     ERROR_PRINTF("modem recv start\r\n");
@@ -1232,7 +1232,7 @@ void modemTcpTask(void  *argument)
     g_cdma_system.link_status = eCDMA_LINK_IDLE;
     g_modem_config.connection_timeoutms = 3600000;
 
-    DEBUG_PRINTF("modemTcp task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"modemTcp task start\r\n");
     while (1)
     {
       g_cdma_system.link_status = eCDMA_LINK_DOWN;

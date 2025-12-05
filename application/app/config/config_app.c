@@ -14,7 +14,7 @@
 #include "user_heap.h"
 #include "FreeRTOS.h"
 #include "util_stdio.h"
-
+#include "system_err.h"
 config_t config;
 system_t System;
 
@@ -416,8 +416,7 @@ void load_config_app(void)
   memcpy(g_sensor_config_bk, config.sensor, sizeof(g_sensor_config_bk));
 
   check_unused_field(CONFIG_START_ADDRESS + sizeof(config_t), CONFIG_SENSOR_START_ADDRESS);
-  
-  io_printf("sizeof(config_t):%d\r\n",sizeof(config_t));
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_t):%d\r\n",sizeof(config_t));
             
 }
 

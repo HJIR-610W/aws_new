@@ -212,7 +212,7 @@ void loggingTask(void *arg)
   uint16_t sunshine;
   int32_t wdt_number;
 
-  DEBUG_PRINTF("logging task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"logging task start\r\n");
 
   //이 task는 최소 1분에 한번씩 호출되어야한다.
   wdt_number = wdt_task_register(kLoggingTask_attributes.name, 90000);
