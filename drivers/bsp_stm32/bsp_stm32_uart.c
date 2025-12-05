@@ -32,7 +32,8 @@ typedef struct stm32_uart_cfg_s
   StreamBufferHandle_t stream_buffer;
   DMA_HandleTypeDef dma_tx;
   DMA_HandleTypeDef dma_rx;
-  osMutexId_t *lock;
+  osMutexId_t *tx_lock; //송신용 뮤텍스
+  osMutexId_t *rx_lock; //수신용 뮤텍스
   osSemaphoreId_t *tx_complete_sem; // 전송 완료 알림 세마포어
 } uart_instance_t;
 
@@ -183,8 +184,8 @@ int32_t stm32_uart_init(int num, void *opt)
       uart_inst[num].tx_complete_sem = tempSem;
   }
   uart_inst[num].stream_buffer = xStreamBufferCreate(uart_inst[num].buffer_size, BUFFER_TRIGGER_LEVEL_BYTES);
-  OS_CREATE_MUTEX(uart_inst[num].lock);
-  //OS_CREATE_BINARY_SEM(uart_inst[num].rx_sem);
+  OS_CREATE_MUTEX(uart_inst[num].tx_lock);
+  OS_CREATE_MUTEX(uart_inst[num].rx_lock);
 
   stm32_uart_hal_init(num, cfg->baud, cfg->parity_index, cfg->dataLen, cfg->stop_bit);
   stm32_uart_dma_init(num);
@@ -409,7 +410,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
   size_t bytes_read;
   size_t cnt = 0;
 
- // OS_MUTEX_LOCK(uart_inst[uart_num].rx_sem, osWaitForever);
+  OS_MUTEX_LOCK(uart_inst[uart_num].rx_lock, osWaitForever);
 
   // timeOutMs가 0인 경우: 논블로킹 모드
   if (timeOutMs == 0)
@@ -427,7 +428,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
     }
     // 데이터가 없으면 cnt는 0으로 리턴
 
-  //  OS_MUTEX_UNLOCK(uart_inst[uart_num].rx_sem);
+    OS_MUTEX_UNLOCK(uart_inst[uart_num].rx_lock);
     return cnt;
   }
 
@@ -522,7 +523,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
     }
   }
 
- // OS_MUTEX_UNLOCK(uart_inst[uart_num].rx_sem);
+  OS_MUTEX_UNLOCK(uart_inst[uart_num].rx_lock);
 
   return cnt;
 }
@@ -543,43 +544,71 @@ void stm32_uart_set(int num, eUART_SET_OPTION_t cmd, void *option)
 void stm32_uart_flush_rx(int num)
 {
   uint8_t data;
+  size_t bytes_available;
 
   if(num <0)
   {
     return;
   }
-  
-  while (stm32_uart_recv(num, &data, 1, 0));
+
+  OS_MUTEX_LOCK(uart_inst[num].rx_lock, osWaitForever);
+
+  while ((bytes_available = xStreamBufferBytesAvailable(uart_inst[num].stream_buffer)) > 0)
+  {
+    xStreamBufferReceive(uart_inst[num].stream_buffer, &data, 1, 0);
+  }
+
+  OS_MUTEX_UNLOCK(uart_inst[num].rx_lock);
 }
 
 int32_t stm32_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms,
                        uint32_t timeout2_ms)
 {
+  int32_t ret;
   int32_t received = 0;
   uint8_t *p = buffer;
+  uint32_t start_tick;
+  uint32_t elapsed_tick;
+  uint32_t remaining_timeout;
+  size_t bytes_read;
 
   if(num <0 )
   {
     return 0;
   }
-  // Step 1: 첫 바이트 수신 (timeout1 사용)
-  int32_t ret = stm32_uart_recv(num, p, 1, timeout1_ms);
-  if (ret <= 0)
-    return 0;  // 첫 바이트 수신 실패, 수신 없음
 
-  received += ret;
-  p += ret;
+  OS_MUTEX_LOCK(uart_inst[num].rx_lock, osWaitForever);
+
+  // Step 1: 첫 바이트 수신 (timeout1 사용)
+  bytes_read = xStreamBufferReceive(uart_inst[num].stream_buffer, p, 1, pdMS_TO_TICKS(timeout1_ms));
+  if (bytes_read <= 0)
+  {
+    OS_MUTEX_UNLOCK(uart_inst[num].rx_lock);
+    return 0;  // 첫 바이트 수신 실패, 수신 없음
+  }
+
+  received += bytes_read;
+  p += bytes_read;
+
+  start_tick = osKernelGetTickCount();
 
   // Step 2: 추가 바이트 수신 루프 (timeout2 사용)
   while (received < buffer_size)
   {
-    ret = stm32_uart_recv(num, p, 1, timeout2_ms);
-    if (ret <= 0)
+    elapsed_tick = osKernelGetTickCount() - start_tick;
+    remaining_timeout = (elapsed_tick < pdMS_TO_TICKS(timeout2_ms)) ?
+                        (pdMS_TO_TICKS(timeout2_ms) - elapsed_tick) : 0;
+
+    bytes_read = xStreamBufferReceive(uart_inst[num].stream_buffer, p, 1, remaining_timeout);
+    if (bytes_read <= 0)
       break;  // timeout2 안에 수신된 게 없으면 종료
 
-    received += ret;
-    p += ret;
+    received += bytes_read;
+    p += bytes_read;
+    start_tick = osKernelGetTickCount();
   }
+
+  OS_MUTEX_UNLOCK(uart_inst[num].rx_lock);
 
   return received;
 }
@@ -634,7 +663,9 @@ int32_t stm32_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout
   uint16_t cnt = 0;
   uint32_t startTime, startTick, stopTick, elapseTick;
   uint32_t timeout;
-  uint32_t len;
+  size_t len;
+
+  OS_MUTEX_LOCK(uart_inst[num].rx_lock, osWaitForever);
 
   startTime = OS_GET_TICK();
   timeout = tout_ms;
@@ -642,27 +673,29 @@ int32_t stm32_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout
   do
   {
     startTick = OS_GET_TICK();
-    len = stm32_uart_recv(num, &data, 1, tout_ms);
+    len = xStreamBufferReceive(uart_inst[num].stream_buffer, &data, 1, pdMS_TO_TICKS(tout_ms));
 
     if (len)
     {
       pBuff[cnt++] = data;
-      
+
       if((cnt==1)&&((data == '\r') || (data == '\n')))
       {
         cnt = 0;
         continue;
       }
-         
-         
+
+
       if ((data == '\r') || (data == '\n'))
       {
         pBuff[cnt - 1] = 0;
+        OS_MUTEX_UNLOCK(uart_inst[num].rx_lock);
         return (cnt - 1); /* \r 또는 \n 를 제외한 문자열 길이 리턴*/
       }
 
       if (cnt == bSize)
       {
+        OS_MUTEX_UNLOCK(uart_inst[num].rx_lock);
         return 0;
       }
     }
@@ -679,6 +712,8 @@ int32_t stm32_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout
       timeout = timeout - elapseTick;
     }
   } while (1);
+
+  OS_MUTEX_UNLOCK(uart_inst[num].rx_lock);
 
   return 0;
 }
@@ -700,7 +735,7 @@ int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
   HAL_StatusTypeDef status;
   osStatus_t osStatus;
 
-  OS_MUTEX_LOCK(uart_inst[num].lock, osWaitForever);
+  OS_MUTEX_LOCK(uart_inst[num].tx_lock, osWaitForever);
   osSemaphoreAcquire(uart_inst[num].tx_complete_sem, 0); // 이전에 처리 못한건 제거
   waitTime = calculate_txWaitTimeMs(uart_inst[num].baud, dataLen);
   status = HAL_UART_Transmit_DMA(&uart_inst[num].handle, pData, dataLen);
@@ -722,8 +757,8 @@ int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
   {
     ERROR_PRINTF("uart");
   }
-  OS_MUTEX_UNLOCK(uart_inst[num].lock);
-  
+  OS_MUTEX_UNLOCK(uart_inst[num].tx_lock);
+
   return retVal;
 }
 
@@ -774,8 +809,8 @@ void stm32_uart_set_config(int num, uart_config_t *config)
     return;
   }
 
-  OS_MUTEX_LOCK(uart_inst[num].lock, osWaitForever);
- 
+  OS_MUTEX_LOCK(uart_inst[num].tx_lock, osWaitForever);
+  OS_MUTEX_LOCK(uart_inst[num].rx_lock, osWaitForever);
 
   p_uart = &uart_inst[num].handle;
 
@@ -785,7 +820,8 @@ void stm32_uart_set_config(int num, uart_config_t *config)
   if (status != HAL_OK)
   {
     ERROR_PRINTF("UART DeInit failed");
-    OS_MUTEX_UNLOCK(uart_inst[num].lock);
+    OS_MUTEX_UNLOCK(uart_inst[num].rx_lock);
+    OS_MUTEX_UNLOCK(uart_inst[num].tx_lock);
     return;
   }
 
@@ -837,11 +873,13 @@ void stm32_uart_set_config(int num, uart_config_t *config)
   if (status != HAL_OK)
   {
     ERROR_PRINTF("UART Init failed");
-    OS_MUTEX_UNLOCK(uart_inst[num].lock);
+    OS_MUTEX_UNLOCK(uart_inst[num].rx_lock);
+    OS_MUTEX_UNLOCK(uart_inst[num].tx_lock);
     return;
   }
 
   HAL_UART_Receive_IT(p_uart, (uint8_t *)&uart_inst[num].rx_data, 1);
 
-  OS_MUTEX_UNLOCK(uart_inst[num].lock);
+  OS_MUTEX_UNLOCK(uart_inst[num].rx_lock);
+  OS_MUTEX_UNLOCK(uart_inst[num].tx_lock);
 }

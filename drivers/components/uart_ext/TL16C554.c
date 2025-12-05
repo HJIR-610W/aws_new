@@ -71,7 +71,8 @@ typedef struct tl16c554_instance_s
   int32_t irq_di_num; // uart 수신 입터럽트 번호
   volatile uint8_t *base_address; // tl16c554 uart 개별 주소
   StreamBufferHandle_t quad_stream;
-  osMutexId_t *lock; //송신용 세마포어, 동일task만 사용한다면 불필요
+  osMutexId_t *tx_lock; //송신용 뮤텍스
+  osMutexId_t *rx_lock; //수신용 뮤텍스
   tx_cicular_buffer_t tx_cicular_buffer;
   osSemaphoreId_t *tx_doen_sem;
 } tl16c554_instance_t;
@@ -522,7 +523,7 @@ int32_t tl16c554_send_(int uart_num, const uint8_t *p_data, uint16_t data_len)
   uint32_t waitTime;
   osStatus_t osStatus;
 
-  OS_MUTEX_LOCK(uart->lock, osWaitForever);
+  OS_MUTEX_LOCK(uart->tx_lock, osWaitForever);
 
   if(uart->tx_cicular_buffer.buffer_size>=data_len)
   {
@@ -546,7 +547,7 @@ int32_t tl16c554_send_(int uart_num, const uint8_t *p_data, uint16_t data_len)
   }
   }
 
-  OS_MUTEX_UNLOCK(uart->lock);
+  OS_MUTEX_UNLOCK(uart->tx_lock);
   return count;
 }
 
@@ -561,7 +562,7 @@ int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
   uint32_t timeout;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
-  OS_MUTEX_LOCK(uart->lock, osWaitForever);
+  OS_MUTEX_LOCK(uart->tx_lock, osWaitForever);
 
   while (data_len)
   {
@@ -591,7 +592,7 @@ int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
   THR에 문자가 로드되면 LSR6은 클리어되며 문자가 완전히 송신될 때 까지 유지됨
   */
 
-  OS_MUTEX_UNLOCK(uart->lock);
+  OS_MUTEX_UNLOCK(uart->tx_lock);
 
   return cnt;
 }
@@ -603,9 +604,17 @@ int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
 void tl16c554_recv_flush(int uart_num)
 {
   uint8_t data;
+  size_t bytes_available;
+  tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
-  while (tl16c554_recv(uart_num, &data, 1, 0));
+  OS_MUTEX_LOCK(uart->rx_lock, osWaitForever);
 
+  while ((bytes_available = xStreamBufferBytesAvailable(uart->quad_stream)) > 0)
+  {
+    xStreamBufferReceive(uart->quad_stream, &data, 1, 0);
+  }
+
+  OS_MUTEX_UNLOCK(uart->rx_lock);
 }
 
 
@@ -650,7 +659,7 @@ int32_t tl16c554_recv(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_
   size_t xBytesRead;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
- // OS_MUTEX_LOCK(uart->rx_sem, osWaitForever);
+  OS_MUTEX_LOCK(uart->rx_lock, osWaitForever);
 
   // timeout_ms가 0인 경우: 논블로킹 모드 (데이터가 있으면 읽고 없으면 즉시 리턴)
   if (timeout_ms == 0)
@@ -740,7 +749,7 @@ int32_t tl16c554_recv(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_
     }
   }
 
- // OS_MUTEX_UNLOCK(uart->rx_sem);
+  OS_MUTEX_UNLOCK(uart->rx_lock);
 
   return cnt;
 }
@@ -749,33 +758,53 @@ int32_t tl16c554_recv(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_
  * @brief 특정 용도 첫번째 바이트가 특정 시간안에 수신되어야 하며 그다음부터 특정시간안에 데이터가
  * 수신 안되면 종료 처리
  * 사용 예) 토큰 구분이 없는 프레임 수신
- * 일반적으로 데이터 수신은 연속된 바이트 수신이라고 가정 
+ * 일반적으로 데이터 수신은 연속된 바이트 수신이라고 가정
  * 프레임이 길이를 판단할수 없는 프레임인 경우 응용하여 사용
  * 이함수 말고 실제 드라이버 자체에서 recv함수로 구현하는것이. 나을수도
  */
 int32_t tl16c554_recv_opt(int uart_num, uint8_t *buffer, uint16_t buffer_size,
                            uint32_t timeout1_ms, uint32_t timeout2_ms)
 {
-
   int32_t received = 0;
   uint8_t *p = buffer;
+  uint32_t start_tick;
+  uint32_t elapsed_tick;
+  uint32_t remaining_timeout;
+  size_t bytes_read;
+  tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
-  int32_t ret = tl16c554_recv(uart_num, p, 1, timeout1_ms);
-  if (ret <= 0)
-    return 0;  
+  OS_MUTEX_LOCK(uart->rx_lock, osWaitForever);
 
-  received += ret;
-  p += ret;
+  // Step 1: 첫 바이트 수신 (timeout1 사용)
+  bytes_read = xStreamBufferReceive(uart->quad_stream, p, 1, pdMS_TO_TICKS(timeout1_ms));
+  if (bytes_read <= 0)
+  {
+    OS_MUTEX_UNLOCK(uart->rx_lock);
+    return 0;
+  }
 
+  received += bytes_read;
+  p += bytes_read;
+
+  start_tick = osKernelGetTickCount();
+
+  // Step 2: 추가 바이트 수신 루프 (timeout2 사용)
   while (received < buffer_size)
   {
-    ret = tl16c554_recv(uart_num, p, 1, timeout2_ms);
-    if (ret <= 0)
-      break; 
+    elapsed_tick = osKernelGetTickCount() - start_tick;
+    remaining_timeout = (elapsed_tick < pdMS_TO_TICKS(timeout2_ms)) ?
+                        (pdMS_TO_TICKS(timeout2_ms) - elapsed_tick) : 0;
 
-    received += ret;
-    p += ret;
+    bytes_read = xStreamBufferReceive(uart->quad_stream, p, 1, remaining_timeout);
+    if (bytes_read <= 0)
+      break;
+
+    received += bytes_read;
+    p += bytes_read;
+    start_tick = osKernelGetTickCount();
   }
+
+  OS_MUTEX_UNLOCK(uart->rx_lock);
 
   return received;
 }
@@ -833,7 +862,10 @@ int32_t tl16c554_recv_crlf(int uart_num, char *p_buff, uint16_t buffer_size, uin
   uint16_t cnt = 0;
   uint32_t start_time, startTick, stopTick, elapseTick;
   uint32_t timeout;
-  uint32_t len;
+  size_t len;
+  tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+
+  OS_MUTEX_LOCK(uart->rx_lock, osWaitForever);
 
   start_time = OS_GET_TICK();
   timeout = tout_ms;
@@ -841,7 +873,7 @@ int32_t tl16c554_recv_crlf(int uart_num, char *p_buff, uint16_t buffer_size, uin
   do
   {
     startTick = OS_GET_TICK();
-    len = tl16c554_recv(uart_num, &data, 1, tout_ms);
+    len = xStreamBufferReceive(uart->quad_stream, &data, 1, pdMS_TO_TICKS(tout_ms));
 
     if (len)
     {
@@ -856,11 +888,13 @@ int32_t tl16c554_recv_crlf(int uart_num, char *p_buff, uint16_t buffer_size, uin
       if ((data == '\r') || (data == '\n'))
       {
         p_buff[cnt - 1] = 0;
+        OS_MUTEX_UNLOCK(uart->rx_lock);
         return (cnt - 1); /* \r 또는 \n 를 제외한 문자열 길이 리턴*/
       }
 
       if (cnt == buffer_size)
       {
+        OS_MUTEX_UNLOCK(uart->rx_lock);
         return 0;
       }
     }
@@ -877,6 +911,8 @@ int32_t tl16c554_recv_crlf(int uart_num, char *p_buff, uint16_t buffer_size, uin
       timeout = timeout - elapseTick;
     }
   } while (1);
+
+  OS_MUTEX_UNLOCK(uart->rx_lock);
 
   return 0;
 }
@@ -946,8 +982,8 @@ int32_t tl16c554_init(int32_t uart_num, void *opt)
   uart->parity_index = config->parity_index;
   uart->quad_stream = xStreamBufferCreate(buff_size_list[uart_num], 1);
 
-  OS_CREATE_MUTEX(uart->lock);// 반드시 사용할필요 없음
-  //OS_CREATE_BINARY_SEM(uart->rx_sem);// 반드시 사용할필요 없음
+  OS_CREATE_MUTEX(uart->tx_lock);
+  OS_CREATE_MUTEX(uart->rx_lock);
 
   quad_init(uart_num, (uart_config_t *)opt);
   //TODO:quad 초기화 결과로 opend 변수 처리 필요

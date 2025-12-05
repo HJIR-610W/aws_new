@@ -72,18 +72,20 @@ int32_t ctrl_hj_wind_speed(void)
       case HJ_WIND_SPEED_INFO:
       {
         char buff[100]={"Time Out"};
-        modbus_h_t *modbus_h;
+        modbus_h_t modbus_h;
         uint16_t regs[3];
         int32_t len = 0;
         int32_t ret;
-
-        modbus_h = hj_wind_speed_get_bus_io();
-        if(modbus_h)
+         modbus_h_t *p_modbus;
+            
+        p_modbus = hj_wind_speed_get_bus_io();
+        if(p_modbus)
         {
-          modbus_h->id = 0xFE;
+          modbus_h = *p_modbus;
+          modbus_h.id = 0xFE;
 
 
-          ret = modbus_read_hold_reg(modbus_h, REG_RW_ID, (uint16_t *)regs, _countof(regs));
+          ret = modbus_read_hold_reg(&modbus_h, REG_RW_ID, (uint16_t *)regs, _countof(regs));
           if(ret ==0)
           {
             len += make_sreen_row(&buff[0],  "ID     :%d",regs[0]);
