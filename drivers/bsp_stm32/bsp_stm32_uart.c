@@ -401,6 +401,10 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
   }
 }
 
+/**
+ * @note xStreamBufferReceive 서로 다른 task에서 동시에 block되면 안된다.단일 송신 단일 수신처리되어야한다.
+ * 
+ */
 int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {
   uint32_t start_tick;
@@ -416,7 +420,7 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
   if (timeOutMs == 0)
   {
     bytes_available = xStreamBufferBytesAvailable(uart_inst[uart_num].stream_buffer);
-
+    //읽을 데이터가 있으면 읽고
     if (bytes_available > 0)
     {
       size_t bytes_to_read = (bytes_available > buffSize) ? buffSize : bytes_available;
