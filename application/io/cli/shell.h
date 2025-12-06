@@ -148,7 +148,7 @@ void shell_init(p_shell_context_t context, printf_data_t shell_printf,
 
 
 int32_t shell_register_command(const shell_command_context_t *command_context);
-int32_t shell_main(p_shell_context_t context);
+int32_t shell_loop(p_shell_context_t context);
 int32_t SHELL_recv(p_shell_context_t context,uint32_t *key);
 
 int32_t shell_vscanf_s(const char *fmt_ptr, va_list ap);

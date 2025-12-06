@@ -65,7 +65,8 @@ void shell_init(
     shell_register_command(&xExitCommand);
 }
 
-int32_t shell_main(p_shell_context_t context)
+bool shell_exit=false;
+int32_t shell_loop(p_shell_context_t context)
 {
     uint8_t ch;
     int32_t i;
@@ -75,12 +76,12 @@ int32_t shell_main(p_shell_context_t context)
         return -1;
     }
 
-    context->exit = false;
+    shell_exit = false;
     debug_printf(context->prompt);
 
     while (1)
     {
-        if (context->exit)
+        if (shell_exit)
         {
             break;
         }
@@ -262,7 +263,8 @@ static int32_t HelpCommand(  int32_t argc, char **argv)
 static int32_t ExitCommand( int32_t argc, char **argv)
 {
     /* 경고 생략 */
-    debug_printf("\r\nSHELL exited\r\n");
+    debug_printf("\r\nShell exited\r\n");
+    shell_exit = true;
     return 0;
 }
 

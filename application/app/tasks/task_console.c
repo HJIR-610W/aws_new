@@ -20,7 +20,9 @@
  
 #include "console_test.h"
 #include "system_err.h"
-
+#include "task_logging.h"
+#include "console_login.h"
+#include "crypto_key.h"
 
 int32_t console_uart_num = -1;
 
@@ -31,10 +33,6 @@ const osThreadAttr_t consoleTask_attributes = {
   .priority = (osPriority_t)TASK_PRIO(TASK_CONSOLE_DEF),
 };
 
-
-static const shell_command_context_t printCmd = { "menu",
-                                                  "\r\n\"menu\":menu\r\n" ,
-                                                   menu_root,0 };
 
 static const shell_command_context_t developCmd = {"develop", "\r\n\"develop\":develop\r\n", menu_develop,
                                                  0};
@@ -75,22 +73,24 @@ void print_signature(void)
 
 }
 
+void dev_shell(int mode)
+{
 
-#define SHELL_USE 0
+
+}
+
+
+
 void consoleTask(void *arg)
 {
-  char buffer[100];
-#if SHELL_USE==1
-  const char *prompt=NULL;
-  shell_context_struct user_context;
-  int mode = (int)arg;
-#endif
-
+  char buffer[50];
+  char login_key[10];
 
   print_signature();
-
-  check_login();
   
+  read_password(login_key);
+  while(check_login(login_key)==false);
+
   if(read_last_error(buffer,sizeof(buffer)))
   {
     debug_printf("Last error:%s\r\n",buffer);
@@ -102,20 +102,24 @@ void consoleTask(void *arg)
 
   aws_menu();
   
-#if SHELL_USE==1
-  prompt = (mode==0)?"\x1B[32mAWS>> \x1B[37m":"\x1B[32mAWS_TEST>> \x1B[37m";
-  shell_init(&user_context,   debug_printf,(char *)prompt);
-  shell_register_command(&printCmd);
+
+}
+
+
+void testColsoleTask(void *arg)
+{
+  shell_context_struct user_context;
+
+  log_printf(L_ERROR,"testColsoleTask");
+
+  shell_init(&user_context,   debug_printf,(char *)"\x1B[32mAWS_TEST>> \x1B[37m");
   shell_register_command(&testCmd);
   shell_register_command(&developCmd);
-  shell_main(&user_context);
-#endif
+  shell_loop(&user_context);
 
-  while(1)
-  {
-    debug_puts("Debug menu exited\r\n");
-    osDelay(1000);
-  }
+  debug_puts("Debug menu exited\r\n");
+
+  
 }
 
 
@@ -124,6 +128,7 @@ void start_console(void *arg)
 {
 
   debug_init();
+
   if(s_console_task_id == NULL)
   {
     s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
@@ -134,15 +139,18 @@ void start_console(void *arg)
 
 void consoleTask_init(void *arg)
 {
+
   debug_init() ;
   
-  s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
+  if((int)arg == 1)//버튼 눌린상태로진입 test 모드 실행
+  {
+    osThreadNew(testColsoleTask, arg, &consoleTask_attributes);
+  }
+  else
+  { 
+    s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
+  }
   
 }
 
 
-
-void consoleTask_stop(void)
-{
-  
-}

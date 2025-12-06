@@ -2,5 +2,6 @@
 #ifndef CONSOLE_LOGIN_H
 #define CONSOLE_LOGIN_H
 
-void check_login(void);
+#include <stdbool.h>
+bool check_login(const char *login_key);
 #endif

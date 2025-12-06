@@ -16,7 +16,7 @@
 #include "util_memory.h"
 #include "aws_menu_view.h"
 #include "aws_menu_manager.h"
-
+#include "console_login.h"
 #define MENU_INFO        1
 #define MENU_SYSTEM      2
 #define MENU_SENSOR      3
@@ -41,9 +41,12 @@
 #define MENU_ITEM(def) GET_1 def
 #define MENU_NUMBER(def) GET_2 def
 
+
+extern void testColsoleTask(void *arg);
 int aws_menu(void)
 {
   int choice, status;
+  int test_mode_num=0;
 
  const char* menu[] = { MENU_ITEM(MENU_INFO_DEF),
                         MENU_ITEM(MENU_SYSTEM_DEF),
@@ -60,8 +63,20 @@ int aws_menu(void)
     status = view_input_combobox("AWS", menu, _countof(menu), &choice);
 
     if(status!=MENU_OK)
+    {
+
+      test_mode_num++;
+      if(test_mode_num==5)
+      {
+        test_mode_num=0;
+        if(check_login("1601"))
+        {
+          testColsoleTask(0);
+        }
+      }
       continue;
-    
+    }
+    test_mode_num = 0;
     switch (choice)
     {
       case MENU_NUMBER(MENU_INFO_DEF):

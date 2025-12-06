@@ -20,7 +20,7 @@ int32_t menu_develop( int32_t argc, char **argv)
   int status;
   int ok;
 
-  status = check_pass("진행 코드 입력해주세요", "1601",&ok);
+  status = check_pass("비밀번호를 입력해주세요", "0725",&ok);
   if(status == MENU_OK && ok==1)
     aws_menu_develop();
   
