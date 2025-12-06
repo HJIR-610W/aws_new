@@ -23,6 +23,28 @@
 #include "test_modbus.h"
 #include "test_key.h"
 
+#define MENU_HART                   1
+#define MENU_SRAM                   2
+#define MENU_SDI12                  3
+#define MENU_RS232                  4
+#define MENU_RS485                  5
+#define MENU_RAIN                   6
+#define MENU_ADC                    7
+#define MENU_COUNT                  8
+#define MENU_DIGITAL_INPUT          9     // I0~I5
+#define MENU_DIGITAL_OUTPUT         10    // D0~D5
+#define MENU_POWER                  11    // 24V, CDMA, Module, Heater, Rain sensor
+#define MENU_MODBUS                 12
+#define MENU_ETHERNET               13
+#define MENU_TIME                   14
+#define MENU_FILESYSTEM             15
+#define MENU_ADC_LINEARITY          16
+#define MENU_FLASH_MEMORY           17
+#define MENU_CLCD                   18
+#define MENU_KEY                    19
+
+
+
 int run_test_root()
 {
   int choice, status;
@@ -61,64 +83,65 @@ int run_test_root()
 
     switch (choice)
     {
-      case 1:
+      case MENU_HART:
       test_hart();
       break;
-      case 2:
+      case MENU_SRAM:
       test_sram();
       break;
-      case 3:
+      case MENU_SDI12:
       test_sdi12();
       break;
-      case 4:
+      case MENU_RS232:
       test_uart();
       break;
-      case 5:
+      case MENU_RS485:
       test_rs485();
       break;
-      case 6:
+      case MENU_RAIN:
       test_rain();
       break;
-      case 7:
+      case MENU_ADC:
       aws_menu_calibration();
       break;
-      case 8:
+      case MENU_COUNT:
       test_freq();
       break;
-      case 9:
+      case MENU_DIGITAL_INPUT:
       test_di();
       break;
-      case 10:
+      case MENU_DIGITAL_OUTPUT:
       test_do();
       break;
-      case 11:
+      case MENU_POWER:
       test_power_signal();
       break;
-    case 12:
-              test_modbus();
-              break;
-      case 13:
+    case MENU_MODBUS:
+      test_modbus();
+      break;
+      case MENU_ETHERNET:
       test_eth();
       break;
-       case 14:
-        test_rtc();
-        break;
-        case 15:
-          test_filesystem();
-          break;
-    case 16:
+    case MENU_TIME:
+      test_rtc();
+      break;
+    case MENU_FILESYSTEM:
+      test_filesystem();
+      break;
+    case MENU_ADC_LINEARITY:
       test_adc();
       break;
-      case 17:
+    case MENU_FLASH_MEMORY:
       test_flash();
       break;
-      case 18:
+    case MENU_CLCD:
       test_lcd();
       break;
-    case 19:
+    case MENU_KEY:
        test_key();
        break;
-         default : break;
+    default : 
+    break;
     }
   }
 }

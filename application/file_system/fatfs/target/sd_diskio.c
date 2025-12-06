@@ -232,6 +232,8 @@ DSTATUS SD_status(BYTE lun)
   return SD_CheckStatus(lun);
 }
 
+
+
 /* USER CODE BEGIN beforeReadSection */
 /* can be used to modify previous code / undefine following code / add new code */
 /* USER CODE END beforeReadSection */
@@ -300,6 +302,12 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
     g_sd_diskio_error = 2;
   }
   return res;
+}
+
+
+int read_sd_sector(char *buffer,uint32_t sector)
+{
+  return (int)SD_read(0,buffer, sector, 1);
 }
 
 /* USER CODE BEGIN beforeWriteSection */
