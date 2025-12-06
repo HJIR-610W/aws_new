@@ -8,7 +8,7 @@
 #include "application\app\tasks\logging\app_logging.h"
 #include "application\app\tasks\task_menu.h"
 #include "application\file_system\fatfs\app\fatfs.h"
-#include "application\io\dev_io.h"
+#include "application\io\debug_io.h"
 #include "bsp.h"
 #include "cmsis_os2.h"
 #include "communications\CDMA\task_cellular.h"

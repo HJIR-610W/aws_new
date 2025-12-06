@@ -16,7 +16,7 @@
 #include "kma2.h"
 #include "wind_data.h"
 #include "system_err.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "aws_default_data.h"
 #include "util_crc16_ccitt.h"
 #include "kma3.h"

@@ -3,7 +3,7 @@
 
 #include "cli_input.h"
 #include "cli_key_code.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "lwip/icmp.h"
 #include "lwip/inet_chksum.h"
 #include "lwip/ip.h"
@@ -83,13 +83,13 @@ static err_t ping_recv(int s, struct sockaddr_in *from)
 
     if ((iecho->id == PING_ID) && (iecho->seqno == htons(ping_seq_num)))
     {
-      io_printf("Ping response from %s: seq=%d\r\n",
+      dbg_printf("Ping response from %s: seq=%d\r\n",
                    ipaddr_ntoa((const ip_addr_t *)&from->sin_addr), ntohs(iecho->seqno));
       return 0;
     }
   }
 
-  io_printf("Ping timeout or invalid reply\r\n");
+  dbg_printf("Ping timeout or invalid reply\r\n");
   return -1;
 }
 
@@ -112,7 +112,7 @@ void ping_task(const char *target_ip)
   dest_addr.sin_port = 0;  // ICMP는 포트 사용 안 함
 
 
-  io_printf("Pinging %s with %d bytes of data:\r\n", target_ip, PING_DATA_SIZE);
+  dbg_printf("Pinging %s with %d bytes of data:\r\n", target_ip, PING_DATA_SIZE);
 
 
   // 소켓 생성
@@ -173,7 +173,7 @@ void ping_task(const char *target_ip)
       struct ip_hdr *ip_hdr = (struct ip_hdr *)recv_buf;
       int ttl = ip_hdr->_ttl;
 
-      io_printf("Reply from %s bytes=%d time=%dms TTL=%d\r\n", target_ip, recv_len,
+      dbg_printf("Reply from %s bytes=%d time=%dms TTL=%d\r\n", target_ip, recv_len,
                       rtt == 0 ? 1 : rtt, ttl);
     }
     else
@@ -204,7 +204,7 @@ void lwip_ping_test(const char *target_ip)
   s = socket(AF_INET, SOCK_RAW, IP_PROTO_ICMP);
   if (s < 0)
   {
-    io_printf("Ping: 소켓 생성 실패\r\n");
+    dbg_printf("Ping: 소켓 생성 실패\r\n");
     return;
   }
 
@@ -213,7 +213,7 @@ void lwip_ping_test(const char *target_ip)
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = inet_addr(target_ip);
 
-  io_printf("Pinging %s with %d bytes of data:\r\n", target_ip, PING_DATA_SIZE);
+  dbg_printf("Pinging %s with %d bytes of data:\r\n", target_ip, PING_DATA_SIZE);
 
   for (int i = 0; i < PING_COUNT; i++)
   {
@@ -223,14 +223,14 @@ void lwip_ping_test(const char *target_ip)
     }
     else
     {
-      io_printf("Ping: 요청 전송 실패\r\n");
+      dbg_printf("Ping: 요청 전송 실패\r\n");
     }
 
     sys_msleep(PING_DELAY_MS);
   }
 
   closesocket(s);
-  io_printf("Ping 테스트 종료\r\n");
+  dbg_printf("Ping 테스트 종료\r\n");
 }
 
 // 사용자 입력으로 네트워크 설정
@@ -238,35 +238,35 @@ void network_setup_from_user(void)
 {
   char ip_str[32], netmask_str[32], gw_str[32];
 
-  io_printf("\r\n[ 네트워크 설정을 진행합니다. ]\r\n");
+  dbg_printf("\r\n[ 네트워크 설정을 진행합니다. ]\r\n");
 
   // IP 주소 입력
-  io_printf("IP 주소를 입력하세요 (예: 192.168.1.100): ");
+  dbg_printf("IP 주소를 입력하세요 (예: 192.168.1.100): ");
   cli_scanf_s("%s", ip_str,sizeof(ip_str));
 
   // 서브넷 마스크 입력
-  io_printf("서브넷 마스크를 입력하세요 (예: 255.255.255.0): ");
+  dbg_printf("서브넷 마스크를 입력하세요 (예: 255.255.255.0): ");
   cli_scanf_s("%s", netmask_str,sizeof(netmask_str));
 
   // 게이트웨이 입력
-  io_printf("게이트웨이를 입력하세요 (예: 192.168.1.1): ");
+  dbg_printf("게이트웨이를 입력하세요 (예: 192.168.1.1): ");
   cli_scanf_s("%s", gw_str,sizeof(gw_str));
 
   // 문자열을 숫자 배열로 변환
   ip4_addr_t ipaddr, netmask, gw;
   if (!ip4addr_aton(ip_str, &ipaddr))
   {
-    io_printf("잘못된 IP 주소입니다.\r\n");
+    dbg_printf("잘못된 IP 주소입니다.\r\n");
     return;
   }
   if (!ip4addr_aton(netmask_str, &netmask))
   {
-    io_printf("잘못된 서브넷 마스크입니다.\r\n");
+    dbg_printf("잘못된 서브넷 마스크입니다.\r\n");
     return;
   }
   if (!ip4addr_aton(gw_str, &gw))
   {
-    io_printf("잘못된 게이트웨이입니다.\r\n");
+    dbg_printf("잘못된 게이트웨이입니다.\r\n");
     return;
   }
 
@@ -275,10 +275,10 @@ void network_setup_from_user(void)
   memcpy(eth_config.eth_subnet, &netmask, sizeof(eth_config.eth_subnet));
   memcpy(eth_config.eth_gateway, &gw, sizeof(eth_config.eth_gateway));
 
-  io_printf("\r\n네트워크 설정 완료:\r\n");
-  io_printf("IP: %s\r\n", ip4addr_ntoa(&ipaddr));
-  io_printf("Netmask: %s\r\n", ip4addr_ntoa(&netmask));
-  io_printf("Gateway: %s\r\n", ip4addr_ntoa(&gw));
+  dbg_printf("\r\n네트워크 설정 완료:\r\n");
+  dbg_printf("IP: %s\r\n", ip4addr_ntoa(&ipaddr));
+  dbg_printf("Netmask: %s\r\n", ip4addr_ntoa(&netmask));
+  dbg_printf("Gateway: %s\r\n", ip4addr_ntoa(&gw));
 }
 
 
@@ -290,7 +290,7 @@ void test_eth(void)
 {
   char ping_ip_str[32];
 
-  io_printf("\r\n[ Ethernet + Ping 테스트 시작 ]\r\n");
+  dbg_printf("\r\n[ Ethernet + Ping 테스트 시작 ]\r\n");
 
 #if 0 
   // 사용자로부터 네트워크 설정 입력받기
@@ -313,23 +313,23 @@ void test_eth(void)
   
 #endif
   // 네트워크 인터페이스 초기화
-  io_printf("\r\n네트워크 인터페이스 초기화 중...\r\n");
+  dbg_printf("\r\n네트워크 인터페이스 초기화 중...\r\n");
   if (g_lwip_init==0)
   {
     g_lwip_init = 1;
      MX_LWIP_Init(eth_config.eth_ip, eth_config.eth_subnet, eth_config.eth_gateway);
   }
-  io_printf("네트워크 인터페이스 초기화 완료\r\n");
+  dbg_printf("네트워크 인터페이스 초기화 완료\r\n");
   
 
   // 사용자로부터 Ping 대상 입력
-  io_printf("\r\nPing 테스트를 실행합니다.\r\n");
-  io_printf("IPv4 주소 형식으로 입력해주세요 (예: 192.168.1.1)\r\n");
-  io_printf("입력>");
+  dbg_printf("\r\nPing 테스트를 실행합니다.\r\n");
+  dbg_printf("IPv4 주소 형식으로 입력해주세요 (예: 192.168.1.1)\r\n");
+  dbg_printf("입력>");
   cli_scanf_s("%s", ping_ip_str,sizeof(ping_ip_str));
 
   // Ping 실행
   //lwip_ping_test(ping_ip_str);
   ping_task(ping_ip_str);
-   io_printf("\r\n[ Ethernet + Ping 테스트 종료 ]\r\n");
+   dbg_printf("\r\n[ Ethernet + Ping 테스트 종료 ]\r\n");
 }

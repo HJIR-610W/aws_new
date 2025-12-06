@@ -3,7 +3,7 @@
 #include "bsp.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "drv_rs232.h"
 #include "task_event.h"
 #include "update_fw.h"
@@ -97,7 +97,7 @@ void directTask_init(void)
 
   if(drv_uart_init(g_direct_uart_num, &uart_config,"Direct") !=1)
   {
-    io_printf("direct_task err\r\n");
+    dbg_printf("direct_task err\r\n");
   }
 
   osThreadNew(directTask, NULL, &directTask_attributes);

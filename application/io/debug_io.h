@@ -54,19 +54,19 @@ void dev_io_write(dev_io_t *dev, uint8_t *data, uint32_t dataLen, uint32_t opt);
 uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd, void *opt);
 void dev_io_flush(dev_io_t *dev);
 
-int32_t io_vprintf(const char *pFmt, va_list ap);
-int32_t io_printf(const char * pFmt, ...);
-void io_printf_color(int color, const char *pFmt, ...);
-int32_t io_recv(char *out, uint16_t outSize, uint32_t timeout);
-void io_put_ch(char ch);
-void io_send(uint8_t *pData,uint16_t dataLen);
-void io_puts(const char *str);
-int32_t io_vprintf(const char *pFmt, va_list ap);
-int io_scanf_s(const char *fmt, ...);
-int32_t io_inject(uint8_t *p_data,uint32_t data_len);
+int32_t dbg_vprintf(const char *pFmt, va_list ap);
+int32_t dbg_printf(const char * pFmt, ...);
+void dbg_printf_color(int color, const char *pFmt, ...);
+int32_t dbg_recv(char *out, uint16_t outSize, uint32_t timeout);
+void dbg_put_ch(char ch);
+void dbg_send(uint8_t *pData,uint16_t dataLen);
+void dbg_puts(const char *str);
+int32_t dbg_vprintf(const char *pFmt, va_list ap);
+int dbg_scanf_s(const char *fmt, ...);
+int32_t dbg_inject(uint8_t *p_data,uint32_t data_len);
 
 
-void debug_puts_nonos(char *str);
+void dbg_puts_nonos(char *str);
 void set_debug_uart_handle(int32_t drv);
 
 int32_t get_debug_uart_handle(void);

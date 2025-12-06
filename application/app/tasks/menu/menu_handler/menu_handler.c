@@ -13,7 +13,7 @@
 #include "app_screen.h"
 #include "cli_key_code.h"
 #include "os_user_def.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "util_memory.h"
 #include "util_stdio.h"
 #include "system_err.h"

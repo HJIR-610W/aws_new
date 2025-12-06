@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "dev_io.h"
+#include "debug_io.h"
 #include "components\serial_flash\at45db.h"
 #include "components\fram\fm25cl.h"
 

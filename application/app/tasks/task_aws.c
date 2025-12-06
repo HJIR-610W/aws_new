@@ -20,7 +20,7 @@
 #include "util_time.h"
 #include "util_stdio.h"
 #include "kma3.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "logging\utile_data.h"
 #include "util_memory.h"
 #include "system_err.h"

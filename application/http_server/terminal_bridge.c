@@ -7,7 +7,7 @@
 #include "cmsis_os2.h"
 #include "task_logging.h"
 #include "user_heap.h"
-#include "dev_io.h"
+#include "debug_io.h"
 // 터미널 브리지 전역 변수
 static void (*g_terminal_output_callback)(const char* data, size_t len) = NULL;
 static bool g_bridge_initialized = false;
@@ -34,7 +34,7 @@ void terminal_bridge_send_command(const char* command, size_t len)
         return;
     }
     
-    io_inject((uint8_t *)command,len);
+    dbg_inject((uint8_t *)command,len);
 
     
   

@@ -5,7 +5,7 @@
 #include "bsp.h"
 #include "bsp_uart.h"
 #include "config_app.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "drv_do.h"
 #include "drv_rs232.h"
 #include "FreeRTOS.h"
@@ -639,7 +639,7 @@ void put_tcpResp(uint32_t cmd,uint8_t *pData,uint16_t dataLen)
 
   if (osMessageQueuePut(s_resp_tcp_mail_id, &resp, 0, 100) != osOK)
   {
-    io_printf("put_tcpResp error\r\n");
+    dbg_printf("put_tcpResp error\r\n");
   }
 
 
@@ -982,7 +982,7 @@ void put_tcpData(uint8_t *data, uint16_t dataLen)
 
   if(osMessageQueuePut(s_tcp_data_mail_id, &tcpData, 0, 1000) != osOK)
   {
-    io_printf("put_tcpData timeout\r\n");
+    dbg_printf("put_tcpData timeout\r\n");
   }
 
     #endif

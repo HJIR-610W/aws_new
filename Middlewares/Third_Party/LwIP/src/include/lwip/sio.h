@@ -61,7 +61,7 @@ typedef void * sio_fd_t;
 sio_fd_t sio_open(u8_t devnum);
 #endif
 
-#ifndef sio_send
+#ifndef sdbg_send
 /**
  * Sends a single character to the serial device.
  *
@@ -70,10 +70,10 @@ sio_fd_t sio_open(u8_t devnum);
  *
  * @note This function will block until the character can be sent.
  */
-void sio_send(u8_t c, sio_fd_t fd);
+void sdbg_send(u8_t c, sio_fd_t fd);
 #endif
 
-#ifndef sio_recv
+#ifndef sdbg_recv
 /**
  * Receives a single character from the serial device.
  *
@@ -81,7 +81,7 @@ void sio_send(u8_t c, sio_fd_t fd);
  *
  * @note This function will block until a character is received.
  */
-u8_t sio_recv(sio_fd_t fd);
+u8_t sdbg_recv(sio_fd_t fd);
 #endif
 
 #ifndef sio_read

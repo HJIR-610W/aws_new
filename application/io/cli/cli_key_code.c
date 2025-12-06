@@ -1,5 +1,5 @@
 #include "cli_key_code.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "cmsis_os2.h"
 #include "pcb_define.h"
 
@@ -20,7 +20,7 @@ int32_t get_key(uint32_t timeout_ms)
       return (int32_t)KEY_CODE_NONE;
     }
 
-    if (io_recv(&ch, 1, remain) == 1)
+    if (dbg_recv(&ch, 1, remain) == 1)
     {
       break;
     }
@@ -47,7 +47,7 @@ int32_t get_key(uint32_t timeout_ms)
         return (int32_t)KEY_CODE_ESC;
       }
 
-      if (io_recv(&seq[seq_idx], 1, remain) == 1)
+      if (dbg_recv(&seq[seq_idx], 1, remain) == 1)
       {
         seq_idx++;
       }

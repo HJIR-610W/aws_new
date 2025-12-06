@@ -3,7 +3,7 @@
 
 #include "console_define.h"
 #include "console_utile.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "util_memory.h"
 
 #include "drv_fram.h"
@@ -30,39 +30,39 @@ extern const char* panelList[4] ;
 
 int32_t menu_manage_print_config_all(void)
 {
-  io_printf("ID               :%d\r\n", config.id);
-  io_printf("비밀번호         :%d\r\n", config.password);
-  io_printf("충전기 종류      :%s\r\n", ITEM_LIST(config.charger_model, charger_list_eng));
-  io_printf("로그 카운트      :%d\r\n", nvm_get_log_cnt());
-  io_printf("프로토콜          :%s\r\n", ITEM_LIST(config.aws_protocol_type, protocolList));
-  io_printf("이더넷 서브넷    :%d.%d.%d.%d\r\n", config.eth_subnet[0], config.eth_subnet[1],
+  dbg_printf("ID               :%d\r\n", config.id);
+  dbg_printf("비밀번호         :%d\r\n", config.password);
+  dbg_printf("충전기 종류      :%s\r\n", ITEM_LIST(config.charger_model, charger_list_eng));
+  dbg_printf("로그 카운트      :%d\r\n", nvm_get_log_cnt());
+  dbg_printf("프로토콜          :%s\r\n", ITEM_LIST(config.aws_protocol_type, protocolList));
+  dbg_printf("이더넷 서브넷    :%d.%d.%d.%d\r\n", config.eth_subnet[0], config.eth_subnet[1],
               config.eth_subnet[2], config.eth_subnet[3]);
-  io_printf("이더넷 게이트웨이:%d.%d.%d.%d\r\n", config.eth_gateway[0], config.eth_gateway[1],
+  dbg_printf("이더넷 게이트웨이:%d.%d.%d.%d\r\n", config.eth_gateway[0], config.eth_gateway[1],
               config.eth_gateway[2], config.eth_gateway[3]);
-  io_printf("이더넷 IP        :%d.%d.%d.%d\r\n", config.eth_ip[0], config.eth_ip[1],
+  dbg_printf("이더넷 IP        :%d.%d.%d.%d\r\n", config.eth_ip[0], config.eth_ip[1],
               config.eth_ip[2], config.eth_ip[3]);
-  io_printf("이더넷 원격 서버 :%d.%d.%d.%d\r\n", config.eth_remote_server_ip[0], config.eth_remote_server_ip[1],
+  dbg_printf("이더넷 원격 서버 :%d.%d.%d.%d\r\n", config.eth_remote_server_ip[0], config.eth_remote_server_ip[1],
               config.eth_remote_server_ip[2], config.eth_remote_server_ip[3]);
   ;
 
-  io_printf("이더넛 포트      :%d\r\n", config.eth_remote_server_port);
+  dbg_printf("이더넛 포트      :%d\r\n", config.eth_remote_server_port);
 
-  io_printf("CDMA 원격 서버   :%d.%d.%d.%d\r\n", config.cdma_server_ip[0],
+  dbg_printf("CDMA 원격 서버   :%d.%d.%d.%d\r\n", config.cdma_server_ip[0],
               config.cdma_server_ip[1], config.cdma_server_ip[2], config.cdma_server_ip[3]);
-  io_printf("CDMA 포트        :%d\r\n", config.cdma_port);
+  dbg_printf("CDMA 포트        :%d\r\n", config.cdma_port);
 
-  io_printf("CDMA 종류        :%s\r\n", ITEM_LIST(config.cdma_model, cdmaModellList));
-  io_printf("이더넷 사용      :%s\r\n", ITEM_LIST((int32_t)config.eth_active, enableList));
-  io_printf("CDMA 사용        :%s\r\n", ITEM_LIST((int32_t)config.cdma_active, enableList));
-  io_printf("직접통신         :%s\r\n", ITEM_LIST((int32_t)config.direct_active, enableList));
+  dbg_printf("CDMA 종류        :%s\r\n", ITEM_LIST(config.cdma_model, cdmaModellList));
+  dbg_printf("이더넷 사용      :%s\r\n", ITEM_LIST((int32_t)config.eth_active, enableList));
+  dbg_printf("CDMA 사용        :%s\r\n", ITEM_LIST((int32_t)config.cdma_active, enableList));
+  dbg_printf("직접통신         :%s\r\n", ITEM_LIST((int32_t)config.direct_active, enableList));
 
-  io_printf("직접통신 속도    :%d\r\n", ITEM_LIST((int32_t)config.direct_baud_index, baud_list_eng)); 
-  io_printf("패널 종류        :%s\r\n", ITEM_LIST(config.panel_model, panelList));
-  io_printf("VHF ID           :%d\r\n", config.vhf_id);
-  io_printf("VHF 그룹         :%d\r\n", config.vhf_group);
-  io_printf("VHF HOST         :%d\r\n", config.vhf_host_id);
-  io_printf("VHF 중계         :%d\r\n", config.vhf_repeater_id);
-  io_printf("VHF PTT 지연     :%d\r\n", config.vhf_ptt_delay);
+  dbg_printf("직접통신 속도    :%d\r\n", ITEM_LIST((int32_t)config.direct_baud_index, baud_list_eng)); 
+  dbg_printf("패널 종류        :%s\r\n", ITEM_LIST(config.panel_model, panelList));
+  dbg_printf("VHF ID           :%d\r\n", config.vhf_id);
+  dbg_printf("VHF 그룹         :%d\r\n", config.vhf_group);
+  dbg_printf("VHF HOST         :%d\r\n", config.vhf_host_id);
+  dbg_printf("VHF 중계         :%d\r\n", config.vhf_repeater_id);
+  dbg_printf("VHF PTT 지연     :%d\r\n", config.vhf_ptt_delay);
 
   return 0;
 }
@@ -130,7 +130,7 @@ int32_t menu_developer_memory(void)
     return status;
   }
 
-  io_printf("start(HEX),size,len>>");
+  dbg_printf("start(HEX),size,len>>");
 
   inCnt = console_scanf("%x,%d,%d", &start, &size, &len);
   if (inCnt == EXIT_BACK || inCnt == EXIT_PROGRAM && choice < 0)
@@ -163,7 +163,7 @@ int32_t menu_developer_sensor_config(void)
   int32_t cnt = 0;
   int i = 0;
 
-  io_printf("\r\n");
+  dbg_printf("\r\n");
 
 
   cnt = _countof(sensor_name_list);
@@ -182,8 +182,8 @@ int32_t menu_developer_logging(void)
 
   do
   {
-    io_printf("로그 시작 카운트:%d\r\n", logging_get_log_count());
-    io_printf("start,end>>");
+    dbg_printf("로그 시작 카운트:%d\r\n", logging_get_log_count());
+    dbg_printf("start,end>>");
 
     cnt = console_scanf("%d,%d,%d", &startCnt, &endCnt);
 
@@ -200,7 +200,7 @@ int32_t menu_developer_logging(void)
         logging_read_log(i, &log);
         memcpy(buff,log.msg,LOG_LEN_MAX);
         buff[LOG_LEN_MAX]=0;
-        io_printf("%4d,%s\r\n", i,buff);
+        dbg_printf("%4d,%s\r\n", i,buff);
       }
     }
   } while (1);
@@ -226,7 +226,7 @@ int32_t menu_update_info(void)
     {
       progress = ((float)received_bytes/(float)total_bytes)*100.0;
     }
-    io_printf("펌웨어 다운:%7d/%7d [%5.2f%%]\r",received_bytes,total_bytes,progress);
+    dbg_printf("펌웨어 다운:%7d/%7d [%5.2f%%]\r",received_bytes,total_bytes,progress);
 
     if (get_key(1000) == KEY_CODE_CTRL_Q)
     {
@@ -241,9 +241,9 @@ int32_t menu_task_print(void)
 {
   uint32_t id;
   int32_t ret;
-  io_printf("printf 하고 싶은 task id입력해주세요\r\n");
-  io_printf("printf 종료하려면 0을 입력\r\n");
-  io_printf(">>");
+  dbg_printf("printf 하고 싶은 task id입력해주세요\r\n");
+  dbg_printf("printf 종료하려면 0을 입력\r\n");
+  dbg_printf(">>");
 
   ret = cli_scanf_s("%X",&id);
   if(ret <=0)
@@ -269,8 +269,8 @@ int32_t menu_task_print_force(void)
   int status;
   int ok=0;
 
-  io_printf("특정 Task는 1회성 실행으로 task id가 유지 되지 않는다.");
-  io_printf("강제 출력을 하면 task_prinf가 강제 실행된다.\r\n");
+  dbg_printf("특정 Task는 1회성 실행으로 task id가 유지 되지 않는다.");
+  dbg_printf("강제 출력을 하면 task_prinf가 강제 실행된다.\r\n");
 
   while(1)
   {
@@ -301,20 +301,20 @@ int32_t menu_task_telnet(void)
 
   if (get_config_app()->dev_telnet_mode == eTELNET_SERVER)
   {
-    io_printf("텔넷 모드:서버(외부에서 접속해와야함)\r\n");
+    dbg_printf("텔넷 모드:서버(외부에서 접속해와야함)\r\n");
   }
   else if (get_config_app()->dev_telnet_mode == eTELNET_CLIENT)
   {
-    io_printf("텔넷 모드:클라이언트(중계서버로 접속)\r\n");
+    dbg_printf("텔넷 모드:클라이언트(중계서버로 접속)\r\n");
   }
   else{
-    io_printf("텔넷 모드:설정 오류\r\n");
+    dbg_printf("텔넷 모드:설정 오류\r\n");
   }
 
-  io_printf("텔넷 중계서버 IP:%d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
-  io_printf("텔넷 PORT(중계,로컬공통):%d\r\n", port);
+  dbg_printf("텔넷 중계서버 IP:%d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
+  dbg_printf("텔넷 PORT(중계,로컬공통):%d\r\n", port);
 
-  io_printf("텔넷 모드 설정\r\n");
+  dbg_printf("텔넷 모드 설정\r\n");
   status = input_decimal_prompt("텔넷모드(0:서버 1:클라이언트(중계모드))", &a, 0, 1);
 
   if (status != MENU_OK)
@@ -325,7 +325,7 @@ int32_t menu_task_telnet(void)
   get_config_app()->dev_telnet_mode =(eTELNET_MODE_t)a;
   WRITE_CFG(dev_telnet_mode);
 
-  io_printf("텔넷 접속할 서버 주소 설정\r\n");
+  dbg_printf("텔넷 접속할 서버 주소 설정\r\n");
 
   status =  input_ip( &a, &b, &c, &d);
 

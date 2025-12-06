@@ -12,7 +12,7 @@
 #include "drv_adc.h"
 #include "app_sensor.h"
 
-#include "dev_io.h"
+#include "debug_io.h"
 #include "Sensors\general\general_adc.h"
 
 

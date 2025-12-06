@@ -1,7 +1,7 @@
 #include "app_logging.h"
 #include "cmsis_os.h"
 #include "config_app.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "kma_protocol_handler.h"
 #include "lwip.h"
 #include "sockets.h"

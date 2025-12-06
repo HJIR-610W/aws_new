@@ -1,5 +1,5 @@
 #define __STDC_WANT_LIB_EXT1__ 1
-#include "dev_io.h"
+#include "debug_io.h"
 
 #include <stdarg.h>
 #include <stdint.h>
@@ -34,19 +34,19 @@ int32_t get_debug_uart_handle(void)
 }
 
 
-void io_send(uint8_t *p_in_data, uint16_t data_len)
+void dbg_send(uint8_t *p_in_data, uint16_t data_len)
 {
   drv_uart_send(debug_uart_num, p_in_data, data_len);
   terminal_bridge_send_output((char *)p_in_data, data_len);
 }
 
-void io_put_ch(char ch)
+void dbg_put_ch(char ch)
 {
   drv_uart_send(debug_uart_num, (uint8_t *)&ch, 1);
   terminal_bridge_send_output((char *)&ch, 1);
 }
 
-void io_puts(const char *str)
+void dbg_puts(const char *str)
 {
   int32_t len = strlen(str);
 
@@ -57,7 +57,7 @@ void io_puts(const char *str)
 
 #define PRINTF_HEAP_USE 1
 
-int32_t io_printf(const char *pFmt, ...)
+int32_t dbg_printf(const char *pFmt, ...)
 {
   char buff[2];
   char *ptr = NULL;
@@ -111,7 +111,7 @@ int32_t io_printf(const char *pFmt, ...)
 
   if (debug_uart_num != -1 && ptr)
   {
-    io_send((uint8_t *)ptr, strlen(ptr));
+    dbg_send((uint8_t *)ptr, strlen(ptr));
   }
 
 #if PRINTF_HEAP_USE
@@ -124,7 +124,7 @@ int32_t io_printf(const char *pFmt, ...)
   return 0;
 }
 
-int32_t io_vprintf(const char *pFmt, va_list ap)
+int32_t dbg_vprintf(const char *pFmt, va_list ap)
 {
   char buff[2];
   char *ptr = NULL;
@@ -195,7 +195,7 @@ int32_t io_vprintf(const char *pFmt, va_list ap)
 
 
 
-int32_t io_recv(char *p_out_buffer, uint16_t out_size, uint32_t timeout)
+int32_t dbg_recv(char *p_out_buffer, uint16_t out_size, uint32_t timeout)
 {
   int32_t cnt;
 
@@ -204,19 +204,19 @@ int32_t io_recv(char *p_out_buffer, uint16_t out_size, uint32_t timeout)
   return cnt;
 }
 
-void io_printf_color(int color, const char *pFmt, ...)
+void dbg_printf_color(int color, const char *pFmt, ...)
 {
-  io_printf("%c[%dm", 27, color);
+  dbg_printf("%c[%dm", 27, color);
 
   va_list args;
   va_start(args, pFmt);
-  io_vprintf(pFmt, args);
+  dbg_vprintf(pFmt, args);
   va_end(args);
 
-  io_printf("%c[%dm", 27, 37);
+  dbg_printf("%c[%dm", 27, 37);
 }
 
-int io_scanf_s(const char *fmt, ...)
+int dbg_scanf_s(const char *fmt, ...)
 {
   va_list args;
   int ret;
@@ -228,7 +228,7 @@ int io_scanf_s(const char *fmt, ...)
   return ret;
 }
 
-int32_t io_inject(uint8_t *p_data,uint32_t data_len)
+int32_t dbg_inject(uint8_t *p_data,uint32_t data_len)
 {
   return drv_uart_inject(debug_uart_num, p_data, data_len);
 }
@@ -246,7 +246,7 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
   else
     row = (size / col) + 1;
 
-  io_printf("\n\r\n\r                ");
+  dbg_printf("\n\r\n\r                ");
   len = 0;
   temp[0] = 0;
 
@@ -255,18 +255,18 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
     len = strnlen_s(temp, sizeof(temp));
     snprintf_s(&temp[len], sizeof(temp) - len, "%02X ", j);
   }
-  io_printf(temp);
+  dbg_printf(temp);
 
-  io_printf("  ");
+  dbg_printf("  ");
   for (j = 0; j < col; j++)
   {
-    io_printf("%X", j % 16);
+    dbg_printf("%X", j % 16);
   }
 
   for (i = 0; i < row; i++)
   {
     snprintf_s(temp, sizeof(temp), "\n\r%04d  %08X  ", (int32_t)(i * col), (startAddr + i * col));
-    io_printf(temp);
+    dbg_printf(temp);
 
     temp[0] = 0;
 
@@ -283,8 +283,8 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
         snprintf_s(&temp[len], sizeof(temp) - len, "   ");
       }
     }
-    io_printf(temp);
-    io_printf("  ");
+    dbg_printf(temp);
+    dbg_printf("  ");
 
     temp[0] = 0;
 
@@ -305,9 +305,9 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
         }
       }
     }
-    io_printf(temp);
+    dbg_printf(temp);
   }
-  io_printf("\n\r");
+  dbg_printf("\n\r");
 }
 
 void dev_io_get(dev_io_t *dev, uint8_t cmd, void *opt)
@@ -411,7 +411,7 @@ void task_printf(const char *pFmt, ...)
   {
     va_list args;
     va_start(args, pFmt);
-    io_vprintf(pFmt, args); 
+    dbg_vprintf(pFmt, args); 
     va_end(args);
   }
 }

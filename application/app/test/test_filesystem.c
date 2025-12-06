@@ -5,7 +5,7 @@
 
 #include "app_file.h"
 #include "cli_input.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "user_heap.h"
 
 
@@ -30,25 +30,25 @@ void test_filesystem(void)
 
   if (strncmp((char *)temp, TEST_MSG, TEST_MSG_LEN) == 0)
   {
-    io_printf("파일 쓰기 읽기 정상 \r\n");
+    dbg_printf("파일 쓰기 읽기 정상 \r\n");
   }
   else
   {
-    io_printf("파일 쓰기 읽기 실패 \r\n");
+    dbg_printf("파일 쓰기 읽기 실패 \r\n");
   }
 
 
-  io_printf("'0:'목록을 출력합니다.\r\n");
+  dbg_printf("'0:'목록을 출력합니다.\r\n");
   while(1)
   {
     list_directory(buff);
 
-    io_printf("경로를 입력하세요>>\r\n");
+    dbg_printf("경로를 입력하세요>>\r\n");
     ret = cli_scanf_s("%s", buff, sizeof(buff));
 
     if (ret == CLI_KEYCODE_CTRL_C)
     {
-      io_printf("테스트 종료\r\n");
+      dbg_printf("테스트 종료\r\n");
       break;
     }
     

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "dev_io.h"
+#include "debug_io.h"
 #include "stm32f4xx.h"
 
 
@@ -544,13 +544,13 @@ void PrintAllInterrupts(void)
   uint8_t priority;
   int irq_num;
 
-  io_printf("Interrupt Vector Table:\r\n");
-  io_printf(
+  dbg_printf("Interrupt Vector Table:\r\n");
+  dbg_printf(
       "------------------------------------------------------------------------"
       "-------------------\r\n");
-  io_printf(
+  dbg_printf(
       "| IRQ Num | Priority | Name                 | Source Details\r\n");
-  io_printf(
+  dbg_printf(
       "------------------------------------------------------------------------"
       "-------------------\r\n");
 
@@ -578,12 +578,12 @@ void PrintAllInterrupts(void)
       const char* source_details =
           GetInterruptSourceDetails((IRQn_Type)irq_num);
 
-      io_printf("| %7d | %8d | %-20s | %-80s \r\n", irq_num, priority,
+      dbg_printf("| %7d | %8d | %-20s | %-80s \r\n", irq_num, priority,
                    IRQ_Table[irq_num].name, source_details);
     }
   }
 
-  io_printf(
+  dbg_printf(
       "------------------------------------------------------------------------"
       "-------------------\r\n");
 }
@@ -594,7 +594,7 @@ void PrintAllInterrupts(void)
 #include <stdio.h>
 #include <string.h>
 
-#include "dev_io.h"
+#include "debug_io.h"
 #include "stm32f4xx.h"
 
 /* IRQ 테이블 구조체 */
@@ -1243,11 +1243,11 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
     uint8_t priority;
     int irq_num;
 
-    io_printf("STM32F407 Interrupt Vector Table:\r\n");
-    io_printf(
+    dbg_printf("STM32F407 Interrupt Vector Table:\r\n");
+    dbg_printf(
         "===================================================================================\r\n");
-    io_printf("| IRQ Num | Priority | Name                 | Source Details\r\n");
-    io_printf(
+    dbg_printf("| IRQ Num | Priority | Name                 | Source Details\r\n");
+    dbg_printf(
         "===================================================================================\r\n");
 
     for (irq_num = 0; irq_num < NUM_IRQS; irq_num++)
@@ -1272,25 +1272,25 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       if (is_enabled)
       {
         const char* source_details = GetInterruptSourceDetails((IRQn_Type)irq_num);
-        io_printf("| %7d | %8d | %-20s | %-80s \r\n", irq_num, priority, IRQ_Table[irq_num].name,
+        dbg_printf("| %7d | %8d | %-20s | %-80s \r\n", irq_num, priority, IRQ_Table[irq_num].name,
                   source_details);
       }
     }
 
-    io_printf(
+    dbg_printf(
         "===================================================================================\r\n");
-    io_printf("STM32F407 Interrupt Vector Table (82 interrupts total):\r\n");
-    io_printf("DMA1: General purpose DMA streams for most peripherals\r\n");
-    io_printf("DMA2: High-speed DMA streams (ADC, SDIO, SPI1, TIM1/8, USART1/6, DCMI)\r\n");
-    io_printf("SDIO: DMA2_Stream3/6 Channel 4, FSMC: External memory, ETH: Gigabit Ethernet\r\n");
-    io_printf(
+    dbg_printf("STM32F407 Interrupt Vector Table (82 interrupts total):\r\n");
+    dbg_printf("DMA1: General purpose DMA streams for most peripherals\r\n");
+    dbg_printf("DMA2: High-speed DMA streams (ADC, SDIO, SPI1, TIM1/8, USART1/6, DCMI)\r\n");
+    dbg_printf("SDIO: DMA2_Stream3/6 Channel 4, FSMC: External memory, ETH: Gigabit Ethernet\r\n");
+    dbg_printf(
         "===================================================================================\r\n");
   }
 #else
 #include <stdio.h>
 #include <string.h>
 
-#include "dev_io.h"
+#include "debug_io.h"
 #include "stm32f4xx.h"
 
 /* IRQ 테이블 구조체 */
@@ -1971,11 +1971,11 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
     uint8_t priority;
     int irq_num;
 
-    io_printf("STM32F407 Interrupt Vector Table:\r\n");
-    io_printf(
+    dbg_printf("STM32F407 Interrupt Vector Table:\r\n");
+    dbg_printf(
         "===================================================================================\r\n");
-    io_printf("| IRQ Num | Priority | Name                 | Source Details\r\n");
-    io_printf(
+    dbg_printf("| IRQ Num | Priority | Name                 | Source Details\r\n");
+    dbg_printf(
         "===================================================================================\r\n");
 
     for (irq_num = 0; irq_num < NUM_IRQS; irq_num++)
@@ -2000,20 +2000,20 @@ const char* GetInterruptSourceDetails(IRQn_Type irq_num)
       if (is_enabled)
       {
         const char* source_details = GetInterruptSourceDetails((IRQn_Type)irq_num);
-        io_printf("| %7d | %8d | %-20s | %-80s \r\n", irq_num, priority, IRQ_Table[irq_num].name,
+        dbg_printf("| %7d | %8d | %-20s | %-80s \r\n", irq_num, priority, IRQ_Table[irq_num].name,
                   source_details);
       }
     }
 
-    io_printf(
+    dbg_printf(
         "===================================================================================\r\n");
-    io_printf("STM32F407 Interrupt Vector Table (82 interrupts total) - RM0090 Rev 21\r\n");
-    io_printf("DMA1: General purpose DMA streams (UART, SPI2/3, I2C, TIM, DAC)\r\n");
-    io_printf("DMA2: High-speed DMA streams (ADC, SDIO, SPI1/4/5, TIM1/8, USART1/6, DCMI)\r\n");
-    io_printf("SDIO: DMA2_Stream3(RX)/DMA2_Stream6(TX) Channel 4\r\n");
-    io_printf(
+    dbg_printf("STM32F407 Interrupt Vector Table (82 interrupts total) - RM0090 Rev 21\r\n");
+    dbg_printf("DMA1: General purpose DMA streams (UART, SPI2/3, I2C, TIM, DAC)\r\n");
+    dbg_printf("DMA2: High-speed DMA streams (ADC, SDIO, SPI1/4/5, TIM1/8, USART1/6, DCMI)\r\n");
+    dbg_printf("SDIO: DMA2_Stream3(RX)/DMA2_Stream6(TX) Channel 4\r\n");
+    dbg_printf(
         "Direction: P2M=Peripheral to Memory, M2P=Memory to Peripheral, M2M=Memory to Memory\r\n");
-    io_printf(
+    dbg_printf(
         "===================================================================================\r\n");
   }
 #endif

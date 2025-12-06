@@ -13,7 +13,7 @@
 #include "cli\console_scanf.h"
 #include "console_login.h"
 #include "drv_rs232.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "task_event.h"
 #include "util_time.h"
 #include "cli_input.h"
@@ -49,28 +49,28 @@ void print_signature(void)
   uint8_t rel;
   DATE_TIME_BUF ct;
 
-  io_printf("\r\n");
+  dbg_printf("\r\n");
 
-  io_printf("┌──────────────────────────────────────────────┐\r\n");
-  io_printf("│ HWAJIN T&I CO.,LTD.                          │\r\n");
-  io_printf("├──────────────────────────────────────────────┤\r\n");
-  io_printf("│ AWS                                          │\r\n"); 
+  dbg_printf("┌──────────────────────────────────────────────┐\r\n");
+  dbg_printf("│ HWAJIN T&I CO.,LTD.                          │\r\n");
+  dbg_printf("├──────────────────────────────────────────────┤\r\n");
+  dbg_printf("│ AWS                                          │\r\n"); 
 
   get_app_version(&major,&minor,&fix,&rel);
   get_app_build(&ct);
 
-  io_printf("│ App  %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
+  dbg_printf("│ App  %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
           major, minor, fix, rel, ct.Year, ct.Month, ct.Day,
           ct.Hour, ct.Min, ct.Sec);
 
   get_boot_version(&major, &minor, &fix, &rel);
   get_boot_build(&ct);
 
-  io_printf("│ Boot %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
+  dbg_printf("│ Boot %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
           major, minor, fix, rel, ct.Year, ct.Month, ct.Day,
           ct.Hour, ct.Min, ct.Sec);
 
-  io_printf("└──────────────────────────────────────────────┘\r\n");
+  dbg_printf("└──────────────────────────────────────────────┘\r\n");
 
 
 }
@@ -78,13 +78,13 @@ void print_signature(void)
 
 void SHELL_SendDataCallback(uint8_t* buf, uint32_t len)
 {
-  io_send(buf,len);
+  dbg_send(buf,len);
 }
 
 void SHELL_ReceiveDataCallback(uint8_t* buffer, uint32_t len)
 {
    // drv_uart_get_char(console_uart_num, buffer, len);
-  io_recv((char *)buffer,len,osWaitForever);
+  dbg_recv((char *)buffer,len,osWaitForever);
 }
 
 
@@ -99,9 +99,9 @@ void consoleTask(void *arg)
 
   osDelay(1000);
 
-  io_printf("\r\n\r\n");
-  // io_printf(VT100_CLEAR_SCREEN);
-  // io_printf(VT100_CURSOR_HOME);
+  dbg_printf("\r\n\r\n");
+  // dbg_printf(VT100_CLEAR_SCREEN);
+  // dbg_printf(VT100_CURSOR_HOME);
   print_signature();
 
   check_login();
@@ -109,20 +109,20 @@ void consoleTask(void *arg)
 
   if (restore_error(buffer,sizeof(buffer)))
   {
-    io_printf("%s\r\n",buffer);
+    dbg_printf("%s\r\n",buffer);
   }
   
-  io_printf("alarm log count:%d\r\n",alarm_get_log_count());
+  dbg_printf("alarm log count:%d\r\n",alarm_get_log_count());
   DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
 
   if(mode==0)
   {
-    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, io_printf,
+    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, dbg_printf,
                (char *)cli_aws);
   }
   else
   {
-    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, io_printf,
+    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, dbg_printf,
                (char *)cli_test);
   }
   console_scanf_init(&user_context);
@@ -135,7 +135,7 @@ void consoleTask(void *arg)
 
   while(1)
   {
-    io_puts("Debug menu exited\r\n");
+    dbg_puts("Debug menu exited\r\n");
     osDelay(1000);
   }
 }

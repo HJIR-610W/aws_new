@@ -6,7 +6,7 @@
 
 #include "util_memory.h"
 #include "bsp_uart.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "cli_key_code.h"
 #include "pcb_define.h"
 #include "util_time.h"

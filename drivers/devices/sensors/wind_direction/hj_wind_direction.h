@@ -3,7 +3,7 @@
 
 #define HJ_WIND_DIRECTION_H
 
-#include "dev_io.h"
+#include "debug_io.h"
 #include "Sensors\wind_speed\wind_define.h"
 #include "sensors\wind_speed\hj_wind.h"
 #define HJ_WIND_DIRECTION 101

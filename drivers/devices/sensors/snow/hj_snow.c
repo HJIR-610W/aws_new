@@ -6,7 +6,7 @@
 #include "drv_rs232.h"
 #include "drv_rs485.h"
 #include "app_sensor.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "drv_rs485.h"
 #include "drv_rs232.h"
 #include "snow_define.h"

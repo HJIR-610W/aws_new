@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "dev_io.h"
+#include "debug_io.h"
 #include "system_err.h"
 #include "pcb_define.h"
 #include "util_time.h"
@@ -13,7 +13,7 @@
 #include "task_event.h"
 void Error_Handler(const char *file,const int32_t line)
 {
-  io_printf("%s,%d\r\n",file,line);
+  dbg_printf("%s,%d\r\n",file,line);
 
 }
 
@@ -81,7 +81,7 @@ void error_print(const char *pFmt, ...)
 {
   va_list args;
   va_start(args, pFmt);
-  io_vprintf(pFmt, args);
+  dbg_vprintf(pFmt, args);
   va_end(args);
 }
 

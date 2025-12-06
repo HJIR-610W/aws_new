@@ -4,7 +4,7 @@
 
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "pcb_define.h"
 #include "system_err.h"
 
@@ -36,7 +36,7 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
      이 훅 함수는 스택 오버플로우가 감지되었을 때 호출됩니다. */
 
    snprintf(g_task_name,sizeof(g_task_name),"SOF,%s",pcTaskName);
-   io_printf("SOF,%s",g_task_name);
+   dbg_printf("SOF,%s",g_task_name);
    //__asm("BKPT #0");
    reset_system("%s", g_task_name);
 }
@@ -58,9 +58,9 @@ void vApplicationMallocFailedHook(void)
   size_t free_heap = xPortGetFreeHeapSize();            // 현재 사용 가능한 힙 크기
   size_t min_free_heap = xPortGetMinimumEverFreeHeapSize(); // 프로그램 실행 중 가장 작았던 힙 크기
 
-  io_printf("Error : Memory allocation failed.\r\n");
-  io_printf("Free Heap Size          : %u bytes\r\n", (unsigned int)free_heap);
-  io_printf("Minimum Ever Free Heap : %u bytes\r\n", (unsigned int)min_free_heap);
+  dbg_printf("Error : Memory allocation failed.\r\n");
+  dbg_printf("Free Heap Size          : %u bytes\r\n", (unsigned int)free_heap);
+  dbg_printf("Minimum Ever Free Heap : %u bytes\r\n", (unsigned int)min_free_heap);
 
 
 }

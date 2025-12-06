@@ -14,7 +14,7 @@
 #include "bsp.h"
 #include "drv_rtc.h"
 #include "config_app.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "kma2.h"
 #include "kma3.h"
 #include "kma_define.h"

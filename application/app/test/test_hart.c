@@ -3,7 +3,7 @@
 #include "config_app.h"
 #include "bsp_do.h"
 #include "bsp_di.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "pcb_define.h"
 #include "cli_key_code.h"
 #include "hart_parser.h"
@@ -58,7 +58,7 @@ void hart_task(void *arg)
     len  = hart_send(cmd, sizeof(cmd));
     if(len < 0)
     {
-      io_printf("send failed\r\n");
+      dbg_printf("send failed\r\n");
     }
     len = HART_RECV(buff, sizeof(buff), 1000);
     if (len)
@@ -94,12 +94,12 @@ void test_hart(void)
   osDelay(10);
   bsp_do_high(BSP_DO_HART_RESET);
 
-  io_printf("하트센서가 연결되면 센서 정보가 출력됩니다.\r\n");
-  io_printf("하트센서 주소를 0으로 설정하여 연결하세요\r\n");
-  io_printf("지금 전원 24V를 ON 했습니다. 부팅시간 고려하여 50초 대기합니다. 잠시 기다려주세요\r\n");
+  dbg_printf("하트센서가 연결되면 센서 정보가 출력됩니다.\r\n");
+  dbg_printf("하트센서 주소를 0으로 설정하여 연결하세요\r\n");
+  dbg_printf("지금 전원 24V를 ON 했습니다. 부팅시간 고려하여 50초 대기합니다. 잠시 기다려주세요\r\n");
   while(timeout)
   {
-    io_printf("%02d\r",timeout--);
+    dbg_printf("%02d\r",timeout--);
     osDelay(1000);
   }
 

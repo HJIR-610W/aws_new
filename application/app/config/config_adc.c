@@ -8,7 +8,7 @@
 #include "app_version.h"
 #include "config_memory_map.h"
 #include "adc_calibration.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "drv_crc.h"
 #include "ff.h"
 #include "system_err.h"
@@ -91,6 +91,6 @@ void backup_adc_calibration(void)
     f_ret = write_file(PATH_ADC_CALIBRATION_BIN, (uint8_t *)&g_adc_config_nvm, sizeof(g_adc_config_nvm), 0);
     if (f_ret == FR_OK)
     {
-        io_printf("%s에 저장되었습니다\r\n",PATH_ADC_CALIBRATION_BIN);
+        dbg_printf("%s에 저장되었습니다\r\n",PATH_ADC_CALIBRATION_BIN);
     }
 }

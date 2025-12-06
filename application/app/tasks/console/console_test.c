@@ -5,7 +5,7 @@
 #include "test_sdi12.h"
 #include "test_uart.h"
 #include "test_rs485.h"
-#include "IO\dev_io.h"
+#include "IO\debug_io.h"
 #include "console_utile.h"
 #include "test_rain.h"
 #include "console_test.h"
@@ -28,30 +28,30 @@ int run_test_root()
   int choice, status;
   while (1)
   {
-    io_printf("+---------------------------------------+\r\n");
-    io_printf("|             TEST 메뉴                 |\r\n");
-    io_printf("+---------------------------------------+\r\n");
-    io_printf("|  1. HART                              |\r\n");
-    io_printf("|  2. SRAM                              |\r\n");
-    io_printf("|  3. SDI-12                            |\r\n");
-    io_printf("|  4. RS232                             |\r\n");
-    io_printf("|  5. RS485                             |\r\n");
-    io_printf("|  6. RAIN                              |\r\n");
-    io_printf("|  7. ADC                               |\r\n");
-    io_printf("|  8. COUNT                             |\r\n");
-    io_printf("|  9. 디지털 입력(I0~I5)                |\r\n");
-    io_printf("| 10. 디지털 출력(D0~D5)                |\r\n");
-    io_printf("| 11. 전원(24V,CDMA,모듈,히터,우량D)    |\r\n");
-    io_printf("| 12. 모드버스                          |\r\n");
-    io_printf("| 13. 이더넷                            |\r\n");
-    io_printf("| 14. 시간                              |\r\n");
-    io_printf("| 15. 파일시스템                        |\r\n");
-    io_printf("| 16. ADC선형성                         |\r\n");
-    io_printf("| 17. FLASH 메모리                      |\r\n");
-    io_printf("| 18. CLCD                              |\r\n");
-    io_printf("| 19. KEY                               |\r\n");
-    io_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
-    io_printf("+---------------------------------------+\r\n");
+    dbg_printf("+---------------------------------------+\r\n");
+    dbg_printf("|             TEST 메뉴                 |\r\n");
+    dbg_printf("+---------------------------------------+\r\n");
+    dbg_printf("|  1. HART                              |\r\n");
+    dbg_printf("|  2. SRAM                              |\r\n");
+    dbg_printf("|  3. SDI-12                            |\r\n");
+    dbg_printf("|  4. RS232                             |\r\n");
+    dbg_printf("|  5. RS485                             |\r\n");
+    dbg_printf("|  6. RAIN                              |\r\n");
+    dbg_printf("|  7. ADC                               |\r\n");
+    dbg_printf("|  8. COUNT                             |\r\n");
+    dbg_printf("|  9. 디지털 입력(I0~I5)                |\r\n");
+    dbg_printf("| 10. 디지털 출력(D0~D5)                |\r\n");
+    dbg_printf("| 11. 전원(24V,CDMA,모듈,히터,우량D)    |\r\n");
+    dbg_printf("| 12. 모드버스                          |\r\n");
+    dbg_printf("| 13. 이더넷                            |\r\n");
+    dbg_printf("| 14. 시간                              |\r\n");
+    dbg_printf("| 15. 파일시스템                        |\r\n");
+    dbg_printf("| 16. ADC선형성                         |\r\n");
+    dbg_printf("| 17. FLASH 메모리                      |\r\n");
+    dbg_printf("| 18. CLCD                              |\r\n");
+    dbg_printf("| 19. KEY                               |\r\n");
+    dbg_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
+    dbg_printf("+---------------------------------------+\r\n");
 
     status = input_decimal_prompt("선택", &choice, 1, 19);
     if (status == MENU_ABORT || status == MENU_BACK)

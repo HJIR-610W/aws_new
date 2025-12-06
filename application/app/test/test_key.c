@@ -1,7 +1,7 @@
 
 
 #include "app_key.h"
-#include "dev_io.h"
+#include "debug_io.h"
 
 void test_key(void)
 {
@@ -20,25 +20,25 @@ void test_key(void)
     switch (key)
         {
         case KEY_CODE_LEFT:
-        io_printf("LEFT\r\n");
+        dbg_printf("LEFT\r\n");
           break;
         case KEY_CODE_RIGHT:
-        io_printf("RIGHT\r\n");
+        dbg_printf("RIGHT\r\n");
           break;
         case KEY_CODE_UP:
-        io_printf("UP\r\n");
+        dbg_printf("UP\r\n");
           break;
         case KEY_CODE_DOWN:
-        io_printf("DOWN\r\n");
+        dbg_printf("DOWN\r\n");
           break;
         case KEY_CODE_CTRL_C:
-        io_printf("ESC\r\n");
+        dbg_printf("ESC\r\n");
           break;
         case KEY_CODE_ENTER:
-        io_printf("ENTER\r\n");
+        dbg_printf("ENTER\r\n");
           break;
         default:
-          io_printf("%c\r\n",key);
+          dbg_printf("%c\r\n",key);
           break;
         }
     }

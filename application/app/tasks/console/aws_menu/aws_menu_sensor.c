@@ -5,7 +5,7 @@
 #include "config_sensor.h"
 #include "console_scanf.h"
 #include "console_utile.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "driver_interface.h"
 #include "hj_snow_menu.h"
 #include "hj_temp_menu\hjtemp_menu.h"
@@ -19,7 +19,7 @@
 #include "menu_handler.h"
 
 #define ENTRY_PF(cnt, width, label, format, ...) \
-  io_printf("%2d.%-*s:" format "\r\n", cnt, width, label, ##__VA_ARGS__)
+  dbg_printf("%2d.%-*s:" format "\r\n", cnt, width, label, ##__VA_ARGS__)
 
 #define ENTRY_LABEL_WIDTH 16
 const char *adcChModeList[] = {"Single", "Diff"};
@@ -131,16 +131,16 @@ void make_option(eSENSOR_TYPE_t type,sensor_t *sensor, char *out, uint16_t outSi
 #define ADC_LB_W 15
 uint8_t print_adc_cfg( adc_config_t *adc_config, uint8_t cnt)
 {
-  io_printf("%2d.%s:%s\r\n",cnt++, m_l("Adc Mode",ENTRY_LABEL_WIDTH), ITEM_LIST(adc_config->mode, adcChModeList));
+  dbg_printf("%2d.%s:%s\r\n",cnt++, m_l("Adc Mode",ENTRY_LABEL_WIDTH), ITEM_LIST(adc_config->mode, adcChModeList));
   if(adc_config->mode ==0)
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Channel",ENTRY_LABEL_WIDTH), adc_config->single_channel);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("Channel",ENTRY_LABEL_WIDTH), adc_config->single_channel);
   else
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Channel",ENTRY_LABEL_WIDTH), adc_config->diff_channel);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("High Value",ENTRY_LABEL_WIDTH), adc_config->high_scale);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Low Value",ENTRY_LABEL_WIDTH), adc_config->low_scale);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Scale",ENTRY_LABEL_WIDTH), adc_config->scale);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Max Voltage(mV)",ENTRY_LABEL_WIDTH), adc_config->out_max_mv);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Min Voltage(mV)",ENTRY_LABEL_WIDTH), adc_config->out_min_mv);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("Channel",ENTRY_LABEL_WIDTH), adc_config->diff_channel);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("High Value",ENTRY_LABEL_WIDTH), adc_config->high_scale);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("Low Value",ENTRY_LABEL_WIDTH), adc_config->low_scale);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("Scale",ENTRY_LABEL_WIDTH), adc_config->scale);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("Max Voltage(mV)",ENTRY_LABEL_WIDTH), adc_config->out_max_mv);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("Min Voltage(mV)",ENTRY_LABEL_WIDTH), adc_config->out_min_mv);
 
   return cnt;
 }
@@ -159,9 +159,9 @@ uint8_t print_hjwind_cfg( wind_speed_hj_pulse_config_t *hjwindCfg, uint8_t cnt)
   const char *name_table[10];
 
   drv_rs485_get_portList(name_table, _countof(name_table));
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Fullset",ENTRY_LABEL_WIDTH), hjwindCfg->full);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("Offset",ENTRY_LABEL_WIDTH), hjwindCfg->offset);
-  io_printf("%2d.%s:%s\r\n",cnt++, m_l("Port",ENTRY_LABEL_WIDTH), name_table[hjwindCfg->rs485_port]);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("Fullset",ENTRY_LABEL_WIDTH), hjwindCfg->full);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("Offset",ENTRY_LABEL_WIDTH), hjwindCfg->offset);
+  dbg_printf("%2d.%s:%s\r\n",cnt++, m_l("Port",ENTRY_LABEL_WIDTH), name_table[hjwindCfg->rs485_port]);
 
   return cnt;
 }
@@ -173,7 +173,7 @@ uint8_t print_hjwindDir_cfg( wind_speed_hj_pulse_config_t *hjwindCfg, uint8_t cn
 
   drv_rs485_get_portList(name_table, _countof(name_table));
 
-  io_printf("%2d.%s:%s\r\n",cnt++, m_l("Port",ENTRY_LABEL_WIDTH), name_table[hjwindCfg->rs485_port]);
+  dbg_printf("%2d.%s:%s\r\n",cnt++, m_l("Port",ENTRY_LABEL_WIDTH), name_table[hjwindCfg->rs485_port]);
 
   return cnt;
 }
@@ -192,7 +192,7 @@ uint8_t print_hjtemp_cfg(temp_hj_config_t *hjtempCfg, uint8_t cnt)
   const char *name_table[10];
   int port;
   
-  io_printf("%2d.%s:%s\r\n",cnt++, m_l("통신방식",ENTRY_LABEL_WIDTH), physical_list[hjtempCfg->physical_layer]);
+  dbg_printf("%2d.%s:%s\r\n",cnt++, m_l("통신방식",ENTRY_LABEL_WIDTH), physical_list[hjtempCfg->physical_layer]);
 
   if (hjtempCfg->physical_layer == ePHYSICAL_RS232)
   {
@@ -205,9 +205,9 @@ uint8_t print_hjtemp_cfg(temp_hj_config_t *hjtempCfg, uint8_t cnt)
         port = hjtempCfg->rs485_port;
   }
 
-  io_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), name_table[port]);
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("모드버스 ID",ENTRY_LABEL_WIDTH), hjtempCfg->modbus_id);
-  io_printf("%2d.%s:%s\r\n",cnt++, m_l("온습도 메뉴",ENTRY_LABEL_WIDTH), "[제어]");
+  dbg_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), name_table[port]);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("모드버스 ID",ENTRY_LABEL_WIDTH), hjtempCfg->modbus_id);
+  dbg_printf("%2d.%s:%s\r\n",cnt++, m_l("온습도 메뉴",ENTRY_LABEL_WIDTH), "[제어]");
 
   return cnt;
 }
@@ -219,8 +219,8 @@ uint8_t print_ott_smp3_cfg(solar_r_ott_smp3_config_t *ott, uint8_t cnt)
    const char *portNameList[10];
 
    drv_rs485_get_portList(portNameList, _countof(portNameList));
-   io_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), portNameList[ott->rs485_port]);
-   io_printf("%2d.%s:%d\r\n",cnt++, m_l("MODBUS ID",ENTRY_LABEL_WIDTH), ott->modbus_id);
+   dbg_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), portNameList[ott->rs485_port]);
+   dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("MODBUS ID",ENTRY_LABEL_WIDTH), ott->modbus_id);
    return cnt;
 }
 
@@ -228,7 +228,7 @@ uint8_t print_ott_smp3_cfg(solar_r_ott_smp3_config_t *ott, uint8_t cnt)
 uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt)
 {
 
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("해제 지연시간",ENTRY_LABEL_WIDTH), rain_present->off_delay_sec);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("해제 지연시간",ENTRY_LABEL_WIDTH), rain_present->off_delay_sec);
 
   return cnt;
 }
@@ -236,8 +236,8 @@ uint8_t print_rain_present_cfg( rain_present_config_t *rain_present, uint8_t cnt
 
 uint8_t print_freq_cfg(frequency_config_t *freq, uint8_t cnt)
 {
-  io_printf("%2d.%s:%d\r\n",cnt++, m_l("채널",ENTRY_LABEL_WIDTH), freq->channel);
-  io_printf("%2d.%s:%f\r\n",cnt++, m_l("보정계수",ENTRY_LABEL_WIDTH), freq->scale_factor);
+  dbg_printf("%2d.%s:%d\r\n",cnt++, m_l("채널",ENTRY_LABEL_WIDTH), freq->channel);
+  dbg_printf("%2d.%s:%f\r\n",cnt++, m_l("보정계수",ENTRY_LABEL_WIDTH), freq->scale_factor);
 
   return cnt;
 }
@@ -249,20 +249,20 @@ uint8_t print_hjsnow_cfg(snow_hj_config_t *hjsnow, uint8_t cnt)
 {
   const char *portNameList[10];
 
-  io_printf("%2d.%s:%s\r\n",cnt++,  m_l("통신방식",ENTRY_LABEL_WIDTH), physical_list[hjsnow->physical_layer]);
+  dbg_printf("%2d.%s:%s\r\n",cnt++,  m_l("통신방식",ENTRY_LABEL_WIDTH), physical_list[hjsnow->physical_layer]);
 
   if (hjsnow->physical_layer == ePHYSICAL_RS232)
   {
     rs232_get_portList(portNameList, _countof(portNameList));
-    io_printf("%2d.%s:%s\r\n",cnt++,  m_l("통신포트",ENTRY_LABEL_WIDTH), portNameList[hjsnow->rs232_port]);
+    dbg_printf("%2d.%s:%s\r\n",cnt++,  m_l("통신포트",ENTRY_LABEL_WIDTH), portNameList[hjsnow->rs232_port]);
   }
   else
   {
     drv_rs485_get_portList(portNameList, _countof(portNameList));
-    io_printf("%2d.%s:%s\r\n",cnt++,  m_l("통신포트",ENTRY_LABEL_WIDTH), portNameList[hjsnow->rs485_port]);
+    dbg_printf("%2d.%s:%s\r\n",cnt++,  m_l("통신포트",ENTRY_LABEL_WIDTH), portNameList[hjsnow->rs485_port]);
   }
 
-  io_printf("%2d.%s:%s\r\n",cnt++,  m_l("화진 적설 메뉴",ENTRY_LABEL_WIDTH), "[제어]");
+  dbg_printf("%2d.%s:%s\r\n",cnt++,  m_l("화진 적설 메뉴",ENTRY_LABEL_WIDTH), "[제어]");
 
   return cnt;
 }
@@ -273,7 +273,7 @@ uint8_t print_barometer_jsgp215_cfg(barometer_jinsung_sjgp215_config_t *ott, uin
   const char *portNameList[10];
 
   rs232_get_portList(portNameList, _countof(portNameList));
-  io_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), portNameList[ott->rs232_port]);
+  dbg_printf("%2d.%s:%s\r\n",cnt++, m_l("포트",ENTRY_LABEL_WIDTH), portNameList[ott->rs232_port]);
  
   return cnt;
 }
@@ -295,7 +295,7 @@ int32_t print_common_cfg( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t c)
 {
   int32_t cnt = 0;
 
-  io_printf("%2d.%s:%s\r\n",cnt++, m_l("종류",ENTRY_LABEL_WIDTH), g_sensor_model_table[sensor->model]);
+  dbg_printf("%2d.%s:%s\r\n",cnt++, m_l("종류",ENTRY_LABEL_WIDTH), g_sensor_model_table[sensor->model]);
 
   switch (sensor->model)
   {
@@ -340,7 +340,7 @@ int32_t select_menu_index( eSENSOR_TYPE_t type,sensor_t *sensor,int *choice)
   int entry_count;
   int status;
 
-  io_printf("\r\n");
+  dbg_printf("\r\n");
   do
   {
     entry_count = print_common_cfg(type,sensor, 0);
@@ -1043,7 +1043,7 @@ int32_t print_menu_sensor(void)
   int32_t cnt = 0;
   int i = 0;
 
-  io_printf("\r\n");
+  dbg_printf("\r\n");
 
 
   cnt = _countof(sensor_name_list) / 2;
@@ -1053,12 +1053,12 @@ int32_t print_menu_sensor(void)
     make_utf8_string(label, sizeof(label), LABEL_W,sensor_name_list[i]);
     make_utf8_string(sensor_label, sizeof(sensor_label), S_LABEL_W,(ITEM_LIST(get_config_app()->sensor[i].model, g_sensor_model_table)));
     make_option((eSENSOR_TYPE_t)i,&get_config_app()->sensor[i], opt, sizeof(opt));
-    io_printf("%2d.%-14s:%-20s %-22s, ", i, label, sensor_label, opt);
+    dbg_printf("%2d.%-14s:%-20s %-22s, ", i, label, sensor_label, opt);
 
     make_utf8_string(label, sizeof(label), LABEL_W,sensor_name_list[i + cnt]);
     make_utf8_string(sensor_label, sizeof(sensor_label), S_LABEL_W,(ITEM_LIST(get_config_app()->sensor[i + cnt].model, g_sensor_model_table)));
     make_option((eSENSOR_TYPE_t)i,&get_config_app()->sensor[i + cnt], opt, sizeof(opt));
-    io_printf("%2d.%-14s:%-20s %-22s\r\n", i + cnt, label, sensor_label, opt);
+    dbg_printf("%2d.%-14s:%-20s %-22s\r\n", i + cnt, label, sensor_label, opt);
   }
 
 
@@ -1082,6 +1082,6 @@ int32_t aws_menu_sensor(void)
     break;
   }while(1);
 
-  io_printf("장비리셋 후 설정값이 적용됩니다.\r\n");
+  dbg_printf("장비리셋 후 설정값이 적용됩니다.\r\n");
   return status;
 }

@@ -5,14 +5,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "util_time.h"
-#include "dev_io.h"
+#include "debug_io.h"
 
 #define ERROR_PRINTF_USE // 시스템 에러 출력
 #define DEBUG_PRINTF_USE// 디버깅 필요시
 #define USE_DEBUG 0
 #define IWDG_USE 1
 #define PRINTF_BASE(fmt, ...)                                                               \
-  io_printf("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \
+  dbg_printf("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \
               Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \
               Date_Time.Hour, Date_Time.Min, Date_Time.Sec, Date_Time.SubSec,              \
               __FILE__, __LINE__, ##__VA_ARGS__)
@@ -47,7 +47,7 @@
 
 
 #ifdef DEBUG_PRINTF_USE
-  #define DEBUG_PRINTF(fmt, ...)   io_printf(fmt, ##__VA_ARGS__)
+  #define DEBUG_PRINTF(fmt, ...)   dbg_printf(fmt, ##__VA_ARGS__)
 #else
   #define DEBUG_PRINTF(fmt, ...) ((void)0)
 #endif

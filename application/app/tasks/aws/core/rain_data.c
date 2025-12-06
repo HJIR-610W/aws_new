@@ -9,7 +9,7 @@
 #include "aws_data.h"
 #include "app_dataLogging.h"
 #include "app_file.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "ff.h" // FatFs 관련 헤더
 #include "task_logging.h"
 

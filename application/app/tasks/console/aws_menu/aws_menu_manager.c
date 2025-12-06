@@ -13,7 +13,7 @@
 #include "config_sensor.h"
 #include "console_define.h"
 #include "console_utile.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "drv_rs232.h"
 #include "drv_rs485.h"
 #include "drv_flash.h"
@@ -33,16 +33,16 @@ int32_t menu_manage_version()
   get_app_version(&major, &minor, &fix, &rel);
   get_app_build(&ct);
 
-  io_printf("App:%d.%d.%d.%d\r\n", major, minor, fix, rel);
+  dbg_printf("App:%d.%d.%d.%d\r\n", major, minor, fix, rel);
   make_time_to_string(&ct, buff, sizeof(buff));
-  io_printf("App build:%s\r\n", buff);
+  dbg_printf("App build:%s\r\n", buff);
 
   get_boot_version(&major, &minor, &fix, &rel);
   get_boot_build(&ct);
 
-  io_printf("Boot:%d.%d.%d.%d\r\n", major, minor, fix, rel);
+  dbg_printf("Boot:%d.%d.%d.%d\r\n", major, minor, fix, rel);
   make_time_to_string(&ct, buff, sizeof(buff));
-  io_printf("Boot build:%s\r\n", buff);
+  dbg_printf("Boot build:%s\r\n", buff);
   return MENU_OK;
 }
 
@@ -62,16 +62,16 @@ int32_t menu_manage_update()
   char buff[20];
   uint32_t len;
 
-  io_printf("10초뒤에 파일을 전송해주세요\r\n");
+  dbg_printf("10초뒤에 파일을 전송해주세요\r\n");
   osDelay(10000);
 
   if (download_file(save_file, buff, 0, &len, 512 * 1024) == 0)
   {
-    io_printf("파일 크기:%d\r\n", len);
+    dbg_printf("파일 크기:%d\r\n", len);
   }
   else
   {
-    io_printf("파일 수신 오류\r\n");
+    dbg_printf("파일 수신 오류\r\n");
   }
 
   return 0;
@@ -314,7 +314,7 @@ int32_t menu_manage_config_backup()
     {
       case 1:
         backup_config();
-        io_printf("SD카드에 백업되었습니다\r\n");
+        dbg_printf("SD카드에 백업되었습니다\r\n");
         break;
       case 2:
         status = confirm_continue("SD카드에서 설정값을 불러옵니다",&ok);
@@ -381,7 +381,7 @@ int32_t menu_manage_sentor_edit()
             ret = write_bulk_data_range(filename, &start_time, &end_time, value);
             if (ret < 0)
             {
-              io_printf("에러 발생 코드:%d\r\n", ret);
+              dbg_printf("에러 발생 코드:%d\r\n", ret);
             }
           }
           else
@@ -390,7 +390,7 @@ int32_t menu_manage_sentor_edit()
             ret = write_bulk_data_range(filename, &start_time, &end_time, value);
             if (ret < 0)
             {
-              io_printf("에러 발생 코드:%d\r\n", ret);
+              dbg_printf("에러 발생 코드:%d\r\n", ret);
             }
           }
         }
@@ -398,8 +398,8 @@ int32_t menu_manage_sentor_edit()
         {
 
 
-        io_printf("시작시간입력(예:2025-01-01 00:01:00)\r\n");
-        io_printf(">>");
+        dbg_printf("시작시간입력(예:2025-01-01 00:01:00)\r\n");
+        dbg_printf(">>");
         cli_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year,&month,&day,&hour,&min,&sec);
 
         start_time.Year = year;
@@ -409,8 +409,8 @@ int32_t menu_manage_sentor_edit()
         start_time.Min = min;
         start_time.Sec = sec;
 
-        io_printf("종료시간입력(예:2025-01-01 00:01:00)\r\n");
-        io_printf(">>");
+        dbg_printf("종료시간입력(예:2025-01-01 00:01:00)\r\n");
+        dbg_printf(">>");
         cli_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year, &month, &day, &hour, &min, &sec);
         end_time.Year = year;
         end_time.Month = month;
@@ -419,8 +419,8 @@ int32_t menu_manage_sentor_edit()
         end_time.Min = min;
         end_time.Sec = sec;
 
-        io_printf("갑 입력\r\n");
-        io_printf(">>");
+        dbg_printf("갑 입력\r\n");
+        dbg_printf(">>");
         cli_scanf_s("%d", &value);
         ;
         if (choice == 1)
@@ -437,13 +437,13 @@ int32_t menu_manage_sentor_edit()
         break;
         if(ok)
         {
-          io_printf("범위를 넓게 하면 편집에 수십초가 소요될 수 있습니다\r\n");
+          dbg_printf("범위를 넓게 하면 편집에 수십초가 소요될 수 있습니다\r\n");
           ret = write_bulk_data_range(filename, &start_time, &end_time, value);
           if (ret < 0)
           {
-            io_printf("에러 발생 코드:%d\r\n", ret);
+            dbg_printf("에러 발생 코드:%d\r\n", ret);
           }
-          io_printf("OK\r\n");
+          dbg_printf("OK\r\n");
         }
       }
         break;
@@ -457,11 +457,11 @@ int32_t menu_manage_sentor_edit()
         int hour;
         int min;
         int read_cnt;
-        io_printf("시작시간입력(예:2025-01-01 00:01)\r\n");
-        io_printf(">>");
+        dbg_printf("시작시간입력(예:2025-01-01 00:01)\r\n");
+        dbg_printf(">>");
         cli_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
-        io_printf("읽을 갯수 입력\r\n");
-        io_printf(">>");
+        dbg_printf("읽을 갯수 입력\r\n");
+        dbg_printf(">>");
         cli_scanf_s("%d", &read_cnt);
         DATE_TIME_BUF ct;
         ct.Year = year;
@@ -478,7 +478,7 @@ int32_t menu_manage_sentor_edit()
           uint8_t type;
           type = choice == 3 ? LOGGING_RAIN_1MIN : LOGGING_SUNSHINE_1MIN;
           read_sensorDataMulti(&ct, sizeof(uint16_t), 1, type, 1, (uint8_t *)&data, sizeof(data));
-          io_printf("%04d-%02d-%02d %02d:%02d:00 %5d\r\n", ct.Year, ct.Month, ct.Day, ct.Hour,
+          dbg_printf("%04d-%02d-%02d %02d:%02d:00 %5d\r\n", ct.Year, ct.Month, ct.Day, ct.Hour,
                     ct.Min, data);
           start_time += 60;
           time_cvt_secTotime(start_time, &ct);
@@ -513,8 +513,8 @@ int32_t menu_manage_update_fw()
     
       if (check_firmware(UPDATE_LOCAL) == 0)
       {
-        io_printf("장비가 리셋되면서 업데이트가 진행됩니다\r\n");
-        io_printf("상태 LED가 점멸됩니다\r\n");
+        dbg_printf("장비가 리셋되면서 업데이트가 진행됩니다\r\n");
+        dbg_printf("상태 LED가 점멸됩니다\r\n");
 
         set_magic_value(MAGIC_UPDATE_FW_LACAL);
         reset_system("USER update");
@@ -530,7 +530,7 @@ int32_t menu_manage_log_reset(void)
   int status;
   int log_cnt;
 
-  io_printf("현재 로그 카운트:%d\r\n", get_config_nvm()->log_q_cnt );
+  dbg_printf("현재 로그 카운트:%d\r\n", get_config_nvm()->log_q_cnt );
 
   status = input_decimal_prompt("로그 카운트 입력해주세요", &log_cnt, 0, LOG_COUNT_MAX);
   if(status == MENU_OK)
@@ -563,7 +563,7 @@ int32_t menu_manage_log_reset(void)
           if (ok)
           {
             config_hj_reset();
-            io_printf("초기화 되었습니다");
+            dbg_printf("초기화 되었습니다");
           }
           break;
         case 2:
@@ -577,7 +577,7 @@ int32_t menu_manage_log_reset(void)
             save_config_app();
             config_sensor_reset();
             save_config_sensor();
-            io_printf("공장 초기화 되었습니다\r\n");
+            dbg_printf("공장 초기화 되었습니다\r\n");
           }
           break;
         case 3:

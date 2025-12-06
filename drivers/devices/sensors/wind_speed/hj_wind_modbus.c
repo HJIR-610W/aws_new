@@ -9,7 +9,7 @@
 #include "app_sensor.h"
 #include "config_sensor.h"
 #include "modbus_master.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "drv_rs485.h"
 
 

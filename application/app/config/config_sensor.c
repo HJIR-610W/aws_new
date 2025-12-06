@@ -6,7 +6,7 @@
 #include "app_file.h"
 #include "app_version.h"
 #include "drv_crc.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "user_heap.h"
 #include "system_err.h"
 
@@ -359,7 +359,7 @@ void backup_config_sensor(void)
   f_ret = write_file(PATH_CONFIG_SENSOR_BIN, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor), 0);
   if (f_ret == FR_OK)
   {
-    io_printf("%s에 저장되었습니다\r\n",PATH_CONFIG_SENSOR_BIN);
+    dbg_printf("%s에 저장되었습니다\r\n",PATH_CONFIG_SENSOR_BIN);
   }
 }
 
@@ -382,7 +382,7 @@ void restore_config_sensor(void)
 
     if (f_ret != FR_OK)
     {
-      io_printf("파일 읽기 오류  %d\r\n", f_ret);
+      dbg_printf("파일 읽기 오류  %d\r\n", f_ret);
       user_free(p_config);
       return;
     }
@@ -393,13 +393,13 @@ void restore_config_sensor(void)
       {
         memcpy(&g_config_sensor, p_config, sizeof(config_sensor_t));
         crc_result = true;
-        io_printf("0:config_sensor.bin 복구되었습니다.\r\n");
+        dbg_printf("0:config_sensor.bin 복구되었습니다.\r\n");
       }
     }
 
     if (crc_result == false)
     {
-      io_printf("체크섬 오류\r\n");
+      dbg_printf("체크섬 오류\r\n");
     }
 
     user_free(p_config);

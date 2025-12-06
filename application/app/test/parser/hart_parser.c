@@ -4,9 +4,9 @@
 
 
 #include "hart_parser.h"
-#include "dev_io.h"
+#include "debug_io.h"
 
-#define printf io_printf
+#define printf dbg_printf
 
 static const char* hart_command_to_str(uint8_t cmd)
 {

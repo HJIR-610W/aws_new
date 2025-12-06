@@ -3,7 +3,7 @@
 
 #include "cli_key_code.h"
 #include "console_utile.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "bsp_uart.h"
 #include "cli_input.h"
 #include "util_memory.h"
@@ -62,13 +62,13 @@ bool is_gpio_interrupt_enabled(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
   if (exti_port_val != gpio_port_index)
   {
-    io_printf("포트 매핑 불일치: SYSCFG = %u, 기대값 = %u\r\n", exti_port_val, gpio_port_index);
+    dbg_printf("포트 매핑 불일치: SYSCFG = %u, 기대값 = %u\r\n", exti_port_val, gpio_port_index);
     return false;
   }
 
   if (!(EXTI->IMR & (1 << pin_num)))
   {
-    io_printf("EXTI 인터럽트 마스크됨 (IMR[%d] = 0)\r\n", pin_num);
+    dbg_printf("EXTI 인터럽트 마스크됨 (IMR[%d] = 0)\r\n", pin_num);
     return false;
   }
 
@@ -82,7 +82,7 @@ bool is_gpio_interrupt_enabled(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
   if (!(NVIC->ISER[irq / 32] & (1 << (irq % 32))))
   {
-    io_printf("NVIC ISER[%d] 비활성화됨\r\n", irq);
+    dbg_printf("NVIC ISER[%d] 비활성화됨\r\n", irq);
     return false;
   }
 
@@ -93,11 +93,11 @@ bool is_gpio_interrupt_enabled(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
   bool rising = (EXTI->RTSR & (1 << pin_num)) != 0;
   bool falling = (EXTI->FTSR & (1 << pin_num)) != 0;
 
-  io_printf("GPIO 인터럽트 설정됨: 포트=GPIO%c, 핀=%d\r\n", 'A' + gpio_port_index, pin_num);
-  io_printf("  IRQn = %d\r\n", irq);
-  io_printf("  NVIC PreemptPriority = %lu\r\n", preempt_priority);
-  io_printf("  NVIC SubPriority = %lu\r\n", sub_priority);
-  io_printf("  Edge Trigger: %s%s\r\n", rising ? "RISING " : "", falling ? "FALLING" : "");
+  dbg_printf("GPIO 인터럽트 설정됨: 포트=GPIO%c, 핀=%d\r\n", 'A' + gpio_port_index, pin_num);
+  dbg_printf("  IRQn = %d\r\n", irq);
+  dbg_printf("  NVIC PreemptPriority = %lu\r\n", preempt_priority);
+  dbg_printf("  NVIC SubPriority = %lu\r\n", sub_priority);
+  dbg_printf("  Edge Trigger: %s%s\r\n", rising ? "RISING " : "", falling ? "FALLING" : "");
 
   return true;
 }
@@ -175,20 +175,20 @@ void test_uart(void)
     BSP_UART_8_CDMA
   };
 
-  io_printf("RS232 포트별 테스트\r\n");
-  io_printf("주의: RS232 A,B는 하드웨어 점퍼 설정 필요\r\n");
-  io_printf("기능: 포트이름 전송 후 1초간 수신 데이터 에코 및 HEX 출력\r\n\r\n");
+  dbg_printf("RS232 포트별 테스트\r\n");
+  dbg_printf("주의: RS232 A,B는 하드웨어 점퍼 설정 필요\r\n");
+  dbg_printf("기능: 포트이름 전송 후 1초간 수신 데이터 에코 및 HEX 출력\r\n\r\n");
 
   if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:VHF, 1:TTL, 2:A, 3:B, 4:C, 5:D, 6:CDMA)", &port_index, 0, 6) != MENU_OK)
   {
     port_index = 0;
-    io_printf("기본 포트 VHF로 설정합니다.\r\n");
+    dbg_printf("기본 포트 VHF로 설정합니다.\r\n");
   }
 
   if(input_decimal_prompt("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
   {
     baud = 57600;
-    io_printf("기본 속도 %d로 설정합니다.\r\n", baud);
+    dbg_printf("기본 속도 %d로 설정합니다.\r\n", baud);
   }
 
   selected_port = rs232_drv_num[port_index];
@@ -200,7 +200,7 @@ void test_uart(void)
 
   bsp_uart_init(selected_port, &uart_config);
   
-  io_printf("RS232 포트 %s, 속도 %d로 테스트 시작 (CTRL+Q 종료)\r\n", 
+  dbg_printf("RS232 포트 %s, 속도 %d로 테스트 시작 (CTRL+Q 종료)\r\n", 
             rs232_port_name[port_index], baud);
 
   while (1)
@@ -210,11 +210,11 @@ void test_uart(void)
     
     if(len < 0)
     {
-      io_printf("RS232 %s 전송 실패\r\n", rs232_port_name[port_index]);
+      dbg_printf("RS232 %s 전송 실패\r\n", rs232_port_name[port_index]);
     }
     else
     {
-      io_printf("전송: %s", buff);
+      dbg_printf("전송: %s", buff);
     }
 
     len = bsp_uart_recv(selected_port, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
@@ -223,17 +223,17 @@ void test_uart(void)
     {
       bsp_uart_send(selected_port, (uint8_t*)rx_buff, len);
       
-      io_printf("수신 및 에코 (%d bytes): ", len);
+      dbg_printf("수신 및 에코 (%d bytes): ", len);
       for(int i = 0; i < len; i++)
       {
-        io_printf("%c", rx_buff[i]);
+        dbg_printf("%c", rx_buff[i]);
       }
-      io_printf("\r\n");
+      dbg_printf("\r\n");
     }
 
     if (get_key(10) == KEY_CODE_CTRL_C)
     {
-      io_printf("테스트 종료\r\n");
+      dbg_printf("테스트 종료\r\n");
       return;
     }
 

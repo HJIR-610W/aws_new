@@ -26,7 +26,7 @@
 #include "lwip/sio.h"
 #endif /* MDK ARM Compiler */
 #include "ethernetif.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include <string.h>
 
 /* USER CODE BEGIN 0 */
@@ -138,12 +138,12 @@ static void ethernet_link_status_updated(struct netif *netif)
 {
   if (netif_is_up(netif))
   {
-    io_printf("eth link up\r\n");
+    dbg_printf("eth link up\r\n");
     g_ethernet_phy_link = 1;
   }
   else /* netif is down */
   {
-    io_printf("eth link down\r\n");
+    dbg_printf("eth link down\r\n");
     g_ethernet_phy_link = 0;
   }
 }

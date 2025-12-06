@@ -7,7 +7,7 @@
 
 #include "FreeRTOS.h"
 #include "cmsis_os2.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "bsp_di.h"
 #include "os_user_def.h"
 #include "pcb_define.h"
@@ -134,13 +134,13 @@ void check_baud_rate(int uart_num)
 
   if (divisor == 0)
   {
-    io_printf("Invalid divisor value.\n");
+    dbg_printf("Invalid divisor value.\n");
     return;
   }
 
   // 보오드레이트 계산
   uint32_t baud_rate = UART_CLOCK_FREQ / (16 * divisor);
-  io_printf("Calculated Baud Rate: %u\n", baud_rate);
+  dbg_printf("Calculated Baud Rate: %u\n", baud_rate);
 }
 
 // 보오드레이트 설정 함수
@@ -511,7 +511,7 @@ void tl16c554_send_DMA(int uart_num, const uint8_t *p_data, uint16_t dataLen)
   if (HAL_DMA_Start_IT(&hdma_memtomem, (uint32_t)p_data, dest_address, dataLen) != HAL_OK)
   {
     // DMA 시작 실패 처리
-    io_printf("DMA Start Failed\n");
+    dbg_printf("DMA Start Failed\n");
     while (1);
   }
 }

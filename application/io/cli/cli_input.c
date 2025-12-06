@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 #include "cli_key_code.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "cli_input.h"
 #include "console_define.h"
 
@@ -43,18 +43,18 @@ static const char *cmdlist[] = {
 
 int uart_recv(char *ch)
 {
-  io_recv(ch,1,0xffffffff);
+  dbg_recv(ch,1,0xffffffff);
   
   return 0;
 }
 
 void uart_send(char ch) 
 { 
-  io_put_ch (ch);
+  dbg_put_ch (ch);
 }
 void uart_puts(const char *s)
 {
-  io_puts(s);
+  dbg_puts(s);
 }
 
 static const char *autocomplete(const char *input)

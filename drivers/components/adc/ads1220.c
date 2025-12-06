@@ -10,7 +10,7 @@
 #include "bsp_mux.h"
 #include "bsp_spi.h"
 #include "cmsis_os.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "drv_adc.h"
 #include "drv_adc_define.h"
 #include "os_user_def.h"

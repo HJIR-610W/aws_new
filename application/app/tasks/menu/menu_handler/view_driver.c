@@ -5,7 +5,7 @@
 
 
 #include "app_key.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "console_utile.h"
 #include "util_stdio.h"
 
@@ -46,7 +46,7 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 	int len=0;
   int remain_len;
 
-	io_printf("\x1B[%d;%dH", win->start_y, win->start_x);
+	dbg_printf("\x1B[%d;%dH", win->start_y, win->start_x);
 
 	//상단 +----+ 출력
 	for (int i = 0; i < win->view_col - 2; i++)
@@ -54,11 +54,11 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 		buff[len++] = '-';
 	}
 	buff[len] = '\0';
-	io_printf("+%s+", buff);
+	dbg_printf("+%s+", buff);
 
 	len=0;
 			// 타이틀 출력
-			io_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
+			dbg_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
 
 	va_start(ap, pFmt);
 
@@ -81,17 +81,17 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 
 	if (win->is_focused)
 	{
-		io_printf("|\x1B[32m%s\x1B[0m|\r\n",  &buff[0]);
+		dbg_printf("|\x1B[32m%s\x1B[0m|\r\n",  &buff[0]);
 	}
 	else if (win->is_selected)
 	{
-		io_printf("|\x1B[7m%s\x1B[0m|\r\n",  &buff[0]);
+		dbg_printf("|\x1B[7m%s\x1B[0m|\r\n",  &buff[0]);
 	} else
 	{
-    io_printf("|%s|\r\n", buff);
+    dbg_printf("|%s|\r\n", buff);
   }
 
-	io_printf("\x1B[%d;%dH", win->start_y + 2, win->start_x);
+	dbg_printf("\x1B[%d;%dH", win->start_y + 2, win->start_x);
 	len = 0;
 	
 	for (int i = 0; i < win->view_col - 2; i++)
@@ -99,17 +99,17 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 		buff[len++] = '-';
 	}
 	buff[len] = '\0';
-	io_printf("+%s+", buff);
+	dbg_printf("+%s+", buff);
 }
 
 void win_print_close(win_t* win)
 {
-	io_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
-	io_printf("+");
+	dbg_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
+	dbg_printf("+");
 	for (int i = 0; i < win->view_col - 2; i++) {
-		io_printf("-");
+		dbg_printf("-");
 	}
-	io_printf("+\n");
+	dbg_printf("+\n");
 }
 
 /**
@@ -132,7 +132,7 @@ void win_printf_row(win_t* win, int row_index, const char* pFmt, ...)
 	page = win->current_page;// 
 	if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + win->view_row)
 	{
-		io_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
+		dbg_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
 		va_start(ap, pFmt);
 
 		buff[0] = '|';
@@ -150,7 +150,7 @@ void win_printf_row(win_t* win, int row_index, const char* pFmt, ...)
 		buff[total_len++] = '|';
 		buff[total_len] = '\0';
 
-		io_printf("%s", buff);
+		dbg_printf("%s", buff);
 		win->current_row++;
 	}
 }

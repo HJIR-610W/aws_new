@@ -14,7 +14,7 @@
 #include "aws_system.h"
 #include "console_define.h"
 #include "console_utile.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "util_memory.h"
 #include "Sensors\temperature\hj_temperature.h"
 #include "Sensors\humidity\hj_huminity.h"
@@ -36,14 +36,14 @@ int hjtemperature_menu(void)
   hjtemp = hjtemp_opened();
   if (hjtemp == NULL)
   {
-    io_printf("화진 온도를 설정해주세요\r\n");
+    dbg_printf("화진 온도를 설정해주세요\r\n");
     return MENU_BACK;
   }
 
   hjhumi = hjHumi_opened();
   if(hjhumi == NULL)
   {
-    io_printf("화진 습도를 설정해주세요\r\n");
+    dbg_printf("화진 습도를 설정해주세요\r\n");
     return MENU_BACK;
   }
 
@@ -63,8 +63,8 @@ int hjtemperature_menu(void)
         modbus_h = get_hjtemperature_bus_io();
 
         modbus_read_hold_reg(modbus_h,  0, (uint16_t *)&map, 16);
-        io_printf("SW Version:%d\r\n", map.sw_version);
-        io_printf("HW Version:%d\r\n", map.hw_version);
+        dbg_printf("SW Version:%d\r\n", map.sw_version);
+        dbg_printf("HW Version:%d\r\n", map.hw_version);
 
       }
       break;
@@ -80,7 +80,7 @@ int hjtemperature_menu(void)
         hjtemperature_ctrl(hjtemp, eTEMP_GET_OFFSET, NULL, (void*)&data, &err);
         if (err == 0)
         {
-          io_printf("현재 온도 오프셋:%.2f\r\n", ((float)data / 100.0f));
+          dbg_printf("현재 온도 오프셋:%.2f\r\n", ((float)data / 100.0f));
           status = confirm_continue("오프셋을 변경하시겠습니까?", &ok);
           if (status != MENU_OK)
             break;
@@ -100,7 +100,7 @@ int hjtemperature_menu(void)
         }
         else
         {
-          io_printf("장치에 접근할 수 없습니다.\r\n");
+          dbg_printf("장치에 접근할 수 없습니다.\r\n");
         }
       }
         break;
@@ -117,7 +117,7 @@ int hjtemperature_menu(void)
 
           if (err == 0)
           {
-            io_printf("현재 습도 오프셋:%.2f\r\n", ((float)data / 100.0f));
+            dbg_printf("현재 습도 오프셋:%.2f\r\n", ((float)data / 100.0f));
             status = confirm_continue("오프셋을 변경하시겠습니까?", &ok);
             if (status != MENU_OK)
               break;
@@ -134,7 +134,7 @@ int hjtemperature_menu(void)
           }
           else
           {
-            io_printf("장치에 접근할 수 없습니다.\r\n");
+            dbg_printf("장치에 접근할 수 없습니다.\r\n");
           }
         }
 
@@ -146,20 +146,20 @@ int hjtemperature_menu(void)
 
         if(err == 0)
         {
-          io_printf("온도:%.2f\r\n",temp);
+          dbg_printf("온도:%.2f\r\n",temp);
         }
         else
         {
-          io_printf("온도 통신 실패 %s\r\n", get_drv_err_name(err));
+          dbg_printf("온도 통신 실패 %s\r\n", get_drv_err_name(err));
         }
         float humi;
         humi = hjHuminity_read(hjhumi,&err);
         if(err==0)
         {
-          io_printf("습도:%.2f\r\n", humi);
+          dbg_printf("습도:%.2f\r\n", humi);
         }
         else{
-          io_printf("습도 통신 실패 %s\r\n", get_drv_err_name(err));
+          dbg_printf("습도 통신 실패 %s\r\n", get_drv_err_name(err));
         }
       }
     }

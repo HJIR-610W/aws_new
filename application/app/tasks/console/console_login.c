@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "dev_io.h"
+#include "debug_io.h"
 
 #include "console_utile.h"
 #include "crypto_key.h"
@@ -22,11 +22,11 @@ void check_login(void)
   read_password(key);
   while(1)
   {
-  io_printf("\r\n비밀번호를 입력해주세요\r\n");
+  dbg_printf("\r\n비밀번호를 입력해주세요\r\n");
 
  while(1)
  {
-  if(  io_recv(&ch,1,0xFFFFFFFF))
+  if(  dbg_recv(&ch,1,0xFFFFFFFF))
   {
 
       buffer[cnt++] = ch;
@@ -47,7 +47,7 @@ void check_login(void)
       }
       else
       {
-            io_put_ch('*');
+            dbg_put_ch('*');
       }
      
     }

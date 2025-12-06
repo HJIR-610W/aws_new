@@ -5,7 +5,7 @@
 #include "bsp_uart.h"
 #include "TL16C554.h"
 #include "cmsis_os2.h"
-#include "dev_io.h"
+#include "debug_io.h"
 
 // 드라이버 타입 정의
 typedef enum {

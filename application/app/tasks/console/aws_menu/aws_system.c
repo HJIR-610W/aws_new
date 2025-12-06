@@ -1,7 +1,7 @@
 #include "console_define.h"
 #include "console_utile.h"
 #include "const_string.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "util_memory.h"
 
 #include "util_time.h"
@@ -26,7 +26,7 @@ int32_t input_date( DATE_TIME_BUF* nt)
 
   while (1)
   {
-    io_printf("format:YYYY-MM-DD hh:mm:ss,2020-01-01 00:11:22\r\n");
+    dbg_printf("format:YYYY-MM-DD hh:mm:ss,2020-01-01 00:11:22\r\n");
 
     status = cli_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year, &month, &day, &hour, &min, &sec);
 
@@ -53,7 +53,7 @@ int32_t input_date( DATE_TIME_BUF* nt)
       status = MENU_OK;
       break;
     }
-    io_printf("입력을 확인해주세요");
+    dbg_printf("입력을 확인해주세요");
   }
   return status;
 }
@@ -129,7 +129,7 @@ int aws_setup_menu_system(void)
           break;
           config.charger_model = (eCHARGER_MODEL_t)(choice-1);
           WRITE_CFG(charger_model);
-          io_printf_color(IO_COLOR_RED,"리셋 후 적용됩니다\r\n");
+          dbg_printf_color(IO_COLOR_RED,"리셋 후 적용됩니다\r\n");
           break;
     }
 

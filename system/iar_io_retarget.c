@@ -10,7 +10,7 @@
 #include "stm32f4xx_hal.h"
 
 #include "system_err.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "drv_rs232.h"
 #include "stm32f4xx_hal.h"
 

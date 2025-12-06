@@ -7,7 +7,7 @@
 #include "drv_rs485.h"
 #include "app_sensor.h"
 #include "cmsis_os2.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "drv_rs485.h"
 #include "drv_rs232.h"
 #include "util_memory.h"

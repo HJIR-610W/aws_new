@@ -4,7 +4,7 @@
 #include "cli_key_code.h"
 #include "cmsis_os2.h"
 #include "config_app.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "drv_di.h"
 #include "bsp_do.h"
 #include "bsp_uart.h"
@@ -149,8 +149,8 @@ void sdiTask(void *arg)
 
   SDI_DIR_TX_OFF();
 
-  io_printf("0XR3 A 문자열이 출력되면 정상\r\n");
-  io_printf("CTRL+Q 종료료\r\n");
+  dbg_printf("0XR3 A 문자열이 출력되면 정상\r\n");
+  dbg_printf("CTRL+Q 종료료\r\n");
 
   while (1)
   {

@@ -7,7 +7,7 @@
 #include <string.h>
 
 #include "bsp_delay.h"
-#include "dev_io.h"
+#include "debug_io.h"
 #include "lfs_port.h"
 #include "ff.h"
 #include "os_user_def.h"
@@ -367,7 +367,7 @@ void print_fat_time(WORD fdate, WORD ftime)
   uint8_t min = (ftime >> 5) & 0x3F;
   uint8_t sec = (ftime & 0x1F) * 2;
 
-  io_printf("%04u-%02u-%02u %02u:%02u:%02u", year, month, day, hour, min, sec);
+  dbg_printf("%04u-%02u-%02u %02u:%02u:%02u", year, month, day, hour, min, sec);
 }
 FRESULT list_directory(const char *path)
 {
@@ -381,7 +381,7 @@ FRESULT list_directory(const char *path)
   res = f_opendir(&dir, path);
   if (res != FR_OK)
   {
-    io_printf("Failed to open directory: %s (Error: %d)\r\n", path, res);
+    dbg_printf("Failed to open directory: %s (Error: %d)\r\n", path, res);
     OS_POST_SEM(g_file_sem);
     return res;
   }
@@ -398,11 +398,11 @@ FRESULT list_directory(const char *path)
     // 파일/디렉토리 정보 출력
     if (fno.fattrib & AM_DIR)
     {
-      io_printf("[DIR ] %-20s  ", fno.fname);
+      dbg_printf("[DIR ] %-20s  ", fno.fname);
     }
     else
     {
-      io_printf("[FILE] %-20s  %10llu bytes  ", fno.fname, (unsigned long long)fno.fsize);
+      dbg_printf("[FILE] %-20s  %10llu bytes  ", fno.fname, (unsigned long long)fno.fsize);
     }
 
     // 날짜/시간 출력
@@ -410,16 +410,16 @@ FRESULT list_directory(const char *path)
 
     
     // 속성 출력
-    io_printf("  [");
+    dbg_printf("  [");
     if (fno.fattrib & AM_RDO)
-      io_printf("R");
+      dbg_printf("R");
     if (fno.fattrib & AM_HID)
-      io_printf("H");
+      dbg_printf("H");
     if (fno.fattrib & AM_SYS)
-      io_printf("S");
+      dbg_printf("S");
     if (fno.fattrib & AM_ARC)
-      io_printf("A");
-    io_printf("]\r\n");
+      dbg_printf("A");
+    dbg_printf("]\r\n");
   }
 
   // 디렉토리 닫기
@@ -496,7 +496,7 @@ FRESULT find_files_by_extension(const TCHAR *folder_path, const TCHAR *extension
         {
 
 #if 0
-          io_printf("Warning: Filename '%s' is too long and was skipped.\n", fno.fname);
+          dbg_printf("Warning: Filename '%s' is too long and was skipped.\n", fno.fname);
 #endif
         }
       }
@@ -538,20 +538,20 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
   uint8_t *buffer = (uint8_t *)user_malloc(TEST_BUFFER_SIZE);
   if (buffer == NULL)
   {
-      io_printf("메모리 할당 실패\r\n");
+      dbg_printf("메모리 할당 실패\r\n");
     return FR_OK;
   }
 #endif
 
   memset(buffer, 0xAA, TEST_BUFFER_SIZE);
 
-  io_printf("Writing %lu bytes to %s...\r\n", (unsigned long)fileSize, path);
+  dbg_printf("Writing %lu bytes to %s...\r\n", (unsigned long)fileSize, path);
 
   // 파일 열기 (없으면 생성, 항상 새로쓰기)
   res = f_open(&file, path, FA_WRITE | FA_CREATE_ALWAYS);
   if (res != FR_OK)
   {
-    io_printf("Failed to open file for write (Error: %d)\r\n", res);
+    dbg_printf("Failed to open file for write (Error: %d)\r\n", res);
 #if !STATIC_RAM_USE
     user_free(buffer);
 #endif
@@ -571,7 +571,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
     res = f_write(&file, buffer, writeSize, &bytesRW);
     if (res != FR_OK || bytesRW != writeSize)
     {
-      io_printf("Write error at %lu bytes (Error: %d)\r\n", totalBytes, res);
+      dbg_printf("Write error at %lu bytes (Error: %d)\r\n", totalBytes, res);
       f_close(&file);
 #if !STATIC_RAM_USE
       user_free(buffer);
@@ -589,7 +589,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
   endClk = HAL_GetTick();
   elapsed = endClk - startClk;
 
-  io_printf("Write completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
+  dbg_printf("Write completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
                (unsigned long)elapsed,
                (fileSize / (elapsed > 0 ? (elapsed / 1000.0f) : 1.0f)) / 1024.0f);
 
@@ -597,12 +597,12 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
 
   // ============================ 읽기 측정 ==============================
 
-  io_printf("Reading %lu bytes from %s...\r\n", (unsigned long)fileSize, path);
+  dbg_printf("Reading %lu bytes from %s...\r\n", (unsigned long)fileSize, path);
 
   res = f_open(&file, path, FA_READ);
   if (res != FR_OK)
   {
-    io_printf("Failed to open file for read (Error: %d)\r\n", res);
+    dbg_printf("Failed to open file for read (Error: %d)\r\n", res);
 #if !STATIC_RAM_USE
     user_free(buffer);
 #endif
@@ -621,7 +621,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
     res = f_read(&file, buffer, readSize, &bytesRW);
     if (res != FR_OK || bytesRW == 0)
     {
-      io_printf("Read error at %lu bytes (Error: %d)\r\n", totalBytes, res);
+      dbg_printf("Read error at %lu bytes (Error: %d)\r\n", totalBytes, res);
       f_close(&file);
 #if !STATIC_RAM_USE
       user_free(buffer);
@@ -636,7 +636,7 @@ FRESULT test_file_rw_speed(const char *path, uint32_t fileSize)
   endClk = HAL_GetTick();
   elapsed = endClk - startClk;
 
-  io_printf("Read completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
+  dbg_printf("Read completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
                (unsigned long)elapsed,
                (fileSize / (elapsed > 0 ? (elapsed / 1000.0f) : 1.0f)) / 1024.0f);
 
@@ -886,12 +886,12 @@ void printf_lfs_directory(const char *dir)
   err = lfs_dir_open(&lfs, &lfs_dir, dir);
   if (err < 0)
   {
-    io_printf("Failed to open directory: %s (Error: %d)\r\n", dir, err);
+    dbg_printf("Failed to open directory: %s (Error: %d)\r\n", dir, err);
     OS_POST_SEM(g_lfs_sem);
     return;
   }
 
-  io_printf("\r\n========== LittleFS Directory: %s ==========\r\n", dir);
+  dbg_printf("\r\n========== LittleFS Directory: %s ==========\r\n", dir);
 
   // 디렉토리 항목 읽기 루프
   while (1)
@@ -899,7 +899,7 @@ void printf_lfs_directory(const char *dir)
     err = lfs_dir_read(&lfs, &lfs_dir, &info);
     if (err < 0)
     {
-      io_printf("Error reading directory (Error: %d)\r\n", err);
+      dbg_printf("Error reading directory (Error: %d)\r\n", err);
       break;
     }
 
@@ -918,12 +918,12 @@ void printf_lfs_directory(const char *dir)
     // 파일/디렉토리 정보 출력
     if (info.type == LFS_TYPE_DIR)
     {
-      io_printf("[DIR ] %-30s\r\n", info.name);
+      dbg_printf("[DIR ] %-30s\r\n", info.name);
       dir_count++;
     }
     else if (info.type == LFS_TYPE_REG)
     {
-      io_printf("[FILE] %-30s %10lu bytes\r\n", info.name, (unsigned long)info.size);
+      dbg_printf("[FILE] %-30s %10lu bytes\r\n", info.name, (unsigned long)info.size);
       file_count++;
       total_size += info.size;
     }
@@ -935,10 +935,10 @@ void printf_lfs_directory(const char *dir)
   OS_POST_SEM(g_lfs_sem);
 
   // 요약 정보 출력
-  io_printf("--------------------------------------------\r\n");
-  io_printf("Total: %lu directories, %lu files\r\n", (unsigned long)dir_count, (unsigned long)file_count);
-  io_printf("Total size: %lu bytes (%.2f KB)\r\n", (unsigned long)total_size, total_size / 1024.0f);
-  io_printf("============================================\r\n\r\n");
+  dbg_printf("--------------------------------------------\r\n");
+  dbg_printf("Total: %lu directories, %lu files\r\n", (unsigned long)dir_count, (unsigned long)file_count);
+  dbg_printf("Total size: %lu bytes (%.2f KB)\r\n", (unsigned long)total_size, total_size / 1024.0f);
+  dbg_printf("============================================\r\n\r\n");
 }
 
 void printf_lfs_info(void)
@@ -960,7 +960,7 @@ void printf_lfs_info(void)
 
   if (blocks_used < 0)
   {
-    io_printf("[LFS] Error getting filesystem size (Error: %d)\r\n", blocks_used);
+    dbg_printf("[LFS] Error getting filesystem size (Error: %d)\r\n", blocks_used);
     return;
   }
 
@@ -970,26 +970,26 @@ void printf_lfs_info(void)
   used_capacity = blocks_used * block_size;
   free_capacity = total_capacity - used_capacity;
 
-  io_printf("\r\n========== LittleFS Filesystem Info ==========\r\n");
-  io_printf("Block size      : %lu bytes\r\n", (unsigned long)block_size);
-  io_printf("Total blocks    : %lu\r\n", (unsigned long)total_blocks);
-  io_printf("Used blocks     : %lu\r\n", (unsigned long)blocks_used);
-  io_printf("Free blocks     : %lu\r\n", (unsigned long)(total_blocks - blocks_used));
-  io_printf("--------------------------------------------\r\n");
-  io_printf("Total capacity  : %lu bytes (%.2f KB / %.2f MB)\r\n",
+  dbg_printf("\r\n========== LittleFS Filesystem Info ==========\r\n");
+  dbg_printf("Block size      : %lu bytes\r\n", (unsigned long)block_size);
+  dbg_printf("Total blocks    : %lu\r\n", (unsigned long)total_blocks);
+  dbg_printf("Used blocks     : %lu\r\n", (unsigned long)blocks_used);
+  dbg_printf("Free blocks     : %lu\r\n", (unsigned long)(total_blocks - blocks_used));
+  dbg_printf("--------------------------------------------\r\n");
+  dbg_printf("Total capacity  : %lu bytes (%.2f KB / %.2f MB)\r\n",
             (unsigned long)total_capacity,
             total_capacity / 1024.0f,
             total_capacity / (1024.0f * 1024.0f));
-  io_printf("Used capacity   : %lu bytes (%.2f KB / %.2f MB)\r\n",
+  dbg_printf("Used capacity   : %lu bytes (%.2f KB / %.2f MB)\r\n",
             (unsigned long)used_capacity,
             used_capacity / 1024.0f,
             used_capacity / (1024.0f * 1024.0f));
-  io_printf("Free capacity   : %lu bytes (%.2f KB / %.2f MB)\r\n",
+  dbg_printf("Free capacity   : %lu bytes (%.2f KB / %.2f MB)\r\n",
             (unsigned long)free_capacity,
             free_capacity / 1024.0f,
             free_capacity / (1024.0f * 1024.0f));
-  io_printf("Usage           : %.1f%%\r\n", (blocks_used * 100.0f) / total_blocks);
-  io_printf("==============================================\r\n\r\n");
+  dbg_printf("Usage           : %.1f%%\r\n", (blocks_used * 100.0f) / total_blocks);
+  dbg_printf("==============================================\r\n\r\n");
 }
 
 
@@ -1008,20 +1008,20 @@ void lfs_init(void)
   err = lfs_port_init();
   if (err)
   {
-      io_printf("[ERROR] Failed to initialize porting layer\n");
+      dbg_printf("[ERROR] Failed to initialize porting layer\n");
   }
 
   err = lfs_mount(&lfs, &lfs_cfg);
   if (err)
   {
-    io_printf("[LFS] Mount failed, formatting...\r\n");
+    dbg_printf("[LFS] Mount failed, formatting...\r\n");
     lfs_format(&lfs, &lfs_cfg);
     err = lfs_mount(&lfs, &lfs_cfg);
   }
 
   if(err == 0)
   {
-    io_printf("[LFS] Mount successful\r\n");
+    dbg_printf("[LFS] Mount successful\r\n");
 
     printf_lfs_info();
     printf_lfs_directory("/");
@@ -1031,7 +1031,7 @@ void lfs_init(void)
   }
   else
   {
-    io_printf("[ERROR] LittleFS mount failed (err=%d)\r\n", err);
+    dbg_printf("[ERROR] LittleFS mount failed (err=%d)\r\n", err);
   }
 }
 
@@ -1053,14 +1053,14 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
   buffer = (uint8_t *)user_malloc(LFS_TEST_BUFFER_SIZE);
   if (buffer == NULL)
   {
-    io_printf("Failed to allocate write buffer\r\n");
+    dbg_printf("Failed to allocate write buffer\r\n");
     return LFS_ERR_NOMEM;
   }
 
   read_buffer = (uint8_t *)user_malloc(LFS_TEST_BUFFER_SIZE);
   if (read_buffer == NULL)
   {
-    io_printf("Failed to allocate read buffer\r\n");
+    dbg_printf("Failed to allocate read buffer\r\n");
     user_free(buffer);
     return LFS_ERR_NOMEM;
   }
@@ -1068,7 +1068,7 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
   // 쓰기 버퍼 초기화
   memset(buffer, 0xAA, LFS_TEST_BUFFER_SIZE);
 
-  io_printf("Writing %lu bytes to %s...\r\n", (unsigned long)fileSize, path);
+  dbg_printf("Writing %lu bytes to %s...\r\n", (unsigned long)fileSize, path);
 
   OS_PEND_SEM(g_lfs_sem, osWaitForever);
 
@@ -1076,7 +1076,7 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
   err = lfs_file_open(&lfs, &file, path, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC);
   if (err < 0)
   {
-    io_printf("Failed to open file for write (Error: %d)\r\n", err);
+    dbg_printf("Failed to open file for write (Error: %d)\r\n", err);
     OS_POST_SEM(g_lfs_sem);
     user_free(buffer);
     user_free(read_buffer);
@@ -1095,7 +1095,7 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
     size = lfs_file_write(&lfs, &file, buffer, writeSize);
     if (size < 0 || (uint32_t)size != writeSize)
     {
-      io_printf("Write error at %lu bytes (Error: %d)\r\n", totalBytes, size);
+      dbg_printf("Write error at %lu bytes (Error: %d)\r\n", totalBytes, size);
       lfs_file_close(&lfs, &file);
       OS_POST_SEM(g_lfs_sem);
       user_free(buffer);
@@ -1113,7 +1113,7 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
   endClk = HAL_GetTick();
   elapsed = endClk - startClk;
 
-  io_printf("Write completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
+  dbg_printf("Write completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
             (unsigned long)elapsed,
             (fileSize / (elapsed > 0 ? (elapsed / 1000.0f) : 1.0f)) / 1024.0f);
 
@@ -1121,12 +1121,12 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
 
   // ============================ 읽기 측정 ==============================
 
-  io_printf("Reading %lu bytes from %s...\r\n", (unsigned long)fileSize, path);
+  dbg_printf("Reading %lu bytes from %s...\r\n", (unsigned long)fileSize, path);
 
   err = lfs_file_open(&lfs, &file, path, LFS_O_RDONLY);
   if (err < 0)
   {
-    io_printf("Failed to open file for read (Error: %d)\r\n", err);
+    dbg_printf("Failed to open file for read (Error: %d)\r\n", err);
     OS_POST_SEM(g_lfs_sem);
     user_free(buffer);
     user_free(read_buffer);
@@ -1144,7 +1144,7 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
     size = lfs_file_read(&lfs, &file, read_buffer, writeSize);
     if (size < 0 || size == 0)
     {
-      io_printf("Read error at %lu bytes (Error: %d)\r\n", totalBytes, size);
+      dbg_printf("Read error at %lu bytes (Error: %d)\r\n", totalBytes, size);
       lfs_file_close(&lfs, &file);
       OS_POST_SEM(g_lfs_sem);
       user_free(buffer);
@@ -1159,7 +1159,7 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
   endClk = HAL_GetTick();
   elapsed = endClk - startClk;
 
-  io_printf("Read completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
+  dbg_printf("Read completed: %lu bytes in %lu ms (%.2f KB/s)\r\n", (unsigned long)fileSize,
             (unsigned long)elapsed,
             (fileSize / (elapsed > 0 ? (elapsed / 1000.0f) : 1.0f)) / 1024.0f);
 
@@ -1169,14 +1169,14 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
 
   // ============================ 데이터 비교 ==============================
 
-  io_printf("Verifying data integrity...\r\n");
+  dbg_printf("Verifying data integrity...\r\n");
 
   OS_PEND_SEM(g_lfs_sem, osWaitForever);
 
   err = lfs_file_open(&lfs, &file, path, LFS_O_RDONLY);
   if (err < 0)
   {
-    io_printf("Failed to open file for verify (Error: %d)\r\n", err);
+    dbg_printf("Failed to open file for verify (Error: %d)\r\n", err);
     OS_POST_SEM(g_lfs_sem);
     user_free(buffer);
     user_free(read_buffer);
@@ -1191,7 +1191,7 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
     size = lfs_file_read(&lfs, &file, read_buffer, writeSize);
     if (size < 0 || (uint32_t)size != writeSize)
     {
-      io_printf("Verify read error at %lu bytes\r\n", totalBytes);
+      dbg_printf("Verify read error at %lu bytes\r\n", totalBytes);
       lfs_file_close(&lfs, &file);
       OS_POST_SEM(g_lfs_sem);
       user_free(buffer);
@@ -1204,7 +1204,7 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
     {
       if (read_buffer[i] != 0xAA)
       {
-        io_printf("Data mismatch at offset %lu: expected 0xAA, got 0x%02X\r\n",
+        dbg_printf("Data mismatch at offset %lu: expected 0xAA, got 0x%02X\r\n",
                   totalBytes + i, read_buffer[i]);
         lfs_file_close(&lfs, &file);
         OS_POST_SEM(g_lfs_sem);
@@ -1220,7 +1220,7 @@ int32_t test_lfs(const char *path, uint32_t fileSize)
   lfs_file_close(&lfs, &file);
   OS_POST_SEM(g_lfs_sem);
 
-  io_printf("Data verification passed!\r\n");
+  dbg_printf("Data verification passed!\r\n");
 
   user_free(buffer);
   user_free(read_buffer);
