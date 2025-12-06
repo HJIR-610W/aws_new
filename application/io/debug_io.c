@@ -19,7 +19,7 @@
 #include "task_telnet_server.h"
 #include "terminal_bridge.h"
 #include "io_interface.h"
- 
+#include "shell.h"
 
 io_if_t g_debug_uart_io;
 io_if_t g_debug_uart_io;

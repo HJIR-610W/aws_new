@@ -2939,7 +2939,7 @@
         <group>
             <name>io</name>
             <group>
-                <name>cli</name>
+                <name>shell</name>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\cli\cli_key_code.c</name>
                 </file>

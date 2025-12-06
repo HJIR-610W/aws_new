@@ -2,8 +2,12 @@
 #ifndef _FSL_SHELL_H_
 #define _FSL_SHELL_H_
 
-#include "fsl_common.h"
+//#include "fsl_common.h"
 #include <stdarg.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdbool.h>
 /*!
  * @addtogroup SHELL
  * @{

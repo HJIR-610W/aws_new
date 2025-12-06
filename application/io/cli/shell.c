@@ -1,14 +1,15 @@
 
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <assert.h>
+#include <stdio.h>
+#include "FreeRTOS.h"
 #include "shell.h"
-#include "fsl_debug_console.h"
 #include "debug_io.h"
 #include "cli_key_code.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define KEY_ESC (0x1BU)
+
 #define KET_DEL (0x7FU)
 
 /*******************************************************************************
@@ -90,7 +91,7 @@ int32_t SHELL_Main(p_shell_context_t context)
 
 
         /* Special key */
-        if (ch == KEY_ESC)
+        if (ch == KEY_CODE_ESC)
         {
             context->stat = kSHELL_Special;
             continue;
@@ -809,7 +810,7 @@ int32_t shell_scanf(const char *fmt_ptr, ...)
         }
         else
         {
-         result = vsscanf(g_scanf_context->line, fmt_ptr, ap);
+         result = vsscanf_s(g_scanf_context->line, fmt_ptr, ap);
         }
     }
 
@@ -842,7 +843,7 @@ int32_t shell_vscanf_s(const char *fmt_ptr, va_list ap)
         }
         else
         {
-            result = vsscanf(g_scanf_context->line, fmt_ptr, ap);
+            result = vsscanf_s(g_scanf_context->line, fmt_ptr, ap);
         }
     }
 
