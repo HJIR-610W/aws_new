@@ -48,7 +48,7 @@ int32_t get_menu_key(uint32_t timeout_ms)
 {
   int32_t key;
 
-    key =  get_menu_key(timeout_ms);
+    key =  get_button_key(timeout_ms);
 
     if (key_callback && key !=KEY_CODE_NONE )
     {

@@ -7,36 +7,36 @@
 #include "debug_io.h"
 #include "cli_key_code.h"
 /*******************************************************************************
- * Definitions
+ * 정의
  ******************************************************************************/
 
 #define KET_DEL (0x7FU)
 
 /*******************************************************************************
- * Prototypes
+ * 프로토타입
  ******************************************************************************/
-static int32_t HelpCommand( int32_t argc, char **argv); /*!< help command */
+static int32_t HelpCommand( int32_t argc, char **argv); /*!< 도움말 명령 */
 
-static int32_t ExitCommand( int32_t argc, char **argv); /*!< exit command */
+static int32_t ExitCommand( int32_t argc, char **argv); /*!< 종료 명령 */
 
-static int32_t ParseLine(const char *cmd, uint32_t len, char *argv[SHELL_MAX_ARGS]); /*!< parse line command */
+static int32_t ParseLine(const char *cmd, uint32_t len, char *argv[SHELL_MAX_ARGS]); /*!< 라인 파싱 명령 */
 
-static int32_t StrCompare(const char *str1, const char *str2, int32_t count); /*!< compare string command */
+static int32_t StrCompare(const char *str1, const char *str2, int32_t count); /*!< 문자열 비교 명령 */
 
-static void ProcessCommand(p_shell_context_t context, const char *cmd); /*!< process a command */
+static void ProcessCommand(p_shell_context_t context, const char *cmd); /*!< 명령 처리 */
 
-static void GetHistoryCommand(p_shell_context_t context, uint8_t hist_pos); /*!< get commands history */
+static void GetHistoryCommand(p_shell_context_t context, uint8_t hist_pos); /*!< 명령 히스토리 가져오기 */
 
-static void AutoComplete(p_shell_context_t context); /*!< auto complete command */
+static void AutoComplete(p_shell_context_t context); /*!< 자동 완성 명령 */
 
 
 
-static int32_t StrLen(const char *str); /*!< get string length */
+static int32_t StrLen(const char *str); /*!< 문자열 길이 가져오기 */
 
-static char *StrCopy(char *dest, const char *src, int32_t count); /*!< string copy */
+static char *StrCopy(char *dest, const char *src, int32_t count); /*!< 문자열 복사 */
 
 /*******************************************************************************
- * Variables
+ * 변수
  ******************************************************************************/
 static const shell_command_context_t xHelpCommand = {"help", "\r\n\"help\": Lists all the registered commands\r\n",
                                                      HelpCommand, 0};
@@ -48,20 +48,17 @@ static shell_command_context_list_t g_RegisteredCommands;
 static char g_paramBuffer[SHELL_BUFFER_SIZE];
 
 /*******************************************************************************
- * Code
+ * 코드
  ******************************************************************************/
 void shell_init(
-    p_shell_context_t context, send_data_cb_t send_cb, recv_data_cb_t recv_cb, printf_data_t shell_printf, char *prompt)
+    p_shell_context_t context,   printf_data_t shell_printf, char *prompt)
 {
-    assert(send_cb != NULL);
-    assert(recv_cb != NULL);
+
     assert(prompt != NULL);
     assert(shell_printf != NULL);
 
-    /* Memset for context */
+    /* 컨텍스트 초기화 */
     memset_s(context, sizeof(shell_context_struct),0,sizeof(shell_context_struct));
-    context->send_data_func = send_cb;
-    context->recv_data_func = recv_cb;
     context->prompt = prompt;
 
     shell_register_command(&xHelpCommand);
@@ -90,7 +87,7 @@ int32_t shell_main(p_shell_context_t context)
         debug_get_ch(&ch);
 
 
-        /* Special key */
+        /* 특수 키 */
         if (ch == KEY_CODE_ESC)
         {
             context->stat = kSHELL_Special;
@@ -98,7 +95,7 @@ int32_t shell_main(p_shell_context_t context)
         }
         else if (context->stat == kSHELL_Special)
         {
-            /* Function key */
+            /* 기능 키 */
             if (ch == '[')
             {
                 context->stat = kSHELL_Function;
@@ -112,29 +109,29 @@ int32_t shell_main(p_shell_context_t context)
 
             switch ((uint8_t)ch)
             {
-                /* History operation here */
-                case 'A': /* Up key */
+                /* 히스토리 동작 */
+                case 'A': /* 위쪽 키 */
                     GetHistoryCommand(context, context->hist_current);
                     if (context->hist_current < (context->hist_count - 1))
                     {
                         context->hist_current++;
                     }
                     break;
-                case 'B': /* Down key */
+                case 'B': /* 아래쪽 키 */
                     GetHistoryCommand(context, context->hist_current);
                     if (context->hist_current > 0)
                     {
                         context->hist_current--;
                     }
                     break;
-                case 'D': /* Left key */
+                case 'D': /* 왼쪽 키 */
                     if (context->c_pos)
                     {
                         debug_printf("\b");
                         context->c_pos--;
                     }
                     break;
-                case 'C': /* Right key */
+                case 'C': /* 오른쪽 키 */
                     if (context->c_pos < context->l_pos)
                     {
                         debug_printf("%c", context->line[context->c_pos]);
@@ -146,32 +143,32 @@ int32_t shell_main(p_shell_context_t context)
             }
             continue;
         }
-        /* Handle tab key */
+        /* 탭 키 처리 */
         else if (ch == '\t')
         {
 #if SHELL_AUTO_COMPLETE
-            /* Move the cursor to the beginning of line */
+            /* 커서를 라인 시작으로 이동 */
             for (i = 0; i < context->c_pos; i++)
             {
                 debug_printf("\b");
             }
-            /* Do auto complete */
+            /* 자동 완성 수행 */
             AutoComplete(context);
-            /* Move position to end */
+            /* 끝 위치로 이동 */
             context->c_pos = context->l_pos = StrLen(context->line);
 #endif
             continue;
         }
 #if SHELL_SEARCH_IN_HIST
-        /* Search command in history */
+        /* 히스토리에서 명령 검색 */
         else if ((ch == '`') && (context->l_pos == 0) && (context->line[0] == 0x00))
         {
         }
 #endif
-        /* Handle backspace key */
+        /* 백스페이스 키 처리 */
         else if ((ch == KET_DEL) || (ch == '\b'))
         {
-            /* There must be at last one char */
+            /* 최소 한 문자가 있어야 함 */
             if (context->c_pos == 0)
             {
                 continue;
@@ -188,13 +185,13 @@ int32_t shell_main(p_shell_context_t context)
                 context->line[context->l_pos] = 0;
                 debug_printf("\b%s  \b", &context->line[context->c_pos]);
 
-                /* Reset position */
+                /* 위치 재설정 */
                 for (i = context->c_pos; i <= context->l_pos; i++)
                 {
                     debug_printf("\b");
                 }
             }
-            else /* Normal backspace operation */
+            else /* 일반 백스페이스 동작 */
             {
                 debug_printf("\b \b");
                 context->line[context->l_pos] = 0;
@@ -205,18 +202,18 @@ int32_t shell_main(p_shell_context_t context)
         {
         }
 
-        /* Input too long */
+        /* 입력이 너무 긺 */
         if (context->l_pos >= (SHELL_BUFFER_SIZE - 1))
         {
             context->l_pos = 0;
         }
 
-        /* Handle end of line, break */
+        /* 라인 끝 처리, 중단 */
         if ((ch == '\r') || (ch == '\n'))
         {
             debug_printf("\r\n");
             ProcessCommand(context, context->line);
-            /* Reset all params */
+            /* 모든 매개변수 재설정 */
             context->c_pos = context->l_pos = 0;
             context->hist_current = 0;
             debug_printf(context->prompt);
@@ -224,7 +221,7 @@ int32_t shell_main(p_shell_context_t context)
             continue;
         }
 
-        /* Normal character */
+        /* 일반 문자 */
         if (context->c_pos < context->l_pos)
         {
             memmove_s(&context->line[context->c_pos + 1], sizeof(context->line) - context->c_pos -1,
@@ -232,7 +229,7 @@ int32_t shell_main(p_shell_context_t context)
                     context->l_pos - context->c_pos);
             context->line[context->c_pos] = ch;
             debug_printf("%s", &context->line[context->c_pos]);
-            /* Move the cursor to new position */
+            /* 커서를 새 위치로 이동 */
             for (i = context->c_pos; i < context->l_pos; i++)
             {
                 debug_printf("\b");
@@ -264,7 +261,7 @@ static int32_t HelpCommand(  int32_t argc, char **argv)
 
 static int32_t ExitCommand( int32_t argc, char **argv)
 {
-    /* Skip warning */
+    /* 경고 생략 */
     debug_printf("\r\nSHELL exited\r\n");
     return 0;
 }
@@ -290,7 +287,7 @@ static void ProcessCommand(p_shell_context_t context, const char *cmd)
             tmpCommand = g_RegisteredCommands.CommandList[i];
             tmpCommandString = tmpCommand->pcCommand;
             tmpCommandLen = StrLen(tmpCommandString);
-            /* Compare with space or end of string */
+            /* 공백 또는 문자열 끝과 비교 */
             if ((cmd[tmpCommandLen] == ' ') || (cmd[tmpCommandLen] == 0x00))
             {
                 if (StrCompare(tmpCommandString, argv[0], tmpCommandLen) == 0)
@@ -325,7 +322,7 @@ static void ProcessCommand(p_shell_context_t context, const char *cmd)
     else if (tmpCommand != NULL)
     {
         tmpLen = StrLen(cmd);
-        /* Compare with last command. Push back to history buffer if different */
+        /* 마지막 명령과 비교. 다를 경우 히스토리 버퍼에 추가 */
         if (tmpLen != StrCompare(cmd, context->hist_buf[0], StrLen(cmd)))
         {
             for (i = SHELL_HIST_MAX - 1; i > 0; i--)
@@ -368,7 +365,7 @@ static void GetHistoryCommand(p_shell_context_t context, uint8_t hist_pos)
         hist_pos = SHELL_HIST_MAX - 1;
     }
     tmp = StrLen(context->line);
-    /* Clear current if have */
+    /* 현재 내용이 있으면 지우기 */
     if (tmp > 0)
     {
         memset_s(context->line,sizeof(context->line),'\0' , tmp);
@@ -401,13 +398,13 @@ static void AutoComplete(p_shell_context_t context)
         return;
     }
     debug_printf("\r\n");
-    /* Empty tab, list all commands */
+    /* 빈 탭, 모든 명령 나열 */
     if (context->line[0] == '\0')
     {
         HelpCommand( 0, NULL);
         return;
     }
-    /* Do auto complete */
+    /* 자동 완성 수행 */
     for (i = 0; i < g_RegisteredCommands.numberOfCommandInList; i++)
     {
         tmpCommand = g_RegisteredCommands.CommandList[i];
@@ -418,7 +415,7 @@ static void AutoComplete(p_shell_context_t context)
             {
                 namePtr = cmdName;
                 minLen = StrLen(namePtr);
-                /* Show possible matches */
+                /* 가능한 일치 항목 표시 */
                 debug_printf("%s\r\n", cmdName);
                 continue;
             }
@@ -433,7 +430,7 @@ static void AutoComplete(p_shell_context_t context)
             }
         }
     }
-    /* Auto complete string */
+    /* 자동 완성 문자열 */
     if (namePtr)
     {
         StrCopy(context->line, namePtr, minLen);
@@ -485,7 +482,7 @@ static int32_t ParseLine(const char *cmd, uint32_t len, char *argv[SHELL_MAX_ARG
     char *p;
     uint32_t position;
 
-    /* Init params */
+    /* 매개변수 초기화 */
     memset_s(g_paramBuffer, sizeof(g_paramBuffer),'\0', len + 1);
     StrCopy(g_paramBuffer, cmd, len);
 
@@ -495,32 +492,32 @@ static int32_t ParseLine(const char *cmd, uint32_t len, char *argv[SHELL_MAX_ARG
 
     while (position < len)
     {
-        /* Skip all blanks */
+        /* 모든 공백 건너뛰기 */
         while (((char)(*p) == ' ') && (position < len))
         {
             *p = '\0';
             p++;
             position++;
         }
-        /* Process begin of a string */
+        /* 문자열 시작 처리 */
         if (*p == '"')
         {
             p++;
             position++;
             argv[argc] = p;
             argc++;
-            /* Skip this string */
+            /* 이 문자열 건너뛰기 */
             while ((*p != '"') && (position < len))
             {
                 p++;
                 position++;
             }
-            /* Skip '"' */
+            /* '"' 건너뛰기 */
             *p = '\0';
             p++;
             position++;
         }
-        else /* Normal char */
+        else /* 일반 문자 */
         {
             argv[argc] = p;
             argc++;
@@ -538,7 +535,7 @@ int32_t shell_register_command(const shell_command_context_t *command_context)
 {
     int32_t result = 0;
 
-    /* If have room  in command list */
+    /* 명령 목록에 공간이 있는 경우 */
     if (g_RegisteredCommands.numberOfCommandInList < SHELL_MAX_CMD)
     {
         g_RegisteredCommands.CommandList[g_RegisteredCommands.numberOfCommandInList++] = command_context;
@@ -559,25 +556,23 @@ int32_t shell_register_command(const shell_command_context_t *command_context)
 
 static void inputCommand(p_shell_context_t context)
 {
-
     uint8_t tmpLen;
     uint8_t i = 0;
 
+    for (i = SHELL_HIST_MAX - 1; i > 0; i--)
+    {
+         memset_s(context->hist_buf[i],sizeof(context->hist_buf[i]), '\0', SHELL_BUFFER_SIZE);
+        tmpLen = strnlen_s(context->hist_buf[i - 1], sizeof(context->hist_buf[0]));
+         StrCopy(context->hist_buf[i], context->hist_buf[i - 1], tmpLen);
+    }
 
-            for (i = SHELL_HIST_MAX - 1; i > 0; i--)
-            {
-                memset_s(context->hist_buf[i],sizeof(context->hist_buf[i]), '\0', SHELL_BUFFER_SIZE);
-                tmpLen = strnlen_s(context->hist_buf[i - 1], sizeof(context->hist_buf[0]));
-                StrCopy(context->hist_buf[i], context->hist_buf[i - 1], tmpLen);
-            }
-            memset_s(context->hist_buf[0], sizeof(context->hist_buf[0]), '\0', SHELL_BUFFER_SIZE);
-            tmpLen = strnlen_s(context->line, sizeof(context->line));
-            StrCopy(context->hist_buf[0], context->line, tmpLen);
-            if (context->hist_count < SHELL_HIST_MAX)
-            {
-                context->hist_count++;
-            }
-
+    memset_s(context->hist_buf[0], sizeof(context->hist_buf[0]), '\0', SHELL_BUFFER_SIZE);
+    tmpLen = strnlen_s(context->line, sizeof(context->line));
+    StrCopy(context->hist_buf[0], context->line, tmpLen);
+    if (context->hist_count < SHELL_HIST_MAX)
+    {
+        context->hist_count++;
+    }
 }
 
 int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
@@ -628,7 +623,7 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
         }
         else if (context->stat == kSHELL_Special)
         {
-            /* Function key */
+            /* 기능 키 */
             if (ch == '[')
             {
                 context->stat = kSHELL_Function;
@@ -642,29 +637,29 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
 
             switch ((uint8_t)ch)
             {
-                /* History operation here */
-                case 'A': /* Up key */
+                /* 히스토리 동작 */
+                case 'A': /* 위쪽 키 */
                     GetHistoryCommand(context, context->hist_current);
                     if (context->hist_current < (context->hist_count - 1))
                     {
                         context->hist_current++;
                     }
                     break;
-                case 'B': /* Down key */
+                case 'B': /* 아래쪽 키 */
                     GetHistoryCommand(context, context->hist_current);
                     if (context->hist_current > 0)
                     {
                         context->hist_current--;
                     }
                     break;
-                case 'D': /* Left key */
+                case 'D': /* 왼쪽 키 */
                     if (context->c_pos)
                     {
                         debug_printf("\b");
                         context->c_pos--;
                     }
                     break;
-                case 'C': /* Right key */
+                case 'C': /* 오른쪽 키 */
                     if (context->c_pos < context->l_pos)
                     {
                         debug_printf("%c", context->line[context->c_pos]);
@@ -676,32 +671,32 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
             }
             continue;
         }
-        /* Handle tab key */
+        /* 탭 키 처리 */
         else if (ch == '\t')
         {
 #if SHELL_AUTO_COMPLETE
-            /* Move the cursor to the beginning of line */
+            /* 커서를 라인 시작으로 이동 */
             for (i = 0; i < context->c_pos; i++)
             {
                 debug_put_ch('\b');
             }
-            /* Do auto complete */
+            /* 자동 완성 수행 */
             AutoComplete(context);
-            /* Move position to end */
+            /* 끝 위치로 이동 */
             context->c_pos = context->l_pos = strnlen_s(context->line, sizeof(context->line));
 #endif
             continue;
         }
 #if SHELL_SEARCH_IN_HIST
-        /* Search command in history */
+        /* 히스토리에서 명령 검색 */
         else if ((ch == '`') && (context->l_pos == 0) && (context->line[0] == 0x00))
         {
         }
 #endif
-        /* Handle backspace key */
+        /* 백스페이스 키 처리 */
         else if ((ch == KET_DEL) || (ch == '\b'))
         {
-            /* There must be at last one char */
+            /* 최소 한 문자가 있어야 함 */
             if (context->c_pos == 0)
             {
                 continue;
@@ -718,13 +713,13 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
                 context->line[context->l_pos] = 0;
                 debug_printf("\b%s  \b", &context->line[context->c_pos]);
 
-                /* Reset position */
+                /* 위치 재설정 */
                 for (i = context->c_pos; i <= context->l_pos; i++)
                 {
                     debug_printf("\b");
                 }
             }
-            else /* Normal backspace operation */
+            else /* 일반 백스페이스 동작 */
             {
                 debug_printf("\b \b");
                 context->line[context->l_pos] = 0;
@@ -735,13 +730,13 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
         {
         }
 
-        /* Input too long */
+        /* 입력이 너무 긺 */
         if (context->l_pos >= (SHELL_BUFFER_SIZE - 1))
         {
             context->l_pos = 0;
         }
 
-        /* Handle end of line, break */
+        /* 라인 끝 처리, 중단 */
         if ((ch == '\r') || (ch == '\n'))
         {
             debug_printf("\r\n");
@@ -752,7 +747,7 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
             return strnlen_s(context->line, sizeof(context->line));
         }
 
-        /* Normal character */
+        /* 일반 문자 */
         if (context->c_pos < context->l_pos)
         {
             memmove_s(&context->line[context->c_pos + 1], sizeof(context->line) - context->c_pos - 1,
@@ -760,10 +755,10 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
                     context->l_pos - context->c_pos);
             context->line[context->c_pos] = ch;
             debug_printf("%s", &context->line[context->c_pos]);
-            /* Move the cursor to new position */
+            /* 커서를 새 위치로 이동 */
             for (i = context->c_pos; i < context->l_pos; i++)
             {
-               
+
                 debug_put_ch('\b');
             }
         }

@@ -50,7 +50,6 @@ typedef enum
   KEY_CODE_TAB = '\t',
   KEY_CODE_ESC = 0x1B,
   KEY_CODE_SPACE = ' ',
-
   KEY_CODE_UP = 1000,
   KEY_CODE_DOWN,
   KEY_CODE_LEFT,

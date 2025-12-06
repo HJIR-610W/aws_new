@@ -14,105 +14,103 @@
  */
 
 /*******************************************************************************
- * Definitions
+ * 정의
  ******************************************************************************/
-/*! @brief Macro to set on/off history feature. */
+/*! @brief 히스토리 기능 켜기/끄기 설정 매크로. */
 #ifndef SHELL_USE_HISTORY
 #define SHELL_USE_HISTORY (0U)
 #endif
 
-/*! @brief Macro to set on/off history feature. */
+/*! @brief 히스토리 기능 켜기/끄기 설정 매크로. */
 #ifndef SHELL_SEARCH_IN_HIST
 #define SHELL_SEARCH_IN_HIST (1U)
 #endif
 
-/*! @brief Macro to select method stream. */
+/*! @brief 메서드 스트림 선택 매크로. */
 #ifndef SHELL_USE_FILE_STREAM
 #define SHELL_USE_FILE_STREAM (0U)
 #endif
 
-/*! @brief Macro to set on/off auto-complete feature. */
+/*! @brief 자동 완성 기능 켜기/끄기 설정 매크로. */
 #ifndef SHELL_AUTO_COMPLETE
-#define SHELL_AUTO_COMPLETE (1U)
+#define SHELL_AUTO_COMPLETE (0U)
 #endif
 
-/*! @brief Macro to set console buffer size. */
+/*! @brief 콘솔 버퍼 크기 설정 매크로. */
 #ifndef SHELL_BUFFER_SIZE
 #define SHELL_BUFFER_SIZE (64U)
 #endif
 
-/*! @brief Macro to set maximum arguments in command. */
+/*! @brief 명령에서 최대 인자 수 설정 매크로. */
 #ifndef SHELL_MAX_ARGS
 #define SHELL_MAX_ARGS (8U)
 #endif
 
-/*! @brief Macro to set maximum count of history commands. */
+/*! @brief 히스토리 명령의 최대 개수 설정 매크로. */
 #ifndef SHELL_HIST_MAX
 #define SHELL_HIST_MAX (5U)
 #endif
 
-/*! @brief Macro to set maximum count of commands. */
+/*! @brief 명령의 최대 개수 설정 매크로. */
 #ifndef SHELL_MAX_CMD
 #define SHELL_MAX_CMD (10U)
 #endif
 
-/*! @brief Shell user send data callback prototype.*/
+/*! @brief Shell 사용자 데이터 전송 콜백 프로토타입.*/
 typedef void (*send_data_cb_t)(const uint8_t *buf, size_t len);
 
-/*! @brief Shell user receiver data callback prototype.*/
+/*! @brief Shell 사용자 데이터 수신 콜백 프로토타입.*/
 typedef int32_t (*recv_data_cb_t)(uint8_t *buf, size_t len,uint32_t timeout_ms);
 
-/*! @brief Shell user printf data prototype.*/
+/*! @brief Shell 사용자 printf 데이터 프로토타입.*/
 typedef int (*printf_data_t)(const char *format, ...);
 typedef int (*puts_data_t)(const char *str);
 
 
-/*! @brief A type for the handle special key. */
+/*! @brief 특수 키 처리를 위한 타입. */
 typedef enum _fun_key_status
 {
-    kSHELL_Normal = 0U,   /*!< Normal key */
-    kSHELL_Special = 1U,  /*!< Special key */
-    kSHELL_Function = 2U, /*!< Function key */
+    kSHELL_Normal = 0U,   /*!< 일반 키 */
+    kSHELL_Special = 1U,  /*!< 특수 키 */
+    kSHELL_Function = 2U, /*!< 기능 키 */
 } fun_key_status_t;
 
-/*! @brief Data structure for Shell environment. */
+/*! @brief Shell 환경을 위한 데이터 구조체. */
 typedef struct _shell_context_struct
 {
-    char *prompt;                 /*!< Prompt string */
-    enum _fun_key_status stat;    /*!< Special key status */
-    char line[SHELL_BUFFER_SIZE]; /*!< Consult buffer */
-    uint8_t cmd_num;              /*!< Number of user commands */
-    uint8_t l_pos;                /*!< Total line position */
-    uint8_t c_pos;                /*!< Current line position */
-    send_data_cb_t send_data_func; /*!< Send data interface operation */
-    recv_data_cb_t recv_data_func; /*!< Receive data interface operation */
+    char *prompt;                 /*!< 프롬프트 문자열 */
+    enum _fun_key_status stat;    /*!< 특수 키 상태 */
+    char line[SHELL_BUFFER_SIZE]; /*!< 콘솔 버퍼 */
+    uint8_t cmd_num;              /*!< 사용자 명령 개수 */
+    uint8_t l_pos;                /*!< 전체 라인 위치 */
+    uint8_t c_pos;                /*!< 현재 라인 위치 */
     printf_data_t printf;
     puts_data_t puts_data_func;
-    uint16_t hist_current;                            /*!< Current history command in hist buff*/
-    uint16_t hist_count;                              /*!< Total history command in hist buff*/
-    char hist_buf[SHELL_HIST_MAX][SHELL_BUFFER_SIZE]; /*!< History buffer*/
-    bool exit;                                        /*!< Exit Flag*/
+    uint16_t hist_current;                            /*!< 히스토리 버퍼의 현재 히스토리 명령*/
+    uint16_t hist_count;                              /*!< 히스토리 버퍼의 전체 히스토리 명령*/
+    char hist_buf[SHELL_HIST_MAX][SHELL_BUFFER_SIZE]; /*!< 히스토리 버퍼*/
+    bool exit;                                        /*!< 종료 플래그*/
 } shell_context_struct, *p_shell_context_t;
 
-/*! @brief User command function prototype. */
+/*! @brief 사용자 명령 함수 프로토타입. */
 typedef int32_t (*cmd_function_t)(int32_t argc, char **argv);
 
-/*! @brief User command data structure. */
+/*! @brief 사용자 명령 데이터 구조체. */
 typedef struct _shell_command_context
 {
-    const char *pcCommand; /*!< The command that is executed.  For example "help".  It must be all lower case. */
-    char *pcHelpString;    /*!< String that describes how to use the command.  It should start with the command itself,
-                                    and end with "\r\n".  For example "help: Returns a list of all the commands\r\n". */
+    const char *pcCommand; /*!< 실행되는 명령. 예: "help". 모두 소문자여야 함. */
+    char *pcHelpString;    /*!< 명령 사용 방법을 설명하는 문자열. 명령 자체로 시작하고,
+                                    "\r\n"으로 끝나야 함. 예: "help: Returns a list of all the commands\r\n". */
     const cmd_function_t
-        pFuncCallBack; /*!< A pointer to the callback function that returns the output generated by the command. */
-    uint8_t cExpectedNumberOfParameters; /*!< Commands expect a fixed number of parameters, which may be zero. */
+        pFuncCallBack; /*!< 명령에 의해 생성된 출력을 반환하는 콜백 함수에 대한 포인터. */
+    uint8_t cExpectedNumberOfParameters; /*!< 명령이 기대하는 고정된 매개변수 개수, 0일 수 있음. */
 } shell_command_context_t;
 
-/*! @brief Structure list command. */
+/*! @brief 명령 목록 구조체. */
 typedef struct _shell_command_context_list
 {
-    const shell_command_context_t *CommandList[SHELL_MAX_CMD]; /*!< The command table list */
-    uint8_t numberOfCommandInList;                             /*!< The total command in list */
+    const shell_command_context_t *CommandList[SHELL_MAX_CMD]; /*!< 명령 테이블 목록 */
+    uint8_t numberOfCommandInList;                             /*!< 목록의 전체 명령 개수 */
 } shell_command_context_list_t;
 
 /*******************************************************************************
@@ -124,28 +122,28 @@ extern "C" {
 #endif /* _cplusplus */
 
 /*!
- * @name Shell functional operation
+ * @name Shell 기능 동작
  * @{
  */
 
 /*!
-* @brief Enables the clock gate and configures the Shell module according to the configuration structure.
+* @brief 클럭 게이트를 활성화하고 설정 구조체에 따라 Shell 모듈을 구성합니다.
 *
-* This function must be called before calling all other Shell functions.
-* Call operation the Shell commands with user-defined settings.
-* The example below shows how to set up the middleware Shell and
-* how to call the shell_init function by passing in these parameters.
-* This is an example.
+* 이 함수는 다른 모든 Shell 함수를 호출하기 전에 반드시 호출되어야 합니다.
+* 사용자 정의 설정으로 Shell 명령을 호출합니다.
+* 아래 예제는 미들웨어 Shell을 설정하는 방법과
+* 매개변수를 전달하여 shell_init 함수를 호출하는 방법을 보여줍니다.
+* 이것은 예제입니다.
 * @code
 *   shell_context_struct user_context;
 *   shell_init(&user_context, SendDataFunc, ReceiveDataFunc, "SHELL>> ");
 * @endcode
-* @param context The pointer to the Shell environment and  runtime states.
-* @param send_cb The pointer to call back send data function.
-* @param recv_cb The pointer to call back receive data function.
-* @param prompt  The string prompt of Shell
+* @param context Shell 환경 및 런타임 상태에 대한 포인터.
+* @param send_cb 데이터 전송 함수를 콜백하기 위한 포인터.
+* @param recv_cb 데이터 수신 함수를 콜백하기 위한 포인터.
+* @param prompt  Shell의 문자열 프롬프트
 */
-void shell_init(p_shell_context_t context,send_data_cb_t send_cb,recv_data_cb_t recv_cb,printf_data_t shell_printf,
+void shell_init(p_shell_context_t context, printf_data_t shell_printf,
                 char *prompt);
 
 

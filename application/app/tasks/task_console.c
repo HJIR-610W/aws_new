@@ -104,7 +104,7 @@ void consoleTask(void *arg)
   
 #if SHELL_USE==1
   prompt = (mode==0)?"\x1B[32mAWS>> \x1B[37m":"\x1B[32mAWS_TEST>> \x1B[37m";
-  shell_init(&user_context, debug_send, debug_recv, debug_printf,(char *)prompt);
+  shell_init(&user_context,   debug_printf,(char *)prompt);
   shell_register_command(&printCmd);
   shell_register_command(&testCmd);
   shell_register_command(&developCmd);
@@ -136,7 +136,7 @@ void consoleTask_init(void *arg)
 {
   debug_init() ;
   
-    s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
+  s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
   
 }
 
