@@ -359,7 +359,7 @@ void backup_config_sensor(void)
   f_ret = write_file(PATH_CONFIG_SENSOR_BIN, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor), 0);
   if (f_ret == FR_OK)
   {
-    dbg_printf("%s에 저장되었습니다\r\n",PATH_CONFIG_SENSOR_BIN);
+    debug_printf("%s에 저장되었습니다\r\n",PATH_CONFIG_SENSOR_BIN);
   }
 }
 
@@ -382,7 +382,7 @@ void restore_config_sensor(void)
 
     if (f_ret != FR_OK)
     {
-      dbg_printf("파일 읽기 오류  %d\r\n", f_ret);
+      debug_printf("파일 읽기 오류  %d\r\n", f_ret);
       user_free(p_config);
       return;
     }
@@ -393,13 +393,13 @@ void restore_config_sensor(void)
       {
         memcpy(&g_config_sensor, p_config, sizeof(config_sensor_t));
         crc_result = true;
-        dbg_printf("0:config_sensor.bin 복구되었습니다.\r\n");
+        debug_printf("0:config_sensor.bin 복구되었습니다.\r\n");
       }
     }
 
     if (crc_result == false)
     {
-      dbg_printf("체크섬 오류\r\n");
+      debug_printf("체크섬 오류\r\n");
     }
 
     user_free(p_config);

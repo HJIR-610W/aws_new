@@ -58,7 +58,7 @@ void hart_task(void *arg)
     len  = hart_send(cmd, sizeof(cmd));
     if(len < 0)
     {
-      dbg_printf("send failed\r\n");
+      debug_printf("send failed\r\n");
     }
     len = HART_RECV(buff, sizeof(buff), 1000);
     if (len)
@@ -94,12 +94,12 @@ void test_hart(void)
   osDelay(10);
   bsp_do_high(BSP_DO_HART_RESET);
 
-  dbg_printf("하트센서가 연결되면 센서 정보가 출력됩니다.\r\n");
-  dbg_printf("하트센서 주소를 0으로 설정하여 연결하세요\r\n");
-  dbg_printf("지금 전원 24V를 ON 했습니다. 부팅시간 고려하여 50초 대기합니다. 잠시 기다려주세요\r\n");
+  debug_printf("하트센서가 연결되면 센서 정보가 출력됩니다.\r\n");
+  debug_printf("하트센서 주소를 0으로 설정하여 연결하세요\r\n");
+  debug_printf("지금 전원 24V를 ON 했습니다. 부팅시간 고려하여 50초 대기합니다. 잠시 기다려주세요\r\n");
   while(timeout)
   {
-    dbg_printf("%02d\r",timeout--);
+    debug_printf("%02d\r",timeout--);
     osDelay(1000);
   }
 

@@ -1,6 +1,6 @@
 /**
  * @file vt100_terminal.h
- * @brief VT100 터미널 에뮬레이터 헤더 (dbg_printf/dbg_puts 사용)
+ * @brief VT100 터미널 에뮬레이터 헤더 (debug_printf/debug_puts 사용)
  */
 
 #ifndef VT100_TERMINAL_H

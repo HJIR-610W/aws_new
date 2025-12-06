@@ -639,7 +639,7 @@ void put_tcpResp(uint32_t cmd,uint8_t *pData,uint16_t dataLen)
 
   if (osMessageQueuePut(s_resp_tcp_mail_id, &resp, 0, 100) != osOK)
   {
-    dbg_printf("put_tcpResp error\r\n");
+    debug_printf("put_tcpResp error\r\n");
   }
 
 
@@ -982,7 +982,7 @@ void put_tcpData(uint8_t *data, uint16_t dataLen)
 
   if(osMessageQueuePut(s_tcp_data_mail_id, &tcpData, 0, 1000) != osOK)
   {
-    dbg_printf("put_tcpData timeout\r\n");
+    debug_printf("put_tcpData timeout\r\n");
   }
 
     #endif

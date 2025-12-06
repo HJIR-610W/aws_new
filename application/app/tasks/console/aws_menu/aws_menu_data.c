@@ -25,7 +25,7 @@ int32_t menu_data_display(void)
 
   while(1)
   {
-  dbg_printf("시작 시간을 입력해주세요(yyyy-mm-dd hh:mm)\r\n");
+  debug_printf("시작 시간을 입력해주세요(yyyy-mm-dd hh:mm)\r\n");
   status = cli_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
 
   if (status == CLI_KEYCODE_CTRL_C) 
@@ -41,11 +41,11 @@ int32_t menu_data_display(void)
 
   if(status != 5)
   {
-    dbg_printf("입력을 확인해주세요\r\n");
+    debug_printf("입력을 확인해주세요\r\n");
     continue;
   }
 
-  dbg_printf("읽을 갯수를 입력해주세요");
+  debug_printf("읽을 갯수를 입력해주세요");
   status = cli_scanf_s("%d", &cnt);
 
   if (status == CLI_KEYCODE_CTRL_C)
@@ -61,7 +61,7 @@ int32_t menu_data_display(void)
 
   if(status != 1)
   {
-    dbg_printf("%s", CHECK_INPUT);
+    debug_printf("%s", CHECK_INPUT);
     continue;
   }
 
@@ -73,39 +73,39 @@ int32_t menu_data_display(void)
   {
     read_data_month(&nt, &aws, sizeof(aws), LOGGING_AWS, 1);
 
-    dbg_printf("%04d-%02d-%02d %02d:%02d\r\n", nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min);
+    debug_printf("%04d-%02d-%02d %02d:%02d\r\n", nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min);
 
-    dbg_printf("온도          :%6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n",
+    debug_printf("온도          :%6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n",
               READ_TEMP(aws.mTemperature.sReal), READ_TEMP(aws.mTemperature.sMin),
               (aws.mTemperature.sMax));
 
-    dbg_printf("풍향          :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mDirection.sReal),
+    debug_printf("풍향          :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mDirection.sReal),
               READ_X10(aws.mWind.mDirection.sMax));
 
-    dbg_printf("풍속          :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mSpeed.sReal),
+    debug_printf("풍속          :%6.1f 1분 최대:%6.1f\r\n", READ_X10(aws.mWind.mSpeed.sReal),
               READ_X10(aws.mWind.mSpeed.sMax));
 
-    dbg_printf("강우량(일)    : %6.1f 월: %6.1f 시간: %6.1f\r\n", READ_X10(aws.mRainFall.sReal),
+    debug_printf("강우량(일)    : %6.1f 월: %6.1f 시간: %6.1f\r\n", READ_X10(aws.mRainFall.sReal),
               READ_X10(aws.mRainFall.sMonthRain), READ_X10(aws.mRainFall.sHourRain));
 
-    dbg_printf("기압          : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n",
+    debug_printf("기압          : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n",
               READ_X10(aws.mBarometric.sReal), READ_X10(aws.mBarometric.sMin),
               READ_X10(aws.mBarometric.sMax));
 
-    dbg_printf("강우감지      : %6d\r\n", aws.mRainDetect.sReal);
+    debug_printf("강우감지      : %6d\r\n", aws.mRainDetect.sReal);
 
-    dbg_printf("적설          : %6d\r\n", aws.mSnowFall.sReal);
+    debug_printf("적설          : %6d\r\n", aws.mSnowFall.sReal);
 
-    dbg_printf("습도          : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_X10(aws.mHumidity.sReal),
+    debug_printf("습도          : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_X10(aws.mHumidity.sReal),
               READ_X10(aws.mHumidity.sMin), READ_X10(aws.mHumidity.sMax));
 
-    dbg_printf("일사          : %7.2f 하루 총: %.2f\r\n", READ_X100(aws.mSolarRad.sReal),
+    debug_printf("일사          : %7.2f 하루 총: %.2f\r\n", READ_X100(aws.mSolarRad.sReal),
               READ_X100(aws.mSolarRad.sMax));
-    dbg_printf("일조          : %6d  하루 총: %d\r\n", aws.mSunshine.sReal, aws.mSunshine.sMax);
+    debug_printf("일조          : %6d  하루 총: %d\r\n", aws.mSunshine.sReal, aws.mSunshine.sMax);
 
 // 지면온도 / 초상온도 / 지중온도
 #define PRINT_RIX(label, obj)                                                           \
-  dbg_printf(label " : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_TEMP((obj).sReal), \
+  debug_printf(label " : %6.1f 일 최소: %6.1f 일 최대: %6.1f\r\n", READ_TEMP((obj).sReal), \
             READ_TEMP((obj).sMin), READ_TEMP((obj).sMax))
 
     PRINT_RIX("지면온도     ", aws.mGndTemp);
@@ -131,22 +131,22 @@ int32_t menu_data_display(void)
 
     for (int i = 0; i < 15; i++)
     {
-      dbg_printf("Spare%02d 순간: %d 최소: %d 최대: %d\r\n", i + 1, spareList[i].sReal,
+      debug_printf("Spare%02d 순간: %d 최소: %d 최대: %d\r\n", i + 1, spareList[i].sReal,
                    spareList[i].sMin, spareList[i].sMax);
     }
 #endif
     // 상태값 출력
-    dbg_printf("Status sReal: 0x%04X sMin: 0x%04X sMax: 0x%04X\r\n", aws.mStatus.sReal,
+    debug_printf("Status sReal: 0x%04X sMin: 0x%04X sMax: 0x%04X\r\n", aws.mStatus.sReal,
               aws.mStatus.sMin, aws.mStatus.sMax);
 
 #if 0 
     // 예비 데이터 (cDataSpare) 출력
-    dbg_printf("Data Spare:");
+    debug_printf("Data Spare:");
     for (int i = 0; i < sizeof(aws.cDataSpare); i++)
     {
-      dbg_printf(" %02X", aws.cDataSpare[i]);
+      debug_printf(" %02X", aws.cDataSpare[i]);
     }
-    dbg_printf("\r\n");
+    debug_printf("\r\n");
 #endif
     startTime += 60;
     time_cvt_secTotime(startTime, &nt);

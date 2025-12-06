@@ -134,13 +134,13 @@ void check_baud_rate(int uart_num)
 
   if (divisor == 0)
   {
-    dbg_printf("Invalid divisor value.\n");
+    debug_printf("Invalid divisor value.\n");
     return;
   }
 
   // 보오드레이트 계산
   uint32_t baud_rate = UART_CLOCK_FREQ / (16 * divisor);
-  dbg_printf("Calculated Baud Rate: %u\n", baud_rate);
+  debug_printf("Calculated Baud Rate: %u\n", baud_rate);
 }
 
 // 보오드레이트 설정 함수
@@ -511,7 +511,7 @@ void tl16c554_send_DMA(int uart_num, const uint8_t *p_data, uint16_t dataLen)
   if (HAL_DMA_Start_IT(&hdma_memtomem, (uint32_t)p_data, dest_address, dataLen) != HAL_OK)
   {
     // DMA 시작 실패 처리
-    dbg_printf("DMA Start Failed\n");
+    debug_printf("DMA Start Failed\n");
     while (1);
   }
 }

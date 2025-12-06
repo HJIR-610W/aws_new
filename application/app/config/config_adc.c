@@ -91,6 +91,6 @@ void backup_adc_calibration(void)
     f_ret = write_file(PATH_ADC_CALIBRATION_BIN, (uint8_t *)&g_adc_config_nvm, sizeof(g_adc_config_nvm), 0);
     if (f_ret == FR_OK)
     {
-        dbg_printf("%s에 저장되었습니다\r\n",PATH_ADC_CALIBRATION_BIN);
+        debug_printf("%s에 저장되었습니다\r\n",PATH_ADC_CALIBRATION_BIN);
     }
 }

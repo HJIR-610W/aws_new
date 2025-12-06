@@ -25,8 +25,8 @@ int32_t input_ip(int *a, int *b, int *c, int *d)
 
   while(1)
   {
-    dbg_printf("IP(xxx.xxx.xxx.xxx)");
-    dbg_printf("입력:");
+    debug_printf("IP(xxx.xxx.xxx.xxx)");
+    debug_printf("입력:");
     status = cli_scanf_s("%d.%d.%d.%d", a, b, c, d);
 
     if (status == CLI_KEYCODE_CTRL_C )
@@ -44,7 +44,7 @@ int32_t input_ip(int *a, int *b, int *c, int *d)
       status = MENU_OK;
       break;
     }
-    dbg_printf("값이 입력되지 않았습니다.");
+    debug_printf("값이 입력되지 않았습니다.");
   }
 
   return status;
@@ -56,8 +56,8 @@ int32_t input_mac(int *a, int *b, int *c, int *d,int *e,int *f)
 
   while (1)
   {
-    dbg_printf("MAC(xxx.xxx.xxx.xxx.xxx.xxx)");
-    dbg_printf("입력:");
+    debug_printf("MAC(xxx.xxx.xxx.xxx.xxx.xxx)");
+    debug_printf("입력:");
     status = cli_scanf_s("%d.%d.%d.%d.%d.%d", a, b, c, d,e,f);
 
     if (status == CLI_KEYCODE_CTRL_C)
@@ -75,7 +75,7 @@ int32_t input_mac(int *a, int *b, int *c, int *d,int *e,int *f)
       status = MENU_OK;
       break;
     }
-    dbg_printf("값이 입력되지 않았습니다.");
+    debug_printf("값이 입력되지 않았습니다.");
   }
 
   return status;
@@ -198,7 +198,7 @@ int32_t aws_eth_default(void)
             config.eth_ip[2] = c;
             config.eth_ip[3] = d;
             WRITE_CFG(eth_ip);
-            dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+            debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
             break;
         case 2:  // subnet
           status = input_ip(&a, &b, &c, &d);
@@ -209,7 +209,7 @@ int32_t aws_eth_default(void)
           config.eth_subnet[2] = c;
           config.eth_subnet[3] = d;
           WRITE_CFG(eth_subnet);
-          dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+          debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
           break;
         case 3:  // gateway
           status = input_ip(&a, &b, &c, &d);
@@ -220,7 +220,7 @@ int32_t aws_eth_default(void)
           config.eth_gateway[2] = c;
           config.eth_gateway[3] = d;
           WRITE_CFG(eth_gateway);
-          dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+          debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
           break;
         case 4: // mac
           status = input_mac(&a, &b, &c, &d,&e,&f);
@@ -233,7 +233,7 @@ int32_t aws_eth_default(void)
           config.eth_mac[4] = e;
           config.eth_mac[5] = f;
           WRITE_CFG(eth_mac);
-          dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+          debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
           break;
         case 5:  // port
           status = input_decimal_prompt("포트",&a,0,100000);
@@ -241,7 +241,7 @@ int32_t aws_eth_default(void)
           break;
             config.eth_local_port = a;
             WRITE_CFG(eth_local_port);
-            dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+            debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
             break;
       }
 
@@ -302,7 +302,7 @@ int32_t aws_network_config_eth(void)
       }
       config.eth_mode = (eETH_MODE_t)(choice - 1);
       WRITE_CFG(eth_mode);
-      dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+      debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
       break;
     case ETH_SERVER_CFG:
       status = aws_eth_remote_server_info();
@@ -386,7 +386,7 @@ int32_t aws_network_config_cdma(void)
         break;
           config.cdma_model = (eCDMA_MODEL_t)(choice-1);
           WRITE_CFG(cdma_model);
-          dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+          debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
           break;
       case 4:
         status = choice_enable(&get_config_app()->cdma_vpn_active);
@@ -442,7 +442,7 @@ int32_t aws_network_config_direct(void)
 
         config.direct_baud_index = (eUART_BAUD_t)choice;
         WRITE_CFG(direct_baud_index);
-        dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+        debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
     }
 
@@ -534,7 +534,7 @@ int32_t aws_network_use(void)
         if (status != MENU_OK)
           break;
         WRITE_CFG(eth_active);
-        dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+        debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
       case 2:
         status = choice_enable(&get_config_app()->cdma_active);
@@ -546,7 +546,7 @@ int32_t aws_network_use(void)
           WRITE_CFG(direct_active);
         }
         WRITE_CFG(cdma_active);
-        dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+        debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
       case 3:
         status = choice_enable(&get_config_app()->direct_active);
@@ -558,7 +558,7 @@ int32_t aws_network_use(void)
           WRITE_CFG(cdma_active);
         }
         WRITE_CFG(direct_active);
-        dbg_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
+        debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
     }
 

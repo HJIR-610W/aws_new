@@ -20,20 +20,20 @@ void test_rs485(void)
   const char *rs485_port_name[RS485_PORT_MAX] = {"A", "B", "C", "D"};
   int32_t port_list[RS485_PORT_MAX] = {BSP_RS485_C, BSP_RS485_D, BSP_RS485_RS232_A, BSP_RS485_RS232_B};
 
-  dbg_printf("RS485 포트별 테스트\r\n");
-  dbg_printf("주의: RS485 C,D는 하드웨어점퍼 설정 필요\r\n");
-  dbg_printf("기능: 포트이름 전송 후 1초간 수신 데이터 에코 및 HEX 출력\r\n\r\n");
+  debug_printf("RS485 포트별 테스트\r\n");
+  debug_printf("주의: RS485 C,D는 하드웨어점퍼 설정 필요\r\n");
+  debug_printf("기능: 포트이름 전송 후 1초간 수신 데이터 에코 및 HEX 출력\r\n\r\n");
 
   if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
   {
     port_index = 0;
-    dbg_printf("기본 포트 A로 설정합니다.\r\n");
+    debug_printf("기본 포트 A로 설정합니다.\r\n");
   }
 
   if(input_decimal_prompt("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
   {
     baud = 57600;
-    dbg_printf("기본 속도 %d로 설정합니다.\r\n", baud);
+    debug_printf("기본 속도 %d로 설정합니다.\r\n", baud);
   }
 
   selected_port = port_list[port_index];
@@ -45,7 +45,7 @@ void test_rs485(void)
 
   bsp_rs485_init(selected_port, &uart_config);
   
-  dbg_printf("RS485 포트 %s, 속도 %d로 테스트 시작 (CTRL+Q 종료)\r\n", 
+  debug_printf("RS485 포트 %s, 속도 %d로 테스트 시작 (CTRL+Q 종료)\r\n", 
             rs485_port_name[port_index], baud);
 
   while(1)
@@ -55,11 +55,11 @@ void test_rs485(void)
     
     if(len < 0)
     {
-      dbg_printf("RS485 %s 전송 실패\r\n", rs485_port_name[port_index]);
+      debug_printf("RS485 %s 전송 실패\r\n", rs485_port_name[port_index]);
     }
     else
     {
-      dbg_printf("전송: %s", buff);
+      debug_printf("전송: %s", buff);
     }
 
     len = bsp_rs485_recv(selected_port, (uint8_t*)rx_buff, sizeof(rx_buff), 1000);
@@ -68,17 +68,17 @@ void test_rs485(void)
     {
       bsp_rs485_send(selected_port, (uint8_t*)rx_buff, len);
       
-      dbg_printf("수신 및 에코 (%d bytes): ", len);
+      debug_printf("수신 및 에코 (%d bytes): ", len);
       for(int i = 0; i < len; i++)
       {
-        dbg_printf("%c", rx_buff[i]);
+        debug_printf("%c", rx_buff[i]);
       }
-      dbg_printf("\r\n");
+      debug_printf("\r\n");
     }
 
     if (get_key(10) == KEY_CODE_CTRL_C)
     {
-      dbg_printf("테스트 종료\r\n");
+      debug_printf("테스트 종료\r\n");
       return;
     }
   }

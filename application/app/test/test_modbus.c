@@ -34,26 +34,26 @@ void test_modbus_task(void *arg)
   int32_t ret;
   int32_t reg_number=0x3100;
 
-     dbg_printf("MODBUS RS485 RTU테스트\r\n");
-  dbg_printf("주의: RS485 C,D는 하드웨어점퍼 설정 필요\r\n");
-  dbg_printf("기능: 포트이름 전송 후 1초간 수신 데이터 에코 및 HEX 출력\r\n\r\n");
+     debug_printf("MODBUS RS485 RTU테스트\r\n");
+  debug_printf("주의: RS485 C,D는 하드웨어점퍼 설정 필요\r\n");
+  debug_printf("기능: 포트이름 전송 후 1초간 수신 데이터 에코 및 HEX 출력\r\n\r\n");
 
   if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
   {
     port_index = 0;
-    dbg_printf("기본 포트 A로 설정합니다.\r\n");
+    debug_printf("기본 포트 A로 설정합니다.\r\n");
   }
 
   if(input_decimal_prompt("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
   {
     baud = 57600;
-    dbg_printf("기본 속도 %d로 설정합니다.\r\n", baud);
+    debug_printf("기본 속도 %d로 설정합니다.\r\n", baud);
   }
 
   if (input_decimal_prompt("모드버스  주소", &reg_number, 0, 65535) != MENU_OK)
   {
     reg_number = 0;
-    dbg_printf("주소 오류 종료\r\n");
+    debug_printf("주소 오류 종료\r\n");
     return ;
   }
 
@@ -72,7 +72,7 @@ void test_modbus_task(void *arg)
   modbus.port_num = selected_port;
   modbus.sem = 0;
 
-  dbg_printf("모드버스 RS485 포트 %s, 속도 %d로 테스트 시작 (CTRL+Q 종료)\r\n",
+  debug_printf("모드버스 RS485 포트 %s, 속도 %d로 테스트 시작 (CTRL+Q 종료)\r\n",
                 rs485_port_name[port_index], baud);
 
   while(1)
@@ -83,21 +83,21 @@ void test_modbus_task(void *arg)
 
     if (ret)
     {
-      dbg_printf("modbus err:%d\r\n",ret);
+      debug_printf("modbus err:%d\r\n",ret);
     }
     else
     {
-        dbg_printf("수신 및 에코 (%d bytes): ", len);
+        debug_printf("수신 및 에코 (%d bytes): ", len);
         for (int i = 0; i < READ_REG_CNT; i++)
         {
-          dbg_printf("%04X ", reg[i]);
+          debug_printf("%04X ", reg[i]);
         }
-        dbg_printf("\r\n");
+        debug_printf("\r\n");
 
     }
     if (get_key(1000) == KEY_CODE_CTRL_C)
     {
-      dbg_printf("테스트 종료\r\n");
+      debug_printf("테스트 종료\r\n");
       return;
     }
   }
@@ -134,33 +134,33 @@ void test_modbus_task(void)
   int32_t modbus_id = 1;
   int32_t reg_type;
 
-  dbg_printf("MODBUS RTU 테스트\r\n");
-  dbg_printf("기능: Modbus Read Registers\r\n\r\n");
+  debug_printf("MODBUS RTU 테스트\r\n");
+  debug_printf("기능: Modbus Read Registers\r\n\r\n");
 
   if(input_decimal_prompt("인터페이스를 선택하세요 (0:RS232, 1:RS485)", &interface_type, 0, 1) != MENU_OK)
   {
     interface_type = 1;
-    dbg_printf("기본 RS485로 설정합니다.\r\n");
+    debug_printf("기본 RS485로 설정합니다.\r\n");
   }
 
   if(interface_type == 0)
   {
-    dbg_printf("RS232 포트 선택 (사용자 포트만 지원)\r\n");
+    debug_printf("RS232 포트 선택 (사용자 포트만 지원)\r\n");
     if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
     {
       port_index = 0;
-      dbg_printf("기본 포트 A로 설정합니다.\r\n");
+      debug_printf("기본 포트 A로 설정합니다.\r\n");
     }
     selected_port = rs232_port_list[port_index];
   }
   else
   {
-    dbg_printf("RS485 포트 선택\r\n");
-    dbg_printf("주의: RS485 C,D는 하드웨어 점퍼 설정 필요\r\n");
+    debug_printf("RS485 포트 선택\r\n");
+    debug_printf("주의: RS485 C,D는 하드웨어 점퍼 설정 필요\r\n");
     if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
     {
       port_index = 0;
-      dbg_printf("기본 포트 A로 설정합니다.\r\n");
+      debug_printf("기본 포트 A로 설정합니다.\r\n");
     }
     selected_port = rs485_port_list[port_index];
   }
@@ -168,19 +168,19 @@ void test_modbus_task(void)
   if(input_decimal_prompt("통신 속도를 입력해주세요 (1200-115200)", &baud, 1200, 115200) != MENU_OK)
   {
     baud = 57600;
-    dbg_printf("기본 속도 %d로 설정합니다.\r\n", baud);
+    debug_printf("기본 속도 %d로 설정합니다.\r\n", baud);
   }
 
   if(input_decimal_prompt("패리티를 선택하세요 (0:NONE, 1:ODD, 2:EVEN)", &parity, 0, 2) != MENU_OK)
   {
     parity = PARITY_NONE;
-    dbg_printf("기본 패리티 NONE으로 설정합니다.\r\n");
+    debug_printf("기본 패리티 NONE으로 설정합니다.\r\n");
   }
 
   if(input_decimal_prompt("Modbus 슬레이브 ID를 입력하세요 (1-247)", &modbus_id, 1, 247) != MENU_OK)
   {
     modbus_id = 1;
-    dbg_printf("기본 ID 1로 설정합니다.\r\n");
+    debug_printf("기본 ID 1로 설정합니다.\r\n");
   }
 
 
@@ -205,50 +205,50 @@ void test_modbus_task(void)
   modbus.port_num = selected_port;
   modbus.sem = 0;
   modbus_init();
-  dbg_printf("Modbus %s 설정:\r\n", interface_name[interface_type]);
+  debug_printf("Modbus %s 설정:\r\n", interface_name[interface_type]);
   if(interface_type == 0)
-    dbg_printf("  포트: %s (사용자%d)\r\n", rs232_port_name[port_index], port_index);
+    debug_printf("  포트: %s (사용자%d)\r\n", rs232_port_name[port_index], port_index);
   else
-    dbg_printf("  포트: %s\r\n", rs485_port_name[port_index]);
-  dbg_printf("  속도: %d bps\r\n", baud);
-  dbg_printf("  패리티: %s\r\n", parity_name[parity]);
-  dbg_printf("  슬레이브 ID: %d\r\n", modbus_id);
-  dbg_printf("테스트 시작 (CTRL+Q로 종료)\r\n\r\n");
+    debug_printf("  포트: %s\r\n", rs485_port_name[port_index]);
+  debug_printf("  속도: %d bps\r\n", baud);
+  debug_printf("  패리티: %s\r\n", parity_name[parity]);
+  debug_printf("  슬레이브 ID: %d\r\n", modbus_id);
+  debug_printf("테스트 시작 (CTRL+Q로 종료)\r\n\r\n");
 
   while (1)
   {
-    dbg_printf("Modbus 기능 선택:\r\n");
-    dbg_printf("  0: Read Coils (0x01)\r\n");
-    dbg_printf("  1: Read Discrete Inputs (0x02)\r\n");
-    dbg_printf("  2: Read Input Registers (0x04)\r\n");
-    dbg_printf("  3: Read Holding Registers (0x03)\r\n");
+    debug_printf("Modbus 기능 선택:\r\n");
+    debug_printf("  0: Read Coils (0x01)\r\n");
+    debug_printf("  1: Read Discrete Inputs (0x02)\r\n");
+    debug_printf("  2: Read Input Registers (0x04)\r\n");
+    debug_printf("  3: Read Holding Registers (0x03)\r\n");
     
     if (input_decimal_prompt("기능을 선택하세요", &reg_type, 0, 3) != MENU_OK)
     {
-      dbg_printf("테스트 종료\r\n");
+      debug_printf("테스트 종료\r\n");
       return;
     }
 
     if (input_decimal_prompt("Modbus 시작 주소 (0-65535)", &reg_number, 0, 65535) != MENU_OK)
     {
-      dbg_printf("테스트 종료\r\n");
+      debug_printf("테스트 종료\r\n");
       return;
     }
 
     if(reg_type == 0)
     {
       uint16_t coil_result;
-      dbg_printf("Single Coil 읽기 (0x01) - 주소: 0x%04X (%d)\r\n", reg_number, reg_number);
+      debug_printf("Single Coil 읽기 (0x01) - 주소: 0x%04X (%d)\r\n", reg_number, reg_number);
       ret = modbus_read_single_coil(&modbus, reg_number, &coil_result);
       
       if (ret)
       {
-        dbg_printf("Modbus 오류: %d\r\n", ret);
+        debug_printf("Modbus 오류: %d\r\n", ret);
       }
       else
       {
-        dbg_printf("Coil 읽기 성공:\r\n");
-        dbg_printf("  주소 0x%04X (%d): %s (%d)\r\n", 
+        debug_printf("Coil 읽기 성공:\r\n");
+        debug_printf("  주소 0x%04X (%d): %s (%d)\r\n", 
                   reg_number, reg_number, coil_result ? "ON" : "OFF", coil_result);
       }
     }
@@ -256,23 +256,23 @@ void test_modbus_task(void)
     {
       if (input_decimal_prompt("읽을 Discrete Input 개수 (1-15)", &read_cnt, 1, 15) != MENU_OK)
       {
-        dbg_printf("테스트 종료\r\n");
+        debug_printf("테스트 종료\r\n");
         return;
       }
       
-      dbg_printf("Discrete Inputs 읽기 (0x02) - 주소: 0x%04X (%d), 개수: %d\r\n", reg_number, reg_number, read_cnt);
+      debug_printf("Discrete Inputs 읽기 (0x02) - 주소: 0x%04X (%d), 개수: %d\r\n", reg_number, reg_number, read_cnt);
       ret = modbus_read_discrete_inputs(&modbus, reg_number, reg, read_cnt);
       
       if (ret)
       {
-        dbg_printf("Modbus 오류: %d\r\n", ret);
+        debug_printf("Modbus 오류: %d\r\n", ret);
       }
       else
       {
-        dbg_printf("Discrete Inputs 읽기 성공:\r\n");
+        debug_printf("Discrete Inputs 읽기 성공:\r\n");
         for (int i = 0; i < read_cnt; i++)
         {
-          dbg_printf("  주소 0x%04X (%d): %s (0x%04X)\r\n", 
+          debug_printf("  주소 0x%04X (%d): %s (0x%04X)\r\n", 
                     reg_number + i, reg_number + i, (reg[i] & 0x01) ? "ON" : "OFF", reg[i]);
         }
       }
@@ -281,23 +281,23 @@ void test_modbus_task(void)
     {
       if (input_decimal_prompt("읽을 Input Register 개수 (1-15)", &read_cnt, 1, 15) != MENU_OK)
       {
-        dbg_printf("테스트 종료\r\n");
+        debug_printf("테스트 종료\r\n");
         return;
       }
       
-      dbg_printf("Input Registers 읽기 (0x04) - 주소: 0x%04X (%d), 개수: %d\r\n", reg_number, reg_number, read_cnt);
+      debug_printf("Input Registers 읽기 (0x04) - 주소: 0x%04X (%d), 개수: %d\r\n", reg_number, reg_number, read_cnt);
       ret = modbus_read_input_reg(&modbus, reg_number, reg, read_cnt);
       
       if (ret)
       {
-        dbg_printf("Modbus 오류: %d\r\n", ret);
+        debug_printf("Modbus 오류: %d\r\n", ret);
       }
       else
       {
-        dbg_printf("Input 레지스터 읽기 성공:\r\n");
+        debug_printf("Input 레지스터 읽기 성공:\r\n");
         for (int i = 0; i < read_cnt; i++)
         {
-          dbg_printf("  주소 0x%04X (%d): 0x%04X (%d)\r\n", 
+          debug_printf("  주소 0x%04X (%d): 0x%04X (%d)\r\n", 
                     reg_number + i, reg_number + i, reg[i], reg[i]);
         }
       }
@@ -306,29 +306,29 @@ void test_modbus_task(void)
     {
       if (input_decimal_prompt("읽을 Holding Register 개수 (1-15)", &read_cnt, 1, 15) != MENU_OK)
       {
-        dbg_printf("테스트 종료\r\n");
+        debug_printf("테스트 종료\r\n");
         return;
       }
       
-      dbg_printf("Holding Registers 읽기 (0x03) - 주소: 0x%04X (%d), 개수: %d\r\n", reg_number, reg_number, read_cnt);
+      debug_printf("Holding Registers 읽기 (0x03) - 주소: 0x%04X (%d), 개수: %d\r\n", reg_number, reg_number, read_cnt);
       ret = modbus_read_hold_reg(&modbus, reg_number, reg, read_cnt);
       
       if (ret)
       {
-        dbg_printf("Modbus 오류: %d\r\n", ret);
+        debug_printf("Modbus 오류: %d\r\n", ret);
       }
       else
       {
-        dbg_printf("Holding 레지스터 읽기 성공:\r\n");
+        debug_printf("Holding 레지스터 읽기 성공:\r\n");
         for (int i = 0; i < read_cnt; i++)
         {
-          dbg_printf("  주소 0x%04X (%d): 0x%04X (%d)\r\n", 
+          debug_printf("  주소 0x%04X (%d): 0x%04X (%d)\r\n", 
                     reg_number + i, reg_number + i, reg[i], reg[i]);
         }
       }
     }
     
-    dbg_printf("\r\n");
+    debug_printf("\r\n");
   }
 }
 #include "cmsis_os2.h"

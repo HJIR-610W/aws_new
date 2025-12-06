@@ -18,7 +18,7 @@ typedef int32_t (*menu_func)(void);
 
 #define ITEM_LIST(cnt, list) cnt >= _countof(list) ? g_unknown : (char *)list[cnt]
 
-char recv_key(uint32_t timeout_ms) ;
+uint8_t recv_key(uint32_t timeout_ms) ;
 void make_comList(char *out, uint16_t outsize);
 
 int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_val);

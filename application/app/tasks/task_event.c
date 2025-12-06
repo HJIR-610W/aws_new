@@ -72,7 +72,7 @@ void isrEventTask(void *arg)
             start_console((void *)0);
         break;
           case eUSER_STOP_CONSOLE:
-          stop_console();
+        //  stop_console();
         break;
             default : 
             break;

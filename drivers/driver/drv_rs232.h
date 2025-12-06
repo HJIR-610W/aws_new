@@ -5,6 +5,7 @@
 
 #include "drv_uart_def.h"
 #include "bsp_uart.h"
+#include "io_interface.h"
 
 #define DRV_UART_0_VHF   BSP_UART_0_D_SUB_0  // VHF
 #define DRV_UART_2_EXT_A BSP_UART_2_EXT_A // 사용자0
@@ -24,37 +25,42 @@ typedef enum rs232_port_e
   eRS232_MAX
 } eRS232_PORT_t;
 
-uint16_t rs232_get_portList(const char **list,uint16_t listMax);
+uint16_t rs232_get_portList(const char **list,size_t list_max);
 int32_t uart_num_to_driver_num(int32_t app_uart_num);
 
 
 
 int32_t drv_uart_init(int32_t num, void *opt,const char *owner);
-void drv_uart_close(int num);
-int32_t drv_uart_send(int num, const uint8_t *pData, uint16_t dataLen);
-int32_t drv_uart_recv(int num, uint8_t *pBuff, uint16_t rLen,
-                      uint32_t timeOutMs);
-int32_t drv_uart_recv_crlf(int num, char *pBuff, uint16_t bSize,
-                           uint32_t tout_ms);
-void drv_uart_set(int num, eUART_SET_OPTION_t cmd, void *para);
+void drv_uart_deinit(int32_t num);
+int32_t drv_uart_send(int32_t num, const uint8_t *data, size_t dataLen);
+int32_t drv_uart_recv(int32_t num, uint8_t *buffer, size_t rLen,uint32_t timeOutMs);
+int32_t drv_uart_recv_crlf(int32_t num, char *buffer, size_t bSize,uint32_t tout_ms);
+void drv_uart_set(int32_t num, eUART_SET_OPTION_t cmd, void *para);
 
 // 밑에 두함수는 대체 필요
-int32_t drv_uart_get_char(int num, uint8_t *pBuff, uint16_t rLen);
-int32_t drv_uart_get_charNonBlocking(int num, uint8_t *pBuff);
+int32_t drv_uart_get_char(int32_t num, uint8_t *buffer);
+int32_t drv_uart_get_charNonBlocking(int num, uint8_t *buffer);
 
-void drv_uart_flush_rx(int num);
+void drv_uart_flush_rx(int32_t num);
 
-int32_t drv_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size,
+int32_t drv_uart_recv_opt(int32_t num, uint8_t *buffer, size_t buffer_size,
                           uint32_t timeout1_ms, uint32_t timeout2_ms);
-void drv_uart_get(int num, eUART_GET_OPTION_t cmd, void *para);
-int32_t drv_uart_recv_ll(int num, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutMs);
+void drv_uart_get(int32_t num, eUART_GET_OPTION_t cmd, void *para);
+int32_t drv_uart_recv_ll(int32_t num, uint8_t *buffer, size_t rLen, uint32_t timeOutMs);
 
-int32_t drv_uart_inject(int num, const uint8_t *pData, uint16_t dataLen);
-int32_t drv_uart_get_charNonBlocking(int32_t drv, uint8_t *pBuff);
+int32_t drv_uart_inject(int32_t num, const uint8_t *pData, size_t dataLen);
+int32_t drv_uart_get_charNonBlocking(int32_t drv, uint8_t *buffer);
 
 
 
-uint16_t rs232_get_port_name_list(const char **list,uint16_t listMax);
+uint16_t rs232_get_port_name_list(const char **list,size_t listMax);
+
+
+int32_t drv_uart_io_send(io_if_t *io,const uint8_t *data,size_t len );
+int32_t drv_uart_io_recv(io_if_t *io,uint8_t *buffer,size_t len,uint32_t timeout_ms);
+void drv_uart_io_flush(io_if_t *io);
+
+
 extern const char *g_rs232_owner_list[3];
 extern const char *rs232_port_name_list[3];
 #endif

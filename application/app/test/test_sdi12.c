@@ -149,8 +149,8 @@ void sdiTask(void *arg)
 
   SDI_DIR_TX_OFF();
 
-  dbg_printf("0XR3 A 문자열이 출력되면 정상\r\n");
-  dbg_printf("CTRL+Q 종료료\r\n");
+  debug_printf("0XR3 A 문자열이 출력되면 정상\r\n");
+  debug_printf("CTRL+Q 종료료\r\n");
 
   while (1)
   {
@@ -162,7 +162,7 @@ void sdiTask(void *arg)
       {
         buff[i]&=0x7F;//even 페리티 제거 
       }
-      LOG_MEM(buff,len,0,16);
+      debug_dump(buff,len,0,16);
     }
     if (get_key(1000) == KEY_CODE_CTRL_C)
     {

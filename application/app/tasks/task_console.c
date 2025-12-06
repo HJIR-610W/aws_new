@@ -24,7 +24,7 @@
 
 int32_t console_uart_num = -1;
 
- osThreadId_t s_console_task_id;
+static osThreadId_t s_console_task_id;
 const osThreadAttr_t consoleTask_attributes = {
   .name = "consoleTask",
   .stack_size = TASK_STACK(TASK_CONSOLE_DEF),
@@ -49,28 +49,28 @@ void print_signature(void)
   uint8_t rel;
   DATE_TIME_BUF ct;
 
-  dbg_printf("\r\n");
+  debug_printf("\r\n");
 
-  dbg_printf("┌──────────────────────────────────────────────┐\r\n");
-  dbg_printf("│ HWAJIN T&I CO.,LTD.                          │\r\n");
-  dbg_printf("├──────────────────────────────────────────────┤\r\n");
-  dbg_printf("│ AWS                                          │\r\n"); 
+  debug_printf("┌──────────────────────────────────────────────┐\r\n");
+  debug_printf("│ HWAJIN T&I CO.,LTD.                          │\r\n");
+  debug_printf("├──────────────────────────────────────────────┤\r\n");
+  debug_printf("│ AWS                                          │\r\n"); 
 
   get_app_version(&major,&minor,&fix,&rel);
   get_app_build(&ct);
 
-  dbg_printf("│ App  %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
+  debug_printf("│ App  %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
           major, minor, fix, rel, ct.Year, ct.Month, ct.Day,
           ct.Hour, ct.Min, ct.Sec);
 
   get_boot_version(&major, &minor, &fix, &rel);
   get_boot_build(&ct);
 
-  dbg_printf("│ Boot %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
+  debug_printf("│ Boot %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
           major, minor, fix, rel, ct.Year, ct.Month, ct.Day,
           ct.Hour, ct.Min, ct.Sec);
 
-  dbg_printf("└──────────────────────────────────────────────┘\r\n");
+  debug_printf("└──────────────────────────────────────────────┘\r\n");
 
 
 }
@@ -78,13 +78,12 @@ void print_signature(void)
 
 void SHELL_SendDataCallback(uint8_t* buf, uint32_t len)
 {
-  dbg_send(buf,len);
+  debug_send(buf,len);
 }
 
 void SHELL_ReceiveDataCallback(uint8_t* buffer, uint32_t len)
 {
-   // drv_uart_get_char(console_uart_num, buffer, len);
-  dbg_recv((char *)buffer,len,osWaitForever);
+  debug_recv(buffer,len,osWaitForever);
 }
 
 
@@ -99,30 +98,30 @@ void consoleTask(void *arg)
 
   osDelay(1000);
 
-  dbg_printf("\r\n\r\n");
-  // dbg_printf(VT100_CLEAR_SCREEN);
-  // dbg_printf(VT100_CURSOR_HOME);
+  debug_printf("\r\n\r\n");
+  // debug_printf(VT100_CLEAR_SCREEN);
+  // debug_printf(VT100_CURSOR_HOME);
   print_signature();
 
   check_login();
   
 
-  if (restore_error(buffer,sizeof(buffer)))
+  if (read_last_error(buffer,sizeof(buffer)))
   {
-    dbg_printf("%s\r\n",buffer);
+    debug_printf("%s\r\n",buffer);
   }
   
-  dbg_printf("alarm log count:%d\r\n",alarm_get_log_count());
+  debug_printf("alarm log count:%d\r\n",alarm_get_log_count());
   DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
 
   if(mode==0)
   {
-    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, dbg_printf,
+    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf,
                (char *)cli_aws);
   }
   else
   {
-    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, dbg_printf,
+    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf,
                (char *)cli_test);
   }
   console_scanf_init(&user_context);
@@ -135,7 +134,7 @@ void consoleTask(void *arg)
 
   while(1)
   {
-    dbg_puts("Debug menu exited\r\n");
+    debug_puts("Debug menu exited\r\n");
     osDelay(1000);
   }
 }
@@ -147,38 +146,17 @@ void start_console(void *arg)
     s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
   }
 
-  if(s_console_task_id)
-  {
-    set_debug_uart_handle(BSP_UART_10_CDC);
-  }
+
 }
 
 void consoleTask_init(void *arg)
 {
-  int32_t result;
-  uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
+  debug_init();
 
-  uart_config.baud = 115200;
-  uart_config.parity_index = PARITY_NONE;
-  uart_config.stop_bit = UART_STOP_BIT_1;
-
-  console_uart_num = BSP_UART_10_CDC  ;
-  
-
-  result = drv_uart_init(console_uart_num, &uart_config,"Console");
-   
-  if(result > 0)                                                                                
-  {
-    set_debug_uart_handle(console_uart_num);
-    start_console(arg);
-  }
+  s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
 }
 
 
-void stop_console(void)
-{
-  set_debug_uart_handle(-1);
-}
 
 void consoleTask_stop(void)
 {

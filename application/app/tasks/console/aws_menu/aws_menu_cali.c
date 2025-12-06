@@ -6,7 +6,7 @@
  */
 
 #include <math.h>    // For NAN, isnan, fabsf
-#include <stdarg.h>  // For va_list in dbg_printf stub
+#include <stdarg.h>  // For va_list in debug_printf stub
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -57,7 +57,7 @@ int select_channel(adc_channel_type_t type, int* channel_index)
 /** @brief 공장 캘리브레이션 메뉴 처리 */
 int handle_factory_calibration(int adc_num)
 {
-  char ch;
+  uint8_t ch;
   int choice, channel_index, status;
   int key;
   float cal_temp;
@@ -68,13 +68,13 @@ int handle_factory_calibration(int adc_num)
 
   while (1)
   {
-    dbg_printf("+---------------------------------------+\r\n");
-    dbg_printf("|           공장 캘리브레이션           |\r\n");
-    dbg_printf("+---------------------------------------+\r\n");
-    dbg_printf("|  1. 싱글 엔드 채널 캘리브레이션       |\r\n");
-    dbg_printf("|  2. 차동 채널 캘리브레이션            |\r\n");
-    dbg_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
-    dbg_printf("+---------------------------------------+\r\n");
+    debug_printf("+---------------------------------------+\r\n");
+    debug_printf("|           공장 캘리브레이션           |\r\n");
+    debug_printf("+---------------------------------------+\r\n");
+    debug_printf("|  1. 싱글 엔드 채널 캘리브레이션       |\r\n");
+    debug_printf("|  2. 차동 채널 캘리브레이션            |\r\n");
+    debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
+    debug_printf("+---------------------------------------+\r\n");
 
     status = input_decimal_prompt("선택", &choice, 1, 2);
 
@@ -96,12 +96,12 @@ int handle_factory_calibration(int adc_num)
                            ? &p_adc->single_ended_cal[channel_index]
                            : &p_adc->differential_cal[channel_index];
 
-      dbg_printf("\r\n--- %s 채널 %d 캘리브레이션 시작 ---\r\n", (type == 0 ? "SE" : "Diff"),
+      debug_printf("\r\n--- %s 채널 %d 캘리브레이션 시작 ---\r\n", (type == 0 ? "SE" : "Diff"),
                 channel_index);
 
       // Point 1 입력
-      dbg_printf("1. 낮은 기준점(Low Reference)을 연결하고 엔터를 입력해주세요\r\n");
-      dbg_recv(&ch, 1, 60000);
+      debug_printf("1. 낮은 기준점(Low Reference)을 연결하고 엔터를 입력해주세요\r\n");
+      debug_recv(&ch, 1, 60000);
 
       float avg = 0;
       int32_t adc_raw;
@@ -124,14 +124,14 @@ int handle_factory_calibration(int adc_num)
         {
           //초기에 높은값에서 점점 값이 작아지는
           stable_delay = 0;
-          dbg_printf("ADC안정화를 위해 5초뒤 시작 시작됩니다\r\n");
+          debug_printf("ADC안정화를 위해 5초뒤 시작 시작됩니다\r\n");
           osDelay(5000);
           continue;
         }
         avg_cnt++;
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
-        dbg_printf("RAW:%10d AVG:%10.0f\r\n", adc_raw, avg);
+        debug_printf("RAW:%10d AVG:%10.0f\r\n", adc_raw, avg);
         key = get_key(10);
         if(key == KEY_CODE_CTRL_C)
           break;
@@ -152,8 +152,8 @@ int handle_factory_calibration(int adc_num)
       }
 
       // Point 2 입력
-      dbg_printf("2. 높은 기준점(High Reference)을 연결하고 엔터를 입력해주세요\r\n");
-      dbg_recv(&ch, 1, 60000);
+      debug_printf("2. 높은 기준점(High Reference)을 연결하고 엔터를 입력해주세요\r\n");
+      debug_recv(&ch, 1, 60000);
       avg_cnt = 0;
       avg = 0;
       stable_delay = 1;
@@ -173,7 +173,7 @@ int handle_factory_calibration(int adc_num)
         if (stable_delay)
         {
           stable_delay = 0;
-          dbg_printf("ADC안정화를 위해 5초뒤 시작 시작됩니다\r\n");
+          debug_printf("ADC안정화를 위해 5초뒤 시작 시작됩니다\r\n");
           osDelay(5000);
           continue;
         }
@@ -181,7 +181,7 @@ int handle_factory_calibration(int adc_num)
         avg_cnt++;
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
-        dbg_printf("RAW:%10d AVG:%10.0f\r\n", adc_raw, avg);
+        debug_printf("RAW:%10d AVG:%10.0f\r\n", adc_raw, avg);
         key = get_key(10);
         if (key == KEY_CODE_CTRL_C)
           break;
@@ -200,7 +200,7 @@ int handle_factory_calibration(int adc_num)
 
       // 캘리브레이션 온도 입력
       g_current_temp = read_current_temperature();  // 현재 온도 읽기
-      dbg_printf("현재 측정된 온도: %.1f °C\r\n", g_current_temp);
+      debug_printf("현재 측정된 온도: %.1f °C\r\n", g_current_temp);
       #if 0
       status =
           input_float_prompt("캘리브레이션 수행 온도를 입력하세요 (기본값: 현재 온도)", &cal_temp);
@@ -217,13 +217,13 @@ int handle_factory_calibration(int adc_num)
       {
 
         save_adc_cali();
-        dbg_printf("Slope:%e Offset:%e\r\n", cal_params_ptr->factory_offset,
+        debug_printf("Slope:%e Offset:%e\r\n", cal_params_ptr->factory_offset,
                   cal_params_ptr->factory_offset);
-        dbg_printf("캘리브레이션 성공! 설정이 NVM에 저장되었습니다.\r\n");
+        debug_printf("캘리브레이션 성공! 설정이 NVM에 저장되었습니다.\r\n");
       }
       else
       {
-        dbg_printf("오류: 캘리브레이션 실패.\r\n");
+        debug_printf("오류: 캘리브레이션 실패.\r\n");
       }
     }
   }
@@ -242,13 +242,13 @@ int handle_temp_comp_setup(int adc_num)
 
   while (1)
   {
-    dbg_printf("+---------------------------------------+\\rn");
-    dbg_printf("|       --- 온도 보상 설정 ---          |\r\n");
-    dbg_printf("+---------------------------------------+\r\n");
-    dbg_printf("|  1. 싱글 엔드 채널 설정               |\r\n");
-    dbg_printf("|  2. 차동 채널 설정                    |\r\n");
-    dbg_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
-    dbg_printf("+---------------------------------------+\r\n");
+    debug_printf("+---------------------------------------+\\rn");
+    debug_printf("|       --- 온도 보상 설정 ---          |\r\n");
+    debug_printf("+---------------------------------------+\r\n");
+    debug_printf("|  1. 싱글 엔드 채널 설정               |\r\n");
+    debug_printf("|  2. 차동 채널 설정                    |\r\n");
+    debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
+    debug_printf("+---------------------------------------+\r\n");
 
     status = input_decimal_prompt("선택", &choice, 1, 2);
     if (status == MENU_ABORT || status == MENU_BACK)
@@ -281,7 +281,7 @@ int handle_temp_comp_setup(int adc_num)
       // 채널별 상세 설정 루프
       while (1)
       {
-        dbg_printf("+--- 채널 %s[%d] 온도 보상 설정 ---+\r\n", (type == 0 ? "SE" : "Diff"),
+        debug_printf("+--- 채널 %s[%d] 온도 보상 설정 ---+\r\n", (type == 0 ? "SE" : "Diff"),
                   channel_index);
         const char* method_str;
         switch (params->comp_method)
@@ -296,13 +296,13 @@ int handle_temp_comp_setup(int adc_num)
             method_str = "사용 안함";
             break;
         }
-        dbg_printf("| 현재 방식: %s\r\n", method_str);
-        dbg_printf("+---------------------------------------+\r\n");
-        dbg_printf("|  1. 보상 방식 변경                    |\r\n");
-        dbg_printf("|  2. 온도 계수 설정 (방식=계수)        |\r\n");
-        dbg_printf("|  3. LUT 데이터 설정/보기 (방식=LUT)   |\r\n");
-        dbg_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
-        dbg_printf("+---------------------------------------+\r\n");
+        debug_printf("| 현재 방식: %s\r\n", method_str);
+        debug_printf("+---------------------------------------+\r\n");
+        debug_printf("|  1. 보상 방식 변경                    |\r\n");
+        debug_printf("|  2. 온도 계수 설정 (방식=계수)        |\r\n");
+        debug_printf("|  3. LUT 데이터 설정/보기 (방식=LUT)   |\r\n");
+        debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
+        debug_printf("+---------------------------------------+\r\n");
 
         status = input_decimal_prompt("선택", &choice, 1, 3);
         if (status == MENU_ABORT || status == MENU_BACK)
@@ -322,14 +322,14 @@ int handle_temp_comp_setup(int adc_num)
             if (status == MENU_ABORT || status == MENU_BACK)
               return status;
             params->comp_method = (temp_comp_method_t)method_choice;
-            dbg_printf("보상 방식이 변경되었습니다.\r\n");
+            debug_printf("보상 방식이 변경되었습니다.\r\n");
             save_adc_cali();  // NVM 저장 필요
 
             break;
           case 2:  // 계수 설정
             if (params->comp_method == TEMP_COMP_COEFF)
             {
-              dbg_printf("현재 SlopeTC=%.6f, OffsetTC=%.6f\r\n", params->slope_temp_coeff,
+              debug_printf("현재 SlopeTC=%.6f, OffsetTC=%.6f\r\n", params->slope_temp_coeff,
                         params->offset_temp_coeff);
               status = input_float_prompt("새 Slope TempCo 입력",0,0, &params->slope_temp_coeff);
               if (status == MENU_ABORT || status == MENU_BACK)
@@ -347,14 +347,14 @@ int handle_temp_comp_setup(int adc_num)
 
                 if (status == MENU_OK)
                 {
-                  dbg_printf("온도 계수가 업데이트되었습니다.\r\n");
+                  debug_printf("온도 계수가 업데이트되었습니다.\r\n");
                   save_adc_cali();  // NVM 저장 필요
                 }
               }
             }
             else
             {
-              dbg_printf("오류: 현재 보상 방식이 '계수 사용'이 아닙니다.\r\n");
+              debug_printf("오류: 현재 보상 방식이 '계수 사용'이 아닙니다.\r\n");
             }
 
             break;
@@ -364,38 +364,38 @@ int handle_temp_comp_setup(int adc_num)
             {
               // TODO: LUT 보기 및 편집 기능 구현 (복잡함)
               // 예시: 현재 설정된 LUT 보기
-              dbg_printf("현재 LUT 데이터 (최대 %d개):\r\n", MAX_LUT_SIZE);
+              debug_printf("현재 LUT 데이터 (최대 %d개):\r\n", MAX_LUT_SIZE);
               if (params->lut_size == 0)
               {
-                dbg_printf("  (설정된 데이터 없음)\r\n");
+                debug_printf("  (설정된 데이터 없음)\r\n");
               }
               else
               {
-                dbg_printf("  Idx | Temp(C) | SlopeMult | OffsetCorr\r\n");
-                dbg_printf("  --------------------------------------\r\n");
+                debug_printf("  Idx | Temp(C) | SlopeMult | OffsetCorr\r\n");
+                debug_printf("  --------------------------------------\r\n");
                 for (uint8_t i = 0; i < params->lut_size; ++i)
                 {
-                  dbg_printf("  %2u | %7.1f | %9.6f | %9.6f\r\n", i,
+                  debug_printf("  %2u | %7.1f | %9.6f | %9.6f\r\n", i,
                             params->temp_comp_lut[i].temperature,
                             params->temp_comp_lut[i].slope_multiplier,
                             params->temp_comp_lut[i].offset_correction);
                 }
               }
-              dbg_printf("\r\nLUT 데이터 편집 기능은 이 예제에 포함되지 않았습니다.\r\n");
+              debug_printf("\r\nLUT 데이터 편집 기능은 이 예제에 포함되지 않았습니다.\r\n");
               // 예시 LUT 채우기 호출 (디버그용)
               // populate_lut_example(params);
               // save_adc_cali(&g_adc_config_nvm);
             }
             else
             {
-              dbg_printf("오류: 현재 보상 방식이 'LUT 사용'이 아닙니다.\r\n");
+              debug_printf("오류: 현재 보상 방식이 'LUT 사용'이 아닙니다.\r\n");
             }
 
 #endif
           case 'b':
             goto channel_setup_exit;  // 채널 설정 루프 탈출
           default:
-            dbg_printf("잘못된 선택입니다.\r\n");
+            debug_printf("잘못된 선택입니다.\r\n");
 
             break;
         }
@@ -420,13 +420,13 @@ int handle_offset_adjustment(int adc_num)
   config_adc_adv_t* p_adc = get_adc_config(adc_num);
   while (1)
   {
-    dbg_printf("+---------------------------------------+\r\n");
-    dbg_printf("|         --- 오프셋 조정 ---           |\r\n");
-    dbg_printf("+---------------------------------------+\r\n");
-    dbg_printf("|  1. 싱글 엔드 채널 조정               |\r\n");
-    dbg_printf("|  2. 차동 채널 조정                    |\r\n");
-    dbg_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
-    dbg_printf("+---------------------------------------+\r\n");
+    debug_printf("+---------------------------------------+\r\n");
+    debug_printf("|         --- 오프셋 조정 ---           |\r\n");
+    debug_printf("+---------------------------------------+\r\n");
+    debug_printf("|  1. 싱글 엔드 채널 조정               |\r\n");
+    debug_printf("|  2. 차동 채널 조정                    |\r\n");
+    debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
+    debug_printf("+---------------------------------------+\r\n");
 
     status = input_decimal_prompt("선택", &choice, 0, 2);
     if (status == MENU_ABORT || status == MENU_BACK)
@@ -458,31 +458,31 @@ int handle_offset_adjustment(int adc_num)
 
       if (!params->is_calibrated)
       {
-        dbg_printf("오류: 이 채널은 공장 캘리브레이션되지 않아 오프셋 조정 불가.\r\n");
+        debug_printf("오류: 이 채널은 공장 캘리브레이션되지 않아 오프셋 조정 불가.\r\n");
         continue;
       }
 
       // 상세 조정 메뉴
       while (1)
       {
-        dbg_printf("+--- 채널 %s[%d] 오프셋 조정 ---+\r\n", (type == 0 ? "SE" : "Diff"),
+        debug_printf("+--- 채널 %s[%d] 오프셋 조정 ---+\r\n", (type == 0 ? "SE" : "Diff"),
                   channel_index);
         g_current_temp = read_current_temperature();
         float current_val = adc_get_compensated_value(
             (type == 0 ? (int32_t)drv_adc_single_raw_read(channel_index, 1, &err)
                        : (int32_t)drv_adc_diff_raw_read(channel_index, 1,&err)),
             params, g_current_temp);
-        dbg_printf("| 현재 온도: %.1f°C\r\n", g_current_temp);
-        dbg_printf("| 현재 측정값: ");
+        debug_printf("| 현재 온도: %.1f°C\r\n", g_current_temp);
+        debug_printf("| 현재 측정값: ");
         if (isnan(current_val))
-          dbg_printf("N/A\r\n");
+          debug_printf("N/A\r\n");
         else
-          dbg_printf("%.4f\r\n", current_val);
+          debug_printf("%.4f\r\n", current_val);
 
-        dbg_printf("+---------------------------------------+\r\n");
-        dbg_printf("|  1. 오프셋 조정                       |\r\n");
-        dbg_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
-        dbg_printf("+---------------------------------------+\r\n");
+        debug_printf("+---------------------------------------+\r\n");
+        debug_printf("|  1. 오프셋 조정                       |\r\n");
+        debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
+        debug_printf("+---------------------------------------+\r\n");
 
         status = input_decimal_prompt("선택", &choice, 1, 1);
         if (status == MENU_ABORT || status == MENU_BACK)
@@ -558,16 +558,16 @@ int handle_view_status(int adc_num)
 
   while (1)
   {
-    dbg_printf("+---------------------------------------+\r\n");
-    dbg_printf("|           채널 상태 보기              |\r\n");
-    dbg_printf("+---------------------------------------+\r\n");
-    dbg_printf("|  1. 싱글 엔드 채널 상태 보기 (0-18)   |\r\n");
-    dbg_printf("|  2. 차동 채널 상태 보기 (0-7)         |\r\n");
-    dbg_printf("|  3. 싱글 채널 모두 보기               |\r\n");
-    dbg_printf("|  4. 차동 채널 모두 보기               |\r\n");
-    dbg_printf("|  5. 시스템 정보 보기                  |\r\n");
-    dbg_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
-    dbg_printf("+---------------------------------------+\r\n");
+    debug_printf("+---------------------------------------+\r\n");
+    debug_printf("|           채널 상태 보기              |\r\n");
+    debug_printf("+---------------------------------------+\r\n");
+    debug_printf("|  1. 싱글 엔드 채널 상태 보기 (0-18)   |\r\n");
+    debug_printf("|  2. 차동 채널 상태 보기 (0-7)         |\r\n");
+    debug_printf("|  3. 싱글 채널 모두 보기               |\r\n");
+    debug_printf("|  4. 차동 채널 모두 보기               |\r\n");
+    debug_printf("|  5. 시스템 정보 보기                  |\r\n");
+    debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
+    debug_printf("+---------------------------------------+\r\n");
 
     status = input_decimal_prompt("선택", &choice, 1, 5);
     if (status != MENU_OK)
@@ -583,7 +583,7 @@ int handle_view_status(int adc_num)
         if (status != MENU_OK)
           break;
 
-        dbg_printf("시리얼 오실로스코프 사용하려면 yes입력\r\n");
+        debug_printf("시리얼 오실로스코프 사용하려면 yes입력\r\n");
         user_input[0] = 0;
         if (cli_scanf_s("%s", user_input,sizeof(user_input)) == CLI_KEYCODE_CTRL_C)
         {
@@ -594,7 +594,7 @@ int handle_view_status(int adc_num)
         {
           osc_use = 1;
         }
-        dbg_printf("파일로 저장하려면 yes입력\r\n");
+        debug_printf("파일로 저장하려면 yes입력\r\n");
         user_input[0] = 0;
         if (cli_scanf_s("%s", user_input, sizeof(user_input)) == CLI_KEYCODE_CTRL_C)
         {
@@ -607,7 +607,7 @@ int handle_view_status(int adc_num)
           delete_file("adc_sample.txt");
         }
 
-        dbg_printf("스캔 주기를 ms 단위로 입력하세요\r\n");
+        debug_printf("스캔 주기를 ms 단위로 입력하세요\r\n");
         if (cli_scanf_s("%d", &scan_ms) == CLI_KEYCODE_CTRL_C)
         {
           return 0;
@@ -616,14 +616,14 @@ int handle_view_status(int adc_num)
         params = (type == ADC_CHANNEL_TYPE_SINGLE_ENDED) ? &p_adc->single_ended_cal[channel_index]
                                                          : &p_adc->differential_cal[channel_index];
 
-        dbg_printf("\r\n--- 채널 %s[%d] 상세 정보 ---\r\n", (type == 0 ? "SE" : "Diff"),
+        debug_printf("\r\n--- 채널 %s[%d] 상세 정보 ---\r\n", (type == 0 ? "SE" : "Diff"),
                   channel_index);
-        dbg_printf("  공장 캘리브레이션됨: %s\r\n", params->is_calibrated ? "예" : "아니오");
+        debug_printf("  공장 캘리브레이션됨: %s\r\n", params->is_calibrated ? "예" : "아니오");
         if (params->is_calibrated)
         {
-          dbg_printf("  공장 Slope: %.6f\r\n", params->factory_slope);
-          dbg_printf("  공장 Offset: %.6f\r\n", params->factory_offset);
-          dbg_printf("  공장 캘리 온도: %.1f C\r\n", params->factory_cal_temp);
+          debug_printf("  공장 Slope: %.6f\r\n", params->factory_slope);
+          debug_printf("  공장 Offset: %.6f\r\n", params->factory_offset);
+          debug_printf("  공장 캘리 온도: %.1f C\r\n", params->factory_cal_temp);
         }
 
         const char* method_str;
@@ -639,23 +639,23 @@ int handle_view_status(int adc_num)
             method_str = "사용 안함";
             break;
         }
-        dbg_printf("  온도 보상 방식: %s\r\n", method_str);
+        debug_printf("  온도 보상 방식: %s\r\n", method_str);
         switch (params->comp_method)
         {
           case TEMP_COMP_COEFF:
 
-            dbg_printf("    Slope TC: %.6f\r\n", params->slope_temp_coeff);
-            dbg_printf("    Offset TC: %.6f\r\n", params->offset_temp_coeff);
+            debug_printf("    Slope TC: %.6f\r\n", params->slope_temp_coeff);
+            debug_printf("    Offset TC: %.6f\r\n", params->offset_temp_coeff);
             break;
           case TEMP_COMP_LUT:
           {
-            dbg_printf("    LUT 크기: %d / %d\r\n", params->lut_size, MAX_LUT_SIZE);
+            debug_printf("    LUT 크기: %d / %d\r\n", params->lut_size, MAX_LUT_SIZE);
             // LUT 내용 표시 로직 추가 가능
           }
           break;
         }
         g_current_temp = read_current_temperature();
-        dbg_printf("  현재 측정 값 (%.1f C): \r\n", g_current_temp);
+        debug_printf("  현재 측정 값 (%.1f C): \r\n", g_current_temp);
 
         uint32_t start_time;
         uint32_t elased_time;
@@ -672,7 +672,7 @@ int handle_view_status(int adc_num)
           {
             if (osc_use)
             {
-              dbg_printf("%d\r", (int32_t)(current_val * 1000000));
+              debug_printf("%d\r", (int32_t)(current_val * 1000000));
             }
             else
             {
@@ -681,7 +681,7 @@ int handle_view_status(int adc_num)
                          Date_Time.Sec,Date_Time.SubSec);
               snprintf(buffer, sizeof(buffer), "%s SE CH:%d ADC:%8d VOLTAGE:%8.6f %.3fms\r\n", buff,
                        channel_index, raw_adc, current_val, elased_time / 1000.0f);
-              dbg_printf("%s", buffer);
+              debug_printf("%s", buffer);
               if (file_save_use)
               {
                 append_file("0:adc_sample.txt", (uint8_t*)buffer, strlen(buffer));
@@ -692,7 +692,7 @@ int handle_view_status(int adc_num)
           {
             if (osc_use)
             {
-              dbg_printf("%d\r", (int32_t)(current_val * 1000000));
+              debug_printf("%d\r", (int32_t)(current_val * 1000000));
             }
             else
             {
@@ -701,7 +701,7 @@ int handle_view_status(int adc_num)
                        Date_Time.SubSec, HAL_GetTick());
               snprintf(buffer, sizeof(buffer), "%s DI CH:%d ADC:%8d VOLTAGE:%8.6f %.3fms\r\n", buff,
                        channel_index, raw_adc, current_val, elased_time / 1000.0f);
-              dbg_printf("%s", buffer);
+              debug_printf("%s", buffer);
               if (file_save_use)
               {
                 append_file("0:adc_sample.txt", (uint8_t*)buffer, strlen(buffer));
@@ -721,14 +721,14 @@ int handle_view_status(int adc_num)
         int32_t raw;
         float voltage;
 
-        dbg_printf(ES_CLEAR_SCREEN);
-        dbg_printf(ES_CURSOR_OFF);
+        debug_printf(ES_CLEAR_SCREEN);
+        debug_printf(ES_CURSOR_OFF);
 
         type = ADC_CHANNEL_TYPE_SINGLE_ENDED;
 
         do
         {
-          dbg_printf(ES_CURSOR_HOME_ALT);
+          debug_printf(ES_CURSOR_HOME_ALT);
           for (int channel = 0; channel < 18; channel++)
           {
             
@@ -741,12 +741,12 @@ int handle_view_status(int adc_num)
             if (isnan(voltage))
             {
 
-              dbg_printf("%7s slope:%e offset:%e raw:%10d %s\r\n", adc_se_list[channel], params->factory_slope,
+              debug_printf("%7s slope:%e offset:%e raw:%10d %s\r\n", adc_se_list[channel], params->factory_slope,
                         params->factory_offset, raw, "켈리브레이션 필요");
             }
             else
             {
-              dbg_printf("%7s slope:%e offset:%e raw:%10d voltage:%8.4f\r\n", adc_se_list[channel],
+              debug_printf("%7s slope:%e offset:%e raw:%10d voltage:%8.4f\r\n", adc_se_list[channel],
                         params->factory_slope, params->factory_offset, raw, voltage);
             }
           }
@@ -755,7 +755,7 @@ int handle_view_status(int adc_num)
           break;
         } while( 1);
       }
-        dbg_printf(ES_CURSOR_ON);
+        debug_printf(ES_CURSOR_ON);
 
         break;
       case MENU_VIEW_DIFF_SUMMARY:
@@ -763,14 +763,14 @@ int handle_view_status(int adc_num)
         int32_t raw;
         float voltage;
 
-        dbg_printf(ES_CLEAR_SCREEN);
-        dbg_printf(ES_CURSOR_OFF);
+        debug_printf(ES_CLEAR_SCREEN);
+        debug_printf(ES_CURSOR_OFF);
 
         type = ADC_CHANNEL_TYPE_SINGLE_ENDED;
 
         do
         {
-          dbg_printf(ES_CURSOR_HOME_ALT);
+          debug_printf(ES_CURSOR_HOME_ALT);
           for (int channel = 0; channel < 8; channel++)
           {
             params = &p_adc->differential_cal[channel];
@@ -780,12 +780,12 @@ int handle_view_status(int adc_num)
             voltage = adc_get_compensated_value(raw, params, g_current_temp);
             if (isnan(voltage))
             {
-              dbg_printf("DIFF %2d slope:%e offset:%e raw:%10d %s\r\n", channel,
+              debug_printf("DIFF %2d slope:%e offset:%e raw:%10d %s\r\n", channel,
                         params->factory_slope, params->factory_offset, raw, "켈리브레이션 필요");
             }
             else
             {
-              dbg_printf("DIFF %2d slope:%e offset:%e raw:%10d voltage:%8.4f\r\n", channel,
+              debug_printf("DIFF %2d slope:%e offset:%e raw:%10d voltage:%8.4f\r\n", channel,
                         params->factory_slope, params->factory_offset, raw, voltage);
             }
           }
@@ -793,18 +793,18 @@ int handle_view_status(int adc_num)
             break;
         } while (1);
       }
-        dbg_printf(ES_CURSOR_ON);
+        debug_printf(ES_CURSOR_ON);
         break;
       case MENU_VIEW_SYSINFO:
-        dbg_printf("\r\n");
-        dbg_printf("ADC 정보\r\n");
-        dbg_printf("ADC 해상도: %u 비트\r\n", p_adc->bits->resolution_bits);
-        dbg_printf("기준 전압 (Vref): %.3f V\r\n", p_adc->bits->reference_voltage);
-        dbg_printf("최소 Raw 값: %d\r\n", p_adc->bits->min_raw_value);
-        dbg_printf("최대 Raw 값: %d\r\n", p_adc->bits->max_raw_value);
+        debug_printf("\r\n");
+        debug_printf("ADC 정보\r\n");
+        debug_printf("ADC 해상도: %u 비트\r\n", p_adc->bits->resolution_bits);
+        debug_printf("기준 전압 (Vref): %.3f V\r\n", p_adc->bits->reference_voltage);
+        debug_printf("최소 Raw 값: %d\r\n", p_adc->bits->min_raw_value);
+        debug_printf("최대 Raw 값: %d\r\n", p_adc->bits->max_raw_value);
         break;
       default:
-        dbg_printf("잘못된 선택입니다.\r\n");
+        debug_printf("잘못된 선택입니다.\r\n");
         break;
     }
   }
@@ -850,7 +850,7 @@ int adc_set_cali_default(void)
   }
 
   save_adc_cali();
-  dbg_printf("NVM 저장 성공\r\n");
+  debug_printf("NVM 저장 성공\r\n");
 
   return status;
 }
@@ -882,8 +882,8 @@ int system_adc_set_cali_default(void)
   }
   save_adc_cali();
 
-  dbg_printf("시스템 ADC 켈리브레이션값이 임의의 값으로 설정되었습니다.\r\n");
-  dbg_printf("NVM 저장 성공\r\n");
+  debug_printf("시스템 ADC 켈리브레이션값이 임의의 값으로 설정되었습니다.\r\n");
+  debug_printf("NVM 저장 성공\r\n");
 
 
 

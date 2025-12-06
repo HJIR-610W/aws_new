@@ -46,7 +46,7 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 	int len=0;
   int remain_len;
 
-	dbg_printf("\x1B[%d;%dH", win->start_y, win->start_x);
+	debug_printf("\x1B[%d;%dH", win->start_y, win->start_x);
 
 	//상단 +----+ 출력
 	for (int i = 0; i < win->view_col - 2; i++)
@@ -54,11 +54,11 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 		buff[len++] = '-';
 	}
 	buff[len] = '\0';
-	dbg_printf("+%s+", buff);
+	debug_printf("+%s+", buff);
 
 	len=0;
 			// 타이틀 출력
-			dbg_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
+			debug_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
 
 	va_start(ap, pFmt);
 
@@ -81,17 +81,17 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 
 	if (win->is_focused)
 	{
-		dbg_printf("|\x1B[32m%s\x1B[0m|\r\n",  &buff[0]);
+		debug_printf("|\x1B[32m%s\x1B[0m|\r\n",  &buff[0]);
 	}
 	else if (win->is_selected)
 	{
-		dbg_printf("|\x1B[7m%s\x1B[0m|\r\n",  &buff[0]);
+		debug_printf("|\x1B[7m%s\x1B[0m|\r\n",  &buff[0]);
 	} else
 	{
-    dbg_printf("|%s|\r\n", buff);
+    debug_printf("|%s|\r\n", buff);
   }
 
-	dbg_printf("\x1B[%d;%dH", win->start_y + 2, win->start_x);
+	debug_printf("\x1B[%d;%dH", win->start_y + 2, win->start_x);
 	len = 0;
 	
 	for (int i = 0; i < win->view_col - 2; i++)
@@ -99,17 +99,17 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 		buff[len++] = '-';
 	}
 	buff[len] = '\0';
-	dbg_printf("+%s+", buff);
+	debug_printf("+%s+", buff);
 }
 
 void win_print_close(win_t* win)
 {
-	dbg_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
-	dbg_printf("+");
+	debug_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
+	debug_printf("+");
 	for (int i = 0; i < win->view_col - 2; i++) {
-		dbg_printf("-");
+		debug_printf("-");
 	}
-	dbg_printf("+\n");
+	debug_printf("+\n");
 }
 
 /**
@@ -132,7 +132,7 @@ void win_printf_row(win_t* win, int row_index, const char* pFmt, ...)
 	page = win->current_page;// 
 	if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + win->view_row)
 	{
-		dbg_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
+		debug_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
 		va_start(ap, pFmt);
 
 		buff[0] = '|';
@@ -150,7 +150,7 @@ void win_printf_row(win_t* win, int row_index, const char* pFmt, ...)
 		buff[total_len++] = '|';
 		buff[total_len] = '\0';
 
-		dbg_printf("%s", buff);
+		debug_printf("%s", buff);
 		win->current_row++;
 	}
 }

@@ -22,13 +22,13 @@ void inline_print_offset_sensor(uint8_t cnt,eSENSOR_TYPE_t sensor)
   sensor_t *p_sensor;
   p_sensor = &get_config_app()->sensor[sensor];
   s_offset_sensor_index[cnt] = sensor;
-  dbg_printf("%2d.%-14s 오프셋:%9.3f \r\n", cnt, sensor_name_list[sensor], p_sensor->offset);
+  debug_printf("%2d.%-14s 오프셋:%9.3f \r\n", cnt, sensor_name_list[sensor], p_sensor->offset);
   
 }
 int32_t print_offset_sensor(void)
 {
   int32_t cnt = 0;
-  dbg_printf("\r\n");
+  debug_printf("\r\n");
 
 
   inline_print_offset_sensor(cnt++, A1_TEMPERATURE);
@@ -68,7 +68,7 @@ int32_t menu_offset_pressure(void)
 
   if (driver_num != GENERAL_ADC)
   {
-    dbg_printf("ADC가 아닙니다\r\n");
+    debug_printf("ADC가 아닙니다\r\n");
     return 0;
   }
 
@@ -76,22 +76,22 @@ int32_t menu_offset_pressure(void)
   driver = get_sensor_driver(A7_PRESSURE);
   temperature = read_sensor_barometer(driver, &error);
 
-  dbg_printf("%s 장비 값:%fhpa\r\n", sensor_name_list[A7_PRESSURE], temperature);
-  dbg_printf("현장 값 입력해주세요\r\n");
-  dbg_printf("입력:");
+  debug_printf("%s 장비 값:%fhpa\r\n", sensor_name_list[A7_PRESSURE], temperature);
+  debug_printf("현장 값 입력해주세요\r\n");
+  debug_printf("입력:");
   if(cli_scanf_s("%f",&local_temperature)>0)
   {
     voltage = drv_adc_single_read_voltage(p_config->single_channel, 10,&error);
-    dbg_printf("현재 ADC 싱글 %d 전압:%fv\r\n",p_config->single_channel,voltage);
+    debug_printf("현재 ADC 싱글 %d 전압:%fv\r\n",p_config->single_channel,voltage);
     calibrated_voltage = cvt_data_to_voltage(p_config,local_temperature);
-    dbg_printf("요구되는 전압:%f\r\n", calibrated_voltage);
+    debug_printf("요구되는 전압:%f\r\n", calibrated_voltage);
     status  = confirm_continue("오프셋을 조정합니다",&ok);
     if(status != MENU_OK)
     if(ok)
     {
       float new_offset = calibrated_voltage - voltage;
       drv_adc_set_offset( p_config->single_channel, new_offset);
-      dbg_printf("현장센서에맞게 오프셋 %f 적용됩니다\n",new_offset);
+      debug_printf("현장센서에맞게 오프셋 %f 적용됩니다\n",new_offset);
     }
 
   }
@@ -116,13 +116,13 @@ int aws_menu_offset(void)
       break;
     }
 
-    dbg_printf("%s offset 을 입력해주세요\r\n", sensor_name_list[s_offset_sensor_index[choice]]);
-    dbg_printf("입력:");
+    debug_printf("%s offset 을 입력해주세요\r\n", sensor_name_list[s_offset_sensor_index[choice]]);
+    debug_printf("입력:");
     if(cli_scanf_s("%f", &offset)>0)
     {
       config.sensor[s_offset_sensor_index[choice]].offset = offset;
       WRITE_CFG(sensor[s_offset_sensor_index[choice]].offset);
-      dbg_printf("수정되었습니다\r\n");
+      debug_printf("수정되었습니다\r\n");
     }
 
     switch (s_offset_sensor_index[choice])

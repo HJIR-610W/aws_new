@@ -89,10 +89,10 @@ void fault_printf(const char * pFmt, ...)
 
 #include <stdio.h>
 
-#define printf dbg_printf
+#define printf debug_printf
 #include <stdio.h>
 
-#define printf dbg_printf
+#define printf debug_printf
 
 void analyze_fault(uint32_t cfsr, uint32_t hfsr, uint32_t mmfar, uint32_t bfar)
 {

@@ -61,7 +61,7 @@ void safe_us_delay(uint32_t us_delay)
  * @param dataLen
  * @retval -1 전송 오류, 0>= 전송된 데이터 수
  */
-int32_t bsp_rs485_send(int num,uint8_t *pData, uint16_t dataLen)
+int32_t bsp_rs485_send(int num,const uint8_t *pData, size_t dataLen)
 {
 
   int32_t cnt = 0;
@@ -92,7 +92,7 @@ int32_t bsp_rs485_send(int num,uint8_t *pData, uint16_t dataLen)
  * 시간만수신
  * @retval -1에러,0 수신없음, 1이상 수신된 데이터 길이
  */
-int32_t bsp_rs485_recv(int num, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutms)
+int32_t bsp_rs485_recv(int num, uint8_t *pBuff, size_t rLen, uint32_t timeOutms)
 {
    int32_t len = 0;
 
@@ -114,7 +114,7 @@ int32_t bsp_rs485_recv(int num, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutm
  * @details
  * #test
  */
-int32_t bsp_rs485_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms, uint32_t timeout2_ms)
+int32_t bsp_rs485_recv_opt(int num, uint8_t *buffer, size_t buffer_size, uint32_t timeout1_ms, uint32_t timeout2_ms)
 {
   int32_t len = 0;
 

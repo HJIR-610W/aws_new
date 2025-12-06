@@ -22,8 +22,8 @@ void test_di(void)
 
   int32_t prev_state[DI_COUNT] = {-1, -1, -1, -1, -1, -1};  
 
-  dbg_printf("DI_EXT_0 ~ DI_EXT_5 상태 모니터링 시작\r\n");
-  dbg_printf("1초마다 상태를 읽어 변경 시 출력됩니다. CTRL+Q로 종료\r\n");
+  debug_printf("DI_EXT_0 ~ DI_EXT_5 상태 모니터링 시작\r\n");
+  debug_printf("1초마다 상태를 읽어 변경 시 출력됩니다. CTRL+Q로 종료\r\n");
 
 
   while (1)
@@ -33,19 +33,19 @@ void test_di(void)
       int32_t state = drv_di_read(di_nums[i]);
       if (state >= 0 && state != prev_state[i])
       {
-        dbg_printf("%s 상태 변경: %s\r\n", di_names[i], (state == 1) ? "High" : "Low");
+        debug_printf("%s 상태 변경: %s\r\n", di_names[i], (state == 1) ? "High" : "Low");
         prev_state[i] = state;
       }
         else if (state < 0)
         {
-          dbg_printf("%s read 에러: %d\r\n", di_names[i], state);
+          debug_printf("%s read 에러: %d\r\n", di_names[i], state);
         }
 
     }
 
     if (get_key(100) == KEY_CODE_CTRL_C)
     {
-      dbg_printf("테스트 종료\r\n");
+      debug_printf("테스트 종료\r\n");
       break;
     }
   }
@@ -62,9 +62,9 @@ void test_do(void)
 
 
 
-  dbg_printf("DO_EXT_0 ~ DO_EXT_5 인터랙티브 테스트 시작\r\n");
-  dbg_printf("입력 예: 0,low  또는  3,high (번호,상태)\r\n");
-  dbg_printf("CTRL+C 입력 시 종료\r\n");
+  debug_printf("DO_EXT_0 ~ DO_EXT_5 인터랙티브 테스트 시작\r\n");
+  debug_printf("입력 예: 0,low  또는  3,high (번호,상태)\r\n");
+  debug_printf("CTRL+C 입력 시 종료\r\n");
 
   drv_power_on(DRV_POWER_RAIN_DECT_DIGITAL);
   while (1)
@@ -72,19 +72,19 @@ void test_do(void)
     int num;
     char state_str[10] = {0};
 
-    dbg_printf("출력 제어 입력 대기 (번호,상태) > ");
+    debug_printf("출력 제어 입력 대기 (번호,상태) > ");
     int ret = cli_scanf_s("%d,%9s", &num, state_str,sizeof(state_str));
 
     if (ret == CLI_KEYCODE_CTRL_C)
     {
-      dbg_printf("\r\nCTRL+C 감지: 테스트 종료\r\n");
+      debug_printf("\r\nCTRL+C 감지: 테스트 종료\r\n");
       break;
     }
     else if (ret == 2)
     {
       if (num < 0 || num >= DO_COUNT)
       {
-        dbg_printf("잘못된 번호입니다. 0 ~ %d 범위만 허용\r\n", DO_COUNT - 1);
+        debug_printf("잘못된 번호입니다. 0 ~ %d 범위만 허용\r\n", DO_COUNT - 1);
         continue;
       }
 
@@ -92,21 +92,21 @@ void test_do(void)
       if (strcasecmp(state_str, "low") == 0 || strcmp(state_str, "0") == 0)
       {
         drv_do_low(do_nums[num]);
-        dbg_printf("%s 출력: Low\r\n", do_names[num]);
+        debug_printf("%s 출력: Low\r\n", do_names[num]);
       }
       else if (strcasecmp(state_str, "high") == 0 || strcmp(state_str, "1") == 0)
       {
         drv_do_high(do_nums[num]);
-        dbg_printf("%s 출력: High\r\n", do_names[num]);
+        debug_printf("%s 출력: High\r\n", do_names[num]);
       }
       else
       {
-        dbg_printf("상태는 low 또는 high 만 허용\r\n");
+        debug_printf("상태는 low 또는 high 만 허용\r\n");
       }
     }
     else
     {
-      dbg_printf("입력 형식 오류. 예: 2,low 또는 3,high\r\n");
+      debug_printf("입력 형식 오류. 예: 2,low 또는 3,high\r\n");
     }
   }
 

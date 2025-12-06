@@ -28,9 +28,9 @@ void print_gpio_states_in_table_old()
   // 1. 첫 번째 행: 포트 이름 출력
   for (uint8_t i = 0; i < num_ports; i++)
   {
-    dbg_printf("%-8s ", port_names[i]);  // 포트 이름 간격 정렬
+    debug_printf("%-8s ", port_names[i]);  // 포트 이름 간격 정렬
   }
-  dbg_printf("\r\n");
+  debug_printf("\r\n");
 
   // 2. 각 핀 상태를 행 단위로 출력
   for (uint8_t pin = 0; pin < max_pins; pin++)
@@ -42,17 +42,17 @@ void print_gpio_states_in_table_old()
       // 핀이 입력 모드인지 확인
       if (port->MODER & (0x3 << (pin * 2)))  // 입력 모드가 아닌 경우
       {
-        dbg_printf("%2d:%-5s ", pin, "-");  // 출력 모드가 아닌 핀 표시
+        debug_printf("%2d:%-5s ", pin, "-");  // 출력 모드가 아닌 핀 표시
       }
       else
       {
         uint8_t pin_state =
             (port->IDR & (1 << pin)) ? 1 : 0;  // IDR에서 핀 상태 읽기
-        dbg_printf("%2d:%-5s ", pin,
+        debug_printf("%2d:%-5s ", pin,
                      pin_state ? "HIGH" : "LOW");  // 핀 번호와 상태 출력
       }
     }
-    dbg_printf("\r\n");
+    debug_printf("\r\n");
   }
 }
 
@@ -68,9 +68,9 @@ void print_gpio_states_in_table()
   // 1. 첫 번째 행: 포트 이름 출력
   for (uint8_t i = 0; i < num_ports; i++)
   {
-    dbg_printf("%-8s ", port_names[i]);  // 포트 이름 간격 정렬
+    debug_printf("%-8s ", port_names[i]);  // 포트 이름 간격 정렬
   }
-  dbg_printf("\r\n");
+  debug_printf("\r\n");
 
   // 2. 각 핀 상태를 행 단위로 출력
   for (uint8_t pin = 0; pin < max_pins; pin++)
@@ -82,17 +82,17 @@ void print_gpio_states_in_table()
       // 핀이 입력 모드인지 확인
       if (port->MODER & (0x3 << (pin * 2)))  // 입력 모드가 아닌 경우
       {
-        dbg_printf("%2d:%-5s ", pin, "-");  // 출력 모드가 아닌 핀 표시
+        debug_printf("%2d:%-5s ", pin, "-");  // 출력 모드가 아닌 핀 표시
       }
       else
       {
         uint8_t pin_state =
             (port->IDR & (1 << pin)) ? 1 : 0;  // IDR에서 핀 상태 읽기
-        dbg_printf("%2d:%-5s ", pin,
+        debug_printf("%2d:%-5s ", pin,
                      pin_state ? "HIGH" : "LOW");  // 핀 번호와 상태 출력
       }
     }
-    dbg_printf("\r\n");
+    debug_printf("\r\n");
   }
 }
 
@@ -100,7 +100,7 @@ void print_gpio_states_in_table()
 
 #include "stm32f4xx.h"  // HAL 라이브러리 헤더 포함
 
-#define printf dbg_printf  // 사용자 스타일에 맞춘 printf 매크로 정의
+#define printf debug_printf  // 사용자 스타일에 맞춘 printf 매크로 정의
 
 void print_gpio_output_states()
 {
@@ -114,9 +114,9 @@ void print_gpio_output_states()
   // 1. 첫 번째 행: 포트 이름 출력
   for (uint8_t i = 0; i < num_ports; i++)
   {
-    dbg_printf("%-8s ", port_names[i]);  // 포트 이름 간격 정렬
+    debug_printf("%-8s ", port_names[i]);  // 포트 이름 간격 정렬
   }
-  dbg_printf("\r\n");
+  debug_printf("\r\n");
 
   // 2. 각 핀 상태를 행 단위로 출력
   for (uint8_t pin = 0; pin < max_pins; pin++)
@@ -129,37 +129,37 @@ void print_gpio_output_states()
       if ((port->MODER & (0x3 << (pin * 2))) !=
           (0x1 << (pin * 2)))  // 출력 모드 확인 (MODER = 01)
       {
-        dbg_printf("%2d:%-5s ", pin, "-");  // 출력 모드가 아닌 핀 표시
+        debug_printf("%2d:%-5s ", pin, "-");  // 출력 모드가 아닌 핀 표시
       }
       else
       {
         uint8_t pin_state =
             (port->ODR & (1 << pin)) ? 1 : 0;  // ODR에서 핀 상태 읽기
-        dbg_printf("%2d:%-5s ", pin,
+        debug_printf("%2d:%-5s ", pin,
                      pin_state ? "HIGH" : "LOW");  // 핀 번호와 상태 출력
       }
     }
-    dbg_printf("\r\n");
+    debug_printf("\r\n");
   }
 }
 
 int32_t mcu_pin(p_shell_context_t ctx, int32_t argc, char **argv)
 {
-  char ch;
+  uint8_t ch;
 
   if (strncmp(argv[1], "di", 2) == 0)
   {
-    dbg_printf(ES_CLEAR_SCREEN);
-    dbg_printf(ES_CURSOR_OFF);
+    debug_printf(ES_CLEAR_SCREEN);
+    debug_printf(ES_CURSOR_OFF);
     do
     {
-      dbg_printf(ES_CURSOR_HOME_ALT);
+      debug_printf(ES_CURSOR_HOME_ALT);
       print_gpio_states_in_table();
 
-      dbg_recv(&ch, 1, 100);
+      debug_recv(&ch, 1, 100);
     } while (ch != ASCII_CODE_CTRL_Q);
 
-    dbg_printf(ES_CURSOR_ON);
+    debug_printf(ES_CURSOR_ON);
   }
   else if (strncmp(argv[1], "do", 2) == 0)
   {
@@ -173,12 +173,12 @@ int32_t pcb_pin(void)
   GPIO_TypeDef *ports[] = {GPIOA, GPIOB, GPIOC, GPIOD, GPIOE,
                            GPIOF, GPIOG, GPIOH, GPIOI};
 
-  dbg_printf("GREEN[OUT],WHITE[IN],YELLOW[AF]\r\n");
+  debug_printf("GREEN[OUT],WHITE[IN],YELLOW[AF]\r\n");
   for (uint32_t i = 0; i < _countof(pcbPortNameList) / 2; i++)
   {
-    dbg_printf("%-23s ", pcbPortNameList[i]);
+    debug_printf("%-23s ", pcbPortNameList[i]);
   }
-  dbg_printf("\r\n");
+  debug_printf("\r\n");
 
   for (uint32_t pin = 0; pin < 16; pin++)
   {
@@ -209,15 +209,15 @@ int32_t pcb_pin(void)
         vt100_printfColor(YELLOW, "%-20s[F] ", pcbPinNameList[j][pin]);
       }
     }
-    dbg_printf("\r\n");
+    debug_printf("\r\n");
   }
-  dbg_printf("\r\n");
+  debug_printf("\r\n");
   for (uint32_t i = _countof(pcbPortNameList) / 2; i < _countof(pcbPortNameList);
        i++)
   {
-    dbg_printf("%-23s ", pcbPortNameList[i]);
+    debug_printf("%-23s ", pcbPortNameList[i]);
   }
-  dbg_printf("\r\n");
+  debug_printf("\r\n");
 
   for (uint32_t pin = 0; pin < 16; pin++)
   {
@@ -250,7 +250,7 @@ int32_t pcb_pin(void)
         vt100_printfColor(YELLOW, "%-20s[F] ", pcbPinNameList[j][pin]);
       }
     }
-    dbg_printf("\r\n");
+    debug_printf("\r\n");
   }
 
   return 0;
@@ -273,7 +273,7 @@ int32_t print_di(p_shell_context_t ctx, int32_t argc, char **argv)
   for (int i = 0; i < 6; i++)
   {
     input = drv_di_read(di_list[i]);
-    dbg_printf("EXT_%d:%d\r\n", i, input);
+    debug_printf("EXT_%d:%d\r\n", i, input);
 
   }
   return 0;

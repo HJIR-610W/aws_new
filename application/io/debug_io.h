@@ -6,6 +6,7 @@
 #include <stdarg.h>
 
 #include "driver_interface.h"
+#include "io_interface.h"
 
 #define IO_COLOR_RED     31
 #define IO_COLOR_GREEN   32
@@ -54,23 +55,23 @@ void dev_io_write(dev_io_t *dev, uint8_t *data, uint32_t dataLen, uint32_t opt);
 uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd, void *opt);
 void dev_io_flush(dev_io_t *dev);
 
-int32_t dbg_vprintf(const char *pFmt, va_list ap);
-int32_t dbg_printf(const char * pFmt, ...);
-void dbg_printf_color(int color, const char *pFmt, ...);
-int32_t dbg_recv(char *out, uint16_t outSize, uint32_t timeout);
-void dbg_put_ch(char ch);
-void dbg_send(uint8_t *pData,uint16_t dataLen);
-void dbg_puts(const char *str);
-int32_t dbg_vprintf(const char *pFmt, va_list ap);
-int dbg_scanf_s(const char *fmt, ...);
-int32_t dbg_inject(uint8_t *p_data,uint32_t data_len);
 
+void debug_init(void);
+int32_t debug_recv(uint8_t *out, size_t outSize, uint32_t timeout);
+int32_t debug_get_ch(uint8_t *buffer);
+int32_t debug_get_ch_nonblocking(uint8_t *buffer);
 
-void dbg_puts_nonos(char *str);
-void set_debug_uart_handle(int32_t drv);
+int32_t debug_printf(const char * pFmt, ...);
+void debug_printf_color(int color, const char *pFmt, ...);
+void debug_send(const uint8_t *pData,size_t dataLen);
+void debug_put_ch(uint8_t ch);
+void debug_puts(const uint8_t *str);
+void debug_dump(uint8_t* src, uint32_t size, uint32_t startAddr,uint32_t col);
+int debug_scanf_s(const char *fmt, ...);
+void debug_inject(uint8_t *p_data,uint32_t data_len);
 
-int32_t get_debug_uart_handle(void);
-void LOG_MEM(uint8_t* src, uint32_t size, uint32_t startAddr,uint32_t col);
+io_if_t *get_debug_io(void) ;
+
 
 
 void set_task_id(void *task_id);

@@ -83,14 +83,14 @@ void log_out_queue(logging_t *logging)
 {
   if(osMessageQueuePut(g_loggingQueue, logging, 0, kLoggingTimeOutMs) != osOK)
   {
-    dbg_printf("log_printf_level timeout.\r\n");
+    debug_printf("log_printf_level timeout.\r\n");
   }
 }
 
 
 void log_out_uart(logging_t *logging)
 {
-  dbg_printf("%s",logging->data);
+  debug_printf("%s",logging->data);
 }
 
 void log_printf(log_level_t level, const char *pFmt, ...)
@@ -161,7 +161,7 @@ void os_save_aws_data(DATE_TIME_BUF *pDate, void *pInData,uint32_t data_size, ui
 
   if(osMessageQueuePut(g_loggingQueue, &logging, 0, kLoggingTimeOutMs) != osOK)
   {
-    dbg_printf("os_save_aws_data timeout.\r\n");
+    debug_printf("os_save_aws_data timeout.\r\n");
   }
 }
 
@@ -235,7 +235,7 @@ void loggingTask(void *arg)
             }
             if(err)
             {
-              dbg_printf("log err:%d\r\n",err);
+              debug_printf("log err:%d\r\n",err);
             }
             break;
           case eLOGGING_DATA:

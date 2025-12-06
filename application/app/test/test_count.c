@@ -19,7 +19,7 @@ void test_freq(void)
   uint8_t err=0;
 
 
-   dbg_printf("아무키나 입력하면 측정 시작");
+   debug_printf("아무키나 입력하면 측정 시작");
   get_key(0xFFFFFFFF);
 
   count_b = driver_freq_open(GENERAL_FREQ_1,"test");
@@ -30,11 +30,11 @@ void test_freq(void)
     freq_b = driver_freq_read(count_b,&err);
     freq_c = driver_freq_read(count_c, &err);
 
-    dbg_printf("freq b:%f,freq c:%f\r\n", freq_b, freq_c);
+    debug_printf("freq b:%f,freq c:%f\r\n", freq_b, freq_c);
 
     if (get_key(1000) == KEY_CODE_CTRL_C)
     {
-      dbg_printf("테스트 종료 (CTRL+Q 감지)\r\n");
+      debug_printf("테스트 종료 (CTRL+Q 감지)\r\n");
       break;
     }
   }

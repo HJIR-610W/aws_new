@@ -12,7 +12,7 @@
 #define USE_DEBUG 0
 #define IWDG_USE 1
 #define PRINTF_BASE(fmt, ...)                                                               \
-  dbg_printf("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \
+  debug_printf("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \
               Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \
               Date_Time.Hour, Date_Time.Min, Date_Time.Sec, Date_Time.SubSec,              \
               __FILE__, __LINE__, ##__VA_ARGS__)
@@ -47,7 +47,7 @@
 
 
 #ifdef DEBUG_PRINTF_USE
-  #define DEBUG_PRINTF(fmt, ...)   dbg_printf(fmt, ##__VA_ARGS__)
+  #define DEBUG_PRINTF(fmt, ...)   debug_printf(fmt, ##__VA_ARGS__)
 #else
   #define DEBUG_PRINTF(fmt, ...) ((void)0)
 #endif
@@ -55,7 +55,6 @@
 
 void Error_Handler(const char *file,int32_t line);
 void reset_system(const char * pFmt, ...);
-bool restore_error(char *p_out, int32_t out_size);
-void error_print(const char *pFmt, ...);
+bool read_last_error(char *buffer, size_t len);
 void reset_system_delay(uint32_t delay_seconds);
 #endif

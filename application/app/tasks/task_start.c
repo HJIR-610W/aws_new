@@ -75,7 +75,7 @@ void log_boot_reason(void)
   else
       log_printf(L_INFO,"Boot: Unknown");
 
-  if(restore_error(buffer,sizeof(buffer)))
+  if(read_last_error(buffer,sizeof(buffer)))
   {
     log_printf(L_INFO, "%s", buffer);
   }

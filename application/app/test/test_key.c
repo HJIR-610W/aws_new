@@ -20,25 +20,25 @@ void test_key(void)
     switch (key)
         {
         case KEY_CODE_LEFT:
-        dbg_printf("LEFT\r\n");
+        debug_printf("LEFT\r\n");
           break;
         case KEY_CODE_RIGHT:
-        dbg_printf("RIGHT\r\n");
+        debug_printf("RIGHT\r\n");
           break;
         case KEY_CODE_UP:
-        dbg_printf("UP\r\n");
+        debug_printf("UP\r\n");
           break;
         case KEY_CODE_DOWN:
-        dbg_printf("DOWN\r\n");
+        debug_printf("DOWN\r\n");
           break;
         case KEY_CODE_CTRL_C:
-        dbg_printf("ESC\r\n");
+        debug_printf("ESC\r\n");
           break;
         case KEY_CODE_ENTER:
-        dbg_printf("ENTER\r\n");
+        debug_printf("ENTER\r\n");
           break;
         default:
-          dbg_printf("%c\r\n",key);
+          debug_printf("%c\r\n",key);
           break;
         }
     }

@@ -7,7 +7,7 @@ extern uint32_t millis(void);
 
 int32_t get_key(uint32_t timeout_ms)
 {
-  char ch;
+  uint8_t ch;
   uint32_t start_time = HAL_GetTick();
   uint32_t elapsed = 0;
 
@@ -20,7 +20,7 @@ int32_t get_key(uint32_t timeout_ms)
       return (int32_t)KEY_CODE_NONE;
     }
 
-    if (dbg_recv(&ch, 1, remain) == 1)
+    if (debug_recv(&ch, 1, remain) == 1)
     {
       break;
     }
@@ -35,7 +35,7 @@ int32_t get_key(uint32_t timeout_ms)
 
   if (ch == 0x1B)
   {
-    char seq[2];
+    uint8_t seq[2];
     int seq_idx = 0;
     elapsed = HAL_GetTick() - start_time;
 
@@ -47,7 +47,7 @@ int32_t get_key(uint32_t timeout_ms)
         return (int32_t)KEY_CODE_ESC;
       }
 
-      if (dbg_recv(&seq[seq_idx], 1, remain) == 1)
+      if (debug_recv(&seq[seq_idx], 1, remain) == 1)
       {
         seq_idx++;
       }

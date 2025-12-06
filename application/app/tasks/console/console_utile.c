@@ -32,13 +32,13 @@ const char* enableList[] = {"비활성", "활성"};
 
 
 
-char recv_key(uint32_t timeout_ms)
+uint8_t recv_key(uint32_t timeout_ms)
 {
-  char ch=0;
+  uint8_t ch=0;
 
   while(1)
   {
-    if(dbg_recv(&ch, 1, timeout_ms))
+    if(debug_recv(&ch, 1, timeout_ms))
     {
       if(ch==0x1B || ch==0x5B)
       {
@@ -81,7 +81,7 @@ int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_va
   
   while(1)
   {
-    dbg_printf("%s (%d ~ %d): ", prompt, min_val, max_val);
+    debug_printf("%s (%d ~ %d): ", prompt, min_val, max_val);
     ret_scan = cli_scanf_s("%d", &input_value);
     if (ret_scan == CLI_KEYCODE_CTRL_Q)
     {
@@ -99,7 +99,7 @@ int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_va
       ret = MENU_OK;
       break;
     }
-    dbg_printf("%s\r\n", STRING_INPUT_ERR);
+    debug_printf("%s\r\n", STRING_INPUT_ERR);
   }
   return ret;
 }
@@ -126,43 +126,43 @@ int print_menu(int width, const char* title, char** menu_list, int cnt)
   int ctrl_padding_right = total_width - 2 - ctrl_len - ctrl_padding;
 
   // 상단 라인
-  dbg_printf("+");
-  for (int i = 0; i < total_width - 2; i++) dbg_printf("-");
-  dbg_printf("+\r\n");
+  debug_printf("+");
+  for (int i = 0; i < total_width - 2; i++) debug_printf("-");
+  debug_printf("+\r\n");
 
   // 타이틀 출력
-  dbg_printf("|");
-  for (int i = 0; i < title_padding; i++) dbg_printf(" ");
-  dbg_printf("%s", title);
-  for (int i = 0; i < title_padding_right; i++) dbg_printf(" ");
-  dbg_printf("|\r\n");
+  debug_printf("|");
+  for (int i = 0; i < title_padding; i++) debug_printf(" ");
+  debug_printf("%s", title);
+  for (int i = 0; i < title_padding_right; i++) debug_printf(" ");
+  debug_printf("|\r\n");
 
   // 중간 라인
-  dbg_printf("+");
-  for (int i = 0; i < total_width - 2; i++) dbg_printf("-");
-  dbg_printf("+\r\n");
+  debug_printf("+");
+  for (int i = 0; i < total_width - 2; i++) debug_printf("-");
+  debug_printf("+\r\n");
 
   // 메뉴 리스트 출력
   for (int i = 0; i < cnt; i++)
   {
     len = snprintf(buff, sizeof(buff), "|  %2d. %-s", i+1, menu_list[i]);
-    dbg_printf(buff);
+    debug_printf(buff);
     len = total_width - utf8_strlen(buff) - 1;
-    for (int j = 0; j < len; j++) dbg_printf(" ");
-    dbg_printf("|\r\n");
+    for (int j = 0; j < len; j++) debug_printf(" ");
+    debug_printf("|\r\n");
   }
 
   // CTRL 문구
-  dbg_printf("|");
-  for (int i = 0; i < ctrl_padding; i++) dbg_printf(" ");
-  dbg_printf("%s", ctrl_msg);
-  for (int i = 0; i < ctrl_padding_right; i++) dbg_printf(" ");
-  dbg_printf("|\r\n");
+  debug_printf("|");
+  for (int i = 0; i < ctrl_padding; i++) debug_printf(" ");
+  debug_printf("%s", ctrl_msg);
+  for (int i = 0; i < ctrl_padding_right; i++) debug_printf(" ");
+  debug_printf("|\r\n");
 
   // 하단 라인
-  dbg_printf("+");
-  for (int i = 0; i < total_width - 2; i++) dbg_printf("-");
-  dbg_printf("+\r\n");
+  debug_printf("+");
+  for (int i = 0; i < total_width - 2; i++) debug_printf("-");
+  debug_printf("+\r\n");
 
   return cnt;
 }
@@ -204,11 +204,11 @@ int32_t select_index_from_table(const char* list[], int32_t (*func)(), uint16_t 
       {
         if (number == true)
         {
-          dbg_printf("%d.%s\r\n", i, list[i]);
+          debug_printf("%d.%s\r\n", i, list[i]);
         }
         else
         {
-          dbg_printf("%s\r\n", list[i]);
+          debug_printf("%s\r\n", list[i]);
         }
       }
       indexMax = listCnt;
@@ -276,7 +276,7 @@ int input_float_prompt(const char* prompt, float min, float max, float* value)
 
   while (1)
   {
-    dbg_printf("%s: ", prompt);
+    debug_printf("%s: ", prompt);
     ret_scan = cli_scanf_s("%f", value);
 
     if (ret_scan == CLI_KEYCODE_CTRL_C)
@@ -303,12 +303,12 @@ int input_float_prompt(const char* prompt, float min, float max, float* value)
       }
       else
       {
-        dbg_printf("입력 범위: %.2f ~ %.2f\r\n", min, max);
+        debug_printf("입력 범위: %.2f ~ %.2f\r\n", min, max);
       }
     }
     else
     {
-      dbg_printf("%s\r\n", STRING_INPUT_ERR);
+      debug_printf("%s\r\n", STRING_INPUT_ERR);
     }
   }
 
@@ -321,8 +321,8 @@ int check_pass(const char* title, char* password_str,int *ok)
   int len;
   int status;
 
-  dbg_printf("%s\r\n", title);
-  dbg_printf(": ");
+  debug_printf("%s\r\n", title);
+  debug_printf(": ");
 
   while(1)
   {
@@ -356,7 +356,7 @@ int check_pass(const char* title, char* password_str,int *ok)
       }
     }
 
-    dbg_printf("%s\r\n", STRING_INPUT_ERR);
+    debug_printf("%s\r\n", STRING_INPUT_ERR);
  }
 
  return status;
@@ -369,8 +369,8 @@ int confirm_continue(const char *title,int32_t* ok)
   int len;
   while (1)
   {
-    dbg_printf("%s(yes/no)\r\n",title);
-    dbg_printf("입력:");
+    debug_printf("%s(yes/no)\r\n",title);
+    debug_printf("입력:");
     status = cli_scanf_s("%s", input,sizeof(input));
 
     if (status == CLI_KEYCODE_CTRL_C)
@@ -400,7 +400,7 @@ int confirm_continue(const char *title,int32_t* ok)
         break;
       }
     }
-    dbg_printf("%s\r\n", STRING_INPUT_ERR);
+    debug_printf("%s\r\n", STRING_INPUT_ERR);
   }
   return status;
 }

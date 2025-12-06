@@ -21,8 +21,8 @@ void test_lcd(void)
     const char *lcd_type_names[] = {"CLCD", "TERMINAL"};
     const int lcd_driver_nums[] = {DRIVER_CLCD, DRIVER_LCD_TERMNINAL};
     
-    dbg_printf("LCD Test\r\n");
-    dbg_printf("Select LCD Type: CLCD or TERMINAL\r\n");
+    debug_printf("LCD Test\r\n");
+    debug_printf("Select LCD Type: CLCD or TERMINAL\r\n");
 #if 1
     if (cli_scanf_s("%s", lcd_type,sizeof(lcd_type)) == CLI_KEYCODE_CTRL_C)
     {
@@ -40,20 +40,20 @@ void test_lcd(void)
     
     if(lcd_driver_num == -1)
     {
-        dbg_printf("Invalid LCD Type. Please enter CLCD or TERMINAL.\r\n");
+        debug_printf("Invalid LCD Type. Please enter CLCD or TERMINAL.\r\n");
         return;
     }
 #endif
     g_lcd_driver = driver_lcd_open(lcd_driver_num);
     if(g_lcd_driver == NULL)
     {
-        dbg_printf("LCD driver open failed\r\n");
+        debug_printf("LCD driver open failed\r\n");
         return;
     }
     
     driver_lcd_display_on(g_lcd_driver);
     
-    dbg_printf("LCD Test Start (%s) - Press CTRL+Q to exit\r\n", lcd_type);
+    debug_printf("LCD Test Start (%s) - Press CTRL+Q to exit\r\n", lcd_type);
     
 
                     
@@ -65,7 +65,7 @@ void test_lcd(void)
             driver_lcd_set_mode(g_lcd_driver, eLCD_MODE_CHARACTER);
             driver_lcd_clear_screen(g_lcd_driver);
             
-            dbg_printf("Character mode test (10 seconds)\r\n");
+            debug_printf("Character mode test (10 seconds)\r\n");
             
             for(int i = 0; i < 10; i++)
             {
@@ -97,7 +97,7 @@ void test_lcd(void)
             driver_lcd_set_mode(g_lcd_driver, eLCD_MODE_GRAPHIC);
             driver_lcd_clear_screen(g_lcd_driver);
             
-            dbg_printf("Drawing sin graph\r\n");
+            debug_printf("Drawing sin graph\r\n");
             
             for(int x = 0; x < 128; x++)
             {
@@ -156,5 +156,5 @@ exit_test:
     
     driver_lcd_clear_screen(g_lcd_driver);
     
-    dbg_printf("LCD Test End\r\n");
+    debug_printf("LCD Test End\r\n");
 }

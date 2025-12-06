@@ -13,7 +13,7 @@
 #include "task_event.h"
 void Error_Handler(const char *file,const int32_t line)
 {
-  dbg_printf("%s,%d\r\n",file,line);
+  debug_printf("%s,%d\r\n",file,line);
 
 }
 
@@ -66,24 +66,17 @@ void reset_system(const char * pFmt, ...)
 
 }
 
-bool restore_error(char *p_out, int32_t out_size)
+bool read_last_error(char *buffer, size_t len)
 { 
   if(noInitData.key ==0x5a5a5a5a)
   {
-    snprintf(p_out, out_size,"%s",noInitData.rstLog);
-  return true;
+    snprintf(buffer, len,"%s",noInitData.rstLog);
+    return true;
   }
 
   return false;
 }
 
-void error_print(const char *pFmt, ...)
-{
-  va_list args;
-  va_start(args, pFmt);
-  dbg_vprintf(pFmt, args);
-  va_end(args);
-}
 
 static osTimerId_t s_reset_timer_id;
 

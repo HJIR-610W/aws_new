@@ -44,19 +44,21 @@ typedef struct
 {
   int (*send)(struct io_if *io,
               const uint8_t *data,
-              size_t len,
-              uint32_t timeout_ms);
+              size_t len);
 
   int (*recv)(struct io_if *io,
               uint8_t *data,
               size_t len,
               uint32_t timeout_ms);
 
-  int (*flush)(struct io_if *io);
+  void (*flush)(struct io_if *io);
 
   int (*ioctl)(struct io_if *io,
                uint32_t cmd,
                void *arg);
+  void (*inject)(struct io_if *io,
+              uint8_t *data,
+              size_t len);
 } io_ops_t;
 
 /* ------------------------------------------
@@ -70,6 +72,7 @@ typedef struct io_if
   io_com_type_t type;
   const io_ops_t *ops;
   void *context;
+  int dev_num;
   uint8_t initialized;
 } io_if_t;
 
@@ -81,14 +84,13 @@ typedef struct io_if
 int io_init(io_if_t *io,
             io_com_type_t type,
             const io_ops_t *ops,
-            void *context);
+            int dev_num);
 
 /* 송신 (블로킹/논블로킹 여부는 드라이버 구현에 따름)
  * 반환값 : 전송한 바이트 수(>=0) 또는 음수 에러코드(io_status_t) */
 int io_send(io_if_t *io,
             const uint8_t *data,
-            size_t len,
-            uint32_t timeout_ms);
+            size_t len);
 
 /* 수신
  * 반환값 : 수신한 바이트 수(>=0) 또는 음수 에러코드(io_status_t) */
@@ -98,13 +100,15 @@ int io_recv(io_if_t *io,
             uint32_t timeout_ms);
 
 /* 출력 버퍼 flush (필요 없으면 드라이버에서 NULL 구현 가능) */
-int io_flush(io_if_t *io);
+void io_flush(io_if_t *io);
 
 /* 드라이버별 확장 기능 (baud 변경 등)
  * cmd / arg 포맷은 각 드라이버가 정의 */
 int io_ioctl(io_if_t *io,
              uint32_t cmd,
              void *arg);
+
+void io_inject(struct io_if *io,uint8_t *data,size_t len);
 
 /* 초기화 여부 확인 헬퍼 (0: not initialized, 1: initialized) */
 int io_is_initialized(const io_if_t *io);

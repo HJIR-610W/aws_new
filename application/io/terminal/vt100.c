@@ -50,7 +50,7 @@ static int get_visual_width(const char* str)
  void vt100_set_cursorPos(uint8_t line, uint8_t col)
 {
      // ESC [ Pl ; Pc H
-      dbg_printf("\x1B[%d;%dH",line,col);
+      debug_printf("\x1B[%d;%dH",line,col);
 }
 
 
@@ -64,7 +64,7 @@ void vt100_print_bar(uint32_t line,uint32_t col,int32_t width,const char * pFmt,
     int padding_needed;
     int i;
 
-    dbg_printf("\x1B[%d;%dH",line,col);
+    debug_printf("\x1B[%d;%dH",line,col);
 
     va_start(ap, pFmt);
     vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
@@ -89,13 +89,13 @@ void vt100_print_bar(uint32_t line,uint32_t col,int32_t width,const char * pFmt,
         padding_needed = 0;
     }
     
-    dbg_printf("|%s", buff);
+    debug_printf("|%s", buff);
     
     for (i = 0; i < padding_needed; i++) {
-        dbg_printf(" ");
+        debug_printf(" ");
     }
     
-    dbg_printf("|");
+    debug_printf("|");
 
     return ; 
 }
@@ -106,13 +106,13 @@ void vt100_print(uint32_t line,uint32_t col,const char * pFmt, ...)
   char buff[150];
   va_list ap;  
 
-  dbg_printf("\x1B[%d;%dH",line,col);
+  debug_printf("\x1B[%d;%dH",line,col);
 
   va_start(ap, pFmt);
   vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
   va_end(ap);
   strnlen_s((char *)buff,0xFFFF);
-  dbg_printf("%s",  buff);
+  debug_printf("%s",  buff);
   return ; 
 }
 
@@ -127,7 +127,7 @@ void vt100_printfColor(color_t color, char * pFmt, ...)
   vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
   va_end(ap);
   strnlen_s((char *)buff,0xFFFF);
-  dbg_printf("%s",  buff);
+  debug_printf("%s",  buff);
 
   terminal_reset_color();
   return ; 
@@ -183,6 +183,6 @@ void vt100_print_line(uint8_t line,uint8_t colum,char del, char l, size_t width)
     (void)memset_s(linebuff,sizeof(linebuff), l, width);
       
       vt100_set_cursorPos(line,colum);
-    dbg_printf("%c%.*s%c\r\n", del, width, linebuff, del);
+    debug_printf("%c%.*s%c\r\n", del, width, linebuff, del);
 }
 

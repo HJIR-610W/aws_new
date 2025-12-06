@@ -21,6 +21,11 @@ static int io_validate_handle(const io_if_t *io)
     return IO_STATUS_NOT_INITIALIZED;
   }
 
+  if(io->dev_num ==-1)
+  {
+    return IO_STATUS_NOT_INITIALIZED;
+  }
+
   return IO_STATUS_OK;
 }
 
@@ -31,7 +36,7 @@ static int io_validate_handle(const io_if_t *io)
 int io_init(io_if_t *io,
             io_com_type_t type,
             const io_ops_t *ops,
-            void *context)
+            int dev_num)
 {
   if ((io == NULL) || (ops == NULL))
   {
@@ -40,7 +45,7 @@ int io_init(io_if_t *io,
 
   io->type        = type;
   io->ops         = ops;
-  io->context     = context;
+  io->dev_num     = dev_num;
   io->initialized = 1U;
 
   return IO_STATUS_OK;
@@ -51,8 +56,7 @@ int io_init(io_if_t *io,
  * ------------------------------------------ */
 int io_send(io_if_t *io,
             const uint8_t *data,
-            size_t len,
-            uint32_t timeout_ms)
+            size_t len)
 {
   int ret;
 
@@ -72,7 +76,7 @@ int io_send(io_if_t *io,
     return IO_STATUS_NOT_SUPPORTED;
   }
 
-  return io->ops->send(io, data, len, timeout_ms);
+  return io->ops->send(io, data, len);
 }
 
 /* ------------------------------------------
@@ -107,29 +111,52 @@ int io_recv(io_if_t *io,
 /* ------------------------------------------
  * io_flush
  * ------------------------------------------ */
-int io_flush(io_if_t *io)
+void io_flush(io_if_t *io)
 {
   int ret;
 
   if (io == NULL)
   {
-    return IO_STATUS_INVALID_PARAM;
+    return ;
   }
 
   ret = io_validate_handle(io);
   if (ret != IO_STATUS_OK)
   {
-    return ret;
+    return ;
   }
 
   if ((io->ops->flush) == NULL)
   {
     /* flush 미지원이면 성공으로 간주 */
-    return IO_STATUS_OK;
+    return ;
   }
 
-  return io->ops->flush(io);
+   io->ops->flush(io);
 }
+
+ void io_inject(struct io_if *io,uint8_t *data,size_t len)
+ {
+    int ret;
+
+  if ((io == NULL) || (data == NULL) || (len == 0U))
+  {
+    return ;
+  }
+
+  ret = io_validate_handle(io);
+  if (ret != IO_STATUS_OK)
+  {
+    return ;
+  }
+
+  if ((io->ops->recv) == NULL)
+  {
+    return ;
+  }
+
+   io->ops->inject(io, data, len);
+ }
 
 /* ------------------------------------------
  * io_ioctl

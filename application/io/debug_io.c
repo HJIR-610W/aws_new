@@ -18,113 +18,32 @@
 #include "util_time.h"
 #include "task_telnet_server.h"
 #include "terminal_bridge.h"
-
-static int32_t debug_uart_num = -1;
-
+#include "io_interface.h"
 
 
-void set_debug_uart_handle(int32_t drv) 
+io_if_t g_debug_uart_io;
+io_if_t g_debug_uart_io;
+io_if_t *g_current_debug_io;
+
+
+
+
+
+void set_debug_io(io_if_t *debug_io)
+{
+  g_current_debug_io = debug_io;
+}
+
+
+
+
+io_if_t *get_debug_io(void) 
 { 
-  debug_uart_num = drv; 
-}
-
-int32_t get_debug_uart_handle(void) 
-{ 
-  return debug_uart_num; 
+  return g_current_debug_io; 
 }
 
 
-void dbg_send(uint8_t *p_in_data, uint16_t data_len)
-{
-  drv_uart_send(debug_uart_num, p_in_data, data_len);
-  terminal_bridge_send_output((char *)p_in_data, data_len);
-}
-
-void dbg_put_ch(char ch)
-{
-  drv_uart_send(debug_uart_num, (uint8_t *)&ch, 1);
-  terminal_bridge_send_output((char *)&ch, 1);
-}
-
-void dbg_puts(const char *str)
-{
-  int32_t len = strlen(str);
-
-  drv_uart_send(debug_uart_num, (uint8_t *)str, len);
-  terminal_bridge_send_output((char *)str, len);
-}
-
-
-#define PRINTF_HEAP_USE 1
-
-int32_t dbg_printf(const char *pFmt, ...)
-{
-  char buff[2];
-  char *ptr = NULL;
-  char *temp = NULL;
-  va_list ap;
-  int32_t len=0;
-
-  (void)len;
-  (void)temp;
-#if PRINTF_HEAP_USE == 0
-  char printf_buff[256];
-#endif
-
-  // 먼저 필요한 길이 측정
-  va_start(ap, pFmt);
-  len = vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
-  va_end(ap);
-
-#if PRINTF_HEAP_USE
-  // 동적 메모리 할당 모드
-  if (len > (sizeof(buff) - 1))
-  {
-    temp = user_malloc(len + 1);  // null 포함
-    if (temp)
-    {
-      va_start(ap, pFmt);
-      vsnprintf_s((char *)temp, len + 1, (char *)pFmt, ap);
-      va_end(ap);
-      ptr = temp;
-    }
-    else
-    {
-      return 1;  // 메모리 할당 에러
-    }
-  }
-  else
-  {
-    // 매우 짧은 메시지 (1바이트)는 buff에 다시 포맷팅
-    va_start(ap, pFmt);
-    vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
-    va_end(ap);
-    ptr = buff;
-  }
-#else
-  // 고정 버퍼 모드
-  va_start(ap, pFmt);
-  vsnprintf_s((char *)printf_buff, sizeof(printf_buff), (char *)pFmt, ap);
-  va_end(ap);
-  ptr = printf_buff;
-#endif
-
-  if (debug_uart_num != -1 && ptr)
-  {
-    dbg_send((uint8_t *)ptr, strlen(ptr));
-  }
-
-#if PRINTF_HEAP_USE
-  if (temp)
-  {
-    user_free(temp);
-  }
-#endif
-
-  return 0;
-}
-
-int32_t dbg_vprintf(const char *pFmt, va_list ap)
+int32_t debug_vprintf(const char *pFmt, va_list ap)
 {
   char buff[2];
   char *ptr = NULL;
@@ -177,10 +96,9 @@ int32_t dbg_vprintf(const char *pFmt, va_list ap)
   ptr = printf_buff;
 #endif
 
-  if (debug_uart_num != -1 && ptr)
-  {
-    drv_uart_send(debug_uart_num, (uint8_t *)ptr, strlen(ptr));
-  }
+
+    io_send(g_current_debug_io, (uint8_t *)ptr, strlen(ptr));
+
 
 #if PRINTF_HEAP_USE
   if (temp)
@@ -195,28 +113,20 @@ int32_t dbg_vprintf(const char *pFmt, va_list ap)
 
 
 
-int32_t dbg_recv(char *p_out_buffer, uint16_t out_size, uint32_t timeout)
+
+void debug_printf_color(int color, const char *pFmt, ...)
 {
-  int32_t cnt;
-
-  cnt = drv_uart_recv(debug_uart_num, (uint8_t *)p_out_buffer, out_size, timeout);
-
-  return cnt;
-}
-
-void dbg_printf_color(int color, const char *pFmt, ...)
-{
-  dbg_printf("%c[%dm", 27, color);
+  debug_printf("%c[%dm", 27, color);
 
   va_list args;
   va_start(args, pFmt);
-  dbg_vprintf(pFmt, args);
+  debug_vprintf(pFmt, args);
   va_end(args);
 
-  dbg_printf("%c[%dm", 27, 37);
+  debug_printf("%c[%dm", 27, 37);
 }
 
-int dbg_scanf_s(const char *fmt, ...)
+int debug_scanf_s(const char *fmt, ...)
 {
   va_list args;
   int ret;
@@ -228,12 +138,12 @@ int dbg_scanf_s(const char *fmt, ...)
   return ret;
 }
 
-int32_t dbg_inject(uint8_t *p_data,uint32_t data_len)
+void debug_inject(uint8_t *data,uint32_t len)
 {
-  return drv_uart_inject(debug_uart_num, p_data, data_len);
+  io_inject(g_current_debug_io,data,len);
 }
 
-void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
+void debug_dump(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
 {
   int32_t i, j, row;
   uint8_t ch;
@@ -246,7 +156,7 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
   else
     row = (size / col) + 1;
 
-  dbg_printf("\n\r\n\r                ");
+  debug_printf("\n\r\n\r                ");
   len = 0;
   temp[0] = 0;
 
@@ -255,18 +165,18 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
     len = strnlen_s(temp, sizeof(temp));
     snprintf_s(&temp[len], sizeof(temp) - len, "%02X ", j);
   }
-  dbg_printf(temp);
+  debug_printf(temp);
 
-  dbg_printf("  ");
+  debug_printf("  ");
   for (j = 0; j < col; j++)
   {
-    dbg_printf("%X", j % 16);
+    debug_printf("%X", j % 16);
   }
 
   for (i = 0; i < row; i++)
   {
     snprintf_s(temp, sizeof(temp), "\n\r%04d  %08X  ", (int32_t)(i * col), (startAddr + i * col));
-    dbg_printf(temp);
+    debug_printf(temp);
 
     temp[0] = 0;
 
@@ -283,8 +193,8 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
         snprintf_s(&temp[len], sizeof(temp) - len, "   ");
       }
     }
-    dbg_printf(temp);
-    dbg_printf("  ");
+    debug_printf(temp);
+    debug_printf("  ");
 
     temp[0] = 0;
 
@@ -305,9 +215,9 @@ void LOG_MEM(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
         }
       }
     }
-    dbg_printf(temp);
+    debug_printf(temp);
   }
-  dbg_printf("\n\r");
+  debug_printf("\n\r");
 }
 
 void dev_io_get(dev_io_t *dev, uint8_t cmd, void *opt)
@@ -411,7 +321,7 @@ void task_printf(const char *pFmt, ...)
   {
     va_list args;
     va_start(args, pFmt);
-    dbg_vprintf(pFmt, args); 
+    debug_vprintf(pFmt, args); 
     va_end(args);
   }
 }
@@ -432,4 +342,148 @@ void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)
     if ((i + 1) % 16 == 0 || i + 1 == length)
       task_printf("\r\n");
   }
+}
+
+
+/*
+디버그용 포트
+*/
+
+int32_t debug_recv(uint8_t *out_buffer, size_t out_size, uint32_t timeout_ms)
+{
+  int32_t len;
+
+  len = io_recv(g_current_debug_io,out_buffer,out_size, timeout_ms);
+
+  return len;
+}
+
+
+
+#define PRINTF_HEAP_USE 1
+
+int32_t debug_printf(const char *pFmt, ...)
+{
+  uint8_t buff[2];
+  const uint8_t *ptr = NULL;
+  uint8_t *temp = NULL;
+  va_list ap;
+  int32_t len=0;
+
+  (void)len;
+  (void)temp;
+#if PRINTF_HEAP_USE == 0
+  char printf_buff[256];
+#endif
+
+  // 먼저 필요한 길이 측정
+  va_start(ap, pFmt);
+  len = vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
+  va_end(ap);
+
+#if PRINTF_HEAP_USE
+  // 동적 메모리 할당 모드
+  if (len > (sizeof(buff) - 1))
+  {
+    temp = user_malloc(len + 1);  // null 포함
+    if (temp)
+    {
+      va_start(ap, pFmt);
+      vsnprintf_s((char *)temp, len + 1, (char *)pFmt, ap);
+      va_end(ap);
+      ptr = temp;
+    }
+    else
+    {
+      return 1;  // 메모리 할당 에러
+    }
+  }
+  else
+  {
+    // 매우 짧은 메시지 (1바이트)는 buff에 다시 포맷팅
+    va_start(ap, pFmt);
+    vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
+    va_end(ap);
+    ptr = buff;
+  }
+#else
+  // 고정 버퍼 모드
+  va_start(ap, pFmt);
+  vsnprintf_s((char *)printf_buff, sizeof(printf_buff), (char *)pFmt, ap);
+  va_end(ap);
+  ptr = printf_buff;
+#endif
+
+  io_send(g_current_debug_io,ptr,strlen((char*)ptr));
+
+#if PRINTF_HEAP_USE
+  if (temp)
+  {
+    user_free(temp);
+  }
+#endif
+
+  return 0;
+}
+
+
+void debug_send(const uint8_t *data, size_t len)
+{
+  io_send(g_current_debug_io, data, len);
+  terminal_bridge_send_output((char *)data, len);
+}
+
+void debug_put_ch(uint8_t ch)
+{
+  io_send(g_current_debug_io, &ch, 1);
+  terminal_bridge_send_output((char *)&ch, 1);
+}
+
+void debug_puts(const uint8_t *string)
+{
+  size_t len = strlen((char *)string);
+
+  io_send(g_current_debug_io, string, len);
+  terminal_bridge_send_output((char *)string, len);
+}
+
+int32_t debug_get_ch(uint8_t *buffer)
+{
+  return   io_recv(g_current_debug_io,buffer,1, 0xFFFFFFFF);
+}
+
+int32_t debug_get_ch_nonblocking(uint8_t *buffer)
+{
+  return   io_recv(g_current_debug_io,buffer,1, 0);
+}
+
+
+#define DEBUG_UART_NUM BSP_UART_10_CDC
+
+
+io_ops_t g_io_ops={.recv = drv_uart_io_recv,
+                   .send = drv_uart_io_send,
+                   .flush = drv_uart_io_flush,
+                   .ioctl = NULL};
+void debug_init(void)
+{
+  int32_t result;
+  
+  uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
+  uart_config.baud = 115200;
+  uart_config.parity_index = PARITY_NONE;
+  uart_config.stop_bit = UART_STOP_BIT_1;
+  
+
+  result = drv_uart_init(DEBUG_UART_NUM, &uart_config,"debug");
+  if(result > 0)
+  {
+    io_init(&g_debug_uart_io,IO_COM_TYPE_RS232,&g_io_ops,DEBUG_UART_NUM);
+    g_current_debug_io = &g_debug_uart_io;
+  }
+}
+
+void debug_deinit(void)
+{
+
 }

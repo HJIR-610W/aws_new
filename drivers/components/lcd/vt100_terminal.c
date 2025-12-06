@@ -1,6 +1,6 @@
 /**
  * @file vt100_terminal.c
- * @brief VT100 터미널 에뮬레이터 (dbg_printf/dbg_puts 사용)
+ * @brief VT100 터미널 에뮬레이터 (debug_printf/debug_puts 사용)
  */
 
 #include "debug_io.h"
@@ -53,7 +53,7 @@ void vt100_io_pirntf(driver_t *drv,const char *pFmt, ...)
     }
 }
 
-void vt100_dbg_puts(driver_t *drv,char *string)
+void vt100_debug_puts(driver_t *drv,char *string)
 {
   vt100_terminal_t *vt100 = (vt100_terminal_t *)(drv->cfg);
 
@@ -82,8 +82,8 @@ static void vt100_clear_screen(driver_t *drv)
     
     if(!term->initialized) return;
 
-    vt100_dbg_puts(drv, ES_CLEAR_SCREEN);
-    vt100_dbg_puts(drv, ES_CURSOR_HOME);
+    vt100_debug_puts(drv, ES_CLEAR_SCREEN);
+    vt100_debug_puts(drv, ES_CURSOR_HOME);
 
     term->cursor_x = 0;
     term->cursor_y = 0;
@@ -99,7 +99,7 @@ static void vt100_home(driver_t *drv)
     
     if(!term->initialized) return;
     
-    vt100_dbg_puts(drv, ES_CURSOR_HOME);
+    vt100_debug_puts(drv, ES_CURSOR_HOME);
 
     term->cursor_x = 0;
     term->cursor_y = 0;
@@ -111,7 +111,7 @@ static void vt100_display_on(driver_t *drv)
     
     if(!term->initialized) return;
 
-    vt100_dbg_puts(drv, ES_CLEAR_SCREEN);
+    vt100_debug_puts(drv, ES_CLEAR_SCREEN);
 }
 
 static void vt100_display_off(driver_t *drv)
@@ -120,7 +120,7 @@ static void vt100_display_off(driver_t *drv)
     
     if(!term->initialized) return;
 
-    vt100_dbg_puts(drv, ES_CLEAR_SCREEN);
+    vt100_debug_puts(drv, ES_CLEAR_SCREEN);
 }
 
 static void vt100_write_string_at(driver_t *drv, int row, int col, const char *str)
@@ -129,7 +129,7 @@ static void vt100_write_string_at(driver_t *drv, int row, int col, const char *s
     
     // 위치 설정 후 문자열 출력
     vt100_set_position(drv, row, col);
-    vt100_dbg_puts(drv,(char *)str);
+    vt100_debug_puts(drv,(char *)str);
 }
 
 // VT100 터미널 LCD API 구조체
@@ -170,9 +170,9 @@ driver_t* vt100_terminal_open(void)
   vt100_driver.opened = true;
     
 
-  vt100_dbg_puts(&vt100_driver, ES_CLEAR_SCREEN); 
-  vt100_dbg_puts(&vt100_driver, ES_CURSOR_HOME);
-  vt100_dbg_puts(&vt100_driver, ES_CURSOR_OFF);
+  vt100_debug_puts(&vt100_driver, ES_CLEAR_SCREEN); 
+  vt100_debug_puts(&vt100_driver, ES_CURSOR_HOME);
+  vt100_debug_puts(&vt100_driver, ES_CURSOR_OFF);
 
   return &vt100_driver;
 }
@@ -187,7 +187,7 @@ void vt100_flush_buffer(driver_t *drv)
     vt100_set_position(drv, row, 0);
     strncpy(buff, (char *)framebuffer[row], VT100_DEFAULT_COLS);
     buff[VT100_DEFAULT_COLS] = 0;
-    vt100_dbg_puts(&vt100_driver, buff);
+    vt100_debug_puts(&vt100_driver, buff);
   }
 }
 

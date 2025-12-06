@@ -131,7 +131,7 @@ void bsp_uart_set(int num, eUART_SET_OPTION_t cmd, void *option)
   }
 }
 
-int32_t bsp_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
+int32_t bsp_uart_send(int num, const uint8_t *data, size_t len)
 {
   const uart_pinmap_t* pinmap = get_uart_pinmap(num);
   if (!pinmap) return -1;
@@ -139,17 +139,17 @@ int32_t bsp_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
     return -1;
   switch (pinmap->driver_type) {
     case UART_DRIVER_STM32:
-      return stm32_uart_send(pinmap->driver_num, pData, dataLen);
+      return stm32_uart_send(pinmap->driver_num, data, len);
     case UART_DRIVER_TL16C554:
-      return tl16c554_send(pinmap->driver_num, pData, dataLen);
+      return tl16c554_send(pinmap->driver_num, data, len);
     case UART_DRIVER_CDC:
-      return stm32_cdc_send( pData, dataLen);
+      return stm32_cdc_send( data, len);
     default:
       return -1;
   }
 }
 
-int32_t bsp_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
+int32_t bsp_uart_recv(int num, uint8_t *pBuff, size_t buffSize, uint32_t timeOutMs)
 {
   int32_t len;
   
@@ -177,7 +177,7 @@ int32_t bsp_uart_recv(int num, uint8_t *pBuff, uint16_t buffSize, uint32_t timeO
   return len;
 }
 
-int32_t bsp_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms, uint32_t timeout2_ms)
+int32_t bsp_uart_recv_opt(int num, uint8_t *buffer, size_t buffer_size, uint32_t timeout1_ms, uint32_t timeout2_ms)
 {
   const uart_pinmap_t* pinmap = get_uart_pinmap(num);
   int32_t len;
@@ -223,7 +223,7 @@ void bsp_uart_get(int num, eUART_GET_OPTION_t cmd, void *option)
   }
 }
 
-int32_t bsp_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
+int32_t bsp_uart_inject(int num, const uint8_t *pData, size_t dataLen)
 {
   const uart_pinmap_t* pinmap = get_uart_pinmap(num);
   if (!pinmap) return -1;
@@ -241,7 +241,7 @@ int32_t bsp_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
   }
 }
 
-int32_t bsp_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_ms)
+int32_t bsp_uart_recv_crlf(int num, char *pBuff, size_t bSize, uint32_t tout_ms)
 {
     const uart_pinmap_t* pinmap = get_uart_pinmap(num);
   if (!pinmap) return -1;
@@ -260,12 +260,12 @@ int32_t bsp_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout_m
   }
 }
 
-int32_t bsp_uart_get_char(int num, uint8_t *pBuff, uint16_t rLen)
+int32_t bsp_uart_get_char(int num, uint8_t *buffer)
 {
   if (num == -1)
     return -1;
 
-  return bsp_uart_recv(num,pBuff,1,osWaitForever);
+  return bsp_uart_recv(num,buffer,1,osWaitForever);
   
 }
 
@@ -276,7 +276,7 @@ int32_t bsp_uart_get_charNonBlocking(int num, uint8_t *pBuff)
   return -1;
 }
 
-int32_t bsp_uart_recv_ll(int num, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutMs)
+int32_t bsp_uart_recv_ll(int num, uint8_t *pBuff, size_t rLen, uint32_t timeOutMs)
 {
   const uart_pinmap_t* pinmap = get_uart_pinmap(num);
   if (!pinmap) return -1;

@@ -2049,8 +2049,8 @@ int32_t aws_menu_veiw(void)
   int current_win;
   app_mode_t mode = MODE_SELECT;
 
-  dbg_printf(ES_CLEAR_SCREEN);
-  dbg_printf(ES_CURSOR_OFF);
+  debug_printf(ES_CLEAR_SCREEN);
+  debug_printf(ES_CURSOR_OFF);
 
   create_win(&system_win, 0, 0, 6, 26);
   create_win(&rain_win, 0, 0, 6, 26);
@@ -2072,7 +2072,7 @@ int32_t aws_menu_veiw(void)
 
         while (1)
     {
-      dbg_printf(ES_CURSOR_HOME);
+      debug_printf(ES_CURSOR_HOME);
       reset_layout();
       window_count = 0;
 
@@ -2122,7 +2122,7 @@ int32_t aws_menu_veiw(void)
 
       if (window_count == 0)
       {
-        dbg_printf("No windows to display\n");
+        debug_printf("No windows to display\n");
         break;
       }
 
@@ -2132,8 +2132,8 @@ int32_t aws_menu_veiw(void)
       }
 
       layout_t *layout = get_layout();
-      dbg_printf("\x1B[%d;1H", layout->next_y + layout->row_height + 2);
-      dbg_printf("");
+      debug_printf("\x1B[%d;1H", layout->next_y + layout->row_height + 2);
+      debug_printf("");
 
       int key = view_get_key_input(1000);
 
@@ -2162,8 +2162,8 @@ int32_t aws_menu_veiw(void)
       }
     }
 
-  dbg_printf("\r\n");
+  debug_printf("\r\n");
 
-  dbg_printf(ES_CURSOR_ON);
+  debug_printf(ES_CURSOR_ON);
   return 1;
 }

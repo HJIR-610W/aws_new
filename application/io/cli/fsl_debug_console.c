@@ -74,6 +74,7 @@
 #include "user_heap.h"
 
 
+#include "io_interface.h"
 
 #if defined(FSL_FEATURE_SOC_UART_COUNT) && (FSL_FEATURE_SOC_UART_COUNT > 0)
 #include "fsl_uart.h"
@@ -129,7 +130,7 @@ typedef struct DebugConsoleOperationFunctions
 {
     struct tx_union_s
     {
-        int32_t (*PutChar)(int32_t base, const uint8_t* buffer, uint16_t length);
+        void (*PutChar)(const uint8_t* buffer, size_t length);
 #if defined(FSL_FEATURE_SOC_UART_COUNT) && (FSL_FEATURE_SOC_UART_COUNT > 0)
         void (*UART_PutChar)(UART_Type* base, const uint8_t* buffer, uint16_t length);
 #endif /* FSL_FEATURE_SOC_UART_COUNT */
@@ -148,8 +149,8 @@ typedef struct DebugConsoleOperationFunctions
     } tx_union;
     struct rx_union_s
     {
-        int32_t (*GetChar)(int32_t base,  uint8_t* buffer, uint16_t length);
-        int32_t (*GetCharNonBlocking)(int32_t base,  uint8_t* data);
+        int32_t (*GetChar)(uint8_t* buffer);
+        int32_t (*GetCharNonBlocking)( uint8_t* data);
 #if defined(FSL_FEATURE_SOC_UART_COUNT) && (FSL_FEATURE_SOC_UART_COUNT > 0)
         status_t(*UART_GetChar)(UART_Type* base, uint8_t* buffer, size_t length);
 #endif /* FSL_FEATURE_SOC_UART_COUNT */
@@ -172,7 +173,7 @@ typedef struct DebugConsoleOperationFunctions
 typedef struct DebugConsoleState
 {
     uint8_t type;            /*!< Indicator telling whether the debug console is initialized. */
-    int32_t base;              /*!< Base of the IP register. */
+    io_if_t *base;              /*!< Base of the IP register. */
     debug_console_ops_t ops; /*!< Operation function pointers for debug UART operations. */
 } debug_console_state_t;
 
@@ -337,10 +338,10 @@ status_t DbgConsole_Init(uint32_t baseAddr, uint32_t baudRate, uint8_t device, u
      * this kind of device exist in this SOC. */
     case DEBUG_CONSOLE_DEVICE_TYPE_RS232:
         
-        s_debugConsole.base = get_debug_uart_handle();
-        s_debugConsole.ops.tx_union.PutChar = drv_uart_send;
-        s_debugConsole.ops.rx_union.GetChar = drv_uart_get_char;
-        s_debugConsole.ops.rx_union.GetCharNonBlocking = drv_uart_get_charNonBlocking;
+        s_debugConsole.base = get_debug_io();
+        s_debugConsole.ops.tx_union.PutChar = debug_send;
+        s_debugConsole.ops.rx_union.GetChar = debug_get_ch;
+        s_debugConsole.ops.rx_union.GetCharNonBlocking = debug_get_ch_nonblocking;
         break;
 
     default:
@@ -493,7 +494,7 @@ int DbgConsole_Putchar(int ch)
     {
         return -1;
     }
-    s_debugConsole.ops.tx_union.PutChar(s_debugConsole.base, (uint8_t*)(&ch), 1);
+    s_debugConsole.ops.tx_union.PutChar((uint8_t*)(&ch),1);
 
     return 1;
 }
@@ -507,7 +508,7 @@ int DbgConsole_Puts(char *str)
     {
         return -1;
     }
-    s_debugConsole.ops.tx_union.PutChar(s_debugConsole.base, (uint8_t*)(str), strlen(str));
+    s_debugConsole.ops.tx_union.PutChar( (uint8_t*)(str), strlen(str));
 
     return 1;
 }
@@ -585,7 +586,7 @@ int DbgConsole_Getchar(void)
     {
         return -1;
     }
-    s_debugConsole.ops.rx_union.GetChar(s_debugConsole.base, (uint8_t*)(&ch), 1);
+    s_debugConsole.ops.rx_union.GetChar((uint8_t*)(&ch));
 
     return ch;
 }
@@ -599,7 +600,7 @@ int DbgConsole_GetcharNonBlocking(void)
         return -1;
     }
 
-    if(s_debugConsole.ops.rx_union.GetCharNonBlocking(s_debugConsole.base, (uint8_t*)(&ch)))
+    if(s_debugConsole.ops.rx_union.GetCharNonBlocking( (uint8_t*)(&ch)))
     {
         return ch;
     }

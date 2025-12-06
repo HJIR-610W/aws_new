@@ -4,6 +4,7 @@
 #define BSP_UART_H
 
 #include <stdint.h>
+#include <stddef.h>
 #include "drv_uart_def.h"
 
 #define BSP_UART_0_D_SUB_0 0 // VHF
@@ -20,26 +21,27 @@
 
 
 int32_t bsp_uart_init(int32_t num, void *opt);
-void bsp_uart_close(int num);
-int32_t bsp_uart_send(int num, const uint8_t *pData, uint16_t dataLen);
-int32_t bsp_uart_recv(int num, uint8_t *pBuff, uint16_t rLen,
-                         uint32_t timeOutMs);
-int32_t bsp_uart_recv_crlf(int num, char *pBuff, uint16_t bSize,
-                              uint32_t tout_ms);
-void bsp_uart_set(int num, eUART_SET_OPTION_t cmd, void *para);
+void bsp_uart_close(int32_t num);
+int32_t bsp_uart_send(int32_t num, const uint8_t *data, size_t dataLen);
+int32_t bsp_uart_recv(int32_t num, uint8_t *buffer, size_t len,uint32_t timeOutMs);
+
+int32_t bsp_uart_recv_crlf(int32_t num, char *buffer, size_t len,uint32_t tout_ms);
+void bsp_uart_set(int32_t num, eUART_SET_OPTION_t cmd, void *para);
 
 // 밑에 두함수는 대체 필요
-int32_t bsp_uart_get_char(int num, uint8_t *pBuff, uint16_t rLen);
-int32_t bsp_uart_get_charNonBlocking(int num, uint8_t *pBuff);
+int32_t bsp_uart_get_char(int32_t num, uint8_t *buffer);
+int32_t bsp_uart_get_charNonBlocking(int32_t num, uint8_t *buffer);
 
-void bsp_uart_flush_rx(int num);
+void bsp_uart_flush_rx(int32_t num);
 
-int32_t bsp_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size,
-                             uint32_t timeout1_ms, uint32_t timeout2_ms);
-void bsp_uart_get(int num, eUART_GET_OPTION_t cmd, void *para);
-int32_t bsp_uart_recv_ll(int num, uint8_t *pBuff, uint16_t rLen, uint32_t timeOutMs);
+int32_t bsp_uart_recv_opt(int32_t num, uint8_t *buffer, size_t len,uint32_t timeout1_ms, uint32_t timeout2_ms);
 
-int32_t bsp_uart_inject(int num, const uint8_t *pData, uint16_t dataLen);
-void bsp_uart_set_config(int num, uart_config_t *config);
+void bsp_uart_get(int32_t num, eUART_GET_OPTION_t cmd, void *para);
+
+int32_t bsp_uart_recv_ll(int32_t num, uint8_t *buffer, size_t len, uint32_t timeOutMs);
+
+int32_t bsp_uart_inject(int32_t num, const uint8_t *data, size_t len);
+
+void bsp_uart_set_config(int32_t num, uart_config_t *config);
 
 #endif

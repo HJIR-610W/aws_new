@@ -31,7 +31,7 @@ int hj_snow_menu(void)
   hjsnow = hjsnow_opened();
   if (hjsnow == NULL)
   {
-    dbg_printf("화진 적설 센서를 설정해주세요\r\n");
+    debug_printf("화진 적설 센서를 설정해주세요\r\n");
     return MENU_BACK;
   }
 
@@ -50,36 +50,36 @@ int hj_snow_menu(void)
 
     if (err)
     {
-      dbg_printf("화진 적설센서 에러 %s\r\n", get_drv_err_name(err));
+      debug_printf("화진 적설센서 에러 %s\r\n", get_drv_err_name(err));
       break;
       ;
     }
 
-        dbg_printf("블루투스 1     :%s\r\n", hjsnow_config.config.xModel[0]);
-        dbg_printf("블루투스 2     :%s\r\n", hjsnow_config.config.xModel[1]);
-        dbg_printf("블루투스 3     :%s\r\n", hjsnow_config.config.xModel[2]);
-        dbg_printf("스캔 주기      :%d\r\n", hjsnow_config.config.snow_scantime);
-        dbg_printf("레퍼런스 길이 1:%d\r\n", hjsnow_config.config.snow_refdistance[0]);
-        dbg_printf("레퍼런스 길이 2:%d\r\n", hjsnow_config.config.snow_refdistance[1]);
-        dbg_printf("레퍼런스 길이 3:%d\r\n", hjsnow_config.config.snow_refdistance[2]);
-        dbg_printf("높이           :%d\r\n", hjsnow_config.config.snow_stddistance);
-        dbg_printf("스캔온도       :%d\r\n", hjsnow_config.config.snow_scantemp);
-        dbg_printf("온도 스캔 모드 :%s\r\n",
+        debug_printf("블루투스 1     :%s\r\n", hjsnow_config.config.xModel[0]);
+        debug_printf("블루투스 2     :%s\r\n", hjsnow_config.config.xModel[1]);
+        debug_printf("블루투스 3     :%s\r\n", hjsnow_config.config.xModel[2]);
+        debug_printf("스캔 주기      :%d\r\n", hjsnow_config.config.snow_scantime);
+        debug_printf("레퍼런스 길이 1:%d\r\n", hjsnow_config.config.snow_refdistance[0]);
+        debug_printf("레퍼런스 길이 2:%d\r\n", hjsnow_config.config.snow_refdistance[1]);
+        debug_printf("레퍼런스 길이 3:%d\r\n", hjsnow_config.config.snow_refdistance[2]);
+        debug_printf("높이           :%d\r\n", hjsnow_config.config.snow_stddistance);
+        debug_printf("스캔온도       :%d\r\n", hjsnow_config.config.snow_scantemp);
+        debug_printf("온도 스캔 모드 :%s\r\n",
                   hjsnow_config.config.snow_scantempauto == 0 ? "수동" : "자동");
-        dbg_printf("필터 레벨      :%d\r\n", hjsnow_config.config.snow_filterlevel);
-        dbg_printf("필터 동작      :%d\r\n", hjsnow_config.config.snow_nofiltermode);
+        debug_printf("필터 레벨      :%d\r\n", hjsnow_config.config.snow_filterlevel);
+        debug_printf("필터 동작      :%d\r\n", hjsnow_config.config.snow_nofiltermode);
         }
         break;
       case 2:
         hjsnow_ctrl(hjsnow, eHJSNOW_RUN_ZERO, NULL, NULL, &err);
         if (err)
         {
-          dbg_printf("명령어가 전송 실패\r\n");
+          debug_printf("명령어가 전송 실패\r\n");
         }
         else
         {
-          dbg_printf("명령어가 전송되었습니다\r\n");
-          dbg_printf("레이저 포인터를 확인해주세요\r\n");
+          debug_printf("명령어가 전송되었습니다\r\n");
+          debug_printf("레이저 포인터를 확인해주세요\r\n");
         }
 
         break;
@@ -90,16 +90,16 @@ int hj_snow_menu(void)
 
           if (err)
           {
-            dbg_printf("화진 적설센서 에러 %s\r\n", get_drv_err_name(err));
+            debug_printf("화진 적설센서 에러 %s\r\n", get_drv_err_name(err));
             break;
             ;
           }
 
-          dbg_printf("센서 1 측정:%d\r\n", system.system.CurDistance[0]);
-          dbg_printf("센서 2 측정:%d\r\n", system.system.CurDistance[1]);
-          dbg_printf("센서 3 측정:%d\r\n", system.system.CurDistance[2]);
-          dbg_printf("온도:%d\r\n", system.system.innerTemp);
-          dbg_printf("현재 적설:%d\r\n", system.system.CurSnowLevel);
+          debug_printf("센서 1 측정:%d\r\n", system.system.CurDistance[0]);
+          debug_printf("센서 2 측정:%d\r\n", system.system.CurDistance[1]);
+          debug_printf("센서 3 측정:%d\r\n", system.system.CurDistance[2]);
+          debug_printf("온도:%d\r\n", system.system.innerTemp);
+          debug_printf("현재 적설:%d\r\n", system.system.CurSnowLevel);
       }
         break;
     }

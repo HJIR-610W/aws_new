@@ -44,7 +44,7 @@
  * @ingroup netifs
  *
  * This is an arch independent SLIP netif. The specific serial hooks must be
- * provided by another file. They are sio_open, sio_read/sio_tryread and sdbg_send
+ * provided by another file. They are sio_open, sio_read/sio_tryread and sdebug_send
  *
  * Usage: This netif can be used in three ways:\n
  *        1) For NO_SYS==0, an RX thread can be used which blocks on sio_read()
@@ -106,7 +106,7 @@ struct slipif_priv {
 /**
  * Send a pbuf doing the necessary SLIP encapsulation
  *
- * Uses the serial layer's sdbg_send()
+ * Uses the serial layer's sdebug_send()
  *
  * @param netif the lwip network interface structure for this slipif
  * @param p the pbuf chain packet to send
@@ -129,7 +129,7 @@ slipif_output(struct netif *netif, struct pbuf *p)
 
   /* Send pbuf out on the serial I/O device. */
   /* Start with packet delimiter. */
-  sdbg_send(SLIP_END, priv->sd);
+  sdebug_send(SLIP_END, priv->sd);
 
   for (q = p; q != NULL; q = q->next) {
     for (i = 0; i < q->len; i++) {
@@ -137,23 +137,23 @@ slipif_output(struct netif *netif, struct pbuf *p)
       switch (c) {
         case SLIP_END:
           /* need to escape this byte (0xC0 -> 0xDB, 0xDC) */
-          sdbg_send(SLIP_ESC, priv->sd);
-          sdbg_send(SLIP_ESC_END, priv->sd);
+          sdebug_send(SLIP_ESC, priv->sd);
+          sdebug_send(SLIP_ESC_END, priv->sd);
           break;
         case SLIP_ESC:
           /* need to escape this byte (0xDB -> 0xDB, 0xDD) */
-          sdbg_send(SLIP_ESC, priv->sd);
-          sdbg_send(SLIP_ESC_ESC, priv->sd);
+          sdebug_send(SLIP_ESC, priv->sd);
+          sdebug_send(SLIP_ESC_ESC, priv->sd);
           break;
         default:
           /* normal byte - no need for escaping */
-          sdbg_send(c, priv->sd);
+          sdebug_send(c, priv->sd);
           break;
       }
     }
   }
   /* End with packet delimiter. */
-  sdbg_send(SLIP_END, priv->sd);
+  sdebug_send(SLIP_END, priv->sd);
   return ERR_OK;
 }
 
@@ -161,7 +161,7 @@ slipif_output(struct netif *netif, struct pbuf *p)
 /**
  * Send a pbuf doing the necessary SLIP encapsulation
  *
- * Uses the serial layer's sdbg_send()
+ * Uses the serial layer's sdebug_send()
  *
  * @param netif the lwip network interface structure for this slipif
  * @param p the pbuf chain packet to send
@@ -180,7 +180,7 @@ slipif_output_v4(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)
 /**
  * Send a pbuf doing the necessary SLIP encapsulation
  *
- * Uses the serial layer's sdbg_send()
+ * Uses the serial layer's sdebug_send()
  *
  * @param netif the lwip network interface structure for this slipif
  * @param p the pbuf chain packet to send

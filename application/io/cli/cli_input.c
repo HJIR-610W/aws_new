@@ -41,28 +41,28 @@ static const char *cmdlist[] = {
 };
 
 
-int uart_recv(char *ch)
+int uart_recv(uint8_t *ch)
 {
-  dbg_recv(ch,1,0xffffffff);
+  debug_recv(ch,1,0xffffffff);
   
   return 0;
 }
 
-void uart_send(char ch) 
+void uart_send(uint8_t ch) 
 { 
-  dbg_put_ch (ch);
+  debug_put_ch (ch);
 }
-void uart_puts(const char *s)
+void uart_puts(const uint8_t *s)
 {
-  dbg_puts(s);
+  debug_puts(s);
 }
 
-static const char *autocomplete(const char *input)
+static const char *autocomplete(const uint8_t *input)
 {
-  int len = strlen(input);
+  int len = strlen((char *)input);
   for (int i = 0; cmdlist[i]; i++)
   {
-    if (strncmp(cmdlist[i], input, len) == 0)
+    if (strncmp(cmdlist[i], (char*)input, len) == 0)
       return cmdlist[i];
   }
   return NULL;
@@ -70,12 +70,12 @@ static const char *autocomplete(const char *input)
 
 
 //      u                (     ?  ?          )
-static void clear_line_and_print(const char *buf, int len)
+static void clear_line_and_print(const uint8_t *buf, int len)
 {
   uart_puts("\r");
 }
 //     ?   ?    (    ,        )
-static void refresh_line(const char *buf, int len, int cursor_pos)
+static void refresh_line(const uint8_t *buf, int len, int cursor_pos)
 {
   uart_puts("\r");
   for (int i = 0; i < len; i++) uart_send(buf[i]);
@@ -85,11 +85,11 @@ static void refresh_line(const char *buf, int len, int cursor_pos)
     uart_puts("\b");
 }
 
-int uart_get_line_with_edit(char *buf, int maxlen)
+int uart_get_line_with_edit(uint8_t *buf, int maxlen)
 {
   int len = 0;
   int cursor_pos = 0;
-  char ch;
+  uint8_t ch;
 
   memset_s(buf, maxlen, 0, maxlen);
 
@@ -120,7 +120,7 @@ int uart_get_line_with_edit(char *buf, int maxlen)
 
     if (ch == 0x1B)
     {
-      char seq[3] = {0};
+      uint8_t seq[3] = {0};
       if (uart_recv(&seq[0]) == 0 && uart_recv(&seq[1]) == 0)
       {
         if (seq[0] == '[')
@@ -147,8 +147,8 @@ int uart_get_line_with_edit(char *buf, int maxlen)
             {
               clear_line_and_print(buf, cursor_pos);
               history_index++;
-              strcpy_s(buf, maxlen, history[history_index]);
-              len = strlen(buf);
+              strcpy_s((char*)buf, maxlen, history[history_index]);
+              len = strlen((char*)buf);
               cursor_pos = len;
               uart_puts(buf);
             }
@@ -159,8 +159,8 @@ int uart_get_line_with_edit(char *buf, int maxlen)
             {
               clear_line_and_print(buf, cursor_pos);
               history_index--;
-              strcpy_s(buf, maxlen, history[history_index]);
-              len = strlen(buf);
+              strcpy_s((char *)buf, maxlen, history[history_index]);
+              len = strlen((char *)buf);
               cursor_pos = len;
               uart_puts(buf);
             }
@@ -175,7 +175,7 @@ int uart_get_line_with_edit(char *buf, int maxlen)
           }
           else if (seq[1] == '3')
           {
-            char tilde;
+            uint8_t tilde;
             uart_recv(&tilde);
             if (cursor_pos < len)
             {
@@ -198,7 +198,7 @@ int uart_get_line_with_edit(char *buf, int maxlen)
         int remain = strlen(suggest) - len;
         if (remain > 0 && len + remain < maxlen)
         {
-          strncpy_s(&buf[len], maxlen - len, &suggest[len], remain);
+          strncpy_s((char *)&buf[len], maxlen - len, &suggest[len], remain);
           len += remain;
           cursor_pos = len;
           refresh_line(buf, len, cursor_pos);
@@ -253,7 +253,7 @@ int uart_get_line_with_edit(char *buf, int maxlen)
       history_count++;
     for (int i = UART_HISTORY_DEPTH - 1; i > 0; i--)
       strcpy_s(history[i], sizeof(history[i]), history[i - 1]);
-    strcpy_s(history[0], sizeof(history[0]), buf);
+    strcpy_s(history[0], sizeof(history[0]), (char *)buf);
   }
   history_index = -1;
 
@@ -263,7 +263,7 @@ int uart_get_line_with_edit(char *buf, int maxlen)
 
 int cli_scanf_s(const char *fmt, ...)
 {
-  char input[100];
+  uint8_t input[100];
   va_list args;
   int ret;
   int code;
@@ -282,7 +282,7 @@ int cli_scanf_s(const char *fmt, ...)
   }
 
   va_start(args, fmt);
-  ret = vsscanf_s(input, fmt, args);  // vsscanf_s    !
+  ret = vsscanf_s((char *)input, fmt, args);  // vsscanf_s    !
   va_end(args);
 
   return ret;
@@ -290,7 +290,7 @@ int cli_scanf_s(const char *fmt, ...)
 
 int cli_vscanf_s(const char *fmt, va_list args)
 {
-  char input[100];
+  uint8_t input[100];
   int code;
   int ret;
 
@@ -298,7 +298,7 @@ int cli_vscanf_s(const char *fmt, va_list args)
   if (code == KEYCODE_CTRL_C || code == KEYCODE_CTRL_Q)
     return code;
 
-  ret = vsscanf_s(input, fmt, args);
+  ret = vsscanf_s((char*)input, fmt, args);
   return ret;
 }
 

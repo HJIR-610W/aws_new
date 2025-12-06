@@ -32,7 +32,7 @@ int32_t test_flash_range(uint32_t start_addr, uint32_t test_size)
   // 주소 범위 검증
   if ((start_addr + test_size) > FLASH_CAPACITY)
   {
-    dbg_printf("Error: Test range exceeds flash capacity (8MB)\r\n");
+    debug_printf("Error: Test range exceeds flash capacity (8MB)\r\n");
     return -1;
   }
 
@@ -40,14 +40,14 @@ int32_t test_flash_range(uint32_t start_addr, uint32_t test_size)
   write_buffer = (uint8_t *)user_malloc(FLASH_TEST_BUFFER_SIZE);
   if (write_buffer == NULL)
   {
-    dbg_printf("Failed to allocate write buffer\r\n");
+    debug_printf("Failed to allocate write buffer\r\n");
     return -1;
   }
 
   read_buffer = (uint8_t *)user_malloc(FLASH_TEST_BUFFER_SIZE);
   if (read_buffer == NULL)
   {
-    dbg_printf("Failed to allocate read buffer\r\n");
+    debug_printf("Failed to allocate read buffer\r\n");
     user_free(write_buffer);
     return -1;
   }
@@ -55,7 +55,7 @@ int32_t test_flash_range(uint32_t start_addr, uint32_t test_size)
   // 쓰기 버퍼 초기화 (0xAA 패턴)
   memset(write_buffer, 0xAA, FLASH_TEST_BUFFER_SIZE);
 
-  dbg_printf("Writing %lu bytes to flash at address 0x%08lX...\r\n",
+  debug_printf("Writing %lu bytes to flash at address 0x%08lX...\r\n",
             (unsigned long)test_size, (unsigned long)start_addr);
 
   // 쓰기 시간 측정 시작
@@ -72,7 +72,7 @@ int32_t test_flash_range(uint32_t start_addr, uint32_t test_size)
     err = drv_flash_write(start_addr + totalBytes, write_buffer, chunkSize);
     if (err < 0)
     {
-      dbg_printf("Write error at offset %lu (Error: %ld)\r\n", totalBytes, (long)err);
+      debug_printf("Write error at offset %lu (Error: %ld)\r\n", totalBytes, (long)err);
       user_free(write_buffer);
       user_free(read_buffer);
       return err;
@@ -85,14 +85,14 @@ int32_t test_flash_range(uint32_t start_addr, uint32_t test_size)
   endClk = HAL_GetTick();
   elapsed = endClk - startClk;
 
-  dbg_printf("Write completed: %lu bytes in %lu ms (%.2f KB/s)\r\n",
+  debug_printf("Write completed: %lu bytes in %lu ms (%.2f KB/s)\r\n",
             (unsigned long)test_size,
             (unsigned long)elapsed,
             (test_size / (elapsed > 0 ? (elapsed / 1000.0f) : 1.0f)) / 1024.0f);
 
   // ============================ 읽기 측정 ==============================
 
-  dbg_printf("Reading %lu bytes from flash at address 0x%08lX...\r\n",
+  debug_printf("Reading %lu bytes from flash at address 0x%08lX...\r\n",
             (unsigned long)test_size, (unsigned long)start_addr);
 
   // 읽기 시간 측정 시작
@@ -114,14 +114,14 @@ int32_t test_flash_range(uint32_t start_addr, uint32_t test_size)
   endClk = HAL_GetTick();
   elapsed = endClk - startClk;
 
-  dbg_printf("Read completed: %lu bytes in %lu ms (%.2f KB/s)\r\n",
+  debug_printf("Read completed: %lu bytes in %lu ms (%.2f KB/s)\r\n",
             (unsigned long)test_size,
             (unsigned long)elapsed,
             (test_size / (elapsed > 0 ? (elapsed / 1000.0f) : 1.0f)) / 1024.0f);
 
   // ============================ 데이터 검증 ==============================
 
-  dbg_printf("Verifying data integrity...\r\n");
+  debug_printf("Verifying data integrity...\r\n");
 
   totalBytes = 0;
   while (totalBytes < test_size)
@@ -137,7 +137,7 @@ int32_t test_flash_range(uint32_t start_addr, uint32_t test_size)
     {
       if (read_buffer[i] != 0xAA)
       {
-        dbg_printf("Data mismatch at offset %lu: expected 0xAA, got 0x%02X\r\n",
+        debug_printf("Data mismatch at offset %lu: expected 0xAA, got 0x%02X\r\n",
                   totalBytes + i, read_buffer[i]);
         user_free(write_buffer);
         user_free(read_buffer);
@@ -148,8 +148,8 @@ int32_t test_flash_range(uint32_t start_addr, uint32_t test_size)
     totalBytes += chunkSize;
   }
 
-  dbg_printf("Data verification passed!\r\n");
-  dbg_printf("Flash test completed successfully\r\n");
+  debug_printf("Data verification passed!\r\n");
+  debug_printf("Flash test completed successfully\r\n");
 
   user_free(write_buffer);
   user_free(read_buffer);

@@ -34,7 +34,7 @@ void terminal_bridge_send_command(const char* command, size_t len)
         return;
     }
     
-    dbg_inject((uint8_t *)command,len);
+    debug_inject((uint8_t *)command,len);
 
     
   

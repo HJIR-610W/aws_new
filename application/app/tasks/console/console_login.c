@@ -12,7 +12,7 @@ void check_login(void)
 {
   char buffer[10];
   char key[20];
-  char ch;
+  uint8_t ch;
   uint8_t ret=0;
   uint8_t cnt = 0;
   int32_t password=0;
@@ -22,11 +22,11 @@ void check_login(void)
   read_password(key);
   while(1)
   {
-  dbg_printf("\r\n비밀번호를 입력해주세요\r\n");
+  debug_printf("\r\n비밀번호를 입력해주세요\r\n");
 
  while(1)
  {
-  if(  dbg_recv(&ch,1,0xFFFFFFFF))
+  if(  debug_recv(&ch,1,0xFFFFFFFF))
   {
 
       buffer[cnt++] = ch;
@@ -47,7 +47,7 @@ void check_login(void)
       }
       else
       {
-            dbg_put_ch('*');
+            debug_put_ch('*');
       }
      
     }
