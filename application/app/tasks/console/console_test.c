@@ -1,22 +1,22 @@
 #include "console_define.h"
 
+#include "console_utile.h"
+#include "debug_io.h"
+#include "aws_menu_cali.h"
+
 #include "test_hart.h"
 #include "test_sram.h"
 #include "test_sdi12.h"
 #include "test_uart.h"
 #include "test_rs485.h"
-#include "IO\debug_io.h"
-#include "console_utile.h"
 #include "test_rain.h"
 #include "console_test.h"
 #include "test_count.h"
 #include "test_dinOut.h"
 #include "test_power.h"
-
 #include "test_rtc.h"
 #include "test_eth.h"
 #include "test_filesystem.h"
-#include "aws_menu_cali.h"
 #include "test_adc.h"
 #include "test_flash.h"
 #include "test_lcd.h"
@@ -48,6 +48,7 @@
 int run_test_root()
 {
   int choice, status;
+
   while (1)
   {
     debug_printf("+---------------------------------------+\r\n");

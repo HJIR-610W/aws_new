@@ -305,7 +305,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
 }
 
 
-int read_sd_sector(char *buffer,uint32_t sector)
+int read_sd_sector(unsigned char *buffer,uint32_t sector)
 {
   return (int)SD_read(0,buffer, sector, 1);
 }

@@ -39,10 +39,6 @@ void test_draw_aws_setup_page(screen_menu_t* p_win)
 }
 
 
-
-
-
-
 void test_setup_menu(void)
 {
   int32_t index;
