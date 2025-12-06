@@ -63,11 +63,10 @@ int32_t input_date( DATE_TIME_BUF* nt)
 
 int aws_setup_menu_system(void)
 {
+  const char* menu[4];
   int choice, status;
-
   char buff[4][40];
   char buffer[25];
-  const char* menu[4];
   int menu_cnt = 0;
 
   DATE_TIME_BUF nt;

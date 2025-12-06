@@ -50,7 +50,7 @@ static char g_paramBuffer[SHELL_BUFFER_SIZE];
 /*******************************************************************************
  * Code
  ******************************************************************************/
-void SHELL_Init(
+void shell_init(
     p_shell_context_t context, send_data_cb_t send_cb, recv_data_cb_t recv_cb, printf_data_t shell_printf, char *prompt)
 {
     assert(send_cb != NULL);
@@ -64,11 +64,11 @@ void SHELL_Init(
     context->recv_data_func = recv_cb;
     context->prompt = prompt;
 
-    SHELL_RegisterCommand(&xHelpCommand);
-    SHELL_RegisterCommand(&xExitCommand);
+    shell_register_command(&xHelpCommand);
+    shell_register_command(&xExitCommand);
 }
 
-int32_t SHELL_Main(p_shell_context_t context)
+int32_t shell_main(p_shell_context_t context)
 {
     uint8_t ch;
     int32_t i;
@@ -534,7 +534,7 @@ static int32_t ParseLine(const char *cmd, uint32_t len, char *argv[SHELL_MAX_ARG
     return argc;
 }
 
-int32_t SHELL_RegisterCommand(const shell_command_context_t *command_context)
+int32_t shell_register_command(const shell_command_context_t *command_context)
 {
     int32_t result = 0;
 

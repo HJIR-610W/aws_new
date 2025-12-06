@@ -10,7 +10,7 @@
 #include "cmsis_os.h"
 #include "cli\shell.h"
 
- 
+#include "aws_menu.h"
 #include "console_login.h"
 #include "drv_rs232.h"
 #include "debug_io.h"
@@ -76,17 +76,19 @@ void print_signature(void)
 }
 
 
-
+#define SHELL_USE 0
 void consoleTask(void *arg)
 {
   char buffer[100];
+#if SHELL_USE==1
   const char *prompt=NULL;
   shell_context_struct user_context;
-  uint8_t instance = 0;
   int mode = (int)arg;
+#endif
 
 
   print_signature();
+
   check_login();
   
   if(read_last_error(buffer,sizeof(buffer)))
@@ -96,18 +98,18 @@ void consoleTask(void *arg)
   
   debug_printf("Alarm log count:%d\r\n",alarm_get_log_count());
 
-  
-  prompt = (mode==0)?"\x1B[32mAWS>> \x1B[37m":"\x1B[32mAWS_TEST>> \x1B[37m";
-
-  SHELL_Init(&user_context, debug_send, debug_recv, debug_printf,(char *)prompt);
-
   shell_scanf_init();
 
-  SHELL_RegisterCommand(&printCmd);
-  SHELL_RegisterCommand(&testCmd);
-  SHELL_RegisterCommand(&developCmd);
-  SHELL_Main(&user_context);
-
+  aws_menu();
+  
+#if SHELL_USE==1
+  prompt = (mode==0)?"\x1B[32mAWS>> \x1B[37m":"\x1B[32mAWS_TEST>> \x1B[37m";
+  shell_init(&user_context, debug_send, debug_recv, debug_printf,(char *)prompt);
+  shell_register_command(&printCmd);
+  shell_register_command(&testCmd);
+  shell_register_command(&developCmd);
+  shell_main(&user_context);
+#endif
 
   while(1)
   {

@@ -134,23 +134,23 @@ extern "C" {
 * This function must be called before calling all other Shell functions.
 * Call operation the Shell commands with user-defined settings.
 * The example below shows how to set up the middleware Shell and
-* how to call the SHELL_Init function by passing in these parameters.
+* how to call the shell_init function by passing in these parameters.
 * This is an example.
 * @code
 *   shell_context_struct user_context;
-*   SHELL_Init(&user_context, SendDataFunc, ReceiveDataFunc, "SHELL>> ");
+*   shell_init(&user_context, SendDataFunc, ReceiveDataFunc, "SHELL>> ");
 * @endcode
 * @param context The pointer to the Shell environment and  runtime states.
 * @param send_cb The pointer to call back send data function.
 * @param recv_cb The pointer to call back receive data function.
 * @param prompt  The string prompt of Shell
 */
-void SHELL_Init(p_shell_context_t context,send_data_cb_t send_cb,recv_data_cb_t recv_cb,printf_data_t shell_printf,
+void shell_init(p_shell_context_t context,send_data_cb_t send_cb,recv_data_cb_t recv_cb,printf_data_t shell_printf,
                 char *prompt);
 
 
-int32_t SHELL_RegisterCommand(const shell_command_context_t *command_context);
-int32_t SHELL_Main(p_shell_context_t context);
+int32_t shell_register_command(const shell_command_context_t *command_context);
+int32_t shell_main(p_shell_context_t context);
 int32_t SHELL_recv(p_shell_context_t context,uint32_t *key);
 
 int32_t shell_vscanf_s(const char *fmt_ptr, va_list ap);

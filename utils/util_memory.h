@@ -8,6 +8,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#define GET_1(a, b) a
+#define GET_2(a, b) b
+
+
 #define IS_BIT_SET(value, bit_pos) (((value) >> (bit_pos)) & 0x01)
 
 
