@@ -90,7 +90,7 @@ int32_t aws_eth_remote_server_info(void)
 {
   int choice, status;
   char buff[ETH_REMOTE_SERVER_CNT][20];
-  char *menu[ETH_REMOTE_SERVER_CNT];
+ const char *menu[ETH_REMOTE_SERVER_CNT];
   int menu_cnt = 0;
 
 int a,b,c,d;
@@ -111,7 +111,7 @@ int dec;
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "PORT:%d", get_config_app()->eth_remote_server_port);
     menu_cnt++;
 
-    status = choice_menu(24, "수집서버 설정", menu, menu_cnt, &choice);
+    status = view_input_combobox( "수집서버 설정", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
@@ -128,7 +128,7 @@ int dec;
           WRITE_CFG(eth_remote_server_ip);
         break;
       case 2:
-        status = input_decimal_prompt("포트",&dec,0, 60000);
+        status = view_input_decimal("포트",&dec,0, 60000);
         if(status != MENU_OK)
         break;
           config.eth_remote_server_port = dec;
@@ -150,7 +150,7 @@ int32_t aws_eth_default(void)
 {
   int choice, status;
   char buff[ETH_DEFAUNT_CNT][30];
-  char *menu[ETH_DEFAUNT_CNT];
+  const char *menu[ETH_DEFAUNT_CNT];
   int menu_cnt = 0;
   int a, b, c, d,e,f;
   uint8_t *p_mac;
@@ -182,7 +182,7 @@ int32_t aws_eth_default(void)
              get_config_app()->eth_local_port);
     menu_cnt++;
 
-    status = choice_menu(24, "이더넷 기본 설정", menu, menu_cnt, &choice);
+    status = view_input_combobox( "이더넷 기본 설정", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
@@ -236,7 +236,7 @@ int32_t aws_eth_default(void)
           debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
           break;
         case 5:  // port
-          status = input_decimal_prompt("포트",&a,0,100000);
+          status = view_input_decimal("포트",&a,0,100000);
           if(status != MENU_OK)
           break;
             config.eth_local_port = a;
@@ -254,17 +254,16 @@ int32_t aws_eth_default(void)
   return status;
 }
 
-#define ETH_DEFAULT    0
-#define ETH_COM_TYPE   1
-#define ETH_SERVER_CFG 2
-
+#define ETH_DEFAULT     0
+#define ETH_COM_TYPE    1
+#define ETH_SERVER_CFG  2
 #define ETH_CFG_CNT     3
 
 int32_t aws_network_config_eth(void)
 {
   int choice, status;
   char buff[ETH_CFG_CNT][40];
-  char *menu[ETH_CFG_CNT];
+  const char *menu[ETH_CFG_CNT];
   int menu_cnt = 0;
 
 
@@ -286,7 +285,7 @@ int32_t aws_network_config_eth(void)
 
     }
 
-    status = choice_menu(24, "네트워크", menu, menu_cnt, &choice);
+    status = view_input_combobox( "네트워크", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       break;
     switch (choice)
@@ -295,7 +294,7 @@ int32_t aws_network_config_eth(void)
       status = aws_eth_default();
       break;
     case ETH_COM_TYPE:
-      status = choice_menu(30, "이더넷 방식", (char **)eth_mode_list, _countof(eth_mode_list), &choice);
+      status = view_input_combobox( "이더넷 방식",eth_mode_list, _countof(eth_mode_list), &choice);
       if (status != MENU_OK)
       {
         break;
@@ -324,7 +323,7 @@ int32_t aws_network_config_cdma(void)
 {
   int choice, status;
   char buff[AWS_CDMA_CNT][30];
-  char *menu[AWS_CDMA_CNT];
+  const char *menu[AWS_CDMA_CNT];
   int menu_cnt = 0;
 
   int a, b, c, d;
@@ -351,11 +350,11 @@ int32_t aws_network_config_cdma(void)
     if (config.cdma_model == eCDMA_NTLE9607)
     {
       snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "VPN   :%s",
-               ITEM_LIST(config.cdma_vpn_active, enableList));
+               ITEM_LIST(config.cdma_vpn_active, enable_list_kor));
     menu_cnt++;
     }
 
-    status = choice_menu(24, "CDMA 설정", menu, menu_cnt, &choice);
+    status = view_input_combobox( "CDMA 설정", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       break;
 
@@ -373,7 +372,7 @@ int32_t aws_network_config_cdma(void)
 
         break;
       case 2:
-        status = input_decimal_prompt("포트",&dec,0,10000);
+        status = view_input_decimal("포트",&dec,0,10000);
         if(status != MENU_OK)
         break;
           config.cdma_port = dec;
@@ -381,7 +380,7 @@ int32_t aws_network_config_cdma(void)
 
         break;
       case 3:  // 모델
-        status = choice_menu(30,"CDMA 모델",(char**)cdma_model_list,  _countof(cdma_model_list), &choice);
+        status = view_input_combobox("CDMA 모델",cdma_model_list,  _countof(cdma_model_list), &choice);
         if( status != MENU_OK)
         break;
           config.cdma_model = (eCDMA_MODEL_t)(choice-1);
@@ -389,9 +388,11 @@ int32_t aws_network_config_cdma(void)
           debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
           break;
       case 4:
-        status = choice_enable(&get_config_app()->cdma_vpn_active);
+        choice = get_config_app()->cdma_vpn_active;
+        status = view_input_active("VPN 사용",&choice);
         if (status != MENU_OK)
           break;
+        config.cdma_vpn_active = choice;
         WRITE_CFG(cdma_vpn_active);
       
         break;
@@ -410,7 +411,7 @@ int32_t aws_network_config_direct(void)
 {
   int choice, status;
   char buff[AWS_CDMA_CNT][20];
-  char *menu[AWS_CDMA_CNT];
+  const char *menu[AWS_CDMA_CNT];
   int menu_cnt = 0;
 
 
@@ -428,7 +429,7 @@ int32_t aws_network_config_direct(void)
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "통신 속도   :%s",ITEM_LIST(config.direct_baud_index,baud_list_eng));
     menu_cnt++;
 
-    status = choice_menu(LABEL_W, "직접통신(RS232)", menu, menu_cnt, &choice);
+    status = view_input_combobox( "직접통신(RS232)", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       break;
 
@@ -436,7 +437,7 @@ int32_t aws_network_config_direct(void)
     {
       case 1:
         choice = get_config_app()->direct_baud_index;
-        status = choice_menu(30, "통신 속도", (char **)baud_list_eng, _countof(baud_list_eng), &choice);
+        status = view_input_combobox( "통신 속도", baud_list_eng, _countof(baud_list_eng), &choice);
         if(status != MENU_OK)
         break;
 
@@ -459,11 +460,11 @@ int32_t aws_network_config(void)
 {
   int choice, status;
 
-  char *menu[] = {"이더넷", "CDMA", "직접통신"};
+ const char *menu[] = {"이더넷", "CDMA", "직접통신"};
 
   while (1)
   {
-    status = choice_menu(AWS_MENU_NET_WIDTH, "상세 설정", menu, _countof(menu), &choice);
+    status = view_input_combobox( "상세 설정", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break;
 
@@ -497,7 +498,7 @@ int32_t aws_network_use(void)
   char buff[MENU_CNT][50];
   char buffer[20];
 
-  char *menu[MENU_CNT];
+  const char *menu[MENU_CNT];
   int menu_cnt = 0;
 
 
@@ -512,51 +513,56 @@ int32_t aws_network_use(void)
 
     make_comList(buffer, sizeof(buffer));
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "이더넷  :%s",
-             ITEM_LIST((int)get_config_app()->eth_active, enableList));
+             ITEM_LIST((int)get_config_app()->eth_active, enable_list_kor));
     menu_cnt++;
 
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "CDMA    :%s",
-             ITEM_LIST((int)get_config_app()->cdma_active, enableList));
+             ITEM_LIST((int)get_config_app()->cdma_active, enable_list_kor));
     menu_cnt++;
 
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "직접통신:%s",
-             ITEM_LIST((int)get_config_app()->direct_active, enableList));
+             ITEM_LIST((int)get_config_app()->direct_active, enable_list_kor));
     menu_cnt++;
 
-    status = choice_menu(24, "사용 여부", menu, menu_cnt, &choice);
+    status = view_input_combobox( "사용 여부", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
     switch (choice)
     {
       case 1:
-        status = choice_enable(&get_config_app()->eth_active);
+        choice = config.eth_active;
+        status = view_input_active("이더넷 사용",&choice);
         if (status != MENU_OK)
           break;
+        config.eth_active  = choice;
         WRITE_CFG(eth_active);
         debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
       case 2:
-        status = choice_enable(&get_config_app()->cdma_active);
+        choice = config.cdma_active;
+        status = view_input_active("CDMA 사용",&choice);
         if (status != MENU_OK)
           break;
-        if (get_config_app()->direct_active)
+        if (config.direct_active)
         {
-          get_config_app()->direct_active = 0;
+          config.direct_active = 0;
           WRITE_CFG(direct_active);
         }
         WRITE_CFG(cdma_active);
         debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
       case 3:
-        status = choice_enable(&get_config_app()->direct_active);
+        choice = get_config_app()->direct_active;
+        status = view_input_active("직접통신 사용",&choice);
         if (status != MENU_OK)
           break;
-        if(get_config_app()->cdma_active)
+        if(config.cdma_active)
         {
-          get_config_app()->cdma_active = 0;
+          config.cdma_active = 0;
           WRITE_CFG(cdma_active);
         }
+        config.direct_active = choice;
         WRITE_CFG(direct_active);
         debug_printf_color(IO_COLOR_RED, "리셋 후 적용됩니다\r\n");
         break;
@@ -578,7 +584,7 @@ int aws_menu_network(void)
   char buff[MENU_CNT][30];
   char buffer[50];
 
-  char *menu[MENU_CNT];
+ const char *menu[MENU_CNT];
   int menu_cnt = 0;
 
 
@@ -600,7 +606,7 @@ int aws_menu_network(void)
              ITEM_LIST(get_config_app()->aws_protocol_type, protocol_list));
       menu_cnt++; 
 
-    status = choice_menu(24, "네트워크", menu, menu_cnt, &choice);
+    status = view_input_combobox( "네트워크", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
@@ -613,7 +619,7 @@ int aws_menu_network(void)
         status = aws_network_config();
          break;
       case 3:
-        status = choice_menu(40,"AWS 프로토콜",(char **)protocol_list,_countof(protocol_list),&choice);
+        status = view_input_combobox("AWS 프로토콜",protocol_list,_countof(protocol_list),&choice);
         if (status != MENU_OK)
           break;
 

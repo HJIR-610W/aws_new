@@ -37,7 +37,7 @@ int hj_snow_menu(void)
 
   while (1)
   {
-    status = choice_menu(AWS_MENU_WIDTH, "화진 적설", menu, _countof(menu), &choice);
+    status = view_input_combobox( "화진 적설", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break;
 

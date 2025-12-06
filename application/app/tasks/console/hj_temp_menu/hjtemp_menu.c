@@ -31,7 +31,7 @@ int hjtemperature_menu(void)
   driver_t* hjhumi;
 
   uint8_t err;
-  char* menu[] = {"설정값 확인(구현 예정)","온도 오프셋 변경" ,"습도 오프셋 변경","온습도 확인"};
+ const  char* menu[] = {"설정값 확인(구현 예정)","온도 오프셋 변경" ,"습도 오프셋 변경","온습도 확인"};
 
   hjtemp = hjtemp_opened();
   if (hjtemp == NULL)
@@ -49,7 +49,7 @@ int hjtemperature_menu(void)
 
       while (1)
   {
-    status = choice_menu(AWS_MENU_WIDTH, "화진 온습도", menu, _countof(menu), &choice);
+    status = view_input_combobox( "화진 온습도", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break;
 
@@ -81,7 +81,7 @@ int hjtemperature_menu(void)
         if (err == 0)
         {
           debug_printf("현재 온도 오프셋:%.2f\r\n", ((float)data / 100.0f));
-          status = confirm_continue("오프셋을 변경하시겠습니까?", &ok);
+          status = view_confirm_continue("오프셋을 변경하시겠습니까?", &ok);
           if (status != MENU_OK)
             break;
 
@@ -89,7 +89,7 @@ int hjtemperature_menu(void)
           {
             float f_offset;
 
-            status = input_float_prompt("오프셋을 입력해주세요",-5,5,&f_offset);
+            status = view_input_float("오프셋을 입력해주세요",-5,5,&f_offset);
             if(status !=MENU_OK)
             break;
             
@@ -118,12 +118,12 @@ int hjtemperature_menu(void)
           if (err == 0)
           {
             debug_printf("현재 습도 오프셋:%.2f\r\n", ((float)data / 100.0f));
-            status = confirm_continue("오프셋을 변경하시겠습니까?", &ok);
+            status = view_confirm_continue("오프셋을 변경하시겠습니까?", &ok);
             if (status != MENU_OK)
               break;
             if (ok)
             {
-              status = input_float_prompt("오프셋을 입력해주세요",-5, 5, &f_offset);
+              status = view_input_float("오프셋을 입력해주세요",-5, 5, &f_offset);
               if(status !=MENU_OK)
               break;
                 data = (uint16_t)(f_offset * 100);

@@ -13,6 +13,7 @@
 #include "app_adc.h"
 #include "config_adc.h"
 #include "console_define.h"
+#include "console_scanf.h"
 #include "drv_adc.h"
 #include "fsl_shell.h"
 #include "bsp.h"
@@ -23,16 +24,16 @@
 #include "cli_input.h"
 #include "cli_key_code.h"
 #include "util_stdio.h"
-#include "fsl_debug_console.h"
+
 #include "os_user_def.h"
 
-const char *g_unknown = "unknown";
-
-const char* enableList[] = {"비활성", "활성"};
 
 
 
-uint8_t recv_key(uint32_t timeout_ms)
+
+
+
+uint8_t view_recv_key(uint32_t timeout_ms)
 {
   uint8_t ch=0;
 
@@ -73,7 +74,7 @@ int32_t console_scanf_s(const char* fmt, ...)
   return ret;
 }
 
-int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_val)
+int view_input_decimal(const char* prompt, int* value, int min_val, int max_val)
 {
   int ret_scan;
   int ret = MENU_ABORT;
@@ -82,7 +83,8 @@ int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_va
   while(1)
   {
     debug_printf("%s (%d ~ %d): ", prompt, min_val, max_val);
-    ret_scan = cli_scanf_s("%d", &input_value);
+    //ret_scan = cli_scanf_s("%d", &input_value);
+    ret_scan = console_scanf("%d", &input_value);
     if (ret_scan == CLI_KEYCODE_CTRL_Q)
     {
       ret = MENU_ABORT;
@@ -108,7 +110,7 @@ int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_va
 
 
 //utf8 전용
-int print_menu(int width, const char* title, char** menu_list, int cnt)
+int print_menu(int width, const char* title, const char** menu_list, int cnt)
 {
   char buff[50];
   int len;
@@ -166,7 +168,9 @@ int print_menu(int width, const char* title, char** menu_list, int cnt)
 
   return cnt;
 }
-int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int32_t *choice)
+
+
+int32_t view_input_combobox(const char *title, const char *item_list[], int32_t item_count, int *choice)
 {
   int32_t max_number;
   int status;
@@ -174,9 +178,9 @@ int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int3
   while(1)
   {
 
-  max_number = print_menu(width, title, menu_list,cnt);
+  max_number = print_menu(30, title, item_list,item_count);
 
-  status = input_decimal_prompt("선택", choice, 1, max_number);
+  status = view_input_decimal("선택", choice, 1, max_number);
   if (status == MENU_ABORT || status == MENU_BACK)
     return status;
   if (status == MENU_OK)
@@ -224,7 +228,7 @@ int32_t select_index_from_table(const char* list[], int32_t (*func)(), uint16_t 
       indexMax = listCnt;
     }
 
-    status = input_decimal_prompt("번호를 선택해주세요",&index,0,indexMax-1);
+    status = view_input_decimal("번호를 선택해주세요",&index,0,indexMax-1);
     if(status!=MENU_OK)
     break;
 
@@ -238,15 +242,15 @@ int32_t select_index_from_table(const char* list[], int32_t (*func)(), uint16_t 
 
 
 
-int32_t choice_enable(uint8_t *enable)
+int32_t view_input_active(const char *title,int32_t *enable)
 {
   const char *menu[]={"미사용","사용"};
   int32_t status;
   int32_t choice;
 
-  status = choice_menu(20,"사용 선택",(char **)menu,_countof(menu),&choice);
+  status = view_input_combobox(title,menu,_countof(menu),&choice);
 
-  if(status ==MENU_OK)
+  if(status == MENU_OK)
   {
     *enable = choice-1;
   }
@@ -256,20 +260,9 @@ int32_t choice_enable(uint8_t *enable)
 }
 
 
-bool wait_break(uint32_t timeoutms)
-{
-  int32_t ch;
-  osDelay(timeoutms);
-  ch = DbgConsole_GetcharNonBlocking();
-  if (ch == -1)
-  {
-    return true;
-  }
 
-  return false;
-}
 
-int input_float_prompt(const char* prompt, float min, float max, float* value)
+int view_input_float(const char* prompt, float min, float max, float* value)
 {
   int ret_scan;
   int ret;
@@ -362,7 +355,7 @@ int check_pass(const char* title, char* password_str,int *ok)
  return status;
 }
 
-int confirm_continue(const char *title,int32_t* ok)
+int view_confirm_continue(const char *title,int32_t* ok)
 {
   char input[16] = {0};
   int status;

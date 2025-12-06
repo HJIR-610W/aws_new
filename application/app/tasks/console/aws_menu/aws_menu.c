@@ -22,7 +22,7 @@ int aws_menu(void)
 {
   int choice, status;
 
-  char* menu[] = { "기본정보",
+ const char* menu[] = { "기본정보",
                    "시스템",
                    "센서",
                    "네트워크",
@@ -34,7 +34,7 @@ int aws_menu(void)
 
   while (1)
   {
-    status = choice_menu(AWS_MENU_WIDTH, "AWS", menu, _countof(menu), &choice);
+    status = view_input_combobox( "AWS", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break ;
 

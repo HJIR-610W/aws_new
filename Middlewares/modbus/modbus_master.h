@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "modbus.h"
+#include "io_interface.h"
 
 typedef struct modbus_config_s
 {
@@ -14,6 +15,7 @@ typedef struct modbus_config_s
   eMODBUS_TYPE_t modebus_type;
   void *sem;
   int id;
+  io_if_t *io;
 }modbus_h_t;
 
 void modbus_init(void);

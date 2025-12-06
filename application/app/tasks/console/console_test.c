@@ -53,7 +53,7 @@ int run_test_root()
     debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
     debug_printf("+---------------------------------------+\r\n");
 
-    status = input_decimal_prompt("선택", &choice, 1, 19);
+    status = view_input_decimal("선택", &choice, 1, 19);
     if (status == MENU_ABORT || status == MENU_BACK)
       return status;
     if (status != MENU_OK)

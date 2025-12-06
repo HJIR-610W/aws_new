@@ -12,6 +12,7 @@
 #include "system_err.h"
 #include "temperature\hj_temperature.h"
 #include "temperature\temperature_define.h"
+#include "const_string.h"
 
 #include "util_memory.h"
  
@@ -345,7 +346,7 @@ int32_t select_menu_index( eSENSOR_TYPE_t type,sensor_t *sensor,int *choice)
   {
     entry_count = print_common_cfg(type,sensor, 0);
 
-    status = input_decimal_prompt("번호를 선택해 주세요", &index, 0, entry_count - 1);
+    status = view_input_decimal("번호를 선택해 주세요", &index, 0, entry_count - 1);
 
     if(status != MENU_OK)
       break;
@@ -435,7 +436,7 @@ int32_t hjwind_config_set( eSENSOR_TYPE_t type, sensor_t *sensor, uint8_t munu_i
   switch (munu_index)
   {
     case HJWIND_CFG_FULL:
-      status = input_decimal_prompt("FULL SET",&dec,0, 999999);
+      status = view_input_decimal("FULL SET",&dec,0, 999999);
       if(status != MENU_OK)
       {
         break;
@@ -445,7 +446,7 @@ int32_t hjwind_config_set( eSENSOR_TYPE_t type, sensor_t *sensor, uint8_t munu_i
         save_config_sensor();
       break;
     case HJWIND_CFG_OFF:
-      status = input_decimal_prompt("OFFSET", &dec, 0, 999999);
+      status = view_input_decimal("OFFSET", &dec, 0, 999999);
       if (status != MENU_OK)
       {
         break;
@@ -555,7 +556,7 @@ int32_t hjtemp_config_set(eSENSOR_TYPE_t type, sensor_t *sensor, uint8_t menu_in
 
       break;
     case HJTEMP_CFG_MODBUS_ID:
-      status = input_decimal_prompt("ID", &dec,0, 247);
+      status = view_input_decimal("ID", &dec,0, 247);
       if(status !=MENU_OK)
         break;
 
@@ -624,7 +625,7 @@ int32_t hjhumi_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_in
       }
       break;
     case HJTEMP_CFG_MODBUS_ID:
-      status = input_decimal_prompt("ID",&dec, 0, 247);
+      status = view_input_decimal("ID",&dec, 0, 247);
       
       if(status != MENU_OK)
         break;
@@ -676,7 +677,7 @@ int32_t ott_smp3_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_
 
       break;
     case OTT_SMP3_CFG_ID:
-      status = input_decimal_prompt("ID",&dec, 0, 247);
+      status = view_input_decimal("ID",&dec, 0, 247);
       if(status !=MENU_OK)
         break;
         ott->modbus_id = dec;
@@ -706,7 +707,7 @@ int32_t rain_present_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t me
   switch (menu_index)
   {
     case RAIN_PRESENT_DELAY:
-      status = input_decimal_prompt("지연시간(s)", &dec, 1, 300);
+      status = view_input_decimal("지연시간(s)", &dec, 1, 300);
       if (status != MENU_OK)
         break;
       rain_present->off_delay_sec = dec;
@@ -738,7 +739,7 @@ int32_t general_freq_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t me
   switch (menu_index)
   {
     case GENERAL_FREQ_CHANNEL:
-      status = input_decimal_prompt("채널", &dec, 0, 1);
+      status = view_input_decimal("채널", &dec, 0, 1);
       if (status != MENU_OK)
         break;
       freq->channel = dec;
@@ -846,14 +847,14 @@ int32_t general_adc_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t me
     case ADC_SET_CHANNLEL:  // channel;
       if(adc->mode ==0)
       {
-      status = input_decimal_prompt("싱글 채널",&dec, 0, 17);
+      status = view_input_decimal("싱글 채널",&dec, 0, 17);
       if(status !=MENU_OK)
       break;
              adc->single_channel = dec;
       }
       else
       {
-      status = input_decimal_prompt("차동 채널",&dec, 0, 8);
+      status = view_input_decimal("차동 채널",&dec, 0, 8);
       if(status !=MENU_OK)
        adc->diff_channel = dec;
       }
@@ -862,7 +863,7 @@ int32_t general_adc_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t me
 
       break;
     case ADC_SET_HIGHSCALE:  // hish cale;
-      status = input_decimal_prompt("High Value",&dec, -1000000, 1000000);
+      status = view_input_decimal("High Value",&dec, -1000000, 1000000);
       if (status != MENU_OK)
         break;
 
@@ -871,7 +872,7 @@ int32_t general_adc_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t me
 
       break;
     case ADC_SET_LOWSCALE:  // low cale;
-      status = input_decimal_prompt("Low Value", &dec, -1000000, 1000000);
+      status = view_input_decimal("Low Value", &dec, -1000000, 1000000);
       if (status != MENU_OK)
         break;
 
@@ -880,7 +881,7 @@ int32_t general_adc_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t me
 
       break;
     case ADC_SET_SCALE:  // ale;
-      status = input_decimal_prompt("Scale", &dec, -1000000, 1000000);
+      status = view_input_decimal("Scale", &dec, -1000000, 1000000);
       if (status != MENU_OK)
         break;
 
@@ -890,7 +891,7 @@ int32_t general_adc_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t me
       break;
 
     case ADC_SET_OUTMAXVOLT:
-      status = input_decimal_prompt("Max Votage(mv)", &dec, -1000000, 1000000);
+      status = view_input_decimal("Max Votage(mv)", &dec, -1000000, 1000000);
       if (status != MENU_OK)
         break;
 
@@ -900,7 +901,7 @@ int32_t general_adc_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t me
       break;
 
     case ADC_SET_OUTMINVOLT:
-      status = input_decimal_prompt("Min Voltage(mv)", &dec, -1000000, 1000000);
+      status = view_input_decimal("Min Voltage(mv)", &dec, -1000000, 1000000);
       if (status != MENU_OK)
         break;
 

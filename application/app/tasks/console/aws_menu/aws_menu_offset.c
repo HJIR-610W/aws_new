@@ -85,7 +85,7 @@ int32_t menu_offset_pressure(void)
     debug_printf("현재 ADC 싱글 %d 전압:%fv\r\n",p_config->single_channel,voltage);
     calibrated_voltage = cvt_data_to_voltage(p_config,local_temperature);
     debug_printf("요구되는 전압:%f\r\n", calibrated_voltage);
-    status  = confirm_continue("오프셋을 조정합니다",&ok);
+    status  = view_confirm_continue("오프셋을 조정합니다",&ok);
     if(status != MENU_OK)
     if(ok)
     {
@@ -109,7 +109,7 @@ int aws_menu_offset(void)
   while (1)
   {
     max_number = print_offset_sensor();
-    status = input_decimal_prompt("선택", &choice, 0, max_number-1);//수위  제외
+    status = view_input_decimal("선택", &choice, 0, max_number-1);//수위  제외
 
     if (status != MENU_OK)
     {

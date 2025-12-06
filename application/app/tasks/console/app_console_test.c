@@ -144,7 +144,7 @@ void print_gpio_output_states()
   }
 }
 
-int32_t mcu_pin(p_shell_context_t ctx, int32_t argc, char **argv)
+int32_t mcu_pin( int32_t argc, char **argv)
 {
   uint8_t ch;
 
@@ -257,7 +257,7 @@ int32_t pcb_pin(void)
   return 0;
 }
 
-int32_t print_di(p_shell_context_t ctx, int32_t argc, char **argv)
+int32_t print_di( int32_t argc, char **argv)
 {
 
   int32_t input;
@@ -282,7 +282,7 @@ int32_t print_di(p_shell_context_t ctx, int32_t argc, char **argv)
 
 
 
-int32_t test_pcb(p_shell_context_t ctx, int32_t argc, char **argv)
+int32_t test_pcb( int32_t argc, char **argv)
 {
   run_test_root();
   

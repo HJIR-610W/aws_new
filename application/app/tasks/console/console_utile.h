@@ -18,26 +18,29 @@ typedef int32_t (*menu_func)(void);
 
 #define ITEM_LIST(cnt, list) cnt >= _countof(list) ? g_unknown : (char *)list[cnt]
 
-uint8_t recv_key(uint32_t timeout_ms) ;
+uint8_t view_recv_key(uint32_t timeout_ms) ;
+
+
+int view_input_decimal(const char* title, int* value, int min_val, int max_val);
+int view_input_float(const char* title, float min, float max, float* value);
+int32_t view_input_active(const char *title,int32_t *choice);
+int32_t view_input_combobox(const char *title, const char *item_list[], int32_t item_count, int *choice);
+int view_confirm_continue(const char *,int32_t* ok);
+
 void make_comList(char *out, uint16_t outsize);
 
-int input_decimal_prompt(const char* prompt, int* value, int min_val, int max_val);
 
-int input_float_prompt(const char* prompt, float min, float max, float* value);
 
-    int print_menu(int width, const char* title, char** menu_list, int cnt);
-int32_t choice_menu(int width, const char* title, char** menu_list, int cnt,int32_t *choice);
+int print_menu(int width, const char* title, const char** menu_list, int cnt);
+
 int32_t select_index_from_table(const char* list[], int32_t (*func)(), uint16_t listCnt, bool number,
                              int32_t* choice);
 
 
 
-bool wait_break(uint32_t timeoutms);
-int32_t choice_enable(uint8_t* enable);
-int confirm_continue(const char *,int32_t* ok);
 int check_pass(const char* title, char* password_str, int* ok);
 int32_t console_scanf_s(const char* fmt, ...);
-    extern const char* g_unknown;
 
-extern const char* enableList[2];
+
+
 #endif

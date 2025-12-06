@@ -38,19 +38,19 @@ void test_modbus_task(void *arg)
   debug_printf("주의: RS485 C,D는 하드웨어점퍼 설정 필요\r\n");
   debug_printf("기능: 포트이름 전송 후 1초간 수신 데이터 에코 및 HEX 출력\r\n\r\n");
 
-  if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
+  if(view_input_decimal("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
   {
     port_index = 0;
     debug_printf("기본 포트 A로 설정합니다.\r\n");
   }
 
-  if(input_decimal_prompt("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
+  if(view_input_decimal("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
   {
     baud = 57600;
     debug_printf("기본 속도 %d로 설정합니다.\r\n", baud);
   }
 
-  if (input_decimal_prompt("모드버스  주소", &reg_number, 0, 65535) != MENU_OK)
+  if (view_input_decimal("모드버스  주소", &reg_number, 0, 65535) != MENU_OK)
   {
     reg_number = 0;
     debug_printf("주소 오류 종료\r\n");
@@ -137,7 +137,7 @@ void test_modbus_task(void)
   debug_printf("MODBUS RTU 테스트\r\n");
   debug_printf("기능: Modbus Read Registers\r\n\r\n");
 
-  if(input_decimal_prompt("인터페이스를 선택하세요 (0:RS232, 1:RS485)", &interface_type, 0, 1) != MENU_OK)
+  if(view_input_decimal("인터페이스를 선택하세요 (0:RS232, 1:RS485)", &interface_type, 0, 1) != MENU_OK)
   {
     interface_type = 1;
     debug_printf("기본 RS485로 설정합니다.\r\n");
@@ -146,7 +146,7 @@ void test_modbus_task(void)
   if(interface_type == 0)
   {
     debug_printf("RS232 포트 선택 (사용자 포트만 지원)\r\n");
-    if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
+    if(view_input_decimal("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
     {
       port_index = 0;
       debug_printf("기본 포트 A로 설정합니다.\r\n");
@@ -157,7 +157,7 @@ void test_modbus_task(void)
   {
     debug_printf("RS485 포트 선택\r\n");
     debug_printf("주의: RS485 C,D는 하드웨어 점퍼 설정 필요\r\n");
-    if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
+    if(view_input_decimal("테스트할 포트를 선택하세요 (0:A, 1:B, 2:C, 3:D)", &port_index, 0, 3) != MENU_OK)
     {
       port_index = 0;
       debug_printf("기본 포트 A로 설정합니다.\r\n");
@@ -165,19 +165,19 @@ void test_modbus_task(void)
     selected_port = rs485_port_list[port_index];
   }
 
-  if(input_decimal_prompt("통신 속도를 입력해주세요 (1200-115200)", &baud, 1200, 115200) != MENU_OK)
+  if(view_input_decimal("통신 속도를 입력해주세요 (1200-115200)", &baud, 1200, 115200) != MENU_OK)
   {
     baud = 57600;
     debug_printf("기본 속도 %d로 설정합니다.\r\n", baud);
   }
 
-  if(input_decimal_prompt("패리티를 선택하세요 (0:NONE, 1:ODD, 2:EVEN)", &parity, 0, 2) != MENU_OK)
+  if(view_input_decimal("패리티를 선택하세요 (0:NONE, 1:ODD, 2:EVEN)", &parity, 0, 2) != MENU_OK)
   {
     parity = PARITY_NONE;
     debug_printf("기본 패리티 NONE으로 설정합니다.\r\n");
   }
 
-  if(input_decimal_prompt("Modbus 슬레이브 ID를 입력하세요 (1-247)", &modbus_id, 1, 247) != MENU_OK)
+  if(view_input_decimal("Modbus 슬레이브 ID를 입력하세요 (1-247)", &modbus_id, 1, 247) != MENU_OK)
   {
     modbus_id = 1;
     debug_printf("기본 ID 1로 설정합니다.\r\n");
@@ -223,13 +223,13 @@ void test_modbus_task(void)
     debug_printf("  2: Read Input Registers (0x04)\r\n");
     debug_printf("  3: Read Holding Registers (0x03)\r\n");
     
-    if (input_decimal_prompt("기능을 선택하세요", &reg_type, 0, 3) != MENU_OK)
+    if (view_input_decimal("기능을 선택하세요", &reg_type, 0, 3) != MENU_OK)
     {
       debug_printf("테스트 종료\r\n");
       return;
     }
 
-    if (input_decimal_prompt("Modbus 시작 주소 (0-65535)", &reg_number, 0, 65535) != MENU_OK)
+    if (view_input_decimal("Modbus 시작 주소 (0-65535)", &reg_number, 0, 65535) != MENU_OK)
     {
       debug_printf("테스트 종료\r\n");
       return;
@@ -254,7 +254,7 @@ void test_modbus_task(void)
     }
     else if(reg_type == 1)
     {
-      if (input_decimal_prompt("읽을 Discrete Input 개수 (1-15)", &read_cnt, 1, 15) != MENU_OK)
+      if (view_input_decimal("읽을 Discrete Input 개수 (1-15)", &read_cnt, 1, 15) != MENU_OK)
       {
         debug_printf("테스트 종료\r\n");
         return;
@@ -279,7 +279,7 @@ void test_modbus_task(void)
     }
     else if(reg_type == 2)
     {
-      if (input_decimal_prompt("읽을 Input Register 개수 (1-15)", &read_cnt, 1, 15) != MENU_OK)
+      if (view_input_decimal("읽을 Input Register 개수 (1-15)", &read_cnt, 1, 15) != MENU_OK)
       {
         debug_printf("테스트 종료\r\n");
         return;
@@ -304,7 +304,7 @@ void test_modbus_task(void)
     }
     else
     {
-      if (input_decimal_prompt("읽을 Holding Register 개수 (1-15)", &read_cnt, 1, 15) != MENU_OK)
+      if (view_input_decimal("읽을 Holding Register 개수 (1-15)", &read_cnt, 1, 15) != MENU_OK)
       {
         debug_printf("테스트 종료\r\n");
         return;

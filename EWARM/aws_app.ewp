@@ -2921,13 +2921,13 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\terminal_bridge.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
@@ -2948,9 +2948,6 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\cli\console_scanf.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\io\cli\fsl_debug_console.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</name>
@@ -3181,7 +3178,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -3211,7 +3208,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>

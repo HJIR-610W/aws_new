@@ -17,6 +17,7 @@ extern const char* cdma_model_list_eng[CDMA_MODEL_COUNT];
 extern const char* rain_mm_list_eng[RAIN_MM_COUNT];
 
 extern const char* enable_list_eng[2];
+extern const char* enable_list_kor[2];
 extern const char* eth_mode_list_eng[2];// = {"Client", "Server"};
 extern const char* cdma_model_list_eng[2];// = {"NTLE9607", "TX700"};
 extern const char* protocol_list_eng[2];  // = {"KMA2", "KMA3"};
@@ -37,4 +38,5 @@ extern const char *baud_list_eng[6];
 extern const char *adc_single_list[16];
 extern const char *pt100_list_eng[2];
 
+extern const char *g_unknown;
 #endif // CONST_STRING_H

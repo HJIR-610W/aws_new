@@ -15,9 +15,10 @@ int32_t aws_menu_panel(void)
 {
   int32_t choice, status;
   char buff[AWS_MENU_PANEL_CNT][20];
-  char* menu[AWS_MENU_PANEL_CNT];
+  const char* menu[AWS_MENU_PANEL_CNT];
   int32_t menu_cnt = 0;
   bool enalbe;
+ 
 
   for (int32_t i = 0; i < AWS_MENU_PANEL_CNT; i++)
   {
@@ -33,22 +34,22 @@ int32_t aws_menu_panel(void)
     if (get_config_app()->panel_model == ePANEL_MUJU)
     {
       enalbe = get_config_app()->panel_snow_active;
-      snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"적설 출력:%s", ITEM_LIST((int32_t)enalbe, enableList));
+      snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"적설 출력:%s", ITEM_LIST((int32_t)enalbe, enable_list_kor));
       menu_cnt++;
 
       enalbe = get_config_app()->panel_barometer_active;
-      snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"기압 출력:%s",  ITEM_LIST((int32_t)enalbe, enableList));
+      snprintf(buff[menu_cnt],sizeof(buff[menu_cnt]),"기압 출력:%s",  ITEM_LIST((int32_t)enalbe, enable_list_kor));
       menu_cnt++;
     }
 
-    status = choice_menu(24, "패널(전광판)", menu, menu_cnt, &choice);
+    status = view_input_combobox( "패널(전광판)", menu, menu_cnt, &choice);
     if (status != MENU_OK)
       return status;
 
     switch (choice)
     {
       case 1:
-        status = choice_menu(24, "패널 종류", (char **)panel_list_eng, _countof(panel_list_eng), &choice);
+        status = view_input_combobox( "패널 종류", (const char **)panel_list_eng, _countof(panel_list_eng), &choice);
         if(status != MENU_OK)
           break;
 
@@ -56,15 +57,19 @@ int32_t aws_menu_panel(void)
         WRITE_CFG(panel_model);
         break;
       case 2:
-        status = choice_enable(&get_config_app()->panel_snow_active);
+        choice = get_config_app()->panel_snow_active;
+        status = view_input_active("적설 사용",&choice);
         if(status != MENU_OK)
           break;
+          config.panel_snow_active = choice;
           WRITE_CFG(panel_snow_active);
         break;
       case 3:
-        status = choice_enable(&get_config_app()->panel_barometer_active);
+        choice = get_config_app()->panel_barometer_active;
+        status = view_input_active("기압 사용",&choice);
         if(status != MENU_OK)
         break;
+        config.panel_barometer_active = choice;
         WRITE_CFG(panel_barometer_active);
         break;
     }

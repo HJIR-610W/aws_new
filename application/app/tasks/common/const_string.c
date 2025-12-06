@@ -39,8 +39,11 @@ const char* rain_mm_list_eng[] = {
 #undef X
 };
 
+const char *g_unknown = "unknown";
 
 const char* enable_list_eng[] = {"Disabled", "Enabled"};
+const char* enable_list_kor[] = {"비활성", "활성"};
+
 const char* eth_mode_list_eng[] = {"Client", "Server"};
 
 const char* protocol_list_eng[] = {"KMA2", "KMA3"};

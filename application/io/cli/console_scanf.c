@@ -1,45 +1,36 @@
 
 
 
+#include "console_scanf.h"
+
 #include <stdarg.h>
 #include <stdio.h>
+
 #include "cmsis_os.h"
-
-#include "console_scanf.h"
 #include "fsl_shell.h"
+#include "fsl_debug_console.h"
+#include "debug_io.h"
+#include "cli_key_code.h"
 
-
-
-shell_context_struct *pxShell_context_struct = NULL;
-
-
-extern  int DbgConsole_ScanfFormattedData(const char *line_ptr,const char *format, va_list args_ptr);
+shell_context_struct *g_scanf_context = NULL;
 
 int32_t console_scanf(const char *fmt_ptr, ...)
 {
     int32_t cnt;
-    va_list ap;
     int32_t result =-1;
     uint32_t key=0;
+    va_list ap;
 
     va_start(ap, fmt_ptr);
 
-    if(pxShell_context_struct)
+    if(g_scanf_context)
     {
-
-        cnt =  SHELL_recv(pxShell_context_struct,&key);
+        cnt =  SHELL_recv(g_scanf_context,&key);
         
-        
-        
-        if(key == KEY_EXIT_PROGRAM)
+        if(key == KEY_CODE_CTRL_Q || key ==KEY_CODE_CTRL_C)
         {
-            result  = -3;//exit
+            result = key;
             goto END_FUNC;
-        }
-        else if( key == KEY_PREV_PROGRAM)
-        {
-          result = -1;//back
-          goto END_FUNC;
         }
 
         if(cnt == 0)
@@ -49,8 +40,7 @@ int32_t console_scanf(const char *fmt_ptr, ...)
         }
         else
         {
-         //   result = DbgConsole_ScanfFormattedData(pxShell_context_struct->line,(char *) fmt_ptr, ap);
-         result = vsscanf(pxShell_context_struct->line, fmt_ptr, ap);
+         result = vsscanf(g_scanf_context->line, fmt_ptr, ap);
         }
     }
 
@@ -61,25 +51,16 @@ END_FUNC:
 }
 
 
-
-
-
-void console_scanf_init( p_shell_context_t context)
+void console_scanf_init( void )
 {
-
-    if(pxShell_context_struct==NULL)
+    if(g_scanf_context==NULL)
     {
-        pxShell_context_struct = (shell_context_struct *)pvPortMalloc(sizeof(shell_context_struct));
-    }
-
-    if(pxShell_context_struct)
-    {
-        SHELL_input_init(  pxShell_context_struct,  context->send_data_func,  context->recv_data_func,  context->printf);
+        g_scanf_context = (shell_context_struct *)pvPortMalloc(sizeof(shell_context_struct));
     }
 }
 
 void console_scanf_exit(void)
 {
-    vPortFree(pxShell_context_struct);
-    pxShell_context_struct = NULL;
+    vPortFree(g_scanf_context);
+    g_scanf_context = NULL;
 }

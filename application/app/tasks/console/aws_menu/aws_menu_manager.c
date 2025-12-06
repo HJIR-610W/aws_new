@@ -302,11 +302,11 @@ int32_t menu_manage_config_backup()
   int choice;
   int ok;
 
-   char *menu[] = {"백업", "복구"};
+   const char *menu[] = {"백업", "복구"};
 
   while (1)
   {
-    status = choice_menu(AWS_MANAGER_MENU_WITDH, "설정 백업/복구", menu, _countof(menu), &choice);
+    status = view_input_combobox( "설정 백업/복구", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break; 
 
@@ -317,7 +317,7 @@ int32_t menu_manage_config_backup()
         debug_printf("SD카드에 백업되었습니다\r\n");
         break;
       case 2:
-        status = confirm_continue("SD카드에서 설정값을 불러옵니다",&ok);
+        status = view_confirm_continue("SD카드에서 설정값을 불러옵니다",&ok);
         if(status!=MENU_OK)
         break;
         if(ok)
@@ -336,7 +336,7 @@ int32_t menu_manage_sentor_edit()
   int year,month,day,hour,min,sec;
   int choice;
   int status;
-   char *menu[] = {"우량 자료 편집",
+   const char *menu[] = {"우량 자료 편집",
                    "일조 자료 편집",
                    "우량 자료 확인",
                    "일조 자료 확인"};
@@ -350,7 +350,7 @@ int32_t menu_manage_sentor_edit()
     int ok;
   while (1)
   {
-    status = choice_menu(24, "데이터 편집", menu, _countof(menu), &choice);
+    status = view_input_combobox( "데이터 편집", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       return status;
 
@@ -358,7 +358,7 @@ int32_t menu_manage_sentor_edit()
     {
       case 1:
       case 2:
-        if(confirm_continue("해당년도 자료 모두 0으로 초기화 할까요?",&ok)==MENU_OK && ok ==1)
+        if(view_confirm_continue("해당년도 자료 모두 0으로 초기화 할까요?",&ok)==MENU_OK && ok ==1)
         {
           start_time.Year = Date_Time.Year;
           start_time.Month =1;
@@ -432,7 +432,7 @@ int32_t menu_manage_sentor_edit()
           filename = "SUNSHINE_01.rcd";
         }
 
-        status = confirm_continue("계속 진행하겠니까?",&ok);
+        status = view_confirm_continue("계속 진행하겠니까?",&ok);
         if(status!=MENU_OK)
         break;
         if(ok)
@@ -501,7 +501,7 @@ int32_t menu_manage_update_fw()
 
   while(1)
   {
-    status  = confirm_continue("펌웨어 업데이트를 진행할까요?",&ok);
+    status  = view_confirm_continue("펌웨어 업데이트를 진행할까요?",&ok);
     if(status != MENU_OK)
     break;
     
@@ -532,7 +532,7 @@ int32_t menu_manage_log_reset(void)
 
   debug_printf("현재 로그 카운트:%d\r\n", get_config_nvm()->log_q_cnt );
 
-  status = input_decimal_prompt("로그 카운트 입력해주세요", &log_cnt, 0, LOG_COUNT_MAX);
+  status = view_input_decimal("로그 카운트 입력해주세요", &log_cnt, 0, LOG_COUNT_MAX);
   if(status == MENU_OK)
   {
     nvm_set_log_cnt(log_cnt);
@@ -544,19 +544,19 @@ int32_t menu_manage_log_reset(void)
   {
     int choice, status;
     int ok;
-    char *menu[] = {"AWS 화진 기본 설정", "공장 초기화", "설정 백업", "우량,일조 자료 초기화",
+    const char *menu[] = {"AWS 화진 기본 설정", "공장 초기화", "설정 백업", "우량,일조 자료 초기화",
                     "로그 카운트 초기화"};
 
     while (1)
     {
-      status = choice_menu(24, "DATA", menu, _countof(menu), &choice);
+      status = view_input_combobox( "DATA", menu, _countof(menu), &choice);
       if (status != MENU_OK)
         return status;
 
       switch (choice)
       {
         case 1:
-          status = confirm_continue("센서 구성을 화진 기본값으로 초기화합니다", &ok);
+          status = view_confirm_continue("센서 구성을 화진 기본값으로 초기화합니다", &ok);
           if (status != MENU_OK)
             break;
 
@@ -567,7 +567,7 @@ int32_t menu_manage_log_reset(void)
           }
           break;
         case 2:
-          status = confirm_continue("설정값을 공장초기화합니다", &ok);
+          status = view_confirm_continue("설정값을 공장초기화합니다", &ok);
 
           if (status != MENU_OK)
             break;
@@ -603,11 +603,11 @@ int32_t menu_manage_log_reset(void)
   int aws_menu_manager(void)
   {
     int choice, status;
-    char *menu[] = {"버전", "장비리셋", "설정 변경", "펌웨어 업데이트"};
+    const char *menu[] = {"버전", "장비리셋", "설정 변경", "펌웨어 업데이트"};
 
     while (1)
     {
-      status = choice_menu(24, "설정", menu, _countof(menu), &choice);
+      status = view_input_combobox( "설정", menu, _countof(menu), &choice);
       if (status != MENU_OK)
         return status;
 

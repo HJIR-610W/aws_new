@@ -1,71 +1,10 @@
-/*
- * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of Freescale Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * POSIX getopt for Windows
- * Code given out at the 1985 UNIFORUM conference in Dallas.
- *
- * From std-unix@ut-sally.UUCP (Moderator, John Quarterman) Sun Nov  3 14:34:15 1985
- * Relay-Version: version B 2.10.3 4.3bsd-beta 6/6/85; site gatech.CSNET
- * Posting-Version: version B 2.10.2 9/18/84; site ut-sally.UUCP
- * Path: gatech!akgua!mhuxv!mhuxt!mhuxr!ulysses!allegra!mit-eddie!genrad!panda!talcott!harvard!seismo!ut-sally!std-unix
- * From: std-unix@ut-sally.UUCP (Moderator, John Quarterman)
- * Newsgroups: mod.std.unix
- * Subject: public domain AT&T getopt source
- * Message-ID: <3352@ut-sally.UUCP>
- * Date: 3 Nov 85 19:34:15 GMT
- * Date-Received: 4 Nov 85 12:25:09 GMT
- * Organization: IEEE/P1003 Portable Operating System Environment Committee
- * Lines: 91
- * Approved: jsq@ut-sally.UUC
- * Here's something you've all been waiting for:  the AT&T public domain
- * source for getopt(3).  It is the code which was given out at the 1985
- * UNIFORUM conference in Dallas.  I obtained it by electronic mail
- * directly from AT&T.  The people there assure me that it is indeed
- * in the public domain
- * There is no manual page.  That is because the one they gave out at
- * UNIFORUM was slightly different from the current System V Release 2
- * manual page.  The difference apparently involved a note about the
- * famous rules 5 and 6, recommending using white space between an option
- * and its first argument, and not grouping options that have arguments.
- * Getopt itself is currently lenient about both of these things White
- * space is allowed, but not mandatory, and the last option in a group can
- * have an argument.  That particular version of the man page evidently
- * has no official existence, and my source at AT&T did not send a copy.
- * The current SVR2 man page reflects the actual behavor of this getopt.
- * However, I am not about to post a copy of anything licensed by AT&T.
- */
+
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <assert.h>
 #include "fsl_shell.h"
 #include "fsl_debug_console.h"
-
-
+#include "debug_io.h"
+#include "cli_key_code.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -75,9 +14,9 @@
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-static int32_t HelpCommand(p_shell_context_t context, int32_t argc, char **argv); /*!< help command */
+static int32_t HelpCommand( int32_t argc, char **argv); /*!< help command */
 
-static int32_t ExitCommand(p_shell_context_t context, int32_t argc, char **argv); /*!< exit command */
+static int32_t ExitCommand( int32_t argc, char **argv); /*!< exit command */
 
 static int32_t ParseLine(const char *cmd, uint32_t len, char *argv[SHELL_MAX_ARGS]); /*!< parse line command */
 
@@ -89,7 +28,7 @@ static void GetHistoryCommand(p_shell_context_t context, uint8_t hist_pos); /*!<
 
 static void AutoComplete(p_shell_context_t context); /*!< auto complete command */
 
-static uint8_t GetChar(p_shell_context_t context); /*!< get a char from communication interface */
+
 
 static int32_t StrLen(const char *str); /*!< get string length */
 
@@ -122,7 +61,6 @@ void SHELL_Init(
     memset_s(context, sizeof(shell_context_struct),0,sizeof(shell_context_struct));
     context->send_data_func = send_cb;
     context->recv_data_func = recv_cb;
-    context->printf = shell_printf;
     context->prompt = prompt;
 
     SHELL_RegisterCommand(&xHelpCommand);
@@ -140,7 +78,7 @@ int32_t SHELL_Main(p_shell_context_t context)
     }
 
     context->exit = false;
-    context->printf(context->prompt);
+    debug_printf(context->prompt);
 
     while (1)
     {
@@ -148,7 +86,8 @@ int32_t SHELL_Main(p_shell_context_t context)
         {
             break;
         }
-        ch = GetChar(context);
+        debug_get_ch(&ch);
+
 
         /* Special key */
         if (ch == KEY_ESC)
@@ -190,14 +129,14 @@ int32_t SHELL_Main(p_shell_context_t context)
                 case 'D': /* Left key */
                     if (context->c_pos)
                     {
-                        context->printf("\b");
+                        debug_printf("\b");
                         context->c_pos--;
                     }
                     break;
                 case 'C': /* Right key */
                     if (context->c_pos < context->l_pos)
                     {
-                        context->printf("%c", context->line[context->c_pos]);
+                        debug_printf("%c", context->line[context->c_pos]);
                         context->c_pos++;
                     }
                     break;
@@ -213,7 +152,7 @@ int32_t SHELL_Main(p_shell_context_t context)
             /* Move the cursor to the beginning of line */
             for (i = 0; i < context->c_pos; i++)
             {
-                context->printf("\b");
+                debug_printf("\b");
             }
             /* Do auto complete */
             AutoComplete(context);
@@ -246,17 +185,17 @@ int32_t SHELL_Main(p_shell_context_t context)
                 &context->line[context->c_pos + 1],
                         context->l_pos - context->c_pos);
                 context->line[context->l_pos] = 0;
-                context->printf("\b%s  \b", &context->line[context->c_pos]);
+                debug_printf("\b%s  \b", &context->line[context->c_pos]);
 
                 /* Reset position */
                 for (i = context->c_pos; i <= context->l_pos; i++)
                 {
-                    context->printf("\b");
+                    debug_printf("\b");
                 }
             }
             else /* Normal backspace operation */
             {
-                context->printf("\b \b");
+                debug_printf("\b \b");
                 context->line[context->l_pos] = 0;
             }
             continue;
@@ -274,12 +213,12 @@ int32_t SHELL_Main(p_shell_context_t context)
         /* Handle end of line, break */
         if ((ch == '\r') || (ch == '\n'))
         {
-            context->printf("\r\n");
+            debug_printf("\r\n");
             ProcessCommand(context, context->line);
             /* Reset all params */
             context->c_pos = context->l_pos = 0;
             context->hist_current = 0;
-            context->printf(context->prompt);
+            debug_printf(context->prompt);
             memset_s(context->line,  sizeof(context->line),0,sizeof(context->line));
             continue;
         }
@@ -291,17 +230,17 @@ int32_t SHELL_Main(p_shell_context_t context)
                    &context->line[context->c_pos],
                     context->l_pos - context->c_pos);
             context->line[context->c_pos] = ch;
-            context->printf("%s", &context->line[context->c_pos]);
+            debug_printf("%s", &context->line[context->c_pos]);
             /* Move the cursor to new position */
             for (i = context->c_pos; i < context->l_pos; i++)
             {
-                context->printf("\b");
+                debug_printf("\b");
             }
         }
         else
         {
             context->line[context->l_pos] = ch;
-            context->printf("%c", ch);
+            debug_printf("%c", ch);
         }
 
         ch = 0;
@@ -311,22 +250,21 @@ int32_t SHELL_Main(p_shell_context_t context)
     return 0;
 }
 
-static int32_t HelpCommand(p_shell_context_t context, int32_t argc, char **argv)
+static int32_t HelpCommand(  int32_t argc, char **argv)
 {
     uint8_t i = 0;
 
     for (i = 0; i < g_RegisteredCommands.numberOfCommandInList; i++)
     {
-        context->printf(g_RegisteredCommands.CommandList[i]->pcHelpString);
+        debug_printf(g_RegisteredCommands.CommandList[i]->pcHelpString);
     }
     return 0;
 }
 
-static int32_t ExitCommand(p_shell_context_t context, int32_t argc, char **argv)
+static int32_t ExitCommand( int32_t argc, char **argv)
 {
     /* Skip warning */
-    context->printf("\r\nSHELL exited\r\n");
-    context->exit = true;
+    debug_printf("\r\nSHELL exited\r\n");
     return 0;
 }
 
@@ -379,7 +317,7 @@ static void ProcessCommand(p_shell_context_t context, const char *cmd)
 
     if ((tmpCommand != NULL) && (flag == 1U))
     {
-      context->printf("\r\nType 'help' to see the list of commands.\r\n\r\n");
+      debug_printf("\r\nType 'help' to see the list of commands.\r\n\r\n");
 
       tmpCommand = NULL;
     }
@@ -403,12 +341,12 @@ static void ProcessCommand(p_shell_context_t context, const char *cmd)
                 context->hist_count++;
             }
         }
-        tmpCommand->pFuncCallBack(context, argc, argv);
+        tmpCommand->pFuncCallBack( argc, argv);
         tmpCommand = NULL;
     }
     else
     {
-      context->printf("\r\nType 'help' to see the available commands.\r\n\r\n");
+      debug_printf("\r\nType 'help' to see the available commands.\r\n\r\n");
 
       tmpCommand = NULL;
     }
@@ -435,14 +373,14 @@ static void GetHistoryCommand(p_shell_context_t context, uint8_t hist_pos)
         memset_s(context->line,sizeof(context->line),'\0' , tmp);
         for (i = 0; i < tmp; i++)
         {
-            context->printf("\b \b");
+            debug_printf("\b \b");
         }
     }
 
     context->l_pos = StrLen(context->hist_buf[hist_pos]);
     context->c_pos = context->l_pos;
     StrCopy(context->line, context->hist_buf[hist_pos], context->l_pos);
-    context->printf(context->hist_buf[hist_pos]);
+    debug_printf(context->hist_buf[hist_pos]);
 }
 
 static void AutoComplete(p_shell_context_t context)
@@ -461,11 +399,11 @@ static void AutoComplete(p_shell_context_t context)
     {
         return;
     }
-    context->printf("\r\n");
+    debug_printf("\r\n");
     /* Empty tab, list all commands */
     if (context->line[0] == '\0')
     {
-        HelpCommand(context, 0, NULL);
+        HelpCommand( 0, NULL);
         return;
     }
     /* Do auto complete */
@@ -480,7 +418,7 @@ static void AutoComplete(p_shell_context_t context)
                 namePtr = cmdName;
                 minLen = StrLen(namePtr);
                 /* Show possible matches */
-                context->printf("%s\r\n", cmdName);
+                debug_printf("%s\r\n", cmdName);
                 continue;
             }
             len = StrCompare(namePtr, cmdName, StrLen(namePtr));
@@ -499,7 +437,7 @@ static void AutoComplete(p_shell_context_t context)
     {
         StrCopy(context->line, namePtr, minLen);
     }
-    context->printf("%s%s", context->prompt, context->line);
+    debug_printf("%s%s", context->prompt, context->line);
     return;
 }
 
@@ -611,43 +549,11 @@ int32_t SHELL_RegisterCommand(const shell_command_context_t *command_context)
     return result;
 }
 
-static uint8_t GetChar(p_shell_context_t context)
-{
-    uint8_t ch;
-
-#if SHELL_USE_FILE_STREAM
-    ch = fgetc(context->STDIN);
-#else
-    context->recv_data_func(&ch, 1U);
-#endif
-    return ch;
-}
 
 
 
 
 
-
-
-
-
-
-void SHELL_input_init(
-    p_shell_context_t context, send_data_cb_t send_cb, recv_data_cb_t recv_cb, printf_data_t shell_printf)
-{
-    assert(send_cb != NULL);
-    assert(recv_cb != NULL);
-
-    assert(shell_printf != NULL);
-
-    /* Memset for context */
-    memset_s(context, sizeof(shell_context_struct),0, sizeof(shell_context_struct));
-    context->send_data_func = send_cb;
-    context->recv_data_func = recv_cb;
-    context->printf = shell_printf;
-    context->prompt = NULL;
-
-}
 
 
 static void inputCommand(p_shell_context_t context)
@@ -678,7 +584,7 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
     uint8_t ch;
     int32_t i;
 
-    if (!context)
+    if (context==NULL)
     {
         return -1;
     }
@@ -693,26 +599,28 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
         {
             break;
         }
-        ch = GetChar(context);
-        /* Special key */
 
-        if(ch== KEY_ETX)
+        debug_get_ch(&ch);
+
+        
+
+        if(ch== KEY_CODE_CTRL_C)
         {
-            context->printf("\r\nctrl+c\r\n");
+            debug_puts("\r\nCtrl+c\r\n");
             context->c_pos = context->l_pos = 0;
             context->hist_current = 0;
-            *key = KEY_ETX;
+            *key = KEY_CODE_CTRL_C;
             return 0;
         }
-        else if(ch == KEY_DC1)
+        else if(ch == KEY_CODE_CTRL_Q)
         {
-            context->printf("\r\nctrl+q\r\n");
+            debug_puts("\r\nCtrl+q\r\n");
             context->c_pos = context->l_pos = 0;
             context->hist_current = 0;
-            *key = KEY_EXIT_PROGRAM;
+            *key = KEY_CODE_CTRL_Q;
             return 0;
         }
-        else if(ch == KEY_ESC)
+        else if(ch == KEY_CODE_ESC)
         {
             context->stat = kSHELL_Special;
             continue;
@@ -751,14 +659,14 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
                 case 'D': /* Left key */
                     if (context->c_pos)
                     {
-                        context->printf("\b");
+                        debug_printf("\b");
                         context->c_pos--;
                     }
                     break;
                 case 'C': /* Right key */
                     if (context->c_pos < context->l_pos)
                     {
-                        context->printf("%c", context->line[context->c_pos]);
+                        debug_printf("%c", context->line[context->c_pos]);
                         context->c_pos++;
                     }
                     break;
@@ -774,7 +682,7 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
             /* Move the cursor to the beginning of line */
             for (i = 0; i < context->c_pos; i++)
             {
-                context->printf("\b");
+                debug_put_ch('\b');
             }
             /* Do auto complete */
             AutoComplete(context);
@@ -807,17 +715,17 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
                 &context->line[context->c_pos + 1],
                         context->l_pos - context->c_pos);
                 context->line[context->l_pos] = 0;
-                context->printf("\b%s  \b", &context->line[context->c_pos]);
+                debug_printf("\b%s  \b", &context->line[context->c_pos]);
 
                 /* Reset position */
                 for (i = context->c_pos; i <= context->l_pos; i++)
                 {
-                    context->printf("\b");
+                    debug_printf("\b");
                 }
             }
             else /* Normal backspace operation */
             {
-                context->printf("\b \b");
+                debug_printf("\b \b");
                 context->line[context->l_pos] = 0;
             }
             continue;
@@ -835,7 +743,7 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
         /* Handle end of line, break */
         if ((ch == '\r') || (ch == '\n'))
         {
-            context->printf("\r\n");
+            debug_printf("\r\n");
             context->c_pos = context->l_pos = 0;
             context->hist_current = 0;
 
@@ -850,17 +758,18 @@ int32_t SHELL_recv(p_shell_context_t context,uint32_t *key)
                     &context->line[context->c_pos],
                     context->l_pos - context->c_pos);
             context->line[context->c_pos] = ch;
-            context->printf("%s", &context->line[context->c_pos]);
+            debug_printf("%s", &context->line[context->c_pos]);
             /* Move the cursor to new position */
             for (i = context->c_pos; i < context->l_pos; i++)
             {
-                context->printf("\b");
+               
+                debug_put_ch('\b');
             }
         }
         else
         {
             context->line[context->l_pos] = ch;
-            context->printf("%c", ch);
+            debug_printf("%c", ch);
         }
 
         ch = 0;

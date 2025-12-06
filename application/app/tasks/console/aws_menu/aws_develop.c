@@ -53,9 +53,9 @@ int32_t menu_manage_print_config_all(void)
   debug_printf("CDMA 포트        :%d\r\n", config.cdma_port);
 
   debug_printf("CDMA 종류        :%s\r\n", ITEM_LIST(config.cdma_model, cdmaModellList));
-  debug_printf("이더넷 사용      :%s\r\n", ITEM_LIST((int32_t)config.eth_active, enableList));
-  debug_printf("CDMA 사용        :%s\r\n", ITEM_LIST((int32_t)config.cdma_active, enableList));
-  debug_printf("직접통신         :%s\r\n", ITEM_LIST((int32_t)config.direct_active, enableList));
+  debug_printf("이더넷 사용      :%s\r\n", ITEM_LIST((int32_t)config.eth_active, enable_list_kor));
+  debug_printf("CDMA 사용        :%s\r\n", ITEM_LIST((int32_t)config.cdma_active, enable_list_kor));
+  debug_printf("직접통신         :%s\r\n", ITEM_LIST((int32_t)config.direct_active, enable_list_kor));
 
   debug_printf("직접통신 속도    :%d\r\n", ITEM_LIST((int32_t)config.direct_baud_index, baud_list_eng)); 
   debug_printf("패널 종류        :%s\r\n", ITEM_LIST(config.panel_model, panelList));
@@ -275,7 +275,7 @@ int32_t menu_task_print_force(void)
 
   while(1)
   {
-    status = confirm_continue("task printf 강제출력하겠습니까?",&ok);
+    status = view_confirm_continue("task printf 강제출력하겠습니까?",&ok);
     if(status != MENU_OK)
     break;
 
@@ -316,7 +316,7 @@ int32_t menu_task_telnet(void)
   debug_printf("텔넷 PORT(중계,로컬공통):%d\r\n", port);
 
   debug_printf("텔넷 모드 설정\r\n");
-  status = input_decimal_prompt("텔넷모드(0:서버 1:클라이언트(중계모드))", &a, 0, 1);
+  status = view_input_decimal("텔넷모드(0:서버 1:클라이언트(중계모드))", &a, 0, 1);
 
   if (status != MENU_OK)
   {
@@ -342,7 +342,7 @@ int32_t menu_task_telnet(void)
 
   WRITE_CFG(dev_telnet_ip);
 
-  status = input_decimal_prompt("port",&a,0,65535);
+  status = view_input_decimal("port",&a,0,65535);
 
   if (status != MENU_OK)
   {
@@ -359,7 +359,7 @@ int32_t aws_menu_develop(void)
   int choice, status;
 
 
-  char* menu[] = {"인터럽트 설정 확인",
+  const char* menu[] = {"인터럽트 설정 확인",
                   "메모리 테스트",
                   "센서 설정 전부 확인",
                   "로그 확인",
@@ -373,7 +373,7 @@ int32_t aws_menu_develop(void)
 
     while(1)
     {
-      status = choice_menu(24, "개발자", menu, _countof(menu),&choice);
+      status = view_input_combobox( "개발자", menu, _countof(menu),&choice);
       if (status != MENU_OK)
         return status;
 

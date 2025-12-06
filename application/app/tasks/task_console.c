@@ -9,7 +9,7 @@
 #include "boot_version.h"
 #include "cmsis_os.h"
 #include "cli\fsl_shell.h"
-#include "cli\fsl_debug_console.h"
+
 #include "cli\console_scanf.h"
 #include "console_login.h"
 #include "drv_rs232.h"
@@ -49,7 +49,7 @@ void print_signature(void)
   uint8_t rel;
   DATE_TIME_BUF ct;
 
-  debug_printf("\r\n");
+  debug_printf("\r\n\r\n");
 
   debug_printf("┌──────────────────────────────────────────────┐\r\n");
   debug_printf("│ HWAJIN T&I CO.,LTD.                          │\r\n");
@@ -76,55 +76,32 @@ void print_signature(void)
 }
 
 
-void SHELL_SendDataCallback(uint8_t* buf, uint32_t len)
-{
-  debug_send(buf,len);
-}
-
-void SHELL_ReceiveDataCallback(uint8_t* buffer, uint32_t len)
-{
-  debug_recv(buffer,len,osWaitForever);
-}
-
 
 void consoleTask(void *arg)
 {
+  char buffer[100];
+  const char *prompt=NULL;
   shell_context_struct user_context;
   uint8_t instance = 0;
   int mode = (int)arg;
-  char buffer[100];
-  const char *cli_aws = "\x1B[32mAWS>> \x1B[37m";
-  const char *cli_test = "\x1B[32mAWS_TEST>> \x1B[37m";
 
-  osDelay(1000);
 
-  debug_printf("\r\n\r\n");
-  // debug_printf(VT100_CLEAR_SCREEN);
-  // debug_printf(VT100_CURSOR_HOME);
   print_signature();
-
   check_login();
   
-
-  if (read_last_error(buffer,sizeof(buffer)))
+  if(read_last_error(buffer,sizeof(buffer)))
   {
-    debug_printf("%s\r\n",buffer);
+    debug_printf("Last error:%s\r\n",buffer);
   }
   
-  debug_printf("alarm log count:%d\r\n",alarm_get_log_count());
-  DbgConsole_Init(instance, 0, DEBUG_CONSOLE_DEVICE_TYPE_RS232, 0);
+  debug_printf("Alarm log count:%d\r\n",alarm_get_log_count());
 
-  if(mode==0)
-  {
-    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf,
-               (char *)cli_aws);
-  }
-  else
-  {
-    SHELL_Init(&user_context, SHELL_SendDataCallback, SHELL_ReceiveDataCallback, debug_printf,
-               (char *)cli_test);
-  }
-  console_scanf_init(&user_context);
+  
+  prompt = (mode==0)?"\x1B[32mAWS>> \x1B[37m":"\x1B[32mAWS_TEST>> \x1B[37m";
+
+  SHELL_Init(&user_context, debug_send, debug_recv, debug_printf,(char *)prompt);
+
+  console_scanf_init();
 
   SHELL_RegisterCommand(&printCmd);
   SHELL_RegisterCommand(&testCmd);

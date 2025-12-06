@@ -6,10 +6,10 @@
 
 
 
-  int32_t mcu_pin(p_shell_context_t ctx, int32_t argc, char** argv);
+  int32_t mcu_pin( int32_t argc, char** argv);
   int32_t pcb_pin(void);
 
-      int32_t print_di(p_shell_context_t ctx, int32_t argc, char** argv);
+      int32_t print_di( int32_t argc, char** argv);
 
-  int32_t test_pcb(p_shell_context_t ctx, int32_t argc, char** argv);
+  int32_t test_pcb( int32_t argc, char** argv);
 #endif

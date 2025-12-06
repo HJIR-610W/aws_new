@@ -160,12 +160,12 @@ int aws_menu_data(void)
 {
   int choice;
   int status;
-  char* menu[] = {"1분자료 확인",
+  const char* menu[] = {"1분자료 확인",
                   "1분자료 편집(구현 예정)"};
 
   while (1)
   {
-    status = choice_menu(AWS_DATA_MENU_WITDH, "데이터", menu, _countof(menu), &choice);
+    status = view_input_combobox( "데이터", menu, _countof(menu), &choice);
     if (status != MENU_OK)
       break ;
 

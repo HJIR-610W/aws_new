@@ -8,14 +8,14 @@
 #include "console_define.h"
 #include "console_utile.h"
 
-int32_t menu_root(p_shell_context_t ctx, int32_t argc, char **argv)
+int32_t menu_root( int32_t argc, char **argv)
 {
   aws_menu();
 
   return 0;
 }
 
-int32_t menu_develop(p_shell_context_t ctx, int32_t argc, char **argv)
+int32_t menu_develop( int32_t argc, char **argv)
 {
   int status;
   int ok;

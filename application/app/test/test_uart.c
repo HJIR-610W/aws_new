@@ -179,13 +179,13 @@ void test_uart(void)
   debug_printf("주의: RS232 A,B는 하드웨어 점퍼 설정 필요\r\n");
   debug_printf("기능: 포트이름 전송 후 1초간 수신 데이터 에코 및 HEX 출력\r\n\r\n");
 
-  if(input_decimal_prompt("테스트할 포트를 선택하세요 (0:VHF, 1:TTL, 2:A, 3:B, 4:C, 5:D, 6:CDMA)", &port_index, 0, 6) != MENU_OK)
+  if(view_input_decimal("테스트할 포트를 선택하세요 (0:VHF, 1:TTL, 2:A, 3:B, 4:C, 5:D, 6:CDMA)", &port_index, 0, 6) != MENU_OK)
   {
     port_index = 0;
     debug_printf("기본 포트 VHF로 설정합니다.\r\n");
   }
 
-  if(input_decimal_prompt("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
+  if(view_input_decimal("통신 속도를 입력해주세요", &baud, 1200, 115200) != MENU_OK)
   {
     baud = 57600;
     debug_printf("기본 속도 %d로 설정합니다.\r\n", baud);

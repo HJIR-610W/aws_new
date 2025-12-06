@@ -1,32 +1,3 @@
-/*
- * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of Freescale Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 
 #ifndef _FSL_SHELL_H_
 #define _FSL_SHELL_H_
@@ -73,7 +44,7 @@
 
 /*! @brief Macro to set maximum count of history commands. */
 #ifndef SHELL_HIST_MAX
-#define SHELL_HIST_MAX (3U)
+#define SHELL_HIST_MAX (5U)
 #endif
 
 /*! @brief Macro to set maximum count of commands. */
@@ -82,10 +53,10 @@
 #endif
 
 /*! @brief Shell user send data callback prototype.*/
-typedef void (*send_data_cb_t)(uint8_t *buf, uint32_t len);
+typedef void (*send_data_cb_t)(const uint8_t *buf, size_t len);
 
 /*! @brief Shell user receiver data callback prototype.*/
-typedef void (*recv_data_cb_t)(uint8_t *buf, uint32_t len);
+typedef int32_t (*recv_data_cb_t)(uint8_t *buf, size_t len,uint32_t timeout_ms);
 
 /*! @brief Shell user printf data prototype.*/
 typedef int (*printf_data_t)(const char *format, ...);
@@ -109,14 +80,10 @@ typedef struct _shell_context_struct
     uint8_t cmd_num;              /*!< Number of user commands */
     uint8_t l_pos;                /*!< Total line position */
     uint8_t c_pos;                /*!< Current line position */
-#if SHELL_USE_FILE_STREAM
-    FILE *STDOUT, *STDIN, *STDERR;
-#else
     send_data_cb_t send_data_func; /*!< Send data interface operation */
     recv_data_cb_t recv_data_func; /*!< Receive data interface operation */
     printf_data_t printf;
     puts_data_t puts_data_func;
-#endif
     uint16_t hist_current;                            /*!< Current history command in hist buff*/
     uint16_t hist_count;                              /*!< Total history command in hist buff*/
     char hist_buf[SHELL_HIST_MAX][SHELL_BUFFER_SIZE]; /*!< History buffer*/
@@ -124,7 +91,7 @@ typedef struct _shell_context_struct
 } shell_context_struct, *p_shell_context_t;
 
 /*! @brief User command function prototype. */
-typedef int32_t (*cmd_function_t)(p_shell_context_t context, int32_t argc, char **argv);
+typedef int32_t (*cmd_function_t)(int32_t argc, char **argv);
 
 /*! @brief User command data structure. */
 typedef struct _shell_command_context
@@ -174,30 +141,15 @@ extern "C" {
 * @param recv_cb The pointer to call back receive data function.
 * @param prompt  The string prompt of Shell
 */
-void SHELL_Init(p_shell_context_t context,
-                send_data_cb_t send_cb,
-                recv_data_cb_t recv_cb,
-                printf_data_t shell_printf,
+void SHELL_Init(p_shell_context_t context,send_data_cb_t send_cb,recv_data_cb_t recv_cb,printf_data_t shell_printf,
                 char *prompt);
 
-/*!
- * @brief Shell register command.
- * @param   command_context The pointer to the command data structure.
- * @return  -1 if error or 0 if success
- */
-int32_t SHELL_RegisterCommand(const shell_command_context_t *command_context);
 
-/*!
- * @brief Main loop for Shell.
- * Main loop for Shell; After this function is called, Shell begins to initialize the basic variables and starts to
- * work.
- * @param    context The pointer to the Shell environment and  runtime states.
- * @return   This function does not return until Shell command exit was called.
- */
+int32_t SHELL_RegisterCommand(const shell_command_context_t *command_context);
 int32_t SHELL_Main(p_shell_context_t context);
-void SHELL_input_init(
-    p_shell_context_t context, send_data_cb_t send_cb, recv_data_cb_t recv_cb, printf_data_t shell_printf);
 int32_t SHELL_recv(p_shell_context_t context,uint32_t *key);
+
+
 /* @} */
 
 #if defined(__cplusplus)
