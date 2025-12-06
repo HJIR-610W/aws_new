@@ -21,11 +21,27 @@
 #include "io_interface.h"
 #include "shell.h"
 
+#define TELNET_MIRROR_USE 1
 
 #define DEBUG_UART_NUM BSP_UART_10_CDC
 
 
 io_if_t g_debug_uart_io;
+/*
+//디버깅 포트는 초기화 안되더라도  NULL이 안되게 한다. 실제 최종 send,recv 함수 안에서 에러 처리 
+telent 포트랑 미러링 때문에 
+injection 처리가 안된다.
+
+rs232이는 커넥터 연결 감지 없기때문에 항상 정상처리해야하며
+usb 인경우 초기화 실패 있지만 드라이버 자체에서 에러 처리 해야한다.
+
+여기서 debug 포트를 io 함수로 사용하는 이유는 
+debug포트가 꼭 uart가 아닐수도 있다.
+rs485
+tcp
+spi 등 입출력만 된다면 아무거나 가능하다.
+
+*/
 io_if_t *g_current_debug_io;
 
 io_ops_t g_uart_io_ops={.recv = drv_uart_io_recv,
@@ -152,13 +168,17 @@ int debug_scanf_s(const char *fmt, ...)
   return ret;
 }
 
+/**
+ * 
+ */
 void debug_inject(uint8_t *data,size_t len)
 {
   io_if_t io;
-  
- // io_inject(g_current_debug_io,data,len);
+
   io.dev_num = DEBUG_UART_NUM;
   g_uart_io_ops.inject(&io,data,len);
+
+  io_inject(g_current_debug_io,data,len);
 }
 
 void debug_dump(uint8_t *src, size_t size, uint32_t startAddr, uint32_t col)
@@ -319,13 +339,17 @@ int32_t debug_printf(const char *fmt, ...)
 void debug_send(const uint8_t *data, size_t len)
 {
   io_send(g_current_debug_io, data, len);
+#if TELNET_MIRROR_USE ==1
   telnet_send(data,len);
+#endif
 }
 
 void debug_put_ch(uint8_t ch)
 {
   io_send(g_current_debug_io, &ch, 1);
+  #if TELNET_MIRROR_USE ==1
   telnet_send(&ch,1);
+  #endif
 }
 
 void debug_puts(const uint8_t *string)
@@ -333,12 +357,14 @@ void debug_puts(const uint8_t *string)
   size_t len = strlen((char *)string);
 
   io_send(g_current_debug_io, string, len);
+  #if TELNET_MIRROR_USE ==1
   telnet_send(string, len);
+  #endif
 }
 
 int32_t debug_get_ch(uint8_t *buffer)
 {
-  return   io_recv(g_current_debug_io,buffer,1, 0xFFFFFFFF);
+  return io_recv(g_current_debug_io,buffer,1, 0xFFFFFFFF);
 }
 
 int32_t debug_get_ch_nonblocking(uint8_t *buffer)
@@ -356,23 +382,23 @@ int32_t debug_get_ch_nonblocking(uint8_t *buffer)
 int32_t debug_init(void)
 {
   int32_t result;
-  
   uart_config_t uart_config={.dataLen=UART_DATA_LEN_8,.stop_bit=0};
+
   uart_config.baud = 115200;
   uart_config.parity_index = PARITY_NONE;
   uart_config.stop_bit = UART_STOP_BIT_1;
   
+  drv_uart_init(DEBUG_UART_NUM, &uart_config,"debug");
 
-   drv_uart_init(DEBUG_UART_NUM, &uart_config,"debug");
-
-   io_init(&g_debug_uart_io,IO_COM_TYPE_RS232,&g_uart_io_ops,DEBUG_UART_NUM);
-   g_current_debug_io = &g_debug_uart_io;
+  io_init(&g_debug_uart_io,IO_COM_TYPE_RS232,&g_uart_io_ops,DEBUG_UART_NUM);
+  g_current_debug_io = &g_debug_uart_io;
     
-    return 1;
+  return 1;
 
 }
 
 void debug_deinit(void)
 {
+  drv_uart_deinit(DEBUG_UART_NUM);
   g_current_debug_io = NULL;
 }

@@ -76,7 +76,7 @@ int32_t read_snow_config(void)
   {
     draw_snow_config_page(&lcd_win,&cfg);
     screen_refresh();
-    key = get_button_key(1000);
+    key = get_menu_key(1000);
 
     if (key == KEY_CODE_CTRL_Q)
     {
@@ -121,7 +121,7 @@ int32_t ctrl_hj_snow(void)
     draw_ctrl_hj_snow_menu(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_menu_key(1000);
 
     if (key == KEY_CODE_CTRL_Q)
     {

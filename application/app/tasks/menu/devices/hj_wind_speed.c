@@ -52,7 +52,7 @@ int32_t ctrl_hj_wind_speed(void)
     draw_ctrl_hj_wind_speed_page(&menu);
     screen_refresh();
 
-    key = get_button_key(1000);
+    key = get_menu_key(1000);
 
     if (key == KEY_CODE_CTRL_Q)
     {

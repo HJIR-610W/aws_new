@@ -17,9 +17,6 @@ static int32_t serial_key = -1;
 osMessageQueueId_t g_button_queue_id = NULL;
 
 
-
-
-
 void send_key_cmd(const char *cmd)
 {
   if(serial_key !=-1)

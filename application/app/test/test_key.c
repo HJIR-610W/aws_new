@@ -2,6 +2,7 @@
 
 #include "app_key.h"
 #include "debug_io.h"
+#include "menu_handler.h"
 
 void test_key(void)
 {
@@ -12,7 +13,7 @@ void test_key(void)
   while(1)
   {
     scan_key();
-    key = get_button_key(0);
+    key = get_menu_key(0);
     
     if(key !=KEY_CODE_NONE)
     {

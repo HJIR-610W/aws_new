@@ -40,11 +40,15 @@ void unregister_key_callback(void)
 }
 
 
+/**
+ * @brief 화면 조작시 필요한 키처리
+ * @note 키가 눌릴때마다 예외 처리 할일이 있으면 callback 함수 호출
+ */
 int32_t get_menu_key(uint32_t timeout_ms)
 {
   int32_t key;
 
-    key =  get_button_key(timeout_ms);
+    key =  get_menu_key(timeout_ms);
 
     if (key_callback && key !=KEY_CODE_NONE )
     {

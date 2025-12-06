@@ -1432,7 +1432,7 @@ void menuTask(void *arg)
     wait_refrech_trigger();//task_aws에서 값이 동기화신호 줌
     //
 
-    key = get_button_key(0); 
+    key = get_menu_key(0); 
     if (key == KEY_CODE_CTRL_C)
     {
       setup_menu();
@@ -1464,7 +1464,7 @@ void menuTask(void *arg)
       {
         screen_off();
 
-        key = get_button_key(0xFFFFFFFF); // 무한 대기
+        key = get_menu_key(0xFFFFFFFF); // 무한 대기
         screen_off_time = OS_GET_TICK();
         screen_on();
       }

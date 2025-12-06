@@ -7,7 +7,7 @@
 #include "util_memory.h"
 
 #include "drv_fram.h"
-#include "app_flash.h"
+
 #include "mcu_debug.h"
 #include "const_string.h"
 #include "config_app.h"

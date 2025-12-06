@@ -2,7 +2,7 @@
 
 #include "tasks\task_start.h"
 
-#include "app_drivers\app_flash.h"
+
 #include "app_file.h"
 #include "application\app\tasks\logging\app_dataLogging.h"
 #include "application\app\tasks\logging\app_logging.h"
