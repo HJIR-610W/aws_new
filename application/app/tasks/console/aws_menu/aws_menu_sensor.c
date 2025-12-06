@@ -12,9 +12,9 @@
 #include "system_err.h"
 #include "temperature\hj_temperature.h"
 #include "temperature\temperature_define.h"
-#include "terminal.h"
+
 #include "util_memory.h"
-#include "vt100_command.h"
+ 
 #include "util_stdio.h"
 #include "menu_handler.h"
 

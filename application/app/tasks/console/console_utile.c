@@ -19,7 +19,7 @@
 #include "bsp_delay.h"
 #include "util_filter.h"
 #include "util_time.h"
-#include "vt100_command.h"
+ 
 #include "cli_input.h"
 #include "cli_key_code.h"
 #include "util_stdio.h"

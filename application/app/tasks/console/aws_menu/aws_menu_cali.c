@@ -29,7 +29,7 @@
 #include "bsp_delay.h"
 #include "util_filter.h"
 #include "util_time.h"
-#include "vt100_command.h"
+ 
 #include "cli_key_code.h"
 extern float g_current_temp;
 

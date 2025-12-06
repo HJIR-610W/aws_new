@@ -12,8 +12,9 @@
 #include "drv_do.h"
 #include "pcb_define.h"
 #include "util_memory.h"
-#include "vt100_command.h"
+ 
 #include "console_test.h"
+
 
 
 void print_gpio_states_in_table_old()
@@ -189,24 +190,24 @@ int32_t pcb_pin(void)
           (0x1 << (pin * 2)))  // 출력 모드 확인 (MODER = 01)
       {
         uint8_t pin_state = (port->ODR & (1 << pin)) ? 1 : 0;  // ODR 출력력
-        vt100_printfColor(GREEN, "%-20s[%d] ", pcbPinNameList[j][pin],
+        debug_printf_color((int32_t)GREEN, "%-20s[%d] ", pcbPinNameList[j][pin],
                           pin_state);  // 출력핀이 아닌경우
       }
       else if ((port->MODER & (0x3 << (pin * 2))) == 0)  // 입력력
       {
         uint8_t pin_state =
             (port->IDR & (1 << pin)) ? 1 : 0;  // IDR에서 핀 상태 읽기
-        vt100_printfColor(WHITE, "%-20s[%d] ", pcbPinNameList[j][pin],
+        debug_printf_color((int32_t)WHITE, "%-20s[%d] ", pcbPinNameList[j][pin],
                           pin_state);  // 출력핀이 아닌경우
       }
       else if ((port->MODER & (0x3 << (pin * 2))) ==
                (0x11 << (pin * 2)))  // 출력 모드 확인 (MODER = 01)
       {
-        vt100_printfColor(YELLOW, "%-20s[A] ", pcbPinNameList[j][pin]);
+        debug_printf_color((int32_t)YELLOW, "%-20s[A] ", pcbPinNameList[j][pin]);
       }
       else
       {
-        vt100_printfColor(YELLOW, "%-20s[F] ", pcbPinNameList[j][pin]);
+        debug_printf_color((int32_t)YELLOW, "%-20s[F] ", pcbPinNameList[j][pin]);
       }
     }
     debug_printf("\r\n");
@@ -230,24 +231,24 @@ int32_t pcb_pin(void)
       {
         uint8_t pin_state =
             (port->ODR & (1 << pin)) ? 1 : 0;  // ODR에서 핀 상태 읽기
-        vt100_printfColor(GREEN, "%-20s[%d] ", pcbPinNameList[j][pin],
+        debug_printf_color((int32_t)GREEN, "%-20s[%d] ", pcbPinNameList[j][pin],
                           pin_state);  // 출력핀이 아닌경우
       }
       else if ((port->MODER & (0x3 << (pin * 2))) == 0)  // 입력력
       {
         uint8_t pin_state =
             (port->IDR & (1 << pin)) ? 1 : 0;  // IDR에서 핀 상태 읽기
-        vt100_printfColor(WHITE, "%-20s[%d] ", pcbPinNameList[j][pin],
+        debug_printf_color((int32_t)WHITE, "%-20s[%d] ", pcbPinNameList[j][pin],
                           pin_state);  // 출력핀이 아닌경우
       }
       else if ((port->MODER & (0x3 << (pin * 2))) ==
                (0x11 << (pin * 2)))  // 출력 모드 확인 (MODER = 01)
       {
-        vt100_printfColor(YELLOW, "%-20s[A] ", pcbPinNameList[j][pin]);
+        debug_printf_color((int32_t)YELLOW, "%-20s[A] ", pcbPinNameList[j][pin]);
       }
       else
       {
-        vt100_printfColor(YELLOW, "%-20s[F] ", pcbPinNameList[j][pin]);
+        debug_printf_color((int32_t)YELLOW, "%-20s[F] ", pcbPinNameList[j][pin]);
       }
     }
     debug_printf("\r\n");

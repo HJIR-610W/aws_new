@@ -7,7 +7,7 @@
 #include "system_err.h"
 #include "pcb_define.h"
 #include "util_time.h"
-#include "vt100_command.h"
+ 
 #include "os_user_def.h"
 #include "app_file.h"
 #include "task_event.h"

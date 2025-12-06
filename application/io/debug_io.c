@@ -7,7 +7,7 @@
 #include <string.h>
 
 #include "cli_input.h"
-#include "terminal.h"
+
 #include "drv_rs232.h"
 #include "drv_rs485.h"
 #include "pcb_define.h"

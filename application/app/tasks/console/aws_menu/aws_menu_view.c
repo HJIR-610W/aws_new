@@ -23,7 +23,7 @@
 #include "task_tcpServer.h"
 #include "task_client.h"
 #include "task_measure.h"
-#include "vt100_command.h"
+ 
 #include "util_stdio.h"
 #include "task_system.h"
 #include "drv_system.h"

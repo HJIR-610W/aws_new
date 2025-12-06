@@ -2921,13 +2921,13 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\terminal_bridge.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
@@ -2954,21 +2954,6 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</name>
-                </file>
-            </group>
-            <group>
-                <name>terminal</name>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\terminal.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\io\terminal\vt100_command.h</name>
                 </file>
             </group>
             <file>

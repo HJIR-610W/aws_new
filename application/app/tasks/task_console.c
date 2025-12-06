@@ -17,7 +17,7 @@
 #include "task_event.h"
 #include "util_time.h"
 #include "cli_input.h"
-#include "vt100_command.h"
+ 
 #include "console_test.h"
 #include "system_err.h"
 

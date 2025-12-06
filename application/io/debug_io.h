@@ -22,6 +22,20 @@
 
 #define ASCII_SPEICIAL    0x5B //   '['   
 
+#include "util_escape_sequence.h"
+
+typedef enum {
+    RED = 31,
+    GREEN = 32,
+    YELLOW = 33,
+    BLUE = 34,
+    MAGENTA = 35,
+    CYAN = 36,
+    WHITE = 37
+}color_t;
+
+
+
 void debug_init(void);
 int32_t debug_recv(uint8_t *buffer, size_t len, uint32_t timeout_ms);
 int32_t debug_get_ch(uint8_t *buffer);
