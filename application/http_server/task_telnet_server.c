@@ -190,11 +190,13 @@ static telnet_client_t* g_current_telnet_client = NULL;
 static void telnet_output_callback(const char* data, size_t len)
 {
     if (g_current_telnet_client && g_current_telnet_client->connected && 
-        telnet_is_socket_valid(g_current_telnet_client->socket) && data && len > 0) {
-        if (telnet_safe_send(g_current_telnet_client->socket, data, len) < 0) {
-            g_current_telnet_client->connected = false;
+        telnet_is_socket_valid(g_current_telnet_client->socket) && data && len > 0)
+        {
+            if (telnet_safe_send(g_current_telnet_client->socket, data, len) < 0) 
+            {
+                g_current_telnet_client->connected = false;
+            }
         }
-    }
 }
 
 static void telnet_process_data(telnet_client_t* client, const uint8_t* data, int len)
@@ -278,9 +280,10 @@ static void telnet_server_mode_task(void)
     struct sockaddr_in server_addr, client_addr;
     socklen_t client_len = sizeof(client_addr);
     int opt = 1;
-    uint16_t telnet_server_port = get_config_app()->dev_telnet_port;
+    uint16_t telnet_server_port = config.dev_telnet_port;
 
-    for (int i = 0; i < TELNET_MAX_CLIENTS; i++) {
+    for (int i = 0; i < TELNET_MAX_CLIENTS; i++)
+    {
         memset(&g_telnet_clients[i], 0, sizeof(telnet_client_t));
         g_telnet_clients[i].socket = -1;
         g_telnet_clients[i].connected = false;
@@ -382,7 +385,7 @@ static void telnet_server_mode_task(void)
         start_console((void *)0);
 
 
-            char client_ip_str[INET_ADDRSTRLEN];
+        char client_ip_str[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &client_addr.sin_addr, client_ip_str, sizeof(client_ip_str));
         task_printf("Telnet Server: New client connected %s:%u (socket: %d)\r\n", 
                    client_ip_str, ntohs(client_addr.sin_port), client_socket);
@@ -442,8 +445,8 @@ static void telnet_server_mode_task(void)
 
 static void telnet_client_mode_task(void)
 {
-  uint8_t* ip = get_config_app()->dev_telnet_ip;
-  uint16_t port = get_config_app()->dev_telnet_port;
+  uint8_t* ip = config.dev_telnet_ip;
+  uint16_t port = config.dev_telnet_port;
 
 
     snprintf(g_tcp_relay_client.relay_server_ip, sizeof(g_tcp_relay_client.relay_server_ip),
@@ -820,7 +823,7 @@ static void telnet_server_task(void* argument)
 
   osThreadFlagsWait(0x00000001, osFlagsWaitAny, osWaitForever);
 
-  g_telnet_mode = get_config_app()->dev_telnet_mode;
+  g_telnet_mode = config.dev_telnet_mode;
 
   if (g_telnet_mode == eTELNET_CLIENT)
   {  

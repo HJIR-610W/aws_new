@@ -118,9 +118,13 @@ void consoleTask(void *arg)
   }
 }
 
+
+//디버깅 포트 초기화 안된 상태에서 실행되면 recv가 계속 리턴되는 문제 발생
 void start_console(void *arg)
 {
-  if (s_console_task_id == NULL)
+
+  debug_init();
+  if(s_console_task_id == NULL)
   {
     s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
   }
@@ -130,9 +134,10 @@ void start_console(void *arg)
 
 void consoleTask_init(void *arg)
 {
-  debug_init();
-
-  s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
+  debug_init() ;
+  
+    s_console_task_id = osThreadNew(consoleTask, arg, &consoleTask_attributes);
+  
 }
 
 

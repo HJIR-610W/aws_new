@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "debug_io.h"
-
+#include "cmsis_os.h"
 #include "console_utile.h"
 #include "crypto_key.h"
 #include "task_logging.h"
@@ -26,7 +26,7 @@ void check_login(void)
 
  while(1)
  {
-  if(  debug_recv(&ch,1,0xFFFFFFFF))
+  if(  debug_recv(&ch,1,0xFFFFFFFF)>0)
   {
 
       buffer[cnt++] = ch;
@@ -57,10 +57,11 @@ void check_login(void)
       cnt = 0;
     }
   }
+
  }
 
 
-  if(strncmp(key,buffer,strlen(buffer))==0)
+  if(strncmp(key,buffer,strlen(key))==0 )
   {
     log_printf(L_INFO,"Login successful");    
     log_printf(L_ERROR,"Login successful");

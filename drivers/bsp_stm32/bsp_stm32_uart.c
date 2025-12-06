@@ -651,9 +651,12 @@ int32_t stm32_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
   {
     return 0;
   }
+  
+  if(uart_inst[num].stream_buffer)
+  {
   xBytesSent = xStreamBufferSend(uart_inst[num].stream_buffer, pData, dataLen,
                                  pdMS_TO_TICKS( 100 ));
-
+  }
   return xBytesSent;
 
 }

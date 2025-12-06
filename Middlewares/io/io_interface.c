@@ -139,6 +139,7 @@ void io_flush(io_if_t *io)
  {
     int ret;
 
+ 
   if ((io == NULL) || (data == NULL) || (len == 0U))
   {
     return ;
@@ -150,7 +151,7 @@ void io_flush(io_if_t *io)
     return ;
   }
 
-  if ((io->ops->recv) == NULL)
+  if ((io->ops->inject) == NULL)
   {
     return ;
   }

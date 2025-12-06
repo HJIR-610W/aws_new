@@ -59,6 +59,9 @@ int aws_menu(void)
   {
     status = view_input_combobox("AWS", menu, _countof(menu), &choice);
 
+    if(status!=MENU_OK)
+      continue;
+    
     switch (choice)
     {
       case MENU_NUMBER(MENU_INFO_DEF):

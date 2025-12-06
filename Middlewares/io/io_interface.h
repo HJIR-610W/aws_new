@@ -16,7 +16,8 @@ typedef enum
   IO_COM_TYPE_NONE = 0,
   IO_COM_TYPE_RS232,
   IO_COM_TYPE_RS485,
-  IO_COM_TYPE_TCP
+  IO_COM_TYPE_TCP,
+    IO_COM_TYPE_TELNET
 } io_com_type_t;
 
 /* ------------------------------------------

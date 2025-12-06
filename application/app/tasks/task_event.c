@@ -70,10 +70,10 @@ void isrEventTask(void *arg)
           reset_system("eSYSTEM_RESET");
           break;
          case eUSER_START_CONSOLE:
-            start_console((void *)0);
+          // start_console(0);
         break;
           case eUSER_STOP_CONSOLE:
-        //  stop_console();
+        //  debug_deinit();
         break;
             default : 
             break;

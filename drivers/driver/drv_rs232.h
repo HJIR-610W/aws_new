@@ -59,7 +59,7 @@ uint16_t rs232_get_port_name_list(const char **list,size_t listMax);
 int32_t drv_uart_io_send(io_if_t *io,const uint8_t *data,size_t len );
 int32_t drv_uart_io_recv(io_if_t *io,uint8_t *buffer,size_t len,uint32_t timeout_ms);
 void drv_uart_io_flush(io_if_t *io);
-
+void drv_uart_io_inject(io_if_t *io,uint8_t *data,size_t len);
 
 extern const char *g_rs232_owner_list[3];
 extern const char *rs232_port_name_list[3];

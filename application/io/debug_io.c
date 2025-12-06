@@ -21,17 +21,35 @@
 #include "io_interface.h"
 #include "shell.h"
 
-io_if_t g_debug_uart_io;
+
+#define DEBUG_UART_NUM BSP_UART_10_CDC
+
+
 io_if_t g_debug_uart_io;
 io_if_t *g_current_debug_io;
 
+io_ops_t g_uart_io_ops={.recv = drv_uart_io_recv,
+                        .send = drv_uart_io_send,
+                        .flush = drv_uart_io_flush,
+                        .ioctl = NULL,
+                        .inject = drv_uart_io_inject};
 
 
-void set_debug_io(io_if_t *debug_io)
+io_ops_t g_telnet_io_ops={.recv = telnet_io_recv,
+                          .send = telnet_io_send,
+                          .flush = telnet_io_flush,
+                          .ioctl = NULL,
+                          .inject =NULL};
+
+void debug_set_io(io_if_t *debug_io)
 {
   g_current_debug_io = debug_io;
 }
 
+void debug_set_io_default(void)
+{
+  g_current_debug_io = &g_debug_uart_io;
+}
 
 io_if_t *get_debug_io(void) 
 { 
@@ -93,7 +111,7 @@ int32_t debug_vprintf(const char *fmt, va_list ap)
 #endif
 
 
-    io_send(g_current_debug_io, (uint8_t *)ptr, strlen(ptr));
+    debug_send( (uint8_t *)ptr, strlen(ptr));
 
 
 #if PRINTF_HEAP_USE
@@ -136,7 +154,11 @@ int debug_scanf_s(const char *fmt, ...)
 
 void debug_inject(uint8_t *data,size_t len)
 {
-  io_inject(g_current_debug_io,data,len);
+  io_if_t io;
+  
+ // io_inject(g_current_debug_io,data,len);
+  io.dev_num = DEBUG_UART_NUM;
+  g_uart_io_ops.inject(&io,data,len);
 }
 
 void debug_dump(uint8_t *src, size_t size, uint32_t startAddr, uint32_t col)
@@ -281,7 +303,7 @@ int32_t debug_printf(const char *fmt, ...)
   ptr = printf_buff;
 #endif
 
-  io_send(g_current_debug_io,ptr,strlen((char*)ptr));
+  debug_send(ptr,strlen((char*)ptr));
 
 #if PRINTF_HEAP_USE
   if (temp)
@@ -297,13 +319,13 @@ int32_t debug_printf(const char *fmt, ...)
 void debug_send(const uint8_t *data, size_t len)
 {
   io_send(g_current_debug_io, data, len);
-  terminal_bridge_send_output((char *)data, len);
+  telnet_send(data,len);
 }
 
 void debug_put_ch(uint8_t ch)
 {
   io_send(g_current_debug_io, &ch, 1);
-  terminal_bridge_send_output((char *)&ch, 1);
+  telnet_send(&ch,1);
 }
 
 void debug_puts(const uint8_t *string)
@@ -311,7 +333,7 @@ void debug_puts(const uint8_t *string)
   size_t len = strlen((char *)string);
 
   io_send(g_current_debug_io, string, len);
-  terminal_bridge_send_output((char *)string, len);
+  telnet_send(string, len);
 }
 
 int32_t debug_get_ch(uint8_t *buffer)
@@ -325,14 +347,13 @@ int32_t debug_get_ch_nonblocking(uint8_t *buffer)
 }
 
 
-#define DEBUG_UART_NUM BSP_UART_10_CDC
 
 
-io_ops_t g_io_ops={.recv = drv_uart_io_recv,
-                   .send = drv_uart_io_send,
-                   .flush = drv_uart_io_flush,
-                   .ioctl = NULL};
-void debug_init(void)
+
+
+
+
+int32_t debug_init(void)
 {
   int32_t result;
   
@@ -342,15 +363,16 @@ void debug_init(void)
   uart_config.stop_bit = UART_STOP_BIT_1;
   
 
-  result = drv_uart_init(DEBUG_UART_NUM, &uart_config,"debug");
-  if(result > 0)
-  {
-    io_init(&g_debug_uart_io,IO_COM_TYPE_RS232,&g_io_ops,DEBUG_UART_NUM);
-    g_current_debug_io = &g_debug_uart_io;
-  }
+   drv_uart_init(DEBUG_UART_NUM, &uart_config,"debug");
+
+   io_init(&g_debug_uart_io,IO_COM_TYPE_RS232,&g_uart_io_ops,DEBUG_UART_NUM);
+   g_current_debug_io = &g_debug_uart_io;
+    
+    return 1;
+
 }
 
 void debug_deinit(void)
 {
-
+  g_current_debug_io = NULL;
 }

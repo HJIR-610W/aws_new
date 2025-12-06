@@ -48,7 +48,6 @@ void set_usb_cdc_connection(bool set)
     isr_event_cmd_t event;
     event.cmd = eUSER_STOP_CONSOLE;
     os_send_event(&event, 0);
-
   }
 }
 
@@ -74,8 +73,10 @@ int32_t stm32_cdc_init(void *opt)
     osDelay(100);
   }
 
-  cdc_inst.cdc_stream = xStreamBufferCreate(100, 1);
-
+  if(  cdc_inst.cdc_stream == NULL)
+  {
+    cdc_inst.cdc_stream = xStreamBufferCreate(100, 1);
+  }
 
   OS_CREATE_MUTEX(cdc_inst.lock);
   OS_CREATE_BINARY_SEM(cdc_inst.tx_done_sem);
@@ -130,9 +131,9 @@ int32_t stm32_cdc_send(const uint8_t *pData,uint16_t dataLen)
   OS_MUTEX_UNLOCK(cdc_inst.lock);
 
   return retVal;
-
-  
+ 
 }
+
 int32_t stm32_cdc_recv( uint8_t *pBuff, uint16_t buffSize, uint32_t timeOutMs)
 {
   uint32_t start_tick;
@@ -310,7 +311,7 @@ int32_t stm32_cdc_inject( const uint8_t *pData, uint16_t dataLen)
 
   if(cdc_inst.cdc_stream)
   {
-  xBytesSent = xStreamBufferSend(cdc_inst.cdc_stream, pData, dataLen,
+    xBytesSent = xStreamBufferSend(cdc_inst.cdc_stream, pData, dataLen,
                                  pdMS_TO_TICKS(100));
   }
   return xBytesSent;

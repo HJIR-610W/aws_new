@@ -11,10 +11,13 @@ extern USBD_CDC_ItfTypeDef USBD_CDC_fops;
                                 
 USBD_HandleTypeDef  USBD_Device;
 
-
+uint8_t usb_init =0;
 void usb_start(void)
 {
-  
+  if(usb_init)
+  {
+    return;
+  }
     /* Init Device Library */
   if(USBD_Init(&USBD_Device, &FS_Desc, 0)!= USBD_OK)
   {
@@ -38,6 +41,8 @@ void usb_start(void)
   {
     ERROR_PRINTF("usb");
   }
+  
+  usb_init = 1;
 }
 
 
