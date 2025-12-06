@@ -1,12 +1,13 @@
 
+#include "humidity.h"
+
 #include <math.h>
 #include <string.h>
 
-#include "Sensors\humidity\humidity.h"
+
+#include "Sensors\temperature\temperature_define.h"
+#include "Sensors\humidity\hj_huminity.h"
 #include "Sensors\general\general_adc.h"
-#include "Sensors\general\general_virtual.h"
-#include "humidity\hj_huminity.h"
-#include "temperature\temperature_define.h"
 
 
 driver_t *humidity_open(int32_t num,void *opt)

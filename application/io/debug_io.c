@@ -25,8 +25,133 @@ io_if_t g_debug_uart_io;
 io_if_t g_debug_uart_io;
 io_if_t *g_current_debug_io;
 
+void dev_io_get(dev_io_t *dev, uint8_t cmd, void *opt)
+{
+  switch (cmd)
+  {
+    case DEV_IO_GET_CMD_CFG:
+      switch (dev->io)
+      {
+        case eRS485_IO:
+
+          break;
+        case eRS232_IO:
+
+          break;
+      }
+      break;
+  }
+}
+
+void dev_io_write(dev_io_t *dev, uint8_t *data, uint32_t dataLen, uint32_t opt)
+{
+  switch (dev->io)
+  {
+    case eRS485_IO:
+      drv_rs485_send(dev->num, data, dataLen);
+      break;
+    case eRS232_IO:
+      drv_uart_send(dev->num, data, dataLen);
+      break;
+  }
+}
+
+void dev_io_flush(dev_io_t *dev)
+{
+  switch (dev->io)
+  {
+    case eRS485_IO:
+      drv_rs485_flush_rx(dev->num);
+      break;
+    case eRS232_IO:
+      drv_uart_flush_rx(dev->num);
+      break;
+  }
+}
+
+uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd, void *opt)
+{
+  devIoTimeOutopt_t *pdevopt = opt;
+  uint32_t data_timeout;
+  data_timeout = pdevopt->waitTimeOutMs / 2;
+
+  switch (dev->io)
+  {
+    case eRS485_IO:
+       return drv_rs485_recv_opt(dev->num, out, dataLen, pdevopt->waitTimeOutMs,data_timeout);
+      break;
+    case eRS232_IO:
+
+      return drv_uart_recv_opt(dev->num, out, dataLen, pdevopt->waitTimeOutMs, data_timeout);
+      break;
+  }
+  return 0;
+}
 
 
+/**
+ * @brief Task에서 디버깅용으로 출력 하고 싶을때
+ *         콘솔 메뉴에서 task id를 설정해주면 id가 일치하는 task는 
+ *         printf 
+ */
+
+static void *g_task_id;
+static bool foreced_print = false;
+void set_task_id(void *task_id)
+{
+  g_task_id = task_id;
+}
+
+void set_forced_print(bool set) { foreced_print = set; }
+
+
+void task_printf(const char *pFmt, ...)
+{
+  void *task_id;
+
+  task_id = osThreadGetId();
+
+  if (task_id == NULL && foreced_print==false)
+  {
+    return;
+  }
+
+  if (g_task_id == NULL && foreced_print==false)
+  {
+    return;
+  }
+
+  if (task_id == g_task_id || (foreced_print))
+  {
+    va_list args;
+    va_start(args, pFmt);
+    debug_vprintf(pFmt, args); 
+    va_end(args);
+  }
+}
+
+
+void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)
+{
+  if (title || foreced_print)
+    task_printf("%s (len=%d):\r\n", title, (int)length);
+
+  for (uint32_t i = 0; i < length; i++)
+  {
+    if (i % 16 == 0)
+      task_printf("%04X: ", (unsigned int)i);  // 주소/인덱스 출력
+
+    task_printf("%02X ", data[i]);
+
+    if ((i + 1) % 16 == 0 || i + 1 == length)
+      task_printf("\r\n");
+  }
+}
+
+
+/*
+디버그용 포트
+*/
 
 
 void set_debug_io(io_if_t *debug_io)
@@ -219,135 +344,6 @@ void debug_dump(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
   }
   debug_printf("\n\r");
 }
-
-void dev_io_get(dev_io_t *dev, uint8_t cmd, void *opt)
-{
-  switch (cmd)
-  {
-    case DEV_IO_GET_CMD_CFG:
-      switch (dev->io)
-      {
-        case eRS485_IO:
-
-          break;
-        case eRS232_IO:
-
-          break;
-      }
-      break;
-  }
-}
-
-void dev_io_write(dev_io_t *dev, uint8_t *data, uint32_t dataLen, uint32_t opt)
-{
-  switch (dev->io)
-  {
-    case eRS485_IO:
-      drv_rs485_send(dev->num, data, dataLen);
-      break;
-    case eRS232_IO:
-      drv_uart_send(dev->num, data, dataLen);
-      break;
-  }
-}
-
-void dev_io_flush(dev_io_t *dev)
-{
-  switch (dev->io)
-  {
-    case eRS485_IO:
-      drv_rs485_flush_rx(dev->num);
-      break;
-    case eRS232_IO:
-      drv_uart_flush_rx(dev->num);
-      break;
-  }
-}
-
-uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd, void *opt)
-{
-  devIoTimeOutopt_t *pdevopt = opt;
-  uint32_t data_timeout;
-  data_timeout = pdevopt->waitTimeOutMs / 2;
-
-  switch (dev->io)
-  {
-    case eRS485_IO:
-       return drv_rs485_recv_opt(dev->num, out, dataLen, pdevopt->waitTimeOutMs,data_timeout);
-      break;
-    case eRS232_IO:
-
-      return drv_uart_recv_opt(dev->num, out, dataLen, pdevopt->waitTimeOutMs, data_timeout);
-      break;
-  }
-  return 0;
-}
-
-
-
-/**
- * @brief Task에서 디버깅용으로 출력 하고 싶을때
- *         콘솔 메뉴에서 task id를 설정해주면 id가 일치하는 task는 
- *         printf 
- */
-
-static void *g_task_id;
-static bool foreced_print = false;
-void set_task_id(void *task_id)
-{
-  g_task_id = task_id;
-}
-
-void set_forced_print(bool set) { foreced_print = set; }
-
-
-void task_printf(const char *pFmt, ...)
-{
-  void *task_id;
-
-  task_id = osThreadGetId();
-
-  if (task_id == NULL && foreced_print==false)
-  {
-    return;
-  }
-
-  if (g_task_id == NULL && foreced_print==false)
-  {
-    return;
-  }
-
-  if (task_id == g_task_id || (foreced_print))
-  {
-    va_list args;
-    va_start(args, pFmt);
-    debug_vprintf(pFmt, args); 
-    va_end(args);
-  }
-}
-
-
-void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)
-{
-  if (title || foreced_print)
-    task_printf("%s (len=%d):\r\n", title, (int)length);
-
-  for (uint32_t i = 0; i < length; i++)
-  {
-    if (i % 16 == 0)
-      task_printf("%04X: ", (unsigned int)i);  // 주소/인덱스 출력
-
-    task_printf("%02X ", data[i]);
-
-    if ((i + 1) % 16 == 0 || i + 1 == length)
-      task_printf("\r\n");
-  }
-}
-
-
-/*
-디버그용 포트
-*/
 
 int32_t debug_recv(uint8_t *out_buffer, size_t out_size, uint32_t timeout_ms)
 {
