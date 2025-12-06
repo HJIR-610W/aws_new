@@ -2,7 +2,7 @@
 #ifndef HJ_WIND_H
 #define HJ_WIND_H
 
-#include "debug_io.h"
+#include "dev_io.h"
 #include "wind_define.h"
 
 #define HJ_WIND 100  // ?랁뼢 ?띿냽 媛숈씠 泥섎━

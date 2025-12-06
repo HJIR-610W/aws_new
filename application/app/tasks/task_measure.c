@@ -51,7 +51,7 @@
 #include "system_err.h"
 #include "os_user_def.h"
 #include "task_wdt.h"
-
+#include "task_core_debug.h"
 #define MEASURE_PERIOD_250MS 250
 #define MEASURE_PERIOD_1000MS 1000
 

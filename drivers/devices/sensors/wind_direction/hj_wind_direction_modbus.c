@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "driver_interface.h"
 #include "cmsis_os.h"
 #include "app_sensor.h"
 #include "config_sensor.h"

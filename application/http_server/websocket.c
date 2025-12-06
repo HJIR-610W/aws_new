@@ -13,6 +13,7 @@
 // mbedTLS includes for WebSocket handshake
 #include "mbedtls/sha1.h"
 #include "mbedtls/base64.h"
+#include "task_core_debug.h"
 
 #define WS_MAGIC_STRING "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 #define WS_FRAME_HEADER_SIZE 14

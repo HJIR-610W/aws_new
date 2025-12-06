@@ -447,6 +447,8 @@
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/src/include/netif/ppp</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/system</state>
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/system/arch</state>
+                    <state>$PROJ_DIR$\..\Middlewares\dev_io</state>
+                    <state>$PROJ_DIR$\..\application\app\tasks\core</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2504,6 +2506,15 @@
                     </file>
                 </group>
                 <group>
+                    <name>core</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\core\task_core_debug.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\tasks\core\task_core_debug.h</name>
+                    </file>
+                </group>
+                <group>
                     <name>key</name>
                 </group>
                 <group>
@@ -3185,7 +3196,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
@@ -3215,7 +3226,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -3696,6 +3707,12 @@
     </group>
     <group>
         <name>middlewares</name>
+        <group>
+            <name>dev_io</name>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\dev_io\dev_io.c</name>
+            </file>
+        </group>
         <group>
             <name>FatFs</name>
             <file>

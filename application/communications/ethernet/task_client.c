@@ -10,7 +10,7 @@
 #include "update_fw.h"
 #include "util_time.h"
 #include "os_user_def.h"
-
+#include "task_core_debug.h"
 #define RECV_BUFF_SIZE 512
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define CLIENT_CONNECT_TIMEOUT_MS 1000

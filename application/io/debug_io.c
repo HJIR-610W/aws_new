@@ -25,133 +25,6 @@ io_if_t g_debug_uart_io;
 io_if_t g_debug_uart_io;
 io_if_t *g_current_debug_io;
 
-void dev_io_get(dev_io_t *dev, uint8_t cmd, void *opt)
-{
-  switch (cmd)
-  {
-    case DEV_IO_GET_CMD_CFG:
-      switch (dev->io)
-      {
-        case eRS485_IO:
-
-          break;
-        case eRS232_IO:
-
-          break;
-      }
-      break;
-  }
-}
-
-void dev_io_write(dev_io_t *dev, uint8_t *data, uint32_t dataLen, uint32_t opt)
-{
-  switch (dev->io)
-  {
-    case eRS485_IO:
-      drv_rs485_send(dev->num, data, dataLen);
-      break;
-    case eRS232_IO:
-      drv_uart_send(dev->num, data, dataLen);
-      break;
-  }
-}
-
-void dev_io_flush(dev_io_t *dev)
-{
-  switch (dev->io)
-  {
-    case eRS485_IO:
-      drv_rs485_flush_rx(dev->num);
-      break;
-    case eRS232_IO:
-      drv_uart_flush_rx(dev->num);
-      break;
-  }
-}
-
-uint16_t dev_io_read(dev_io_t *dev, uint8_t *out, uint32_t dataLen, uint8_t cmd, void *opt)
-{
-  devIoTimeOutopt_t *pdevopt = opt;
-  uint32_t data_timeout;
-  data_timeout = pdevopt->waitTimeOutMs / 2;
-
-  switch (dev->io)
-  {
-    case eRS485_IO:
-       return drv_rs485_recv_opt(dev->num, out, dataLen, pdevopt->waitTimeOutMs,data_timeout);
-      break;
-    case eRS232_IO:
-
-      return drv_uart_recv_opt(dev->num, out, dataLen, pdevopt->waitTimeOutMs, data_timeout);
-      break;
-  }
-  return 0;
-}
-
-
-/**
- * @brief Task에서 디버깅용으로 출력 하고 싶을때
- *         콘솔 메뉴에서 task id를 설정해주면 id가 일치하는 task는 
- *         printf 
- */
-
-static void *g_task_id;
-static bool foreced_print = false;
-void set_task_id(void *task_id)
-{
-  g_task_id = task_id;
-}
-
-void set_forced_print(bool set) { foreced_print = set; }
-
-
-void task_printf(const char *pFmt, ...)
-{
-  void *task_id;
-
-  task_id = osThreadGetId();
-
-  if (task_id == NULL && foreced_print==false)
-  {
-    return;
-  }
-
-  if (g_task_id == NULL && foreced_print==false)
-  {
-    return;
-  }
-
-  if (task_id == g_task_id || (foreced_print))
-  {
-    va_list args;
-    va_start(args, pFmt);
-    debug_vprintf(pFmt, args); 
-    va_end(args);
-  }
-}
-
-
-void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)
-{
-  if (title || foreced_print)
-    task_printf("%s (len=%d):\r\n", title, (int)length);
-
-  for (uint32_t i = 0; i < length; i++)
-  {
-    if (i % 16 == 0)
-      task_printf("%04X: ", (unsigned int)i);  // 주소/인덱스 출력
-
-    task_printf("%02X ", data[i]);
-
-    if ((i + 1) % 16 == 0 || i + 1 == length)
-      task_printf("\r\n");
-  }
-}
-
-
-/*
-디버그용 포트
-*/
 
 
 void set_debug_io(io_if_t *debug_io)
@@ -160,15 +33,13 @@ void set_debug_io(io_if_t *debug_io)
 }
 
 
-
-
 io_if_t *get_debug_io(void) 
 { 
   return g_current_debug_io; 
 }
 
 
-int32_t debug_vprintf(const char *pFmt, va_list ap)
+int32_t debug_vprintf(const char *fmt, va_list ap)
 {
   char buff[2];
   char *ptr = NULL;
@@ -186,7 +57,7 @@ int32_t debug_vprintf(const char *pFmt, va_list ap)
 
   // 먼저 필요한 길이 측정
   va_copy(ap_copy, ap);
-  len = vsnprintf_s(buff, sizeof(buff), pFmt, ap_copy);
+  len = vsnprintf_s(buff, sizeof(buff), fmt, ap_copy);
   va_end(ap_copy);
 
 #if PRINTF_HEAP_USE
@@ -198,7 +69,7 @@ int32_t debug_vprintf(const char *pFmt, va_list ap)
     if (temp)
     {
       va_copy(ap_copy, ap);
-      vsnprintf_s(temp, total_len, pFmt, ap_copy);
+      vsnprintf_s(temp, total_len, fmt, ap_copy);
       va_end(ap_copy);
       ptr = temp;
     }
@@ -211,13 +82,13 @@ int32_t debug_vprintf(const char *pFmt, va_list ap)
   {
     // 매우 짧은 메시지 (1바이트)는 buff 사용
     va_copy(ap_copy, ap);
-    vsnprintf_s(buff, sizeof(buff), pFmt, ap_copy);
+    vsnprintf_s(buff, sizeof(buff), fmt, ap_copy);
     va_end(ap_copy);
     ptr = buff;
   }
 #else
   // 고정 버퍼 모드: 256바이트 버퍼 사용
-  vsnprintf_s(printf_buff, sizeof(printf_buff), pFmt, ap);
+  vsnprintf_s(printf_buff, sizeof(printf_buff), fmt, ap);
   ptr = printf_buff;
 #endif
 
@@ -239,13 +110,13 @@ int32_t debug_vprintf(const char *pFmt, va_list ap)
 
 
 
-void debug_printf_color(int color, const char *pFmt, ...)
+void debug_printf_color(int color, const char *fmt, ...)
 {
   debug_printf("%c[%dm", 27, color);
 
   va_list args;
-  va_start(args, pFmt);
-  debug_vprintf(pFmt, args);
+  va_start(args, fmt);
+  debug_vprintf(fmt, args);
   va_end(args);
 
   debug_printf("%c[%dm", 27, 37);
@@ -263,12 +134,12 @@ int debug_scanf_s(const char *fmt, ...)
   return ret;
 }
 
-void debug_inject(uint8_t *data,uint32_t len)
+void debug_inject(uint8_t *data,size_t len)
 {
   io_inject(g_current_debug_io,data,len);
 }
 
-void debug_dump(uint8_t *src, uint32_t size, uint32_t startAddr, uint32_t col)
+void debug_dump(uint8_t *src, size_t size, uint32_t startAddr, uint32_t col)
 {
   int32_t i, j, row;
   uint8_t ch;
@@ -358,7 +229,7 @@ int32_t debug_recv(uint8_t *out_buffer, size_t out_size, uint32_t timeout_ms)
 
 #define PRINTF_HEAP_USE 1
 
-int32_t debug_printf(const char *pFmt, ...)
+int32_t debug_printf(const char *fmt, ...)
 {
   uint8_t buff[2];
   const uint8_t *ptr = NULL;
@@ -373,8 +244,8 @@ int32_t debug_printf(const char *pFmt, ...)
 #endif
 
   // 먼저 필요한 길이 측정
-  va_start(ap, pFmt);
-  len = vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
+  va_start(ap, fmt);
+  len = vsnprintf_s((char *)buff, sizeof(buff), (char *)fmt, ap);
   va_end(ap);
 
 #if PRINTF_HEAP_USE
@@ -384,8 +255,8 @@ int32_t debug_printf(const char *pFmt, ...)
     temp = user_malloc(len + 1);  // null 포함
     if (temp)
     {
-      va_start(ap, pFmt);
-      vsnprintf_s((char *)temp, len + 1, (char *)pFmt, ap);
+      va_start(ap, fmt);
+      vsnprintf_s((char *)temp, len + 1, (char *)fmt, ap);
       va_end(ap);
       ptr = temp;
     }
@@ -397,15 +268,15 @@ int32_t debug_printf(const char *pFmt, ...)
   else
   {
     // 매우 짧은 메시지 (1바이트)는 buff에 다시 포맷팅
-    va_start(ap, pFmt);
-    vsnprintf_s((char *)buff, sizeof(buff), (char *)pFmt, ap);
+    va_start(ap, fmt);
+    vsnprintf_s((char *)buff, sizeof(buff), (char *)fmt, ap);
     va_end(ap);
     ptr = buff;
   }
 #else
   // 고정 버퍼 모드
-  va_start(ap, pFmt);
-  vsnprintf_s((char *)printf_buff, sizeof(printf_buff), (char *)pFmt, ap);
+  va_start(ap, fmt);
+  vsnprintf_s((char *)printf_buff, sizeof(printf_buff), (char *)fmt, ap);
   va_end(ap);
   ptr = printf_buff;
 #endif

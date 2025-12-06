@@ -26,6 +26,8 @@
 #include "util_time.h"
 #include "schedule.h"
 #include "task_logging.h"
+#include "task_core_debug.h"
+
 
 #define REQ_BLOCK_BEFORE_SEC 5 //너무 이른 요청은 무시 
 

@@ -8,6 +8,7 @@
 #include "task_logging.h"
 #include "user_heap.h"
 #include "debug_io.h"
+#include "task_core_debug.h"
 // 터미널 브리지 전역 변수
 static void (*g_terminal_output_callback)(const char* data, size_t len) = NULL;
 static bool g_bridge_initialized = false;

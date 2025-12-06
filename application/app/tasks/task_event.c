@@ -10,6 +10,7 @@
 #include "task_console.h"
 #include "Sensors\rain\rain.h"
 #include "system_err.h"
+#include "task_core_debug.h"
 
 const osThreadAttr_t kIsrEventTask_attributes = {
   .name = "isr_event",

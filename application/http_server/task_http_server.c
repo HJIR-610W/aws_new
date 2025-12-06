@@ -15,6 +15,8 @@
 #include "user_heap.h"
 #include "util_time.h"
 #include "app_file.h"
+#include "task_core_debug.h"
+
 
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define CLIENT_CONNECT_TIMEOUT_MS 10000

@@ -22,6 +22,7 @@
 #include "cmsis_os.h"
 #include "drv_flash.h"
 #include "littlefs_manager\lfs_manager.h"
+#include "task_core_debug.h"
 
 extern const char *protocolList[2];
 extern const char *cdmaModellList[2];

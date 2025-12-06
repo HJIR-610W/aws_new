@@ -9,6 +9,9 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include "debug_io.h"
+
+
 static int get_visual_width(const char* str)
 {
   int width = 0;
@@ -48,7 +51,7 @@ static int get_visual_width(const char* str)
   return width;
 }
 
-extern int32_t debug_printf(const char * pFmt, ...);
+
 
 
 

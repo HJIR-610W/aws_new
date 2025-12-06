@@ -10,6 +10,10 @@
 
 #include "aws_data.h"
 
+#include "task_core_debug.h"
+
+
+
 void http_api_handle_sensor_get(int client_socket)
 {
   kma_data_ex_t* p_kma = acquire_kma_data(eAWS_DATA_REAL);
