@@ -2,7 +2,7 @@
 #include "cmsis_os2.h"
 #include "debug_io.h"
 #include "drv_lcd.h"
-#include "cli_input.h"
+ 
 #include <string.h>
 #include <math.h>
 
@@ -24,7 +24,7 @@ void test_lcd(void)
     debug_printf("LCD Test\r\n");
     debug_printf("Select LCD Type: CLCD or TERMINAL\r\n");
 #if 1
-    if (cli_scanf_s("%s", lcd_type,sizeof(lcd_type)) == CLI_KEYCODE_CTRL_C)
+    if (debug_scanf_s("%s", lcd_type,sizeof(lcd_type)) == KEY_CODE_CTRL_C)
     {
         return;
     }

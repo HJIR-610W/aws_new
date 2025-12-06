@@ -14,8 +14,8 @@
 #include "config_nvm.h"
 #include "cli_key_code.h"
 #include "app_logging.h"
-#include "console_scanf.h"
-#include "cli_input.h"
+ 
+ 
 #include "console_rtos.h"
 #include "divas_protocol_handler.h"
 #include "app_console_test.h"
@@ -133,7 +133,7 @@ int32_t menu_developer_memory(void)
 
   debug_printf("start(HEX),size,len>>");
 
-  inCnt = console_scanf("%x,%d,%d", &start, &size, &len);
+  inCnt = shell_scanf("%x,%d,%d", &start, &size, &len);
   if (inCnt == EXIT_BACK || inCnt == EXIT_PROGRAM && choice < 0)
   {
     return inCnt;
@@ -186,7 +186,7 @@ int32_t menu_developer_logging(void)
     debug_printf("로그 시작 카운트:%d\r\n", logging_get_log_count());
     debug_printf("start,end>>");
 
-    cnt = console_scanf("%d,%d,%d", &startCnt, &endCnt);
+    cnt = shell_scanf("%d,%d,%d", &startCnt, &endCnt);
 
     if (cnt == EXIT_BACK || cnt == EXIT_PROGRAM)
     {
@@ -246,7 +246,7 @@ int32_t menu_task_print(void)
   debug_printf("printf 종료하려면 0을 입력\r\n");
   debug_printf(">>");
 
-  ret = cli_scanf_s("%X",&id);
+  ret = debug_scanf_s("%X",&id);
   if(ret <=0)
   {
     return ret;

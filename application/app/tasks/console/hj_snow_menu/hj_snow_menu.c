@@ -26,7 +26,7 @@ int hj_snow_menu(void)
   driver_t* hjsnow;
 
   uint8_t err;
-  char* menu[] = {"설정값 확인", "0점 재조정 실행","적설 확인"};
+  const char* menu[] = {"설정값 확인", "0점 재조정 실행","적설 확인"};
 
   hjsnow = hjsnow_opened();
   if (hjsnow == NULL)

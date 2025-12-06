@@ -2,14 +2,15 @@
 /*
 This file must be encoded in EUC-KR
 */
-#include "cli_input.h"
+ 
 #include "config_app.h"
 #include "console_define.h"
-#include "console_scanf.h"
+ 
 #include "console_utile.h"
 #include "const_string.h"
 #include "debug_io.h"
 #include "util_memory.h"
+
 
 #define AWS_MENU_NET_WIDTH 30
 
@@ -27,14 +28,14 @@ int32_t input_ip(int *a, int *b, int *c, int *d)
   {
     debug_printf("IP(xxx.xxx.xxx.xxx)");
     debug_printf("입력:");
-    status = cli_scanf_s("%d.%d.%d.%d", a, b, c, d);
+    status = debug_scanf_s("%d.%d.%d.%d", a, b, c, d);
 
-    if (status == CLI_KEYCODE_CTRL_C )
+    if (status == KEY_CODE_CTRL_C )
     {
       status = MENU_BACK;
       break;
     }
-    else if(status==CLI_KEYCODE_CTRL_Q)
+    else if(status==KEY_CODE_CTRL_P)
     {
       status = MENU_ABORT;
       break; 
@@ -58,14 +59,14 @@ int32_t input_mac(int *a, int *b, int *c, int *d,int *e,int *f)
   {
     debug_printf("MAC(xxx.xxx.xxx.xxx.xxx.xxx)");
     debug_printf("입력:");
-    status = cli_scanf_s("%d.%d.%d.%d.%d.%d", a, b, c, d,e,f);
+    status = debug_scanf_s("%d.%d.%d.%d.%d.%d", a, b, c, d,e,f);
 
-    if (status == CLI_KEYCODE_CTRL_C)
+    if (status == KEY_CODE_CTRL_C)
     {
       status = MENU_BACK;
       break;
     }
-    else if (status == CLI_KEYCODE_CTRL_Q)
+    else if (status == KEY_CODE_CTRL_P)
     {
       status = MENU_ABORT;
       break;

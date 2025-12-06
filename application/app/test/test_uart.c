@@ -5,7 +5,7 @@
 #include "console_utile.h"
 #include "debug_io.h"
 #include "bsp_uart.h"
-#include "cli_input.h"
+ 
 #include "util_memory.h"
 #include "pcb_define.h"
 #include "drv_do.h"

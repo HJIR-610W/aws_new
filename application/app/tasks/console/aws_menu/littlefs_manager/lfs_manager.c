@@ -15,7 +15,7 @@ littlefs 테스트용 파일
 
 
 #include "cli_key_code.h"
-#include "console_scanf.h"
+ 
 #include "debug_io.h"
 #include "lfs.h"
 #include "lfs_port.h"
@@ -53,7 +53,7 @@ int32_t menu_littlefs_manager(void)
     print_menu();
 
     debug_printf("\r\nLFS> ");
-    ret = console_scanf("%s", cmd);
+    ret = shell_scanf("%s", cmd);
 
     if (ret <= 0)
     {
@@ -138,7 +138,7 @@ static void cmd_list(void)
   int ret;
 
   debug_printf("Directory path (default: /): ");
-  ret = console_scanf("%s", dir);
+  ret = shell_scanf("%s", dir);
 
   if (ret <= 0 || strlen(dir) == 0)
   {
@@ -157,7 +157,7 @@ static void cmd_delete(void)
   uint32_t size;
 
   debug_printf("Filename to delete: ");
-  ret = console_scanf("%s", filename);
+  ret = shell_scanf("%s", filename);
 
   if (ret <= 0)
   {
@@ -176,7 +176,7 @@ static void cmd_delete(void)
   debug_printf("File '%s' found (size: %lu bytes)\r\n", filename, (unsigned long)size);
   debug_printf("Are you sure you want to delete? (y/n): ");
 
-  ret = console_scanf("%c", &confirm);
+  ret = shell_scanf("%c", &confirm);
 
   if (ret <= 0 || (confirm != 'y' && confirm != 'Y'))
   {
@@ -207,7 +207,7 @@ static void cmd_dump(void)
   uint32_t offset;
 
   debug_printf("Filename: ");
-  ret = console_scanf("%s", filename);
+  ret = shell_scanf("%s", filename);
   if (ret <= 0)
   {
     debug_printf("Error: Invalid filename\r\n");
@@ -215,14 +215,14 @@ static void cmd_dump(void)
   }
 
   debug_printf("Offset (hex): ");
-  ret = console_scanf("%x", &offset);
+  ret = shell_scanf("%x", &offset);
   if (ret <= 0)
   {
     offset = 0;
   }
 
   debug_printf("Length (hex): ");
-  ret = console_scanf("%x", &length);
+  ret = shell_scanf("%x", &length);
   if (ret <= 0)
   {
     length = 256;
@@ -281,7 +281,7 @@ static void cmd_write(void)
   uint32_t offset;
 
   debug_printf("Filename: ");
-  ret = console_scanf("%s", filename);
+  ret = shell_scanf("%s", filename);
   if (ret <= 0)
   {
     debug_printf("Error: Invalid filename\r\n");
@@ -289,14 +289,14 @@ static void cmd_write(void)
   }
 
   debug_printf("Offset (default: 0): ");
-  ret = console_scanf("%u", &offset);
+  ret = shell_scanf("%u", &offset);
   if (ret <= 0)
   {
     offset = 0;
   }
 
   debug_printf("Data to write: ");
-  ret = console_scanf("%s", data);
+  ret = shell_scanf("%s", data);
   if (ret <= 0)
   {
     debug_printf("Error: No data entered\r\n");
@@ -327,7 +327,7 @@ static void cmd_read(void)
   uint32_t length;
 
   debug_printf("Filename: ");
-  ret = console_scanf("%s", filename);
+  ret = shell_scanf("%s", filename);
   if (ret <= 0)
   {
     debug_printf("Error: Invalid filename\r\n");
@@ -394,7 +394,7 @@ static void cmd_test(void)
   uint32_t size;
 
   debug_printf("Test file size (bytes, default: 10240): ");
-  ret = console_scanf("%u", &size);
+  ret = shell_scanf("%u", &size);
   if (ret <= 0)
   {
     size = 10240;
@@ -422,7 +422,7 @@ static void cmd_format(void)
   printf_lfs_info();
 
   debug_printf("\r\nType 'YES' (all uppercase) to confirm format: ");
-  ret = console_scanf("%s", confirm);
+  ret = shell_scanf("%s", confirm);
 
   if (ret <= 0 || strcmp(confirm, "YES") != 0)
   {

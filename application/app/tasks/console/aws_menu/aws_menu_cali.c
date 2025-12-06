@@ -17,14 +17,14 @@
 #include "adc_calibration.h"
 #include "app_adc.h"
 #include "app_file.h"
-#include "cli_input.h"
+ 
 #include "config_adc.h"
 #include "const_string.h"
 #include "console_define.h"
-#include "console_scanf.h"
+ 
 #include "console_utile.h"
 #include "drv_adc.h"
-#include "fsl_shell.h"
+#include "shell.h"
 #include "bsp.h"
 #include "bsp_delay.h"
 #include "util_filter.h"
@@ -584,7 +584,7 @@ int handle_view_status(int adc_num)
 
         debug_printf("시리얼 오실로스코프 사용하려면 yes입력\r\n");
         user_input[0] = 0;
-        if (cli_scanf_s("%s", user_input,sizeof(user_input)) == CLI_KEYCODE_CTRL_C)
+        if (debug_scanf_s("%s", user_input,sizeof(user_input)) == KEY_CODE_CTRL_C)
         {
           return 0;
         }
@@ -595,7 +595,7 @@ int handle_view_status(int adc_num)
         }
         debug_printf("파일로 저장하려면 yes입력\r\n");
         user_input[0] = 0;
-        if (cli_scanf_s("%s", user_input, sizeof(user_input)) == CLI_KEYCODE_CTRL_C)
+        if (debug_scanf_s("%s", user_input, sizeof(user_input)) == KEY_CODE_CTRL_C)
         {
           return 0;
         }
@@ -607,7 +607,7 @@ int handle_view_status(int adc_num)
         }
 
         debug_printf("스캔 주기를 ms 단위로 입력하세요\r\n");
-        if (cli_scanf_s("%d", &scan_ms) == CLI_KEYCODE_CTRL_C)
+        if (debug_scanf_s("%d", &scan_ms) == KEY_CODE_CTRL_C)
         {
           return 0;
         }

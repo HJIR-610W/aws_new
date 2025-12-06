@@ -1,8 +1,8 @@
 
 #ifndef APP_CONSOLE_TEST_H
 #define APP_CONSOLE_TEST_H
-#include "cli\fsl_shell.h"
-#include "cli\console_scanf.h"
+#include "shell.h"
+
 
 
 

@@ -8,15 +8,15 @@
 #include "app_version.h"
 #include "boot_version.h"
 #include "cmsis_os.h"
-#include "cli\fsl_shell.h"
+#include "cli\shell.h"
 
-#include "cli\console_scanf.h"
+ 
 #include "console_login.h"
 #include "drv_rs232.h"
 #include "debug_io.h"
 #include "task_event.h"
 #include "util_time.h"
-#include "cli_input.h"
+ 
  
 #include "console_test.h"
 #include "system_err.h"
@@ -101,7 +101,7 @@ void consoleTask(void *arg)
 
   SHELL_Init(&user_context, debug_send, debug_recv, debug_printf,(char *)prompt);
 
-  console_scanf_init();
+  shell_scanf_init();
 
   SHELL_RegisterCommand(&printCmd);
   SHELL_RegisterCommand(&testCmd);

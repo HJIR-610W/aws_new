@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cli_input.h"
+ 
 #include "cli_key_code.h"
 #include "console_utile.h"
 #include "debug_io.h"
@@ -23,9 +23,9 @@ void test_power_signal(void)
   static   char cmd[10] = {0};
 
     debug_printf("입력 대기 (cdma/24v/btm/heater/raind,on/off) > ");
-    int ret = cli_scanf_s("%19[^,],%9s", signal, sizeof(signal), cmd, sizeof(cmd));
+    int ret = debug_scanf_s("%19[^,],%9s", signal, sizeof(signal), cmd, sizeof(cmd));
 
-    if (ret == CLI_KEYCODE_CTRL_C)
+    if (ret == KEY_CODE_CTRL_C)
     {
       debug_printf("\r\nCTRL+C 감지: 테스트 종료\r\n");
       break;

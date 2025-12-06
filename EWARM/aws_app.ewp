@@ -2941,16 +2941,10 @@
             <group>
                 <name>cli</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\cli\cli_input.c</name>
-                </file>
-                <file>
                     <name>$PROJ_DIR$\..\Application\io\cli\cli_key_code.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\io\cli\console_scanf.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\io\cli\fsl_shell.c</name>
+                    <name>$PROJ_DIR$\..\application\io\cli\shell.c</name>
                 </file>
             </group>
             <file>

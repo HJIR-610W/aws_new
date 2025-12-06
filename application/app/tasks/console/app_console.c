@@ -2,9 +2,9 @@
 
 #include "app_console_test.h"
 #include "aws_menu.h"
-#include "fsl_shell.h"
+#include "shell.h"
 #include "aws_develop.h"
-#include "cli_input.h"
+ 
 #include "console_define.h"
 #include "console_utile.h"
 

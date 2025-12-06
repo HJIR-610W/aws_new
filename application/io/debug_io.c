@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cli_input.h"
+ 
 
 #include "drv_rs232.h"
 #include "drv_rs485.h"
@@ -19,7 +19,7 @@
 #include "task_telnet_server.h"
 #include "terminal_bridge.h"
 #include "io_interface.h"
-
+ 
 
 io_if_t g_debug_uart_io;
 io_if_t g_debug_uart_io;
@@ -128,7 +128,7 @@ int debug_scanf_s(const char *fmt, ...)
   int ret;
 
   va_start(args, fmt);
-  ret = cli_vscanf_s(fmt, args); 
+  ret  = shell_vscanf_s(fmt,args);
   va_end(args);
 
   return ret;

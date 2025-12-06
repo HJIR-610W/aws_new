@@ -39,7 +39,7 @@ int32_t select_index_from_table(const char* list[], int32_t (*func)(), uint16_t 
 
 
 int check_pass(const char* title, char* password_str, int* ok);
-int32_t console_scanf_s(const char* fmt, ...);
+int32_t shell_scanf_s(const char* fmt, ...);
 
 
 

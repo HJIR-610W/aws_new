@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "app_file.h"
-#include "cli_input.h"
+ 
 #include "debug_io.h"
 #include "user_heap.h"
 
@@ -44,9 +44,9 @@ void test_filesystem(void)
     list_directory(buff);
 
     debug_printf("경로를 입력하세요>>\r\n");
-    ret = cli_scanf_s("%s", buff, sizeof(buff));
+    ret = debug_scanf_s("%s", buff, sizeof(buff));
 
-    if (ret == CLI_KEYCODE_CTRL_C)
+    if (ret == KEY_CODE_CTRL_C)
     {
       debug_printf("테스트 종료\r\n");
       break;

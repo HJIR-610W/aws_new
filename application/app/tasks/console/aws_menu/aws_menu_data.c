@@ -1,8 +1,7 @@
-#include "IO\debug_io.h"
+
 #include "app_dataLogging.h"
 #include "aws_data.h"
-#include "cli_input.h"
-#include "console_define.h"
+ #include "console_define.h"
 #include "console_utile.h"
 #include "debug_io.h"
 #include "old_aws_define.h"
@@ -26,14 +25,14 @@ int32_t menu_data_display(void)
   while(1)
   {
   debug_printf("시작 시간을 입력해주세요(yyyy-mm-dd hh:mm)\r\n");
-  status = cli_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
+  status = debug_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
 
-  if (status == CLI_KEYCODE_CTRL_C) 
+  if (status == KEY_CODE_CTRL_C) 
   {
     status = MENU_BACK;
     break;
   }
-  if(status == CLI_KEYCODE_CTRL_Q)
+  if(status == KEY_CODE_CTRL_Q)
   {
     status = MENU_ABORT;
     break;
@@ -46,14 +45,14 @@ int32_t menu_data_display(void)
   }
 
   debug_printf("읽을 갯수를 입력해주세요");
-  status = cli_scanf_s("%d", &cnt);
+  status = debug_scanf_s("%d", &cnt);
 
-  if (status == CLI_KEYCODE_CTRL_C)
+  if (status == KEY_CODE_CTRL_C)
   {
     status = MENU_BACK;
     break;
   }
-  if (status == CLI_KEYCODE_CTRL_Q)
+  if (status == KEY_CODE_CTRL_Q)
   {
     status = MENU_ABORT;
     break;

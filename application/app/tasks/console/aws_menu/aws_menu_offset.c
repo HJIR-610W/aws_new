@@ -1,7 +1,7 @@
 #include "Sensors\barometer\barometer.h"
 #include "Sensors\temperature\temperature.h"
 #include "app_adc.h"
-#include "cli_input.h"
+ 
 #include "config_app.h"
 #include "config_sensor.h"
 #include "console_define.h"
@@ -79,7 +79,7 @@ int32_t menu_offset_pressure(void)
   debug_printf("%s 장비 값:%fhpa\r\n", sensor_name_list[A7_PRESSURE], temperature);
   debug_printf("현장 값 입력해주세요\r\n");
   debug_printf("입력:");
-  if(cli_scanf_s("%f",&local_temperature)>0)
+  if(debug_scanf_s("%f",&local_temperature)>0)
   {
     voltage = drv_adc_single_read_voltage(p_config->single_channel, 10,&error);
     debug_printf("현재 ADC 싱글 %d 전압:%fv\r\n",p_config->single_channel,voltage);
@@ -118,7 +118,7 @@ int aws_menu_offset(void)
 
     debug_printf("%s offset 을 입력해주세요\r\n", sensor_name_list[s_offset_sensor_index[choice]]);
     debug_printf("입력:");
-    if(cli_scanf_s("%f", &offset)>0)
+    if(debug_scanf_s("%f", &offset)>0)
     {
       config.sensor[s_offset_sensor_index[choice]].offset = offset;
       WRITE_CFG(sensor[s_offset_sensor_index[choice]].offset);

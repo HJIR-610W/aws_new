@@ -3,7 +3,7 @@
 #define _FSL_SHELL_H_
 
 #include "fsl_common.h"
-
+#include <stdarg.h>
 /*!
  * @addtogroup SHELL
  * @{
@@ -148,6 +148,11 @@ void SHELL_Init(p_shell_context_t context,send_data_cb_t send_cb,recv_data_cb_t 
 int32_t SHELL_RegisterCommand(const shell_command_context_t *command_context);
 int32_t SHELL_Main(p_shell_context_t context);
 int32_t SHELL_recv(p_shell_context_t context,uint32_t *key);
+
+int32_t shell_vscanf_s(const char *fmt_ptr, va_list ap);
+int32_t shell_scanf(const char *fmt_ptr, ...);
+void shell_scanf_init(void);
+void shell_scanf_exit(void);
 
 
 /* @} */

@@ -5,7 +5,7 @@
 #include "app_sensor.h"
 #include "app_version.h"
 #include "boot_version.h"
-#include "cli_input.h"
+ 
 #include "cmsis_os2.h"
 #include "config_app.h"
 #include "config_manager.h"
@@ -400,7 +400,7 @@ int32_t menu_manage_sentor_edit()
 
         debug_printf("시작시간입력(예:2025-01-01 00:01:00)\r\n");
         debug_printf(">>");
-        cli_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year,&month,&day,&hour,&min,&sec);
+        debug_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year,&month,&day,&hour,&min,&sec);
 
         start_time.Year = year;
         start_time.Month = month;
@@ -411,7 +411,7 @@ int32_t menu_manage_sentor_edit()
 
         debug_printf("종료시간입력(예:2025-01-01 00:01:00)\r\n");
         debug_printf(">>");
-        cli_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year, &month, &day, &hour, &min, &sec);
+        debug_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year, &month, &day, &hour, &min, &sec);
         end_time.Year = year;
         end_time.Month = month;
         end_time.Day = day;
@@ -421,7 +421,7 @@ int32_t menu_manage_sentor_edit()
 
         debug_printf("갑 입력\r\n");
         debug_printf(">>");
-        cli_scanf_s("%d", &value);
+        debug_scanf_s("%d", &value);
         ;
         if (choice == 1)
         {
@@ -459,10 +459,10 @@ int32_t menu_manage_sentor_edit()
         int read_cnt;
         debug_printf("시작시간입력(예:2025-01-01 00:01)\r\n");
         debug_printf(">>");
-        cli_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
+        debug_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
         debug_printf("읽을 갯수 입력\r\n");
         debug_printf(">>");
-        cli_scanf_s("%d", &read_cnt);
+        debug_scanf_s("%d", &read_cnt);
         DATE_TIME_BUF ct;
         ct.Year = year;
         ct.Month = month;

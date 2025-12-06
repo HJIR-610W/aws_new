@@ -5,7 +5,7 @@
 #include "IO\debug_io.h"
 #include "app_dataLogging.h"
 #include "aws_data.h"
-#include "cli_input.h"
+ 
 #include "cmsis_os2.h"  // CMSIS-OS2 API 헤더
 #include "console_define.h"
 #include "console_utile.h"

@@ -13,15 +13,15 @@
 #include "app_adc.h"
 #include "config_adc.h"
 #include "console_define.h"
-#include "console_scanf.h"
+ 
 #include "drv_adc.h"
-#include "fsl_shell.h"
+#include "shell.h"
 #include "bsp.h"
 #include "bsp_delay.h"
 #include "util_filter.h"
 #include "util_time.h"
  
-#include "cli_input.h"
+ 
 #include "cli_key_code.h"
 #include "util_stdio.h"
 
@@ -53,26 +53,6 @@ return ch;
 
 }
 
-int32_t console_scanf_s(const char* fmt, ...)
-{
-  va_list args;
-  int ret;
-
-  va_start(args, fmt);
-  ret = cli_vscanf_s(fmt, args);
-  va_end(args);
-
-  if (ret == CLI_KEYCODE_CTRL_C)
-  {
-    ret = MENU_BACK;
-  }
-  else if (ret == CLI_KEYCODE_CTRL_Q)
-  {
-    ret = MENU_ABORT;
-  }
-
-  return ret;
-}
 
 int view_input_decimal(const char* prompt, int* value, int min_val, int max_val)
 {
@@ -83,14 +63,14 @@ int view_input_decimal(const char* prompt, int* value, int min_val, int max_val)
   while(1)
   {
     debug_printf("%s (%d ~ %d): ", prompt, min_val, max_val);
-    //ret_scan = cli_scanf_s("%d", &input_value);
-    ret_scan = console_scanf("%d", &input_value);
-    if (ret_scan == CLI_KEYCODE_CTRL_Q)
+    //ret_scan = debug_scanf_s("%d", &input_value);
+    ret_scan = debug_scanf_s("%d", &input_value);
+    if (ret_scan == KEY_CODE_CTRL_Q)
     {
       ret = MENU_ABORT;
       break;
     }
-    else if (ret_scan == CLI_KEYCODE_CTRL_C)
+    else if (ret_scan == KEY_CODE_CTRL_C)
     {
       ret = MENU_BACK;
       break;
@@ -270,14 +250,14 @@ int view_input_float(const char* prompt, float min, float max, float* value)
   while (1)
   {
     debug_printf("%s: ", prompt);
-    ret_scan = cli_scanf_s("%f", value);
+    ret_scan = debug_scanf_s("%f", value);
 
-    if (ret_scan == CLI_KEYCODE_CTRL_C)
+    if (ret_scan == KEY_CODE_CTRL_C)
     {
       ret = MENU_BACK;
       break;
     }
-    else if (ret_scan == CLI_KEYCODE_CTRL_Q)
+    else if (ret_scan == KEY_CODE_CTRL_Q)
     {
       ret = MENU_ABORT;
       break;
@@ -319,14 +299,14 @@ int check_pass(const char* title, char* password_str,int *ok)
 
   while(1)
   {
-    status = cli_scanf_s("%s", input,sizeof(input));
+    status = debug_scanf_s("%s", input,sizeof(input));
 
-    if(status == CLI_KEYCODE_CTRL_C)
+    if(status == KEY_CODE_CTRL_C)
     {
       status = MENU_BACK;
       break;
     }
-    else if (status == CLI_KEYCODE_CTRL_Q)
+    else if (status == KEY_CODE_CTRL_Q)
     {
       status = MENU_ABORT;
       break;
@@ -364,14 +344,14 @@ int view_confirm_continue(const char *title,int32_t* ok)
   {
     debug_printf("%s(yes/no)\r\n",title);
     debug_printf("입력:");
-    status = cli_scanf_s("%s", input,sizeof(input));
+    status = debug_scanf_s("%s", input,sizeof(input));
 
-    if (status == CLI_KEYCODE_CTRL_C)
+    if (status == KEY_CODE_CTRL_C)
     {
       status = MENU_BACK;
       break;
     }
-    else if (status == CLI_KEYCODE_CTRL_Q)
+    else if (status == KEY_CODE_CTRL_Q)
     {
       status = MENU_ABORT;
       break;

@@ -7,8 +7,8 @@
 #include "util_time.h"
 #include "config_app.h"
 #include "drv_rtc.h"
-#include "console_scanf.h"
-#include "cli_input.h"
+ 
+ 
 #include "task_logging.h"
 
 
@@ -28,14 +28,14 @@ int32_t input_date( DATE_TIME_BUF* nt)
   {
     debug_printf("format:YYYY-MM-DD hh:mm:ss,2020-01-01 00:11:22\r\n");
 
-    status = cli_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year, &month, &day, &hour, &min, &sec);
+    status = debug_scanf_s("%04d-%02d-%02d %02d:%02d:%02d", &year, &month, &day, &hour, &min, &sec);
 
-    if(status == CLI_KEYCODE_CTRL_Q)
+    if(status == KEY_CODE_CTRL_P)
     {
       status = MENU_ABORT;
       break;
     }
-    else if (status == CLI_KEYCODE_CTRL_C)
+    else if (status == KEY_CODE_CTRL_C)
     {
       status = MENU_BACK;
       break;

@@ -6,7 +6,7 @@
 #include <stdarg.h>
 
 #include "io_interface.h"
-
+#include "cli_key_code.h"
 #define IO_COLOR_RED     31
 #define IO_COLOR_GREEN   32
 #define IO_COLOR_YELLOW  33

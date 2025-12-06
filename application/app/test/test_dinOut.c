@@ -8,7 +8,7 @@
 #include "drv_di.h"
 #include "drv_do.h"
 #include "drv_power.h"
-#include "cli_input.h"
+ 
 
 #define DI_COUNT 6
 #define DO_COUNT 6
@@ -73,9 +73,9 @@ void test_do(void)
     char state_str[10] = {0};
 
     debug_printf("출력 제어 입력 대기 (번호,상태) > ");
-    int ret = cli_scanf_s("%d,%9s", &num, state_str,sizeof(state_str));
+    int ret = debug_scanf_s("%d,%9s", &num, state_str,sizeof(state_str));
 
-    if (ret == CLI_KEYCODE_CTRL_C)
+    if (ret == KEY_CODE_CTRL_C)
     {
       debug_printf("\r\nCTRL+C 감지: 테스트 종료\r\n");
       break;

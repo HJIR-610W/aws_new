@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cli_input.h"
+ 
 #include "cli_key_code.h"
 #include "debug_io.h"
 #include "lwip/icmp.h"
@@ -242,15 +242,15 @@ void network_setup_from_user(void)
 
   // IP 주소 입력
   debug_printf("IP 주소를 입력하세요 (예: 192.168.1.100): ");
-  cli_scanf_s("%s", ip_str,sizeof(ip_str));
+  debug_scanf_s("%s", ip_str,sizeof(ip_str));
 
   // 서브넷 마스크 입력
   debug_printf("서브넷 마스크를 입력하세요 (예: 255.255.255.0): ");
-  cli_scanf_s("%s", netmask_str,sizeof(netmask_str));
+  debug_scanf_s("%s", netmask_str,sizeof(netmask_str));
 
   // 게이트웨이 입력
   debug_printf("게이트웨이를 입력하세요 (예: 192.168.1.1): ");
-  cli_scanf_s("%s", gw_str,sizeof(gw_str));
+  debug_scanf_s("%s", gw_str,sizeof(gw_str));
 
   // 문자열을 숫자 배열로 변환
   ip4_addr_t ipaddr, netmask, gw;
@@ -326,7 +326,7 @@ void test_eth(void)
   debug_printf("\r\nPing 테스트를 실행합니다.\r\n");
   debug_printf("IPv4 주소 형식으로 입력해주세요 (예: 192.168.1.1)\r\n");
   debug_printf("입력>");
-  cli_scanf_s("%s", ping_ip_str,sizeof(ping_ip_str));
+  debug_scanf_s("%s", ping_ip_str,sizeof(ping_ip_str));
 
   // Ping 실행
   //lwip_ping_test(ping_ip_str);

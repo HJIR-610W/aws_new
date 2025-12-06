@@ -1,9 +1,9 @@
 
 
-#include "cli_input.h"
+ 
 #include "config_app.h"
 #include "config_sensor.h"
-#include "console_scanf.h"
+ 
 #include "console_utile.h"
 #include "debug_io.h"
 #include "driver_interface.h"
