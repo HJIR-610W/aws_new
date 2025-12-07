@@ -20,6 +20,15 @@
 /* STM32F407IG GPIO 포트 정의 (GPIOA ~ GPIOI) */
 #define GPIO_PORT_COUNT 9
 
+/* VT100 터미널 제어 명령어 */
+#define VT100_CLEAR_SCREEN    "\033[2J"      /* 화면 지우기 */
+#define VT100_CURSOR_HOME     "\033[H"       /* 커서를 홈(0,0)으로 이동 */
+#define VT100_HIDE_CURSOR     "\033[?25l"    /* 커서 숨기기 */
+#define VT100_SHOW_CURSOR     "\033[?25h"    /* 커서 보이기 */
+#define VT100_COLOR_RED       "\033[31m"     /* 빨간색 텍스트 */
+#define VT100_COLOR_WHITE     "\033[37m"     /* 흰색 텍스트 */
+#define VT100_COLOR_RESET     "\033[0m"      /* 색상 초기화 */
+
 /* GPIO 포트 정보 구조체 */
 typedef struct {
   GPIO_TypeDef *port;
@@ -464,7 +473,121 @@ static void display_all_ports_summary(void)
 }
 
 /**
- * @brief GPIO 상태 변화 모니터링
+ * @brief GPIO 상태 변화 모니터링 (간략, VT100)
+ * @param interval_ms 모니터링 주기 (ms)
+ */
+static void monitor_gpio_changes_simple(uint32_t interval_ms)
+{
+  uint8_t current_states[GPIO_PORT_COUNT][16];
+  uint8_t prev_states[GPIO_PORT_COUNT][16];
+  uint8_t changed_flags[GPIO_PORT_COUNT][16];
+  int port;
+  int pin;
+  uint8_t state;
+
+  /* 초기 상태 읽기 */
+  for (port = 0; port < GPIO_PORT_COUNT; port++)
+  {
+    for (pin = 0; pin < 16; pin++)
+    {
+      GPIO_PinState pin_state = HAL_GPIO_ReadPin(s_gpio_ports[port].port, (1 << pin));
+      prev_states[port][pin] = (pin_state == GPIO_PIN_SET) ? 1 : 0;
+      changed_flags[port][pin] = 0;
+    }
+  }
+
+  /* 화면 초기화 및 커서 숨기기 */
+  debug_printf(VT100_CLEAR_SCREEN);
+  debug_printf(VT100_CURSOR_HOME);
+  debug_printf(VT100_HIDE_CURSOR);
+
+  /* 모니터링 루프 */
+  while (1)
+  {
+    /* 커서를 홈으로 이동하여 같은 위치에 다시 그리기 */
+    debug_printf(VT100_CURSOR_HOME);
+
+    /* 헤더 출력 */
+    debug_printf("\n");
+    debug_printf("STM32F407IG GPIO 상태 모니터링 (간략) - 주기: %ums\n", interval_ms);
+    debug_printf("================================================================================\n");
+    debug_printf("포트 | ");
+    for (pin = 0; pin < 16; pin++)
+    {
+      debug_printf("%2d ", pin);
+    }
+    debug_printf("|\n");
+    debug_printf("-----|");
+    for (pin = 0; pin < 16; pin++)
+    {
+      debug_printf("---");
+    }
+    debug_printf("|\n");
+
+    /* 모든 포트 상태 읽기 및 출력 */
+    for (port = 0; port < GPIO_PORT_COUNT; port++)
+    {
+      debug_printf(" %s  | ", s_gpio_ports[port].port_name);
+
+      for (pin = 0; pin < 16; pin++)
+      {
+        GPIO_PinState pin_state = HAL_GPIO_ReadPin(s_gpio_ports[port].port, (1 << pin));
+        current_states[port][pin] = (pin_state == GPIO_PIN_SET) ? 1 : 0;
+        state = current_states[port][pin];
+
+        /* 변화 감지 */
+        if (current_states[port][pin] != prev_states[port][pin])
+        {
+          changed_flags[port][pin] = 1;
+          prev_states[port][pin] = current_states[port][pin];
+        }
+
+        /* 변경된 핀은 빨간색으로 표시 */
+        if (changed_flags[port][pin])
+        {
+          debug_printf(VT100_COLOR_RED " %d " VT100_COLOR_RESET, state);
+        }
+        else
+        {
+          debug_printf(" %d ", state);
+        }
+      }
+
+      debug_printf("|\n");
+    }
+
+    /* 푸터 출력 */
+    debug_printf("-----|");
+    for (pin = 0; pin < 16; pin++)
+    {
+      debug_printf("---");
+    }
+    debug_printf("|\n");
+    debug_printf("================================================================================\n");
+    debug_printf(VT100_COLOR_RED "빨간색" VT100_COLOR_RESET ": 변경된 핀 | CTRL+C: 종료\n");
+    debug_printf("                                                                                \n");
+
+    /* CTRL+C 체크 */
+    if (get_key(interval_ms) == KEY_CODE_CTRL_C)
+    {
+      debug_printf(VT100_SHOW_CURSOR);
+      debug_printf("\n\n모니터링 종료\n\n");
+      break;
+    }
+
+    /* 변경 플래그 초기화 (다음 사이클에서는 흰색으로 표시) */
+    for (port = 0; port < GPIO_PORT_COUNT; port++)
+    {
+      for (pin = 0; pin < 16; pin++)
+      {
+        changed_flags[port][pin] = 0;
+      }
+    }
+  }
+}
+
+/**
+ * @brief GPIO 상태 변화 모니터링 (상세 로그)
  * @param interval_ms 모니터링 주기 (ms)
  */
 static void monitor_gpio_changes(uint32_t interval_ms)
@@ -541,6 +664,7 @@ void test_mcu_port(void)
     debug_printf("│  2. 특정 포트 상세 구성 정보           │\n");
     debug_printf("│  3. 모든 포트 구성 요약                │\n");
     debug_printf("│  4. GPIO 상태 변화 모니터링            │\n");
+    debug_printf("│  5. GPIO 상태 변화 모니터링 (간략)     │\n");
     debug_printf("│  0. 이전 메뉴                          │\n");
     debug_printf("├────────────────────────────────────────┤\n");
     debug_printf("│  포트: PA(0), PB(1), PC(2), PD(3)      │\n");
@@ -548,7 +672,7 @@ void test_mcu_port(void)
     debug_printf("│        PI(8)                           │\n");
     debug_printf("└────────────────────────────────────────┘\n");
 
-    ret = view_input_decimal("선택", &choice, 0, 4);
+    ret = view_input_decimal("선택", &choice, 0, 5);
 
     if (ret == MENU_ABORT || ret == MENU_BACK || choice == 0)
     {
@@ -599,6 +723,13 @@ void test_mcu_port(void)
           monitor_gpio_changes(interval_ms);
         }
         break;
+      case 5:
+         ret = view_input_decimal("모니터링 주기(ms)", &interval_ms, 10, 10000);
+        if (ret == MENU_OK)
+        {
+      monitor_gpio_changes_simple(interval_ms);
+        }
+        
 
       default:
         debug_printf("잘못된 선택입니다.\n");

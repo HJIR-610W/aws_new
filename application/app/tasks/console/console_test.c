@@ -54,31 +54,31 @@ int run_test_root()
 
   while (1)
   {
-    debug_printf("+---------------------------------------+\r\n");
-    debug_printf("|             TEST 메뉴                 |\r\n");
-    debug_printf("+---------------------------------------+\r\n");
-    debug_printf("|  1. HART                              |\r\n");
-    debug_printf("|  2. SRAM                              |\r\n");
-    debug_printf("|  3. SDI-12                            |\r\n");
-    debug_printf("|  4. RS232                             |\r\n");
-    debug_printf("|  5. RS485                             |\r\n");
-    debug_printf("|  6. RAIN                              |\r\n");
-    debug_printf("|  7. ADC                               |\r\n");
-    debug_printf("|  8. COUNT                             |\r\n");
-    debug_printf("|  9. 디지털 입력(I0~I5)                |\r\n");
-    debug_printf("| 10. 디지털 출력(D0~D5)                |\r\n");
-    debug_printf("| 11. 전원(24V,CDMA,모듈,히터,우량D)    |\r\n");
-    debug_printf("| 12. 모드버스                          |\r\n");
-    debug_printf("| 13. 이더넷                            |\r\n");
-    debug_printf("| 14. 시간                              |\r\n");
-    debug_printf("| 15. 파일시스템                        |\r\n");
-    debug_printf("| 16. ADC선형성                         |\r\n");
-    debug_printf("| 17. FLASH 메모리                      |\r\n");
-    debug_printf("| 18. CLCD                              |\r\n");
-    debug_printf("| 19. KEY                               |\r\n");
-    debug_printf("| 20. MCU PORT (GPIO 구성/상태)         |\r\n");
-    debug_printf("|     CTRL+C 이전,CTRL+Q 종료           |\r\n");
-    debug_printf("+---------------------------------------+\r\n");
+    debug_printf("┌────────────────────────────────────────┐\r\n");
+    debug_printf("│             TEST 메뉴                  │\r\n");
+    debug_printf("├────────────────────────────────────────┤\r\n");
+    debug_printf("│  1. HART                               │\r\n");
+    debug_printf("│  2. SRAM                               │\r\n");
+    debug_printf("│  3. SDI-12                             │\r\n");
+    debug_printf("│  4. RS232                              │\r\n");
+    debug_printf("│  5. RS485                              │\r\n");
+    debug_printf("│  6. RAIN                               │\r\n");
+    debug_printf("│  7. ADC                                │\r\n");
+    debug_printf("│  8. COUNT                              │\r\n");
+    debug_printf("│  9. 디지털 입력(I0~I5)                 │\r\n");
+    debug_printf("│ 10. 디지털 출력(D0~D5)                 │\r\n");
+    debug_printf("│ 11. 전원(24V,CDMA,모듈,히터,우량D)     │\r\n");
+    debug_printf("│ 12. 모드버스                           │\r\n");
+    debug_printf("│ 13. 이더넷                             │\r\n");
+    debug_printf("│ 14. 시간                               │\r\n");
+    debug_printf("│ 15. 파일시스템                         │\r\n");
+    debug_printf("│ 16. ADC선형성                          │\r\n");
+    debug_printf("│ 17. FLASH 메모리                       │\r\n");
+    debug_printf("│ 18. CLCD                               │\r\n");
+    debug_printf("│ 19. KEY                                │\r\n");
+    debug_printf("│ 20. MCU PORT (GPIO 구성/상태)          │\r\n");
+    debug_printf("│     CTRL+C 이전,CTRL+Q 종료            │\r\n");
+    debug_printf("└────────────────────────────────────────┘\r\n");
 
     status = view_input_decimal("선택", &choice, 1, 20);
     if (status == MENU_ABORT || status == MENU_BACK)
