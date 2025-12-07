@@ -2,7 +2,7 @@
 #ifndef APP_CONSOLE_H
 #define APP_CONSOLE_H
 
-#include "cli\shell.h"
+#include "shell.h"
 
 
  int32_t menu_root( int32_t argc, char** argv);

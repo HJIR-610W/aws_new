@@ -2930,13 +2930,13 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\terminal_bridge.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
@@ -2947,20 +2947,17 @@
         </group>
         <group>
             <name>io</name>
-            <group>
-                <name>shell</name>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\io\cli\cli_key_code.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\application\io\cli\shell.c</name>
-                </file>
-            </group>
+            <file>
+                <name>$PROJ_DIR$\..\application\io\cli_key_code.c</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\..\application\io\debug_io.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\application\io\debug_io.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\application\io\shell.c</name>
             </file>
         </group>
         <group>

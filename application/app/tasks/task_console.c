@@ -8,7 +8,7 @@
 #include "app_version.h"
 #include "boot_version.h"
 #include "cmsis_os.h"
-#include "cli\shell.h"
+#include "shell.h"
 
 #include "aws_menu.h"
 #include "console_login.h"
