@@ -667,10 +667,7 @@ void stm32_uart_get(int num, eUART_GET_OPTION_t cmd, void *option)
 }
 
 
-void stm32_uart_close(int num)
-{
-  (void)0;
-}
+
 
 int32_t stm32_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
 {
@@ -969,12 +966,6 @@ void stm32_uart_deinit(int num)
 
   HAL_DMA_DeInit(p_dma);
   HAL_UART_DeInit(p_uart);
-
-  if (uart_inst[num].stream_buffer)
-  {
-    vStreamBufferDelete(uart_inst[num].stream_buffer);
-    uart_inst[num].stream_buffer = NULL;
-  }
 
   OS_MUTEX_DELETE(uart_inst[num].tx_lock);
   OS_MUTEX_DELETE(uart_inst[num].rx_lock);

@@ -133,7 +133,7 @@ case DRV_UART_10_CDC :  // USB 디버깅
 
 void drv_uart_deinit(int32_t num)
 {
-  bsp_uart_close(num);
+  bsp_uart_deinit(num);
 }
 
 

@@ -14,7 +14,7 @@
 int32_t stm32_uart_init(int num, void *opt);
 void stm32_uart_deinit(int num);
 void stm32_uart_flush_rx(int num);
-void stm32_uart_close(int num);
+
 void stm32_uart_set(int num, eUART_SET_OPTION_t cmd, void *option);
 void stm32_uart_get(int num, eUART_GET_OPTION_t cmd, void *option);
 int32_t stm32_uart_inject(int num, const uint8_t *pData, uint16_t dataLen);

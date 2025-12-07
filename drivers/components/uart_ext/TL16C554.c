@@ -308,6 +308,17 @@ static void quad_disable_tx_interrupt(int uart_num)
   bsp_di_set_interrupt(uart->irq_di_num, &isr_cfg);
 }
 
+static void quad_deinit(int uart_num)
+{
+  tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+
+  write_register(IER(uart->base_address), 0x00);
+  write_register(FCR(uart->base_address), 0x00);
+  write_register(MCR(uart->base_address), 0x00);
+
+  bsp_di_clear_interrupt(uart->irq_di_num);
+}
+
 /**
  * @brief 1바이트 전송
  * @retval <0 오류,1 정상 전송
@@ -1051,13 +1062,9 @@ void tl16c554_deinit(int uart_num)
 
   uart->opened = false;
 
-  osDelay(10);
+  quad_deinit(uart_num);
 
-  if (uart->quad_stream)
-  {
-    vStreamBufferDelete(uart->quad_stream);
-    uart->quad_stream = NULL;
-  }
+  osDelay(10);
 
   OS_MUTEX_DELETE(uart->tx_lock);
   OS_MUTEX_DELETE(uart->rx_lock);
