@@ -10,7 +10,7 @@
 #include "drv_di_def.h"
 #include "pcb_define.h"
 
-#ifdef PCB_0_5
+#if 0
 #define BSP_DI_USER_BTN        0
 #define BSP_DI_RAIN_REED       1
 #define BSP_DI_RAIN_HALL       2

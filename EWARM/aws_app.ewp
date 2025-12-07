@@ -2686,7 +2686,10 @@
                     <name>$PROJ_DIR$\..\Application\app\test\test_count.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_dinOut.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_di.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\application\app\test\test_do.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\test\test_eth.c</name>

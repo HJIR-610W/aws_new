@@ -7,7 +7,6 @@
 #include "debug_io.h"
 #include "drv_di.h"
 #include "drv_do.h"
-#include "test_dinOut.h"
 #include  "drv_freqInput.h"
 
 
