@@ -8,7 +8,7 @@ extern "C" {
 #include <stdint.h>
 #include "util_memory.h"
 #include "cli_key_code.h"
-#define KEY_BREAK KEY_CODE_CTRL_Q
+#define KEY_BREAK KEY_CODE_CTRL_C
 #define KEY_ENTER KEY_CODE_ENTER
 #define KEY_UP KEY_CODE_UP
 #define KEY_DOWN KEY_CODE_DOWN

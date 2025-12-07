@@ -108,43 +108,43 @@ int print_menu(int width, const char* title, const char** menu_list, int cnt)
   int ctrl_padding_right = total_width - 2 - ctrl_len - ctrl_padding;
 
   // 상단 라인
-  debug_printf("+");
-  for (int i = 0; i < total_width - 2; i++) debug_printf("-");
-  debug_printf("+\r\n");
+  debug_printf("┌");
+  for (int i = 0; i < total_width - 2; i++) debug_printf("─");
+  debug_printf("┐\r\n");
 
   // 타이틀 출력
-  debug_printf("|");
+  debug_printf("│");
   for (int i = 0; i < title_padding; i++) debug_printf(" ");
   debug_printf("%s", title);
   for (int i = 0; i < title_padding_right; i++) debug_printf(" ");
-  debug_printf("|\r\n");
+  debug_printf("│\r\n");
 
   // 중간 라인
-  debug_printf("+");
-  for (int i = 0; i < total_width - 2; i++) debug_printf("-");
-  debug_printf("+\r\n");
+  debug_printf("├");
+  for (int i = 0; i < total_width - 2; i++) debug_printf("─");
+  debug_printf("┤\r\n");
 
   // 메뉴 리스트 출력
   for (int i = 0; i < cnt; i++)
   {
-    len = snprintf(buff, sizeof(buff), "|  %2d. %-s", i+1, menu_list[i]);
+    len = snprintf(buff, sizeof(buff), "│  %2d. %-s", i+1, menu_list[i]);
     debug_printf(buff);
     len = total_width - utf8_strlen(buff) - 1;
     for (int j = 0; j < len; j++) debug_printf(" ");
-    debug_printf("|\r\n");
+    debug_printf(" │\r\n");
   }
 
   // CTRL 문구
-  debug_printf("|");
+  debug_printf("│");
   for (int i = 0; i < ctrl_padding; i++) debug_printf(" ");
   debug_printf("%s", ctrl_msg);
   for (int i = 0; i < ctrl_padding_right; i++) debug_printf(" ");
-  debug_printf("|\r\n");
+  debug_printf("│\r\n");
 
   // 하단 라인
-  debug_printf("+");
-  for (int i = 0; i < total_width - 2; i++) debug_printf("-");
-  debug_printf("+\r\n");
+  debug_printf("└");
+  for (int i = 0; i < total_width - 2; i++) debug_printf("─");
+  debug_printf("┘\r\n");
 
   return cnt;
 }
