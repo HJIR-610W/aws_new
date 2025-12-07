@@ -18,7 +18,7 @@
  
 #include "util_stdio.h"
 #include "menu_handler.h"
-
+#include "temperature\pt100.h"
 #define ENTRY_PF(cnt, width, label, format, ...) \
   debug_printf("%2d.%-*s:" format "\r\n", cnt, width, label, ##__VA_ARGS__)
 
@@ -952,6 +952,45 @@ int32_t sjgp215_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_in
 
   return status;
 }
+
+
+
+int32_t temperature_pt100_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
+{
+  int32_t status;
+  int32_t choice;
+
+  temperature_pt100_t *pt100;
+
+
+  pt100 = get_sensor_config(type,sensor->model);;
+  if (pt100 == NULL)
+  {
+    ERROR_PRINTF("진성 일사 설정값 NULL");
+    return 0;
+  }
+
+  switch (menu_index)
+  {
+  case OTT_SMP3_CFG_PORT:
+
+    status = select_index_from_table(g_pt100_owner_list, NULL, _countof(g_pt100_owner_list), true, &choice);
+
+    if (status != MENU_OK)
+      break;
+
+    pt100->channel = choice;
+    save_config_sensor();
+
+    break;
+
+  default:
+    break;
+  }
+
+  return status;
+}
+
 /*
 센서 모델과 모델 설정 함수 연결
 센서가 추가되거나 센서고유의 설정값을 변경하려면 처리 함수를 작성해야한다.
@@ -966,7 +1005,9 @@ const sensor_config_entry_t g_config_sensor_table[] = {
     {.sensor_type = S_T_HUMINITY_HJ, .config_set = hjhumi_config_set},
     {.sensor_type = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_config_set},
     {.sensor_type = S_T_RAIN_PRESENT_DI, .config_set = rain_present_config_set},
-    {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = sjgp215_config_set}};
+    {.sensor_type = S_T_RAIN_PRESENT_ANALOG, .config_set = rain_present_config_set},
+    {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = sjgp215_config_set},
+    {.sensor_type = S_T_PT100,.config_set = temperature_pt100_set},};
 
 int32_t sensor_set( eSENSOR_TYPE_t type,sensor_t *p_sensor, uint8_t choice)
 {
