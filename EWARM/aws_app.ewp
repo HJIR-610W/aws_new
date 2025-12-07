@@ -2713,6 +2713,9 @@
                     <name>$PROJ_DIR$\..\Application\app\test\test_lcd.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\application\app\test\test_mcu_port.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Application\app\test\test_meomoy.c</name>
                 </file>
                 <file>
