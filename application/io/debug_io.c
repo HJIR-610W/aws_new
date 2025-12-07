@@ -176,7 +176,7 @@ void debug_inject(uint8_t *data,size_t len)
   io_if_t io;
 
   io.dev_num = DEBUG_UART_NUM;
-  g_uart_io_ops.inject(&io,data,len);
+ // g_uart_io_ops.inject(&io,data,len);
 
   io_inject(g_current_debug_io,data,len);
 }

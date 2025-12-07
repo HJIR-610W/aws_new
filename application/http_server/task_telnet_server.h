@@ -44,7 +44,7 @@ extern eTELNET_MODE_t g_telnet_server_mode_use;  // 0:  , 1:
 #define TELNET_OPT_SGA      3    // Suppress Go Ahead
 #define TELNET_OPT_NAWS     31   // Negotiate About Window Size
 
-// Telnet  
+// Telnet
 typedef enum {
     TELNET_STATE_NORMAL,
     TELNET_STATE_IAC,

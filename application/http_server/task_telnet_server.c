@@ -76,17 +76,18 @@ static void telnet_init_client(telnet_client_t* client, int socket)
     client->socket = socket;
     client->connected = true;
     client->state = TELNET_STATE_NORMAL;
-    client->echo_enabled = true;
+    client->echo_enabled = false;
     client->sga_enabled = true;
     client->window_width = 80;
     client->window_height = 24;
     client->line_pos = 0;
-    
+
     // Send initial telnet options for immediate character transmission
-    telnet_send_option(socket, TELNET_WILL, TELNET_OPT_ECHO);
+    // ECHO 옵션 비활성화 - 클라이언트에서 로컬 에코 처리
+    telnet_send_option(socket, TELNET_WONT, TELNET_OPT_ECHO);
     telnet_send_option(socket, TELNET_WILL, TELNET_OPT_SGA);
     telnet_send_option(socket, TELNET_DO, TELNET_OPT_SGA);
-    
+
     task_printf("Telnet: Client initialized with options negotiation (socket: %d)\r\n", socket);
 }
 
@@ -478,28 +479,28 @@ static void telnet_client_mode_task(void)
 static void tcp_relay_connect(tcp_relay_client_t* client)
 {
     struct sockaddr_in server_addr;
-    
-    task_printf("TCP Relay: Attempting connection to %s:%d (attempt %lu)\r\n", 
+
+    task_printf("TCP Relay: Attempting connection to %s:%d (attempt %lu)\r\n",
                client->relay_server_ip, client->relay_server_port, client->reconnect_count + 1);
-    
+
     client->socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (client->socket < 0)
     {
         task_printf("TCP Relay: Socket creation failed, error: %d\r\n", errno);
         return;
     }
-    
+
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(client->relay_server_port);
-    
+
     if (inet_pton(AF_INET, client->relay_server_ip, &server_addr.sin_addr) <= 0) {
         task_printf("TCP Relay: Invalid IP address: %s\r\n", client->relay_server_ip);
         closesocket(client->socket);
         client->socket = -1;
         return;
     }
-    
+
     if (connect(client->socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         task_printf("TCP Relay: Connection failed, error: %d\r\n", errno);
         closesocket(client->socket);
@@ -507,12 +508,12 @@ static void tcp_relay_connect(tcp_relay_client_t* client)
         client->reconnect_count++;
         return;
     }
-    
+
     client->connected = true;
     client->reconnect_count = 0;
     client->state = TELNET_STATE_NORMAL;
     client->line_pos = 0;
-    
+
     task_printf("TCP Relay: Connected successfully - ready for Telnet forwarding\r\n");
 }
 
@@ -585,7 +586,7 @@ typedef struct {
 static telnet_common_client_t telnet_get_common_client(void* client_ptr, bool is_server_mode)
 {
     telnet_common_client_t common = {0};
-    
+
     if (is_server_mode) {
         telnet_client_t* server_client = (telnet_client_t*)client_ptr;
         common.state = &server_client->state;
@@ -603,7 +604,7 @@ static telnet_common_client_t telnet_get_common_client(void* client_ptr, bool is
         common.connected = &relay_client->connected;
         common.echo_enabled = false; // Relay clients don't echo
     }
-    
+
     return common;
 }
 
@@ -627,164 +628,144 @@ static void telnet_send_unified_response(telnet_common_client_t* common, const c
 
 static void telnet_process_common_data(void* client_ptr, bool is_server_mode, const uint8_t* data, int len)
 {
+    char single_char[2];
     telnet_common_client_t common = telnet_get_common_client(client_ptr, is_server_mode);
-    size_t line_len;
+
     for (int i = 0; i < len; i++) {
         uint8_t ch = data[i];
-        
+
         switch (*common.state) {
-            case TELNET_STATE_NORMAL:
+            case TELNET_STATE_NORMAL: // 일반 문자 입력 상태
                 if (ch == TELNET_IAC)
                 {
+                    // Telnet 프로토콜 명령어(IAC 0xFF) 시작 - Telnet 내부 처리
                     *common.state = TELNET_STATE_IAC;
-                } 
-                else if (ch == '\n' || ch==0x03||ch == 0x11 || ch==0x1B|| ch==0x5B)
-                {
-                  if (ch == '\n' || ch == '\r')
-                  {
-                    // Line complete - process command (mode independent)
-                    line_len = *common.line_pos;
-                    common.line_buffer[line_len++] = '\n';
-                    common.line_buffer[line_len] = 0;
-                  }
-                  else
-                  {
-                      common.line_buffer[0] = ch;
-                      *common.line_pos =0 ;
-                      line_len =1;
-                  }    
-                    if (*common.line_pos >= 0) {
-                        // Set global client for server mode only (connection management)
-                        if (is_server_mode) {
-                            g_current_telnet_client = (telnet_client_t*)client_ptr;
-                        }
-                        
-                        // Process command - unified for both modes
-                        telnet_process_command(common.line_buffer, line_len);
-
-                        // Send response - mode independent
-                        telnet_send_unified_response(&common, "\r\n");
-                    }
-                    
-                    *common.line_pos = 0;
-                } else if (ch == '\b' || ch == 127) {
-                    // Backspace processing - mode independent
-                    if (*common.line_pos > 0) {
-                        (*common.line_pos)--;
-                        // Echo only for server mode with echo enabled
-                        if (is_server_mode && common.echo_enabled) {
-                            telnet_send_unified_response(&common, "\b \b");
-                        }
-                    }
-                } else if (ch >= 32 && ch < 127) {
-                    // Regular character processing - mode independent
-                    if (*common.line_pos < TELNET_LINE_BUFFER_SIZE - 1) {
-                        common.line_buffer[(*common.line_pos)++] = ch;
-                        
-                        // Echo only for server mode with echo enabled
-                        if (is_server_mode && common.echo_enabled && telnet_is_socket_valid(common.socket)) {
-                            char echo_ch = ch;
-                            if (telnet_safe_send(common.socket, &echo_ch, 1) < 0) {
-                                *common.connected = false;
-                                return;
-                            }
-                        }
-                    }
                 }
-                else if (ch == 4) {
-                    // Ctrl+D processing (EOF) - mode independent
+                else
+                {
+                    // Telnet 프로토콜 제어 문자가 아닌 모든 데이터는 즉시 전송
+                    // ESC, 방향키, 특수키, 제어 문자 등 모든 입력을 그대로 전달
+
+                    // 서버 모드일 경우 현재 클라이언트 설정
                     if (is_server_mode) {
-                        telnet_send_unified_response(&common, "\r\nGoodbye!\r\n");
+                        g_current_telnet_client = (telnet_client_t*)client_ptr;
                     }
-                    *common.connected = false;
-                    return;
+
+                    // 단일 문자를 즉시 명령 처리 함수로 전송
+                    single_char[0] = ch;
+                    single_char[1] = 0;
+                    telnet_process_command(single_char, 1);
+
+                    // 에코 기능 비활성화 - 클라이언트에서 에코 처리
                 }
                 break;
                 
-            case TELNET_STATE_IAC:
+            case TELNET_STATE_IAC: // Telnet IAC(0xFF) 명령어 처리 상태
+                // IAC(Interpret As Command) 다음 명령어 바이트 처리
                 switch (ch) {
                     case TELNET_WILL:
+                        // WILL(0xFB): 클라이언트가 옵션을 활성화하겠다고 알림
                         *common.state = TELNET_STATE_WILL;
                         break;
                     case TELNET_WONT:
+                        // WONT(0xFC): 클라이언트가 옵션을 비활성화하겠다고 알림
                         *common.state = TELNET_STATE_WONT;
                         break;
                     case TELNET_DO:
+                        // DO(0xFD): 서버에게 옵션 활성화 요청
                         *common.state = TELNET_STATE_DO;
                         break;
                     case TELNET_DONT:
+                        // DONT(0xFE): 서버에게 옵션 비활성화 요청
                         *common.state = TELNET_STATE_DONT;
                         break;
                     case TELNET_SB:
+                        // SB(0xFA): 서브네고시에이션(Subnegotiation) 시작
                         *common.state = TELNET_STATE_SB;
                         break;
                     case TELNET_IAC:
-                        // IAC IAC = literal IAC
+                        // IAC IAC(0xFF 0xFF): 실제 데이터로 0xFF 값을 전송
                         if (*common.line_pos < TELNET_LINE_BUFFER_SIZE - 1) {
                             common.line_buffer[(*common.line_pos)++] = TELNET_IAC;
                         }
                         *common.state = TELNET_STATE_NORMAL;
                         break;
                     default:
+                        // 알 수 없는 명령어 - 일반 모드로 복귀
                         *common.state = TELNET_STATE_NORMAL;
                         break;
                 }
                 break;
                 
-            case TELNET_STATE_WILL:
+            case TELNET_STATE_WILL: // WILL 옵션 처리 상태
+                // 클라이언트가 특정 옵션을 활성화하겠다고 알림
                 task_printf("Telnet: Client WILL %d\r\n", ch);
                 if (is_server_mode) {
                     telnet_client_t* server_client = (telnet_client_t*)client_ptr;
                     if (ch == TELNET_OPT_SGA) {
+                        // SGA(Suppress Go Ahead) 옵션 활성화
                         server_client->sga_enabled = true;
                     } else if (ch == TELNET_OPT_NAWS) {
+                        // NAWS(Negotiate About Window Size) 옵션 요청 수락
                         telnet_send_option(server_client->socket, TELNET_DO, TELNET_OPT_NAWS);
                     }
                 }
                 *common.state = TELNET_STATE_NORMAL;
                 break;
-                
-            case TELNET_STATE_WONT:
+
+            case TELNET_STATE_WONT: // WONT 옵션 처리 상태
+                // 클라이언트가 특정 옵션을 비활성화하겠다고 알림
                 task_printf("Telnet: Client WONT %d\r\n", ch);
                 if (is_server_mode && ch == TELNET_OPT_ECHO) {
                     telnet_client_t* server_client = (telnet_client_t*)client_ptr;
+                    // Echo 옵션 비활성화
                     server_client->echo_enabled = false;
                 }
                 *common.state = TELNET_STATE_NORMAL;
                 break;
-                
-            case TELNET_STATE_DO:
+
+            case TELNET_STATE_DO: // DO 옵션 처리 상태
+                // 클라이언트가 서버에게 특정 옵션 활성화 요청
                 task_printf("Telnet: Client DO %d\r\n", ch);
                 if (is_server_mode) {
                     telnet_client_t* server_client = (telnet_client_t*)client_ptr;
                     if (ch == TELNET_OPT_ECHO) {
+                        // Echo 옵션 활성화 - 서버가 문자를 에코
                         telnet_send_option(server_client->socket, TELNET_WILL, TELNET_OPT_ECHO);
-                        server_client->echo_enabled = true;
+                       // server_client->echo_enabled = true;
                     } else if (ch == TELNET_OPT_SGA) {
+                        // SGA 옵션 활성화 - Go Ahead 신호 억제
                         telnet_send_option(server_client->socket, TELNET_WILL, TELNET_OPT_SGA);
                         server_client->sga_enabled = true;
                     }
                 }
                 *common.state = TELNET_STATE_NORMAL;
                 break;
-                
-            case TELNET_STATE_DONT:
+
+            case TELNET_STATE_DONT: // DONT 옵션 처리 상태
+                // 클라이언트가 서버에게 특정 옵션 비활성화 요청
                 task_printf("Telnet: Client DONT %d\r\n", ch);
                 *common.state = TELNET_STATE_NORMAL;
                 break;
-                
-            case TELNET_STATE_SB:
+
+            case TELNET_STATE_SB: // 서브네고시에이션 시작 상태
+                // 서브네고시에이션 옵션 코드 수신
                 if (ch == TELNET_OPT_NAWS) {
+                    // NAWS(윈도우 크기) 서브네고시에이션 데이터 수집 시작
                     *common.state = TELNET_STATE_SB_DATA;
                 } else {
+                    // 다른 서브네고시에이션은 무시하고 일반 모드로 복귀
                     *common.state = TELNET_STATE_NORMAL;
                 }
                 break;
-                
-            case TELNET_STATE_SB_DATA:
+
+            case TELNET_STATE_SB_DATA: // 서브네고시에이션 데이터 수신 상태
+                // SE(0xF0) 종료 마커까지 데이터 수집
                 if (ch == TELNET_SE) {
+                    // 서브네고시에이션 종료 - 일반 모드로 복귀
                     *common.state = TELNET_STATE_NORMAL;
                 }
+                // 데이터는 현재 무시 (필요 시 향후 처리 가능)
                 break;
         }
     }
