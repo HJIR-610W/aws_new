@@ -2444,37 +2444,34 @@
                             <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_cali.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu_cali.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_data.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu_data.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_manager.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu_manager.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_offset.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu_network.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_panel.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu_offset.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_sensor.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu_panel.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_menu_view.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu_sensor.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_network.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu_system.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_panel.c</name>
-                        </file>
-                        <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_system.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu_view.c</name>
                         </file>
                     </group>
                     <group>

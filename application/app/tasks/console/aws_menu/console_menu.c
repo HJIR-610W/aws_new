@@ -1,23 +1,27 @@
 
-#include "aws_menu.h"
+#include "console_menu.h"
 
 #include "aws_develop.h"
-#include "aws_menu_cali.h"
-#include "aws_menu_data.h"
+#include "console_menu_cali.h"
 
-#include "aws_menu_offset.h"
-#include "aws_menu_panel.h"
-#include "aws_menu_sensor.h"
-#include "aws_network.h"
-#include "aws_system.h"
+#include "console_menu_offset.h"
+#include "console_menu_panel.h"
+#include "console_menu_network.h"
+#include "console_menu_system.h"
+#include "console_menu_panel.h"
+#include "console_menu_data.h"
+#include "console_menu_view.h"
+#include "console_menu_manager.h"
+#include "console_menu_sensor.h"
+
+#include "console_login.h"
 #include "console_define.h"
 #include "console_utile.h"
 #include "debug_io.h"
 #include "util_memory.h"
-#include "aws_menu_view.h"
-#include "aws_menu_manager.h"
-#include "console_login.h"
-#include "aws_panel.h"
+
+
+
 
 #define MENU_INFO        1
 #define MENU_SYSTEM      2
@@ -89,12 +93,14 @@ int aws_menu(void)
         break;
       case MENU_NUMBER(MENU_SENSOR_DEF):
         aws_menu_sensor();
+        //console_menu_sensor();
         break;
       case MENU_NUMBER(MENU_NETWORK_DEF):
         aws_menu_network();
         break;
       case MENU_NUMBER(MENU_DATA_DEF):
-        aws_menu_data();
+        //aws_menu_data();
+         console_menu_data();
         break;
       case MENU_NUMBER(MENU_PANEL_DEF):
         //aws_menu_panel();

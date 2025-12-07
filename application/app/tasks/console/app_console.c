@@ -1,7 +1,7 @@
 
 
 #include "app_console_test.h"
-#include "aws_menu.h"
+#include "console_menu.h"
 #include "shell.h"
 #include "aws_develop.h"
  

@@ -1,6 +1,6 @@
 
 
-#include "aws_menu_view.h"
+#include "console_menu_view.h"
 
 #include <string.h>
 #include "view_driver.h"

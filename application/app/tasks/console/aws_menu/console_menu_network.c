@@ -2,7 +2,8 @@
 /*
 This file must be encoded in EUC-KR
 */
- 
+#include "console_menu_network.h"
+
 #include "config_app.h"
 #include "console_define.h"
  

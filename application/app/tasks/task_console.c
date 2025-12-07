@@ -10,7 +10,7 @@
 #include "cmsis_os.h"
 #include "shell.h"
 
-#include "aws_menu.h"
+#include "console_menu.h"
 #include "console_login.h"
 #include "drv_rs232.h"
 #include "debug_io.h"

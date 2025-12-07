@@ -1,4 +1,4 @@
-#include "aws_panel.h"
+#include "console_menu_panel.h"
 
 #include "config_app.h"
 #include "const_string.h"
