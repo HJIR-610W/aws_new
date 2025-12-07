@@ -2695,7 +2695,10 @@
                     <name>$PROJ_DIR$\..\Application\app\test\test_filesystem.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_flach.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_flash.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\application\app\test\test_fram.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\test\test_hart.c</name>
