@@ -87,6 +87,70 @@ static const char* get_pull_string(uint32_t pull)
 }
 
 /**
+ * @brief Alternate Function 상세 설명 가져오기
+ * @param af_num AF 번호 (0~15)
+ * @param buffer 설명 문자열 저장 버퍼
+ * @param buffer_size 버퍼 크기
+ */
+static void get_af_description(uint32_t af_num, char *buffer, size_t buffer_size)
+{
+  switch (af_num)
+  {
+    case 0:
+      snprintf(buffer, buffer_size, "RTC_50Hz, MCO, TAMPER, SWJ(SWD/JTAG), TRACE");
+      break;
+    case 1:
+      snprintf(buffer, buffer_size, "TIM1, TIM2");
+      break;
+    case 2:
+      snprintf(buffer, buffer_size, "TIM3, TIM4, TIM5");
+      break;
+    case 3:
+      snprintf(buffer, buffer_size, "TIM8, TIM9, TIM10, TIM11");
+      break;
+    case 4:
+      snprintf(buffer, buffer_size, "I2C1, I2C2, I2C3");
+      break;
+    case 5:
+      snprintf(buffer, buffer_size, "SPI1, SPI2/I2S2, I2S3ext");
+      break;
+    case 6:
+      snprintf(buffer, buffer_size, "SPI3/I2S3, I2S2ext");
+      break;
+    case 7:
+      snprintf(buffer, buffer_size, "USART1, USART2, USART3, I2S3ext");
+      break;
+    case 8:
+      snprintf(buffer, buffer_size, "UART4, UART5, USART6");
+      break;
+    case 9:
+      snprintf(buffer, buffer_size, "CAN1, CAN2, TIM12, TIM13, TIM14");
+      break;
+    case 10:
+      snprintf(buffer, buffer_size, "OTG_FS, OTG_HS (USB)");
+      break;
+    case 11:
+      snprintf(buffer, buffer_size, "ETH (Ethernet)");
+      break;
+    case 12:
+      snprintf(buffer, buffer_size, "FSMC, OTG_HS_FS, SDIO");
+      break;
+    case 13:
+      snprintf(buffer, buffer_size, "DCMI (Camera Interface)");
+      break;
+    case 14:
+      snprintf(buffer, buffer_size, "Reserved");
+      break;
+    case 15:
+      snprintf(buffer, buffer_size, "EVENTOUT");
+      break;
+    default:
+      snprintf(buffer, buffer_size, "Unknown");
+      break;
+  }
+}
+
+/**
  * @brief GPIO 속도 문자열 변환
  */
 static const char* get_speed_string(uint32_t speed)
@@ -233,7 +297,8 @@ static void display_port_detailed_config(int port_index)
   gpio_pin_config_t config;
   int pin;
   uint32_t mode_type;
-  char mode_detail[64];
+  char af_desc[80];
+  char mode_detail[128];
 
   if (port_index < 0 || port_index >= GPIO_PORT_COUNT)
   {
@@ -243,9 +308,9 @@ static void display_port_detailed_config(int port_index)
 
   debug_printf("\n");
   debug_printf("================================================================================\n");
-  debug_printf("포트 %s 상세 구성 정보\n", s_gpio_ports[port_index].port_name);
+  debug_printf("포트 %s 상세 구성 정보 (STM32F407IG)\n", s_gpio_ports[port_index].port_name);
   debug_printf("================================================================================\n");
-  debug_printf("핀  | 상태 | 모드     | PULL   | 속도 | AF  | 설명\n");
+  debug_printf("핀  | 상태 | 모드     | PULL   | 속도 | AF  | 모드 설명\n");
   debug_printf("----|------|----------|--------|------|-----|--------------------------------\n");
 
   for (pin = 0; pin < 16; pin++)
@@ -267,7 +332,7 @@ static void display_port_detailed_config(int port_index)
         break;
 
       case 0x02:  /* ALTERNATE FUNCTION */
-        snprintf(mode_detail, sizeof(mode_detail), "주변장치 AF%d", config.alternate);
+        snprintf(mode_detail, sizeof(mode_detail), "AF%d - 주변장치", config.alternate);
         break;
 
       case 0x03:  /* ANALOG */
@@ -290,6 +355,46 @@ static void display_port_detailed_config(int port_index)
                  mode_detail);
   }
 
+  debug_printf("================================================================================\n");
+
+  /* AF 사용 핀에 대한 상세 설명 추가 */
+  debug_printf("\n[AF(Alternate Function) 상세 정보]\n");
+  debug_printf("--------------------------------------------------------------------------------\n");
+
+  for (pin = 0; pin < 16; pin++)
+  {
+    read_gpio_pin_config(s_gpio_ports[port_index].port, pin, &config);
+
+    /* AF 모드인 핀만 상세 정보 출력 */
+    if (config.mode == 0x02)  /* ALTERNATE FUNCTION */
+    {
+      get_af_description(config.alternate, af_desc, sizeof(af_desc));
+      debug_printf("%s%-2d : AF%-2d - %s\n",
+                   s_gpio_ports[port_index].port_name,
+                   pin,
+                   config.alternate,
+                   af_desc);
+    }
+  }
+
+  debug_printf("--------------------------------------------------------------------------------\n");
+  debug_printf("\n[STM32F407IG AF 기능 요약]\n");
+  debug_printf("AF0  : RTC_50Hz, MCO, TAMPER, SWJ(SWD/JTAG), TRACE\n");
+  debug_printf("AF1  : TIM1, TIM2 (타이머)\n");
+  debug_printf("AF2  : TIM3, TIM4, TIM5 (타이머)\n");
+  debug_printf("AF3  : TIM8, TIM9, TIM10, TIM11 (타이머)\n");
+  debug_printf("AF4  : I2C1, I2C2, I2C3 (I2C 통신)\n");
+  debug_printf("AF5  : SPI1, SPI2/I2S2, I2S3ext (SPI/I2S 통신)\n");
+  debug_printf("AF6  : SPI3/I2S3, I2S2ext (SPI/I2S 통신)\n");
+  debug_printf("AF7  : USART1, USART2, USART3, I2S3ext (UART 통신)\n");
+  debug_printf("AF8  : UART4, UART5, USART6 (UART 통신)\n");
+  debug_printf("AF9  : CAN1, CAN2, TIM12, TIM13, TIM14 (CAN 통신/타이머)\n");
+  debug_printf("AF10 : OTG_FS, OTG_HS (USB)\n");
+  debug_printf("AF11 : ETH (Ethernet 통신)\n");
+  debug_printf("AF12 : FSMC, OTG_HS_FS, SDIO (메모리 인터페이스/USB/SD카드)\n");
+  debug_printf("AF13 : DCMI (카메라 인터페이스)\n");
+  debug_printf("AF14 : Reserved (예약됨)\n");
+  debug_printf("AF15 : EVENTOUT (이벤트 출력)\n");
   debug_printf("================================================================================\n");
 }
 
