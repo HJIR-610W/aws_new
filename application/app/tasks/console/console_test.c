@@ -24,6 +24,7 @@
 #include "test_modbus.h"
 #include "test_key.h"
 #include "test_mcu_port.h"
+#include "test_fram.h"
 
 #define MENU_HART                   1
 #define MENU_SRAM                   2
@@ -45,7 +46,7 @@
 #define MENU_CLCD                   18
 #define MENU_KEY                    19
 #define MENU_MCU_PORT               20
-
+#define MENU_FRAM                   21
 
 
 int run_test_root()
@@ -77,10 +78,11 @@ int run_test_root()
     debug_printf("│ 18. CLCD                               │\r\n");
     debug_printf("│ 19. KEY                                │\r\n");
     debug_printf("│ 20. MCU PORT (GPIO 구성/상태)          │\r\n");
+    debug_printf("│ 21. FRAM                               │\r\n");
     debug_printf("│     CTRL+C 이전,CTRL+Q 종료            │\r\n");
     debug_printf("└────────────────────────────────────────┘\r\n");
 
-    status = view_input_decimal("선택", &choice, 1, 20);
+    status = view_input_decimal("선택", &choice, 1, 21);
     if (status == MENU_ABORT || status == MENU_BACK)
       return status;
     if (status != MENU_OK)
@@ -148,6 +150,9 @@ int run_test_root()
     case MENU_MCU_PORT:
        test_mcu_port();
        break;
+    case MENU_FRAM:
+      test_fram();
+      break;
     default :
     break;
     }

@@ -634,22 +634,25 @@ static void telnet_process_common_data(void* client_ptr, bool is_server_mode, co
         
         switch (*common.state) {
             case TELNET_STATE_NORMAL:
-                if (ch == TELNET_IAC) {
+                if (ch == TELNET_IAC)
+                {
                     *common.state = TELNET_STATE_IAC;
-                } else if (ch == '\n' || ch==0x03||ch == 0x11) {
+                } 
+                else if (ch == '\n' || ch==0x03||ch == 0x11 || ch==0x1B|| ch==0x5B)
+                {
                   if (ch == '\n' || ch == '\r')
                   {
                     // Line complete - process command (mode independent)
                     line_len = *common.line_pos;
                     common.line_buffer[line_len++] = '\n';
                     common.line_buffer[line_len] = 0;
-                    }
-                    else
-                    {
+                  }
+                  else
+                  {
                       common.line_buffer[0] = ch;
                       *common.line_pos =0 ;
                       line_len =1;
-                    }    
+                  }    
                     if (*common.line_pos >= 0) {
                         // Set global client for server mode only (connection management)
                         if (is_server_mode) {

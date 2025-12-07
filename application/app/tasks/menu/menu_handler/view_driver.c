@@ -41,24 +41,24 @@ void create_win(win_t* win, int start_x, int start_y, int view_row, int view_col
 //실시간 값 표시
 void win_printf_title(win_t* win, const char* pFmt, ...)
 {
-	char buff[150];
+	char buff[300];
 	va_list ap;
 	int len=0;
-  int remain_len;
+	int remain_len;
 
 	debug_printf("\x1B[%d;%dH", win->start_y, win->start_x);
 
 	//상단 +----+ 출력
 	for (int i = 0; i < win->view_col - 2; i++)
 	{
-		buff[len++] = '-';
+		len +=snprintf(&buff[len],sizeof(buff)-len,"─");
 	}
 	buff[len] = '\0';
-	debug_printf("+%s+", buff);
+	debug_printf("┌%s┐", buff);
 
 	len=0;
-			// 타이틀 출력
-			debug_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
+	// 타이틀 출력
+	debug_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
 
 	va_start(ap, pFmt);
 
@@ -81,14 +81,14 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 
 	if (win->is_focused)
 	{
-		debug_printf("|\x1B[32m%s\x1B[0m|\r\n",  &buff[0]);
+		debug_printf("│\x1B[32m%s\x1B[0m│\r\n",  &buff[0]);
 	}
 	else if (win->is_selected)
 	{
-		debug_printf("|\x1B[7m%s\x1B[0m|\r\n",  &buff[0]);
+		debug_printf("│\x1B[7m%s\x1B[0m│\r\n",  &buff[0]);
 	} else
 	{
-    debug_printf("|%s|\r\n", buff);
+    debug_printf("│%s│\r\n", buff);
   }
 
 	debug_printf("\x1B[%d;%dH", win->start_y + 2, win->start_x);
@@ -96,20 +96,21 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
 	
 	for (int i = 0; i < win->view_col - 2; i++)
 	{
-		buff[len++] = '-';
+		len +=snprintf(&buff[len],sizeof(buff)-len,"─");
 	}
 	buff[len] = '\0';
-	debug_printf("+%s+", buff);
+	debug_printf("├%s┤", buff);
 }
 
 void win_print_close(win_t* win)
 {
 	debug_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
-	debug_printf("+");
-	for (int i = 0; i < win->view_col - 2; i++) {
-		debug_printf("-");
+	debug_printf("└");
+	for (int i = 0; i < win->view_col - 2; i++)
+	{
+		debug_printf("─");
 	}
-	debug_printf("+\n");
+	debug_printf("┘\n");
 }
 
 /**
@@ -119,25 +120,27 @@ void win_print_close(win_t* win)
  */
 void win_printf_row(win_t* win, int row_index, const char* pFmt, ...)
 {
-	char buff[150];
+	char buff[300];
 	int i;
-	int len;
+	int len=0;
 	int page;
 	va_list ap;
 	int total_len = 0;
 	int remain_len=0;
 
-			if (win->current_row >= win->view_row) return;
+	if (win->current_row >= win->view_row) return;
 
 	page = win->current_page;// 
+  
 	if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + win->view_row)
 	{
 		debug_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
 		va_start(ap, pFmt);
 
-		buff[0] = '|';
-		len = 1;
-		len += vsnprintf((char*)&buff[1], sizeof(buff) - 2, (char*)pFmt, ap);
+    len = 0;
+		len +=snprintf(&buff[len],sizeof(buff)-len,"│");
+
+		len += vsnprintf((char*)&buff[len], sizeof(buff) - len, (char*)pFmt, ap);
 		va_end(ap);
 
 		total_len = len;
@@ -147,8 +150,10 @@ void win_printf_row(win_t* win, int row_index, const char* pFmt, ...)
 		{
 			buff[total_len++] = ' ';
 		}
-		buff[total_len++] = '|';
-		buff[total_len] = '\0';
+    
+    len +=snprintf(&buff[total_len],sizeof(buff)-total_len," │");
+    
+
 
 		debug_printf("%s", buff);
 		win->current_row++;
