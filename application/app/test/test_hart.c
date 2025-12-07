@@ -65,7 +65,7 @@ void hart_task(void *arg)
     {
       hart_parse(buff,len);
     }
-    if (get_key(1000) == KEY_CODE_CTRL_C)
+    if (debug_get_key(1000) == KEY_CODE_CTRL_C)
     {
       break;
     }

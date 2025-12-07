@@ -117,7 +117,7 @@ static void menu_sram_rw_test(void)
   debug_printf("\n메모리 해제 완료\n");
 
   debug_printf("\n아무 키나 누르세요...");
-  get_key(0xFFFFFFFF);
+  debug_get_key(0xFFFFFFFF);
 }
 
 /**
@@ -204,7 +204,7 @@ static void menu_sram_hex_dump(void)
     if ((offset % 256 == 0) && (offset < dump_size))
     {
       debug_printf("\n계속하려면 아무 키나 누르세요 (Ctrl+C: 중단)...");
-      key = get_key(0xFFFFFFFF);
+      key = debug_get_key(0xFFFFFFFF);
       if (key == KEY_CODE_CTRL_C)
       {
         debug_printf("\n중단되었습니다.\n");
@@ -219,7 +219,7 @@ static void menu_sram_hex_dump(void)
 
   debug_printf("\nHEX DUMP 완료!\n");
   debug_printf("아무 키나 누르세요...");
-  get_key(0xFFFFFFFF);
+  debug_get_key(0xFFFFFFFF);
 }
 
 /**
@@ -289,7 +289,7 @@ static void menu_sram_pattern_test(void)
       debug_printf("\n패턴 0x%02X 테스트 실패!\n", patterns[i]);
       user_free(sram_ptr);
       debug_printf("\n아무 키나 누르세요...");
-      get_key(0xFFFFFFFF);
+      debug_get_key(0xFFFFFFFF);
       return;
     }
 
@@ -305,7 +305,7 @@ static void menu_sram_pattern_test(void)
   debug_printf("========================================\n");
 
   debug_printf("\n아무 키나 누르세요...");
-  get_key(0xFFFFFFFF);
+  debug_get_key(0xFFFFFFFF);
 }
 
 /**

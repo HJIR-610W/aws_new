@@ -222,7 +222,7 @@ int view_get_key_input(uint32_t timeout_ms)
 {
   int key;
 
-  key = get_key(timeout_ms);
+  key = debug_get_key(timeout_ms);
   return key;
 }
 

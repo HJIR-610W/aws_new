@@ -130,7 +130,7 @@ void test_di(void)
     }
 
     /* CTRL+C 체크 */
-    if (get_key(100) == KEY_CODE_CTRL_C)
+    if (debug_get_key(100) == KEY_CODE_CTRL_C)
     {
       debug_printf("\n\n테스트 종료\n");
       break;

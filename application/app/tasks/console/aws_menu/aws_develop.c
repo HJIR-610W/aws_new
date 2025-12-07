@@ -229,7 +229,7 @@ int32_t menu_update_info(void)
     }
     debug_printf("펌웨어 다운:%7d/%7d [%5.2f%%]\r",received_bytes,total_bytes,progress);
 
-    if (get_key(1000) == KEY_CODE_CTRL_Q)
+    if (debug_get_key(1000) == KEY_CODE_CTRL_Q)
     {
       break;
     }
@@ -255,7 +255,7 @@ int32_t menu_task_print(void)
 
   while(1)
   {
-    if(get_key(osWaitForever)==KEY_CODE_CTRL_Q)
+    if(debug_get_key(osWaitForever)==KEY_CODE_CTRL_Q)
     {
       set_task_id(0);
       break;

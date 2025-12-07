@@ -89,7 +89,7 @@ void test_lcd(void)
                     counter = 0;
                 }
 
-                if (get_key(1000) == KEY_CODE_CTRL_C)
+                if (debug_get_key(1000) == KEY_CODE_CTRL_C)
                 {
                     goto exit_test;
                 }
@@ -114,7 +114,7 @@ void test_lcd(void)
             
             for(int i = 0; i < 5; i++)
             {
-                if (get_key(1000) == KEY_CODE_CTRL_C)
+                if (debug_get_key(1000) == KEY_CODE_CTRL_C)
                 {
                     goto exit_test;
                 }
@@ -145,7 +145,7 @@ void test_lcd(void)
                 counter = 0;
             }
 
-            if (get_key(1000) == KEY_CODE_CTRL_C)
+            if (debug_get_key(1000) == KEY_CODE_CTRL_C)
             {
                 break;
             }

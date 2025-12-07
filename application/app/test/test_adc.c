@@ -28,7 +28,7 @@ void test_adc(void)
   {
     debug_printf("싱글 채널  0전압 %dmv입력하고 아무키나 입력하세요\r\n",i);
 
-    if (get_key(osWaitForever) == KEY_CODE_CTRL_C)
+    if (debug_get_key(osWaitForever) == KEY_CODE_CTRL_C)
       break;
 
     adc_raw = (int32_t)drv_adc_single_raw_read(0,1, &err);

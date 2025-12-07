@@ -1,6 +1,6 @@
 
-#ifndef CONSOLE_KEY_CODE_H
-#define CONSOLE_KEY_CODE_H
+#ifndef KEYBOARD_KEY_H
+#define KEYBOARD_KEY_H
 
 #include <stdint.h>
 

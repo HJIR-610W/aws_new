@@ -293,7 +293,7 @@ void test_rs485(void)
   /* CTRL+C 입력 대기 */
   while (1)
   {
-    if (get_key(100) == KEY_CODE_CTRL_C)
+    if (debug_get_key(100) == KEY_CODE_CTRL_C)
     {
       debug_printf("\r\n\r\n테스트 종료 요청...\r\n");
       break;
@@ -411,7 +411,7 @@ void test_rs485_polling(void)
     }
 
     /* CTRL+C 체크 */
-    if (get_key(1) == KEY_CODE_CTRL_C)
+    if (debug_get_key(1) == KEY_CODE_CTRL_C)
     {
       debug_printf("\r\n\r\n테스트 종료 요청...\r\n");
       break;

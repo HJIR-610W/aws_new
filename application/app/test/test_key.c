@@ -44,7 +44,7 @@ void test_key(void)
         }
     }
 
-        if (get_key(100) == KEY_CODE_CTRL_C)
+        if (debug_get_key(100) == KEY_CODE_CTRL_C)
     {
       break;
     }

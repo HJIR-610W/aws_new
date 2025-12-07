@@ -167,7 +167,7 @@ static void menu_file_rw_test(void)
     }
 
     debug_printf("\n아무 키나 누르세요...");
-    get_key(0xFFFFFFFF);
+    debug_get_key(0xFFFFFFFF);
 }
 
 /**
@@ -293,7 +293,7 @@ static void menu_sector_hex_dump(void)
         if ((i + 1) % 4 == 0 && (i + 1) < sector_count)
         {
             debug_printf("계속하려면 아무 키나 누르세요 (Ctrl+C: 중단)...");
-            int key = get_key(0xFFFFFFFF);
+            int key = debug_get_key(0xFFFFFFFF);
             if (key == KEY_CODE_CTRL_C)
             {
                 debug_printf("\n중단되었습니다.\n");
@@ -307,7 +307,7 @@ static void menu_sector_hex_dump(void)
 
     debug_printf("\n섹터 HEX DUMP 완료!\n");
     debug_printf("아무 키나 누르세요...");
-    get_key(0xFFFFFFFF);
+    debug_get_key(0xFFFFFFFF);
 }
 
 /**
@@ -359,7 +359,7 @@ static void menu_delete_file(void)
     }
 
     debug_printf("\n아무 키나 누르세요...");
-    get_key(0xFFFFFFFF);
+    debug_get_key(0xFFFFFFFF);
 }
 
 /**
@@ -448,7 +448,7 @@ static void menu_create_test_file(void)
     print_file_info(filename);
 
     debug_printf("\n아무 키나 누르세요...");
-    get_key(0xFFFFFFFF);
+    debug_get_key(0xFFFFFFFF);
 }
 
 /**
@@ -691,7 +691,7 @@ static void menu_filesystem_info(void)
     vPortFree(buffer);
 
     debug_printf("\n아무 키나 누르세요...");
-    get_key(0xFFFFFFFF);
+    debug_get_key(0xFFFFFFFF);
 }
 
 /**
@@ -779,7 +779,7 @@ static void menu_root_entry_dump(void)
         if ((i + 1) % 4 == 0 && (i + 1) < sector_count)
         {
             debug_printf("계속하려면 아무 키나 누르세요 (Ctrl+C: 중단)...");
-            int key = get_key(0xFFFFFFFF);
+            int key = debug_get_key(0xFFFFFFFF);
             if (key == KEY_CODE_CTRL_C)
             {
                 debug_printf("\n중단되었습니다.\n");
@@ -793,7 +793,7 @@ static void menu_root_entry_dump(void)
 
     debug_printf("\nRoot Entry HEX DUMP 완료!\n");
     debug_printf("아무 키나 누르세요...");
-    get_key(0xFFFFFFFF);
+    debug_get_key(0xFFFFFFFF);
 }
 
 /**
@@ -1226,7 +1226,7 @@ static void menu_file_fat_trace(void)
         if (cluster_count % 10 == 0)
         {
             debug_printf("\n계속하려면 아무 키나 누르세요 (Ctrl+C: 중단)...");
-            int key = get_key(0xFFFFFFFF);
+            int key = debug_get_key(0xFFFFFFFF);
             if (key == KEY_CODE_CTRL_C)
             {
                 debug_printf("\n중단되었습니다.\n");
@@ -1253,7 +1253,7 @@ static void menu_file_fat_trace(void)
     vPortFree(buffer);
 
     debug_printf("\n아무 키나 누르세요...");
-    get_key(0xFFFFFFFF);
+    debug_get_key(0xFFFFFFFF);
 }
 #endif /* TEST_FILE_ADVANCED */
 

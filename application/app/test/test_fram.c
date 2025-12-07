@@ -120,7 +120,7 @@ static void menu_fram_rw_test(void)
     }
 
     debug_printf("\n아무 키나 누르세요...");
-    get_key(0xFFFFFFFF);
+    debug_get_key(0xFFFFFFFF);
 }
 
 /**
@@ -203,7 +203,7 @@ static void menu_fram_hex_dump(void)
         if ((current_addr - start_addr) % 256 == 0 && current_addr < (start_addr + size))
         {
             debug_printf("\n계속하려면 아무 키나 누르세요 (Ctrl+C: 중단)...");
-            key = get_key(0xFFFFFFFF);
+            key = debug_get_key(0xFFFFFFFF);
             if (key == KEY_CODE_CTRL_C)
             {
                 debug_printf("\n중단되었습니다.\n");
@@ -217,7 +217,7 @@ static void menu_fram_hex_dump(void)
 
     debug_printf("\nHEX DUMP 완료!\n");
     debug_printf("아무 키나 누르세요...");
-    get_key(0xFFFFFFFF);
+    debug_get_key(0xFFFFFFFF);
 }
 
 /**
@@ -336,7 +336,7 @@ static void menu_fram_erase_check(void)
     }
 
     debug_printf("\n아무 키나 누르세요...");
-    get_key(0xFFFFFFFF);
+    debug_get_key(0xFFFFFFFF);
 }
 
 /**

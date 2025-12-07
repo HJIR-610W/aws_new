@@ -2647,7 +2647,7 @@
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_menu.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_menu_define.h</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_menu_define.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_monitor.c</name>
@@ -2823,7 +2823,7 @@
                         <name>$PROJ_DIR$\..\Application\Communications\lwip\app\lwip.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\application\communications\lwip\app\lwip.h</name>
+                        <name>$PROJ_DIR$\..\Application\Communications\lwip\app\lwip.h</name>
                     </file>
                 </group>
                 <group>
@@ -2924,7 +2924,7 @@
                 <name>$PROJ_DIR$\..\Application\http_server\task_http_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\application\http_server\task_http_server.h</name>
+                <name>$PROJ_DIR$\..\Application\http_server\task_http_server.h</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
@@ -2948,9 +2948,6 @@
         <group>
             <name>io</name>
             <file>
-                <name>$PROJ_DIR$\..\application\io\cli_key_code.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\application\io\debug_io.c</name>
             </file>
             <file>
@@ -2966,7 +2963,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <group>
@@ -3199,7 +3196,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
@@ -3253,7 +3250,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</name>
                 </file>
             </group>
             <group>
@@ -3271,7 +3268,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554_def.h</name>

@@ -164,7 +164,7 @@ void sdiTask(void *arg)
       }
       debug_dump(buff,len,0,16);
     }
-    if (get_key(1000) == KEY_CODE_CTRL_C)
+    if (debug_get_key(1000) == KEY_CODE_CTRL_C)
     {
       break;
     }

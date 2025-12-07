@@ -173,9 +173,9 @@ int debug_scanf_s(const char *fmt, ...)
  */
 void debug_inject(uint8_t *data,size_t len)
 {
-  io_if_t io;
+//  io_if_t io;
 
-  io.dev_num = DEBUG_UART_NUM;
+ // io.dev_num = DEBUG_UART_NUM;
  // g_uart_io_ops.inject(&io,data,len);
 
   io_inject(g_current_debug_io,data,len);
@@ -372,6 +372,107 @@ int32_t debug_get_ch_nonblocking(uint8_t *buffer)
   return   io_recv(g_current_debug_io,buffer,1, 0);
 }
 
+
+
+int32_t debug_get_key(uint32_t timeout_ms)
+{
+  uint8_t ch;
+  uint32_t start_time = osKernelGetTickCount();
+  uint32_t elapsed = 0;
+
+
+  while (1)
+  {
+    uint32_t remain = timeout_ms - elapsed;
+    if (remain == 0)
+    {
+      return (int32_t)KEY_CODE_NONE;
+    }
+
+    if (debug_recv(&ch, 1, remain) == 1)
+    {
+      break;
+    }
+
+    elapsed = osKernelGetTickCount() - start_time;
+    if (elapsed >= timeout_ms)
+    {
+      return (int32_t)KEY_CODE_NONE;
+    }
+  }
+
+
+  if (ch == 0x1B)
+  {
+    uint8_t seq[2];
+    int seq_idx = 0;
+    elapsed = osKernelGetTickCount() - start_time;
+
+    while (seq_idx < 2)
+    {
+      uint32_t remain = timeout_ms - elapsed;
+      if (remain == 0)
+      {
+        return (int32_t)KEY_CODE_ESC;
+      }
+
+      if (debug_recv(&seq[seq_idx], 1, remain) == 1)
+      {
+        seq_idx++;
+      }
+
+      elapsed = osKernelGetTickCount() - start_time;
+      if (elapsed >= timeout_ms)
+      {
+        return (int32_t)KEY_CODE_ESC;
+      }
+    }
+
+    if (seq[0] == '[')
+    {
+      switch (seq[1])
+      {
+        case 'A':
+          return KEY_CODE_UP;
+        case 'B':
+          return KEY_CODE_DOWN;
+        case 'C':
+          return KEY_CODE_RIGHT;
+        case 'D':
+          return KEY_CODE_LEFT;
+        case 'H':
+          return KEY_CODE_HOME;
+        case 'F':
+          return KEY_CODE_END;
+        default:
+          return KEY_CODE_UNKNOWN;
+      }
+    }
+    else if (seq[0] == 'O')
+    {
+      switch (seq[1])
+      {
+        case 'H':
+          return KEY_CODE_HOME;
+        case 'F':
+          return KEY_CODE_END;
+        default:
+          return KEY_CODE_UNKNOWN;
+      }
+    }
+
+    return KEY_CODE_UNKNOWN;
+  }
+
+
+  if (ch >= 0x01 && ch <= 0x1A)
+  {
+    return (int32_t)ch;
+  }
+
+
+  return (int32_t)ch;
+}
 
 
 

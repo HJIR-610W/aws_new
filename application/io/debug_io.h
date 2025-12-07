@@ -39,6 +39,7 @@ typedef enum {
 int32_t debug_init(void);
 void debug_deinit(void);
 
+int32_t debug_get_key(uint32_t timeout_ms);
 int32_t debug_recv(uint8_t *buffer, size_t len, uint32_t timeout_ms);
 int32_t debug_get_ch(uint8_t *buffer);
 int32_t debug_get_ch_nonblocking(uint8_t *buffer);

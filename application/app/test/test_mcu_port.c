@@ -568,7 +568,7 @@ static void monitor_gpio_changes_simple(uint32_t interval_ms)
     debug_printf("                                                                                \n");
 
     /* CTRL+C 체크 */
-    if (get_key(interval_ms) == KEY_CODE_CTRL_C)
+    if (debug_get_key(interval_ms) == KEY_CODE_CTRL_C)
     {
       debug_printf(VT100_SHOW_CURSOR);
       debug_printf("\n\n모니터링 종료\n\n");
@@ -636,7 +636,7 @@ static void monitor_gpio_changes(uint32_t interval_ms)
     }
 
     /* CTRL+C 체크 */
-    if (get_key(interval_ms) == KEY_CODE_CTRL_C)
+    if (debug_get_key(interval_ms) == KEY_CODE_CTRL_C)
     {
       debug_printf("\n모니터링 종료\n\n");
       break;
@@ -691,7 +691,7 @@ void test_mcu_port(void)
         /* 모든 GPIO 포트 상태 표시 (간략) */
         display_all_gpio_states_simple();
         debug_printf("\n아무 키나 누르세요...");
-        get_key(0xFFFFFFFF);
+        debug_get_key(0xFFFFFFFF);
         break;
 
       case 2:
@@ -704,7 +704,7 @@ void test_mcu_port(void)
         {
           display_port_detailed_config(port_index);
           debug_printf("\n아무 키나 누르세요...");
-          get_key(0xFFFFFFFF);
+          debug_get_key(0xFFFFFFFF);
         }
         break;
 
@@ -712,7 +712,7 @@ void test_mcu_port(void)
         /* 모든 포트 구성 요약 */
         display_all_ports_summary();
         debug_printf("\n아무 키나 누르세요...");
-        get_key(0xFFFFFFFF);
+        debug_get_key(0xFFFFFFFF);
         break;
 
       case 4:

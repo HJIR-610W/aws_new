@@ -19,7 +19,7 @@ void test_freq(void)
 
 
    debug_printf("아무키나 입력하면 측정 시작");
-  get_key(0xFFFFFFFF);
+  debug_get_key(0xFFFFFFFF);
 
   count_b = driver_freq_open(GENERAL_FREQ_1,"test");
   count_c = driver_freq_open(GENERAL_FREQ_2,"test");
@@ -31,7 +31,7 @@ void test_freq(void)
 
     debug_printf("freq b:%f,freq c:%f\r\n", freq_b, freq_c);
 
-    if (get_key(1000) == KEY_CODE_CTRL_C)
+    if (debug_get_key(1000) == KEY_CODE_CTRL_C)
     {
       debug_printf("테스트 종료 (CTRL+Q 감지)\r\n");
       break;

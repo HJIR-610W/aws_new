@@ -131,7 +131,7 @@ int handle_factory_calibration(int adc_num)
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
         debug_printf("RAW:%10d AVG:%10.0f\r\n", adc_raw, avg);
-        key = get_key(10);
+        key = debug_get_key(10);
         if(key == KEY_CODE_CTRL_C)
           break;
       }
@@ -181,7 +181,7 @@ int handle_factory_calibration(int adc_num)
         avg = recursive_avg_i(avg, adc_raw, avg_cnt);
 
         debug_printf("RAW:%10d AVG:%10.0f\r\n", adc_raw, avg);
-        key = get_key(10);
+        key = debug_get_key(10);
         if (key == KEY_CODE_CTRL_C)
           break;
       }
@@ -708,7 +708,7 @@ int handle_view_status(int adc_num)
             }
           }
 
-          key = get_key(scan_ms);
+          key = debug_get_key(scan_ms);
 
         } while (key != KEY_CODE_CTRL_C);
 
@@ -750,7 +750,7 @@ int handle_view_status(int adc_num)
             }
           }
           
-          if(get_key(100)==KEY_CODE_CTRL_C)
+          if(debug_get_key(100)==KEY_CODE_CTRL_C)
           break;
         } while( 1);
       }
@@ -788,7 +788,7 @@ int handle_view_status(int adc_num)
                         params->factory_slope, params->factory_offset, raw, voltage);
             }
           }
-          if (get_key(100) == KEY_CODE_CTRL_C)
+          if (debug_get_key(100) == KEY_CODE_CTRL_C)
             break;
         } while (1);
       }

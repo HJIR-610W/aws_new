@@ -183,7 +183,7 @@ void ping_task(const char *target_ip)
 
     }
     // 1초 간격으로 대기
-    if (get_key(1000) == KEY_CODE_CTRL_C)
+    if (debug_get_key(1000) == KEY_CODE_CTRL_C)
     {
       break;
     }
