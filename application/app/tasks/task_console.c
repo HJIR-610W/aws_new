@@ -112,6 +112,9 @@ void testColsoleTask(void *arg)
 
   log_printf(L_ERROR,"testColsoleTask");
 
+  shell_scanf_init();
+    
+    
   shell_init(&user_context,   debug_printf,(char *)"\x1B[32mAWS_TEST>> \x1B[37m");
   shell_register_command(&testCmd);
   shell_register_command(&developCmd);

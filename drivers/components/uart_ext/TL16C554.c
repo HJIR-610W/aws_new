@@ -316,7 +316,7 @@ static void quad_deinit(int uart_num)
   write_register(FCR(uart->base_address), 0x00);
   write_register(MCR(uart->base_address), 0x00);
 
-  bsp_di_clear_interrupt(uart->irq_di_num);
+ // bsp_di_clear_interrupt(uart->irq_di_num);
 }
 
 /**

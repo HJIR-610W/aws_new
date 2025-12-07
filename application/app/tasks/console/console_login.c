@@ -19,10 +19,11 @@ bool check_login(const char *login_key)
   int32_t password=0;
   uint8_t retry_count=0;
 
+
+      
   while(1)
   {
-    debug_printf("\r\n비밀번호를 입력해주세요\r\n");
-
+      debug_printf("\r\n비밀번호를 입력해주세요\r\n");
     while(1)
     {
       if(debug_recv(&ch,1,0xFFFFFFFF)>0)
@@ -30,11 +31,13 @@ bool check_login(const char *login_key)
         buffer[cnt++] = ch;
       
         if(cnt==1 && (ch==0x0D|| ch==0x0A)){
+  debug_printf("\r\n비밀번호를 입력해주세요\r\n");
           cnt = 0;
           continue;;
         }
         else{
-          if(ch==0x0D || ch == 0x0A){
+          if(ch==0x0D || ch == 0x0A)
+          {
             buffer[cnt-1]=0;
             cnt = 0;
             break;
