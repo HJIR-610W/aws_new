@@ -17,6 +17,8 @@
 #include "aws_menu_view.h"
 #include "aws_menu_manager.h"
 #include "console_login.h"
+#include "aws_panel.h"
+
 #define MENU_INFO        1
 #define MENU_SYSTEM      2
 #define MENU_SENSOR      3
@@ -95,7 +97,8 @@ int aws_menu(void)
         aws_menu_data();
         break;
       case MENU_NUMBER(MENU_PANEL_DEF):
-        aws_menu_panel();
+        //aws_menu_panel();
+        aws_panel();
         break;
       case MENU_NUMBER(MENU_OFFSET_DEF):
         aws_menu_offset();
