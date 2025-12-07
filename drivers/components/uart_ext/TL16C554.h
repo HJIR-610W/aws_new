@@ -32,4 +32,5 @@ void tl16c554_get(int uart_num, eUART_GET_OPTION_t cmd, void *option);
 void tl16c554_set_config(int uart_num, uart_config_t *config);
 void tl16c554_close(int uart_num);
 int32_t tl16c554_init(int32_t uart_num, void *opt);
+void tl16c554_deinit(int uart_num);
 #endif

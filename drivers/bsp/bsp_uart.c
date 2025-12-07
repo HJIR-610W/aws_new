@@ -68,26 +68,27 @@ int32_t bsp_uart_init(int32_t num, void *opt)
   }
 }
 
-void bsp_uart_close(int num)
+void bsp_uart_deinit(int32_t num)
 {
   const uart_pinmap_t* pinmap = get_uart_pinmap(num);
   if (!pinmap) return;
   if (num == -1)
-    return ;
+    return;
   switch (pinmap->driver_type) {
     case UART_DRIVER_STM32:
-      stm32_uart_close(pinmap->driver_num);
+      stm32_uart_deinit(pinmap->driver_num);
       break;
     case UART_DRIVER_TL16C554:
-      tl16c554_close(pinmap->driver_num);
+      tl16c554_deinit(pinmap->driver_num);
       break;
     case UART_DRIVER_CDC:
-
+      // CDC does not have deinit function
       break;
     default:
       break;
   }
 }
+
 
 void bsp_uart_flush_rx(int num)
 {

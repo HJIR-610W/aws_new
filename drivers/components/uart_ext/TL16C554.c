@@ -364,6 +364,12 @@ int32_t quad_recv_byte(int uart_num, uint8_t *data)
 }
 
 
+/**
+ * @note THRE(Transmitter Holding Register Empty) 인터럽트 발생 시 호출되어
+ *       순환 버퍼에서 데이터를 읽어 UART TX FIFO로 전송한다.
+ *       FIFO 크기만큼 또는 버퍼에 남은 데이터만큼 전송하며,
+ *       모든 데이터 전송 완료 시 TX 인터럽트를 비활성화하고 세마포어를 해제한다.
+ */
 void quad_write_tx_data(int32_t uart_num)
 {
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
@@ -562,6 +568,11 @@ int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
   uint32_t timeout;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
+  if (!uart->opened)
+  {
+    return 0;
+  }
+
   OS_MUTEX_LOCK(uart->tx_lock, osWaitForever);
 
   while (data_len)
@@ -606,6 +617,11 @@ void tl16c554_recv_flush(int uart_num)
   uint8_t data;
   size_t bytes_available;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+
+  if (!uart->opened)
+  {
+    return;
+  }
 
   OS_MUTEX_LOCK(uart->rx_lock, osWaitForever);
 
@@ -658,6 +674,11 @@ int32_t tl16c554_recv(int uart_num, uint8_t *p_buff, uint16_t buff_size, uint32_
   size_t xBytesAvailable;
   size_t xBytesRead;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+
+  if (!uart->opened)
+  {
+    return 0;
+  }
 
   OS_MUTEX_LOCK(uart->rx_lock, osWaitForever);
 
@@ -773,6 +794,11 @@ int32_t tl16c554_recv_opt(int uart_num, uint8_t *buffer, uint16_t buffer_size,
   size_t bytes_read;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
+  if (!uart->opened)
+  {
+    return 0;
+  }
+
   OS_MUTEX_LOCK(uart->rx_lock, osWaitForever);
 
   // Step 1: 첫 바이트 수신 (timeout1 사용)
@@ -847,6 +873,11 @@ int32_t tl16c554_recv_inject(int uart_num, const uint8_t *p_data, uint16_t data_
   size_t xBytesSent;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
+  if (!uart->opened)
+  {
+    return 0;
+  }
+
   xBytesSent = xStreamBufferSend(uart->quad_stream, p_data, data_len, pdMS_TO_TICKS(10));
 
   return xBytesSent;
@@ -864,6 +895,11 @@ int32_t tl16c554_recv_crlf(int uart_num, char *p_buff, uint16_t buffer_size, uin
   uint32_t timeout;
   size_t len;
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+
+  if (!uart->opened)
+  {
+    return 0;
+  }
 
   OS_MUTEX_LOCK(uart->rx_lock, osWaitForever);
 
@@ -993,8 +1029,43 @@ int32_t tl16c554_init(int32_t uart_num, void *opt)
   uart->tx_cicular_buffer.count = 0;
   uart->tx_cicular_buffer.head = 0;
   uart->tx_cicular_buffer.tail = 0;
-  OS_CREATE_BINARY_SEM(uart->tx_doen_sem); // 반드시 사용할필요 없음
+  OS_CREATE_BINARY_SEM(uart->tx_doen_sem);
   uart->opened = true;
 
   return 1;
+}
+
+void tl16c554_deinit(int uart_num)
+{
+  tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
+
+  if (uart_num < 0 || uart_num >= TL16C554_UART_MAX)
+  {
+    return;
+  }
+
+  if (!uart->opened)
+  {
+    return;
+  }
+
+  uart->opened = false;
+
+  osDelay(10);
+
+  if (uart->quad_stream)
+  {
+    vStreamBufferDelete(uart->quad_stream);
+    uart->quad_stream = NULL;
+  }
+
+  OS_MUTEX_DELETE(uart->tx_lock);
+  OS_MUTEX_DELETE(uart->rx_lock);
+  OS_SEM_DELETE(uart->tx_doen_sem);
+
+  uart->baud = 0;
+  uart->parity_index = 0;
+  uart->tx_cicular_buffer.count = 0;
+  uart->tx_cicular_buffer.head = 0;
+  uart->tx_cicular_buffer.tail = 0;
 }

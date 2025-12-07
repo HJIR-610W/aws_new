@@ -21,6 +21,7 @@
 
 
 int32_t bsp_uart_init(int32_t num, void *opt);
+void bsp_uart_deinit(int32_t num);
 void bsp_uart_close(int32_t num);
 int32_t bsp_uart_send(int32_t num, const uint8_t *data, size_t dataLen);
 int32_t bsp_uart_recv(int32_t num, uint8_t *buffer, size_t len,uint32_t timeOutMs);

@@ -12,6 +12,7 @@
 #define STM32_UART_MAX    2
 
 int32_t stm32_uart_init(int num, void *opt);
+void stm32_uart_deinit(int num);
 void stm32_uart_flush_rx(int num);
 void stm32_uart_close(int num);
 void stm32_uart_set(int num, eUART_SET_OPTION_t cmd, void *option);

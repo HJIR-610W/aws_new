@@ -50,6 +50,20 @@ os함수가 길어서 쉬운 용어로 사용
 #define OS_POST_SEM(sem) ((void)0)
 #endif
 
+#if FREE_RTOS_USE
+#define OS_SEM_DELETE(sem)          \
+  do                           \
+  {                            \
+    if (sem)                   \
+    {                          \
+      osSemaphoreDelete(sem); \
+      sem = NULL;          \
+    }                          \
+  } while (0)
+#else
+#define OS_SEM_DELETE(sem) ((void)0)
+#endif
+
 
 
 
@@ -94,6 +108,20 @@ os함수가 길어서 쉬운 용어로 사용
   } while (0)
 #else
 #define OS_MUTEX_UNLOCK(myMutex) ((void)0)
+#endif
+
+#if FREE_RTOS_USE
+#define OS_MUTEX_DELETE(myMutex)          \
+  do                           \
+  {                            \
+    if (myMutex)                   \
+    {                          \
+      osMutexDelete(myMutex); \
+      myMutex = NULL;          \
+    }                          \
+  } while (0)
+#else
+#define OS_MUTEX_DELETE(myMutex) ((void)0)
 #endif
 
 

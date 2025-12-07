@@ -239,6 +239,25 @@ void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
   }
 }
 
+void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
+{
+  if (uartHandle->Instance == USART1)
+  {
+    __HAL_RCC_USART1_CLK_DISABLE();
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9 | GPIO_PIN_10);
+  }
+  else if (uartHandle->Instance == USART3)
+  {
+    __HAL_RCC_USART3_CLK_DISABLE();
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_10 | GPIO_PIN_11);
+  }
+  else if (uartHandle->Instance == USART6)
+  {
+    __HAL_RCC_USART6_CLK_DISABLE();
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_6 | GPIO_PIN_7);
+  }
+}
+
 
 
 HAL_StatusTypeDef UART_SetBaudAndParity(UART_HandleTypeDef *huart, uint32_t baudrate,
@@ -414,6 +433,11 @@ int32_t stm32_uart_recv(int uart_num, uint8_t *pBuff, uint16_t buffSize, uint32_
   size_t bytes_read;
   size_t cnt = 0;
 
+  if (!uart_inst[uart_num].opened)
+  {
+    return 0;
+  }
+
   OS_MUTEX_LOCK(uart_inst[uart_num].rx_lock, osWaitForever);
 
   // timeOutMs가 0인 경우: 논블로킹 모드
@@ -537,6 +561,11 @@ void stm32_uart_set(int num, eUART_SET_OPTION_t cmd, void *option)
 {
   uart_config_t *cfg_baud;
 
+  if (!uart_inst[num].opened)
+  {
+    return;
+  }
+
   switch (cmd)
   {
     case eUART_SET_CONFIG:
@@ -551,7 +580,7 @@ void stm32_uart_flush_rx(int num)
   uint8_t data;
   size_t bytes_available;
 
-  if(num <0)
+  if(num <0 || !uart_inst[num].opened)
   {
     return;
   }
@@ -577,7 +606,7 @@ int32_t stm32_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint
   uint32_t remaining_timeout;
   size_t bytes_read;
 
-  if(num <0 )
+  if(num <0 || !uart_inst[num].opened)
   {
     return 0;
   }
@@ -624,7 +653,7 @@ void stm32_uart_get(int num, eUART_GET_OPTION_t cmd, void *option)
 {
   uart_config_t *opt_cfg = option;
 
-  if(num <0)
+  if(num <0 || !uart_inst[num].opened)
   {
     return ;
   }
@@ -647,7 +676,7 @@ int32_t stm32_uart_inject(int num, const uint8_t *pData, uint16_t dataLen)
 {
   size_t xBytesSent;
 
-  if(num <0)
+  if(num <0 || !uart_inst[num].opened)
   {
     return 0;
   }
@@ -672,6 +701,11 @@ int32_t stm32_uart_recv_crlf(int num, char *pBuff, uint16_t bSize, uint32_t tout
   uint32_t startTime, startTick, stopTick, elapseTick;
   uint32_t timeout;
   size_t len;
+
+  if (!uart_inst[num].opened)
+  {
+    return 0;
+  }
 
   OS_MUTEX_LOCK(uart_inst[num].rx_lock, osWaitForever);
 
@@ -742,6 +776,11 @@ int32_t stm32_uart_send(int num, const uint8_t *pData, uint16_t dataLen)
   uint32_t waitTime;
   HAL_StatusTypeDef status;
   osStatus_t osStatus;
+
+  if (!uart_inst[num].opened)
+  {
+    return 0;
+  }
 
   OS_MUTEX_LOCK(uart_inst[num].tx_lock, osWaitForever);
   osSemaphoreAcquire(uart_inst[num].tx_complete_sem, 0); // 이전에 처리 못한건 제거
@@ -890,4 +929,58 @@ void stm32_uart_set_config(int num, uart_config_t *config)
 
   OS_MUTEX_UNLOCK(uart_inst[num].rx_lock);
   OS_MUTEX_UNLOCK(uart_inst[num].tx_lock);
+}
+
+
+void stm32_uart_deinit(int num)
+{
+  UART_HandleTypeDef *p_uart;
+  DMA_HandleTypeDef *p_dma;
+
+  if (num < 0 || num >= STM32_UART_MAX)
+  {
+    return;
+  }
+
+  if (!uart_inst[num].opened)
+  {
+    return;
+  }
+
+  uart_inst[num].opened = false;
+
+  osDelay(10);
+
+  p_uart = &uart_inst[num].handle;
+  p_dma = &uart_inst[num].dma_tx;
+
+  HAL_UART_Abort(p_uart);
+
+  if (p_uart->Instance == USART3)
+  {
+    HAL_NVIC_DisableIRQ(USART3_IRQn);
+    HAL_NVIC_DisableIRQ(DMA1_Stream3_IRQn);
+  }
+  else if (p_uart->Instance == USART6)
+  {
+    HAL_NVIC_DisableIRQ(USART6_IRQn);
+    HAL_NVIC_DisableIRQ(DMA2_Stream7_IRQn);
+  }
+
+  HAL_DMA_DeInit(p_dma);
+  HAL_UART_DeInit(p_uart);
+
+  if (uart_inst[num].stream_buffer)
+  {
+    vStreamBufferDelete(uart_inst[num].stream_buffer);
+    uart_inst[num].stream_buffer = NULL;
+  }
+
+  OS_MUTEX_DELETE(uart_inst[num].tx_lock);
+  OS_MUTEX_DELETE(uart_inst[num].rx_lock);
+  OS_SEM_DELETE(uart_inst[num].tx_complete_sem);
+
+  uart_inst[num].err_code = 0;
+  uart_inst[num].baud = 0;
+  uart_inst[num].parity_index = 0;
 }
