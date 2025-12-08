@@ -25,3 +25,4 @@ post_build.log
 Debug/
 Release/
 /EWARM/not_use_lcd
+/EWARM/settings/*.reggroups
