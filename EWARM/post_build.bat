@@ -44,7 +44,7 @@ REM =======================================================
 REM 5. Execute make_fw.exe
 REM =======================================================
 pushd "%BIN_DIR%"
-make_fw.exe "%BIN_NAME%" 0x188
+make_fw_1.0.0.exe "%BIN_NAME%"
 IF %ERRORLEVEL% EQU 0 (
     echo [SUCCESS] make_fw.exe executed successfully.
 ) ELSE (
