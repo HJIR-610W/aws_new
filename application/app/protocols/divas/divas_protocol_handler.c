@@ -559,7 +559,7 @@ uint16_t divas_read_version(uint8_t *rx_frame, uint8_t *tx_frame)
   return make_divas_frame(DIVAS_CMD_RD_VERSION, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
 }
 
-#define CONNET_TYPE_AWS 100
+#define CONNET_TYPE_AWS 0x30
 uint16_t divas_read_index(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
