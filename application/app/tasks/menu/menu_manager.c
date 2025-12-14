@@ -318,7 +318,7 @@ int32_t setup_menu_config(void)
 {
   int32_t index;
   int32_t key;
-  int32_t status;
+  int32_t status = MENU_OK;
   screen_menu_t menu;
 
   screen_menu_create(&menu, "Settings Change");
@@ -376,7 +376,7 @@ int32_t setup_menu_manager(void)
 {
   int32_t index;
   int32_t key;
-  int32_t status;
+  int32_t status = MENU_OK;
   screen_menu_t menu;
   int32_t dec;
 

@@ -58,7 +58,10 @@ float validate_sensor_value_max(float value, float max, float abs_tol, uint8_t* 
 
   if (isnan(value))
   {
+    if(err)
+    {
     *err = 1;
+    }
     return NAN;
   }
 

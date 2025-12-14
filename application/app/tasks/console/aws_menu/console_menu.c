@@ -118,5 +118,5 @@ int aws_menu(void)
     }
   }
 
-  return 0;
+  //return 0;
 }

@@ -288,17 +288,17 @@ void cdc_tx_complete(void)
 
 void put_cdc_rx(uint8_t *p_data,uint16_t dataLen)
 {
-  size_t xBytesSent;
+ // size_t xBytesSent;
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
   
   if(cdc_inst.cdc_stream)
   {
-    xBytesSent = xStreamBufferSendFromISR(cdc_inst.cdc_stream, p_data, dataLen, &xHigherPriorityTaskWoken);
+     xStreamBufferSendFromISR(cdc_inst.cdc_stream, p_data, dataLen, &xHigherPriorityTaskWoken);
     /* 높은 우선순위의 태스크가 깨어나야 하면 컨텍스트 스위칭 요청 */
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
-  (void)xBytesSent;
+ // (void)xBytesSent;
 }
 
 

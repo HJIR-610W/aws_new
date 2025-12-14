@@ -626,7 +626,7 @@ int32_t tl16c554_send(int uart_num, const uint8_t *p_data, uint16_t data_len)
 void tl16c554_recv_flush(int uart_num)
 {
   uint8_t data;
-  size_t bytes_available;
+
   tl16c554_instance_t *uart = &tl16c554_inst[uart_num];
 
   if (!uart->opened)
@@ -636,7 +636,7 @@ void tl16c554_recv_flush(int uart_num)
 
   OS_MUTEX_LOCK(uart->rx_lock, osWaitForever);
 
-  while ((bytes_available = xStreamBufferBytesAvailable(uart->quad_stream)) > 0)
+  while (( xStreamBufferBytesAvailable(uart->quad_stream)) > 0)
   {
     xStreamBufferReceive(uart->quad_stream, &data, 1, 0);
   }

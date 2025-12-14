@@ -804,7 +804,7 @@ int32_t cali_setup_menu_factory(void)
 {
   int32_t index;
   int32_t key;
-  int32_t status;
+  int32_t status = MENU_OK;
   uint8_t cali_single_all_active_count=0;
   screen_menu_t menu;
 
@@ -1165,7 +1165,7 @@ int32_t cali_setup_menu_view(void)
 {
   int32_t index;
   int32_t key;
-  int32_t status;
+  int32_t status = MENU_OK;
   screen_menu_t menu;
   uint8_t cali_summary_default_count=0;
 

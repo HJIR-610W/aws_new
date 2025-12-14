@@ -23,7 +23,7 @@ uint16_t SubSec;
 void time_cvt_secTotime(time_t sec,DATE_TIME_BUF *timeNow);
 time_t time_cvt_timestamp(DATE_TIME_BUF *tN);
 time_t SetTime(int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec);
-int GetYear(time_t tmIn);
+uint32_t GetYear(time_t tmIn);
 int GetDay(time_t tmIn);
 long GetTotalSeconds(time_t ts);
 int GetMonth(time_t tmIn);

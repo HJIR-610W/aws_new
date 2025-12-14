@@ -90,6 +90,7 @@ int32_t debug_vprintf(const char *fmt, va_list ap)
 #endif
 
   // 먼저 필요한 길이 측정
+  memset_s(&ap_copy, sizeof(ap_copy),0, sizeof(va_list));//SPC-uninit-struct 정적 경고
   va_copy(ap_copy, ap);
   len = vsnprintf_s(buff, sizeof(buff), fmt, ap_copy);
   va_end(ap_copy);

@@ -476,7 +476,7 @@ static void telnet_client_mode_task(void)
     }
 }
 
-static void tcp_relay_connect(tcp_relay_client_t* client)
+ void tcp_relay_connect(tcp_relay_client_t* client)
 {
     struct sockaddr_in server_addr;
 
@@ -517,7 +517,7 @@ static void tcp_relay_connect(tcp_relay_client_t* client)
     task_printf("TCP Relay: Connected successfully - ready for Telnet forwarding\r\n");
 }
 
-static void tcp_relay_handle_connection(tcp_relay_client_t* client)
+ void tcp_relay_handle_connection(tcp_relay_client_t* client)
 {
     uint8_t* buffer = (uint8_t*)user_malloc(TELNET_BUFFER_SIZE);
     if (buffer == NULL)

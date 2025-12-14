@@ -136,7 +136,7 @@ uint32_t getBaudRatePrescaler(uint32_t desiredSpiClock, uint32_t pclk)
 uint32_t get_spi_prescaler(SPI_HandleTypeDef *hspi, uint32_t freq)
 {
   uint32_t pclk;
-  uint32_t prescale;
+  uint32_t prescale=1;
 
   if (hspi->Instance == SPI1)
   {

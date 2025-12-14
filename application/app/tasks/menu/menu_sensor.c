@@ -784,7 +784,7 @@ int32_t hjsnow_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t 
 int32_t hjtemp_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 
 {
-  int32_t status;
+  int32_t status = MENU_OK;
    int32_t choice;
   int32_t dec = 0;
   temp_hj_config_t* hjtemp;

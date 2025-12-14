@@ -74,7 +74,7 @@ float read_pt100_temperature(driver_t *driver,uint8_t *err)
 
   int32_t adc_ch;
   float resistance;
-  float temperature;
+  float temperature=0;
   float voltage;
   const pt100_cfg_t *cfg = ((driver_t *)driver)->cfg;
 

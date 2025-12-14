@@ -56,7 +56,7 @@ typedef struct file_erase_s
 void fileEraseTask( void *arg)
 {
   file_erase_t *p_erase = (file_erase_t *)arg;
-  int32_t result;
+  int32_t result=0;
   uint32_t flags = TASK_MENU_ALARM_FILE_RET_FAIL; // 에러
 
   if(p_erase->file_type == FILE_RAIN)
@@ -480,7 +480,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     int32_t key;
     int32_t year,month, day, hour, min;
     int32_t update = 1;
-    uint32_t startTime;
+    uint32_t startTime=0;
     screen_page_t lcd_win;
     string_fmt_t strfmt;
     AWS_DATA_STRUCT aws;
@@ -616,7 +616,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     int32_t status;
     int32_t key;
     int32_t  year,month, day, hour, min;
-    uint32_t startTime;
+    uint32_t startTime=0;
     screen_page_t lcd_win;
     string_fmt_t strfmt;
     DATE_TIME_BUF nt;
@@ -692,7 +692,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
   int32_t setup_menu_data_rain(void)
   {
     int32_t key;
-    int32_t status;
+  int32_t status = MENU_OK;
     screen_menu_t menu;
 
     screen_menu_create(&menu, "Rain Data");
@@ -740,7 +740,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     int32_t setup_menu_sunshine(void)
   {
     int32_t key;
-    int32_t status;
+  int32_t status = MENU_OK;
     screen_menu_t menu;
 
     screen_menu_create(&menu, "Sunshine Data");
@@ -786,7 +786,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
   int32_t setup_menu_data(void)
   {
     int32_t key;
-    int32_t status;
+  int32_t status = MENU_OK;
     int32_t choice;
     screen_menu_t menu;
 

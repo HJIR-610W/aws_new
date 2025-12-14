@@ -5,7 +5,7 @@
 uint8_t  radd_dirc(uint32_t ang)
 {
   uint32_t d_ang;
-    uint8_t rr;
+    uint8_t rr=0;
 
     d_ang = ang;
     if((d_ang > 0 && d_ang <= 10) || (d_ang > 350))

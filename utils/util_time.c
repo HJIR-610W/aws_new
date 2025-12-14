@@ -68,7 +68,7 @@ time_t SetTime(int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec)
 	return mktime(&atm);
 }
 
-int GetYear(time_t tmIn)
+uint32_t GetYear(time_t tmIn)
 {
     struct tm time_info;
   //C11

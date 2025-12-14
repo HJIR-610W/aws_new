@@ -421,7 +421,7 @@ uint16_t  TempCalcExt(uint8_t ch,uint8_t *sensor_err)
 {
 
   sensor_data_t *p_sensor = g_p_raw->data;
-  float temperature;
+  float temperature=0;
   uint8_t err=0;
 
   *sensor_err = 0;

@@ -46,7 +46,7 @@ void draw_setup_menu_system_menu(screen_menu_t* p_win)
 int32_t setup_menu_system(void)
 {
   int32_t choice=0;
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t key;
   int32_t index;
   screen_menu_t menu;
