@@ -170,7 +170,7 @@ int32_t stm32_uart_init(int num, void *opt)
 
   if(uart_inst[num].opened == true)
   {
-    return 1;
+    return 0;
   }
 
   uart_inst[num].baud = cfg->baud;
@@ -194,7 +194,7 @@ int32_t stm32_uart_init(int num, void *opt)
 
   uart_inst[num].opened = true;
 
-  return 1;
+  return 0;
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)

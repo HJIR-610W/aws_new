@@ -449,6 +449,8 @@
                     <state>$PROJ_DIR$/../Middlewares/Third_Party/LwIP/system/arch</state>
                     <state>$PROJ_DIR$\..\Middlewares\dev_io</state>
                     <state>$PROJ_DIR$\..\application\app\tasks\core</state>
+                    <state>$PROJ_DIR$\..\Middlewares\cellular\cdma</state>
+                    <state>$PROJ_DIR$\..\Middlewares\cellular</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2749,40 +2751,16 @@
             <group>
                 <name>CDMA</name>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\cdma\at_cmd.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\modem_sms.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\cdma\modem_if.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_sms.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_sms.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\old_aws_sms.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</name>
+                    <name>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.h</name>
                 </file>
             </group>
             <group>
@@ -2992,6 +2970,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\application\system_err.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\application\system_err.h</name>
         </file>
     </group>
     <group>
@@ -3686,6 +3667,48 @@
     </group>
     <group>
         <name>middlewares</name>
+        <group>
+            <name>cellular</name>
+            <group>
+                <name>cdma</name>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\cellular\cdma\ntle9607.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\cellular\cdma\ntle9607.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\cellular\cdma\tx700.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\cellular\cdma\tx700.h</name>
+                </file>
+            </group>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\cellular\at_parser.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\cellular\at_parser.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\cellular\cellular.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\cellular\cellular_api.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\cellular\cellular_api.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\cellular\cellular_hal.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\cellular\dispatcher.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\cellular\dispatcher.h</name>
+            </file>
+        </group>
         <group>
             <name>dev_io</name>
             <file>

@@ -15,3 +15,4 @@ void drv_power_off(int num)
 {
   bsp_power_off(num);
 }
+
