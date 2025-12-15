@@ -309,7 +309,7 @@ void draw_eth_config_page(screen_menu_t* p_win)
 int32_t setup_eth_config(void)
 {
   int32_t choice = 0;
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t key;
   int32_t dec;
   int32_t index;
@@ -443,7 +443,7 @@ void draw_cdma_config_page(screen_menu_t* p_win)
 int32_t setup_cdma_config(void)
 {
   int32_t choice = 0;
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t key;
   screen_menu_t menu;
   int32_t dec;
@@ -539,7 +539,7 @@ void draw_direct_config_page(screen_menu_t* p_win)
 
 int32_t setup_direct_config(void)
 {
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t key;
   screen_menu_t menu;
   int32_t dec;
@@ -596,7 +596,7 @@ int32_t setup_direct_config(void)
 int32_t setup_menu_network_mode(void)
 {
   int32_t choice = 0;
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t key;
   screen_menu_t menu;
   int32_t index;
@@ -678,7 +678,7 @@ int32_t setup_menu_network_mode(void)
 int32_t setup_menu_network(void)
 {
   int32_t choice = 0;
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t key;
   screen_menu_t menu;
   int32_t index;

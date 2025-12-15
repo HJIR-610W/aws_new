@@ -15,7 +15,7 @@
 */
 uint16_t send_panel_hj(int32_t panel_port_num)
 {
-    char framemk[50];
+    char framemk[100];
     uint8_t 	cnt = 0;
 
     DATE_TIME_BUF			*pDate;

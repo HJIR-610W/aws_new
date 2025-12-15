@@ -290,7 +290,7 @@ bool is_divas_frame(uint8_t *p_in_data, uint16_t data_length)
 uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
-  uint8_t * p_config;
+  uint8_t * p_config=NULL;
   uint16_t cnt=0;
   uint8_t parameter_error=0;
 #pragma pack(push, 1)
@@ -336,10 +336,13 @@ uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame)
       tx_data[cnt++] = 2;
       break;
     }
+    if(p_config)
+    {
+      tx_data[cnt++] = ASCII_ACK;
 
-    tx_data[cnt++] = ASCII_ACK;
-    memcpy(&tx_data[cnt], p_config + request.offset, request.length);
-    cnt += request.length;
+      memcpy(&tx_data[cnt], p_config + request.offset, request.length);
+      cnt += request.length;
+    }
 
   }while(0);
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
-    <fileVersion>3</fileVersion>
+    <fileVersion>4</fileVersion>
     <configuration>
         <name>release</name>
         <toolchain>
@@ -11,9 +11,13 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>31</version>
+                <version>36</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
+                <option>
+                    <name>BrowseInfoPath</name>
+                    <state>release\BrowseInfo</state>
+                </option>
                 <option>
                     <name>ExePath</name>
                     <state>release\Exe</state>
@@ -58,7 +62,7 @@
                 </option>
                 <option>
                     <name>RTDescription</name>
-                    <state>Use the full configuration of the C/C++ runtime library. Full locale interface, C locale, file descriptor support, multibytes in printf and scanf, and hex floats in strtod.</state>
+                    <state>A complete configuration of the C/C++14 runtime library. Full locale interface, C locale, file descriptor support, multibytes in printf and scanf, and hex floats in strtod.</state>
                 </option>
                 <option>
                     <name>OGProductVersion</name>
@@ -66,15 +70,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.42.1.23869</state>
-                </option>
-                <option>
-                    <name>GeneralEnableMisra</name>
-                    <state>0</state>
-                </option>
-                <option>
-                    <name>GeneralMisraVerbose</name>
-                    <state>0</state>
+                    <state>9.50.1.69462</state>
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
@@ -97,26 +93,12 @@
                     <state>0</state>
                 </option>
                 <option>
-                    <name>GeneralMisraRules98</name>
-                    <version>0</version>
-                    <state>1000111110110101101110011100111111101110011011000101110111101101100111111111111100110011111001110111001111111111111111111111111</state>
-                </option>
-                <option>
-                    <name>GeneralMisraVer</name>
-                    <state>0</state>
-                </option>
-                <option>
-                    <name>GeneralMisraRules04</name>
-                    <version>0</version>
-                    <state>111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111</state>
-                </option>
-                <option>
                     <name>RTConfigPath2</name>
                     <state>$TOOLKIT_DIR$\inc\c\DLib_Config_Full.h</state>
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>28</version>
+                    <version>33</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -133,7 +115,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>28</version>
+                    <version>33</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -156,7 +138,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>28</version>
+                    <version>33</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -207,7 +189,32 @@
                 <option>
                     <name>TrustZoneModes</name>
                     <version>0</version>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>OGAarch64Abi</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>OG_32_64Device</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>BuildFilesPath</name>
+                    <state>release</state>
+                </option>
+                <option>
+                    <name>PointerAuthentication</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>FPU64</name>
                     <state>1</state>
+                </option>
+                <option>
+                    <name>OG_32_64DeviceCoreSlave</name>
+                    <version>33</version>
+                    <state>39</state>
                 </option>
             </data>
         </settings>
@@ -215,7 +222,7 @@
             <name>ICCARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>36</version>
+                <version>38</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -267,7 +274,7 @@
                 </option>
                 <option>
                     <name>CCDiagSuppress</name>
-                    <state>Pe826,Pe001,Pe177,Pe1873</state>
+                    <state>Pe001,Pe177,Pa205</state>
                 </option>
                 <option>
                     <name>CCDiagRemark</name>
@@ -345,10 +352,6 @@
                 <option>
                     <name>PreInclude</name>
                     <state></state>
-                </option>
-                <option>
-                    <name>CompilerMisraOverride</name>
-                    <state>0</state>
                 </option>
                 <option>
                     <name>CCIncludePath2</name>
@@ -476,16 +479,6 @@
                     <state>1</state>
                 </option>
                 <option>
-                    <name>CompilerMisraRules98</name>
-                    <version>0</version>
-                    <state>1000111110110101101110011100111111101110011011000101110111101101100111111111111100110011111001110111001111111111111111111111111</state>
-                </option>
-                <option>
-                    <name>CompilerMisraRules04</name>
-                    <version>0</version>
-                    <state>111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111</state>
-                </option>
-                <option>
                     <name>CCPosIndRopi</name>
                     <state>0</state>
                 </option>
@@ -570,13 +563,21 @@
                     <name>CCStackProtection</name>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>CCPointerAutentiction</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CCBranchTargetIdentification</name>
+                    <state>0</state>
+                </option>
             </data>
         </settings>
         <settings>
             <name>AARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>10</version>
+                <version>12</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -732,6 +733,14 @@
                     <name>AsmNoLiteralPool</name>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>PreInclude</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>A_32_64Device</name>
+                    <state>1</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -771,26 +780,14 @@
                 <extensions></extensions>
                 <cmdline></cmdline>
                 <hasPrio>0</hasPrio>
-            </data>
-        </settings>
-        <settings>
-            <name>BICOMP</name>
-            <archiveVersion>0</archiveVersion>
-            <data />
-        </settings>
-        <settings>
-            <name>BUILDACTION</name>
-            <archiveVersion>1</archiveVersion>
-            <data>
-                <prebuild></prebuild>
-                <postbuild>cmd /C "cmd /C $PROJ_DIR$\post_build.bat "$TARGET_PATH$""</postbuild>
+                <buildSequence>inputOutputBased</buildSequence>
             </data>
         </settings>
         <settings>
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>23</version>
+                <version>27</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -800,10 +797,6 @@
                 <option>
                     <name>IlinkLibIOConfig</name>
                     <state>1</state>
-                </option>
-                <option>
-                    <name>XLinkMisraHandler</name>
-                    <state>0</state>
                 </option>
                 <option>
                     <name>IlinkInputFileSlave</name>
@@ -1126,6 +1119,42 @@
                     <name>IlinkRawBinaryAlign2</name>
                     <state></state>
                 </option>
+                <option>
+                    <name>IlinkLogCrtRoutineSelection</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkLogFragmentInfo</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkLogInlining</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkLogMerging</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkDemangle</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkWrapperFileEnable</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkWrapperFile</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkProcessor</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>IlinkFpuProcessor</name>
+                    <state>1</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -1150,9 +1179,22 @@
             </data>
         </settings>
         <settings>
-            <name>BILINK</name>
-            <archiveVersion>0</archiveVersion>
-            <data />
+            <name>BUILDACTION</name>
+            <archiveVersion>2</archiveVersion>
+            <data>
+                <buildActions>
+                    <buildAction>
+                        <cmdline>cmd /C "cmd /C $PROJ_DIR$\post_build.bat "$TARGET_PATH$"" &amp;&amp; echo &gt; "$BUILD_FILES_DIR$/.postbuild"</cmdline>
+                        <workingDirectory>$PROJ_DIR$</workingDirectory>
+                        <buildSequence>postLink</buildSequence>
+                        <outputs>
+                            <file>
+                                <name>$BUILD_FILES_DIR$/.postbuild</name>
+                            </file>
+                        </outputs>
+                    </buildAction>
+                </buildActions>
+            </data>
         </settings>
         <settings>
             <name>Coder</name>
@@ -1170,9 +1212,13 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>31</version>
+                <version>36</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
+                <option>
+                    <name>BrowseInfoPath</name>
+                    <state>not_use_lcd\BrowseInfo</state>
+                </option>
                 <option>
                     <name>ExePath</name>
                     <state>not_use_lcd\Exe</state>
@@ -1225,15 +1271,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.42.1.23869</state>
-                </option>
-                <option>
-                    <name>GeneralEnableMisra</name>
-                    <state>0</state>
-                </option>
-                <option>
-                    <name>GeneralMisraVerbose</name>
-                    <state>0</state>
+                    <state>9.50.1.69462</state>
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
@@ -1256,26 +1294,12 @@
                     <state>0</state>
                 </option>
                 <option>
-                    <name>GeneralMisraRules98</name>
-                    <version>0</version>
-                    <state>1000111110110101101110011100111111101110011011000101110111101101100111111111111100110011111001110111001111111111111111111111111</state>
-                </option>
-                <option>
-                    <name>GeneralMisraVer</name>
-                    <state>0</state>
-                </option>
-                <option>
-                    <name>GeneralMisraRules04</name>
-                    <version>0</version>
-                    <state>111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111</state>
-                </option>
-                <option>
                     <name>RTConfigPath2</name>
                     <state>$TOOLKIT_DIR$\inc\c\DLib_Config_Full.h</state>
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>28</version>
+                    <version>33</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1292,7 +1316,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>28</version>
+                    <version>33</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1315,7 +1339,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>28</version>
+                    <version>33</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1368,13 +1392,38 @@
                     <version>0</version>
                     <state>1</state>
                 </option>
+                <option>
+                    <name>OGAarch64Abi</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>OG_32_64Device</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>BuildFilesPath</name>
+                    <state>not_use_lcd</state>
+                </option>
+                <option>
+                    <name>PointerAuthentication</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>FPU64</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>OG_32_64DeviceCoreSlave</name>
+                    <version>33</version>
+                    <state>39</state>
+                </option>
             </data>
         </settings>
         <settings>
             <name>ICCARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>36</version>
+                <version>38</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1507,10 +1556,6 @@
                     <state></state>
                 </option>
                 <option>
-                    <name>CompilerMisraOverride</name>
-                    <state>0</state>
-                </option>
-                <option>
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\application</state>
@@ -1629,16 +1674,6 @@
                     <state>1</state>
                 </option>
                 <option>
-                    <name>CompilerMisraRules98</name>
-                    <version>0</version>
-                    <state>1000111110110101101110011100111111101110011011000101110111101101100111111111111100110011111001110111001111111111111111111111111</state>
-                </option>
-                <option>
-                    <name>CompilerMisraRules04</name>
-                    <version>0</version>
-                    <state>111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111</state>
-                </option>
-                <option>
                     <name>CCPosIndRopi</name>
                     <state>0</state>
                 </option>
@@ -1723,13 +1758,21 @@
                     <name>CCStackProtection</name>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>CCPointerAutentiction</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CCBranchTargetIdentification</name>
+                    <state>0</state>
+                </option>
             </data>
         </settings>
         <settings>
             <name>AARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>10</version>
+                <version>12</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1885,6 +1928,14 @@
                     <name>AsmNoLiteralPool</name>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>PreInclude</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>A_32_64Device</name>
+                    <state>1</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -1924,26 +1975,14 @@
                 <extensions></extensions>
                 <cmdline></cmdline>
                 <hasPrio>0</hasPrio>
-            </data>
-        </settings>
-        <settings>
-            <name>BICOMP</name>
-            <archiveVersion>0</archiveVersion>
-            <data />
-        </settings>
-        <settings>
-            <name>BUILDACTION</name>
-            <archiveVersion>1</archiveVersion>
-            <data>
-                <prebuild></prebuild>
-                <postbuild>cmd /C "cmd /C $PROJ_DIR$\create_bin.bat "$TARGET_PATH$""</postbuild>
+                <buildSequence>inputOutputBased</buildSequence>
             </data>
         </settings>
         <settings>
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>23</version>
+                <version>27</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1953,10 +1992,6 @@
                 <option>
                     <name>IlinkLibIOConfig</name>
                     <state>1</state>
-                </option>
-                <option>
-                    <name>XLinkMisraHandler</name>
-                    <state>0</state>
                 </option>
                 <option>
                     <name>IlinkInputFileSlave</name>
@@ -2279,6 +2314,42 @@
                     <name>IlinkRawBinaryAlign2</name>
                     <state></state>
                 </option>
+                <option>
+                    <name>IlinkLogCrtRoutineSelection</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkLogFragmentInfo</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkLogInlining</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkLogMerging</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkDemangle</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkWrapperFileEnable</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>IlinkWrapperFile</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkProcessor</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>IlinkFpuProcessor</name>
+                    <state>1</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -2303,9 +2374,22 @@
             </data>
         </settings>
         <settings>
-            <name>BILINK</name>
-            <archiveVersion>0</archiveVersion>
-            <data />
+            <name>BUILDACTION</name>
+            <archiveVersion>2</archiveVersion>
+            <data>
+                <buildActions>
+                    <buildAction>
+                        <cmdline>cmd /C "cmd /C $PROJ_DIR$\create_bin.bat "$TARGET_PATH$"" &amp;&amp; echo &gt; "$BUILD_FILES_DIR$/.postbuild"</cmdline>
+                        <workingDirectory>$PROJ_DIR$</workingDirectory>
+                        <buildSequence>postLink</buildSequence>
+                        <outputs>
+                            <file>
+                                <name>$BUILD_FILES_DIR$/.postbuild</name>
+                            </file>
+                        </outputs>
+                    </buildAction>
+                </buildActions>
+            </data>
         </settings>
         <settings>
             <name>Coder</name>
@@ -2320,37 +2404,37 @@
             <group>
                 <name>app_driver</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\app_drivers\app_adc.c</name>
+                    <name>$PROJ_DIR$\..\application\app\app_drivers\app_adc.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\app_drivers\app_charger.c</name>
+                    <name>$PROJ_DIR$\..\application\app\app_drivers\app_charger.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\app_drivers\app_key.c</name>
+                    <name>$PROJ_DIR$\..\application\app\app_drivers\app_key.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\app_drivers\app_screen.c</name>
+                    <name>$PROJ_DIR$\..\application\app\app_drivers\app_screen.c</name>
                 </file>
             </group>
             <group>
                 <name>config</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\config\config_adc.c</name>
+                    <name>$PROJ_DIR$\..\application\app\config\config_adc.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\config\config_app.c</name>
+                    <name>$PROJ_DIR$\..\application\app\config\config_app.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\config\config_manager.c</name>
+                    <name>$PROJ_DIR$\..\application\app\config\config_manager.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\config\config_memory_map.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\config\config_nvm.c</name>
+                    <name>$PROJ_DIR$\..\application\app\config\config_nvm.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\config\config_sensor.c</name>
+                    <name>$PROJ_DIR$\..\application\app\config\config_sensor.c</name>
                 </file>
             </group>
             <group>
@@ -2367,31 +2451,31 @@
                 <group>
                     <name>aws</name>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\protocols\aws\aws_data.c</name>
+                        <name>$PROJ_DIR$\..\application\app\protocols\aws\aws_data.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\protocols\aws\aws_jinyang.c</name>
+                        <name>$PROJ_DIR$\..\application\app\protocols\aws\aws_jinyang.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\protocols\aws\kma2.c</name>
+                        <name>$PROJ_DIR$\..\application\app\protocols\aws\kma2.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\protocols\aws\kma3.c</name>
+                        <name>$PROJ_DIR$\..\application\app\protocols\aws\kma3.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\protocols\aws\kma_protocol_handler.c</name>
+                        <name>$PROJ_DIR$\..\application\app\protocols\aws\kma_protocol_handler.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\protocols\aws\parse_aws.c</name>
+                        <name>$PROJ_DIR$\..\application\app\protocols\aws\parse_aws.c</name>
                     </file>
                 </group>
                 <group>
                     <name>divas</name>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\protocols\divas\aws_monitor.c</name>
+                        <name>$PROJ_DIR$\..\application\app\protocols\divas\aws_monitor.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\protocols\divas\divas_protocol_handler.c</name>
+                        <name>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_handler.c</name>
                     </file>
                 </group>
                 <group>
@@ -2421,13 +2505,13 @@
                         </file>
                     </group>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\tasks\aws\schedule.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\aws\schedule.c</name>
                     </file>
                 </group>
                 <group>
                     <name>common</name>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\tasks\common\const_string.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\common\const_string.c</name>
                     </file>
                 </group>
                 <group>
@@ -2441,7 +2525,7 @@
                             </file>
                         </group>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\aws_menu\aws_develop.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\aws_develop.c</name>
                         </file>
                         <file>
                             <name>$PROJ_DIR$\..\application\app\tasks\console\aws_menu\console_menu.c</name>
@@ -2477,32 +2561,32 @@
                     <group>
                         <name>hj_snow_menu</name>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\hj_snow_menu\hj_snow_menu.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\hj_snow_menu\hj_snow_menu.c</name>
                         </file>
                     </group>
                     <group>
                         <name>hj_temp_menu</name>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\console\hj_temp_menu\hjtemp_menu.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\console\hj_temp_menu\hjtemp_menu.c</name>
                         </file>
                     </group>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\tasks\console\app_console.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\console\app_console.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\tasks\console\app_console_test.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\console\app_console_test.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\app\tasks\console\console_login.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\tasks\console\console_rtos.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\console\console_rtos.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\tasks\console\console_test.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\console\console_test.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\tasks\console\console_utile.c</name>
+                        <name>$PROJ_DIR$\..\application\app\tasks\console\console_utile.c</name>
                     </file>
                 </group>
                 <group>
@@ -2561,7 +2645,7 @@
                             <name>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\menu_handler.c</name>
                         </file>
                         <file>
-                            <name>$PROJ_DIR$\..\Application\app\tasks\menu\menu_handler\view_driver.c</name>
+                            <name>$PROJ_DIR$\..\application\app\tasks\menu\menu_handler\view_driver.c</name>
                         </file>
                     </group>
                     <file>
@@ -2626,10 +2710,10 @@
                     <name>$PROJ_DIR$\..\application\app\tasks\task_aws.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_console.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_console.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_ethernet.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_ethernet.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\tasks\task_event.c</name>
@@ -2638,31 +2722,31 @@
                     <name>$PROJ_DIR$\..\application\app\tasks\task_key.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_logging.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_logging.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_measure.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_measure.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_menu.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_menu.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_menu_define.h</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_menu_define.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_monitor.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_monitor.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_panel.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_panel.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_start.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_start.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_system.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_system.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\tasks\task_wdt.c</name>
+                    <name>$PROJ_DIR$\..\application\app\tasks\task_wdt.c</name>
                 </file>
             </group>
             <group>
@@ -2670,20 +2754,20 @@
                 <group>
                     <name>parser</name>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\app\test\parser\hart_parser.c</name>
+                        <name>$PROJ_DIR$\..\application\app\test\parser\hart_parser.c</name>
                     </file>
                 </group>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\test\mcu_debug.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\task_test.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\task_test.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_adc.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_adc.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_count.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_count.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\test\test_di.c</name>
@@ -2692,10 +2776,10 @@
                     <name>$PROJ_DIR$\..\application\app\test\test_do.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_eth.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_eth.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_filesystem.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_filesystem.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\test\test_flash.c</name>
@@ -2704,43 +2788,43 @@
                     <name>$PROJ_DIR$\..\application\app\test\test_fram.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_hart.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_hart.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\test\test_key.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_lcd.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_lcd.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\test\test_mcu_port.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_meomoy.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_meomoy.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\test\test_modbus.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_power.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_power.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_rain.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_rain.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_rs485.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_rs485.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_rtc.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_rtc.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_sdi12.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_sdi12.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_sram.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_sram.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\app\test\test_uart.c</name>
+                    <name>$PROJ_DIR$\..\application\app\test\test_uart.c</name>
                 </file>
             </group>
         </group>
@@ -2755,31 +2839,31 @@
                     <name>$PROJ_DIR$\..\application\communications\cdma\modem_if.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\modem_ntle9607.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_ntle9607.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\modem_ntle9607.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_sms.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\modem_sms.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_sms.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\modem_sms.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\modem_tx700.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\modem_tx700.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\modem_tx700.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\old_aws_sms.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\old_aws_sms.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\old_aws_sms.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\task_cellular.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</name>
@@ -2788,7 +2872,7 @@
             <group>
                 <name>Direct</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\direct\task_direct.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\direct\task_direct.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\communications\direct\task_direct.h</name>
@@ -2800,19 +2884,19 @@
                     <name>http</name>
                 </group>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\ethernet\app_socket.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\ethernet\app_socket.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\ethernet\eth_icmp.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\ethernet\eth_icmp.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\application\communications\ethernet\ping_callback.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\ethernet\task_client.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\ethernet\task_client.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\ethernet\task_tcpServer.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\ethernet\task_tcpServer.c</name>
                 </file>
             </group>
             <group>
@@ -2820,7 +2904,7 @@
                 <group>
                     <name>App</name>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\Communications\lwip\app\lwip.c</name>
+                        <name>$PROJ_DIR$\..\application\communications\lwip\app\lwip.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\communications\lwip\app\lwip.h</name>
@@ -2829,7 +2913,7 @@
                 <group>
                     <name>Target</name>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\Communications\lwip\target\ethernetif.c</name>
+                        <name>$PROJ_DIR$\..\application\communications\lwip\target\ethernetif.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\communications\lwip\target\ethernetif.h</name>
@@ -2847,7 +2931,7 @@
                 <group>
                     <name>App</name>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\file_system\fatfs\app\fatfs.c</name>
+                        <name>$PROJ_DIR$\..\application\file_system\fatfs\app\fatfs.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\file_system\fatfs\app\fatfs.h</name>
@@ -2856,13 +2940,13 @@
                 <group>
                     <name>Target</name>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\file_system\fatfs\target\bsp_driver_sd.c</name>
+                        <name>$PROJ_DIR$\..\application\file_system\fatfs\target\bsp_driver_sd.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\file_system\fatfs\target\bsp_driver_sd.h</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\file_system\fatfs\target\fatfs_platform.c</name>
+                        <name>$PROJ_DIR$\..\application\file_system\fatfs\target\fatfs_platform.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\file_system\fatfs\target\fatfs_platform.h</name>
@@ -2874,23 +2958,23 @@
                         <name>$PROJ_DIR$\..\application\file_system\fatfs\target\journal_manager.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\file_system\fatfs\target\sd_diskio.c</name>
+                        <name>$PROJ_DIR$\..\application\file_system\fatfs\target\sd_diskio.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\file_system\fatfs\target\sd_diskio.h</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\Application\file_system\fatfs\target\user_diskio.c</name>
+                        <name>$PROJ_DIR$\..\application\file_system\fatfs\target\user_diskio.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\application\file_system\fatfs\target\user_diskio.h</name>
                     </file>
                 </group>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.c</name>
+                    <name>$PROJ_DIR$\..\application\file_system\fatfs\file_io.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\file_system\fatfs\file_io.h</name>
+                    <name>$PROJ_DIR$\..\application\file_system\fatfs\file_io.h</name>
                 </file>
             </group>
             <file>
@@ -2900,7 +2984,7 @@
                 <name>$PROJ_DIR$\..\application\file_system\app_file.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\file_system\user_heap.c</name>
+                <name>$PROJ_DIR$\..\application\file_system\user_heap.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\application\file_system\user_heap.h</name>
@@ -2909,40 +2993,40 @@
         <group>
             <name>http_server</name>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\core_json.c</name>
+                <name>$PROJ_DIR$\..\application\http_server\core_json.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\core_json.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\core_json.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\http_api.c</name>
+                <name>$PROJ_DIR$\..\application\http_server\http_api.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\http_api.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\http_api.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_http_server.c</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_http_server.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\application\http_server\task_http_server.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.c</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\task_telnet_server.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\task_telnet_server.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.c</name>
+                <name>$PROJ_DIR$\..\application\http_server\terminal_bridge.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\terminal_bridge.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\terminal_bridge.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\websocket.c</name>
+                <name>$PROJ_DIR$\..\application\http_server\websocket.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\http_server\websocket.h</name>
+                <name>$PROJ_DIR$\..\application\http_server\websocket.h</name>
             </file>
         </group>
         <group>
@@ -2960,10 +3044,10 @@
         <group>
             <name>update</name>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <group>
@@ -2979,13 +3063,13 @@
             </file>
         </group>
         <file>
-            <name>$PROJ_DIR$\..\Application\freertos_callback.c</name>
+            <name>$PROJ_DIR$\..\application\freertos_callback.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\application\FreeRTOSConfig.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\Application\main.c</name>
+            <name>$PROJ_DIR$\..\application\main.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\application\os_user_def.h</name>
@@ -3172,19 +3256,19 @@
             <group>
                 <name>adc</name>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\components\adc\ads1220.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\adc\ads1220_reg.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\adc\ads1220_reg.h</name>
                 </file>
             </group>
             <group>
                 <name>fram</name>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\fram\fm25cl.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\fram\fm25cl.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\components\fram\fm25cl.h</name>
@@ -3193,19 +3277,19 @@
             <group>
                 <name>io_expander</name>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\io_expander\pcf8575.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\io_expander\pcf8575.h</name>
                 </file>
             </group>
             <group>
                 <name>lan</name>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -3213,50 +3297,50 @@
                 <group>
                     <name>font</name>
                     <file>
-                        <name>$PROJ_DIR$\..\drivers\Components\lcd\font\font_6x8.c</name>
+                        <name>$PROJ_DIR$\..\drivers\components\lcd\font\font_6x8.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\drivers\Components\lcd\font\font_6x8.h</name>
+                        <name>$PROJ_DIR$\..\drivers\components\lcd\font\font_6x8.h</name>
                     </file>
                 </group>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lcd\st7920.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lcd\st7920.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lcd\st7920.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lcd\st7920.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lcd\vt100_terminal.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lcd\vt100_terminal.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lcd\vt100_terminal.h</name>
                 </file>
             </group>
             <group>
                 <name>rtc</name>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\rtc\bcd.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\rtc\bcd.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\rtc\built_.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\rtc\built_.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\rtc\ds1306.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\rtc\ds1306.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\rtc\ds1306.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\rtc\rv8803.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\rtc\rv8803.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\rtc\rv8803.h</name>
                 </file>
             </group>
             <group>
                 <name>serial_flash</name>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\serial_flash\at45db.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\drivers\components\serial_flash\at45db.h</name>
@@ -3265,13 +3349,13 @@
             <group>
                 <name>uart_ext</name>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.c</name>
+                    <name>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\uart_ext\TL16C554_def.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\uart_ext\TL16C554_def.h</name>
                 </file>
             </group>
         </group>

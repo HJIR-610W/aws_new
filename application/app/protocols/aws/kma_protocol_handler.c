@@ -91,6 +91,11 @@ bool is_kma3_protocol(uint8_t *input, uint32_t len)
   uint16_t crc;
   uint16_t recv_crc;
 
+    if ((input == NULL) || (len < KMA3_REQ_LEN))
+  {
+    return false;
+  }
+  
   if (input[0] == 0xFA && input[1] == 0xFB)
   {
     crc = crc16_ccitt_table(&input[2], KMA3_REQ_LEN - 6);

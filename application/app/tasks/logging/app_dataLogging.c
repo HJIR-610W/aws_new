@@ -182,7 +182,7 @@ int32_t write_data_month(DATE_TIME_BUF *p_date, void *p_data,uint16_t dataLen, u
   time_t time_stamp;
 
   uint8_t last_month[]={0,12,1,2,3,4,5,6,7,8,9,10,11};//index 0은 사용 안함
-  uint8_t ret;
+  uint8_t ret=1;
 
   year  = p_date->Year;
   month = p_date->Month;
@@ -233,7 +233,7 @@ int32_t read_data_month(DATE_TIME_BUF *p_date, void *p_buff,uint16_t readLen, ui
 
 
   uint8_t monthList[]={0,12,1,2,3,4,5,6,7,8,9,10,11};
-  uint8_t ret;
+  uint8_t ret=1;
 
   year  = p_date->Year;
   month = p_date->Month; 
@@ -281,7 +281,7 @@ int32_t read_data_month_bulk(DATE_TIME_BUF *p_date, void *p_buff, uint16_t readL
 
 
   uint8_t monthList[] = {0, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-  uint8_t ret;
+  uint8_t ret=1;
 
   year = p_date->Year;
   month = p_date->Month;
@@ -359,7 +359,7 @@ int32_t write_data_year(DATE_TIME_BUF *pDate, void *pInData, uint32_t dataSize, 
   time_t tmCurrent;
   uint32_t year, nAddr;
   uint8_t yearList[10] = {9, 0, 1, 2, 3, 4, 5, 6, 7, 8};
-  uint8_t ret;
+  uint8_t ret=1;
   uint32_t sensorDataSize;
 
   sensorDataSize = dataSize;

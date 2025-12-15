@@ -578,7 +578,6 @@ void stm32_uart_set(int num, eUART_SET_OPTION_t cmd, void *option)
 void stm32_uart_flush_rx(int num)
 {
   uint8_t data;
-  size_t bytes_available;
 
   if(num <0 || !uart_inst[num].opened)
   {
@@ -587,7 +586,7 @@ void stm32_uart_flush_rx(int num)
 
   OS_MUTEX_LOCK(uart_inst[num].rx_lock, osWaitForever);
 
-  while ((bytes_available = xStreamBufferBytesAvailable(uart_inst[num].stream_buffer)) > 0)
+  while (( xStreamBufferBytesAvailable(uart_inst[num].stream_buffer)) > 0)
   {
     xStreamBufferReceive(uart_inst[num].stream_buffer, &data, 1, 0);
   }

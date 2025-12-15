@@ -96,9 +96,9 @@ static void telnet_send_response(telnet_client_t* client, const char* response);
 static void telnet_send_prompt(telnet_client_t* client);
 
 // Telnet    (TCP )
-void telnet_client_mode_task(void);
-void tcp_relay_connect(tcp_relay_client_t* client);
-void tcp_relay_handle_connection(tcp_relay_client_t* client);
+
+ void tcp_relay_handle_connection(tcp_relay_client_t* client);
+ void tcp_relay_connect(tcp_relay_client_t* client);
 static void tcp_relay_process_data(tcp_relay_client_t* client, const uint8_t* data, int len);
 
 //  

@@ -511,7 +511,7 @@ int32_t hjwinddir_config_set(eSENSOR_TYPE_t type, sensor_t *sensor, uint8_t menu
 
 int32_t hjtemp_config_set(eSENSOR_TYPE_t type, sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t choice;
   int32_t dec = 0;
   temp_hj_config_t *hjtemp;
@@ -579,7 +579,7 @@ int32_t hjhumi_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_in
 {
   const char *portList[10];
   uint16_t portListCnt;
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t choice;
   int32_t dec = 0;
   temp_hj_config_t *hjtemp;
@@ -648,7 +648,7 @@ int32_t hjhumi_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_in
 
 int32_t ott_smp3_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t choice;
   int32_t dec = 0;
   solar_r_ott_smp3_config_t *ott;
@@ -693,7 +693,7 @@ int32_t ott_smp3_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_
 
 int32_t rain_present_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t dec = 0;
   rain_present_config_t *rain_present;
 
@@ -724,7 +724,7 @@ int32_t rain_present_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t me
 #define GENERAL_FREQ_SCALE_FACTOR 1
 int32_t general_freq_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t status;
+  int32_t status = MENU_OK;
   float factor = 0;
   frequency_config_t *freq;
   int dec;
@@ -761,7 +761,7 @@ int32_t hjsnow_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_in
 {
   const char *portList[10];
   uint16_t portCnt;
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t choice;
   snow_hj_config_t *hjsnow;
 
@@ -917,7 +917,7 @@ int32_t general_adc_config_set( eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t me
 
 int32_t sjgp215_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t choice;
 
   barometer_jinsung_sjgp215_config_t *sjgp215;
@@ -957,7 +957,7 @@ int32_t sjgp215_config_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_in
 
 int32_t temperature_pt100_set(eSENSOR_TYPE_t type,sensor_t *sensor, uint8_t menu_index)
 {
-  int32_t status;
+  int32_t status = MENU_OK;
   int32_t choice;
 
   temperature_pt100_t *pt100;

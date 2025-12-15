@@ -48,7 +48,7 @@ int32_t setup_menu_panel(void)
   int32_t choice = 0;
   int32_t index;
   int32_t key;
-  int32_t status;
+  int32_t status = MENU_OK;
   screen_menu_t menu;
 
   screen_menu_create(&menu,  "Panel");

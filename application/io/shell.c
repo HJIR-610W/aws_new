@@ -362,7 +362,7 @@ static void GetHistoryCommand(p_shell_context_t context, uint8_t hist_pos)
         context->hist_current = 0;
         return;
     }
-    if (hist_pos > SHELL_HIST_MAX)
+    if (hist_pos >= SHELL_HIST_MAX)
     {
         hist_pos = SHELL_HIST_MAX - 1;
     }

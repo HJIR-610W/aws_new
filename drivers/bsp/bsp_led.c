@@ -40,7 +40,7 @@ void Set_PWM_Frequency(uint32_t frequency, uint8_t duty_cycle)
 {
     uint32_t timer_clock = Get_TIM12_ClockFrequency();  // TIM12의 클럭 주파수
     uint32_t prescaler;
-    uint32_t arr;
+    uint32_t arr=1;
 
     // `Prescaler`를 먼저 크게 설정하여 `ARR`이 16비트 내에 들어오도록 조정
     for (prescaler = 1; prescaler <= 65536; prescaler++)

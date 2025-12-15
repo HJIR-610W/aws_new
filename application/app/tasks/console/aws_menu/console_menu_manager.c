@@ -344,8 +344,8 @@ int32_t menu_manage_sentor_edit()
     DATE_TIME_BUF end_time;
 
 
-  int32_t value;
-  const char *filename;
+  int32_t value=0;
+  const char *filename="";
   int32_t ret;
     int ok;
   while (1)

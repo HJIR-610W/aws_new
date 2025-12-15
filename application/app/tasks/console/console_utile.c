@@ -177,7 +177,7 @@ int32_t select_index_from_table(const char* list[], int32_t (*func)(), uint16_t 
 
   int index = 0;
   int funcCnt = 0;
-  int indexMax;
+  int indexMax=0;
   int status=0;
 
   do

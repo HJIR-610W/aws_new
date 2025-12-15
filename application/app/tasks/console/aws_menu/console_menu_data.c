@@ -38,7 +38,7 @@ typedef struct file_erase_s
 
 void fileEraseTask2(void *arg)
 {
-  int32_t result;
+  int32_t result=1;
   uint32_t flags = TASK_MENU_ALARM_FILE_RET_FAIL;
   file_erase_t *p_erase = (file_erase_t *)arg;
 
@@ -488,7 +488,7 @@ int32_t aws_view_1min_data(int system)
   int32_t year, month, day, hour, min;
   int32_t status;
   uint16_t data[MIN_VIEW_ROW];
-  uint32_t startTime;
+  uint32_t startTime=0;
   DATE_TIME_BUF nt;
 
   year = Date_Time.Year;

@@ -31,7 +31,7 @@ void create_win(win_t* win, int start_x, int start_y, int view_row, int view_col
 	win->current_page = 0;
 	win->total_pages = 1;
 	
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < WIN_PAGE_MAX; i++) {
 		win->scroll_offset[i] = 0;
 		win->total_items[i] = 0;
 		win->selected_item[i] = 0;

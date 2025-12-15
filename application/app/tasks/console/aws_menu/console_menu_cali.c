@@ -103,7 +103,7 @@ int handle_factory_calibration(int adc_num)
       debug_recv(&ch, 1, 60000);
 
       float avg = 0;
-      int32_t adc_raw;
+      int32_t adc_raw=0;
       int32_t avg_cnt = 0;
       uint8_t stable_delay=1;
       while (1)
@@ -414,7 +414,7 @@ int handle_offset_adjustment(int adc_num)
   adc_channel_type_t type;
   adc_cal_params_t* params;
   float target_ref;
-  int32_t raw_now;
+  int32_t raw_now=0;
 
   config_adc_adv_t* p_adc = get_adc_config(adc_num);
   while (1)

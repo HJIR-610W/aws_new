@@ -19,7 +19,7 @@ extern "C" {
 
 
 //win은 하나의 창으로 구성되며 창은 스크롤 기능과 여러개의 페이지로 구성된다.
-#define WIN_PAGE_MAX 6
+#define WIN_PAGE_MAX 10
 typedef struct
 {
 	int start_x;

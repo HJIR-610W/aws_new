@@ -1075,6 +1075,9 @@ void update_kma_data(eAWS_DATA_MIN_t min,DATE_TIME_BUF *p_time)
     case eAWS_DATA_DAY:
       pAws = &mDayAws;
       break;
+  default:
+    return ;
+    break;
     }
 
   p_kma_data = acquire_kma_data((eAWS_DATA_MIN_t)min);

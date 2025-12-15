@@ -1276,6 +1276,7 @@ menu_status_t input_password(const char *title, int32_t *password)
   make_centered(temp, sizeof(temp), "[****]", LCD_COLS);
   start_pos = (int)(strchr(temp, '[') - temp) + 1;
   screen_printf(3, 0, "%s", temp);
+  last_blink = OS_GET_TICK();
   while(1)
   {
     if (OS_GET_TICK() - last_blink >= 500)
