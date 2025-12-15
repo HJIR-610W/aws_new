@@ -330,8 +330,8 @@ void cellular_task(void *arg)
           }
           if (clear_mask != 0)
           {
-            clear_mask = 0;
             osEventFlagsClear(s_app_event_flags, clear_mask);
+            clear_mask = 0;
             state = APP_STATE_CONNECT_TCP;
             break;
           }
