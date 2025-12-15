@@ -127,11 +127,11 @@ int32_t ntle9607_send_sms(cellular_if_t* p_if, char* number_str, char* message_s
   length = 0;
   return_code = 1;
 
-  length = snprintf((char*)buffer, sizeof(buffer), "AT*SMS*MO=%s,\"", number_str);
+  length = snprintf((char*)buffer, sizeof(buffer), "AT*SMS*MO=%s,\"\",", number_str);
 
   if ((sizeof(buffer) - length - 2) >= (strlen((char*)message_str) * 2))
   {
-    length += Convert_HexAscii2uchar((uint8_t*)message_str, strlen(message_str), &buffer[length]);
+    length += Convert_ucharHexAscii((uint8_t*)message_str, strlen(message_str), &buffer[length]);
 
     buffer[length++] = '\r';
     buffer[length++] = '\n';

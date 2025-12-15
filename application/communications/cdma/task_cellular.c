@@ -278,7 +278,7 @@ void cellular_task(void *arg)
   {
     case eCDMA_NTLE9607:
       DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"NTLE9607 모뎀 사용\r\n");
-          cellular_open(TX700_MODEM);
+          cellular_open(NTLE9607_MODEM);
       break;
     case eCDMA_TX700:
     default:

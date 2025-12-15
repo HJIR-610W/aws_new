@@ -80,6 +80,9 @@ void SMS_Reset(sms_t *sms)
   cellular_send_sms(sms->number, sms->message);
 }
 
+extern void set_cdma_retarget_ip(uint8_t ip[4],uint16_t port);
+extern void set_cdma_retarget(bool target);
+
 void SMS_Reconnect_TCP(sms_t *sms)
 {
   uint16_t port;
