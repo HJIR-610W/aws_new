@@ -202,42 +202,44 @@ int32_t tx700_init(cellular_if_t* p_if)
  */
 int32_t tx700_send_sms(cellular_if_t* p_if, char* p_number_str, char* p_message_str)
 {
-  char command_buffer[80];
+  char command_buffer[200];
+  const char* ack_sms_list[] = { "\x3E\x20" };
   const char* ack_list[] = { "$$TELL:45" };
   uint32_t matched_index = 0;
-  char response_buffer[256];
+  char response_buffer[20];
   int32_t length;
-  int32_t return_code;
-
-  return_code = 1;
-
-  length = snprintf((char*)command_buffer, sizeof(command_buffer), "AT+CMGS=\" %s \"\r\n", p_number_str);
-  dispatcher_send_async((const uint8_t*)command_buffer, length);
-  osDelay(500);
-
-  length = snprintf((char*)command_buffer, sizeof(command_buffer) - 2, "%s", p_message_str);
-
-  if (length < (int32_t)(sizeof(command_buffer) - 2)) {
-    command_buffer[length++] = 0x1A; // Ctrl-Z
-    command_buffer[length] = 0;
-  }
-  else {
-    command_buffer[sizeof(command_buffer) - 2] = 0x1A;
-    command_buffer[sizeof(command_buffer) - 1] = 0;
-  }
 
 
-  return_code = dispatcher_send_sync((const uint8_t*)command_buffer, length, ack_list, 1, &matched_index,
+
+
+  length = snprintf((char*)command_buffer, sizeof(command_buffer)-2, "AT+CMGS=\"%s\"\r\n", p_number_str);
+  
+  length = dispatcher_send_sync((const uint8_t*)command_buffer, length, ack_sms_list, 1, &matched_index,
                                     (uint8_t*)response_buffer, sizeof(response_buffer) - 1, 1000);
 
-  if (return_code > 0) // 성공 시 반환값은 길이
+  if(length>0)
   {
-    return 0;
+    if(matched_index ==0)
+    {
+        length = snprintf((char*)command_buffer, sizeof(command_buffer)-2, "%s\x1A", p_message_str);
+          length = dispatcher_send_sync((const uint8_t*)command_buffer, length, ack_list, 1, &matched_index,
+                                    (uint8_t*)response_buffer, sizeof(response_buffer) - 1, 1000);
+
+        if (length > 0)
+        {
+          return 0;
+        }
+        else
+        {
+          return 1;
+        }
+    }
   }
-  else
-  {
-    return 1;
-  }
+
+
+  return 0;
+
+
 }
 
 
@@ -751,8 +753,7 @@ void tx700_write_ip(cellular_if_t* p_if, uint8_t p_ip_address[4], uint16_t port_
 
   int32_t return_code = dispatcher_send_sync((const uint8_t*)command_buffer, strlen(command_buffer), ack_list, 1, &matched_index,
                                     (uint8_t*)response_buffer, sizeof(response_buffer) - 1, 1000);
-  // 응답 처리 로직은 ntle9607.c를 따르지 않고, dispatcher_send_sync가 내부적으로 처리할 것으로 가정
-  // 이 함수의 리턴 값이 무시되고 있음.
+
 }
 
 /**
@@ -808,7 +809,7 @@ int32_t tx700_recv_uart(cellular_if_t* p_if, uint8_t* p_buffer, size_t buffer_si
   uint8_t first_pass_sms = 1;
   uint16_t data_len = 0;
   int32_t sub_len = 0;
-
+  uint8_t first_pass_sms_send=1;
 
   while (1)
   {
@@ -821,6 +822,12 @@ int32_t tx700_recv_uart(cellular_if_t* p_if, uint8_t* p_buffer, size_t buffer_si
 
       p_buffer[current_count++] = received_char;
 
+      //sms send시 응답대기 코드 별도 처리 
+      if(p_buffer[0]==0x3E&&p_buffer[1]==0x20)
+      {
+        return 2;
+      }
+      
       if (current_count == 10 && first_pass)
       {
         first_pass = 0;

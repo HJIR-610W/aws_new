@@ -2054,7 +2054,7 @@ int32_t aws_menu_veiw(void)
 
   create_win(&system_win, 0, 0, 6, 31);
   create_win(&rain_win, 0, 0, 6, 31);
-  create_win(&cdma_win, 0, 0, 6, 31);
+  create_win(&cdma_win, 0, 0, 7, 31);
   create_win(&direct_win, 0, 0, 6, 31);
   create_win(&eth_win, 0, 0, 15, 31);
   create_win(&aws_win, 0, 0, 19, 65);

@@ -181,7 +181,7 @@ void at_parser_set_sms_task(at_parser_task_fn_t fn)
       s_sms_queue = osMessageQueueNew(SMS_QUEUE_DEPTH, sizeof(sms_event_t), &attr);
     }
     if (s_sms_queue && s_sms_task_id == NULL) {
-      const osThreadAttr_t attr = { .name = "sms_cb", .stack_size = 1024, .priority = osPriorityNormal };
+      const osThreadAttr_t attr = { .name = "sms_cb", .stack_size = 2048, .priority = osPriorityNormal };
       s_sms_task_id = osThreadNew(sms_task_worker, NULL, &attr);
     }
   }
