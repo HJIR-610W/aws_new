@@ -57,7 +57,7 @@ static void reset_sms(sms_t *sms)
   
   log_printf(L_INFO, "sms reset");
   reset_system_delay(reset_delay_seconds);
-  snprintf(&sms->message[0], sizeof(sms->message) ,"%d초 안에 장비가 리셋됩니다", reset_delay_seconds );
+  snprintf(&sms->message[0], sizeof(sms->message) ,"The device will reset in %d seconds.", reset_delay_seconds );
 
   cellular_send_sms(sms->number, sms->message);
 }
@@ -81,7 +81,7 @@ static void reconnect_tcp_sms(sms_t *sms)
 
   set_cdma_retarget(true);
 
-  sprintf(sms->message, "TCP IP/PORT를 변경합니다.");
+  sprintf(sms->message, "Reconnecting to %u.%u.%u.%u:%u.", ip[0], ip[1], ip[2], ip[3], port);
 
   cellular_send_sms(sms->number, sms->message);
 }
@@ -104,7 +104,7 @@ cellular_set_vpn_config(vpn_info.id, vpn_info.pass, vpn_info.ip, vpn_info.port);
 
 cellular_read_vpn_config((char *)&vpn_info, sizeof(vpn_info));
 
-  vpn_info.ip[3] = 0;  // 문자열 null;
+  vpn_info.ip[3] = 0;  
 
   snprintf(sms->message, sizeof(sms->message), "%s", (char *)&vpn_info);
 
@@ -126,7 +126,7 @@ static void read_mem_sms(sms_t *sms)
   }
   else
   {
-    snprintf(sms->message, sizeof(sms->message), "파라미터 오류");
+    snprintf(sms->message, sizeof(sms->message), "Read length exceeded.");
   }
 
   cellular_send_sms(sms->number, sms->message);
@@ -148,7 +148,7 @@ static void read_config_sms(sms_t *sms)
   }
   else
   {
-    snprintf(sms->message, sizeof(sms->message), "파라미터 오류");
+    snprintf(sms->message, sizeof(sms->message), "Read length exceeded.");
   }
 
   cellular_send_sms(sms->number, sms->message);
@@ -212,7 +212,6 @@ void sms_cmd(sms_t *sms)
   }
   else
   {
-    //AWS(구) SMS방식 처리
     CheckReadSMS(sms->message, sms->number);
   }
 }

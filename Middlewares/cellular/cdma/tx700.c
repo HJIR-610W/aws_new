@@ -19,6 +19,7 @@
 #include "cellular.h"
 #include "dispatcher.h"
 #include "system_err.h"
+#include "util_safe.h"
 
 
 /* TX700 전용 TCP 데이터 큐 */
@@ -199,6 +200,9 @@ int32_t tx700_init(cellular_if_t* p_if)
 
 /**
  * @brief SMS 전송
+
+소켓이 끊기거나 이럴때 문자 전송하면 실패함 (모뎀 문제) 모뎀이 명령어를 무시함
+
  */
 int32_t tx700_send_sms(cellular_if_t* p_if, char* p_number_str, char* p_message_str)
 {
@@ -215,7 +219,7 @@ int32_t tx700_send_sms(cellular_if_t* p_if, char* p_number_str, char* p_message_
   length = snprintf((char*)command_buffer, sizeof(command_buffer)-2, "AT+CMGS=\"%s\"\r\n", p_number_str);
   
   length = dispatcher_send_sync((const uint8_t*)command_buffer, length, ack_sms_list, 1, &matched_index,
-                                    (uint8_t*)response_buffer, sizeof(response_buffer) - 1, 1000);
+                                    (uint8_t*)response_buffer, sizeof(response_buffer) - 1, 5000);
 
   if(length>0)
   {
@@ -223,7 +227,7 @@ int32_t tx700_send_sms(cellular_if_t* p_if, char* p_number_str, char* p_message_
     {
         length = snprintf((char*)command_buffer, sizeof(command_buffer)-2, "%s\x1A", p_message_str);
           length = dispatcher_send_sync((const uint8_t*)command_buffer, length, ack_list, 1, &matched_index,
-                                    (uint8_t*)response_buffer, sizeof(response_buffer) - 1, 1000);
+                                    (uint8_t*)response_buffer, sizeof(response_buffer) - 1, 5000);
 
         if (length > 0)
         {
@@ -236,7 +240,7 @@ int32_t tx700_send_sms(cellular_if_t* p_if, char* p_number_str, char* p_message_
     }
   }
 
-
+  
   return 0;
 
 
@@ -306,32 +310,33 @@ int32_t tx700_read_sms(cellular_if_t* p_if, sms_t* p_sms)
   const char* ack_list[] = { "+CMGR" };
   char response_buffer[310]; // 충분한 크기로 확보
   uint32_t matched_index = 0;
-  int32_t results;
-  int32_t return_code;
-
-  return_code = 1;
+  int32_t results=1;
+  int32_t len;
 
 
 
-  return_code = dispatcher_send_sync((const uint8_t*)command, strlen(command), ack_list, 1, &matched_index,
+
+
+  len = dispatcher_send_sync((const uint8_t*)command, strlen(command), ack_list, 1, &matched_index,
                                     (uint8_t*)response_buffer, sizeof(response_buffer) - 1, 200);
 
-  if (return_code > 0) // 성공 시 반환값은 길이
+  if (len > 0) // 성공 시 반환값은 길이
   {
     results = extract_sms_data(response_buffer, p_sms->number, sizeof(p_sms->number), p_sms->message, sizeof(p_sms->message));
 
     if (results != 0)
     {
-      return_code = 1;
+      results = 1;
     }
     else
     {
       dispatcher_send_async((const uint8_t*)delete_command, strlen(delete_command)); // SMS 추출 성공시에만 삭제
-      return_code = 0;
+      osDelay(2000);
+      results = 0;
     }
   }
 
-  return return_code;
+  return results;
 }
 
 /**
@@ -753,7 +758,7 @@ void tx700_write_ip(cellular_if_t* p_if, uint8_t p_ip_address[4], uint16_t port_
 
   int32_t return_code = dispatcher_send_sync((const uint8_t*)command_buffer, strlen(command_buffer), ack_list, 1, &matched_index,
                                     (uint8_t*)response_buffer, sizeof(response_buffer) - 1, 1000);
-
+  osDelay(1000);// 지연 모뎀 안정화 
 }
 
 /**

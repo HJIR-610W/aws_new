@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+//2025-12-31 23:59:59 형식의 시간정보 구조체
 typedef struct 
 {
   int16_t Year;

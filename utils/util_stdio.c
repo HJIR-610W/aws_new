@@ -1,7 +1,10 @@
 
 #include "util_stdio.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
 #include <math.h>
 
 #include "util_memory.h"
@@ -144,3 +147,5 @@ bool normalize_bool(uint8_t raw)
 {
   return raw == 1 ? true : false;
 }
+
+

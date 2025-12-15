@@ -181,7 +181,9 @@ int32_t connect_tcp(eAPP_STATE_t state)
        DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[AppMain] 부팅 감지 타임 아웃\r\n");
     }
 
+    osDelay(5000);//tx700의 경우 부팅감지되고 약간의 시간이 더 지나야 전화 번호 읽기 가능
     local_state = APP_STATE_INIT_MODEM;
+    
     break;
   case APP_STATE_INIT_MODEM:
   {
@@ -215,7 +217,7 @@ int32_t connect_tcp(eAPP_STATE_t state)
   case APP_STATE_CONNECT_TCP:
      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[AppMain] State: APP_STATE_CONNECT_TCP\r\n");
     cellular_disconnect();
-    osDelay(1000);
+    osDelay(2000);
 
     if(is_cdma_retarget())
     {
@@ -271,7 +273,7 @@ void cellular_task(void *arg)
   uint32_t flags;
   uint32_t clear_mask = 0;
   int32_t len;
-
+   uint16_t  rtu_id ;//= swap_uint16(get_config_app()->id);
 
 
   switch(config.cdma_model)
@@ -310,6 +312,9 @@ void cellular_task(void *arg)
       connect_tcp(state);
       g_cdma_system.link_status = eCDMA_LINK_UP;
       network_wtd_starttime = osKernelGetTickCount();
+      rtu_id = swap_uint16(config.id);
+      cellular_send_tcp((uint8_t *)&rtu_id, 2);//AWS는 아이디 전송해야 수신측에서 AWS id로 인식 처리 
+      
         while (1)
         {
           flags = osEventFlagsGet(s_app_event_flags);
