@@ -524,7 +524,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
             show_popup("Information", "File Open Err");
             return MENU_OK;
           }
-          startTime = SetTime(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
+          startTime = time_set_time(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
         }
         draw_aws_data_page(&lcd_win, &aws, startTime);
         screen_refresh();
@@ -660,7 +660,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
           for (int i = 0; i < MIN_VIEW_ROW; i++)
           {
             read_sensorDataMulti(&nt, sizeof(uint16_t), 1, system, 1, (uint8_t *)&rain[i], 2);
-            startTime = SetTime(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
+            startTime = time_set_time(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
             startTime += 60;
             time_cvt_secTotime(startTime, &nt);
           }

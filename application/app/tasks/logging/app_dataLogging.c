@@ -11,6 +11,7 @@
 #include "debug_io.h"
 #include "app_file.h"
 
+
 #define AWS_FILE_PATH       "0:Y%02d/M%02d.aws"
 #define AWS_NEW_FILE_PATH   "0:Y%02d/M%02d_new.aws"
 
@@ -63,9 +64,9 @@ uint32_t timeToOffsetMonth(time_t currnet_tick, uint8_t min,uint16_t byte)
   uint32_t offset;
 
   currnet_tick     -= currnet_tick % (min*60);
-  year   = GetYear(currnet_tick);
-  month  = GetMonth(currnet_tick);
-  month_start_tick = SetTime(year, month, 1, 0, 0, 0);
+  year   = time_get_year(currnet_tick);
+  month  = time_get_month(currnet_tick);
+  month_start_tick = time_set_time(year, month, 1, 0, 0, 0);
 
   ts = currnet_tick - month_start_tick;
 
@@ -91,8 +92,8 @@ uint32_t timeToOffsetYear(time_t currnet_tick, uint8_t min,uint16_t byte)
   uint32_t offset;
 
   currnet_tick     -= currnet_tick % (min*60);
-  year   = GetYear(currnet_tick);
-  year_start_tick = SetTime(year, 1, 1, 0, 0, 0);
+  year   = time_get_year(currnet_tick);
+  year_start_tick = time_set_time(year, 1, 1, 0, 0, 0);
 
   ts = currnet_tick - year_start_tick;
 
@@ -121,11 +122,11 @@ uint32_t timeToOffsetDay(time_t current_tick, uint8_t min, uint16_t byte)
   // min 단위로 정렬
   current_tick -= current_tick % (min * 60);
 
-  year = GetYear(current_tick);
-  month = GetMonth(current_tick);
-  day = GetDay(current_tick);
+  year = time_get_year(current_tick);
+  month = time_get_month(current_tick);
+  day = time_get_day(current_tick);
 
-  day_start_tick = SetTime(year, month, day, 0, 0, 0);
+  day_start_tick = time_set_time(year, month, day, 0, 0, 0);
 
 
   ts = current_tick - day_start_tick;
@@ -187,7 +188,7 @@ int32_t write_data_month(DATE_TIME_BUF *p_date, void *p_data,uint16_t dataLen, u
   year  = p_date->Year;
   month = p_date->Month;
 
-  time_stamp = SetTime(p_date->Year, p_date->Month, p_date->Day, p_date->Hour, p_date->Min, 0);
+  time_stamp = time_set_time(p_date->Year, p_date->Month, p_date->Day, p_date->Hour, p_date->Min, 0);
 
   year_offset = timeToOffsetYear(time_stamp, period_min, dataLen);
   month_offset = timeToOffsetMonth(time_stamp, period_min, dataLen);
@@ -200,7 +201,7 @@ int32_t write_data_month(DATE_TIME_BUF *p_date, void *p_data,uint16_t dataLen, u
   if(month_offset == 0)// 1일 0시0분 이면 이건 전달 자료임
   {
     last_day = get_last_day(year, last_month[month]); // 지난달의 일수 계산
-    month_offset = timeToOffsetMonth(SetTime(year, last_month[month], last_day, 23, 60 - period_min, 0), period_min, dataLen) + dataLen;
+    month_offset = timeToOffsetMonth(time_set_time(year, last_month[month], last_day, 23, 60 - period_min, 0), period_min, dataLen) + dataLen;
 
     month = last_month[month];
   }
@@ -238,7 +239,7 @@ int32_t read_data_month(DATE_TIME_BUF *p_date, void *p_buff,uint16_t readLen, ui
   year  = p_date->Year;
   month = p_date->Month; 
 
-  tmCurrent  = SetTime(p_date->Year, p_date->Month, p_date->Day, p_date->Hour, p_date->Min, 0);
+  tmCurrent  = time_set_time(p_date->Year, p_date->Month, p_date->Day, p_date->Hour, p_date->Min, 0);
 
   year_offset  = timeToOffsetYear(tmCurrent,period_min, readLen);
   month_offset = timeToOffsetMonth(tmCurrent,period_min, readLen);
@@ -251,7 +252,7 @@ int32_t read_data_month(DATE_TIME_BUF *p_date, void *p_buff,uint16_t readLen, ui
   if(month_offset == 0)// 1일 0시0분 이면 이건 전달 자료임
   {
     last_day = get_last_day(p_date->Year,monthList[month]);
-    month_offset = timeToOffsetMonth(SetTime(year, monthList[month], last_day, 23, 60-period_min, 0), period_min, readLen) + readLen;
+    month_offset = timeToOffsetMonth(time_set_time(year, monthList[month], last_day, 23, 60-period_min, 0), period_min, readLen) + readLen;
   }
 
   get_filePath(type,year%10,month,path,sizeof(path));
@@ -286,7 +287,7 @@ int32_t read_data_month_bulk(DATE_TIME_BUF *p_date, void *p_buff, uint16_t readL
   year = p_date->Year;
   month = p_date->Month;
 
-  tmCurrent = SetTime(p_date->Year, p_date->Month, p_date->Day, p_date->Hour, p_date->Min, 0);
+  tmCurrent = time_set_time(p_date->Year, p_date->Month, p_date->Day, p_date->Hour, p_date->Min, 0);
 
   year_offset = timeToOffsetYear(tmCurrent, period_min, readLen);
   month_offset = timeToOffsetMonth(tmCurrent, period_min, readLen);
@@ -299,7 +300,7 @@ int32_t read_data_month_bulk(DATE_TIME_BUF *p_date, void *p_buff, uint16_t readL
   {
     last_day = get_last_day(p_date->Year, monthList[month]);
     month_offset =
-        timeToOffsetMonth(SetTime(year, monthList[month], last_day, 23, 60 - period_min, 0),
+        timeToOffsetMonth(time_set_time(year, monthList[month], last_day, 23, 60 - period_min, 0),
                           period_min, readLen) +
         readLen;
   }
@@ -331,12 +332,12 @@ uint32_t TimeToAddress(time_t tmStart, uint16_t sec,uint32_t byte)
 
     // 입력 일시의 당년 1월 1일 00:00:00을 기준시간으로 함.
     tmStart     -= tmStart % sec;
-    nYear       = GetYear(tmStart);
-    tmTemp      = SetTime(nYear, 1, 1, 0, 0, 0);
+    nYear       = time_get_year(tmStart);
+    tmTemp      = time_set_time(nYear, 1, 1, 0, 0, 0);
 
     // (입력 일시 - 기준시각) / (60초 * 10분) * 2 Byte= Address
     ts          = tmStart - tmTemp;
-    nTotalSec   = GetTotalSeconds(ts);
+    nTotalSec   = time_get_seconds(ts);
    // nAddress    = nTotalSec /(sec/byte);            // 10분단위 데이터를 얻기 위함.
     if(nTotalSec)
     {
@@ -364,16 +365,16 @@ int32_t write_data_year(DATE_TIME_BUF *pDate, void *pInData, uint32_t dataSize, 
 
   sensorDataSize = dataSize;
 
-  tmCurrent = SetTime(pDate->Year, pDate->Month, pDate->Day, pDate->Hour, pDate->Min, 0);
-  year = GetYear(tmCurrent) % 10;
+  tmCurrent = time_set_time(pDate->Year, pDate->Month, pDate->Day, pDate->Hour, pDate->Min, 0);
+  year = time_get_year(tmCurrent) % 10;
   nAddr = TimeToAddress(tmCurrent, periodMin * 60, sensorDataSize);
 
   if (nAddr == 0)  // 해가 바뀌게 되면
   {
-    nAddr = TimeToAddress(SetTime(pDate->Year - 1, 12, 31, 23, 60 - periodMin, 0), periodMin * 60,
+    nAddr = TimeToAddress(time_set_time(pDate->Year - 1, 12, 31, 23, 60 - periodMin, 0), periodMin * 60,
                           sensorDataSize) +
             sensorDataSize;
-    year = yearList[GetYear(tmCurrent) % 10];  // 전년도에 저장해야함
+    year = yearList[time_get_year(tmCurrent) % 10];  // 전년도에 저장해야함
   }
 
 
@@ -421,16 +422,16 @@ uint8_t read_sensorDataMulti(DATE_TIME_BUF *pDate, uint32_t dataSize, int32_t Re
     return 0;
   }
 
-  tmCurrent = SetTime(pDate->Year, pDate->Month, pDate->Day, pDate->Hour, pDate->Min, 0);
-  year = GetYear(tmCurrent) % 10;
+  tmCurrent = time_set_time(pDate->Year, pDate->Month, pDate->Day, pDate->Hour, pDate->Min, 0);
+  year = time_get_year(tmCurrent) % 10;
   nAddr = TimeToAddress(tmCurrent, 60 * periodMin, dataSize);
 
   if (nAddr == 0)  // 해가 바뀌면
   {
-    nAddrOld = TimeToAddress(SetTime(pDate->Year - 1, 12, 31, 23, 60 - periodMin, 0),
+    nAddrOld = TimeToAddress(time_set_time(pDate->Year - 1, 12, 31, 23, 60 - periodMin, 0),
                              periodMin * 60, dataSize) +
                dataSize;
-    yearOld = yearList[GetYear(tmCurrent) % 10];  // 전년도 저장 메모리에 연속하여 저장
+    yearOld = yearList[time_get_year(tmCurrent) % 10];  // 전년도 저장 메모리에 연속하여 저장
 
 
 

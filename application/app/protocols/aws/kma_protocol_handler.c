@@ -754,11 +754,11 @@ uint8_t calculate_old_Z_status(uint8_t kma3_status[8])
     tx_frame[9] = rx_frame[9];
 
     //요청 시간
-    poll_t = SetTime(pDate->Year, pDate->Month, pDate->Day, pDate->Hour, pDate->Min, 0);
+    poll_t = time_set_time(pDate->Year, pDate->Month, pDate->Day, pDate->Hour, pDate->Min, 0);
 
     //현재 시간
     cur_t =
-        SetTime(Date_Time.Year, Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, 0);
+        time_set_time(Date_Time.Year, Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, 0);
     if ((poll_t == cur_t) && (Date_Time.Sec < 5))
     {
       vPortFree(p_kma3);

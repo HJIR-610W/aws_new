@@ -95,7 +95,7 @@ void compute_monthly_data(uint8_t type, const void *data_days, int year, uint32_
 
 int32_t get_daily_accu(uint8_t type, const void *data_days, int year, int month, int day)
 {
-  int index = dayOfYear(year, month, day);
+  int index = day_of_year(year, month, day);
   if (index <= 0 || index > 366)
     return -1;  // 오류 값 (unsigned -1)
 
@@ -129,7 +129,7 @@ uint32_t get_yearly_accu(uint8_t type, const void *data_days, int year, int mont
   if (!data_days)
     return 0;
 
-  int doy = dayOfYear(year, month, day);
+  int doy = day_of_year(year, month, day);
   if (doy <= 0 || doy > 366)
     return 0;
 
@@ -165,7 +165,7 @@ uint32_t get_hourly_accu(uint8_t type, const void *data_minutes, int year, int m
   if (!data_minutes || hour < 0 || hour >= 24 || min < 0 || min >= 60)
     return 0xFFFFFFFF;
 
-  int doy = dayOfYear(year, month, day);
+  int doy = day_of_year(year, month, day);
   if (doy <= 0 || doy > DATA_DAYS_IN_YEAR)
     return 0xFFFFFFFF;
 
@@ -235,7 +235,7 @@ int get_minute_index(int year, int month, int day, int hour, int min)
   if (hour < 0 || hour > 23 || min < 0 || min > 59)
     return -1;
 
-  int doy = dayOfYear(year, month, day);
+  int doy = day_of_year(year, month, day);
   if (doy <= 0 || doy > DATA_DAYS_IN_YEAR)
     return -1;
 

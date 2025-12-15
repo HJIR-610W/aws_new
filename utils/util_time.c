@@ -1,10 +1,10 @@
-#define __STDC_WANT_LIB_EXT1__ 1
+
 #include <time.h>
 #include <stdio.h>
 
 #include "cmsis_os.h"
 #include "util_time.h"
-
+#include "util_safe.h"
 DATE_TIME_BUF Date_Time;
 
 
@@ -15,7 +15,7 @@ void time_cvt_secTotime(time_t sec,DATE_TIME_BUF *timeNow)
 {
 	struct tm newtime;
 
-	localtime_s(&sec,&newtime);
+	localtime_safe(&sec,&newtime);
 
 	timeNow->Year = newtime.tm_year + 1900;
 	timeNow->Month = newtime.tm_mon +1;
@@ -49,12 +49,12 @@ time_t time_timestamp(void)
 
 int32_t make_time_to_string(DATE_TIME_BUF *ct, char *out, uint16_t outSize)
 {
-  return snprintf_s(out,outSize,"%04d-%02d-%02d %02d:%02d:%02d",ct->Year,
+  return snprintf(out,outSize,"%04d-%02d-%02d %02d:%02d:%02d",ct->Year,
   ct->Month,ct->Day,ct->Hour,ct->Min,ct->Sec);
 }
 
 
-time_t SetTime(int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec)
+time_t time_set_time(int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec)
 {
 	struct tm atm;
 
@@ -68,38 +68,38 @@ time_t SetTime(int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec)
 	return mktime(&atm);
 }
 
-uint32_t GetYear(time_t tmIn)
+uint32_t time_get_year(time_t tmIn)
 {
     struct tm time_info;
   //C11
     time_info.tm_year =0;
-	localtime_s(&tmIn,&time_info);
+	localtime_safe(&tmIn,&time_info);
     
     return time_info.tm_year+1900;
 }
-int GetMonth(time_t tmIn)
+uint32_t time_get_month(time_t tmIn)
 {
     struct tm time_info;
   //C11
     time_info.tm_year =0;
     time_info.tm_mon = 0;
-	localtime_s(&tmIn,&time_info);
+	localtime_safe(&tmIn,&time_info);
     
     return time_info.tm_mon+1;
 }
 
-int GetDay(time_t tmIn)
+uint32_t time_get_day(time_t tmIn)
 {
   struct tm time_info;
 
   time_info.tm_year = 0;
   time_info.tm_mon = 0;
-  localtime_s(&tmIn, &time_info);
+  localtime_safe(&tmIn, &time_info);
 
   return time_info.tm_mday;
 }
 
-long GetTotalSeconds(time_t ts)
+unsigned long time_get_seconds(time_t ts)
 {
 	return ts;
 }
@@ -109,7 +109,7 @@ long GetTotalSeconds(time_t ts)
 // month: 월 (1 ~ 12)
 // day: 일 (1 ~ 31)
 // 리턴값: 해당 연도의 1월 1일부터 몇 번째 날인지 (1 ~ 365 또는 366)
-int dayOfYear(int year, int month, int day)
+uint32_t day_of_year(int year, int month, int day)
 {
   static const uint16_t days_until_month[12] = {0,   31,  59,  90,  120, 151,
                                                 181, 212, 243, 273, 304, 334};
@@ -123,6 +123,7 @@ int dayOfYear(int year, int month, int day)
   return table[month - 1] + day;
 }
 
+//현재시간에서 seconds 만큼 빼기
 void subtract_seconds(DATE_TIME_BUF *dt, uint32_t seconds)
 {
   uint32_t tick = time_cvt_timestamp(dt);
@@ -169,7 +170,7 @@ st 2025-01-01 00:01:00
 et 2025-01-01 00:02:00
 min 카운트는 총 2개이다. 
  */
-int32_t count_min(DATE_TIME_BUF *st,DATE_TIME_BUF *et)
+uint32_t count_min(DATE_TIME_BUF *st,DATE_TIME_BUF *et)
 {
   st->Sec = 0;
   et->Sec = 0;
@@ -180,7 +181,7 @@ int32_t count_min(DATE_TIME_BUF *st,DATE_TIME_BUF *et)
   if(t_et == t_st)
   return 1;
 
-  int count = (int)((t_et - t_st) / 60)+1;
+  uint32_t count = (int)((t_et - t_st) / 60)+1;
 
   return count;
 }

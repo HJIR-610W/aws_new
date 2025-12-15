@@ -57,9 +57,12 @@ time_t ConvertDate_TMX400(char * szDate)  // String을 날짜 시간 데이터�
   strncpy(szTemp, szDate + 14, 2);
   nSecond = atoi(szTemp);
 
-  tmRet = SetTime(nYear, nMonth, nDay, nHour, nMinute, nSecond);
+  tmRet = time_set_time(nYear, nMonth, nDay, nHour, nMinute, nSecond);
   return tmRet;
 }
+
+extern void set_cdma_retarget_ip(uint8_t ip[4],uint16_t port);
+extern void set_cdma_retarget(bool target);
 bool CheckReadSMS(char *sms_msg,char *sms_number)
 {
 

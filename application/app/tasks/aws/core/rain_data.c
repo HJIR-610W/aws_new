@@ -85,7 +85,7 @@ int get_hourly_rain(uint16_t *rain_minutes, int year, int month, int day, int ho
   if (hour < 0 || hour >= 24 || min < 0 || min >= 60)
     return -1;
 
-  int doy = dayOfYear(year, month, day);
+  int doy = day_of_year(year, month, day);
   if (doy <= 0 || doy > DAYS_IN_YEAR)
     return -1;
 
@@ -150,7 +150,7 @@ void compute_monthly_rain(const uint16_t *rain_days, int year, uint16_t *rain_mo
 uint16_t get_daily_rain(const uint16_t *rain_days, int year, int month, int day)
 {
 
-  int index = dayOfYear(year, month, day);
+  int index = day_of_year(year, month, day);
   if (index <= 0 || index > 366)
     return 0;
 
@@ -174,7 +174,7 @@ uint16_t get_yearly_rain(const uint16_t *rain_days, int year, int month, int day
   if (rain_days == NULL)
     return 0;
 
-  int doy = dayOfYear(year, month, day);
+  int doy = day_of_year(year, month, day);
   if (doy <= 0 || doy > 366)
     return 0;
 

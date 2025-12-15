@@ -428,7 +428,7 @@ int32_t aws_view_aws_data(void)
     return MENU_OK;
   }
 
-  startTime = SetTime(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
+  startTime = time_set_time(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
   aws_display_aws_data(&aws, startTime);
 
   return MENU_OK;
@@ -524,7 +524,7 @@ int32_t aws_view_1min_data(int system)
   for (int i = 0; i < MIN_VIEW_ROW; i++)
   {
     read_sensorDataMulti(&nt, sizeof(uint16_t), 1, system, 1, (uint8_t *)&data[i], 2);
-    startTime = SetTime(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
+    startTime = time_set_time(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
     startTime += 60;
     time_cvt_secTotime(startTime, &nt);
   }
