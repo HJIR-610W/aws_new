@@ -1,7 +1,7 @@
 
 
-#ifndef MODEM_SMS_H
-#define MODEM_SMS_H
+#ifndef SMS_HANDLER_H
+#define SMS_HANDLER_H
 
 #include "cellular.h"
 

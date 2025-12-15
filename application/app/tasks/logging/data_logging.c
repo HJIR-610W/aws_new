@@ -4,6 +4,7 @@
 
 #include "data_logging.h"
 #include "ff.h"
+#include "util_safe.h"
 
 int32_t save_data_to_file(const char *path, const uint8_t *data, uint32_t dataLen,
                           uint32_t offset) ;

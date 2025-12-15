@@ -90,8 +90,6 @@ char * h_findnum(char *buff);
 uint32_t parse_args(char* str, char* argv[],uint32_t argvCnt);
 bool isDigit(uint8_t d);
 
-void strcpy_safe(char* det, size_t detSize, const char* src);
-size_t memcpy_safe(uint8_t* des, size_t desLen, uint8_t* src, size_t len);
 
 uint32_t Convert_HexAscii2uchar(char* src, uint16_t len, uint8_t * dst);
 

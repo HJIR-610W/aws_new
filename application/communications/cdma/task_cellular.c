@@ -14,8 +14,8 @@
 
 #include "config_app.h"
 #include "protocols\aws\kma_protocol_handler.h"
-#include "modem_sms.h"
-
+#include "sms_handler.h"
+#include "util_safe.h"
 
 /* FSM 상태 */
 typedef enum {
@@ -71,7 +71,7 @@ static void ring_callback_task(void* arg)
 static void sms_callback_task(void* arg)
 {
   sms_t sms;
-  const char* payload = (const char*)arg; // payload is null-terminated copy of URC line
+  const char* payload = (const char*)arg; 
    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[SMS] %s\r\n", payload ? payload : "(null)");
   if (cellular_read_sms(&sms) == 0)
   {

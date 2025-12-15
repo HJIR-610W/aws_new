@@ -21,7 +21,7 @@
 #include "system_err.h"
 #include "drv_power.h"
 
-
+#include "util_safe.h"
 
 
 

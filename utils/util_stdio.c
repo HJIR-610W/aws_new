@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include "util_memory.h"
+#include "util_safe.h"
 
 int32_t get_formatted_length_v(const char *format, va_list args)
 {

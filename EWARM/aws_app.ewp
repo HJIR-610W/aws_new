@@ -2751,16 +2751,16 @@
             <group>
                 <name>CDMA</name>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\cdma\modem_sms.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\old_aws_sms.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\communications\cdma\old_aws_sms.c</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\sms_handler.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\Application\Communications\cdma\task_cellular.h</name>
+                    <name>$PROJ_DIR$\..\application\communications\cdma\task_cellular.h</name>
                 </file>
             </group>
             <group>
@@ -4146,6 +4146,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\utils\util_memory.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\utils\util_safe.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\utils\util_stdio.c</name>

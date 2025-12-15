@@ -1,0 +1,27 @@
+
+#ifndef SMS_CORE_H
+#define SMS_CORE_H
+
+
+#include <stddef.h>
+#include <stdint.h>
+typedef enum
+{
+  eSMS_CMD_RESET = 1,
+  eSMS_CMD_READ_SYSTEM,
+  eSMS_CMD_WRITE_CONFIG,
+  eSMS_CMD_READ_CONFIG,
+  eSMS_CMD_Info,
+  eSMS_CMD_RECONNECT_TCP,
+  eSMS_CMD_RESET_MODEM,
+  eSMS_CMD_READ_MEM,
+  eSMS_CMD_READ_SMALLSTREAM_RING,
+  eSMS_CMD_VHF_LOOP_TEST,
+  eSMA_CMD_VPN_SET,
+  eSMA_CMD_AT_DIRECT,
+  eSMA_CMD_ENTRY_NOT_ALLOWED,
+  eSMA_CMD_ENTRY_ALLOWED
+} eSMS_CMD_t;
+
+
+#endif

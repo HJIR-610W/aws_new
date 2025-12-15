@@ -217,36 +217,7 @@ bool isDigit(uint8_t d)
 }
 
 
-/**
- * @brief 문자열 복사, 확실리 문자열로 만듦
- * @param det 대상 주소
- * @param detSize 대상 주소 크기
- * @param src 소스
- * @todo 코드가 효율적이 않아서 최적화 코드 작성필요
- */
-void strcpy_safe(char* det, size_t detSize, const char* src)
-{
-    
-	detSize--;
-	while (detSize &&*src)
-	{
-		*det++ = *src++;
-		detSize--;
-	}
-	*det = 0;
-}
 
-size_t memcpy_safe(uint8_t* des, size_t desLen, uint8_t* src, size_t len)
-{
-
-	if(len>desLen)
-	{
-		len = desLen;
-	}
-	memcpy(des,src,len);
-
-	return len;
-}
 
 
 
