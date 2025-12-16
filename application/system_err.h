@@ -33,7 +33,7 @@
 #define LOG_LEVEL_NONE    99 
 
 #ifndef CURRENT_LOG_LEVEL
-#define CURRENT_LOG_LEVEL LOG_LEVEL_WARN
+#define CURRENT_LOG_LEVEL LOG_LEVEL_DEBUG
 #endif
 
 #define DEBUG_PRINTF_LEVEL(level, fmt, ...) \
