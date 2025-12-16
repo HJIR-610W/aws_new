@@ -12,7 +12,7 @@
 #define DIRECT_TIMEOUT_MS 600000
 
 const osThreadAttr_t directTask_attributes = {
-    .name = "directTask",
+    .name = "direct",
     .stack_size = TASK_STACK(TASK_DIRECT_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_DIRECT_DEF),
 };

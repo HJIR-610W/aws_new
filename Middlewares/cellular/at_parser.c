@@ -70,6 +70,8 @@ static void at_task(void *arg)
       continue;
     }
 
+    TASK_PRINTF("at parser","%s\r\n", buffer);
+
     find = 0;
 
     for (size_t i = 0; i < at_table->count; i++) 
@@ -115,7 +117,6 @@ static void at_task(void *arg)
     }
     if (find == 0)
     {
-       DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"RAW:%s\r\n", buffer);
       dispatcher_handle_frame(buffer, len);
     }
 

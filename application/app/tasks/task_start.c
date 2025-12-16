@@ -48,7 +48,7 @@
 #include "utils\util_time.h"
 
 const osThreadAttr_t kStartTask_attributes = {
-    .name = "startTask",
+    .name = "start",
     .stack_size = TASK_STACK(TASK_START_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_START_DEF),
 };

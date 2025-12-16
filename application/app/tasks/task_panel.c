@@ -6,7 +6,7 @@
 
 #include "config_app.h"
 const osThreadAttr_t kPanelTask_attributes = {
-    .name = "panelTask",
+    .name = "panel",
     .stack_size = TASK_STACK(TASK_PANEL_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_PANEL_DEF),
 };

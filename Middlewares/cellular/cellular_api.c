@@ -300,18 +300,16 @@ int32_t cellular_connect(uint8_t ip[4], uint16_t port)
   g_cellular_if->remote_port = port;
 
 
-   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[CellConn] Connecting to %d.%d.%d.%d:%d\r\n", ip[0], ip[1], ip[2], ip[3], port);
 
 
   cellular_write_ip(ip, port);
   ret = cellular_open_tcp();
 
   if (ret == 0) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[CellConn] Connected.\r\n");
+
   }
   else {
     ret = CELLULAR_CONN_ERR_REFUSED;
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[CellConn] Connect failed.\r\n");
   }
 
   return ret;

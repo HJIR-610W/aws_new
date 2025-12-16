@@ -71,7 +71,7 @@ int dispatcher_init(void)
 
     // 단일 보류 슬롯 초기화
     s_pending_sync_slot.active = 0;
-    s_pending_sync_slot.sem = NULL;
+    s_pending_sync_slot.sem = osSemaphoreNew(1, 0, NULL);
     s_pending_sync_slot.resp_buf = NULL;
 
     // 비동기 구독자 목록 초기화
@@ -90,7 +90,7 @@ int dispatcher_init(void)
  */
 void dispatcher_handle_frame(const uint8_t* p_data, size_t len)
 {
-  // dispatcher_init()은 at_task 실행 전에 한 번 호출된다고 가정합니다.
+
   if (!s_lock) return; // 초기화가 제대로 되었다면 발생하지 않아야 함.
 
   osMutexAcquire(s_lock, osWaitForever);
@@ -190,7 +190,6 @@ int dispatcher_send_sync(const uint8_t* p_cmd, size_t cmd_len, const char* const
   osStatus_t status;
   int modem_lock_acquired = 0;
 
-  // dispatcher_init()은 at_task 실행 전에 호출된다고 가정합니다.
 
   if (!s_modem_lock) return -1;
 
@@ -263,59 +262,6 @@ exit:
   return return_code;
 }
 
-/**
- * @brief 명령 전송 없이 모든 수신 프레임 대기
- * @param p_resp_buf 응답 버퍼 포인터
- * @param resp_buf_size 응답 버퍼 크기
- * @param timeout_ms 타임아웃 시간 (밀리초)
- * @return 수신된 바이트 수 (>0) 또는 타임아웃/오류 시 -1
- */
-int dispatcher_wait_any(uint8_t* p_resp_buf, size_t resp_buf_size, uint32_t timeout_ms)
-{
-  int32_t return_code = -1;
-
-  // dispatcher_init()은 at_task 실행 전에 호출된다고 가정합니다.
-
-  osMutexAcquire(s_lock, osWaitForever);
-
-  // 단일 보류 슬롯이 활성 상태인지 확인
-  if (s_pending_sync_slot.active) {
-    osMutexRelease(s_lock);
-    return -1; // 다른 동기 명령이 이미 보류 중이거나 dispatcher_send_sync가 사용 중입니다.
-  }
-
-  s_pending_sync_slot.active = 1;
-  s_pending_sync_slot.resp_buf = p_resp_buf;
-  s_pending_sync_slot.resp_buf_size = resp_buf_size;
-  s_pending_sync_slot.resp_len = 0;
-  s_pending_sync_slot.p_ack_list = NULL;
-  s_pending_sync_slot.ack_list_cnt = 0;
-  s_pending_sync_slot.p_matched_index = NULL;
-  s_pending_sync_slot.sem = osSemaphoreNew(1, 0, NULL);
-  if (s_pending_sync_slot.sem == NULL) {
-    s_pending_sync_slot.active = 0;
-    osMutexRelease(s_lock);
-    return -1;
-  }
-
-  osMutexRelease(s_lock);
-
-  if (osSemaphoreAcquire(s_pending_sync_slot.sem, timeout_ms) == osOK) {
-    return_code = (int)s_pending_sync_slot.resp_len;
-  } else {
-    return_code = -1;
-    osMutexAcquire(s_lock, osWaitForever);
-    s_pending_sync_slot.active = 0;
-    osMutexRelease(s_lock);
-  }
-
-  if (s_pending_sync_slot.sem) {
-    osSemaphoreDelete(s_pending_sync_slot.sem);
-    s_pending_sync_slot.sem = NULL;
-  }
-
-  return return_code;
-}
 
 /**
  * @brief URC (비동기 응답) 구독
@@ -327,7 +273,7 @@ int dispatcher_wait_any(uint8_t* p_resp_buf, size_t resp_buf_size, uint32_t time
 int dispatcher_subscribe(const char* p_prefix, void (*p_cb)(const uint8_t*, size_t, void*), void* p_ctx)
 {
   int i;
-  // dispatcher_init()은 at_task 실행 전에 호출된다고 가정합니다.
+
 
   // 사용자 요청에 따라 접두사가 NULL인 경우 즉시 반환
   if (p_prefix == NULL) {

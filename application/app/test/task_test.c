@@ -16,7 +16,7 @@
 #include "task_wdt.h"
 
 const osThreadAttr_t kTestTask_attributes = {
-    .name = "test_task",
+    .name = "test",
     .stack_size = TASK_STACK(TASK_TEST_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_TEST_DEF),
 };

@@ -1,9 +1,11 @@
 
 #include "task_core_debug.h"
 
+#include <stdarg.h>
+
 #include "cmsis_os.h"
 #include "FreeRTOS.h"  // pvPortMalloc, vPortFree 사용 시 필요
-
+#include "debug_io.h"
 /**
  * @brief Task에서 디버깅용으로 출력 하고 싶을때
  *         콘솔 메뉴에서 task id를 설정해주면 id가 일치하는 task는 
@@ -46,7 +48,7 @@ void task_printf(const char *pFmt, ...)
 }
 
 
-void task_hex_dump(const char *title, const uint8_t *data, uint32_t length)
+void task_hex_dump(const char *title, const uint8_t *data, size_t length)
 {
   if (title || foreced_print)
     task_printf("%s (len=%d):\r\n", title, (int)length);

@@ -36,7 +36,7 @@ int32_t g_sdi_uart;
 
 
 const osThreadAttr_t sdiTask_attributes = {
-    .name = "sdiTask",
+    .name = "sdi",
     .stack_size = TASK_STACK(TASK_SDI_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_SDI_DEF),
 };

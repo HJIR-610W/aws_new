@@ -76,52 +76,7 @@ static void tx700_send_tcp_data(const uint8_t* p_data_buffer, size_t length_val)
   }
 }
 
-/**
- * @brief 비동기 응답 확인 (dispatcher_wait_any 사용)
- */
-static int32_t check_async_response(cellular_if_t* p_if, const char* const* p_ack_list, uint32_t ack_list_count, uint32_t* p_found_index, char* out_buffer, size_t out_buffer_size, uint32_t timeout_ms)
-{
-  uint32_t start_time;
-  int32_t return_code;
-  uint8_t local_buffer[512]; // 충분한 크기로 확보
 
-  start_time = osKernelGetTickCount();
-
-  do {
-    return_code = dispatcher_wait_any(local_buffer, sizeof(local_buffer) - 1, timeout_ms);
-    if (return_code > 0) { // dispatcher_wait_any는 수신된 길이 반환
-      local_buffer[return_code] = '\0';
-      
-      // 호출자 버퍼로 복사
-      if (out_buffer != NULL && out_buffer_size > 0) {
-        strncpy(out_buffer, (char*)local_buffer, out_buffer_size - 1);
-        out_buffer[out_buffer_size - 1] = '\0';
-      }
-
-      // ACK 목록과 일치하는지 확인
-      for (uint32_t i = 0; i < ack_list_count; i++) {
-        if (strncmp((char*)local_buffer, (char*)p_ack_list[i], strlen((char*)p_ack_list[i])) == 0) {
-          *p_found_index = i;
-          return RET_OK;
-        }
-      }
-    } else {
-      return RET_TIME_OUT;
-    }
-
-  } while ((osKernelGetTickCount() - start_time) < timeout_ms);
-
-  return RET_TIME_OUT;
-}
-
-/**
- * @brief TCP 응답 확인 (dispatcher_wait_any 사용)
- */
-static int32_t check_tcp_response(cellular_if_t* p_if, const char* const* p_ack_list, uint32_t ack_list_count, uint32_t* p_found_index, char* out_buffer, size_t out_buffer_size, uint32_t timeout_ms)
-{
-  // check_async_response와 동일한 로직을 사용하지만, 의미상 분리
-  return check_async_response(p_if, p_ack_list, ack_list_count, p_found_index, out_buffer, out_buffer_size, timeout_ms);
-}
 #if 0 
 /**
  * @brief SMS 메시지에서 전화번호와 내용 추출

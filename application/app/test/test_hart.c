@@ -25,7 +25,7 @@
 int32_t g_hart_uart_num;
 
 const osThreadAttr_t kHartTask_attributes = {
-    .name = "hartTask",
+    .name = "hart",
     .stack_size = TASK_STACK(TASK_HART_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_HART_DEF),
 };

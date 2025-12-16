@@ -464,7 +464,7 @@ int32_t ntle9607_recv_tcp(cellular_if_t* p_if, uint8_t* buffer, size_t size, uin
 
   if (ret == osOK) {
     if (tcp_data.len == 0) {
-       DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[CellConn] Connection closed by peer.\r\n");
+
       return 0;
     }
     copy_len = (tcp_data.len < size) ? tcp_data.len : size;

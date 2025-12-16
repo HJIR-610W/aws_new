@@ -104,7 +104,7 @@ void test_modbus_task(void *arg)
 }
 #include "cmsis_os2.h"
 const osThreadAttr_t ktestmodbusTask_attributes = {
-    .name = "modbustestTask",
+    .name = "modbustest",
     .stack_size = 2048,
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
@@ -333,7 +333,7 @@ void test_modbus_task(void)
 }
 #include "cmsis_os2.h"
 const osThreadAttr_t ktestmodbusTask_attributes = {
-    .name = "modbustestTask",
+    .name = "modbustest",
     .stack_size = 2048,
     .priority = (osPriority_t)osPriorityBelowNormal,
 };

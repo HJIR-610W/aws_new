@@ -28,7 +28,7 @@ int32_t console_uart_num = -1;
 
 static osThreadId_t s_console_task_id;
 const osThreadAttr_t consoleTask_attributes = {
-  .name = "consoleTask",
+  .name = "console",
   .stack_size = TASK_STACK(TASK_CONSOLE_DEF),
   .priority = (osPriority_t)TASK_PRIO(TASK_CONSOLE_DEF),
 };
