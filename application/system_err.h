@@ -24,11 +24,11 @@
   #define ERROR_PRINTF(fmt, ...) ((void)0)
 #endif
 
-#define TASK_PRINTF(task_name, fmt, ...)                                               \
+#define TASK_PRINTF(fmt, ...)                                               \
   task_printf("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s] " fmt "\r\n",                      \
               Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \
               Date_Time.Hour, Date_Time.Min, Date_Time.Sec, Date_Time.SubSec,              \
-              task_name, ##__VA_ARGS__)
+              get_task_name(), ##__VA_ARGS__)
 
 // 로그 레벨 정의
 #define LOG_LEVEL_FATAL   1

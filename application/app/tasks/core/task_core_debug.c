@@ -3,7 +3,7 @@
 
 #include <stdarg.h>
 
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
 #include "FreeRTOS.h"  // pvPortMalloc, vPortFree 사용 시 필요
 #include "debug_io.h"
 /**
@@ -22,10 +22,28 @@ void set_task_id(void *task_id)
 void set_forced_print(bool set) { foreced_print = set; }
 
 
-void task_printf(const char *pFmt, ...)
+const char* get_task_name(void)
 {
   void *task_id;
 
+  task_id = osThreadGetId();
+  if (task_id == NULL && foreced_print==false)
+  {
+    return "null";
+  }
+
+  if (g_task_id == NULL && foreced_print==false)
+  {
+    return "null";
+  }
+
+  return osThreadGetName(task_id);
+}
+
+void task_printf(const char *pFmt, ...)
+{
+  void *task_id;
+  
   task_id = osThreadGetId();
 
   if (task_id == NULL && foreced_print==false)
@@ -46,6 +64,9 @@ void task_printf(const char *pFmt, ...)
     va_end(args);
   }
 }
+
+
+
 
 
 void task_hex_dump(const char *title, const uint8_t *data, size_t length)

@@ -214,12 +214,12 @@ int32_t connect_tcp(eAPP_STATE_t state)
     clear_mask = 0;
 
     if (flags & EVT_FLAG_MODEM_REBOOTED){
-    TASK_PRINTF("Cellular"," 모뎀 리부팅됨\r\n");
+    TASK_PRINTF("모뎀 리부팅됨\r\n");
       local_state = APP_STATE_INIT_MODEM;
       clear_mask |= EVT_FLAG_MODEM_REBOOTED;
     }
     if (flags & EVT_FLAG_TCP_DISCONNECTED){
-    TASK_PRINTF("Cellular"," 소켓 닫힘\r\n");
+    TASK_PRINTF("소켓 닫힘\r\n");
       local_state = APP_STATE_CONNECT_TCP;
       clear_mask |= EVT_FLAG_TCP_DISCONNECTED;
     }
@@ -232,27 +232,27 @@ int32_t connect_tcp(eAPP_STATE_t state)
     switch (local_state)
     {
     case APP_STATE_HW_RESET:
-   TASK_PRINTF("Cellular","하드웨어 리셋\r\n");
+   TASK_PRINTF("하드웨어 리셋\r\n");
       log_printf(L_INFO,"Modem HW Reset");
       cellular_reset_hw();
       local_state = APP_STATE_WAIT_FOR_BOOT;
       break;
     case APP_STATE_SW_RESET:
-   TASK_PRINTF("Cellular","소프트웨어 리셋\r\n");
+   TASK_PRINTF("소프트웨어 리셋\r\n");
       log_printf(L_INFO,"Modem SW Reset");
       cellular_reset_sw();
       local_state = APP_STATE_WAIT_FOR_BOOT;
       break;
     case APP_STATE_WAIT_FOR_BOOT:
-   TASK_PRINTF("Cellular","부팅 완료 대기\r\n");
+   TASK_PRINTF("부팅 완료 대기\r\n");
       if (osErrorTimeout != (int32_t)osEventFlagsWait(s_app_event_flags, EVT_FLAG_MODEM_REBOOTED |
         EVT_FLAG_TCP_DISCONNECTED, osFlagsWaitAny, 30000))
       {
-     TASK_PRINTF("Cellular"," 부팅 감지 신호 수신완료\r\n");
+     TASK_PRINTF("부팅 감지 신호 수신완료\r\n");
       }
       else
       {
-     TASK_PRINTF("Cellular"," 부팅 감지 타임 아웃\r\n");
+     TASK_PRINTF("부팅 감지 타임 아웃\r\n");
       }
 
     osDelay(5000);//tx700의 경우 부팅감지되고 약간의 시간이 더 지나야 전화 번호 읽기 가능
@@ -269,14 +269,14 @@ int32_t connect_tcp(eAPP_STATE_t state)
       if (cellular_read_num(buffer, sizeof(buffer)) == 0)
       {
          strcpy_safe(g_cdma_system.num,sizeof(g_cdma_system.num),buffer);
-      TASK_PRINTF("Cellular"," 전화번호:%s\r\n", buffer);
+      TASK_PRINTF("전화번호:%s\r\n", buffer);
         break;
       }
     }
 
     if (cellular_read_rssi(&rssi) == 0)
     {
-    TASK_PRINTF("Cellular"," RSSI:%d \r\n", rssi);
+    TASK_PRINTF("RSSI:%d \r\n", rssi);
        g_cdma_system.rssi = rssi;
     }
 
@@ -285,9 +285,9 @@ int32_t connect_tcp(eAPP_STATE_t state)
   break;
   case APP_STATE_VPN_LOGIN:
     if(is_vpn_enabled()&& config.cdma_model ==eCDMA_NTLE9607){
-   TASK_PRINTF("Cellular"," VPN 로그인 시도\r\n");
+   TASK_PRINTF("VPN 로그인 시도\r\n");
       if(cellular_vpn_init()==0){
-     TASK_PRINTF("Cellular"," VPN 로그인 성공\r\n");
+     TASK_PRINTF("VPN 로그인 성공\r\n");
         local_state = APP_STATE_CONNECT_TCP;
         break;
     }
@@ -297,7 +297,7 @@ int32_t connect_tcp(eAPP_STATE_t state)
 
     break;
   case APP_STATE_CONNECT_TCP:
- TASK_PRINTF("Cellular"," TCP 연결 시도\r\n");
+ TASK_PRINTF("TCP 연결 시도\r\n");
     cellular_disconnect();
     osDelay(2000);//완전히 끊길때까지 대기 정해진 시간은 없음, 너무 짧으면 모뎀 에서 처리가 안됨
  
@@ -310,7 +310,7 @@ int32_t connect_tcp(eAPP_STATE_t state)
     ret = cellular_connect(ip, port);
     if (ret == 0)
     {
-   TASK_PRINTF("Cellular"," 서버 연결됨\r\n");
+   TASK_PRINTF("서버 연결됨\r\n");
       osEventFlagsClear(s_app_event_flags, EVT_FLAG_MODEM_REBOOTED| EVT_FLAG_TCP_DISCONNECTED);
       goto LOOP_END;
     }
@@ -335,11 +335,11 @@ static void sms_callback_task(void* arg)
 {
   sms_t sms;
   const char* payload = (const char*)arg; 
-TASK_PRINTF("Cellular","[SMS] %s\r\n", payload ? payload : "(null)");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[SMS] %s\r\n", payload ? payload : "(null)");
   if (cellular_read_sms(&sms) == 0)
   {
     sms_cmd(&sms);
- TASK_PRINTF("Cellular","Number: %s, Message: %s\r\n", sms.number, sms.message);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Number: %s, Message: %s\r\n", sms.number, sms.message);
   }
 }
 
@@ -362,12 +362,12 @@ void cellular_task(void *arg)
   switch(config.cdma_model)
   {
     case eCDMA_NTLE9607:
-   TASK_PRINTF("Cellular","NTLE9607 모뎀 사용\r\n");
+   TASK_PRINTF("NTLE9607 모뎀 사용\r\n");
           cellular_open(NTLE9607_MODEM);
       break;
     case eCDMA_TX700:
     default:
-   TASK_PRINTF("Cellular","TX700 모뎀 사용\r\n");
+   TASK_PRINTF("TX700 모뎀 사용\r\n");
     cellular_open(TX700_MODEM);
       break;
   }
@@ -410,11 +410,11 @@ void cellular_task(void *arg)
         clear_mask = 0;
         flags = osEventFlagsGet(s_app_event_flags);
         if (flags & EVT_FLAG_MODEM_REBOOTED){
-       TASK_PRINTF("Cellular","모뎀 리부팅됨\r\n");
+       TASK_PRINTF("모뎀 리부팅됨\r\n");
           clear_mask |= EVT_FLAG_MODEM_REBOOTED;
         }
         if (flags & EVT_FLAG_TCP_DISCONNECTED){
-       TASK_PRINTF("Cellular","소켓 닫힘\r\n");
+       TASK_PRINTF("소켓 닫힘\r\n");
           clear_mask |= EVT_FLAG_TCP_DISCONNECTED;
         }
         if (clear_mask != 0){
@@ -423,7 +423,7 @@ void cellular_task(void *arg)
           break;
         }
         if ((osKernelGetTickCount() - network_wtd_starttime) > (180 * 1000)){
-       TASK_PRINTF("Cellular","유령 세션 연결 타임아웃\r\n");
+       TASK_PRINTF("유령 세션 연결 타임아웃\r\n");
           state = APP_STATE_CONNECT_TCP;
           break;
         }
@@ -445,7 +445,7 @@ void cellular_task(void *arg)
               UPDATE_CNT(g_cdma_system.tx_cnt, 99);
               len =  cellular_send_tcp(tx_buffer, len);
               if(len<0){
-             TASK_PRINTF("Cellular","송신 실패\r\n");
+             TASK_PRINTF("송신 실패\r\n");
                 state = APP_STATE_CONNECT_TCP;
                 break;
               }

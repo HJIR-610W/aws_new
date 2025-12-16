@@ -70,7 +70,7 @@ static void at_task(void *arg)
       continue;
     }
 
-    TASK_PRINTF("at parser","%s\r\n", buffer);
+    TASK_PRINTF("%s", buffer);
 
     find = 0;
 
