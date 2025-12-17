@@ -89,6 +89,7 @@ void consoleTask(void *arg)
   print_signature();
   
   read_password(login_key);
+  
   while(check_login(login_key)==false);
 
   if(read_last_error(buffer,sizeof(buffer)))
