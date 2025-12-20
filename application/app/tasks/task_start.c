@@ -46,6 +46,7 @@
 #include "test\task_test.h"
 #include "user_heap.h"
 #include "utils\util_time.h"
+#include "task_logger.h"
 
 const osThreadAttr_t kStartTask_attributes = {
     .name = "start",
@@ -131,6 +132,7 @@ void startTask(void *arg)
   }
   wdtTask_init();
   menuTask_init();//최소 test_mode 다음에 선언하여 이때 부팅화면 출력 
+  loggerTask_init();
   consoleTask_init((void *)test_mode);//디버깅 printf 사용 해야해서 먼저 초기화
   config_manager_init();  // 우선 실행
   filesystem_init();//SD카드 초기화 및 파일시스템 초 기화 

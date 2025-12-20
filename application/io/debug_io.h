@@ -23,6 +23,7 @@
 #define ASCII_SPEICIAL    0x5B //   '['   
 
 #include "util_escape_sequence.h"
+#include "task_logger.h"
 
 typedef enum {
     RED = 31,
@@ -46,13 +47,14 @@ int32_t debug_get_ch_nonblocking(uint8_t *buffer);
 void debug_inject(uint8_t *data,size_t len);
 int debug_scanf_s(const char *fmt, ...);
 
-int32_t debug_printf(const char * fmt, ...);
+#define debug_printf os_printf
+
 void debug_printf_color(int color, const char *pFmt, ...);
-void debug_send(const uint8_t *data,size_t len);
-void debug_put_ch(uint8_t ch);
-void debug_puts(const uint8_t *string);
+#define debug_send os_debug_send
+#define debug_put_ch os_put_ch
+#define debug_puts os_puts
 void debug_dump(uint8_t* data, size_t size, uint32_t start_address,uint32_t col);
-int32_t debug_vprintf(const char *fmt, va_list ap);
+#define debug_vprintf os_vprintf
 
 io_if_t *get_debug_io(void) ;
 void debug_set_io(io_if_t *debug_io);

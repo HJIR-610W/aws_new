@@ -23,6 +23,7 @@
 #include "task_logging.h"
 #include "console_login.h"
 #include "crypto_key.h"
+#include"task_logger.h"
 
 int32_t console_uart_num = -1;
 
@@ -143,7 +144,7 @@ void start_console(void *arg)
 void consoleTask_init(void *arg)
 {
 
-  debug_init() ;
+ 
   
   if((int)arg == 1)//버튼 눌린상태로진입 test 모드 실행
   {

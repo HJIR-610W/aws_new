@@ -15,7 +15,7 @@
 #include "system_err.h"
 #include "debug_io.h"
 
-#define debug_printf(...)
+
 
 
 #define RET_SIZE_OVER -1
@@ -205,7 +205,7 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
 
   if (ret != 3)
   {
-    debug_printf("%s ret!=3 %d\r\n", drv->name, ret);
+ 
     return -1;
   }
 
@@ -309,7 +309,7 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
     int32_t len;
     
     OS_PEND_SEM(modbus_sem,osWaitForever);
-    debug_printf("modbus start %s\r\n",drv->name);
+
 
     memset(buff, 0, sizeof(buff));
     send_query(drv, modbus);
@@ -319,16 +319,16 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
 
     if (len > 0)
     {
-      debug_printf("modbus parse %s\r\n", drv->name);
+
       if (parse_recv(buff, len, modbus->regs, modbus->regsCnt) == 0)
       {
-        debug_printf("modbus ok %s\r\n", drv->name);
+   
           OS_POST_SEM(modbus_sem);
         return 0;
       }
     }
 
-    debug_printf("modbus err %s %d\r\n",drv->name,len);
+
 
       OS_POST_SEM(modbus_sem);
     return 1;

@@ -66,7 +66,7 @@
 // Tmr Svc                      (1024, osPriorityRealtime2)
 #define TASK_DUALPORT_DEF       (2048, osPriorityRealtime1)
 #define TASK_KEY_DEF            ( 256, osPriorityRealtime1)
-#define TASK_MEASURE_250MS_DEF  (1536, osPriorityRealtime)
+#define TASK_MEASURE_250MS_DEF  (2048, osPriorityRealtime)
 #define TASK_MEASURE_1S_DEF     (2048, osPriorityRealtime)
 // tcpip_thread                 (1024, osPriorityRealtime)
 // EthIf                        ( 512, osPriorityRealtime)
@@ -90,7 +90,7 @@
 #define TASK_VHF_DEF            ( 768, osPriorityBelowNormal)
 // EthLink                      (1024, osPriorityBelowNormal)
 #define TASK_IWDT_DEF           ( 256, osPriorityLow)
-
+#define TASK_LOGGER_DEF         (1024, osPriorityBelowNormal)
 
 
 

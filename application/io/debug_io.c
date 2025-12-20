@@ -73,6 +73,7 @@ io_if_t *get_debug_io(void)
 }
 
 
+#if 0
 int32_t debug_vprintf(const char *fmt, va_list ap)
 {
   char buff[2];
@@ -140,6 +141,7 @@ int32_t debug_vprintf(const char *fmt, va_list ap)
 
   return 0;
 }
+#endif
 
 
 
@@ -272,6 +274,7 @@ int32_t debug_recv(uint8_t *out_buffer, size_t out_size, uint32_t timeout_ms)
 
 #define PRINTF_HEAP_USE 1
 
+#if 0
 int32_t debug_printf(const char *fmt, ...)
 {
   uint8_t buff[2];
@@ -335,8 +338,10 @@ int32_t debug_printf(const char *fmt, ...)
 
   return 0;
 }
+#endif
 
 
+#if 0
 void debug_send(const uint8_t *data, size_t len)
 {
   io_send(g_current_debug_io, data, len);
@@ -344,7 +349,9 @@ void debug_send(const uint8_t *data, size_t len)
   telnet_send(data,len);
 #endif
 }
+#endif
 
+#if 0
 void debug_put_ch(uint8_t ch)
 {
   io_send(g_current_debug_io, &ch, 1);
@@ -352,7 +359,9 @@ void debug_put_ch(uint8_t ch)
   telnet_send(&ch,1);
   #endif
 }
+#endif
 
+#if 0
 void debug_puts(const uint8_t *string)
 {
   size_t len = strlen((char *)string);
@@ -362,6 +371,7 @@ void debug_puts(const uint8_t *string)
   telnet_send(string, len);
   #endif
 }
+#endif
 
 int32_t debug_get_ch(uint8_t *buffer)
 {
