@@ -1813,7 +1813,7 @@ void DUALPORT_TASK(void *arg)
 }
 
 const osThreadAttr_t KdualportTask_attributes = {
-    .name = "DUALPORT_TASK",
+    .name = "aws",
     .stack_size = TASK_STACK(TASK_DUALPORT_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_DUALPORT_DEF),
 };
