@@ -256,7 +256,7 @@ void draw_data_menu(screen_menu_t *p_win)
   screen_menu_printf(p_win, DATA_MENU_AWS, "AWS");
   screen_menu_printf(p_win, DATA_MENU_RAIN, "Rain");
   screen_menu_printf(p_win, DATA_MENU_SOLAR_R, "Sunshine");
-  screen_menu_printf(p_win, DATA_MENU_CSV_SAVE, "Save CSV :%s",safe_name(enable_list_eng,_countof(enable_list_eng),config.aws_csv_save_active));
+ // screen_menu_printf(p_win, DATA_MENU_CSV_SAVE, "Save CSV :%s",safe_name(enable_list_eng,_countof(enable_list_eng),config.aws_csv_save_active));
   screen_menu_clear(p_win);
 }
 

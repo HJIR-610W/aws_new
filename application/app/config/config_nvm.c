@@ -57,7 +57,7 @@ void save_config_nvm(void)
   g_config_nvm.header.version = CONFIG_NVM_VERSION;
 
   drv_fram_write(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(config_nvm_t));
-  load_config_nvm();
+
 }
 
 config_nvm_t *get_config_nvm(void)
