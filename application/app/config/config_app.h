@@ -132,6 +132,16 @@ typedef enum
 
 #define CONFIG_APP_VERSION 0x00000002
 
+
+
+typedef struct sensor_s
+{
+  float offset;
+ // eSENSOR_TYPE_t type;
+  eSENSOR_TYPE_MODEL_t model;
+} sensor_t;
+
+
 typedef struct config_app_v1_s
 {
   config_header_t header;

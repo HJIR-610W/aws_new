@@ -192,13 +192,6 @@ typedef enum adcChType_e
 
 
 
-#define SENSOR_CONFIG_TABLE_MAX 2
-typedef struct sensor_s
-{
-  float offset;
- // eSENSOR_TYPE_t type;
-  eSENSOR_TYPE_MODEL_t model;
-} sensor_t;
 typedef struct supported_sensors_s
 {
   bool supported;

@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "Sensors\general\general_adc.h"
-#include "Sensors\general\sensor_general.h"
+
 #include "Sensors\temperature\hj_temperature.h"
 #include "pt100.h"
 #include "util_memory.h"

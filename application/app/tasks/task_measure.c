@@ -22,7 +22,7 @@
 
 #include "Sensors\barometer\barometer.h"
 #include "Sensors\general\general_adc.h"
-#include "Sensors\general\sensor_general.h"
+
 #include "Sensors\humidity\humidity.h"
 #include "Sensors\rain\rain.h"
 #include "Sensors\rain_present\rain_present.h"

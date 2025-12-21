@@ -3397,9 +3397,6 @@
                     <file>
                         <name>$PROJ_DIR$\..\drivers\devices\sensors\general\general_frequency.c</name>
                     </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\drivers\devices\sensors\general\sensor_general.c</name>
-                    </file>
                 </group>
                 <group>
                     <name>humidity</name>
@@ -4242,6 +4239,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\utils\util_filter.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\utils\util_macro.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\utils\util_memory.c</name>

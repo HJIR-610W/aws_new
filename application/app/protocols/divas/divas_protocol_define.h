@@ -35,6 +35,10 @@
 #define DIVAS_ASCII_NAK 0x15
 
 
+#define INDEX_CONFIG_APP    0
+#define INDEX_CONFIG_SENSOR 1
+#define INDEX_CONFIG_NVM    2
+
 
 typedef struct
 {

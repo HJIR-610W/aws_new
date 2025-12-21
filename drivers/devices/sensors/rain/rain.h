@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "app_sensor.h"
 #include "driver_interface.h"
+
 typedef struct rain_data_s
 {
   uint16_t min;
@@ -16,7 +17,6 @@ typedef struct rain_data_s
 }rain_data_t;
 
 
-void rainPresent_init(sensor_t *sensor);
 bool is_rainPresentInit(void);
 bool rainPresent_deInit(void);
 
