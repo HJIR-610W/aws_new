@@ -236,7 +236,7 @@ uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame, size_t t
     }
     
     //요청 길이가 전송가능한 버퍼보다 크면 에러 
-    if (request.length >= (KMA_TX_BUFFER_SIZE - DIVAS_FRAME_OVERHEAD-1))
+    if (request.length >= (tx_size - DIVAS_FRAME_OVERHEAD-1))
     {
       tx_data[cnt++] = ASCII_NAK;
       tx_data[cnt++] = 2;
@@ -253,7 +253,7 @@ uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame, size_t t
   }while(0);
 
   return make_divas_frame(DIVAS_CMD_RD_CFG_OFS, rx_frame, NULL, cnt, tx_frame,
-                            KMA_TX_BUFFER_SIZE);
+                            tx_size);
 }
 
 
@@ -348,7 +348,7 @@ uint16_t divas_read_system(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
   do
   {
     // 요청 길이가 전송가능한 버퍼보다 크면 에러
-    if (request.length >= (KMA_TX_BUFFER_SIZE - DIVAS_FRAME_OVERHEAD - 1))
+    if (request.length >= (tx_size - DIVAS_FRAME_OVERHEAD - 1))
     {
       tx_data[cnt++] = ASCII_NAK;
       tx_data[cnt++] = 2;
@@ -405,7 +405,7 @@ enum {SYSTEM_LOG=0,ALARM_LOG=1};
   do
   {
   
-      if (request.cnt * sizeof(system_log_t) >= (KMA_TX_BUFFER_SIZE - DIVAS_FRAME_OVERHEAD - 1))
+      if (request.cnt * sizeof(system_log_t) >= (tx_size - DIVAS_FRAME_OVERHEAD - 1))
       {
         cnt = 0;
         tx_data[cnt++] = ASCII_NAK;

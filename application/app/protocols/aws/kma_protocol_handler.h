@@ -7,7 +7,7 @@
 
 #include "app_sensor.h"
 
-#define KMA_TX_BUFFER_SIZE 400
+#define KMA_TX_BUFFER_SIZE 512
 
 typedef enum req_source_e
 {

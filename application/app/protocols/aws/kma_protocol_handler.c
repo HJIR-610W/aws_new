@@ -1046,7 +1046,7 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, size_t frame_len, uint8_t *tx_buffer,
   }
 
   // 반드시 0으로 초기화
-  memset(tx_buffer, 0, KMA_TX_BUFFER_SIZE);
+  memset(tx_buffer, 0, size);
 
   cmd_type = kma_get_command_type(request.command_str);
 
