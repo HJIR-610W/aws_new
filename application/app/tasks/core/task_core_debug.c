@@ -28,12 +28,12 @@ const char* get_task_name(void)
   void *task_id;
 
   task_id = osThreadGetId();
-  if (task_id == NULL && foreced_print==false)
+  if (task_id == NULL )
   {
     return "null";
   }
 
-  if (g_task_id == NULL && foreced_print==false)
+  if (foreced_print==false)
   {
     return "null";
   }
@@ -72,10 +72,17 @@ void task_printf(const char *pFmt, ...)
 
 void task_hex_dump(const char *title, const uint8_t *data, size_t length)
 {
-  if (title || foreced_print)
+  if (title ==NULL)
+  {
+    return;
+  }
+  
+  if( foreced_print==false)
+  {
+    return;
+  }
     TASK_PRINTF("%s (len=%d):\r\n", title, (int)length);
-  else
-    return ;
+
 
   for (uint32_t i = 0; i < length; i++)
   {

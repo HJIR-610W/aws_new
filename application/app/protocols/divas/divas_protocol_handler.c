@@ -18,38 +18,9 @@
 #include "app_version.h"
 #include "boot_version.h"
 #include "divas_protocol_define.h"
+#include "parse_divas.h"
 
 
-#define DIVAS_FRAME_OFFSET(field) ((size_t)&(((divas_frame_t *)0)->field))
-
-//디바스 명령어 정의
-#define DIVAS_CMD_RD_INDEX    0x01
-#define DIVAS_CMD_RD_VERSION  0x15
-#define DIVAS_CMD_RD_CFG_OFS  0x29
-#define DIVAS_CMD_WR_CFG_OFS  0x2A
-#define DIVAS_CMD_FW_DOWNLOAD 0x63
-#define DIVAS_CMD_FW_UPDATE   0x64
-#define DIVAS_CMD_RD_SYSTEM   0x06
-#define DIVAS_CMD_RESET       0x74
-#define DIVAS_CMD_RD_SYSLOG   0x07
-
-
-
-//응답 프레임 에러 여부
-#define ASCII_ACK 0x06
-#define ASCII_NAK 0x15
-
-//NAK 에 따른 에러 코드
-#define RES_FSIZE_ERROR 32       // 처음에 보낸 TOTAL 사이즈와 패킷마다 보낸 사이즈가 다른경우
-#define RES_FILE_WRITE_ERROR 39  // 파일 쓰기 오류
-#define RES_OVERFLOW_ERROR 40  // 버퍼 오버플로우
-
-#define RES_CMD_ERR 0x80
-
-#define DIVAS_FRAME_CMD_OFFSET  11
-#define DIVAS_FRAME_DATA_OFFSET 12
-
-#define DIVAS_FRAME_OVERHEAD 14 //STX(1) 길이(2) 시퀀스(1) 년월일시분초(7) 명령어(1) SUM(1) ETX(1)
 
 uint32_t g_download_file_size = 0;
 uint32_t g_received_bytes;
@@ -84,11 +55,20 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame,size_t tx_size)
   uint16_t len;
   uint16_t cnt = 0;
   uint8_t data[20];
+#pragma pack(push, 1)
+  struct divas_fw_download_request_s
+  {
+    uint32_t total_size;
+    uint32_t offset;
+    uint8_t data[1]; // 데이터
+  } request;
+#pragma pack(pop)
+
 
   do
   {
-    res = RES_CMD_ERR;
-    rtnstat = ASCII_NAK;
+    res = DIVAS_RES_CMD_ERR;
+    rtnstat = DIVAS_ASCII_NAK;
 
     memcpy(&len, &rx_frame[1], sizeof(len));
     memcpy(&totsize, &rx_frame[12], sizeof(totsize));
@@ -111,8 +91,8 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame,size_t tx_size)
     {
       if( offset + length > FW_DOWNLOAD_BUFFER_SIZE)
       {
-        rtnstat = ASCII_NAK;
-        res = RES_OVERFLOW_ERROR;
+        rtnstat = DIVAS_ASCII_NAK;
+        res = DIVAS_RES_OVERFLOW_ERROR;
         break;
       }
       else
@@ -135,20 +115,20 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame,size_t tx_size)
 
         if (fret != FR_OK)
         {
-          res = RES_FILE_WRITE_ERROR;
+          res = DIVAS_RES_FILE_WRITE_ERROR;
           break;
         }
       }
   
 
     }
-    rtnstat = ASCII_ACK;
+    rtnstat = DIVAS_ASCII_ACK;
   } while (0);
 
   // 리턴상태
   data[cnt++] = rtnstat;
 
-  if (rtnstat == ASCII_ACK)
+  if (rtnstat == DIVAS_ASCII_ACK)
   {
     memcpy(&data[cnt], &totsize, 4);
     cnt += 4;
@@ -169,17 +149,22 @@ uint16_t divas_fw_update(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
   uint8_t data[10];
   uint16_t cnt = 0;
   uint8_t code;
-
+#pragma pack(push, 1)
+  struct divas_fw_update_request_s
+  {
+    uint8_t reserved;
+  } request;
+#pragma pack(pop)
   code = check_firmware(UPDATE_REMOTE);
 
   if(code)
   {
-    data[cnt++] = ASCII_NAK;
+    data[cnt++] = DIVAS_ASCII_NAK;
     data[cnt++] = code;
   }
   else
   {
-    data[cnt++] = ASCII_ACK;
+    data[cnt++] = DIVAS_ASCII_ACK;
     set_magic_value(MAGIC_UPDATE_FW_REMOTE);
     set_firmware_update();
   }
@@ -200,7 +185,7 @@ uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame, size_t t
   uint16_t cnt=0;
   uint8_t parameter_error=0;
 #pragma pack(push, 1)
-  struct read_config_offset_s
+  struct divas_read_config_offset_request_s
   {
     uint8_t config_type;
     uint16_t offset;
@@ -230,7 +215,7 @@ uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame, size_t t
   {
     if(parameter_error)
     {
-      tx_data[cnt++] = ASCII_NAK;
+      tx_data[cnt++] = DIVAS_ASCII_NAK;
       tx_data[cnt++] = 1;
       break;
     }
@@ -238,13 +223,13 @@ uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame, size_t t
     //요청 길이가 전송가능한 버퍼보다 크면 에러 
     if (request.length >= (tx_size - DIVAS_FRAME_OVERHEAD-1))
     {
-      tx_data[cnt++] = ASCII_NAK;
+      tx_data[cnt++] = DIVAS_ASCII_NAK;
       tx_data[cnt++] = 2;
       break;
     }
     if(p_config)
     {
-      tx_data[cnt++] = ASCII_ACK;
+      tx_data[cnt++] = DIVAS_ASCII_ACK;
 
       memcpy(&tx_data[cnt], p_config + request.offset, request.length);
       cnt += request.length;
@@ -268,7 +253,7 @@ uint16_t
   uint16_t cnt = 0;
   uint8_t parameter_error = 0;
 #pragma pack(push, 1)
-  struct write_config_offset_s
+  struct divas_write_config_offset_request_s
   {
     uint8_t config_type;
     uint16_t offset;
@@ -307,11 +292,11 @@ uint8_t *p_data;
   {
     if (parameter_error)
     {
-      tx_data[cnt++] = ASCII_NAK;
+      tx_data[cnt++] = DIVAS_ASCII_NAK;
       tx_data[cnt++] = 1;
       break;
     }
-    tx_data[cnt++] = ASCII_ACK;
+    tx_data[cnt++] = DIVAS_ASCII_ACK;
   }while(0);
 
   return make_divas_frame(DIVAS_CMD_RD_CFG_OFS, rx_frame, NULL, cnt, tx_frame, tx_size);
@@ -331,7 +316,7 @@ uint16_t divas_read_system(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
   uint16_t cnt = 0;
 
 #pragma pack(push, 1)
-  struct read_config_offset_s
+  struct divas_read_config_offset_request_s
   {
     uint16_t offset;
     uint16_t length;
@@ -350,12 +335,12 @@ uint16_t divas_read_system(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
     // 요청 길이가 전송가능한 버퍼보다 크면 에러
     if (request.length >= (tx_size - DIVAS_FRAME_OVERHEAD - 1))
     {
-      tx_data[cnt++] = ASCII_NAK;
+      tx_data[cnt++] = DIVAS_ASCII_NAK;
       tx_data[cnt++] = 2;
       break;
     }
 
-    tx_data[cnt++] = ASCII_ACK;
+    tx_data[cnt++] = DIVAS_ASCII_ACK;
     memcpy(&tx_data[cnt], p_system + request.offset, request.length);
     cnt += request.length;
 
@@ -373,7 +358,7 @@ uint16_t divas_cmd_reset(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
   uint16_t cnt = 0;
 
-   tx_data[cnt++] = ASCII_ACK;
+   tx_data[cnt++] = DIVAS_ASCII_ACK;
 
    log_printf(L_INFO, "divas cmd reset");
    reset_system_delay(5);
@@ -390,12 +375,19 @@ uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame,size_t tx_size)
   uint16_t cnt = 0;
 
 #pragma pack(push, 1)
-  struct read_config_offset_s
+  struct divas_read_config_offset_request_s
   {
     uint16_t q_start;
     uint16_t cnt;
     uint8_t log_type;
   } request;
+  
+  struct divas_read_config_offset_response_s
+  {
+    uint8_t status;
+    system_log_t log_msg[1]; // 가변 길이
+  };
+
 #pragma pack(pop)
 enum {SYSTEM_LOG=0,ALARM_LOG=1};
 
@@ -408,12 +400,12 @@ enum {SYSTEM_LOG=0,ALARM_LOG=1};
       if (request.cnt * sizeof(system_log_t) >= (tx_size - DIVAS_FRAME_OVERHEAD - 1))
       {
         cnt = 0;
-        tx_data[cnt++] = ASCII_NAK;
+        tx_data[cnt++] = DIVAS_ASCII_NAK;
         tx_data[cnt++] = (uint8_t)-100;
         break;
       }
       
-      tx_data[cnt]= ASCII_ACK;
+      tx_data[cnt]= DIVAS_ASCII_ACK;
       cnt++;
 
     for (int i = 0; i < request.cnt; i++)
@@ -431,7 +423,7 @@ enum {SYSTEM_LOG=0,ALARM_LOG=1};
       if (status != 0)
       {
         cnt = 0;
-        tx_data[cnt++] = ASCII_NAK;
+        tx_data[cnt++] = DIVAS_ASCII_NAK;
         tx_data[cnt++] = status;
         break;
       }
@@ -445,8 +437,20 @@ enum {SYSTEM_LOG=0,ALARM_LOG=1};
 uint16_t divas_read_version(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
-
   uint16_t cnt = 0;
+#pragma pack(push, 1)
+  struct divas_read_version_s
+  {
+    uint32_t app_version;
+    uint32_t product_code;
+    uint32_t app_alias;
+    uint32_t app_area_code;
+    uint32_t app_build_timestamp;
+    uint32_t boot_version;
+    uint32_t boot_build_timestamp;
+    uint32_t boot_pcb_version;
+  } response;
+#pragma pack(pop)
 
 
   SetU32(&tx_data[cnt], get_app_version(NULL, NULL, NULL, NULL));
@@ -474,7 +478,14 @@ uint16_t divas_read_index(uint8_t *rx_frame, uint8_t *tx_frame,size_t tx_size)
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
   uint16_t cnt = 0;
   uint16_t id;
-
+#pragma pack(push, 1)
+  struct divas_read_index_response_s
+  {
+    uint8_t connect_type;
+    uint16_t device_id;
+    uint32_t reserved;
+  };
+#pragma pack(pop)
 
   tx_data[cnt++] = CONNET_TYPE_AWS;
   id = get_config_app()->device_id;
@@ -499,6 +510,7 @@ uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len, uint8_t *tx_frame
     return 0;
   }
 
+  parse_divas_request(rx_frame, rx_len);
   switch (rx_frame[11])
   {
     case DIVAS_CMD_FW_DOWNLOAD:
