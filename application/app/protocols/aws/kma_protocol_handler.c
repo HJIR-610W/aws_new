@@ -27,6 +27,7 @@
 #include "schedule.h"
 #include "task_logging.h"
 #include "task_core_debug.h"
+#include "system_err.h"
 
 
 #define REQ_BLOCK_BEFORE_SEC 5 //너무 이른 요청은 무시 
@@ -992,7 +993,7 @@ uint16_t kma_cmd_handler_AP(uint8_t *rx_frame, uint8_t *tx_frame)
 /**
  * @retval 전송 길이
  */
-int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffer, eREQ_SOURCE_t source)
+int32_t kma_cmd_handler(uint8_t *rx_frame, size_t frame_len, uint8_t *tx_buffer, eREQ_SOURCE_t source)
 {
   bool protocol_ok = false;
   int32_t len = 0;
@@ -1011,6 +1012,7 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
 
   if (protocol_ok == false)
   {
+    TASK_PRINTF("Not KMA Protocol\r\n");
     task_hex_dump("AWS frame",rx_frame,frame_len);
     return divas_cmd_handler(rx_frame, frame_len,tx_buffer);
   }
@@ -1039,6 +1041,7 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
 
   if (request.station_id != config.device_id)
   {
+    TASK_PRINTF("Not station_id\r\n");
     return 0;
   }
 

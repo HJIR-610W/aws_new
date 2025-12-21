@@ -15,6 +15,6 @@ typedef enum req_source_e
   eREQ_SOURCE_CDMA,
 }eREQ_SOURCE_t;
 
-int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t rx_len, uint8_t *tx_frame, eREQ_SOURCE_t source);
+int32_t kma_cmd_handler(uint8_t *rx_frame, size_t rx_len, uint8_t *tx_frame, eREQ_SOURCE_t source);
 
 #endif

@@ -19,7 +19,7 @@
 #include "task_logging.h"
 system_t System;
 const osThreadAttr_t kSystemTask_attributes = {
-    .name = "system",
+    .name = "System",
     .stack_size = TASK_STACK(TASK_SYSTEM_DEF),
     .priority = (osPriority_t)TASK_PRIO(TASK_SYSTEM_DEF),
 };

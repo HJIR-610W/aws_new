@@ -2486,7 +2486,13 @@
                         <name>$PROJ_DIR$\..\application\app\protocols\divas\aws_monitor.c</name>
                     </file>
                     <file>
+                        <name>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_define.c</name>
+                    </file>
+                    <file>
                         <name>$PROJ_DIR$\..\application\app\protocols\divas\divas_protocol_handler.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\protocols\divas\parse_divas.c</name>
                     </file>
                 </group>
                 <group>

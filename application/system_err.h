@@ -25,7 +25,7 @@
 #endif
 
 #define TASK_PRINTF(fmt, ...)                                               \
-  task_printf("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s] " fmt "\r\n",                      \
+  task_printf("%04d-%02d-%02d %02d:%02d:%02d [%s] " fmt "\r\n",                      \
               Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \
               Date_Time.Hour, Date_Time.Min, Date_Time.Sec,              \
               get_task_name(), ##__VA_ARGS__)
