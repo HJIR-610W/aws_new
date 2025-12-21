@@ -13,10 +13,10 @@
 #define USE_DEBUG 0
 #define IWDG_USE 1
 #define PRINTF_BASE(fmt, ...)                                                               \
-  debug_printf("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s:%d] " fmt "\r\n",                      \
+  debug_printf("%04d-%02d-%02d %02d:%02d:%02d [%s] " fmt "\r\n",                      \
               Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \
-              Date_Time.Hour, Date_Time.Min, Date_Time.Sec, Date_Time.SubSec,              \
-              __FILE__, __LINE__, ##__VA_ARGS__)
+              Date_Time.Hour, Date_Time.Min, Date_Time.Sec,              \
+              __FILE__, ##__VA_ARGS__)
 
 #ifdef ERROR_PRINTF_USE
 #define ERROR_PRINTF(fmt, ...) PRINTF_BASE(fmt, ##__VA_ARGS__)
@@ -27,7 +27,7 @@
 #define TASK_PRINTF(fmt, ...)                                               \
   task_printf("%04d-%02d-%02d %02d:%02d:%02d.%02d [%s] " fmt "\r\n",                      \
               Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \
-              Date_Time.Hour, Date_Time.Min, Date_Time.Sec, Date_Time.SubSec,              \
+              Date_Time.Hour, Date_Time.Min, Date_Time.Sec,              \
               get_task_name(), ##__VA_ARGS__)
 
 // 로그 레벨 정의
@@ -47,14 +47,14 @@
     do {\
         if (level >= LOG_LEVEL_NONE) {}\
         else if (level <= CURRENT_LOG_LEVEL) { \
-            PRINTF_BASE(fmt, ##__VA_ARGS__); \
+            PRINTF_BASE(fmt , ##__VA_ARGS__); \
         } \
     } while(0)
 
 
 
 #ifdef DEBUG_PRINTF_USE
-  #define DEBUG_PRINTF(fmt, ...)   debug_printf(fmt, ##__VA_ARGS__)
+  #define DEBUG_PRINTF(fmt, ...)   debug_printf(fmt "\r\n", ##__VA_ARGS__)
 #else
   #define DEBUG_PRINTF(fmt, ...) ((void)0)
 #endif

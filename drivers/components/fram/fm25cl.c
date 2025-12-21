@@ -51,7 +51,7 @@ void fm25lc_init(void)
 
   data = fm25cl_read_status();
   
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"fm24ls statsus:0x%02X\r\n",data);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"fm24ls statsus:0x%02X",data);
   (void)data;
 }
 
@@ -129,17 +129,17 @@ void fm25cl_read(uint32_t offset,uint8_t *pBuff,uint16_t rLen)
 void fm25_status_parse(uint8_t status)
 {
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Status Register: 0x%02X\r\n", status);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Status Register: 0x%02X", status);
 
   // WPEN: Write Protect Enable (Bit 7)
   if (status & (1 << 7))
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  WPEN = 1 → WP 핀의 쓰기 보호 기능이 활성화됨\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  WPEN = 1 → WP 핀의 쓰기 보호 기능이 활성화됨");
   else
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  WPEN = 0 → WP 핀 무시\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  WPEN = 0 → WP 핀 무시");
 
   // Bits 6~4: Don't care, always 0
   if (status & 0x70)
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  [경고] Bit 4~6이 0이 아님 (예상치 못한 값)\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  [경고] Bit 4~6이 0이 아님 (예상치 못한 값)");
 
   // BP1/BP0: Block Protect
   uint8_t bp = (status >> 2) & 0x03;
@@ -162,19 +162,19 @@ void fm25_status_parse(uint8_t status)
       bp_desc = "알 수 없음";
       break;
   }
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  BP1:BP0 = %d:%d → %s\r\n", (bp >> 1) & 1, bp & 1, bp_desc);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  BP1:BP0 = %d:%d → %s", (bp >> 1) & 1, bp & 1, bp_desc);
 
   (void)bp_desc;
   
   // WEL: Write Enable Latch (Bit 1)
   if (status & (1 << 1))
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  WEL = 1 → 쓰기 가능 상태\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  WEL = 1 → 쓰기 가능 상태");
   else
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  WEL = 0 → 쓰기 비활성화 상태\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  WEL = 0 → 쓰기 비활성화 상태");
 
   // Bit 0: 항상 0 (읽기 전용)
   if (status & 0x01)
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  [주의] Bit 0이 1로 설정됨 (비정상 상태)\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  [주의] Bit 0이 1로 설정됨 (비정상 상태)");
 }
 
 uint8_t fm25cl_read_status(void)

@@ -37,80 +37,143 @@ void create_win(win_t* win, int start_x, int start_y, int view_row, int view_col
 		win->selected_item[i] = 0;
 	}
 }
-
 //실시간 값 표시
 void win_printf_title(win_t* win, const char* pFmt, ...)
 {
-	char buff[300];
-	va_list ap;
-	int len=0;
-	int remain_len;
+  char hline[300];
+  char title[300];
+  char out[700];
+  va_list ap;
+  int len;
+  int remain_len;
+  const char* ansi_begin = "";
+  const char* ansi_end = "";
 
-	debug_printf("\x1B[%d;%dH", win->start_y, win->start_x);
+  /* 1) 가로선(─) 문자열 생성: view_col-2 만큼 */
+  len = 0;
+  hline[0] = '\0';
 
-	//상단 +----+ 출력
-	for (int i = 0; i < win->view_col - 2; i++)
-	{
-		len +=snprintf(&buff[len],sizeof(buff)-len,"─");
-	}
-	buff[len] = '\0';
-	debug_printf("┌%s┐", buff);
+  for (int i = 0; i < win->view_col - 2; i++)
+  {
+    len += snprintf(&hline[len], sizeof(hline) - len, "─");
+    if (len >= (int)sizeof(hline) - 1)
+    {
+      break;
+    }
+  }
 
-	len=0;
-	// 타이틀 출력
-	debug_printf("\x1B[%d;%dH", win->start_y + 1, win->start_x);
+  /* 2) 타이틀 문자열 1회 생성 */
+  len = 0;
+  title[0] = '\0';
 
-	va_start(ap, pFmt);
+  va_start(ap, pFmt);
+  len = vsnprintf(&title[len], sizeof(title) - len, pFmt, ap);
+  va_end(ap);
 
-	len += vsnprintf(&buff[0], sizeof(buff) - 2, pFmt, ap);
-	va_end(ap);
-	
-	if (win->total_pages > 1)
-	{
-    len+=snprintf(&buff[len], sizeof(buff)-len, " [%d/%d]", win->current_page + 1, win->total_pages);
-	}
+  if (len < 0)
+  {
+    len = 0;
+    title[0] = '\0';
+  }
+  if (len >= (int)sizeof(title))
+  {
+    len = (int)sizeof(title) - 1;
+    title[len] = '\0';
+  }
 
-  remain_len = win->view_col - utf8_strlen(buff)  -2;
+  if (win->total_pages > 1)
+  {
+    len += snprintf(&title[len], sizeof(title) - len,
+                    " [%d/%d]", win->current_page + 1, win->total_pages);
+    if (len >= (int)sizeof(title))
+    {
+      len = (int)sizeof(title) - 1;
+      title[len] = '\0';
+    }
+  }
+
+  /* 3) 화면 폭(문자 수 기준) 맞춰 공백 패딩 */
+  remain_len = win->view_col - utf8_strlen(title) - 2;
+  if (remain_len < 0)
+  {
+    remain_len = 0;
+  }
 
   for (int i = 0; i < remain_len; i++)
   {
-    buff[len++] = ' ';
+    len += snprintf(&title[len], sizeof(title) - len, " ");
+    if (len >= (int)sizeof(title) - 1)
+    {
+      break;
+    }
   }
 
-  buff[len++] = '\0';
-
-	if (win->is_focused)
-	{
-		debug_printf("│\x1B[32m%s\x1B[0m│\r\n",  &buff[0]);
-	}
-	else if (win->is_selected)
-	{
-		debug_printf("│\x1B[7m%s\x1B[0m│\r\n",  &buff[0]);
-	} else
-	{
-    debug_printf("│%s│\r\n", buff);
+  /* 4) 포커스/선택 스타일 결정 */
+  if (win->is_focused)
+  {
+    ansi_begin = "\x1B[32m";
+    ansi_end = "\x1B[0m";
+  }
+  else if (win->is_selected)
+  {
+    ansi_begin = "\x1B[7m";
+    ansi_end = "\x1B[0m";
   }
 
-	debug_printf("\x1B[%d;%dH", win->start_y + 2, win->start_x);
-	len = 0;
-	
-	for (int i = 0; i < win->view_col - 2; i++)
-	{
-		len +=snprintf(&buff[len],sizeof(buff)-len,"─");
-	}
-	buff[len] = '\0';
-	debug_printf("├%s┤", buff);
+  /* 5) 상단 라인 출력: ┌───┐ */
+  snprintf(out, sizeof(out),
+           "\x1B[%d;%dH┌%s┐",
+           win->start_y, win->start_x, hline);
+  debug_printf("%s", out);
+
+  /* 6) 타이틀 라인 출력: │title│ */
+  snprintf(out, sizeof(out),
+           "\x1B[%d;%dH│%s%s%s│\r\n",
+           win->start_y + 1, win->start_x,
+           ansi_begin, title, ansi_end);
+  debug_printf("%s", out);
+
+  /* 7) 구분선 라인 출력: ├───┤ */
+  snprintf(out, sizeof(out),
+           "\x1B[%d;%dH├%s┤",
+           win->start_y + 2, win->start_x, hline);
+  debug_printf("%s", out);
 }
+
+
 
 void win_print_close(win_t* win)
 {
-	debug_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
-	debug_printf("└");
-	for (int i = 0; i < win->view_col - 2; i++)
-	{
-		debug_printf("─");
-	}
-	debug_printf("┘\n");
+  char buff[256];
+  int offset = 0;
+
+  /* 커서 이동 + 좌측 하단 모서리 */
+  offset += snprintf(
+    buff + offset,
+    sizeof(buff) - offset,
+    "\x1B[%d;%dH└",
+    win->start_y + 3 + win->current_row,
+    win->start_x
+  );
+
+  /* 하단 가로선 */
+  for (int i = 0; i < win->view_col - 2; i++)
+  {
+    offset += snprintf(
+      buff + offset,
+      sizeof(buff) - offset,
+      "─"
+    );
+  }
+
+  /* 우측 하단 모서리 + 개행 */
+  offset += snprintf(
+    buff + offset,
+    sizeof(buff) - offset,
+    "┘\n"
+  );
+
+  debug_printf("%s", buff);
 }
 
 /**
@@ -120,45 +183,75 @@ void win_print_close(win_t* win)
  */
 void win_printf_row(win_t* win, int row_index, const char* pFmt, ...)
 {
-	char buff[300];
-	int i;
-	int len=0;
-	int page;
-	va_list ap;
-	int total_len = 0;
-	int remain_len=0;
+  char line[300];
+  char out[360];
+  va_list ap;
+  int len;
+  int page;
+  int remain_len;
 
-	if (win->current_row >= win->view_row) return;
+  if (win->current_row >= win->view_row)
+  {
+    return;
+  }
 
-	page = win->current_page;// 
-  
-	if (row_index >= win->scroll_offset[page] && row_index < win->scroll_offset[page] + win->view_row)
-	{
-		debug_printf("\x1B[%d;%dH", win->start_y + 3 + win->current_row, win->start_x);
-		va_start(ap, pFmt);
+  page = win->current_page;
 
+  if (row_index < win->scroll_offset[page] ||
+      row_index >= (win->scroll_offset[page] + win->view_row))
+  {
+    return;
+  }
+
+  /* 1) 라인 내용 생성: "│" + formatted + padding + "│" */
+  len = 0;
+  len += snprintf(&line[len], sizeof(line) - len, "│");
+
+  va_start(ap, pFmt);
+  len += vsnprintf(&line[len], sizeof(line) - len, pFmt, ap);
+  va_end(ap);
+
+  if (len < 0)
+  {
     len = 0;
-		len +=snprintf(&buff[len],sizeof(buff)-len,"│");
+    line[0] = '\0';
+  }
+  if (len >= (int)sizeof(line))
+  {
+    len = (int)sizeof(line) - 1;
+    line[len] = '\0';
+  }
 
-		len += vsnprintf((char*)&buff[len], sizeof(buff) - len, (char*)pFmt, ap);
-		va_end(ap);
+  /* view_col 기준(문자 수)으로 오른쪽 패딩: 마지막 우측 테두리 1칸 남김 */
+  remain_len = win->view_col - utf8_strlen(line) - 1;
+  if (remain_len < 0)
+  {
+    remain_len = 0;
+  }
 
-		total_len = len;
+  for (int i = 0; i < remain_len; i++)
+  {
+    len += snprintf(&line[len], sizeof(line) - len, " ");
+    if (len >= (int)sizeof(line) - 1)
+    {
+      break;
+    }
+  }
 
-		remain_len = win->view_col - utf8_strlen(buff) - 1;
-		for (i = 0; i < remain_len; i++)
-		{
-			buff[total_len++] = ' ';
-		}
-    
-    len +=snprintf(&buff[total_len],sizeof(buff)-total_len," │");
-    
+  len += snprintf(&line[len], sizeof(line) - len, " │");
 
+  /* 2) 커서 이동까지 포함해서 한 번에 출력 */
+  snprintf(out, sizeof(out),
+           "\x1B[%d;%dH%s",
+           win->start_y + 3 + win->current_row,
+           win->start_x,
+           line);
 
-		debug_printf("%s", buff);
-		win->current_row++;
-	}
+  debug_printf("%s", out);
+
+  win->current_row++;
 }
+
 
 void handle_scroll(win_t* win, int key)
 {

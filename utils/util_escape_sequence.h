@@ -10,6 +10,7 @@
 #ifndef ESCAPE_SEQUENCE_H
 #define ESCAPE_SEQUENCE_H
 
+#include "util_macro.h"
 /* =================================================================== */
 /*                          커서 제어                                   */
 /* =================================================================== */
@@ -203,5 +204,17 @@
 
 /* 줄 클리어 후 출력 */
 #define ES_CLEAR_LINE_PRINT(text)    ES_ERASE_ENTIRE_LINE text
+
+
+/* 커서/화면 제어 */
+#define ESC_SAVE_CURSOR         "\x1B[s"
+#define ESC_RESTORE_CURSOR      "\x1B[u"
+#define ESC_CLEAR_LINE          "\x1B[2K"
+
+/* 커서 이동 */
+#define EC_CURSOR_POS(r,c)     "\x1B[" STR(r)  ";" STR(c)  "H"
+
+#define EC_SCROLL_REGION(top, bottom)  "\x1B[" STR(top) ";" STR(bottom) "r"
+#define EC_SCROLL_REGION_RESET         "\x1B[r"
 
 #endif /* ESCAPE_SEQUENCE_H */

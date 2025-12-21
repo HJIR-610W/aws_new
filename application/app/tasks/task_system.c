@@ -66,7 +66,7 @@ void check_sd_card(void)
 
     if (now_sd_inserted)
     {
-      ERROR_PRINTF("SD card inserted\r\n");
+      ERROR_PRINTF("SD card inserted");
       log_printf(L_ERROR,"SD card inserted");
       OS_PEND_SEM(get_file_sem(), osWaitForever);
       MX_FATFS_DeInit();
@@ -79,7 +79,7 @@ void check_sd_card(void)
     }
     else
     {
-      ERROR_PRINTF("SD card removed\r\n");
+      ERROR_PRINTF("SD card removed");
       log_printf(L_ERROR,"SD card removed");
       OS_PEND_SEM(get_file_sem(), osWaitForever);
       MX_FATFS_DeInit();
@@ -121,7 +121,7 @@ void systemTask(void *arg)
   uint8_t err=0;
   uint32_t start_time = osKernelGetTickCount();
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"system task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"System task start\r\n");
 
   pre_sd_inserted = BSP_PlatformIsDetected();
 

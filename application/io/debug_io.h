@@ -47,17 +47,40 @@ int32_t debug_get_ch_nonblocking(uint8_t *buffer);
 void debug_inject(uint8_t *data,size_t len);
 int debug_scanf_s(const char *fmt, ...);
 
-#define debug_printf os_printf
 
 void debug_printf_color(int color, const char *pFmt, ...);
-#define debug_send os_debug_send
-#define debug_put_ch os_put_ch
-#define debug_puts os_puts
 void debug_dump(uint8_t* data, size_t size, uint32_t start_address,uint32_t col);
-#define debug_vprintf os_vprintf
-
 io_if_t *get_debug_io(void) ;
 void debug_set_io(io_if_t *debug_io);
 void debug_set_io_default(void);
+
+
+int32_t debug_vprintf(const char *fmt, va_list ap);
+int32_t debug_printf(const char *fmt, ...);
+void debug_send(const uint8_t *data, size_t len);
+void debug_put_ch(uint8_t ch);
+void debug_puts(const uint8_t *string);
+
+
+//#define debug_printf os_printf
+//#define debug_send os_debug_send
+//#define debug_put_ch os_put_ch
+//#define debug_puts os_puts
+//#define debug_vprintf os_vprintf
+
+
+/* 상태창용 (row,col 필요) */
+#define STATIC_PRINTF(row, col, fmt, ...) \
+  os_printf( \
+    "\x1B[s" \
+    "\x1B[" row ";" col "H" \
+    "\x1B[2K" \
+    fmt \
+    "\x1B[u", \
+    ##__VA_ARGS__)
+
+
+
+
 
 #endif

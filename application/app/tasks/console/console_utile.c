@@ -29,124 +29,257 @@
 
 
 
-
+#define CONSOLE_LINE_BUFFER_SIZE 256
 
 
 
 uint8_t view_recv_key(uint32_t timeout_ms)
+
 {
+
   uint8_t ch=0;
 
+
+
   while(1)
+
   {
+
     if(debug_recv(&ch, 1, timeout_ms))
+
     {
+
       if(ch==0x1B || ch==0x5B)
+
       {
+
         continue;
+
       }
+
       break;
+
     }
+
     break;
+
   }
+
 return ch;
 
+
+
 }
+
+
+
 
 
 int view_input_decimal(const char* prompt, int* value, int min_val, int max_val)
+
 {
+
   int ret_scan;
+
   int ret = MENU_ABORT;
+
   int input_value=0;
+
   
+
   while(1)
+
   {
+
     debug_printf("%s (%d ~ %d): ", prompt, min_val, max_val);
+
     //ret_scan = debug_scanf_s("%d", &input_value);
+
     ret_scan = debug_scanf_s("%d", &input_value);
+
     if (ret_scan == KEY_CODE_CTRL_Q)
+
     {
+
       ret = MENU_ABORT;
+
       break;
+
     }
+
     else if (ret_scan == KEY_CODE_CTRL_C)
+
     {
+
       ret = MENU_BACK;
+
       break;
+
     }
+
     if (ret_scan == 1 && input_value >= min_val && input_value <= max_val)
+
     {
+
       *value = input_value;
+
       ret = MENU_OK;
+
       break;
+
     }
+
     debug_printf("%s\r\n", STRING_INPUT_ERR);
+
   }
+
   return ret;
+
 }
+
+
+
+
 
 
 
 
 //utf8 전용
+
 int print_menu(int width, const char* title, const char** menu_list, int cnt)
+
 {
-  char buff[50];
+
+  char buff[CONSOLE_LINE_BUFFER_SIZE]; // Use CONSOLE_LINE_BUFFER_SIZE
+
+  char line_buf[CONSOLE_LINE_BUFFER_SIZE];
+
   int len;
+
   int total_width = width + 8;  // 좌우 여백 및 메뉴 번호 고려
 
+
+
   // 타이틀 가운데 정렬
+
   int title_len = utf8_strlen(title);
+
   int title_padding = (total_width - 2 - title_len) / 2;
+
   int title_padding_right = total_width - 2 - title_len - title_padding;
 
+
+
   // CTRL 문구 가운데 정렬
+
   const char* ctrl_msg = "CTRL+C 이전, CTRL+Q 종료";
+
   int ctrl_len = utf8_strlen(ctrl_msg);
+
   int ctrl_padding = (total_width - 2 - ctrl_len) / 2;
+
   int ctrl_padding_right = total_width - 2 - ctrl_len - ctrl_padding;
 
+
+
   // 상단 라인
-  debug_printf("┌");
-  for (int i = 0; i < total_width - 2; i++) debug_printf("─");
-  debug_printf("┐\r\n");
+
+  snprintf(line_buf, sizeof(line_buf), "┌");
+
+  for (int i = 0; i < total_width - 2; i++) strncat(line_buf, "─", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  strncat(line_buf, "┐\r\n", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  debug_printf("%s", line_buf);
+
+
 
   // 타이틀 출력
-  debug_printf("│");
-  for (int i = 0; i < title_padding; i++) debug_printf(" ");
-  debug_printf("%s", title);
-  for (int i = 0; i < title_padding_right; i++) debug_printf(" ");
-  debug_printf("│\r\n");
+
+  snprintf(line_buf, sizeof(line_buf), "│");
+
+  for (int i = 0; i < title_padding; i++) strncat(line_buf, " ", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  strncat(line_buf, title, sizeof(line_buf) - strlen(line_buf) - 1);
+
+  for (int i = 0; i < title_padding_right; i++) strncat(line_buf, " ", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  strncat(line_buf, "│\r\n", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  debug_printf("%s", line_buf);
+
+
 
   // 중간 라인
-  debug_printf("├");
-  for (int i = 0; i < total_width - 2; i++) debug_printf("─");
-  debug_printf("┤\r\n");
+
+  snprintf(line_buf, sizeof(line_buf), "├");
+
+  for (int i = 0; i < total_width - 2; i++) strncat(line_buf, "─", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  strncat(line_buf, "┤\r\n", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  debug_printf("%s", line_buf);
+
+
 
   // 메뉴 리스트 출력
+
   for (int i = 0; i < cnt; i++)
+
   {
-    len = snprintf(buff, sizeof(buff), "│  %2d. %-s", i+1, menu_list[i]);
-    debug_printf(buff);
-    len = total_width - utf8_strlen(buff) - 1;
-    for (int j = 0; j < len; j++) debug_printf(" ");
-    debug_printf(" │\r\n");
+
+    snprintf(line_buf, sizeof(line_buf), "│  %2d. %-s", i+1, menu_list[i]);
+
+    len = total_width - utf8_strlen(line_buf) - 1; // total_width is physical chars, utf8_strlen is logical chars
+
+    // Adjust len for bytes in line_buf vs actual visible width
+
+    int current_visible_width = utf8_strlen(line_buf); // visible width of current content
+
+    int space_to_add = total_width - current_visible_width ; // calculate spaces based on visible width
+
+    
+
+    for (int j = 0; j < space_to_add; j++) strncat(line_buf, " ", sizeof(line_buf) - strlen(line_buf) - 1);
+
+    strncat(line_buf, "│\r\n", sizeof(line_buf) - strlen(line_buf) - 1);
+
+    debug_printf("%s", line_buf);
+
   }
 
+
+
   // CTRL 문구
-  debug_printf("│");
-  for (int i = 0; i < ctrl_padding; i++) debug_printf(" ");
-  debug_printf("%s", ctrl_msg);
-  for (int i = 0; i < ctrl_padding_right; i++) debug_printf(" ");
-  debug_printf("│\r\n");
+
+  snprintf(line_buf, sizeof(line_buf), "│");
+
+  for (int i = 0; i < ctrl_padding; i++) strncat(line_buf, " ", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  strncat(line_buf, ctrl_msg, sizeof(line_buf) - strlen(line_buf) - 1);
+
+  for (int i = 0; i < ctrl_padding_right; i++) strncat(line_buf, " ", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  strncat(line_buf, "│\r\n", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  debug_printf("%s", line_buf);
+
+
 
   // 하단 라인
-  debug_printf("└");
-  for (int i = 0; i < total_width - 2; i++) debug_printf("─");
-  debug_printf("┘\r\n");
+
+  snprintf(line_buf, sizeof(line_buf), "└");
+
+  for (int i = 0; i < total_width - 2; i++) strncat(line_buf, "─", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  strncat(line_buf, "┘\r\n", sizeof(line_buf) - strlen(line_buf) - 1);
+
+  debug_printf("%s", line_buf);
+
+
 
   return cnt;
+
 }
 
 
@@ -377,4 +510,3 @@ int view_confirm_continue(const char *title,int32_t* ok)
   }
   return status;
 }
-

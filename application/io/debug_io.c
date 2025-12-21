@@ -73,7 +73,7 @@ io_if_t *get_debug_io(void)
 }
 
 
-#if 0
+#ifndef debug_vprintf
 int32_t debug_vprintf(const char *fmt, va_list ap)
 {
   char buff[2];
@@ -274,7 +274,7 @@ int32_t debug_recv(uint8_t *out_buffer, size_t out_size, uint32_t timeout_ms)
 
 #define PRINTF_HEAP_USE 1
 
-#if 0
+#ifndef debug_printf
 int32_t debug_printf(const char *fmt, ...)
 {
   uint8_t buff[2];
@@ -341,7 +341,7 @@ int32_t debug_printf(const char *fmt, ...)
 #endif
 
 
-#if 0
+#ifndef debug_send
 void debug_send(const uint8_t *data, size_t len)
 {
   io_send(g_current_debug_io, data, len);
@@ -351,7 +351,7 @@ void debug_send(const uint8_t *data, size_t len)
 }
 #endif
 
-#if 0
+#ifndef debug_put_ch
 void debug_put_ch(uint8_t ch)
 {
   io_send(g_current_debug_io, &ch, 1);
@@ -361,7 +361,7 @@ void debug_put_ch(uint8_t ch)
 }
 #endif
 
-#if 0
+#ifndef debug_puts
 void debug_puts(const uint8_t *string)
 {
   size_t len = strlen((char *)string);

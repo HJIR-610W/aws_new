@@ -857,19 +857,19 @@ int32_t ntle9607_open(cellular_if_t *p_if)
   // 메시지 큐 생성
   s_ntle9607_tcp_queue = osMessageQueueNew(1, sizeof(tcp_data_t), NULL);
   if (s_ntle9607_tcp_queue == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"NTLE9607: TCP queue 생성 실패\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"NTLE9607: TCP queue 생성 실패");
     return -1;
   }
 
   s_ntle9607_dtmf_queue = osMessageQueueNew(10,1, NULL);
   if (s_ntle9607_dtmf_queue == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"NTLE9607: DTMF\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"NTLE9607: DTMF");
     return -1;
   }
 
 
 
-   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"NTLE9607: TCP queue 생성 완료\r\n");
+   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"NTLE9607: TCP queue 생성 완료");
 
   return RET_OK;
 }
@@ -890,7 +890,7 @@ void ntle9607_close(cellular_if_t *p_if)
     s_ntle9607_tcp_queue = NULL;
   }
 
-   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"NTLE9607: TCP 메시지 큐 삭제 완료\r\n");
+   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"NTLE9607: TCP 메시지 큐 삭제 완료");
 
   // UART 핸들 정리 (필요 시uart_close 구현)
   p_if->uart_handle = 0;

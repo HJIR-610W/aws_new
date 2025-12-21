@@ -117,7 +117,7 @@ void at45db_init(void)
 
   if (at45db_initialize() != AT45DB_OK)
   {
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: AT45DB initialization failed\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: AT45DB initialization failed");
     at45db_inst.opened = false;
     return;
   }
@@ -288,7 +288,7 @@ static void at45db_wait_ready(void)
 
 
     if(++timeout_count > AT45DB_BUSY_TIMEOUT_MS) {
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Warning: AT45DB busy timeout\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Warning: AT45DB busy timeout");
       break;
     }
 
@@ -421,7 +421,7 @@ at45db_result_t at45db_initialize(void)
 
   result = at45db_parse_chip_info(chip_info, &at45db_inst.chip_info);
   if (result != AT45DB_OK) {
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Failed to parse chip info\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Failed to parse chip info");
     return result;
   }
 
@@ -431,7 +431,7 @@ at45db_result_t at45db_initialize(void)
 
   // 바이너리 페이지 크기 모드가 활성화되어 있는지 확인
   if ((reg & AT45DB_STATUS_PAGE_SIZE_BIT) == 0) {
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Switching to binary page size mode...\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Switching to binary page size mode...");
     at45db_reg_write( (uint8_t *)protect_enable);
     at45db_wait_ready();
     at45db_reg_write( (uint8_t *)page_binary_mode);
@@ -440,7 +440,7 @@ at45db_result_t at45db_initialize(void)
     // 전환 확인
     at45db_reg_read( AT45DB_CMD_STATUS_REGISTER, &reg, 1);
     if ((reg & AT45DB_STATUS_PAGE_SIZE_BIT) == 0) {
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Failed to switch to binary page size mode\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Error: Failed to switch to binary page size mode");
       return AT45DB_ERROR;
     }
   }
@@ -453,10 +453,10 @@ at45db_result_t at45db_initialize(void)
   at45db_inst.chip_info.total_capacity_bytes = (at45db_inst.chip_info.device_info.capacity_bits / 8);
   at45db_inst.chip_info.is_initialized = true;
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"AT45DB initialization completed successfully\r\n");
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Mode: %s\r\n", at45db_inst.chip_info.is_binary_mode ? "Binary" : "Standard");
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Current page size: %u bytes\r\n", at45db_inst.chip_info.current_page_size);
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Total capacity: %lu bytes\r\n", at45db_inst.chip_info.total_capacity_bytes);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"AT45DB initialization completed successfully");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Mode: %s", at45db_inst.chip_info.is_binary_mode ? "Binary" : "Standard");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Current page size: %u bytes", at45db_inst.chip_info.current_page_size);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Total capacity: %lu bytes", at45db_inst.chip_info.total_capacity_bytes);
 
   at45db_delay(10);
   

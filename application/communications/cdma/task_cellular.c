@@ -327,7 +327,7 @@ LOOP_END:
 static void ring_callback_task(void* arg)
 {
   const char* payload = (const char*)arg;//전화번호 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[RING] %s\r\n", payload ? payload : "(null)");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[RING] %s", payload ? payload : "(null)");
   cellular_recv_call();
 }
 
@@ -335,11 +335,11 @@ static void sms_callback_task(void* arg)
 {
   sms_t sms;
   const char* payload = (const char*)arg; 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[SMS] %s\r\n", payload ? payload : "(null)");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[SMS] %s", payload ? payload : "(null)");
   if (cellular_read_sms(&sms) == 0)
   {
     sms_cmd(&sms);
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Number: %s, Message: %s\r\n", sms.number, sms.message);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Number: %s, Message: %s", sms.number, sms.message);
   }
 }
 
@@ -362,12 +362,12 @@ void cellular_task(void *arg)
   switch(config.cdma_model)
   {
     case eCDMA_NTLE9607:
-   TASK_PRINTF("NTLE9607 모뎀 사용\r\n");
+   TASK_PRINTF("NTLE9607 모뎀 사용");
           cellular_open(NTLE9607_MODEM);
       break;
     case eCDMA_TX700:
     default:
-   TASK_PRINTF("TX700 모뎀 사용\r\n");
+   TASK_PRINTF("TX700 모뎀 사용");
     cellular_open(TX700_MODEM);
       break;
   }
@@ -376,7 +376,7 @@ void cellular_task(void *arg)
     s_app_event_flags = osEventFlagsNew(NULL);
     if (s_app_event_flags == NULL)
     {
-        debug_printf("[AppMain] 플래그 생성 실패\r\n");
+        debug_printf("[AppMain] 플래그 생성 실패");
         while (1)
         {
           osDelay(1000);
@@ -410,11 +410,11 @@ void cellular_task(void *arg)
         clear_mask = 0;
         flags = osEventFlagsGet(s_app_event_flags);
         if (flags & EVT_FLAG_MODEM_REBOOTED){
-       TASK_PRINTF("모뎀 리부팅됨\r\n");
+       TASK_PRINTF("모뎀 리부팅됨");
           clear_mask |= EVT_FLAG_MODEM_REBOOTED;
         }
         if (flags & EVT_FLAG_TCP_DISCONNECTED){
-       TASK_PRINTF("소켓 닫힘\r\n");
+       TASK_PRINTF("소켓 닫힘");
           clear_mask |= EVT_FLAG_TCP_DISCONNECTED;
         }
         if (clear_mask != 0){
@@ -423,7 +423,7 @@ void cellular_task(void *arg)
           break;
         }
         if ((osKernelGetTickCount() - network_wtd_starttime) > (180 * 1000)){
-       TASK_PRINTF("유령 세션 연결 타임아웃\r\n");
+       TASK_PRINTF("유령 세션 연결 타임아웃");
           state = APP_STATE_CONNECT_TCP;
           break;
         }
@@ -445,7 +445,7 @@ void cellular_task(void *arg)
               UPDATE_CNT(g_cdma_system.tx_cnt, 99);
               len =  cellular_send_tcp(tx_buffer, len);
               if(len<0){
-             TASK_PRINTF("송신 실패\r\n");
+             TASK_PRINTF("송신 실패");
                 state = APP_STATE_CONNECT_TCP;
                 break;
               }
@@ -462,7 +462,7 @@ static void dispatcher_urc_reboot_cb(const uint8_t* data, size_t len, void* ctx)
   (void)data;
   (void)len;
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[URC] *REBOOT URC 수신됨\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[URC] *REBOOT URC 수신됨");
   osEventFlagsSet(s_app_event_flags, EVT_FLAG_MODEM_REBOOTED);
 }
 
@@ -472,12 +472,12 @@ static void dispatcher_urc_tcp_disconnected_cb(const uint8_t* data, size_t len, 
   (void)data;
   (void)len; 
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[URC] *TCPDISCONNECTED URC 수신됨\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[URC] *TCPDISCONNECTED URC 수신됨");
   osEventFlagsSet(s_app_event_flags, EVT_FLAG_TCP_DISCONNECTED);
 }
 static void dispatcher_urc_dtmf_cb(const uint8_t* data, size_t len, void* ctx)
 {
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[URC] *DTMF URC 수신됨: %.*s\r\n", len, data);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[URC] *DTMF URC 수신됨: %.*s", len, data);
 }
 
 const osThreadAttr_t kCellulaTask_attributes = {

@@ -13,7 +13,7 @@
  * LOGGER_QUEUE_LENGTH: 큐 깊이(메시지 개수)
  */
 #define LOGGER_MAX_LINE_BYTES   (256)
-#define LOGGER_QUEUE_LENGTH     (32)
+#define LOGGER_QUEUE_LENGTH     (4)
 
 /* static 전역 */
 static osMessageQueueId_t s_log_queue = NULL;
@@ -38,7 +38,7 @@ void loggerTask_init(void)
         return; // 이미 초기화됨
     }
 
-     debug_init() ;
+
 
      
     // 메시지 큐 생성
@@ -105,7 +105,7 @@ int32_t os_vprintf(const char *fmt, va_list ap)
      * 논블로킹 호출 (timeout = 0).
      * 큐가 가득 찼으면 메시지는 드롭됩니다.
      */
-    st = osMessageQueuePut(s_log_queue, buf, 0, 0);
+    st = osMessageQueuePut(s_log_queue, buf, 0, 10);
     if (st != osOK)
     {
         return -1;
@@ -235,7 +235,8 @@ void os_debug_send(const uint8_t *data, size_t len)
     char line_buf[LOGGER_MAX_LINE_BYTES];
     char byte_str[4]; // "XX " + null
     size_t line_len = 0;
-
+    osStatus_t st;
+    
     if (s_log_queue == NULL || data == NULL)
     {
         return;
@@ -263,6 +264,11 @@ void os_debug_send(const uint8_t *data, size_t len)
     // 남은 데이터가 있으면 큐에 넣습니다.
     if (line_len > 0)
     {
-        osMessageQueuePut(s_log_queue, line_buf, 0, 0);
+    st =     osMessageQueuePut(s_log_queue, line_buf, 0, 0);
+    
+        if (st != osOK)
+    {
+        // Optionally handle the error, e.g., increment a drop counter
+    }
     }
 }

@@ -416,7 +416,7 @@ void load_config_app(void)
   memcpy(g_sensor_config_bk, config.sensor, sizeof(g_sensor_config_bk));
 
   check_unused_field(CONFIG_START_ADDRESS + sizeof(config_t), CONFIG_SENSOR_START_ADDRESS);
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_t):%d\r\n",sizeof(config_t));
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_t):%d",sizeof(config_t));
             
 }
 

@@ -31,7 +31,7 @@ void cellular_set_interface(cellular_if_t* pif)
 {
   g_cellular_if = pif;
   if (pif != NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스 설정: %s\r\n", pif->modem_name);
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스 설정: %s", pif->modem_name);
   }
 }
 
@@ -91,14 +91,14 @@ int32_t cellular_open(int32_t modem_number)
   }
   else
   {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"지원하지 않는 모뎀 번호: %d\r\n", modem_number);
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"지원하지 않는 모뎀 번호: %d", modem_number);
     return CELLULAR_ERR_NOT_INIT;
   }
 
 
   if (ret != 0)
   {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Modem driver initialization failed\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Modem driver initialization failed");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -115,12 +115,12 @@ int32_t cellular_open(int32_t modem_number)
 void cellular_reset_sw(void)
 {
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return;
   }
 
   if (g_cellular_if->api.reset_sw == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] reset_sw 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] reset_sw 함수가 초기화되지 않음");
     return;
   }
 
@@ -133,12 +133,12 @@ void cellular_reset_sw(void)
 void cellular_reset_hw(void)
 {
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return;
   }
 
   if (g_cellular_if->api.reset_hw == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] reset_hw 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] reset_hw 함수가 초기화되지 않음");
     return;
   }
 
@@ -151,12 +151,12 @@ void cellular_reset_hw(void)
 void cellular_off_power_safe(void)
 {
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return;
   }
 
   if (g_cellular_if->api.off_power_safe == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] off_power_safe 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] off_power_safe 함수가 초기화되지 않음");
     return;
   }
 
@@ -175,12 +175,12 @@ int32_t cellular_send_sms(char* num, char* msg)
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.send_sms == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] send_sms 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] send_sms 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -200,12 +200,12 @@ int32_t cellular_read_sms(sms_t* sms)
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.read_sms == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] read_sms 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] read_sms 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -221,12 +221,12 @@ int32_t cellular_open_tcp(void)
   int32_t ret;
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.open_tcp == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] open_tcp 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] open_tcp 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -241,12 +241,12 @@ int32_t cellular_disconnect(void)
 {
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.close_tcp == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] close_tcp 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] close_tcp 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
   return g_cellular_if->api.close_tcp(g_cellular_if);
@@ -267,7 +267,7 @@ int32_t cellular_tcp_recv_handler(uint8_t* buffer, size_t len, size_t size)
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -349,12 +349,12 @@ int32_t cellular_recv_tcp(uint8_t* buffer, size_t len, uint32_t timeout_ms)
 int32_t cellular_reset_data_usage(void)
 {
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
   g_cellular_if->rx_bytes = 0;
   g_cellular_if->tx_bytes = 0;
-   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 데이터 사용량 초기화됨 (rx_bytes: %lu, tx_bytes: %lu)\r\n",
+   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 데이터 사용량 초기화됨 (rx_bytes: %lu, tx_bytes: %lu)",
                g_cellular_if->rx_bytes, g_cellular_if->tx_bytes);
   return CELLULAR_OK;
 }
@@ -368,11 +368,11 @@ int32_t cellular_reset_data_usage(void)
 int32_t cellular_get_data_usage(uint32_t* rx_bytes, uint32_t* tx_bytes)
 {
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
   if (rx_bytes == NULL || tx_bytes == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] NULL 포인터 에러\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] NULL 포인터 에러");
     return CELLULAR_ERR_NULL_PTR;
   }
 
@@ -390,12 +390,12 @@ int32_t cellular_open_ppp(void)
   int32_t ret;
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.open_ppp == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] open_ppp 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] open_ppp 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -411,12 +411,12 @@ int32_t cellular_close_ppp(void)
   int32_t ret;
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.close_ppp == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] close_ppp 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] close_ppp 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -432,12 +432,12 @@ int32_t cellular_vpn_init(void)
   int32_t ret;
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.vpn_init == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] vpn_init 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] vpn_init 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -457,12 +457,12 @@ int32_t cellular_set_vpn_config(char* id, char* pw, uint8_t ip[4], uint16_t port
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.set_vpn_config == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] set_vpn_config 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] set_vpn_config 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -482,12 +482,12 @@ int32_t cellular_read_vpn_config(char* buffer, size_t size)
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.read_vpn_config == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] read_vpn_config 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] read_vpn_config 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -507,12 +507,12 @@ int32_t cellular_read_rssi(int16_t *rssi)
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.read_rssi == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] read_rssi 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] read_rssi 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -532,12 +532,12 @@ int32_t cellular_read_num(char* buffer, size_t size)
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.read_num == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] read_num 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] read_num 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -551,17 +551,17 @@ int32_t cellular_read_num(char* buffer, size_t size)
 void cellular_write_ip(uint8_t ip[4], uint16_t port)
 {
   if (ip == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] IP 주소가 NULL\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] IP 주소가 NULL");
     return;
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return;
   }
 
   if (g_cellular_if->api.write_ip == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] write_ip 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] write_ip 함수가 초기화되지 않음");
     return;
   }
 
@@ -580,12 +580,12 @@ int32_t cellular_check_network_service(char* buffer, size_t size)
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.check_network_service == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] check_network_service 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] check_network_service 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -601,12 +601,12 @@ int32_t cellular_recv_call(void)
   int32_t ret;
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.recv_call == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] recv_call 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] recv_call 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -626,12 +626,12 @@ int32_t cellular_dial(char* num, uint32_t waitTimeOutMs)
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.dial == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] dial 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] dial 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -651,12 +651,12 @@ int32_t cellular_read_ring_number(const char* data, char* buffer, size_t size)
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.read_ring_number == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] read_ring_number 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] read_ring_number 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -672,17 +672,17 @@ char cellular_get_dtmf(uint8_t* data)
   char dtmf;
 
   if (data == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] DTMF 데이터가 NULL\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] DTMF 데이터가 NULL");
     return 0;
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.get_dtmf == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] get_dtmf 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] get_dtmf 함수가 초기화되지 않음");
     return 0;
   }
 
@@ -702,12 +702,12 @@ int32_t cellular_at_direct(const char* at_command, char* response, size_t size)
   }
 
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
   if (g_cellular_if->api.at_direct == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] at_direct 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] at_direct 함수가 초기화되지 않음");
     return CELLULAR_ERR_NOT_INIT;
   }
 
@@ -722,7 +722,7 @@ int32_t cellular_at_direct(const char* at_command, char* response, size_t size)
 at_cmd_table_t *cellular_get_at_cmd_table(void)
 {
   if (g_cellular_if == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] 인터페이스가 설정되지 않음");
     return NULL;
   }
   return g_cellular_if->at_cmd_table;
@@ -807,7 +807,7 @@ int32_t cellular_recv_uart_at(uint8_t *buffer, size_t size,uint32_t timeout_ms)
     return 0;
   }
   if (g_cellular_if->api.recv_uart == NULL) {
-     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] drv_uart_recv 함수가 초기화되지 않음\r\n");
+     DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[Cellular API] drv_uart_recv 함수가 초기화되지 않음");
     return 0;
   }
 

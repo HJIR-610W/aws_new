@@ -80,7 +80,7 @@
 #define TASK_CDMA_ASYNC_DEF     (2048, osPriorityNormal)
 #define TASK_CLIENT_HANDLER_DEF (2048, osPriorityNormal)
 #define TASK_ETHERNET_DEF       (2048, osPriorityBelowNormal)  //초기화만 해주고 종료 됨
-#define TASK_CONSOLE_DEF        (3072, osPriorityBelowNormal)
+#define TASK_CONSOLE_DEF        (4096, osPriorityBelowNormal)
 #define TASK_MENU_DEF           (2560, osPriorityBelowNormal)
 #define TASK_SYSTEM_DEF         (2048, osPriorityBelowNormal)
 #define TASK_LOGGING_DEF        (2560, osPriorityBelowNormal)
@@ -90,7 +90,7 @@
 #define TASK_VHF_DEF            ( 768, osPriorityBelowNormal)
 // EthLink                      (1024, osPriorityBelowNormal)
 #define TASK_IWDT_DEF           ( 256, osPriorityLow)
-#define TASK_LOGGER_DEF         (1024, osPriorityBelowNormal)
+#define TASK_LOGGER_DEF         (1024, osPriorityRealtime3)
 
 
 
@@ -114,7 +114,7 @@
 #define configTICK_RATE_HZ ((TickType_t)1000)
 #define configMAX_PRIORITIES (56)
 #define configMINIMAL_STACK_SIZE ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE ((size_t)1024 * 56)
+#define configTOTAL_HEAP_SIZE ((size_t)1024 * 58)
 #define configMAX_TASK_NAME_LEN (16)
 #define configUSE_TRACE_FACILITY 1
 #define configUSE_16_BIT_TICKS 0

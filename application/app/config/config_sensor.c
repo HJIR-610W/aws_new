@@ -332,7 +332,7 @@ void load_config_sensor(void)
     backup_config_sensor();
   }
   
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_sensor_t):%d\r\n",sizeof(config_sensor_t));
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_sensor_t):%d",sizeof(config_sensor_t));
 }
 
 config_sensor_t *get_config_sensor(void)

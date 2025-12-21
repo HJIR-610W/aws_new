@@ -139,28 +139,28 @@ void parse_ads1220_register()
   switch ((reg >> 5) & 0x07)
   {
     case 0:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"000 - 20 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"000 - 20 SPS (Normal)");
       break;
     case 1:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"001 - 45 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"001 - 45 SPS (Normal)");
       break;
     case 2:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"010 - 90 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"010 - 90 SPS (Normal)");
       break;
     case 3:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"011 - 175 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"011 - 175 SPS (Normal)");
       break;
     case 4:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"100 - 330 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"100 - 330 SPS (Normal)");
       break;
     case 5:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"101 - 600 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"101 - 600 SPS (Normal)");
       break;
     case 6:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"110 - 1000 SPS (Normal)\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"110 - 1000 SPS (Normal)");
       break;
     case 7:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"111 - Reserved\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"111 - Reserved");
       break;
   }
   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"                        // 출력 샘플링 속도 설정\r\n");
@@ -169,16 +169,16 @@ void parse_ads1220_register()
   switch ((reg >> 3) & 0x03)
   {
     case 0:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"00 - Normal mode\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"00 - Normal mode");
       break;
     case 1:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"01 - Duty-cycle mode\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"01 - Duty-cycle mode");
       break;
     case 2:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"10 - Turbo mode\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"10 - Turbo mode");
       break;
     case 3:
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"11 - Reserved\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"11 - Reserved");
       break;
   }
   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"                        // 변환 클럭 동작 모드 설정\r\n");
@@ -192,7 +192,7 @@ void parse_ads1220_register()
 
   // Register 2: VREF[7:6], 50/60[5:4], PSW[3], IDAC[2:0]
   read_reg( ADS1220_REG_2, 1, &reg);
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"REG2 (0x%02X): 0x%02X\r\n", ADS1220_REG_2, reg);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"REG2 (0x%02X): 0x%02X", ADS1220_REG_2, reg);
 
   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  VREF      [7:6]: ");
   switch ((reg >> 6) & 0x03)
@@ -210,7 +210,7 @@ void parse_ads1220_register()
       DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"11 - AVDD - AVSS 사용");
       break;
   }
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"        // 기준 전압 선택\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"        // 기준 전압 선택");
 
   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  50/60Hz Rej[5:4]: ");
   switch ((reg >> 4) & 0x03)
@@ -267,7 +267,7 @@ void parse_ads1220_register()
   read_reg( ADS1220_REG_3, 1, &reg);
   // Register 3: I1MUX[7:5], I2MUX[4:2], DRDYM[1], Reserved[0]
   read_reg( ADS1220_REG_3, 1, &reg);
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"REG3 (0x%02X): 0x%02X\r\n", ADS1220_REG_3, reg);
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"REG3 (0x%02X): 0x%02X", ADS1220_REG_3, reg);
 
   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  IDAC1 MUX [7:5]: ");
   switch ((reg >> 5) & 0x07)
@@ -334,7 +334,7 @@ void parse_ads1220_register()
 
   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"  Reserved   [0] : %d                    // 예약비트 (항상 0)\r\n", reg & 0x01);
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"\r\n==========\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"\r\n==========");
 }
 
 void write_reg(uint8_t startAddress,uint8_t numRegs,uint8_t *pData)

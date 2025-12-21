@@ -34,7 +34,7 @@ void isrEventTask(void *arg)
 {
   isr_event_cmd_t event;
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"isr task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"ISR task start");
 
   while(1)
   {
