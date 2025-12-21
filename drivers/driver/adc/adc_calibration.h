@@ -74,6 +74,9 @@ typedef struct resolution_s
   int32_t max_raw_value;  ///< ADC 최대 원시 값 (예: 2^23 - 1)
 } config_adc_bits_t;
 
+
+#define CONFIG_ADC_CALI_VERSION 0x00000001
+
 typedef struct
 {
   config_header_t header;
@@ -82,7 +85,7 @@ typedef struct
   adc_cal_params_t ads1220_di_cal[ADS1220_NUM_DIFFERENTIAL_CHANNELS];
   config_adc_bits_t stm32_bits;
   adc_cal_params_t stm32_se_cal[STM32_NUM_SINGLE_ENDED_CHANNELS];
-} config_adc_nvm_t;
+} config_adc_t;
 
 typedef struct
 {
@@ -125,7 +128,7 @@ bool adc_driver_read_offset_trim(config_adc_adv_t* cfg, adc_channel_type_t chann
                                  int channel_index, float* offset_trim);
 
 config_adc_adv_t* get_adc_config(int type);
-extern config_adc_nvm_t g_adc_config_nvm;
+extern config_adc_t g_config_adc;
 extern config_adc_adv_t g_adc_config_stm32;
 extern config_adc_adv_t g_adc_config_ads1220;
 

@@ -20,6 +20,7 @@
 #include "aws_default_data.h"
 #include "util_crc16_ccitt.h"
 #include "kma3.h"
+#include "task_system.h"
 #define D2R 3.14159265 / 180.0
 #define R2D 180.0 / 3.14159265
 

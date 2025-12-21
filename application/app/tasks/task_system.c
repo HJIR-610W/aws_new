@@ -17,7 +17,7 @@
 #include "drv_system.h"
 #include "dev_charger.h"
 #include "task_logging.h"
-
+system_t System;
 const osThreadAttr_t kSystemTask_attributes = {
     .name = "system",
     .stack_size = TASK_STACK(TASK_SYSTEM_DEF),
@@ -34,6 +34,10 @@ void user_button_callback(int32_t arg)
 
 }
 
+system_t *get_system(void)
+{
+  return &System;
+}
 void user_button_init(void)
 {
   di_isr_set_cfg_t isr_cfg;
@@ -92,7 +96,7 @@ void check_sd_card(void)
   // 카드가 삽입된 상태에서 오류가 감지된 경우
   if (now_sd_inserted && g_sd_diskio_error)
   {
-    ERROR_PRINTF("g_sd_diskio_error %d\r\n", g_sd_diskio_error);
+    ERROR_PRINTF("g_sd_diskio_error %d", g_sd_diskio_error);
     OS_PEND_SEM(get_file_sem(), osWaitForever);
     MX_FATFS_DeInit();
     hal_sd_deinit();
@@ -121,7 +125,7 @@ void systemTask(void *arg)
   uint8_t err=0;
   uint32_t start_time = osKernelGetTickCount();
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"System task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"system task start\r\n");
 
   pre_sd_inserted = BSP_PlatformIsDetected();
 

@@ -91,7 +91,7 @@ void draw_system(win_t* p_win)
       win_printf_row(p_win, row_count++, "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,
                      Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
 
-      win_printf_row(p_win, row_count++, "%s: %d", m_l("ID",SYSTEM_WD), get_config_app()->id);
+      win_printf_row(p_win, row_count++, "%s: %d", m_l("ID",SYSTEM_WD), get_config_app()->device_id);
 
       win_printf_row(p_win, row_count++, "%s: %s", m_l("문 상태", SYSTEM_WD),
                      ITEM_LIST(is_door_opened(), door_status_list_kor));

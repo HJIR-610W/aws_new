@@ -85,7 +85,7 @@ void draw_system_page(screen_page_t *p_win)
 
   screen_page_printf(p_win, "%04d-%02d-%02d %02d:%02d:%02d", Date_Time.Year,
                  Date_Time.Month, Date_Time.Day, Date_Time.Hour, Date_Time.Min, Date_Time.Sec);
-  screen_page_printf(p_win, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
+  screen_page_printf(p_win, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->device_id);
   screen_page_printf(p_win, "%-*s:%s", SYSTEM_WD, "DOOR",
                     ITEM_LIST(is_door_opened(), door_status_list_eng));
 

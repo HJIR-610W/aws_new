@@ -2420,6 +2420,15 @@
             </group>
             <group>
                 <name>config</name>
+                <group>
+                    <name>migration</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\config\migration\config_app_migraion.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\application\app\config\migration\config_app_migration.h</name>
+                    </file>
+                </group>
                 <file>
                     <name>$PROJ_DIR$\..\application\app\config\config_adc.c</name>
                 </file>

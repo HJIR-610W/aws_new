@@ -46,7 +46,7 @@ static void read_sms_info(sms_t *sms)
   mfg_name = get_alias_name();
 
   len += snprintf(&sms->message[len], sizeof(sms->message) - len, "PCB:%u,MFG:%s,AREA:%u,BUILD:%u,", get_boot_pcb_version(), mfg_name, get_app_area_code(), build_time);
-  len += snprintf(&sms->message[len], sizeof(sms->message) - len, "ID:%d ", get_config_app()->id);
+  len += snprintf(&sms->message[len], sizeof(sms->message) - len, "ID:%d ", get_config_app()->device_id);
 
   cellular_send_sms(sms->number, sms->message);
 }

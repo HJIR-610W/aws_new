@@ -33,7 +33,7 @@ void draw_setup_menu_system_menu(screen_menu_t* p_win)
                      Date_Time.Month, Date_Time.Day);
   screen_menu_printf(p_win, SYSTEM_MENU_TIME, "%-*s:%02d:%02d:%02d", SYSTEM_WD, "TIME", Date_Time.Hour,
                      Date_Time.Min, Date_Time.Sec);
-  screen_menu_printf(p_win, SYSTEM_MENU_ID, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->id);
+  screen_menu_printf(p_win, SYSTEM_MENU_ID, "%-*s:%d", SYSTEM_WD, "ID", get_config_app()->device_id);
   screen_menu_printf(p_win, SYSTEM_MENU_PASSWORD, "%-*s:%d", SYSTEM_WD, "PASS", get_config_app()->password);
   screen_menu_printf(p_win, SYSTEM_MENU_CHARGER, "%-*s:%s", SYSTEM_WD, "CHARGER",
                      ITEM_LIST(get_config_app()->charger_model, charger_list_eng));
@@ -117,12 +117,12 @@ int32_t setup_menu_system(void)
       break;
       case SYSTEM_MENU_ID:
       {
-        int val = get_config_app()->id;
+        int val = get_config_app()->device_id;
         status = input_decimal("ID", 0, 65535, &val);
         if(status !=MENU_OK)
           break;
-        config.id = val;
-        WRITE_CFG(id);
+        config.device_id = val;
+        WRITE_CFG(device_id);
       }
         break;
         case SYSTEM_MENU_PASSWORD:

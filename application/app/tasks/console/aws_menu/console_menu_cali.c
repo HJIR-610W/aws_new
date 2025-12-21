@@ -215,7 +215,7 @@ int handle_factory_calibration(int adc_num)
       if (adc_perform_factory_calibration( cal_params_ptr, p1, p2, cal_temp))
       {
 
-        save_adc_cali();
+        save_config_adc_cali();
         debug_printf("Slope:%e Offset:%e\r\n", cal_params_ptr->factory_offset,
                   cal_params_ptr->factory_offset);
         debug_printf("캘리브레이션 성공! 설정이 NVM에 저장되었습니다.\r\n");
@@ -322,7 +322,7 @@ int handle_temp_comp_setup(int adc_num)
               return status;
             params->comp_method = (temp_comp_method_t)method_choice;
             debug_printf("보상 방식이 변경되었습니다.\r\n");
-            save_adc_cali();  // NVM 저장 필요
+            save_config_adc_cali();  // NVM 저장 필요
 
             break;
           case 2:  // 계수 설정
@@ -347,7 +347,7 @@ int handle_temp_comp_setup(int adc_num)
                 if (status == MENU_OK)
                 {
                   debug_printf("온도 계수가 업데이트되었습니다.\r\n");
-                  save_adc_cali();  // NVM 저장 필요
+                  save_config_adc_cali();  // NVM 저장 필요
                 }
               }
             }
@@ -383,7 +383,7 @@ int handle_temp_comp_setup(int adc_num)
               debug_printf("\r\nLUT 데이터 편집 기능은 이 예제에 포함되지 않았습니다.\r\n");
               // 예시 LUT 채우기 호출 (디버그용)
               // populate_lut_example(params);
-              // save_adc_cali(&g_adc_config_nvm);
+              // save_config_adc_cali(&g_config_adc);
             }
             else
             {
@@ -848,7 +848,7 @@ int adc_set_cali_default(void)
     g_adc_config_ads1220.differential_cal[channel].slope_temp_coeff = 1;
   }
 
-  save_adc_cali();
+  save_config_adc_cali();
   debug_printf("NVM 저장 성공\r\n");
 
   return status;
@@ -879,7 +879,7 @@ int system_adc_set_cali_default(void)
     g_adc_config_stm32.single_ended_cal[channel].offset_temp_coeff = 1;
     g_adc_config_stm32.single_ended_cal[channel].slope_temp_coeff = 1;
   }
-  save_adc_cali();
+  save_config_adc_cali();
 
   debug_printf("시스템 ADC 켈리브레이션값이 임의의 값으로 설정되었습니다.\r\n");
   debug_printf("NVM 저장 성공\r\n");

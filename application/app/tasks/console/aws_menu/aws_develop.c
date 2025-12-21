@@ -31,7 +31,7 @@ extern const char* panelList[4] ;
 
 int32_t menu_manage_print_config_all(void)
 {
-  debug_printf("ID               :%d\r\n", config.id);
+  debug_printf("ID               :%d\r\n", config.device_id);
   debug_printf("비밀번호         :%d\r\n", config.password);
   debug_printf("충전기 종류      :%s\r\n", ITEM_LIST(config.charger_model, charger_list_eng));
   debug_printf("로그 카운트      :%d\r\n", nvm_get_log_cnt());

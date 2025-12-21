@@ -401,7 +401,7 @@ void cellular_task(void *arg)
       port = config.cdma_port;
       log_printf(L_INFO,"Modem connection established");
 
-      rtu_id = swap_uint16(config.id);
+      rtu_id = swap_uint16(config.device_id);
       cellular_send_tcp((uint8_t *)&rtu_id, 2);//AWS는 아이디 전송해야 수신측에서 AWS id로 인식 처리 
       network_wtd_starttime = osKernelGetTickCount();
       state = APP_STATE_COMMUNICATE;

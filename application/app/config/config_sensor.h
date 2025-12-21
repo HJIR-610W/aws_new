@@ -282,9 +282,10 @@ typedef struct soil_temp_s
   adc_config_t   adc; 
 }soil_temp_t;
 
+#define CONFIG_SENSOR_VERSION 0x00000001
 typedef struct sensor_configs_s
 {
-    config_header_t header;
+  config_header_t header;
   temperature_config_t temp;
   wind_speed_config_t wind_speed;
   wind_direction_config_t wind_direction;

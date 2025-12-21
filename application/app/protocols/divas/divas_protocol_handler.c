@@ -571,7 +571,7 @@ uint16_t divas_read_index(uint8_t *rx_frame, uint8_t *tx_frame)
 
 
   tx_data[cnt++] = CONNET_TYPE_AWS;
-  id = get_config_app()->id;
+  id = get_config_app()->device_id;
   memcpy(&tx_data[cnt],&id,2);
   
   cnt += 2;

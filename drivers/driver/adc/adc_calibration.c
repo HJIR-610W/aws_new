@@ -3,7 +3,7 @@
 #include "adc_calibration.h"
 #include "config_adc.h"
 #include "system_err.h"
-config_adc_nvm_t g_adc_config_nvm;
+config_adc_t g_config_adc;
 config_adc_adv_t g_adc_config_stm32;
 config_adc_adv_t g_adc_config_ads1220;
 
@@ -103,15 +103,15 @@ STM이랑 ADS1220이랑 채널구성이 달라서별도 관ㄹ
 */
 void adc_config_map(void)
 {
-  g_adc_config_ads1220.bits = &g_adc_config_nvm.ads1220_bits;
-  g_adc_config_ads1220.single_ended_cal = g_adc_config_nvm.ads1220_se_cal;
+  g_adc_config_ads1220.bits = &g_config_adc.ads1220_bits;
+  g_adc_config_ads1220.single_ended_cal = g_config_adc.ads1220_se_cal;
   g_adc_config_ads1220.params_se_cnt = ADS1220_NUM_SINGLE_ENDED_CHANNELS;
 
-  g_adc_config_ads1220.differential_cal = g_adc_config_nvm.ads1220_di_cal;
+  g_adc_config_ads1220.differential_cal = g_config_adc.ads1220_di_cal;
   g_adc_config_ads1220.params_di_cnt = ADS1220_NUM_DIFFERENTIAL_CHANNELS;
 
-  g_adc_config_stm32.bits = &g_adc_config_nvm.stm32_bits;
-  g_adc_config_stm32.single_ended_cal = g_adc_config_nvm.stm32_se_cal;
+  g_adc_config_stm32.bits = &g_config_adc.stm32_bits;
+  g_adc_config_stm32.single_ended_cal = g_config_adc.stm32_se_cal;
   g_adc_config_stm32.params_se_cnt = STM32_NUM_SINGLE_ENDED_CHANNELS;
 
   g_adc_config_stm32.params_di_cnt = 0;
@@ -299,7 +299,7 @@ bool adc_perform_offset_adjustment(const config_adc_adv_t* adc_config, adc_cal_p
         ch_idx, current_temp, raw_now, target_ref, new_factory_offset, cal_params->factory_offset);
 
   cal_params->factory_offset = new_factory_offset;
-  save_adc_cali();
+  save_config_adc_cali();
   return true;
 }
 
@@ -376,7 +376,7 @@ bool adc_driver_adjust_offset(config_adc_adv_t *cfg,adc_channel_type_t channel_t
                                                current_temp, target_reference_value, raw_value);
   if(success)
   { 
-    save_adc_cali();
+    save_config_adc_cali();
   }
   return success;
 }
@@ -404,7 +404,7 @@ bool adc_driver_adjust_offset_trim(config_adc_adv_t* cfg, adc_channel_type_t cha
 
   cal_params_rw->factory_offset_trim = offset_trim;
 
-  save_adc_cali();
+  save_config_adc_cali();
   
   return true;
 

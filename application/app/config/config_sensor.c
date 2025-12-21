@@ -10,24 +10,10 @@
 #include "user_heap.h"
 #include "system_err.h"
 
-const config_sensor_t g_sensor_att_default =
-    {
-        .temp.hj = {.modbus_id = 1,
-                   .ofset = 0,
-                   .physical_layer = ePHYSICAL_RS485,
-                   .rs485_port = eAPP_RS485_RS232_B},
-        .humi.hj= {.modbus_id = 1,
-                   .ofset = 0,
-                   .physical_layer = ePHYSICAL_RS485,
-                   .rs485_port = eAPP_RS485_RS232_B}
-        };
-
 
 config_sensor_t g_config_sensor;
-const config_sensor_t g_config_sensor_default;
 
 bool g_config_sensor_dirty_flag=false;
-
 
 
 void limit_adc(adc_config_t *p_adc)
@@ -281,14 +267,12 @@ void save_config_sensor(void)
 
   g_config_sensor.header.magicNum = CONFIG_MAGIC;
   g_config_sensor.header.crc = crc;
-  g_config_sensor.header.version = get_app_version(0,0,0,0);
+  g_config_sensor.header.version = CONFIG_SENSOR_VERSION;
   drv_fram_write(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
 }
 
 void load_config_sensor(void)
 {
-
-
 #if 0
   uint32_t crc;
   uint8_t *p_start;
@@ -307,10 +291,10 @@ void load_config_sensor(void)
     }
   }
 
-  
-
 #else
   drv_fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
+
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_sensor_t):%d",sizeof(config_sensor_t));
 #endif
 
   limit_temp();

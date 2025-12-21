@@ -58,7 +58,7 @@ static void tcp_client_service(int sock)
   int32_t ret, len, err_code;
   uint16_t rtu_id;
   uint32_t start_tkme;
-  rtu_id = swap_uint16(get_config_app()->id);
+  rtu_id = swap_uint16(get_config_app()->device_id);
 
   send(sock, &rtu_id,2, 0);
 

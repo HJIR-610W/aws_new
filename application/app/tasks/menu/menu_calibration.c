@@ -411,7 +411,7 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
               p1.reference_value =0;
               p2.raw_value = 0;
               p2.reference_value =0;
-              save_adc_cali();
+              save_config_adc_cali();
               show_popup("Information","Init Ok");
             }
           }
@@ -427,7 +427,7 @@ int32_t setup_factory_calibration(adc_channel_type_t type)
           if (calib_updated)
           {
             adc_perform_factory_calibration(p_cal_params, p1, p2, 25);
-            save_adc_cali();
+            save_config_adc_cali();
             len = 0;
             len = make_sreen_row(&buffer[len], "Slope:%e", p_cal_params->factory_slope);
             len += make_sreen_row(&buffer[len], "Offset:%e", p_cal_params->factory_offset);
@@ -593,7 +593,7 @@ int32_t cali_setup_menu_factory_calibration(adc_channel_type_t type)
 
   if (adc_perform_factory_calibration( p_cal_params, p1, p2, cal_temp))
   {
-    save_adc_cali();
+    save_config_adc_cali();
     show_popup("Information", "Success");
   }
   else
@@ -793,7 +793,7 @@ CALI_POINT2:
     adc_perform_factory_calibration( p_cal_params, p1, p2, 25.0f);
   }
 
-  save_adc_cali();
+  save_config_adc_cali();
 
   return MENU_OK;
 }
@@ -1255,7 +1255,7 @@ int32_t cali_setup_menu_system_adc_init(void)
       g_adc_config_stm32.single_ended_cal[channel].slope_temp_coeff = 1.0f;
     }
 
-    save_adc_cali();
+    save_config_adc_cali();
     screen_clear();
     show_popup("Information", "Init Complete");
 
@@ -1301,7 +1301,7 @@ int32_t cali_setup_menu_adc_init(void)
     g_adc_config_ads1220.differential_cal[channel].slope_temp_coeff = 1.0f;
   }
 
-  save_adc_cali();
+  save_config_adc_cali();
   screen_clear();
   show_popup("Information", "Init Complete");
 

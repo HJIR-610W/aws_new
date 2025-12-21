@@ -30,7 +30,7 @@ void ping_callback(uint8_t *p_payload,uint16_t data_len)
     return;
   }
 
-  if(station_id == 65535 || get_config_app()->id== station_id)
+  if(station_id == 65535 || get_config_app()->device_id== station_id)
   {
     
     switch(cmd)

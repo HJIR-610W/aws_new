@@ -83,7 +83,7 @@ int aws_setup_menu_system(void)
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "시간    :%s",buffer);
     menu_cnt++;
 
-    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ID      :%d", get_config_app()->id);
+    snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "ID      :%d", get_config_app()->device_id);
     menu_cnt++;
 
     snprintf(buff[menu_cnt], sizeof(buff[menu_cnt]), "비밀번호:%d",get_config_app()->password);
@@ -111,8 +111,8 @@ int aws_setup_menu_system(void)
         status = view_input_decimal("ID",&dec,0, 9999);
         if(status != MENU_OK)
           break;
-          config.id = dec;
-          WRITE_CFG(id);
+          config.device_id = dec;
+          WRITE_CFG(device_id);
 
         break;
       case 3:  // password

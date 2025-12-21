@@ -5,7 +5,7 @@
 #include "drv_fram.h"
 #include "drv_crc.h"
 #include "app_version.h"
-
+#include "system_err.h"
 config_nvm_t g_config_nvm;
 
 
@@ -34,6 +34,8 @@ void load_config_nvm(void)
   #else
 
   drv_fram_read(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(config_nvm_t));
+
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_nvm_t):%d",sizeof(config_nvm_t));
 #endif
 
 
@@ -52,7 +54,7 @@ void save_config_nvm(void)
   g_config_nvm.header.time_stamp = 0;
   g_config_nvm.header.magicNum = CONFIG_MAGIC;
   g_config_nvm.header.crc = crc;
-  g_config_nvm.header.version = get_app_version(NULL,NULL,NULL,NULL);
+  g_config_nvm.header.version = CONFIG_NVM_VERSION;
 
   drv_fram_write(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(config_nvm_t));
   load_config_nvm();

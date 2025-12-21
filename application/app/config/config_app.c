@@ -16,11 +16,11 @@
 #include "util_stdio.h"
 #include "system_err.h"
 config_t config;
-system_t System;
+
 
 sensor_t g_sensor_config_bk[SENSOR_LIST_MAX]; // config 센서의 복사본
 
-const config_t config_app_default = {.id = 0,
+const config_t config_app_default = {.device_id = 0,
                                      .password = 7777,
                                      .charger_model = eCHARGER_LS,
                                      .aws_protocol_type = eAWS_PROTOCOL_KMA3,
@@ -299,14 +299,13 @@ void save_config_app(void)
   uint32_t crc;
   uint8_t *p_start;
 
-
   p_start = (uint8_t *)&config + sizeof(config.header);
 
   crc = drv_crc32_with_padding( p_start,sizeof(config_t)-sizeof(config.header));
   
   config.header.magicNum = CONFIG_MAGIC;
   config.header.crc = crc;
-  config.header.version = get_app_version(0,0,0,0); 
+  config.header.version = CONFIG_APP_VERSION; 
 
   drv_fram_write(CONFIG_START_ADDRESS, (uint8_t *)&config, sizeof(config)); 
 }
@@ -488,23 +487,7 @@ void config_app_sensor_reset(void)
 }
 
 
-void save_config_app_field(eCONFIG_APP_FIELD_t field)
-{
-  int32_t member_size;
-  uint32_t offset;
 
-  switch (field)
-  {
-    case eCONFIG_APP_SENSOR:
-      member_size = MEMBER_SIZE(config_t,sensor);
-      offset = OFFSET_OF_STRUCT(config_t,sensor);
-      drv_fram_write(CONFIG_START_ADDRESS + (uint32_t)offset, (uint8_t *)config.sensor,member_size);
-      break;
-
-    default:
-      break;
-  }
-}
 
 void make_comList(char *out, uint16_t outsize)
 {
@@ -585,10 +568,6 @@ void restore_config_app(void)
   }
 }
 
-system_t *get_system(void)
-{
-  return &System;
-}
 
 
 uint16_t get_lcd_off_time(void)

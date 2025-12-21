@@ -7,8 +7,8 @@
 
 
 
-void save_adc_cali(void);
-void load_adc_cali(void);
+void save_config_adc_cali(void);
+void load_config_adc_cali(void);
 
 void backup_adc_calibration(void);
 #endif

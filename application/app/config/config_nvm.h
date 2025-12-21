@@ -4,7 +4,9 @@
 #include "config_define.h"
 #include "config_memory_map.h"
 #include "util_memory.h"
-typedef struct sensor_nvm_S
+
+#define CONFIG_NVM_VERSION 0x00000001
+typedef struct config_nvm_s
 {
   config_header_t header;
   uint32_t log_q_cnt;

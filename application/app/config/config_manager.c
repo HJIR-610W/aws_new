@@ -12,7 +12,7 @@ void config_manager_init(void)
   load_config_app();
   load_config_nvm();  
   load_config_sensor();
-  load_adc_cali();
+  load_config_adc_cali();
 }
 
 

@@ -130,11 +130,12 @@ typedef enum
   eLCD_OFF_ALWAYS_ON
 } eLCD_OFF_TIME_t;
 
+#define CONFIG_APP_VERSION 0x00000002
 
-typedef struct config_s
+typedef struct config_app_v1_s
 {
   config_header_t header;
-  uint16_t id;
+  uint16_t device_id;
   sensor_t sensor[SENSOR_LIST_MAX];
   uint16_t password;
   eCHARGER_MODEL_t charger_model;  // 설정 후 리셋 요구됨
@@ -171,46 +172,59 @@ typedef struct config_s
   uint16_t dev_telnet_port;
   eLCD_OFF_TIME_t lcd_off_time_index; 
   uint8_t aws_csv_save_active;
-}config_t;
+}config_app_v1_t;
 
 
-typedef enum config_app_field_e
+typedef struct config_app_v2_s
 {
-  eCONFIG_APP_SENSOR
-} eCONFIG_APP_FIELD_t;
+  config_header_t header;
+  uint16_t id;
+  sensor_t sensor[SENSOR_LIST_MAX];
+  uint16_t password;
+  eCHARGER_MODEL_t charger_model;  // 설정 후 리셋 요구됨
+  eAWS_PROTOCOL_t aws_protocol_type;
+  eETH_MODE_t eth_mode;     // 설정 후 리셋 요구됨
+  uint8_t eth_subnet[4];    // 설정 후 리셋 요구됨
+  uint8_t eth_gateway[4];   // 설정 후 리셋 요구됨
+  uint8_t eth_ip[4];        // 설정 후 리셋 요구됨
+  uint8_t eth_mac[6];       // 설정 후 리셋 요구됨
+  uint8_t eth_remote_server_ip[4];
+  uint16_t eth_remote_server_port;
+  uint16_t eth_local_port;   // 설정 후 리셋 요구됨
+  uint8_t cdma_server_ip[4];
+  uint16_t cdma_port;
+  eCDMA_MODEL_t cdma_model;  // 설정 후 리셋 요구됨
+  uint8_t eth_active;        // 설정 후 리셋 요구됨
+  uint8_t cdma_active;       // 설정 후 리셋 요구됨
+  uint8_t direct_active;     // 설정 후 리셋 요구됨
+  eUART_BAUD_t direct_baud_index;  // 설정 후 리셋 요구됨
+  ePANEL_MODEL_t panel_model; // 경우에 따라 리셋 요구됨
+  ePANEL_ITEM6_TYPE_t panel_item6_type;
+  uint8_t panel_snow_active;
+  uint8_t panel_barometer_active;
+  uint8_t com_encrypt_active;
+  uint8_t cdma_vpn_active;
+  uint8_t ac_active;
+  eTELNET_MODE_t dev_telnet_mode;
+  uint8_t dev_telnet_ip[4];
+  uint16_t dev_telnet_port;
+  eLCD_OFF_TIME_t lcd_off_time_index; 
+  uint8_t aws_csv_save_active;
+  uint8_t vhf_id;
+  uint8_t vhf_group;
+  uint8_t vhf_host_id;
+  uint8_t vhf_repeater_id;
+  uint16_t vhf_ptt_delay;
+}config_app_v2_t;
 
-typedef enum AC_status_e
-{
-  eAC_100V,
-  eAC_220V,
-  eAC_OFF
-}eAC_STATUS_t;
+typedef struct config_app_v1_s config_t; // 현재 config 구조체는 v1 버전과 동일
 
-typedef struct system_s
-{
-  bool dc_error;
-  bool battery_error;
-  bool door_opened;
-  bool sdcard_inserted;
-  eAC_STATUS_t ac_status; 
-  bool fan_active;
-  float charger_solar1_voltage;
-  float charger_solar2_voltage;
-  float charger_solar1_currnet;
-  float charger_solar2_currnet;
-  float charger_battery1_voltage;
-  float charger_battery2_voltage;
-  float charger_load1_currnet;
-  float charger_load2_currnet;
-  float charger_load3_currnet;
-  float battery_voltage;
-}system_t;
 
 void config_app_sensor_reset(void);
 void config_app_reset(void);
 void save_config_app(void);
 void load_config_app(void);
-void save_config_app_field(eCONFIG_APP_FIELD_t field);
+
 void set_sensor_offset(eSENSOR_TYPE_t sensor,float offset);
 void backup_config_app(void);
 void restore_config_app(void);
@@ -225,11 +239,12 @@ uint16_t get_lcd_off_time(void);
 
 eUART_BAUD_t uart_baud_to_config_index(uint32_t baud);
 uint32_t config_index_to_uart_baud(eUART_BAUD_t index) ;
+sensor_t *get_sensor_config_copy(void);
+
 
 
 extern config_t config;
-extern system_t System;
 extern sensor_t g_sensor_config_bk[SENSOR_LIST_MAX]; // config 센서의 복사본
-system_t *get_system(void);
-sensor_t *get_sensor_config_copy(void);
+
+
 #endif

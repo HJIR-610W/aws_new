@@ -872,7 +872,7 @@ uint32_t kma_cmd_handler_AV(uint8_t *packet, uint8_t *txBuff)
   data[cnt++] = version[0];  // Ⅱ 프로토콜 버전 월
   data[cnt++] = version[0];  // Ⅱ 프로토콜 버전 월
 
-  SetWord(&data[cnt], config.id);
+  SetWord(&data[cnt], config.device_id);
   cnt += 2;
 
   memcpy(&data[cnt], "1.0.0             ", 18);
@@ -1031,13 +1031,13 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, uint32_t frame_len, uint8_t *tx_buffe
 
   if (request.command_str[1] == 'D')  // 지점번호 설정,AWS(구)에서 이렇게 처리함
   {
-    if (request.password == config.id)
+    if (request.password == config.device_id)
     {
-      config.id = request.station_id;
+      config.device_id = request.station_id;
     }
   }
 
-  if (request.station_id != config.id)
+  if (request.station_id != config.device_id)
   {
     return 0;
   }
