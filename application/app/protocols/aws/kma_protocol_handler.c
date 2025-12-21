@@ -993,7 +993,7 @@ uint16_t kma_cmd_handler_AP(uint8_t *rx_frame, uint8_t *tx_frame)
 /**
  * @retval 전송 길이
  */
-int32_t kma_cmd_handler(uint8_t *rx_frame, size_t frame_len, uint8_t *tx_buffer, eREQ_SOURCE_t source)
+int32_t kma_cmd_handler(uint8_t *rx_frame, size_t frame_len, uint8_t *tx_buffer,size_t size, eREQ_SOURCE_t source)
 {
   bool protocol_ok = false;
   int32_t len = 0;
@@ -1014,7 +1014,7 @@ int32_t kma_cmd_handler(uint8_t *rx_frame, size_t frame_len, uint8_t *tx_buffer,
   {
     TASK_PRINTF("Not KMA Protocol\r\n");
     task_hex_dump("AWS frame",rx_frame,frame_len);
-    return divas_cmd_handler(rx_frame, frame_len,tx_buffer);
+    return divas_cmd_handler(rx_frame, frame_len,tx_buffer,size);
   }
 
   switch (get_config_app()->aws_protocol_type)

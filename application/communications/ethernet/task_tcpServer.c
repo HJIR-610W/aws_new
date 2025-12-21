@@ -165,7 +165,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
       start_time = OS_GET_TICK();
       slot->status->last_recv_time = time_timestamp();
       UPDATE_CNT(slot->status->rx_cnt, 99);  // 스레드 안전한 카운터 업데이트
-      len = kma_cmd_handler(p_rx_buffer, ret, tx_buffer, eREQ_SOURCE_ETH);
+      len = kma_cmd_handler(p_rx_buffer, ret, tx_buffer, sizeof(tx_buffer),eREQ_SOURCE_ETH);
 
       if (len > 0) // 응답할 데이터가 있는 경우
       {

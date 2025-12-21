@@ -3,6 +3,7 @@
 #define AWS_KMA3_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #include "app_sensor.h"
 
@@ -15,6 +16,6 @@ typedef enum req_source_e
   eREQ_SOURCE_CDMA,
 }eREQ_SOURCE_t;
 
-int32_t kma_cmd_handler(uint8_t *rx_frame, size_t rx_len, uint8_t *tx_frame, eREQ_SOURCE_t source);
+int32_t kma_cmd_handler(uint8_t *rx_frame, size_t rx_len, uint8_t *tx_frame, size_t tx_size,eREQ_SOURCE_t source);
 
 #endif

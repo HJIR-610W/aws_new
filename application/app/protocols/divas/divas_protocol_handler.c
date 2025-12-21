@@ -72,7 +72,7 @@ uint32_t get_received_bytes(void)
 
 #define FW_DOWNLOAD_BUFFER_SIZE (1024*1024)
 
-uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
+uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame,size_t tx_size)
 {
   uint32_t totsize, offset;
   uint16_t length;
@@ -161,10 +161,10 @@ uint16_t divas_fw_download(uint8_t *rx_frame, uint8_t *tx_frame)
   }
 
   return make_divas_frame(DIVAS_CMD_FW_DOWNLOAD, rx_frame, data, cnt, tx_frame,
-                         KMA_TX_BUFFER_SIZE);  // 200 주의 하드코딩
+                         tx_size);  // 200 주의 하드코딩
 }
 
-uint16_t divas_fw_update(uint8_t *rx_frame, uint8_t *tx_frame)
+uint16_t divas_fw_update(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
 {
   uint8_t data[10];
   uint16_t cnt = 0;
@@ -184,7 +184,7 @@ uint16_t divas_fw_update(uint8_t *rx_frame, uint8_t *tx_frame)
     set_firmware_update();
   }
 
-  return make_divas_frame(DIVAS_CMD_FW_UPDATE, rx_frame, data, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+  return make_divas_frame(DIVAS_CMD_FW_UPDATE, rx_frame, data, cnt, tx_frame, tx_size);
 }
 
 
@@ -193,7 +193,7 @@ uint16_t divas_fw_update(uint8_t *rx_frame, uint8_t *tx_frame)
 #define INDEX_CONFIG_SENSOR 1
 #define INDEX_CONFIG_NVM    2
 
-uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame)
+uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
   uint8_t * p_config=NULL;
@@ -260,7 +260,7 @@ uint16_t divas_read_config_offset(uint8_t *rx_frame, uint8_t *tx_frame)
 
 
 uint16_t
-    divas_write_config_offset(uint8_t *rx_frame, uint8_t *tx_frame)
+    divas_write_config_offset(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
   uint8_t *rx_data = &rx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
@@ -314,7 +314,7 @@ uint8_t *p_data;
     tx_data[cnt++] = ASCII_ACK;
   }while(0);
 
-  return make_divas_frame(DIVAS_CMD_RD_CFG_OFS, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+  return make_divas_frame(DIVAS_CMD_RD_CFG_OFS, rx_frame, NULL, cnt, tx_frame, tx_size);
 }
 
 
@@ -323,7 +323,7 @@ uint8_t *p_data;
 /// @param rx_frame 
 /// @param tx_frame 
 /// @return tx 프레임 길이
-uint16_t divas_read_system(uint8_t *rx_frame, uint8_t *tx_frame)
+uint16_t divas_read_system(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
   uint8_t *rx_data = &rx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
@@ -361,14 +361,14 @@ uint16_t divas_read_system(uint8_t *rx_frame, uint8_t *tx_frame)
 
   } while (0);
 
-  return make_divas_frame(DIVAS_CMD_RD_SYSTEM, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+  return make_divas_frame(DIVAS_CMD_RD_SYSTEM, rx_frame, NULL, cnt, tx_frame, tx_size);
 }
 
 
 
 
 
-uint16_t divas_cmd_reset(uint8_t *rx_frame, uint8_t *tx_frame)
+uint16_t divas_cmd_reset(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
   uint16_t cnt = 0;
@@ -377,13 +377,13 @@ uint16_t divas_cmd_reset(uint8_t *rx_frame, uint8_t *tx_frame)
 
    log_printf(L_INFO, "divas cmd reset");
    reset_system_delay(5);
-   return make_divas_frame(DIVAS_CMD_RESET, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+   return make_divas_frame(DIVAS_CMD_RESET, rx_frame, NULL, cnt, tx_frame, tx_size);
 }
 
 #define RD_LOG_TYPE_Q 0
 #define RD_LOG_TYPE_TIME 1
 
-uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame)
+uint16_t divas_read_log(uint8_t *rx_frame, uint8_t *tx_frame,size_t tx_size)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
   uint8_t *rx_data = &rx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
@@ -439,10 +439,10 @@ enum {SYSTEM_LOG=0,ALARM_LOG=1};
     }
   }while(0);
 
-  return make_divas_frame(DIVAS_CMD_RD_SYSLOG, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+  return make_divas_frame(DIVAS_CMD_RD_SYSLOG, rx_frame, NULL, cnt, tx_frame, tx_size);
 }
 
-uint16_t divas_read_version(uint8_t *rx_frame, uint8_t *tx_frame)
+uint16_t divas_read_version(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
 
@@ -465,11 +465,11 @@ uint16_t divas_read_version(uint8_t *rx_frame, uint8_t *tx_frame)
   cnt += 4;
   SetU32(&tx_data[cnt], get_boot_pcb_version());
   cnt += 4;
-  return make_divas_frame(DIVAS_CMD_RD_VERSION, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+  return make_divas_frame(DIVAS_CMD_RD_VERSION, rx_frame, NULL, cnt, tx_frame, tx_size);
 }
 
 #define CONNET_TYPE_AWS 0x30
-uint16_t divas_read_index(uint8_t *rx_frame, uint8_t *tx_frame)
+uint16_t divas_read_index(uint8_t *rx_frame, uint8_t *tx_frame,size_t tx_size)
 {
   uint8_t *tx_data = &tx_frame[DIVAS_FRAME_OFFSET(DATA[0])];
   uint16_t cnt = 0;
@@ -484,11 +484,11 @@ uint16_t divas_read_index(uint8_t *rx_frame, uint8_t *tx_frame)
   SetU32(&tx_data[cnt], 0);
   cnt+=4;
 
-  return make_divas_frame(DIVAS_CMD_RD_INDEX, rx_frame, NULL, cnt, tx_frame, KMA_TX_BUFFER_SIZE);
+  return make_divas_frame(DIVAS_CMD_RD_INDEX, rx_frame, NULL, cnt, tx_frame, tx_size);
 }
 
 
-uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len, uint8_t *tx_frame)
+uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len, uint8_t *tx_frame, size_t tx_size)
 {
   uint16_t len = 0;
 
@@ -502,31 +502,31 @@ uint16_t divas_cmd_handler(uint8_t *rx_frame, uint16_t rx_len, uint8_t *tx_frame
   switch (rx_frame[11])
   {
     case DIVAS_CMD_FW_DOWNLOAD:
-      len = divas_fw_download(rx_frame, tx_frame);
+      len = divas_fw_download(rx_frame, tx_frame, tx_size);
       break;
     case DIVAS_CMD_FW_UPDATE:
-      len = divas_fw_update(rx_frame, tx_frame);
+      len = divas_fw_update(rx_frame, tx_frame, tx_size);
       break;
     case DIVAS_CMD_RD_CFG_OFS:
-      len = divas_read_config_offset(rx_frame,tx_frame);
+      len = divas_read_config_offset(rx_frame,tx_frame, tx_size);
       break;
     case DIVAS_CMD_WR_CFG_OFS:
-      len = divas_write_config_offset(rx_frame,tx_frame);
+      len = divas_write_config_offset(rx_frame,tx_frame, tx_size);
       break;
     case DIVAS_CMD_RD_SYSTEM:
-      len = divas_read_system(rx_frame, tx_frame);
+      len = divas_read_system(rx_frame, tx_frame, tx_size);
       break;
     case DIVAS_CMD_RESET:
-      len = divas_cmd_reset(rx_frame, tx_frame);
+      len = divas_cmd_reset(rx_frame, tx_frame, tx_size);
       break;
     case DIVAS_CMD_RD_SYSLOG:
-      len = divas_read_log(rx_frame,tx_frame);
+      len = divas_read_log(rx_frame,tx_frame, tx_size);
     break;
     case DIVAS_CMD_RD_VERSION:
-      len = divas_read_version(rx_frame, tx_frame);
+      len = divas_read_version(rx_frame, tx_frame, tx_size);
     break;
     case DIVAS_CMD_RD_INDEX:
-    //  len = divas_read_index(rx_frame,tx_frame);
+    //  len = divas_read_index(rx_frame,tx_frame, tx_size);
       break;
 
   }

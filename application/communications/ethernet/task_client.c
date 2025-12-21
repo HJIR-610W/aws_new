@@ -106,7 +106,7 @@ static void tcp_client_service(int sock)
 
         UPDATE_CNT(g_tcp_client_status.rx_cnt, 99);
         g_tcp_client_status.last_recv_time = time_timestamp();
-        len = kma_cmd_handler(rbuffer, ret, tx_buffer, eREQ_SOURCE_ETH);
+        len = kma_cmd_handler(rbuffer, ret, tx_buffer,sizeof(tx_buffer), eREQ_SOURCE_ETH);
         if (len > 0)
         {
           int32_t total = 0;

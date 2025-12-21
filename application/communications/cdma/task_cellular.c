@@ -438,7 +438,7 @@ void cellular_task(void *arg)
           network_wtd_starttime = osKernelGetTickCount();
           g_cdma_system.last_recv_time = time_timestamp();
           UPDATE_CNT(g_cdma_system.rx_cnt, 99);
-          len = kma_cmd_handler(rx_buffer, ret, tx_buffer, eREQ_SOURCE_CDMA);
+          len = kma_cmd_handler(rx_buffer, ret, tx_buffer, sizeof(tx_buffer),eREQ_SOURCE_CDMA);
           
           if (len > 0){
               g_cdma_system.last_send_time = time_timestamp();

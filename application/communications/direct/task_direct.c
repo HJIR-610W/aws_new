@@ -45,7 +45,7 @@ void directTask(void *arg)
       g_direct_system.link_status = eDIRECT_LINK_UP;
       g_direct_system.last_recv_time = time_timestamp();
       UPDATE_CNT(g_direct_system.rx_cnt, 99);
-      len = kma_cmd_handler(rx_buff, len, tx_buffer, eREQ_SOURCE_DIRECT);
+      len = kma_cmd_handler(rx_buff, len, tx_buffer,sizeof(tx_buffer), eREQ_SOURCE_DIRECT);
       if(len)
       {
         drv_uart_send(g_direct_uart_num, tx_buffer, len);
