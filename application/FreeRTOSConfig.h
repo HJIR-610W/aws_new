@@ -77,13 +77,13 @@
 #define TASK_CELLULAR_AT_DEF    (2048, osPriorityNormal)
 #define TASK_CELLULAR_DEF       (3072, osPriorityNormal)
 
-#define TASK_CLIENT_HANDLER_DEF (2560, osPriorityNormal)
-#define TASK_ETHERNET_DEF       (3072, osPriorityBelowNormal)  //초기화만 해주고 종료 됨
-#define TASK_CONSOLE_DEF        (3072, osPriorityBelowNormal)
+#define TASK_CLIENT_HANDLER_DEF (3072, osPriorityNormal)
+#define TASK_ETHERNET_DEF       (2048, osPriorityBelowNormal)  //초기화만 해주고 종료 됨
+#define TASK_CONSOLE_DEF        (3072, osPriorityBelowNormal) 
 #define TASK_MENU_DEF           (2560, osPriorityBelowNormal)
 #define TASK_SYSTEM_DEF         (2048, osPriorityBelowNormal)
-#define TASK_LOGGING_DEF        (2560, osPriorityBelowNormal)
-#define TASK_TELNET_SERVER_DEF  (3072, osPriorityBelowNormal)
+#define TASK_LOGGING_DEF        (2048, osPriorityBelowNormal)
+#define TASK_TELNET_SERVER_DEF  (2048, osPriorityBelowNormal)
 #define TASK_FILE_ERASE_DEF     (2048, osPriorityBelowNormal)
 #define TASK_PANEL_DEF          ( 768, osPriorityBelowNormal)
 #define TASK_VHF_DEF            ( 768, osPriorityBelowNormal)

@@ -1,4 +1,13 @@
 
+/*
+| 함수          | `FF_USE_LFN = 0` | `FF_USE_LFN = 1` (LFN은 stack에) |
+| ----------- | ---------------- | ------------------------------ |
+| `f_open()`  | \~320 bytes      | \~820 bytes                    |
+| `f_read()`  | \~350 bytes      | \~900 bytes                    |
+| `f_write()` | \~400 bytes      | \~950 bytes                    |
+| `f_mount()` | \~200 bytes      | \~200 bytes                    |
+
+*/
 
 #include "app_file.h"
 
@@ -87,15 +96,6 @@ FRESULT write_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)
   OS_POST_SEM(g_file_sem);
   return res;
 }
-/*
-| 함수          | `FF_USE_LFN = 0` | `FF_USE_LFN = 1` (LFN은 stack에) |
-| ----------- | ---------------- | ------------------------------ |
-| `f_open()`  | \~320 bytes      | \~820 bytes                    |
-| `f_read()`  | \~350 bytes      | \~900 bytes                    |
-| `f_write()` | \~400 bytes      | \~950 bytes                    |
-| `f_mount()` | \~200 bytes      | \~200 bytes                    |
-
-*/
 
 
 FRESULT read_file(char *path, uint8_t *data, uint32_t dataLen, uint32_t offset)

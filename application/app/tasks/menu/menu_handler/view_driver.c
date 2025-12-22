@@ -38,87 +38,45 @@ void create_win(win_t* win, int start_x, int start_y, int view_row, int view_col
 		win->selected_item[i] = 0;
 	}
 }
-
 #define OUT_BUFF_SIZE 1024
+#define HLINE_BUFF_SIZE 300
+#define TITLE_BUFF_SIZE 300
 //실시간 값 표시
 void win_printf_title(win_t* win, const char* pFmt, ...)
 {
-  char hline[300];
-  char title[300];
-  char *out;
+  char buffer[256];
   va_list ap;
   int len;
   int remain_len;
   const char* ansi_begin = "";
   const char* ansi_end = "";
 
-  out = user_malloc(OUT_BUFF_SIZE);
-  
-  if(out == NULL)
-  {
-    return ;
-  }
-  
+
+
+//  snprintf(&buffer[len], sizeof(buffer) - len, "\x1B[%d;%dH┌%s┐",win->start_y, win->start_x);  
   /* 1) 가로선(─) 문자열 생성: view_col-2 만큼 */
-  len = 0;
-  hline[0] = '\0';
+  /* 상단 라인 출력: ┌───┐ */
+ len = 0;
+
+ len =  snprintf(&buffer[len], sizeof(buffer) - len, "\x1B[%d;%dH┌",win->start_y, win->start_x);
 
   for (int i = 0; i < win->view_col - 2; i++)
   {
-    len += snprintf(&hline[len], sizeof(hline) - len, "─");
-    if (len >= (int)sizeof(hline) - 1)
+    len += snprintf(&buffer[len], sizeof(buffer) - len, "─");
+    if (len >= (int)sizeof(buffer) - 1)
     {
       break;
     }
   }
+
+  snprintf(&buffer[len], sizeof(buffer) - len, "┐");
+  debug_printf("%s", buffer);
+
+
 
   /* 2) 타이틀 문자열 1회 생성 */
-  len = 0;
-  title[0] = '\0';
-
-  va_start(ap, pFmt);
-  len = vsnprintf(&title[len], sizeof(title) - len, pFmt, ap);
-  va_end(ap);
-
-  if (len < 0)
-  {
-    len = 0;
-    title[0] = '\0';
-  }
-  if (len >= (int)sizeof(title))
-  {
-    len = (int)sizeof(title) - 1;
-    title[len] = '\0';
-  }
-
-  if (win->total_pages > 1)
-  {
-    len += snprintf(&title[len], sizeof(title) - len,
-                    " [%d/%d]", win->current_page + 1, win->total_pages);
-    if (len >= (int)sizeof(title))
-    {
-      len = (int)sizeof(title) - 1;
-      title[len] = '\0';
-    }
-  }
-
-  /* 3) 화면 폭(문자 수 기준) 맞춰 공백 패딩 */
-  remain_len = win->view_col - utf8_strlen(title) - 2;
-  if (remain_len < 0)
-  {
-    remain_len = 0;
-  }
-
-  for (int i = 0; i < remain_len; i++)
-  {
-    len += snprintf(&title[len], sizeof(title) - len, " ");
-    if (len >= (int)sizeof(title) - 1)
-    {
-      break;
-    }
-  }
-
   /* 4) 포커스/선택 스타일 결정 */
+    /* 6) 타이틀 라인 출력: │title│ */
   if (win->is_focused)
   {
     ansi_begin = "\x1B[32m";
@@ -130,26 +88,70 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
     ansi_end = "\x1B[0m";
   }
 
-  /* 5) 상단 라인 출력: ┌───┐ */
-  snprintf(out, OUT_BUFF_SIZE,
-           "\x1B[%d;%dH┌%s┐",
-           win->start_y, win->start_x, hline);
-  debug_printf("%s", out);
 
-  /* 6) 타이틀 라인 출력: │title│ */
-  snprintf(out, OUT_BUFF_SIZE,
-           "\x1B[%d;%dH│%s%s%s│\r\n",
-           win->start_y + 1, win->start_x,
-           ansi_begin, title, ansi_end);
-  debug_printf("%s", out);
+  len = 0;
+   debug_printf("\x1B[%d;%dH│%s",win->start_y + 1, win->start_x,ansi_begin);
+
+  va_start(ap, pFmt);
+  len += vsnprintf(&buffer[len], sizeof(buffer) - len, pFmt, ap);
+  va_end(ap);
+
+  if (len < 0)
+  {
+    len = 0;
+    buffer[0] = '\0';
+  }
+  if (len >= (int)sizeof(buffer))
+  {
+    len = (int)sizeof(buffer) - 1;
+    buffer[len] = '\0';
+  }
+
+  if (win->total_pages > 1)
+  {
+    len += snprintf(&buffer[len], sizeof(buffer) - len," [%d/%d]", win->current_page + 1, win->total_pages);
+    if (len >= (int)sizeof(buffer))
+    {
+      len = (int)sizeof(buffer) - 1;
+      buffer[len] = '\0';
+    }
+  }
+
+  remain_len = win->view_col - utf8_strlen(buffer) - 2;
+  if (remain_len < 0)
+  {
+    remain_len = 0;
+  }
+
+  for (int i = 0; i < remain_len; i++)
+  {
+    len += snprintf(&buffer[len], sizeof(buffer) - len, " ");
+    if (len >= (int)sizeof(buffer) - 1)
+    {
+      break;
+    }
+  }
+
+  debug_printf("%s", buffer);
+  debug_printf("%s│", ansi_end);
+
 
   /* 7) 구분선 라인 출력: ├───┤ */
-  snprintf(out, OUT_BUFF_SIZE,
-           "\x1B[%d;%dH├%s┤",
-           win->start_y + 2, win->start_x, hline);
-  debug_printf("%s", out);
+  len = 0;
+  len = snprintf(&buffer[len], sizeof(buffer) - len, "\x1B[%d;%dH├",win->start_y + 2, win->start_x);
   
-  user_free(out);
+  for (int i = 0; i < win->view_col - 2; i++)
+  {
+    len += snprintf(&buffer[len], sizeof(buffer) - len, "─");
+    if (len >= (int)sizeof(buffer) - 1)
+    {
+      break;
+    }
+  }
+  snprintf(&buffer[len], sizeof(buffer) - len, "┤");
+  debug_printf("%s", buffer);
+
+
 }
 
 

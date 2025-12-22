@@ -22,18 +22,18 @@ extern "C" {
 #define WIN_PAGE_MAX 10
 typedef struct
 {
-	int start_x;
-	int start_y;
-	int current_row;
-	int view_row;//창에서 타이틀 제외한 행의 수
-	int view_col; // 창의 열에 출력되는 모든 문자수  | | 포함
-	int scroll_offset[WIN_PAGE_MAX];//개별 페이지의 스크롤 오프셋
-	int total_items[WIN_PAGE_MAX];//개별 페이지 행의 갯수
-	int selected_item[WIN_PAGE_MAX];//개별 페이지 선택된 행
-	int is_focused;
-	int is_selected;
-	int current_page;
-	int total_pages;//창이 갖는 페이지 수
+	int8_t start_x;
+	int8_t start_y;
+	int8_t current_row;
+	int8_t view_row;//창에서 타이틀 제외한 행의 수
+	int8_t view_col; // 창의 열에 출력되는 모든 문자수  | | 포함
+	int8_t scroll_offset[WIN_PAGE_MAX];//개별 페이지의 스크롤 오프셋
+	int8_t total_items[WIN_PAGE_MAX];//개별 페이지 행의 갯수
+	int8_t selected_item[WIN_PAGE_MAX];//개별 페이지 선택된 행
+	int8_t is_focused;
+	int8_t is_selected;
+	int8_t current_page;
+	int8_t total_pages;//창이 갖는 페이지 수
 } win_t;
 
 
