@@ -35,11 +35,7 @@ extern UART_HandleTypeDef huart6;
 int32_t g_sdi_uart;
 
 
-const osThreadAttr_t sdiTask_attributes = {
-    .name = "sdi",
-    .stack_size = TASK_STACK(TASK_SDI_DEF),
-    .priority = (osPriority_t)TASK_PRIO(TASK_SDI_DEF),
-};
+
 
 uint8_t set_even_parity(uint8_t data)
 {

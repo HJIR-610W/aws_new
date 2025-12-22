@@ -27,18 +27,19 @@ void vApplicationIdleHook( void )
      때문**입니다. */
 }
 
-char g_task_name[20];
+
 
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 {
   /* configCHECK_FOR_STACK_OVERFLOW가 1 또는 2로 정의되어 있으면
      런타임 중 스택 오버플로우(overflow) 검사가 수행됩니다.
      이 훅 함수는 스택 오버플로우가 감지되었을 때 호출됩니다. */
+   char task_name[20];
 
-   snprintf(g_task_name,sizeof(g_task_name),"SOF,%s",pcTaskName);
-   debug_printf("SOF,%s",g_task_name);
+   snprintf(task_name,sizeof(task_name),"SOF,%s",pcTaskName);
+   debug_printf("SOF,%s",task_name);
    //__asm("BKPT #0");
-   reset_system("%s", g_task_name);
+   reset_system("%s", task_name);
 }
 
 void vApplicationMallocFailedHook(void)

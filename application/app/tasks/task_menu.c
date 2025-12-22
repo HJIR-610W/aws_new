@@ -1535,19 +1535,8 @@ void menuTask_init(void)
 
 }
 
-//
-void menuPopUpTask(void *arg)
-{
-  while(1)
-  {
 
-  }
-}
 
-void menuPopUpTask_init(void)
-{
-  osThreadNew(menuPopUpTask, NULL, &kBootProgressTask_attributes);
-}
 
 void test_menu_info(void)
 {

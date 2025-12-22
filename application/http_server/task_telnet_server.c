@@ -819,10 +819,30 @@ static void telnet_server_task(void* argument)
   }
 }
 
+static StaticTask_t s_telnetServerTcb;
 
 void telnet_server_task_init(void)
 {
-
+#if 0 //freertos heap사용
   g_telnetServerTaskId = osThreadNew(telnet_server_task, NULL, &kTelnet_server_task_attributes);
+#endif
+#if 1
+const uint32_t stack_size = TASK_STACK(TASK_TELNET_SERVER_DEF);
+    void* stack_mem = user_malloc(stack_size);
+    if (stack_mem != NULL) {
+        osThreadAttr_t custom_attr = kTelnet_server_task_attributes;
+        custom_attr.stack_mem = stack_mem;
+        custom_attr.stack_size = stack_size;
+        custom_attr.cb_mem  = &s_telnetServerTcb;
+        custom_attr.cb_size = sizeof(s_telnetServerTcb);
 
+        g_telnetServerTaskId = osThreadNew(telnet_server_task, NULL, &custom_attr);
+        if (g_telnetServerTaskId == NULL) {
+            debug_printf("Telnet Server: Task creation failed\r\n");
+            user_free(stack_mem);
+        }
+    } else {
+        debug_printf("Telnet Server: Failed to allocate memory for task stack\r\n");
+    }
+#endif
 }

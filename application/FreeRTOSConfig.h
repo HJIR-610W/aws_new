@@ -62,7 +62,7 @@
 #define TASK_BOOT_DEF           (2048, osPriorityRealtime3)
 #define TASK_WDT_DEF            (1024, osPriorityRealtime2)
 #define TASK_ISR_EVENT_DEF      (1024, osPriorityRealtime2)
-#define TASK_HTTP_SERVER_DEF    (4096, osPriorityRealtime2)
+#define TASK_HTTP_SERVER_DEF    (4096, osPriorityRealtime2) //미사용중
 // Tmr Svc                      (1024, osPriorityRealtime2)
 #define TASK_DUALPORT_DEF       (2048, osPriorityRealtime1)
 #define TASK_KEY_DEF            ( 256, osPriorityRealtime1)
@@ -70,28 +70,25 @@
 #define TASK_MEASURE_1S_DEF     (2048, osPriorityRealtime)
 // tcpip_thread                 (1024, osPriorityRealtime)
 // EthIf                        ( 512, osPriorityRealtime)
-#define TASK_SDI_DEF            (1024, osPriorityNormal) //현재 미사용
-#define TASK_HART_DEF           (1024, osPriorityNormal) //현재 미사용
-#define TASK_TCP_SERVER_DEF     (1024, osPriorityNormal)
+
+#define TASK_TCP_SERVER_DEF     (1024, osPriorityNormal) // 
 #define TASK_TCP_CLIENT_DEF     (2048, osPriorityNormal)
 #define TASK_DIRECT_DEF         (2048, osPriorityNormal)
-#define TASK_CDMA_AT_DEF        (2048, osPriorityNormal)
+#define TASK_CELLULAR_AT_DEF    (2048, osPriorityNormal)
 #define TASK_CELLULAR_DEF       (3072, osPriorityNormal)
-#define TASK_CDMA_ASYNC_DEF     (2048, osPriorityNormal)
-#define TASK_CLIENT_HANDLER_DEF (3072, osPriorityNormal)
-#define TASK_ETHERNET_DEF       (2048, osPriorityBelowNormal)  //초기화만 해주고 종료 됨
+
+#define TASK_CLIENT_HANDLER_DEF (2560, osPriorityNormal)
+#define TASK_ETHERNET_DEF       (3072, osPriorityBelowNormal)  //초기화만 해주고 종료 됨
 #define TASK_CONSOLE_DEF        (3072, osPriorityBelowNormal)
 #define TASK_MENU_DEF           (2560, osPriorityBelowNormal)
 #define TASK_SYSTEM_DEF         (2048, osPriorityBelowNormal)
 #define TASK_LOGGING_DEF        (2560, osPriorityBelowNormal)
-#define TASK_TELNET_SERVER_DEF  (2048, osPriorityBelowNormal)
+#define TASK_TELNET_SERVER_DEF  (3072, osPriorityBelowNormal)
 #define TASK_FILE_ERASE_DEF     (2048, osPriorityBelowNormal)
 #define TASK_PANEL_DEF          ( 768, osPriorityBelowNormal)
 #define TASK_VHF_DEF            ( 768, osPriorityBelowNormal)
 // EthLink                      (1024, osPriorityBelowNormal)
 #define TASK_IWDT_DEF           ( 256, osPriorityLow)
-#define TASK_LOGGER_DEF         (1024, osPriorityRealtime3)
-
 
 
 
@@ -114,7 +111,7 @@
 #define configTICK_RATE_HZ ((TickType_t)1000)
 #define configMAX_PRIORITIES (56)
 #define configMINIMAL_STACK_SIZE ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE ((size_t)1024 * 57)
+#define configTOTAL_HEAP_SIZE ((size_t)1024 * 56)
 #define configMAX_TASK_NAME_LEN (16)
 #define configUSE_TRACE_FACILITY 1
 #define configUSE_16_BIT_TICKS 0

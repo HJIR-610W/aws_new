@@ -2661,9 +2661,6 @@
                     <name>$PROJ_DIR$\..\application\app\tasks\task_key.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\app\tasks\task_logger.c</name>
-                </file>
-                <file>
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_logging.c</name>
                 </file>
                 <file>
@@ -3210,7 +3207,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>

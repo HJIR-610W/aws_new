@@ -386,7 +386,7 @@ void cellular_task(void *arg)
     cellular_set_reboot_callback(dispatcher_urc_reboot_cb);
     cellular_set_disconnect_callback(dispatcher_urc_tcp_disconnected_cb);
     cellular_set_dtmf_callback(dispatcher_urc_dtmf_cb);
-    cellular_set_call_callback(ring_callback_task);
+  //  cellular_set_call_callback(ring_callback_task); 전화 필요 없ㅇ므 
     cellular_set_sms_callback(sms_callback_task);
 
     while (1)

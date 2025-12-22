@@ -127,7 +127,7 @@ int at_parser_start(void)
 {
   if (s_task_id) return 0;
 
-  const osThreadAttr_t attr = { .name = "at_parser", .stack_size = TASK_STACK(TASK_CDMA_AT_DEF), .priority = (osPriority_t)TASK_PRIO(TASK_CDMA_AT_DEF) };
+  const osThreadAttr_t attr = { .name = "at_parser", .stack_size = TASK_STACK(TASK_CELLULAR_AT_DEF), .priority = (osPriority_t)TASK_PRIO(TASK_CELLULAR_AT_DEF) };
   s_task_id = osThreadNew(at_task, NULL, &attr);
   return (s_task_id != NULL) ? 0 : -1;
 }
