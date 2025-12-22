@@ -255,11 +255,12 @@ void loggingTask(void *arg)
               err = write_sunshine_1min(&logging.ct, sunshine);
               update_loggingErr(&g_logging_system.status_group, err, LOGGING_SUN_ERR);
             }
+#if 0 
             if(config.aws_csv_save_active)
             {
               save_aws_csv(p_frame->data,p_frame->data_len);
             }
-            
+#endif
             break;
         }
 

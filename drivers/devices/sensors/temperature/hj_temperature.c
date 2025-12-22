@@ -83,11 +83,11 @@ float get_float(uint16_t high, uint16_t low)
 float hjTemperature_read(driver_t *driver, uint8_t *err)
 {
   float temp;
-  uint16_t reg[2];
+  int16_t reg[2];
   hj_temperature_cfg_t *cfg = driver->cfg;
   int32_t ret;
 
-  ret = modbus_read_hold_reg(&cfg->modbus,  HJ_REG_NUM_TEMP, reg, 1);
+  ret = modbus_read_hold_reg(&cfg->modbus,  HJ_REG_NUM_TEMP, (uint16_t *)reg, 1);
 
   if(ret)
   {

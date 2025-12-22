@@ -82,7 +82,7 @@
 #define TASK_CONSOLE_DEF        (3072, osPriorityBelowNormal) 
 #define TASK_MENU_DEF           (2560, osPriorityBelowNormal)
 #define TASK_SYSTEM_DEF         (2048, osPriorityBelowNormal)
-#define TASK_LOGGING_DEF        (2048, osPriorityBelowNormal)
+#define TASK_LOGGING_DEF        (3072, osPriorityBelowNormal)
 #define TASK_TELNET_SERVER_DEF  (2048, osPriorityBelowNormal)
 #define TASK_FILE_ERASE_DEF     (2048, osPriorityBelowNormal)
 #define TASK_PANEL_DEF          ( 768, osPriorityBelowNormal)
