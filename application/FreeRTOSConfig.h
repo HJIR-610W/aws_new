@@ -77,7 +77,7 @@
 #define TASK_CELLULAR_AT_DEF    (2048, osPriorityNormal)
 #define TASK_CELLULAR_DEF       (3072, osPriorityNormal)
 
-#define TASK_CLIENT_HANDLER_DEF (3072, osPriorityNormal)
+#define TASK_CLIENT_HANDLER_DEF (2048, osPriorityNormal)
 #define TASK_ETHERNET_DEF       (2048, osPriorityBelowNormal)  //초기화만 해주고 종료 됨
 #define TASK_CONSOLE_DEF        (3072, osPriorityBelowNormal) 
 #define TASK_MENU_DEF           (2560, osPriorityBelowNormal)

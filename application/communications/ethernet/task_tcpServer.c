@@ -24,6 +24,7 @@
 #include "task_core_debug.h"
 
 
+
 #define RECV_BUFF_SIZE 512
 #define SERVER_RETRY_INTERVAL_MS 5000
 #define CLIENT_CONNECT_TIMEOUT_MS 1000 
@@ -99,18 +100,24 @@ int set_recv_timeout(int sockfd, uint32_t timeout_ms)
 extern uint8_t g_ethernet_phy_link;
 static void server_service_for_client(int sock, client_slot_t* slot)
 {
-
-  uint8_t tx_buffer[KMA_TX_BUFFER_SIZE];
+  uint8_t *p_tx_buffer = NULL;
+  uint8_t *p_rx_buffer = NULL;
   int32_t ret, len, err_code;
-  uint8_t *p_rx_buffer;
   uint32_t start_time;
 
-  p_rx_buffer = pvPortMalloc(RECV_BUFF_SIZE);
+  p_rx_buffer = user_malloc(RECV_BUFF_SIZE);
 
   if(p_rx_buffer ==NULL)
   {
     return;
   }
+  p_tx_buffer = user_malloc(KMA_TX_BUFFER_SIZE);
+  if(p_tx_buffer ==NULL)
+  {
+    user_free(p_rx_buffer);
+    return;
+  }
+
 
   task_printf("클라이언트 핸들러: 클라이언트 %s:%u (소켓 %d) 처리 중\r\n", slot->client_ip_str,
             slot->client_port, sock);
@@ -119,7 +126,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
   {
     task_printf("클라이언트 핸들러 (%s:%u): 소켓 %d에 대한 타임아웃 설정 실패\r\n",
               slot->client_ip_str, slot->client_port, sock);
-    vPortFree(p_rx_buffer);
+    user_free(p_rx_buffer);
     return;
   }
 
@@ -165,7 +172,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
       start_time = OS_GET_TICK();
       slot->status->last_recv_time = time_timestamp();
       UPDATE_CNT(slot->status->rx_cnt, 99);  // 스레드 안전한 카운터 업데이트
-      len = kma_cmd_handler(p_rx_buffer, ret, tx_buffer, sizeof(tx_buffer),eREQ_SOURCE_ETH);
+      len = kma_cmd_handler(p_rx_buffer, ret, p_tx_buffer, KMA_TX_BUFFER_SIZE,eREQ_SOURCE_ETH);
 
       if (len > 0) // 응답할 데이터가 있는 경우
       {
@@ -174,7 +181,7 @@ static void server_service_for_client(int sock, client_slot_t* slot)
 
         while (total_sent < len)
         {
-          ret = send(sock, tx_buffer + total_sent, len - total_sent, 0);
+          ret = send(sock, p_tx_buffer + total_sent, len - total_sent, 0);
           slot->status->last_send_time = time_timestamp();
           if (ret <= 0)  // send 오류 또는 연결 종료
           {
@@ -214,7 +221,8 @@ static void server_service_for_client(int sock, client_slot_t* slot)
   task_printf("클라이언트 핸들러 (%s:%u): 소켓 %d에 대한 서비스 루프 종료\r\n", slot->client_ip_str, slot->client_port, sock);
 
 
-  vPortFree(p_rx_buffer);
+  user_free(p_rx_buffer);
+  user_free(p_tx_buffer);
 
 
 }
