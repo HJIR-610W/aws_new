@@ -2673,7 +2673,7 @@
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_menu.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\application\app\tasks\task_menu_define.h</name>
+                    <name>$PROJ_DIR$\..\Application\app\tasks\task_menu_define.h</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Application\app\tasks\task_monitor.c</name>
@@ -3210,7 +3210,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
