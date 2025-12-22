@@ -164,17 +164,6 @@ void analyze_fault(uint32_t cfsr, uint32_t hfsr, uint32_t mmfar, uint32_t bfar)
 
 }
 
-void hardfault_c(uint32_t *stack)
-{
-    printf("R0  = 0x%08lx\n", stack[0]);
-    printf("R1  = 0x%08lx\n", stack[1]);
-    printf("R2  = 0x%08lx\n", stack[2]);
-    printf("R3  = 0x%08lx\n", stack[3]);
-    printf("R12 = 0x%08lx\n", stack[4]);
-    printf("LR  = 0x%08lx\n", stack[5]);
-    printf("PC  = 0x%08lx\n", stack[6]);
-    printf("xPSR=0x%08lx\n", stack[7]);
-}
 
 
 void HardFault_Handler(void)
@@ -183,15 +172,7 @@ void HardFault_Handler(void)
   reg_psp = __get_PSP();
   reg_lr = __get_LR();
     
-      __asm volatile
-    (
-        "tst lr, #4          \n"
-        "ite eq              \n"
-        "mrseq r0, msp       \n"
-        "mrsne r0, psp       \n"
-        "b hardfault_c       \n"
-    );
-    
+
     
     
   for(i = 0 ; i < 6;i++)

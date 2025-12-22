@@ -8,8 +8,9 @@
 #include "debug_io.h"
 #include "console_utile.h"
 #include "util_stdio.h"
+#include "user_heap.h"
 
-static layout_t g_layout = {1, 1, 125, 0};//화면 전체 정보
+static layout_t g_layout = {1, 1, 150, 0};//화면 전체 정보
 
 
 
@@ -37,18 +38,27 @@ void create_win(win_t* win, int start_x, int start_y, int view_row, int view_col
 		win->selected_item[i] = 0;
 	}
 }
+
+#define OUT_BUFF_SIZE 1024
 //실시간 값 표시
 void win_printf_title(win_t* win, const char* pFmt, ...)
 {
   char hline[300];
   char title[300];
-  char out[700];
+  char *out;
   va_list ap;
   int len;
   int remain_len;
   const char* ansi_begin = "";
   const char* ansi_end = "";
 
+  out = user_malloc(OUT_BUFF_SIZE);
+  
+  if(out == NULL)
+  {
+    return ;
+  }
+  
   /* 1) 가로선(─) 문자열 생성: view_col-2 만큼 */
   len = 0;
   hline[0] = '\0';
@@ -121,23 +131,25 @@ void win_printf_title(win_t* win, const char* pFmt, ...)
   }
 
   /* 5) 상단 라인 출력: ┌───┐ */
-  snprintf(out, sizeof(out),
+  snprintf(out, OUT_BUFF_SIZE,
            "\x1B[%d;%dH┌%s┐",
            win->start_y, win->start_x, hline);
   debug_printf("%s", out);
 
   /* 6) 타이틀 라인 출력: │title│ */
-  snprintf(out, sizeof(out),
+  snprintf(out, OUT_BUFF_SIZE,
            "\x1B[%d;%dH│%s%s%s│\r\n",
            win->start_y + 1, win->start_x,
            ansi_begin, title, ansi_end);
   debug_printf("%s", out);
 
   /* 7) 구분선 라인 출력: ├───┤ */
-  snprintf(out, sizeof(out),
+  snprintf(out, OUT_BUFF_SIZE,
            "\x1B[%d;%dH├%s┤",
            win->start_y + 2, win->start_x, hline);
   debug_printf("%s", out);
+  
+  user_free(out);
 }
 
 

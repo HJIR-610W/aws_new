@@ -507,7 +507,7 @@ void draw_aws_data_page(screen_page_t *p_win, AWS_DATA_STRUCT *p_aws, uint32_t s
     if (status != MENU_OK)
     break; 
      
-    sscanf(strfmt.data, strfmt.fmt,&year, &month, &day, &hour, &min);
+      sscanf(strfmt.data, strfmt.fmt,&year, &month, &day, &hour, &min);
       nt.Year = year;
       nt.Month = month;
       nt.Day = day;
