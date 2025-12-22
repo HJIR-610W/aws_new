@@ -1,0 +1,66 @@
+{
+  "product_list": [
+    {
+      "id": 0,
+      "code": "PRODUCT_NEW_DIVAS",
+      "name": "HJIR-510",
+	  "offset":"0x188"
+    },
+    {
+      "id": 1,
+      "code": "PRODUCT_NEW_RECORDER",
+      "name": "HJIR-310",
+	  "offset":"0x188"
+    },
+    {
+      "id": 2,
+      "code": "PRODUCT_NEW_MINILOGGER",
+      "name": "-",
+	  "offset":"0x188"
+    },
+    {
+      "id": 3,
+      "code": "PRODUCT_NEW_AWS",
+      "name": "HJIR-610W",
+	   "offset":"0x188"
+    },
+    {
+      "id": 4,
+      "code": "PRODUCT_GATE_CONTROL",
+      "name": "HJBC-400",
+	  "offset":"0x188"
+    }
+  ],
+
+  "alias_list": [
+    {
+      "id": 0,
+      "code": "ALIAS_HJ",
+      "name": "HJ"
+    },
+    {
+      "id": 1,
+      "code": "ALIAS_NEW_ASW_HJ",
+      "name": "HJ"
+    }
+  ],
+  "section_list": [
+    {
+      "id": 0,
+      "code": "SECTION_APP",
+      "name": "Boot"
+    },
+    {
+      "id": 1,
+      "code": "SECTION_BOOT",
+      "name": "App"
+    },
+    {
+      "id": 2,
+      "code": "SECTION_INFO",
+      "name": "Info"
+    }
+  ]
+
+
+}
