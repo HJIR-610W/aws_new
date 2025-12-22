@@ -35,14 +35,14 @@ stm32_do_inst_t do_inst[STM32_DO_MAX] = {
                                                  .Pull = GPIO_NOPULL,
                                                  .Speed = GPIO_SPEED_FREQ_LOW},
                                         .port = DO_CON_PWR_RAIN_DIGITAL_GPIO_Port,
-                                        .init_state = GPIO_PIN_RESET}, /*전원 차단*/
+                                        .init_state = GPIO_PIN_SET}, /*전원 공급*/
 
     [STM32_DO_POWER_RAIN_DECT_ANALOG] = {.init = {.Pin = DO_CON_PWR_RAIN_Pin,
                                                 .Mode = GPIO_MODE_OUTPUT_PP,
                                                 .Pull = GPIO_NOPULL,
                                                 .Speed = GPIO_SPEED_FREQ_LOW},
                                        .port = DO_CON_PWR_RAIN_GPIO_Port,
-                                       .init_state = GPIO_PIN_RESET}, /*전원 차단*/
+                                       .init_state = GPIO_PIN_SET}, /*전원 공급*/
     [STM32_DO_LCD_RESET] = {.init = {.Pin = DO_LCD_RESET_Pin,
                                    .Mode = GPIO_MODE_OUTPUT_PP,
                                    .Pull = GPIO_NOPULL,
