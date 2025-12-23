@@ -26,7 +26,7 @@
 
 int hjtemperature_menu(void)
 {
-  int choice, status;
+  int choice =0, status;
   driver_t* hjtemp;
   driver_t* hjhumi;
 

@@ -391,6 +391,7 @@ int32_t aws_view_aws_data(void)
   uint32_t startTime;
   DATE_TIME_BUF nt;
   AWS_DATA_STRUCT aws;
+  int32_t key;
 
   year = Date_Time.Year;
   month = Date_Time.Month;
@@ -401,6 +402,7 @@ int32_t aws_view_aws_data(void)
   debug_printf("조회 시간 (YYYY-MM-DD HH:MM)\r\n");
   status = debug_scanf_s("%04d-%02d-%02d %02d:%02d", &year, &month, &day, &hour, &min);
 
+  
   if (status == KEY_CODE_CTRL_C)
   {
     return MENU_BACK;
@@ -415,22 +417,50 @@ int32_t aws_view_aws_data(void)
     return MENU_OK;
   }
 
-  nt.Year = year;
-  nt.Month = month;
-  nt.Day = day;
-  nt.Hour = hour;
-  nt.Min = min;
-  nt.Sec = 0;
-
-  if (read_data_month(&nt, &aws, sizeof(aws), LOGGING_AWS, 1) > 0)
+  while(1)
   {
-    debug_printf_color(IO_COLOR_RED, "파일 열기 실패\r\n");
-    return MENU_OK;
+    nt.Year = year;
+    nt.Month = month;
+    nt.Day = day;
+    nt.Hour = hour;
+    nt.Min = min;
+    nt.Sec = 0;
+
+    if (read_data_month(&nt, &aws, sizeof(aws), LOGGING_AWS, 1) > 0)
+    {
+      debug_printf_color(IO_COLOR_RED, "파일 열기 실패\r\n");
+      return MENU_OK;
+    }
+
+    startTime = time_set_time(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
+    aws_display_aws_data(&aws, startTime);
+
+    key = debug_get_key(0xFFFFFFFF);
+    if(key == KEY_CODE_LEFT)
+    {
+      // 이전 데이터
+      startTime -= 60;
+      time_cvt_secTotime(startTime, &nt);
+    }
+    else if(key == KEY_CODE_RIGHT)
+    {
+      // 다음 데이터
+      startTime += 60;
+      time_cvt_secTotime(startTime, &nt);
+    }
+    else if(key == KEY_CODE_CTRL_C)
+    {
+      return MENU_BACK;
+    }
+    else if(key == KEY_CODE_CTRL_P)
+    {
+      return MENU_ABORT;
+    }
+    else
+    {
+      break;
+    }
   }
-
-  startTime = time_set_time(nt.Year, nt.Month, nt.Day, nt.Hour, nt.Min, 0);
-  aws_display_aws_data(&aws, startTime);
-
   return MENU_OK;
 }
 
@@ -538,7 +568,7 @@ int32_t aws_menu_data_rain(void)
 {
   char buff[3][40];
   const char* menu[3];
-  int choice, status;
+  int choice=0, status;
   int menu_cnt;
 
   for (int i = 0; i < 3; i++)
@@ -586,7 +616,7 @@ int32_t aws_menu_data_sunshine(void)
 {
   char buff[3][40];
   const char* menu[3];
-  int choice, status;
+  int choice=0, status;
   int menu_cnt;
 
   for (int i = 0; i < 3; i++)
@@ -634,7 +664,7 @@ int32_t console_menu_data(void)
 {
   char buff[4][40];
   const char* menu[4];
-  int choice, status;
+  int choice=0, status;
   int menu_cnt;
 
   for (int i = 0; i < 4; i++)

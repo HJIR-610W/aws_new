@@ -87,7 +87,7 @@ void draw_rain_reset_page(screen_menu_t *p_win)
 extern uint32_t get_key_version(uint8_t *major, uint8_t *minor, uint8_t *patch, uint8_t *release);
 extern void get_key_build(DATE_TIME_BUF *build);
 
-    int32_t setup_menu_version(void)
+int32_t setup_menu_version(void)
 {
   uint8_t fix;
   uint8_t major;

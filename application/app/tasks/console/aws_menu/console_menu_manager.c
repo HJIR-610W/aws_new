@@ -22,6 +22,7 @@
 #include "update_fw.h"
 #include "util_memory.h"
 #include "util_time.h"
+#include "const_string.h"
 
 int32_t menu_manage_version()
 {
@@ -82,7 +83,21 @@ int32_t menu_manage_device_reset()
   return MENU_OK;
 }
 
+int32_t menu_manage_lcd_off_time()
+{
+  int status;
+  int lcd_off_time;
 
+  lcd_off_time = get_config_app()->lcd_off_time_index;
+  status = view_input_combobox("LCD Off Time (분)", lcd_off_time_list_eng,_countof(lcd_off_time_list_eng),&lcd_off_time );
+  if (status == MENU_OK)
+  {
+    get_config_app()->lcd_off_time_index = lcd_off_time-1;
+    WRITE_CFG(lcd_off_time_index);
+  }
+
+  return status;
+}
 
 
 void config_hj_reset(void)
@@ -299,7 +314,7 @@ solar_r_ott_smp3_config_t *p_smp3;
 int32_t menu_manage_config_backup()
 {
   int status;
-  int choice;
+  int choice=0;
   int ok;
 
    const char *menu[] = {"백업", "복구"};
@@ -334,7 +349,7 @@ int32_t menu_manage_config_backup()
 int32_t menu_manage_sentor_edit()
 {
   int year,month,day,hour,min,sec;
-  int choice;
+  int choice=0;
   int status;
    const char *menu[] = {"우량 자료 편집",
                    "일조 자료 편집",
@@ -542,7 +557,7 @@ int32_t menu_manage_log_reset(void)
 }
   int aws_manager_config(void)
   {
-    int choice, status;
+    int choice=0, status;
     int ok;
     const char *menu[] = {"AWS 화진 기본 설정", "공장 초기화", "설정 백업", "우량,일조 자료 초기화",
                     "로그 카운트 초기화"};
@@ -602,14 +617,16 @@ int32_t menu_manage_log_reset(void)
 
   int aws_menu_manager(void)
   {
-    int choice, status;
-    const char *menu[] = {"버전", "장비리셋", "설정 변경", "펌웨어 업데이트"};
+    int choice = 0;
+    int status;
+    const char *menu[] = {"버전", "설정 변경", "펌웨어 업데이트","LCD Off Time", "장비리셋",};
 
     while (1)
     {
+
       status = view_input_combobox( "설정", menu, _countof(menu), &choice);
       if (status != MENU_OK)
-        return status;
+        break;
 
       switch (choice)
       {
@@ -617,15 +634,18 @@ int32_t menu_manage_log_reset(void)
           status = menu_manage_version();
           break;
         case 2:
-          status = menu_manage_device_reset();
-          break;
-        case 3:
           status = aws_manager_config();
           break;
-        case 4:
+        case 3:
           status = menu_manage_update_fw();
           break;
-      }
+        case 4:
+          status = menu_manage_lcd_off_time();
+          break;
+        case 5:
+          status = menu_manage_device_reset();
+          break;
+        }
       if (status != MENU_OK)
       {
         break;

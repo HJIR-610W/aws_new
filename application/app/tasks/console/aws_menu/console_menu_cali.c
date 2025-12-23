@@ -894,7 +894,7 @@ int system_adc_set_cali_default(void)
 
 int aws_menu_calibration()
 {
-  int choice, status;
+  int choice=0, status;
  const  char *menu[] = {"공장 캘리브레이션",
                   "채널 상태 보기",
                   "ADC 초기화",

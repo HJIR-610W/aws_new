@@ -42,5 +42,5 @@ int check_pass(const char* title, char* password_str, int* ok);
 int32_t shell_scanf_s(const char* fmt, ...);
 
 
-
+int print_combobox(int width, const char* title, const char** menu_list, int cnt,int selected_index);
 #endif

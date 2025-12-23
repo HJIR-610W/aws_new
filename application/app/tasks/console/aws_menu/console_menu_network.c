@@ -90,7 +90,7 @@ PORT:1234
 #define ETH_REMOTE_SERVER_CNT 2
 int32_t aws_eth_remote_server_info(void)
 {
-  int choice, status;
+  int choice =0, status;
   char buff[ETH_REMOTE_SERVER_CNT][20];
  const char *menu[ETH_REMOTE_SERVER_CNT];
   int menu_cnt = 0;
@@ -150,7 +150,7 @@ int dec;
 #define ETH_DEFAUNT_CNT 5
 int32_t aws_eth_default(void)
 {
-  int choice, status;
+  int choice =0, status;
   char buff[ETH_DEFAUNT_CNT][30];
   const char *menu[ETH_DEFAUNT_CNT];
   int menu_cnt = 0;
@@ -263,7 +263,7 @@ int32_t aws_eth_default(void)
 
 int32_t aws_network_config_eth(void)
 {
-  int choice, status;
+  int choice =0, status;
   char buff[ETH_CFG_CNT][40];
   const char *menu[ETH_CFG_CNT];
   int menu_cnt = 0;
@@ -323,7 +323,7 @@ int32_t aws_network_config_eth(void)
 #define AWS_CDMA_CNT 4
 int32_t aws_network_config_cdma(void)
 {
-  int choice, status;
+  int choice =0, status;
   char buff[AWS_CDMA_CNT][30];
   const char *menu[AWS_CDMA_CNT];
   int menu_cnt = 0;
@@ -411,7 +411,7 @@ int32_t aws_network_config_cdma(void)
 #define LABEL_W 24
 int32_t aws_network_config_direct(void)
 {
-  int choice, status;
+  int choice =0, status;
   char buff[AWS_CDMA_CNT][20];
   const char *menu[AWS_CDMA_CNT];
   int menu_cnt = 0;
@@ -460,7 +460,7 @@ int32_t aws_network_config_direct(void)
 
 int32_t aws_network_config(void)
 {
-  int choice, status;
+  int choice =0, status;
 
  const char *menu[] = {"이더넷", "CDMA", "직접통신"};
 
@@ -495,7 +495,7 @@ int32_t aws_network_config(void)
 #define MENU_CNT 4
 int32_t aws_network_use(void)
 {
-  int choice, status;
+  int choice =0, status;
 
   char buff[MENU_CNT][50];
   char buffer[20];
@@ -587,7 +587,7 @@ int aws_menu_network(void)
  const char *menu[MENU_CNT];
   char buff[MENU_CNT][30];
   char buffer[50];
-  int choice, status;
+  int choice =0, status;
   int menu_cnt = 0;
 
 
