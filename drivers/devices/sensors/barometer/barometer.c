@@ -8,8 +8,8 @@
 #include "Sensors\barometer\barometer.h"
 #include "Sensors\general\general_adc.h"
 #include "sensors\barometer\jinsung_sjgp215.h"
-#include "sensors\barometer\barometer_rmyoung_61402v.h"
-#include "sensors\barometer\barometer_rmyoung_61402v_rs232.h"
+#include "sensors\barometer\barometer_rmyoung_61302v.h"
+#include "sensors\barometer\barometer_rmyoung_61302v_rs232.h"
 driver_t *barometer_open(int32_t num,void *opt)
 {
   driver_t *driver=NULL;
@@ -23,13 +23,13 @@ driver_t *barometer_open(int32_t num,void *opt)
     sjgp215_init(opt);
     driver = (driver_t *)sjgp215_init;
     break;
-  case BAROMETER_RMYOUNG_61402V:
-    rmyoung_61402v_init(opt);
-    driver = (driver_t *)rmyoung_61402v_init;
+  case BAROMETER_RMYOUNG_61302V:
+    rmyoung_61302v_init(opt);
+    driver = (driver_t *)rmyoung_61302v_init;
     break;
-    case BAROMETER_RMYOUNG_61402V_RS232:
-    rmyoung_61402v_rs232_init(opt);
-    driver = (driver_t *)rmyoung_61402v_rs232_init;
+    case BAROMETER_RMYOUNG_61302V_RS232:
+    rmyoung_61302v_rs232_init(opt);
+    driver = (driver_t *)rmyoung_61302v_rs232_init;
     break;
   }
   
@@ -49,13 +49,13 @@ float read_sensor_barometer(driver_t *driver,uint8_t *err)
   {
     return read_sjgp215_baromater(err);
   }
-  else if (driver == (driver_t *)rmyoung_61402v_init)
+  else if (driver == (driver_t *)rmyoung_61302v_init)
   {
     return read_baromater_rmyoung_61402v(err);
   }
-  else if (driver == (driver_t *)rmyoung_61402v_rs232_init)
+  else if (driver == (driver_t *)rmyoung_61302v_rs232_init)
   {
-    return read_rmyoung_61402v_rs232_baromater(err);
+    return read_rmyoung_61302v_rs232_baromater(err);
   }
   
 

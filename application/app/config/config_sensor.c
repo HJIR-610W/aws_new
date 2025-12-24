@@ -145,15 +145,15 @@ void limit_barometer(void)
     g_config_sensor_dirty_flag = true;
   }
 
-  if (g_config_sensor.baromater.rmyoung_61402v_barometer.adc_channel > 15)
+  if (g_config_sensor.baromater.rmyoung_61302v_barometer.adc_channel > 15)
   {
-    g_config_sensor.baromater.rmyoung_61402v_barometer.adc_channel = 0;
+    g_config_sensor.baromater.rmyoung_61302v_barometer.adc_channel = 0;
     g_config_sensor_dirty_flag = true;
   }
   
-  if(g_config_sensor.baromater.rmyoung_61402v_rs232.rs232_port >eRS232_MAX)
+  if(g_config_sensor.baromater.rmyoung_61302v_rs232.rs232_port >eRS232_MAX)
   {
-    g_config_sensor.baromater.rmyoung_61402v_rs232.rs232_port = eRS232_RS485_A;
+    g_config_sensor.baromater.rmyoung_61302v_rs232.rs232_port = eRS232_RS485_A;
     g_config_sensor_dirty_flag = true;
   }
 

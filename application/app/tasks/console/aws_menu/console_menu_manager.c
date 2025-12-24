@@ -109,7 +109,7 @@ void config_hj_reset(void)
   wind_direction_hj_config_t *hj_wind_direction;
   snow_hj_config_t *hjsnow_cfg;
   rain_present_config_t *hjrain_det_cfg;
-  barometer_rmyoung_61402v_rs232_config_t *p_barometer;
+  barometer_rmyoung_61302v_rs232_config_t *p_barometer;
   rainfall_reed_t *p_rain_reed;
 solar_duration_csd3_t *p_solar_duration;
 solar_r_ott_smp3_config_t *p_smp3;
@@ -170,9 +170,9 @@ solar_r_ott_smp3_config_t *p_smp3;
   hjsnow_cfg->rs232_port = eRS232_C;
 
   // 기압[RM YOUNG]
-  config.sensor[A7_PRESSURE].model = S_T_BARO_RMYOUNG_61402V_RS232;
+  config.sensor[A7_PRESSURE].model = S_T_BARO_RMYOUNG_61302V_RS232;
 
-  p_barometer =get_sensor_config(A7_PRESSURE,S_T_BARO_RMYOUNG_61402V_RS232);
+  p_barometer =get_sensor_config(A7_PRESSURE,S_T_BARO_RMYOUNG_61302V_RS232);
   p_barometer->rs232_port = eRS232_RS485_A;
 
   // 일사 CMP3 0~1.0VDC

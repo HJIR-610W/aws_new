@@ -235,9 +235,9 @@ void draw_barometer_jinsung_page(screen_menu_t *p_win, barometer_jinsung_sjgp215
   screen_menu_printf(p_win, HJTEMP_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
 }
 
-#define BAROMETER_RMYOUNG_61402V_RS232_PORT  0
-#define BAROMETER_RMYOUNG_61402V_RS232_DEFAULT 1
-void draw_barometer_rmyoung_61402V_rs232_page(screen_menu_t *p_win, barometer_rmyoung_61402v_rs232_config_t *rmyoung_config)
+#define BAROMETER_RMYOUNG_61302V_RS232_PORT  0
+#define BAROMETER_RMYOUNG_61302V_RS232_DEFAULT 1
+void draw_barometer_rmyoung_61302V_rs232_page(screen_menu_t *p_win, barometer_rmyoung_61302v_rs232_config_t *rmyoung_config)
 {
   const char *name_table[10];
   int list_cnt;
@@ -246,16 +246,16 @@ void draw_barometer_rmyoung_61402V_rs232_page(screen_menu_t *p_win, barometer_rm
   list_cnt = rs232_get_port_name_list(name_table, _countof(name_table));
   port_number = rmyoung_config->rs232_port;
   
-  screen_menu_printf(p_win, BAROMETER_RMYOUNG_61402V_RS232_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
-  screen_menu_printf(p_win, BAROMETER_RMYOUNG_61402V_RS232_DEFAULT, "Default");
+  screen_menu_printf(p_win, BAROMETER_RMYOUNG_61302V_RS232_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, port_number));
+  screen_menu_printf(p_win, BAROMETER_RMYOUNG_61302V_RS232_DEFAULT, "Default");
 }
 
-#define BAROMETER_RMYOUNG_61402V_RS232_PORT  0
-#define BAROMETER_RMYOUNG_61402V_DEFAULT 1
-void draw_barometer_rmyoung_61402V_page(screen_menu_t *p_win, barometer_rmyoung_61402v_config_t *adc_config)
+#define BAROMETER_RMYOUNG_61302V_RS232_PORT  0
+#define BAROMETER_RMYOUNG_61302V_DEFAULT 1
+void draw_barometer_rmyoung_61302V_page(screen_menu_t *p_win, barometer_rmyoung_61302v_config_t *adc_config)
 {
-  screen_menu_printf(p_win, BAROMETER_RMYOUNG_61402V_RS232_PORT, "%-*s:%d", E_L_W, "ADC CH", adc_config->adc_channel);
-  screen_menu_printf(p_win, BAROMETER_RMYOUNG_61402V_DEFAULT, "Default");
+  screen_menu_printf(p_win, BAROMETER_RMYOUNG_61302V_RS232_PORT, "%-*s:%d", E_L_W, "ADC CH", adc_config->adc_channel);
+  screen_menu_printf(p_win, BAROMETER_RMYOUNG_61302V_DEFAULT, "Default");
 }
 
 #define WDIN_DIRECTION_RMYOUNG_05103V_CH 0
@@ -379,8 +379,8 @@ void draw_rain_hall_page(screen_menu_t *p_win, rainfall_hall_t *p_hall)
     case S_T_BARO_JINSUNG_SJGP215:
       draw_barometer_jinsung_page(p_win,  get_sensor_config(type,model));
       break;
-    case S_T_BARO_RMYOUNG_61402V:
-      draw_barometer_rmyoung_61402V_page(p_win,  get_sensor_config(type,model));
+    case S_T_BARO_RMYOUNG_61302V:
+      draw_barometer_rmyoung_61302V_page(p_win,  get_sensor_config(type,model));
       break;
     case S_T_WIND_DIRECTION_RMYOUNG_05103V:
       draw_wind_direction_rmyoung_05103V_page(p_win, get_sensor_config(type,model));
@@ -406,8 +406,8 @@ void draw_rain_hall_page(screen_menu_t *p_win, rainfall_hall_t *p_hall)
     case S_T_RAIN_HALL:
           draw_rain_hall_page(p_win,  get_sensor_config(type,model));
     break;
-    case S_T_BARO_RMYOUNG_61402V_RS232:
-      draw_barometer_rmyoung_61402V_rs232_page(p_win,  get_sensor_config(type,model));
+    case S_T_BARO_RMYOUNG_61302V_RS232:
+      draw_barometer_rmyoung_61302V_rs232_page(p_win,  get_sensor_config(type,model));
       break;
     default:
       break;
@@ -1091,12 +1091,12 @@ int32_t barometer_jinsung_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t mode
 
 
 
-int32_t barometer_rmyoung_61402V_rs232_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
+int32_t barometer_rmyoung_61302V_rs232_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
 
 
-  barometer_rmyoung_61402v_rs232_config_t *p_pressure;
+  barometer_rmyoung_61302v_rs232_config_t *p_pressure;
   const char *portList[10];
   uint16_t portListCnt;
   int choice;
@@ -1109,7 +1109,7 @@ int32_t barometer_rmyoung_61402V_rs232_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE
 
   switch (menu_index)
   {
-  case BAROMETER_RMYOUNG_61402V_RS232_PORT:
+  case BAROMETER_RMYOUNG_61302V_RS232_PORT:
     portListCnt = rs232_get_portList(portList, _countof(portList));
     choice = p_pressure->rs232_port;
     status = input_combobox("RS232 Port", portList, portListCnt, &choice);
@@ -1118,7 +1118,7 @@ int32_t barometer_rmyoung_61402V_rs232_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE
     p_pressure->rs232_port = choice;
     save_config_sensor();
     break;
-    case BAROMETER_RMYOUNG_61402V_RS232_DEFAULT:
+    case BAROMETER_RMYOUNG_61302V_RS232_DEFAULT:
             choice = 0;
       status = input_active("Set as Default?", &choice);
       if (status != MENU_OK || choice == 0)
@@ -1130,10 +1130,10 @@ int32_t barometer_rmyoung_61402V_rs232_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE
 
   return status;
 }
-int32_t barometer_rmyoun_61402V_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
+int32_t barometer_rmyoung_61302v_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
-  barometer_rmyoung_61402v_config_t *p_cfg;
+  barometer_rmyoung_61302v_config_t *p_cfg;
   int choice;
   int active;
 
@@ -1145,7 +1145,7 @@ int32_t barometer_rmyoun_61402V_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_
 
   switch (menu_index)
   {
-  case BAROMETER_RMYOUNG_61402V_RS232_PORT:
+  case BAROMETER_RMYOUNG_61302V_RS232_PORT:
     choice = p_cfg->adc_channel;
     status = input_combobox("SE Channel", g_adc_single_owner_list, _countof(g_adc_single_owner_list), &choice);
     if (status != MENU_OK)
@@ -1153,12 +1153,12 @@ int32_t barometer_rmyoun_61402V_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_
         p_cfg->adc_channel = choice;
         save_config_sensor();
     break;
-  case BAROMETER_RMYOUNG_61402V_DEFAULT:
+  case BAROMETER_RMYOUNG_61302V_DEFAULT:
     choice = 0;
     status = input_active("Set as Default?", &choice);
     if (status != MENU_OK || choice == 0)
       break;
-    p_cfg->adc_channel = ADC_PRESSURE_RMYOUNG_61402V;
+    p_cfg->adc_channel = ADC_PRESSURE_RMYOUNG_61302V;
     save_config_sensor();
     break;
   }
@@ -1502,7 +1502,7 @@ const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_RAIN_PRESENT_DI, .config_set = rain_present_setup},
     {.sensor_type = S_T_RAIN_PRESENT_ANALOG, .config_set = rain_present_setup},
     {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = barometer_jinsung_setup},
-    {.sensor_type = S_T_BARO_RMYOUNG_61402V, .config_set = barometer_rmyoun_61402V_setup},
+    {.sensor_type = S_T_BARO_RMYOUNG_61302V, .config_set = barometer_rmyoung_61302v_setup},
     {.sensor_type = S_T_WIND_DIRECTION_RMYOUNG_05103V, .config_set = wind_direction_rmyoung_05103V_setup},
     {.sensor_type = S_T_WIND_SPEED_RMYOUNG_05103V, .config_set = wind_speed_rmyoung_05103V_setup},
     {.sensor_type = S_T_SOLAR_DURATION_CSD3, .config_set = solar_duration_csd3_setup},
@@ -1511,7 +1511,7 @@ const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_PT100,.config_set = temperature_pt100_setup},
     {.sensor_type = S_T_RAIN_REED,.config_set = rain_reed_setup},
     {.sensor_type = S_T_RAIN_HALL,.config_set = rain_hall_setup},
-   {.sensor_type = S_T_BARO_RMYOUNG_61402V_RS232, .config_set = barometer_rmyoung_61402V_rs232_setup},
+   {.sensor_type = S_T_BARO_RMYOUNG_61302V_RS232, .config_set = barometer_rmyoung_61302V_rs232_setup},
 };
 
 int32_t setup_sensor_set(eSENSOR_TYPE_t type,sensor_t* p_sensor, uint8_t choice)

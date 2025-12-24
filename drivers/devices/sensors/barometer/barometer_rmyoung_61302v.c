@@ -17,26 +17,26 @@
 #include "Sensors\general\general_adc.h"
 
 
-typedef struct rmyoung_61402v_instance_s
+typedef struct rmyoung_61302v_instance_s
 {
   driver_t *driver;
   bool opened;
-} rmyoung_61402v_instance_t;
+} rmyoung_61302v_instance_t;
 
-rmyoung_61402v_instance_t rmyoung_61402v_inst;
+rmyoung_61302v_instance_t rmyoung_61302v_inst;
 
 
-int32_t rmyoung_61402v_init(void *opt)
+int32_t rmyoung_61302v_init(void *opt)
 {
 
   adc_config_t adc_config;
-      barometer_rmyoung_61402v_config_t  *p_cfg = (barometer_rmyoung_61402v_config_t *)opt;
-    if (rmyoung_61402v_inst.opened)
+      barometer_rmyoung_61302v_config_t  *p_cfg = (barometer_rmyoung_61302v_config_t *)opt;
+    if (rmyoung_61302v_inst.opened)
   {
     return 1;
   }
 
-  rmyoung_61402v_inst.opened = true;
+  rmyoung_61302v_inst.opened = true;
   
   
   adc_config.mode = 0;
@@ -48,7 +48,7 @@ int32_t rmyoung_61402v_init(void *opt)
   adc_config.scale = 1;
   
   
-  rmyoung_61402v_inst.driver = general_adc_open(GENERAL_ADC,&adc_config,"Pressure");
+  rmyoung_61302v_inst.driver = general_adc_open(GENERAL_ADC,&adc_config,"Pressure");
   
   return   1;
 }
@@ -58,7 +58,7 @@ float read_baromater_rmyoung_61402v(uint8_t *err)
   float barometer = NAN;
 
 
-  barometer = general_adc_read(rmyoung_61402v_inst.driver,err);
+  barometer = general_adc_read(rmyoung_61302v_inst.driver,err);
   
   return barometer;
 }

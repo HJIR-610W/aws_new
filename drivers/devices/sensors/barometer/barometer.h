@@ -13,9 +13,9 @@
 #endif
 
 
-#define BAROMETER_RMYOUNG_61402V 100
+#define BAROMETER_RMYOUNG_61302V 100
 #define BARO_JINSUNG_SJGP215 101
-#define BAROMETER_RMYOUNG_61402V_RS232 102
+#define BAROMETER_RMYOUNG_61302V_RS232 102
 
 driver_t *barometer_open(int32_t num,void *opt);
 

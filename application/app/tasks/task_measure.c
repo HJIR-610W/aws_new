@@ -184,8 +184,8 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
     case S_T_ADC:
     num = GENERAL_ADC;
     break;
-    case S_T_BARO_RMYOUNG_61402V:
-    num = BAROMETER_RMYOUNG_61402V;
+    case S_T_BARO_RMYOUNG_61302V:
+    num = BAROMETER_RMYOUNG_61302V;
     break;
     case  S_T_WIND_DIRECTION_RMYOUNG_05103V:
     num = WIND_DIRECTION_RMYOUNG_05103V;
@@ -241,8 +241,8 @@ int32_t get_driver_number(eSENSOR_TYPE_MODEL_t type)
   case S_T_RAIN_REED:
   num = RAIN_REED;
   break;
-  case S_T_BARO_RMYOUNG_61402V_RS232:
-    num  = BAROMETER_RMYOUNG_61402V_RS232;
+  case S_T_BARO_RMYOUNG_61302V_RS232:
+    num  = BAROMETER_RMYOUNG_61302V_RS232;
     break;
 
     }
