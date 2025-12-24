@@ -7,7 +7,7 @@
 
 #include "console_define.h"
 
-
+#include "menu_handler.h"
 #define STRING_INPUT_ERR "입력이 잘못되었습니다"
 
 typedef int32_t (*menu_func)(void);
@@ -43,4 +43,8 @@ int32_t shell_scanf_s(const char* fmt, ...);
 
 
 int print_combobox(int width, const char* title, const char** menu_list, int cnt,int selected_index);
+
+void console_printf(int row, int col, const char* format, ...);
+
+menu_status_t console_input_combobox(const char *title, const char *item_list[], int32_t item_count, int *choice);
 #endif

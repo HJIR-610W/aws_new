@@ -89,7 +89,7 @@ int32_t menu_manage_lcd_off_time()
   int lcd_off_time;
 
   lcd_off_time = (int32_t)get_config_app()->lcd_off_time_index;
-  status = view_input_combobox("LCD Off Time (분)", lcd_off_time_list_eng,_countof(lcd_off_time_list_eng),&lcd_off_time );
+  status = console_input_combobox("LCD Off Time (분)", lcd_off_time_list_eng,_countof(lcd_off_time_list_eng),&lcd_off_time );
   if (status == MENU_OK)
   {
     get_config_app()->lcd_off_time_index = (eLCD_OFF_TIME_t)(lcd_off_time-1);
@@ -646,7 +646,7 @@ int32_t menu_manage_log_reset(void)
           status = menu_manage_device_reset();
           break;
         }
-      if (status != MENU_OK)
+      if (status == MENU_ABORT)
       {
         break;
       }
