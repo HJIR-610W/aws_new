@@ -817,7 +817,7 @@ int32_t tx700_recv_uart(cellular_if_t* p_if, uint8_t* p_buffer, size_t buffer_si
               {
                 current_count--;
                 p_buffer[current_count++ ] = ',';
-                sub_len = p_if->uart_io.recv_crlf(p_if->uart_handle, &p_buffer[current_count], buffer_size - current_count, 1000); // 메시지 본문 수신
+                sub_len = p_if->uart_io.recv_crlf(p_if->uart_handle, (char *)&p_buffer[current_count], buffer_size - current_count, 1000); // 메시지 본문 수신
               
                 if(sub_len > 0)
                 {

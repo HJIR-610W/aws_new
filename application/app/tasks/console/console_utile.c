@@ -150,7 +150,7 @@ int print_menu(int width, const char* title, const char** menu_list, int cnt)
 {
   char buff[CONSOLE_LINE_BUFFER_SIZE]; // Use CONSOLE_LINE_BUFFER_SIZE
   char line_buf[CONSOLE_LINE_BUFFER_SIZE];
-  int len;
+ // int len;
   int total_width = width + 8;  // 좌우 여백 및 메뉴 번호 고려
   int title_len = utf8_strlen(title);
   int title_padding = (total_width - 2 - title_len) / 2;
@@ -182,7 +182,7 @@ int print_menu(int width, const char* title, const char** menu_list, int cnt)
   for (int i = 0; i < cnt; i++)
   {
     snprintf(line_buf, sizeof(line_buf), "│  %2d. %-s", i+1, menu_list[i]);
-    len = total_width - utf8_strlen(line_buf) - 1; // total_width is physical chars, utf8_strlen is logical chars
+   // len = total_width - utf8_strlen(line_buf) - 1; // total_width is physical chars, utf8_strlen is logical chars
     int current_visible_width = utf8_strlen(line_buf); // visible width of current content
     int space_to_add = total_width - current_visible_width ; // calculate spaces based on visible width
 
@@ -218,7 +218,7 @@ int print_combobox(int width, const char* title, const char** menu_list, int cnt
 {
   char buff[CONSOLE_LINE_BUFFER_SIZE]; // Use CONSOLE_LINE_BUFFER_SIZE
   char line_buf[CONSOLE_LINE_BUFFER_SIZE];
-  int len;
+ // int len;
   int total_width = width + 8;  // 좌우 여백 및 메뉴 번호 고려
   int title_len = utf8_strlen(title);
   int title_padding = (total_width - 2 - title_len) / 2;
@@ -257,7 +257,7 @@ int print_combobox(int width, const char* title, const char** menu_list, int cnt
     {
       snprintf(line_buf, sizeof(line_buf), "│  %2d. %-s", i+1, menu_list[i]);
     }
-    len = total_width - utf8_strlen(line_buf) - 1; // total_width is physical chars, utf8_strlen is logical chars
+    //len = total_width - utf8_strlen(line_buf) - 1; // total_width is physical chars, utf8_strlen is logical chars
     int current_visible_width = utf8_strlen(line_buf); // visible width of current content
     int space_to_add = total_width - current_visible_width ; // calculate spaces based on visible width
    

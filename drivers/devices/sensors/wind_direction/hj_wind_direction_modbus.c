@@ -13,7 +13,7 @@
 #include "modbus_master.h"
 #include "debug_io.h"
 #include "drv_rs485.h"
-
+#include "system_err.h"
 
 #define REG_R_WIND_DATA 0 //풍속,풍향 데이터
 #define REG_R_VERSION   1 //버전 정보 읽기 전용
@@ -69,16 +69,17 @@ float hj_wind_direction_read(uint8_t *err)
 {
   uint16_t reg[4];
   int16_t s_reg;
-  int32_t ret;
+  eMODBUS_RESULT_t mb_ret;
   uint16_t status;
   uint16_t type;
   float wind_dir=0;
 
   osDelay(30);
-  ret = modbus_read_hold_reg(&g_hj_wind_dir_inst.modbus,  REG_R_WIND_DATA, reg, _countof(reg));
+  mb_ret = modbus_read_hold_reg(&g_hj_wind_dir_inst.modbus,  REG_R_WIND_DATA, reg, _countof(reg));
 
-  if(ret)
+  if(mb_ret != eMODBUS_OK)
   {
+            ERROR_PRINTF("hj_wind_direction_read error %s",get_modbus_err_string(mb_ret));
     *err = DRV_ERR_TIMEOUT;
     wind_dir = NAN;
   }

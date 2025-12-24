@@ -303,11 +303,12 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
   }
 
 
-  int32_t modbus_master_req(modbus_h_t *drv, modbus_t *modbus)
+  eMODBUS_RESULT_t modbus_master_req(modbus_h_t *drv, modbus_t *modbus)
   {
     uint8_t buff[MODBUS_REG_SIZE*2+20];
     int32_t len;
-    
+    eMODBUS_RESULT_t result = eMODBUS_FAIL;
+
     OS_PEND_SEM(modbus_sem,osWaitForever);
 
 
@@ -315,23 +316,23 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
     send_query(drv, modbus);
 
 
-     len = modbus_receive_packet(drv, buff, sizeof(buff));
+    len = modbus_receive_packet(drv, buff, sizeof(buff));
 
     if (len > 0)
     {
-
       if (parse_recv(buff, len, modbus->regs, modbus->regsCnt) == 0)
       {
-   
-          OS_POST_SEM(modbus_sem);
-        return 0;
+         OS_POST_SEM(modbus_sem);
+        return eMODBUS_OK;
+      }
+      else
+      {
+        OS_POST_SEM(modbus_sem);
+        return eMODBUS_PARSE_FAIL;
       }
     }
-
-
-
-      OS_POST_SEM(modbus_sem);
-    return 1;
+    OS_POST_SEM(modbus_sem);
+    return eMODBUS_LEN_ZERO;
   }
 
 /**
@@ -341,12 +342,11 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
  * @param val
  * @retval
  */
-int32_t modbus_write_holding_reg(modbus_h_t *drv, uint16_t address, uint16_t val)
+eMODBUS_RESULT_t modbus_write_holding_reg(modbus_h_t *drv, uint16_t address, uint16_t val)
 {
   modbus_t modbus;
   uint16_t reg[10];
-  int32_t err = RET_FAIL;
-
+  eMODBUS_RESULT_t mb_ret;
 
   modbus.id = drv->id;
   modbus.fc = MB_FC_WRITE_REGISTER;
@@ -358,13 +358,9 @@ int32_t modbus_write_holding_reg(modbus_h_t *drv, uint16_t address, uint16_t val
 
   modbus.reg[0] = val;  // 시작
 
-  if (modbus_master_req(drv, &modbus) == RET_OK)
-  {
-    err = RET_OK;
-  }
+  mb_ret = modbus_master_req(drv, &modbus);
 
-
-  return err;
+  return mb_ret;
 }
 
 /**
@@ -374,11 +370,11 @@ int32_t modbus_write_holding_reg(modbus_h_t *drv, uint16_t address, uint16_t val
  * @param val 코일 값 (false: OFF, true: ON)
  * @retval RET_OK: 성공, RET_FAIL: 실패
  */
-int32_t modbus_write_single_coil(modbus_h_t *drv, uint16_t address, bool val)
+eMODBUS_RESULT_t modbus_write_single_coil(modbus_h_t *drv, uint16_t address, bool val)
 {
   modbus_t modbus;
   uint16_t reg[10];
-  int32_t err = RET_FAIL;
+  eMODBUS_RESULT_t mb_ret;
 
   modbus.id = drv->id;
   modbus.fc = MB_FC_WRITE_COIL;
@@ -390,12 +386,9 @@ int32_t modbus_write_single_coil(modbus_h_t *drv, uint16_t address, bool val)
 
   modbus.reg[0] = val ? 1 : 0; // 코일 값 수정
 
-  if (modbus_master_req(drv, &modbus) == RET_OK)
-  {
-    err = RET_OK;
-  }
+  mb_ret = modbus_master_req(drv, &modbus);
 
-  return err;
+  return mb_ret;
 }
 
 /**
@@ -405,15 +398,15 @@ int32_t modbus_write_single_coil(modbus_h_t *drv, uint16_t address, bool val)
  * @param pOutCoil 읽은 코일 값 포인터 (0: OFF, 1: ON)
  * @retval RET_OK: 성공, RET_FAIL: 실패
  */
-int32_t modbus_read_single_coil(modbus_h_t *drv, uint16_t address, uint16_t *pOutCoil)
+eMODBUS_RESULT_t modbus_read_single_coil(modbus_h_t *drv, uint16_t address, uint16_t *pOutCoil)
 {
   modbus_t modbus;
   uint16_t reg[10];
-  int32_t ret = RET_FAIL;
+  eMODBUS_RESULT_t mb_ret;
 
   if (pOutCoil == NULL)
   {
-    return ret;
+    return eMODBUS_HANDLE_ERROR;
   }
 
   memset(reg, 0, sizeof(reg));
@@ -426,18 +419,14 @@ int32_t modbus_read_single_coil(modbus_h_t *drv, uint16_t address, uint16_t *pOu
   modbus.regsCnt = sizeof(reg) / sizeof(reg[0]);
   modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
 
-  ret = modbus_master_req(drv, &modbus);
+  mb_ret = modbus_master_req(drv, &modbus);
 
-  if (ret == RET_OK)
+  if (mb_ret == eMODBUS_OK)
   {
     *pOutCoil = modbus.regs[0];  // 첫 번째 코일 값
   }
-  else
-  {
-    ret = RET_FAIL;
-  }
 
-  return ret;
+  return mb_ret;
 }
 
 /**
@@ -448,22 +437,23 @@ int32_t modbus_read_single_coil(modbus_h_t *drv, uint16_t address, uint16_t *pOu
  * @param inputCnt 읽을 이산 입력 개수
  * @retval RET_OK: 성공, RET_FAIL: 실패
  */
-int32_t modbus_read_discrete_inputs(modbus_h_t *drv, uint16_t address, uint16_t *pOutInputs, uint16_t inputCnt)
+eMODBUS_RESULT_t modbus_read_discrete_inputs(modbus_h_t *drv, uint16_t address, uint16_t *pOutInputs, uint16_t inputCnt)
 {
   modbus_t modbus;
   uint16_t reg[MODBUS_REG_SIZE];
-  int32_t ret = RET_FAIL;
+  eMODBUS_RESULT_t mb_ret = eMODBUS_FAIL;
+
 
   if (pOutInputs == NULL)
   {
-    return ret;
+    return eMODBUS_HANDLE_ERROR;
   }
 
   memset(reg, 0, sizeof(reg));
   
   if ((sizeof(reg) / sizeof(reg[0])) < inputCnt)
   {
-    return ret;
+    return eMODBUS_PARAM_ERROR;
   }
 
   modbus.id = drv->id;
@@ -474,37 +464,29 @@ int32_t modbus_read_discrete_inputs(modbus_h_t *drv, uint16_t address, uint16_t 
   modbus.regsCnt = sizeof(reg) / sizeof(reg[0]);
   modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
 
-  ret = modbus_master_req(drv, &modbus);
+  mb_ret = modbus_master_req(drv, &modbus);
 
-  if (ret == RET_OK)
+  if (mb_ret == eMODBUS_OK)
   {
     for (int i = 0; i < inputCnt; i++)
     {
       pOutInputs[i] = modbus.regs[i];
     }
   }
-  else
-  {
-    ret = RET_FAIL;
-  }
 
-  return ret;
+  return mb_ret;
 }
 
-int32_t modbus_write_multi_reg(modbus_h_t *drv, uint16_t address, uint16_t *regs,
+eMODBUS_RESULT_t modbus_write_multi_reg(modbus_h_t *drv, uint16_t address, uint16_t *regs,
                                uint16_t regCnt)
 {
   modbus_t modbus;
   uint16_t reg[MODBUS_REG_SIZE];
-  int32_t err = RET_FAIL;
-
-
+  eMODBUS_RESULT_t mb_ret = eMODBUS_FAIL;
 
   if ((sizeof(reg) / sizeof(reg[0])) < regCnt)
   {
-
-
-    return err;
+    return eMODBUS_PARAM_ERROR;
   }
 
   modbus.id = drv->id;
@@ -520,27 +502,22 @@ int32_t modbus_write_multi_reg(modbus_h_t *drv, uint16_t address, uint16_t *regs
     modbus.reg[i] = regs[i];
   }
 
-  if (modbus_master_req(drv, &modbus) == RET_OK)
-  {
-    err = RET_OK;
-  }
+  mb_ret = modbus_master_req(drv, &modbus) ;
 
-
-
-  return err;
+  return mb_ret;
 }
 
-int32_t modbus_read_hold_reg(modbus_h_t *drv, uint16_t address, uint16_t *pOutRegs,
+eMODBUS_RESULT_t modbus_read_hold_reg(modbus_h_t *drv, uint16_t address, uint16_t *pOutRegs,
                               uint16_t regCnt)
 {
   modbus_t modbus;
   uint16_t reg[MODBUS_REG_SIZE];
-  int32_t ret = RET_FAIL;
+  eMODBUS_RESULT_t mb_ret = eMODBUS_FAIL;
 
 
   if ((sizeof(reg) / sizeof(reg[0])) < regCnt)
   {
-    return ret;
+    return eMODBUS_PARAM_ERROR;
   }
 
 
@@ -553,36 +530,32 @@ int32_t modbus_read_hold_reg(modbus_h_t *drv, uint16_t address, uint16_t *pOutRe
   modbus.regsCnt = sizeof(reg) / sizeof(reg[0]);
   modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
 
-  ret = modbus_master_req(drv, &modbus);
+  mb_ret = modbus_master_req(drv, &modbus);
 
-  if (ret == RET_OK)
+  if (mb_ret == eMODBUS_OK)
   {
     for (int i = 0; i < regCnt; i++)
     {
       pOutRegs[i] = modbus.regs[i];
     }
   }
-  else
-  {
-    ret = RET_FAIL;
-  }
 
 
-  return ret;
+  return mb_ret;
 }
 
-int32_t modbus_read_input_reg(modbus_h_t *drv, uint16_t address, uint16_t *pOutRegs,
+eMODBUS_RESULT_t modbus_read_input_reg(modbus_h_t *drv, uint16_t address, uint16_t *pOutRegs,
                              uint16_t regCnt)
 {
   modbus_t modbus;
   uint16_t reg[MODBUS_REG_SIZE];
-  int32_t ret = RET_FAIL;
+  eMODBUS_RESULT_t mb_ret = eMODBUS_FAIL;
 
   
   memset(reg,0,sizeof(reg));
   if ((sizeof(reg) / sizeof(reg[0])) < regCnt)
   {
-    return ret;
+    return eMODBUS_PARAM_ERROR;
   }
   
   modbus.id = drv->id;
@@ -593,22 +566,18 @@ int32_t modbus_read_input_reg(modbus_h_t *drv, uint16_t address, uint16_t *pOutR
   modbus.regsCnt = sizeof(reg) / sizeof(reg[0]);
   modbus.wait_ms = MODBUS_REQ_TIMEOUT_MS;
 
-  ret = modbus_master_req(drv, &modbus);
+  mb_ret = modbus_master_req(drv, &modbus);
 
-  if (ret == RET_OK)
+  if (mb_ret == eMODBUS_OK)
   {
     for (int i = 0; i < regCnt; i++)
     {
       pOutRegs[i] = modbus.regs[i];
     }
   }
-  else
-  {
-    ret = RET_FAIL;
-  }
 
 
-  return ret;
+  return mb_ret;
 }
 void send_query(modbus_h_t *drv, modbus_t *pmodbus)
 {
@@ -717,27 +686,29 @@ void modbus_init(void)
 #define RET_FAIL 6
 #define RET_ID_FAIL 7
 
-const char *get_modbus_err_string(int32_t err)
+const char *get_modbus_err_string(eMODBUS_RESULT_t err)
 {
   switch (err)
   {
-    case RET_OK:
-      return "RET_OK";
-    case RET_TIME_OUT:
-      return "RET_TIME_OUT";
-    case RET_OVER:
-      return "RET_OVER";
-    case RET_INVAILD:
-      return "RET_INVAILD";
-    case RET_UNKNOWN:
-      return "RET_UNKNOWN";
-    case RET_UNKNOWN_VAL:
-      return "RET_UNKNOWN_VAL";
-    case RET_FAIL:
-      return "RET_FAIL";
-    case RET_ID_FAIL:
-      return "RET_ID_FAIL";
+    case eMODBUS_OK:
+      return "eMODBUS_OK";
+    case eMODBUS_HANDLE_ERROR:
+      return "eMODBUS_HANDLE_ERROR";
+    case eMODBUS_PARAM_ERROR:
+      return "eMODBUS_PARAM_ERROR";
+    case eMODBUS_TIMEOUT:
+      return "eMODBUS_TIMEOUT";
+    case eMODBUS_CRC_ERROR:
+      return "eMODBUS_CRC_ERROR";
+    case eMODBUS_EXCEPTION:
+      return "eMODBUS_EXCEPTION";
+    case eMODBUS_FAIL:
+      return "eMODBUS_FAIL";
+    case eMODBUS_LEN_ZERO:
+      return "eMODBUS_LEN_ZERO";
+    case eMODBUS_PARSE_FAIL:
+      return "eMODBUS_PARSE_FAIL";
     default:
-      return "Unknown Error";
+      return "UNKNOWN";
   }
 }

@@ -13,7 +13,7 @@
 #include "debug_io.h"
 #include "drv_rs485.h"
 #include "driver_interface.h"
-
+#include "system_err.h"
 
 
 
@@ -61,16 +61,17 @@ float hj_wind_speed_read(uint8_t *err)
 {
   uint16_t reg[4];
   int16_t s_reg;
-  int32_t ret;
+  eMODBUS_RESULT_t mb_ret;
   uint16_t status;
   uint16_t type;
   float wind_speed=0;
 
   osDelay(30);
-  ret = modbus_read_hold_reg(&g_hj_wind_speed_inst.modbus,  REG_R_WIND_DATA, reg, _countof(reg));
+  mb_ret = modbus_read_hold_reg(&g_hj_wind_speed_inst.modbus,  REG_R_WIND_DATA, reg, _countof(reg));
 
-  if(ret)
+  if(mb_ret != eMODBUS_OK)
   {
+        ERROR_PRINTF("hj_wind_speed_read error %s",get_modbus_err_string(mb_ret));
     *err = DRV_ERR_TIMEOUT;
     wind_speed = NAN;
   }

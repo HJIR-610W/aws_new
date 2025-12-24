@@ -157,18 +157,18 @@ float smp3_solar_read(driver_t *driver, uint8_t *err)
 {
   uint16_t reg[10];
   int16_t s_reg;
-  int32_t ret;
+  eMODBUS_RESULT_t mb_ret;
   float scale_factor;
   float solar_radiation;
   ott_smp3_cfg_t *cfg = driver->cfg; 
 
   osDelay(10);//화진 풍향 풍속계 같이 사용할때 필요 화진에서 완전히 수신대기 상태 될때대기 
   
-  ret = modbus_read_input_reg(&cfg->modbus,  REG_IO_DEVICE_TYPE, reg, _countof(reg));
+  mb_ret = modbus_read_input_reg(&cfg->modbus,  REG_IO_DEVICE_TYPE, reg, _countof(reg));
 
-  if(ret)
+  if(mb_ret != eMODBUS_OK)
   {
-    ERROR_PRINTF("smp3_solar_read error %s",get_modbus_err_string(ret));
+    ERROR_PRINTF("smp3_solar_read error %s",get_modbus_err_string(mb_ret));
     *err = DRV_ERR_TIMEOUT;
     solar_radiation = NAN;
   }

@@ -19,10 +19,15 @@ typedef enum _mb_message
 typedef enum modbus_result_e
 {
   eMODBUS_OK = 0,
+  eMODBUS_HANDLE_ERROR,
+  eMODBUS_PARAM_ERROR,
   eMODBUS_TIMEOUT,
   eMODBUS_CRC_ERROR,
   eMODBUS_EXCEPTION,
-  eMODBUS_FAIL
+  eMODBUS_FAIL,
+  eMODBUS_LEN_ZERO,
+  eMODBUS_PARSE_FAIL
+
 } eMODBUS_RESULT_t;
 
 #define RET_OK 0

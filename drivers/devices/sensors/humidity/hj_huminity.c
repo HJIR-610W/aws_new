@@ -81,13 +81,13 @@ float hjHuminity_read(driver_t *driver, uint8_t *err)
   float temp;
   uint16_t reg[2];
   hj_huminity_cfg_t *cfg = driver->cfg;
-  int32_t ret;
+  eMODBUS_RESULT_t mb_ret;
 
-  ret = modbus_read_hold_reg(&cfg->modbus, HJ_REG_NUM_HUMI, reg, 1);
+  mb_ret = modbus_read_hold_reg(&cfg->modbus, HJ_REG_NUM_HUMI, reg, 1);
 
-  if(ret)
+  if(mb_ret != eMODBUS_OK)
   {
-        ERROR_PRINTF("hjHuminity_read error %s",get_modbus_err_string(ret));
+        ERROR_PRINTF("hjHuminity_read error %s",get_modbus_err_string(mb_ret));
 
     *err = DRV_ERR_TIMEOUT;
     temp = NAN;

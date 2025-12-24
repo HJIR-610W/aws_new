@@ -803,7 +803,7 @@ void ntle9607_off_power_safe(cellular_if_t* p_if)
 
 int32_t ntle9607_recv_uart(cellular_if_t* p_if, uint8_t* buffer, size_t size, uint32_t timeout_ms)
 {
-  return p_if->uart_io.recv_crlf(p_if->uart_handle, buffer, size, timeout_ms);
+  return p_if->uart_io.recv_crlf(p_if->uart_handle, (char*)buffer, size, timeout_ms);
 }
 /**
  * @brief NTLE9607 드라이버 초기화 및 구조체 설정
