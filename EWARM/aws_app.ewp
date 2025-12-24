@@ -2962,7 +2962,7 @@
                 <name>$PROJ_DIR$\..\Application\update\update_fw.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Application\update\update_fw.h</name>
+                <name>$PROJ_DIR$\..\application\update\update_fw.h</name>
             </file>
         </group>
         <group>
@@ -3207,7 +3207,7 @@
                     <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\drivers\components\lan8742\lan8742.h</name>
+                    <name>$PROJ_DIR$\..\drivers\Components\lan8742\lan8742.h</name>
                 </file>
             </group>
             <group>
@@ -3303,6 +3303,9 @@
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\drivers\devices\sensors\barometer\barometer_rmyoung_61402v.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\drivers\devices\sensors\barometer\barometer_rmyoung_61402v_rs232.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\drivers\devices\sensors\barometer\jinsung_sjgp215.c</name>

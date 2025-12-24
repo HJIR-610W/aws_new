@@ -153,6 +153,11 @@ typedef struct rmyoung_61402v_barometer_config_s
 } barometer_rmyoung_61402v_config_t;
 
 
+typedef struct barometer_rmyoung_61402v_rs232_config_s
+{
+  uint8_t rs232_port;
+} barometer_rmyoung_61402v_rs232_config_t;
+
 typedef struct solar_duration_csd3_s
 {
   uint8_t adc_channel;
@@ -243,6 +248,7 @@ typedef struct barometer_config_s
 {
   barometer_jinsung_sjgp215_config_t jinsung_sjgp215;
   barometer_rmyoung_61402v_config_t rmyoung_61402v_barometer;
+  barometer_rmyoung_61402v_rs232_config_t rmyoung_61402v_rs232;
   adc_config_t adc;
 }barometer_config_t;
 

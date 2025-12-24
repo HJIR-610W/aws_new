@@ -80,7 +80,7 @@ const uint8_t temperature_list[] = {S_T_UNSUED, S_T_TEMPERATURE_HJ, S_T_PT100};
 const uint8_t wind_direction_list[] = {S_T_UNSUED, S_T_WIND_DIRECTION_HJ_MODBUS,S_T_WIND_DIRECTION_HJ_485, S_T_WIND_DIRECTION_RMYOUNG_05103V, S_T_ADC};
 const uint8_t wind_speed_list[] = {S_T_UNSUED, S_T_WIND_SPEED_HJ_MODBUS,S_T_WIND_SPEED_HJ_485, S_T_WIND_SPEED_RMYOUNG_05103V,S_T_FREQ};
 const uint8_t rainfall_list[] = {S_T_UNSUED,         S_T_RAIN_REED,  S_T_RAIN_HALL};
-const uint8_t pressure_list[] = {S_T_UNSUED, S_T_BARO_RMYOUNG_61402V, S_T_BARO_JINSUNG_SJGP215, S_T_ADC};
+const uint8_t pressure_list[] = {S_T_UNSUED, S_T_BARO_RMYOUNG_61402V, S_T_BARO_JINSUNG_SJGP215,S_T_BARO_RMYOUNG_61402V_RS232, S_T_ADC};
 const uint8_t rain_present_list[] = {S_T_UNSUED, S_T_RAIN_PRESENT_DI,S_T_RAIN_PRESENT_ANALOG};
 const uint8_t snow_list[] = {S_T_UNSUED, S_T_SNOW_HJ};
 const uint8_t humi_list[] = {S_T_UNSUED, S_T_HUMINITY_HJ, S_T_ADC};
@@ -212,8 +212,11 @@ void *get_sensor_config(  eSENSOR_TYPE_t type,eSENSOR_TYPE_MODEL_t model)
         return &g_config_sensor.baromater.jinsung_sjgp215;
         case S_T_BARO_RMYOUNG_61402V:
         return &g_config_sensor.baromater.rmyoung_61402v_barometer;
+        case S_T_BARO_RMYOUNG_61402V_RS232:
+        return &g_config_sensor.baromater.rmyoung_61402v_rs232;
         case S_T_ADC:
         return &g_config_sensor.baromater.adc;
+        
       }
     break;
     case A8_RAIN_PRESENT:

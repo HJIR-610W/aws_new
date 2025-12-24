@@ -708,3 +708,36 @@ void modbus_init(void)
   if (modbus_sem ==NULL)
     OS_CREATE_BINARY_SEM(modbus_sem);
 }
+#define RET_OK 0
+#define RET_TIME_OUT 1
+#define RET_OVER 2
+#define RET_INVAILD 3
+#define RET_UNKNOWN 4
+#define RET_UNKNOWN_VAL 5
+#define RET_FAIL 6
+#define RET_ID_FAIL 7
+
+const char *get_modbus_err_string(int32_t err)
+{
+  switch (err)
+  {
+    case RET_OK:
+      return "RET_OK";
+    case RET_TIME_OUT:
+      return "RET_TIME_OUT";
+    case RET_OVER:
+      return "RET_OVER";
+    case RET_INVAILD:
+      return "RET_INVAILD";
+    case RET_UNKNOWN:
+      return "RET_UNKNOWN";
+    case RET_UNKNOWN_VAL:
+      return "RET_UNKNOWN_VAL";
+    case RET_FAIL:
+      return "RET_FAIL";
+    case RET_ID_FAIL:
+      return "RET_ID_FAIL";
+    default:
+      return "Unknown Error";
+  }
+}

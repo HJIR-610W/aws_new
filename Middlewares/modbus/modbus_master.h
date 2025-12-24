@@ -31,4 +31,5 @@ int32_t modbus_read_hold_reg(modbus_h_t *drv, uint16_t address, uint16_t *pOutRe
                              uint16_t regCnt);
 int32_t modbus_read_input_reg(modbus_h_t *drv, uint16_t address, uint16_t *pOutRegs,
                               uint16_t regCnt);
+const char *get_modbus_err_string(int32_t err);
 #endif

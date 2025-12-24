@@ -141,13 +141,19 @@ void limit_barometer(void)
 {
   if (g_config_sensor.baromater.jinsung_sjgp215.rs232_port > eRS232_MAX)
   {
-    g_config_sensor.baromater.jinsung_sjgp215.rs232_port = eRS232_RS485_B;
+    g_config_sensor.baromater.jinsung_sjgp215.rs232_port = eRS232_RS485_A;
     g_config_sensor_dirty_flag = true;
   }
 
   if (g_config_sensor.baromater.rmyoung_61402v_barometer.adc_channel > 15)
   {
     g_config_sensor.baromater.rmyoung_61402v_barometer.adc_channel = 0;
+    g_config_sensor_dirty_flag = true;
+  }
+  
+  if(g_config_sensor.baromater.rmyoung_61402v_rs232.rs232_port >eRS232_MAX)
+  {
+    g_config_sensor.baromater.rmyoung_61402v_rs232.rs232_port = eRS232_RS485_A;
     g_config_sensor_dirty_flag = true;
   }
 

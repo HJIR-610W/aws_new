@@ -132,7 +132,7 @@ typedef enum sensor_list_e
   X(S_T_RAIN_PRESENT_DI, "화진 강우감지 접점")                \
   X(S_T_SOLAR_RADIATION_OTT_SMP3, "일사 OTT SMP3")       \
   X(S_T_BARO_JINSUNG_SJGP215, "진성 SJGP215")            \
-  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")           \
+  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V VOUT")           \
   X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V") \
   X(S_T_WIND_SPEED_RMYOUNG_05103V, "RMYOUNG 05103V")     \
   X(S_T_RAIN_PRESENT_ANALOG, "화진 우량감지 디지털")\
@@ -141,7 +141,8 @@ typedef enum sensor_list_e
   X(S_T_WIND_DIRECTION_HJ_MODBUS, "화진 풍향 MODBUS")\
   X(S_T_PT100, "PT100")\
   X(S_T_RAIN_REED, "PULSE")\
-  X(S_T_RAIN_HALL, "HALL")     
+  X(S_T_RAIN_HALL, "HALL")\
+  X(S_T_BARO_RMYOUNG_61402V_RS232, "RMYOUNG 61402V RS232")         
 
 #define SENSOR_TYPE_ENG_LIST                             \
   X(S_T_UNSUED, "Not Used")                              \
@@ -155,7 +156,7 @@ typedef enum sensor_list_e
   X(S_T_RAIN_PRESENT_DI, "HJ Rain Det Digital")            \
   X(S_T_SOLAR_RADIATION_OTT_SMP3, "Solar SMP3")          \
   X(S_T_BARO_JINSUNG_SJGP215, "JINSUNG SJGP215")         \
-  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V")           \
+  X(S_T_BARO_RMYOUNG_61402V, "RMYOUNG 61402V VOUT")           \
   X(S_T_WIND_DIRECTION_RMYOUNG_05103V, "RMYOUNG 05103V") \
   X(S_T_WIND_SPEED_RMYOUNG_05103V, "RMYOUNG 05103V")     \
   X(S_T_RAIN_PRESENT_ANALOG, "HJ Rain Det Analog")      \
@@ -164,7 +165,8 @@ typedef enum sensor_list_e
   X(S_T_WIND_DIRECTION_HJ_MODBUS, "HJ Wind Dir MODBUS")\
   X(S_T_PT100,"PT100")\
   X(S_T_RAIN_REED, "PULSE")\
-  X(S_T_RAIN_HALL, "HALL")                    
+  X(S_T_RAIN_HALL, "HALL")\
+  X(S_T_BARO_RMYOUNG_61402V_RS232, "RMYOUNG 61402V RS232")                    
 
 
   
@@ -204,7 +206,7 @@ rain_present_config_t *get_rain_present_config(void);
 extern const uint8_t temperature_list[3];
 extern const uint8_t wind_direction_list[5];
 extern const uint8_t wind_speed_list[5];
-extern const uint8_t pressure_list[4];
+extern const uint8_t pressure_list[5];
 extern const uint8_t rainfall_list[3];
 extern const uint8_t snow_list[2];
 extern const uint8_t rain_present_list[3];

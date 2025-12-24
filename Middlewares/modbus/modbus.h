@@ -15,6 +15,16 @@ typedef enum _mb_message
   eBYTE_CNT  //!< byte counter
 } eMB_MESSAGE_t;
 
+
+typedef enum modbus_result_e
+{
+  eMODBUS_OK = 0,
+  eMODBUS_TIMEOUT,
+  eMODBUS_CRC_ERROR,
+  eMODBUS_EXCEPTION,
+  eMODBUS_FAIL
+} eMODBUS_RESULT_t;
+
 #define RET_OK 0
 #define RET_TIME_OUT 1
 #define RET_OVER 2

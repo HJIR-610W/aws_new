@@ -10,6 +10,7 @@
 #include "hj_temperature_define.h"
 #include "drv_rs232.h"
 #include "drv_rs485.h"
+#include "system_err.h"
 
 typedef struct hj_temperature_cfg_s
 {
@@ -91,6 +92,7 @@ float hjTemperature_read(driver_t *driver, uint8_t *err)
 
   if(ret)
   {
+    ERROR_PRINTF("hjTemperature_read error %s",get_modbus_err_string(ret));
     *err = DRV_ERR_TIMEOUT;
     temp = NAN;
   }

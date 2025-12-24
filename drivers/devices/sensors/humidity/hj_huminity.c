@@ -11,6 +11,7 @@
 #include "os_user_def.h"
 #include "drv_rs485.h"
 #include "drv_rs232.h"
+#include "system_err.h"
 
 typedef struct hj_huminity_cfg_s
 {
@@ -86,8 +87,11 @@ float hjHuminity_read(driver_t *driver, uint8_t *err)
 
   if(ret)
   {
+        ERROR_PRINTF("hjHuminity_read error %s",get_modbus_err_string(ret));
+
     *err = DRV_ERR_TIMEOUT;
     temp = NAN;
+    
   }
   else
   {
