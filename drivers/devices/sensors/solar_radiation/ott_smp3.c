@@ -14,6 +14,7 @@
 typedef struct ott_smp3_cfg_s
 {
   modbus_h_t modbus;
+  
 } ott_smp3_cfg_t;
 
 
@@ -44,15 +45,12 @@ driver_t *ott_smp3_open(int32_t num, void *opt)
   uart_config_t uart_config;
   solar_r_ott_smp3_config_t *ott = (solar_r_ott_smp3_config_t *)opt;
 
-  uart_config.baud = 19200;
-  uart_config.parity_index = PARITY_EVEN;
-  uart_config.stop_bit = UART_STOP_BIT_1;
-  uart_config.dataLen = UART_DATA_LEN_8;
+  uart_config = ott->uart_config;
 
   g_ott_smp3_cfg.modbus.modebus_type = eMODBUS_RS485;
   g_ott_smp3_cfg.modbus.port_num = rs485_num_to_driver_num(ott->rs485_port);
   g_ott_smp3_cfg.modbus.id = ott->modbus_id;
-    modbus_init();
+  modbus_init();
     
   drv_rs485_init(g_ott_smp3_cfg.modbus.port_num,&uart_config,"Solar Radiation");
 

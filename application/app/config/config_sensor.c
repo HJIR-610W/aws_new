@@ -237,6 +237,18 @@ void limit_solar_radiation(void)
     g_config_sensor_dirty_flag = true;
   }
 
+  if(g_config_sensor.solar_radication.ott_smp3.uart_config.baud <1200 ||
+     g_config_sensor.solar_radication.ott_smp3.uart_config.baud >115200)
+  {
+    g_config_sensor.solar_radication.ott_smp3.uart_config.baud = 9600;
+    g_config_sensor_dirty_flag = true;
+  }
+
+  if(g_config_sensor.solar_radication.ott_smp3.uart_config.parity_index > PARITY_EVEN)
+  {
+    g_config_sensor.solar_radication.ott_smp3.uart_config.parity_index = PARITY_NONE;
+    g_config_sensor_dirty_flag = true;
+  }
     
   limit_adc(&g_config_sensor.solar_radication.adc);
 }

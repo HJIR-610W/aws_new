@@ -118,6 +118,7 @@ typedef struct ottSMP3_config_s
 {
   uint8_t rs485_port;
   uint8_t modbus_id;
+  uart_config_t uart_config;
 } solar_r_ott_smp3_config_t;
 
 typedef struct rain_present_config_s

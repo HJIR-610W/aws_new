@@ -38,5 +38,6 @@ extern const char *baud_list_eng[6];
 extern const char *adc_single_list[16];
 extern const char *pt100_list_eng[2];
 
+extern const char *uart_parity_list_eng[3];
 extern const char *g_unknown;
 #endif // CONST_STRING_H

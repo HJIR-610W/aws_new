@@ -74,6 +74,8 @@ const char *sdcard_status_list_eng[] = {"NOT INSERTED", "INSERTED"};
 const char *lcd_off_time_list_eng[] = {"10", "60", "Always On"};
 
 
+const char *uart_parity_list_eng[] = {"NONE", "ODD", "ENVEN"};
+
 
 
 const char *safe_name(const char **names,int name_count,int index)

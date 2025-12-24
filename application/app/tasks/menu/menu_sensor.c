@@ -143,7 +143,9 @@ void draw_wind_direction_hj_page(screen_menu_t* p_win, wind_direction_hj_pulse_c
 
 #define OTT_SMP3_PAGE_PORT 0
 #define OTT_SMP3_PAGE_MODBUS_ID 1
-#define OTT_SMP3_PAGE_DEFAULT 2
+#define OTT_SMP3_PAGE_BAUD 2
+#define OTT_SMP3_PAGE_PARITY 3
+#define OTT_SMP3_PAGE_DEFAULT 4
 void draw_solar_radiation_ott_smp3_page(screen_menu_t* p_win, solar_r_ott_smp3_config_t* ott_smp3_config)
 {
   const char *name_table[10];
@@ -154,6 +156,10 @@ void draw_solar_radiation_ott_smp3_page(screen_menu_t* p_win, solar_r_ott_smp3_c
 
   screen_menu_printf(p_win, OTT_SMP3_PAGE_PORT, "%-*s:%s", E_L_W, "Port", safe_name(name_table, list_cnt, ott_smp3_config->rs485_port));
   screen_menu_printf(p_win, OTT_SMP3_PAGE_MODBUS_ID, "%-*s:%d", E_L_W, "MODBUS ID", ott_smp3_config->modbus_id);
+
+  screen_menu_printf(p_win, OTT_SMP3_PAGE_BAUD, "%-*s:%d", E_L_W, "BAUD", ott_smp3_config->uart_config.baud);
+  screen_menu_printf(p_win, OTT_SMP3_PAGE_PARITY, "%-*s:%s", E_L_W, "PARITY",safe_name(uart_parity_list_eng,_countof(uart_parity_list_eng), 
+  ott_smp3_config->uart_config.parity_index));
   screen_menu_printf(p_win, OTT_SMP3_PAGE_DEFAULT, "Default");
 }
 
@@ -938,7 +944,7 @@ int32_t hjhumi_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t 
 
   return status;
 }
-int32_t ott_smp3_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
+int32_t solar_r_ott_smp3_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t menu_index)
 {
   int32_t status = 0;
   int32_t choice;
@@ -972,13 +978,33 @@ int32_t ott_smp3_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_
       ott_smp3->modbus_id = dec;
       save_config_sensor();
       break;
+    case OTT_SMP3_PAGE_BAUD:
+      dec = ott_smp3->uart_config.baud;
+      status = input_decimal("BAUD", 1200, 115200, &dec);
+      if (status != MENU_OK)
+        break;
+      ott_smp3->uart_config.baud = dec;
+      save_config_sensor();
+      break;
+    case OTT_SMP3_PAGE_PARITY:
+      choice = ott_smp3->uart_config.parity_index;
+      status = input_combobox("PARITY", uart_parity_list_eng, _countof(uart_parity_list_eng), &choice);
+      if (status != MENU_OK)
+        break;
+      ott_smp3->uart_config.parity_index = choice;
+      save_config_sensor();
+      break;
     case OTT_SMP3_PAGE_DEFAULT:
       choice = 0;
       status = input_active("Set as Default?", &choice);
       if (status != MENU_OK || choice == 0)
         break;
-      ott_smp3->rs485_port = eAPP_RS485_RS232_A;
+      ott_smp3->rs485_port = eAPP_RS485_RS232_B;
       ott_smp3->modbus_id = 1;
+      ott_smp3->uart_config.baud = 9600;
+      ott_smp3->uart_config.dataLen = UART_DATA_LEN_8;
+      ott_smp3->uart_config.parity_index = PARITY_NONE;
+      ott_smp3->uart_config.stop_bit = UART_STOP_BIT_1;
       save_config_sensor();
       break;
     }
@@ -1414,7 +1440,7 @@ const sensor_setup_entry_t g_sensor_setup_table[] = {
     {.sensor_type = S_T_SNOW_HJ, .config_set = hjsnow_setup},
     {.sensor_type = S_T_TEMPERATURE_HJ, .config_set = hjtemp_setup},
     {.sensor_type = S_T_HUMINITY_HJ, .config_set = hjhumi_setup},
-    {.sensor_type = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = ott_smp3_setup},
+    {.sensor_type = S_T_SOLAR_RADIATION_OTT_SMP3, .config_set = solar_r_ott_smp3_setup},
     {.sensor_type = S_T_RAIN_PRESENT_DI, .config_set = rain_present_setup},
     {.sensor_type = S_T_RAIN_PRESENT_ANALOG, .config_set = rain_present_setup},
     {.sensor_type = S_T_BARO_JINSUNG_SJGP215, .config_set = barometer_jinsung_setup},
