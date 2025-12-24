@@ -51,7 +51,7 @@
 extern void testColsoleTask(void *arg);
 int aws_menu(void)
 {
-  int choice, status;
+  int choice =0, status;
   int test_mode_num=0;
 
  const char* menu[] = { MENU_ITEM(MENU_INFO_DEF),

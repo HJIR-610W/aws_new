@@ -12,7 +12,7 @@ int32_t aws_panel(void)
 {
   char buff[4][30];
   const char* menu[4];
-  int choice, status;
+  int choice =0, status;
   int menu_cnt;
   bool enable;
 

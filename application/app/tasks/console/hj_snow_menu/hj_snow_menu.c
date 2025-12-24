@@ -22,7 +22,7 @@
 
 int hj_snow_menu(void)
 {
-  int choice, status;
+  int choice =0, status;
   driver_t* hjsnow;
 
   uint8_t err;

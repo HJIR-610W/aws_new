@@ -59,6 +59,22 @@ void MX_I2C_Init(int num)
 
 
 
+const char *bsp_i2c_get_err_name(int32_t err)
+{
+  switch (err)
+  {
+    case HAL_OK:
+      return "HAL_OK";
+    case HAL_ERROR:
+      return "HAL_ERROR";
+    case HAL_BUSY:
+      return "HAL_BUSY";
+    case HAL_TIMEOUT:
+      return "HAL_TIMEOUT";
+    default:
+      return "UNKNOWN";
+  }
+}
 
 void i2c1_bus_recovery(void)
 {
@@ -83,6 +99,7 @@ void i2c1_bus_recovery(void)
   // 2. SDA 상태 확인
   if (HAL_GPIO_ReadPin(I2C1_SDA_GPIO_Port, I2C1_SDA_Pin) == GPIO_PIN_RESET)
   {
+        ERROR_PRINTF("I2C1 SDA low");
     // 3. SDA가 LOW인 경우: SCL을 pulsing하여 버스 복구 시도
     for (int i = 0; i < 9; i++)
     {
@@ -131,6 +148,7 @@ void i2c2_bus_recovery(void)
   // 2. SDA 상태가 LOW이면 복구 진행
   if (HAL_GPIO_ReadPin(I2C2_SDA_GPIO_Port, I2C2_SDA_Pin) == GPIO_PIN_RESET)
   {
+    ERROR_PRINTF("I2C2 SDA low");
     // 3. SCL 클럭을 9번 출력하여 stuck 해제 시도
     for (int i = 0; i < 9; i++)
     {
@@ -252,7 +270,7 @@ int32_t bsp_i2c_send(int num, uint32_t address,uint8_t reg,const uint8_t *pData,
     sr1 = handle->Instance->SR1;
     sr2 = handle->Instance->SR2;
 
-    ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status, sr1, sr2);
+    ERROR_PRINTF("I2C%d send error %s,SR1:0x%08X,SR2:0x%08X", num+1, bsp_i2c_get_err_name(status), sr1, sr2);
     
     (void)sr1;
     (void)sr2;
@@ -291,7 +309,7 @@ int32_t bsp_i2c_read(int num ,uint32_t address,uint8_t reg,uint8_t *pData,uint16
     sr1 = handle->Instance->SR1;
     sr2 = handle->Instance->SR2;
 
-    ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status, sr1, sr2);
+    ERROR_PRINTF("I2C%d read error %s,SR1:0x%08X,SR2:0x%08X", num+1, bsp_i2c_get_err_name(status), sr1, sr2);
     (void)sr1;
     (void)sr2;
     if (handle->Instance == I2C1)
@@ -326,7 +344,7 @@ int32_t bsp_i2c_recv_byte(int num,uint8_t address,uint8_t *pBuff,uint32_t readCn
     sr1 = handle->Instance->SR1;
     sr2 = handle->Instance->SR2;
 
-    ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status, sr1, sr2);
+    ERROR_PRINTF("I2C%d recv byte error %s,SR1:0x%08X,SR2:0x%08X", num+1, bsp_i2c_get_err_name(status), sr1, sr2);
     (void)sr1;
     (void)sr2;
     if (handle->Instance == I2C1)
@@ -344,6 +362,7 @@ int32_t bsp_i2c_recv_byte(int num,uint8_t address,uint8_t *pBuff,uint32_t readCn
 
   return status;
 }
+
 int32_t bsp_i2c_send_byte(int num,uint8_t address,uint8_t *pData,uint32_t dataLen)
 {
   HAL_StatusTypeDef status = HAL_OK;
@@ -360,7 +379,7 @@ int32_t bsp_i2c_send_byte(int num,uint8_t address,uint8_t *pData,uint32_t dataLe
     sr1 = handle->Instance->SR1;
     sr2 = handle->Instance->SR2;
     
-    ERROR_PRINTF("i2c error %d,SR1:0x%08X,SR2:0x%08X", status,sr1,sr2);
+    ERROR_PRINTF("I2C%d send byte error %s,SR1:0x%08X,SR2:0x%08X", num+1, bsp_i2c_get_err_name(status), sr1, sr2);
     (void)sr1;
     (void)sr2;
     if (handle->Instance == I2C1)
