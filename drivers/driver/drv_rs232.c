@@ -58,6 +58,7 @@ int32_t uart_num_to_driver_num(int32_t app_uart_num)
 
   return rs232_define[app_uart_num].num;
 
+  
 }
 
 

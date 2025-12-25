@@ -327,7 +327,7 @@ uint8_t date[7];
         return RET_IO_ERR;
     }
 
-    reg = reg | RV8803_CTRL_RESET;
+    reg = reg | (uint8_t)RV8803_CTRL_RESET;
 
     err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_CTRL,&reg,1);
 
@@ -349,7 +349,7 @@ uint8_t date[7];
 	}
 
 
-    reg = reg & ~RV8803_CTRL_RESET;
+    reg = reg & ~(uint8_t)RV8803_CTRL_RESET;
     err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_CTRL,&reg,1);
 
 	if(err)
@@ -376,7 +376,7 @@ uint8_t date[7];
 		}
 	}
 
-    reg = reg & ~(RV8803_FLAG_V1F | RV8803_FLAG_V2F);
+    reg = reg & ~(uint8_t)((RV8803_FLAG_V1F | RV8803_FLAG_V2F));
 
     err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_FLAG,&reg,1);
 
@@ -427,7 +427,7 @@ int32_t rv8803_set_date(driver_t *rv8803,uint16_t year, int8_t mon, uint8_t day)
 	}
 
 
-    reg = reg & ~RV8803_CTRL_RESET;
+    reg = reg & ~(uint8_t)RV8803_CTRL_RESET;
     err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_CTRL,&reg,1);
 
 	if(err)
@@ -454,7 +454,7 @@ int32_t rv8803_set_date(driver_t *rv8803,uint16_t year, int8_t mon, uint8_t day)
 		}
 	}
 
-    reg = reg & ~(RV8803_FLAG_V1F | RV8803_FLAG_V2F);
+    reg = reg & ~(uint8_t)(RV8803_FLAG_V1F | RV8803_FLAG_V2F);
 
     err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_FLAG,&reg,1);
 
@@ -513,7 +513,7 @@ if (reg & RV8803_FLAG_V2F)//Voltage Low Flag2
       {
     return ret;
   }
-      reg = reg & ~(RV8803_FLAG_V1F | RV8803_FLAG_V2F);
+      reg = reg & ~(uint8_t)(RV8803_FLAG_V1F | RV8803_FLAG_V2F);
 
       err =  bsp_i2c_send(cfg->i2c_num, cfg->address,RV8803_FLAG,&reg,1);
 

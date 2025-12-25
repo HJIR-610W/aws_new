@@ -144,7 +144,7 @@ rain_cfg_t rain_cfg;
 
 driver_t *rain_open(int32_t num,void *opt)
 {
- rain_config_t *p_rain = (rain_config_t*) opt;
+// rain_config_t *p_rain = (rain_config_t*) opt;
 
   if(rain_driver.opened)
   {

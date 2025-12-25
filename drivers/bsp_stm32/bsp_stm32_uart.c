@@ -597,7 +597,7 @@ void stm32_uart_flush_rx(int num)
 int32_t stm32_uart_recv_opt(int num, uint8_t *buffer, uint16_t buffer_size, uint32_t timeout1_ms,
                        uint32_t timeout2_ms)
 {
-  int32_t ret;
+ // int32_t ret;
   int32_t received = 0;
   uint8_t *p = buffer;
   uint32_t start_tick;

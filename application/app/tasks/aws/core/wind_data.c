@@ -173,7 +173,7 @@ float calculate_wind_direction_mavg(const float *direction, int count)
 void calculate_wind_moving_avg(float *wind_speed,float *wind_direction)
 {
   double speed_sum=0;
-  double direction_sum=0;
+//  double direction_sum=0;
   uint8_t actual_count;
   float sample_direction[WIND_SPEED_AVG_CNT];
 

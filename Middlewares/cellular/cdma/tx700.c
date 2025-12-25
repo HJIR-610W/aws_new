@@ -769,7 +769,7 @@ int32_t tx700_recv_uart(cellular_if_t* p_if, uint8_t* p_buffer, size_t buffer_si
   uint8_t first_pass_sms = 1;
   uint16_t data_len = 0;
   int32_t sub_len = 0;
-  uint8_t first_pass_sms_send=1;
+  //uint8_t first_pass_sms_send=1;
 
   while (1)
   {
@@ -865,7 +865,7 @@ int32_t tx700_recv_uart(cellular_if_t* p_if, uint8_t* p_buffer, size_t buffer_si
  */
 int32_t tx700_open(cellular_if_t *p_if)
 {
-  void *p_uart_handle = NULL;
+  //void *p_uart_handle = NULL;
 
   if (p_if == NULL ) {
     return -1;

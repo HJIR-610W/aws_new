@@ -62,7 +62,7 @@ float hj_wind_speed_read(uint8_t *err)
   uint16_t reg[4];
   int16_t s_reg;
   eMODBUS_RESULT_t mb_ret;
-  uint16_t status;
+  //uint16_t status;
   uint16_t type;
   float wind_speed=0;
 

@@ -620,7 +620,7 @@ uint8_t reverse_bits(uint8_t b)
 
 void st7920_clear_screen(driver_t *drv)
 {
-    st7920_t *cfg = (st7920_t *)drv->cfg;
+   // st7920_t *cfg = (st7920_t *)drv->cfg;
 
     
   memset(framebuffer,0,sizeof(framebuffer));

@@ -331,7 +331,7 @@ float read_current_temperature(void)
 float adc_driver_get_value(config_adc_adv_t *cfg,adc_channel_type_t channel_type, int channel_index,
                            int32_t raw_value)
 {
-  const adc_cal_params_t* cal_params;
+  const adc_cal_params_t* cal_params=NULL;
 
   switch (channel_type)
   {

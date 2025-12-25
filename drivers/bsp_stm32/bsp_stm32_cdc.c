@@ -55,7 +55,7 @@ void set_usb_cdc_connection(bool set)
 
 int32_t stm32_cdc_init(void *opt)
 {
-  osSemaphoreId_t tempSem=NULL;
+ // osSemaphoreId_t tempSem=NULL;
 
   if (cdc_inst.opened == true)
   {

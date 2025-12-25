@@ -63,7 +63,7 @@ void fault_uart_init(uint32_t baud_rate)
 void fault_printf(const char * pFmt, ...)
 {
   char buff[50];
-  char *ptr=buff;
+  //char *ptr=buff;
   va_list ap;  
 
 

@@ -215,7 +215,7 @@ int fm25cl_lfs_prog( uint32_t block,uint32_t off,const uint8_t *buffer,uint32_t 
 {
 
   uint32_t flash_addr;
-  uint32_t page_size;
+ // uint32_t page_size;
 
 
   // block은 littlefs 블록 번호 (블록 크기 = 64바이트)lfs_cfg.block_size 

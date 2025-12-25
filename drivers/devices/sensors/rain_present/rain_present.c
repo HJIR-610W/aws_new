@@ -17,7 +17,7 @@ driver_t g_rain_present_driver;
 
 driver_t *rainPresent_open(int32_t num, void *opt)
 {
-  driver_t *driver=NULL;
+ // driver_t *driver=NULL;
 
   if (g_rain_present_driver.opened)
   {

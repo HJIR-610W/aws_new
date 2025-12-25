@@ -82,7 +82,7 @@ void limit_active(uint8_t *p_active)
 
 void check_config_app(void)
 {
-  void *p_config;
+ // void *p_config;
 
 
   //특별 처리 
