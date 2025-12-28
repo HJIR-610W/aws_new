@@ -146,15 +146,15 @@ void consoleTask(void *arg)
 
   print_signature();
   
-  read_password(login_key);
-  while(check_login(login_key)==false);
+ // read_password(login_key);
+ // while(check_login(login_key)==false);
 
   if(read_last_error(buffer,sizeof(buffer)))
   {
     debug_printf("Last error:%s\r\n",buffer);
   }
   
-  debug_printf("Alarm log count:%d\r\n",alarm_get_log_count());
+
 
   shell_scanf_init();
 

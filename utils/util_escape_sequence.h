@@ -30,7 +30,7 @@
 #define ES_CURSOR_LEFT_N         "\x1B[%dD"      // 커서 왼쪽으로 N칸
 
 /* 커서 위치 설정 */
-#define ES_CURSOR_POSITION       "\x1B[%d;%dH"   // 커서 위치 (행;열)
+#define ES_CURSOR_POSITION(row, col)  "\x1B[" STR(row) ";" STR(col) "H"
 #define ES_CURSOR_COLUMN         "\x1B[%dG"      // 커서 열 위치
 
 /* 커서 표시/숨김 */
@@ -219,5 +219,7 @@
 
 /* 화면 크기 변경 (rows, cols) */
 #define EC_SET_SCREEN_SIZE(rows, cols)  "\x1B[8;" STR(rows) ";" STR(cols) "t"
+
+#define EC_CLEAR_LINE(row)   "\x1B[" STR(row) ";1H" "\x1B[2K"
 
 #endif /* ESCAPE_SEQUENCE_H */

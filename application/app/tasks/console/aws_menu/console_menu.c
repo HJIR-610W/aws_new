@@ -21,41 +21,20 @@
 #include "util_memory.h"
 #include "app_screen.h"
 #include "app_key.h"
+#include "system_err.h"
 
-
-#define MENU_INFO        1
-#define MENU_SYSTEM      2
-#define MENU_SENSOR      3
-#define MENU_NETWORK     4
-#define MENU_DATA        5
-#define MENU_PANEL       6
-#define MENU_OFFSET      7
-#define MENU_CALIBRATION 8
-#define MENU_MANAGER     9 
-
-#define MENU_INFO_DEF         ( "기본정보", MENU_INFO)
-#define MENU_SYSTEM_DEF       ( "시스템", MENU_SYSTEM)
-#define MENU_SENSOR_DEF       ( "센서", MENU_SENSOR)
-#define MENU_NETWORK_DEF      ( "네트워크", MENU_NETWORK)
-#define MENU_DATA_DEF         ( "데이터", MENU_DATA)
-#define MENU_PANEL_DEF        ( "패널(전광판)", MENU_PANEL)
-#define MENU_OFFSET_DEF       ( "오프셋", MENU_OFFSET)
-#define MENU_CALIBRATION_DEF  ( "켈리브레이션", MENU_CALIBRATION)
-#define MENU_MANAGER_DEF      ( "관리", MENU_MANAGER)
-
-#define MENU_SYSTEM_DEF       ( "시스템", MENU_SYSTEM)
-
-#define MENU_ITEM(def) GET_1 def
-#define MENU_NUMBER(def) GET_2 def
 
 
 void menu_mirror(void)
 {
-  g_log_write_enable  = 0;
-  g_debug_port_mirror_enable = 1;
-
   debug_printf(ES_CURSOR_HIDE);
   debug_printf(ES_CLEAR_SCREEN);
+  debug_printf(ES_CURSOR_POSITION(10,1));//실제 화면은 1~8 이고 9행은 정보
+  debug_printf("CTRL+Z 누르면 종료,LONG ESC CTRL+Q,LONG ENTER CTRL+P\r\n");
+  debug_printf(EC_SCROLL_REGION(12,40 ));
+  debug_printf(ES_CURSOR_POSITION(12,1));
+  //g_log_write_enable  = 0;
+  g_debug_port_mirror_enable = 1;
 
   uint8_t ch;
   while(1)
@@ -68,8 +47,12 @@ void menu_mirror(void)
     }
   }
   g_debug_port_mirror_enable = 0;
-  g_log_write_enable  = 1;
+  //g_log_write_enable  = 1;
+  debug_printf(ES_CURSOR_POSITION(1,1));//실제 화면은 1~8 이고 9행은 정보
+  debug_printf(ES_CLEAR_SCREEN_BELOW);
+  
   debug_printf(ES_CURSOR_SHOW);
+  debug_printf(EC_SCROLL_REGION_RESET);
 
 }
 
@@ -82,7 +65,7 @@ int aws_menu(void)
   int test_mode_num=0;
 
  const char* menu[] = {"기본 정보",
-                       "화면 미러"};
+                       "LCD"};
 
   while (1)
   {
