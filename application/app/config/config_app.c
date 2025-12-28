@@ -357,7 +357,7 @@ void check_unused_field(uint32_t start_address,uint32_t end_address)
       {
         memset(buff,0,sizeof(buff));
         drv_fram_write(start_address + i * sizeof(buff), buff, sizeof(buff));
-        debug_printf("start_address:%X 512\r\n", start_address + i * sizeof(buff));
+        DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"start_address:%X 512\r\n", start_address + i * sizeof(buff));
         break;
       }
     }
@@ -372,7 +372,7 @@ void check_unused_field(uint32_t start_address,uint32_t end_address)
       {
         memset(buff, 0, sizeof(buff));
         drv_fram_write(start_address + i * sizeof(buff), buff, rem);
-        debug_printf("start_address:%X %d\r\n", start_address + i * sizeof(buff),rem);
+          DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"start_address:%X %d\r\n", start_address + i * sizeof(buff),rem);
         break;
       }
     }
@@ -519,7 +519,7 @@ void backup_config_app(void)
   f_ret = write_file(PATH_CONFIG_APP_BIN,(uint8_t *)&config,sizeof(config),0);
   if(f_ret == FR_OK)
   {
-    debug_printf("%s에 저장되었습니다\r\n",PATH_CONFIG_APP_BIN);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"%s에 저장되었습니다\r\n",PATH_CONFIG_APP_BIN);
   }
 }
 
@@ -539,7 +539,7 @@ void restore_config_app(void)
     
     if(f_ret != FR_OK)
     {
-      debug_printf("File read error  %d\r\n", f_ret);
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"File read error  %d\r\n", f_ret);
       user_free(p_config);
       return ;
     }
@@ -553,13 +553,13 @@ void restore_config_app(void)
         {
           memcpy(&config, p_config, sizeof(config_t));
           crc_result = true;
-          debug_printf("0:config_app.bin has been restored.\r\n");
+          DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"0:config_app.bin has been restored.\r\n");
         }
       }
     
       if (crc_result == false)
       {
-        debug_printf("Checksum error\r\n");
+        DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Checksum error\r\n");
       }
  
  

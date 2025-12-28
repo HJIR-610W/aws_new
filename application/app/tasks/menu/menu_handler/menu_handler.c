@@ -97,7 +97,7 @@ menu_status_t show_popup(const char *title, const char *message)
         {
           break; // LCD 영역 초과 시 출력 종료
         }
-        screen_set_cursor(current_row, current_col);
+
       }
 
       screen_put_ch(current_row, current_col, message[i]);
@@ -393,7 +393,7 @@ void screen_menu_printf(screen_menu_t *win, int index, const char *format, ...)
   {
     display_row = row_index - win->scroll_offset + title_offset;
 
-    //    screen_set_cursor(display_row, 0);
+
 
     // 선택된 항목이면 '*', 아니면 ' ' 표시
     if (win->enter_long_key_active == true)

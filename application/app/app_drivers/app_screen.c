@@ -44,34 +44,10 @@ screen_instance_t* screen_get_instance(void)
   return &s_screen;
 }
 
-void screen_home(void)
-{
-    if(p_s_lcd == NULL)
-    return;
-    driver_lcd_home(p_s_lcd);
-}
 
 
-void screen_display_on(void)
-{
-    if(p_s_lcd == NULL)
-     return;
-    driver_lcd_display_on(p_s_lcd);
-}
 
-void screen_display_off(void)
-{
-    if(p_s_lcd == NULL)
-    return;
-    driver_lcd_display_off(p_s_lcd);
-}
 
-void screen_set_cursor(int row, int col)
-{
-    if(p_s_lcd == NULL)
-     return;
-   // driver_lcd_set_position(p_s_lcd, row, col);
-}
 
 
 

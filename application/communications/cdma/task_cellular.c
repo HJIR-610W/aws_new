@@ -376,7 +376,7 @@ void cellular_task(void *arg)
     s_app_event_flags = osEventFlagsNew(NULL);
     if (s_app_event_flags == NULL)
     {
-        debug_printf("[AppMain] 플래그 생성 실패");
+          DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[AppMain] 플래그 생성 실패");
         while (1)
         {
           osDelay(1000);

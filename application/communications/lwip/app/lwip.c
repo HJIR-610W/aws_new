@@ -138,12 +138,12 @@ static void ethernet_link_status_updated(struct netif *netif)
 {
   if (netif_is_up(netif))
   {
-    debug_printf("eth link up\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"eth link up\r\n");
     g_ethernet_phy_link = 1;
   }
   else /* netif is down */
   {
-    debug_printf("eth link down\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"eth link down\r\n");
     g_ethernet_phy_link = 0;
   }
 }

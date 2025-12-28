@@ -838,11 +838,11 @@ const uint32_t stack_size = TASK_STACK(TASK_TELNET_SERVER_DEF);
 
         g_telnetServerTaskId = osThreadNew(telnet_server_task, NULL, &custom_attr);
         if (g_telnetServerTaskId == NULL) {
-            debug_printf("Telnet Server: Task creation failed\r\n");
+              DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Telnet Server: Task creation failed\r\n");
             user_free(stack_mem);
         }
     } else {
-        debug_printf("Telnet Server: Failed to allocate memory for task stack\r\n");
+          DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Telnet Server: Failed to allocate memory for task stack\r\n");
     }
 #endif
 }

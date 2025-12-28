@@ -37,7 +37,7 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
    char task_name[20];
 
    snprintf(task_name,sizeof(task_name),"SOF,%s",pcTaskName);
-   debug_printf("SOF,%s",task_name);
+   ERROR_PRINTF("SOF,%s",task_name);
    //__asm("BKPT #0");
    reset_system("%s", task_name);
 }
@@ -59,9 +59,9 @@ void vApplicationMallocFailedHook(void)
   size_t free_heap = xPortGetFreeHeapSize();            // 현재 사용 가능한 힙 크기
   size_t min_free_heap = xPortGetMinimumEverFreeHeapSize(); // 프로그램 실행 중 가장 작았던 힙 크기
 
-  debug_printf("Error : Memory allocation failed.\r\n");
-  debug_printf("Free Heap Size          : %u bytes\r\n", (unsigned int)free_heap);
-  debug_printf("Minimum Ever Free Heap : %u bytes\r\n", (unsigned int)min_free_heap);
+  ERROR_PRINTF("Error : Memory allocation failed.\r\n");
+  ERROR_PRINTF("Free Heap Size          : %u bytes\r\n", (unsigned int)free_heap);
+  ERROR_PRINTF("Minimum Ever Free Heap : %u bytes\r\n", (unsigned int)min_free_heap);
 
 
 }

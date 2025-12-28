@@ -6,8 +6,6 @@
 #include <stdbool.h>
 
 
-
-
 typedef struct screen_instance
 {
   int32_t width_pixel; //가로 픽셀
@@ -16,16 +14,13 @@ typedef struct screen_instance
   uint8_t font_cols;//캐릭터 모드인경우 열수
   bool screen_on;//현재 화면 꺼졌는지 켜졌는지 상태
   bool graphic_mode;//그래픽 모드인지 캐릭터 모드인지
+  bool debug_mirror;
 } screen_instance_t;
 
 
 screen_instance_t* screen_get_instance(void);
 
 void screen_init(void);
-void screen_home(void);
-void screen_display_on(void);
-void screen_display_off(void);
-void screen_set_cursor(int row, int col);
 void screen_set_pixel( uint8_t x, uint8_t y, bool on);
 void screen_refresh(void);
 void screen_put_ch(int row, int col, uint8_t ch);

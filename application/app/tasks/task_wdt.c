@@ -67,7 +67,7 @@ int wdt_task_register(const char *name, uint32_t timeout_ms)
     }
   }
 
-  debug_printf("더이상 task등록 못해요");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"더이상 task등록 못해요");
   return -1;
 }
 
@@ -76,7 +76,7 @@ void wdtTask(void *argument)
   uint32_t now;
   uint32_t elapsed;
 
-  debug_printf("wdt task start\r\n");
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"wdt task start\r\n");
   while(1)
   {
     osDelay(1000);  
@@ -92,7 +92,7 @@ void wdtTask(void *argument)
 
       if (elapsed > task_watch_list[i].timeout_ms)
       {
-        debug_printf("[WDT] Task '%s' not responding for %lu ms\r\n", task_watch_list[i].name,elapsed);
+        DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"[WDT] Task '%s' not responding for %lu ms\r\n", task_watch_list[i].name,elapsed);
         reset_system("[WDT]%s", task_watch_list[i].name);
       }
     }

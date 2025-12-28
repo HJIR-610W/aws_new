@@ -514,3 +514,5 @@ void debug_deinit(void)
   drv_uart_deinit(DEBUG_UART_NUM);
   g_current_debug_io = NULL;
 }
+
+

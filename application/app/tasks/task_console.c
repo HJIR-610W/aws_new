@@ -52,7 +52,7 @@ void print_signature(void)
   
   debug_printf(ES_CURSOR_HOME);
   //debug_printf(EC_SCROLL_REGION(20,30));
-  debug_printf(ES_CLEAR_SCREEN_BELOW);
+ // debug_printf(ES_CLEAR_SCREEN_BELOW);
      
     
   debug_printf("\r\n\r\n");
@@ -105,7 +105,7 @@ void print_signature(void)
 
     // snprintf를 이용해 buffer에 문자열 조립
     // len += snprintf 형식을 사용하여 이전 문자열 끝에 이어서 붙임
-    len += snprintf(buffer + len, max_len - len, "%s%s\r\n\r\n", ES_CURSOR_HOME, ES_CLEAR_SCREEN_BELOW);
+    len += snprintf(buffer + len, max_len - len, "\r\n\r\n");
     len += snprintf(buffer + len, max_len - len, "┌──────────────────────────────────────────────┐\r\n");
     len += snprintf(buffer + len, max_len - len, "│ HWAJIN T&I CO.,LTD.                          │\r\n");
     len += snprintf(buffer + len, max_len - len, "├──────────────────────────────────────────────┤\r\n");

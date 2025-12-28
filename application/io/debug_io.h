@@ -79,8 +79,40 @@ void debug_puts(const uint8_t *string);
     "\x1B[u", \
     ##__VA_ARGS__)
 
+#define VT100_PRINTF_AT(row, col, fmt, ...) \
+  debug_printf("\x1B[s\x1B[%d;%dH" fmt "\x1B[u", (row), (col), ##__VA_ARGS__)
 
+#define VT100_PUT_CH_AT(row, col, ch) \
+  debug_printf("\x1B[s\x1B[%d;%dH%c\x1B[u", (row), (col), (ch))
 
+#define VT100_PUTS_AT(row, col, str) \
+  debug_printf("\x1B[s\x1B[%d;%dH%s\x1B[u", (row), (col), (str))
 
+  #define VT100_CLEAR_ROWS(row_start, row_end)           \
+  do                                                   \
+  {                                                    \
+    for (int r = (row_start); r <= (row_end); r++)     \
+    {                                                  \
+      debug_printf("\x1B[%d;1H\x1B[2K", r);             \
+    }                                                  \
+  } while (0)
+#define VT100_CLEAR_TO_COL(row, col) \
+  debug_printf("\x1B[s\x1B[%d;%dH\x1B[1K\x1B[u", (row), (col))
+
+  #define VT100_CLEAR()           \
+  do                                                   \
+  {                                                    \
+    for (int r = (0); r <= (8); r++)     \
+    {                                                  \
+      VT100_CLEAR_TO_COL(r,20);             \
+    }                                                  \
+  } while (0)
+
+#define VT100_PRINTF(fmt, ...)               debug_printf(fmt, ##__VA_ARGS__)
+#define VT100_PUTS(str)                      debug_printf(str)
+
+//#define VT100_CLEAR()               debug_printf("\x1B[2J\x1B[H")
+#define VT100_SET_RANGE(top, bottom)   debug_printf("\x1B[%d;%dr", (top), (bottom))
+#define VT100_RESET_RANGE()  debug_printf("\x1B[r")    /* 전체 화면을 스크롤 영역으로 복원 */
 
 #endif

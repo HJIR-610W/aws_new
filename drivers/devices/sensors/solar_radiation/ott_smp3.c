@@ -81,19 +81,19 @@ void print_ott(void)
   memcpy(&status,&g_ott_smp3_system.status,2);
   if(status)
   {
-    debug_printf("Signal quality error:       %d\r\n", g_ott_smp3_system.status.signal_quality);
-  debug_printf("Overflow error:             %d\r\n", g_ott_smp3_system.status.overflow_error);
-  debug_printf("Underflow error:            %d\r\n", g_ott_smp3_system.status.underflow_error);
-  debug_printf("General error:              %d\r\n", g_ott_smp3_system.status.general_error);
-  debug_printf("ADC error:                  %d\r\n", g_ott_smp3_system.status.adc_error);
-  debug_printf("DAC error:                  %d\r\n", g_ott_smp3_system.status.dac_error);
-  debug_printf("Calibration error:          %d\r\n", g_ott_smp3_system.status.calibration_error);
-  debug_printf("EEPROM update error:        %d\r\n", g_ott_smp3_system.status.eeprom_update_error);
-  debug_printf("Power failure error:        %d\r\n", g_ott_smp3_system.status.power_failure_error);
-  debug_printf("Tilt sensor error:          %d\r\n", g_ott_smp3_system.status.tilt_sensor_error);
-  debug_printf("RH sensor error:            %d\r\n", g_ott_smp3_system.status.rh_sensor_error);
-  debug_printf("RH threshold warning:       %d\r\n", g_ott_smp3_system.status.rh_threshold_warning);
-  debug_printf("Body temperature error:     %d\r\n", g_ott_smp3_system.status.body_temp_error);
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Signal quality error:       %d\r\n", g_ott_smp3_system.status.signal_quality);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Overflow error:             %d\r\n", g_ott_smp3_system.status.overflow_error);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Underflow error:            %d\r\n", g_ott_smp3_system.status.underflow_error);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"General error:              %d\r\n", g_ott_smp3_system.status.general_error);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"ADC error:                  %d\r\n", g_ott_smp3_system.status.adc_error);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"DAC error:                  %d\r\n", g_ott_smp3_system.status.dac_error);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Calibration error:          %d\r\n", g_ott_smp3_system.status.calibration_error);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"EEPROM update error:        %d\r\n", g_ott_smp3_system.status.eeprom_update_error);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Power failure error:        %d\r\n", g_ott_smp3_system.status.power_failure_error);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Tilt sensor error:          %d\r\n", g_ott_smp3_system.status.tilt_sensor_error);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"RH sensor error:            %d\r\n", g_ott_smp3_system.status.rh_sensor_error);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"RH threshold warning:       %d\r\n", g_ott_smp3_system.status.rh_threshold_warning);
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Body temperature error:     %d\r\n", g_ott_smp3_system.status.body_temp_error);
   }
 }
 
