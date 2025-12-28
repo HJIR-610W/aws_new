@@ -107,22 +107,22 @@ void print_signature(void)
     // snprintf를 이용해 buffer에 문자열 조립
     // len += snprintf 형식을 사용하여 이전 문자열 끝에 이어서 붙임
     len += snprintf(buffer + len, max_len - len, "\r\n\r\n");
-    len += snprintf(buffer + len, max_len - len, "┌──────────────────────────────────────────────┐\r\n");
-    len += snprintf(buffer + len, max_len - len, "│ HWAJIN T&I CO.,LTD.                          │\r\n");
-    len += snprintf(buffer + len, max_len - len, "├──────────────────────────────────────────────┤\r\n");
-    len += snprintf(buffer + len, max_len - len, "│ AWS                                          │\r\n");
+    len += snprintf(buffer + len, max_len - len, "┌───────────────────────────────────────────┐\r\n");
+    len += snprintf(buffer + len, max_len - len, "│ HWAJIN T&I CO.,LTD.                       │\r\n");
+    len += snprintf(buffer + len, max_len - len, "├───────────────────────────────────────────┤\r\n");
+    len += snprintf(buffer + len, max_len - len, "│ AWS                                       │\r\n");
 
     len += snprintf(buffer + len, max_len - len, 
-                    "│ App  %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
+                    "│ App  %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d │\r\n",
                     major, minor, fix, rel, ct_app.Year, ct_app.Month, ct_app.Day,
                     ct_app.Hour, ct_app.Min, ct_app.Sec);
 
     len += snprintf(buffer + len, max_len - len, 
-                    "│ Boot %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d    │\r\n",
+                    "│ Boot %3d.%3d.%3d.%3d, %04d-%02d-%02d %02d:%02d:%02d │\r\n",
                     b_major, b_minor, b_fix, b_rel, ct_boot.Year, ct_boot.Month, ct_boot.Day,
                     ct_boot.Hour, ct_boot.Min, ct_boot.Sec);
 
-    len += snprintf(buffer + len, max_len - len, "└──────────────────────────────────────────────┘\r\n");
+    len += snprintf(buffer + len, max_len - len, "└───────────────────────────────────────────┘\r\n");
 
     // 버퍼를 한 번에 출력
     debug_printf("%s", buffer);

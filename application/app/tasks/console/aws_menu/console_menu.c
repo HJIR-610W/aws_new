@@ -30,7 +30,7 @@ void menu_mirror(void)
   debug_printf(ES_CURSOR_HIDE);
   debug_printf(ES_CLEAR_SCREEN);
   debug_printf(ES_CURSOR_POSITION(10,1));//실제 화면은 1~8 이고 9행은 정보
-  debug_printf("CTRL+Z 누르면 종료,LONG ESC CTRL+Q,LONG ENTER CTRL+P\r\n");
+  debug_printf("CTRL+Z 종료,ESC CTRL+C,LONG ESC CTRL+Q,LONG ENTER CTRL+P\r\n");
   debug_printf(EC_SCROLL_REGION(12,40 ));
   debug_printf(ES_CURSOR_POSITION(12,1));
   //g_log_write_enable  = 0;
