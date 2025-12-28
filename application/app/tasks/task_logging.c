@@ -83,7 +83,7 @@ void log_out_queue(logging_t *logging)
 {
   if(osMessageQueuePut(g_loggingQueue, logging, 0, kLoggingTimeOutMs) != osOK)
   {
-      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"log_printf_level timeout.\r\n");
+      DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"log_write_level timeout.\r\n");
   }
 }
 
@@ -93,7 +93,7 @@ void log_out_uart(logging_t *logging)
   DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"%s",logging->data);
 }
 
-void log_printf(log_level_t level, const char *pFmt, ...)
+void log_write(log_level_t level, const char *pFmt, ...)
 {
   logging_t logging;
   va_list ap;

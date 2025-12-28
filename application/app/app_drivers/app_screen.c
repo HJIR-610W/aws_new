@@ -10,6 +10,7 @@
 #include "cli_key_code.h"
 #include "util_memory.h"
 #include "drv_power.h"
+#include "debug_io.h"
 
 #define MAX_COLS 21
 #define MAX_ROWS 8
@@ -18,6 +19,8 @@
 static driver_t *p_s_lcd = NULL;
 static screen_instance_t s_screen;
 
+
+uint8_t g_debug_port_mirror_enable = 0;
 void screen_init(void)
 {
 #ifdef NOT_USE_LCD
@@ -65,11 +68,19 @@ void screen_refresh(void)
 void screen_put_ch(int row, int col, uint8_t ch)
 {
   driver_lcd_put_ch(p_s_lcd,row,col,ch);
+  if(g_debug_port_mirror_enable == 1)
+  {
+    VT100_PUT_CH_AT(row+1,col+1,ch);
+  }
 }
 
 void screen_clear(void)
 {
   driver_lcd_clear_screen(p_s_lcd);
+  if(g_debug_port_mirror_enable == 1)
+  {
+    VT100_CLEAR();
+  }
 }
 
 

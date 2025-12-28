@@ -60,25 +60,25 @@ void log_boot_reason(void)
   char buffer[64];
 
   if (csr & RCC_CSR_LPWRRSTF)
-      log_printf(L_INFO,"Boot: LPWR Reset");
+      log_write(L_INFO,"Boot: LPWR Reset");
   else if (csr & RCC_CSR_WWDGRSTF)
-      log_printf(L_INFO,"Boot: WWDG Reset");
+      log_write(L_INFO,"Boot: WWDG Reset");
   else if (csr & RCC_CSR_IWDGRSTF)
-      log_printf(L_INFO,"Boot: IWDG Reset");
+      log_write(L_INFO,"Boot: IWDG Reset");
   else if (csr & RCC_CSR_SFTRSTF)
-      log_printf(L_INFO,"Boot: SW Reset");
+      log_write(L_INFO,"Boot: SW Reset");
   else if (csr & RCC_CSR_PORRSTF)
-      log_printf(L_INFO,"Boot: POR/PDR Reset");
+      log_write(L_INFO,"Boot: POR/PDR Reset");
   else if (csr & RCC_CSR_PINRSTF)
-      log_printf(L_INFO,"Boot: NRST Pin");
+      log_write(L_INFO,"Boot: NRST Pin");
   else if (csr & RCC_CSR_BORRSTF)
-      log_printf(L_INFO,"Boot: BOR Reset");
+      log_write(L_INFO,"Boot: BOR Reset");
   else
-      log_printf(L_INFO,"Boot: Unknown");
+      log_write(L_INFO,"Boot: Unknown");
 
   if(read_last_error(buffer,sizeof(buffer)))
   {
-    log_printf(L_INFO, "%s", buffer);
+    log_write(L_INFO, "%s", buffer);
   }
 
       // 리셋 플래그 초기화

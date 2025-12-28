@@ -68,7 +68,7 @@ extern char *strerror();
 #endif
 
 static void ppp_logit(int level, const char *fmt, va_list args);
-static void ppp_log_printf(int level, char *buf);
+static void ppp_log_write(int level, char *buf);
 #if PRINTPKT_SUPPORT
 static void ppp_vslp_printer(void *arg, const char *fmt, ...);
 static void ppp_format_packet(const u_char *p, int len,
@@ -511,7 +511,7 @@ end_pr_log()
 {
 	if (linep != line) {
 		*linep = 0;
-		ppp_log_printf(llevel, line);
+		ppp_log_write(llevel, line);
 	}
 }
 
@@ -545,13 +545,13 @@ pr_log (void *arg, const char *fmt, ...)
 			eol = strchr(p, '\n');
 		}
 		*linep = 0;
-		ppp_log_printf(llevel, line);
+		ppp_log_write(llevel, line);
 		linep = line;
 	}
 
 	while (eol != NULL) {
 		*eol = 0;
-		ppp_log_printf(llevel, p);
+		ppp_log_write(llevel, p);
 		p = eol + 1;
 		eol = strchr(p, '\n');
 	}
@@ -606,10 +606,10 @@ static void ppp_logit(int level, const char *fmt, va_list args) {
     char buf[1024];
 
     ppp_vslprintf(buf, sizeof(buf), fmt, args);
-    ppp_log_printf(level, buf);
+    ppp_log_write(level, buf);
 }
 
-static void ppp_log_printf(int level, char *buf) {
+static void ppp_log_write(int level, char *buf) {
     LWIP_UNUSED_ARG(level); /* necessary if PPPDEBUG is defined to an empty function */
     LWIP_UNUSED_ARG(buf);
     PPPDEBUG(level, ("%s\n", buf) );

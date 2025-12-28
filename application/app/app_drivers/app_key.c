@@ -190,7 +190,10 @@ void get_key_build(DATE_TIME_BUF *build)
     time_cvt_secTotime(time_stamp,build);
 }
 
-
+void inject_key(uint8_t data)
+{
+    bsp_uart_inject(serial_key,&data,1);
+}
 void scan_key(void)
 {
     uint8_t data;

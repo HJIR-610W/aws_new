@@ -55,7 +55,7 @@ static void reset_sms(sms_t *sms)
 {
   int reset_delay_seconds = 15;
   
-  log_printf(L_INFO, "sms reset");
+  log_write(L_INFO, "sms reset");
   reset_system_delay(reset_delay_seconds);
   snprintf(&sms->message[0], sizeof(sms->message) ,"The device will reset in %d seconds.", reset_delay_seconds );
 

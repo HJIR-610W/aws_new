@@ -217,4 +217,7 @@
 #define EC_SCROLL_REGION(top, bottom)  "\x1B[" STR(top) ";" STR(bottom) "r"
 #define EC_SCROLL_REGION_RESET         "\x1B[r"
 
+/* 화면 크기 변경 (rows, cols) */
+#define EC_SET_SCREEN_SIZE(rows, cols)  "\x1B[8;" STR(rows) ";" STR(cols) "t"
+
 #endif /* ESCAPE_SEQUENCE_H */

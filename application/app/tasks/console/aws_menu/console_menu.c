@@ -19,8 +19,8 @@
 #include "console_utile.h"
 #include "debug_io.h"
 #include "util_memory.h"
-
-
+#include "app_screen.h"
+#include "app_key.h"
 
 
 #define MENU_INFO        1
@@ -43,9 +43,36 @@
 #define MENU_CALIBRATION_DEF  ( "켈리브레이션", MENU_CALIBRATION)
 #define MENU_MANAGER_DEF      ( "관리", MENU_MANAGER)
 
+#define MENU_SYSTEM_DEF       ( "시스템", MENU_SYSTEM)
 
 #define MENU_ITEM(def) GET_1 def
 #define MENU_NUMBER(def) GET_2 def
+
+
+void menu_mirror(void)
+{
+  g_log_write_enable  = 0;
+  g_debug_port_mirror_enable = 1;
+
+  debug_printf(ES_CURSOR_HIDE);
+  debug_printf(ES_CLEAR_SCREEN);
+
+  uint8_t ch;
+  while(1)
+  {
+    debug_get_ch(&ch);
+    inject_key(ch);
+    if(ch==KEY_CODE_CTRL_Z) 
+    {
+      break;
+    }
+  }
+  g_debug_port_mirror_enable = 0;
+  g_log_write_enable  = 1;
+  debug_printf(ES_CURSOR_SHOW);
+
+}
+
 
 
 extern void testColsoleTask(void *arg);
@@ -54,15 +81,8 @@ int aws_menu(void)
   int choice =0, status;
   int test_mode_num=0;
 
- const char* menu[] = { MENU_ITEM(MENU_INFO_DEF),
-                        MENU_ITEM(MENU_SYSTEM_DEF),
-                        MENU_ITEM(MENU_SENSOR_DEF),
-                        MENU_ITEM(MENU_NETWORK_DEF),
-                        MENU_ITEM(MENU_DATA_DEF),
-                        MENU_ITEM(MENU_PANEL_DEF),
-                        MENU_ITEM(MENU_OFFSET_DEF),
-                        MENU_ITEM(MENU_CALIBRATION_DEF),
-                        MENU_ITEM(MENU_MANAGER_DEF)};
+ const char* menu[] = {"기본 정보",
+                       "화면 미러"};
 
   while (1)
   {
@@ -85,36 +105,13 @@ int aws_menu(void)
     test_mode_num = 0;
     switch (choice)
     {
-      case MENU_NUMBER(MENU_INFO_DEF):
+      case 1:
         aws_menu_veiw();
         break;
-      case MENU_NUMBER(MENU_SYSTEM_DEF):
-        aws_setup_menu_system();
-        break;
-      case MENU_NUMBER(MENU_SENSOR_DEF):
-        aws_menu_sensor();
-        //console_menu_sensor();
-        break;
-      case MENU_NUMBER(MENU_NETWORK_DEF):
-        aws_menu_network();
-        break;
-      case MENU_NUMBER(MENU_DATA_DEF):
-        //aws_menu_data();
-         console_menu_data();
-        break;
-      case MENU_NUMBER(MENU_PANEL_DEF):
-        //aws_menu_panel();
-        aws_panel();
-        break;
-      case MENU_NUMBER(MENU_OFFSET_DEF):
-        aws_menu_offset();
-        break;
-      case MENU_NUMBER(MENU_CALIBRATION_DEF):
-        aws_menu_calibration();
-        break;
-      case MENU_NUMBER(MENU_MANAGER_DEF):
-        aws_menu_manager();
-        break; ;
+      case 2:
+        menu_mirror();    
+      break;
+
     }
   }
 

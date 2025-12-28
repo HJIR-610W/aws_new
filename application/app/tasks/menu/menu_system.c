@@ -90,7 +90,7 @@ int32_t setup_menu_system(void)
           nt.Day = day;
           drv_rtc_set(&nt);
 
-                    log_printf(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
+                    log_write(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
         }
         break;
         case SYSTEM_MENU_TIME:
@@ -112,7 +112,7 @@ int32_t setup_menu_system(void)
           nt.Min = min;
           nt.Sec = sec;
           drv_rtc_set(&nt);
-          log_printf(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
+          log_write(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
         }
       break;
       case SYSTEM_MENU_ID:

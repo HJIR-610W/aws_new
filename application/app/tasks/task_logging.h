@@ -38,7 +38,7 @@ typedef enum
 
 
 void loggingTask_init(void);
-void log_printf(log_level_t level, const char *pFmt, ...);
+void log_write(log_level_t level, const char *pFmt, ...);
 void os_save_aws_data(DATE_TIME_BUF *pDate, void *pInData,uint32_t dataSize,
                          uint8_t Type,uint32_t periodMin);
 logging_system_t *get_logging_system(void);

@@ -61,6 +61,7 @@ void debug_send(const uint8_t *data, size_t len);
 void debug_put_ch(uint8_t ch);
 void debug_puts(const uint8_t *string);
 
+int32_t log_printf(const char *fmt, ...);
 
 //#define debug_printf os_printf
 //#define debug_send os_debug_send
@@ -114,5 +115,7 @@ void debug_puts(const uint8_t *string);
 //#define VT100_CLEAR()               debug_printf("\x1B[2J\x1B[H")
 #define VT100_SET_RANGE(top, bottom)   debug_printf("\x1B[%d;%dr", (top), (bottom))
 #define VT100_RESET_RANGE()  debug_printf("\x1B[r")    /* 전체 화면을 스크롤 영역으로 복원 */
+
+extern uint8_t g_log_write_enable;
 
 #endif

@@ -509,6 +509,80 @@ int32_t debug_init(void)
 
 }
 
+
+/*
+시스템 발생 로그는 log_write로 만 사용, 매크로도 이함수 사용
+debug_printf는 디버깅포트 입출력 함수이다. 
+log_write로 하는 이유는 console 메뉴에서 로그 출력 on/off 제어를 위함이다.
+*/
+uint8_t g_log_write_enable = 1;
+int32_t log_printf(const char *fmt, ...)
+{
+  uint8_t buff[2];
+  const uint8_t *ptr = NULL;
+  uint8_t *temp = NULL;
+  va_list ap;
+  int32_t len=0;
+
+  (void)len;
+  (void)temp;
+#if PRINTF_HEAP_USE == 0
+  char printf_buff[256];
+#endif
+
+  if (g_log_write_enable == 0)
+  {
+    return 0;
+  }
+  // 먼저 필요한 길이 측정
+  va_start(ap, fmt);
+  len = vsnprintf_s((char *)buff, sizeof(buff), (char *)fmt, ap);
+  va_end(ap);
+
+#if PRINTF_HEAP_USE
+  // 동적 메모리 할당 모드
+  if (len > (sizeof(buff) - 1))
+  {
+    temp = user_malloc(len + 1);  // null 포함
+    if (temp)
+    {
+      va_start(ap, fmt);
+      vsnprintf_s((char *)temp, len + 1, (char *)fmt, ap);
+      va_end(ap);
+      ptr = temp;
+    }
+    else
+    {
+      return 1;  // 메모리 할당 에러
+    }
+  }
+  else
+  {
+    // 매우 짧은 메시지 (1바이트)는 buff에 다시 포맷팅
+    va_start(ap, fmt);
+    vsnprintf_s((char *)buff, sizeof(buff), (char *)fmt, ap);
+    va_end(ap);
+    ptr = buff;
+  }
+#else
+  // 고정 버퍼 모드
+  va_start(ap, fmt);
+  vsnprintf_s((char *)printf_buff, sizeof(printf_buff), (char *)fmt, ap);
+  va_end(ap);
+  ptr = printf_buff;
+#endif
+
+  debug_send(ptr,strlen((char*)ptr));
+
+#if PRINTF_HEAP_USE
+  if (temp)
+  {
+    user_free(temp);
+  }
+#endif
+
+  return 0;
+}
 void debug_deinit(void)
 {
   drv_uart_deinit(DEBUG_UART_NUM);

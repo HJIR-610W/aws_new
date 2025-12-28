@@ -834,7 +834,7 @@ uint16_t kma_cmd_handler_AT(uint8_t *frame, uint8_t *send)
 
 
 
-  log_printf(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
+  log_write(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
 
   len = make_kma3_resp_RODTWC(packet, sizeof(packet), station_id, req->command_str[1], "OKAY");
 

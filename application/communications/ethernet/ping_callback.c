@@ -36,7 +36,7 @@ void ping_callback(uint8_t *p_payload,uint16_t data_len)
     switch(cmd)
     {
       case PING_CMD_RESET:
-        log_printf(L_INFO, "ping reset");
+        log_write(L_INFO, "ping reset");
         reset_system_delay(2);
         break;
     }

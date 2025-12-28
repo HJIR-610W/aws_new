@@ -13,7 +13,7 @@
 #define USE_DEBUG 0
 #define IWDG_USE 1
 #define PRINTF_BASE(fmt, ...)                                                               \
-  debug_printf("%04d-%02d-%02d %02d:%02d:%02d [%s] " fmt "\r\n",                      \
+  log_printf("%04d-%02d-%02d %02d:%02d:%02d [%s] " fmt "\r\n",                      \
               Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \
               Date_Time.Hour, Date_Time.Min, Date_Time.Sec,              \
               __FILE__, ##__VA_ARGS__)
@@ -54,7 +54,7 @@
 
 
 #ifdef DEBUG_PRINTF_USE
-  #define DEBUG_PRINTF(fmt, ...)   debug_printf(fmt "\r\n", ##__VA_ARGS__)
+  #define DEBUG_PRINTF(fmt, ...)   log_printf(fmt "\r\n", ##__VA_ARGS__)
 #else
   #define DEBUG_PRINTF(fmt, ...) ((void)0)
 #endif

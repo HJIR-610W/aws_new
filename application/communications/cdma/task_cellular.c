@@ -233,13 +233,13 @@ int32_t connect_tcp(eAPP_STATE_t state)
     {
     case APP_STATE_HW_RESET:
    TASK_PRINTF("하드웨어 리셋\r\n");
-      log_printf(L_INFO,"Modem HW Reset");
+      log_write(L_INFO,"Modem HW Reset");
       cellular_reset_hw();
       local_state = APP_STATE_WAIT_FOR_BOOT;
       break;
     case APP_STATE_SW_RESET:
    TASK_PRINTF("소프트웨어 리셋\r\n");
-      log_printf(L_INFO,"Modem SW Reset");
+      log_write(L_INFO,"Modem SW Reset");
       cellular_reset_sw();
       local_state = APP_STATE_WAIT_FOR_BOOT;
       break;
@@ -399,7 +399,7 @@ void cellular_task(void *arg)
       ip[2] = config.cdma_server_ip[2];
       ip[3] = config.cdma_server_ip[3];
       port = config.cdma_port;
-      log_printf(L_INFO,"Modem connection established");
+      log_write(L_INFO,"Modem connection established");
 
       rtu_id = swap_uint16(config.device_id);
       cellular_send_tcp((uint8_t *)&rtu_id, 2);//AWS는 아이디 전송해야 수신측에서 AWS id로 인식 처리 

@@ -105,7 +105,7 @@ int aws_setup_menu_system(void)
           drv_rtc_set(&nt);
           drv_rtc_read(&Date_Time);//즉시 표시 
 
-          log_printf(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
+          log_write(L_INFO, "ST:%d%d%d%d%d%d",nt.Year,nt.Month,nt.Day,nt.Hour,nt.Min,nt.Sec);
         break;
       case 2:  // id
         status = view_input_decimal("ID",&dec,0, 9999);

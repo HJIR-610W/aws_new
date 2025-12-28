@@ -24,6 +24,7 @@
 #include "crypto_key.h"
 #include "task_logger.h"
 #include "user_heap.h"
+#include "app_screen.h"
 
 int32_t console_uart_num = -1;
 
@@ -123,7 +124,7 @@ void print_signature(void)
 
     len += snprintf(buffer + len, max_len - len, "└──────────────────────────────────────────────┘\r\n");
 
-    // 조립된 버퍼를 한 번에 출력
+    // 버퍼를 한 번에 출력
     debug_printf("%s", buffer);
 
     // 할당된 메모리 해제
@@ -136,6 +137,7 @@ void dev_shell(int mode)
 }
 
 
+extern void inject_key(uint8_t data);
 
 void consoleTask(void *arg)
 {
@@ -166,7 +168,7 @@ void testColsoleTask(void *arg)
 {
   shell_context_struct user_context;
 
-  log_printf(L_ERROR,"testColsoleTask");
+  log_write(L_ERROR,"testColsoleTask");
 
   shell_scanf_init();
     

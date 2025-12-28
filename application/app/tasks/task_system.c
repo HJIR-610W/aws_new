@@ -71,7 +71,7 @@ void check_sd_card(void)
     if (now_sd_inserted)
     {
       ERROR_PRINTF("SD card inserted");
-      log_printf(L_ERROR,"SD card inserted");
+      log_write(L_ERROR,"SD card inserted");
       OS_PEND_SEM(get_file_sem(), osWaitForever);
       MX_FATFS_DeInit();
       hal_sd_deinit();
@@ -84,7 +84,7 @@ void check_sd_card(void)
     else
     {
       ERROR_PRINTF("SD card removed");
-      log_printf(L_ERROR,"SD card removed");
+      log_write(L_ERROR,"SD card removed");
       OS_PEND_SEM(get_file_sem(), osWaitForever);
       MX_FATFS_DeInit();
       hal_sd_deinit();

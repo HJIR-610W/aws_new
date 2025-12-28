@@ -30,4 +30,6 @@ void screen_off(void);
 void screen_on(void);
 void screen_puts(int row,int col,const char *string);
 
+extern uint8_t g_debug_port_mirror_enable;
+
 #endif

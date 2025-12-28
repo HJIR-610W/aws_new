@@ -164,7 +164,7 @@ uint16_t divas_fw_update(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
   }
   else
   {
-      log_printf(L_INFO,"[SERVER]Update FW");
+      log_write(L_INFO,"[SERVER]Update FW");
 
     data[cnt++] = DIVAS_ASCII_ACK;
     set_magic_value(MAGIC_UPDATE_FW_REMOTE);
@@ -266,7 +266,7 @@ uint8_t *p_data;
   memcpy(&request, &rx_data[0], sizeof(request));
   p_data = &rx_data[sizeof(request)];
 
-  log_printf(L_INFO,"[SERVER]Write config %d,%d,%d", request.config_type, request.offset,request.length);
+  log_write(L_INFO,"[SERVER]Write config %d,%d,%d", request.config_type, request.offset,request.length);
 
   switch (request.config_type)
   {
@@ -362,7 +362,7 @@ uint16_t divas_cmd_reset(uint8_t *rx_frame, uint8_t *tx_frame, size_t tx_size)
 
    tx_data[cnt++] = DIVAS_ASCII_ACK;
 
-   log_printf(L_INFO, "[SERVER]Reset");
+   log_write(L_INFO, "[SERVER]Reset");
    reset_system_delay(5);
    return make_divas_frame(DIVAS_CMD_RESET, rx_frame, NULL, cnt, tx_frame, tx_size);
 }

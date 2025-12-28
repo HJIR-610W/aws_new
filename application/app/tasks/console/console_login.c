@@ -57,8 +57,8 @@ bool check_login(const char *login_key)
     retry_count++;
     if(strncmp(login_key,buffer,strlen(login_key))==0 )
     {
-      log_printf(L_INFO,"Login successful");    
-      log_printf(L_ERROR,"Login successful");
+      log_write(L_INFO,"Login successful");    
+      log_write(L_ERROR,"Login successful");
       break;
     }
     if(retry_count>5)

@@ -66,7 +66,7 @@ int32_t read_sunshine_1min(uint16_t year, uint16_t *p_buffer, uint32_t read_size
     }
     else
     {
-      log_printf(L_ERROR,"read sunshine file failed");
+      log_write(L_ERROR,"read sunshine file failed");
     }
   }
   return 1;
