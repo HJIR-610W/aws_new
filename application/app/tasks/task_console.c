@@ -168,7 +168,7 @@ void testColsoleTask(void *arg)
 {
   shell_context_struct user_context;
 
-  log_write(L_ERROR,"testColsoleTask");
+
 
   shell_scanf_init();
     

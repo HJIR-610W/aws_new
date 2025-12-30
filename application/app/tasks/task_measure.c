@@ -663,7 +663,7 @@ void measure250ms_task(void *arg)
   uint32_t tick_count;
   int32_t wdt_number;
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Measure 250ms task start");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_VERBOSE,"Measure 250ms task start");
 
   tick_count = osKernelGetTickCount();
   wdt_number = wdt_task_register(kMeasure250msTask_attributes.name, 60000);
@@ -689,7 +689,7 @@ void measure1s_task(void *arg)
   uint32_t tick_count;
   int32_t wdt_number;
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"Measure 1s task start");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_VERBOSE,"Measure 1s task start");
 
   tick_count = osKernelGetTickCount();
   wdt_number = wdt_task_register(kMeasure250msTask_attributes.name, 10000);

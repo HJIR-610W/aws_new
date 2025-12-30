@@ -35,7 +35,7 @@ void load_config_nvm(void)
 
   drv_fram_read(CONFIG_NVM_START_ADDRESS, (uint8_t *)&g_config_nvm, sizeof(config_nvm_t));
 
-    DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_nvm_t):%d",sizeof(config_nvm_t));
+    DEBUG_PRINTF_LEVEL(LOG_LEVEL_VERBOSE,"sizeof(config_nvm_t):%d",sizeof(config_nvm_t));
 #endif
 
 

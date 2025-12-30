@@ -36,7 +36,7 @@
 #define LOG_LEVEL_WARN    3
 #define LOG_LEVEL_INFO    4
 #define LOG_LEVEL_DEBUG   5
-#define LOG_LEVEL_VERBOSE 6
+#define LOG_LEVEL_VERBOSE 6 //상세
 #define LOG_LEVEL_NONE    99 
 
 #ifndef CURRENT_LOG_LEVEL

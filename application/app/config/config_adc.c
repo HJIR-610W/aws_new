@@ -76,7 +76,7 @@ void load_config_adc_cali(void)
   
 
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_adc_t):%d",sizeof(config_adc_t));
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_VERBOSE,"sizeof(config_adc_t):%d",sizeof(config_adc_t));
 }
 
 #define PATH_ADC_CALIBRATION_BIN "0:back_up/adc_calibraion.bin"

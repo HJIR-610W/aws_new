@@ -125,7 +125,7 @@ void systemTask(void *arg)
   uint8_t err=0;
   uint32_t start_time = osKernelGetTickCount();
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"system task start\r\n");
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_VERBOSE,"System task start");
 
   pre_sd_inserted = BSP_PlatformIsDetected();
 

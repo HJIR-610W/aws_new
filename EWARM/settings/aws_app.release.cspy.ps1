@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "D:\WTH_BK_2\1.Projects\2.Local\600_HJIR-610W[AWS]\1.FW\aws_app\EWARM\settings\aws_app.release.general.xcl" --backend -f "D:\WTH_BK_2\1.Projects\2.Local\600_HJIR-610W[AWS]\1.FW\aws_app\EWARM\settings\aws_app.release.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\common\bin\cspybat" -f "D:\WTH\1.Projects\2.Local\600_HJIR-610W[AWS]\1.FW\aws_app\EWARM\settings\aws_app.release.general.xcl" --backend -f "D:\WTH\1.Projects\2.Local\600_HJIR-610W[AWS]\1.FW\aws_app\EWARM\settings\aws_app.release.driver.xcl" 
 }
 else
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "D:\WTH_BK_2\1.Projects\2.Local\600_HJIR-610W[AWS]\1.FW\aws_app\EWARM\settings\aws_app.release.general.xcl" --debug_file=$debugfile --backend -f "D:\WTH_BK_2\1.Projects\2.Local\600_HJIR-610W[AWS]\1.FW\aws_app\EWARM\settings\aws_app.release.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\common\bin\cspybat" -f "D:\WTH\1.Projects\2.Local\600_HJIR-610W[AWS]\1.FW\aws_app\EWARM\settings\aws_app.release.general.xcl" --debug_file=$debugfile --backend -f "D:\WTH\1.Projects\2.Local\600_HJIR-610W[AWS]\1.FW\aws_app\EWARM\settings\aws_app.release.driver.xcl" 
 }

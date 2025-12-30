@@ -312,7 +312,7 @@ void load_config_sensor(void)
 #else
   drv_fram_read(CONFIG_SENSOR_START_ADDRESS, (uint8_t *)&g_config_sensor, sizeof(g_config_sensor));
 
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_sensor_t):%d",sizeof(config_sensor_t));
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_VERBOSE,"sizeof(config_sensor_t):%d",sizeof(config_sensor_t));
 #endif
 
   limit_temp();
@@ -334,7 +334,7 @@ void load_config_sensor(void)
     backup_config_sensor();
   }
   
-  DEBUG_PRINTF_LEVEL(LOG_LEVEL_DEBUG,"sizeof(config_sensor_t):%d",sizeof(config_sensor_t));
+  DEBUG_PRINTF_LEVEL(LOG_LEVEL_VERBOSE,"sizeof(config_sensor_t):%d",sizeof(config_sensor_t));
 }
 
 config_sensor_t *get_config_sensor(void)
