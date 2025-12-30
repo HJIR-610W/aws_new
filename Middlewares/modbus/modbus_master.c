@@ -1,5 +1,21 @@
 
+/*
+        
+| Baudrate | 1바이트             | T3.5      |
+| -------- | ------------------- | --------- |
+| 1200     | 8.33 ms             | ≈ 29 ms   |
+| 2400     | 4.17 ms             | ≈ 14.6 ms |
+| 4800     | 2.08 ms             | ≈ 7.3 ms  |
+| 9600     | 1.04 ms             | ≈ 3.64 ms |
+| 19200    | 0.52 ms             | ≈ 1.82 ms |
+| 38400↑   | 고정 1.75 ms (표준 권장값) |    |
 
+모드버스는 프레임 시작 조건 T3.5 
+바이트간 T1.5            
+
+19200bps 초과 시
+T3.5를 1.75ms 고정값으로 써도 된다고 명시함
+*/
 #include "modbus_master.h"
 
 #include <string.h>
@@ -15,7 +31,11 @@
 #include "system_err.h"
 #include "debug_io.h"
 
-
+#define MODBUS_RECV_ERR_3BYTE_TIMEOUT_MS -1
+#define MODBUS_RECV_ERR_NOT_SUPPORTED -99
+#define MODBUS_RECV_ERR_BUFF_SIZE_OVER -3
+#define MODBUS_RECV_ERR_DATA_LEN -4
+#define MODBUS_RECV_ERR_CRC_ERROR -5
 
 
 #define RET_SIZE_OVER -1
@@ -43,6 +63,7 @@ typedef struct _send_data
   uint8_t data[MODBUS_REG_SIZE*2];
   uint16_t cnt;
 } modbus_data_t;
+
 
 
 void send_query(modbus_h_t *drv, modbus_t *pmodbus);
@@ -182,6 +203,9 @@ int32_t parse_recv(uint8_t *pInData, uint16_t dataLen, uint16_t *pOutRegs, uint1
 #define MODBUS_START_TIMEOUT_MS 50  // 슬레이브가 늦게 줄수 도 있는걸 고려
 #define MODBUS_DATA_TIMEOUT_MS 20   // 선점에 의한 지연 고려
 
+
+
+
 int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_size)
 {
   uint8_t func_code;
@@ -296,6 +320,12 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
     crc_recv = rx_buf[total_len - 2] << 8 | (rx_buf[total_len - 1]);
     if (crc_calc != crc_recv)
     {
+      ERROR_PRINT("\r\n");
+      for(int i = 0 ; i< total_len; i++)
+      {
+        ERROR_PRINT("%02X ",rx_buf[i]);
+      }
+      ERROR_PRINT("\r\n");
       return -5;  // CRC 에러
     }
 
@@ -307,7 +337,7 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
   {
     uint8_t buff[MODBUS_REG_SIZE*2+20];
     int32_t len;
-   // eMODBUS_RESULT_t result = eMODBUS_FAIL;
+    eMODBUS_RESULT_t result = eMODBUS_FAIL;
 
     OS_PEND_SEM(modbus_sem,osWaitForever);
 
@@ -322,17 +352,38 @@ int32_t modbus_receive_packet(modbus_h_t *drv, uint8_t *rx_buf, uint16_t buf_siz
     {
       if (parse_recv(buff, len, modbus->regs, modbus->regsCnt) == 0)
       {
-         OS_POST_SEM(modbus_sem);
-        return eMODBUS_OK;
+        result = eMODBUS_OK;
       }
       else
       {
-        OS_POST_SEM(modbus_sem);
-        return eMODBUS_PARSE_FAIL;
+
+        result = eMODBUS_PARSE_FAIL;
       }
     }
+    else if(len == -1)
+    {
+      result = eMODBUS_TIMEOUT;
+    }
+      else if(len == -3)
+      {
+
+        result = eMODBUS_RECV_ERR_BUFF_SIZE_OVER;
+      }
+      else if(len == -4)
+      {
+        result = eMODBUS_RECV_ERR_DATA_LEN;
+      }
+      else if(len == -5)
+      {
+        result =  eMODBUS_RECV_ERR_CRC_ERROR;
+      }
+      else if(len == -99)
+      {
+        result =  eMODBUS_RECV_ERR_NOT_SUPPORTED;
+      }
+
     OS_POST_SEM(modbus_sem);
-    return eMODBUS_LEN_ZERO;
+    return result;
   }
 
 /**
@@ -708,6 +759,16 @@ const char *get_modbus_err_string(eMODBUS_RESULT_t err)
       return "eMODBUS_LEN_ZERO";
     case eMODBUS_PARSE_FAIL:
       return "eMODBUS_PARSE_FAIL";
+    case eMODBUS_RECV_ERR_3BYTE_TIMEOUT:
+      return "eMODBUS_RECV_ERR_3BYTE_TIMEOUT";
+    case eMODBUS_RECV_ERR_NOT_SUPPORTED:
+      return "eMODBUS_RECV_ERR_NOT_SUPPORTED";
+    case eMODBUS_RECV_ERR_BUFF_SIZE_OVER:
+      return "eMODBUS_RECV_ERR_BUFF_SIZE_OVER";
+    case eMODBUS_RECV_ERR_DATA_LEN:
+      return "eMODBUS_RECV_ERR_DATA_LEN";
+    case eMODBUS_RECV_ERR_CRC_ERROR:
+      return "eMODBUS_RECV_ERR_CRC_ERROR";
     default:
       return "UNKNOWN";
   }

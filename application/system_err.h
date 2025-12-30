@@ -24,6 +24,13 @@
   #define ERROR_PRINTF(fmt, ...) ((void)0)
 #endif
 
+#ifdef ERROR_PRINTF_USE
+#define ERROR_PRINT(fmt, ...)  log_printf(fmt,  ##__VA_ARGS__)
+#else
+  #define ERROR_PRINT(fmt, ...) ((void)0)
+#endif
+
+
 #define TASK_PRINTF(fmt, ...)                                               \
   task_printf("%04d-%02d-%02d %02d:%02d:%02d [%s] " fmt "\r\n",                      \
               Date_Time.Year, Date_Time.Month, Date_Time.Day,                               \
