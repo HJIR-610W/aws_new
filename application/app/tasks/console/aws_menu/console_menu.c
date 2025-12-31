@@ -46,7 +46,7 @@ void menu_mirror(void)
     }
   }
   g_debug_port_mirror_enable = 0;
- g_log_write_enable  = 1;
+  g_log_write_enable  = 1;
 
   
   debug_printf(ES_CURSOR_SHOW);
@@ -117,7 +117,9 @@ int aws_menu(void)
     switch (choice)
     {
       case 1:
+
         aws_menu_veiw();
+
         break;
       case 2:
         menu_mirror_with_log();    

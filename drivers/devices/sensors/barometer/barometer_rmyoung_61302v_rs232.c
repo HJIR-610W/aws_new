@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <math.h>
+#include <string.h>
+
 
 #include "drv_rs232.h"
 
@@ -89,7 +91,16 @@ float read_rmyoung_61302v_rs232_baromater(uint8_t *err)
         }
         else
         {
+          if(strlen(buff)==7)
+          {
+            barometer = strtof(&buff[0], NULL);
+            *err = DRV_ERR_NONE;
+          }
+          else
+          {
+            
             *err = DRV_ERR_RECV_DATA;
+          }
         }
     }
     else

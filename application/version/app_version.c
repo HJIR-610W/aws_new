@@ -15,7 +15,7 @@ __no_init volatile uint32_t _shareData;
 
 #define APP_INFO_START_ADDRESS (0x08000188 + 0x00010000) // 벡터가 끝나는 곳
 #pragma location = APP_INFO_START_ADDRESS
-//2025년 12월 30일 화요일 오후 4:13:48 GMT+09:00
+//2025년 12월 31일 수요일 오전 10:13:34 GMT+09:00
 __root const section_info_t k_app_section = {.signature ={'A','P','P',' '},\
                                           .ver = INFO_VER,
                                           .section = SECTION_APP,
@@ -23,7 +23,7 @@ __root const section_info_t k_app_section = {.signature ={'A','P','P',' '},\
                                           .alias_code =ALIAS_NEW_ASW_HJ,\
                                           .offset = 0x08010000,\
                                           .section_ver = APP_VERSION,\
-                                          .build_timestamp = 1767078828,\
+                                          .build_timestamp = 1767143614,\
                                           .pcb_n =1,
                                           .pcb[0]=0x01000000};
  
