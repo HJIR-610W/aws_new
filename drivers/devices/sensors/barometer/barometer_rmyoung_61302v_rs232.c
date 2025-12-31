@@ -67,7 +67,11 @@ int32_t rmyoung_61302v_rs232_init(void *opt)
 M0!<CR>
 >                 3E 20
 0999.04<CR>
+2025-12-31 11:56:45.148 [COM31] - M0!<CR>
 
+2025-12-31 11:56:45.153 [COM30] - <CR><LF>
+> 
+2025-12-31 11:56:45.726 [COM30] - 1010.00<CR><LF>
  */
 float read_rmyoung_61302v_rs232_baromater(uint8_t *err)
 {
@@ -79,7 +83,7 @@ float read_rmyoung_61302v_rs232_baromater(uint8_t *err)
 
     drv_uart_send(rmyoung_61302v_rs232_inst.rs232_port, "M0!\r", 4);
 
-    len = drv_uart_recv_crlf(rmyoung_61302v_rs232_inst.rs232_port, buff, sizeof(buff),50);
+    len = drv_uart_recv_crlf(rmyoung_61302v_rs232_inst.rs232_port, buff, sizeof(buff),100);
 
     if (len > 0)
     {
