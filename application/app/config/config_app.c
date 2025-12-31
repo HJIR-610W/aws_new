@@ -464,17 +464,9 @@ void set_config_app_cdma_ip(uint8_t ip[4])
 void config_app_reset(void)
 {
   uint8_t *p_buffer;
+
   config = config_app_default;
 
-  memset(config.sensor, 0, sizeof(config.sensor));
-  p_buffer = pvPortMalloc(CONFIG_MEMORY_SIZE);
-
-  if(p_buffer)
-  {
-    memset(p_buffer, 0, CONFIG_MEMORY_SIZE);
-    drv_fram_write(CONFIG_START_ADDRESS, p_buffer, CONFIG_MEMORY_SIZE);
-    vPortFree(p_buffer);
-  }
  
 }
 
@@ -656,3 +648,10 @@ uint32_t config_index_to_uart_baud(eUART_BAUD_t index)
 }
 
 
+void config_sensor_factory_reset(void)
+{
+
+  memset(config.sensor,0,sizeof(config.sensor));
+
+  save_config_app();
+}

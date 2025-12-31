@@ -250,7 +250,7 @@ uint16_t get_lcd_off_time(void);
 eUART_BAUD_t uart_baud_to_config_index(uint32_t baud);
 uint32_t config_index_to_uart_baud(eUART_BAUD_t index) ;
 sensor_t *get_sensor_config_copy(void);
-
+void config_sensor_factory_reset(void);
 
 
 extern config_t config;

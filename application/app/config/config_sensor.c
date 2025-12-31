@@ -343,12 +343,7 @@ config_sensor_t *get_config_sensor(void)
   return &g_config_sensor;
 }
 
-//task 실행 안되게 하고 업데이트 후 장비 재시작
-void config_sensor_reset(void)
-{
-  memset(&g_config_sensor,0,sizeof(g_config_sensor));
-  
-}
+
 
 
 #define PATH_CONFIG_SENSOR_BIN "0:back_up/config_sensor.bin"

@@ -308,7 +308,6 @@ typedef struct sensor_configs_s
 
 void save_config_sensor(void);
 void load_config_sensor(void);
-void config_sensor_reset(void);
 void backup_config_sensor(void);
 void restore_config_sensor(void);
 

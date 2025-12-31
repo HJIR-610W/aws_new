@@ -36,10 +36,11 @@ extern void config_hj_reset(void);
 #define MANAGER_MENU_LCD        3
 
 #define CONFIG_MENU_HJ_RESET    0
-#define CONFIG_MENU_INIT        1
-#define CONFIG_MENU_BACKUP      2
-#define CONFIG_MENU_LOG_RESET   3
-#define CONFIG_MENU_ALARM_LOG_RESET   4
+#define CONFIG_MENU_SENSOR_RESET    1
+#define CONFIG_MENU_INIT        2
+#define CONFIG_MENU_BACKUP      3
+#define CONFIG_MENU_LOG_RESET   4
+#define CONFIG_MENU_ALARM_LOG_RESET   5
 
 #define BACKUP_MENU_SAVE        0
 #define BACKUP_MENU_RESTORE     1
@@ -58,7 +59,8 @@ void draw_menu_config_menu(screen_menu_t* p_win)
 {
   screen_menu_start(p_win);
   screen_menu_printf(p_win, CONFIG_MENU_HJ_RESET, "HJ Reset");
-  screen_menu_printf(p_win, CONFIG_MENU_INIT, "Factory Reset");
+  screen_menu_printf(p_win, CONFIG_MENU_SENSOR_RESET, "Sensor Reset");
+  screen_menu_printf(p_win, CONFIG_MENU_INIT, "All Factory Reset");
   screen_menu_printf(p_win, CONFIG_MENU_BACKUP, "Backup Config");
   screen_menu_printf(p_win, CONFIG_MENU_LOG_RESET, "Log Count Reset");
   screen_menu_printf(p_win, CONFIG_MENU_ALARM_LOG_RESET, "Alarm Count Reset");
@@ -184,12 +186,31 @@ int32_t setup_menu_hj_reset(void)
   if (status == MENU_OK && choice == 1)
   {
     config_hj_reset();
+    save_config_app();
     show_popup("Information", "Reset Complete");
   }
 
   return status;
 }
 
+int32_t setup_menu_sensor_reset(void)
+{
+  int32_t choice = 0;
+  int32_t status;
+
+  status = input_active("Sensor Config Reset?", &choice);
+
+  if (status == MENU_OK && choice == 1)
+  {
+    config_sensor_factory_reset();
+    show_popup("Information", "Reset Complete");
+  }
+
+  return status;
+}
+
+
+extern void config_sensor_reset(void);
 int32_t setup_menu_init(void)
 {
   int32_t choice = 0;
@@ -199,10 +220,13 @@ int32_t setup_menu_init(void)
 
   if (status == MENU_OK && choice == 1)
   {
-    config_app_reset();
-    save_config_app();
     config_sensor_reset();
     save_config_sensor();
+
+    config_app_reset();
+    save_config_app();
+
+
 
     show_popup("Information", "Init Complete");
   }
@@ -343,6 +367,9 @@ int32_t setup_menu_config(void)
       {
         case CONFIG_MENU_HJ_RESET:
           status = setup_menu_hj_reset();//1.AWS 화진 기본 설정
+          break;
+        case CONFIG_MENU_SENSOR_RESET:
+          status = setup_menu_sensor_reset();//1.AWS 화진 기본 설정
           break;
         case CONFIG_MENU_INIT:
           status = setup_menu_init();//2.공장 초기화
