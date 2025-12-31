@@ -33,6 +33,7 @@ typedef struct driver_s
 #define DRV_ERR_TIMEOUT   2
 #define DRV_ERR_RECV_DATA 3
 #define DRV_ERR_DATA_NAN  4
-#define DRV_ERR_NOT_READY  15
+#define DRV_ERR_NOT_READY  5
+#define DRV_ERR_DIVIDE_ZERO 6
 const char* get_drv_err_name(int num);
 #endif

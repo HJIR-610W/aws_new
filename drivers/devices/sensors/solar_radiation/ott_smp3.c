@@ -159,7 +159,7 @@ float smp3_solar_read(driver_t *driver, uint8_t *err)
   int16_t s_reg;
   eMODBUS_RESULT_t mb_ret;
   float scale_factor;
-  float solar_radiation;
+  float solar_radiation=NAN;
   ott_smp3_cfg_t *cfg = driver->cfg; 
 
 
@@ -170,18 +170,23 @@ float smp3_solar_read(driver_t *driver, uint8_t *err)
   {
     ERROR_PRINTF("smp3_solar_read error %s",get_modbus_err_string(mb_ret));
     *err = DRV_ERR_TIMEOUT;
-    solar_radiation = NAN;
   }
   else
   {
-    *err = DRV_ERR_NONE;
     memcpy(&g_ott_smp3_system.status, &reg[REG_IO_STATUS_FLAGS], 2);
     //print_ott();
     scale_factor = ott_cvt_scale_factor(reg[REG_IO_SCALE_FACTOR]);
 
-    //temp = modbus_regs_to_float(reg[3], reg[4]);
     s_reg = (int16_t)reg[REG_IO_SENSOR1_DATA] ;
-    solar_radiation = (float)s_reg / scale_factor;
+    if(scale_factor != 0)
+    {
+      solar_radiation = (float)s_reg / scale_factor;
+      *err = DRV_ERR_NONE;
+    }
+    else{
+      *err = DRV_ERR_DIVIDE_ZERO;
+    }
+
   }
 
   return solar_radiation;

@@ -31,6 +31,35 @@ void menu_mirror(void)
   debug_printf(ES_CLEAR_SCREEN);
   debug_printf(ES_CURSOR_POSITION(10,1));//실제 화면은 1~8 이고 9행은 정보
   debug_printf("CTRL+Z 종료,ESC CTRL+C,LONG ESC CTRL+Q,LONG ENTER CTRL+P\r\n");
+
+  g_log_write_enable  = 0;
+  g_debug_port_mirror_enable = 1;
+
+  uint8_t ch;
+  while(1)
+  {
+    debug_get_ch(&ch);
+    inject_key(ch);
+    if(ch==KEY_CODE_CTRL_Z) 
+    {
+      break;
+    }
+  }
+  g_debug_port_mirror_enable = 0;
+ g_log_write_enable  = 1;
+
+  
+  debug_printf(ES_CURSOR_SHOW);
+
+
+}
+
+void menu_mirror_with_log(void)
+{
+  debug_printf(ES_CURSOR_HIDE);
+  debug_printf(ES_CLEAR_SCREEN);
+  debug_printf(ES_CURSOR_POSITION(10,1));//실제 화면은 1~8 이고 9행은 정보
+  debug_printf("CTRL+Z 종료,ESC CTRL+C,LONG ESC CTRL+Q,LONG ENTER CTRL+P\r\n");
   debug_printf(EC_SCROLL_REGION(12,40 ));
   debug_printf(ES_CURSOR_POSITION(12,1));
   //g_log_write_enable  = 0;
@@ -56,8 +85,6 @@ void menu_mirror(void)
 
 }
 
-
-
 extern void testColsoleTask(void *arg);
 int aws_menu(void)
 {
@@ -65,7 +92,8 @@ int aws_menu(void)
   int test_mode_num=0;
 
  const char* menu[] = {"기본 정보",
-                       "LCD"};
+                       "LCD 화면(로그 포함)",
+                       "LCD 화면"};
 
   while (1)
   {
@@ -92,7 +120,10 @@ int aws_menu(void)
         aws_menu_veiw();
         break;
       case 2:
-        menu_mirror();    
+        menu_mirror_with_log();    
+      break;
+      case 3:
+      menu_mirror();
       break;
 
     }

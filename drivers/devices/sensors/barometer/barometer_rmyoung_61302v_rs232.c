@@ -18,6 +18,7 @@
 #include "config_sensor.h"
 #include "os_user_def.h"
 #include "system_err.h"
+#include "driver_interface.h"
 
 
 typedef struct rmyoung_61302v_rs232_instance_s
@@ -71,7 +72,7 @@ float read_rmyoung_61302v_rs232_baromater(uint8_t *err)
     char buff[20];
     int len;
     float barometer = NAN;
-    *err = 1;
+    *err = DRV_ERR_TIMEOUT;
     
 
     drv_uart_send(rmyoung_61302v_rs232_inst.rs232_port, "M0!\r", 4);
@@ -82,14 +83,18 @@ float read_rmyoung_61302v_rs232_baromater(uint8_t *err)
     {
         if(buff[0] == '>')
         {
-        buff[len] = 0;
-        barometer = strtof(&buff[2], NULL);
-        *err = 0;
+            buff[len] = 0;
+            barometer = strtof(&buff[2], NULL);
+            *err = DRV_ERR_NONE;
+        }
+        else
+        {
+            *err = DRV_ERR_RECV_DATA;
         }
     }
     else
     {
-      ERROR_PRINTF("read_rmyoung_61302v_rs232_baromater error %d",len);
+      ERROR_PRINTF("read_rmyoung_61302v_rs232_baromater timeout %d",len);
     }
     
     

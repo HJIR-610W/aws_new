@@ -78,7 +78,7 @@ void log_boot_reason(void)
 
   if(read_last_error(buffer,sizeof(buffer)))
   {
-    log_write(L_INFO, "%s", buffer);
+    log_write(L_FATAL, "%s", buffer);
   }
 
       // 리셋 플래그 초기화
