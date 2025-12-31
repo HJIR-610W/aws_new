@@ -733,6 +733,7 @@ int32_t hjwind_setup(  eSENSOR_TYPE_t type, eSENSOR_TYPE_MODEL_t model, uint8_t 
       hjwind->full = 3200;
       hjwind->offset = 0;
       hjwind->rs485_port = eAPP_RS485_C;
+            save_config_sensor();
     }
 
     break;
